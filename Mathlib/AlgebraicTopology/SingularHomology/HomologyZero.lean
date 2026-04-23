@@ -8,6 +8,7 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.TopAdj
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.HomologyZero
 public import Mathlib.AlgebraicTopology.SingularHomology.Basic
+public import Mathlib.Topology.Homotopy.TopCat.Path
 
 /-!
 # Singular homology in degree 0
@@ -22,37 +23,11 @@ universe w v v' u u'
 open CategoryTheory Limits AlgebraicTopology Simplicial
 
 variable {C : Type u} [Category.{v} C] [HasCoproducts.{w} C] [Preadditive C]
+  [CategoryWithHomology C]
 
 namespace TopCat
 
-variable (X : TopCat.{w})
-
-@[ext]
-protected structure Path (x y : X) where
-  hom : I ⟶ X
-  hom₀ : hom 0 = x := by cat_disch
-  hom₁ : hom 1 = y := by cat_disch
-
-attribute [simp] Path.hom₀ Path.hom₁
-
-variable {X} in
-@[simps!]
-def pathEquiv {x y : X} : X.Path x y ≃ _root_.Path x y where
-  toFun p :=
-    { toContinuousMap := p.hom.hom.comp TopCat.I.homeomorph.symm
-      source' := p.hom₀
-      target' := p.hom₁ }
-  invFun p :=
-    { hom := ofHom (p.toContinuousMap.comp (toContinuousMap TopCat.I.homeomorph))
-      hom₀ := p.source'
-      hom₁ := p.target' }
-  left_inv _ := rfl
-  right_inv _ := rfl
-
-variable [CategoryWithHomology C] (R : C)
-
-instance : Unique (stdSimplex ℝ (Fin (⦋0⦌.len + 1))) :=
-  inferInstanceAs (Unique (stdSimplex ℝ (Fin 1)))
+variable (X : TopCat.{w}) (R : C)
 
 section
 
@@ -104,20 +79,16 @@ noncomputable def toSSetObjEdgeEquiv {x y : X} :
   left_inv _ := by aesop
   right_inv _ := by aesop
 
-noncomputable def toSSetObjEdgeEquiv' {x y : X} :
-    SSet.Edge (toSSetObj₀Equiv.symm x) (toSSetObj₀Equiv.symm y) ≃ _root_.Path x y :=
-  toSSetObjEdgeEquiv.trans pathEquiv
-
 end
 
 noncomputable def zerothHomotopyEquiv : ZerothHomotopy X ≃ (toSSet.obj X).π₀ where
   toFun :=
     ZerothHomotopy.lift (SSet.π₀.mk ∘ toSSetObj₀Equiv.symm)
-      (fun _ _ p ↦ SSet.π₀.sound (toSSetObjEdgeEquiv'.symm p))
+      (fun _ _ p ↦ SSet.π₀.sound (toSSetObjEdgeEquiv.symm (pathEquiv.symm p)))
   invFun := SSet.π₀.lift (ZerothHomotopy.mk ∘ toSSetObj₀Equiv) (fun x y e ↦ by
     obtain ⟨x, rfl⟩ := toSSetObj₀Equiv.symm.surjective x
     obtain ⟨y, rfl⟩ := toSSetObj₀Equiv.symm.surjective y
-    exact ZerothHomotopy.sound (toSSetObjEdgeEquiv' e))
+    exact ZerothHomotopy.sound (pathEquiv (toSSetObjEdgeEquiv e)))
   left_inv x := by induction x; simp
   right_inv x := by induction x; simp
 
