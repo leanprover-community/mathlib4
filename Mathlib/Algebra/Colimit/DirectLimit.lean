@@ -620,7 +620,7 @@ theorem hom_ext {g₁ g₂ : DirectLimit G f →+* P} (h : ∀ i, g₁.comp (of 
 
 end Ring
 
-namespace StarRing
+namespace NonUnitalStarRing
 
 variable [∀ i, NonUnitalNonAssocSemiring (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)]
 variable [∀ i, StarRing (G i)] [∀ i j h, StarHomClass (T h) (G i) (G j)]
@@ -660,6 +660,6 @@ theorem hom_ext {g₁ g₂ : DirectLimit G f →⋆ₙ+* P}
   induction x using DirectLimit.induction with | _ i x
   exact congr($(h i) x)
 
-end StarRing
+end NonUnitalStarRing
 
 end DirectLimit
