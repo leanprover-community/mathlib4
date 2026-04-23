@@ -125,6 +125,7 @@ class CompleteLattice (α : Type*) extends Lattice α, CompleteSemilatticeSup α
     CompleteSemilatticeInf α, BoundedOrder α
 
 attribute [to_dual existing] CompleteLattice.toCompleteSemilatticeInf
+attribute [to_dual self (reorder := toSupSet toInfSet, isLUB_sSup isGLB_sInf)] CompleteLattice.mk
 
 -- Shortcut instance to ensure that the path
 -- `CompleteLattice α → CompletePartialOrder α → PartialOrder α` isn't taken,
