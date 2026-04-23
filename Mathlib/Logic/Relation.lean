@@ -77,7 +77,6 @@ theorem Std.Refl.ne_imp_iff [Std.Refl r] {x y : α} : x ≠ y → r x y ↔ r x 
   ⟨Std.Refl.rel_of_ne_imp, fun hr _ ↦ hr⟩
 
 @[deprecated (since := "2026-03-27")] alias Reflexive.ne_imp_iff := Std.Refl.ne_imp_iff
-
 @[deprecated (since := "2026-03-27")] alias reflexive_ne_imp_iff := Std.Refl.ne_imp_iff
 
 theorem refl_iff_eq_le : Std.Refl r ↔ Eq ≤ r := by
@@ -85,17 +84,14 @@ theorem refl_iff_eq_le : Std.Refl r ↔ Eq ≤ r := by
   grind [Std.Refl]
 
 @[deprecated (since := "2026-04-23")] alias refl_iff_subrelation_eq := refl_iff_eq_le
-
 @[deprecated (since := "2026-03-27")] alias reflexive_iff_subrelation_eq := refl_iff_eq_le
 
 theorem irrefl_iff_le_ne : Std.Irrefl r ↔ r ≤ Ne := by
   unfold Pi.hasLe Prop.le
   grind [Std.Irrefl]
 
-@[deprecated (since := "2026-02-21")] alias irrefl_iff_subrelation_ne := irrefl_iff_le_ne
-
-@[deprecated (since := "2026-02-12")]
-alias irreflexive_iff_subrelation_ne := irrefl_iff_subrelation_ne
+@[deprecated (since := "2026-04-23")] alias irrefl_iff_subrelation_ne := irrefl_iff_le_ne
+@[deprecated (since := "2026-02-12")] alias irreflexive_iff_subrelation_ne := irrefl_iff_le_ne
 
 protected theorem Symmetric.iff (H : Symmetric r) (x y : α) : r x y ↔ r y x :=
   ⟨fun h ↦ H h, fun h ↦ H h⟩
@@ -767,7 +763,7 @@ theorem reflTransGen_swap_eq_swap_reflTransGen :
   · simpa [reflTransGen_eq_self] using h.mono ReflGen.to_reflTransGen x y |>.to_reflTransGen x y
   · obtain (rfl | h) := reflTransGen_iff_eq_or_transGen.mp h
     · exact .single .refl
-    · exact .mono (fun _ _ ↦ .single) x y h
+    · exact h.mono (fun _ _ ↦ .single) x y
 
 @[simp, grind =] lemma reflTransGen_reflGen : ReflTransGen (ReflGen r) = ReflTransGen r := by
   simp only [← transGen_reflGen, reflGen_eq_self]
