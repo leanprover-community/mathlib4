@@ -693,7 +693,7 @@ there exists a finite partition of [0,1] such that each segment lies entirely in
 from the cover. -/
 theorem exists_partition_in_cover
     {ι : Type*} (U : ι → Set X) (hU_open : ∀ i, IsOpen (U i))
-    {x y : X} (γ : Path x y) (hU_cover : Set.range γ ⊆ ⋃ i, U i) :
+    {x y : X} (γ : Path x y) (hU_cover : ∀ s : unitInterval, ∃ i, γ s ∈ U i) :
     ∃ (n : ℕ) (t : Fin (n + 1) → unitInterval),
       Monotone t ∧ t 0 = 0 ∧ t (Fin.last n) = 1 ∧
       (∀ i : Fin n, ∃ j : ι,
@@ -702,7 +702,9 @@ theorem exists_partition_in_cover
   obtain ⟨n, t, ht_mono, ht0, htn, ht_cover⟩ :=
     exists_monotone_partition_unitInterval
       (fun i ↦ (hU_open i).preimage γ.continuous)
-      (fun s _ ↦ by rw [← Set.preimage_iUnion]; exact hU_cover ⟨s, rfl⟩)
+      (fun s _ ↦ by
+        obtain ⟨i, hi⟩ := hU_cover s
+        exact Set.mem_iUnion.2 ⟨i, hi⟩)
   refine ⟨n, t, ht_mono, ht0, htn, fun i ↦ ?_⟩
   obtain ⟨j, hj⟩ := ht_cover i
   exact ⟨j, fun s hs ↦ hj ⟨hs.1, hs.2⟩⟩
@@ -719,8 +721,8 @@ theorem exists_partition_with_property {x y : X} (γ : Path x y) (P : Set X → 
   choose U hU_open hU_mem hU_P using h
   obtain ⟨n, t, h_mono, h_start, h_end, h_segments⟩ :=
     exists_partition_in_cover (fun z : Set.range γ ↦ U z.val z.property)
-      (fun z ↦ hU_open z.val z.property) γ
-      (fun w hw ↦ Set.mem_iUnion.mpr ⟨⟨w, hw⟩, hU_mem w hw⟩)
+      (fun z ↦ hU_open z.val z.property) γ fun s ↦
+        ⟨⟨γ s, ⟨s, rfl⟩⟩, hU_mem (γ s) ⟨s, rfl⟩⟩
   refine ⟨n, t, h_mono, h_start, h_end, fun i ↦ ?_⟩
   obtain ⟨⟨z, hz⟩, h_seg⟩ := h_segments i
   exact ⟨U z hz, hU_open z hz, hU_P z hz, h_seg⟩
