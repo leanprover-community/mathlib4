@@ -132,45 +132,22 @@ meta def iInf_delab : Delab := whenPPOption Lean.getPPNotation <| withOverApp 4 
   return stx
 end delaborators
 
-section OrderSupInfSet
+section OrderSupSet
 
-class OrderSupInfSet (α : Type*) [LE α] extends SupSet α, InfSet α where
+variable [LE α]
+
+/-- `OrderSupSet α` expresses that `α` is equipped with the operation `sSup` that returns
+the least upper bound of a set whenever one exists. -/
+class OrderSupSet (α : Type*) [LE α] extends SupSet α where
   protected isLUB_sSup_of_isLUB s a : IsLUB s a → IsLUB s (sSup s)
+
+/-- `OrderInfSet α` expresses that `α` is equipped with the operation `sInf` that returns
+the greatest lower bound of a set whenever one exists. -/
+@[to_dual existing]
+class OrderInfSet (α : Type*) [LE α] extends InfSet α where
   protected isGLB_sInf_of_isGLB s a : IsGLB s a → IsGLB s (sInf s)
 
-attribute [to_dual self (reorder := 3 4, 5 6)] OrderSupInfSet.mk
-attribute [to_dual existing] OrderSupInfSet.toSupSet
-attribute [to_dual existing] OrderSupInfSet.isLUB_sSup_of_isLUB
-
-@[to_dual]
-abbrev OrderSupInfSet.ofSupSet [SupSet α] [LE α]
-    (isLUB_sSup_of_isLUB : ∀ (s : Set α) a, IsLUB s a → IsLUB s (sSup s)) :
-    OrderSupInfSet α where
-  isLUB_sSup_of_isLUB := isLUB_sSup_of_isLUB
-  sInf s := sSup (lowerBounds s)
-  isGLB_sInf_of_isGLB _ _ h := isLUB_lowerBounds.mp (isLUB_sSup_of_isLUB _ _ h.isLUB)
-
-open Classical in
-noncomputable abbrev OrderSupInfSet.choose [LE α] (d : α) :
-    OrderSupInfSet α where
-  sSup s := if h : ∃ x, IsLUB s x then h.choose else d
-  sInf s := if h : ∃ x, IsGLB s x then h.choose else d
-  isLUB_sSup_of_isLUB _ _ h := dif_pos (Exists.intro _ h) ▸ choose_spec _
-  isGLB_sInf_of_isGLB _ _ h := dif_pos (Exists.intro _ h) ▸ choose_spec _
-
-@[to_dual]
-theorem isLUB_sSup_of_isLUB [LE α] [OrderSupInfSet α] {s : Set α} {a : α} :
-    IsLUB s a → IsLUB s (sSup s) :=
-  OrderSupInfSet.isLUB_sSup_of_isLUB _ _
-
-@[to_dual] protected alias IsLUB.isLUB_sSup := isLUB_sSup_of_isLUB
-
-@[to_dual]
-theorem exists_isLUB_iff_isLUB_sSup [LE α] [OrderSupInfSet α] {s : Set α} :
-    (∃ a, IsLUB s a) ↔ IsLUB s (sSup s) :=
-  ⟨fun ⟨_, h⟩ ↦ h.isLUB_sSup, fun h ↦ ⟨_, h⟩⟩
-
-end OrderSupInfSet
+end OrderSupSet
 
 namespace Set
 

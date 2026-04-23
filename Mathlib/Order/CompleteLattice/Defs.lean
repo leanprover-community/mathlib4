@@ -51,9 +51,9 @@ variable {α β γ : Type*} {ι ι' : Sort*} {κ : ι → Sort*} {κ' : ι' → 
 instance OrderDual.supSet (α) [h : InfSet α] : SupSet αᵒᵈ :=
   ⟨fun s ↦ h.sInf s⟩
 
-instance OrderDual.orderSupInfSet (α) [LE α] [OrderSupInfSet α] : OrderSupInfSet αᵒᵈ where
+@[to_dual]
+instance OrderDual.orderSupSet (α) [Preorder α] [OrderInfSet α] : OrderSupSet αᵒᵈ where
   isLUB_sSup_of_isLUB _ _ := isGLB_sInf_of_isGLB (α := α)
-  isGLB_sInf_of_isGLB _ _ := isLUB_sSup_of_isLUB (α := α)
 
 /-- Note that we rarely use `CompleteSemilatticeSup`
 (in fact, any such object is always a `CompleteLattice`, so it's usually best to start there).
@@ -81,6 +81,11 @@ variable [CompleteSemilatticeSup α] {s t : Set α} {a b : α}
 @[to_dual]
 theorem isLUB_sSup (s : Set α) : IsLUB s (sSup s) :=
   CompleteSemilatticeSup.isLUB_sSup _
+
+@[to_dual]
+instance (priority := 100) CompleteSemilatticeSup.toOrderSupSet [CompleteSemilatticeSup α] :
+    OrderSupSet α where
+  isLUB_sSup_of_isLUB _ _ _ := isLUB_sSup _
 
 @[to_dual sInf_le]
 theorem le_sSup (h : a ∈ s) : a ≤ sSup s :=
@@ -126,11 +131,6 @@ class CompleteLattice (α : Type*) extends Lattice α, CompleteSemilatticeSup α
 
 attribute [to_dual existing] CompleteLattice.toCompleteSemilatticeInf
 attribute [to_dual self (reorder := toSupSet toInfSet, isLUB_sSup isGLB_sInf)] CompleteLattice.mk
-
-instance (priority := 100) CompleteLattice.toOrderSupInfSet [CompleteLattice α] :
-    OrderSupInfSet α where
-  isLUB_sSup_of_isLUB _ _ _ := isLUB_sSup _
-  isGLB_sInf_of_isGLB _ _ _ := isGLB_sInf _
 
 -- Shortcut instance to ensure that the path
 -- `CompleteLattice α → CompletePartialOrder α → PartialOrder α` isn't taken,
