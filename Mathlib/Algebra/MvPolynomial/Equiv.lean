@@ -99,6 +99,25 @@ theorem uniqueAlgEquiv_symm_monomial [Unique σ] {d : σ →₀ ℕ} {r : R} :
       = MvPolynomial.monomial d r := by
   simp [MvPolynomial.monomial_eq]
 
+/-- The coefficient of `X ^ n` in `uniqueAlgEquiv R σ P` is the coefficient of the unique
+monomial of degree `n` in `P`. -/
+theorem coeff_uniqueAlgEquiv [Unique σ] (P : MvPolynomial σ R) (n : ℕ) :
+    (MvPolynomial.uniqueAlgEquiv R σ P : Polynomial R).coeff n =
+      coeff (Finsupp.single default n) P := by
+  induction P using MvPolynomial.induction_on' with
+  | monomial d r =>
+      rw [uniqueAlgEquiv_monomial, Finsupp.unique_single d]
+      simp [Polynomial.coeff_monomial, MvPolynomial.coeff_monomial]
+  | add P Q hP hQ =>
+      simpa using congrArg₂ (· + ·) hP hQ
+
+/-- The coefficient of a monomial in `(uniqueAlgEquiv R σ).symm P` is the coefficient of the
+corresponding univariate monomial in `P`. -/
+theorem coeff_uniqueAlgEquiv_symm [Unique σ] (P : Polynomial R) (d : σ →₀ ℕ) :
+    coeff d ((MvPolynomial.uniqueAlgEquiv R σ).symm P) = P.coeff (d default) := by
+  rw [Finsupp.unique_single d, ← coeff_uniqueAlgEquiv R ((uniqueAlgEquiv R σ).symm P),
+    AlgEquiv.apply_symm_apply, Finsupp.single_eq_same]
+
 /-- The algebra isomorphism between multivariable polynomials in a single variable and
 polynomials over the ground ring. -/
 @[deprecated uniqueAlgEquiv (since := "2026-04-15")]
