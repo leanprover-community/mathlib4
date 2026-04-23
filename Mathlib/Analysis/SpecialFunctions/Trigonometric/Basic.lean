@@ -1260,4 +1260,30 @@ theorem norm_exp_mul_exp_add_exp_neg_le_of_abs_im_le {a b : ℝ} (ha : a ≤ 0) 
   · refine Real.cos_nonneg_of_mem_Icc ⟨?_, hb⟩
     exact (neg_nonpos.2 <| Real.pi_div_two_pos.le).trans ((_root_.abs_nonneg _).trans hz)
 
+@[simp]
+public theorem sinh_add_pi_I (z : ℂ) : sinh (z + π * I) = -sinh z := by
+    simp [Complex.sinh_add, sinh_mul_I, cosh_mul_I]
+
+@[simp]
+public theorem sinh_sub_pi_I (z : ℂ) : sinh (z - π * I) = -sinh z := by
+    simp [Complex.sinh_sub, sinh_mul_I, cosh_mul_I]
+
+@[simp]
+public theorem cosh_add_pi_I (z : ℂ) : cosh (z + π * I) = -cosh z := by
+    simp [Complex.cosh_add, cosh_mul_I, sinh_mul_I]
+
+@[simp]
+public theorem cosh_sub_pi_I (z : ℂ) : cosh (z - π * I) = -cosh z := by
+    simp [Complex.cosh_sub, cosh_mul_I, sinh_mul_I]
+
+@[simp]
+public theorem tanh_add_pi_I (z : ℂ) : tanh (z + π * I) = tanh z := by
+  rw [Complex.tanh_eq_sinh_div_cosh, Complex.tanh_eq_sinh_div_cosh,
+    sinh_add_pi_I, cosh_add_pi_I]; field_simp
+
+@[simp]
+public theorem tanh_sub_pi_I (z : ℂ) : tanh (z - π * I) = tanh z := by
+  rw [Complex.tanh_eq_sinh_div_cosh, Complex.tanh_eq_sinh_div_cosh,
+    sinh_sub_pi_I, cosh_sub_pi_I]; field_simp
+
 end Complex
