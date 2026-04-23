@@ -36,6 +36,23 @@ the quotient topology coming from the compact-open based-path space.
 * `UniversalCover.sheet_surjOn`, `UniversalCover.sheet_pairwise_disjoint`,
   `UniversalCover.sheet_exhaustive`, `UniversalCover.sheet_proj_injOn`: structure of the sheet
   decomposition over a good neighborhood `U`.
+
+## Implementation note
+
+Hatcher (and many textbook treatments) topologise the universal cover directly, declaring
+a basic open set for each pair `(q, U)` of a homotopy class `q` and a good neighbourhood `U`.
+That definition is concrete, but then checking basic properties — continuity of the projection,
+openness of sheets, the covering map property — amounts to rebuilding a significant amount of
+point-set topology by hand.
+
+Here we take a different route: the based-path space `BasedPath x₀` with the compact-open
+topology already "knows" how to be continuous; we put the quotient topology on the
+endpoint/homotopy-class model via the surjection `ofBasedPath`. The book's sheet basis is then
+a theorem (`sheet` is open in our topology) rather than a definition, and continuity of the
+projection is inherited from continuity of `endpoint : BasedPath x₀ → X`. The trade-off is
+some extra work showing that our coinduced topology has the expected local structure
+(the sheet decomposition over good neighbourhoods), which is carried out below and in
+`BasedPath.lean`.
 -/
 
 @[expose] public section
@@ -60,6 +77,9 @@ def ofBasedPath (x₀ : X) : BasedPath x₀ → UniversalCover x₀
       ⟨γ 1, Path.Homotopic.Quotient.mk
         ({ toContinuousMap := γ, source' := hγ, target' := rfl } : Path x₀ (γ 1))⟩
 
+/-- The topology on `UniversalCover x₀` as the quotient topology coinduced from the compact-open
+topology on `BasedPath x₀` via `ofBasedPath`. See the module-level `## Implementation note` for
+why we do not use the Hatcher-style bespoke basis. -/
 instance instTopologicalSpaceUniversalCover (x₀ : X) : TopologicalSpace (UniversalCover x₀) :=
   TopologicalSpace.coinduced (ofBasedPath x₀) inferInstance
 
@@ -88,17 +108,22 @@ theorem isQuotientMap_ofBasedPath (x₀ : X) : IsQuotientMap (ofBasedPath x₀) 
 def proj : UniversalCover x₀ → X :=
   Sigma.fst
 
+/-- The projection of a pair in the universal cover is its endpoint. -/
 @[simp] theorem proj_mk (q : Path.Homotopic.Quotient x₀ x) :
     proj ⟨x, q⟩ = x := rfl
 
+/-- `proj` composed with `ofBasedPath` reads off the endpoint of the representative. -/
 @[simp] theorem proj_ofBasedPath (x₀ : X) (γ : BasedPath x₀) :
     proj (ofBasedPath x₀ γ) = BasedPath.endpoint γ :=
   rfl
 
+/-- `ofBasedPath` unpacks to an explicit sigma pair: endpoint and homotopy class of `toPath`. -/
 theorem ofBasedPath_eq (α : BasedPath x₀) :
     ofBasedPath x₀ α = ⟨BasedPath.endpoint α, Path.Homotopic.Quotient.mk α.toPath⟩ := by
   cases α; rfl
 
+/-- `ofBasedPath` applied to the canonical based path from `p : Path x₀ y` gives the
+endpoint-and-homotopy-class pair. -/
 @[simp] theorem ofBasedPath_ofPath {y : X} (p : Path x₀ y) :
     ofBasedPath x₀ (BasedPath.ofPath p) = ⟨y, Path.Homotopic.Quotient.mk p⟩ := by
   refine Sigma.ext p.target ?_
@@ -138,7 +163,6 @@ theorem ofBasedPath_eq_of_homotopic_toPath {α β : BasedPath x₀}
 
 @[continuity] theorem continuous_proj (x₀ : X) : Continuous (proj (x₀ := x₀)) := by
   rw [(isQuotientMap_ofBasedPath x₀).continuous_iff]
-  change Continuous fun γ : BasedPath x₀ ↦ γ.1 1
   exact (continuous_eval_const (1 : I)).comp continuous_subtype_val
 
 /-- The endpoint projection `UniversalCover x₀ → X` is an open map when `X` is locally
@@ -160,11 +184,17 @@ theorem isOpenMap_proj [LocPathConnectedSpace X] (x₀ : X) :
   rw [himage]
   exact BasedPath.isOpenMap_endpoint x₀ _ hs_pre
 
-/-- A point in the universal cover determines a point of the fiber over its endpoint. -/
+/-- The fibre of the universal cover over `x`, as a subtype of `UniversalCover x₀` picking out
+points whose projection is `x`. Having a named type for the fibre lets us transport
+covering-map lemmas (such as `IsCoveringMap.discreteTopology_fiber`) onto the universal cover
+without inline subtype spellings. -/
 abbrev Fiber (x₀ x : X) :=
   {p : UniversalCover x₀ // proj p = x}
 
-/-- The fiber over `x` is equivalent to the quotient of paths from `x₀` to `x`. -/
+/-- The fibre over `x` is equivalent to the quotient of paths from `x₀` to `x`. This provides
+the standard identification of the fibre with `π₁(X, x₀)`-like data: once we also know that the
+fibre is discrete (see `Covering.lean`), any continuous section of the universal cover amounts
+to a choice of homotopy class. -/
 noncomputable def fiberEquiv (x₀ x : X) :
     Fiber x₀ x ≃ Path.Homotopic.Quotient x₀ x where
   toFun p := p.1.2.cast rfl p.2.symm
@@ -192,9 +222,11 @@ noncomputable def basedPathSheet (U : Set X) (hxU : x ∈ U)
   Quotient.liftOn q (fun p : Path x₀ x ↦ basedPathComponent U p)
     fun _ _ h ↦ BasedPath.pathComponent_preimage_saturated hxU h
 
+/-- `basedPathSheet` of a quotient class unfolds to the path component of any representative. -/
 @[simp] theorem basedPathSheet_mk (U : Set X) (hxU : x ∈ U) (p : Path x₀ x) :
     basedPathSheet U hxU (Path.Homotopic.Quotient.mk p) = basedPathComponent U p := rfl
 
+/-- Every based path in a `basedPathSheet` over `U` has its endpoint in `U`. -/
 theorem basedPathSheet_subset_endpoint_preimage (U : Set X) (hxU : x ∈ U)
     (q : Path.Homotopic.Quotient x₀ x) :
     basedPathSheet U hxU q ⊆ BasedPath.endpoint (x₀ := x₀) ⁻¹' U := by
@@ -208,6 +240,7 @@ noncomputable def sheet (U : Set X) (hxU : x ∈ U)
     (q : Path.Homotopic.Quotient x₀ x) : Set (UniversalCover x₀) :=
   ofBasedPath x₀ '' basedPathSheet U hxU q
 
+/-- Points of the sheet over `U` project into `U`. -/
 theorem sheet_subset_proj_preimage (U : Set X) (hxU : x ∈ U)
     (q : Path.Homotopic.Quotient x₀ x) :
     sheet U hxU q ⊆ proj (x₀ := x₀) ⁻¹' U := by
@@ -218,7 +251,10 @@ theorem sheet_subset_proj_preimage (U : Set X) (hxU : x ∈ U)
 /-- Two based paths with equal `ofBasedPath` images lie in the same path component of any
 endpoint preimage of a set containing their common endpoint.
 
-This is the saturation property of sheets under the quotient map `ofBasedPath`. -/
+This is the saturation property of sheets under the quotient map `ofBasedPath`, and it is
+what makes `ofBasedPath_preimage_sheet` work: to prove the preimage of a sheet under
+`ofBasedPath` equals the corresponding `basedPathSheet`, we must show that two based paths
+with the same image lie in the same path component, which is exactly this statement. -/
 theorem pathComponent_preimage_eq_of_ofBasedPath_eq
     {U : Set X} {α β : BasedPath x₀}
     (hα_end : BasedPath.endpoint α ∈ U)
@@ -258,9 +294,7 @@ theorem ofBasedPath_preimage_sheet (U : Set X) (hxU : x ∈ U)
     obtain ⟨β, hβ, hαβ⟩ := hα
     induction q using Quotient.inductionOn with
     | h p =>
-      -- `basedPathSheet U hxU ⟦p⟧` reduces to `basedPathComponent U p` by `basedPathSheet_mk`.
-      change β ∈ basedPathComponent U p at hβ
-      change α ∈ basedPathComponent U p
+      -- `basedPathSheet U hxU ⟦p⟧` is definitionally `basedPathComponent U p`.
       exact mem_basedPathComponent_of_ofBasedPath_eq hβ hαβ.symm
   · intro α hα
     exact ⟨α, hα, rfl⟩
@@ -323,9 +357,7 @@ theorem sheet_pairwise_disjoint [LocPathConnectedSpace X]
     | h p₂ =>
       obtain ⟨α₁, hα₁, rfl⟩ := he₁
       obtain ⟨α₂, hα₂, hαeq⟩ := he₂
-      -- `basedPathSheet U hxU ⟦pᵢ⟧` reduces to `basedPathComponent U pᵢ` by `basedPathSheet_mk`.
-      change α₁ ∈ basedPathComponent U p₁ at hα₁
-      change α₂ ∈ basedPathComponent U p₂ at hα₂
+      -- `basedPathSheet U hxU ⟦pᵢ⟧` is definitionally `basedPathComponent U pᵢ`.
       have hα₁_end : BasedPath.endpoint α₁ ∈ U := hα₁.target_mem
       have h_same : pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) α₁ =
           pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) α₂ :=
@@ -373,8 +405,7 @@ theorem sheet_exhaustive [LocPathConnectedSpace X]
   -- `basedPathSheet U hxU ⟦p⟧ = basedPathComponent U p = pathComponentIn _ (ofPath p)`.
   rw [Set.mem_iUnion]
   refine ⟨Path.Homotopic.Quotient.mk p, ?_⟩
-  change ∃ β, β ∈ pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) (BasedPath.ofPath p) ∧
-    ofBasedPath x₀ β = ofBasedPath x₀ α
+  simp only [sheet, basedPathSheet_mk, basedPathComponent]
   -- α is joined to `ofPath p = append α η` inside `endpoint ⁻¹' U`.
   have h_join : JoinedIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) α
       (BasedPath.append α η) :=
@@ -394,9 +425,7 @@ theorem sheet_proj_injOn [LocPathConnectedSpace X]
     basedPathSheet_subset_endpoint_preimage U hxU q hα₁
   induction q using Quotient.inductionOn with
   | h p =>
-    -- `basedPathSheet U hxU ⟦p⟧` reduces to `basedPathComponent U p` by `basedPathSheet_mk`.
-    change α₁ ∈ basedPathComponent U p at hα₁
-    change α₂ ∈ basedPathComponent U p at hα₂
+    -- `basedPathSheet U hxU ⟦p⟧` is definitionally `basedPathComponent U p`.
     have h_joined : JoinedIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) α₁ α₂ :=
       hα₁.symm.trans hα₂
     have h_homotopic : Path.Homotopic (α₁.toPath.cast rfl h_proj.symm) α₂.toPath :=
