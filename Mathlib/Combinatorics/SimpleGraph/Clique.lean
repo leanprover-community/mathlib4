@@ -53,20 +53,19 @@ theorem isClique_iff : G.IsClique s ↔ s.Pairwise G.Adj :=
 lemma not_isClique_iff : ¬ G.IsClique s ↔ ∃ (v w : s), v ≠ w ∧ ¬ G.Adj v w := by
   aesop (add simp [isClique_iff, Set.Pairwise])
 
-/-- A clique is a set of vertices whose induced graph is complete. -/
-@[simp← ]
-theorem isClique_iff_induce_eq : G.IsClique s ↔ G.induce s = ⊤ := by
+variable {G} in
+@[simp]
+theorem induce_eq_top : G.induce s = ⊤ ↔ G.IsClique s := by
   rw [isClique_iff]
-  constructor
-  · intro h
-    ext ⟨v, hv⟩ ⟨w, hw⟩
-    simp only [comap_adj, top_adj, Ne, Subtype.mk_eq_mk]
-    exact ⟨Adj.ne, h hv hw⟩
-  · intro h v hv w hw hne
-    have h2 : (G.induce s).Adj ⟨v, hv⟩ ⟨w, hw⟩ = _ := rfl
-    conv_lhs at h2 => rw [h]
-    simp only [top_adj, ne_eq, Subtype.mk.injEq, eq_iff_iff] at h2
-    exact h2.1 hne
+  refine ⟨fun h u hu v hv hne ↦ ?_, fun h ↦ ?_⟩
+  · simpa [← induce_adj (u := ⟨u, hu⟩) (v := ⟨v, hv⟩), h]
+  · ext ⟨v, hv⟩ ⟨w, hw⟩
+    simpa using ⟨Adj.ne, h hv hw⟩
+
+/-- A clique is a set of vertices whose induced graph is complete. -/
+@[deprecated induce_eq_top (since := "2026-04-23")]
+theorem isClique_iff_induce_eq : G.IsClique s ↔ G.induce s = ⊤ :=
+  induce_eq_top.symm
 
 theorem isClique_iff_isChain_adj : G.IsClique s ↔ IsChain G.Adj s := by
   simp [IsChain, G.symm.iff]
