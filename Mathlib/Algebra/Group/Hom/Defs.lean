@@ -940,6 +940,11 @@ namespace End
 @[to_additive]
 instance instFunLike : FunLike (Monoid.End M) M M := inferInstanceAs <| FunLike (M →* M) M M
 
+@[to_additive (attr := ext)]
+theorem ext {f g : Monoid.End M} (h : ∀ x : M, f x = g x) :
+    f = g :=
+  DFunLike.ext _ _ h
+
 @[to_additive]
 instance instMonoidHomClass : MonoidHomClass (Monoid.End M) M M :=
   inferInstanceAs <| MonoidHomClass (M →* M) M M
@@ -970,11 +975,6 @@ theorem coe_one : ((1 : Monoid.End M) : M → M) = id := rfl
 
 @[to_additive (attr := simp) coe_mul]
 theorem coe_mul (f g) : ((f * g : Monoid.End M) : M → M) = f ∘ g := rfl
-
-@[to_additive (attr := ext)]
-theorem ext {f g : Monoid.End M} (h : ∀ x : M, f x = g x) :
-    f = g :=
-  DFunLike.ext _ _ h
 
 end End
 
