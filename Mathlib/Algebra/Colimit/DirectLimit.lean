@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Algebra.Star.StarRingHom
+public import Mathlib.Algebra.Algebra.Hom
 public import Mathlib.Data.Rat.Cast.Defs
 public import Mathlib.Order.DirectedInverseSystem
 public import Mathlib.Tactic.SuppressCompilation
@@ -571,6 +572,39 @@ instance [∀ i, Field (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
     Field (DirectLimit G f) where
   __ : DivisionRing _ := inferInstance
   mul_comm := mul_comm
+
+--TODO: add support for non-unital algebras
+section Algebra
+
+variable [CommSemiring R]
+variable [∀ i, Semiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)]
+variable [∀ i, Algebra R (G i)] [∀ i j h, AlgHomClass (T h) R (G i) (G j)]
+
+noncomputable def algebraMapAux : R →+* DirectLimit G f where
+  toFun := fun r => ⟦⟨Classical.arbitrary ι, algebraMap R (G (Classical.arbitrary ι)) r⟩⟧
+  map_one' := by rw [algebraMap, RingHom.map_one, one_def]
+  map_mul' := fun r s => by rw [algebraMap, mul_def, map_mul]
+  map_add' := fun r s => by simp only [algebraMap, add_def, map_add]
+  map_zero' := by rw [algebraMap, map_zero, zero_def]
+
+lemma algebraMapAux_at (i : ι) (r : R) :
+    algebraMapAux (R:=R) r
+      = (⟦⟨i, algebraMap R (G i) r⟩⟧ : DirectLimit G f) := by
+  let j := Classical.arbitrary ι
+  change ⟦⟨j, (algebraMap R (G j)) r⟩⟧ = (⟦⟨i, (algebraMap R (G i)) r⟩⟧ : DirectLimit G f)
+  obtain ⟨k, hik, hjk⟩ := directed_of (α := ι) (· ≤ ·) i j
+  rw [eq_of_le (f := f) ⟨j, (algebraMap R (G j) r)⟩ k hjk]
+  rw [eq_of_le (f := f) ⟨i, (algebraMap R (G i) r)⟩ k hik]
+  simp_rw [AlgHomClass.commutes]
+
+noncomputable instance : Algebra R (DirectLimit G f) where
+  algebraMap := algebraMapAux
+  commutes' r := DirectLimit.induction f fun i _ ↦ by
+    rw [algebraMapAux_at i, mul_def, mul_def, Algebra.commutes]
+  smul_def' r := DirectLimit.induction _ fun i _ => by
+    rw [smul_def, algebraMapAux_at i, mul_def, Algebra.smul_def']; rfl
+
+end Algebra
 
 end DirectLimit
 
