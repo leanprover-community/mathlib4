@@ -232,14 +232,7 @@ lemma takeUntil_append_of_mem_left {x : V} (p : G.Walk u v) (q : G.Walk v w) (hx
     (p.append q).takeUntil x (subset_support_append_left _ _ hx) = p.takeUntil _ hx := by
   induction p with
   | nil => rw [mem_support_nil_iff] at hx; subst_vars; simp
-  | @cons u _ _ _ _ ih =>
-    rw [support_cons] at hx
-    by_cases hxu : u = x
-    · subst_vars; simp
-    · have := List.mem_of_ne_of_mem (fun hf ↦ hxu hf.symm) hx
-      simp_rw [takeUntil_cons this hxu, cons_append,
-        takeUntil_cons (subset_support_append_left _ _ this) hxu]
-      simpa using ih _ this
+  | cons => grind [cons_append, takeUntil]
 
 lemma getVert_takeUntil {u v : V} {n : ℕ} {p : G.Walk u v} (hw : w ∈ p.support)
     (hn : n ≤ (p.takeUntil w hw).length) : (p.takeUntil w hw).getVert n = p.getVert n := by
@@ -319,6 +312,12 @@ theorem rotate_darts (c : G.Walk v v) (u : V) (h) : (c.rotate u h).darts ~r c.da
 
 theorem rotate_edges (c : G.Walk v v) (u : V) (h) : (c.rotate u h).edges ~r c.edges :=
   (rotate_darts c u h).map _
+
+@[simp] lemma length_rotate (c : G.Walk v v) (u : V) (h) : (c.rotate u h).length = c.length := by
+  simpa using (rotate_edges c u h).perm.length_eq
+
+@[simp] lemma rotate_eq_nil {c : G.Walk v v} {u : V} (h) : c.rotate u h = nil ↔ c = nil := by
+  simp [← length_eq_zero_iff]
 
 end WalkDecomp
 

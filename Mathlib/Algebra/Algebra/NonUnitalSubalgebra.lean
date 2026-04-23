@@ -1095,11 +1095,11 @@ theorem coe_center : (center R A : Set A) = Set.center A :=
 
 /-- The center of a non-unital algebra is commutative and associative -/
 instance center.instNonUnitalCommSemiring : NonUnitalCommSemiring (center R A) :=
-  NonUnitalSubsemiring.center.instNonUnitalCommSemiring _
+  inferInstanceAs <| NonUnitalCommSemiring (NonUnitalSubsemiring.center A)
 
 instance center.instNonUnitalCommRing {A : Type*} [NonUnitalNonAssocRing A] [Module R A]
     [IsScalarTower R A A] [SMulCommClass R A A] : NonUnitalCommRing (center R A) :=
-  NonUnitalSubring.center.instNonUnitalCommRing _
+  inferInstanceAs <| NonUnitalCommRing (NonUnitalSubring.center A)
 
 @[simp]
 theorem center_toNonUnitalSubsemiring :
@@ -1116,7 +1116,6 @@ end NonUnitalNonAssocSemiring
 variable (R A : Type*) [CommSemiring R] [NonUnitalSemiring A] [Module R A] [IsScalarTower R A A]
   [SMulCommClass R A A]
 
-set_option backward.isDefEq.respectTransparency false in
 -- no instance diamond, as the `npow` field isn't present in the non-unital case.
 example : center.instNonUnitalCommSemiring.toNonUnitalSemiring =
     NonUnitalSubsemiringClass.toNonUnitalSemiring (center R A) := by

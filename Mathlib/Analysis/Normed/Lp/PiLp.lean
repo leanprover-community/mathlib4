@@ -546,8 +546,6 @@ theorem continuous_toLp [∀ i, TopologicalSpace (β i)] : Continuous (@toLp p (
 /-- `WithLp.equiv` as a homeomorphism. -/
 def homeomorph [∀ i, TopologicalSpace (β i)] : PiLp p β ≃ₜ (Π i, β i) where
   toEquiv := WithLp.equiv p (Π i, β i)
-  continuous_toFun := continuous_ofLp p β
-  continuous_invFun := continuous_toLp p β
 
 @[simp]
 lemma toEquiv_homeomorph [∀ i, TopologicalSpace (β i)] :

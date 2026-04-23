@@ -20,7 +20,7 @@ namespace Submodule
 -/
 instance seminormedAddCommGroup [Ring 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E]
     (s : Submodule 𝕜 E) : SeminormedAddCommGroup s :=
-  SeminormedAddCommGroup.induced _ _ s.subtype.toAddMonoidHom
+  fast_instance% SeminormedAddCommGroup.induced _ _ s.subtype.toAddMonoidHom
 
 /-- If `x` is an element of a submodule `s` of a normed group `E`, its norm in `s` is equal to its
 norm in `E`. -/

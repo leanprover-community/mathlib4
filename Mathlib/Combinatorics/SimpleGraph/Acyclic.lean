@@ -114,7 +114,7 @@ private lemma Walk.exists_mem_contains_edges_of_directed (Hs : Set <| SimpleGrap
     obtain ⟨H, hH, h₁, h₂⟩ := h_dir H₁ hH₁ H₂ hH₂
     simpa using ⟨H, hH, (le_iff_adj.mp h₂) _ _ h_adj, fun a ha => edgeSet_mono h₁ (ih a ha)⟩
 
-/-- The directed supremum of acyclic graphs is acylic. -/
+/-- The directed supremum of acyclic graphs is acyclic. -/
 lemma isAcyclic_sSup_of_isAcyclic_directedOn (Hs : Set <| SimpleGraph V)
     (h_acyc : ∀ H ∈ Hs, H.IsAcyclic) (h_dir : DirectedOn (· ≤ ·) Hs) : IsAcyclic (sSup Hs) := by
   rcases Hs.eq_empty_or_nonempty with rfl | hnemp
@@ -162,7 +162,13 @@ theorem IsTree.coe_subgraphOfAdj {u v : V} (h : G.Adj u v) : G.subgraphOfAdj h |
   refine ⟨Subgraph.subgraphOfAdj_connected h, fun w p hp ↦ ?_⟩
   have : _ = _ := p.adj_snd <| nil_iff_eq_nil.not.mpr hp.ne_nil
   have : _ = _ := p.adj_penultimate <| nil_iff_eq_nil.not.mpr hp.ne_nil
-  grind [Sym2.eq_iff, IsCycle.snd_ne_penultimate]
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
+  It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+  canonicalizer; a minimization would help. The original proof was:
+  `grind [Sym2.eq_iff, IsCycle.snd_ne_penultimate]` -/
+  simp_all
+  grind [IsCycle.snd_ne_penultimate]
 
 theorem isAcyclic_iff_forall_adj_isBridge :
     G.IsAcyclic ↔ ∀ ⦃v w : V⦄, G.Adj v w → G.IsBridge s(v, w) := by
@@ -485,7 +491,6 @@ lemma Connected.card_vert_le_card_edgeSet_add_one (h : G.Connected) :
     Nat.card_eq_fintype_card, ← edgeFinset_card]
   exact Finset.card_mono <| by simpa
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isTree_iff_connected_and_card [Finite V] :
     G.IsTree ↔ G.Connected ∧ Nat.card G.edgeSet + 1 = Nat.card V := by
   have := Fintype.ofFinite V
@@ -646,9 +651,13 @@ lemma exists_isCycle_of_two_le_isEdgeReachable {u v : V} (huv : u ≠ v) {n : �
     (h : G.IsEdgeReachable n u v) : ∃ w : G.Walk u u, w.IsCycle := by
   classical
   obtain ⟨w, hw, h⟩ := exists_adj_isEdgeReachable_two huv (h.anti hn)
-  have := @h {s(u, w)} (by simp)
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), this was just
+  `have := @h {s(u, w)} (by simp)`. It is not yet clear whether this is due to defeq abuse in
+  Mathlib or a problem in the new canonicalizer; a minimization would help. -/
+  have := @h {s(u, w)} (by simp only [Set.encard_singleton, Nat.cast_ofNat]; decide)
   obtain ⟨w, p, hp₁, hp₂⟩ := adj_and_reachable_delete_edges_iff_exists_cycle.mp ⟨hw, this⟩
-  exact ⟨p.rotate _ (p.fst_mem_support_of_mem_edges hp₂), IsCycle.rotate hp₁ _⟩
+  exact ⟨p.rotate _ (p.fst_mem_support_of_mem_edges hp₂), hp₁.rotate _⟩
 
 lemma isAcyclic_iff_pairwise_not_isEdgeReachable_two :
     G.IsAcyclic ↔ Pairwise (¬G.IsEdgeReachable 2 · ·) := by
