@@ -132,7 +132,7 @@ private theorem not_power_rat_of_num {a b d : ℕ}
   rcases d.even_or_odd with (h_even | h_odd)
   · have := not_power_rat_of_num_aux h_coprime (q := -q) ha (by linarith)
     rwa [h_even.neg_pow] at this
-  · contrapose! hq
+  · contrapose hq
     rw [← h_odd.pow_nonneg_iff, ← hq]
     positivity
 

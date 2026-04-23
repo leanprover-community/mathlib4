@@ -6,7 +6,6 @@ Authors: Antoine Chambert-Loir
 
 module
 
-public import Mathlib.Algebra.Module.Submodule.Pointwise
 public import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 public import Mathlib.GroupTheory.GroupAction.Ring
@@ -57,7 +56,7 @@ theorem fixedSubmodule_inf_fixedSubmodule_le_comp (f g : V →ₗ[R] V) :
   intro; simp_all
 
 theorem fixedSubmodule_comp_inf_fixedSubmodule_le (f g : V →ₗ[R] V) :
-    (f ∘ₗ g).fixedSubmodule ⊓ g.fixedSubmodule ≤ f.fixedSubmodule := by  intro; aesop
+    (f ∘ₗ g).fixedSubmodule ⊓ g.fixedSubmodule ≤ f.fixedSubmodule := by intro; aesop
 
 end LinearMap
 
