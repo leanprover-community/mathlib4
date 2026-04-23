@@ -468,6 +468,7 @@ theorem IsPathConnected.exists_path {a b : X} {U : Set X} (hU : IsPathConnected 
   intro y hy
   obtain ⟨t, rfl⟩ := hy
   exact hab.somePath_mem t
+
 set_option backward.isDefEq.respectTransparency false in
 theorem IsPathConnected.exists_path_through_family {n : ℕ}
     {s : Set X} (h : IsPathConnected s) (p : Fin (n + 1) → X) (hp : ∀ i, p i ∈ s) :

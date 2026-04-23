@@ -673,15 +673,15 @@ theorem isOpen_pathComponent_preimage
   intro γ hγ_N
   exact hβ.trans (hN_joined γ hγ_N)
 
-private def joinedInSLsc_uReal (ts : ℝ × ℝ) : ℝ :=
+private def joinedInSLSC_uReal (ts : ℝ × ℝ) : ℝ :=
   ts.1 + max 0 (2 * ts.2 - 1) * (1 - ts.1)
 
-private def joinedInSLsc_vReal (ts : ℝ × ℝ) : ℝ :=
+private def joinedInSLSC_vReal (ts : ℝ × ℝ) : ℝ :=
   min (2 * ts.2) 1
 
-private theorem joinedInSLsc_uReal_mem (t s : I) :
-    joinedInSLsc_uReal ((t : ℝ), (s : ℝ)) ∈ I := by
-  simp only [joinedInSLsc_uReal]
+private theorem joinedInSLSC_uReal_mem (t s : I) :
+    joinedInSLSC_uReal ((t : ℝ), (s : ℝ)) ∈ I := by
+  simp only [joinedInSLSC_uReal]
   have hm_nn : (0 : ℝ) ≤ max 0 (2 * (s : ℝ) - 1) := le_max_left _ _
   have hm_le : max 0 (2 * (s : ℝ) - 1) ≤ 1 := max_le zero_le_one (by linarith [s.2.2])
   refine ⟨?_, ?_⟩
@@ -690,35 +690,35 @@ private theorem joinedInSLsc_uReal_mem (t s : I) :
     linarith [t.2.1]
   · nlinarith [t.2.1, t.2.2]
 
-private theorem joinedInSLsc_vReal_mem (t s : I) :
-    joinedInSLsc_vReal ((t : ℝ), (s : ℝ)) ∈ I := by
+private theorem joinedInSLSC_vReal_mem (t s : I) :
+    joinedInSLSC_vReal ((t : ℝ), (s : ℝ)) ∈ I := by
   refine ⟨le_min (by linarith [s.2.1]) zero_le_one, min_le_right _ _⟩
 
-private def joinedInSLsc_uFn : I × I → I := fun ts ↦
-  ⟨joinedInSLsc_uReal ((ts.1 : ℝ), (ts.2 : ℝ)), joinedInSLsc_uReal_mem ts.1 ts.2⟩
+private def joinedInSLSC_uFn : I × I → I := fun ts ↦
+  ⟨joinedInSLSC_uReal ((ts.1 : ℝ), (ts.2 : ℝ)), joinedInSLSC_uReal_mem ts.1 ts.2⟩
 
-private def joinedInSLsc_vFn : I × I → I := fun ts ↦
-  ⟨joinedInSLsc_vReal ((ts.1 : ℝ), (ts.2 : ℝ)), joinedInSLsc_vReal_mem ts.1 ts.2⟩
+private def joinedInSLSC_vFn : I × I → I := fun ts ↦
+  ⟨joinedInSLSC_vReal ((ts.1 : ℝ), (ts.2 : ℝ)), joinedInSLSC_vReal_mem ts.1 ts.2⟩
 
-private theorem joinedInSLsc_uFn_zero_left (s : I) :
-    (joinedInSLsc_uFn (0, s) : ℝ) = max 0 (2 * (s : ℝ) - 1) := by
-  simp [joinedInSLsc_uFn, joinedInSLsc_uReal]
+private theorem joinedInSLSC_uFn_zero_left (s : I) :
+    (joinedInSLSC_uFn (0, s) : ℝ) = max 0 (2 * (s : ℝ) - 1) := by
+  simp [joinedInSLSC_uFn, joinedInSLSC_uReal]
 
-private theorem joinedInSLsc_uFn_one_left (s : I) : joinedInSLsc_uFn (1, s) = 1 :=
-  Subtype.ext (by simp [joinedInSLsc_uFn, joinedInSLsc_uReal])
+private theorem joinedInSLSC_uFn_one_left (s : I) : joinedInSLSC_uFn (1, s) = 1 :=
+  Subtype.ext (by simp [joinedInSLSC_uFn, joinedInSLSC_uReal])
 
-private theorem joinedInSLsc_uFn_one_right (t : I) : joinedInSLsc_uFn (t, 1) = 1 :=
-  Subtype.ext (by simp [joinedInSLsc_uFn, joinedInSLsc_uReal]; ring)
+private theorem joinedInSLSC_uFn_one_right (t : I) : joinedInSLSC_uFn (t, 1) = 1 :=
+  Subtype.ext (by simp [joinedInSLSC_uFn, joinedInSLSC_uReal]; ring)
 
-private theorem joinedInSLsc_vFn_left (t s : I) :
-    (joinedInSLsc_vFn (t, s) : ℝ) = min (2 * (s : ℝ)) 1 := by
-  simp [joinedInSLsc_vFn, joinedInSLsc_vReal]
+private theorem joinedInSLSC_vFn_left (t s : I) :
+    (joinedInSLSC_vFn (t, s) : ℝ) = min (2 * (s : ℝ)) 1 := by
+  simp [joinedInSLSC_vFn, joinedInSLSC_vReal]
 
-private theorem joinedInSLsc_vFn_zero_right (t : I) : joinedInSLsc_vFn (t, 0) = 0 :=
-  Subtype.ext (by simp [joinedInSLsc_vFn, joinedInSLsc_vReal])
+private theorem joinedInSLSC_vFn_zero_right (t : I) : joinedInSLSC_vFn (t, 0) = 0 :=
+  Subtype.ext (by simp [joinedInSLSC_vFn, joinedInSLSC_vReal])
 
-private theorem joinedInSLsc_vFn_one_right (t : I) : joinedInSLsc_vFn (t, 1) = 1 :=
-  Subtype.ext (by simp [joinedInSLsc_vFn, joinedInSLsc_vReal])
+private theorem joinedInSLSC_vFn_one_right (t : I) : joinedInSLSC_vFn (t, 1) = 1 :=
+  Subtype.ext (by simp [joinedInSLSC_vFn, joinedInSLSC_vReal])
 
 /-- If `α` and `β` are based paths with the same endpoint `v ∈ U`, joined inside
 `endpoint ⁻¹' U`, and `U` has the SLSC uniqueness property, then their associated paths
@@ -757,18 +757,18 @@ theorem toPath_homotopic_of_joinedIn_slsc
       rintro _ ⟨_, rfl⟩; simpa using hv)
   -- Cast α.toPath to target `v`.
   let α' : Path x₀ v := α.toPath.cast rfl heq.symm
-  have hu_cont : Continuous joinedInSLsc_uReal :=
+  have hu_cont : Continuous joinedInSLSC_uReal :=
     (continuous_fst).add <|
       (Continuous.max continuous_const (by fun_prop)).mul (by fun_prop)
-  have hv_cont_real : Continuous joinedInSLsc_vReal :=
+  have hv_cont_real : Continuous joinedInSLSC_vReal :=
     Continuous.min (by fun_prop) continuous_const
-  have hu_fn_cont : Continuous joinedInSLsc_uFn :=
+  have hu_fn_cont : Continuous joinedInSLSC_uFn :=
     Continuous.subtype_mk (hu_cont.comp (by fun_prop)) _
-  have hv_fn_cont : Continuous joinedInSLsc_vFn :=
+  have hv_fn_cont : Continuous joinedInSLSC_vFn :=
     Continuous.subtype_mk (hv_cont_real.comp (by fun_prop)) _
   -- The rectangle homotopy.
-  let K_fn : I × I → X := fun ts ↦ (F (joinedInSLsc_uFn ts)).1 (joinedInSLsc_vFn ts)
-  have K_fn_apply : ∀ ts : I × I, K_fn ts = (F (joinedInSLsc_uFn ts)).1 (joinedInSLsc_vFn ts) :=
+  let K_fn : I × I → X := fun ts ↦ (F (joinedInSLSC_uFn ts)).1 (joinedInSLSC_vFn ts)
+  have K_fn_apply : ∀ ts : I × I, K_fn ts = (F (joinedInSLSC_uFn ts)).1 (joinedInSLSC_vFn ts) :=
     fun _ ↦ rfl
   have hK_cont : Continuous K_fn :=
     hFv_cont.comp (hu_fn_cont.prodMk hv_fn_cont)
@@ -779,43 +779,43 @@ theorem toPath_homotopic_of_joinedIn_slsc
     by_cases hs : (s : ℝ) ≤ 1 / 2
     · rw [dif_pos hs]
       have h2s : 2 * (s : ℝ) - 1 ≤ 0 := by linarith
-      have hu_subt : joinedInSLsc_uFn (0, s) = (0 : I) :=
-        Subtype.ext (by rw [joinedInSLsc_uFn_zero_left, max_eq_left h2s]; rfl)
-      have hv_subt : joinedInSLsc_vFn (0, s) =
+      have hu_subt : joinedInSLSC_uFn (0, s) = (0 : I) :=
+        Subtype.ext (by rw [joinedInSLSC_uFn_zero_left, max_eq_left h2s]; rfl)
+      have hv_subt : joinedInSLSC_vFn (0, s) =
           ⟨2 * (s : ℝ), (unitInterval.mul_pos_mem_iff zero_lt_two).2 ⟨s.2.1, hs⟩⟩ :=
-        Subtype.ext (by rw [joinedInSLsc_vFn_left, min_eq_left (by linarith)])
+        Subtype.ext (by rw [joinedInSLSC_vFn_left, min_eq_left (by linarith)])
       rw [hu_subt, hv_subt, hF0_eq]
       rfl
     · rw [dif_neg hs]
       have h2s : 0 ≤ 2 * (s : ℝ) - 1 := by linarith [not_le.mp hs]
-      have hu_subt : joinedInSLsc_uFn (0, s) =
+      have hu_subt : joinedInSLSC_uFn (0, s) =
           ⟨2 * (s : ℝ) - 1,
             unitInterval.two_mul_sub_one_mem_iff.2 ⟨(not_le.mp hs).le, s.2.2⟩⟩ :=
-        Subtype.ext (by rw [joinedInSLsc_uFn_zero_left, max_eq_right h2s])
-      have hv_subt : joinedInSLsc_vFn (0, s) = (1 : I) :=
-        Subtype.ext (by rw [joinedInSLsc_vFn_left, min_eq_right (by linarith)]; rfl)
+        Subtype.ext (by rw [joinedInSLSC_uFn_zero_left, max_eq_right h2s])
+      have hv_subt : joinedInSLSC_vFn (0, s) = (1 : I) :=
+        Subtype.ext (by rw [joinedInSLSC_vFn_left, min_eq_right (by linarith)]; rfl)
       rw [hu_subt, hv_subt]
       rfl
   have hK_one : ∀ s : I, K_fn (1, s) = (β.toPath.trans (Path.refl v)) s := by
     intro s
-    rw [K_fn_apply, Path.trans_apply, joinedInSLsc_uFn_one_left]
+    rw [K_fn_apply, Path.trans_apply, joinedInSLSC_uFn_one_left]
     by_cases hs : (s : ℝ) ≤ 1 / 2
     · rw [dif_pos hs]
-      have hv_subt : joinedInSLsc_vFn (1, s) =
+      have hv_subt : joinedInSLSC_vFn (1, s) =
           ⟨2 * (s : ℝ), (unitInterval.mul_pos_mem_iff zero_lt_two).2 ⟨s.2.1, hs⟩⟩ :=
-        Subtype.ext (by rw [joinedInSLsc_vFn_left, min_eq_left (by linarith)])
+        Subtype.ext (by rw [joinedInSLSC_vFn_left, min_eq_left (by linarith)])
       rw [hv_subt, hF1_eq]
       rfl
     · rw [dif_neg hs]
-      have hv_subt : joinedInSLsc_vFn (1, s) = (1 : I) :=
-        Subtype.ext (by rw [joinedInSLsc_vFn_left, min_eq_right (by linarith [not_le.mp hs])]; rfl)
+      have hv_subt : joinedInSLSC_vFn (1, s) = (1 : I) :=
+        Subtype.ext (by rw [joinedInSLSC_vFn_left, min_eq_right (by linarith [not_le.mp hs])]; rfl)
       rw [hv_subt, hF1_eq]
       rfl
   have hK_at_zero : ∀ t : I, K_fn (t, 0) = x₀ := fun t ↦ by
-    rw [K_fn_apply, joinedInSLsc_vFn_zero_right]
-    exact (F (joinedInSLsc_uFn (t, 0))).2
+    rw [K_fn_apply, joinedInSLSC_vFn_zero_right]
+    exact (F (joinedInSLSC_uFn (t, 0))).2
   have hK_at_one : ∀ t : I, K_fn (t, 1) = v := fun t ↦ by
-    rw [K_fn_apply, joinedInSLsc_uFn_one_right, joinedInSLsc_vFn_one_right, hF1_eq]
+    rw [K_fn_apply, joinedInSLSC_uFn_one_right, joinedInSLSC_vFn_one_right, hF1_eq]
     rfl
   let K : Path.Homotopy (α'.trans L) (β.toPath.trans (Path.refl v)) :=
     { toFun := K_fn

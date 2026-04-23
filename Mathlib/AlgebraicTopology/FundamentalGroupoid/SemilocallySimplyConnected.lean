@@ -867,7 +867,7 @@ theorem Path.trans_right_of_nullhomotopic {x y : X} {γ₀ : Path x y} {γ₁ : 
     Path.Homotopic.hcomp (Path.Homotopic.refl γ₀) hγ₁
   exact step1.trans <| Path.Homotopic.trans_refl γ₀
 
-private theorem Path.first_rung_nullhomotopic_of_range_subset_slsc
+private theorem Path.first_rung_nullhomotopic_of_range_subset_SLSC
     {x y y' : X} {n : ℕ}
     (γ : Path x y) (γ' : Path x y')
     (part : IntervalPartition n)
@@ -885,7 +885,7 @@ private theorem Path.first_rung_nullhomotopic_of_range_subset_slsc
     exact h_α₀_in_U₀ ⟨0, rfl⟩
   · simpa only [α₀, Path.cast, Set.range] using h_α₀_in_U₀
 
-private theorem Path.last_rung_nullhomotopic_of_range_subset_slsc
+private theorem Path.last_rung_nullhomotopic_of_range_subset_SLSC
     {x y : X} {n : ℕ}
     (γ γ' : Path x y) (part : IntervalPartition n)
     (α : (i : Fin (n + 1)) → Path (γ (part.t i)) (γ' (part.t i)))
@@ -930,7 +930,7 @@ theorem Path.paste_segment_homotopies_slsc_source {x y y' : X} {n : ℕ}
                        (show x = γ' (part.t 0) by rw [part.h_start, γ'.source])
   have h_α₀_null : Path.Homotopic α₀ (Path.refl x) := by
     simpa [α₀] using
-      Path.first_rung_nullhomotopic_of_range_subset_slsc γ γ' part α U₀ h_U₀_slsc h_α₀_in_U₀
+      Path.first_rung_nullhomotopic_of_range_subset_SLSC γ γ' part α U₀ h_U₀_slsc h_α₀_in_U₀
   exact h_paste.trans <| Path.trans_left_of_nullhomotopic h_α₀_null
 
 /-- Two-sided specialization of `paste_segment_homotopies`: if the source and target rungs live in
@@ -957,7 +957,7 @@ theorem Path.paste_segment_homotopies_slsc {x y : X} {n : ℕ} (γ γ' : Path x 
       paste_segment_homotopies_slsc_source γ γ' part α h_rectangles U₀ h_U₀_slsc h_α₀_in_U₀
   have h_αₙ_null : Path.Homotopic αₙ (Path.refl y) := by
     simpa [αₙ] using
-      Path.last_rung_nullhomotopic_of_range_subset_slsc γ γ' part α Uₙ h_Uₙ_slsc h_αₙ_in_Uₙ
+      Path.last_rung_nullhomotopic_of_range_subset_SLSC γ γ' part α Uₙ h_Uₙ_slsc h_αₙ_in_Uₙ
   exact (Path.trans_right_of_nullhomotopic h_αₙ_null).symm.trans h_source
 
 /-- Given a path γ in an SLSC space, paths in the tube around γ are homotopic to γ.

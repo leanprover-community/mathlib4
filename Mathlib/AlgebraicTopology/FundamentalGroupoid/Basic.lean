@@ -187,6 +187,7 @@ theorem trans_refl_cast {x₀ x₁ x₁' x₂ : X} (p : Path x₀ x₁) (hx : x�
   subst hx
   subst hy
   simpa using trans_refl _
+
 theorem trans_symm (p : Path x₀ x₁) :
     (p.trans p.symm).Homotopic (Path.refl x₀) :=
   ⟨(Homotopy.reflTransSymm p).symm⟩
