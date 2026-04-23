@@ -103,7 +103,7 @@ theorem IsClique.subset (h : t ⊆ s) : G.IsClique s → G.IsClique t := Set.Pai
 
 variable (s) in
 @[simp]
-theorem isClique_top : (⊤ : SimpleGraph α).IsClique s :=
+protected theorem IsClique.top : (⊤ : SimpleGraph α).IsClique s :=
   fun _ _ _ _ ↦ id
 
 @[simp]
@@ -114,7 +114,7 @@ alias ⟨IsClique.subsingleton, _⟩ := isClique_bot_iff
 
 @[simp]
 theorem isClique_univ : G.IsClique .univ ↔ G = ⊤ :=
-  ⟨fun h ↦ eq_top_iff_forall_ne_adj.mpr fun _ _ ↦ h trivial trivial, (· ▸ isClique_top .univ)⟩
+  ⟨fun h ↦ eq_top_iff_forall_ne_adj.mpr fun _ _ ↦ h trivial trivial, (· ▸ .top .univ)⟩
 
 protected theorem IsClique.map (h : G.IsClique s) {f : α ↪ β} : (G.map f).IsClique (f '' s) := by
   rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ hab
