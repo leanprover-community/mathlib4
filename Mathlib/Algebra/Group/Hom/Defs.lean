@@ -941,8 +941,7 @@ namespace End
 instance instFunLike : FunLike (Monoid.End M) M M := inferInstanceAs <| FunLike (M →* M) M M
 
 @[to_additive (attr := ext)]
-theorem ext {f g : Monoid.End M} (h : ∀ x : M, f x = g x) :
-    f = g :=
+theorem ext {f g : Monoid.End M} (h : ∀ x : M, f x = g x) : f = g :=
   DFunLike.ext _ _ h
 
 @[to_additive]
