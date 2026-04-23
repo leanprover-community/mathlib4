@@ -291,10 +291,6 @@ theorem sdiff_right_inj (hxz : x ≤ z) (hyz : y ≤ z) : z \ x = z \ y ↔ x = 
   ⟨fun h => by rw [← sdiff_sdiff_eq_self hxz, h, sdiff_sdiff_eq_self hyz], congrArg (z \ ·)⟩
 
 @[deprecated sdiff_right_inj (since := "2026-04-16")]
-theorem eq_of_sdiff_left_eq (hxz : x ≤ z) (hyz : y ≤ z) (h : z \ x = z \ y) : x = y :=
-  (sdiff_right_inj hxz hyz).mp h
-
-@[deprecated sdiff_right_inj (since := "2026-04-16")]
 theorem eq_of_sdiff_eq_sdiff (hxz : x ≤ z) (hyz : y ≤ z) (h : z \ x = z \ y) : x = y :=
   (sdiff_right_inj hxz hyz).mp h
 
