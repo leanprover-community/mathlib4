@@ -388,6 +388,15 @@ when we reassociate a convex combination.
 -/
 abbrev convexCombo_assoc_coeff₂ (s t : unitInterval) : unitInterval := s * t
 
+private theorem one_sub_coe_ne_zero {t : unitInterval} (ht : (t : ℝ) ≠ 1) : (1 - t : ℝ) ≠ 0 := by
+  grind
+
+private theorem one_sub_mul_coe_ne_zero {s t : unitInterval}
+    (ht : (t : ℝ) ≠ 1) : (1 - s * t : ℝ) ≠ 0 := by
+  intro h
+  have : 1 ≤ (t : ℝ) := by nlinarith [s.2.2, t.2.1]
+  grind
+
 theorem convexCombo_assoc {a b : ℝ} (x y z : Icc a b) (s t : unitInterval) :
     convexCombo x (convexCombo y z t) s =
       convexCombo (convexCombo x y (convexCombo_assoc_coeff₁ s t)) z
@@ -397,16 +406,11 @@ theorem convexCombo_assoc {a b : ℝ} (x y z : Icc a b) (s t : unitInterval) :
   · simp only [hs]
     by_cases ht : (t : ℝ) = 1
     · simp [ht]
-    · have : (1 - t : ℝ) ≠ 0 := by grind
-      field_simp
-      simp
+    · field_simp [one_sub_coe_ne_zero ht]
+      ring
   · by_cases ht : (t : ℝ) = 1
     · simp [ht]
-    · have : (1 - s * t : ℝ) ≠ 0 := by
-        intro h
-        have : 1 ≤ (t : ℝ) := by nlinarith [s.2.2, t.2.1]
-        grind
-      field_simp
+    · field_simp [one_sub_mul_coe_ne_zero ht]
       ring_nf
 
 /--
@@ -472,17 +476,32 @@ end Set.Icc
 
 open scoped unitInterval
 
+private theorem mem_ball_addNSMul_of_mem_Icc {a b δ : ℝ} (h : a ≤ b) (δ_pos : 0 < δ)
+    (n : ℕ) {t : Icc a b}
+    (ht : t ∈ Icc (addNSMul h (δ / 2) n) (addNSMul h (δ / 2) (n + 1))) :
+    t ∈ Metric.ball (addNSMul h (δ / 2) n) δ :=
+  Metric.mem_ball.mpr <|
+    (abs_sub_addNSMul_le h (half_pos δ_pos).le n ht).trans_lt <| half_lt_self δ_pos
+
+private theorem mem_ball_addNSMul_prod_of_mem_Icc {δ : ℝ} (δ_pos : 0 < δ)
+    (n m : ℕ) {t : I × I}
+    (ht₁ : t.1 ∈ Icc (addNSMul zero_le_one (δ / 2) n) (addNSMul zero_le_one (δ / 2) (n + 1)))
+    (ht₂ : t.2 ∈ Icc (addNSMul zero_le_one (δ / 2) m) (addNSMul zero_le_one (δ / 2) (m + 1))) :
+    t ∈ Metric.ball (addNSMul zero_le_one (δ / 2) n, addNSMul zero_le_one (δ / 2) m) δ :=
+  Metric.mem_ball.mpr <|
+    (max_le (abs_sub_addNSMul_le zero_le_one (half_pos δ_pos).le n ht₁)
+      (abs_sub_addNSMul_le zero_le_one (half_pos δ_pos).le m ht₂)).trans_lt <| half_lt_self δ_pos
+
 /-- Any open cover `c` of a closed interval `[a, b]` in ℝ
 can be refined to a finite partition into subintervals. -/
 lemma exists_monotone_Icc_subset_open_cover_Icc {ι} {a b : ℝ} (h : a ≤ b) {c : ι → Set (Icc a b)}
     (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : univ ⊆ ⋃ i, c i) : ∃ t : ℕ → Icc a b, t 0 = a ∧
       Monotone t ∧ (∃ m, ∀ n ≥ m, t n = b) ∧ ∀ n, ∃ i, Icc (t n) (t (n + 1)) ⊆ c i := by
   obtain ⟨δ, δ_pos, ball_subset⟩ := lebesgue_number_lemma_of_metric isCompact_univ hc₁ hc₂
-  have hδ := half_pos δ_pos
   refine ⟨addNSMul h (δ/2), addNSMul_zero h,
-    monotone_addNSMul h hδ.le, addNSMul_eq_right h hδ, fun n ↦ ?_⟩
+    monotone_addNSMul h (half_pos δ_pos).le, addNSMul_eq_right h (half_pos δ_pos), fun n ↦ ?_⟩
   obtain ⟨i, hsub⟩ := ball_subset (addNSMul h (δ / 2) n) trivial
-  exact ⟨i, fun t ht ↦ hsub ((abs_sub_addNSMul_le h hδ.le n ht).trans_lt <| half_lt_self δ_pos)⟩
+  exact ⟨i, fun t ht ↦ hsub <| mem_ball_addNSMul_of_mem_Icc h δ_pos n ht⟩
 
 /-- Any open cover of the unit interval can be refined to a finite partition into subintervals. -/
 lemma exists_monotone_Icc_subset_open_cover_unitInterval {ι} {c : ι → Set I}
@@ -496,14 +515,13 @@ lemma exists_monotone_Icc_subset_open_cover_unitInterval_prod_self {ι} {c : ι 
     ∃ t : ℕ → I, t 0 = 0 ∧ Monotone t ∧ (∃ n, ∀ m ≥ n, t m = 1) ∧
       ∀ n m, ∃ i, Icc (t n) (t (n + 1)) ×ˢ Icc (t m) (t (m + 1)) ⊆ c i := by
   obtain ⟨δ, δ_pos, ball_subset⟩ := lebesgue_number_lemma_of_metric isCompact_univ hc₁ hc₂
-  have hδ := half_pos δ_pos
   simp_rw [Subtype.ext_iff]
-  have h : (0 : ℝ) ≤ 1 := zero_le_one
-  refine ⟨addNSMul h (δ/2), addNSMul_zero h,
-    monotone_addNSMul h hδ.le, addNSMul_eq_right h hδ, fun n m ↦ ?_⟩
-  obtain ⟨i, hsub⟩ := ball_subset (addNSMul h (δ / 2) n, addNSMul h (δ / 2) m) trivial
-  exact ⟨i, fun t ht ↦ hsub (Metric.mem_ball.mpr <| (max_le (abs_sub_addNSMul_le h hδ.le n ht.1) <|
-    abs_sub_addNSMul_le h hδ.le m ht.2).trans_lt <| half_lt_self δ_pos)⟩
+  refine ⟨addNSMul zero_le_one (δ/2), addNSMul_zero zero_le_one,
+    monotone_addNSMul zero_le_one (half_pos δ_pos).le,
+    addNSMul_eq_right zero_le_one (half_pos δ_pos), fun n m ↦ ?_⟩
+  obtain ⟨i, hsub⟩ := ball_subset
+    (addNSMul zero_le_one (δ / 2) n, addNSMul zero_le_one (δ / 2) m) trivial
+  exact ⟨i, fun t ht ↦ hsub <| mem_ball_addNSMul_prod_of_mem_Icc δ_pos n m ht.1 ht.2⟩
 
 /-- Finite-`Fin` partition variant: Any open cover of `[a, b]` can be refined to a monotone
 partition indexed by `Fin (n + 1)`. -/
@@ -514,7 +532,7 @@ lemma exists_monotone_partition_Icc {ι} {a b : ℝ} (h : a ≤ b) {c : ι → S
       ∀ i : Fin n, ∃ j : ι, Icc (t i.castSucc) (t i.succ) ⊆ c j := by
   obtain ⟨t, ht0, ht_mono, ⟨N, hN⟩, ht_cover⟩ :=
     exists_monotone_Icc_subset_open_cover_Icc h hc₁ hc₂
-  refine ⟨N, fun k => t (k : ℕ), fun _ _ hij => ht_mono hij, ?_, ?_, fun i => ?_⟩
+  refine ⟨N, fun k ↦ t (k : ℕ), fun _ _ hij ↦ ht_mono hij, ?_, ?_, fun i ↦ ?_⟩
   · simpa using ht0
   · simpa using hN N le_rfl
   · obtain ⟨j, hj⟩ := ht_cover i

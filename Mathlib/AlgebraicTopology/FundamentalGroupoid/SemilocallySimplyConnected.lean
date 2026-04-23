@@ -378,6 +378,58 @@ def TubeData.toSet {X : Type*} [TopologicalSpace X] {x y : X} {n : ℕ}
     (part : IntervalPartition n) (T : TubeData X x y n) : Set (Path x y) :=
   {γ | PathInTube γ part T}
 
+/-- Given segment neighborhoods covering each subpath of `γ`, construct the vertex neighborhoods
+as path components of the finite intersections of adjacent segment neighborhoods. -/
+private theorem Path.exists_vertexNeighborhood_family [LocPathConnectedSpace X]
+    {x y : X} {γ : Path x y} {n : ℕ}
+    {t : Fin (n + 1) → unitInterval} {U : Fin n → Set X}
+    (h_mono : Monotone t) (hU_open : ∀ i, IsOpen (U i))
+    (hU_contains : ∀ i : Fin n, ∀ s : unitInterval,
+      (t i.castSucc : ℝ) ≤ s ∧ s ≤ (t i.succ : ℝ) → γ s ∈ U i) :
+    ∃ V : Fin (n + 1) → Set X,
+      (∀ j, IsOpen (V j)) ∧
+      (∀ j, IsPathConnected (V j)) ∧
+      (∀ j, γ (t j) ∈ V j) ∧
+      (∀ i : Fin n, V i.castSucc ⊆ U i) ∧
+      (∀ i : Fin n, V i.succ ⊆ U i) := by
+  have V_data : ∀ j : Fin (n + 1),
+      ∃ V : Set X, IsOpen V ∧ IsPathConnected V ∧ γ (t j) ∈ V ∧
+        (∀ i : Fin n, j = i.castSucc → V ⊆ U i) ∧
+        (∀ i : Fin n, j = i.succ → V ⊆ U i) := by
+    intro j
+    let U_inter := ⋂ i : Fin n, ⋂ (_ : j = i.castSucc ∨ j = i.succ), U i
+    have hγ_in_inter : γ (t j) ∈ U_inter := by
+      simp only [U_inter, Set.mem_iInter]
+      intro i hi
+      exact hU_contains i (t j) <| by
+        cases hi with
+        | inl h =>
+            constructor <;> apply h_mono <;> simp [h, Fin.le_def]
+        | inr h =>
+            constructor <;> apply h_mono <;> simp [h, Fin.le_def, Fin.succ]
+    refine ⟨pathComponentIn U_inter (γ (t j)), ?_, isPathConnected_pathComponentIn hγ_in_inter,
+      mem_pathComponentIn_self hγ_in_inter, ?_, ?_⟩
+    · apply IsOpen.pathComponentIn
+      apply isOpen_iInter_of_finite
+      intro i
+      apply isOpen_iInter_of_finite
+      intro _
+      exact hU_open i
+    · intro i hi
+      trans U_inter
+      · exact pathComponentIn_subset
+      · exact Set.iInter_subset_of_subset i <| Set.iInter_subset_of_subset (Or.inl hi) <| subset_rfl
+    · intro i hi
+      trans U_inter
+      · exact pathComponentIn_subset
+      · exact Set.iInter_subset_of_subset i <| Set.iInter_subset_of_subset (Or.inr hi) <| subset_rfl
+  choose V hV_open hV_pathConn hγ_in_V hV_left hV_right using V_data
+  refine ⟨V, hV_open, hV_pathConn, hγ_in_V, ?_, ?_⟩
+  · intro i
+    exact hV_left i.castSucc i rfl
+  · intro i
+    exact hV_right i.succ i rfl
+
 /-- In an SLSC space, given a path γ, there exists a tubular neighborhood structure
 such that γ stays in the tube. This uses compactness of the path's image and the
 Lebesgue number lemma. -/
@@ -397,51 +449,8 @@ theorem Path.exists_partition_in_slsc_neighborhoods [SemilocallySimplyConnectedS
     )
   -- Extract U sets from the partition using choice
   choose U hU_open hU_prop hU_contains using h_partition
-  -- For each point j, construct V[j] as the intersection of all U[i] where j is an endpoint
-  -- Using iterated intersection: ⋂ i, ⋂ (_ : j is endpoint of i), U i
-  -- This makes finiteness manifest (exactly n iterations) and openness automatic
-  have V_data : ∀ (j : Fin (n + 1)),
-      ∃ V : Set X, IsOpen V ∧ IsPathConnected V ∧ γ (t j) ∈ V ∧
-        (∀ i : Fin n, j = i.castSucc → V ⊆ U i) ∧ (∀ i : Fin n, j = i.succ → V ⊆ U i) := by
-    intro j
-    -- Define intersection as: ⋂ i : Fin n, ⋂ (_ : j = i.castSucc ∨ j = i.succ), U i
-    let U_inter := ⋂ i : Fin n, ⋂ (_ : j = i.castSucc ∨ j = i.succ), U i
-    -- γ(t_j) is in all relevant U sets
-    have hγ_in_inter : γ (t j) ∈ U_inter := by
-      simp only [U_inter, Set.mem_iInter]
-      intro i hi
-      exact hU_contains i (t j) <| by
-        cases hi with
-        | inl h =>
-            constructor <;> apply h_mono <;> simp [h, Fin.le_def]
-        | inr h =>
-            constructor <;> apply h_mono <;> simp [h, Fin.le_def, Fin.succ]
-    -- Take the path component of γ(t_j) in the intersection
-    refine ⟨pathComponentIn U_inter (γ (t j)),
-      ?_, isPathConnected_pathComponentIn hγ_in_inter,
-      mem_pathComponentIn_self hγ_in_inter, ?_, ?_⟩
-    · -- Prove open: finite intersection of open sets, then path component
-      apply IsOpen.pathComponentIn
-      apply isOpen_iInter_of_finite
-      intro i
-      apply isOpen_iInter_of_finite
-      intro _
-      exact hU_open i
-    · -- Prove V ⊆ U i when j = i.castSucc
-      intro i hi
-      trans U_inter
-      · apply pathComponentIn_subset
-      · apply Set.iInter_subset_of_subset i
-        apply Set.iInter_subset_of_subset (Or.inl hi)
-        rfl
-    · -- Prove V ⊆ U i when j = i.succ
-      intro i hi
-      trans U_inter
-      · apply pathComponentIn_subset
-      · apply Set.iInter_subset_of_subset i
-        apply Set.iInter_subset_of_subset (Or.inr hi)
-        rfl
-  choose V hV_open hV_pathConn hγ_in_V hV_left hV_right using V_data
+  obtain ⟨V, hV_open, hV_pathConn, hγ_in_V, hV_left, hV_right⟩ :=
+    Path.exists_vertexNeighborhood_family h_mono hU_open hU_contains
   -- Construct IntervalPartition
   let part : IntervalPartition n := {
     t := t
@@ -458,8 +467,8 @@ theorem Path.exists_partition_in_slsc_neighborhoods [SemilocallySimplyConnectedS
     h_U_slsc := fun i ↦ (hU_prop i).2
     h_V_open := hV_open
     h_V_pathConn := hV_pathConn
-    h_V_left_subset := fun i ↦ hV_left i.castSucc i rfl
-    h_V_right_subset := fun i ↦ hV_right i.succ i rfl
+    h_V_left_subset := hV_left
+    h_V_right_subset := hV_right
   }
   -- Prove PathInTube
   refine ⟨n, part, T, ?_⟩
@@ -858,6 +867,42 @@ theorem Path.trans_right_of_nullhomotopic {x y : X} {γ₀ : Path x y} {γ₁ : 
     Path.Homotopic.hcomp (Path.Homotopic.refl γ₀) hγ₁
   exact step1.trans <| Path.Homotopic.trans_refl γ₀
 
+private theorem Path.first_rung_nullhomotopic_of_range_subset_slsc
+    {x y y' : X} {n : ℕ}
+    (γ : Path x y) (γ' : Path x y')
+    (part : IntervalPartition n)
+    (α : (i : Fin (n + 1)) → Path (γ (part.t i)) (γ' (part.t i)))
+    (U₀ : Set X) (h_U₀_slsc : ∀ {a b : X} (p q : Path a b), a ∈ U₀ → b ∈ U₀ →
+      Set.range p ⊆ U₀ → Set.range q ⊆ U₀ → Path.Homotopic p q)
+    (h_α₀_in_U₀ : Set.range (α 0) ⊆ U₀) :
+    let α₀ := (α 0).cast (show x = γ (part.t 0) by rw [part.h_start, γ.source])
+      (show x = γ' (part.t 0) by rw [part.h_start, γ'.source])
+    Path.Homotopic α₀ (Path.refl x) := by
+  intro α₀
+  apply Path.nullhomotopic_of_range_subset_slsc α₀ U₀ h_U₀_slsc
+  · have : (α 0) 0 = x := by simp [(α 0).source, part.h_start, γ.source]
+    rw [← this]
+    exact h_α₀_in_U₀ ⟨0, rfl⟩
+  · simpa only [α₀, Path.cast, Set.range] using h_α₀_in_U₀
+
+private theorem Path.last_rung_nullhomotopic_of_range_subset_slsc
+    {x y : X} {n : ℕ}
+    (γ γ' : Path x y) (part : IntervalPartition n)
+    (α : (i : Fin (n + 1)) → Path (γ (part.t i)) (γ' (part.t i)))
+    (Uₙ : Set X) (h_Uₙ_slsc : ∀ {a b : X} (p q : Path a b), a ∈ Uₙ → b ∈ Uₙ →
+      Set.range p ⊆ Uₙ → Set.range q ⊆ Uₙ → Path.Homotopic p q)
+    (h_αₙ_in_Uₙ : Set.range (α (Fin.last n)) ⊆ Uₙ) :
+    let αₙ := (α (Fin.last n)).cast
+      (show y = γ (part.t (Fin.last n)) by rw [part.h_end, γ.target])
+      (show y = γ' (part.t (Fin.last n)) by rw [part.h_end, γ'.target])
+    Path.Homotopic αₙ (Path.refl y) := by
+  intro αₙ
+  apply Path.nullhomotopic_of_range_subset_slsc αₙ Uₙ h_Uₙ_slsc
+  · have : (α (Fin.last n)) 0 = y := by simp [(α (Fin.last n)).source, part.h_end]
+    rw [← this]
+    exact h_αₙ_in_Uₙ ⟨0, rfl⟩
+  · simpa only [αₙ, Path.cast, Set.range] using h_αₙ_in_Uₙ
+
 /-- One-sided specialization of `paste_segment_homotopies` that kills the source loop.
 
 Given the same rectangle homotopies, plus:
@@ -884,11 +929,8 @@ theorem Path.paste_segment_homotopies_slsc_source {x y y' : X} {n : ℕ}
   let α₀ := (α 0).cast (show x = γ (part.t 0) by rw [part.h_start, γ.source])
                        (show x = γ' (part.t 0) by rw [part.h_start, γ'.source])
   have h_α₀_null : Path.Homotopic α₀ (Path.refl x) := by
-    apply Path.nullhomotopic_of_range_subset_slsc α₀ U₀ h_U₀_slsc
-    · have : (α 0) 0 = x := by simp [(α 0).source, part.h_start, γ.source]
-      rw [← this]
-      exact h_α₀_in_U₀ ⟨0, rfl⟩
-    · simpa only [α₀, Path.cast, Set.range] using h_α₀_in_U₀
+    simpa [α₀] using
+      Path.first_rung_nullhomotopic_of_range_subset_slsc γ γ' part α U₀ h_U₀_slsc h_α₀_in_U₀
   exact h_paste.trans <| Path.trans_left_of_nullhomotopic h_α₀_null
 
 /-- Two-sided specialization of `paste_segment_homotopies`: if the source and target rungs live in
@@ -914,12 +956,8 @@ theorem Path.paste_segment_homotopies_slsc {x y : X} {n : ℕ} (γ γ' : Path x 
     simpa only [αₙ] using
       paste_segment_homotopies_slsc_source γ γ' part α h_rectangles U₀ h_U₀_slsc h_α₀_in_U₀
   have h_αₙ_null : Path.Homotopic αₙ (Path.refl y) := by
-    apply Path.nullhomotopic_of_range_subset_slsc αₙ Uₙ h_Uₙ_slsc
-    · have : (α (Fin.last n)) 0 = y := by
-        simp [(α (Fin.last n)).source, part.h_end]
-      rw [← this]
-      exact h_αₙ_in_Uₙ ⟨0, rfl⟩
-    · simpa only [αₙ, Path.cast, Set.range] using h_αₙ_in_Uₙ
+    simpa [αₙ] using
+      Path.last_rung_nullhomotopic_of_range_subset_slsc γ γ' part α Uₙ h_Uₙ_slsc h_αₙ_in_Uₙ
   exact (Path.trans_right_of_nullhomotopic h_αₙ_null).symm.trans h_source
 
 /-- Given a path γ in an SLSC space, paths in the tube around γ are homotopic to γ.
@@ -953,39 +991,19 @@ theorem Path.tube_subset_homotopy_class {x y : X} {n : ℕ}
       exact (hα_ranges i).1
     · -- α i.succ has range in U_i
       exact (hα_ranges i).2
-  -- Step 3: Apply the stronger pasting lemma that uses SLSC to handle endpoint loops
-  -- We need to identify which neighborhoods contain the endpoint rungs
-  -- First, handle the case where n = 0 separately
+  -- Step 3: Apply the stronger pasting lemma that uses SLSC to handle endpoint loops.
   cases n with
-  | zero =>
-    -- When n = 0, the partition is impossible (requires 0 = 1)
-    exfalso; exact IntervalPartition.not_zero part
+  | zero => exfalso; exact IntervalPartition.not_zero part
   | succ n' =>
-    -- Now n = n' + 1, so we have at least one segment
-    -- α 0 has range in V 0, and V 0 ⊆ U 0 (left endpoint of segment 0)
-    -- α (Fin.last n) has range in V (Fin.last n), and V (Fin.last n) ⊆ U n'
-    -- (right endpoint of last segment)
-    -- For α 0: it has range in V 0 ⊆ U 0
     let i_first : Fin (n' + 1) := ⟨0, Nat.zero_lt_succ n'⟩
-    have h_α₀_range : Set.range (α 0) ⊆ T.U i_first := by
-      have h1 : i_first.castSucc = 0 := rfl
-      rw [← h1]
-      exact (hα_ranges i_first).1
-    -- For α (Fin.last (n' + 1)): it has range in V (Fin.last (n' + 1)) ⊆ U n'
     let i_last : Fin (n' + 1) := ⟨n', Nat.lt_succ_self n'⟩
-    have h_αₙ_range : Set.range (α (Fin.last (n' + 1))) ⊆ T.U i_last := by
-      have h1 : i_last.succ = Fin.last (n' + 1) := rfl
-      rw [← h1]
-      exact (hα_ranges i_last).2
-    -- Now apply the stronger pasting lemma and use symmetry
-    apply Path.Homotopic.symm
-    refine paste_segment_homotopies_slsc γ γ' part α h_rectangles
+    refine Path.Homotopic.symm <| paste_segment_homotopies_slsc γ γ' part α h_rectangles
       (T.U i_first)
       (fun p q hp_a hp_d hp_range hq_range ↦ T.h_U_slsc i_first hp_a hp_d p q hp_range hq_range)
-      h_α₀_range
+      (hα_ranges i_first).1
       (T.U i_last)
       (fun p q hp_a hp_d hp_range hq_range ↦ T.h_U_slsc i_last hp_a hp_d p q hp_range hq_range)
-      h_αₙ_range
+      (hα_ranges i_last).2
 
 /--
 In an SLSC locally path-connected space, every path p has an open tubular neighborhood
@@ -1013,37 +1031,17 @@ theorem Path.exists_open_tubular_neighborhood_in_homotopy_class
     · exact hp_in_tube
     · exact hp'
 
-/-- In an SLSC locally path-connected space, for any path p, the set of paths homotopic to p
-is open.
-
-**Proof strategy:** To show the homotopy class H(p) = {p' | Homotopic p' p} is open, we show
-that every point q ∈ H(p) has an open neighborhood contained in H(p):
-1. Take any q ∈ H(p), so Homotopic q p
-2. By `exists_open_tubular_neighborhood_in_homotopy_class`, q has an open tubular neighborhood
-   T_q with T_q ⊆ {p' | Homotopic p' q}
-3. Since homotopy is an equivalence relation, {p' | Homotopic p' q} = {p' | Homotopic p' p} = H(p)
-4. Therefore q ∈ T_q ⊆ H(p), giving an open neighborhood of q in H(p)
-
-Since every point in H(p) has an open neighborhood contained in H(p), the set H(p) is open.
-
-This is the main topological consequence of the SLSC property: homotopy classes of paths are
-not just equivalence classes, but also open sets in the path space. -/
+/-- In an SLSC locally path-connected space, for any path `p`, the set of paths homotopic to `p`
+is open. -/
 theorem Path.isOpen_setOf_homotopic [SemilocallySimplyConnectedSpace X]
     [LocPathConnectedSpace X] {x y : X} (p : Path x y) :
     IsOpen {p' : Path x y | Path.Homotopic p' p} := by
-  -- Strategy: show every point in the homotopy class has an open neighborhood in the class
   apply isOpen_iff_mem_nhds.mpr
   intro q hq
-  -- q is homotopic to p, so get a tubular neighborhood around q
-  obtain ⟨T_q, hT_open, hq_in_T, hT_subset⟩ :=
+  obtain ⟨T, hT_open, hqT, hT_subset⟩ :=
     exists_open_tubular_neighborhood_in_homotopy_class q
-  -- T_q is an open neighborhood of q, so we just need to show T_q ⊆ {p' | Homotopic p' p}
   rw [mem_nhds_iff]
-  refine ⟨T_q, ?_, hT_open, hq_in_T⟩
-  -- Use transitivity: p' ∈ T_q → p' ~ q, and q ~ p, so p' ~ p
-  intro p' hp'
-  have hp'q : Path.Homotopic p' q := hT_subset hp'
-  exact hp'q.trans hq
+  refine ⟨T, fun p' hp' ↦ (hT_subset hp').trans hq, hT_open, hqT⟩
 
 /--
 In a semilocally simply connected, locally path-connected space, the quotient of paths by
@@ -1056,21 +1054,12 @@ theorem Path.Homotopic.Quotient.discreteTopology
   letI : Setoid (Path x y) := Path.Homotopic.setoid x y
   letI : TopologicalSpace (Path.Homotopic.Quotient x y) :=
     inferInstanceAs (TopologicalSpace (Quotient (Path.Homotopic.setoid x y)))
-  -- By `isOpen_setOf_homotopic`, every homotopy class H(p) = {p' | Homotopic p' p} is
-  -- open in Path x y. Under the quotient map π : Path x y → Path.Homotopic.Quotient x y, the
-  -- preimage π⁻¹({⟦p⟧}) = H(p) is open. Since preimages of singletons are open, every singleton
-  -- in the quotient is open, giving the discrete topology.
-
-  -- Show every singleton is open in the quotient
   rw [discreteTopology_iff_isOpen_singleton]
   intro a
-  -- Use quotient induction to get a representative path
   induction a using Quotient.inductionOn with
   | h p =>
-    -- In the quotient topology, `{⟦p⟧}` is open iff its preimage is open.
     change IsOpen ((Path.Homotopic.Quotient.mk : Path x y → Path.Homotopic.Quotient x y) ⁻¹'
       ({⟦p⟧} : Set (Path.Homotopic.Quotient x y)))
-    -- The preimage is the homotopy class `{p' | Homotopic p' p}`, which is open.
     have heq :
         (Path.Homotopic.Quotient.mk : Path x y → Path.Homotopic.Quotient x y) ⁻¹' {⟦p⟧} =
           {p' : Path x y | Path.Homotopic p' p} :=
