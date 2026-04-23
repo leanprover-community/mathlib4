@@ -38,6 +38,13 @@ lemma horn_ι_mem_innerHornInclusions {n : ℕ} {i : Fin (n + 3)}
   use n
   use ⟨i, h0, hn⟩
 
+lemma horn_ι_mem_innerHornInclusions' {n : ℕ} [NeZero n] {i : Fin (n + 2)}
+    (h0 : 0 < i) (hn : i < Fin.last (n + 1)) :
+    innerHornInclusions (horn.{u} (n + 1) i).ι := by
+  cases n with
+  | zero => omega
+  | succ n => exact horn_ι_mem_innerHornInclusions h0 hn
+
 lemma innerHornInclusions_le_J : innerHornInclusions.{u} ≤ modelCategoryQuillen.J := by
   intro _ _ _ h
   simp only [innerHornInclusions, iSup_iff] at h
