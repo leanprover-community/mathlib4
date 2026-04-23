@@ -675,14 +675,6 @@ lemma comap_apply (f : V ≃ W) (G : SimpleGraph W) (v : V) :
 lemma comap_symm_apply (f : V ≃ W) (G : SimpleGraph W) (w : W) :
     (SimpleGraph.Iso.comap f G).symm w = f.symm w := rfl
 
-theorem preimage_neighborSet_comap_equiv (e : V ≃ W) (w : W) :
-    G'.neighborSet w = e.symm ⁻¹' (G'.comap e).neighborSet (e.symm w) :=
-  Iso.comap e G' |>.symm.toEmbedding.preimage_neighborSet w |>.symm
-
-theorem preimage_neighborSet_comap_equiv' (e : V ≃ W) (v : V) :
-    e.symm ⁻¹' (G'.comap e).neighborSet v = G'.neighborSet (e v) := by
-  simpa using (preimage_neighborSet_comap_equiv e <| e v).symm
-
 /-- Given a bijective function, there is an isomorphism from a graph into the mapped graph. -/
 protected def map (f : V ≃ W) (G : SimpleGraph V) : G ≃g G.map f.toEmbedding :=
   { f with map_rel_iff' := by aesop (add simp map_adj') }
@@ -694,14 +686,6 @@ lemma map_apply (f : V ≃ W) (G : SimpleGraph V) (v : V) :
 @[simp]
 lemma map_symm_apply (f : V ≃ W) (G : SimpleGraph V) (w : W) :
     (SimpleGraph.Iso.map f G).symm w = f.symm w := rfl
-
-theorem neighborSet_map_equiv (e : V ≃ W) (w : W) :
-    (G.map e).neighborSet w = e.symm ⁻¹' G.neighborSet (e.symm w) :=
-  Iso.map e G |>.symm.toEmbedding.preimage_neighborSet w |>.symm
-
-theorem equiv_preimage_neighborSet (e : W ≃ V) (v : V) :
-    e ⁻¹' G.neighborSet v = (G.map e.symm).neighborSet (e.symm v) := by
-  simpa using (neighborSet_map_equiv e.symm <| e.symm v).symm
 
 /-- Equivalences of types induce isomorphisms of complete graphs on those types. -/
 protected def completeGraph {α β : Type*} (f : α ≃ β) : completeGraph α ≃g completeGraph β :=
@@ -722,6 +706,18 @@ theorem coe_comp (f' : G' ≃g G'') (f : G ≃g G') : ⇑(f'.comp f) = f' ∘ f 
   rfl
 
 end Iso
+
+theorem neighborSet_comap (f : V → W) (v : V) :
+    (G'.comap f).neighborSet v = f ⁻¹' G'.neighborSet (f v) :=
+  rfl
+
+theorem neighborSet_induce (s : Set V) (v : s) :
+    (G.induce s).neighborSet v = (↑) ⁻¹' G.neighborSet v :=
+  G.neighborSet_comap _ v
+
+theorem neighborSet_map_equiv (e : V ≃ W) (w : W) :
+    (G.map e).neighborSet w = e.symm ⁻¹' G.neighborSet (e.symm w) :=
+  Iso.map e G |>.symm.toEmbedding.preimage_neighborSet w |>.symm
 
 /-- The graph induced on `Set.univ` is isomorphic to the original graph. -/
 @[simps!]
