@@ -44,7 +44,7 @@ open Classical in
 `c`. When `r = 1`, that point stays at the original position. A different choice of the point will
 not affect the output (See `AffineSubspace.shift_eq`).
 
-We define `AffineSubspace.shift ⊥ c r = ⊥` (See `AffineSubspace.shift_empty`). -/
+We define `AffineSubspace.shift ⊥ c r = ⊥` (See `AffineSubspace.shift_bot`). -/
 noncomputable
 def shift (s : AffineSubspace k P) (c : P) (r : k) : AffineSubspace k P :=
   if h : Nonempty s then
@@ -61,7 +61,7 @@ theorem direction_shift (s : AffineSubspace k P) (c : P) (r : k) :
   simp [shift, h]
 
 @[simp]
-theorem shift_empty (c : P) (r : k) : shift ⊥ c r = ⊥ := by
+theorem shift_bot (c : P) (r : k) : shift ⊥ c r = ⊥ := by
   simp [shift]
 
 /-- `AffineSubspace.shift s c r` can be represented by moving a point in the subspace
