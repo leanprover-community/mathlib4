@@ -29,7 +29,7 @@ open TopologicalSpace TopCat CategoryTheory MonoidalCategory
 
 /-- A pair of topological spaces consists of an embedding `f : A ⟶ X` in `TopCat`. -/
 abbrev TopPair :=
-  MorphismProperty.Arrow (fun (A X : TopCat.{u}) (f : A ⟶ X) ↦ Topology.IsEmbedding f.hom) ⊤ ⊤
+  MorphismProperty.Arrow TopCat.isEmbedding ⊤ ⊤
 
 namespace TopPair
 
@@ -48,11 +48,11 @@ lemma isEmbedding_map (X : TopPair.{u}) : Topology.IsEmbedding X.map := X.prop
 
 /-- Construct a topological pair from its components. -/
 abbrev of {A X : TopCat.{u}} (f : A ⟶ X) (h : Topology.IsEmbedding f) : TopPair.{u} :=
-  MorphismProperty.Arrow.mk (P := fun (A X : TopCat.{u}) (f : A ⟶ X) ↦ Topology.IsEmbedding f.hom) f h
+  MorphismProperty.Arrow.mk (P := TopCat.isEmbedding) f h
 
 /-- Constructor for a topological pair (X, A) where A ⊆ X. -/
-abbrev ofSubset {X : TopCat.{u}} (A : Set X) : TopPair.{u} :=
-  TopPair.of (A := (TopCat.of A)) (X := X) ⟨{ toFun := Subtype.val }⟩ Topology.IsEmbedding.subtypeVal
+abbrev ofSubset {X : TopCat.{u}} (A : Set X) : TopPair.{u} := TopPair.of (A := (TopCat.of A))
+  (X := X) ⟨{ toFun := Subtype.val }⟩ Topology.IsEmbedding.subtypeVal
 
 /-- Construct a morphism in `TopPair` from its components. -/
 abbrev ofHom (f : X.fst ⟶ Y.fst) (g : X.snd ⟶ Y.snd) (w : g ≫ Y.map = X.map ≫ f := by cat_disch) :=

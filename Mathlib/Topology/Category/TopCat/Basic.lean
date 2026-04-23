@@ -254,6 +254,13 @@ theorem isOpenEmbedding_iff_isIso_comp' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y �
   simp only
   exact isOpenEmbedding_iff_isIso_comp f g
 
+abbrev isEmbedding : MorphismProperty TopCat :=
+  fun ⦃A X : TopCat⦄ (f : A ⟶ X) ↦ Topology.IsEmbedding f.hom
+
+@[simp]
+lemma isEmbedding_iff ⦃A X : TopCat⦄ (f : A ⟶ X) : isEmbedding f ↔ Topology.IsEmbedding f.hom :=
+  by rfl
+
 /-- The constant morphism `X ⟶ Y` in `TopCat` given by `y : Y`. -/
 def const {X Y : TopCat.{u}} (y : Y) : X ⟶ Y :=
   ofHom ⟨fun _ ↦ y, by continuity⟩
