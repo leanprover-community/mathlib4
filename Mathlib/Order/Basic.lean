@@ -533,11 +533,6 @@ instance Ne.instIsEquiv_compl : IsEquiv α (· ≠ ·)ᶜ := by
 
 /-! ### Order instances on the function space -/
 
-@[to_dual self]
-theorem Pi.le_def [∀ i, LE (π i)] {x y : ∀ i, π i} :
-    x ≤ y ↔ ∀ i, x i ≤ y i :=
-  Iff.rfl
-
 instance Pi.preorder [∀ i, Preorder (π i)] : Preorder (∀ i, π i) where
   __ := (inferInstance : LE (∀ i, π i))
   le_refl := fun a i ↦ le_refl (a i)
@@ -1077,10 +1072,6 @@ instance : DenselyOrdered PUnit :=
 end PUnit
 
 section «Prop»
-
-@[simp]
-theorem le_Prop_eq : ((· ≤ ·) : Prop → Prop → Prop) = (· → ·) :=
-  rfl
 
 theorem subrelation_iff_le {r s : α → α → Prop} : Subrelation r s ↔ r ≤ s :=
   Iff.rfl
