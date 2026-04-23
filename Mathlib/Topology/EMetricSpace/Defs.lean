@@ -57,13 +57,13 @@ export EDist (edist)
 
 section
 
-variable {x y z : α} {ε ε₁ ε₂ : ℝ≥0∞} {s t : Set α} [EDist α]
+variable {x y z : α} {ε : ℝ≥0∞} [EDist α]
 
 /-- `EMetric.ball x ε` is the set of all points `y` with `edist y x < ε` -/
 def Metric.eball (x : α) (ε : ℝ≥0∞) : Set α :=
   { y | edist y x < ε }
 
-@[simp] theorem Metric.mem_eball : y ∈ eball x ε ↔ edist y x < ε := Iff.rfl
+@[simp] theorem Metric.mem_eball {x y : α} {ε : ℝ≥0∞} : y ∈ eball x ε ↔ edist y x < ε := Iff.rfl
 
 end
 
@@ -571,7 +571,6 @@ theorem eball_mem_nhds (x : α) {ε : ℝ≥0∞} (ε0 : 0 < ε) : eball x ε �
 theorem closedEBall_mem_nhds (x : α) {ε : ℝ≥0∞} (ε0 : 0 < ε) : closedEBall x ε ∈ 𝓝 x :=
   mem_of_superset (eball_mem_nhds x ε0) eball_subset_closedEBall
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eball_prod_same [PseudoEMetricSpace β] (x : α) (y : β) (r : ℝ≥0∞) :
     eball x r ×ˢ eball y r = eball (x, y) r :=
   ext fun z => by simp [Prod.edist_eq]
@@ -633,10 +632,6 @@ alias nhdsWithin_basis_closed_eball := nhdsWithin_basis_closedEBall
 @[deprecated (since := "2026-01-24")] alias closedBall_mem_nhds := closedEBall_mem_nhds
 @[deprecated (since := "2026-01-24")] alias ball_prod_same := eball_prod_same
 @[deprecated (since := "2026-01-24")] alias closedBall_prod_same := closedEBall_prod_same
-
-section
-
-end
 
 end EMetric
 
@@ -881,7 +876,6 @@ protected theorem WeakPseudoEMetricSpace.ext
       (h : m.toEDist = m'.toEDist) : m = m' := by
   cases m; cases m'; congr
 
-
 /-- Every `PseudoEMetricSpace` has a `WeakPseudoEMetricSpace` structure by
 using the topology induced by `edist`. -/
 instance PseudoEMetricSpace.toWeakPseudoEMetricSpace (α : Type u) [inst : PseudoEMetricSpace α] :
@@ -938,8 +932,7 @@ protected theorem WeakEMetricSpace.ext {α : Type*} [TopologicalSpace α] {m m' 
   ext1
   assumption
 
-/-- Every `EMetricSpace` has a `WeakEMetricSpace` structure by
-  using the topology induced by edist. -/
+/-- Every `EMetricSpace` has a `WeakEMetricSpace` structure by using the topology induced by edist. -/
 instance EMetricSpace.toWeakEMetricSpace (α : Type u) [EMetricSpace α] :
     WeakEMetricSpace α where
   eq_of_edist_eq_zero := eq_of_edist_eq_zero
