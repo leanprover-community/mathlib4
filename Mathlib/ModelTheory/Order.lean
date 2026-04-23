@@ -246,6 +246,15 @@ theorem Term.realize_le {t₁ t₂ : L.Term (α ⊕ (Fin n))} {v : α → M}
     (t₁.le t₂).Realize v xs ↔ t₁.realize (Sum.elim v xs) ≤ t₂.realize (Sum.elim v xs) := by
   simp [Term.le]
 
+@[fun_prop]
+theorem _root_.Set.DefinablePred.le {A : Set M} {f g : (α → M) → M}
+    (hf : A.DefinableFun L f) (hg : A.DefinableFun L g) : A.DefinablePred L fun v => f v ≤ g v := by
+  apply Set.DefinablePred.comp (f := fun v => ![f v, g v]) (p := fun v => v 0 ≤ v 1)
+  · simp [*]
+  · convert Formula.definablePred_realize (L := L) (α := Fin 2)
+      ((Term.var (Sum.inl 0)).le (Term.var (Sum.inl 1)))
+    simp [Formula.Realize]
+
 theorem realize_noTopOrder_iff : M ⊨ L.noTopOrderSentence ↔ NoTopOrder M := by
   simp only [noTopOrderSentence, Sentence.Realize, Formula.Realize, BoundedFormula.realize_all,
     BoundedFormula.realize_ex, BoundedFormula.realize_not, Term.realize_le]
@@ -301,6 +310,15 @@ theorem Term.realize_lt {t₁ t₂ : L.Term (α ⊕ (Fin n))}
     {v : α → M} {xs : Fin n → M} :
     (t₁.lt t₂).Realize v xs ↔ t₁.realize (Sum.elim v xs) < t₂.realize (Sum.elim v xs) := by
   simp [Term.lt, lt_iff_le_not_ge]
+
+@[fun_prop]
+theorem _root_.Set.DefinablePred.lt {A : Set M} {f g : (α → M) → M}
+    (hf : A.DefinableFun L f) (hg : A.DefinableFun L g) : A.DefinablePred L fun v => f v < g v := by
+  apply Set.DefinablePred.comp (f := fun v => ![f v, g v]) (p := fun v => v 0 < v 1)
+  · simp [*]
+  · convert Formula.definablePred_realize (L := L) (α := Fin 2)
+      ((Term.var (Sum.inl 0)).lt (Term.var (Sum.inl 1)))
+    simp [Formula.Realize]
 
 theorem realize_denselyOrdered_iff :
     M ⊨ L.denselyOrderedSentence ↔ DenselyOrdered M := by

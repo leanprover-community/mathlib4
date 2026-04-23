@@ -525,8 +525,12 @@ theorem DefinablePred.exists {p : M → (α → M) → Prop}
   simp_rw [(Equiv.funUnique Unit M).symm.exists_congr_left]
   exact (hp.preimage_comp (Equiv.optionEquivSumPUnit.{0} α)).exists_of_finite
 
+theorem _root_.FirstOrder.Language.Formula.definablePred_realize (φ : L.Formula α) :
+    A.DefinablePred L φ.Realize :=
+  .of_definable <| (empty_definable_iff.2 ⟨φ, rfl⟩).mono (empty_subset A)
+
 theorem DefinablePred.rel {n} (r : L.Relations n) : A.DefinablePred L (Structure.RelMap r) :=
-  .of_definable (by rw [definable_iff_exists_formula_sum]; exists (r.formula (Term.var ∘ Sum.inr)))
+  (r.formula Term.var).definablePred_realize
 
 variable (A L) in
 /-- A function from tuples of elements of `M` to `M` is definable if its graph is definable. -/
@@ -606,6 +610,10 @@ lemma Definable.preimage_map
   convert Definable.exists_of_finite (Definable.inter h_graph h_cyl) using 1
   ext v
   simp [← funext_iff]
+
+theorem DefinablePred.comp [Finite α] {f : (β → M) → α → M} (hf : A.DefinableMap L f)
+    (hp : A.DefinablePred L p) : A.DefinablePred L fun v => p (f v) :=
+  hp.preimage_map hf
 
 @[fun_prop]
 theorem DefinableFun.comp [Finite α] {g : (β → M) → α → M}
