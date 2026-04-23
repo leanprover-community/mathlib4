@@ -36,10 +36,8 @@ def smulShortComplex (r : R) : ShortComplex (ModuleCat R) :=
   ModuleCat.shortComplexOfCompEqZero (LinearMap.lsmul _ M r) (r • (⊤ : Submodule R M)).mkQ
     (LinearMap.exact_lsmul_mkQ_smul_top M r).linearMap_comp_eq_zero
 
+@[simp]
 lemma smulShortComplex_f_eq_smul_id (r : R) : (M.smulShortComplex r).f = r • 𝟙 M := rfl
-
-lemma smulShortComplex_f_hom_eq_smul_id (r : R) :
-    (M.smulShortComplex r).f.hom = r • LinearMap.id := rfl
 
 lemma smulShortComplex_exact (r : R) : (smulShortComplex M r).Exact :=
   ModuleCat.shortComplex_exact _ (LinearMap.exact_lsmul_mkQ_smul_top M r)
