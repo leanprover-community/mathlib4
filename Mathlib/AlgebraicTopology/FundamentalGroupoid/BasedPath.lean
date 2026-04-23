@@ -33,7 +33,9 @@ of the compact-open topology on `C(I, X)`. It then develops the path-component m
   locally path-connected.
 * `BasedPath.joinedIn_preimage_of_append`: appending a path inside `U` moves a based path
   within the same path component of `endpoint ⁻¹' U`.
-* `BasedPath.exists_open_nhd_pathComponent_preimage`: variable-endpoint tube/component theorem.
+* `BasedPath.exists_open_nhd_pathComponent_preimage`: for a good neighbourhood `U` of `y`,
+  every based path landing in `U` has an open neighbourhood of based paths that are all joined
+  to it inside `endpoint ⁻¹' U`.
 * `BasedPath.isOpen_pathComponent_preimage`: in a semilocally simply connected, locally
   path-connected space, path components of `endpoint ⁻¹' U` (for good `U`) are open.
 * `BasedPath.pathComponent_preimage_saturated`: path components of `endpoint ⁻¹' U` are
@@ -506,30 +508,34 @@ private theorem isOpen_refined_tubeNeighborhood
       (∀ (i : Fin (n' + 1)) (s : I),
           (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → β.1 s ∈ U i) ∧
       (∀ j, β.1 (part.t j) ∈ V j)} := by
-  rw [show {β : BasedPath x₀ |
+  have h_split : {β : BasedPath x₀ |
         (∀ (i : Fin (n' + 1)) (s : I),
             (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → β.1 s ∈ U i) ∧
         (∀ j, β.1 (part.t j) ∈ V j)} =
       {β : BasedPath x₀ | ∀ (i : Fin (n' + 1)) (s : I),
           (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → β.1 s ∈ U i} ∩
-      {β : BasedPath x₀ | ∀ j, β.1 (part.t j) ∈ V j} from by ext β; simp]
+      {β : BasedPath x₀ | ∀ j, β.1 (part.t j) ∈ V j} := by ext β; simp
+  rw [h_split]
   refine IsOpen.inter ?_ ?_
-  · rw [show {β : BasedPath x₀ | ∀ (i : Fin (n' + 1)) (s : I),
+  · have h_U_iInter : {β : BasedPath x₀ | ∀ (i : Fin (n' + 1)) (s : I),
           (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → β.1 s ∈ U i} =
         ⋂ i : Fin (n' + 1), {β : BasedPath x₀ | ∀ s : I,
-            (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → β.1 s ∈ U i} from
-      by ext β; simp]
+            (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → β.1 s ∈ U i} := by
+      ext β; simp
+    rw [h_U_iInter]
     refine isOpen_iInter_of_finite fun i ↦ ?_
-    rw [show {β : BasedPath x₀ | ∀ s : I,
+    have h_U_preimage : {β : BasedPath x₀ | ∀ s : I,
           (part.t i.castSucc : ℝ) ≤ s ∧ s ≤ (part.t i.succ : ℝ) → β.1 s ∈ U i} =
         (fun β : BasedPath x₀ ↦ (β.1 : C(I, X))) ⁻¹'
           {f : C(I, X) | Set.MapsTo f
-            (Set.Icc (part.t i.castSucc) (part.t i.succ) : Set I) (U i)} from
-      by ext β; simp [Set.MapsTo, Set.mem_Icc]]
+            (Set.Icc (part.t i.castSucc) (part.t i.succ) : Set I) (U i)} := by
+      ext β; simp [Set.MapsTo, Set.mem_Icc]
+    rw [h_U_preimage]
     exact (ContinuousMap.isOpen_setOf_mapsTo isCompact_Icc (hU_open i)).preimage
       continuous_subtype_val
-  · rw [show {β : BasedPath x₀ | ∀ j, β.1 (part.t j) ∈ V j} =
-        ⋂ j : Fin (n' + 2), {β : BasedPath x₀ | β.1 (part.t j) ∈ V j} from by ext β; simp]
+  · have h_V_iInter : {β : BasedPath x₀ | ∀ j, β.1 (part.t j) ∈ V j} =
+        ⋂ j : Fin (n' + 2), {β : BasedPath x₀ | β.1 (part.t j) ∈ V j} := by ext β; simp
+    rw [h_V_iInter]
     exact isOpen_iInter_of_finite fun j ↦
       (hV_open j).preimage ((continuous_eval_const (part.t j)).comp continuous_subtype_val)
 
@@ -640,8 +646,9 @@ theorem exists_open_nhd_pathComponent_preimage
         (fun p q hp_a hp_d hp_range hq_range ↦
           T.h_U_slsc ⟨0, Nat.succ_pos n'⟩ hp_a hp_d p q hp_range hq_range)
         ((hρ_range 0).trans (by
-          rw [show (0 : Fin (n' + 2)) = (⟨0, Nat.succ_pos n'⟩ : Fin (n' + 1)).castSucc from rfl,
-            hV'_castSucc_eq]
+          have h_zero : (0 : Fin (n' + 2)) =
+              (⟨0, Nat.succ_pos n'⟩ : Fin (n' + 1)).castSucc := rfl
+          rw [h_zero, hV'_castSucc_eq]
           exact T.h_V_left_subset ⟨0, Nat.succ_pos n'⟩))
     -- Package the final rung as a path from `endpoint α` to `endpoint β`.
     have hβ_at_last : β.toPath (part.t (Fin.last (n' + 1))) = endpoint β := by
@@ -726,7 +733,22 @@ private theorem joinedInSLSC_vFn_one_right (t : I) : joinedInSLSC_vFn (t, 1) = 1
 
 This is the heart of the sheet-injectivity argument: a path in the based-path space descends
 to a free homotopy of paths in `X` whose endpoint trace is a loop in `U`, which is killed by
-the SLSC hypothesis. -/
+the SLSC hypothesis.
+
+## Proof sketch
+
+1. Uncurry the path `F : Path α β` in `BasedPath x₀` (which lives in
+   `endpoint ⁻¹' U`) to a continuous map `F̃ : I × I → X`, `F̃(t, s) := (F t).1 s`.
+   So `F̃(0, ·) = α`, `F̃(1, ·) = β`, and `F̃(·, 1)` is a loop `L : Path v v` trace
+   contained in `U`.
+2. Since `U` has the SLSC uniqueness property, the loop `L` is null-homotopic in `U` via
+   some `L ≃ refl v`.
+3. Combine `F̃` with this null-homotopy to build a rel-endpoints homotopy between
+   `α.toPath` (with target cast to `v`) and `β.toPath`. The reparametrisation is
+   carried by the pair of coordinate helpers `joinedInSLSC_uFn` / `joinedInSLSC_vFn`
+   above, which rescale `(t, s) ∈ I × I` so that the bottom edge (`s = 0`) evaluates
+   to the free-homotopy `F̃` and the top edge (`s = 1`) picks up the null-homotopy of
+   `L`, with a continuous interpolation between the two. -/
 theorem toPath_homotopic_of_joinedIn_slsc
     {U : Set X}
     (hU_slsc : ∀ {a b : X}, a ∈ U → b ∈ U → ∀ (p q : Path a b),
