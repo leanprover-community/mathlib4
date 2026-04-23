@@ -187,7 +187,7 @@ theorem of_localizationSpan_finite' (t : Finset R) (ht : Ideal.span (t : Set R) 
     {Rₚ : ∀ (_ : t), Type u} [∀ (g : t), CommRing (Rₚ g)] [∀ (g : t), Algebra R (Rₚ g)]
     [∀ (g : t), IsLocalization.Away g.val (Rₚ g)]
     [∀ (g : t), Module (Rₚ g) (Mₚ g)] [∀ (g : t), IsScalarTower R (Rₚ g) (Mₚ g)]
-    (f : ∀ (g : t), M →ₗ[R] Mₚ g) [∀ (g : t), IsLocalizedModule (Submonoid.powers g.val) (f g)]
+    (f : ∀ (g : t), M →ₗ[R] Mₚ g) [∀ (g : t), IsLocalizedModule.Away g.val (f g)]
     (H : ∀ (g : t), Module.Finite (Rₚ g) (Mₚ g)) :
     Module.Finite R M := by
   classical
@@ -223,14 +223,14 @@ theorem of_localizationSpan' (t : Set R) (ht : Ideal.span t = ⊤)
     {Rₚ : ∀ (_ : t), Type u} [∀ (g : t), CommRing (Rₚ g)] [∀ (g : t), Algebra R (Rₚ g)]
     [h₁ : ∀ (g : t), IsLocalization.Away g.val (Rₚ g)]
     [∀ (g : t), Module (Rₚ g) (Mₚ g)] [∀ (g : t), IsScalarTower R (Rₚ g) (Mₚ g)]
-    (f : ∀ (g : t), M →ₗ[R] Mₚ g) [h₂ : ∀ (g : t), IsLocalizedModule (Submonoid.powers g.val) (f g)]
+    (f : ∀ (g : t), M →ₗ[R] Mₚ g) [h₂ : ∀ (g : t), IsLocalizedModule.Away g.val (f g)]
     (H : ∀ (g : t), Module.Finite (Rₚ g) (Mₚ g)) :
     Module.Finite R M := by
   rw [Ideal.span_eq_top_iff_finite] at ht
   obtain ⟨t', hc, ht'⟩ := ht
   have (g : t') : IsLocalization.Away g.val (Rₚ ⟨g.val, hc g.property⟩) :=
     h₁ ⟨g.val, hc g.property⟩
-  have (g : t') : IsLocalizedModule (Submonoid.powers g.val)
+  have (g : t') : IsLocalizedModule.Away g.val
     ((fun g ↦ f ⟨g.val, hc g.property⟩) g) := h₂ ⟨g.val, hc g.property⟩
   apply of_localizationSpan_finite' t' ht' (fun g ↦ f ⟨g.val, hc g.property⟩)
     (fun g ↦ H ⟨g.val, hc g.property⟩)
@@ -243,9 +243,9 @@ See `of_localizationSpan` for a version without the finite set assumption.
 -/
 theorem of_localizationSpan_finite (t : Finset R) (ht : Ideal.span (t : Set R) = ⊤)
     (H : ∀ (g : t), Module.Finite (Localization.Away g.val)
-      (LocalizedModule (Submonoid.powers g.val) M)) :
+      (LocalizedModule.Away g.val M)) :
     Module.Finite R M :=
-  let f (g : t) : M →ₗ[R] LocalizedModule (Submonoid.powers g.val) M :=
+  let f (g : t) : M →ₗ[R] LocalizedModule.Away g.val M :=
     LocalizedModule.mkLinearMap (Submonoid.powers g.val) M
   of_localizationSpan_finite' t ht f H
 
@@ -253,9 +253,9 @@ theorem of_localizationSpan_finite (t : Finset R) (ht : Ideal.span (t : Set R) =
 then `M` is a finite `R`-module. -/
 theorem of_localizationSpan (t : Set R) (ht : Ideal.span t = ⊤)
     (H : ∀ (g : t), Module.Finite (Localization.Away g.val)
-      (LocalizedModule (Submonoid.powers g.val) M)) :
+      (LocalizedModule.Away g.val M)) :
     Module.Finite R M :=
-  let f (g : t) : M →ₗ[R] LocalizedModule (Submonoid.powers g.val) M :=
+  let f (g : t) : M →ₗ[R] LocalizedModule.Away g.val M :=
     LocalizedModule.mkLinearMap (Submonoid.powers g.val) M
   of_localizationSpan' t ht f H
 

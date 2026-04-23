@@ -97,7 +97,7 @@ lemma Module.annihilator_le_of_mem_support (hp : p ∈ Module.support R M) :
   exact le_trans ((Submodule.subtype _).annihilator_le_of_injective Subtype.val_injective) hm
 
 lemma LocalizedModule.subsingleton_iff_support_subset {f : R} :
-    Subsingleton (LocalizedModule (.powers f) M) ↔
+    Subsingleton (LocalizedModule.Away f M) ↔
       Module.support R M ⊆ PrimeSpectrum.zeroLocus {f} := by
   rw [LocalizedModule.subsingleton_iff]
   constructor
@@ -221,7 +221,7 @@ lemma Module.support_eq_zeroLocus :
 then `M[1/f] = 0` for some `p ∈ D(f)`. -/
 lemma LocalizedModule.exists_subsingleton_away (p : Ideal R) [p.IsPrime]
     [Subsingleton (LocalizedModule p.primeCompl M)] :
-    ∃ f ∉ p, Subsingleton (LocalizedModule (.powers f) M) := by
+    ∃ f ∉ p, Subsingleton (LocalizedModule.Away f M) := by
   have : ⟨p, inferInstance⟩ ∈ (Module.support R M)ᶜ := by
     simpa [Module.notMem_support_iff]
   rw [Module.support_eq_zeroLocus, ← Set.biUnion_of_singleton (Module.annihilator R M : Set R),
@@ -233,7 +233,7 @@ lemma LocalizedModule.exists_subsingleton_away (p : Ideal R) [p.IsPrime]
 lemma IsLocalizedModule.exists_subsingleton_away {M' : Type*} [AddCommMonoid M'] [Module R M']
     (l : M →ₗ[R] M') (p : Ideal R) [p.IsPrime] [IsLocalizedModule p.primeCompl l]
     [Subsingleton M'] :
-    ∃ f ∉ p, Subsingleton (LocalizedModule (.powers f) M) := by
+    ∃ f ∉ p, Subsingleton (LocalizedModule.Away f M) := by
   let e := IsLocalizedModule.iso p.primeCompl l
   have : Subsingleton (LocalizedModule p.primeCompl M) := e.subsingleton
   exact LocalizedModule.exists_subsingleton_away p

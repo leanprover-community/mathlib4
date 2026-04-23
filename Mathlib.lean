@@ -777,7 +777,6 @@ public import Mathlib.Algebra.Module.LinearMap.Prod
 public import Mathlib.Algebra.Module.LinearMap.Rat
 public import Mathlib.Algebra.Module.LinearMap.Star
 public import Mathlib.Algebra.Module.LocalizedModule.AtPrime
-public import Mathlib.Algebra.Module.LocalizedModule.Away
 public import Mathlib.Algebra.Module.LocalizedModule.Basic
 public import Mathlib.Algebra.Module.LocalizedModule.Exact
 public import Mathlib.Algebra.Module.LocalizedModule.Int

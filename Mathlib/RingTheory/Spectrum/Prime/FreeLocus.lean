@@ -167,7 +167,7 @@ lemma freeLocus_eq_univ [Module.Finite R M] [Module.Flat R M] :
 
 lemma basicOpen_subset_freeLocus_iff [Module.FinitePresentation R M] {f : R} :
     (basicOpen f : Set (PrimeSpectrum R)) ⊆ freeLocus R M ↔
-      Module.Projective (Localization.Away f) (LocalizedModule (.powers f) M) := by
+      Module.Projective (Localization.Away f) (LocalizedModule.Away f M) := by
   rw [← freeLocus_eq_univ_iff, freeLocus_localization,
     Set.preimage_eq_univ_iff, localization_away_comap_range _ f]
 
