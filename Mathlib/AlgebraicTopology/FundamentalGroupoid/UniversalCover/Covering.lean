@@ -244,13 +244,17 @@ theorem simplyConnectedSpace [LocPathConnectedSpace X] [PathConnectedSpace X]
     have h_end' :
         ofBasedPath x₀ (BasedPath.ofPath (α.toPath.trans γ)) =
           ofBasedPath x₀ (BasedPath.ofPath α.toPath) := by
-      simpa [BasedPath.append, BasedPath.ofPath] using h_end
-    have h_end'' :
+      have h1 : BasedPath.ofPath (α.toPath.trans γ) = BasedPath.append α γ := rfl
+      have h2 : BasedPath.ofPath α.toPath = α := by cases α; rfl
+      rw [h1, h2]; exact h_end
+    -- Unfold the `UniversalCover` def to a raw `Σ` so that `Sigma.mk.injEq` applies.
+    have h_end_sigma :
         (⟨BasedPath.endpoint α, Path.Homotopic.Quotient.mk (α.toPath.trans γ)⟩ :
-          UniversalCover x₀) =
+          Σ y : X, Path.Homotopic.Quotient x₀ y) =
         ⟨BasedPath.endpoint α, Path.Homotopic.Quotient.mk α.toPath⟩ := by
-      simpa [ofBasedPath_ofPath] using h_end'
-    exact eq_of_heq ((Sigma.mk.injEq _ _ _ _).mp h_end'').2
+      rw [← ofBasedPath_ofPath, ← ofBasedPath_ofPath]
+      exact h_end'
+    exact eq_of_heq (Sigma.mk.inj_iff.mp h_end_sigma).2
   have hγ_null :
       (Path.Homotopic.Quotient.mk γ : Path.Homotopic.Quotient
           (BasedPath.endpoint α) (BasedPath.endpoint α)) =

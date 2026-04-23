@@ -47,7 +47,7 @@ variable {X : Type*} [TopologicalSpace X]
 
 /-- The endpoint-plus-homotopy-class model for the universal cover. The topology is supplied below
 as the quotient topology from `BasedPath x₀`. -/
-abbrev UniversalCover (x₀ : X) :=
+def UniversalCover (x₀ : X) :=
   Σ x : X, Path.Homotopic.Quotient x₀ x
 
 namespace UniversalCover
@@ -116,8 +116,8 @@ theorem toPath_homotopic_of_ofBasedPath_eq {α β : BasedPath x₀}
           simpa [proj_ofBasedPath] using congrArg (proj (x₀ := x₀)) h
         exact heq.symm))
       β.toPath := by
-  rw [ofBasedPath_eq α, ofBasedPath_eq β, Sigma.mk.injEq] at h
-  obtain ⟨hend, hq⟩ := h
+  rw [ofBasedPath_eq α, ofBasedPath_eq β] at h
+  obtain ⟨hend, hq⟩ := Sigma.mk.inj_iff.mp (show (⟨_, _⟩ : Σ x, _) = ⟨_, _⟩ from h)
   have hcast : HEq (Path.Homotopic.Quotient.mk α.toPath)
       (Path.Homotopic.Quotient.mk (α.toPath.cast rfl hend.symm)) :=
     Path.Homotopic.hpath_hext (fun _ ↦ rfl)
