@@ -370,6 +370,15 @@ theorem injective_of_top_hom (f : (⊤ : SimpleGraph V) →g G') : Function.Inje
   contrapose! h
   exact G'.ne_of_adj (map_adj _ ((top_adj _ _).mpr h))
 
+/-- A function `f` that is injective on adjacent vertices in a graph `G`
+(equivalently `f` is a valid `W`-coloring of `G`, or `G ≤ comap ⊤ f`)
+is a homomorphism from `G` to the mapped graph. -/
+@[simps]
+protected def map (f : V → W) (G : SimpleGraph V) (h : ∀ {u v}, G.Adj u v → f u ≠ f v) :
+    G →g G.map f where
+  toFun := f
+  map_rel' {u v} hadj := ⟨h hadj, u, v, hadj, rfl, rfl⟩
+
 /-- There is a homomorphism to a graph from a comapped graph.
 When the function is injective, this is an embedding (see `SimpleGraph.Embedding.comap`). -/
 @[simps]

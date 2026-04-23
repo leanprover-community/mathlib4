@@ -179,6 +179,13 @@ theorem isEmpty_of_colorable_zero (h : G.Colorable 0) : IsEmpty V := by
 lemma colorable_zero_iff : G.Colorable 0 ↔ IsEmpty V :=
   ⟨isEmpty_of_colorable_zero, fun _ ↦ .of_isEmpty 0⟩
 
+/-- A coloring of a graph `G` is a homomorphism from it to the mapped graph.
+This is `Hom.map` spelled using colorings. The mapped graph `G.map f` can be thought of as taking
+the original graph `G` and considering every color class (independent set) as a single vertex. -/
+@[simps!]
+def Coloring.homMap {α : Type*} (f : G.Coloring α) : G →g G.map f :=
+  .map f G f.map_adj
+
 /-- If `G` is `n`-colorable, then mapping the vertices of `G` produces an `n`-colorable simple
 graph. -/
 theorem Colorable.map (f : V ↪ β) [NeZero n] (hc : G.Colorable n) : (G.map f).Colorable n := by
