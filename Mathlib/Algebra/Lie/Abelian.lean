@@ -40,7 +40,6 @@ universe u v w w₁ w₂
 class LieModule.IsTrivial (L : Type v) (M : Type w) [Bracket L M] [Zero M] : Prop where
   trivial : ∀ (x : L) (m : M), ⁅x, m⁆ = 0
 
-@[simp]
 theorem trivial_lie_zero (L : Type v) (M : Type w) [Bracket L M] [Zero M] [LieModule.IsTrivial L M]
     (x : L) (m : M) : ⁅x, m⁆ = 0 :=
   LieModule.IsTrivial.trivial x m
@@ -97,8 +96,8 @@ alias commutative_ring_iff_abelian_lie_ring := isMulCommutative_iff_isLieAbelian
   refine ⟨fun h x hx y hy ↦ ?_, fun h ↦ ⟨fun ⟨x, hx⟩ ⟨y, hy⟩ ↦ ?_⟩⟩
   · let x' : lieSpan R L s := ⟨x, subset_lieSpan hx⟩
     let y' : lieSpan R L s := ⟨y, subset_lieSpan hy⟩
-    suffices ⁅x', y'⁆ = 0 by simpa [x', y', Subtype.ext_iff, -trivial_lie_zero] using this
-    simp
+    suffices ⁅x', y'⁆ = 0 by simpa [x', y', Subtype.ext_iff] using this
+    simp [trivial_lie_zero]
   · induction hx using lieSpan_induction with
     | mem w hw =>
       induction hy using lieSpan_induction with
@@ -143,7 +142,6 @@ protected theorem mem_ker (x : L) : x ∈ LieModule.ker R L M ↔ ∀ m : M, ⁅
   simp only [LieModule.ker, LieHom.mem_ker, LinearMap.ext_iff, LinearMap.zero_apply,
     toEnd_apply_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma _root_.LieIdeal.isLieAbelian_iff {I : LieIdeal R L} :
     IsLieAbelian I ↔ I ≤ LieModule.ker R L I := by
   refine ⟨fun hI x hx ↦ LieHom.mem_ker.mpr ?_, fun h ↦ ⟨fun ⟨x, hx⟩ ⟨y, hy⟩ ↦ ?_⟩⟩
@@ -212,7 +210,7 @@ def maxTrivHom (f : M →ₗ⁅R,L⁆ N) : maxTrivSubmodule R L M →ₗ⁅R,L�
       (congr_arg f (m.property x)).trans (map_zero _)⟩
   map_add' m n := by ext; simp
   map_smul' t m := by ext; simp
-  map_lie' {x m} := by simp
+  map_lie' {x m} := by simp [trivial_lie_zero]
 
 @[norm_cast, simp]
 theorem coe_maxTrivHom_apply (f : M →ₗ⁅R,L⁆ N) (m : maxTrivSubmodule R L M) :
@@ -396,8 +394,8 @@ instance : LieModule.IsTrivial L (TrivialLieModule R L M) where
   trivial _ _ := rfl
 
 instance : LieModule R L (TrivialLieModule R L M) where
-  smul_lie := by simp
-  lie_smul := by simp
+  smul_lie := by simp [trivial_lie_zero]
+  lie_smul := by simp [trivial_lie_zero]
 
 end TrivialLieModule
 

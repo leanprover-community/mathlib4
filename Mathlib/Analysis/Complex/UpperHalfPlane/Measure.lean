@@ -28,11 +28,6 @@ open scoped NNReal
 
 public noncomputable section
 
--- backward-compatibility fixes
-instance : MeasureSpace ℂ := inferInstance
-
-instance : FiniteDimensional ℝ ℂ := inferInstance
-
 namespace UpperHalfPlane
 
 instance : MeasurableSpace ℍ := .comap UpperHalfPlane.coe inferInstance
