@@ -378,9 +378,6 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   if (← get).messages.hasErrors then
     return
-  -- `Mathlib.lean` imports `Mathlib.Tactic`, which the broad imports check below would flag.
-  -- Since that file is imports-only, we can simply skip linting it.
-  if mainModule == `Mathlib then return
   let fm ← getFileMap
   let mdDocs := (getMainModuleDoc (← getEnv)).toArray
   let versoDocs := (getMainVersoModuleDocs (← getEnv)).snippets
