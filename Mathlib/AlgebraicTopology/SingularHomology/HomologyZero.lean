@@ -5,20 +5,22 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialSet.TopAdj
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.HomologyZero
 public import Mathlib.AlgebraicTopology.SingularHomology.Basic
-public import Mathlib.Topology.Homotopy.TopCat.Path
+public import Mathlib.Topology.Homotopy.TopCat.ZerothHomotopy
 
 /-!
 # Singular homology in degree 0
 
+The main definition in this file is `TopCat.singularHomology₀Iso₀Iso` which is an
+isomorphism `((singularHomologyFunctor C 0).obj R).obj X ≅ ∐ (fun (_ : ZerothHomotopy X) ↦ R)`
+for any `X : TopCat`.
 
 -/
 
 @[expose] public section
 
-universe w v v' u u'
+universe w v u
 
 open CategoryTheory Limits AlgebraicTopology Simplicial
 
@@ -29,74 +31,14 @@ namespace TopCat
 
 variable (X : TopCat.{w}) (R : C)
 
-section
-
-variable {X}
-
-set_option backward.isDefEq.respectTransparency false in
-noncomputable def toSSetObj₁Equiv :
-    toSSet.obj X _⦋1⦌ ≃ (I ⟶ X) :=
-  (toSSetObjEquiv _ _).trans
-    { toFun f := ofHom (f.comp (toContinuousMap TopCat.stdSimplexHomeomorphI.symm))
-      invFun f := f.hom.comp TopCat.stdSimplexHomeomorphI
-      left_inv _ := by aesop
-      right_inv _ := by aesop }
-
-set_option backward.isDefEq.respectTransparency false in
-@[simp]
-lemma toSSetObj₁Equiv_apply_zero (s : toSSet.obj X _⦋1⦌) :
-    X.toSSetObj₁Equiv s 0 = toSSetObj₀Equiv ((toSSet.obj X).δ 1 s) := by
-  dsimp [toSSetObj₀Equiv, toSSetObj₁Equiv]
-  congr 1
-  rw [Subsingleton.elim default (stdSimplex.vertex 0)]
-  simp
-
-set_option backward.isDefEq.respectTransparency false in
-@[simp]
-lemma toSSetObj₁Equiv_apply_one (s : toSSet.obj X _⦋1⦌) :
-    X.toSSetObj₁Equiv s 1 = toSSetObj₀Equiv ((toSSet.obj X).δ 0 s) := by
-  dsimp [toSSetObj₀Equiv, toSSetObj₁Equiv]
-  congr 1
-  rw [Subsingleton.elim default (stdSimplex.vertex 0)]
-  simp
-
-@[simp]
-lemma δ_one_toSSetObj₁Equiv.symm (f : I ⟶ X) :
-    (toSSet.obj X).δ 1 (toSSetObj₁Equiv.symm f) =
-      toSSetObj₀Equiv.symm (f 0) :=
-  toSSetObj₀Equiv.injective (by simp [← toSSetObj₁Equiv_apply_zero])
-
-@[simp]
-lemma δ_zero_toSSetObj₁Equiv.symm (f : I ⟶ X) :
-    (toSSet.obj X).δ 0 (toSSetObj₁Equiv.symm f) =
-      toSSetObj₀Equiv.symm (f 1) :=
-  toSSetObj₀Equiv.injective (by simp [← toSSetObj₁Equiv_apply_one])
-
-noncomputable def toSSetObjEdgeEquiv {x y : X} :
-    SSet.Edge (toSSetObj₀Equiv.symm x) (toSSetObj₀Equiv.symm y) ≃ X.Path x y where
-  toFun e := { hom := toSSetObj₁Equiv e.edge }
-  invFun p := SSet.Edge.mk (toSSetObj₁Equiv.symm p.hom)
-  left_inv _ := by aesop
-  right_inv _ := by aesop
-
-end
-
-noncomputable def zerothHomotopyEquiv : ZerothHomotopy X ≃ (toSSet.obj X).π₀ where
-  toFun :=
-    ZerothHomotopy.lift (SSet.π₀.mk ∘ toSSetObj₀Equiv.symm)
-      (fun _ _ p ↦ SSet.π₀.sound (toSSetObjEdgeEquiv.symm (pathEquiv.symm p)))
-  invFun := SSet.π₀.lift (ZerothHomotopy.mk ∘ toSSetObj₀Equiv) (fun x y e ↦ by
-    obtain ⟨x, rfl⟩ := toSSetObj₀Equiv.symm.surjective x
-    obtain ⟨y, rfl⟩ := toSSetObj₀Equiv.symm.surjective y
-    exact ZerothHomotopy.sound (pathEquiv (toSSetObjEdgeEquiv e)))
-  left_inv x := by induction x; simp
-  right_inv x := by induction x; simp
-
+/-- The singular homology of a topological space `X` with coefficients in `R`
+identifies with the coproduct of copies of `R` indexed by `ZerothHomotopy X`. -/
 noncomputable def singularHomology₀Iso :
     ((singularHomologyFunctor C 0).obj R).obj X ≅ ∐ (fun (_ : ZerothHomotopy X) ↦ R) :=
   SSet.homology₀Iso _ _ ≪≫
     (sigmaConst.obj R).mapIso (zerothHomotopyEquiv X).toIso.symm
 
+/-- The augmentation map `((singularHomologyFunctor C 0).obj R).obj X ⟶ R`. -/
 noncomputable def singularHomology₀ε :
     ((singularHomologyFunctor C 0).obj R).obj X ⟶ R :=
   SSet.homology₀ε _ _
@@ -108,6 +50,7 @@ lemma singularHomology₀Iso_sigma_desc_id :
   dsimp only [singularHomology₀Iso, singularHomology₀ε, SSet.homology₀ε]
   cat_disch
 
+-- this should be moved
 instance [PathConnectedSpace X] : Subsingleton (ZerothHomotopy X) :=
   (pathConnectedSpace_iff_zerothHomotopy.1 inferInstance).2
 
