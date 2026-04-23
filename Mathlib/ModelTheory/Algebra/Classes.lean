@@ -32,11 +32,13 @@ variable {L : Language} {α : Type*} {t t₁ t₂ : L.Term α}
 
 /-- Type class for first-order langauges that have a constant symbol `0` for zero. -/
 class ZeroConstant (L : Language) where
+  /-- Constant `0`. Use `Constants.zero` instead for dot notation. -/
   zero : L.Constants
 
 /-- Type class for first-order langauges that have a constant symbol `1` for one. -/
 @[to_additive]
 class OneConstant (L : Language) where
+  /-- Constant `1`. Use `Constants.one` instead for dot notation. -/
   one : L.Constants
 
 /-- Constant `1`. -/
@@ -45,12 +47,14 @@ def Constants.one [OneConstant L] : L.Constants := OneConstant.one
 
 /-- Type class for first-order languages that have a binary function symbol `+` for addition. -/
 class AddFunction (L : Language) where
+  /-- Binary function `+`. Use `Functions.add` instead for dot notation. -/
   add : L.Functions 2
 
 /-- Type class for first-order languages that have a binary function symbol `*` for
 multiplication. -/
 @[to_additive]
 class MulFunction (L : Language) where
+  /-- Binary function `*`. Use `Functions.mul` instead for dot notation. -/
   mul : L.Functions 2
 
 /-- Binary function `*`. -/
@@ -59,11 +63,13 @@ def Functions.mul [MulFunction L] : L.Functions 2 := MulFunction.mul
 
 /-- Type class for first-order languages that have a unary function symbol `-` for negation. -/
 class NegFunction (L : Language) where
+  /-- Unary function `-`. Use `Functions.neg` instead for dot notation. -/
   neg : L.Functions 1
 
 /-- Type class for first-order languages that have a unary function symbol `⁻¹` for inverse. -/
 @[to_additive]
 class InvFunction (L : Language) where
+  /-- Unary function `⁻¹`. Use `Functions.inv` instead for dot notation. -/
   inv : L.Functions 1
 
 /-- Unary function `⁻¹`. -/
