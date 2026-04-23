@@ -258,15 +258,13 @@ theorem intCast_strictMono : StrictMono (Int.cast : ℤ → α) := by
   grind
 
 theorem natCast_mono : Monotone (Nat.cast : ℕ → α) :=
-  fun m n h => by simpa only [Int.cast_natCast]
-    using intCast_mono (Int.natCast_strictMono.monotone h)
+  fun m n h => by simpa using intCast_mono (Int.natCast_strictMono.monotone h)
 
 theorem natCast_nonneg (n : ℕ) : 0 ≤ (n : α) := by
-  simpa only [Nat.cast_zero] using natCast_mono (Nat.zero_le n)
+  simpa using natCast_mono n.zero_le
 
 theorem natCast_strictMono : StrictMono (Nat.cast : ℕ → α) :=
-  fun m n h => by simpa only [Int.cast_natCast]
-    using intCast_strictMono (Int.natCast_strictMono h)
+  fun m n h => by simpa using intCast_strictMono (Int.natCast_strictMono h)
 
 instance : CharZero α := ⟨natCast_strictMono.injective⟩
 
