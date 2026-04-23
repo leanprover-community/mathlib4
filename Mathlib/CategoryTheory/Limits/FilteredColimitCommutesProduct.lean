@@ -80,29 +80,13 @@ noncomputable def coconePointwiseProduct (c : ∀ i, Cocone (F i)) :
   pt := ∏ᶜ fun i ↦ (c i).pt
   ι := Functor.whiskerRight (NatTrans.pi fun i ↦ (c i).ι) _ ≫ (Pi.constCompPiIsoConst _).hom
 
--- TODO: remove after bump
-@[reassoc (attr := simp high)]
-lemma Pi.mapIso_hom_π {β : Type w} {C : Type u} [Category.{v, u} C] {f g : β → C}
-    [HasProductsOfShape β C] (p : (b : β) → f b ≅ g b) (i : β) :
-    (Pi.mapIso p).hom ≫ Pi.π g i = Pi.π f i ≫ (p i).hom :=
-  Limits.limMap_π _ _
-
--- TODO: remove after bump
-set_option allowUnsafeReducibility true in
-attribute [local irreducible] Pi.mapIso
-
 /-- `coconePointwiseProduct` is invariant under isomorphisms of cocones. -/
 noncomputable def coconePointwiseProductIso {c c' : ∀ i, Cocone (F i)} (e : ∀ i, c i ≅ c' i) :
     coconePointwiseProduct c ≅ coconePointwiseProduct c' :=
   Cocone.ext (Pi.mapIso fun i ↦ (Cocone.forget _).mapIso (e i)) fun i ↦ by
-    -- TODO: fix after bump
     dsimp
     ext
-    simp only [Category.assoc]
-    simp only [Functor.pi, Functor.const_obj_obj, Functor.const_obj_map, Category.id_comp, Pi.map_π,
-      NatTrans.pi_app]
-    rw [Pi.mapIso_hom_π]
-    simp
+    simp [Functor.pi]
 
 /-- The natural morphism `colim_k (∏ᶜ s ↦ (F s).obj (k s)) ⟶ ∏ᶜ s ↦ colim_k (F s).obj (k s)`.
 A category has the `IPC` property of shape `α` if this morphism is an isomorphism as long
@@ -180,6 +164,14 @@ class IsIPCOfShape (ι : Type*) (C : Type*) [Category* C] [HasProductsOfShape ι
     [∀ i, IsFiltered (J i)] ⦃F : ∀ i, J i ⥤ C⦄ ⦃c : ∀ i, Cocone (F i)⦄ :
     (∀ i, IsColimit (c i)) → Nonempty (IsColimit (coconePointwiseProduct c))
 
+instance [IsIPCOfShape.{w} ι C] {J : ι → Type w} [∀ i, SmallCategory (J i)]
+    [∀ i, IsFiltered (J i)] (F : ∀ i, J i ⥤ C)
+    [∀ i, HasColimit (F i)] [HasColimit (pointwiseProduct F)] :
+    IsIso (colimitPointwiseProductToProductColimit F) := by
+  rw [colimitPointwiseProductToProductColimit, colimit.desc]
+  refine ((colimit.isColimit (pointwiseProduct F)).nonempty_isColimit_iff_isIso_desc).mp ?_
+  exact IsIPCOfShape.nonempty_isColimit fun i ↦ colimit.isColimit _
+
 lemma IsIPCOfShape.of_forall_exists
     (H : ∀ ⦃J : ι → Type w⦄ [∀ i, SmallCategory (J i)]
       [∀ i, IsFiltered (J i)] (F : ∀ i, J i ⥤ C) [∀ i, HasColimit (F i)], ∃ (c : ∀ i, Cocone (F i))
@@ -195,7 +187,7 @@ lemma IsIPCOfShape.of_forall_exists
 lemma IsIPCOfShape.of_isIso
     (H : ∀ (J : ι → Type w) [∀ i, SmallCategory (J i)] [∀ i, IsFiltered (J i)]
       (F : ∀ i, J i ⥤ C) [∀ (i : ι), HasColimit (F i)],
-      ∃ (_ : HasColimit (Functor.pi F ⋙ Pi.functor ι)),
+      ∃ (_ : HasColimit (pointwiseProduct F)),
         IsIso (colimitPointwiseProductToProductColimit F)) :
     IsIPCOfShape.{w} ι C := by
   refine .of_forall_exists fun J _ _ F _ ↦ ?_
