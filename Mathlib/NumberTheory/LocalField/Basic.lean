@@ -177,7 +177,7 @@ instance : IsAdicComplete 𝓂[K] 𝒪[K] where
       simpa [S] using (hf n.le_succ).symm
     have h n : IsClosed (S n) := (IsNoetherianRing.isClosed_ideal (𝓂[K] ^ n)).vadd (f n)
     obtain ⟨L, hL⟩ := (h 0).isCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed S hS
-      (by simp [S, Submodule.nonempty]) h
+      (by simp [S]) h
     refine ⟨L, fun n ↦ ?_⟩
     obtain ⟨y, hy, rfl⟩ := Set.mem_iInter.mp hL n
     simpa [SModEq.sub_mem] using hy

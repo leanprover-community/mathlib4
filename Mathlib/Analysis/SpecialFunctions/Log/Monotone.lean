@@ -54,22 +54,19 @@ theorem log_div_self_antitoneOn : AntitoneOn (fun x : ℝ => log x / x) { x | ex
 theorem log_div_self_rpow_antitoneOn {a : ℝ} (ha : 0 < a) :
     AntitoneOn (fun x : ℝ => log x / x ^ a) { x | exp (1 / a) ≤ x } := by
   simp only [AntitoneOn, mem_setOf_eq]
-  have hbound : ∀ {z : ℝ}, exp (1 / a) ≤ z → exp 1 ≤ z ^ a := by
-    intro z hz
-    convert rpow_le_rpow _ hz (le_of_lt ha) using 1
-    · rw [← exp_mul]
-      simp only [Real.exp_eq_exp]
-      field
-    · positivity
   intro x hex y _ hxy
   have x_pos : 0 < x := lt_of_lt_of_le (exp_pos (1 / a)) hex
   have y_pos : 0 < y := by linarith
-  nth_rw 1 [← rpow_one y]
-  nth_rw 1 [← rpow_one x]
+  nth_rw 1 [← rpow_one y, ← rpow_one x]
   rw [← div_self (ne_of_lt ha).symm, div_eq_mul_one_div a a, rpow_mul y_pos.le, rpow_mul x_pos.le,
     log_rpow (rpow_pos_of_pos y_pos a), log_rpow (rpow_pos_of_pos x_pos a), mul_div_assoc,
     mul_div_assoc, mul_le_mul_iff_right₀ (one_div_pos.mpr ha)]
-  refine log_div_self_antitoneOn (hbound hex) (hbound (_root_.trans hex hxy)) ?_
+  have hbound {z : ℝ} (hz : rexp (1 / a) ≤ z) : z ^ a ∈ {b | rexp 1 ≤ b} := by
+    rw [mem_setOf_eq]
+    convert rpow_le_rpow _ hz (le_of_lt ha) using 1
+    · simp only [← exp_mul, Real.exp_eq_exp, field]
+    positivity
+  refine log_div_self_antitoneOn (hbound hex) (hbound (hex.trans hxy)) ?_
   gcongr
 
 theorem log_div_sqrt_antitoneOn : AntitoneOn (fun x : ℝ => log x / √x) { x | exp 2 ≤ x } := by
