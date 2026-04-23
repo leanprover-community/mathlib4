@@ -339,24 +339,27 @@ instance (W : MorphismProperty C) : W.paths.IsMultiplicative where
   id_mem _ := nil_mem_paths
   comp_mem _ _ hf hg := W.comp_mem_paths_iff.2 ⟨hf, hg⟩
 
+/-- If `W` and `W'` are morphism properties on `C` such that `W ≤ W'`, then `W.paths ≤ W'.paths`. -/
 @[gcongr]
 lemma monotone_paths : Monotone (paths (C := C)) :=
   fun _ _ h _ _ p ↦ p.rec (fun _ ↦ trivial) (fun _ _ hp' hp ↦ ⟨hp' hp.1, h _ hp.2⟩)
 
-lemma composePath_mem' (W : MorphismProperty C) [W.IsStableUnderComposition] {X Y : C}
-    {p : Path X Y} (hp : W.paths p) (h : 0 < p.length ∨ W (𝟙 X)) : W (composePath p) := by
-  obtain hp' | hX := h
-  · revert hp hp'
-    refine p.rec (by simp) fun p f hp hp' hp'' ↦ ?_
-    cases p
-    · simpa [paths] using hp'
-    · refine W.comp_mem _ _ (hp hp'.1 (by simp)) hp'.2
-  · revert hp
-    exact p.rec (fun _ ↦ hX) fun p f hp hp' ↦ W.comp_mem _ _ (hp hp'.1) hp'.2
+lemma composePath_mem_of_id_mem (W : MorphismProperty C) [W.IsStableUnderComposition] {X Y : C}
+    {p : Path X Y} (hp : W.paths p) (h : W (𝟙 X)) : W (composePath p) := by
+  revert hp
+  exact p.rec (by simpa) fun p f hp hp' ↦ W.comp_mem _ _ (hp hp'.1) hp'.2
+
+lemma composePath_mem_of_length_pos (W : MorphismProperty C) [W.IsStableUnderComposition] {X Y : C}
+    {p : Path X Y} (hp : W.paths p) (h : 0 < p.length) : W (composePath p) := by
+  revert hp h
+  refine p.rec (by simp) fun p f hp hp' hp'' ↦ ?_
+  cases p
+  · simpa [paths] using hp'
+  · refine W.comp_mem _ _ (hp hp'.1 (by simp)) hp'.2
 
 lemma composePath_mem (W : MorphismProperty C) [W.IsMultiplicative] {X Y : C}
     {p : Path X Y} (hp : W.paths p) : W (composePath p) :=
-  W.composePath_mem' hp <| .inr (W.id_mem X)
+  W.composePath_mem_of_id_mem hp <| W.id_mem X
 
 lemma paths_le_inverseImage (W : MorphismProperty C) [W.IsMultiplicative] :
     W.paths ≤ W.inverseImage (pathComposition C) :=
