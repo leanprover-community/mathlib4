@@ -49,9 +49,8 @@ variable {X : Type*} [TopologicalSpace X]
 
 /-- The quotient of paths by homotopy inherits its topology as a quotient of the path space. -/
 instance instTopologicalSpaceHomotopicQuotient (x₀ x : X) :
-    TopologicalSpace (Path.Homotopic.Quotient x₀ x) := by
-  delta Path.Homotopic.Quotient
-  infer_instance
+    TopologicalSpace (Path.Homotopic.Quotient x₀ x) :=
+  inferInstanceAs (TopologicalSpace (Quotient _))
 
 /-- The compact-open based-path space out of `x₀`. -/
 def BasedPath (x₀ : X) :=
@@ -61,7 +60,8 @@ namespace BasedPath
 
 variable {x₀ : X}
 
-instance : TopologicalSpace (BasedPath x₀) := instTopologicalSpaceSubtype
+instance : TopologicalSpace (BasedPath x₀) :=
+  inferInstanceAs (TopologicalSpace { γ : C(I, X) // γ 0 = x₀ })
 
 /-- The endpoint of a based path. -/
 def endpoint (γ : BasedPath x₀) : X := γ.1 1
