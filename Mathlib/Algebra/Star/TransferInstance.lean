@@ -26,7 +26,7 @@ protected abbrev star [Star S] : Star R where
   star r := e.symm (star (e r))
 
 /-- Transfer `InvolutiveStar` across an `Equiv` -/
-protected abbrev InvolutiveStar [InvolutiveStar S] : InvolutiveStar R :=
+protected abbrev involutiveStar [InvolutiveStar S] : InvolutiveStar R :=
   let _ := e.star
   e.injective.involutiveStar _ fun _ ↦ e.apply_symm_apply _
 
