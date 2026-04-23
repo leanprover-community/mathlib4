@@ -135,6 +135,7 @@ theorem one_coeff_of_ne {n : ℤ} (hn : n ≠ 0) :
 
 section HasseDerivative
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `k`th Hasse derivative of a vertex operator `∑ A_i X^i` is `∑ (i.choose k) A_i X^(i-k)`.
 That is, it sends a vector to the `k`th Hasse derivative of the corresponding Laurent series.
 It satisfies `k! * (hasseDeriv k A) = derivative^[k] A`. -/
@@ -270,7 +271,11 @@ theorem binomCompLeft_apply_coeff (k l n : ℤ) (v : V) :
     (binomCompLeft A B n).coeff (toLex (k, l)) v =
       ∑ᶠ (m : ℕ), Int.negOnePow m • Ring.choose n m • A.coeff (l - n + m) (B.coeff (k - m) v) := by
   rw [binomCompLeft, coeff_apply_apply, LinearMap.smul_apply, binomialPow_smul_coeff _ lex_basis_lt]
-  exact finsum_congr fun _ ↦ by congr 2; simp; abel_nf
+  refine finsum_congr fun _ ↦ ?_
+  congr 2
+  have (m : ℕ) : ofLex (m : Lex (ℤ × ℤ)) = ((m : ℤ), (m : ℤ)) := rfl
+  simp [this]
+  abel_nf
 
 -- TODO : replace 2nd term on right with a version of Ring.choose that takes integer inputs.
 theorem binomCompLeft_one_left_nat_coeff (n : ℕ) (g : ℤ ×ₗ ℤ) :
@@ -320,7 +325,11 @@ theorem binomCompRight_apply_coeff (k l n : ℤ) (v : V) :
     HahnModule.of_symm_smul, HahnSeries.coeff_smul, binomialPow_smul_coeff _ lex_basis_lt,
     Int.cast_smul_eq_zsmul, Units.smul_def]
   congr 1
-  refine finsum_congr fun m ↦ by congr 2; simp; abel_nf
+  refine finsum_congr fun m ↦ ?_
+  congr 2
+  have (m : ℕ) : ofLex (m : Lex (ℤ × ℤ)) = ((m : ℤ), (m : ℤ)) := rfl
+  simp [this]
+  abel_nf
 
 end BinomComp
 

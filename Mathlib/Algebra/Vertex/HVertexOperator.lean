@@ -116,17 +116,20 @@ variable [PartialOrder Γ] [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] [Par
 --#synth Module (HahnSeries Γ R) (HVertexOperator Γ₁ R V W) -- LinearMap.module
 --#synth SMul (Finsupp Γ R) (HVertexOperator Γ R V W) -- nope
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem smul_eq {x : HahnSeries Γ R} {A : HVertexOperator Γ₁ R V W} {v : V} :
     (x • A) v = x • (A v) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem single_zero_smul_eq_smul {r : R} {A : HVertexOperator Γ₁ R V W} :
     (HahnSeries.single (0 : Γ)) r • A = r • A := by
   ext
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coeff_single_smul_vadd {A : HVertexOperator Γ₁ R V W} (g : Γ) (g₁ : Γ₁) (r : R) :
     coeff ((HahnSeries.single g) r • A) (g +ᵥ g₁) = r • coeff A g₁ := by
@@ -134,6 +137,7 @@ theorem coeff_single_smul_vadd {A : HVertexOperator Γ₁ R V W} (g : Γ) (g₁ 
   rw [coeff_apply_apply, smul_eq, HahnModule.coeff_single_smul_vadd, LinearMap.smul_apply,
     coeff_apply_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coeff_single_smul {Γ} [PartialOrder Γ] [AddCommGroup Γ] [IsOrderedCancelAddMonoid Γ]
     [AddAction Γ Γ₁] [IsOrderedCancelVAdd Γ Γ₁] {A : HVertexOperator Γ₁ R V W} (g : Γ) (g₁ : Γ₁)
     (r : R) :
@@ -197,6 +201,7 @@ end arrowCongrLeft
 
 section equivDomain
 
+set_option backward.isDefEq.respectTransparency false in
 omit [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ] in
 /-- An isomorphism of heterogeneous vertex operator spaces induced by ordered isomorphisms. -/
 @[simps]
@@ -658,6 +663,7 @@ theorem binomialPow_smul_coeff {g g' : Γ} (g₁ : Γ₁) (h : g < g') (n : S)
     rw [HahnSeries.mem_support, not_ne_iff] at this
     rw [this, smul_zero, smul_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 omit [Module S W] [IsScalarTower S R W] in
 theorem binomialPow_smul_injective {g g' : Γ} (n : S) :
     Function.Injective (HahnSeries.binomialPow (A := R) g g' n • · :
@@ -740,6 +746,7 @@ theorem compLeft_isPWO {Γ} [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HStat
 
 variable {Γ}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Composition of state-field maps by left-insertion. In traditional notation, if `Y₁(-,z)` and
 `Y₂(-,w)` are state-field maps, then this is `Y₁(Y₂(u₀,w)u₁,z)u₂`. -/
 @[simps!]
@@ -779,6 +786,7 @@ theorem compRight_isPWO {Γ} [PartialOrder Γ] [PartialOrder Γ₁] (Y₁ : HSta
     simp only [Function.mem_support, ofLex_toLex]
     exact HahnSeries.isPWO_support _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Composition of state-field maps by right-insertion. In traditional notation, if `Y₁(-,z)` and
 `Y₂(-,w)` are state-field maps, then this is `Y₁(u₀,z)Y₂(u₁,w)u₂`. -/
 @[simps!]

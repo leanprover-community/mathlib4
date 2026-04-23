@@ -507,17 +507,13 @@ instance [NonUnitalNonAssocSemiring R] : Distrib R⟦Γ⟧ where
     simp only [smul_eq_mul]
     exact add_mul
 
-instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring (HahnSeries Γ R) :=
-  { inferInstanceAs (AddCommMonoid (HahnSeries Γ R)),
-    inferInstanceAs (Distrib (HahnSeries Γ R)) with
-    zero_mul := by
-      intro a
-      ext
-      simp [coeff_mul]
-    mul_zero := by
-      intro a
-      ext
-      simp [coeff_mul] }
+instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring R⟦Γ⟧ where
+  zero_mul _ := by
+    ext
+    simp [coeff_mul]
+  mul_zero _ := by
+    ext
+    simp [coeff_mul]
 
 theorem coeff_single_mul_add [NonUnitalNonAssocSemiring R] {r : R} {x : R⟦Γ⟧} {a : Γ}
     {b : Γ} : (single b r * x).coeff (a + b) = r * x.coeff a := by
@@ -567,15 +563,13 @@ theorem coeff_single_zero_mul [NonUnitalNonAssocSemiring R] {r : R} {x : R⟦Γ�
     ((single 0 r : R⟦Γ⟧) * x).coeff a = r * x.coeff a := by
   rw [← add_zero a, coeff_single_mul_add, add_zero]
 
-instance [NonAssocSemiring R] : NonAssocSemiring (HahnSeries Γ R) :=
-  { inferInstanceAs (AddMonoidWithOne (HahnSeries Γ R)),
-    inferInstanceAs (NonUnitalNonAssocSemiring (HahnSeries Γ R)) with
-    one_mul := fun x => by
-      ext
-      exact coeff_single_zero_mul.trans (one_mul _)
-    mul_one := fun x => by
-      ext
-      exact coeff_mul_single_zero.trans (mul_one _) }
+instance [NonAssocSemiring R] : NonAssocSemiring R⟦Γ⟧ where
+  one_mul := fun x => by
+    ext
+    exact coeff_single_zero_mul.trans (one_mul _)
+  mul_one := fun x => by
+    ext
+    exact coeff_mul_single_zero.trans (mul_one _)
 
 @[simp]
 theorem single_zero_mul_eq_smul [Semiring R] {r : R} {x : R⟦Γ⟧} : single 0 r * x = r • x := by
@@ -589,14 +583,6 @@ theorem support_mul_subset [NonUnitalNonAssocSemiring R] {x y : R⟦Γ⟧} :
 
 @[deprecated (since := "2025-12-09")]
 alias support_mul_subset_add_support := support_mul_subset
-
-instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring R⟦Γ⟧ where
-  zero_mul _ := by
-    ext
-    simp
-  mul_zero _ := by
-    ext
-    simp
 
 end mul
 
@@ -909,9 +895,10 @@ instance [CommRing R] {S : Type*} [CommRing S] [Algebra R S] [Module R V] [Modul
     ext
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 instance [CommRing R] [Module R V] : IsScalarTower R R⟦Γ⟧ (HahnModule Γ' R V) where
   smul_assoc r x a := by
-    rw [← HahnSeries.single_zero_mul_eq_smul, mul_smul', ← single_zero_smul_eq_smul Γ]
+    rw [← HahnSeries.single_zero_mul_eq_smul, mul_smul', single_zero_smul_eq_smul Γ]
 
 set_option backward.isDefEq.respectTransparency false in
 instance SMulCommClass [CommSemiring R] [Module R V] :
@@ -1401,6 +1388,7 @@ theorem equivDomainModuleHom_symm_smul (u : HahnSeries Γ' R) (x : HahnModule Γ
         (equivDomainModuleHom f f₁).symm x :=
   map_smulₛₗ (equivDomainModuleHom (R := R) (V := V) f f₁).symm u x
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem equivDomainModuleHom_base_smul (x : HahnModule Γ₁ R V) (r : R) :
     equivDomainModuleHom f f₁ (r • x) =
@@ -1409,6 +1397,7 @@ theorem equivDomainModuleHom_base_smul (x : HahnModule Γ₁ R V) (r : R) :
   rw [equivDomainModuleHom_apply_coeff, of_symm_smul, HahnSeries.coeff_smul,
     ← equivDomainModuleHom_apply_coeff, of_symm_smul, HahnSeries.coeff_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem equivDomainModuleHom_symm_base_smul (x : HahnModule Γ₂ R V) (r : R) :
     (equivDomainModuleHom f f₁).symm (r • x) =
