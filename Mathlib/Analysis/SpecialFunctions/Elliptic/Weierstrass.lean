@@ -397,7 +397,7 @@ lemma eqOn_deriv_weierstrassPExcept_derivWeierstrassPExcept (l₀ : ℂ) :
       simp_rw [← zpow_natCast, one_div, ← zpow_neg, Nat.cast_ofNat]
       rw [deriv_comp_sub_const (f := (· ^ (-2 : ℤ))), deriv_zpow]
       simp
-      field_simp
+      field
     · intros x hxs
       split_ifs with hl₁
       · simp

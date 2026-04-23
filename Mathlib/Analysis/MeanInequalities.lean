@@ -514,9 +514,8 @@ theorem Lr_le_Lp_mul_Lq (f g : ι → ℝ≥0) {p q r : ℝ} (hpqr : p.HolderTri
       (∑ i ∈ s, f i ^ p) ^ (1 / p) * (∑ i ∈ s, g i ^ q) ^ (1 / q) := by
   convert rpow_le_rpow_iff (inv_eq_one_div r ▸ inv_pos.mpr hpqr.pos' : 0 < 1 / r) |>.mpr <|
     Lr_rpow_le_Lp_mul_Lq s f g hpqr using 1
-  have hr := hpqr.pos'.ne'
   simp only [← rpow_mul, mul_rpow]
-  field_simp
+  field_simp [hpqr.pos'.ne']
 
 /-- **Weighted Hölder inequality**. -/
 lemma inner_le_weight_mul_Lp (s : Finset ι) {p : ℝ} (hp : 1 ≤ p) (w f : ι → ℝ≥0) :
@@ -590,9 +589,8 @@ theorem Lr_le_Lp_mul_Lq_tsum {f g : ι → ℝ≥0} {p q r : ℝ} (hpqr : p.Hold
     (∑' i, (f i * g i) ^ r) ^ (1 / r) ≤ (∑' i, f i ^ p) ^ (1 / p) * (∑' i, g i ^ q) ^ (1 / q) := by
   convert rpow_le_rpow_iff (inv_eq_one_div r ▸ inv_pos.mpr hpqr.pos') |>.mpr <|
     Lr_rpow_le_Lp_mul_Lq_tsum hpqr hf hg
-  have hr := hpqr.pos'.ne'
   simp only [← rpow_mul, mul_rpow]
-  field_simp
+  field_simp [hpqr.pos'.ne']
 
 theorem inner_le_Lp_mul_Lq_tsum {f g : ι → ℝ≥0} {p q : ℝ} (hpq : p.HolderConjugate q)
     (hf : Summable fun i => f i ^ p) (hg : Summable fun i => g i ^ q) :

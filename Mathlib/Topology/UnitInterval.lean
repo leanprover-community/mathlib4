@@ -401,8 +401,7 @@ theorem convexCombo_assoc {a b : ℝ} (x y z : Icc a b) (s t : unitInterval) :
         intro h
         have : 1 ≤ (t : ℝ) := by nlinarith [s.2.2, t.2.1]
         grind
-      field_simp
-      ring_nf
+      field
 
 /--
 Helper definition for `convexCombo_assoc'`, giving one of the coefficients appearing
@@ -460,8 +459,7 @@ theorem eq_convexCombo {a b : ℝ} {x y z : Icc a b} (hxy : x ≤ y) (hyz : y �
     replace hxy : (x : ℝ) ≤ (y : ℝ) := hxy
     replace hyz : (y : ℝ) ≤ (z : ℝ) := hyz
     linarith
-  · field_simp
-    ring_nf
+  · field
 
 end Set.Icc
 

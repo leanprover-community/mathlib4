@@ -90,8 +90,7 @@ lemma gaussian_charFunDual_congr [IsFiniteMeasure μ] {m : E}
   have h L : (n L : ℂ) = (L (∫ x, id x ∂μ) * I - covarianceBilinDual μ L L / 2 -
       L m * I + f L L / 2) / (2 * π * I) := by
     rw [hn L]
-    field_simp
-    ring
+    field
   have : Continuous n := by
     rw [← Complex.isometry_intCast.comp_continuous_iff]
     change Continuous (fun L ↦ (n L : ℂ))
