@@ -328,7 +328,7 @@ the underlying algebra homomorphisms of two morphisms. -/
 def ofPullbackOfIsSeparable [Algebra.IsSeparable (ResidueField Λ) k] (f : A ⟶ C) (g : B ⟶ C) :
     BaseCat Λ k :=
   haveI : IsLocalRing ↥(f.hom.toAlgHom.pullback g.hom.toAlgHom) :=
-    isLocalRing_algHomPullback _ _ g.hom.isLocalHom_toAlgHom
+    AlgHom.isLocalRing_pullback f.hom.toAlgHom g.hom.toAlgHom g.hom.isLocalHom_toAlgHom
   ⟨.of Λ k (f.hom.toAlgHom.pullback g.hom.toAlgHom)
     (LocAlgCat.surjective_residue_comp_pullbackFst_of_isSeparable f.hom g.hom), inferInstance⟩
 

@@ -125,31 +125,3 @@ instance : IsLocalization.AtPrime (ofPrime A P).toSubring P :=
 end ofPrime
 
 end LocalSubring
-
-
-theorem isLocalRing_eqLocus {R S : Type*} [Ring R] [Semiring S] [IsLocalRing R] (f g : R →+* S) :
-    IsLocalRing (f.eqLocus g) :=
-  Subring.isLocalRing_of_unit _ fun _ h ↦ (RingHom.isUnit_eqLocus_mk_iff f g h).mpr
-
-theorem isLocalRing_ringHomPullback {R S T F G : Type*} [Ring R] [Ring S] [Semiring T]
-    [IsLocalRing R] [FunLike F R T] [RingHomClass F R T] [FunLike G S T] [RingHomClass G S T]
-    (f : F) (g : G) (hg : IsLocalHom g) :
-    IsLocalRing (RingHom.pullback (f : R →+* T) (g : S →+* T)) where
-  isUnit_or_isUnit_of_add_one {a b} h := by
-    rcases a with ⟨⟨u, v⟩, huv⟩; rcases b with ⟨⟨s, t⟩, hst⟩
-    simp only [AddMemClass.mk_add_mk, Prod.mk_add_mk, ← Subtype.val_inj, OneMemClass.coe_one,
-      Prod.mk_eq_one] at h
-    simp only [RingHom.mem_eqLocus, RingHom.coe_comp, RingHom.coe_coe, RingHom.coe_fst,
-      Function.comp_apply, RingHom.coe_snd] at huv hst
-    rcases IsLocalRing.isUnit_or_isUnit_of_add_one h.left with hu | hs
-    · have : IsUnit (g v) := by rw [← huv]; exact IsUnit.map f hu
-      apply IsLocalHom.map_nonunit at this; left
-      simpa [RingHom.isUnit_pullback_mk_iff] using ⟨hu, this⟩
-    have : IsUnit (g t) := by rw [← hst]; exact IsUnit.map f hs
-    apply IsLocalHom.map_nonunit at this; right
-    simpa [RingHom.isUnit_pullback_mk_iff] using ⟨hs, this⟩
-
-theorem isLocalRing_algHomPullback {R S T A : Type*} [CommSemiring R] [Ring S] [Algebra R S]
-    [IsLocalRing S] [Ring T] [Algebra R T] [Semiring A] [Algebra R A] (f : S →ₐ[R] A)
-    (g : T →ₐ[R] A) (hg : IsLocalHom g) : IsLocalRing (AlgHom.pullback f g) :=
-  isLocalRing_ringHomPullback (f : S →+* A) (g : T →+* A) ⟨hg.map_nonunit⟩

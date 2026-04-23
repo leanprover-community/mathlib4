@@ -7,7 +7,7 @@ Authors: Bingyu Xia
 module
 
 public import Mathlib.Algebra.Category.LocAlgCat.Defs
-public import Mathlib.RingTheory.LocalRing.LocalSubring
+public import Mathlib.RingTheory.LocalRing.Pullback
 public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 public import Mathlib.RingTheory.Henselian
 public import Mathlib.RingTheory.LocalRing.Length
@@ -247,7 +247,7 @@ instance isScalarTower_ofPullbackResidueAlgebra :
 algebra homomorphisms`. -/
 def ofPullback (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.toAlgHom) : LocAlgCat.{w} Λ k :=
   letI : IsLocalRing ↥(f.toAlgHom.pullback g.toAlgHom) :=
-    isLocalRing_algHomPullback f.toAlgHom g.toAlgHom ⟨hg.isLocalHom.map_nonunit⟩
+    AlgHom.isLocalRing_pullback f.toAlgHom g.toAlgHom ⟨hg.isLocalHom.map_nonunit⟩
   of Λ k (f.toAlgHom.pullback g.toAlgHom) (by
     simpa [RingHom.algebraMap_toAlgebra] using Surjective.comp A.surj
       (AlgHom.surjective_pullbackFst_of_surjective _ _ hg))
@@ -256,7 +256,7 @@ def ofPullback (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.toAlgHom) : LocAlg
 abbrev pullbackFst (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.toAlgHom) :
     ofPullback f g hg ⟶ A :=
   letI : IsLocalRing ↥(f.toAlgHom.pullback g.toAlgHom) :=
-    isLocalRing_algHomPullback f.toAlgHom g.toAlgHom ⟨hg.isLocalHom.map_nonunit⟩
+    AlgHom.isLocalRing_pullback f.toAlgHom g.toAlgHom ⟨hg.isLocalHom.map_nonunit⟩
   ⟨f.toAlgHom.pullbackFst g.toAlgHom, eq_maximalIdeal <| Ideal.comap_isMaximal_of_surjective _
     (AlgHom.surjective_pullbackFst_of_surjective f.toAlgHom g.toAlgHom hg), rfl⟩
 
@@ -273,7 +273,7 @@ lemma residue_comp_pullbackFst (f : A ⟶ C) (g : B ⟶ C) :
 abbrev pullbackSnd (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.toAlgHom) :
     ofPullback f g hg ⟶ B :=
   letI : IsLocalRing ↥(f.toAlgHom.pullback g.toAlgHom) :=
-    isLocalRing_algHomPullback f.toAlgHom g.toAlgHom ⟨hg.isLocalHom.map_nonunit⟩
+    AlgHom.isLocalRing_pullback f.toAlgHom g.toAlgHom ⟨hg.isLocalHom.map_nonunit⟩
   haveI : IsLocalHom f.toAlgHom.toRingHom := ⟨f.isLocalHom_toAlgHom.map_nonunit⟩
   haveI : IsLocalHom (f.toAlgHom.pullbackSnd g.toAlgHom).toRingHom :=
     ⟨(RingHom.isLocalHom_pullbackSnd f.toAlgHom.toRingHom g.toAlgHom.toRingHom).map_nonunit⟩
