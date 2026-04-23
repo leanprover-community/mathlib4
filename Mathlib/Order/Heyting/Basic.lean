@@ -449,8 +449,8 @@ theorem sup_sdiff_cancel_right (h : a ≤ b) : a ⊔ b \ a = b :=
 
 theorem sdiff_sup_cancel (h : b ≤ a) : a \ b ⊔ b = a := by rw [sup_comm, sup_sdiff_cancel_right h]
 
-theorem eq_of_sdiff_right_eq (hac : c ≤ a) (hbc : c ≤ b) (h : a \ c = b \ c) : a = b := by
-  rw [← sdiff_sup_cancel hac, h, sdiff_sup_cancel hbc]
+theorem sdiff_left_inj (hac : c ≤ a) (hbc : c ≤ b) : a \ c = b \ c ↔ a = b :=
+  ⟨fun h => by rw [← sdiff_sup_cancel hac, h, sdiff_sup_cancel hbc], congrArg (· \ c)⟩
 
 theorem sup_le_of_le_sdiff_left (h : b ≤ c \ a) (hac : a ≤ c) : a ⊔ b ≤ c :=
   sup_le hac <| h.trans sdiff_le
