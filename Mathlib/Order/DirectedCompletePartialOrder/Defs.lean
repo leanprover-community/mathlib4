@@ -43,8 +43,6 @@ directed complete partial order, directedly complete partial order, dcpo
 
 @[expose] public section
 
-variable {ι : Sort*} {α : Type*}
-
 /--
 Directed complete partial orders are partial orders
 where every nonempty, directed set has a least upper bound.
@@ -58,12 +56,14 @@ class DirectedCompletePartialOrder (α : Type*)
 
   -- TODO(rfc): once LawfulSup exists, drop the `SupSet` and go for `Nonempty {u | IsLUB d u}`?
 
+variable {ι : Sort*} {α : Type*}
+
 /--
 Create a `DirectedCompletePartialOrder` from a `PartialOrder` and `SupSet`
 such that for every nonempty directed set `d`, `sSup d` is the least upper bound of `d`.
 -/
 @[reducible]
-def DirectedCompletePartialOrder.ofLubOfNonemptyDirected (α : Type*)
+def DirectedCompletePartialOrder.ofLubOfNonemptyDirected
     [PartialOrder α] [SupSet α]
     (lub_of_nonempty_directed : ∀ d : Set α, d.Nonempty → DirectedOn (· ≤ ·) d → IsLUB d (sSup d)) :
     DirectedCompletePartialOrder α where
