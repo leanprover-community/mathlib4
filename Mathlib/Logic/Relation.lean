@@ -265,9 +265,9 @@ instance _root_.Std.Symm.map {r : α → α → Prop} [h : Std.Symm r] (f : α �
   symm := map_symmetric h.symm f
 
 lemma _root_.IsTrans.map {r : α → α → Prop} [IsTrans α r] {f : α → β}
-    (hf : ((· = ·) on f) ≤ r) : IsTrans β (Relation.Map r f f) := by
+    (hf : ∀ x y, f x = f y → r x y) : IsTrans β (Relation.Map r f f) := by
   refine ⟨fun _ _ _ ⟨x, y, hxy, hx, hy⟩ ⟨y', z, hyz, hy', hz⟩ ↦ ?_⟩
-  exact ⟨x, z, trans_of r hxy <| trans_of r (hf y y' (hy' ▸ hy :)) hyz, hx, hz⟩
+  exact ⟨x, z, trans_of r hxy <| trans_of r (hf y y' <| hy' ▸ hy) hyz, hx, hz⟩
 
 @[deprecated (since := "2026-03-27")] alias isTrans_map := IsTrans.map
 
