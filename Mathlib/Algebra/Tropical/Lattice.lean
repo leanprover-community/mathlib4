@@ -63,9 +63,9 @@ instance instConditionallyCompleteLatticeTropical [ConditionallyCompleteLattice 
   isGLB_sInf_of_isGLB _ _ hx := by
     rw [← tropOrderIso.symm.isGLB_image'] at hx ⊢
     exact hx.isGLB_sInf
-  exists_isLUB_of_nonempty_of_bddAbove s hn hb := ⟨sSup s,
+  exists_isLUB_cond s hn hb := ⟨sSup s,
     .of_image untrop_le_iff <| isLUB_csSup (hn.image _) (untrop_monotone.map_bddAbove hb)⟩
-  exists_isGLB_of_nonempty_of_bddBelow s hn hb := ⟨sInf s,
+  exists_isGLB_cond s hn hb := ⟨sInf s,
     .of_image untrop_le_iff <| isGLB_csInf (hn.image _) (untrop_monotone.map_bddBelow hb)⟩
 
 instance [ConditionallyCompleteLinearOrder R] : ConditionallyCompleteLinearOrder (Tropical R) :=

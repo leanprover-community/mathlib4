@@ -141,8 +141,8 @@ noncomputable instance : ConditionallyCompleteLinearOrder ℝ where
   __ := Real.lattice
   isLUB_sSup_of_isLUB _ _ h := Real.isLUB_sSup h.nonempty h.bddAbove
   isGLB_sInf_of_isGLB _ _ h := Real.isGLB_sInf h.nonempty h.bddBelow
-  exists_isLUB_of_nonempty_of_bddAbove _ hn hb := ⟨_, Real.isLUB_sSup hn hb⟩
-  exists_isGLB_of_nonempty_of_bddBelow _ hn hb := ⟨_, Real.isGLB_sInf hn hb⟩
+  exists_isLUB_cond _ hn hb := ⟨_, Real.isLUB_sSup hn hb⟩
+  exists_isGLB_cond _ hn hb := ⟨_, Real.isGLB_sInf hn hb⟩
   csSup_of_not_bddAbove s hs := by simp [hs, sSup_def]
   csInf_of_not_bddBelow s hs := by simp [hs, sInf_def, sSup_def]
 

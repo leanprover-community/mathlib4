@@ -145,10 +145,10 @@ noncomputable abbrev subsetConditionallyCompleteLinearOrder [Bot s] [Top s]
       · rw [dif_pos ⟨hn, h.bddBelow, h_Inf hn h.bddBelow⟩]
         exact .of_image Subtype.coe_le_coe
           (isGLB_csInf (hn.image _) ((Subtype.mono_coe _).map_bddBelow h.bddBelow))
-    exists_isLUB_of_nonempty_of_bddAbove t ht h_bdd := ⟨sSup t, .of_image Subtype.coe_le_coe <| by
+    exists_isLUB_cond t ht h_bdd := ⟨sSup t, .of_image Subtype.coe_le_coe <| by
       rw [← subset_sSup_of_within s ht h_bdd (h_Sup ht h_bdd)]
       exact isLUB_csSup (ht.image _) ((Subtype.mono_coe _).map_bddAbove h_bdd)⟩
-    exists_isGLB_of_nonempty_of_bddBelow t ht h_bdd := ⟨sInf t, .of_image Subtype.coe_le_coe <| by
+    exists_isGLB_cond t ht h_bdd := ⟨sInf t, .of_image Subtype.coe_le_coe <| by
       rw [← subset_sInf_of_within s ht h_bdd (h_Inf ht h_bdd)]
       exact isGLB_csInf (ht.image _) ((Subtype.mono_coe _).map_bddBelow h_bdd)⟩
     csSup_of_not_bddAbove := fun t ht ↦ by simp [ht]

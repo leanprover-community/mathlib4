@@ -136,8 +136,8 @@ noncomputable instance : ConditionallyCompleteLinearOrderBot ℕ :=
     isGLB_sInf_of_isGLB s _ h := by
       rw [sInf_def h.nonempty]
       exact (Nat.isLeast_find _).isGLB
-    exists_isLUB_of_nonempty_of_bddAbove s hn hb := ⟨_, Nat.isLeast_find hb⟩
-    exists_isGLB_of_nonempty_of_bddBelow s hn hb := ⟨_, (Nat.isLeast_find hn).isGLB⟩
+    exists_isLUB_cond s hn hb := ⟨_, Nat.isLeast_find hb⟩
+    exists_isGLB_cond s hn hb := ⟨_, (Nat.isLeast_find hn).isGLB⟩
     csSup_of_not_bddAbove := by
       intro s hs
       simp only [sSup,

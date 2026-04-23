@@ -576,9 +576,9 @@ private theorem isLUB_sSup (s : Set (Seminorm 𝕜 E)) (hs₁ : BddAbove s) :
     exact le_ciSup ⟨q x, forall_mem_range.mpr fun i : s => hq i.2 x⟩ ⟨p, hp⟩
   · exact ciSup_le fun q => hp q.2 x
 
-noncomputable instance instOrderSupInfSet :
-    OrderSupInfSet (Seminorm 𝕜 E) :=
-  .ofSupSet fun s _ h ↦ by exact Seminorm.isLUB_sSup _ h.bddAbove
+noncomputable instance instOrderSupSet :
+    OrderSupSet (Seminorm 𝕜 E) where
+  isLUB_sSup_of_isLUB s _ h := by exact Seminorm.isLUB_sSup _ h.bddAbove
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in

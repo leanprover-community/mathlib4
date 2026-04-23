@@ -113,8 +113,8 @@ theorem WithTop.isGLB_coe {s : Set (WithTop α)} {a : α} :
   ext; simp [ne_top_iff_exists]
 
 @[to_dual]
-noncomputable instance WithTop.instOrderSupInfSet [OrderSupInfSet α] :
-    OrderSupInfSet (WithTop α) where
+noncomputable instance WithTop.instOrderSupSet [OrderSupSet α] :
+    OrderSupSet (WithTop α) where
   isLUB_sSup_of_isLUB s a h := by
     dsimp [sSup]
     split_ifs with hbot hbdd
@@ -133,6 +133,10 @@ noncomputable instance WithTop.instOrderSupInfSet [OrderSupInfSet α] :
     · cases a with | top => exact h | coe a => ?_
       rw [isLUB_image_coe] at h
       exact absurd h.bddAbove hbdd
+
+@[to_dual]
+noncomputable instance WithTop.instOrderInfSet [OrderInfSet α] :
+    OrderInfSet (WithTop α) where
   isGLB_sInf_of_isGLB s a h := by
     dsimp [sInf]
     split_ifs with hs
@@ -230,8 +234,8 @@ attribute [instance 100] ConditionallyCompleteLinearOrderBot.toOrderBot
 on the properties of sInf and sSup in a complete lattice. -/
 instance (priority := 100) CompleteLattice.toConditionallyCompleteLattice [CompleteLattice α] :
     ConditionallyCompleteLattice α where
-  exists_isLUB_of_nonempty_of_bddAbove _ _ _ := ⟨_, isLUB_sSup _⟩
-  exists_isGLB_of_nonempty_of_bddBelow _ _ _ := ⟨_, isGLB_sInf _⟩
+  exists_isLUB_cond _ _ _ := ⟨_, isLUB_sSup _⟩
+  exists_isGLB_cond _ _ _ := ⟨_, isGLB_sInf _⟩
 
 -- see Note [lower instance priority]
 instance (priority := 100) CompleteLinearOrder.toConditionallyCompleteLinearOrderBot {α : Type*}
@@ -245,10 +249,8 @@ namespace OrderDual
 
 instance instConditionallyCompleteLattice (α : Type*) [ConditionallyCompleteLattice α] :
     ConditionallyCompleteLattice αᵒᵈ where
-  exists_isLUB_of_nonempty_of_bddAbove :=
-    ConditionallyCompleteLattice.exists_isGLB_of_nonempty_of_bddBelow (α := α)
-  exists_isGLB_of_nonempty_of_bddBelow :=
-    ConditionallyCompleteLattice.exists_isLUB_of_nonempty_of_bddAbove (α := α)
+  exists_isLUB_cond := ConditionallyCompleteLattice.exists_isGLB_cond (α := α)
+  exists_isGLB_cond := ConditionallyCompleteLattice.exists_isLUB_cond (α := α)
 
 instance (α : Type*) [ConditionallyCompleteLinearOrder α] :
     ConditionallyCompleteLinearOrder αᵒᵈ where
@@ -264,13 +266,13 @@ section ConditionallyCompleteLattice
 variable [ConditionallyCompleteLattice α] {s t : Set α} {a b : α}
 
 @[to_dual]
-theorem exists_isLUB_of_nonempty_of_bddAbove (hn : s.Nonempty) (hb : BddAbove s := by bddDefault) :
+theorem exists_isLUB_cond (hn : s.Nonempty) (hb : BddAbove s := by bddDefault) :
     ∃ a, IsLUB s a :=
-  ConditionallyCompleteLattice.exists_isLUB_of_nonempty_of_bddAbove s hn hb
+  ConditionallyCompleteLattice.exists_isLUB_cond s hn hb
 
 @[to_dual]
 theorem isLUB_csSup (hn : s.Nonempty) (hb : BddAbove s := by bddDefault) : IsLUB s (sSup s) :=
-  (exists_isLUB_of_nonempty_of_bddAbove hn hb).rec fun _ h ↦ h.isLUB_sSup
+  (exists_isLUB_cond hn hb).rec fun _ h ↦ h.isLUB_sSup
 
 @[to_dual csInf_le]
 theorem le_csSup (h₁ : BddAbove s) (h₂ : a ∈ s) : a ≤ sSup s :=
@@ -468,10 +470,10 @@ end ConditionallyCompleteLattice
 
 instance Pi.conditionallyCompleteLattice {ι : Type*} {α : ι → Type*}
     [∀ i, ConditionallyCompleteLattice (α i)] : ConditionallyCompleteLattice (∀ i, α i) where
-  exists_isLUB_of_nonempty_of_bddAbove s hn hb := ⟨sSup s, isLUB_pi.mpr fun _ ↦ by
+  exists_isLUB_cond s hn hb := ⟨sSup s, isLUB_pi.mpr fun _ ↦ by
     rw [sSup_apply_eq_sSup_image]
     exact isLUB_csSup (image_nonempty.mpr hn) ((monotone_eval _).map_bddAbove hb)⟩
-  exists_isGLB_of_nonempty_of_bddBelow s hn hb := ⟨sInf s, isGLB_pi.mpr fun _ ↦ by
+  exists_isGLB_cond s hn hb := ⟨sInf s, isGLB_pi.mpr fun _ ↦ by
     rw [sInf_apply_eq_sInf_image]
     exact isGLB_csInf (image_nonempty.mpr hn) ((monotone_eval _).map_bddBelow hb)⟩
 
@@ -953,17 +955,15 @@ This result can be used to show that the extended reals `[-∞, ∞]` are a comp
 gives a conditionally complete lattice -/
 noncomputable instance WithTop.conditionallyCompleteLattice {α : Type*}
     [ConditionallyCompleteLattice α] : ConditionallyCompleteLattice (WithTop α) where
-  exists_isLUB_of_nonempty_of_bddAbove _ hS _ := ⟨_, WithTop.isLUB_sSup' hS⟩
-  exists_isGLB_of_nonempty_of_bddBelow _ _ hS := ⟨_, WithTop.isGLB_sInf' hS⟩
+  exists_isLUB_cond _ hS _ := ⟨_, WithTop.isLUB_sSup' hS⟩
+  exists_isGLB_cond _ _ hS := ⟨_, WithTop.isGLB_sInf' hS⟩
 
 /-- Adding a bottom element to a conditionally complete lattice
 gives a conditionally complete lattice -/
 noncomputable instance WithBot.conditionallyCompleteLattice {α : Type*}
     [ConditionallyCompleteLattice α] : ConditionallyCompleteLattice (WithBot α) where
-  exists_isLUB_of_nonempty_of_bddAbove :=
-    (WithTop.conditionallyCompleteLattice (α := αᵒᵈ)).exists_isGLB_of_nonempty_of_bddBelow
-  exists_isGLB_of_nonempty_of_bddBelow :=
-    (WithTop.conditionallyCompleteLattice (α := αᵒᵈ)).exists_isLUB_of_nonempty_of_bddAbove
+  exists_isLUB_cond := (WithTop.conditionallyCompleteLattice (α := αᵒᵈ)).exists_isGLB_cond
+  exists_isGLB_cond := (WithTop.conditionallyCompleteLattice (α := αᵒᵈ)).exists_isLUB_cond
 
 noncomputable instance [CompleteLattice α] : CompleteLattice (WithBot α) where
   isLUB_sSup s := ⟨fun _ ↦ le_csSup (OrderTop.bddAbove _), fun _ hsa ↦
