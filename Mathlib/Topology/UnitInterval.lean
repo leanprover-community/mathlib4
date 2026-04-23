@@ -401,13 +401,11 @@ theorem convexCombo_assoc {a b : ℝ} (x y z : Icc a b) (s t : unitInterval) :
   · simp only [hs]
     by_cases ht : (t : ℝ) = 1
     · simp [ht]
-    · have h1t : (1 - t : ℝ) ≠ 0 := one_sub_coe_ne_zero ht
-      field_simp
-      simp
+    · field_simp [one_sub_coe_ne_zero ht]
+      ring
   · by_cases ht : (t : ℝ) = 1
     · simp [ht]
-    · have h1st : (1 - s * t : ℝ) ≠ 0 := one_sub_mul_coe_ne_zero ht
-      field_simp
+    · field_simp [one_sub_mul_coe_ne_zero ht]
       ring_nf
 
 /--
@@ -476,20 +474,18 @@ open scoped unitInterval
 private theorem mem_ball_addNSMul_of_mem_Icc {a b δ : ℝ} (h : a ≤ b) (δ_pos : 0 < δ)
     (n : ℕ) {t : Icc a b}
     (ht : t ∈ Icc (addNSMul h (δ / 2) n) (addNSMul h (δ / 2) (n + 1))) :
-    t ∈ Metric.ball (addNSMul h (δ / 2) n) δ := by
-  have hδ : 0 < δ / 2 := half_pos δ_pos
-  exact Metric.mem_ball.mpr <|
-    (abs_sub_addNSMul_le h hδ.le n ht).trans_lt <| half_lt_self δ_pos
+    t ∈ Metric.ball (addNSMul h (δ / 2) n) δ :=
+  Metric.mem_ball.mpr <|
+    (abs_sub_addNSMul_le h (half_pos δ_pos).le n ht).trans_lt <| half_lt_self δ_pos
 
 private theorem mem_ball_addNSMul_prod_of_mem_Icc {δ : ℝ} (δ_pos : 0 < δ)
     (n m : ℕ) {t : I × I}
     (ht₁ : t.1 ∈ Icc (addNSMul zero_le_one (δ / 2) n) (addNSMul zero_le_one (δ / 2) (n + 1)))
     (ht₂ : t.2 ∈ Icc (addNSMul zero_le_one (δ / 2) m) (addNSMul zero_le_one (δ / 2) (m + 1))) :
-    t ∈ Metric.ball (addNSMul zero_le_one (δ / 2) n, addNSMul zero_le_one (δ / 2) m) δ := by
-  have hδ : 0 < δ / 2 := half_pos δ_pos
-  exact Metric.mem_ball.mpr <|
-    (max_le (abs_sub_addNSMul_le zero_le_one hδ.le n ht₁)
-      (abs_sub_addNSMul_le zero_le_one hδ.le m ht₂)).trans_lt <| half_lt_self δ_pos
+    t ∈ Metric.ball (addNSMul zero_le_one (δ / 2) n, addNSMul zero_le_one (δ / 2) m) δ :=
+  Metric.mem_ball.mpr <|
+    (max_le (abs_sub_addNSMul_le zero_le_one (half_pos δ_pos).le n ht₁)
+      (abs_sub_addNSMul_le zero_le_one (half_pos δ_pos).le m ht₂)).trans_lt <| half_lt_self δ_pos
 
 /-- Any open cover `c` of a closed interval `[a, b]` in ℝ
 can be refined to a finite partition into subintervals. -/
