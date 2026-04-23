@@ -44,9 +44,8 @@ section AffineIndependent
 variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
 variable [AffineSpace V P] {ι : Type*}
 
-/-- An indexed family is said to be affinely independent if no
-nontrivial weighted subtractions (where the sum of weights is 0) are
-0. -/
+/-- An indexed family is said to be affinely independent if no nontrivial weighted subtractions
+(where the sum of weights is 0) are 0. -/
 def AffineIndependent (p : ι → P) : Prop :=
   ∀ (s : Finset ι) (w : ι → k),
     ∑ i ∈ s, w i = 0 → s.weightedVSub p w = (0 : V) → ∀ i ∈ s, w i = 0
