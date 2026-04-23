@@ -90,12 +90,6 @@ theorem isCoveringMap [LocPathConnectedSpace X] [PathConnectedSpace X]
   rw [IsOpen.trivializationDiscrete_baseSet]
   exact hxU
 
-/-- Fibers of the universal cover are discrete, as for any covering map. -/
-theorem discreteTopology_fiber [LocPathConnectedSpace X] [PathConnectedSpace X]
-    [SemilocallySimplyConnectedSpace X] (x₀ x : X) :
-    DiscreteTopology (proj (x₀ := x₀) ⁻¹' {x}) :=
-  ((isCoveringMap x₀) x).discreteTopology_fiber
-
 /-- Helper: every point of `UniversalCover x₀` is joined to the basepoint. -/
 private theorem joined_basepoint_of_ofBasedPath (α : BasedPath x₀) :
     Joined (ofBasedPath x₀ (BasedPath.ofPath (Path.refl x₀))) (ofBasedPath x₀ α) := by
@@ -200,14 +194,9 @@ private theorem liftPath_apply_one_eq_ofBasedPath_append
       (e := ofBasedPath x₀ α)
       (γ_0 := by simpa [BasedPath.endpoint] using γ.source) (Γ := Γ)).2 ?_
     exact ⟨hΓ_lifts, hΓ_zero⟩
-  calc
-    (isCoveringMap x₀).liftPath γ (ofBasedPath x₀ α)
-        (by simpa [BasedPath.endpoint] using γ.source) 1 = Γ 1 := by
-      simp [hΓ_eq_lift]
-    _ = ofBasedPath x₀ (BasedPath.append α γ) := by
-      simpa [Γ] using
-        congrArg (fun δ ↦ ofBasedPath x₀ (BasedPath.append α δ))
-          (Path.initialSegmentFamily_one γ)
+  rw [← hΓ_eq_lift]
+  simpa [Γ] using
+    congrArg (fun δ ↦ ofBasedPath x₀ (BasedPath.append α δ)) (Path.initialSegmentFamily_one γ)
 
 /-- The universal cover is simply connected. -/
 theorem simplyConnectedSpace [LocPathConnectedSpace X] [PathConnectedSpace X]
@@ -230,15 +219,7 @@ theorem simplyConnectedSpace [LocPathConnectedSpace X] [PathConnectedSpace X]
       (e := ofBasedPath x₀ α) (γ_0 := hγ0) (Γ := p)).2 ?_
     exact ⟨by ext t; rfl, p.source⟩
   have h_end : ofBasedPath x₀ (BasedPath.append α γ) = ofBasedPath x₀ α := by
-    calc
-      ofBasedPath x₀ (BasedPath.append α γ) =
-          (isCoveringMap x₀).liftPath γ (ofBasedPath x₀ α) hγ0 1 := by
-        symm
-        exact liftPath_apply_one_eq_ofBasedPath_append γ
-      _ = p 1 := by
-        rw [← hp_eq_lift]
-        rfl
-      _ = ofBasedPath x₀ α := p.target
+    rw [← liftPath_apply_one_eq_ofBasedPath_append, ← hp_eq_lift]; exact p.target
   have h_append_eq :
       Path.Homotopic.Quotient.mk (α.toPath.trans γ) = Path.Homotopic.Quotient.mk α.toPath := by
     have h_end' :
@@ -259,26 +240,21 @@ theorem simplyConnectedSpace [LocPathConnectedSpace X] [PathConnectedSpace X]
       (Path.Homotopic.Quotient.mk γ : Path.Homotopic.Quotient
           (BasedPath.endpoint α) (BasedPath.endpoint α)) =
         Path.Homotopic.Quotient.refl (BasedPath.endpoint α) := by
+    -- Insert α⁻¹·α in front of γ and re-associate; then `α·γ` has the same class as `α`
+    -- (by `h_append_eq`), so we're left with `α⁻¹·α`, which is the identity.
     let qα : Path.Homotopic.Quotient x₀ (BasedPath.endpoint α) :=
       Path.Homotopic.Quotient.mk α.toPath
     calc
-      Path.Homotopic.Quotient.mk γ =
-          Path.Homotopic.Quotient.trans
-            (Path.Homotopic.Quotient.refl (BasedPath.endpoint α))
-            (Path.Homotopic.Quotient.mk γ) := by simp
-      _ = Path.Homotopic.Quotient.trans
-            (Path.Homotopic.Quotient.trans (Path.Homotopic.Quotient.symm qα) qα)
-            (Path.Homotopic.Quotient.mk γ) := by simp
-      _ = Path.Homotopic.Quotient.trans
-            (Path.Homotopic.Quotient.symm qα)
-            (Path.Homotopic.Quotient.trans qα (Path.Homotopic.Quotient.mk γ)) := by
-          exact Path.Homotopic.Quotient.trans_assoc _ _ _
-      _ = Path.Homotopic.Quotient.trans
-            (Path.Homotopic.Quotient.symm qα)
+      Path.Homotopic.Quotient.mk γ
+          = (Path.Homotopic.Quotient.trans (Path.Homotopic.Quotient.symm qα) qα).trans
+              (Path.Homotopic.Quotient.mk γ) := by simp
+      _ = (Path.Homotopic.Quotient.symm qα).trans
+            (qα.trans (Path.Homotopic.Quotient.mk γ)) :=
+          Path.Homotopic.Quotient.trans_assoc _ _ _
+      _ = (Path.Homotopic.Quotient.symm qα).trans
             (Path.Homotopic.Quotient.mk (α.toPath.trans γ)) := by
           rw [Path.Homotopic.Quotient.mk_trans]
-      _ = Path.Homotopic.Quotient.trans (Path.Homotopic.Quotient.symm qα) qα := by
-          rw [h_append_eq]
+      _ = (Path.Homotopic.Quotient.symm qα).trans qα := by rw [h_append_eq]
       _ = Path.Homotopic.Quotient.refl (BasedPath.endpoint α) := by simp
   rw [← Path.Homotopic.Quotient.eq]
   apply (isCoveringMap x₀).injective_path_homotopic_map
