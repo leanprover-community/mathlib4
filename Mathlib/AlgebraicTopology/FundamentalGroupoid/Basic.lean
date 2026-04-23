@@ -188,6 +188,16 @@ theorem trans_refl_cast {x₀ x₁ x₁' x₂ : X} (p : Path x₀ x₁) (hx : x�
   subst hy
   simpa using trans_refl _
 
+/-- Composing on the left with a null-homotopic loop does not change the homotopy class. -/
+theorem trans_left_of_nullhomotopic {γ₀ : Path x₀ x₀} {γ₁ : Path x₀ x₁}
+    (hγ₀ : γ₀.Homotopic (Path.refl x₀)) : (γ₀.trans γ₁).Homotopic γ₁ :=
+  (hcomp hγ₀ (.refl γ₁)).trans (refl_trans γ₁)
+
+/-- Composing on the right with a null-homotopic loop does not change the homotopy class. -/
+theorem trans_right_of_nullhomotopic {γ₀ : Path x₀ x₁} {γ₁ : Path x₁ x₁}
+    (hγ₁ : γ₁.Homotopic (Path.refl x₁)) : (γ₀.trans γ₁).Homotopic γ₀ :=
+  (hcomp (.refl γ₀) hγ₁).trans (trans_refl γ₀)
+
 theorem trans_symm (p : Path x₀ x₁) :
     (p.trans p.symm).Homotopic (Path.refl x₀) :=
   ⟨(Homotopy.reflTransSymm p).symm⟩
