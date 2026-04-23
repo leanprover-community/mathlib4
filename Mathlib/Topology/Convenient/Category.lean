@@ -5,8 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Adjunction.Basic
-public import Mathlib.Topology.Category.TopCat.Basic
+public import Mathlib.CategoryTheory.Adjunction.Reflective
+public import Mathlib.CategoryTheory.Monad.Limits
+public import Mathlib.Topology.Category.TopCat.Limits.Basic
 public import Mathlib.Topology.Convenient.ContinuousMapGeneratedBy
 
 /-!
@@ -36,7 +37,7 @@ structure on `GeneratedByTopCat X` under suitable assumptions (TODO @joelriou).
 
 universe v t u
 
-open CategoryTheory Topology
+open CategoryTheory Topology Limits
 
 variable {ι : Type t} (X : ι → Type u) [∀ i, TopologicalSpace (X i)]
 
@@ -188,6 +189,9 @@ instance : (toTopCat.{v} X).IsLeftAdjoint := adj.isLeftAdjoint
 
 instance : (TopCat.toContinuousGeneratedByCat.{v} X).IsRightAdjoint := adj.isRightAdjoint
 
+instance : (TopCat.toContinuousGeneratedByCat.{v} X).Faithful where
+  map_injective h := by ext x; exact ConcreteCategory.congr_hom h x
+
 instance : IsIso (adj.{v} (X := X)).unit := by dsimp; infer_instance
 
 /-- The functor `GeneratedByTopCat X ⥤ ContinuousGeneratedByCat X` which is
@@ -284,5 +288,22 @@ instance : IsIso (adj.{v} (X := X)).unit := by dsimp; infer_instance
 instance : (toTopCat.{v} (X := X)).IsLeftAdjoint := adj.isLeftAdjoint
 
 instance : (TopCat.toGeneratedByTopCat.{v} (X := X)).IsRightAdjoint := adj.isRightAdjoint
+
+instance : (TopCat.toGeneratedByTopCat.{v} (X := X)).Faithful where
+  map_injective h := by ext x; exact ConcreteCategory.congr_hom h x
+
+/-- The category of `X`-generated spaces is coreflective in the category of topological spaces. -/
+instance : Coreflective (toTopCat.{v} (X := X)) where
+  R := TopCat.toGeneratedByTopCat
+  adj := adj
+
+noncomputable instance : CreatesColimits (toTopCat.{v} (X := X)) :=
+  comonadicCreatesColimits _
+
+instance : HasLimits (GeneratedByTopCat X) :=
+  hasLimits_of_coreflective toTopCat
+
+instance : HasColimits (GeneratedByTopCat X) :=
+  hasColimits_of_hasColimits_createsColimits toTopCat
 
 end GeneratedByTopCat

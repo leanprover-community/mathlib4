@@ -1,10 +1,11 @@
 /-
 Copyright (c) 2024 Ben Eltschig. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Ben Eltschig
+Authors: Ben Eltschig, Joël Riou
 -/
 module
 
+public import Mathlib.Topology.Convenient.GeneratedBy
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 
 /-!
@@ -28,158 +29,95 @@ Adapted from `Mathlib/Topology/Compactness/CompactlyGeneratedSpace.lean`.
 
 @[expose] public section
 
-variable {X Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
-
 open TopologicalSpace Topology
 
-/-- The topology coinduced by all maps from ℝⁿ into a space. -/
-@[implicit_reducible]
-def TopologicalSpace.deltaGenerated (X : Type*) [TopologicalSpace X] : TopologicalSpace X :=
-  ⨆ f : (n : ℕ) × C(((Fin n) → ℝ), X), coinduced f.2 inferInstance
-
-/-- The delta-generated topology is also coinduced by a single map out of a sigma type. -/
-lemma deltaGenerated_eq_coinduced : deltaGenerated X = coinduced
-    (fun x : (f : (n : ℕ) × C(Fin n → ℝ, X)) × (Fin f.1 → ℝ) ↦ x.1.2 x.2) inferInstance := by
-  rw [deltaGenerated, instTopologicalSpaceSigma, coinduced_iSup]; rfl
-
-/-- The delta-generated topology is at least as fine as the original one. -/
-lemma deltaGenerated_le : deltaGenerated X ≤ tX :=
-  iSup_le_iff.mpr fun f ↦ f.2.continuous.coinduced_le
-
-/-- A set is open in `deltaGenerated X` iff all its preimages under continuous functions ℝⁿ → X are
-  open. -/
-lemma isOpen_deltaGenerated_iff {u : Set X} :
-    IsOpen[deltaGenerated X] u ↔ ∀ n (p : C(Fin n → ℝ, X)), IsOpen (p ⁻¹' u) := by
-  simp_rw +instances [deltaGenerated, isOpen_iSup_iff, isOpen_coinduced, Sigma.forall]
-
-/-- A map from ℝⁿ to X is continuous iff it is continuous regarding the
-  delta-generated topology on X. Outside of this file, use the more general
-  `continuous_to_deltaGenerated` instead. -/
-private lemma continuous_euclidean_to_deltaGenerated {n : ℕ} {f : (Fin n → ℝ) → X} :
-    Continuous[_, deltaGenerated X] f ↔ Continuous f := by
-  simp_rw [continuous_iff_coinduced_le]
-  refine ⟨fun h ↦ h.trans deltaGenerated_le, fun h ↦ ?_⟩
-  simp_rw [deltaGenerated]
-  exact le_iSup_of_le (i := ⟨n, f, continuous_iff_coinduced_le.mpr h⟩) le_rfl
-
-/-- `deltaGenerated` is idempotent as a function `TopologicalSpace X → TopologicalSpace X`. -/
-lemma deltaGenerated_deltaGenerated_eq :
-    @deltaGenerated X (deltaGenerated X) = deltaGenerated X := by
-  ext u; simp_rw [isOpen_deltaGenerated_iff]; refine forall_congr' fun n ↦ ?_
-  -- somewhat awkward because `ContinuousMap` doesn't play well with multiple topologies.
-  refine ⟨fun h p ↦ h <| @ContinuousMap.mk _ _ _ (_) p ?_, fun h p ↦ h ⟨p, ?_⟩⟩
-  · exact continuous_euclidean_to_deltaGenerated.mpr p.2
-  · exact continuous_euclidean_to_deltaGenerated.mp <| @ContinuousMap.continuous_toFun _ _ _ (_) p
-
-/-- A space is delta-generated if its topology is equal to the delta-generated topology, i.e.
-  coinduced by all continuous maps ℝⁿ → X. Since the delta-generated topology is always finer
-  than the original one, it suffices to show that it is also coarser. -/
-class DeltaGeneratedSpace (X : Type*) [t : TopologicalSpace X] : Prop where
-  le_deltaGenerated : t ≤ deltaGenerated X
-
-lemma eq_deltaGenerated [DeltaGeneratedSpace X] : tX = deltaGenerated X :=
-  eq_of_le_of_ge DeltaGeneratedSpace.le_deltaGenerated deltaGenerated_le
-
-/-- A subset of a delta-generated space is open iff its preimage is open for every
-  continuous map from ℝⁿ to X. -/
-lemma DeltaGeneratedSpace.isOpen_iff [DeltaGeneratedSpace X] {u : Set X} :
-    IsOpen u ↔ ∀ (n : ℕ) (p : ContinuousMap ((Fin n) → ℝ) X), IsOpen (p ⁻¹' u) := by
-  nth_rewrite 1 [eq_deltaGenerated (X := X)]; exact isOpen_deltaGenerated_iff
-
-/-- A map out of a delta-generated space is continuous iff it preserves continuity of maps
-  from ℝⁿ into X. -/
-lemma DeltaGeneratedSpace.continuous_iff [DeltaGeneratedSpace X] {f : X → Y} :
-    Continuous f ↔ ∀ (n : ℕ) (p : C(((Fin n) → ℝ), X)), Continuous (f ∘ p) := by
-  simp_rw [continuous_iff_coinduced_le]
-  nth_rewrite 1 [eq_deltaGenerated (X := X), deltaGenerated]
-  simp [coinduced_compose, Sigma.forall]
-
-/-- A map out of a delta-generated space is continuous iff it is continuous with respect
-  to the delta-generated topology on the codomain. -/
-lemma continuous_to_deltaGenerated [DeltaGeneratedSpace X] {f : X → Y} :
-    Continuous[_, deltaGenerated Y] f ↔ Continuous f := by
-  simp_rw [DeltaGeneratedSpace.continuous_iff, continuous_euclidean_to_deltaGenerated]
-
-/-- The delta-generated topology on `X` does in fact turn `X` into a delta-generated space. -/
-lemma deltaGeneratedSpace_deltaGenerated {X : Type*} {t : TopologicalSpace X} :
-    @DeltaGeneratedSpace X (@deltaGenerated X t) := by
-  let _ := @deltaGenerated X t; constructor; rw [@deltaGenerated_deltaGenerated_eq X t]
-
-lemma deltaGenerated_mono {X : Type*} {t₁ t₂ : TopologicalSpace X} (h : t₁ ≤ t₂) :
-    @deltaGenerated X t₁ ≤ @deltaGenerated X t₂ := by
-  rw [← continuous_id_iff_le, @continuous_to_deltaGenerated _ _
-    (@deltaGenerated X t₁) t₂ deltaGeneratedSpace_deltaGenerated id]
-  exact continuous_id_iff_le.2 <| (@deltaGenerated_le X t₁).trans h
+/-- A topological space is Delta-generated if its topology is generated
+by the continuous maps from topological spaces of the form `Fin n → ℝ`. -/
+abbrev DeltaGeneratedSpace (Y : Type*) [TopologicalSpace Y] : Prop :=
+    IsGeneratedBy (fun n ↦ Fin n → ℝ) Y
 
 namespace DeltaGeneratedSpace
 
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+
 /-- Type synonym to be equipped with the delta-generated topology. -/
-def of (X : Type*) := X
-
-instance : TopologicalSpace (of X) := deltaGenerated X
-
-instance : DeltaGeneratedSpace (of X) :=
-  deltaGeneratedSpace_deltaGenerated
-
-/-- The natural map from `DeltaGeneratedSpace.of X` to `X`. -/
-def counit : (of X) → X := id
-
-lemma continuous_counit : Continuous (counit : _ → X) := by
-  rw [continuous_iff_coinduced_le]; exact deltaGenerated_le
+abbrev of : Type _ := WithGeneratedByTopology (fun n ↦ Fin n → ℝ) Y
 
 /-- Delta-generated spaces are locally path-connected. -/
-instance [DeltaGeneratedSpace X] : LocPathConnectedSpace X := by
-  rw [eq_deltaGenerated (X := X), deltaGenerated_eq_coinduced]
+instance [DeltaGeneratedSpace X] :
+    LocPathConnectedSpace X := by
+  rw [← IsGeneratedBy.generatedBy_eq (X := fun n ↦ Fin n → ℝ) (Y := X)]
+  rw [generatedBy_eq_coinduced]
   exact LocPathConnectedSpace.coinduced _
 
 /-- Delta-generated spaces are sequential. -/
 instance [DeltaGeneratedSpace X] : SequentialSpace X := by
-  rw [eq_deltaGenerated (X := X)]
-  exact SequentialSpace.iSup fun p ↦ SequentialSpace.coinduced p.2
+  rw [← IsGeneratedBy.generatedBy_eq (X := fun n ↦ Fin n → ℝ) (Y := X)]
+  exact SequentialSpace.iSup (fun n ↦ SequentialSpace.iSup
+    (fun f ↦ SequentialSpace.coinduced _))
 
 end DeltaGeneratedSpace
 
-omit tY in
-/-- Any topology coinduced by a delta-generated topology is delta-generated. -/
-lemma DeltaGeneratedSpace.coinduced [DeltaGeneratedSpace X] (f : X → Y) :
-    @DeltaGeneratedSpace Y (tX.coinduced f) :=
-  let _ := tX.coinduced f
-  ⟨(continuous_to_deltaGenerated.2 continuous_coinduced_rng).coinduced_le⟩
+/-- The topology coinduced by all maps from ℝⁿ into a space. -/
+@[implicit_reducible, deprecated "Use TopologicalSpace.generatedBy" (since := "2026-04-23")]
+def TopologicalSpace.deltaGenerated (X : Type*) [TopologicalSpace X] : TopologicalSpace X :=
+  ⨆ f : (n : ℕ) × C(((Fin n) → ℝ), X), coinduced f.2 inferInstance
 
-/-- Suprema of delta-generated topologies are delta-generated. -/
-protected lemma DeltaGeneratedSpace.iSup {X : Type*} {ι : Sort*} {t : ι → TopologicalSpace X}
-    (h : ∀ i, @DeltaGeneratedSpace X (t i)) : @DeltaGeneratedSpace X (⨆ i, t i) :=
-  let _ := ⨆ i, t i
-  ⟨iSup_le_iff.2 fun i ↦ (h i).le_deltaGenerated.trans <| deltaGenerated_mono <| le_iSup t i⟩
+@[deprecated (since := "2026-04-23")]
+alias deltaGenerated_eq_coinduced := generatedBy_eq_coinduced
 
-/-- Suprema of delta-generated topologies are delta-generated. -/
-protected lemma DeltaGeneratedSpace.sup {X : Type*} {t₁ t₂ : TopologicalSpace X}
-    (h₁ : @DeltaGeneratedSpace X t₁) (h₂ : @DeltaGeneratedSpace X t₂) :
-    @DeltaGeneratedSpace X (t₁ ⊔ t₂) := by
-  rw [sup_eq_iSup]
-  exact .iSup <| Bool.forall_bool.2 ⟨h₂, h₁⟩
+@[deprecated (since := "2026-04-23")] alias deltaGenerated_le := generatedBy_le
 
-/-- Quotients of delta-generated spaces are delta-generated. -/
-lemma Topology.IsQuotientMap.deltaGeneratedSpace [DeltaGeneratedSpace X]
-    {f : X → Y} (h : IsQuotientMap f) : DeltaGeneratedSpace Y :=
-  h.isCoinducing.eq_coinduced ▸ DeltaGeneratedSpace.coinduced f
+@[deprecated (since := "2026-04-23")]
+alias isOpen_deltaGenerated_iff := WithGeneratedByTopology.isOpen_iff
 
-/-- Quotients of delta-generated spaces are delta-generated. -/
-instance Quot.deltaGeneratedSpace [DeltaGeneratedSpace X] {r : X → X → Prop} :
-    DeltaGeneratedSpace (Quot r) :=
-  isQuotientMap_quot_mk.deltaGeneratedSpace
+@[deprecated (since := "2026-04-23")]
+alias deltaGenerated_deltaGenerated_eq := generatedBy_generatedBy
 
-/-- Quotients of delta-generated spaces are delta-generated. -/
-instance Quotient.deltaGeneratedSpace [DeltaGeneratedSpace X] {s : Setoid X} :
-    DeltaGeneratedSpace (Quotient s) :=
-  isQuotientMap_quotient_mk'.deltaGeneratedSpace
+@[deprecated (since := "2026-04-23")]
+alias eq_deltaGenerated := IsGeneratedBy.generatedBy_eq
 
-/-- Disjoint unions of delta-generated spaces are delta-generated. -/
-instance Sum.deltaGeneratedSpace [DeltaGeneratedSpace X] [DeltaGeneratedSpace Y] :
-    DeltaGeneratedSpace (X ⊕ Y) :=
-  DeltaGeneratedSpace.sup (.coinduced Sum.inl) (.coinduced Sum.inr)
+@[deprecated (since := "2026-04-23")]
+alias DeltaGeneratedSpace.isOpen_iff := IsGeneratedBy.isOpen_iff
 
-/-- Disjoint unions of delta-generated spaces are delta-generated. -/
-instance Sigma.deltaGeneratedSpace {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
-    [∀ i, DeltaGeneratedSpace (X i)] : DeltaGeneratedSpace (Σ i, X i) :=
-  .iSup fun _ ↦ .coinduced _
+@[deprecated (since := "2026-04-23")]
+alias DeltaGeneratedSpace.continuous_iff := IsGeneratedBy.continuous_iff
+
+@[deprecated (since := "2026-04-23")]
+alias continuous_to_deltaGenerated := WithGeneratedByTopology.continuous_equiv
+
+@[deprecated (since := "2026-04-23")]
+alias deltaGeneratedSpace_deltaGenerated := IsGeneratedBy.instWithGeneratedByTopology
+
+@[deprecated (since := "2026-04-23")]
+alias deltaGenerated_mono := generatedBy_mono
+
+@[deprecated (since := "2026-04-23")]
+alias DeltaGeneratedSpace.counit := WithGeneratedByTopology.equiv
+
+@[deprecated (since := "2026-04-23")]
+alias DeltaGeneratedSpace.continuous_counit := WithGeneratedByTopology.continuous_equiv
+
+@[deprecated (since := "2026-04-23")]
+alias DeltaGeneratedSpace.coinduced := IsGeneratedBy.coinduced
+
+@[deprecated (since := "2026-04-23")]
+alias DeltaGeneratedSpace.iSup := IsGeneratedBy.iSup
+
+@[deprecated (since := "2026-04-23")]
+alias DeltaGeneratedSpace.sup := IsGeneratedBy.sup
+
+@[deprecated (since := "2026-04-23")]
+alias Topology.IsQuotientMap.deltaGeneratedSpace := Topology.IsQuotientMap.isGeneratedBy
+
+@[deprecated (since := "2026-04-23")]
+alias Quot.deltaGeneratedSpace := Quot.isGeneratedBy
+
+@[deprecated (since := "2026-04-23")]
+alias Quotient.deltaGeneratedSpace := Quotient.isGeneratedBy
+
+@[deprecated (since := "2026-04-23")]
+alias Sum.deltaGeneratedSpace := Sum.isGeneratedBy
+
+@[deprecated (since := "2026-04-23")]
+alias Sigma.deltaGeneratedSpace := Sigma.isGeneratedBy

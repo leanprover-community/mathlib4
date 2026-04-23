@@ -1,13 +1,14 @@
 /-
 Copyright (c) 2024 Ben Eltschig. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Ben Eltschig
+Authors: Ben Eltschig, Joël Riou
 -/
 module
 
 public import Mathlib.CategoryTheory.Monad.Limits
 public import Mathlib.Topology.Category.TopCat.Limits.Basic
 public import Mathlib.Topology.Compactness.DeltaGeneratedSpace
+public import Mathlib.Topology.Convenient.Category
 
 /-!
 # Delta-generated topological spaces
@@ -28,77 +29,32 @@ universe u
 
 open CategoryTheory
 
-/-- The type of delta-generated topological spaces. -/
-structure DeltaGenerated where
-  /-- the underlying topological space -/
-  toTop : TopCat.{u}
-  /-- The underlying topological space is delta-generated. -/
-  deltaGenerated : DeltaGeneratedSpace toTop := by infer_instance
-
-namespace DeltaGenerated
-
-instance : CoeSort DeltaGenerated Type* :=
-  ⟨fun X ↦ X.toTop⟩
-
-attribute [instance] deltaGenerated
-
-instance : LargeCategory.{u} DeltaGenerated.{u} :=
-  inferInstanceAs <| Category (InducedCategory _ toTop)
-
-instance : ConcreteCategory.{u} DeltaGenerated.{u} (C(·, ·)) :=
-  inferInstanceAs <| ConcreteCategory (InducedCategory _ toTop) _
-
-/-- Constructor for objects of the category `DeltaGenerated` -/
-abbrev of (X : Type u) [TopologicalSpace X] [DeltaGeneratedSpace X] : DeltaGenerated.{u} where
-  toTop := TopCat.of X
-  deltaGenerated := ‹_›
-
-/-- The forgetful functor `DeltaGenerated ⥤ TopCat` -/
-@[simps!]
-def deltaGeneratedToTop : DeltaGenerated.{u} ⥤ TopCat.{u} :=
-  inducedFunctor _
-
-/-- `deltaGeneratedToTop` is fully faithful. -/
-def fullyFaithfulDeltaGeneratedToTop : deltaGeneratedToTop.{u}.FullyFaithful :=
-  fullyFaithfulInducedFunctor _
-
-instance : deltaGeneratedToTop.{u}.Full := fullyFaithfulDeltaGeneratedToTop.full
-
-instance : deltaGeneratedToTop.{u}.Faithful := fullyFaithfulDeltaGeneratedToTop.faithful
+/-- The category of delta-generated topological spaces. -/
+abbrev DeltaGenerated := GeneratedByTopCat.{u} (fun n ↦ (Fin n) → ℝ)
 
 /-- The faithful (but not full) functor taking each topological space to its delta-generated
   coreflection. -/
-@[simps!]
-def topToDeltaGenerated : TopCat.{u} ⥤ DeltaGenerated.{u} where
-  obj X := of (DeltaGeneratedSpace.of X)
-  map {_ Y} f := ConcreteCategory.ofHom ⟨f, (continuous_to_deltaGenerated (Y := Y)).mpr <|
-    continuous_le_dom deltaGenerated_le f.hom.continuous⟩
+abbrev TopCat.toDeltaGenerated : TopCat.{u} ⥤ DeltaGenerated.{u} :=
+  TopCat.toGeneratedByTopCat
 
-instance : topToDeltaGenerated.{u}.Faithful :=
-  ⟨fun h ↦ by ext x; exact CategoryTheory.congr_fun h x⟩
+namespace DeltaGenerated
+
+/-- Constructor for objects of the category `DeltaGenerated` -/
+abbrev of (X : Type u) [TopologicalSpace X] [DeltaGeneratedSpace X] : DeltaGenerated.{u} :=
+  GeneratedByTopCat.of X
+
+/-- The forgetful functor `DeltaGenerated ⥤ TopCat` -/
+abbrev deltaGeneratedToTop : DeltaGenerated.{u} ⥤ TopCat.{u} :=
+  GeneratedByTopCat.toTopCat
+
+/-- `deltaGeneratedToTop` is fully faithful. -/
+def fullyFaithfulDeltaGeneratedToTop : deltaGeneratedToTop.{u}.FullyFaithful :=
+  GeneratedByTopCat.fullyFaithfulToTopCat _
+
+@[deprecated (since := "2026-04-23")] alias topToDeltaGenerated := TopCat.toDeltaGenerated
 
 /-- The adjunction between the forgetful functor `DeltaGenerated ⥤ TopCat` and its coreflector. -/
-def coreflectorAdjunction : deltaGeneratedToTop ⊣ topToDeltaGenerated :=
-  Adjunction.mkOfUnitCounit {
-    unit := {
-      app X := ConcreteCategory.ofHom
-        ⟨id, continuous_iff_coinduced_le.mpr (eq_deltaGenerated (X := X)).le⟩ }
-    counit := {
-      app X := ConcreteCategory.ofHom
-        ⟨DeltaGeneratedSpace.counit, DeltaGeneratedSpace.continuous_counit⟩ } }
-
-/-- The category of delta-generated spaces is coreflective in the category of topological spaces. -/
-instance deltaGeneratedToTop.coreflective : Coreflective deltaGeneratedToTop where
-  R := topToDeltaGenerated
-  adj := coreflectorAdjunction
-
-noncomputable instance deltaGeneratedToTop.createsColimits : CreatesColimits deltaGeneratedToTop :=
-  comonadicCreatesColimits deltaGeneratedToTop
-
-instance hasLimits : Limits.HasLimits DeltaGenerated :=
-  hasLimits_of_coreflective deltaGeneratedToTop
-
-instance hasColimits : Limits.HasColimits DeltaGenerated :=
-  hasColimits_of_hasColimits_createsColimits deltaGeneratedToTop
+abbrev coreflectorAdjunction : deltaGeneratedToTop ⊣ TopCat.toDeltaGenerated :=
+  GeneratedByTopCat.adj
 
 end DeltaGenerated
