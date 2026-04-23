@@ -97,7 +97,7 @@ theorem surjective_pullbackSnd_of_surjective (f : R →+* T) (g : S →+* T)
   fun s ↦ by simpa [eq_comm] using h (g s)
 
 theorem isLocalRing_pullback [IsLocalRing R] (f : R →+* T) (g : S →+* T) (hg : IsLocalHom g) :
-    IsLocalRing (RingHom.pullback (f : R →+* T) (g : S →+* T)) where
+    IsLocalRing (f.pullback g) where
   isUnit_or_isUnit_of_add_one {a b} h := by
     rcases a with ⟨⟨u, v⟩, huv⟩; rcases b with ⟨⟨s, t⟩, hst⟩
     simp only [AddMemClass.mk_add_mk, Prod.mk_add_mk, ← Subtype.val_inj, OneMemClass.coe_one,
@@ -159,7 +159,7 @@ theorem surjective_pullbackSnd_of_surjective (f : A →ₐ[R] C) (g : B →ₐ[R
   RingHom.surjective_pullbackSnd_of_surjective (f : A →+* C) (g : B →+* C) h
 
 theorem isLocalRing_pullback [IsLocalRing A] (f : A →ₐ[R] C) (g : B →ₐ[R] C) (hg : IsLocalHom g) :
-    IsLocalRing (AlgHom.pullback f g) :=
+    IsLocalRing (f.pullback g) :=
   RingHom.isLocalRing_pullback f.toRingHom g.toRingHom ⟨hg.map_nonunit⟩
 
 end Ring
