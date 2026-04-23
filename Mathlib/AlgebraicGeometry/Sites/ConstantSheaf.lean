@@ -107,7 +107,7 @@ def continuousMapPresheafAb (A : Type v) [TopologicalSpace A] [AddCommGroup A]
 variable (A : Type v) [TopologicalSpace A] [AddCommGroup A] [IsTopologicalAddGroup A]
 
 /-- `continuousMapPresheafAb` viewed as a type valued sheaf is isomorphic to
-`continuousMapPresheaf. -/
+`continuousMapPresheaf`. -/
 def continuousMapPresheafAbForgetIso :
     continuousMapPresheafAb A ⋙ CategoryTheory.forget Ab ≅ continuousMapPresheaf A :=
   Iso.refl _

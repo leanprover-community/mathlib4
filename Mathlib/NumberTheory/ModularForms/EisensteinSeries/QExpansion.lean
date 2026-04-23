@@ -327,7 +327,7 @@ lemma EisensteinSeries.E_qExpansion_coeff {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k
   set β : ℂ := -(2 * k / bernoulli k : ℂ)
   set c : ℕ → ℂ := fun m ↦ if m = 0 then 1 else β * ↑(σ (k - 1) m)
   suffices ∀ τ : ℍ, HasSum (fun m ↦ c m • 𝕢 (1 : ℝ) τ ^ m) (E hk τ) from
-    (qExpansion_coeff_unique one_pos (by simp) this m).symm
+    (ModularFormClass.qExpansion_coeff_unique one_pos (by simp) this m).symm
   intro τ
   have hS : Summable fun n : ℕ ↦ (σ (k - 1) (n + 1) : ℂ) * cexp (2 * π * I * τ) ^ (n + 1) :=
     (summable_nat_add_iff 1).mpr (summable_sigma_mul_cexp_pow (by omega) τ)

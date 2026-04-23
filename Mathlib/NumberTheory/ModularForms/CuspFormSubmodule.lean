@@ -94,9 +94,11 @@ lemma isZeroAtImInfty_of_valueAtInfty_eq_zero {F : Type*} [FunLike F ℍ ℂ]
     (f : F) (h : valueAtInfty f = 0) : IsZeroAtImInfty f := by
   have hh : 0 < Γ.strictWidthInfty := Γ.strictWidthInfty_pos_iff.mpr Fact.out
   have hΓ : Γ.strictWidthInfty ∈ Γ.strictPeriods := Γ.strictWidthInfty_mem_strictPeriods
-  simp_rw [IsZeroAtImInfty, ZeroAtFilter, ← h, ← cuspFunction_apply_zero f hh hΓ]
-  exact ((analyticAt_cuspFunction_zero f hh hΓ).continuousAt.tendsto.comp
-    (qParam_tendsto_atImInfty hh)).congr (fun τ ↦ eq_cuspFunction f τ hΓ hh.ne')
+  have hanal := ModularFormClass.analyticAt_cuspFunction_zero f hh hΓ
+  have hper := periodic_comp_ofComplex f hΓ
+  simp_rw [IsZeroAtImInfty, ZeroAtFilter, ← h, ← cuspFunction_apply_zero hh hanal hper]
+  exact (hanal.continuousAt.tendsto.comp (qParam_tendsto_atImInfty hh)).congr
+    (fun τ ↦ SlashInvariantFormClass.eq_cuspFunction f τ hΓ hh.ne')
 
 section SL2Z
 
@@ -113,7 +115,9 @@ lemma isZeroAt_of_coeffZero_eq_zero (f : ModularForm 𝒮ℒ k)
   intro γ _
   rw [show (⇑f ∣[k] γ) = ⇑f from f.slash_action_eq' _ ⟨γ, rfl⟩]
   exact isZeroAtImInfty_of_valueAtInfty_eq_zero f <| by
-    rwa [← qExpansion_coeff_zero f one_pos one_mem_strictPeriods_SL]
+    rwa [← qExpansion_coeff_zero one_pos
+      (ModularFormClass.analyticAt_cuspFunction_zero f one_pos one_mem_strictPeriods_SL)
+      (periodic_comp_ofComplex f one_mem_strictPeriods_SL)]
 
 /-- Build a `CuspForm 𝒮ℒ k` from a `ModularForm 𝒮ℒ k` whose q-expansion has vanishing
 constant term. The resulting cusp form has the same underlying function. -/
@@ -129,7 +133,9 @@ constant term. -/
 lemma isCuspForm_iff_coeffZero_eq_zero (f : ModularForm 𝒮ℒ k) :
     IsCuspForm f ↔ (qExpansion 1 f).coeff 0 = 0 := by
   refine ⟨fun ⟨g, hg⟩ ↦ ?_, fun h ↦ (isCuspForm_iff f).mpr (isZeroAt_of_coeffZero_eq_zero f h)⟩
-  rw [← hg, qExpansion_coeff_zero _ one_pos one_mem_strictPeriods_SL]
+  rw [← hg, qExpansion_coeff_zero one_pos
+    (ModularFormClass.analyticAt_cuspFunction_zero _ one_pos one_mem_strictPeriods_SL)
+    (periodic_comp_ofComplex _ one_mem_strictPeriods_SL)]
   exact (CuspFormClass.zero_at_infty g).valueAtInfty_eq_zero
 
 end SL2Z
