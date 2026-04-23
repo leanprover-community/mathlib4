@@ -149,7 +149,7 @@ theorem le_nhds_iff_adhp_of_cauchy {f : Filter α} {x : α} (hf : Cauchy f) :
     f ≤ 𝓝 x ↔ ClusterPt x f :=
   ⟨fun h => ClusterPt.of_le_nhds' h hf.1, le_nhds_of_cauchy_adhp hf⟩
 
-nonrec theorem Cauchy.map [UniformSpace β] {f : Filter α} {m : α → β} (hf : Cauchy f)
+protected theorem Cauchy.map [UniformSpace β] {f : Filter α} {m : α → β} (hf : Cauchy f)
     (hm : UniformContinuous m) : Cauchy (map m f) :=
   ⟨hf.1.map _,
     calc
@@ -157,7 +157,7 @@ nonrec theorem Cauchy.map [UniformSpace β] {f : Filter α} {m : α → β} (hf 
       _ ≤ Filter.map (Prod.map m m) (𝓤 α) := map_mono hf.right
       _ ≤ 𝓤 β := hm⟩
 
-nonrec theorem Cauchy.comap [UniformSpace β] {f : Filter β} {m : α → β} (hf : Cauchy f)
+protected theorem Cauchy.comap [UniformSpace β] {f : Filter β} {m : α → β} (hf : Cauchy f)
     (hm : comap (fun p : α × α => (m p.1, m p.2)) (𝓤 β) ≤ 𝓤 α) [NeBot (comap m f)] :
     Cauchy (comap m f) :=
   ⟨‹_›,
@@ -170,6 +170,14 @@ theorem Cauchy.comap' [UniformSpace β] {f : Filter β} {m : α → β} (hf : Ca
     (hm : Filter.comap (fun p : α × α => (m p.1, m p.2)) (𝓤 β) ≤ 𝓤 α)
     (_ : NeBot (Filter.comap m f)) : Cauchy (Filter.comap m f) :=
   hf.comap hm
+
+lemma Cauchy.map_of_le [UniformSpace β] {f : Filter α} {m : α → β} (hf : Cauchy f) {s : Set α}
+    (hm : UniformContinuousOn m s) (hfs : f ≤ 𝓟 s) :
+    Cauchy (map m f) := by
+  suffices Cauchy (comap (Subtype.val : s → α) f) by
+    simpa [Set.restrict_def, ← Function.comp_def, ← map_map,
+      subtype_coe_map_comap, inf_eq_left.mpr hfs] using this.map hm.restrict
+  exact hf.comap' (fun _ x ↦ x) (comap_coe_neBot_of_le_principal (h := hf.1) hfs)
 
 /-- Cauchy sequences. Usually defined on ℕ, but often it is also useful to say that a function
 defined on ℝ is Cauchy at +∞ to deduce convergence. Therefore, we define it in a type class that
@@ -288,7 +296,7 @@ theorem Filter.HasBasis.cauchySeq_iff {γ} [Nonempty β] [SemilatticeSup β] {u 
   rw [cauchySeq_iff_tendsto, ← prod_atTop_atTop_eq]
   refine (atTop_basis.prod_self.tendsto_iff h).trans ?_
   simp only [true_and, Prod.forall, mem_prod_eq,
-    mem_Ici, and_imp, Prod.map, @forall_swap (_ ≤ _) β]
+    mem_Ici, and_imp, Prod.map, @forall_comm (_ ≤ _) β]
 
 theorem Filter.HasBasis.cauchySeq_iff' {γ} [Nonempty β] [SemilatticeSup β] {u : β → α}
     {p : γ → Prop} {s : γ → SetRel α α} (H : (𝓤 α).HasBasis p s) :
@@ -738,9 +746,6 @@ theorem TotallyBounded.isCompact_of_isComplete {s : Set α} (ht : TotallyBounded
 
 theorem TotallyBounded.isCompact_of_isClosed [CompleteSpace α] {s : Set α} (ht : TotallyBounded s)
     (hc : IsClosed s) : IsCompact s := ht.isCompact_of_isComplete hc.isComplete
-
-@[deprecated (since := "2025-08-30")] alias isCompact_of_totallyBounded_isClosed :=
-    TotallyBounded.isCompact_of_isClosed
 
 theorem Filter.TotallyBounded.isCompact_setOf_clusterPt
     [CompleteSpace α] {f : Filter α} (hf : f.TotallyBounded) : IsCompact {x | ClusterPt x f} :=

@@ -66,8 +66,6 @@ private def inv : DihedralGroup n → DihedralGroup n
   | r i => r (-i)
   | sr i => sr i
 
-set_option backward.whnf.reducibleClassField false in
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- The group structure on `DihedralGroup n`.
@@ -132,34 +130,33 @@ theorem r_pow (i : ZMod n) (k : ℕ) : (r i) ^ k = r (i * k : ZMod n) := by
 theorem r_zpow (i : ZMod n) (k : ℤ) : (r i) ^ k = r (i * k : ZMod n) := by
   cases k <;> simp [r_pow, neg_mul_eq_mul_neg]
 
-set_option backward.privateInPublic true in
-private def fintypeHelper : (ZMod n) ⊕ (ZMod n) ≃ DihedralGroup n where
-  invFun
+/-- The equivalence between the dihedral group and the sum of `ZMod`s. -/
+@[simps]
+def equivSum : DihedralGroup n ≃ (ZMod n) ⊕ (ZMod n) where
+  toFun
     | r j => .inl j
     | sr j => .inr j
-  toFun
+  invFun
     | .inl j => r j
     | .inr j => sr j
   left_inv := by rintro (x | x) <;> rfl
   right_inv := by rintro (x | x) <;> rfl
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- If `0 < n`, then `DihedralGroup n` is a finite group.
 -/
 instance [NeZero n] : Fintype (DihedralGroup n) :=
-  Fintype.ofEquiv _ fintypeHelper
+  Fintype.ofEquiv _ equivSum.symm
 
 instance : Infinite (DihedralGroup 0) :=
-  DihedralGroup.fintypeHelper.infinite_iff.mp inferInstance
+  equivSum.symm.infinite_iff.mp inferInstance
 
 instance : Nontrivial (DihedralGroup n) :=
-  ⟨⟨r 0, sr 0, by simp_rw [ne_eq, reduceCtorEq, not_false_eq_true]⟩⟩
+  ⟨⟨r 0, sr 0, by by_contra h; injection h⟩⟩
 
 /-- If `0 < n`, then `DihedralGroup n` has `2n` elements.
 -/
 theorem card [NeZero n] : Fintype.card (DihedralGroup n) = 2 * n := by
-  rw [← Fintype.card_eq.mpr ⟨fintypeHelper⟩, Fintype.card_sum, ZMod.card, two_mul]
+  rw [← Fintype.card_eq.mpr ⟨equivSum.symm⟩, Fintype.card_sum, ZMod.card, two_mul]
 
 theorem nat_card : Nat.card (DihedralGroup n) = 2 * n := by
   cases n
@@ -228,24 +225,22 @@ theorem exponent : Monoid.exponent (DihedralGroup n) = lcm n 2 := by
     · convert Monoid.order_dvd_exponent (sr (0 : ZMod n))
       exact (orderOf_sr 0).symm
 
-lemma not_commutative : ∀ {n : ℕ}, n ≠ 1 → n ≠ 2 →
-    ¬Std.Commutative fun (x y : DihedralGroup n) => x * y
-  | 0, _, _ => fun ⟨h'⟩ ↦ by simpa using h' (r 1) (sr 0)
-  | n + 3, _, _ => by
-    rintro ⟨h'⟩
-    specialize h' (r 1) (sr 0)
+lemma not_commutative : ∀ {n : ℕ}, n ≠ 1 → n ≠ 2 → ¬IsMulCommutative (DihedralGroup n)
+  | 0, _, _, h' => by simpa using h'.is_comm.comm (r 1) (sr 0)
+  | n + 3, _, _, h' => by
+    have := h'.is_comm.comm (r 1) (sr 0)
     rw [r_mul_sr, zero_sub, sr_mul_r, zero_add, sr.injEq, neg_eq_iff_add_eq_zero,
-      one_add_one_eq_two, ← ZMod.val_eq_zero, ZMod.val_two_eq_two_mod] at h'
-    simpa using Nat.le_of_dvd Nat.zero_lt_two <| Nat.dvd_of_mod_eq_zero h'
+      one_add_one_eq_two, ← ZMod.val_eq_zero, ZMod.val_two_eq_two_mod] at this
+    simpa using Nat.le_of_dvd Nat.zero_lt_two <| Nat.dvd_of_mod_eq_zero this
 
-lemma commutative_iff : Std.Commutative (fun x y : DihedralGroup n ↦ x * y) ↔ n = 1 ∨ n = 2 where
+lemma commutative_iff : IsMulCommutative (DihedralGroup n) ↔ n = 1 ∨ n = 2 where
   mp := by contrapose!; rintro ⟨h1, h2⟩; exact not_commutative h1 h2
-  mpr := by rintro (rfl | rfl) <;> exact ⟨by decide⟩
+  mpr := by rintro (rfl | rfl) <;> exact ⟨⟨by decide⟩⟩
 
 lemma not_isCyclic (h1 : n ≠ 1) : ¬ IsCyclic (DihedralGroup n) := fun h => by
   by_cases h2 : n = 2
   · simpa [exponent, card, h2] using h.exponent_eq_card
-  · exact not_commutative h1 h2 h.commutative
+  · exact not_commutative h1 h2 h.isMulCommutative
 
 lemma isCyclic_iff : IsCyclic (DihedralGroup n) ↔ n = 1 where
   mp := not_imp_not.mp not_isCyclic

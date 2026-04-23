@@ -138,7 +138,6 @@ private lemma leadingCoeff_finSuccEquiv_t :
     simp only [this, one_pow, Finset.prod_const_one, mul_one]
   exact fun i ↦ pow_zero _
 
-set_option backward.isDefEq.respectTransparency false in
 /- `T` maps `f` into some polynomial in `X_0` such that the leading coefficient is invertible. -/
 private lemma T_leadingcoeff_isUnit (fne : f ≠ 0) :
     IsUnit (finSuccEquiv k n (T f f)).leadingCoeff := by
@@ -163,7 +162,7 @@ private lemma T_leadingcoeff_isUnit (fne : f ≠ 0) :
       by simpa only [map_eq_zero_iff _ (AlgEquiv.injective _)] using eq
     exact (Finset.sup_lt_iff <| Ne.bot_lt (fun x ↦ h2 <| degree_eq_bot.mp x)).mpr vs
   nth_rw 2 [← f.support_sum_monomial_coeff]
-  rw [Finset.sum_eq_add_sum_diff_singleton vin h]
+  rw [Finset.sum_eq_add_sum_diff_singleton_of_mem vin h]
   rw [leadingCoeff_finSuccEquiv_t] at coeff
   simpa only [coeff, algebraMap_eq] using (mem_support_iff.mp vin).isUnit.map MvPolynomial.C
 

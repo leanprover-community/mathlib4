@@ -139,7 +139,6 @@ theorem orthogonalProjectionFn_norm_sq (v : E) :
     orthogonalProjectionFn_inner_eq_zero _ _ (orthogonalProjectionFn_mem v)
   convert norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero (v - p) p h' using 2 <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The orthogonal projection onto a complete subspace. -/
 def orthogonalProjection : E →L[𝕜] K :=
   LinearMap.mkContinuous
@@ -343,7 +342,6 @@ lemma starProjection_bot : (⊥ : Submodule 𝕜 E).starProjection = 0 := by
 
 variable (K)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The orthogonal projection has norm `≤ 1`. -/
 theorem orthogonalProjection_norm_le : ‖K.orthogonalProjection‖ ≤ 1 :=
   LinearMap.mkContinuous_norm_le _ (by simp) _
@@ -359,7 +357,6 @@ theorem norm_starProjection_apply {v : E} (hv : v ∈ K) :
     ‖K.starProjection v‖ = ‖v‖ :=
   norm_orthogonalProjection_apply _ hv
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The orthogonal projection onto a closed subspace is norm non-increasing. -/
 theorem norm_orthogonalProjection_apply_le (v : E) :
     ‖orthogonalProjection K v‖ ≤ ‖v‖ := by calc
@@ -379,7 +376,6 @@ theorem lipschitzWith_starProjection :
     LipschitzWith 1 K.starProjection :=
   ContinuousLinearMap.lipschitzWith_of_opNorm_le (starProjection_norm_le K)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The operator norm of the orthogonal projection onto a nontrivial subspace is `1`. -/
 theorem norm_orthogonalProjection (hK : K ≠ ⊥) :
     ‖K.orthogonalProjection‖ = 1 := by

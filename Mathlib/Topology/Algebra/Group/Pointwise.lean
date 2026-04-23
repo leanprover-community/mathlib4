@@ -294,7 +294,7 @@ theorem IsTopologicalGroup.t2Space_of_one_sep (H : ∀ x : G, x ≠ 1 → ∃ U 
   suffices T1Space G from inferInstance
   refine t1Space_iff_specializes_imp_eq.2 fun x y hspec ↦ by_contra fun hne ↦ ?_
   rcases H (x * y⁻¹) (by rwa [Ne, mul_inv_eq_one]) with ⟨U, hU₁, hU⟩
-  exact hU <| mem_of_mem_nhds <| hspec.map (continuous_mul_right y⁻¹) (by rwa [mul_inv_cancel])
+  exact hU <| mem_of_mem_nhds <| hspec.map (continuous_mul_const y⁻¹) (by rwa [mul_inv_cancel])
 
 /-- Given a neighborhood `U` of the identity, one may find a neighborhood `V` of the identity which
 is closed, symmetric, and satisfies `V * V ⊆ U`. -/
@@ -358,7 +358,7 @@ theorem eq_zero_or_locallyCompactSpace_of_support_subset_isCompact_of_group
     f = 0 ∨ LocallyCompactSpace G := by
   refine or_iff_not_imp_left.mpr fun h => ?_
   simp_rw [funext_iff, Pi.zero_apply] at h
-  push_neg at h
+  push Not at h
   obtain ⟨x, hx⟩ : ∃ x, f x ≠ 0 := h
   have : k ∈ 𝓝 x :=
     mem_of_superset (h'f.isOpen_support.mem_nhds hx) hf

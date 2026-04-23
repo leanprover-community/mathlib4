@@ -128,6 +128,7 @@ lemma Subgroup.Centralizer.toConjAct_smul_mem_cycleFactorsFinset {k c : Perm α}
 
 /-- The action by conjugation of `Subgroup.centralizer {g}`
   on the cycles of a given permutation -/
+@[implicit_reducible]
 def Subgroup.Centralizer.cycleFactorsFinset_mulAction :
     MulAction (centralizer {g}) g.cycleFactorsFinset where
   smul k c := ⟨ConjAct.toConjAct (k : Perm α) • c.val,
@@ -374,12 +375,12 @@ theorem ofPermHom_support :
     rw [(g ^ m).injective.ne_iff, a.injective.ne_iff, not_iff_comm]
     by_cases H : (τ : Perm g.cycleFactorsFinset) c = c
     · simp only [H, iff_true]
-      push_neg
+      push Not
       intro d hd
       rw [← notMem_support]
       have := g.cycleFactorsFinset_pairwise_disjoint c.prop d.prop
       rw [disjoint_iff_disjoint_support, Finset.disjoint_left] at this
-      exact this (by aesop) hc
+      exact this (by lia) hc
     · simpa only [H, iff_false, not_not] using ⟨c, H, mem_support.mp hc⟩
 
 theorem card_ofPermHom_support :
@@ -457,7 +458,6 @@ theorem range_toPermHom_eq_range_toPermHom' :
   ext τ
   rw [mem_range_toPermHom_iff, mem_range_toPermHom'_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem nat_card_range_toPermHom :
     Nat.card (toPermHom g).range =
       ∏ n ∈ g.cycleType.toFinset, (g.cycleType.count n)! := by
@@ -500,7 +500,7 @@ theorem kerParam_apply {u : Perm (Function.fixedPoints g)}
     rw [kerParam, MonoidHom.noncommCoprod_apply', mul_apply, ofSubtype_apply_of_not_mem u hx',
       noncommPiCoprod_apply, ← Finset.noncommProd_erase_mul _ (Finset.mem_univ ⟨g.cycleOf x, hx⟩),
       mul_apply, ← notMem_support]
-    contrapose! hx'
+    contrapose hx'
     obtain ⟨a, ha1, ha2⟩ := mem_support_of_mem_noncommProd_support hx'
     simp only [Finset.mem_erase, Finset.mem_univ, and_true, Ne, Subtype.ext_iff] at ha1
     have key := cycleFactorsFinset_pairwise_disjoint g a.2 hx ha1
@@ -512,7 +512,7 @@ theorem kerParam_apply {u : Perm (Function.fixedPoints g)}
   · rw [cycleOf_mem_cycleFactorsFinset_iff] at hx
     rw [kerParam, MonoidHom.noncommCoprod_apply, mul_apply, Equiv.apply_eq_iff_eq,
       ← notMem_support]
-    contrapose! hx
+    contrapose hx
     obtain ⟨a, -, ha⟩ := mem_support_of_mem_noncommProd_support
       (comm := fun a ha b hb h ↦ g.pairwise_commute_of_mem_zpowers h (v a) (v b) (v a).2 (v b).2) hx
     exact support_zpowers_of_mem_cycleFactorsFinset_le (v a) ha
@@ -537,7 +537,6 @@ theorem kerParam_injective (g : Perm α) : Function.Injective (kerParam g) := by
     rintro - ⟨a, rfl⟩ - ⟨-, ⟨b, rfl⟩, ⟨-⟩⟩
     exact (ofSubtype_support_disjoint a).mono_right (mem_cycleFactorsFinset_support_le b.2)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem kerParam_range_eq :
     (kerParam g).range = (toPermHom g).ker.map (Subgroup.subtype _) := by
   apply le_antisymm
@@ -578,7 +577,6 @@ theorem kerParam_range_le_centralizer :
   rw [kerParam_range_eq]
   exact map_subtype_le (toPermHom g).ker
 
-set_option backward.isDefEq.respectTransparency false in
 theorem kerParam_range_card (g : Equiv.Perm α) :
     Fintype.card (kerParam g).range = (Fintype.card α - g.cycleType.sum)! * g.cycleType.prod := by
   rw [Fintype.card_coeSort_range (kerParam_injective g)]
@@ -606,7 +604,6 @@ theorem sign_kerParam_apply_apply :
     Finset.univ_eq_attach, Finset.noncommProd_eq_prod]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem cycleType_kerParam_apply_apply :
     cycleType (kerParam g ⟨k, v⟩) = cycleType k + ∑ c, (v c).val.cycleType := by
   let U := SetLike.coe (Finset.univ : Finset { x // x ∈ g.cycleFactorsFinset })
@@ -676,7 +673,6 @@ theorem card_of_cycleType_eq_zero_iff {m : Multiset ℕ} :
     ← exists_with_cycleType_iff, not_exists]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :
     #({g | g.cycleType = m} : Finset (Perm α)) *
       ((Fintype.card α - m.sum)! * m.prod * (∏ n ∈ m.toFinset, (m.count n)!)) =

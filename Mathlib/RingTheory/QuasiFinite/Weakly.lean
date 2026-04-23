@@ -20,7 +20,7 @@ equivalent to `Algebra.QuasiFiniteAt` under all relevant scenarios.
 This class should only be used in stating (and proving) Zariski's main theorem and should not be
 used elsewhere, and all public API shall have a `Algebra.QuasiFiniteAt` version.
 
-# Implementation details
+## Implementation details
 
 The definition of `Algebra.QuasiFiniteAt R q` as is says that the whole `S_q` is quasi-finite,
 which requires not only `q` to be quasi-finite, but also all primes below it (i.e. all generic
@@ -50,7 +50,6 @@ See `Algebra.QuasiFiniteAt.of_weaklyQuasiFiniteAt`. -/
 abbrev Algebra.WeaklyQuasiFiniteAt :=
   Algebra.QuasiFiniteAt R (q.map (Ideal.Quotient.mk ((q.under R).map (algebraMap R S))))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Algebra.weaklyQuasiFiniteAt_iff :
     Algebra.WeaklyQuasiFiniteAt R q ↔
       Algebra.QuasiFinite R (Localization.AtPrime q ⧸
@@ -118,7 +117,6 @@ instance comap_algEquiv (p : Ideal S) [p.IsPrime]
   .of_surjectiveOnStalks p _ f.symm.toAlgHom
     (RingHom.surjectiveOnStalks_of_surjective f.symm.surjective) (by ext; simp)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- By `infer_instance` for `Algebra.QuasiFiniteAt R p`. -/
 lemma finite_residueField
     [p.IsPrime] [q.LiesOver p] [WeaklyQuasiFiniteAt R q] :
@@ -213,7 +211,7 @@ lemma of_restrictScalars [Algebra S T] [IsScalarTower R S T]
     .of_restrictScalars R _ _
   have H : (q.under R).map (algebraMap R T) ≤ (q.under S).map (algebraMap S T) := by
     simpa [Ideal.under, IsScalarTower.algebraMap_eq R S T, ← Ideal.map_map,
-      ← Ideal.comap_comap, - Ideal.under_under] using Ideal.map_mono Ideal.map_comap_le
+      ← Ideal.comap_comap, -Ideal.under_under] using Ideal.map_mono Ideal.map_comap_le
   delta WeaklyQuasiFiniteAt
   refine .of_surjectiveOnStalks (q.map (Ideal.Quotient.mk ((q.under R).map (algebraMap R T))))
     (Ideal.quotientMapₐ _ (.id _ _) (by exact H)) (RingHom.surjectiveOnStalks_of_surjective
@@ -223,7 +221,6 @@ lemma of_restrictScalars [Algebra S T] [IsScalarTower R S T]
   refine .trans ?_ (Ideal.comap_map_of_surjective _ Ideal.Quotient.mk_surjective _).symm
   simp [← RingHom.ker_eq_comap_bot, Ideal.map_comap_le]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Use `Algebra.QuasiFinite.of_quasiFiniteAt_residueField` instead
 for `Algebra.QuasiFiniteAt R q`. -/
 lemma of_quasiFiniteAt_residueField [p.IsPrime] [q.LiesOver p]

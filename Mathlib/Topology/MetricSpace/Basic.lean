@@ -126,7 +126,7 @@ end Real
 section NNReal
 
 instance : MetricSpace ℝ≥0 :=
-  Subtype.metricSpace
+  inferInstanceAs <| MetricSpace (Subtype _)
 
 theorem NNReal.isUniformEmbedding_coe : IsUniformEmbedding NNReal.toReal :=
   isUniformEmbedding_subtype_val
@@ -134,10 +134,13 @@ theorem NNReal.isUniformEmbedding_coe : IsUniformEmbedding NNReal.toReal :=
 theorem NNReal.isEmbedding_coe : Topology.IsEmbedding NNReal.toReal :=
   isUniformEmbedding_coe.isEmbedding
 
+theorem NNReal.isClosedEmbedding_coe : Topology.IsClosedEmbedding NNReal.toReal :=
+  isClosed_Ici.isClosedEmbedding_subtypeVal
+
 end NNReal
 
 instance [MetricSpace β] : MetricSpace (ULift β) :=
-  MetricSpace.induced ULift.down ULift.down_injective ‹_›
+  fast_instance% MetricSpace.induced ULift.down ULift.down_injective ‹_›
 
 section Prod
 
@@ -222,7 +225,6 @@ abbrev replaceEDist : PseudoEMetricSpace X where
 
 lemma replaceEDist_eq : m.replaceEDist d hd = m := by ext : 2; exact hd
 
-set_option backward.whnf.reducibleClassField false in
 -- Check uniformity is unchanged
 example : (replaceEDist m d hd).toUniformSpace = m.toUniformSpace := by
   dsimp +instances [replaceEDist]
@@ -249,12 +251,10 @@ abbrev replaceDist : PseudoMetricSpace X where
 
 lemma replaceDist_eq : m.replaceDist d hd = m := by ext : 2; exact hd
 
-set_option backward.whnf.reducibleClassField false in
 -- Check uniformity is unchanged
 example : (replaceDist m d hd).toUniformSpace = m.toUniformSpace := by
   dsimp +instances [replaceDist]
 
-set_option backward.whnf.reducibleClassField false in
 -- Check Bornology is unchanged
 example : (replaceDist m d hd).toBornology = m.toBornology := by
   dsimp +instances [replaceDist]
@@ -272,7 +272,7 @@ non-definitionally) equal to some given edistance. We also provide convenience v
 PseudoEMetric, PseudoMetric and Metric spaces. -/
 -- See note [forgetful inheritance]
 -- See note [reducible non-instances]
-abbrev replaceEDist : EMetricSpace X where
+noncomputable abbrev replaceEDist : EMetricSpace X where
   edist := d
   edist_self := by simp [hd]
   edist_comm := by simp [hd, edist_comm]

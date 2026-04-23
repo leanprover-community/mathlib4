@@ -184,10 +184,8 @@ theorem comp_inj (B₁ B₂ : BilinForm R M') {l r : M →ₗ[R] M'} (hₗ : Fun
   constructor <;> intro h
   · -- B₁.comp l r = B₂.comp l r → B₁ = B₂
     ext x y
-    obtain ⟨x', hx⟩ := hₗ x
-    subst hx
-    obtain ⟨y', hy⟩ := hᵣ y
-    subst hy
+    obtain ⟨x', rfl⟩ := hₗ x
+    obtain ⟨y', rfl⟩ := hᵣ y
     rw [← comp_apply, ← comp_apply, h]
   · -- B₁ = B₂ → B₁.comp l r = B₂.comp l r
     rw [h]

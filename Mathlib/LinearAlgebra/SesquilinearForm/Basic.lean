@@ -112,15 +112,7 @@ theorem ortho_smul_left {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y} 
 -- todo: this also holds for [CommRing R] [IsDomain R] when J₂ is invertible
 theorem ortho_smul_right {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y} {a : K₂} {ha : a ≠ 0} :
     IsOrtho B x y ↔ IsOrtho B x (a • y) := by
-  dsimp only [IsOrtho]
-  constructor <;> intro H
-  · rw [map_smulₛₗ, H, smul_zero]
-  · rw [map_smulₛₗ, smul_eq_zero] at H
-    rcases H with H | H
-    · simp only [map_eq_zero] at H
-      exfalso
-      exact ha H
-    · exact H
+  simp_all [IsOrtho]
 
 /-- A set of orthogonal vectors `v` with respect to some sesquilinear map `B` is linearly
   independent if for all `i`, `B (v i) (v i) ≠ 0`. -/
@@ -802,7 +794,6 @@ lemma disjoint_ker_of_nondegenerate_restrict {B : M →ₗ[R] M →ₗ[R] M₁} 
   rw [mem_ker] at hx'
   simp [x', hx']
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsSymm.nondegenerate_restrict_of_isCompl_ker {B : M →ₗ[R] M →ₗ[R] R} (hB : B.IsSymm)
     {W : Submodule R M} (hW : IsCompl W (LinearMap.ker B)) :
     (B.domRestrict₁₂ W W).Nondegenerate := by
@@ -820,7 +811,6 @@ lemma IsSymm.nondegenerate_restrict_of_isCompl_ker {B : M →ₗ[R] M →ₗ[R] 
     exact hx' u hu
   simpa [hW.inf_eq_bot] using hx'
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The restriction of a reflexive bilinear map `B` onto a submodule `W` is
 nondegenerate if `W` has trivial intersection with its orthogonal complement,
 that is `Disjoint W (W.orthogonalBilin B)`. -/
@@ -990,7 +980,6 @@ lemma nondegenerate_iff' (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm) :
   contrapose!
   exact exists_congr fun x ↦ ⟨by aesop, fun ⟨h₀, h⟩ ↦ Or.inl ⟨le_antisymm h (hs x), h₀⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma nondegenerate_restrict_iff_disjoint_ker (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm)
     {W : Submodule R M} :
     (B.domRestrict₁₂ W W).Nondegenerate ↔ Disjoint W (LinearMap.ker B) := by
@@ -1014,7 +1003,7 @@ lemma apply_mul_apply_lt_iff_linearIndependent (hp : ∀ x, x ≠ 0 → 0 < B x 
   · contrapose!
     intro h
     rw [LinearIndependent.pair_iff] at h
-    push_neg at h
+    push Not at h
     obtain ⟨r, s, hl, h0⟩ := h
     by_cases hr : r = 0; · simp_all
     by_cases hs : s = 0; · simp_all

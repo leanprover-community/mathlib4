@@ -40,9 +40,7 @@ free `R`-module with generators `x : X`, implemented as the type `X →₀ R`.
 -/
 def free : Type u ⥤ ModuleCat R where
   obj X := ModuleCat.of R (X →₀ R)
-  map {_ _} f := ofHom <| Finsupp.lmapDomain _ _ f
-  map_id := by intros; ext : 1; exact Finsupp.lmapDomain_id _ _
-  map_comp := by intros; ext : 1; exact Finsupp.lmapDomain_comp _ _ _ _
+  map {_ _} f := ofHom <| Finsupp.lmapDomain _ _ (f : _ → _)
 
 variable {R}
 
@@ -69,22 +67,21 @@ lemma freeDesc_apply {X : Type u} {M : ModuleCat.{u} R} (f : X ⟶ M) (x : X) :
   all_goals simp
 
 @[simp]
-lemma free_map_apply {X Y : Type u} (f : X → Y) (x : X) :
+lemma free_map_apply {X Y : Type u} (f : X ⟶ Y) (x : X) :
     (free R).map f (freeMk x) = freeMk (f x) := by
   apply Finsupp.mapDomain_single
 
 /-- The bijection `((free R).obj X ⟶ M) ≃ (X → M)` when `X` is a type and `M` a module. -/
 @[simps]
 def freeHomEquiv {X : Type u} {M : ModuleCat.{u} R} :
-    ((free R).obj X ⟶ M) ≃ (X → M) where
-  toFun φ x := φ (freeMk x)
-  invFun ψ := freeDesc ψ
+    ((free R).obj X ⟶ M) ≃ (X ⟶ M) where
+  toFun φ := TypeCat.ofHom (fun x ↦ φ (freeMk x))
+  invFun ψ := freeDesc (TypeCat.ofHom ψ)
   left_inv _ := by ext; simp
   right_inv _ := by ext; simp
 
 variable (R)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The free-forgetful adjunction for R-modules.
 -/
 def adj : free R ⊣ forget (ModuleCat.{u} R) :=
@@ -142,10 +139,9 @@ def μIso (X Y : Type u) :
     (free R).obj X ⊗ (free R).obj Y ≅ (free R).obj (X ⊗ Y) :=
   (finsuppTensorFinsupp' R _ _).toModuleIso
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma μIso_hom_freeMk_tmul_freeMk {X Y : Type u} (x : X) (y : Y) :
-    (μIso R X Y).hom (freeMk x ⊗ₜ freeMk y) = freeMk ⟨x, y⟩ := by
+    (μIso R X Y).hom (freeMk x ⊗ₜ freeMk y) = freeMk (x, y) := by
   dsimp [μIso, freeMk]
   erw [finsuppTensorFinsupp'_single_tmul_single]
   rw [mul_one]
@@ -158,8 +154,6 @@ lemma μIso_inv_freeMk {X Y : Type u} (z : X ⊗ Y) :
   erw [finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
 
 end FreeMonoidal
-
-set_option backward.isDefEq.respectTransparency false in
 open FreeMonoidal in
 /-- The free functor `Type u ⥤ ModuleCat R` is a monoidal functor. -/
 instance : (free R).Monoidal :=
@@ -200,7 +194,7 @@ lemma free_η_freeMk (x : PUnit) : η (free R) (freeMk x) = 1 := by
 
 @[simp]
 lemma free_μ_freeMk_tmul_freeMk {X Y : Type u} (x : X) (y : Y) :
-    μ (free R) _ _ (freeMk x ⊗ₜ freeMk y) = freeMk ⟨x, y⟩ := by
+    μ (free R) _ _ (freeMk x ⊗ₜ freeMk y) = freeMk (x, y) := by
   apply FreeMonoidal.μIso_hom_freeMk_tmul_freeMk
 
 @[simp]
@@ -252,7 +246,6 @@ namespace Free
 
 section
 
-set_option backward.whnf.reducibleClassField false in
 instance : Preadditive (Free R C) where
   homGroup _ _ := Finsupp.instAddCommGroup
   add_comp X Y Z f f' g := by
@@ -264,7 +257,6 @@ instance : Preadditive (Free R C) where
     congr; ext r h
     rw [Finsupp.sum_add_index'] <;> · simp [mul_add]
 
-set_option backward.whnf.reducibleClassField false in
 instance : Linear R (Free R C) where
   homModule _ _ := Finsupp.module _ R
   smul_comp X Y Z r f g := by
@@ -276,7 +268,6 @@ instance : Linear R (Free R C) where
     congr; ext h s
     rw [Finsupp.sum_smul_index] <;> simp [mul_left_comm]
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 theorem single_comp_single {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (r s : R) :
     (single f r ≫ single g s : Free.of R X ⟶ Free.of R Z) = single (f ≫ g) (r * s) := by
@@ -303,7 +294,6 @@ variable {C} {D : Type u} [Category.{v} D] [Preadditive D] [Linear R D]
 
 open Preadditive Linear
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 /-- A functor to an `R`-linear category lifts to a functor from its `R`-linear completion.
 -/

@@ -84,7 +84,7 @@ Hilbert space, Hilbert sum, l2, Hilbert basis, unitary equivalence, isometric is
 @[expose] public section
 
 open RCLike Submodule Filter
-open scoped NNReal ENNReal ComplexConjugate Topology
+open scoped NNReal ENNReal ComplexConjugate Topology lp
 
 noncomputable section
 
@@ -93,10 +93,6 @@ variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable {G : ι → Type*} [∀ i, NormedAddCommGroup (G i)] [∀ i, InnerProductSpace 𝕜 (G i)]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
-
-/-- `ℓ²(ι, 𝕜)` is the Hilbert space of square-summable functions `ι → 𝕜`, herein implemented
-as `lp (fun i : ι => 𝕜) 2`. -/
-notation "ℓ²(" ι ", " 𝕜 ")" => lp (fun i : ι => 𝕜) 2
 
 /-! ### Inner product space structure on `lp G 2` -/
 
@@ -283,7 +279,6 @@ theorem IsHilbertSum.mk [∀ i, CompleteSpace <| G i] (hVortho : OrthogonalFamil
       exact LinearMap.range_eq_top.mp
         (eq_top_iff.mpr <| hVtotal.trans_eq hVortho.range_linearIsometry.symm) }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This is `Orthonormal.isHilbertSum` in the case of actual inclusions from subspaces. -/
 theorem IsHilbertSum.mkInternal [∀ i, CompleteSpace <| F i]
     (hFortho : OrthogonalFamily 𝕜 (fun i => F i) fun i => (F i).subtypeₗᵢ)
@@ -399,7 +394,6 @@ instance instFunLike : FunLike (HilbertBasis ι 𝕜 E) ι E where
     ext
     exact congr_fun h i
 
-set_option backward.whnf.reducibleClassField false in
 @[simp]
 protected theorem repr_symm_single [DecidableEq ι] (b : HilbertBasis ι 𝕜 E) (i : ι) :
     b.repr.symm (lp.single 2 i (1 : 𝕜)) = b i := by

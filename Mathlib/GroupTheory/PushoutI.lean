@@ -284,7 +284,6 @@ theorem ext {w₁ w₂ : NormalWord d} (hhead : w₁.head = w₂.head)
 
 open Subgroup.IsComplement
 
-set_option backward.whnf.reducibleClassField false in
 instance baseAction : MulAction H (NormalWord d) :=
   { smul := fun h w => { w with head := h * w.head },
     one_smul := by simp +instances [instHSMul]
@@ -370,7 +369,7 @@ theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
       · rcases hep with ⟨hnil, rfl⟩
         rw [head?_eq_some_head hnil]
         simp_all
-      · push_neg at hep
+      · push Not at hep
         by_cases hw : w.toList = []
         · simp [hw, Word.fstIdx]
         · simp [head?_eq_some_head hw, Word.fstIdx, hep hw]
@@ -408,8 +407,7 @@ theorem rcons_injective {i : ι} : Function.Injective (rcons (d := d) i) := by
   rintro ⟨⟨head₁, tail₁⟩, _⟩ ⟨⟨head₂, tail₂⟩, _⟩
   simp only [rcons, NormalWord.mk.injEq, EmbeddingLike.apply_eq_iff_eq,
     Word.Pair.mk.injEq, Pair.mk.injEq, and_imp]
-  intro h₁ h₂ h₃
-  subst h₂
+  rintro h₁ rfl h₃
   rw [← equiv_fst_mul_equiv_snd (d.compl i) head₁,
       ← equiv_fst_mul_equiv_snd (d.compl i) head₂,
     h₁, h₃]
@@ -439,7 +437,6 @@ noncomputable def equivPair (i) : NormalWord d ≃ Pair d i :=
     left_inv := leftInv
     right_inv := fun _ => rcons_injective (leftInv _) }
 
-set_option backward.whnf.reducibleClassField false in
 noncomputable instance summandAction (i : ι) : MulAction (G i) (NormalWord d) :=
   { smul := fun g w => (equivPair i).symm
       { equivPair i w with

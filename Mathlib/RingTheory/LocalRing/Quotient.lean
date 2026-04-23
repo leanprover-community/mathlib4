@@ -33,7 +33,6 @@ namespace IsLocalRing
 local notation "p" => maximalIdeal R
 local notation "pS" => Ideal.map (algebraMap R S) p
 
-set_option backward.isDefEq.respectTransparency false in
 theorem quotient_span_eq_top_iff_span_eq_top (s : Set S) :
     span (R ⧸ p) ((Ideal.Quotient.mk (I := pS)) '' s) = ⊤ ↔ span R s = ⊤ := by
   have H : (span (R ⧸ p) ((Ideal.Quotient.mk (I := pS)) '' s)).restrictScalars R =
@@ -49,7 +48,7 @@ theorem quotient_span_eq_top_iff_span_eq_top (s : Set S) :
     · rw [Ideal.smul_top_eq_map]
       rintro x -
       have : LinearMap.ker (IsScalarTower.toAlgHom R S (S ⧸ pS) : S →ₗ[R] S ⧸ pS) =
-          restrictScalars R pS := by
+          Submodule.restrictScalars R pS := by
         ext; simp [Ideal.Quotient.eq_zero_iff_mem]
       rw [← this, ← comap_map_eq, mem_comap, ← H, hs, restrictScalars_top]
       exact mem_top
@@ -124,10 +123,6 @@ lemma exists_maximalIdeal_pow_le_of_isArtinianRing_quotient
   rw [jacobson_eq_maximalIdeal _ bot_ne_top, ← this, ← Ideal.map_pow, Ideal.zero_eq_bot,
     Ideal.map_eq_bot_iff_le_ker, Ideal.mk_ker] at hn
   exact ⟨n, hn⟩
-
-@[deprecated (since := "2025-09-27")]
-alias exists_maximalIdeal_pow_le_of_finite_quotient :=
-  exists_maximalIdeal_pow_le_of_isArtinianRing_quotient
 
 lemma finite_quotient_iff [IsNoetherianRing R] [Finite (ResidueField R)] {I : Ideal R} :
     Finite (R ⧸ I) ↔ ∃ n, (maximalIdeal R) ^ n ≤ I := by

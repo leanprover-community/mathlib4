@@ -42,8 +42,8 @@ namespace PNat
 
 /-- A term of `XgcdType` is a system of six naturals.  They should
 be thought of as representing the matrix
-[[w, x], [y, z]] = [[wp + 1, x], [y, zp + 1]]
-together with the vector [a, b] = [ap + 1, bp + 1].
+`[[w, x], [y, z]] = [[wp + 1, x], [y, zp + 1]]`
+together with the vector `[a, b] = [ap + 1, bp + 1]`.
 -/
 structure XgcdType where
   /-- `wp` is a variable which changes through the algorithm. -/
@@ -108,9 +108,9 @@ def qp : ℕ :=
   u.q - 1
 
 /-- The map `v` gives the product of the matrix
-[[w, x], [y, z]] = [[wp + 1, x], [y, zp + 1]]
-and the vector [a, b] = [ap + 1, bp + 1].  The map
-`vp` gives [sp, tp] such that v = [sp + 1, tp + 1].
+`[[w, x], [y, z]] = [[wp + 1, x], [y, zp + 1]]`
+and the vector `[a, b] = [ap + 1, bp + 1]`.  The map
+`vp` gives `[sp, tp]` such that `v = [sp + 1, tp + 1]`.
 -/
 def vp : ℕ × ℕ :=
   ⟨u.wp + u.x + u.ap + u.wp * u.ap + u.x * u.bp, u.y + u.zp + u.bp + u.y * u.ap + u.zp * u.bp⟩

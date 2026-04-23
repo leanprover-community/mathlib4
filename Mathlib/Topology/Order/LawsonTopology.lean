@@ -64,6 +64,7 @@ section Preorder
 /--
 The Lawson topology is defined as the meet of `Topology.lower` and the `Topology.scott`.
 -/
+@[implicit_reducible]
 def lawson (α : Type*) [Preorder α] : TopologicalSpace α := lower α ⊓ scott α univ
 
 variable (α) [Preorder α] [TopologicalSpace α]
@@ -140,7 +141,12 @@ instance [Inhabited α] : Inhabited (WithLawson α) := ‹Inhabited α›
 variable [Preorder α]
 
 instance instPreorder : Preorder (WithLawson α) := ‹Preorder α›
-instance instTopologicalSpace : TopologicalSpace (WithLawson α) := lawson α
+
+instance instTopologicalSpace : TopologicalSpace (WithLawson α) :=
+  -- fast_instance% lawson α fails
+  letI : TopologicalSpace α := lawson α
+  inferInstanceAs <| TopologicalSpace α
+
 instance instIsLawson : IsLawson (WithLawson α) := ⟨rfl⟩
 
 /-- If `α` is equipped with the Lawson topology, then it is homeomorphic to `WithLawson α`.

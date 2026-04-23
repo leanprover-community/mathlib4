@@ -169,7 +169,6 @@ open InductionObj
 
 universe u
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The structure of the induction in the proof of Chevalley's theorem:
 Consider a property on a vector `e` of polynomials. Suppose that it holds for the following cases:
@@ -273,7 +272,6 @@ private lemma induction_structure (n : ℕ)
         Ideal.Quotient.mk_singleton_self, ne_eq, not_true_eq_false, false_or] at h_eq
       exact hi h_eq
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: fix non-terminal simp (large simp set)
 set_option linter.flexible false in
 open IsLocalization in
@@ -430,7 +428,6 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
       · exact one_le_coeffSubmodule
       · lia
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The main induction in the proof of Chevalley's theorem for `R →+* R[X]`.
 See the docstring of `induction_structure` for the overview. -/
 private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
@@ -480,7 +477,7 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
     obtain ⟨S, hS, hS'⟩ := H (R₀ := R₀) f
     refine ⟨S, Eq.trans ?_ hS, ?_⟩
     · rw [← zeroLocus_span (Set.range _), ← zeroLocus_span (Set.range _),
-        idealSpan_range_update_divByMonic hne _ hi]
+        idealSpan_range_update_divByMonic hne]
     · intro C hC
       let c' : InductionObj _ _ := ⟨update c.val j (c.val j %ₘ c.val i)⟩
       have deg_bound₁ : c'.degBound ≤ c.degBound := by
@@ -699,7 +696,7 @@ lemma chevalley_mvPolynomialC
   let S' := S.map e.toRingHom
   have hS' : S'.degBound ≤ k * (1 + d.count 0) := by
     apply Finset.sup_le fun x hxS ↦ ?_
-    simp only [ConstructibleSetData.map, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toRingHom_eq_coe,
+    simp only [ConstructibleSetData.map, RingEquiv.toRingHom_eq_coe,
       AlgEquiv.toRingEquiv_toRingHom, Finset.mem_image, BasicConstructibleSetData.map,
       RingHom.coe_coe, S'] at hxS
     obtain ⟨C, hxS, rfl⟩ := hxS
@@ -722,7 +719,7 @@ lemma chevalley_mvPolynomialC
       (coeffsIn _ M ⊓ (degreesLE _ _ B).restrictScalars ℤ)
       (by simpa [MvPolynomial.coeff_one, apply_ite] using hM)
       S' (fun x hxS j k ↦ by
-        simp only [ConstructibleSetData.map, AlgEquiv.toRingEquiv_eq_coe,
+        simp only [ConstructibleSetData.map,
           RingEquiv.toRingHom_eq_coe, AlgEquiv.toRingEquiv_toRingHom, Finset.mem_image,
           BasicConstructibleSetData.map, RingHom.coe_coe, S', e] at hxS
         obtain ⟨C, hxS, rfl⟩ := hxS
@@ -799,7 +796,6 @@ end ChevalleyThm
 
 open ChevalleyThm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Chevalley's theorem** with complexity bound.
 
 A constructible set of complexity at most `M` in `Spec R[X₁, ..., Xₘ]` gets mapped under

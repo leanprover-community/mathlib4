@@ -88,12 +88,10 @@ theorem isInt_ratCast {R : Type*} [DivisionRing R] : {q : ℚ} → {n : ℤ} →
     IsInt q n → IsInt (q : R) n
   | _, _, ⟨rfl⟩ => ⟨by simp⟩
 
-set_option backward.whnf.reducibleClassField false in
 theorem isNNRat_ratCast {R : Type*} [DivisionRing R] [CharZero R] : {q : ℚ} → {n : ℕ} → {d : ℕ} →
     IsNNRat q n d → IsNNRat (q : R) n d
   | _, _, _, ⟨⟨qi,_,_⟩, rfl⟩ => ⟨⟨qi, by norm_cast, by norm_cast⟩, by simp only; norm_cast⟩
 
-set_option backward.whnf.reducibleClassField false in
 theorem isRat_ratCast {R : Type*} [DivisionRing R] [CharZero R] : {q : ℚ} → {n : ℤ} → {d : ℕ} →
     IsRat q n d → IsRat (q : R) n d
   | _, _, _, ⟨⟨qi,_,_⟩, rfl⟩ => ⟨⟨qi, by norm_cast, by norm_cast⟩, by simp only; norm_cast⟩
@@ -159,7 +157,7 @@ theorem isRat_inv_neg {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} 
 open Lean
 
 attribute [local instance] monadLiftOptionMetaM in
-/-- The result of inverting a norm_num result. -/
+/-- The result of inverting a `norm_num` result. -/
 def Result.inv {u : Level} {α : Q(Type u)} {a : Q($α)} (ra : Result a)
     (dsα : Q(DivisionSemiring $α)) (czα? : Option Q(CharZero $α)) :
     MetaM (Result q($a⁻¹)) := do

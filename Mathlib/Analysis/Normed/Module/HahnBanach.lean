@@ -38,7 +38,6 @@ namespace Real
 
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Hahn-Banach theorem** for continuous linear functions over `ℝ`.
 See also `exists_extension_norm_eq` in the root namespace for a more general version
 that works both for `ℝ` and `ℂ`. -/
@@ -48,7 +47,8 @@ theorem exists_extension_norm_eq (p : Subspace ℝ E) (f : StrongDual ℝ p) :
       (fun c hc x => by simp only [norm_smul c x, Real.norm_eq_abs, abs_of_pos hc, mul_left_comm])
       (fun x y => by
         rw [← left_distrib]
-        exact mul_le_mul_of_nonneg_left (norm_add_le x y) (@norm_nonneg _ _ f))
+        dsimp; gcongr
+        exact norm_add_le x y)
       fun x => le_trans (le_abs_self _) (f.le_opNorm _) with ⟨g, g_eq, g_le⟩
   set g' :=
     g.mkContinuous ‖f‖ fun x => abs_le.2 ⟨neg_le.1 <| g.map_neg x ▸ norm_neg x ▸ g_le (-x), g_le x⟩
@@ -69,14 +69,13 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜
   [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Hahn-Banach theorem** for continuous linear functions over `𝕜`
 satisfying `IsRCLikeNormedField 𝕜`. -/
 theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : StrongDual 𝕜 p) :
     ∃ g : StrongDual 𝕜 E, (∀ x : p, g x = f x) ∧ ‖g‖ = ‖f‖ := by
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
-  letI : Module ℝ E := RestrictScalars.module ℝ 𝕜 E
-  letI : IsScalarTower ℝ 𝕜 E := RestrictScalars.isScalarTower _ _ _
+  letI : Module ℝ E := .restrictScalars ℝ 𝕜 E
+  haveI : IsScalarTower ℝ 𝕜 E := .restrictScalars _ _ _
   letI : NormedSpace ℝ E := NormedSpace.restrictScalars _ 𝕜 _
   -- Let `fr: StrongDual ℝ p` be the real part of `f`.
   let fr := reCLM.comp (f.restrictScalars ℝ)
@@ -105,7 +104,6 @@ theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : StrongDual 𝕜 p) :
 
 open Module
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Corollary of the **Hahn-Banach theorem**: if `f : p → F` is a continuous linear map
 from a submodule of a normed space `E` over `𝕜`, `𝕜 = ℝ` or `𝕜 = ℂ`,
 with a finite-dimensional range, then `f` admits an extension to a continuous linear map `E → F`.
@@ -126,7 +124,6 @@ lemma ContinuousLinearMap.exist_extension_of_finiteDimensional_range {p : Submod
   ext x
   simp [fi, e, hgf]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A finite-dimensional submodule over `ℝ` or `ℂ` is `Submodule.ClosedComplemented`. -/
 lemma Submodule.ClosedComplemented.of_finiteDimensional (p : Submodule 𝕜 F)
     [FiniteDimensional 𝕜 p] : p.ClosedComplemented :=
@@ -145,7 +142,6 @@ section Seminormed
 
 variable {E : Type u} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Corollary of Hahn-Banach. Given an element `x` of a normed space with `‖x‖ ≠ 0`, there
 exists an element of the dual space, of norm `1`, whose value on `x` is `‖x‖`. -/
 theorem exists_dual_vector (x : E) (h : ‖x‖ ≠ 0) : ∃ g : StrongDual 𝕜 E, ‖g‖ = 1 ∧ g x = ‖x‖ := by
@@ -164,7 +160,6 @@ theorem exists_dual_vector (x : E) (h : ‖x‖ ≠ 0) : ∃ g : StrongDual 𝕜
     simp only [hval, norm_algebraMap', norm_norm] at hle
     exact one_le_of_le_mul_right₀ (by positivity) hle
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Variant of Hahn-Banach, eliminating the hypothesis that `x` be nonzero, but only ensuring that
 the dual element has norm at most `1` (this cannot be improved for the trivial
 vector space). -/

@@ -84,12 +84,11 @@ theorem turanGraph_eq_top : turanGraph n r = ⊤ ↔ r = 0 ∨ n ≤ r := by
 
 theorem turanGraph_cliqueFree (hr : 0 < r) : (turanGraph n r).CliqueFree (r + 1) := by
   rw [cliqueFree_iff]
-  by_contra! ⟨f, ha⟩
-  simp_rw [turanGraph_adj] at ha
+  by_contra! ⟨f⟩
   obtain ⟨x, y, d, c⟩ := exists_ne_map_eq_of_card_lt (fun x ↦
     (⟨(f x).1 % r, Nat.mod_lt _ hr⟩ : Fin r)) (by simp)
   rw [Fin.mk.injEq] at c
-  exact absurd c ((@ha x y).mpr d)
+  exact absurd c <| f.toHom.map_adj d
 
 /-- An `r + 1`-cliquefree Turán-maximal graph is _not_ `r`-cliquefree
 if it can accommodate such a clique. -/
@@ -165,6 +164,7 @@ theorem equivalence_not_adj : Equivalence (¬G.Adj · ·) where
 
 /-- The non-adjacency setoid over the vertices of a Turán-maximal graph
 induced by `equivalence_not_adj`. -/
+@[implicit_reducible]
 def setoid : Setoid V := ⟨_, h.equivalence_not_adj⟩
 
 instance : DecidableRel h.setoid.r :=
@@ -181,8 +181,6 @@ lemma not_adj_iff_part_eq [DecidableEq V] :
   change t ∈ fp.part s ↔ fp.part s = fp.part t
   rw [fp.mem_part_iff_part_eq_part (mem_univ t) (mem_univ s), eq_comm]
 
-set_option backward.whnf.reducibleClassField false in
-set_option backward.isDefEq.respectTransparency false in
 lemma degree_eq_card_sub_part_card [DecidableEq V] :
     G.degree s = card V - #(h.finpartition.part s) :=
   calc
@@ -204,7 +202,7 @@ theorem isEquipartition [DecidableEq V] : h.finpartition.IsEquipartition := by
   obtain ⟨w, hw⟩ := fp.nonempty_of_mem_parts hl
   obtain ⟨v, hv⟩ := fp.nonempty_of_mem_parts hs
   apply absurd h
-  rw [IsTuranMaximal, IsExtremal]; push_neg; intro cf
+  rw [IsTuranMaximal, IsExtremal]; push Not; intro cf
   use G.replaceVertex v w, inferInstance, cf.replaceVertex v w
   have large_eq := fp.part_eq_of_mem hl hw
   have small_eq := fp.part_eq_of_mem hs hv
@@ -221,7 +219,7 @@ lemma card_parts_le [DecidableEq V] : #h.finpartition.parts ≤ r := by
   obtain ⟨z, -, hz⟩ := h.finpartition.exists_subset_part_bijOn
   have ncf : ¬G.CliqueFree #z := by
     refine IsNClique.not_cliqueFree ⟨fun v hv w hw hn ↦ ?_, rfl⟩
-    contrapose! hn
+    contrapose hn
     exact hz.injOn hv hw (by rwa [← h.not_adj_iff_part_eq])
   rw [Finset.card_eq_of_equiv hz.equiv] at ncf
   exact absurd (h.1.mono (Nat.succ_le_of_lt l)) ncf
@@ -237,11 +235,11 @@ theorem card_parts [DecidableEq V] : #h.finpartition.parts = min (card V) r := b
   obtain ⟨x, -, y, -, hn, he⟩ :=
     exists_ne_map_eq_of_card_lt_of_maps_to l.1 fun a _ ↦ fp.part_mem.2 (mem_univ a)
   apply absurd h
-  rw [IsTuranMaximal, IsExtremal]; push_neg; rintro -
+  rw [IsTuranMaximal, IsExtremal]; push Not; rintro -
   have cf : G.CliqueFree r := by
     simp_rw [← cliqueFinset_eq_empty_iff, cliqueFinset, filter_eq_empty_iff, mem_univ,
       forall_true_left, isNClique_iff, and_comm, not_and, isClique_iff, Set.Pairwise]
-    intro z zc; push_neg; simp_rw [h.not_adj_iff_part_eq]
+    intro z zc; push Not; simp_rw [h.not_adj_iff_part_eq]
     exact exists_ne_map_eq_of_card_lt_of_maps_to (zc.symm ▸ l.2) fun a _ ↦
       fp.part_mem.2 (mem_univ a)
   use G ⊔ edge x y, inferInstance, cf.sup_edge x y
@@ -277,7 +275,7 @@ theorem isTuranMaximal_of_iso (f : G ≃g turanGraph n r) (hr : 0 < r) : G.IsTur
   obtain ⟨J, _, j⟩ := exists_isTuranMaximal (V := V) hr
   obtain ⟨g⟩ := j.nonempty_iso_turanGraph
   rw [f.card_eq, Fintype.card_fin] at g
-  use (turanGraph_cliqueFree (n := n) hr).comap f,
+  use (turanGraph_cliqueFree (n := n) hr).comap f.isContained,
     fun H _ cf ↦ (f.symm.comp g).card_edgeFinset_eq ▸ j.2 cf
 
 /-- Turán-maximality with `0 < r` transfers across graph isomorphisms. -/

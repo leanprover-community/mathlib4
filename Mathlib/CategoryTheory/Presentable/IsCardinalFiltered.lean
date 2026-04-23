@@ -66,7 +66,7 @@ noncomputable def cocone {A : Type v'} [Category.{u'} A]
   have := small_of_small_arrow.{w} A
   have := locallySmall_of_small_arrow.{w} A
   let e := (Shrink.equivalence.{w} A).trans (ShrinkHoms.equivalence.{w} (Shrink.{w} A))
-  exact (Cocones.equivalenceOfReindexing e.symm (Iso.refl _)).inverse.obj
+  exact (Cocone.equivalenceOfReindexing e.symm (Iso.refl _)).inverse.obj
     (nonempty_cocone (κ := κ) (e.inverse ⋙ F) (by simpa)).some
 
 variable (J) in
@@ -151,9 +151,6 @@ lemma isFiltered_of_isCardinalFiltered (J : Type u) [Category.{v} J]
     infer_instance
   exact ⟨cocone F hA⟩
 
-@[deprecated (since := "2025-10-07")] alias isFiltered_of_isCardinalDirected :=
-  isFiltered_of_isCardinalFiltered
-
 lemma IsCardinalFiltered.nonempty (J : Type u) [Category.{v} J]
     (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] [IsCardinalFiltered J κ] : Nonempty J :=
   have := isFiltered_of_isCardinalFiltered J κ
@@ -173,6 +170,8 @@ lemma isCardinalFiltered_aleph0_iff (J : Type u) [Category.{v} J] :
     have := ((Arrow.finite_iff A).1 hA).some
     exact ⟨IsFiltered.cocone F⟩
 
+-- TODO: make a version specialized to linear orders.
+-- In a linear order, `h` is equivalent to `κ ≤ Order.cof J`
 lemma isCardinalFiltered_preorder (J : Type w) [Preorder J]
     (κ : Cardinal.{w}) [Fact κ.IsRegular]
     (h : ∀ ⦃K : Type w⦄ (s : K → J) (_ : Cardinal.mk K < κ),
@@ -189,11 +188,11 @@ instance (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] :
     IsCardinalFiltered κ.ord.ToType κ :=
   isCardinalFiltered_preorder _ _ (fun ι f hs ↦ by
     have h : Function.Surjective (fun i ↦ (⟨f i, i, rfl⟩ : Set.range f)) := fun _ ↦ by aesop
-    obtain ⟨j, hj⟩ := Ordinal.lt_cof_type
-      (α := κ.ord.ToType) (r := (· < ·)) (S := Set.range f)
-      (lt_of_le_of_lt (Cardinal.mk_le_of_surjective h)
-        (lt_of_lt_of_le hs (by simp [hκ.out.cof_eq])))
-    exact ⟨j, fun i ↦ (hj (f i) (by simp)).le⟩)
+    contrapose! hs
+    rw [← hκ.out.cof_ord, ← Ordinal.cof_toType]
+    refine (Order.cof_le fun j ↦ ?_).trans (Cardinal.mk_le_of_surjective h)
+    obtain ⟨k, hk⟩ := hs j
+    exact ⟨_, Set.mem_range_self k, hk.le⟩)
 
 open IsCardinalFiltered
 
@@ -279,7 +278,8 @@ variable (J κ) in
 /-- A category is `κ`-filtered iff
 1) any family of objects of cardinality `< κ` admits a map towards a common object, and
 2) any family of morphisms `j ⟶ k` of cardinality `< κ` (between *fixed* objects
-`j` and `k`) can be coequalized by a suitable morphism `k ⟶ l`. -/
+   `j` and `k`) can be coequalized by a suitable morphism `k ⟶ l`.
+-/
 lemma isCardinalFiltered_iff :
     IsCardinalFiltered J κ ↔
       (∀ ⦃ι : Type w⦄ (j : ι → J) (_ : HasCardinalLT ι κ),
