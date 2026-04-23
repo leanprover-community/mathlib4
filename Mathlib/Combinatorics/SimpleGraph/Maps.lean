@@ -344,7 +344,7 @@ theorem subset_preimage_edgeSet : G.edgeSet ⊆ Sym2.map f ⁻¹' G'.edgeSet :=
   fun _ ↦ f.map_mem_edgeSet
 
 theorem image_edgeSet_subset : Sym2.map f '' G.edgeSet ⊆ G'.edgeSet :=
-  fun _e' ⟨_e, he, he'⟩ ↦ he' ▸ f.map_mem_edgeSet he
+  Set.image_subset_iff.mpr f.subset_preimage_edgeSet
 
 theorem apply_mem_neighborSet {v w : V} (h : w ∈ G.neighborSet v) : f w ∈ G'.neighborSet (f v) :=
   map_adj f h
@@ -355,7 +355,7 @@ theorem subset_preimage_neighborSet : G.neighborSet v ⊆ f ⁻¹' G'.neighborSe
 
 variable (v) in
 theorem image_neighborSet_subset : f '' G.neighborSet v ⊆ G'.neighborSet (f v) :=
-  fun _ ⟨_, hmem, heq⟩ ↦ heq ▸ f.apply_mem_neighborSet hmem
+  Set.image_subset_iff.mpr <| f.subset_preimage_neighborSet v
 
 /-- The map between edge sets induced by a homomorphism.
 The underlying map on edges is given by `Sym2.map`. -/
