@@ -102,6 +102,7 @@ theorem IsClique.mono (h : G ≤ H) : G.IsClique s → H.IsClique s := Set.Pairw
 theorem IsClique.subset (h : t ⊆ s) : G.IsClique s → G.IsClique t := Set.Pairwise.mono h
 
 variable (s) in
+@[simp]
 theorem isClique_top : (⊤ : SimpleGraph α).IsClique s :=
   fun _ _ _ _ ↦ id
 
