@@ -37,8 +37,8 @@ relevant for covering space theory.
 ## Main theorems
 
 * `semilocallySimplyConnectedAt_iff` - Characterization in terms of loops being nullhomotopic.
-* `semilocallySimplyConnectedAt_iff_paths` - Characterization: any two paths in U between the same
-  endpoints are homotopic.
+* `semilocallySimplyConnectedAt_iff_paths` - Characterization: there exists a neighbourhood `U`
+  such that any two paths in `U` between the same endpoints are homotopic.
 * `SemilocallySimplyConnectedAt.of_simplyConnected` - Simply connected spaces are semilocally
   simply connected at every point.
 * `Path.Homotopic.Quotient.discreteTopology` - In a semilocally simply connected,
@@ -90,14 +90,13 @@ theorem semilocallySimplyConnectedAt_iff {x : X} :
     -- The map from π₁(U, u') to π₁(X, u) has trivial range
     have h_range := hU_loops u'
     rw [MonoidHom.range_eq_bot_iff] at h_range
-    have h_map : FundamentalGroup.map ⟨Subtype.val, continuous_subtype_val⟩ u'
-            (FundamentalGroup.fromPath ⟦γ_U⟧) =
-           FundamentalGroup.fromPath ⟦Path.refl u⟧ := by
-      rw [h_range]; rfl
-    rw [show FundamentalGroup.map ⟨Subtype.val, continuous_subtype_val⟩ u'
-            (FundamentalGroup.fromPath ⟦γ_U⟧) =
-           FundamentalGroup.fromPath ⟦γ_U.map continuous_subtype_val⟧ from rfl,
-        Path.map_codRestrict] at h_map
+    have h_map_eq : FundamentalGroup.map ⟨Subtype.val, continuous_subtype_val⟩ u'
+        (FundamentalGroup.fromPath ⟦γ_U⟧) =
+      FundamentalGroup.fromPath ⟦γ_U.map continuous_subtype_val⟧ := rfl
+    have h_map : FundamentalGroup.fromPath ⟦γ_U.map continuous_subtype_val⟧ =
+        FundamentalGroup.fromPath ⟦Path.refl u⟧ := by
+      rw [← h_map_eq, h_range]; rfl
+    rw [Path.map_codRestrict] at h_map
     exact Quotient.eq.mp h_map
   · -- Backward direction: small loops null implies SemilocallySimplyConnectedAt
     intro ⟨U, hU_open, hx_in_U, hU_loops_null⟩
@@ -108,10 +107,10 @@ theorem semilocallySimplyConnectedAt_iff {x : X} :
       rintro _ ⟨t, rfl⟩
       exact (γ' t).property
     have hhom := hU_loops_null (γ'.map continuous_subtype_val) hrange
-    rw [show FundamentalGroup.map ⟨Subtype.val, continuous_subtype_val⟩ base
-            (FundamentalGroup.fromPath ⟦γ'⟧) =
-           FundamentalGroup.fromPath ⟦γ'.map continuous_subtype_val⟧ from rfl,
-        Quotient.sound hhom]
+    have h_map_eq : FundamentalGroup.map ⟨Subtype.val, continuous_subtype_val⟩ base
+        (FundamentalGroup.fromPath ⟦γ'⟧) =
+      FundamentalGroup.fromPath ⟦γ'.map continuous_subtype_val⟧ := rfl
+    rw [h_map_eq, Quotient.sound hhom]
     rfl
 
 /-- Characterization of semilocally simply connected at a point: any two paths in U between
@@ -215,33 +214,6 @@ theorem semilocallySimplyConnectedSpace_iff_paths :
 
 /-! ### Helper lemmas for discreteness of path homotopy quotients -/
 
-/-- In an SLSC neighborhood where loops are nullhomotopic, any two paths with the same
-endpoints are homotopic. This is derived by composing one path with the reverse of the other
-to form a loop. -/
-theorem Path.homotopic_of_loops_nullhomotopic_in_neighborhood {x y : X} (U : Set X)
-    (h_loops : ∀ {z : X} (γ : Path z z), z ∈ U → Set.range γ ⊆ U → Path.Homotopic γ (Path.refl z))
-    {p q : Path x y} (hp : Set.range p ⊆ U) (hq : Set.range q ⊆ U) :
-    Path.Homotopic p q := by
-  have hx : x ∈ U := by simpa using hp (Set.mem_range_self (0 : unitInterval))
-  -- The loop p · q⁻¹ is nullhomotopic
-  have h_loop : Path.Homotopic (p.trans q.symm) (Path.refl x) := by
-    apply h_loops (p.trans q.symm) hx
-    intro z hz
-    obtain ⟨t, rfl⟩ := hz
-    simp only [Path.trans_apply]
-    split_ifs <;> [exact hp (Set.mem_range_self _); exact hq (Set.mem_range_self _)]
-  -- Move to quotient and work there
-  replace h_loop := Path.Homotopic.Quotient.eq.mpr h_loop
-  simp only [Path.Homotopic.Quotient.mk_trans, Path.Homotopic.Quotient.mk_symm,
-    Path.Homotopic.Quotient.mk_refl] at h_loop
-  apply Path.Homotopic.Quotient.exact
-  generalize Path.Homotopic.Quotient.mk p = p' at h_loop ⊢
-  generalize Path.Homotopic.Quotient.mk q = q' at h_loop ⊢
-  calc p' = p'.trans (q'.symm.trans q') := by simp
-    _ = (p'.trans q'.symm).trans q' := by simp
-    _ = (Path.Homotopic.Quotient.refl x).trans q' := by rw [h_loop]
-    _ = q' := by simp
-
 /-- In an SLSC space, every point has an open neighborhood U such that for any two points
 in U, there is a unique (up to homotopy) path between them.
 
@@ -257,12 +229,8 @@ theorem exists_uniquePath_neighborhood [SemilocallySimplyConnectedSpace X] (x : 
         Set.range p ⊆ U → Set.range q ⊆ U → Path.Homotopic p q) := by
   obtain ⟨U, hU_open, hx_in_U, hU_loops⟩ := semilocallySimplyConnectedSpace_iff.mp ‹_› x
   refine ⟨U, hU_open, hx_in_U, ?_⟩
-  intro a b ha hb p q hp_range hq_range
-  apply Path.homotopic_of_loops_nullhomotopic_in_neighborhood U
-  · intro z γ hz hγ_range
-    exact hU_loops γ hγ_range
-  · exact hp_range
-  · exact hq_range
+  intro _ _ _ _ p q hp hq
+  exact (Path.Homotopic.paths_homotopic_iff_loops_nullhomotopic U).mpr hU_loops p q hp hq
 
 /-- An SLSC neighborhood can be chosen to be path-connected. In a locally path-connected space,
 we can use the path component of x in an SLSC neighborhood V to get a neighborhood that is both
