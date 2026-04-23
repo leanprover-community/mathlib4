@@ -528,7 +528,7 @@ lemma exists_isLocalHom_flat : ∃ (R' : Type (max u v)) (_ : CommRing R') (_ : 
     maximalIdeal R' = (maximalIdeal R).map (algebraMap R R') ∧
     Nonempty (K ≃ₐ[ResidueField R] (ResidueField R')) := by
   obtain ⟨setK, ⟨e⟩⟩ : ∃ S : Type max u v, Nonempty (S ≃ Set K) := ⟨ULift (Set K), ⟨Equiv.ulift⟩⟩
-  let ⟨lin, wf⟩ := exists_wellOrder setK
+  let ⟨lin, wf⟩ := exists_wellFoundedLT setK
   let : WellFoundedLT (WithTop setK) := WithTop.instWellFoundedLT
   let : SuccOrder (WithTop setK) := SuccOrder.ofLinearWellFoundedLT _
   let : OrderBot (WithTop setK) := WellFoundedLT.toOrderBot _
