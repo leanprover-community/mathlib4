@@ -125,10 +125,11 @@ theorem pow_succ {n : ℕ} : t ^ (n + 1) = t ^ n * t := rfl
 It is defined via choice, so the result only makes sense when the structure satisfies commutativity
 (see `realize_prod`). -/
 @[to_additive /-- Summation over a finite set of terms.
+
 It is defined via choice, so the result only makes sense when the structure satisfies commutativity
 (see `realize_sum`). -/]
-noncomputable def prod {β : Type*} (s : Finset β) (f : β → L.Term α) :
-    L.Term α := (s.toList.map f).prod
+noncomputable def prod {β : Type*} (s : Finset β) (f : β → L.Term α) : L.Term α :=
+  (s.toList.map f).prod
 
 end
 
@@ -265,7 +266,7 @@ theorem DefinableFun.finsetProd [OneConstant L] [MulFunction L] [CommMonoid M] [
     [CompatibleMul L M] {ι : Type*} {s : Finset ι} {f : ι → (α → M) → M}
     (hf : ∀ i ∈ s, A.DefinableFun L (f i)) :
     A.DefinableFun L fun v => ∏ i ∈ s, f i v := by
-  conv in (Finset.prod _ _) => rw [← Finset.prod_coe_sort]
+  conv in Finset.prod _ _ => rw [← Finset.prod_coe_sort]
   apply comp
   · simp [DefinableMap, *]
   · convert (Term.prod .univ (L := L) fun i : s => Term.var i).definableFun_realize.of_empty
