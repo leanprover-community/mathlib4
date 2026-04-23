@@ -89,16 +89,16 @@ lemma term_realize_eq_add_dotProduct [Fintype α] (t : presburger[[A]].Term α) 
       | zero =>
         refine ⟨0, 0, fun v => ?_⟩
         rw [withConstants_funMap_sumInl]
-        simp
+        simp [zero_eq]
       | one =>
         refine ⟨1, 0, fun v => ?_⟩
         rw [withConstants_funMap_sumInl]
-        simp [ih]
+        simp [one_eq]
       | add =>
         refine ⟨k 0 + k 1, u 0 + u 1, fun v => ?_⟩
         rw [withConstants_funMap_sumInl, add_dotProduct, add_left_comm, add_assoc, add_left_comm,
           ← add_assoc]
-        simp [ih]
+        simp [ih, add_eq]
     | inr f =>
       cases l with
       | zero =>

@@ -49,9 +49,9 @@ instance : ZeroConstant presburger := ⟨presburgerFunc.zero⟩
 instance : OneConstant presburger := ⟨presburgerFunc.one⟩
 instance : AddFunction presburger := ⟨presburgerFunc.add⟩
 
-@[simp] theorem zero_eq : presburgerFunc.zero = Constants.zero (L := presburger) := rfl
-@[simp] theorem one_eq : presburgerFunc.one = Constants.one (L := presburger) := rfl
-@[simp] theorem add_eq : presburgerFunc.add = Functions.add (L := presburger) := rfl
+theorem zero_eq : presburgerFunc.zero = Constants.zero (L := presburger) := rfl
+theorem one_eq : presburgerFunc.one = Constants.one (L := presburger) := rfl
+theorem add_eq : presburgerFunc.add = Functions.add (L := presburger) := rfl
 
 open Structure
 
