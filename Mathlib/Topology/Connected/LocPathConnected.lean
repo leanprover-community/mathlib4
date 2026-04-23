@@ -126,7 +126,7 @@ def connectedComponentsEquivZerothHomotopy : ConnectedComponents X ≃ ZerothHom
 
 @[simp]
 lemma connectedComponentsEquivZerothHomotopy_apply (x : X) :
-    connectedComponentsEquivZerothHomotopy ⟦x⟧ = ⟦x⟧ :=
+    connectedComponentsEquivZerothHomotopy ⟦x⟧ = (.mk x) :=
   rfl
 
 @[simp]
@@ -135,7 +135,7 @@ lemma coe_connectedComponentsEquivZerothHomotopy_symm :
   rfl
 
 lemma connectedComponentsEquivZerothHomotopy_symm_apply (x : X) :
-    connectedComponentsEquivZerothHomotopy.symm ⟦x⟧ = ⟦x⟧ :=
+    connectedComponentsEquivZerothHomotopy.symm (.mk x) = ⟦x⟧ :=
   rfl
 
 theorem pathConnected_subset_basis {U : Set X} (h : IsOpen U) (hx : x ∈ U) :
@@ -262,19 +262,12 @@ instance AlexandrovDiscrete.locPathConnectedSpace [AlexandrovDiscrete X] :
   symm
   apply hy.joinedIn <;> rewrite [mem_nhdsKer_singleton] <;> [assumption; rfl]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a space is locally path-connected, the topology of its path components is discrete. -/
 instance : DiscreteTopology <| ZerothHomotopy X := by
   refine discreteTopology_iff_isOpen_singleton.mpr fun c ↦ ?_
-  obtain ⟨x, rfl⟩ := Quotient.mk_surjective c
-  rw [← isQuotientMap_quotient_mk'.isOpen_preimage]
-  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
-  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
-  It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
-  canonicalizer; a minimization would help. The original proof was:
-  `grind [ZerothHomotopy.preimage_singleton_eq_pathComponent, IsOpen.pathComponent]` -/
-  rw [ZerothHomotopy.preimage_singleton_eq_pathComponent]
-  exact IsOpen.pathComponent x
+  obtain ⟨x, rfl⟩ := ZerothHomotopy.mk_surjective c
+  rw [← ZerothHomotopy.isQuotientMap_mk.isOpen_preimage]
+  grind [ZerothHomotopy.preimage_singleton_eq_pathComponent, IsOpen.pathComponent]
 
 /-- A locally path-connected compact space has finitely many path components. -/
 instance [CompactSpace X] : Finite <| ZerothHomotopy X :=
