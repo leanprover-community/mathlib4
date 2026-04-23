@@ -423,8 +423,8 @@ theorem norm_integral_le_of_norm_le_const' {f : ℂ → E} {c : ℂ} {R C : ℝ}
         calc
           ‖deriv (circleMap c R) θ • f (circleMap c R θ)‖ = |R| * ‖f (circleMap c R θ)‖ := by
             simp [norm_smul]
-          _ ≤ |R| * C :=
-            mul_le_mul_of_nonneg_left (hf _ <| circleMap_mem_sphere' _ _ _) (abs_nonneg _)
+          _ ≤ |R| * C := by
+            gcongr; exact hf _ <| circleMap_mem_sphere' _ _ _
     _ = 2 * π * |R| * C := by rw [sub_zero, _root_.abs_of_pos Real.two_pi_pos]; ac_rfl
 
 theorem norm_integral_le_of_norm_le_const {f : ℂ → E} {c : ℂ} {R C : ℝ} (hR : 0 ≤ R)
@@ -459,7 +459,8 @@ theorem norm_integral_lt_of_norm_le_const_of_lt {f : ℂ → E} {c : ℂ} {R C :
           Real.two_pi_pos ?_ continuousOn_const (fun θ _ => ?_) ⟨θ₀, Ioc_subset_Icc_self hmem, ?_⟩
       · exact continuousOn_const.mul (hc.comp (continuous_circleMap _ _).continuousOn fun θ _ =>
           circleMap_mem_sphere _ hR.le _).norm
-      · exact mul_le_mul_of_nonneg_left (hf _ <| circleMap_mem_sphere _ hR.le _) hR.le
+      · gcongr
+        exact hf _ <| circleMap_mem_sphere _ hR.le _
       · gcongr
     _ = 2 * π * R * C := by simp [mul_assoc]; ring
 
@@ -560,10 +561,9 @@ theorem norm_cauchyPowerSeries_le (f : ℂ → E) (c : ℂ) (R : ℝ) (n : ℕ) 
     _ = (2 * π)⁻¹ * ‖∮ z in C(c, R), (z - c)⁻¹ ^ n • (z - c)⁻¹ • f z‖ := by
       simp [cauchyPowerSeries, norm_smul, Real.pi_pos.le]
     _ ≤ (2 * π)⁻¹ * ∫ θ in 0..2 * π, ‖deriv (circleMap c R) θ •
-        (circleMap c R θ - c)⁻¹ ^ n • (circleMap c R θ - c)⁻¹ • f (circleMap c R θ)‖ :=
-      (mul_le_mul_of_nonneg_left
-        (intervalIntegral.norm_integral_le_integral_norm Real.two_pi_pos.le)
-        (by simp [Real.pi_pos.le]))
+        (circleMap c R θ - c)⁻¹ ^ n • (circleMap c R θ - c)⁻¹ • f (circleMap c R θ)‖ := by
+      gcongr
+      exact intervalIntegral.norm_integral_le_integral_norm (by positivity)
     _ = (2 * π)⁻¹ *
         (|R|⁻¹ ^ n * (|R| * (|R|⁻¹ * ∫ x : ℝ in 0..2 * π, ‖f (circleMap c R x)‖))) := by
       simp [norm_smul, mul_left_comm |R|]
