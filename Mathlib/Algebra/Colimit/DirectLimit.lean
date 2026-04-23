@@ -347,8 +347,8 @@ instance [∀ i, NonUnitalNonAssocSemiring (G i)] [∀ i j h, NonUnitalRingHomCl
   mul_zero := mul_zero
 
 instance [∀ i, NonUnitalNonAssocSemiring (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)]
-    [∀ i, StarRing (G i)] [∀ i j h, StarHomClass (T h) (G i) (G j)]
-    : StarRing (DirectLimit G f) where
+    [∀ i, StarRing (G i)] [∀ i j h, StarHomClass (T h) (G i) (G j)] :
+    StarRing (DirectLimit G f) where
   star_add := star_add
 
 instance [∀ i, NonUnitalSemiring (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
