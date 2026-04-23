@@ -41,18 +41,11 @@ the quotient topology coming from the compact-open based-path space.
 
 Hatcher (and many textbook treatments) topologise the universal cover directly, declaring
 a basic open set for each pair `(q, U)` of a homotopy class `q` and a good neighbourhood `U`.
-That definition is concrete, but then checking basic properties — continuity of the projection,
-openness of sheets, the covering map property — amounts to rebuilding a significant amount of
-point-set topology by hand.
 
-Here we take a different route: the based-path space `BasedPath x₀` with the compact-open
-topology already "knows" how to be continuous; we put the quotient topology on the
-endpoint/homotopy-class model via the surjection `ofBasedPath`. The book's sheet basis is then
-a theorem (`sheet` is open in our topology) rather than a definition, and continuity of the
-projection is inherited from continuity of `endpoint : BasedPath x₀ → X`. The trade-off is
-some extra work showing that our coinduced topology has the expected local structure
-(the sheet decomposition over good neighbourhoods), which is carried out below and in
-`BasedPath.lean`.
+Here we take a different route: the based-path space `BasedPath x₀` already naturally has the
+compact-open topology, and we put the quotient topology on the endpoint/homotopy-class model via the
+surjection `ofBasedPath`. This introduces slightly more complexity, that is hidden in book
+presentations that omit proving their introduced topology is actually the standard one.
 -/
 
 @[expose] public section
