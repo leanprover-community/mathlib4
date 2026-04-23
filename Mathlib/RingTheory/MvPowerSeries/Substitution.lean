@@ -168,6 +168,15 @@ protected theorem HasSubst.X_pow {n : ℕ} (hn : n ≠ 0) :
     HasSubst (fun (s : σ) ↦ (X s : MvPowerSeries σ S) ^ n) :=
   HasSubst.X.pow (by lia)
 
+lemma HasSubst.truncTotal {a : σ → MvPowerSeries τ S} {x : σ → ℕ} [Finite τ] (ha : HasSubst a) :
+    HasSubst (fun i ↦ ((a i).truncTotal (x i)).toMvPowerSeries) where
+  const_coeff i := by
+    rw [← coeff_zero_eq_constantCoeff_apply, MvPolynomial.coeff_coe,
+      ← MvPolynomial.constantCoeff_eq, constantCoeff_truncTotal_eq_ite]
+    split_ifs <;> simp [ha.const_coeff i]
+  coeff_zero d :=
+    (ha.coeff_zero d).subset fun i => by contrapose; simp +contextual [coeff_truncTotal_eq_ite]
+
 /-- Substitution of power series into a power series
 
 It coincides with evaluation when `f` is a polynomial, or under `HasSubst a`.
@@ -493,21 +502,8 @@ section truncTotal
 
 open Finset
 
-variable {f : MvPowerSeries σ R} [Finite τ] [Finite σ] {x : σ → ℕ} {k : ℕ}
+variable {f : MvPowerSeries σ R} [Finite τ] {x : σ → ℕ} {k : ℕ}
 
-omit [Finite σ] in
-lemma HasSubst.truncTotal (ha : HasSubst a) :
-    HasSubst (fun i ↦ ((a i).truncTotal (x i)).toMvPowerSeries) where
-  const_coeff i := by
-    rw [← coeff_zero_eq_constantCoeff_apply, MvPolynomial.coeff_coe,
-      ← MvPolynomial.constantCoeff_eq, constantCoeff_truncTotal_eq_ite]
-    by_cases h : 0 < x i
-    · simp [if_pos h, ha.const_coeff i]
-    simp [if_neg h]
-  coeff_zero d :=
-    (ha.coeff_zero d).subset fun i => by contrapose; simp +contextual [coeff_truncTotal_eq_ite]
-
-omit [Finite σ] in
 theorem truncTotal_subst_eq_truncTotal_right_of_lt (ha : HasSubst a) (hx : ∀ i, k < x i) :
     (f.subst a).truncTotal k = (f.subst
       fun i ↦ ((a i).truncTotal (x i)).toMvPowerSeries).truncTotal k := by
@@ -536,7 +532,8 @@ theorem truncTotal_subst_eq_truncTotal_right_of_lt (ha : HasSubst a) (hx : ∀ i
     · exact HasSubst.truncTotal ha
   simp_rw [coeff_truncTotal_eq_zero _ (not_lt.mp hd)]
 
-theorem truncTotal_subst_eq_truncTotal_left (ha : HasSubst a) (ha₁ : ∀ i, (a i).constantCoeff = 0) :
+theorem truncTotal_subst_eq_truncTotal_left [Finite σ] (ha : HasSubst a)
+    (ha₁ : ∀ i, (a i).constantCoeff = 0) :
     truncTotal k (f.subst a)
       = (∑ i ∈ range k, (f.homogeneousComponent i).subst a).truncTotal k := by
   ext d
@@ -563,7 +560,7 @@ theorem truncTotal_subst_eq_truncTotal_left (ha : HasSubst a) (ha₁ : ∀ i, (a
     rw [coeff_homogeneousComponent, if_neg ht.symm, zero_smul]
   simp_rw [coeff_truncTotal_eq_zero _ (not_lt.mp hd)]
 
-theorem truncTotal_subst_of_lt (ha : HasSubst a) (ha₁ : ∀ i, (a i).constantCoeff = 0)
+theorem truncTotal_subst_of_lt [Finite σ] (ha : HasSubst a) (h : ∀ i, (a i).constantCoeff = 0)
     (hx : ∀ i, k < x i) :
     truncTotal k (f.subst a) = (∑ i ∈ range k, (f.homogeneousComponent i).subst
       (fun i ↦ ((a i).truncTotal (x i)).toMvPowerSeries)).truncTotal k := by
@@ -571,12 +568,12 @@ theorem truncTotal_subst_of_lt (ha : HasSubst a) (ha₁ : ∀ i, (a i).constantC
   refine truncTotal_subst_eq_truncTotal_left (HasSubst.truncTotal ha) ?_
   intro i
   rw [← coeff_zero_eq_constantCoeff_apply, MvPolynomial.coeff_coe,
-    ← MvPolynomial.constantCoeff_eq, constantCoeff_truncTotal_eq_ite, if_pos (by grind), ha₁ i]
+    ← MvPolynomial.constantCoeff_eq, constantCoeff_truncTotal_eq_ite, if_pos (by grind), h i]
 
-theorem truncTotal_subst (ha : HasSubst a) (ha₁ : ∀ i, (a i).constantCoeff = 0) :
+theorem truncTotal_subst [Finite σ] (ha : HasSubst a) (h : ∀ i, (a i).constantCoeff = 0) :
     truncTotal k (f.subst a) = (∑ i ∈ range k, (f.homogeneousComponent i).subst
       (fun i ↦ ((a i).truncTotal (k + 1)).toMvPowerSeries)).truncTotal k :=
-  truncTotal_subst_of_lt ha ha₁ fun _ ↦ lt_add_one k
+  truncTotal_subst_of_lt ha h fun _ ↦ lt_add_one k
 
 end truncTotal
 

@@ -306,8 +306,7 @@ theorem coeff_truncTotal_eq_ite :
 
 theorem constantCoeff_truncTotal_eq_ite :
     (truncTotal n p).constantCoeff = if 0 < n then p.constantCoeff else 0 := by
-  rw [MvPolynomial.constantCoeff_eq, coeff_truncTotal_eq_ite]
-  rfl
+  simp [MvPolynomial.constantCoeff_eq, coeff_truncTotal_eq_ite]
 
 lemma truncTotal_one (h : n ≠ 0) : truncTotal n (1 : MvPowerSeries σ R) = 1 :=
   truncFinset_one (by revert h; contrapose; simp)
