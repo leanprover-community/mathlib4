@@ -225,9 +225,7 @@ lemma nnnorm_sum_eq_sup {ι : Type*} {f : ι → A} (s : Finset ι) (h0 : Pairwi
   induction s using Finset.induction with
   | empty => simp
   | insert j s hj ih =>
-    suffices f j * ∑ i ∈ s, f i = 0 by
-      simp_all only [not_false_eq_true, Finset.sum_insert, Finset.sup_insert]
-      simpa [← ih] using nnnorm_add_eq_max this
+    suffices f j * ∑ i ∈ s, f i = 0 by simp_all [nnnorm_add_eq_max this]
     simpa [Finset.mul_sum] using Finset.sum_eq_zero fun i hi ↦ h0 (by grind)
 
 end CommCStarAlgebra
@@ -304,9 +302,7 @@ lemma nnnorm_sum_eq_sup {ι : Type*} {f : ι → A} (s : Finset ι)
   | empty => simp
   | insert j s hj ih =>
     suffices f j * ∑ i ∈ s, f i = 0 by
-      simp_all only [Finset.mem_insert, or_true, implies_true, forall_const, forall_eq_or_imp,
-        not_false_eq_true, Finset.sum_insert, Finset.sup_insert]
-      simpa [← ih] using h.1.nnnorm_add_eq_max (by cfc_tac) this
+      simp_all [(h j (by simp)).nnnorm_add_eq_max (by cfc_tac) this]
     simpa [Finset.mul_sum] using Finset.sum_eq_zero fun i hi ↦ h0 (by grind)
 
 end IsSelfAdjoint
