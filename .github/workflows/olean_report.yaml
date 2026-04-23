@@ -33,7 +33,21 @@ jobs:
         contains(github.event.comment.body, '!olean_report')
       }}
     steps:
+      - name: Check trigger pattern
+        id: check_trigger
+        env:
+          COMMENT_BODY: ${{ github.event.comment.body }}
+        run: |
+          # Require !olean_report to appear at the beginning of a line.
+          if printf '%s' "$COMMENT_BODY" | grep -qE '^!olean_report'; then
+            echo "triggered=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "triggered=false" >> "$GITHUB_OUTPUT"
+            echo "'!olean_report' was not found at the beginning of a line; skipping."
+          fi
+
       - name: Checkout local actions
+        if: steps.check_trigger.outputs.triggered == 'true'
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ github.workflow_sha }}
@@ -42,12 +56,14 @@ jobs:
           path: workflow-actions
 
       - name: Get mathlib-ci
+        if: steps.check_trigger.outputs.triggered == 'true'
         uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
       # We use the GH CLI here because issue_comment events do not carry the
       # full pull_request payload.
       - name: Get PR info
         id: pr_info
+        if: steps.check_trigger.outputs.triggered == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -62,6 +78,7 @@ jobs:
       # GitHub mirrors fork commits under this ref.
       # We fetch full depth so that we can compute the merge base.
       - name: Checkout PR head
+        if: steps.check_trigger.outputs.triggered == 'true'
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           repository: ${{ github.repository }}
@@ -72,6 +89,7 @@ jobs:
       # Check out master into tools-branch.  We build the `cache` binary from
       # here so that a single binary can fetch oleans for both checkouts.
       - name: Checkout tools branch (master)
+        if: steps.check_trigger.outputs.triggered == 'true'
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           repository: ${{ github.repository }}
@@ -84,6 +102,7 @@ jobs:
       # branched off.
       - name: Compute merge base
         id: merge_base
+        if: steps.check_trigger.outputs.triggered == 'true'
         working-directory: pr-branch
         run: |
           BASE_SHA="${{ steps.pr_info.outputs.base_sha }}"
@@ -92,6 +111,7 @@ jobs:
           echo "sha=$MERGE_BASE" >> "$GITHUB_OUTPUT"
 
       - name: Checkout merge base
+        if: steps.check_trigger.outputs.triggered == 'true'
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           repository: ${{ github.repository }}
@@ -101,6 +121,7 @@ jobs:
 
       - name: Check toolchain compatibility
         id: toolchain_check
+        if: steps.check_trigger.outputs.triggered == 'true'
         env:
           BASE_REF: ${{ steps.pr_info.outputs.base_ref }}
         run: |
@@ -171,6 +192,7 @@ jobs:
           "$CACHE_BIN" get
 
       - name: Generate olean report
+        if: steps.check_trigger.outputs.triggered == 'true'
         env:
           TOOLCHAINS_MATCH: ${{ steps.toolchain_check.outputs.match }}
           MISMATCH_REASON: ${{ steps.toolchain_check.outputs.mismatch_reason }}
@@ -235,6 +257,7 @@ jobs:
           fi
 
       - name: Upload full olean diff
+        if: steps.check_trigger.outputs.triggered == 'true'
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: olean-diff-full
@@ -243,12 +266,14 @@ jobs:
           retention-days: 5
 
       - name: Prepare bridge outputs
+        if: steps.check_trigger.outputs.triggered == 'true'
         run: |
           jq -n \
             --arg pr_number "${{ github.event.issue.number }}" \
             '{ pr_number: $pr_number }' > bridge-outputs.json
 
       - name: Emit bridge artifact
+        if: steps.check_trigger.outputs.triggered == 'true'
         uses: leanprover-community/privilege-escalation-bridge/emit@f5dfe313a79647c07315b451b2dc2a81a161a50d # v1.2.0
         with:
           artifact: workflow-data
