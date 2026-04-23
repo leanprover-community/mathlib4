@@ -175,6 +175,19 @@ theorem deformTerminal_apply_of_lt {u v : X} (γ : BasedPath x₀) (hu : endpoin
     (deformTerminal γ hu δ ha hab hb).1 t = δ.extend (((t : ℝ) - b) / (1 - b)) := by
   simp [deformTerminal, not_le_of_gt (lt_trans hab ht), not_le_of_gt ht]
 
+/-- The endpoint of `deformTerminal γ hu δ ha hab hb` is the endpoint of `δ`. -/
+theorem endpoint_deformTerminal {u v : X} (γ : BasedPath x₀) (hu : endpoint γ = u)
+    (δ : Path u v) {a b : ℝ} (ha : 0 ≤ a) (hab : a < b) (hb : b < 1) :
+    endpoint (deformTerminal γ hu δ ha hab hb) = v := by
+  simp only [endpoint_def]
+  rw [deformTerminal_apply_of_lt γ hu δ ha hab hb 1 hb]
+  have hbne : (1 : ℝ) - b ≠ 0 := sub_ne_zero.mpr hb.ne'
+  have hone : (((1 : I) : ℝ) - b) / (1 - b) = 1 := by
+    have : ((1 : I) : ℝ) = 1 := rfl
+    rw [this]; field_simp
+  rw [hone]
+  simp [δ.extend_one]
+
 end BasedPath
 
 namespace Path
@@ -278,83 +291,66 @@ private theorem exists_deformTerminal_mem_basicNeighborhood
   classical
   intro v hvW
   obtain ⟨δ, hδW⟩ := hWpath.exists_path huW hvW
-  let η := deformTerminal γ rfl δ ha0 hab hb1
-  have hηV : η.1 ∈ V := by
-    apply hSV
-    intro K U hKU
-    have hKUT : (K, U) ∈ T := hT_of_S (K, U) hKU
-    by_cases h1K : (1 : I) ∈ K
-    · have hKUgood : (K, U) ∈ Tgood := by
-        exact (hTgood_iff (K, U)).2 ⟨hKUT, h1K⟩
-      change Set.MapsTo η.1 K U
-      intro t ht
-      by_cases hta : (t : ℝ) ≤ a
-      · rw [BasedPath.deformTerminal_apply_of_le γ rfl δ ha0 hab hb1 t hta, Path.extend_apply _ t.2]
-        exact (hSdata K U hKU).2.2 ht
-      · have hat : a < (t : ℝ) := lt_of_not_ge hta
-        by_cases htb : (t : ℝ) ≤ b
-        · have hrange : Set.range (terminalTail γ rfl a (by linarith)) ⊆ W := by
-            apply Path.truncateOfLE_range_subset_preimage (h := ha1)
-            intro s hs
-            have hs01 : s ∈ (Set.Icc 0 1 : Set ℝ) := ⟨le_trans ha0 hs.1, hs.2⟩
-            change γ.toPath.extend s ∈ W
-            rw [Path.extend_apply _ hs01]
-            apply (hIoc ?_).1
-            constructor
-            · change ((a₀ : I) : ℝ) < s
-              exact lt_of_lt_of_le ha₀_lt_a hs.1
-            · change s ≤ 1
-              exact hs.2
-          have hparam : (((t : ℝ) - a) / (b - a)) ∈ (Set.Icc 0 1 : Set ℝ) := by
-            have hba : 0 < b - a := sub_pos.mpr hab
-            constructor
-            · exact div_nonneg (sub_nonneg.mpr (le_of_lt hat)) (le_of_lt hba)
-            · exact (div_le_one hba).2 <| sub_le_sub_right htb a
-          have htailW :
-              (terminalTail γ rfl a (by linarith)).extend (((t : ℝ) - a) / (b - a)) ∈ W := by
-            rw [Path.extend_apply _ hparam]
-            apply hrange
-            exact ⟨⟨((t : ℝ) - a) / (b - a), hparam⟩, rfl⟩
-          rw [BasedPath.deformTerminal_apply_of_lt_of_le γ rfl δ ha0 hab hb1 t hat htb]
-          exact hW_good (K, U) hKUgood htailW
-        · have hbt : b < (t : ℝ) := lt_of_not_ge htb
-          have hparam : (((t : ℝ) - b) / (1 - b)) ∈ (Set.Icc 0 1 : Set ℝ) := by
-            have hb : 0 < 1 - b := sub_pos.mpr hb1
-            constructor
-            · exact div_nonneg (sub_nonneg.mpr (le_of_lt hbt)) (le_of_lt hb)
-            · exact (div_le_one hb).2 <| sub_le_sub_right t.2.2 b
-          have hδt : δ.extend (((t : ℝ) - b) / (1 - b)) ∈ W := by
-            rw [Path.extend_apply _ hparam]
-            apply hδW
-            exact ⟨⟨((t : ℝ) - b) / (1 - b), hparam⟩, rfl⟩
-          rw [BasedPath.deformTerminal_apply_of_lt γ rfl δ ha0 hab hb1 t hbt]
-          exact hW_good (K, U) hKUgood hδt
-    · have hKUbad : (K, U) ∈ Tbad := by
-        exact (hTbad_iff (K, U)).2 ⟨hKUT, h1K⟩
-      change Set.MapsTo η.1 K U
-      intro t ht
-      have ht_not_Ioc : t ∉ Set.Ioc a₀ 1 := by
-        intro htIoc
-        have htN : t ∈ γ.toPath ⁻¹' W ∩ ⋂ KU ∈ Tbad, KU.1ᶜ := hIoc htIoc
-        have htN' : ∀ KU ∈ Tbad, t ∉ KU.1 := by simpa using htN.2
-        exact htN' (K, U) hKUbad ht
-      have htle : (t : ℝ) ≤ a := by
-        by_contra hgt
-        have hat : a < (t : ℝ) := lt_of_not_ge hgt
-        have hat₀ : ((a₀ : I) : ℝ) < t := lt_trans ha₀_lt_a hat
-        exact ht_not_Ioc ⟨hat₀, t.2.2⟩
-      rw [BasedPath.deformTerminal_apply_of_le γ rfl δ ha0 hab hb1 t htle, Path.extend_apply _ t.2]
+  refine ⟨deformTerminal γ rfl δ ha0 hab hb1, ?_,
+    endpoint_deformTerminal γ rfl δ ha0 hab hb1⟩
+  apply hSV
+  intro K U hKU
+  have hKUT : (K, U) ∈ T := hT_of_S (K, U) hKU
+  intro t ht
+  by_cases h1K : (1 : I) ∈ K
+  · have hKUgood : (K, U) ∈ Tgood := (hTgood_iff (K, U)).2 ⟨hKUT, h1K⟩
+    by_cases hta : (t : ℝ) ≤ a
+    · rw [BasedPath.deformTerminal_apply_of_le γ rfl δ ha0 hab hb1 t hta,
+          Path.extend_apply _ t.2]
       exact (hSdata K U hKU).2.2 ht
-  have hend : endpoint η = v := by
-    change η.1 1 = v
-    rw [BasedPath.deformTerminal_apply_of_lt γ rfl δ ha0 hab hb1 1 hb1]
-    have hbne : 1 - b ≠ 0 := sub_ne_zero.mpr hb1.ne'
-    have hratio : ((((1 : I) : ℝ) - b) / (1 - b) : ℝ) = 1 := by
-      change (1 - b) / (1 - b) = 1
-      field_simp [hbne]
-    rw [hratio]
-    simpa using δ.extend_one
-  exact ⟨η, hηV, hend⟩
+    · have hat : a < (t : ℝ) := lt_of_not_ge hta
+      by_cases htb : (t : ℝ) ≤ b
+      · have hrange : Set.range (terminalTail γ rfl a (by linarith)) ⊆ W := by
+          apply Path.truncateOfLE_range_subset_preimage (h := ha1)
+          intro s hs
+          have hs01 : s ∈ (Set.Icc 0 1 : Set ℝ) := ⟨le_trans ha0 hs.1, hs.2⟩
+          simp only [Set.mem_preimage]
+          rw [Path.extend_apply _ hs01]
+          refine (hIoc ?_).1
+          refine ⟨?_, ?_⟩
+          · -- The goal is `a₀ < ⟨s, hs01⟩` as elements of `I`; strip the Subtype-`<` coercion.
+            change ((a₀ : I) : ℝ) < s
+            exact lt_of_lt_of_le ha₀_lt_a hs.1
+          · change s ≤ 1
+            exact hs.2
+        have hparam : (((t : ℝ) - a) / (b - a)) ∈ (Set.Icc 0 1 : Set ℝ) := by
+          have hba : 0 < b - a := sub_pos.mpr hab
+          exact ⟨div_nonneg (sub_nonneg.mpr hat.le) hba.le,
+            (div_le_one hba).2 <| sub_le_sub_right htb a⟩
+        have htailW :
+            (terminalTail γ rfl a (by linarith)).extend (((t : ℝ) - a) / (b - a)) ∈ W := by
+          rw [Path.extend_apply _ hparam]
+          exact hrange ⟨⟨((t : ℝ) - a) / (b - a), hparam⟩, rfl⟩
+        rw [BasedPath.deformTerminal_apply_of_lt_of_le γ rfl δ ha0 hab hb1 t hat htb]
+        exact hW_good (K, U) hKUgood htailW
+      · have hbt : b < (t : ℝ) := lt_of_not_ge htb
+        have hparam : (((t : ℝ) - b) / (1 - b)) ∈ (Set.Icc 0 1 : Set ℝ) := by
+          have hb : 0 < 1 - b := sub_pos.mpr hb1
+          exact ⟨div_nonneg (sub_nonneg.mpr hbt.le) hb.le,
+            (div_le_one hb).2 <| sub_le_sub_right t.2.2 b⟩
+        have hδt : δ.extend (((t : ℝ) - b) / (1 - b)) ∈ W := by
+          rw [Path.extend_apply _ hparam]
+          exact hδW ⟨⟨((t : ℝ) - b) / (1 - b), hparam⟩, rfl⟩
+        rw [BasedPath.deformTerminal_apply_of_lt γ rfl δ ha0 hab hb1 t hbt]
+        exact hW_good (K, U) hKUgood hδt
+  · have hKUbad : (K, U) ∈ Tbad := (hTbad_iff (K, U)).2 ⟨hKUT, h1K⟩
+    have ht_not_Ioc : t ∉ Set.Ioc a₀ 1 := fun htIoc ↦ by
+      have htN : t ∈ γ.toPath ⁻¹' W ∩ ⋂ KU ∈ Tbad, KU.1ᶜ := hIoc htIoc
+      have htN' : ∀ KU ∈ Tbad, t ∉ KU.1 := by simpa using htN.2
+      exact htN' (K, U) hKUbad ht
+    have htle : (t : ℝ) ≤ a := by
+      by_contra hgt
+      have hat : a < (t : ℝ) := lt_of_not_ge hgt
+      have hat₀ : ((a₀ : I) : ℝ) < t := lt_trans ha₀_lt_a hat
+      exact ht_not_Ioc ⟨hat₀, t.2.2⟩
+    rw [BasedPath.deformTerminal_apply_of_le γ rfl δ ha0 hab hb1 t htle,
+        Path.extend_apply _ t.2]
+    exact (hSdata K U hKU).2.2 ht
 
 /-- The endpoint map `BasedPath x₀ → X` is an open map when `X` is locally path-connected. -/
 theorem isOpenMap_endpoint [LocPathConnectedSpace X] (x₀ : X) :
