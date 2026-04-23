@@ -205,6 +205,8 @@ end Homotopic
 
 section Embedding
 
+/-- A morphism `f : X ⟶ Y` in `TopPair` is an embedding if its first and second component are
+embeddings. -/
 structure IsEmbedding {X Y : TopPair} (f : X ⟶ Y)where
   fst : Topology.IsEmbedding (Hom.fst f)
   snd : Topology.IsEmbedding (Hom.snd f)
@@ -213,6 +215,8 @@ end Embedding
 
 section Complement
 
+/-- Two morphisms `f : A ⟶ X` and `g : B ⟶ X` in `TopPair` are complements if their first and second
+components are complements in `TopCat`. -/
 protected structure IsCompl {X A B : TopPair} (f : A ⟶ X) (g : B ⟶ X) where
   fst : TopCat.IsCompl (Hom.fst f) (Hom.fst g)
   snd : TopCat.IsCompl (Hom.snd f) (Hom.snd g)
