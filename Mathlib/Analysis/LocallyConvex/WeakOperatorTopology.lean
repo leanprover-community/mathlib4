@@ -220,11 +220,9 @@ lemma ofCLM_apply {A : E →SL[σ] F} {x : E} : ofCLM A x = A x := rfl
 
 @[deprecated (since := "2026-04-10")] alias _root_.ContinuousLinearMap.toWOT_apply := ofCLM_apply
 
+@[ext]
 lemma ext {A B : E →SWOT[σ] F} (h : ∀ x, A x = B x) : A = B :=
   toCLM_injective <| ContinuousLinearMap.ext h
-
-lemma ext_iff {A B : E →SWOT[σ] F} : A = B ↔ ∀ x, A x = B x :=
-  toCLM_injective.eq_iff.symm.trans ContinuousLinearMap.ext_iff
 
 -- This `ext` lemma is set at a lower priority than the default of 1000, so that the
 -- version with an inner product (`ContinuousLinearMapWOT.ext_inner`) takes precedence
@@ -232,7 +230,8 @@ lemma ext_iff {A B : E →SWOT[σ] F} : A = B ↔ ∀ x, A x = B x :=
 @[ext 900]
 lemma ext_dual [H : SeparatingDual 𝕜₂ F] {A B : E →SWOT[σ] F}
     (h : ∀ x (y : F⋆), y (A x) = y (B x)) : A = B := by
-  simp_rw [ext_iff, ← (separatingDual_iff_injective.mp H).eq_iff, LinearMap.ext_iff]
+  simp_rw [ContinuousLinearMapWOT.ext_iff, ← (separatingDual_iff_injective.mp H).eq_iff,
+    LinearMap.ext_iff]
   exact h
 
 section SMul
