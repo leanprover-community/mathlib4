@@ -570,17 +570,21 @@ theorem subpathOn_self (γ : Path x y) (a : unitInterval) :
     Homotopic (γ.subpathOn a a) (Path.refl (γ a)) := by
   simpa [subpathOn_self_eq_refl] using Homotopic.refl (Path.refl (γ a))
 
-/-- The subpath from `0` to `1`, after casting endpoints, is the original path. -/
+/-- The subpath from `0` to `1` equals the original path, after casting the endpoints of `γ`
+back to `γ 0` and `γ 1`.
+
+The cast is on the RHS so that the lemma rewrites `γ.subpathOn 0 1` (the cluttered form) to
+`γ.cast …` (which names the simple `γ` up to a cast); this matches the direction of the
+`@[simp]` lemma `Path.Homotopic.Quotient.subpathOn_zero_one`. -/
 theorem subpathOn_zero_one_cast (γ : Path x y) :
-    ((γ.subpathOn 0 1).cast (by simp [γ.source]) (by simp [γ.target])) = γ := by
+    γ.subpathOn 0 1 = γ.cast γ.source γ.target := by
   ext t
   simp [Path.cast, Path.subpathOn]
 
-/-- The subpath from 0 to 1 is homotopic to the original path (up to casting endpoints). -/
+/-- The subpath from `0` to `1` is homotopic to the original path, up to casting endpoints. -/
 theorem subpathOn_zero_one (γ : Path x y) :
-    Homotopic
-      ((γ.subpathOn 0 1).cast (by simp [γ.source]) (by simp [γ.target])) γ := by
-  simpa [subpathOn_zero_one_cast] using Homotopic.refl γ
+    Homotopic (γ.subpathOn 0 1) (γ.cast γ.source γ.target) := by
+  rw [subpathOn_zero_one_cast]
 
 namespace Homotopic.Quotient
 
