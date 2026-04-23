@@ -878,8 +878,7 @@ private theorem Path.first_rung_nullhomotopic_of_range_subset_slsc
     let α₀ := (α 0).cast (show x = γ (part.t 0) by rw [part.h_start, γ.source])
       (show x = γ' (part.t 0) by rw [part.h_start, γ'.source])
     Path.Homotopic α₀ (Path.refl x) := by
-  let α₀ := (α 0).cast (show x = γ (part.t 0) by rw [part.h_start, γ.source])
-                       (show x = γ' (part.t 0) by rw [part.h_start, γ'.source])
+  intro α₀
   apply Path.nullhomotopic_of_range_subset_slsc α₀ U₀ h_U₀_slsc
   · have : (α 0) 0 = x := by simp [(α 0).source, part.h_start, γ.source]
     rw [← this]
@@ -897,9 +896,7 @@ private theorem Path.last_rung_nullhomotopic_of_range_subset_slsc
       (show y = γ (part.t (Fin.last n)) by rw [part.h_end, γ.target])
       (show y = γ' (part.t (Fin.last n)) by rw [part.h_end, γ'.target])
     Path.Homotopic αₙ (Path.refl y) := by
-  let αₙ := (α (Fin.last n)).cast
-              (show y = γ (part.t (Fin.last n)) by rw [part.h_end, γ.target])
-              (show y = γ' (part.t (Fin.last n)) by rw [part.h_end, γ'.target])
+  intro αₙ
   apply Path.nullhomotopic_of_range_subset_slsc αₙ Uₙ h_Uₙ_slsc
   · have : (α (Fin.last n)) 0 = y := by simp [(α (Fin.last n)).source, part.h_end]
     rw [← this]
@@ -994,39 +991,19 @@ theorem Path.tube_subset_homotopy_class {x y : X} {n : ℕ}
       exact (hα_ranges i).1
     · -- α i.succ has range in U_i
       exact (hα_ranges i).2
-  -- Step 3: Apply the stronger pasting lemma that uses SLSC to handle endpoint loops
-  -- We need to identify which neighborhoods contain the endpoint rungs
-  -- First, handle the case where n = 0 separately
+  -- Step 3: Apply the stronger pasting lemma that uses SLSC to handle endpoint loops.
   cases n with
-  | zero =>
-    -- When n = 0, the partition is impossible (requires 0 = 1)
-    exfalso; exact IntervalPartition.not_zero part
+  | zero => exfalso; exact IntervalPartition.not_zero part
   | succ n' =>
-    -- Now n = n' + 1, so we have at least one segment
-    -- α 0 has range in V 0, and V 0 ⊆ U 0 (left endpoint of segment 0)
-    -- α (Fin.last n) has range in V (Fin.last n), and V (Fin.last n) ⊆ U n'
-    -- (right endpoint of last segment)
-    -- For α 0: it has range in V 0 ⊆ U 0
     let i_first : Fin (n' + 1) := ⟨0, Nat.zero_lt_succ n'⟩
-    have h_α₀_range : Set.range (α 0) ⊆ T.U i_first := by
-      have h1 : i_first.castSucc = 0 := rfl
-      rw [← h1]
-      exact (hα_ranges i_first).1
-    -- For α (Fin.last (n' + 1)): it has range in V (Fin.last (n' + 1)) ⊆ U n'
     let i_last : Fin (n' + 1) := ⟨n', Nat.lt_succ_self n'⟩
-    have h_αₙ_range : Set.range (α (Fin.last (n' + 1))) ⊆ T.U i_last := by
-      have h1 : i_last.succ = Fin.last (n' + 1) := rfl
-      rw [← h1]
-      exact (hα_ranges i_last).2
-    -- Now apply the stronger pasting lemma and use symmetry
-    apply Path.Homotopic.symm
-    refine paste_segment_homotopies_slsc γ γ' part α h_rectangles
+    refine Path.Homotopic.symm <| paste_segment_homotopies_slsc γ γ' part α h_rectangles
       (T.U i_first)
       (fun p q hp_a hp_d hp_range hq_range ↦ T.h_U_slsc i_first hp_a hp_d p q hp_range hq_range)
-      h_α₀_range
+      (hα_ranges i_first).1
       (T.U i_last)
       (fun p q hp_a hp_d hp_range hq_range ↦ T.h_U_slsc i_last hp_a hp_d p q hp_range hq_range)
-      h_αₙ_range
+      (hα_ranges i_last).2
 
 /--
 In an SLSC locally path-connected space, every path p has an open tubular neighborhood
