@@ -65,11 +65,11 @@ notation:25 E " →L_c[" R "] " F => CompactConvergenceCLM (RingHom.id R) E F
 namespace CompactConvergenceCLM
 
 instance continuousSMul [RingHomSurjective σ] [RingHomIsometric σ]
-    [UniformSpace E] [IsUniformAddGroup E] [TopologicalSpace F] [IsTopologicalAddGroup F]
+    [TopologicalSpace E] [IsTopologicalAddGroup E] [TopologicalSpace F] [IsTopologicalAddGroup F]
     [ContinuousSMul 𝕜₁ E] [ContinuousSMul 𝕜₂ F] :
     ContinuousSMul 𝕜₂ (E →SL_c[σ] F) :=
   UniformConvergenceCLM.continuousSMul σ F { S | IsCompact S }
-    (fun _ hs => hs.totallyBounded.isVonNBounded 𝕜₁)
+    (fun _ hs => hs.isVonNBounded 𝕜₁)
 
 instance instContinuousEvalConst [TopologicalSpace E] [TopologicalSpace F]
     [IsTopologicalAddGroup F] : ContinuousEvalConst (E →SL_c[σ] F) E F :=
