@@ -187,10 +187,15 @@ theorem gt_imp_gt_of_le_of_le (h₁ : a ≤ c) (h₂ : d ≤ b) : a > b → c > 
   fun hab ↦ (h₂.trans_lt hab).trans_le h₁
 
 namespace Mathlib.Tactic.GCongr
+open Lean Meta
 
 /-- See if the term is `a < b` and the goal is `a ≤ b`. -/
 @[gcongr_forward] meta def exactLeOfLt : ForwardExt where
-  eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``le_of_lt #[h])
+  eval h goal := do
+    let le_of_lt := .const ``le_of_lt [← mkFreshLevelMVar]
+    let (mvars, _, _) ← forallMetaTelescope (← inferType le_of_lt)
+    mvars[4]!.mvarId!.assignIfDefEq h
+    goal.assignIfDefEq (mkAppN le_of_lt mvars)
 
 end Mathlib.Tactic.GCongr
 
