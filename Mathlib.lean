@@ -4338,6 +4338,7 @@ public import Mathlib.Dynamics.Ergodic.Function
 public import Mathlib.Dynamics.Ergodic.MeasurePreserving
 public import Mathlib.Dynamics.Ergodic.RadonNikodym
 public import Mathlib.Dynamics.FixedPoints.Basic
+public import Mathlib.Dynamics.FixedPoints.Defs
 public import Mathlib.Dynamics.FixedPoints.Prufer
 public import Mathlib.Dynamics.FixedPoints.Topology
 public import Mathlib.Dynamics.Flow
@@ -7863,6 +7864,7 @@ public import Mathlib.Topology.Sheaves.Skyscraper
 public import Mathlib.Topology.Sheaves.Stalks
 public import Mathlib.Topology.ShrinkingLemma
 public import Mathlib.Topology.Sion
+public import Mathlib.Topology.SmallInductiveDimension
 public import Mathlib.Topology.Sober
 public import Mathlib.Topology.Specialization
 public import Mathlib.Topology.Spectral.Basic
