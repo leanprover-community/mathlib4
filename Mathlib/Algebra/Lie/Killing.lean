@@ -71,7 +71,6 @@ lemma killingForm_nondegenerate :
   refine (LieModule.traceForm_isSymm R L L).isRefl.nondegenerate_iff_separatingLeft.mpr ?_
   simp [LinearMap.separatingLeft_iff_ker_eq_bot]
 
-set_option backward.isDefEq.respectTransparency false in
 variable {R L} in
 lemma ideal_eq_bot_of_isLieAbelian
     [Module.Free R L] [Module.Finite R L] [IsDomain R] [IsPrincipalIdealRing R]
@@ -79,7 +78,6 @@ lemma ideal_eq_bot_of_isLieAbelian
   rw [eq_bot_iff, ← killingCompl_top_eq_bot]
   exact I.le_killingCompl_top_of_isLieAbelian
 
-set_option backward.isDefEq.respectTransparency false in
 instance instSemisimple [IsKilling K L] [Module.Finite K L] : IsSemisimple K L := by
   apply InvariantForm.isSemisimple_of_nondegenerate (Φ := killingForm K L)
   · exact IsKilling.killingForm_nondegenerate _ _
@@ -97,6 +95,16 @@ instance instHasTrivialRadical
     [Module.Free R L] [Module.Finite R L] [IsDomain R] [IsPrincipalIdealRing R] :
     HasTrivialRadical R L :=
   (hasTrivialRadical_iff_no_abelian_ideals R L).mpr IsKilling.ideal_eq_bot_of_isLieAbelian
+
+theorem isLieAbelian_iff_subsingleton
+    [Module.Free R L] [Module.Finite R L] [IsDomain R] [IsPrincipalIdealRing R] :
+    IsLieAbelian L ↔ Subsingleton L := by
+  constructor
+  · intro h
+    rw [isLieAbelian_iff_center_eq_top R] at h
+    have hc : (⊤ : LieIdeal R L) = ⊥ := by rw [← center_eq_bot R L, h]
+    exact (LieSubmodule.subsingleton_iff R L L).mp (subsingleton_of_top_eq_bot hc)
+  · exact fun _ => inferInstance
 
 end IsKilling
 
@@ -132,7 +140,6 @@ end LieEquiv
 
 end LieAlgebra
 
-set_option backward.isDefEq.respectTransparency false in
 open LieAlgebra in
 variable {K L} in
 lemma LieIdeal.isCompl_killingCompl [IsKilling K L] [Module.Finite K L] (I : LieIdeal K L) :

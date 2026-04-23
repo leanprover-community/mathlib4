@@ -122,9 +122,8 @@ lemma natCast_natAbs_valMinAbs [NeZero n] (a : ZMod n) :
       Int.cast_natCast, Int.cast_natCast, natCast_self, sub_zero, natCast_zmod_val]
 
 lemma valMinAbs_neg_of_ne_half (ha : 2 * a.val ≠ n) : (-a).valMinAbs = -a.valMinAbs := by
-  rcases eq_zero_or_neZero n with h | h
-  · subst h
-    rfl
+  rcases eq_zero_or_neZero n with rfl | h
+  · rfl
   refine (valMinAbs_spec _ _).2 ⟨?_, ?_, ?_⟩
   · rw [Int.cast_neg, coe_valMinAbs]
   · rw [neg_mul, neg_lt_neg_iff]

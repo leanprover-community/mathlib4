@@ -67,7 +67,8 @@ def Monic (p : R[X]) :=
 theorem Monic.def : Monic p ↔ leadingCoeff p = 1 :=
   Iff.rfl
 
-instance Monic.decidable [DecidableEq R] : Decidable (Monic p) := by unfold Monic; infer_instance
+instance Monic.decidable [DecidableEq R] : Decidable (Monic p) :=
+  inferInstanceAs <| Decidable (p.leadingCoeff = 1)
 
 @[simp]
 theorem Monic.leadingCoeff {p : R[X]} (hp : p.Monic) : leadingCoeff p = 1 :=
@@ -209,11 +210,11 @@ theorem degree_C_mul_X_pow_le (n : ℕ) (a : R) : degree (C a * X ^ n) ≤ n := 
 theorem degree_C_mul_X_le (a : R) : degree (C a * X) ≤ 1 := by
   simpa only [pow_one] using degree_C_mul_X_pow_le 1 a
 
-@[simp]
+@[simp, grind =]
 theorem natDegree_C_mul_X_pow (n : ℕ) (a : R) (ha : a ≠ 0) : natDegree (C a * X ^ n) = n :=
   natDegree_eq_of_degree_eq_some (degree_C_mul_X_pow n ha)
 
-@[simp]
+@[simp, grind =]
 theorem natDegree_C_mul_X (a : R) (ha : a ≠ 0) : natDegree (C a * X) = 1 := by
   simpa only [pow_one] using natDegree_C_mul_X_pow 1 a ha
 

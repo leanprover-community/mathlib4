@@ -24,6 +24,9 @@ on:
         type: string
         required: false
         default: ''
+      cache_application_id:
+        type: string
+        required: true
 
 env:
   # Disable Lake's automatic fetching of cloud builds.
@@ -244,76 +247,6 @@ jobs:
             echo "✅ All inputRevs in lake-manifest.json are valid"
           fi
 
-      - name: validate ProofWidgets source repository
-        # Only enforce this on the main mathlib4 repository, not on nightly-testing
-        if: github.repository == 'leanprover-community/mathlib4'
-        shell: bash
-        run: |
-          cd pr-branch
-
-          expected_url='https://github.com/leanprover-community/ProofWidgets4'
-          proofwidgets_count=$(jq '[.packages[] | select(.name == "proofwidgets")] | length' lake-manifest.json)
-          if [ "$proofwidgets_count" -ne 1 ]; then
-            echo "❌ Error: expected exactly one proofwidgets entry in lake-manifest.json, found $proofwidgets_count"
-            exit 1
-          fi
-
-          proofwidgets_url=$(jq -r '.packages[] | select(.name == "proofwidgets") | .url' lake-manifest.json)
-          normalized_url="${proofwidgets_url%.git}"
-          if [ "$normalized_url" != "$expected_url" ]; then
-            echo "❌ Error: invalid ProofWidgets source URL in lake-manifest.json"
-            echo "  expected: $expected_url"
-            echo "  found:    $proofwidgets_url"
-            exit 1
-          fi
-
-          echo "✅ ProofWidgets source URL is allowed: $proofwidgets_url"
-
-      - name: verify ProofWidgets lean-toolchain matches on versioned releases
-        # Only enforce this on the main mathlib4 repository, not on nightly-testing
-        if: github.repository == 'leanprover-community/mathlib4'
-        shell: bash
-        run: |
-          cd pr-branch
-
-          # Read the lean-toolchain file
-          TOOLCHAIN=$(cat lean-toolchain | tr -d '[:space:]')
-          echo "Lean toolchain: $TOOLCHAIN"
-
-          # Check if toolchain matches the versioned release pattern: leanprover/lean4:vX.Y.Z (with optional suffix like -rc1)
-          if [[ "$TOOLCHAIN" =~ ^leanprover/lean4:v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?$ ]]; then
-            echo "✓ Detected versioned Lean release: $TOOLCHAIN"
-            echo "Verifying ProofWidgets lean-toolchain matches..."
-
-            # Check if ProofWidgets lean-toolchain exists
-            if [ ! -f .lake/packages/proofwidgets/lean-toolchain ]; then
-              echo "❌ Error: .lake/packages/proofwidgets/lean-toolchain does not exist"
-              echo "This file should be created by 'lake env' during dependency download."
-              exit 1
-            fi
-
-            # Read ProofWidgets lean-toolchain
-            PROOFWIDGETS_TOOLCHAIN=$(cat .lake/packages/proofwidgets/lean-toolchain | tr -d '[:space:]')
-            echo "ProofWidgets toolchain: $PROOFWIDGETS_TOOLCHAIN"
-
-            # Compare the two
-            if [ "$TOOLCHAIN" != "$PROOFWIDGETS_TOOLCHAIN" ]; then
-              echo "❌ Error: Lean toolchain mismatch!"
-              echo "  Main lean-toolchain: $TOOLCHAIN"
-              echo "  ProofWidgets lean-toolchain: $PROOFWIDGETS_TOOLCHAIN"
-              echo ""
-              echo "When using a versioned Lean release (leanprover/lean4:vX.Y.Z),"
-              echo "the ProofWidgets dependency must use the same toolchain."
-              echo "Please update the ProofWidgets dependency to use $TOOLCHAIN"
-              exit 1
-            else
-              echo "✅ ProofWidgets lean-toolchain matches: $TOOLCHAIN"
-            fi
-          else
-            echo "ℹ Lean toolchain is not a versioned release (pattern: leanprover/lean4:vX.Y.Z)"
-            echo "Skipping ProofWidgets toolchain verification."
-          fi
-
       - name: get cache (1/3 - setup and initial fetch)
         id: get_cache_part1_setup
         shell: bash # only runs `cache get` from `tools-branch`, so doesn't need to be inside landrun
@@ -324,7 +257,7 @@ jobs:
 
           # Fail quickly if the cache is completely cold, by checking for Mathlib.Init
           echo "Attempting to fetch olean for Mathlib/Init.lean from cache..."
-          ../tools-branch/.lake/build/bin/cache --skip-proofwidgets get Mathlib/Init.lean
+          ../tools-branch/.lake/build/bin/cache get Mathlib/Init.lean
 
       - name: get cache (2/3 - test Mathlib.Init cache)
         id: get_cache_part2_test
@@ -377,13 +310,19 @@ jobs:
             # cf. https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Mathlib.20has.20moved.20to.20the.20new.20module.20system/near/563452000
             echo "Warming up cache using previous commit: $PREV_SHA (source: $PREV_SHA_SOURCE)"
             if git cat-file -e "$PREV_SHA^{commit}" 2>/dev/null || git fetch --no-tags --depth=1 origin "$PREV_SHA"; then
-              git checkout "$PREV_SHA"
-              ../tools-branch/.lake/build/bin/cache --skip-proofwidgets get
-              # Run again with --repo, to ensure we actually get the oleans.
-              ../tools-branch/.lake/build/bin/cache --repo="$CACHE_REPO" --skip-proofwidgets get
+              # Skip warmup if the previous commit uses a different toolchain
+              PREV_TOOLCHAIN=$(git show "$PREV_SHA:lean-toolchain" 2>/dev/null || true)
+              if [[ "$PREV_TOOLCHAIN" != "$(cat lean-toolchain)" ]]; then
+                echo "Previous commit $PREV_SHA uses a different toolchain ($PREV_TOOLCHAIN); skipping warmup."
+              else
+                git checkout "$PREV_SHA"
+                ../tools-branch/.lake/build/bin/cache get
+                # Run again with --repo, to ensure we actually get the oleans.
+                ../tools-branch/.lake/build/bin/cache --repo="$CACHE_REPO" get
 
-              echo "Switching back to branch head"
-              git checkout "$ORIG_SHA"
+                echo "Switching back to branch head"
+                git checkout "$ORIG_SHA"
+              fi
             else
               echo "Could not fetch $PREV_SHA; skipping parent warmup cache fetch."
             fi
@@ -393,18 +332,10 @@ jobs:
 
           echo "Fetching all remaining cache..."
 
-          ../tools-branch/.lake/build/bin/cache --skip-proofwidgets get
+          ../tools-branch/.lake/build/bin/cache get
 
           # Run again with --repo, to ensure we actually get the oleans.
-          ../tools-branch/.lake/build/bin/cache --repo="$CACHE_REPO" --skip-proofwidgets get
-
-      - name: fetch ProofWidgets release
-        # We need network access for ProofWidgets frontend assets.
-        # Run inside landrun so PR-controlled code remains sandboxed.
-        shell: landrun --unrestricted-network --rox /etc --rox /usr --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT --env CI -- bash -euxo pipefail {0}
-        run: |
-          cd pr-branch
-          lake build proofwidgets:release
+          ../tools-branch/.lake/build/bin/cache --repo="$CACHE_REPO" get
 
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
         id: mk_all
@@ -459,8 +390,8 @@ jobs:
         shell: bash
         run: |
           cd pr-branch
-          ../tools-branch/.lake/build/bin/cache --skip-proofwidgets get Archive.lean
-          ../tools-branch/.lake/build/bin/cache --skip-proofwidgets get Counterexamples.lean
+          ../tools-branch/.lake/build/bin/cache get Archive.lean
+          ../tools-branch/.lake/build/bin/cache get Counterexamples.lean
 
       - name: build archive
         id: archive
@@ -643,7 +574,7 @@ jobs:
       - name: Generate lean-pr-testing app token
         if: ${{ always() && github.repository == 'leanprover-community/mathlib4-nightly-testing' && (startsWith(github.ref_name, 'lean-pr-testing-') || startsWith(github.ref_name, 'batteries-pr-testing-')) }}
         id: lean-pr-testing-token
-        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        uses: actions/create-github-app-token@f8d387b68d61c58ab83c6c016672934102569859 # v3.0.0
         with:
           app-id: ${{ secrets.MATHLIB_LEAN_PR_TESTING_APP_ID }}
           private-key: ${{ secrets.MATHLIB_LEAN_PR_TESTING_PRIVATE_KEY }}
@@ -672,6 +603,9 @@ jobs:
     name: Upload to cache
     needs: [build]
     runs-on: ubuntu-latest # These steps run on a GitHub runner; no landrun sandboxing is needed.
+    permissions:
+      contents: read
+      id-token: write
     # We only upload the cache if the build started (whether succeeding, failing, or cancelled)
     # but not if any earlier step failed or was cancelled.
     # See discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Some.20files.20not.20found.20in.20the.20cache/near/407183836
@@ -702,21 +636,46 @@ jobs:
           echo "CACHE_BIN=$CACHE_BIN" >> "$GITHUB_ENV"
 
       - name: Download cache staging artifact
-        uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3 # v8.0.0
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: cache-staging
           path: cache-staging
 
+      - name: Azure CLI OIDC login and mint storage bearer token
+        id: mint_cache_bearer
+        continue-on-error: true
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-cache-token@17db5ff55a65df98d55cbddcc67938f70d10dab2
+        with:
+          azure-client-id: ${{ inputs.cache_application_id }}
+          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
+
+      - name: Fallback to SAS token if bearer mint fails (for ease of migration)
+        if: ${{ steps.mint_cache_bearer.outcome != 'success' }}
+        shell: bash
+        env:
+          MATHLIB_CACHE_SAS_RAW: ${{ secrets.MATHLIB_CACHE_SAS }}
+        run: |
+          if [ -z "$MATHLIB_CACHE_SAS_RAW" ]; then
+            echo "Azure bearer mint failed and secrets.MATHLIB_CACHE_SAS is not set"
+            exit 1
+          fi
+
+          MATHLIB_CACHE_SAS="${MATHLIB_CACHE_SAS_RAW%"${MATHLIB_CACHE_SAS_RAW##*[![:space:]]}"}"
+          if [ -z "$MATHLIB_CACHE_SAS" ]; then
+            echo "Azure bearer mint failed and secrets.MATHLIB_CACHE_SAS is empty after trimming"
+            exit 1
+          fi
+
+          echo "::add-mask::$MATHLIB_CACHE_SAS"
+          echo "MATHLIB_CACHE_AZURE_BEARER_TOKEN=" >> "$GITHUB_ENV"
+          echo "MATHLIB_CACHE_SAS=$MATHLIB_CACHE_SAS" >> "$GITHUB_ENV"
+          echo "Using SAS fallback because bearer mint step failed."
+
       - name: Upload staged cache to Azure
         shell: bash
         run: |
-          # Trim trailing whitespace from secrets to prevent issues with accidentally added spaces
-          export MATHLIB_CACHE_SAS="${MATHLIB_CACHE_SAS_RAW%"${MATHLIB_CACHE_SAS_RAW##*[![:space:]]}"}"
-
           echo "Uploading cache to Azure..."
           MATHLIB_CACHE_USE_CLOUDFLARE=0 lake env "$CACHE_BIN" put-staged --staging-dir="cache-staging" --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }}
-        env:
-          MATHLIB_CACHE_SAS_RAW: ${{ secrets.MATHLIB_CACHE_SAS }}
 
   post_steps:
     name: Post-Build Step
@@ -783,6 +742,12 @@ jobs:
 
       - name: clean up the import graph file
         run: rm import_graph.dot
+
+      - name: check all scripts build successfully
+        run: |
+          lake env lean scripts/create_deprecated_modules.lean
+          lake env lean scripts/autolabel.lean
+          lake exe check_title_labels --labels "t-algebra" "feat: dummy PR for testing"
 
       - name: build everything
         # make sure everything is available for test/import_all.lean
@@ -906,7 +871,8 @@ jobs:
       - if: >- # bot usernames will cause this step to error with "Could not resolve to a User..."
           contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI') &&
           steps.get-label-actor.outputs.username != 'mathlib-nolints' &&
-          steps.get-label-actor.outputs.username != 'mathlib-update-dependencies'
+          steps.get-label-actor.outputs.username != 'mathlib-update-dependencies' &&
+          steps.get-label-actor.outputs.username != 'mathlib-splicebot'
         name: check team membership
         uses: tspascoal/get-user-teams-membership@57e9f42acd78f4d0f496b3be4368fc5f62696662 # v3.0.0
         id: actorTeams
@@ -921,7 +887,9 @@ jobs:
           (
             steps.get-label-actor.outputs.username == 'mathlib-nolints' ||
             steps.get-label-actor.outputs.username == 'mathlib-update-dependencies' ||
+            steps.get-label-actor.outputs.username == 'mathlib-splicebot' ||
             contains(steps.actorTeams.outputs.teams, 'mathlib-maintainers') ||
+            contains(steps.actorTeams.outputs.teams, 'lean-release-managers') ||
             contains(steps.actorTeams.outputs.teams, 'bot-users')
           )
         name: If `auto-merge-after-CI` is present, add a `bors merge` comment.
