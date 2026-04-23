@@ -190,8 +190,6 @@ lemma ιFree_mapFree (η : unit S ⟶ F.obj (unit R)) (i : I) :
   IsColimit.ι_map (isColimitFreeCofan I) (F.mapCocone (freeCofan I))
     (Discrete.natTrans fun _ ↦ η) (Discrete.mk i)
 
-@[deprecated (since := "2026-04-21")] alias ιFree_mapFree_inv := ιFree_mapFree
-
 variable [PreservesColimitsOfShape (Discrete I) F]
 
 /-- Let `F` be a functor from the category of sheaves of `R`-modules to sheaves of `S`-modules.
@@ -203,6 +201,13 @@ noncomputable def mapFreeIso (η : unit S ≅ F.obj (unit R)) : free (R := S) I 
 
 lemma mapFreeIso_hom (η : unit S ≅ F.obj (unit R)) :
     (mapFreeIso F I η).hom = mapFree F I η.hom := rfl
+
+@[reassoc (attr := simp)]
+lemma ιFree_mapFreeIso_hom (η : unit S ≅ F.obj (unit R)) (i : I) :
+    ιFree i ≫ (mapFreeIso F I η).hom = η.hom ≫ F.map (ιFree i) :=
+  ιFree_mapFree _ _ _ _
+
+@[deprecated (since := "2026-04-21")] alias ιFree_mapFree_inv := ιFree_mapFreeIso_hom
 
 @[reassoc (attr := simp)]
 lemma map_ιFree_mapFreeIso_inv (η : unit S ≅ F.obj (unit R)) (i : I) :
