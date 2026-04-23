@@ -115,9 +115,6 @@ variable [Ring R] [LinearOrder R] [FloorRing R] {z : ℤ} {a b : R}
 
 section floor
 
-theorem floor_le_iff : ⌊a⌋ ≤ z ↔ a < z + 1 := by rw [← lt_add_one_iff, floor_lt]; norm_cast
-theorem lt_floor_iff : z < ⌊a⌋ ↔ z + 1 ≤ a := by rw [← add_one_le_iff, le_floor]; norm_cast
-
 @[deprecated floor_lt (since := "2025-12-26")]
 theorem floor_le_sub_one_iff : ⌊a⌋ ≤ z - 1 ↔ a < z := by rw [← floor_lt, le_sub_one_iff]
 
@@ -577,9 +574,6 @@ end fract
 /-! #### Ceil -/
 
 section ceil
-
-lemma le_ceil_iff : z ≤ ⌈a⌉ ↔ z - 1 < a := by rw [← sub_one_lt_iff, lt_ceil]; norm_cast
-lemma ceil_lt_iff : ⌈a⌉ < z ↔ a ≤ z - 1 := by rw [← le_sub_one_iff, ceil_le]; norm_cast
 
 @[deprecated lt_ceil (since := "2025-12-26")]
 theorem add_one_le_ceil_iff : z + 1 ≤ ⌈a⌉ ↔ (z : R) < a := by rw [← lt_ceil, add_one_le_iff]
