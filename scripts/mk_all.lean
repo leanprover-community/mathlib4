@@ -36,43 +36,6 @@ def getLeanLibs : IO (Array String) := do
   else
     libs
 
-/-- Skip leading ASCII whitespace and Lean comments (line `-- ...` and nested `/- ... -/` block
-comments) from the start of `s`, returning the remaining slice. -/
-partial def skipWsAndComments (s : String.Slice) : String.Slice := Id.run do
-  let s := s.trimAsciiStart
-  if s.startsWith "--" then
-    let mut t := s.drop 2
-    while !t.isEmpty && t.front != '\n' do
-      t := t.drop 1
-    return skipWsAndComments t
-  if s.startsWith "/-" then
-    let mut t := s.drop 2
-    let mut depth := 1
-    while depth > 0 && !t.isEmpty do
-      if t.startsWith "/-" then
-        depth := depth + 1
-        t := t.drop 2
-      else if t.startsWith "-/" then
-        depth := depth - 1
-        t := t.drop 2
-      else
-        t := t.drop 1
-    return skipWsAndComments t
-  return s
-
-/-- Decide whether the given aggregator-file contents use the module system,
-by checking if the first non-comment, non-whitespace token is the `module` keyword. -/
-def usesModuleSystem (content : String) : Bool :=
-  -- Strip an optional UTF-8 BOM before scanning.
-  let bom := (Char.ofNat 0xfeff).toString
-  let content := if content.startsWith bom then content.drop bom.length else content.toSlice
-  let rest := skipWsAndComments content
-  if rest.startsWith "module" then
-    let after := rest.drop "module".length
-    after.isEmpty || !(after.front.isAlphanum || after.front == '_')
-  else
-    false
-
 open IO.FS IO.Process Name Cli in
 /-- Implementation of the `mk_all` command line program.
 The exit code is the number of files that the command updates/creates. -/
@@ -98,7 +61,10 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
     let existingContent ← if fileExists then IO.FS.readFile fileName else pure ""
     -- If the aggregator file already exists, infer whether it uses the module system;
     -- otherwise, fall back to the `--module` flag.
-    let useModule := if fileExists then usesModuleSystem existingContent else moduleFlag
+    let useModule ← if fileExists then do
+      let header ← Lean.parseImports' existingContent fileName.toString
+      pure header.isModule
+    else pure moduleFlag
     let mut allFiles ← getAllModulesSorted git d
     -- mathlib exception: manually import Std and Batteries in `Mathlib.lean`
     if d == "Mathlib" then
