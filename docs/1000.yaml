@@ -257,13 +257,17 @@ Q242045:
 
 Q245098:
   title: Intermediate value theorem
-  decl: intermediate_value_Icc
+  decls:
+    - intermediate_value_Icc
+    - intermediate_value_Icc'
+    - intermediate_value_uIcc
   authors: Rob Lewis and Chris Hughes
 
 Q245098X:
   title: Bolzano's theorem
-  decl: intermediate_value_Icc
-  comment: variant of the intermediate value theorem above
+  decls:
+    - exists_mem_uIcc_eq_zero
+    - exists_mem_uIcc_eq_zero
 
 Q245902:
   title: Riesz–Thorin theorem
