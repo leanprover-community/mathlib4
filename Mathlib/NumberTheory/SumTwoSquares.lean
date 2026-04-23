@@ -99,11 +99,6 @@ theorem Nat.mod_four_ne_three_of_mem_primeFactors_of_isSquare_neg_one {p n : ℕ
   have : Fact p.Prime := ⟨Nat.prime_of_mem_primeFactors hp⟩
   exact ZMod.mod_four_ne_three_of_sq_eq_neg_sq' one_ne_zero h
 
-@[deprecated "Note that the statement now uses `Nat.primeFactors`, \
-  you can use `Nat.mem_primeFactors` to get the previous formulation" (since := "2025-10-15")]
-alias Nat.Prime.mod_four_ne_three_of_dvd_isSquare_neg_one :=
-  Nat.mod_four_ne_three_of_mem_primeFactors_of_isSquare_neg_one
-
 /-- If `n` is a squarefree natural number, then `-1` is a square modulo `n` if and only if
 `n` does not have a prime factor `q` such that `q % 4 = 3`. -/
 theorem ZMod.isSquare_neg_one_iff_forall_mem_primeFactors_mod_four_ne_three {n : ℕ}
@@ -123,12 +118,6 @@ theorem ZMod.isSquare_neg_one_iff_forall_mem_primeFactors_mod_four_ne_three {n :
     exact ZMod.isSquare_neg_one_mul hcp hp₁ <| ih hn.of_mul_right fun q hqp => H q <|
         Nat.mem_primeFactors.mpr ⟨Nat.prime_of_mem_primeFactors hqp,
           dvd_mul_of_dvd_right (Nat.dvd_of_mem_primeFactors hqp) _, Squarefree.ne_zero hn⟩
-
-@[deprecated "Note that the statement now uses `Nat.primeFactors`, \
-  you can use `Nat.mem_primeFactors` and `Squarefree.ne_zero` to get the previous formulation"
-  (since := "2025-10-15")]
-alias ZMod.isSquare_neg_one_iff :=
-  ZMod.isSquare_neg_one_iff_forall_mem_primeFactors_mod_four_ne_three
 
 /-- If `n` is a squarefree natural number, then `-1` is a square modulo `n` if and only if
 `n` has no divisor `q` that is `≡ 3 mod 4`. -/

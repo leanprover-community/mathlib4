@@ -88,7 +88,8 @@ lemma sum_le_sum_index [DecidableEq ι] {f₁ f₂ : ι →₀ α} {h : ι → �
   classical
   rw [sum_of_support_subset _ Finset.subset_union_left _ hh₀,
     sum_of_support_subset _ Finset.subset_union_right _ hh₀]
-  exact Finset.sum_le_sum fun i hi ↦ hh _ hi <| hf _
+  gcongr with i hi
+  exact hh _ hi <| hf _
 
 end Preorder
 

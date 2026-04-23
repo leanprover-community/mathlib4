@@ -436,7 +436,7 @@ lemma eq_zero_of_mem_rootSpan_of_rootForm_self_eq_zero {x : M}
 lemma rootForm_pos_of_ne_zero {x : M} (hx : x ∈ P.rootSpan R) (h : x ≠ 0) :
     0 < P.RootForm x x := by
   apply (P.zero_le_rootForm x).lt_of_ne
-  contrapose! h
+  contrapose h
   exact P.eq_zero_of_mem_rootSpan_of_rootForm_self_eq_zero hx h.symm
 
 lemma rootForm_anisotropic [P.IsRootSystem] :

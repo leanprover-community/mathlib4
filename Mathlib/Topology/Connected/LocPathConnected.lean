@@ -268,7 +268,13 @@ instance : DiscreteTopology <| ZerothHomotopy X := by
   refine discreteTopology_iff_isOpen_singleton.mpr fun c ↦ ?_
   obtain ⟨x, rfl⟩ := Quotient.mk_surjective c
   rw [← isQuotientMap_quotient_mk'.isOpen_preimage]
-  grind [ZerothHomotopy.preimage_singleton_eq_pathComponent, IsOpen.pathComponent]
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
+  It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+  canonicalizer; a minimization would help. The original proof was:
+  `grind [ZerothHomotopy.preimage_singleton_eq_pathComponent, IsOpen.pathComponent]` -/
+  rw [ZerothHomotopy.preimage_singleton_eq_pathComponent]
+  exact IsOpen.pathComponent x
 
 /-- A locally path-connected compact space has finitely many path components. -/
 instance [CompactSpace X] : Finite <| ZerothHomotopy X :=

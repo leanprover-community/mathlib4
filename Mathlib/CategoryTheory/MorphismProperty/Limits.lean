@@ -82,14 +82,12 @@ lemma pushouts_monotone : Monotone (pushouts (C := C)) := by
   rintro _ _ h _ _ _ ⟨_, _, _, _, _, hp, sq⟩
   exact ⟨_, _, _, _, _, h _ hp, sq⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance : P.pushouts.RespectsIso :=
   RespectsIso.of_respects_arrow_iso _ (by
     rintro q q' e ⟨A, B, p, f, g, hp, h⟩
     exact ⟨A, B, p, f ≫ e.hom.left, g ≫ e.hom.right, hp,
       IsPushout.paste_horiz h (IsPushout.of_horiz_isIso ⟨e.hom.w⟩)⟩)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : P.pullbacks.RespectsIso :=
   RespectsIso.of_respects_arrow_iso _ (by
     rintro q q' e ⟨X, Y, p, f, g, hp, h⟩
@@ -218,7 +216,6 @@ theorem pullback_snd {X Y S : C} (f : X ⟶ S) (g : Y ⟶ S) [HasPullback f g]
     [P.IsStableUnderBaseChangeAlong g] (H : P f) : P (pullback.snd f g) :=
   IsStableUnderBaseChangeAlong.of_isPullback (IsPullback.of_hasPullback f g) H
 
-set_option backward.isDefEq.respectTransparency false in
 theorem baseChange_obj {S S' : C} (f : S' ⟶ S)
     [HasPullbacksAlong f] [P.IsStableUnderBaseChangeAlong f] (X : Over S) (H : P X.hom) :
     P ((Over.pullback f).obj X).hom :=
@@ -240,9 +237,8 @@ alias baseChange_map' := pullbackLift_fst_snd
 
 theorem overPullbackMap [IsStableUnderBaseChange P] {S S' : C} (f : S' ⟶ S)
     [HasPullbacksAlong f] {X Y : Over S} (g : X ⟶ Y) (H : P g.left) :
-    P ((Over.pullback f).map g).left := by
-  dsimp only [Over.pullback_obj_left, Over.pullback_map_left]
-  convert pullbackLift_fst_snd f (g.w.symm) H <;> simp
+    P ((Over.pullback f).map g).left :=
+  pullbackLift_fst_snd f (g.w.symm) H
 
 @[deprecated (since := "2026-03-20")]
 alias baseChange_map := overPullbackMap
@@ -359,10 +355,8 @@ theorem pushoutDesc_inl_inr [IsStableUnderCobaseChange P] {S S' X Y : C} (f : S 
 
 theorem underPushoutMap [IsStableUnderCobaseChange P] {S S' : C} (f : S' ⟶ S)
     [HasPushoutsAlong f] {X Y : Under S'} (g : X ⟶ Y) (H : P g.right) :
-    P ((Under.pushout f).map g).right := by
-  dsimp only [Under.pushout_obj, Functor.const_obj_obj, Functor.id_obj, Under.mk_right,
-    Under.pushout_map, Under.homMk_right]
-  convert pushoutDesc_inl_inr f (g.w) H <;> simp
+    P ((Under.pushout f).map g).right :=
+  pushoutDesc_inl_inr f g.w.symm H
 
 set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] hasPushouts_symmetry_of_hasPushoutsAlong in

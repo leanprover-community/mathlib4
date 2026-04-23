@@ -132,11 +132,11 @@ private theorem not_power_rat_of_num {a b d : ℕ}
   rcases d.even_or_odd with (h_even | h_odd)
   · have := not_power_rat_of_num_aux h_coprime (q := -q) ha (by linarith)
     rwa [h_even.neg_pow] at this
-  · contrapose! hq
+  · contrapose hq
     rw [← h_odd.pow_nonneg_iff, ← hq]
     positivity
 
-private theorem irrational_rpow_rat_rat_of_num {x y : ℝ} {x_num x_den y_num y_den k_num : ℕ}
+theorem irrational_rpow_rat_rat_of_num {x y : ℝ} {x_num x_den y_num y_den k_num : ℕ}
     (hx_isNNRat : IsNNRat x x_num x_den)
     (hy_isNNRat : IsNNRat y y_num y_den)
     (hx_coprime : Nat.Coprime x_num x_den)
@@ -166,7 +166,7 @@ private theorem irrational_rpow_rat_rat_of_num {x y : ℝ} {x_num x_den y_num y_
     · apply not_power_nat_pow_of_bounds hy_den_pos hy_coprime hn1 hn2
   · positivity
 
-private theorem irrational_rpow_rat_rat_of_den {x y : ℝ} {x_num x_den y_num y_den k_den : ℕ}
+theorem irrational_rpow_rat_rat_of_den {x y : ℝ} {x_num x_den y_num y_den k_den : ℕ}
     (hx_isNNRat : IsNNRat x x_num x_den)
     (hy_isNNRat : IsNNRat y y_num y_den)
     (hx_coprime : Nat.Coprime x_num x_den)
@@ -182,7 +182,7 @@ private theorem irrational_rpow_rat_rat_of_den {x y : ℝ} {x_num x_den y_num y_
   refine ⟨invertibleOfNonzero (fun _ ↦ ?_), by simp [hx_eq]⟩
   simp_all
 
-private theorem irrational_rpow_nat_rat {x y : ℝ} {x_num y_num y_den k : ℕ}
+theorem irrational_rpow_nat_rat {x y : ℝ} {x_num y_num y_den k : ℕ}
     (hx_isNat : IsNat x x_num)
     (hy_isNNRat : IsNNRat y y_num y_den)
     (hy_coprime : Nat.Coprime y_num y_den)
@@ -191,7 +191,7 @@ private theorem irrational_rpow_nat_rat {x y : ℝ} {x_num y_num y_den k : ℕ}
     Irrational (x ^ y) :=
   irrational_rpow_rat_rat_of_num hx_isNat.to_isNNRat hy_isNNRat (by simp) hy_coprime hn1 hn2
 
-private theorem irrational_sqrt_rat_of_num {x : ℝ} {num den num_k : ℕ}
+theorem irrational_sqrt_rat_of_num {x : ℝ} {num den num_k : ℕ}
     (hx_isNNRat : IsNNRat x num den)
     (hx_coprime : Nat.Coprime num den)
     (hn1 : num_k ^ 2 < num)
@@ -202,7 +202,7 @@ private theorem irrational_sqrt_rat_of_num {x : ℝ} {num den num_k : ℕ}
     hn1 hn2
   exact ⟨Invertible.mk (1/2) (by simp) (by simp), by simp⟩
 
-private theorem irrational_sqrt_rat_of_den {x : ℝ} {num den den_k : ℕ}
+theorem irrational_sqrt_rat_of_den {x : ℝ} {num den den_k : ℕ}
     (hx_isNNRat : IsNNRat x num den)
     (hx_coprime : Nat.Coprime num den)
     (hd1 : den_k ^ 2 < den)
@@ -213,7 +213,7 @@ private theorem irrational_sqrt_rat_of_den {x : ℝ} {num den den_k : ℕ}
     hd1 hd2
   exact ⟨Invertible.mk (1/2) (by simp) (by simp), by simp⟩
 
-private theorem irrational_sqrt_nat {x : ℝ} {n k : ℕ}
+theorem irrational_sqrt_nat {x : ℝ} {n k : ℕ}
     (hx_isNat : IsNat x n)
     (hn1 : k ^ 2 < n)
     (hn2 : n < (k + 1) ^ 2) :

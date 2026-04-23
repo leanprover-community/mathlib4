@@ -391,7 +391,6 @@ variable (b) in
     simp only [← mul_assoc, ω_mul_ω, one_mul]
     simp [mul_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ωConj_mem_of_mem
     {x : Matrix (b.support ⊕ ι) (b.support ⊕ ι) R} (hx : x ∈ lieAlgebra b) :
     ωConj b x ∈ lieAlgebra b := by

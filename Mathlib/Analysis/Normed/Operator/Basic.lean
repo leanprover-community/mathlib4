@@ -321,6 +321,7 @@ theorem opNorm_add_le : ‖f + g‖ ≤ ‖f‖ + ‖g‖ :=
     (norm_add_le_of_le (f.le_opNorm x) (g.le_opNorm x)).trans_eq (add_mul _ _ _).symm
 
 /-- If a normed space is (topologically) non-trivial, then the norm of the identity equals `1`. -/
+@[simp]
 theorem norm_id [NontrivialTopology E] : ‖ContinuousLinearMap.id 𝕜 E‖ = 1 :=
   le_antisymm norm_id_le <| by
     let ⟨x, hx⟩ := exists_norm_ne_zero E
@@ -501,7 +502,6 @@ end LinearIsometry
 
 namespace Submodule
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_subtypeL_le (K : Submodule 𝕜 E) : ‖K.subtypeL‖ ≤ 1 :=
   K.subtypeₗᵢ.norm_toContinuousLinearMap_le
 

@@ -714,7 +714,13 @@ instance : SecondCountableTopology GHSpace := by
           _ ≤ 1 := le_of_lt (abs_sub_lt_one_of_floor_eq_floor this)
       calc
         |dist x y - dist (Ψ x) (Ψ y)|
-        _ = ε * (ε⁻¹ * |dist x y - dist (Ψ x) (Ψ y)|) := by grind
+        _ = ε * (ε⁻¹ * |dist x y - dist (Ψ x) (Ψ y)|) := by
+            #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+            (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed
+            this goal. It is not yet clear whether this is due to defeq abuse in Mathlib or a
+            problem in the new canonicalizer; a minimization would help. The original proof was:
+            `grind` -/
+            field_simp
         _ ≤ ε * 1 := by gcongr
         _ = ε := mul_one _
   calc

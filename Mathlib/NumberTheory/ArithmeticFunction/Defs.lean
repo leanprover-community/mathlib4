@@ -338,6 +338,11 @@ instance {S : Type*} [CommSemiring R] [Semiring S] [Algebra R S] :
   .ofModule (fun x f g ↦ ext fun n ↦ by simp [Finset.smul_sum])
     fun x f g ↦ ext fun n ↦ by simp [Finset.smul_sum]
 
+@[simp]
+theorem algebraMap_apply_one {S : Type*} [CommSemiring R] [Semiring S] [Algebra R S] (x : R) :
+    algebraMap R (ArithmeticFunction S) x 1 = algebraMap R S x := by
+  simp [Algebra.algebraMap_eq_smul_one]
+
 instance {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
     Module (ArithmeticFunction R) (ArithmeticFunction M) where
   one_smul := one_smul'

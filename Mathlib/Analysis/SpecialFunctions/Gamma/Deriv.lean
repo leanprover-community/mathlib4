@@ -74,7 +74,7 @@ theorem differentiableAt_GammaAux (s : ℂ) (n : ℕ) (h1 : 1 - s.re < n) (h2 : 
       rw [Nat.cast_succ] at h1; rw [Complex.add_re, Complex.one_re]; linarith
     have b : ∀ m : ℕ, s + 1 ≠ -m := by
       intro m; have := h2 (1 + m)
-      contrapose! this
+      contrapose this
       rw [← eq_sub_iff_add_eq] at this
       simpa using this
     refine DifferentiableAt.div (DifferentiableAt.comp _ (hn a b) ?_) ?_ ?_
@@ -127,7 +127,7 @@ theorem not_continuousAt_Gamma_neg_nat (n : ℕ) : ¬ ContinuousAt Gamma (-n) :=
     rw [Nat.cast_zero, neg_zero]
     exact not_continuousAt_Gamma_zero
   case succ n ih =>
-    contrapose! ih
+    contrapose ih
     rw [Nat.cast_add, Nat.cast_one] at ih
     suffices ContinuousAt (fun s ↦ Gamma (s - 1 + 1)) (-n) by simpa using this
     suffices ContinuousAt (fun s ↦ Gamma (s + 1)) (-n - 1) from

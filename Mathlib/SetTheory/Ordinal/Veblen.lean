@@ -117,8 +117,8 @@ theorem veblenWith_mem_range : veblenWith f o a ∈ range f := by
     simp
 
 theorem veblenWith_add_one (o : Ordinal) : veblenWith f (o + 1) = deriv (veblenWith f o) := by
-  rw [deriv_eq_enumOrd (isNormal_veblenWith hf o), veblenWith_of_ne_zero f (add_one_ne_zero _),
-    derivFamily_eq_enumOrd]
+  rw [deriv_eq_enumOrd (isNormal_veblenWith hf o),
+    veblenWith_of_ne_zero f (add_pos_of_right zero_lt_one _).ne', derivFamily_eq_enumOrd]
   · apply congr_arg
     ext a
     rw [mem_iInter]

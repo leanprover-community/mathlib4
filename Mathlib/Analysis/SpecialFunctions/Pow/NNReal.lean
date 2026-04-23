@@ -831,7 +831,7 @@ theorem rpow_lt_rpow_of_exponent_lt {x : ℝ≥0∞} {y z : ℝ} (hx : 1 < x) (h
     x ^ y < x ^ z := by
   lift x to ℝ≥0 using hx'
   rw [one_lt_coe_iff] at hx
-  simp [← coe_rpow_of_ne_zero (ne_of_gt (lt_trans zero_lt_one hx)),
+  simp [← coe_rpow_of_ne_zero (lt_trans zero_lt_one hx).ne',
     NNReal.rpow_lt_rpow_of_exponent_lt hx hyz]
 
 @[gcongr] theorem rpow_le_rpow_of_exponent_le {x : ℝ≥0∞} {y z : ℝ} (hx : 1 ≤ x) (hyz : y ≤ z) :
@@ -1183,7 +1183,6 @@ theorem IsNat.nnreal_rpow_eq_nnreal_pow {b : ℝ} {n : ℕ} (h : IsNat b n) (a :
     a ^ b = a ^ n := by
   rw [h.1, NNReal.rpow_natCast]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsInt.nnreal_rpow_eq_inv_nnreal_pow {b : ℝ} {n : ℕ} (h : IsInt b (.negOfNat n)) (a : ℝ≥0) :
     a ^ b = (a ^ n)⁻¹ := by
   rw [h.1, NNReal.rpow_intCast, Int.negOfNat_eq, zpow_neg, Int.ofNat_eq_natCast, zpow_natCast]

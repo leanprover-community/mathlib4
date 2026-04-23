@@ -908,9 +908,6 @@ theorem condIndepFun_iff_condDistrib_prod_ae_eq_prodMkRight
   rw [h1, h2]
   exact ⟨fun h ↦ by rw [h], fun h ↦ by rw [h1_symm, h1, h2_symm, h2, h]⟩
 
-@[deprecated (since := "2025-10-14")] alias condIndepFun_iff_condDistrib_prod_ae_eq_prodMkLeft :=
-  condIndepFun_iff_condDistrib_prod_ae_eq_prodMkRight
-
 section iCondIndepFun
 variable {β : ι → Type*} {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i}
 

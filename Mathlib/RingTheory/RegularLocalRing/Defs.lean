@@ -65,7 +65,6 @@ lemma iff_finrank_cotangentSpace [IsLocalRing R] [IsNoetherianRing R] :
     IsRegularLocalRing R ↔ Module.finrank (ResidueField R) (CotangentSpace R) = ringKrullDim R := by
   rw [isRegularLocalRing_iff, spanFinrank_maximalIdeal_eq_finrank_cotangentSpace]
 
-set_option backward.isDefEq.respectTransparency false in
 instance [IsLocalRing R] [IsDomain R] [IsPrincipalIdealRing R] : IsRegularLocalRing R := by
   by_cases isf : IsField R
   · let _ := isf.toField

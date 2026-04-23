@@ -61,7 +61,7 @@ def subMulAction : SubMulAction G (Finset α) where
 
 @[to_additive]
 instance : MulAction G (Set.powersetCard α n) :=
-  (subMulAction G α n).mulAction
+  inferInstanceAs <| MulAction G (subMulAction G α n)
 
 variable {G}
 
@@ -86,7 +86,7 @@ theorem addAction_faithful {G : Type*} [AddGroup G] [AddAction G α] {n : ℕ}
     obtain ⟨s, has, has'⟩ := exists_mem_notMem hn hα (Ne.symm ha)
     rw [Equiv.ext_iff, not_forall]
     use s
-    contrapose! has'
+    contrapose has'
     simp only [AddAction.toPerm_apply, coe_one, id_eq] at has'
     rw [← has']
     simpa [← mem_coe_iff]
@@ -114,7 +114,7 @@ theorem mulAction_faithful (hn : 1 ≤ n) (hα : n < ENat.card α) {g : G} :
     obtain ⟨s, has, has'⟩ := exists_mem_notMem hn hα (Ne.symm ha)
     rw [Equiv.ext_iff, not_forall]
     use s
-    contrapose! has'
+    contrapose has'
     simp only [MulAction.toPerm_apply, coe_one, id_eq] at has'
     rw [← has']
     simpa only [coe_smul, smul_mem_smul_finset_iff, ← mem_coe_iff]

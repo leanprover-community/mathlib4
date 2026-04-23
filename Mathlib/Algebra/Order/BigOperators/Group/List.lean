@@ -47,7 +47,7 @@ lemma Sublist.prod_le_prod' [Preorder M] [MulRightMono M]
   | cons a _ ih' =>
     simp only [prod_cons, forall_mem_cons] at h₁ ⊢
     exact (ih' h₁.2).trans (le_mul_of_one_le_left' h₁.1)
-  | cons₂ a _ ih' =>
+  | cons_cons a _ ih' =>
     simp only [prod_cons, forall_mem_cons] at h₁ ⊢
     grw [ih' h₁.2]
 

@@ -110,7 +110,7 @@ instance [Nontrivial M] : Nonempty (Module.Free.ChooseBasisIndex R M) :=
 theorem infinite [Infinite R] [Nontrivial M] : Infinite M :=
   (Equiv.infinite_iff (chooseBasis R M).repr.toEquiv).mpr Finsupp.infinite_of_right
 
-instance [Module.Free R M] [Nontrivial M] : FaithfulSMul R M :=
+instance [Nontrivial M] : FaithfulSMul R M :=
   .of_injective _ (chooseBasis R M).repr.symm.injective
 
 variable {R M N}
@@ -146,7 +146,7 @@ lemma iff_of_equiv {R R' M M'} [Semiring R] [AddCommMonoid M] [Module R M]
 @[deprecated (since := "2026-02-14")] alias of_ringEquiv := of_equiv
 @[deprecated (since := "2026-02-14")] alias iff_of_ringEquiv := iff_of_equiv
 
-instance Module.free_shrink [Module.Free R M] [Small.{w} M] : Module.Free R (Shrink.{w} M) :=
+instance Module.free_shrink [Small.{w} M] : Module.Free R (Shrink.{w} M) :=
   Module.Free.of_equiv (Shrink.linearEquiv R M).symm
 
 variable (R M N)
@@ -155,7 +155,7 @@ variable (R M N)
 instance self : Module.Free R R :=
   of_basis (Basis.singleton Unit R)
 
-instance ulift [Free R M] : Free R (ULift M) := of_equiv ULift.moduleEquiv.symm
+instance ulift : Free R (ULift M) := of_equiv ULift.moduleEquiv.symm
 
 instance (priority := 100) of_subsingleton [Subsingleton N] : Module.Free R N :=
   of_basis.{u, z, z} (Basis.empty N : Basis PEmpty R N)

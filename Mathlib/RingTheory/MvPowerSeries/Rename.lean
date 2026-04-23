@@ -57,7 +57,7 @@ section Semiring
 variable [Semiring R] [Semiring S]
 
 /-- Implementation detail for `rename`. Use `MvPowerSeries.rename` instead. -/
-def renameFun [TendstoCofinite f] : MvPowerSeries σ R → MvPowerSeries τ R :=
+def renameFun : MvPowerSeries σ R → MvPowerSeries τ R :=
   TendstoCofinite.mapDomain (Finsupp.mapDomain f)
 
 private lemma coeff_renameFun {p : MvPowerSeries σ R} {x : τ →₀ ℕ} : (renameFun f p).coeff x =
@@ -115,7 +115,7 @@ variable [CommSemiring R] [CommSemiring S]
 
 /-- Rename all the variables in a multivariable power series by a map with finite fibers. -/
 @[no_expose]
-def rename [TendstoCofinite f] : MvPowerSeries σ R →ₐ[R] MvPowerSeries τ R where
+def rename : MvPowerSeries σ R →ₐ[R] MvPowerSeries τ R where
   toFun := renameFun f
   map_one' := renameFun_monomial f 0 1
   map_mul' := renameFun_mul f

@@ -148,13 +148,18 @@ theorem tendsto_of_subseq_tendsto {ι : Type*} {x : ι → α} {f : Filter α} {
   rcases (hms_tendsto.eventually_mem hs).exists with ⟨n, hn⟩
   exact absurd hn <| hy_freq _
 
+theorem exists_seq_comp_tendsto {ι : Type*} {g : Filter ι} [IsCountablyGenerated g] {u : ι → α}
+    {f : Filter α} [IsCountablyGenerated f]
+    (hx : NeBot (f ⊓ map u g)) : ∃ θ : ℕ → ι, Tendsto θ atTop g ∧ Tendsto (u ∘ θ) atTop f := by
+  rw [← Filter.push_pull', map_neBot_iff] at hx
+  obtain ⟨θ, hθ⟩ := exists_seq_tendsto (comap u f ⊓ g)
+  exact ⟨θ, (tendsto_inf.1 hθ).2, tendsto_comap_iff.1 (tendsto_inf.1 hθ).1⟩
+
 theorem subseq_tendsto_of_neBot {f : Filter α} [IsCountablyGenerated f] {u : ℕ → α}
     (hx : NeBot (f ⊓ map u atTop)) : ∃ θ : ℕ → ℕ, StrictMono θ ∧ Tendsto (u ∘ θ) atTop f := by
-  rw [← Filter.push_pull', map_neBot_iff] at hx
-  rcases exists_seq_tendsto (comap u f ⊓ atTop) with ⟨φ, hφ⟩
-  rw [tendsto_inf, tendsto_comap_iff] at hφ
+  obtain ⟨φ, hφ⟩ := exists_seq_comp_tendsto hx
   obtain ⟨ψ, hψ, hψφ⟩ : ∃ ψ : ℕ → ℕ, StrictMono ψ ∧ StrictMono (φ ∘ ψ) :=
-    strictMono_subseq_of_tendsto_atTop hφ.2
-  exact ⟨φ ∘ ψ, hψφ, hφ.1.comp hψ.tendsto_atTop⟩
+    strictMono_subseq_of_tendsto_atTop hφ.1
+  exact ⟨φ ∘ ψ, hψφ, hφ.2.comp hψ.tendsto_atTop⟩
 
 end Filter

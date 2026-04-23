@@ -96,9 +96,6 @@ lemma nat_card_ofStabilizer_add_one_eq [Finite α] (a : α) :
     Nat.card_eq_fintype_card]
   simp [mem_ofStabilizer_iff]
 
-@[deprecated (since := "2025-10-03")]
-alias nat_card_ofStabilizer_eq_add_one := nat_card_ofStabilizer_add_one_eq
-
 @[to_additive]
 lemma nat_card_ofStabilizer_eq [Finite α] (a : α) :
     Nat.card (ofStabilizer G a) = Nat.card α - 1 :=

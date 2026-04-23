@@ -192,7 +192,7 @@ theorem coeff_contract {p : ℕ} (hp : p ≠ 0) (f : R[X]) (n : ℕ) :
   calc
     f.natDegree < f.natDegree + 1 := Nat.lt_succ_self _
     _ ≤ n * 1 := by simpa only [mul_one] using hn
-    _ ≤ n * p := mul_le_mul_of_nonneg_left (show 1 ≤ p from hp.bot_lt) (zero_le n)
+    _ ≤ n * p := by gcongr; exact hp.bot_lt
 
 theorem map_contract {p : ℕ} (hp : p ≠ 0) {f : R →+* S} {q : R[X]} :
     (q.contract p).map f = (q.map f).contract p := ext fun n ↦ by

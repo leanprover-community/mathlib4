@@ -91,6 +91,12 @@ theorem injective_of_surjective_of_injective
   replace hf : Surjective f' := by simpa [f'] using hf
   simpa [f'] using injective_of_surjective_of_submodule' f' hf
 
+theorem bijective_of_surjective_of_injective
+    {N : Type w} [AddCommMonoid N] [Module R N]
+    (i f : N →ₗ[R] M) (hi : Function.Injective i)
+    (hf : Function.Surjective f) : Function.Bijective f :=
+  ⟨OrzechProperty.injective_of_surjective_of_injective _ _ hi hf, hf⟩
+
 theorem injective_of_surjective_of_submodule
     {N : Submodule R M} (f : N →ₗ[R] M) (hf : Surjective f) : Injective f :=
   injective_of_surjective_of_injective N.subtype f N.injective_subtype hf

@@ -200,6 +200,9 @@ behaviour. They share a common DAG traversal library that parallelises work in i
 - `downstream_repos.yml` contains basic information about significant downstream repositories.
 - `downstream-tags.py` is a script to check whether a given tag exists on the downstream
   repositories listed in `downstream_repos.yml`.
+- `extract-unique-nonascii.lean` is used for updating the list of non-ascii characters in
+  `Mathlib/Tactic/Linter/TextBased/UnicodeLinter.lean`
+  which have an abbreviation provided by the Lean VSCode extension.
 - `downstream_dashboard.py` inspects the CI infrastructure of each repository in
   `downstream_repos.yml` and makes actionable suggestions for improvement or automation.
 
@@ -213,6 +216,15 @@ behaviour. They share a common DAG traversal library that parallelises work in i
 
 Both of these files should tend to zero over time;
 please do not add new entries to these files. PRs removing (the need for) entries are welcome.
+
+**Grind tactic analysis**
+- `grind_unused_lemmas.sh` `[N] [logfile]`
+  Builds Mathlib with `set_option grind.unusedLemmaThreshold N` (default 10) and reports
+  E-matching lemmas that are activated N+ times but do not appear in the final proof term.
+  Outputs `grind-unused-lemmas.md` with a table of lemmas ranked by how many files they
+  appear as unused in. If a logfile is given, skips the build and processes that log instead.
+  Requires a Lean toolchain with `grind.unusedLemmaThreshold` support
+  (leanprover/lean4#12805 or later).
 
 **API surrounding CI**
 - `check_title_labels.lean` is used to check whether a PR title follows our [commit style conventions](https://leanprover-community.github.io/contribute/commit.html).

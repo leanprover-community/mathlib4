@@ -358,7 +358,7 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [NormedSpace ℂ E] {a b : ℝ}
     rw [norm_cpow_eq_rpow_re_of_pos ht]
     rcases le_or_gt 1 t with h | h
     · refine le_add_of_le_of_nonneg (rpow_le_rpow_of_exponent_le h ?_)
-        (rpow_nonneg (zero_le_one.trans h) _)
+        (by positivity)
       rw [sub_re, one_re, sub_le_sub_iff_right]
       rw [mem_ball_iff_norm] at hz
       have hz' := (re_le_norm _).trans hz.le

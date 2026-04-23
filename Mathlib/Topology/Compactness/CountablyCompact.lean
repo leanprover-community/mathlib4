@@ -61,7 +61,7 @@ variable {ι E F : Type*} [TopologicalSpace E] [TopologicalSpace F] {A B : Set E
 /-- A set `A` is countably compact if every countably generated proper filter `f` with
 `f ≤ 𝓟 A` has a cluster point in `A`. -/
 def IsCountablyCompact (A : Set E) : Prop :=
-  ∀ ⦃f⦄ [NeBot f] [Filter.IsCountablyGenerated f], f ≤ 𝓟 A → ∃ a ∈ A, ClusterPt a f
+  ∀ ⦃f⦄ [NeBot f] [f.IsCountablyGenerated], f ≤ 𝓟 A → ∃ a ∈ A, ClusterPt a f
 
 /-- A topological space is countably compact if every countably generated proper filter has a
 cluster point. -/
@@ -187,7 +187,7 @@ instance instSeqCompactSpaceCountablyCompactSpace
 theorem IsCountablyCompact.isSeqCompact [FirstCountableTopology E]
     (hA : IsCountablyCompact A) : IsSeqCompact A := fun x hx =>
     let ⟨a, haA, hac⟩ := IsCountablyCompact.seq_clusterPt hA x (Eventually.of_forall hx)
-    ⟨a, haA, TopologicalSpace.FirstCountableTopology.tendsto_subseq hac⟩
+    ⟨a, haA, hac.tendsto_subseq⟩
 
 /-- A first-countable countably compact space is sequentially compact. -/
 instance instCountablyCompactSpaceSeqCompactSpace {X : Type*} [TopologicalSpace X]
@@ -273,7 +273,7 @@ theorem IsCountablyCompact.union (hA : IsCountablyCompact A) (hB : IsCountablyCo
   intro U hUo hAU
   obtain ⟨t₁, ht₁, hA_sub⟩ : ∃ (t₁ : Set ℕ), t₁.Finite ∧ A ⊆ ⋃ k ∈ t₁, U k :=
     hA U hUo (subset_union_left.trans hAU)
-  obtain  ⟨t₂, ht₂, hB_sub⟩ : ∃ (t₂ : Set ℕ), t₂.Finite ∧ B ⊆ ⋃ k ∈ t₂, U k :=
+  obtain ⟨t₂, ht₂, hB_sub⟩ : ∃ (t₂ : Set ℕ), t₂.Finite ∧ B ⊆ ⋃ k ∈ t₂, U k :=
     hB U hUo (subset_union_right.trans hAU)
   have h : (⋃ k ∈ t₁, U k) ∪ (⋃ k ∈ t₂, U k) = ⋃ k ∈ (t₁ ∪ t₂), U k := by ext; aesop
   exact ⟨t₁ ∪ t₂, ht₁.union ht₂, h ▸ union_subset_union hA_sub hB_sub⟩

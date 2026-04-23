@@ -603,7 +603,7 @@ theorem generateFrom_iInter_of_generateFrom_eq_self {ι : Type*}
     (G : ι → Set ((n : ℕ) × (𝔼ⁿ → X)))
     (hG : ∀ i, (generateFrom (G i)).toPlots = G i) :
     generateFrom (⋂ i, G i) = ⨅ i, generateFrom (G i) :=
-  (giGenerateFrom X).l_iInf_of_ul_eq_self G hG
+  (giGenerateFrom X).l_iInf_of_u_l_eq_self G hG
 
 theorem isPlot_inf_iff {d₁ d₂ : DiffeologicalSpace X} {n : ℕ} {p : 𝔼ⁿ → X} :
     (@IsPlot _ (d₁ ⊓ d₂)) p ↔ (@IsPlot _ d₁) p ∧ (@IsPlot _ d₂) p :=

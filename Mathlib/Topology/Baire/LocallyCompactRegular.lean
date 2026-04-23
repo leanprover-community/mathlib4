@@ -46,7 +46,7 @@ instance (priority := 100) BaireSpace.of_t2Space_locallyCompactSpace : BaireSpac
     refine ⟨fun n ↦ ?_, fun n ↦ (hK_next n _).trans inter_subset_left, hK₀⟩
     exact subset_closure.trans <| (hK_next _ _).trans <|
       inter_subset_right.trans interior_subset
-  -- Prove that ̀`⋂ n : ℕ, closure (K n)` is inside `U ∩ ⋂ n : ℕ, f n`.
+  -- Prove that `⋂ n : ℕ, closure (K n)` is inside `U ∩ ⋂ n : ℕ, f n`.
   have hK_subset : (⋂ n, closure (K n) : Set X) ⊆ U ∩ ⋂ n, f n := fun x hx ↦ by
     simp only [mem_iInter, mem_inter_iff] at hx ⊢
     exact ⟨hKU <| hx 0, fun n ↦ hKf n <| hx (n + 1)⟩

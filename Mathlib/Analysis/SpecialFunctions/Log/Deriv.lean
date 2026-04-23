@@ -71,7 +71,7 @@ theorem deriv_log (x : ℝ) : deriv log x = x⁻¹ :=
 theorem deriv_log' : deriv log = Inv.inv :=
   funext deriv_log
 
-theorem contDiffAt_log {n : WithTop ℕ∞} {x : ℝ} : ContDiffAt ℝ n log x ↔ x ≠ 0 := by
+theorem contDiffAt_log {n : ℕ∞ω} {x : ℝ} : ContDiffAt ℝ n log x ↔ x ≠ 0 := by
   refine ⟨fun h ↦ continuousAt_log_iff.1 h.continuousAt, fun hx ↦ ?_⟩
   have A y (hy : 0 < y) : ContDiffAt ℝ n log y := by
     apply expPartialHomeomorph.contDiffAt_symm_deriv (f₀' := y) hy.ne' (by simpa)
@@ -89,7 +89,7 @@ theorem contDiffAt_log {n : WithTop ℕ∞} {x : ℝ} : ContDiffAt ℝ n log x �
   · exact A x hx
 
 @[fun_prop]
-theorem contDiffOn_log {n : WithTop ℕ∞} : ContDiffOn ℝ n log {0}ᶜ := by
+theorem contDiffOn_log {n : ℕ∞ω} : ContDiffOn ℝ n log {0}ᶜ := by
   intro x hx
   push _ ∈ _ at hx
   exact (contDiffAt_log.2 hx).contDiffWithinAt

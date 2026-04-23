@@ -41,7 +41,7 @@ theorem dense_addSubgroupClosure_pair_iff {a b : ℝ} :
     · simp [field, mul_div_left_comm _ b, ← Rat.cast_def, hr]
     · simp [field]
   · intro h
-    contrapose! h
+    contrapose h
     rcases (AddSubgroup.dense_or_cyclic _).resolve_left h with ⟨c, hc⟩
     have : {a, b} ⊆ range (· • c : ℤ → ℝ) := by
       rw [← AddSubgroup.coe_zmultiples, AddSubgroup.zmultiples_eq_closure, ← hc]

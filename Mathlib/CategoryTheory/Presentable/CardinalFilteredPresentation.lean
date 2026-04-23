@@ -177,9 +177,4 @@ instance (C : Type u) [Category.{v} C]
   obtain ⟨P, _, hP⟩ := HasCardinalFilteredGenerator.exists_generator C κ
   exact hP.essentiallySmall_isPresentable
 
-@[deprecated (since := "2025-10-12")] alias AreCardinalFilteredGenerators :=
-  ObjectProperty.IsCardinalFilteredGenerator
-@[deprecated (since := "2025-10-12")] alias HasCardinalFilteredGenerators :=
-  HasCardinalFilteredGenerator
-
 end CategoryTheory

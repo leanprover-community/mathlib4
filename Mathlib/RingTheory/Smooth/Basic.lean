@@ -115,7 +115,8 @@ instance mvPolynomial (σ : Type*) : FormallySmooth R (MvPolynomial σ R) := by
   let P : Generators R (MvPolynomial σ R) σ :=
     .ofSurjective X (by simp [aeval_X_left, Function.Surjective])
   have : Subsingleton ↥P.toExtension.ker :=
-    Submodule.subsingleton_iff_eq_bot.mpr (by simp [SetLike.ext_iff, map_id])
+    Submodule.subsingleton_iff_eq_bot.mpr <| by
+      simp [SetLike.ext_iff, P, Generators.ofSurjective, aeval_X_left]
   have : Subsingleton P.toExtension.Cotangent := Cotangent.mk_surjective.subsingleton
   have := P.toExtension.h1Cotangentι_injective.subsingleton
   exact ⟨inferInstance, P.equivH1Cotangent.symm.subsingleton⟩

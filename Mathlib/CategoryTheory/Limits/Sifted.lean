@@ -152,7 +152,8 @@ product comparison map for the colimit functor. -/
 lemma factorization_prodComparison_colim :
     (HasColimit.isoOfNatIso ((externalProductCompDiagIso _ _).app (X, Y)).symm).hom ≫
       colimit.pre (X ⊠ Y) (diag C) ≫
-        (PreservesColimit₂.isoColimitUncurryWhiskeringLeft₂ X Y <| curriedTensor <| Type u).hom =
+        (PreservesColimit₂.isoColimitUncurryWhiskeringLeft₂ X Y <|
+          curriedTensor <| Type u).hom =
     CartesianMonoidalCategory.prodComparison colim X Y := by
   apply colimit.hom_ext
   intro j
@@ -220,7 +221,8 @@ theorem isSiftedOrEmpty_of_colim_preservesBinaryProducts
       HasColimit.isoOfNatIso <| isoWhiskerLeft _ <| .refl _
     _ ≅ colimit (_ ⊗ _) := HasColimit.isoOfNatIso <| .refl _
     _ ≅ (colimit _) ⊗ (colimit _) := CartesianMonoidalCategory.prodComparisonIso colim _ _
-    _ ≅ PUnit ⊗ PUnit := (Coyoneda.colimitCoyonedaIso _) ⊗ᵢ (Coyoneda.colimitCoyonedaIso _)
+    _ ≅ PUnit ⊗ PUnit :=
+      (Coyoneda.colimitCoyonedaIso _) ⊗ᵢ (Coyoneda.colimitCoyonedaIso _)
     _ ≅ PUnit := λ_ _
 
 lemma isSiftedOrEmpty_of_colim_preservesFiniteProducts

@@ -46,7 +46,7 @@ lemma IsLocalizedModule.lift_rank_eq :
   cases subsingleton_or_nontrivial R
   · simp only [rank_subsingleton, lift_one]
   apply le_antisymm <;>
-    rw [Module.rank_def, lift_iSup (bddAbove_range _)] <;>
+    rw [Module.rank_def, lift_iSup bddAbove_of_small] <;>
     apply ciSup_le' <;>
     intro ⟨s, hs⟩
   exacts [(IsLocalizedModule.linearIndependent_lift p f hs).choose_spec.cardinal_lift_le_rank,

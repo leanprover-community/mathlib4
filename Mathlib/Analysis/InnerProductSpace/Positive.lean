@@ -411,7 +411,6 @@ theorem IsPositive.conj_starProjection (U : Submodule 𝕜 E) {T : E →L[𝕜] 
     U.starProjection_isSymmetric _, ← U.starProjection_isSymmetric _, coe_coe,
     hT.inner_nonneg_right, implies_true, and_self]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsPositive.orthogonalProjection_comp {T : E →L[𝕜] E} (hT : T.IsPositive) (U : Submodule 𝕜 E)
     [U.HasOrthogonalProjection] : (U.orthogonalProjection ∘L T ∘L U.subtypeL).IsPositive := by
   simp only [isPositive_iff, IsSymmetric, coe_comp, LinearMap.coe_comp, coe_coe,

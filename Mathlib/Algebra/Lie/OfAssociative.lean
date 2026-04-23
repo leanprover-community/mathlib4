@@ -123,6 +123,14 @@ instance Module.End.instLieModule : LieModule R (Module.End R M) M :=
 
 @[simp] lemma Module.End.lie_apply (f : Module.End R M) (m : M) : ⁅f, m⁆ = f m := rfl
 
+-- TODO: fix this
+/-- Unfortunately we now have two brackets which are not equal at reducible transparency, even
+though they are equal at default transparency. We can use this lemma on rare occasions when this
+matters. -/
+theorem Module.End.instLieRingModule_eq :
+    LinearMap.instLieRingModule (L := Module.End R M) (M := M) (N := M) = lieRingSelfModule :=
+  rfl
+
 end AssociativeRepresentation
 
 namespace AlgHom

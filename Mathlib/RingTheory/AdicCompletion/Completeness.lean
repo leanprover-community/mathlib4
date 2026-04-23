@@ -78,7 +78,7 @@ private lemma ofValEqZeroAux_exists {x : AdicCompletion I M} (h : c = b + a)
   simpa [← LinearMap.mem_range, range_powSMulQuotInclusion] using
     (val_apply_mem_smul_top_iff I (show a ≤ c by lia)).mpr ha
 
-/-- An auxillary lift function used in the definition of `ofValEqZero`.
+/-- An auxiliary lift function used in the definition of `ofValEqZero`.
 Use `ofValEqZero` instead. -/
 def ofValEqZeroAux {x : AdicCompletion I M} (h : c = b + a) (ha : x.val a = 0) :
     ↥(I ^ a • ⊤ : Submodule R M) ⧸ I ^ b • (⊤ : Submodule R ↥(I ^ a • ⊤ : Submodule R M)) :=

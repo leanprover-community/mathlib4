@@ -247,7 +247,6 @@ lemma liftCLM_apply (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 (fun _ : ι 
 section CompContinuousLinearMap
 
 variable {E' : Type*} [AddCommGroup E'] [Module 𝕜 E'] [TopologicalSpace E']
-    [ContinuousConstSMul 𝕜 F]
 
 /-- Composition of a continuous alternating map and a continuous linear map
 as a bundled continuous linear map.

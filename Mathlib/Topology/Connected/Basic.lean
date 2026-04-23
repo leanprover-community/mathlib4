@@ -659,6 +659,11 @@ theorem Function.Surjective.connectedSpace [ConnectedSpace α] [TopologicalSpace
   rw [connectedSpace_iff_univ, ← hf.range_eq]
   exact isConnected_range hf'
 
+lemma Homeomorph.connectedSpace_iff [TopologicalSpace β] (e : α ≃ₜ β) :
+    ConnectedSpace α ↔ ConnectedSpace β :=
+  ⟨fun _ ↦ e.surjective.connectedSpace e.continuous,
+    fun _ ↦ e.symm.surjective.connectedSpace e.symm.continuous⟩
+
 instance Quotient.instConnectedSpace {s : Setoid α} [ConnectedSpace α] :
     ConnectedSpace (Quotient s) :=
   Quotient.mk'_surjective.connectedSpace continuous_coinduced_rng

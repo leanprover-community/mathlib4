@@ -25,6 +25,7 @@ open Order Topology
 namespace SuccOrder
 variable [SuccOrder α]
 
+@[to_dual]
 theorem isOpen_singleton_of_not_isSuccPrelimit (ha : ¬ IsSuccPrelimit a) : IsOpen {a} := by
   obtain ⟨b, hb⟩ := not_isSuccPrelimit_iff_exists_covBy a |>.mp ha
   by_cases ha' : IsMax a
@@ -70,12 +71,7 @@ end SuccOrder
 
 -- TODO: use `to_dual`
 namespace PredOrder
-variable [PredOrder α]
-
-theorem isOpen_singleton_of_not_isPredPrelimit (ha : ¬ IsPredPrelimit a) : IsOpen {a} :=
-  SuccOrder.isOpen_singleton_of_not_isSuccPrelimit (α := αᵒᵈ) (isSuccPrelimit_toDual_iff.not.2 ha)
-
-variable [NoMinOrder α]
+variable [PredOrder α] [NoMinOrder α]
 
 theorem isOpen_singleton_iff : IsOpen {a} ↔ ¬ IsPredLimit a :=
   (SuccOrder.isOpen_singleton_iff (α := αᵒᵈ)).trans isSuccLimit_toDual_iff.not
@@ -87,7 +83,7 @@ theorem isOpen_iff {s : Set α} : IsOpen s ↔
     ∀ o ∈ s, IsPredLimit o → ∃ a, o < a ∧ Set.Ioo o a ⊆ s := by
   refine isOpen_iff_mem_nhds.trans <| forall₂_congr fun o ho ↦ ?_
   by_cases ho' : IsPredLimit o
-  · rw [(PredOrder.hasBasis_nhds_Ioc_of_exists_gt (not_isMax_iff.1 ho'.not_isMax)).mem_iff]
+  · rw [(PredOrder.hasBasis_nhds_Ico_of_exists_gt (not_isMax_iff.1 ho'.not_isMax)).mem_iff]
     grind
   · simp [nhds_eq_pure.2 ho', ho, ho']
 

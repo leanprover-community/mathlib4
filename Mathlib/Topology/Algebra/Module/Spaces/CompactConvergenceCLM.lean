@@ -20,7 +20,7 @@ Here is a list of type aliases for `E →L[𝕜] F` endowed with various topolog
 * `ContinuousLinearMap`: topology of bounded convergence
 * `UniformConvergenceCLM`: topology of `𝔖`-convergence, for a general `𝔖 : Set (Set E)`
 * `CompactConvergenceCLM`: topology of compact convergence
-* `PointwiseConvergenceCLM`: topology of pointwise convergence, also called "weak-* topology"
+* `PointwiseConvergenceCLM`: topology of pointwise convergence, also called "weak-\* topology"
   or "strong-operator topology" depending on the context
 * `ContinuousLinearMapWOT`: topology of weak pointwise convergence, also called "weak-operator
   topology"

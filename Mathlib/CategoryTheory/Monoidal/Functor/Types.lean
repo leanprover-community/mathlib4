@@ -32,8 +32,8 @@ attribute [local simp] map_seq seq_map_assoc types_tensorObj_def types_tensorUni
 between categories of types. -/
 @[simps]
 instance : (ofTypeFunctor F).LaxMonoidal where
-  ε _ : F _ := pure PUnit.unit
-  μ _ _ p : F _ := Prod.mk <$> p.1 <*> p.2
+  ε := TypeCat.ofHom (fun _ ↦ (pure PUnit.unit : F _))
+  μ _ _ := TypeCat.ofHom (fun p ↦ (Prod.mk <$> p.1 <*> p.2 : F _))
 
 end
 

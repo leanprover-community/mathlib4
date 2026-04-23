@@ -310,7 +310,7 @@ lemma left_cancel_posSubmonoid (x y : R) (u : posSubmonoid R) :
 lemma val_posSubmonoid_ne_zero (x : posSubmonoid R) : (x : R) ≠ 0 := by
   have := x.prop
   rw [posSubmonoid_def] at this
-  contrapose! this
+  contrapose this
   simp [this]
 
 variable (R) in
@@ -722,9 +722,6 @@ lemma vlt_iff_lt : x <ᵥ y ↔ v x < v y := by
   simp [lt_iff_not_ge, ← Compatible.vle_iff_le]
 
 @[deprecated (since := "2025-12-20")] alias srel_iff_lt := vlt_iff_lt
-
-@[deprecated (since := "2025-10-09")]
-alias Compatible.srel_iff_lt := vlt_iff_lt
 
 lemma veq_iff_eq : x =ᵥ y ↔ v x = v y := by
   simp_rw [veq_def, vle_iff_le v, antisymm_iff]

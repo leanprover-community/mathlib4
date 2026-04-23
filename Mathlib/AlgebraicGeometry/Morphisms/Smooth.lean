@@ -302,7 +302,6 @@ def Scheme.Hom.smoothLocus (f : X ⟶ Y) [LocallyOfFinitePresentation f] : X.Ope
 lemma Scheme.Hom.mem_smoothLocus {f : X ⟶ Y} [LocallyOfFinitePresentation f] {x : X} :
     x ∈ f.smoothLocus ↔ (f.stalkMap x).hom.FormallySmooth := .rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Scheme.Hom.smoothLocus_eq_top (f : X ⟶ Y) [Smooth f] :
     f.smoothLocus = ⊤ := by
   rw [← top_le_iff]

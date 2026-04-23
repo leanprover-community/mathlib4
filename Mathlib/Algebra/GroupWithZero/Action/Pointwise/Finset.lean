@@ -131,6 +131,10 @@ lemma smul_finset_symmDiff₀ (ha : a ≠ 0) : a • s ∆ t = (a • s) ∆ (a 
 lemma smul_finset_univ₀ [Fintype β] (ha : a ≠ 0) : a • (univ : Finset β) = univ :=
   coe_injective <| by push_cast; exact Set.smul_set_univ₀ ha
 
+@[simp]
+lemma smul_finset_eq_univ₀ [Fintype β] (ha : a ≠ 0) : a • s = univ ↔ s = univ := by
+  exact_mod_cast smul_finset_eq_univ (α := Units α) (a := Units.mk0 a ha)
+
 lemma smul_univ₀ [Fintype β] {s : Finset α} (hs : ¬s ⊆ 0) : s • (univ : Finset β) = univ :=
   coe_injective <| by
     rw [← coe_subset] at hs
@@ -139,6 +143,16 @@ lemma smul_univ₀ [Fintype β] {s : Finset α} (hs : ¬s ⊆ 0) : s • (univ :
 
 lemma smul_univ₀' [Fintype β] {s : Finset α} (hs : s.Nontrivial) : s • (univ : Finset β) = univ :=
   coe_injective <| by push_cast; exact Set.smul_univ₀' hs
+
+@[simp]
+lemma card_smul_finset₀ (ha : a ≠ 0) (s : Finset β) : (a • s).card = s.card :=
+  card_image_of_injective _ (MulAction.injective₀ ha)
+
+/-- If the left cosets of `t` by elements of `s` are disjoint (but not necessarily distinct!), then
+the size of `t` divides the size of `s • t`. -/
+lemma card_dvd_card_smul_right₀ {s : Finset α} (hs : ∀ a ∈ s, a ≠ 0) :
+    ((· • t) '' (s : Set α)).PairwiseDisjoint id → t.card ∣ (s • t).card :=
+  card_dvd_card_image₂_right fun a ha => MulAction.injective₀ (hs a ha)
 
 end MulAction
 

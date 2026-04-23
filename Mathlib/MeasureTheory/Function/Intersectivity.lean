@@ -19,7 +19,7 @@ This is in some sense a finitary version of the second Borel-Cantelli lemma.
 ## References
 
 [Bergelson, *Sets of recurrence of `ℤᵐ`-actions and properties of sets of differences in
-`ℤᵐ`][bergelson1985]
+`ℤᵐ`*][bergelson1985]
 
 ## TODO
 

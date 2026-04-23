@@ -336,7 +336,6 @@ theorem objSupIsoProdEqLocus_inv_snd {X : TopCat} (F : X.Sheaf CommRingCat) (U V
       (CommRingCat.pullbackConeIsLimit _ _) WalkingCospan.right)
     x
 
-set_option backward.isDefEq.respectTransparency false in
 theorem objSupIsoProdEqLocus_inv_eq_iff {X : TopCat.{u}} (F : X.Sheaf CommRingCat.{u})
     {U V W UW VW : Opens X} (e : W ≤ U ⊔ V) (x) (y : F.1.obj (op W))
     (h₁ : UW = U ⊓ W) (h₂ : VW = V ⊓ W) :

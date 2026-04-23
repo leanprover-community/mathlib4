@@ -84,7 +84,6 @@ theorem ofFn_mul' {m n} (f : Fin (m * n) → α) :
         (Nat.add_lt_add_left j.prop _).trans_eq (by rw [Nat.mul_add, Nat.mul_one])
       _ ≤ _ := Nat.mul_le_mul_left _ i.prop⟩) := by simp_rw [m.mul_comm, ofFn_mul, Fin.cast_mk]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofFn_get : ∀ l : List α, (ofFn (get l)) = l
   | [] => by rw [ofFn_zero]
@@ -122,9 +121,6 @@ theorem pairwise_ofFn {R : α → α → Prop} {n} {f : Fin n → α} :
   simp only [pairwise_iff_getElem, length_ofFn, List.getElem_ofFn,
     Fin.forall_iff,
     Fin.mk_lt_mk, forall_comm (α := (_ : Prop)) (β := ℕ)]
-
-@[deprecated (since := "2025-10-11")]
-alias sorted_ofFn_iff := pairwise_ofFn
 
 lemma getLast_ofFn_succ {n : ℕ} (f : Fin n.succ → α) :
     (ofFn f).getLast (mt ofFn_eq_nil_iff.1 (Nat.succ_ne_zero _)) = f (Fin.last _) :=

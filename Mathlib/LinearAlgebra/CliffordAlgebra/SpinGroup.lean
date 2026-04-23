@@ -28,7 +28,7 @@ In this file we define `lipschitzGroup`, `pinGroup` and `spinGroup` and show the
 The definition of the Lipschitz group
 $\{ x \in \mathop{\mathcal{C}\ell} | x \text{ is invertible and } x v x^{-1} ∈ V \}$ is given by:
 
-* [fulton2004][], Chapter 20
+* [fulton2004], Chapter 20
 * https://en.wikipedia.org/wiki/Clifford_algebra#Lipschitz_group
 
 But they presumably form a group only in finite dimensions. So we define `lipschitzGroup` with

@@ -48,4 +48,16 @@ instance hasLimits {B : C} [HasWidePullbacks.{w} C] : HasLimitsOfSize.{w, w} (Ov
   have := ConstructProducts.over_products_of_widePullbacks (B := B)
   apply has_limits_of_hasEqualizers_and_products
 
-end CategoryTheory.Over
+end Over
+
+namespace Under
+
+instance {B : C} [HasFiniteWidePushouts C] : HasFiniteColimits (Under B) := by
+  rw [← hasFiniteLimits_opposite_iff]
+  exact hasFiniteLimits_of_hasLimitsLimits_of_createsFiniteLimits (Over.opEquivOpUnder _).inverse
+
+instance {B : C} [HasWidePushouts.{w} C] : HasColimitsOfSize.{w, w} (Under B) := by
+  rw [← hasLimitsOfSize_opposite_iff]
+  exact hasLimits_of_hasLimits_createsLimits (Over.opEquivOpUnder _).inverse
+
+end CategoryTheory.Under

@@ -35,8 +35,8 @@ conditions are equivalent in this case).
 
 ## Main results
 
-* `TopologicalSpace.FirstCountableTopology.tendsto_subseq`: In a first-countable space,
-  cluster points are limits of subsequences.
+* `MapClusterPt.tendsto_subseq`: In a first-countable space, cluster points are limits of
+  subsequences.
 * `TopologicalSpace.SecondCountableTopology.isOpen_iUnion_countable`: In a second-countable space,
   the union of arbitrarily-many open sets is equal to a sub-union of only countably many of these
   sets.
@@ -704,11 +704,32 @@ protected theorem _root_.Topology.IsEmbedding.firstCountableTopology {β : Type*
     FirstCountableTopology α :=
   hf.1.firstCountableTopology
 
-namespace FirstCountableTopology
+section FirstCountableTopology
+
+variable [FirstCountableTopology α] {x : α}
+
+/-- In a first-countable space, a cluster point `x` of a countably generated filter is the limit of
+some sequence. -/
+theorem _root_.ClusterPt.exists_seq_tendsto {f : Filter α} [IsCountablyGenerated f]
+    (hx : ClusterPt x f) :
+    ∃ ψ : ℕ → α, Tendsto ψ atTop (𝓝 x) ∧ Tendsto ψ atTop f := by
+  unfold ClusterPt at hx
+  obtain ⟨g, hg⟩ := Filter.exists_seq_tendsto (𝓝 x ⊓ f)
+  exact ⟨g, (tendsto_inf.1 hg).1, (tendsto_inf.1 hg).2⟩
+
+theorem _root_.MapClusterPt.exists_seq_tendsto {ι : Type*} {f : Filter ι} [IsCountablyGenerated f]
+    {x : α} {u : ι → α} (hx : MapClusterPt x f u) :
+    ∃ ψ : ℕ → ι, Tendsto (u ∘ ψ) atTop (𝓝 x) ∧ Tendsto ψ atTop f := by
+  grind [exists_seq_comp_tendsto hx]
 
 /-- In a first-countable space, a cluster point `x` of a sequence
 is the limit of some subsequence. -/
-theorem tendsto_subseq [FirstCountableTopology α] {u : ℕ → α} {x : α}
+theorem _root_.MapClusterPt.tendsto_subseq {u : ℕ → α} (hx : MapClusterPt x atTop u) :
+    ∃ ψ : ℕ → ℕ, StrictMono ψ ∧ Tendsto (u ∘ ψ) atTop (𝓝 x) :=
+  subseq_tendsto_of_neBot hx
+
+@[deprecated MapClusterPt.tendsto_subseq (since := "2026-03-29")]
+theorem FirstCountableTopology.tendsto_subseq {u : ℕ → α} {x : α}
     (hx : MapClusterPt x atTop u) : ∃ ψ : ℕ → ℕ, StrictMono ψ ∧ Tendsto (u ∘ ψ) atTop (𝓝 x) :=
   subseq_tendsto_of_neBot hx
 

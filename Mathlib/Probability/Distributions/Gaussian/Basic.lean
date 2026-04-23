@@ -110,6 +110,14 @@ variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpa
 instance {x : E} : IsGaussian (Measure.dirac x) where
   map_eq_gaussianReal L := by simp
 
+omit [IsGaussian μ] in
+lemma IsGaussian.of_subsingleton [Subsingleton E] [IsProbabilityMeasure μ] :
+    IsGaussian μ := by
+  convert instIsGaussianDirac (x := (0 : E))
+  ext s -
+  apply Subsingleton.set_cases (p := fun s ↦ μ s = _)
+  all_goals simp
+
 lemma IsGaussian.memLp_dual (μ : Measure E) [IsGaussian μ] (L : StrongDual ℝ E)
     (p : ℝ≥0∞) (hp : p ≠ ∞) :
     MemLp L p μ := by

@@ -539,14 +539,6 @@ section Mul
 ### mul
 -/
 
-@[deprecated (since := "2025-10-06")] alias mul_one' := Fin.mul_one
-
-@[deprecated (since := "2025-10-06")] alias one_mul' := Fin.one_mul
-
-@[deprecated (since := "2025-10-06")] alias mul_zero' := Fin.mul_zero
-
-@[deprecated (since := "2025-10-06")] alias zero_mul' := Fin.zero_mul
-
 end Mul
 
 end Fin

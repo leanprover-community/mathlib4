@@ -472,14 +472,6 @@ theorem weightedHomogeneousComponent_of_mem [DecidableEq M] {m n : M}
     · rfl
     · simp only [coeff_zero]
 
-@[deprecated (since := "2025-10-06")]
-alias weightedHomogeneousComponent_of_isWeightedHomogeneous_same :=
-  IsWeightedHomogeneous.weightedHomogeneousComponent_same
-
-@[deprecated (since := "2025-10-06")]
-alias weightedHomogeneousComponent_of_isWeightedHomogeneous_ne :=
-  IsWeightedHomogeneous.weightedHomogeneousComponent_ne
-
 variable (R w)
 
 open DirectSum

@@ -231,7 +231,7 @@ theorem fourierSubalgebra_separatesPoints : (@fourierSubalgebra T).SeparatesPoin
   intro x y hxy
   refine ⟨_, ⟨fourier 1, subset_adjoin ⟨1, rfl⟩, rfl⟩, ?_⟩
   dsimp only; rw [fourier_one, fourier_one]
-  contrapose! hxy
+  contrapose hxy
   rw [Subtype.coe_inj] at hxy
   exact injective_toCircle hT.elim.ne' hxy
 

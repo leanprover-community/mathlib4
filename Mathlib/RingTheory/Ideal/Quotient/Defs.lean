@@ -73,7 +73,8 @@ instance commRing {R} [CommRing R] (I : Ideal R) : CommRing (R ⧸ I) where
 variable [I.IsTwoSided]
 
 -- Sanity test to make sure no diamonds have emerged in `commRing`
-example : (ring I).toAddCommGroup = Submodule.Quotient.addCommGroup I := rfl
+example : (ring I).toAddCommGroup = Submodule.Quotient.addCommGroup I := by
+  with_reducible_and_instances rfl
 
 variable (I) in
 /-- The ring homomorphism from a ring `R` to a quotient ring `R/I`. -/

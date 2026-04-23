@@ -310,13 +310,19 @@ jobs:
             # cf. https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Mathlib.20has.20moved.20to.20the.20new.20module.20system/near/563452000
             echo "Warming up cache using previous commit: $PREV_SHA (source: $PREV_SHA_SOURCE)"
             if git cat-file -e "$PREV_SHA^{commit}" 2>/dev/null || git fetch --no-tags --depth=1 origin "$PREV_SHA"; then
-              git checkout "$PREV_SHA"
-              ../tools-branch/.lake/build/bin/cache get
-              # Run again with --repo, to ensure we actually get the oleans.
-              ../tools-branch/.lake/build/bin/cache --repo="$CACHE_REPO" get
+              # Skip warmup if the previous commit uses a different toolchain
+              PREV_TOOLCHAIN=$(git show "$PREV_SHA:lean-toolchain" 2>/dev/null || true)
+              if [[ "$PREV_TOOLCHAIN" != "$(cat lean-toolchain)" ]]; then
+                echo "Previous commit $PREV_SHA uses a different toolchain ($PREV_TOOLCHAIN); skipping warmup."
+              else
+                git checkout "$PREV_SHA"
+                ../tools-branch/.lake/build/bin/cache get
+                # Run again with --repo, to ensure we actually get the oleans.
+                ../tools-branch/.lake/build/bin/cache --repo="$CACHE_REPO" get
 
-              echo "Switching back to branch head"
-              git checkout "$ORIG_SHA"
+                echo "Switching back to branch head"
+                git checkout "$ORIG_SHA"
+              fi
             else
               echo "Could not fetch $PREV_SHA; skipping parent warmup cache fetch."
             fi
@@ -736,6 +742,12 @@ jobs:
 
       - name: clean up the import graph file
         run: rm import_graph.dot
+
+      - name: check all scripts build successfully
+        run: |
+          lake env lean scripts/create_deprecated_modules.lean
+          lake env lean scripts/autolabel.lean
+          lake exe check_title_labels --labels "t-algebra" "feat: dummy PR for testing"
 
       - name: build everything
         # make sure everything is available for test/import_all.lean

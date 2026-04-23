@@ -39,7 +39,7 @@ theorem exists_eq_colon_of_mem_minimalPrimes [IsNoetherianRing R]
   have key : ∃ n ≠ 0, ∃ J : Ideal R, I ^ n * J ≤ ann ∧ ¬ J ≤ I := by
     -- let `n` be large enough so that `ann.radical ^ n ≤ ann` (uses Noetherian)
     obtain ⟨n, hn⟩ := ann.exists_radical_pow_le_of_fg ann.radical.fg_of_isNoetherianRing
-    have hn0 : n ≠ 0 := by contrapose! hn; simpa [hn, ann]
+    have hn0 : n ≠ 0 := by contrapose hn; simpa [hn, ann]
     -- then take `J` to be the product of the other minimal primes raised to the `n`th power
     have h := ann.finite_minimalPrimes_of_isNoetherianRing R
     rw [← ann.sInf_minimalPrimes, ← h.coe_toFinset, ← h.toFinset.inf_id_eq_sInf,

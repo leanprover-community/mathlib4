@@ -39,7 +39,7 @@ theorem le_max_iff : a ≤ max b c ↔ a ≤ b ∨ a ≤ c :=
   le_sup_iff
 
 @[to_dual]
-instance [LinearOrder α] : Std.LawfulOrderSup α where
+instance : Std.LawfulOrderSup α where
   max_le_iff _ _ _ := max_le_iff
 
 @[to_dual max_lt_iff]

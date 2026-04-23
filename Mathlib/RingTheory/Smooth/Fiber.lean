@@ -49,13 +49,10 @@ variable [CommRing P] [Algebra R P] [Algebra P S] [IsScalarTower R P S]
 
 section IsLocalRing
 
-set_option backward.isDefEq.respectTransparency false
-
 variable [IsLocalRing R] [IsLocalRing S] [IsLocalHom (algebraMap R S)]
   [Algebra.FormallySmooth 𝓀[R] (𝓀[R] ⊗[R] S)]
 
-#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
-attribute [local irreducible] KaehlerDifferential in
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] TensorProduct.rightAlgebra in
 /--
 Let `(R, m, k)` be a local ring, `(S, M, K)` be a local `R`-algebra that is `R`-flat such that

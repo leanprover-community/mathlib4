@@ -7,7 +7,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Fréd�
 module
 
 public import Mathlib.Algebra.Module.Submodule.Ker
-public import Mathlib.Algebra.Module.Submodule.RestrictScalars
 public import Mathlib.Data.Set.Finite.Range
 
 /-!

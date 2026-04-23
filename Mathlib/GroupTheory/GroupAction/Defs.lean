@@ -75,8 +75,6 @@ theorem mem_orbit_self (a : α) : a ∈ orbit M a :=
 theorem nonempty_orbit (a : α) : Set.Nonempty (orbit M a) :=
   Set.range_nonempty _
 
-@[deprecated (since := "2025-09-25")] alias orbit_nonempty := nonempty_orbit
-
 @[to_additive]
 theorem mapsTo_smul_orbit (m : M) (a : α) : Set.MapsTo (m • ·) (orbit M a) (orbit M a) :=
   Set.mapsTo_iff_subset_preimage.mpr <| Set.range_subset_iff.mpr fun m' => ⟨m * m', mul_smul _ _ _⟩
@@ -399,9 +397,6 @@ nonrec lemma orbitRel.Quotient.nonempty_orbit (x : orbitRel.Quotient G α) :
     Set.Nonempty x.orbit := by
   rw [orbitRel.Quotient.orbit_eq_orbit_out x Quotient.out_eq']
   exact nonempty_orbit _
-
-@[deprecated (since := "2025-09-25")]
-alias orbitRel.Quotient.orbit_nonempty := orbitRel.Quotient.nonempty_orbit
 
 @[to_additive]
 nonrec lemma orbitRel.Quotient.mapsTo_smul_orbit (g : G) (x : orbitRel.Quotient G α) :

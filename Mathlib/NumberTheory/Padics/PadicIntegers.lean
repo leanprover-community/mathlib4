@@ -177,7 +177,7 @@ We now show that `ℤ_[p]` is a
 
 variable (p)
 
-instance : MetricSpace ℤ_[p] := Subtype.metricSpace
+instance : MetricSpace ℤ_[p] := inferInstanceAs <| MetricSpace (Subtype _)
 
 instance : IsUltrametricDist ℤ_[p] := IsUltrametricDist.subtype _
 
@@ -191,7 +191,6 @@ variable {p} in
 theorem norm_def {z : ℤ_[p]} : ‖z‖ = ‖(z : ℚ_[p])‖ := rfl
 
 instance : NormedCommRing ℤ_[p] where
-  __ := instCommRing
   dist_eq := by
     rintro ⟨x, hx⟩ ⟨y, hy⟩
     exact dist_eq_norm_neg_add x y
@@ -459,7 +458,7 @@ theorem mem_span_pow_iff_le_valuation (x : ℤ_[p]) (hx : x ≠ 0) (n : ℕ) :
     suffices c ≠ 0 by
       rw [valuation_p_pow_mul _ _ this]
       exact le_self_add
-    contrapose! hx
+    contrapose hx
     rw [hx, mul_zero]
   · nth_rewrite 2 [unitCoeff_spec hx]
     simpa [Units.isUnit, IsUnit.dvd_mul_left] using pow_dvd_pow _

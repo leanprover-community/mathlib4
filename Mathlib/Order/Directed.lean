@@ -212,10 +212,10 @@ alias ⟨DirectedOn.isDirectedOrder, DirectedOn.of_isDirectedOrder⟩ := directe
 
 section Reflexive
 
-protected theorem DirectedOn.insert (h : Reflexive r) (a : α) {s : Set α} (hd : DirectedOn r s)
+protected theorem DirectedOn.insert [Std.Refl r] (a : α) {s : Set α} (hd : DirectedOn r s)
     (ha : ∀ b ∈ s, ∃ c ∈ s, a ≼ c ∧ b ≼ c) : DirectedOn r (insert a s) := by
   rintro x (rfl | hx) y (rfl | hy)
-  · exact ⟨y, Set.mem_insert _ _, h _, h _⟩
+  · exact ⟨y, Set.mem_insert _ _, refl _, refl _⟩
   · obtain ⟨w, hws, hwr⟩ := ha y hy
     exact ⟨w, Set.mem_insert_of_mem _ hws, hwr⟩
   · obtain ⟨w, hws, hwr⟩ := ha x hx
@@ -223,16 +223,16 @@ protected theorem DirectedOn.insert (h : Reflexive r) (a : α) {s : Set α} (hd 
   · obtain ⟨w, hws, hwr⟩ := hd x hx y hy
     exact ⟨w, Set.mem_insert_of_mem _ hws, hwr⟩
 
-theorem directedOn_singleton (h : Reflexive r) (a : α) : DirectedOn r ({a} : Set α) :=
-  fun x hx _ hy => ⟨x, hx, h _, hx.symm ▸ hy.symm ▸ h _⟩
+theorem directedOn_singleton [Std.Refl r] (a : α) : DirectedOn r ({a} : Set α) :=
+  fun x hx _ hy => ⟨x, hx, refl _, hx.symm ▸ hy.symm ▸ refl _⟩
 
-theorem directedOn_pair (h : Reflexive r) {a b : α} (hab : a ≼ b) : DirectedOn r ({a, b} : Set α) :=
-  (directedOn_singleton h _).insert h _ fun c hc => ⟨c, hc, hc.symm ▸ hab, h _⟩
+theorem directedOn_pair [Std.Refl r] {a b : α} (hab : a ≼ b) : DirectedOn r ({a, b} : Set α) :=
+  (directedOn_singleton _).insert _ fun c hc => ⟨c, hc, hc.symm ▸ hab, refl _⟩
 
-theorem directedOn_pair' (h : Reflexive r) {a b : α} (hab : a ≼ b) :
+theorem directedOn_pair' [Std.Refl r] {a b : α} (hab : a ≼ b) :
     DirectedOn r ({b, a} : Set α) := by
   rw [Set.pair_comm]
-  apply directedOn_pair h hab
+  apply directedOn_pair hab
 
 end Reflexive
 

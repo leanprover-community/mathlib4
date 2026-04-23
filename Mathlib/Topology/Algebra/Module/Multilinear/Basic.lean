@@ -192,6 +192,10 @@ theorem toMultilinearMap_add (f g : ContinuousMultilinearMap R M₁ M₂) :
     (f + g).toMultilinearMap = f.toMultilinearMap + g.toMultilinearMap :=
   rfl
 
+-- The `AddMonoid` instance exists to help speedup unification
+instance : AddMonoid (ContinuousMultilinearMap R M₁ M₂) := fast_instance%
+  toMultilinearMap_injective.addMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
+
 instance addCommMonoid : AddCommMonoid (ContinuousMultilinearMap R M₁ M₂) := fast_instance%
   toMultilinearMap_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 

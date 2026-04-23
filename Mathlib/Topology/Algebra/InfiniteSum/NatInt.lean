@@ -536,9 +536,6 @@ theorem multipliable_pnat_iff_multipliable_succ {f : ℕ → M} :
     Multipliable (fun x : ℕ+ ↦ f x) ↔ Multipliable fun x ↦ f (x + 1) :=
   Equiv.pnatEquivNat.symm.multipliable_iff.symm
 
-@[deprecated (since := "2025-09-31")]
-alias pnat_multipliable_iff_multipliable_succ := multipliable_pnat_iff_multipliable_succ
-
 @[to_additive]
 lemma multipliable_pnat_iff_multipliable_nat [TopologicalSpace G] [IsTopologicalGroup G]
     {f : ℕ → G} : Multipliable (fun n : ℕ+ ↦ f n) ↔ Multipliable f := by

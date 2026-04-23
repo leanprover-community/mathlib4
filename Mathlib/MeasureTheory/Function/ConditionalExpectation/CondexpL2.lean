@@ -85,7 +85,6 @@ theorem integrable_condExpL2_of_isFiniteMeasure (hm : m ≤ m0) [IsFiniteMeasure
     Integrable (ε := E) (condExpL2 E 𝕜 hm f) μ :=
   integrableOn_univ.mp <| integrableOn_condExpL2_of_measure_ne_top hm (measure_ne_top _ _) f
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_condExpL2_le_one (hm : m ≤ m0) : ‖@condExpL2 α E 𝕜 _ _ _ _ _ _ μ hm‖ ≤ 1 :=
   haveI : Fact (m ≤ m0) := ⟨hm⟩
   Submodule.orthogonalProjection_norm_le _

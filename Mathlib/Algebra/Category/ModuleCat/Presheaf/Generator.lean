@@ -63,9 +63,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma freeYonedaEquiv_symm_app (M : PresheafOfModules.{v} R) (X : C)
     (x : M.obj (Opposite.op X)) :
     (freeYonedaEquiv.symm x).app (Opposite.op X) (ModuleCat.freeMk (𝟙 _)) = x := by
-  dsimp [freeYonedaEquiv, freeHomEquiv, yonedaEquiv]
-  rw [ModuleCat.freeDesc_apply, op_id, M.presheaf.map_id]
-  rfl
+  simp [freeYonedaEquiv, freeHomEquiv, yonedaEquiv]
 
 lemma freeYonedaEquiv_comp {M N : PresheafOfModules.{v} R} {X : C}
     (m : ((free R).obj (yoneda.obj X) ⟶ M)) (φ : M ⟶ N) :
@@ -166,9 +164,9 @@ lemma ι_fromFreeYonedaCoproduct (m : M.Elements) :
 lemma ι_fromFreeYonedaCoproduct_apply (m : M.Elements) (X : Cᵒᵖ) (x : m.freeYoneda.obj X) :
     M.fromFreeYonedaCoproduct.app X ((M.ιFreeYonedaCoproduct m).app X x) =
       m.fromFreeYoneda.app X x :=
-  congr_fun ((evaluation R X ⋙ forget _).congr_map (M.ι_fromFreeYonedaCoproduct m)) x
+  ConcreteCategory.congr_hom
+    ((evaluation R X ⋙ forget _).congr_map (M.ι_fromFreeYonedaCoproduct m)) x
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma fromFreeYonedaCoproduct_app_mk (m : M.Elements) :
     M.fromFreeYonedaCoproduct.app _ (M.freeYonedaCoproductMk m) = m.2 := by

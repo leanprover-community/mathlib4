@@ -306,7 +306,7 @@ lemma id_map_iff (hX : Measurable X) :
   · simpa [Kernel.map_apply _ hX, mgf_id_map hX.aemeasurable] using h.mgf_le
 
 protected lemma const_mul (h : HasSubgaussianMGF X c κ ν) (r : ℝ) :
-    HasSubgaussianMGF (fun ω ↦ r * X ω) (⟨r ^ 2, sq_nonneg r⟩ * c) κ ν where
+    HasSubgaussianMGF (fun ω ↦ r * X ω) (.mk (r ^ 2) (sq_nonneg r) * c) κ ν where
   integrable_exp_mul t := by
     simp_rw [← mul_assoc]
     exact h.integrable_exp_mul (t * r)

@@ -227,8 +227,7 @@ theorem norm_mul_invInterpStrip_le_one_of_mem_verticalClosedStrip (f : ℂ → E
   rw [eventually_inf_principal]
   apply Eventually.of_forall
   intro x hx
-  norm_num
-  exact (hBF x ((preimage_mono Ioo_subset_Icc_self) hx)).trans
+  simpa using (hBF x ((preimage_mono Ioo_subset_Icc_self) hx)).trans
     ((le_of_lt (lt_add_one BF)).trans (Real.add_one_le_exp BF))
 
 end invInterpStrip
@@ -515,13 +514,15 @@ lemma norm_le_interp_of_mem_verticalClosedStrip₀₁' (f : ℂ → E) {z : ℂ}
     specialize hb 1
     simp only [mem_preimage, one_re, mem_singleton_iff, forall_true_left] at hb
     exact (norm_nonneg _).trans hb
-  · apply Real.rpow_le_rpow (sSupNormIm_nonneg f _) _ (sub_nonneg.mpr hz.2)
-    · rw [sSupNormIm]
-      apply csSup_le _
-      · simpa [comp_apply, mem_image, forall_exists_index,
-          and_imp, forall_apply_eq_imp_iff₂] using ha
-      · use ‖(f 0)‖, 0
-        simp
+  · gcongr
+    · exact sSupNormIm_nonneg f _
+    · exact sub_nonneg.mpr hz.2
+    rw [sSupNormIm]
+    apply csSup_le _
+    · simpa [comp_apply, mem_image, forall_exists_index,
+        and_imp, forall_apply_eq_imp_iff₂] using ha
+    · use ‖(f 0)‖, 0
+      simp
   · apply Real.rpow_le_rpow (sSupNormIm_nonneg f _) _ hz.1
     · rw [sSupNormIm]
       apply csSup_le _

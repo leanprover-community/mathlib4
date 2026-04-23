@@ -354,7 +354,7 @@ theorem homotopicRel_iff_comp [PreconnectedSpace A] {f₀ f₁ : C(A, E)} {S : S
       (ContinuousMap.comp ⟨p, cov.continuous⟩ f₀).HomotopicRel (.comp ⟨p, cov.continuous⟩ f₁) S :=
   ⟨fun ⟨F⟩ ↦ ⟨F.compContinuousMap _⟩, fun ⟨F⟩ ↦ ⟨cov.liftHomotopyRel F he rfl rfl⟩⟩
 
-/-- Lifting two paths that are homotopic relative to {0,1}
+/-- Lifting two paths that are homotopic relative to `{0,1}`
   starting from the same point also ends up in the same point. -/
 theorem liftPath_apply_one_eq_of_homotopicRel {γ₀ γ₁ : C(I, X)}
     (h : γ₀.HomotopicRel γ₁ {0,1}) (e : E) (h₀ : γ₀ 0 = p e) (h₁ : γ₁ 0 = p e) :
@@ -393,9 +393,9 @@ open CategoryTheory
 https://ncatlab.org/nlab/show/monodromy. -/
 @[simps] noncomputable def monodromyFunctor : FundamentalGroupoid X ⥤ Type _ where
   obj x := p ⁻¹' {x.as}
-  map := cov.monodromy
-  map_id _ := cov.monodromy_refl
-  map_comp _ _ := funext (cov.monodromy_trans_apply _ _)
+  map f := TypeCat.ofHom (cov.monodromy f)
+  map_id _ := by ext x : 3; simpa using congr_fun cov.monodromy_refl x
+  map_comp _ _ := by ext : 3; simpa using cov.monodromy_trans_apply _ _ _
 
 theorem monodromy_bijective {x y : X} (γ : Path.Homotopic.Quotient x y) :
     (cov.monodromy γ).Bijective :=

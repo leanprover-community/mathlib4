@@ -102,6 +102,13 @@ theorem Continuous.matrix_elem {A : X → Matrix m n R} (hA : Continuous A) (i :
     Continuous fun x => A x i j :=
   (continuous_apply_apply i j).comp hA
 
+lemma continuous_matrixOf [TopologicalSpace α] {f : α → m → n → R} :
+    Continuous (fun x ↦ Matrix.of (f x)) ↔ Continuous f := by
+  rfl
+
+@[fun_prop]
+alias ⟨_, Continuous.matrixOf⟩ := continuous_matrixOf
+
 @[continuity, fun_prop]
 theorem Continuous.matrix_map [TopologicalSpace S] {A : X → Matrix m n S} {f : S → R}
     (hA : Continuous A) (hf : Continuous f) : Continuous fun x => (A x).map f :=

@@ -469,19 +469,9 @@ theorem second_derivative_symmetric_of_eventually [IsRCLikeNormedField 𝕜]
   let _ : LinearMap.CompatibleSMul E F ℝ 𝕜 := LinearMap.IsScalarTower.compatibleSMul
   let _ : LinearMap.CompatibleSMul E (E →L[𝕜] F) ℝ 𝕜 := LinearMap.IsScalarTower.compatibleSMul
   let f'R : E → E →L[ℝ] F := fun x ↦ (f' x).restrictScalars ℝ
+  let f''R : E →L[ℝ] E →L[ℝ] F := f''.bilinearRestrictScalars ℝ
   have hfR : ∀ᶠ y in 𝓝 x, HasFDerivAt f (f'R y) y := by
     filter_upwards [hf] with y hy using HasFDerivAt.restrictScalars ℝ hy
-  let f''Rl : E →ₗ[ℝ] E →ₗ[ℝ] F :=
-  { toFun := fun x ↦
-      { toFun := fun y ↦ f'' x y
-        map_add' := by simp
-        map_smul' := by simp }
-    map_add' := by intros; ext; simp
-    map_smul' := by intros; ext; simp }
-  let f''R : E →L[ℝ] E →L[ℝ] F := by
-    refine LinearMap.mkContinuous₂ f''Rl (‖f''‖) (fun x y ↦ ?_)
-    simp only [LinearMap.coe_mk, AddHom.coe_mk, f''Rl]
-    exact ContinuousLinearMap.le_opNorm₂ f'' x y
   have : HasFDerivAt f'R f''R x := by
     simp only [hasFDerivAt_iff_tendsto] at hx ⊢
     exact hx
@@ -500,18 +490,18 @@ variable (𝕜) in
 /-- `minSmoothness 𝕜 n` is the minimal smoothness exponent larger than or equal to `n` for which
 one can do serious calculus in `𝕜`. If `𝕜` is `ℝ` or `ℂ`, this is just `n`. Otherwise,
 this is `ω` as only analytic functions are well behaved on `ℚₚ`, say. -/
-noncomputable irreducible_def minSmoothness (n : WithTop ℕ∞) :=
+noncomputable irreducible_def minSmoothness (n : ℕ∞ω) :=
   if IsRCLikeNormedField 𝕜 then n else ω
 
-@[simp] lemma minSmoothness_of_isRCLikeNormedField [h : IsRCLikeNormedField 𝕜] {n : WithTop ℕ∞} :
+@[simp] lemma minSmoothness_of_isRCLikeNormedField [h : IsRCLikeNormedField 𝕜] {n : ℕ∞ω} :
     minSmoothness 𝕜 n = n := by
   simp [minSmoothness, h]
 
-lemma le_minSmoothness {n : WithTop ℕ∞} : n ≤ minSmoothness 𝕜 n := by
+lemma le_minSmoothness {n : ℕ∞ω} : n ≤ minSmoothness 𝕜 n := by
   simp only [minSmoothness]
   split_ifs <;> simp
 
-lemma minSmoothness_add {n m : WithTop ℕ∞} : minSmoothness 𝕜 (n + m) = minSmoothness 𝕜 n + m := by
+lemma minSmoothness_add {n m : ℕ∞ω} : minSmoothness 𝕜 (n + m) = minSmoothness 𝕜 n + m := by
   simp only [minSmoothness]
   split_ifs <;> simp
 
@@ -520,7 +510,7 @@ lemma minSmoothness_monotone : Monotone (minSmoothness 𝕜) := by
   simp only [minSmoothness]
   split_ifs <;> simp [hmn]
 
-@[simp] lemma minSmoothness_eq_infty {n : WithTop ℕ∞} :
+@[simp] lemma minSmoothness_eq_infty {n : ℕ∞ω} :
     minSmoothness 𝕜 n = ∞ ↔ (n = ∞ ∧ IsRCLikeNormedField 𝕜) := by
   simp only [minSmoothness]
   split_ifs with h <;> simp [h]
@@ -530,7 +520,7 @@ find `n' ∈ [minSmoothness 𝕜 m, n]` which is not `∞`: over `ℝ` or `ℂ`,
 just take `ω`. The interest of this technical lemma is that, if a function is `C^{n'}` at a point
 for `n' ≠ ∞`, then it is `C^{n'}` on a neighborhood of the point (this property fails only
 in `C^∞` smoothness, see `ContDiffWithinAt.contDiffOn`). -/
-lemma exist_minSmoothness_le_ne_infty {n : WithTop ℕ∞} {m : ℕ} (hm : minSmoothness 𝕜 m ≤ n) :
+lemma exist_minSmoothness_le_ne_infty {n : ℕ∞ω} {m : ℕ} (hm : minSmoothness 𝕜 m ≤ n) :
     ∃ n', minSmoothness 𝕜 m ≤ n' ∧ n' ≤ n ∧ n' ≠ ∞ := by
   simp only [minSmoothness] at hm ⊢
   split_ifs with h
@@ -541,7 +531,7 @@ lemma exist_minSmoothness_le_ne_infty {n : WithTop ℕ∞} {m : ℕ} (hm : minSm
 
 /-- If a function is `C^2` at a point, then its second derivative there is symmetric. Over a field
 different from `ℝ` or `ℂ`, we should require that the function is analytic. -/
-theorem ContDiffAt.isSymmSndFDerivAt {n : WithTop ℕ∞}
+theorem ContDiffAt.isSymmSndFDerivAt {n : ℕ∞ω}
     (hf : ContDiffAt 𝕜 n f x) (hn : minSmoothness 𝕜 2 ≤ n) : IsSymmSndFDerivAt 𝕜 f x := by
   by_cases h : IsRCLikeNormedField 𝕜
   -- First deal with the `ℝ` or `ℂ` case, where `C^2` is enough.
@@ -567,7 +557,7 @@ theorem ContDiffAt.isSymmSndFDerivAt {n : WithTop ℕ∞}
 /-- If a function is `C^2` within a set at a point, and accumulated by points in the interior
 of the set, then its second derivative there is symmetric. Over a field
 different from `ℝ` or `ℂ`, we should require that the function is analytic. -/
-theorem ContDiffWithinAt.isSymmSndFDerivWithinAt {n : WithTop ℕ∞}
+theorem ContDiffWithinAt.isSymmSndFDerivWithinAt {n : ℕ∞ω}
     (hf : ContDiffWithinAt 𝕜 n f s x) (hn : minSmoothness 𝕜 2 ≤ n)
     (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ closure (interior s)) (h'x : x ∈ s) :
     IsSymmSndFDerivWithinAt 𝕜 f s x := by

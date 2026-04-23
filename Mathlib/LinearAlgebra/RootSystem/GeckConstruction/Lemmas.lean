@@ -67,7 +67,7 @@ lemma root_sub_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
       exact P.ne_zero _ hk'.choose_spec
     have aux (h : P.pairingIn ℤ i k = -2) : ¬P.pairingIn ℤ k i = -2 := by
       have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
-      contrapose! hk'; exact (P.pairingIn_neg_two_neg_two_iff ℤ i k).mp ⟨h, hk'⟩
+      contrapose hk'; exact (P.pairingIn_neg_two_neg_two_iff ℤ i k).mp ⟨h, hk'⟩
     have := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i k
     aesop -- https://github.com/leanprover-community/mathlib4/issues/24551 (this should be faster)
   replace hki : P.pairing k i = -1 := by rw [← P.algebraMap_pairingIn ℤ, hki]; simp
@@ -92,7 +92,7 @@ lemma root_add_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
     simp only [indexNeg_neg, root_reflectionPerm, reflection_apply_self]
     module
   rw [← neg_mem_range_root_iff]
-  convert b.root_sub_root_mem_of_mem_of_mem j i (-k) hij.symm hj hi hk (by contrapose! hkj; aesop)
+  convert b.root_sub_root_mem_of_mem_of_mem j i (-k) hij.symm hj hi hk (by contrapose hkj; aesop)
     (by convert P.neg_mem_range_root_iff.mpr hk' using 1; simp [neg_add_eq_sub]) using 1
   simp only [indexNeg_neg, root_reflectionPerm, reflection_apply_self]
   module
@@ -280,7 +280,7 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_2
   have hlj_mem : P.root l - P.root j ∈ range P.root := by rwa [← h₁]
   /- It is sufficient to prove that two key pairings vanish. -/
   suffices ¬ (P.pairingIn ℤ m i = 0 ∧ P.pairingIn ℤ l j ≠ 0) by
-    contrapose! this
+    contrapose this
     rcases ne_or_eq (P.pairingIn ℤ m i) 0 with hmi | hmi
     · simpa [hmi, this.1, P.pairingIn_eq_zero_iff (i := i)] using chainBotCoeff_if_one_zero him_mem
     refine ⟨hmi, fun hlj ↦ ?_⟩

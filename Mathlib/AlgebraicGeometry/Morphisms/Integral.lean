@@ -35,9 +35,6 @@ affine and the induced ring hom on sections is integral. -/
 class IsIntegralHom {X Y : Scheme} (f : X ⟶ Y) : Prop extends IsAffineHom f where
   isIntegral_app (f) (U : Y.Opens) (hU : IsAffineOpen U) : (f.app U).hom.IsIntegral
 
-@[deprecated (since := "2025-10-15")]
-alias IsIntegralHom.integral_app := IsIntegralHom.isIntegral_app
-
 alias Scheme.Hom.isIntegral_app := IsIntegralHom.isIntegral_app
 
 namespace IsIntegralHom

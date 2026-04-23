@@ -639,7 +639,6 @@ lemma ContinuousMapZero.adjoin_id_dense (s : Set 𝕜) [Fact (0 ∈ s)]
     ContinuousMap.evalStarAlgHom_apply, ContinuousMap.coe_coe]
   exact map_zero f
 
-set_option backward.isDefEq.respectTransparency false in
 open NonUnitalStarAlgebra in
 lemma ContinuousMapZero.elemental_eq_top {𝕜 : Type*} [RCLike 𝕜] (s : Set 𝕜) [Fact (0 ∈ s)]
     [CompactSpace s] : elemental 𝕜 (ContinuousMapZero.id s) = ⊤ :=

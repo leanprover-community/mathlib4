@@ -183,7 +183,6 @@ lemma of_range_subset_iSup [P.RespectsRight @IsOpenImmersion] {ι : Type*} (U : 
   rw [Scheme.Hom.image_iSup, Scheme.Hom.image_top_eq_opensRange, Scheme.Opens.opensRange_ι]
   simp [Scheme.Hom.image_preimage_eq_opensRange_inf, le_iSup U]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma of_forall_exists_morphismRestrict (H : ∀ x, ∃ U : Y.Opens, x ∈ U ∧ P (f ∣_ U)) : P f := by
   choose U hxU hU using H
   refine IsZariskiLocalAtTarget.of_iSup_eq_top U (top_le_iff.mp fun x _ ↦ ?_) hU
@@ -313,7 +312,6 @@ lemma resLE [IsZariskiLocalAtTarget P] {U : Y.Opens} {V : X.Opens}
     (hf : P f) : P (f.resLE U V e) :=
   IsZariskiLocalAtSource.comp (IsZariskiLocalAtTarget.restrict hf U) _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `P` is local at the source, local at the target and is stable under post-composition with
 open immersions, then `P` can be checked locally around points. -/
 lemma iff_exists_resLE [IsZariskiLocalAtTarget P]
@@ -475,6 +473,7 @@ schemes, it is equivalent to `Q : AffineTargetMorphismProperty`.
 To make the proofs easier, we state it instead as
 1. `Q` is local at the target
 2. `P f` if and only if `∀ U, Q (f ∣_ U)` ranging over all affine opens of the target of `f`.
+
 See `HasAffineProperty.iff`.
 -/
 class HasAffineProperty (P : MorphismProperty Scheme)
@@ -507,8 +506,6 @@ lemma of_isZariskiLocalAtTarget (P : MorphismProperty Scheme.{u})
     · intro hf
       exact P.of_zeroHypercover_target Y.affineCover
         fun i ↦ of_targetAffineLocally_of_isPullback (.of_hasPullback _ _) hf
-
-@[deprecated (since := "2025-10-07")] alias of_isLocalAtTarget := of_isZariskiLocalAtTarget
 
 lemma copy {P P'} {Q Q'} [HasAffineProperty P Q]
     (e : P = P') (e' : Q = Q') : HasAffineProperty P' Q' where
@@ -678,81 +675,5 @@ lemma hasOfPostcompProperty_isOpenImmersion_of_morphismRestrict (P : MorphismPro
 instance (P : MorphismProperty Scheme) [P.IsStableUnderBaseChange] :
     P.HasOfPostcompProperty @IsOpenImmersion :=
   HasOfPostcompProperty.of_le P (.monomorphisms Scheme) (fun _ _ f _ ↦ inferInstanceAs (Mono f))
-
-section Deprecations
-
-@[deprecated (since := "2025-10-07")] alias IsLocalAtTarget := IsZariskiLocalAtTarget
-
-namespace IsLocalAtTarget
-
-@[deprecated (since := "2025-10-07")]
-alias mk' := IsZariskiLocalAtTarget.mk'
-
-@[deprecated (since := "2025-10-07")]
-alias of_iSup_eq_top := IsZariskiLocalAtTarget.of_iSup_eq_top
-
-@[deprecated (since := "2025-10-07")]
-alias iff_of_iSup_eq_top := IsZariskiLocalAtTarget.iff_of_iSup_eq_top
-
-@[deprecated (since := "2025-10-07")]
-alias of_openCover := IsZariskiLocalAtTarget.of_openCover
-
-@[deprecated (since := "2025-10-07")]
-alias iff_of_openCover := IsZariskiLocalAtTarget.iff_of_openCover
-
-@[deprecated (since := "2025-10-07")]
-alias of_isPullback := IsZariskiLocalAtTarget.of_isPullback
-
-@[deprecated (since := "2025-10-07")]
-alias restrict := IsZariskiLocalAtTarget.restrict
-
-@[deprecated (since := "2025-10-07")]
-alias of_range_subset_iSup := IsZariskiLocalAtTarget.of_range_subset_iSup
-
-end IsLocalAtTarget
-
-@[deprecated (since := "2025-10-07")] alias IsLocalAtSource := IsZariskiLocalAtSource
-
-namespace IsLocalAtSource
-
-@[deprecated (since := "2025-10-07")]
-alias mk' := IsZariskiLocalAtSource.mk'
-
-@[deprecated (since := "2025-10-07")]
-alias comp := IsZariskiLocalAtSource.comp
-
-@[deprecated (since := "2025-10-07")]
-alias respectsLeft_isOpenImmersion := IsZariskiLocalAtSource.respectsLeft_isOpenImmersion
-
-@[deprecated (since := "2025-10-07")]
-alias of_iSup_eq_top := IsZariskiLocalAtSource.of_iSup_eq_top
-
-@[deprecated (since := "2025-10-07")]
-alias iff_of_iSup_eq_top := IsZariskiLocalAtSource.iff_of_iSup_eq_top
-
-@[deprecated (since := "2025-10-07")]
-alias of_openCover := IsZariskiLocalAtSource.of_openCover
-
-@[deprecated (since := "2025-10-07")]
-alias iff_of_openCover := IsZariskiLocalAtSource.iff_of_openCover
-
-@[deprecated (since := "2025-10-07")]
-alias of_isOpenImmersion := IsZariskiLocalAtSource.of_isOpenImmersion
-
-@[deprecated (since := "2025-10-07")]
-alias isLocalAtTarget := IsZariskiLocalAtSource.isZariskiLocalAtTarget
-
-@[deprecated (since := "2025-10-07")]
-alias sigmaDesc := IsZariskiLocalAtSource.sigmaDesc
-
-@[deprecated (since := "2025-10-07")]
-alias resLE := IsZariskiLocalAtSource.resLE
-
-@[deprecated (since := "2025-10-07")]
-alias iff_exists_resLE := IsZariskiLocalAtSource.iff_exists_resLE
-
-end IsLocalAtSource
-
-end Deprecations
 
 end AlgebraicGeometry

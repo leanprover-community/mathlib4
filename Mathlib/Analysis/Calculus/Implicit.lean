@@ -325,7 +325,6 @@ section Defs
 
 variable (f f')
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Data used to apply the generic implicit function theorem to the case of a strictly
 differentiable map such that its derivative is surjective and has a complemented kernel. -/
 @[simp]
@@ -343,7 +342,6 @@ def implicitFunctionDataOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' : f'
   range_rightDeriv := LinearMap.range_eq_of_proj (Classical.choose_spec hker)
   isCompl_ker := LinearMap.isCompl_of_proj (Classical.choose_spec hker)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An open partial homeomorphism between `E` and `F × f'.ker` sending level surfaces of `f`
 to vertical subspaces. -/
 def implicitToOpenPartialHomeomorphOfComplemented (hf : HasStrictFDerivAt f f' a)
@@ -351,7 +349,6 @@ def implicitToOpenPartialHomeomorphOfComplemented (hf : HasStrictFDerivAt f f' a
     OpenPartialHomeomorph E (F × f'.ker) :=
   (implicitFunctionDataOfComplemented f f' hf hf' hker).toOpenPartialHomeomorph
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Implicit function `g` defined by `f (g z y) = z`. -/
 def implicitFunctionOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' : f'.range = ⊤)
     (hker : f'.ker.ClosedComplemented) : F → f'.ker → E :=
@@ -384,7 +381,6 @@ theorem implicitToOpenPartialHomeomorphOfComplemented_self (hf : HasStrictFDeriv
     hf.implicitToOpenPartialHomeomorphOfComplemented f f' hf' hker a = (f a, 0) := by
   simp [hf.implicitToOpenPartialHomeomorphOfComplemented_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mem_implicitToOpenPartialHomeomorphOfComplemented_source (hf : HasStrictFDerivAt f f' a)
     (hf' : f'.range = ⊤) (hker : f'.ker.ClosedComplemented) :
     a ∈ (hf.implicitToOpenPartialHomeomorphOfComplemented f f' hf' hker).source :=
@@ -407,7 +403,6 @@ theorem map_implicitFunctionOfComplemented_eq (hf : HasStrictFDerivAt f f' a) (h
         hf.mem_implicitToOpenPartialHomeomorphOfComplemented_target hf' hker).mono
     fun ⟨_, _⟩ h => congr_arg Prod.fst h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Any point in some neighborhood of `a` can be represented as
 `HasStrictFDerivAt.implicitFunctionOfComplemented` of some point. -/
 theorem eq_implicitFunctionOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' : f'.range = ⊤)
@@ -424,7 +419,6 @@ theorem implicitFunctionOfComplemented_apply_image (hf : HasStrictFDerivAt f f' 
       (hf.implicitToOpenPartialHomeomorphOfComplemented f f' hf' hker).left_inv
       (hf.mem_implicitToOpenPartialHomeomorphOfComplemented_source hf' hker)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem to_implicitFunctionOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' : f'.range = ⊤)
     (hker : f'.ker.ClosedComplemented) :
     HasStrictFDerivAt (hf.implicitFunctionOfComplemented f f' hf' hker (f a))
@@ -499,7 +493,6 @@ theorem implicitToOpenPartialHomeomorph_self (hf : HasStrictFDerivAt f f' a) (hf
   have := FiniteDimensional.complete 𝕜 F
   implicitToOpenPartialHomeomorphOfComplemented_self ..
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mem_implicitToOpenPartialHomeomorph_source (hf : HasStrictFDerivAt f f' a)
     (hf' : f'.range = ⊤) : a ∈ (hf.implicitToOpenPartialHomeomorph f f' hf').source :=
   have := FiniteDimensional.complete 𝕜 F

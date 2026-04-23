@@ -45,7 +45,7 @@ to the type of morphisms between the "restrictions" of `F` and `G` to the catego
 @[simps! obj]
 def presheafHom : Cᵒᵖ ⥤ Type _ where
   obj X := (Over.forget X.unop).op ⋙ F ⟶ (Over.forget X.unop).op ⋙ G
-  map f := Functor.whiskerLeft (Over.map f.unop).op
+  map f := TypeCat.ofHom (Functor.whiskerLeft (Over.map f.unop).op)
   map_id := by
     rintro ⟨X⟩
     ext φ ⟨Y⟩
@@ -70,7 +70,7 @@ lemma presheafHom_map_app {X Y Z : C} (f : Z ⟶ Y) (g : Y ⟶ X) (h : Z ⟶ X) 
 @[simp]
 lemma presheafHom_map_app_op_mk_id {X Y : C} (g : Y ⟶ X)
     (α : (presheafHom F G).obj (op X)) :
-    ((presheafHom F G).map g.op α).app (op (Over.mk (𝟙 Y))) =
+    dsimp% ((presheafHom F G).map g.op α).app (op (Over.mk (𝟙 Y))) =
       α.app (op (Over.mk g)) :=
   presheafHom_map_app (𝟙 Y) g g (by simp) α
 
@@ -85,7 +85,9 @@ def presheafHomSectionsEquiv : (presheafHom F G).sections ≃ (F ⟶ G) where
         dsimp
         refine Eq.trans ?_ ((s.1 ⟨X₁⟩).naturality
           (Over.homMk f : Over.mk f ⟶ Over.mk (𝟙 X₁)).op)
-        rw [← s.2 f.op, presheafHom_map_app_op_mk_id]
+        rw [← s.2 f.op]
+        dsimp
+        rw [presheafHom_map_app_op_mk_id]
         rfl }
   invFun f := ⟨fun _ => Functor.whiskerLeft _ f, fun _ => rfl⟩
   left_inv s := by
@@ -98,7 +100,6 @@ def presheafHomSectionsEquiv : (presheafHom F G).sections ≃ (F ⟶ G) where
 
 variable {F G}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma PresheafHom.isAmalgamation_iff {X : C} (S : Sieve X)
     (x : Presieve.FamilyOfElements (presheafHom F G) S.arrows)
     (hx : x.Compatible) (y : (presheafHom F G).obj (op X)) :
@@ -106,15 +107,16 @@ lemma PresheafHom.isAmalgamation_iff {X : C} (S : Sieve X)
       y.app (op (Over.mk g)) = (x g hg).app (op (Over.mk (𝟙 Y))) := by
   constructor
   · intro h Y g hg
-    rw [← h g hg, presheafHom_map_app_op_mk_id]
+    rw [← h g hg]
+    dsimp
+    rw [presheafHom_map_app_op_mk_id]
   · intro h Y g hg
     dsimp
     ext ⟨W : Over Y⟩
     refine (h W.left (W.hom ≫ g) (S.downward_closed hg _)).trans ?_
     have H := hx (𝟙 _) W.hom (S.downward_closed hg W.hom) hg (by simp)
-    dsimp at H
-    simp only [FunctorToTypes.map_id_apply] at H
-    rw [H, presheafHom_map_app_op_mk_id]
+    simp only [op_id, Functor.map_id, id_apply] at H
+    rw [H, presheafHom_map_app _ _ W.hom (by simp)]
     rfl
 
 section
@@ -126,7 +128,6 @@ namespace PresheafHom.IsSheafFor
 
 variable (x : Presieve.FamilyOfElements (presheafHom F G) S.arrows) {Y : C}
 
-set_option backward.isDefEq.respectTransparency false in
 include hG in
 lemma exists_app (hx : x.Compatible) (g : Y ⟶ X) :
     ∃ (φ : F.obj (op Y) ⟶ G.obj (op Y)),
@@ -141,8 +142,7 @@ lemma exists_app (hx : x.Compatible) (g : Y ⟶ X) :
             dsimp
             rw [id_comp, assoc]
             have H := hx f.left (𝟙 _) hZ₁ hZ₂ (by simp)
-            simp only [presheafHom_obj, unop_op, Functor.id_obj, op_id,
-              FunctorToTypes.map_id_apply] at H
+            simp only [op_id, Functor.map_id, id_apply] at H
             let φ : Over.mk f.left ⟶ Over.mk (𝟙 Z₁.left) := Over.homMk f.left
             have H' := (x (Z₁.hom ≫ g) hZ₁).naturality φ.op
             dsimp at H H' ⊢
@@ -215,14 +215,14 @@ lemma Presheaf.IsSheaf.hom (hG : Presheaf.IsSheaf J G) :
 /-- The underlying presheaf of `sheafHom F G`. It is isomorphic to `presheafHom F.1 G.1`
 (see `sheafHom'Iso`), but has better definitional properties. -/
 def sheafHom' (F G : Sheaf J A) : Cᵒᵖ ⥤ Type _ where
-  obj X := (J.overPullback A X.unop).obj F ⟶ (J.overPullback A X.unop).obj G
-  map f := fun φ => (J.overMapPullback A f.unop).map φ
+  obj X := ((J.overPullback A X.unop).obj F ⟶ (J.overPullback A X.unop).obj G)
+  map f := TypeCat.ofHom ((J.overMapPullback A f.unop).map)
   map_id X := by
-    ext φ : 2
-    exact congr_fun ((presheafHom F.1 G.1).map_id X) φ.1
+    ext φ : 4
+    exact ConcreteCategory.congr_hom ((presheafHom F.1 G.1).map_id X) φ.1
   map_comp f g := by
-    ext φ : 2
-    exact congr_fun ((presheafHom F.1 G.1).map_comp f g) φ.1
+    ext φ : 4
+    exact ConcreteCategory.congr_hom ((presheafHom F.1 G.1).map_comp f g) φ.1
 
 /-- The canonical isomorphism `sheafHom' F G ≅ presheafHom F.1 G.1`. -/
 def sheafHom'Iso (F G : Sheaf J A) :

@@ -165,7 +165,7 @@ theorem coe_tsum {f : α → ℝ≥0} : ↑(∑'[L] a, f a) = ∑'[L] a, (f a : 
     f NNReal.continuous_coe continuous_real_toNNReal (fun x ↦ by simp)
 
 theorem coe_tsum_of_nonneg {f : α → ℝ} (hf₁ : ∀ n, 0 ≤ f n) :
-    (⟨∑'[L] n, f n, tsum_nonneg hf₁⟩ : ℝ≥0) = (∑'[L] n, ⟨f n, hf₁ n⟩ : ℝ≥0) :=
+    NNReal.mk (∑'[L] n, f n) (tsum_nonneg hf₁) = ∑'[L] n, NNReal.mk (f n) (hf₁ n) :=
   NNReal.eq <| Eq.symm <| coe_tsum (f := fun x => ⟨f x, hf₁ x⟩)
 
 nonrec theorem tsum_mul_left (a : ℝ≥0) (f : α → ℝ≥0) :

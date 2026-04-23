@@ -553,8 +553,7 @@ theorem comp_C_integral_of_surjective_of_isJacobsonRing {S : Type*} [Field S] (f
   rw [← hfg, RingHom.comp_assoc]
   refine (quotient_mk_comp_C_isIntegral_of_isJacobsonRing (RingHom.ker f)).trans _ g
     (g.isIntegral_of_surjective ?_)
-  rw [← hfg] at hf
-  norm_num at hf
+  rw [← hfg, RingHom.coe_comp] at hf
   exact Function.Surjective.of_comp hf
 
 end
@@ -606,7 +605,7 @@ private lemma aux_IH {R : Type u} {S : Type v} {T : Type w}
   have h_eq : algebraMap R (T ⧸ P) =
     w.toRingEquiv.toRingHom.comp (w'.toRingHom.comp (algebraMap R (S ⧸ Q'))) := by
     ext r
-    simp only [AlgHom.toRingHom_eq_coe, AlgEquiv.toRingEquiv_eq_coe,
+    simp only [AlgHom.toRingHom_eq_coe,
       RingEquiv.toRingHom_eq_coe, AlgHom.comp_algebraMap_of_tower, coe_comp, coe_coe,
       AlgEquiv.coe_ringEquiv, Function.comp_apply, AlgEquiv.commutes]
   rw [h_eq]
@@ -657,8 +656,7 @@ theorem comp_C_integral_of_surjective_of_isJacobsonRing {R : Type*} [CommRing R]
     rw [← hfg, RingHom.comp_assoc]
     refine (quotient_mk_comp_C_isIntegral_of_isJacobsonRing (RingHom.ker f')).trans _ g
       (g.isIntegral_of_surjective ?_)
-    rw [← hfg] at hf'
-    norm_num at hf'
+    rw [← hfg, coe_comp] at hf'
     exact Function.Surjective.of_comp hf'
   rw [RingHom.comp_assoc] at this
   convert this

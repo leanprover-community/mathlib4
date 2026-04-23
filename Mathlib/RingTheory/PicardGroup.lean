@@ -409,7 +409,7 @@ def CommRing.Pic (R : Type u) [CommSemiring R] : Type u :=
 
 open CommRing (Pic)
 
-noncomputable instance : CommGroup (Pic R) := (equivShrink _).symm.commGroup
+noncomputable instance : CommGroup (Pic R) := fast_instance% (equivShrink _).symm.commGroup
 
 variable (M N : Type*) [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
   [Module.Invertible R M] [Module.Invertible R N]
@@ -848,7 +848,6 @@ the group of the invertible `R`-submodules in `A` modulo the principal submodule
   (QuotientGroup.congr _ _ (.refl _) ((Subgroup.map_id _).trans (ker_unitsToPic R A).symm)).trans <|
   (quotientKerEquivRange _).trans <| .subgroupCongr (range_unitsToPic R A)
 
-#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
 /-- The class group of a domain is isomorphic to the Picard group. -/
 @[simps!] noncomputable def ClassGroup.equivPic (R) [CommRing R] [IsDomain R] :
     ClassGroup R ≃* Pic R :=

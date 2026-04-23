@@ -23,7 +23,7 @@ in particular `MonCat`, `SemiRingCat`, `RingCat`, and `AlgCat R`.)
 @[expose] public section
 
 
-open CategoryTheory Limits Monoidal MonoidalCategory
+open CategoryTheory Limits MonoidalCategory
 
 universe v u w
 

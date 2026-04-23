@@ -122,6 +122,15 @@ theorem ne_top_of_lt (h : a < b) : a ≠ ⊤ :=
 
 @[to_dual bot_lt] alias LT.lt.lt_top := lt_top_of_lt
 
+@[to_dual bot_lt_iff_not_le_bot]
+theorem lt_top_iff_not_top_le : a < ⊤ ↔ ¬ ⊤ ≤ a := by
+  simp [lt_iff_le_not_ge]
+
+@[to_dual not_isMin_iff_bot_lt]
+theorem not_isMax_iff_lt_top : ¬ IsMax a ↔ a < ⊤ := by
+  rw [not_isMax_iff]
+  exact ⟨fun ⟨b, hb⟩ ↦ hb.trans_le le_top, fun h ↦ ⟨⊤, h⟩⟩
+
 attribute [aesop (rule_sets := [finiteness]) unsafe 20%] ne_top_of_lt
 -- would have been better to implement this as a "safe" "forward" rule, why doesn't this work?
 -- attribute [aesop (rule_sets := [finiteness]) safe forward] ne_top_of_lt

@@ -61,7 +61,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {M M' N N' : Type*} [TopologicalSpace M] [ChartedSpace H M]
   [TopologicalSpace M'] [ChartedSpace H' M']
   [TopologicalSpace N] [ChartedSpace G N] [TopologicalSpace N'] [ChartedSpace G' N']
-  {n : WithTop ℕ∞}
+  {n : ℕ∞ω}
 
 variable (I J n) in
 /-- A `C^k` map `f : M → M'` is a smooth `C^k` embedding if it is a topological embedding
