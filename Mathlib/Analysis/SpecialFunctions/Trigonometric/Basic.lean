@@ -1214,6 +1214,11 @@ theorem exp_neg_pi_mul_I : exp (-(π * I)) = -1 := by
   simp [Complex.exp_neg]
 
 @[simp]
+theorem exp_neg_pi_mul_I' : exp (-π * I) = -1 := by
+  ring_nf
+  exact exp_neg_pi_mul_I
+
+@[simp]
 theorem exp_two_pi_mul_I : exp (2 * π * I) = 1 :=
   exp_periodic.eq.trans exp_zero
 
