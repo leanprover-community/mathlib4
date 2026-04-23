@@ -70,9 +70,11 @@ jobs:
           pr_json=$(gh pr view "${{ github.event.issue.number }}" \
             --repo "${{ github.repository }}" \
             --json headRefOid,baseRefOid,baseRefName)
-          echo "head_sha=$(echo "$pr_json" | jq -r '.headRefOid')" >> "$GITHUB_OUTPUT"
-          echo "base_sha=$(echo "$pr_json" | jq -r '.baseRefOid')" >> "$GITHUB_OUTPUT"
-          echo "base_ref=$(echo "$pr_json" | jq -r '.baseRefName')" >> "$GITHUB_OUTPUT"
+          {
+            echo "head_sha=$(echo "$pr_json" | jq -r '.headRefOid')"
+            echo "base_sha=$(echo "$pr_json" | jq -r '.baseRefOid')"
+            echo "base_ref=$(echo "$pr_json" | jq -r '.baseRefName')"
+          } >> "$GITHUB_OUTPUT"
 
       # Using refs/pull/N/head works for both same-repo and fork PRs, since
       # GitHub mirrors fork commits under this ref.
@@ -128,20 +130,24 @@ jobs:
           PR_TC=$(cat pr-branch/lean-toolchain)
           BASE_TC=$(cat base/lean-toolchain)
           TOOLS_TC=$(cat tools-branch/lean-toolchain)
-          echo "pr_toolchain=$PR_TC" >> "$GITHUB_OUTPUT"
-          echo "base_toolchain=$BASE_TC" >> "$GITHUB_OUTPUT"
-          echo "tools_toolchain=$TOOLS_TC" >> "$GITHUB_OUTPUT"
+          MATCH=true
+          MISMATCH_REASON=
           if [ "$PR_TC" != "$BASE_TC" ]; then
-            echo "match=false" >> "$GITHUB_OUTPUT"
-            echo "mismatch_reason=pr_vs_base" >> "$GITHUB_OUTPUT"
+            MATCH=false
+            MISMATCH_REASON=pr_vs_base
           elif [ "$BASE_REF" = "master" ] && [ "$TOOLS_TC" != "$PR_TC" ]; then
             # it's unlikely we'll be in a situation where we run this against a PR not into master
             # but just in case, we will them to have a different toolchain from the tools branch (master)
-            echo "match=false" >> "$GITHUB_OUTPUT"
-            echo "mismatch_reason=tools_vs_pr" >> "$GITHUB_OUTPUT"
-          else
-            echo "match=true" >> "$GITHUB_OUTPUT"
+            MATCH=false
+            MISMATCH_REASON=tools_vs_pr
           fi
+          {
+            echo "pr_toolchain=$PR_TC"
+            echo "base_toolchain=$BASE_TC"
+            echo "tools_toolchain=$TOOLS_TC"
+            echo "match=$MATCH"
+            if [ -n "$MISMATCH_REASON" ]; then echo "mismatch_reason=$MISMATCH_REASON"; fi
+          } >> "$GITHUB_OUTPUT"
 
       # We use --default-toolchain none so elan itself does not download a
       # toolchain at install time; the toolchain is resolved lazily when
