@@ -3,8 +3,11 @@ Copyright (c) 2020 Ruben Van de Velde, Stanislas Polu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ruben Van de Velde, Stanislas Polu
 -/
-import Mathlib.Data.Real.Basic
-import Mathlib.Analysis.Normed.Module.Basic
+
+module
+
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Analysis.Normed.Module.Basic
 
 /-!
 # IMO 1972 Q5
@@ -13,6 +16,8 @@ Problem: `f` and `g` are real-valued functions defined on the real line. For all
 `f(x + y) + f(x - y) = 2f(x)g(y)`. `f` is not identically zero and `|f(x)| ≤ 1` for all `x`.
 Prove that `|g(x)| ≤ 1` for all `x`.
 -/
+
+@[expose] public section
 
 /--
 This proof begins by introducing the supremum of `f`, `k ≤ 1` as well as `k' = k / ‖g y‖`. We then

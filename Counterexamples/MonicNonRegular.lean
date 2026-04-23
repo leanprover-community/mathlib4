@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
-import Mathlib.Algebra.Polynomial.Monic
+module
+
+public import Mathlib.Algebra.Polynomial.Monic
 
 /-!
 # `Monic` does not necessarily imply `IsRegular` in a `Semiring` with no opposites
@@ -23,6 +25,9 @@ The products `(X + 2) * (X + 2)` and `(X + 2) * (X + 3)` are equal to
 By truncation, `4, 5, 6` all mean `3` in `N`.
 It follows that multiplication by `(X + 2)` is not injective.
 -/
+
+@[expose] public section
+
 open Polynomial
 
 namespace Counterexample.NonRegular

@@ -3,9 +3,12 @@ Copyright (c) 2025 Jan Förster, Leon Müller, Luis Sand, and Junyan Xu. All rig
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan Förster, Leon Müller, Luis Sand, Junyan Xu
 -/
-import Mathlib.Topology.Instances.Irrational
-import Mathlib.Topology.Instances.Real.Lemmas
-import Archive.Kuratowski
+
+module
+
+public import Mathlib.Topology.Instances.Irrational
+public import Mathlib.Topology.Instances.Real.Lemmas
+public import Archive.Kuratowski
 
 /-!
 # Kuratowski's closure-complement theorem is sharp
@@ -42,6 +45,8 @@ There are characterizations and criteria for a set to be a 14-set in the paper
   for the defined `fourteenSet` in ℝ, there are exactly 14 distinct sets that can be obtained from
   `fourteenSet` using the closure and complement operations.
 -/
+
+@[expose] public section
 
 namespace Topology.ClosureCompl
 

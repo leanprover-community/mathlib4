@@ -3,10 +3,13 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Eric Wieser, Jujian Zhang
 -/
-import Mathlib.Algebra.Divisibility.Finite
-import Mathlib.Algebra.Divisibility.Prod
-import Mathlib.Data.Fintype.Units
-import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
+
+module
+
+public import Mathlib.Algebra.Divisibility.Finite
+public import Mathlib.Algebra.Divisibility.Prod
+public import Mathlib.Data.Fintype.Units
+public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
 
 /-!
 # A homogeneous ideal that is homogeneously prime but not prime
@@ -31,6 +34,7 @@ then `(a, b) * (c, d) ∈ I` implies either `(a, b) ∈ I` or `(c, d) ∈ I`.
 homogeneous, prime
 -/
 
+@[expose] public section
 
 namespace Counterexample
 

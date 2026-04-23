@@ -3,10 +3,13 @@ Copyright (c) 2025 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan, David Renshaw
 -/
-import Mathlib.Algebra.Order.Ring.Canonical
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Data.Int.NatAbs
-import Mathlib.Data.Nat.ModEq
+
+module
+
+public import Mathlib.Algebra.Order.Ring.Canonical
+public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Data.Int.NatAbs
+public import Mathlib.Data.Nat.ModEq
 
 /-!
 # IMO 1985 Q2
@@ -31,6 +34,8 @@ In this range of $k$, $kj\bmod n ≠ j$, so
 * if $kj\bmod n < j$, $kj\bmod n \sim j - kj\bmod n \sim n - j + kj\bmod n = (k-1)j\bmod n$
   using rule 2 then rule 1.
 -/
+
+@[expose] public section
 
 namespace Imo1985Q2
 

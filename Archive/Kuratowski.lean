@@ -3,8 +3,11 @@ Copyright (c) 2025 Jan Förster, Leon Müller, Luis Sand, and Junyan Xu. All rig
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan Förster, Leon Müller, Luis Sand, Junyan Xu
 -/
-import Mathlib.Data.Set.Card
-import Mathlib.Topology.Closure
+
+module
+
+public import Mathlib.Data.Set.Card
+public import Mathlib.Topology.Closure
 
 /-!
 # The Kuratowski closure-complement theorem
@@ -44,6 +47,8 @@ In another file it will be shown that the maximum can be realized in the real nu
 * https://en.wikipedia.org/wiki/Kuratowski%27s_closure-complement_problem
 * https://web.archive.org/web/20220212062843/http://nzjm.math.auckland.ac.nz/images/6/63/The_Kuratowski_Closure-Complement_Theorem.pdf
 -/
+
+@[expose] public section
 
 namespace Topology.ClosureCompl
 

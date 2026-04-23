@@ -3,8 +3,11 @@ Copyright (c) 2023 Martin Dvorak. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Dvorak
 -/
-import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Order.BoundedOrder.Lattice
+
+module
+
+public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.Order.BoundedOrder.Lattice
 
 /-!
 # Do not combine OrderedCancelAddCommMonoid with BoundedOrder
@@ -13,6 +16,8 @@ This file shows that combining `OrderedCancelAddCommMonoid` with `BoundedOrder` 
 as such a structure must be trivial (`⊥ = x = ⊤` for all `x`).
 The same applies to any superclasses, e.g. combining `StrictOrderedSemiring` with `CompleteLattice`.
 -/
+
+@[expose] public section
 
 example {α : Type*} [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
     [BoundedOrder α] [Nontrivial α] : False :=

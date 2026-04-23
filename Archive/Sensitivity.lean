@@ -5,12 +5,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Johan Commelin, Jesse Michael Han, Chris Hughes, Robert Y. Lewis,
   Patrick Massot
 -/
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.Data.Real.Sqrt
-import Mathlib.LinearAlgebra.Dual.Lemmas
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.FinCases
+
+module
+
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Data.Real.Sqrt
+public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.Tactic.ApplyFun
+public import Mathlib.Tactic.FinCases
 
 /-!
 # Huang's sensitivity theorem
@@ -32,6 +35,8 @@ and using Lean's user maintained mathematics library
 The project was developed at https://github.com/leanprover-community/lean-sensitivity and is now
 archived at https://github.com/leanprover-community/mathlib/blob/master/archive/sensitivity.lean
 -/
+
+@[expose] public section
 
 namespace Sensitivity
 

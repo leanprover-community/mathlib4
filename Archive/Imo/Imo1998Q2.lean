@@ -3,13 +3,16 @@ Copyright (c) 2020 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Field.Rat
-import Mathlib.Data.Finite.Prod
-import Mathlib.GroupTheory.GroupAction.Ring
-import Mathlib.Tactic.NoncommRing
-import Mathlib.Tactic.Ring
+
+module
+
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Algebra.Order.Field.Rat
+public import Mathlib.Data.Finite.Prod
+public import Mathlib.GroupTheory.GroupAction.Ring
+public import Mathlib.Tactic.NoncommRing
+public import Mathlib.Tactic.Ring
 
 /-!
 # IMO 1998 Q2
@@ -38,6 +41,8 @@ the lower bound: `a(b-1)^2/2 ≤ |A|`.
 
 Rearranging gives the result.
 -/
+
+@[expose] public section
 
 variable {C J : Type*} (r : C → J → Prop)
 

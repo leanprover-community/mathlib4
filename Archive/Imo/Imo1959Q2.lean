@@ -3,7 +3,10 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Real.Sqrt
+
+module
+
+public import Mathlib.Data.Real.Sqrt
 
 /-!
 # IMO 1959 Q2
@@ -24,6 +27,8 @@ website.
 Namely, we rewrite the equation as $\sqrt{2x-1}+1+|\sqrt{2x-1}-1|=A\sqrt{2}$,
 then consider the cases $\sqrt{2x-1}\le 1$ and $1 < \sqrt{2x-1}$ separately.
 -/
+
+@[expose] public section
 
 open Set Real
 

@@ -3,10 +3,13 @@ Copyright (c) 2025 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.Order.Group.Abs
-import Mathlib.Algebra.Order.Group.Int.Sum
-import Mathlib.Algebra.Order.Ring.Int
+
+module
+
+public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Algebra.Order.Group.Abs
+public import Mathlib.Algebra.Order.Group.Int.Sum
+public import Mathlib.Algebra.Order.Ring.Int
 
 /-!
 # IMO 2015 Q6
@@ -47,6 +50,7 @@ so the absolute difference is upper-bounded by
 $$\sum_{i=0}^{b-2} (2014-i) - (b-1) - \sum_{i=0}^{b-2} (b-2-i) = (b-1)(2015-b) ≤ 1007^2.$$
 -/
 
+@[expose] public section
 
 namespace Imo2015Q6
 

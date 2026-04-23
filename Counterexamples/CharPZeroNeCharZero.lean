@@ -3,8 +3,11 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Eric Wieser
 -/
-import Mathlib.Algebra.CharP.Lemmas
-import Mathlib.Algebra.Ring.PUnit
+
+module
+
+public import Mathlib.Algebra.CharP.Lemmas
+public import Mathlib.Algebra.Ring.PUnit
 
 /-! # `CharP R 0` and `CharZero R` need not coincide for semirings
 
@@ -19,6 +22,7 @@ This file shows that there are semirings `R` for which `CharP R 0` holds and `Ch
 The example is `{0, 1}` with saturating addition.
 -/
 
+@[expose] public section
 
 namespace Counterexample
 

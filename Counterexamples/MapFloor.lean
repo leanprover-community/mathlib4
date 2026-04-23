@@ -3,10 +3,13 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Round
-import Mathlib.Algebra.Order.Group.PiLex
-import Mathlib.Algebra.Order.Hom.Ring
-import Mathlib.Algebra.Polynomial.Reverse
+
+module
+
+public import Mathlib.Algebra.Order.Round
+public import Mathlib.Algebra.Order.Group.PiLex
+public import Mathlib.Algebra.Order.Hom.Ring
+public import Mathlib.Algebra.Polynomial.Reverse
 
 /-!
 # Floors and ceils aren't preserved under ordered ring homomorphisms
@@ -35,6 +38,7 @@ But it does not preserve floors (nor ceils) as `⌊-ε⌋ = -1` while `⌊f (-ε
 (`IntWithEpsilon.forgetEpsilons_floor_lt`, `IntWithEpsilon.lt_forgetEpsilons_ceil`).
 -/
 
+@[expose] public section
 
 namespace Counterexample
 

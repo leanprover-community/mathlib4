@@ -3,8 +3,11 @@ Copyright (c) 2024 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Data.Rat.Floor
-import Mathlib.SetTheory.Cardinal.Basic
+
+module
+
+public import Mathlib.Data.Rat.Floor
+public import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # IMO 2024 Q6
@@ -25,6 +28,7 @@ so there are at most two values of `f(x)+f(-x)`. All this works over any `AddCom
 `ℚ`, we then show that `⌊x⌋ - Int.fract x` achieves two different values of `f(x)+f(-x)`.
 -/
 
+@[expose] public section
 
 namespace Imo2024Q6
 

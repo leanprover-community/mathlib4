@@ -3,10 +3,13 @@ Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Data.Nat.Cast.Field
-import Mathlib.Data.Nat.Cast.Order.Field
+
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Data.Nat.Cast.Field
+public import Mathlib.Data.Nat.Cast.Order.Field
 
 /-!
 # The Oxford Invariants Puzzle Challenges - Summer 2021, Week 3, Problem 1
@@ -67,6 +70,8 @@ natural.
   * Divisibility condition:
     `aₙ₊₁ * ((aₙ + aₙ₊₂)/aₙ₊₁ * b - (aₙ * b - a₀)/aₙ₊₁) - a₀ = aₙ₊₁aₙ₊₂b` is divisible by `aₙ₊₂`.
 -/
+
+@[expose] public section
 
 variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 

@@ -3,12 +3,15 @@ Copyright (c) 2025 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Mathlib.Algebra.Group.Fin.Basic
-import Mathlib.Algebra.Order.Pi
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Algebra.Order.Sub.Basic
-import Mathlib.Algebra.Order.Sub.Prod
-import Mathlib.Data.Fintype.Basic
+
+module
+
+public import Mathlib.Algebra.Group.Fin.Basic
+public import Mathlib.Algebra.Order.Pi
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Algebra.Order.Sub.Basic
+public import Mathlib.Algebra.Order.Sub.Prod
+public import Mathlib.Data.Fintype.Basic
 
 /-!
 # IMO 2010 Q5
@@ -50,6 +53,8 @@ since `T < 2^2^2^2^2^11` and `T` is divisible by 4 we can drop coins from box 4 
 to swap the empty boxes 5 and 6 until we have `(T/4, 0, 0)`. Then we can repeatedly use move 1
 to get `(0, T/2, 0)` and finally `(0, 0, T)`.
 -/
+
+@[expose] public section
 
 open Pi Equiv Function
 

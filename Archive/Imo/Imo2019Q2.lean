@@ -3,8 +3,11 @@ Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Geometry.Euclidean.Angle.Sphere
-import Mathlib.Geometry.Euclidean.Sphere.SecondInter
+
+module
+
+public import Mathlib.Geometry.Euclidean.Angle.Sphere
+public import Mathlib.Geometry.Euclidean.Sphere.SecondInter
 
 /-!
 # IMO 2019 Q2
@@ -33,6 +36,7 @@ angles used are modulo `2 * π`, so parts of the angle chase that are only valid
 as `(2 : ℤ) • ∡ _ _ _ = (2 : ℤ) • ∡ _ _ _`.
 -/
 
+@[expose] public section
 
 library_note «IMO geometry formalization conventions» /--
 We apply the following conventions for formalizing IMO geometry problems. A problem is assumed

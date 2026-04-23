@@ -3,7 +3,10 @@ Copyright (c) 2021 Tian Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tian Chen
 -/
-import Mathlib.Analysis.SpecialFunctions.Sqrt
+
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Sqrt
 
 /-!
 # IMO 2006 Q3
@@ -26,6 +29,7 @@ It involves making the substitution
 `x = a - b`, `y = b - c`, `z = c - a`, `s = a + b + c`.
 -/
 
+@[expose] public section
 
 open Real
 

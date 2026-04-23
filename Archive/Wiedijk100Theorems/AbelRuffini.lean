@@ -3,12 +3,15 @@ Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Analysis.Calculus.LocalExtr.Polynomial
-import Mathlib.Analysis.Complex.Polynomial.Basic
-import Mathlib.FieldTheory.AbelRuffini
-import Mathlib.RingTheory.Polynomial.Eisenstein.Criterion
-import Mathlib.RingTheory.Int.Basic
-import Mathlib.RingTheory.RootsOfUnity.Minpoly
+
+module
+
+public import Mathlib.Analysis.Calculus.LocalExtr.Polynomial
+public import Mathlib.Analysis.Complex.Polynomial.Basic
+public import Mathlib.FieldTheory.AbelRuffini
+public import Mathlib.RingTheory.Polynomial.Eisenstein.Criterion
+public import Mathlib.RingTheory.Int.Basic
+public import Mathlib.RingTheory.RootsOfUnity.Minpoly
 
 /-!
 # Construction of an algebraic number that is not solvable by radicals
@@ -25,6 +28,8 @@ The main ingredients are:
 Then all that remains is the construction of a specific polynomial satisfying the conditions of
 `galActionHom_bijective_of_prime_degree'`, which is done in this file.
 -/
+
+@[expose] public section
 
 namespace AbelRuffini
 

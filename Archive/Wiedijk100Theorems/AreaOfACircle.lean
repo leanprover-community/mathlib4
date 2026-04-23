@@ -3,10 +3,13 @@ Copyright (c) 2021 James Arthur, Benjamin Davidson, Andrew Souther. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: James Arthur, Benjamin Davidson, Andrew Souther
 -/
-import Mathlib.Analysis.SpecialFunctions.Sqrt
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.InverseDeriv
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
-import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
+
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Sqrt
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.InverseDeriv
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 
 /-!
 # Freek № 9: The Area of a Circle
@@ -40,6 +43,7 @@ continues to develop, it should eventually become possible to redefine `disc` an
 to the n-ball.
 -/
 
+@[expose] public section
 
 open Set Real MeasureTheory intervalIntegral
 

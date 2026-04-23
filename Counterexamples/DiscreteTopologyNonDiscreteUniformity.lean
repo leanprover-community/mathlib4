@@ -3,7 +3,10 @@ Copyright (c) 2024 Filippo A. E. Nuccio. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Filippo A. E. Nuccio
 -/
-import Mathlib.Analysis.SpecificLimits.Basic
+
+module
+
+public import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # Discrete uniformities and discrete topology
@@ -73,6 +76,8 @@ inequality) to explicit subsets, many proofs are easily closed by `aesop` or `om
 ### References
 * [N. Bourbaki, *General Topology*, Chapter II][bourbaki1966]
 -/
+
+@[expose] public section
 
 open Set Function Filter Metric
 

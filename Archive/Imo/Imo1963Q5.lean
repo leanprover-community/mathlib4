@@ -3,7 +3,10 @@ Copyright (c) 2024 Rida Hamadani. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rida Hamadani
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
+
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 
 /-!
 # IMO 1963 Q5
@@ -14,6 +17,8 @@ The main idea of the proof is to multiply both sides by `2 * sin (π / 7)`, then
 through basic algebraic manipulations with the use of some trigonometric identities.
 
 -/
+
+@[expose] public section
 
 open Real
 
