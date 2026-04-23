@@ -206,7 +206,7 @@ theorem mapsTo_inter : MapsTo f s (t₁ ∩ t₂) ↔ MapsTo f s t₁ ∧ MapsTo
       h.mono (Subset.refl s) inter_subset_right⟩,
     fun h => h.1.inter h.2⟩
 
-theorem mapsTo_univ (f : α → β) (s : Set α) : MapsTo f s univ := fun _ _ => trivial
+@[simp] theorem mapsTo_univ (f : α → β) (s : Set α) : MapsTo f s univ := fun _ _ => trivial
 
 theorem mapsTo_range (f : α → β) (s : Set α) : MapsTo f s (range f) :=
   (mapsTo_image f s).mono (Subset.refl s) (image_subset_range _ _)
@@ -881,7 +881,7 @@ theorem SurjOn.leftInvOn_of_rightInvOn (hf : SurjOn f s t) (hf' : RightInvOn f f
   let ⟨x, hx, heq⟩ := hf hy
   rw [← heq, hf' hx]
 
-theorem image_eq_preimage_of_leftInvOn_injOn_mapsTo {f : α → β} {g : β → α} {s : Set α}
+theorem image_eq_preimage_of_leftInvOn_injOn {f : α → β} {g : β → α} {s : Set α}
     (hgf : LeftInvOn g f s) (ginj : Set.InjOn g (g ⁻¹' s)) : f '' s = g ⁻¹' s := by
   ext x
   constructor
@@ -891,6 +891,9 @@ theorem image_eq_preimage_of_leftInvOn_injOn_mapsTo {f : α → β} {g : β → 
     refine ⟨g x, hx, Set.InjOn.rightInvOn_of_leftInvOn ginj hgf (Set.mapsTo_preimage g s) ?_ hx⟩
     intro y hy
     simpa [hgf hy] using hy
+
+@[deprecated (since := "2026-03-27")]
+alias image_eq_preimage_of_leftInvOn_injOn_mapsTo := image_eq_preimage_of_leftInvOn_injOn
 
 end RightInvOn
 

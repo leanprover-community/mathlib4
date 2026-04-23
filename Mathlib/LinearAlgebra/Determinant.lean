@@ -308,7 +308,7 @@ theorem det_conj {N : Type*} [AddCommGroup N] [Module A N] (f : M →ₗ[A] M) (
       · rw [← toMatrix_comp, LinearEquiv.comp_coe, e.self_trans_symm, LinearEquiv.refl_toLinearMap,
           toMatrix_id]
     · have H' : ¬∃ t : Finset N, Nonempty (Basis t A N) := by
-        contrapose! H
+        contrapose H
         rcases H with ⟨s, ⟨b⟩⟩
         exact ⟨_, ⟨(b.map e.symm).reindexFinsetRange⟩⟩
       simp only [coe_det, H, H', MonoidHom.one_apply, dif_neg, not_false_eq_true]
@@ -450,7 +450,7 @@ end LinearEquiv
 @[simp] theorem LinearMap.det_map {K V W : Type*} [Field K] [AddCommGroup V] [Module K V]
     [AddCommGroup W] [Module K W] {F : Type*} [EquivLike F (End K V) (End K W)]
     [AlgEquivClass F K _ _] (f : F) (x : End K V) : (f x).det = x.det :=
-  have ⟨_, h⟩ := AlgEquiv.eq_linearEquivConjAlgEquiv (f : End K V ≃ₐ[K] End K W)
+  have ⟨_, h⟩ := (AlgEquivClass.toAlgEquiv f).eq_linearEquivConjAlgEquiv
   (by simpa using congr($h x)) ▸ det_conj _ _
 
 @[simp] theorem Matrix.det_map {K m n : Type*} [Field K] [Fintype m] [Fintype n]
@@ -458,7 +458,7 @@ end LinearEquiv
     [AlgEquivClass F K _ _] (f : F) (x : Matrix m m K) : (f x).det = x.det := by
   simpa [toMatrixAlgEquiv', Matrix.toLinAlgEquiv'] using
     LinearMap.det_map ((Matrix.toLinAlgEquiv'.symm.trans
-      (f : Matrix m m K ≃ₐ[K] Matrix n n K)).trans Matrix.toLinAlgEquiv') x.toLin'
+      (AlgEquivClass.toAlgEquiv f)).trans Matrix.toLinAlgEquiv') x.toLin'
 
 -- TODO: show `(f x).det = x.det` for when `f : Matrix m m K →ₐ[K] Matrix m m K`
 -- (using Skolem-Noether)
@@ -791,7 +791,6 @@ variable {R V : Type*} [CommRing R] [AddCommGroup V]
     [Module R V] [Module.Finite R V]
     (W : Submodule R V) [Module.Free R W] [Module.Finite R W] [Module.Free R (V ⧸ W)]
 
-set_option backward.isDefEq.respectTransparency false in
 open Module.Basis in
 theorem LinearMap.det_eq_det_mul_det (e : V →ₗ[R] V) (he : W ≤ W.comap e) :
     e.det = (e.restrict he).det * (W.mapQ W e he).det := by

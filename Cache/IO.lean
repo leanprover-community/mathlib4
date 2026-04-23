@@ -79,15 +79,7 @@ def CURLBIN :=
   -- change file name if we ever need a more recent version to trigger re-download
   IO.CACHEDIR / s!"curl-{CURLVERSION}"
 
-/-- leantar version at https://github.com/digama0/leangz -/
-def LEANTARVERSION :=
-  "0.1.17"
-
 def EXE := if System.Platform.isWindows then ".exe" else ""
-
-def LEANTARBIN :=
-  -- change file name if we ever need a more recent version to trigger re-download
-  IO.CACHEDIR / s!"leantar-{LEANTARVERSION}{EXE}"
 
 def LAKEPACKAGESDIR : FilePath :=
   ".lake" / "packages"
@@ -95,8 +87,16 @@ def LAKEPACKAGESDIR : FilePath :=
 def getCurl : IO String := do
   return if (← CURLBIN.pathExists) then CURLBIN.toString else "curl"
 
-def getLeanTar : IO String := do
-  return if (← LEANTARBIN.pathExists) then LEANTARBIN.toString else "leantar"
+/-- Path to the `leantar` binary bundled with the Lean toolchain.
+    This has been bundled since `nightly-2026-03-09` (lean4#12822). -/
+private initialize leantarSysrootBin : String ← do
+  let out ← IO.Process.output { cmd := "lean", args := #["--print-prefix"] }
+  if out.exitCode == 0 then
+    let path : FilePath := out.stdout.trimAscii.toString / "bin" / s!"leantar{EXE}"
+    if ← path.pathExists then return path.toString
+  throw <| IO.userError "leantar not found in Lean sysroot. This toolchain may predate nightly-2026-03-09."
+
+def getLeanTar : IO String := return leantarSysrootBin
 
 /-- Spawn a `leantar` process for decompression, writing the given JSON config to its stdin.
     Returns the process exit code. -/
@@ -122,15 +122,12 @@ def rootHashGeneration : UInt64 := 4
   folders are located. However, `lake` has multiple options to customise these paths, like
   setting `srcDir` in a `lean_lib`. See `mkBuildPaths` below which currently assumes
   that no such options are set in any mathlib dependency)
-* the build directory for proofwidgets
 -/
 structure CacheM.Context where
   /-- source directory for mathlib files -/
   mathlibDepPath : FilePath
   /-- the Lean source search path -/
   srcSearchPath : SearchPath
-  /-- build directory for proofwidgets -/
-  proofWidgetsBuildDir : FilePath
 
 @[inherit_doc CacheM.Context]
 abbrev CacheM := ReaderT CacheM.Context IO
@@ -158,8 +155,7 @@ private def CacheM.getContext : IO CacheM.Context := do
   let mathlibSource ← CacheM.mathlibDepPath sp
   return {
     mathlibDepPath := mathlibSource,
-    srcSearchPath := sp,
-    proofWidgetsBuildDir := LAKEPACKAGESDIR / "proofwidgets" / ".lake" / "build"}
+    srcSearchPath := sp}
 
 /-- Run a `CacheM` in `IO` by loading the context from `LEAN_SRC_PATH`. -/
 def CacheM.run (f : CacheM α) : IO α := do ReaderT.run f (← getContext)
@@ -212,7 +208,9 @@ def validateCurl : IO Bool := do
   match (← runCmd "curl" #["--version"]).splitOn " " with
   | "curl" :: v :: _ => match v.splitOn "." with
     | maj :: min :: _ =>
-      let version := (maj.toNat!, min.toNat!)
+      let some majN := String.toNat? maj | throw <| IO.userError "Invalidly formatted version of `curl`"
+      let some minN := String.toNat? min | throw <| IO.userError "Invalidly formatted version of `curl`"
+      let version := (majN, minN)
       let _ := @lexOrd
       let _ := @leOfOrd
       if version >= (7, 81) then return true
@@ -235,45 +233,6 @@ def validateCurl : IO Bool := do
         return false
     | _ => throw <| IO.userError "Invalidly formatted version of `curl`"
   | _ => throw <| IO.userError "Invalidly formatted response from `curl --version`"
-
-def Version := Nat × Nat × Nat
-  deriving Inhabited, DecidableEq
-
-instance : Ord Version := let _ := @lexOrd; lexOrd
-instance : LE Version := leOfOrd
-
-def parseVersion (s : String) : Option Version := do
-  let [maj, min, patch] := s.splitOn "." | none
-  some (maj.toNat!, min.toNat!, patch.toNat!)
-
-def validateLeanTar : IO Unit := do
-  if (← LEANTARBIN.pathExists) then return
-  if let some version ← some <$> runCmd "leantar" #["--version"] <|> pure none then
-    let "leantar" :: v :: _ := version.splitOn " "
-      | throw <| IO.userError "Invalidly formatted response from `leantar --version`"
-    let some v := parseVersion v | throw <| IO.userError "Invalidly formatted version of `leantar`"
-    -- currently we need exactly one version of leantar, change this to reflect compatibility
-    if v = (parseVersion LEANTARVERSION).get! then return
-  let win := System.Platform.getIsWindows ()
-  let target ← if win then
-    pure "x86_64-pc-windows-msvc"
-  else
-    let mut arch ← (·.trimAscii.copy) <$> runCmd "uname" #["-m"] false
-    if arch = "arm64" then arch := "aarch64"
-    unless arch ∈ ["x86_64", "aarch64"] do
-      throw <| IO.userError s!"unsupported architecture {arch}"
-    pure <|
-      if System.Platform.getIsOSX () then s!"{arch}-apple-darwin"
-      else s!"{arch}-unknown-linux-musl"
-  IO.println s!"installing leantar {LEANTARVERSION}"
-  IO.FS.createDirAll IO.CACHEDIR
-  let ext := if win then "zip" else "tar.gz"
-  let _ ← runCmd "curl" (stderrAsErr := false) #[
-    s!"https://github.com/digama0/leangz/releases/download/v{LEANTARVERSION}/leantar-v{LEANTARVERSION}-{target}.{ext}",
-    "-L", "-o", s!"{LEANTARBIN}.{ext}"]
-  let _ ← runCmd "tar" #["-xf", s!"{LEANTARBIN}.{ext}",
-    "-C", IO.CACHEDIR.toString, "--strip-components=1"]
-  IO.FS.rename (IO.CACHEDIR / s!"leantar{EXE}").toString LEANTARBIN.toString
 
 /-- Recursively gets all files from a directory with a certain extension -/
 partial def getFilesWithExtension

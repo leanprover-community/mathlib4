@@ -101,14 +101,11 @@ abbrev FunctionField : Type r :=
 
 namespace CoordinateRing
 
-noncomputable instance : Algebra R W'.CoordinateRing :=
-  Quotient.algebra R
+noncomputable instance : Algebra R W'.CoordinateRing := inferInstance
 
-noncomputable instance : Algebra R[X] W'.CoordinateRing :=
-  Quotient.algebra R[X]
+noncomputable instance : Algebra R[X] W'.CoordinateRing := inferInstance
 
-instance : IsScalarTower R R[X] W'.CoordinateRing :=
-  Quotient.isScalarTower R R[X] _
+instance : IsScalarTower R R[X] W'.CoordinateRing := inferInstance
 
 instance [Subsingleton R] : Subsingleton W'.CoordinateRing :=
   Module.subsingleton R[X] _
@@ -268,14 +265,14 @@ lemma XYIdeal_add_eq (x₁ x₂ y₁ ℓ : R) : XYIdeal W' (W'.addX x₁ x₂ �
   rw [sub_sub <| -(Y : R[X][Y]), neg_sub_left (Y : R[X][Y]), map_neg, span_singleton_neg, sup_comm,
     ← span_insert, ← span_pair_add_left_mul _ _ <| mk W' <| C <| C <| W'.a₁ + ℓ, ← map_mul,
     ← map_add]
-  apply congr_arg (_ ∘ _ ∘ _ ∘ _)
+  congr 4
   C_simp
   ring1
 
 lemma XYIdeal_eq₁ (x y ℓ : R) : XYIdeal W' x (C y) = XYIdeal W' x (linePolynomial x y ℓ) := by
   simp only [XYIdeal, XClass, YClass, linePolynomial]
   rw [← span_pair_add_left_mul _ _ <| mk W' <| C <| C <| -ℓ, ← map_mul, ← map_add]
-  apply congr_arg (_ ∘ _ ∘ _ ∘ _)
+  congr 4
   C_simp
   ring1
 
@@ -296,7 +293,7 @@ lemma XYIdeal_eq₂ [DecidableEq F] {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation
   nth_rw 1 [hy₂]
   simp only [XYIdeal, XClass, YClass, linePolynomial]
   rw [← span_pair_add_left_mul _ _ <| mk W <| C <| C <| -W.slope x₁ x₂ y₁ y₂, ← map_mul, ← map_add]
-  apply congr_arg (_ ∘ _ ∘ _ ∘ _)
+  congr 4
   simp only [eval_C, eval_X, eval_add, eval_sub, eval_mul]
   C_simp
   ring1
@@ -644,12 +641,18 @@ instance : InvolutiveNeg W'.Point where
     · rfl
     · simp only [neg_some, negY_negY]
 
+lemma X_eq_iff {x₁ y₁ x₂ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h₂ : W.Nonsingular x₂ y₂} :
+    x₁ = x₂ ↔ some x₁ y₁ h₁ = some x₂ y₂ h₂ ∨ some x₁ y₁ h₁ = -some x₂ y₂ h₂ := by
+  refine ⟨fun H ↦ ?_, fun H ↦ by grind [neg_some]⟩
+  simp_rw [neg_some, some.injEq, ← and_or_left]
+  exact ⟨H, Y_eq_of_X_eq h₁.1 h₂.1 H⟩
+
 variable [DecidableEq F] [DecidableEq K] [DecidableEq L]
 
 /-- The addition of two nonsingular points on a Weierstrass curve in affine coordinates.
 
 Given two nonsingular points `P` and `Q` in affine coordinates, use `P + Q` instead of `add P Q`. -/
-def add [DecidableEq F] : W.Point → W.Point → W.Point
+def add : W.Point → W.Point → W.Point
   | 0, P => P
   | P, 0 => P
   | some x₁ y₁ h₁, some x₂ y₂ h₂ =>
@@ -828,6 +831,59 @@ lemma map_baseChange [Algebra F K] [IsScalarTower R F K] [Algebra F L] [IsScalar
     (f : K →ₐ[F] L) (P : W'⟮F⟯) : map f (baseChange F K P) = baseChange F L P := by
   have : Subsingleton (F →ₐ[F] L) := inferInstance
   convert map_map (Algebra.ofId F K) f P
+
+end Point
+
+/-!
+### The x-coordinate map to ℙ¹
+
+We define the map from points on an affine Weierstrass curve over `R` to the projective line
+by producing a coordinate vector in `Fin 2 → R` that represents the projective point.
+-/
+
+namespace Point
+
+/-- This map sends a point `P` on a Weierstrass curve `W'` in affine coordinates
+to a representative of its image on ℙ¹ under the x-coordinate map.
+We take `![1, 0]` for the point at infinity and `![x, 1]`,
+where `x` is the x-coordinate of `P`, for an affine point.
+
+We define it in the general setting of a commutative base ring, even though the definition
+of points in this setting is not really correct. For Weierstrass curves over fields, this
+gives the correct notion. -/
+noncomputable def xRep : W'.Point → Fin 2 → R
+  | 0 => ![1, 0]
+  | some x _ _ => ![x, 1]
+
+@[simp]
+lemma xRep_zero : (0 : W'.Point).xRep = ![1, 0] :=
+  rfl
+
+@[simp]
+lemma xRep_some {x y : R} (h : W'.Nonsingular x y) : (some x y h).xRep = ![x, 1] :=
+  rfl
+
+lemma xRep_ne_zero [Nontrivial R] (P : W'.Point) : P.xRep ≠ 0 := by
+  cases P <;> simp [xRep]
+
+@[simp]
+lemma xRep_neg (P : W'.Point) : (-P).xRep = P.xRep := by
+  cases P <;> simp [← zero_def]
+
+-- The following lemmas need a field as base ring.
+
+lemma eq_or_eq_neg_of_xRep_eq_xRep {P Q : W.Point} (h : P.xRep = Q.xRep) : P = Q ∨ P = -Q := by
+  match P, Q with
+  | 0, 0 => exact .inl rfl
+  | 0, some .. => simp [xRep] at h
+  | some .., 0 => simp [xRep] at h
+  | some x₁ .., some x₂ .. =>
+    simp only [xRep, Matrix.vecCons_inj, and_true] at h
+    exact X_eq_iff.mp h
+
+lemma xRep_eq_xRep_iff {P Q : W.Point} : P.xRep = Q.xRep ↔ P = Q ∨ P = -Q := by
+  refine ⟨eq_or_eq_neg_of_xRep_eq_xRep, fun H ↦ ?_⟩
+  rcases H with rfl | rfl <;> simp
 
 end Point
 
