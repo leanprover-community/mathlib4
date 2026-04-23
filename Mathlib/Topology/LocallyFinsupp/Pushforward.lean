@@ -25,7 +25,7 @@ open Set Order Topology TopologicalSpace
 
 universe u v
 variable {X Y R : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    {f : X → Y} (hf : IsSpectralMap f) (w : X → R) {U : Set X}
+    {f : X → Y} (hf : IsSpectralMap f) (w : X → R)
 
 namespace Function
 namespace locallyFinsupp
@@ -51,8 +51,8 @@ satisfy this property, so in practice this definition shouldn't be exposed to th
 -/
 def PreimageSupportFinite (c : X → R) (f : X → Y) : Prop :=
     ∀ (z : Y), (preimageSupport f c z).Finite
-#check Function.locallyFinsuppWithin
-lemma _root_.IsProperMap.preimageSupportFinite (c : locallyFinsuppWithin U R)
+
+lemma _root_.IsProperMap.preimageSupportFinite (c : locallyFinsupp X R)
     (f : X → Y) (hf : IsProperMap f) : PreimageSupportFinite c f := by
   intro z
   exact LocallyFiniteSupport.finite_inter_support_of_isCompact
@@ -77,7 +77,7 @@ lemma inter_preimageSupport_nonempty_finite (hf : IsSpectralMap f) (hW : IsCompa
   suffices (f ⁻¹' W.carrier ∩ c.support).Finite by
     grind [preimageSupport, Opens.carrier_eq_coe, iUnion_subset_iff, SetLike.mem_coe,
       Function.mem_support, Finite.subset]
-  exact LocallyFiniteSupport.finite_inter_support_of_isCompact c.Function.locallyFinsuppWithin.locallyFiniteSupportWithin <|
+  exact LocallyFiniteSupport.finite_inter_support_of_isCompact c.locallyFiniteSupport <|
     hf.2 W.is_open' hW
 
 variable {N : Type*} [PrespectralSpace Y]
