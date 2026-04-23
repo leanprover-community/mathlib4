@@ -511,7 +511,7 @@ left-cancellative multiplication.
 @[to_additive
 /-- See `card_le_card_add_left` for a more convenient but less general version for types with a
 left-cancellative addition. -/]
-lemma card_le_card_mul_left_of_injective (has : a ∈ s) (ha : Function.Injective (a * ·)) :
+lemma card_le_card_mul_left_of_injective (has : a ∈ s) (ha : IsLeftRegular a) :
     #t ≤ #(s * t) :=
   card_le_card_image₂_left _ has ha
 
@@ -522,7 +522,7 @@ right-cancellative multiplication.
 @[to_additive
 /-- See `card_le_card_add_right` for a more convenient but less general version for types with a
 right-cancellative addition. -/]
-lemma card_le_card_mul_right_of_injective (hat : a ∈ t) (ha : Function.Injective (· * a)) :
+lemma card_le_card_mul_right_of_injective (hat : a ∈ t) (ha : IsRightRegular a) :
     #s ≤ #(s * t) :=
   card_le_card_image₂_right _ hat ha
 

@@ -399,11 +399,11 @@ protected theorem ciSup_mul_ciSup (g : ι' → Cardinal.{v}) :
 
 theorem sum_eq_lift_iSup_of_lift_mk_le_lift_iSup [Small.{v} ι] {f : ι → Cardinal.{v}} (hι : ℵ₀ ≤ #ι)
     (h : lift.{v} #ι ≤ lift.{u} (⨆ i, f i)) : sum f = lift (⨆ i, f i) := by
-  rw [lift_iSup (bddAbove_of_small _)] at h
+  rw [lift_iSup bddAbove_of_small] at h
   apply (lift_iSup_le_sum f).antisymm'
   convert sum_le_lift_mk_mul_iSup_lift f
   rw [mul_eq_max (aleph0_le_lift.mpr hι) ((aleph0_le_lift.mpr hι).trans h), max_eq_right h,
-    lift_iSup (bddAbove_of_small _)]
+    lift_iSup bddAbove_of_small]
 
 theorem sum_eq_iSup_of_lift_mk_le_iSup {f : ι → Cardinal.{max u v}} (hι : ℵ₀ ≤ #ι)
     (h : lift.{v} #ι ≤ ⨆ i, f i) : sum f = ⨆ i, f i := by
