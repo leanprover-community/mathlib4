@@ -843,10 +843,9 @@ lemma Polynomial.toMvPolynomial_C (i : σ) (r : R) : (C r).toMvPolynomial i = Mv
 lemma Polynomial.toMvPolynomial_X (i : σ) : X.toMvPolynomial i = MvPolynomial.X (R := R) i := by
   simp [toMvPolynomial]
 
-set_option linter.deprecated false in
 lemma Polynomial.toMvPolynomial_eq_rename_comp (i : σ) :
     toMvPolynomial (R := R) i =
-      (MvPolynomial.rename (fun _ : Unit ↦ i)).comp (MvPolynomial.pUnitAlgEquiv R).symm := by
+      (MvPolynomial.rename (fun _ : Unit ↦ i)).comp (MvPolynomial.uniqueAlgEquiv R Unit).symm := by
   ext
   simp
 
