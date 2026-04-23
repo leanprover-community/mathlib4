@@ -797,4 +797,49 @@ theorem hom_ext {g₁ g₂ : DirectLimit G f →⋆ₙ+* P}
 
 end NonUnitalStarRing
 
+namespace Algebra
+
+variable [CommSemiring R]
+variable [∀ i, Semiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)]
+variable [∀ i, Algebra R (G i)] [∀ i j h, AlgHomClass (T h) R (G i) (G j)]
+variable [Nonempty ι]
+
+variable (G f) in
+/-- The canonical map from a component to the direct limit. -/
+noncomputable def of (i) : G i →ₐ[R] DirectLimit G f where
+  toFun x := ⟦⟨i, x⟩⟧
+  __ := (DirectLimit.Ring.of G f i)
+  commutes' r := by rw [algebraMap_at i]
+
+@[simp] lemma of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x := .symm <| eq_of_le ..
+
+variable (P : Type*) [Semiring P] [Algebra R P]
+
+variable (G f) in
+/-- The universal property of the direct limit: maps from the components to another R-algebra
+that respect the directed system structure (i.e. make some diagram commute) give rise
+to a unique map out of the direct limit.
+-/
+noncomputable def lift (g : ∀ i, G i →ₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
+    DirectLimit G f →ₐ[R] P where
+  toFun := _root_.DirectLimit.lift _ (g · ·) fun i j h x ↦ (Hg i j h x).symm
+  __ := DirectLimit.Ring.lift G f P (g:= fun i => (g i).toRingHom) (Hg:=Hg)
+  commutes' r := by
+    let i := Classical.arbitrary ι
+    rw [algebraMap_at i r, lift_def, AlgHom.commutes]
+
+variable (g : ∀ i, G i →ₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
+
+@[simp] theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x := rfl
+
+@[ext]
+theorem hom_ext {g₁ g₂ : DirectLimit G f →ₐ[R] P}
+    (h : ∀ i, g₁.comp (of G f i) = g₂.comp (of G f i)) :
+    g₁ = g₂ := by
+  ext x
+  induction x using DirectLimit.induction with | _ i x
+  exact congr($(h i) x)
+
+end Algebra
+
 end DirectLimit
