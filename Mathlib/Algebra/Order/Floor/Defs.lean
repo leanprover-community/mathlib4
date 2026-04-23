@@ -91,16 +91,14 @@ theorem natCast_mono : Monotone (Nat.cast : ℕ → α) :=
   fun _ _ h => (gc_ceil _ _).mp <| h.trans' <| (gc_ceil _ _).mpr (le_refl _)
 
 theorem natCast_nonneg (n : ℕ) : 0 ≤ (n : α) := by
-  simpa only [Nat.cast_zero] using natCast_mono (Nat.zero_le n)
+  simpa using natCast_mono n.zero_le
 
 theorem natCast_strictMono : StrictMono (Nat.cast : ℕ → α) := by
   refine strictMono_nat_of_lt_succ fun n => (natCast_mono (Nat.le_succ n)).lt_of_ne fun hn => ?_
   replace hn (k : ℕ) : ((n + k : ℕ) : α) = n := by
-    induction k with | zero => rfl | succ k k_ih =>
-      rw [← Nat.add_assoc, Nat.cast_add, k_ih, ← Nat.cast_add, ← hn]
+    induction k with | zero => rfl | succ k k_ih => grind
   have h : n + (floor (n : α) + 1) ≤ floor (n : α) := (gc_floor (natCast_nonneg n)).mpr (hn _).le
-  rw [← Nat.add_assoc, Nat.add_one_le_iff] at h
-  exact Nat.not_le_of_lt h (Nat.le_add_left _ _)
+  grind
 
 instance : ZeroLEOneClass α := ⟨by simpa only [Nat.cast_one] using natCast_nonneg 1⟩
 
@@ -251,11 +249,13 @@ theorem intCast_mono : Monotone (Int.cast : ℤ → α) :=
   fun _ _ h => (gc_ceil_coe _ _).mp <| h.trans' <| (gc_ceil_coe _ _).mpr (le_refl _)
 
 theorem intCast_strictMono : StrictMono (Int.cast : ℤ → α) := by
-  have h : (1 : α) ≠ 0 :=
-    fun h ↦ (Int.lt_succ (floor 0)).not_ge <|
-      (FloorRing.gc_coe_floor _ _).mp (eq_zero_of_zero_eq_one h.symm _).le
+  have h : (1 : α) ≠ 0 := by
+    intro h
+    suffices floor (0 : α) + 1 ≤ floor (0 : α) by grind
+    rw [← FloorRing.gc_coe_floor]
+    exact (eq_zero_of_zero_eq_one h.symm _).le
   refine strictMono_int_of_lt_succ fun n => (intCast_mono (Int.le_add_one (le_refl _))).lt_of_ne ?_
-  rwa [Int.cast_add, Int.cast_one, left_ne_add]
+  grind
 
 theorem natCast_mono : Monotone (Nat.cast : ℕ → α) :=
   fun m n h => by simpa only [Int.cast_natCast]
@@ -341,9 +341,9 @@ theorem floor_lt_zero : ⌊a⌋ < 0 ↔ a < 0 := by rw [floor_lt, Int.cast_zero]
 @[bound]
 theorem floor_nonpos (ha : a ≤ 0) : ⌊a⌋ ≤ 0 := by
   obtain ha0 | rfl : a < 0 ∨ a = 0 := ha.lt_or_eq
-  · exact (floor_lt_zero.mpr ha0).le
-  · rw [← Int.lt_add_one_iff, floor_lt, Int.zero_add, Int.cast_one]
-    exact zero_lt_one
+  · rw [← floor_lt_zero] at ha0
+    lia
+  · simp [← Int.lt_add_one_iff, floor_lt]
 
 /-! #### Ceil -/
 
@@ -368,13 +368,12 @@ theorem ceil_pos : 0 < ⌈a⌉ ↔ 0 < a := by rw [lt_ceil, cast_zero]
 @[bound]
 theorem ceil_nonneg (ha : 0 ≤ a) : 0 ≤ ⌈a⌉ := by
   obtain ha0 | rfl : 0 < a ∨ a = 0 := ha.lt_or_eq'
-  · exact (ceil_pos.mpr ha0).le
-  · refine not_lt.mp (fun h => ?_)
+  · rw [← ceil_pos] at ha0
+    lia
+  · by_contra! h
     rw [← le_sub_one_iff, ceil_le, ← cast_zero] at h
-    replace h : ((-1 : ℤ) : α) = ((0 : ℤ) : α) :=
-      h.antisymm' (FloorRing.intCast_mono (neg_ofNat_le_ofNat 1 0))
-    rw [cast_neg, cast_zero, neg_eq_zero, cast_one] at h
-    exact zero_ne_one h.symm
+    replace h : ((-1 : ℤ) : α) = ((0 : ℤ) : α) := h.antisymm' (FloorRing.intCast_mono (by lia))
+    simp at h
 
 end Int
 
