@@ -12,8 +12,9 @@ public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 /-!
 # Local Ring Properties of Equalizers and Pullbacks
 
-In this file we provide basic lemmas for the equalizers the pullbacks and of ring homomorphisms.
-Then we show that they preserve the property of being a local ring under suitable conditions.
+In this file we provide basic lemmas for the equalizers the pullbacks and of ring homomorphisms
+and algebra homomorphisms. We show that they preserve the property of being a local ring
+under suitable conditions.
 
 ## Main definitions
 
@@ -112,3 +113,55 @@ theorem isLocalRing_pullback [IsLocalRing R] (f : R →+* T) (g : S →+* T) (hg
     right; simpa [isUnit_pullback_mk_iff] using ⟨hs, this⟩
 
 end RingHom
+
+namespace AlgHom
+
+variable {R A B C : Type*} [CommSemiring R]
+
+section Semiring
+
+variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B] [Semiring C] [Algebra R C]
+
+/-- The subalgebra of pairs `(a, b) : A × B` such that `f a = g b`, i.e.,
+  the pullback of f and g as a subalgebra of A × B. -/
+abbrev pullback (f : A →ₐ[R] C) (g : B →ₐ[R] C) : Subalgebra R (A × B) := equalizer
+  (f.comp (fst R A B)) (g.comp (snd R A B))
+
+/-- The first projection from the pullback of `f` and `g` to `A`. -/
+abbrev pullbackFst (f : A →ₐ[R] C) (g : B →ₐ[R] C) : pullback f g →ₐ[R] A :=
+  (fst R A B).comp (pullback f g).val
+
+/-- The second projection from the pullback of `f` and `g` to `B`. -/
+abbrev pullbackSnd (f : A →ₐ[R] C) (g : B →ₐ[R] C) : pullback f g →ₐ[R] B :=
+  (snd R A B).comp (pullback f g).val
+
+theorem pullback_comm_sq (f : A →ₐ[R] C) (g : B →ₐ[R] C) :
+    f.comp (pullbackFst f g) = g.comp (pullbackSnd f g) :=
+  AlgHom.ext fun x ↦ x.prop
+
+end Semiring
+
+section Ring
+
+variable [Ring A] [Algebra R A] [Ring B] [Algebra R B] [Semiring C] [Algebra R C]
+
+theorem isUnit_pullback_mk_iff (f : A →ₐ[R] C) (g : B →ₐ[R] C) {a : A × B}
+    (a_in : a ∈ f.pullback g) : IsUnit (⟨a, a_in⟩ : f.pullback g) ↔
+      IsUnit a.1 ∧ IsUnit a.2 :=
+  RingHom.isUnit_pullback_mk_iff (f : A →+* C) (g : B →+* C) a_in
+
+theorem surjective_pullbackFst_of_surjective (f : A →ₐ[R] C) (g : B →ₐ[R] C)
+    (h : Function.Surjective g) : Function.Surjective (pullbackFst f g) :=
+  RingHom.surjective_pullbackFst_of_surjective (f : A →+* C) (g : B →+* C) h
+
+theorem surjective_pullbackSnd_of_surjective (f : A →ₐ[R] C) (g : B →ₐ[R] C)
+    (h : Function.Surjective f) : Function.Surjective (pullbackSnd f g) :=
+  RingHom.surjective_pullbackSnd_of_surjective (f : A →+* C) (g : B →+* C) h
+
+theorem isLocalRing_pullback [IsLocalRing A] (f : A →ₐ[R] C) (g : B →ₐ[R] C) (hg : IsLocalHom g) :
+    IsLocalRing (AlgHom.pullback f g) :=
+  RingHom.isLocalRing_pullback f.toRingHom g.toRingHom ⟨hg.map_nonunit⟩
+
+end Ring
+
+end AlgHom
