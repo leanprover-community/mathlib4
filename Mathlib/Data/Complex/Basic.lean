@@ -5,6 +5,8 @@ Authors: Kevin Buzzard, Mario Carneiro
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Basic
+public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Algebra.Ring.CharZero
 public import Mathlib.Algebra.Ring.Torsion
 public import Mathlib.Algebra.Star.Basic
@@ -21,8 +23,6 @@ of characteristic zero. For the result that the complex numbers are algebraicall
 -/
 
 @[expose] public section
-
-assert_not_exists Multiset Algebra
 
 open Set Function
 
@@ -197,7 +197,8 @@ instance : Sub ℂ :=
 /--
 `mulAux` is an auxiliary definition for defining multiplication and scalar multiplication on `ℂ`
 in such a way that `real_smul {x : ℝ} {z : ℂ} : x • z = x * z` holds definitionally.
-This makes sure that `Module.restrictScalars ℝ ℂ ℂ = Complex.module` definitionally.
+This makes sure that `Module.restrictScalars ℝ ℂ ℂ = Complex.instModule` definitionally at
+implicit-reducible transparency.
 -/
 @[no_expose]
 def mulAux {R : Type*} [SMul R ℝ] (re : R) (im : ℝ) (z : ℂ) : ℂ :=
@@ -282,8 +283,8 @@ def equivRealProdAddHom : ℂ ≃+ ℝ × ℝ :=
 theorem equivRealProdAddHom_symm_apply (p : ℝ × ℝ) :
     equivRealProdAddHom.symm p = p.1 + p.2 * I := equivRealProd_symm_apply p
 
-/-! ### Commutative ring instance and lemmas -/
 
+/-! ### Commutative ring instance and lemmas -/
 
 /- We use a nonstandard formula for the `ℕ` and `ℤ` actions to make sure there is no
 diamond from the other actions they inherit through the `ℝ`-action on `ℂ` and action transitivity
@@ -298,8 +299,8 @@ namespace SMul
 /-- Scalar multiplication by `R` on `ℝ` extends to `ℂ`. This is used here and in
 `Mathlib/LinearAlgebra/Complex/Module.lean` to transfer instances from `ℝ` to `ℂ`, but is not
 needed outside, so we make it scoped. -/
-scoped instance instSMulRealComplex {R : Type*} [SMul R ℝ] : SMul R ℂ where
-  smul r x := mulAux r 0 x
+scoped instance instSMulRealComplex {R : Type*} [CommSemiring R] [Algebra R ℝ] : SMul R ℂ where
+  smul r x := ofReal (algebraMap R ℝ r) * x
 
 end SMul
 
@@ -307,13 +308,17 @@ open scoped SMul
 
 section SMul
 
-variable {R : Type*} [SMul R ℝ]
+variable {R : Type*} [CommSemiring R] [Algebra R ℝ]
 
-theorem smul_re (r : R) (z : ℂ) : (r • z).re = r • z.re :=
-  show r • z.re - 0 * z.im = r • z.re by simp
+theorem smul_re (r : R) (z : ℂ) : (r • z).re = r • z.re := by
+  rw [Algebra.smul_def]
+  change (ofReal (algebraMap R ℝ r) * z).re = algebraMap R ℝ r * z.re
+  simp
 
-theorem smul_im (r : R) (z : ℂ) : (r • z).im = r • z.im :=
-  show r • z.im + 0 * z.re = r • z.im by simp
+theorem smul_im (r : R) (z : ℂ) : (r • z).im = r • z.im := by
+  rw [Algebra.smul_def]
+  change (ofReal (algebraMap R ℝ r) * z).im = algebraMap R ℝ r * z.im
+  simp
 
 @[simp]
 theorem real_smul {x : ℝ} {z : ℂ} : x • z = x * z :=
@@ -568,7 +573,7 @@ theorem add_conj (z : ℂ) : z + conj z = (2 * z.re : ℝ) :=
   Complex.ext_iff.2 <| by simp [two_mul, ofReal]
 
 /-- The coercion `ℝ → ℂ` as a `RingHom`. -/
-def ofRealHom : ℝ →+* ℂ where
+@[implicit_reducible] def ofRealHom : ℝ →+* ℂ where
   toFun x := (x : ℂ)
   map_one' := ofReal_one
   map_zero' := ofReal_zero

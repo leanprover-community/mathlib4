@@ -983,6 +983,40 @@ example :
     (instInnerProductSpaceRealComplex : InnerProductSpace ℝ ℂ) = RCLike.toInnerProductSpaceReal :=
   rfl
 
+
+#synth Algebra ℝ ℂ
+
+
+-- Module.restrictScalars constructs SMul by composing with `AlgebraMap`, while this is not
+-- the definition we have in `Complex.SMul.instSMulRealComplex`.
+
+example : ((Module.restrictScalars ℝ ℂ ℂ).toSMul : SMul ℝ ℂ) =
+    Complex.SMul.instSMulRealComplex := by
+  with_reducible_and_instances rfl
+
+#exit
+
+example : ((Module.restrictScalars ℝ ℂ ℂ).toSMul : SMul ℝ ℂ) =
+    Complex.instAlgebraOfReal.toSMul := by
+  with_reducible_and_instances rfl
+
+
+example : (instInnerProductSpaceRealComplex.toSMul : SMul ℝ ℂ) =
+    Complex.instRCLike.toSMul := by
+  with_reducible_and_instances rfl
+
+example : ((Module.restrictScalars ℝ ℂ ℂ).toSMul : SMul ℝ ℂ) =
+    Complex.instRCLike.toSMul := by
+  with_reducible_and_instances rfl
+
+example : ((Module.restrictScalars ℝ ℂ ℂ).toSMul : SMul ℝ ℂ) =
+    Complex.instNormedAlgebraOfReal.toAlgebra.toSMul := by
+  with_reducible_and_instances rfl
+
+
+
+instNormedAlgebraOfReal.toAlgebra
+
 section IsPosSemidef
 
 variable [NormedAddCommGroup E] [InnerProductSpace ℝ E]

@@ -101,10 +101,12 @@ class Algebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends SM
   commutes' : ∀ r x, algebraMap r * x = x * algebraMap r
   smul_def' : ∀ r x, r • x = algebraMap r * x
 
+export Algebra (algebraMap)
+
 end Prio
 
 /-- Embedding `R →+* A` given by `Algebra` structure. -/
-def algebraMap (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra R A] : R →+* A :=
+abbrev algebraMap (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra R A] : R →+* A :=
   Algebra.algebraMap
 
 theorem Algebra.subsingleton (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra R A]
