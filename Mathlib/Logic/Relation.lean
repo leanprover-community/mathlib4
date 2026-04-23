@@ -274,7 +274,7 @@ lemma _root_.IsTrans.map {r : α → α → Prop} [IsTrans α r] {f : α → β}
 @[deprecated (since := "2026-02-21")] alias map_transitive := isTrans_map
 
 lemma map_equivalence {r : α → α → Prop} (hr : Equivalence r) (f : α → β)
-    (hf : f.Surjective) (hf_ker : ((· = ·) on f) ≤ r) :
+    (hf : f.Surjective) (hf_ker : ∀ x y, f x = f y → r x y) :
     Equivalence (Relation.Map r f f) where
   refl := hr.stdRefl.map hf |>.refl
   symm := @(map_symmetric hr.symmetric _)
@@ -657,9 +657,9 @@ theorem TransGen.lift' {p : β → β → Prop} (f : α → β) (h : r ≤ (Tran
 theorem TransGen.closed {p : α → α → Prop} : r ≤ TransGen p → TransGen r ≤ TransGen p :=
   TransGen.lift' id
 
-lemma TransGen.closed' {P : α → Prop} (dc : r ≤ (swap (· → ·) on P)) :
-    TransGen r ≤ (swap (· → ·) on P) :=
-  fun _ _ h ↦ h.head_induction_on (dc _ _) fun hr _ hi ↦ dc _ _ hr ∘ hi
+lemma TransGen.closed' {P : α → Prop} (dc : ∀ {a b}, r a b → P b → P a)
+    {a b : α} (h : TransGen r a b) : P b → P a :=
+  h.head_induction_on dc fun hr _ hi ↦ dc hr ∘ hi
 
 theorem TransGen.mono {p : α → α → Prop} : r ≤ p → TransGen r ≤ TransGen p :=
   TransGen.lift id
@@ -900,12 +900,12 @@ open Relation
 
 variable {r : α → α → Prop} {a b : α}
 
-theorem Quot.eqvGen_exact : ((· = ·) on Quot.mk r) ≤ EqvGen r :=
-  fun _ _ H ↦ Quotient.exact <| congrArg
-    (Quot.lift (Quotient.mk <| EqvGen.setoid r) (fun _ _ h ↦ Quot.sound <| EqvGen.rel _ _ h)) H
+theorem Quot.eqvGen_exact (H : Quot.mk r a = Quot.mk r b) : EqvGen r a b :=
+  @Quotient.exact _ (EqvGen.setoid r) a b (congrArg
+    (Quot.lift (Quotient.mk (EqvGen.setoid r)) (fun x y h ↦ Quot.sound (EqvGen.rel x y h))) H)
 
-theorem Quot.eqvGen_sound : EqvGen r ≤ ((· = ·) on Quot.mk r) :=
-  fun _ _ H ↦ EqvGen.rec
+theorem Quot.eqvGen_sound (H : EqvGen r a b) : Quot.mk r a = Quot.mk r b :=
+  EqvGen.rec
     (fun _ _ h ↦ Quot.sound h)
     (fun _ ↦ rfl)
     (fun _ _ _ IH ↦ Eq.symm IH)
