@@ -752,11 +752,9 @@ def Hom.mapMulticospan {E : PreOneHypercover.{w} S} {F : PreOneHypercover.{w'} S
     | .left _ => rfl
     | .right _ => rfl
   map_comp
-    | .id _, _ => by simp only [WalkingMulticospan.Hom.id_eq_id, Category.id_comp]
-    | .fst _, .id _ => by
-        simp only [WalkingMulticospan.Hom.id_eq_id, Category.comp_id]
-    | .snd _, .id _ => by
-        simp only [WalkingMulticospan.Hom.id_eq_id, Category.comp_id]
+    | .id _, _ => by simp
+    | .fst _, .id _ => by simp
+    | .snd _, .id _ => by simp
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Isomorphic pre-`1`-hypercovers have equivalent multifork index categories. -/

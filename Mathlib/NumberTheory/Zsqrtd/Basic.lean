@@ -639,8 +639,7 @@ open Int in
 theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
   obtain ⟨x, y, (h : a ≤ ⟨x, y⟩)⟩ : ∃ x y : ℕ, Nonneg (⟨x, y⟩ + -a) :=
     match -a with
-    | ⟨Int.ofNat x, Int.ofNat y⟩ => ⟨0, 0, by
-        change Nonneg ⟨_, _⟩; simp [Nonneg, Nonnegg]⟩
+    | ⟨Int.ofNat x, Int.ofNat y⟩ => ⟨0, 0, by trivial⟩
     | ⟨Int.ofNat x, -[y+1]⟩ => ⟨0, y + 1, by
         simp only [Nonneg, Nonnegg, Nat.cast_zero, ofNat_eq_natCast, zero_add,
           Nat.cast_add, Nat.cast_one, negSucc_eq, neg_add_rev, reduceNeg,

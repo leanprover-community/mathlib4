@@ -107,10 +107,7 @@ def multicospanMap {P Q : C₀ᵒᵖ ⥤ A} (f : P ⟶ Q) :
     | WalkingMulticospan.right j => f.app _
   naturality := by
     rintro (i₁ | j₁) (i₂ | j₂) (_ | _) <;>
-    simp only [multicospanIndex,
-      MulticospanIndex.multicospan,
-      Category.id_comp, Category.comp_id,
-      f.naturality]
+    simp [MulticospanIndex.multicospan]
 
 /-- The natural isomorphism between the diagrams attached to `data : F.PreOneHypercoverDenseData X`
 that are induced by isomorphisms in `C₀ᵒᵖ ⥤ A`. -/

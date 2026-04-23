@@ -356,23 +356,16 @@ theorem xor_range (n : ℕ) : (List.range (n + 1)).foldl (· ^^^ ·) 0 =
     rw [List.range_succ, List.foldl_append, ih, ← Fin.ofNat_add, List.foldl_cons, List.foldl_nil]
     match h : Fin.ofNat 4 n with
     | 0 =>
-      rw [Fin.zero_add]
-      simp only [OfNat.ofNat]
-      rw [← xor_one_of_even <| even_iff.mpr ?_, xor_xor_cancel_left]
+      rw [Fin.zero_add, ← xor_one_of_even <| even_iff.mpr ?_, xor_xor_cancel_left]
       rw [← @mod_mod_of_dvd _ 4 _ <| by simp, ← Fin.val_ofNat 4, h]
       rfl
     | 1 =>
-      simp only [OfNat.ofNat, Fin.ofNat, Nat.reduceMod, Fin.add_def]
       rw [Nat.xor_comm]
       refine xor_one_of_even <| even_iff.mpr ?_
       rw [add_mod, ← @mod_mod_of_dvd _ 4 n <| by simp, ← Fin.val_ofNat 4, h]
       rfl
-    | 2 =>
-      simp only [OfNat.ofNat, Fin.ofNat, Nat.reduceMod, Fin.add_def]
-      apply Nat.xor_self
-    | 3 =>
-      simp only [OfNat.ofNat, Fin.ofNat, Nat.reduceMod, Fin.add_def]
-      apply zero_xor
+    | 2 => apply Nat.xor_self
+    | 3 => apply zero_xor
 
 lemma shiftLeft_lt {x n m : ℕ} (h : x < 2 ^ n) : x <<< m < 2 ^ (n + m) := by
   simp only [Nat.pow_add, shiftLeft_eq, Nat.mul_lt_mul_right (Nat.two_pow_pos _), h]

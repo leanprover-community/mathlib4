@@ -261,18 +261,18 @@ theorem normalize_naturality (n : NormalMonoidalObject C) {X Y : F C} (f : X ⟶
   case comp f g ihf ihg => simp [ihg, reassoc_of% (ihf _)]
   case whiskerLeft X' X Y f ih =>
     intro n
-    simp only [normalizeObj_tensor, normalizeIsoApp'_tensor, Iso.trans_hom,
+    dsimp only [normalizeObj_tensor, normalizeIsoApp'_tensor, Iso.trans_hom,
       Iso.symm_hom, whiskerRightIso_hom, Function.comp_apply, inclusion_obj]
     rw [associator_inv_naturality_right_assoc, whisker_exchange_assoc, ih]
     simp
   case whiskerRight X Y h η' ih =>
     intro n
-    simp only [normalizeObj_tensor, normalizeIsoApp'_tensor, Iso.trans_hom,
+    dsimp only [normalizeObj_tensor, normalizeIsoApp'_tensor, Iso.trans_hom,
       Iso.symm_hom, whiskerRightIso_hom, Function.comp_apply, inclusion_obj]
     rw [associator_inv_naturality_middle_assoc, ← comp_whiskerRight_assoc, ih]
     have := dcongr_arg (fun x => (normalizeIsoApp' C η' x).hom) (normalizeObj_congr n h)
     simp [this]
-  all_goals simp [normalizeIsoApp'_tensor, normalizeIsoApp'_unit]
+  all_goals simp
 
 end
 
