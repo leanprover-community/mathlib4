@@ -621,7 +621,7 @@ def applyGCongrLemma (g : MVarId) (lem : GCongr.GCongrLemma) :
       let lhsNames := lambdaBinderNames (← instantiateMVars mvars[h.lhsIdx]!)
       let rhsNames := lambdaBinderNames (← instantiateMVars mvars[h.rhsIdx]!)
       let lambdaNames := if lhsNames.size ≥ rhsNames.size then lhsNames else rhsNames
-      let names := h.hypsPos.map fun | some n => lambdaNames[n]! | none => `_
+      let names := h.hypsPos.map fun | some n => lambdaNames.getD n `_ | none => `_
       let mvarId := (← mvars[h.hypIdx]!.mvarId!.introN h.hypsPos.length names).2
       return #[(mvarId, h.isContra)]
     else
