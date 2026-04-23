@@ -246,7 +246,7 @@ theorem hasBasis_nhds_zero_of_basis [TopologicalSpace F] [IsTopologicalAddGroup 
     {b : ι → Set F} (h : (𝓝 0 : Filter F).HasBasis p b) :
     (𝓝 (0 : E →SLᵤ[σ, 𝔖] F)).HasBasis
       (fun Si : Set E × ι => Si.1 ∈ 𝔖 ∧ p Si.2)
-      fun Si => { f : E →SL[σ] F | ∀ x ∈ Si.1, f x ∈ b Si.2 } := by
+      fun Si => { f : E →SLᵤ[σ, 𝔖] F | ∀ x ∈ Si.1, f x ∈ b Si.2 } := by
   letI : UniformSpace F := IsTopologicalAddGroup.rightUniformSpace F
   haveI : IsUniformAddGroup F := isUniformAddGroup_of_addCommGroup
   rw [(isEmbedding_coeFn σ F 𝔖).isInducing.nhds_eq_comap]
