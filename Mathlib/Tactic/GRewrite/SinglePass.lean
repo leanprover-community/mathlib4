@@ -69,7 +69,7 @@ def GRewriteLemma.apply (lem : GRewriteLemma) (g : MVarId) (symm : Bool) (config
     if ← mvar.mvarId!.isAssigned then return none
     let type ← mvar.mvarId!.getType
     if (← isClass? type).isSome then
-      if let some inst ← synthInstance? type then
+      if let .some inst ← trySynthInstance type then
         mvar.mvarId!.assign inst
         return none
     return mvar.mvarId!

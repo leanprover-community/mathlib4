@@ -163,6 +163,22 @@ deriving Inhabited, BEq
 instance : Ord GCongrKey where
   compare a b := a.1.quickCmp b.1 |>.then (a.2.quickCmp b.2) |>.then (compare a.3 b.3)
 
+/-- The data for a "main" hypothesis of a `gcongr` lemma.
+That is a hypothesis of the form `∀ xs, a xs' ~ b xs'` where `xs'` is a subset of `xs`,
+and `a` and `b` form a "varying pair" in the conclusion of the `gcongr` lemma. -/
+structure GCongrHyp where
+  /-- Index of the left varying argument. -/
+  lhsIdx : Nat
+  /-- Index of the right varying argument. -/
+  rhsIdx : Nat
+  /-- Index of the hypothesis itself. -/
+  hypIdx : Nat
+  /-- In `∀ xs, a xs' ~ b xs'`, for each `x` in `xs`, the position it appears in `xs'`.
+  This information is used to infer suitable names when introducing these variables. -/
+  hypsPos : List (Option Nat)
+  /-- Whether the order of the two varying arguments is the opposite from in the conclusion. -/
+  isContra : Bool
+
 /-- Structure recording the data for a "generalized congruence" (`gcongr`) lemma. -/
 structure GCongrLemma where
   /-- The key under which the lemma is stored. -/
@@ -174,7 +190,7 @@ structure GCongrLemma where
   - the index of the hypothesis
   - the number of parameters in the hypothesis
   - whether it is contravariant (i.e. switches the order of the two arguments) -/
-  mainSubgoals : Array (Nat × Nat × Nat × Nat × Bool)
+  mainSubgoals : Array GCongrHyp
   /-- The number of arguments that `declName` takes when applying it. -/
   numHyps : Nat
   /-- The given priority of the lemma, for example as `@[gcongr high]`. -/
@@ -266,7 +282,7 @@ def makeGCongrLemma (hyps : Array Expr) (target : Expr) (declName : Name) (prio 
     if ← isDefEq e1 e2 <||> (isProof e1 <&&> isProof e2) then continue
     let e1 := e1.eta; let e2 := e2.eta
     -- verify that the "varying argument" pairs are free variables (after eta-reduction)
-    unless e1.isFVar && e2.isFVar do  fail "Not all varying arguments are free variables"
+    unless e1.isFVar && e2.isFVar do fail "Not all varying arguments are free variables"
     if (← e1.fvarId!.getBinderInfo).isInstImplicit &&
         (← e2.fvarId!.getBinderInfo).isInstImplicit then
       continue
@@ -277,33 +293,33 @@ def makeGCongrLemma (hyps : Array Expr) (target : Expr) (declName : Name) (prio 
     fail "LHS and RHS are the same"
   let mut mainSubgoals := #[]
   -- iterate over antecedents `hyp` to the lemma
-  for hyp in hyps, i in 0...* do
-    let some mainSubgoal@(n, m, _, _, isContra) ←
-      forallTelescopeReducing (← inferType hyp) fun args hypTy => do
+  for hyp in hyps, hypIdx in 0...* do
+    match ← forallTelescopeReducing (← inferType hyp) fun xs hypTy => do
       -- pull out the conclusion `hypTy` of the antecedent, and check whether it is of the form
       -- `lhs₁ _ ... _ ≈ rhs₁ _ ... _` (for a possibly different relation `≈` than the relation
       -- `rel` above)
-      let findGoal (lhs rhs : Expr) (numHyps : Nat) : Option (Nat × Nat × Nat × Nat × Bool) := do
-        guard <| lhs.getAppArgs.all (·.isFVar) && lhs.getAppArgs == rhs.getAppArgs
-        let lhs := lhs.getAppFn; let rhs := rhs.getAppFn
-        let n ← hyps.idxOf? lhs
-        let m ← hyps.idxOf? rhs
-        let isContra ← pairs.findSome? fun pair =>
-          if (lhs, rhs) == pair then false else if (rhs, lhs) == pair then true else none
-        -- if yes, record the index of this antecedent as a "main subgoal", together with the
-        -- index of the "varying argument" pair it corresponds to
-        some (n, m, i, numHyps, isContra)
-      let hypTy ← whnf hypTy
-      if let some (_, lhs₁, rhs₁) := getRel hypTy then
-        return findGoal lhs₁ rhs₁ args.size
-      else if let some lastFVar := args.back? then
-        return findGoal (← inferType lastFVar) hypTy (args.size - 1)
-        -- check whether `(lhs₁, rhs₁)` is in some order one of the "varying argument" pairs from
-        -- the conclusion to the lemma
+      let findGoal (lhs rhs : Expr) (xs : Array Expr) :=
+        lhs.withApp fun lhs lhsArgs => rhs.withApp fun rhs rhsArgs => do
+          guard <| lhsArgs.all xs.contains && lhsArgs == rhsArgs
+          let lhsIdx ← hyps.idxOf? lhs
+          let rhsIdx ← hyps.idxOf? rhs
+          -- check whether `(lhs, rhs)` is in some order one of the "varying argument" pairs from
+          -- the conclusion to the lemma
+          let (pair, isContra) ← pairs.findSome? fun pair =>
+            if (lhs, rhs) == pair then some (pair, false) else
+            if (rhs, lhs) == pair then some (pair, true) else none
+          let hypsPos := xs.toList.map lhsArgs.idxOf?
+          some ({ lhsIdx, rhsIdx, hypIdx, hypsPos, isContra }, pair)
+      if let some (_, lhs₁, rhs₁) := getRel (← whnf hypTy) then
+        return findGoal lhs₁ rhs₁ xs
+      else if let some lastFVar := xs.back? then
+        return findGoal (← inferType lastFVar) hypTy xs.pop
       return none
-      | pure ()
-    mainSubgoals := mainSubgoals.push mainSubgoal
-    pairs := pairs.erase <| if isContra then (hyps[m]!, hyps[n]!) else (hyps[n]!, hyps[m]!)
+      with
+    | none => pure ()
+    | some (mainSubgoal, pair) =>
+      mainSubgoals := mainSubgoals.push mainSubgoal
+      pairs := pairs.erase pair
   let forGrw := pairs.isEmpty
   unless forGrw do
     Linter.logLintIf linter.gcongr.grw (← getRef)
@@ -533,7 +549,7 @@ For example, the relation `a ≡ b [ZMOD n]` has an instance of `IsTrans`, so a 
 def relImpRelLemma (arity : Nat) : List GCongrLemma :=
   if arity < 2 then [] else [{
     declName := ``rel_imp_rel
-    mainSubgoals := #[(5, 3, 7, 0, true), (4, 6, 8, 0, false)]
+    mainSubgoals := #[⟨5, 3, 7, [], true⟩, ⟨4, 6, 8, [], false⟩]
     numHyps := 9
     key := default, prio := default, numVarying := default, forGrw := true
   }]
@@ -590,29 +606,32 @@ def dischargeSide (mvarId : MVarId) : GCongrM Unit := do
 def applyGCongrLemma (g : MVarId) (lem : GCongr.GCongrLemma) :
     GCongrM (Array (MVarId × Bool) × Array MVarId) := do
   let const ← mkConstWithFreshMVarLevels lem.declName
-  let type      ← inferType const
+  let type ← inferType const
   -- we use `withDefault` so that we can unfold `Monotone`
   let (mvars, _, type) ← withDefault <| forallMetaTelescopeReducing type lem.numHyps
-  guard <| ← approxDefEq <| isDefEq type (← g.getType)
+  guard <| ← approxDefEq <| isDefEq (← g.getType) type
   g.assign (mkAppN const mvars)
   let mut sideGoals := #[]
   for mvar in mvars, i in 0...* do
     unless ← mvar.mvarId!.isAssigned do
-      unless lem.mainSubgoals.any (fun (n, m, k, _) ↦ n == i || m == i || k == i) do
+      unless lem.mainSubgoals.any (fun h ↦ h.lhsIdx == i || h.rhsIdx == i || h.hypIdx == i) do
         sideGoals := sideGoals.push mvar.mvarId!
-  let mainGoals ← lem.mainSubgoals.flatMapM fun (n, m, k, numHyps, isContra) ↦ do
+  let mainGoals ← lem.mainSubgoals.flatMapM fun h ↦ do
     if (← get).patterns.isEmpty then
-      let f ← mvars[n]!.mvarId!.getType
-      let f ← if f.isLambda then pure f else mvars[m]!.mvarId!.getType
-      let mvarId := (← mvars[k]!.mvarId!.introN numHyps (lambdaBinderNames f)).2
-      return #[(mvarId, isContra)]
+      let lhsNames := lambdaBinderNames (← instantiateMVars mvars[h.lhsIdx]!)
+      let rhsNames := lambdaBinderNames (← instantiateMVars mvars[h.rhsIdx]!)
+      let lambdaNames := if lhsNames.size ≥ rhsNames.size then lhsNames else rhsNames
+      let names := h.hypsPos.map fun | some n => lambdaNames[n]! | none => `_
+      let mvarId := (← mvars[h.hypIdx]!.mvarId!.introN h.hypsPos.length names).2
+      return #[(mvarId, h.isContra)]
     else
-      return (← introN mvars[k]!.mvarId! numHyps).map (·, isContra)
+      return (← introN mvars[h.hypIdx]!.mvarId! h.hypsPos.length).map (·, h.isContra)
   return (mainGoals, sideGoals)
 where
-  lambdaBinderNames : Expr → List Name
-    | .lam n _ b _ => n :: lambdaBinderNames b
-    | _ => []
+  lambdaBinderNames (e : Expr) (acc : Array Name := #[]) : Array Name :=
+    match e with
+    | .lam n _ b _ => lambdaBinderNames b (acc.push n)
+    | _ => acc
 
 /-- The core of the `gcongr` tactic.  Parse a goal into the form `(f _ ... _) ∼ (f _ ... _)`,
 look up any relevant `@[gcongr]` lemmas, try to apply them, recursively run the tactic itself on
