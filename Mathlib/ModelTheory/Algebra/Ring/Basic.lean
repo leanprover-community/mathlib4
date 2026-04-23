@@ -80,11 +80,11 @@ instance : AddFunction ring := ⟨ringFunc.add⟩
 instance : MulFunction ring := ⟨ringFunc.mul⟩
 instance : NegFunction ring := ⟨ringFunc.neg⟩
 
-@[simp] theorem zero_eq : ringFunc.zero = Constants.zero (L := ring) := rfl
-@[simp] theorem one_eq : ringFunc.one = Constants.one (L := ring) := rfl
-@[simp] theorem add_eq : ringFunc.add = Functions.add (L := ring) := rfl
-@[simp] theorem mul_eq : ringFunc.mul = Functions.mul (L := ring) := rfl
-@[simp] theorem neg_eq : ringFunc.neg = Functions.neg (L := ring) := rfl
+theorem zero_eq : ringFunc.zero = Constants.zero (L := ring) := rfl
+theorem one_eq : ringFunc.one = Constants.one (L := ring) := rfl
+theorem add_eq : ringFunc.add = Functions.add (L := ring) := rfl
+theorem mul_eq : ringFunc.mul = Functions.mul (L := ring) := rfl
+theorem neg_eq : ringFunc.neg = Functions.neg (L := ring) := rfl
 
 instance : Fintype Language.ring.Symbols :=
   ⟨⟨Multiset.ofList
@@ -94,7 +94,7 @@ instance : Fintype Language.ring.Symbols :=
        Sum.inl ⟨0, Constants.zero⟩,
        Sum.inl ⟨0, Constants.one⟩], by
     simp [← zero_eq, ← one_eq, ← add_eq, ← mul_eq]⟩, by
-    rintro (⟨_, f⟩ | ⟨_, f⟩) <;> cases f <;> simp⟩
+    rintro (⟨_, f⟩ | ⟨_, f⟩) <;> cases f <;> simp [zero_eq, one_eq, add_eq, mul_eq, neg_eq]⟩
 
 @[simp]
 theorem card_ring : card Language.ring = 5 := by
@@ -158,7 +158,7 @@ def languageEquivEquivRingEquiv {R S : Type*}
       map_mul' x y := by simpa using f.map_fun .mul ![x, y] }
     invFun f :=
     { f with
-      map_fun' f := by cases f <;> simp
+      map_fun' f := by cases f <;> simp [zero_eq, one_eq, add_eq, mul_eq, neg_eq]
       map_rel' f := by cases f } }
 
 variable (R : Type*) [Language.ring.Structure R]
