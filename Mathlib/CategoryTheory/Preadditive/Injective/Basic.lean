@@ -66,6 +66,8 @@ class EnoughInjectives : Prop where
 
 attribute [inherit_doc EnoughInjectives] EnoughInjectives.presentation
 
+attribute [instance low] EnoughInjectives.presentation
+
 end
 
 namespace Injective
@@ -189,7 +191,6 @@ open CategoryTheory.Functor
 variable {D : Type u₂} [Category.{v₂} D]
 variable {L : C ⥤ D} {R : D ⥤ C} [PreservesMonomorphisms L]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem injective_of_adjoint (adj : L ⊣ R) (J : D) [Injective J] : Injective <| R.obj J :=
   ⟨fun {A} {_} g f im =>
     ⟨adj.homEquiv _ _ (factorThru ((adj.homEquiv A J).symm g) (L.map f)),
