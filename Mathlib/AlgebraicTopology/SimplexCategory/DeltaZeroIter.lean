@@ -30,7 +30,7 @@ def δ₀Iter (i : ℕ) {n m : ℕ} (hi : n + i = m := by grind) :
     { toFun j := ⟨j.val + i, by grind ⟩
       monotone' _ _ := by grind }
 
-lemma δ₀Iter_apply (i : ℕ) {n m : ℕ} (hi : n + i = m := by grind) (j : Fin (n + 1)) :
+lemma δ₀Iter_apply (i : ℕ) {n m : ℕ} (j : Fin (n + 1)) (hi : n + i = m := by grind) :
     dsimp% (δ₀Iter i hi j) = ⟨j.val + i, by grind⟩ := rfl
 
 @[simp]
