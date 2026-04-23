@@ -344,10 +344,8 @@ theorem floor_lt_zero : ⌊a⌋ < 0 ↔ a < 0 := by rw [floor_lt, Int.cast_zero]
 
 @[bound]
 theorem floor_nonpos (ha : a ≤ 0) : ⌊a⌋ ≤ 0 := by
-  obtain ha0 | rfl : a < 0 ∨ a = 0 := ha.lt_or_eq
-  · rw [← floor_lt_zero] at ha0
-    lia
-  · simp [← Int.lt_add_one_iff, floor_lt]
+  rw [← FloorRing.intCast_strictMono.le_iff_le (β := α), Int.cast_zero]
+  exact (floor_le a).trans ha
 
 /-! #### Ceil -/
 
@@ -375,13 +373,8 @@ theorem ceil_pos : 0 < ⌈a⌉ ↔ 0 < a := by rw [lt_ceil, cast_zero]
 
 @[bound]
 theorem ceil_nonneg (ha : 0 ≤ a) : 0 ≤ ⌈a⌉ := by
-  obtain ha0 | rfl : 0 < a ∨ a = 0 := ha.lt_or_eq'
-  · rw [← ceil_pos] at ha0
-    lia
-  · by_contra! h
-    replace h : ((0 : ℤ) : α) ≤ (-1 : ℤ) := by simpa [ceil_lt_iff] using h
-    replace h : ((-1 : ℤ) : α) = ((0 : ℤ) : α) := h.antisymm' (FloorRing.intCast_mono (by simp))
-    simp at h
+  rw [← FloorRing.intCast_strictMono.le_iff_le (β := α), Int.cast_zero]
+  exact ha.trans (le_ceil a)
 
 end Int
 
