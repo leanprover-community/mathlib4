@@ -156,17 +156,29 @@ section RingEquiv
 
 variable (𝕜 E)
 
-/-- If `M` is a normed space over `𝕜`, then the space of maps `𝕜 →L[𝕜] M` is linearly equivalent
-to `M`. (See `ring_lmap_equiv_self` for a stronger statement.) -/
-def ring_lmap_equiv_selfₗ : (𝕜 →L[𝕜] E) ≃ₗ[𝕜] E :=
-  (ContinuousLinearMap.toSpanSingletonLE 𝕜 𝕜 E).symm
-
 /-- If `M` is a normed space over `𝕜`, then the space of maps `𝕜 →L[𝕜] M` is linearly isometrically
 equivalent to `M`. -/
-def ring_lmap_equiv_self : (𝕜 →L[𝕜] E) ≃ₗᵢ[𝕜] E where
-  toLinearEquiv := ring_lmap_equiv_selfₗ 𝕜 E
-  norm_map' f := by
-    simpa using (ContinuousLinearMap.norm_toSpanSingleton (𝕜 := 𝕜) (x := f 1)).symm
+@[simp]
+def toSpanSingletonₗᵢ : E ≃ₗᵢ[𝕜] (𝕜 →L[𝕜] E) where
+  toLinearEquiv := toSpanSingletonLE 𝕜 𝕜 E
+  norm_map' _ := by simp
+
+lemma toSpanSingletonₗᵢ_apply (x : E) : toSpanSingletonₗᵢ 𝕜 E x = toSpanSingletonLE 𝕜 𝕜 E x := by
+  simp
+
+lemma toSpanSingletonₗᵢ_symm_apply (f : 𝕜 →L[𝕜] E) :
+    (toSpanSingletonₗᵢ 𝕜 E).symm f = (toSpanSingletonLE 𝕜 𝕜 E).symm f :=
+  Eq.symm (DFunLike.congr_fun rfl f)
+
+lemma toSpanSingletonₗᵢ_toLinearEquiv :
+    (toSpanSingletonₗᵢ 𝕜 E).toLinearEquiv = toSpanSingletonLE 𝕜 𝕜 E := by
+  simp
+
+@[deprecated (since := "2026-04-23")]
+alias ring_lmap_equiv_selfₗ := toSpanSingletonLE
+
+@[deprecated (since := "2026-04-23")]
+alias ring_lmap_equiv_self := toSpanSingletonₗᵢ
 
 end RingEquiv
 
