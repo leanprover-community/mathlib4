@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Vasily Ilin. All rights reserved.
+Copyright (c) 2026 Vasily Ilin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasily Ilin
 -/
@@ -26,7 +26,7 @@ on a normed space `E`, the Euler method produces a piecewise linear approximatio
 * `ODE.EulerMethod.point`: The sequence of Euler points.
 * `ODE.EulerMethod.slope`: The slope `v(tₙ, yₙ)` on the `n`-th cell.
 * `ODE.EulerMethod.path`: The piecewise linear Euler path.
-* `ODE.EulerMethod.deriv`: The piecewise constant right derivative.
+* `ODE.EulerMethod.approxDeriv`: The piecewise constant right derivative.
 
 ## Main results
 
@@ -54,15 +54,13 @@ namespace ODE.EulerMethod
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- A single step of the explicit Euler method: `y + h • v(t, y)`. -/
-def step {𝕜 : Type*} {E : Type*} [Ring 𝕜] [AddCommGroup E] [Module 𝕜 E]
-    (v : 𝕜 → E → E) (h : 𝕜) (t : 𝕜) (y : E) : E :=
+def step (v : ℝ → E → E) (h t : ℝ) (y : E) : E :=
   y + h • v t y
 
 /-- The sequence of Euler points, defined recursively:
 `point v h t₀ y₀ 0 = y₀` and
 `point v h t₀ y₀ (n+1) = step v h (t₀ + n*h) (point v h t₀ y₀ n)`. -/
-def point {𝕜 : Type*} {E : Type*} [Ring 𝕜] [AddCommGroup E] [Module 𝕜 E]
-    (v : 𝕜 → E → E) (h : 𝕜) (t₀ : 𝕜) (y₀ : E) : ℕ → E
+def point (v : ℝ → E → E) (h t₀ : ℝ) (y₀ : E) : ℕ → E
   | 0 => y₀
   | n + 1 => step v h (t₀ + n * h) (point v h t₀ y₀ n)
 
@@ -70,15 +68,12 @@ def point {𝕜 : Type*} {E : Type*} [Ring 𝕜] [AddCommGroup E] [Module 𝕜 E
 noncomputable def slope (v : ℝ → E → E) (h : ℝ) (t₀ : ℝ) (y₀ : E) (n : ℕ) : E :=
   v (t₀ + n * h) (point v h t₀ y₀ n)
 
-/-- The regular grid `t₀ + n • h` used by the Euler method. -/
 def grid (h : ℝ) (t₀ : ℝ) (n : ℤ) : ℝ :=
   t₀ + n • h
 
-/-- The Euler points, extended to `ℤ` by keeping the initial value on negative indices. -/
 def pointInt (v : ℝ → E → E) (h : ℝ) (t₀ : ℝ) (y₀ : E) (n : ℤ) : E :=
   point v h t₀ y₀ n.toNat
 
-/-- The Euler slopes, extended to `ℤ` by `0` on negative indices. -/
 noncomputable def slopeInt (v : ℝ → E → E) (h : ℝ) (t₀ : ℝ) (y₀ : E) (n : ℤ) : E :=
   if 0 ≤ n then slope v h t₀ y₀ n.toNat else 0
 
@@ -87,18 +82,18 @@ noncomputable def path (v : ℝ → E → E) (h : ℝ) (t₀ : ℝ) (y₀ : E) :
   piecewiseLinear (grid h t₀) (pointInt v h t₀ y₀) (slopeInt v h t₀ y₀)
 
 /-- The piecewise constant right derivative of the Euler path. -/
-noncomputable def deriv (v : ℝ → E → E) (h : ℝ) (t₀ : ℝ) (y₀ : E) : ℝ → E :=
+noncomputable def approxDeriv (v : ℝ → E → E) (h : ℝ) (t₀ : ℝ) (y₀ : E) : ℝ → E :=
   fun t => slopeInt v h t₀ y₀ (gridIdx (grid h t₀) t)
 
-theorem strictMono_grid {h t₀ : ℝ} (hh : 0 < h) : StrictMono (grid h t₀) := by
+private theorem strictMono_grid {h t₀ : ℝ} (hh : 0 < h) : StrictMono (grid h t₀) := by
   refine strictMono_int_of_lt_succ fun n => ?_
   simp [grid]
   nlinarith
 
-theorem tendsto_grid_atTop {h t₀ : ℝ} (hh : 0 < h) : Tendsto (grid h t₀) atTop atTop := by
+private theorem tendsto_grid_atTop {h t₀ : ℝ} (hh : 0 < h) : Tendsto (grid h t₀) atTop atTop := by
   convert tendsto_atTop_add_const_left atTop t₀ (tendsto_id.atTop_zsmul_const hh) using 1
 
-theorem tendsto_grid_atBot {h t₀ : ℝ} (hh : 0 < h) : Tendsto (grid h t₀) atBot atBot := by
+private theorem tendsto_grid_atBot {h t₀ : ℝ} (hh : 0 < h) : Tendsto (grid h t₀) atBot atBot := by
   convert tendsto_atBot_add_const_left atBot t₀ (tendsto_id.atBot_zsmul_const hh) using 1
 
 theorem continuous_path {v : ℝ → E → E} {h t₀ : ℝ} {y₀ : E} (hh : 0 < h) :
@@ -118,8 +113,8 @@ theorem continuous_path {v : ℝ → E → E} {h t₀ : ℝ} {y₀ : E} (hh : 0 
     simp [pointInt, slopeInt, hn, point, grid, Int.toNat_of_nonpos hn0, Int.toNat_of_nonpos hn1]
 
 theorem hasDerivWithinAt_path {v : ℝ → E → E} {h t₀ : ℝ} {y₀ : E} (hh : 0 < h) {t : ℝ} :
-    HasDerivWithinAt (path v h t₀ y₀) (deriv v h t₀ y₀ t) (Ici t) t := by
-  simpa [path, deriv] using
+    HasDerivWithinAt (path v h t₀ y₀) (approxDeriv v h t₀ y₀ t) (Ici t) t := by
+  simpa [path, approxDeriv] using
     (hasDerivWithinAt_piecewiseLinear
       (x := grid h t₀) (y := pointInt v h t₀ y₀) (c := slopeInt v h t₀ y₀)
       (strictMono_grid (t₀ := t₀) hh) (tendsto_grid_atTop (t₀ := t₀) hh)
@@ -141,7 +136,7 @@ include hv hvt hM
 /-- Global bound on the difference between the Euler derivative and the vector field
 along the Euler path. -/
 theorem dist_deriv_le (hh : 0 < h) {t : ℝ} (ht₀ : t₀ ≤ t) :
-    dist (deriv v h t₀ y₀ t) (v t (path v h t₀ y₀ t)) ≤ h * (L + K * M) := by
+    dist (approxDeriv v h t₀ y₀ t) (v t (path v h t₀ y₀ t)) ≤ h * (L + K * M) := by
   set n : ℤ := gridIdx (grid h t₀) t with hn_def
   have htcell : t ∈ Ico (grid h t₀ n) (grid h t₀ (n + 1)) := by
     simpa [hn_def] using
@@ -181,9 +176,9 @@ theorem dist_deriv_le (hh : 0 < h) {t : ℝ} (ht₀ : t₀ ≤ t) :
     simpa only [sub_add_cancel_left, norm_neg, norm_smul, slope,
       Real.norm_of_nonneg (sub_nonneg.2 ht1)] using
       (mul_le_mul htstep (hM (t₀ + m * h) (point v h t₀ y₀ m)) (norm_nonneg _) hh.le)
-  calc dist (deriv v h t₀ y₀ t) (v t (path v h t₀ y₀ t))
+  calc dist (approxDeriv v h t₀ y₀ t) (v t (path v h t₀ y₀ t))
       = dist (v (t₀ + m * h) (point v h t₀ y₀ m)) (v t (path v h t₀ y₀ t)) := by
-          rw [deriv, hidx]
+          rw [approxDeriv, hidx]
           simp [slopeInt, slope]
     _ ≤ L * (t - (t₀ + m * h)) + K * (h * M) :=
           (dist_triangle _ _ _).trans
@@ -200,7 +195,7 @@ theorem dist_path_le (hh : 0 < h) {T : ℝ}
       dist (path v h t₀ y₀ t) (sol t) ≤ gronwallBound 0 K (h * (L + K * M)) (t - t₀) := by
   intro t ht
   have := dist_le_of_approx_trajectories_ODE (δ := 0) (εg := 0)
-    (f' := deriv v h t₀ y₀) (g' := fun t => v t (sol t)) hv
+    (f' := approxDeriv v h t₀ y₀) (g' := fun t => v t (sol t)) hv
     (continuous_path (v := v) (t₀ := t₀) (y₀ := y₀) hh).continuousOn
     (fun t ht => hasDerivWithinAt_path (v := v) (t₀ := t₀) (y₀ := y₀) hh)
     (fun t ht => dist_deriv_le hv hvt hM hh ht.1)
