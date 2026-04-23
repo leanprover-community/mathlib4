@@ -126,15 +126,13 @@ theorem IsClique.inter_left {s : Set α} (hs : G.IsClique s) (t : Set α) : G.Is
 theorem IsClique.inter_right {s : Set α} (hs : G.IsClique s) (t : Set α) : G.IsClique <| t ∩ s :=
   hs.subset Set.inter_subset_right
 
-theorem isClique_sUnion {S : Set (Set α)} (hd : DirectedOn (· ⊆ ·) S) (h : ∀ s ∈ S, G.IsClique s) :
-    G.IsClique <| ⋃₀ S := by
-  intro u ⟨su, hsu, hu⟩ v ⟨sv, hsv, hv⟩
-  have ⟨s, hs, hsus, hsvs⟩ := hd su hsu sv hsv
-  exact h s hs (hsus hu) (hsvs hv)
+theorem isClique_sUnion {S : Set (Set α)} (hd : DirectedOn (· ⊆ ·) S) :
+    G.IsClique (⋃₀ S) ↔ ∀ s ∈ S, G.IsClique s :=
+  Set.pairwise_sUnion hd
 
-theorem isClique_iUnion {ι : Type*} {s : ι → Set α} (hd : Directed (· ⊆ ·) s)
-    (h : ∀ i, G.IsClique (s i)) : G.IsClique <| ⋃ i, s i :=
-  isClique_sUnion hd.directedOn_range fun _ ⟨i, hi⟩ ↦ hi ▸ h i
+theorem isClique_iUnion {ι : Type*} {s : ι → Set α} (hd : Directed (· ⊆ ·) s) :
+    G.IsClique (⋃ i, s i) ↔ ∀ i, G.IsClique (s i) :=
+  Set.pairwise_iUnion hd
 
 theorem isClique_map_iff_of_nontrivial {f : α ↪ β} {t : Set β} (ht : t.Nontrivial) :
     (G.map f).IsClique t ↔ ∃ (s : Set α), G.IsClique s ∧ f '' s = t := by
