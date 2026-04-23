@@ -112,7 +112,8 @@ theorem isClique_bot_iff : (⊥ : SimpleGraph α).IsClique s ↔ (s : Set α).Su
 
 alias ⟨IsClique.subsingleton, _⟩ := isClique_bot_iff
 
-theorem isClique_univ_iff : G.IsClique .univ ↔ G = ⊤ :=
+@[simp]
+theorem isClique_univ : G.IsClique .univ ↔ G = ⊤ :=
   ⟨fun h ↦ eq_top_iff_forall_ne_adj.mpr fun _ _ ↦ h trivial trivial, (· ▸ isClique_top .univ)⟩
 
 protected theorem IsClique.map (h : G.IsClique s) {f : α ↪ β} : (G.map f).IsClique (f '' s) := by
