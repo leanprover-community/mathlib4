@@ -64,7 +64,7 @@ lemma takeUntil_eq_take (p : G.Walk u v) (h : w ∈ p.support) :
   | nil =>
     simp only [takeUntil, eq_mpr_eq_cast, support_nil, getVert_nil, take, support_copy]
     grind [mem_support_nil_iff, support_nil]
-  | @cons a _ _ _ p ih =>
+  | cons hadj p ih =>
     grind [takeUntil, support, copy_rfl_rfl, take_support_eq_support_take_succ]
 
 lemma length_takeUntil (p : G.Walk u v) (h : w ∈ p.support) :
