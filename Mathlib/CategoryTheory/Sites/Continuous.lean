@@ -64,7 +64,7 @@ namespace PreOneHypercover
 variable {X : C} (E : PreOneHypercover X) (F : C ⥤ D)
 
 /-- The image of a 1-pre-hypercover by a functor. -/
-@[simps toPreZeroHypercover Y p₁ p₂]
+@[simps toPreZeroHypercover I₁ Y p₁ p₂]
 def map : PreOneHypercover (F.obj X) where
   __ := E.toPreZeroHypercover.map F
   I₁ := E.I₁
