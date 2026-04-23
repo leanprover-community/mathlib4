@@ -102,7 +102,7 @@ private theorem joined_basepoint_of_ofBasedPath (α : BasedPath x₀) :
   -- Family of based paths: `F t s = α ⟨s * t, _⟩` — at `t = 0` constant at `x₀`, at `t = 1` `α`.
   have hst_mem : ∀ s t : I, (s : ℝ) * (t : ℝ) ∈ I := fun s t ↦
     ⟨mul_nonneg s.2.1 t.2.1, mul_le_one₀ s.2.2 t.2.1 t.2.2⟩
-  -- Subtype reductions at the three boundary values, in the exact form produced by `F_apply`.
+  -- Subtype reductions at the three boundary values of `s * t`.
   have hst_zero_left : ∀ t : I, (⟨((0 : I) : ℝ) * (t : ℝ), hst_mem 0 t⟩ : I) = 0 :=
     fun _ ↦ Subtype.ext (by simp)
   have hst_zero_right : ∀ s : I, (⟨(s : ℝ) * ((0 : I) : ℝ), hst_mem s 0⟩ : I) = 0 :=

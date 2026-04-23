@@ -372,16 +372,18 @@ theorem isOpenMap_endpoint [LocPathConnectedSpace X] (x₀ : X) :
   let Tbad : Finset (Set I × Set X) := T.filter fun KU ↦ (1 : I) ∉ KU.1
   have hS_of_T : ∀ KU, KU ∈ T → KU ∈ S := fun _ ↦ hSfin.mem_toFinset.mp
   have hT_of_S : ∀ KU, KU ∈ S → KU ∈ T := fun _ ↦ hSfin.mem_toFinset.mpr
+  have hgood : ∀ KU ∈ Tgood, KU ∈ S ∧ (1 : I) ∈ KU.1 := fun KU hKU ↦
+    let ⟨hT, h1⟩ := Finset.mem_filter.mp hKU
+    ⟨hS_of_T KU hT, h1⟩
+  have hbad : ∀ KU ∈ Tbad, KU ∈ S ∧ (1 : I) ∉ KU.1 := fun KU hKU ↦
+    let ⟨hT, h1⟩ := Finset.mem_filter.mp hKU
+    ⟨hS_of_T KU hT, h1⟩
   obtain ⟨W, a₀, a, b, hWopen, huW, hWpath, hW_good, hIoc, ha₀_lt_a, ha0, ha1, hab, hb1⟩ :=
     exists_endpointNeighborhood_of_basicNeighborhood γ Tgood Tbad
-      (fun KU hKU ↦ by
-        have hKU' : KU ∈ T := (Finset.mem_filter.mp hKU).1
-        exact ⟨(hSdata KU.1 KU.2 (hS_of_T KU hKU')).2.1,
-          (hSdata KU.1 KU.2 (hS_of_T KU hKU')).2.2 (by simpa using (Finset.mem_filter.mp hKU).2)⟩)
-      (fun KU hKU ↦ by
-        have hKU' : KU ∈ T := (Finset.mem_filter.mp hKU).1
-        exact (hSdata KU.1 KU.2 (hS_of_T KU hKU')).1.isClosed)
-      (fun KU hKU ↦ by simpa using (Finset.mem_filter.mp hKU).2)
+      (fun KU hKU ↦ ⟨(hSdata KU.1 KU.2 (hgood KU hKU).1).2.1,
+        (hSdata KU.1 KU.2 (hgood KU hKU).1).2.2 (hgood KU hKU).2⟩)
+      (fun KU hKU ↦ (hSdata KU.1 KU.2 (hbad KU hKU).1).1.isClosed)
+      (fun KU hKU ↦ (hbad KU hKU).2)
   refine mem_nhds_iff.mpr ⟨W, ?_, hWopen, huW⟩
   intro v hvW
   obtain ⟨η, hηV, hend⟩ :=
@@ -760,12 +762,10 @@ theorem toPath_homotopic_of_joinedIn_slsc
       (Continuous.max continuous_const (by fun_prop)).mul (by fun_prop)
   have hv_cont_real : Continuous joinedInSLsc_vReal :=
     Continuous.min (by fun_prop) continuous_const
-  have hu_fn_cont : Continuous joinedInSLsc_uFn := by
-    refine Continuous.subtype_mk ?_ _
-    exact hu_cont.comp (by fun_prop)
-  have hv_fn_cont : Continuous joinedInSLsc_vFn := by
-    refine Continuous.subtype_mk ?_ _
-    exact hv_cont_real.comp (by fun_prop)
+  have hu_fn_cont : Continuous joinedInSLsc_uFn :=
+    Continuous.subtype_mk (hu_cont.comp (by fun_prop)) _
+  have hv_fn_cont : Continuous joinedInSLsc_vFn :=
+    Continuous.subtype_mk (hv_cont_real.comp (by fun_prop)) _
   -- The rectangle homotopy.
   let K_fn : I × I → X := fun ts ↦ (F (joinedInSLsc_uFn ts)).1 (joinedInSLsc_vFn ts)
   have K_fn_apply : ∀ ts : I × I, K_fn ts = (F (joinedInSLsc_uFn ts)).1 (joinedInSLsc_vFn ts) :=
