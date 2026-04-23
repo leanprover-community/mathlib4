@@ -120,15 +120,6 @@ protected theorem IsClique.map (h : G.IsClique s) {f : α ↪ β} : (G.map f).Is
   rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ hab
   exact ⟨hab, a, b, h ha hb <| ne_of_apply_ne _ hab, rfl, rfl⟩
 
-theorem isClique_sInter {S : Set (Set α)} (hn : S.Nonempty) (h : ∀ s ∈ S, G.IsClique s) :
-    G.IsClique <| ⋂₀ S := by
-  have ⟨s, hs⟩ := hn
-  exact h s hs |>.subset <| S.sInter_subset_of_mem hs
-
-theorem isClique_iInter {ι : Type*} [Nonempty ι] {s : ι → Set α} (h : ∀ i, G.IsClique (s i)) :
-    G.IsClique <| ⋂ i, s i :=
-  isClique_sInter (Set.range_nonempty s) fun _ ⟨i, hi⟩ ↦ hi ▸ h i
-
 theorem isClique_sUnion {S : Set (Set α)} (hd : DirectedOn (· ⊆ ·) S) (h : ∀ s ∈ S, G.IsClique s) :
     G.IsClique <| ⋃₀ S := by
   intro u ⟨su, hsu, hu⟩ v ⟨sv, hsv, hv⟩
