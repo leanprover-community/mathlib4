@@ -576,7 +576,7 @@ back to `γ 0` and `γ 1`.
 The cast is on the RHS so that the lemma rewrites `γ.subpathOn 0 1` (the cluttered form) to
 `γ.cast …` (which names the simple `γ` up to a cast); this matches the direction of the
 `@[simp]` lemma `Path.Homotopic.Quotient.subpathOn_zero_one`. -/
-theorem subpathOn_zero_one_cast (γ : Path x y) :
+theorem subpathOn_zero_one_eq_cast (γ : Path x y) :
     γ.subpathOn 0 1 = γ.cast γ.source γ.target := by
   ext t
   simp [Path.cast, Path.subpathOn]
@@ -584,7 +584,7 @@ theorem subpathOn_zero_one_cast (γ : Path x y) :
 /-- The subpath from `0` to `1` is homotopic to the original path, up to casting endpoints. -/
 theorem subpathOn_zero_one (γ : Path x y) :
     Homotopic (γ.subpathOn 0 1) (γ.cast γ.source γ.target) := by
-  rw [subpathOn_zero_one_cast]
+  rw [subpathOn_zero_one_eq_cast]
 
 namespace Homotopic.Quotient
 
