@@ -76,10 +76,8 @@ where
     if let some info := getStructureInfo? (← getEnv) cls then
       let .const _ us := type.getAppFn | panic! s!"`{inst} is not an instance"
       for info in info.parentInfo do
-        let parent := info.structName
-        -- hard-code an exception for `Nontrivial`, which commonly has multiple local instances.
-        if parent matches `Nontrivial then continue
         anyParent := true
+        let parent := info.structName
         if (← get).contains parent then continue
         modify (·.insert parent)
         let proj := Expr.app (mkAppN (.const info.projFn us) type.getAppArgs) inst
