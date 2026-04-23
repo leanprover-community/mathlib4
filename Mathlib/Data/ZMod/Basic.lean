@@ -755,9 +755,6 @@ alias ⟨_, _root_.Even.intCast_zmod_two⟩ := intCast_eq_zero_iff_even
 theorem natCast_eq_zero_iff_even {n : ℕ} : (n : ZMod 2) = 0 ↔ Even n :=
   mod_cast intCast_eq_zero_iff_even (n := n)
 
-@[deprecated (since := "2025-08-25")]
-alias eq_zero_iff_even := natCast_eq_zero_iff_even
-
 alias ⟨_, _root_.Even.natCast_zmod_two⟩ := natCast_eq_zero_iff_even
 
 theorem intCast_eq_one_iff_odd {n : ℤ} : (n : ZMod 2) = 1 ↔ Odd n := by
@@ -769,16 +766,10 @@ alias ⟨_, _root_.Odd.intCast_zmod_two⟩ := intCast_eq_one_iff_odd
 theorem natCast_eq_one_iff_odd {n : ℕ} : (n : ZMod 2) = 1 ↔ Odd n :=
   mod_cast intCast_eq_one_iff_odd (n := n)
 
-@[deprecated (since := "2025-08-25")]
-alias eq_one_iff_odd := natCast_eq_one_iff_odd
-
 alias ⟨_, _root_.Odd.natCast_zmod_two⟩ := natCast_eq_one_iff_odd
 
 theorem natCast_ne_zero_iff_odd {n : ℕ} : (n : ZMod 2) ≠ 0 ↔ Odd n := by
   simp [natCast_eq_zero_iff_even]
-
-@[deprecated (since := "2025-08-25")]
-alias ne_zero_iff_odd := natCast_ne_zero_iff_odd
 
 theorem coe_mul_inv_eq_one {n : ℕ} (x : ℕ) (h : Nat.Coprime x n) :
     ((x : ZMod n) * (x : ZMod n)⁻¹) = 1 := by
@@ -837,12 +828,7 @@ lemma isUnit_prime_of_not_dvd {n p : ℕ} (hp : p.Prime) (h : ¬ p ∣ n) : IsUn
 theorem inv_coe_unit {n : ℕ} (u : (ZMod n)ˣ) : (u : ZMod n)⁻¹ = (u⁻¹ : (ZMod n)ˣ) := by
   have := congr_arg ((↑) : ℕ → ZMod n) (val_coe_unit_coprime u)
   rw [← mul_inv_eq_gcd, Nat.cast_one] at this
-  let u' : (ZMod n)ˣ := ⟨u, (u : ZMod n)⁻¹, this, by rwa [mul_comm]⟩
-  have h : u = u' := by
-    apply Units.ext
-    rfl
-  rw [h]
-  rfl
+  exact (Units.inv_eq_of_mul_eq_one_right this).symm
 
 theorem mul_inv_of_unit {n : ℕ} (a : ZMod n) (h : IsUnit a) : a * a⁻¹ = 1 := by
   rcases h with ⟨u, rfl⟩
@@ -978,7 +964,6 @@ theorem val_eq_one : ∀ {n : ℕ} (_ : 1 < n) (a : ZMod n), a.val = 1 ↔ a = 1
   | 1, hn, _ => by simp at hn
   | n + 2, _, _ => by simp only [val, ZMod, Fin.ext_iff, Fin.val_one]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val = n := by
   rw [neg_eq_iff_add_eq_zero, ← two_mul]
   cases n
@@ -1173,7 +1158,6 @@ theorem lift_comp_coe : ZMod.lift n f ∘ ((↑) : ℤ → _) = f :=
 theorem lift_comp_castAddHom : (ZMod.lift n f).comp (Int.castAddHom (ZMod n)) = f :=
   AddMonoidHom.ext <| lift_castAddHom _ _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma lift_injective {f : {f : ℤ →+ A // f n = 0}} :
     Injective (lift n f) ↔ ∀ m, f.1 m = 0 → (m : ZMod n) = 0 := by
   simp only [← AddMonoidHom.ker_eq_bot_iff, eq_bot_iff, SetLike.le_def,

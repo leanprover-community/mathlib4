@@ -65,7 +65,7 @@ instance Int.instUnitsPow : Pow ℤˣ R where
 
 -- The above instances form no typeclass diamonds with the standard power operators
 -- but we will need `reducible_and_instances` which currently fails https://github.com/leanprover-community/mathlib4/issues/10906
-example : Int.instUnitsPow = Monoid.toNatPow := rfl
+example : Int.instUnitsPow = Monoid.toPow := rfl
 example : Int.instUnitsPow = DivInvMonoid.toZPow := rfl
 
 @[simp] lemma ofMul_uzpow (u : ℤˣ) (r : R) : Additive.ofMul (u ^ r) = r • Additive.ofMul u := rfl

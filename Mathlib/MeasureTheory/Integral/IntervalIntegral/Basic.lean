@@ -861,6 +861,20 @@ theorem _root_.ContinuousLinearMap.intervalIntegral_comp_comm [CompleteSpace E] 
 
 end ContinuousLinearMap
 
+section RCLike
+
+variable {𝕜 : Type*} [RCLike 𝕜] {f : ℝ → 𝕜} {a b : ℝ} {μ : Measure ℝ}
+
+theorem intervalIntegral_re (hf : IntervalIntegrable f μ a b) :
+    ∫ x in a..b, RCLike.re (f x) ∂μ = RCLike.re (∫ x in a..b, f x ∂μ) :=
+  RCLike.reCLM.intervalIntegral_comp_comm hf
+
+theorem intervalIntegral_im (hf : IntervalIntegrable f μ a b) :
+    ∫ x in a..b, RCLike.im (f x) ∂μ = RCLike.im (∫ x in a..b, f x ∂μ) :=
+  RCLike.imCLM.intervalIntegral_comp_comm hf
+
+end RCLike
+
 /-!
 ## Basic arithmetic
 Includes addition, scalar multiplication and affine transformations.
@@ -1037,7 +1051,6 @@ theorem integral_congr {a b : ℝ} (h : EqOn f g [[a, b]]) :
     simpa [hab, integral_of_le, integral_of_ge] using
       setIntegral_congr_fun measurableSet_Ioc (h.mono Ioc_subset_Icc_self)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem integral_add_adjacent_intervals_cancel (hab : IntervalIntegrable f μ a b)
     (hbc : IntervalIntegrable f μ b c) :
     (((∫ x in a..b, f x ∂μ) + ∫ x in b..c, f x ∂μ) + ∫ x in c..a, f x ∂μ) = 0 := by
@@ -1128,6 +1141,30 @@ theorem integral_interval_add_Ioi' (ha : IntervalIntegrable f μ a b)
   · exact (Ioc_union_Ioi_eq_Ioi h) ▸ IntegrableOn.union
       ((intervalIntegrable_iff_integrableOn_Ioc_of_le h).1 ha) hb
   · exact hb.mono_set <| Ioi_subset_Ioi h.le
+
+theorem integral_Ioi_sub_Ioi (hf : IntegrableOn f (Ioi a) μ) (hab : a ≤ b) :
+    ∫ x in Ioi a, f x ∂μ - ∫ x in Ioi b, f x ∂μ = ∫ x in a..b, f x ∂μ :=
+  sub_eq_of_eq_add (integral_interval_add_Ioi hf (hf.mono_set (Ioi_subset_Ioi hab))).symm
+
+theorem integral_Ioi_sub_Ioi' (hf : IntegrableOn f (Ioi a) μ) (hg : IntegrableOn f (Ioi b) μ) :
+    ∫ x in Ioi a, f x ∂μ - ∫ x in Ioi b, f x ∂μ = ∫ x in a..b, f x ∂μ := by
+  wlog! hab : a ≤ b generalizing a b
+  · rw [integral_symm, ← this hg hf hab.le, neg_sub]
+  exact integral_Ioi_sub_Ioi hf hab
+
+theorem integral_Iio_sub_Iio (hf : IntegrableOn f (Iio b) μ) (hab : a ≤ b) :
+    ∫ x in Iio b, f x ∂μ - ∫ x in Iio a, f x ∂μ = ∫ x in Ico a b, f x ∂μ := by
+  have ha : IntegrableOn f (Iio a) μ := hf.mono_set (Iio_subset_Iio hab)
+  have h : IntegrableOn f (Ico a b) μ := hf.mono_set Ico_subset_Iio_self
+  rw [sub_eq_iff_eq_add', ← setIntegral_union (by grind) measurableSet_Ico ha h,
+      Iio_union_Ico_eq_Iio hab]
+
+theorem integral_Iio_sub_Iio' [NoAtoms μ] (hf : IntegrableOn f (Iio b) μ)
+    (hg : IntegrableOn f (Iio a) μ) :
+    ∫ x in Iio b, f x ∂μ - ∫ x in Iio a, f x ∂μ = ∫ x in a..b, f x ∂μ := by
+  wlog! hab : a ≤ b generalizing a b
+  · rw [integral_symm, ← this hg hf hab.le, neg_sub]
+  rw [integral_Iio_sub_Iio hf hab, integral_of_le hab, integral_Ico_eq_integral_Ioc]
 
 theorem integral_Iic_add_Ioi (h_left : IntegrableOn f (Iic b) μ)
     (h_right : IntegrableOn f (Ioi b) μ) :

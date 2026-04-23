@@ -35,7 +35,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
 
 variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   -- `F` model fiber
-  (n : WithTop ℕ∞)
+  (n : ℕ∞ω)
   (V : M → Type*) [TopologicalSpace (TotalSpace F V)]
   -- `V` vector bundle
   [∀ x : M, TopologicalSpace (V x)] [FiberBundle F V]
@@ -336,7 +336,6 @@ instance instSub : Sub Cₛ^n⟮I; F, V⟯ :=
 theorem coe_sub (s t : Cₛ^n⟮I; F, V⟯) : ⇑(s - t) = s - t :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance instZero : Zero Cₛ^n⟮I; F, V⟯ :=
   ⟨⟨fun _ => 0, (contMDiff_zeroSection 𝕜 V).of_le le_top⟩⟩
 

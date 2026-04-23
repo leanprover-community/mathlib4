@@ -182,7 +182,6 @@ theorem coe_add (p q : Seminorm 𝕜 E) : ⇑(p + q) = p + q :=
 theorem add_apply (p q : Seminorm 𝕜 E) (x : E) : (p + q) x = p x + q x :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance instAddMonoid : AddMonoid (Seminorm 𝕜 E) :=
   DFunLike.coe_injective.addMonoid _ rfl coe_add fun _ _ => by rfl
 
@@ -343,7 +342,7 @@ theorem smul_le_smul {p q : Seminorm 𝕜 E} {a b : ℝ≥0} (hpq : p ≤ q) (ha
   exact mul_le_mul hab (hpq x) (apply_nonneg p x) (NNReal.coe_nonneg b)
 
 theorem finset_sup_apply (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) :
-    s.sup p x = ↑(s.sup fun i => ⟨p i x, apply_nonneg (p i) x⟩ : ℝ≥0) := by
+    s.sup p x = ↑(s.sup fun i => NNReal.mk (p i x) (apply_nonneg (p i) x)) := by
   induction s using Finset.cons_induction_on with
   | empty =>
     rw [Finset.sup_empty, Finset.sup_empty, coe_bot, _root_.bot_eq_zero, Pi.zero_apply]
@@ -387,7 +386,6 @@ theorem le_finset_sup_apply {p : ι → Seminorm 𝕜 E} {s : Finset ι} {x : E}
     (hi : i ∈ s) : p i x ≤ s.sup p x :=
   (Finset.le_sup hi : p i ≤ s.sup p) x
 
-set_option backward.isDefEq.respectTransparency false in
 theorem finset_sup_apply_lt {p : ι → Seminorm 𝕜 E} {s : Finset ι} {x : E} {a : ℝ} (ha : 0 < a)
     (h : ∀ i, i ∈ s → p i x < a) : s.sup p x < a := by
   lift a to ℝ≥0 using ha.le
@@ -691,9 +689,11 @@ theorem closedBall_finset_sup' (p : ι → Seminorm 𝕜 E) (s : Finset ι) (H :
   | cons _ _ _ hs ih =>
     simp only [Finset.sup'_cons hs, Finset.inf'_cons hs, closedBall_sup, inf_eq_inter, ih]
 
+@[gcongr]
 theorem ball_mono {p : Seminorm 𝕜 E} {r₁ r₂ : ℝ} (h : r₁ ≤ r₂) : p.ball x r₁ ⊆ p.ball x r₂ :=
   fun _ (hx : _ < _) => hx.trans_le h
 
+@[gcongr]
 theorem closedBall_mono {p : Seminorm 𝕜 E} {r₁ r₂ : ℝ} (h : r₁ ≤ r₂) :
     p.closedBall x r₁ ⊆ p.closedBall x r₂ := fun _ (hx : _ ≤ _) => hx.trans h
 
@@ -807,27 +807,23 @@ theorem balanced_closedBall_zero (r : ℝ) : Balanced 𝕜 (closedBall p 0 r) :=
     _ ≤ p y := mul_le_of_le_one_left (apply_nonneg p _) ha
     _ ≤ r := by rwa [mem_closedBall_zero] at hy
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ball_finset_sup_eq_iInter (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) {r : ℝ}
     (hr : 0 < r) : ball (s.sup p) x r = ⋂ i ∈ s, ball (p i) x r := by
   lift r to NNReal using hr.le
   simp_rw [ball, iInter_setOf, finset_sup_apply, NNReal.coe_lt_coe,
     Finset.sup_lt_iff (show ⊥ < r from hr), ← NNReal.coe_lt_coe, NNReal.coe_mk]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem closedBall_finset_sup_eq_iInter (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) {r : ℝ}
     (hr : 0 ≤ r) : closedBall (s.sup p) x r = ⋂ i ∈ s, closedBall (p i) x r := by
   lift r to NNReal using hr
   simp_rw [closedBall, iInter_setOf, finset_sup_apply, NNReal.coe_le_coe, Finset.sup_le_iff, ←
     NNReal.coe_le_coe, NNReal.coe_mk]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ball_finset_sup (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) {r : ℝ} (hr : 0 < r) :
     ball (s.sup p) x r = s.inf fun i => ball (p i) x r := by
   rw [Finset.inf_eq_iInf]
   exact ball_finset_sup_eq_iInter _ _ _ hr
 
-set_option backward.isDefEq.respectTransparency false in
 theorem closedBall_finset_sup (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x : E) {r : ℝ} (hr : 0 ≤ r) :
     closedBall (s.sup p) x r = s.inf fun i => closedBall (p i) x r := by
   rw [Finset.inf_eq_iInf]
@@ -1083,8 +1079,8 @@ theorem continuousAt_zero' [TopologicalSpace E] [ContinuousConstSMul 𝕜 E] {p 
     rcases le_or_gt r 0 with hr | hr
     · use 1; simpa using hr.trans_lt hε
     · simpa [lt_div_iff₀ hr] using exists_norm_lt 𝕜 (div_pos hε hr)
-  rw [← set_smul_mem_nhds_zero_iff (norm_pos_iff.1 hk₀), smul_closedBall_zero hk₀] at hp
-  exact mem_of_superset hp <| p.closedBall_mono hk.le
+  grw [← hk]
+  rwa [← set_smul_mem_nhds_zero_iff (norm_pos_iff.1 hk₀), smul_closedBall_zero hk₀] at hp
 
 /-- A seminorm is continuous at `0` if `p.ball 0 r ∈ 𝓝 0` for *all* `r > 0`.
 Over a `NontriviallyNormedField` it is actually enough to check that this is true
@@ -1240,7 +1236,7 @@ lemma rescale_to_shell_zpow (p : Seminorm 𝕜 E) {c : 𝕜} (hc : 1 < ‖c‖) 
     have : ε⁻¹ * ‖c‖ * p x = ε⁻¹ * p x * ‖c‖ := by ring
     rw [zpow_neg, norm_inv, inv_inv, norm_zpow, zpow_add₀ (ne_of_gt cpos), zpow_one, this,
         ← div_eq_inv_mul]
-    exact mul_le_mul_of_nonneg_right hn.1 (norm_nonneg _)
+    gcongr; exact hn.1
 
 /-- Let `p` be a seminorm on a vector space over a `NormedField`.
 If there is a scalar `c` with `‖c‖>1`, then any `x` such that `p x ≠ 0` can be

@@ -155,7 +155,7 @@ lemma mapPower_powerMap {U V : FormalCoproduct.{w} C} (f : U ⟶ V)
   · cat_disch
   · dsimp
     ext
-    simp only [Function.comp_apply, limit.lift_map, Cones.postcompose, Fan.mk_pt, Category.comp_id,
+    simp only [Function.comp_apply, limit.lift_map, Cone.postcompose, Fan.mk_pt, Category.comp_id,
       Category.assoc, limit.lift_π, Fan.mk_π_app, Pi.map_π]
     apply limit.lift_π
 
@@ -173,10 +173,10 @@ set_option backward.isDefEq.respectTransparency false in
 which sends a type `α` and `U : FormalCoproduct C` to `U.power α`. -/
 @[simps]
 noncomputable def powerBifunctor [HasProducts.{t} C] :
-    (Type t)ᵒᵖ ⥤ FormalCoproduct.{w} C ⥤ FormalCoproduct.{max w t} C where
+    Type tᵒᵖ ⥤ FormalCoproduct.{w} C ⥤ FormalCoproduct.{max w t} C where
   obj α := powerFunctor α.unop
   map f := { app _ := mapPower _ f.unop }
-  map_comp _ _ := by ext : 2; dsimp; apply mapPower_comp
+  map_comp _ _ := by ext : 2; simp [types_comp]
 
 variable [HasFiniteProducts C]
 

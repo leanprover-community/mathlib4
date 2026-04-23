@@ -25,7 +25,6 @@ open Complex InnerProductSpace Metric Set Topology
 variable
   {f : ℂ → ℝ} {x : ℂ}
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `f : ℂ → ℝ` is harmonic at `x`, then `∂f/∂1 - I • ∂f/∂I` is complex differentiable at `x`.
 -/
@@ -56,7 +55,6 @@ theorem HarmonicAt.differentiableAt_complex_partial (hf : HarmonicAt f x) :
       add_eq_zero_iff_eq_neg] at h₂f
     simp [h₂f]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `f : ℂ → ℝ` is harmonic at `x`, then `∂f/∂1 - I • ∂f/∂I` is complex analytic at `x`.
 -/
@@ -71,7 +69,8 @@ set_option backward.isDefEq.respectTransparency false in
 If a function `f : ℂ → ℝ` is harmonic on an open ball, then `f` is the real part of a function
 `F : ℂ → ℂ` that is holomorphic on the ball.
 -/
-theorem harmonic_is_realOfHolomorphic {z : ℂ} {R : ℝ} (hf : HarmonicOnNhd f (ball z R)) :
+theorem InnerProductSpace.HarmonicOnNhd.exists_analyticOnNhd_ball_re_eq {z : ℂ} {R : ℝ}
+    (hf : HarmonicOnNhd f (ball z R)) :
     ∃ F : ℂ → ℂ, (AnalyticOnNhd ℂ F (ball z R)) ∧ ((ball z R).EqOn (fun z ↦ (F z).re) f) := by
   by_cases hR : R ≤ 0
   · simp [ball_eq_empty.2 hR]
@@ -102,11 +101,15 @@ theorem harmonic_is_realOfHolomorphic {z : ℂ} {R : ℝ} (hf : HarmonicOnNhd f 
     simp [HasDerivAt.deriv (hF.2 y hy), g]
   all_goals simp_all
 
+@[deprecated (since := "2026-03-03")]
+alias harmonic_is_realOfHolomorphic :=
+  InnerProductSpace.HarmonicOnNhd.exists_analyticOnNhd_ball_re_eq
+
 set_option backward.isDefEq.respectTransparency false in
 /--
 If a function `f : ℂ → ℝ` is harmonic, then `f` is the real part of a holomorphic function.
 -/
-theorem InnerProductSpace.harmonic_is_realOfHolomorphic_univ {f : ℂ → ℝ}
+theorem InnerProductSpace.HarmonicOnNhd.exists_analyticOnNhd_univ_re_eq {f : ℂ → ℝ}
     (hf : HarmonicOnNhd f univ) :
     ∃ F : ℂ → ℂ, (AnalyticOnNhd ℂ F univ) ∧ ((fun z ↦ (F z).re) = f) := by
   let g := ofRealCLM ∘ (fderiv ℝ f · 1) - I • ofRealCLM ∘ (fderiv ℝ f · I)
@@ -132,6 +135,10 @@ theorem InnerProductSpace.harmonic_is_realOfHolomorphic_univ {f : ℂ → ℝ}
     · simp
   all_goals simp_all
 
+@[deprecated (since := "2026-03-03")]
+alias InnerProductSpace.harmonic_is_realOfHolomorphic_univ :=
+  InnerProductSpace.HarmonicOnNhd.exists_analyticOnNhd_univ_re_eq
+
 set_option backward.isDefEq.respectTransparency false in
 /-
 Harmonic functions are real analytic.
@@ -139,6 +146,7 @@ TODO: Prove this for harmonic functions on an arbitrary f.d. inner product space
 -/
 theorem HarmonicAt.analyticAt (hf : HarmonicAt f x) : AnalyticAt ℝ f x := by
   obtain ⟨ε, h₁ε, h₂ε⟩ := isOpen_iff.1 (isOpen_setOf_harmonicAt (f := f)) x hf
-  obtain ⟨F, h₁F, h₂F⟩ := harmonic_is_realOfHolomorphic (fun _ hy ↦ h₂ε hy)
+  obtain ⟨F, h₁F, h₂F⟩ := InnerProductSpace.HarmonicOnNhd.exists_analyticOnNhd_ball_re_eq
+    (fun _ hy ↦ h₂ε hy)
   rw [analyticAt_congr (Filter.eventually_of_mem (ball_mem_nhds x h₁ε) (fun y hy ↦ h₂F.symm hy))]
   exact (reCLM.analyticAt (F x)).comp (h₁F x (mem_ball_self h₁ε)).restrictScalars

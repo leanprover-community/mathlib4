@@ -45,7 +45,7 @@ instance {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [Ha
     [EffectiveEpiFamily X π] : EffectiveEpi (Sigma.desc π) := by
   let e := effectiveEpiStructIsColimitDescOfEffectiveEpiFamily X _ (coproductIsCoproduct _) π
   simp only [Cofan.mk_pt, coproductIsCoproduct, colimit.cocone_x, IsColimit.ofIsoColimit_desc,
-    Cocones.ext_inv_hom, Iso.refl_inv, colimit.isColimit_desc, Category.id_comp] at e
+    Cocone.ext_inv_hom, Iso.refl_inv, colimit.isColimit_desc, Category.id_comp] at e
   exact ⟨⟨e⟩⟩
 
 example {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [EffectiveEpiFamily X π]

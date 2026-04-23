@@ -200,6 +200,12 @@ lemma rnDeriv_eq_zero_of_mutuallySingular {ν' : Measure α} [HaveLebesgueDecomp
     exact h_ac'.ae_le this
   exact rnDeriv_zero _
 
+variable (μ ν) in
+lemma rnDeriv_eq_zero_ae_singularPart [SigmaFinite μ] [SigmaFinite ν] :
+    ∀ᵐ x ∂(ν.singularPart μ), μ.rnDeriv ν x = 0 := by
+  refine rnDeriv_eq_zero_of_mutuallySingular (mutuallySingular_singularPart ν μ).symm ?_
+  exact (Measure.singularPart_le _ _).absolutelyContinuous
+
 /-- Auxiliary lemma for `rnDeriv_add_right_of_mutuallySingular`. -/
 lemma rnDeriv_add_right_of_absolutelyContinuous_of_mutuallySingular {ν' : Measure α}
     [HaveLebesgueDecomposition μ ν] [HaveLebesgueDecomposition μ (ν + ν')] [SigmaFinite ν]
@@ -296,6 +302,20 @@ lemma inv_rnDeriv' [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
     (ν.rnDeriv μ)⁻¹ =ᵐ[μ] μ.rnDeriv ν := by
   filter_upwards [inv_rnDeriv hμν] with x hx; simp only [Pi.inv_apply, ← hx, inv_inv]
 
+variable (ν) in
+lemma ae_rnDeriv_ne_zero_imp_of_ae [SigmaFinite μ] [SigmaFinite ν] {p : α → Prop}
+    (h : ∀ᵐ a ∂μ, p a) :
+    ∀ᵐ a ∂ν, μ.rnDeriv ν a ≠ 0 → p a := by
+  rw [ν.haveLebesgueDecomposition_add μ, ae_add_measure_iff]
+  constructor
+  · rw [← ν.haveLebesgueDecomposition_add μ]
+    have : ∀ᵐ x ∂(ν.singularPart μ), μ.rnDeriv ν x = 0 := μ.rnDeriv_eq_zero_ae_singularPart ν
+    filter_upwards [this] with x hx h_absurd using absurd hx h_absurd
+  · have h_ac : μ.withDensity (ν.rnDeriv μ) ≪ μ := withDensity_absolutelyContinuous _ _
+    rw [← ν.haveLebesgueDecomposition_add μ]
+    suffices ∀ᵐx ∂μ, μ.rnDeriv ν x ≠ 0 → p x from h_ac this
+    filter_upwards [h] with _ h _ using h
+
 section integral
 
 lemma setLIntegral_rnDeriv_le (s : Set α) :
@@ -353,8 +373,7 @@ lemma setIntegral_toReal_rnDeriv_le [SigmaFinite μ] {s : Set α} (hμs : μ s �
   _ ≤ μ.real t := by
         simp only [measureReal_def]
         gcongr
-        · exact hμt
-        · apply withDensity_rnDeriv_le
+        apply withDensity_rnDeriv_le
   _ = μ.real s := by rw [measureReal_def, measureReal_def, measure_toMeasurable s]
 
 lemma setIntegral_toReal_rnDeriv' [SigmaFinite μ] [HaveLebesgueDecomposition μ ν]
@@ -413,6 +432,70 @@ lemma rnDeriv_eq_one_iff_eq [HaveLebesgueDecomposition μ ν] [SigmaFinite ν] (
     μ.rnDeriv ν =ᵐ[ν] 1 ↔ μ = ν := by
   refine ⟨fun h ↦ ?_, fun h ↦ h ▸ ν.rnDeriv_self⟩
   rw [← withDensity_rnDeriv_eq _ _ hμν, withDensity_congr_ae h, withDensity_one]
+
+section Ratio
+
+lemma rnDeriv_add_self (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν] :
+    μ.rnDeriv (ν + μ) =ᵐ[μ] fun x ↦ (ν.rnDeriv μ x + 1)⁻¹ := by
+  have hν_ac : μ ≪ ν + μ := rfl.absolutelyContinuous.add_right' _
+  filter_upwards [ν.rnDeriv_add' μ μ, μ.rnDeriv_self, Measure.inv_rnDeriv hν_ac] with a h1 h2 h3
+  rw [Pi.inv_apply, h1, Pi.add_apply, h2, inv_eq_iff_eq_inv] at h3
+  rw [h3]
+
+lemma rnDeriv_self_add (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν] :
+    μ.rnDeriv (μ + ν) =ᵐ[ν] fun x ↦ μ.rnDeriv ν x / (μ.rnDeriv ν x + 1) := by
+  have h_add : (μ + ν).rnDeriv (μ + ν) =ᵐ[ν] μ.rnDeriv (μ + ν) + ν.rnDeriv (μ + ν) :=
+    (ae_add_measure_iff.mp (μ.rnDeriv_add' ν (μ + ν))).2
+  have h_one_add := (ae_add_measure_iff.mp (μ + ν).rnDeriv_self).2
+  have : (μ.rnDeriv (μ + ν)) =ᵐ[ν] fun x ↦ 1 - (μ.rnDeriv ν x + 1)⁻¹ := by
+    filter_upwards [h_add, h_one_add, rnDeriv_add_self ν μ] with a h4 h5 h6
+    rw [h5, Pi.add_apply] at h4
+    nth_rw 1 [h4, h6]
+    simp
+  filter_upwards [this, μ.rnDeriv_lt_top ν] with a ha ha_lt_top
+  rw [ha, div_eq_mul_inv]
+  refine ENNReal.sub_eq_of_eq_add (by simp) ?_
+  nth_rewrite 2 [← one_mul (μ.rnDeriv ν a + 1)⁻¹]
+  have h := add_mul (μ.rnDeriv ν a) 1 (μ.rnDeriv ν a + 1)⁻¹
+  rwa [ENNReal.mul_inv_cancel (by simp) (by simp [ha_lt_top.ne])] at h
+
+lemma rnDeriv_eq_div_rnDeriv_add (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν] :
+    μ.rnDeriv ν =ᵐ[ν] fun x ↦ μ.rnDeriv (μ + ν) x / ν.rnDeriv (μ + ν) x := by
+  filter_upwards [rnDeriv_add_self ν μ, rnDeriv_self_add μ ν, μ.rnDeriv_lt_top ν]
+      with a ha1 ha2 ha_lt_top
+  rw [ha1, ha2, ENNReal.div_eq_inv_mul, inv_inv, ENNReal.div_eq_inv_mul, ← mul_assoc,
+      ENNReal.mul_inv_cancel, one_mul]
+  · simp
+  · simp [ha_lt_top.ne]
+
+lemma rnDeriv_div_rnDeriv_eq_div_rnDeriv_add {ξ : Measure α}
+    [SigmaFinite μ] [SigmaFinite ν] [SigmaFinite ξ]
+    (hμ : μ ≪ ξ) (hν : ν ≪ ξ) :
+    (fun x ↦ μ.rnDeriv ξ x / ν.rnDeriv ξ x)
+      =ᵐ[μ + ν] fun x ↦ μ.rnDeriv (μ + ν) x / ν.rnDeriv (μ + ν) x := by
+  have h1 : μ.rnDeriv (μ + ν) * (μ + ν).rnDeriv ξ =ᵐ[ξ] μ.rnDeriv ξ :=
+    Measure.rnDeriv_mul_rnDeriv (rfl.absolutelyContinuous.add_right _)
+  have h2 : ν.rnDeriv (μ + ν) * (μ + ν).rnDeriv ξ =ᵐ[ξ] ν.rnDeriv ξ :=
+    Measure.rnDeriv_mul_rnDeriv (rfl.absolutelyContinuous.add_right' _)
+  have h_ac : μ + ν ≪ ξ := hμ.add_left hν
+  filter_upwards [h_ac h1, h_ac h2, h_ac <| (μ + ν).rnDeriv_lt_top ξ, ν.rnDeriv_lt_top (μ + ν),
+    Measure.rnDeriv_pos h_ac] with a h1 h2 h_lt_top1 h_lt_top2 h_pos
+  rw [← h1, ← h2, Pi.mul_apply, Pi.mul_apply, div_eq_mul_inv,
+    ENNReal.mul_inv (Or.inr h_lt_top1.ne) (Or.inl h_lt_top2.ne), div_eq_mul_inv, mul_assoc,
+    mul_comm ((μ + ν).rnDeriv ξ a), mul_assoc, ENNReal.inv_mul_cancel h_pos.ne' h_lt_top1.ne,
+    mul_one]
+
+/-- For any measure `ξ` dominating `μ` and `ν`, the Radon-Nikodym derivative of `μ` with respect to
+`ν` is `ν`-almost everywhere equal to the ratio of the Radon-Nikodym derivatives of `μ` and `ν` with
+respect to `ξ`. -/
+lemma rnDeriv_eq_div {ξ : Measure α} [SigmaFinite μ] [SigmaFinite ν] [SigmaFinite ξ]
+    (hμ : μ ≪ ξ) (hν : ν ≪ ξ) :
+    μ.rnDeriv ν =ᵐ[ν] fun x ↦ μ.rnDeriv ξ x / ν.rnDeriv ξ x := by
+  have hν_ac : ν ≪ μ + ν := rfl.absolutelyContinuous.add_right' _
+  filter_upwards [μ.rnDeriv_eq_div_rnDeriv_add ν,
+    hν_ac (rnDeriv_div_rnDeriv_eq_div_rnDeriv_add hμ hν)] with a h1 h2 using h1.trans h2.symm
+
+end Ratio
 
 section MeasurableEmbedding
 
@@ -502,10 +585,17 @@ theorem integrable_rnDeriv_smul_iff (hμν : μ ≪ ν) :
   rw [← integrable_withDensity_iff_integrable_smul' (E := E)
     (measurable_rnDeriv μ ν) (rnDeriv_lt_top μ ν)]
 
+lemma integrable_toReal_rnDeriv_mul_iff (hμν : μ ≪ ν) {f : α → ℝ} :
+    Integrable (fun x ↦ (μ.rnDeriv ν x).toReal * f x) ν ↔ Integrable f μ :=
+  integrable_rnDeriv_smul_iff hμν
+
 theorem integral_rnDeriv_smul (hμν : μ ≪ ν) :
     ∫ x, (μ.rnDeriv ν x).toReal • f x ∂ν = ∫ x, f x ∂μ := by
   rw [← integral_withDensity_eq_integral_toReal_smul (measurable_rnDeriv _ _) (rnDeriv_lt_top _ _),
     withDensity_rnDeriv_eq _ _ hμν]
+
+lemma integral_toReal_rnDeriv_mul (hμν : μ ≪ ν) {f : α → ℝ} :
+    ∫ x, (μ.rnDeriv ν x).toReal * f x ∂ν = ∫ x, f x ∂μ := integral_rnDeriv_smul hμν
 
 /-- See also `setIntegral_rnDeriv_smul'` for a version that requires both measures to be σ-finite,
 but doesn't require `s` to be a measurable set. -/
@@ -514,6 +604,12 @@ lemma setIntegral_rnDeriv_smul (hμν : μ ≪ ν) {s : Set α} (hs : Measurable
   rw [← setIntegral_withDensity_eq_setIntegral_toReal_smul, withDensity_rnDeriv_eq _ _ hμν]
   exacts [measurable_rnDeriv _ _, ae_restrict_of_ae (rnDeriv_lt_top _ _), hs]
 
+/-- See also `setIntegral_toReal_rnDeriv_mul'` for a version that requires both measures to be
+σ-finite, but doesn't require `s` to be a measurable set. -/
+lemma setIntegral_toReal_rnDeriv_mul (hμν : μ ≪ ν) {f : α → ℝ} {s : Set α} (hs : MeasurableSet s) :
+    ∫ x in s, (μ.rnDeriv ν x).toReal * f x ∂ν = ∫ x in s, f x ∂μ :=
+  setIntegral_rnDeriv_smul hμν hs
+
 omit [HaveLebesgueDecomposition μ ν] in
 /-- A version of `setIntegral_rnDeriv_smul` that requires both measures to be σ-finite,
 but doesn't require `s` to be a measurable set. -/
@@ -521,6 +617,13 @@ lemma setIntegral_rnDeriv_smul' [SigmaFinite ν] (hμν : μ ≪ ν) (s : Set α
     ∫ x in s, (μ.rnDeriv ν x).toReal • f x ∂ν = ∫ x in s, f x ∂μ := by
   rw [← setIntegral_withDensity_eq_setIntegral_toReal_smul', withDensity_rnDeriv_eq _ _ hμν]
   exacts [measurable_rnDeriv _ _, ae_restrict_of_ae (rnDeriv_lt_top _ _)]
+
+omit [HaveLebesgueDecomposition μ ν] in
+/-- A version of `setIntegral_toReal_rnDeriv_mul` that requires both measures to be σ-finite,
+but doesn't require `s` to be a measurable set. -/
+lemma setIntegral_toReal_rnDeriv_mul' [SigmaFinite ν] (hμν : μ ≪ ν) (f : α → ℝ) (s : Set α) :
+    ∫ x in s, (μ.rnDeriv ν x).toReal * f x ∂ν = ∫ x in s, f x ∂μ :=
+  setIntegral_rnDeriv_smul' hμν s
 
 end IntegralRNDerivMul
 

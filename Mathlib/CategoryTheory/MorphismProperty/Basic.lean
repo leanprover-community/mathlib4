@@ -45,7 +45,7 @@ variable (C : Type u) [CategoryStruct.{v} C]
 
 instance : CompleteBooleanAlgebra (MorphismProperty C) where
   le P₁ P₂ := ∀ ⦃X Y : C⦄ (f : X ⟶ Y), P₁ f → P₂ f
-  __ := inferInstanceAs (CompleteBooleanAlgebra (∀ ⦃X Y : C⦄ (_ : X ⟶ Y), Prop))
+  __ := (inferInstance : CompleteBooleanAlgebra (∀ ⦃X Y : C⦄ (_ : X ⟶ Y), Prop))
 
 lemma le_def {P Q : MorphismProperty C} :
     P ≤ Q ↔ ∀ {X Y : C} (f : X ⟶ Y), P f → Q f := Iff.rfl
@@ -259,13 +259,13 @@ section
 variable (C : Type u) [Category.{v} C]
 
 /-- The `MorphismProperty C` satisfied by isomorphisms in `C`. -/
-def isomorphisms : MorphismProperty C := fun _ _ f => IsIso f
+abbrev isomorphisms : MorphismProperty C := fun _ _ f => IsIso f
 
 /-- The `MorphismProperty C` satisfied by monomorphisms in `C`. -/
-def monomorphisms : MorphismProperty C := fun _ _ f => Mono f
+abbrev monomorphisms : MorphismProperty C := fun _ _ f => Mono f
 
 /-- The `MorphismProperty C` satisfied by epimorphisms in `C`. -/
-def epimorphisms : MorphismProperty C := fun _ _ f => Epi f
+abbrev epimorphisms : MorphismProperty C := fun _ _ f => Epi f
 
 @[simp]
 lemma op_isomorphisms : (isomorphisms C).op = isomorphisms Cᵒᵖ := by

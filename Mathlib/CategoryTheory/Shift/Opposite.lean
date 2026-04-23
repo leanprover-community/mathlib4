@@ -86,6 +86,7 @@ instance : Category (OppositeShift C A) := inferInstanceAs (Category Cᵒᵖ)
 instance : HasShift (OppositeShift C A) A :=
   hasShiftMk Cᵒᵖ A (HasShift.mkShiftCoreOp C A)
 
+set_option backward.isDefEq.respectTransparency false in
 instance [HasZeroObject C] : HasZeroObject (OppositeShift C A) := by
   dsimp only [OppositeShift]
   infer_instance
@@ -193,7 +194,7 @@ set_option backward.isDefEq.respectTransparency false in
 Given a `CommShift` structure on `OppositeShift.functor F` (for the naive shifts on the opposite
 categories), this is the corresponding `CommShift` structure on `F`.
 -/
-@[simps -isSimp]
+@[simps -isSimp, implicit_reducible]
 def commShiftUnop
     [CommShift (OppositeShift.functor A F) A] : CommShift F A where
   commShiftIso a := NatIso.removeOp ((OppositeShift.functor A F).commShiftIso a).symm

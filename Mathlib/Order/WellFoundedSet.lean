@@ -505,7 +505,7 @@ theorem IsPWO.exists_le_minimal {a} (hs : s.IsPWO) (ha : a ∈ s) :
   refine ⟨hs.wellFounded.min t h, hs.wellFounded.min_mem t h,
     (hs.wellFounded.min t h).2, fun y hy hle => ?_⟩
   by_contra hnle
-  exact hs.wellFounded.not_lt_min t h (x := ⟨y, hy⟩) (hle.trans (hs.wellFounded.min_mem t h))
+  exact hs.wellFounded.not_lt_min t (x := ⟨y, hy⟩) (hle.trans (hs.wellFounded.min_mem t h))
     ⟨hle, hnle⟩
 
 theorem IsPWO.exists_minimal (h : s.IsPWO) (hs : s.Nonempty) :
@@ -606,12 +606,10 @@ protected theorem wellFoundedOn [IsStrictOrder α r] (s : Finset α) :
   letI := partialOrderOfSO r
   s.isWF
 
-set_option backward.isDefEq.respectTransparency false in
 theorem wellFoundedOn_sup [IsStrictOrder α r] (s : Finset ι) {f : ι → Set α} :
     (s.sup f).WellFoundedOn r ↔ ∀ i ∈ s, (f i).WellFoundedOn r :=
   Finset.cons_induction_on s (by simp) fun a s ha hs => by simp [-sup_set_eq_biUnion, hs]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem partiallyWellOrderedOn_sup (s : Finset ι) {f : ι → Set α} :
     (s.sup f).PartiallyWellOrderedOn r ↔ ∀ i ∈ s, (f i).PartiallyWellOrderedOn r :=
   Finset.cons_induction_on s (by simp) fun a s ha hs => by simp [-sup_set_eq_biUnion, hs]
@@ -660,7 +658,7 @@ theorem IsWF.min_mem (hs : IsWF s) (hn : s.Nonempty) : hs.min hn ∈ s :=
   (WellFounded.min hs univ (nonempty_iff_univ_nonempty.1 hn.to_subtype)).2
 
 nonrec theorem IsWF.not_lt_min (hs : IsWF s) (hn : s.Nonempty) (ha : a ∈ s) : ¬a < hs.min hn :=
-  hs.not_lt_min univ (nonempty_iff_univ_nonempty.1 hn.to_subtype) (mem_univ (⟨a, ha⟩ : s))
+  hs.not_lt_min univ (mem_univ (⟨a, ha⟩ : s))
 
 theorem IsWF.min_of_subset_not_lt_min {hs : s.IsWF} {hsn : s.Nonempty} {ht : t.IsWF}
     {htn : t.Nonempty} (hst : s ⊆ t) : ¬hs.min hsn < ht.min htn :=
@@ -848,7 +846,7 @@ theorem partiallyWellOrderedOn_sublistForall₂ (r : α → α → Prop) [IsPreo
     rw [List.length_tail, ← Nat.pred_eq_sub_one]
     exact Nat.pred_lt fun con => hnil _ (List.length_eq_zero_iff.1 con)
   rw [IsBadSeq] at hf'
-  push_neg at hf'
+  push Not at hf'
   obtain ⟨m, n, mn, hmn⟩ := hf' fun n x hx => by
     split_ifs at hx with hn
     exacts [hf1.1 _ _ hx, hf1.1 _ _ (List.tail_subset _ hx)]

@@ -192,7 +192,6 @@ lemma coheight_le {a : α} {n : ℕ∞} (h : ∀ (p : LTSeries α), p.head = a �
     coheight a ≤ n :=
   coheight_le_iff'.mpr h
 
-set_option backward.isDefEq.respectTransparency false in
 lemma length_le_height {p : LTSeries α} {x : α} (hlast : p.last ≤ x) :
     p.length ≤ height x := by
   by_cases hlen0 : p.length ≠ 0
@@ -241,7 +240,6 @@ The coheight of an element in a series is larger or equal to its reverse index i
 lemma rev_index_le_coheight (p : LTSeries α) (i : Fin (p.length + 1)) : i.rev ≤ coheight (p i) := by
   simpa using index_le_height (α := αᵒᵈ) p.reverse i.rev
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 In a maximally long series, i.e one as long as the height of the last element, the height of each
 element is its index in the series.
@@ -343,7 +341,6 @@ private lemma exists_eq_iSup_of_iSup_eq_coe {α : Type*} [Nonempty α] {f : α �
   use x
   simpa [hx] using h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- There exists a series ending in an element for any length up to the element’s height. -/
 lemma exists_series_of_le_height (a : α) {n : ℕ} (h : n ≤ height a) :
     ∃ p : LTSeries α, p.last = a ∧ p.length = n := by
@@ -405,7 +402,6 @@ Another characterization of coheight, based on the supremum of the coheights of 
 lemma coheight_eq_iSup_gt_coheight (x : α) : coheight x = ⨆ y > x, coheight y + 1 :=
   height_eq_iSup_lt_height (α := αᵒᵈ) x
 
-set_option backward.isDefEq.respectTransparency false in
 lemma height_le_coe_iff {x : α} {n : ℕ} : height x ≤ n ↔ ∀ y < x, height y < n := by
   conv_lhs => rw [height_eq_iSup_lt_height, iSup₂_le_iff]
   congr! 2 with y _
@@ -427,7 +423,7 @@ lemma height_eq_top_iff {x : α} :
     simp [h]
   mpr h := by
     rw [height_eq_iSup_last_eq, iSup_subtype', ENat.iSup_coe_eq_top, bddAbove_def]
-    push_neg
+    push Not
     intro n
     obtain ⟨p, hlast, hp⟩ := h (n + 1)
     exact ⟨p.length, ⟨⟨⟨p, hlast⟩, by simp [hp]⟩, by simp [hp]⟩⟩
@@ -476,7 +472,6 @@ lemma coheight_pos_of_lt_top {x : α} [OrderTop α] (h : x < ⊤) : 0 < coheight
   rw [coheight_pos]
   grind [not_isMax_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma coe_lt_height_iff {x : α} {n : ℕ} (hfin : height x < ⊤) :
     n < height x ↔ ∃ y < x, height y = n where
   mp h := by
@@ -513,7 +508,6 @@ lemma coheight_eq_coe_add_one_iff {x : α} {n : ℕ} :
       coheight x < ⊤ ∧ (∃ y > x, coheight y = n) ∧ (∀ y > x, coheight y ≤ n) :=
   height_eq_coe_add_one_iff (α := αᵒᵈ)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma height_eq_coe_iff {x : α} {n : ℕ} :
     height x = n ↔
       height x < ⊤ ∧ (n = 0 ∨ ∃ y < x, height y = n - 1) ∧ (∀ y < x, height y < n) := by
@@ -613,9 +607,8 @@ lemma krullDim_nonpos_iff_forall_isMax : krullDim α ≤ 0 ↔ ∀ x : α, IsMax
 
 lemma krullDim_nonpos_iff_forall_isMin : krullDim α ≤ 0 ↔ ∀ x : α, IsMin x := by
   simp only [krullDim_nonpos_iff_forall_isMax, IsMax, IsMin]
-  exact forall_swap
+  exact forall_comm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma krullDim_le_one_iff : krullDim α ≤ 1 ↔ ∀ x : α, IsMin x ∨ IsMax x := by
   simp_rw [isMax_iff_forall_not_lt, isMin_iff_forall_not_lt, krullDim, iSup_le_iff]
   contrapose!
@@ -631,7 +624,7 @@ lemma krullDim_pos_iff : 0 < krullDim α ↔ ∃ x y : α, x < y := by
   simp_rw [← isMax_iff_forall_not_lt, ← krullDim_nonpos_iff_forall_isMax]
 
 lemma one_le_krullDim_iff : 1 ≤ krullDim α ↔ ∃ x y : α, x < y := by
-  rw [← krullDim_pos_iff, ← Nat.cast_zero, ← WithBot.add_one_le_iff, Nat.cast_zero, zero_add]
+  rw [← krullDim_pos_iff, ← Nat.cast_zero, ← ENat.WithBot.add_one_le_iff, Nat.cast_zero, zero_add]
 
 lemma krullDim_nonpos_of_subsingleton [Subsingleton α] : krullDim α ≤ 0 := by
   rw [krullDim_nonpos_iff_forall_isMax]
@@ -714,7 +707,6 @@ lemma krullDim_eq_top_iff : krullDim α = ⊤ ↔ InfiniteDimensionalOrder α :=
     cases h
   · infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 lemma le_krullDim_iff {n : ℕ} : n ≤ krullDim α ↔ ∃ l : LTSeries α, l.length = n := by
   cases isEmpty_or_nonempty α
   · simp [krullDim_eq_bot]
@@ -730,13 +722,12 @@ lemma krullDim_eq_iSup_length [Nonempty α] :
     krullDim α = ⨆ (p : LTSeries α), (p.length : ℕ∞) := by
   simp [krullDim, WithBot.coe_iSup (OrderTop.bddAbove _), WithBot.coe_natCast]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma krullDim_lt_coe_iff {n : ℕ} : krullDim α < n ↔ ∀ l : LTSeries α, l.length < n := by
   rw [krullDim, ← WithBot.coe_natCast]
   rcases n with - | n
   · rw [ENat.coe_zero, ← bot_eq_zero, WithBot.lt_coe_bot]
     simp
-  · simp [WithBot.lt_add_one_iff, WithBot.coe_natCast]
+  · simp [ENat.WithBot.lt_add_one_iff, WithBot.coe_natCast]
 
 lemma krullDim_le_of_strictMono (f : α → β) (hf : StrictMono f) : krullDim α ≤ krullDim β :=
   iSup_le fun p ↦ le_sSup ⟨p.map f hf, rfl⟩
@@ -828,7 +819,6 @@ lemma krullDim_eq_iSup_height_add_coheight_of_nonempty [Nonempty α] :
         obtain ⟨p₂, hhead, hlen₂⟩ := exists_series_of_coheight_eq_coe a hch
         apply le_iSup_of_le ((p₁.smash p₂) (by simp [*])) (by simp [*])
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The Krull dimension is the supremum of the elements' heights.
 
@@ -840,7 +830,6 @@ lemma krullDim_eq_iSup_height : krullDim α = ⨆ (a : α), ↑(height a) := by
   | inl h => rw [krullDim_eq_bot, ciSup_of_empty]
   | inr h => rw [krullDim_eq_iSup_height_of_nonempty, WithBot.coe_iSup (OrderTop.bddAbove _)]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The Krull dimension is the supremum of the elements' coheights.
 
@@ -904,6 +893,11 @@ lemma krullDim_ne_bot_of_finiteDimensionalOrder [FiniteDimensionalOrder α] : kr
 lemma krullDim_ne_top_of_finiteDimensionalOrder [FiniteDimensionalOrder α] : krullDim α ≠ ⊤ :=
   (finiteDimensionalOrder_iff_krullDim_ne_bot_and_top.mp ‹_›).2
 
+lemma coheight_lt_top [FiniteDimensionalOrder α] (x : α) : coheight x < ⊤ := by
+  rw [← WithBot.coe_lt_coe]
+  apply lt_of_le_of_lt (coheight_le_krullDim x)
+  simpa using krullDim_ne_top_of_finiteDimensionalOrder.lt_top
+
 end finiteDimensional
 
 section typeclass
@@ -913,7 +907,6 @@ section typeclass
 class KrullDimLE (n : ℕ) (α : Type*) [Preorder α] : Prop where
   krullDim_le : krullDim α ≤ n
 
-set_option backward.isDefEq.respectTransparency false in
 lemma KrullDimLE.mono {n m : ℕ} (e : n ≤ m) (α : Type*) [Preorder α] [KrullDimLE n α] :
     KrullDimLE m α :=
   ⟨KrullDimLE.krullDim_le (n := n).trans (Nat.cast_le.mpr e)⟩
@@ -951,7 +944,6 @@ proof_wanted coheight_of_linearOrder {α : Type*} [LinearOrder α] (a : α) :
   coheight a = (Set.Ioi a).encard
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma height_nat (n : ℕ) : height n = n := by
   induction n using Nat.strongRecOn with | ind n ih =>
   apply le_antisymm
@@ -1024,7 +1016,6 @@ lemma krullDim_int : krullDim ℤ = ⊤ := krullDim_of_noMaxOrder ..
 @[simp] lemma coheight_coe_withTop (x : α) : coheight (x : WithTop α) = coheight x + 1 :=
   height_coe_withBot (α := αᵒᵈ) x
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma height_coe_withTop (x : α) : height (x : WithTop α) = height x := by
   apply le_antisymm
   · apply height_le
@@ -1053,7 +1044,6 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma coheight_coe_withBot (x : α) : coheight (x : WithBot α) = coheight x :=
   height_coe_withTop (α := αᵒᵈ) x
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma krullDim_WithTop [Nonempty α] : krullDim (WithTop α) = krullDim α + 1 := by
   rw [← height_top_eq_krullDim, krullDim_eq_iSup_height_of_nonempty, height_eq_iSup_lt_height]
   norm_cast
@@ -1091,7 +1081,6 @@ section orderHom
 variable {α β : Type*} [Preorder α] [PartialOrder β]
 variable {m : ℕ} (f : α →o β) (h : ∀ (x : β), Order.krullDim (f ⁻¹' {x}) ≤ m)
 
-set_option backward.isDefEq.respectTransparency false in
 include h in
 lemma height_le_of_krullDim_preimage_le (x : α) :
     Order.height x ≤ (m + 1) * Order.height (f x) + m := by
@@ -1143,6 +1132,12 @@ lemma krullDim_le_of_krullDim_preimage_le' (f : α → β) (h_mono : Monotone f)
     (h : ∀ (x : β), Order.krullDim (f ⁻¹' {x}) ≤ m) :
     Order.krullDim α ≤ (m + 1) * Order.krullDim β + m :=
   Order.krullDim_le_of_krullDim_preimage_le ⟨f, h_mono⟩ h
+
+lemma krullDim_le_of_orderEmbedding (e : α ↪o β) : Order.krullDim α ≤ Order.krullDim β := by
+  have (b : β) : Subsingleton (e ⁻¹' {b}) := Set.Subsingleton.coe_sort <|
+    Set.Subsingleton.preimage Set.subsingleton_singleton e.injective
+  simpa using Order.krullDim_le_of_krullDim_preimage_le' e e.monotone fun _ ↦
+    Order.krullDim_nonpos_of_subsingleton
 
 end orderHom
 

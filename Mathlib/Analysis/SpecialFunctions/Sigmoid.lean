@@ -64,7 +64,6 @@ noncomputable def sigmoid (x : ℝ) := (1 + exp (-x))⁻¹
 
 lemma sigmoid_def (x : ℝ) : sigmoid x = (1 + exp (-x))⁻¹ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma sigmoid_zero : sigmoid 0 = 2⁻¹ := by norm_num [sigmoid]
 
@@ -188,7 +187,6 @@ open ContDiff in
 lemma ContDiff.sigmoid (hf : ContDiff ℝ ω f) : ContDiff ℝ ω (sigmoid ∘ f) :=
   contDiff_sigmoid.comp hf
 
-set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 lemma differentiable_sigmoid : Differentiable ℝ sigmoid :=
    contDiff_sigmoid.of_le le_top |>.differentiable_one

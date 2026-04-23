@@ -133,7 +133,8 @@ it is the monic polynomial with smallest degree that has `x` as its root. -/
 theorem min {p : A[X]} (pmonic : p.Monic) (hp : Polynomial.aeval x p = 0) :
     degree (minpoly A x) ≤ degree p := by
   delta minpoly; split_ifs with hx
-  · exact le_of_not_gt (degree_lt_wf.not_lt_min _ hx ⟨pmonic, hp⟩)
+  · refine le_of_not_gt <| degree_lt_wf.not_lt_min _ ?_
+    exact ⟨pmonic, hp⟩
   · simp only [degree_zero, bot_le]
 
 theorem unique' {p : A[X]} (hm : p.Monic) (hp : Polynomial.aeval x p = 0)
@@ -230,7 +231,6 @@ theorem two_le_natDegree_iff (int : IsIntegral A x) :
   rw [iff_not_comm, ← natDegree_eq_one_iff, not_le]
   exact ⟨fun h ↦ h.trans_lt one_lt_two, fun h ↦ by linarith only [minpoly.natDegree_pos int, h]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem two_le_natDegree_subalgebra {B} [CommRing B] [Algebra A B] [Nontrivial B]
     {S : Subalgebra A B} {x : B} (int : IsIntegral S x) : 2 ≤ (minpoly S x).natDegree ↔ x ∉ S := by
   rw [two_le_natDegree_iff int, Iff.not]

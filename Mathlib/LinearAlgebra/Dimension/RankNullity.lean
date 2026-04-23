@@ -95,7 +95,6 @@ theorem LinearMap.rank_eq_of_surjective {f : M →ₗ[R] M₁} (h : Surjective f
     Module.rank R M = Module.rank R M₁ + Module.rank R (LinearMap.ker f) := by
   rw [← rank_range_add_rank_ker f, ← rank_range_of_surjective f h]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_linearIndepOn_of_lt_rank [StrongRankCondition R]
     {s : Set M} (hs : LinearIndepOn R id s) :
     ∃ t, s ⊆ t ∧ #t = Module.rank R M ∧ LinearIndepOn R id t := by
@@ -145,11 +144,10 @@ theorem exists_linearIndependent_pair_of_one_lt_rank [IsDomain R] [StrongRankCon
     [IsTorsionFree R M] (h : 1 < Module.rank R M) {x : M} (hx : x ≠ 0) :
     ∃ y, LinearIndependent R ![x, y] := by
   obtain ⟨y, hy⟩ := exists_linearIndependent_snoc_of_lt_rank (.of_subsingleton (v := ![x]) 0 hx) h
-  have : Fin.snoc ![x] y = ![x, y] := by simp [Fin.snoc, ← List.ofFn_inj]
+  have : Fin.snoc ![x] y = ![x, y] := by simp
   rw [this] at hy
   exact ⟨y, hy⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Submodule.exists_smul_notMem_of_rank_lt {N : Submodule R M}
     (h : Module.rank R N < Module.rank R M) : ∃ m : M, ∀ r : R, r ≠ 0 → r • m ∉ N := by
   have : Module.rank R (M ⧸ N) ≠ 0 := by
@@ -157,7 +155,7 @@ theorem Submodule.exists_smul_notMem_of_rank_lt {N : Submodule R M}
     rw [← rank_quotient_add_rank N, e, zero_add] at h
     exact h.ne rfl
   rw [ne_eq, rank_eq_zero_iff, (Submodule.Quotient.mk_surjective N).forall] at this
-  push_neg at this
+  push Not at this
   simp_rw [← N.mkQ_apply, ← map_smul, N.mkQ_apply, ne_eq, Submodule.Quotient.mk_eq_zero] at this
   exact this
 
@@ -239,7 +237,6 @@ open Submodule Module
 
 variable [StrongRankCondition R] [Module.Finite R M]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Submodule.exists_of_finrank_lt (N : Submodule R M) (h : finrank R N < finrank R M) :
     ∃ m : M, ∀ r : R, r ≠ 0 → r • m ∉ N := by
   obtain ⟨s, hs, hs'⟩ :=

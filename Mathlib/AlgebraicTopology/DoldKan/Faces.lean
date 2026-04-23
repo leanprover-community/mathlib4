@@ -180,7 +180,7 @@ theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFac
     rfl
   -- now, we assume j ≠ a (i.e. a < j)
   have haj : a < j := (Ne.le_iff_lt hj₂).mp (by lia)
-  have ham : a ≤ m := by lia
+  have ham : a ≤ m := by grind
   rw [X.δ_comp_σ_of_gt', j.pred_succ]
   swap
   · rw [Fin.lt_def]
