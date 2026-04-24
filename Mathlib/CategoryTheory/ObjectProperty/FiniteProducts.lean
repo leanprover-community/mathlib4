@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinary
 public import Mathlib.CategoryTheory.Limits.FullSubcategory
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsClosure
 public import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
+public import Mathlib.Data.Fintype.Shrink
 
 /-!
 # Properties of objects that are stable under finite products
@@ -22,6 +23,8 @@ assuming `P.IsClosedUnderBinaryProducts`,
 has finite products.
 
 -/
+
+universe w
 
 @[expose] public section
 
@@ -82,6 +85,15 @@ lemma binaryProductsClosure_le_iff [HasTerminal C] {P Q : ObjectProperty C}
 class IsClosedUnderFiniteProducts : Prop where
   isClosedUnderLimitsOfShape (J : Type) [Finite J] :
     P.IsClosedUnderLimitsOfShape (Discrete J) := by infer_instance
+
+variable {P} in
+/-- `IsClosedUnderFiniteProducts` may be checked at any universe. -/
+lemma IsClosedUnderFiniteProducts.of_isClosedUnderLimitsOfShape
+    (H : ∀ (J : Type w) [Finite J], P.IsClosedUnderLimitsOfShape (Discrete J)) :
+    P.IsClosedUnderFiniteProducts where
+  isClosedUnderLimitsOfShape J _ := by
+    rw [P.isClosedUnderLimitsOfShape_iff_of_equivalence (Discrete.equivalence (equivShrink.{w} _))]
+    exact H _
 
 instance [P.IsClosedUnderFiniteProducts] (J : Type*) [Finite J] :
     P.IsClosedUnderLimitsOfShape (Discrete J) := by
@@ -176,6 +188,16 @@ lemma binaryCoproductsClosure_le_iff [HasInitial C] {P Q : ObjectProperty C}
 class IsClosedUnderFiniteCoproducts : Prop where
   isClosedUnderColimitsOfShape (J : Type) [Finite J] :
     P.IsClosedUnderColimitsOfShape (Discrete J) := by infer_instance
+
+variable {P} in
+/-- `IsClosedUnderFiniteProducts` may be checked at any universe. -/
+lemma IsClosedUnderFiniteCoproducts.of_isClosedUnderColimitsOfShape
+    (H : ∀ (J : Type w) [Finite J], P.IsClosedUnderColimitsOfShape (Discrete J)) :
+    P.IsClosedUnderFiniteCoproducts where
+  isClosedUnderColimitsOfShape J _ := by
+    rw [P.isClosedUnderColimitsOfShape_iff_of_equivalence
+      (Discrete.equivalence (equivShrink.{w} _))]
+    exact H _
 
 instance [P.IsClosedUnderFiniteCoproducts] (J : Type*) [Finite J] :
     P.IsClosedUnderColimitsOfShape (Discrete J) := by
