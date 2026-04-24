@@ -69,7 +69,7 @@ lemma deterministic_comp_copy (κ : Kernel α β) [IsDeterministic κ] :
 instance {f : α → β} (hf : Measurable f) : IsDeterministic (deterministic f hf) where
   deterministic_comp_copy' := by
     simp_rw [parallelComp_comp_copy, deterministic_prod_deterministic, copy,
-    deterministic_comp_deterministic, Function.comp_def]
+      deterministic_comp_deterministic, Function.comp_def]
 
 instance : IsDeterministic (Kernel.id (α := α)) := by
   unfold Kernel.id
