@@ -128,8 +128,7 @@ lemma ContinuousMultilinearMap.iteratedFDeriv_comp_diagonal
   congr with σ
   congr with i
   obtain ⟨y, rfl⟩ := σ.equivOfFiniteSelfEmbedding.surjective i
-  simp [inv_apply, Perm.inv_def,
-    ofBijective_symm_apply_apply, Function.Embedding.equivOfFiniteSelfEmbedding, g]
+  simp [Function.Embedding.equivOfFiniteSelfEmbedding, g]
 
 private lemma HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum_of_subset
     (h : HasFPowerSeriesWithinOnBall f p s x r) (h' : AnalyticOn 𝕜 f s)
