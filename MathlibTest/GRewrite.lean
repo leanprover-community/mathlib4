@@ -215,7 +215,7 @@ the inequality goes in the wrong direction). -/
 /--
 error: Tactic `grewrite` failed: could not discharge x ≤ y using x ≥ y
 
-case h₁.hbc
+case hbc
 x y b : ℚ
 h : x ≥ y
 ⊢ x ≤ y
@@ -257,7 +257,7 @@ example {Prime : ℕ → Prop} {a a' : ℕ} (h₁ : Prime (a + 1)) (h₂ : a = a
 /--
 error: Tactic `grewrite` failed: could not discharge b ≤ a using a ≤ b
 
-case h₂.hbc
+case hbc
 a b c : ℚ
 h₁ : a ≤ b
 h₂ : 0 ≤ c
