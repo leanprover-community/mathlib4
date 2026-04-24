@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.MellinTransform
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
+import all Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 
 /-!
 # Derivative of the Gamma function
@@ -61,43 +62,26 @@ theorem hasDerivAt_GammaIntegral {s : ℂ} (hs : 0 < s.re) :
     rw [(by simp : (1 : ℂ) = Real.exp (-0))]
     exact (continuous_ofReal.comp (Real.continuous_exp.comp continuous_neg)).continuousWithinAt
 
-theorem differentiableAt_GammaAux (s : ℂ) (n : ℕ) (h1 : 1 - s.re < n) (h2 : ∀ m : ℕ, s ≠ -m) :
-    DifferentiableAt ℂ (GammaAux n) s := by
-  induction n generalizing s with
-  | zero =>
-    refine (hasDerivAt_GammaIntegral ?_).differentiableAt
-    rw [Nat.cast_zero] at h1; linarith
-  | succ n hn =>
-    dsimp only [GammaAux]
-    specialize hn (s + 1)
-    have a : 1 - (s + 1).re < ↑n := by
-      rw [Nat.cast_succ] at h1; rw [Complex.add_re, Complex.one_re]; linarith
-    have b : ∀ m : ℕ, s + 1 ≠ -m := by
-      intro m; have := h2 (1 + m)
-      contrapose this
-      rw [← eq_sub_iff_add_eq] at this
-      simpa using this
-    refine DifferentiableAt.div (DifferentiableAt.comp _ (hn a b) ?_) ?_ ?_
-    · rw [differentiableAt_add_const_iff (1 : ℂ)]; exact differentiableAt_id
-    · exact differentiableAt_id
-    · simpa using h2 0
-
 @[fun_prop]
 theorem differentiableAt_Gamma (s : ℂ) (hs : ∀ m : ℕ, s ≠ -m) : DifferentiableAt ℂ Gamma s := by
-  let n := ⌊1 - s.re⌋₊ + 1
-  have hn : 1 - s.re < n := mod_cast Nat.lt_floor_add_one (1 - s.re)
-  apply (differentiableAt_GammaAux s n hn hs).congr_of_eventuallyEq
-  let S := {t : ℂ | 1 - t.re < n}
-  have : S ∈ 𝓝 s := by
-    rw [mem_nhds_iff]; use S
-    refine ⟨Subset.rfl, ?_, hn⟩
-    have : S = re ⁻¹' Ioi (1 - n : ℝ) := by
-      ext; rw [preimage, Ioi, mem_setOf_eq, mem_setOf_eq, mem_setOf_eq]; exact sub_lt_comm
-    rw [this]
-    exact Continuous.isOpen_preimage continuous_re _ isOpen_Ioi
-  apply eventuallyEq_of_mem this
-  intro t ht; rw [mem_setOf_eq] at ht
-  apply Gamma_eq_GammaAux; linarith
+  -- We will show, by induction on `n`, that `Gamma` is differentiable on `-n < Re s`.
+  suffices ∀ (n : ℕ) (s : ℂ) (hsre : -n < s.re) (hs : ∀ m : ℕ, s ≠ -m), DifferentiableAt ℂ _ s from
+    this (⌊-s.re⌋₊ + 1) s (by grind [Nat.lt_floor_add_one (-s.re)]) hs
+  intro n s hsre hs
+  induction n generalizing s with
+  | zero =>
+    -- Case `n = 0`: use relation to `gammaIntegral`
+    replace hsre : 0 < s.re := by simpa using hsre
+    have : IsOpen {s : ℂ | 0 < s.re} := continuous_re.isOpen_preimage _ isOpen_Ioi
+    apply (hasDerivAt_GammaIntegral (by simpa using hsre)).differentiableAt.congr_of_eventuallyEq
+    filter_upwards [this.mem_nhds hsre] with a using Gamma_eq_integral
+  | succ n IH =>
+    -- Induction step: use recurrence relation
+    have hsne : s ≠ 0 := by grind [hs 0]
+    specialize IH (s + 1) (by grind [add_re, one_re]) (fun m ↦ by grind [hs (m + 1)])
+    have := IH.comp s (show DifferentiableAt ℂ (fun s ↦ s + 1) s by fun_prop)
+    apply (this.fun_div differentiableAt_id hsne).congr_of_eventuallyEq
+    filter_upwards [isOpen_ne.mem_nhds hsne] using by grind [Gamma_add_one]
 
 theorem differentiableAt_Gamma_one : DifferentiableAt ℂ Gamma 1 :=
   differentiableAt_Gamma 1 (by norm_cast; simp)
