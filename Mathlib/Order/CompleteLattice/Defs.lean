@@ -313,7 +313,6 @@ theorem le_iSup_iff_forall_lt : l ≤ iSup f ↔ ∀ b < l, ∃ i, b < f i :=
 theorem sSup_eq_top : sSup s = ⊤ ↔ ∀ b < ⊤, ∃ a ∈ s, b < a := by
   rw [eq_top_iff, le_sSup_iff_forall_lt]
 
-variable (f) in
 @[to_dual]
 theorem iSup_eq_top : iSup f = ⊤ ↔ ∀ b < ⊤, ∃ i, b < f i := by
   rw [eq_top_iff, le_iSup_iff_forall_lt]
