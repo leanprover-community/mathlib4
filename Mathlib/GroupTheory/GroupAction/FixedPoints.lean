@@ -119,11 +119,11 @@ theorem smul_fixedBy (g h : G) :
   ext a
   simp_rw [Set.mem_smul_set_iff_inv_smul_mem, mem_fixedBy, mul_smul, smul_eq_iff_eq_inv_smul h]
 
-lemma fixedBy_eq_empty_iff [IsRightCancelMul M] {m : M} :
+lemma fixedBy_mul_eq_empty_iff [IsRightCancelMul M] {m : M} :
     fixedBy M m = ∅ ↔ m ≠ 1 := by
   simp [MulAction.fixedBy, Set.eq_empty_iff_forall_notMem]
 
-lemma fixedBy_op_eq_empty_iff [IsLeftCancelMul M] {m : M} :
+lemma fixedBy_mul_op_eq_empty_iff [IsLeftCancelMul M] {m : M} :
     fixedBy M (MulOpposite.op m) = ∅ ↔ m ≠ 1 := by
   simp [MulAction.fixedBy, Set.eq_empty_iff_forall_notMem]
 
