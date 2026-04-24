@@ -9,7 +9,7 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp_
 public import Mathlib.Algebra.Ring.Basic
 
 /-!
-# Ring objects
+# Ring objects in cartesian monoidal categories
 
 If `C` is a cartesian monoidal category and `X : C`, we introduce a typeclass `RingObj X`
 which says that `X` is a ring object: it has a commutative additive group structure and
