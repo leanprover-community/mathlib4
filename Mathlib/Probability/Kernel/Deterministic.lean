@@ -117,7 +117,7 @@ lemma exists_measure_eq_one_iff_measure_univ_eq_one : (∃ s, μ s = 1) ↔ μ u
 lemma measure_univ {s : Set α} (hμs : μ s = 1) : μ univ = 1 :=
   (exists_measure_eq_one_iff_measure_univ_eq_one).mp ⟨s, hμs⟩
 
-lemma inter_eq_one {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
+lemma measure_inter_eq_one {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
     (hμs : μ s = 1) (hμt : μ t = 1) : μ (s ∩ t) = 1 := by
   have : μ (s ∩ t) ≤ μ s := measure_mono inter_subset_left
   have : μ (s ∩ t) ≤ μ t := measure_mono inter_subset_right
@@ -141,7 +141,7 @@ lemma inter_eq_prod {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
   have : μ (s ∩ t) ≤ μ s := measure_mono inter_subset_left
   have : μ (s ∩ t) ≤ μ t := measure_mono inter_subset_right
   cases μ.zero_one s <;> cases μ.zero_one t <;> cases μ.zero_one (s ∩ t)
-  all_goals try simp_all [inter_eq_one]
+  all_goals try simp_all [measure_inter_eq_one]
 
 /-- In a standard Borel space, a zero-one measure is either the zero measure or a Dirac measure. -/
 theorem eq_zero_or_dirac [StandardBorelSpace α] : μ = 0 ∨ ∃ x₀, μ = Measure.dirac x₀ := by
