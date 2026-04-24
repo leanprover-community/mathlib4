@@ -131,8 +131,8 @@ lemma exists_of_simplex (s : X _⦋1⦌) :
     ∃ (x₀ x₁ : X _⦋0⦌) (e : Edge x₀ x₁), e.edge = s :=
   ⟨_, _, mk' s, rfl⟩
 
-/-- Transports an edge between `x₀` and `x₁` along equalities `xᵢ = yᵢ`.
-  I.e. constructs an edge between the `yᵢ` from an edge between the `xᵢ`. -/
+/-- Transports an edge between `x₀` and `x₁` to an edge between `y₀` and `y₁`, given `x₀ = y₀`
+and `x₁ = y₁`. -/
 @[simps]
 def ofEq {y₀ y₁ : X _⦋0⦌}
     (e : Edge x₀ x₁)
@@ -245,9 +245,8 @@ def map (h : CompStruct e₀₁ e₁₂ e₀₂) (f : X ⟶ Y) :
 lemma map_simplex (h : CompStruct e₀₁ e₁₂ e₀₂) (f : X ⟶ Y) :
     (h.map f).simplex = f.app _ h.simplex := rfl
 
-/-- Transports a CompStruct between edges `e₀₁`, `e₁₂` and `e₀₂` along equalities on
-  1-simplices `eᵢⱼ.edge = fᵢⱼ.edge`.
-  I.e. constructs a `CompStruct` between the `fᵢⱼ` from a `CompStruct` between the `eᵢⱼ`. -/
+/-- Transports a `CompStruct` between edges `e₀₁`, `e₁₂` and `e₀₂` to a `CompStruct` between edges
+`f₀₁`, `f₁₂` and `f₀₂` along equalities of 1-simplices `eᵢⱼ.edge = fᵢⱼ.edge`. -/
 @[simps]
 def ofEq {y₀ y₁ y₂ : X _⦋0⦌}
     {e₀₁ : Edge x₀ x₁} {f₀₁ : Edge y₀ y₁}
@@ -265,8 +264,8 @@ def ofEq {y₀ y₁ y₂ : X _⦋0⦌}
 
 end CompStruct
 
-/-- For `hom` an edge, `InvStruct hom` encodes that there is a backward edge `inv`, and
-there are 2-simplices witnessing that `hom` and `inv` compose to the identity on their endpoints.
+/-- For an edge `hom`, `InvStruct hom` encodes the data of a backward edge `inv`, and
+2-simplices witnessing that `hom` and `inv` compose to the identity on their endpoints.
 This implies that `hom` becomes an isomorphism in the homotopy category. -/
 @[ext]
 structure InvStruct (hom : Edge x₀ x₁) where

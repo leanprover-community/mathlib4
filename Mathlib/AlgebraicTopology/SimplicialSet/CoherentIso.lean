@@ -15,10 +15,10 @@ public import Mathlib.CategoryTheory.CodiscreteCategory
 
 In this file, we define two related types.
 
-We first define the free walking or free-living isomorphism `WalkingIso`: the category with
-two objects `false` and `true`, and morphisms `false ⟶ true` and `true ⟶ false`.
-We show that the type of functor from `WalkingIso` into any category is equivalent to the type of
-isomorphisms in that category.
+We first define the free walking isomorphism `WalkingIso` as the codiscrete category on `Bool`:
+the category with objects `false` and `true` and unique morphisms `false ⟶ true` and `true ⟶ false`.
+We construct an equivalence `equiv` between the type of functors from `WalkingIso` into any category
+and the type of isomorphisms in that category.
 
 Then we define the simplicial set `coherentIso` as the nerve of `WalkingIso`.
 Lastly, we show that `hom : coherentIso _⦋1⦌` (the edge from `false` to `true`) has an inverse,
@@ -119,15 +119,11 @@ def equiv : (WalkingIso.{w} ⥤ C) ≃ Σ (X : C) (Y : C), (X ≅ Y) where
   toFun F := ⟨F.obj zero, F.obj one, toIso F⟩
   invFun p := fromIso p.2.2
   right_inv := fun ⟨X, Y, e⟩ ↦ rfl
-  left_inv F := by
-    apply Functor.hext
-    · rintro (_ | _) <;> rfl
-    · intro X Y f
-      induction X <;>
-      induction Y <;>
-      ( dsimp
-        try rw [← F.map_id]
-        rfl )
+  left_inv F := Functor.ext (by rintro (_ | _) <;> rfl) <| by
+    intro X Y f
+    induction X <;>
+    induction Y <;>
+    cat_disch
 
 end
 
@@ -144,9 +140,6 @@ Its n-simplices are formal compositions of arrows in WalkingIso. -/
 abbrev coherentIso : SSet := nerve WalkingIso.{u}
 
 namespace coherentIso
-
-instance {n : ℕ} : DecidableEq (coherentIso.{u} _⦋n⦌) :=
-  inferInstanceAs (DecidableEq (nerve (Codiscrete _) _⦋n⦌))
 
 /-- The source vertex of `coherentIso`. -/
 def x₀ : coherentIso.{u} _⦋0⦌ :=
