@@ -94,7 +94,7 @@ theorem mem_vars (i : σ) : i ∈ p.vars ↔ ∃ d ∈ p.support, i ∈ d.suppor
   classical simp only [vars_def, Multiset.mem_toFinset, mem_degrees, mem_support_iff]
 
 theorem mem_vars_iff_degreeOf_ne_zero {i : σ} : i ∈ p.vars ↔ p.degreeOf i ≠ 0 := by
-  classical rw [degreeOf, vars_def, Multiset.mem_toFinset, Multiset.count_ne_zero]
+  classical simp [degreeOf, vars_def]
 
 theorem mem_support_notMem_vars_zero {f : MvPolynomial σ R} {x : σ →₀ ℕ} (H : x ∈ f.support)
     {v : σ} (h : v ∉ vars f) : x v = 0 := by
@@ -104,17 +104,14 @@ theorem mem_support_notMem_vars_zero {f : MvPolynomial σ R} {x : σ →₀ ℕ}
 theorem support_subset_vars_of_mem_support {s : σ →₀ ℕ} (h : s ∈ p.support) :
     s.support ⊆ p.vars := fun i hi ↦ by
   contrapose! hi
-  apply Finsupp.notMem_support_iff.mpr
-  exact mem_support_notMem_vars_zero h hi
+  simp [mem_support_notMem_vars_zero h hi]
 
 theorem vars_eq_empty_iff_eq_C : p.vars = ∅ ↔ p = C (p.coeff 0) := by
-  refine ⟨fun h ↦ ?_, fun h ↦ h ▸ vars_C⟩
-  apply totalDegree_eq_zero_iff_eq_C.mp
-  apply Nat.eq_zero_of_le_zero
-  suffices p.degrees.card = 0 from this ▸ totalDegree_le_degrees_card p
+  refine ⟨fun h ↦ ?_, fun h ↦ by rw [h]; simp⟩
+  rw [← totalDegree_eq_zero_iff_eq_C]
+  suffices p.degrees.card = 0 by grind [totalDegree_le_degrees_card p]
   classical rw [vars_def, Multiset.toFinset_eq_empty] at h
-  rw [h]
-  rfl
+  simp_all
 
 theorem vars_add_subset [DecidableEq σ] (p q : MvPolynomial σ R) :
     (p + q).vars ⊆ p.vars ∪ q.vars := by
