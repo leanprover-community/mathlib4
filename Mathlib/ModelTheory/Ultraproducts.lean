@@ -72,7 +72,7 @@ instance setoidPrestructure : L.Prestructure ((u : Filter α).productSetoid M) :
 variable {M} {u}
 
 instance «structure» : L.Structure ((u : Filter α).Product M) :=
-  Language.quotientStructure
+  inferInstanceAs <| L.Structure (Quotient _)
 
 theorem funMap_cast {n : ℕ} (f : L.Functions n) (x : Fin n → ∀ a, M a) :
     (funMap f fun i => (x i : (u : Filter α).Product M)) =

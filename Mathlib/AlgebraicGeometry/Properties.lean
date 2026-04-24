@@ -61,6 +61,9 @@ instance {X : Scheme.{u}} : PrespectralSpace X :=
 instance : ObjectProperty.IsClosedUnderIsomorphisms (C := Scheme) (IrreducibleSpace ·) :=
   ⟨fun e ↦ e.hom.homeomorph.irreducibleSpace_iff.mp⟩
 
+instance : ObjectProperty.IsClosedUnderIsomorphisms (C := Scheme) (ConnectedSpace ·) :=
+  ⟨fun e ↦ e.hom.homeomorph.connectedSpace_iff.mp⟩
+
 /-- A scheme `X` is reduced if all `𝒪ₓ(U)` are reduced. -/
 class IsReduced : Prop where
   component_reduced : ∀ U, _root_.IsReduced Γ(X, U) := by infer_instance
@@ -246,7 +249,6 @@ instance Scheme.component_nontrivial (X : Scheme.{u}) (U : X.Opens) [Nonempty U]
     Nontrivial Γ(X, U) :=
   LocallyRingedSpace.component_nontrivial (hU := ‹_›)
 
-set_option backward.isDefEq.respectTransparency false in
 instance irreducibleSpace_of_isIntegral [IsIntegral X] : IrreducibleSpace X := by
   by_contra H
   replace H : ¬IsPreirreducible .univ := fun h =>
