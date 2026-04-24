@@ -74,14 +74,14 @@ theorem sum_divisorsAntidiagonal_eq_sum_divisors {M} [Semiring R] [AddCommMonoid
       ∑ i ∈ divisors x, f i := by
   simp [← coe_zeta_smul_apply (R := R)]
 
+theorem coe_zeta_mul_comm [Semiring R] {f : ArithmeticFunction R} : ζ * f = f * ζ := by
+  ext n
+  simp_rw [mul_apply, natCoe_apply, (cast_commute ..).eq]
+  rw [sum_divisorsAntidiagonal fun x y ↦ f y * ζ x, sum_divisorsAntidiagonal' fun x y ↦ f x * ζ y]
+
 theorem coe_zeta_mul_apply [Semiring R] {f : ArithmeticFunction R} {x : ℕ} :
     (ζ * f) x = ∑ i ∈ divisors x, f i :=
   coe_zeta_smul_apply
-
-theorem coe_zeta_mul_comm [Semiring R] {f : ArithmeticFunction R} : ζ * f = f * ζ := by
-  ext x
-  rw [mul_apply, ← map_swap_divisorsAntidiagonal, Finset.sum_map]
-  simp [mul_apply]
 
 theorem coe_mul_zeta_apply [Semiring R] {f : ArithmeticFunction R} {x : ℕ} :
     (f * ζ) x = ∑ i ∈ divisors x, f i := by
