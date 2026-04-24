@@ -11,7 +11,7 @@ public import Mathlib.Algebra.ContinuedFractions.TerminatedStable
 public import Mathlib.Tactic.Ring
 
 /-!
-# Determinant Formula for Generalised Continued Fraction
+# Determinant Formula for Generalized Continued Fraction
 
 We derive the so-called *determinant formula* for `GenContFract`:
 `Aₙ * Bₙ₊₁ - Bₙ * Aₙ₊₁ = (-a₀) * (-a₁) * .. * (-aₙ)`.
