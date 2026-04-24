@@ -401,20 +401,20 @@ theorem drop_eq_empty_of_ge_length : S.length ≤ n → S.drop n = ∅ := fun h 
 /-- The condition required to append `p` to `S` while maintaining the Triangular Set property.
 `p` must be non-zero and its main variable must be strictly greater than
 the main variable of the last element of `S`. -/
-abbrev canConcat (S : TriangularSet σ R) (p : MvPolynomial σ R) : Prop :=
+abbrev CanConcat (S : TriangularSet σ R) (p : MvPolynomial σ R) : Prop :=
   p ≠ 0 ∧ (0 < S.length → (S (S.length - 1)).vars.max < p.vars.max)
 
-theorem canConcat_def : S.canConcat p ↔
+theorem canConcat_def : S.CanConcat p ↔
     (p ≠ 0 ∧ (0 < S.length → (S (S.length - 1)).vars.max < p.vars.max)) := Iff.rfl
 
-theorem empty_canConcat : p ≠ 0 → (∅ : TriangularSet σ R).canConcat p :=
+theorem empty_canConcat : p ≠ 0 → (∅ : TriangularSet σ R).CanConcat p :=
   fun h1 ↦ ⟨h1, fun h2 ↦ absurd h2 <| Nat.lt_irrefl 0⟩
 
-theorem not_canConcat_zero : ¬ S.canConcat 0 := not_and.mpr fun a _ ↦ a rfl
+theorem not_canConcat_zero : ¬ S.CanConcat 0 := not_and.mpr fun a _ ↦ a rfl
 
 /-- Appends a polynomial `p` to the end of `S`. Requires `S.canConcat p`. -/
 def concat (S : TriangularSet σ R) (p : MvPolynomial σ R)
-    (h : S.canConcat p := by assumption) : TriangularSet σ R where
+    (h : S.CanConcat p := by assumption) : TriangularSet σ R where
   toList := S.toList.concat p
   zero_notMem' := fun hz ↦ by
     rw [List.concat_eq_append, List.mem_append, List.mem_singleton] at hz
@@ -431,36 +431,36 @@ def concat (S : TriangularSet σ R) (p : MvPolynomial σ R)
       grind
     exact hq ▸ h.2 this
 
-theorem toList_concat {p : MvPolynomial σ R} (h : S.canConcat p) :
+theorem toList_concat {p : MvPolynomial σ R} (h : S.CanConcat p) :
     (S.concat p).toList = S.toList.concat p := rfl
 
-@[simp] theorem length_concat {p : MvPolynomial σ R} (h : S.canConcat p) :
+@[simp] theorem length_concat {p : MvPolynomial σ R} (h : S.CanConcat p) :
     (S.concat p).length = S.length + 1 := by
   rw [← length_toList, ← length_toList, toList_concat, List.length_concat]
 
-theorem concat_apply {p : MvPolynomial σ R} (h : S.canConcat p) (n : ℕ) :
+theorem concat_apply {p : MvPolynomial σ R} (h : S.CanConcat p) (n : ℕ) :
     (S.concat p) n = if n < S.length then S n else if n = S.length then p else 0 := by
   rw [← toList_getElem?_getD]
   grind [= toList_concat, = toList_getElem?_getD, = length_toList]
 
-theorem concat_apply_length {p : MvPolynomial σ R} (h : S.canConcat p) :
+theorem concat_apply_length {p : MvPolynomial σ R} (h : S.CanConcat p) :
     (S.concat p) S.length = p := by
   simp only [concat_apply, lt_self_iff_false, ↓reduceIte]
 
-theorem mem_concat {p : MvPolynomial σ R} (h : S.canConcat p) : p ∈ S.concat p := by
+theorem mem_concat {p : MvPolynomial σ R} (h : S.CanConcat p) : p ∈ S.concat p := by
   use S.length
   rw [length_concat, concat_apply h, if_neg (Nat.lt_irrefl S.length), if_pos rfl]
   simp only [lt_add_iff_pos_right, zero_lt_one, and_self]
 
-theorem subset_concat {p : MvPolynomial σ R} (h : S.canConcat p) : S ⊆ S.concat p := fun _ ⟨i, hi⟩ ↦
+theorem subset_concat {p : MvPolynomial σ R} (h : S.CanConcat p) : S ⊆ S.concat p := fun _ ⟨i, hi⟩ ↦
   ⟨i, (length_concat h) ▸ Nat.lt_add_one_of_lt hi.1, (concat_apply h _) ▸ if_pos hi.1 ▸ hi.2⟩
 
-theorem mem_concat_iff {p q : MvPolynomial σ R} (h : S.canConcat p) :
+theorem mem_concat_iff {p q : MvPolynomial σ R} (h : S.CanConcat p) :
     q ∈ S.concat p ↔ q = p ∨ q ∈ S := by
   rw [← mem_toList_iff, toList_concat, List.concat_eq_append, List.mem_append, List.mem_singleton,
     mem_toList_iff, Or.comm]
 
-theorem coe_concat_eq_insert {p : MvPolynomial σ R} (h : S.canConcat p) :
+theorem coe_concat_eq_insert {p : MvPolynomial σ R} (h : S.CanConcat p) :
     S.concat p = (S : Set (MvPolynomial σ R)).insert p := Set.ext fun q ↦ by
   simpa using mem_concat_iff h
 
@@ -539,13 +539,13 @@ noncomputable def takeConcat (S : TriangularSet σ R) (p : MvPolynomial σ R) :
     have hk : k ≤ S.length ∧ (S (k - 1)).vars.max < p.vars.max ∧
         (p.vars.max ≤ (S k).vars.max ∨ k = S.length) :=
       Nat.find_spec <| exists_index_max_vars_between_of_max_vars_first_lt <| lt_of_not_ge hc
-    have max_vars_lt : (S.take k).canConcat p := by
-      rw [canConcat, length_take, min_eq_left hk.1, take_apply]
+    have max_vars_lt : (S.take k).CanConcat p := by
+      rw [CanConcat, length_take, min_eq_left hk.1, take_apply]
       refine ⟨fun hp ↦ absurd (LT.lt.ne_bot <| lt_of_not_ge hc) (by simp [hp]), ?_⟩
       exact fun hkz ↦ if_pos (Nat.sub_one_lt_of_lt hkz) ▸ hk.2.1
     (S.take k).concat p
 
-theorem takeConcat_eq_concat_of_canConcat (h : S.canConcat p) : S.takeConcat p = S.concat p := by
+theorem takeConcat_eq_concat_of_canConcat (h : S.CanConcat p) : S.takeConcat p = S.concat p := by
   unfold takeConcat
   split_ifs with h1 hc
   · simp [h1, single, h.1, single', concat]

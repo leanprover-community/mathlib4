@@ -63,7 +63,7 @@ noncomputable scoped instance : AscendingSetTheory σ R where
     | .inl hij => hj2 ▸ hij ▸ initial_reducedTo_self hc
     | .inr hij => initial_reducedTo <| hj2 ▸ reducedTo_of_ne h hij hj1
 
-theorem isAscendingSet_concat (h : S.canConcat p) (hp : p.reducedToSet S) :
+theorem isAscendingSet_concat (h : S.CanConcat p) (hp : p.reducedToSet S) :
     S.IsAscendingSet → (S.concat p).IsAscendingSet :=
   TriangularSet.isAscendingSet_concat h (reducedToSet_iff.mp hp)
 
@@ -158,7 +158,7 @@ lemma basicSetGo_isAscendingSet (l : List (MvPolynomial σ R)) (BS : TriangularS
 /-- The core lemma proving that the computed Basic Set is indeed minimal
 among all ascending sets contained in `l`. -/
 lemma basicSetGo_le_ascendingSet (l : List (MvPolynomial σ R)) (BS : TriangularSet σ R)
-    (hl1 : ∀ p ∈ l, p ≠ 0) : l.Pairwise (· ≤ ·) → (∀ p ∈ l, BS.canConcat p) →
+    (hl1 : ∀ p ∈ l, p ≠ 0) : l.Pairwise (· ≤ ·) → (∀ p ∈ l, BS.CanConcat p) →
     l.head?.all (reducedToSet · BS) →
     ∀ T, T.IsAscendingSet → (BS.length ≤ T.length ∧ ∀ i < BS.length, BS i ≈ T i) →
     (∀ p ∈ T, (∀ i < BS.length, ¬ BS i ≈ p) → p ∈ l) → basicSet.go l BS hl1 ≤ T := by
@@ -205,7 +205,7 @@ lemma basicSetGo_le_ascendingSet (l : List (MvPolynomial σ R)) (BS : Triangular
       refine le_trans ?_ (le_of_lt this)
       exact basicSetGo_le _ _ _ hBS2'
     -- Case 2: B ≈ q. They match, so we proceed recursively.
-    have hBS1' : ∀ p ∈ l', BS'.canConcat p := fun p hp ↦ by
+    have hBS1' : ∀ p ∈ l', BS'.CanConcat p := fun p hp ↦ by
       simp only [l', heq, List.mem_filter, decide_eq_true_eq, reducedToSet_iff] at hp ⊢
       refine ⟨hl1 p hp.1, fun _ ↦ ?_⟩
       have := hp.2 BS.length (BS.length_concat _ ▸ lt_add_one _)

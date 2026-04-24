@@ -82,7 +82,7 @@ theorem isAscendingSet_drop (n : ℕ) : S.IsAscendingSet → (S.drop n).IsAscend
   rw [drop_apply, drop_apply]
   exact hs (Nat.add_lt_add_left hij n) (Nat.add_lt_of_lt_sub' (S.length_drop _ ▸ hj))
 
-protected theorem isAscendingSet_concat (h : S.canConcat p)
+protected theorem isAscendingSet_concat (h : S.CanConcat p)
     (hp : ∀ i < S.length, AscendingSetTheory.reducedTo' p (S i)) :
     S.IsAscendingSet → (S.concat p).IsAscendingSet := fun hs i j hij hj ↦ by
   have hi : i < S.length := lt_of_lt_of_le hij <| Nat.le_of_lt_add_one (S.length_concat h ▸ hj)

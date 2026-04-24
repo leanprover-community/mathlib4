@@ -395,7 +395,7 @@ theorem lt_drop : S ≠ ∅ → 0 < n → S < S.drop n := fun h1 h2 ↦
       exact max_vars_lt_of_index_lt (Nat.lt_of_not_le gel) h2,
     fun i hi ↦ absurd hi <| Nat.not_lt_zero i⟩
 
-theorem concat_lt {p : MvPolynomial σ R} (h : S.canConcat p) : S.concat p h < S := lt_def.mpr <|
+theorem concat_lt {p : MvPolynomial σ R} (h : S.CanConcat p) : S.concat p h < S := lt_def.mpr <|
   Or.inr ⟨length_concat h ▸ lt_add_one S.length, fun i hi ↦ by rw [concat_apply h, if_pos hi]⟩
 
 theorem single_lt_empty [DecidableEq R] : p ≠ 0 → (single p) < ∅ :=

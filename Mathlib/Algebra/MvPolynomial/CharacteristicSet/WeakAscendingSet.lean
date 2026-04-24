@@ -64,7 +64,7 @@ noncomputable scoped instance : AscendingSetTheory σ R where
     | .inl hij => hj2 ▸ hij ▸ initial_reducedTo_self hc
     | .inr hij => hj2 ▸ initial_reducedTo_of_ne h hij hj1
 
-theorem isAscendingSet_concat (h : S.canConcat p) (hp : p.initial.reducedToSet S) :
+theorem isAscendingSet_concat (h : S.CanConcat p) (hp : p.initial.reducedToSet S) :
     S.IsAscendingSet → (S.concat p).IsAscendingSet :=
   TriangularSet.isAscendingSet_concat h (reducedToSet_iff.mp hp)
 
@@ -78,16 +78,16 @@ variable (l : List (MvPolynomial σ R))
 
 /-- The recursive algorithm for computing the Weak Basic Set. -/
 noncomputable def basicSet.go (l : List (MvPolynomial σ R)) (BS : TriangularSet σ R)
-    (hl1 : ∀ p ∈ l, p ≠ 0) (hl2 : ∀ p ∈ l, BS.canConcat p) : TriangularSet σ R :=
+    (hl1 : ∀ p ∈ l, p ≠ 0) (hl2 : ∀ p ∈ l, BS.CanConcat p) : TriangularSet σ R :=
   match l with
   | [] => BS
   | B :: tail =>
-    have hB : BS.canConcat B := hl2 B List.mem_cons_self
+    have hB : BS.CanConcat B := hl2 B List.mem_cons_self
     let BS' := BS.concat B
     -- Explicitly check main variable ordering here:
     let l' := (B :: tail).filter fun p ↦ B.vars.max < p.vars.max ∧ p.initial.reducedToSet BS'
     have hl1' : ∀ p ∈ l', p ≠ 0 := fun p hp ↦ hl1 p (List.mem_of_mem_filter hp)
-    have hl2' : ∀ p ∈ l', BS'.canConcat p := fun p hp ↦
+    have hl2' : ∀ p ∈ l', BS'.CanConcat p := fun p hp ↦
       have := List.mem_filter.mp hp
       ⟨hl1 p this.1, fun _ ↦ by
         rw [concat_apply, length_concat]
@@ -115,7 +115,7 @@ noncomputable def basicSet : TriangularSet σ R :=
   basicSet.go sl ∅ hsl1 (fun p hp ↦ empty_canConcat <| hsl1 p hp)
 
 lemma basicSetGo_lt (BS : TriangularSet σ R) (hl1 : ∀ p ∈ l, p ≠ 0)
-    (hl2 : ∀ p ∈ l, BS.canConcat p) : (h : l ≠ []) →
+    (hl2 : ∀ p ∈ l, BS.CanConcat p) : (h : l ≠ []) →
     (l.head h).initial.reducedToSet BS → basicSet.go l BS hl1 hl2 < BS := by
   induction l, BS, hl1, hl2 using basicSet.go.induct with
   | case1 _ _ _ => simp
@@ -132,7 +132,7 @@ lemma basicSetGo_lt (BS : TriangularSet σ R) (hl1 : ∀ p ∈ l, p ≠ 0)
       exact lt_trans this (concat_lt hB)
 
 lemma basicSetGo_le (BS : TriangularSet σ R) (hl1 : ∀ p ∈ l, p ≠ 0)
-    (hl2 : ∀ p ∈ l, BS.canConcat p) :
+    (hl2 : ∀ p ∈ l, BS.CanConcat p) :
     l.head?.all (fun p ↦ p.initial.reducedToSet BS) → basicSet.go l BS hl1 hl2 ≤ BS := by
   induction l, BS, hl1, hl2 using basicSet.go.induct with
   | case1 _ _ _ => unfold basicSet.go; simp
@@ -142,7 +142,7 @@ lemma basicSetGo_le (BS : TriangularSet σ R) (hl1 : ∀ p ∈ l, p ≠ 0)
     exact le_of_lt <| basicSetGo_lt (B :: tail) BS hl1 hl2 (by simp) hl3
 
 lemma mem_of_mem_basicSetGo (BS : TriangularSet σ R) (hl1 : ∀ p ∈ l, p ≠ 0)
-    (hl2 : ∀ p ∈ l, BS.canConcat p) :
+    (hl2 : ∀ p ∈ l, BS.CanConcat p) :
     ∀ p, p ∉ BS → p ∈ basicSet.go l BS hl1 hl2 → p ∈ l := by
   induction l, BS, hl1, hl2 using basicSet.go.induct with
   | case1 _ _ _ => unfold basicSet.go; simp
@@ -157,7 +157,7 @@ lemma mem_of_mem_basicSetGo (BS : TriangularSet σ R) (hl1 : ∀ p ∈ l, p ≠ 
     | .inr hm => exact List.mem_of_mem_filter <| ih p hm hp2
 
 lemma basicSetGo_isAscendingSet (BS : TriangularSet σ R)
-    (hl1 : ∀ p ∈ l, p ≠ 0) (hl2 : ∀ p ∈ l, BS.canConcat p) :
+    (hl1 : ∀ p ∈ l, p ≠ 0) (hl2 : ∀ p ∈ l, BS.CanConcat p) :
     l.head?.all (fun p ↦ p.initial.reducedToSet BS) → BS.IsAscendingSet →
     (basicSet.go l BS hl1 hl2).IsAscendingSet := by
   induction l, BS, hl1, hl2 using basicSet.go.induct with
@@ -174,7 +174,7 @@ lemma basicSetGo_isAscendingSet (BS : TriangularSet σ R)
       exact (of_decide_eq_true (List.mem_filter.mp <| List.head_mem l'_nil).2).2
 
 lemma basicSetGo_le_ascendingSet (BS : TriangularSet σ R) (hl1 : ∀ p ∈ l, p ≠ 0)
-    (hl2 : ∀ p ∈ l, BS.canConcat p) : l.Pairwise (· ≤ ·) →
+    (hl2 : ∀ p ∈ l, BS.CanConcat p) : l.Pairwise (· ≤ ·) →
     l.head?.all (fun p ↦ p.initial.reducedToSet BS) →
     ∀ T, T.IsAscendingSet → (BS.length ≤ T.length ∧ ∀ i < BS.length, BS i ≈ T i) →
     (∀ p ∈ T, (∀ i < BS.length, ¬ BS i ≈ p) → p ∈ l) → basicSet.go l BS hl1 hl2 ≤ T := by
