@@ -220,7 +220,7 @@ theorem toSesqForm_apply_norm_le {f : E →L[𝕜] E'} {v : E'} : ‖toSesqForm 
   have h₂ := @norm_inner_le_norm 𝕜 E' _ _ _ v (f x)
   calc
     ‖⟪v, f x⟫‖ ≤ ‖v‖ * ‖f x‖ := h₂
-    _ ≤ ‖v‖ * (‖f‖ * ‖x‖) := mul_le_mul_of_nonneg_left h₁ (norm_nonneg v)
+    _ ≤ ‖v‖ * (‖f‖ * ‖x‖) := by gcongr
     _ = ‖f‖ * ‖v‖ * ‖x‖ := by ring
 
 end ContinuousLinearMap

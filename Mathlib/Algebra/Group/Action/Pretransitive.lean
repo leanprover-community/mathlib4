@@ -87,6 +87,19 @@ instance Regular.isPretransitive [Group G] : IsPretransitive G G :=
 instance Regular.isPretransitive_mulOpposite [Group G] : IsPretransitive Gᵐᵒᵖ G :=
   ⟨fun x y ↦ ⟨.op (x⁻¹ * y), mul_inv_cancel_left _ _⟩⟩
 
+/-- If `G` is a group acting multiplicatively on a set, then the action is transitive if there is
+a single element whose orbit is everything. -/
+@[to_additive /-- If `G` is a group acting additively on a set, then the action is transitive if
+there is a single element whose orbit is everything. -/]
+lemma IsPretransitive.of_orbit {X : Type*} [Group G] [MulAction G X] {x₀ : X}
+    (ha : ∀ x, ∃ g : G, g • x₀ = x) :
+    IsPretransitive G X := by
+  constructor
+  intro x y
+  rcases ha x with ⟨g, rfl⟩
+  rcases ha y with ⟨h, rfl⟩
+  exact ⟨h * g⁻¹, by simp [mul_smul]⟩
+
 end MulAction
 
 namespace MulAction

@@ -38,7 +38,7 @@ lemma functorObj_eq_pos {n m : ℕ} (h : m < n) :
 lemma functorObj_eq_neg {n m : ℕ} (h : ¬(m < n)) :
     (fun i ↦ if _ : i < n then M i else N i) m = N m := dif_neg h
 
-variable [Category* C] (f : ∀ n, M n ⟶ N n) [HasProductsOfShape ℕ C]
+variable [Category* C] (f : ∀ n, M n ⟶ N n) [HasCountableProducts C]
 
 variable (M N) in
 /-- The product of the `m` first objects of `M` and the rest of the rest of `N` -/
@@ -86,7 +86,7 @@ lemma functorMap_commSq_aux {n m k : ℕ} (h : n ≤ m) (hh : ¬(k < m)) :
     rw [this, op_comp, Functor.map_comp]
     slice_lhs 2 4 => rw [ih]
     simp only [Functor.ofOpSequence_obj, homOfLE_leOfHom, Functor.ofOpSequence_map_homOfLE_succ,
-      functorMap, dite_eq_ite, limMap_π_assoc, Discrete.functor_obj_eq_as, Discrete.natTrans_app]
+      functorMap, dite_eq_ite, Pi.map_π_assoc]
     split_ifs
     simp [dif_neg (by lia : ¬(k < m))]
 
@@ -129,10 +129,9 @@ noncomputable def cone : Cone (Functor.ofOpSequence (functorMap f)) where
         f m ≫ eqToHom (functorObj_eq_neg h).symm) (fun n ↦ ?_)
     apply Limits.Pi.hom_ext
     intro m
-    simp only [Functor.const_obj_obj, Functor.ofOpSequence_obj, homOfLE_leOfHom,
-      Functor.const_obj_map, Category.id_comp, limMap_π, Discrete.functor_obj_eq_as,
-      Discrete.natTrans_app, Functor.ofOpSequence_map_homOfLE_succ, functorMap, Category.assoc,
-      limMap_π_assoc]
+    simp only [Functor.const_obj_obj, dite_eq_ite, Functor.ofOpSequence_obj, homOfLE_leOfHom,
+      Functor.const_obj_map, Category.id_comp, Pi.map_π, Functor.ofOpSequence_map_homOfLE_succ,
+      functorMap, Category.assoc, Pi.map_π_assoc]
     split
     · simp [dif_pos (by lia : m < n + 1)]
     · split
@@ -147,16 +146,14 @@ set_option backward.isDefEq.respectTransparency false in
 lemma cone_π_app_comp_Pi_π_pos (m n : ℕ) (h : n < m) : (cone f).π.app ⟨m⟩ ≫
     Pi.π (fun i ↦ if _ : i < m then M i else N i) n =
     Pi.π _ n ≫ eqToHom (functorObj_eq_pos h).symm := by
-  simp only [Functor.const_obj_obj, dite_eq_ite, Functor.ofOpSequence_obj, cone_π_app, limMap_π,
-    Discrete.functor_obj_eq_as, Discrete.natTrans_app]
+  simp only [Functor.const_obj_obj, dite_eq_ite, Functor.ofOpSequence_obj, cone_π_app, Pi.map_π]
   rw [dif_pos h]
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma cone_π_app_comp_Pi_π_neg (m n : ℕ) (h : ¬(n < m)) : (cone f).π.app ⟨m⟩ ≫ Pi.π _ n =
     Pi.π _ n ≫ f n ≫ eqToHom (functorObj_eq_neg h).symm := by
-  simp only [Functor.const_obj_obj, dite_eq_ite, Functor.ofOpSequence_obj, cone_π_app, limMap_π,
-    Discrete.functor_obj_eq_as, Discrete.natTrans_app]
+  simp only [Functor.const_obj_obj, dite_eq_ite, Functor.ofOpSequence_obj, cone_π_app, Pi.map_π]
   rw [dif_neg h]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -196,8 +193,7 @@ noncomputable def isLimit : IsLimit (cone f) where
           rw [dif_pos h, dif_pos (by lia)]
         rw [← eqToHom_trans h₁ h₂]
         slice_lhs 2 4 => rw [ih (by lia)]
-        simp only [functorMap, dite_eq_ite, Pi.π, limMap_π_assoc, Discrete.functor_obj_eq_as,
-          Discrete.natTrans_app]
+        simp only [functorMap, dite_eq_ite, Pi.π, Pi.map_π_assoc]
         split_ifs
         rw [dif_pos (by lia)]
         simp
@@ -217,7 +213,7 @@ noncomputable def isLimit : IsLimit (cone f) where
 
 section
 
-variable [HasZeroMorphisms C] [HasFiniteBiproducts C] [HasCountableProducts C] [∀ n, Epi (f n)]
+variable [HasZeroMorphisms C] [HasFiniteBiproducts C] [∀ n, Epi (f n)]
 
 attribute [local instance] hasBinaryBiproducts_of_finite_biproducts
 

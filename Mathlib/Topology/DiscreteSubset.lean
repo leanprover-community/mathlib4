@@ -110,9 +110,7 @@ lemma IsOpenMap.isDiscrete_range [DiscreteTopology X] (hf : IsOpenMap f) :
   simpa using IsDiscrete.univ.image_of_isOpenMap_of_isOpen hf isOpen_univ
 
 lemma IsDiscrete.image (hs : IsDiscrete s) (hf : IsInducing f) : IsDiscrete (f '' s) := by
-  refine .of_nhdsWithin ?_
-  rintro _ ⟨x, hx, rfl⟩
-  rw [← map_pure, ← hs.nhdsWithin x hx, hf.map_nhdsWithin_eq]
+  simp_all [isDiscrete_iff_nhdsWithin, ← hf.map_nhdsWithin_eq s]
 
 lemma IsInducing.isDiscrete_range [DiscreteTopology X] (hf : IsInducing f) :
     IsDiscrete (Set.range f) := by
@@ -174,9 +172,6 @@ lemma IsClosed.tendsto_coe_cofinite_of_isDiscrete
     Tendsto ((↑) : s → X) cofinite (cocompact _) :=
   haveI := hs'.to_subtype
   tendsto_cofinite_cocompact_of_discrete hs.isClosedEmbedding_subtypeVal.tendsto_cocompact
-
-@[deprecated (since := "2025-10-08")] alias IsClosed.tendsto_coe_cofinite_of_discreteTopology :=
-  IsClosed.tendsto_coe_cofinite_of_isDiscrete
 
 lemma IsClosed.tendsto_coe_cofinite_iff [T1Space X] [WeaklyLocallyCompactSpace X]
     {s : Set X} (hs : IsClosed s) :
@@ -240,9 +235,6 @@ theorem isDiscrete_of_codiscreteWithin {U s : Set X} (h : sᶜ ∈ Filter.codisc
   rw [(by simp : ((s ∩ U) : Set X) = ((sᶜ ∪ Uᶜ)ᶜ : Set X)), isDiscrete_iff_nhdsNE]
   simp_rw [← Filter.mem_iff_inf_principal_compl]
   simp_all [← Set.compl_diff, mem_codiscreteWithin]
-
-@[deprecated (since := "2025-10-08")] alias discreteTopology_of_codiscreteWithin :=
-  isDiscrete_of_codiscreteWithin
 
 /-- Helper lemma for `codiscreteWithin_iff_locallyFiniteComplementWithin`: A set `s` is
 `codiscreteWithin U` iff every point `z ∈ U` has a punctured neighborhood that does not intersect

@@ -94,7 +94,7 @@ lemma iff_surjective {R : Type u} [CommRing R] [Module R M] : Module.Baer R M �
 /-- If we view `M` as a submodule of `N` via the injective linear map `i : M ↪ N`, then a submodule
 between `M` and `N` is a submodule `N'` of `N`. To prove Baer's criterion, we need to consider
 pairs of `(N', f')` such that `M ≤ N' ≤ N` and `f'` extends `f`. -/
-structure ExtensionOf extends LinearPMap R N Q where
+structure ExtensionOf extends N →ₗ.[R] Q where
   le : LinearMap.range i ≤ domain
   is_extension : ∀ m : M, f m = toLinearPMap ⟨i m, le ⟨m, rfl⟩⟩
 
