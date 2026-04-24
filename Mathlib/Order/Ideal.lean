@@ -236,18 +236,20 @@ theorem toIdeal_le {I : Set P} (h : IsIdeal I) {J : Ideal P} : h.toIdeal ≤ J �
 theorem le_toIdeal {I : Set P} (h : IsIdeal I) {J : Ideal P} : J ≤ h.toIdeal ↔ (J : Set P) ⊆ I :=
   Iff.rfl
 
-@[deprecated "`PFilter` was defined as a stucture of `toDual : Ideal P`" (since := "2026-04-23")]
-def _root_.Order.PFilter.ofDual (I : Ideal Pᵒᵈ) : PFilter P :=
+/-- `PFilter` was defined as a stucture of `dual : Ideal Pᵒᵈ`. -/
+@[deprecated "`PFilter` was defined as a stucture of `dual : Ideal Pᵒᵈ`." (since := "2026-04-23")]
+def _root_.Order.PFilter.mk' (I : Ideal Pᵒᵈ) : PFilter P :=
   ⟨⟨I.carrier, I.lower⟩, I.nonempty', I.directed'⟩
 
-@[deprecated "`PFilter` was defined as a stucture of `toDual : Ideal P`" (since := "2026-04-23")]
-def _root_.Order.PFilter.toDual (F : PFilter P) : Ideal Pᵒᵈ :=
+/-- `PFilter` was defined as a stucture of `dual : Ideal Pᵒᵈ`. -/
+@[deprecated "`PFilter` was defined as a stucture of `dual : Ideal Pᵒᵈ`." (since := "2026-04-23")]
+def _root_.Order.PFilter.dual (F : PFilter P) : Ideal Pᵒᵈ :=
   ⟨⟨F.carrier, F.upper⟩, F.nonempty', F.directed'⟩
 
 set_option linter.deprecated false in
 @[deprecated "`PFilter` was defined as a stucture of `toDual : Ideal P`" (since := "2026-04-23")]
 theorem _root_.Order.PFilter.mem_mk (x : P) (I : Ideal Pᵒᵈ) :
-    x ∈ (.ofDual I : PFilter P) ↔ OrderDual.toDual x ∈ I := Iff.rfl
+    x ∈ (PFilter.mk' I : PFilter P) ↔ OrderDual.toDual x ∈ I := Iff.rfl
 
 /-- A proper ideal is one that is not `Set.univ` (note `Set.univ` might not be an ideal). -/
 @[mk_iff]
