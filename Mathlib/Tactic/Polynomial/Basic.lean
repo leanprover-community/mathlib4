@@ -3,11 +3,13 @@ Copyright (c) 2025 Arend Mellendijk. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arend Mellendijk
 -/
-import Mathlib.Algebra.MvPolynomial.Basic
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Coeff
-import Mathlib.Tactic.Polynomial.Core
-import Mathlib.Tactic.Algebra.Basic
+
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Coeff
+public meta import Mathlib.Tactic.Polynomial.Core
+public meta import Mathlib.Tactic.Algebra.Basic
 
 /-!
 # Polynomial
@@ -31,11 +33,9 @@ expression.
 
 open Lean Mathlib.Tactic Mathlib.Tactic.Algebra Parser.Tactic Elab Meta Qq
 
+public meta section
+
 namespace Mathlib.Tactic.Polynomial
-
-section extension
-
-end extension
 
 /-- Infer base ring for `Polynomial R` -/
 @[infer_polynomial_base]
@@ -45,27 +45,11 @@ def polynomialInferBase : PolynomialExt where
   | Polynomial R _ => pure R
   | _ => failure
 
-/-- Infer base ring for `MvPolynomial _ R` -/
-@[infer_polynomial_base]
-def mvPolynomialInferBaseImpl : PolynomialExt where
-  infer := fun e ↦ do
-  match_expr e with
-  | MvPolynomial _ R _ => pure R
-  | _ => failure
 
 section Lemmas
 variable {σ R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
 
-@[polynomial_post]
-theorem _root_.Polynomial.algebraMap_eq_C : algebraMap R _ = Polynomial.C := rfl
-
-@[polynomial_post]
-theorem _root_.MvPolynomial.algebraMap_eq_C :
-    algebraMap R (MvPolynomial σ R) = MvPolynomial.C := rfl
-
-@[polynomial_pre]
-theorem _root_.MvPolynomial.C_eq_algebraMap :
-    MvPolynomial.C = algebraMap R (MvPolynomial σ R) := rfl
+attribute [polynomial_post] Polynomial.algebraMap_eq
 
 @[polynomial_pre]
 theorem monomial_eq_smul (a : R) (n : ℕ) : Polynomial.monomial n a = a • (.X ^ n) := by
@@ -101,11 +85,17 @@ def preprocess (mvarId : MVarId) : MetaM MVarId := do
 
 open Tactic
 
-/-- Prove equality of polynomials allowing for variables in the exponent.
+/-- `polynomial` solves equalities of `Polynomial`s and similar types.
+
+Given a goal which is an equality in `Polynomial R` with a commutative ring `R`, `polynomial`
+expands out the brackets on both sides of the equation and combines the coefficients of equal
+monomials. It then closes the goal if both sides contain the same terms and fails otherwise.
+
 `example (a : ℚ) : (X + C a) * (X - C a) = X^2 + C (a^2) := by polynomial`
-See also:
-* `polynomial_nf` for normalizing polynomial expressions into sum-of-monomial form.
-* `match_coefficients` for creating side goals equating matching coefficients. -/
+
+The `polynomial` can be extended to work with algebras other than `Polynomial`, so long as the base
+ring can be inferred from the structure of the type.
+-/
 elab (name := polynomial) "polynomial":tactic =>
   withMainContext do
     let g ← preprocess (← getMainGoal)
@@ -119,3 +109,5 @@ elab (name := polynomial) "polynomial":tactic =>
     AtomM.run .default (Algebra.proveEq (some (← getLevelQ' β)) g)
 
 end Mathlib.Tactic.Polynomial
+
+end

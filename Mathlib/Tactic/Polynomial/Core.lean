@@ -3,8 +3,11 @@ Copyright (c) 2025 Arend Mellendijk. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arend Mellendijk
 -/
-import Lean.Meta.Tactic.Simp.Attr
-import Mathlib.Init
+module
+
+meta import Lean.Compiler.IR.CompilerM
+public meta import Lean.Meta.Tactic.Simp.Attr
+public import Mathlib.Init
 
 /-!
 # Setup for the `polynomial` tactic
@@ -18,6 +21,8 @@ with the `polynomial` tactic suite.
 namespace Mathlib.Tactic.Polynomial
 
 open Lean Lean.Meta Lean.Elab Term
+
+public meta section
 
 /-- Attribute for identifying `polynomial` preprocessing extensions. These serve the purpose of
 removing any definitions specific to polynomials that `algebra` can't handle.
@@ -89,5 +94,7 @@ def inferBase (e : Expr) : MetaM Expr := do
     catch _ =>
       continue
   failure
+
+end
 
 end Mathlib.Tactic.Polynomial
