@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.CategoryTheory.Monoidal.Ring
 
 /-!
-# Yoneda embedding of `Rng C`
+# Yoneda embedding of `RingCatObj C`
 
 -/
 
@@ -23,7 +23,7 @@ namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C] [BraidedCategory C]
 
-open scoped RingObj
+open scoped CommRingObj RingObj
 
 /-- If `R` is a ring object, then `Hom(-, R)` is a presheaf of rings. -/
 @[simps! obj]
@@ -41,7 +41,8 @@ def yonedaRingObj (R : C) [RingObj R] : Cᵒᵖ ⥤ RingCat.{v} where
 lemma yonedaRingObj_map_apply {R : C} [RingObj R] {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : X.unop ⟶ R) :
     dsimp% (yonedaRingObj R).map f x = f.unop ≫ x := rfl
 
-def yonedaRing : Rng C ⥤ Cᵒᵖ ⥤ RingCat.{v} where
+/-- The yoneda embedding of `RingObjCat C` into presheaves of rings. -/
+def yonedaRing : RingObjCat C ⥤ Cᵒᵖ ⥤ RingCat.{v} where
   obj R := yonedaRingObj R.X
   map f :=
     { app X := RingCat.ofHom
@@ -49,9 +50,9 @@ def yonedaRing : Rng C ⥤ Cᵒᵖ ⥤ RingCat.{v} where
           map_one' := by simp
           map_zero' := by simp
           map_mul' x y :=
-            ((yonedaMon.map ((Rng.forget₂Mon C).map f)).app X).hom.map_mul x y
+            ((yonedaMon.map ((RingObjCat.forget₂Mon C).map f)).app X).hom.map_mul x y
           map_add' x y :=
-            ((yonedaAddMon.map ((Rng.forget₂AddMon C).map f)).app X).hom.map_add x y }
+            ((yonedaAddMon.map ((RingObjCat.forget₂AddMon C).map f)).app X).hom.map_add x y }
       naturality _ _ f := by ext g; apply Category.assoc }
   map_comp _ _ := by ext; exact (Category.assoc ..).symm
 
@@ -61,7 +62,8 @@ def yonedaCommRingObj (R : C) [CommRingObj R] : Cᵒᵖ ⥤ CommRingCat.{v} wher
   obj X := .of (X.unop ⟶ R)
   map f := CommRingCat.ofHom ((yonedaRingObj R).map f).hom
 
-def yonedaCommRing : CommRng C ⥤ Cᵒᵖ ⥤ CommRingCat.{v} where
+/-- The yoneda embedding of `CommRingObjCat C` into presheaves of commutative rings. -/
+def yonedaCommRing : CommRingObjCat C ⥤ Cᵒᵖ ⥤ CommRingCat.{v} where
   obj R := yonedaCommRingObj R.X
   map f :=
     { app X := CommRingCat.ofHom
@@ -69,12 +71,12 @@ def yonedaCommRing : CommRng C ⥤ Cᵒᵖ ⥤ CommRingCat.{v} where
           map_one' := by simp
           map_zero' := by simp
           map_mul' x y :=
-            ((yonedaMon.map ((CommRng.forget₂Rng C ⋙
-              Rng.forget₂Mon C).map f)).app X).hom.map_mul x y
+            ((yonedaMon.map ((CommRingObjCat.forget₂RingObjCat C ⋙
+              RingObjCat.forget₂Mon C).map f)).app X).hom.map_mul x y
           map_add' x y :=
-            ((yonedaAddMon.map ((CommRng.forget₂Rng C ⋙
-              Rng.forget₂AddMon C).map f)).app X).hom.map_add x y }
-      naturality _ _ f := by ext g; apply Category.assoc }
+            ((yonedaAddMon.map ((CommRingObjCat.forget₂RingObjCat C ⋙
+              RingObjCat.forget₂AddMon C).map f)).app X).hom.map_add x y }
+      naturality _ _ f := by ext; apply Category.assoc }
   map_comp _ _ := by ext; exact (Category.assoc ..).symm
 
 end CategoryTheory
