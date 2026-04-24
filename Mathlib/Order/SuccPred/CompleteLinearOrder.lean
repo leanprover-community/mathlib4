@@ -23,6 +23,7 @@ variable {ι : Sort*} {α : Type*}
 section ConditionallyCompleteLinearOrder
 variable [ConditionallyCompleteLinearOrder α] [Nonempty ι] {f : ι → α} {s : Set α} {x : α}
 
+@[to_dual]
 lemma csSup_mem_of_not_isSuccLimit (hne : s.Nonempty) (hbdd : BddAbove s)
     (hlim : ¬ IsSuccLimit (sSup s)) : sSup s ∈ s := by
   rw [IsSuccLimit, not_and_or, not_not] at hlim
@@ -33,23 +34,10 @@ lemma csSup_mem_of_not_isSuccLimit (hne : s.Nonempty) (hbdd : BddAbove s)
     have ⟨i, his, hi⟩ := exists_lt_of_lt_csSup hne hy.lt
     exact eq_of_le_of_not_lt (le_csSup hbdd his) (hy.2 hi) ▸ his
 
-lemma csInf_mem_of_not_isPredLimit (hne : s.Nonempty) (hbdd : BddBelow s)
-    (hlim : ¬ IsPredLimit (sInf s)) : sInf s ∈ s := by
-  rw [IsPredLimit, not_and_or, not_not] at hlim
-  rcases hlim with (hmax | hlim)
-  · have ⟨a, has⟩ := hne
-    rwa [hmax.eq_of_le <| csInf_le hbdd has]
-  · have ⟨y, hy⟩ := not_forall_not.mp hlim
-    have ⟨i, his, hi⟩ := exists_lt_of_csInf_lt hne hy.lt
-    exact eq_of_le_of_not_lt (csInf_le hbdd his) (hy.2 · hi) ▸ his
-
+@[to_dual]
 lemma exists_eq_ciSup_of_not_isSuccLimit (hbdd : BddAbove (range f))
     (hf : ¬ IsSuccLimit (⨆ i, f i)) : ∃ i, f i = ⨆ i, f i :=
   csSup_mem_of_not_isSuccLimit (range_nonempty f) hbdd hf
-
-lemma exists_eq_ciInf_of_not_isPredLimit (hbdd : BddBelow (range f))
-    (hf : ¬ IsPredLimit (⨅ i, f i)) : ∃ i, f i = ⨅ i, f i :=
-  csInf_mem_of_not_isPredLimit (range_nonempty f) hbdd hf
 
 @[deprecated csSup_mem_of_not_isSuccLimit (since := "2026-04-24")]
 lemma csSup_mem_of_not_isSuccPrelimit (hne : s.Nonempty) (hbdd : BddAbove s)
@@ -71,21 +59,15 @@ lemma exists_eq_ciInf_of_not_isPredPrelimit (hf : BddBelow (range f))
     (hf' : ¬ IsPredPrelimit (⨅ i, f i)) : ∃ i, f i = ⨅ i, f i :=
   exists_eq_ciInf_of_not_isPredLimit hf <| mt IsPredLimit.isPredPrelimit hf'
 
+@[to_dual]
 lemma IsLUB.mem_of_nonempty_of_not_isSuccLimit (hs : IsLUB s x) (hne : s.Nonempty)
     (hx : ¬ IsSuccLimit x) : x ∈ s :=
   hs.csSup_eq hne ▸ csSup_mem_of_not_isSuccLimit hne hs.bddAbove (hs.csSup_eq hne ▸ hx)
 
-lemma IsGLB.mem_of_nonempty_of_not_isPredLimit (hs : IsGLB s x) (hne : s.Nonempty)
-    (hx : ¬ IsPredLimit x) : x ∈ s :=
-  hs.csInf_eq hne ▸ csInf_mem_of_not_isPredLimit hne hs.bddBelow (hs.csInf_eq hne ▸ hx)
-
+@[to_dual]
 lemma IsLUB.exists_of_nonempty_of_not_isSuccLimit (hf : IsLUB (range f) x) (hx : ¬ IsSuccLimit x) :
     ∃ i, f i = x :=
   hf.mem_of_nonempty_of_not_isSuccLimit (range_nonempty f) hx
-
-lemma IsGLB.exists_of_nonempty_of_not_isPredLimit
-    (hf : IsGLB (range f) x) (hx : ¬ IsPredLimit x) : ∃ i, f i = x :=
-  hf.mem_of_nonempty_of_not_isPredLimit (range_nonempty f) hx
 
 @[deprecated mem_of_nonempty_of_not_isSuccLimit (since := "2026-04-24")]
 lemma IsLUB.mem_of_nonempty_of_not_isSuccPrelimit
