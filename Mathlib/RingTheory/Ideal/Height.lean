@@ -186,7 +186,7 @@ lemma Ideal.mem_minimalPrimes_of_height_eq {I J : Ideal R} (e : I ≤ J) [J.IsPr
   refine (eq_of_le_of_not_lt h₂ fun h₃ ↦ ?_).symm
   have := Ideal.minimalPrimes_isPrime h₁
   have := finiteHeight_of_le h₂ IsPrime.ne_top'
-  exact lt_irrefl _ ((height_strict_mono_of_isPrime h₃).trans_le
+  exact lt_irrefl _ ((height_strict_mono_of_is_prime h₃).trans_le
     (e'.trans <| height_mono (Ideal.le_of_mem_minimalPrimes h₁)))
 
 /-- A prime ideal has height zero if and only if it is minimal -/
