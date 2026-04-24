@@ -603,9 +603,8 @@ to a unique map out of the direct limit. -/
 def lift (g : ∀ i, G i →ₗ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
     DirectLimit G f →ₗ[R] P where
   toFun := _root_.DirectLimit.lift _ (g · ·) fun i j h x ↦ (Hg i j h x).symm
-  map_add' := DirectLimit.induction₂ _ fun i x y ↦ by simp_rw [add_def, lift_def, map_add]
-  map_smul' r := DirectLimit.induction _ fun i x ↦ by
-    simp_rw [smul_def, lift_def, map_smul, RingHom.id_apply]
+  map_add' := lift_add _ _
+  map_smul' := lift_smul _ _
 
 variable (g : ∀ i, G i →ₗ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 
