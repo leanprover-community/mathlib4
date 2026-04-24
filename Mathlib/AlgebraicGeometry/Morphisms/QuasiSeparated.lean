@@ -53,9 +53,6 @@ class QuasiSeparated (f : X ⟶ Y) : Prop where
 
 attribute [instance] QuasiSeparated.quasiCompact_diagonal
 
-@[deprecated (since := "2025-10-15")]
-alias QuasiSeparated.diagonalQuasiCompact := QuasiSeparated.quasiCompact_diagonal
-
 theorem quasiSeparatedSpace_iff_forall_affineOpens {X : Scheme} :
     QuasiSeparatedSpace X ↔ ∀ U V : X.affineOpens, IsCompact (U ∩ V : Set X) := by
   rw [quasiSeparatedSpace_iff]
@@ -81,9 +78,6 @@ theorem quasiSeparatedSpace_iff_forall_affineOpens {X : Scheme} :
         rw [Set.union_inter_distrib_right]
         apply hW.union
         apply H
-
-@[deprecated (since := "2025-10-15")]
-alias quasiSeparatedSpace_iff_affine := quasiSeparatedSpace_iff_forall_affineOpens
 
 theorem quasiCompact_affineProperty_iff_quasiSeparatedSpace [IsAffine Y] (f : X ⟶ Y) :
     AffineTargetMorphismProperty.diagonal (fun X _ _ _ ↦ CompactSpace X) f ↔
@@ -235,9 +229,6 @@ theorem quasiSeparated_iff_quasiSeparatedSpace (f : X ⟶ Y) [QuasiSeparatedSpac
     QuasiSeparated f ↔ QuasiSeparatedSpace X :=
   ⟨fun _ ↦ quasiSeparatedSpace_of_quasiSeparated f, fun _ ↦ inferInstance⟩
 
-@[deprecated (since := "2025-10-15")]
-alias quasiSeparated_over_affine_iff := quasiSeparated_iff_quasiSeparatedSpace
-
 instance : MorphismProperty.HasOfPostcompProperty @QuasiSeparated ⊤ where
   of_postcomp f g _ _ := .of_comp f g
 
@@ -257,9 +248,6 @@ instance (priority := low) quasiCompact_of_compactSpace {X Y : Scheme} (f : X �
 theorem quasiCompact_iff_compactSpace (f : X ⟶ Y) [QuasiSeparatedSpace Y] [CompactSpace Y] :
     QuasiCompact f ↔ CompactSpace X :=
   ⟨fun _ ↦ QuasiCompact.compactSpace_of_compactSpace f, fun _ ↦ inferInstance⟩
-
-@[deprecated (since := "2025-10-15")]
-alias quasiCompact_over_affine_iff := quasiCompact_iff_compactSpace
 
 theorem exists_eq_pow_mul_of_isAffineOpen (X : Scheme) (U : X.Opens) (hU : IsAffineOpen U)
     (f : Γ(X, U)) (x : Γ(X, X.basicOpen f)) :
