@@ -1259,17 +1259,8 @@ open scoped Topology uniformity
 
 /-- The coercion from `lp E p` to `∀ i, E i` is uniformly continuous. -/
 theorem uniformContinuous_coe [_i : Fact (1 ≤ p)] :
-    UniformContinuous (α := lp E p) ((↑) : lp E p → ∀ i, E i) := by
-  have hp : p ≠ 0 := (zero_lt_one.trans_le _i.elim).ne'
-  rw [uniformContinuous_pi]
-  intro i
-  rw [NormedAddCommGroup.uniformity_basis_dist.uniformContinuous_iff
-    NormedAddCommGroup.uniformity_basis_dist]
-  intro ε hε
-  refine ⟨ε, hε, ?_⟩
-  rintro f g (hfg : ‖f - g‖ < ε)
-  have : ‖f i - g i‖ ≤ ‖f - g‖ := norm_apply_le_norm hp (f - g) i
-  exact this.trans_lt hfg
+    UniformContinuous (α := lp E p) ((↑) : lp E p → ∀ i, E i) :=
+  uniformContinuous_pi.2 fun i => (lipschitzWith_one_eval (E := E) p i).uniformContinuous
 
 variable {ι : Type*} {l : Filter ι} [Filter.NeBot l]
 
