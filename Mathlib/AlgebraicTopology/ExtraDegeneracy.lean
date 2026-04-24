@@ -91,6 +91,8 @@ def map {D : Type*} [Category* D] {X : SimplicialObject.Augmented C} (ed : Extra
   s' := F.map ed.s'
   s n := F.map (ed.s n)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- If `X` and `Y` are isomorphic augmented simplicial objects, then an extra
 degeneracy for `X` gives also an extra degeneracy for `Y` -/
 def ofIso {X Y : SimplicialObject.Augmented C} (e : X ≅ Y) (ed : ExtraDegeneracy X) :
@@ -98,39 +100,9 @@ def ofIso {X Y : SimplicialObject.Augmented C} (e : X ≅ Y) (ed : ExtraDegenera
   s' := (point.mapIso e).inv ≫ ed.s' ≫ (drop.mapIso e).hom.app (op ⦋0⦌)
   s n := (drop.mapIso e).inv.app (op ⦋n⦌) ≫ ed.s n ≫ (drop.mapIso e).hom.app (op ⦋n + 1⦌)
   s'_comp_ε := by
-    #adaptation_note /-- Proof repaired after leanprover/lean4#13492.
-    The body of `s'_comp_ε` used to be just
-    ```
-    simpa [w₀, ed.s'_comp_ε_assoc] using (point.mapIso e).inv_hom_id
-    ```
-    The replacement proof is a short-term fix, and we request that the authors/maintainers of
-    this file review the proof, and either approve it by removing this adaptation note, revise
-    the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
-    needs addressing. -/
-    have h1 := (point.mapIso e).inv_hom_id
-    dsimp [point] at h1
-    have h2 : e.hom.left.app (op ⦋0⦌) ≫ Y.hom.app (op ⦋0⦌) =
-        X.hom.app (op ⦋0⦌) ≫ e.hom.right := w₀ e.hom
-    simp only [Category.assoc]
-    erw [h2, ed.s'_comp_ε_assoc]
-    exact h1
+    simpa [dsimp% w₀] using dsimp% (point.mapIso e).inv_hom_id
   s₀_comp_δ₁ := by
-    #adaptation_note /-- Proof repaired after leanprover/lean4#13492.
-    The body of `s₀_comp_δ₁` used to be just
-    ```
-    simp [← SimplicialObject.δ_naturality, s₀_comp_δ₁_assoc, w₀_assoc]
-    ```
-    The replacement proof is a short-term fix, and we request that the authors/maintainers of
-    this file review the proof, and either approve it by removing this adaptation note, revise
-    the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
-    needs addressing. -/
-    dsimp
-    rw [Category.assoc, Category.assoc, ← SimplicialObject.δ_naturality,
-      ← Category.assoc (ed.s 0)]
-    erw [ed.s₀_comp_δ₁]
-    rw [Category.assoc]
-    erw [w₀_assoc e.inv]
-    simp [Category.assoc]
+    simp [← SimplicialObject.δ_naturality, s₀_comp_δ₁_assoc, dsimp% w₀_assoc]
   s_comp_δ₀ n := by
     simpa [← SimplicialObject.δ_naturality] using
       congr_app (drop.mapIso e).inv_hom_id (op ⦋n⦌)
