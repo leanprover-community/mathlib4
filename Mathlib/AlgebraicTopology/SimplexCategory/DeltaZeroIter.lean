@@ -237,7 +237,6 @@ lemma σ_σ₀Iter (i : ℕ) {n m : ℕ} (j : Fin (m + 1)) (hi : n + i = m := by
     σ j ≫ σ₀Iter i hi = σ₀Iter (i + 1) := by
   refine ConcreteCategory.hom_ext _ _ (fun k ↦ ?_)
   ext
-  dsimp
   rw [dsimp% ConcreteCategory.comp_apply (σ j) (σ₀Iter i), coe_σ]
   by_cases! hk : i < k.val
   · rw [σ₀Iter_coe_eq_of_ge (i + 1) ..,
