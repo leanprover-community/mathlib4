@@ -47,7 +47,7 @@ lemma HasLaw.measure_eq (hX : HasLaw X μ P) {p : 𝓧 → Prop} (hp : Measurabl
   rw [← hX.map_eq, map_apply_of_aemeasurable hX.aemeasurable hp]
   simp
 
-lemma HasLaw.measure_real_eq (hX : HasLaw X μ P) {p : 𝓧 → Prop} (hp : MeasurableSet {x | p x}) :
+lemma HasLaw.measureReal_eq (hX : HasLaw X μ P) {p : 𝓧 → Prop} (hp : MeasurableSet {x | p x}) :
     P.real {ω | p (X ω)} = μ.real {x | p x} := by
   rw [← hX.map_eq, map_measureReal_apply_of_aemeasurable hX.aemeasurable hp]
   simp
