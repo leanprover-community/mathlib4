@@ -134,6 +134,8 @@ structure RingObjCat where
   X : C
   [ringObj : RingObj X]
 
+initialize_simps_projections RingObjCat (-ringObj)
+
 namespace RingObjCat
 
 attribute [instance] ringObj
@@ -190,6 +192,8 @@ structure CommRingObjCat where
   /-- The underlying object in the ambient monoidal category -/
   X : C
   [commRingObj : CommRingObj X]
+
+initialize_simps_projections CommRingObjCat (-commRingObj)
 
 namespace CommRingObjCat
 
