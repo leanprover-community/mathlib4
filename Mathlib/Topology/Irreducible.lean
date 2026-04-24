@@ -160,6 +160,7 @@ theorem isClosed_irreducibleComponent {x : X} : IsClosed (irreducibleComponent x
   isClosed_of_mem_irreducibleComponents _ (irreducibleComponent_mem_irreducibleComponents x)
 
 /-- A preirreducible space is one where there is no non-trivial pair of disjoint opens. -/
+@[mk_iff]
 class PreirreducibleSpace (X : Type*) [TopologicalSpace X] : Prop where
   /-- In a preirreducible space, `Set.univ` is a preirreducible set. -/
   isPreirreducible_univ : IsPreirreducible (univ : Set X)
@@ -344,9 +345,7 @@ theorem isPreirreducible_iff_subset_closure_inter_open (S : Set X) :
 /-- A space is preirreducible iff all nonempty open sets are dense. -/
 theorem preirreducibleSpace_iff_open_dense (X : Type*) [TopologicalSpace X] :
     PreirreducibleSpace X ↔ ∀ ⦃U : Set X⦄, IsOpen U → U.Nonempty → Dense U := by
-  have : PreirreducibleSpace X ↔ IsPreirreducible (@univ X) :=
-    ⟨fun h ↦ PreirreducibleSpace.isPreirreducible_univ, fun h ↦ { isPreirreducible_univ := h }⟩
-  rw [this, isPreirreducible_iff_subset_closure_inter_open]
+  rw [preirreducibleSpace_iff, isPreirreducible_iff_subset_closure_inter_open]
   simp only [univ_inter, univ_subset_iff, Dense]
   grind
 
