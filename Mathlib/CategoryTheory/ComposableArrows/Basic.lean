@@ -225,20 +225,11 @@ lemma hom_ext₀ {F G : ComposableArrows C 0} {φ φ' : F ⟶ G}
   fin_cases i
   exact h
 
-#adaptation_note /-- After leanprover/lean4#13363, the `hom_inv_id` and `inv_hom_id` fields
-needed to be supplied explicitly. Previously they were not necessary, and were proved by the
-`auto_param`.
-The replacement proof is a short-term fix, and we request that the authors/maintainers of
-this file review the proof, and either approve it by removing this adaptation note, revise
-the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
-needs addressing. -/
 /-- Constructor for isomorphisms in `ComposableArrows C 0`. -/
 @[simps!]
 def isoMk₀ {F G : ComposableArrows C 0} (e : F.obj' 0 ≅ G.obj' 0) : F ≅ G where
   hom := homMk₀ e.hom
   inv := homMk₀ e.inv
-  hom_inv_id := by apply hom_ext₀; with_unfolding_all exact e.hom_inv_id
-  inv_hom_id := by apply hom_ext₀; with_unfolding_all exact e.inv_hom_id
 
 lemma isIso_iff₀ {F G : ComposableArrows C 0} (f : F ⟶ G) :
     IsIso f ↔ IsIso (f.app 0) := by
@@ -274,13 +265,6 @@ lemma hom_ext₁ {F G : ComposableArrows C 1} {φ φ' : F ⟶ G}
     | 0 => exact h₀
     | 1 => exact h₁
 
-#adaptation_note /-- After leanprover/lean4#13363, the `hom_inv_id` and `inv_hom_id` fields
-needed to be supplied explicitly. Previously they were not necessary, and were proved by the
-`auto_param`.
-The replacement proof is a short-term fix, and we request that the authors/maintainers of
-this file review the proof, and either approve it by removing this adaptation note, revise
-the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
-needs addressing. -/
 /-- Constructor for isomorphisms in `ComposableArrows C 1`. -/
 @[simps!]
 def isoMk₁ {F G : ComposableArrows C 1}
@@ -291,18 +275,6 @@ def isoMk₁ {F G : ComposableArrows C 1}
   inv := homMk₁ left.inv right.inv (by
     rw [← cancel_mono right.hom, assoc, assoc, w, right.inv_hom_id, left.inv_hom_id_assoc]
     apply comp_id)
-  hom_inv_id := by
-    apply hom_ext₁
-    · change left.hom ≫ left.inv = 𝟙 _
-      simp
-    · change right.hom ≫ right.inv = 𝟙 _
-      simp
-  inv_hom_id := by
-    apply hom_ext₁
-    · change left.inv ≫ left.hom = 𝟙 _
-      simp
-    · change right.inv ≫ right.hom = 𝟙 _
-      simp
 
 lemma map'_eq_hom₁ (F : ComposableArrows C 1) : F.map' 0 1 = F.hom := rfl
 
@@ -642,13 +614,6 @@ lemma hom_ext₂ {f g : ComposableArrows C 2} {φ φ' : f ⟶ g}
     φ = φ' :=
   hom_ext_succ h₀ (hom_ext₁ h₁ h₂)
 
-#adaptation_note /-- After leanprover/lean4#13363, the `hom_inv_id` and `inv_hom_id` fields
-needed to be supplied explicitly. Previously they were not necessary, and were proved by the
-`auto_param`.
-The replacement proof is a short-term fix, and we request that the authors/maintainers of
-this file review the proof, and either approve it by removing this adaptation note, revise
-the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
-needs addressing. -/
 /-- Constructor for isomorphisms in `ComposableArrows C 2`. -/
 @[simps]
 def isoMk₂ {f g : ComposableArrows C 2}
@@ -661,8 +626,6 @@ def isoMk₂ {f g : ComposableArrows C 2}
       comp_id, app₀.hom_inv_id_assoc])
     (by rw [← cancel_epi app₁.hom, ← reassoc_of% w₁, app₂.hom_inv_id,
       comp_id, app₁.hom_inv_id_assoc])
-  hom_inv_id := by apply hom_ext₂ <;> (with_unfolding_all dsimp; simp)
-  inv_hom_id := by apply hom_ext₂ <;> (with_unfolding_all dsimp; simp)
 
 lemma isIso_iff₂ {F G : ComposableArrows C 2} (f : F ⟶ G) :
     IsIso f ↔ IsIso (f.app 0) ∧ IsIso (f.app 1) ∧ IsIso (f.app 2) := by

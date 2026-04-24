@@ -579,20 +579,8 @@ end PosNum
 namespace Num
 
 @[simp]
-protected theorem div_zero (n : Num) : n / 0 = 0 :=
-  show n.div 0 = 0 by
-    cases n
-    · rfl
-    · #adaptation_note /-- Proof repaired after leanprover/lean4#13363.
-      The proof used to finish from this point as
-      ```
-      simp [Num.div]
-      ```
-      The replacement proof is a short-term fix, and we request that the authors/maintainers of
-      this file review the proof, and either approve it by removing this adaptation note, revise
-      the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
-      needs addressing. -/
-      change (Num.pos _).div Num.zero = 0; simp [Num.div]
+protected theorem div_zero (n : Num) : n / 0 = 0 := by
+  cases n <;> rfl
 
 @[simp, norm_cast]
 theorem div_to_nat : ∀ n d, ((n / d : Num) : ℕ) = n / d
@@ -602,20 +590,8 @@ theorem div_to_nat : ∀ n d, ((n / d : Num) : ℕ) = n / d
   | pos _, pos _ => PosNum.div'_to_nat _ _
 
 @[simp]
-protected theorem mod_zero (n : Num) : n % 0 = n :=
-  show n.mod 0 = n by
-    cases n
-    · rfl
-    · #adaptation_note /-- Proof repaired after leanprover/lean4#13363.
-      The proof used to finish from this point as
-      ```
-      simp [Num.mod]
-      ```
-      The replacement proof is a short-term fix, and we request that the authors/maintainers of
-      this file review the proof, and either approve it by removing this adaptation note, revise
-      the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
-      needs addressing. -/
-      change (Num.pos _).mod Num.zero = Num.pos _; simp [Num.mod]
+protected theorem mod_zero (n : Num) : n % 0 = n := by
+  cases n <;> rfl
 
 @[simp, norm_cast]
 theorem mod_to_nat : ∀ n d, ((n % d : Num) : ℕ) = n % d

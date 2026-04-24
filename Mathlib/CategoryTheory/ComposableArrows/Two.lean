@@ -61,35 +61,13 @@ lemma twoδ₁Toδ₀_app_zero :
 lemma twoδ₁Toδ₀_app_one :
     (twoδ₁Toδ₀ f g fg h).app 1 = 𝟙 _ := by with_unfolding_all rfl
 
-#adaptation_note /-- Proof repaired after leanprover/lean4#13363.
-The proof body used to be just
-```
-rw [isIso_iff₁]
-constructor <;> dsimp <;> infer_instance
-```
-The replacement proof is a short-term fix, and we request that the authors/maintainers of
-this file review the proof, and either approve it by removing this adaptation note, revise
-the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
-needs addressing. -/
-set_option backward.isDefEq.respectTransparency false in
 instance [IsIso g] : IsIso (twoδ₂Toδ₁ f g fg h) := by
   rw [isIso_iff₁, twoδ₂Toδ₁_app_zero, twoδ₂Toδ₁_app_one]
-  exact ⟨inferInstance, ‹_›⟩
+  exact ⟨IsIso.id _, ‹_›⟩
 
-#adaptation_note /-- Proof repaired after leanprover/lean4#13363.
-The proof body used to be just
-```
-rw [isIso_iff₁]
-constructor <;> dsimp <;> infer_instance
-```
-The replacement proof is a short-term fix, and we request that the authors/maintainers of
-this file review the proof, and either approve it by removing this adaptation note, revise
-the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
-needs addressing. -/
-set_option backward.isDefEq.respectTransparency false in
 instance [IsIso f] : IsIso (twoδ₁Toδ₀ f g fg h) := by
   rw [isIso_iff₁, twoδ₁Toδ₀_app_zero, twoδ₁Toδ₀_app_one]
-  exact ⟨‹_›, inferInstance⟩
+  exact ⟨‹_›, IsIso.id _⟩
 
 end
 
