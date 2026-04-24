@@ -76,7 +76,6 @@ noncomputable def toSSetObjEdgeEquiv {x y : X} :
   left_inv _ := by aesop
   right_inv _ := by aesop
 
-variable (X) in
 /-- Given `X : TopCat`, this is the bijection between `ZerothHomotopy X` and the
 type of connected components of the simplicial set `toSSet.obj X`. -/
 noncomputable def zerothHomotopyEquiv : ZerothHomotopy X ≃ (toSSet.obj X).π₀ where
@@ -90,11 +89,19 @@ noncomputable def zerothHomotopyEquiv : ZerothHomotopy X ≃ (toSSet.obj X).π�
   left_inv x := by induction x; simp
   right_inv x := by induction x; simp
 
+@[simp]
+lemma zerothHomotopyEquiv_mk (x : X) :
+    zerothHomotopyEquiv (.mk x) = .mk (toSSetObj₀Equiv.symm x) := rfl
+
+@[simp]
+lemma zerothHomotopyEquiv_symm_mk (x : (toSSet.obj X) _⦋0⦌) :
+    zerothHomotopyEquiv.symm (.mk x) = .mk (toSSetObj₀Equiv x) := rfl
+
 instance [PathConnectedSpace X] : (toSSet.obj X).IsConnected := by
   letI : Unique (ZerothHomotopy X) := Nonempty.some (by
     rw [unique_iff_subsingleton_and_nonempty]
     constructor <;> infer_instance)
   rw [SSet.isConnected_iff_nonempty_unique]
-  exact ⟨(zerothHomotopyEquiv X).symm.unique⟩
+  exact ⟨zerothHomotopyEquiv.symm.unique⟩
 
 end TopCat

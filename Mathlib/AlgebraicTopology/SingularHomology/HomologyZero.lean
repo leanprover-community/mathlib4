@@ -36,7 +36,7 @@ identifies with the coproduct of copies of `R` indexed by `ZerothHomotopy X`. -/
 noncomputable def singularHomology₀Iso :
     ((singularHomologyFunctor C 0).obj R).obj X ≅ ∐ (fun (_ : ZerothHomotopy X) ↦ R) :=
   SSet.homology₀Iso _ _ ≪≫
-    (sigmaConst.obj R).mapIso (zerothHomotopyEquiv X).toIso.symm
+    (sigmaConst.obj R).mapIso zerothHomotopyEquiv.toIso.symm
 
 /-- The augmentation map `((singularHomologyFunctor C 0).obj R).obj X ⟶ R`. -/
 noncomputable def singularHomology₀ε :
