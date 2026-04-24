@@ -233,7 +233,7 @@ lemma exists_notMem_forall_ne_mem_and_adjoin_eq_top
   have hrQ' : φ r ≠ 0 := by
     have : Ideal.ResidueField.mapₐ p Q (ofId R S) (Ideal.over_def Q p) =
       AlgHom.restrictScalars R (ofId p.ResidueField Q.ResidueField) := by ext
-    rw [← AlgHom.restrictScalars_apply R, Algebra.TensorProduct.restrictScalars_lift (S' := R)]
+    rw [← AlgHom.restrictScalars_apply R, Algebra.TensorProduct.restrictScalars_lift]
     convert hrQ
     rw [← SetLike.mem_coe, PrimeSpectrum.coe_primesOverOrderIsoFiber_apply_asIdeal]
     simp [this]
