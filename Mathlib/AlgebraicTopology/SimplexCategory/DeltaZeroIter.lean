@@ -262,7 +262,7 @@ lemma σ_σ₀Iter' (i : ℕ) {n m : ℕ} (j : Fin (m + 1)) (j' : Fin (n + 1))
       ← σ_comp_σ (by simp), Fin.castSucc_zero]
 
 @[reassoc (attr := simp)]
-def δ₀Iter_σ₀Iter (i : ℕ) {n m : ℕ} (hi : n + i = m := by lia) :
+lemma δ₀Iter_σ₀Iter (i : ℕ) {n m : ℕ} (hi : n + i = m := by lia) :
     δ₀Iter i hi ≫ σ₀Iter i hi = 𝟙 _ := by
   induction i generalizing n m with
   | zero =>
