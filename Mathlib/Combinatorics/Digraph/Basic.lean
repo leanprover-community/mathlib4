@@ -474,10 +474,8 @@ instance (G : Digraph V) : CompleteLattice G.SpanningSubgraph where
   bot_le := bot_le
   sSup := sSup
   sInf := sInf
-  le_sSup := le_sSup
-  sSup_le := sSup_le
-  sInf_le := sInf_le
-  le_sInf := le_sInf
+  isLUB_sSup s := ⟨le_sSup s, sSup_le s⟩
+  isGLB_sInf s := ⟨sInf_le s, le_sInf s⟩
 
 instance (G : Digraph V) : DistribLattice G.SpanningSubgraph :=
   Subtype.coe_injective.distribLattice (fun H : G.SpanningSubgraph => (H : Digraph V))
