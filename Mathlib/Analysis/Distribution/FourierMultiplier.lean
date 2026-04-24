@@ -209,10 +209,6 @@ theorem lineDeriv_eq_fourierMultiplierCLM (m : E) (f : 𝓢'(E, F)) :
 
 open Laplacian
 
---set_option backward.isDefEq.respectTransparency false in
-lemma foo (f : 𝓢'(E, F)) (x : ℝ) : x • f = (x : ℂ) • f := by
-  rw [← Complex.coe_smul x]
-
 theorem laplacian_eq_fourierMultiplierCLM (f : 𝓢'(E, F)) :
     Δ f = -(2 * π) ^ 2 • fourierMultiplierCLM F (fun x ↦ Complex.ofReal (‖x‖ ^ 2)) f := by
   let ι := Fin (Module.finrank ℝ E)
