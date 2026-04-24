@@ -3,13 +3,16 @@ Copyright (c) 2021 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
-import Mathlib.Algebra.Category.MonCat.Basic
-import Mathlib.Algebra.Category.Semigrp.Basic
-import Mathlib.Algebra.FreeMonoid.Basic
-import Mathlib.Algebra.Group.WithOne.Basic
-import Mathlib.Data.Finsupp.Basic
-import Mathlib.Data.Finsupp.SMulWithZero
-import Mathlib.CategoryTheory.Adjunction.Basic
+module
+
+public import Mathlib.Algebra.Category.MonCat.Basic
+public import Mathlib.Algebra.Category.Semigrp.Basic
+public import Mathlib.Algebra.FreeMonoid.Basic
+public import Mathlib.Algebra.Group.WithOne.Basic
+public import Mathlib.Algebra.Module.NatInt
+public import Mathlib.Data.Finsupp.Basic
+public import Mathlib.Data.Finsupp.SMulWithZero
+public import Mathlib.CategoryTheory.Adjunction.Basic
 
 /-!
 # Adjunctions regarding the category of monoids
@@ -22,6 +25,8 @@ from monoids to semigroups.
 * free-forgetful adjunction for monoids
 * adjunctions related to commutative monoids
 -/
+
+@[expose] public section
 
 
 universe u
@@ -70,8 +75,9 @@ def free : Type u ⥤ MonCat.{u} where
 def adj : free ⊣ forget MonCat.{u} :=
   Adjunction.mkOfHomEquiv
     -- The hint `(C := MonCat)` below speeds up the declaration by 10 times.
-    { homEquiv X Y := (ConcreteCategory.homEquiv (C := MonCat)).trans FreeMonoid.lift.symm
-      homEquiv_naturality_left_symm _ _ := MonCat.hom_ext (FreeMonoid.hom_eq fun _ => rfl) }
+    { homEquiv X Y := (ConcreteCategory.homEquiv (C := MonCat)).trans (FreeMonoid.lift.symm.trans
+        TypeCat.homEquiv.symm)
+      homEquiv_naturality_left_symm _ _ := ConcreteCategory.ext (FreeMonoid.hom_eq fun _ ↦ by rfl) }
 
 instance : (forget MonCat.{u}).IsRightAdjoint :=
   ⟨_, ⟨adj⟩⟩
@@ -88,13 +94,14 @@ def free : Type u ⥤ AddCommMonCat.{u} where
   obj α := .of (α →₀ ℕ)
   map f := ofHom (Finsupp.mapDomain.addMonoidHom f)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The free-forgetful adjunction for commutative monoids. -/
 noncomputable
 def adj : free ⊣ forget AddCommMonCat.{u} where
-  unit := { app X i := Finsupp.single i 1 }
+  unit := { app X := TypeCat.ofHom fun i ↦ Finsupp.single i 1 }
   counit :=
   { app M := ofHom (Finsupp.liftAddHom (multiplesHom M))
-    naturality {M N} f := by dsimp; ext1; apply Finsupp.liftAddHom.symm.injective; ext; simp }
+    naturality {M N} f := by ext1; apply Finsupp.liftAddHom.symm.injective; cat_disch }
 
 instance : free.IsLeftAdjoint := ⟨_, ⟨adj⟩⟩
 

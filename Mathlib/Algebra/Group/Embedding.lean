@@ -3,12 +3,16 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Logic.Embedding.Basic
-import Mathlib.Algebra.Group.Defs
+module
+
+public import Mathlib.Logic.Embedding.Basic
+public import Mathlib.Algebra.Group.Defs
 
 /-!
 # The embedding of a cancellative semigroup into itself by multiplication by a fixed element.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero DenselyOrdered
 

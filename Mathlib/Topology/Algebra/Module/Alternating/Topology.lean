@@ -3,8 +3,10 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Algebra.Module.Multilinear.Topology
-import Mathlib.Topology.Algebra.Module.Alternating.Basic
+module
+
+public import Mathlib.Topology.Algebra.Module.Multilinear.Topology
+public import Mathlib.Topology.Algebra.Module.Alternating.Basic
 
 /-!
 # Topology on continuous alternating maps
@@ -15,6 +17,8 @@ on the space of continuous alternating maps between topological vector spaces.
 The structures are induced by those on `ContinuousMultilinearMap`s,
 and most of the lemmas follow from the corresponding lemmas about `ContinuousMultilinearMap`s.
 -/
+
+@[expose] public section
 
 open Bornology Function Set Topology
 open scoped UniformConvergence Filter
@@ -130,7 +134,7 @@ variable [TopologicalSpace F] [IsTopologicalAddGroup F]
 
 lemma isEmbedding_toContinuousMultilinearMap :
     IsEmbedding (toContinuousMultilinearMap : (E [⋀^ι]→L[𝕜] F → _)) :=
-  letI := IsTopologicalAddGroup.toUniformSpace F
+  letI := IsTopologicalAddGroup.rightUniformSpace F
   haveI := isUniformAddGroup_of_addCommGroup (G := F)
   isUniformEmbedding_toContinuousMultilinearMap.isEmbedding
 
@@ -165,6 +169,16 @@ theorem hasBasis_nhds_zero :
       fun SV => { f | MapsTo f SV.1 SV.2 } :=
   hasBasis_nhds_zero_of_basis (Filter.basis_sets _)
 
+/-- The inclusion of *alternating* continuous multilinear maps into continuous multilinear maps
+as a continuous linear map. -/
+@[simps! -fullyApplied]
+def toContinuousMultilinearMapCLM
+    (R : Type*) [Semiring R] [Module R F] [ContinuousConstSMul R F] [SMulCommClass 𝕜 R F] :
+    E [⋀^ι]→L[𝕜] F →L[R] ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F :=
+  ⟨toContinuousMultilinearMapLinear, continuous_induced_dom⟩
+
+section ContinuousSMul
+
 variable [ContinuousSMul 𝕜 E]
 
 lemma isClosedEmbedding_toContinuousMultilinearMap [T2Space F] :
@@ -181,14 +195,6 @@ instance instT2Space [T2Space F] : T2Space (E [⋀^ι]→L[𝕜] F) :=
 instance instT3Space [T2Space F] : T3Space (E [⋀^ι]→L[𝕜] F) :=
   inferInstance
 
-/-- The inclusion of *alternating* continuous multi-linear maps into continuous multi-linear maps
-as a continuous linear map. -/
-@[simps! -fullyApplied]
-def toContinuousMultilinearMapCLM
-    (R : Type*) [Semiring R] [Module R F] [ContinuousConstSMul R F] [SMulCommClass 𝕜 R F] :
-    E [⋀^ι]→L[𝕜] F →L[R] ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F :=
-  ⟨toContinuousMultilinearMapLinear, continuous_induced_dom⟩
-
 section RestrictScalars
 
 variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
@@ -196,7 +202,7 @@ variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' �
 
 theorem isEmbedding_restrictScalars :
     IsEmbedding (restrictScalars 𝕜' : E [⋀^ι]→L[𝕜] F → E [⋀^ι]→L[𝕜'] F) :=
-  letI : UniformSpace F := IsTopologicalAddGroup.toUniformSpace F
+  letI : UniformSpace F := IsTopologicalAddGroup.rightUniformSpace F
   haveI : IsUniformAddGroup F := isUniformAddGroup_of_addCommGroup
   (isUniformEmbedding_restrictScalars _).isEmbedding
 
@@ -216,10 +222,52 @@ def restrictScalarsCLM [ContinuousConstSMul 𝕜' F] :
 
 end RestrictScalars
 
+end ContinuousSMul
+
+section ContinuousConstSMul
+
+variable {G : Type*} [AddCommGroup G] [Module 𝕜 G] [TopologicalSpace G] [ContinuousConstSMul 𝕜 F]
+
+/-- Given a continuous linear map taking values in the space of continuous multilinear maps
+such that all of its values are alternating maps,
+lift it to a continuous linear map taking values in the space of continuous alternating maps. -/
+def liftCLM (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F)
+    (hf : ∀ x v i j, v i = v j → i ≠ j → f x v = 0) : G →L[𝕜] (E [⋀^ι]→L[𝕜] F) where
+  toFun x := ⟨f x, hf x⟩
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
+  cont := continuous_induced_rng.mpr (map_continuous f)
+
+@[simp]
+lemma liftCLM_apply (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F)
+    (hf : ∀ x v i j, v i = v j → i ≠ j → f x v = 0) (x : G) (v : ι → E) :
+    liftCLM f hf x v = f x v :=
+  rfl
+
+section CompContinuousLinearMap
+
+variable {E' : Type*} [AddCommGroup E'] [Module 𝕜 E'] [TopologicalSpace E']
+
+/-- Composition of a continuous alternating map and a continuous linear map
+as a bundled continuous linear map.
+
+Note that for general topological vector spaces,
+this function does not need to be continuous in `f`. -/
+@[simps! apply]
+def compContinuousLinearMapCLM (f : E →L[𝕜] E') : (E' [⋀^ι]→L[𝕜] F) →L[𝕜] (E [⋀^ι]→L[𝕜] F) where
+  toLinearMap := compContinuousLinearMapₗ f
+  cont := by
+    rw [isEmbedding_toContinuousMultilinearMap.continuous_iff]
+    exact (map_continuous <| ContinuousMultilinearMap.compContinuousLinearMapL fun _ ↦ f).comp
+      continuous_toContinuousMultilinearMap
+
+end CompContinuousLinearMap
+
+variable [ContinuousSMul 𝕜 E]
 variable (𝕜 E F)
 
 /-- The application of a multilinear map as a `ContinuousLinearMap`. -/
-def apply [ContinuousConstSMul 𝕜 F] (m : ι → E) : E [⋀^ι]→L[𝕜] F →L[𝕜] F where
+def apply (m : ι → E) : E [⋀^ι]→L[𝕜] F →L[𝕜] F where
   toFun c := c m
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
@@ -228,16 +276,113 @@ def apply [ContinuousConstSMul 𝕜 F] (m : ι → E) : E [⋀^ι]→L[𝕜] F �
 variable {𝕜 E F}
 
 @[simp]
-lemma apply_apply [ContinuousConstSMul 𝕜 F] {m : ι → E} {c : E [⋀^ι]→L[𝕜] F} :
-    apply 𝕜 E F m c = c m := rfl
+lemma apply_apply {m : ι → E} {c : E [⋀^ι]→L[𝕜] F} : apply 𝕜 E F m c = c m := rfl
 
-theorem hasSum_eval {α : Type*} {p : α → E [⋀^ι]→L[𝕜] F}
-    {q : E [⋀^ι]→L[𝕜] F} (h : HasSum p q) (m : ι → E) :
+end ContinuousConstSMul
+
+variable [ContinuousSMul 𝕜 E] {α : Type*} {p : α → E [⋀^ι]→L[𝕜] F}
+
+theorem hasSum_eval {q : E [⋀^ι]→L[𝕜] F} (h : HasSum p q) (m : ι → E) :
     HasSum (fun a => p a m) (q m) :=
   h.map (applyAddHom m) (continuous_eval_const m)
 
-theorem tsum_eval [T2Space F] {α : Type*} {p : α → E [⋀^ι]→L[𝕜] F} (hp : Summable p)
-    (m : ι → E) : (∑' a, p a) m = ∑' a, p a m :=
+theorem tsum_eval [T2Space F] (hp : Summable p) (m : ι → E) : (∑' a, p a) m = ∑' a, p a m :=
   (hasSum_eval hp.hasSum m).tsum_eq.symm
 
 end ContinuousAlternatingMap
+
+namespace ContinuousLinearMap
+variable (𝕜 E F G ι : Type*) [NormedField 𝕜]
+  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [ContinuousSMul 𝕜 E]
+  [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [IsTopologicalAddGroup F]
+  [ContinuousConstSMul 𝕜 F]
+  [AddCommGroup G] [Module 𝕜 G] [TopologicalSpace G] [IsTopologicalAddGroup G]
+  [ContinuousConstSMul 𝕜 G]
+
+/-- `ContinuousLinearMap.compContinuousAlternatingMap` as a bundled continuous bilinear map.
+
+Given a continuous linear map `g : F →L[𝕜] G` and a continuous alternating map `f : E [⋀^ι]→L[𝕜] F`,
+it returns the continuous alternating map `g ∘ f`.
+This function is continuous in `f` (for each `g`)
+and in `g` (as a function taking values in continuous linear maps).
+Note that for a general topological vector space,
+the map is not guaranteed to be continuous in `(g, f)`.
+-/
+@[simps! apply_apply]
+def compContinuousAlternatingMapCLM :
+    (F →L[𝕜] G) →L[𝕜] (E [⋀^ι]→L[𝕜] F) →L[𝕜] (E [⋀^ι]→L[𝕜] G) where
+  toFun g :=
+    { toLinearMap := compContinuousAlternatingMapₗ _ _ _ _ g
+      cont := by
+        rw [ContinuousAlternatingMap.isEmbedding_toContinuousMultilinearMap.continuous_iff]
+        exact (map_continuous <| compContinuousMultilinearMapL 𝕜 (fun _ : ι ↦ E) F G g).comp
+          ContinuousAlternatingMap.continuous_toContinuousMultilinearMap }
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
+  cont := by
+    rw [ContinuousLinearMap.isEmbedding_postcomp
+      (ContinuousAlternatingMap.toContinuousMultilinearMapCLM 𝕜)
+      ContinuousAlternatingMap.isEmbedding_toContinuousMultilinearMap |>.continuous_iff]
+    exact map_continuous <|
+      (precomp (ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) G)
+        ((ContinuousAlternatingMap.toContinuousMultilinearMapCLM 𝕜 : (E [⋀^ι]→L[𝕜] F) →L[𝕜] _))) ∘L
+        (compContinuousMultilinearMapL 𝕜 (fun _ : ι ↦ E) F G)
+
+end ContinuousLinearMap
+
+namespace ContinuousLinearEquiv
+variable {𝕜 E E' F G ι : Type*} [NormedField 𝕜]
+  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+  [AddCommGroup E'] [Module 𝕜 E'] [TopologicalSpace E']
+  [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [IsTopologicalAddGroup F]
+  [ContinuousConstSMul 𝕜 F]
+  [AddCommGroup G] [Module 𝕜 G] [TopologicalSpace G] [IsTopologicalAddGroup G]
+  [ContinuousConstSMul 𝕜 G]
+
+/-- `ContinuousLinearMap.compContinuousAlternatingMap` as a bundled continuous linear equiv.
+
+Given a continuous linear equivalence `g : F ≃L[𝕜] G`,
+this function returns the equivalence between continuous alternating maps with codomain `F`
+and continuous alternating maps with codomain `G`
+that acts by composing these maps with `g`.
+-/
+@[simps +simpRhs apply]
+def continuousAlternatingMapCongrRight (g : F ≃L[𝕜] G) :
+    (E [⋀^ι]→L[𝕜] F) ≃L[𝕜] (E [⋀^ι]→L[𝕜] G) where
+  __ := g.continuousAlternatingMapCongrRightEquiv
+  __ := ContinuousLinearMap.compContinuousAlternatingMapCLM 𝕜 E F G ι g.toContinuousLinearMap
+  continuous_toFun := map_continuous <|
+    ContinuousLinearMap.compContinuousAlternatingMapCLM 𝕜 E F G ι g.toContinuousLinearMap
+  continuous_invFun := map_continuous <|
+    ContinuousLinearMap.compContinuousAlternatingMapCLM 𝕜 E G F ι g.symm.toContinuousLinearMap
+
+@[simp]
+theorem _root_.ContinuousLinearEquiv.continuousAlternatingMapCongrRight_symm (g : F ≃L[𝕜] G) :
+    (g.continuousAlternatingMapCongrRight (ι := ι) (E := E)).symm =
+      g.symm.continuousAlternatingMapCongrRight :=
+  rfl
+
+/-- Given a continuous linear isomorphism between the domains,
+generate a continuous linear isomorphism between the spaces of continuous alternating maps.
+
+This is `ContinuousAlternatingMap.compContinuousLinearMap` as an equivalence,
+and is the continuous version of `AlternatingMap.domLCongr`. -/
+@[simps apply]
+def continuousAlternatingMapCongrLeft (f : E ≃L[𝕜] E') :
+    E [⋀^ι]→L[𝕜] F ≃L[𝕜] (E' [⋀^ι]→L[𝕜] F) where
+  __ := f.continuousAlternatingMapCongrLeftEquiv
+  __ := ContinuousAlternatingMap.compContinuousLinearMapCLM (f.symm : E' →L[𝕜] E)
+  toFun g := g.compContinuousLinearMap (f.symm : E' →L[𝕜] E)
+  continuous_invFun :=
+    (ContinuousAlternatingMap.compContinuousLinearMapCLM (f : E →L[𝕜] E')).cont
+  continuous_toFun :=
+    (ContinuousAlternatingMap.compContinuousLinearMapCLM (f.symm : E' →L[𝕜] E)).cont
+
+/-- Continuous linear equivalences between the domains and the codomains
+generate a continuous linear equivalence between the spaces of continuous alternating maps. -/
+@[simps! apply]
+def continuousAlternatingMapCongr (e : E ≃L[𝕜] E') (e' : F ≃L[𝕜] G) :
+    (E [⋀^ι]→L[𝕜] F) ≃L[𝕜] (E' [⋀^ι]→L[𝕜] G) :=
+  e.continuousAlternatingMapCongrLeft.trans <| e'.continuousAlternatingMapCongrRight
+
+end ContinuousLinearEquiv

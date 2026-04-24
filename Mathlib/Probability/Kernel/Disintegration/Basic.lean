@@ -3,8 +3,10 @@ Copyright (c) 2024 Yaël Dillies, Kin Yau James Wong. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Kin Yau James Wong, Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
-import Mathlib.Probability.Kernel.Composition.MeasureCompProd
+module
+
+public import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
+public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 
 /-!
 # Disintegration of measures and kernels
@@ -35,6 +37,8 @@ disintegrated by some kernel, then `κ` itself is disintegrated by a kernel, nam
 disintegrating kernels.
 -/
 
+@[expose] public section
+
 open MeasureTheory Set Filter MeasurableSpace ProbabilityTheory
 open scoped ENNReal MeasureTheory Topology
 
@@ -59,7 +63,7 @@ variable [ρ.IsCondKernel ρCond]
 lemma disintegrate : ρ.fst ⊗ₘ ρCond = ρ := IsCondKernel.disintegrate
 
 lemma IsCondKernel.isSFiniteKernel (hρ : ρ ≠ 0) : IsSFiniteKernel ρCond := by
-  contrapose! hρ; rwa [← ρ.disintegrate ρCond, Measure.compProd_of_not_isSFiniteKernel]
+  contrapose hρ; rwa [← ρ.disintegrate ρCond, Measure.compProd_of_not_isSFiniteKernel]
 
 variable [IsFiniteMeasure ρ]
 
@@ -162,7 +166,8 @@ lemma IsCondKernel.isProbabilityMeasure_ae [IsFiniteKernel κ.fst] [κ.IsCondKer
     rw [lintegral_indicator_const hs] at this
     contrapose! this with h_ne_zero
     conv_lhs => rw [← one_mul (κ.fst a s)]
-    exact ENNReal.mul_lt_mul_right' h_ne_zero (measure_ne_top _ _) hr
+    gcongr
+    finiteness
   · rw [ae_const_le_iff_forall_lt_measure_zero]
     intro r hr
     let s := {b | κCond (a, b) Set.univ ≤ r}
@@ -177,7 +182,8 @@ lemma IsCondKernel.isProbabilityMeasure_ae [IsFiniteKernel κ.fst] [κ.IsCondKer
     rw [lintegral_indicator_const hs] at this
     contrapose! this with h_ne_zero
     conv_rhs => rw [← one_mul (κ.fst a s)]
-    exact ENNReal.mul_lt_mul_right' h_ne_zero (measure_ne_top _ _) hr
+    gcongr
+    finiteness
 
 
 /-! #### Existence of a disintegrating kernel in a countable space -/

@@ -3,11 +3,14 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Matrix
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Algebra.Lie.Weights.Basic
-import Mathlib.LinearAlgebra.Eigenspace.Matrix
-import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
+module
+
+public import Mathlib.Algebra.Lie.Matrix
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.Algebra.Lie.Weights.Basic
+public import Mathlib.LinearAlgebra.Eigenspace.Matrix
+public import Mathlib.LinearAlgebra.LinearIndependent.BaseChange
+public import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
 
 /-!
 # Geck's construction of a Lie algebra associated to a root system
@@ -25,7 +28,7 @@ reduced crystallographic root system. It follows [Geck](Geck2017) quite closely.
 
 ## Alternative approaches
 
-The are at least three ways to construct a Lie algebra from a root system:
+There are at least three ways to construct a Lie algebra from a root system:
 1. As a quotient of a free Lie algebra, using the Serre relations
 2. Directly defining the Lie bracket on $H ⊕ K^∣Φ|$
 3. The Geck construction
@@ -46,6 +49,8 @@ There seems to be no known construction of a Lie algebra from a root system with
 a base: https://mathoverflow.net/questions/495434/
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -73,6 +78,22 @@ lemma h_def [DecidableEq ι] (i : b.support) :
 lemma h_eq_diagonal [DecidableEq ι] (i : b.support) :
     h i = .diagonal (Sum.elim 0 (P.pairingIn ℤ · i)) := by
   ext (j | j) (k | k) <;> simp [h, Matrix.diagonal_apply]
+
+variable (b) in
+lemma linearIndependent_h [Finite ι] [CharZero R] [IsDomain R] [P.IsRootSystem] :
+    LinearIndependent R (h (b := b)) := by
+  classical
+  have : Matrix.diagLinearMap (b.support ⊕ ι) R R ∘ h =
+      Sum.elimZeroLeft ∘ fun i : b.support ↦ algebraMap ℤ R ∘ (P.pairingIn ℤ · i) := by
+    ext; rw [comp_apply, h_def]; aesop
+  apply LinearIndependent.of_comp (Matrix.diagLinearMap _ _ _)
+  rw [this, LinearMap.linearIndependent_iff_of_injOn _ Sum.elim_injective'.injOn,
+    linearIndependent_algebraMap_comp_iff]
+  suffices LinearIndependent ℤ (fun i j : b.support ↦ P.pairingIn ℤ j i) from
+    this.of_linearIndependent_subset b.support
+  apply b.cartanMatrix.transpose.linearIndependent_rows_of_det_ne_zero
+  rw [Matrix.det_transpose, ← Matrix.nondegenerate_iff_det_ne_zero]
+  exact b.cartanMatrix_nondegenerate
 
 lemma span_range_h_le_range_diagonal [DecidableEq ι] :
     span R (range h) ≤ LinearMap.range (Matrix.diagonalLinearMap (b.support ⊕ ι) R R) := by
@@ -120,7 +141,7 @@ def e (i : b.support) :
   open scoped Classical in
   letI := P.indexNeg
   .fromBlocks 0
-    (.of fun i' j ↦ if i' = i ∧ j = - i then 1 else 0)
+    (.of fun i' j ↦ if i' = i ∧ j = -i then 1 else 0)
     (.of fun i' j ↦ if i' = i then ↑|b.cartanMatrix i j| else 0)
     (.of fun i' j ↦ if P.root i' = P.root i + P.root j then P.chainBotCoeff i j + 1 else 0)
 
@@ -131,7 +152,7 @@ def f (i : b.support) :
   letI := P.indexNeg
   .fromBlocks 0
     (.of fun i' j ↦ if i' = i ∧ j = i then 1 else 0)
-    (.of fun i' j ↦ if i' = - i then ↑|b.cartanMatrix i j| else 0)
+    (.of fun i' j ↦ if i' = -i then ↑|b.cartanMatrix i j| else 0)
     (.of fun i' j ↦ if P.root i' = P.root j - P.root i then P.chainTopCoeff i j + 1 else 0)
 
 variable (b)
@@ -226,7 +247,7 @@ omit [Finite ι] [IsDomain R] [CharZero R] [P.IsCrystallographic] in
 
 omit [Finite ι] [IsDomain R] in
 lemma ω_mul_h [Fintype ι] (i : b.support) :
-    ω b * h i = - h i * ω b := by
+    ω b * h i = -h i * ω b := by
   classical
   ext (k | k) (l | l)
   · simp [ω, h]
@@ -244,7 +265,7 @@ lemma ω_mul_e [Fintype ι] (i : b.support) :
   · simp only [ω, e, f, mul_ite, mul_zero, Fintype.sum_sum_type, Matrix.mul_apply, Matrix.of_apply,
       Matrix.fromBlocks_apply₁₂, Matrix.fromBlocks_apply₂₂, Finset.sum_ite_eq']
     rw [Finset.sum_eq_single_of_mem i (Finset.mem_univ _) (by simp_all)]
-    simp [← ite_and, and_comm, - indexNeg_neg, neg_eq_iff_eq_neg]
+    simp [← ite_and, and_comm, -indexNeg_neg, neg_eq_iff_eq_neg]
   · simp [ω, e, f]
   · simp only [ω, e, f, Matrix.mul_apply, Fintype.sum_sum_type, Matrix.fromBlocks_apply₂₁,
       Matrix.fromBlocks_apply₂₂, Matrix.of_apply, mul_ite, ← neg_eq_iff_eq_neg (a := k)]
@@ -259,7 +280,7 @@ lemma ω_mul_f [Fintype ι] (i : b.support) :
   simpa [mul_assoc, ω_mul_ω] using this.symm
 
 lemma lie_e_f_mul_ω [Fintype ι] (i j : b.support) :
-    ⁅e i, f j⁆ * ω b = - ω b * ⁅e j, f i⁆ := by
+    ⁅e i, f j⁆ * ω b = -ω b * ⁅e j, f i⁆ := by
   classical
   calc ⁅e i, f j⁆ * ω b = e i * f j * ω b - f j * e i * ω b := by rw [Ring.lie_def, sub_mul]
                       _ = e i * (f j * ω b) - f j * (e i * ω b) := by rw [mul_assoc, mul_assoc]
@@ -307,8 +328,8 @@ instance : IsLieAbelian (cartanSubalgebra' b) := by
   refine ⟨fun ⟨⟨x, hx⟩, hx'⟩ ⟨⟨y, hy⟩, hy'⟩ ↦ ?_⟩
   let x' : cartanSubalgebra b := ⟨x, hx'⟩
   let y' : cartanSubalgebra b := ⟨y, hy'⟩
-  suffices ⁅x', y'⁆ = 0 by simpa [x', y', Subtype.ext_iff, -trivial_lie_zero] using this
-  simp
+  suffices ⁅x', y'⁆ = 0 by simpa [x', y', Subtype.ext_iff] using this
+  simp [trivial_lie_zero]
 
 instance : LieModule.IsTriangularizable R (cartanSubalgebra' b) (b.support ⊕ ι → R) := by
   refine ⟨fun ⟨⟨x, hx'⟩, hx⟩ ↦ ?_⟩

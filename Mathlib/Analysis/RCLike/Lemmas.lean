@@ -3,11 +3,15 @@ Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Topology.Instances.RealVectorSpace
+module
+
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Topology.Instances.RealVectorSpace
 
 /-! # Further lemmas about `RCLike` -/
+
+@[expose] public section
 
 open scoped Finset
 
@@ -52,7 +56,7 @@ namespace FiniteDimensional
 
 open RCLike
 
-library_note2 «RCLike instance» /--
+library_note «RCLike instance» /--
 This instance generates a type-class problem with a metavariable `?m` that should satisfy
 `RCLike ?m`. Since this can only be satisfied by `ℝ` or `ℂ`, this does not cause problems. -/
 
@@ -68,7 +72,7 @@ This is not an instance because it would cause a search for `FiniteDimensional ?
 `RCLike ?x`. -/
 theorem proper_rclike [FiniteDimensional K E] : ProperSpace E := by
   -- Using `have` not `let` since it is only existence of `NormedSpace` structure that we need.
-  have : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ K E
+  have : NormedSpace ℝ E := .restrictScalars ℝ K E
   have : FiniteDimensional ℝ E := FiniteDimensional.trans ℝ K E
   infer_instance
 

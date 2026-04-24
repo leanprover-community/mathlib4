@@ -3,8 +3,10 @@ Copyright (c) 2025 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.CategoryTheory.Functor.CurryingThree
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.Functor.CurryingThree
 
 /-!
 
@@ -17,9 +19,11 @@ phrased as equalities of natural transformations between trifunctors
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
-variable {C : Type*} [Category C] [MonoidalCategory C]
+variable {C : Type*} [Category* C] [MonoidalCategory C]
 
 open MonoidalCategory Functor
 
@@ -29,43 +33,43 @@ namespace Hexagon
 
 variable (C)
 
-/-- The trifunctor `X₁ X₂ X₃ ↦ (X₁ ⊗ X₂) ⊗ X₃ -/
+/-- The trifunctor `X₁ X₂ X₃ ↦ (X₁ ⊗ X₂) ⊗ X₃` -/
 @[simps!]
 def functor₁₂₃ : C ⥤ C ⥤ C ⥤ C := bifunctorComp₁₂ (curriedTensor C) (curriedTensor C)
 
-/-- The trifunctor `X₁ X₂ X₃ ↦ X₁ ⊗ (X₂ ⊗ X₃) -/
+/-- The trifunctor `X₁ X₂ X₃ ↦ X₁ ⊗ (X₂ ⊗ X₃)` -/
 @[simps!]
 def functor₁₂₃' : C ⥤ C ⥤ C ⥤ C := bifunctorComp₂₃ (curriedTensor C) (curriedTensor C)
 
-/-- The trifunctor `X₁ X₂ X₃ ↦ (X₂ ⊗ X₃) ⊗ X₁ -/
+/-- The trifunctor `X₁ X₂ X₃ ↦ (X₂ ⊗ X₃) ⊗ X₁` -/
 @[simps!]
 def functor₂₃₁ : C ⥤ C ⥤ C ⥤ C := (bifunctorComp₂₃ (curriedTensor C).flip (curriedTensor C))
 
-/-- The trifunctor `X₁ X₂ X₃ ↦ X₂ ⊗ (X₃ ⊗ X₁) -/
+/-- The trifunctor `X₁ X₂ X₃ ↦ X₂ ⊗ (X₃ ⊗ X₁)` -/
 @[simps!]
 def functor₂₃₁' : C ⥤ C ⥤ C ⥤ C := (bifunctorComp₂₃ (curriedTensor C) (curriedTensor C)).flip.flip₁₃
 
-/-- The trifunctor `X₁ X₂ X₃ ↦ (X₂ ⊗ X₁) ⊗ X₃ -/
+/-- The trifunctor `X₁ X₂ X₃ ↦ (X₂ ⊗ X₁) ⊗ X₃` -/
 @[simps!]
 def functor₂₁₃ : C ⥤ C ⥤ C ⥤ C := bifunctorComp₁₂ (curriedTensor C).flip (curriedTensor C)
 
-/-- The trifunctor `X₁ X₂ X₃ ↦ X₂ ⊗ (X₁ ⊗ X₃) -/
+/-- The trifunctor `X₁ X₂ X₃ ↦ X₂ ⊗ (X₁ ⊗ X₃)` -/
 @[simps!]
 def functor₂₁₃' : C ⥤ C ⥤ C ⥤ C := (bifunctorComp₂₃ (curriedTensor C) (curriedTensor C)).flip
 
-/-- The trifunctor `X₁ X₂ X₃ ↦ X₃ ⊗ (X₁ ⊗ X₂) -/
+/-- The trifunctor `X₁ X₂ X₃ ↦ X₃ ⊗ (X₁ ⊗ X₂)` -/
 @[simps!]
 def functor₃₁₂' : C ⥤ C ⥤ C ⥤ C := (bifunctorComp₂₃ (curriedTensor C) (curriedTensor C)).flip.flip₂₃
 
-/-- The trifunctor `X₁ X₂ X₃ ↦ (X₃ ⊗ X₁) ⊗ X₂ -/
+/-- The trifunctor `X₁ X₂ X₃ ↦ (X₃ ⊗ X₁) ⊗ X₂` -/
 @[simps!]
 def functor₃₁₂ : C ⥤ C ⥤ C ⥤ C := (bifunctorComp₁₂ (curriedTensor C) (curriedTensor C)).flip.flip₂₃
 
-/-- The trifunctor `X₁ X₂ X₃ ↦ X₁ ⊗ (X₃ ⊗ X₂) -/
+/-- The trifunctor `X₁ X₂ X₃ ↦ X₁ ⊗ (X₃ ⊗ X₂)` -/
 @[simps!]
 def functor₁₃₂' : C ⥤ C ⥤ C ⥤ C := (bifunctorComp₂₃ (curriedTensor C) (curriedTensor C).flip)
 
-/-- The trifunctor `X₁ X₂ X₃ ↦ (X₁ ⊗ X₃) ⊗ X₂ -/
+/-- The trifunctor `X₁ X₂ X₃ ↦ (X₁ ⊗ X₃) ⊗ X₂` -/
 @[simps!]
 def functor₁₃₂ : C ⥤ C ⥤ C ⥤ C := (bifunctorComp₁₂ (curriedTensor C) (curriedTensor C)).flip₂₃
 
@@ -92,7 +96,7 @@ namespace Forward
 
 /-!
 
-# The forward hexagon identity
+### The forward hexagon identity
 
 Given a braiding in the form of a natural isomorphism of bifunctors
 `β : curriedTensor C ≅ (curriedTensor C).flip` (i.e. `(β.app X₁).app X₂ : X₁ ⊗ X₂ ≅ X₂ ⊗ X₁`),
@@ -101,11 +105,11 @@ we phrase the forward hexagon identity as an equality of natural transformations
 same on the object level on three objects `X₁ X₂ X₃`).
 
 ```
-            funtor₁₂₃                         (X₁ ⊗ X₂) ⊗ X₃
-associtator/          \ secondMap₁             /           \
+            functor₁₂₃                        (X₁ ⊗ X₂) ⊗ X₃
+associator /          \ secondMap₁             /           \
           v            v                      v             v
      functor₁₂₃'    functor₂₁₃          X₁ ⊗ (X₂ ⊗ X₃)    (X₂ ⊗ X₁) ⊗ X₃
- firsMap₂ |            |secondMap₂            |             |
+firstMap₂ |            |secondMap₂            |             |
           v            v                      v             v
      functor₂₃₁     functor₂₁₃'         (X₂ ⊗ X₃) ⊗ X₁    X₂ ⊗ (X₁ ⊗ X₃)
   firstMap₃\           / secondMap₃            \            /
@@ -148,7 +152,7 @@ namespace Reverse
 
 /-!
 
-# The reverse hexagon identity
+### The reverse hexagon identity
 
 Given a braiding in the form of a natural isomorphism of bifunctors
 `β : curriedTensor C ≅ (curriedTensor C).flip` (i.e. `(β.app X₁).app X₂ : X₁ ⊗ X₂ ≅ X₂ ⊗ X₁`),
@@ -157,11 +161,11 @@ we phrase the reverse hexagon identity as an equality of natural transformations
 same on the object level on three objects `X₁ X₂ X₃`).
 
 ```
-            funtor₁₂₃'                        X₁ ⊗ (X₂ ⊗ X₃)
-associtator/          \ secondMap₁             /           \
+            functor₁₂₃'                       X₁ ⊗ (X₂ ⊗ X₃)
+associator /          \ secondMap₁             /           \
           v            v                      v             v
      functor₁₂₃    functor₁₃₂'          (X₁ ⊗ X₂) ⊗ X₃    X₁ ⊗ (X₃ ⊗ X₂)
- firsMap₂ |            |secondMap₂            |             |
+firstMap₂ |            |secondMap₂            |             |
           v            v                      v             v
      functor₃₁₂'    functor₁₃₂          X₃ ⊗ (X₁ ⊗ X₂)    (X₁ ⊗ X₃) ⊗ X₂
   firstMap₃\           / secondMap₃            \            /
@@ -217,6 +221,7 @@ Given a braiding `β : curriedTensor C ≅ (curriedTensor C).flip` as a natural 
 bifunctors, and the two equalities `hexagon_forward` and `hexagon_reverse` of natural
 transformations between trifunctors, we obtain a braided category structure.
 -/
+@[implicit_reducible]
 def ofBifunctor : BraidedCategory C where
   braiding X Y := (β.app X).app Y
   braiding_naturality_right _ _ _ _ := (β.app _).hom.naturality _
@@ -226,4 +231,19 @@ def ofBifunctor : BraidedCategory C where
   hexagon_reverse X Y Z :=
     (NatTrans.congr_app (NatTrans.congr_app (NatTrans.congr_app hexagon_reverse X) Y) Z)
 
-end CategoryTheory.BraidedCategory
+end BraidedCategory
+
+open BraidedCategory
+
+/--
+Alternative constructor for symmetric categories, where the symmetry of the braiding is phrased
+as an equality of natural transformation of bifunctors.
+-/
+@[implicit_reducible]
+def SymmetricCategory.ofCurried [BraidedCategory C]
+    (h : (curriedBraidingNatIso C).hom ≫ (flipFunctor _ _ _).map (curriedBraidingNatIso C).hom =
+      𝟙 _) :
+    SymmetricCategory C where
+  symmetry X Y := NatTrans.congr_app (NatTrans.congr_app h X) Y
+
+end CategoryTheory

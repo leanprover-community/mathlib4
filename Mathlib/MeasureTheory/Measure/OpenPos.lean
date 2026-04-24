@@ -3,9 +3,11 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
-import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
+module
+
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+public import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
+public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 
 /-!
 # Measures positive on nonempty opens
@@ -16,6 +18,8 @@ measures that have positive density with respect to a Haar measure. We also prov
 about these measures.
 
 -/
+
+@[expose] public section
 
 
 open Topology ENNReal MeasureTheory
@@ -221,29 +225,35 @@ theorem measure_closedBall_pos (x : X) {r : ℝ} (hr : 0 < r) : 0 < μ (closedBa
 
 end Metric
 
-namespace EMetric
+namespace Metric
 
 variable {X : Type*} [PseudoEMetricSpace X] {m : MeasurableSpace X} (μ : Measure X)
   [IsOpenPosMeasure μ]
 
-theorem measure_ball_pos (x : X) {r : ℝ≥0∞} (hr : r ≠ 0) : 0 < μ (ball x r) :=
-  isOpen_ball.measure_pos μ ⟨x, mem_ball_self hr.bot_lt⟩
+theorem measure_eball_pos (x : X) {r : ℝ≥0∞} (hr : r ≠ 0) : 0 < μ (eball x r) :=
+  isOpen_eball.measure_pos μ ⟨x, mem_eball_self hr.bot_lt⟩
 
-theorem measure_closedBall_pos (x : X) {r : ℝ≥0∞} (hr : r ≠ 0) : 0 < μ (closedBall x r) :=
-  (measure_ball_pos μ x hr).trans_le (measure_mono ball_subset_closedBall)
+theorem measure_closedEBall_pos (x : X) {r : ℝ≥0∞} (hr : r ≠ 0) : 0 < μ (closedEBall x r) :=
+  (measure_eball_pos μ x hr).trans_le (measure_mono eball_subset_closedEBall)
 
-end EMetric
+end Metric
+
+@[deprecated (since := "2026-01-24")]
+alias EMetric.measure_ball_pos := Metric.measure_eball_pos
+
+@[deprecated (since := "2026-01-24")]
+alias EMetric.measure_closedBall_pos := Metric.measure_closedEBall_pos
 
 section MeasureZero
 /-! ## Meagre sets and measure zero
 In general, neither of meagre and measure zero implies the other.
 - The set of Liouville numbers is a Lebesgue measure zero subset of ℝ, but is not meagre.
-(In fact, its complement is meagre. See `Real.disjoint_residual_ae`.)
+  (In fact, its complement is meagre. See `Real.disjoint_residual_ae`.)
 
 - The complement of the set of Liouville numbers in $[0,1]$ is meagre and has measure 1.
-For another counterexample, for all $α ∈ (0,1)$, there is a generalised Cantor set $C ⊆ [0,1]$
-of measure `α`. Cantor sets are nowhere dense (hence meagre). Taking a countable union of
-fat Cantor sets whose measure approaches 1 even yields a meagre set of measure 1.
+  For another counterexample, for all $α ∈ (0,1)$, there is a generalised Cantor set $C ⊆ [0,1]$
+  of measure `α`. Cantor sets are nowhere dense (hence meagre). Taking a countable union of
+  fat Cantor sets whose measure approaches 1 even yields a meagre set of measure 1.
 
 However, with respect to a measure which is positive on non-empty open sets, *closed* measure
 zero sets are nowhere dense and σ-compact measure zero sets in a Hausdorff space are meagre.
@@ -253,7 +263,8 @@ variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X] {s : Set X}
   {μ : Measure X} [IsOpenPosMeasure μ]
 
 /-- A *closed* measure zero subset is nowhere dense. (Closedness is required: for instance, the
-rational numbers are countable (thus have measure zero), but are dense (hence not nowhere dense). -/
+rational numbers are countable (thus have measure zero), but are dense (hence not nowhere dense).)
+-/
 lemma IsNowhereDense.of_isClosed_null (h₁s : IsClosed s) (h₂s : μ s = 0) :
     IsNowhereDense s := h₁s.isNowhereDense_iff.mpr (interior_eq_empty_of_null h₂s)
 

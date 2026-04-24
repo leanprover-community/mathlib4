@@ -3,12 +3,14 @@ Copyright (c) 2021 Bryan Gin-ge Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bryan Gin-ge Chen, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Idempotent
-import Mathlib.Algebra.Ring.Equiv
-import Mathlib.Algebra.Ring.PUnit
-import Mathlib.Order.Hom.BoundedLattice
-import Mathlib.Tactic.Abel
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.Group.Idempotent
+public import Mathlib.Algebra.Ring.Equiv
+public import Mathlib.Algebra.Ring.PUnit
+public import Mathlib.Order.Hom.BoundedLattice
+public import Mathlib.Tactic.Abel
+public import Mathlib.Tactic.Ring
 
 /-!
 # Boolean rings
@@ -39,6 +41,8 @@ purposes and because it is easier than dealing with
 
 boolean ring, boolean algebra
 -/
+
+@[expose] public section
 
 open scoped symmDiff
 
@@ -153,15 +157,17 @@ variable [BooleanRing α] [BooleanRing β] [BooleanRing γ]
 namespace BooleanRing
 
 /-- The join operation in a Boolean ring is `x + y + x * y`. -/
+@[instance_reducible]
 def sup : Max α :=
   ⟨fun x y => x + y + x * y⟩
 
 /-- The meet operation in a Boolean ring is `x * y`. -/
+@[instance_reducible]
 def inf : Min α :=
   ⟨(· * ·)⟩
 
-scoped [BooleanAlgebraOfBooleanRing] attribute [instance 100] BooleanRing.sup
-scoped [BooleanAlgebraOfBooleanRing] attribute [instance 100] BooleanRing.inf
+scoped[BooleanAlgebraOfBooleanRing] attribute [instance 100] BooleanRing.sup
+scoped[BooleanAlgebraOfBooleanRing] attribute [instance 100] BooleanRing.inf
 open BooleanAlgebraOfBooleanRing
 
 theorem sup_comm (a b : α) : a ⊔ b = b ⊔ a := by
@@ -199,6 +205,7 @@ theorem le_sup_inf (a b c : α) : (a ⊔ b) ⊓ (a ⊔ c) ⊔ (a ⊔ b ⊓ c) = 
   dsimp only [(· ⊔ ·), (· ⊓ ·)]
   rw [le_sup_inf_aux, add_self, mul_self, zero_add]
 
+set_option linter.flexible false in -- TODO: fix non-terminal simp
 /-- The Boolean algebra structure on a Boolean ring.
 
 The data is defined so that:
@@ -210,6 +217,7 @@ The data is defined so that:
 * `aᶜ` unfolds to `1 + a`
 * `a \ b` unfolds to `a * (1 + b)`
 -/
+@[instance_reducible]
 def toBooleanAlgebra : BooleanAlgebra α :=
   { Lattice.mk' sup_comm sup_assoc inf_comm inf_assoc sup_inf_self inf_sup_self with
     le_sup_inf := le_sup_inf
@@ -225,7 +233,7 @@ def toBooleanAlgebra : BooleanAlgebra α :=
       change
         1 + (a + (1 + a) + a * (1 + a)) + 1 * (a + (1 + a) + a * (1 + a)) =
           a + (1 + a) + a * (1 + a)
-      norm_num [mul_add, mul_self, add_self]
+      simp [mul_add, mul_self, add_self]
       rw [← add_assoc, add_self] }
 
 scoped[BooleanAlgebraOfBooleanRing] attribute [instance 100] BooleanRing.toBooleanAlgebra
@@ -235,7 +243,7 @@ end BooleanRing
 open BooleanRing
 
 instance : BooleanAlgebra (AsBoolAlg α) :=
-  @BooleanRing.toBooleanAlgebra α _
+  fast_instance% @BooleanRing.toBooleanAlgebra α _
 
 @[simp]
 theorem ofBoolAlg_top : ofBoolAlg (⊤ : AsBoolAlg α) = 1 :=
@@ -360,7 +368,7 @@ theorem ofBoolRing_inj {a b : AsBoolRing α} : ofBoolRing a = ofBoolRing b ↔ a
   Iff.rfl
 
 instance [Inhabited α] : Inhabited (AsBoolRing α) :=
-  ‹Inhabited α›
+  ⟨default (α := α)⟩
 
 -- See note [reducible non-instances]
 /-- Every generalized Boolean algebra has the structure of a nonunital commutative ring with the
@@ -416,7 +424,7 @@ scoped[BooleanRingOfBooleanAlgebra]
   attribute [instance] GeneralizedBooleanAlgebra.toNonUnitalCommRing BooleanAlgebra.toBooleanRing
 
 instance : BooleanRing (AsBoolRing α) :=
-  @BooleanAlgebra.toBooleanRing α _
+  fast_instance% @BooleanAlgebra.toBooleanRing α _
 
 @[simp]
 theorem ofBoolRing_zero : ofBoolRing (0 : AsBoolRing α) = ⊥ :=
@@ -521,7 +529,6 @@ instance : BooleanRing Bool where
   add_assoc := xor_assoc
   zero_add := Bool.false_xor
   add_zero := Bool.xor_false
-  sub_eq_add_neg _ _ := rfl
   neg_add_cancel := Bool.xor_self
   add_comm := xor_comm
   mul_assoc := and_assoc

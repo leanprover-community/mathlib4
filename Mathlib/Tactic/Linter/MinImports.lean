@@ -3,8 +3,11 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import ImportGraph.Imports
-import Mathlib.Tactic.MinImports
+module
+
+public meta import ImportGraph.Imports.ImportGraph
+public meta import ImportGraph.Graph.TransitiveClosure
+public import Mathlib.Tactic.MinImports
 
 /-! # The `minImports` linter
 
@@ -18,10 +21,12 @@ It also works incrementally, accumulating increasing import information.
 This is better suited, for instance, to split files.
 -/
 
+meta section
+
 open Lean Elab Command Linter
 
 /-!
-#  The "minImports" linter
+### The "minImports" linter
 
 The "minImports" linter tracks information about minimal imports over several commands.
 -/
@@ -47,7 +52,7 @@ structure ImportState where
 /--
 `minImportsRef` keeps track of cumulative imports across multiple commands, using `ImportState`.
 -/
-initialize minImportsRef : IO.Ref ImportState ← IO.mkRef {}
+private initialize minImportsRef : IO.Ref ImportState ← IO.mkRef {}
 
 /-- `#reset_min_imports` sets to empty the current list of cumulative imports. -/
 elab "#reset_min_imports" : command => minImportsRef.set {}
@@ -66,7 +71,7 @@ Another important difference is that the `minImports` *linter* starts counting i
 where the option is set to `true` *downwards*, whereas the `#min_imports` *command* looks at the
 imports needed from the command *upwards*.
 -/
-register_option linter.minImports : Bool := {
+public register_option linter.minImports : Bool := {
   defValue := false
   descr := "enable the minImports linter"
 }
@@ -75,7 +80,7 @@ register_option linter.minImports : Bool := {
 change in number of imports, when it reports import changes.
 Setting this option to `false` helps with test stability.
 -/
-register_option linter.minImports.increases : Bool := {
+public register_option linter.minImports.increases : Bool := {
   defValue := true
   descr := "enable reporting increase-size change in the minImports linter"
 }
@@ -120,7 +125,7 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- when the linter reaches the end of the file or `#exit`, it gives a report
     if #[``Parser.Command.eoi, ``Lean.Parser.Command.exit].contains stx.getKind then
       let explicitImportsInFile : NameSet :=
-        .ofArray ((env.imports.map (·.module)).erase `Init)
+        .ofArray ((env.imports.map (·.module)).filter (!isInitImport ·))
       let newImps := importsSoFar \ explicitImportsInFile
       let currentlyUnneededImports := explicitImportsInFile \ importsSoFar
       -- we read the current file, to do a custom parsing of the imports:
@@ -141,7 +146,7 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
         logWarningAt ((impMods.raw.find? (·.isOfKind `import)).getD default)
           m!"-- missing imports\n{"\n".intercalate withImport.toList}"
     let id ← getId stx
-    let newImports := getIrredundantImports env (← getAllImports stx id)
+    let newImports := (getIrredundantImports env (← getAllImports stx id)).filter (!isInitImport ·)
     let tot := (newImports.append importsSoFar)
     let redundant := env.findRedundantImports tot.toArray
     let currImports := tot \ redundant

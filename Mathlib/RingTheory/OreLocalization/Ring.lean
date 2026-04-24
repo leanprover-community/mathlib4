@@ -3,10 +3,11 @@ Copyright (c) 2022 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
 -/
+module
 
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Field.Defs
-import Mathlib.RingTheory.OreLocalization.NonZeroDivisors
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.RingTheory.OreLocalization.NonZeroDivisors
 
 /-!
 
@@ -16,6 +17,8 @@ The `Monoid` and `DistribMulAction` instances and additive versions are provided
 `Mathlib/RingTheory/OreLocalization/Basic.lean`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Subgroup
 
@@ -68,14 +71,6 @@ variable {R : Type*} [Semiring R] {S : Submonoid R} [OreSet S]
 
 attribute [local instance] OreLocalization.oreEqv
 
-@[deprecated zero_mul (since := "2025-08-20")]
-protected theorem zero_mul (x : R[S⁻¹]) : 0 * x = 0 :=
-  OreLocalization.zero_smul x
-
-@[deprecated mul_zero (since := "2025-08-20")]
-protected theorem mul_zero (x : R[S⁻¹]) : x * 0 = 0 :=
-  OreLocalization.smul_zero x
-
 protected theorem left_distrib (x y z : R[S⁻¹]) : x * (y + z) = x * y + x * z :=
   OreLocalization.smul_add _ _ _
 
@@ -83,8 +78,8 @@ theorem right_distrib (x y z : R[S⁻¹]) : (x + y) * z = x * z + y * z :=
   OreLocalization.add_smul _ _ _
 
 instance : Semiring R[S⁻¹] where
-  __ := inferInstanceAs (MonoidWithZero (R[S⁻¹]))
-  __ := inferInstanceAs (AddCommMonoid (R[S⁻¹]))
+  __ := (inferInstance : MonoidWithZero (R[S⁻¹]))
+  __ := (inferInstance : AddCommMonoid (R[S⁻¹]))
   left_distrib := OreLocalization.left_distrib
   right_distrib := right_distrib
 
@@ -109,13 +104,13 @@ lemma nsmul_eq_nsmul (n : ℕ) (x : X[S⁻¹]) :
 
 /-- The ring homomorphism from `R` to `R[S⁻¹]`, mapping `r : R` to the fraction `r /ₒ 1`. -/
 @[simps!]
-def numeratorRingHom : R →+* R[S⁻¹] where
+abbrev numeratorRingHom : R →+* R[S⁻¹] where
   __ := numeratorHom
   map_zero' := by with_unfolding_all exact OreLocalization.zero_def
   map_add' _ _ := add_oreDiv.symm
 
 instance {R₀} [CommSemiring R₀] [Algebra R₀ R] : Algebra R₀ R[S⁻¹] where
-  __ := inferInstanceAs (Module R₀ R[S⁻¹])
+  __ := (inferInstance : Module R₀ R[S⁻¹])
   algebraMap := numeratorRingHom.comp (algebraMap R₀ R)
   commutes' r x := by
     induction x using OreLocalization.ind with | _ r₁ s₁
@@ -150,7 +145,7 @@ def universalHom : R[S⁻¹] →+* T :=
       clear h₃'
       simp only [smul_eq_mul, universalMulHom_apply, MonoidHom.coe_coe,
         Submonoid.smul_def]
-      simp only [mul_inv_rev, MonoidHom.map_mul, RingHom.map_add, RingHom.map_mul, Units.val_mul]
+      simp only [mul_inv_rev, map_mul, map_add, map_mul, Units.val_mul]
       rw [mul_add, mul_assoc, ← mul_assoc _ (f s₃), hf, ← Units.val_mul]
       simp only [one_mul, inv_mul_cancel, Units.val_one]
       congr 1
@@ -183,8 +178,8 @@ variable {R : Type*} [Ring R] {S : Submonoid R} [OreSet S]
 variable {X : Type*} [AddCommGroup X] [Module R X]
 
 instance : Ring R[S⁻¹] where
-  __ := inferInstanceAs (Semiring R[S⁻¹])
-  __ := inferInstanceAs (AddGroup R[S⁻¹])
+  __ := (inferInstance : Semiring R[S⁻¹])
+  __ := (inferInstance : AddGroup R[S⁻¹])
 
 @[simp]
 lemma zsmul_eq_zsmul (n : ℤ) (x : X[S⁻¹]) :
@@ -227,8 +222,8 @@ section CommSemiring
 variable {R : Type*} [CommSemiring R] {S : Submonoid R} [OreSet S]
 
 instance : CommSemiring R[S⁻¹] where
-  __ := inferInstanceAs (Semiring R[S⁻¹])
-  __ := inferInstanceAs (CommMonoid R[S⁻¹])
+  __ := (inferInstance : Semiring R[S⁻¹])
+  __ := (inferInstance : CommMonoid R[S⁻¹])
 
 end CommSemiring
 
@@ -237,8 +232,8 @@ section CommRing
 variable {R : Type*} [CommRing R] {S : Submonoid R} [OreSet S]
 
 instance : CommRing R[S⁻¹] where
-  __ := inferInstanceAs (Ring R[S⁻¹])
-  __ := inferInstanceAs (CommMonoid R[S⁻¹])
+  __ := (inferInstance : Ring R[S⁻¹])
+  __ := (inferInstance : CommMonoid R[S⁻¹])
 
 end CommRing
 
@@ -250,8 +245,8 @@ variable {R : Type*} [CommRing R] [Nontrivial R] [NoZeroDivisors R] [OreSet R⁰
 
 noncomputable
 instance : Field R[R⁰⁻¹] where
-  __ := inferInstanceAs (DivisionRing R[R⁰⁻¹])
-  __ := inferInstanceAs (CommMonoid R[R⁰⁻¹])
+  __ := (inferInstance : DivisionRing R[R⁰⁻¹])
+  __ := (inferInstance : CommMonoid R[R⁰⁻¹])
 
 end Field
 

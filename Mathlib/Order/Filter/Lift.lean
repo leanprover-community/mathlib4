@@ -3,14 +3,19 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Order.Filter.Prod
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Order.Filter.Finite
-import Mathlib.Order.Filter.Bases.Basic
+module
+
+public import Mathlib.Order.Filter.Prod
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Order.Filter.Bases.Basic
 
 /-!
 # Lift filters along filter and set functions
 -/
+
+assert_not_exists Set.Finite
+
+public section
 
 open Set Filter Function
 

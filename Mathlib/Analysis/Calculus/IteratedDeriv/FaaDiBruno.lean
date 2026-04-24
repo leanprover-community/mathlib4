@@ -3,8 +3,10 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Basic
-import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Comp
+public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 
 /-!
 # Iterated derivatives of compositions
@@ -30,6 +32,8 @@ Before starting to work on these TODOs, please contact Yury Kudryashov
 who may have partial progress towards some of them.
 -/
 
+public section
+
 open Function Set
 open scoped ContDiff
 
@@ -37,7 +41,7 @@ section vcomp
 
 variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {g : E → F} {f : 𝕜 → E} {s : Set 𝕜} {t : Set E} {x : 𝕜} {n : WithTop ℕ∞} {i : ℕ}
+  {g : E → F} {f : 𝕜 → E} {s : Set 𝕜} {t : Set E} {x : 𝕜} {n : ℕ∞ω} {i : ℕ}
 
 theorem iteratedDerivWithin_vcomp_eq_sum_orderedFinpartition
     (hg : ContDiffWithinAt 𝕜 n g t (f x)) (hf : ContDiffWithinAt 𝕜 n f s x)
@@ -58,6 +62,7 @@ theorem iteratedDeriv_vcomp_eq_sum_orderedFinpartition
   exact iteratedDerivWithin_vcomp_eq_sum_orderedFinpartition hg hf uniqueDiffOn_univ
     uniqueDiffOn_univ (mem_univ x) (mapsTo_univ f _) hi
 
+set_option backward.isDefEq.respectTransparency false in
 theorem iteratedDerivWithin_vcomp_two
     (hg : ContDiffWithinAt 𝕜 2 g t (f x)) (hf : ContDiffWithinAt 𝕜 2 f s x)
     (ht : UniqueDiffOn 𝕜 t) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (hst : MapsTo f s t) :
@@ -81,6 +86,7 @@ theorem iteratedDeriv_vcomp_two (hg : ContDiffAt 𝕜 2 g (f x)) (hf : ContDiffA
   exact iteratedDerivWithin_vcomp_two hg hf uniqueDiffOn_univ
     uniqueDiffOn_univ (mem_univ x) (mapsTo_univ f _)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem iteratedDerivWithin_vcomp_three
     (hg : ContDiffWithinAt 𝕜 3 g t (f x)) (hf : ContDiffWithinAt 𝕜 3 f s x)
     (ht : UniqueDiffOn 𝕜 t) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (hst : MapsTo f s t) :
@@ -123,7 +129,7 @@ end vcomp
 section scomp
 
 variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {g : 𝕜 → E} {f : 𝕜 → 𝕜} {s : Set 𝕜} {t : Set 𝕜} {x : 𝕜} {n : WithTop ℕ∞} {i : ℕ}
+  {g : 𝕜 → E} {f : 𝕜 → 𝕜} {s : Set 𝕜} {t : Set 𝕜} {x : 𝕜} {n : ℕ∞ω} {i : ℕ}
 
 theorem iteratedDerivWithin_scomp_eq_sum_orderedFinpartition
     (hg : ContDiffWithinAt 𝕜 n g t (f x)) (hf : ContDiffWithinAt 𝕜 n f s x)
@@ -150,7 +156,7 @@ theorem iteratedDerivWithin_scomp_two
       derivWithin f s x ^ 2 • iteratedDerivWithin 2 g t (f x) +
       iteratedDerivWithin 2 f s x • derivWithin g t (f x) := by
   rw [iteratedDerivWithin_vcomp_two hg hf ht hs hx hst]
-  simp [← derivWithin_fderivWithin, iteratedFDerivWithin_apply_eq_iteratedDerivWithin_mul_prod]
+  simp [← toSpanSingleton_derivWithin, iteratedFDerivWithin_apply_eq_iteratedDerivWithin_mul_prod]
 
 theorem iteratedDeriv_scomp_two (hg : ContDiffAt 𝕜 2 g (f x)) (hf : ContDiffAt 𝕜 2 f x) :
     iteratedDeriv 2 (g ∘ f) x
@@ -167,7 +173,7 @@ theorem iteratedDerivWithin_scomp_three
       3 • iteratedDerivWithin 2 f s x • derivWithin f s x • iteratedDerivWithin 2 g t (f x) +
       iteratedDerivWithin 3 f s x • derivWithin g t (f x) := by
   rw [iteratedDerivWithin_vcomp_three hg hf ht hs hx hst]
-  simp [← derivWithin_fderivWithin, mul_smul, smul_comm (iteratedDerivWithin 2 f s x),
+  simp [← toSpanSingleton_derivWithin, mul_smul, smul_comm (iteratedDerivWithin 2 f s x),
         iteratedFDerivWithin_apply_eq_iteratedDerivWithin_mul_prod]
   abel
 
@@ -185,7 +191,7 @@ end scomp
 section comp
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {g f : 𝕜 → 𝕜} {s t : Set 𝕜} {x : 𝕜} {n : WithTop ℕ∞} {i : ℕ}
+  {g f : 𝕜 → 𝕜} {s t : Set 𝕜} {x : 𝕜} {n : ℕ∞ω} {i : ℕ}
 
 theorem iteratedDerivWithin_comp_eq_sum_orderedFinpartition
     (hg : ContDiffWithinAt 𝕜 n g t (f x)) (hf : ContDiffWithinAt 𝕜 n f s x)

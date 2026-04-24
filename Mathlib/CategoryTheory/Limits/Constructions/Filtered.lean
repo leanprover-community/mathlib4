@@ -3,8 +3,11 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
-import Mathlib.CategoryTheory.Limits.Opposites
+module
+
+public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
+public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Filtered
+public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
 
 /-!
 # Constructing colimits from finite colimits and filtered colimits
@@ -18,6 +21,8 @@ diagram of all coproducts of finite subsets of `α`.
 
 We also deduce the dual statement by invoking the original statement in `Cᵒᵖ`.
 -/
+
+@[expose] public section
 
 
 universe w v u
@@ -34,6 +39,7 @@ namespace CoproductsFromFiniteFiltered
 
 variable [HasFiniteCoproducts C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `C` has finite coproducts, a functor `Discrete α ⥤ C` lifts to a functor
 `Finset (Discrete α) ⥤ C` by taking coproducts. -/
 @[simps!]
@@ -42,6 +48,7 @@ def liftToFinsetObj (F : Discrete α ⥤ C) : Finset (Discrete α) ⥤ C where
   map {_ Y} h := Sigma.desc fun y =>
     Sigma.ι (fun (x : { x // x ∈ Y }) => F.obj x) ⟨y, h.down.down y.2⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `C` has finite coproducts and filtered colimits, we can construct arbitrary coproducts by
 taking the colimit of the diagram formed by the coproducts of finite sets over the indexing type. -/
 @[simps!]
@@ -69,6 +76,7 @@ def liftToFinsetColimitCocone [HasColimitsOfShape (Finset (Discrete α)) C]
           rfl
         · simp }
 
+set_option backward.isDefEq.respectTransparency false in
 variable (C) (α) in
 /-- The functor taking a functor `Discrete α ⥤ C` to a functor `Finset (Discrete α) ⥤ C` by taking
 coproducts. -/
@@ -77,6 +85,7 @@ def liftToFinset : (Discrete α ⥤ C) ⥤ (Finset (Discrete α) ⥤ C) where
   obj := liftToFinsetObj
   map := fun β => { app := fun _ => Sigma.map (fun x => β.app x.val) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The converse of the construction in `liftToFinsetColimitCocone`: we can form a cocone on the
 coproduct of `f` whose legs are the coproducts over the finite subsets of `α`. -/
 @[simps!]
@@ -85,15 +94,16 @@ def finiteSubcoproductsCocone (f : α → C) [HasCoproduct f] :
   pt := ∐ f
   ι := { app S := Sigma.desc fun s => Sigma.ι f _ }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The cocone `finiteSubcoproductsCocone` is a colimit cocone. -/
 def isColimitFiniteSubproductsCocone (f : α → C) [HasColimitsOfShape (Finset (Discrete α)) C]
     [HasCoproduct f] : IsColimit (finiteSubcoproductsCocone f) :=
   IsColimit.ofIsoColimit (colimit.isColimit _)
-    (Cocones.ext (IsColimit.coconePointUniqueUpToIso
+    (Cocone.ext (IsColimit.coconePointUniqueUpToIso
       (liftToFinsetColimitCocone (Discrete.functor f)).isColimit (colimit.isColimit _) :) (by
     intro S
     simp only [liftToFinsetObj_obj, Discrete.functor_obj_eq_as, finiteSubcoproductsCocone_pt,
-      colimit.cocone_x, Functor.const_obj_obj, colimit.cocone_ι, finiteSubcoproductsCocone_ι_app]
+      colimit.cocone_x, colimit.cocone_ι, finiteSubcoproductsCocone_ι_app]
     ext j
     rw [← Category.assoc]
     convert IsColimit.comp_coconePointUniqueUpToIso_hom
@@ -131,6 +141,7 @@ section
 variable [HasFiniteCoproducts C] [HasColimitsOfShape (Finset (Discrete α)) C]
     [HasColimitsOfShape (Discrete α) C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Helper construction for `liftToFinsetColimIso`. -/
 @[reassoc]
 theorem liftToFinsetColimIso_aux (F : Discrete α ⥤ C) {J : Finset (Discrete α)} (j : J) :
@@ -139,6 +150,7 @@ theorem liftToFinsetColimIso_aux (F : Discrete α ⥤ C) {J : Finset (Discrete �
     = colimit.ι F j := by
   simp [colimit.isoColimitCocone, IsColimit.coconePointUniqueUpToIso]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `liftToFinset` functor, precomposed with forming a colimit, is a coproduct on the original
 functor. -/
 def liftToFinsetColimIso : liftToFinset C α ⋙ colim ≅ colim :=
@@ -149,12 +161,11 @@ def liftToFinsetColimIso : liftToFinset C α ⋙ colim ≅ colim :=
       ext J
       simp only [liftToFinset_obj_obj]
       ext j
-      simp only [liftToFinset, ι_colimMap_assoc, liftToFinsetObj_obj, Discrete.functor_obj_eq_as,
-        Discrete.natTrans_app, liftToFinsetColimIso_aux, liftToFinsetColimIso_aux_assoc,
-        ι_colimMap])
+      simp [liftToFinset, liftToFinsetColimIso_aux, liftToFinsetColimIso_aux_assoc])
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `liftToFinset`, when composed with the evaluation functor, results in the whiskering composed
 with `colim`. -/
 def liftToFinsetEvaluationIso [HasFiniteCoproducts C] (I : Finset (Discrete α)) :
@@ -169,6 +180,7 @@ namespace ProductsFromFiniteCofiltered
 
 variable [HasFiniteProducts C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `C` has finite coproducts, a functor `Discrete α ⥤ C` lifts to a functor
 `Finset (Discrete α) ⥤ C` by taking coproducts. -/
 @[simps!]
@@ -178,6 +190,7 @@ def liftToFinsetObj (F : Discrete α ⥤ C) : (Finset (Discrete α))ᵒᵖ ⥤ C
     Pi.π (fun (x : { x // x ∈ Y.unop }) => F.obj x) ⟨y, h.unop.down.down y.2⟩
 
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `C` has finite coproducts and filtered colimits, we can construct arbitrary coproducts by
 taking the colimit of the diagram formed by the coproducts of finite sets over the indexing type. -/
 @[simps!]
@@ -203,6 +216,7 @@ def liftToFinsetLimitCone [HasLimitsOfShape (Finset (Discrete α))ᵒᵖ C]
           rfl
         · simp }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The converse of the construction in `liftToFinsetLimitCone`: we can form a cone on the
 product of `f` whose legs are the products over the finite subsets of `α`. -/
 @[simps!]
@@ -211,11 +225,12 @@ def finiteSubproductsCone (f : α → C) [HasProduct f] :
   pt := ∏ᶜ f
   π := { app S := Pi.lift fun s => Pi.π f _ }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The cone `finiteSubproductsCone` is a limit cone. -/
 def isLimitFiniteSubproductsCone (f : α → C) [HasLimitsOfShape (Finset (Discrete α))ᵒᵖ C]
     [HasProduct f] : IsLimit (finiteSubproductsCone f) :=
   IsLimit.ofIsoLimit (limit.isLimit _)
-    (Cones.ext (IsLimit.conePointUniqueUpToIso
+    (Cone.ext (IsLimit.conePointUniqueUpToIso
       (liftToFinsetLimitCone (Discrete.functor f)).isLimit (limit.isLimit _) :) (by
     intro S
     simp only [limit.cone_x, Functor.const_obj_obj, liftToFinsetObj_obj, Discrete.functor_obj_eq_as,
@@ -229,6 +244,7 @@ def isLimitFiniteSubproductsCone (f : α → C) [HasLimitsOfShape (Finset (Discr
 
 variable (C) (α)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor taking a functor `Discrete α ⥤ C` to a functor `Finset (Discrete α) ⥤ C` by taking
 coproducts. -/
 @[simps!]
@@ -236,6 +252,7 @@ def liftToFinset : (Discrete α ⥤ C) ⥤ ((Finset (Discrete α))ᵒᵖ ⥤ C) 
   obj := liftToFinsetObj
   map := fun β => { app := fun _ => Pi.map (fun x => β.app x.val) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `liftToFinset` functor, precomposed with forming a colimit, is a coproduct on the original
 functor. -/
 def liftToFinsetLimIso [HasLimitsOfShape (Finset (Discrete α))ᵒᵖ C]
@@ -247,13 +264,14 @@ def liftToFinsetLimIso [HasLimitsOfShape (Finset (Discrete α))ᵒᵖ C]
       ext J
       simp [liftToFinset])
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `liftToFinset`, when composed with the evaluation functor, results in the whiskering composed
 with `colim`. -/
 def liftToFinsetEvaluationIso (I : Finset (Discrete α)) :
     liftToFinset C α ⋙ (evaluation _ _).obj ⟨I⟩ ≅
     (Functor.whiskeringLeft _ _ _).obj (Discrete.functor (·.val)) ⋙ lim (J := Discrete I) :=
   NatIso.ofComponents (fun _ => HasLimit.isoOfNatIso (Discrete.natIso fun _ => Iso.refl _))
-    fun _ => by dsimp; ext; simp
+    fun _ => by dsimp; ext; simp [Pi.map]
 
 end ProductsFromFiniteCofiltered
 

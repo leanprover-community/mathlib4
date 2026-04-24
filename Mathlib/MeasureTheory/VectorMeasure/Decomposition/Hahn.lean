@@ -3,8 +3,10 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.VectorMeasure.Basic
-import Mathlib.Order.SymmDiff
+module
+
+public import Mathlib.MeasureTheory.VectorMeasure.Basic
+public import Mathlib.Order.SymmDiff
 
 /-!
 # Hahn decomposition
@@ -34,6 +36,8 @@ being positive/negative with respect to the signed measure `s`.
 Hahn decomposition theorem
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -51,7 +55,7 @@ variable {s : SignedMeasure α} {i j : Set α}
 
 section ExistsSubsetRestrictNonpos
 
-/-! ### exists_subset_restrict_nonpos
+/-! ### `exists_subset_restrict_nonpos`
 
 In this section we will prove that a set `i` whose measure is negative contains a negative subset
 `j` with respect to the signed measure `s` (i.e. `s ≤[j] 0`), whose measure is negative. This lemma
@@ -62,7 +66,7 @@ such that, for all $n$, $s(A_{n + 1})$ is close to maximal among subsets of
 $i \setminus \bigcup_{k \le n} A_k$.
 
 This sequence of sets does not necessarily exist. However, if this sequence terminates; that is,
-there does not exists any sets satisfying the property, the last $A_n$ will be a negative subset
+there does not exist any set satisfying the property, the last $A_n$ will be a negative subset
 of negative measure, hence proving our claim.
 
 In the case that the sequence does not terminate, it is easy to see that
@@ -82,7 +86,7 @@ To implement this in Lean, we define several auxiliary definitions.
   `restrictNonposSeq s i (n + 1) = someExistsOneDivLT s (i \ ⋃ k ≤ n, restrictNonposSeq k)`.
   This definition represents the sequence $(A_n)$ in the proof as described above.
 
-With these definitions, we are able consider the case where the sequence terminates separately,
+With these definitions, we are able to consider the case where the sequence terminates separately,
 allowing us to prove `exists_subset_restrict_nonpos`.
 -/
 
@@ -191,7 +195,7 @@ private theorem measure_of_restrictNonposSeq (hi₂ : ¬s ≤[i] 0) (n : ℕ)
   | succ n =>
     rw [restrictNonposSeq_succ]
     have h₁ : ¬s ≤[i \ ⋃ (k : ℕ) (_ : k ≤ n), restrictNonposSeq s i k] 0 := by
-      refine mt (restrict_le_zero_subset _ ?_ (by simp [Nat.lt_succ_iff])) hn
+      refine mt (restrict_le_zero_subset _ ?_ (by simp)) hn
       convert measurable_of_not_restrict_le_zero _ hn using 3
       exact funext fun x => by rw [Nat.lt_succ_iff]
     rcases someExistsOneDivLT_spec h₁ with ⟨_, _, h⟩
@@ -207,7 +211,7 @@ private theorem restrictNonposSeq_disjoint' {n m : ℕ} (h : n < m) :
     restrictNonposSeq s i n ∩ restrictNonposSeq s i m = ∅ := by
   rw [Set.eq_empty_iff_forall_notMem]
   rintro x ⟨hx₁, hx₂⟩
-  cases m; · cutsat
+  cases m; · lia
   · rw [restrictNonposSeq] at hx₂
     exact
       (someExistsOneDivLT_subset hx₂).2
@@ -227,7 +231,7 @@ private theorem exists_subset_restrict_nonpos' (hi₁ : MeasurableSet i) (hi₂ 
   classical
   by_cases h : s ≤[i] 0
   · exact ⟨i, hi₁, Set.Subset.refl _, h, hi₂⟩
-  push_neg at hn
+  push Not at hn
   set k := Nat.find hn
   have hk₂ : s ≤[i \ ⋃ l < k, restrictNonposSeq s i l] 0 := Nat.find_spec hn
   have hmeas : MeasurableSet (⋃ (l : ℕ) (_ : l < k), restrictNonposSeq s i l) :=
@@ -305,7 +309,7 @@ theorem exists_subset_restrict_nonpos (hi : s i < 0) :
     hi₁.diff (MeasurableSet.iUnion fun _ => restrictNonposSeq_measurableSet _)
   refine ⟨A, A_meas, Set.diff_subset, ?_, h₂.trans_lt hi⟩
   by_contra hnn
-  rw [restrict_le_restrict_iff _ _ A_meas] at hnn; push_neg at hnn
+  rw [restrict_le_restrict_iff _ _ A_meas] at hnn; push Not at hnn
   obtain ⟨E, hE₁, hE₂, hE₃⟩ := hnn
   have : ∃ k, 1 ≤ bdd k ∧ 1 / (bdd k : ℝ) < s E := by
     rw [tendsto_atTop_atTop] at h₄
@@ -318,11 +322,8 @@ theorem exists_subset_restrict_nonpos (hi : s i < 0) :
       rw [one_div] at this ⊢
       exact inv_lt_of_inv_lt₀ hE₃ this
   obtain ⟨k, hk₁, hk₂⟩ := this
-  have hA' : A ⊆ i \ ⋃ l ≤ k, restrictNonposSeq s i l := by
-    apply Set.diff_subset_diff_right
-    intro x; simp only [Set.mem_iUnion]
-    rintro ⟨n, _, hn₂⟩
-    exact ⟨n, hn₂⟩
+  have hA' : A ⊆ i \ ⋃ l ≤ k, restrictNonposSeq s i l :=
+    Set.diff_subset_diff_right (Set.iUnion₂_subset_iUnion _ _)
   refine
     findExistsOneDivLT_min (hn' k) (Nat.sub_lt hk₁ Nat.zero_lt_one)
       ⟨E, Set.Subset.trans hE₂ hA', hE₁, ?_⟩

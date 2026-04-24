@@ -3,16 +3,20 @@ Copyright (c) 2024 Emilie Burgun. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Emilie Burgun
 -/
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-import Mathlib.Algebra.Group.Commute.Basic
-import Mathlib.Dynamics.PeriodicPts.Defs
-import Mathlib.GroupTheory.GroupAction.Defs
+module
+
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Commute.Basic
+public import Mathlib.Dynamics.PeriodicPts.Defs
+public import Mathlib.GroupTheory.GroupAction.Defs
+public import Mathlib.GroupTheory.GroupAction.Hom
 
 /-!
 # Properties of `fixedPoints` and `fixedBy`
 
 This module contains some useful properties of `MulAction.fixedPoints` and `MulAction.fixedBy`
-that don't directly belong to `Mathlib/GroupTheory/GroupAction/Basic.lean`.
+that don't directly belong to `Mathlib/GroupTheory/GroupAction/Basic.lean`,
+as well as their interaction with `MulActionHom`.
 
 ## Main theorems
 
@@ -43,8 +47,10 @@ To properly use theorems using `fixedBy (Set α) g`, you should `open Pointwise`
 all points in `s` are fixed by `g`, whereas the former only requires that `g • x ∈ s`.
 -/
 
+public section
+
 namespace MulAction
-open Pointwise
+open scoped Pointwise
 
 variable {α : Type*}
 variable {G : Type*} [Group G] [MulAction G α]
@@ -256,10 +262,29 @@ is disjoint from `(fixedBy α g)ᶜ`, then `g` and `h` cannot commute.
 is disjoint from `(fixedBy α g)ᶜ`, then `g` and `h` cannot commute. -/]
 theorem not_commute_of_disjoint_movedBy_preimage {g h : G} (ne_one : g ≠ 1)
     (disjoint : Disjoint (fixedBy α g)ᶜ (h • (fixedBy α g)ᶜ)) : ¬Commute g h := by
-  contrapose! ne_one with comm
+  contrapose ne_one with comm
   rwa [movedBy_mem_fixedBy_of_commute comm, disjoint_self, Set.bot_eq_empty, ← Set.compl_univ,
     compl_inj_iff, fixedBy_eq_univ_iff_eq_one] at disjoint
 
 end Faithful
 
 end MulAction
+
+namespace MulActionHom
+
+/-- `MulActionHom` maps `fixedPoints` to `fixedPoints`. -/
+@[to_additive /-- `AddActionHom` maps `fixedPoints` to `fixedPoints`. -/]
+lemma map_mem_fixedPoints {G A B : Type*} [Monoid G] [MulAction G A] [MulAction G B]
+    (f : A →[G] B) {H : Submonoid G} {a : A} (ha : a ∈ MulAction.fixedPoints H A) :
+    f a ∈ MulAction.fixedPoints H B := by
+  intro ⟨h, _⟩
+  simp_all [← f.map_smul h a]
+
+/-- `MulActionHom` maps `fixedBy` to `fixedBy`. -/
+@[to_additive /-- `AddActionHom` maps `fixedBy` to `fixedBy`. -/]
+lemma map_mem_fixedBy {G A B : Type*} [Monoid G] [MulAction G A] [MulAction G B]
+    (f : A →[G] B) {g : G} {a : A} (ha : a ∈ MulAction.fixedBy A g) :
+    f a ∈ MulAction.fixedBy B g := by
+  simpa using congr_arg f ha
+
+end MulActionHom

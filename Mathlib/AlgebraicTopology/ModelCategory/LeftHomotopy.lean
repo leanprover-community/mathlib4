@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.ModelCategory.Cylinder
-import Mathlib.CategoryTheory.Localization.Quotient
+module
+
+public import Mathlib.AlgebraicTopology.ModelCategory.Cylinder
+public import Mathlib.CategoryTheory.Localization.Quotient
 
 /-!
 # Left homotopies in model categories
@@ -22,6 +24,8 @@ relation on `X ⟶ Y`.
 * [Daniel G. Quillen, Homotopical algebra, section I.1][Quillen1967]
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -61,6 +65,7 @@ are homotopic relative to `P.symm` -/
 def symm {f g : X ⟶ Y} (h : P.LeftHomotopy f g) : P.symm.LeftHomotopy g f where
   h := h.h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f₀` is homotopic to `f₁` relative to a precylinder `P`,
 and `f₁` is homotopic to `f₂` relative to `P'`, then
 `f₀` is homotopic to `f₂` relative to `P.trans P'`. -/
@@ -116,14 +121,8 @@ lemma weakEquivalence_iff [(weakEquivalences C).HasTwoOutOfThreeProperty]
     [(weakEquivalences C).ContainsIdentities]
     {f₀ f₁ : X ⟶ Y} (h : P.LeftHomotopy f₀ f₁) :
     WeakEquivalence f₀ ↔ WeakEquivalence f₁ := by
-  revert P f₀ f₁
-  suffices ∀ (P : Cylinder X) {f₀ f₁ : X ⟶ Y} (h : P.LeftHomotopy f₀ f₁),
-      WeakEquivalence f₀ → WeakEquivalence f₁
-    from fun _ _ _ h ↦ ⟨this _ h, this _ h.symm⟩
-  intro P f₀ f₁ h h₀
-  have := weakEquivalence_of_precomp_of_fac h.h₀
-  rw [← h.h₁]
-  infer_instance
+  induction h
+  grind [weakEquivalence_precomp_iff]
 
 end
 
@@ -248,6 +247,7 @@ lemma equivalence [ModelCategory C] (X Y : C) [IsCofibrant X] :
   symm h := h.symm
   trans h h' := h.trans h'
 
+set_option backward.isDefEq.respectTransparency false in
 lemma precomp [ModelCategory C] {f g : X ⟶ Y} [IsFibrant Y] (h : LeftHomotopyRel f g)
     {Z : C} (i : Z ⟶ X) : LeftHomotopyRel (i ≫ f) (i ≫ g) := by
   obtain ⟨P, _, ⟨h⟩⟩ := h.exists_very_good_cylinder

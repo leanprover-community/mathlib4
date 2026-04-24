@@ -3,10 +3,12 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta, Adam Topaz
 -/
-import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.Functor.FullyFaithful
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
+module
+
+public import Mathlib.CategoryTheory.Functor.Category
+public import Mathlib.CategoryTheory.Functor.FullyFaithful
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
 
 /-!
 # Monads
@@ -14,11 +16,13 @@ import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
 We construct the categories of monads and comonads, and their forgetful functors to endofunctors.
 
 (Note that these are the category theorist's monads, not the programmers monads.
-For the translation, see the file `CategoryTheory.Monad.Types`.)
+For the translation, see the file `Mathlib/CategoryTheory/Monad/Types.lean`.)
 
 For the fact that monads are "just" monoids in the category of endofunctors, see the file
 `CategoryTheory.Monad.EquivMon`.
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -31,10 +35,10 @@ universe v₁ u₁
 variable (C : Type u₁) [Category.{v₁} C]
 
 /-- The data of a monad on C consists of an endofunctor T together with natural transformations
-η : 𝟭 C ⟶ T and μ : T ⋙ T ⟶ T satisfying three equations:
-- T μ_X ≫ μ_X = μ_(TX) ≫ μ_X (associativity)
-- η_(TX) ≫ μ_X = 1_X (left unit)
-- Tη_X ≫ μ_X = 1_X (right unit)
+`η : 𝟭 C ⟶ T` and `μ : T ⋙ T ⟶ T` satisfying three equations:
+- `T μ_X ≫ μ_X = μ_(TX) ≫ μ_X` (associativity)
+- `η_(TX) ≫ μ_X = 1_X` (left unit)
+- `Tη_X ≫ μ_X = 1_X` (right unit)
 -/
 structure Monad extends C ⥤ C where
   /-- The unit for the monad. -/
@@ -56,10 +60,10 @@ lemma Monad.mu_naturality (T : Monad C) ⦃X Y : C⦄ (f : X ⟶ Y) :
   T.μ.naturality _
 
 /-- The data of a comonad on C consists of an endofunctor G together with natural transformations
-ε : G ⟶ 𝟭 C and δ : G ⟶ G ⋙ G satisfying three equations:
-- δ_X ≫ G δ_X = δ_X ≫ δ_(GX) (coassociativity)
-- δ_X ≫ ε_(GX) = 1_X (left counit)
-- δ_X ≫ G ε_X = 1_X (right counit)
+`ε : G ⟶ 𝟭 C` and `δ : G ⟶ G ⋙ G` satisfying three equations:
+- `δ_X ≫ G δ_X = δ_X ≫ δ_(GX)` (coassociativity)
+- `δ_X ≫ ε_(GX) = 1_X` (left counit)
+- `δ_X ≫ G ε_X = 1_X` (right counit)
 -/
 structure Comonad extends C ⥤ C where
   /-- The counit for the comonad. -/
@@ -132,27 +136,21 @@ lemma MonadHom.ext' {T₁ T₂ : Monad C} (f g : T₁ ⟶ T₂) (h : f.app = g.a
 lemma ComonadHom.ext' {T₁ T₂ : Comonad C} (f g : T₁ ⟶ T₂) (h : f.app = g.app) : f = g :=
   ComonadHom.ext h
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Category (Monad C) where
   id M := { toNatTrans := 𝟙 (M : C ⥤ C) }
   comp f g :=
     { toNatTrans :=
         { app := fun X => f.app X ≫ g.app X
           naturality := fun X Y h => by rw [assoc, f.1.naturality_assoc, g.1.naturality] } }
-  -- `cat_disch` can fill in these proofs, but is unfortunately slightly slow.
-  id_comp _ := MonadHom.ext (by funext; simp only [NatTrans.id_app, id_comp])
-  comp_id _ := MonadHom.ext (by funext; simp only [NatTrans.id_app, comp_id])
-  assoc _ _ _ := MonadHom.ext (by funext; simp only [assoc])
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Category (Comonad C) where
   id M := { toNatTrans := 𝟙 (M : C ⥤ C) }
   comp f g :=
     { toNatTrans :=
         { app := fun X => f.app X ≫ g.app X
           naturality := fun X Y h => by rw [assoc, f.1.naturality_assoc, g.1.naturality] } }
-  -- `cat_disch` can fill in these proofs, but is unfortunately slightly slow.
-  id_comp _ := ComonadHom.ext (by funext; simp only [NatTrans.id_app, id_comp])
-  comp_id _ := ComonadHom.ext (by funext; simp only [NatTrans.id_app, comp_id])
-  assoc _ _ _ := ComonadHom.ext (by funext; simp only [assoc])
 
 instance {T : Monad C} : Inhabited (MonadHom T T) :=
   ⟨𝟙 T⟩
@@ -178,6 +176,7 @@ theorem comp_toNatTrans {T₁ T₂ T₃ : Comonad C} (f : T₁ ⟶ T₂) (g : T�
     (f ≫ g).toNatTrans = ((f.toNatTrans : _ ⟶ (T₂ : C ⥤ C)) ≫ g.toNatTrans : (T₁ : C ⥤ C) ⟶ T₃) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Construct a monad isomorphism from a natural isomorphism of functors where the forward
 direction is a monad morphism. -/
 @[simps]
@@ -198,6 +197,7 @@ def MonadIso.mk {M N : Monad C} (f : (M : C ⥤ C) ≅ N)
           NatTrans.naturality_assoc, Iso.inv_hom_id_app_assoc, ← Functor.map_comp_assoc]
         simp }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Construct a comonad isomorphism from a natural isomorphism of functors where the forward
 direction is a comonad morphism. -/
 @[simps]
@@ -234,6 +234,7 @@ theorem monadToFunctor_mapIso_monad_iso_mk {M N : Monad C} (f : (M : C ⥤ C) �
   ext
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (monadToFunctor C).ReflectsIsomorphisms where
   reflects f _ := (MonadIso.mk (asIso ((monadToFunctor C).map f)) f.app_η f.app_μ).isIso_hom
 
@@ -251,6 +252,7 @@ theorem comonadToFunctor_mapIso_comonad_iso_mk {M N : Comonad C} (f : (M : C ⥤
   ext
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (comonadToFunctor C).ReflectsIsomorphisms where
   reflects f _ := (ComonadIso.mk (asIso ((comonadToFunctor C).map f)) f.app_ε f.app_δ).isIso_hom
 
@@ -304,6 +306,7 @@ variable {C}
 
 namespace Monad
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Transport a monad structure on a functor along an isomorphism of functors. -/
 def transport {F : C ⥤ C} (T : Monad C) (i : (T : C ⥤ C) ≅ F) : Monad C where
   toFunctor := F
@@ -336,6 +339,7 @@ end Monad
 
 namespace Comonad
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Transport a comonad structure on a functor along an isomorphism of functors. -/
 def transport {F : C ⥤ C} (T : Comonad C) (i : (T : C ⥤ C) ≅ F) : Comonad C where
   toFunctor := F
@@ -362,10 +366,12 @@ end Comonad
 
 namespace Monad
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_unit_app (T : Monad C) (X : C) [IsIso T.μ] :
     T.map (T.η.app X) = T.η.app (T.obj X) := by
   simp [← cancel_mono (T.μ.app _)]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isSplitMono_iff_isIso_unit (T : Monad C) (X : C) [IsIso T.μ] :
     IsSplitMono (T.η.app X) ↔ IsIso (T.η.app X) := by
   refine ⟨fun _ ↦ ⟨retraction (T.η.app X), by simp, ?_⟩, fun _ ↦ inferInstance⟩
@@ -376,10 +382,12 @@ end Monad
 
 namespace Comonad
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_counit_app (T : Comonad C) (X : C) [IsIso T.δ] :
     T.map (T.ε.app X) = T.ε.app (T.obj X) := by
   simp [← cancel_epi (T.δ.app _)]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isSplitEpi_iff_isIso_counit (T : Comonad C) (X : C) [IsIso T.δ] :
     IsSplitEpi (T.ε.app X) ↔ IsIso (T.ε.app X) := by
   refine ⟨fun _ ↦ ⟨section_ (T.ε.app X), ?_, by simp⟩, fun _ ↦ inferInstance⟩

@@ -3,7 +3,9 @@ Copyright (c) 2023 Martin Dvorak. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Dvorak
 -/
-import Mathlib.Computability.Language
+module
+
+public import Mathlib.Computability.Language
 
 /-!
 # Context-Free Grammars
@@ -22,6 +24,8 @@ nonterminal symbols that are referred to by its finitely many rules.
 ## Main theorems
 * `Language.IsContextFree.reverse`: The class of context-free languages is closed under reversal.
 -/
+
+@[expose] public section
 
 open Function
 
@@ -79,7 +83,7 @@ lemma Rewrites.input_output : r.Rewrites [.nonterminal r.input] r.output := by
 lemma rewrites_of_exists_parts (r : ContextFreeRule T N) (p q : List (Symbol T N)) :
     r.Rewrites (p ++ [Symbol.nonterminal r.input] ++ q) (p ++ r.output ++ q) := by
   induction p with
-  | nil         => exact Rewrites.head q
+  | nil => exact Rewrites.head q
   | cons d l ih => exact Rewrites.cons d ih
 
 /-- Rule `r` rewrites string `u` is to string `v` iff they share both a prefix `p` and postfix `q`
@@ -220,7 +224,7 @@ lemma derives_nonterminal {t : g.NT} (hgt : ∀ r ∈ g.rules, r.input ≠ t)
     (s : List (Symbol T g.NT)) (hs : s ≠ [.nonterminal t]) :
     ¬g.Derives [.nonterminal t] s := by
   rw [derives_iff_eq_or_head]
-  push_neg
+  push Not
   refine ⟨hs.symm, fun _ hx ↦ ?_⟩
   have hxr := hx.exists_nonterminal_input_mem
   simp_rw [List.mem_singleton, Symbol.nonterminal.injEq] at hxr
@@ -294,12 +298,14 @@ lemma reverse_injective : Injective (reverse : ContextFreeGrammar T → ContextF
 lemma reverse_surjective : Surjective (reverse : ContextFreeGrammar T → ContextFreeGrammar T) :=
   reverse_bijective.surjective
 
+set_option backward.isDefEq.respectTransparency false in
 lemma produces_reverse : g.reverse.Produces u.reverse v.reverse ↔ g.Produces u v :=
   (Equiv.ofBijective _ ContextFreeRule.reverse_bijective).exists_congr
     (by simp [ContextFreeRule.reverse_involutive.eq_iff])
 
 alias ⟨_, Produces.reverse⟩ := produces_reverse
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma produces_reverse_comm : g.reverse.Produces u v ↔ g.Produces u.reverse v.reverse :=
   (Equiv.ofBijective _ ContextFreeRule.reverse_bijective).exists_congr
     (by simp [ContextFreeRule.reverse_involutive.eq_iff])
@@ -327,7 +333,18 @@ alias ⟨_, Generates.reverse⟩ := generates_reverse
 end ContextFreeGrammar
 
 /-- The class of context-free languages is closed under reversal. -/
-theorem Language.IsContextFree.reverse (L : Language T) :
-    L.IsContextFree → L.reverse.IsContextFree := by rintro ⟨g, rfl⟩; exact ⟨g.reverse, by simp⟩
+protected theorem Language.IsContextFree.reverse {L : Language T} (h : L.IsContextFree) :
+    L.reverse.IsContextFree := by
+  rcases h with ⟨g, rfl⟩
+  exact ⟨g.reverse, by simp⟩
+
+protected theorem Language.IsContextFree.of_reverse {L : Language T} (h : L.reverse.IsContextFree) :
+    L.IsContextFree := by
+  simpa using h.reverse
+
+@[simp]
+theorem Language.isContextFree_reverse {L : Language T} :
+    L.reverse.IsContextFree ↔ L.IsContextFree :=
+  ⟨.of_reverse, .reverse⟩
 
 end closure_reversal

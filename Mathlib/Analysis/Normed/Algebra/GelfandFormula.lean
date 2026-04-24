@@ -3,10 +3,13 @@ Copyright (c) 2021 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.Analytic.RadiusLiminf
-import Mathlib.Analysis.Complex.Liouville
+module
+
+public import Mathlib.Analysis.Normed.Algebra.Spectrum
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Normed.Operator.Mul
 import Mathlib.Analysis.Complex.Polynomial.Basic
-import Mathlib.Analysis.Normed.Algebra.Spectrum
+import Mathlib.Analysis.Analytic.RadiusLiminf
 
 /-!
 # Gelfand's formula and other results on the spectrum in complex Banach algebras
@@ -17,7 +20,8 @@ complex Banach algebra has nonempty spectrum.
 
 ## Main results
 
-* `spectrum.hasDerivAt_resolvent`: the resolvent function is differentiable on the resolvent set.
+* `spectrum.hasDerivAt_resolvent_const_left`: the resolvent function is differentiable on the
+  resolvent set.
 * `spectrum.pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius`: Gelfand's formula for the
   spectral radius in Banach algebras over `ℂ`.
 * `spectrum.nonempty`: the spectrum of any element in a complex Banach algebra is nonempty.
@@ -25,17 +29,28 @@ complex Banach algebra has nonempty spectrum.
   Banach division algebra, the natural `algebraMap ℂ A` is an algebra isomorphism whose inverse
   is given by selecting the (unique) element of `spectrum ℂ a`
 
+## Implementation notes
+
+Note that it is important here that the complex analysis files are privately imported, since the
+material proven here gets used in contexts that have nothing to do with complex analysis
+(i.e. C⋆-algebras, etc).
+
 -/
+
+@[expose] public section
 
 variable {𝕜 A : Type*}
 
-open scoped NNReal Topology
+open scoped NNReal Topology Ring
 open Filter ENNReal
 
 namespace spectrum
 
-theorem hasDerivAt_resolvent [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
-    [CompleteSpace A] {a : A} {k : 𝕜} (hk : k ∈ resolventSet 𝕜 a) :
+section NonTriviallyNormedField
+
+variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+
+theorem hasDerivAt_resolvent_const_left {a : A} {k : 𝕜} (hk : k ∈ resolventSet 𝕜 a) :
     HasDerivAt (resolvent a) (-resolvent a k ^ 2) k := by
   have H₁ : HasFDerivAt Ring.inverse _ (algebraMap 𝕜 A k - a) :=
     hasFDerivAt_ringInverse (𝕜 := 𝕜) hk.unit
@@ -43,13 +58,33 @@ theorem hasDerivAt_resolvent [NontriviallyNormedField 𝕜] [NormedRing A] [Norm
     simpa using (Algebra.linearMap 𝕜 A).hasDerivAt.sub_const a
   simpa [resolvent, sq, hk.unit_spec, ← Ring.inverse_unit hk.unit] using H₁.comp_hasDerivAt k H₂
 
+@[deprecated (since := "2026-03-26")]
+alias hasDerivAt_resolvent := hasDerivAt_resolvent_const_left
+
+theorem hasFDerivAt_resolvent {a : A} {k : 𝕜} (hk : k ∈ resolventSet 𝕜 a) :
+    HasFDerivAt (resolvent · k)
+      (((ContinuousLinearMap.mulLeftRight 𝕜 A) (resolvent a k)) (resolvent a k)) a := by
+  have H₁ : HasFDerivAt Ring.inverse _ (algebraMap 𝕜 A k - a) :=
+    hasFDerivAt_ringInverse (𝕜 := 𝕜) hk.unit
+  have H₂ : HasFDerivAt (fun a => algebraMap 𝕜 A k - a) (- .id 𝕜 A) a := by
+    simpa using (hasFDerivAt_const _ a).sub (hasFDerivAt_id a)
+  simpa [resolvent_eq hk] using H₁.comp a H₂
+
+end NonTriviallyNormedField
+
+theorem hasDerivAt_resolvent_const_right [NontriviallyNormedField 𝕜] [NontriviallyNormedField A]
+    [NormedAlgebra 𝕜 A] [CompleteSpace A] {a : A} {k : 𝕜} (hk : k ∈ resolventSet 𝕜 a) :
+    HasDerivAt (resolvent · k) (resolvent a k ^ 2) a := by
+  convert hasFDerivAt_resolvent (𝕜 := A) hk |>.hasDerivAt
+  simp [resolvent, pow_two]
+
 open ENNReal in
 /-- In a Banach algebra `A` over `𝕜`, for `a : A` the function `fun z ↦ (1 - z • a)⁻¹` is
 differentiable on any closed ball centered at zero of radius `r < (spectralRadius 𝕜 a)⁻¹`. -/
 theorem differentiableOn_inverse_one_sub_smul [NontriviallyNormedField 𝕜] [NormedRing A]
     [NormedAlgebra 𝕜 A] [CompleteSpace A] {a : A} {r : ℝ≥0}
     (hr : (r : ℝ≥0∞) < (spectralRadius 𝕜 a)⁻¹) :
-    DifferentiableOn 𝕜 (fun z : 𝕜 => Ring.inverse (1 - z • a)) (Metric.closedBall 0 r) := by
+    DifferentiableOn 𝕜 (fun z : 𝕜 => (1 - z • a)⁻¹ʳ) (Metric.closedBall 0 r) := by
   intro z z_mem
   apply DifferentiableAt.differentiableWithinAt
   have hu : IsUnit (1 - z • a) := by
@@ -114,7 +149,8 @@ protected theorem nonempty (a : A) : (spectrum ℂ a).Nonempty := by
   by_contra! h
   have H₀ : resolventSet ℂ a = Set.univ := by rwa [spectrum, Set.compl_empty_iff] at h
   have H₁ : Differentiable ℂ fun z : ℂ => resolvent a z := fun z =>
-    (hasDerivAt_resolvent (H₀.symm ▸ Set.mem_univ z : z ∈ resolventSet ℂ a)).differentiableAt
+    hasDerivAt_resolvent_const_left (H₀.symm ▸ Set.mem_univ z : z ∈ resolventSet ℂ a)
+      |>.differentiableAt
   /- Since `resolvent a` tends to zero at infinity, by Liouville's theorem `resolvent a = 0`,
   which contradicts that `resolvent a z` is invertible. -/
   have H₃ := H₁.apply_eq_of_tendsto_cocompact 0 <| by
@@ -145,7 +181,7 @@ open Polynomial in
 to monic monomials. -/
 protected theorem map_pow (a : A) (n : ℕ) :
     spectrum ℂ (a ^ n) = (· ^ n) '' spectrum ℂ a := by
-  simpa only [aeval_X_pow, eval_pow, eval_X] using map_polynomial_aeval a (X ^ n)
+  simpa only [aeval_X_pow, eval_X_pow] using map_polynomial_aeval a (X ^ n)
 
 end Nontrivial
 
@@ -164,8 +200,8 @@ precisely the units. This allows for the application of this isomorphism in broa
 to the quotient of a complex Banach algebra by a maximal ideal. In the case when `A` is actually a
 `NormedDivisionRing`, one may fill in the argument `hA` with the lemma `isUnit_iff_ne_zero`. -/
 @[simps]
-noncomputable def _root_.NormedRing.algEquivComplexOfComplete (hA : ∀ {a : A}, IsUnit a ↔ a ≠ 0)
-    [CompleteSpace A] : ℂ ≃ₐ[ℂ] A :=
+noncomputable def _root_.NormedRing.algEquivComplexOfComplete (hA : ∀ {a : A}, IsUnit a ↔ a ≠ 0) :
+    ℂ ≃ₐ[ℂ] A :=
   let nt : Nontrivial A := ⟨⟨1, 0, hA.mp ⟨⟨1, 1, mul_one _, mul_one _⟩, rfl⟩⟩⟩
   { Algebra.ofId ℂ A with
     toFun := algebraMap ℂ A

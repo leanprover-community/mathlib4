@@ -3,9 +3,11 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler, Michael Stoll
 -/
-import Mathlib.NumberTheory.LSeries.ZMod
-import Mathlib.NumberTheory.DirichletCharacter.Basic
-import Mathlib.NumberTheory.EulerProduct.DirichletLSeries
+module
+
+public import Mathlib.NumberTheory.LSeries.ZMod
+public import Mathlib.NumberTheory.DirichletCharacter.Basic
+public import Mathlib.NumberTheory.EulerProduct.DirichletLSeries
 
 /-!
 # Analytic continuation of Dirichlet L-functions
@@ -37,6 +39,8 @@ All definitions and theorems are in the `DirichletCharacter` namespace.
   showing that if `χ` is primitive modulo `N`, then
   `completedLFunction χ s = N ^ (s - 1 / 2) * rootNumber χ * completedLFunction χ⁻¹ s`.
 -/
+
+@[expose] public section
 
 open HurwitzZeta Complex Finset ZMod Filter
 
@@ -286,7 +290,7 @@ theorem completedLFunction_one_sub {χ : DirichletCharacter ℂ N} (hχ : IsPrim
   -- facts about `χ` as function
   have h_sum : ∑ j, χ j = 0 := by
     refine χ.sum_eq_zero_of_ne_one (fun h ↦ hN.symm ?_)
-    rwa [IsPrimitive, h, conductor_one (NeZero.ne _)] at hχ
+    rwa [IsPrimitive, h, conductor_one] at hχ
   let ε := I ^ (if χ.Even then 0 else 1)
   -- gather up powers of N
   rw [rootNumber, ← mul_comm_div, ← mul_comm_div, ← cpow_sub _ _ (NeZero.ne _), sub_sub, add_halves]

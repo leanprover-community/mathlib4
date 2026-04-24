@@ -3,22 +3,26 @@ Copyright (c) 2020 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.CategoryTheory.Elements
-import Mathlib.CategoryTheory.IsConnected
-import Mathlib.CategoryTheory.SingleObj
-import Mathlib.GroupTheory.GroupAction.Quotient
-import Mathlib.GroupTheory.SemidirectProduct
+module
+
+public import Mathlib.CategoryTheory.Elements
+public import Mathlib.CategoryTheory.IsConnected
+public import Mathlib.CategoryTheory.SingleObj
+public import Mathlib.GroupTheory.GroupAction.Quotient
+public import Mathlib.GroupTheory.SemidirectProduct
 
 /-!
 # Actions as functors and as categories
 
 From a multiplicative action M ↻ X, we can construct a functor from M to the category of
-types, mapping the single object of M to X and an element `m : M` to map `X → X` given by
+types, mapping the single object of M to X and an element `m : M` to the map `X → X` given by
 multiplication by `m`.
   This functor induces a category structure on X -- a special case of the category of elements.
 A morphism `x ⟶ y` in this category is simply a scalar `m : M` such that `m • x = y`. In the case
 where M is a group, this category is a groupoid -- the *action groupoid*.
 -/
+
+@[expose] public section
 
 
 open MulAction SemidirectProduct
@@ -31,22 +35,19 @@ variable (M : Type*) [Monoid M] (X : Type u) [MulAction M X]
 
 /-- A multiplicative action M ↻ X viewed as a functor mapping the single object of M to X
   and an element `m : M` to the map `X → X` given by multiplication by `m`. -/
-@[simps]
+@[simps obj map]
 def actionAsFunctor : SingleObj M ⥤ Type u where
   obj _ := X
-  map := (· • ·)
-  map_id _ := funext <| MulAction.one_smul
-  map_comp f g := funext fun x => (smul_smul g f x).symm
+  map f := TypeCat.ofHom (f • ·)
+  map_id _ := by ext; exact MulAction.one_smul _
+  map_comp f g := by ext x; exact (smul_smul g f x).symm
 
 /-- A multiplicative action M ↻ X induces a category structure on X, where a morphism
 from x to y is a scalar taking x to y. Due to implementation details, the object type
 of this category is not equal to X, but is in bijection with X. -/
 def ActionCategory :=
   (actionAsFunctor M X).Elements
-
-instance : Category (ActionCategory M X) := by
-  dsimp only [ActionCategory]
-  infer_instance
+deriving Category
 
 namespace ActionCategory
 
@@ -158,9 +159,6 @@ protected def cases {P : ∀ ⦃a b : ActionCategory G X⦄, (a ⟶ b) → Sort*
   rcases f with ⟨g : G, h : g • a = b⟩
   cases inv_smul_eq_iff.mpr h.symm
   rfl
-
-@[deprecated (since := "2025-08-21")]
-alias cases' := ActionCategory.cases
 
 variable {H : Type*} [Group H]
 

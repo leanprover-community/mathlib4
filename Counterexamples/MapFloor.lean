@@ -42,8 +42,6 @@ noncomputable section
 
 open Function Int Polynomial
 
-open scoped Polynomial
-
 /-- The integers with infinitesimals adjoined. -/
 def IntWithEpsilon :=
   ℤ[X] deriving Nontrivial, CommRing, Inhabited
@@ -71,12 +69,16 @@ theorem pos_iff {p : ℤ[ε]} : 0 < p ↔ 0 < p.trailingCoeff := by
   exact (natTrailingDegree_le_of_ne_zero hn.2.ne').antisymm
     (le_natTrailingDegree (by rintro rfl; cases hn.2.false) fun m hm => (hn.1 _ hm).symm)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : ZeroLEOneClass ℤ[ε] :=
   { zero_le_one := Or.inr ⟨0, by simp⟩ }
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsStrictOrderedRing ℤ[ε] :=
   .of_mul_pos fun p q => by simp_rw [pos_iff]; rw [trailingCoeff_mul]; exact mul_pos
 
+set_option backward.isDefEq.respectTransparency false in
+set_option linter.flexible false in
 instance : FloorRing ℤ[ε] :=
   FloorRing.ofFloor _ (fun p => if (p.coeff 0 : ℤ[ε]) ≤ p then p.coeff 0 else p.coeff 0 - 1)
     fun p q => by
@@ -112,6 +114,7 @@ def forgetEpsilons : ℤ[ε] →+*o ℤ where
 theorem forgetEpsilons_apply (p : ℤ[ε]) : forgetEpsilons p = coeff p 0 :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The floor of `n - ε` is `n - 1` but its image under `forgetEpsilons` is `n`, whose floor is
 itself. -/
 theorem forgetEpsilons_floor_lt (n : ℤ) :

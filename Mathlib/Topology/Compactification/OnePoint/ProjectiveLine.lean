@@ -3,17 +3,19 @@ Copyright (c) 2024 Bjørn Kjos-Hanssen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Kjos-Hanssen, Oliver Nash
 -/
-import Mathlib.Algebra.QuadraticDiscriminant
-import Mathlib.Data.Matrix.Action
-import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.FinTwo
-import Mathlib.LinearAlgebra.Projectivization.Action
-import Mathlib.Topology.Compactification.OnePoint.Basic
+module
+
+public import Mathlib.Algebra.QuadraticDiscriminant
+public import Mathlib.Data.Matrix.Action
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.FinTwo
+public import Mathlib.LinearAlgebra.Projectivization.Action
+public import Mathlib.Topology.Compactification.OnePoint.Basic
 
 /-!
 # One-point compactification and projectivization
 
 We construct a set-theoretic equivalence between
-`OnePoint K` and the projectivization `ℙ K (K × K)` for an arbitrary division ring `K`.
+`OnePoint K` and the projectivization `ℙ K (Fin 2 → K)` for an arbitrary division ring `K`.
 
 TODO: Add the extension of this equivalence to a homeomorphism in the case `K = ℝ`,
 where `OnePoint ℝ` gets the topology of one-point compactification.
@@ -21,12 +23,14 @@ where `OnePoint ℝ` gets the topology of one-point compactification.
 
 ## Main definitions and results
 
-* `OnePoint.equivProjectivization` : the equivalence `OnePoint K ≃ ℙ K (K × K)`.
+* `OnePoint.equivProjectivization` : the equivalence `OnePoint K ≃ ℙ K (Fin 2 → K)`.
 
 ## Tags
 
 one-point extension, projectivization
 -/
+
+@[expose] public section
 
 open scoped LinearAlgebra.Projectivization
 
@@ -36,21 +40,37 @@ section MatrixProdAction
 
 variable {R n : Type*} [Semiring R] [Fintype n] [DecidableEq n]
 
+@[simp] lemma Matrix.mulVec_fin_two (m : Matrix (Fin 2) (Fin 2) R) (v : Fin 2 → R) :
+    m *ᵥ v = ![m 0 0 * v 0 + m 0 1 * v 1, m 1 0 * v 0 + m 1 1 * v 1] := by
+  ext i
+  fin_cases i <;>
+  simp [mulVec_eq_sum]
+
+@[simp] lemma Matrix.GeneralLinearGroup.fin_two_smul {R : Type*} [CommRing R]
+    (g : GL (Fin 2) R) (v : Fin 2 → R) :
+    g • v = ![g 0 0 * v 0 + g 0 1 * v 1, g 1 0 * v 0 + g 1 1 * v 1] := by
+  simp [Units.smul_def]
+
+@[deprecated "use Fin 2 → R instead" (since := "2026-04-19")]
 instance : Module (Matrix (Fin 2) (Fin 2) R) (R × R) :=
   (LinearEquiv.finTwoArrow R R).symm.toAddEquiv.module _
 
+@[deprecated "use Fin 2 → R instead" (since := "2026-04-19")]
 instance {S} [DistribSMul S R] [SMulCommClass R S R] :
     SMulCommClass (Matrix (Fin 2) (Fin 2) R) S (R × R) :=
   (LinearEquiv.finTwoArrow R R).symm.smulCommClass _ _
 
-@[simp] lemma Matrix.fin_two_smul_prod (g : Matrix (Fin 2) (Fin 2) R) (v : R × R) :
+@[deprecated "use Fin 2 → R instead" (since := "2026-04-19")]
+lemma Matrix.fin_two_smul_prod (g : Matrix (Fin 2) (Fin 2) R) (v : R × R) :
     g • v = (g 0 0 * v.1 + g 0 1 * v.2, g 1 0 * v.1 + g 1 1 * v.2) := by
   simp [Equiv.smul_def, smul_eq_mulVec, Matrix.mulVec_eq_sum]
 
-@[simp] lemma Matrix.GeneralLinearGroup.fin_two_smul_prod {R : Type*} [CommRing R]
+set_option linter.deprecated false in
+@[deprecated Matrix.GeneralLinearGroup.fin_two_smul (since := "2026-04-19")]
+lemma Matrix.GeneralLinearGroup.fin_two_smul_prod {R : Type*} [CommRing R]
     (g : GL (Fin 2) R) (v : R × R) :
     g • v = (g 0 0 * v.1 + g 0 1 * v.2, g 1 0 * v.1 + g 1 1 * v.2) := by
-  simp [Units.smul_def]
+  simp [Units.smul_def, Matrix.fin_two_smul_prod]
 
 end MatrixProdAction
 
@@ -61,40 +81,39 @@ section DivisionRing
 variable (K : Type*) [DivisionRing K] [DecidableEq K]
 
 /-- The one-point compactification of a division ring `K` is equivalent to
-the projectivization `ℙ K (K × K)`. -/
-def equivProjectivization :
-    OnePoint K ≃ ℙ K (K × K) where
-  toFun p := p.elim (mk K (1, 0) (by simp)) (fun t ↦ mk K (t, 1) (by simp))
+the projectivization `ℙ K (Fin 2 → K)`. -/
+def equivProjectivization : OnePoint K ≃ ℙ K (Fin 2 → K) where
+  toFun p := p.elim (mk K ![1, 0] (by simp)) (fun t ↦ mk K ![t, 1] (by simp))
   invFun p := by
     refine Projectivization.lift
-      (fun u : {v : K × K // v ≠ 0} ↦ if u.1.2 = 0 then ∞ else ((u.1.2)⁻¹ * u.1.1)) ?_ p
-    rintro ⟨-, hv⟩ ⟨⟨x, y⟩, hw⟩ t rfl
+      (fun u : {v : Fin 2 → K // v ≠ 0} ↦ if u.1 1 = 0 then ∞ else ((u.1 1)⁻¹ * u.1 0)) ?_ p
+    rintro ⟨-, hv⟩ ⟨w, hw⟩ t rfl
     have ht : t ≠ 0 := by rintro rfl; simp at hv
-    by_cases h₀ : y = 0 <;> simp [h₀, ht, mul_assoc]
+    by_cases h₀ : w 1 = 0 <;> simp [h₀, ht, mul_assoc]
   left_inv p := by cases p <;> simp
   right_inv p := by
-    induction p using ind with | h p hp =>
-    obtain ⟨x, y⟩ := p
-    by_cases h₀ : y = 0 <;> simp only [mk_eq_mk_iff', h₀, Projectivization.lift_mk, if_true,
-      if_false, OnePoint.elim_infty, OnePoint.elim_some, Prod.smul_mk, Prod.mk.injEq, smul_eq_mul,
-      mul_zero, and_true]
-    · use x⁻¹
-      simp_all
-    · exact ⟨y⁻¹, rfl, inv_mul_cancel₀ h₀⟩
+    induction p using ind with | h w hw =>
+    by_cases h₀ : w 1 = 0 <;> simp only [mk_eq_mk_iff', h₀, Projectivization.lift_mk, if_true,
+        if_false, OnePoint.elim_infty, OnePoint.elim_some]
+    · have : w 0 ≠ 0 := fun h ↦ hw <| funext <| by simp_all
+      use (w 0)⁻¹
+      ext i
+      fin_cases i <;> simp_all
+    · exact ⟨(w 1)⁻¹, funext <| by simp [inv_mul_cancel₀ h₀]⟩
 
 @[simp]
 lemma equivProjectivization_apply_infinity :
-    equivProjectivization K ∞ = mk K ⟨1, 0⟩ (by simp) :=
+    equivProjectivization K ∞ = mk K ![1, 0] (by simp) :=
   rfl
 
 @[simp]
 lemma equivProjectivization_apply_coe (t : K) :
-    equivProjectivization K t = mk K ⟨t, 1⟩ (by simp) :=
+    equivProjectivization K t = mk K ![t, 1] (by simp) :=
   rfl
 
 @[simp]
-lemma equivProjectivization_symm_apply_mk (x y : K) (h : (x, y) ≠ 0) :
-    (equivProjectivization K).symm (mk K ⟨x, y⟩ h) = if y = 0 then ∞ else y⁻¹ * x := by
+lemma equivProjectivization_symm_apply_mk (v : Fin 2 → K) (h : v ≠ 0) :
+    (equivProjectivization K).symm (mk K v h) = if v 1 = 0 then ∞ else (v 1)⁻¹ * v 0 := by
   simp [equivProjectivization]
 
 end DivisionRing
@@ -108,9 +127,14 @@ with the `ℙ¹(K)` (which is given explicitly by Möbius transformations). -/
 instance instGLAction : MulAction (GL (Fin 2) K) (OnePoint K) :=
   (equivProjectivization K).mulAction (GL (Fin 2) K)
 
+lemma equivProjectivization_smul {g : GL (Fin 2) K} (x : OnePoint K) :
+    equivProjectivization K (g • x) = g • equivProjectivization K x := by
+  rw [Equiv.smul_def, Equiv.apply_symm_apply]
+
 lemma smul_infty_def {g : GL (Fin 2) K} :
-    g • ∞ = (equivProjectivization K).symm (.mk K (g 0 0, g 1 0) (fun h ↦ by
-      simpa [det_fin_two, Prod.mk_eq_zero.mp h] using g.det_ne_zero)) := by
+    g • ∞ = (equivProjectivization K).symm (.mk K ![g 0 0, g 1 0] (fun h ↦ by
+      simpa [det_fin_two, show g 0 0 = 0 from congr_fun h 0, show g 1 0 = 0 from congr_fun h 1]
+        using g.det_ne_zero)) := by
   simp [Equiv.smul_def, mulVec_eq_sum, Units.smul_def]
 
 lemma smul_infty_eq_ite (g : GL (Fin 2) K) :
@@ -162,7 +186,7 @@ def parabolicFixedPoint (g : GL (Fin 2) K) : OnePoint K :=
 lemma IsParabolic.smul_eq_self_iff {g : GL (Fin 2) K} (hg : g.IsParabolic) [NeZero (2 : K)]
     {c : OnePoint K} : g • c = c ↔ c = parabolicFixedPoint g := by
   rcases hg with ⟨hg, hdisc⟩
-  rw [disc_fin_two, trace_fin_two, det_fin_two] at hdisc
+  rw [discr_fin_two, trace_fin_two, det_fin_two] at hdisc
   cases c with
   | infty => by_cases h : g 1 0 = 0 <;> simp [parabolicFixedPoint, smul_infty_eq_ite, h]
   | coe c =>
@@ -185,7 +209,7 @@ lemma IsParabolic.parabolicFixedPoint_pow {g : GL (Fin 2) K} (hg : IsParabolic g
   clear hn
   induction n with
   | zero => simp
-  | succ n IH => rw [pow_succ, MulAction.mul_smul, hg.smul_eq_self_iff.mpr rfl, IH]
+  | succ n IH => rw [pow_succ, SemigroupAction.mul_smul, hg.smul_eq_self_iff.mpr rfl, IH]
 
 /-- Elliptic elements have no fixed points in `OnePoint K`. -/
 lemma IsElliptic.smul_ne_self [LinearOrder K] [IsStrictOrderedRing K]
@@ -195,18 +219,18 @@ lemma IsElliptic.smul_ne_self [LinearOrder K] [IsStrictOrderedRing K]
   | infty =>
     rw [Ne, smul_infty_eq_self_iff]
     refine fun h ↦ not_le_of_gt hg ?_
-    have : g.val.disc = (g 0 0 - g 1 1) ^ 2 := by
-      simp only [disc_fin_two, trace_fin_two, det_fin_two]
+    have : g.val.discr = (g 0 0 - g 1 1) ^ 2 := by
+      simp only [discr_fin_two, trace_fin_two, det_fin_two]
       grind
     rw [this]
     apply sq_nonneg
   | coe c =>
     refine fun h ↦ not_le_of_gt hg ?_
-    have : g.val.disc = (2 * g 1 0 * c + (g 1 1 + -g 0 0)) ^ 2 := by
+    have : g.val.discr = (2 * g 1 0 * c + (g 1 1 + -g 0 0)) ^ 2 := by
       replace h : g 1 0 * (c * c) + (g 1 1 + -g 0 0) * c + -g 0 1 = 0 := by
         simpa [← fixpointPolynomial_aeval_eq_zero_iff, fixpointPolynomial, sq, sub_eq_add_neg]
           using h
-      simp only [← discrim_eq_sq_of_quadratic_eq_zero h, disc_fin_two, discrim, trace_fin_two,
+      simp only [← discrim_eq_sq_of_quadratic_eq_zero h, discr_fin_two, discrim, trace_fin_two,
         det_fin_two]
       grind
     rw [this]

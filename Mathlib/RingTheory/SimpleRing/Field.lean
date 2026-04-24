@@ -3,10 +3,11 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
+module
 
-import Mathlib.RingTheory.SimpleRing.Basic
-import Mathlib.Algebra.Ring.Subring.Basic
-import Mathlib.Algebra.Field.Equiv
+public import Mathlib.RingTheory.SimpleRing.Basic
+public import Mathlib.Algebra.Ring.Subring.Basic
+public import Mathlib.Algebra.Field.Equiv
 
 /-!
 # Simple ring and fields
@@ -17,8 +18,11 @@ import Mathlib.Algebra.Field.Equiv
 
 -/
 
+public section
+
 namespace IsSimpleRing
 
+set_option backward.isDefEq.respectTransparency false in
 open TwoSidedIdeal in
 lemma isField_center (A : Type*) [Ring A] [IsSimpleRing A] : IsField (Subring.center A) where
   exists_pair_ne := ⟨0, 1, zero_ne_one⟩

@@ -3,7 +3,9 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Properties
+module
+
+public import Mathlib.AlgebraicGeometry.Properties
 
 /-!
 # Function field of integral schemes
@@ -16,6 +18,8 @@ This is a field when the scheme is integral.
 * `AlgebraicGeometry.Scheme.germToFunctionField`: The canonical map from a component into the
   function field. This map is injective.
 -/
+
+@[expose] public section
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
@@ -44,20 +48,9 @@ noncomputable instance [IrreducibleSpace X] (U : X.Opens) [Nonempty U] :
     Algebra Γ(X, U) X.functionField :=
   (X.germToFunctionField U).hom.toAlgebra
 
-noncomputable instance [IsIntegral X] : Field X.functionField := by
-  refine .ofIsUnitOrEqZero fun a ↦ ?_
-  obtain ⟨U, m, s, rfl⟩ := TopCat.Presheaf.germ_exist _ _ a
-  rw [or_iff_not_imp_right, ← (X.presheaf.germ _ _ m).hom.map_zero]
-  intro ha
-  replace ha := ne_of_apply_ne _ ha
-  have hs : genericPoint X ∈ RingedSpace.basicOpen _ s := by
-    rw [← SetLike.mem_coe, (genericPoint_spec X).mem_open_set_iff,
-      Set.univ_inter, Set.nonempty_iff_ne_empty, Ne, ← Opens.coe_bot, ← SetLike.ext'_iff]
-    · erw [basicOpen_eq_bot_iff]
-      exact ha
-    · exact (RingedSpace.basicOpen _ _).isOpen
-  have := (X.presheaf.germ _ _ hs).hom.isUnit_map (RingedSpace.isUnit_res_basicOpen _ s)
-  rwa [Presheaf.germ_res_apply] at this
+noncomputable instance [IsIntegral X] : Field X.functionField :=
+  (isField_stalk_of_closure_mem_irreducibleComponents X _
+    (by simp [irreducibleComponents_eq_singleton])).toField
 
 theorem germ_injective_of_isIntegral [IsIntegral X] {U : X.Opens} (x : X) (hx : x ∈ U) :
     Function.Injective (X.presheaf.germ U x hx) := by
@@ -73,14 +66,14 @@ theorem Scheme.germToFunctionField_injective [IsIntegral X] (U : X.Opens) [Nonem
     Function.Injective (X.germToFunctionField U) :=
   germ_injective_of_isIntegral _ _ _
 
-theorem genericPoint_eq_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f]
+theorem genericPoint_eq_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [IsOpenImmersion f]
     [hX : IrreducibleSpace X] [IrreducibleSpace Y] :
-    f.base (genericPoint X) = genericPoint Y := by
+    f (genericPoint X) = genericPoint Y := by
   apply ((genericPoint_spec Y).eq _).symm
-  convert (genericPoint_spec X).image (show Continuous f.base by fun_prop)
+  convert (genericPoint_spec X).image f.continuous
   symm
   rw [← Set.univ_subset_iff]
-  convert subset_closure_inter_of_isPreirreducible_of_isOpen _ H.base_open.isOpen_range _
+  convert subset_closure_inter_of_isPreirreducible_of_isOpen _ f.isOpenEmbedding.isOpen_range _
   · rw [Set.univ_inter, Set.image_univ]
   · apply PreirreducibleSpace.isPreirreducible_univ (X := Y)
   · exact ⟨_, trivial, Set.mem_range_self hX.2.some⟩
@@ -103,6 +96,7 @@ noncomputable instance (R : CommRingCat.{u}) [IsDomain R] :
   -- TODO: can we write this normally after the refactor finishes?
   RingHom.toAlgebra <| by apply CommRingCat.Hom.hom; apply StructureSheaf.toStalk
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem genericPoint_eq_bot_of_affine (R : CommRingCat) [IsDomain R] :
     genericPoint (Spec R) = (⊥ : PrimeSpectrum R) := by
@@ -127,13 +121,13 @@ instance {X : Scheme} [IsIntegral X] {U : X.Opens} [Nonempty U] :
     IsIntegral U :=
   isIntegral_of_isOpenImmersion U.ι
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsAffineOpen.primeIdealOf_genericPoint {X : Scheme} [IsIntegral X] {U : X.Opens}
     (hU : IsAffineOpen U) [h : Nonempty U] :
     hU.primeIdealOf
         ⟨genericPoint X,
           ((genericPoint_spec X).mem_open_set_iff U.isOpen).mpr (by simpa using h)⟩ =
       genericPoint (Spec Γ(X, U)) := by
-  haveI : IsAffine _ := hU
   delta IsAffineOpen.primeIdealOf
   convert
     genericPoint_eq_of_isOpenImmersion
@@ -145,10 +139,6 @@ theorem IsAffineOpen.primeIdealOf_genericPoint {X : Scheme} [IsIntegral X] {U : 
 theorem functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : X.Opens)
     (hU : IsAffineOpen U) [Nonempty U] :
     IsFractionRing Γ(X, U) X.functionField := by
-  haveI : IsAffine _ := hU
-  haveI : IsIntegral U :=
-    @isIntegral_of_isAffine_of_isDomain _ _ _
-      (by rw [Scheme.Opens.toScheme_presheaf_obj, Opens.isOpenEmbedding_obj_top]; infer_instance)
   delta IsFractionRing Scheme.functionField
   convert hU.isLocalization_stalk ⟨genericPoint X,
     (((genericPoint_spec X).mem_open_set_iff U.isOpen).mpr (by simpa using ‹Nonempty U›))⟩ using 1

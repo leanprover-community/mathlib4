@@ -3,7 +3,9 @@ Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Measure.GiryMonad
+module
+
+public import Mathlib.MeasureTheory.Measure.GiryMonad
 
 /-!
 # Markov Kernels
@@ -35,6 +37,8 @@ Classes of kernels:
   functions `f` and all `a`, then the two kernels `κ` and `η` are equal.
 
 -/
+
+@[expose] public section
 
 assert_not_exists MeasureTheory.integral
 
@@ -102,7 +106,7 @@ instance instPartialOrder : PartialOrder (Kernel α β) := .lift _ DFunLike.coe_
 
 instance {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
     AddLeftMono (Kernel α β) :=
-  ⟨fun _ _ _ hμ a ↦ add_le_add_left (hμ a) _⟩
+  ⟨fun _ _ _ hμ a ↦ add_le_add_right (hμ a) _⟩
 
 noncomputable
 instance instOrderBot {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
@@ -156,8 +160,6 @@ theorem eq_zero_or_isMarkovKernel
 noncomputable def Kernel.bound (κ : Kernel α β) : ℝ≥0∞ :=
   ⨆ a, κ a Set.univ
 
-@[deprecated (since := "2025-09-13")] alias IsFiniteKernel.bound := Kernel.bound
-
 namespace Kernel
 
 theorem bound_lt_top (κ : Kernel α β) [h : IsFiniteKernel κ] : κ.bound < ∞ := by
@@ -165,14 +167,8 @@ theorem bound_lt_top (κ : Kernel α β) [h : IsFiniteKernel κ] : κ.bound < �
   refine lt_of_le_of_lt ?_ hC
   simp [bound, hle]
 
-@[deprecated (since := "2025-09-13")] alias _root_.ProbabilityTheory.IsFiniteKernel.bound_lt_top :=
-  bound_lt_top
-
 theorem bound_ne_top (κ : Kernel α β) [IsFiniteKernel κ] :
     κ.bound ≠ ∞ := κ.bound_lt_top.ne
-
-@[deprecated (since := "2025-09-13")] alias _root_.ProbabilityTheory.IsFiniteKernel.bound_ne_top :=
-  bound_ne_top
 
 theorem measure_le_bound (κ : Kernel α β) (a : α) (s : Set β) :
     κ a s ≤ κ.bound :=
@@ -182,29 +178,19 @@ theorem measure_le_bound (κ : Kernel α β) (a : α) (s : Set β) :
 lemma bound_eq_zero_of_isEmpty [IsEmpty α] (κ : Kernel α β) :
     κ.bound = 0 := by simp [bound]
 
-@[deprecated (since := "2025-09-13")] alias
-  _root_.ProbabilityTheory.IsFiniteKernel.bound_eq_zero_of_isEmpty := bound_eq_zero_of_isEmpty
-
 @[simp]
 lemma bound_eq_zero_of_isEmpty' [IsEmpty β] (κ : Kernel α β) :
     κ.bound = 0 := by simp [bound, Subsingleton.elim _ (0 : Measure β)]
-
-@[deprecated (since := "2025-09-13")] alias
-  _root_.ProbabilityTheory.IsFiniteKernel.bound_eq_zero_of_isEmpty' := bound_eq_zero_of_isEmpty'
 
 @[simp]
 lemma bound_zero : bound (0 : Kernel α β) = 0 := by
   simp [bound]
 
-@[deprecated (since := "2025-09-13")] alias
-  _root_.ProbabilityTheory.IsFiniteKernel.bound_zero := bound_zero
-
 end Kernel
 
 instance isFiniteKernel_zero (α β : Type*) {_ : MeasurableSpace α} {_ : MeasurableSpace β} :
     IsFiniteKernel (0 : Kernel α β) :=
-  ⟨⟨0, ENNReal.coe_lt_top, fun _ => by
-      simp only [Kernel.zero_apply, Measure.coe_zero, Pi.zero_apply, le_zero_iff]⟩⟩
+  ⟨⟨0, ENNReal.coe_lt_top, fun _ => by simp⟩⟩
 
 instance IsFiniteKernel.add (κ η : Kernel α β) [IsFiniteKernel κ] [IsFiniteKernel η] :
     IsFiniteKernel (κ + η) := by
@@ -248,18 +234,12 @@ namespace Kernel
 lemma bound_eq_one [Nonempty α] (κ : Kernel α β) [IsMarkovKernel κ] :
     κ.bound = 1 := by simp [bound]
 
-@[deprecated (since := "2025-09-13")] alias _root_.ProbabilityTheory.IsMarkovKernel.bound_eq_one :=
-  bound_eq_one
-
 @[simp]
 lemma bound_le_one (κ : Kernel α β) [IsZeroOrMarkovKernel κ] :
     κ.bound ≤ 1 := by
   rcases isEmpty_or_nonempty α
   · simp
   · rcases eq_zero_or_isMarkovKernel κ with rfl | _ <;> simp
-
-@[deprecated (since := "2025-09-13")] alias
-  _root_.ProbabilityTheory.IsZeroOrMarkovKernel.bound_le_one := bound_le_one
 
 @[ext]
 theorem ext (h : ∀ a, κ a = η a) : κ = η := DFunLike.ext _ _ h

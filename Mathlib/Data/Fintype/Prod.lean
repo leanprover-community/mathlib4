@@ -3,13 +3,17 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Prod
-import Mathlib.Data.Fintype.EquivFin
+module
+
+public import Mathlib.Data.Finset.Prod
+public import Mathlib.Data.Fintype.EquivFin
 
 /-!
 # fintype instance for the product of two fintypes.
 
 -/
+
+@[expose] public section
 
 
 open Function
@@ -29,9 +33,12 @@ theorem toFinset_prod (s : Set α) (t : Set β) [Fintype s] [Fintype t] [Fintype
   ext
   simp
 
-theorem toFinset_off_diag {s : Set α} [DecidableEq α] [Fintype s] [Fintype s.offDiag] :
+theorem toFinset_offDiag {s : Set α} [Fintype s] [Fintype s.offDiag] :
     s.offDiag.toFinset = s.toFinset.offDiag :=
   Finset.ext <| by simp
+
+@[deprecated (since := "2026-01-09")]
+alias toFinset_off_diag := toFinset_offDiag
 
 end Set
 

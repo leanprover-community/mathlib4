@@ -1,11 +1,12 @@
 /-
-Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
+Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Topology.Bornology.Constructions
-import Mathlib.Topology.MetricSpace.Pseudo.Defs
-import Mathlib.Topology.UniformSpace.UniformEmbedding
+module
+
+public import Mathlib.Topology.Bornology.Constructions
+public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 
 /-!
 # Products of pseudometric spaces and other constructions
@@ -13,6 +14,8 @@ import Mathlib.Topology.UniformSpace.UniformEmbedding
 This file constructs the supremum distance on binary products of pseudometric spaces and provides
 instances for type synonyms.
 -/
+
+@[expose] public section
 
 open Bornology Filter Metric Set Topology
 open scoped NNReal
@@ -37,6 +40,7 @@ abbrev PseudoMetricSpace.induced {α β} (f : α → β) (m : PseudoMetricSpace 
 /-- Pull back a pseudometric space structure by an inducing map. This is a version of
 `PseudoMetricSpace.induced` useful in case if the domain already has a `TopologicalSpace`
 structure. -/
+@[implicit_reducible]
 def Topology.IsInducing.comapPseudoMetricSpace {α β : Type*} [TopologicalSpace α]
     [m : PseudoMetricSpace β] {f : α → β} (hf : IsInducing f) : PseudoMetricSpace α :=
   .replaceTopology (.induced f m) hf.eq_induced
@@ -44,16 +48,42 @@ def Topology.IsInducing.comapPseudoMetricSpace {α β : Type*} [TopologicalSpace
 /-- Pull back a pseudometric space structure by a uniform inducing map. This is a version of
 `PseudoMetricSpace.induced` useful in case if the domain already has a `UniformSpace`
 structure. -/
+@[implicit_reducible]
 def IsUniformInducing.comapPseudoMetricSpace {α β} [UniformSpace α] [m : PseudoMetricSpace β]
     (f : α → β) (h : IsUniformInducing f) : PseudoMetricSpace α :=
   .replaceUniformity (.induced f m) h.comap_uniformity.symm
 
-instance Subtype.pseudoMetricSpace {p : α → Prop} : PseudoMetricSpace (Subtype p) :=
+namespace Subtype
+
+variable {p : α → Prop}
+
+instance pseudoMetricSpace : PseudoMetricSpace (Subtype p) :=
   PseudoMetricSpace.induced Subtype.val ‹_›
 
-lemma Subtype.dist_eq {p : α → Prop} (x y : Subtype p) : dist x y = dist (x : α) y := rfl
+lemma dist_eq (x y : Subtype p) : dist x y = dist (x : α) y := rfl
 
-lemma Subtype.nndist_eq {p : α → Prop} (x y : Subtype p) : nndist x y = nndist (x : α) y := rfl
+lemma nndist_eq (x y : Subtype p) : nndist x y = nndist (x : α) y := rfl
+
+@[simp]
+theorem preimage_ball (a : {a // p a}) (r : ℝ) : Subtype.val ⁻¹' (ball a.1 r) = ball a r :=
+  rfl
+
+@[simp]
+theorem preimage_closedBall {p : α → Prop} (a : {a // p a}) (r : ℝ) :
+    Subtype.val ⁻¹' (closedBall a.1 r) = closedBall a r :=
+  rfl
+
+@[simp]
+theorem image_ball {p : α → Prop} (a : {a // p a}) (r : ℝ) :
+    Subtype.val '' (ball a r) = ball a.1 r ∩ {a | p a} := by
+  rw [← preimage_ball, image_preimage_eq_inter_range, range_val_subtype]
+
+@[simp]
+theorem image_closedBall {p : α → Prop} (a : {a // p a}) (r : ℝ) :
+    Subtype.val '' (closedBall a r) = closedBall a.1 r ∩ {a | p a} := by
+  rw [← preimage_closedBall, image_preimage_eq_inter_range, range_val_subtype]
+
+end Subtype
 
 namespace MulOpposite
 
@@ -77,7 +107,8 @@ end MulOpposite
 
 section NNReal
 
-instance : PseudoMetricSpace ℝ≥0 := Subtype.pseudoMetricSpace
+instance : PseudoMetricSpace ℝ≥0 :=
+  inferInstanceAs <| PseudoMetricSpace (Subtype _)
 
 lemma NNReal.dist_eq (a b : ℝ≥0) : dist a b = |(a : ℝ) - b| := rfl
 
@@ -107,17 +138,17 @@ lemma NNReal.ball_zero_eq_Ico' (c : ℝ≥0) :
 
 lemma NNReal.ball_zero_eq_Ico (c : ℝ) :
     Metric.ball (0 : ℝ≥0) c = Set.Ico 0 c.toNNReal := by
-  by_cases c_pos : 0 < c
-  · convert NNReal.ball_zero_eq_Ico' ⟨c, c_pos.le⟩
+  by_cases! c_pos : 0 < c
+  · convert NNReal.ball_zero_eq_Ico' (NNReal.mk c c_pos.le)
     simp [Real.toNNReal, c_pos.le]
-  simp [not_lt.mp c_pos]
+  simp [c_pos]
 
 lemma NNReal.closedBall_zero_eq_Icc' (c : ℝ≥0) :
     Metric.closedBall (0 : ℝ≥0) c.toReal = Set.Icc 0 c := by ext x; simp
 
 lemma NNReal.closedBall_zero_eq_Icc {c : ℝ} (c_nn : 0 ≤ c) :
     Metric.closedBall (0 : ℝ≥0) c = Set.Icc 0 c.toNNReal := by
-  convert NNReal.closedBall_zero_eq_Icc' ⟨c, c_nn⟩
+  convert NNReal.closedBall_zero_eq_Icc' (NNReal.mk c c_nn)
   simp [Real.toNNReal, c_nn]
 
 end NNReal
@@ -125,7 +156,8 @@ end NNReal
 namespace ULift
 variable [PseudoMetricSpace β]
 
-instance : PseudoMetricSpace (ULift β) := PseudoMetricSpace.induced ULift.down ‹_›
+instance : PseudoMetricSpace (ULift β) :=
+  fast_instance% PseudoMetricSpace.induced ULift.down ‹_›
 
 lemma dist_eq (x y : ULift β) : dist x y = dist x.down y.down := rfl
 
@@ -143,9 +175,8 @@ variable [PseudoMetricSpace β]
 instance Prod.pseudoMetricSpaceMax : PseudoMetricSpace (α × β) :=
   let i := PseudoEMetricSpace.toPseudoMetricSpaceOfDist
     (fun x y : α × β => dist x.1 y.1 ⊔ dist x.2 y.2)
-    (fun _ _ => (max_lt (edist_lt_top _ _) (edist_lt_top _ _)).ne) fun x y => by
-      simp only [dist_edist, ← ENNReal.toReal_max (edist_ne_top _ _) (edist_ne_top _ _),
-        Prod.edist_eq]
+    (fun x y ↦ by positivity) fun x y => by
+      simp only [ENNReal.ofReal_max, Prod.edist_eq, edist_dist]
   i.replaceBornology fun s => by
     simp only [← isBounded_image_fst_and_snd, isBounded_iff_eventually, forall_mem_image, ←
       eventually_and, ← forall_and, ← max_le_iff]

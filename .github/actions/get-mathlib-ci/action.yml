@@ -1,0 +1,52 @@
+# Source of truth for `mathlib-ci` checkout settings in this repository.
+# Workflows should use this action instead of duplicating the checkout block
+# and hardcoded ref in multiple places.
+name: Get mathlib-ci
+description: Checkout leanprover-community/mathlib-ci at a shared ref.
+inputs:
+  ref:
+    description: Git ref (branch, tag, or SHA) for mathlib-ci.
+    required: false
+    # Default pinned commit used by workflows unless they explicitly override.
+    # Update this ref as needed to pick up changes to mathlib-ci scripts
+    # This is also updated automatically by .github/workflows/update_dependencies.yml
+    default: ca86f6900d53e503e28ec1cfa2bff2f505474553
+  path:
+    description: Checkout destination path.
+    required: false
+    default: ci-tools
+  fetch-depth:
+    description: Number of commits to fetch.
+    required: false
+    default: '1'
+outputs:
+  ref:
+    description: Effective ref used for the checkout.
+    value: ${{ inputs.ref }}
+  path:
+    description: Checkout path used.
+    value: ${{ inputs.path }}
+  scripts_dir:
+    description: Absolute path to the scripts directory.
+    value: ${{ steps.paths.outputs.scripts_dir }}
+runs:
+  using: composite
+  steps:
+    - name: Get mathlib-ci
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        repository: leanprover-community/mathlib-ci
+        ref: ${{ inputs.ref }}
+        fetch-depth: ${{ inputs.fetch-depth }}
+        path: ${{ inputs.path }}
+
+    - name: Setup CI Scripts Paths
+      id: paths
+      shell: bash
+      run: |
+        checkout_path="${GITHUB_WORKSPACE}/${{ inputs.path }}"
+        scripts_dir="${checkout_path}/scripts"
+        echo "checkout_path=${checkout_path}" >> "$GITHUB_OUTPUT"
+        echo "scripts_dir=${scripts_dir}" >> "$GITHUB_OUTPUT"
+        echo "CI_CHECKOUT_PATH=${checkout_path}" >> "$GITHUB_ENV"
+        echo "CI_SCRIPTS_DIR=${scripts_dir}" >> "$GITHUB_ENV"

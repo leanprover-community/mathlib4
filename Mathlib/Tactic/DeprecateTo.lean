@@ -3,14 +3,14 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Batteries.Tactic.Alias
-import Lean.Meta.Tactic.TryThis
-import Mathlib.Lean.Expr.Basic
-import Mathlib.Tactic.Lemma
-import Std.Time.Format
+module
+
+public meta import Std.Time.Format
+public import Batteries.Tactic.Alias
+public import Mathlib.Init
 
 /-!
-#  `deprecate to` -- a deprecation tool
+# `deprecate to` -- a deprecation tool
 
 Writing
 ```lean
@@ -38,6 +38,8 @@ TODO:
 * preserve formatting of existing command?
 -/
 
+public meta section
+
 namespace Mathlib.Tactic.DeprecateTo
 
 open Lean Elab Term Command
@@ -50,7 +52,7 @@ def mkDeprecationStx (id : TSyntax `ident) (n : Name) (dat : Option String := no
       | none => do
         return s!"{(← Std.Time.ZonedDateTime.now).toPlainDate}"
       | some s => return s
-  let nd := mkNode `str #[mkAtom ("\"" ++ dat.trimRight ++ "\"")]
+  let nd := mkNode `str #[mkAtom ("\"" ++ dat.trimAsciiEnd ++ "\"")]
   `(command| @[deprecated (since := $nd)] alias $(mkIdent n) := $id)
 
 /-- Returns the array of names that are in `new` but not in `old`. -/

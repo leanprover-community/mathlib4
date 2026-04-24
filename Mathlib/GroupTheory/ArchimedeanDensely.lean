@@ -3,24 +3,28 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.Order.Group.Units
-import Mathlib.Algebra.Order.Monoid.LocallyFiniteOrder
-import Mathlib.Data.Int.Interval
-import Mathlib.GroupTheory.Archimedean
-import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.Order.Interval.Finset.DenselyOrdered
+module
+
+public import Mathlib.Algebra.Order.Group.Units
+public import Mathlib.Algebra.Order.Monoid.LocallyFiniteOrder
+public import Mathlib.Data.Int.Interval
+public import Mathlib.GroupTheory.Archimedean
+public import Mathlib.GroupTheory.OrderOfElement
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic
+public import Mathlib.Order.Interval.Finset.DenselyOrdered
 
 /-!
 # Archimedean groups are either discrete or densely ordered
 
 This file proves a few additional facts about linearly ordered additive groups which satisfy the
-  `Archimedean` property --
-  they are either order-isomorphic and additively isomorphic to the integers,
-  or they are densely ordered.
+`Archimedean` property -- they are either order-isomorphic and additively isomorphic to the
+integers, or they are densely ordered.
 
 They are placed here in a separate file (rather than incorporated as a continuation of
 `GroupTheory.Archimedean`) because they rely on some imports from pointwise lemmas.
 -/
+
+@[expose] public section
 
 open Set
 open scoped WithZero
@@ -55,12 +59,11 @@ lemma Subgroup.mem_closure_singleton_iff_existsUnique_zpow {G : Type*}
   · exact fun h ↦ h.exists
 
 lemma Int.addEquiv_eq_refl_or_neg (e : ℤ ≃+ ℤ) : e = .refl _ ∨ e = .neg _ := by
-  suffices e 1 = 1 ∨ - e 1 = 1 by simpa [AddEquiv.ext_int_iff, neg_eq_iff_eq_neg]
+  suffices e 1 = 1 ∨ -e 1 = 1 by simpa [AddEquiv.ext_int_iff, neg_eq_iff_eq_neg]
   have he : ¬IsOfFinAddOrder (e 1) :=
     not_isOfFinAddOrder_of_isAddTorsionFree ((AddEquiv.map_ne_zero_iff e).mpr Int.one_ne_zero)
   rw [← AddSubgroup.zmultiples_eq_zmultiples_iff he]
   simpa [e.surjective, eq_comm] using (e : ℤ →+ ℤ).map_zmultiples 1
-
 
 instance : Fintype (ℤ ≃+ ℤ) where
   elems := .cons (.neg _) ({.refl _}) (by simp [AddEquiv.ext_int_iff])
@@ -124,41 +127,23 @@ noncomputable def LinearOrderedCommGroup.closure_equiv_closure {G G' : Type*}
     set y' := max y y⁻¹ with hy'
     have ypos : 1 < y' := by
       simp [hy', eq_comm, ← hxy, hx]
-    have hxc : closure {x} = closure {x'} := by
-      rcases max_cases x x⁻¹ with H|H <;>
-      simp [hx', H.left]
-    have hyc : closure {y} = closure {y'} := by
-      rcases max_cases y y⁻¹ with H|H <;>
-      simp [hy', H.left]
-    refine ⟨⟨⟨
-      fun a ↦ ⟨y' ^ ((mem_closure_singleton).mp
-        (by simpa [hxc] using a.prop)).choose, ?_⟩,
-      fun a ↦ ⟨x' ^ ((mem_closure_singleton).mp
-        (by simpa [hyc] using a.prop)).choose, ?_⟩,
-        ?_, ?_⟩, ?_⟩, ?_⟩
-    · rw [hyc, mem_closure_singleton]
-      exact ⟨_, rfl⟩
-    · rw [hxc, mem_closure_singleton]
-      exact ⟨_, rfl⟩
-    · intro a
-      generalize_proofs A B C D
-      rw [Subtype.ext_iff, ← (C a).choose_spec, zpow_right_inj xpos,
-          ← zpow_right_inj ypos, (A ⟨_, D a⟩).choose_spec]
-    · intro a
-      generalize_proofs A B C D
-      rw [Subtype.ext_iff, ← (C a).choose_spec, zpow_right_inj ypos,
-          ← zpow_right_inj xpos, (A ⟨_, D a⟩).choose_spec]
+    have hxc : closure {x} = closure {x'} := by rcases max_cases x x⁻¹ <;> simp_all
+    have hyc : closure {y} = closure {y'} := by rcases max_cases y y⁻¹ <;> simp_all
+    have Hx : ∀ (z : closure {x}), z ∈ zpowers ⟨x', by simp [hxc]⟩ := by
+      simp_rw [Subtype.forall, hxc, ← zpowers_eq_closure, mem_zpowers_iff, Subtype.ext_iff,
+        SubgroupClass.coe_zpow, imp_self, implies_true]
+    have Hy : ∀ (z : closure {y}), z ∈ zpowers ⟨y', by simp [hyc]⟩ := by
+      simp_rw [Subtype.forall, hyc, ← zpowers_eq_closure, mem_zpowers_iff, Subtype.ext_iff,
+        SubgroupClass.coe_zpow, imp_self, implies_true]
+    refine OrderMonoidIso.mk (mulEquivOfOrderOfEq Hx Hy ?_) ?_
+    · rw [orderOf_mk, orderOf_mk]
+      grind [orderOf_eq_one_iff, IsMulTorsionFree.orderOf_le_one]
     · intro a b
-      generalize_proofs A B C D E F
-      simp only [coe_mul, MulMemClass.mk_mul_mk, Subtype.ext_iff]
-      rw [← zpow_add, zpow_right_inj ypos, ← zpow_right_inj xpos, zpow_add,
-          (A a).choose_spec, (A b).choose_spec, (A (a * b)).choose_spec]
-      simp
-    · intro a b
-      simp only [Subtype.mk_le_mk]
-      generalize_proofs A B C D
-      simp [zpow_le_zpow_iff_right ypos, ← zpow_le_zpow_iff_right xpos, A.choose_spec,
-        B.choose_spec]
+      obtain ⟨m, rfl⟩ := Hx a
+      obtain ⟨n, rfl⟩ := Hx b
+      simp only [MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe, map_zpow,
+        mulEquivOfOrderOfEq_apply_gen]
+      simp_all [zpow_le_zpow_iff_right, ← Subtype.coe_lt_coe]
 
 variable {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] [MulArchimedean G]
 
@@ -178,7 +163,7 @@ lemma Subgroup.isLeast_of_closure_iff_eq_mabs {a b : G} :
       rw [← zpow_right_inj this.right, zpow_mul', hm, zpow_one]
     rw [Int.mul_eq_one_iff_eq_one_or_neg_one] at key
     rw [eq_comm]
-    rcases key with ⟨rfl, rfl⟩|⟨rfl, rfl⟩ <;>
+    rcases key with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ <;>
     simp [this.right.le, this.right, mabs]
   · wlog ha : 1 ≤ a generalizing a
     · convert @this (a⁻¹) ?_ (by simpa using le_of_not_ge ha) using 4
@@ -244,11 +229,10 @@ to the integers, or is densely ordered. -/
 lemma LinearOrderedAddCommGroup.discrete_or_denselyOrdered (G : Type*)
     [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G] :
     Nonempty (G ≃+o ℤ) ∨ DenselyOrdered G := by
-  by_cases H : ∃ x, IsLeast {y : G | 0 < y} x
+  by_cases! H : ∃ x, IsLeast {y : G | 0 < y} x
   · obtain ⟨x, hx⟩ := H
     exact Or.inl ⟨(int_orderAddMonoidIso_of_isLeast_pos hx)⟩
-  · push_neg at H
-    refine Or.inr ⟨?_⟩
+  · refine Or.inr ⟨?_⟩
     intro x y hxy
     specialize H (y - x)
     obtain ⟨z, hz⟩ : ∃ z : G, 0 < z ∧ z < y - x := by
@@ -259,19 +243,28 @@ lemma LinearOrderedAddCommGroup.discrete_or_denselyOrdered (G : Type*)
     · simpa [lt_sub_iff_add_lt'] using hz.right
 
 /-- Any linearly ordered archimedean additive group is either isomorphic (and order-isomorphic)
-to the integers, or is densely ordered, exclusively. -/
+to the integers, or is densely ordered, exclusively.
+
+(See also `LinearOrderedAddCommGroup.isAddCyclic_iff_not_denselyOrdered`.) -/
 lemma LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered (G : Type*)
     [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G] :
     Nonempty (G ≃+o ℤ) ↔ ¬ DenselyOrdered G := by
   suffices ∀ (_ : G ≃+o ℤ), ¬ DenselyOrdered G by
-    rcases LinearOrderedAddCommGroup.discrete_or_denselyOrdered G with ⟨⟨h⟩⟩|h
+    rcases LinearOrderedAddCommGroup.discrete_or_denselyOrdered G with ⟨⟨h⟩⟩ | h
     · simpa [this h] using ⟨h⟩
     · simp only [h, not_true_eq_false, iff_false, not_nonempty_iff]
       exact ⟨fun H ↦ (this H) h⟩
   intro e H
   rw [denselyOrdered_iff_of_orderIsoClass e] at H
   obtain ⟨_, _⟩ := exists_between (one_pos (α := ℤ))
-  cutsat
+  lia
+
+/-- Any non-trivial linearly ordered archimedean additive group is either cyclic, or densely
+ordered, exclusively. -/
+lemma LinearOrderedAddCommGroup.isAddCyclic_iff_not_denselyOrdered {A : Type*}
+    [AddCommGroup A] [LinearOrder A] [IsOrderedAddMonoid A] [Archimedean A] [Nontrivial A] :
+    IsAddCyclic A ↔ ¬ DenselyOrdered A := by
+  rw [← discrete_iff_not_denselyOrdered, isAddCyclic_iff_nonempty_equiv_int]
 
 variable (G) in
 /-- Any linearly ordered mul-archimedean group is either isomorphic (and order-isomorphic)
@@ -283,13 +276,23 @@ lemma LinearOrderedCommGroup.discrete_or_denselyOrdered :
 
 variable (G) in
 /-- Any linearly ordered mul-archimedean group is either isomorphic (and order-isomorphic)
-to the multiplicative integers, or is densely ordered, exclusively. -/
+to the multiplicative integers, or is densely ordered, exclusively.
+
+(See also `LinearOrderedCommGroup.isCyclic_iff_not_denselyOrdered`.) -/
 lemma LinearOrderedCommGroup.discrete_iff_not_denselyOrdered :
     Nonempty (G ≃*o Multiplicative ℤ) ↔ ¬ DenselyOrdered G := by
   let e : G ≃o Additive G := .refl G
   rw [← OrderAddMonoidIso.toMultiplicativeRight.nonempty_congr,
     LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered,
     denselyOrdered_iff_of_orderIsoClass e]
+
+/-- Any non-trivial linearly ordered mul-archimedean group is either cyclic, or densely ordered,
+exclusively. -/
+@[to_additive existing]
+lemma LinearOrderedCommGroup.isCyclic_iff_not_denselyOrdered [Nontrivial G] :
+    IsCyclic G ↔ ¬ DenselyOrdered G := by
+  rw [← isAddCyclic_additive_iff, LinearOrderedAddCommGroup.isAddCyclic_iff_not_denselyOrdered]
+  rfl
 
 /-- Any nontrivial (has other than 0 and 1) linearly ordered mul-archimedean group with zero is
 either isomorphic (and order-isomorphic) to `ℤᵐ⁰`, or is densely ordered. -/
@@ -328,6 +331,7 @@ lemma LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered (G : Type*)
 
 section WellFounded
 
+set_option backward.isDefEq.respectTransparency false in
 lemma LinearOrderedAddCommGroup.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete
     {G : Type*} [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Nontrivial G] {g : G} :
     Set.WellFoundedOn {x : G | g ≤ x} (· < ·) ↔ Nonempty (G ≃+o ℤ) := by
@@ -340,21 +344,19 @@ lemma LinearOrderedAddCommGroup.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete
   · intro h
     replace h : WellFounded (α := {x : G | 0 ≤ x}) (· < ·) := h
     rw [WellFounded.wellFounded_iff_has_min] at h
-    by_cases H : ∀ (x : G) {y}, 0 < y → ∃ n : ℕ, x ≤ n • y -- Archimedean
+    by_cases! H : ∀ (x : G) {y}, 0 < y → ∃ n : ℕ, x ≤ n • y -- Archimedean
     · replace H : Archimedean G := ⟨H⟩
       rw [LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered]
       intro hd
       obtain ⟨y, hy⟩ := exists_ne (0 : G)
-      wlog hy' : 0 < y generalizing y
+      wlog! hy' : 0 < y generalizing y
       · refine this (-y) ?_ ?_
         · simp [hy]
-        · simp only [not_lt] at hy'
-          simp [lt_of_le_of_ne hy' hy]
+        · simp [lt_of_le_of_ne hy' hy]
       obtain ⟨⟨z, hz⟩, hz', hz''⟩ := h ({x | ⟨0, le_rfl⟩ < x}) ⟨⟨y, hy'.le⟩, hy'⟩
       obtain ⟨w, hw, hw'⟩ := exists_between hz'
       exact hz'' ⟨w, hw.le⟩ hw hw'
-    · push_neg at H
-      exfalso
+    · exfalso
       obtain ⟨x, y, hy0, H⟩ := H
       obtain ⟨_, ⟨n, rfl⟩, hz⟩ :=
         h (Set.range (fun n : ℕ ↦ ⟨x - n • y, sub_nonneg.mpr (H _).le⟩)) (range_nonempty _)

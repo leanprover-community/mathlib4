@@ -3,8 +3,10 @@ Copyright (c) 2018 Jan-David Salchow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Topology.Defs.Sequences
-import Mathlib.Topology.UniformSpace.Cauchy
+module
+
+public import Mathlib.Topology.Defs.Sequences
+public import Mathlib.Topology.Metrizable.Basic
 
 /-!
 # Sequences in topological spaces
@@ -59,6 +61,8 @@ We build theory about these definitions here, so we remind the definitions.
 
 sequentially closed, sequentially compact, sequential space
 -/
+
+@[expose] public section
 
 
 open Bornology Filter Function Set TopologicalSpace Topology
@@ -208,7 +212,7 @@ protected theorem SequentialSpace.sup {X} {t₁ t₂ : TopologicalSpace X}
   exact .iSup <| Bool.forall_bool.2 ⟨h₂, h₁⟩
 
 lemma Topology.IsQuotientMap.sequentialSpace [SequentialSpace X] {f : X → Y}
-    (hf : IsQuotientMap f) : SequentialSpace Y := hf.2.symm ▸ .coinduced f
+    (hf : IsQuotientMap f) : SequentialSpace Y := hf.isCoinducing.eq_coinduced.symm ▸ .coinduced f
 
 /-- The quotient of a sequential space is a sequential space. -/
 instance Quotient.instSequentialSpace [SequentialSpace X] {s : Setoid X} :
@@ -254,7 +258,7 @@ open FirstCountableTopology
 protected theorem IsCompact.isSeqCompact {s : Set X} (hs : IsCompact s) : IsSeqCompact s :=
   fun _x x_in =>
   let ⟨a, a_in, ha⟩ := hs (tendsto_principal.mpr (Eventually.of_forall x_in))
-  ⟨a, a_in, tendsto_subseq ha⟩
+  ⟨a, a_in, MapClusterPt.tendsto_subseq ha⟩
 
 theorem IsCompact.tendsto_subseq' {s : Set X} {x : ℕ → X} (hs : IsCompact s)
     (hx : ∃ᶠ n in atTop, x n ∈ s) :
@@ -362,16 +366,30 @@ protected theorem IsSeqCompact.isComplete (hs : IsSeqCompact s) : IsComplete s :
   refine mem_of_superset (htl n) fun y hy => hWV N ⟨u n, hn, htW N ?_⟩
   exact ⟨ht_anti hNn (hu n), ht_anti hNn hy⟩
 
-/-- If `𝓤 β` is countably generated, then any sequentially compact set is compact. -/
+end UniformSpaceSeqCompact
+
+section MetrizableSpaceSeqCompact
+
+variable [TopologicalSpace X] [PseudoMetrizableSpace X] {s : Set X}
+
+/-- In a (pseudo)metrizable space, any sequentially compact set is compact. -/
 protected theorem IsSeqCompact.isCompact (hs : IsSeqCompact s) : IsCompact s :=
+  letI := pseudoMetrizableSpaceUniformity X
+  haveI := pseudoMetrizableSpaceUniformity_countably_generated X
   isCompact_iff_totallyBounded_isComplete.2 ⟨hs.totallyBounded, hs.isComplete⟩
 
-/-- A version of Bolzano-Weierstrass: in a uniform space with countably generated uniformity filter
-(e.g., in a metric space), a set is compact if and only if it is sequentially compact. -/
-protected theorem UniformSpace.isCompact_iff_isSeqCompact : IsCompact s ↔ IsSeqCompact s :=
+/-- A version of **Bolzano-Weierstrass**: in a (pseudo)metrizable space, a set is compact if and
+only if it is sequentially compact. -/
+theorem isCompact_iff_isSeqCompact : IsCompact s ↔ IsSeqCompact s :=
   ⟨fun H => H.isSeqCompact, fun H => H.isCompact⟩
 
-theorem UniformSpace.compactSpace_iff_seqCompactSpace : CompactSpace X ↔ SeqCompactSpace X := by
-  simp only [← isCompact_univ_iff, seqCompactSpace_iff, UniformSpace.isCompact_iff_isSeqCompact]
+@[deprecated (since := "2025-12-23")]
+protected alias UniformSpace.isCompact_iff_isSeqCompact := isCompact_iff_isSeqCompact
 
-end UniformSpaceSeqCompact
+theorem compactSpace_iff_seqCompactSpace : CompactSpace X ↔ SeqCompactSpace X := by
+  simp only [← isCompact_univ_iff, seqCompactSpace_iff, isCompact_iff_isSeqCompact]
+
+@[deprecated (since := "2025-12-23")]
+protected alias UniformSpace.compactSpace_iff_seqCompactSpace := compactSpace_iff_seqCompactSpace
+
+end MetrizableSpaceSeqCompact

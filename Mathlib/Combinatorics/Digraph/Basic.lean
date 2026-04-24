@@ -3,8 +3,10 @@ Copyright (c) 2024 Kyle Miller, Jack Cheverton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Jack Cheverton, Jeremy Tan
 -/
-import Mathlib.Order.CompleteBooleanAlgebra
-import Mathlib.Data.Fintype.Pi
+module
+
+public import Mathlib.Order.CompleteBooleanAlgebra
+public import Mathlib.Data.Fintype.Pi
 
 /-!
 # Digraphs
@@ -31,6 +33,8 @@ of digraphs on `V`.
   `CompleteAtomicBooleanAlgebra`. In other words, this is the complete lattice of spanning subgraphs
   of the complete graph.
 -/
+
+@[expose] public section
 
 open Finset Function
 
@@ -111,6 +115,7 @@ Note that `Digraph.IsSubgraph G H` should be spelled `G ≤ H`.
 protected def IsSubgraph (x y : Digraph V) : Prop :=
   ∀ ⦃v w : V⦄, x.Adj v w → y.Adj v w
 
+/-- For digraphs `G`, `H`, `G ≤ H` iff `∀ a b, G.Adj a b → H.Adj a b`. -/
 instance : LE (Digraph V) := ⟨Digraph.IsSubgraph⟩
 
 @[simp]
@@ -132,7 +137,7 @@ theorem inf_adj (x y : Digraph V) (v w : V) : (x ⊓ y).Adj v w ↔ x.Adj v w �
 
 /-- We define `Gᶜ` to be the `Digraph V` such that no two adjacent vertices in `G`
 are adjacent in the complement, and every nonadjacent pair of vertices is adjacent. -/
-instance hasCompl : HasCompl (Digraph V) where
+instance : Compl (Digraph V) where
   compl G := { Adj := fun v w ↦ ¬G.Adj v w }
 
 @[simp] theorem compl_adj (G : Digraph V) (v w : V) : Gᶜ.Adj v w ↔ ¬G.Adj v w := Iff.rfl
@@ -162,34 +167,21 @@ theorem iSup_adj {f : ι → Digraph V} : (⨆ i, f i).Adj a b ↔ ∃ i, (f i).
 @[simp]
 theorem iInf_adj {f : ι → Digraph V} : (⨅ i, f i).Adj a b ↔ (∀ i, (f i).Adj a b) := by simp [iInf]
 
-/-- For digraphs `G`, `H`, `G ≤ H` iff `∀ a b, G.Adj a b → H.Adj a b`. -/
-instance distribLattice : DistribLattice (Digraph V) :=
-  { adj_injective.distribLattice Digraph.Adj (fun _ _ ↦ rfl) fun _ _ ↦ rfl with
-    le := fun G H ↦ ∀ ⦃a b⦄, G.Adj a b → H.Adj a b }
+instance : PartialOrder (Digraph V) := fast_instance% PartialOrder.lift _ adj_injective
 
-instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Digraph V) :=
-  { Digraph.distribLattice with
-    le := (· ≤ ·)
-    sup := (· ⊔ ·)
-    inf := (· ⊓ ·)
-    compl := HasCompl.compl
-    sdiff := (· \ ·)
-    top := Digraph.completeDigraph V
-    bot := Digraph.emptyDigraph V
-    le_top := fun _ _ _ _ ↦ trivial
-    bot_le := fun _ _ _ h ↦ h.elim
-    sdiff_eq := fun _ _ ↦ rfl
-    inf_compl_le_bot := fun _ _ _ h ↦ absurd h.1 h.2
-    top_le_sup_compl := fun G v w _ ↦ by tauto
-    sSup := sSup
-    le_sSup := fun _ G hG _ _ hab ↦ ⟨G, hG, hab⟩
-    sSup_le := fun s G hG a b ↦ by
-      rintro ⟨H, hH, hab⟩
-      exact hG _ hH hab
-    sInf := sInf
-    sInf_le := fun _ _ hG _ _ hab ↦ hab hG
-    le_sInf := fun _ _ hG _ _ hab ↦ fun _ hH ↦ hG _ hH hab
-    iInf_iSup_eq := fun f ↦ by ext; simp [Classical.skolem] }
+instance distribLattice : DistribLattice (Digraph V) := fast_instance%
+  adj_injective.distribLattice _ .rfl .rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+
+instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Digraph V) where
+  top := Digraph.completeDigraph V
+  bot := Digraph.emptyDigraph V
+  le_top _ _ _ _ := trivial
+  bot_le _ _ _ h := h.elim
+  inf_compl_le_bot _ _ _ h := absurd h.1 h.2
+  top_le_sup_compl G v w _ := by tauto
+  isLUB_sSup _ := ⟨fun G hG _ _ hab ↦ ⟨G, hG, hab⟩, fun _ hG _ _ ⟨_, hH, hab⟩ ↦ hG hH hab⟩
+  isGLB_sInf _ := ⟨fun _ hG _ _ hab ↦ hab hG, fun _ hG _ _ hab _ hH ↦ hG hH hab⟩
+  iInf_iSup_eq f := by ext; simp [Classical.skolem]
 
 @[simp] theorem top_adj (v w : V) : (⊤ : Digraph V).Adj v w := trivial
 

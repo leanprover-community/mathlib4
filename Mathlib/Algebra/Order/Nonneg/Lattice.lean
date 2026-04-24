@@ -3,15 +3,19 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Order.CompleteLatticeIntervals
-import Mathlib.Order.LatticeIntervals
+module
+
+public import Mathlib.Order.CompleteLatticeIntervals
+public import Mathlib.Order.LatticeIntervals
 
 /-!
 # Lattice structures on the type of nonnegative elements
 
 -/
+
+@[expose] public section
 assert_not_exists Ring
-assert_not_exists OrderedCommMonoid
+assert_not_exists IsOrderedMonoid
 
 open Set
 
@@ -19,36 +23,37 @@ variable {α : Type*}
 
 namespace Nonneg
 
-/-- This instance uses data fields from `Subtype.partialOrder` to help type-class inference.
-The `Set.Ici` data fields are definitionally equal, but that requires unfolding semireducible
-definitions, so type-class inference won't see this. -/
 instance orderBot [Preorder α] {a : α} : OrderBot { x : α // a ≤ x } :=
-  { Set.Ici.orderBot with }
+  inferInstanceAs <| OrderBot (Ici a)
 
 theorem bot_eq [Preorder α] {a : α} : (⊥ : { x : α // a ≤ x }) = ⟨a, le_rfl⟩ :=
   rfl
 
 instance noMaxOrder [PartialOrder α] [NoMaxOrder α] {a : α} : NoMaxOrder { x : α // a ≤ x } :=
-  show NoMaxOrder (Ici a) by infer_instance
+  inferInstanceAs <| NoMaxOrder (Ici a)
 
 instance semilatticeSup [SemilatticeSup α] {a : α} : SemilatticeSup { x : α // a ≤ x } :=
-  Set.Ici.semilatticeSup
+  inferInstanceAs <| SemilatticeSup (Ici a)
 
 instance semilatticeInf [SemilatticeInf α] {a : α} : SemilatticeInf { x : α // a ≤ x } :=
-  Set.Ici.semilatticeInf
+  inferInstanceAs <| SemilatticeInf (Ici a)
 
 instance distribLattice [DistribLattice α] {a : α} : DistribLattice { x : α // a ≤ x } :=
-  Set.Ici.distribLattice
+  inferInstanceAs <| DistribLattice (Ici a)
 
 instance instDenselyOrdered [Preorder α] [DenselyOrdered α] {a : α} :
     DenselyOrdered { x : α // a ≤ x } :=
-  show DenselyOrdered (Ici a) from Set.instDenselyOrdered
+  inferInstanceAs <| DenselyOrdered (Ici a)
 
 /-- If `sSup ∅ ≤ a` then `{x : α // a ≤ x}` is a `ConditionallyCompleteLinearOrder`. -/
 protected noncomputable abbrev conditionallyCompleteLinearOrder [ConditionallyCompleteLinearOrder α]
     {a : α} : ConditionallyCompleteLinearOrder { x : α // a ≤ x } :=
-  { @ordConnectedSubsetConditionallyCompleteLinearOrder α (Set.Ici a) _ ⟨⟨a, le_rfl⟩⟩ _ with }
+  -- TODO: missing `Inhabited (Ici a)` instance
+  haveI : Inhabited (Ici a) := ⟨a, le_rfl⟩
+  inferInstanceAs <| ConditionallyCompleteLinearOrder (Ici a)
 
+
+set_option backward.isDefEq.respectTransparency false in
 /-- If `sSup ∅ ≤ a` then `{x : α // a ≤ x}` is a `ConditionallyCompleteLinearOrderBot`.
 
 This instance uses data fields from `Subtype.linearOrder` to help type-class inference.

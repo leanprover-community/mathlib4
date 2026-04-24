@@ -3,11 +3,15 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-import Mathlib.Tactic.FunProp.Core
+module
+
+public import Mathlib.Tactic.FunProp.Core
 
 /-!
 ## `funProp` tactic syntax
 -/
+
+public meta section
 
 namespace Mathlib
 open Lean Meta Elab Tactic
@@ -19,14 +23,44 @@ open Lean.Parser.Tactic
 /-- `fun_prop` config elaborator -/
 declare_config_elab elabFunPropConfig FunProp.Config
 
-/-- Tactic to prove function properties -/
+/-- `fun_prop` solves a goal of the form `P f`, where `P` is a predicate and `f` is a function,
+by decomposing `f` into a composition of elementary functions, and proving `P` on each of those
+by matching against a set of `@[fun_prop]` lemmas.
+
+If `fun_prop` fails to solve a goal with the error "No theorems found", you can solve this issue
+by importing or adding new theorems tagged with the `@[fun_prop]` attribute. See the module
+documentation for `Mathlib/Tactic/FunProp.lean` for a detailed explanation.
+
+* `fun_prop (disch := tac)` uses `tac` to solve potential side goals. Setting this option is
+  required to solve `ContinuousAt/On/Within` goals.
+* `fun_prop [c, ...]` will unfold the constant(s) `c`, ... before decomposing `f`.
+* `fun_prop (config := cfg)` sets advanced configuration options using `cfg : FunProp.Config`
+  (see `FunProp.Config` for details).
+  These options can be combined: `fun_prop (config := cfg) (disch := tac) [c]`
+
+Examples:
+
+```lean
+example : Continuous (fun x : ℝ ↦ x * sin x) := by fun_prop
+```
+
+```lean
+-- Specify a discharger to solve `ContinuousAt`/`Within`/`On` goals:
+example (y : ℝ) (hy : y ≠ 0) : ContinuousAt (fun x : ℝ ↦ 1/x) y := by
+  fun_prop (disch := assumption)
+
+example (y : ℝ) (hy : y ≠ 0) : ContinuousAt (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) y := by
+  fun_prop (disch := aesop)
+```
+
+-/
 syntax (name := funPropTacStx)
   "fun_prop" optConfig (discharger)? (" [" withoutPosition(ident,*,?) "]")? : tactic
 
 private def emptyDischarge : Expr → MetaM (Option Expr) :=
   fun e =>
     withTraceNode `Meta.Tactic.fun_prop
-      (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] discharging: {← ppExpr e}") do
+      (fun _ => do pure s!"discharging: {← ppExpr e}") do
       pure none
 
 /-- Tactic to prove function properties -/
@@ -45,7 +79,7 @@ def funPropTac : Tactic
         unless (← getFunProp? type).isSome do
           let hint :=
             if let some n := type.getAppFn.constName?
-            then s!" Maybe you forgot marking `{n}` with `@[fun_prop]`."
+            then s!" Consider marking `{n}` with `@[fun_prop]`."
             else ""
           throwError "`{← ppExpr type}` is not a `fun_prop` goal!{hint}"
 
@@ -89,7 +123,7 @@ def funPropTac : Tactic
 
 
 
-/-- Command that printins all function properties attached to a function.
+/-- Command that prints all function properties attached to a function.
 
 For example
 ```
@@ -99,8 +133,8 @@ might print out
 ```
 Continuous
   continuous_add, args: [4,5], priority: 1000
-  continuous_add_left, args: [5], priority: 1000
-  continuous_add_right, args [4], priority: 1000
+  continuous_const_add, args: [5], priority: 1000
+  continuous_add_const, args [4], priority: 1000
   ...
 Differentiable
   Differentiable.add, args: [4,5], priority: 1000

@@ -3,10 +3,13 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.Algebra.Ring.Action.End
-import Mathlib.RingTheory.Finiteness.Cardinality
-import Mathlib.RingTheory.LocalRing.ResidueField.Defs
-import Mathlib.RingTheory.LocalRing.RingHom.Basic
+module
+
+public import Mathlib.Algebra.Ring.Action.End
+public import Mathlib.RingTheory.Finiteness.Cardinality
+public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
+public import Mathlib.RingTheory.LocalRing.RingHom.Basic
+public import Mathlib.RingTheory.Ideal.Over
 
 /-!
 
@@ -15,6 +18,8 @@ import Mathlib.RingTheory.LocalRing.RingHom.Basic
 We prove basic properties of the residue field of a local ring.
 
 -/
+
+@[expose] public section
 
 variable {R S T : Type*}
 
@@ -44,12 +49,12 @@ variable (R)
 
 instance ResidueField.algebra {R₀} [CommRing R₀] [Algebra R₀ R] :
     Algebra R₀ (ResidueField R) :=
-  Ideal.Quotient.algebra _
+  inferInstanceAs <| Algebra R₀ (_ ⧸ _)
 
 instance {R₁ R₂} [CommRing R₁] [CommRing R₂]
     [Algebra R₁ R₂] [Algebra R₁ R] [Algebra R₂ R] [IsScalarTower R₁ R₂ R] :
-    IsScalarTower R₁ R₂ (IsLocalRing.ResidueField R) := by
-  delta IsLocalRing.ResidueField; infer_instance
+    IsScalarTower R₁ R₂ (ResidueField R) :=
+  inferInstanceAs <| IsScalarTower R₁ R₂ (_ ⧸ _)
 
 @[simp]
 theorem ResidueField.algebraMap_eq : algebraMap R (ResidueField R) = residue R :=
@@ -82,6 +87,7 @@ theorem lift_residue_apply {R S : Type*} [CommRing R] [IsLocalRing R] [Field S] 
     [IsLocalHom f] (x) : lift f (residue R x) = f x :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map on residue fields induced by a local homomorphism between local rings -/
 noncomputable def map (f : R →+* S) [IsLocalHom f] : ResidueField R →+* ResidueField S :=
   Ideal.Quotient.lift (maximalIdeal R) ((Ideal.Quotient.mk _).comp f) fun a ha => by
@@ -127,8 +133,8 @@ noncomputable def mapEquiv (f : R ≃+* S) :
   invFun := map (f.symm : S →+* R)
   left_inv x := by simp only [map_map, RingEquiv.symm_comp, map_id, RingHom.id_apply]
   right_inv x := by simp only [map_map, RingEquiv.comp_symm, map_id, RingHom.id_apply]
-  map_mul' := RingHom.map_mul _
-  map_add' := RingHom.map_add _
+  map_mul' := map_mul _
+  map_add' := map_add _
 
 @[simp]
 theorem mapEquiv.symm (f : R ≃+* S) : (mapEquiv f).symm = mapEquiv f.symm :=
@@ -170,11 +176,26 @@ section FiniteDimensional
 
 variable [Algebra R S] [IsLocalHom (algebraMap R S)]
 
-noncomputable instance : Algebra (ResidueField R) (ResidueField S) :=
-  (ResidueField.map (algebraMap R S)).toAlgebra
+instance : (maximalIdeal S).LiesOver (maximalIdeal R) :=
+  ⟨(((local_hom_TFAE (algebraMap R S)).out 0 4 rfl rfl).mp inferInstance).symm⟩
 
-instance : IsScalarTower R (ResidueField R) (ResidueField S) :=
-  IsScalarTower.of_algebraMap_eq (congrFun rfl)
+instance : Algebra (ResidueField R) (ResidueField S) :=
+  Ideal.Quotient.algebraOfLiesOver _ _
+
+@[simp] lemma algebraMap_residue (x : R) :
+    algebraMap (ResidueField R) (ResidueField S) (residue R x) =
+      residue S (algebraMap R S x) := rfl
+
+instance {R₀ : Type*} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
+    IsScalarTower R₀ (ResidueField R) (ResidueField S) :=
+  Ideal.Quotient.isScalarTower_of_liesOver ..
+
+instance {R₀ : Type*} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S]
+    [IsLocalRing R₀] [IsLocalHom (algebraMap R₀ R)] [IsLocalHom (algebraMap R₀ S)] :
+    IsScalarTower (ResidueField R₀) (ResidueField R) (ResidueField S) := by
+  refine .of_algebraMap_eq fun x ↦ ?_
+  obtain ⟨x, rfl⟩ := residue_surjective x
+  simp [← IsScalarTower.algebraMap_apply]
 
 instance finite_of_module_finite [Module.Finite R S] :
     Module.Finite (ResidueField R) (ResidueField S) :=
@@ -186,14 +207,6 @@ lemma finite_of_finite [Module.Finite R S] (hfin : Finite (ResidueField R)) :
 end FiniteDimensional
 
 end ResidueField
-
-theorem isLocalHom_residue : IsLocalHom (IsLocalRing.residue R) := by
-  constructor
-  intro a ha
-  by_contra h
-  rw [residue_def, Ideal.Quotient.eq_zero_iff_mem.mpr ((IsLocalRing.mem_maximalIdeal _).mpr h)]
-    at ha
-  exact ha.ne_zero rfl
 
 end
 

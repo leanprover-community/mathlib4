@@ -3,8 +3,10 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Analysis.CStarAlgebra.Classes
-import Mathlib.Analysis.InnerProductSpace.Adjoint
+module
+
+public import Mathlib.Analysis.CStarAlgebra.Classes
+public import Mathlib.Analysis.InnerProductSpace.Adjoint
 
 /-!
 # Von Neumann algebras
@@ -12,29 +14,31 @@ import Mathlib.Analysis.InnerProductSpace.Adjoint
 We give the "abstract" and "concrete" definitions of a von Neumann algebra.
 We still have a major project ahead of us to show the equivalence between these definitions!
 
-An abstract von Neumann algebra `WStarAlgebra M` is a C^* algebra with a Banach space predual,
+An abstract von Neumann algebra `WStarAlgebra M` is a C⋆ algebra with a Banach space predual,
 per Sakai (1971).
 
 A concrete von Neumann algebra `VonNeumannAlgebra H` (where `H` is a Hilbert space)
-is a *-closed subalgebra of bounded operators on `H` which is equal to its double commutant.
+is a \*-closed subalgebra of bounded operators on `H` which is equal to its double commutant.
 
 We'll also need to prove the von Neumann double commutant theorem,
-that the concrete definition is equivalent to a *-closed subalgebra which is weakly closed.
+that the concrete definition is equivalent to a \*-closed subalgebra which is weakly closed.
 -/
+
+@[expose] public section
 
 
 universe u v
 
-/-- Sakai's definition of a von Neumann algebra as a C^* algebra with a Banach space predual.
+/-- Sakai's definition of a von Neumann algebra as a C⋆ algebra with a Banach space predual.
 
 So that we can unambiguously talk about these "abstract" von Neumann algebras
-in parallel with the "concrete" ones (weakly closed *-subalgebras of B(H)),
+in parallel with the "concrete" ones (weakly closed \*-subalgebras of B(H)),
 we name this definition `WStarAlgebra`.
 
 Note that for now we only assert the mere existence of predual, rather than picking one.
 This may later prove problematic, and need to be revisited.
 Picking one may cause problems with definitional unification of different instances.
-One the other hand, not picking one means that the weak-* topology
+One the other hand, not picking one means that the weak-\* topology
 (which depends on a choice of predual) must be defined using the choice,
 and we may be unhappy with the resulting opaqueness of the definition.
 -/
@@ -47,12 +51,12 @@ class WStarAlgebra (M : Type u) [CStarAlgebra M] : Prop where
 
 -- TODO: Without this, `VonNeumannAlgebra` times out. Why?
 /-- The double commutant definition of a von Neumann algebra,
-as a *-closed subalgebra of bounded operators on a Hilbert space,
+as a \*-closed subalgebra of bounded operators on a Hilbert space,
 which is equal to its double commutant.
 
 Note that this definition is parameterised by the Hilbert space
 on which the algebra faithfully acts, as is standard in the literature.
-See `WStarAlgebra` for the abstract notion (a C^*-algebra with Banach space predual).
+See `WStarAlgebra` for the abstract notion (a C⋆-algebra with Banach space predual).
 
 Note this is a bundled structure, parameterised by the Hilbert space `H`,
 rather than a typeclass on the type of elements.
@@ -65,7 +69,7 @@ structure VonNeumannAlgebra (H : Type u) [NormedAddCommGroup H] [InnerProductSpa
   /-- The double commutant (a.k.a. centralizer) of a `VonNeumannAlgebra` is itself. -/
   centralizer_centralizer' : Set.centralizer (Set.centralizer carrier) = carrier
 
-/-- Consider a von Neumann algebra acting on a Hilbert space `H` as a *-subalgebra of `H →L[ℂ] H`.
+/-- Consider a von Neumann algebra acting on a Hilbert space `H` as a \*-subalgebra of `H →L[ℂ] H`.
 (That is, we forget that it is equal to its double commutant
 or equivalently that it is closed in the weak and strong operator topologies.)
 -/
@@ -78,6 +82,8 @@ variable {H : Type u} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [Complete
 instance instSetLike : SetLike (VonNeumannAlgebra H) (H →L[ℂ] H) where
   coe S := S.carrier
   coe_injective' S T h := by obtain ⟨⟨⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩, _⟩, _⟩ := S; cases T; congr
+
+instance : PartialOrder (VonNeumannAlgebra H) := .ofSetLike (VonNeumannAlgebra H) (H →L[ℂ] H)
 
 noncomputable instance instStarMemClass : StarMemClass (VonNeumannAlgebra H) (H →L[ℂ] H) where
   star_mem {s} := s.star_mem'
@@ -139,8 +145,7 @@ its range and kernel are invariant under the commutant. -/
 theorem IsIdempotentElem.mem_iff {e : H →L[ℂ] H} (h : IsIdempotentElem e)
     (S : VonNeumannAlgebra H) :
     e ∈ S ↔ ∀ y ∈ S.commutant,
-    LinearMap.range e ∈ Module.End.invtSubmodule y
-      ∧ LinearMap.ker e ∈ Module.End.invtSubmodule y := by
+      e.range ∈ Module.End.invtSubmodule y ∧ e.ker ∈ Module.End.invtSubmodule y := by
   conv_rhs => simp [← h.commute_iff, Commute.symm_iff (a := e), commute_iff_eq, ← mem_commutant_iff]
 
 open VonNeumannAlgebra ContinuousLinearMap in
@@ -148,7 +153,7 @@ open VonNeumannAlgebra ContinuousLinearMap in
 its range is invariant under the commutant. -/
 theorem IsStarProjection.mem_iff {e : H →L[ℂ] H} (he : IsStarProjection e)
     (S : VonNeumannAlgebra H) :
-    e ∈ S ↔ ∀ y ∈ S.commutant, LinearMap.range e ∈ Module.End.invtSubmodule y := by
+    e ∈ S ↔ ∀ y ∈ S.commutant, e.range ∈ Module.End.invtSubmodule y := by
   simp_rw [he.isIdempotentElem.mem_iff, he.isIdempotentElem.range_mem_invtSubmodule_iff,
     he.isIdempotentElem.ker_mem_invtSubmodule_iff, forall_and, and_iff_left_iff_imp, ← mul_def]
   intro h x hx

@@ -3,7 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Set.Lattice
+module
+
+public import Mathlib.Data.Set.Lattice
 
 /-! # Semiquotients
 
@@ -14,6 +16,8 @@ element of `S`. This can be used to model nondeterministic functions,
 which return something in a range of values (represented by the
 predicate `S`) but are not completely determined.
 -/
+
+@[expose] public section
 
 
 /-- A member of `Semiquot α` is classically a nonempty `Set α`,
@@ -148,10 +152,9 @@ instance : LawfulMonad Semiquot := LawfulMonad.mk'
   (bind_pure_comp := fun {α β} f s => ext.2 <| by simp [eq_comm])
 
 instance : LE (Semiquot α) :=
-  ⟨fun s t => s.s ⊆ t.s⟩
+  ⟨fun s t => ∀ ⦃x⦄, x ∈ s → x ∈ t⟩
 
 instance partialOrder : PartialOrder (Semiquot α) where
-  le s t := ∀ ⦃x⦄, x ∈ s → x ∈ t
   le_refl _ := Set.Subset.refl _
   le_trans _ _ _ := Set.Subset.trans
   le_antisymm _ _ h₁ h₂ := ext_s.2 (Set.Subset.antisymm h₁ h₂)
@@ -194,6 +197,7 @@ theorem isPure_iff {s : Semiquot α} : IsPure s ↔ ∃ a, s = pure a :=
 theorem IsPure.mono {s t : Semiquot α} (st : s ≤ t) (h : IsPure t) : IsPure s
   | _, as, _, bs => h _ (st as) _ (st bs)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsPure.min {s t : Semiquot α} (h : IsPure t) : s ≤ t ↔ s = t :=
   ⟨fun st =>
     le_antisymm st <| by

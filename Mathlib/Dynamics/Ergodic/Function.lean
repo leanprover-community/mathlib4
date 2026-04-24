@@ -3,11 +3,13 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Dynamics.Ergodic.Ergodic
-import Mathlib.MeasureTheory.Function.AEEqFun
+module
+
+public import Mathlib.Dynamics.Ergodic.Ergodic
+public import Mathlib.MeasureTheory.Function.AEEqFun
 
 /-!
-# Functions invariant under (quasi)ergodic map
+# Functions invariant under a (quasi)ergodic map
 
 In this file we prove that an a.e. strongly measurable function `g : α → X`
 that is a.e. invariant under a (quasi)ergodic map is a.e. equal to a constant.
@@ -16,14 +18,16 @@ We also formulate a version for `MeasureTheory.AEEqFun` functions
 with all a.e. equalities replaced with equalities in the quotient space.
 -/
 
+public section
+
 open Function Set Filter MeasureTheory Topology TopologicalSpace
 
 variable {α X : Type*} [MeasurableSpace α] {μ : MeasureTheory.Measure α}
 
-/-- Let `f : α → α` be a (quasi)ergodic map. Let `g : α → X` is a null-measurable function
+/-- Let `f : α → α` be a (quasi)ergodic map. Let `g : α → X` be a null-measurable function
 from `α` to a nonempty space with a countable family of measurable sets
-separating points of a set `s` such that `f x ∈ s` for a.e. `x`.
-If `g` that is a.e.-invariant under `f`, then `g` is a.e. constant. -/
+separating points of a set `s` such that `g x ∈ s` for a.e. `x`.
+If `g` is a.e.-invariant under `f`, then `g` is a.e. constant. -/
 theorem QuasiErgodic.ae_eq_const_of_ae_eq_comp_of_ae_range₀ [Nonempty X] [MeasurableSpace X]
     {s : Set X} [MeasurableSpace.CountablySeparated s] {f : α → α} {g : α → X}
     (h : QuasiErgodic f μ) (hs : ∀ᵐ x ∂μ, g x ∈ s) (hgm : NullMeasurable g μ)

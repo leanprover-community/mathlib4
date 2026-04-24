@@ -3,13 +3,17 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro
 -/
-import Mathlib.Algebra.Algebra.Hom
-import Mathlib.LinearAlgebra.TensorProduct.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Hom
+public import Mathlib.LinearAlgebra.TensorProduct.Map
 
 /-!
 # Associators and unitors for tensor products of modules over a commutative ring.
 
 -/
+
+@[expose] public section
 
 variable {R : Type*} [CommSemiring R]
 variable {R' : Type*} [Monoid R']
@@ -48,6 +52,8 @@ theorem lid_tmul (m : M) (r : R) : (TensorProduct.lid R M : R ⊗ M → M) (r �
 theorem lid_symm_apply (m : M) : (TensorProduct.lid R M).symm m = 1 ⊗ₜ m :=
   rfl
 
+theorem toLinearMap_symm_lid : (TensorProduct.lid R M).symm.toLinearMap = mk R R M 1 := rfl
+
 lemma includeRight_lid {S : Type*} [Semiring S] [Algebra R S] (m : R ⊗[R] M) :
     (1 : S) ⊗ₜ[R] (TensorProduct.lid R M) m =
       (LinearMap.rTensor M (Algebra.algHom R R S).toLinearMap) m := by
@@ -79,6 +85,8 @@ theorem rid_tmul (m : M) (r : R) : (TensorProduct.rid R M) (m ⊗ₜ r) = r • 
 theorem rid_symm_apply (m : M) : (TensorProduct.rid R M).symm m = m ⊗ₜ 1 :=
   rfl
 
+theorem toLinearMap_symm_rid : (TensorProduct.rid R M).symm.toLinearMap = (mk R M R).flip 1 := rfl
+
 @[simp]
 theorem comm_trans_lid :
     TensorProduct.comm R M R ≪≫ₗ TensorProduct.lid R M = TensorProduct.rid R M :=
@@ -102,9 +110,18 @@ variable (R A M N) [CommSemiring A] [Module A M] [Module A N]
 /-- If the R- and A- action on A and M satisfy `CompatibleSMul` both ways,
 then `A ⊗[R] M` is canonically isomorphic to `M`. -/
 def lidOfCompatibleSMul : A ⊗[R] M ≃ₗ[A] M :=
-  (equivOfCompatibleSMul R A A M).symm ≪≫ₗ TensorProduct.lid _ _
+  (equivOfCompatibleSMul R A A A M).symm ≪≫ₗ TensorProduct.lid _ _
 
 theorem lidOfCompatibleSMul_tmul (a m) : lidOfCompatibleSMul R A M (a ⊗ₜ[R] m) = a • m := rfl
+
+variable {R} in
+lemma CompatibleSMul.of_algebraMap_surjective {A : Type*} [CommSemiring A] [Algebra R A]
+    [Module A M] [IsScalarTower R A M] [Module A N] [IsScalarTower R A N]
+    (h : Function.Surjective (algebraMap R A)) :
+    CompatibleSMul R A M N where
+  smul_tmul a m n := by
+    obtain ⟨r, rfl⟩ := h a
+    simp [smul_tmul]
 
 end CompatibleSMul
 
@@ -161,6 +178,28 @@ lemma map_map_assoc_symm (f : M →ₗ[R] Q) (g : N →ₗ[R] S) (h : P →ₗ[R
       (TensorProduct.assoc R Q S T).symm (map f (map g h) x) :=
   DFunLike.congr_fun (map_map_comp_assoc_symm_eq _ _ _) _
 
+lemma assoc_tensor :
+    TensorProduct.assoc R (M ⊗[R] N) Q S = .rTensor S (TensorProduct.assoc R M N Q) ≪≫ₗ
+      TensorProduct.assoc R M (N ⊗[R] Q) S ≪≫ₗ .lTensor M (TensorProduct.assoc R N Q S) ≪≫ₗ
+      (TensorProduct.assoc R M N (Q ⊗[R] S)).symm :=
+  LinearEquiv.toLinearMap_inj.mp <| ext_fourfold fun _ _ _ => congrFun rfl
+
+lemma assoc_tensor' :
+    TensorProduct.assoc R M (N ⊗[R] Q) S = .rTensor S (TensorProduct.assoc R M N Q).symm ≪≫ₗ
+      (TensorProduct.assoc R (M ⊗[R] N) Q S) ≪≫ₗ TensorProduct.assoc R M N (Q ⊗[R] S) ≪≫ₗ
+      .lTensor M (TensorProduct.assoc R N Q S).symm :=
+  LinearEquiv.toLinearMap_inj.mp <| ext_fourfold'' fun _ _ _ => congrFun rfl
+
+lemma assoc_tensor'' :
+    TensorProduct.assoc R M N (Q ⊗[R] S) = (TensorProduct.assoc R (M ⊗[R] N) Q S).symm ≪≫ₗ
+      .rTensor S (TensorProduct.assoc R M N Q) ≪≫ₗ TensorProduct.assoc R M (N ⊗[R] Q) S ≪≫ₗ
+      .lTensor M (TensorProduct.assoc R N Q S) :=
+  LinearEquiv.toLinearMap_inj.mp <| ext_fourfold' fun _ _ _ => congrFun rfl
+
+lemma lid_tensor :
+    TensorProduct.lid R (M ⊗[R] N) = (TensorProduct.assoc R R M N).symm ≪≫ₗ
+      .rTensor N (TensorProduct.lid R M) :=
+  LinearEquiv.toLinearMap_inj.mp <| ext_threefold' fun _ _ => congrFun rfl
 
 section
 
@@ -188,6 +227,12 @@ theorem leftComm_symm_tmul (m : M) (n : N) (p : P) :
     (leftComm R M N P).symm (n ⊗ₜ (m ⊗ₜ p)) = m ⊗ₜ (n ⊗ₜ p) :=
   rfl
 
+attribute [local ext high] TensorProduct.ext in
+lemma leftComm_def : leftComm R M N P =
+    (TensorProduct.assoc R _ _ _).symm ≪≫ₗ congr (TensorProduct.comm _ _ _) (.refl _ _) ≪≫ₗ
+      (TensorProduct.assoc R _ _ _) := by
+  apply LinearEquiv.toLinearMap_injective; ext; rfl
+
 variable (M N P) in
 attribute [local ext high] ext in
 /-- A tensor product analogue of `mul_right_comm`. -/
@@ -204,6 +249,12 @@ theorem rightComm_tmul (m : M) (n : N) (p : P) :
 
 @[simp]
 theorem rightComm_symm : (rightComm R M N P).symm = rightComm R M P N := rfl
+
+attribute [local ext high] TensorProduct.ext in
+lemma rightComm_def : rightComm R M N P =
+    TensorProduct.assoc R _ _ _ ≪≫ₗ congr (.refl _ _) (TensorProduct.comm _ _ _) ≪≫ₗ
+      (TensorProduct.assoc R _ _ _).symm := by
+  apply LinearEquiv.toLinearMap_injective; ext; rfl
 
 variable (M N P Q)
 
@@ -233,6 +284,11 @@ theorem tensorTensorTensorComm_tmul (m : M) (n : N) (p : P) (q : Q) :
 theorem tensorTensorTensorComm_symm :
     (tensorTensorTensorComm R M N P Q).symm = tensorTensorTensorComm R M P N Q :=
   rfl
+
+@[simp] theorem tensorTensorTensorComm_trans_tensorTensorTensorComm :
+    tensorTensorTensorComm R M N P Q ≪≫ₗ tensorTensorTensorComm R M P N Q = .refl R _ := by
+  rw [← tensorTensorTensorComm_symm]
+  exact LinearEquiv.symm_trans_self _
 
 theorem tensorTensorTensorComm_comp_map {V W : Type*}
     [AddCommMonoid V] [AddCommMonoid W] [Module R V] [Module R W]
@@ -310,3 +366,29 @@ lemma rTensor_lTensor_comp_assoc_symm (x : M →ₗ[R] N) :
   simp_rw [rTensor, lTensor, map_map_comp_assoc_symm_eq]
 
 end LinearMap
+
+namespace Equiv
+variable {R A A' B B' C C' : Type*}
+variable [CommSemiring R] [AddCommMonoid A'] [AddCommMonoid B'] [AddCommMonoid C']
+variable [Module R A'] [Module R B'] [Module R C']
+
+variable (R) in
+open TensorProduct in
+lemma tensorProductAssoc_def (eA : A ≃ A') (eB : B ≃ B') (eC : C ≃ C') :
+    letI := eA.addCommMonoid
+    letI := eB.addCommMonoid
+    letI := eC.addCommMonoid
+    letI := eA.module R
+    letI := eB.module R
+    letI := eC.module R
+    TensorProduct.assoc R A B C = .trans
+      (congr (congr (eA.linearEquiv R) (eB.linearEquiv R)) (eC.linearEquiv R)) (.trans
+      (TensorProduct.assoc R A' B' C') <| congr (eA.linearEquiv R).symm <|
+        congr (eB.linearEquiv R).symm (eC.linearEquiv R).symm) := by
+  ext x
+  induction x with
+  | zero => simp
+  | add => simp [*]
+  | tmul x a => induction x <;> simp [*, add_tmul]
+
+end Equiv

@@ -3,10 +3,12 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.QuadraticForm.TensorProduct
-import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
-import Mathlib.LinearAlgebra.TensorProduct.Opposite
-import Mathlib.RingTheory.TensorProduct.Basic
+module
+
+public import Mathlib.LinearAlgebra.QuadraticForm.TensorProduct
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
+public import Mathlib.LinearAlgebra.TensorProduct.Opposite
+public import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # The base change of a clifford algebra
@@ -30,6 +32,8 @@ We show the additional results:
 * `CliffordAlgebra.toBaseChange_reverse`: the effect of base-changing a reversal.
 -/
 
+@[expose] public section
+
 variable {R A V : Type*}
 variable [CommRing R] [CommRing A] [AddCommGroup V]
 variable [Algebra R A] [Module R V]
@@ -41,6 +45,7 @@ namespace CliffordAlgebra
 
 variable (A)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary construction: note this is really just a heterobasic `CliffordAlgebra.map`. -/
 def ofBaseChangeAux (Q : QuadraticForm R V) :
     CliffordAlgebra Q →ₐ[R] CliffordAlgebra (Q.baseChange A) :=
@@ -54,6 +59,7 @@ def ofBaseChangeAux (Q : QuadraticForm R V) :
     ofBaseChangeAux A Q (ι Q v) = ι (Q.baseChange A) (1 ⊗ₜ v) :=
   CliffordAlgebra.lift_ι_apply _ _ v
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Convert from the base-changed clifford algebra to the clifford algebra over a base-changed
 module. -/
 def ofBaseChange (Q : QuadraticForm R V) :
@@ -159,6 +165,7 @@ theorem toBaseChange_comp_ofBaseChange (Q : QuadraticForm R V) :
     toBaseChange A Q (ofBaseChange A Q x) = x :=
   AlgHom.congr_fun (toBaseChange_comp_ofBaseChange A Q :) x
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ofBaseChange_comp_toBaseChange (Q : QuadraticForm R V) :
     (ofBaseChange A Q).comp (toBaseChange A Q) = AlgHom.id _ _ := by
   ext x
@@ -172,7 +179,7 @@ theorem ofBaseChange_comp_toBaseChange (Q : QuadraticForm R V) :
   AlgHom.congr_fun (ofBaseChange_comp_toBaseChange A Q :) x
 
 /-- Base-changing the vector space of a clifford algebra is isomorphic as an A-algebra to
-base-changing the clifford algebra itself; <|Cℓ(A ⊗_R V, Q_A) ≅ A ⊗_R Cℓ(V, Q)<|.
+base-changing the clifford algebra itself; $<|Cℓ(A ⊗_R V, Q_A) ≅ A ⊗_R Cℓ(V, Q)<|$.
 
 This is `CliffordAlgebra.toBaseChange` and `CliffordAlgebra.ofBaseChange` as an equivalence. -/
 @[simps!]

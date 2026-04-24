@@ -1,9 +1,11 @@
 /-
-Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
+Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Topology.MetricSpace.Pseudo.Defs
+module
+
+public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 
 /-!
 # Metric spaces
@@ -14,16 +16,30 @@ Many definitions and theorems expected on metric spaces are already introduced o
 topological spaces. This includes open and closed sets, compactness, completeness, continuity
 and uniform continuity.
 
-TODO (anyone): Add "Main results" section.
+## Main definitions
+
+* `MetricSpace α`: A pseudometric space with the guarantee `dist x y = 0 → x = y`.
+* `MetricSpace.ofDistTopology`: Construct a metric space from a compatible topology and distance.
+* `MetricSpace.replaceUniformity`, `MetricSpace.replaceTopology`,
+  `MetricSpace.replaceBornology`: Tools to construct a metric space on a type with a pre-existing
+  uniformity, topology, or bornology in such a way that the definitional equalities for these
+  structures are preserved; these are essential to avoid type class synthesis issues.
+
+## Main results
+
+* `dist_eq_zero`, `dist_pos`, `eq_of_forall_dist_le`, `eq_of_nndist_eq_zero`: core
+  characterizations of equality via distance.
 
 ## Implementation notes
 A lot of elementary properties don't require `eq_of_dist_eq_zero`, hence are stated and proven
-for `PseudoMetricSpace`s in `PseudoMetric.lean`.
+for `PseudoMetricSpace`s in `Mathlib/Topology/MetricSpace/Pseudo/Defs.lean`.
 
 ## Tags
 
-metric, pseudo_metric, dist
+metric, pseudometric space, dist
 -/
+
+@[expose] public section
 
 assert_not_exists Finset.sum
 
@@ -62,6 +78,7 @@ theorem MetricSpace.ext {α : Type*} {m m' : MetricSpace α} (h : m.toDist = m'.
 /-- Construct a metric space structure whose underlying topological space structure
 (definitionally) agrees which a pre-existing topology which is compatible with a given distance
 function. -/
+@[implicit_reducible]
 def MetricSpace.ofDistTopology {α : Type u} [TopologicalSpace α] (dist : α → α → ℝ)
     (dist_self : ∀ x : α, dist x x = 0) (dist_comm : ∀ x y : α, dist x y = dist y x)
     (dist_triangle : ∀ x y z : α, dist x z ≤ dist x y + dist y z)

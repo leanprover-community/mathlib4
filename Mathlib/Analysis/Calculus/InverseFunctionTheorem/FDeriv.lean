@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Equiv
-import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ApproximatesLinearOn
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Equiv
+public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ApproximatesLinearOn
 
 /-!
 # Inverse function theorem
@@ -37,6 +39,8 @@ folders, and in `ContDiff.lean`.
 
 derivative, strictly differentiable, continuously differentiable, smooth, inverse function
 -/
+
+@[expose] public section
 
 open Function Set Filter Metric
 
@@ -78,7 +82,7 @@ theorem approximates_deriv_on_nhds {f : E → F} {f' : E →L[𝕜] F} {a : E}
   exact ⟨s, has, fun x hx y hy => hs (mk_mem_prod hx hy)⟩
 
 theorem map_nhds_eq_of_surj [CompleteSpace E] [CompleteSpace F] {f : E → F} {f' : E →L[𝕜] F} {a : E}
-    (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) (h : LinearMap.range f' = ⊤) :
+    (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) (h : f'.range = ⊤) :
     map f (𝓝 a) = 𝓝 (f a) := by
   let f'symm := f'.nonlinearRightInverseOfSurjective h
   set c : ℝ≥0 := f'symm.nnnorm⁻¹ / 2 with hc
@@ -116,9 +120,6 @@ def toOpenPartialHomeomorph (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
       NNReal.half_lt_self <| ne_of_gt <| inv_pos.2 hf')
     (Classical.choose_spec hf.approximates_deriv_on_open_nhds).2.1
 
-@[deprecated (since := "2025-08-29")] noncomputable alias
-  toPartialHomeomorph := toOpenPartialHomeomorph
-
 variable {f}
 
 @[simp]
@@ -126,23 +127,13 @@ theorem toOpenPartialHomeomorph_coe (hf : HasStrictFDerivAt f (f' : E →L[𝕜]
     (hf.toOpenPartialHomeomorph f : E → F) = f :=
   rfl
 
-@[deprecated (since := "2025-08-29")] alias
-  toPartialHomeomorph_coe := toOpenPartialHomeomorph_coe
-
 theorem mem_toOpenPartialHomeomorph_source (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
     a ∈ (hf.toOpenPartialHomeomorph f).source :=
   (Classical.choose_spec hf.approximates_deriv_on_open_nhds).1
 
-@[deprecated (since := "2025-08-29")] alias
-  mem_toPartialHomeomorph_source := mem_toOpenPartialHomeomorph_source
-
 theorem image_mem_toOpenPartialHomeomorph_target (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
     f a ∈ (hf.toOpenPartialHomeomorph f).target :=
   (hf.toOpenPartialHomeomorph f).map_source hf.mem_toOpenPartialHomeomorph_source
-
-@[deprecated (since := "2025-08-29")] alias
-  image_mem_toPartialHomeomorph_target := image_mem_toOpenPartialHomeomorph_target
-
 
 theorem map_nhds_eq_of_equiv (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
     map f (𝓝 a) = 𝓝 (f a) :=

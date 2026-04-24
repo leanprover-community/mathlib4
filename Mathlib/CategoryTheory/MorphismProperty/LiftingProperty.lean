@@ -3,10 +3,12 @@ Copyright (c) 2024 Jack McKoen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jack McKoen, Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Limits
-import Mathlib.CategoryTheory.MorphismProperty.Retract
-import Mathlib.CategoryTheory.LiftingProperties.Limits
-import Mathlib.Order.GaloisConnection.Defs
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.CategoryTheory.MorphismProperty.Retract
+public import Mathlib.CategoryTheory.LiftingProperties.Limits
+public import Mathlib.Order.GaloisConnection.Defs
 
 /-!
 # Left and right lifting properties
@@ -17,6 +19,8 @@ We show that the left lifting property is stable under retracts, cobase change, 
 and composition, with dual statements for the right lifting property.
 
 -/
+
+@[expose] public section
 
 universe w v u
 
@@ -85,6 +89,8 @@ instance llp_isStableUnderCoproductsOfShape (J : Type*) :
   intro A B _ _ f hf X Y p hp
   have := fun j ↦ hf j _ hp
   infer_instance
+
+instance : IsStableUnderCoproducts.{w} T.llp where
 
 instance rlp_isStableUnderProductsOfShape (J : Type*) :
     T.rlp.IsStableUnderProductsOfShape J := by

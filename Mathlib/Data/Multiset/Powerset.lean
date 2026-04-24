@@ -3,14 +3,18 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.List.Sublists
-import Mathlib.Data.List.Zip
-import Mathlib.Data.Multiset.Bind
-import Mathlib.Data.Multiset.Range
+module
+
+public import Mathlib.Data.List.Sublists
+public import Mathlib.Data.List.Zip
+public import Mathlib.Data.Multiset.Bind
+public import Mathlib.Data.Multiset.Range
 
 /-!
 # The powerset of a multiset
 -/
+
+@[expose] public section
 
 namespace Multiset
 
@@ -100,9 +104,23 @@ theorem map_single_le_powerset (s : Multiset α) : s.map singleton ≤ powerset 
     rw [← List.map_map]
     exact ((map_pure_sublist_sublists _).map _).subperm
 
+theorem zero_mem_powerset (s : Multiset α) : 0 ∈ s.powerset :=
+  Multiset.mem_powerset.mpr s.zero_le
+
+theorem self_mem_powerset (s : Multiset α) : s ∈ s.powerset :=
+  Multiset.mem_powerset.mpr le_rfl
+
 @[simp]
 theorem card_powerset (s : Multiset α) : card (powerset s) = 2 ^ card s :=
   Quotient.inductionOn s <| by simp
+
+@[simp]
+theorem powerset_eq_singleton_zero_iff (s : Multiset α) : powerset s = {0} ↔ s = 0 where
+  mpr := by
+    intro rfl
+    exact powerset_zero
+  mp powerset := by
+    simpa using congr(card $powerset)
 
 theorem revzip_powersetAux {l : List α} ⦃x⦄ (h : x ∈ revzip (powersetAux l)) : x.1 + x.2 = ↑l := by
   rw [revzip, powersetAux_eq_map_coe, ← map_reverse, zip_map, ← revzip, List.mem_map] at h
@@ -141,6 +159,29 @@ theorem revzip_powersetAux_perm {l₁ l₂ : List α} (p : l₁ ~ l₂) :
   haveI := Classical.decEq α
   simp only [fun l : List α => revzip_powersetAux_lemma l revzip_powersetAux, coe_eq_coe.2 p]
   exact (powersetAux_perm p).map _
+
+@[simp]
+theorem powerset_le_powerset_iff_le {s t : Multiset α} :
+    s.powerset ≤ t.powerset ↔ s ≤ t where
+  mp powerset := Multiset.mem_powerset.mp <| Multiset.mem_of_le powerset (self_mem_powerset s)
+  mpr le :=
+    leInductionOn le fun hsub => by
+      rw [powerset_coe', powerset_coe', coe_le]
+      apply Sublist.subperm
+      apply Sublist.map
+      exact Sublist.sublists' hsub
+
+lemma powerset_injective : Function.Injective (@Multiset.powerset α) := by
+  intro a₁ a₂ a
+  exact le_antisymm
+    (powerset_le_powerset_iff_le.mp (le_of_eq a))
+    (powerset_le_powerset_iff_le.mp (le_of_eq a.symm))
+
+lemma powerset_strictMono : StrictMono (@Multiset.powerset α) :=
+  strictMono_of_le_iff_le (fun _ _ ↦ powerset_le_powerset_iff_le.symm)
+
+lemma powerset_mono : Monotone (@Multiset.powerset α) :=
+  powerset_strictMono.monotone
 
 /-! ### powersetCard -/
 

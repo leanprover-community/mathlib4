@@ -3,9 +3,13 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Nat.Find
-import Mathlib.Data.Stream.Init
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Data.Nat.Find
+public import Mathlib.Data.Stream.Init
+public import Mathlib.Logic.Relator
+public import Mathlib.Tactic.Common
+public import Batteries.Tactic.Lint.Simp
 
 /-!
 # Coinductive formalization of unbounded computations.
@@ -13,6 +17,8 @@ import Mathlib.Tactic.Common
 This file provides a `Computation` type where `Computation α` is the type of
 unbounded computations returning `α`.
 -/
+
+@[expose] public section
 
 open Function
 
@@ -100,7 +106,7 @@ theorem destruct_eq_pure {s : Computation α} {a : α} : destruct s = Sum.inl a 
   dsimp [destruct]
   cases f0 : s.1 0 <;> intro h
   · contradiction
-  · apply Subtype.eq
+  · apply Subtype.ext
     funext n
     induction n with
     | zero => injection h with h'; rwa [h'] at f0
@@ -112,7 +118,7 @@ theorem destruct_eq_think {s : Computation α} {s'} : destruct s = Sum.inr s' �
   · injection h with h'
     rw [← h']
     obtain ⟨f, al⟩ := s
-    apply Subtype.eq
+    apply Subtype.ext
     dsimp [think, tail]
     rw [← f0]
     exact (Stream'.eta f).symm
@@ -216,11 +222,10 @@ theorem corec_eq (f : β → α ⊕ β) (b : β) : destruct (corec f b) = rmap (
     dsimp [Corec.f, Stream'.corec', Stream'.corec, Stream'.map, Stream'.get, Stream'.iterate]
     match (f b) with
     | Sum.inl x => rfl
-    | Sum.inr x => rfl
-    ]
+    | Sum.inr x => rfl]
   rcases h : f b with a | b'; · rfl
   dsimp [Corec.f, destruct]
-  apply congr_arg; apply Subtype.eq
+  apply congr_arg; apply Subtype.ext
   dsimp [corec, tail]
   rw [Stream'.corec'_eq, Stream'.tail_cons]
   dsimp [Corec.f]; rw [h]
@@ -247,7 +252,7 @@ def IsBisimulation :=
 
 -- If two computations are bisimilar, then they are equal
 theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s₁ = s₂ := by
-  apply Subtype.eq
+  apply Subtype.ext
   apply Stream'.eq_of_bisim fun x y => ∃ s s' : Computation α, s.1 = x ∧ s'.1 = y ∧ R s s'
   · dsimp [Stream'.IsBisimulation]
     intro t₁ t₂ e
@@ -260,7 +265,7 @@ theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s
       · constructor <;> dsimp at h
         · rw [h]
         · rw [h] at r
-          rw [tail_pure, tail_pure,h]
+          rw [tail_pure, tail_pure, h]
           assumption
       · rw [destruct_pure, destruct_think] at h
         exact False.elim h
@@ -343,12 +348,10 @@ theorem of_think_terminates {s : Computation α} : Terminates (think s) → Term
 
 theorem notMem_empty (a : α) : a ∉ empty α := fun ⟨n, h⟩ => by contradiction
 
-@[deprecated (since := "2025-05-23")] alias not_mem_empty := notMem_empty
-
 theorem not_terminates_empty : ¬Terminates (empty α) := fun ⟨⟨a, h⟩⟩ => notMem_empty a h
 
 theorem eq_empty_of_not_terminates {s} (H : ¬Terminates s) : s = empty α := by
-  apply Subtype.eq; funext n
+  apply Subtype.ext; funext n
   rcases h : s.val n; · rfl
   refine absurd ?_ H; exact ⟨⟨_, _, h.symm⟩⟩
 
@@ -408,7 +411,6 @@ theorem get_thinkN (n) : get (thinkN s n) = get s :=
 theorem get_promises : s ~> get s := fun _ => get_eq_of_mem _
 
 theorem mem_of_promises {a} (p : s ~> a) : a ∈ s := by
-  obtain ⟨h⟩ := h
   obtain ⟨a', h⟩ := h
   rw [p h]
   exact h
@@ -579,7 +581,7 @@ theorem map_pure (f : α → β) (a) : map f (pure a) = pure (f a) :=
 
 @[simp]
 theorem map_think (f : α → β) : ∀ s, map f (think s) = think (map f s)
-  | ⟨s, al⟩ => by apply Subtype.eq; dsimp [think, map]; rw [Stream'.map_cons]
+  | ⟨s, al⟩ => by apply Subtype.ext; dsimp [think, map]; rw [Stream'.map_cons]
 
 @[simp]
 theorem destruct_map (f : α → β) (s) : destruct (map f s) = lmap f (rmap (map f) (destruct s)) := by
@@ -588,14 +590,14 @@ theorem destruct_map (f : α → β) (s) : destruct (map f s) = lmap f (rmap (ma
 @[simp]
 theorem map_id : ∀ s : Computation α, map id s = s
   | ⟨f, al⟩ => by
-    apply Subtype.eq; simp only [map, comp_apply, id_eq]
+    apply Subtype.ext; simp only [map, comp_apply, id_eq]
     have e : @Option.rec α (fun _ => Option α) none some = id := by ext ⟨⟩ <;> rfl
     have h : ((fun x : Option α => x) = id) := rfl
     simp [e, h, Stream'.map_id]
 
 theorem map_comp (f : α → β) (g : β → γ) : ∀ s : Computation α, map (g ∘ f) s = map g (map f s)
   | ⟨s, al⟩ => by
-    apply Subtype.eq; dsimp [map]
+    apply Subtype.ext; dsimp [map]
     apply congr_arg fun f : _ → Option γ => Stream'.map f s
     ext ⟨⟩ <;> rfl
 
@@ -878,8 +880,8 @@ theorem lift_eq_iff_equiv (c₁ c₂ : Computation α) : LiftRel (· = ·) c₁ 
      fun a2 => by let ⟨b, b1, ab⟩ := h2 a2; rwa [← ab]⟩,
     fun e => ⟨fun {a} a1 => ⟨a, (e _).1 a1, rfl⟩, fun {a} a2 => ⟨a, (e _).2 a2, rfl⟩⟩⟩
 
-theorem LiftRel.refl (R : α → α → Prop) (H : Reflexive R) : Reflexive (LiftRel R) := fun _ =>
-  ⟨fun {a} as => ⟨a, as, H a⟩, fun {b} bs => ⟨b, bs, H b⟩⟩
+instance LiftRel.refl (R : α → α → Prop) [Std.Refl R] : Std.Refl (LiftRel R) where
+  refl _ := ⟨fun {a} as => ⟨a, as, refl_of R a⟩, fun {b} bs => ⟨b, bs, refl_of R b⟩⟩
 
 theorem LiftRel.symm (R : α → α → Prop) (H : Symmetric R) : Symmetric (LiftRel R) :=
   fun _ _ ⟨l, r⟩ =>
@@ -890,19 +892,21 @@ theorem LiftRel.symm (R : α → α → Prop) (H : Symmetric R) : Symmetric (Lif
     let ⟨b, b2, ab⟩ := l a1
     ⟨b, b2, H ab⟩⟩
 
-theorem LiftRel.trans (R : α → α → Prop) (H : Transitive R) : Transitive (LiftRel R) :=
-  fun _ _ _ ⟨l1, r1⟩ ⟨l2, r2⟩ =>
-  ⟨fun {_} a1 =>
-    let ⟨_, b2, ab⟩ := l1 a1
+instance LiftRel.trans (R : α → α → Prop) [IsTrans α R] : IsTrans _ (LiftRel R) :=
+  ⟨fun _ _ _ ⟨l1, r1⟩ ⟨l2, r2⟩ =>
+  ⟨fun {_a} a1 =>
+    let ⟨_b, b2, ab⟩ := l1 a1
     let ⟨c, c3, bc⟩ := l2 b2
-    ⟨c, c3, H ab bc⟩,
-    fun {_} c3 =>
-    let ⟨_, b2, bc⟩ := r2 c3
+    ⟨c, c3, trans_of R ab bc⟩,
+    fun {_c} c3 =>
+    let ⟨_b, b2, bc⟩ := r2 c3
     let ⟨a, a1, ab⟩ := r1 b2
-    ⟨a, a1, H ab bc⟩⟩
+    ⟨a, a1, trans_of R ab bc⟩⟩⟩
 
-theorem LiftRel.equiv (R : α → α → Prop) : Equivalence R → Equivalence (LiftRel R)
-  | ⟨refl, symm, trans⟩ => ⟨LiftRel.refl R refl, @LiftRel.symm _ R @symm, @LiftRel.trans _ R @trans⟩
+theorem LiftRel.equiv (R : α → α → Prop) (H : Equivalence R) : Equivalence (LiftRel R) where
+  refl := @LiftRel.refl α R H.stdRefl |>.refl
+  symm := @LiftRel.symm α R H.symmetric
+  trans := @LiftRel.trans α R H.isTrans |>.trans _ _ _
 
 theorem LiftRel.imp {R S : α → β → Prop} (H : ∀ {a b}, R a b → S a b) (s t) :
     LiftRel R s t → LiftRel S s t

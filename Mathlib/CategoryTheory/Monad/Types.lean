@@ -3,11 +3,13 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Category.KleisliCat
-import Mathlib.CategoryTheory.Monad.Basic
-import Mathlib.CategoryTheory.Monad.Kleisli
-import Mathlib.CategoryTheory.Types.Basic
-import Mathlib.Control.Basic
+module
+
+public import Mathlib.CategoryTheory.Category.KleisliCat
+public import Mathlib.CategoryTheory.Monad.Basic
+public import Mathlib.CategoryTheory.Monad.Kleisli
+public import Mathlib.CategoryTheory.Types.Basic
+public import Mathlib.Control.Basic
 
 /-!
 
@@ -16,6 +18,8 @@ import Mathlib.Control.Basic
 This allows us to use these monads in category theory.
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -28,51 +32,46 @@ variable (m : Type u → Type u) [_root_.Monad m] [LawfulMonad m]
 
 /-- A lawful `Control.Monad` gives a category theory `Monad` on the category of types.
 -/
-@[simps!]
+@[simps! obj map η_app μ_app]
 def ofTypeMonad : Monad (Type u) where
   toFunctor := ofTypeFunctor m
-  η := ⟨@pure m _, fun _ _ f => funext fun x => (LawfulApplicative.map_pure f x).symm⟩
-  μ := ⟨@joinM m _, fun _ _ _ => funext fun _ => joinM_map_map _ _⟩
-  assoc _ := funext fun _ => joinM_map_joinM _
-  left_unit _ := funext fun _ => joinM_pure _
-  right_unit _ := funext fun _ => joinM_map_pure _
+  η := ⟨fun X ↦ TypeCat.ofHom (@pure m _ X), fun _ _ f => by
+    ext x; exact (LawfulApplicative.map_pure f x).symm⟩
+  μ := ⟨fun X ↦ TypeCat.ofHom (@joinM m _ X), fun _ _ _ => by ext _; exact joinM_map_map _ _⟩
+  assoc _ := by ext; exact joinM_map_joinM _
+  left_unit _ := by ext; exact joinM_pure _
+  right_unit _ := by ext; exact joinM_map_pure _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `Kleisli` category of a `Control.Monad` is equivalent to the `Kleisli` category of its
 category-theoretic version, provided the monad is lawful.
 -/
 @[simps]
-def eq : KleisliCat m ≌ Kleisli (ofTypeMonad m) where
+def kleisliCatEquivKleisli : KleisliCat m ≌ Kleisli (ofTypeMonad m) where
   functor :=
-    { obj := fun X => X
-      map := fun f => f
+    { obj X := Kleisli.mk _ X
+      map f := ⟨TypeCat.ofHom f⟩
       map_id := fun _ => rfl
       map_comp := fun f g => by
-        unfold_projs
-        funext t
-        simp only [ofTypeMonad_obj, Function.comp_apply, ofTypeMonad_map, ofTypeMonad_μ_app, joinM,
-          bind_map_left, id_eq]
+        ext
+        simp [joinM]
         rfl }
   inverse :=
-    { obj := fun X => X
-      map := fun f => f
+    { obj X := X.of
+      map f x := f.of x
       map_id := fun _ => rfl
       map_comp := fun f g => by
-        unfold_projs
-        -- Porting note: Need these instances for some lemmas below.
-        --Should they be added as actual instances elsewhere?
-        letI : _root_.Monad (ofTypeMonad m).obj :=
-          show _root_.Monad m from inferInstance
-        letI : LawfulMonad (ofTypeMonad m).obj :=
-          show LawfulMonad m from inferInstance
-        funext t
-        simp only [ofTypeMonad_obj, Function.comp_apply, ofTypeMonad_map, ofTypeMonad_μ_app, joinM,
-          bind_map_left, id_eq]
+        dsimp
+        ext t
+        simp [joinM]
         rfl }
   unitIso := by
     refine NatIso.ofComponents (fun X => Iso.refl X) fun f => ?_
     change f >=> pure = pure >=> f
     simp [functor_norm]
   counitIso := NatIso.ofComponents fun X => Iso.refl X
+
+@[deprecated (since := "2026-04-16")] alias eq := kleisliCatEquivKleisli
 
 end
 

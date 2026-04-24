@@ -3,13 +3,18 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.FinCategory.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
-import Mathlib.Tactic.DeriveFintype
+module
+
+public import Mathlib.CategoryTheory.FinCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
+public import Mathlib.Data.Fintype.Sum
+public import Mathlib.Tactic.ProxyType
 
 /-!
 # Finiteness instances on multi-spans
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Limits
 

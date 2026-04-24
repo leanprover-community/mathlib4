@@ -3,11 +3,13 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
-import Mathlib.Algebra.EuclideanDomain.Basic
-import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Algebra.GCDMonoid.Nat
-import Mathlib.Data.Nat.Prime.Int
-import Mathlib.RingTheory.PrincipalIdealDomain
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Basic
+public import Mathlib.Algebra.EuclideanDomain.Int
+public import Mathlib.Algebra.GCDMonoid.Nat
+public import Mathlib.Data.Nat.Prime.Int
+public import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Divisibility over ℤ
@@ -26,6 +28,8 @@ cases of ℤ being examples of structures in ring theory.
 
 prime, irreducible, integers, normalization monoid, gcd monoid, greatest common divisor
 -/
+
+@[expose] public section
 
 namespace Int
 
@@ -110,6 +114,14 @@ instance (priority := 100) : DecidablePred (Irreducible : ℤ → Prop) := fun m
 theorem span_natAbs (a : ℤ) : Ideal.span ({(a.natAbs : ℤ)} : Set ℤ) = Ideal.span {a} := by
   rw [Ideal.span_singleton_eq_span_singleton]
   exact (associated_natAbs _).symm
+
+@[simp]
+theorem isCoprime_two_left {m : ℤ} : IsCoprime 2 m ↔ Odd m := by
+  simp [isCoprime_iff_nat_coprime]
+
+@[simp]
+theorem isCoprime_two_right {m : ℤ} : IsCoprime m 2 ↔ Odd m := by
+  simp [isCoprime_iff_nat_coprime]
 
 theorem eq_pow_of_mul_eq_pow_odd_left {a b c : ℤ} (hab : IsCoprime a b) {k : ℕ} (hk : Odd k)
     (h : a * b = c ^ k) : ∃ d, a = d ^ k := by

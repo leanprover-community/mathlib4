@@ -3,8 +3,10 @@ Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland
 -/
-import Mathlib.Tactic.Ring
-import Mathlib.Data.PNat.Prime
+module
+
+public import Mathlib.Tactic.Ring
+public import Mathlib.Data.PNat.Prime
 
 /-!
 # Euclidean algorithm for ℕ
@@ -31,6 +33,8 @@ the theory of continued fractions.
 See `Nat.Xgcd` for a very similar algorithm allowing values in `ℤ`.
 -/
 
+@[expose] public section
+
 
 open Nat
 
@@ -38,8 +42,8 @@ namespace PNat
 
 /-- A term of `XgcdType` is a system of six naturals.  They should
 be thought of as representing the matrix
-[[w, x], [y, z]] = [[wp + 1, x], [y, zp + 1]]
-together with the vector [a, b] = [ap + 1, bp + 1].
+`[[w, x], [y, z]] = [[wp + 1, x], [y, zp + 1]]`
+together with the vector `[a, b] = [ap + 1, bp + 1]`.
 -/
 structure XgcdType where
   /-- `wp` is a variable which changes through the algorithm. -/
@@ -104,9 +108,9 @@ def qp : ℕ :=
   u.q - 1
 
 /-- The map `v` gives the product of the matrix
-[[w, x], [y, z]] = [[wp + 1, x], [y, zp + 1]]
-and the vector [a, b] = [ap + 1, bp + 1].  The map
-`vp` gives [sp, tp] such that v = [sp + 1, tp + 1].
+`[[w, x], [y, z]] = [[wp + 1, x], [y, zp + 1]]`
+and the vector `[a, b] = [ap + 1, bp + 1]`.  The map
+`vp` gives `[sp, tp]` such that `v = [sp + 1, tp + 1]`.
 -/
 def vp : ℕ × ℕ :=
   ⟨u.wp + u.x + u.ap + u.wp * u.ap + u.x * u.bp, u.y + u.zp + u.bp + u.y * u.ap + u.zp * u.bp⟩
@@ -227,10 +231,9 @@ theorem start_isSpecial (a b : ℕ+) : (start a b).IsSpecial := by
 
 theorem start_v (a b : ℕ+) : (start a b).v = ⟨a, b⟩ := by
   dsimp [start, v, XgcdType.a, XgcdType.b, w, z]
-  rw [one_mul, one_mul, zero_mul, zero_mul]
   have := a.pos
   have := b.pos
-  congr <;> omega
+  lia
 
 /-- `finish` happens when the reducing process ends. -/
 def finish : XgcdType :=

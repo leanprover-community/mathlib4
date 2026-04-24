@@ -3,22 +3,26 @@ Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson
 -/
-import Mathlib.Computability.Language
-import Mathlib.Tactic.AdaptationNote
+module
+
+public import Mathlib.Computability.Language
+public import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Regular Expressions
 
 This file contains the formal definition for regular expressions and basic lemmas. Note these are
-regular expressions in terms of formal language theory. Note this is different to regex's used in
+regular expressions in terms of formal language theory. Note this is different to regexes used in
 computer science such as the POSIX standard.
 
 ## TODO
 
-Currently, we don't show that regular expressions and DFA/NFA's are equivalent.
+Currently, we do not show that regular expressions and DFAs/NFAs are equivalent.
 Multiple competing PRs towards that goal are in review.
 See https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Regular.20languages.3A.20the.20review.20queue
 -/
+
+@[expose] public section
 
 open List Set
 
@@ -31,13 +35,13 @@ variable {α β γ : Type*}
 -- Disable generation of unneeded lemmas which the simpNF linter would complain about.
 set_option genSizeOfSpec false in
 set_option genInjectivity false in
-/-- This is the definition of regular expressions. The names used here is to mirror the definition
-of a Kleene algebra (https://en.wikipedia.org/wiki/Kleene_algebra).
+/-- This is the definition of regular expressions. The names used here are meant to mirror the
+[definition of a Kleene algebra](https://en.wikipedia.org/wiki/Kleene_algebra).
 * `0` (`zero`) matches nothing
 * `1` (`epsilon`) matches only the empty string
 * `char a` matches only the string 'a'
-* `star P` matches any finite concatenation of strings which match `P`
-* `P + Q` (`plus P Q`) matches anything which match `P` or `Q`
+* `star P` matches any finite concatenation of strings that match `P`
+* `P + Q` (`plus P Q`) matches anything that matches `P` or `Q`
 * `P * Q` (`comp P Q`) matches `x ++ y` if `x` matches `P` and `y` matches `Q`
 -/
 inductive RegularExpression (α : Type u) : Type u
@@ -213,8 +217,7 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
       rw [rmatch, rmatch]
       rwa [Bool.and_eq_true_iff] at h
     · rintro ⟨t, u, h₁, h₂⟩
-      obtain ⟨ht, hu⟩ := List.append_eq_nil_iff.1 h₁.symm
-      subst ht hu
+      obtain ⟨rfl, rfl⟩ := List.append_eq_nil_iff.1 h₁.symm
       repeat rw [rmatch] at h₂
       simp [h₂]
   | cons a x ih =>
@@ -262,7 +265,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
         rintro ⟨t, u, hs, ht, hu⟩
         have hwf : u.length < (List.cons a x).length := by
           rw [hs, List.length_cons, List.length_append]
-          omega
+          lia
         rw [IH _ hwf] at hu
         rcases hu with ⟨S', hsum, helem⟩
         use (a :: t) :: S'
@@ -283,7 +286,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
         · obtain - | ⟨b, t⟩ := t'
           · simp only [forall_eq_or_imp, List.mem_cons] at helem
             simp only [not_true, Ne, false_and] at helem
-          simp only [List.flatten, List.cons_append, List.cons_eq_cons] at hsum
+          simp only [List.flatten_cons, List.cons_append, List.cons_eq_cons] at hsum
           refine ⟨t, U.flatten, hsum.2, ?_, ?_⟩
           · specialize helem (b :: t) (by simp)
             rw [rmatch] at helem

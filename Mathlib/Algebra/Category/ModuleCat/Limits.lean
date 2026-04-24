@@ -3,10 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.Algebra.Category.Grp.Limits
-import Mathlib.Algebra.Colimit.Module
-import Mathlib.Algebra.Module.Shrink
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.Algebra.Category.Grp.Limits
+public import Mathlib.Algebra.Colimit.Module
+public import Mathlib.Algebra.Module.Shrink
 
 /-!
 # The category of R-modules has all limits
@@ -15,10 +17,10 @@ Further, these limits are preserved by the forgetful functor --- that is,
 the underlying types are just the limits in the category of types.
 -/
 
+@[expose] public section
 
-open CategoryTheory
 
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 universe t v w u
 
@@ -38,15 +40,16 @@ instance moduleObj (j) :
     Module.{u, w} R ((F ⋙ forget (ModuleCat R)).obj j) :=
   inferInstanceAs <| Module R (F.obj j)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The flat sections of a functor into `ModuleCat R` form a submodule of all sections.
 -/
 def sectionsSubmodule : Submodule R (∀ j, F.obj j) :=
-  { AddGrp.sectionsAddSubgroup.{v, w}
-      (F ⋙ forget₂ (ModuleCat R) AddCommGrp.{w} ⋙
-          forget₂ AddCommGrp AddGrp.{w}) with
+  { AddGrpCat.sectionsAddSubgroup.{v, w}
+      (F ⋙ forget₂ (ModuleCat R) AddCommGrpCat.{w} ⋙
+          forget₂ AddCommGrpCat AddGrpCat.{w}) with
     carrier := (F ⋙ forget (ModuleCat R)).sections
     smul_mem' := fun r s sh j j' f => by
-      simpa [Functor.sections, forget_map] using congr_arg (r • ·) (sh f) }
+      simpa [Functor.sections] using congr_arg (r • ·) (sh f) }
 
 instance : AddCommMonoid (F ⋙ forget (ModuleCat R)).sections :=
   inferInstanceAs <| AddCommMonoid (sectionsSubmodule F)
@@ -75,19 +78,14 @@ instance limitModule :
     Module R (Types.Small.limitCone.{v, w} (F ⋙ forget (ModuleCat.{w} R))).pt :=
   inferInstanceAs <| Module R (Shrink (sectionsSubmodule F))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `limit.π (F ⋙ forget (ModuleCat.{w} R)) j` as an `R`-linear map. -/
 def limitπLinearMap (j) :
     (Types.Small.limitCone (F ⋙ forget (ModuleCat.{w} R))).pt →ₗ[R]
       (F ⋙ forget (ModuleCat R)).obj j where
   toFun := (Types.Small.limitCone (F ⋙ forget (ModuleCat R))).π.app j
-  map_smul' _ _ := by
-    simp only [Types.Small.limitCone_π_app,
-      ← Shrink.linearEquiv_apply R (F ⋙ forget (ModuleCat R)).sections, map_smul]
-    simp only [Shrink.linearEquiv_apply]
-    rfl
-  map_add' _ _ := by
-    simp only [Types.Small.limitCone_π_app, ← Equiv.addEquiv_apply, map_add]
-    rfl
+  map_smul' _ _ := by simp; rfl
+  map_add' _ _ := by simp; rfl
 
 namespace HasLimits
 
@@ -100,10 +98,12 @@ namespace HasLimits
 def limitCone : Cone F where
   pt := ModuleCat.of R (Types.Small.limitCone.{v, w} (F ⋙ forget _)).pt
   π :=
-    { app := fun j => ofHom (limitπLinearMap F j)
-      naturality := fun _ _ f => hom_ext <| LinearMap.coe_injective <|
-        ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) }
+    { app j := ofHom (limitπLinearMap F j)
+      naturality _ _ f := by
+        ext
+        simpa using (Types.Small.limitCone (F ⋙ forget _)).π.naturality_apply f _ }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Witness that the limit cone in `ModuleCat R` is a limit cone.
 (Internal use only; use the limits API.)
 -/
@@ -113,12 +113,10 @@ def limitConeIsLimit : IsLimit (limitCone.{t, v, w} F) := by
                 ((forget (ModuleCat R)).mapCone s), ?_⟩, ?_⟩)
     (fun s => rfl)
   · intro x y
-    simp only [Types.Small.limitConeIsLimit_lift, Functor.mapCone_π_app, forget_map, map_add]
-    rw [← equivShrink_add]
+    simp [← equivShrink_add]
     rfl
   · intro r x
-    simp only [Types.Small.limitConeIsLimit_lift, Functor.mapCone_π_app, forget_map, map_smul]
-    rw [← equivShrink_smul]
+    simp [← equivShrink_smul]
     rfl
 
 end HasLimits
@@ -147,15 +145,15 @@ instance (priority := high) hasLimits' : HasLimits (ModuleCat.{u} R) :=
 /-- An auxiliary declaration to speed up typechecking.
 -/
 def forget₂AddCommGroup_preservesLimitsAux :
-    IsLimit ((forget₂ (ModuleCat R) AddCommGrp).mapCone (limitCone F)) :=
-  letI : Small.{w} (Functor.sections ((F ⋙ forget₂ _ AddCommGrp) ⋙ forget _)) :=
+    IsLimit ((forget₂ (ModuleCat R) AddCommGrpCat).mapCone (limitCone F)) :=
+  letI : Small.{w} (Functor.sections ((F ⋙ forget₂ _ AddCommGrpCat) ⋙ forget _)) :=
     inferInstanceAs <| Small.{w} (Functor.sections (F ⋙ forget (ModuleCat R)))
-  AddCommGrp.limitConeIsLimit
-    (F ⋙ forget₂ (ModuleCat.{w} R) _ : J ⥤ AddCommGrp.{w})
+  AddCommGrpCat.limitConeIsLimit
+    (F ⋙ forget₂ (ModuleCat.{w} R) _ : J ⥤ AddCommGrpCat.{w})
 
 /-- The forgetful functor from R-modules to abelian groups preserves all limits. -/
 instance forget₂AddCommGroup_preservesLimit :
-    PreservesLimit F (forget₂ (ModuleCat R) AddCommGrp) :=
+    PreservesLimit F (forget₂ (ModuleCat R) AddCommGrpCat) :=
   preservesLimit_of_preserves_limit_cone (limitConeIsLimit F)
     (forget₂AddCommGroup_preservesLimitsAux F)
 
@@ -163,11 +161,11 @@ instance forget₂AddCommGroup_preservesLimit :
 -/
 instance forget₂AddCommGroup_preservesLimitsOfSize [UnivLE.{v, w}] :
     PreservesLimitsOfSize.{t, v}
-      (forget₂ (ModuleCat.{w} R) AddCommGrp.{w}) where
+      (forget₂ (ModuleCat.{w} R) AddCommGrpCat.{w}) where
   preservesLimitsOfShape := { preservesLimit := inferInstance }
 
 instance forget₂AddCommGroup_preservesLimits :
-    PreservesLimits (forget₂ (ModuleCat R) AddCommGrp.{w}) :=
+    PreservesLimits (forget₂ (ModuleCat R) AddCommGrpCat.{w}) :=
   ModuleCat.forget₂AddCommGroup_preservesLimitsOfSize.{w, w}
 
 /-- The forgetful functor from R-modules to types preserves all limits.
@@ -184,19 +182,19 @@ instance forget_preservesLimits : PreservesLimits (forget (ModuleCat.{w} R)) :=
 end
 
 instance forget₂AddCommGroup_reflectsLimit :
-    ReflectsLimit F (forget₂ (ModuleCat.{w} R) AddCommGrp) where
+    ReflectsLimit F (forget₂ (ModuleCat.{w} R) AddCommGrpCat) where
   reflects {c} hc := ⟨by
-    have : HasLimit (F ⋙ forget₂ (ModuleCat R) AddCommGrp) := ⟨_, hc⟩
+    have : HasLimit (F ⋙ forget₂ (ModuleCat R) AddCommGrpCat) := ⟨_, hc⟩
     have : Small.{w} (Functor.sections (F ⋙ forget (ModuleCat R))) := by
-      simpa only [AddCommGrp.hasLimit_iff_small_sections] using this
-    have := reflectsLimit_of_reflectsIsomorphisms F (forget₂ (ModuleCat R) AddCommGrp)
+      simpa only [AddCommGrpCat.hasLimit_iff_small_sections] using this
+    have := reflectsLimit_of_reflectsIsomorphisms F (forget₂ (ModuleCat R) AddCommGrpCat)
     exact isLimitOfReflects _ hc⟩
 
 instance forget₂AddCommGroup_reflectsLimitOfShape :
-    ReflectsLimitsOfShape J (forget₂ (ModuleCat.{w} R) AddCommGrp) where
+    ReflectsLimitsOfShape J (forget₂ (ModuleCat.{w} R) AddCommGrpCat) where
 
 instance forget₂AddCommGroup_reflectsLimitOfSize :
-    ReflectsLimitsOfSize.{t, v} (forget₂ (ModuleCat.{w} R) AddCommGrp) where
+    ReflectsLimitsOfSize.{t, v} (forget₂ (ModuleCat.{w} R) AddCommGrpCat) where
 
 section DirectLimit
 
@@ -221,8 +219,6 @@ def directLimitDiagram : ι ⥤ ModuleCat R where
     symm
     apply Module.DirectedSystem.map_map f
 
-variable [DecidableEq ι]
-
 /-- The `Cocone` on `directLimitDiagram` corresponding to
 the unbundled `directLimit` of modules.
 
@@ -236,6 +232,7 @@ def directLimitCocone : Cocone (directLimitDiagram G f) where
         ext
         exact DirectLimit.of_f }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The unbundled `directLimit` of modules is a colimit
 in the sense of `CategoryTheory`. -/
 @[simps]

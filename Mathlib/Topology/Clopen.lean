@@ -3,14 +3,18 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Data.Set.BoolIndicator
-import Mathlib.Topology.ContinuousOn
+module
+
+public import Mathlib.Data.Set.BoolIndicator
+public import Mathlib.Topology.ContinuousOn
 
 /-!
 # Clopen sets
 
 A clopen set is a set that is both closed and open.
 -/
+
+public section
 
 open Set Filter Topology TopologicalSpace
 
@@ -101,6 +105,15 @@ theorem isClopen_inter_of_disjoint_cover_clopen {s a b : Set X} (h : IsClopen s)
   refine (inter_subset_inter_right s hab.subset_compl_right).antisymm ?_
   rintro x ⟨hx₁, hx₂⟩
   exact ⟨hx₁, by simpa [notMem_of_mem_compl hx₂] using cover hx₁⟩
+
+/-- Variant of `isClopen_inter_of_disjoint_cover_clopen` with weaker disjointness condition. -/
+lemma isClopen_inter_of_disjoint_cover_clopen' {s a b : Set X} (h : IsClopen s) (cover : s ⊆ a ∪ b)
+    (ha : IsOpen a) (hb : IsOpen b) (hab : s ∩ a ∩ b = ∅) : IsClopen (s ∩ a) := by
+  rw [show s ∩ a = s ∩ (s ∩ a) by simp]
+  refine isClopen_inter_of_disjoint_cover_clopen h ?_ (h.2.inter ha) (h.2.inter hb) ?_
+  · rw [← inter_union_distrib_left]
+    exact subset_inter .rfl cover
+  · rw [disjoint_iff_inter_eq_empty, inter_comm s b, ← inter_assoc, hab, empty_inter]
 
 theorem isClopen_of_disjoint_cover_open {a b : Set X} (cover : univ ⊆ a ∪ b)
     (ha : IsOpen a) (hb : IsOpen b) (hab : Disjoint a b) : IsClopen a :=

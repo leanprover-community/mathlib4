@@ -3,8 +3,10 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Order.Filter.Tendsto
-import Mathlib.Data.PFun
+module
+
+public import Mathlib.Order.Filter.Tendsto
+public import Mathlib.Data.PFun
 
 /-!
 # `Tendsto` for relations and partial functions
@@ -32,12 +34,15 @@ functions and relations.
 `Set.preimage` can be generalized to relations in two ways:
 * `Rel.preimage` returns the image of the set under the inverse relation.
 * `Rel.core` returns the set of elements that are only related to those in the set.
+
 Both generalizations are sensible in the context of filters, so `Filter.comap` and `Filter.Tendsto`
 get two generalizations each.
 
 We first take care of relations. Then the definitions for partial functions are taken as special
 cases of the definitions for relations.
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -105,7 +110,7 @@ theorem rcomap_rcomap (r : SetRel α β) (s : SetRel β γ) (l : Filter γ) :
     rcomap r (rcomap s l) = rcomap (r.comp s) l :=
   filter_eq <| by
     ext t
-    simp only [rcomap_sets, SetRel.image, Filter.mem_sets, Set.mem_setOf_eq,SetRel.core_comp]
+    simp only [rcomap_sets, SetRel.image, Filter.mem_sets, Set.mem_setOf_eq, SetRel.core_comp]
     constructor
     · rintro ⟨u, ⟨v, vsets, hv⟩, h⟩
       exact ⟨v, vsets, Set.Subset.trans (SetRel.core_mono hv) h⟩
