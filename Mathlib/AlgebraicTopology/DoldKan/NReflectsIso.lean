@@ -23,7 +23,7 @@ reflect isomorphisms for any preadditive category `C`.
 
 -/
 
-@[expose] public section
+public section
 
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Idempotents Opposite Simplicial

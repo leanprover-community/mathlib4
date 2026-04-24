@@ -14,7 +14,7 @@ This file provides the definitions of ordered monoids.
 
 -/
 
-@[expose] public section
+public section
 
 
 open Function
