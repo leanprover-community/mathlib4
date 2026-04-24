@@ -101,14 +101,11 @@ abbrev FunctionField : Type r :=
 
 namespace CoordinateRing
 
-noncomputable instance : Algebra R W'.CoordinateRing :=
-  Quotient.algebra R
+noncomputable instance : Algebra R W'.CoordinateRing := inferInstance
 
-noncomputable instance : Algebra R[X] W'.CoordinateRing :=
-  Quotient.algebra R[X]
+noncomputable instance : Algebra R[X] W'.CoordinateRing := inferInstance
 
-instance : IsScalarTower R R[X] W'.CoordinateRing :=
-  Quotient.isScalarTower R R[X] _
+instance : IsScalarTower R R[X] W'.CoordinateRing := inferInstance
 
 instance [Subsingleton R] : Subsingleton W'.CoordinateRing :=
   Module.subsingleton R[X] _
@@ -655,7 +652,7 @@ variable [DecidableEq F] [DecidableEq K] [DecidableEq L]
 /-- The addition of two nonsingular points on a Weierstrass curve in affine coordinates.
 
 Given two nonsingular points `P` and `Q` in affine coordinates, use `P + Q` instead of `add P Q`. -/
-def add [DecidableEq F] : W.Point → W.Point → W.Point
+def add : W.Point → W.Point → W.Point
   | 0, P => P
   | P, 0 => P
   | some x₁ y₁ h₁, some x₂ y₂ h₂ =>

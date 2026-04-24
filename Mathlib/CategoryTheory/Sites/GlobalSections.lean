@@ -217,7 +217,6 @@ noncomputable def Sheaf.ΓObjEquivHom [HasWeakSheafify J (Type w)]
   ((Equiv.funUnique X _).symm.trans TypeCat.homEquiv.symm).trans
     ((constantSheafΓAdj J (Type w)).homEquiv _ _).symm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Sheaf.ΓObjEquivHom_naturality [HasWeakSheafify J (Type w)]
     [HasGlobalSectionsFunctor J (Type w)] (X : Type w) [Unique X]
     {F G : Sheaf J (Type w)} (f : F ⟶ G) (x : (Γ J (Type w)).obj F) :
