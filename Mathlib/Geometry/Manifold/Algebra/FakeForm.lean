@@ -43,8 +43,6 @@ lemma apply_smooth
   (ContMDiffSection.contMDiff w).clm_bundle_apply
       (ContMDiffSection.contMDiff X)
 
-#check ContMDiff.clm_bundle_apply₂
-
 lemma apply_smooth'
   (w : OneForm (E := E) (F := F) (IB := IB))
   (X : VectorField (IB := IB) (E := E) (F := F)) :
@@ -128,7 +126,6 @@ variable
   [MulAction (MulOpposite G) P]
   (ρ : P → B)
   [IsPrincipalBundle G P B ρ IP IB]
-  -- [IsPrincipalBundle G P B ρ]
   [T2Space G]
   [CompleteSpace EG]
   [BoundarylessManifold IG G]
@@ -144,8 +141,6 @@ noncomputable def fundamentalVectorField
 
 noncomputable def Ad (g : G) : GroupLieAlgebra IG G →L[ℝ] GroupLieAlgebra IG G :=
   mfderiv IG IG (fun h : G ↦ g * h * g⁻¹) 1
-
-#check @LieAlgebraValuedOneForm
 
 structure ConnectionForm where
   /-- The underlying Lie-algebra-valued 1-form -/
@@ -298,8 +293,6 @@ lemma mfderiv_expLie [T2Space G] [BoundarylessManifold IG G] [CompleteSpace EG]
 section
 open RightActions
 
-#check mfderiv_comp
-
 lemma fundamentalVectorField_eq_mfderiv_action (p : P)
      [MulAction Gᵐᵒᵖ P] [T2Space G] [CompleteSpace EG] [BoundarylessManifold IG G]
      [SmoothRightGAction ∞ IG IP G P] :
@@ -364,16 +357,6 @@ noncomputable def fundamentalVectorFieldLinearMap (p : P)
   map_smul' r A := by
     simp only [fundamentalVectorField_eq_mfderiv_action, map_smul, RingHom.id_apply]
     exact rfl
-
-#check IsMIntegralCurveOn.comp_add
-#check IsMIntegralCurve.mul
-
-example (p : P) (g h : G) [MulAction Gᵐᵒᵖ P] : p <• (g * h) = (p <• g) <• h := by
-  simp only [MulOpposite.op_mul, mul_smul]
-
-example (p : P) (g h : G) [MulAction Gᵐᵒᵖ P] : p <• (g * h) = (p <• g) <• h := by
-  show MulOpposite.op (g * h) •> p = MulOpposite.op h •> (MulOpposite.op g •> p)
-  rw [MulOpposite.op_mul, mul_smul]
 
 /-- The curve `t ↦ p <• expLie (t • A)` is an integral curve of the fundamental vector field
 `fun q ↦ fundamentalVectorField A q` on the principal bundle `P`.
@@ -477,14 +460,31 @@ lemma contMDiff_fundamentalVectorField
   apply ContMDiffAt.congr_of_eventuallyEq (hq.clm_apply (contMDiffAt_const (c := (1 : ℝ))))
   filter_upwards [(chartAt HP q).open_source.mem_nhds (mem_chart_source HP q)] with x hx
   simp only [TangentBundle.trivializationAt_apply, fundamentalVectorField]
-  simp?
+  simp only [OpenPartialHomeomorph.extend, PartialEquiv.coe_trans,
+   ModelWithCorners.toPartialEquiv_coe,
+    OpenPartialHomeomorph.toFun_eq_coe, PartialEquiv.coe_trans_symm,
+     OpenPartialHomeomorph.coe_coe_symm,
+    ModelWithCorners.toPartialEquiv_coe_symm, Function.comp_apply]
   have hrw := inTangentCoordinates_eq (I := 𝓘(ℝ, ℝ)) (I' := IP)
         (f := fun x ↦ (0 : ℝ)) (g := fun x ↦ x)
         (ϕ := fun x ↦ (mfderiv% fun (t : ℝ) ↦ x <• expLie (IG := IG) (t • A)) 0)
         (hx := ChartedSpace.mem_chart_source (0 : ℝ))
         (hy := hx)
   rw [hrw]
-  simp?
+  simp only [tangentBundleCore_coordChange, OpenPartialHomeomorph.extend, coe_achart,
+   PartialEquiv.coe_trans,
+    ModelWithCorners.toPartialEquiv_coe, OpenPartialHomeomorph.toFun_eq_coe,
+     PartialEquiv.coe_trans_symm,
+    OpenPartialHomeomorph.coe_coe_symm, ModelWithCorners.toPartialEquiv_coe_symm,
+     Function.comp_apply,
+     ContinuousLinearMap.coe_comp']
+  simp only [modelWithCornersSelf_coe, OpenPartialHomeomorph.refl_partialEquiv,
+   PartialEquiv.refl_source,
+    OpenPartialHomeomorph.singletonChartedSpace_chartAt_eq, OpenPartialHomeomorph.refl_apply,
+     CompTriple.comp_eq,
+    OpenPartialHomeomorph.refl_symm, modelWithCornersSelf_coe_symm, range_id, id_eq,
+     fderivWithin_univ, fderiv_id,
+    ContinuousLinearMap.coe_id']
   rfl
 
 lemma fundamentalVectorField_zero_iff (p : P) (A : GroupLieAlgebra IG G)
@@ -496,10 +496,6 @@ lemma fundamentalVectorField_zero_iff (p : P) (A : GroupLieAlgebra IG G)
     [T2Space P] [BoundarylessManifold IP P] :
     fundamentalVectorField (HP := HP) (IP := IP) A p = 0 → A = 0 := by
   intro h
-  -- The curve fun t ↦ p <• expLie (t • A) has zero derivative at 0
-  -- so it's an integral curve of the zero vector field
-  -- The constant curve fun t ↦ p is also an integral curve of the zero vector field
-  -- By uniqueness, p <• expLie (t • A) = p for all t
   have hconst : ∀ (t : ℝ), p <• expLie (IG := IG) (t • A) = p := by
     have hcurve : IsMIntegralCurve (I := IP) (fun t ↦ p <• expLie (IG := IG) (t • A))
       (fun q : P ↦ fundamentalVectorField (HP := HP) (IP := IP) A q) :=
@@ -510,18 +506,15 @@ lemma fundamentalVectorField_zero_iff (p : P) (A : GroupLieAlgebra IG G)
     have heq : (fun (t : ℝ) ↦ p <• expLie (IG := IG) (t • A)) = (fun _ ↦ p) := by
       apply isMIntegralCurve_eq_of_contMDiff (t₀ := 0)
           (fun _ ↦ BoundarylessManifold.isInteriorPoint (I := IP))
-      · -- hv: smoothness of fun q ↦ ⟨q, fundamentalVectorField A q⟩
-        exact (contMDiff_fundamentalVectorField (P := P) (IP := IP) A).of_le (by norm_num)
+      · exact (contMDiff_fundamentalVectorField (P := P) (IP := IP) A).of_le (by norm_num)
       · exact hcurve
       · exact hconstcurve
       · simp [expLie_zero]
     exact fun t ↦ congr_fun heq t
-  -- By freeness, expLie (t • A) = 1 for all t
   have hexp : ∀ (t : ℝ), expLie (IG := IG) (t • A) = 1 := by
     intro t
     have := IsPrincipalBundle.is_free (ρ := ρ) (IP := IP) (IB := IB) p (expLie (t • A))
     exact this (hconst t)
-  -- Differentiate at t = 0 using mfderiv_expLie to get A = 0
   have := mfderiv_expLie (IG := IG) A
   rw [show (fun t : ℝ ↦ expLie (IG := IG) (t • A)) = (fun _ ↦ (1 : G)) from
       funext hexp] at this
@@ -529,72 +522,25 @@ lemma fundamentalVectorField_zero_iff (p : P) (A : GroupLieAlgebra IG G)
   exact this.symm
 
 lemma fundamentalVectorField_injective (p : P)
-  [MulAction Gᵐᵒᵖ P] [T2Space G] [CompleteSpace EG] [ BoundarylessManifold IG G] :
+    [MulAction Gᵐᵒᵖ P]
+    (ρ : P → B)
+    [IsPrincipalBundle G P B ρ IP IB]
+    [T2Space G] [CompleteSpace EG] [BoundarylessManifold IG G]
+    [SmoothRightGAction ∞ IG IP G P]
+    [T2Space P] [BoundarylessManifold IP P] :
     Function.Injective
       (fun A : GroupLieAlgebra IG G ↦ fundamentalVectorField (HP := HP) (IP := IP) A p) := by
   intro A B h
-  unfold fundamentalVectorField at h
-  have hg : MDiffAt (fun g : G ↦ p <• g) ((fun t : ℝ ↦ expLie (IG := IG) (t • A)) 0) := sorry
-  have hf : MDiffAt (fun t : ℝ ↦ expLie (IG := IG) (t • A)) 0 := sorry
-  have hh : mfderiv% ((fun g : G ↦ p <• g) ∘ (fun t : ℝ ↦ expLie (IG := IG) (t • A))) 0 =
-            (mfderiv% (fun g : G ↦ p <• g) ((fun t : ℝ ↦ expLie (IG := IG) (t • A)) 0)).comp
-            (mfderiv% ((fun t : ℝ ↦ expLie (IG := IG) (t • A))) 0) := mfderiv_comp 0 hg hf
-  have hkey : mfderiv% (fun t : ℝ ↦ p <• expLie (IG := IG) (t • A)) 0 1 =
-      mfderiv% (fun g : G ↦ p <• g) 1 A := by
-    have : mfderiv% (fun t : ℝ ↦ p <• expLie (IG := IG) (t • A)) 0 =
-        (mfderiv% (fun g : G ↦ p <• g) 1).comp
-          (mfderiv% (fun t : ℝ ↦ expLie (IG := IG) (t • A)) 0) := by
-      have := hh
-      simp only [Function.comp_apply] at this
-      have h0 :
-        mfderiv% ((fun (g : G) ↦ p <• g) ∘ fun (t : ℝ) ↦ expLie (IG := IG) (t •> A)) 0 =
-        ((mfderiv% fun(g : G) ↦ p <• g) (expLie (0 •> A))).comp
-          ((mfderiv% fun (t : ℝ) ↦ expLie (IG := IG) (t •> A)) 0) :=
-          this
-      have h1 : ((fun (g : G) ↦ p <• g) ∘ fun (t : ℝ) ↦ expLie (IG := IG) (t •> A)) =
-             (fun (t : ℝ) ↦ p <• expLie (IG := IG) (t •> A)) :=
-               Function.comp_def (fun g ↦ p <• g) fun t ↦ expLie (t •> A)
-      have h2 : (expLie ((0 : ℝ) •> A)) = 1 := by
-        simp only [zero_smul]
-        exact expLie_zero
-      rw [h1, h2] at h0
-      exact h0
-    simp [this]
-    have h3 : ((mfderiv% fun (t : ℝ) ↦ expLie (IG := IG) (t • A)) 0) 1 = A :=
-      mfderiv_expLie (IG := IG) A
-    change (((mfderiv% fun (g : G) ↦ p <• g) 1).comp
-      ((mfderiv% fun (t : ℝ) ↦ expLie (IG := IG) (t • A)) 0)) 1 =
-      ((mfderiv% fun (g : G) ↦ p <• g) 1) A
-    rw [ContinuousLinearMap.comp_apply]
-    exact Eq.symm (DFunLike.congr rfl (id (Eq.symm h3)))
-  -- Apply chain rule to both sides
-  -- fun t ↦ p <• expLie (t • A) = (fun g ↦ p <• g) ∘ (fun t ↦ expLie (t • A))
-  have hA : mfderiv 𝓘(ℝ, ℝ) IP (fun t : ℝ ↦ p <• expLie (IG := IG) (t • A)) 0 1 =
-      mfderiv IG IP (fun g : G ↦ p <• g) 1
-        (mfderiv 𝓘(ℝ, ℝ) IG (fun t : ℝ ↦ expLie (IG := IG) (t • A)) 0 1) := by
-    have hcomp : mfderiv 𝓘(ℝ, ℝ) IP (fun t : ℝ ↦ p <• expLie (IG := IG) (t • A)) 0 =
-        (mfderiv IG IP (fun g : G ↦ p <• g) 1).comp
-          (mfderiv 𝓘(ℝ, ℝ) IG (fun t : ℝ ↦ expLie (IG := IG) (t • A)) 0) := by
-      rw [show (fun t : ℝ ↦ p <• expLie (IG := IG) (t • A)) =
-              (fun g : G ↦ p <• g) ∘ (fun t ↦ expLie (IG := IG) (t • A)) from rfl]
-      exact sorry -- mfderiv_comp 0 (sorry) (sorry)
-    simp [hcomp]
-    exact sorry
-  have hA : mfderiv 𝓘(ℝ, ℝ) IP (fun t : ℝ ↦ p <• expLie (IG := IG) (t • A)) 0 1 =
-    mfderiv IG IP (fun g : G ↦ p <• g) (expLie (IG := IG) ((0 : ℝ) • A))
-      (mfderiv 𝓘(ℝ, ℝ) IG (fun t : ℝ ↦ expLie (IG := IG) (t • A)) 0 1) := by
-    rw [← mfderiv_comp (0 : ℝ) (sorry) (sorry)]
-    rfl
-  have hB : mfderiv 𝓘(ℝ, ℝ) IP (fun t : ℝ ↦ p <• expLie (IG := IG) (t • B)) 0 1 =
-    mfderiv IG IP (fun g : G ↦ p <• g) (expLie (IG := IG) ((0 : ℝ) • B))
-      (mfderiv 𝓘(ℝ, ℝ) IG (fun t : ℝ ↦ expLie (IG := IG) (t • B)) 0 1) := by
-    rw [← mfderiv_comp (0 : ℝ) (sorry) (sorry)]
-    rfl
-  rw [zero_smul, expLie_zero, mfderiv_expLie, mfderiv_expLie] at hA hB
-  -- Now hA : mfderiv IP IP (· <• 1) p A = ...
-  -- and the right action by 1 is identity
-  have hone : ∀ q : P, q <• (1 : G) = q := MulAction.one_smul
-  sorry
+  have hab : fundamentalVectorField (HP := HP) (IP := IP) (A - B) p = 0 := by
+    have h1 := (fundamentalVectorFieldLinearMap (IP := IP) p).map_sub A B
+    simp only [fundamentalVectorFieldLinearMap, LinearMap.coe_mk, AddHom.coe_mk] at h1
+    simp only at h
+    have h2 : fundamentalVectorField (HP := HP) (IP := IP) (A - B) p = 0 := by
+      rw [h1]
+      exact sub_eq_zero_of_eq h
+    exact h2
+  have hAB := fundamentalVectorField_zero_iff (IB := IB) p (A - B) (ρ := ρ) hab
+  exact sub_eq_zero.mp hAB
 
 end
 
