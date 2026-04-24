@@ -91,7 +91,7 @@ lemma Submartingale.monotone_predictablePart [PartialOrder E] [IsOrderedAddMonoi
   refine monotone_nat_of_le_succ fun n ↦ (?_ : _ ≥ _)
   grw [predictablePart_add_one, Pi.add_apply, h n, add_zero]
 
-lemma Submartingale.nonneg_predictablePart [PartialOrder E] [IsOrderedAddMonoid E]
+lemma Submartingale.predictablePart_nonneg [PartialOrder E] [IsOrderedAddMonoid E]
     (hf : Submartingale f ℱ μ) :
     ∀ᵐ ω ∂μ, ∀ n, 0 ≤ predictablePart f ℱ μ n ω := by
   filter_upwards [hf.monotone_predictablePart] with ω hω n
