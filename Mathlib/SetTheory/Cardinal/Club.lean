@@ -125,13 +125,18 @@ theorem IsClub.inter {s t : Set α} (hα : Order.cof α ≠ ℵ₀) (hs : IsClub
   · exact .sInter hα (hα'.trans_le' <| by simp) H
 
 theorem Order.IsNormal.isClub_fixedPoints {f : α → α}
-    (hα : ℵ₀ < Order.cof α) (hf : Order.IsNormal f) : IsClub f.fixedPoints := by
+    (hα : Order.cof α ≠ ℵ₀) (hf : Order.IsNormal f) : IsClub f.fixedPoints := by
   cases isEmpty_or_nonempty α; · simp
   refine ⟨fun s hs hs₀ _ a ha ↦ (hf.map_isLUB ha hs₀).unique ?_, fun a ↦ ?_⟩
   · rwa [Set.image_congr hs, Set.image_id']
-  · suffices BddAbove (.range fun n ↦ f^[n] a) from
-      ⟨_, hf.iSup_iterate_mem_fixedPoints a this, le_csSup this ⟨0, rfl⟩⟩
-    refine .of_not_isCofinal fun h ↦ (Order.cof_le h).not_gt (hα.trans_le' ?_)
-    simpa using mk_range_le_lift (f := fun n : ℕ ↦ f^[n] a)
+  · cases topOrderOrNoTopOrder α with
+    | inl => use ⊤; simpa using hf.strictMono.id_le ⊤
+    | inr h =>
+      rw [noTopOrder_iff_noMaxOrder] at h
+      suffices BddAbove (.range fun n ↦ f^[n] a) from
+        ⟨_, hf.iSup_iterate_mem_fixedPoints a this, le_csSup this ⟨0, rfl⟩⟩
+      refine .of_not_isCofinal fun h ↦ (Order.cof_le h).not_gt
+        ((Order.aleph0_le_cof.lt_of_ne' hα).trans_le' ?_)
+      simpa using mk_range_le_lift (f := fun n : ℕ ↦ f^[n] a)
 
 end WellFoundedLT
