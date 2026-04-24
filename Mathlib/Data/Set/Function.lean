@@ -1257,14 +1257,16 @@ lemma InjOn.left_prodMk (h₁ : s.InjOn f₁) : s.InjOn fun x ↦ (f₁ x, f₂ 
 lemma InjOn.right_prodMk (h₂ : s.InjOn f₂) : s.InjOn fun x ↦ (f₁ x, f₂ x) :=
   fun _ hx _ hy h => h₂ hx hy (Prod.ext_iff.1 h).2
 
-lemma surjOn_fst (h : t₂.Nonempty) : (t₁ ×ˢ t₂).SurjOn Prod.fst t₁ := fun _ h => by simpa [h]
-lemma surjOn_snd (h : t₁.Nonempty) : (t₁ ×ˢ t₂).SurjOn Prod.snd t₂ := fun _ h => by simpa [h]
+lemma prod_surjOn_fst (h : t₂.Nonempty) : (t₁ ×ˢ t₂).SurjOn Prod.fst t₁ :=
+  fun _ h => by simpa [h]
+lemma prod_surjOn_snd (h : t₁.Nonempty) : (t₁ ×ˢ t₂).SurjOn Prod.snd t₂ :=
+  fun _ h => by simpa [h]
 
-lemma surjOn_fst_iff : (t₁ ×ˢ t₂).SurjOn Prod.fst t₁ ↔ t₁ = ∅ ∨ t₂.Nonempty :=
-  ⟨by by_contra!; aesop, by simp +contextual [or_imp, surjOn_fst]⟩
+lemma prod_surjOn_fst_iff : (t₁ ×ˢ t₂).SurjOn Prod.fst t₁ ↔ t₁ = ∅ ∨ t₂.Nonempty :=
+  ⟨by by_contra!; aesop, by simp +contextual [or_imp, prod_surjOn_fst]⟩
 
-lemma surjOn_snd_iff : (t₁ ×ˢ t₂).SurjOn Prod.snd t₂ ↔ t₁.Nonempty ∨ t₂ = ∅ :=
-  ⟨by by_contra!; aesop, by simp +contextual [or_imp, surjOn_snd]⟩
+lemma prod_surjOn_snd_iff : (t₁ ×ˢ t₂).SurjOn Prod.snd t₂ ↔ t₁.Nonempty ∨ t₂ = ∅ :=
+  ⟨by by_contra!; aesop, by simp +contextual [or_imp, prod_surjOn_snd]⟩
 
 lemma MapsTo.prodMk (h₁ : MapsTo f₁ s t₁) (h₂ : MapsTo f₂ s t₂) :
     MapsTo (fun x => (f₁ x, f₂ x)) s (t₁ ×ˢ t₂) :=
