@@ -261,4 +261,22 @@ lemma σ_σ₀Iter' (i : ℕ) {n m : ℕ} (j : Fin (m + 1)) (j' : Fin (n + 1))
       reassoc_of% hi' _ j'.succ (by grind) (by grind),
       ← σ_comp_σ (by simp), Fin.castSucc_zero]
 
+@[reassoc (attr := simp)]
+def δ₀Iter_σ₀Iter (i : ℕ) {n m : ℕ} (hi : n + i = m := by grind) :
+    δ₀Iter i hi ≫ σ₀Iter i hi = 𝟙 _ := by
+  induction i generalizing n m with
+  | zero =>
+    obtain rfl : n = m := by lia
+    simp
+  | succ i hi' =>
+    obtain rfl : m = (n + i) + 1 := by lia
+    rw [δ₀Iter_succ_assoc .., σ₀Iter_succ',
+      dsimp% reassoc_of% δ_comp_σ_self (n := n + i) (i := 0), hi']
+
+instance (i : ℕ) {n m : ℕ} (hi : n + i = m) : Mono (δ₀Iter i hi) :=
+  mono_of_mono_fac (δ₀Iter_σ₀Iter i hi)
+
+instance (i : ℕ) {n m : ℕ} (hi : n + i = m) : Epi (σ₀Iter i hi) :=
+  epi_of_epi_fac (δ₀Iter_σ₀Iter i hi)
+
 end SimplexCategory
