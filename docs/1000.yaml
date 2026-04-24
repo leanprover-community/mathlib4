@@ -1568,6 +1568,9 @@ Q1307676:
 
 Q1308502:
   title: Church–Rosser theorem
+  authors: Chris Henson, Maximiliano Onofre Martínez
+  url: https://github.com/leanprover/cslib/
+  comment: "CSLib has a few variants for untyped terms, including β-, η-, and βη-reduction."
 
 Q1315949:
   title: Mittag-Leffler's theorem
@@ -1672,8 +1675,8 @@ Q1455794:
 
 Q1457052:
   title: Well-ordering theorem
-  decl: exists_wellOrder
-  authors: Mario Carneiro, Chris Hughes, Violeta Hernández
+  decl: exists_wellFoundedLT
+  authors: Mario Carneiro, Chris Hughes, Violeta Hernández Palacios
   date: 2017
 
 Q1471282:
@@ -1799,7 +1802,7 @@ Q1683356:
 Q1687147:
   title: Sprague–Grundy theorem
   url: https://github.com/vihdzp/combinatorial-games/blob/master/CombinatorialGames/Game/Impartial/Grundy.lean
-  authors: Fox Thomson
+  authors: Fox Thomson, Julia Markus Himmel, Violeta Hernández Palacios
   date: 2020
 
 Q1694565:
@@ -3503,7 +3506,7 @@ Q6799039:
 
 Q6813106:
   title: Mellin inversion theorem
-  decl: mellin_inversion
+  decl: mellinInv_mellin_eq
 
 Q6859627:
   title: Milliken's tree theorem
@@ -3620,7 +3623,6 @@ Q7208500:
   title: Poisson limit theorem
   decls:
     - ProbabilityTheory.tendsto_choose_mul_pow_of_tendsto_mul_atTop
-    - ProbabilityTheory.binomial_tendsto_poissonPMFReal_atTop
   authors: Yi Yuan
   date: 2026
 

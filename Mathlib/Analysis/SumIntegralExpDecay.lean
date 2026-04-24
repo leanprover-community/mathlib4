@@ -42,7 +42,7 @@ lemma intervalIntegral_pow_mul_exp_neg_le {k : ℕ} {M c : ℝ} (hM : 0 ≤ M) (
 lemma sum_Ico_pow_mul_exp_neg_le {k : ℕ} {M : ℕ} {c : ℝ} (hc : 0 < c) :
     ∑ i ∈ Finset.Ico 0 M, i ^ k * rexp (- (c * i)) ≤ rexp c * k ! / c ^ (k + 1) := calc
   ∑ i ∈ Finset.Ico 0 M, i ^ k * rexp (- (c * i))
-  _ ≤ ∫ x in (0 : ℕ).. M, x ^ k * rexp (- (c * (x - 1))) := by
+  _ ≤ ∫ x in (0 : ℕ)..M, x ^ k * rexp (- (c * (x - 1))) := by
     apply sum_mul_Ico_le_integral_of_monotone_antitone
       (f := fun x ↦ x ^ k) (g := fun x ↦ rexp (- (c * x)))
     · exact Nat.zero_le M
