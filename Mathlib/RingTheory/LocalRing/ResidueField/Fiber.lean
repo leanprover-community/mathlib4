@@ -67,6 +67,18 @@ abbrev Ideal.Fiber (p : Ideal R) [p.IsPrime] (S : Type*) [CommRing S] [Algebra R
 instance (p : Ideal R) [p.IsPrime] (q : Ideal (p.Fiber S)) [q.IsPrime] : q.LiesOver p :=
   .trans _ (⊥ : Ideal p.ResidueField) _
 
+/-- If `q` is a prime ideal of `p.Fiber S`, then `q` lies over `p`, so the localization
+`(p.Fiber S)_q` is an algebra the localization `R_p`. But `p.Fiber S = Rp ⊗[R] S` is itself an
+algebra over `Rp`, and this gives another instance of `(p.Fiber S)_q` as an `Rp`-algebra.
+
+This was discussed on Zulip here:
+https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/instance.20diamond.20with.20.60Ideal.2EFiber.60. -/
+theorem Fiber.localization_diamond (p : Ideal R) [p.IsPrime] (q : Ideal (p.Fiber S)) [q.IsPrime] :
+    Localization.AtPrime.instAlgebraOfLiesOver p q = OreLocalization.instAlgebra := by
+  apply Algebra.algebra_ext
+  rw [← DFunLike.ext_iff]
+  exact Localization.localRingHom_unique p q _ Ideal.LiesOver.over fun x ↦ rfl
+
 lemma Ideal.Fiber.exists_smul_eq_one_tmul (x : p.Fiber S) : ∃ r ∉ p, ∃ s, r • x = 1 ⊗ₜ[R] s := by
   obtain ⟨r, hr, s, e⟩ := Ideal.ResidueField.exists_smul_eq_tmul_one _
     (Algebra.TensorProduct.comm _ _ _ x)
