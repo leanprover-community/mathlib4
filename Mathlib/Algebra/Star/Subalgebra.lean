@@ -337,11 +337,9 @@ end Centralizer
 end StarSubalgebra
 
 /-! ### The star closure of a subalgebra -/
-
-
 namespace Subalgebra
 
-open Pointwise
+open scoped Pointwise
 
 variable {F R A B : Type*} [CommSemiring R] [StarRing R]
 variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
