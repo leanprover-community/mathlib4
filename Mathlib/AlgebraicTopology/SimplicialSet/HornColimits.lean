@@ -171,7 +171,7 @@ protected def IsCompatible
       stdSimplex.δ (j.castPred (Fin.ne_last_of_lt hjk)) ≫ f k hk
 
 @[simp]
-lemma isCompatible_iff_true {i : Fin 2} (f : ∀ (j : Fin 2) (_ : j ≠ i), Δ[0] ⟶ X) :
+lemma isCompatible_zero_iff_true {i : Fin 2} (f : ∀ (j : Fin 2) (_ : j ≠ i), Δ[0] ⟶ X) :
     horn.IsCompatible f ↔ True := Iff.rfl
 
 @[simp]
