@@ -291,7 +291,7 @@ end OrderDual
 
 section CompleteLinearOrder
 
-variable [CompleteLinearOrder α] {s : Set α} {a b : α} {f : ι → α}
+variable [CompleteLinearOrder α] {s : Set α} {a b : α}
 
 @[to_dual sInf_lt_iff]
 theorem lt_sSup_iff : b < sSup s ↔ ∃ a ∈ s, b < a :=
@@ -312,14 +312,6 @@ theorem lt_iSup_iff {f : ι → α} : a < iSup f ↔ ∃ i, a < f i :=
 @[to_dual]
 theorem lt_biSup_iff {s : Set β} {f : β → α} : a < ⨆ i ∈ s, f i ↔ ∃ i ∈ s, a < f i := by
   simp [lt_iSup_iff]
-
-@[to_dual sInf_le_iff_forall_lt]
-theorem le_sSup_iff_forall_lt {l : α} : l ≤ sSup s ↔ ∀ b < l, ∃ a ∈ s, b < a := by
-  grind [le_sSup_iff, mem_upperBounds, not_le, not_lt]
-
-@[to_dual iInf_le_iff_forall_lt]
-theorem le_iSup_iff_forall_lt {l : α} : l ≤ iSup f ↔ ∀ b < l, ∃ i, b < f i :=
-  le_sSup_iff_forall_lt.trans <| forall₂_congr fun _ _ ↦ exists_range_iff
 
 end CompleteLinearOrder
 
