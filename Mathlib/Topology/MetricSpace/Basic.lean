@@ -126,7 +126,7 @@ end Real
 section NNReal
 
 instance : MetricSpace ℝ≥0 :=
-  Subtype.metricSpace
+  inferInstanceAs <| MetricSpace (Subtype _)
 
 theorem NNReal.isUniformEmbedding_coe : IsUniformEmbedding NNReal.toReal :=
   isUniformEmbedding_subtype_val
@@ -140,7 +140,7 @@ theorem NNReal.isClosedEmbedding_coe : Topology.IsClosedEmbedding NNReal.toReal 
 end NNReal
 
 instance [MetricSpace β] : MetricSpace (ULift β) :=
-  MetricSpace.induced ULift.down ULift.down_injective ‹_›
+  fast_instance% MetricSpace.induced ULift.down ULift.down_injective ‹_›
 
 section Prod
 

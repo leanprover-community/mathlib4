@@ -189,7 +189,7 @@ public register_option linter.style.cdot : Bool := {
 /-- `isCDot? stx` checks whether `stx` is a `Syntax` node corresponding to a `cdot` typed with
 the character `·`. -/
 public def isCDot? : Syntax → Bool
-  | .node _ ``cdotTk #[.node _ `patternIgnore #[.node _ _ #[.atom _ v]]] => v == "·"
+  | .node _ ``cdotTk #[.atom _ v] => v == "·"
   | .node _ ``Lean.Parser.Term.cdot #[.atom _ v, _] => v == "·"
   | _ => false
 
@@ -225,12 +225,14 @@ def cdotLinter : Linter where run := withSetOptionIn fun stx ↦ do
         m!"Please, use '·' (typed as `\\.`) instead of '.' as 'cdot'."
     -- We also check for isolated cdot's, i.e. when the cdot is on its own line.
     for cdot in Mathlib.Linter.findCDot stx do
-      match cdot.find? (·.isOfKind `token.«· ») with
-      | some (.node _ _ #[.atom (.original _ _ afterCDot _) _]) =>
-        if (afterCDot.takeWhile (·.isWhitespace)).contains '\n' then
-          Linter.logLint linter.style.cdot cdot
-            m!"This central dot `·` is isolated; please merge it with the next line."
-      | _ => return
+      -- Apply this only to cdot tactics
+      if cdot.isOfKind ``cdotTk then
+        match cdot.getTrailing? with
+        |  some afterCDot =>
+          if (afterCDot.takeWhile (·.isWhitespace)).contains '\n' then
+            Linter.logLint linter.style.cdot cdot
+              m!"This central dot `·` is isolated; please merge it with the next line."
+        | _ => return
 
 initialize addLinter cdotLinter
 

@@ -65,7 +65,6 @@ lemma Module.length_pos_iff : 0 < Module.length R M ↔ Nontrivial M := by
 lemma Module.length_pos [Nontrivial M] : 0 < Module.length R M :=
   Module.length_pos_iff.mpr ‹_›
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Module.length_compositionSeries (s : CompositionSeries (Submodule R M)) (h₁ : s.head = ⊥)
     (h₂ : s.last = ⊤) : s.length = Module.length R M := by
   have H := isFiniteLength_of_exists_compositionSeries ⟨s, h₁, h₂⟩
@@ -107,6 +106,15 @@ lemma Module.length_ne_top_iff : Module.length R M ≠ ⊤ ↔ IsFiniteLength R 
 lemma Module.length_ne_top [IsArtinian R M] [IsNoetherian R M] : Module.length R M ≠ ⊤ := by
   rw [length_ne_top_iff, isFiniteLength_iff_isNoetherian_isArtinian]
   exact ⟨‹_›, ‹_›⟩
+
+@[simp]
+lemma Module.finiteDimensionalOrder_submodule_iff :
+    FiniteDimensionalOrder (Submodule R M) ↔ IsFiniteLength R M := by
+  rw [← Module.length_ne_top_iff_finiteDimensionalOrder, Module.length_ne_top_iff]
+
+instance [IsArtinian R M] [IsNoetherian R M] : FiniteDimensionalOrder (Submodule R M) := by
+  rw [Module.finiteDimensionalOrder_submodule_iff, isFiniteLength_iff_isNoetherian_isArtinian]
+  tauto
 
 lemma Module.length_submodule {N : Submodule R M} :
     Module.length R N = Order.height N := by
@@ -290,3 +298,15 @@ lemma Module.length_eq_finrank
     (K M : Type*) [DivisionRing K] [AddCommGroup M] [Module K M] [Module.Finite K M] :
     Module.length K M = Module.finrank K M := by
   simp [Module.length_of_free]
+
+theorem Submodule.length_le_length_restrictScalars (A : Type*) [Ring A] [SMul A R] [Module A M]
+    [IsScalarTower A R M] (p : Submodule R M) :
+    Module.length R p ≤ Module.length A (p.restrictScalars A) := by
+  rw [← WithBot.coe_le_coe, Module.coe_length, Module.coe_length]
+  exact Order.krullDim_le_of_orderEmbedding (restrictScalarsEmbedding A R p)
+
+theorem Submodule.length_quotient_lt [IsArtinian R M] [IsNoetherian R M] (p : Submodule R M)
+    (h : p ≠ ⊥) : Module.length R (M ⧸ p) < Module.length R M := by
+  rw [Module.length_quotient, Module.length, WithBot.lt_unbot_iff, ← Order.coheight_bot_eq_krullDim,
+    WithBot.coe_lt_coe]
+  exact Order.coheight_strictAnti (bot_lt_iff_ne_bot.mpr h) (Order.coheight_lt_top p)

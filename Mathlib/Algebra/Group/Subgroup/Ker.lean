@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Group.Subgroup.Map
 public import Mathlib.Tactic.ApplyFun
 
+import Mathlib.Algebra.Group.Equiv.Basic
+
 /-!
 # Kernel and range of group homomorphisms
 
@@ -565,4 +567,30 @@ theorem codisjoint_subgroupOf_sup (H K : Subgroup G) :
   rw [codisjoint_iff, ← subgroupOf_sup, subgroupOf_self]
   exacts [le_sup_left, le_sup_right]
 
+variable {M : Type*} [CommGroup M]
+
+@[to_additive]
+lemma subgroupOf_map_powMonoidHom_eq_range (S : Subgroup M) (n : ℕ) :
+    (map (powMonoidHom n) S).subgroupOf S = (powMonoidHom n).range := by
+  ext : 1
+  simp [mem_subgroupOf]
+  grind
+
 end Subgroup
+
+namespace MulEquiv
+
+@[to_additive (attr := simp)]
+lemma range_eq_top (e : G ≃* G') : (e : G →* G').range = ⊤ :=
+  MonoidHom.range_eq_top.mpr e.surjective
+
+variable {M N : Type*} [CommGroup M] [CommGroup N]
+
+open MonoidHom in
+@[to_additive]
+lemma map_range_powMonoidHom (e : M ≃* N) (n : ℕ) :
+    (powMonoidHom (α := M) n).range.map e = (powMonoidHom (α := N) n).range := by
+  have H : (e : M →* N).comp (powMonoidHom n) = (powMonoidHom n).comp e := by ext : 1; simp
+  rw [map_range, H, range_comp, e.range_eq_top, ← range_eq_map]
+
+end MulEquiv

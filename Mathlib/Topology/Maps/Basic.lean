@@ -21,6 +21,7 @@ This file introduces the following properties of a map `f : X → Y` between top
 * `IsInducing f` means the topology on `X` is the one induced via `f` from the topology on `Y`.
   These behave like embeddings except they need not be injective. Instead, points of `X` which
   are identified by `f` are also inseparable in the topology on `X`.
+* `IsCoinducing f` means the topology on `Y` is the one coinduced via `f` from the topology on `X`.
 * `IsEmbedding f` means `f` is inducing and also injective. Equivalently, `f` identifies `X` with
   a subspace of `Y`.
 * `IsOpenEmbedding f` means `f` is an embedding with open image, so it identifies `X` with an
@@ -225,6 +226,7 @@ lemma tendsto_nhds_iff {f : ι → Y} {l : Filter ι} {y : Y} (hg : IsEmbedding 
 lemma continuous_iff (hg : IsEmbedding g) : Continuous f ↔ Continuous (g ∘ f) :=
   hg.isInducing.continuous_iff
 
+@[fun_prop]
 lemma continuous (hf : IsEmbedding f) : Continuous f := hf.isInducing.continuous
 
 lemma closure_eq_preimage_closure_image (hf : IsEmbedding f) (s : Set X) :
@@ -243,41 +245,91 @@ lemma of_subsingleton [Subsingleton X] (f : X → Y) : IsEmbedding f :=
 
 end IsEmbedding
 
+section IsCoinducing
+
+variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+
+lemma isCoinducing_iff : IsCoinducing f ↔ ∀ s : Set Y, IsOpen (f ⁻¹' s) ↔ IsOpen s :=
+  (isCoinducing_iff' _).trans <| eq_comm.trans TopologicalSpace.ext_iff
+
+lemma isCoinducing_iff_isClosed :
+    IsCoinducing f ↔ ∀ s : Set Y, IsClosed (f ⁻¹' s) ↔ IsClosed s :=
+  isCoinducing_iff.trans <| compl_surjective.forall.trans <| by simp
+
+namespace IsCoinducing
+
+protected lemma isOpen_preimage (hf : IsCoinducing f) {s : Set Y} :
+    IsOpen (f ⁻¹' s) ↔ IsOpen s :=
+  isCoinducing_iff.mp hf _
+
+protected lemma isClosed_preimage (hf : IsCoinducing f) {s : Set Y} :
+    IsClosed (f ⁻¹' s) ↔ IsClosed s :=
+  isCoinducing_iff_isClosed.mp hf _
+
+alias ⟨_, of_isOpen_preimage_iff_isOpen⟩ := isCoinducing_iff
+
+alias ⟨_, of_isClosed_preimage_iff_isClosed⟩ := isCoinducing_iff_isClosed
+
+protected lemma continuous (hf : IsCoinducing f) : Continuous f where
+  isOpen_preimage s hs := by rwa [hf.isOpen_preimage]
+
+variable (X) in
+@[fun_prop]
+protected lemma id : IsCoinducing (id (α := X)) where
+  eq_coinduced := coinduced_id.symm
+
+@[fun_prop]
+protected lemma comp (hg : IsCoinducing g) (hf : IsCoinducing f) : IsCoinducing (g.comp f) where
+  eq_coinduced := by rw [hg.eq_coinduced, hf.eq_coinduced, coinduced_compose]
+
+protected lemma of_comp_iff (hf : IsCoinducing f) :
+    IsCoinducing (g ∘ f) ↔ IsCoinducing g := by
+  refine ⟨fun hgf ↦ .of_isOpen_preimage_iff_isOpen fun s ↦ ?_, fun hg ↦ hg.comp hf⟩
+  rw [← hgf.isOpen_preimage, Set.preimage_comp, hf.isOpen_preimage]
+
+protected lemma of_comp (hf : Continuous f) (hg : Continuous g) (hgf : IsCoinducing (g ∘ f)) :
+    IsCoinducing g :=
+  ⟨le_antisymm (by grw [hgf.eq_coinduced, ← coinduced_compose, hf.coinduced_le]) hg.coinduced_le⟩
+
+lemma isOpenMap_of_injective (hf : IsCoinducing f) (hf' : Injective f) : IsOpenMap f := by
+  intro s hs
+  rwa [← hf.isOpen_preimage, preimage_image_eq _ hf']
+
+end IsCoinducing
+
+end IsCoinducing
+
 section IsQuotientMap
 
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
-lemma isQuotientMap_iff : IsQuotientMap f ↔ Surjective f ∧ ∀ s, IsOpen s ↔ IsOpen (f ⁻¹' s) :=
-  (isQuotientMap_iff' _).trans <| and_congr Iff.rfl TopologicalSpace.ext_iff
-
 theorem isQuotientMap_iff_isClosed :
-    IsQuotientMap f ↔ Surjective f ∧ ∀ s : Set Y, IsClosed s ↔ IsClosed (f ⁻¹' s) :=
-  isQuotientMap_iff.trans <| Iff.rfl.and <| compl_surjective.forall.trans <| by
-    simp only [isOpen_compl_iff, preimage_compl]
+    IsQuotientMap f ↔ Surjective f ∧ ∀ s : Set Y, IsClosed s ↔ IsClosed (f ⁻¹' s) := by
+  simp_rw [isQuotientMap_iff, isCoinducing_iff_isClosed, and_comm, iff_comm]
 
 namespace IsQuotientMap
 
 @[fun_prop]
 protected theorem id : IsQuotientMap (@id X) :=
-  ⟨fun x => ⟨x, rfl⟩, coinduced_id.symm⟩
+  ⟨.id _, fun x => ⟨x, rfl⟩⟩
 
 @[fun_prop]
 protected theorem comp (hg : IsQuotientMap g) (hf : IsQuotientMap f) : IsQuotientMap (g ∘ f) :=
-  ⟨hg.surjective.comp hf.surjective, by rw [hg.eq_coinduced, hf.eq_coinduced, coinduced_compose]⟩
+  ⟨.comp hg.1 hf.1, hg.surjective.comp hf.surjective, ⟩
 
 protected theorem of_comp (hf : Continuous f) (hg : Continuous g)
     (hgf : IsQuotientMap (g ∘ f)) : IsQuotientMap g :=
-  ⟨hgf.1.of_comp,
-    le_antisymm (by grw [hgf.eq_coinduced, ← coinduced_compose, hf.coinduced_le]) hg.coinduced_le⟩
+  ⟨.of_comp hf hg hgf.1, hgf.2.of_comp⟩
 
-theorem of_comp_of_eq_coinduced (hgf : IsQuotientMap (g ∘ f))
-    (hf : ‹TopologicalSpace Y› = ‹TopologicalSpace X›.coinduced f) : IsQuotientMap g :=
-  isQuotientMap_iff.mpr <| .intro hgf.1.of_comp fun s ↦ by
-    conv_rhs => rw [TopologicalSpace.ext_iff.mp hf, isOpen_coinduced]
-    exact (isQuotientMap_iff.mp hgf).2 s
+theorem of_comp_of_isCoinducing (hgf : IsQuotientMap (g ∘ f)) (hf : IsCoinducing f) :
+    IsQuotientMap g :=
+  ⟨hf.of_comp_iff.mp hgf.1, hgf.2.of_comp⟩
+
+@[deprecated (since := "2026-03-21")]
+alias of_comp_of_eq_coinduced := of_comp_of_isCoinducing
 
 theorem of_comp_isQuotientMap (hf : IsQuotientMap f) (hgf : IsQuotientMap (g ∘ f)) :
-    IsQuotientMap g := of_comp_of_eq_coinduced hgf hf.2
+    IsQuotientMap g := of_comp_of_isCoinducing hgf hf.isCoinducing
 
 theorem of_inverse {g : Y → X} (hf : Continuous f) (hg : Continuous g) (h : LeftInverse g f) :
     IsQuotientMap g := .of_comp hf hg <| h.comp_eq_id.symm ▸ IsQuotientMap.id
@@ -288,13 +340,6 @@ protected theorem continuous_iff (hf : IsQuotientMap f) : Continuous g ↔ Conti
 @[fun_prop]
 protected theorem continuous (hf : IsQuotientMap f) : Continuous f :=
   hf.continuous_iff.mp continuous_id
-
-protected lemma isOpen_preimage (hf : IsQuotientMap f) {s : Set Y} : IsOpen (f ⁻¹' s) ↔ IsOpen s :=
-  ((isQuotientMap_iff.1 hf).2 s).symm
-
-protected theorem isClosed_preimage (hf : IsQuotientMap f) {s : Set Y} :
-    IsClosed (f ⁻¹' s) ↔ IsClosed s :=
-  ((isQuotientMap_iff_isClosed.1 hf).2 s).symm
 
 end IsQuotientMap
 
@@ -360,9 +405,10 @@ theorem of_inverse {f' : Y → X} (h : Continuous f') (l_inv : LeftInverse f f')
 
 /-- A continuous surjective open map is a quotient map. -/
 theorem isQuotientMap (open_map : IsOpenMap f) (cont : Continuous f) (surj : Surjective f) :
-    IsQuotientMap f :=
-  isQuotientMap_iff.2
-    ⟨surj, fun s => ⟨fun h => h.preimage cont, fun h => surj.image_preimage s ▸ open_map _ h⟩⟩
+    IsQuotientMap f := by
+  rw [isQuotientMap_iff]
+  refine ⟨.of_isOpen_preimage_iff_isOpen fun s ↦ ?_, surj⟩
+  exact ⟨fun h => surj.image_preimage s ▸ open_map _ h, fun h => h.preimage cont⟩
 
 theorem interior_preimage_subset_preimage_interior (hf : IsOpenMap f) {s : Set Y} :
     interior (f ⁻¹' s) ⊆ f ⁻¹' interior s :=
@@ -399,6 +445,17 @@ theorem clusterPt_comap (hf : IsOpenMap f) {x : X} {l : Filter Y} (h : ClusterPt
     ClusterPt x (comap f l) := by
   rw [ClusterPt, ← map_neBot_iff, Filter.push_pull]
   exact h.neBot.mono <| inf_le_inf_right _ <| hf.nhds_le _
+
+theorem accPt_comap (hf : IsOpenMap f) {x : X} {l : Filter Y} (h : AccPt (f x) l) :
+    AccPt x (comap f l) := by
+  rw [accPt_iff_clusterPt] at h ⊢
+  apply (hf.clusterPt_comap h).mono
+  rw [comap_inf, comap_principal, preimage_compl]
+  exact inf_le_inf_right (comap f l) (by simp)
+
+theorem clusterPt_comap_iff (hf : IsOpenMap f) (hfc : Continuous f) {x : X} {l : Filter Y} :
+    ClusterPt x (comap f l) ↔ ClusterPt (f x) l :=
+  ⟨fun h => h.map hfc.continuousAt tendsto_comap, hf.clusterPt_comap⟩
 
 end IsOpenMap
 
@@ -709,6 +766,13 @@ theorem of_isEmpty [IsEmpty X] (f : X → Y) : IsOpenEmbedding f :=
 theorem image_mem_nhds {f : X → Y} (hf : IsOpenEmbedding f) {s : Set X} {x : X} :
     f '' s ∈ 𝓝 (f x) ↔ s ∈ 𝓝 x := by
   rw [← hf.map_nhds_eq, mem_map, preimage_image_eq _ hf.injective]
+
+theorem accPt_comap_iff
+    (hf : IsOpenEmbedding f) {x : X} {l : Filter Y} :
+    AccPt x (comap f l) ↔ AccPt (f x) l := by
+  rw [accPt_iff_clusterPt, accPt_iff_clusterPt, ← hf.injective.preimage_image {x}, image_singleton,
+    ← preimage_compl, ← comap_principal, ← comap_inf,
+    hf.isOpenMap.clusterPt_comap_iff hf.continuous]
 
 end IsOpenEmbedding
 

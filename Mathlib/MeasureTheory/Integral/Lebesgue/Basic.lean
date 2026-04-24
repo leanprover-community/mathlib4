@@ -357,7 +357,6 @@ theorem setLIntegral_pos_iff {f : α → ℝ≥0∞} (hf : Measurable f) {s : Se
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` has finite integral, then `∫⁻ x in s, f x ∂μ` is absolutely continuous in `s`: it tends
 to zero as `μ s` tends to zero. This lemma states this fact in terms of `ε` and `δ`. -/
 theorem exists_pos_setLIntegral_lt_of_measure_lt {f : α → ℝ≥0∞} (h : ∫⁻ x, f x ∂μ ≠ ∞) {ε : ℝ≥0∞}
@@ -487,7 +486,7 @@ theorem lintegral_indicator_le (f : α → ℝ≥0∞) (s : Set α) :
   congr with x
   simp only [mem_preimage, mem_singleton_iff, mem_inter_iff, iff_self_and]
   rintro rfl
-  contrapose! H
+  contrapose H
   simpa [H] using hg x
 
 @[simp]

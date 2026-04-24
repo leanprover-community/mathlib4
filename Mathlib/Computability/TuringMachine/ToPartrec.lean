@@ -402,10 +402,12 @@ def trCont : Cont → Cont'
 /-- We use `PosNum` to define the translation of binary natural numbers. A natural number is
 represented as a little-endian list of `bit0` and `bit1` elements:
 
+```
     1 = [bit1]
     2 = [bit0, bit1]
     3 = [bit1, bit1]
     4 = [bit0, bit0, bit1]
+```
 
 In particular, this representation guarantees no trailing `bit0`'s at the end of the list. -/
 def trPosNum : PosNum → List Γ'
@@ -417,11 +419,13 @@ def trPosNum : PosNum → List Γ'
 translated using `trPosNum`, and `trNum 0 = []`. So there are never any trailing `bit0`'s in
 a translated `Num`.
 
+```
     0 = []
     1 = [bit1]
     2 = [bit0, bit1]
     3 = [bit1, bit1]
     4 = [bit0, bit0, bit1]
+```
 -/
 def trNum : Num → List Γ'
   | Num.zero => []
@@ -1130,7 +1134,7 @@ theorem supports_union {K₁ K₂ S} : Supports (K₁ ∪ K₂) S ↔ Supports K
 
 theorem supports_biUnion {K : Option Γ' → Finset Λ'} {S} :
     Supports (Finset.univ.biUnion K) S ↔ ∀ a, Supports (K a) S := by
-  simpa [Supports] using forall_swap
+  simpa [Supports] using forall_comm
 
 theorem head_supports {S k q} (H : (q : Λ').Supports S) : (head k q).Supports S := fun _ => by
   dsimp only; split_ifs <;> exact H

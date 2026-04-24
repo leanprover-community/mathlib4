@@ -372,16 +372,25 @@ def IsIndContained (G : SimpleGraph V) (H : SimpleGraph W) : Prop := Nonempty (G
 
 @[inherit_doc] scoped infixl:50 " ⊴ " => SimpleGraph.IsIndContained
 
-protected lemma IsIndContained.isContained : G ⊴ H → G ⊑ H := fun ⟨f⟩ ↦ ⟨f.toCopy⟩
+protected lemma Copy.isContained (f : Copy G H) : G ⊑ H := ⟨f⟩
+
+protected lemma Embedding.isIndContained (f : G ↪g H) : G ⊴ H := ⟨f⟩
+
+protected lemma Embedding.isContained (f : G ↪g H) : G ⊑ H := f.toCopy.isContained
+
+protected lemma IsIndContained.isContained : G ⊴ H → G ⊑ H := fun ⟨f⟩ ↦ f.isContained
+
+/-- If `G` is isomorphic to `H`, then `G` is contained in `H`. -/
+protected lemma Iso.isContained (e : G ≃g H) : G ⊑ H := e.toCopy.isContained
+
+/-- If `G` is isomorphic to `H`, then `H` is contained in `G`. -/
+protected lemma Iso.isContained' (e : G ≃g H) : H ⊑ G := e.symm.isContained
 
 /-- If `G` is isomorphic to `H`, then `G` is inducingly contained in `H`. -/
-protected lemma Iso.isIndContained (e : G ≃g H) : G ⊴ H := ⟨e⟩
+protected lemma Iso.isIndContained (e : G ≃g H) : G ⊴ H := e.toEmbedding.isIndContained
 
 /-- If `G` is isomorphic to `H`, then `H` is inducingly contained in `G`. -/
 protected lemma Iso.isIndContained' (e : G ≃g H) : H ⊴ G := e.symm.isIndContained
-
-/-- If `G` is isomorphic to `H`, then `G` is contained in `H`. -/
-protected lemma Iso.isContained (e : G ≃g H) : G ⊑ H := ⟨e.toCopy⟩
 
 protected lemma Subgraph.IsInduced.isIndContained {G' : G.Subgraph} (hG' : G'.IsInduced) :
     G'.coe ⊴ G :=
@@ -427,6 +436,12 @@ alias ⟨IsIndContained.exists_iso_subgraph, IsIndContained.of_exists_iso_subgra
   Embedding.complEquiv.symm.nonempty_congr
 
 protected alias ⟨IsIndContained.of_compl, IsIndContained.compl⟩ := compl_isIndContained_compl
+
+theorem isContained_iff_exists_le_comap : H ⊑ G ↔ ∃ (f : W ↪ V), H ≤ G.comap f :=
+  ⟨fun ⟨f⟩ ↦ ⟨f.toEmbedding, f.toHom.le_comap⟩, fun ⟨f, h⟩ ↦ ⟨⟨f, (h ·)⟩, f.injective⟩⟩
+
+theorem isIndContained_iff_exists_comap_eq : H ⊴ G ↔ ∃ (f : W ↪ V), G.comap f = H :=
+  ⟨fun ⟨f⟩ ↦ ⟨f.toEmbedding, f.comap_eq⟩, fun ⟨f, h⟩ ↦ ⟨f, h ▸ .rfl⟩⟩
 
 /-!
 ### Counting the copies
@@ -561,7 +576,7 @@ private lemma killCopies_of_ne_bot (hH : H ≠ ⊥) (G : SimpleGraph V) :
 `Free.killCopies_eq_left` for the reverse implication with no assumption on `H`. -/
 lemma killCopies_eq_left (hH : H ≠ ⊥) : G.killCopies H = G ↔ H.Free G := by
   simp only [killCopies_of_ne_bot hH, Set.disjoint_left, isContained_iff_exists_iso_subgraph,
-    @forall_swap _ G.Subgraph, deleteEdges_eq_self, Set.mem_iUnion,
+    @forall_comm _ G.Subgraph, deleteEdges_eq_self, Set.mem_iUnion,
     not_exists, not_nonempty_iff, Nonempty.forall, Free]
   exact forall_congr' fun G' ↦ ⟨fun h ↦ ⟨fun f ↦ h _
     (Subgraph.edgeSet_subset _ <| (aux hH ⟨f⟩).choose_spec) f rfl⟩, fun h _ _ ↦ h.elim⟩

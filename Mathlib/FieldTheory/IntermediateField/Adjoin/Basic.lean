@@ -435,7 +435,6 @@ section PowerBasis
 
 variable {L : Type*} [Field L] [Algebra K L]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The elements `1, x, ..., x ^ (d - 1)` form a basis for `K⟮x⟯`,
 where `d` is the degree of the minimal polynomial of `x`. -/
 noncomputable def powerBasisAux {x : L} (hx : IsIntegral K x) :
@@ -532,15 +531,6 @@ theorem exists_lt_finrank_of_infinite_dimensional
     have h2 : F⟮x⟯ ≤ L' := le_sup_right
     exact hx <| (h1.symm ▸ h2) <| mem_adjoin_simple_self F x
 
-theorem _root_.minpoly.natDegree_le (x : L) [FiniteDimensional K L] :
-    (minpoly K x).natDegree ≤ finrank K L :=
-  le_of_eq_of_le (IntermediateField.adjoin.finrank (.of_finite _ _)).symm
-    K⟮x⟯.toSubmodule.finrank_le
-
-theorem _root_.minpoly.degree_le (x : L) [FiniteDimensional K L] :
-    (minpoly K x).degree ≤ finrank K L :=
-  degree_le_of_natDegree_le (minpoly.natDegree_le x)
-
 /-- If `x : L` is an integral element in a field extension `L` over `K`, then the degree of the
   minimal polynomial of `x` over `K` divides `[L : K]`. -/
 theorem _root_.minpoly.degree_dvd {x : L} (hx : IsIntegral K x) :
@@ -560,7 +550,7 @@ theorem _root_.Polynomial.Irreducible.natDegree_dvd_finrank {f : K[X]} (hi : Irr
   rw [key, natDegree_C_mul (leadingCoeff_ne_zero.mpr hi)]
   apply minpoly.degree_dvd
   rw [← minpoly.ne_zero_iff]
-  contrapose! hi
+  contrapose hi
   rwa [hi, mul_zero] at key
 
 -- TODO: generalize to `Sort`
@@ -619,7 +609,6 @@ theorem card_algHom_adjoin_integral (h : IsIntegral F α) (h_sep : IsSeparable F
     simp only [IsSeparable, adjoin.powerBasis_dim, adjoin.powerBasis_gen, minpoly_gen, h_splits]
   exact h_sep
 
-set_option backward.isDefEq.respectTransparency false in
 -- Apparently `K⟮root f⟯ →+* K⟮root f⟯` is expensive to unify during instance synthesis.
 open Module AdjoinRoot in
 /-- Let `f, g` be monic polynomials over `K`. If `f` is irreducible, and `g(x) - α` is irreducible

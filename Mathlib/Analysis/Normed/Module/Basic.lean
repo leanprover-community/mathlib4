@@ -189,8 +189,8 @@ See note [reducible non-instances] -/
 abbrev NormedSpace.induced {F : Type*} (𝕜 E G : Type*) [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
     [SeminormedAddCommGroup G] [NormedSpace 𝕜 G] [FunLike F E G] [LinearMapClass F 𝕜 E G] (f : F) :
     @NormedSpace 𝕜 E _ (SeminormedAddCommGroup.induced E G f) :=
-  let _ := SeminormedAddCommGroup.induced E G f
-  ⟨fun a b ↦ by simpa only [← map_smul f a b] using norm_smul_le a (f b)⟩
+  letI := SeminormedAddCommGroup.induced E G f
+  { norm_smul_le a b := by simpa only [← map_smul f a b] using norm_smul_le a (f b) }
 
 section NontriviallyNormedSpace
 
@@ -402,7 +402,7 @@ abbrev NormedAlgebra.induced {F : Type*} (𝕜 R S : Type*) [NormedField 𝕜] [
 
 instance Subalgebra.toNormedAlgebra {𝕜 A : Type*} [SeminormedRing A] [NormedField 𝕜]
     [NormedAlgebra 𝕜 A] (S : Subalgebra 𝕜 A) : NormedAlgebra 𝕜 S :=
-  NormedAlgebra.induced 𝕜 S A S.val
+  fast_instance% NormedAlgebra.induced 𝕜 S A S.val
 
 section SubalgebraClass
 
@@ -487,11 +487,10 @@ theorem NormedSpace.restrictScalars_eq {E : Type*} [SeminormedAddCommGroup E]
   ext
   apply algebraMap_smul
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `E` is a normed space over `𝕜'` and `𝕜` is a normed algebra over `𝕜'`, then
 `RestrictScalars.module` is additionally a `NormedSpace`. -/
 instance RestrictScalars.normedSpace : NormedSpace 𝕜 (RestrictScalars 𝕜 𝕜' E) :=
-  NormedSpace.restrictScalars 𝕜 𝕜' E
+  fast_instance% NormedSpace.restrictScalars 𝕜 𝕜' E
 
 -- If you think you need this, consider instead reproducing `RestrictScalars.lsmul`
 -- appropriately modified here.
@@ -527,7 +526,7 @@ def NormedAlgebra.restrictScalars : NormedAlgebra 𝕜 E :=
 /-- If `E` is a normed algebra over `𝕜'` and `𝕜` is a normed algebra over `𝕜'`, then
 `RestrictScalars.module` is additionally a `NormedAlgebra`. -/
 instance RestrictScalars.normedAlgebra : NormedAlgebra 𝕜 (RestrictScalars 𝕜 𝕜' E) :=
-  NormedAlgebra.restrictScalars 𝕜 𝕜' E
+  fast_instance% NormedAlgebra.restrictScalars 𝕜 𝕜' E
 
 -- If you think you need this, consider instead reproducing `RestrictScalars.lsmul`
 -- appropriately modified here.
