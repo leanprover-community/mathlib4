@@ -5700,7 +5700,6 @@ public import Mathlib.NumberTheory.PowModTotient
 public import Mathlib.NumberTheory.PrimeCounting
 public import Mathlib.NumberTheory.PrimesCongruentOne
 public import Mathlib.NumberTheory.Primorial
-public import Mathlib.NumberTheory.PrimorialLowerBound
 public import Mathlib.NumberTheory.PythagoreanTriples
 public import Mathlib.NumberTheory.RamificationInertia.Basic
 public import Mathlib.NumberTheory.RamificationInertia.Galois

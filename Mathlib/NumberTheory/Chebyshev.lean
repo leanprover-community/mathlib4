@@ -10,7 +10,7 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 public import Mathlib.NumberTheory.AbelSummation
 public import Mathlib.NumberTheory.PrimeCounting
-public import Mathlib.NumberTheory.PrimorialLowerBound
+public import Mathlib.NumberTheory.Primorial
 public import Mathlib.NumberTheory.ArithmeticFunction.VonMangoldt
 
 import Mathlib.Analysis.SpecialFunctions.Log.InvLog
