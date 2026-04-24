@@ -116,7 +116,7 @@ protected theorem DirectedOn.lt_csSup_of_lt (hd : DirectedOn (· ≤ ·) s) (hs 
   lt_of_lt_of_le h (hd.le_csSup hs ha)
 
 /-- The supremum of a singleton is the element of the singleton -/
-@[to_dual (attr := simp)]
+@[to_dual]
 theorem csSup_singleton (a : α) : sSup {a} = a :=
   sSup_singleton
 
@@ -173,3 +173,4 @@ protected theorem DirectedOn.csInf_le_csSup (hdb : DirectedOn (· ≥ ·) s)
   isGLB_le_isLUB (hdb.isGLB_csInf ne hb) (hda.isLUB_csSup ne ha) ne
 
 end ConditionallyCompletePartialOrder
+#lint
