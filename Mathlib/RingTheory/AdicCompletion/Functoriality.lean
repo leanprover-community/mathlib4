@@ -48,8 +48,12 @@ def reduceModIdeal :
         refine Submodule.smul_induction_on hx (fun r hr x _ ↦ ?_) (fun x y hx hy ↦ ?_)
         · simp [Submodule.smul_mem_smul hr Submodule.mem_top]
         · simp [Submodule.add_mem _ hx hy])
-  map_add' f g := LinearMap.ext fun _ ↦ by simp
-  map_smul' r f := LinearMap.ext fun _ ↦ by simp
+  map_add' f g := LinearMap.ext fun x ↦ by
+    rcases Submodule.Quotient.mk_surjective _ x with ⟨x, rfl⟩
+    simp
+  map_smul' r f := LinearMap.ext fun x ↦ by
+    rcases Submodule.Quotient.mk_surjective _ x with ⟨x, rfl⟩
+    simp
 
 @[simp]
 theorem reduceModIdeal_apply (f : M →ₗ[R] N) (x : M) :
@@ -106,14 +110,19 @@ end AdicCauchySequence
 def map : (M →ₗ[R] N) →ₗ[R] (AdicCompletion I M →ₗ[AdicCompletion I R] AdicCompletion I N) where
   toFun f :=
     { __ := AdicCompletion.lift I (fun n ↦ reduceModIdeal (I ^ n) f ∘ₗ AdicCompletion.eval I M n)
-      (fun {m n} hmn ↦ by rw [← comp_assoc, AdicCompletion.transitionMap_comp_reduceModIdeal,
-        comp_assoc, transitionMap_comp_eval])
+        (fun {m n} hmn ↦ by rw [← comp_assoc, AdicCompletion.transitionMap_comp_reduceModIdeal,
+          comp_assoc, transitionMap_comp_eval])
       map_smul' r x := by
         ext
         dsimp
         rw [val_smul_eq_evalₐ_smul, val_smul_eq_evalₐ_smul, map_smul] }
-  map_add' f g := by ext; simp
-  map_smul' c f := by ext; simp
+  map_add' f g := LinearMap.ext fun _ ↦ by
+    simp only [map_add, restrictScalars_add, add_comp, ← Pi.add_def, coe_mk, coe_toAddHom,
+      add_apply]
+    rw [← LinearMap.add_apply, ← lift_add]
+  map_smul' c f := LinearMap.ext fun _ ↦ by
+    simp only [map_smul, restrictScalars_smul, coe_mk, coe_toAddHom, RingHom.id_apply, smul_apply]
+    simp_rw [← LinearMap.smul_apply, ← lift_smul, Pi.smul_def, LinearMap.smul_comp]
 
 @[simp]
 theorem map_val_apply (f : M →ₗ[R] N) {n : ℕ} (x : AdicCompletion I M) :
