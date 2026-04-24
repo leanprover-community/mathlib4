@@ -169,11 +169,11 @@ theorem exists_eq_dirac [StandardBorelSpace α] [NeZero μ] : ∃ x₀, μ = Mea
       · exact h₀
       · simp_all
   obtain ⟨x₀, hx₀⟩ : ∃ x₀, ⋂ n, B n = {x₀} := by
+    simp_rw [eq_singleton_iff_unique_mem]
     have neBn : (⋂ n, B n).Nonempty := by
       by_contra! h
       rw [h] at hBn
       simp_all
-    simp_rw [eq_singleton_iff_unique_mem]
     refine ⟨neBn.some, neBn.some_mem, fun y hy ↦ ?_⟩
     refine hAsep y (by trivial) neBn.some (by trivial) fun n ↦ ?_
     have hsome := neBn.some_mem
@@ -193,13 +193,11 @@ theorem exists_eq_dirac [StandardBorelSpace α] [NeZero μ] : ∃ x₀, μ = Mea
   ext s hs
   by_cases h : x₀ ∈ s
   · simp [h]
-    have : {x₀} ⊆ s := by grind
-    have := measure_mono (μ := μ) this
+    have : μ {x₀} ≤ μ s := measure_mono (μ := μ) (by grind)
     rw [← hx₀, hBn] at this
     simp_all
   · simp [h]
-    have : s ⊆ {x₀}ᶜ := by grind
-    have := measure_mono (μ := μ) this
+    have : μ s ≤ μ {x₀}ᶜ := measure_mono (μ := μ) (by grind)
     rw [← hx₀, measure_compl mBn (by simp), MeasureTheory.measure_univ, hBn] at this
     simp_all
 
@@ -210,16 +208,6 @@ end MeasureTheory
 namespace ProbabilityTheory.Kernel
 
 open IsZeroOneMeasure
-
-lemma copy_comp_apply_prod (κ : Kernel α β) (a : α) {s t : Set β} (hs : MeasurableSet s)
-    (ht : MeasurableSet t) : (copy β ∘ₖ κ) a (s ×ˢ t) = κ a (s ∩ t) := by
-  rw [comp_apply' _ _ _ <| hs.prod ht]
-  simp_rw [copy_apply, Measure.dirac_apply' _ <| hs.prod ht, indicator_prod_one]
-  calc
-  _ = ∫⁻ b, (s ∩ t).indicator 1 b ∂κ a := by
-    congr with b
-    simp [inter_indicator_one]
-  _ = κ a (s ∩ t) := lintegral_indicator_one <| hs.inter ht
 
 lemma isDeterministic_iff_isZeroOneMeasure (κ : Kernel α β) [IsFiniteKernel κ] :
     IsDeterministic κ ↔ ∀ a, IsZeroOneMeasure (κ a) := by
