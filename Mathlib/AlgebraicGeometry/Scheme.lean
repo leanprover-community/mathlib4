@@ -265,14 +265,10 @@ lemma preimage_iSup {ι} (U : ι → Opens Y) : f ⁻¹ᵁ iSup U = ⨆ i, f ⁻
 lemma iSup_preimage_eq_top {ι} {U : ι → Opens Y} (hU : iSup U = ⊤) :
     ⨆ i, f ⁻¹ᵁ U i = ⊤ := f.preimage_iSup U ▸ hU ▸ rfl
 
-@[deprecated (since := "2025-10-07")] alias preimage_iSup_eq_top := iSup_preimage_eq_top
-
 @[gcongr]
 lemma preimage_mono {U U' : Y.Opens} (hUU' : U ≤ U') :
     f ⁻¹ᵁ U ≤ f ⁻¹ᵁ U' :=
   fun _ ha ↦ hUU' ha
-
-@[deprecated (since := "2025-10-07")] alias preimage_le_preimage_of_le := preimage_mono
 
 lemma id_preimage (U : X.Opens) : (𝟙 X) ⁻¹ᵁ U = U := rfl
 
@@ -281,8 +277,6 @@ lemma comp_preimage {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
     (f ≫ g) ⁻¹ᵁ U = f ⁻¹ᵁ g ⁻¹ᵁ U := rfl
 
 end Hom
-
-@[deprecated (since := "2025-10-07")] alias preimage_comp := Hom.comp_preimage
 
 /-- The forgetful functor from `Scheme` to `LocallyRingedSpace`. -/
 @[simps!]
@@ -468,30 +462,6 @@ lemma copyBase_eq {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g) :
 
 end Hom
 
-@[deprecated (since := "2025-10-07")] alias id.base := Hom.id_base
-@[deprecated (since := "2025-10-07")] alias id_app := Hom.id_app
-@[deprecated (since := "2025-10-07")] alias id_appTop := Hom.id_appTop
-@[deprecated (since := "2025-10-07")] alias comp_toLRSHom := Hom.comp_toLRSHom
-@[deprecated (since := "2025-10-07")] alias comp_toLRSHom_assoc := Hom.comp_toLRSHom_assoc
-@[deprecated (since := "2025-10-07")] alias comp_coeBase := Hom.comp_base
-@[deprecated (since := "2025-10-07")] alias comp_coeBase_assoc := Hom.comp_base_assoc
-@[deprecated (since := "2025-10-07")] alias comp_base := Hom.comp_base
-@[deprecated (since := "2025-10-07")] alias comp_base_assoc := Hom.comp_base_assoc
-@[deprecated (since := "2025-10-07")] alias comp_base_apply := Hom.comp_apply
-@[deprecated (since := "2025-10-07")] alias comp_app := Hom.comp_app
-@[deprecated (since := "2025-10-07")] alias comp_app_assoc := Hom.comp_app_assoc
-@[deprecated (since := "2025-10-07")] alias comp_appTop := Hom.comp_appTop
-@[deprecated (since := "2025-10-07")] alias comp_appTop_assoc := Hom.comp_appTop_assoc
-@[deprecated (since := "2025-10-07")] alias appLE_comp_appLE := Hom.appLE_comp_appLE
-@[deprecated (since := "2025-10-07")] alias comp_appLE := Hom.comp_appLE
-@[deprecated (since := "2025-10-07")] alias comp_appLE_assoc := Hom.comp_appLE_assoc
-@[deprecated (since := "2025-10-07")] alias congr_app := Hom.congr_app
-@[deprecated (since := "2025-10-07")] alias app_eq := Hom.app_eq
-@[deprecated (since := "2025-10-07")] alias eqToHom_c_app := Hom.eqToHom_app
-@[deprecated (since := "2025-10-07")] alias inv_app := Hom.inv_app
-@[deprecated (since := "2025-10-07")] alias inv_appTop := Hom.inv_appTop
-@[deprecated (since := "2025-10-07")] alias presheaf_map_eqToHom_op := eqToHom_map
-
 end Scheme
 
 /-- The spectrum of a commutative ring, as a scheme.
@@ -569,8 +539,6 @@ lemma Spec_sheaf (R : CommRingCat.{u}) : (Spec R).sheaf = Spec.structureSheaf R 
 lemma Spec_presheaf (R : CommRingCat.{u}) : (Spec R).presheaf = (Spec.structureSheaf R).1 := rfl
 lemma Spec.map_base : (Spec.map f).base = ofHom ⟨_, PrimeSpectrum.continuous_comap f.hom⟩ := rfl
 lemma Spec.map_apply (x : Spec S) : Spec.map f x = PrimeSpectrum.comap f.hom x := rfl
-
-@[deprecated (since := "2025-10-07")] alias Spec.map_base_apply := Spec.map_apply
 
 lemma Spec.map_app (U) :
     (Spec.map f).app U =
@@ -891,9 +859,6 @@ theorem Scheme.SpecMap_presheaf_map_eqToHom {X : Scheme} {U V : X.Opens} (h : U 
   refine (Scheme.Hom.congr_app this _).trans ?_
   simp [eqToHom_map]
 
-@[deprecated (since := "2025-10-07")]
-alias Scheme.Spec_map_presheaf_map_eqToHom := Scheme.SpecMap_presheaf_map_eqToHom
-
 lemma germ_eq_zero_of_pow_mul_eq_zero {X : Scheme.{u}} {U : Opens X} (x : U) {f s : Γ(X, U)}
     (hx : x.val ∈ X.basicOpen s) {n : ℕ} (hf : s ^ n * f = 0) : X.presheaf.germ U x x.2 f = 0 := by
   rw [Scheme.mem_basicOpen X s x x.2] at hx
@@ -907,34 +872,22 @@ lemma Scheme.hom_base_inv_base {X Y : Scheme.{u}} (e : X ≅ Y) :
     e.hom.base ≫ e.inv.base = 𝟙 _ :=
   LocallyRingedSpace.iso_hom_base_inv_base (Scheme.forgetToLocallyRingedSpace.mapIso e)
 
-@[deprecated (since := "2025-10-07")]
-alias Scheme.iso_hom_base_inv_base := Scheme.hom_base_inv_base
-
 @[simp]
 lemma Scheme.hom_inv_apply {X Y : Scheme.{u}} (e : X ≅ Y) (x : X) :
     e.inv (e.hom x) = x := by
   change (e.hom ≫ e.inv) x = 𝟙 X.toPresheafedSpace x
   simp
 
-@[deprecated (since := "2025-10-07")]
-alias Scheme.iso_hom_base_inv_base_apply := Scheme.hom_inv_apply
-
 @[reassoc (attr := simp)]
 lemma Scheme.inv_base_hom_base {X Y : Scheme.{u}} (e : X ≅ Y) :
     e.inv.base ≫ e.hom.base = 𝟙 _ :=
   LocallyRingedSpace.iso_inv_base_hom_base (Scheme.forgetToLocallyRingedSpace.mapIso e)
-
-@[deprecated (since := "2025-10-07")]
-alias Scheme.iso_inv_base_hom_base := Scheme.inv_base_hom_base
 
 @[simp]
 lemma Scheme.inv_hom_apply {X Y : Scheme.{u}} (e : X ≅ Y) (y : Y) :
     e.hom (e.inv y) = y := by
   change (e.inv ≫ e.hom) y = 𝟙 Y.toPresheafedSpace y
   simp
-
-@[deprecated (since := "2025-10-07")]
-alias Scheme.iso_inv_base_hom_base_apply := Scheme.inv_hom_apply
 
 theorem Spec_zeroLocus_eq_zeroLocus {R : CommRingCat} (s : Set R) :
     (Spec R).zeroLocus ((Scheme.ΓSpecIso R).inv '' s) = PrimeSpectrum.zeroLocus s := by
@@ -1040,32 +993,6 @@ noncomputable def arrowStalkMapIsoOfEq {x y : X}
     rw [stalkSpecializes_stalkMap]
 
 end Hom
-
-@[deprecated (since := "2025-10-07")] alias stalkMap_id := Hom.stalkMap_id
-@[deprecated (since := "2025-10-07")] alias stalkMap_comp := Hom.stalkMap_comp
-@[deprecated (since := "2025-10-07")]
-alias stalkSpecializes_stalkMap := Hom.stalkSpecializes_stalkMap
-@[deprecated (since := "2025-10-07")]
-alias stalkSpecializes_stalkMap_assoc := Hom.stalkSpecializes_stalkMap_assoc
-@[deprecated (since := "2025-10-07")]
-alias stalkSpecializes_stalkMap_apply := Hom.stalkSpecializes_stalkMap_apply
-@[deprecated (since := "2025-10-07")] alias stalkMap_congr := Hom.stalkMap_congr
-@[deprecated (since := "2025-10-07")] alias stalkMap_congr_assoc := Hom.stalkMap_congr_assoc
-@[deprecated (since := "2025-10-07")] alias stalkMap_congr_hom := Hom.stalkMap_congr_hom
-@[deprecated (since := "2025-10-07")] alias stalkMap_congr_hom_assoc := Hom.stalkMap_congr_hom_assoc
-@[deprecated (since := "2025-10-07")] alias stalkMap_congr_point := Hom.stalkMap_congr_point
-@[deprecated (since := "2025-10-07")]
-alias stalkMap_congr_point_assoc := Hom.stalkMap_congr_point_assoc
-@[deprecated (since := "2025-10-07")] alias stalkMap_hom_inv := Hom.stalkMap_hom_inv
-@[deprecated (since := "2025-10-07")] alias stalkMap_hom_inv_assoc := Hom.stalkMap_hom_inv_assoc
-@[deprecated (since := "2025-10-07")] alias stalkMap_hom_inv_apply := Hom.stalkMap_hom_inv_apply
-@[deprecated (since := "2025-10-07")] alias stalkMap_inv_hom := Hom.stalkMap_inv_hom
-@[deprecated (since := "2025-10-07")] alias stalkMap_inv_hom_assoc := Hom.stalkMap_inv_hom_assoc
-@[deprecated (since := "2025-10-07")] alias stalkMap_inv_hom_apply := Hom.stalkMap_inv_hom_apply
-@[deprecated (since := "2025-10-07")] alias stalkMap_germ := Hom.germ_stalkMap
-@[deprecated (since := "2025-10-07")] alias stalkMap_germ_assoc := Hom.germ_stalkMap_assoc
-@[deprecated (since := "2025-10-07")] alias stalkMap_germ_apply := Hom.germ_stalkMap_apply
-@[deprecated (since := "2025-10-07")] alias arrowStalkMapIsoOfEq := Hom.arrowStalkMapIsoOfEq
 
 end Scheme
 

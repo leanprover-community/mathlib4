@@ -111,7 +111,7 @@ theorem descPochhammer_eval_div_factorial_le_sum_choose
       ≤ ∑ i ∈ t, w i * (p i).choose n := by
   simp_rw [Nat.cast_choose_eq_descPochhammer_div,
     mul_div, ← Finset.sum_div, descPochhammer_eval_eq_descFactorial]
-  apply div_le_div_of_nonneg_right _ (Nat.cast_nonneg n.factorial)
+  apply div_le_div_of_nonneg_right _ (by positivity)
   exact descPochhammer_eval_le_sum_descFactorial hn p w h₀ h₁ h_avg
 
 end DescPochhammer
