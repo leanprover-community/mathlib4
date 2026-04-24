@@ -41,7 +41,7 @@ open CategoryTheory Topology
 variable {ι : Type t} (X : ι → Type u) [∀ i, TopologicalSpace (X i)]
 
 /-- The property of objects of `TopCat` which is satisfied by `X`-generated spaces. -/
-def TopCat.generatedBy : ObjectProperty TopCat.{v} :=
+abbrev TopCat.generatedBy : ObjectProperty TopCat.{v} :=
   fun Y ↦ IsGeneratedBy X Y
 
 lemma TopCat.generatedBy_def (Y : TopCat.{v}) :
