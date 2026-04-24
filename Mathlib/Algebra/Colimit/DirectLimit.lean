@@ -83,7 +83,7 @@ variable [∀ i j h, OneHomClass (T h) (G i) (G j)]
 theorem lift_one (g : ∀ i, H i) (h) :
     DirectLimit.lift f (g ·) h (1 : DirectLimit G f) = (1 : C) := by
   let ⟨i⟩ := ‹Nonempty ι›
-  rw [one_def , lift_def, map_one (g i)]
+  rw [one_def, lift_def, map_one (g i)]
 
 end ZeroOne
 
@@ -513,7 +513,8 @@ instance [Semiring R] [∀ i, AddCommMonoid (G i)] [∀ i, Module R (G i)]
 end Action
 
 section DivisionSemiring
-variable [∀ i, DivisionSemiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)]
+variable [∀ i, DivisionSemiring (G i)] [DivisionSemiring C]
+variable [∀ i j h, RingHomClass (T h) (G i) (G j)] [∀ i, RingHomClass (H i) (G i) C]
 
 instance : DivisionSemiring (DirectLimit G f) where
   __ : GroupWithZero _ := inferInstance
@@ -528,6 +529,12 @@ instance : DivisionSemiring (DirectLimit G f) where
 theorem nnratCast_def (q : ℚ≥0) (i) : (q : DirectLimit G f) = ⟦⟨i, q⟩⟧ :=
   map₀_def _ _ (fun _ _ _ ↦ map_nnratCast _ _) _
 
+@[simp]
+theorem lift_nnratCast (g : ∀ i, H i) (h) (q : ℚ≥0) :
+    DirectLimit.lift f (g ·) h (q : DirectLimit G f) = (q : C) := by
+  let ⟨i⟩ := ‹Nonempty ι›
+  rw [nnratCast_def, lift_def, map_nnratCast (g i)]
+
 end DivisionSemiring
 
 instance [∀ i, Semifield (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
@@ -536,7 +543,8 @@ instance [∀ i, Semifield (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
   mul_comm := mul_comm
 
 section DivisionRing
-variable [∀ i, DivisionRing (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)]
+variable [∀ i, DivisionRing (G i)] [DivisionRing C]
+variable [∀ i j h, RingHomClass (T h) (G i) (G j)] [∀ i, RingHomClass (H i) (G i) C]
 
 instance : DivisionRing (DirectLimit G f) where
   __ : DivisionSemiring _ := inferInstance
@@ -550,6 +558,12 @@ instance : DivisionRing (DirectLimit G f) where
 
 theorem ratCast_def (q : ℚ) (i) : (q : DirectLimit G f) = ⟦⟨i, q⟩⟧ :=
   map₀_def _ _ (fun _ _ _ ↦ map_ratCast _ _) _
+
+@[simp]
+theorem lift_ratCast (g : ∀ i, H i) (h) (q : ℚ) :
+    DirectLimit.lift f (g ·) h (q : DirectLimit G f) = (q : C) := by
+  let ⟨i⟩ := ‹Nonempty ι›
+  rw [ratCast_def, lift_def, map_ratCast (g i)]
 
 end DivisionRing
 
