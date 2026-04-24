@@ -302,6 +302,16 @@ instance restrictScalars_isEquivalence_of_ringEquiv {R S} [Ring R] [Ring S] (e :
     (ModuleCat.restrictScalars e.toRingHom).IsEquivalence :=
   (restrictScalarsEquivalenceOfRingEquiv e).isEquivalence_functor
 
+attribute [local instance] RingHomInvPair.of_ringEquiv in
+/-- Given semi linear equiv `M ≃ M'`, the categorical isomorphism `M ≅ ↑R M'` -/
+noncomputable def isoRestrictScalars {R S} [Ring R] [Ring S] {M' : ModuleCat.{v} S}
+    {M : ModuleCat.{v} R} (e : R ≃+* S) (e' : M ≃ₛₗ[RingHomClass.toRingHom e] M') :
+    M ≅ ((ModuleCat.restrictScalars (RingHomClass.toRingHom e)).obj M') :=
+  let e : M ≃ₗ[R] ((ModuleCat.restrictScalars (RingHomClass.toRingHom e)).obj M') := {
+    __ := e'
+    map_smul' r m := by simp }
+  e.toModuleIso
+
 instance {R S} [Ring R] [Ring S] (f : R →+* S) : (restrictScalars f).Additive where
 
 instance restrictScalarsEquivalenceOfRingEquiv_additive {R S} [Ring R] [Ring S] (e : R ≃+* S) :

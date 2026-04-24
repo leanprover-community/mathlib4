@@ -51,11 +51,6 @@ section
 
 variable {M N : ModuleCat.{v} R} {M' N' : ModuleCat.{v'} R}
 
-/-- If two modules are linear equivalent then their `ULift` are isomorphic in `ModuleCat`. -/
-def ModuleCat.uliftFunctorObjIso (e1 : M ≃ₗ[R] M') :
-    (uliftFunctor.{v'} R).obj M ≅ (uliftFunctor.{v} R).obj M' :=
-  ((ULift.moduleEquiv.trans e1).trans ULift.moduleEquiv.symm).toModuleIso
-
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for the connection of `ModuleCat.extUliftLinearEquiv`. -/
 noncomputable def ModuleCat.extUliftFunctorObjIso
@@ -117,15 +112,6 @@ noncomputable def extRestrictScalarsSemiLinearEquiv [Small.{v} R] [Small.{v} R']
   LinearEquiv.ofBijective (ModuleCat.extRestrictScalarsSemiLinearMap e M N n)
     (Functor.mapExt_bijective_of_preservesProjectiveObjects
     (ModuleCat.restrictScalars.{v} (RingHomClass.toRingHom e)) M N n)
-
-/-- Given semi linear equiv `M ≃ M'`, the categorical isomorphism `M ≅ ↑R M'` -/
-noncomputable def isoRestrictScalars {M' : ModuleCat.{v} R'} {M : ModuleCat.{v} R}
-    (e' : M ≃ₛₗ[RingHomClass.toRingHom e] M') :
-    M ≅ ((ModuleCat.restrictScalars (RingHomClass.toRingHom e)).obj M') :=
-  let e : M ≃ₗ[R] ((ModuleCat.restrictScalars (RingHomClass.toRingHom e)).obj M') := {
-    __ := e'
-    map_smul' r m := by simp }
-  e.toModuleIso
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given semi linear equivalence `M ≃ M'` and `N ≃ N'` with respect to `R ≃+* R'`

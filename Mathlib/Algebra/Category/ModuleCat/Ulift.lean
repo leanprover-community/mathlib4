@@ -95,6 +95,17 @@ instance [Small.{v} R] : (uliftFunctor.{v', v} R).PreservesInjectiveObjects wher
   injective_obj {M} inj := (Module.injective_iff_injective_object R _).mp
     (Module.ulift_injective_of_injective R ((Module.injective_iff_injective_object R M).mpr inj))
 
+variable {R}
+
+/-- If two modules are linear equivalent then their `ULift` are isomorphic in `ModuleCat`. -/
+def uliftFunctorObjIso {M : ModuleCat.{v} R} {M' : ModuleCat.{v'} R} (e1 : M ≃ₗ[R] M') :
+    (uliftFunctor.{v'} R).obj M ≅ (uliftFunctor.{v} R).obj M' :=
+  ((ULift.moduleEquiv.trans e1).trans ULift.moduleEquiv.symm).toModuleIso
+
+lemma uliftFunctorObjIso_hom {M : ModuleCat.{v} R} {M' : ModuleCat.{v'} R} (e1 : M ≃ₗ[R] M') :
+    (uliftFunctorObjIso e1).toLinearEquiv  =
+    (ULift.moduleEquiv.trans e1).trans ULift.moduleEquiv.symm := rfl
+
 end Ring
 
 instance [CommRing R] : (uliftFunctor.{v', v} R).Linear R where
