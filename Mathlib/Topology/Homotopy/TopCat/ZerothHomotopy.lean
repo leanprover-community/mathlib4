@@ -68,6 +68,7 @@ lemma δ_zero_toSSetObj₁Equiv.symm (f : I ⟶ X) :
 /-- Given two points `x` and `y` of `X : TopCat`, this is the bijection between
 edges in the simplicial set `toSSet.obj X` connecting the vertices corresponding
 to `x` and `y`, and paths from `x` to `y`. -/
+@[simps]
 noncomputable def toSSetObjEdgeEquiv {x y : X} :
     SSet.Edge (toSSetObj₀Equiv.symm x) (toSSetObj₀Equiv.symm y) ≃ X.Path x y where
   toFun e := { hom := toSSetObj₁Equiv e.edge }
