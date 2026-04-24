@@ -333,46 +333,39 @@ theorem TreeDecomp.exists_proper_adhesion [Nonempty V] [DecidableEq V] (t : G.Tr
   by_cases! h : ∀ x y : t.W, t.𝓧 x = t.𝓧 y
   · /- Because of h and t.vertexCover, every bag must contain V.univ -/
     left
-    have h_univ : ∀ x : t.W, ∀ v : V, v ∈ t.𝓧 x := fun x v => by
+    obtain w₀ := t.isTree.connected.nonempty.some
+    have h_univ : ∀ v : V, v ∈ t.𝓧 w₀ := fun v => by
       obtain ⟨w, hw⟩ := t.vertexCover v
-      exact (h x w).symm ▸ hw
+      exact (h w₀ w).symm ▸ hw
     rcases finite_or_infinite V with hV | hV
     · replace hV := Fintype.ofFinite V
       rw [Nat.card_eq_fintype_card]
-      obtain w₀ := t.isTree.connected.nonempty.some
       have hcard : #(t.𝓧 w₀) = Fintype.card V := by
-        rw [Finset.eq_univ_of_forall (h_univ w₀), Finset.card_univ]
+        rw [Finset.eq_univ_of_forall h_univ, Finset.card_univ]
       have hle : Fintype.card V ≤ t.width + 1 := hcard ▸ t.card_bag_le_width hw w₀
       have hge : t.width ≤ Fintype.card V - 1 := t.width_le_card
       have hpos : 1 ≤ Fintype.card V := Fintype.card_pos
       omega
     /- Absurd because each bag is a finset. -/
-    · obtain w₀ := t.isTree.connected.nonempty.some
-      obtain ⟨v, hv⟩ := Infinite.exists_notMem_finset (t.𝓧 w₀)
-      exact absurd (h_univ w₀ v) hv
+    · obtain ⟨v, hv⟩ := Infinite.exists_notMem_finset (t.𝓧 w₀)
+      exact absurd (h_univ v) hv
   · right
     obtain ⟨x, y, hxy⟩ := h
-    have ⟨p, hp⟩ := IsTree.existsUnique_path t.isTree x y
-    /- Induction on path, use hxy as a tool for contradiction. -/
-    induction p with
-    | nil => exact absurd rfl hxy
-    | @cons u v w h_adj p ih =>
-      by_cases! huv : t.𝓧 u = t.𝓧 v
-      · rw [huv] at hxy
-        exact ih hxy ⟨hp.1.of_cons, fun z hz ↦
-          congrArg Subtype.val (t.isTree.isAcyclic.path_unique ⟨z, hz⟩ ⟨p, hp.1.of_cons⟩)⟩
-      · refine ⟨u, v, h_adj, ?_⟩
-        rw [adhesion]
-        have hbu := t.card_bag_le_width hw u
-        have hbv := t.card_bag_le_width hw v
-        by_cases h_sub : t.𝓧 u ⊆ t.𝓧 v
-        · rw [Finset.inter_eq_left.mpr h_sub]
-          have := Finset.card_lt_card (h_sub.ssubset_of_ne huv)
-          omega
-        · obtain ⟨z, hzu, hzv⟩ := Finset.not_subset.mp h_sub
-          have := Finset.card_lt_card (Finset.ssubset_iff_of_subset
-            Finset.inter_subset_left |>.mpr ⟨z, hzu, fun h => hzv (Finset.mem_inter.mp h).2⟩)
-          omega
+    obtain ⟨p⟩ := t.isTree.connected x y
+    obtain ⟨d, _, hfst, hsnd⟩ := p.exists_boundary_dart {w | t.𝓧 w = t.𝓧 x} rfl hxy.symm
+    have huv : t.𝓧 d.fst ≠ t.𝓧 d.snd := fun heq => hsnd (heq.symm.trans hfst)
+    refine ⟨d.fst, d.snd, d.adj, ?_⟩
+    rw [adhesion]
+    have hbu := t.card_bag_le_width hw d.fst
+    have hbv := t.card_bag_le_width hw d.snd
+    by_cases h_sub : t.𝓧 d.fst ⊆ t.𝓧 d.snd
+    · rw [Finset.inter_eq_left.mpr h_sub]
+      have := Finset.card_lt_card (h_sub.ssubset_of_ne huv)
+      omega
+    · obtain ⟨z, hzu, hzv⟩ := Finset.not_subset.mp h_sub
+      have := Finset.card_lt_card (Finset.ssubset_iff_of_subset
+        Finset.inter_subset_left |>.mpr ⟨z, hzu, fun h => hzv (Finset.mem_inter.mp h).2⟩)
+      omega
 
 
 end Adhesion
