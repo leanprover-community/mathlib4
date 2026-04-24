@@ -1,6 +1,5 @@
-
 /-
-Copyright (c) 2025 Floris van Doorn and Hannah Scholz. All rights reserved.
+Copyright (c) 2026 Floris van Doorn and Hannah Scholz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Hannah Scholz
 -/
@@ -165,7 +164,6 @@ instance RelCWComplex.Subcomplex.finite_subcomplex_of_finite [T2Space X] [RelCWC
 
 section Lattice
 
-@[simps -isSimp]
 instance RelCWComplex.Subcomplex.instMax [RelCWComplex C D] : Max (Subcomplex C) where
   max E F := {
     carrier := E ∪ F
@@ -173,54 +171,56 @@ instance RelCWComplex.Subcomplex.instMax [RelCWComplex C D] : Max (Subcomplex C)
     closed' := (closed E).union (closed F)
     union' :=  by
       simp [mem_union, iUnion_or, iUnion_union_distrib, ← union, ← union_assoc _ D, union_comm,
-        union_assoc]
-  }
+        union_assoc]}
 
-@[simps -isSimp]
+lemma RelCWComplex.Subcomplex.coe_sup [RelCWComplex C D] (E F : Subcomplex C) :
+    (((E ⊔ F) : Subcomplex C) : Set X) = ↑E ∪ ↑F :=
+  rfl
+
+lemma RelCWComplex.Subcomplex.sup_I [RelCWComplex C D] (E F : Subcomplex C) (n : ℕ) :
+    (E ⊔ F).I n = E.I n ∪ F.I n :=
+  rfl
+
 instance RelCWComplex.Subcomplex.instMin [RelCWComplex C D] : Min (Subcomplex C) where
   min E F := {
     carrier := E ∩ F
     I n := E.I n ∩ F.I n
     closed' := (closed E).inter (closed F)
     union' := by
-      simp only [iUnion_coe_set, mem_inter_iff, iUnion_and, ← union]
-      rw [inter_union_distrib_left, union_inter_cancel_left, union_inter_distrib_left,
-        ← union_assoc, union_self, ← union_inter_distrib_left]
+      simp_rw [← Subcomplex.union, ← union_inter_distrib_left, iUnion_coe_set]
       congrm D ∪ ?_
       calc
-        ⋃ n, ⋃ i ∈ E.I n, ⋃ (_ : i ∈ F.I n), openCell n i
+        ⋃ n, ⋃ i ∈ (E.I n ∩ F.I n), openCell n i
         _ = ⋃ (x ∈ {x : Σ n, cell C n | x.2 ∈ E.I x.1} ∩ {x : Σ n, cell C n | x.2 ∈ F.I x.1}),
             openCell x.1 x.2 := by
-          simp [iUnion_sigma, iUnion_and]
+          simp [iUnion_sigma]
         _ = (⋃ n, ⋃ i ∈ E.I n, openCell n i) ∩ ⋃ n, ⋃ i ∈ F.I n, openCell n i := by
           rw [biUnion_inter_of_pairwise_disjoint
             (fun ⟨n, j⟩ ⟨m, i⟩ h ↦ disjoint_openCell_of_ne h)]
-          simp [iUnion_sigma]
-  }
+          simp [iUnion_sigma]}
 
-instance RelCWComplex.Subcomplex.instLattice [RelCWComplex C D] : Lattice (Subcomplex C) :=
-  Lattice.mk''
-    (fun E F ↦ by simp_rw [eq_iff, coe_max, union_comm])
-    (fun E F G ↦ by simp_rw [eq_iff, coe_max, union_assoc])
-    (fun E F ↦ by simp_rw [eq_iff, coe_min, inter_comm])
-    (fun E F G ↦ by simp_rw [eq_iff, coe_min, inter_assoc])
-    (fun E F ↦ by
-      simp_rw [eq_iff, coe_max, coe_min, union_eq_self_of_subset_right inter_subset_left])
-    (fun E F ↦ by
-      simp_rw [eq_iff, coe_min, coe_max, inter_eq_self_of_subset_left subset_union_left])
-    (by
-      intro E F
-      rw [← SetLike.coe_subset_coe, eq_iff, coe_max]
-      exact union_eq_right.symm)
+lemma RelCWComplex.Subcomplex.coe_inf [RelCWComplex C D] (E F : Subcomplex C) :
+    (((E ⊓ F) : Subcomplex C) : Set X) = ↑E ∩ ↑F :=
+  rfl
 
-#defeq_abuse in
+lemma RelCWComplex.Subcomplex.inf_I [RelCWComplex C D] (E F : Subcomplex C) (n : ℕ) :
+    (E ⊓ F).I n = E.I n ∩ F.I n :=
+  rfl
+
+instance RelCWComplex.Subcomplex.instLattice [RelCWComplex C D] : Lattice (Subcomplex C) where
+  sup E F := E ⊔ F
+  inf E F := E ⊓ F
+  le_sup_left E F := by simp [← SetLike.coe_subset_coe, coe_sup]
+  le_sup_right E F := by simp [← SetLike.coe_subset_coe, coe_sup]
+  sup_le E F G hE hF := by simp_all [← SetLike.coe_subset_coe, coe_sup]
+  inf_le_left E F := by simp [← SetLike.coe_subset_coe, coe_inf]
+  inf_le_right E F := by simp [← SetLike.coe_subset_coe, coe_inf]
+  le_inf E F G hE hF := by simp_all [← SetLike.coe_subset_coe, coe_inf]
+
 instance RelCWComplex.Subcomplex.instDistribLattice [RelCWComplex C D] :
-    DistribLattice (Subcomplex C) :=
-  {(instLattice : Lattice (Subcomplex C)) with
-    le_sup_inf E F G := by
-      simp only [← SetLike.coe_subset_coe, coe_max, coe_min]
-      rw [← union_inter_distrib_left]
-    }
+    DistribLattice (Subcomplex C) where
+  le_sup_inf E F G := by
+    simp [← SetLike.coe_subset_coe, coe_sup, coe_inf, union_inter_distrib_left]
 
 @[simps -isSimp]
 instance RelCWComplex.Subcomplex.instTop [T2Space X] [RelCWComplex C D] : Top (Subcomplex C) where
@@ -254,51 +254,31 @@ instance RelCWComplex.Subcomplex.instSupSet [T2Space X] [RelCWComplex C D] :
       apply subset_union_of_subset_right
       simp_rw [mem_iUnion] at hi
       obtain ⟨E, hE, hEj⟩ := hi
-      apply subset_iUnion_of_subset E
-      apply subset_iUnion_of_subset hE
-      rw [← E.union_closedCell (C := C)]
-      apply subset_union_of_subset_right
-      exact subset_iUnion_of_subset n (subset_iUnion
-        (fun (j : ↑(E.I n)) ↦ closedCell (C := C) n ↑j) ⟨i, hEj⟩))
+      exact subset_iUnion₂_of_subset E hE <| E.closedCell_subset_of_mem hEj)
     (by
-      simp_rw [← Subcomplex.union]
-      rw [← iUnion_subtype (p := fun E ↦ E ∈ S)
-        (s := fun E ↦ D ∪ ⋃ n, ⋃ (j : E.1.I n), openCell n j.1)]
       by_cases h : Nonempty S
-      · rw [← union_iUnion, ← union_assoc, union_self, iUnion_comm]
-        congrm D ∪ ?_
-        apply iUnion_congr fun n ↦ ?_
-        simp_rw [iUnion_subtype, mem_iUnion, iUnion_exists]
-        rw [iUnion_comm]
-        apply iUnion_congr fun E ↦ ?_
-        rw [iUnion_comm]
+      · simp_rw [← Subcomplex.union, biUnion_eq_iUnion, union_iUnion, ← union_assoc,
+          union_self, ← union_iUnion, iUnion_subtype, biUnion_iUnion, iUnion_comm (ι := ℕ)]
       · simp_all)
 
-lemma RelCWComplex.Subcomplex.iSup_carrier [T2Space X] [RelCWComplex C D]
+lemma RelCWComplex.Subcomplex.coe_iSup [T2Space X] [RelCWComplex C D]
     {J : Type*} (f : J → Subcomplex C) :
     ((⨆ (j : J), f j) : Subcomplex C) = D ∪ ⋃ j, f j := by
   simp [iSup, coe_sSup]
 
 @[simp]
-lemma RelCWComplex.Subcomplex.iSup_coe_eq_of_nonempty [T2Space X] [RelCWComplex C D]
+lemma RelCWComplex.Subcomplex.coe_iSup_eq_of_nonempty [T2Space X] [RelCWComplex C D]
     {J : Type*} [Nonempty J] (f : J → Subcomplex C) :
     (((⨆ (j : J), f j) : Subcomplex C) : Set X) = ⋃ j, f j := by
-  simp only [iSup_carrier, union_eq_right]
+  simp only [coe_iSup, union_eq_right]
   apply subset_iUnion_of_subset (Classical.choice (α := J) inferInstance)
   exact base_subset_complex
-
-@[simp]
-lemma RelCWComplex.Subcomplex.iSup_coe_eq_of_empty [T2Space X] [RelCWComplex C D]
-    {J : Type*} [IsEmpty J] (f : J → Subcomplex C) :
-    ⨆ (j : J), f j = ⊥ := by
-  ext x
-  simp [← SetLike.mem_coe, iSup_carrier, coe_bot]
 
 @[simp]
 lemma CWComplex.Subcomplex.coe_iSup [T2Space X] [CWComplex C]
     {J : Type*} (f : J → Subcomplex C) :
     (((⨆ (j : J), f j) : Subcomplex C) : Set X) = ⋃ j, f j := by
-  simp [RelCWComplex.Subcomplex.iSup_carrier]
+  simp [RelCWComplex.Subcomplex.coe_iSup]
 
 @[simp]
 lemma RelCWComplex.Subcomplex.iSup_I [T2Space X] [RelCWComplex C D]
@@ -436,54 +416,48 @@ lemma RelCWComplex.Subcomplex.finite_iInf_of_exists_finite
   let _ := finiteType_iInf_of_exists_finiteType (f := f) j
   finite_of_finiteDimensional_finiteType _
 
+instance RelCWComplex.Subcomplex.instCompleteLattice [T2Space X] [RelCWComplex C D] :
+    CompleteLattice (Subcomplex C) where
+  isLUB_sSup S := by
+    rw [isLUB_iff_le_iff]
+    intro E
+    constructor
+    · intro hES F hF
+      exact (subset_union_of_subset_right (subset_biUnion_of_mem hF) _).trans hES
+    · intro h
+      simpa [← SetLike.coe_subset_coe, coe_sSup, base_subset_complex]
+  isGLB_sInf S := by
+    rw [isGLB_iff_le_iff]
+    intro E
+    constructor
+    · intro hES F hF
+      exact hES.trans (inter_subset_right.trans (biInter_subset_of_mem hF))
+    · intro h
+      simpa [← SetLike.coe_subset_coe, subset_complex, coe_sInf]
+  le_top E := by simp [← SetLike.coe_subset_coe, subset_complex, coe_top]
+  bot_le E := by simp [← SetLike.coe_subset_coe, base_subset_complex]
+
 /-- An auxiliary definition to provide a `CompletelyDistribLattice` instance on subcomplexes. -/
 protected def RelCWComplex.Subcomplex.CompletelyDistribLattice.MinimalAxioms [T2Space X]
-    [RelCWComplex C D] : CompletelyDistribLattice.MinimalAxioms (Subcomplex C) :=
-  { __ := (inferInstance : DistribLattice (Subcomplex C))
-    __ := (inferInstance : Top (Subcomplex C))
-    __ := (inferInstance : Bot (Subcomplex C))
-    __ := (inferInstance : SupSet (Subcomplex C))
-    __ := (inferInstance : InfSet (Subcomplex C))
-    le_sSup S E hES := by
-      simp only [← SetLike.coe_subset_coe, coe_sSup]
-      apply subset_union_of_subset_right
-      exact subset_biUnion_of_mem hES
-    sSup_le S E hE := by simp_all [← SetLike.coe_subset_coe, base_subset_complex, coe_sSup]
-    sInf_le S E hES := by
-      simp only [← SetLike.coe_subset_coe, coe_sInf]
-      apply inter_subset_right.trans
-      exact biInter_subset_of_mem hES
-    le_sInf SDiff E hE := by simp_all [← SetLike.coe_subset_coe, subset_complex, coe_sInf]
-    le_top E := by simp [← SetLike.coe_subset_coe, subset_complex, coe_top]
-    bot_le E := by simp [← SetLike.coe_subset_coe, base_subset_complex]
-    iInf_iSup_eq {ι} f E := by
-      simp_rw [eq_iff, iSup, coe_sSup, iInf, coe_sInf]
-      by_cases h : Nonempty ι
-      · simp only [mem_range, iInter_exists, iInter_iInter_eq', coe_sSup, iUnion_exists,
-          iUnion_iUnion_eq', inter_iInter, inter_union_distrib_left,
-          inter_eq_right.2 (base_subset_complex (C := C)), inter_iUnion, coe_sInf]
-        by_cases h' : ∀ a, Nonempty (f a)
-        · simp only [union_iUnion, union_iInter]
-          ext x
-          simp only [mem_iUnion, mem_iInter]
-          exact ⟨fun hE ↦ ⟨(fun i ↦ (hE i).choose), fun i ↦ (hE i).choose_spec⟩,
-            fun ⟨g, hg⟩ i ↦ ⟨g i, hg i ⟩⟩
-        · simp_all only [not_forall, not_nonempty_iff, isEmpty_pi, iUnion_of_empty, union_empty]
-          refine subset_antisymm ?_ (subset_iInter (fun ?_ ↦ subset_union_left))
-          obtain ⟨a, ha⟩ := h'
-          apply iInter_subset_of_subset a
-          simp
-      · simp_all only [not_nonempty_iff, mem_range, IsEmpty.exists_iff, iInter_of_empty,
-        iInter_univ, inter_univ, iUnion_exists, iUnion_iUnion_eq', coe_sInf]
-        ext x
-        simp only [mem_union, mem_iUnion, exists_const, iff_or_self]
-        exact fun h ↦ base_subset_complex h
-    }
+    [RelCWComplex C D] : CompletelyDistribLattice.MinimalAxioms (Subcomplex C) where
+  iInf_iSup_eq {ι} f E := by
+    by_cases h : Nonempty ι
+    · by_cases h' : ∀ a, Nonempty (f a)
+      · have h'' := Classical.nonempty_pi.mpr h'
+        simp [eq_iff, ← iInf_eq_iInter, ← iSup_eq_iUnion, iInf_iSup_eq]
+      · push Not at h'
+        have h'' := isEmpty_pi.mpr h'
+        rcases h' with ⟨i, hi⟩
+        rw [iSup_of_empty, eq_bot_iff]
+        exact iInf_le_of_le i <| by rw [iSup_of_empty]
+    · rw [not_nonempty_iff] at h
+      simp
 
 instance RelCWComplex.Subcomplex.instCompletelyDistribLattice [T2Space X]
-    [RelCWComplex C D] : CompletelyDistribLattice (Subcomplex C) :=
-  CompletelyDistribLattice.ofMinimalAxioms
-    RelCWComplex.Subcomplex.CompletelyDistribLattice.MinimalAxioms
+    [RelCWComplex C D] : CompletelyDistribLattice (Subcomplex C) := fast_instance%
+  { RelCWComplex.Subcomplex.instCompleteLattice with
+    __ := CompletelyDistribLattice.ofMinimalAxioms
+      RelCWComplex.Subcomplex.CompletelyDistribLattice.MinimalAxioms }
 
 end Lattice
 
