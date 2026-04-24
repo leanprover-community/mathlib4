@@ -36,8 +36,8 @@ noncomputable def toSSetObj₁Equiv :
   (toSSetObjEquiv _ _).trans
     { toFun f := ofHom (f.comp (toContinuousMap TopCat.stdSimplexHomeomorphI.symm))
       invFun f := f.hom.comp TopCat.stdSimplexHomeomorphI
-      left_inv _ := by aesop
-      right_inv _ := by aesop }
+      left_inv _ := by simp
+      right_inv _ := by simp }
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
