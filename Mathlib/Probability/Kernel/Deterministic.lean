@@ -203,7 +203,7 @@ theorem eq_zero_or_dirac [StandardBorelSpace α] : μ = 0 ∨ ∃ x₀, μ = Mea
     · simp [h]
       have : s ⊆ {x₀}ᶜ := by grind
       have := measure_mono (μ := μ) this
-      rw [← hx₀, measure_compl mBn (by simp), measure_univ, hBn] at this
+      rw [← hx₀, measure_compl mBn (by simp), MeasureTheory.measure_univ, hBn] at this
       simp_all
 
 end IsZeroOneMeasure
