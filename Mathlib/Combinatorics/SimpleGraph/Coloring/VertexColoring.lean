@@ -169,15 +169,13 @@ theorem Colorable.of_isEmpty [IsEmpty V] (n : ℕ) : G.Colorable n := ⟨.ofIsEm
 @[deprecated (since := "2026-01-03")] alias coloringOfIsEmpty := Coloring.ofIsEmpty
 @[deprecated (since := "2026-01-03")] alias colorableOfIsEmpty := Colorable.of_isEmpty
 
-theorem isEmpty_of_colorable_zero (h : G.Colorable 0) : IsEmpty V := by
-  constructor
-  intro v
-  obtain ⟨i, hi⟩ := h.some v
-  exact Nat.not_lt_zero _ hi
-
 @[simp]
 lemma colorable_zero_iff : G.Colorable 0 ↔ IsEmpty V :=
-  ⟨isEmpty_of_colorable_zero, fun _ ↦ .of_isEmpty 0⟩
+  ⟨fun ⟨C⟩ ↦ Function.isEmpty C, fun _ ↦ .of_isEmpty 0⟩
+
+alias ⟨Colorable.isEmpty, _⟩ := colorable_zero_iff
+
+@[deprecated (since := "2026-04-24")] alias isEmpty_of_colorable_zero := Colorable.isEmpty
 
 @[simp]
 theorem colorable_one_iff : G.Colorable 1 ↔ G = ⊥ := by
