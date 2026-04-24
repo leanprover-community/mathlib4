@@ -236,8 +236,7 @@ noncomputable def desc (hf : horn.IsCompatible f) : (Λ[n + 1, i] : SSet) ⟶ X 
   hf.exists_desc.choose
 
 @[reassoc (attr := simp)]
-lemma ι_desc (hf : horn.IsCompatible f) (j : Fin (n + 2))
-    (hj : j ≠ i) :
+lemma ι_desc (hf : horn.IsCompatible f) (j : Fin (n + 2)) (hj : j ≠ i) :
     horn.ι i j hj ≫ hf.desc = f j hj :=
   hf.exists_desc.choose_spec j hj
 
