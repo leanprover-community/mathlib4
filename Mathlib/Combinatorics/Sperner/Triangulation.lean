@@ -3,9 +3,10 @@ Copyright (c) 2026 RJ Walters. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: RJ Walters
 -/
+module
 
-import Mathlib.Combinatorics.Sperner.Basic
-import Mathlib.Data.Finset.Sort
+public import Mathlib.Combinatorics.Sperner.Basic
+public import Mathlib.Data.Finset.Sort
 
 /-!
 # SimplicialComplex to CellComplex Bridge for Sperner's Lemma
@@ -57,6 +58,8 @@ interval example with fully proved axioms.
 
 Sperner, simplicial complex, triangulation, cell complex, bridge
 -/
+
+@[expose] public section
 
 open Finset
 
@@ -365,7 +368,7 @@ in `t`'s sorted vertex list of the unique vertex in `t \ f`.
 Returns the position of the "opposite" vertex. -/
 noncomputable def AbstractSimplicialData.findOppositeIdx
     (t : Finset V) (ht : t ∈ D.topSimplices)
-    (f : Finset V) (_hf : f ⊆ t) (hfc : f.card = n) :
+    (f : Finset V) (hf : f ⊆ t) (hfc : f.card = n) :
     Fin (n + 1) :=
   -- There exists k such that vertexEnum t ht k is not in f.
   -- Since t has n+1 vertices and f has n with f ⊆ t, at least one
@@ -373,7 +376,7 @@ noncomputable def AbstractSimplicialData.findOppositeIdx
   have hex : ∃ k : Fin (n + 1), D.vertexEnum t ht k ∉ f := by
     by_contra hall
     push_neg at hall
-    -- Every vertex of t is in f, so t ⊆ f
+    -- Every vertex of t is in f, so t ⊆ f (contradicting |f| < |t|)
     have hsub : t ⊆ f := by
       intro v hv
       -- v is in t, so v appears somewhere in t.sort
@@ -391,9 +394,8 @@ noncomputable def AbstractSimplicialData.findOppositeIdx
         simp only [vertexEnum, List.get_eq_getElem]
         exact hidx_eq
       rwa [heq] at hmem
-    have := Finset.card_le_card hsub
-    rw [D.card_eq t ht, hfc] at this
-    omega
+    exact absurd (Finset.Subset.antisymm hsub hf |> congrArg Finset.card)
+      (by rw [D.card_eq t ht, hfc]; omega)
   hex.choose
 
 /-- The opposite vertex is not in the face. -/
@@ -821,17 +823,18 @@ Adjacency:
   So adj i 1 = some (i-1, 0) when 0 < i
 -/
 
+
 section Interval
 
 variable {m : ℕ}
 
 /-- Vertex map for the interval triangulation. -/
-private def ivtx (_ : 0 < m) (i : Fin m) (k : Fin 2) : ℕ :=
+def ivtx (i : Fin m) (k : Fin 2) : ℕ :=
   if k.val = 0 then i.val else i.val + 1
 
 /-- Adjacency for the interval triangulation. Defined as an
 opaque `if/dite` chain. -/
-private def iadj (m : ℕ) (i : Fin m)
+def iadj (m : ℕ) (i : Fin m)
     (k : Fin 2) : Option (Fin m × Fin 2) :=
   if hk : k.val = 0 then
     if h : i.val + 1 < m then
@@ -845,7 +848,7 @@ private def iadj (m : ℕ) (i : Fin m)
       none
 
 /-- Extract data from iadj = some. -/
-private lemma iadj_cases {s s' : Fin m}
+lemma iadj_cases {s s' : Fin m}
     {k k' : Fin 2}
     (hadj : iadj m s k = some (s', k')) :
     (k.val = 0 ∧ s'.val = s.val + 1 ∧ k'.val = 1 ∧
@@ -879,7 +882,7 @@ private lemma iadj_cases {s s' : Fin m}
         h⟩
     · rw [dif_neg h] at hadj; exact nomatch hadj
 
-private lemma iadj_symm' {s s' : Fin m}
+lemma iadj_symm' {s s' : Fin m}
     {k k' : Fin 2}
     (hadj : iadj m s k = some (s', k')) :
     iadj m s' k' = some (s, k) := by
@@ -906,7 +909,7 @@ private lemma iadj_symm' {s s' : Fin m}
     simp only [Option.some.injEq, Prod.mk.injEq]
     exact ⟨Fin.ext (by simp; omega), Fin.ext (by simp; omega)⟩
 
-private lemma iadj_ne' {s s' : Fin m}
+lemma iadj_ne' {s s' : Fin m}
     {k k' : Fin 2}
     (hadj : iadj m s k = some (s', k')) :
     s ≠ s' := by
@@ -914,11 +917,11 @@ private lemma iadj_ne' {s s' : Fin m}
   · intro heq; have := congr_arg Fin.val heq; omega
   · intro heq; have := congr_arg Fin.val heq; omega
 
-private lemma iadj_vertex' {hm : 0 < m} {s s' : Fin m}
+lemma iadj_vertex' {s s' : Fin m}
     {k k' : Fin 2}
     (hadj : iadj m s k = some (s', k')) :
-    (univ.erase k).image (ivtx hm s) =
-    (univ.erase k').image (ivtx hm s') := by
+    (univ.erase k).image (ivtx s) =
+    (univ.erase k').image (ivtx s') := by
   obtain (⟨hk, hs', hk', _⟩ | ⟨hk, hs', hk', _⟩) :=
     iadj_cases hadj
   · -- k.val=0, s'=s+1, k'.val=1
@@ -971,12 +974,12 @@ private lemma iadj_vertex' {hm : 0 < m} {s s' : Fin m}
 
 /-- A subdivision of [0,m] into m unit intervals, as a
 `Triangulation Nat 1`. All axioms fully proved. -/
-def intervalTriangulation (m : ℕ) (hm : 0 < m) :
+def intervalTriangulation (m : ℕ) :
     Triangulation ℕ 1 where
   Cell := Fin m
   cellDecEq := inferInstance
   cellFintype := inferInstance
-  vertex := ivtx hm
+  vertex := ivtx
   vertex_injective := by
     intro i a b hab
     simp only [ivtx] at hab
@@ -995,16 +998,16 @@ interval triangulation and prove it via the abstract theorem. -/
 
 /-- 1-d Sperner's lemma for intervals: if the boundary doors
 are odd, a panchromatic cell exists. -/
-theorem interval_sperner (m : ℕ) (hm : 0 < m)
+theorem interval_sperner (m : ℕ)
     (c : ℕ → Fin 2)
     (hbdry : Odd (Finset.univ.filter
       (fun p : Fin m × Fin 2 =>
         CellComplex.IsDoor c
-          (intervalTriangulation m hm).toCellComplex p.1 p.2 ∧
-        (intervalTriangulation m hm).adj p.1 p.2 = none)).card) :
+          (intervalTriangulation m).toCellComplex p.1 p.2 ∧
+        (intervalTriangulation m).adj p.1 p.2 = none)).card) :
     ∃ s : Fin m,
       CellComplex.IsPanchromatic c
-        (intervalTriangulation m hm).toCellComplex s :=
-  Triangulation.sperner (intervalTriangulation m hm) c hbdry
+        (intervalTriangulation m).toCellComplex s :=
+  Triangulation.sperner (intervalTriangulation m) c hbdry
 
 end Triangulation

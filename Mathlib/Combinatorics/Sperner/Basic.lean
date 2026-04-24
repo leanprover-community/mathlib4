@@ -3,11 +3,12 @@ Copyright (c) 2026 RJ Walters. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: RJ Walters
 -/
+module
 
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Ring.Parity
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.ZMod.Basic
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Ring.Parity
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Data.ZMod.Basic
 
 /-!
 # Abstract Sperner's Lemma
@@ -51,6 +52,8 @@ total doors ≡ panchromatic cells (mod 2).
 
 Sperner, combinatorics, parity, triangulation, door-counting
 -/
+
+@[expose] public section
 
 open Finset
 
