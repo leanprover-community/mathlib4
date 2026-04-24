@@ -40,7 +40,6 @@ properties of eigenvalues and eigenvectors.
 
 @[expose] public section
 
-
 noncomputable section
 
 open Finset
