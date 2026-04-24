@@ -732,17 +732,15 @@ variable [CommRing R] [PartialOrder R] [IsStrictOrderedRing R]
 variable {R}
 
 theorem Wbtw.sameRay_vsub {x y z : P} (h : Wbtw R x y z) : SameRay R (y -ᵥ x) (z -ᵥ y) := by
-  have h' := sameRay_of_mem_segment ((mem_segment_iff_wbtw).2 (by simpa using h.vsub_const x))
-  simpa [sub_zero, vsub_sub_vsub_cancel_right] using h'
+  simpa using sameRay_of_mem_segment ((mem_segment_iff_wbtw).2 (h.vsub_const x))
 
 theorem Wbtw.sameRay_vsub_left {x y z : P} (h : Wbtw R x y z) : SameRay R (y -ᵥ x) (z -ᵥ x) := by
   rcases h with ⟨t, ⟨ht0, _⟩, rfl⟩
-  simpa [lineMap_apply] using SameRay.sameRay_nonneg_smul_left (z -ᵥ x) ht0
+  simp [SameRay.sameRay_nonneg_smul_left (z -ᵥ x) ht0]
 
 theorem Wbtw.sameRay_vsub_right {x y z : P} (h : Wbtw R x y z) : SameRay R (z -ᵥ x) (z -ᵥ y) := by
   rcases h with ⟨t, ⟨_, ht1⟩, rfl⟩
-  simpa [lineMap_apply, vsub_vadd_eq_vsub_sub, sub_smul] using
-    SameRay.sameRay_nonneg_smul_right (z -ᵥ x) (sub_nonneg.2 ht1)
+  simp [SameRay.sameRay_nonneg_smul_right (z -ᵥ x) (sub_nonneg.2 ht1)]
 
 end StrictOrderedCommRing
 
