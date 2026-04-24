@@ -208,7 +208,7 @@ variable {i : Fin (n + 2)} {f : ∀ (j : Fin (n + 2)) (_ : j ≠ i), (Δ[n] : SS
 
 open stdSimplex in
 /-- Auxiliary definition for `horn.IsCompatible.desc`. -/
-def multicofork (hf : horn.IsCompatible f) :
+private def multicofork (hf : horn.IsCompatible f) :
     Multicofork ((multicoequalizerDiagram i).multispanIndex.toLinearOrder.map
       (Subcomplex.toSSetFunctor)) :=
   Multicofork.ofπ _ X (fun ⟨j, hj⟩ ↦ (stdSimplex.faceSingletonComplIso j).inv ≫ f j hj) (by
