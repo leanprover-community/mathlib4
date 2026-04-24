@@ -460,6 +460,8 @@ end GaloisCorrespondence
 
 section Quotient
 
+section Semiring
+
 variable (A B C : Type*) [CommSemiring A] [Semiring C] [Algebra A C] [MulSemiringAction G C]
 variable (N : Subgroup G) [CommSemiring B] [Algebra B C]
 
@@ -547,15 +549,30 @@ noncomputable instance instMulSemiringActionQuotient [N.Normal] [MulSemiringActi
   smul_one g := Quotient.inductionOn' g fun g ↦ by simp
   smul_mul g x y := Quotient.inductionOn' g fun g ↦ by simp
 
-variable [Algebra A B] [IsScalarTower A B C]
+/-- Given `MulSemiringAction G B`, a compatible `MulAction (G ⧸ N) B`, `IsScalarTower G (G ⧸ N) B`,
+and `SMulCommClass G A C`, the actions of `A` and `G ⧸ N` on `B` commute. -/
+@[implicit_reducible]
+def smulCommClassQuotient [N.Normal] [Algebra A B] [IsScalarTower A B C] [SMulCommClass G A C]
+    [MulSemiringAction G B] [MulAction (G ⧸ N) B] [SMulDistribClass G B C]
+    [IsScalarTower G (G ⧸ N) B] :
+    SMulCommClass (G ⧸ N) A B :=
+  ⟨fun g k x ↦ Quotient.inductionOn' g fun g ↦
+    FaithfulSMul.algebraMap_injective B C (by
+      simp [algebraMap.smul, algebraMap.smul', smul_comm])⟩
+
+end Semiring
+
+section Domain
+
+variable (A B C : Type*) [CommRing A] [CommRing B] [CommRing C] [IsDomain C] [Algebra A B]
+    [Algebra A C] [Algebra B C] [FaithfulSMul A C] [FaithfulSMul B C] [IsScalarTower A B C]
 
 /-- If `G` is a Galois group for `C/A`, and the normal subgroup `N ≤ G` is a Galois group for
 `C/B`, then the quotient `G ⧸ N` is a Galois group for `B/A`. -/
-theorem quotient (A B C : Type*) [CommRing A] [CommRing B] [CommRing C] [IsDomain C] [Algebra A B]
-    [Algebra A C] [Algebra B C] [FaithfulSMul A C] [FaithfulSMul B C] [IsScalarTower A B C]
-    [Finite G] [N.Normal] [MulSemiringAction G C] [hG : IsGaloisGroup G A C]
-    [MulSemiringAction G B] [MulAction (G ⧸ N) B] [SMulCommClass (G ⧸ N) A B]
-    [SMulDistribClass G B C] [IsScalarTower G (G ⧸ N) B] [IsGaloisGroup N B C] :
+theorem quotient [Finite G] (N : Subgroup G) [N.Normal] [MulSemiringAction G C]
+    [hG : IsGaloisGroup G A C] [MulSemiringAction G B] [MulAction (G ⧸ N) B]
+    [SMulCommClass (G ⧸ N) A B] [SMulDistribClass G B C] [IsScalarTower G (G ⧸ N) B]
+    [IsGaloisGroup N B C] :
     IsGaloisGroup (G ⧸ N) A B where
   faithful.eq_of_smul_eq_smul := fun {g₁} {g₂} ↦ Quotient.inductionOn₂' g₁ g₂ fun g₁ g₂ h ↦ by
     have h' : ∀ g : G, (∀ x : B, g • x = x) → g ∈ N := by
@@ -575,6 +592,8 @@ theorem quotient (A B C : Type*) [CommRing A] [CommRing B] [CommRing C] [IsDomai
     have := (FaithfulSMul.algebraMap_injective B C).eq_iff.mpr <| h g
     rwa [coe_quotient_smul, algebraMap.smul'] at this
 
+end Domain
+
 noncomputable section IntermediateField
 
 variable (N : Subgroup G) [N.Normal] [IsGaloisGroup N F L]
@@ -592,6 +611,10 @@ instance : MulSemiringAction (G ⧸ N) F :=
   let := mulSemiringAction_of_smulDistribClass F L G
   instMulSemiringActionQuotient G F N
 
+instance [SMulCommClass G K L] [MulSemiringAction G F] [SMulDistribClass G F L]
+    [IsScalarTower G (G ⧸ N) F] : SMulCommClass (G ⧸ N) K F :=
+  smulCommClassQuotient G K F L N
+
 /-- If `G` is a finite Galois group for `L/K` and `N` is a normal subgroup of `G` that is a
 Galois group for `L/F`, then the quotient group `G ⧸ N` is a Galois group for `F/K`. -/
 instance instIsGaloisGroupQuotient [Finite G] [IsGaloisGroup G K L] :
@@ -603,7 +626,7 @@ instance instIsGaloisGroupQuotient [Finite G] [IsGaloisGroup G K L] :
   have : SMulCommClass (G ⧸ N) K F :=
     ⟨fun g k x ↦ Quotient.inductionOn' g fun g ↦
       FaithfulSMul.algebraMap_injective F L (by simp [algebraMap.smul, smul_comm])⟩
-  quotient G N K F L
+  quotient G K F L N
 
 variable (E : IntermediateField K L) (H : Subgroup G) [hE : IsGaloisGroup H E L]
 
