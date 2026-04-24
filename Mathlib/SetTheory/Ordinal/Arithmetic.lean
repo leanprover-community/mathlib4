@@ -1189,4 +1189,11 @@ theorem noMaxOrder {c} (h : ℵ₀ ≤ c) : NoMaxOrder c.ord.ToType := by
   rw [← isSuccPrelimit_type_lt_iff, type_toType]
   exact (isSuccLimit_ord h).isSuccPrelimit
 
+instance : Nonempty (ℵ₀ : Cardinal.{u}).ord.ToType := by simp
+
+/-- This can be made a local instance in order to get `⊥`
+in `Cardinal.aleph0.ord.ToType`. -/
+abbrev orderBotAleph0OrdToType : OrderBot Cardinal.aleph0.{u}.ord.ToType :=
+  WellFoundedLT.toOrderBot _
+
 end Cardinal
