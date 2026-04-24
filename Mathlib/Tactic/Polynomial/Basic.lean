@@ -98,7 +98,7 @@ ring can be inferred from the structure of the type.
 -/
 elab (name := polynomial) "polynomial":tactic =>
   withMainContext do
-    let g ← preprocess (← getMainGoal)
+    let g ← getMainGoal
     let some (α, _, _) := (← whnfR <|← instantiateMVars <|← g.getType).eq?
       | throwError "polynomial failed: not an equality"
     let mut β : Expr := default
@@ -106,6 +106,7 @@ elab (name := polynomial) "polynomial":tactic =>
       β ← Polynomial.inferBase α
     catch _ =>
       throwError "polynomial failed: not an equality of (mv)polynomials"
+    let g ← Algebra.preprocess (← preprocess g)
     AtomM.run .default (Algebra.proveEq (some (← getLevelQ' β)) g)
 
 end Mathlib.Tactic.Polynomial
