@@ -222,7 +222,7 @@ jobs:
 
       - name: validate lake-manifest.json inputRevs
         # Only enforce this on the main mathlib4 repository, not on nightly-testing
-        if: github.repository == 'leanprover-community/mathlib4'
+        if: github.repository == 'leanprover-community/mathlib4' && github.ref_name != 'nightly-testing'
         shell: bash
         run: |
           cd pr-branch
@@ -742,6 +742,12 @@ jobs:
 
       - name: clean up the import graph file
         run: rm import_graph.dot
+
+      - name: check all scripts build successfully
+        run: |
+          lake env lean scripts/create_deprecated_modules.lean
+          lake env lean scripts/autolabel.lean
+          lake exe check_title_labels --labels "t-algebra" "feat: dummy PR for testing"
 
       - name: build everything
         # make sure everything is available for test/import_all.lean

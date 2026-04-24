@@ -24,6 +24,7 @@ We add some local simp lemmas so we can unfold the definitions of the normalizat
 attribute [local simp] normalized hasNestedIf hasConstantIf hasRedundantIf disjoint vars
   List.disjoint
 
+set_option warning.simp.varHead false in
 attribute [local simp] apply_ite ite_eq_iff'
 
 variable {b : Bool} {f : ℕ → Bool} {i : ℕ} {t e : IfExpr}

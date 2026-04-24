@@ -224,4 +224,9 @@
  ["docBlame", "Mathlib.Tactic.Coherence.LiftObj.lift"],
  ["docBlame", "Mathlib.Tactic.GCongr.ForwardExt.eval"],
  ["docBlame", "Mathlib.Tactic.Monotonicity.mono.side"],
- ["docBlame", "Mathlib.Tactic.Sat.buildReify.mkPS"]]
+ ["docBlame", "Mathlib.Tactic.Sat.buildReify.mkPS"],
+ ["docBlame", "Lean.Meta.RefinedDiscrTree.instInhabitedPartialMatch.default"],
+ ["docBlame", "Mathlib.Linter.Flexible.instInhabitedStained.default"],
+ ["docBlame", "Mathlib.Linter.instInhabitedImportState.default"],
+ ["docBlame", "Mathlib.Linter.TextBased.instInhabitedStyleError.default"],
+ ["docBlame", "Mathlib.Linter.instInhabitedFormatError.default"]]

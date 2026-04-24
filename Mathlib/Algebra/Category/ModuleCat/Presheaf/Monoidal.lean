@@ -141,7 +141,7 @@ noncomputable instance monoidalCategory :
 
 open BraidedCategory
 
-instance symmetricCategory :
+noncomputable instance symmetricCategory :
     SymmetricCategory (PresheafOfModules.{u} (R ⋙ forget₂ _ _)) where
   braiding M₁ M₂ :=
     isoMk (fun X ↦ braiding (C := ModuleCat (R.obj X)) (M₁.obj X) (M₂.obj X))

@@ -109,11 +109,7 @@ theorem CancelMonoid.toRightCancelMonoid_injective {M : Type u} :
 theorem CancelCommMonoid.toCommMonoid_injective {M : Type u} :
     Function.Injective (@CancelCommMonoid.toCommMonoid M) := by
   rintro @⟨@⟨@⟨⟩⟩⟩ @⟨@⟨@⟨⟩⟩⟩ h
-  #adaptation_note /-- Before leanprover/lean4#13166, the last line was `grind`.
-  The new type-directed canonicalizer tries to synthesize `Monoid M` / `CommMonoid M` to normalize
-  sub-expressions, but fails because after `rintro` the instances exist only as destructured fields
-  in the local context, not as registered typeclass instances. -/
-  cases h; rfl
+  grind
 
 @[to_additive (attr := ext)]
 theorem CancelCommMonoid.ext {M : Type*} ⦃m₁ m₂ : CancelCommMonoid M⦄

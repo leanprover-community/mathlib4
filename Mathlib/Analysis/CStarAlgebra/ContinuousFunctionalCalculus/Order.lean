@@ -293,15 +293,12 @@ set_option backward.isDefEq.respectTransparency false in
 invertible. -/
 lemma CStarAlgebra.isUnit_of_le (a : A) {b : A} (hab : a ≤ b)
     (h : IsStrictlyPositive a := by cfc_tac) : IsUnit b := by
-  have h₀ := h.isUnit
-  have ha := h.nonneg
-  rw [← spectrum.zero_notMem_iff ℝ≥0] at h₀ ⊢
   nontriviality A
-  have hb := (show 0 ≤ a from ha).trans hab
-  rw [zero_notMem_iff, SpectrumRestricts.nnreal_lt_iff (.nnreal_of_nonneg ‹_›),
-    NNReal.coe_zero, ← CFC.exists_pos_algebraMap_le_iff (.of_nonneg ‹_›)] at h₀ ⊢
-  peel h₀ with r hr _
-  exact this.trans hab
+  rw [← spectrum.zero_notMem_iff ℝ]
+  obtain ⟨r, hr, hr_le⟩ : ∃ r > 0, (algebraMap ℝ A) r ≤ a :=
+    (exists_pos_algebraMap_le_iff h.isSelfAdjoint).2 fun x hx ↦ h.spectrum_pos hx
+  exact fun h0 ↦ not_le_of_gt hr <| (algebraMap_le_iff_le_spectrum <| .of_nonneg <|
+    h.nonneg.trans hab).1 (hr_le.trans hab) 0 h0
 
 lemma le_iff_norm_sqrt_mul_rpow (a b : A) (ha : 0 ≤ a := by cfc_tac)
     (hb : IsStrictlyPositive b := by cfc_tac) :
@@ -447,18 +444,8 @@ lemma norm_le_norm_of_nonneg_of_le {a b : A} (ha : 0 ≤ a := by cfc_tac) (hab :
       this a b (by simpa) (by rwa [Unitization.inr_le_iff a b])
   intro a b ha hab
   have hb : 0 ≤ b := ha.trans hab
-  -- these two `have`s are just for performance
-  have := IsSelfAdjoint.of_nonneg ha; have := IsSelfAdjoint.of_nonneg hb
-  have h₂ : cfc (id : ℝ → ℝ) a ≤ cfc (fun _ => ‖b‖) a := by
-    calc _ = a := by rw [cfc_id ℝ a]
-      _ ≤ cfc id b := (cfc_id ℝ b) ▸ hab
-      _ ≤ cfc (fun _ => ‖b‖) b := by
-          refine cfc_mono fun x hx => ?_
-          calc x = ‖x‖ := (Real.norm_of_nonneg (spectrum_nonneg_of_nonneg hb hx)).symm
-            _ ≤ ‖b‖ := spectrum.norm_le_norm_of_mem hx
-      _ = _ := by rw [cfc_const _ _, cfc_const _ _]
-  rw [cfc_le_iff id (fun _ => ‖b‖) a] at h₂
-  exact h₂ ‖a‖ <| norm_mem_spectrum_of_nonneg ha
+  exact (norm_le_iff_le_algebraMap a (norm_nonneg _) ha).2 <| hab.trans <|
+    IsSelfAdjoint.le_algebraMap_norm_self (.of_nonneg hb)
 
 theorem nnnorm_le_nnnorm_of_nonneg_of_le {a : A} {b : A} (ha : 0 ≤ a := by cfc_tac) (hab : a ≤ b) :
     ‖a‖₊ ≤ ‖b‖₊ :=

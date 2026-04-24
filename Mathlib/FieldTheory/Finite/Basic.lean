@@ -162,7 +162,7 @@ theorem sum_subgroup_units_eq_zero [Ring K] [NoZeroDivisors K]
   have hzero : (((a : Kˣ) : K) - 1) = 0 ∨ ∑ x : ↥G, ((x : Kˣ) : K) = 0 := by
     rw [← mul_eq_zero, sub_mul, ← h_sum_map, one_mul, sub_self]
   apply Or.resolve_left hzero
-  contrapose! ha
+  contrapose ha
   ext
   rwa [← sub_eq_zero]
 
@@ -236,6 +236,16 @@ theorem pow_card_pow (n : ℕ) (a : K) : a ^ q ^ n = a := by
   induction n with
   | zero => simp
   | succ n ih => simp [pow_succ, pow_mul, ih, pow_card]
+
+end
+
+section
+
+variable [Field K] [Fintype K]
+
+open Lean in
+instance instGrindPowIdentity : Grind.PowIdentity K (Fintype.card K) where
+  pow_eq := pow_card
 
 end
 

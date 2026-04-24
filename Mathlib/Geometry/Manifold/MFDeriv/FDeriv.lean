@@ -50,6 +50,7 @@ the simpNF linter complains about this being `@[simp]`. -/
 theorem writtenInExtChartAt_model_space : writtenInExtChartAt 𝓘(𝕜, E) 𝓘(𝕜, E') x f = f :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hasMFDerivWithinAt_iff_hasFDerivWithinAt {f'} :
     HasMFDerivWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E') f s x f' ↔ HasFDerivWithinAt f f' s x := by
   simpa only [HasMFDerivWithinAt, and_iff_right_iff_imp, mfld_simps] using

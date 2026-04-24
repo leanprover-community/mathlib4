@@ -212,13 +212,13 @@ theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
 termination_by WellFounded.wrap
   ((isWellFounded_iff m.syn fun x x_1 ↦ x < x_1).mp m.wf) (m.toSyn (m.degree f))
 decreasing_by
-· exact deg_reduce
-· apply degree_sub_LTerm_lt
-  intro hf0
-  apply hf'0
-  simp only [subLTerm, sub_eq_zero]
-  nth_rewrite 1 [eq_C_of_degree_eq_zero hf0, hf0]
-  simp
+  · exact deg_reduce
+  · apply degree_sub_LTerm_lt
+    intro hf0
+    apply hf'0
+    simp only [subLTerm, sub_eq_zero]
+    nth_rewrite 1 [eq_C_of_degree_eq_zero hf0, hf0]
+    simp
 
 /-!
 Module doc as workaround for a parser error that prevents using `set_option`

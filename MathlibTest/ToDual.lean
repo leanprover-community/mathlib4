@@ -32,8 +32,8 @@ structure Lattice (α : Type) extends SemilatticeInf α, SemilatticeSup α
 attribute [to_dual existing] Lattice.toSemilatticeInf
 
 -- we can reorder arguments of arguments in `SemilatticeInf.mk`
-@[to_dual]
-instance [Min α] (le_inf : ∀ a b c : α, a ≤ b → a ≤ c → a ≤ b ⊓ c) : SemilatticeInf α where
+@[to_dual, reducible]
+def le_inf_test [Min α] (le_inf : ∀ a b c : α, a ≤ b → a ≤ c → a ≤ b ⊓ c) : SemilatticeInf α where
   le_inf
 
 -- we can reorder arguments of arguments of arguments in `SemilatticeInf.casesOn`
@@ -382,3 +382,8 @@ info: eq_of_max_of_min {α : Type} [PartialOrder α] (a b : α) (hmin : ∀ (x :
 -/
 #guard_msgs in
 #check eq_of_max_of_min
+
+-- Test that the heuristic applies even when proofs are beta expanded
+@[to_dual (dont_translate := β) le_of_lt_and_le_of_lt']
+theorem le_of_lt_and_le_of_lt {β} [Preorder β] (a b : α) (c d : β) : (a < b → a ≤ b) ∧ (c < d → c ≤ d) :=
+  ⟨le_of_lt, (fun γ [Preorder γ] (c d : γ) ↦ @le_of_lt γ _ c d) β c d⟩

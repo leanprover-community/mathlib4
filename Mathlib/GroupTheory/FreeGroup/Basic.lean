@@ -323,7 +323,7 @@ theorem Step.sublist (H : Red.Step L₁ L₂) : L₂ <+ L₁ := by
 protected theorem sublist : Red L₁ L₂ → L₂ <+ L₁ :=
   @reflTransGen_of_isTrans_reflexive
     _ (fun a b => b <+ a) _ _ _
-    (fun l => List.Sublist.refl l)
+    ⟨List.Sublist.refl⟩
     ⟨fun _a _b _c hab hbc => List.Sublist.trans hbc hab⟩
     (fun _ _ => Red.Step.sublist)
 
@@ -331,14 +331,14 @@ protected theorem sublist : Red L₁ L₂ → L₂ <+ L₁ :=
 theorem length_le (h : Red L₁ L₂) : L₂.length ≤ L₁.length :=
   h.sublist.length_le
 
-
-@[to_additive]
+@[to_additive (attr := deprecated "Should not be needed." (since := "2026-04-10"))]
 theorem sizeof_of_step : ∀ {L₁ L₂ : List (α × Bool)},
     Step L₁ L₂ → sizeOf L₂ < sizeOf L₁
   | _, _, @Step.not _ L1 L2 x b => by
     induction L1 with
     | nil =>
-      dsimp
+      -- This was just `dsimp` prior to https://github.com/leanprover/lean4/pull/13320
+      dsimp [sizeOf, _sizeOf_1]
       lia
     | cons hd tl ih =>
       dsimp
@@ -367,8 +367,9 @@ theorem equivalence_join_red : Equivalence (Join (@Red α)) :=
     | _, _, Or.inr ⟨d, hbd, hcd⟩ => ⟨d, ReflGen.single hbd, ReflTransGen.single hcd⟩
 
 @[to_additive]
-theorem join_red_of_step (h : Red.Step L₁ L₂) : Join Red L₁ L₂ :=
-  join_of_single reflexive_reflTransGen h.to_red
+theorem join_red_of_step (h : Red.Step L₁ L₂) : Join Red L₁ L₂ := by
+  unfold Red
+  exact join_of_single h.to_red
 
 @[to_additive]
 theorem eqvGen_step_iff_join_red : EqvGen Red.Step L₁ L₂ ↔ Join Red L₁ L₂ :=
@@ -962,7 +963,7 @@ def mulEquivIntOfUnique [Unique α] : FreeGroup α ≃* Multiplicative ℤ where
   invFun := equivIntOfUnique.symm ∘ Multiplicative.toAdd
   left_inv _ := by simp
   right_inv _ := by simp
-  map_mul' _ _  := by simp [equivIntOfUnique]
+  map_mul' _ _ := by simp [equivIntOfUnique]
 
 /-- A free group over one generator is an instance of a cyclic group. -/
 instance [Unique α] : IsCyclic (FreeGroup α) :=

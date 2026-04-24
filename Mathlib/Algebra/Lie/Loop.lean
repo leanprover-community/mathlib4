@@ -155,7 +155,8 @@ def twoCocycleOfBilinear [CommRing A] [IsAddTorsionFree R] [Algebra A R]
         b • Φ (Finsupp.single (a + c) ⁅x, z⁆ (-b)) y =
         c • Φ (Finsupp.single (a + b) ⁅x, y⁆ (-c)) z +
         a • Φ (Finsupp.single (b + c) ⁅y, z⁆ (-a)) x by
-      simpa [sub_eq_zero, neg_add_eq_iff_eq_add, ← LinearEquiv.map_add, -LinearEquiv.map_add]
+      simpa [trivial_lie_zero, sub_eq_zero, neg_add_eq_iff_eq_add, ← LinearEquiv.map_add,
+        -LinearEquiv.map_add]
     by_cases h0 : a + b + c = 0
     · suffices b • Φ ⁅x, z⁆ y = c • Φ ⁅x, y⁆ z + a • Φ ⁅y, z⁆ x by
         simpa only [show a + b = -c by grind, show a + c = -b by grind, show b + c = -a by grind,
