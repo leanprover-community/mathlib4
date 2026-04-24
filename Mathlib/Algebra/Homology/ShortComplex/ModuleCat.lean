@@ -244,8 +244,7 @@ variable {M' N' L' : Type*} [AddCommGroup M'] [AddCommGroup N'] [AddCommGroup L'
 variable (eM : M ≃ₗ[R] M') (eN : N ≃ₗ[R] N') (eL : L ≃ₗ[R] L') (f : M' →ₗ[R] N') (g : N' →ₗ[R] L')
 
 /-- The short complex in `ModuleCat` obtained from conjugate by linear equivalences. -/
-@[simps! X₁ X₂ X₃ f g]
-def ModuleCat.shortComplexOfConj (eq0 : g ∘ₗ f = 0) :
+abbrev ModuleCat.shortComplexOfConj (eq0 : g ∘ₗ f = 0) :
     ShortComplex (ModuleCat.{v} R) :=
   ModuleCat.shortComplexOfCompEqZero ((eN.symm.comp f).comp eM.toLinearMap)
     (eL.symm.comp (g.comp eN.toLinearMap)) (by
@@ -261,7 +260,6 @@ lemma ModuleCat.shortComplexOfConj_exact (exact : Function.Exact f g) :
     (ModuleCat.shortComplexOfConj eM eN eL f g exact.linearMap_comp_eq_zero).Exact :=
   ModuleCat.shortComplex_exact _ (exact_conj_of_exact eM eN eL f g exact)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ModuleCat.shortComplexOfConj_shortExact (exact : Function.Exact f g)
     (inj : Function.Injective f) (surj : Function.Surjective g) :
     (ModuleCat.shortComplexOfConj eM eN eL f g exact.linearMap_comp_eq_zero).ShortExact := by
