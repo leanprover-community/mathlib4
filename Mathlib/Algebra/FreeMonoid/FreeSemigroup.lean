@@ -20,7 +20,7 @@ We provide some constructions relating the free semigroup and the free monoid on
 
 ## Main definitions
 * `FreeSemigroup.toFreeMonoid`: the natural embedding of the free semigroup into the free monoid.
-* `equivWithOneFreeSemigroup`: the free monoid is isomorphic to the free semigroup with a `1` added.
+* `FreeMonoid.equivWithOneFreeSemigroup`: the free monoid is isomorphic to the free semigroup with a `1` added.
 -/
 
 public section
@@ -83,9 +83,9 @@ The free monoid on `α` is isomorphic to the free semigroup on `α` with a `1` a
 -/
 @[expose, to_additive (attr := simps) /-- The free additive monoid on `α` is isomorphic to
 the free additive semigroup on `α` with a `0` added. -/]
-def MulEquiv.withOneFreeSemigroup : FreeMonoid α ≃* WithOne (FreeSemigroup α) where
+def FreeMonoid.equivWithOneFreeSemigroup : FreeMonoid α ≃* WithOne (FreeSemigroup α) where
   toFun := lift fun x ↦ ↑(FreeSemigroup.of x)
-  invFun := lift toFreeMonoid
+  invFun := WithOne.lift toFreeMonoid
   left_inv x := by induction x with simp [*]
   right_inv x := by
     induction x with
