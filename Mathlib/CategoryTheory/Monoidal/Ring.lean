@@ -121,12 +121,14 @@ abbrev Hom.commRing {R : C} {X : C} [CommRingObj R] : CommRing (X ⟶ R) where
 scoped[CategoryTheory.CommRingObj] attribute [instance] Hom.commRing
 
 /-- The property that a morphism between ring objects is a ring morphism. -/
-class IsRingHom {R₁ R₂ : C} [RingObj R₁] [RingObj R₂] (f : R₁ ⟶ R₂)
+class IsRingHom {R₁ R₂ : C} [AddMonObj R₁] [AddMonObj R₂] [MonObj R₁] [MonObj R₂] (f : R₁ ⟶ R₂)
   extends IsAddMonHom f, IsMonHom f
 
-instance IsRingHom.id (R : C) [RingObj R] : IsRingHom (𝟙 R) where
+instance IsRingHom.id (R : C) [AddMonObj R] [MonObj R] : IsRingHom (𝟙 R) where
 
-instance IsRingHom.comp {R₁ R₂ R₃ : C} [RingObj R₁] [RingObj R₂] [RingObj R₃]
+instance IsRingHom.comp {R₁ R₂ R₃ : C}
+    [AddMonObj R₁] [AddMonObj R₂] [AddMonObj R₃]
+    [MonObj R₁] [MonObj R₂] [MonObj R₃]
     (f : R₁ ⟶ R₂) (g : R₂ ⟶ R₃) [IsRingHom f] [IsRingHom g] :
     IsRingHom (f ≫ g) where
 
