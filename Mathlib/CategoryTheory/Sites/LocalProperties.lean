@@ -24,7 +24,7 @@ namespace CategoryTheory
 
 open Limits Opposite
 
-variable {C : Type*} [Category C] {K : GrothendieckTopology C} {A : Type*} [Category A]
+variable {C : Type*} [Category* C] {K : GrothendieckTopology C} {A : Type*} [Category* A]
 
 namespace Sheaf
 
