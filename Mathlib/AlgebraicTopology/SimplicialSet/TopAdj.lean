@@ -113,7 +113,14 @@ lemma toSSetObjEquiv_naturality_apply {X : TopCat.{u}} {n m : SimplexCategory} (
 lemma toSSetObjEquiv_δ_apply {X : TopCat.{u}} {n : ℕ}
     (x : toSSet.obj X _⦋n + 1⦌) (i : Fin (n + 2)) (z : stdSimplex ℝ (Fin (n + 1))) :
     dsimp% X.toSSetObjEquiv _ ((toSSet.obj X).δ i x) z =
-      X.toSSetObjEquiv _ x (stdSimplex.map (Fin.succAbove i) z) :=
+      X.toSSetObjEquiv _ x (stdSimplex.map i.succAbove z) :=
+  rfl
+
+@[simp]
+lemma toSSetObjEquiv_σ_apply {X : TopCat.{u}} {n : ℕ}
+    (x : toSSet.obj X _⦋n⦌) (i : Fin (n + 1)) (z : stdSimplex ℝ (Fin (n + 2))) :
+    dsimp% X.toSSetObjEquiv _ ((toSSet.obj X).σ i x) z =
+      X.toSSetObjEquiv _ x (stdSimplex.map i.predAbove z) :=
   rfl
 
 end TopCat
