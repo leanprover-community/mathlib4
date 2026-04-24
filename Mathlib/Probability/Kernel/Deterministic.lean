@@ -11,7 +11,7 @@ public import Mathlib.Probability.Kernel.Composition.Prod
 public import Mathlib.MeasureTheory.Constructions.Polish.Basic
 
 /-!
-# IsDeterministic
+# Class `IsDeterministic` of deterministic kernels
 
 This file defines the class `IsDeterministic` of deterministic kernels, and proves some
 properties about them.
