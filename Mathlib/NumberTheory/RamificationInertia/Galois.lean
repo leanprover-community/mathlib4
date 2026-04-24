@@ -249,7 +249,7 @@ theorem ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn :
     (primesOver p B).ncard * (ramificationIdxIn p B * inertiaDegIn p B) = Nat.card G := by
   let K := FractionRing A
   let L := FractionRing B
-  let _ := FractionRing.mulSemiringAction_of_isGaloisGroup G A B
+  let := IsFractionRing.mulSemiringAction G A B (FractionRing A) (FractionRing B)
   rw [← smul_eq_mul, ← IsDedekindDomain.coe_primesOverFinset hpb B, Set.ncard_coe_finset,
     ← Finset.sum_const]
   rw [(IsGaloisGroup.toFractionRing G A B).card_eq_finrank, ← sum_ramification_inertia B K L hpb]
@@ -276,9 +276,9 @@ include G GAC GBC in
 theorem ncard_primesOver_mul_ncard_primesOver (hp : p ≠ ⊥) :
     (p.primesOver B).ncard * (P.primesOver C).ncard = (p.primesOver C).ncard := by
   have hP : P ≠ ⊥ := ne_bot_of_liesOver_of_ne_bot hp P
-  let _ := FractionRing.mulSemiringAction_of_isGaloisGroup G A B
-  let _ := FractionRing.mulSemiringAction_of_isGaloisGroup GAC A C
-  let _ := FractionRing.mulSemiringAction_of_isGaloisGroup GBC B C
+  let := IsFractionRing.mulSemiringAction G A B (FractionRing A) (FractionRing B)
+  let := IsFractionRing.mulSemiringAction GAC A C (FractionRing A) (FractionRing C)
+  let := IsFractionRing.mulSemiringAction GBC B C (FractionRing B) (FractionRing C)
   have : p.ramificationIdxIn C * p.inertiaDegIn C ≠ 0 :=
     mul_ne_zero (ramificationIdxIn_ne_zero GAC hp) (inertiaDegIn_ne_zero GAC)
   rw [← Nat.mul_left_inj this, ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hp C GAC]
