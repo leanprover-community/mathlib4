@@ -324,16 +324,12 @@ protected theorem snoc {s₁ s₂ : CompositionSeries X} {x₁ x₂ : X} {hsat�
     rw [he_last]
     simpa [apply_last] using hlast
   · intro i
-    have hi : i.val < s₁.length := by simpa using i.isLt
-    let j : Fin s₁.length := ⟨i.val, hi⟩
-    have heq : i.castSucc = (j : Fin s₁.length).castSucc := by
-      apply Fin.ext; simp [j]
     change Iso ((snoc s₁ x₁ hsat₁).toFun i.castSucc.castSucc,
         (snoc s₁ x₁ hsat₁).toFun i.castSucc.succ)
       ((snoc s₂ x₂ hsat₂).toFun (e i.castSucc).castSucc,
         (snoc s₂ x₂ hsat₂).toFun (e i.castSucc).succ)
-    rw [heq, he_castSucc]
-    simpa [snoc_castSucc, ← Fin.castSucc_succ] using hequiv.choose_spec j
+    rw [he_castSucc]
+    simpa [snoc_castSucc, ← Fin.castSucc_succ] using hequiv.choose_spec i
 
 theorem length_eq {s₁ s₂ : CompositionSeries X} (h : Equivalent s₁ s₂) : s₁.length = s₂.length := by
   simpa using Fintype.card_congr h.choose
