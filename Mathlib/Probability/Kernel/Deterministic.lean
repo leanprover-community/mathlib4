@@ -224,7 +224,7 @@ lemma copy_comp_apply_prod (κ : Kernel α β) (a : α) {s t : Set β} (hs : Mea
     simp [inter_indicator_one]
   _ = κ a (s ∩ t) := lintegral_indicator_one <| hs.inter ht
 
-lemma is_deterministic_iff_zero_one (κ : Kernel α β) [IsFiniteKernel κ] :
+lemma isDeterministic_iff_isZeroOneMeasure (κ : Kernel α β) [IsFiniteKernel κ] :
     IsDeterministic κ ↔ ∀ a, IsZeroOneMeasure (κ a) := by
   constructor
   · intro h a
@@ -245,7 +245,7 @@ lemma is_deterministic_iff_zero_one (κ : Kernel α β) [IsFiniteKernel κ] :
     exact measure_inter_eq_prod hs ht
 
 instance (κ : Kernel α β) [IsFiniteKernel κ] [IsDeterministic κ] : ∀ a, IsZeroOneMeasure (κ a) :=
-  (is_deterministic_iff_zero_one κ).mp ‹_›
+  (isDeterministic_iff_isZeroOneMeasure κ).mp ‹_›
 
 /-- in a standard Borel space, a deterministic Markov kernel is a Dirac kernel of ome measurable
 function. -/
