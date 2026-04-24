@@ -1,4 +1,8 @@
-import Mathlib.Util.AliasIn
+module
+
+public import Mathlib.Util.AliasIn
+
+public section
 
 @[alias_in Baz] def Foo.Bar.baz : Nat := 1
 /-- info: Foo.Baz.baz : Nat -/
@@ -64,3 +68,11 @@ Look at this docstring!
 #guard_msgs in
 open Lean in
 run_cmd logInfo m!"{(← Lean.findDocString? (← getEnv) `Foo.Baz.baz5).get!}"
+
+end
+
+section
+
+/-- error: The `alias_in` attribute cannot be used for private declarations. -/
+#guard_msgs in
+@[alias_in Baz] def Foo.Bar.n := 2
