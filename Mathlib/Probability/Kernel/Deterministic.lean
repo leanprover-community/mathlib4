@@ -73,17 +73,11 @@ instance {f : α → β} (hf : Measurable f) : IsDeterministic (deterministic f 
 
 instance : IsDeterministic (Kernel.id (α := α)) := by unfold Kernel.id; infer_instance
 
-instance : IsDeterministic (copy α) := by
-  unfold copy
-  infer_instance
+instance : IsDeterministic (copy α) := by unfold copy; infer_instance
 
-instance : IsDeterministic (discard α) := by
-  unfold discard
-  infer_instance
+instance : IsDeterministic (discard α) := by unfold discard; infer_instance
 
-instance : IsDeterministic (swap α β) := by
-  unfold swap
-  infer_instance
+instance : IsDeterministic (swap α β) := by unfold swap; infer_instance
 
 end ProbabilityTheory.Kernel
 
