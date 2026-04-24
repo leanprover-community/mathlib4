@@ -66,7 +66,7 @@ theorem Ideal.iUnion_minimalPrimes :
     obtain ⟨p, hp, hyp⟩ : ∃ p ∈ I.minimalPrimes, y ∉ p := by
       simpa [← Ideal.sInf_minimalPrimes] using hy
     refine ⟨p, hp, ((Ideal.minimalPrimes_isPrime hp).mem_or_mem ?_).resolve_right hyp⟩
-    exact (Ideal.minimalPrimes_isPrime hp).radical_le_iff.mpr (Ideal.le_minimalPrimes hp) hx
+    exact (Ideal.minimalPrimes_isPrime hp).radical_le_iff.mpr (Ideal.le_of_mem_minimalPrimes hp) hx
 
 theorem Ideal.exists_mul_mem_of_mem_minimalPrimes
     {p : Ideal R} (hp : p ∈ I.minimalPrimes) {x : R} (hx : x ∈ p) :
@@ -98,7 +98,7 @@ lemma Ideal.disjoint_nonZeroDivisors_of_mem_minimalPrimes {p : Ideal R} (hp : p 
 theorem Ideal.exists_comap_eq_of_mem_minimalPrimes {I : Ideal S} (f : R →+* S) (p)
     (H : p ∈ (I.comap f).minimalPrimes) : ∃ p' : Ideal S, p'.IsPrime ∧ I ≤ p' ∧ p'.comap f = p :=
   have := Ideal.minimalPrimes_isPrime H
-  have ⟨p', hIp', hp', le⟩ := exists_ideal_comap_le_prime p I (Ideal.le_minimalPrimes H)
+  have ⟨p', hIp', hp', le⟩ := exists_ideal_comap_le_prime p I (Ideal.le_of_mem_minimalPrimes H)
   ⟨p', hp', hIp', le.antisymm (H.2 ⟨inferInstance, comap_mono hIp'⟩ le)⟩
 
 @[stacks 00FK] theorem Ideal.exists_comap_eq_of_mem_minimalPrimes_of_injective {f : R →+* S}
@@ -115,7 +115,7 @@ theorem Ideal.exists_minimalPrimes_comap_eq {I : Ideal S} (f : R →+* S) (p)
   refine ⟨q, hq, Eq.symm ?_⟩
   have := Ideal.minimalPrimes_isPrime hq
   have := (Ideal.comap_mono hq').trans_eq h₃
-  exact (H.2 ⟨inferInstance, Ideal.comap_mono (Ideal.le_minimalPrimes hq)⟩ this).antisymm this
+  exact (H.2 ⟨inferInstance, Ideal.comap_mono (Ideal.le_of_mem_minimalPrimes hq)⟩ this).antisymm this
 
 theorem Ideal.minimalPrimes_comap_subset (f : R →+* S) (J : Ideal S) :
     (J.comap f).minimalPrimes ⊆ Ideal.comap f '' J.minimalPrimes :=
@@ -130,7 +130,7 @@ variable {R S : Type*} [CommRing R] [CommRing S] {I J : Ideal R}
 theorem Ideal.minimalPrimes_comap_of_surjective {f : R →+* S} (hf : Function.Surjective f)
     {I J : Ideal S} (h : J ∈ I.minimalPrimes) : J.comap f ∈ (I.comap f).minimalPrimes := by
   have := Ideal.minimalPrimes_isPrime h
-  refine ⟨⟨inferInstance, Ideal.comap_mono (Ideal.le_minimalPrimes h)⟩, ?_⟩
+  refine ⟨⟨inferInstance, Ideal.comap_mono (Ideal.le_of_mem_minimalPrimes h)⟩, ?_⟩
   rintro K ⟨hK, e₁⟩ e₂
   have : RingHom.ker f ≤ K := (Ideal.comap_mono bot_le).trans e₁
   rw [← sup_eq_left.mpr this, RingHom.ker_eq_comap_bot, ← Ideal.comap_map_of_surjective f hf]
@@ -160,7 +160,7 @@ lemma Ideal.minimalPrimes_map_of_surjective {S : Type*} [CommRing S] {f : R →+
     Ideal.comap_map_of_surjective f hf, Set.image_congr, Set.image_id, RingHom.ker]
   intro x hx
   exact (Ideal.comap_map_of_surjective f hf _).trans
-    (sup_eq_left.mpr <| le_sup_right.trans (Ideal.le_minimalPrimes hx))
+    (sup_eq_left.mpr <| le_sup_right.trans (Ideal.le_of_mem_minimalPrimes hx))
 
 theorem Ideal.minimalPrimes_eq_comap :
     I.minimalPrimes = Ideal.comap (Ideal.Quotient.mk I) '' minimalPrimes (R ⧸ I) := by
@@ -179,7 +179,7 @@ theorem IsLocalization.minimalPrimes_map [IsLocalization S A] (J : Ideal R) :
   constructor
   · intro hp
     haveI := Ideal.minimalPrimes_isPrime hp
-    refine ⟨⟨Ideal.IsPrime.comap _, Ideal.map_le_iff_le_comap.mp (Ideal.le_minimalPrimes hp)⟩, ?_⟩
+    refine ⟨⟨Ideal.IsPrime.comap _, Ideal.map_le_iff_le_comap.mp (Ideal.le_of_mem_minimalPrimes hp)⟩, ?_⟩
     rintro I hI e
     have hI' : Disjoint (S : Set R) I := Set.disjoint_of_subset_right e
       ((IsLocalization.isPrime_iff_isPrime_disjoint S A _).mp (Ideal.minimalPrimes_isPrime hp)).2
@@ -188,7 +188,7 @@ theorem IsLocalization.minimalPrimes_map [IsLocalization S A] (J : Ideal R) :
     · exact IsLocalization.isPrime_of_isPrime_disjoint S A I hI.1 hI'
     · exact IsLocalization.comap_map_of_isPrime_disjoint S A hI.1 hI'
   · intro hp
-    refine ⟨⟨?_, Ideal.map_le_iff_le_comap.mpr (Ideal.le_minimalPrimes hp)⟩, ?_⟩
+    refine ⟨⟨?_, Ideal.map_le_iff_le_comap.mpr (Ideal.le_of_mem_minimalPrimes hp)⟩, ?_⟩
     · rw [IsLocalization.isPrime_iff_isPrime_disjoint S A, IsLocalization.disjoint_comap_iff S]
       refine ⟨Ideal.minimalPrimes_isPrime hp, ?_⟩
       rintro rfl
