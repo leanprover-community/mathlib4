@@ -90,18 +90,8 @@ theorem colimitLimitToLimitColimit_injective :
           ((limit.π ((curry.obj (swap K J ⋙ F)).obj kx) j) x) =
         (colimit.ι ((curry.obj F).obj j) ky)
           ((limit.π ((curry.obj (swap K J ⋙ F)).obj ky) j) y) := by
-      #adaptation_note /-- Proof repaired after leanprover/lean4#13492.
-      The body of this `have` was previously just
-      ```
-      simpa using ConcreteCategory.congr_arg (limit.π (curry.obj F ⋙ colim) j) h
-      ```
-      The replacement proof is a short-term fix, and we request that the authors/maintainers of
-      this file review the proof, and either approve it by removing this adaptation note, revise
-      the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
-      needs addressing. -/
-      have hj := ConcreteCategory.congr_arg (limit.π (curry.obj F ⋙ colim) j) h
-      simp only [ι_colimitLimitToLimitColimit_π_apply] at hj
-      exact hj
+      simpa only [ι_colimitLimitToLimitColimit_π_apply] using
+        ConcreteCategory.congr_arg (limit.π (curry.obj F ⋙ colim) j) h
     -- and they are equations in a filtered colimit,
     -- so for each `j` we have some place `k j` to the right of both `kx` and `ky`
     simp only [colimit_eq_iff] at h
@@ -213,17 +203,9 @@ theorem colimitLimitToLimitColimit_surjective :
       nth_rw 2 [← Bifunctor.diagonal']
       simp only [← curry_obj_obj_map, ← curry_obj_obj_obj, comp_apply, colimit.w_apply]
       rw [e, ← limit.w_apply _ f, ← e]
-      #adaptation_note /-- Proof repaired after leanprover/lean4#13492.
-      The tail of this `have` body (the `change` + `rw [ι_colimMap]` + `simp`)
-      was previously just `simp [-curry_obj_obj_obj]`.
-      The replacement proof is a short-term fix, and we request that the authors/maintainers of
-      this file review the proof, and either approve it by removing this adaptation note, revise
-      the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
-      needs addressing. -/
       change (ConcreteCategory.hom (colimit.ι ((curry.obj F).obj j) (k j) ≫
           colimMap ((curry.obj F).map f))) (y j) = _
-      rw [ι_colimMap]
-      simp [-curry_obj_obj_obj]
+      simp [ι_colimMap, -curry_obj_obj_obj]
     -- Because `K` is filtered, we can restate this as saying that
     -- for each such `f`, there is some place to the right of `k'`
     -- where these images of `y j` and `y j'` become equal.
