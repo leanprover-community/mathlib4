@@ -531,7 +531,7 @@ def leanModulesFromSpec (sp : SearchPath) (argₛ : String) :
       if !modules.isEmpty then
         return .ok modules
       else
-          return .error s!"Invalid argument: {argₛ}"
+        return .error s!"Invalid argument: {argₛ}"
 
 where
   /--
