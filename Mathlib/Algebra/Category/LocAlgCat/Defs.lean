@@ -55,7 +55,7 @@ structure LocAlgCat (Λ : Type u) (k : Type v) [CommRing Λ] [Field k] [Algebra 
   [baseAlgebra : Algebra Λ carrier]
   [residueAlgebra : Algebra carrier k]
   [scalarTower : IsScalarTower Λ carrier k]
-  surj : Surjective (algebraMap carrier k)
+  isSurjective : Surjective (algebraMap carrier k)
 
 namespace LocAlgCat
 
@@ -85,9 +85,9 @@ lemma residue_toRingHom : A.residue = algebraMap A k := rfl
 lemma residue_apply {a : A} : A.residue a = algebraMap A k a := rfl
 
 lemma ker_residue : RingHom.ker (residue A) = maximalIdeal A :=
-  eq_maximalIdeal (RingHom.ker_isMaximal_of_surjective _ A.surj)
+  eq_maximalIdeal (RingHom.ker_isMaximal_of_surjective _ A.isSurjective)
 
-lemma residue_surjective : Surjective (residue A) := A.surj
+lemma residue_surjective : Surjective (residue A) := A.isSurjective
 
 lemma residue_eq_zero_iff {x : A} : residue A x = 0 ↔ x ∈ maximalIdeal A := by
   rw [← RingHom.mem_ker, ker_residue]
@@ -217,7 +217,7 @@ instance isScalarTower_uliftResidueAlgebra : IsScalarTower Λ (ULift.{w'} A) k :
 variable (Λ k) in
 /-- Universe lift functor for `LocAlgCat`. -/
 def uliftFunctor : LocAlgCat.{w} Λ k ⥤ LocAlgCat.{max w w'} Λ k where
-  obj A := of Λ k (ULift.{w'} A) (fun r ↦ by simpa using A.surj r)
+  obj A := of Λ k (ULift.{w'} A) (fun r ↦ by simpa using A.isSurjective r)
   map {A B} f :=
     ofHom (ULift.algEquiv.symm.toAlgHom.comp <| f.toAlgHom.comp ULift.algEquiv.toAlgHom) (by
       have := f.isLocalHom_toAlgHom
