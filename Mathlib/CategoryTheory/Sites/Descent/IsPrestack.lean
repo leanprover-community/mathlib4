@@ -116,7 +116,6 @@ section
 
 variable (F) {S : C} (M N : F.obj (.mk (op S)))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `F` is a pseudofunctor from `Cᵒᵖ` to `Cat`, and `M` and `N` are objects in
 `F.obj (.mk (op S))`, this is the presheaf of morphisms from `M` to `N`: it sends
 an object `T : Over S` corresponding to a morphism `p : X ⟶ S` to the type

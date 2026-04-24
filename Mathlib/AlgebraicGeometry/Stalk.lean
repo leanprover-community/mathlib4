@@ -136,11 +136,6 @@ lemma SpecMap_stalkSpecializes_fromSpecStalk {x y : X} (h : x ⤳ y) :
     IsAffineOpen.fromSpecStalk, IsAffineOpen.fromSpecStalk, ← Category.assoc, ← Spec.map_comp,
     TopCat.Presheaf.germ_stalkSpecializes]
 
-@[deprecated (since := "2025-10-07")]
-alias Spec_map_stalkSpecializes_fromSpecStalk := SpecMap_stalkSpecializes_fromSpecStalk
-@[deprecated (since := "2025-10-07")]
-alias Spec_map_stalkSpecializes_fromSpecStalk_assoc := SpecMap_stalkSpecializes_fromSpecStalk_assoc
-
 instance {x y : X} (h : x ⤳ y) : (Spec.map (X.presheaf.stalkSpecializes h)).IsOver X where
 
 @[reassoc (attr := simp)]
@@ -155,11 +150,6 @@ lemma SpecMap_stalkMap_fromSpecStalk {x} :
     IsAffineOpen.fromSpecStalk, Spec.map_comp_assoc, ← X.presheaf.germ_res (homOfLE hVU) x hxV,
     Spec.map_comp_assoc, Category.assoc, ← Spec.map_comp_assoc (f.app _),
       Hom.app_eq_appLE, Hom.appLE_map, IsAffineOpen.SpecMap_appLE_fromSpec]
-
-@[deprecated (since := "2025-10-07")]
-alias Spec_map_stalkMap_fromSpecStalk := SpecMap_stalkMap_fromSpecStalk
-@[deprecated (since := "2025-10-07")]
-alias Spec_map_stalkMap_fromSpecStalk_assoc := SpecMap_stalkMap_fromSpecStalk_assoc
 
 instance [X.Over Y] {x} : Spec.map ((X ↘ Y).stalkMap x) |>.IsOver Y where
 
