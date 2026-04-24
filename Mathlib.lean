@@ -3499,6 +3499,8 @@ public import Mathlib.Combinatorics.Quiver.SingleObj
 public import Mathlib.Combinatorics.Quiver.Subquiver
 public import Mathlib.Combinatorics.Quiver.Symmetric
 public import Mathlib.Combinatorics.Schnirelmann
+public import Mathlib.Combinatorics.Sperner.Basic
+public import Mathlib.Combinatorics.Sperner.Triangulation
 public import Mathlib.Combinatorics.SetFamily.AhlswedeZhang
 public import Mathlib.Combinatorics.SetFamily.Compression.Down
 public import Mathlib.Combinatorics.SetFamily.Compression.UV
