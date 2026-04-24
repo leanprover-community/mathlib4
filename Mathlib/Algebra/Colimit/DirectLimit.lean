@@ -583,6 +583,7 @@ variable [∀ i j h, LinearMapClass (T h) R (G i) (G j)]
 variable (R ι G f) [Nonempty ι]
 
 /-- The canonical map from a component to the direct limit. -/
+@[simps]
 def of (i) : G i →ₗ[R] DirectLimit G f where
   toFun x := ⟦⟨i, x⟩⟧
   map_add' _ _ := (add_def ..).symm
@@ -590,7 +591,6 @@ def of (i) : G i →ₗ[R] DirectLimit G f where
 
 variable {R ι G f}
 
-@[simp]
 theorem of_f {i j hij x} : of R ι G f j (f i j hij x) = of R ι G f i x := .symm <| eq_of_le ..
 
 variable {P : Type*} [AddCommMonoid P] [Module R P]
@@ -599,7 +599,7 @@ variable (R ι G f) in
 /-- The universal property of the direct limit: maps from the components to another module
 that respect the directed system structure (i.e. make some diagram commute) give rise
 to a unique map out of the direct limit. -/
-@[simps -isSimp]
+@[simps]
 def lift (g : ∀ i, G i →ₗ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
     DirectLimit G f →ₗ[R] P where
   toFun := _root_.DirectLimit.lift _ (g · ·) fun i j h x ↦ (Hg i j h x).symm
@@ -608,7 +608,6 @@ def lift (g : ∀ i, G i →ₗ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g
 
 variable (g : ∀ i, G i →ₗ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 
-@[simp]
 theorem lift_of {i} (x) : lift R ι G f g Hg (of R ι G f i x) = g i x := rfl
 
 @[ext]
@@ -626,13 +625,14 @@ variable [Nonempty ι]
 
 variable (G f) in
 /-- The canonical map from a component to the direct limit. -/
+@[simps]
 nonrec def of (i) : G i →ₙ+* DirectLimit G f where
   toFun x := ⟦⟨i, x⟩⟧
   map_mul' _ _ := (mul_def ..).symm
   map_zero' := (zero_def i).symm
   map_add' _ _ := (add_def ..).symm
 
-@[simp] theorem of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x := .symm <| eq_of_le ..
+theorem of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x := by simp
 
 variable (P : Type*) [NonUnitalNonAssocSemiring P]
 variable (G f) in
@@ -640,6 +640,7 @@ variable (G f) in
 NonUnitalNonAsssocSemiRing that respect the directed system structure
 (i.e. make some diagram commute) give rise to a unique map out of the direct limit.
 -/
+@[simps]
 noncomputable def lift
     (g : ∀ i, (G i) →ₙ+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
     DirectLimit G f →ₙ+* P where
@@ -650,7 +651,7 @@ noncomputable def lift
 
 variable (g : ∀ i, G i →ₙ+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 
-@[simp] theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x := rfl
+theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x := rfl
 
 @[ext]
 theorem hom_ext {g₁ g₂ : DirectLimit G f →ₙ+* P} (h : ∀ i, g₁.comp (of G f i) = g₂.comp (of G f i)):
@@ -667,12 +668,13 @@ variable [∀ i, NonAssocSemiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G
 
 variable (G f) in
 /-- The canonical map from a component to the direct limit. -/
+@[simps]
 nonrec def of (i) : G i →+* DirectLimit G f where
   __ := NonUnitalRing.of G f i
   toFun x := ⟦⟨i, x⟩⟧
   map_one' := (one_def i).symm
 
-@[simp] theorem of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x := .symm <| eq_of_le ..
+theorem of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x := .symm <| eq_of_le ..
 
 variable (P : Type*) [NonAssocSemiring P]
 
@@ -681,6 +683,7 @@ variable (G f) in
 that respect the directed system structure (i.e. make some diagram commute) give rise
 to a unique map out of the direct limit.
 -/
+@[simps]
 def lift (g : ∀ i, G i →+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
     DirectLimit G f →+* P where
   __ := (NonUnitalRing.lift G f P (fun _ => (g _).toNonUnitalRingHom) Hg)
@@ -689,7 +692,7 @@ def lift (g : ∀ i, G i →+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x
 
 variable (g : ∀ i, G i →+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 
-@[simp] theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x := rfl
+theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x := rfl
 
 @[ext]
 theorem hom_ext {g₁ g₂ : DirectLimit G f →+* P} (h : ∀ i, g₁.comp (of G f i) = g₂.comp (of G f i)) :
@@ -708,12 +711,13 @@ variable [Nonempty ι]
 
 variable (G f) in
 /-- The canonical map from a component to the direct limit. -/
+@[simps]
 noncomputable def of (i) : G i →⋆ₙ+* DirectLimit G f where
   __ := NonUnitalRing.of G f i
   toFun x := ⟦⟨i, x⟩⟧
   map_star' _ := (star_def ..).symm
 
-@[simp] lemma of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x := .symm <| eq_of_le ..
+lemma of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x := .symm <| eq_of_le ..
 
 variable (P : Type*) [NonUnitalNonAssocSemiring P] [StarRing P]
 variable (G f) in
@@ -721,6 +725,7 @@ variable (G f) in
 that respect the directed system structure (i.e. make some diagram commute) give rise
 to a unique map out of the direct limit.
 -/
+@[simps]
 noncomputable def lift
     (g : ∀ i, (G i) →⋆ₙ+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
     DirectLimit G f →⋆ₙ+* P where
@@ -730,7 +735,7 @@ noncomputable def lift
 
 variable (g : ∀ i, G i →⋆ₙ+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 
-@[simp] theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x := rfl
+theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x := rfl
 
 @[ext]
 theorem hom_ext {g₁ g₂ : DirectLimit G f →⋆ₙ+* P}
