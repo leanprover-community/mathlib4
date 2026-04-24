@@ -32,7 +32,7 @@ positive semidefinite matrices.
 
 ## References
 * [Paulsen, Vern I. and Raghupathi, Mrinal,
-  *An introduction to the theory of reproducing kernel {H}ilbert spaces*][MR3526117]
+  *An introduction to the theory of reproducing kernel Hilbert spaces*][MR3526117]
 -/
 
 public noncomputable section
