@@ -738,11 +738,11 @@ theorem volume_measurePreserving_piCongrLeft (α : ι → Type*) (f : ι' ≃ ι
     MeasurePreserving (MeasurableEquiv.piCongrLeft α f) volume volume :=
   measurePreserving_piCongrLeft (fun _ ↦ volume) f
 
-lemma pi_map_piCongrLeft (e : ι ≃ ι') {β : ι' → Type*} [∀ i, MeasurableSpace (β i)]
+lemma Measure.pi_map_piCongrLeft (e : ι ≃ ι') {β : ι' → Type*} [∀ i, MeasurableSpace (β i)]
     (μ : (i : ι') → Measure (β i)) [∀ i, SigmaFinite (μ i)] :
     (Measure.pi fun i ↦ μ (e i)).map (MeasurableEquiv.piCongrLeft (fun i ↦ β i) e) =
       Measure.pi μ :=
-  (measurePreserving_piCongrLeft (α := fun i ↦ β i) (μ := μ) e).map_eq
+  (measurePreserving_piCongrLeft (α := fun i ↦ β i) μ e).map_eq
 
 theorem measurePreserving_arrowProdEquivProdArrow (α β γ : Type*) [MeasurableSpace α]
     [MeasurableSpace β] [Fintype γ] (μ : γ → Measure α) (ν : γ → Measure β) [∀ i, SigmaFinite (μ i)]

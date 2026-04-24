@@ -326,7 +326,7 @@ theorem Module.Basis.mk_eq_rank'' {ι : Type v} (v : Basis ι R M) : #ι = Modul
   apply le_antisymm
   · trans
     swap
-    · apply le_ciSup (Cardinal.bddAbove_range _)
+    · apply le_ciSup Cardinal.bddAbove_of_small
       exact
         ⟨Set.range v, by
           rw [LinearIndepOn]
@@ -477,6 +477,24 @@ module over itself. -/
 theorem finrank_self : finrank R R = 1 :=
   finrank_eq_of_rank_eq (by simp)
 
+variable {R} in
+theorem finrank_of_bijective_toSpanSingleton {x : M}
+    (h : Bijective (LinearMap.toSpanSingleton R M x)) : finrank R M = 1 := by
+  rw [← (LinearEquiv.ofBijective _ h).finrank_eq, finrank_self]
+
+variable {R} in
+theorem rank_of_bijective_toSpanSingleton {x : M}
+    (h : Bijective (LinearMap.toSpanSingleton R M x)) : Module.rank R M = 1 := by
+  rw [rank_eq_one_iff_finrank_eq_one, finrank_of_bijective_toSpanSingleton h]
+
+theorem finrank_of_bijective_algebraMap {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
+    [StrongRankCondition R] (h : Bijective (algebraMap R S)) : finrank R S = 1 := by
+  rw [← (AlgEquiv.ofBijective (Algebra.ofId R S) h).toLinearEquiv.finrank_eq, finrank_self]
+
+theorem rank_of_bijective_algebraMap {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
+    [StrongRankCondition R] (h : Bijective (algebraMap R S)) : Module.rank R S = 1 := by
+  rw [rank_eq_one_iff_finrank_eq_one, finrank_of_bijective_algebraMap h]
+
 /-- Given a basis of a ring over itself indexed by a type `ι`, then `ι` is `Unique`. -/
 @[implicit_reducible]
 noncomputable def _root_.Module.Basis.unique {ι : Type*} (b : Basis ι R R) : Unique ι := by
@@ -513,7 +531,7 @@ theorem finrank_eq_zero_iff_of_free [Module.Free R M] [Module.Finite R M] :
   simp [Module.finrank, this, Module.rank_zero_iff_of_free]
 
 @[simp]
-theorem finrank_eq_zero_of_subsingleton [Module.Free R M] [Module.Finite R M] [Subsingleton M] :
+theorem finrank_eq_zero_of_subsingleton [Module.Free R M] [Subsingleton M] :
     Module.finrank R M = 0 :=
   (finrank_eq_zero_iff_of_free R M).mpr inferInstance
 
@@ -535,7 +553,11 @@ variable {M'} [AddCommMonoid M'] [Module R M']
 
 theorem LinearMap.finrank_le_finrank_of_injective [Module.Finite R M'] {f : M →ₗ[R] M'}
     (hf : Function.Injective f) : finrank R M ≤ finrank R M' :=
-  finrank_le_finrank_of_rank_le_rank (LinearMap.lift_rank_le_of_injective _ hf) (rank_lt_aleph0 _ _)
+  finrank_le_finrank_of_rank_le_rank (lift_rank_le_of_injective _ hf) (rank_lt_aleph0 _ _)
+
+theorem LinearMap.finrank_le_finrank_of_surjective [Module.Finite R M] {f : M →ₗ[R] M'}
+    (hf : Function.Surjective f) : Module.finrank R M' ≤ Module.finrank R M :=
+  finrank_le_finrank_of_rank_le_rank (lift_rank_le_of_surjective _ hf) (rank_lt_aleph0 _ _)
 
 theorem LinearMap.finrank_range_le [Module.Finite R M] (f : M →ₗ[R] M') :
     finrank R (LinearMap.range f) ≤ finrank R M :=
