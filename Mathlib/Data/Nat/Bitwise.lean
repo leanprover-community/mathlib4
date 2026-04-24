@@ -364,8 +364,10 @@ theorem xor_range (n : ℕ) : (List.range (n + 1)).foldl (· ^^^ ·) 0 =
       refine xor_one_of_even <| even_iff.mpr ?_
       rw [add_mod, ← @mod_mod_of_dvd _ 4 n <| by simp, ← Fin.val_ofNat 4, h]
       rfl
-    | 2 => apply Nat.xor_self
-    | 3 => apply zero_xor
+    | 2 =>
+      apply Nat.xor_self
+    | 3 =>
+      apply zero_xor
 
 lemma shiftLeft_lt {x n m : ℕ} (h : x < 2 ^ n) : x <<< m < 2 ^ (n + m) := by
   simp only [Nat.pow_add, shiftLeft_eq, Nat.mul_lt_mul_right (Nat.two_pow_pos _), h]

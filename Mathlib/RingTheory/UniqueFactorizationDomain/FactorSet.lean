@@ -122,16 +122,7 @@ theorem count_some (hp : Irreducible p) (s : Multiset _) :
 
 @[simp]
 theorem count_zero (hp : Irreducible p) : count p (0 : FactorSet α) = 0 := by
-  #adaptation_note /-- Proof repaired after leanprover/lean4#13363.
-  The proof body used to be just
-  ```
   simp only [count, dif_pos hp, bcount, Multiset.count_zero]
-  ```
-  The replacement proof is a short-term fix, and we request that the authors/maintainers of
-  this file review the proof, and either approve it by removing this adaptation note, revise
-  the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
-  needs addressing. -/
-  rw [show (0 : FactorSet α) = WithTop.some 0 from rfl, count_some hp, Multiset.count_zero]
 
 theorem count_reducible (hp : ¬Irreducible p) : count p = 0 := dif_neg hp
 

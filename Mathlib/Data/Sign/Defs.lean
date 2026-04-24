@@ -130,9 +130,9 @@ def fin3Equiv : SignType ≃* Fin 3 where
   left_inv a := by cases a <;> rfl
   right_inv a :=
     match a with
-    | ⟨0, _⟩ => by decide +revert
-    | ⟨1, _⟩ => by decide +revert
-    | ⟨2, _⟩ => by decide +revert
+    | ⟨0, _⟩ => by simp
+    | ⟨1, _⟩ => by simp
+    | ⟨2, _⟩ => by simp
   map_mul' a b := by
     cases a <;> cases b <;> rfl
 

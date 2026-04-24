@@ -61,8 +61,7 @@ lemma nerveMap_app_mk₀ (x : C) :
 lemma nerveMap_app_mk₁ {x y : C} (f : x ⟶ y) :
     (nerveMap F).app (op ⦋1⦌) (ComposableArrows.mk₁ f) =
       ComposableArrows.mk₁ (F.map f) :=
-  ComposableArrows.ext₁ (by with_unfolding_all rfl) (by with_unfolding_all rfl)
-    (by simp [nerveMap_app])
+  ComposableArrows.ext₁ rfl rfl (by simp [nerveMap_app])
 
 end
 
@@ -102,7 +101,6 @@ lemma σ_obj {n : ℕ} (i : Fin (n + 1)) (x : ComposableArrows C n) (j : Fin (n 
 
 lemma δ₀_eq {x : ComposableArrows C (n + 1)} : (nerve C).δ (0 : Fin (n + 2)) x = x.δ₀ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma σ₀_mk₀_eq (x : C) : (nerve C).σ (0 : Fin 1) (.mk₀ x) = .mk₁ (𝟙 x) :=
   ComposableArrows.ext₁ rfl rfl (by simp; rfl)
 

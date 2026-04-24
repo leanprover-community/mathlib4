@@ -722,13 +722,12 @@ the class of the non-zero fractional ideal `⟨X - x, Y - y⟩` in the ideal cla
 @[simps]
 noncomputable def toClass : W.Point →+ Additive (ClassGroup W.CoordinateRing) where
   toFun P := match P with
-    | zero => 0
+    | 0 => 0
     | some _ _ h => ClassGroup.mk <| CoordinateRing.XYIdeal' h
   map_zero' := rfl
   map_add' := by
     rintro (_ | ⟨x₁, y₁, h₁⟩) (_ | ⟨x₂, y₂, h₂⟩)
     any_goals simp only [← zero_def, zero_add, add_zero]
-    any_goals rfl
     by_cases hxy : x₁ = x₂ ∧ y₁ = W.negY x₂ y₂
     · simp only [hxy.left, hxy.right, add_of_Y_eq rfl rfl]
       exact (CoordinateRing.mk_XYIdeal'_neg_mul h₂).symm
@@ -794,7 +793,7 @@ variable [Algebra R S] [Algebra R F] [Algebra S F] [IsScalarTower R S F] [Algebr
 where `W` is defined over a subring of a ring `S`, and `F` and `K` are field extensions of `S`. -/
 noncomputable def map : W'⟮F⟯ →+ W'⟮K⟯ where
   toFun P := match P with
-    | zero => 0
+    | 0 => 0
     | some _ _ h => some _ _ <| (baseChange_nonsingular _ _ f.injective).mpr h
   map_zero' := rfl
   map_add' := by
@@ -802,7 +801,7 @@ noncomputable def map : W'⟮F⟯ →+ W'⟮K⟯ where
     any_goals rfl
     by_cases hxy : x₁ = x₂ ∧ y₁ = (W'.baseChange F).toAffine.negY x₂ y₂
     · rw [add_of_Y_eq hxy.left hxy.right,
-        add_of_Y_eq (congr_arg _ hxy.left) <| by rw [hxy.right, baseChange_negY]]; rfl
+        add_of_Y_eq (congr_arg _ hxy.left) <| by rw [hxy.right, baseChange_negY]]
     · simpa only [add_some hxy, ← baseChange_addX, ← baseChange_addY, ← baseChange_slope] using
         (add_some fun h ↦ hxy ⟨f.injective h.1, f.injective (W'.baseChange_negY f .. ▸ h).2⟩).symm
 
@@ -878,9 +877,9 @@ lemma xRep_neg (P : W'.Point) : (-P).xRep = P.xRep := by
 
 lemma eq_or_eq_neg_of_xRep_eq_xRep {P Q : W.Point} (h : P.xRep = Q.xRep) : P = Q ∨ P = -Q := by
   match P, Q with
-  | zero, zero => exact .inl rfl
-  | zero, some .. => simp [xRep] at h
-  | some .., zero => simp [xRep] at h
+  | 0, 0 => exact .inl rfl
+  | 0, some .. => simp [xRep] at h
+  | some .., 0 => simp [xRep] at h
   | some x₁ .., some x₂ .. =>
     simp only [xRep, Matrix.vecCons_inj, and_true] at h
     exact X_eq_iff.mp h

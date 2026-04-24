@@ -789,8 +789,7 @@ theorem pred_ok (q₁ q₂ s v) (c d : List Γ') : ∃ s',
   simp only [trList, trNat.eq_1, trNum, Nat.cast_succ, Num.add_one, Num.succ,
     List.tail_cons, List.headI_cons]
   rcases (n : Num) with - | a
-  · simp only [show (1 : PosNum) = PosNum.one from rfl,
-      trPosNum, Num.succ', List.singleton_append, List.nil_append]
+  · simp only [trPosNum, Num.succ', List.singleton_append, List.nil_append]
     refine TransGen.head rfl ?_
     rw [tr]; simp only [pop', TM2.stepAux]
     convert unrev_ok using 2

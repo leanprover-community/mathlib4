@@ -110,17 +110,7 @@ theorem cast_bit0 [AddGroupWithOne α] : ∀ n : ZNum, (n.bit0 : α) = (n : α) 
 
 @[simp, norm_cast]
 theorem cast_bit1 [AddGroupWithOne α] : ∀ n : ZNum, (n.bit1 : α) = ((n : α) + n) + 1
-  | 0 => by
-    #adaptation_note /-- Proof repaired after leanprover/lean4#13363.
-    The proof used to finish from this point as
-    ```
-    simp [ZNum.bit1]
-    ```
-    The replacement proof is a short-term fix, and we request that the authors/maintainers of
-    this file review the proof, and either approve it by removing this adaptation note, revise
-    the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
-    needs addressing. -/
-    change ((ZNum.zero).bit1 : α) = _; simp [ZNum.bit1]
+  | 0 => by simp [ZNum.bit1]
   | pos p => by rw [ZNum.bit1, cast_pos, cast_pos]; rfl
   | neg p => by
     rw [ZNum.bit1, cast_neg, cast_neg]
@@ -322,7 +312,9 @@ theorem ofInt'_neg : ∀ n : ℤ, ofInt' (-n) = -ofInt' n
   | (n + 1 : ℕ) => show Num.toZNumNeg _ = -Num.toZNum _ by rw [Num.zneg_toZNum]
 
 theorem of_to_int' : ∀ n : ZNum, ZNum.ofInt' n = n
-  | 0 => rfl
+  | 0 => by
+    dsimp [ofInt', cast_zero]
+    simp only [Num.ofNat'_zero, Num.toZNum]
   | pos a => by rw [cast_pos, ← PosNum.cast_to_nat, ← Num.ofInt'_toZNum, PosNum.of_to_nat]; rfl
   | neg a => by
     rw [cast_neg, ofInt'_neg, ← PosNum.cast_to_nat, ← Num.ofInt'_toZNum, PosNum.of_to_nat]; rfl
@@ -579,8 +571,11 @@ end PosNum
 namespace Num
 
 @[simp]
-protected theorem div_zero (n : Num) : n / 0 = 0 := by
-  cases n <;> rfl
+protected theorem div_zero (n : Num) : n / 0 = 0 :=
+  show n.div 0 = 0 by
+    cases n
+    · rfl
+    · simp [Num.div]
 
 @[simp, norm_cast]
 theorem div_to_nat : ∀ n d, ((n / d : Num) : ℕ) = n / d
@@ -590,8 +585,11 @@ theorem div_to_nat : ∀ n d, ((n / d : Num) : ℕ) = n / d
   | pos _, pos _ => PosNum.div'_to_nat _ _
 
 @[simp]
-protected theorem mod_zero (n : Num) : n % 0 = n := by
-  cases n <;> rfl
+protected theorem mod_zero (n : Num) : n % 0 = n :=
+  show n.mod 0 = n by
+    cases n
+    · rfl
+    · simp [Num.mod]
 
 @[simp, norm_cast]
 theorem mod_to_nat : ∀ n d, ((n % d : Num) : ℕ) = n % d

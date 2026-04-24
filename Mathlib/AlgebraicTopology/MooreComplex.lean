@@ -135,10 +135,7 @@ def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
         erw [kernelSubobject_arrow_comp_assoc]
         rw [zero_comp, comp_zero]))
     fun n => by
-    cases n <;>
-      simp only [Nat.reduceAdd, objX_add_one, objX_zero, objD, Fin.isValue,
-        factorThru_arrow_assoc, Category.assoc] <;>
-      cat_disch
+    cases n <;> dsimp [objD, objX] <;> cat_disch
 
 end NormalizedMooreComplex
 

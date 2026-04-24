@@ -162,7 +162,7 @@ theorem DenseRange.zpow_of_ergodic_mul_left [OpensMeasurableSpace G]
       ∃ V : Set G, 1 ∈ V ∧ IsOpen V ∧ ∀ x ∈ V, ∀ y ∈ V, ∀ m : ℤ, g ^ m ≠ a * x / y := by
     rw [← mem_compl_iff, ← interior_compl, mem_interior_iff_mem_nhds] at h
     have : Tendsto (fun (x, y) ↦ a * x / y) (𝓝 1) (𝓝 a) :=
-      Continuous.tendsto' (by fun_prop) _ _ (by simp [One.one])
+      Continuous.tendsto' (by fun_prop) _ _ (by simp)
     rw [nhds_prod_eq] at this
     simpa [(nhds_basis_opens (1 : G)).prod_self.mem_iff, prod_subset_iff, and_assoc] using this h
   set s := ⋃ m : ℤ, g ^ m • V

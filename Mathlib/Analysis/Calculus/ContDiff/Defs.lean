@@ -209,18 +209,8 @@ theorem contDiffWithinAt_infty :
 theorem ContDiffWithinAt.continuousWithinAt (h : ContDiffWithinAt 𝕜 n f s x) :
     ContinuousWithinAt f s x := by
   have := h.of_le (zero_le _)
-  #adaptation_note /-- Proof repaired after leanprover/lean4#13363.
-  The next two lines of this proof were previously just
-  ```
-  simp only [ContDiffWithinAt, nonpos_iff_eq_zero, Nat.cast_eq_zero, forall_eq,
-    CharP.cast_eq_zero] at this
-  ```
-  The replacement proof is a short-term fix, and we request that the authors/maintainers of
-  this file review the proof, and either approve it by removing this adaptation note, revise
-  the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
-  needs addressing. -/
-  change ∀ m : ℕ, (m : ℕ∞) ≤ 0 → _ at this
-  simp only [nonpos_iff_eq_zero, Nat.cast_eq_zero, forall_eq, CharP.cast_eq_zero] at this
+  simp only [ContDiffWithinAt, nonpos_iff_eq_zero, Nat.cast_eq_zero, forall_eq, CharP.cast_eq_zero]
+    at this
   rcases this with ⟨u, hu, p, H⟩
   rw [mem_nhdsWithin_insert] at hu
   exact (H.continuousOn.continuousWithinAt hu.1).mono_of_mem_nhdsWithin hu.2

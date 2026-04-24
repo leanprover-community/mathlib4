@@ -729,17 +729,7 @@ lemma mkAux_eq_shortComplex_mk_d_comp_d (n : ℕ) :
       ShortComplex.mk _ _ ((mk X₀ X₁ X₂ d₀ d₁ s succ).d_comp_d (n + 2) (n + 1) n) := by
   change ShortComplex.mk _ _ (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).zero = _
   dsimp [mk, of, mkAux]
-  #adaptation_note /-- Proof repaired after leanprover/lean4#13363.
-  The proof used to finish from this point as
-  ```
   simp
-  ```
-  The replacement proof is a short-term fix, and we request that the authors/maintainers of
-  this file review the proof, and either approve it by removing this adaptation note, revise
-  the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
-  needs addressing. -/
-  simp only [show n + 2 = n + 1 + 1 from rfl, ↓reduceDIte]
-  congr 1 <;> exact (Category.id_comp _).symm
 
 /-- The isomorphism from `(mk X₀ X₁ X₂ d₀ d₁ s succ).X (n + 3)` that is given by
 the inductive construction. -/

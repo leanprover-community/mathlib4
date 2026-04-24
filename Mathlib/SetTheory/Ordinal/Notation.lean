@@ -444,7 +444,7 @@ theorem repr_add : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ + o₂) = rep
     conv at nf => simp [HAdd.hAdd, Add.add]
     conv in _ + o => simp [HAdd.hAdd, Add.add]
     rcases h : add a o with - | ⟨e', n', a'⟩ <;>
-      simp only [add, addAux, h'.symm, h, add_assoc, repr, repr_zero] at nf h₁ ⊢
+      simp only [add, addAux, h'.symm, h, add_assoc, repr] at nf h₁ ⊢
     have := h₁.fst; haveI := nf.fst; have ee := cmp_compares e e'
     cases he : cmp e e' <;> simp only [he, Ordering.compares_gt, Ordering.compares_lt,
         Ordering.compares_eq, repr, gt_iff_lt, PNat.add_coe, Nat.cast_add] at ee ⊢
@@ -711,8 +711,7 @@ instance nf_scale (x) [NF x] (o) [NF o] : NF (scale x o) := by
 
 @[simp]
 theorem repr_scale (x) [NF x] (o) [NF o] : repr (scale x o) = ω ^ repr x * repr o := by
-  simp only [scale_eq_mul, repr_mul, repr, repr_zero, PNat.one_coe, Nat.cast_one, mul_one,
-    add_zero]
+  simp only [scale_eq_mul, repr_mul, repr, PNat.one_coe, Nat.cast_one, mul_one, add_zero]
 
 theorem nf_repr_split {o o' m} [NF o] (h : split o = (o', m)) : NF o' ∧ repr o = repr o' + m := by
   rcases e : split' o with ⟨a, n⟩
@@ -951,9 +950,8 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
       · simp only [opowAux2, opow_def, e₁, h, r₁, r₂, OfNat.ofNat, Zero.zero, One.one,
           repr]
         simp [opow_add, opow_mul]
-      simp only [opow_def, opowAux2, e₁, r₁, e₂, r₂, repr, repr_zero,
-          Nat.cast_succ, _root_.zero_add,
-          add_zero]
+      simp only [opow_def, opowAux2, e₁, r₁, e₂, r₂, repr,
+          Nat.cast_succ, _root_.zero_add, add_zero]
       rw [opow_add, opow_mul, opow_omega0]
       · simp
       · simpa [Nat.one_le_iff_ne_zero]

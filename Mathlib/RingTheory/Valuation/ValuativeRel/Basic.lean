@@ -1317,7 +1317,7 @@ variable (A B) in
 def mapPosSubmonoid : posSubmonoid A →* posSubmonoid B where
   toFun := fun ⟨a,ha⟩ => ⟨algebraMap _ _ a,
     by simpa only [posSubmonoid_def, ← (algebraMap A B).map_zero, vlt_iff_vlt] using ha⟩
-  map_one' := by simp [One.one]
+  map_one' := by simp
   map_mul' := by simp
 
 variable (A) in

@@ -419,23 +419,16 @@ end PartialOrder
 
 section Lattice
 
-/-- Supremum for `WithZero α`, defined via `Option.merge`. -/
-def withZeroSup [Max α] : WithZero α → WithZero α → WithZero α :=
-  Option.merge (· ⊔ ·)
-
-@[simp] theorem withZeroSup_zero_zero [Max α] : (withZeroSup (0 : WithZero α) 0) = 0 := rfl
-@[simp] theorem withZeroSup_coe_zero [Max α] (a : α) : (withZeroSup (↑a : WithZero α) 0) = ↑a := rfl
-@[simp] theorem withZeroSup_zero_coe [Max α] (b : α) : (withZeroSup (0 : WithZero α) ↑b) = ↑b := rfl
-@[simp] theorem withZeroSup_coe_coe [Max α] (a b : α) :
-    (withZeroSup (↑a : WithZero α) ↑b) = ↑(a ⊔ b) := rfl
-
 instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithZero α) where
-  sup := withZeroSup
+  sup
+    -- note this is `Option.merge`, but with the right defeq when unfolding
+    | 0, 0 => 0
+    | (a : α), 0 => a
+    | 0, (b : α) => b
+    | (a : α), (b : α) => ↑(a ⊔ b)
   le_sup_left x y := by cases x <;> cases y <;> simp
   le_sup_right x y := by cases x <;> cases y <;> simp
-  sup_le x y z := by
-    cases x <;> cases y <;> cases z <;> simp
-    simpa using sup_le
+  sup_le x y z := by cases x <;> cases y <;> cases z <;> simp; simpa using sup_le
 
 theorem coe_sup [SemilatticeSup α] (a b : α) : ((a ⊔ b : α) : WithZero α) = (a : WithZero α) ⊔ b :=
   rfl

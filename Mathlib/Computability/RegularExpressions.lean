@@ -103,8 +103,6 @@ def matches' : RegularExpression α → Language α
   | P * Q => P.matches' * Q.matches'
   | star P => P.matches'∗
 
-attribute [nolint simpNF] matches'.eq_1 matches'.eq_2
-
 theorem matches'_zero : (0 : RegularExpression α).matches' = 0 :=
   rfl
 
@@ -138,13 +136,6 @@ def matchEpsilon : RegularExpression α → Bool
   | P + Q => P.matchEpsilon || Q.matchEpsilon
   | P * Q => P.matchEpsilon && Q.matchEpsilon
   | star _P => true
-
-@[simp]
-theorem matchEpsilon_zero : matchEpsilon (0 : RegularExpression α) = false := by
-  change matchEpsilon zero = false; rfl
-
-theorem matchEpsilon_one : matchEpsilon (1 : RegularExpression α) = true := by
-  change matchEpsilon epsilon = true; rfl
 
 section DecidableEq
 variable [DecidableEq α]
@@ -191,10 +182,10 @@ def rmatch : RegularExpression α → List α → Bool
 
 @[simp]
 theorem zero_rmatch (x : List α) : rmatch 0 x = false := by
-  induction x <;> simp [rmatch, matchEpsilon_zero, *]
+  induction x <;> simp [rmatch, matchEpsilon, *]
 
 theorem one_rmatch_iff (x : List α) : rmatch 1 x ↔ x = [] := by
-  induction x <;> simp [rmatch, matchEpsilon_one, *]
+  induction x <;> simp [rmatch, matchEpsilon, *]
 
 theorem char_rmatch_iff (a : α) (x : List α) : rmatch (char a) x ↔ x = [a] := by
   rcases x with - | ⟨_, x⟩
@@ -339,8 +330,6 @@ def map (f : α → β) : RegularExpression α → RegularExpression β
   | R + S => map f R + map f S
   | R * S => map f R * map f S
   | star R => star (map f R)
-
-attribute [nolint simpNF] map.eq_1 map.eq_2
 
 @[simp]
 protected theorem map_pow (f : α → β) (P : RegularExpression α) :

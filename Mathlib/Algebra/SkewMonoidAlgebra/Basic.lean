@@ -324,7 +324,7 @@ theorem one_def : (1 : SkewMonoidAlgebra k G) = single 1 1 := rfl
 
 @[simp]
 theorem coeff_one_one : coeff (1 : SkewMonoidAlgebra k G) 1 = 1 := by
-  simp only [coeff, One.one, toFinsupp_single, Finsupp.single_eq_same]
+  simp only [coeff, toFinsupp_single, Finsupp.single_eq_same]
 
 theorem coeff_one {a : G} [Decidable (a = 1)] :
     (1 : SkewMonoidAlgebra k G).coeff a = if a = 1 then 1 else 0 := by

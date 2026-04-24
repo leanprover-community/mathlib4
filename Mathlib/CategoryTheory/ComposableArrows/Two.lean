@@ -31,13 +31,11 @@ section
 variable {C : Type*} [Category* C]
   {i j k : C} (f : i ⟶ j) (g : j ⟶ k) (fg : i ⟶ k)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The morphism `mk₁ f ⟶ mk₁ fg` when `f ≫ g = fg` for some morphism `g`. -/
 def twoδ₂Toδ₁ (h : f ≫ g = fg := by cat_disch) :
     mk₁ f ⟶ mk₁ fg :=
   homMk₁ (𝟙 _) g
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The morphism `mk₁ fg ⟶ mk₁ g` when `f ≫ g = fg` for some morphism `f`. -/
 def twoδ₁Toδ₀ (h : f ≫ g = fg := by cat_disch) :
     mk₁ fg ⟶ mk₁ g :=
@@ -47,27 +45,27 @@ variable (h : f ≫ g = fg)
 
 @[simp]
 lemma twoδ₂Toδ₁_app_zero :
-    (twoδ₂Toδ₁ f g fg h).app 0 = 𝟙 _ := by with_unfolding_all rfl
+    (twoδ₂Toδ₁ f g fg h).app 0 = 𝟙 _ := rfl
 
 @[simp]
 lemma twoδ₂Toδ₁_app_one :
-    (twoδ₂Toδ₁ f g fg h).app 1 = g := by with_unfolding_all rfl
+    (twoδ₂Toδ₁ f g fg h).app 1 = g := rfl
 
 @[simp]
 lemma twoδ₁Toδ₀_app_zero :
-    (twoδ₁Toδ₀ f g fg h).app 0 = f := by with_unfolding_all rfl
+    (twoδ₁Toδ₀ f g fg h).app 0 = f := rfl
 
 @[simp]
 lemma twoδ₁Toδ₀_app_one :
-    (twoδ₁Toδ₀ f g fg h).app 1 = 𝟙 _ := by with_unfolding_all rfl
+    (twoδ₁Toδ₀ f g fg h).app 1 = 𝟙 _ := rfl
 
 instance [IsIso g] : IsIso (twoδ₂Toδ₁ f g fg h) := by
-  rw [isIso_iff₁, twoδ₂Toδ₁_app_zero, twoδ₂Toδ₁_app_one]
-  exact ⟨IsIso.id _, ‹_›⟩
+  rw [isIso_iff₁]
+  constructor <;> dsimp <;> infer_instance
 
 instance [IsIso f] : IsIso (twoδ₁Toδ₀ f g fg h) := by
-  rw [isIso_iff₁, twoδ₁Toδ₀_app_zero, twoδ₁Toδ₀_app_one]
-  exact ⟨‹_›, IsIso.id _⟩
+  rw [isIso_iff₁]
+  constructor <;> dsimp <;> infer_instance
 
 end
 

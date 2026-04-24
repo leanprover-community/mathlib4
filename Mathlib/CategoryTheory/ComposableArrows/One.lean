@@ -39,7 +39,8 @@ def mapFunctorArrows (i j i' j' n : ℕ)
     (_ : i ≤ i' := by lia) (_ : j ≤ j' := by lia)
     (_ : j' ≤ n := by lia) :
     functorArrows C i j n ⟶ functorArrows C i' j' n where
-  app S := homMk₁ (S.map' i i') (S.map' j j') (by simp [← Functor.map_comp])
+  app S := homMk₁ (S.map' i i') (S.map' j j')
+    (by simp [← Functor.map_comp])
 
 end ComposableArrows
 
