@@ -792,7 +792,6 @@ end NeWord
 section PingPongLemma
 
 open Cardinal
-
 open scoped Function -- required for scoped `on` notation
 open scoped Pointwise
 
