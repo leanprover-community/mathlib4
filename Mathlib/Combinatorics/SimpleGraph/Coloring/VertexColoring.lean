@@ -451,6 +451,7 @@ theorem chromaticNumber_top_eq_top_of_infinite (V : Type*) [Infinite V] :
   obtain ⟨n, ⟨hn⟩⟩ := hc
   exact not_injective_infinite_finite _ hn.injective_of_top_hom
 
+@[simp]
 theorem chromaticNumber_top_eq_enat_card : (⊤ : SimpleGraph V).chromaticNumber = ENat.card V := by
   cases finite_or_infinite V
   · have := Fintype.ofFinite ‹_›
@@ -484,12 +485,13 @@ theorem two_le_chromaticNumber_of_adj {u v : V} (hadj : G.Adj u v) : 2 ≤ G.chr
   obtain ⟨c⟩ := chromaticNumber_le_iff_colorable.mp (Order.le_of_lt_add_one h)
   exact c.valid hadj (Subsingleton.elim (c u) (c v))
 
+@[simp]
 theorem chromaticNumber_eq_zero_iff : G.chromaticNumber = 0 ↔ IsEmpty V :=
   nonpos_iff_eq_zero.symm.trans <| chromaticNumber_le_iff_colorable.trans colorable_zero_iff
 
 @[simp]
-theorem chromaticNumber_eq_zero_of_isEmpty [IsEmpty V] : G.chromaticNumber = 0 :=
-  chromaticNumber_eq_zero_iff.mpr ‹_›
+theorem chromaticNumber_eq_zero_of_isEmpty [IsEmpty V] : G.chromaticNumber = 0 := by
+  simpa
 
 @[deprecated (since := "2026-04-24")]
 alias ⟨isEmpty_of_chromaticNumber_eq_zero, _⟩ := chromaticNumber_eq_zero_iff
