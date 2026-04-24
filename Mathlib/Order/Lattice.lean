@@ -409,6 +409,7 @@ laws relating the two operations has the structure of a lattice.
 Provided a partial order such that `a ≤ b` if and only if `a ⊔ b = b`, we can define a lattice that
 uses both the provided `Min` and `Max` instances as well as the provided `PartialOrder` instance.
 -/
+@[implicit_reducible]
 def Lattice.mk'' {α : Type*} [PartialOrder α] [Max α] [Min α]
     (sup_comm : ∀ (a b : α), a ⊔ b = b ⊔ a) (sup_assoc : ∀ (a b c : α), a ⊔ b ⊔ c = a ⊔ (b ⊔ c))
     (inf_comm : ∀ (a b : α), a ⊓ b = b ⊓ a) (inf_assoc : ∀ (a b c : α), a ⊓ b ⊓ c = a ⊓ (b ⊓ c))

@@ -1,3 +1,4 @@
+
 /-
 Copyright (c) 2025 Floris van Doorn and Hannah Scholz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
@@ -212,6 +213,7 @@ instance RelCWComplex.Subcomplex.instLattice [RelCWComplex C D] : Lattice (Subco
       rw [← SetLike.coe_subset_coe, eq_iff, coe_max]
       exact union_eq_right.symm)
 
+#defeq_abuse in
 instance RelCWComplex.Subcomplex.instDistribLattice [RelCWComplex C D] :
     DistribLattice (Subcomplex C) :=
   {(instLattice : Lattice (Subcomplex C)) with
