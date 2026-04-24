@@ -423,7 +423,6 @@ theorem mem_dilatransvections_iff_rank_quotient {e : V ≃ₗ[K] V} :
   rw [mem_dilatransvections_iff_rank, ← (quotKerEquivRange _).rank_eq, ← fixedSubmodule_eq_ker]
 
 variable (e f : V ≃ₗ[K] V)
-open Pointwise MulAction
 
 /-- Characterization of transvections within dilatransvections. -/
 theorem mem_transvections_iff_mem_dilatransvections_and_fixedReduce_eq_one
