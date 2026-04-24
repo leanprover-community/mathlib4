@@ -22,9 +22,6 @@ def LIBDIR : FilePath :=
 def IRDIR : FilePath :=
   ".lake" / "build" / "ir"
 
-/--
-TODO: is there a better test to see if a module is part of Lean core?
--/
 def isInLeanCore (mod : Name) := #[
   `Init,
   `Lean,
