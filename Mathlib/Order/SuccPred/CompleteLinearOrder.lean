@@ -115,10 +115,16 @@ lemma csSup_mem_of_not_isSuccPrelimit (hlim : ¬ IsSuccPrelimit (sSup s)) : sSup
     rw [csSup_of_not_bddAbove hlim, csSup_empty]
     exact isSuccPrelimit_bot
 
+@[deprecated (since := "2026-04-24")]
+alias csSup_mem_of_not_isSuccPrelimit' := csSup_mem_of_not_isSuccPrelimit
+
 /-- See `exists_eq_ciSup_of_not_isSuccLimit` for the `ConditionallyCompleteLinearOrder` version. -/
 lemma exists_eq_ciSup_of_not_isSuccPrelimit (hf' : ¬ IsSuccPrelimit (⨆ i, f i)) :
     ∃ i, f i = ⨆ i, f i :=
   csSup_mem_of_not_isSuccPrelimit hf'
+
+@[deprecated (since := "2026-04-24")]
+alias exists_eq_ciSup_of_not_isSuccPrelimit' := exists_eq_ciSup_of_not_isSuccPrelimit
 
 theorem Order.IsSuccPrelimit.sSup_Iio (h : IsSuccPrelimit x) : sSup (Iio x) = x := by
   obtain rfl | hx := eq_bot_or_bot_lt x
