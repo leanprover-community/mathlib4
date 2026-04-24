@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2026 Raphael Douglas Giles. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Raphael Douglas Giles
+-/
 module
 
 public import Mathlib.AlgebraicGeometry.AlgebraicCycle.Basic
