@@ -18,7 +18,7 @@ We also introduce a typeclass `CommRingObj X` which further requires that the mu
 law is commutative.
 
 The categories of bundled ring objects and bundled commutative ring objects are
-denoted `Rng C` and `CommRng C`.
+denoted `Rng C` and `CommRng C` respectively.
 
 -/
 
