@@ -921,6 +921,9 @@ theorem isStronglyProgressive_min_stopping_time [PseudoMetrizableSpace ι]
       simp only [sc, s, not_le, Set.mem_compl_iff, Set.mem_setOf_eq, ← ht]
       norm_cast
 
+@[deprecated (since := "2026-04-24")]
+alias progMeasurable_min_stopping_time := isStronglyProgressive_min_stopping_time
+
 theorem IsStronglyProgressive.stoppedProcess [PseudoMetrizableSpace ι]
     (h : IsStronglyProgressive f u) (hτ : IsStoppingTime f τ) :
     IsStronglyProgressive f (stoppedProcess u τ) := by
@@ -933,10 +936,17 @@ theorem IsStronglyProgressive.stoppedProcess [PseudoMetrizableSpace ι]
     · simp [(mod_cast h_it : (i : WithTop ι) ≤ t)]
     · simpa [(mod_cast h_ti : t ≤ (i : WithTop ι))]
 
+@[deprecated (since := "2026-04-24")]
+alias ProgMeasurable.stoppedProcess := IsStronglyProgressive.stoppedProcess
+
 theorem IsStronglyProgressive.stronglyAdapted_stoppedProcess [PseudoMetrizableSpace ι]
     (h : IsStronglyProgressive f u) (hτ : IsStoppingTime f τ) :
     StronglyAdapted f (MeasureTheory.stoppedProcess u τ) :=
   (h.stoppedProcess hτ).stronglyAdapted
+
+@[deprecated (since := "2026-04-24")]
+alias ProgMeasurable.stronglyAdapted_stoppedProcess :=
+  IsStronglyProgressive.stronglyAdapted_stoppedProcess
 
 theorem IsStronglyProgressive.stronglyMeasurable_stoppedProcess [PseudoMetrizableSpace ι]
     (hu : IsStronglyProgressive f u) (hτ : IsStoppingTime f τ) (i : ι) :
