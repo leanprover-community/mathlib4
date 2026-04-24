@@ -16,7 +16,7 @@ public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 -  `LinearMap.rank`: The rank of a linear map.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
