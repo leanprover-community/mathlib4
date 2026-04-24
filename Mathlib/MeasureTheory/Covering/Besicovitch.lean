@@ -98,7 +98,7 @@ noncomputable section
 
 universe u
 
-open Metric Set Filter Fin MeasureTheory TopologicalSpace CompleteLinearOrderedAddCommMonoidWithTop
+open Metric Set Filter Fin MeasureTheory TopologicalSpace CompleteLattice
 
 open scoped Topology ENNReal MeasureTheory NNReal
 

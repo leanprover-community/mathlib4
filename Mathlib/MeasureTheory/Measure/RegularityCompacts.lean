@@ -27,7 +27,7 @@ probability.
 
 @[expose] public section
 
-open Set MeasureTheory TopologicalSpace CompleteLinearOrderedAddCommMonoidWithTop
+open Set MeasureTheory TopologicalSpace CompleteLattice
 
 open scoped ENNReal Uniformity
 

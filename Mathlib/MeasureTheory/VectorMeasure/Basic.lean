@@ -48,7 +48,7 @@ vector measure, signed measure, complex measure
 
 noncomputable section
 
-open NNReal ENNReal Filter CompleteLinearOrderedAddCommMonoidWithTop
+open NNReal ENNReal Filter CompleteLattice
 
 open scoped Topology Function -- required for scoped `on` notation
 namespace MeasureTheory

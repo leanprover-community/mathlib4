@@ -51,10 +51,6 @@ class LinearOrderedAddCommGroupWithTop (α : Type*)
   neg_top : -(⊤ : α) = ⊤
   add_neg_cancel_of_ne_top ⦃x : α⦄ : x ≠ ⊤ → x + -x = 0
 
-/-- A complete linearly ordered commutative monoid with an additively absorbing `⊤` element. -/
-class CompleteLinearOrderedAddCommMonoidWithTop (E : Type*) extends
-    LinearOrderedAddCommMonoidWithTop E, CompleteLinearOrder E
-
 section LinearOrderedAddCommMonoidWithTop
 variable [LinearOrderedAddCommMonoidWithTop α] {a b c : α}
 

@@ -25,7 +25,7 @@ measure, mutually singular
 
 @[expose] public section
 
-open Set MeasureTheory NNReal ENNReal Filter CompleteLinearOrderedAddCommMonoidWithTop
+open Set MeasureTheory NNReal ENNReal Filter CompleteLattice
 
 namespace MeasureTheory
 

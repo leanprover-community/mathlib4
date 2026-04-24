@@ -36,7 +36,7 @@ measures in the set, the complement of `K` has measure at most `ε`.
 @[expose] public section
 
 open Filter Set Metric ENNReal NNReal MeasureTheory ProbabilityMeasure TopologicalSpace
-  CompleteLinearOrderedAddCommMonoidWithTop
+  CompleteLattice
 
 open scoped ENNReal NNReal Topology FiniteMeasure ProbabilityMeasure
 

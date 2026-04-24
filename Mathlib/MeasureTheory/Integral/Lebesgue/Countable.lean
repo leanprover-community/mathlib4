@@ -22,7 +22,7 @@ public section
 
 namespace MeasureTheory
 
-open Set ENNReal NNReal Measure CompleteLinearOrderedAddCommMonoidWithTop
+open Set ENNReal NNReal Measure CompleteLattice
 
 variable {α : Type*} [MeasurableSpace α] {μ : Measure α}
 

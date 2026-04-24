@@ -84,7 +84,7 @@ measure, almost everywhere, measure space, completion, null set, null measurable
 
 noncomputable section
 
-open Set CompleteLinearOrderedAddCommMonoidWithTop
+open Set CompleteLattice
 
 open Filter hiding map
 

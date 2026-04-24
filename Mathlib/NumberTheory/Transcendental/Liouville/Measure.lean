@@ -31,7 +31,7 @@ public section
 
 open scoped Filter ENNReal Topology NNReal
 
-open Filter Set Metric MeasureTheory Real CompleteLinearOrderedAddCommMonoidWithTop
+open Filter Set Metric MeasureTheory Real CompleteLattice
 
 theorem setOf_liouvilleWith_subset_aux :
     { x : ℝ | ∃ p > 2, LiouvilleWith p x } ⊆

@@ -44,7 +44,7 @@ localizing sequence, local property, stable property
 
 @[expose] public section
 
-open MeasureTheory Filter Filtration CompleteLinearOrderedAddCommMonoidWithTop
+open MeasureTheory Filter Filtration CompleteLattice
 open scoped ENNReal Topology
 
 namespace ProbabilityTheory

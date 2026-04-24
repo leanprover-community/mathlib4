@@ -34,7 +34,7 @@ Carathéodory-measurable, Carathéodory's criterion
 
 noncomputable section
 
-open Set Function Filter CompleteLinearOrderedAddCommMonoidWithTop
+open Set Function Filter CompleteLattice
 open scoped NNReal Topology ENNReal
 
 namespace MeasureTheory

@@ -114,7 +114,7 @@ Hausdorff measure, measure, metric measure
 open scoped NNReal ENNReal Topology
 
 open Metric EMetric Set Function Filter Encodable Module TopologicalSpace
-  CompleteLinearOrderedAddCommMonoidWithTop
+  CompleteLattice
 
 noncomputable section
 

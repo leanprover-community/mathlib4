@@ -48,7 +48,7 @@ is not representable as a Stieltjes measure.
 noncomputable section
 
 open Set Filter Function ENNReal NNReal Topology
-  MeasureTheory CompleteLinearOrderedAddCommMonoidWithTop
+  MeasureTheory CompleteLattice
 
 open ENNReal (ofReal)
 

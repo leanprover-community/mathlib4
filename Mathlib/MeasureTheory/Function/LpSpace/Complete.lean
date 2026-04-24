@@ -17,7 +17,7 @@ in `MeasureTheory.Lp.instCompleteSpace`.
 
 @[expose] public section
 
-open MeasureTheory Filter CompleteLinearOrderedAddCommMonoidWithTop
+open MeasureTheory Filter CompleteLattice
 open scoped ENNReal Topology
 
 variable {α E : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α} [SeminormedAddGroup E]

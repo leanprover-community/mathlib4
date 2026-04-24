@@ -7312,7 +7312,6 @@ public import Mathlib.Topology.Algebra.InfiniteSum.Ring
 public import Mathlib.Topology.Algebra.InfiniteSum.SummationFilter
 public import Mathlib.Topology.Algebra.InfiniteSum.TsumUniformlyOn
 public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
-public import Mathlib.Topology.Algebra.InfiniteSum.WithTop
 public import Mathlib.Topology.Algebra.IntermediateField
 public import Mathlib.Topology.Algebra.IsOpenUnits
 public import Mathlib.Topology.Algebra.IsUniformGroup.Basic

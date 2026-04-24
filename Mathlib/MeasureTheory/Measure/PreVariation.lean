@@ -31,7 +31,7 @@ measure.
 
 variable {X : Type*} [MeasurableSpace X]
 
-open MeasureTheory BigOperators NNReal ENNReal Function CompleteLinearOrderedAddCommMonoidWithTop
+open MeasureTheory BigOperators NNReal ENNReal Function CompleteLattice
 
 namespace MeasureTheory
 
@@ -203,7 +203,7 @@ lemma iUnion (hf : IsSigmaSubadditiveSetFun f) (hf' : f ∅ = 0) (s : ℕ → Se
     (hs : ∀ i, MeasurableSet (s i)) (hs' : Pairwise (Disjoint on s)) :
     HasSum (fun i ↦ preVariationFun f (s i)) (preVariationFun f (⋃ i, s i)) := by
   refine summable.hasSum_iff.mpr (le_antisymm (sum_le_preVariationFun_iUnion f hs hs') ?_)
-  refine le_tsum_of_forall_lt_exists_sum fun b hb ↦ ?_
+  refine ENNReal.le_tsum_of_forall_lt_exists_sum fun b hb ↦ ?_
   simp only [preVariationFun, MeasurableSet.iUnion hs, reduceDIte, lt_iSup_iff] at hb
   obtain ⟨Q, hQ⟩ := hb
   let s' (i : ℕ) : Subtype MeasurableSet := ⟨s i, hs i⟩

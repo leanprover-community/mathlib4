@@ -42,7 +42,7 @@ Classes of kernels:
 
 assert_not_exists MeasureTheory.integral
 
-open MeasureTheory CompleteLinearOrderedAddCommMonoidWithTop
+open MeasureTheory CompleteLattice
 
 open scoped ENNReal
 

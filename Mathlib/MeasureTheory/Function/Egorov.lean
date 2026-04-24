@@ -26,7 +26,7 @@ convergence in measure.
 
 noncomputable section
 
-open MeasureTheory NNReal ENNReal Topology CompleteLinearOrderedAddCommMonoidWithTop
+open MeasureTheory NNReal ENNReal Topology CompleteLattice
 
 namespace MeasureTheory
 

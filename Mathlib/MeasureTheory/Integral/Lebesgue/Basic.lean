@@ -32,7 +32,7 @@ assert_not_exists Module.Basis Norm MeasureTheory.MeasurePreserving MeasureTheor
 
 open Set hiding restrict restrict_apply
 
-open Filter ENNReal Topology NNReal CompleteLinearOrderedAddCommMonoidWithTop
+open Filter ENNReal Topology NNReal CompleteLattice
 
 namespace MeasureTheory
 

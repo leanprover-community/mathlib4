@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Data.Real.ENatENNReal
 public import Mathlib.Data.Set.Card
-public import Mathlib.Topology.Algebra.InfiniteSum.WithTop
+public import Mathlib.Topology.Algebra.InfiniteSum.Order
+public import Mathlib.Topology.Instances.ENNReal.Lemmas
 public import Mathlib.Tactic.Bound
 
 /-!
@@ -25,7 +26,7 @@ these sums.
 
 public section
 
-open Set Function Filter Metric Topology CompleteLinearOrderedAddCommMonoidWithTop
+open Set Function Filter Metric Topology CompleteLattice
 open scoped Finset ENNReal NNReal
 
 variable {α : Type*} {β : Type*} {γ : Type*}
@@ -33,10 +34,6 @@ variable {α : Type*} {β : Type*} {γ : Type*}
 namespace ENNReal
 
 variable {a b : ℝ≥0∞} {r : ℝ≥0} {x : ℝ≥0∞} {ε : ℝ≥0∞}
-
-noncomputable instance : CompleteLinearOrderedAddCommMonoidWithTop ℝ≥0∞ where
-  toLinearOrderedAddCommMonoidWithTop := inferInstance
-  __ := instCompleteLinearOrder
 
 section tsum
 
@@ -53,10 +50,10 @@ protected theorem tsum_coe_eq {f : α → ℝ≥0} (h : HasSum f r) : (∑' a, (
 protected theorem coe_tsum {f : α → ℝ≥0} : Summable f → ↑(tsum f) = ∑' a, (f a : ℝ≥0∞)
   | ⟨r, hr⟩ => by rw [hr.tsum_eq, ENNReal.tsum_coe_eq hr]
 
-@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.hasSum (since := "2026-04-17")]
+@[deprecated CompleteLattice.hasSum (since := "2026-04-17")]
 protected theorem hasSum : HasSum f (⨆ s : Finset α, ∑ a ∈ s, f a) := hasSum
 
-@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.summable (since := "2026-04-17")]
+@[deprecated CompleteLattice.summable (since := "2026-04-17")]
 protected theorem summable : Summable f := summable
 
 macro_rules | `(tactic| gcongr_discharger) => `(tactic| apply summable)
@@ -68,62 +65,63 @@ theorem tsum_coe_ne_top_iff_summable {f : β → ℝ≥0} : (∑' b, (f b : ℝ�
   rw [ha]
   exact summable.hasSum
 
-@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.tsum_eq_iSup_sum (since := "2026-04-17")]
+@[deprecated tsum_eq_iSup_sum (since := "2026-04-17")]
 protected theorem tsum_eq_iSup_sum : ∑' a, f a = ⨆ s : Finset α, ∑ a ∈ s, f a := tsum_eq_iSup_sum
 
-@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.tsum_eq_iSup_sum' (since := "2026-04-17")]
+@[deprecated tsum_eq_iSup_sum' (since := "2026-04-17")]
 protected theorem tsum_eq_iSup_sum' {ι : Type*} (s : ι → Finset α) (hs : ∀ t, ∃ i, t ⊆ s i) :
     ∑' a, f a = ⨆ i, ∑ a ∈ s i, f a := tsum_eq_iSup_sum' s hs
 
-@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.tsum_sigma (since := "2026-04-17")]
+@[deprecated tsum_sigma (since := "2026-04-17")]
 protected theorem tsum_sigma {β : α → Type*} (f : ∀ a, β a → ℝ≥0∞) :
     ∑' p : Σ a, β a, f p.1 p.2 = ∑' (a) (b), f a b := tsum_sigma f
 
-@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.tsum_sigma' (since := "2026-04-17")]
+@[deprecated tsum_sigma' (since := "2026-04-17")]
 protected theorem tsum_sigma' {β : α → Type*} (f : (Σ a, β a) → ℝ≥0∞) :
     ∑' p : Σ a, β a, f p = ∑' (a) (b), f ⟨a, b⟩ := tsum_sigma' f
 
-@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.tsum_biUnion' (since := "2026-04-17")]
+@[deprecated tsum_biUnion' (since := "2026-04-17")]
 protected theorem tsum_biUnion' {ι : Type*} {S : Set ι} {f : α → ENNReal} {t : ι → Set α}
     (h : S.PairwiseDisjoint t) : ∑' x : ⋃ i ∈ S, t i, f x = ∑' (i : S), ∑' (x : t i), f x :=
   tsum_biUnion' h
 
-@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.tsum_biUnion (since := "2026-04-17")]
+@[deprecated tsum_biUnion (since := "2026-04-17")]
 protected theorem tsum_biUnion {ι : Type*} {f : α → ENNReal} {t : ι → Set α}
     (h : Set.univ.PairwiseDisjoint t) : ∑' x : ⋃ i, t i, f x = ∑' (i) (x : t i), f x :=
   tsum_biUnion h
 
-@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.tsum_prod (since := "2026-04-17")]
+@[deprecated tsum_prod (since := "2026-04-17")]
 protected theorem tsum_prod {f : α → β → ℝ≥0∞} : ∑' p : α × β, f p.1 p.2 = ∑' (a) (b), f a b :=
   tsum_prod
 
-@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.tsum_prod' (since := "2026-04-17")]
+@[deprecated tsum_prod' (since := "2026-04-17")]
 protected theorem tsum_prod' {f : α × β → ℝ≥0∞} : ∑' p : α × β, f p = ∑' (a) (b), f (a, b) :=
   tsum_prod'
 
-@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.tsum_comm (since := "2026-04-17")]
+@[deprecated tsum_comm (since := "2026-04-17")]
 protected theorem tsum_comm {f : α → β → ℝ≥0∞} : ∑' a, ∑' b, f a b = ∑' b, ∑' a, f a b :=
   tsum_comm
 
-@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.tsum_add (since := "2026-04-17")]
+@[deprecated tsum_add (since := "2026-04-17")]
 protected theorem tsum_add : ∑' a, (f a + g a) = ∑' a, f a + ∑' a, g a :=
   tsum_add
 
-@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.sum_add_tsum_compl (since := "2026-04-17")]
+@[deprecated sum_add_tsum_compl (since := "2026-04-17")]
 protected lemma sum_add_tsum_compl {ι : Type*} (s : Finset ι) (f : ι → ℝ≥0∞) :
     ∑ i ∈ s, f i + ∑' i : ↥(s : Set ι)ᶜ, f i = ∑' i, f i := sum_add_tsum_compl s f
 
-@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.tsum_le_tsum (since := "2026-04-17")]
+@[deprecated tsum_le_tsum (since := "2026-04-17")]
 protected theorem tsum_le_tsum (h : ∀ a, f a ≤ g a) : ∑' a, f a ≤ ∑' a, g a := tsum_le_tsum h
 
-@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.sum_le_tsum (since := "2026-04-17")]
+@[deprecated sum_le_tsum (since := "2026-04-17")]
 protected theorem sum_le_tsum {f : α → ℝ≥0∞} (s : Finset α) : ∑ x ∈ s, f x ≤ ∑' x, f x :=
   sum_le_tsum s
 
-@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.le_tsum_of_forall_lt_exists_sum
-  (since := "2026-04-17")]
-protected lemma le_tsum_of_forall_lt_exists_sum (h : ∀ b < a, ∃ I : Finset α, b < ∑ i ∈ I, f i) :
-    a ≤ ∑' i, f i := le_tsum_of_forall_lt_exists_sum h
+protected lemma le_tsum_of_forall_lt_exists_sum
+    (h : ∀ b < a, ∃ I : Finset α, b < ∑ i ∈ I, f i) : a ≤ ∑' i, f i := by
+  refine le_of_forall_lt fun b hb ↦ ?_
+  obtain ⟨I, hI⟩ := h b hb
+  exact lt_of_lt_of_le hI (sum_le_tsum I)
 
 protected theorem tsum_eq_iSup_nat' {f : ℕ → ℝ≥0∞} {N : ℕ → ℕ} (hN : Tendsto N atTop atTop) :
     ∑' i : ℕ, f i = ⨆ i : ℕ, ∑ a ∈ Finset.range (N i), f a :=
@@ -144,25 +142,26 @@ protected theorem tsum_eq_limsup_sum_nat {f : ℕ → ℝ≥0∞} :
     ∑' i, f i = limsup (fun n => ∑ i ∈ Finset.range n, f i) atTop :=
   summable.hasSum.tendsto_sum_nat.limsup_eq.symm
 
-@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.le_tsum (since := "2026-04-17")]
+@[deprecated le_tsum (since := "2026-04-17")]
 protected theorem le_tsum (a : α) : f a ≤ ∑' a, f a :=
   summable.le_tsum' a
 
-@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.tsum_eq_zero (since := "2026-04-17")]
+@[deprecated tsum_eq_zero (since := "2026-04-17")]
 protected theorem tsum_eq_zero : ∑' i, f i = 0 ↔ ∀ i, f i = 0 := tsum_eq_zero
 
-@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.tsum_eq_top_of_eq_top
-  (since := "2026-04-17")]
+@[deprecated tsum_eq_top_of_eq_top (since := "2026-04-17")]
 protected theorem tsum_eq_top_of_eq_top : (∃ a, f a = ∞) → ∑' a, f a = ∞ :=
   tsum_eq_top_of_eq_top
 
-@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.lt_top_of_tsum_ne_top
-  (since := "2026-04-17")]
 protected theorem lt_top_of_tsum_ne_top {a : α → ℝ≥0∞} (tsum_ne_top : ∑' i, a i ≠ ∞) (j : α) :
-    a j < ∞ := lt_top_of_tsum_ne_top tsum_ne_top j
+    a j < ∞ := by
+  contrapose! tsum_ne_top with h
+  exact tsum_eq_top_of_eq_top ⟨j, top_unique h⟩
 
-@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.tsum_top (since := "2026-04-17")]
-protected theorem tsum_top [Nonempty α] : ∑' _ : α, ∞ = ∞ := tsum_top
+@[simp]
+protected theorem tsum_top [Nonempty α] : ∑' _ : α, ∞ = ∞ :=
+  let ⟨a⟩ := ‹Nonempty α›
+  tsum_eq_top_of_eq_top ⟨a, rfl⟩
 
 theorem tsum_const_eq_top_of_ne_zero {α : Type*} [Infinite α] {c : ℝ≥0∞} (hc : c ≠ 0) :
     ∑' _ : α, c = ∞ := by
@@ -174,8 +173,7 @@ theorem tsum_const_eq_top_of_ne_zero {α : Type*} [Infinite α] {c : ℝ≥0∞}
     simpa [hs] using sum_le_tsum (f := fun _ => c) s
   simpa [hc] using le_of_tendsto' A B
 
-@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.ne_top_of_tsum_ne_top
-  (since := "2026-04-17")]
+@[deprecated ne_top_of_tsum_ne_top (since := "2026-04-17")]
 protected theorem ne_top_of_tsum_ne_top (h : ∑' a, f a ≠ ∞) (a : α) : f a ≠ ∞ :=
   ne_top_of_tsum_ne_top h a
 
@@ -195,7 +193,7 @@ protected theorem tsum_const_smul {R} [SMul R ℝ≥0∞] [IsScalarTower R ℝ�
     ∑' i, a • f i = a • ∑' i, f i := by
   simpa only [smul_one_mul] using @ENNReal.tsum_mul_left _ (a • (1 : ℝ≥0∞)) _
 
-@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.tsum_iSup_eq (since := "2026-04-17")]
+@[deprecated tsum_iSup_eq (since := "2026-04-17")]
 theorem tsum_iSup_eq {α : Type*} (a : α) {f : α → ℝ≥0∞} : (∑' b : α, ⨆ _ : a = b, f b) = f a :=
   (tsum_eq_single a fun _ h => by simp [h.symm]).trans <| by simp
 
@@ -250,42 +248,40 @@ theorem tsum_sub {f : ℕ → ℝ≥0∞} {g : ℕ → ℝ≥0∞} (h₁ : ∑' 
   have : ∀ i, f i - g i + g i = f i := fun i => tsub_add_cancel_of_le (h₂ i)
   ENNReal.eq_sub_of_add_eq h₁ <| by simp only [← tsum_add, this]
 
-@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.tsum_comp_le_tsum_of_injective
-  (since := "2026-04-17")]
+@[deprecated tsum_comp_le_tsum_of_injective (since := "2026-04-17")]
 protected theorem tsum_comp_le_tsum_of_injective {f : α → β} (hf : Injective f) (g : β → ℝ≥0∞) :
     ∑' x, g (f x) ≤ ∑' y, g y := tsum_comp_le_tsum_of_injective hf g
 
-@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.tsum_le_tsum_comp_of_surjective
-  (since := "2026-04-17")]
+@[deprecated tsum_le_tsum_comp_of_surjective (since := "2026-04-17")]
 protected theorem tsum_le_tsum_comp_of_surjective {f : α → β} (hf : Surjective f) (g : β → ℝ≥0∞) :
     ∑' y, g y ≤ ∑' x, g (f x) := tsum_le_tsum_comp_of_surjective hf g
 
-@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.tsum_mono_subtype (since := "2026-04-17")]
+@[deprecated tsum_mono_subtype (since := "2026-04-17")]
 protected theorem tsum_mono_subtype (f : α → ℝ≥0∞) {s t : Set α} (h : s ⊆ t) :
     ∑' x : s, f x ≤ ∑' x : t, f x := tsum_mono_subtype f h
 
-@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.tsum_iUnion_le_tsum (since := "2026-04-17")]
+@[deprecated tsum_iUnion_le_tsum (since := "2026-04-17")]
 protected theorem tsum_iUnion_le_tsum {ι : Type*} (f : α → ℝ≥0∞) (t : ι → Set α) :
     ∑' x : ⋃ i, t i, f x ≤ ∑' i, ∑' x : t i, f x := tsum_iUnion_le_tsum f t
 
-@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.tsum_biUnion_le_tsum (since := "2026-04-17")]
+@[deprecated tsum_biUnion_le_tsum (since := "2026-04-17")]
 protected theorem tsum_biUnion_le_tsum {ι : Type*} (f : α → ℝ≥0∞) (s : Set ι) (t : ι → Set α) :
     ∑' x : ⋃ i ∈ s, t i, f x ≤ ∑' i : s, ∑' x : t i, f x := tsum_biUnion_le_tsum f s t
 
-@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.tsum_biUnion_le (since := "2026-04-17")]
+@[deprecated tsum_biUnion_le (since := "2026-04-17")]
 protected theorem tsum_biUnion_le {ι : Type*} (f : α → ℝ≥0∞) (s : Finset ι) (t : ι → Set α) :
     ∑' x : ⋃ i ∈ s, t i, f x ≤ ∑ i ∈ s, ∑' x : t i, f x := tsum_biUnion_le f s t
 
-@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.tsum_iUnion_le (since := "2026-04-17")]
+@[deprecated tsum_iUnion_le (since := "2026-04-17")]
 protected theorem tsum_iUnion_le {ι : Type*} [Fintype ι] (f : α → ℝ≥0∞) (t : ι → Set α) :
     ∑' x : ⋃ i, t i, f x ≤ ∑ i, ∑' x : t i, f x := tsum_iUnion_le f t
 
-@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.tsum_union_le (since := "2026-04-17")]
+@[deprecated tsum_union_le (since := "2026-04-17")]
 protected theorem tsum_union_le (f : α → ℝ≥0∞) (s t : Set α) :
     ∑' x : ↑(s ∪ t), f x ≤ ∑' x : s, f x + ∑' x : t, f x := tsum_union_le f s t
 
 open Classical in
-@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.tsum_eq_add_tsum_ite (since := "2026-04-17")]
+@[deprecated tsum_eq_add_tsum_ite (since := "2026-04-17")]
 protected theorem tsum_eq_add_tsum_ite {f : β → ℝ≥0∞} (b : β) :
     ∑' x, f x = f b + ∑' x, ite (x = b) 0 (f x) := tsum_eq_add_tsum_ite b
 
@@ -317,7 +313,7 @@ theorem finset_card_const_le_le_of_tsum_le {ι : Type*} {a : ι → ℝ≥0∞} 
     _ ≤ ∑' i, a i := sum_le_tsum _
     _ ≤ c := tsum_le_c
 
-@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.tsum_fiberwise (since := "2026-04-17")]
+@[deprecated tsum_fiberwise (since := "2026-04-17")]
 protected theorem tsum_fiberwise (f : β → ℝ≥0∞) (g : β → γ) :
     ∑' x, ∑' b : g ⁻¹' {x}, f b = ∑' i, f i := tsum_fiberwise f g
 
@@ -467,7 +463,7 @@ theorem tsum_pos {g : α → ℝ≥0} (hg : Summable g) (i : α) (hi : 0 < g i) 
   simpa using tsum_lt_tsum (fun a => zero_le _) hi hg
 
 open Classical in
-@[deprecated CompleteLinearOrderedAddCommMonoidWithTop.tsum_eq_add_tsum_ite (since := "2026-04-17")]
+@[deprecated tsum_eq_add_tsum_ite (since := "2026-04-17")]
 theorem tsum_eq_add_tsum_ite {f : α → ℝ≥0} (hf : Summable f) (i : α) :
     ∑' x, f x = f i + ∑' x, ite (x = i) 0 (f x) := by
   refine (NNReal.summable_of_le (fun i' => ?_) hf).tsum_eq_add_tsum_ite' i

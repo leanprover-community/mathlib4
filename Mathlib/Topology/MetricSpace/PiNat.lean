@@ -61,7 +61,7 @@ in general), and `ι` is countable.
 
 noncomputable section
 
-open Topology TopologicalSpace Set Metric Filter Function CompleteLinearOrderedAddCommMonoidWithTop
+open Topology TopologicalSpace Set Metric Filter Function CompleteLattice
 
 attribute [local simp] pow_le_pow_iff_right₀ one_lt_two inv_le_inv₀ zero_le_two zero_lt_two
 

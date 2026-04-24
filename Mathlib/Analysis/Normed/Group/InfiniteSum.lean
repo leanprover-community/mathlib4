@@ -36,7 +36,7 @@ infinite series, absolute convergence, normed group
 
 public section
 
-open Topology ENNReal NNReal CompleteLinearOrderedAddCommMonoidWithTop Finset Filter Metric
+open Topology ENNReal NNReal CompleteLattice Finset Filter Metric
 
 variable {ι α E F ε : Type*} [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
   [TopologicalSpace ε] [ESeminormedAddCommMonoid ε]

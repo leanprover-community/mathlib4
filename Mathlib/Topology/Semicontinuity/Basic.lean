@@ -60,7 +60,7 @@ ones for lower semicontinuous functions using `OrderDual`.
 
 public section
 
-open Topology ENNReal CompleteLinearOrderedAddCommMonoidWithTop Set Function Filter
+open Topology ENNReal CompleteLattice Set Function Filter
 
 variable {α β γ : Type*} [TopologicalSpace α] [TopologicalSpace γ] {f : α → β} {s t : Set α}
   {x : α} {y z : β}

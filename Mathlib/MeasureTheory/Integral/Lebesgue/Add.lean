@@ -22,7 +22,7 @@ public section
 
 namespace MeasureTheory
 
-open Set Filter ENNReal Topology NNReal SimpleFunc CompleteLinearOrderedAddCommMonoidWithTop
+open Set Filter ENNReal Topology NNReal SimpleFunc CompleteLattice
 
 variable {α β : Type*} {m : MeasurableSpace α} {μ : Measure α}
 

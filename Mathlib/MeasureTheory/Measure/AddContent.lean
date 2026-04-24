@@ -61,7 +61,7 @@ made of open-closed intervals, mapping `(a, b]` to `f b - f a`.
 
 @[expose] public section
 
-open Set Finset Function Filter CompleteLinearOrderedAddCommMonoidWithTop
+open Set Finset Function Filter CompleteLattice
 
 open scoped ENNReal Topology Function
 

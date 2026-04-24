@@ -42,7 +42,7 @@ the outer measure induced by `m`. The induced outer measure is equal to `m` on `
 
 @[expose] public section
 
-open Set CompleteLinearOrderedAddCommMonoidWithTop
+open Set CompleteLattice
 
 open scoped ENNReal
 

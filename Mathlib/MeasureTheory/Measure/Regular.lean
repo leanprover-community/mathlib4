@@ -195,7 +195,7 @@ proofs or statements do not apply directly.
 
 @[expose] public section
 
-open Set Filter ENNReal NNReal TopologicalSpace CompleteLinearOrderedAddCommMonoidWithTop
+open Set Filter ENNReal NNReal TopologicalSpace CompleteLattice
 open scoped symmDiff Topology
 
 namespace MeasureTheory

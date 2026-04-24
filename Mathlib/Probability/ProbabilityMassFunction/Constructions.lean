@@ -36,7 +36,7 @@ noncomputable section
 
 variable {α β γ : Type*}
 
-open NNReal ENNReal Finset MeasureTheory CompleteLinearOrderedAddCommMonoidWithTop
+open NNReal ENNReal Finset MeasureTheory CompleteLattice
 
 section Map
 

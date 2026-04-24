@@ -38,7 +38,7 @@ noncomputable section
 
 variable {α : Type*}
 
-open NNReal ENNReal MeasureTheory CompleteLinearOrderedAddCommMonoidWithTop
+open NNReal ENNReal MeasureTheory CompleteLattice
 
 /-- A probability mass function, or discrete probability measures is a function `α → ℝ≥0∞` such
   that the values have (infinite) sum `1`. -/

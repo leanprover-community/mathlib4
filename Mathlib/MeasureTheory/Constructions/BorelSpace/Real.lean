@@ -31,7 +31,7 @@ public import Mathlib.Topology.Instances.Real.Lemmas
 
 @[expose] public section
 
-open Set Filter MeasureTheory MeasurableSpace CompleteLinearOrderedAddCommMonoidWithTop
+open Set Filter MeasureTheory MeasurableSpace CompleteLattice
 
 open scoped Topology NNReal ENNReal
 

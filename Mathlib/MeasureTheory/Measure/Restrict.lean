@@ -26,7 +26,7 @@ pullback under `Subtype.val`) and the restriction to a set as above.
 
 open scoped ENNReal NNReal Topology
 open Set MeasureTheory Measure Filter MeasurableSpace ENNReal Function
-  CompleteLinearOrderedAddCommMonoidWithTop
+  CompleteLattice
 
 variable {R α β δ γ ι : Type*}
 

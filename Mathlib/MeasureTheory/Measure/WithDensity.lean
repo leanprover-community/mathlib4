@@ -28,7 +28,7 @@ See `MeasureTheory.Measure.absolutelyContinuous_iff_withDensity_rnDeriv_eq`.
 
 open Set hiding restrict restrict_apply
 
-open Filter ENNReal NNReal MeasureTheory.Measure CompleteLinearOrderedAddCommMonoidWithTop
+open Filter ENNReal NNReal MeasureTheory.Measure CompleteLattice
 
 namespace MeasureTheory
 

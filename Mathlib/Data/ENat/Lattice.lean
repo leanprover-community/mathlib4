@@ -29,10 +29,6 @@ noncomputable section
 deriving instance CompleteLinearOrder for ℕ∞
 end
 
-noncomputable instance : CompleteLinearOrderedAddCommMonoidWithTop ℕ∞ where
-  toLinearOrderedAddCommMonoidWithTop := inferInstance
-  __ := instCompleteLinearOrderENat
-
 noncomputable instance : CompleteLinearOrder (WithBot ENat) :=
   inferInstanceAs (CompleteLinearOrder (WithBot (WithTop ℕ)))
 

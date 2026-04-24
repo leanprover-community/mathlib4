@@ -26,7 +26,7 @@ noncomputable section
 
 variable {α β γ : Type*}
 
-open NNReal ENNReal CompleteLinearOrderedAddCommMonoidWithTop MeasureTheory
+open NNReal ENNReal CompleteLattice MeasureTheory
 
 namespace PMF
 
