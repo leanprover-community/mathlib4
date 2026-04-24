@@ -2997,6 +2997,7 @@ public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 public import Mathlib.CategoryTheory.Monoidal.Braided.Multifunctor
 public import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
 public import Mathlib.CategoryTheory.Monoidal.Braided.Reflection
+public import Mathlib.CategoryTheory.Monoidal.Braided.Traced
 public import Mathlib.CategoryTheory.Monoidal.Braided.Transport
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Cat
@@ -3074,6 +3075,7 @@ public import Mathlib.CategoryTheory.Monoidal.Rigid.Braided
 public import Mathlib.CategoryTheory.Monoidal.Rigid.Functor
 public import Mathlib.CategoryTheory.Monoidal.Rigid.FunctorCategory
 public import Mathlib.CategoryTheory.Monoidal.Rigid.OfEquivalence
+public import Mathlib.CategoryTheory.Monoidal.Rigid.Traced
 public import Mathlib.CategoryTheory.Monoidal.Skeleton
 public import Mathlib.CategoryTheory.Monoidal.Subcategory
 public import Mathlib.CategoryTheory.Monoidal.Tor
