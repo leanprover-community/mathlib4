@@ -160,7 +160,7 @@ theorem hittingBtwn_of_le {m : ι} (hmn : m ≤ n) : hittingBtwn u s n m ω = m 
     rw [hittingBtwn, ite_eq_right_iff, forall_exists_index]
     conv => intro; rw [Set.mem_Icc, Set.Icc_self, and_imp, and_imp]
     intro i hi₁ hi₂ hi
-    rw [Set.inter_eq_left.2, csInf_singleton]
+    rw [Set.inter_eq_left.2, sInf_singleton]
     exact Set.singleton_subset_iff.2 (le_antisymm hi₂ hi₁ ▸ hi)
   · exact hittingBtwn_of_lt h
 

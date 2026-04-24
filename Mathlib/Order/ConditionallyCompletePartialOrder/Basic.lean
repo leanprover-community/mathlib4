@@ -115,8 +115,13 @@ protected theorem DirectedOn.lt_csSup_of_lt (hd : DirectedOn (· ≤ ·) s) (hs 
     (ha : a ∈ s) (h : b < a) : b < sSup s :=
   lt_of_lt_of_le h (hd.le_csSup hs ha)
 
-@[deprecated (since := "2026-04-24")] alias csSup_singleton := sSup_singleton
-@[deprecated (since := "2026-04-24")] alias csInf_singleton := sInf_singleton
+/-- The supremum of a singleton is the element of the singleton -/
+@[to_dual (attr := simp)]
+theorem csSup_singleton (a : α) : sSup {a} = a :=
+  sSup_singleton
+
+attribute [deprecated sSup_singleton (since := "2026-04-24")] csSup_singleton
+attribute [deprecated sInf_singleton (since := "2026-04-24")] csInf_singleton
 
 @[simp]
 theorem csInf_Ici {α : Type*} [ConditionallyCompletePartialOrderInf α] {a : α} :
