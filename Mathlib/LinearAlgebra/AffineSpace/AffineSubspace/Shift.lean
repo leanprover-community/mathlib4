@@ -109,7 +109,7 @@ theorem affineCombination_mem_shift {ι : Type*} [Fintype ι] [Nontrivial ι]
     simp
   classical
   obtain ⟨j, hj⟩ : Set.Nonempty {i}ᶜ := by
-    by_contra!
+    by_contra
     simp at this
   rw [shift_eq ⟨p j, mem_affineSpan k <| Set.mem_image_of_mem _ hj⟩]
   suffices ∃ q ∈ affineSpan k (p '' {i}ᶜ), w i • (p i -ᵥ p j) +ᵥ q = affineCombination k univ p w by
@@ -132,7 +132,7 @@ theorem _root_.AffineIndependent.affineCombination_mem_shift_iff
   refine ⟨?_, fun h ↦ by simpa [h] using affineCombination_mem_shift p i hw⟩
   classical
   obtain ⟨j, hj⟩ : Set.Nonempty {i}ᶜ := by
-    by_contra!
+    by_contra
     simp at this
   rw [shift_eq ⟨p j, mem_affineSpan k <| Set.mem_image_of_mem _ hj⟩]
   suffices ∀ q ∈ affineSpan k (p '' {i}ᶜ),
@@ -217,9 +217,9 @@ theorem closedInterior_inter_shift_zero [ZeroLEOneClass k] :
     · simp [h i (mem_univ i)]
   · apply iff_of_false
     · apply not_and_of_not_left
-      contrapose! hp
+      contrapose hp
       exact Set.mem_of_mem_of_subset hp s.closedInterior_subset_affineSpan
-    · contrapose! hp
+    · contrapose hp
       rw [Set.mem_singleton_iff] at hp
       rw [hp]
       exact mem_affineSpan _ (by simp)
@@ -293,9 +293,9 @@ theorem closedInterior_inter_shift (hx : x ∈ Set.Icc 0 1) :
         simp [lineMap_apply, hj]
   · apply iff_of_false
     · apply not_and_of_not_left
-      contrapose! hp
+      contrapose hp
       exact Set.mem_of_mem_of_subset hp s.closedInterior_subset_affineSpan
-    · contrapose! hp
+    · contrapose hp
       rw [Set.mem_image] at hp
       obtain ⟨q, hq, rfl⟩ := hp
       apply homothety_mem (mem_affineSpan _ (by simp))
