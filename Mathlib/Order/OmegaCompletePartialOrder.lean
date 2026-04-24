@@ -730,6 +730,8 @@ instance : OmegaCompletePartialOrder (α →𝒄 β) :=
   OmegaCompletePartialOrder.lift ContinuousHom.toMono ContinuousHom.ωSup
     (fun _ _ h => h) (fun _ => rfl)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 lemma ωScottContinuous_apply
     {f : α → β →𝒄 γ} (hf : ωScottContinuous f) {g : α → β} (hg : ωScottContinuous g) :
@@ -742,13 +744,7 @@ lemma ωScottContinuous_apply
     apply le_antisymm
     · apply ωSup_le
       intro i
-      #adaptation_note /-- Proof repaired after leanprover/lean4#13492.
-      The next line was previously just `dsimp`.
-      The replacement proof is a short-term fix, and we request that the authors/maintainers of
-      this file review the proof, and either approve it by removing this adaptation note, revise
-      the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
-      needs addressing. -/
-      change (f (c i)) (ωSup (c.map ⟨g, hg.monotone⟩)) ≤ _
+      dsimp
       rw [(f (c i)).continuous]
       apply ωSup_le
       intro j
