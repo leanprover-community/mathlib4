@@ -22,7 +22,7 @@ assert_not_exists Module.Basis -- See `RingTheory.Ideal.Basis`
 
 universe u v w x
 
-open Pointwise
+open scoped Pointwise
 
 namespace Ideal
 

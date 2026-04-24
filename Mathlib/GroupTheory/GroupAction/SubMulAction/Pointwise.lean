@@ -21,7 +21,7 @@ To match `Submodule.idemSemiring`, we do not put these in the `Pointwise` locale
 @[expose] public section
 
 
-open Pointwise
+open scoped Pointwise
 
 variable {R M : Type*}
 

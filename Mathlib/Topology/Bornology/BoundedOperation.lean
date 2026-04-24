@@ -34,7 +34,7 @@ section bounded_sub
 ### Bounded subtraction
 -/
 
-open Pointwise
+open scoped Pointwise
 
 /-- A typeclass saying that `(p : R × R) ↦ p.1 - p.2` maps any product of bounded sets to a bounded
 set. This property automatically holds for seminormed additive groups, but it also holds, e.g.,

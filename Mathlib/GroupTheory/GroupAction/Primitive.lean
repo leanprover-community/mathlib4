@@ -71,7 +71,7 @@ public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 @[expose] public section
 
-open Pointwise
+open scoped Pointwise
 
 namespace MulAction
 

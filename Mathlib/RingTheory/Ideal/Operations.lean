@@ -207,7 +207,7 @@ section CommSemiring
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
 
-open Pointwise
+open scoped Pointwise
 
 variable {I : Ideal R} {N : Submodule R M}
 

@@ -26,7 +26,7 @@ group action, minimal
 @[expose] public section
 
 
-open Pointwise
+open scoped Pointwise
 
 /-- An action of an additive monoid `M` on a topological space is called *minimal* if the `M`-orbit
 of every point `x : α` is dense. -/

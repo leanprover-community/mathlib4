@@ -26,7 +26,7 @@ scalar-multiply to `a`.
 
 variable {G P : Type*}
 
-open Pointwise
+open scoped Pointwise
 
 namespace Set
 
