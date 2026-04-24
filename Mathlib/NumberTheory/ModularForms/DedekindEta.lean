@@ -29,12 +29,9 @@ public import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
 
 @[expose] public section
 
-open TopologicalSpace Set MeasureTheory intervalIntegral
- Metric Filter Function Complex
-
+open Set Function Complex
 open UpperHalfPlane hiding I
-
-open scoped Interval Real NNReal ENNReal Topology BigOperators Nat
+open scoped Real
 
 local notation "𝕢" => Periodic.qParam
 
