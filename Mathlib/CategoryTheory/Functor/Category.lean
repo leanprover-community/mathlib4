@@ -93,6 +93,12 @@ theorem naturality_app_app {F G : C ⥤ D ⥤ E ⥤ E'}
       ((α.app X₁).app X₂).app X₃ ≫ ((G.map f).app X₂).app X₃ :=
   congr_app (NatTrans.naturality_app α X₂ f) X₃
 
+lemma naturality_inv {F G : C ⥤ D} (α : F ⟶ G) {X Y : C} (f : X ⟶ Y) [IsIso (α.app X)]
+    [IsIso (α.app Y)] :
+    inv (α.app X) ≫ F.map f = G.map f ≫ inv (α.app Y) := by
+  rw [IsIso.inv_comp_eq, ← Category.assoc, IsIso.eq_comp_inv]
+  exact α.naturality f
+
 /-- A natural transformation is an epimorphism if each component is. -/
 @[to_dual /-- A natural transformation is a monomorphism if each component is. -/]
 theorem epi_of_epi_app (α : F ⟶ G) [∀ X : C, Epi (α.app X)] : Epi α :=
