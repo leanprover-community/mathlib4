@@ -41,7 +41,6 @@ lemma mul_add_iff (R : C) [MonObj R] [AddMonObj R] :
   · have := lift a (lift b c) ≫= h
     simp only [lift_whiskerLeft_assoc] at this
     simp only [Hom.add_def, Hom.mul_def, this, ← Category.assoc]
-    congr 1
     cat_disch
   · replace h := h (fst R (R ⊗ R)) (snd _ _ ≫ fst _ _) (snd _ _ ≫ snd _ _)
     simp only [Hom.mul_def, Hom.add_def] at h
