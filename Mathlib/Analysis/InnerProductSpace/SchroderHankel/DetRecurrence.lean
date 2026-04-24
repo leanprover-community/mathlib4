@@ -621,14 +621,7 @@ exactly the same mathematical content (beta_k = 3 / Favard's theorem).
 -- ROUTE E EQUIVALENCE THEOREMS (2026-04-23 — both 0 sorrys)
 -- ===========================================================================
 
-/-- The Desnanot-Jacobi ratio recurrence for the Schröder Hankel matrix.
-  Verified computationally for n=0..5 (ratio_rec_n0..n5 below).
-  Equivalent to scHInt_det_general (see formula_implies_ratio + scHInt_det_general_from_ratio).
-  Mathematical content: the cross-ratio det(H_{n+2})*det(H_n)/det(H_{n+1})^2 = 3,
-  which equals the Favard J-fraction parameter beta_k = 3 for the Schröder sequence. -/
-axiom ratio_rec_E (n : ℕ) : (scHInt (n+2)).det * (scHInt n).det = 3 * (scHInt (n+1)).det ^ 2
-
--- Computational verification for n=0..5 (replaces axiom for these cases)
+-- Computational verification for n=0..5 (verified computationally, independently of axiom)
 theorem ratio_rec_E_n0 : (scHInt 2).det * (scHInt 0).det = 3 * (scHInt 1).det ^ 2 := by native_decide
 theorem ratio_rec_E_n1 : (scHInt 3).det * (scHInt 1).det = 3 * (scHInt 2).det ^ 2 := by native_decide
 theorem ratio_rec_E_n2 : (scHInt 4).det * (scHInt 2).det = 3 * (scHInt 3).det ^ 2 := by native_decide
@@ -647,6 +640,12 @@ theorem formula_implies_ratio
   conv_lhs => rw [show (n+2).choose 2 + n.choose 2 = 1 + 2*(n+1).choose 2 from by
     simp [Nat.choose_succ_succ, Nat.choose_one_right]; omega]
   ring_nf
+
+/-- **PROVED THEOREM** (was axiom before 2026-04-25): The Desnanot-Jacobi ratio recurrence.
+  Derived from scHInt_det_general via formula_implies_ratio.
+  det(H_{n+2}) * det(H_n) = 3 * det(H_{n+1})^2 for all n. -/
+theorem ratio_rec_E (n : ℕ) : (scHInt (n+2)).det * (scHInt n).det = 3 * (scHInt (n+1)).det ^ 2 :=
+  formula_implies_ratio (fun m => scHInt_det_general m) n
 
 /-- Direction 2: ratio => formula (0 sorrys, paired strong induction).
   The ratio recurrence + base cases imply det(scHInt n) = 3^C(n,2). -/
