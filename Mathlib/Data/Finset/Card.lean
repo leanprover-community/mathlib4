@@ -476,8 +476,8 @@ See `Finset.surj_on_of_inj_on_of_card_le` for the version where `f` is a depende
 lemma surjOn_of_injOn_of_card_le (f : α → β) (hf : Set.MapsTo f s t) (hinj : Set.InjOn f s)
     (hst : #t ≤ #s) : Set.SurjOn f s t := by
   classical
-  suffices s.image f = t by simp [← this, Set.SurjOn]
-  have : s.image f ⊆ t := by aesop (add simp Finset.subset_iff)
+  suffices s.image f = t by rw [Finset.surjOn_iff_subset_image, this]
+  have : s.image f ⊆ t := hf.finsetImage_subset
   exact eq_of_subset_of_card_le this (hst.trans_eq (card_image_of_injOn hinj).symm)
 
 /--
@@ -521,6 +521,10 @@ theorem inj_on_of_surj_on_of_card_le (f : ∀ a ∈ s, β) (hf : ∀ a ha, f a h
   have hsurj' : Set.SurjOn f' s.attach t := fun x hx ↦ by simpa [f'] using hsurj x hx
   have hinj' := injOn_of_surjOn_of_card_le f' (fun x hx ↦ hf _ _) hsurj' (by simpa)
   exact congrArg Subtype.val (@hinj' ⟨a₁, ha₁⟩ (by simp) ⟨a₂, ha₂⟩ (by simp) ha₁a₂)
+
+lemma image_eq_iff_bijOn_of_card [DecidableEq β] (h : #s = #t) :
+    s.image f = t ↔ Set.BijOn f s t := by
+  grind [injOn_of_surjOn_of_card_le, Set.BijOn, image_eq_iff_surjOn_mapsTo]
 
 end bij
 
