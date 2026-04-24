@@ -18,7 +18,7 @@ We also introduce a typeclass `CommRingObj X` which further requires that the mu
 law is commutative.
 
 The categories of bundled ring objects and bundled commutative ring objects are
-denoted `Rng C` and `CommRng C` respectively.
+denoted `RingObjCat C` and `CommRingObjCat C` respectively.
 
 -/
 
@@ -129,18 +129,18 @@ instance IsRingHom.comp {R₁ R₂ R₃ : C} [RingObj R₁] [RingObj R₂] [Ring
 
 variable (C) in
 /-- The category of ring objects in a cartesian monoidal category. -/
-structure Rng where
+structure RingObjCat where
   /-- The underlying object in the ambient monoidal category -/
   X : C
   [ringObj : RingObj X]
 
-namespace Rng
+namespace RingObjCat
 
 attribute [instance] ringObj
 
 /-- A morphism of ring objects. -/
 @[ext]
-structure Hom (R₁ R₂ : Rng C) where
+structure Hom (R₁ R₂ : RingObjCat C) where
   /-- The underlying morphism -/
   hom : R₁.X ⟶ R₂.X
   [isRingHom : IsRingHom hom]
@@ -148,19 +148,19 @@ structure Hom (R₁ R₂ : Rng C) where
 attribute [instance] Hom.isRingHom
 
 @[simps]
-instance : Category (Rng C) where
+instance : Category (RingObjCat C) where
   Hom R₁ R₂ := Hom R₁ R₂
   id X := { hom := 𝟙 _ }
   comp f g := { hom := f.hom ≫ g.hom }
 
 @[ext]
-lemma hom_ext {R₁ R₂ : Rng C} {f g : R₁ ⟶ R₂} (h : f.hom = g.hom) : f = g :=
+lemma hom_ext {R₁ R₂ : RingObjCat C} {f g : R₁ ⟶ R₂} (h : f.hom = g.hom) : f = g :=
   Hom.ext h
 
 variable (C) in
 /-- The forgetful functor from the category of ring objects in `C` to `C`. -/
 @[simps]
-def forget : Rng C ⥤ C where
+def forget : RingObjCat C ⥤ C where
   obj R := R.X
   map f := f.hom
 
@@ -170,7 +170,7 @@ variable (C) in
 /-- The forgetful functor from the category of ring objects in `C`
 to the category of monoid objects in `C`. -/
 @[simps]
-def forget₂Mon : Rng C ⥤ Mon C where
+def forget₂Mon : RingObjCat C ⥤ Mon C where
   obj R := .mk R.X
   map f := .mk f.hom
 
@@ -178,26 +178,26 @@ variable (C) in
 /-- The forgetful functor from the category of ring objects in `C`
 to the category of additive monoid objects in `C`. -/
 @[simps]
-def forget₂AddMon : Rng C ⥤ AddMon C where
+def forget₂AddMon : RingObjCat C ⥤ AddMon C where
   obj R := .mk R.X
   map f := .mk f.hom
 
-end Rng
+end RingObjCat
 
 variable (C) in
 /-- The category of commutative ring objects in a cartesian monoidal category. -/
-structure CommRng where
+structure CommRingObjCat where
   /-- The underlying object in the ambient monoidal category -/
   X : C
   [commRingObj : CommRingObj X]
 
-namespace CommRng
+namespace CommRingObjCat
 
 attribute [instance] commRingObj
 
 /-- A morphism of commutative ring objects. -/
 @[ext]
-structure Hom (R₁ R₂ : CommRng C) where
+structure Hom (R₁ R₂ : CommRingObjCat C) where
   /-- The underlying morphism -/
   hom : R₁.X ⟶ R₂.X
   [isRingHom : IsRingHom hom]
@@ -205,42 +205,42 @@ structure Hom (R₁ R₂ : CommRng C) where
 attribute [instance] Hom.isRingHom
 
 @[simps]
-instance : Category (CommRng C) where
+instance : Category (CommRingObjCat C) where
   Hom R₁ R₂ := Hom R₁ R₂
   id X := { hom := 𝟙 _ }
   comp f g := { hom := f.hom ≫ g.hom }
 
 @[ext]
-lemma hom_ext {R₁ R₂ : CommRng C} {f g : R₁ ⟶ R₂} (h : f.hom = g.hom) : f = g :=
+lemma hom_ext {R₁ R₂ : CommRingObjCat C} {f g : R₁ ⟶ R₂} (h : f.hom = g.hom) : f = g :=
   Hom.ext h
 
 variable (C) in
 /-- The forgetful functor from the category of ring objects in `C` to `C`. -/
 @[simps]
-def forget : CommRng C ⥤ C where
+def forget : CommRingObjCat C ⥤ C where
   obj R := R.X
   map f := f.hom
 
 variable (C) in
 /-- The forgetful functor from the category of commutative ring objects
 to the category of ring objects. -/
-def forget₂Rng : CommRng C ⥤ Rng C where
+def forget₂RingObjCat : CommRingObjCat C ⥤ RingObjCat C where
   obj R := .mk R.X
   map f := { hom := f.hom }
 
 variable (C) in
-/-- The forgetful functor `CommRng C ⥤ Rng C` is fully faithful. -/
-def fullyFaithfulForget₂Rng : (forget₂Rng C).FullyFaithful where
+/-- The forgetful functor `CommRingObjCat C ⥤ RingObjCat C` is fully faithful. -/
+def fullyFaithfulForget₂RingObjCat : (forget₂RingObjCat C).FullyFaithful where
   preimage f := { hom := f.hom, isRingHom := f.isRingHom }
 
-instance : (forget₂Rng C).Faithful :=
-  (fullyFaithfulForget₂Rng C).faithful
+instance : (forget₂RingObjCat C).Faithful :=
+  (fullyFaithfulForget₂RingObjCat C).faithful
 
-instance : (forget₂Rng C).Full :=
-  (fullyFaithfulForget₂Rng C).full
+instance : (forget₂RingObjCat C).Full :=
+  (fullyFaithfulForget₂RingObjCat C).full
 
 instance : (forget C).Faithful where
 
-end CommRng
+end CommRingObjCat
 
 end CategoryTheory
