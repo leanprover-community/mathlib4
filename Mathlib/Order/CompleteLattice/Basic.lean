@@ -304,10 +304,6 @@ theorem iSup_le_iff : iSup f ≤ a ↔ ∀ i, f i ≤ a :=
 theorem iSup₂_le_iff {f : ∀ i, κ i → α} : ⨆ (i) (j), f i j ≤ a ↔ ∀ i j, f i j ≤ a := by
   simp_rw [iSup_le_iff]
 
-@[to_dual lt_iInf_iff]
-theorem iSup_lt_iff : iSup f < a ↔ ∃ b, b < a ∧ ∀ i, f i ≤ b :=
-  ⟨fun h => ⟨iSup f, h, le_iSup f⟩, fun ⟨_, h, hb⟩ => (iSup_le hb).trans_lt h⟩
-
 @[to_dual]
 theorem sSup_eq_iSup {s : Set α} : sSup s = ⨆ a ∈ s, a :=
   le_antisymm (sSup_le le_iSup₂) (iSup₂_le fun _ => le_sSup)
