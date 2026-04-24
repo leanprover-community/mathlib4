@@ -5,6 +5,7 @@ Authors: RJ Walters
 -/
 
 import Mathlib.Combinatorics.Sperner.Basic
+import Mathlib.Data.Finset.Sort
 
 /-!
 # SimplicialComplex to CellComplex Bridge for Sperner's Lemma
