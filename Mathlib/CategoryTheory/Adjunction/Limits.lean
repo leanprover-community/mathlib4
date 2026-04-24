@@ -59,7 +59,6 @@ def functorialityRightAdjoint : Cocone (K ⋙ F) ⥤ Cocone K :=
 
 attribute [local simp] functorialityRightAdjoint
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The unit for the adjunction for `Cocone.functoriality K F : Cocone K ⥤ Cocone (K ⋙ F)`.
 
 Auxiliary definition for `functorialityAdjunction`.
@@ -69,7 +68,6 @@ def functorialityUnit :
     𝟭 (Cocone K) ⟶ Cocone.functoriality _ F ⋙ functorialityRightAdjoint adj K where
   app c := { hom := adj.unit.app c.pt }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The counit for the adjunction for `Cocone.functoriality K F : Cocone K ⥤ Cocone (K ⋙ F)`.
 
 Auxiliary definition for `functorialityAdjunction`.
@@ -171,7 +169,6 @@ def functorialityLeftAdjoint : Cone (K ⋙ G) ⥤ Cone K :=
 
 attribute [local simp] functorialityLeftAdjoint
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The unit for the adjunction for `Cone.functoriality K G : Cone K ⥤ Cone (K ⋙ G)`.
 
 Auxiliary definition for `functorialityAdjunction'`.
@@ -181,7 +178,6 @@ def functorialityUnit' :
     𝟭 (Cone (K ⋙ G)) ⟶ functorialityLeftAdjoint adj K ⋙ Cone.functoriality _ G where
   app c := { hom := adj.unit.app c.pt }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The counit for the adjunction for `Cone.functoriality K G : Cone K ⥤ Cone (K ⋙ G)`.
 
 Auxiliary definition for `functorialityAdjunction'`.
@@ -309,7 +305,6 @@ variable {C : Type u₁} [Category.{v₀} C] {D : Type u₂} [Category.{v₀} D]
 
 attribute [local simp] homEquiv_unit homEquiv_counit
 
-set_option backward.isDefEq.respectTransparency false in
 -- Note: this is natural in K, but we do not yet have the tools to formulate that.
 /-- When `F ⊣ G`,
 the functor associating to each `Y` the cocones over `K ⋙ F` with cone point `Y`
@@ -322,7 +317,6 @@ def coconesIso {J : Type u} [Category.{v} J] {K : J ⥤ C} :
     { hom := TypeCat.ofHom (coconesIsoComponentHom adj Y)
       inv := TypeCat.ofHom (coconesIsoComponentInv adj Y) }
 
-set_option backward.isDefEq.respectTransparency false in
 -- Note: this is natural in K, but we do not yet have the tools to formulate that.
 /-- When `F ⊣ G`,
 the functor associating to each `X` the cones over `K` with cone point `F.op.obj X`
