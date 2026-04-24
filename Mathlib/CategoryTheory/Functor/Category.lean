@@ -93,6 +93,7 @@ theorem naturality_app_app {F G : C ⥤ D ⥤ E ⥤ E'}
       ((α.app X₁).app X₂).app X₃ ≫ ((G.map f).app X₂).app X₃ :=
   congr_app (NatTrans.naturality_app α X₂ f) X₃
 
+@[reassoc]
 lemma naturality_inv {F G : C ⥤ D} (α : F ⟶ G) {X Y : C} (f : X ⟶ Y) [IsIso (α.app X)]
     [IsIso (α.app Y)] :
     inv (α.app X) ≫ F.map f = G.map f ≫ inv (α.app Y) := by
