@@ -64,7 +64,7 @@ theorem Ideal.isPrincipal_of_isPrincipal_isLocalization_away_of_prime
   by_cases hpbot : p = ⊥
   · simpa [hpbot] using bot_isPrincipal
   · have hpb : map (algebraMap R S) p ≠ ⊥ := by
-      simpa [Ideal.map_eq_bot_iff_of_injective (IsLocalization.injective _ hM)] using hpbot
+      simpa [Ideal.map_eq_bot_iff_of_injective (IsLocalization.injective S hM)] using hpbot
     obtain ⟨g, hg⟩ := hp
     have hg0 : g ≠ 0 := fun hg0 ↦ hpb <| by simpa [hg0] using hg
     obtain ⟨a, n, hxa, hag⟩ := exists_reduced_fraction' x S hg0 hx.irreducible
@@ -91,8 +91,6 @@ theorem Ideal.isPrincipal_of_isPrincipal_localization_away_of_prime
     (hp : (map (algebraMap R (Localization.Away x)) p).IsPrincipal) : p.IsPrincipal :=
   p.isPrincipal_of_isPrincipal_isLocalization_away_of_prime hx hxp (Localization.Away x) hp
 
-/-- Let `R` be a Noetherian domain, `x ∈ R` be a prime element. If `Rₓ` is a UFD,
-  then `R` is also a UFD. -/
 theorem ufd_of_ufd_isLocalization_away_of_prime [IsNoetherianRing R] {x : R} (hx : Prime x)
     (S : Type*) [CommRing S] [Algebra R S] [IsLocalization.Away x S]
     [UniqueFactorizationMonoid S] : UniqueFactorizationMonoid R := by
@@ -115,3 +113,15 @@ theorem ufd_of_ufd_isLocalization_away_of_prime [IsNoetherianRing R] {x : R} (hx
 theorem ufd_of_ufd_localization_away_of_prime [IsNoetherianRing R] {x : R} (hx : Prime x)
     [UniqueFactorizationMonoid (Localization.Away x)] : UniqueFactorizationMonoid R :=
   ufd_of_ufd_isLocalization_away_of_prime hx (Localization.Away x)
+
+theorem isLocalization_ufd {M : Submonoid R} (hM : M ≤ nonZeroDivisors R) (S : Type*) [CommRing S]
+    [IsDomain S] [Algebra R S]
+    [IsLocalization M S] [UniqueFactorizationMonoid R] : UniqueFactorizationMonoid S := by
+  rw [UniqueFactorizationMonoid.iff_exists_prime_mem_of_isPrime]
+  intro p hpb _
+  obtain ⟨x, hxp, hpx⟩ := Ideal.IsPrime.exists_mem_prime_of_ne_bot inferInstance
+    (IsLocalization.bot_lt_comap_prime M S hM p hpb).ne'
+  use algebraMap R S x, hxp
+  refine Ideal.span_singleton_prime
+    ((map_ne_zero_iff (algebraMap R S) (IsLocalization.injective S hM)).mpr hpx.ne_zero) |>.mp ?_
+  sorry
