@@ -192,7 +192,7 @@ instance : IsIso (adj.{v} (X := X)).unit := by dsimp; infer_instance
 
 /-- The functor `GeneratedByTopCat X ⥤ ContinuousGeneratedByCat X` which is
 part of the equivalence `ContinuousGeneratedByCat.equivalence`. It sends
-a `X`-generated topological space `Y` to the topological space `Y`, considered as
+an `X`-generated topological space `Y` to the topological space `Y`, considered as
 an object of `ContinuousGeneratedByCat X`. -/
 @[simps obj]
 def fromGeneratedByTopCat : GeneratedByTopCat.{v} X ⥤ ContinuousGeneratedByCat.{v} X where
