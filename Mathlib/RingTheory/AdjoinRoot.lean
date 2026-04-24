@@ -326,18 +326,6 @@ end
 section deprecated
 variable (f) [Algebra R S]
 
-/-- Produce an algebra homomorphism `AdjoinRoot f →ₐ[R] S` sending `root f` to
-a root of `f` in `S`. -/
-@[deprecated liftAlgHom (since := "2025-10-10")]
-def liftHom (x : S) (hfx : aeval x f = 0) : AdjoinRoot f →ₐ[R] S :=
-  liftAlgHom _ _ x hfx
-
-set_option linter.deprecated false in
-@[deprecated toRingHom_liftAlgHom (since := "2025-10-10")]
-theorem coe_liftHom (x : S) (hfx : aeval x f = 0) :
-    (liftHom f x hfx : AdjoinRoot f →+* S) = lift (algebraMap R S) x hfx :=
-  rfl
-
 @[simp]
 theorem aeval_algHom_eq_zero (ϕ : AdjoinRoot f →ₐ[R] S) : aeval (ϕ (root f)) f = 0 := by
   have h : ϕ.toRingHom.comp (of f) = algebraMap R S := RingHom.ext_iff.mpr ϕ.commutes
@@ -349,28 +337,6 @@ theorem liftAlgHom_eq_algHom (ϕ : AdjoinRoot f →ₐ[R] S) :
     liftAlgHom f (Algebra.ofId R S) (ϕ (root f)) (aeval_algHom_eq_zero f ϕ) = ϕ := by
   ext
   simp
-
-set_option linter.deprecated false in
-@[deprecated liftAlgHom_eq_algHom (since := "2025-10-10")]
-theorem liftHom_eq_algHom (f : R[X]) (ϕ : AdjoinRoot f →ₐ[R] S) :
-    liftHom f (ϕ (root f)) (aeval_algHom_eq_zero f ϕ) = ϕ := liftAlgHom_eq_algHom ..
-
-variable (hfx : aeval a f = 0)
-
-set_option linter.deprecated false in
-@[deprecated liftAlgHom_mk (since := "2025-10-10")]
-theorem liftHom_mk {g : R[X]} : liftAlgHom f _ a hfx (mk f g) = aeval a g :=
-  rfl
-
-set_option linter.deprecated false in
-@[deprecated liftAlgHom_root (since := "2025-10-10")]
-theorem liftHom_root : liftHom f a hfx (root f) = a :=
-  lift_root hfx
-
-set_option linter.deprecated false in
-@[deprecated liftAlgHom_of (since := "2025-10-10")]
-theorem liftHom_of {x : R} : liftHom f a hfx (of f x) = algebraMap _ _ x :=
-  lift_of hfx
 
 end deprecated
 
@@ -531,11 +497,6 @@ lemma algEquivOfEq_toAlgHom (f g : S[X]) (hfg) :
 /-- `algEquivOfEq` sends `AdjoinRoot.root f` to `AdjoinRoot.root g`. -/
 lemma algEquivOfEq_root (f g : S[X]) (hfg) : algEquivOfEq R f g hfg (root f) = root g := by
   rw [coe_algEquivOfEq, algHomOfDvd_root]
-
-@[deprecated (since := "2025-10-10")] alias algHomOfDvd_apply_root := algHomOfDvd_root
-@[deprecated (since := "2025-10-10")] alias algEquivOfEq_apply_root := algEquivOfEq_root
-@[deprecated (since := "2025-10-10")]
-alias algEquivOfAssociated_apply_root := algEquivOfAssociated_root
 
 end CommRing
 
