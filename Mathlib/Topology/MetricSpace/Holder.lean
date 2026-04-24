@@ -194,8 +194,8 @@ lemma of_le {C D s : ℝ≥0} {A : Set X}
   have hr : 0 < r := ht.trans_le hsr
   rw [← NNReal.coe_le_coe] at hsr
   rw [← NNReal.coe_pos] at hr
-  set θ₁ : ℝ≥0 := ⟨s/r, by positivity⟩
-  set θ₂ : ℝ≥0 := ⟨1 - s/r, by simpa using div_le_one_of_le₀ hsr (by positivity)⟩
+  set θ₁ : ℝ≥0 := .mk (s / r) (by positivity)
+  set θ₂ : ℝ≥0 := .mk (1 - s / r) (by simpa using div_le_one_of_le₀ hsr (by positivity))
   have hθ : θ₁ + θ₂ = 1 := by ext; simp [θ₁, θ₂]
   have hθt : r * θ₁ + 0 * θ₂ = s := by ext; simp [θ₁, mul_div_cancel₀ _ hr.ne']
   have hθC : C * D ^ (r - s : ℝ) = C ^ (θ₁ : ℝ) * (C * D ^ (r : ℝ)) ^ (θ₂ : ℝ) := by

@@ -28,7 +28,7 @@ theorem acc_def {α} {r : α → α → Prop} {a : α} : Acc r a ↔ ∀ b, r b 
 
 theorem exists_not_acc_lt_of_not_acc {α} {a : α} {r} (h : ¬Acc r a) : ∃ b, ¬Acc r b ∧ r b a := by
   rw [acc_def] at h
-  push_neg at h
+  push Not at h
   simpa only [and_comm]
 
 theorem not_acc_iff_exists_descending_chain {α} {r : α → α → Prop} {x : α} :
@@ -100,19 +100,23 @@ theorem min_mem {r : α → α → Prop} (H : WellFounded r) (s : Set α) (h : s
   let ⟨h, _⟩ := Classical.choose_spec (H.has_min s h)
   h
 
-theorem not_lt_min {r : α → α → Prop} (H : WellFounded r) (s : Set α) (h : s.Nonempty) {x}
-    (hx : x ∈ s) : ¬r x (H.min s h) :=
-  let ⟨_, h'⟩ := Classical.choose_spec (H.has_min s h)
+theorem prop_min {r : α → α → Prop} (H : WellFounded r) {p : α → Prop} (h : ∃ a, p a) :
+    p (H.min {a | p a} h) :=
+  H.min_mem {a | p a} h
+
+theorem not_lt_min {r : α → α → Prop} (H : WellFounded r) (s : Set α) {x} (hx : x ∈ s) :
+    ¬r x (H.min s ⟨x, hx⟩) :=
+  let ⟨_, h'⟩ := Classical.choose_spec (H.has_min s ⟨x, hx⟩)
   h' _ hx
 
 /-- The minimal element of a trichotomous well-founded order is unique -/
 theorem min_eq_of_forall_not_lt [Std.Trichotomous r] (wf : WellFounded r) {s : Set α} {m : α}
     (hms : m ∈ s) (hrm : ∀ x ∈ s, ¬r x m) : wf.min s ⟨m, hms⟩ = m :=
-  Std.Trichotomous.trichotomous _ m (hrm _ <| wf.min_mem s _) (wf.not_lt_min s _ hms)
+  Std.Trichotomous.trichotomous _ m (hrm _ <| wf.min_mem s _) (wf.not_lt_min s hms)
 
 theorem notMem_of_lt_min {wf : WellFounded r} {s : Set α} {hs : s.Nonempty} {x : α}
     (hx : r x (wf.min s hs)) : x ∉ s :=
-  (wf.not_lt_min s hs · hx)
+  (wf.not_lt_min s · hx)
 
 theorem mem_of_lt_min_compl {wf : WellFounded r} {s : Set α} {hs : sᶜ.Nonempty} {x : α}
     (hx : r x (wf.min sᶜ hs)) : x ∈ s :=
@@ -151,8 +155,8 @@ variable [LinearOrder β] [Preorder γ]
 -- TODO: the name `WellFounded.min` is incorrect when the assumption is that `>` is well-founded.
 @[to_dual none]
 theorem WellFounded.min_le (h : WellFounded ((· < ·) : β → β → Prop))
-    {x : β} {s : Set β} (hx : x ∈ s) (hne : s.Nonempty := ⟨x, hx⟩) : h.min s hne ≤ x :=
-  not_lt.1 <| h.not_lt_min _ _ hx
+    {x : β} {s : Set β} (hx : x ∈ s) : h.min s ⟨x, hx⟩ ≤ x :=
+  not_lt.1 <| h.not_lt_min _ hx
 
 theorem Set.range_injOn_strictMono [WellFoundedLT β] :
     Set.InjOn Set.range { f : β → γ | StrictMono f } := by
@@ -228,7 +232,7 @@ noncomputable def argmin [Nonempty α] : α :=
   WellFounded.min (InvImage.wf f wellFounded_lt) Set.univ Set.univ_nonempty
 
 theorem not_lt_argmin [Nonempty α] (a : α) : ¬f a < f (argmin f) :=
-  WellFounded.not_lt_min (InvImage.wf f wellFounded_lt) _ _ (Set.mem_univ a)
+  WellFounded.not_lt_min (InvImage.wf f wellFounded_lt) _ (Set.mem_univ a)
 
 /-- Given a function `f : α → β` where `β` carries a well-founded `<`, and a non-empty subset `s`
 of `α`, this is an element of `s` whose image under `f` is minimal in the sense of
@@ -244,9 +248,8 @@ noncomputable def argminOn (s : Set α) (hs : s.Nonempty) : α :=
 theorem argminOn_mem (s : Set α) (hs : s.Nonempty) : argminOn f s hs ∈ s :=
   WellFounded.min_mem _ _ _
 
-theorem not_lt_argminOn (s : Set α) {a : α} (ha : a ∈ s)
-    (hs : s.Nonempty := Set.nonempty_of_mem ha) : ¬f a < f (argminOn f s hs) :=
-  WellFounded.not_lt_min (InvImage.wf f wellFounded_lt) s hs ha
+theorem not_lt_argminOn (s : Set α) {a : α} (ha : a ∈ s) : ¬f a < f (argminOn f s ⟨a, ha⟩) :=
+  WellFounded.not_lt_min (InvImage.wf f wellFounded_lt) s ha
 
 end LT
 
@@ -261,13 +264,13 @@ theorem isMinimalFor_argmin [Nonempty α] :
     MinimalFor (fun _ ↦ True) f (argmin f) :=
   ⟨trivial, fun a _ _ ↦ argmin_le f a⟩
 
-theorem argminOn_le (s : Set α) {a : α} (ha : a ∈ s) (hs : s.Nonempty := Set.nonempty_of_mem ha) :
-    f (argminOn f s hs) ≤ f a :=
-  not_lt.mp <| not_lt_argminOn f s ha hs
+theorem argminOn_le (s : Set α) {a : α} (ha : a ∈ s) :
+    f (argminOn f s ⟨a, ha⟩) ≤ f a :=
+  not_lt.mp <| not_lt_argminOn f s ha
 
 theorem isMinimalFor_argminOn (s : Set α) (hs : s.Nonempty) :
     MinimalFor (· ∈ s) f (argminOn f s hs) :=
-  ⟨argminOn_mem f s hs, fun _ h _ ↦ argminOn_le f s h hs⟩
+  ⟨argminOn_mem f s hs, fun _ h _ ↦ argminOn_le f s h⟩
 
 end LinearOrder
 

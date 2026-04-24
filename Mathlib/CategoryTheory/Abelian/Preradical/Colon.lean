@@ -37,7 +37,7 @@ quotients in the sense that `Φ.quotient ⋙ Ψ.r` is the zero object.
 
 ## Tags
 
-category_theory, preradical, colon, pullback, torsion theory
+category theory, preradical, colon, pullback, torsion theory
 -/
 
 @[expose] public section
@@ -78,11 +78,9 @@ noncomputable def shortComplex : ShortComplex (C ⥤ C) where
 instance : Mono Φ.shortComplex.f := by dsimp; infer_instance
 instance : Epi Φ.shortComplex.g := by dsimp; infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 lemma shortExact_shortComplex : Φ.shortComplex.ShortExact where
   exact := ShortComplex.exact_of_g_is_cokernel _ (cokernelIsCokernel _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The kernel fork `KernelFork.ofι Φ.ι Φ.ι_π` exhibits `Φ.ι : Φ.r ⟶ 𝟭 C` as the kernel
 of the canonical projection `Φ.π : 𝟭 C ⟶ Φ.quotient`. -/
 noncomputable def isLimitKernelFork : IsLimit (KernelFork.ofι _ Φ.ι_π) :=
@@ -168,7 +166,6 @@ lemma toColon_hom_left_app_colonπ_app (X : C) :
     (toColon Φ Ψ).hom.left.app X ≫ (colonπ Φ Ψ).app X = 0 :=
   NatTrans.congr_app (toColon_hom_left_colonπ Φ Ψ) X
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma toColon_hom_left_app_colon_ι_app (X : C) :
     (Φ.toColon Ψ).hom.left.app X ≫ (Φ.colon Ψ).ι.app X = Φ.ι.app X := by

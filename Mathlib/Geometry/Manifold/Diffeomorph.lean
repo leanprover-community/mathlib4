@@ -70,7 +70,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
 
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {M' : Type*} [TopologicalSpace M']
   [ChartedSpace H' M'] {N : Type*} [TopologicalSpace N] [ChartedSpace G N] {N' : Type*}
-  [TopologicalSpace N'] [ChartedSpace G' N'] {n : WithTop ℕ∞}
+  [TopologicalSpace N'] [ChartedSpace G' N'] {n : ℕ∞ω}
 
 section Defs
 
@@ -337,9 +337,6 @@ theorem toOpenPartialHomeomorph_mdifferentiable (h : M ≃ₘ^n⟮I, J⟯ N) (hn
     h.toHomeomorph.toOpenPartialHomeomorph.MDifferentiable I J :=
   ⟨h.mdifferentiableOn _ hn, h.symm.mdifferentiableOn _ hn⟩
 
-@[deprecated (since := "2025-08-29")] alias
-  toPartialHomeomorph_mdifferentiable := toOpenPartialHomeomorph_mdifferentiable
-
 theorem uniqueMDiffOn_image_aux (h : M ≃ₘ^n⟮I, J⟯ N) (hn : n ≠ 0) {s : Set M}
     (hs : UniqueMDiffOn I s) : UniqueMDiffOn J (h '' s) := by
   convert hs.uniqueMDiffOn_preimage (h.toOpenPartialHomeomorph_mdifferentiable hn)
@@ -396,7 +393,6 @@ namespace ModelWithCorners
 
 variable (I) (e : E ≃L[𝕜] E')
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Apply a continuous linear equivalence to the model vector space. -/
 def transContinuousLinearEquiv : ModelWithCorners 𝕜 E' H where
   toPartialEquiv := I.toPartialEquiv.trans e.toEquiv.toPartialEquiv

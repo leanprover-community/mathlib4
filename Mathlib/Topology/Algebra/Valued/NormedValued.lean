@@ -67,7 +67,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[instance_reducible]
 def toValued : Valued K ℝ≥0 :=
   { hK.toUniformSpace,
-    inferInstanceAs (IsUniformAddGroup K) with
+    (inferInstance : IsUniformAddGroup K) with
     v := valuation
     is_topological_valuation := fun U => by
       rw [Metric.mem_nhds_iff]

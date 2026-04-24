@@ -30,7 +30,6 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   [Category.{v₆} T'] {L' : C' ⥤ T'} {R' : D' ⥤ T'} {F₁ : C ⥤ C'} {F₂ : D ⥤ D'} {F : T ⥤ T'}
   (α : F₁ ⋙ L' ⟶ L ⋙ F) (β : R ⋙ F ⟶ F₂ ⋙ R')
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor establishing the equivalence `StructuredArrow.commaMapEquivalence`. -/
 @[simps]
 def commaMapEquivalenceFunctor [IsIso β] (X : Comma L' R') :
@@ -41,15 +40,12 @@ def commaMapEquivalenceFunctor [IsIso β] (X : Comma L' R') :
         map₂_obj_hom, mk_hom_eq_self, Category.id_comp, Category.assoc, NatIso.isIso_inv_app,
         Functor.comp_obj, Comma.map_obj_right, Comma.map_obj_left, Comma.map_obj_hom,
         IsIso.hom_inv_id, Category.comp_id] using
-        congrFun (congrArg CategoryStruct.comp Y.hom.w) (inv (β.app Y.right.right)))⟩
+        congrFun (congrArg CategoryStruct.comp Y.hom.w) (inv (β.app Y.right.right) :))⟩
   map {Y Z} f := ⟨homMk f.right.left (congrArg CommaMorphism.left (StructuredArrow.w f)),
     homMk f.right.right (congrArg CommaMorphism.right (StructuredArrow.w f)),
-    by simp only [Functor.const_obj_obj, map₂_obj_right, mk_right, hom_eq_iff, comp_right,
+    by simp only [map₂_obj_right, mk_right, hom_eq_iff, comp_right,
       map₂_map_right, homMk_right, CommaMorphism.w] ⟩
-  map_id X := by ext <;> rfl
-  map_comp f g := by ext <;> rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The inverse functor establishing the equivalence `StructuredArrow.commaMapEquivalence`. -/
 @[simps]
 def commaMapEquivalenceInverse [IsIso β] (X : Comma L' R') :
@@ -59,13 +55,7 @@ def commaMapEquivalenceInverse [IsIso β] (X : Comma L' R') :
       simpa using congrFun (congrArg CategoryStruct.comp (StructuredArrow.w Y.hom))
         (β.app Y.right.right)⟩
   map {Y Z} f := homMk ⟨by exact f.left.right, by exact f.right.right,
-      by exact congrArg CommaMorphism.right f.w⟩ (by
-      ext
-      <;> simp only [Comma.map_obj_right, Comma.map_obj_left, Functor.const_obj_obj,
-          mk_left, mk_right, mk_hom_eq_self, Comma.comp_left, Comma.map_map_left, w]
-      · simp only [Comma.map_obj_right, Comma.comp_right, Comma.map_map_right, w])
-  map_id X := by ext <;> rfl
-  map_comp f g := by ext <;> rfl
+    by exact congrArg CommaMorphism.right f.w⟩
 
 /-- The unit establishing the equivalence `StructuredArrow.commaMapEquivalence`. -/
 @[simps!]

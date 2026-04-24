@@ -5,11 +5,11 @@ Authors: Amelia Livingston
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Projective
+public import Mathlib.Algebra.Category.ModuleCat.Adjunctions
 public import Mathlib.AlgebraicTopology.ExtraDegeneracy
 public import Mathlib.CategoryTheory.Abelian.Ext
-public import Mathlib.RepresentationTheory.Rep
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
+public import Mathlib.RepresentationTheory.Rep.Iso
 
 /-!
 # The standard and bar resolutions of `k` as a trivial `k`-linear `G`-representation
@@ -59,6 +59,9 @@ computing group (co)homology.
  * `Rep.standardComplex.forget₂ToModuleCatHomotopyEquiv`
  * `Rep.standardResolution`
 
+TODO: There's bad DefEq abuses in `Action` and the way we do `Rep.standardComplex` should be
+  unified with continuous cohomology, therefore we should remove the use of `Action` in `Rep` which
+  would remove all the unification hints in this file.
 -/
 
 @[expose] public noncomputable section
@@ -85,7 +88,7 @@ def classifyingSpaceUniversalCover [Monoid G] :
     SimplicialObject (Action (Type u) G) where
   obj n := Action.ofMulAction G (Fin (n.unop.len + 1) → G)
   map f :=
-    { hom := fun x => x ∘ f.unop.toOrderHom
+    { hom := TypeCat.ofHom (fun x => x ∘ f.unop.toOrderHom)
       comm := fun _ => rfl }
   map_id _ := rfl
   map_comp _ _ := rfl
@@ -99,8 +102,8 @@ variable [Monoid G]
 set_option backward.isDefEq.respectTransparency false in
 /-- When the category is `G`-Set, `cechNerveTerminalFrom` of `G` with the left regular action is
 isomorphic to `EG`, the universal cover of the classifying space of `G` as a simplicial `G`-set. -/
-def cechNerveTerminalFromIso :
-    cechNerveTerminalFrom (Action.ofMulAction G G) ≅ classifyingSpaceUniversalCover G :=
+def cechNerveTerminalFromIso : cechNerveTerminalFrom (Action.ofMulAction G (G)) ≅
+    classifyingSpaceUniversalCover G :=
   NatIso.ofComponents (fun _ => limit.isoLimitCone (Action.ofMulActionLimitCone _ _)) fun f => by
     refine IsLimit.hom_ext (Action.ofMulActionLimitCone.{u, 0} G fun _ => G).2 fun j => ?_
     dsimp only [cechNerveTerminalFrom, Pi.lift]
@@ -110,9 +113,10 @@ def cechNerveTerminalFromIso :
 /-- As a simplicial set, `cechNerveTerminalFrom` of a monoid `G` is isomorphic to the universal
 cover of the classifying space of `G` as a simplicial set. -/
 def cechNerveTerminalFromIsoCompForget :
-    cechNerveTerminalFrom G ≅ classifyingSpaceUniversalCover G ⋙ forget _ :=
-  NatIso.ofComponents (fun _ => Types.productIso _) fun _ =>
-    Matrix.ext fun _ _ => Types.Limit.lift_π_apply (Discrete.functor fun _ ↦ G) _ _ _
+    cechNerveTerminalFrom G ≅ classifyingSpaceUniversalCover G ⋙ forget _ := by
+  refine NatIso.ofComponents (fun _ => Types.productIso _) fun _ => ?_
+  ext : 2
+  exact Matrix.ext fun _ _ => Pi.lift_π_apply (f := fun _ ↦ G) _ _ _
 
 variable (k)
 
@@ -129,8 +133,7 @@ extra degeneracy. -/
 def extraDegeneracyAugmentedCechNerve :
     ExtraDegeneracy (Arrow.mk <| terminal.from G).augmentedCechNerve :=
   AugmentedCechNerve.extraDegeneracy (Arrow.mk <| terminal.from G)
-    ⟨fun _ => (1 : G),
-      @Subsingleton.elim _ (@Unique.instSubsingleton _ (Limits.uniqueToTerminal _)) _ _⟩
+    ⟨TypeCat.ofHom (fun _ => (1 : G)), by cat_disch⟩
 
 /-- The universal cover of the classifying space of `G` as a simplicial set, augmented by the map
 from `Fin 1 → G` to the terminal object in `Type u`, has an extra degeneracy. -/
@@ -170,8 +173,6 @@ namespace Rep.standardComplex
 
 open classifyingSpaceUniversalCover AlgebraicTopology CategoryTheory.Limits
 
-variable [Monoid G]
-
 /-- The `k`-linear map underlying the differential in the standard resolution of `k` as a trivial
 `k`-linear `G`-representation. It sends `(g₀, ..., gₙ) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ)`. -/
 def d (G : Type u) (n : ℕ) : ((Fin (n + 1) → G) →₀ k) →ₗ[k] (Fin n → G) →₀ k :=
@@ -182,13 +183,20 @@ def d (G : Type u) (n : ℕ) : ((Fin (n + 1) → G) →₀ k) →ₗ[k] (Fin n �
 variable {k G}
 
 @[simp]
-theorem d_of {G : Type u} {n : ℕ} (c : Fin (n + 1) → G) :
+theorem d_of {n : ℕ} (c : Fin (n + 1) → G) :
     d k G n (Finsupp.single c 1) =
       Finset.univ.sum fun p : Fin (n + 1) =>
         Finsupp.single (c ∘ p.succAbove) ((-1 : k) ^ (p : ℕ)) := by
   simp [d]
 
-variable (k G)
+lemma d_single {n : ℕ} (c : Fin (n + 1) → G) (r : k) :
+    d k G n (Finsupp.single c r) =
+      Finset.univ.sum fun p : Fin (n + 1) =>
+        Finsupp.single (c ∘ p.succAbove) (r * (-1 : k) ^ (p : ℕ)) := by
+  rw [← mul_one r, ← smul_eq_mul, ← smul_single, map_smul, d_of]
+  simp [Finset.smul_sum]
+
+variable (k G) [Monoid G]
 
 /-- The `n`th object of the standard resolution of `k` is definitionally isomorphic to `k[Gⁿ⁺¹]`
 equipped with the representation induced by the diagonal action of `G`. -/
@@ -199,14 +207,22 @@ instance x_projective (G : Type u) [Group G] (n : ℕ) :
     Projective ((standardComplex k G).X n) := by
   classical exact inferInstanceAs <| Projective (Rep.diagonal k G (n + 1))
 
+unif_hint where ⊢ Action.V (Action.ofMulAction G (Fin (n + 1) → G)) ≟ Fin (n + 1) → G in
 set_option backward.isDefEq.respectTransparency false in
 /-- Simpler expression for the differential in the standard resolution of `k` as a
 `G`-representation. It sends `(g₀, ..., gₙ₊₁) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ₊₁)`. -/
-theorem d_eq (n : ℕ) : ((standardComplex k G).d (n + 1) n).hom =
-    ModuleCat.ofHom (d k G (n + 1)) := by
-  refine ModuleCat.hom_ext <| Finsupp.lhom_ext' fun (x : Fin (n + 2) → G) => LinearMap.ext_ring ?_
-  simp [Action.ofMulAction_V, standardComplex, SimplicialObject.δ,
-    ← Int.cast_smul_eq_zsmul k ((-1) ^ _ : ℤ), SimplexCategory.δ, Fin.succAboveOrderEmb]
+theorem d_eq (n : ℕ) : ((standardComplex k G).d (n + 1) n).hom.toLinearMap =
+    d k G (n + 1) := by
+  refine Finsupp.lhom_ext' fun (x : Fin (n + 2) → G) => LinearMap.ext_ring ?_
+  simp [standardComplex, Action.ofMulAction_V, SimplicialObject.δ, SimplexCategory.δ,
+    Fin.succAboveOrderEmb, ← Int.cast_smul_eq_zsmul k ((-1) ^ _ : ℤ), ← ofHom_smul, ← ofHom_sum,
+    Representation.IntertwiningMap.coe_toLinearMap, Representation.IntertwiningMap.sum_apply,
+    Representation.IntertwiningMap.smul_apply, (Representation.linearizeMap_single), smul_single,
+    smul_eq_mul, mul_one]
+
+lemma d_apply {n : ℕ} (f : (Fin (n + 1 + 1) → G) →₀ k) :
+    ((standardComplex k G).d (n + 1) n).hom f = d k G (n + 1) f := by
+  rw [← Representation.IntertwiningMap.toLinearMap_apply, d_eq]; rfl
 
 section Exactness
 
@@ -240,10 +256,9 @@ def forget₂ToModuleCatHomotopyEquiv :
               Types.terminalIso.toEquiv.unique).toModuleIso)
 
 /-- The hom of `k`-linear `G`-representations `k[G¹] → k` sending `∑ nᵢgᵢ ↦ ∑ nᵢ`. -/
-def ε : Rep.ofMulAction k G (Fin 1 → G) ⟶ Rep.trivial k G k where
-  hom := ModuleCat.ofHom <| Finsupp.linearCombination _ fun _ => (1 : k)
-  comm _ := ModuleCat.hom_ext <| Finsupp.lhom_ext' fun _ => LinearMap.ext_ring
-    (by simp [ModuleCat.endRingEquiv])
+def ε : Rep.ofMulAction k G (Fin 1 → G) ⟶ Rep.trivial k G k := ofHom
+  ⟨Finsupp.linearCombination _ fun _ ↦ (1 : k), fun _ ↦ Finsupp.lhom_ext'
+    fun _ => LinearMap.ext_ring <| by simp⟩
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The homotopy equivalence of complexes of `k`-modules between the standard resolution of `k` as
@@ -289,7 +304,6 @@ theorem quasiIso_forget₂_εToSingle₀ :
   rw [← εToSingle₀_comp_eq k G] at h
   exact quasiIso_of_comp_right (hφφ' := h)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : QuasiIso (εToSingle₀ k G) := by
   rw [← HomologicalComplex.quasiIso_map_iff_of_preservesHomology _ (forget₂ _ (ModuleCat.{u} k))]
   apply quasiIso_forget₂_εToSingle₀
@@ -301,13 +315,11 @@ open HomologicalComplex.Hom standardComplex
 
 variable [Group G]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The standard projective resolution of `k` as a trivial `k`-linear `G`-representation. -/
 def standardResolution : ProjectiveResolution (Rep.trivial k G k) where
   complex := standardComplex k G
   π := εToSingle₀ k G
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `V`, `Extⁿ(k, V)` (where `k` is a trivial `k`-linear
 `G`-representation) is isomorphic to the `n`th cohomology group of `Hom(P, V)`, where `P` is the
 standard resolution of `k` called `standardComplex k G`. -/
@@ -327,7 +339,7 @@ variable (n)
 `g₀·(g₁, ..., gₙ) + ∑ (-1)ʲ⁺¹·(g₀, ..., gⱼgⱼ₊₁, ..., gₙ) + (-1)ⁿ⁺¹·(g₀, ..., gₙ₋₁)` for
 `j = 0, ..., n - 1`. -/
 def d : free k G Gⁿ⁺¹ ⟶ free k G Gⁿ :=
-  freeLift _ fun g => single (fun i => g i.succ) (single (g 0) 1) +
+  freeLift k G _ fun g => single (fun i => g i.succ) (single (g 0) 1) +
     Finset.univ.sum fun j : Fin (n + 1) =>
       single (Fin.contractNth j (· * ·) g) (single (1 : G) ((-1 : k) ^ ((j : ℕ) + 1)))
 
@@ -336,17 +348,45 @@ lemma d_single (x : Gⁿ⁺¹) :
     (d k G n).hom (single x (single 1 1)) = single (fun i => x i.succ) (Finsupp.single (x 0) 1) +
       Finset.univ.sum fun j : Fin (n + 1) =>
         single (Fin.contractNth j (· * ·) x) (single (1 : G) ((-1 : k) ^ ((j : ℕ) + 1))) := by
-  simp [d]
+  simp [d, ← Representation.IntertwiningMap.toLinearMap_apply]
 
+-- the reason the following two horrible lemmas exist is again because `Action` has bad DefEq and
+-- we should be able to remove them as soon as we get rid of the use of `Action` in this file.
+open scoped MonoidalCategory in
+@[simp]
+private lemma _root_.Representation.μ_apply_single_single_leftRegular (m : ℕ) (g : G) (r s : k)
+    (f : Fin m → G) : @DFunLike.coe _ (TensorProduct k ((Action.leftRegular G).V →₀ k) _)
+    (fun _ ↦ (Action.leftRegular G).V ⊗ (Fin m → G) →₀ k) _
+    (Representation.LinearizeMonoidal.μ (Action.leftRegular G) (Action.trivial G (Fin m → G)))
+    (single g r ⊗ₜ[k] single f s) = single (g, f) (r * s) :=
+  Representation.LinearizeMonoidal.μ_apply_single_single
+    (X := Action.leftRegular G) (Y := Action.trivial G (Fin m → G)) g f r s
+
+open scoped MonoidalCategory in
+@[simp]
+private lemma _root_.Representation.linearizeMap_single_diagonal (m : ℕ) (g : G) (f : Fin m → G)
+    (r : k) : @DFunLike.coe _ ((Action.leftRegular G).V ⊗ (Fin m → G) →₀ k)
+    (fun _ ↦ (Action.diagonal G (m + 1)).V →₀ k) _
+    (Representation.linearizeMap (Action.diagonalSuccIsoTensorTrivial G m).inv) (single (g, f) r)
+    = single ((Action.diagonalSuccIsoTensorTrivial G m).inv.hom (g, f)) r :=
+  Representation.linearizeMap_single (Action.diagonalSuccIsoTensorTrivial G m).inv (g, f) r
+
+unif_hint (X : Type*) where ⊢ Action.V (Action.trivial G X) ≟ X in
+unif_hint where ⊢ (HomologicalComplex.X (standardComplex k G) n).V ≟ ((Fin (n + 1) → G) →₀ k) in
 set_option backward.isDefEq.respectTransparency false in
 lemma d_comp_diagonalSuccIsoFree_inv_eq :
     d k G n ≫ (diagonalSuccIsoFree k G n).inv =
       (diagonalSuccIsoFree k G (n + 1)).inv ≫ (standardComplex k G).d (n + 1) n :=
-  free_ext _ _ fun i => by
-    simpa [diagonalSuccIsoFree_inv_hom_single_single (k := k), d_single (k := k),
-      standardComplex.d_eq, standardComplex.d_of (k := k) (Fin.partialProd i), Fin.sum_univ_succ,
-      Fin.partialProd_contractNth] using
-      congr(single $(by ext j; exact (Fin.partialProd_succ' i j).symm) 1)
+  free_ext k G _ _ _ fun i ↦ by
+    have eq3 : single (i 0 • Fin.partialProd fun i_1 ↦ i i_1.succ) (1 : k) =
+      single (Fin.partialProd i ∘ Fin.succ) 1 := by
+      congr; exact funext fun j ↦ Fin.partialProd_succ' i j |>.symm
+    simp [μ_hom, d_single (k := k), Rep.mkIso_inv_hom_apply _,
+      Representation.linearizeOfMulActionIso_symm_apply,
+      Representation.linearizeTrivialIso_symm_apply _, d_apply (k := k),
+      Representation.μ_apply_single_single_leftRegular _,
+      Representation.linearizeMap_single_diagonal _]
+    simp [Fin.partialProd_contractNth, Fin.sum_univ_succ, Action.ofMulAction_V, eq3]
 
 end barComplex
 
@@ -358,9 +398,12 @@ differential `(Gⁿ⁺¹ →₀ k[G]) → (Gⁿ →₀ k[G])` sending `(g₀, ..
 `g₀·(g₁, ..., gₙ) + ∑ (-1)ʲ⁺¹·(g₀, ..., gⱼgⱼ₊₁, ..., gₙ) + (-1)ⁿ⁺¹·(g₀, ..., gₙ₋₁)` for
 `j = 0, ..., n - 1`. -/
 noncomputable abbrev barComplex : ChainComplex (Rep k G) ℕ :=
-  ChainComplex.of (fun n => free k G (Fin n → G)) (fun n => d k G n) fun _ => by
-    ext x
-    simp [(diagonalSuccIsoFree k G _).comp_inv_eq.1 (d_comp_diagonalSuccIsoFree_inv_eq k G _)]
+  ChainComplex.of (fun n => free k G (Fin n → G)) (fun n => d k G n) fun m => by
+    have key : (d k G (m + 1) ≫ d k G m) ≫ (diagonalSuccIsoFree k G m).inv = 0 := by
+      rw [Category.assoc, d_comp_diagonalSuccIsoFree_inv_eq, ← Category.assoc,
+        d_comp_diagonalSuccIsoFree_inv_eq, Category.assoc, HomologicalComplex.d_comp_d,
+        Limits.comp_zero]
+    exact (cancel_mono (diagonalSuccIsoFree k G m).inv).mp (by simpa using key)
 
 namespace barComplex
 
@@ -373,20 +416,18 @@ set_option backward.isDefEq.respectTransparency false in
 def isoStandardComplex : barComplex k G ≅ standardComplex k G :=
   HomologicalComplex.Hom.isoOfComponents (fun i => (diagonalSuccIsoFree k G i).symm) fun i j => by
     rintro (rfl : j + 1 = i)
-    simp only [ChainComplex.of_x, Iso.symm_hom, d_def, d_comp_diagonalSuccIsoFree_inv_eq]
+    simp only [ChainComplex.of_X, Iso.symm_hom, d_def, d_comp_diagonalSuccIsoFree_inv_eq]
 
 end barComplex
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The chain complex `barComplex k G` as a projective resolution of `k` as a trivial
 `k`-linear `G`-representation. -/
 @[simps complex]
 def barResolution : ProjectiveResolution (Rep.trivial k G k) where
   complex := barComplex k G
-  projective n := inferInstanceAs <| Projective (free k G (Fin n → G))
+  projective n := (inferInstance : Projective (free k G (Fin n → G)))
   π := (isoStandardComplex k G).hom ≫ standardComplex.εToSingle₀ k G
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `V`, `Extⁿ(k, V)` (where `k` is the trivial `k`-linear
 `G`-representation) is isomorphic to the `n`th cohomology group of `Hom(P, V)`, where `P` is the
 bar resolution of `k`. -/

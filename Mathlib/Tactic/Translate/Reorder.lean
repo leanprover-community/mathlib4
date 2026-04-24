@@ -78,7 +78,7 @@ where
   /-- Permute the array using a sequence of indices defining a cyclic permutation.
   If the list of indices `l = [i₁, i₂, ..., iₙ]` are all distinct then
   `(cyclicPermute! a l)[iₖ₊₁] = a[iₖ]` and `(cyclicPermute! a l)[i₀] = a[iₙ]` -/
-  cyclicPermute! [Inhabited α] : Array α → List Nat → Array α
+  cyclicPermute! : Array α → List Nat → Array α
     | a, [] => a
     | a, i :: is => cyclicPermuteAux a is a[i]! i
   cyclicPermuteAux : Array α → List Nat → α → Nat → Array α
@@ -141,7 +141,7 @@ private def fixBinderInfos (bis : List BinderInfo) (e : Expr) : Expr :=
 /-
 In the implementation of `reorderForall` and `reorderLambda` we use metavariables.
 To reorder the arguments in one, we assign it to a reordered new metavariable.
-This trick lets us avoid traversing the expression manually when handling recurive reorderings.
+This trick lets us avoid traversing the expression manually when handling recursive reorderings.
 Instead, we implicitly rely on `instantiateMVars`.
 -/
 mutual
@@ -196,7 +196,7 @@ private def depForallDepth : Expr → Nat
 type `e₁` to type `e₂`. If there is no good guess, default to `[]`.
 The heuristic that we use is to compare the conclusions of `e₁` and `e₂`,
 and to observe which variables are swapped.
-We also apply this heuristic recurisvely in hypotheses. -/
+We also apply this heuristic recursively in hypotheses. -/
 partial def guessReorder (src tgt : Expr) : MetaM Reorder := withReducible do
   let src ← whnf src; let tgt ← whnf tgt
   let depth := depForallDepth src
