@@ -348,7 +348,7 @@ theorem powser_Sorted {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basi
     {ms : MultiseriesExpansion (basis_hd :: basis_tl)} (h_sorted : ms.Sorted)
     (h_neg : ms.leadingExp < 0) :
     (powser s ms).Sorted := by
-  simp only [Sorted_iff_Seq_Sorted, leadingExp_def, powser_seq] at *
+  simp only [sorted_iff_seq_sorted, leadingExp_def, powser_seq] at *
   exact Multiseries.powser_Sorted h_sorted h_neg
 
 theorem powser_Approximates {s : LazySeries} (h_convergent : s.Convergent) {basis_hd : ℝ → ℝ}
@@ -371,7 +371,7 @@ theorem powser_Approximates {s : LazySeries} (h_convergent : s.Convergent) {basi
   right
   simp only [powser_toFun] at hf_eq
   simp only [↓existsAndEq, h_seq_eq, powser_seq, Multiseries.powser_cons, mul_seq,
-    Multiseries.cons_eq_cons, Sorted_iff_Seq_Sorted, true_and, const_toFun', Real.pi_rpow_zero,
+    Multiseries.cons_eq_cons, sorted_iff_seq_sorted, true_and, const_toFun', Real.pi_rpow_zero,
     one_mul]
   have : LazySeries.toFun (Seq.cons s_hd s_tl) ∘ ms.toFun =ᶠ[atTop]
       (fun t ↦ s_hd + t * ((LazySeries.toFun s_tl) t)) ∘ ms.toFun := by

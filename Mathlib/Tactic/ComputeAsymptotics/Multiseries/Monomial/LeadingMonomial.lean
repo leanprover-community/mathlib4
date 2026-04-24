@@ -215,7 +215,7 @@ mutual
       (h_coef_ne_zero : ¬ IsZero coef)
       (h_basis : WellFormedBasis (basis_hd :: basis_tl)) :
       f ~[atTop] basis_hd ^ exp * coef.toFun := by
-    obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := Sorted_cons h_sorted
+    obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := h_sorted.elim_cons
     obtain ⟨h_coef, h_maj, h_tl⟩ := h_approx.elim_cons
     have coef_ih := coef.IsEquivalent_leadingMonomial h_coef_sorted h_coef h_coef_trimmed
       (h_basis.tail)
@@ -299,7 +299,7 @@ mutual
       | cons exp coef tl f =>
         obtain ⟨h_coef, _, h_tl⟩ := h_approx.elim_cons
         obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := Trimmed_cons h_trimmed
-        obtain ⟨h_coef_sorted, h_comp, _⟩ := Sorted_cons h_sorted
+        obtain ⟨h_coef_sorted, h_comp, _⟩ := h_sorted.elim_cons
         have coef_ih := coef.IsEquivalent_leadingMonomial h_coef_sorted h_coef h_coef_trimmed
           (h_basis.tail)
         have : f ~[atTop] basis_hd ^ exp * coef.toFun :=
@@ -684,7 +684,7 @@ theorem tendsto_zero_of_FirstNonzeroIsNeg_aux {basis : Basis} {ms : MultiseriesE
     apply Tendsto.congr' h_approx.symm
     apply tendsto_const_nhds
   | cons exp coef tl f =>
-    obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := Sorted_cons h_sorted
+    obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := h_sorted.elim_cons
     obtain ⟨h_coef_approx, h_maj, h_tl_approx⟩ := h_approx.elim_cons
     simp only [leadingMonomial, realCoef, mk_seq, Multiseries.head_cons, exps_eq_Seq_exps,
       Multiseries.cons_exps, Monomial.mk.injEq] at h_eq

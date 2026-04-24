@@ -143,11 +143,11 @@ partial def trimWithoutOracle {basis : Q(Basis)} (ms : Q(MultiseriesExpansion $b
         | .zero _ => pure ()
 
       let h_coef_sorted : Q(($coef).Sorted) :=
-        q((MultiseriesExpansion.Sorted_cons $h_extracted_sorted).left)
+        q((MultiseriesExpansion.Sorted.elim_cons $h_extracted_sorted).left)
       let h_comp : Q(($tl).leadingExp < $exp) :=
-        q((MultiseriesExpansion.Sorted_cons $h_extracted_sorted).right.left)
+        q((MultiseriesExpansion.Sorted.elim_cons $h_extracted_sorted).right.left)
       let h_tl_sorted : Q(($tl).Sorted) :=
-        q((MultiseriesExpansion.Sorted_cons $h_extracted_sorted).right.right)
+        q((MultiseriesExpansion.Sorted.elim_cons $h_extracted_sorted).right.right)
       let h_coef_approx : Q(MultiseriesExpansion.Approximates $coef) :=
         q((MultiseriesExpansion.Approximates.elim_cons ($h_eq_extracted ▸ $h_approx)).left)
 
@@ -171,7 +171,7 @@ partial def trimWithoutOracle {basis : Q(Basis)} (ms : Q(MultiseriesExpansion $b
           q(approx_cons_zero ($h_eq_extracted ▸ $h_approx) $coef_trimmed.h_approx
             $coef_trimmed.h_fun $h_coef_eq_zero)
         let .some tl_trimmed ← trimWithoutOracle q(.mk $tl $f)
-          q(MultiseriesExpansion.Sorted_iff_Seq_Sorted.mpr $h_tl_sorted)
+          q(MultiseriesExpansion.sorted_iff_seq_sorted.mpr $h_tl_sorted)
           q($h_tl_approx) q($h_basis) allZero destructStepsLeftNext | return none
         return some {
           val := q($tl_trimmed.val)

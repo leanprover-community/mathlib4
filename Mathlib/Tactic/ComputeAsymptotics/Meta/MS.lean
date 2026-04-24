@@ -288,7 +288,7 @@ def replaceFun (ms : MS) (f : Q(ℝ → ℝ)) (h : Q(($ms.val).toFun =ᶠ[Filter
   let ~q($basis_hd :: $basis_tl) := ms.basis | panic! "replaceFun: unexpected basis"
   return {ms with
     val := q(MultiseriesExpansion.replaceFun $ms.val $f)
-    h_sorted := q(MultiseriesExpansion.replaceFun_Sorted $ms.h_sorted)
+    h_sorted := q(MultiseriesExpansion.Sorted.replaceFun $ms.h_sorted)
     h_approx := q(MultiseriesExpansion.Approximates.replaceFun $h $ms.h_approx)
   }
 

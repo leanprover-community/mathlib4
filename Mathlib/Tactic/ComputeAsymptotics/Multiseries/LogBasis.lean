@@ -168,7 +168,7 @@ theorem extendBasisMiddle_WellFormed {right_hd : ℝ → ℝ} {left right_tl : B
     (h_sorted : ms.Sorted) (h_approx : ms.Approximates) (hf : ms.toFun = Real.log ∘ f)
     (h_trimmed : ms.Trimmed) :
     (logBasis.extendBasisMiddle f ms).WellFormed := by
-  simp only [MultiseriesExpansion.Sorted_iff_Seq_Sorted] at h_sorted
+  simp only [MultiseriesExpansion.sorted_iff_seq_sorted] at h_sorted
   cases left with
   | nil =>
     cases logBasis with
@@ -180,13 +180,13 @@ theorem extendBasisMiddle_WellFormed {right_hd : ℝ → ℝ} {left right_tl : B
   cases left_tl with
   | nil =>
     cases logBasis with | cons _ _ _ logBasis_tl ms' =>
-    simp only [WellFormed, MultiseriesExpansion.Sorted_iff_Seq_Sorted] at h_wf
+    simp only [WellFormed, MultiseriesExpansion.sorted_iff_seq_sorted] at h_wf
     simp only [List.cons_append, List.nil_append, extendBasisMiddle, WellFormed,
-      MultiseriesExpansion.Sorted_iff_Seq_Sorted,
+      MultiseriesExpansion.sorted_iff_seq_sorted,
       MultiseriesExpansion.extendBasisMiddle_toFun, h_wf.right, h_sorted,
       h_approx, and_true, true_and]
     constructorm* _ ∧ _
-    · rw [← MultiseriesExpansion.Sorted_iff_Seq_Sorted]
+    · rw [← MultiseriesExpansion.sorted_iff_seq_sorted]
       apply MultiseriesExpansion.extendBasisMiddle_Sorted
       simp
       grind

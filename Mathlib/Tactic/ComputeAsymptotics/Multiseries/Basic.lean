@@ -154,7 +154,7 @@ theorem const_Sorted {basis : Basis} {c : ℝ} :
   cases basis with
   | nil => constructor
   | cons basis_hd basis_tl =>
-    simp only [const, Sorted_iff_Seq_Sorted, mk_seq]
+    simp only [const, sorted_iff_seq_sorted, mk_seq]
     apply Multiseries.const_Sorted
 
 end
@@ -234,7 +234,7 @@ theorem monomialRpow_Sorted {basis : Basis} {n : ℕ} {r : ℝ} :
   cases basis with
   | nil => constructor
   | cons basis_hd basis_tl =>
-    simp only [Sorted_iff_Seq_Sorted, monomialRpow_seq]
+    simp only [sorted_iff_seq_sorted, monomialRpow_seq]
     apply Multiseries.monomialRpow_Sorted
 
 end
@@ -364,7 +364,7 @@ lemma Multiseries.map_id_Sorted {basis_hd basis_hd' basis_tl basis_tl'}
   | nil => simp at h_eq
   | cons exp' coef' tl' =>
   simp at h_eq
-  obtain ⟨h_coef, h_comp, h_tl⟩ := Sorted_cons h_sorted
+  obtain ⟨h_coef, h_comp, h_tl⟩ := h_sorted.elim_cons
   simp [h_eq, h_comp, motive]
   grind
 
@@ -443,7 +443,7 @@ theorem updateBasis_Sorted {basis : Basis} {ex : BasisExtension basis}
     apply Sorted.cons_nil
     exact updateBasis_Sorted h_sorted
   | @keep basis_hd basis_tl ex_tl =>
-    simp only [Sorted_iff_Seq_Sorted, updateBasis, mk_seq] at h_sorted ⊢
+    simp only [sorted_iff_seq_sorted, updateBasis, mk_seq] at h_sorted ⊢
     apply Multiseries.updateBasis_Sorted ex_tl h_sorted
 
 end
@@ -490,7 +490,7 @@ theorem extendBasisMiddle_Sorted {left right : Basis} {b : ℝ → ℝ}
     apply Sorted.cons_nil
     assumption
   | cons left_hd left_tl =>
-  simp only [List.cons_append, extendBasisMiddle, List.append_eq, Sorted_iff_Seq_Sorted,
+  simp only [List.cons_append, extendBasisMiddle, List.append_eq, sorted_iff_seq_sorted,
     mk_seq]
   apply Multiseries.map_id_Sorted
   · simpa using h_sorted
@@ -552,7 +552,7 @@ theorem extendBasisEnd_Sorted {basis : Basis} {b : ℝ → ℝ} {ms : Multiserie
   cases basis with
   | nil => simpa only [extendBasisEnd] using const_Sorted
   | cons basis_hd basis_tl =>
-  simp only [Sorted_iff_Seq_Sorted, List.cons_append, List.append_eq,
+  simp only [sorted_iff_seq_sorted, List.cons_append, List.append_eq,
     extendBasisEnd_seq] at *
   exact Multiseries.extendBasisEnd_Sorted h_sorted
 

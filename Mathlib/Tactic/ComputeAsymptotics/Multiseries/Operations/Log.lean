@@ -116,7 +116,7 @@ theorem Multiseries.log_Sorted {basis_hd basis_tl}
     have h_exp : exp = 0 := by
       simp at h_last
       simpa [leadingMonomial] using h_last
-    obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := Sorted_cons h_sorted
+    obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := h_sorted.elim_cons
     simp only [Multiseries.log, Multiseries.destruct_cons]
     apply Multiseries.add_Sorted Multiseries.const_Sorted
     apply Multiseries.powser_Sorted
@@ -129,7 +129,7 @@ theorem Multiseries.log_Sorted {basis_hd basis_tl}
         norm_cast
         linarith
   | cons basis_tl_hd basis_tl_tl =>
-    obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := Sorted_cons h_sorted
+    obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := h_sorted.elim_cons
     obtain ⟨_, _, _, _, logBasis_tl, log_hd, h_sorted, h_approx⟩ := logBasis
     unfold Multiseries.log
     simp only [Multiseries.destruct_cons]
@@ -168,7 +168,7 @@ theorem log_Sorted {basis : Basis}
   cases basis with
   | nil => apply Sorted.const
   | cons basis_hd basis_tl =>
-    simp only [Sorted_iff_Seq_Sorted, log_seq]
+    simp only [sorted_iff_seq_sorted, log_seq]
     exact Multiseries.log_Sorted h_logBasis (by simpa [exps] using h_last) (by simpa using h_sorted)
 termination_by 2 * basis.length
 decreasing_by grind
@@ -198,7 +198,7 @@ theorem log_Approximates {basis : Basis}
     simp at hx ⊢
     grind
   | cons exp coef tl f =>
-  obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := Sorted_cons h_sorted
+  obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := h_sorted.elim_cons
   obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := Trimmed_cons h_trimmed
   obtain ⟨h_coef, h_maj, h_tl⟩ := h_approx.elim_cons
   have h_f_pos : ∀ᶠ t in atTop, 0 < f t :=
@@ -297,7 +297,7 @@ theorem log_Approximates {basis : Basis}
           · simp only [WithBot.coe_lt_coe] at h_comp
             norm_cast
             linarith
-        · simp only [Sorted_iff_Seq_Sorted, mulMonomial_seq, mk_seq] at h_tl_sorted ⊢
+        · simp only [sorted_iff_seq_sorted, mulMonomial_seq, mk_seq] at h_tl_sorted ⊢
           apply Multiseries.mulMonomial_Sorted h_tl_sorted
           apply inv_Sorted h_coef_sorted
         apply mulMonomial_Approximates h_basis h_tl

@@ -453,12 +453,12 @@ theorem Multiseries.add_Sorted {basis_hd basis_tl} {X Y : Multiseries basis_hd b
   | nil =>
     simp only [Multiseries.nil_add] at h_eq
     subst h_eq
-    obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := Sorted_cons hY_sorted
+    obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := hY_sorted.elim_cons
     simp only [h_coef_sorted, h_comp, true_and, motive]
     use .nil, tl
     simp [Multiseries.Sorted.nil, h_tl_sorted]
   | cons X_exp X_coef X_tl =>
-    obtain ⟨hX_coef_sorted, hX_comp, hX_tl_sorted⟩ := Sorted_cons hX_sorted
+    obtain ⟨hX_coef_sorted, hX_comp, hX_tl_sorted⟩ := hX_sorted.elim_cons
     cases Y with
     | nil =>
       simp at h_eq
@@ -466,7 +466,7 @@ theorem Multiseries.add_Sorted {basis_hd basis_tl} {X Y : Multiseries basis_hd b
       use .nil, X_tl
       simp [Multiseries.Sorted.nil, hX_tl_sorted]
     | cons Y_exp Y_coef Y_tl =>
-      obtain ⟨hY_coef_sorted, hY_comp, hY_tl_sorted⟩ := Sorted_cons hY_sorted
+      obtain ⟨hY_coef_sorted, hY_comp, hY_tl_sorted⟩ := hY_sorted.elim_cons
       rw [Multiseries.add_cons_cons] at h_eq
       split_ifs at h_eq with h1 h2 <;> simp at h_eq
       · simp only [h_eq, hX_coef_sorted, Multiseries.add_leadingExp, Multiseries.leadingExp_cons,
@@ -490,7 +490,7 @@ theorem add_Sorted {basis : Basis} {X Y : MultiseriesExpansion basis}
   | nil =>
     constructor
   | cons basis_hd basis_tl =>
-    simp only [Sorted_iff_Seq_Sorted, add_seq] at hX_sorted hY_sorted ⊢
+    simp only [sorted_iff_seq_sorted, add_seq] at hX_sorted hY_sorted ⊢
     apply Multiseries.add_Sorted hX_sorted hY_sorted
 
 end
@@ -734,7 +734,7 @@ theorem Multiseries.Sorted.add_coind' {basis_hd : ℝ → ℝ} {basis_tl : Basis
   cases A with
   | nil => simp at hBA
   | cons A_exp A_coef A_tl =>
-  obtain ⟨hA_coef_sorted, hA_comp, hA_tl⟩ := Sorted_cons hA_sorted
+  obtain ⟨hA_coef_sorted, hA_comp, hA_tl⟩ := hA_sorted.elim_cons
   cases B with
   | nil =>
     simp only [add_nil, cons_eq_cons] at h_eq

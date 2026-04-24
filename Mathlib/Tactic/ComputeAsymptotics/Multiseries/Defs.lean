@@ -603,7 +603,7 @@ variable {basis_hd : ℝ → ℝ} {basis_tl : Basis}
 
 namespace Multiseries
 
-/-- The leading exponent of multiseries with non-empty basis. For `ms = []` it is `⊥`. -/
+/-- The leading exponent of a multiseries with non-empty basis. For `ms = []` it is `⊥`. -/
 def leadingExp (s : Multiseries basis_hd basis_tl) : WithBot ℝ :=
   match s.head with
   | none => ⊥
@@ -619,7 +619,7 @@ theorem leadingExp_cons {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
     (cons exp coef tl).leadingExp = exp :=
   rfl
 
-/-- If `ms.leadingExp = ⊥` then `ms = []`. -/
+/-- `ms.leadingExp = ⊥` iff `ms = []`. -/
 @[simp]
 theorem leadingExp_eq_bot (s : Multiseries basis_hd basis_tl) :
     s.leadingExp = ⊥ ↔ s = nil := by
@@ -627,7 +627,7 @@ theorem leadingExp_eq_bot (s : Multiseries basis_hd basis_tl) :
 
 end Multiseries
 
-/-- The leading exponent of multiseries with non-empty basis. For `ms = []` it is `⊥`. -/
+/-- The leading exponent of a multiseries with non-empty basis. For `ms = []` it is `⊥`. -/
 def leadingExp (ms : MultiseriesExpansion (basis_hd :: basis_tl)) : WithBot ℝ :=
   ms.seq.leadingExp
 
@@ -639,7 +639,7 @@ end leadingExp
 
 section Sorted
 
-/-- Auxilary instance for order on pairs `(exp, coef)` used below to define `Sorted` in terms
+/-- Auxiliary instance for the order on pairs `(exp, coef)` used below to define `Sorted` in terms
 of `Stream'.Seq.Pairwise`. `(exp₁, coef₁) ≤ (exp₂, coef₂)` iff `exp₁ ≤ exp₂`. -/
 scoped instance {basis} : Preorder (ℝ × MultiseriesExpansion basis) := Preorder.lift Prod.fst
 
@@ -647,22 +647,22 @@ private theorem lt_iff_lt {basis} {exp1 exp2 : ℝ} {coef1 coef2 : MultiseriesEx
     (exp1, coef1) < (exp2, coef2) ↔ exp1 < exp2 := by
   rfl
 
-/-- Multiseries `ms` is `Sorted` when at each its level exponents are sorted. -/
+/-- A multiseries `ms` is `Sorted` when the exponents at each of its levels are sorted. -/
 inductive Sorted : {basis : Basis} → (MultiseriesExpansion basis) → Prop
-| const (ms : MultiseriesExpansion []) : Sorted ms
+| const (ms : MultiseriesExpansion []) : ms.Sorted
 | seq {hd} {tl} (ms : MultiseriesExpansion (hd :: tl))
     (h_coef : ∀ x ∈ ms.seq, x.2.Sorted)
     (h_Pairwise : Seq.Pairwise (· > ·) ms.seq) : ms.Sorted
 
-/-- Multiseries `ms` is `Sorted` when at each its level exponents are sorted. -/
+/-- A multiseries `ms` is `Sorted` when the exponents at each of its levels are sorted. -/
 def Multiseries.Sorted {basis_hd basis_tl} (s : Multiseries basis_hd basis_tl) : Prop :=
   (mk s 0).Sorted (basis := basis_hd :: basis_tl)
 
 variable {basis_hd : ℝ → ℝ} {basis_tl : Basis}
 
 @[simp]
-theorem Sorted_iff_Seq_Sorted {ms : MultiseriesExpansion (basis_hd :: basis_tl)} :
-    ms.Sorted ↔ Multiseries.Sorted ms.seq where
+theorem sorted_iff_seq_sorted {ms : MultiseriesExpansion (basis_hd :: basis_tl)} :
+    ms.Sorted ↔ ms.seq.Sorted where
   mp h := by
     cases h with | seq _ h_coef h_Pairwise =>
     constructor
@@ -674,22 +674,21 @@ theorem Sorted_iff_Seq_Sorted {ms : MultiseriesExpansion (basis_hd :: basis_tl)}
     · simpa using h_coef
     · simpa using h_Pairwise
 
-namespace Multiseries
+namespace Multiseries.Sorted
 
 @[simp]
-theorem Sorted.nil : Sorted (nil : Multiseries basis_hd basis_tl) := by
-  unfold Sorted
+theorem nil : Sorted (nil : Multiseries basis_hd basis_tl) := by
   constructor <;> simp
 
 /-- `[(exp, coef)]` is `Sorted` when `coef` is `Sorted`. -/
-theorem Sorted.cons_nil {basis_hd basis_tl} {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
+theorem cons_nil {basis_hd basis_tl} {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
     (h_coef : coef.Sorted) :
     Sorted (cons exp coef (.nil : Multiseries basis_hd basis_tl)) := by
   constructor
   · simpa
   · simp
 
-theorem Sorted.cons {basis_hd basis_tl} {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
+theorem cons {basis_hd basis_tl} {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
     {tl : Multiseries basis_hd basis_tl}
     (h_coef : coef.Sorted)
     (h_comp : leadingExp tl < exp)
@@ -701,44 +700,36 @@ theorem Sorted.cons {basis_hd basis_tl} {exp : ℝ} {coef : MultiseriesExpansion
     grind
   · cases tl
     · exact Seq.Pairwise_cons_nil
-    apply Seq.Pairwise.cons_cons_of_trans _ h_tl_tl
-    simpa [lt_iff_lt] using h_comp
+    · exact h_tl_tl.cons_cons_of_trans (by simpa [lt_iff_lt] using h_comp)
 
-/-- The fact `Sorted (cons (exp, coef) tl)` implies that `coef` and `tl` are `Sorted`, and
+/-- If `cons (exp, coef) tl` is `Sorted`, then `coef` and `tl` are `Sorted`, and the
 leading exponent of `tl` is less than `exp`. -/
-theorem Sorted_cons {basis_hd basis_tl} {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
-    {tl : Multiseries basis_hd basis_tl} (h : Sorted (cons exp coef tl)) :
+theorem elim_cons {basis_hd basis_tl} {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
+    {tl : Multiseries basis_hd basis_tl} (h : (Multiseries.cons exp coef tl).Sorted) :
     coef.Sorted ∧ leadingExp tl < exp ∧ tl.Sorted := by
   cases h with | seq _ h_coef h_Pairwise =>
   constructor
-  · specialize h_coef (exp, coef) (by simp)
-    simpa using h_coef
+  · simpa using h_coef (exp, coef) (by simp)
   cases tl with
-  | nil =>
-    simp
+  | nil => simp
   | cons tl_exp tl_coef tl_tl =>
-  obtain ⟨h_all, h_Pairwise⟩ := Seq.Pairwise.cons_elim h_Pairwise
+  obtain ⟨h_all, h_Pairwise⟩ := h_Pairwise.cons_elim
   constructor
   · simp only [leadingExp_cons, WithBot.coe_lt_coe]
-    apply h_all (tl_exp, tl_coef) (by simp [cons])
-  constructor
-  · intro x hx
-    apply h_coef
-    simp at hx ⊢
-    grind
-  · assumption
+    exact h_all (tl_exp, tl_coef) (by simp [Multiseries.cons])
+  · exact Sorted.seq _ (fun x hx ↦ h_coef _ (by simp_all)) h_Pairwise
 
-theorem Sorted.tail {ms : Multiseries basis_hd basis_tl} (h : ms.Sorted) :
+theorem tail {ms : Multiseries basis_hd basis_tl} (h : ms.Sorted) :
     ms.tail.Sorted := by
   cases ms with
   | nil => simp
-  | cons exp coef tl => simpa using (Sorted_cons h).right.right
+  | cons exp coef tl => simpa using h.elim_cons.right.right
 
-/-- Coinduction principle for proving `Sorted`. For some predicate `motive` on multiseries,
-if `motive ms` (base case) and the predicate "survives" destruction of its argument, then `ms` is
-`Sorted`. Here "survive" means that if `x = cons (exp, coef) tl` than `motive x` must imply
-`coef.Sorted`, `tl.leadingExp < exp` and `motive tl`. -/
-theorem Sorted.coind {s : Multiseries basis_hd basis_tl}
+/-- Coinduction principle for proving `Sorted`. Given a predicate `motive` on multiseries,
+if `motive ms` holds (base case) and the predicate "survives" destruction of its argument, then
+`ms` is `Sorted`. Here "survives" means that if `x = cons (exp, coef) tl`, then `motive x` must
+imply `coef.Sorted`, `tl.leadingExp < exp`, and `motive tl`. -/
+theorem coind {s : Multiseries basis_hd basis_tl}
     (motive : (ms : Multiseries basis_hd basis_tl) → Prop)
     (h_base : motive s)
     (h_step : ∀ exp coef tl, motive (.cons exp coef tl) →
@@ -750,19 +741,17 @@ theorem Sorted.coind {s : Multiseries basis_hd basis_tl}
   · apply Seq.all_coind
     · exact h_base
     · intro (exp, coef) tl h
-      specialize h_step exp coef tl h
-      grind
+      grind [h_step exp coef tl h]
   · apply Seq.Pairwise.coind_trans
     · exact h_base
     · intro (exp, coef) tl h
       constructor
       · intro (tl_exp, tl_coef) h_tl
-        simp only [gt_iff_lt]
-        change tl_exp < exp
+        rw [gt_iff_lt, lt_iff_lt]
         replace h_step := (h_step exp coef tl h).right.left
-        cases tl <;> simp [leadingExp, head] at h_tl h_step; grind
-      · specialize h_step exp coef tl h
+        cases tl <;> simp [leadingExp, head] at h_tl h_step
         grind
+      · grind [h_step exp coef tl h]
 
 /-- A predicate that says that a function `op` preserves well-orderedness of multiseries. -/
 abbrev PreservesSorted {basis_hd : ℝ → ℝ} {basis_tl : Basis}
@@ -776,7 +765,7 @@ theorem PreservesSorted.comp {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   simp [PreservesSorted] at *
   grind
 
-theorem Sorted.coind_friend {ms : Multiseries basis_hd basis_tl}
+theorem coind_friend {ms : Multiseries basis_hd basis_tl}
     (motive : (ms : Multiseries basis_hd basis_tl) → Prop)
     (h_base : motive ms)
     (h_step : ∀ exp coef tl, motive (.cons exp coef tl) →
@@ -800,7 +789,7 @@ theorem Sorted.coind_friend {ms : Multiseries basis_hd basis_tl}
       rw [h_eq]
       apply h_preserves
       apply Sorted.nil
-    obtain ⟨h_coef_sorted, h_comp, h_tl⟩ := Sorted_cons this
+    obtain ⟨h_coef_sorted, h_comp, h_tl⟩ := this.elim_cons
     exact ⟨h_coef_sorted, h_comp, fun _ ↦ tl, .nil, rfl, FriendlyOperation.const,
       fun _ _ ↦ h_tl, hx⟩
   | cons x_exp x_coef x_tl =>
@@ -825,7 +814,7 @@ theorem Sorted.coind_friend {ms : Multiseries basis_hd basis_tl}
           rw [hx_tl]
           apply h_preserves'
           apply Sorted.nil
-        obtain ⟨h_coef_sorted, h_comp, h_tl⟩ := Sorted_cons this
+        obtain ⟨h_coef_sorted, h_comp, h_tl⟩ := this.elim_cons
         assumption
       | cons y_exp y_coef y_tl =>
         have : Sorted (basis_hd := basis_hd) (.cons y_exp y_coef .nil) := by
@@ -846,7 +835,7 @@ theorem Sorted.coind_friend {ms : Multiseries basis_hd basis_tl}
         obtain ⟨rfl, rfl, rfl⟩ := h2
         apply destruct_eq_cons at h1
         rw [h1] at this
-        obtain ⟨h_coef_sorted, h_comp, h_tl⟩ := Sorted_cons this
+        obtain ⟨h_coef_sorted, h_comp, h_tl⟩ := this.elim_cons
         assumption
   apply h_preserves at this
   have hT := FriendlyOperation.destruct_apply_eq_unfold h_friend
@@ -862,7 +851,7 @@ theorem Sorted.coind_friend {ms : Multiseries basis_hd basis_tl}
   obtain ⟨rfl, rfl, h_tl_eq⟩ := h2
   apply destruct_eq_cons at h1
   rw [h1] at this
-  obtain ⟨h_coef_sorted, h_comp, h_tl⟩ := Sorted_cons this
+  obtain ⟨h_coef_sorted, h_comp, h_tl⟩ := this.elim_cons
   refine ⟨h_coef_sorted, ?_, ?_⟩
   · simpa [h_tl_eq, leadingExp, FriendlyOperation.head_eq_head h_friend'' hx_tl_head] using h_comp
   simp only [motive']
@@ -888,7 +877,7 @@ theorem Sorted.coind_friend {ms : Multiseries basis_hd basis_tl}
     · apply Sorted.nil
   · exact hy
 
-theorem Sorted.coind_friend' {ms : Multiseries basis_hd basis_tl}
+theorem coind_friend' {ms : Multiseries basis_hd basis_tl}
     {γ : Type*} (op : γ → Multiseries basis_hd basis_tl → Multiseries basis_hd basis_tl)
     [FriendlyOperationClass op]
     (motive : (ms : Multiseries basis_hd basis_tl) → Prop)
@@ -907,41 +896,45 @@ theorem Sorted.coind_friend' {ms : Multiseries basis_hd basis_tl}
   refine ⟨h_coef_sorted, h_comp, op c, x, h_tl, FriendlyOperationClass.FriendlyOperation _,
     by grind, hx⟩
 
-end Multiseries
+end Multiseries.Sorted
+
+namespace Sorted
 
 /-- `[]` is `Sorted`. -/
-theorem Sorted.nil (f : ℝ → ℝ) : @Sorted (basis_hd :: basis_tl) (mk .nil f) := by
+theorem nil (f : ℝ → ℝ) : Sorted (basis := basis_hd :: basis_tl) (mk .nil f) := by
   simp
 
 /-- `[(exp, coef)]` is `Sorted` when `coef` is `Sorted`. -/
-theorem Sorted.cons_nil {exp : ℝ} {coef : MultiseriesExpansion basis_tl} {f : ℝ → ℝ}
+theorem cons_nil {exp : ℝ} {coef : MultiseriesExpansion basis_tl} {f : ℝ → ℝ}
     (h_coef : coef.Sorted) :
-    @Sorted (basis_hd :: basis_tl) (mk (.cons exp coef .nil) f) := by
+    Sorted (basis := basis_hd :: basis_tl) (mk (.cons exp coef .nil) f) := by
   simp [Multiseries.Sorted.cons_nil h_coef]
 
-/-- `cons (exp, coef) tl` is `Sorted` when `coef` and `tl` are `Sorted` and leading
+/-- `cons (exp, coef) tl` is `Sorted` when `coef` and `tl` are `Sorted` and the leading
 exponent of `tl` is less than `exp`. -/
-theorem Sorted.cons {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
+theorem cons {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
     {tl : Multiseries basis_hd basis_tl}
     {f : ℝ → ℝ}
     (h_coef : coef.Sorted)
     (h_comp : tl.leadingExp < exp)
     (h_tl : tl.Sorted) :
-    @Sorted (basis_hd :: basis_tl) (mk (.cons exp coef tl) f) := by
+    Sorted (basis := basis_hd :: basis_tl) (mk (.cons exp coef tl) f) := by
   simp [Multiseries.Sorted.cons h_coef h_comp h_tl]
 
-/-- The fact `Sorted (cons (exp, coef) tl)` implies that `coef` and `tl` are `Sorted`, and
+/-- If `cons (exp, coef) tl` is `Sorted`, then `coef` and `tl` are `Sorted`, and the
 leading exponent of `tl` is less than `exp`. -/
-theorem Sorted_cons {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
+theorem elim_cons {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
     {tl : Multiseries basis_hd basis_tl} {f : ℝ → ℝ}
-    (h : @Sorted (basis_hd :: basis_tl) (mk (.cons exp coef tl) f)) :
+    (h : Sorted (basis := basis_hd :: basis_tl) (mk (.cons exp coef tl) f)) :
     coef.Sorted ∧ tl.leadingExp < exp ∧ tl.Sorted := by
-  apply Multiseries.Sorted_cons (by simpa using h)
+  apply Multiseries.Sorted.elim_cons (by simpa using h)
 
-theorem replaceFun_Sorted {ms : MultiseriesExpansion (basis_hd :: basis_tl)}
+theorem replaceFun {ms : MultiseriesExpansion (basis_hd :: basis_tl)}
     {f : ℝ → ℝ} (h_sorted : ms.Sorted) :
     (ms.replaceFun f).Sorted := by
   simpa using h_sorted
+
+end Sorted
 
 end Sorted
 

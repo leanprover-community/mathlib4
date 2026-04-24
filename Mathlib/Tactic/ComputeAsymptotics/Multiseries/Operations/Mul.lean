@@ -166,7 +166,7 @@ theorem Multiseries.mul_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {Y_exp 
     simp only [mul_cons_cons, mulMonomial_cons]
     rw [add_cons_left]
     simp
-    obtain ⟨_, hX_comp, hX_tail_sorted⟩ := Sorted_cons hX_sorted
+    obtain ⟨_, hX_comp, hX_tail_sorted⟩ := hX_sorted.elim_cons
     cases Y_tl
     · simp
     · simp at hX_comp ⊢
@@ -562,7 +562,7 @@ mutual
     by_cases hY : Y = .nil
     · simp [hY]
     right
-    obtain ⟨hZ_coef_sorted, hZ_comp, hZ_tl_sorted⟩ := Sorted_cons hZ_sorted
+    obtain ⟨hZ_coef_sorted, hZ_comp, hZ_tl_sorted⟩ := hZ_sorted.elim_cons
     simp only [Multiseries.mul_cons hZ_sorted, Multiseries.add_mulMonomial_right hZ_coef_sorted,
       exists_and_left, ↓existsAndEq, Multiseries.add_leadingExp, Multiseries.mul_leadingExp,
       sup_lt_iff, true_and, motive]
@@ -670,7 +670,7 @@ mutual
     by_cases hY : Y = .nil
     · simp [hY]
     right
-    obtain ⟨hZ_coef_sorted, hZ_comp, hZ_tl_sorted⟩ := Sorted_cons hZ_sorted
+    obtain ⟨hZ_coef_sorted, hZ_comp, hZ_tl_sorted⟩ := hZ_sorted.elim_cons
     simp only [Multiseries.mul_cons hZ_sorted, Multiseries.add_mul_left', exists_and_left,
       ↓existsAndEq, Multiseries.mul_leadingExp, true_and, motive]
     use (X.mul Y).mulMonomial Z_coef Z_exp, Z_tl
@@ -723,7 +723,7 @@ mutual
       cases B with
       | nil => simp at h_eq
       | cons B_exp B_coef B_tl =>
-      obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := Multiseries.Sorted_cons hB_sorted
+      obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := hB_sorted.elim_cons
       simp only [Multiseries.mulMonomial_cons, Multiseries.cons_eq_cons] at h_eq
       simp only [h_eq, Multiseries.mulMonomial_leadingExp, WithBot.coe_add, motive]
       constructorm* _ ∧ _
@@ -747,7 +747,7 @@ mutual
     | cons Y_exp Y_coef Y_tl =>
     by_cases hX : X = .nil
     · simp [hX]
-    obtain ⟨hY_coef_sorted, hY_comp, hY_tl_sorted⟩ := Multiseries.Sorted_cons hY_sorted
+    obtain ⟨hY_coef_sorted, hY_comp, hY_tl_sorted⟩ := hY_sorted.elim_cons
     right
     simp only [Multiseries.mul_cons hY_sorted]
     refine ⟨_, _, rfl, ?_⟩
@@ -765,7 +765,7 @@ mutual
     cases basis with
     | nil => constructor
     | cons basis_hd basis_tl =>
-      simp only [Sorted_iff_Seq_Sorted, mul_seq] at *
+      simp only [sorted_iff_seq_sorted, mul_seq] at *
       exact Multiseries.mul_Sorted hX_sorted hY_sorted
 
 end
@@ -978,7 +978,7 @@ theorem Approximates.mul_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     apply hA_maj.mul hB_maj
     apply h_basis.head_eventually_pos
   · apply mulMonomial_Approximates h_basis hA_tl hB_coef
-  simp only [equiv_def, mul_seq, mul_toFun, Sorted_iff_Seq_Sorted, mk_seq, mk_toFun,
+  simp only [equiv_def, mul_seq, mul_toFun, sorted_iff_seq_sorted, mk_seq, mk_toFun,
     motive']
   use (mk (.cons A_exp A_coef A_tl) fA).mul X, Y
   constructorm* _ ∧ _

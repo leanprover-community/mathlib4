@@ -169,7 +169,7 @@ theorem Multiseries.mulConst_Sorted {basis_hd basis_tl} {ms : Multiseries basis_
     cases X with
     | nil => simp at h_ms_eq
     | cons exp coef tl =>
-      obtain ⟨hX_coef_sorted, hX_comp, hX_tl_sorted⟩ := Sorted_cons hX_sorted
+      obtain ⟨hX_coef_sorted, hX_comp, hX_tl_sorted⟩ := hX_sorted.elim_cons
       simp at h_ms_eq
       constructor
       · simp only [h_ms_eq]
@@ -186,7 +186,7 @@ theorem mulConst_Sorted {basis : Basis} {ms : MultiseriesExpansion basis} {c : �
   cases basis with
   | nil => constructor
   | cons basis_hd basis_tl =>
-    simp only [Sorted_iff_Seq_Sorted, mulConst_seq]
+    simp only [sorted_iff_seq_sorted, mulConst_seq]
     apply Multiseries.mulConst_Sorted
     simpa using h_sorted
 

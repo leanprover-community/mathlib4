@@ -169,7 +169,7 @@ theorem Multiseries.inv_Sorted {basis_hd basis_tl} {ms : Multiseries basis_hd ba
     simp only [Multiseries.inv, Multiseries.destruct_nil]
     apply Sorted.nil
   | cons exp coef tl =>
-    obtain ⟨h_coef, h_comp, h_tl⟩ := Sorted_cons h_sorted
+    obtain ⟨h_coef, h_comp, h_tl⟩ := h_sorted.elim_cons
     simp only [Multiseries.inv, Multiseries.destruct_cons]
     apply Multiseries.mulMonomial_Sorted
     · apply Multiseries.powser_Sorted
@@ -190,7 +190,7 @@ theorem inv_Sorted {basis : Basis} {ms : MultiseriesExpansion basis}
   cases basis with
   | nil => constructor
   | cons basis_hd basis_tl =>
-    simp only [Sorted_iff_Seq_Sorted, inv_seq] at *
+    simp only [sorted_iff_seq_sorted, inv_seq] at *
     exact Multiseries.inv_Sorted h_sorted
 
 end
@@ -205,7 +205,7 @@ theorem tl_mulMonomial_coef_inv_neg_exp_toFun_tendsto_zero
     Tendsto ((mk tl (f - basis_hd ^ exp * coef.toFun)).mulMonomial
       coef.inv (-exp)).toFun atTop (𝓝 0) := by
   obtain ⟨h_coef, h_maj, h_tl⟩ := h_approx.elim_cons
-  obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := Sorted_cons h_sorted
+  obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := h_sorted.elim_cons
   obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := Trimmed_cons h_trimmed
   have := IsEquivalent_coef h_approx h_sorted h_coef_trimmed h_coef_ne_zero h_basis
   obtain ⟨φ, hφ, hf⟩ := this.exists_eq_mul
@@ -240,7 +240,7 @@ theorem inv_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
       simp
     | cons exp coef tl f =>
       obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := Trimmed_cons h_trimmed
-      obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := Sorted_cons h_sorted
+      obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := h_sorted.elim_cons
       obtain ⟨h_coef, _, h_tl⟩ := h_approx.elim_cons
       have h_coef_ne_zero : ∀ᶠ t in atTop, coef.toFun t ≠ 0 :=
         eventually_ne_zero_of_not_zero h_coef_ne_zero h_coef_sorted h_coef h_coef_trimmed
@@ -262,7 +262,7 @@ theorem inv_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
           cases w with
           | bot => simp [Ne.bot_lt']
           | coe => simpa [← WithBot.coe_add] using h_comp
-        · simp only [Sorted_iff_Seq_Sorted, mulMonomial_seq, mk_seq]
+        · simp only [sorted_iff_seq_sorted, mulMonomial_seq, mk_seq]
           apply Multiseries.mulMonomial_Sorted h_tl_sorted (inv_Sorted h_coef_sorted)
         apply mulMonomial_Approximates h_basis h_tl
         apply inv_Approximates (h_basis.tail) h_coef_sorted h_coef h_coef_trimmed

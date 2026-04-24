@@ -124,7 +124,7 @@ theorem Multiseries.exp_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     grind
   subst h_exp
   clear h_if
-  obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := Sorted_cons h
+  obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := h.elim_cons
   apply Multiseries.mulMonomial_Sorted
   · exact Multiseries.powser_Sorted h_tl_sorted h_comp
   · apply exp_Sorted h_coef_sorted
@@ -139,7 +139,7 @@ theorem exp_Sorted {basis : Basis} {ms : MultiseriesExpansion basis}
   cases basis with
   | nil => apply Sorted.const
   | cons basis_hd basis_tl =>
-    simp only [Sorted_iff_Seq_Sorted, exps_eq_Seq_exps, exp_seq] at *
+    simp only [sorted_iff_seq_sorted, exps_eq_Seq_exps, exp_seq] at *
     apply Multiseries.exp_Sorted h h_nonpos
 
 end
@@ -173,7 +173,7 @@ theorem exp_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
     grind
   subst h_exp
   clear h_if
-  obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := Sorted_cons h_sorted
+  obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := h_sorted.elim_cons
   obtain ⟨h_coef, h_majorized, h_tl⟩ := h_approx.elim_cons
   let ms := ((mk tl (f - basis_hd ^ 0 * coef.toFun)).powser expSeries).mulMonomial coef.exp 0
   have h : ms.Approximates := by

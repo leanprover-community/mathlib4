@@ -5,8 +5,6 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-public import Mathlib.Tactic.MoveAdd
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basis
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Monomial.Predicates
 
@@ -126,9 +124,12 @@ theorem mul_toFun {m1 m2 : UnitMonomial} {basis : Basis} (h_basis : WellFormedBa
     cases basis with
     | nil => simp
     | cons basis_hd basis_tl =>
-    simp only [List.zipWith_cons_cons, List.prod_cons] at ih ⊢
-    rw [ih h_basis.tail (by grind) (by grind), Real.rpow_add (h_pos _ (by simp))]
-    grind
+      simp only [List.zipWith_cons_cons, List.prod_cons] at ih ⊢
+      have h1 : exps1.length = exps2.length := by grind
+      have h2 : ∀ f ∈ basis_tl, 0 < f x := by grind
+      have h3 : 0 < basis_hd x := h_pos _ (by simp)
+      rw [ih h_basis.tail h1 h2, Real.rpow_add h3]
+      grind
 
 theorem inv_toFun {m : UnitMonomial} {basis : Basis} (h_basis : WellFormedBasis basis) :
     m.inv.toFun basis =ᶠ[atTop] (m.toFun basis)⁻¹ := by
@@ -142,7 +143,7 @@ theorem inv_toFun {m : UnitMonomial} {basis : Basis} (h_basis : WellFormedBasis 
     | cons basis_hd basis_tl =>
       apply ((h_basis.head_eventually_pos).and (ih (h_basis.tail))).mono
       intro x ⟨h_pos, ih⟩
-      simp only [List.map_cons, List.zipWith_cons_cons, List.prod_cons, mul_inv_rev] at ih ⊢
+      simp only [List.map_cons, List.zipWith_cons_cons, List.prod_cons, mul_inv_rev]
       grind [Real.rpow_neg h_pos.le]
 
 theorem tail_toFun_IsLittleO_head {m : UnitMonomial} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
