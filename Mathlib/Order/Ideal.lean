@@ -202,13 +202,15 @@ protected theorem isIdeal (s : Ideal P) : IsIdeal (s : Set P) :=
 theorem mem_compl_of_ge {x y : P} : x ≤ y → x ∈ (I : Set P)ᶜ → y ∈ (I : Set P)ᶜ := fun h ↦
   mt <| I.lower h
 
-@[to_dual (attr := simp high)]
+@[to_dual]
 theorem coe_subset_coe : (s : Set P) ⊆ t ↔ s ≤ t :=
   Iff.rfl
 
-@[to_dual (attr := simp high)]
+@[to_dual]
 theorem coe_ssubset_coe : (s : Set P) ⊂ t ↔ s < t :=
   Iff.rfl
+
+attribute [simp] PFilter.coe_subset_coe PFilter.coe_ssubset_coe
 
 @[deprecated Order.PFilter.upper (since := "2026-04-23")]
 theorem _root_.Order.PFilter.mem_of_le {F : PFilter P} {x y} : x ≤ y → x ∈ F → y ∈ F :=
@@ -396,11 +398,14 @@ section
 variable {I : Ideal P} {x y : P}
 
 /-- The smallest ideal containing a given element. -/
-@[to_dual (attr := simps!) /-- The smallest filter containing a given element. -/]
+@[to_dual /-- The smallest filter containing a given element. -/]
 def principal (p : P) : Ideal P where
   toLowerSet := LowerSet.Iic p
   nonempty' := nonempty_Iic
   directed' _ hx _ hy := ⟨p, le_rfl, hx, hy⟩
+
+@[to_dual (attr := simp)]
+theorem principal_toLowerSet (p : P) : (principal p).toLowerSet = LowerSet.Iic p := rfl
 
 @[to_dual]
 instance [Inhabited P] : Inhabited (Ideal P) :=
@@ -422,7 +427,7 @@ lemma mem_principal_self : x ∈ principal x :=
   mem_principal.2 (le_refl x)
 
 @[deprecated "use `simp` instead" (since := "2026-04-23")]
-theorem principal_le_principal_iff : PFilter.principal y ≥ PFilter.principal x ↔ x ≤ y := by simp
+theorem principal_le_principal_iff : PFilter.principal x ≤ PFilter.principal y ↔ x ≤ y := by simp
 
 @[to_dual]
 theorem monotone_principal : Monotone (principal (P := P)) := fun _ _ => by simp
@@ -460,7 +465,7 @@ end OrderTop
 
 end Preorder
 
-@[to_dual]
+@[to_dual (attr := simp)]
 theorem isProper_principal_iff [PartialOrder P] [OrderTop P] {a : P} :
     (principal a).IsProper ↔ a ≠ ⊤ := by
   rw [isProper_iff_top_notMem, mem_principal, top_le_iff]
@@ -801,7 +806,7 @@ instance [LE P] [OrderTop P] : IsCoatomic (Ideal P) := by
   refine ⟨IsIdeal.toIdeal <| isIdeal_sUnion_of_isChain (C := SetLike.coe '' S) ?_
     (hS₁.image_of_map_rel _ _ _ ?_) (hS₂.image _), ?_, ?_⟩
   · simp [Ideal.isIdeal]
-  · simp
+  · simp [↓coe_subset_coe]
   · simpa [top_notMem_iff, lt_top_iff_ne_top, ← top_mem_iff_eq_top] using hS₃
   · intro J hJ
     simpa [le_toIdeal] using Set.subset_biUnion_of_mem hJ
