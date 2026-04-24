@@ -285,6 +285,21 @@ protected theorem smash {s₁ s₂ t₁ t₂ : CompositionSeries X}
     · intro i
       simpa [e, -Fin.castSucc_natAdd, smash_natAdd, smash_succ_natAdd] using h₂.choose_spec i⟩
 
+#adaptation_note /-- Proof repaired after leanprover/lean4#13492.
+The proof body used to be a single term
+```
+⟨e, fun i => by
+  refine Fin.lastCases ?_ ?_ i
+  · simpa [e, apply_last] using hlast
+  · intro i
+    simpa [e, ← Fin.castSucc_succ] using hequiv.choose_spec i⟩
+```
+(where `e` was defined via the same `calc` block; the signature had `: ... :=` rather
+than `: ... := by`).
+The replacement proof is a short-term fix, and we request that the authors/maintainers of
+this file review the proof, and either approve it by removing this adaptation note, revise
+the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
+needs addressing. -/
 set_option backward.isDefEq.respectTransparency false in
 protected theorem snoc {s₁ s₂ : CompositionSeries X} {x₁ x₂ : X} {hsat₁ : IsMaximal s₁.last x₁}
     {hsat₂ : IsMaximal s₂.last x₂} (hequiv : Equivalent s₁ s₂)

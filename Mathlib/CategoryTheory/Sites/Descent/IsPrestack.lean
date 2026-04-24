@@ -104,6 +104,19 @@ lemma pullHom_pullHom
     pullHom (pullHom φ g gf₁ gf₂ hgf₁ hgf₂) g' g'f₁ g'f₂ hg'f₁ hg'f₂ =
       pullHom φ (g' ≫ g) g'f₁ g'f₂ := by
   dsimp [pullHom]
+  #adaptation_note /-- Proof repaired after leanprover/lean4#13492.
+  The tail of this proof was previously a single combined `rw` call
+  ```
+  rw [Functor.map_comp_assoc, Functor.map_comp_assoc,
+    F.mapComp'_inv_whiskerRight_mapComp'₀₂₃_inv_app _ _ _ _ _ _ _ rfl (by aesop),
+    F.mapComp'₀₂₃_hom_comp_mapComp'_hom_whiskerRight_app_assoc _ _ _ _ _ _ _ rfl (by aesop),
+    mapComp'_inv_naturality_assoc,
+      ← reassoc_of% Cat.Hom₂.comp_app, Iso.hom_inv_id, Cat.Hom₂.id_app, Category.id_comp]
+  ```
+  The replacement proof is a short-term fix, and we request that the authors/maintainers of
+  this file review the proof, and either approve it by removing this adaptation note, revise
+  the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
+  needs addressing. -/
   rw [Functor.map_comp_assoc, Functor.map_comp_assoc,
     F.mapComp'_inv_whiskerRight_mapComp'₀₂₃_inv_app _ _ _ _ _ _ _ rfl (by aesop),
     F.mapComp'₀₂₃_hom_comp_mapComp'_hom_whiskerRight_app_assoc _ _ _ _ _ _ _ rfl (by aesop)]

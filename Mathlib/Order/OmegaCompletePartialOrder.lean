@@ -742,6 +742,12 @@ lemma ωScottContinuous_apply
     apply le_antisymm
     · apply ωSup_le
       intro i
+      #adaptation_note /-- Proof repaired after leanprover/lean4#13492.
+      The next line was previously just `dsimp`.
+      The replacement proof is a short-term fix, and we request that the authors/maintainers of
+      this file review the proof, and either approve it by removing this adaptation note, revise
+      the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
+      needs addressing. -/
       change (f (c i)) (ωSup (c.map ⟨g, hg.monotone⟩)) ≤ _
       rw [(f (c i)).continuous]
       apply ωSup_le

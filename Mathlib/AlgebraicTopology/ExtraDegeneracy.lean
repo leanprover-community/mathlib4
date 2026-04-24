@@ -98,6 +98,15 @@ def ofIso {X Y : SimplicialObject.Augmented C} (e : X ≅ Y) (ed : ExtraDegenera
   s' := (point.mapIso e).inv ≫ ed.s' ≫ (drop.mapIso e).hom.app (op ⦋0⦌)
   s n := (drop.mapIso e).inv.app (op ⦋n⦌) ≫ ed.s n ≫ (drop.mapIso e).hom.app (op ⦋n + 1⦌)
   s'_comp_ε := by
+    #adaptation_note /-- Proof repaired after leanprover/lean4#13492.
+    The body of `s'_comp_ε` used to be just
+    ```
+    simpa [w₀, ed.s'_comp_ε_assoc] using (point.mapIso e).inv_hom_id
+    ```
+    The replacement proof is a short-term fix, and we request that the authors/maintainers of
+    this file review the proof, and either approve it by removing this adaptation note, revise
+    the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
+    needs addressing. -/
     have h1 := (point.mapIso e).inv_hom_id
     dsimp [point] at h1
     have h2 : e.hom.left.app (op ⦋0⦌) ≫ Y.hom.app (op ⦋0⦌) =
@@ -106,6 +115,15 @@ def ofIso {X Y : SimplicialObject.Augmented C} (e : X ≅ Y) (ed : ExtraDegenera
     erw [h2, ed.s'_comp_ε_assoc]
     exact h1
   s₀_comp_δ₁ := by
+    #adaptation_note /-- Proof repaired after leanprover/lean4#13492.
+    The body of `s₀_comp_δ₁` used to be just
+    ```
+    simp [← SimplicialObject.δ_naturality, s₀_comp_δ₁_assoc, w₀_assoc]
+    ```
+    The replacement proof is a short-term fix, and we request that the authors/maintainers of
+    this file review the proof, and either approve it by removing this adaptation note, revise
+    the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
+    needs addressing. -/
     dsimp
     rw [Category.assoc, Category.assoc, ← SimplicialObject.δ_naturality,
       ← Category.assoc (ed.s 0)]

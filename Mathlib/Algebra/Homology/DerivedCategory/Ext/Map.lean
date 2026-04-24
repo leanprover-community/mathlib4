@@ -64,6 +64,25 @@ lemma DerivedCategory.map_triangleOfSESδ [HasDerivedCategory.{t} C] [HasDerived
         (F.mapDerivedCategoryFactors.inv.app S.X₁)⟦1⟧' ≫
           (F.mapDerivedCategory.commShiftIso (1 : ℤ)).inv.app (Q.obj S.X₁) := by
   have := CochainComplex.mappingCone.quasiIso_descShortComplex hS
+  #adaptation_note /-- Proof repaired after leanprover/lean4#13492.
+  The rest of the proof from this point used to be
+  ```
+  rw [← cancel_epi (F.mapDerivedCategory.map
+    (Q.map (CochainComplex.mappingCone.descShortComplex S))), ← Functor.map_comp,
+    descShortComplex_triangleOfSESδ, F.mapDerivedCategoryFactors_hom_naturality_assoc,
+    ← CochainComplex.mappingCone.mapHomologicalComplexIso_hom_descShortComplex,
+    Functor.map_comp_assoc, descShortComplex_triangleOfSESδ_assoc, Category.assoc,
+    ← Functor.map_comp_assoc]
+  dsimp
+  rw [← CochainComplex.mappingCone.map_δ, Functor.map_comp_assoc,
+    ← F.mapDerivedCategoryFactors_hom_naturality_assoc, Functor.map_comp]
+  simp [NatTrans.shift_app, Functor.commShiftIso_comp_hom_app, Functor.commShiftIso_comp_inv_app,
+    ← Functor.map_comp_assoc]
+  ```
+  The replacement proof is a short-term fix, and we request that the authors/maintainers of
+  this file review the proof, and either approve it by removing this adaptation note, revise
+  the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
+  needs addressing. -/
   rw [← cancel_epi (F.mapDerivedCategory.map
     (Q.map (CochainComplex.mappingCone.descShortComplex S))), ← Functor.map_comp,
     descShortComplex_triangleOfSESδ, F.mapDerivedCategoryFactors_hom_naturality_assoc,
