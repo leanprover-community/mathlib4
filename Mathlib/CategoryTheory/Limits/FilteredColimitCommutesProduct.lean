@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Limits.FunctorCategory.Filtered
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.CategoryTheory.Limits.Types.Products
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 
 /-!
 # The IPC property
@@ -62,14 +61,15 @@ maps `k : ∀ i, I i` to `∏ᶜ fun (s : α) => (F s).obj (k s)`. -/
 noncomputable abbrev pointwiseProduct : (∀ i, I i) ⥤ C :=
   Functor.pi F ⋙ Pi.functor α
 
-set_option backward.isDefEq.respectTransparency false in
+attribute [local simp] Functor.pi in
 /-- `pointwiseProduct` is invariant under re-indexing. -/
+@[simps!]
 noncomputable
 def Pi.equivalenceOfEquivCompPointwiseProduct {β : Type*} (f : β ≃ α) [HasProductsOfShape β C] :
     (Pi.equivalenceOfEquiv I f).inverse ⋙ pointwiseProduct (fun i ↦ F (f i)) ≅
       pointwiseProduct F :=
   (NatIso.ofComponents
-    fun a ↦ (Pi.whiskerEquiv f (fun j ↦ (Iso.refl ((F (f j)).obj <| a (f j))))).symm).symm
+    (fun a ↦ (Pi.whiskerEquiv f (fun j ↦ (Iso.refl ((F (f j)).obj <| a (f j))))).symm)).symm
 
 variable {F} in
 /-- The inclusions `(F s).obj (k s) ⟶ colimit (F s)` induce a cocone on `pointwiseProduct F` with
@@ -104,7 +104,7 @@ theorem ι_colimitPointwiseProductToProductColimit_π (k : ∀ i, I i) (s : α) 
     colimit.ι (pointwiseProduct F) k ≫
       colimitPointwiseProductToProductColimit F ≫ Pi.π _ s =
       Pi.π _ s ≫ colimit.ι (F s) (k s) := by
-  simp [colimitPointwiseProductToProductColimit, Functor.pi]
+  simp [colimitPointwiseProductToProductColimit, Functor.pi, Pi.functor]
 
 end
 
@@ -195,6 +195,7 @@ lemma IsIPCOfShape.of_isIso
   obtain ⟨_, h⟩ := H J F
   rwa [IsColimit.nonempty_isColimit_iff_isIso_desc (colimit.isColimit _)]
 
+attribute [local simp] Functor.pi in
 lemma IsIPCOfShape.of_equiv {ι' : Type*} [HasProductsOfShape ι' C] [IsIPCOfShape.{w} ι C]
     (e : ι ≃ ι') :
     IsIPCOfShape.{w} ι' C where
@@ -205,12 +206,7 @@ lemma IsIPCOfShape.of_equiv {ι' : Type*} [HasProductsOfShape ι' C] [IsIPCOfSha
         h.whiskerEquivalence (Pi.equivalenceOfEquiv J e).symm
     · exact (Pi.equivalenceOfEquivCompPointwiseProduct F e)
     · -- Without the double `symm`, one runs into DTT hell
-      symm
-      refine Cocone.ext ?_ ?_
-      · exact (Pi.whiskerEquiv e fun _ ↦ Iso.refl _).symm
-      · intro a
-        apply Pi.hom_ext
-        simp [Pi.equivalenceOfEquivCompPointwiseProduct, Pi.equivalenceOfEquiv, Functor.pi]
+      exact (Cocone.ext (Pi.whiskerEquiv e fun _ ↦ Iso.refl _).symm).symm
 
 variable (C) in
 /-- A category `C` has the `w`-IPC property it satisfies the IPC-property for every `ι : Type w`. -/

@@ -977,7 +977,11 @@ noncomputable def Pi.functor [HasProductsOfShape α C] : (α → C) ⥤ C where
   obj f := ∏ᶜ f
   map {f g} t := Pi.map t
 
-set_option backward.isDefEq.respectTransparency false in
+lemma piEquivalenceFunctorDiscrete_functor_comp_lim [HasProductsOfShape α C] :
+    (piEquivalenceFunctorDiscrete α C).functor ⋙ lim = Pi.functor _ :=
+  rfl
+
+attribute [local simp] Functor.pi in
 /-- The `∏ᶜ` functor composed with the pointwise constant functor `Π i, I i ⥤ (α → C)` is isomorphic
 to the constant functor with value `∏ᶜ X`. -/
 @[simps!]
@@ -994,7 +998,11 @@ noncomputable def Sigma.functor [HasCoproductsOfShape α C] : (α → C) ⥤ C w
   obj f := ∐ f
   map {f g} t := Sigma.map t
 
-set_option backward.isDefEq.respectTransparency false in
+lemma piEquivalenceFunctorDiscrete_functor_comp_colim [HasCoproductsOfShape α C] :
+    (piEquivalenceFunctorDiscrete α C).functor ⋙ colim = Sigma.functor _ :=
+  rfl
+
+attribute [local simp] Functor.pi in
 /-- The `∐` functor composed with the pointwise constant functor `Π i, I i ⥤ (α → C)` is isomorphic
 to the constant functor with value `∐ X`. -/
 @[simps!]
