@@ -117,14 +117,13 @@ lemma exists_measure_eq_one_iff_measure_univ_eq_one : (∃ s, μ s = 1) ↔ μ u
 lemma measure_univ {s : Set α} (hμs : μ s = 1) : μ univ = 1 :=
   (exists_measure_eq_one_iff_measure_univ_eq_one).mp ⟨s, hμs⟩
 
-lemma compl_eq_zero {s : Set α} (hs : MeasurableSet s) (hμs : μ s = 1) : μ sᶜ = 0 := by
-  rw [measure_compl hs (by simp), measure_univ hμs, hμs, tsub_self]
-
 lemma inter_eq_one {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
     (hμs : μ s = 1) (hμt : μ t = 1) : μ (s ∩ t) = 1 := by
   have : μ (s ∩ t) ≤ μ s := measure_mono inter_subset_left
   have : μ (s ∩ t) ≤ μ t := measure_mono inter_subset_right
-  cases μ.zero_one s <;> cases μ.zero_one t <;> cases μ.zero_one (s ∩ t)
+  rcases μ.zero_one s with (_ | hμs)
+    <;> rcases μ.zero_one t with (_ | hμt)
+    <;> rcases μ.zero_one (s ∩ t)
   all_goals try simp_all only [zero_le, zero_ne_one]
   suffices μ (s ∩ t)ᶜ ≤ 0 by
     rw [measure_compl (hs.inter ht) (by simp), measure_univ ‹_›] at this
@@ -133,7 +132,8 @@ lemma inter_eq_one {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
   _ = μ (sᶜ ∪ tᶜ) := by simp [compl_inter]
   _ ≤ μ sᶜ + μ tᶜ := measure_union_le _ _
   _ ≤ 0 := by
-    rw [compl_eq_zero hs ‹_›, compl_eq_zero ht ‹_›]
+    rw [measure_compl hs (by simp), measure_univ hμs, hμs, tsub_self,
+      measure_compl ht (by simp), measure_univ hμt, hμt, tsub_self]
     simp
 
 lemma inter_eq_prod {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t) :
@@ -325,6 +325,7 @@ lemma parallelComp_id_comp_copy_comp {γ : Type*} [MeasurableSpace γ] {κ : Ker
         simp
     _ = (η ∘ₖ κ) a sᶜ := by
         rw [η.comp_apply' _ _ hs.compl]
-    _ = 0 := compl_eq_zero hs h₁
+    _ = 0 := by
+      rw [measure_compl hs (by simp), measure_univ h₁, h₁, tsub_self]
 
 end ProbabilityTheory.Kernel
