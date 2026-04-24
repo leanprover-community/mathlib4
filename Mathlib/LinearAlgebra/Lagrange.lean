@@ -509,6 +509,20 @@ theorem leadingCoeff_eq_sum
   rw [leadingCoeff, natDegree_eq_of_degree_eq_some hdegree]
   exact coeff_eq_sum hvs (by rw [hdegree]; norm_cast; lia)
 
+lemma _root_.Polynomial.exists_eval_eq_iff {ι : Type*} [Finite ι] (x y : ι → F) :
+    (∃ q : F[X], ∀ i, q.eval (x i) = y i) ↔ ∀ i j, x i = x j → y i = y j := by
+  refine ⟨fun ⟨q, hq⟩ i j hij ↦ by rw [← hq, ← hq, hij], fun hwd ↦ ?_⟩
+  classical
+  have : Fintype ι := Fintype.ofFinite ι
+  have hinj : Set.InjOn (fun d : F ↦ d) (Finset.univ.image x) := Function.injective_id.injOn
+  set v : F → F := fun z ↦ if h : ∃ i, x i = z then y h.choose else 0 with v_def
+  refine ⟨Lagrange.interpolate (Finset.univ.image x) (fun d : F ↦ d) v, fun i ↦ ?_⟩
+  rw [Lagrange.eval_interpolate_at_node _ hinj (by simp), v_def]
+  simp only
+  split_ifs with h
+  · exact hwd _ _ h.choose_spec
+  · aesop
+
 end Interpolate
 
 section Nodal
