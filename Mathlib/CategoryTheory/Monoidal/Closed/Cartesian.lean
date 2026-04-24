@@ -71,8 +71,6 @@ def internalizeHom {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C] {
 
 variable {A B : C} [Closed A]
 
-noncomputable instance : (ihom A).Monoidal := .ofChosenFiniteProducts _
-
 open MonoidalClosed
 
 /-- If an initial object `I` exists in a CCC, then `A ⨯ I ≅ I`. -/

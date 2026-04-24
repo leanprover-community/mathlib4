@@ -84,9 +84,6 @@ def adjunction : tensorLeft A ⊣ ihom A :=
 instance : (tensorLeft A).IsLeftAdjoint :=
   (ihom.adjunction A).isLeftAdjoint
 
-instance : (ihom A).IsRightAdjoint :=
-  (ihom.adjunction A).isRightAdjoint
-
 /-- The evaluation natural transformation. -/
 def ev : ihom A ⋙ tensorLeft A ⟶ 𝟭 C :=
   (ihom.adjunction A).counit
