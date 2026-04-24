@@ -34,12 +34,12 @@ def mapCompSimp (e : Expr) : MetaM Simp.Result :=
 
 private def extractCatInstanceFromEq (eqTy : Expr) : MetaM (Expr × Expr) := do
   let some (α, _, _) := eqTy.cleanupAnnotations.eq? | throwError "`@[map]` expects an equality"
-  let (``Quiver.Hom, #[_, instQuiv, _, _]) := α.getAppFnArgs |
+  let (``Quiver.Hom, #[C, _, _, _]) := α.getAppFnArgs |
     throwError "`@[map]` expects an equality of morphisms"
-  let (``CategoryTheory.CategoryStruct.toQuiver, #[_, instCS]) := instQuiv.getAppFnArgs |
-    throwError "`@[map]` expects an equality of morphisms"
-  let (``CategoryTheory.Category.toCategoryStruct, #[C, instC]) := instCS.getAppFnArgs |
-    throwError "`@[map]` expects an equality of morphisms"
+  let uObj ← mkFreshLevelMVar
+  let vHom ← mkFreshLevelMVar
+  let catTy := .app (.const ``CategoryTheory.Category [vHom, uObj]) C
+  let instC ← synthInstance catTy
   return (C, instC)
 
 /-- Build the functor `map` lemma for `e : f = g` with target category levels `uLev`, `vLev`. -/
