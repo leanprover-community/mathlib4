@@ -122,7 +122,7 @@ theorem isOpen_image_iff_of_subset_source {s : Set X} (hs : s ⊆ e.source) :
 
 /-- A `PartialEquiv` with continuous open forward map and open source is a
 `OpenPartialHomeomorph`. -/
-@[simps toPartialEquiv]
+@[simps toPartialHomeomorph_toPartialEquiv]
 def ofContinuousOpenRestrict (e : PartialEquiv X Y) (hc : ContinuousOn e e.source)
     (ho : IsOpenMap (e.source.restrict e)) (hs : IsOpen e.source) : OpenPartialHomeomorph X Y where
   toPartialEquiv := e
@@ -145,7 +145,7 @@ theorem coe_ofContinuousOpenRestrict_symm (e : PartialEquiv X Y) (hc : Continuou
 
 /-- A `PartialEquiv` with continuous open forward map and open source is a
 `OpenPartialHomeomorph`. -/
-@[simps! toPartialEquiv]
+@[simps! toPartialHomeomorph_toPartialEquiv]
 def ofContinuousOpen (e : PartialEquiv X Y) (hc : ContinuousOn e e.source) (ho : IsOpenMap e)
     (hs : IsOpen e.source) : OpenPartialHomeomorph X Y :=
   ofContinuousOpenRestrict e hc (ho.restrict hs) hs
