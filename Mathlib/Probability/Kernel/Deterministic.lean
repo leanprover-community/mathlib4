@@ -54,7 +54,7 @@ composition is deterministic, the equation fails.
 
 open MeasureTheory ProbabilityTheory Set
 
-variable {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
+variable {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
 namespace ProbabilityTheory.Kernel
 
