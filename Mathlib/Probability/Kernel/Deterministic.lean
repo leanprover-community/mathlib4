@@ -25,8 +25,8 @@ properties about them.
 
 ## Main statements
 
-* `eq_zero_or_dirac`: in a standard Borel space, a zero-one measure is either the zero measure or a
-  Dirac measure.
+* `exists_eq_dirac`: in a standard Borel space, a zero-one measure that is not the zero measure is
+  a Dirac measure.
 * `isDeterministic_iff_isZeroOneMeasure`: a finite kernel is deterministic if and
   only if it is a zero-one measure for every input.
 * `IsDeterministic.exists_eq_deterministic`: in a standard Borel space, a deterministic Markov
@@ -143,68 +143,65 @@ lemma measure_inter_eq_prod {s t : Set α} (hs : MeasurableSet s) (ht : Measurab
   cases μ.zero_one s <;> cases μ.zero_one t <;> cases μ.zero_one (s ∩ t)
   all_goals try simp_all [measure_inter_eq_one]
 
-/-- In a standard Borel space, a zero-one measure is either the zero measure or a Dirac measure. -/
-theorem eq_zero_or_dirac [StandardBorelSpace α] : μ = 0 ∨ ∃ x₀, μ = Measure.dirac x₀ := by
-  by_cases hμ : μ = 0
-  · exact Or.inl hμ
-  · right
-    have : IsProbabilityMeasure μ := by
-      rcases IsZeroOrProbabilityMeasure.measure_univ (μ := μ) with (h | h)
-      · rw [← ne_eq, ← μ.measure_univ_ne_zero] at hμ
-        contradiction
-      · exact ⟨h⟩
-    obtain ⟨A, hAm, hAsep⟩ := exists_seq_separating (α := α) MeasurableSet.univ univ
-    let B := fun n => if h : μ (A n) = 1 then A n else (A n)ᶜ
-    have mBn : MeasurableSet (⋂ n, B n) := by
-      refine MeasurableSet.iInter fun n ↦ ?_
-      simp only [dite_eq_ite, B]
-      split_ifs
-      · exact hAm n
-      · exact (hAm n).compl
-    have hBn : μ (⋂ n, B n) = 1 := by
-      refine (prob_compl_eq_zero_iff mBn).mp ?_
-      simp only [dite_eq_ite, compl_iInter, measure_iUnion_null_iff, B]
-      intro n
-      split_ifs with h
+/-- In a standard Borel space, a zero-one measure that is not the zero measure is a Dirac
+measure. -/
+theorem exists_eq_dirac [StandardBorelSpace α] [NeZero μ] : ∃ x₀, μ = Measure.dirac x₀ := by
+  have : IsProbabilityMeasure μ := by
+    rcases IsZeroOrProbabilityMeasure.measure_univ (μ := μ) with (h | h)
+    · simp_all
+    · exact ⟨h⟩
+  obtain ⟨A, hAm, hAsep⟩ := exists_seq_separating (α := α) MeasurableSet.univ univ
+  let B := fun n => if h : μ (A n) = 1 then A n else (A n)ᶜ
+  have mBn : MeasurableSet (⋂ n, B n) := by
+    refine MeasurableSet.iInter fun n ↦ ?_
+    simp only [dite_eq_ite, B]
+    split_ifs
+    · exact hAm n
+    · exact (hAm n).compl
+  have hBn : μ (⋂ n, B n) = 1 := by
+    refine (prob_compl_eq_zero_iff mBn).mp ?_
+    simp only [dite_eq_ite, compl_iInter, measure_iUnion_null_iff, B]
+    intro n
+    split_ifs with h
+    · simp_all
+    · rw [compl_compl]
+      rcases μ.zero_one (A n) with (h₀ | h₁)
+      · exact h₀
       · simp_all
-      · rw [compl_compl]
-        rcases μ.zero_one (A n) with (h₀ | h₁)
-        · exact h₀
-        · simp_all
-    obtain ⟨x₀, hx₀⟩ : ∃ x₀, ⋂ n, B n = {x₀} := by
-      have neBn : (⋂ n, B n).Nonempty := by
-        by_contra! h
-        rw [h] at hBn
-        simp_all
-      simp_rw [eq_singleton_iff_unique_mem]
-      refine ⟨neBn.some, neBn.some_mem, fun y hy ↦ ?_⟩
-      refine hAsep y (by trivial) neBn.some (by trivial) fun n ↦ ?_
-      have hsome := neBn.some_mem
-      simp only [dite_eq_ite, mem_iInter, B] at hsome hy
-      specialize hsome n
-      specialize hy n
-      constructor
-      · intro h
-        split_ifs at hy with hμAn
-        · simpa [hμAn] using hsome
-        · contradiction
-      · intro h
-        split_ifs at hsome with hμAn
-        · simpa [hμAn] using hy
-        · contradiction
-    use x₀
-    ext s hs
-    by_cases h : x₀ ∈ s
-    · simp [h]
-      have : {x₀} ⊆ s := by grind
-      have := measure_mono (μ := μ) this
-      rw [← hx₀, hBn] at this
+  obtain ⟨x₀, hx₀⟩ : ∃ x₀, ⋂ n, B n = {x₀} := by
+    have neBn : (⋂ n, B n).Nonempty := by
+      by_contra! h
+      rw [h] at hBn
       simp_all
-    · simp [h]
-      have : s ⊆ {x₀}ᶜ := by grind
-      have := measure_mono (μ := μ) this
-      rw [← hx₀, measure_compl mBn (by simp), MeasureTheory.measure_univ, hBn] at this
-      simp_all
+    simp_rw [eq_singleton_iff_unique_mem]
+    refine ⟨neBn.some, neBn.some_mem, fun y hy ↦ ?_⟩
+    refine hAsep y (by trivial) neBn.some (by trivial) fun n ↦ ?_
+    have hsome := neBn.some_mem
+    simp only [dite_eq_ite, mem_iInter, B] at hsome hy
+    specialize hsome n
+    specialize hy n
+    constructor
+    · intro h
+      split_ifs at hy with hμAn
+      · simpa [hμAn] using hsome
+      · contradiction
+    · intro h
+      split_ifs at hsome with hμAn
+      · simpa [hμAn] using hy
+      · contradiction
+  use x₀
+  ext s hs
+  by_cases h : x₀ ∈ s
+  · simp [h]
+    have : {x₀} ⊆ s := by grind
+    have := measure_mono (μ := μ) this
+    rw [← hx₀, hBn] at this
+    simp_all
+  · simp [h]
+    have : s ⊆ {x₀}ᶜ := by grind
+    have := measure_mono (μ := μ) this
+    rw [← hx₀, measure_compl mBn (by simp), MeasureTheory.measure_univ, hBn] at this
+    simp_all
 
 end IsZeroOneMeasure
 
@@ -252,14 +249,7 @@ function. -/
 theorem IsDeterministic.exists_eq_deterministic [StandardBorelSpace β] (κ : Kernel α β)
     [IsMarkovKernel κ] [IsDeterministic κ] :
     ∃ (f : α → β) (hf : Measurable f), κ = deterministic f hf := by
-  have : ∀ a, ∃ x₀, κ a = Measure.dirac x₀ := by
-    intro a
-    rcases eq_zero_or_dirac (μ := κ a) with (h | h)
-    · have : κ a univ = 0 := by simp [h]
-      have : κ a univ = 1 := by simp
-      simp_all
-    · exact h
-  choose f hf using this
+  choose f hf using fun a ↦ exists_eq_dirac (μ := κ a)
   refine ⟨f, ?_, ?_⟩
   · intro s hs
     have : f ⁻¹' s = (fun a => κ a s) ⁻¹' {1} := by
