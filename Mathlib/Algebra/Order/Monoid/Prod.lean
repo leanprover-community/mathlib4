@@ -21,14 +21,14 @@ namespace Prod
 variable {α β : Type*}
 
 @[to_additive]
-instance [CommMonoid α] [Preorder α] [IsOrderedMonoid α]
-    [CommMonoid β] [Preorder β] [IsOrderedMonoid β] : IsOrderedMonoid (α × β) where
+instance [CommSemigroup α] [Preorder α] [IsOrderedMonoid α]
+    [CommSemigroup β] [Preorder β] [IsOrderedMonoid β] : IsOrderedMonoid (α × β) where
   mul_le_mul_left _ _ h _ := ⟨mul_le_mul_left h.1 _, mul_le_mul_left h.2 _⟩
 
 @[to_additive]
 instance instIsOrderedCancelMonoid
-    [CommMonoid α] [Preorder α] [IsOrderedCancelMonoid α]
-    [CommMonoid β] [Preorder β] [IsOrderedCancelMonoid β] :
+    [CommSemigroup α] [Preorder α] [IsOrderedCancelMonoid α]
+    [CommSemigroup β] [Preorder β] [IsOrderedCancelMonoid β] :
     IsOrderedCancelMonoid (α × β) :=
   { le_of_mul_le_mul_left :=
       fun _ _ _ h ↦ ⟨le_of_mul_le_mul_left' h.1, le_of_mul_le_mul_left' h.2⟩ }
@@ -50,8 +50,8 @@ instance [Mul α] [LE α] [CanonicallyOrderedMul α]
 namespace Lex
 
 @[to_additive]
-instance isOrderedMonoid [CommMonoid α] [Preorder α] [MulLeftStrictMono α]
-    [CommMonoid β] [Preorder β] [IsOrderedMonoid β] :
+instance isOrderedMonoid [CommSemigroup α] [Preorder α] [MulLeftStrictMono α]
+    [CommSemigroup β] [Preorder β] [IsOrderedMonoid β] :
     IsOrderedMonoid (α ×ₗ β) where
   mul_le_mul_left _ _ hxy z := (le_iff.1 hxy).elim
     (fun hxy => left _ _ <| mul_lt_mul_left hxy _)
@@ -59,8 +59,8 @@ instance isOrderedMonoid [CommMonoid α] [Preorder α] [MulLeftStrictMono α]
       Or.inr ⟨by simp only [ofLex_mul, fst_mul, hxy.1], mul_le_mul_left hxy.2 _⟩)
 
 @[to_additive]
-instance isOrderedCancelMonoid [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α]
-    [CommMonoid β] [PartialOrder β] [IsOrderedCancelMonoid β] :
+instance isOrderedCancelMonoid [CommSemigroup α] [PartialOrder α] [IsOrderedCancelMonoid α]
+    [CommSemigroup β] [PartialOrder β] [IsOrderedCancelMonoid β] :
     IsOrderedCancelMonoid (α ×ₗ β) where
   le_of_mul_le_mul_left _ _ _ hxyz := (le_iff.1 hxyz).elim
     (fun hxy => left _ _ <| lt_of_mul_lt_mul_left' hxy)

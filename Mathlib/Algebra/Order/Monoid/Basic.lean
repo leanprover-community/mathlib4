@@ -21,11 +21,11 @@ open Function
 
 universe u
 
-variable {α : Type u} {β : Type*} [CommMonoid α] [Preorder α]
+variable {α : Type u} {β : Type*} [CommSemigroup α] [Preorder α]
 
 /-- Pullback an `IsOrderedMonoid` under an injective map. -/
 @[to_additive /-- Pullback an `IsOrderedAddMonoid` under an injective map. -/]
-lemma Function.Injective.isOrderedMonoid [IsOrderedMonoid α] [CommMonoid β]
+lemma Function.Injective.isOrderedMonoid [IsOrderedMonoid α] [CommSemigroup β]
     [Preorder β] (f : β → α) (mul : ∀ x y, f (x * y) = f x * f y)
     (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) :
     IsOrderedMonoid β where
@@ -33,7 +33,7 @@ lemma Function.Injective.isOrderedMonoid [IsOrderedMonoid α] [CommMonoid β]
 
 /-- Pullback an `IsOrderedMonoid` under a strictly monotone map. -/
 @[to_additive /-- Pullback an `IsOrderedAddMonoid` under a strictly monotone map. -/]
-lemma StrictMono.isOrderedMonoid [IsOrderedMonoid α] [CommMonoid β] [LinearOrder β]
+lemma StrictMono.isOrderedMonoid [IsOrderedMonoid α] [CommSemigroup β] [LinearOrder β]
     (f : β → α) (hf : StrictMono f) (mul : ∀ x y, f (x * y) = f x * f y) :
     IsOrderedMonoid β :=
   Function.Injective.isOrderedMonoid f mul hf.le_iff_le
@@ -41,7 +41,7 @@ lemma StrictMono.isOrderedMonoid [IsOrderedMonoid α] [CommMonoid β] [LinearOrd
 /-- Pullback an `IsOrderedCancelMonoid` under an injective map. -/
 @[to_additive Function.Injective.isOrderedCancelAddMonoid
     /-- Pullback an `IsOrderedCancelAddMonoid` under an injective map. -/]
-lemma Function.Injective.isOrderedCancelMonoid [IsOrderedCancelMonoid α] [CommMonoid β]
+lemma Function.Injective.isOrderedCancelMonoid [IsOrderedCancelMonoid α] [CommSemigroup β]
     [Preorder β]
     (f : β → α) (mul : ∀ x y, f (x * y) = f x * f y)
     (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) :
@@ -52,7 +52,7 @@ lemma Function.Injective.isOrderedCancelMonoid [IsOrderedCancelMonoid α] [CommM
 
 /-- Pullback an `IsOrderedCancelMonoid` under a strictly monotone map. -/
 @[to_additive /-- Pullback an `IsOrderedAddCancelMonoid` under a strictly monotone map. -/]
-lemma StrictMono.isOrderedCancelMonoid [IsOrderedCancelMonoid α] [CommMonoid β] [LinearOrder β]
+lemma StrictMono.isOrderedCancelMonoid [IsOrderedCancelMonoid α] [CommSemigroup β] [LinearOrder β]
     (f : β → α) (hf : StrictMono f) (mul : ∀ x y, f (x * y) = f x * f y) :
     IsOrderedCancelMonoid β where
   __ := hf.isOrderedMonoid f mul

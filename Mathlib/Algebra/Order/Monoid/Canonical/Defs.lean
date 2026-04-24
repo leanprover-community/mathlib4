@@ -253,7 +253,7 @@ end Semigroup
 -- TODO: make it an instance
 @[to_additive]
 lemma CanonicallyOrderedMul.toIsOrderedMonoid
-    [CommMonoid α] [Preorder α] [CanonicallyOrderedMul α] : IsOrderedMonoid α where
+    [CommSemigroup α] [Preorder α] [CanonicallyOrderedMul α] : IsOrderedMonoid α where
   mul_le_mul_left _ _ := mul_le_mul_left
 
 section Monoid

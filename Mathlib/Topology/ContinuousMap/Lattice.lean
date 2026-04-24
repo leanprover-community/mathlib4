@@ -32,7 +32,7 @@ section Lattice
 /-! `C(α, β)` is a lattice ordered group. -/
 
 @[to_additive]
-instance [PartialOrder β] [CommMonoid β] [IsOrderedMonoid β] [ContinuousMul β] :
+instance [PartialOrder β] [CommSemigroup β] [IsOrderedMonoid β] [ContinuousMul β] :
     IsOrderedMonoid C(α, β) where
   mul_le_mul_left _ _ hfg c x := mul_le_mul_left (hfg x) (c x)
 

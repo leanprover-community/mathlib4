@@ -29,7 +29,7 @@ namespace Pi
 @[to_additive
       /-- The product of a family of ordered additive commutative monoids is
 an ordered additive commutative monoid. -/]
-instance isOrderedMonoid {ι : Type*} {Z : ι → Type*} [∀ i, CommMonoid (Z i)]
+instance isOrderedMonoid {ι : Type*} {Z : ι → Type*} [∀ i, CommSemigroup (Z i)]
     [∀ i, Preorder (Z i)] [∀ i, IsOrderedMonoid (Z i)] :
     IsOrderedMonoid (∀ i, Z i) where
   mul_le_mul_left _ _ w _ := fun i => mul_le_mul_left (w i) _
@@ -45,7 +45,7 @@ instance existsMulOfLe {ι : Type*} {α : ι → Type*} [∀ i, LE (α i)] [∀ 
 @[to_additive
       /-- The product of a family of canonically ordered additive monoids is
 a canonically ordered additive monoid. -/]
-instance {ι : Type*} {Z : ι → Type*} [∀ i, Monoid (Z i)] [∀ i, PartialOrder (Z i)]
+instance {ι : Type*} {Z : ι → Type*} [∀ i, Semigroup (Z i)] [∀ i, PartialOrder (Z i)]
     [∀ i, CanonicallyOrderedMul (Z i)] :
     CanonicallyOrderedMul (∀ i, Z i) where
   __ := Pi.existsMulOfLe
@@ -53,7 +53,7 @@ instance {ι : Type*} {Z : ι → Type*} [∀ i, Monoid (Z i)] [∀ i, PartialOr
   le_self_mul _ _ := fun _ => le_self_mul
 
 @[to_additive]
-instance isOrderedCancelMonoid [∀ i, CommMonoid <| f i] [∀ i, Preorder <| f i]
+instance isOrderedCancelMonoid [∀ i, CommSemigroup <| f i] [∀ i, Preorder <| f i]
     [∀ i, IsOrderedCancelMonoid <| f i] :
     IsOrderedCancelMonoid (∀ i : I, f i) where
   le_of_mul_le_mul_left _ _ _ h i := le_of_mul_le_mul_left' (h i)
