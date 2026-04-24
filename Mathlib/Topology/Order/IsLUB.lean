@@ -432,8 +432,8 @@ theorem DenseRange.exists_seq_strictAnti_tendsto {β : Type*} [LinearOrder β] [
     ∃ u : ℕ → β, StrictAnti u ∧ (∀ n, f (u n) ∈ Ioi x) ∧ Tendsto (f ∘ u) atTop (𝓝 x) :=
   hf.exists_seq_strictMono_tendsto (α := αᵒᵈ) (β := βᵒᵈ) hmono.dual x
 
-theorem eventually_le_const_iff_forall_gt_eventually_lt_const {β : Type*} [FirstCountableTopology α]
-    {l : Filter β} [CountableInterFilter l] {f : β → α} {a : α} :
+theorem eventually_le_const_iff_forall_gt_eventually_lt_const [FirstCountableTopology α]
+    {l : Filter γ} [CountableInterFilter l] {f : γ → α} {a : α} :
     (∀ᶠ x in l, f x ≤ a) ↔ ∀ b, a < b → ∀ᶠ x in l, f x < b where
   mp h c hbc := h.mono <| fun x hx ↦ lt_of_le_of_lt hx hbc
   mpr h := by
@@ -451,8 +451,8 @@ theorem eventually_le_const_iff_forall_gt_eventually_lt_const {β : Type*} [Firs
       rw [← Set.compl_Iic, ← Set.compl_Iio, compl_inj_iff] at H0
       simpa [← Set.mem_Iic, ← Set.mem_Iio, H0] using hx
 
-theorem eventually_const_le_iff_forall_lt_eventually_const_lt {β : Type*} [FirstCountableTopology α]
-    {l : Filter β} [CountableInterFilter l] {f : β → α} {a : α} :
+theorem eventually_const_le_iff_forall_lt_eventually_const_lt [FirstCountableTopology α]
+    {l : Filter γ} [CountableInterFilter l] {f : γ → α} {a : α} :
     (∀ᶠ x in l, a ≤ f x) ↔ ∀ b, b < a → ∀ᶠ x in l, b < f x :=
   eventually_le_const_iff_forall_gt_eventually_lt_const (α := αᵒᵈ)
 
