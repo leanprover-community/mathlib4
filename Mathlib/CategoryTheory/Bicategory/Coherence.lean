@@ -135,8 +135,8 @@ def normalizeIso {a : B} :
 
 -- Equation lemmas for `normalizeIso`/`normalizeAux` matching `≫`/`𝟙`
 -- (i.e., `CategoryStruct.comp`/`CategoryStruct.id` for `FreeBicategory`) instead of
--- `Hom.comp`/`Hom.id`. Needed because `canUnfoldAtMatcher` no longer unfolds class
--- projections in match discriminants.
+-- `Hom.comp`/`Hom.id`. Needed because after leanprover/lean4#13363, `canUnfoldAtMatcher`
+-- no longer unfolds class projections in match discriminants.
 @[simp] theorem normalizeAux_comp {a : B} {b c d : FreeBicategory B}
     (p : Path a b) (f : b ⟶ c) (g : c ⟶ d) :
     normalizeAux p (f ≫ g) = normalizeAux (normalizeAux p f) g := rfl
@@ -190,8 +190,7 @@ theorem normalize_naturality {a b c : B} (p : Path a b) {f g : Hom b c} (η : f 
     rw [associator_inv_naturality_middle_assoc, ← comp_whiskerRight_assoc, ih, comp_whiskerRight]
     have := dcongr_arg (fun x => (normalizeIso x h).hom) (normalizeAux_congr p (Quot.mk _ η'))
     dsimp at this; simp [this]
-  | _ =>
-    simp
+  | _ => simp
 
 -- Not `@[simp]` because it is not in `simp`-normal form.
 theorem normalizeAux_nil_comp {a b c : B} (f : Hom a b) (g : Hom b c) :

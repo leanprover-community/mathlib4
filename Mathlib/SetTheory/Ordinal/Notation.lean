@@ -54,7 +54,8 @@ instance : Zero ONote :=
 theorem zero_def : zero = 0 :=
   rfl
 
--- With matchwhnf changes, Zero.zero doesn't unfold in match discriminants.
+-- After leanprover/lean4#13363 (matchwhnf changes), `Zero.zero` doesn't unfold in match
+-- discriminants.
 theorem zero_zero_eq : (Zero.zero : ONote) = zero := rfl
 
 instance : Inhabited ONote :=
@@ -141,7 +142,8 @@ instance (priority := low) nat (n : ℕ) : OfNat ONote n where
   ofNat := ofNat n
 
 -- Unfold the OfNat class projection for ONote to the concrete `ofNat` function.
--- Needed because class projections no longer unfold in match discriminants.
+-- Needed because after leanprover/lean4#13363, class projections no longer unfold in match
+-- discriminants.
 theorem ofNat_unfold (n : ℕ) : @OfNat.ofNat ONote n (nat n) = ofNat n := rfl
 
 

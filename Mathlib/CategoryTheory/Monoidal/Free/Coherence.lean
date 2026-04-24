@@ -194,7 +194,8 @@ def normalizeIsoApp' :
     (α_ _ _ _).symm ≪≫ whiskerRightIso (normalizeIsoApp' X n) Y ≪≫ normalizeIsoApp' _ _
 
 -- Equation lemmas for `normalizeIsoApp'` matching `⊗`/`𝟙_` instead of `tensor`/`unit`.
--- Needed because `canUnfoldAtMatcher` no longer unfolds class projections in match discriminants.
+-- Needed because after leanprover/lean4#13363, `canUnfoldAtMatcher` no longer unfolds class
+-- projections in match discriminants.
 @[simp] theorem normalizeIsoApp'_tensor (X Y : F C) (n : NormalMonoidalObject C) :
     normalizeIsoApp' C (X ⊗ Y) n =
       (α_ _ _ _).symm ≪≫ whiskerRightIso (normalizeIsoApp' C X n) Y ≪≫
