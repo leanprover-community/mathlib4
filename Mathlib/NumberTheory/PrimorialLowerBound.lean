@@ -168,11 +168,9 @@ theorem two_pow_succ_lt_primorial {n : ℕ} (hn : 3 ≤ n) : 2 ^ (n + 1) < (2 * 
     set π := (sqrt (2 * n) + 1).primesBelow.card
     apply lt_of_mul_lt_mul_left' (a := n * (2 * n) ^ π)
     calc
-      _ ≤ 4 ^ n := by
-        rw [show n * (2 * n) ^ π * 2 ^ (n + 1) = (2 * n) ^ (π + 1) * 2 ^ n from by ring,
-          show (4 : ℕ) ^ n = 2 ^ n * 2 ^ n from by
-            rw [show (4 : ℕ) = 2 ^ 2 from by norm_num, ← pow_mul, two_mul, ← pow_add]]
-        exact Nat.mul_le_mul_right _ (numerical_bound hn')
+      _ = (2 * n) ^ (π + 1) * 2 ^ n := by ring
+      _ ≤ 2 ^ n * 2 ^ n := mul_le_mul_left (numerical_bound hn') _
+      _ = 4 ^ n := by rw [← pow_add, ← two_mul, pow_mul]; norm_num
       _ < n * n.centralBinom := four_pow_lt_mul_centralBinom _ h4
       _ ≤ _ := by
         rw [mul_assoc]
