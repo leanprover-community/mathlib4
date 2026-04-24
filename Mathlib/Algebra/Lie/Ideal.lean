@@ -76,7 +76,7 @@ instance LieIdeal.bracket {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L
     (I : LieIdeal R L) [Bracket L M] : Bracket I M where
   bracket x m := ⁅(x : L), m⁆
 
-instance (priority := 2000) (I : LieIdeal R L) : Bracket I I := inferInstance
+instance (I : LieIdeal R L) : Bracket I I := inferInstance
 
 /-- An ideal of `L` is a Lie subalgebra of `L`, so it is a Lie ring. -/
 instance LieIdeal.lieRing (I : LieIdeal R L) : LieRing I :=
