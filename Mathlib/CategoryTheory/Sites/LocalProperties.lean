@@ -45,7 +45,7 @@ lemma isIso_of_coversTop (hX : K.CoversTop X) {F G : Sheaf K A} {f : F ⟶ G}
     obtain ⟨i, ⟨g⟩⟩ := I.hf
     exact hiso I.Y i g
   let invMap : G.obj.obj (op W.unop) ⟶ F.obj.obj (op W.unop) :=
-    F.2.amalgamate S (fun I => G.obj.map I.f.op ≫ inv (f.hom.app (op I.Y))) (by
+    F.property.amalgamate S (fun I => G.obj.map I.f.op ≫ inv (f.hom.app (op I.Y))) (by
       intro I₁ I₂ r
       have hZ : IsIso (f.hom.app (op r.Z)) := by
         obtain ⟨i, ⟨g⟩⟩ := I₁.hf
