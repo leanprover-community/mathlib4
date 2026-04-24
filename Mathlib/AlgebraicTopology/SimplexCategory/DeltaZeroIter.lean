@@ -10,7 +10,7 @@ public import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 /-!
 # Iterations of `δ 0` and `σ 0`
 
-This file introduce morphisms `δ₀Iter i` and `σ₀Iter i` in the simplex category:
+This file introduces morphisms `δ₀Iter i` and `σ₀Iter i` in the simplex category:
 they are obtained as the `i`th iteration of `δ 0` or `σ 0`.
 
 -/
