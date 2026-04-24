@@ -59,10 +59,10 @@ theorem cardinalMk_prod_le (α : Type*) : Cardinal.mk (α × α) ≤ 2 * Cardina
   rw [← Equiv.sigmaFiberEquiv Sym2.mk.uncurry |>.cardinal_eq, Cardinal.mk_sigma, mul_comm]
   grw [Cardinal.sum_le_mk_mul_iSup]
   apply mul_le_mul_right <| ciSup_le' fun z ↦ ?_
-  change Cardinal.mk (Sym2.mk.uncurry ⁻¹' {z}) ≤ 2
+  rw [← Set.coe_setOf, ← Set.preimage_singleton]
   cases z
-  grw [Sym2.mk_fiber, ← Set.cast_ncard, Set.ncard_insert_le]
-    <;> simp
+  grw [Sym2.mk_fiber, ← Set.cast_ncard, Set.ncard_insert_le] <;>
+    simp
 
 section fromRel
 
@@ -74,10 +74,10 @@ theorem cardinalMk_prod_le_two_mul_cardinalMk_fromRel :
     |>.cardinal_eq, Cardinal.mk_sigma, mul_comm]
   grw [Cardinal.sum_le_mk_mul_iSup]
   apply mul_le_mul_right <| ciSup_le' fun z ↦ ?_
-  change Cardinal.mk (Sym2.mk.uncurry ⁻¹' {z.val}) ≤ 2
+  rw [← Set.coe_setOf, ← Set.preimage_singleton]
   rcases z with ⟨⟨⟩⟩
-  grw [Sym2.mk_fiber, ← Set.cast_ncard, Set.ncard_insert_le]
-    <;> simp
+  grw [Sym2.mk_fiber, ← Set.cast_ncard, Set.ncard_insert_le] <;>
+    simp
 
 theorem cardinalMk_prod_eq_two_mul_cardinalMk_fromRel (irrefl : Std.Irrefl r) :
     Cardinal.mk { p : α × α // r p.fst p.snd } = 2 * Cardinal.mk (Sym2.fromRel sym) := by
@@ -85,8 +85,8 @@ theorem cardinalMk_prod_eq_two_mul_cardinalMk_fromRel (irrefl : Std.Irrefl r) :
     |>.cardinal_eq, Cardinal.mk_sigma, mul_comm, ← Cardinal.sum_const']
   congr
   ext ⟨z, hz⟩
-  change Cardinal.mk (Sym2.mk.uncurry ⁻¹' {z}) = 2
-  rw [← Set.cast_ncard z.finite_mk_fiber, z.ncard_mk_fiber_of_not_isDiag, Nat.cast_two]
+  rw [← Set.coe_setOf, ← Set.preimage_singleton, ← Set.cast_ncard z.finite_mk_fiber,
+    z.ncard_mk_fiber_of_not_isDiag, Nat.cast_two]
   exact Sym2.fromRel_irrefl.mp irrefl hz
 
 end fromRel

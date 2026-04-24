@@ -101,6 +101,9 @@ theorem preimage_ite (f : α → β) (s t₁ t₂ : Set β) :
 theorem preimage_setOf_eq {p : α → Prop} {f : β → α} : f ⁻¹' { a | p a } = { a | p (f a) } :=
   rfl
 
+theorem preimage_singleton (f : α → β) (y : β) : f ⁻¹' {y} = {x | f x = y} :=
+  rfl
+
 @[simp]
 theorem preimage_id_eq : preimage (id : α → α) = id :=
   rfl
