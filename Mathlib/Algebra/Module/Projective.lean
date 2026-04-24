@@ -196,17 +196,17 @@ theorem Projective.of_equiv' [Module.Projective R M]
 
 @[deprecated (since := "2026-02-14")] alias Projective.of_ringEquiv := Projective.of_equiv
 
-instance Projective.ulift [Projective R M] : Projective R (ULift.{w} M) :=
-  .of_equiv' ULift.moduleEquiv.symm
+instance [Projective R M] : Projective R (ULift.{w} M) :=
+  Projective.of_equiv' ULift.moduleEquiv.symm
 
 theorem Projective.of_ulift [Projective R (ULift.{w} M)] : Projective R M :=
-  .of_equiv' ULift.moduleEquiv
+  Projective.of_equiv' ULift.moduleEquiv
 
-instance Projective.shrink [Small.{w} M] [Projective R M] : Projective R (Shrink.{w} M) :=
-  .of_equiv' (Shrink.linearEquiv R M).symm
+instance [Small.{w} M] [Projective R M] : Projective R (Shrink.{w} M) :=
+  Projective.of_equiv' (Shrink.linearEquiv R M).symm
 
 theorem Projective.of_shrink [Small.{w} M] [Projective R (Shrink.{w} M)] : Projective R M :=
-  .of_equiv' (Shrink.linearEquiv R M)
+  Projective.of_equiv' (Shrink.linearEquiv R M)
 
 /-- A quotient of a projective module is projective iff it is a direct summand. -/
 theorem Projective.iff_split_of_projective [Module.Projective R M] (s : M →ₗ[R] P)

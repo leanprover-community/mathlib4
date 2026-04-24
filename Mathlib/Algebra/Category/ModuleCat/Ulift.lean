@@ -87,9 +87,8 @@ instance : Limits.PreservesFiniteColimits (uliftFunctor.{v', v} R) := by
 
 instance [Small.{v} R] : (uliftFunctor.{v', v} R).PreservesProjectiveObjects where
   projective_obj {M} proj := by
-    have := small_lift R
-    rw [← IsProjective.iff_projective]
-    exact Module.Projective.ulift
+    have := small_lift.{u, v'} R
+    simpa [← IsProjective.iff_projective] using by infer_instance
 
 instance [Small.{v} R] : (uliftFunctor.{v', v} R).PreservesInjectiveObjects where
   injective_obj {M} inj := (Module.injective_iff_injective_object R _).mp
