@@ -548,7 +548,7 @@ theorem Submodule.isClosed_mono_of_finiteDimensional_quotient
 theorem Submodule.isClosed_sup_finiteDimensional
     (s t : Submodule 𝕜 E) (hs : IsClosed (s : Set E)) [ht : FiniteDimensional 𝕜 t] :
     IsClosed ((s ⊔ t : Submodule 𝕜 E) : Set E) := by
-  rw [show s ⊔ t = comap s.mkQ (map s.mkQ t) by simp]
+  rw [← comap_map_mkQ]
   exact (map s.mkQ t).closed_of_finiteDimensional.preimage continuous_quot_mk
 
 /-- An injective linear map with finite-dimensional domain is a closed embedding. -/
