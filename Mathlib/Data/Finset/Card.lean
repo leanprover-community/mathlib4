@@ -914,32 +914,6 @@ theorem eraseInduction [DecidableEq α] {p : Finset α → Prop}
     (H : (S : Finset α) → (∀ s ∈ S, p (S.erase s)) → p S) (S : Finset α) : p S :=
   S.strongInduction fun S ih => H S fun _ hs => ih _ (erase_ssubset hs)
 
--- theorem constant [PartialOrder α] [WellFoundedLT α] {f : ℕ → α} (hf : Antitone f) :
---     ∃ n, ∀ m, n ≤ m → f n = f m :=
---   WellFoundedGT.monotone_chain_condition ⟨OrderDual.toDual ∘ f, hf⟩
-
--- theorem constant [PartialOrder α] [WellFoundedLT α] {f : ℕ → α} (hf : Antitone f) :
---     ∃ n, ∀ m, n ≤ m → f m = f n := by
---   let f : ℕ →o αᵒᵈ := ⟨OrderDual.toDual ∘ f, hf⟩
---   have := WellFoundedGT.monotone_chain_condition
-
-
-lemma Nat.stabilises_of_antitone {f : ℕ → ℕ} (hfmono : Antitone f)
-    (hfstab : ∀ m, f m = f (m + 1) → f (m + 1) = f (m + 2)) :
-    ∃ n ≤ f 0, ∀ m, n ≤ m → f m = f n := by
-  induction h : f 0 using Nat.strongRecOn generalizing f with
-  | ind n ih =>
-    by_cases heq : f 0 = f 1
-    · have flat (j : ℕ) : f j = f (j + 1) := by induction j with grind
-      exact ⟨0, Nat.zero_le _, fun m _ => by induction m with grind⟩
-    · have hlt : f 1 < f 0 := (hfmono (Nat.le_succ 0)).lt_of_ne' heq
-      let g (i : ℕ) := f (i + 1)
-      have hg_anti : Antitone g := by grind [Antitone]
-      obtain ⟨p, hp, hp'⟩ := ih (f 1) (by grind) hg_anti (by grind) rfl
-      refine ⟨p + 1, by omega, fun m hm => ?_⟩
-      specialize hp' (m - 1) (by lia)
-      grind
-
 /--
 Given a function `f` which sends the finite set `s` to itself, the sequence of images of `s` under
 iterates of `f` are eventually constant. Furthermore, the sequence of images stabilises in less than
