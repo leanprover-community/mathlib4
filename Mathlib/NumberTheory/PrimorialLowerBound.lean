@@ -28,7 +28,7 @@ Central binomial decomposition: from `4^n < n * C(2n,n)` (`four_pow_lt_mul_centr
 The key analytical step shows `(log₂(2n)+1) * (√(2n)+2) ≤ n` for `n > 400` by factoring
 through `r = √n`:
 - `2*(log₂(2n)+1) ≤ r` via `2n < 2^(r/2)` (exponential beats polynomial)
-- `√(2n)+2 ≤ 2*r` via `zify` + `nlinarith`
+- `√(2n)+2 ≤ 2*r`
 - Combine with `r² ≤ n`
 
 Base cases `n ∈ [3, 29]` by computation.
@@ -61,11 +61,7 @@ theorem centralBinom_le_pow_mul_primorial {n : ℕ} (hn : 4 ≤ n) :
   rw [← prod_pow_factorization_centralBinom, ← hS,
     ← prod_filter_mul_prod_filter_not _ (· ≤ s)]
   gcongr
-  · have hfilt : (2 * n + 1).primesBelow.filter (· ≤ s) = (s + 1).primesBelow := by
-      have : s ≤ 2 * n := sqrt_le_self _
-      ext p; simp only [Finset.mem_filter, mem_primesBelow]
-      exact ⟨fun ⟨⟨_, hp⟩, hle⟩ ↦ ⟨by lia, hp⟩, fun ⟨hlt, hp⟩ ↦ ⟨⟨by lia, hp⟩, by lia⟩⟩
-    rw [hfilt]
+  · rw [primesBelow_filter_le (sqrt_le_self (2 * n) |>.trans_lt (lt_add_one _))]
     exact prod_le_pow_card _ _ _ fun _ _ ↦ pow_factorization_choose_le (by lia)
   · rw [primorial, ← primesBelow]
     have H : ∀ p ∈ {x ∈ (2 * n + 1).primesBelow | ¬x ≤ s}, f p ≤ p := by
@@ -87,7 +83,8 @@ theorem eight_mul_sq_add_le_two_pow (u : ℕ) (hu : 10 ≤ u) :
     exact Nat.add_le_add ih (ih.trans' (by nlinarith))
 
 /-- `(2n)^{π(√(2n))+1} ≤ 2^n` for `n ≥ 30`. -/
-private theorem numerical_bound_aux (n l u k : ℕ) (hl : l ≤ n := by lia) (hu : n ≤ u := by lia)
+private theorem numerical_bound_aux (n l u k : ℕ)
+    (hl : l ≤ n := by lia) (hu : n ≤ u := by lia)
     (hu₀ : 0 < u := by lia) (H : (2 * u) ^ (k + 1) ≤ 2 ^ l := by norm_num)
     (hπ : #((2 * u).sqrt + 1).primesBelow = k := by norm_num [primesBelow]; decide) :
     (2 * n) ^ (#((2 * n).sqrt + 1).primesBelow + 1) ≤ 2 ^ n := by
@@ -122,7 +119,7 @@ private theorem numerical_bound_aux' {n : ℕ} (hn : 400 ≤ n) :
   have hb : s + 2 ≤ 2 * r := by
     suffices hslt : s < 2 * r - 1 by lia
     rw [show s = sqrt (2 * n) from rfl, sqrt_lt]
-    zify [show 1 ≤ 2 * r from by lia]
+    zify [show 1 ≤ 2 * r by lia]
     nlinarith [sq_nonneg (r : ℤ)]
   have ha : 2 * (L + 1) ≤ r := by
     suffices L < r / 2 by lia
@@ -205,9 +202,7 @@ theorem two_pow_half_succ_le_primorial {n : ℕ} (hn : 2 ≤ n) : 2 ^ ((n + 1) /
 /-- **Chebyshev lower bound** (1852). `2 ^ (n / 2) ≤ n#` for all `n`.
 
 The product of all primes up to `n` is at least `2 ^ (n / 2)`. This is the lower bound
-complement to `primorial_le_four_pow` (which gives the upper bound `n# ≤ 4 ^ n`). -/
-theorem two_pow_div_two_le_primorial {n : ℕ} : 2 ^ (n / 2) ≤ n# := by
-  obtain hn | hn := le_or_gt 2 n
-  · exact (pow_le_pow_right₀ (by lia) (Nat.div_le_div_right (by lia))).trans
-      (two_pow_half_succ_le_primorial hn)
-  · decide +revert
+complement to `primorial_le_four_pow` (which gives the upper bound `n# ≤ 4 ^ n`).
+Note: this is weaker than `√2 ^ n ≤ n#` (see `sqrt_two_pow_le_primorial`) when `n` is odd. -/
+theorem two_pow_div_two_le_primorial {n : ℕ} : 2 ^ (n / 2) ≤ n# :=
+  two_pow_le_primorial.trans (primorial_mono (Nat.mul_div_le ..))

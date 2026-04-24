@@ -60,6 +60,14 @@ lemma primesBelow_succ (n : ℕ) :
 lemma notMem_primesBelow (n : ℕ) : n ∉ primesBelow n :=
   fun hn ↦ (lt_of_mem_primesBelow hn).false
 
+lemma primesBelow_filter_lt {m n : ℕ} (h : m ≤ n) :
+    n.primesBelow.filter (· < m) = m.primesBelow := by
+  ext p; simp [mem_primesBelow, Finset.mem_filter]; lia
+
+lemma primesBelow_filter_le {m n : ℕ} (h : m < n) :
+    n.primesBelow.filter (· ≤ m) = (m + 1).primesBelow := by
+  ext p; simp [mem_primesBelow, Finset.mem_filter]; lia
+
 /-!
 ### `s`-factored numbers
 -/
