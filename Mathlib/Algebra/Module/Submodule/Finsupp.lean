@@ -24,7 +24,7 @@ assert_not_exists Ideal
 
 variable {α : Type*} {R : Type*} {M : Type*}
 
-open Pointwise
+open scoped Pointwise
 
 namespace Submodule
 
