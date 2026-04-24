@@ -20,7 +20,8 @@ We provide some constructions relating the free semigroup and the free monoid on
 
 ## Main definitions
 * `FreeSemigroup.toFreeMonoid`: the natural embedding of the free semigroup into the free monoid.
-* `FreeMonoid.equivWithOneFreeSemigroup`: the free monoid is isomorphic to the free semigroup with a `1` added.
+* `FreeMonoid.equivWithOneFreeSemigroup`: the free monoid is isomorphic to the free semigroup
+  with a `1` added.
 -/
 
 public section
