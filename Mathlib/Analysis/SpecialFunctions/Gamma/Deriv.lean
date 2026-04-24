@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.MellinTransform
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
-import all Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 
 /-!
 # Derivative of the Gamma function
