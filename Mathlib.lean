@@ -7583,6 +7583,7 @@ public import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 public import Mathlib.Topology.ContinuousOn
 public import Mathlib.Topology.Convenient.ContinuousMapGeneratedBy
 public import Mathlib.Topology.Convenient.GeneratedBy
+public import Mathlib.Topology.Convenient.HomSpace
 public import Mathlib.Topology.Covering
 public import Mathlib.Topology.Covering.AddCircle
 public import Mathlib.Topology.Covering.Basic
