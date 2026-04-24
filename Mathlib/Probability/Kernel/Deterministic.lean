@@ -87,17 +87,14 @@ namespace MeasureTheory
 class IsZeroOneMeasure (μ : Measure α) : Prop where
   zero_one₀ : ∀ ⦃s⦄, MeasurableSet s → μ s = 0 ∨ μ s = 1
 
-lemma Measure.zero_one₀ (μ : Measure α) [IsZeroOneMeasure μ] :
-    ∀ ⦃s⦄, MeasurableSet s → μ s = 0 ∨ μ s = 1 := IsZeroOneMeasure.zero_one₀
-
 lemma Measure.zero_one (μ : Measure α) [IsZeroOneMeasure μ] :
     ∀ s, μ s = 0 ∨ μ s = 1 := by
   intro s
   by_cases hs : MeasurableSet s
-  · exact μ.zero_one₀ hs
+  · exact IsZeroOneMeasure.zero_one₀ hs
   · obtain ⟨t, _, mt, ht⟩ := exists_measurable_superset μ s
     rw [← ht]
-    exact μ.zero_one₀ mt
+    exact IsZeroOneMeasure.zero_one₀ mt
 
 variable {μ : Measure α} [IsZeroOneMeasure μ]
 
