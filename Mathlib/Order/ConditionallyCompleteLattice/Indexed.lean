@@ -479,8 +479,8 @@ theorem ciSup_le_iff' {f : ι → α} (h : BddAbove (range f)) {a : α} :
 theorem ciSup_le' {f : ι → α} {a : α} (h : ∀ i, f i ≤ a) : ⨆ i, f i ≤ a :=
   csSup_le' <| forall_mem_range.2 h
 
-@[simp]
-theorem ciSup_bot : ⨆ _ : ι, (⊥ : α) = ⊥ := le_bot_iff.mp (ciSup_le' fun _ ↦ bot_le)
+@[deprecated iSup_bot (since := "2026-04-24")]
+theorem ciSup_bot : ⨆ _ : ι, (⊥ : α) = ⊥ := iSup_bot
 
 /-- In conditionally complete orders with a bottom element, the nonempty condition can be omitted
 from `lt_ciSup_iff`. -/
