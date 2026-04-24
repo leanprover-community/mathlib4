@@ -245,7 +245,6 @@ lemma σ_σ₀Iter (i : ℕ) {n m : ℕ} (j : Fin (m + 1)) (hi : n + i = m := by
   · rw [σ₀Iter_coe_eq_of_ge (i + 1) ..,
       Fin.predAbove_of_castSucc_lt _ _ (by grind),
       σ₀Iter_coe_eq_of_ge ..]
-    dsimp
     grind
   · rw [σ₀Iter_coe_eq_of_lt (i + 1) ..]
     rw [σ₀Iter_coe_eq_of_le _ _ _ ?_]
