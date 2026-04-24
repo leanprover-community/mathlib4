@@ -818,6 +818,8 @@ noncomputable def ofBijective (f : α → β) (hf : Bijective f) : α ≃ β whe
   left_inv := leftInverse_surjInv hf
   right_inv := rightInverse_surjInv _
 
+@[simp] lemma coe_ofBijective (f : α → β) (hf : Bijective f) : ⇑(ofBijective f hf) = f := rfl
+
 lemma ofBijective_apply_symm_apply (f : α → β) (hf : Bijective f) (x : β) :
     f ((ofBijective f hf).symm x) = x :=
   (ofBijective f hf).apply_symm_apply x

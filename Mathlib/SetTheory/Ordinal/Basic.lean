@@ -374,12 +374,14 @@ theorem type_lt_iff {α β} {r : α → α → Prop} {s : β → β → Prop} [I
 
 /-- Given two ordinals `α ≤ β`, then `initialSegToType α β` is the initial segment embedding of
 `α.ToType` into `β.ToType`. -/
+@[deprecated type_le_iff (since := "2026-04-12")]
 def initialSegToType {α β : Ordinal} (h : α ≤ β) : α.ToType ≤i β.ToType := by
   apply Classical.choice (type_le_iff.mp _)
   rwa [type_toType, type_toType]
 
 /-- Given two ordinals `α < β`, then `principalSegToType α β` is the principal segment embedding
 of `α.ToType` into `β.ToType`. -/
+@[deprecated type_lt_iff (since := "2026-04-12")]
 def principalSegToType {α β : Ordinal} (h : α < β) : α.ToType <i β.ToType := by
   apply Classical.choice (type_lt_iff.mp _)
   rwa [type_toType, type_toType]
@@ -549,11 +551,14 @@ instance small_Ioo (a b : Ordinal.{u}) : Small.{u} (Ioo a b) := small_subset Ioo
 instance small_Ioc (a b : Ordinal.{u}) : Small.{u} (Ioc a b) := small_subset Ioc_subset_Iic_self
 
 /-- `o.ToType` is an `OrderBot` whenever `o ≠ 0`. -/
-@[implicit_reducible]
+@[implicit_reducible, deprecated WellFoundedLT.toOrderBot (since := "2026-04-12")]
 def toTypeOrderBot {o : Ordinal} (ho : o ≠ 0) : OrderBot o.ToType where
   bot := (enum (· < ·)) ⟨0, _⟩
   bot_le := enum_zero_le' (bot_lt_iff_ne_bot.2 ho)
 
+set_option linter.deprecated false in
+@[deprecated "use `WellFoundedLT.toOrderBot` if you need an `OrderBot` instance"
+(since := "2026-04-12")]
 theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
     enum (α := o.ToType) (· < ·) ⟨0, by rwa [type_toType]⟩ =
       have H := toTypeOrderBot (o := o) (by rintro rfl; simp at ho)
@@ -1055,7 +1060,8 @@ theorem exists_ord_eq (α) : ∃ (r : α → α → Prop) (_ : IsWellOrder α r)
 
 open Classical in
 /-- There exists a well-order on `α` whose order type is exactly `ord #α`. -/
-theorem exists_ord_eq_type_lt (α) : ∃ (_ : LinearOrder α) (_: WellFoundedLT α), ord #α = typeLT α :=
+theorem exists_ord_eq_type_lt (α) :
+    ∃ (_ : LinearOrder α) (_ : WellFoundedLT α), ord #α = typeLT α :=
   let ⟨r, _, hr⟩ := exists_ord_eq α
   let := linearOrderOfSTO r
   ⟨this, inferInstance, hr⟩
@@ -1136,7 +1142,7 @@ theorem ord_nat (n : ℕ) : ord n = n := by
   apply (ord_le.2 (card_nat n).ge).antisymm
   induction n with
   | zero => exact _root_.zero_le _
-  | succ n IH => exact (IH.trans_lt <| by simpa using Nat.cast_lt.2 n.lt_succ_self).succ_le
+  | succ n IH => exact (IH.trans_lt <| by simp).succ_le
 
 @[simp]
 theorem ord_ofNat (n : ℕ) [n.AtLeastTwo] : ord ofNat(n) = OfNat.ofNat n :=
@@ -1178,12 +1184,18 @@ theorem mk_Iio_lt [LinearOrder α] [WellFoundedLT α] (i : α) (h : ord #α = ty
     #(Iio i) < #α :=
   card_typein_lt (r := LT.lt) i h
 
+theorem mk_Ioi_lt {α : Type*} [LinearOrder α] [WellFoundedGT α] (i : α) (h : ord #α = typeLT αᵒᵈ) :
+    #(Ioi i) < #α :=
+  mk_Iio_lt (OrderDual.toDual i) h
+
+@[deprecated mk_Iio_lt (since := "2026-04-12")]
 theorem mk_Iio_toType_ord_lt {c : Cardinal} (i : c.ord.ToType) : #(Iio i) < c := by
   simpa using mk_Iio_lt i
 
 @[deprecated (since := "2026-03-20")] alias mk_Iio_ord_toType := mk_Iio_toType_ord_lt
 
-@[deprecated mk_Iio_toType_ord_lt (since := "2026-03-20")]
+set_option linter.deprecated false in
+@[deprecated mk_Iio_lt (since := "2026-03-20")]
 theorem card_typein_toType_lt (c : Cardinal) (x : c.ord.ToType) :
     card (typein (α := c.ord.ToType) (· < ·) x) < c :=
   mk_Iio_toType_ord_lt x
@@ -1239,8 +1251,9 @@ def ord.orderEmbedding : Cardinal ↪o Ordinal :=
 theorem ord.orderEmbedding_coe : (ord.orderEmbedding : Cardinal → Ordinal) = ord :=
   rfl
 
+set_option linter.deprecated false in
 /-- If a cardinal `c` is nonzero, then `c.ord.ToType` has a least element. -/
-@[implicit_reducible]
+@[implicit_reducible, deprecated WellFoundedLT.toOrderBot (since := "2025-04-12")]
 noncomputable def toTypeOrderBot {c : Cardinal} (hc : c ≠ 0) :
     OrderBot c.ord.ToType :=
   Ordinal.toTypeOrderBot (fun h ↦ hc (ord_injective (by simpa using h)))
@@ -1272,7 +1285,7 @@ theorem card_lt_aleph0 {o} : card o < ℵ₀ ↔ o < ω :=
 
 @[simp]
 theorem nat_lt_card {o} {n : ℕ} : (n : Cardinal) < card o ↔ (n : Ordinal) < o := by
-  rw [← succ_le_iff, ← succ_le_iff, ← nat_succ, nat_le_card]
+  rw [← natCast_add_one_le_iff, ← succ_le_iff, ← Nat.cast_add_one, nat_le_card]
   rfl
 
 @[simp]
