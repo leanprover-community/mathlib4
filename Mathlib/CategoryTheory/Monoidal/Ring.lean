@@ -20,6 +20,9 @@ law is commutative.
 The categories of bundled ring objects and bundled commutative ring objects are
 denoted `RingObjCat C` and `CommRingObjCat C` respectively.
 
+## TODO
+* develop the theory of bimonoidal categories and relate this with `Rig`-objects
+
 -/
 
 @[expose] public section
@@ -228,6 +231,7 @@ def forget : CommRingObjCat C ⥤ C where
 variable (C) in
 /-- The forgetful functor from the category of commutative ring objects
 to the category of ring objects. -/
+@[simps]
 def forget₂RingObjCat : CommRingObjCat C ⥤ RingObjCat C where
   obj R := .mk R.X
   map f := { hom := f.hom }
