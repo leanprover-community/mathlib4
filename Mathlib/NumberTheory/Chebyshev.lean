@@ -153,45 +153,28 @@ theorem sqrt_two_pow_le_primorial {n : ℕ} (hn : 2 ≤ n) :
   · exact one_le_two -- side goal
 
 /-- Chebyshev's lower bound: `log 2 / 2 * x ≤ θ x` for `3 ≤ x`. -/
-theorem log2_div_two_mul_le_theta {x : ℝ} (hx : 3 ≤ x) : Real.log 2 / 2 * x ≤ θ x := by
-  rw [theta_eq_log_primorial]
-  have hfloor3 : 3 ≤ ⌊x⌋₊ := by
-    have := Nat.floor_le_floor hx; norm_num at this; exact this
+theorem log2_div_two_mul_le_theta {x : ℝ} (hx : 3 ≤ x) : log 2 / 2 * x ≤ θ x := by
+  rw [theta_eq_log_primorial, div_mul_comm]
+  pull (disch := positivity) log
+  refine log_le_log (by positivity) ?_
   by_cases hfloor5 : 5 ≤ ⌊x⌋₊
   · -- Case ⌊x⌋₊ ≥ 5: use two_pow_half_add_one_le_primorial
-    trans Real.log (2 ^ (⌊x⌋₊ / 2 + 1))
-    · rw [Real.log_pow, show Real.log 2 / 2 * x = x / 2 * Real.log 2 from by ring]
-      gcongr
-      -- x / 2 ≤ ↑(⌊x⌋₊ / 2 + 1): from x < ⌊x⌋₊ + 1 ≤ 2 * (⌊x⌋₊ / 2 + 1)
-      have hle : (↑(⌊x⌋₊ + 1) : ℝ) ≤ ↑(2 * (⌊x⌋₊ / 2 + 1)) :=
-        Nat.cast_le.mpr (by lia)
-      have hlt : x < ↑⌊x⌋₊ + 1 := Nat.lt_floor_add_one x
-      push_cast at hle ⊢; linarith
-    · exact Real.log_le_log (by positivity)
-        (by exact_mod_cast two_pow_half_add_one_le_primorial hfloor5)
+    grw [← two_pow_half_add_one_le_primorial hfloor5]
+    push_cast
+    rw [← rpow_natCast]
+    refine rpow_le_rpow_of_exponent_le one_le_two <| (div_le_iff₀ zero_lt_two).mpr ?_
+    exact (lt_floor_add_one x).le.trans <| by norm_cast; lia
   · -- Case ⌊x⌋₊ ∈ {3, 4}: primorial = 6, x < 5
+    have hfloor3 : 3 ≤ ⌊x⌋₊ := floor_ofNat (R := ℝ) 3 ▸ floor_le_floor hx
     have hfloor4 : ⌊x⌋₊ ≤ 4 := by lia
     have hx5 : x < 5 := by
-      linarith [Nat.lt_floor_add_one x,
-        show (↑⌊x⌋₊ : ℝ) ≤ 4 from Nat.cast_le.mpr hfloor4]
-    have h6 : (6 : ℕ) ≤ primorial ⌊x⌋₊ := by
-      rcases show ⌊x⌋₊ = 3 ∨ ⌊x⌋₊ = 4 from by lia with h | h <;>
-        simp only [h] <;> decide
-    -- 5/2 * log 2 ≤ log 6, from 2^3 ≤ 3^2 (i.e. 8 ≤ 9)
-    have h52 : 5 / 2 * Real.log 2 ≤ Real.log 6 := by
-      have h23 : 3 * Real.log 2 ≤ 2 * Real.log 3 := by
-        have h := Real.log_le_log (show (0:ℝ) < 2 ^ 3 from by positivity)
-          (show (2:ℝ) ^ 3 ≤ 3 ^ 2 from by norm_num)
-        rwa [Real.log_pow, Real.log_pow] at h
-      rw [show (6 : ℝ) = 2 * 3 from by norm_num,
-          Real.log_mul (by norm_num : (2 : ℝ) ≠ 0) (by norm_num : (3 : ℝ) ≠ 0)]
-      linarith
-    calc Real.log 2 / 2 * x
-        ≤ Real.log 2 / 2 * 5 := by gcongr
-      _ = 5 / 2 * Real.log 2 := by ring
-      _ ≤ Real.log 6 := h52
-      _ ≤ Real.log ↑(primorial ⌊x⌋₊) :=
-          Real.log_le_log (by positivity) (by exact_mod_cast h6)
+      linarith [lt_floor_add_one x, show (⌊x⌋₊ : ℝ) ≤ 4 from mod_cast hfloor4]
+    have h6 : 6 ≤ primorial ⌊x⌋₊ := by interval_cases ⌊x⌋₊ <;> decide
+    grw [← h6, hx5]
+    case h₁.hx => exact one_le_two -- side goal
+    refine (rpow_le_rpow_iff (by positivity) (by positivity) zero_lt_two).mp ?_
+    rw [← rpow_mul zero_le_two]
+    norm_num
 
 /-!
 ## Relating `ψ` and `θ`
