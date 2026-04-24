@@ -32,4 +32,4 @@ pfilter, filter, ideal, dual
 
 -/
 
-deprecated_module (since := "2026-04-23") "all definitions are moved to `Order/Ideal.lean`."
+deprecated_module (since := "2026-04-23")
