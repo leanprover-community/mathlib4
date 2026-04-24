@@ -17,7 +17,7 @@ This file defines the symmetric difference and bi-implication operators in (co-)
 
 Some examples are
 * The symmetric difference of two sets is the set of elements that are in either but not both.
-* The symmetric difference on propositions is `Xor'`.
+* The symmetric difference on propositions is `Xor`.
 * The symmetric difference on `Bool` is `Bool.xor`.
 * The equivalence of propositions. Two propositions are equivalent if they imply each other.
 * The symmetric difference translates to addition when considering a Boolean algebra as a Boolean
@@ -82,8 +82,10 @@ theorem symmDiff_def [Max α] [SDiff α] (a b : α) : a ∆ b = a \ b ⊔ b \ a 
 theorem bihimp_def [Min α] [HImp α] (a b : α) : a ⇔ b = (b ⇨ a) ⊓ (a ⇨ b) :=
   rfl
 
-theorem symmDiff_eq_Xor' (p q : Prop) : p ∆ q = Xor' p q :=
+theorem symmDiff_eq_xor (p q : Prop) : p ∆ q = Xor p q :=
   rfl
+
+@[deprecated (since := "2026-04-24")] alias symmDiff_eq_Xor' := symmDiff_eq_xor
 
 @[simp]
 theorem bihimp_iff_iff {p q : Prop} : p ⇔ q ↔ (p ↔ q) :=

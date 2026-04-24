@@ -89,14 +89,14 @@ variable [Nontrivial G] [DenselyOrdered G]
 a subgroup is either dense or is cyclic, but not both.
 
 For a non-exclusive `Or` version with weaker assumptions, see `Subgroup.dense_or_cyclic` above. -/
-@[to_additive dense_xor'_cyclic
+@[to_additive dense_xor_cyclic
 /-- In a nontrivial densely linear ordered archimedean topological additive group,
 a subgroup is either dense or is cyclic, but not both.
 
 For a non-exclusive `Or` version with weaker assumptions, see `AddSubgroup.dense_or_cyclic` above.
 -/]
-theorem dense_xor'_cyclic (s : Subgroup G) :
-    Xor' (Dense (s : Set G)) (∃ a, s = .zpowers a) := by
+theorem dense_xor_cyclic (s : Subgroup G) :
+    Xor (Dense (s : Set G)) (∃ a, s = .zpowers a) := by
   if hd : Dense (s : Set G) then
     simp only [hd, xor_true]
     rintro ⟨a, rfl⟩
@@ -105,9 +105,12 @@ theorem dense_xor'_cyclic (s : Subgroup G) :
     simp only [hd, xor_false, id, zpowers_eq_closure]
     exact s.dense_or_cyclic.resolve_left hd
 
+@[to_additive (attr := deprecated dense_xor_cyclic (since := "2026-04-24"))]
+alias dense_xor_cyclic' := dense_xor_cyclic
+
 @[to_additive]
 theorem dense_iff_ne_zpowers {s : Subgroup G} :
     Dense (s : Set G) ↔ ∀ a, s ≠ .zpowers a := by
-  simp [xor_iff_iff_not.1 s.dense_xor'_cyclic]
+  simp [xor_iff_iff_not.1 s.dense_xor_cyclic]
 
 end Subgroup

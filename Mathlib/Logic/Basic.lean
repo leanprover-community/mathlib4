@@ -221,38 +221,34 @@ lemma Iff.ne_left {α β : Sort*} {a b : α} {c d : β} : (a = b ↔ c ≠ d) �
 lemma Iff.ne_right {α β : Sort*} {a b : α} {c d : β} : (a ≠ b ↔ c = d) → (a = b ↔ c ≠ d) :=
   Iff.not_right
 
-/-! ### Declarations about `Xor'` -/
+/-! ### Declarations about `Xor` -/
 
-#adaptation_note
-/--
-2025-07-31. Upstream `Xor` has been renamed to `XorOp`.
-2025-09-16. The deprecation for `Xor` has been removed.
-Anytime after v4.25.0-rc1 lands we rename this back to `Xor`.
--/
-/-- `Xor' a b` is the exclusive-or of propositions. -/
-def Xor' (a b : Prop) := (a ∧ ¬b) ∨ (b ∧ ¬a)
+/-- `Xor a b` is the exclusive-or of propositions. -/
+def Xor (a b : Prop) := (a ∧ ¬b) ∨ (b ∧ ¬a)
 
-@[grind =] theorem xor_def {a b : Prop} : Xor' a b ↔ (a ∧ ¬b) ∨ (b ∧ ¬a) := Iff.rfl
+@[deprecated (since := "2026-04-24")] alias Xor' := Xor
 
-instance [Decidable a] [Decidable b] : Decidable (Xor' a b) := inferInstanceAs (Decidable (Or ..))
+@[grind =] theorem xor_def {a b : Prop} : Xor a b ↔ (a ∧ ¬b) ∨ (b ∧ ¬a) := Iff.rfl
 
-@[simp] theorem xor_true : Xor' True = Not := by grind
+instance [Decidable a] [Decidable b] : Decidable (Xor a b) := inferInstanceAs (Decidable (Or ..))
 
-@[simp] theorem xor_false : Xor' False = id := by grind
+@[simp] theorem xor_true : Xor True = Not := by grind
 
-theorem xor_comm (a b : Prop) : Xor' a b = Xor' b a := by grind
+@[simp] theorem xor_false : Xor False = id := by grind
 
-instance : Std.Commutative Xor' := ⟨xor_comm⟩
+theorem xor_comm (a b : Prop) : Xor a b = Xor b a := by grind
 
-@[simp] theorem xor_self (a : Prop) : Xor' a a = False := by grind
+instance : Std.Commutative Xor := ⟨xor_comm⟩
 
-@[simp] theorem xor_not_left : Xor' (¬a) b ↔ (a ↔ b) := by grind
+@[simp] theorem xor_self (a : Prop) : Xor a a = False := by grind
 
-@[simp] theorem xor_not_right : Xor' a (¬b) ↔ (a ↔ b) := by grind
+@[simp] theorem xor_not_left : Xor (¬a) b ↔ (a ↔ b) := by grind
 
-theorem xor_not_not : Xor' (¬a) (¬b) ↔ Xor' a b := by grind
+@[simp] theorem xor_not_right : Xor a (¬b) ↔ (a ↔ b) := by grind
 
-protected theorem Xor'.or (h : Xor' a b) : a ∨ b := by grind
+theorem xor_not_not : Xor (¬a) (¬b) ↔ Xor a b := by grind
+
+protected theorem Xor.or (h : Xor a b) : a ∨ b := by grind
 
 /-! ### Declarations about `and` -/
 
@@ -352,17 +348,17 @@ theorem or_iff_not_and_not : a ∨ b ↔ ¬(¬a ∧ ¬b) :=
 theorem and_iff_not_or_not : a ∧ b ↔ ¬(¬a ∨ ¬b) :=
   open scoped Classical in Decidable.and_iff_not_not_or_not
 
-@[simp] theorem not_xor (P Q : Prop) : ¬Xor' P Q ↔ (P ↔ Q) := by
-  simp only [not_and, Xor', not_or, not_not, ← iff_iff_implies_and_implies]
+@[simp] theorem not_xor (P Q : Prop) : ¬Xor P Q ↔ (P ↔ Q) := by
+  simp only [not_and, Xor, not_or, not_not, ← iff_iff_implies_and_implies]
 
-theorem xor_iff_not_iff (P Q : Prop) : Xor' P Q ↔ ¬(P ↔ Q) := (not_xor P Q).not_right
+theorem xor_iff_not_iff (P Q : Prop) : Xor P Q ↔ ¬(P ↔ Q) := (not_xor P Q).not_right
 
-theorem xor_iff_iff_not : Xor' a b ↔ (a ↔ ¬b) := by simp only [← @xor_not_right a, not_not]
+theorem xor_iff_iff_not : Xor a b ↔ (a ↔ ¬b) := by simp only [← @xor_not_right a, not_not]
 
-theorem xor_iff_not_iff' : Xor' a b ↔ (¬a ↔ b) := by simp only [← @xor_not_left _ b, not_not]
+theorem xor_iff_not_iff' : Xor a b ↔ (¬a ↔ b) := by simp only [← @xor_not_left _ b, not_not]
 
-theorem xor_iff_or_and_not_and (a b : Prop) : Xor' a b ↔ (a ∨ b) ∧ (¬(a ∧ b)) := by
-  rw [Xor', or_and_right, not_and_or, and_or_left, and_not_self_iff, false_or,
+theorem xor_iff_or_and_not_and (a b : Prop) : Xor a b ↔ (a ∨ b) ∧ (¬(a ∧ b)) := by
+  rw [Xor, or_and_right, not_and_or, and_or_left, and_not_self_iff, false_or,
     and_or_left, and_not_self_iff, or_false]
 
 end Propositional

@@ -42,13 +42,17 @@ lemma even_or_odd (n : ℤ) : Even n ∨ Odd n := by grind
 lemma even_or_odd' (n : ℤ) : ∃ k, n = 2 * k ∨ n = 2 * k + 1 := by
   simpa only [two_mul, exists_or, Odd, Even] using even_or_odd n
 
-lemma even_xor'_odd (n : ℤ) : Xor' (Even n) (Odd n) := by
+lemma even_xor_odd (n : ℤ) : Xor (Even n) (Odd n) := by
   grind
 
-lemma even_xor'_odd' (n : ℤ) : ∃ k, Xor' (n = 2 * k) (n = 2 * k + 1) := by
+@[deprecated (since := "2026-04-24")] alias even_xor'_odd := even_xor_odd
+
+lemma even_xor_odd' (n : ℤ) : ∃ k, Xor (n = 2 * k) (n = 2 * k + 1) := by
   rcases even_or_odd n with (⟨k, rfl⟩ | ⟨k, rfl⟩) <;>
   · use k
     grind
+
+@[deprecated (since := "2026-04-24")] alias even_xor'_odd' := even_xor_odd'
 
 instance : DecidablePred (Odd : ℤ → Prop) := fun _ => decidable_of_iff _ not_even_iff_odd
 
