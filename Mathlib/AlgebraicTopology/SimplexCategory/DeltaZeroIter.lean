@@ -23,7 +23,9 @@ namespace SimplexCategory
 
 /-- If `n + i = m`, this is the morphism `⦋n⦌ ⟶ ⦋m⦌` in the simplex category
 which is obtained as the `i`th iteration of `δ 0`: it sends `j : Fin (n + 1)` to
-`⟨j.val + i, _⟩`. -/
+`⟨j.val + i, _⟩`. This may also be described as the order embedding
+`Fin.addNatOrderEmb i : Fin (n + 1) ↪o Fin (n + 1 + i)`
+followed by the order isomorphism `Fin (n + 1 + i) ≃o Fin (m + 1)`. -/
 def δ₀Iter (i : ℕ) {n m : ℕ} (hi : n + i = m := by lia) :
     ⦋n⦌ ⟶ ⦋m⦌ :=
   Hom.mk
