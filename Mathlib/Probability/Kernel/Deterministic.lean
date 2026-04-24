@@ -114,11 +114,11 @@ lemma exists_measure_eq_one_iff_measure_univ_eq_one : (∃ s, μ s = 1) ↔ μ u
   · intro h
     exact ⟨univ, h⟩
 
-lemma univ_one {s : Set α} (hμs : μ s = 1) : μ univ = 1 :=
+lemma measure_univ {s : Set α} (hμs : μ s = 1) : μ univ = 1 :=
   (exists_measure_eq_one_iff_measure_univ_eq_one).mp ⟨s, hμs⟩
 
 lemma compl_eq_zero {s : Set α} (hs : MeasurableSet s) (hμs : μ s = 1) : μ sᶜ = 0 := by
-  rw [measure_compl hs (by simp), univ_one hμs, hμs, tsub_self]
+  rw [measure_compl hs (by simp), measure_univ hμs, hμs, tsub_self]
 
 lemma inter_eq_one {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
     (hμs : μ s = 1) (hμt : μ t = 1) : μ (s ∩ t) = 1 := by
@@ -127,7 +127,7 @@ lemma inter_eq_one {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
   cases μ.zero_one s <;> cases μ.zero_one t <;> cases μ.zero_one (s ∩ t)
   all_goals try simp_all only [zero_le, zero_ne_one]
   suffices μ (s ∩ t)ᶜ ≤ 0 by
-    rw [measure_compl (hs.inter ht) (by simp), univ_one ‹_›] at this
+    rw [measure_compl (hs.inter ht) (by simp), measure_univ ‹_›] at this
     simp_all
   calc
   _ = μ (sᶜ ∪ tᶜ) := by simp [compl_inter]
