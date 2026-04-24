@@ -501,11 +501,14 @@ lemma AbstractSimplicialData.vertexEnum_not_mem_faceOf_iff
 Since the only vertex not in faceOf s hs k is vertexEnum s hs k (at index k),
 and findOppositeIdx picks such an index, it must pick k. -/
 lemma AbstractSimplicialData.findOppositeIdx_eq
-    (s : Finset V) (hs : s ∈ D.topSimplices) (k : Fin (n+1)) :
-    D.findOppositeIdx s hs (D.faceOf s hs k) (D.faceOf_subset s hs k) (D.faceOf_card s hs k) = k := by
-  set idx := D.findOppositeIdx s hs (D.faceOf s hs k) (D.faceOf_subset s hs k) (D.faceOf_card s hs k)
+    (s : Finset V) (hs : s ∈ D.topSimplices) (k : Fin (n + 1)) :
+    D.findOppositeIdx s hs (D.faceOf s hs k)
+      (D.faceOf_subset s hs k) (D.faceOf_card s hs k) = k := by
+  set idx := D.findOppositeIdx s hs (D.faceOf s hs k)
+    (D.faceOf_subset s hs k) (D.faceOf_card s hs k)
   have h_not_mem : D.vertexEnum s hs idx ∉ D.faceOf s hs k :=
-    D.vertexEnum_findOppositeIdx_not_mem s hs (D.faceOf s hs k) (D.faceOf_subset s hs k) (D.faceOf_card s hs k)
+    D.vertexEnum_findOppositeIdx_not_mem s hs (D.faceOf s hs k)
+      (D.faceOf_subset s hs k) (D.faceOf_card s hs k)
   exact (D.vertexEnum_not_mem_faceOf_iff s hs idx k).mp h_not_mem
 
 end FaceHelpers
@@ -754,8 +757,10 @@ lemma AbstractSimplicialData.adjFn_symm
       simp [AbstractSimplicialData.vertexEnum, ht_eq_s]
     -- Vertex at idx is not in faceOf s' hs' k' = faceOf s hs k
     have h_nmem : D.vertexEnum s hs idx ∉ D.faceOf s hs k := by
-      have := D.vertexEnum_findOppositeIdx_not_mem hne_erase.choose ht' _ hf' hfc'
-      rwa [hface_eq, hve] at this
+      have h1 := D.vertexEnum_findOppositeIdx_not_mem hne_erase.choose ht' _ hf' hfc'
+      rw [hve] at h1
+      intro hmem
+      exact h1 (by rwa [hface_eq, hf_def])
     exact (D.vertexEnum_not_mem_faceOf_iff s hs idx k).mp h_nmem
   exact h_idx_eq _ _ _
 
@@ -776,8 +781,10 @@ noncomputable def AbstractSimplicialData.toTriangulation
     intro ⟨s, hs⟩ i j hij
     have hnd : (s.sort (· ≤ ·)).Nodup := s.sort_nodup (· ≤ ·)
     set L := s.sort (· ≤ ·) with hL_def
-    set i' : Fin L.length := i.cast (by rw [hL_def, Finset.length_sort]; exact (D.card_eq s hs).symm)
-    set j' : Fin L.length := j.cast (by rw [hL_def, Finset.length_sort]; exact (D.card_eq s hs).symm)
+    set i' : Fin L.length :=
+      i.cast (by rw [hL_def, Finset.length_sort]; exact (D.card_eq s hs).symm)
+    set j' : Fin L.length :=
+      j.cast (by rw [hL_def, Finset.length_sort]; exact (D.card_eq s hs).symm)
     have hi'j' : L.get i' = L.get j' := hij
     have key : (i' : ℕ) = (j' : ℕ) := by
       rw [List.nodup_iff_injective_get] at hnd
@@ -858,7 +865,7 @@ private lemma iadj_cases {s s' : Fin m}
         by have := congr_arg Fin.val hs'_eq; simp at this; omega,
         by have := congr_arg Fin.val hk'_eq; simp at this; omega,
         h⟩
-    · rw [dif_neg h] at hadj; exact Option.noConfusion hadj
+    · rw [dif_neg h] at hadj; exact nomatch hadj
   · -- k.val ≠ 0
     rw [dif_neg hk] at hadj
     by_cases h : (0 : ℕ) < s.val
@@ -870,7 +877,7 @@ private lemma iadj_cases {s s' : Fin m}
         by have := congr_arg Fin.val hs'_eq; simp at this; omega,
         by have := congr_arg Fin.val hk'_eq; simp at this; omega,
         h⟩
-    · rw [dif_neg h] at hadj; exact Option.noConfusion hadj
+    · rw [dif_neg h] at hadj; exact nomatch hadj
 
 private lemma iadj_symm' {s s' : Fin m}
     {k k' : Fin 2}
