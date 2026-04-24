@@ -376,7 +376,6 @@ theorem surjective_residue_comp_pullbackFst_of_isSeparable [IsLocalRing Λ] [Mod
         (ResidueField Λ) x) map_q hb)
   replace hb : B.residue b = x := by
     rw [← sub_add_cancel b b', map_add, hb, LocAlgCat.residue_eq_zero_iff.mpr b_sub, zero_add]
-  clear a' a_sub b' b_sub
   have hab : f.toAlgHom a = g.toAlgHom b := by
     simp only [IsRoot.def, eval_map_algebraMap, aeval_def] at a_rt b_rt
     apply DFunLike.congr_arg f.toAlgHom at a_rt
@@ -392,9 +391,7 @@ theorem surjective_residue_comp_pullbackFst_of_isSeparable [IsLocalRing Λ] [Mod
   apply Algebra.adjoin_eq_top_of_primitive_element (Algebra.IsAlgebraic.isAlgebraic x) at hx
   simp only [SetLike.ext_iff, Algebra.mem_top, iff_true] at hx
   intro y
-  simp only [AlgHom.coe_comp, Subalgebra.coe_val, Function.comp_apply, AlgHom.fst_apply,
-    Subtype.exists, AlgHom.mem_equalizer, AlgHom.snd_apply, exists_prop, Prod.exists,
-    exists_and_right]
+  suffices ∃ a, (∃ x, f.toAlgHom a = g.toAlgHom x) ∧ A.residue a = y by simpa
   obtain ⟨r, hr⟩ := Algebra.adjoin_eq_exists_aeval (ResidueField Λ) x ⟨y, hx y⟩
   obtain ⟨r, rfl⟩ :=
     map_surjective (algebraMap Λ (ResidueField Λ)) IsLocalRing.residue_surjective r
