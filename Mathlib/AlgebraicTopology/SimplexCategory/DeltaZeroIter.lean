@@ -176,8 +176,7 @@ lemma σ₀Iter_succ (i : ℕ) {n m : ℕ} (h : n + (i + 1) = m) :
         σ₀Iter_coe_eq_of_ge .., tsub_self]
       rw [Fin.le_def, σ₀Iter_coe_eq_of_ge ..]
       simp
-  · dsimp
-    rw [σ₀Iter_coe_eq_of_ge .., coe_σ,
+  · rw [σ₀Iter_coe_eq_of_ge .., coe_σ,
       Fin.predAbove_of_castSucc_lt _ _ ?_, Fin.val_pred,
       σ₀Iter_coe_eq_of_ge .., Nat.sub_add_eq]
     rw [Fin.lt_def, Fin.castSucc_zero, σ₀Iter_coe_eq_of_ge ..,
