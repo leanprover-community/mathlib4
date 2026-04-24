@@ -536,6 +536,7 @@ private lemma ZariskisMainProperty.of_algHom_polynomial
   replace hx (a : _) : x * a ∈ f.range := by simpa [← AlgHom.map_adjoin_singleton f] using hx a
   refine ZariskisMainProperty.trans (S := f.range) _ ?_ ?_
   · have : Algebra.WeaklyQuasiFiniteAt R (p.under f.range) := by
+      let _ := Localization.AtPrime.algebraOfLiesOver (p.under f.range) p
       let e : Localization.AtPrime (p.under f.range) ≃ₐ[R] Localization.AtPrime p :=
         .ofBijective (IsScalarTower.toAlgHom _ _ _)
           (Localization.localRingHom_bijective_of_not_conductor_le this
@@ -579,6 +580,7 @@ private lemma ZariskisMainProperty.of_algHom_mvPolynomial
       Algebra.adjoin R ↑(Finset.univ.image (f ∘ .X ∘ Fin.succ) ∪ r ^ (s.sup m) • s ∪ {r})
     have hrR' : r ∈ R' := Algebra.subset_adjoin (by simp)
     have : Algebra.WeaklyQuasiFiniteAt R (p.under R') := by
+      let := Localization.AtPrime.algebraOfLiesOver (p.under R') p
       let e : Localization.AtPrime (p.under R') ≃ₐ[R] Localization.AtPrime p :=
         .ofBijective (IsScalarTower.toAlgHom _ _ _) <| by
           refine Localization.localRingHom_bijective_of_saturated_inf_eq_top _ ?_ _
