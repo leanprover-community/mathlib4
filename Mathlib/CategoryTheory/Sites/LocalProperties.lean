@@ -16,6 +16,7 @@ In this file we study properties of sheaves that can be checked on a covering fa
 - `CategoryTheory.Sheaf.isIso_iff_of_coversTop`: A morphism of sheaves is an isomorphism if it
   is one on a cover.
 -/
+public section
 
 namespace CategoryTheory
 
