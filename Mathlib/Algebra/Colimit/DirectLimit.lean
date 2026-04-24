@@ -79,7 +79,7 @@ variable [∀ i j h, OneHomClass (T h) (G i) (G j)]
   exact ⟨fun ⟨i, h, _, eq⟩ ↦ ⟨i, h, eq.trans (map_one _)⟩,
     fun ⟨i, h, eq⟩ ↦ ⟨i, h, h, eq.trans (map_one _).symm⟩⟩
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem lift_one (g : ∀ i, H i) (h) :
     DirectLimit.lift f (g ·) h (1 : DirectLimit G f) = (1 : C) := by
   let ⟨i⟩ := ‹Nonempty ι›
@@ -98,6 +98,7 @@ lemma star_def (i : ι) (x : G i) :
     star ⟦⟨i, x⟩⟧ = (⟦⟨i, star x⟩⟧ : DirectLimit G f) := by
   rfl
 
+@[simp]
 theorem lift_star (g : ∀ i, H i) (h) (x : DirectLimit G f) :
     DirectLimit.lift f (g ·) h (star x) = star (DirectLimit.lift f (g ·) h x) :=
   x.induction _ fun i x ↦ by simp_rw [star_def, lift_def, map_star (g i)]
@@ -126,7 +127,7 @@ variable [∀ i j h, MulHomClass (T h) (G i) (G j)] [∀ i, MulHomClass (H i) (G
     ⟦⟨i, x⟩⟧ * ⟦⟨i, y⟩⟧ = (⟦⟨i, x * y⟩⟧ : DirectLimit G f) :=
   map₂_def ..
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem lift_mul (g : ∀ i, H i) (h) (x y : DirectLimit G f) :
     DirectLimit.lift f (g ·) h (x * y) =
       DirectLimit.lift f (g ·) h x * DirectLimit.lift f (g ·) h y :=
@@ -165,7 +166,7 @@ variable [∀ i j h, MulActionHomClass (T h) R (G i) (G j)] [∀ i, MulActionHom
 @[to_additive] theorem smul_def (i x) (r : R) : r • ⟦⟨i, x⟩⟧ = (⟦⟨i, r • x⟩⟧ : DirectLimit G f) :=
   rfl
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem lift_smul (g : ∀ i, H i) (h) (r : R) (x : DirectLimit G f) :
     DirectLimit.lift f (g ·) h (r • x) = r • DirectLimit.lift f (g ·) h x :=
   x.induction _ fun i x ↦ by simp_rw [smul_def, lift_def, map_smul (g i)]
@@ -206,7 +207,7 @@ variable [∀ i j h, MonoidHomClass (T h) (G i) (G j)] [∀ i, MonoidHomClass (H
 @[to_additive] theorem npow_def (i x) (n : ℕ) : ⟦⟨i, x⟩⟧ ^ n = (⟦⟨i, x ^ n⟩⟧ : DirectLimit G f) :=
   rfl
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem lift_npow (g : ∀ i, H i) (h) (x : DirectLimit G f) (n : ℕ) :
     DirectLimit.lift f (g ·) h (x ^ n) = DirectLimit.lift f (g ·) h x ^ n :=
   x.induction _ fun i x ↦ by simp_rw [npow_def, lift_def, map_pow (g i)]
@@ -252,18 +253,18 @@ variable [∀ i j h, MonoidHomClass (T h) (G i) (G j)] [∀ i, MonoidHomClass (H
 @[to_additive] theorem zpow_def (i x) (n : ℤ) : ⟦⟨i, x⟩⟧ ^ n = (⟦⟨i, x ^ n⟩⟧ : DirectLimit G f) :=
   rfl
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem lift_inv (g : ∀ i, H i) (h) (x : DirectLimit G f) :
     DirectLimit.lift f (g ·) h (x⁻¹) = (DirectLimit.lift f (g ·) h x)⁻¹ :=
   x.induction _ fun i x ↦ by simp_rw [inv_def, lift_def, map_inv (g i)]
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem lift_div (g : ∀ i, H i) (h) (x y : DirectLimit G f) :
     DirectLimit.lift f (g ·) h (x / y) =
       (DirectLimit.lift f (g ·) h x) / (DirectLimit.lift f (g ·) h y) :=
   DirectLimit.induction₂ _ (fun i x y ↦ by simp_rw [div_def, lift_def, map_div (g i)]) x y
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem lift_zpow (g : ∀ i, H i) (h) (x : DirectLimit G f) (z : ℤ) :
     DirectLimit.lift f (g ·) h (x ^ z) = DirectLimit.lift f (g ·) h x ^ z :=
   x.induction _ fun i x ↦ by simp_rw [zpow_def, lift_def, map_zpow (g i)]
@@ -338,15 +339,18 @@ theorem div₀_def (i x y) : ⟦⟨i, x⟩⟧ / ⟦⟨i, y⟩⟧ = (⟦⟨i, x /
 
 theorem zpow₀_def (i x) (n : ℤ) : ⟦⟨i, x⟩⟧ ^ n = (⟦⟨i, x ^ n⟩⟧ : DirectLimit G f) := rfl
 
+@[simp]
 theorem lift_inv₀ (g : ∀ i, H i) (h) (x : DirectLimit G f) :
     DirectLimit.lift f (g ·) h (x⁻¹) = (DirectLimit.lift f (g ·) h x)⁻¹ :=
   x.induction _ fun i x ↦ by simp_rw [inv₀_def, lift_def, map_inv₀ (g i)]
 
+@[simp]
 theorem lift_div₀ (g : ∀ i, H i) (h) (x y : DirectLimit G f) :
     DirectLimit.lift f (g ·) h (x / y) =
       (DirectLimit.lift f (g ·) h x) / (DirectLimit.lift f (g ·) h y) :=
   DirectLimit.induction₂ _ (fun i x y ↦ by simp_rw [div₀_def, lift_def, map_div₀ (g i)]) x y
 
+@[simp]
 theorem lift_zpow₀ (g : ∀ i, H i) (h) (x : DirectLimit G f) (z : ℤ) :
     DirectLimit.lift f (g ·) h (x ^ z) = DirectLimit.lift f (g ·) h x ^ z :=
   x.induction _ fun i x ↦ by simp_rw [zpow₀_def, lift_def, map_zpow₀ (g i)]
