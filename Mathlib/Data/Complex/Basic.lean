@@ -640,11 +640,12 @@ theorem normSq_sub (z w : ℂ) : normSq (z - w) = normSq z + normSq w - 2 * (z *
 /-! ### Inversion -/
 
 
+@[no_expose]
 noncomputable instance : Inv ℂ :=
   ⟨fun z => conj z * ((normSq z)⁻¹ : ℝ)⟩
 
 theorem inv_def (z : ℂ) : z⁻¹ = conj z * ((normSq z)⁻¹ : ℝ) :=
-  rfl
+  (rfl)
 
 @[simp]
 theorem inv_re (z : ℂ) : z⁻¹.re = z.re / normSq z := by simp [inv_def, division_def, ofReal]
@@ -760,7 +761,7 @@ theorem im_eq_sub_conj (z : ℂ) : (z.im : ℂ) = (z - conj z) / (2 * I) := by
   simp only [sub_conj, ofReal_mul, ofReal_ofNat, mul_right_comm,
     mul_div_cancel_left₀ _ (mul_ne_zero two_ne_zero I_ne_zero : 2 * I ≠ 0)]
 
-/-- Show the imaginary number ⟨x, y⟩ as an "x + y*I" string
+/-- Show the imaginary number ⟨x, y⟩ as an `"x + y*I"` string
 
 Note that the Real numbers used for x and y will show as Cauchy sequences due to the way Real
 numbers are represented.
