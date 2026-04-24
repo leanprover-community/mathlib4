@@ -193,6 +193,7 @@ variable {Q : Ideal S} {σ σ' : G}
 theorem mem_stabilizer [Q.IsPrime] (h : IsArithFrobAt R σ Q) : σ ∈ MulAction.stabilizer G Q := by
   rw [MulAction.mem_stabilizer_iff]
   conv_lhs => rw [← h.comap_eq]
+  rw [Ideal.pointwise_smul_def]
   exact Q.map_comap_eq_self_of_equiv (MulSemiringAction.toRingEquiv G S σ)
 
 lemma mul_inv_mem_inertia (H : IsArithFrobAt R σ Q) (H' : IsArithFrobAt R σ' Q) :
