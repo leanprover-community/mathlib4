@@ -293,7 +293,7 @@ variable {A B : C} [HasBinaryProduct A B]
 instance : HasBinaryCoproduct (op A) (op B) := by
   have : HasProduct fun x ↦ (WalkingPair.casesOn x A B : C) := ‹_›
   change HasCoproduct _
-  convert inferInstanceAs (HasCoproduct fun x ↦ op (WalkingPair.casesOn x A B : C)) with x
+  convert (inferInstance : HasCoproduct fun x ↦ op (WalkingPair.casesOn x A B : C)) with x
   cases x <;> rfl
 
 set_option backward.isDefEq.respectTransparency false in

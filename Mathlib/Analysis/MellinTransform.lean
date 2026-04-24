@@ -250,11 +250,11 @@ theorem mellin_convergent_zero_of_isBigO {b : ℝ} {f : ℝ → ℝ}
     · refine (ae_restrict_iff' measurableSet_Ioo).mpr (Eventually.of_forall fun t ht => ?_)
       rw [mul_comm, norm_mul]
       specialize hε' _ ht.1
-      · rw [dist_eq_norm, sub_zero, norm_of_nonneg (le_of_lt ht.1)]
+      · rw [dist_eq_norm, sub_zero, norm_of_nonneg ht.1.le]
         exact ht.2
       · calc _ ≤ d * ‖t ^ (-b)‖ * ‖t ^ (s - 1)‖ := by gcongr
           _ = d * t ^ (s - b - 1) := ?_
-        simp_rw [norm_of_nonneg (rpow_nonneg (le_of_lt ht.1) _), mul_assoc]
+        simp_rw [norm_of_nonneg (rpow_nonneg ht.1.le _), mul_assoc]
         rw [← rpow_add ht.1]
         congr 2
         abel
@@ -358,7 +358,7 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [NormedSpace ℂ E] {a b : ℝ}
     rw [norm_cpow_eq_rpow_re_of_pos ht]
     rcases le_or_gt 1 t with h | h
     · refine le_add_of_le_of_nonneg (rpow_le_rpow_of_exponent_le h ?_)
-        (rpow_nonneg (zero_le_one.trans h) _)
+        (by positivity)
       rw [sub_re, one_re, sub_le_sub_iff_right]
       rw [mem_ball_iff_norm] at hz
       have hz' := (re_le_norm _).trans hz.le

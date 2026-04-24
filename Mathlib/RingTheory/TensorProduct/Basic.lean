@@ -546,7 +546,7 @@ lemma adjoin_one_tmul_image_eq_top [CommSemiring R] [CommSemiring A]
     [Semiring B] [Algebra R A] [Algebra R B]
     (s : Set B) (hs : adjoin R s = ⊤) : adjoin A (((1 : A) ⊗ₜ[R] ·) '' s) = ⊤ := by
   suffices h : adjoin A ((⊤ : Subalgebra R B).map (includeRight (A := A)) : Set (A ⊗[R] B)) = ⊤ by
-    simp [← h, ← hs, AlgHom.map_adjoin, -adjoin_toSubsemiring, adjoin_adjoin_of_tower]
+    simp [← h, ← hs, AlgHom.map_adjoin, adjoin_adjoin_of_tower]
   rw [← Algebra.toSubmodule_eq_top, ← top_le_iff, Algebra.map_top, ← Submodule.baseChange_top,
     Submodule.baseChange_eq_span, Submodule.map_top]
   exact span_le_adjoin _ _

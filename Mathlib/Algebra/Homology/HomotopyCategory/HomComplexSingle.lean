@@ -13,7 +13,7 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 
 We introduce constructors `Cochain.fromSingleMk` and `Cocycle.fromSingleMk`
 for cochains and cocycles from a single complex. We also introduce similar
-definitions for cochains and cocyles to a single complex.
+definitions for cochains and cocycles to a single complex.
 
 -/
 

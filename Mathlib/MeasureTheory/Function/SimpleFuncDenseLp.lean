@@ -280,11 +280,7 @@ theorem measure_preimage_lt_top_of_memLp (hp_pos : p ≠ 0) (hp_ne_top : p ≠ �
   swap
   · suffices h_empty : f ⁻¹' {y} = ∅ by
       rw [h_empty, measure_empty]; exact ENNReal.coe_lt_top
-    ext1 x
-    rw [Set.mem_preimage, Set.mem_singleton_iff, mem_empty_iff_false, iff_false]
-    refine fun hxy => hyf ?_
-    rw [mem_range, Set.mem_range]
-    exact ⟨x, hxy⟩
+    exact (preimage_eq_empty_iff _ _).mpr hyf
   specialize hf_eLpNorm y hyf
   rw [ENNReal.mul_lt_top_iff] at hf_eLpNorm
   cases hf_eLpNorm with
@@ -456,7 +452,6 @@ protected theorem isBoundedSMul [Fact (1 ≤ p)] : IsBoundedSMul 𝕜 (Lp.simple
 
 attribute [local instance] simpleFunc.isBoundedSMul
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `E` is a normed space, `Lp.simpleFunc E p μ` is a normed space. Not declared as an
 instance as it is (as of writing) used only in the construction of the Bochner integral. -/
 @[instance_reducible]

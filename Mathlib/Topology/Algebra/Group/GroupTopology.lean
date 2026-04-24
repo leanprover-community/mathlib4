@@ -110,7 +110,6 @@ instance : Bot (GroupTopology α) :=
 theorem toTopologicalSpace_bot : (⊥ : GroupTopology α).toTopologicalSpace = ⊥ :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance : BoundedOrder (GroupTopology α) where
   le_top x := show x.toTopologicalSpace ≤ ⊤ from le_top
@@ -165,14 +164,14 @@ topologies contained in the intersection of `s` and `t`. -/
   The supremum of two group topologies `s` and `t` is the infimum of the family of all group
   topologies contained in the intersection of `s` and `t`. -/]
 instance : CompleteSemilatticeInf (GroupTopology α) :=
-  { inferInstanceAs (InfSet (GroupTopology α)),
-    inferInstanceAs (PartialOrder (GroupTopology α)) with
+  { (inferInstance : InfSet (GroupTopology α)),
+    (inferInstance : PartialOrder (GroupTopology α)) with
     isGLB_sInf _ := .of_image toTopologicalSpace_le (isGLB_sInf _) }
 
 @[to_additive]
 instance : CompleteLattice (GroupTopology α) :=
-  { inferInstanceAs (BoundedOrder (GroupTopology α)),
-    inferInstanceAs (SemilatticeInf (GroupTopology α)),
+  { (inferInstance : BoundedOrder (GroupTopology α)),
+    (inferInstance : SemilatticeInf (GroupTopology α)),
     completeLatticeOfCompleteSemilatticeInf _ with
     inf := (· ⊓ ·) }
 

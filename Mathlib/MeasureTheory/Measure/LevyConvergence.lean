@@ -121,7 +121,7 @@ lemma isTightMeasureSet_of_tendsto_charFun {μ : ℕ → Measure E} [∀ i, IsPr
     refine (hδ_lt ?_).le
     simp only [norm_smul, Real.norm_eq_abs, mul_one, hz]
     calc |x|
-    _ ≤ 2 * r⁻¹ := by simp at hx; grind
+    _ ≤ 2 * r⁻¹ := by grind
     _ < δ := by
       rw [← lt_div_iff₀' (by positivity), inv_lt_comm₀ hr (by positivity)]
       refine lt_of_lt_of_le ?_ hrδ
@@ -173,7 +173,7 @@ lemma ProbabilityMeasure.tendsto_of_tight_of_separatesPoints (𝕜 : Type*) [RCL
 
 variable {ι : Type*} {𝓕 : Filter ι} {μ₀ : ProbabilityMeasure E}
 
-set_option backward.isDefEq.respectTransparency false
+set_option backward.isDefEq.respectTransparency false in
 omit [FiniteDimensional ℝ E] in
 lemma ProbabilityMeasure.tendsto_charPoly_of_tendsto_charFun {μ : ι → ProbabilityMeasure E}
     (h : ∀ t : E, Tendsto (fun n ↦ charFun (μ n) t) 𝓕 (𝓝 (charFun μ₀ t)))

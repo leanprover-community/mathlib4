@@ -279,11 +279,6 @@ lemma subgroupOf_isOpen (U K : Subgroup G) (h : IsOpen (K : Set G)) :
     IsOpen (K.subgroupOf U : Set U) :=
   Continuous.isOpen_preimage (continuous_iff_le_induced.mpr fun _ ↦ id) _ h
 
-@[to_additive (attr := deprecated QuotientGroup.discreteTopology (since := "2025-10-09"))]
-lemma discreteTopology [SeparatelyContinuousMul G] (U : Subgroup G) (h : IsOpen (U : Set G)) :
-    DiscreteTopology (G ⧸ U) :=
-  QuotientGroup.discreteTopology h
-
 @[to_additive]
 instance [SeparatelyContinuousMul G] (U : OpenSubgroup G) : DiscreteTopology (G ⧸ U.toSubgroup) :=
   QuotientGroup.discreteTopology U.isOpen

@@ -8,7 +8,7 @@ module
 public import Mathlib.AlgebraicGeometry.Sites.QuasiCompact
 
 /-!
-# Sheafs for the quasi-compact topology
+# Sheaves for the quasi-compact topology
 
 In this file we show that a presheaf is a sheaf in the `AlgebraicGeometry.Scheme.propQCTopology`
 if and only if it is a sheaf in the Zariski topology and a sheaf on single object

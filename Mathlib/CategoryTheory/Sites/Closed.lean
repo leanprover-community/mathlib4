@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Sites.SheafOfTypes
 public import Mathlib.Order.Closure
+public import Mathlib.CategoryTheory.Subfunctor.Basic
 
 /-!
 # Closed sieves
@@ -147,36 +148,41 @@ theorem close_eq_top_iff_mem {X : C} (S : Sieve X) : J₁.close S = ⊤ ↔ S �
 
 end GrothendieckTopology
 
+variable (C) in
+/-- The presheaf sending each object to the type of sieves on it. This will turn out to be a
+subobject classifier for the category of presheaves. -/
+@[simps]
+def Functor.sieves : Cᵒᵖ ⥤ Type max v u where
+  obj X := Sieve X.unop
+  map f := TypeCat.ofHom fun S ↦ S.pullback f.unop
+
 /--
 The presheaf sending each object to the set of `J`-closed sieves on it. This presheaf is a `J`-sheaf
 (and will turn out to be a subobject classifier for the category of `J`-sheaves).
 -/
 @[simps]
-def Functor.closedSieves : Cᵒᵖ ⥤ Type max v u where
-  obj X := { S : Sieve X.unop // J₁.IsClosed S }
-  map f S := ⟨S.1.pullback f.unop, J₁.isClosed_pullback f.unop _ S.2⟩
+def Functor.closedSieves : Subfunctor (Functor.sieves C) where
+  obj X := {S : Sieve X.unop | J₁.IsClosed S}
+  map f _ := J₁.isClosed_pullback f.unop _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The presheaf of `J`-closed sieves is a `J`-sheaf.
 The proof of this is adapted from [MM92], Chapter III, Section 7, Lemma 1.
 -/
-theorem classifier_isSheaf : Presieve.IsSheaf J₁ (Functor.closedSieves J₁) := by
+theorem classifier_isSheaf : Presieve.IsSheaf J₁ (Functor.closedSieves J₁).toFunctor := by
   intro X S hS
   rw [← Presieve.isSeparatedFor_and_exists_isAmalgamation_iff_isSheafFor]
   refine ⟨?_, ?_⟩
   · rintro x ⟨M, hM⟩ ⟨N, hN⟩ hM₂ hN₂
-    simp only [Functor.closedSieves_obj]
+    dsimp at S M N ⊢
     ext Y f
     dsimp only [Subtype.coe_mk]
     rw [← J₁.covers_iff_mem_of_isClosed hM, ← J₁.covers_iff_mem_of_isClosed hN]
     have q : ∀ ⦃Z : C⦄ (g : Z ⟶ X) (_ : S g), M.pullback g = N.pullback g :=
       fun Z g hg => congr_arg Subtype.val ((hM₂ g hg).trans (hN₂ g hg).symm)
     have MSNS : M ⊓ S = N ⊓ S := by
-      ext Z g
-      rw [Sieve.inter_apply, Sieve.inter_apply]
-      simp only [and_comm]
-      apply and_congr_right
-      intro hg
-      rw [Sieve.mem_iff_pullback_eq_top, Sieve.mem_iff_pullback_eq_top, q g hg]
+      ext
+      grind [Sieve.inter_apply, Sieve.mem_iff_pullback_eq_top]
     constructor
     · intro hf
       rw [J₁.covers_iff]
@@ -194,7 +200,7 @@ theorem classifier_isSheaf : Presieve.IsSheaf J₁ (Functor.closedSieves J₁) :
     have : ∀ ⦃Y⦄ (f : Y ⟶ X) (hf : S f), M.pullback f = (x f hf).1 := by
       intro Y f hf
       apply le_antisymm
-      · rintro Z u ⟨W, g, f', hf', hg : (x f' hf').1 _, c⟩
+      · rintro Z u ⟨W, g, f', hf', hg : (x f' hf').1.1 _, c⟩
         rw [Sieve.mem_iff_pullback_eq_top,
           ← show (x (u ≫ f) _).1 = (x f hf).1.pullback u from congr_arg Subtype.val (hx f u hf)]
         conv_lhs => congr; congr; rw [← c] -- Porting note: Originally `simp_rw [← c]`
@@ -203,17 +209,18 @@ theorem classifier_isSheaf : Presieve.IsSheaf J₁ (Functor.closedSieves J₁) :
       · apply Sieve.le_pullback_bind S fun Y f hf => (x f hf).1
     refine ⟨⟨_, J₁.close_isClosed M⟩, ?_⟩
     intro Y f hf
-    simp only [Functor.closedSieves_obj]
+    dsimp
     ext1
     dsimp
     rw [← J₁.pullback_close, this _ hf]
     apply le_antisymm (J₁.le_close_of_isClosed le_rfl (x f hf).2) (J₁.le_close _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A sieve `S` is covering for `J` if and only if the subobject classifier
 is a sheaf for `S`. -/
 lemma GrothendieckTopology.mem_iff_isSheafFor_closedSieves
     (J : GrothendieckTopology C) {X : C} (S : Sieve X) :
-    S ∈ J X ↔ Presieve.IsSheafFor (Functor.closedSieves J) S.arrows := by
+    S ∈ J X ↔ Presieve.IsSheafFor (Functor.closedSieves J).toFunctor S.arrows := by
   refine ⟨fun hS ↦ classifier_isSheaf _ _ hS, fun H ↦ ?_⟩
   rw [← J.close_eq_top_iff_mem]
   have : J.IsClosed (⊤ : Sieve X) := by
@@ -223,7 +230,7 @@ lemma GrothendieckTopology.mem_iff_isSheafFor_closedSieves
     rw [Subtype.ext_iff] at this
     exact this
   refine H.isSeparatedFor.ext fun Y f hf ↦ ?_
-  simp only [Functor.closedSieves_obj]
+  simp only [Subfunctor.toFunctor_obj, Functor.sieves_obj, Functor.closedSieves_obj, Set.coe_setOf]
   ext1
   dsimp
   rw [Sieve.pullback_top, ← J.pullback_close, S.pullback_eq_top_of_mem hf,
@@ -234,14 +241,14 @@ lemma GrothendieckTopology.mem_iff_isSheafFor_closedSieves
 `classifier_isSheaf` and `isSheaf_of_le`.
 -/
 theorem le_topology_of_closedSieves_isSheaf {J₁ J₂ : GrothendieckTopology C}
-    (h : Presieve.IsSheaf J₁ (Functor.closedSieves J₂)) : J₁ ≤ J₂ := by
+    (h : Presieve.IsSheaf J₁ (Functor.closedSieves J₂).toFunctor) : J₁ ≤ J₂ := by
   intro X S hS
   rw [GrothendieckTopology.mem_iff_isSheafFor_closedSieves]
   exact h _ hS
 
 /-- If being a sheaf for `J₁` is equivalent to being a sheaf for `J₂`, then `J₁ = J₂`. -/
 theorem topology_eq_iff_same_sheaves {J₁ J₂ : GrothendieckTopology C} :
-    J₁ = J₂ ↔ ∀ P : Cᵒᵖ ⥤ Type max v u, Presieve.IsSheaf J₁ P ↔ Presieve.IsSheaf J₂ P := by
+    J₁ = J₂ ↔ ∀ P : Cᵒᵖ ⥤ Type (max v u), Presieve.IsSheaf J₁ P ↔ Presieve.IsSheaf J₂ P := by
   constructor
   · rintro rfl
     intro P

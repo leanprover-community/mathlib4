@@ -222,7 +222,7 @@ lemma corootSpace_zero_eq_bot :
   rintro - ⟨y, hy, z, hz, rfl⟩
   suffices ⁅(⟨y, hy⟩ : H), (⟨z, hz⟩ : H)⁆ = 0 by
     simpa only [Subtype.ext_iff, LieSubalgebra.coe_bracket, ZeroMemClass.coe_zero] using this
-  simp
+  simp [trivial_lie_zero]
 
 variable {K L} in
 /-- The restriction of the Killing form to a Cartan subalgebra, as a linear equivalence to the
@@ -440,7 +440,7 @@ lemma disjoint_ker_weight_corootSpace (α : Weight K H L) :
 
 lemma root_apply_cartanEquivDual_symm_ne_zero {α : Weight K H L} (hα : α.IsNonZero) :
     α ((cartanEquivDual H).symm α) ≠ 0 := by
-  contrapose! hα
+  contrapose hα
   suffices (cartanEquivDual H).symm α ∈ α.ker ⊓ corootSpace α by
     rw [(disjoint_ker_weight_corootSpace α).eq_bot] at this
     simpa using this
@@ -540,7 +540,7 @@ lemma traceForm_eq_zero_of_mem_ker_of_mem_span_coroot {α : Weight K H L} {x y :
     simp [hα.eq, hβ.eq]
   else
     have hβ : β.IsNonZero := by
-      contrapose! hα
+      contrapose hα
       simp only [← coroot_eq_zero_iff] at hα ⊢
       rwa [hyp]
     have : α.ker = β.ker := by
@@ -600,7 +600,7 @@ lemma _root_.IsSl2Triple.h_eq_coroot {α : Weight K H L} (hα : α.IsNonZero)
   use (2 • (α α')⁻¹) * (killingForm K L e f)⁻¹
   have hef₀ : killingForm K L e f ≠ 0 := by
     have := ht.h_ne_zero
-    contrapose! this
+    contrapose this
     simpa [this] using h_eq
   rw [h_eq, smul_smul, mul_assoc, inv_mul_cancel₀ hef₀, mul_one, smul_assoc, coroot]
 
@@ -685,6 +685,12 @@ noncomputable def sl2SubmoduleOfRoot {α : Weight K H L} (hα : α.IsNonZero) :
 This represents the image of the coroot space under the inclusion `H ↪ L`. -/
 noncomputable abbrev corootSubmodule (α : Weight K H L) : LieSubmodule K H L :=
   LieSubmodule.map H.toLieSubmodule.incl (corootSpace α)
+
+omit [CharZero K] in
+lemma coe_coroot_mem_corootSubmodule (α : Weight K H L) :
+    (coroot α : L) ∈ corootSubmodule α :=
+  (LieSubmodule.mem_map _).mpr
+    ⟨⟨coroot α, (coroot α).property⟩, coroot_mem_corootSpace α, rfl⟩
 
 open Submodule in
 lemma sl2SubmoduleOfRoot_eq_sup (α : Weight K H L) (hα : α.IsNonZero) :

@@ -178,7 +178,6 @@ theorem iteratedDerivWithin_sub
   rw [sub_eq_add_neg, sub_eq_add_neg, Pi.neg_def, iteratedDerivWithin_add hx h hf hg.neg,
     iteratedDerivWithin_fun_neg]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iteratedDerivWithin_comp_const_smul (hf : ContDiffOn 𝕜 n f s) (c : 𝕜)
     (hs : Set.MapsTo (c * ·) s s) :
     iteratedDerivWithin n (fun x => f (c * x)) s x = c ^ n • iteratedDerivWithin n f s (c * x) := by
@@ -204,6 +203,40 @@ theorem iteratedDerivWithin_comp_const_smul (hf : ContDiffOn 𝕜 n f s) (c : �
       derivWithin.scomp x h₁ (differentiableWithinAt_id'.const_mul _) hs,
       derivWithin_const_mul _ differentiableWithinAt_id', derivWithin_id' _ _ (h _ hx),
       smul_smul, mul_one, pow_succ]
+
+open Pointwise
+
+omit hx h in
+lemma iteratedDerivWithin_comp_neg (a : 𝕜) : iteratedDerivWithin n (fun x ↦ f (-x)) s a
+    = (-1 : 𝕜) ^ n • iteratedDerivWithin n f (-s) (-a) := by
+  simp [iteratedDerivWithin, iteratedFDerivWithin_comp_neg n a]
+
+omit hx h in
+theorem iteratedDerivWithin_comp_const_add (c : 𝕜) :
+    iteratedDerivWithin n (fun z => f (c + z)) s =
+      fun x ↦ iteratedDerivWithin n f (c +ᵥ s) (c + x) := by
+  ext x
+  simp [iteratedDerivWithin, ← iteratedFDerivWithin_comp_add_left n c x]
+
+omit hx h in
+theorem iteratedDerivWithin_comp_add_const (c : 𝕜) :
+    iteratedDerivWithin n (fun z => f (z + c)) s =
+      fun x ↦ iteratedDerivWithin n f (c +ᵥ s) (x + c) := by
+  ext x
+  simp [iteratedDerivWithin, ← iteratedFDerivWithin_comp_add_right n c x]
+
+omit hx h in
+theorem iteratedDerivWithin_comp_sub_const (c : 𝕜) :
+    iteratedDerivWithin n (fun z => f (z - c)) s =
+      fun x ↦ iteratedDerivWithin n f (-c +ᵥ s) (x - c) := by
+  simpa only [sub_eq_add_neg] using iteratedDerivWithin_comp_add_const (-c)
+
+omit hx h in
+theorem iteratedDerivWithin_comp_const_sub (c : 𝕜) :
+    iteratedDerivWithin n (fun z => f (c - z)) s =
+      fun x ↦ (-1 : 𝕜) ^ n • iteratedDerivWithin n f (c +ᵥ -s) (c - x) := by
+  ext a
+  simp [iteratedDerivWithin, iteratedFDerivWithin_comp_const_sub]
 
 lemma iteratedDerivWithin_id :
     iteratedDerivWithin n id s x = if n = 0 then x else if n = 1 then 1 else 0 := by
@@ -372,14 +405,7 @@ theorem iteratedDeriv_comp_const_mul {n : ℕ} {f : 𝕜 → 𝕜} (h : ContDiff
 
 lemma iteratedDeriv_comp_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :
     iteratedDeriv n (fun x ↦ f (-x)) a = (-1 : 𝕜) ^ n • iteratedDeriv n f (-a) := by
-  induction n generalizing a with
-  | zero => simp only [iteratedDeriv_zero, pow_zero, one_smul]
-  | succ n ih =>
-    have ih' : iteratedDeriv n (fun x ↦ f (-x)) = fun x ↦ (-1 : 𝕜) ^ n • iteratedDeriv n f (-x) :=
-      funext ih
-    rw [iteratedDeriv_succ, iteratedDeriv_succ, ih', pow_succ', neg_mul, one_mul,
-      deriv_comp_neg (f := fun x ↦ (-1 : 𝕜) ^ n • iteratedDeriv n f x), deriv_fun_const_smul_field,
-      neg_smul]
+  simp [iteratedDeriv, ← iteratedFDerivWithin_univ, iteratedFDerivWithin_comp_neg]
 
 lemma iteratedDeriv_id {n : ℕ} {x : 𝕜} :
     iteratedDeriv n id x = if n = 0 then x else if n = 1 then 1 else 0 := by

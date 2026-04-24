@@ -150,11 +150,11 @@ theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul'
       _ = K.indicator (fun x ↦ (C * ‖v‖) * ‖g x‖) x := by rw [indicator_of_mem hx]
     · have A : f x = 0 := by
         rw [← Function.notMem_support]
-        contrapose! hx
+        contrapose hx
         exact self_subset_cthickening _ (subset_tsupport _ hx)
       have B : f (x + t • v) = 0 := by
         rw [← Function.notMem_support]
-        contrapose! hx
+        contrapose hx
         apply mem_cthickening_of_dist_le _ _ (‖v‖) (tsupport f) (subset_tsupport _ hx)
         simp only [dist_eq_norm, sub_add_cancel_left, norm_neg, norm_smul, Real.norm_eq_abs,
           abs_of_nonneg t_pos.le]
@@ -316,7 +316,7 @@ theorem hasFDerivAt_of_hasLineDerivAt_of_closure
     _ = ε * ‖v‖ := by rw [hδ, hρ]
 
 /-- A real-valued function on a finite-dimensional space which is Lipschitz is
-differentiable almost everywere. Superseded by
+differentiable almost everywhere. Superseded by
 `LipschitzWith.ae_differentiableAt` which works for functions taking value in any
 finite-dimensional space. -/
 theorem ae_differentiableAt_of_real (hf : LipschitzWith C f) :
@@ -335,7 +335,7 @@ variable [FiniteDimensional ℝ E] [FiniteDimensional ℝ F] [IsAddHaarMeasure �
 namespace LipschitzOnWith
 
 /-- A real-valued function on a finite-dimensional space which is Lipschitz on a set is
-differentiable almost everywere in this set. Superseded by
+differentiable almost everywhere in this set. Superseded by
 `LipschitzOnWith.ae_differentiableWithinAt_of_mem` which works for functions taking value in any
 finite-dimensional space. -/
 theorem ae_differentiableWithinAt_of_mem_of_real (hf : LipschitzOnWith C f s) :
@@ -345,7 +345,7 @@ theorem ae_differentiableWithinAt_of_mem_of_real (hf : LipschitzOnWith C f s) :
   exact hx.differentiableWithinAt.congr hg (hg xs)
 
 /-- A function on a finite-dimensional space which is Lipschitz on a set and taking values in a
-product space is differentiable almost everywere in this set. Superseded by
+product space is differentiable almost everywhere in this set. Superseded by
 `LipschitzOnWith.ae_differentiableWithinAt_of_mem` which works for functions taking value in any
 finite-dimensional space. -/
 theorem ae_differentiableWithinAt_of_mem_pi
@@ -359,7 +359,7 @@ theorem ae_differentiableWithinAt_of_mem_pi
   exact differentiableWithinAt_pi.2 (fun i ↦ hx i xs)
 
 /-- *Rademacher's theorem*: a function between finite-dimensional real vector spaces which is
-Lipschitz on a set is differentiable almost everywere in this set. -/
+Lipschitz on a set is differentiable almost everywhere in this set. -/
 theorem ae_differentiableWithinAt_of_mem {f : E → F} (hf : LipschitzOnWith C f s) :
     ∀ᵐ x ∂μ, x ∈ s → DifferentiableWithinAt ℝ f s x := by
   have A := (Basis.ofVectorSpace ℝ F).equivFun.toContinuousLinearEquiv
@@ -373,7 +373,7 @@ theorem ae_differentiableWithinAt_of_mem {f : E → F} (hf : LipschitzOnWith C f
   exact A.lipschitz.comp_lipschitzOnWith hf
 
 /-- *Rademacher's theorem*: a function between finite-dimensional real vector spaces which is
-Lipschitz on a set is differentiable almost everywere in this set. -/
+Lipschitz on a set is differentiable almost everywhere in this set. -/
 theorem ae_differentiableWithinAt {f : E → F} (hf : LipschitzOnWith C f s)
     (hs : MeasurableSet s) :
     ∀ᵐ x ∂(μ.restrict s), DifferentiableWithinAt ℝ f s x := by
