@@ -145,22 +145,12 @@ theorem theta_le_log4_mul_x {x : ℝ} (hx : 0 ≤ x) : θ x ≤ log 4 * x := by
 /-- `√2 ^ n ≤ n#` for `n ≥ 2`. Real-valued form of the Chebyshev lower bound. -/
 theorem sqrt_two_pow_le_primorial {n : ℕ} (hn : 2 ≤ n) :
     Real.sqrt 2 ^ n ≤ (primorial n : ℝ) := by
-  have hnat : 2 ^ ((n + 1) / 2) ≤ primorial n := two_pow_half_succ_le_primorial hn
-  -- √2^n = 2^(n/2 : ℝ) ≤ 2^((n+1)/2 : ℕ) ≤ n#
-  -- since (n : ℝ)/2 ≤ ((n+1)/2 : ℕ) [nat ceil of n/2]
-  have hexp : (n : ℝ) / 2 ≤ ((n + 1) / 2 : ℕ) := by
-    have h : n ≤ 2 * ((n + 1) / 2 : ℕ) := by lia
-    rw [div_le_iff₀ (by norm_num : (0 : ℝ) < 2)]
-    have : (↑n : ℝ) ≤ ↑(2 * ((n + 1) / 2)) := Nat.cast_le.mpr h
-    push_cast at this ⊢; linarith [mul_comm 2 (↑((n + 1) / 2) : ℝ)]
-  calc (Real.sqrt 2 ^ n : ℝ)
-      = (2 : ℝ) ^ ((n : ℝ) / 2) := by
-        rw [Real.sqrt_eq_rpow, ← Real.rpow_natCast, ← Real.rpow_mul (by positivity)]
-        ring_nf
-    _ ≤ (2 : ℝ) ^ ((n + 1) / 2 : ℕ) := by
-        rw [← Real.rpow_natCast (2 : ℝ) ((n + 1) / 2)]
-        exact Real.rpow_le_rpow_of_exponent_le (by norm_num) (by exact_mod_cast hexp)
-    _ ≤ primorial n := by exact_mod_cast hnat
+  have hexp : (n : ℝ) / 2 ≤ ↑((n + 1) / 2) :=
+    (div_le_iff₀' zero_lt_two).mpr <| by norm_cast; lia
+  rw [← rpow_natCast, ← rpow_div_two_eq_sqrt _ zero_le_two]
+  grw [hexp]
+  · exact_mod_cast two_pow_half_succ_le_primorial hn
+  · exact one_le_two -- side goal
 
 /-- Chebyshev's lower bound: `log 2 / 2 * x ≤ θ x` for `3 ≤ x`. -/
 theorem log2_div_two_mul_le_theta {x : ℝ} (hx : 3 ≤ x) : Real.log 2 / 2 * x ≤ θ x := by
