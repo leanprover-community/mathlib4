@@ -997,17 +997,6 @@ lemma isPosSemidef_inner : LinearMap.IsPosSemidef (innerₗ E) where
 
 end IsPosSemidef
 
-attribute [local implicit_reducible] algebraMap
-
-example : (Semiring.toNatAlgebra : Algebra ℕ ℂ) = Complex.instAlgebraOfReal := by
-  with_reducible_and_instances rfl
-
-example : (Ring.toIntAlgebra ℂ : Algebra ℤ ℂ) = Complex.instAlgebraOfReal := by
-  with_reducible_and_instances rfl
-
-example : Module.restrictScalars ℝ ℂ ℂ = Complex.instModule := by
-  with_reducible_and_instances rfl
-
 example : (instInnerProductSpaceRealComplex.toSMul : SMul ℝ ℂ) =
     Complex.instRCLike.toSMul := by
   with_reducible_and_instances rfl
