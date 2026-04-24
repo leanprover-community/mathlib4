@@ -385,6 +385,13 @@ lemma isZero_iff_subsingleton : IsZero M ↔ Subsingleton M where
 lemma isZero_of_iff_subsingleton {M : Type*} [AddCommGroup M] [Module R M] :
     IsZero (of R M) ↔ Subsingleton M := isZero_iff_subsingleton
 
+lemma ofHom_zero {M N : Type v} [AddCommGroup M] [Module R M]
+    [AddCommGroup N] [Module R N] : ModuleCat.ofHom (0 : M →ₗ[R] N) = 0 := rfl
+
+lemma ofHom_add {M N : Type v} [AddCommGroup M] [Module R M]
+    [AddCommGroup N] [Module R N] (f g : M →ₗ[R] N) :
+    ModuleCat.ofHom (f + g) = ModuleCat.ofHom f + ModuleCat.ofHom g := rfl
+
 end AddCommGroup
 
 section SMul
