@@ -127,21 +127,24 @@ def homMk {Y Z : ContinuousGeneratedByCat.{v} X} (f : Y → Z) (hf : ContinuousG
   hom.toFun := f
   hom.prop := hf
 
+/-- Use the abbreviation `TopCat.toContinuousGeneratedByCat` for the faithful
+functor `TopCat ⥤ ContinuousGeneratedByCat X` which sends
+a topological space `Y` to the same type `Y`, with the same topology, but
+considered as an object of `ContinuousGeneratedByCat X`. -/
+@[simps! +dsimpLhs forget₂_obj forget₂_map_hom_apply]
+instance : HasForget₂ TopCat.{v} (ContinuousGeneratedByCat.{v} X) where
+  forget₂.obj Y := .of Y
+  forget₂.map f := ContinuousGeneratedByCat.homMk f (f.hom.continuous.continuousGeneratedBy)
+
 end ContinuousGeneratedByCat
 
 /-- The faithful functor `TopCat ⥤ ContinuousGeneratedByCat X` which sends
 a topological space `Y` to the same type `Y`, with the same topology, but
 considered as an object of `ContinuousGeneratedByCat X`. -/
-@[simps! +dsimpLhs obj map_hom_apply]
-def TopCat.toContinuousGeneratedByCat :
-    TopCat.{v} ⥤ ContinuousGeneratedByCat.{v} X where
-  obj Y := .of Y
-  map f := ContinuousGeneratedByCat.homMk f (f.hom.continuous.continuousGeneratedBy)
+abbrev TopCat.toContinuousGeneratedByCat :
+    TopCat.{v} ⥤ ContinuousGeneratedByCat.{v} X := forget₂ _ _
 
-instance : (TopCat.toContinuousGeneratedByCat.{v} X).Faithful where
-  map_injective {_ _ _ _ h} := by
-    ext x
-    apply ConcreteCategory.congr_hom h
+instance : (TopCat.toContinuousGeneratedByCat.{v} X).Faithful := inferInstance
 
 namespace ContinuousGeneratedByCat
 
