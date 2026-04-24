@@ -5,6 +5,7 @@ Authors: Kexing Ying, Rémy Degenne
 -/
 module
 
+public import Mathlib.Order.SuccPred.LinearLocallyFinite
 public import Mathlib.Probability.Process.Filtration
 public import Mathlib.Topology.Instances.Discrete
 
@@ -281,11 +282,16 @@ theorem StronglyAdapted.progMeasurable_of_discrete [TopologicalSpace ι] [Discre
   h.progMeasurable_of_continuous fun _ => continuous_of_discreteTopology
 
 -- this dot notation will make more sense once we have a more general definition for predictable
-theorem Predictable.stronglyAdapted {f : Filtration ℕ m} {u : ℕ → Ω → β}
-    (hu : StronglyAdapted f fun n => u (n + 1)) (hu0 : StronglyMeasurable[f 0] (u 0)) :
-    StronglyAdapted f u := fun n =>
-  match n with
-  | 0 => hu0
-  | n + 1 => (hu n).mono (f.mono n.le_succ)
+theorem Predictable.stronglyAdapted {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [OrderBot ι]
+    [SuccOrder ι] {f : Filtration ι m} {u : ι → Ω → β}
+    (hu : StronglyAdapted f fun n => u (succ n)) (hu0 : StronglyMeasurable[f ⊥] (u ⊥)) :
+    StronglyAdapted f u := by
+  intro n
+  by_cases hn : n = ⊥
+  · rw [hn]; exact hu0
+  · obtain ⟨m, rfl⟩ : ∃ m, n = succ m := by
+      have : PredOrder ι := LinearLocallyFiniteOrder.predOrder ι
+      exact ⟨pred n, by simp [succ_pred_of_not_isMin, hn]⟩
+    exact (hu m).mono (f.mono (le_succ m))
 
 end MeasureTheory
