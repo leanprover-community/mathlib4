@@ -127,17 +127,9 @@ lemma ContinuousMultilinearMap.iteratedFDeriv_comp_diagonal
   rw [← sum_comp (Equiv.embeddingEquivOfFinite (Fin n))]
   congr with σ
   congr with i
-  have A : ∃ y, σ y = i := by
-    have : Function.Bijective σ := (Fintype.bijective_iff_injective_and_card _).2 ⟨σ.injective, rfl⟩
-    exact this.surjective i
-  rcases A with ⟨y, rfl⟩
-  simp only [EmbeddingLike.apply_eq_iff_eq, exists_eq, ↓reduceDIte,
-    Function.Embedding.toEquivRange_symm_apply_self, ContinuousLinearMap.coe_pi',
-    ContinuousLinearMap.coe_id', id_eq, g]
-  congr 1
-  symm
+  obtain ⟨y, rfl⟩ := σ.equivOfFiniteSelfEmbedding.surjective i
   simp [inv_apply, Perm.inv_def,
-    ofBijective_symm_apply_apply, Function.Embedding.equivOfFiniteSelfEmbedding]
+    ofBijective_symm_apply_apply, Function.Embedding.equivOfFiniteSelfEmbedding, g]
 
 private lemma HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum_of_subset
     (h : HasFPowerSeriesWithinOnBall f p s x r) (h' : AnalyticOn 𝕜 f s)
