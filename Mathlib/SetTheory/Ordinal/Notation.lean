@@ -756,6 +756,21 @@ instance nf_opow (o₁ o₂) [NF o₁] [NF o₂] : NF (o₁ ^ o₂) := by
   rcases e₂ : split' o₂ with ⟨b', k⟩
   haveI := (nf_repr_split' e₂).1
   obtain - | ⟨a0, n, a'⟩ := a
+  #adaptation_note /-- Proof repaired after leanprover/lean4#13363.
+  The next branch was previously
+  ```
+  · rcases m with - | m
+    · by_cases o₂ = 0 <;> simp only [(· ^ ·), Pow.pow, opow, opowAux2, *] <;> decide
+    · by_cases m = 0
+      · simp only [(· ^ ·), Pow.pow, opow, opowAux2, *, zero_def]
+        decide
+      · simp only [(· ^ ·), Pow.pow, opow, opowAux2, *]
+        infer_instance
+  ```
+  The replacement proof is a short-term fix, and we request that the authors/maintainers of
+  this file review the proof, and either approve it by removing this adaptation note, revise
+  the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
+  needs addressing. -/
   · rcases m with - | m
     · by_cases h : o₂ = 0
       · subst h
@@ -901,6 +916,25 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
   rcases e₁ : split o₁ with ⟨a, m⟩
   obtain ⟨N₁, r₁⟩ := nf_repr_split e₁
   obtain - | ⟨a0, n, a'⟩ := a
+  #adaptation_note /-- Proof repaired after leanprover/lean4#13363.
+  The next block was previously
+  ```
+  · rcases m with - | m
+    · by_cases h : o₂ = 0 <;> simp [opow_def, opowAux2, e₁, h, r₁]
+      have := mt repr_inj.1 h
+      rw [zero_opow this]
+    · rcases e₂ : split' o₂ with ⟨b', k⟩
+      obtain ⟨_, r₂⟩ := nf_repr_split' e₂
+      by_cases h : m = 0
+      · simp [opowAux2, opow_def, e₁, h, r₁, r₂]
+      simp only [opow_def, opowAux2, e₁, r₁, e₂, r₂, repr,
+          Nat.cast_succ, _root_.zero_add,
+          add_zero]
+  ```
+  The replacement proof is a short-term fix, and we request that the authors/maintainers of
+  this file review the proof, and either approve it by removing this adaptation note, revise
+  the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
+  needs addressing. -/
   · rcases m with - | m
     · have hzero : (0 : ONote) = zero := rfl
       by_cases h : o₂ = 0

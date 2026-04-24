@@ -225,6 +225,13 @@ lemma hom_ext₀ {F G : ComposableArrows C 0} {φ φ' : F ⟶ G}
   fin_cases i
   exact h
 
+#adaptation_note /-- After leanprover/lean4#13363, the `hom_inv_id` and `inv_hom_id` fields
+needed to be supplied explicitly. Previously they were not necessary, and were proved by the
+`auto_param`.
+The replacement proof is a short-term fix, and we request that the authors/maintainers of
+this file review the proof, and either approve it by removing this adaptation note, revise
+the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
+needs addressing. -/
 /-- Constructor for isomorphisms in `ComposableArrows C 0`. -/
 @[simps!]
 def isoMk₀ {F G : ComposableArrows C 0} (e : F.obj' 0 ≅ G.obj' 0) : F ≅ G where
@@ -267,6 +274,13 @@ lemma hom_ext₁ {F G : ComposableArrows C 1} {φ φ' : F ⟶ G}
     | 0 => exact h₀
     | 1 => exact h₁
 
+#adaptation_note /-- After leanprover/lean4#13363, the `hom_inv_id` and `inv_hom_id` fields
+needed to be supplied explicitly. Previously they were not necessary, and were proved by the
+`auto_param`.
+The replacement proof is a short-term fix, and we request that the authors/maintainers of
+this file review the proof, and either approve it by removing this adaptation note, revise
+the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
+needs addressing. -/
 /-- Constructor for isomorphisms in `ComposableArrows C 1`. -/
 @[simps!]
 def isoMk₁ {F G : ComposableArrows C 1}
@@ -628,6 +642,13 @@ lemma hom_ext₂ {f g : ComposableArrows C 2} {φ φ' : f ⟶ g}
     φ = φ' :=
   hom_ext_succ h₀ (hom_ext₁ h₁ h₂)
 
+#adaptation_note /-- After leanprover/lean4#13363, the `hom_inv_id` and `inv_hom_id` fields
+needed to be supplied explicitly. Previously they were not necessary, and were proved by the
+`auto_param`.
+The replacement proof is a short-term fix, and we request that the authors/maintainers of
+this file review the proof, and either approve it by removing this adaptation note, revise
+the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
+needs addressing. -/
 /-- Constructor for isomorphisms in `ComposableArrows C 2`. -/
 @[simps]
 def isoMk₂ {f g : ComposableArrows C 2}

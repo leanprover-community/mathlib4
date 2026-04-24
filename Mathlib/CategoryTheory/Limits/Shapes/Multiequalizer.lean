@@ -540,6 +540,17 @@ def ofι {J : MulticospanShape.{w, w'}} (I : MulticospanIndex J C)
         | WalkingMulticospan.left _ => ι _
         | WalkingMulticospan.right b => ι (J.fst b) ≫ I.fst b
       naturality := by
+        #adaptation_note /-- Proof repaired after leanprover/lean4#13363.
+        The proof used to finish from this point as
+        ```
+        rintro (_ | _) (_ | _) (_ | _ | _) <;>
+          dsimp <;> simp only [Category.id_comp, Category.comp_id]
+        apply w
+        ```
+        The replacement proof is a short-term fix, and we request that the authors/maintainers of
+        this file review the proof, and either approve it by removing this adaptation note, revise
+        the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
+        needs addressing. -/
         rintro (_ | _) (_ | _) (_ | _ | _) <;>
           simp only [WalkingMulticospan.Hom.id_eq_id,
             Functor.map_id, Functor.const_obj_map, Category.comp_id] <;>
@@ -660,16 +671,25 @@ def ofPiFork
     | WalkingMulticospan.left _ => a.ι ≫ c.proj _
     | WalkingMulticospan.right _ => a.ι ≫ I.fstPiMapOfIsLimit c hd ≫ d.proj _
   π.naturality := by
+    #adaptation_note /-- Proof repaired after leanprover/lean4#13363.
+    The proof used to finish from this point as
+    ```
     rintro (_ | _) (_ | _) (_ | _ | _)
-    -- left.left.id
+    · simp
+    · simp
+    · dsimp; rw [a.condition_assoc]; simp
+    · simp
+    ```
+    The replacement proof is a short-term fix, and we request that the authors/maintainers of
+    this file review the proof, and either approve it by removing this adaptation note, revise
+    the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
+    needs addressing. -/
+    rintro (_ | _) (_ | _) (_ | _ | _)
     · simp only [WalkingMulticospan.Hom.id_eq_id, Functor.map_id,
         Functor.const_obj_map, Category.comp_id]
       exact Category.id_comp _
-    -- left.right.fst
-    · dsimp; simp [MulticospanIndex.fstPiMapOfIsLimit_proj]
-    -- left.right.snd
+    · simp
     · dsimp; rw [a.condition_assoc]; simp
-    -- right.right.id
     · simp only [WalkingMulticospan.Hom.id_eq_id, Functor.map_id,
         Functor.const_obj_map, Category.comp_id]
       exact Category.id_comp _

@@ -110,7 +110,17 @@ theorem cast_bit0 [AddGroupWithOne α] : ∀ n : ZNum, (n.bit0 : α) = (n : α) 
 
 @[simp, norm_cast]
 theorem cast_bit1 [AddGroupWithOne α] : ∀ n : ZNum, (n.bit1 : α) = ((n : α) + n) + 1
-  | 0 => by change ((ZNum.zero).bit1 : α) = _; simp [ZNum.bit1]
+  | 0 => by
+    #adaptation_note /-- Proof repaired after leanprover/lean4#13363.
+    The proof used to finish from this point as
+    ```
+    simp [ZNum.bit1]
+    ```
+    The replacement proof is a short-term fix, and we request that the authors/maintainers of
+    this file review the proof, and either approve it by removing this adaptation note, revise
+    the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
+    needs addressing. -/
+    change ((ZNum.zero).bit1 : α) = _; simp [ZNum.bit1]
   | pos p => by rw [ZNum.bit1, cast_pos, cast_pos]; rfl
   | neg p => by
     rw [ZNum.bit1, cast_neg, cast_neg]
@@ -573,7 +583,16 @@ protected theorem div_zero (n : Num) : n / 0 = 0 :=
   show n.div 0 = 0 by
     cases n
     · rfl
-    · change (Num.pos _).div Num.zero = 0; simp [Num.div]
+    · #adaptation_note /-- Proof repaired after leanprover/lean4#13363.
+      The proof used to finish from this point as
+      ```
+      simp [Num.div]
+      ```
+      The replacement proof is a short-term fix, and we request that the authors/maintainers of
+      this file review the proof, and either approve it by removing this adaptation note, revise
+      the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
+      needs addressing. -/
+      change (Num.pos _).div Num.zero = 0; simp [Num.div]
 
 @[simp, norm_cast]
 theorem div_to_nat : ∀ n d, ((n / d : Num) : ℕ) = n / d
@@ -587,7 +606,16 @@ protected theorem mod_zero (n : Num) : n % 0 = n :=
   show n.mod 0 = n by
     cases n
     · rfl
-    · change (Num.pos _).mod Num.zero = Num.pos _; simp [Num.mod]
+    · #adaptation_note /-- Proof repaired after leanprover/lean4#13363.
+      The proof used to finish from this point as
+      ```
+      simp [Num.mod]
+      ```
+      The replacement proof is a short-term fix, and we request that the authors/maintainers of
+      this file review the proof, and either approve it by removing this adaptation note, revise
+      the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
+      needs addressing. -/
+      change (Num.pos _).mod Num.zero = Num.pos _; simp [Num.mod]
 
 @[simp, norm_cast]
 theorem mod_to_nat : ∀ n d, ((n % d : Num) : ℕ) = n % d

@@ -313,8 +313,7 @@ lemma toCycles_cyclesMap (α : mk₂ f g ⟶ mk₂ f' g') (β : mk₁ fg ⟶ mk�
   · dsimp
     rw [hβ₀]
     exact naturality' α 0 1
-  · dsimp
-    simp [hβ₁]
+  · simp [hβ₁]
 
 /-- The map `H^n(f) ⟶ H^n(f ≫ g)` factors through `opZ^n(f, g)`. -/
 noncomputable def fromOpcycles (n : ℤ) :

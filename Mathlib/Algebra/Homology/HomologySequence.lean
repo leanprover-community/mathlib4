@@ -161,7 +161,18 @@ noncomputable def composableArrows₃Functor [CategoryWithHomology C] :
     (homologyMap φ j)
     (by set_option backward.isDefEq.respectTransparency false in simp)
     (by set_option backward.isDefEq.respectTransparency false in simp [-Fin.reduceFinMk])
-    (by change K.homologyπ j ≫ homologyMap φ j = cyclesMap φ j ≫ L.homologyπ j; simp)
+    (#adaptation_note /-- Proof repaired after leanprover/lean4#13363.
+    The proof used to finish from this point as
+    ```
+    by simp [-Fin.reduceFinMk]
+    ```
+    (`Fin.reduceFinMk` was disabled so that `Precomp.obj_succ` would fire; see
+    https://github.com/leanprover-community/mathlib4/issues/27382).
+    The replacement proof is a short-term fix, and we request that the authors/maintainers of
+    this file review the proof, and either approve it by removing this adaptation note, revise
+    the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
+    needs addressing. -/
+    by change K.homologyπ j ≫ homologyMap φ j = cyclesMap φ j ≫ L.homologyπ j; simp)
 
 end HomologySequence
 

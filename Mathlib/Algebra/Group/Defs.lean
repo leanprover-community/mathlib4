@@ -15,6 +15,7 @@ public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Tactic.OfNat
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Typeclasses for (semi)groups and monoids
@@ -525,6 +526,15 @@ theorem npowRec'_two_mul {M : Type*} [Semigroup M] [One M] (k : ℕ) (m : M) :
     | 0 => rfl
     | 1 => simp [npowRec']
     | k + 2 =>
+      #adaptation_note /-- Proof repaired after leanprover/lean4#13363.
+      The proof used to finish from this point as
+      ```
+      simp [npowRec', ← mul_assoc, ← ih]
+      ```
+      The replacement proof is a short-term fix, and we request that the authors/maintainers of
+      this file review the proof, and either approve it by removing this adaptation note, revise
+      the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
+      needs addressing. -/
       rw [show 2 * (k + 2) = k + k + 4 from by omega]
       simp only [npowRec']
       rw [← ih (k + 1) (by omega), show 2 * (k + 1) = k + k + 2 from by omega]

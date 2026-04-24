@@ -637,6 +637,15 @@ instance preorder : Preorder (ℤ√d) where
 open Int in
 -- TODO add an `Archimedean (ℤ√d)` instance and drop this lemma
 theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
+  #adaptation_note /-- Proof repaired after leanprover/lean4#13363.
+  The last three `by` subproofs inside the following match arms used to be each
+  ```
+  by simp [Int.negSucc_eq, add_assoc, Nonneg, Nonnegg]
+  ```
+  The replacement proof is a short-term fix, and we request that the authors/maintainers of
+  this file review the proof, and either approve it by removing this adaptation note, revise
+  the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
+  needs addressing. -/
   obtain ⟨x, y, (h : a ≤ ⟨x, y⟩)⟩ : ∃ x y : ℕ, Nonneg (⟨x, y⟩ + -a) :=
     match -a with
     | ⟨Int.ofNat x, Int.ofNat y⟩ => ⟨0, 0, by trivial⟩

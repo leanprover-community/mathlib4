@@ -227,6 +227,15 @@ def parallelPair (f g : X ⟶ Y) : WalkingParallelPair ⥤ C where
     | right => g
   -- `sorry` can cope with this, but it's too slow:
   map_comp := by
+    #adaptation_note /-- Proof repaired after leanprover/lean4#13363.
+    The proof used to be
+    ```
+    rintro _ _ _ ⟨⟩ g <;> cases g <;> simp
+    ```
+    The replacement proof is a short-term fix, and we request that the authors/maintainers of
+    this file review the proof, and either approve it by removing this adaptation note, revise
+    the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
+    needs addressing. -/
     rintro _ _ _ ⟨⟩ g <;> cases g <;>
       dsimp only [CategoryStruct.comp, CategoryStruct.id, WalkingParallelPairHom.comp] <;>
       first | rfl | simp
