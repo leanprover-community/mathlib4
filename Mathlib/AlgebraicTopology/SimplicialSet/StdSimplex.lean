@@ -524,7 +524,7 @@ lemma homOfLE_faceSingletonComplIso_inv_eq_facePairComplIso_inv_δ_pred {n : ℕ
     (i j : Fin (n + 3)) (h : i < j) :
     Subcomplex.homOfLE (by simp [face_le_face_iff]) ≫
       (faceSingletonComplIso.{u} i).inv =
-        (facePairComplIso i j h).inv ≫ stdSimplex.δ (j.pred (Fin.ne_zero_of_lt h)) := by
+    (facePairComplIso i j h).inv ≫ stdSimplex.δ (j.pred (Fin.ne_zero_of_lt h)) := by
   simp [← cancel_mono (faceSingletonComplIso i).hom,
     ← cancel_mono (Subcomplex.ι _), ← cancel_epi (facePairComplIso i j h).hom,
     facePairComplIso_hom_ι']
