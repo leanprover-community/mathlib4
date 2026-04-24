@@ -98,4 +98,16 @@ end
 
 end CommComon
 
+section Symmetric
+
+variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C] [SymmetricCategory C]
+
+instance (A B : C) [ComonObj A] [ComonObj B]
+    [IsCommComonObj A] [IsCommComonObj B] : IsCommComonObj (A ⊗ B) where
+  comul_comm := by
+    rw [Comon.tensorObj_comul, Category.assoc, MonoidalCategory.tensorμ_braid_swap]
+    simp
+
+end Symmetric
+
 end CategoryTheory

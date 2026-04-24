@@ -777,6 +777,22 @@ lemma tensorμ_comp_μ_tensorHom_μ_comp_μ (F : C ⥤ D) [F.LaxBraided] (W X Y 
 
 end Tensor
 
+section Symmetric
+
+variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory C] [SymmetricCategory C]
+
+@[reassoc]
+theorem tensorμ_braid_swap (A Y : C) :
+    tensorμ A A Y Y ≫ (β_ (A ⊗ Y) (A ⊗ Y)).hom =
+      ((β_ A A).hom ⊗ₘ (β_ Y Y).hom) ≫ tensorμ A A Y Y := by
+  simp only [tensorμ, braiding_tensor_right_hom, braiding_tensor_left_hom, comp_whiskerRight,
+    whisker_assoc, Category.assoc, whiskerLeft_comp, pentagon_assoc,
+    pentagon_inv_hom_hom_hom_inv_assoc, Iso.inv_hom_id_assoc, whiskerLeft_hom_inv_assoc]
+  slice_lhs 3 4 => rw [← whiskerLeft_comp, ← comp_whiskerRight, SymmetricCategory.symmetry]
+  simp [tensorHom_def]
+
+end Symmetric
+
 end MonoidalCategory
 
 instance : BraidedCategory Cᵒᵖ where
