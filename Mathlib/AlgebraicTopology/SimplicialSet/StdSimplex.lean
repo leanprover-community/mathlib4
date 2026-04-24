@@ -485,8 +485,7 @@ noncomputable def finOrderIsoPairCompl {n : ℕ} (i j : Fin (n + 2)) (h : i < j)
     · exact ((Fin.succAboveOrderEmb (i.castPred (Fin.ne_last_of_lt h))).trans
         (Fin.succAboveOrderEmb j)).injective (by rwa [Subtype.ext_iff] at hk)
     · obtain ⟨m, rfl⟩ : l ∈ Set.range j.succAbove := by
-        simp [Fin.range_succAbove] at hl ⊢
-        tauto
+        grind [Fin.range_succAbove, mem_compl, Fin.succAbove]
       obtain ⟨k, hk⟩ : m ∈ Set.range (i.castPred (Fin.ne_last_of_lt h)).succAbove := by
         simp only [Fin.range_succAbove, Set.mem_compl_iff, Set.mem_singleton_iff]
         rintro rfl
