@@ -194,18 +194,9 @@ theorem two_pow_le_primorial {n : ℕ} : 2 ^ n ≤ (2 * n)# := by
 /-- **Strongest Chebyshev lower bound**. `2 ^ (n / 2 + 1) ≤ n#` for `n ≥ 5`. -/
 theorem two_pow_half_add_one_le_primorial {n : ℕ} (hn : 5 ≤ n) : 2 ^ (n / 2 + 1) ≤ n# := by
   rcases Nat.even_or_odd n with ⟨k, rfl⟩ | ⟨k, rfl⟩
-  · have hk : 3 ≤ k := by lia
-    have : (k + k) / 2 + 1 = k + 1 := by lia
-    rw [this, show k + k = 2 * k from by ring]
-    exact (two_pow_succ_lt_primorial hk).le
-  · have hk : 2 ≤ k := by lia
-    have : (2 * k + 1) / 2 + 1 = k + 1 := by lia
-    rw [this]
-    have hps : (2 * k + 1 + 1)# = (2 * k + 1)# :=
-      primorial_succ (by lia) ⟨k, rfl⟩
-    have hlt : 2 ^ (k + 1) < (2 * (k + 1))# := two_pow_lt_primorial (by lia)
-    rw [show 2 * (k + 1) = 2 * k + 1 + 1 from by ring, hps] at hlt
-    exact hlt.le
+  · grind [two_pow_succ_lt_primorial]
+  · rw [← primorial_succ (by lia) ⟨k, rfl⟩]
+    grind [two_pow_lt_primorial (show 2 ≤ k + 1 by lia)]
 
 /-- **Stronger Chebyshev lower bound**. `2 ^ ((n + 1) / 2) ≤ n#` for `n ≥ 2`. -/
 theorem two_pow_half_succ_le_primorial {n : ℕ} (hn : 2 ≤ n) : 2 ^ ((n + 1) / 2) ≤ n# := by
