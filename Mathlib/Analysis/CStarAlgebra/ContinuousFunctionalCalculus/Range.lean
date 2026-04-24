@@ -155,7 +155,6 @@ section ClosedEmbedding
 
 variable [NonUnitalClosedEmbeddingContinuousFunctionalCalculus 𝕜 A p]
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped NonUnitalContinuousFunctionalCalculus in
 theorem range_cfcₙHom {a : A} (ha : p a) :
     NonUnitalStarAlgHom.range (cfcₙHom ha (R := 𝕜)) = elemental 𝕜 a := by
@@ -173,7 +172,6 @@ end ClosedEmbedding
 
 variable [NonUnitalContinuousFunctionalCalculus 𝕜 A p]
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped NonUnitalContinuousFunctionalCalculus in
 theorem range_cfcₙHom_le {a : A} (ha : p a) :
     NonUnitalStarAlgHom.range (cfcₙHom ha (R := 𝕜)) ≤ elemental 𝕜 a := by
