@@ -71,9 +71,7 @@ instance {f : α → β} (hf : Measurable f) : IsDeterministic (deterministic f 
     simp_rw [parallelComp_comp_copy, deterministic_prod_deterministic, copy,
       deterministic_comp_deterministic, Function.comp_def]
 
-instance : IsDeterministic (Kernel.id (α := α)) := by
-  unfold Kernel.id
-  infer_instance
+instance : IsDeterministic (Kernel.id (α := α)) := by unfold Kernel.id; infer_instance
 
 instance : IsDeterministic (copy α) := by
   unfold copy
