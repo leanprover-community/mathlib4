@@ -29,8 +29,7 @@ useful since it is sometimes better behaved (for example it is stable under `Pol
 
 -/
 
-@[expose] public section
-
+public section
 
 universe u v w z
 

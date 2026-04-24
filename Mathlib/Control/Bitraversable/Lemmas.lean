@@ -34,8 +34,7 @@ traversable bitraversable functor bifunctor applicative
 
 -/
 
-@[expose] public section
-
+public section
 
 universe u
 
