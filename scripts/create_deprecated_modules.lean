@@ -372,10 +372,17 @@ replaced by the suggestion, which means that you can click on multiple suggestio
 the deprecations later on.
 -/
 
-#find_deleted_files 0
+-- #find_deleted_files 0
 
 /--
-info: import Mathlib.Tactic.Linter.DeprecatedModule
+info: /-
+Copyright (c) 2025 Damiano Testa. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Damiano Testa
+-/
+
+--import Mathlib.Init
+import Mathlib.Tactic.Linter.DeprecatedModule
 import Std.Time.Zoned
 import Lean.Meta.Tactic.TryThis
 -/
@@ -386,7 +393,14 @@ run_cmd
   logInfo head
 
 /--
-info: import Mathlib.Tactic.Linter.DeprecatedModule
+info: /-
+Copyright (c) 2025 Damiano Testa. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Damiano Testa
+-/
+
+--import Mathlib.Init
+import Mathlib.Tactic.Linter.DeprecatedModule
 import Std.Time.Zoned
 import Lean.Meta.Tactic.TryThis
 -- a comment here to test `keepTrailing

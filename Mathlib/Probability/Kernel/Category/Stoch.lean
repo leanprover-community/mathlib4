@@ -23,14 +23,14 @@ The category of measurable spaces with Markov kernels is a Markov category.
 
 ## References
 * [A synthetic approach to
-Markov kernels, conditional independence and theorems on sufficient statistics][fritz2020]
+  Markov kernels, conditional independence and theorems on sufficient statistics][fritz2020]
 -/
 
 @[expose] public section
 
 open CategoryTheory ProbabilityTheory MeasureTheory
 
-open scoped MonoidalCategory
+open scoped MonoidalCategory SFinKer
 
 universe u
 

@@ -383,7 +383,7 @@ theorem lift_cof_iSup_add_one [Small.{u} β] {f : β → Ordinal} (hf : StrictMo
       obtain ⟨i, hi⟩ := hb
       exact ⟨_, Set.mem_range_self i, hi⟩
   · rw [mem_Iio]
-    exact (lt_add_one _).trans_le <| le_ciSup  (bddAbove_of_small _) _
+    exact (lt_add_one _).trans_le <| le_ciSup bddAbove_of_small _
 
 theorem cof_iSup_add_one {f : γ → Ordinal} (hf : StrictMono f) :
     cof (⨆ i, f i + 1) = Order.cof γ := by
@@ -698,12 +698,20 @@ theorem bsup_lt_ord {o : Ordinal} {f : ∀ a < o, Ordinal} {c : Ordinal} (ho : o
     (∀ i hi, f i hi < c) → bsup.{u, u} o f < c :=
   bsup_lt_ord_lift (by rwa [o.card.lift_id])
 
+/-! ### Cofinality arithmetic -/
+
 @[simp]
-theorem cof_add (a b : Ordinal) : b ≠ 0 → cof (a + b) = cof b := fun h => by
+theorem cof_add (a : Ordinal) {b : Ordinal} (hb : b ≠ 0) : cof (a + b) = cof b := by
   rcases zero_or_succ_or_isSuccLimit b with (rfl | ⟨c, rfl⟩ | hb)
   · contradiction
   · rw [succ_eq_add_one, ← add_assoc, cof_add_one, cof_add_one]
   · exact cof_map_of_isNormal (isNormal_add_right a) hb
+
+@[simp]
+theorem cof_mul {a b : Ordinal} (ha : a ≠ 0) (hb : IsSuccPrelimit b) : cof (a * b) = cof b := by
+  by_cases hb' : IsMin b
+  · simp [hb'.eq_bot]
+  · exact cof_map_of_isNormal (isNormal_mul_right ha.pos) ⟨hb', hb⟩
 
 @[simp]
 theorem cof_preOmega {o : Ordinal} (ho : IsSuccPrelimit o) : (preOmega o).cof = o.cof := by
