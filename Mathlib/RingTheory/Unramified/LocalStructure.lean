@@ -206,14 +206,6 @@ private lemma exists_hasStandardEtaleSurjectionOn_of_exists_adjoin_singleton_eq_
   obtain ⟨c, hc⟩ := hmp₁
   simp_all [hm.dvd_mul, dvd_add_left, pow_two, mul_dvd_mul_iff_left, hm.ne_zero]
 
-theorem foo {R S A B C : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S] [Semiring A]
-    [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Semiring B] [Algebra R B] [Semiring C]
-    [Algebra S C] [Algebra R C] [IsScalarTower R S C]
-    (f : A →ₐ[S] C) (g : B →ₐ[R] C) (hfg : ∀ (x : A) (y : B), Commute (f x) (g y)) :
-    (Algebra.TensorProduct.lift f g hfg).restrictScalars R =
-      Algebra.TensorProduct.lift (f.restrictScalars R) g hfg := by
-  rfl
-
 lemma exists_notMem_forall_ne_mem_and_adjoin_eq_top
     (Q : Ideal S) [Q.IsPrime] [Module.Finite R S] [IsUnramifiedAt R Q]
     [Algebra (Localization.AtPrime (Q.under R)) (Localization.AtPrime Q)]
@@ -239,13 +231,12 @@ lemma exists_notMem_forall_ne_mem_and_adjoin_eq_top
     IsArtinianRing.exists_not_mem_forall_mem_of_ne (α ⟨Q, ‹_›, ⟨rfl⟩⟩).asIdeal
   obtain ⟨s, hsQ, t, e⟩ := Ideal.Fiber.exists_smul_eq_one_tmul _ (r * x)
   have hrQ' : φ r ≠ 0 := by
+    have : Ideal.ResidueField.mapₐ p Q (ofId R S) (Ideal.over_def Q p) =
+      AlgHom.restrictScalars R (ofId p.ResidueField Q.ResidueField) := by ext
+    rw [← AlgHom.restrictScalars_apply R, Algebra.TensorProduct.restrictScalars_lift (S' := R)]
     convert hrQ
-    simp only [PrimeSpectrum.primesOverOrderIsoFiber, PrimeSpectrum.preimageOrderIsoFiber,
-      PrimeSpectrum.preimageEquivFiber, AlgHom.toRingHom_eq_coe, OrderIso.trans_apply,
-      RelIso.coe_fn_mk, Equiv.coe_fn_mk, RingHom.mem_ker, RingHom.coe_coe, φ, α]
-    rw [← AlgHom.restrictScalars_apply R, foo]
-    convert Iff.rfl
-    ext
+    rw [← SetLike.mem_coe, PrimeSpectrum.coe_primesOverOrderIsoFiber_apply_asIdeal]
+    simp [this]
   have hsQ' : algebraMap R Q.ResidueField s ≠ 0 := by
     simpa [IsScalarTower.algebraMap_apply R S Q.ResidueField]
   replace hrQ' : φ r = 1 := by
