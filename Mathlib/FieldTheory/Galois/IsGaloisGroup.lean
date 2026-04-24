@@ -245,6 +245,39 @@ theorem mulEquivCongr_apply_smul [IsGaloisGroup G K L] [Finite G] [IsGaloisGroup
     (g : G) (x : L) : mulEquivCongr G H K L g • x = g • x :=
   AlgEquiv.ext_iff.mp ((mulEquivAlgEquiv H K L).apply_symm_apply (mulEquivAlgEquiv G K L g)) x
 
+attribute [local instance] FractionRing.liftAlgebra in
+/-- If `G` and `H` are finite Galois groups for `B/A` with `B` a domain, then `G` is
+isomorphic to `H`. -/
+noncomputable def mulEquivCongrOfDomain [Finite G] [Finite H] (A B : Type*) [CommRing A]
+    [CommRing B] [IsDomain B] [Algebra A B] [FaithfulSMul A B] [MulSemiringAction G B]
+    [MulSemiringAction H B] [IsGaloisGroup G A B] [IsGaloisGroup H A B] :
+    G ≃* H :=
+  haveI : IsDomain A := (FaithfulSMul.algebraMap_injective A B).isDomain
+  letI K := FractionRing A
+  letI L := FractionRing B
+  letI : MulSemiringAction G L := IsFractionRing.mulSemiringAction G A B K L
+  letI : MulSemiringAction H L := IsFractionRing.mulSemiringAction H A B K L
+  haveI : IsGaloisGroup G K L := IsGaloisGroup.toFractionRing G A B
+  haveI : IsGaloisGroup H K L := IsGaloisGroup.toFractionRing H A B
+  mulEquivCongr G H K L
+
+attribute [local instance] FractionRing.liftAlgebra in
+@[simp]
+theorem mulEquivCongrOfDomain_apply_smul [Finite G] [Finite H] (A B : Type*) [CommRing A]
+    [CommRing B] [IsDomain B] [Algebra A B] [FaithfulSMul A B] [MulSemiringAction G B]
+    [MulSemiringAction H B] [IsGaloisGroup G A B] [IsGaloisGroup H A B] (g : G) (x : B) :
+    mulEquivCongrOfDomain G H A B g • x = g • x := by
+  haveI : IsDomain A := (FaithfulSMul.algebraMap_injective A B).isDomain
+  letI K := FractionRing A
+  letI L := FractionRing B
+  letI : MulSemiringAction G L := IsFractionRing.mulSemiringAction G A B K L
+  letI : MulSemiringAction H L := IsFractionRing.mulSemiringAction H A B K L
+  haveI : IsGaloisGroup G K L := IsGaloisGroup.toFractionRing G A B
+  haveI : IsGaloisGroup H K L := IsGaloisGroup.toFractionRing H A B
+  apply FaithfulSMul.algebraMap_injective B L
+  rw [algebraMap.smul', algebraMap.smul']
+  exact mulEquivCongr_apply_smul G H K L g _
+
 @[simp]
 theorem map_mulEquivAlgEquiv_fixingSubgroup
     [IsGaloisGroup G K L] [Finite G] (F : IntermediateField K L) :
