@@ -81,7 +81,7 @@ theorem cardinalMk_prod_le_two_mul_cardinalMk_fromRel :
   grw [Sym2.mk_fiber, ← Set.cast_ncard, Set.ncard_insert_le] <;>
     simp
 
-theorem cardinalMk_prod_eq_two_mul_cardinalMk_fromRel (irrefl : Std.Irrefl r) :
+theorem cardinalMk_prod_eq_two_mul_cardinalMk_fromRel [Std.Irrefl r] :
     #{ p : α × α // r p.fst p.snd } = 2 * #(Sym2.fromRel sym) := by
   rw [← Equiv.sigmaSubtypeFiberEquivSubtype Sym2.mk.uncurry (q := (· ∈ Sym2.fromRel sym)) (by simp)
     |>.cardinal_eq, Cardinal.mk_sigma, mul_comm, ← Cardinal.sum_const']
@@ -89,7 +89,7 @@ theorem cardinalMk_prod_eq_two_mul_cardinalMk_fromRel (irrefl : Std.Irrefl r) :
   ext ⟨z, hz⟩
   rw [← Set.coe_setOf, ← Set.preimage_singleton, ← Set.cast_ncard z.finite_mk_fiber,
     z.ncard_mk_fiber_of_not_isDiag, Nat.cast_two]
-  exact Sym2.fromRel_irrefl.mp irrefl hz
+  exact Sym2.fromRel_irrefl.mp ‹_› hz
 
 end fromRel
 
