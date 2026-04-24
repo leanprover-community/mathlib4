@@ -335,7 +335,8 @@ lemma maxDegree_mono {H : SimpleGraph V} [Fintype V] [DecidableRel G.Adj] [Decid
 theorem Copy.minDegree_le [Fintype V] [Fintype W] [DecidableRel G.Adj] [DecidableRel H.Adj]
     {f : Copy G H} (hf : Function.Surjective f) : G.minDegree ≤ H.minDegree := by
   cases isEmpty_or_nonempty W
-  · simp [Function.isEmpty f]
+  · have := Function.isEmpty f
+    simp
   refine H.le_minDegree_of_forall_le_degree _ fun w ↦ ?_
   obtain ⟨v, rfl⟩ := hf w
   grw [← f.degree_le, ← minDegree_le_degree]
