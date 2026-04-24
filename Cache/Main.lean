@@ -113,7 +113,7 @@ def main (args : List String) : IO Unit := do
   let hashMemo ← getHashMemo roots
   let hashMap := hashMemo.hashMap
   let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl
-  let get (force := false) (decompress := true) := do
+  let get (args : List String) (force := false) (decompress := true) := do
     let hashMap ← if args.isEmpty then pure hashMap else hashMemo.filterByRootModules roots.keys
     getFiles repo? hashMap force force goodCurl decompress
   let pack (overwrite verbose unpackedOnly := false) := do
@@ -135,9 +135,9 @@ def main (args : List String) : IO Unit := do
         (overwrite := false) (← getUploadAuth)
 
   match args with
-  | "get"  :: _ => get
-  | "get!" :: _ => get (force := true)
-  | "get-" :: _ => get (decompress := false)
+  | "get"  :: args => get args
+  | "get!" :: args => get args (force := true)
+  | "get-" :: args => get args (decompress := false)
   | ["pack"] => discard <| pack
   | ["pack!"] => discard <| pack (overwrite := true)
   | ["unpack"] => unpackCache hashMap false
