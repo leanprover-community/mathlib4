@@ -3,9 +3,8 @@ Copyright (c) 2026 RJ Walters. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: RJ Walters
 -/
-module
 
-public import Mathlib.Combinatorics.Sperner.Basic
+import Mathlib.Combinatorics.Sperner.Basic
 
 /-!
 # SimplicialComplex to CellComplex Bridge for Sperner's Lemma

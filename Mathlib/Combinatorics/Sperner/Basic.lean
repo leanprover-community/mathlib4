@@ -3,12 +3,11 @@ Copyright (c) 2026 RJ Walters. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: RJ Walters
 -/
-module
 
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
-public import Mathlib.Algebra.Ring.Parity
-public import Mathlib.Data.Fintype.BigOperators
-public import Mathlib.Data.ZMod.Basic
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Ring.Parity
+import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.ZMod.Basic
 
 /-!
 # Abstract Sperner's Lemma
@@ -542,7 +541,7 @@ theorem even_card_interiorDoors
         K.adj (adjMap K p).1 (adjMap K p).2 ≠ none
       simp only [adjMap, hadj_eq]
       exact ⟨(isDoor_iff_of_adj hadj_eq).mp hdoor,
-        by rw [hadj_back]; exact Option.noConfusion⟩
+        by rw [hadj_back]; exact nofun⟩
   · intro p hp
     simp only [S, mem_filter, mem_univ,
       true_and] at hp
