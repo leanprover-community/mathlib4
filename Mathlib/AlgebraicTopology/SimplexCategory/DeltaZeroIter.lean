@@ -163,7 +163,6 @@ lemma σ₀Iter_succ (i : ℕ) {n m : ℕ} (h : n + (i + 1) = m) :
     σ₀Iter (i + 1) h = σ₀Iter i ≫ σ 0 := by
   refine ConcreteCategory.hom_ext _ _ (fun k ↦ ?_)
   ext
-  dsimp
   rw [dsimp% ConcreteCategory.comp_apply (σ₀Iter i) (σ 0)]
   by_cases! hk : k.val ≤ i
   · rw [σ₀Iter_coe_eq_of_lt .., coe_σ]
