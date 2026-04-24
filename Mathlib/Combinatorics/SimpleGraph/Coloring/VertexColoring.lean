@@ -381,14 +381,6 @@ theorem colorable_of_chromaticNumber_ne_top (h : G.chromaticNumber ≠ ⊤) :
   obtain ⟨n, hn⟩ := h
   exact colorable_chromaticNumber hn
 
-theorem chromaticNumber_eq_zero_of_isEmpty [IsEmpty V] : G.chromaticNumber = 0 := by
-  rw [← nonpos_iff_eq_zero, ← Nat.cast_zero, chromaticNumber_le_iff_colorable]; exact .of_isEmpty _
-
-theorem isEmpty_of_chromaticNumber_eq_zero (h : G.chromaticNumber = 0) : IsEmpty V := by
-  have := colorable_of_chromaticNumber_ne_top (h ▸ ENat.zero_ne_top)
-  rw [h] at this
-  exact G.isEmpty_of_colorable_zero this
-
 theorem Colorable.mono_left {G' : SimpleGraph V} (h : G ≤ G') {n : ℕ} (hc : G'.Colorable n) :
     G.Colorable n :=
   ⟨hc.some.comp (.ofLE h)⟩
@@ -494,6 +486,13 @@ theorem two_le_chromaticNumber_of_adj {u v : V} (hadj : G.Adj u v) : 2 ≤ G.chr
 
 theorem chromaticNumber_eq_zero_iff : G.chromaticNumber = 0 ↔ IsEmpty V :=
   nonpos_iff_eq_zero.symm.trans <| chromaticNumber_le_iff_colorable.trans colorable_zero_iff
+
+@[simp]
+theorem chromaticNumber_eq_zero_of_isEmpty [IsEmpty V] : G.chromaticNumber = 0 :=
+  chromaticNumber_eq_zero_iff.mpr ‹_›
+
+@[deprecated (since := "2026-04-24")]
+alias ⟨isEmpty_of_chromaticNumber_eq_zero, _⟩ := chromaticNumber_eq_zero_iff
 
 theorem chromaticNumber_eq_one_iff : G.chromaticNumber = 1 ↔ G = ⊥ ∧ Nonempty V := by
   rw [eq_iff_le_not_lt, Order.lt_one_iff_nonpos, ← not_isEmpty_iff, ← Nat.cast_one, ← Nat.cast_zero,
