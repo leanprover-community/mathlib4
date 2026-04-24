@@ -32,9 +32,7 @@ public import Mathlib.Order.SuccPred.WithBot
 
 noncomputable section
 
-open Finsupp Finset
-
-open Polynomial
+open Finset
 
 namespace Polynomial
 
