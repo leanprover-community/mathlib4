@@ -640,7 +640,7 @@ theorem of_d (j : α) : (of X d sq).d (j + 1) j = d j := by
   rw [if_pos rfl, Category.id_comp]
 
 theorem of_d_ne {i j : α} (h : i ≠ j + 1) : (of X d sq).d i j = 0 := by
-  unfold of
+  rw [of]
   simp [dif_neg h]
 
 end Of
@@ -899,7 +899,7 @@ theorem of_d (j : α) : (of X d sq).d j (j + 1) = d j := by
   rw [if_pos rfl, Category.comp_id]
 
 theorem of_d_ne {i j : α} (h : i + 1 ≠ j) : (of X d sq).d i j = 0 := by
-  unfold of
+  rw [of]
   simp [dif_neg h]
 
 end Of
