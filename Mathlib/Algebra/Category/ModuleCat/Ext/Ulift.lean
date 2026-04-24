@@ -62,7 +62,7 @@ noncomputable def CategoryTheory.Abelian.Ext.moduleCatUliftFunctorObjIso
     [Small.{max v v'} R] (e1 : M ≃ₗ[R] M') (e2 : N ≃ₗ[R] N') (n : ℕ) :
     Ext ((ModuleCat.uliftFunctor.{v'} R).obj M) ((ModuleCat.uliftFunctor.{v'} R).obj N) n ≃ₗ[R]
     Ext ((ModuleCat.uliftFunctor.{v} R).obj M') ((ModuleCat.uliftFunctor.{v} R).obj N') n := {
-  __ := (((extFunctorObj ((ModuleCat.uliftFunctor.{v'} R).obj M) n).mapIso
+  __ := ((((extFunctor n).obj ⟨(ModuleCat.uliftFunctor.{v'} R).obj M⟩).mapIso
     (ModuleCat.uliftFunctorObjIso e2)).trans (((extFunctor n).mapIso
       (ModuleCat.uliftFunctorObjIso e1).symm.op).app
         ((ModuleCat.uliftFunctor.{v} R).obj N'))).addCommGroupIsoToAddEquiv
@@ -136,10 +136,10 @@ noncomputable def extSemiLinearEquivOfSemiLinearEquiv_equal_universe [Small.{v} 
     (n : ℕ) :  Ext M' N' n ≃ₛₗ[RingHomClass.toRingHom e.symm] Ext M N n :=
   let e3 : Ext ((ModuleCat.restrictScalars (RingHomClass.toRingHom e)).obj M')
     ((ModuleCat.restrictScalars (RingHomClass.toRingHom e)).obj N') n ≃ₗ[R] Ext M N n := {
-      __ := (((extFunctorObj
-        ((ModuleCat.restrictScalars (RingHomClass.toRingHom e)).obj M') n).mapIso
-        (ModuleCat.iso_restrictScalars e e2).symm).trans (((extFunctor n).mapIso
-        (ModuleCat.iso_restrictScalars e e1).op).app N)).addCommGroupIsoToAddEquiv
+      __ := ((((extFunctor n).obj
+        ⟨(ModuleCat.restrictScalars (RingHomClass.toRingHom e)).obj M'⟩).mapIso
+          (ModuleCat.iso_restrictScalars e e2).symm).trans (((extFunctor n).mapIso
+            (ModuleCat.iso_restrictScalars e e1).op).app N)).addCommGroupIsoToAddEquiv
       map_smul' r' x := by simp [Iso.addCommGroupIsoToAddEquiv] }
   (ModuleCat.extRestrictScalarsSemiLinearEquiv e M' N' n).trans e3
 
