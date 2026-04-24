@@ -43,8 +43,10 @@ public import Mathlib.Tactic.CategoryTheory.Monoidal.Datatypes
 public import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
 public import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
 public import Mathlib.Tactic.CategoryTheory.MonoidalComp
+public import Mathlib.Tactic.CategoryTheory.Op
 public import Mathlib.Tactic.CategoryTheory.Reassoc
 public import Mathlib.Tactic.CategoryTheory.Slice
+public import Mathlib.Tactic.CategoryTheory.SpecializeMap
 public import Mathlib.Tactic.CategoryTheory.ToApp
 public import Mathlib.Tactic.Change
 public import Mathlib.Tactic.Check

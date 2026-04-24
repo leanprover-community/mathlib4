@@ -32,7 +32,7 @@ namespace Mathlib.Tactic.CategoryTheory.Map
 def mapCompSimp (e : Expr) : MetaM Simp.Result :=
   simpOnlyNames [``Functor.map_comp, ``Functor.map_id] e (config := { decide := false })
 
-private def extractCatInstanceFromEq (eqTy : Expr) : MetaM (Expr × Expr) := do
+def extractCatInstanceFromEq (eqTy : Expr) : MetaM (Expr × Expr) := do
   let some (α, _, _) := eqTy.cleanupAnnotations.eq? | throwError "`@[map]` expects an equality"
   let (``Quiver.Hom, #[C, _, _, _]) := α.getAppFnArgs |
     throwError "`@[map]` expects an equality of morphisms"
@@ -41,6 +41,26 @@ private def extractCatInstanceFromEq (eqTy : Expr) : MetaM (Expr × Expr) := do
   let catTy := .app (.const ``CategoryTheory.Category [vHom, uObj]) C
   let instC ← synthInstance catTy
   return (C, instC)
+
+/-- Build the mapped equality for `e : f = g` under a specific functor `F`, simplifying with
+`simp only [Functor.map_comp, Functor.map_id]`. -/
+def mapExprWithFunctor (e : Expr) (F : Expr) : MetaM Expr := do
+  let lem₀ ← mkConstWithFreshMVarLevels ``CategoryTheory.Functor.congr_map
+  let (args, _, _) ← forallMetaBoundedTelescope (← inferType lem₀) 10
+  let instC := args[1]!
+  let instD := args[3]!
+  args[4]!.mvarId!.assignIfDefEq F
+  args[9]!.mvarId!.assignIfDefEq e
+  if instC.isMVar then
+    let t ← instantiateMVars (← inferType instC)
+    try instC.mvarId!.assign (← synthInstance t) catch _ => pure ()
+  if instD.isMVar then
+    let t ← instantiateMVars (← inferType instD)
+    try instD.mvarId!.assign (← synthInstance t) catch _ => pure ()
+  let pf₀ := mkAppN lem₀ args
+  let ty ← instantiateMVars (← inferType pf₀)
+  let (_, pf') ← simpEq (fun e' => mapCompSimp e') ty pf₀
+  pure pf'
 
 /-- Build the functor `map` lemma for `e : f = g` with target category levels `uLev`, `vLev`. -/
 def mapExprHom (e : Expr) (uLev vLev : Level) : MetaM Expr := do
@@ -52,9 +72,7 @@ def mapExprHom (e : Expr) (uLev vLev : Level) : MetaM Expr := do
     withLocalDecl `instD .instImplicit catD fun instDFVar => do
       let Fty ← mkAppOptM ``CategoryTheory.Functor #[C, instC, dFVar, instDFVar]
       withLocalDecl `F .default Fty fun fFVar => do
-        let pf₀ ← mkAppM ``CategoryTheory.Functor.congr_map #[fFVar, e]
-        let ty ← instantiateMVars (← inferType pf₀)
-        let (_, pf') ← simpEq (fun e' => mapCompSimp e') ty pf₀
+        let pf' ← mapExprWithFunctor e fFVar
         mkLambdaFVars #[dFVar, instDFVar, fFVar] pf'
 
 /--
