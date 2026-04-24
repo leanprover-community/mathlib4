@@ -222,21 +222,9 @@ lemma isComplex₂_mk (S : ComposableArrows C 2) (w : S.map' 0 1 ≫ S.map' 1 2 
     S.IsComplex :=
   S.isComplex₂_iff.2 w
 
-#adaptation_note /-- Proof repaired after leanprover/lean4#13363.
-The proof used to be just
-```
-isComplex₂_mk _ (by simp [-Fin.reduceFinMk])
-```
-(with a comment noting that `Fin.reduceFinMk` had to be disabled so that `Precompose.map_one_succ`
-applied; see https://github.com/leanprover-community/mathlib4/issues/27382).
-The replacement proof is a short-term fix, and we request that the authors/maintainers of
-this file review the proof, and either approve it by removing this adaptation note, revise
-the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
-needs addressing. -/
-set_option backward.isDefEq.respectTransparency false in
 lemma _root_.CategoryTheory.ShortComplex.isComplex_toComposableArrows (S : ShortComplex C) :
     S.toComposableArrows.IsComplex :=
-  isComplex₂_mk _ (by change S.f ≫ S.g = 0; simp [S.zero])
+  isComplex₂_mk _ S.zero
 
 lemma exact₂_iff (S : ComposableArrows C 2) (hS : S.IsComplex) :
     S.Exact ↔ (S.sc' hS 0 1 2).Exact := by
