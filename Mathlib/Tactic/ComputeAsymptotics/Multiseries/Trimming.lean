@@ -160,7 +160,7 @@ theorem Multiseries.monomialRpow_Trimmed {basis_hd : ℝ → ℝ} {basis_tl : Ba
       cases m <;> simp [MultiseriesExpansion.monomialRpow, Multiseries.monomialRpow]
 
 theorem monomialRpow_Trimmed {basis : Basis} {n : ℕ} (h : n < basis.length) {r : ℝ} :
-    (@monomialRpow basis n r).Trimmed := by
+    (monomialRpow basis n r).Trimmed := by
   obtain _ | ⟨basis_hd, basis_tl⟩ := basis
   · constructor
   simp only [monomialRpow, List.getElem!_eq_getElem?_getD, Pi.default_def, Trimmed_iff_seq_Trimmed,
@@ -175,7 +175,7 @@ theorem Multiseries.monomial_Trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   Multiseries.monomialRpow_Trimmed h
 
 theorem monomial_Trimmed {basis : Basis} {n : ℕ} (h : n < basis.length) :
-    (@monomial basis n).Trimmed :=
+    (monomial basis n).Trimmed :=
   monomialRpow_Trimmed h
 
 theorem extendBasisEnd_ne_zero {basis : Basis} {b : ℝ → ℝ} {ms : MultiseriesExpansion basis}

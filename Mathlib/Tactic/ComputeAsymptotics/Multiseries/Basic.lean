@@ -204,7 +204,7 @@ theorem one_Approximates {basis : Basis} (h_basis : WellFormedBasis basis) :
 
 @[simp]
 theorem monomialRpow_toFun {basis : Basis} {n : Fin (List.length basis)} {r : ℝ} :
-    (@monomialRpow basis n r).toFun = basis[n] ^ r := by
+    (monomialRpow basis n r).toFun = basis[n] ^ r := by
   cases basis with
   | nil => grind
   | cons basis_hd basis_tl => cases n using Fin.cases <;> simp [monomialRpow]
@@ -230,7 +230,7 @@ theorem Multiseries.monomialRpow_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Bas
 
 /-- `monomial` is well-ordered. -/
 theorem monomialRpow_Sorted {basis : Basis} {n : ℕ} {r : ℝ} :
-    (@monomialRpow basis n r).Sorted := by
+    (monomialRpow basis n r).Sorted := by
   cases basis with
   | nil => constructor
   | cons basis_hd basis_tl =>
@@ -242,7 +242,7 @@ end
 /-- `monomialRpow` approximates monomial function. -/
 theorem monomialRpow_Approximates {basis : Basis} {n : Fin (List.length basis)} {r : ℝ}
     (h_basis : WellFormedBasis basis) :
-    (@monomialRpow basis n r).Approximates := by
+    (monomialRpow basis n r).Approximates := by
   cases basis with
   | nil => simp
   | cons basis_hd basis_tl =>
@@ -267,7 +267,7 @@ theorem monomialRpow_Approximates {basis : Basis} {n : Fin (List.length basis)} 
 
 @[simp]
 theorem monomial_toFun {basis : Basis} {n : ℕ} (h : n < basis.length) :
-    (@monomial basis n).toFun = basis[n] := by
+    (monomial basis n).toFun = basis[n] := by
   let n' : Fin basis.length := ⟨n, h⟩
   conv_lhs => rw [show n = n'.val by simp [n']]
   convert monomialRpow_toFun
@@ -276,7 +276,7 @@ theorem monomial_toFun {basis : Basis} {n : ℕ} (h : n < basis.length) :
   grind
 
 theorem monomial_toFun' {basis : Basis} {n : Fin basis.length} :
-    (@monomial basis n).toFun = basis[n] := by
+    (monomial basis n).toFun = basis[n] := by
   simp
 
 @[simp]
@@ -289,12 +289,12 @@ theorem Multiseries.monomial_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis} 
   Multiseries.monomialRpow_Sorted
 
 /-- `monomial` is well-ordered. -/
-theorem monomial_Sorted {basis : Basis} {n : ℕ} : (@monomial basis n).Sorted :=
+theorem monomial_Sorted {basis : Basis} {n : ℕ} : (monomial basis n).Sorted :=
   monomialRpow_Sorted
 
 /-- `monomial` approximates monomial function. -/
 theorem monomial_Approximates {basis : Basis} {n : Fin (List.length basis)}
-    (h_basis : WellFormedBasis basis) : (@monomial basis n).Approximates :=
+    (h_basis : WellFormedBasis basis) : (monomial basis n).Approximates :=
   monomialRpow_Approximates h_basis
 
 section BasisOperations

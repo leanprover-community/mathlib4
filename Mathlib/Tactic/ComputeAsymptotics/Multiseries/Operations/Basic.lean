@@ -66,12 +66,6 @@ theorem mulConst_seq {basis_hd basis_tl} {ms : MultiseriesExpansion (basis_hd ::
     {c : ℝ} : (ms.mulConst c).seq = ms.seq.mulConst c :=
   rfl
 
--- @[simp]
--- theorem mulConst_replaceFun_seq {basis_hd basis_tl} {c : ℝ}
---     {ms : MultiseriesExpansion (basis_hd :: basis_tl)} {f : ℝ → ℝ} :
---     (ms.replaceFun f).mulConst c = (ms.mulConst c).replaceFun (c • f) := by
---   rfl
-
 @[simp]
 theorem Multiseries.mulConst_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {c : ℝ} :
   @mulConst basis_hd basis_tl c nil = nil := by
