@@ -465,21 +465,32 @@ set_option linter.tacticAnalysis.verifyGrindSuggestions true in
 example : 1 + 1 = 2 := by
   rfl
 
--- Test a known failure of `grind?`
+-- Test: a failure of an applied try-this suggestion should print a warning
+section
 
-/-- warning: `grind?` suggestion failed -/
-#guard_msgs (substring := true) in
-set_option linter.tacticAnalysis.verifyGrindOnly true in
-example {α} (f : Bool → α) : Set.range f = {f false, f true} := by
-  grind only [= Set.mem_insert_iff, = Set.mem_range, = Set.mem_singleton_iff, cases Bool]
+open Lean Meta Elab Tactic Mathlib.TacticAnalysis
 
--- check that the failure is still correctly reported with a definition named `approx`
-def approx {α} (f : Bool → α) : Set α := {f false, f true}
+/-- Suggests to close a goal with `rfl`, but actually closes it with `trivial`. -/
+elab "fakeRfl?" : tactic => do
+  Lean.Meta.Tactic.TryThis.addSuggestion (← getRef) (← `(tactic| rfl))
+  evalTactic (← `(tactic| trivial))
 
-/-- warning: `grind?` suggestion failed -/
-#guard_msgs (substring := true) in
-set_option linter.tacticAnalysis.verifyGrindOnly true in
-example {α} (f : Bool → α) : Set.range f = approx f := by
-  grind only [approx, = Set.mem_insert_iff, = Set.mem_range, = Set.mem_singleton_iff, cases Bool]
+@[tacticAnalysis linter.tacticAnalysis.dummy]
+def verifyFakeRfl := verifyTryThisSuggestions
+  (fun _ _ => `(tactic| fakeRfl?))
+  "fakeRfl?"
+
+/--
+info: Try this:
+  [apply] rfl
+---
+warning: `fakeRfl?` suggestion failed: `rfl` did not close the goal
+-/
+#guard_msgs in
+set_option linter.tacticAnalysis.dummy true in
+example : True := by
+  fakeRfl?
+
+end
 
 end verifyGrindSuggestions
