@@ -22,8 +22,8 @@ certain `Ext` groups and the length of a maximal regular sequence in a certain i
 
 ## Main results
 
-* `exists_isRegular_tfae` (Rees theorem) : For any `n : ℕ`, noetherian ring `R`, `I : Ideal R`, and
-  finitely generated and nontrivial `R`-module `M` satisfying `IM < M`,
+* `ModuleCat.exists_isRegular_tfae` (Rees theorem) : For any `n : ℕ`, noetherian ring `R`,
+  `I : Ideal R`, and finitely generated and nontrivial `R`-module `M` satisfying `IM < M`,
   the following are equivalent:
   · for any `N : ModuleCat R` finitely generated and nontrivial with support contained in the
     zero locus of `I`, `∀ i < n, Ext N M i = 0`
