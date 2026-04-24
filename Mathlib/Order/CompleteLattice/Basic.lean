@@ -820,10 +820,6 @@ section CompleteLinearOrder
 variable [CompleteLinearOrder α]
 
 @[to_dual]
-theorem iSup_eq_top (f : ι → α) : iSup f = ⊤ ↔ ∀ b < ⊤, ∃ i, b < f i := by
-  simp only [← sSup_range, sSup_eq_top, Set.exists_range_iff]
-
-@[to_dual]
 lemma iSup₂_eq_top (f : ∀ i, κ i → α) : ⨆ i, ⨆ j, f i j = ⊤ ↔ ∀ b < ⊤, ∃ i j, b < f i j := by
   simp_rw [iSup_psigma', iSup_eq_top, PSigma.exists]
 
