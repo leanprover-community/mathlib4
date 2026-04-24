@@ -136,7 +136,7 @@ lemma measure_inter_eq_one {s t : Set α} (hs : MeasurableSet s) (ht : Measurabl
       measure_compl ht (by simp), measure_univ hμt, hμt, tsub_self]
     simp
 
-lemma inter_eq_prod {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t) :
+lemma measure_inter_eq_prod {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t) :
     μ (s ∩ t) = μ s * μ t := by
   have : μ (s ∩ t) ≤ μ s := measure_mono inter_subset_left
   have : μ (s ∩ t) ≤ μ t := measure_mono inter_subset_right
@@ -242,7 +242,7 @@ lemma is_deterministic_iff_zero_one (κ : Kernel α β) [IsFiniteKernel κ] :
     rw [parallelComp_comp_copy, prod_apply]
     refine Measure.prod_eq fun s t hs ht ↦ ?_
     rw [copy_comp_apply_prod _ _ hs ht]
-    exact inter_eq_prod hs ht
+    exact measure_inter_eq_prod hs ht
 
 instance (κ : Kernel α β) [IsFiniteKernel κ] [IsDeterministic κ] : ∀ a, IsZeroOneMeasure (κ a) :=
   (is_deterministic_iff_zero_one κ).mp ‹_›
