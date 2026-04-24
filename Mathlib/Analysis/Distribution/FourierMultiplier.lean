@@ -221,7 +221,7 @@ theorem laplacian_eq_fourierMultiplierCLM (f : 𝓢'(E, F)) :
     Finset.smul_sum]
   congr 1
   ext i x
-  simp_rw [lineDeriv_eq_fourierMultiplierCLM, map_smul, smul_smul]
+  simp_rw [lineDeriv_eq_fourierMultiplierCLM, map_smul, smul_smul, UniformConvergenceCLM.smul_apply]
   rw [fourierMultiplierCLM_fourierMultiplierCLM_apply (by fun_prop) (by fun_prop),
     ← Complex.coe_smul (-(2 * π) ^ 2)]
   congr 4
