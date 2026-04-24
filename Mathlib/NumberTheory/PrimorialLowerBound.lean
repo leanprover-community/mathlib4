@@ -87,6 +87,54 @@ theorem eight_mul_sq_add_le_two_pow (u : ℕ) (hu : 10 ≤ u) :
     exact Nat.add_le_add ih (ih.trans' (by nlinarith))
 
 /-- `(2n)^{π(√(2n))+1} ≤ 2^n` for `n ≥ 30`. -/
+private theorem numerical_bound_aux (n l u k : ℕ) (hl : l ≤ n := by lia) (hu : n ≤ u := by lia)
+    (hu₀ : 0 < u := by lia) (H : (2 * u) ^ (k + 1) ≤ 2 ^ l := by norm_num)
+    (hπ : #((2 * u).sqrt + 1).primesBelow = k := by norm_num [primesBelow]; decide) :
+    (2 * n) ^ (#((2 * n).sqrt + 1).primesBelow + 1) ≤ 2 ^ n := by
+  set π := #((2 * n).sqrt + 1).primesBelow
+  have hcard : π ≤ k := by
+    rw [← hπ]
+    exact card_le_card <| filter_subset_filter _ <| range_subset_range.mpr (by gcongr)
+  calc (2 * n) ^ (π + 1)
+      ≤ (2 * u) ^ (π + 1) := Nat.pow_le_pow_left (by gcongr) _
+    _ ≤ (2 * u) ^ (k + 1) := pow_le_pow_right₀ (by lia) (by lia)
+    _ ≤ 2 ^ l := H
+    _ ≤ 2 ^ n := pow_le_pow_right₀ one_le_two hl
+
+private theorem numerical_bound_aux' {n : ℕ} (hn : 400 ≤ n) :
+    (2 * n) ^ (#((2 * n).sqrt + 1).primesBelow + 1) ≤ 2 ^ n := by
+  set π := (sqrt (2 * n) + 1).primesBelow.card
+  have hπ : π ≤ sqrt (2 * n) + 1 :=
+    (card_filter_le _ _).trans (card_range _).le
+  set s := sqrt (2 * n)
+  set L := Nat.log 2 (2 * n)
+  have h2n_bound : 2 * n < 2 ^ (L + 1) := lt_pow_succ_log_self (by lia) (2 * n)
+  suffices h : (L + 1) * (s + 2) ≤ n by
+    calc (2 * n) ^ (π + 1)
+        ≤ (2 * n) ^ (s + 2) := by gcongr; lia
+      _ ≤ (2 ^ (L + 1)) ^ (s + 2) := (Nat.pow_lt_pow_left h2n_bound (by lia)).le
+      _ = 2 ^ ((L + 1) * (s + 2)) := (pow_mul ..).symm
+      _ ≤ 2 ^ n := pow_le_pow_right₀ (by lia) h
+  set r := sqrt n
+  have hr_ge : 20 ≤ r := le_sqrt.mpr (by lia)
+  have hr_sq : r * r ≤ n := sqrt_le n
+  have hr_lt : n < (r + 1) * (r + 1) := lt_succ_sqrt n
+  have hb : s + 2 ≤ 2 * r := by
+    suffices hslt : s < 2 * r - 1 by lia
+    rw [show s = sqrt (2 * n) from rfl, sqrt_lt]
+    zify [show 1 ≤ 2 * r from by lia]
+    nlinarith [sq_nonneg (r : ℤ)]
+  have ha : 2 * (L + 1) ≤ r := by
+    suffices L < r / 2 by lia
+    suffices 2 * n < 2 ^ (r / 2) from (Nat.log_lt_iff_lt_pow one_lt_two (by lia)).mpr this
+    calc 2 * n
+        < 2 * ((r + 1) * (r + 1)) := by gcongr
+      _ ≤ 2 * ((2 * (r / 2) + 2) * (2 * (r / 2) + 2)) := by gcongr <;> lia
+      _ = 8 * (r / 2) ^ 2 + 16 * (r / 2) + 8 := by ring
+      _ ≤ 2 ^ (r / 2) := eight_mul_sq_add_le_two_pow (r / 2) (by lia)
+  nlinarith
+
+/-- `(2n)^{π(√(2n))+1} ≤ 2^n` for `n ≥ 30`. -/
 private theorem numerical_bound {n : ℕ} (hn : 30 ≤ n) :
     (2 * n) ^ ((sqrt (2 * n) + 1).primesBelow.card + 1) ≤ 2 ^ n := by
   set π := (sqrt (2 * n) + 1).primesBelow.card
@@ -94,99 +142,23 @@ private theorem numerical_bound {n : ℕ} (hn : 30 ≤ n) :
     (card_filter_le _ _).trans (card_range _).le
   rcases le_or_gt 400 n with h_large | h_small
   · -- n > 400: factor through r = √n
-    set s := sqrt (2 * n)
-    set L := Nat.log 2 (2 * n)
-    have h2n_bound : 2 * n < 2 ^ (L + 1) := lt_pow_succ_log_self (by lia) (2 * n)
-    suffices h : (L + 1) * (s + 2) ≤ n by
-      calc (2 * n) ^ (π + 1)
-          ≤ (2 * n) ^ (s + 2) := by
-            apply Nat.pow_le_pow_right (by lia)
-            exact Nat.succ_le_succ hπ
-        _ ≤ 2 ^ ((L + 1) * (s + 2)) := by
-            rw [pow_mul]
-            exact (Nat.pow_lt_pow_left h2n_bound (by lia : s + 2 ≠ 0)).le
-        _ ≤ 2 ^ n := pow_le_pow_right₀ (by lia) h
-    set r := sqrt n
-    have hr_ge : 20 ≤ r := le_sqrt.mpr (by lia)
-    have hr_sq : r * r ≤ n := sqrt_le n
-    have hr_lt : n < (r + 1) * (r + 1) := lt_succ_sqrt n
-    have hb : s + 2 ≤ 2 * r := by
-      suffices hslt : s < 2 * r - 1 by lia
-      rw [show s = sqrt (2 * n) from rfl, sqrt_lt]
-      zify [show 1 ≤ 2 * r from by lia]
-      nlinarith [sq_nonneg (r : ℤ)]
-    have ha : 2 * (L + 1) ≤ r := by
-      rw [show 2 * (L + 1) ≤ r ↔ L + 1 ≤ r / 2 from by lia]
-      rw [succ_le_iff, show L = Nat.log 2 (2 * n) from rfl,
-        Nat.log_lt_iff_lt_pow (by lia) (by lia)]
-      have hu : 10 ≤ r / 2 := by lia
-      have h_rdiv : r + 1 ≤ 2 * (r / 2) + 2 := by lia
-      calc 2 * n
-          < 2 * ((r + 1) * (r + 1)) := by lia
-        _ ≤ 2 * ((2 * (r / 2) + 2) * (2 * (r / 2) + 2)) := by nlinarith
-        _ = 8 * (r / 2) ^ 2 + 16 * (r / 2) + 8 := by ring
-        _ ≤ 2 ^ (r / 2) := eight_mul_sq_add_le_two_pow (r / 2) hu
-    nlinarith
+    exact numerical_bound_aux' h_large
   · -- 30 ≤ n ≤ 400: bound π by range, then compute
     rcases le_or_gt n 32 with h₁ | h₁
     · -- n ∈ [30, 32]: π ≤ 4, (2*32)^5 = 64^5 = 2^30
-      have hcard : π ≤ 4 := by
-        change #((2 * n).sqrt + 1).primesBelow ≤ 4
-        rw [show 4 = #((2 * 32).sqrt + 1).primesBelow by norm_num [primesBelow]; decide]
-        exact card_le_card <| filter_subset_filter Nat.Prime <|
-          range_subset_range.mpr (by gcongr)
-      calc (2 * n) ^ (π + 1)
-          ≤ (2 * 32) ^ (π + 1) := Nat.pow_le_pow_left (by lia) _
-        _ ≤ (2 * 32) ^ 5 := pow_le_pow_right₀ (by lia) (by lia)
-        _ ≤ 2 ^ 30 := by norm_num
-        _ ≤ 2 ^ n := pow_le_pow_right₀ (by lia) (by lia)
+      exact numerical_bound_aux n 30 32 4
     rcases le_or_gt n 44 with h₂ | h₂
     · -- n ∈ [33, 44]: π ≤ 4
-      have hcard : π ≤ 4 := by
-        change #((2 * n).sqrt + 1).primesBelow ≤ 4
-        rw [show 4 = #((2 * 44).sqrt + 1).primesBelow by norm_num [primesBelow]; decide]
-        exact card_le_card <| filter_subset_filter Nat.Prime <|
-          range_subset_range.mpr (by gcongr)
-      calc (2 * n) ^ (π + 1)
-          ≤ (2 * 44) ^ (π + 1) := Nat.pow_le_pow_left (by lia) _
-        _ ≤ (2 * 44) ^ 5 := pow_le_pow_right₀ (by lia) (by lia)
-        _ ≤ 2 ^ 33 := by norm_num
-        _ ≤ 2 ^ n := pow_le_pow_right₀ (by lia) (by lia)
+      exact numerical_bound_aux n 33 44 4
     rcases le_or_gt n 84 with h₃ | h₃
     · -- n ∈ [45, 84]: π ≤ 5
-      have hcard : π ≤ 5 := by
-        change #((2 * n).sqrt + 1).primesBelow ≤ 5
-        rw [show 5 = #((2 * 84).sqrt + 1).primesBelow by norm_num [primesBelow]; decide]
-        exact card_le_card <| filter_subset_filter Nat.Prime <|
-          range_subset_range.mpr (by gcongr)
-      calc (2 * n) ^ (π + 1)
-          ≤ (2 * 84) ^ (π + 1) := Nat.pow_le_pow_left (by lia) _
-        _ ≤ (2 * 84) ^ 6 := pow_le_pow_right₀ (by lia) (by lia)
-        _ ≤ 2 ^ 45 := by norm_num
-        _ ≤ 2 ^ n := pow_le_pow_right₀ (by lia) (by lia)
+      exact numerical_bound_aux n 45 84 5
     rcases le_or_gt n 264 with h₄ | h₄
     · -- n ∈ [85, 264]: π ≤ 8
-      have hcard : π ≤ 8 := by
-        change #((2 * n).sqrt + 1).primesBelow ≤ 8
-        rw [show 8 = #((2 * 264).sqrt + 1).primesBelow by norm_num [primesBelow]; decide]
-        exact card_le_card <| filter_subset_filter Nat.Prime <|
-          range_subset_range.mpr (by gcongr)
-      calc (2 * n) ^ (π + 1)
-          ≤ (2 * 264) ^ (π + 1) := Nat.pow_le_pow_left (by lia) _
-        _ ≤ (2 * 264) ^ 9 := pow_le_pow_right₀ (by lia) (by lia)
-        _ ≤ 2 ^ 85 := by norm_num
-        _ ≤ 2 ^ n := pow_le_pow_right₀ (by lia) (by lia)
+      exact numerical_bound_aux n 85 264 8
     · -- n ∈ [265, 400]: π ≤ 9
-      have hcard : π ≤ 9 := by
-        change #((2 * n).sqrt + 1).primesBelow ≤ 9
-        rw [show 9 = #((2 * 400).sqrt + 1).primesBelow by norm_num [primesBelow]; decide]
-        exact card_le_card <| filter_subset_filter Nat.Prime <|
-          range_subset_range.mpr (by gcongr)
-      calc (2 * n) ^ (π + 1)
-          ≤ (2 * 400) ^ (π + 1) := Nat.pow_le_pow_left (by lia) _
-        _ ≤ (2 * 400) ^ 10 := pow_le_pow_right₀ (by lia) (by lia)
-        _ ≤ 2 ^ 100 := by norm_num
-        _ ≤ 2 ^ n := pow_le_pow_right₀ (by lia) (by lia)
+      set_option exponentiation.threshold 300 in
+      refine numerical_bound_aux n 265 400 9
 
 /-- `2 ^ (n + 1) < (2n)#` for `n ≥ 3`. The core Chebyshev lower bound from which all
 weaker variants are derived. -/
