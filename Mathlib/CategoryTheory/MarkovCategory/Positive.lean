@@ -38,7 +38,7 @@ deterministic process.
 ## References
 
 * [Fritz, *A synthetic approach to Markov kernels, conditional independence
-  and theorems on sufficient statistics*][fritz2020]
+  and theorems on sufficient statistics*, Def. 11.22][fritz2020]
 * [Moss and Perrone, *A category-theoretic proof of the ergodic decomposition theorem*][moss2023]
 -/
 
