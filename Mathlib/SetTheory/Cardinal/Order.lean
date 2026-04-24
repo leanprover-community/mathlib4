@@ -544,13 +544,13 @@ theorem exists_wellFoundedLT : ∃ (_ : LinearOrder α), WellFoundedLT α := by
 
 namespace Cardinal
 
-@[deprecated exists_eq_ciSup_of_not_isSuccPrelimit' (since := "2026-04-13")]
+@[deprecated exists_eq_ciSup_of_not_isSuccPrelimit (since := "2026-04-13")]
 lemma exists_eq_of_iSup_eq_of_not_isSuccPrelimit
     {ι : Type u} (f : ι → Cardinal.{v}) (ω : Cardinal.{v})
     (hω : ¬ IsSuccPrelimit ω)
     (h : ⨆ i : ι, f i = ω) : ∃ i, f i = ω := by
   subst h
-  exact exists_eq_ciSup_of_not_isSuccPrelimit' hω
+  exact exists_eq_ciSup_of_not_isSuccPrelimit hω
 
 @[deprecated exists_eq_ciSup_of_not_isSuccLimit (since := "2026-04-13")]
 lemma exists_eq_of_iSup_eq_of_not_isSuccLimit
