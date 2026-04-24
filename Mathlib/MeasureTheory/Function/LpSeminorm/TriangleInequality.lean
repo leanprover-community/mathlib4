@@ -15,7 +15,7 @@ In this file we prove several versions of the triangle inequality for the `Lp` s
 as well as simple corollaries.
 -/
 
-@[expose] public section
+public section
 
 open Filter ENNReal
 open scoped Topology

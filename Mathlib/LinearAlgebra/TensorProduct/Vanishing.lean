@@ -56,7 +56,7 @@ is injective for every submodule $M' \subseteq M$.
 
 -/
 
-@[expose] public section
+public section
 
 variable (R : Type*) [CommRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M]

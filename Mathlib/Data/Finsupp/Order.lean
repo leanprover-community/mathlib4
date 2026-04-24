@@ -24,7 +24,7 @@ This file lifts order structures on `α` to `ι →₀ α`.
   functions.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

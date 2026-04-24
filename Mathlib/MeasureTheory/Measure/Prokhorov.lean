@@ -49,7 +49,7 @@ from the construction. In the second case, we modify the individual limits
 check the condition.
 -/
 
-@[expose] public section
+public section
 
 open scoped ENNReal NNReal CompactlySupported
 open Filter Function Set Topology TopologicalSpace MeasureTheory BoundedContinuousFunction
