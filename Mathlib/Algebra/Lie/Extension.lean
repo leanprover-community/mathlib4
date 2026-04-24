@@ -247,7 +247,7 @@ def ofTwoCocycle : Extension R M L where
     { toFun x := ofProd c (0, x)
       map_add' _ _ := by simp [← of_add]
       map_smul' _ _ := by simp [← of_smul]
-      map_lie' {_ _} := by simp [bracket_ofTwoCocycle] }
+      map_lie' {_ _} := by simp [trivial_lie_zero, bracket_ofTwoCocycle] }
   proj :=
     { toFun x := ((ofProd c).symm x).1
       map_add' _ _ := by simp

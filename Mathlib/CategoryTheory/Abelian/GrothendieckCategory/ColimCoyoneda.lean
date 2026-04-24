@@ -66,7 +66,6 @@ the inclusion `(kernel.ι (g y)).app j` is an isomorphism,
 which implies that `y ≫ Y.map φ = 0` (see the lemma `injectivity₀`).
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation `X ⟶ Y.obj t.right` for `t : Under j₀`
 that is induced by `y : X ⟶ Y.obj j₀`. -/
 @[simps]
