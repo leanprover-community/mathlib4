@@ -78,7 +78,7 @@ theorem isUniform_iff_exists_ringFilterBasis {A : Type*} [Ring A] {F : IdealFilt
   refine ⟨fun _ ↦ ⟨F.ringFilterBasis, rfl⟩, fun ⟨B, hB⟩ ↦ ⟨fun {I} hI a ↦ ?_⟩⟩
   obtain ⟨V, hbasis, hsub⟩ := B.mul_right a (U := I) (hB.ge (by simpa))
   obtain ⟨J, hJ, rfl⟩ := hB.le hbasis
-  exact Order.PFilter.mem_of_le (fun x hx ↦ by simpa using (hsub hx)) hJ
+  exact F.upper (fun x hx ↦ by simpa using (hsub hx)) hJ
 
 end IdealFilter
 
