@@ -542,4 +542,23 @@ lemma subst_substInv_left : P.substInv.subst P = X := by
 
 end substInv
 
+section
+
+variable {x : ℕ → PowerSeries R} {a : MvPowerSeries τ S}
+  [UniformSpace R] [DiscreteUniformity R] [UniformSpace S] [DiscreteUniformity S]
+
+lemma tsum_subst (hx : Summable x) (ha : HasSubst a) :
+    (∑' i, x i).subst a = ∑' i, ((x i).subst a) := by
+  rw [← coe_substAlgHom ha, substAlgHom_eq_aeval ha, hx.map_tsum _]
+  convert continuous_aeval _
+
+lemma summable_of_subst (hx : Summable x) (ha : HasSubst a) :
+    Summable fun i ↦ (x i).subst a := by
+  rw [← coe_substAlgHom ha, substAlgHom_eq_aeval ha]
+  refine hx.map _ <| ?_
+  convert continuous_aeval _
+
+end
+
+
 end PowerSeries
