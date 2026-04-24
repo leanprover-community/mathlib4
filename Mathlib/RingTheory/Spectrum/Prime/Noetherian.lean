@@ -45,20 +45,12 @@ namespace IsArtinianRing
 
 open PrimeSpectrum
 
-variable (F R : Type*) [Field F] [CommRing R] [IsArtinianRing R] [Algebra F R]
+variable (R : Type*) [CommRing R] [IsArtinianRing R]
 
 instance : Ring.KrullDimLE 0 R := .mk₀ fun _ _ ↦ inferInstance
 
 instance : DiscreteTopology (PrimeSpectrum R) :=
   discreteTopology_iff_finite_and_krullDimLE_zero.mpr ⟨inferInstance, inferInstance⟩
-
-theorem finrank_eq_sum_primeSpectrum [Module.Finite F R] :
-    Module.finrank F R = ∑ p : PrimeSpectrum R, Module.finrank F (Localization.AtPrime p.1) :=
-  have (p : Ideal R) [p.IsPrime] : Module.Finite F (Localization.AtPrime p) :=
-    Module.Finite.of_surjective (Algebra.algHom F R (Localization.AtPrime p)).toLinearMap
-      (localization_surjective p.primeCompl (Localization.AtPrime p))
-  ((toPiLocalizationEquiv R).restrictScalars F).toLinearEquiv.finrank_eq.trans
-    (Module.finrank_pi_fintype F)
 
 variable {R} in
 lemma exists_not_mem_forall_mem_of_ne (p : Ideal R) [p.IsPrime] :
@@ -80,5 +72,13 @@ lemma exists_not_mem_forall_mem_of_ne (p : Ideal R) [p.IsPrime] :
         -FaithfulSMul.algebraMap_eq_zero_iff] using funext_iff.mp hr ⟨q, inferInstance⟩
     rw [← IsLocalization.AtPrime.to_map_mem_maximal_iff (Localization.AtPrime q) q, this]
     simp
+
+theorem finrank_eq_sum_primeSpectrum (F : Type*) [Field F] [Algebra F R] [Module.Finite F R] :
+    Module.finrank F R = ∑ p : PrimeSpectrum R, Module.finrank F (Localization.AtPrime p.1) :=
+  have (p : Ideal R) [p.IsPrime] : Module.Finite F (Localization.AtPrime p) :=
+    Module.Finite.of_surjective (Algebra.algHom F R (Localization.AtPrime p)).toLinearMap
+      (localization_surjective p.primeCompl (Localization.AtPrime p))
+  ((toPiLocalizationEquiv R).restrictScalars F).toLinearEquiv.finrank_eq.trans
+    (Module.finrank_pi_fintype F)
 
 end IsArtinianRing
