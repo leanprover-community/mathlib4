@@ -146,7 +146,7 @@ theorem inv_toFun {m : UnitMonomial} {basis : Basis} (h_basis : WellFormedBasis 
       simp only [List.map_cons, List.zipWith_cons_cons, List.prod_cons, mul_inv_rev]
       grind [Real.rpow_neg h_pos.le]
 
-theorem tail_toFun_IsLittleO_head {m : UnitMonomial} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+theorem tail_toFun_isLittleO_head {m : UnitMonomial} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (h_length : m.length = basis_tl.length)
     (h_basis : WellFormedBasis (basis_hd :: basis_tl)) :
     Majorized (m.toFun basis_tl) basis_hd 0 := by
@@ -158,11 +158,11 @@ theorem tail_toFun_IsLittleO_head {m : UnitMonomial} {basis_hd : ℝ → ℝ} {b
     | cons basis_tl_hd basis_tl_tl =>
       simp only [List.length_cons, Nat.add_right_cancel_iff, toFun_cons] at h_length ⊢
       rw [show (0 : ℝ) = 0 + 0 by simp]
-      apply Majorized.mul (h_basis.tail_pow_Majorized_head (by simp) _) _
+      apply Majorized.mul (h_basis.tail_pow_majorized_head (by simp) _) _
         h_basis.head_eventually_pos
       exact fun exp h_exp ↦
         (ih h_length h_basis.tail 1 (by simp)).trans <|
-        h_basis.tail_pow_Majorized_head (by simp) 1 exp h_exp
+        h_basis.tail_pow_majorized_head (by simp) 1 exp h_exp
 
 theorem toFun_pos {m : UnitMonomial} {basis : Basis}
     (h_basis : WellFormedBasis basis) :
@@ -274,7 +274,7 @@ theorem toFun_tendsto_zero_of_head_neg {exps_hd : ℝ} {exps_tl : UnitMonomial} 
     Tendsto.comp Real.tendsto_log_atTop (h_basis.tendsto_atTop (by simp))
   exact Filter.Tendsto.const_mul_atTop_of_neg h_nonzero h_log_atTop
 
-theorem toFun_tendsto_top_of_FirstNonzeroIsPos {m : UnitMonomial} {basis : Basis}
+theorem toFun_tendsto_top_of_firstNonzeroIsPos {m : UnitMonomial} {basis : Basis}
     (h_basis : WellFormedBasis basis) (h_length : m.length = basis.length)
     (h_firstIsPos : FirstNonzeroIsPos m) :
     Tendsto (UnitMonomial.toFun m basis) atTop atTop := by
@@ -291,9 +291,9 @@ theorem toFun_tendsto_top_of_FirstNonzeroIsPos {m : UnitMonomial} {basis : Basis
                     UnitMonomial.toFun exps_tl basis_tl := by
           ext x; simp [UnitMonomial.toFun, h.left]
         rw [h_eq]
-        exact toFun_tendsto_top_of_FirstNonzeroIsPos h_basis.tail (by simpa using h_length) h.right
+        exact toFun_tendsto_top_of_firstNonzeroIsPos h_basis.tail (by simpa using h_length) h.right
 
-theorem toFun_tendsto_zero_of_FirstNonzeroIsNeg {m : UnitMonomial} {basis : Basis}
+theorem toFun_tendsto_zero_of_firstNonzeroIsNeg {m : UnitMonomial} {basis : Basis}
     (h_basis : WellFormedBasis basis) (h_length : m.length = basis.length)
     (h_firstIsNeg : FirstNonzeroIsNeg m) :
     Tendsto (UnitMonomial.toFun m basis) atTop (𝓝 0) := by
@@ -310,9 +310,9 @@ theorem toFun_tendsto_zero_of_FirstNonzeroIsNeg {m : UnitMonomial} {basis : Basi
                     UnitMonomial.toFun exps_tl basis_tl := by
           ext x; simp [UnitMonomial.toFun, h.left]
         rw [h_eq]
-        exact toFun_tendsto_zero_of_FirstNonzeroIsNeg h_basis.tail (by simpa using h_length) h.right
+        exact toFun_tendsto_zero_of_firstNonzeroIsNeg h_basis.tail (by simpa using h_length) h.right
 
-theorem toFun_tendsto_one_of_AllZero {m : UnitMonomial} {basis : Basis}
+theorem toFun_tendsto_one_of_allZero {m : UnitMonomial} {basis : Basis}
     (h_allZero : AllZero m) :
     Tendsto (UnitMonomial.toFun m basis) atTop (𝓝 1) := by
   cases m with
@@ -329,9 +329,9 @@ theorem toFun_tendsto_one_of_AllZero {m : UnitMonomial} {basis : Basis}
                   UnitMonomial.toFun exps_tl basis_tl := by
         ext x; simp [UnitMonomial.toFun, h_allZero.left]
       rw [h_eq]
-      apply toFun_tendsto_one_of_AllZero h_allZero.right
+      apply toFun_tendsto_one_of_allZero h_allZero.right
 
-lemma IsLittleO_of_lt {basis : Basis} {m1 m2 : UnitMonomial}
+lemma isLittleO_of_lt {basis : Basis} {m1 m2 : UnitMonomial}
     (h_basis : WellFormedBasis basis)
     (h1 : m1.length = basis.length)
     (h2 : m2.length = basis.length)
@@ -348,7 +348,7 @@ lemma IsLittleO_of_lt {basis : Basis} {m1 m2 : UnitMonomial}
   | cons h =>
     simp only [toFun_cons]
     apply IsBigO.mul_isLittleO (isBigO_refl _ _)
-    exact IsLittleO_of_lt h_basis.tail (by simpa using h1) (by simpa using h2) h
+    exact isLittleO_of_lt h_basis.tail (by simpa using h1) (by simpa using h2) h
   | rel h =>
     simp only [List.length_cons, Nat.add_right_cancel_iff, toFun_cons] at h1 h2 ⊢
     apply IsLittleO.of_tendsto_div_atTop
@@ -360,7 +360,7 @@ lemma IsLittleO_of_lt {basis : Basis} {m1 m2 : UnitMonomial}
       intro x hx
       simp only [Pi.mul_apply, Pi.pow_apply, Pi.inv_apply, Real.rpow_sub hx]
       field
-    · apply toFun_tendsto_top_of_FirstNonzeroIsPos h_basis
+    · apply toFun_tendsto_top_of_firstNonzeroIsPos h_basis
       · grind [inv_length, mul_length]
       · apply FirstNonzeroIsPos.of_head
         grind
@@ -474,7 +474,7 @@ theorem tendsto_zero_of_coef_zero {coef : ℝ} {exps : UnitMonomial} (basis : Ba
   rw [zero_coef_toFun _ (by simpa [t])]
   exact tendsto_const_nhds
 
-theorem toFun_tendsto_zero_of_FirstNonzeroIsNeg {coef : ℝ} {exps : UnitMonomial} {basis : Basis}
+theorem toFun_tendsto_zero_of_firstNonzeroIsNeg {coef : ℝ} {exps : UnitMonomial} {basis : Basis}
     (h_basis : WellFormedBasis basis)
     (h_length : exps.length = basis.length)
     (h_exps : exps.FirstNonzeroIsNeg) :
@@ -484,10 +484,10 @@ theorem toFun_tendsto_zero_of_FirstNonzeroIsNeg {coef : ℝ} {exps : UnitMonomia
   eta_expand
   simp only [toFun, Pi.smul_apply, smul_eq_mul]
   convert Filter.Tendsto.const_mul _
-    (UnitMonomial.toFun_tendsto_zero_of_FirstNonzeroIsNeg h_basis h_length h_exps)
+    (UnitMonomial.toFun_tendsto_zero_of_firstNonzeroIsNeg h_basis h_length h_exps)
   simp
 
-theorem toFun_tendsto_top_of_FirstNonzeroIsPos {coef : ℝ} {exps : UnitMonomial} {basis : Basis}
+theorem toFun_tendsto_top_of_firstNonzeroIsPos {coef : ℝ} {exps : UnitMonomial} {basis : Basis}
     (h_basis : WellFormedBasis basis)
     (h_length : exps.length = basis.length)
     (h_coef : 0 < coef)
@@ -498,9 +498,9 @@ theorem toFun_tendsto_top_of_FirstNonzeroIsPos {coef : ℝ} {exps : UnitMonomial
   eta_expand
   simp only [toFun, Pi.smul_apply, smul_eq_mul]
   convert Filter.Tendsto.const_mul_atTop h_coef
-    (UnitMonomial.toFun_tendsto_top_of_FirstNonzeroIsPos h_basis h_length h_exps)
+    (UnitMonomial.toFun_tendsto_top_of_firstNonzeroIsPos h_basis h_length h_exps)
 
-theorem toFun_tendsto_bot_of_FirstNonzeroIsPos {coef : ℝ} {exps : UnitMonomial} {basis : Basis}
+theorem toFun_tendsto_bot_of_firstNonzeroIsPos {coef : ℝ} {exps : UnitMonomial} {basis : Basis}
     (h_basis : WellFormedBasis basis)
     (h_length : exps.length = basis.length)
     (h_coef : coef < 0)
@@ -511,25 +511,25 @@ theorem toFun_tendsto_bot_of_FirstNonzeroIsPos {coef : ℝ} {exps : UnitMonomial
   eta_expand
   simp only [toFun, Pi.smul_apply, smul_eq_mul]
   convert Filter.Tendsto.const_mul_atTop_of_neg h_coef
-    (UnitMonomial.toFun_tendsto_top_of_FirstNonzeroIsPos h_basis h_length h_exps)
+    (UnitMonomial.toFun_tendsto_top_of_firstNonzeroIsPos h_basis h_length h_exps)
 
-theorem toFun_tendsto_const_of_AllZero {coef : ℝ} {exps : UnitMonomial} {basis : Basis}
+theorem toFun_tendsto_const_of_allZero {coef : ℝ} {exps : UnitMonomial} {basis : Basis}
     (h_exps : exps.AllZero) :
     let t : Monomial := ⟨coef, exps⟩
     Tendsto (t.toFun basis) atTop (𝓝 coef) := by
   intro t
   eta_expand
   simp only [toFun, Pi.smul_apply, smul_eq_mul]
-  convert Filter.Tendsto.const_mul _ (UnitMonomial.toFun_tendsto_one_of_AllZero h_exps)
+  convert Filter.Tendsto.const_mul _ (UnitMonomial.toFun_tendsto_one_of_allZero h_exps)
   simp [t]
 
-theorem tail_toFun_IsLittleO_head {t : Monomial} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+theorem tail_toFun_isLittleO_head {t : Monomial} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (h_length : t.unit.length = basis_tl.length)
     (h_basis : WellFormedBasis (basis_hd :: basis_tl)) :
     Majorized (t.toFun basis_tl) basis_hd 0 := by
-  exact Majorized.smul (UnitMonomial.tail_toFun_IsLittleO_head h_length h_basis)
+  exact Majorized.smul (UnitMonomial.tail_toFun_isLittleO_head h_length h_basis)
 
-lemma IsLittleO_of_lt_exps {basis : Basis} {t1 t2 : Monomial}
+lemma isLittleO_of_lt_exps {basis : Basis} {t1 t2 : Monomial}
     (h_basis : WellFormedBasis basis)
     (h1 : t1.unit.length = basis.length)
     (h2 : t2.unit.length = basis.length)
@@ -542,9 +542,9 @@ lemma IsLittleO_of_lt_exps {basis : Basis} {t1 t2 : Monomial}
   · simp at h_coef2
     simp
     grind
-  apply UnitMonomial.IsLittleO_of_lt h_basis h1 h2 h_lt
+  apply UnitMonomial.isLittleO_of_lt h_basis h1 h2 h_lt
 
-theorem IsLittleO_of_lt_exps_left {left right : Basis} {t1 t2 : Monomial}
+theorem isLittleO_of_lt_exps_left {left right : Basis} {t1 t2 : Monomial}
     (h_basis : WellFormedBasis (left ++ right))
     (h1 : t1.unit.length = left.length + right.length)
     (h2 : t2.unit.length = right.length)
@@ -556,9 +556,9 @@ theorem IsLittleO_of_lt_exps_left {left right : Basis} {t1 t2 : Monomial}
   have : t2'.toFun (left ++ right) = Monomial.toFun ⟨coef2, exps2⟩ right :=
     Monomial.zeros_append_toFun _
   rw [← this]
-  apply Monomial.IsLittleO_of_lt_exps h_basis <;> simpa [t2']
+  apply isLittleO_of_lt_exps h_basis <;> simpa [t2']
 
-theorem IsLittleO_of_lt_exps_right {left right : Basis} {t1 t2 : Monomial}
+theorem isLittleO_of_lt_exps_right {left right : Basis} {t1 t2 : Monomial}
     (h_basis : WellFormedBasis (left ++ right))
     (h1 : t1.unit.length = left.length + right.length)
     (h2 : t2.unit.length = right.length)
@@ -570,7 +570,7 @@ theorem IsLittleO_of_lt_exps_right {left right : Basis} {t1 t2 : Monomial}
   have : t2'.toFun (left ++ right) = Monomial.toFun ⟨coef2, exps2⟩ right :=
     Monomial.zeros_append_toFun _
   rw [← this]
-  apply Monomial.IsLittleO_of_lt_exps h_basis <;> simpa [t2']
+  apply isLittleO_of_lt_exps h_basis <;> simpa [t2']
 
 end Monomial
 

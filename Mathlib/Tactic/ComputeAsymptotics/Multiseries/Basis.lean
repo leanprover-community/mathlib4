@@ -178,7 +178,7 @@ theorem pow_isLittleO_pow_of_log {f g : ℝ → ℝ} (a b : ℝ) (hf : ∀ᶠ x 
 
 /-- Any power of function from a well-formed basis' tail is Majorized by
 basis' head with zero exponent. -/
-theorem tail_pow_Majorized_head {hd f : ℝ → ℝ} {tl : Basis}
+theorem tail_pow_majorized_head {hd f : ℝ → ℝ} {tl : Basis}
     (h_basis : WellFormedBasis (hd :: tl)) (hf : f ∈ tl) (r : ℝ) :
     Majorized (f ^ r) hd 0 := by
   intro exp h_exp
