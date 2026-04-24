@@ -6,8 +6,7 @@ Authors: Nailin Guan, Yi Song
 module
 
 public import Mathlib.Algebra.Category.Grp.Zero
-public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
-public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
+public import Mathlib.Algebra.Category.ModuleCat.Ext.Basic
 public import Mathlib.RingTheory.Regular.Category
 public import Mathlib.RingTheory.Regular.LinearMap
 public import Mathlib.RingTheory.Regular.RegularSequence
@@ -43,19 +42,6 @@ universe v u
 open RingTheory.Sequence Ideal CategoryTheory Abelian Limits
 
 variable {R : Type u} [CommRing R] [Small.{v} R]
-
-namespace CategoryTheory.Abelian
-
-set_option backward.isDefEq.respectTransparency false in
-lemma Ext.smul_id_postcomp_eq_zero_of_mem_ann {M N : ModuleCat.{v} R}
-    {r : R} (mem_ann : r ∈ Module.annihilator R N) (n : ℕ) :
-    AddCommGrpCat.ofHom ((Ext.mk₀ (r • (𝟙 M))).postcomp N (add_zero n)) = 0 := by
-  ext h
-  have : r • (𝟙 N) = 0 := ModuleCat.hom_ext (LinearMap.ext (Module.mem_annihilator.mp mem_ann ·))
-  have smul_eq : r • h = (Ext.mk₀ (r • (𝟙 N))).comp h (zero_add n) := by simp [Ext.mk₀_smul]
-  simp [Ext.mk₀_smul, this, smul_eq]
-
-end CategoryTheory.Abelian
 
 open Pointwise ModuleCat IsSMulRegular
 
@@ -105,21 +91,6 @@ lemma ModuleCat.exists_isRegular_of_exists_subsingleton_ext [IsNoetherianRing R]
     use x ^ k :: rs
     simpa [len, hk] using ⟨mem, hx.pow k, reg⟩
 
-set_option backward.isDefEq.respectTransparency false in
-lemma CategoryTheory.Abelian.Ext.pow_mono_of_mono (a : R) (k : ℕ) (i : ℕ) {M N : ModuleCat.{v} R}
-    (f_mono : Mono (AddCommGrpCat.ofHom ((Ext.mk₀ (smulShortComplex M a).f).postcomp
-    N (add_zero i)))) : Mono (AddCommGrpCat.ofHom ((Ext.mk₀ (smulShortComplex M (a ^ k)).f).postcomp
-    N (add_zero i))) := by
-  have (x : R) : Mono (AddCommGrpCat.ofHom ((Ext.mk₀ (smulShortComplex M x).f).postcomp
-    N (add_zero i))) ↔ IsSMulRegular (Ext N M i) x := by
-    simp only [IsSMulRegular, AddCommGrpCat.mono_iff_injective]
-    congr!
-    ext
-    rw [smulShortComplex_f_eq_smul_id]
-    simp [smulShortComplex, Ext.mk₀_smul]
-  rw [this] at f_mono ⊢
-  exact f_mono.pow k
-
 lemma ModuleCat.subsingleton_ext_of_exists_isRegular [IsNoetherianRing R] (I : Ideal R)
     (N : ModuleCat.{v} R) [Nfin : Module.Finite R N]
     (Nsupp : Module.support R N ⊆ PrimeSpectrum.zeroLocus I)
@@ -163,9 +134,12 @@ lemma ModuleCat.subsingleton_ext_of_exists_isRegular [IsNoetherianRing R] (I : I
           exact ih (ModuleCat.of R (QuotSMulTop a M)) ne.lt_top rs' mem.2 reg.2 len i (by omega)
         let gk := AddCommGrpCat.ofHom ((Ext.mk₀ (M.smulShortComplex (a ^ k)).f).postcomp N
           (add_zero (i + 1)))
-        have mono_gk := Ext.pow_mono_of_mono a k (i + 1) mono_g
+        have mono_gk : Mono gk := by
+          simp only [smulShortComplex_f_eq_smul_id, g, gk] at mono_g ⊢
+          exact (Ext.smul_id_postcomp_mono_iff (a ^ k) (i + 1)).mpr <|
+            ((Ext.smul_id_postcomp_mono_iff a (i + 1)).mp mono_g).pow k
         -- scalar multiple by `aᵏ` on `Ext N M i` is zero since `aᵏ ∈ Ann(N)`, so `Ext N M i` vanish
-        have zero_gk : gk = 0 := Ext.smul_id_postcomp_eq_zero_of_mem_ann hk (i + 1)
+        have zero_gk : gk = 0 := Ext.smul_id_postcomp_eq_zero_of_mem_annihilator hk (i + 1)
         exact AddCommGrpCat.subsingleton_of_isZero (IsZero.of_mono_eq_zero _ zero_gk)
 
 /--
