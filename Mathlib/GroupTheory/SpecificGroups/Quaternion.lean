@@ -3,8 +3,10 @@ Copyright (c) 2021 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
-import Mathlib.GroupTheory.SpecificGroups.Dihedral
+module
+
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic
+public import Mathlib.GroupTheory.SpecificGroups.Dihedral
 
 /-!
 # Quaternion Groups
@@ -40,6 +42,8 @@ Show that `QuaternionGroup 2 ≃* (Quaternion ℤ)ˣ`.
 
 -/
 
+@[expose] public section
+
 
 /-- The (generalised) quaternion group `QuaternionGroup n` of order `4n`. It can be defined by the
 presentation $\langle a, x | a^{2n} = 1, x^2 = a^n, x^{-1}ax=a^{-1}\rangle$. We write `a i` for
@@ -54,7 +58,8 @@ namespace QuaternionGroup
 
 variable {n : ℕ}
 
-/-- Multiplication of the dihedral group.
+set_option backward.privateInPublic true in
+/-- Multiplication of the quaternion group.
 -/
 private def mul : QuaternionGroup n → QuaternionGroup n → QuaternionGroup n
   | a i, a j => a (i + j)
@@ -62,31 +67,35 @@ private def mul : QuaternionGroup n → QuaternionGroup n → QuaternionGroup n
   | xa i, a j => xa (i + j)
   | xa i, xa j => a (n + j - i)
 
+set_option backward.privateInPublic true in
 /-- The identity `1` is given by `aⁱ`.
 -/
 private def one : QuaternionGroup n :=
   a 0
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Inhabited (QuaternionGroup n) :=
   ⟨one⟩
 
+set_option backward.privateInPublic true in
 /-- The inverse of an element of the quaternion group.
 -/
 private def inv : QuaternionGroup n → QuaternionGroup n
   | a i => a (-i)
   | xa i => xa (n + i)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The group structure on `QuaternionGroup n`.
 -/
 instance : Group (QuaternionGroup n) where
   mul := mul
   mul_assoc := by
-    rintro (i | i) (j | j) (k | k) <;> simp only [(· * ·), mul] <;> ring_nf
-    congr
-    calc
-      -(n : ZMod (2 * n)) = 0 - n := by rw [zero_sub]
-      _ = 2 * n - n := by norm_cast; simp
-      _ = n := by ring
+    unfold instHMul
+    rintro (i | i) (j | j) (k | k) <;> simp only [mul] <;> ring_nf
+    have : (2 * n : ZMod (2 * n)) = 0 := by norm_cast; simp
+    grind
   one := one
   one_mul := by
     rintro (i | i)
@@ -125,6 +134,7 @@ theorem a_zero : a 0 = (1 : QuaternionGroup n) := by
 theorem one_def : (1 : QuaternionGroup n) = a 0 :=
   rfl
 
+set_option backward.privateInPublic true in
 private def fintypeHelper : ZMod (2 * n) ⊕ ZMod (2 * n) ≃ QuaternionGroup n where
   invFun i :=
     match i with
@@ -150,6 +160,8 @@ def quaternionGroupZeroEquivDihedralGroupZero : QuaternionGroup 0 ≃* DihedralG
   right_inv := by rintro (k | k) <;> rfl
   map_mul' := by rintro (k | k) (l | l) <;> simp
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- If `0 < n`, then `QuaternionGroup n` is a finite group.
 -/
 instance [NeZero n] : Fintype (QuaternionGroup n) :=
@@ -212,9 +224,8 @@ theorem quaternionGroup_one_isCyclic : IsCyclic (QuaternionGroup 1) := by
 -/
 @[simp]
 theorem orderOf_a_one : orderOf (a 1 : QuaternionGroup n) = 2 * n := by
-  rcases eq_zero_or_neZero n with hn | hn
-  · subst hn
-    simp_rw [mul_zero, orderOf_eq_zero_iff']
+  rcases eq_zero_or_neZero n with rfl | hn
+  · simp_rw [mul_zero, orderOf_eq_zero_iff']
     intro n h
     rw [one_def, a_one_pow]
     apply mt a.inj
@@ -238,10 +249,9 @@ theorem orderOf_a [NeZero n] (i : ZMod (2 * n)) :
 
 theorem exponent : Monoid.exponent (QuaternionGroup n) = 2 * lcm n 2 := by
   rw [← normalize_eq 2, ← lcm_mul_left, normalize_eq]
-  norm_num
-  rcases eq_zero_or_neZero n with hn | hn
-  · subst hn
-    simp only [lcm_zero_left, mul_zero]
+  simp only [Nat.reduceMul]
+  rcases eq_zero_or_neZero n with rfl | hn
+  · simp only [lcm_zero_left, mul_zero]
     exact Monoid.exponent_eq_zero_of_order_zero orderOf_a_one
   apply Nat.dvd_antisymm
   · apply Monoid.exponent_dvd_of_forall_pow_eq_one

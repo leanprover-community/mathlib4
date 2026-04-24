@@ -3,13 +3,16 @@ Copyright (c) 2025 Arend Mellendijk. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arend Mellendijk
 -/
+module
 
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Tactic.Ring.RingNF
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Algebra.Basic
+public import Mathlib.Tactic.Ring.RingNF
 
 /-! # Lemmas for the `algebra` tactic.
 -/
+
+@[expose] public section
 
 open Mathlib.Meta.NormNum
 
@@ -17,42 +20,12 @@ namespace Mathlib.Tactic.Algebra
 
 section ring
 
-variable {R A : Type*} [sR : CommRing R] [sA : CommRing A] [sAlg : Algebra R A]
-
-section evalNeg
-
-/- evalNegProd -/
-theorem neg_smul_one {r s : R} (h : -r = s) :
-    -(r • (1 : A)) = s • 1 := by
-  simp [← h]
-
-/- evalNegProd -/
-theorem neg_pow_mul (x : A) (e : ℕ) {b c : A} (h : -b = c) :
-    -(x ^ e * b) = x ^ e * c := by
-  simp [← h]
-
-/- evalNeg -/
-theorem neg_add {a b c d : A} (ha : -a = c) (hb : -b = d) :
-    -(a + b) = c + d := by
-  simp [← ha, hb, add_comm]
-
-end evalNeg
+variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
 
 /- evalCast -/
 theorem isInt_negOfNat_eq {a : A} {lit : ℕ} (h : IsInt a (Int.negOfNat lit)) :
-    a = (Int.rawCast (Int.negOfNat lit) + 0 : R) • (1 : A) + 0 := by
-  simp [h.out, ← Algebra.algebraMap_eq_smul_one]
-
-
-/- eval -/
-theorem eval_neg {a a' b : A} (ha : a = a') (hb : -a' = b) :
-    -a = b := by
-  grind
-
-/- eval -/
-theorem eval_sub {a b a' b' c : A} (ha : a = a') (hb : b = b') (hc : a' - b' = c) :
-    a - b = c := by
-  grind
+    a = algebraMap R A (Int.rawCast (Int.negOfNat lit) + 0 : R) + 0 := by
+  simp [h.out]
 
 end ring
 
@@ -62,8 +35,8 @@ variable {R A : Type*} [Semifield R] [Semifield A] [Algebra R A]
 
 /- evalCast -/
 theorem isNNRat_eq_rawCast {a : A} {n d : ℕ} (h : IsNNRat a n d) :
-    a = (NNRat.rawCast n d + 0 : R) • 1 + 0 := by
-  simp [Mathlib.Tactic.Ring.cast_nnrat h, ← Algebra.algebraMap_eq_smul_one]
+    a = algebraMap R A (NNRat.rawCast n d + 0 : R) + 0 := by
+  simp [Mathlib.Tactic.Ring.cast_nnrat h]
 
 end semifield
 
@@ -73,8 +46,8 @@ variable {R A : Type*} [Field R] [Field A] [Algebra R A]
 
 /- evalCast -/
 theorem isRat_eq_rawCast {a : A} {n d : ℕ} (h : IsRat a (.negOfNat n) d) :
-    a = (Rat.rawCast (.negOfNat n) d + 0 : R) • 1 + 0 := by
-  simp [Mathlib.Tactic.Ring.cast_rat h, ← Algebra.algebraMap_eq_smul_one]
+    a = algebraMap R A (Rat.rawCast (.negOfNat n) d + 0 : R) + 0 := by
+  simp [Mathlib.Tactic.Ring.cast_rat h]
 
 end field
 
@@ -85,54 +58,10 @@ theorem isNat_zero_eq {a : A} (h : IsNat a 0) : a = 0 := by
   have := h.out
   simp [this]
 
-/- evalAddOverlap -/
-theorem smul_add_left_zero {r s : R} (h : r + s = 0) :
-    IsNat (r • 1 + s • 1 : A) 0 := by
-  refine ⟨?_⟩
-  simp [← add_smul, h]
-
-/- evalAddOverlap -/
-theorem smul_add_smul_same {r s t : R} {a b : A} (ha : a = b) (ht : r + s = t) :
-    r • a + s • b = t • a := by
-  rw [ha, ← add_smul, ht]
-
-/- evalAddOverlap -/
-theorem mul_pow_add_overlap_nonzero {x : A} {e : ℕ} {b₁ b₂ c : A}
-    (h : b₁ + b₂ = c) :
-    x ^ e * b₁ + x ^ e * b₂ = x ^ e * c := by
-  rw [← mul_add, h]
-
-/- evalAddOverlap -/
-theorem mul_pow_add_overlap_zero {b₁ b₂ x : A} {e : ℕ}
-    (h : IsNat (b₁ + b₂) 0) :
-    IsNat (x ^ e * b₁ + x ^ e * b₂) 0 := by
-  refine ⟨?_⟩
-  simp [← mul_add, h.out]
-
-/- evalAdd -/
-theorem add_overlap_nonzero {a₁ a₂ b₁ b₂ c₁ c₂ : R} (h₁ : a₁ + b₁ = c₁) (h₂ : a₂ + b₂ = c₂) :
-    a₁ + a₂ + (b₁ + b₂) = c₁ + c₂ := by
-  rw [← h₁, ← h₂, add_assoc, add_assoc, add_left_comm a₂]
-
-/- evalAdd -/
-theorem add_overlap_zero {a₁ a₂ b₁ b₂ c₂ : R}
-    (h₁ : IsNat (a₁ + b₁) 0) (h₂ : a₂ + b₂ = c₂) :
-    a₁ + a₂ + (b₁ + b₂) = c₂ := by
-  rw [add_comm a₁, add_assoc, ← add_assoc a₁, h₁.out]
-  simp [h₂]
-
-/- evalAdd -/
-theorem add_add_add_comm {a₁ a₂ b₁ b₂ c : A}
-    (h : a₂ + (b₁ + b₂) = c) :
-    a₁ + a₂ + (b₁ + b₂) = a₁ + c := by
-  rw [add_assoc, h]
-
-/- evalAdd -/
-theorem add_add_add_comm' {a₁ a₂ b₁ b₂ c : A}
-    (h : (a₁ + a₂) + b₂ = c) :
-    a₁ + a₂ + (b₁ + b₂) = b₁ + c := by
-  subst_vars
-  ring
+/- evalCast -/
+theorem isNat_eq_rawCast {a : A} {lit : ℕ} (h : IsNat a lit) :
+    a = algebraMap R A (lit + 0 : R) + 0 := by
+  simp [h.out]
 
 section cleanup
 
@@ -194,217 +123,6 @@ end cleanupConsts
 
 end cleanup
 
-
-section evalPow
-
-/- evalPowProdAtom -/
-theorem pow_eq_pow_mul_smul_one {a : A} {b : ℕ} :
-    a ^ b = (a + 0) ^ b * (Nat.rawCast 1 + 0 : R) • (1 : A) := by
-  simp
-
-/- evalPowAtom -/
-theorem pow_eq_pow_mul_smul_one_add_zero {a : A} {b : ℕ} :
-    a ^ b = a ^ b * (Nat.rawCast 1 + 0 : R) • (1 : A) + 0 := by
-  simp
-
-/- evalProdPow -/
-theorem smul_one_pow {r r' : R} {b : ℕ}
-    (h : r ^ (b + 0) = r') :
-    (r • (1 : A)) ^ b = r' • 1 := by
-  simp [smul_pow, ← h]
-
-/- evalProdPow -/
-theorem pow_mul_pow {x : A} {e e' : ℕ} {b c : A} {n : ℕ}
-    (he : e * n = e') (hb : b ^ n = c) :
-    (x ^ e * b) ^ n = x ^ e' * c := by
-  subst_vars
-  simp [mul_pow, ← pow_mul]
-
-/- evalPowNat -/
-theorem pow_even {a b c : A} {m : ℕ}
-    (hb : a ^ m = b) (hc : b * b = c) :
-    a ^ (m+m) = c := by
-  subst_vars
-  exact pow_add a m m
-
-/- evalPowNat -/
-theorem pow_odd {a b c d : A} {m : ℕ}
-    (hb : a ^ m = b) (hc : b * b = c) (hd : c * a = d) :
-    a ^ (m+m+1) = d := by
-  subst_vars
-  simp [pow_add]
-
-/- evalPow₁ -/
-theorem pow_rawCast_one {a : A} :
-    a ^ Nat.rawCast (nat_lit 1) = a := by
-  simp
-
-/- evalPow₁ -/
-theorem zero_pow_pos {b : ℕ} (h : 0 < b) :
-    (0 : A) ^ b = 0 := by
-  rw [zero_pow]
-  exact Nat.ne_zero_of_lt h
-
-/- evalPow₁ -/
-theorem pow_add_zero {a c : A} {b : ℕ}
-    (h : a ^ b = c) :
-    (a + 0) ^ b = c + 0 := by
-  subst_vars
-  simp
-
-/- evalPow₁ -/
-theorem pow_factored {a d e : A} {b e' k : ℕ}
-    (hb : b = e' * k) (hd : a ^ e' = d) (he : d ^ k = e) :
-    a ^ b = e := by
-  subst_vars
-  rw [pow_mul]
-
-/- evalPow -/
-theorem pow_zero_eq {a : A} :
-    a ^ 0 = (Nat.rawCast 1 + 0 : R) • (1 : A) + 0 := by
-  simp
-
-/- evalPow -/
-theorem pow_add {a c₁ c₂ d : A} {b₁ b₂ : ℕ}
-    (hc₁ : a ^ b₁ = c₁) (hc₂ : a ^ b₂ = c₂) (hd : c₁ * c₂ = d) :
-    a ^ (b₁ + b₂) = d := by
-  subst_vars
-  rw [_root_.pow_add]
-
-end evalPow
-
-section evalAtom
-
-/- evalAtom -/
-theorem atom_eq_pow_one_mul_smul_one_add_zero {a : A} :
-    a = a ^ Nat.rawCast 1 * (Nat.rawCast 1 + 0 : R) • (1 : A) + 0 := by
-  simp
-
-/- evalAtom -/
-theorem atom_eq_pow_one_mul_smul_one_add_zero' {a e : A}
-    (h : a = e) :
-    a = e ^ Nat.rawCast 1 * (Nat.rawCast 1 + 0 : R) • (1 : A) + 0 := by
-  subst_vars
-  simp
-
-end evalAtom
-
-/- eval -/
-theorem smul_congr {r r' : R} {a a' : A} {ef : A} (hr : r = r') (ha : a = a') (hf : r' • a' = ef) :
-    r • a = ef := by
-  rw [hr, ha, hf]
-
-/- eval -/
-theorem eval_smul_eq {e : A} {r : R} {a : A} {ef : A}
-    (he : e = r • a) (hf : r • a = ef) :
-    e = ef := by
-  rw [he, hf]
-
-/- eval -/
-theorem eval_add {a b a' b' c : A}
-    (ha : a = a') (hb : b = b') (hc : a' + b' = c) :
-    a + b = c := by
-  subst_vars
-  rfl
-
-/- eval -/
-theorem eval_mul {a b a' b' c : A}
-    (ha : a = a') (hb : b = b') (hc : a' * b' = c) :
-    a * b = c := by
-  subst_vars
-  rfl
-
-/- eval -/
-theorem eval_pow {a a' c : A} {b b' : ℕ}
-    (ha : a = a') (hb : b = b') (hc : a' ^ b' = c) :
-    a ^ b = c := by
-  subst_vars
-  rfl
-
-section evalSMul
-
-/- evalSMulExProd -/
-theorem smul_smul_one {r s t : R}
-    (h : r * s = t) :
-    r • s • (1 : A) = t • 1 := by
-  subst_vars
-  rw [mul_smul]
-
-/- evalSMulExProd -/
-theorem smul_mul_assoc {r : R} {x : A} {e : ℕ} {b c : A}
-    (h : r • b = c) :
-    r • (x ^ e * b) = x ^ e * c := by
-  subst_vars
-  rw [mul_smul_comm]
-
-/- evaLSMul -/
-theorem smul_add {r : R} {a b c d : A}
-    (ha : r • a = c) (hb : r • b = d) :
-    r • (a + b) = c + d := by
-  subst_vars
-  rw [_root_.smul_add]
-
-end evalSMul
-section evalMul
-
-/- evalMul₂ -/
-theorem smul_one_mul_smul_one {r s t : R}
-    (h : r * s = t) :
-    r • (1 : A) * s • 1 = t • 1 := by
-  subst_vars
-  rw [smul_mul_smul, mul_one]
-
-/- evalMul₂ -/
-theorem pow_mul_mul_smul_one {x : A} {e : ℕ} {b d : A} {r : R}
-    (h : b * (r • 1) = d) :
-    x ^ e * b * r • 1 = x ^ e * d := by
-  subst_vars
-  ring
-
-/- evalMul₂ -/
-theorem smul_one_mul_pow_mul {r : R} {x : A} {e : ℕ} {b c : A}
-    (h : r • 1 * b = c) :
-    r • 1 * (x ^ e * b) = x ^ e * c := by
-  subst_vars
-  ring
-
-/- evalMul₂ -/
-theorem pow_mul_mul_pow_mul {x : A} {ea eb e : ℕ} {b₁ b₂ c : A}
-    (pe : ea + eb = e) (pc : b₁ * b₂ = c) :
-    x ^ ea * b₁ * (x ^ eb * b₂) = x ^ e * c := by
-  subst_vars
-  ring
-
-/- evalMul₂ -/
-theorem pow_mul_mul_assoc {x xb : A} {ea eb : ℕ} {b₁ b c : A}
-    (pc : b₁ * (xb ^ eb * b) = c) :
-    x ^ ea * b₁ * (xb ^ eb * b) = x ^ ea * c := by
-  subst_vars
-  ring
-
-/- evalMul₂ -/
-theorem mul_pow_mul_assoc {xa xb : A} {ea eb : ℕ} {b₁ b c : A}
-    (pc : xa ^ ea * b₁ * b = c) :
-    xa ^ ea * b₁ * (xb ^ eb * b) = xb ^ eb * c := by
-  subst_vars
-  ring
-
-/- evalMul₁ -/
-theorem mul_add_of_add {a a₁ b c₁ c₂ c : A}
-    (pb₁' : a * a₁ = c₁) (pt : a * b = c₂) (pd : c₁ + 0 + c₂ = c) :
-    a * (a₁ + b) = c := by
-  subst_vars
-  ring
-
-/- evalMul -/
-theorem add_mul_of_add {a₁ a₂ b c₁ c₂ c : A}
-    (pc₁ : a₁ * b = c₁) (pc₂ : a₂ * b = c₂) (pd : c₁ + c₂ = c) :
-    (a₁ + a₂) * b = c := by
-  subst_vars
-  ring
-
-end evalMul
-
 section equateScalars
 
 /- ExProd.equateZero -/
@@ -458,5 +176,49 @@ theorem mul_eq_mul_of_eq {c a b : A}
   simp [h]
 
 end equateScalars
+
+section RingCompute
+
+/- RingCompute.add -/
+theorem add_algebraMap {r s t : R} (h : r + s = t) :
+    algebraMap R A r + algebraMap R A s = algebraMap R A t := by
+  rw [← map_add, h]
+
+/- RingCompute.add -/
+theorem add_algebraMap_isNat_zero {r s : R} (h : r + s = 0) :
+    IsNat (algebraMap R A r + algebraMap R A s) 0 := by
+  rw [← map_add, h, map_zero]
+  exact ⟨by simp⟩
+
+/- RingCompute.cast -/
+theorem cast_smul_eq_mul {R' : Type*} [HSMul R' A A] {r' : R'} {r r'' : R}
+    (hr : r = r'') (h_smul : ∀ (a : A), r • a = r' • a) (a : A) :
+    r' • a = (algebraMap R A r'' + 0) * a := by
+  simp [← h_smul, ← hr, Algebra.smul_def r a]
+
+/- RingCompute.neg -/
+theorem neg_algebraMap {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+    {r t : R} (h : -r = t) :
+    -(algebraMap R A r) = algebraMap R A t := by
+  rw [← map_neg, h]
+
+/- RingCompute.pow -/
+theorem pow_algebraMap {r s : R} {b : ℕ} (h : r ^ b = s) :
+    (algebraMap R A r) ^ b = algebraMap R A s := by
+  rw [← map_pow, h]
+
+/- RingCompute.inv -/
+theorem inv_algebraMap {R A : Type*} [Semifield R] [Semifield A] [Algebra R A]
+    {r s : R} (h : r⁻¹ = s) :
+    (algebraMap R A r)⁻¹ = algebraMap R A s := by
+  rw [← map_inv₀, h]
+
+/- RingCompute.isOne -/
+theorem isOne_algebraMap {r : R} (h : IsNat r 1) :
+    IsNat (algebraMap R A (r + 0)) 1 := by
+  simp only [h.out, Nat.cast_one, add_zero, map_one]
+  exact ⟨by simp⟩
+
+end RingCompute
 
 end Mathlib.Tactic.Algebra

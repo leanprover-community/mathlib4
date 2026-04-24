@@ -3,9 +3,11 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Yury Kudryashov
 -/
-import Mathlib.Data.Finset.Fin
-import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Order.Interval.Set.Fin
+module
+
+public import Mathlib.Data.Finset.Fin
+public import Mathlib.Order.Interval.Finset.Nat
+public import Mathlib.Order.Interval.Set.Fin
 
 /-!
 # Finite intervals in `Fin n`
@@ -13,6 +15,8 @@ import Mathlib.Order.Interval.Set.Fin
 This file proves that `Fin n` is a `LocallyFiniteOrder` and calculates the cardinality of its
 intervals as Finsets and Fintypes.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -87,10 +91,6 @@ theorem attachFin_Iic : attachFin (Iic a) (fun _x hx ↦ (mem_Iic.mp hx).trans_l
 @[simp]
 theorem attachFin_Iio : attachFin (Iio a) (fun _x hx ↦ (mem_Iio.mp hx).trans a.2) = Iio a := by
   ext; simp
-
-section deprecated
-
-end deprecated
 
 section val
 
@@ -891,5 +891,78 @@ theorem card_Iic : #(Iic b) = b + 1 := by rw [← Nat.card_Iic b, ← map_valEmb
 theorem card_Iio : #(Iio b) = b := by rw [← Nat.card_Iio b, ← map_valEmbedding_Iio, card_map]
 
 end card
+
+/-! ### Perturbations of endpoints by one -/
+
+/-
+Note: the `haveI`s in the statements below are needed for `0` and `1`
+to be defined in `Fin n`. One could instead add `[NeZero n]` at the
+top of this section, but then this instance would be required to
+rewrite using the lemmas.
+-/
+
+section pm_one
+
+lemma Iio_add_one_eq_Iic {n : ℕ} {b : Fin n} (hb : b + 1 < n) :
+    haveI := b.neZero
+    Iio (b + 1) = Iic b := by
+  grind [= Fin.lt_def, = Fin.le_def, = Fin.val_add_one_of_lt']
+
+lemma Iic_sub_one_eq_Iio {n : ℕ} {b : Fin n} :
+    haveI := b.neZero
+    (hb : 0 < b) → Iic (b - 1) = Iio b := by
+  grind [= Fin.val_sub_one_of_ne_zero]
+
+lemma Ici_add_one_eq_Ioi {n : ℕ} {a : Fin n} (ha : a + 1 < n) :
+    haveI := a.neZero
+    Ici (a + 1) = Ioi a := by
+  grind [= Fin.le_def, = Fin.val_add_one_of_lt']
+
+lemma Ioi_sub_one_eq_Ici {n : ℕ} {a : Fin n} :
+    haveI := a.neZero
+    (ha : 0 < a) → Ioi (a - 1) = Ici a := by
+  grind [= Fin.lt_def, = Fin.le_def, = Fin.val_sub_one_of_ne_zero]
+
+lemma Ioc_sub_one_eq_Icc {n : ℕ} {a b : Fin n} :
+    haveI := a.neZero
+    (ha : 0 < a) → Ioc (a - 1) b = Icc a b := by
+  grind [= Fin.lt_def, = Fin.le_def, = Fin.val_sub_one_of_ne_zero]
+
+lemma Icc_add_one_eq_Ioc {n : ℕ} {a b : Fin n} (ha : a + 1 < n) :
+    haveI := a.neZero
+    Icc (a + 1) b = Ioc a b := by
+  grind [= Fin.lt_def, = Fin.le_def, = Fin.val_add_one_of_lt']
+
+lemma Ioo_sub_one_eq_Ico {n : ℕ} {a b : Fin n} :
+    haveI := a.neZero
+    (ha : 0 < a) → Ioo (a - 1) b = Ico a b := by
+  grind [= Fin.lt_def, = Fin.le_def, = Fin.val_sub_one_of_ne_zero]
+
+lemma Ico_add_one_eq_Ioo {n : ℕ} {a b : Fin n} (ha : a + 1 < n) :
+    haveI := a.neZero
+    Ico (a + 1) b = Ioo a b := by
+  grind [= Fin.lt_def, = Fin.le_def, = Fin.val_add_one_of_lt']
+
+lemma Icc_sub_one_eq_Ico {n : ℕ} {a b : Fin n} :
+    haveI := a.neZero
+    (hb : 0 < b) → Icc a (b - 1) = Ico a b := by
+  grind [= Fin.lt_def, = Fin.le_def, = Fin.val_sub_one_of_ne_zero]
+
+lemma Ico_add_one_eq_Icc {n : ℕ} {a b : Fin n} (hb : b + 1 < n) :
+    haveI := a.neZero
+    Ico a (b + 1) = Icc a b := by
+  grind [= Fin.lt_def, = Fin.le_def, = Fin.val_add_one_of_lt']
+
+lemma Ioc_sub_one_eq_Ioo {n : ℕ} {a b : Fin n} :
+    haveI := a.neZero
+    (hb : 0 < b) → Ioc a (b - 1) = Ioo a b := by
+  grind [= Fin.lt_def, = Fin.le_def, = Fin.val_sub_one_of_ne_zero]
+
+lemma Ioo_add_one_eq_Ioc {n : ℕ} {a b : Fin n} (hb : b + 1 < n) :
+    haveI := a.neZero
+    Ioo a (b + 1) = Ioc a b := by
+  grind [= Fin.lt_def, = Fin.le_def, = Fin.val_add_one_of_lt']
+
+end pm_one
 
 end Fin

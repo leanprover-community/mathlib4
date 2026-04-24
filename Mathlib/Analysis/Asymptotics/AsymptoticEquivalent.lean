@@ -3,21 +3,23 @@ Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
+module
+
+public import Mathlib.Analysis.Asymptotics.Defs
+public import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Analysis.Asymptotics.Theta
 
 /-!
 # Asymptotic equivalence
 
-In this file, we define the relation `IsEquivalent l u v`, which means that `u-v` is little o of
-`v` along the filter `l`.
+In this file, we prove properties of the relation `IsEquivalent l u v`,
+which means that `u-v` is little o of `v` along the filter `l`.
 
 Unlike `Is(Little|Big)O` relations, this one requires `u` and `v` to have the same codomain `β`.
-While the definition only requires `β` to be a `NormedAddCommGroup`, most interesting properties
-require it to be a `NormedField`.
 
 ## Notation
 
-We introduce the notation `u ~[l] v := IsEquivalent l u v`, which you can use by opening the
+We use the notation `u ~[l] v := IsEquivalent l u v`, which you can use by opening the
 `Asymptotics` locale.
 
 ## Main results
@@ -53,6 +55,8 @@ This is to enable `calc` support, as `calc` requires that the last two explicit 
 
 -/
 
+@[expose] public section
+
 
 namespace Asymptotics
 
@@ -63,14 +67,6 @@ open Topology
 section NormedAddCommGroup
 
 variable {α β : Type*} [NormedAddCommGroup β]
-
-/-- Two functions `u` and `v` are said to be asymptotically equivalent along a filter `l`
-  (denoted as `u ~[l] v` in the `Asymptotics` namespace)
-  when `u x - v x = o(v x)` as `x` converges along `l`. -/
-def IsEquivalent (l : Filter α) (u v : α → β) :=
-  (u - v) =o[l] v
-
-@[inherit_doc] scoped notation:50 u " ~[" l:50 "] " v:50 => Asymptotics.IsEquivalent l u v
 
 variable {u v w : α → β} {l : Filter α}
 
@@ -197,14 +193,17 @@ theorem IsEquivalent.exists_eq_mul (huv : u ~[l] v) :
     ∃ (φ : α → β) (_ : Tendsto φ l (𝓝 1)), u =ᶠ[l] φ * v :=
   isEquivalent_iff_exists_eq_mul.mp huv
 
-theorem isEquivalent_of_tendsto_one (hz : ∀ᶠ x in l, v x = 0 → u x = 0)
-    (huv : Tendsto (u / v) l (𝓝 1)) : u ~[l] v := by
-  rw [isEquivalent_iff_exists_eq_mul]
-  exact ⟨u / v, huv, hz.mono fun x hz' ↦ (div_mul_cancel_of_imp hz').symm⟩
+theorem isEquivalent_of_tendsto_one (huv : Tendsto (u / v) l (𝓝 1)) :
+    u ~[l] v := by
+  suffices ∀ᶠ x in l, v x = 0 → u x = 0 by
+    rw [isEquivalent_iff_exists_eq_mul]
+    exact ⟨u / v, huv, this.mono fun x hz' ↦ (div_mul_cancel_of_imp hz').symm⟩
+  by_contra! h
+  replace h : ∃ᶠ t in l, (u / v) t = 0 := h.mono fun x ⟨hv, hu⟩ ↦ by simp [hv]
+  simpa using tendsto_nhds_unique_of_frequently_eq (b := 0) huv tendsto_const_nhds h
 
-theorem isEquivalent_of_tendsto_one' (hz : ∀ x, v x = 0 → u x = 0) (huv : Tendsto (u / v) l (𝓝 1)) :
-    u ~[l] v :=
-  isEquivalent_of_tendsto_one (Eventually.of_forall hz) huv
+@[deprecated (since := "2026-01-26")] alias isEquivalent_of_tendsto_one' :=
+  isEquivalent_of_tendsto_one
 
 theorem isEquivalent_iff_tendsto_one (hz : ∀ᶠ x in l, v x ≠ 0) :
     u ~[l] v ↔ Tendsto (u / v) l (𝓝 1) := by
@@ -217,7 +216,7 @@ theorem isEquivalent_iff_tendsto_one (hz : ∀ᶠ x in l, v x ≠ 0) :
     convert this.add key
     · simp
     · simp
-  · exact isEquivalent_of_tendsto_one (hz.mono fun x hnvz hz ↦ (hnvz hz).elim)
+  · exact isEquivalent_of_tendsto_one
 
 end NormedField
 
@@ -329,6 +328,38 @@ theorem IsEquivalent.tendsto_atBot [OrderTopology β] (huv : u ~[l] v) (hu : Ten
 theorem IsEquivalent.tendsto_atBot_iff [OrderTopology β] (huv : u ~[l] v) :
     Tendsto u l atBot ↔ Tendsto v l atBot :=
   ⟨huv.tendsto_atBot, huv.symm.tendsto_atBot⟩
+
+section ClosedIicTopology
+
+variable [ClosedIicTopology β]
+
+lemma IsEquivalent.exists_pos_eq_mul (h : u ~[l] v) :
+    ∃ φ, (∀ᶠ x in l, 0 < φ x) ∧ (u =ᶠ[l] φ * v) := by
+  obtain ⟨φ, hφ, h_eq⟩ := h.exists_eq_mul
+  exact ⟨φ, hφ.eventually_const_lt (zero_lt_one' β), h_eq⟩
+
+theorem IsEquivalent.eventually_nonneg (h : u ~[l] v) (hv : ∀ᶠ t in l, 0 ≤ v t) :
+    ∀ᶠ x in l, 0 ≤ u x := by
+  obtain ⟨φ, hφ, h_eq⟩ := h.exists_pos_eq_mul
+  exact (hφ.and (hv.and h_eq)).mono (fun x ⟨hφ, hv, h_eq⟩ ↦ h_eq ▸ mul_nonneg hφ.le hv)
+
+theorem IsEquivalent.eventually_pos (h : u ~[l] v) (hv : ∀ᶠ t in l, 0 < v t) :
+    ∀ᶠ x in l, 0 < u x := by
+  obtain ⟨φ, hφ, h_eq⟩ := h.exists_pos_eq_mul
+  exact (hφ.and (hv.and h_eq)).mono (fun x ⟨hφ, hv, h_eq⟩ ↦ h_eq ▸ mul_pos hφ hv)
+
+theorem IsEquivalent.eventually_nonpos (h : u ~[l] v) (hv : ∀ᶠ t in l, v t ≤ 0) :
+    ∀ᶠ x in l, u x ≤ 0 := by
+  obtain ⟨φ, hφ, h_eq⟩ := h.exists_pos_eq_mul
+  exact (hφ.and (hv.and h_eq)).mono (fun x ⟨hφ, hv, h_eq⟩ ↦
+    h_eq ▸ mul_nonpos_of_nonneg_of_nonpos hφ.le hv)
+
+theorem IsEquivalent.eventually_neg (h : u ~[l] v) (hv : ∀ᶠ t in l, v t < 0) :
+    ∀ᶠ x in l, u x < 0 := by
+  obtain ⟨φ, hφ, h_eq⟩ := h.exists_pos_eq_mul
+  exact (hφ.and (hv.and h_eq)).mono (fun x ⟨hφ, hv, h_eq⟩ ↦ h_eq ▸ mul_neg_of_pos_of_neg hφ hv)
+
+end ClosedIicTopology
 
 end NormedLinearOrderedField
 

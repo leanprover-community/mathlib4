@@ -3,9 +3,10 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Data.Finset.NAry
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
-import Mathlib.Algebra.Group.Pointwise.Set.Finite
+module
+
+public import Mathlib.Data.Finset.NAry
+public import Mathlib.Algebra.Group.Pointwise.Set.Finite
 
 /-!
 # Pointwise operations of finsets
@@ -34,13 +35,15 @@ the latter has `(2 : ℕ) • {1, 2} = {2, 3, 4}`. See note [pointwise nat actio
 We put all instances in the scope `Pointwise`, so that these instances are not available by
 default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
 since we expect the scope to be open whenever the instances are actually used (and making the
-instances reducible changes the behavior of `simp`.
+instances reducible changes the behavior of `simp`).
 
 ## Tags
 
 finset multiplication, finset addition, pointwise addition, pointwise multiplication,
 pointwise subtraction
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal Finset.dens MonoidWithZero MulAction IsOrderedMonoid
 
@@ -60,7 +63,7 @@ section SMul
 variable [DecidableEq β] [SMul α β] {s s₁ s₂ : Finset α} {t t₁ t₂ u : Finset β} {a : α} {b : β}
 
 /-- The pointwise product of two finsets `s` and `t`: `s • t = {x • y | x ∈ s, y ∈ t}`. -/
-@[to_additive
+@[to_additive (attr := implicit_reducible)
 /-- The pointwise sum of two finsets `s` and `t`: `s +ᵥ t = {x +ᵥ y | x ∈ s, y ∈ t}`. -/]
 protected def smul : SMul (Finset α) (Finset β) := ⟨image₂ (· • ·)⟩
 
@@ -150,7 +153,8 @@ section SMul
 variable [DecidableEq β] [SMul α β] {s s₁ s₂ t : Finset β} {a : α} {b : β}
 
 /-- The scaling of a finset `s` by a scalar `a`: `a • s = {a • x | x ∈ s}`. -/
-@[to_additive /-- The translation of a finset `s` by a vector `a`: `a +ᵥ s = {a +ᵥ x | x ∈ s}`. -/]
+@[to_additive (attr := implicit_reducible)
+  /-- The translation of a finset `s` by a vector `a`: `a +ᵥ s = {a +ᵥ x | x ∈ s}`. -/]
 protected def smulFinset : SMul α (Finset β) where smul a := image <| (a • ·)
 
 scoped[Pointwise] attribute [instance] Finset.smulFinset Finset.vaddFinset
@@ -168,7 +172,9 @@ lemma coe_smul_finset (a : α) (s : Finset β) : ↑(a • s) = a • (↑s : Se
 
 @[to_additive] lemma smul_mem_smul_finset : b ∈ s → a • b ∈ a • s := mem_image_of_mem _
 
-@[to_additive] lemma smul_finset_card_le : #(a • s) ≤ #s := card_image_le
+@[to_additive] lemma card_smul_finset_le : #(a • s) ≤ #s := card_image_le
+@[deprecated (since := "2026-04-16")] alias smul_finset_card_le := card_smul_finset_le
+@[deprecated (since := "2026-04-16")] alias vadd_finset_card_le := card_vadd_finset_le
 
 @[to_additive (attr := simp)]
 lemma smul_finset_empty (a : α) : a • (∅ : Finset β) = ∅ := rfl
@@ -224,6 +230,7 @@ section VSub
 variable [VSub α β] [DecidableEq α] {s s₁ s₂ t t₁ t₂ : Finset β} {u : Finset α} {a : α} {b c : β}
 
 /-- The pointwise subtraction of two finsets `s` and `t`: `s -ᵥ t = {x -ᵥ y | x ∈ s, y ∈ t}`. -/
+@[instance_reducible]
 protected def vsub : VSub (Finset α) (Finset β) :=
   ⟨image₂ (· -ᵥ ·)⟩
 
@@ -337,38 +344,12 @@ theorem op_smul_finset_smul_eq_smul_smul_finset (a : α) (s : Finset β) (t : Fi
 
 end SMul
 
-
-section IsRightCancelMul
-
-variable [Mul α] [IsRightCancelMul α] [DecidableEq α] {s t : Finset α} {a : α}
-
-
-end IsRightCancelMul
-
-section CancelMonoid
-variable [DecidableEq α] [CancelMonoid α] {s : Finset α} {m n : ℕ}
-
-
-end CancelMonoid
-
-section Group
-variable [Group α] [DecidableEq α] {s t : Finset α}
-
-
-end Group
-
 @[to_additive]
 theorem image_smul_comm [DecidableEq β] [DecidableEq γ] [SMul α β] [SMul α γ] (f : β → γ) (a : α)
     (s : Finset β) : (∀ b, f (a • b) = a • f b) → (a • s).image f = a • s.image f :=
   image_comm
 
 end Finset
-
-namespace Fintype
-variable {ι : Type*} {α β : ι → Type*} [Fintype ι] [DecidableEq ι] [∀ i, DecidableEq (β i)]
-  [∀ i, DecidableEq (α i)]
-
-end Fintype
 
 open Pointwise
 

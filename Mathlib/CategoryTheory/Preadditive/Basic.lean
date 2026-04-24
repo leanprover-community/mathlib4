@@ -3,12 +3,15 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Jakob von Raumer
 -/
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.Action.Units
-import Mathlib.Algebra.Module.End
-import Mathlib.CategoryTheory.Endomorphism
-import Mathlib.CategoryTheory.Limits.Shapes.Kernels
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+module
+
+public import Mathlib.Algebra.Group.TransferInstance
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.Group.Action.Units
+public import Mathlib.CategoryTheory.Endomorphism
+public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.Module.NatInt
 
 /-!
 # Preadditive categories
@@ -43,6 +46,8 @@ is simplified to `f ≫ g`.
 additive, preadditive, Hom group, Ab-category, Ab-enriched
 -/
 
+@[expose] public section
+
 
 universe v u
 
@@ -64,7 +69,7 @@ class Preadditive where
 
 attribute [inherit_doc Preadditive] Preadditive.homGroup Preadditive.add_comp Preadditive.comp_add
 
-attribute [instance] Preadditive.homGroup
+attribute [instance_reducible, instance] Preadditive.homGroup
 
 -- simp can already prove reassoc version
 attribute [reassoc, simp] Preadditive.add_comp
@@ -94,20 +99,32 @@ universe u'
 variable {D : Type u'} (F : D → C)
 
 instance inducedCategory : Preadditive.{v} (InducedCategory C F) where
-  homGroup P Q := @Preadditive.homGroup C _ _ (F P) (F Q)
-  add_comp _ _ _ _ _ _ := add_comp _ _ _ _ _ _
-  comp_add _ _ _ _ _ _ := comp_add _ _ _ _ _ _
+  homGroup P Q := InducedCategory.homEquiv.addCommGroup
+  add_comp _ _ _ _ _ _ := by ext; apply add_comp
+  comp_add _ _ _ _ _ _ := by ext; apply comp_add
+
+variable {F} in
+/-- The additive equivalence `(X ⟶ Y) ≃+ (F X ⟶ F Y)` when `F : D → C` and
+`C` is a preadditive category. -/
+@[simps!]
+def _root_.CategoryTheory.InducedCategory.homAddEquiv
+    {X Y : InducedCategory C F} :
+    (X ⟶ Y) ≃+ (F X ⟶ F Y) where
+  toEquiv := InducedCategory.homEquiv
+  map_add' := by aesop_cat
 
 end InducedCategory
 
 instance fullSubcategory (Z : ObjectProperty C) : Preadditive Z.FullSubcategory where
-  homGroup P Q := @Preadditive.homGroup C _ _ P.obj Q.obj
-  add_comp _ _ _ _ _ _ := add_comp _ _ _ _ _ _
-  comp_add _ _ _ _ _ _ := comp_add _ _ _ _ _ _
+  homGroup P Q := {
+      -- Note: Add zero field explicitly for a better transparency of definitional properties
+      zero := Z.homMk 0
+      __ := InducedCategory.homEquiv.addCommGroup }
+  add_comp _ _ _ _ _ _ := by ext; apply add_comp
+  comp_add _ _ _ _ _ _ := by ext; apply comp_add
 
-instance (X : C) : AddCommGroup (End X) := by
-  dsimp [End]
-  infer_instance
+instance (X : C) : AddCommGroup (End X) :=
+  inferInstanceAs <| AddCommGroup (X ⟶ X)
 
 /-- Composition by a fixed left argument as a group homomorphism -/
 def leftComp {P Q : C} (R : C) (f : P ⟶ Q) : (Q ⟶ R) →+ (P ⟶ R) :=
@@ -321,6 +338,7 @@ theorem kernelForkOfFork_ofι {P : C} (ι : P ⟶ X) (w : ι ≫ f = ι ≫ g) :
     kernelForkOfFork (Fork.ofι ι w) = KernelFork.ofι ι (by simp [w]) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A kernel of `f - g` is an equalizer of `f` and `g`. -/
 def isLimitForkOfKernelFork {c : KernelFork (f - g)} (i : IsLimit c) :
     IsLimit (forkOfKernelFork c) :=
@@ -332,6 +350,7 @@ theorem isLimitForkOfKernelFork_lift {c : KernelFork (f - g)} (i : IsLimit c) (s
     (isLimitForkOfKernelFork i).lift s = i.lift (kernelForkOfFork s) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An equalizer of `f` and `g` is a kernel of `f - g`. -/
 def isLimitKernelForkOfFork {c : Fork f g} (i : IsLimit c) : IsLimit (kernelForkOfFork c) :=
   Fork.IsLimit.mk' _ fun s =>
@@ -376,6 +395,7 @@ theorem cokernelCoforkOfCofork_ofπ {P : C} (π : Y ⟶ P) (w : f ≫ π = g ≫
     cokernelCoforkOfCofork (Cofork.ofπ π w) = CokernelCofork.ofπ π (by simp [w]) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A cokernel of `f - g` is a coequalizer of `f` and `g`. -/
 def isColimitCoforkOfCokernelCofork {c : CokernelCofork (f - g)} (i : IsColimit c) :
     IsColimit (coforkOfCokernelCofork c) :=
@@ -389,6 +409,7 @@ theorem isColimitCoforkOfCokernelCofork_desc {c : CokernelCofork (f - g)} (i : I
     (isColimitCoforkOfCokernelCofork i).desc s = i.desc (cokernelCoforkOfCofork s) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A coequalizer of `f` and `g` is a cokernel of `f - g`. -/
 def isColimitCokernelCoforkOfCofork {c : Cofork f g} (i : IsColimit c) :
     IsColimit (cokernelCoforkOfCofork c) :=
@@ -425,7 +446,7 @@ end Equalizers
 
 section
 
-variable {C : Type*} [Category C] [Preadditive C] {X Y : C}
+variable {C : Type*} [Category* C] [Preadditive C] {X Y : C}
 
 instance : SMul (Units ℤ) (X ≅ Y) where
   smul a e :=

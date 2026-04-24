@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Control.ULift
-import Mathlib.Logic.Equiv.Basic
+module
+
+public import Mathlib.Control.ULift
+public import Mathlib.Logic.Equiv.Basic
 
 /-!
 # Extra lemmas about `ULift` and `PLift`
@@ -14,6 +16,8 @@ In this file we provide `Subsingleton`, `Unique`, `DecidableEq`, and `isEmpty` i
 `PLift.exists`.
 -/
 
+@[expose] public section
+
 universe u v u' v'
 
 open Function
@@ -21,9 +25,6 @@ open Function
 namespace PLift
 
 variable {α : Sort u} {β : Sort v} {f : α → β}
-
-instance [Subsingleton α] : Subsingleton (PLift α) :=
-  Equiv.plift.subsingleton
 
 instance [Nonempty α] : Nonempty (PLift α) :=
   Equiv.plift.nonempty
@@ -76,9 +77,6 @@ end PLift
 namespace ULift
 
 variable {α : Type u} {β : Type v} {f : α → β}
-
-instance [Subsingleton α] : Subsingleton (ULift α) :=
-  Equiv.ulift.subsingleton
 
 instance [Nonempty α] : Nonempty (ULift α) :=
   Equiv.ulift.nonempty

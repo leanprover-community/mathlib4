@@ -3,7 +3,9 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
+module
+
+public import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 
 /-!
 # Transport a monoidal structure along an equivalence.
@@ -20,6 +22,8 @@ The comparison is analogous to the difference between `Equiv.monoid` and
 We then upgrade the original functor and its inverse to monoidal functors
 with respect to the new monoidal structure on `D`.
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ u₁ u₂
@@ -69,12 +73,13 @@ structure InducingFunctorData [MonoidalCategoryStruct D] (F : D ⥤ C) where
     cat_disch
 
 /--
-Induce the lawfulness of the monoidal structure along an faithful functor of (plain) categories,
+Induce the lawfulness of the monoidal structure along a faithful functor of (plain) categories,
 where the operations are already defined on the destination type `D`.
 
 The functor `F` must preserve all the data parts of the monoidal structure between the two
 categories.
 -/
+@[implicit_reducible]
 def induced [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithful]
     (fData : InducingFunctorData F) :
     MonoidalCategory.{v₂} D where
@@ -127,7 +132,7 @@ instance fromInducedMonoidal [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithfu
 
 /-- Transport a monoidal structure along an equivalence of (plain) categories.
 -/
-@[simps -isSimp]
+@[simps -isSimp, implicit_reducible]
 def transportStruct (e : C ≌ D) : MonoidalCategoryStruct.{v₂} D where
   tensorObj X Y := e.functor.obj (e.inverse.obj X ⊗ e.inverse.obj Y)
   whiskerLeft X _ _ f := e.functor.map (e.inverse.obj X ◁ e.inverse.map f)
@@ -146,14 +151,23 @@ def transportStruct (e : C ≌ D) : MonoidalCategoryStruct.{v₂} D where
     e.functor.mapIso ((whiskerLeftIso _ (e.unitIso.app _).symm) ≪≫ ρ_ (e.inverse.obj X)) ≪≫
       e.counitIso.app _
 
+#adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
+the fields `whiskerLeft_eq` and following were all filled by the `cat_disch` auto_param. -/
 attribute [local simp] transportStruct in
 /-- Transport a monoidal structure along an equivalence of (plain) categories.
 -/
+@[implicit_reducible]
 def transport (e : C ≌ D) : MonoidalCategory.{v₂} D :=
   letI : MonoidalCategoryStruct.{v₂} D := transportStruct e
   induced e.inverse
     { μIso := fun _ _ => e.unitIso.app _
-      εIso := e.unitIso.app _ }
+      εIso := e.unitIso.app _
+      whiskerLeft_eq := by simp +zetaDelta +instances
+      whiskerRight_eq := by simp +zetaDelta +instances
+      tensorHom_eq := by simp +zetaDelta +instances
+      associator_eq := by simp +zetaDelta +instances
+      leftUnitor_eq := by simp +zetaDelta +instances
+      rightUnitor_eq := by simp +zetaDelta +instances }
 
 /-- A type synonym for `D`, which will carry the transported monoidal structure. -/
 @[nolint unusedArguments]
@@ -180,7 +194,7 @@ equivalence `C ≌ Transported e`. -/
 abbrev equivalenceTransported : C ≌ Transported e := e
 
 instance : (equivalenceTransported e).inverse.Monoidal := by
-  dsimp only [Transported.instMonoidalCategory]
+  dsimp +instances only [Transported.instMonoidalCategory]
   infer_instance
 
 instance : (equivalenceTransported e).symm.functor.Monoidal :=
@@ -192,6 +206,7 @@ noncomputable instance : (equivalenceTransported e).functor.Monoidal :=
 noncomputable instance : (equivalenceTransported e).symm.inverse.Monoidal :=
   inferInstanceAs (equivalenceTransported e).functor.Monoidal
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (equivalenceTransported e).symm.IsMonoidal := by
   infer_instance
 

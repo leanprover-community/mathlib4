@@ -3,14 +3,19 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Gabriel Ebner, Floris van Doorn
 -/
-import Mathlib.Init
-import Lean.Elab.Tactic.Simp
+module
+
+public import Mathlib.Init
+public import Lean.Elab.Tactic.Simp
+public import Lean.Meta.DiscrTree
 
 /-!
 # Helper functions for using the simplifier.
 
 [TODO] Needs documentation, cleanup, and possibly reunification of `mkSimpContext'` with core.
 -/
+
+@[expose] public section
 
 open Lean Elab.Tactic
 
@@ -151,7 +156,7 @@ def getAllSimpDecls (simpAttr : Name) : CoreM (List Name) := do
 /-- Gets all simp-attributes given to declaration `decl`. -/
 def getAllSimpAttrs (decl : Name) : CoreM (Array Name) := do
   let mut simpAttrs := #[]
-  for (simpAttr, simpDecl) in (← simpExtensionMapRef.get).toList do
+  for (simpAttr, simpDecl) in ← simpExtensionMapRef.get do
     if (← simpDecl.getTheorems).contains decl then
       simpAttrs := simpAttrs.push simpAttr
   return simpAttrs

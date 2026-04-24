@@ -3,12 +3,16 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.Group.Abs
-import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
+module
+
+public import Mathlib.Algebra.Order.Group.Abs
+public import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 
 /-!
 # `min` and `max` in linearly ordered groups.
 -/
+
+public section
 
 
 section
@@ -27,6 +31,15 @@ lemma max_inv_one (a : α) : max a⁻¹ 1 = a⁻¹ * max a 1 := by
   rw [eq_inv_mul_iff_mul_eq, ← eq_div_iff_mul_eq', max_one_div_max_inv_one_eq_self]
 
 end
+
+section Inv
+
+variable {G₀ : Type*} [Inv G₀] [LinearOrder G₀] {x y : G₀}
+
+lemma min_inv_inv_le : min x⁻¹ y⁻¹ ≤ (max x y)⁻¹ := by
+  cases le_total x y <;> simp_all
+
+end Inv
 
 section LinearOrderedCommGroup
 

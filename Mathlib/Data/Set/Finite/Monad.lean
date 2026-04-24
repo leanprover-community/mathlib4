@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
-import Mathlib.Data.Finite.Prod
-import Mathlib.Data.Set.Finite.Lattice
-import Mathlib.Data.Set.Functor
+module
+
+public import Mathlib.Data.Finite.Prod
+public import Mathlib.Data.Set.Finite.Lattice
+public import Mathlib.Data.Set.Functor
 
 /-!
 # Finiteness of the Set monad operations
@@ -14,6 +16,8 @@ import Mathlib.Data.Set.Functor
 
 finite sets
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedRing MonoidWithZero
 
@@ -37,6 +41,7 @@ attribute [local instance] Set.monad
 
 /-- If `s : Set α` is a set with `Fintype` instance and `f : α → Set β` is a function such that
 each `f a`, `a ∈ s`, has a `Fintype` structure, then `s >>= f` has a `Fintype` structure. -/
+@[implicit_reducible]
 def fintypeBind {α β} [DecidableEq β] (s : Set α) [Fintype s] (f : α → Set β)
     (H : ∀ a ∈ s, Fintype (f a)) : Fintype (s >>= f) :=
   Set.fintypeBiUnion s f H

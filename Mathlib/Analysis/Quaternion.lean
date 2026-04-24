@@ -3,10 +3,12 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Eric Wieser
 -/
-import Mathlib.Algebra.Quaternion
-import Mathlib.Analysis.InnerProductSpace.Continuous
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Topology.Algebra.Algebra
+module
+
+public import Mathlib.Algebra.Quaternion
+public import Mathlib.Analysis.InnerProductSpace.Continuous
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Topology.Algebra.Algebra
 
 /-!
 # Quaternions as a normed algebra
@@ -29,6 +31,8 @@ The following notation is available with `open Quaternion` or `open scoped Quate
 
 quaternion, normed ring, normed space, normed algebra
 -/
+
+@[expose] public section
 
 
 @[inherit_doc] scoped[Quaternion] notation "ℍ" => Quaternion ℝ
@@ -82,7 +86,7 @@ theorem nnnorm_star (a : ℍ) : ‖star a‖₊ = ‖a‖₊ :=
 
 noncomputable instance : NormedDivisionRing ℍ where
   dist_eq _ _ := rfl
-  norm_mul _ _ := by simp [norm_eq_sqrt_real_inner, inner_self]
+  norm_mul _ _ := by simp_rw [norm_eq_sqrt_real_inner, inner_self]; simp
 
 noncomputable instance : NormedAlgebra ℝ ℍ where
   norm_smul_le := norm_smul_le
@@ -101,25 +105,17 @@ instance : Coe ℂ ℍ := ⟨coeComplex⟩
 theorem re_coeComplex (z : ℂ) : (z : ℍ).re = z.re :=
   rfl
 
-@[deprecated (since := "2025-08-31")] alias coeComplex_re := re_coeComplex
-
 @[simp, norm_cast]
 theorem imI_coeComplex (z : ℂ) : (z : ℍ).imI = z.im :=
   rfl
-
-@[deprecated (since := "2025-08-31")] alias coeComplex_imI := imI_coeComplex
 
 @[simp, norm_cast]
 theorem imJ_coeComplex (z : ℂ) : (z : ℍ).imJ = 0 :=
   rfl
 
-@[deprecated (since := "2025-08-31")] alias coeComplex_imJ := imJ_coeComplex
-
 @[simp, norm_cast]
 theorem imK_coeComplex (z : ℂ) : (z : ℍ).imK = 0 :=
   rfl
-
-@[deprecated (since := "2025-08-31")] alias coeComplex_imK := imK_coeComplex
 
 @[simp, norm_cast]
 theorem coeComplex_add (z w : ℂ) : ↑(z + w) = (z + w : ℍ) := by ext <;> simp
@@ -143,7 +139,7 @@ theorem coeComplex_coe (r : ℝ) : ((r : ℂ) : ℍ) = r :=
   rfl
 
 /-- Coercion `ℂ →ₐ[ℝ] ℍ` as an algebra homomorphism. -/
-def ofComplex : ℂ →ₐ[ℝ] ℍ where
+noncomputable def ofComplex : ℂ →ₐ[ℝ] ℍ where
   toFun := (↑)
   map_one' := rfl
   map_zero' := rfl
@@ -154,6 +150,7 @@ def ofComplex : ℂ →ₐ[ℝ] ℍ where
 @[simp]
 theorem coe_ofComplex : ⇑ofComplex = coeComplex := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The norm of the components as a Euclidean vector equals the norm of the quaternion. -/
 lemma norm_toLp_equivTuple (x : ℍ) : ‖WithLp.toLp 2 (equivTuple ℝ x)‖ = ‖x‖ := by
   rw [norm_eq_sqrt_real_inner, norm_eq_sqrt_real_inner, inner_self, normSq_def', PiLp.inner_apply,
@@ -177,7 +174,7 @@ theorem continuous_coe : Continuous (coe : ℝ → ℍ) :=
 @[continuity]
 theorem continuous_normSq : Continuous (normSq : ℍ → ℝ) := by
   simpa [← normSq_eq_norm_mul_self] using
-    (continuous_norm.mul continuous_norm : Continuous fun q : ℍ => ‖q‖ * ‖q‖)
+    (continuous_norm.fun_mul continuous_norm : Continuous fun q : ℍ => ‖q‖ * ‖q‖)
 
 @[continuity]
 theorem continuous_re : Continuous fun q : ℍ => q.re :=

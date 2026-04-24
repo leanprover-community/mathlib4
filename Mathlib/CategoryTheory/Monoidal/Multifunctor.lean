@@ -3,7 +3,9 @@ Copyright (c) 2025 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Monoidal.Functor
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Functor
 /-!
 
 # Constructing monoidal functors from natural transformations between multifunctors
@@ -18,10 +20,12 @@ Once we have more API for quadrifunctors, we can add constructors for monoidal c
 by phrasing the pentagon axiom as an equality of natural transformations between quadrifunctors.
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
-variable {C : Type*} [Category C] [MonoidalCategory C]
-  {D : Type*} [Category D] [MonoidalCategory D]
+variable {C : Type*} [Category* C] [MonoidalCategory C]
+  {D : Type*} [Category* D] [MonoidalCategory D]
 
 namespace MonoidalCategory
 
@@ -66,6 +70,28 @@ abbrev curriedTensorPostPost (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
 /-- The trifunctor `F (- ⊗ (- ⊗ -))` -/
 abbrev curriedTensorPostPost' (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
   bifunctorComp₂₃ (curriedTensorPost F) (curriedTensor C)
+
+/-- The natural isomorphism of bifunctors `F - ⊗ F - ≅ F (- ⊗ -)`, given a monoidal functor `F`. -/
+@[simps!]
+def Functor.curriedTensorPreIsoPost (F : C ⥤ D) [F.Monoidal] :
+    curriedTensorPre F ≅ curriedTensorPost F :=
+  NatIso.ofComponents (fun _ ↦ NatIso.ofComponents (fun _ ↦ Monoidal.μIso F _ _))
+
+/-- The functor which associates to a functor `F` the bifunctor `F - ⊗ F -`. -/
+@[simps]
+def curriedTensorPreFunctor : (C ⥤ D) ⥤ C ⥤ C ⥤ D where
+  obj F := curriedTensorPre F
+  map {F₁ F₂} f :=
+    { app X₁ :=
+        { app X₂ := f.app _ ⊗ₘ f.app _
+          naturality := by simp [← id_tensorHom] }
+      naturality _ _ _ := by
+        ext
+        simp [← tensorHom_id] }
+
+/-- The functor which associates to a functor `F` the bifunctor `F (- ⊗ -)`. -/
+abbrev curriedTensorPostFunctor : (C ⥤ D) ⥤ C ⥤ C ⥤ D :=
+  Functor.postcompose₂.flip.obj (curriedTensor C)
 
 end MonoidalCategory
 
@@ -192,7 +218,7 @@ The top map in the left unitality square.
 @[simps!]
 def topMapₗ {F : C ⥤ D} (ε : 𝟙_ D ⟶ F.obj (𝟙_ C)) :
     F ⋙ tensorUnitLeft D ⟶ (curriedTensorPre F).obj (𝟙_ C) :=
-  whiskerLeft F ((curriedTensor _).map ε )
+  whiskerLeft F ((curriedTensor _).map ε)
 
 /--
 The bottom map in the left unitality square.
@@ -245,6 +271,7 @@ variable {F : C ⥤ D}
 `μ : F - ⊗ F - ⟶ F (- ⊗ -)` as a natural transformation between bifunctors, satisfying the
 relevant compatibilities.
 -/
+@[implicit_reducible]
 def ofBifunctor : F.LaxMonoidal where
   ε := ε
   μ X Y := (μ.app X).app Y
@@ -431,6 +458,7 @@ variable {F : C ⥤ D}
 `δ : F (- ⊗ -) ⟶ F - ⊗ F -` as a natural transformation between bifunctors, satisfying the
 relevant compatibilities.
 -/
+@[implicit_reducible]
 def ofBifunctor : F.OplaxMonoidal where
   η := η
   δ X Y := (δ.app X).app Y
@@ -477,6 +505,7 @@ variable {F : C ⥤ D}
 `μ / δ : F - ⊗ F - ↔ F (- ⊗ -)` as natural transformations between bifunctors, satisfying the
 relevant compatibilities.
 -/
+@[implicit_reducible]
 def ofBifunctor (ε_η : ε ≫ η = 𝟙 _) (η_ε : η ≫ ε = 𝟙 _) (μ_δ : μ ≫ δ = 𝟙 _)
     (δ_μ : δ ≫ μ = 𝟙 _) : F.Monoidal where
   toLaxMonoidal := .ofBifunctor ε μ associativity left_unitality right_unitality

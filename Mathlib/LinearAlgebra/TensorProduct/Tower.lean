@@ -3,8 +3,10 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin, Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.LinearAlgebra.TensorProduct.Associator
+module
+
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.LinearAlgebra.TensorProduct.Associator
 
 /-!
 # The `A`-module structure on `M ⊗[R] N`
@@ -43,6 +45,8 @@ We could thus consider replacing the less general definitions with these ones. I
 probably should still implement the less general ones as abbreviations to the more general ones with
 fewer type arguments.
 -/
+
+@[expose] public section
 
 namespace TensorProduct
 
@@ -341,6 +345,9 @@ theorem congr_mul (f₁ f₂ : M ≃ₗ[A] M) (g₁ g₂ : N ≃ₗ[R] N) :
     (congr f g).symm (p ⊗ₜ q) = f.symm p ⊗ₜ g.symm q :=
   rfl
 
+theorem congr_eq (f : M ≃ₗ[R] P) (g : N ≃ₗ[R] Q) :
+    congr f g = TensorProduct.congr f g := rfl
+
 variable (R A M)
 
 /-- Heterobasic version of `TensorProduct.rid`. -/
@@ -428,7 +435,7 @@ def cancelBaseChange : M ⊗[A] (A ⊗[R] N) ≃ₗ[B] M ⊗[R] N :=
   (assoc R A B M A N).symm ≪≫ₗ g
 
 /-- Base change distributes over tensor product. -/
-def distribBaseChange : A ⊗[R] (M ⊗[R] N) ≃ₗ[A] (A ⊗[R] M) ⊗[A] (A ⊗[R] N) :=
+def distribBaseChange : A ⊗[R] (N ⊗[R] Q) ≃ₗ[A] (A ⊗[R] N) ⊗[A] (A ⊗[R] Q) :=
   (cancelBaseChange _ _ _ _ _ ≪≫ₗ assoc _ _ _ _ _ _).symm
 
 variable {M P N Q}
@@ -447,6 +454,19 @@ theorem lTensor_comp_cancelBaseChange (f : N →ₗ[R] Q) :
     lTensor _ _ f ∘ₗ cancelBaseChange R A B M N =
       (cancelBaseChange R A B M Q).toLinearMap ∘ₗ lTensor _ _ (lTensor _ _ f) := by
   ext; simp
+
+@[simp]
+theorem distribBaseChange_tmul (n : N) (q : Q) (a : A) :
+    distribBaseChange R A N Q (a ⊗ₜ (n ⊗ₜ q)) = (a ⊗ₜ n) ⊗ₜ (1 ⊗ₜ q) :=
+  rfl
+
+@[simp]
+theorem distribBaseChange_symm_tmul
+    (n : N) (q : Q) (a b : A) :
+    (distribBaseChange R A N Q).symm ((a ⊗ₜ n) ⊗ₜ (b ⊗ₜ q)) = (a * b) ⊗ₜ (n ⊗ₜ q) := by
+  apply ((distribBaseChange R A N Q).apply_eq_iff_symm_apply.mp ?_).symm
+  rw [tmul_eq_smul_one_tmul b, ← smul_tmul, smul_tmul', mul_comm]
+  simp
 
 end cancelBaseChange
 
@@ -629,6 +649,15 @@ lemma baseChange_comp (g : N →ₗ[R] P) :
     (g ∘ₗ f).baseChange A = g.baseChange A ∘ₗ f.baseChange A := by
   ext; simp
 
+open AlgebraTensorModule in
+lemma baseChange_baseChange {A B : Type*} [CommSemiring A] [Algebra R A]
+    [Semiring B] [Algebra R B] [Algebra A B] [IsScalarTower R A B]
+    (f : M →ₗ[R] N) :
+    ((f.baseChange A).baseChange B) =
+    (cancelBaseChange R A B B N).symm ∘ₗ
+      (f.baseChange B) ∘ₗ (cancelBaseChange R A B B M) := by
+  ext; simp
+
 variable (R M) in
 @[simp]
 lemma baseChange_one : (1 : Module.End R M).baseChange A = 1 := baseChange_id
@@ -638,10 +667,6 @@ lemma baseChange_mul (f g : Module.End R M) :
   ext; simp
 
 variable (R A M N)
-
-/-- `baseChange A e` for `e : M ≃ₗ[R] N` is the `A`-linear map `A ⊗[R] M ≃ₗ[A] A ⊗[R] N`. -/
-def _root_.LinearEquiv.baseChange (e : M ≃ₗ[R] N) : A ⊗[R] M ≃ₗ[A] A ⊗[R] N :=
-  AlgebraTensorModule.congr (.refl _ _) e
 
 /-- `baseChange` as a linear map.
 
@@ -661,9 +686,69 @@ lemma baseChange_pow (f : Module.End R M) (n : ℕ) :
     (f ^ n).baseChange A = f.baseChange A ^ n :=
   map_pow (Module.End.baseChangeHom _ _ _) f n
 
+/-- `baseChange A e` for `e : M ≃ₗ[R] N` is the `A`-linear map `A ⊗[R] M ≃ₗ[A] A ⊗[R] N`. -/
+def _root_.LinearEquiv.baseChange (e : M ≃ₗ[R] N) : A ⊗[R] M ≃ₗ[A] A ⊗[R] N :=
+  AlgebraTensorModule.congr (.refl _ _) e
+
+@[simp]
+theorem _root_.LinearEquiv.coe_baseChange (f : M ≃ₗ[R] N) :
+    f.baseChange R A M N = f.toLinearMap.baseChange A :=
+   rfl
+
+@[simp] lemma _root_.LinearEquiv.baseChange_tmul {e : M ≃ₗ[R] N} (a : A) (m : M) :
+    e.baseChange R A M N (a ⊗ₜ m) = a ⊗ₜ e m :=
+  rfl
+
+@[simp] lemma _root_.LinearEquiv.baseChange_symm_tmul {e : M ≃ₗ[R] N} (a : A) (n : N) :
+    (e.baseChange R A).symm (a ⊗ₜ n) = a ⊗ₜ e.symm n :=
+  rfl
+
+@[simp]
+theorem _root_.LinearEquiv.baseChange_one :
+    (1 : M ≃ₗ[R] M).baseChange R A M M = 1 := by
+  ext x
+  simp [← LinearEquiv.coe_toLinearMap]
+
+theorem _root_.LinearEquiv.baseChange_trans (e : M ≃ₗ[R] N) (f : N ≃ₗ[R] P) :
+    (e.trans f).baseChange R A M P = (e.baseChange R A M N).trans (f.baseChange R A N P) := by
+  ext x
+  simp only [← LinearEquiv.coe_toLinearMap, LinearEquiv.coe_baseChange, LinearEquiv.trans_apply,
+    LinearEquiv.coe_trans, baseChange_eq_ltensor, lTensor_comp_apply]
+
+theorem _root_.LinearEquiv.baseChange_mul (e : M ≃ₗ[R] M) (f : M ≃ₗ[R] M) :
+    (e * f).baseChange R A M M = (e.baseChange R A M M) * (f.baseChange R A M M) := by
+  simp [LinearEquiv.mul_eq_trans, LinearEquiv.baseChange_trans]
+
+theorem _root_.LinearEquiv.baseChange_symm (e : M ≃ₗ[R] N) :
+    e.symm.baseChange R A N M = (e.baseChange R A M N).symm := by
+  ext x
+  rw [LinearEquiv.eq_symm_apply]
+  simp [← LinearEquiv.coe_toLinearMap, LinearEquiv.coe_baseChange,
+    baseChange_eq_ltensor, ← lTensor_comp_apply]
+
+theorem _root_.LinearEquiv.baseChange_inv (e : M ≃ₗ[R] M) :
+    (e⁻¹).baseChange R A M M = (e.baseChange R A M M)⁻¹ :=
+  LinearEquiv.baseChange_symm R A M M e
+
+lemma _root_.LinearEquiv.baseChange_pow (f : M ≃ₗ[R] M) (n : ℕ) :
+    (f ^ n).baseChange R A M M = f.baseChange R A M M ^ n := by
+  induction n with
+  | zero => simp
+  | succ n h =>
+    simp [pow_succ, LinearEquiv.baseChange_mul, h]
+
+lemma _root_.LinearEquiv.baseChange_zpow (f : M ≃ₗ[R] M) (n : ℤ) :
+    (f ^ n).baseChange R A M M = f.baseChange R A M M ^ n := by
+  induction n with
+  | zero => simp
+  | succ n h =>
+    simp only [zpow_add_one, LinearEquiv.baseChange_mul, h]
+  | pred n h =>
+    simp only [zpow_sub_one, LinearEquiv.baseChange_mul, h, LinearEquiv.baseChange_inv]
+
 variable {R A M N} in
 theorem rTensor_baseChange (φ : A →ₐ[R] B) (t : A ⊗[R] M) (f : M →ₗ[R] N) :
-    (φ.toLinearMap.rTensor N) (f.baseChange A t)  =
+    (φ.toLinearMap.rTensor N) (f.baseChange A t) =
       (f.baseChange B) (φ.toLinearMap.rTensor M t) := by
   simp [LinearMap.baseChange_eq_ltensor, ← LinearMap.comp_apply]
 
@@ -695,7 +780,7 @@ namespace Submodule
 open TensorProduct
 
 variable {R M : Type*} (A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
-  [AddCommMonoid M] [Module R M] (p : Submodule R M)
+  [AddCommMonoid M] [Module R M] (p q : Submodule R M)
 
 /-- If `A` is an `R`-algebra, any `R`-submodule `p` of an `R`-module `M` may be pushed forward to
 an `A`-submodule of `A ⊗ M`.
@@ -727,9 +812,33 @@ lemma baseChange_top : (⊤ : Submodule R M).baseChange A = ⊤ := by
   rw [eq_top_iff, ← span_eq_top_of_span_eq_top R A _ (span_tmul_eq_top R ..)]
   exact span_le.2 fun _ ⟨a, m, h⟩ ↦ h ▸ tmul_mem_baseChange_of_mem _ trivial
 
+variable {p q} in
+theorem baseChange_mono (h : p ≤ q) : p.baseChange A ≤ q.baseChange A := by
+  rw [baseChange, LinearMap.baseChange, ← subtype_comp_inclusion p q h,
+    ← LinearMap.id_comp LinearMap.id, AlgebraTensorModule.map_comp]
+  apply LinearMap.range_comp_le_range
+
 @[simp]
 lemma baseChange_span (s : Set M) :
     (span R s).baseChange A = span A (TensorProduct.mk R A M 1 '' s) := by
   rw [baseChange_eq_span, map_span, span_span_of_tower]
+
+/-- Given an `R`-submodule `p` of `M`, and `R`-algebra `A`, we obtain an `A`-submodule of
+`A ⊗[R] M` by `p.baseChange A`. This is then the surjective `A`-linear map
+`A ⊗[R] M → p.baseChange A`. -/
+def toBaseChange : A ⊗[R] p →ₗ[A] p.baseChange A :=
+  LinearMap.rangeRestrict _
+
+@[simp] lemma coe_toBaseChange_tmul (a : A) (x : p) :
+    (p.toBaseChange A (a ⊗ₜ x) : A ⊗[R] M) = a ⊗ₜ (x : M) := rfl
+
+lemma toBaseChange_surjective : Function.Surjective (p.toBaseChange A) :=
+  LinearMap.surjective_rangeRestrict _
+
+/-- This version enables better pattern matching via the tactic `obtain`. -/
+lemma toBaseChange_surjective' {y : A ⊗[R] M} (hy : y ∈ p.baseChange A) :
+    ∃ x : A ⊗[R] p, p.toBaseChange A x = y := by
+  obtain ⟨x, hx⟩ := toBaseChange_surjective A p ⟨y, hy⟩
+  exact ⟨x, congr($hx)⟩
 
 end Submodule

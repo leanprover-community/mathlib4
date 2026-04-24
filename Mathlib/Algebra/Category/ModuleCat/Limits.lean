@@ -3,10 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.Algebra.Category.Grp.Limits
-import Mathlib.Algebra.Colimit.Module
-import Mathlib.Algebra.Module.Shrink
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.Algebra.Category.Grp.Limits
+public import Mathlib.Algebra.Colimit.Module
+public import Mathlib.Algebra.Module.Shrink
 
 /-!
 # The category of R-modules has all limits
@@ -15,10 +17,10 @@ Further, these limits are preserved by the forgetful functor --- that is,
 the underlying types are just the limits in the category of types.
 -/
 
+@[expose] public section
 
-open CategoryTheory
 
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 universe t v w u
 
@@ -38,6 +40,7 @@ instance moduleObj (j) :
     Module.{u, w} R ((F ⋙ forget (ModuleCat R)).obj j) :=
   inferInstanceAs <| Module R (F.obj j)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The flat sections of a functor into `ModuleCat R` form a submodule of all sections.
 -/
 def sectionsSubmodule : Submodule R (∀ j, F.obj j) :=
@@ -46,7 +49,7 @@ def sectionsSubmodule : Submodule R (∀ j, F.obj j) :=
           forget₂ AddCommGrpCat AddGrpCat.{w}) with
     carrier := (F ⋙ forget (ModuleCat R)).sections
     smul_mem' := fun r s sh j j' f => by
-      simpa [Functor.sections, forget_map] using congr_arg (r • ·) (sh f) }
+      simpa [Functor.sections] using congr_arg (r • ·) (sh f) }
 
 instance : AddCommMonoid (F ⋙ forget (ModuleCat R)).sections :=
   inferInstanceAs <| AddCommMonoid (sectionsSubmodule F)
@@ -75,19 +78,14 @@ instance limitModule :
     Module R (Types.Small.limitCone.{v, w} (F ⋙ forget (ModuleCat.{w} R))).pt :=
   inferInstanceAs <| Module R (Shrink (sectionsSubmodule F))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `limit.π (F ⋙ forget (ModuleCat.{w} R)) j` as an `R`-linear map. -/
 def limitπLinearMap (j) :
     (Types.Small.limitCone (F ⋙ forget (ModuleCat.{w} R))).pt →ₗ[R]
       (F ⋙ forget (ModuleCat R)).obj j where
   toFun := (Types.Small.limitCone (F ⋙ forget (ModuleCat R))).π.app j
-  map_smul' _ _ := by
-    simp only [Types.Small.limitCone_π_app,
-      ← Shrink.linearEquiv_apply R (F ⋙ forget (ModuleCat R)).sections, map_smul]
-    simp only [Shrink.linearEquiv_apply]
-    rfl
-  map_add' _ _ := by
-    simp only [Types.Small.limitCone_π_app, ← Equiv.addEquiv_apply, map_add]
-    rfl
+  map_smul' _ _ := by simp; rfl
+  map_add' _ _ := by simp; rfl
 
 namespace HasLimits
 
@@ -100,10 +98,12 @@ namespace HasLimits
 def limitCone : Cone F where
   pt := ModuleCat.of R (Types.Small.limitCone.{v, w} (F ⋙ forget _)).pt
   π :=
-    { app := fun j => ofHom (limitπLinearMap F j)
-      naturality := fun _ _ f => hom_ext <| LinearMap.coe_injective <|
-        ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) }
+    { app j := ofHom (limitπLinearMap F j)
+      naturality _ _ f := by
+        ext
+        simpa using (Types.Small.limitCone (F ⋙ forget _)).π.naturality_apply f _ }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Witness that the limit cone in `ModuleCat R` is a limit cone.
 (Internal use only; use the limits API.)
 -/
@@ -113,12 +113,10 @@ def limitConeIsLimit : IsLimit (limitCone.{t, v, w} F) := by
                 ((forget (ModuleCat R)).mapCone s), ?_⟩, ?_⟩)
     (fun s => rfl)
   · intro x y
-    simp only [Types.Small.limitConeIsLimit_lift, Functor.mapCone_π_app, forget_map, map_add]
-    rw [← equivShrink_add]
+    simp [← equivShrink_add]
     rfl
   · intro r x
-    simp only [Types.Small.limitConeIsLimit_lift, Functor.mapCone_π_app, forget_map, map_smul]
-    rw [← equivShrink_smul]
+    simp [← equivShrink_smul]
     rfl
 
 end HasLimits
@@ -221,8 +219,6 @@ def directLimitDiagram : ι ⥤ ModuleCat R where
     symm
     apply Module.DirectedSystem.map_map f
 
-variable [DecidableEq ι]
-
 /-- The `Cocone` on `directLimitDiagram` corresponding to
 the unbundled `directLimit` of modules.
 
@@ -236,6 +232,7 @@ def directLimitCocone : Cocone (directLimitDiagram G f) where
         ext
         exact DirectLimit.of_f }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The unbundled `directLimit` of modules is a colimit
 in the sense of `CategoryTheory`. -/
 @[simps]

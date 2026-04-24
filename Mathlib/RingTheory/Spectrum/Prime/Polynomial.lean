@@ -3,12 +3,14 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.LinearAlgebra.Charpoly.BaseChange
-import Mathlib.LinearAlgebra.Eigenspace.Zero
-import Mathlib.RingTheory.AdjoinRoot
-import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
-import Mathlib.RingTheory.Spectrum.Prime.Topology
-import Mathlib.RingTheory.TensorProduct.MvPolynomial
+module
+
+public import Mathlib.LinearAlgebra.Charpoly.BaseChange
+public import Mathlib.LinearAlgebra.Eigenspace.Zero
+public import Mathlib.RingTheory.AdjoinRoot
+public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
+public import Mathlib.RingTheory.Spectrum.Prime.Topology
+public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 /-!
 
@@ -23,9 +25,12 @@ Also see `AlgebraicGeometry/AffineSpace` for the affine space over arbitrary sch
 - `Polynomial.exists_image_comap_of_monic`:
   If `g : R[X]` is monic, the image of `Z(g) ∩ D(f) : Spec R[X]` in `Spec R` is compact open.
 - `Polynomial.isOpenMap_comap_C`: The structure map `Spec R[X] → Spec R` is an open map.
-- `MvPolynomial.isOpenMap_comap_C`: The structure map `Spec R[X̲] → Spec R` is an open map.
+- `MvPolynomial.isOpenMap_comap_C`:
+  The structure map `Spec (MvPolynomial σ R) → Spec R` is an open map.
 
 -/
+
+public section
 
 open Polynomial TensorProduct PrimeSpectrum
 
@@ -64,6 +69,7 @@ lemma isNilpotent_tensor_residueField_iff
 
 namespace PrimeSpectrum
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `A` be an `R`-algebra.
 `𝔭 : Spec R` is in the image of `Z(I) ∩ D(f) ⊆ Spec S`
 if and only if `f` is not nilpotent on `κ(𝔭) ⊗ A ⧸ I`. -/
@@ -79,7 +85,7 @@ lemma mem_image_comap_zeroLocus_sdiff (f : A) (s : Set A) (x) :
         q.asIdeal.ResidueField :=
       Algebra.TensorProduct.lift
         (Ideal.Quotient.liftₐ (Ideal.span s) (Algebra.ofId A _) hs)
-        (Ideal.ResidueField.mapₐ _ _ rfl)
+        (Ideal.ResidueField.mapₐ _ _ (Algebra.ofId _ _) rfl)
         fun _ _ ↦ .all _ _
     have := H.map F
     rw [AlgHom.commutes, isNilpotent_iff_eq_zero, ← RingHom.mem_ker,
@@ -138,11 +144,7 @@ lemma mem_image_comap_C_basicOpen (f : R[X]) (x : PrimeSpectrum R) :
     let e : R[X] ⊗[R] x.asIdeal.ResidueField ≃ₐ[R] x.asIdeal.ResidueField[X] :=
       (Algebra.TensorProduct.comm R _ _).trans (polyEquivTensor R x.asIdeal.ResidueField).symm
     rw [← IsNilpotent.map_iff e.injective, isNilpotent_iff_eq_zero]
-    change (e.toAlgHom.toRingHom).comp (algebraMap _ _) f = 0 ↔ Polynomial.mapRingHom _ f = 0
-    congr!
-    ext1
-    · ext; simp [e]
-    · simp [e]
+    simp [e]
   · simp [Polynomial.ext_iff]
 
 lemma image_comap_C_basicOpen (f : R[X]) :
@@ -165,11 +167,11 @@ lemma comap_C_surjective : Function.Surjective (comap (R := R) C) := by
   intro x
   refine ⟨comap (evalRingHom 0) x, ?_⟩
   rw [← comap_comp_apply, (show (evalRingHom 0).comp C = .id R by ext; simp),
-    comap_id, ContinuousMap.id_apply]
+    comap_id]
 
 lemma exists_image_comap_of_monic (f g : R[X]) (hg : g.Monic) :
     ∃ t : Finset R, comap C '' (zeroLocus {g} \ zeroLocus {f}) = (zeroLocus t)ᶜ := by
-  apply (config := { allowSynthFailures := true }) exists_image_comap_of_finite_of_free
+  apply +allowSynthFailures exists_image_comap_of_finite_of_free
   · exact .of_basis (AdjoinRoot.powerBasis' hg).basis
   · exact .of_basis (AdjoinRoot.powerBasis' hg).basis
 
@@ -228,6 +230,6 @@ lemma comap_C_surjective : Function.Surjective (comap (R := R) (C (σ := σ))) :
   intro x
   refine ⟨comap (eval₂Hom (.id _) 0) x, ?_⟩
   rw [← comap_comp_apply, (show (eval₂Hom (.id _) 0).comp C = .id R by ext; simp),
-    comap_id, ContinuousMap.id_apply]
+    comap_id]
 
 end MvPolynomial

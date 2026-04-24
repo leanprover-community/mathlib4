@@ -3,10 +3,12 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
 -/
+module
 
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.RingTheory.Multiplicity
-import Mathlib.RingTheory.PowerSeries.Basic
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.RingTheory.Multiplicity
+public import Mathlib.RingTheory.PowerSeries.Basic
+public import Mathlib.RingTheory.MvPowerSeries.Order
 
 /-! # Formal power series (in one variable) - Order
 
@@ -24,6 +26,8 @@ dividing out the largest power of X that divides `f`, that is its order. This is
 proving that `R⟦X⟧` is a normalization monoid, which is done in `PowerSeries.Inverse`.
 
 -/
+
+@[expose] public section
 noncomputable section
 
 open Polynomial
@@ -41,11 +45,10 @@ section OrderBasic
 variable [Semiring R] {φ : R⟦X⟧}
 
 theorem exists_coeff_ne_zero_iff_ne_zero : (∃ n : ℕ, coeff n φ ≠ 0) ↔ φ ≠ 0 := by
-  refine not_iff_not.mp ?_
-  push_neg
+  contrapose!
   simp
 
-/-- The order of a formal power series `φ` is the greatest `n : PartENat`
+/-- The order of a formal power series `φ` is the greatest `n : ℕ∞`
 such that `X^n` divides `φ`. The order is `⊤` if and only if `φ = 0`. -/
 def order (φ : R⟦X⟧) : ℕ∞ :=
   letI := Classical.decEq R
@@ -133,6 +136,15 @@ theorem order_eq {φ : R⟦X⟧} {n : ℕ∞} :
   | top => simp
   | coe n => simp [order_eq_nat]
 
+theorem order_eq_order {φ : R⟦X⟧} : φ.order = MvPowerSeries.order φ := by
+  refine eq_of_le_of_ge ?_ ?_
+  · refine MvPowerSeries.le_order fun d hd => by
+      have : coeff ↑(Finsupp.degree d) φ = 0 := coeff_of_lt_order _ hd
+      have eq_aux : d.degree = d () := Finset.sum_eq_single _ (by simp) (by simp)
+      exact (PowerSeries.coeff_def rfl (R := R)) ▸ (eq_aux ▸ this)
+  · refine le_order φ (MvPowerSeries.order φ) fun i hi => by
+      rw [← Finsupp.degree_single () i] at hi
+      exact MvPowerSeries.coeff_of_lt_order hi
 
 /-- The order of the sum of two formal power series
 is at least the minimum of their orders. -/
@@ -164,7 +176,13 @@ theorem order_add_of_order_ne (φ ψ : R⟦X⟧) (h : order φ ≠ order ψ) :
   · apply order_add_of_order_ne.aux _ _ φ_lt_ψ
   · simpa only [add_comm, inf_comm] using order_add_of_order_ne.aux _ _ ψ_lt_φ
 
-@[deprecated (since := "2025-09-17")] alias order_add_of_order_eq := order_add_of_order_ne
+theorem le_order_map {S : Type*} [Semiring S] (f : R →+* S) :
+    φ.order ≤ (φ.map f).order :=
+  le_order _ _ fun i hi => by simp [coeff_of_lt_order i hi]
+
+theorem le_order_smul {a : R} :
+    φ.order ≤ (a • φ).order :=
+  le_order _ φ.order fun i hi => by simp [coeff_of_lt_order i hi]
 
 /-- The order of the product of two formal power series
 is at least the sum of their orders. -/
@@ -194,23 +212,32 @@ theorem le_order_prod {R : Type*} [CommSemiring R] {ι : Type*} (φ : ι → R�
 
 alias order_mul_ge := le_order_mul
 
-theorem order_ne_zero_iff_constCoeff_eq_zero {φ : R⟦X⟧} :
-    φ.order ≠ 0 ↔ φ.constantCoeff = 0 := by
+theorem one_le_order_iff_constCoeff_eq_zero :
+    1 ≤ φ.order ↔ φ.constantCoeff = 0 := by
   constructor
   · intro h
-    rw [← PowerSeries.coeff_zero_eq_constantCoeff]
+    rw [← coeff_zero_eq_constantCoeff]
     apply coeff_of_lt_order
-    simpa using pos_of_ne_zero h
+    simpa using Order.one_le_iff_pos.mp h
   · intro h
-    refine ENat.one_le_iff_ne_zero.mp <| PowerSeries.le_order _ _ fun d hd ↦ ?_
+    refine le_order _ _ fun d hd ↦ ?_
     rw [Nat.cast_lt_one] at hd
     simp [hd, h]
+
+theorem order_ne_zero_iff_constCoeff_eq_zero {φ : R⟦X⟧} :
+    φ.order ≠ 0 ↔ φ.constantCoeff = 0 := by
+  rw [← ENat.one_le_iff_ne_zero, one_le_order_iff_constCoeff_eq_zero]
+
+theorem le_order_pow_of_constantCoeff_eq_zero (n : ℕ) (hf : φ.constantCoeff = 0) :
+    n ≤ (φ ^ n).order := by
+  refine .trans ?_ (le_order_pow _ n)
+  simpa using le_mul_of_one_le_right' (one_le_order_iff_constCoeff_eq_zero.mpr hf)
 
 /-- The order of the monomial `a*X^n` is infinite if `a = 0` and `n` otherwise. -/
 theorem order_monomial (n : ℕ) (a : R) [Decidable (a = 0)] :
     order (monomial n a) = if a = 0 then (⊤ : ℕ∞) else n := by
   split_ifs with h
-  · rw [h, order_eq_top, LinearMap.map_zero]
+  · rw [h, order_eq_top, map_zero]
   · rw [order_eq]
     constructor <;> intro i hi
     · simp only [Nat.cast_inj] at hi
@@ -235,7 +262,7 @@ theorem coeff_mul_of_lt_order {φ ψ : R⟦X⟧} {n : ℕ} (h : ↑n < ψ.order)
   refine mul_eq_zero_of_right (coeff x.fst φ) (coeff_of_lt_order x.snd (lt_of_le_of_lt ?_ h))
   rw [mem_antidiagonal] at hx
   norm_cast
-  cutsat
+  lia
 
 theorem coeff_mul_one_sub_of_lt_order {R : Type*} [Ring R] {φ ψ : R⟦X⟧} (n : ℕ)
     (h : ↑n < ψ.order) : coeff n (φ * (1 - ψ)) = coeff n φ := by
@@ -291,7 +318,7 @@ theorem X_pow_order_mul_divXPowOrder {f : R⟦X⟧} :
   rw [coeff_X_pow_mul']
   split_ifs with h
   · simp [h]
-  · push_neg at h
+  · push Not at h
     rw [coeff_of_lt_order_toNat _ h]
 
 theorem X_pow_order_dvd : X ^ φ.order.toNat ∣ φ := by
@@ -443,6 +470,19 @@ theorem divXPowOrder_prod {R : Type*} [CommSemiring R] [NoZeroDivisors R] [Nontr
   map_prod divXPowOrderHom φ s
 
 end NoZeroDivisors
+
+section Ring
+
+variable [Ring R] (p : PowerSeries R) (T : Subring R) (hp : ∀ n, p.coeff n ∈ T)
+
+@[simp]
+theorem order_toSubring : (p.toSubring T hp).order = p.order := by
+  refine eq_of_le_of_ge ?_ ?_
+  · refine le_order _ _ fun d hd => by simp [coeff_of_lt_order d hd, ← coeff_toSubring p T hp]
+  · exact le_order _ _ fun d hd => by
+      exact_mod_cast (coeff_toSubring p T hp) ▸ (coeff_of_lt_order d hd)
+
+end Ring
 
 end PowerSeries
 

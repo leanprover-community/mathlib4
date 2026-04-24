@@ -3,12 +3,14 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.Algebra.Pointwise.Stabilizer
-import Mathlib.Data.Setoid.Partition
-import Mathlib.GroupTheory.GroupAction.Pointwise
-import Mathlib.GroupTheory.GroupAction.SubMulAction
-import Mathlib.GroupTheory.Index
-import Mathlib.Tactic.IntervalCases
+module
+
+public import Mathlib.Algebra.Pointwise.Stabilizer
+public import Mathlib.Data.Setoid.Partition
+public import Mathlib.GroupTheory.GroupAction.Pointwise
+public import Mathlib.GroupTheory.GroupAction.SubMulAction
+public import Mathlib.GroupTheory.Index
+public import Mathlib.Tactic.IntervalCases
 
 /-! # Blocks
 
@@ -46,6 +48,8 @@ The non-existence of nontrivial blocks is the definition of primitive actions.
 We follow [Wielandt-1964].
 
 -/
+
+@[expose] public section
 
 open Set
 open scoped Pointwise
@@ -675,8 +679,6 @@ theorem ncard_block_eq_relIndex (hB : IsBlock G B) {x : X} (hx : x ∈ B) :
     ext; rfl
   rw [Subgroup.relIndex, key, index_stabilizer, hB.orbit_stabilizer_eq hx]
 
-@[deprecated (since := "2025-08-12")] alias ncard_block_eq_relindex := ncard_block_eq_relIndex
-
 /-- The cardinality of the ambient space is the product of the cardinality of a block
   by the cardinality of the set of translates of that block -/
 @[to_additive
@@ -713,12 +715,7 @@ theorem eq_univ_of_card_lt [hX : Finite X] (hB : IsBlock G B) (hB' : Nat.card X 
 theorem subsingleton_of_card_lt [Finite X] (hB : IsBlock G B)
     (hB' : Nat.card X < 2 * Set.ncard (orbit G B)) :
     B.Subsingleton := by
-  suffices Set.ncard B < 2 by
-    rw [Nat.lt_succ_iff, Set.ncard_le_one_iff_eq] at this
-    cases this with
-    | inl h => rw [h]; exact Set.subsingleton_empty
-    | inr h =>
-      obtain ⟨a, ha⟩ := h; rw [ha]; exact Set.subsingleton_singleton
+  suffices Set.ncard B < 2 by simp_all
   cases Set.eq_empty_or_nonempty B with
   | inl h => rw [h, Set.ncard_empty]; simp
   | inr h =>

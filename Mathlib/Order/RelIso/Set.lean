@@ -3,10 +3,12 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Order.Directed
-import Mathlib.Order.RelIso.Basic
-import Mathlib.Logic.Embedding.Set
-import Mathlib.Logic.Equiv.Set
+module
+
+public import Mathlib.Order.Directed
+public import Mathlib.Order.RelIso.Basic
+public import Mathlib.Logic.Embedding.Set
+public import Mathlib.Logic.Equiv.Set
 
 /-!
 # Interactions between relation homomorphisms and sets
@@ -14,6 +16,8 @@ import Mathlib.Logic.Equiv.Set
 It is likely that there are better homes for many of these statement,
 in files further down the import graph.
 -/
+
+@[expose] public section
 
 
 open Function
@@ -85,23 +89,23 @@ theorem coe_inclusionEmbedding (r : α → α → Prop) {s t : Set α} (h : s �
     (Subrel.inclusionEmbedding r h : s → t) = Set.inclusion h :=
   rfl
 
-instance (r : α → α → Prop) [IsRefl α r] (p : α → Prop) : IsRefl _ (Subrel r p) :=
-  ⟨fun x => @IsRefl.refl α r _ x⟩
+instance (r : α → α → Prop) [Std.Refl r] (p : α → Prop) : Std.Refl (Subrel r p) :=
+  ⟨fun x => Std.Refl.refl (r := r) x⟩
 
-instance (r : α → α → Prop) [IsSymm α r] (p : α → Prop) : IsSymm _ (Subrel r p) :=
-  ⟨fun x y => @IsSymm.symm α r _ x y⟩
+instance (r : α → α → Prop) [Std.Symm r] (p : α → Prop) : Std.Symm (Subrel r p) :=
+  ⟨fun x y => Std.Symm.symm (r := r) x y⟩
 
-instance (r : α → α → Prop) [IsAsymm α r] (p : α → Prop) : IsAsymm _ (Subrel r p) :=
-  ⟨fun x y => @IsAsymm.asymm α r _ x y⟩
+instance (r : α → α → Prop) [Std.Asymm r] (p : α → Prop) : Std.Asymm (Subrel r p) :=
+  ⟨fun x y => Std.Asymm.asymm (r := r) x y⟩
 
 instance (r : α → α → Prop) [IsTrans α r] (p : α → Prop) : IsTrans _ (Subrel r p) :=
-  ⟨fun x y z => @IsTrans.trans α r _ x y z⟩
+  ⟨fun x y z => IsTrans.trans (r := r) x y z⟩
 
-instance (r : α → α → Prop) [IsIrrefl α r] (p : α → Prop) : IsIrrefl _ (Subrel r p) :=
-  ⟨fun x => @IsIrrefl.irrefl α r _ x⟩
+instance (r : α → α → Prop) [Std.Irrefl r] (p : α → Prop) : Std.Irrefl (Subrel r p) :=
+  ⟨fun x => Std.Irrefl.irrefl (r := r) x⟩
 
-instance (r : α → α → Prop) [IsTrichotomous α r] (p : α → Prop) : IsTrichotomous _ (Subrel r p) :=
-  ⟨fun x y => by rw [Subtype.eq_iff]; exact @IsTrichotomous.trichotomous α r _ x y⟩
+instance (r : α → α → Prop) [Std.Trichotomous r] (p : α → Prop) : Std.Trichotomous (Subrel r p) :=
+  ⟨fun x y => by rw [Subtype.ext_iff]; exact @Std.Trichotomous.trichotomous α r _ x y⟩
 
 instance (r : α → α → Prop) [IsWellFounded α r] (p : α → Prop) : IsWellFounded _ (Subrel r p) :=
   (Subrel.relEmbedding r p).isWellFounded

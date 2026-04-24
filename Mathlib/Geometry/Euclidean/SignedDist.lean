@@ -3,13 +3,15 @@ Copyright (c) 2025 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Geometry.Euclidean.Projection
-import Mathlib.Analysis.NormedSpace.Normalize
+module
+
+public import Mathlib.Geometry.Euclidean.Projection
+public import Mathlib.Analysis.Normed.Module.Normalize
 
 /-!
 # Signed distance to an affine subspace in a Euclidean space.
 
-This file defines the signed distance between two points, in the direction of a given a vector, and
+This file defines the signed distance between two points, in the direction of a given vector, and
 the signed distance between an affine subspace and a point, in the direction of a given
 reference point.
 
@@ -26,6 +28,8 @@ reference point.
 
 -/
 
+@[expose] public section
+
 
 open EuclideanGeometry NormedSpace
 open scoped RealInnerProductSpace
@@ -34,15 +38,6 @@ variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricS
 variable [NormedAddTorsor V P]
 
 section signedDist
-
-/-- Auxiliary definition for `signedDist`. It is the underlying linear map of `signedDist`. -/
-private noncomputable def signedDistLinear (v : V) : V →ₗ[ℝ] P →ᴬ[ℝ] ℝ where
-  toFun w := .const ℝ P ⟪-normalize v, w⟫
-  map_add' x y := by ext; simp [inner_add_right]
-  map_smul' r x := by ext; simp [inner_smul_right]
-
-private lemma signedDistLinear_apply (v w : V) :
-    signedDistLinear v w = .const ℝ P ⟪-normalize v, w⟫ := rfl
 
 /--
 The signed distance between two points `p` and `q`, in the direction of a reference vector `v`.
@@ -54,10 +49,12 @@ TODO: once we have a topology on `P →ᴬ[ℝ] ℝ`, the type should be `P →�
 noncomputable def signedDist (v : V) : P →ᵃ[ℝ] P →ᴬ[ℝ] ℝ where
   toFun p := (innerSL ℝ (normalize v)).toContinuousAffineMap.comp
     (ContinuousAffineMap.id ℝ P -ᵥ .const ℝ P p)
-  linear := signedDistLinear v
+  linear := {
+    toFun w := .const ℝ P ⟪-normalize v, w⟫
+    map_add' x y := by ext; simp [inner_add_right]
+    map_smul' r x := by ext; simp [inner_smul_right] }
   map_vadd' p v' := by
     ext q
-    rw [signedDistLinear_apply]
     simp [vsub_vadd_eq_vsub_sub, inner_sub_right, ← sub_eq_neg_add]
 
 variable (v w : V) (p q r : P)
@@ -179,7 +176,7 @@ lemma abs_signedDist_eq_dist_iff_vsub_mem_span :
   by_cases h : v = 0
   · simp [h, eq_comm (a := (0 : ℝ)), eq_comm (a := (0 : V))]
   rw [inv_mul_eq_iff_eq_mul₀ (by positivity)]
-  rw [← Real.norm_eq_abs, ((norm_inner_eq_norm_tfae ℝ v (q -ᵥ p)).out 0 2:)]
+  rw [← Real.norm_eq_abs, ((norm_inner_eq_norm_tfae ℝ v (q -ᵥ p)).out 0 2 :)]
   simp [h, eq_comm]
 
 open NNReal in
@@ -207,6 +204,29 @@ lemma signedDist_eq_dist_iff_vsub_mem_span : signedDist v p q = dist p q ↔ q -
 @[simp] lemma signedDist_vsub_self_rev : signedDist (p -ᵥ q) p q = -dist p q := by
   rw [← neg_eq_iff_eq_neg, ← signedDist_neg, neg_vsub_eq_vsub_rev]
   apply signedDist_vsub_self
+
+lemma signedDist_lineMap_lineMap (c₁ c₂ : ℝ) :
+    signedDist v (AffineMap.lineMap p q c₁) (AffineMap.lineMap p q c₂) =
+      (c₂ - c₁) * signedDist v p q := by
+  trans c₂ * signedDist v p q + c₁ * signedDist v q p
+  · simp [AffineMap.lineMap_apply_ring']
+  · rw [sub_mul, ← signedDist_anticomm v p, mul_neg, sub_eq_add_neg]
+
+lemma signedDist_lineMap_left (c : ℝ) :
+    signedDist v (AffineMap.lineMap p q c) p = -c * signedDist v p q := by
+  simpa using signedDist_lineMap_lineMap v p q c 0
+
+lemma signedDist_left_lineMap (c : ℝ) :
+    signedDist v p (AffineMap.lineMap p q c) = c * signedDist v p q := by
+  simpa using signedDist_lineMap_lineMap v p q 0 c
+
+lemma signedDist_lineMap_right (c : ℝ) :
+    signedDist v (AffineMap.lineMap p q c) q = (1 - c) * signedDist v p q := by
+  simpa using signedDist_lineMap_lineMap v p q c 1
+
+lemma signedDist_right_lineMap (c : ℝ) :
+    signedDist v q (AffineMap.lineMap p q c) = (c - 1) * signedDist v p q := by
+  simpa using signedDist_lineMap_lineMap v p q 1 c
 
 end signedDist
 
@@ -278,6 +298,11 @@ orthogonal to that span is disregarded). In the case of a triangle, these distan
 trilinear coordinates; in a tetrahedron, they are quadriplanar coordinates. -/
 noncomputable def signedInfDist : P →ᴬ[ℝ] ℝ :=
   AffineSubspace.signedInfDist (affineSpan ℝ (s.points '' {i}ᶜ)) (s.points i)
+
+@[simp] lemma signedInfDist_reindex {m : ℕ} [NeZero m] (e : Fin (n + 1) ≃ Fin (m + 1))
+    (j : Fin (m + 1)) : (s.reindex e).signedInfDist j = s.signedInfDist (e.symm j) := by
+  simp_rw [signedInfDist, reindex_points, Set.image_comp, Set.image_compl_eq e.symm.bijective,
+    Set.image_singleton, Function.comp_apply]
 
 lemma signedInfDist_apply_self :
     s.signedInfDist i (s.points i) =

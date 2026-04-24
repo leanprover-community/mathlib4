@@ -3,12 +3,14 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Complex.CauchyIntegral
-import Mathlib.Analysis.InnerProductSpace.Convex
-import Mathlib.Analysis.Normed.Affine.AddTorsor
-import Mathlib.Analysis.NormedSpace.Extr
-import Mathlib.LinearAlgebra.Complex.FiniteDimensional
-import Mathlib.Topology.Order.ExtrClosure
+module
+
+public import Mathlib.Analysis.Complex.CauchyIntegral
+public import Mathlib.Analysis.InnerProductSpace.Convex
+public import Mathlib.Analysis.Normed.Affine.AddTorsor
+public import Mathlib.Analysis.Normed.Module.Extr
+public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+public import Mathlib.Topology.Order.ExtrClosure
 
 /-!
 # Maximum modulus principle
@@ -78,6 +80,8 @@ are continuous on its closure. We prove the following theorems.
 maximum modulus principle, complex analysis
 -/
 
+public section
+
 
 open TopologicalSpace Metric Set Filter Asymptotics Function MeasureTheory AffineMap Bornology
 
@@ -129,11 +133,12 @@ theorem norm_max_aux₁ [CompleteSpace F] {f : ℂ → F} {z w : ℂ}
     refine ((continuousOn_id.sub continuousOn_const).inv₀ ?_).smul (hd.continuousOn_ball.mono hsub)
     exact fun ζ hζ => sub_ne_zero.2 (ne_of_mem_sphere hζ hr.ne')
   · show ∀ ζ ∈ sphere z r, ‖(ζ - z)⁻¹ • f ζ‖ ≤ ‖f z‖ / r
-    rintro ζ (hζ : ‖ζ - z‖ = r)
-    rw [le_div_iff₀ hr, norm_smul, norm_inv, hζ, mul_comm, mul_inv_cancel_left₀ hr.ne']
+    rintro ζ hζ
+    rw [le_div_iff₀ hr, norm_smul, norm_inv, mem_sphere_iff_norm.1 hζ, mul_comm,
+      mul_inv_cancel_left₀ hr.ne']
     exact hz (hsub hζ)
   show ‖(w - z)⁻¹ • f w‖ < ‖f z‖ / r
-  rw [norm_smul, norm_inv, ← div_eq_inv_mul]
+  rw [norm_smul, norm_inv, ← div_eq_inv_mul, ← dist_eq_norm]
   exact (div_lt_div_iff_of_pos_right hr).2 hw_lt
 
 /-!

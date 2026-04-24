@@ -3,8 +3,10 @@ Copyright (c) 2024 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
-import Mathlib.MeasureTheory.SetAlgebra
+module
+
+public import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
+public import Mathlib.MeasureTheory.SetAlgebra
 
 /-!
 # Separable measure
@@ -34,7 +36,7 @@ of separability in the metric space made by constant indicators equipped with th
 
 * `MeasureTheory.Measure.MeasureDense μ 𝒜`: `𝒜` is a measure-dense family if it only contains
   measurable sets and if the following condition is satisfied: if `s` is measurable with finite
-  measure, then for any `ε > 0` there exists `t ∈ 𝒜` such that `μ (s ∆ t) < ε `.
+  measure, then for any `ε > 0` there exists `t ∈ 𝒜` such that `μ (s ∆ t) < ε`.
 * `MeasureTheory.IsSeparable`: A measure is separable if there exists a countable and
   measure-dense family.
 
@@ -63,6 +65,8 @@ written `≠ ∞` rather than `< ∞`. See `Ne.lt_top` and `ne_of_lt` to switch 
 separable measure, measure-dense, Lp space, second-countable
 -/
 
+@[expose] public section
+
 open MeasurableSpace Set ENNReal TopologicalSpace symmDiff Real
 
 namespace MeasureTheory
@@ -78,7 +82,7 @@ section MeasureDense
 measurable sets and can approximate any measurable set with finite measure, in the sense that
 for any measurable set `s` with finite measure the symmetric difference `s ∆ t` can be made
 arbitrarily small when `t ∈ 𝒜`. We show below that such a family can be chosen to contain only
-sets with finite measures.
+sets with finite measure.
 
 The term "measure-dense" is justified by the fact that the approximating condition translates
 to the usual notion of density in the metric space made by constant indicators of measurable sets
@@ -155,9 +159,8 @@ theorem Measure.MeasureDense.indicatorConstLp_subset_closure (h𝒜 : μ.Measure
           gcongr
           exact ofReal_ne_top
       _ = ε := by
-        rw [toReal_ofReal (rpow_nonneg (div_nonneg hε.le (norm_nonneg _)) _),
-          one_div, Real.rpow_rpow_inv (div_nonneg hε.le (norm_nonneg _))
-            (toReal_pos p_pos.ne.symm p_ne_top.elim).ne.symm,
+        rw [toReal_ofReal (by positivity),
+          one_div, Real.rpow_rpow_inv (by positivity) (toReal_pos p_pos.ne.symm p_ne_top.elim).ne',
           mul_div_cancel₀ _ (norm_ne_zero_iff.2 hc)]
 
 /-- If a family of sets `𝒜` is measure-dense in `X`, then it is also the case for the sets in `𝒜`
@@ -268,7 +271,7 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_sigmaFinite (h𝒜 : I
   measurable s hs := hgen ▸ measurableSet_generateFrom hs
   approx s ms hμs ε ε_pos := by
     -- We use partial unions of (Sₙ) to get a monotone family spanning `X`.
-    let T := Accumulate S.set
+    let T := accumulate S.set
     have T_mem (n) : T n ∈ 𝒜 := by
       simpa using h𝒜.biUnion_mem {k | k ≤ n}.toFinset (fun k _ ↦ S.set_mem k)
     have T_finite (n) : μ (T n) < ∞ := by
@@ -461,8 +464,7 @@ instance Lp.SecondCountableTopology [IsSeparable μ] [TopologicalSpace.Separable
       apply ne_of_lt at hμs
       rw [SeminormedAddCommGroup.mem_closure_iff]
       intro ε ε_pos
-      have μs_pow_nonneg : 0 ≤ μ.real s ^ (1 / p.toReal) :=
-        Real.rpow_nonneg ENNReal.toReal_nonneg _
+      have μs_pow_nonneg : 0 ≤ μ.real s ^ (1 / p.toReal) := by positivity
       -- To do so, we first pick `b ∈ u` such that `‖a - b‖ < ε / (3 * (1 + (μ s)^(1/p)))`.
       have approx_a_pos : 0 < ε / (3 * (1 + μ.real s ^ (1 / p.toReal))) :=
         div_pos ε_pos (by linarith [μs_pow_nonneg])

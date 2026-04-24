@@ -3,7 +3,9 @@ Copyright (c) 2025 Michal Staromiejski. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michal Staromiejski
 -/
-import Mathlib.RingTheory.Trace.Basic
+module
+
+public import Mathlib.RingTheory.Trace.Basic
 
 /-!
 
@@ -31,12 +33,15 @@ integral) extension of `F`.
 
 -/
 
+@[expose] public section
+
 namespace Algebra
 
 variable (F K : Type*) [Field F] [Field K] [Algebra F K]
 
 open IntermediateField
 
+set_option backward.privateInPublic true in
 /- The normalized trace function from an extension `K` to the base field `F`.
 Note: this definition does not require the extension `K / F` to be integral (algebraic)
 nor the fields to be of characteristic zero. -/
@@ -70,6 +75,8 @@ private theorem normalizedTraceAux_eq_of_finiteDimensional [FiniteDimensional F 
 
 variable [Algebra.IsIntegral F K]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The normalized trace map from an algebraic extension `K` to the base field `F`. -/
 noncomputable def normalizedTrace : K →ₗ[F] F where
   toFun := normalizedTraceAux F K
@@ -181,6 +188,7 @@ theorem normalizedTrace_algebraMap_of_lifts [CharZero E] [Algebra.IsIntegral E K
   simp [normalizedTrace_minpoly F a, normalizedTrace_minpoly E a, ← minpoly.map_algebraMap ha h,
     (minpoly F a).nextCoeff_map_eq, map_mul, map_neg]
 
+set_option backward.isDefEq.respectTransparency false in
 /- An auxiliary result to prove `normalizedTrace_trans_apply`. It differs from
 `normalizedTrace_trans_apply` only by the extra assumption about finiteness of `E` over `F`. -/
 private theorem normalizedTrace_trans_apply_aux [FiniteDimensional F E] [Algebra.IsIntegral E K]

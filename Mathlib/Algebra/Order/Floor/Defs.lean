@@ -3,9 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Kappelmann
 -/
-import Mathlib.Algebra.Order.Ring.Cast
-import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Tactic.HaveI
+module
+
+public import Mathlib.Algebra.Order.Ring.Cast
+public import Mathlib.Data.Nat.Cast.Basic
+
+import Mathlib.Data.Int.LeastGreatest
 
 /-!
 # Floor and ceil
@@ -43,6 +46,8 @@ many lemmas.
 
 rounding, floor, ceil
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -118,6 +123,12 @@ theorem gc_ceil_coe : GaloisConnection (ceil : α → ℕ) (↑) :=
 theorem ceil_le : ⌈a⌉₊ ≤ n ↔ a ≤ n :=
   gc_ceil_coe _ _
 
+instance : NeZero (1 : α) :=
+  ⟨fun h ↦ not_succ_le_self ⌊(0 : α)⌋₊ <|
+    (le_floor_iff (le_refl 0)).mpr (eq_zero_of_zero_eq_one h.symm _).le⟩
+
+instance : Nontrivial α := NeZero.nontrivial 1
+
 end OrderedSemiring
 
 section LinearOrderedSemiring
@@ -158,7 +169,8 @@ instance : FloorRing ℤ where
     rw [Int.cast_id, id_def]
 
 /-- A `FloorRing` constructor from the `floor` function alone. -/
-def FloorRing.ofFloor (α) [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (floor : α → ℤ)
+@[implicit_reducible]
+def FloorRing.ofFloor (α) [Ring α] [LinearOrder α] [IsOrderedRing α] (floor : α → ℤ)
     (gc_coe_floor : GaloisConnection (↑) floor) : FloorRing α :=
   { floor
     ceil := fun a => -floor (-a)
@@ -166,12 +178,45 @@ def FloorRing.ofFloor (α) [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (
     gc_ceil_coe := fun a z => by rw [neg_le, ← gc_coe_floor, Int.cast_neg, neg_le_neg_iff] }
 
 /-- A `FloorRing` constructor from the `ceil` function alone. -/
-def FloorRing.ofCeil (α) [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (ceil : α → ℤ)
+@[implicit_reducible]
+def FloorRing.ofCeil (α) [Ring α] [LinearOrder α] [IsOrderedRing α] (ceil : α → ℤ)
     (gc_ceil_coe : GaloisConnection ceil (↑)) : FloorRing α :=
   { floor := fun a => -ceil (-a)
     ceil
     gc_coe_floor := fun a z => by rw [le_neg, gc_ceil_coe, Int.cast_neg, neg_le_neg_iff]
     gc_ceil_coe }
+
+open Classical in
+private noncomputable def floorAux {α} [Ring α] [PartialOrder α] [IsStrictOrderedRing α] {x : α}
+    (below : ∃ n : ℤ, n ≤ x) (above : ∃ n : ℤ, x ≤ n) :
+    {n : ℤ // n ≤ x ∧ ∀ m : ℤ, m ≤ x → m ≤ n} := by
+  let n := Classical.indefiniteDescription _ above
+  refine Int.greatestOfBdd (P := (· ≤ x)) n.1 (fun m hm ↦ ?_) below
+  rw [← Int.cast_le (R := α)]
+  exact hm.trans n.2
+
+/-- See `exists_floor` for a variant which instead assumes an `Archimedean` ring. -/
+theorem exists_floor' {α} [Ring α] [PartialOrder α] [IsStrictOrderedRing α] (x : α)
+    (below : ∃ n : ℤ, n ≤ x) (above : ∃ n : ℤ, x ≤ n) :
+    ∃ fl : ℤ, ∀ z : ℤ, z ≤ fl ↔ (z : α) ≤ x := by
+  refine ⟨_, fun n ↦ ⟨?_, (floorAux below above).2.2 _⟩⟩
+  rw [← Int.cast_le (R := α)]
+  exact le_trans' (floorAux below above).2.1
+
+/-- Construct a `FloorRing` instance noncomputably, from the hypothesis that every element is
+bounded above by a natural number. -/
+@[no_expose, implicit_reducible]
+noncomputable def FloorRing.ofBounded (α) [Ring α] [LinearOrder α] [IsStrictOrderedRing α]
+    (bounded : ∀ x : α, ∃ n : ℕ, x ≤ n) : FloorRing α :=
+  have below (x : α) : ∃ n : ℤ, n ≤ x := by
+    obtain ⟨n, hn⟩ := bounded (-x)
+    use -n
+    simpa [neg_le]
+  have above (x : α) : ∃ n : ℤ, x ≤ n := by
+    obtain ⟨n, hn⟩ := bounded x
+    use n
+    exact_mod_cast hn
+  .ofFloor _ _ fun n x ↦ (Classical.choose_spec (exists_floor' x (below x) (above x)) n).symm
 
 namespace Int
 
@@ -217,6 +262,12 @@ theorem floorRing_floor_eq : @FloorRing.floor = @Int.floor :=
 theorem floorRing_ceil_eq : @FloorRing.ceil = @Int.ceil :=
   rfl
 
+instance : NeZero (1 : α) :=
+  ⟨fun h ↦ (Int.lt_succ ⌊(0 : α)⌋).not_ge <|
+    (FloorRing.gc_coe_floor _ _).mp (eq_zero_of_zero_eq_one h.symm _).le⟩
+
+instance : Nontrivial α := NeZero.nontrivial 1
+
 /-! #### Floor -/
 
 theorem gc_coe_floor : GaloisConnection ((↑) : ℤ → α) floor :=
@@ -235,7 +286,7 @@ theorem floor_le (a : α) : (⌊a⌋ : α) ≤ a :=
 theorem floor_nonneg : 0 ≤ ⌊a⌋ ↔ 0 ≤ a := by rw [le_floor, Int.cast_zero]
 
 @[bound]
-theorem floor_nonpos [IsStrictOrderedRing α] (ha : a ≤ 0) : ⌊a⌋ ≤ 0 := by
+theorem floor_nonpos [IsOrderedRing α] (ha : a ≤ 0) : ⌊a⌋ ≤ 0 := by
   rw [← @cast_le α, Int.cast_zero]
   exact (floor_le a).trans ha
 
@@ -255,7 +306,7 @@ theorem le_ceil (a : α) : a ≤ ⌈a⌉ :=
   gc_ceil_coe.le_u_l a
 
 @[bound]
-theorem ceil_nonneg [IsStrictOrderedRing α] (ha : 0 ≤ a) : 0 ≤ ⌈a⌉ := mod_cast ha.trans (le_ceil a)
+theorem ceil_nonneg [IsOrderedRing α] (ha : 0 ≤ a) : 0 ≤ ⌈a⌉ := mod_cast ha.trans (le_ceil a)
 
 @[simp]
 theorem ceil_pos : 0 < ⌈a⌉ ↔ 0 < a := by rw [lt_ceil, cast_zero]
@@ -264,10 +315,9 @@ end Int
 
 section FloorRingToSemiring
 
-variable [Ring α] [LinearOrder α] [IsStrictOrderedRing α] [FloorRing α]
+variable [Ring α] [LinearOrder α] [IsOrderedRing α] [FloorRing α]
 
 /-! #### A floor ring as a floor semiring -/
-
 
 -- see Note [lower instance priority]
 instance (priority := 100) FloorRing.toFloorSemiring : FloorSemiring α where

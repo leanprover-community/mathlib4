@@ -3,8 +3,10 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
-import Mathlib.MeasureTheory.Group.Measure
+module
+
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.MeasureTheory.Group.Measure
 
 /-!
 # Bochner Integration on Groups
@@ -12,6 +14,8 @@ import Mathlib.MeasureTheory.Group.Measure
 We develop properties of integrals with a group as domain.
 This file contains properties about integrability and Bochner integration.
 -/
+
+public section
 
 namespace MeasureTheory
 
@@ -112,7 +116,7 @@ to a left-invariant measure is 0. -/
       respect to a left-invariant measure is 0. -/]
 theorem integral_eq_zero_of_mul_left_eq_neg [IsMulLeftInvariant μ] (hf' : ∀ x, f (g * x) = -f x) :
     ∫ x, f x ∂μ = 0 := by
-  have : IsAddTorsionFree E := .of_noZeroSMulDivisors ℝ E
+  have : IsAddTorsionFree E := .of_isTorsionFree ℝ E
   simp_rw [← self_eq_neg, ← integral_neg, ← hf', integral_mul_left_eq_self]
 
 /-- If some right-translate of a function negates it, then the integral of the function with respect
@@ -122,7 +126,7 @@ to a right-invariant measure is 0. -/
       respect to a right-invariant measure is 0. -/]
 theorem integral_eq_zero_of_mul_right_eq_neg [IsMulRightInvariant μ] (hf' : ∀ x, f (x * g) = -f x) :
     ∫ x, f x ∂μ = 0 := by
-  have : IsAddTorsionFree E := .of_noZeroSMulDivisors ℝ E
+  have : IsAddTorsionFree E := .of_isTorsionFree ℝ E
   simp_rw [← self_eq_neg, ← integral_neg, ← hf', integral_mul_right_eq_self]
 
 @[to_additive]
@@ -165,7 +169,7 @@ end MeasurableMul
 
 section SMul
 
-variable [Group G] [MeasurableSpace α] [MulAction G α] [MeasurableSMul G α]
+variable {G : Type*} [Group G] [MeasurableSpace α] [MulAction G α] [MeasurableConstSMul G α]
 
 @[to_additive]
 theorem integral_smul_eq_self {μ : Measure α} [SMulInvariantMeasure G α μ] (f : α → E) {g : G} :

@@ -3,10 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
-import Mathlib.CategoryTheory.Functor.Derived.PointwiseRightDerived
-import Mathlib.CategoryTheory.GuitartExact.KanExtension
-import Mathlib.CategoryTheory.Limits.Final
+module
+
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
+public import Mathlib.CategoryTheory.Functor.Derived.PointwiseRightDerived
+public import Mathlib.CategoryTheory.GuitartExact.KanExtension
+public import Mathlib.CategoryTheory.Limits.Final
 
 /-!
 # Existence of pointwise right derived functors via derivability structures
@@ -29,6 +31,8 @@ right derived functor of `F` with respect to `W₂` exists.
 * [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 
@@ -82,7 +86,7 @@ variable [Φ.IsRightDerivabilityStructure]
 lemma hasPointwiseRightDerivedFunctorAt_iff_of_isRightDerivabilityStructure (X : C₁) :
     (Φ.functor ⋙ F).HasPointwiseRightDerivedFunctorAt W₁ X ↔
       F.HasPointwiseRightDerivedFunctorAt W₂ (Φ.functor.obj X) := by
-  let e : W₂.Q.obj _ ≅ (Φ.localizedFunctor W₁.Q W₂.Q).obj _  := ((Φ.catCommSq W₁.Q W₂.Q).iso).app X
+  let e : W₂.Q.obj _ ≅ (Φ.localizedFunctor W₁.Q W₂.Q).obj _ := ((Φ.catCommSq W₁.Q W₂.Q).iso).app X
   rw [F.hasPointwiseRightDerivedFunctorAt_iff W₂.Q W₂ (Φ.functor.obj X),
     (Φ.functor ⋙ F).hasPointwiseRightDerivedFunctorAt_iff W₁.Q W₁ X,
     TwoSquare.hasPointwiseLeftKanExtensionAt_iff ((Φ.catCommSq W₁.Q W₂.Q).iso).hom,
@@ -115,11 +119,15 @@ instance : IsIso (Φ.rightDerivedFunctorComparison L₁ L₂ F F₁ α₁ F₂ �
   exact ((F₂.isPointwiseLeftKanExtensionOfHasPointwiseRightDerivedFunctor α₂ W₂).compTwoSquare
     ((Φ.catCommSq L₁ L₂).iso).hom).isLeftKanExtension
 
-lemma isIso_α_iff_of_isRightDerivabilityStructure (X : C₁) :
+set_option backward.isDefEq.respectTransparency false in
+lemma isIso_iff_of_isRightDerivabilityStructure (X : C₁) :
     IsIso (α₁.app X) ↔ IsIso (α₂.app (Φ.functor.obj X)) := by
   rw [← isIso_comp_right_iff (α₁.app X)
     ((Φ.rightDerivedFunctorComparison L₁ L₂ F F₁ α₁ F₂ α₂).app (L₁.obj X)),
     rightDerivedFunctorComparison_fac_app, isIso_comp_right_iff]
+
+@[deprecated (since := "2025-11-16")] alias isIso_α_iff_of_isRightDerivabilityStructure :=
+  isIso_iff_of_isRightDerivabilityStructure
 
 end
 

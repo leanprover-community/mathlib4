@@ -3,8 +3,10 @@ Copyright (c) 2020 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Antoine Labelle
 -/
-import Mathlib.LinearAlgebra.Dual.Lemmas
-import Mathlib.LinearAlgebra.Matrix.ToLin
+module
+
+public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
 # Contractions
@@ -18,10 +20,12 @@ some basic properties of these maps.
 contraction, dual module, tensor product
 -/
 
+@[expose] public section
+
 variable {ι : Type*} (R M N P Q : Type*)
 
 -- Enable extensionality of maps out of the tensor product.
--- High priority so it takes precendence over `LinearMap.ext`.
+-- High priority so it takes precedence over `LinearMap.ext`.
 attribute [local ext high] TensorProduct.ext
 
 section Contraction
@@ -71,7 +75,7 @@ theorem transpose_dualTensorHom (f : Module.Dual R M) (m : M) :
     dualTensorHom R _ _ (Dual.eval R M m ⊗ₜ f) := by
   ext f' m'
   simp only [Dual.transpose_apply, coe_comp, Function.comp_apply, dualTensorHom_apply,
-    LinearMap.map_smulₛₗ, RingHom.id_apply, Algebra.id.smul_eq_mul, Dual.eval_apply,
+    map_smulₛₗ, RingHom.id_apply, smul_eq_mul, Dual.eval_apply,
     LinearMap.smul_apply]
   exact mul_comm _ _
 
@@ -104,8 +108,7 @@ theorem comp_dualTensorHom (f : Module.Dual R M) (n : N) (g : Module.Dual R N) (
     dualTensorHom R N P (g ⊗ₜ[R] p) ∘ₗ dualTensorHom R M N (f ⊗ₜ[R] n) =
       g n • dualTensorHom R M P (f ⊗ₜ p) := by
   ext m
-  simp only [coe_comp, Function.comp_apply, dualTensorHom_apply, LinearMap.map_smul,
-    LinearMap.smul_apply]
+  simp only [coe_comp, Function.comp_apply, dualTensorHom_apply, map_smul, LinearMap.smul_apply]
   rw [smul_comm]
 
 /-- As a matrix, `dualTensorHom` evaluated on a basis element of `M* ⊗ N` is a matrix with a
@@ -114,10 +117,10 @@ theorem toMatrix_dualTensorHom {m : Type*} {n : Type*} [Fintype m] [Finite n] [D
     [DecidableEq n] (bM : Basis m R M) (bN : Basis n R N) (j : m) (i : n) :
     toMatrix bM bN (dualTensorHom R M N (bM.coord j ⊗ₜ bN i)) = single i j 1 := by
   ext i' j'
-  by_cases hij : i = i' ∧ j = j' <;>
-    simp [LinearMap.toMatrix_apply, Finsupp.single_eq_pi_single, hij]
-  rw [and_iff_not_or_not, Classical.not_not] at hij
-  rcases hij with hij | hij <;> simp [hij]
+  by_cases hij : i = i' ∧ j = j'
+  · simp [LinearMap.toMatrix_apply, hij]
+  · rw [and_iff_not_or_not, Classical.not_not] at hij
+    rcases hij with hij | hij <;> simp [LinearMap.toMatrix_apply, Finsupp.single_eq_pi_single, hij]
 
 attribute [-ext] AlgebraTensorModule.curry_injective in
 /-- If `M` is free, the natural linear map $M^* ⊗ N → Hom(M, N)$ is an equivalence. This function
@@ -128,12 +131,12 @@ noncomputable def dualTensorHomEquivOfBasis : Module.Dual R M ⊗[R] N ≃ₗ[R]
     (∑ i, TensorProduct.mk R _ N (b.dualBasis i) ∘ₗ (LinearMap.applyₗ (R := R) (b i)))
     (by
       ext f m
-      simp only [applyₗ_apply_apply, coeFn_sum, dualTensorHom_apply, mk_apply, id_coe, _root_.id,
+      simp only [applyₗ_apply_apply, coe_sum, dualTensorHom_apply, mk_apply, id_coe, _root_.id,
         Fintype.sum_apply, Function.comp_apply, Basis.coe_dualBasis, coe_comp, Basis.coord_apply, ←
         f.map_smul, _root_.map_sum (dualTensorHom R M N), ← _root_.map_sum f, b.sum_repr])
     (by
       ext f m
-      simp only [applyₗ_apply_apply, coeFn_sum, dualTensorHom_apply, mk_apply, id_coe, _root_.id,
+      simp only [applyₗ_apply_apply, coe_sum, dualTensorHom_apply, mk_apply, id_coe, _root_.id,
         Fintype.sum_apply, Function.comp_apply, Basis.coe_dualBasis, coe_comp, compr₂ₛₗ_apply,
         tmul_smul, smul_tmul', ← sum_tmul, Basis.sum_dual_apply_smul_coord])
 

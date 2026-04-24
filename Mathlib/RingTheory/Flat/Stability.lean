@@ -3,11 +3,13 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.RingTheory.Flat.Basic
-import Mathlib.RingTheory.IsTensorProduct
-import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.RingTheory.Localization.BaseChange
-import Mathlib.Algebra.Module.LocalizedModule.Basic
+module
+
+public import Mathlib.RingTheory.Flat.Basic
+public import Mathlib.RingTheory.IsTensorProduct
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.RingTheory.Localization.BaseChange
+public import Mathlib.Algebra.Module.LocalizedModule.Basic
 
 /-!
 # Flatness is stable under composition and base change
@@ -24,6 +26,8 @@ We show that flatness is stable under composition and base change.
                                           then the localization of `M` at `S` is flat as a module
                                           for the localization of `R` at `S`.
 -/
+
+@[expose] public section
 
 universe u v w t
 
@@ -107,6 +111,10 @@ theorem of_isLocalizedModule [Flat R M] (S : Submonoid R) [IsLocalization S Rp]
     (f : M →ₗ[R] Mp) [h : IsLocalizedModule S f] : Flat Rp Mp := by
   fapply Flat.isBaseChange (R := R) (M := M) (S := Rp) (N := Mp)
   exact (isLocalizedModule_iff_isBaseChange S Rp f).mp h
+
+instance {A : Type*} [CommSemiring A] [Algebra R A] [Flat R A] (S : Submonoid R) :
+    Flat (Localization S) (Localization (Algebra.algebraMapSubmonoid A S)) :=
+  of_isLocalizedModule _ S (IsScalarTower.toAlgHom R A _).toLinearMap
 
 end Localization
 

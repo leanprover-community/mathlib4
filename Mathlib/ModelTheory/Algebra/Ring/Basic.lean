@@ -3,10 +3,11 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+module
 
-import Mathlib.ModelTheory.Syntax
-import Mathlib.ModelTheory.Semantics
-import Mathlib.Algebra.Ring.Equiv
+public import Mathlib.ModelTheory.Syntax
+public import Mathlib.ModelTheory.Semantics
+public import Mathlib.Algebra.Ring.Equiv
 
 /-!
 # First-Order Language of Rings
@@ -39,12 +40,14 @@ you must add local instances with definitions like `ModelTheory.Field.fieldOfMod
 (in `Mathlib/ModelTheory/Algebra/Field/Basic.lean`), depending on the Theory.
 -/
 
+@[expose] public section
+
 variable {α : Type*}
 
 namespace FirstOrder
 
 /-- The type of Ring functions, to be used in the definition of the language of rings.
-It contains the operations (+,*,-,0,1) -/
+It contains the operations `(+,*,-,0,1)` -/
 inductive ringFunc : ℕ → Type
   | add : ringFunc 2
   | mul : ringFunc 2
@@ -53,7 +56,7 @@ inductive ringFunc : ℕ → Type
   | one : ringFunc 0
   deriving DecidableEq
 
-/-- The language of rings contains the operations (+,*,-,0,1) -/
+/-- The language of rings contains the operations `(+,*,-,0,1)` -/
 def Language.ring : Language :=
   { Functions := ringFunc
     Relations := fun _ => Empty }
@@ -63,6 +66,7 @@ namespace Ring
 
 open ringFunc Language
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This instance does not get inferred without `instDecidableEqFunctions` in
 `ModelTheory/Basic`. -/
 example (n : ℕ) : DecidableEq (Language.ring.Functions n) := inferInstance
@@ -119,6 +123,7 @@ instance (α : Type*) : Neg (Language.ring.Term α) :=
 theorem neg_def (α : Type*) (t : Language.ring.Term α) :
     -t = negFunc.apply₁ t := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Fintype Language.ring.Symbols :=
   ⟨⟨Multiset.ofList
       [Sum.inl ⟨2, .add⟩,
@@ -215,6 +220,7 @@ This is a `def` and not an `instance`, because the path
 `Ring` => `Language.ring.Structure` => `Ring` cannot be made to
 commute by definition
 -/
+@[instance_reducible]
 def compatibleRingOfRing (R : Type*) [Add R] [Mul R] [Neg R] [One R] [Zero R] :
     CompatibleRing R :=
   { funMap := fun {n} f =>
@@ -311,7 +317,7 @@ abbrev compatibleRingOfRingStructure : CompatibleRing R :=
       rfl
     funMap_one := by
       simp only [Fin.forall_fin_zero_pi]
-      rfl  }
+      rfl }
 
 end Ring
 

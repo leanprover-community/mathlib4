@@ -3,10 +3,12 @@ Copyright (c) 2025 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Analysis.CStarAlgebra.Module.Constructions
-import Mathlib.Analysis.Matrix.Normed
-import Mathlib.Topology.UniformSpace.Matrix
+public import Mathlib.Analysis.CStarAlgebra.Module.Constructions
+public import Mathlib.Analysis.Matrix.Normed
+public import Mathlib.Topology.UniformSpace.Matrix
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 
 /-!
 # Matrices with entries in a C⋆-algebra
@@ -31,6 +33,8 @@ replace the uniformity and bornology by the Pi ones when registering the
 `NormedAddCommGroup (CStarMatrix m n A)` instance. See the docstring of the `TopologyAux` section
 below for more details.
 -/
+
+@[expose] public section
 
 open scoped ComplexOrder Topology Uniformity Bornology Matrix NNReal InnerProductSpace
   WithCStarModule
@@ -109,84 +113,85 @@ instance instInvolutiveStar [InvolutiveStar A] : InvolutiveStar (CStarMatrix n n
   star_involutive := star_involutive (R := Matrix n n A)
 
 instance instInhabited [Inhabited A] : Inhabited (CStarMatrix m n A) :=
-  inferInstanceAs <| Inhabited <| m → n → A
+  inferInstanceAs <| Inhabited (Matrix m n A)
 
 instance instDecidableEq [DecidableEq A] [Fintype m] [Fintype n] :
     DecidableEq (CStarMatrix m n A) :=
-  Fintype.decidablePiFintype
+  inferInstanceAs <| DecidableEq (Matrix m n A)
 
 instance {n m} [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] (α) [Fintype α] :
-    Fintype (CStarMatrix m n α) := inferInstanceAs (Fintype (m → n → α))
+    Fintype (CStarMatrix m n α) :=
+  inferInstanceAs <| Fintype (Matrix m n α)
 
-instance {n m} [Finite m] [Finite n] (α) [Finite α] :
-    Finite (CStarMatrix m n α) := inferInstanceAs (Finite (m → n → α))
+instance {n m} [Finite m] [Finite n] (α) [Finite α] : Finite (CStarMatrix m n α) :=
+  inferInstanceAs <| Finite (Matrix m n α)
 
 instance instAdd [Add A] : Add (CStarMatrix m n A) :=
-  Pi.instAdd
+  inferInstanceAs <| Add (Matrix m n A)
 
 instance instAddSemigroup [AddSemigroup A] : AddSemigroup (CStarMatrix m n A) :=
-  Pi.addSemigroup
+  inferInstanceAs <| AddSemigroup (Matrix m n A)
 
 instance instAddCommSemigroup [AddCommSemigroup A] : AddCommSemigroup (CStarMatrix m n A) :=
-  Pi.addCommSemigroup
+  inferInstanceAs <| AddCommSemigroup (Matrix m n A)
 
 instance instZero [Zero A] : Zero (CStarMatrix m n A) :=
-  Pi.instZero
+  inferInstanceAs <| Zero (Matrix m n A)
 
 instance instAddZeroClass [AddZeroClass A] : AddZeroClass (CStarMatrix m n A) :=
-  Pi.addZeroClass
+  inferInstanceAs <| AddZeroClass (Matrix m n A)
 
 instance instAddMonoid [AddMonoid A] : AddMonoid (CStarMatrix m n A) :=
-  Pi.addMonoid
+  inferInstanceAs <| AddMonoid (Matrix m n A)
 
 instance instAddCommMonoid [AddCommMonoid A] : AddCommMonoid (CStarMatrix m n A) :=
-  Pi.addCommMonoid
+  inferInstanceAs <| AddCommMonoid (Matrix m n A)
 
 instance instNeg [Neg A] : Neg (CStarMatrix m n A) :=
-  Pi.instNeg
+  inferInstanceAs <| Neg (Matrix m n A)
 
 instance instSub [Sub A] : Sub (CStarMatrix m n A) :=
-  Pi.instSub
+  inferInstanceAs <| Sub (Matrix m n A)
 
 instance instAddGroup [AddGroup A] : AddGroup (CStarMatrix m n A) :=
-  Pi.addGroup
+  inferInstanceAs <| AddGroup (Matrix m n A)
 
 instance instAddCommGroup [AddCommGroup A] : AddCommGroup (CStarMatrix m n A) :=
-  Pi.addCommGroup
+  inferInstanceAs <| AddCommGroup (Matrix m n A)
 
 instance instUnique [Unique A] : Unique (CStarMatrix m n A) :=
-  Pi.unique
+  inferInstanceAs <| Unique (Matrix m n A)
 
 instance instSubsingleton [Subsingleton A] : Subsingleton (CStarMatrix m n A) :=
-  inferInstanceAs <| Subsingleton <| m → n → A
+  inferInstanceAs <| Subsingleton (Matrix m n A)
 
 instance instNontrivial [Nonempty m] [Nonempty n] [Nontrivial A] : Nontrivial (CStarMatrix m n A) :=
-  Function.nontrivial
+  inferInstanceAs <| Nontrivial (Matrix m n A)
 
 instance instSMul [SMul R A] : SMul R (CStarMatrix m n A) :=
-  Pi.instSMul
+  inferInstanceAs <| SMul R (Matrix m n A)
 
 instance instSMulCommClass [SMul R A] [SMul S A] [SMulCommClass R S A] :
     SMulCommClass R S (CStarMatrix m n A) :=
-  Pi.smulCommClass
+  inferInstanceAs <| SMulCommClass R S (Matrix m n A)
 
 instance instIsScalarTower [SMul R S] [SMul R A] [SMul S A] [IsScalarTower R S A] :
     IsScalarTower R S (CStarMatrix m n A) :=
-  Pi.isScalarTower
+  inferInstanceAs <| IsScalarTower R S (Matrix m n A)
 
 instance instIsCentralScalar [SMul R A] [SMul Rᵐᵒᵖ A] [IsCentralScalar R A] :
     IsCentralScalar R (CStarMatrix m n A) :=
-  Pi.isCentralScalar
+  inferInstanceAs <| IsCentralScalar R (Matrix m n A)
 
 instance instMulAction [Monoid R] [MulAction R A] : MulAction R (CStarMatrix m n A) :=
-  Pi.mulAction _
+  inferInstanceAs <| MulAction R (Matrix m n A)
 
 instance instDistribMulAction [Monoid R] [AddMonoid A] [DistribMulAction R A] :
     DistribMulAction R (CStarMatrix m n A) :=
-  Pi.distribMulAction _
+  inferInstanceAs <| DistribMulAction R (Matrix m n A)
 
 instance instModule [Semiring R] [AddCommMonoid A] [Module R A] : Module R (CStarMatrix m n A) :=
-  Pi.module _ _ _
+  inferInstanceAs <| Module R (Matrix m n A)
 
 @[simp]
 theorem zero_apply [Zero A] (i : m) (j : n) : (0 : CStarMatrix m n A) i j = 0 := rfl
@@ -236,7 +241,7 @@ instance instStarAddMonoid [AddMonoid A] [StarAddMonoid A] : StarAddMonoid (CSta
 
 instance instStarModule [Star R] [Star A] [SMul R A] [StarModule R A] :
     StarModule R (CStarMatrix n n A) where
-  star_smul := star_smul (A := Matrix n n A)
+  star_smul r a := star_smul r (ofMatrix.symm a)
 
 /-- The equivalence to matrices, bundled as a linear equivalence. -/
 def ofMatrixₗ [AddCommMonoid A] [Semiring R] [Module R A] :
@@ -250,9 +255,13 @@ def mapₗ [Semiring R] [Semiring S] {σ : R →+* S} [AddCommMonoid A] [AddComm
   map_add' M N := by ext; simp
   map_smul' r M := by ext; simp
 
+section decidable
+
+variable [DecidableEq n]
+
 section zero_one
 
-variable [Zero A] [One A] [DecidableEq n]
+variable [Zero A] [One A]
 
 instance instOne : One (CStarMatrix n n A) := inferInstanceAs <| One (Matrix n n A)
 
@@ -265,21 +274,21 @@ theorem one_apply_eq (i) : (1 : CStarMatrix n n A) i i = 1 := Matrix.one_apply_e
 
 theorem one_apply_ne' {i j} : j ≠ i → (1 : CStarMatrix n n A) i j = 0 := Matrix.one_apply_ne'
 
-instance instAddMonoidWithOne [AddMonoidWithOne A] : AddMonoidWithOne (CStarMatrix n n A) where
+end zero_one
 
-instance instAddGroupWithOne [AddGroupWithOne A] : AddGroupWithOne (CStarMatrix n n A) where
-  __ := instAddGroup
-  __ := instAddMonoidWithOne
+instance instAddMonoidWithOne [AddMonoidWithOne A] : AddMonoidWithOne (CStarMatrix n n A) :=
+  inferInstanceAs <| AddMonoidWithOne (Matrix n n A)
+
+instance instAddGroupWithOne [AddGroupWithOne A] : AddGroupWithOne (CStarMatrix n n A) :=
+  inferInstanceAs <| AddGroupWithOne (Matrix n n A)
 
 instance instAddCommMonoidWithOne [AddCommMonoidWithOne A] :
-    AddCommMonoidWithOne (CStarMatrix n n A) where
-  __ := instAddCommMonoid
-  __ := instAddMonoidWithOne
+    AddCommMonoidWithOne (CStarMatrix n n A) :=
+  inferInstanceAs <| AddCommMonoidWithOne (Matrix n n A)
 
 instance instAddCommGroupWithOne [AddCommGroupWithOne A] :
-    AddCommGroupWithOne (CStarMatrix n n A) where
-  __ := instAddCommGroup
-  __ := instAddGroupWithOne
+    AddCommGroupWithOne (CStarMatrix n n A) :=
+  inferInstanceAs <| AddCommGroupWithOne (Matrix n n A)
 
 -- We want to be lower priority than `instHMul`, but without this we can't have operands with
 -- implicit dimensions.
@@ -290,7 +299,7 @@ instance {l : Type*} [Fintype m] [Mul A] [AddCommMonoid A] :
 
 instance [Fintype n] [Mul A] [AddCommMonoid A] : Mul (CStarMatrix n n A) where mul M N := M * N
 
-end zero_one
+end decidable
 
 theorem mul_apply {l : Type*} [Fintype m] [Mul A] [AddCommMonoid A] {M : CStarMatrix l m A}
     {N : CStarMatrix m n A} {i k} : (M * N) i k = ∑ j, M i j * N j k := rfl
@@ -408,7 +417,7 @@ def reindexₐ (R) (A) [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [M
       unfold reindexₗ
       dsimp only [Equiv.toFun_as_coe, Equiv.invFun_as_coe, Matrix.reindex_symm, AddHom.toFun_eq_coe,
         AddHom.coe_mk, Matrix.reindex_apply, Matrix.submatrix_apply]
-      rw [Matrix.star_apply, Matrix.star_apply]
+      rw [star_apply, star_apply]
       simp [Matrix.submatrix_apply] }
 
 @[simp]
@@ -418,8 +427,7 @@ lemma reindexₐ_apply [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [M
 
 lemma mapₗ_reindexₐ [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Module R A]
     [Star A] [AddCommMonoid B] [Mul B] [Module R B] [Star B] {e : m ≃ n} {M : CStarMatrix m m A}
-    (φ : A →ₗ[R] B) : reindexₐ R B e (M.mapₗ φ) = ((reindexₐ R A e M).mapₗ φ) := by
-  ext; simp [reindexₐ, reindexₗ]
+    (φ : A →ₗ[R] B) : reindexₐ R B e (M.mapₗ φ) = ((reindexₐ R A e M).mapₗ φ) := rfl
 
 @[simp]
 lemma reindexₐ_symm [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Module R A]
@@ -465,8 +473,9 @@ def toOneByOne [Unique n] [Semiring R] [AddCommMonoid A] [Mul A] [Star A] [Modul
 
 end basic
 
-variable [Fintype m] [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+variable [Fintype m] [NonUnitalCStarAlgebra A]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Interpret a `CStarMatrix m n A` as a continuous linear map acting on `C⋆ᵐᵒᵈ (n → A)`. -/
 noncomputable def toCLM : CStarMatrix m n A →ₗ[ℂ] C⋆ᵐᵒᵈ(A, m → A) →L[ℂ] C⋆ᵐᵒᵈ(A, n → A) where
   toFun M := { toFun := (WithCStarModule.equivL ℂ).symm ∘ M.vecMul ∘ WithCStarModule.equivL ℂ
@@ -497,6 +506,7 @@ lemma toCLM_apply_eq_sum {M : CStarMatrix m n A} {v : C⋆ᵐᵒᵈ(A, m → A)}
 
 
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Interpret a `CStarMatrix m n A` as a continuous linear map acting on `C⋆ᵐᵒᵈ (n → A)`. This
 version is specialized to the case `m = n` and is bundled as a non-unital algebra homomorphism. -/
 noncomputable def toCLMNonUnitalAlgHom [Fintype n] :
@@ -514,6 +524,7 @@ noncomputable def toCLMNonUnitalAlgHom [Fintype n] :
 lemma toCLMNonUnitalAlgHom_eq_toCLM [Fintype n] {M : CStarMatrix n n A} :
     toCLMNonUnitalAlgHom (A := A) M = MulOpposite.op (toCLM M) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 open WithCStarModule in
 @[simp high]
 lemma toCLM_apply_single [DecidableEq m] {M : CStarMatrix m n A} {i : m} (a : A) :
@@ -525,21 +536,23 @@ open WithCStarModule in
 lemma toCLM_apply_single_apply [DecidableEq m] {M : CStarMatrix m n A} {i : m} {j : n} (a : A) :
     (toCLM M) (equiv _ _ |>.symm <| Pi.single i a) j = a * M i j := by simp
 
+lemma toCLM_injective : Function.Injective (toCLM (A := A) (m := m) (n := n)) := by
+  classical
+  rw [injective_iff_map_eq_zero]
+  intro M h
+  ext i j
+  rw [zero_apply, ← norm_eq_zero, ← sq_eq_zero_iff, sq, ← CStarRing.norm_star_mul_self,
+    ← toCLM_apply_single_apply]
+  simp [h]
+
+variable [PartialOrder A] [StarOrderedRing A]
+
 open WithCStarModule in
 lemma mul_entry_mul_eq_inner_toCLM [Fintype n] [DecidableEq m] [DecidableEq n]
     {M : CStarMatrix m n A} {i : m} {j : n} (a b : A) :
     a * M i j * star b
       = ⟪equiv _ _ |>.symm (Pi.single j b), toCLM M (equiv _ _ |>.symm <| Pi.single i a)⟫_A := by
   simp [mul_assoc, inner_def]
-
-lemma toCLM_injective : Function.Injective (toCLM (A := A) (m := m) (n := n)) := by
-  classical
-  rw [injective_iff_map_eq_zero]
-  intro M h
-  ext i j
-  rw [Matrix.zero_apply, ← norm_eq_zero, ← sq_eq_zero_iff, sq, ← CStarRing.norm_star_mul_self,
-    ← toCLM_apply_single_apply]
-  simp [h]
 
 variable [Fintype n]
 
@@ -618,11 +631,11 @@ namespace CStarMatrix
 variable {m n A : Type*} [Fintype m] [Fintype n]
   [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
-private noncomputable def normedAddCommGroupAux : NormedAddCommGroup (CStarMatrix m n A) :=
+private noncomputable local instance normedAddCommGroupAux :
+    NormedAddCommGroup (CStarMatrix m n A) :=
   .ofCore CStarMatrix.normedSpaceCore
 
-attribute [local instance] normedAddCommGroupAux
-
+@[implicit_reducible]
 private noncomputable def normedSpaceAux : NormedSpace ℂ (CStarMatrix m n A) :=
   .ofCore CStarMatrix.normedSpaceCore
 
@@ -670,6 +683,7 @@ private lemma uniformInducing_toMatrixAux :
   AntilipschitzWith.isUniformInducing antilipschitzWith_toMatrixAux
     lipschitzWith_toMatrixAux.uniformContinuous
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma uniformity_eq_aux :
     𝓤 (CStarMatrix m n A) = (𝓤[Pi.uniformSpace _] :
       Filter (CStarMatrix m n A × CStarMatrix m n A)) := by
@@ -695,41 +709,52 @@ end TopologyAux
 
 namespace CStarMatrix
 
-section non_unital
+section NonUnital
 
 variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 variable {m n : Type*} [Fintype m] [Fintype n]
 
-instance instTopologicalSpace : TopologicalSpace (CStarMatrix m n A) := Pi.topologicalSpace
-instance instUniformSpace : UniformSpace (CStarMatrix m n A) := Pi.uniformSpace _
-instance instBornology : Bornology (CStarMatrix m n A) := Pi.instBornology
-instance instCompleteSpace : CompleteSpace (CStarMatrix m n A) := Pi.complete _
-instance instT2Space : T2Space (CStarMatrix m n A) := Pi.t2Space
-instance instT3Space : T3Space (CStarMatrix m n A) := _root_.instT3Space
+instance instTopologicalSpace : TopologicalSpace (CStarMatrix m n A) :=
+  inferInstanceAs <| TopologicalSpace (Matrix m n A)
+
+instance instUniformSpace : UniformSpace (CStarMatrix m n A) :=
+  inferInstanceAs <| UniformSpace (Matrix m n A)
+
+-- TODO: we are missing `Bornology (Matrix m n A)`
+instance instBornology : Bornology (CStarMatrix m n A) :=
+  inferInstanceAs <| Bornology (m → n → A)
+
+instance instCompleteSpace : CompleteSpace (CStarMatrix m n A) :=
+  inferInstanceAs <| CompleteSpace (Matrix m n A)
+
+instance instT2Space : T2Space (CStarMatrix m n A) := inferInstanceAs <| T2Space (Matrix m n A)
+instance instT3Space : T3Space (CStarMatrix m n A) := inferInstanceAs <| T3Space (Matrix m n A)
+
 
 instance instIsTopologicalAddGroup : IsTopologicalAddGroup (CStarMatrix m n A) :=
-  Pi.topologicalAddGroup
+  inferInstanceAs <| IsTopologicalAddGroup (Matrix m n A)
 
 instance instIsUniformAddGroup : IsUniformAddGroup (CStarMatrix m n A) :=
-  Pi.instIsUniformAddGroup
+  inferInstanceAs <| IsUniformAddGroup (Matrix m n A)
 
 instance instContinuousSMul {R : Type*} [SMul R A] [TopologicalSpace R] [ContinuousSMul R A] :
-    ContinuousSMul R (CStarMatrix m n A) := instContinuousSMulForall
+    ContinuousSMul R (CStarMatrix m n A) :=
+  inferInstanceAs <| ContinuousSMul R (Matrix m n A)
 
 noncomputable instance instNormedAddCommGroup :
     NormedAddCommGroup (CStarMatrix m n A) :=
-  .ofCoreReplaceAll CStarMatrix.normedSpaceCore
-    CStarMatrix.uniformity_eq_aux.symm
-      fun _ => Filter.ext_iff.1 CStarMatrix.cobounded_eq_aux.symm _
+  fast_instance% .ofCoreReplaceAll CStarMatrix.normedSpaceCore ?_ (fun _ ↦ ?_)
+where finally
+  exacts [CStarMatrix.uniformity_eq_aux.symm, Filter.ext_iff.1 CStarMatrix.cobounded_eq_aux.symm _]
 
 noncomputable instance instNormedSpace : NormedSpace ℂ (CStarMatrix m n A) :=
   .ofCore CStarMatrix.normedSpaceCore
 
 noncomputable instance instNonUnitalNormedRing :
     NonUnitalNormedRing (CStarMatrix n n A) where
-  __ : NormedAddCommGroup (CStarMatrix n n A) := inferInstance
   __ : NonUnitalRing (CStarMatrix n n A) := inferInstance
+  __ : NormedAddCommGroup (CStarMatrix n n A) := inferInstance
   norm_mul_le _ _ := by simpa only [norm_def', map_mul] using norm_mul_le _ _
 
 open ContinuousLinearMap CStarModule in
@@ -772,9 +797,9 @@ noncomputable instance instPartialOrder :
 instance instStarOrderedRing :
     StarOrderedRing (CStarMatrix n n A) := CStarAlgebra.spectralOrderedRing _
 
-end non_unital
+end NonUnital
 
-section unital
+section Unital
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
@@ -788,9 +813,9 @@ noncomputable instance instNormedAlgebra : NormedAlgebra ℂ (CStarMatrix n n A)
   norm_smul_le r M := by simpa only [norm_def, map_smul] using (toCLM M).opNorm_smul_le r
 
 /-- Matrices with entries in a unital C⋆-algebra form a unital C⋆-algebra. -/
-noncomputable instance instCStarAlgebra [DecidableEq n] : CStarAlgebra (CStarMatrix n n A) where
+noncomputable instance instCStarAlgebra : CStarAlgebra (CStarMatrix n n A) where
 
-end unital
+end Unital
 
 section
 

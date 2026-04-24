@@ -3,7 +3,9 @@ Copyright (c) 2025 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Lie.Abelian
+module
+
+public import Mathlib.Algebra.Lie.Abelian
 
 /-!
 # Lie algebra cohomology in low degree
@@ -27,6 +29,8 @@ general theory of Lie algebra cohomology.
 * [H. Cartan, S. Eilenberg, *Homological Algebra*](cartan-eilenberg-1956)
 
 -/
+
+@[expose] public section
 
 namespace LieModule.Cohomology
 
@@ -57,6 +61,9 @@ instance : FunLike (twoCochain R L M) L (L →ₗ[R] M) where
 instance : LinearMapClass (twoCochain R L M) R L (L →ₗ[R] M) where
   map_add a := a.1.map_add
   map_smulₛₗ a := a.1.map_smul
+
+@[simp]
+lemma mem_twoCochain_iff {c : L →ₗ[R] L →ₗ[R] M} : c ∈ twoCochain R L M ↔ ∀ x, c x x = 0 := Iff.rfl
 
 @[simp]
 lemma twoCochain_alt (a : twoCochain R L M) (x : L) :
@@ -108,8 +115,9 @@ lemma d₁₂_apply_apply (f : oneCochain R L M) (x y : L) :
 
 lemma d₁₂_apply_apply_ofTrivial [LieModule.IsTrivial L M] (f : oneCochain R L M) (x y : L) :
     d₁₂ R L M f x y = - f ⁅x, y⁆ := by
-  simp
+  simp [trivial_lie_zero]
 
+set_option backward.privateInPublic true in
 /-- The coboundary operator taking degree 2 cochains to a space containing degree 3 cochains. -/
 private def d₂₃_aux (a : twoCochain R L M) : L →ₗ[R] L →ₗ[R] L →ₗ[R] M where
   toFun x :=
@@ -122,6 +130,8 @@ private def d₂₃_aux (a : twoCochain R L M) : L →ₗ[R] L →ₗ[R] L →�
   map_add' _ _ := by ext; simp; abel
   map_smul' _ _ := by ext; abel_nf; simp
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The coboundary operator taking degree 2 cochains to a space containing degree 3 cochains. -/
 def d₂₃ : twoCochain R L M →ₗ[R] L →ₗ[R] L →ₗ[R] L →ₗ[R] M where
   toFun := d₂₃_aux R L M

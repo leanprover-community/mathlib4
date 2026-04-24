@@ -3,8 +3,10 @@ Copyright (c) 2024 Jack McKoen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jack McKoen
 -/
-import Mathlib.CategoryTheory.Comma.Arrow
-import Mathlib.CategoryTheory.EpiMono
+module
+
+public import Mathlib.CategoryTheory.Comma.Arrow
+public import Mathlib.CategoryTheory.EpiMono
 
 /-!
 # Retracts
@@ -12,6 +14,8 @@ import Mathlib.CategoryTheory.EpiMono
 Defines retracts of objects and morphisms.
 
 -/
+
+@[expose] public section
 
 universe v v' u u'
 
@@ -100,6 +104,7 @@ namespace RetractArrow
 
 variable {X Y Z W : C} {f : X ⟶ Y} {g : Z ⟶ W} (h : RetractArrow f g)
 
+set_option backward.isDefEq.respectTransparency false in -- This is needed for `MorphismProperty/Retract.lean`
 @[reassoc]
 lemma i_w : h.i.left ≫ g = f ≫ h.i.right := h.i.w
 
@@ -128,28 +133,28 @@ instance : IsSplitMono h.i.left := ⟨⟨h.left.splitMono⟩⟩
 
 instance : IsSplitMono h.i.right := ⟨⟨h.right.splitMono⟩⟩
 
+/-- If a morphism `f` is a retract of `g`,
+then `F.map f` is a retract of `F.map g` for any functor `F`. -/
+@[simps!]
+def map (F : C ⥤ D) : RetractArrow (F.map f) (F.map g) :=
+  Retract.map h F.mapArrow
+
+set_option backward.isDefEq.respectTransparency false in
 /-- If a morphism `f` is a retract of `g`, then `f.op` is a retract of `g.op`. -/
 @[simps]
 def op : RetractArrow f.op g.op where
-  i.left := h.r.right.op
-  i.right := h.r.left.op
-  i.w := by simp [← op_comp]
-  r.left := h.i.right.op
-  r.right := h.i.left.op
-  r.w := by simp [← op_comp]
+  i := Arrow.homMk (h.r.right.op) (h.r.left.op) (by simp [← op_comp])
+  r := Arrow.homMk (h.i.right.op) (h.i.left.op) (by simp [← op_comp])
   retract := by ext <;> simp [← op_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a morphism `f` in the opposite category is a retract of `g`,
 then `f.unop` is a retract of `g.unop`. -/
 @[simps]
-def unop {X Y Z W : Cᵒᵖ} {f : X ⟶ Y} {g : Z ⟶ W} (h : RetractArrow f g)
- : RetractArrow f.unop g.unop where
-  i.left := h.r.right.unop
-  i.right := h.r.left.unop
-  i.w := by simp [← unop_comp]
-  r.left := h.i.right.unop
-  r.right := h.i.left.unop
-  r.w := by simp [← unop_comp]
+def unop {X Y Z W : Cᵒᵖ} {f : X ⟶ Y} {g : Z ⟶ W} (h : RetractArrow f g) :
+    RetractArrow f.unop g.unop where
+  i := Arrow.homMk (h.r.right.unop) (h.r.left.unop) (by simp [← unop_comp])
+  r := Arrow.homMk (h.i.right.unop) (h.i.left.unop) (by simp [← unop_comp])
   retract := by ext <;> simp [← unop_comp]
 
 end RetractArrow
@@ -163,5 +168,14 @@ def retract {X Y : C} (e : X ≅ Y) : Retract X Y where
   r := e.inv
 
 end Iso
+
+/-- If `X` is a retract of `Y`, then for any natural transformation `τ`,
+the natural transformation `τ.app X` is a retract of `τ.app Y`. -/
+@[simps]
+def NatTrans.retractArrowApp {F G : C ⥤ D}
+    (τ : F ⟶ G) {X Y : C} (h : Retract X Y) : RetractArrow (τ.app X) (τ.app Y) where
+  i := Arrow.homMk (F.map h.i) (G.map h.i) (by simp)
+  r := Arrow.homMk (F.map h.r) (G.map h.r) (by simp)
+  retract := by ext <;> simp [← Functor.map_comp]
 
 end CategoryTheory

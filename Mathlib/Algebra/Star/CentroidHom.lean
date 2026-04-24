@@ -3,23 +3,26 @@ Copyright (c) 2024 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
+module
 
-import Mathlib.Algebra.Ring.CentroidHom
-import Mathlib.Algebra.Star.StarRingHom
-import Mathlib.Algebra.Star.Subsemiring
-import Mathlib.Algebra.Star.Basic
+public import Mathlib.Algebra.Ring.CentroidHom
+public import Mathlib.Algebra.Star.StarRingHom
+public import Mathlib.Algebra.Star.Subsemiring
+public import Mathlib.Algebra.Star.Basic
 
 /-!
 # Centroid homomorphisms on Star Rings
 
 When a (nonunital, non-associative) semiring is equipped with an involutive automorphism the
 center of the centroid becomes a star ring in a natural way and the natural mapping of the centre of
-the semiring into the centre of the centroid becomes a *-homomorphism.
+the semiring into the centre of the centroid becomes a \*-homomorphism.
 
 ## Tags
 
 centroid
 -/
+
+@[expose] public section
 
 variable {α : Type*}
 
@@ -58,6 +61,7 @@ instance instStarAddMonoidCenter : StarAddMonoid (Subsemiring.center (CentroidHo
   star_involutive f := SetCoe.ext (star_involutive f.val)
   star_add f g := SetCoe.ext (star_add f.val g.val)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : StarRing (Subsemiring.center (CentroidHom α)) where
   __ := instStarAddMonoidCenter
   star_mul f g := by
@@ -68,14 +72,11 @@ instance : StarRing (Subsemiring.center (CentroidHom α)) where
       _ = star (g (star (star (f (star a))))) := by simp only [star_star]
       _ = (star g * star f) a := rfl
 
-/-- The canonical *-homomorphism embedding the center of `CentroidHom α` into `CentroidHom α`. -/
+/-- The canonical \*-homomorphism embedding the center of `CentroidHom α` into `CentroidHom α`. -/
 def centerStarEmbedding : Subsemiring.center (CentroidHom α) →⋆ₙ+* CentroidHom α where
   toNonUnitalRingHom :=
     (SubsemiringClass.subtype (Subsemiring.center (CentroidHom α))).toNonUnitalRingHom
-  map_star' f := by
-    simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
-      MonoidHom.coe_coe, SubsemiringClass.coe_subtype]
-    exact rfl
+  map_star' _ := rfl
 
 theorem star_centerToCentroidCenter (z : NonUnitalStarSubsemiring.center α) :
     star (centerToCentroidCenter z) =
@@ -88,14 +89,12 @@ theorem star_centerToCentroidCenter (z : NonUnitalStarSubsemiring.center α) :
       _ = (star z) * a := by rw [(star z).property.comm]
       _ = (centerToCentroidCenter ((star z) : NonUnitalStarSubsemiring.center α)) a := rfl
 
-/-- The canonical *-homomorphism from the center of a non-unital, non-associative *-semiring into
-the center of its centroid. -/
+/-- The canonical \*-homomorphism from the center of a non-unital, non-associative \*-semiring
+into the center of its centroid. -/
 def starCenterToCentroidCenter :
     NonUnitalStarSubsemiring.center α →⋆ₙ+* Subsemiring.center (CentroidHom α) where
   toNonUnitalRingHom := centerToCentroidCenter
-  map_star' _ := by
-    simp only [MulHom.toFun_eq_coe, NonUnitalRingHom.coe_toMulHom]
-    exact (star_centerToCentroidCenter _).symm
+  map_star' _ := (star_centerToCentroidCenter _).symm
 
 /-- The canonical homomorphism from the center into the centroid -/
 def starCenterToCentroid : NonUnitalStarSubsemiring.center α →⋆ₙ+* CentroidHom α :=
@@ -108,11 +107,10 @@ lemma starCenterToCentroid_apply (z : NonUnitalStarSubsemiring.center α) (a : �
 Let `α` be a star ring with commutative centroid. Then the centroid is a star ring.
 -/
 @[reducible]
-def starRingOfCommCentroidHom (mul_comm : Std.Commutative (α := CentroidHom α) (· * ·)) :
+def starRingOfCommCentroidHom (mul_comm : IsMulCommutative (CentroidHom α)) :
     StarRing (CentroidHom α) where
   __ := instStarAddMonoid
-  star_mul _ _ := ext (fun _ => by
-    rw [mul_comm.comm, star_apply, mul_apply, mul_apply, star_apply, star_apply, star_star])
+  star_mul _ _ := ext fun _ ↦ by simp [mul_comm']
 
 end NonUnitalNonAssocStarSemiring
 

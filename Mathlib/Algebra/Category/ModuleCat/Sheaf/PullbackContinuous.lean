@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pullback
-import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafification
-import Mathlib.Algebra.Category.ModuleCat.Sheaf.PushforwardContinuous
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pullback
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafification
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PushforwardContinuous
 
 /-!
 # Pullback of sheaves of modules
@@ -21,18 +23,24 @@ that is left adjoint to `pushforward.{v} φ`. We show that it exists
 under suitable assumptions, and prove that the pullback of (pre)sheaves of
 modules commutes with the sheafification.
 
+From the compatibility of `pushforward` with respect to composition, we deduce
+similar pseudofunctor-like properties of the `pullback` functors.
+
 -/
 
-universe v v₁ v₂ u₁ u₂ u
+@[expose] public section
 
-open CategoryTheory
+universe v v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄ u
+
+open CategoryTheory Functor
 
 namespace SheafOfModules
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
+  {D' : Type u₃} [Category.{v₃} D'] {D'' : Type u₄} [Category.{v₄} D'']
   {J : GrothendieckTopology C} {K : GrothendieckTopology D} {F : C ⥤ D}
   {S : Sheaf J RingCat.{u}} {R : Sheaf K RingCat.{u}}
-  [Functor.IsContinuous.{u} F J K] [Functor.IsContinuous.{v} F J K]
+  [Functor.IsContinuous F J K]
   (φ : S ⟶ (F.sheafPushforwardContinuous RingCat.{u} J K).obj R)
 
 section
@@ -59,20 +67,21 @@ end
 
 section
 
-variable [(PresheafOfModules.pushforward.{v} φ.val).IsRightAdjoint]
+variable [(PresheafOfModules.pushforward.{v} φ.hom).IsRightAdjoint]
   [HasWeakSheafify K AddCommGrpCat.{v}] [K.WEqualsLocallyBijective AddCommGrpCat.{v}]
 
 namespace PullbackConstruction
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Construction of a left adjoint to the functor `pushforward.{v} φ` by using the
 pullback of presheaves of modules and the sheafification. -/
 noncomputable def adjunction :
-    (forget S ⋙ PresheafOfModules.pullback.{v} φ.val ⋙
-      PresheafOfModules.sheafification (𝟙 R.val)) ⊣ pushforward.{v} φ :=
+    (forget S ⋙ PresheafOfModules.pullback.{v} φ.hom ⋙
+      PresheafOfModules.sheafification (R₀ := R.obj) (𝟙 R.obj)) ⊣ pushforward.{v} φ :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun F G ↦
-        ((PresheafOfModules.sheafificationAdjunction (𝟙 R.val)).homEquiv _ _).trans
-            (((PresheafOfModules.pullbackPushforwardAdjunction φ.val).homEquiv F.val G.val).trans
+        ((PresheafOfModules.sheafificationAdjunction (𝟙 R.obj)).homEquiv _ _).trans
+            (((PresheafOfModules.pullbackPushforwardAdjunction φ.hom).homEquiv F.val G.val).trans
               ((fullyFaithfulForget S).homEquiv (Y := (pushforward φ).obj G)).symm)
       homEquiv_naturality_left_symm := by
         intros
@@ -80,7 +89,7 @@ noncomputable def adjunction :
         -- these erw seem difficult to remove
         erw [Adjunction.homEquiv_naturality_left_symm,
           Adjunction.homEquiv_naturality_left_symm]
-        dsimp
+        dsimp [pushforward_obj_val]
         simp only [Functor.map_comp, Category.assoc]
       homEquiv_naturality_right := by
         tauto }
@@ -95,8 +104,8 @@ of the forget functor to presheaves, the pullback on presheaves of modules, and
 the sheafification functor. -/
 noncomputable def pullbackIso :
     pullback.{v} φ ≅
-      forget S ⋙ PresheafOfModules.pullback.{v} φ.val ⋙
-        PresheafOfModules.sheafification (𝟙 R.val) :=
+      forget S ⋙ PresheafOfModules.pullback.{v} φ.hom ⋙
+        PresheafOfModules.sheafification (R₀ := R.obj) (𝟙 R.obj) :=
   Adjunction.leftAdjointUniq (pullbackPushforwardAdjunction φ)
     (PullbackConstruction.adjunction φ)
 
@@ -106,17 +115,99 @@ variable [HasWeakSheafify J AddCommGrpCat.{v}] [J.WEqualsLocallyBijective AddCom
 
 /-- The pullback of (pre)sheaves of modules commutes with the sheafification. -/
 noncomputable def sheafificationCompPullback :
-    PresheafOfModules.sheafification (𝟙 S.val) ⋙ pullback.{v} φ ≅
-      PresheafOfModules.pullback.{v} φ.val ⋙
-        PresheafOfModules.sheafification (𝟙 R.val) :=
+    PresheafOfModules.sheafification (𝟙 S.obj) ⋙ pullback.{v} φ ≅
+      PresheafOfModules.pullback.{v} φ.hom ⋙
+        PresheafOfModules.sheafification (R₀ := R.obj) (𝟙 R.obj) :=
   Adjunction.leftAdjointUniq
-    ((PresheafOfModules.sheafificationAdjunction (𝟙 S.val)).comp
+    ((PresheafOfModules.sheafificationAdjunction (𝟙 S.obj)).comp
       (pullbackPushforwardAdjunction φ))
-    ((PresheafOfModules.pullbackPushforwardAdjunction φ.val).comp
-      (PresheafOfModules.sheafificationAdjunction (𝟙 R.val)))
+    ((PresheafOfModules.pullbackPushforwardAdjunction φ.hom).comp
+      (PresheafOfModules.sheafificationAdjunction (𝟙 R.obj)))
 
 end
 
 end
+
+
+instance : (pushforward.{v} (F := 𝟭 C) (𝟙 S)).IsRightAdjoint :=
+  Functor.isRightAdjoint_of_iso (pushforwardId S).symm
+
+variable (S) in
+/-- The pullback by the identity morphism identifies to the identity functor of the
+category of sheaves of modules. -/
+noncomputable def pullbackId : pullback.{v} (F := 𝟭 C) (𝟙 S) ≅ 𝟭 _ :=
+  ((pullbackPushforwardAdjunction.{v} (F := 𝟭 C) (𝟙 S))).leftAdjointIdIso (pushforwardId S)
+
+variable (S) in
+@[simp]
+lemma conjugateEquiv_pullbackId_hom :
+    conjugateEquiv .id (pullbackPushforwardAdjunction.{v} _) (pullbackId S).hom =
+      (pushforwardId S).inv :=
+  Adjunction.conjugateEquiv_leftAdjointIdIso_hom _ _
+
+variable [(pushforward.{v} φ).IsRightAdjoint]
+
+section
+
+variable {K' : GrothendieckTopology D'} {K'' : GrothendieckTopology D''}
+  {G : D ⥤ D'} {R' : Sheaf K' RingCat.{u}}
+  [Functor.IsContinuous G K K']
+  [Functor.IsContinuous (F ⋙ G) J K']
+  (ψ : R ⟶ (G.sheafPushforwardContinuous RingCat.{u} K K').obj R')
+
+variable [(pushforward.{v} ψ).IsRightAdjoint]
+
+instance : (pushforward.{v} (F := F ⋙ G)
+    (φ ≫ (F.sheafPushforwardContinuous RingCat.{u} J K).map ψ)).IsRightAdjoint :=
+  Functor.isRightAdjoint_of_iso (pushforwardComp.{v} φ ψ)
+
+/-- The composition of two pullback functors on sheaves of modules identifies
+to the pullback for the composition. -/
+noncomputable def pullbackComp :
+    pullback.{v} φ ⋙ pullback.{v} ψ ≅
+      pullback.{v} (F := F ⋙ G) (φ ≫ (F.sheafPushforwardContinuous RingCat.{u} J K).map ψ) :=
+  Adjunction.leftAdjointCompIso
+    (pullbackPushforwardAdjunction.{v} φ) (pullbackPushforwardAdjunction.{v} ψ)
+    (pullbackPushforwardAdjunction.{v} (F := F ⋙ G)
+      (φ ≫ (F.sheafPushforwardContinuous RingCat.{u} J K).map ψ))
+    (pushforwardComp φ ψ)
+
+@[simp]
+lemma conjugateEquiv_pullbackComp_inv :
+    conjugateEquiv ((pullbackPushforwardAdjunction.{v} φ).comp
+      (pullbackPushforwardAdjunction.{v} ψ))
+    (pullbackPushforwardAdjunction.{v} _) (pullbackComp.{v} φ ψ).inv =
+    (pushforwardComp.{v} φ ψ).hom :=
+  Adjunction.conjugateEquiv_leftAdjointCompIso_inv _ _ _ _
+
+variable {G' : D' ⥤ D''} {R'' : Sheaf K'' RingCat.{u}}
+  [Functor.IsContinuous G' K' K'']
+  [Functor.IsContinuous (G ⋙ G') K K'']
+  [Functor.IsContinuous ((F ⋙ G) ⋙ G') J K'']
+  [Functor.IsContinuous (F ⋙ G ⋙ G') J K'']
+  (ψ' : R' ⟶ (G'.sheafPushforwardContinuous RingCat.{u} K' K'').obj R'')
+
+variable [(pushforward.{v} ψ').IsRightAdjoint]
+
+lemma pullback_assoc :
+    isoWhiskerLeft _ (pullbackComp.{v} ψ ψ') ≪≫
+      pullbackComp.{v} (G := G ⋙ G') φ
+        (ψ ≫ (G.sheafPushforwardContinuous RingCat.{u} K K').map ψ') =
+    (associator _ _ _).symm ≪≫ isoWhiskerRight (pullbackComp.{v} φ ψ) _ ≪≫
+      pullbackComp.{v} (F := F ⋙ G)
+        (φ ≫ (F.sheafPushforwardContinuous RingCat.{u} J K).map ψ) ψ' :=
+  Adjunction.leftAdjointCompIso_assoc _ _ _ _ _ _ _ _ _ _ (pushforward_assoc φ ψ ψ')
+
+end
+
+lemma pullback_id_comp :
+    pullbackComp.{v} (F := 𝟭 C) (𝟙 S) φ =
+      isoWhiskerRight (pullbackId S) (pullback φ) ≪≫ Functor.leftUnitor _ :=
+  Adjunction.leftAdjointCompIso_id_comp _ _ _ _ (pushforward_comp_id φ)
+
+lemma pullback_comp_id :
+    pullbackComp.{v} (G := 𝟭 _) φ (𝟙 R) =
+      isoWhiskerLeft _ (pullbackId R) ≪≫ Functor.rightUnitor _ :=
+  Adjunction.leftAdjointCompIso_comp_id _ _ _ _ (pushforward_id_comp φ)
 
 end SheafOfModules

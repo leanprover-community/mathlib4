@@ -3,8 +3,12 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Johan Commelin, Reid Barton, Thomas Murrills
 -/
-import Mathlib.Tactic.Core
-import Lean.Meta.Tactic.Cases
+module
+
+public meta import Lean.Meta.Tactic.Cases
+import all Lean.MetavarContext
+public import Mathlib.Tactic.Core
+public import Mathlib.Tactic.Push
 
 /-!
 
@@ -12,15 +16,18 @@ import Lean.Meta.Tactic.Cases
 
 The tactic `wlog h : P` will add an assumption `h : P` to the main goal,
 and add a new goal that requires showing that the case `h : ¬ P` can be reduced to the case
-where `P` holds (typically by symmetry).
+where `P` holds (typically by symmetry). `wlog! h : P` is a variant that will also call `push Not`
+at `h : ¬ P`.
 
 The new goal will be placed at the top of the goal stack.
 
 -/
 
+public meta section
+
 namespace Mathlib.Tactic
 
-open Lean Meta Elab Term Tactic MetavarContext.MkBinding
+open Lean Meta Elab Term Tactic MetavarContext.MkBinding Parser.Tactic
 
 /-- The result of running `wlog` on a goal. -/
 structure WLOGResult where
@@ -46,7 +53,6 @@ structure WLOGResult where
   `hypothesisGoal`). -/
   revertedFVarIds  : Array FVarId
 
-open private withFreshCache mkAuxMVarType from Lean.MetavarContext in
 /-- `wlog goal h P xs H` will return two goals: the `hypothesisGoal`, which adds an assumption
 `h : P` to the context of `goal`, and the `reductionGoal`, which requires showing that the case
 `h : ¬ P` can be reduced to the case where `P` holds (typically by symmetry).
@@ -78,7 +84,7 @@ def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Option Name) (P : Expr)
     let f ← collectForwardDeps lctx fvars
     let revertedFVars := filterOutImplementationDetails lctx (f.map Expr.fvarId!)
     let HType ← withFreshCache do
-      mkAuxMVarType lctx (revertedFVars.map Expr.fvar) .natural HSuffix (usedLetOnly := true)
+      mkAuxMVarType lctx (revertedFVars.map Expr.fvar) .natural HSuffix (usedLetOnly := false)
     return (revertedFVars, HType))
       { preserveOrder := false, quotContext := ctx.quotContext }
   /- Set up the goal which will suppose `h`; this begins as a goal with type H (hence HExpr), and h
@@ -110,27 +116,10 @@ def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Option Name) (P : Expr)
     easyGoal.assign HApp
   return ⟨reductionGoal, (HFVarId, negHyp), hGoal, hFVar, revertedFVars⟩
 
-/-- `wlog h : P` will add an assumption `h : P` to the main goal, and add a side goal that requires
-showing that the case `h : ¬ P` can be reduced to the case where `P` holds (typically by symmetry).
-
-The side goal will be at the top of the stack. In this side goal, there will be two additional
-assumptions:
-- `h : ¬ P`: the assumption that `P` does not hold
-- `this`: which is the statement that in the old context `P` suffices to prove the goal.
-  By default, the name `this` is used, but the idiom `with H` can be added to specify the name:
-  `wlog h : P with H`.
-
-Typically, it is useful to use the variant `wlog h : P generalizing x y`,
-to revert certain parts of the context before creating the new goal.
-In this way, the wlog-claim `this` can be applied to `x` and `y` in different orders
-(exploiting symmetry, which is the typical use case).
-
-By default, the entire context is reverted. -/
-syntax (name := wlog) "wlog " binderIdent " : " term
-  (" generalizing" (ppSpace colGt ident)*)? (" with " binderIdent)? : tactic
-
-elab_rules : tactic
-| `(tactic| wlog $h:binderIdent : $P:term $[ generalizing $xs*]? $[ with $H:ident]?) =>
+/-- The implementation of `wlog` and `wlog!` -/
+def wlogCore (h : TSyntax ``binderIdent) (P : Term) (xs : Option (TSyntaxArray `ident))
+    (H : Option (TSyntax `ident)) (pushConfig : Option (TSyntax ``optConfig) := none) :
+    TacticM Unit := do
   withMainContext do
   let H := H.map (·.getId)
   let h := match h with
@@ -138,7 +127,45 @@ elab_rules : tactic
   | _ => none
   let P ← elabType P
   let goal ← getMainGoal
-  let { reductionGoal, hypothesisGoal .. } ← goal.wlog h P xs H
+  let { reductionGoal, hypothesisGoal, reductionFVarIds .. } ← goal.wlog h P xs H
   replaceMainGoal [reductionGoal, hypothesisGoal]
+  if let some cfg := pushConfig then
+    reductionGoal.withContext do
+      let negHygName := mkIdent <| ← reductionFVarIds.2.getUserName
+      Push.push (← Push.elabPushConfig cfg) none (.const ``Not) (.targets #[(negHygName)] false)
+        (ifUnchanged := .error)
+
+/-- `wlog h : P` adds an assumption `h : P` to the main goal, and adds a side goal that
+requires showing that the case `h : ¬ P` can be reduced to the case where `P` holds
+(typically by symmetry). The side goal will be at the top of the stack. In this side goal,
+there will be two additional assumptions:
+- `h : ¬ P`: the assumption that `P` does not hold
+- `this`: which is the statement that in the old context `P` suffices to prove the goal.
+  By default, the entire context is reverted to produce `this`.
+
+* `wlog h : P with H` gives the name `H` to the statement that `P` proves the goal.
+* `wlog h : P generalizing x y ...` reverts certain parts of the context before creating the new
+  goal. In this way, the wlog-claim `this` can be applied to `x` and `y` in different orders
+  (exploiting symmetry, which is the typical use case).
+* `wlog! h : P` also calls `push Not` at the generated hypothesis `h`.
+  `wlog! h : P ∧ Q` will transform `¬ (P ∧ Q)` to `P → ¬ Q`
+* `wlog! +distrib h : P` also calls `push +distrib Not` at the generated hypothesis `h`.
+  `wlog! +distrib h : P ∧ Q` will transform `¬ (P ∧ Q)` to `¬P ∨ ¬Q`.
+-/
+syntax (name := wlog) "wlog " binderIdent " : " term
+  (" generalizing" (ppSpace colGt ident)*)? (" with " binderIdent)? : tactic
+
+elab_rules : tactic
+| `(tactic| wlog $h:binderIdent : $P:term $[ generalizing $xs*]? $[ with $H:ident]?) =>
+  wlogCore h P xs H
+
+@[tactic_alt wlog]
+syntax (name := wlog!) "wlog! " optConfig binderIdent " : " term
+  (" generalizing" (ppSpace colGt ident)*)? (" with " binderIdent)? : tactic
+
+elab_rules : tactic
+| `(tactic|
+    wlog! $cfg:optConfig $h:binderIdent : $P:term $[ generalizing $xs*]? $[ with $H:ident]?) =>
+  wlogCore h P xs H cfg
 
 end Mathlib.Tactic

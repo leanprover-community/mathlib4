@@ -3,9 +3,11 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Order.Atoms
-import Mathlib.LinearAlgebra.Span.Defs
-import Mathlib.LinearAlgebra.AffineSpace.Defs
+module
+
+public import Mathlib.Order.Atoms
+public import Mathlib.LinearAlgebra.Span.Defs
+public import Mathlib.LinearAlgebra.AffineSpace.Defs
 
 /-!
 # Affine spaces
@@ -43,6 +45,8 @@ topology are defined elsewhere; see `Analysis.Normed.Affine.AddTorsor` and
 * https://en.wikipedia.org/wiki/Affine_space
 * https://en.wikipedia.org/wiki/Principal_homogeneous_space
 -/
+
+@[expose] public section
 noncomputable section
 
 open Affine
@@ -85,6 +89,18 @@ theorem vsub_set_subset_vectorSpan (s : Set P) : s -ᵥ s ⊆ ↑(vectorSpan k s
 theorem vsub_mem_vectorSpan {s : Set P} {p₁ p₂ : P} (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) :
     p₁ -ᵥ p₂ ∈ vectorSpan k s :=
   vsub_set_subset_vectorSpan k s (vsub_mem_vsub hp₁ hp₂)
+
+lemma vectorSpan_of_subsingleton {s : Set P} (h : s.Subsingleton) : vectorSpan k s = ⊥ := by
+  rcases h.eq_empty_or_singleton with rfl | ⟨p, rfl⟩ <;> simp
+
+@[simp]
+lemma vectorSpan_eq_bot_iff_subsingleton {s : Set P} : vectorSpan k s = ⊥ ↔ s.Subsingleton := by
+  refine ⟨fun h ↦ ?_, vectorSpan_of_subsingleton _⟩
+  by_contra hns
+  rw [Set.not_subsingleton_iff] at hns
+  obtain ⟨p, hp, q, hq, hpq⟩ := hns
+  have hpq' := vsub_mem_vectorSpan k hp hq
+  simp_all
 
 /-- The points in the affine span of a (possibly empty) set of points. Use `affineSpan` instead to
 get an `AffineSubspace k P`. -/
@@ -157,6 +173,8 @@ variable (k : Type*) {V : Type*} (P : Type*) [Ring k] [AddCommGroup V] [Module k
 instance : SetLike (AffineSubspace k P) P where
   coe := carrier
   coe_injective' p q _ := by cases p; cases q; congr
+
+instance : PartialOrder (AffineSubspace k P) := .ofSetLike (AffineSubspace k P) P
 
 /-- A point is in an affine subspace coerced to a set if and only if it is in that affine
 subspace. -/
@@ -345,6 +363,9 @@ theorem vadd_mem_mk' {v : V} (p : P) {direction : Submodule k V} (hv : v ∈ dir
 theorem mk'_nonempty (p : P) (direction : Submodule k V) : (mk' p direction : Set P).Nonempty :=
   ⟨p, self_mem_mk' p direction⟩
 
+instance (p : P) (direction : Submodule k V) : Nonempty (mk' p direction) :=
+  ⟨⟨p, self_mem_mk' p direction⟩⟩
+
 /-- The direction of an affine subspace constructed from a point and a direction. -/
 @[simp]
 theorem direction_mk' (p : P) (direction : Submodule k V) :
@@ -355,8 +376,6 @@ theorem direction_mk' (p : P) (direction : Submodule k V) :
   · rintro ⟨p₁, hp₁, p₂, hp₂, rfl⟩
     simpa using direction.sub_mem hp₁ hp₂
   · exact fun hv => ⟨v +ᵥ p, vadd_mem_mk' _ hv, p, self_mem_mk' _ _, (vadd_vsub _ _).symm⟩
-
-@[deprecated (since := "2025-08-15")] alias mem_mk'_iff_vsub_mem := mem_mk'
 
 /-- Constructing an affine subspace from a point in a subspace and that subspace's direction
 yields the original subspace. -/
@@ -440,7 +459,7 @@ theorem mem_affineSpan {p : P} {s : Set P} (hp : p ∈ s) : p ∈ affineSpan k s
 lemma vectorSpan_add_self (s : Set V) : (vectorSpan k s : Set V) + s = affineSpan k s := by
   ext
   simp [mem_add, spanPoints]
-  aesop
+  grind
 
 variable {k}
 
@@ -467,43 +486,37 @@ namespace AffineSubspace
 variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
   [S : AffineSpace V P] {ι : Sort*}
 
-instance : CompleteLattice (AffineSubspace k P) :=
-  {
-    PartialOrder.lift ((↑) : AffineSubspace k P → Set P)
-      coe_injective with
-    sup := fun s₁ s₂ => affineSpan k (s₁ ∪ s₂)
-    le_sup_left := fun _ _ =>
-      Set.Subset.trans Set.subset_union_left (subset_spanPoints k _)
-    le_sup_right := fun _ _ =>
-      Set.Subset.trans Set.subset_union_right (subset_spanPoints k _)
-    sup_le := fun _ _ _ hs₁ hs₂ => spanPoints_subset_coe_of_subset_coe (Set.union_subset hs₁ hs₂)
-    inf := fun s₁ s₂ =>
-      mk (s₁ ∩ s₂) fun c _ _ _ hp₁ hp₂ hp₃ =>
-        ⟨s₁.smul_vsub_vadd_mem c hp₁.1 hp₂.1 hp₃.1, s₂.smul_vsub_vadd_mem c hp₁.2 hp₂.2 hp₃.2⟩
-    inf_le_left := fun _ _ => Set.inter_subset_left
-    inf_le_right := fun _ _ => Set.inter_subset_right
-    le_sInf := fun S s₁ hs₁ => by
-      apply Set.subset_sInter
-      rintro t ⟨s, _hs, rfl⟩
-      exact Set.subset_iInter (hs₁ s)
-    top :=
-      { carrier := Set.univ
-        smul_vsub_vadd_mem := fun _ _ _ _ _ _ _ => Set.mem_univ _ }
-    le_top := fun _ _ _ => Set.mem_univ _
-    bot :=
-      { carrier := ∅
-        smul_vsub_vadd_mem := fun _ _ _ _ => False.elim }
-    bot_le := fun _ _ => False.elim
-    sSup := fun s => affineSpan k (⋃ s' ∈ s, (s' : Set P))
-    sInf := fun s =>
-      mk (⋂ s' ∈ s, (s' : Set P)) fun c p₁ p₂ p₃ hp₁ hp₂ hp₃ =>
-        Set.mem_iInter₂.2 fun s₂ hs₂ => by
-          rw [Set.mem_iInter₂] at *
-          exact s₂.smul_vsub_vadd_mem c (hp₁ s₂ hs₂) (hp₂ s₂ hs₂) (hp₃ s₂ hs₂)
-    le_sSup := fun _ _ h => Set.Subset.trans (Set.subset_biUnion_of_mem h) (subset_spanPoints k _)
-    sSup_le := fun _ _ h => spanPoints_subset_coe_of_subset_coe (Set.iUnion₂_subset h)
-    sInf_le := fun _ _ => Set.biInter_subset_of_mem
-    le_inf := fun _ _ _ => Set.subset_inter }
+instance : CompleteLattice (AffineSubspace k P) where
+  sup := fun s₁ s₂ => affineSpan k (s₁ ∪ s₂)
+  le_sup_left := fun _ _ =>
+    Set.Subset.trans Set.subset_union_left (subset_spanPoints k _)
+  le_sup_right := fun _ _ =>
+    Set.Subset.trans Set.subset_union_right (subset_spanPoints k _)
+  sup_le := fun _ _ _ hs₁ hs₂ => spanPoints_subset_coe_of_subset_coe (Set.union_subset hs₁ hs₂)
+  inf := fun s₁ s₂ =>
+    mk (s₁ ∩ s₂) fun c _ _ _ hp₁ hp₂ hp₃ =>
+      ⟨s₁.smul_vsub_vadd_mem c hp₁.1 hp₂.1 hp₃.1, s₂.smul_vsub_vadd_mem c hp₁.2 hp₂.2 hp₃.2⟩
+  inf_le_left := fun _ _ => Set.inter_subset_left
+  inf_le_right := fun _ _ => Set.inter_subset_right
+  top :=
+    { carrier := Set.univ
+      smul_vsub_vadd_mem := fun _ _ _ _ _ _ _ => Set.mem_univ _ }
+  le_top := fun _ _ _ => Set.mem_univ _
+  bot :=
+    { carrier := ∅
+      smul_vsub_vadd_mem := fun _ _ _ _ => False.elim }
+  bot_le := fun _ _ => False.elim
+  sSup := fun s => affineSpan k (⋃ s' ∈ s, (s' : Set P))
+  sInf := fun s =>
+    mk (⋂ s' ∈ s, (s' : Set P)) fun c p₁ p₂ p₃ hp₁ hp₂ hp₃ =>
+      Set.mem_iInter₂.2 fun s₂ hs₂ => by
+        rw [Set.mem_iInter₂] at *
+        exact s₂.smul_vsub_vadd_mem c (hp₁ s₂ hs₂) (hp₂ s₂ hs₂) (hp₃ s₂ hs₂)
+  isLUB_sSup _ :=
+    ⟨fun _ h => Set.Subset.trans (Set.subset_biUnion_of_mem h) (subset_spanPoints k _),
+      fun _ h => spanPoints_subset_coe_of_subset_coe (Set.iUnion₂_subset h)⟩
+  isGLB_sInf _ := .of_image SetLike.coe_subset_coe isGLB_biInf
+  le_inf := fun _ _ _ => Set.subset_inter
 
 instance : Inhabited (AffineSubspace k P) :=
   ⟨⊤⟩
@@ -678,8 +691,6 @@ variable {P}
 theorem notMem_bot (p : P) : p ∉ (⊥ : AffineSubspace k P) :=
   Set.notMem_empty p
 
-@[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
-
 instance isEmpty_bot : IsEmpty (⊥ : AffineSubspace k P) :=
   Subtype.isEmpty_of_false fun _ ↦ notMem_bot _ _ _
 
@@ -732,8 +743,6 @@ points. -/
 @[simp]
 theorem coe_inf (s₁ s₂ : AffineSubspace k P) : (s₁ ⊓ s₂ : Set P) = (s₁ : Set P) ∩ s₂ :=
   rfl
-
-@[deprecated (since := "2025-08-31")] alias inf_coe := coe_inf
 
 /-- A point is in the inf of two affine subspaces if and only if it is in both of them. -/
 theorem mem_inf_iff (p : P) (s₁ s₂ : AffineSubspace k P) : p ∈ s₁ ⊓ s₂ ↔ p ∈ s₁ ∧ p ∈ s₂ :=
@@ -882,6 +891,15 @@ theorem affineSpan_coe (s : AffineSubspace k P) : affineSpan k (s : Set P) = s :
   rintro p ⟨p₁, hp₁, v, hv, rfl⟩
   exact vadd_mem_of_mem_direction hv hp₁
 
+@[simp, gcongr]
+theorem mk'_le_mk'_iff (p : P) {d₁ d₂ : Submodule k V} : mk' p d₁ ≤ mk' p d₂ ↔ d₁ ≤ d₂ := by
+  simp_rw [SetLike.le_def, mem_mk']
+  refine ⟨fun h x hx ↦ ?_, fun h x hx ↦ h hx⟩
+  simpa using h (show (x +ᵥ p) -ᵥ p ∈ d₁ by simpa using hx)
+
+theorem mk'_strictMono (p : P) : StrictMono (mk' p (k := k)) :=
+  strictMono_of_le_iff_le (fun _ _ ↦ (mk'_le_mk'_iff p).symm)
+
 end AffineSubspace
 
 section AffineSpace'
@@ -933,7 +951,7 @@ preserved under certain affine combinations, then `p` holds for all elements of 
 theorem affineSpan_induction {x : P} {s : Set P} {p : P → Prop} (h : x ∈ affineSpan k s)
     (mem : ∀ x : P, x ∈ s → p x)
     (smul_vsub_vadd : ∀ (c : k) (u v w : P), p u → p v → p w → p (c • (u -ᵥ v) +ᵥ w)) : p x :=
-  (affineSpan_le (Q := ⟨p, smul_vsub_vadd⟩)).mpr mem h
+  (affineSpan_le (Q := ⟨{x | p x}, smul_vsub_vadd⟩)).mpr mem h
 
 /-- A dependent version of `affineSpan_induction`. -/
 @[elab_as_elim]
@@ -1043,7 +1061,7 @@ span. -/
 lemma affineSpan_le_toAffineSubspace_span {s : Set V} :
     affineSpan k s ≤ (Submodule.span k s).toAffineSubspace := by
   intro x hx
-  simp only [SetLike.mem_coe, Submodule.mem_toAffineSubspace]
+  simp only [Submodule.mem_toAffineSubspace]
   induction hx using affineSpan_induction' with
   | mem x hx => exact Submodule.subset_span hx
   | smul_vsub_vadd c u _ v _ w _ hu hv hw =>
@@ -1052,7 +1070,7 @@ lemma affineSpan_le_toAffineSubspace_span {s : Set V} :
     exact Submodule.smul_mem _ _ (Submodule.sub_mem _ hu hv)
 
 lemma affineSpan_subset_span {s : Set V} :
-    (affineSpan k s : Set V) ⊆  Submodule.span k s :=
+    (affineSpan k s : Set V) ⊆ Submodule.span k s :=
   affineSpan_le_toAffineSubspace_span
 
 -- TODO: We want this to be simp, but `affineSpan` gets simp-ed away to `spanPoints`!

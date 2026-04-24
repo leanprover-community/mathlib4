@@ -3,12 +3,15 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Init
-import Lean.Meta.Tactic.TryThis
-import Batteries.Linter.UnreachableTactic
-import Qq.Match
-import Mathlib.Lean.Elab.InfoTree
-import Mathlib.Tactic.Basic
+module
+
+public import Mathlib.Init
+public meta import Lean.Meta.Tactic.TryThis
+public meta import Qq.Match
+public meta import Mathlib.Lean.Elab.InfoTree
+public import Batteries.Linter.UnreachableTactic
+public import Mathlib.Tactic.Basic
+public meta import Mathlib.Util.ParseCommand
 
 /-!
 # The `says` tactic combinator.
@@ -27,6 +30,8 @@ If you use `set_option says.verify true` (set automatically during CI) then `X s
 runs `X` and verifies that it still prints "Try this: Y".
 -/
 
+public meta section
+
 open Lean Elab Tactic
 open Lean.Meta.Tactic.TryThis
 
@@ -35,29 +40,14 @@ namespace Mathlib.Tactic.Says
 /-- If this option is `true`, verify for `X says Y` that `X says` outputs `Y`. -/
 register_option says.verify : Bool :=
   { defValue := false
-    group := "says"
     descr := "Verify the output" }
 
 /-- This option is only used in CI to negate `says.verify`. -/
 register_option says.no_verify_in_CI : Bool :=
   { defValue := false
-    group := "says"
     descr := "Disable reverification, even if the `CI` environment variable is set." }
 
 open Parser Tactic
-
-/-- This is a slight modification of `Parser.runParserCategory`. -/
-def parseAsTacticSeq (env : Environment) (input : String) (fileName := "<input>") :
-    Except String (TSyntax ``tacticSeq) :=
-  let p := andthenFn whitespace Tactic.tacticSeq.fn
-  let ictx := mkInputContext input fileName
-  let s := p.run ictx { env, options := {} } (getTokenTable env) (mkParserState input)
-  if s.hasError then
-    Except.error (s.toErrorMsg ictx)
-  else if s.pos.atEnd input then
-    Except.ok ⟨s.stxStack.back⟩
-  else
-    Except.error ((s.mkError "end of input").toErrorMsg ictx)
 
 /--
 Run `evalTactic`, capturing a "Try this:" message and converting it back to syntax.
@@ -80,23 +70,20 @@ def evalTacticCapturingTryThis (tac : TSyntax `tactic) : TacticM (TSyntax ``tact
   | .tsyntax stx =>
     throwError m!"Tactic `{tac}` produced a 'Try this:' suggestion with a non-tactic syntax: {stx}"
   | .string s =>
-    match parseAsTacticSeq (← getEnv) s with
+    match Mathlib.GuardExceptions.parseAsTacticSeq (← getEnv) s with
     | .ok stx => return stx
     | .error err => throwError m!"Failed to parse 'Try this:' suggestion: {s}\n{err}"
 
 /--
-If you write `X says`, where `X` is a tactic that produces a "Try this: Y" message,
-then you will get a message "Try this: X says Y".
-Once you've clicked to replace `X says` with `X says Y`,
-afterwards `X says Y` will only run `Y`.
+`tac₁ says tac₂` runs `tac₂`. In CI it also runs `tac₁` and validates that `tac₁` produces
+a "Try this: `tac₂`" message. Use `set_option says.verify true` to enable the validation step on
+your own machine.
 
-The typical usage case is:
-```
-simp? [X] says simp only [X, Y, Z]
-```
+The `says` combinator is intended to be used when `tac₁` is meaningful but slow and `tac₂` is faster
+but hard to read: for example, `simp? [X] says simp only [X, Y, Z]`.
 
-If you use `set_option says.verify true` (set automatically during CI) then `X says Y`
-runs `X` and verifies that it still prints "Try this: Y".
+To generate or update the correct value of `tac₂`, write `tac₁ says`. You will get a message
+"Try this: `tac₁ says tac₂`.
 -/
 syntax (name := says) tactic " says" (colGt tacticSeq)? : tactic
 

@@ -3,14 +3,15 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+module
 
-import Mathlib.Analysis.MellinTransform
+public import Mathlib.Analysis.MellinTransform
 
 /-!
 # Abstract functional equations for Mellin transforms
 
 This file formalises a general version of an argument used to prove functional equations for
-zeta and L functions.
+zeta and L-functions.
 
 ### FE-pairs
 
@@ -56,8 +57,10 @@ See the sections *Main theorems on weak FE-pairs* and
   - `WeakFEPair.Λ_residue_zero`: computation of the residue at `0`.
 -/
 
+@[expose] public section
 
-/- TODO : Consider extending the results to allow functional equations of the form
+
+/- TODO: Consider extending the results to allow functional equations of the form
 `f (N / x) = (const) • x ^ k • g x` for a real parameter `0 < N`. This could be done either by
 generalising the existing proofs in situ, or by a separate wrapper `FEPairWithLevel` which just
 applies a scaling factor to `f` and `g` to reduce to the `N = 1` case.
@@ -108,6 +111,7 @@ lemma WeakFEPair.h_feq' (P : WeakFEPair E) (x : ℝ) (hx : 0 < x) :
   rw [one_div, inv_rpow hx.le, ofReal_inv]
   field [P.hε, (rpow_pos_of_pos hx _).ne']
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The hypotheses are symmetric in `f` and `g`, with the constant `ε` replaced by `ε⁻¹`. -/
 def WeakFEPair.symm (P : WeakFEPair E) : WeakFEPair E where
   f := P.g
@@ -120,8 +124,8 @@ def WeakFEPair.symm (P : WeakFEPair E) : WeakFEPair E where
   hg_int := P.hf_int
   hf_top := P.hg_top
   hg_top := P.hf_top
-  hε     := inv_ne_zero P.hε
-  hk     := P.hk
+  hε := inv_ne_zero P.hε
+  hk := P.hk
   h_feq  := P.h_feq'
 
 /-- The hypotheses are symmetric in `f` and `g`, with the constant `ε` replaced by `ε⁻¹`. -/
@@ -265,19 +269,13 @@ lemma hf_modif_int :
   have : LocallyIntegrableOn (fun x : ℝ ↦ (P.ε * ↑(x ^ (-P.k))) • P.g₀) (Ioi 0) := by
     refine ContinuousOn.locallyIntegrableOn ?_ measurableSet_Ioi
     refine continuousOn_of_forall_continuousAt (fun x (hx : 0 < x) ↦ ?_)
-    refine (continuousAt_const.mul ?_).smul continuousAt_const
-    exact continuous_ofReal.continuousAt.comp (continuousAt_rpow_const _ _ (Or.inl hx.ne'))
+    have : x ≠ 0 ∨ 0 ≤ -P.k := Or.inl hx.ne'
+    fun_prop (discharger := assumption)
   refine LocallyIntegrableOn.add (fun x hx ↦ ?_) (fun x hx ↦ ?_)
   · obtain ⟨s, hs, hs'⟩ := P.hf_int.sub (locallyIntegrableOn_const _) x hx
-    refine ⟨s, hs, ?_⟩
-    rw [IntegrableOn, integrable_indicator_iff measurableSet_Ioi, IntegrableOn,
-      Measure.restrict_restrict measurableSet_Ioi, ← IntegrableOn]
-    exact hs'.mono_set Set.inter_subset_right
+    exact ⟨s, hs, hs'.indicator measurableSet_Ioi⟩
   · obtain ⟨s, hs, hs'⟩ := P.hf_int.sub this x hx
-    refine ⟨s, hs, ?_⟩
-    rw [IntegrableOn, integrable_indicator_iff measurableSet_Ioo, IntegrableOn,
-      Measure.restrict_restrict measurableSet_Ioo, ← IntegrableOn]
-    exact hs'.mono_set Set.inter_subset_right
+    exact ⟨s, hs, hs'.indicator measurableSet_Ioo⟩
 
 lemma hf_modif_FE (x : ℝ) (hx : 0 < x) :
     P.f_modif (1 / x) = (P.ε * ↑(x ^ P.k)) • P.g_modif x := by
@@ -297,6 +295,13 @@ lemma hf_modif_FE (x : ℝ) (hx : 0 < x) :
     simp_rw [rpow_neg hx.le]
     match_scalars <;> field [(rpow_pos_of_pos hx P.k).ne', P.hε]
 
+lemma hf_modif_top (r : ℝ) :
+    (fun x ↦ P.f_modif x - 0) =O[atTop] fun x ↦ x ^ r := by
+  refine (P.hf_top r).congr' ?_ (by rfl)
+  filter_upwards [eventually_gt_atTop 1] with x hx
+  simp [f_modif, mem_Ioi.mpr hx, notMem_Ioo_of_ge hx.le]
+
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Given a weak FE-pair `(f, g)`, modify it into a strong FE-pair by subtracting suitable
 correction terms from `f` and `g`. -/
 def toStrongFEPair : StrongFEPair E where
@@ -306,24 +311,15 @@ def toStrongFEPair : StrongFEPair E where
   ε := P.ε
   f₀ := 0
   g₀ := 0
-  hf_int   := P.hf_modif_int
-  hg_int   := P.symm.hf_modif_int
-  h_feq    := P.hf_modif_FE
-  hε       := P.hε
-  hk       := P.hk
-  hf₀      := rfl
-  hg₀      := rfl
-  hf_top r := by
-    refine (P.hf_top r).congr' ?_ (by rfl)
-    filter_upwards [eventually_gt_atTop 1] with x hx
-    rw [f_modif, Pi.add_apply, indicator_of_mem (mem_Ioi.mpr hx),
-      indicator_of_notMem (notMem_Ioo_of_ge hx.le), add_zero, sub_zero]
-  hg_top r := by
-    refine (P.hg_top r).congr' ?_ (by rfl)
-    filter_upwards [eventually_gt_atTop 1] with x hx
-    rw [f_modif, Pi.add_apply, indicator_of_mem (mem_Ioi.mpr hx),
-      indicator_of_notMem (notMem_Ioo_of_ge hx.le), add_zero, sub_zero]
-    rfl
+  hf_int := P.hf_modif_int
+  hg_int := P.symm.hf_modif_int
+  h_feq := P.hf_modif_FE
+  hε := P.hε
+  hk := P.hk
+  hf₀ := rfl
+  hg₀ := rfl
+  hf_top := P.hf_modif_top
+  hg_top := P.symm.hf_modif_top
 
 /- Alternative form for the difference between `f - f₀` and its modified term. -/
 lemma f_modif_aux1 : EqOn (fun x ↦ P.f_modif x - P.f x + P.f₀)
@@ -342,6 +338,7 @@ lemma f_modif_aux1 : EqOn (fun x ↦ P.f_modif x - P.f x + P.f₀)
       indicator_of_notMem (mem_singleton_iff.not.mpr hx'.ne')]
     abel
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Compute the Mellin transform of the modifying term used to kill off the constants at
 `0` and `∞`. -/
 lemma f_modif_aux2 [CompleteSpace E] {s : ℂ} (hs : P.k < re s) :
@@ -448,7 +445,8 @@ theorem Λ_residue_k :
     apply ((continuous_sub_right _).smul P.differentiable_Λ₀.continuous).tendsto
   · rw [(by rw [sub_self, zero_smul] : 𝓝 0 = 𝓝 ((P.k - P.k : ℂ) • (1 / P.k : ℂ) • P.f₀))]
     refine (continuous_sub_right _).continuousAt.smul (ContinuousAt.smul ?_ continuousAt_const)
-    exact continuousAt_const.div continuousAt_id (ofReal_ne_zero.mpr P.hk.ne')
+    have := ofReal_ne_zero.mpr P.hk.ne'
+    fun_prop (discharger := assumption)
   · refine (tendsto_const_nhds.mono_left nhdsWithin_le_nhds).congr' ?_
     refine eventually_nhdsWithin_of_forall (fun s (hs : s ≠ P.k) ↦ ?_)
     match_scalars

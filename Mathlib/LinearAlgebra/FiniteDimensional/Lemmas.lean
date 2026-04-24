@@ -3,10 +3,12 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.LinearAlgebra.Dimension.DivisionRing
-import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
-import Mathlib.LinearAlgebra.FiniteDimensional.Basic
-import Mathlib.Tactic.IntervalCases
+module
+
+public import Mathlib.LinearAlgebra.Dimension.DivisionRing
+public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
+public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
+public import Mathlib.Tactic.IntervalCases
 
 /-!
 # Finite-dimensional vector spaces
@@ -17,6 +19,8 @@ and linear maps on such spaces.
 Definitions are in `Mathlib/LinearAlgebra/FiniteDimensional/Defs.lean`
 and results that require fewer imports are in `Mathlib/LinearAlgebra/FiniteDimensional/Basic.lean`.
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid.exponent Module.IsTorsion
 
@@ -42,7 +46,8 @@ See also `Submodule.length_lt`. -/
 theorem finrank_lt [FiniteDimensional K V] {s : Submodule K V} (h : s ≠ ⊤) :
     finrank K s < finrank K V := by
   rw [← s.finrank_quotient_add_finrank, add_comm]
-  exact Nat.lt_add_of_pos_right (finrank_pos_iff.mpr (Quotient.nontrivial_of_lt_top _ h.lt_top))
+  rw [← Quotient.nontrivial_iff] at h
+  exact Nat.lt_add_of_pos_right finrank_pos
 
 /-- The sum of the dimensions of s + t and s ∩ t is the sum of the dimensions of s and t -/
 theorem finrank_sup_add_finrank_inf_eq (s t : Submodule K V) [FiniteDimensional K s]
@@ -74,13 +79,50 @@ theorem eq_top_of_disjoint [FiniteDimensional K V] (s t : Submodule K V)
     le_antisymm hdim (finrank_add_finrank_le_of_disjoint hdisjoint)
   rw [hdim]
   convert s.finrank_sup_add_finrank_inf_eq t
-  rw [h_finrank_inf]
-  rfl
+  rw [h_finrank_inf, add_zero]
 
 theorem isCompl_iff_disjoint [FiniteDimensional K V] (s t : Submodule K V)
     (hdim : finrank K V ≤ finrank K s + finrank K t) :
     IsCompl s t ↔ Disjoint s t :=
   ⟨fun h ↦ h.1, fun h ↦ ⟨h, codisjoint_iff.mpr <| eq_top_of_disjoint s t hdim h⟩⟩
+
+theorem sup_span_singleton_eq_top_iff [Module.Finite K V] {W : Submodule K V} {v : V} (hv : v ∉ W) :
+    W ⊔ span K {v} = ⊤ ↔ finrank K (V ⧸ W) = 1 := by
+  refine ⟨fun hW ↦ ?_, fun hW ↦ ?_⟩
+  · suffices W ⊓ span K {v} = ⊥ by
+      have hv₀ : v ≠ 0 := by aesop
+      have aux := finrank_sup_add_finrank_inf_eq W (span K {v})
+      rw [hW, finrank_span_singleton hv₀, this, finrank_bot, finrank_top,
+        ← finrank_quotient_add_finrank W] at aux
+      lia
+    refine (Submodule.eq_bot_iff _).mpr fun w hw ↦ ?_
+    obtain ⟨ht, t, rfl⟩ : w ∈ W ∧ ∃ t : K, t • v = w := by simpa [mem_span_singleton] using hw
+    rcases eq_or_ne t 0 with rfl | ht₀; · simp
+    rw [Submodule.smul_mem_iff _ ht₀] at ht
+    contradiction
+  · apply Submodule.eq_top_of_disjoint
+    · rw [← W.finrank_quotient_add_finrank, add_comm, add_le_add_iff_left, hW]
+      aesop
+    · exact Submodule.disjoint_span_singleton_of_notMem hv
+
+theorem finrank_sup_span_singleton [Module.Finite K V] {p : Submodule K V} {v : V} (hv : v ∉ p) :
+    finrank K (p ⊔ Submodule.span K {v} : Submodule K V) = finrank K p + 1 := by
+  rw [← Nat.add_left_inj, finrank_sup_add_finrank_inf_eq, add_assoc,
+    Nat.add_left_cancel_iff, finrank_span_singleton (by aesop),
+    Nat.left_eq_add, Submodule.finrank_eq_zero, eq_bot_iff]
+  intro x
+  simp only [mem_inf, mem_span_singleton]
+  rintro ⟨hx, ⟨a, hx'⟩⟩
+  rw [← hx'] at hx
+  suffices a = 0 by simp [← hx', this]
+  contrapose hv
+  simpa [smul_mem_iff p hv] using hx
+
+theorem eq_top_iff_finrank_eq [Module.Finite K V] {W : Submodule K V} :
+    W = ⊤ ↔ finrank K W = finrank K V := by
+  refine ⟨fun h ↦ by rw [h, finrank_top], fun h ↦ ?_⟩
+  apply eq_of_le_of_finrank_eq le_top
+  rw [finrank_top, h]
 
 end DivisionRing
 
@@ -139,7 +181,7 @@ lemma ker_ne_bot_of_finrank_lt [FiniteDimensional K V] [FiniteDimensional K V₂
   have h₁ := f.finrank_range_add_finrank_ker
   have h₂ : finrank K (LinearMap.range f) ≤ finrank K V₂ := (LinearMap.range f).finrank_le
   suffices 0 < finrank K (LinearMap.ker f) from Submodule.one_le_finrank_iff.mp this
-  cutsat
+  lia
 
 end DivisionRing
 

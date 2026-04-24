@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplicesSubcomplex
-import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.IsUniquelyCodimOneFace
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplicesSubcomplex
+public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.IsUniquelyCodimOneFace
 
 /-!
 # Pairings
@@ -27,8 +29,9 @@ considered as of type (I) and the latter as type (II).
 
 We say that a pairing is *regular* (typeclass `Pairing.IsRegular`) when
 - it is proper (`Pairing.IsProper`), i.e. any type (II) simplex is uniquely
-a face of the corresponding type (I) simplex.
+  a face of the corresponding type (I) simplex.
 - a certain ancestrality relation is well founded.
+
 When these conditions are satisfied, the inclusion `A.ι : A ⟶ X` is
 a strong anodyne extension (TODO @joelriou), and the converse is also true
 (if `A.ι` is a strong anodyne extension, then there is a regular pairing for `A` (TODO)).
@@ -37,6 +40,8 @@ a strong anodyne extension (TODO @joelriou), and the converse is also true
 * [Sean Moss, *Another approach to the Kan-Quillen model structure*][moss-2020]
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -74,6 +79,11 @@ lemma isUniquelyCodimOneFace [P.IsProper] (x : P.II) :
     S.IsUniquelyCodimOneFace x.1.toS (P.p x).1.toS :=
   IsProper.isUniquelyCodimOneFace x
 
+@[simp]
+lemma dim_p [P.IsProper] (x : P.II) :
+    (P.p x).1.dim = x.1.dim + 1 :=
+  (P.isUniquelyCodimOneFace x).dim_eq
+
 /-- The condition that a pairing only involves inner horns. -/
 class IsInner [P.IsProper] : Prop where
   ne_zero (x : P.II) {d : ℕ} (hd : x.1.dim = d) :
@@ -84,6 +94,12 @@ class IsInner [P.IsProper] : Prop where
 /-- The ancestrality relation on type (II) simplices. -/
 def AncestralRel (x y : P.II) : Prop :=
   x ≠ y ∧ x.1 < (P.p y).1
+
+variable {P} in
+lemma AncestralRel.dim_le [P.IsProper] {x y : P.II} (hxy : P.AncestralRel x y) :
+    x.1.dim ≤ y.1.dim := by
+  simpa only [(P.isUniquelyCodimOneFace y).dim_eq, Nat.lt_succ_iff] using
+    SSet.N.dim_lt_of_lt hxy.2
 
 /-- A proper pairing is regular when the ancestrality relation
 is well founded. -/
@@ -117,6 +133,60 @@ lemma ne (x : P.I) (y : P.II) :
   rintro rfl
   have : x ∈ P.I ∩ P.II := ⟨hx, hy⟩
   simp [P.inter] at this
+
+lemma le [P.IsProper] (x : P.II) :
+    x.1 ≤ (P.p x).1 :=
+  (P.isUniquelyCodimOneFace x).le
+
+lemma lt [P.IsProper] (x : P.II) :
+    x.1 < (P.p x).1 :=
+  lt_of_le_of_ne' (P.le x) (P.ne _ _)
+
+variable {Y : SSet.{u}} {B : Y.Subcomplex} (e : Y ≅ X) (hA : A.preimage e.hom = B)
+
+/-- Given an isomorphism `Y ≅ X` of simplicial sets, a pairing `P` of a subcomplex
+`A` of `X`, this is a pairing for a subcomplex `B` of `Y` if `A.preimage e.hom = B`. -/
+@[simps I II]
+def ofIso : B.Pairing where
+  I := Subcomplex.N.orderIsoOfIso e hA ⁻¹' P.I
+  II := Subcomplex.N.orderIsoOfIso e hA ⁻¹' P.II
+  inter := by simp [← Set.preimage_inter, P.inter]
+  union := by simp [← Set.preimage_union, P.union]
+  p := ((Subcomplex.N.orderIsoOfIso e hA).subtypeEquiv (by simp)).trans
+    (P.p.trans ((Subcomplex.N.orderIsoOfIso e hA).symm.subtypeEquiv (by simp)))
+
+@[simp]
+lemma ofIso_p (x : P.II) :
+    dsimp% (P.ofIso e hA).p ⟨(Subcomplex.N.orderIsoOfIso e hA).symm x, by simp⟩ =
+    ⟨(Subcomplex.N.orderIsoOfIso e hA).symm (P.p x), by simp⟩ := by
+  let e' := Subcomplex.N.orderIsoOfIso e hA
+  ext
+  change e'.symm (P.p ⟨e' (e'.symm x), _⟩) = e'.symm (P.p x)
+  simp
+
+lemma ofIso_ancestralRel_iff (x y : P.II) :
+    (P.ofIso e hA).AncestralRel
+      ⟨(Subcomplex.N.orderIsoOfIso e hA).symm x, by simp⟩
+      ⟨(Subcomplex.N.orderIsoOfIso e hA).symm y, by simp⟩ ↔
+    P.AncestralRel x y :=
+  and_congr (not_congr (by aesop)) (by simp)
+
+instance [P.IsProper] : (P.ofIso e hA).IsProper where
+  isUniquelyCodimOneFace := by
+    rintro ⟨x, hx⟩
+    obtain ⟨x, rfl⟩ := (N.orderIsoOfIso e hA).symm.surjective x
+    simp only [ofIso_II, Set.mem_preimage, OrderIso.apply_symm_apply] at hx
+    simp only [ofIso_II, ofIso_I, dsimp% P.ofIso_p e hA ⟨x, hx⟩]
+    exact (P.isUniquelyCodimOneFace ⟨x, hx⟩).of_iso e.symm
+
+instance [P.IsRegular] : (P.ofIso e hA).IsRegular where
+  wf := by
+    have hP := P.wf
+    rw [wellFounded_iff_isEmpty_descending_chain] at hP ⊢
+    by_contra!
+    obtain ⟨f, hf⟩ := this
+    refine hP.false ⟨fun n ↦ ⟨_, (f n).2⟩, fun n ↦ ?_⟩
+    simpa [← P.ofIso_ancestralRel_iff e hA] using hf n
 
 end Pairing
 

@@ -3,8 +3,10 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.RingTheory.LocalProperties.Basic
-import Mathlib.RingTheory.LocalProperties.Exactness
+module
+
+public import Mathlib.RingTheory.LocalProperties.Basic
+public import Mathlib.RingTheory.LocalProperties.Exactness
 
 /-!
 # Meta properties of bijective ring homomorphisms
@@ -16,6 +18,8 @@ We show some meta properties of bijective ring homomorphisms.
 We don't define a `RingHom.Bijective` predicate, but use `fun f ↦ Function.Bijective f` as
 the ring hom property.
 -/
+
+public section
 
 open TensorProduct
 

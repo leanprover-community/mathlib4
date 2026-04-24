@@ -3,8 +3,11 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Order.WellFounded
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Order.Lex
+public import Mathlib.Order.WellFounded
+public import Mathlib.Tactic.Common
 
 /-!
 # Lexicographic order on Pi types
@@ -30,6 +33,8 @@ Related files are:
 * `Data.Prod.Lex`: Lexicographic order on `α × β`.
 -/
 
+@[expose] public section
+
 assert_not_exists Monoid
 
 variable {ι : Type*} {β : ι → Type*} (r : ι → ι → Prop) (s : ∀ {i}, β i → β i → Prop)
@@ -52,7 +57,7 @@ notation3 (prettyPrint := false) "Πₗ " (...) ", " r:(scoped p => Lex (∀ i, 
 theorem lex_lt_of_lt_of_preorder [∀ i, Preorder (β i)] {r} (hwf : WellFounded r) {x y : ∀ i, β i}
     (hlt : x < y) : ∃ i, (∀ j, r j i → x j ≤ y j ∧ y j ≤ x j) ∧ x i < y i :=
   let h' := Pi.lt_def.1 hlt
-  let ⟨i, hi, hl⟩ := hwf.has_min _ h'.2
+  let ⟨i, hi, hl⟩ := hwf.has_min {i | x i < y i} h'.2
   ⟨i, fun j hj => ⟨h'.1 j, not_not.1 fun h => hl j (lt_of_le_not_ge (h'.1 j) h) hj⟩, hi⟩
 
 theorem lex_lt_of_lt [∀ i, PartialOrder (β i)] {r} (hwf : WellFounded r) {x y : ∀ i, β i}
@@ -60,21 +65,21 @@ theorem lex_lt_of_lt [∀ i, PartialOrder (β i)] {r} (hwf : WellFounded r) {x y
   simp_rw [Pi.Lex, le_antisymm_iff]
   exact lex_lt_of_lt_of_preorder hwf hlt
 
-theorem isTrichotomous_lex [∀ i, IsTrichotomous (β i) s] (wf : WellFounded r) :
-    IsTrichotomous (∀ i, β i) (Pi.Lex r @s) :=
-  { trichotomous := fun a b => by
-      rcases eq_or_ne a b with hab | hab
-      · exact Or.inr (Or.inl hab)
-      · rw [Function.ne_iff] at hab
-        let i := wf.min _ hab
-        have hri : ∀ j, r j i → a j = b j := by
-          intro j
-          rw [← not_imp_not]
-          exact fun h' => wf.not_lt_min _ _ h'
-        have hne : a i ≠ b i := wf.min_mem _ hab
-        rcases trichotomous_of s (a i) (b i) with hi | hi
-        exacts [Or.inl ⟨i, hri, hi⟩,
-          Or.inr <| Or.inr <| ⟨i, fun j hj => (hri j hj).symm, hi.resolve_left hne⟩] }
+theorem lex_iff_of_unique [Unique ι] [∀ i, LT (β i)] {r} [Std.Irrefl r] {x y : ∀ i, β i} :
+    Pi.Lex r (· < ·) x y ↔ x default < y default := by
+  simp [Pi.Lex, Unique.forall_iff, Unique.exists_iff, irrefl]
+
+theorem trichotomous_lex [∀ i, Std.Trichotomous (α := β i) s] (wf : WellFounded r) :
+    Std.Trichotomous (Pi.Lex r @s) :=
+  { trichotomous a b hab hba := by
+      by_contra! h
+      rw [Function.ne_iff] at h
+      let i := wf.min {i | a i ≠ b i} h
+      have hri j (hr : r j i) : a j = b j := not_not.mp (wf.not_lt_min _ · hr)
+      have := Std.Trichotomous.trichotomous (a i) (b i) (hab ⟨i, hri, ·⟩)
+      exact hba ⟨i, (hri · · |>.symm), Not.imp_symm this <| wf.min_mem {i | a i ≠ b i} h⟩ }
+
+@[deprecated (since := "2026-01-24")] alias isTrichotomous_lex := trichotomous_lex
 
 instance [LT ι] [∀ a, LT (β a)] : LT (Lex (∀ i, β i)) :=
   ⟨Pi.Lex (· < ·) (· < ·)⟩
@@ -91,6 +96,20 @@ instance [LT ι] [∀ a, LT (β a)] : LT (Colex (∀ i, β i)) :=
 
 @[simp] theorem toColex_apply (x : ∀ i, β i) (i : ι) : toColex x i = x i := rfl
 @[simp] theorem ofColex_apply (x : Colex (∀ i, β i)) (i : ι) : ofColex x i = x i := rfl
+
+theorem Lex.lt_iff_of_unique [Unique ι] [∀ i, LT (β i)] [Preorder ι] {x y : Lex (∀ i, β i)} :
+    x < y ↔ x default < y default :=
+  lex_iff_of_unique
+
+@[deprecated (since := "2025-11-29")]
+alias lex_lt_iff_of_unique := Lex.lt_iff_of_unique
+
+theorem Colex.lt_iff_of_unique [Unique ι] [∀ i, LT (β i)] [Preorder ι] {x y : Colex (∀ i, β i)} :
+    x < y ↔ x default < y default :=
+  lex_iff_of_unique
+
+@[deprecated (since := "2025-11-29")]
+alias colex_lt_iff_of_unique := Colex.lt_iff_of_unique
 
 instance Lex.isStrictOrder [LinearOrder ι] [∀ a, PartialOrder (β a)] :
     IsStrictOrder (Lex (∀ i, β i)) (· < ·) where
@@ -116,19 +135,32 @@ instance [LinearOrder ι] [∀ a, PartialOrder (β a)] : PartialOrder (Colex (�
 noncomputable instance Lex.linearOrder [LinearOrder ι] [WellFoundedLT ι]
     [∀ a, LinearOrder (β a)] : LinearOrder (Lex (∀ i, β i)) :=
   @linearOrderOfSTO (Πₗ i, β i) (· < ·)
-    { trichotomous := (isTrichotomous_lex _ _ IsWellFounded.wf).1 } (Classical.decRel _)
+    { trichotomous := (trichotomous_lex _ _ IsWellFounded.wf).1 } (Classical.decRel _)
 
 /-- `Colex (∀ i, α i)` is a linear order if the original order has well-founded `>`. -/
 noncomputable instance Colex.linearOrder [LinearOrder ι] [WellFoundedGT ι]
     [∀ a, LinearOrder (β a)] : LinearOrder (Colex (∀ i, β i)) :=
   Lex.linearOrder (ι := ιᵒᵈ)
 
-section Lex
+set_option backward.isDefEq.respectTransparency false in
+theorem lex_le_iff_of_unique [Unique ι] [LinearOrder ι] [∀ i, PartialOrder (β i)]
+    {x y : Lex (∀ i, β i)} : x ≤ y ↔ x default ≤ y default := by
+  simp_rw [le_iff_lt_or_eq, Pi.Lex.lt_iff_of_unique, ← ofLex_inj, funext_iff, Unique.forall_iff,
+    ofLex_apply]
 
-variable [LinearOrder ι] [WellFoundedLT ι] [∀ i, PartialOrder (β i)] {x : ∀ i, β i} {i : ι}
-  {a : β i}
+set_option backward.isDefEq.respectTransparency false in
+theorem colex_le_iff_of_unique [Unique ι] [LinearOrder ι] [∀ i, PartialOrder (β i)]
+    {x y : Colex (∀ i, β i)} : x ≤ y ↔ x default ≤ y default := by
+  simp_rw [le_iff_lt_or_eq, Pi.Colex.lt_iff_of_unique, ← ofColex_inj, funext_iff, Unique.forall_iff,
+    ofColex_apply]
+
+section PartialOrder
+variable [LinearOrder ι] {x : ∀ i, β i} {i : ι} {a : β i} [∀ i, PartialOrder (β i)]
 
 open Function
+
+section Lex
+variable [WellFoundedLT ι]
 
 theorem toLex_monotone : Monotone (@toLex (∀ i, β i)) := fun a b h =>
   or_iff_not_imp_left.2 fun hne =>
@@ -167,10 +199,12 @@ theorem toLex_update_lt_self_iff : toLex (update x i a) < toLex x ↔ a < x i :=
     exact h.false
   rwa [update_self] at h
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem le_toLex_update_self_iff : toLex x ≤ toLex (update x i a) ↔ x i ≤ a := by
   simp_rw [le_iff_lt_or_eq, lt_toLex_update_self_iff, toLex_inj, eq_update_self_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toLex_update_le_self_iff : toLex (update x i a) ≤ toLex x ↔ a ≤ x i := by
   simp_rw [le_iff_lt_or_eq, toLex_update_lt_self_iff, toLex_inj, update_eq_self_iff]
@@ -178,11 +212,7 @@ theorem toLex_update_le_self_iff : toLex (update x i a) ≤ toLex x ↔ a ≤ x 
 end Lex
 
 section Colex
-
-variable [LinearOrder ι] [WellFoundedGT ι] [∀ i, PartialOrder (β i)] {x : ∀ i, β i} {i : ι}
-  {a : β i}
-
-open Function
+variable [WellFoundedGT ι]
 
 theorem toColex_monotone : Monotone (@toColex (∀ i, β i)) :=
   toLex_monotone (ι := ιᵒᵈ)
@@ -207,6 +237,33 @@ theorem toColex_update_le_self_iff : toColex (update x i a) ≤ toColex x ↔ a 
   toLex_update_le_self_iff (ι := ιᵒᵈ)
 
 end Colex
+
+end PartialOrder
+
+section LinearOrder
+variable [LinearOrder ι] {x y : ∀ i, β i} {i : ι} {a : β i} [∀ i, LinearOrder (β i)]
+
+section Lex
+
+theorem apply_le_of_toLex (hxy : toLex x ≤ toLex y) (h : ∀ j < i, x j = y j) : x i ≤ y i := by
+  contrapose! hxy
+  apply not_le_of_gt
+  use i
+  aesop
+
+end Lex
+
+section Colex
+
+theorem apply_le_of_toColex (hxy : toColex x ≤ toColex y) (h : ∀ j > i, x j = y j) : x i ≤ y i := by
+  contrapose! hxy
+  apply not_le_of_gt
+  use i
+  aesop
+
+end Colex
+
+end LinearOrder
 
 instance [LinearOrder ι] [WellFoundedLT ι] [∀ a, PartialOrder (β a)] [∀ a, OrderBot (β a)] :
     OrderBot (Lex (∀ a, β a)) where

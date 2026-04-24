@@ -3,8 +3,10 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Spectrum.Prime.Topology
-import Mathlib.RingTheory.Support
+module
+
+public import Mathlib.RingTheory.Spectrum.Prime.Topology
+public import Mathlib.RingTheory.Support
 
 /-!
 
@@ -19,6 +21,8 @@ import Mathlib.RingTheory.Support
 - If `M` is finitely presented, the complement of `Supp M` is quasi-compact. (stacks#051B)
 
 -/
+
+public section
 
 variable {R A M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
   [CommRing A] [Algebra R A] [Module A M]

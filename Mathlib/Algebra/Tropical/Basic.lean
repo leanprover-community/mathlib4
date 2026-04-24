@@ -3,12 +3,14 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.Order.AddGroupWithTop
-import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
-import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Order.Hom.Basic
+module
+
+public import Mathlib.Algebra.Order.AddGroupWithTop
+public import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Order.Hom.Basic
 
 /-!
 
@@ -43,6 +45,8 @@ most references rely on `Semiring (Tropical R)` for building up the whole theory
 * https://www.mathenjeans.fr/sites/default/files/sujets/tropical_geometry_-_casagrande.pdf
 
 -/
+
+@[expose] public section
 
 assert_not_exists Nat.instMulOneClass
 
@@ -428,11 +432,11 @@ section Distrib
 
 instance mulLeftMono [LE R] [Add R] [AddLeftMono R] :
     MulLeftMono (Tropical R) :=
-  ⟨fun _ y z h => add_le_add_left (show untrop y ≤ untrop z from h) _⟩
+  ⟨fun _ y z h => add_le_add_right (show untrop y ≤ untrop z from h) _⟩
 
 instance mulRightMono [LE R] [Add R] [AddRightMono R] :
     MulRightMono (Tropical R) :=
-  ⟨fun _ y z h => add_le_add_right (show untrop y ≤ untrop z from h) _⟩
+  ⟨fun _ y z h => add_le_add_left (show untrop y ≤ untrop z from h) _⟩
 
 instance addLeftMono [LinearOrder R] : AddLeftMono (Tropical R) :=
   ⟨fun x y z h => by
@@ -445,11 +449,11 @@ instance addLeftMono [LinearOrder R] : AddLeftMono (Tropical R) :=
 
 instance mulLeftStrictMono [LT R] [Add R] [AddLeftStrictMono R] :
     MulLeftStrictMono (Tropical R) :=
-  ⟨fun _ _ _ h => add_lt_add_left (untrop_lt_iff.2 h) _⟩
+  ⟨fun _ _ _ h => add_lt_add_right (untrop_lt_iff.2 h) _⟩
 
 instance mulRightStrictMono [Preorder R] [Add R] [AddRightStrictMono R] :
     MulRightStrictMono (Tropical R) :=
-  ⟨fun _ y z h => add_lt_add_right (show untrop y < untrop z from h) _⟩
+  ⟨fun _ y z h => add_lt_add_left (show untrop y < untrop z from h) _⟩
 
 instance instDistribTropical [LinearOrder R] [Add R] [AddLeftMono R] [AddRightMono R] :
     Distrib (Tropical R) where
@@ -481,7 +485,7 @@ instance : CommSemiring (Tropical R) :=
 @[simp]
 theorem succ_nsmul {R} [LinearOrder R] [OrderTop R] (x : Tropical R) (n : ℕ) : (n + 1) • x = x := by
   induction n with
-  | zero => simp
+  | zero => simp [one_nsmul]
   | succ n IH => rw [add_nsmul, IH, one_nsmul, add_self]
 
 -- TODO: find/create the right classes to make this hold (for enat, ennreal, etc)

@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.Algebra.Notation.Indicator
-import Mathlib.Data.Set.Lattice
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+public import Mathlib.Algebra.Notation.Indicator
+public import Mathlib.Data.Set.Lattice
 
 /-!
 # Big operators on a finset in groups with zero
@@ -14,6 +16,8 @@ import Mathlib.Data.Set.Lattice
 This file contains the results concerning the interaction of finset big operators with groups with
 zero.
 -/
+
+public section
 
 open Function
 
@@ -30,7 +34,7 @@ lemma prod_ite_zero :
     (∏ i ∈ s, if p i then f i else 0) = if ∀ i ∈ s, p i then ∏ i ∈ s, f i else 0 := by
   split_ifs with h
   · exact prod_congr rfl fun i hi => by simp [h i hi]
-  · push_neg at h
+  · push Not at h
     rcases h with ⟨i, hi, hq⟩
     exact prod_eq_zero hi (by simp [hq])
 
@@ -55,7 +59,7 @@ lemma prod_eq_zero_iff : ∏ x ∈ s, f x = 0 ↔ ∃ a ∈ s, f a = 0 := by
 
 lemma prod_ne_zero_iff : ∏ x ∈ s, f x ≠ 0 ↔ ∀ a ∈ s, f a ≠ 0 := by
   rw [Ne, prod_eq_zero_iff]
-  push_neg; rfl
+  push Not; rfl
 
 lemma support_prod (s : Finset ι) (f : ι → κ → M₀) :
     support (fun j ↦ ∏ i ∈ s, f i j) = ⋂ i ∈ s, support (f i) :=

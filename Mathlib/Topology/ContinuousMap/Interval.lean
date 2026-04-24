@@ -3,14 +3,18 @@ Copyright (c) 2024 Vincent Beffara. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vincent Beffara
 -/
-import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.Order.ProjIcc
+module
+
+public import Mathlib.Topology.CompactOpen
+public import Mathlib.Topology.Order.ProjIcc
 
 /-!
 # Continuous bundled maps on intervals
 
 In this file we prove a few results about `ContinuousMap` when the domain is an interval.
 -/
+
+@[expose] public section
 
 open Set ContinuousMap Filter Topology
 
@@ -43,6 +47,7 @@ theorem IccExtendCM_of_mem {f : C(Icc a b, E)} {x : α} (hx : x ∈ Icc a b) :
     IccExtendCM f x = f ⟨x, hx⟩ := by
   simp [IccExtendCM, projIccCM, projIcc, hx.1, hx.2]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The concatenation of two continuous maps defined on adjacent intervals. If the values of the
 functions on the common bound do not agree, this is defined as an arbitrarily chosen constant
 map. See `concatCM` for the corresponding map on the subtype of compatible function pairs. -/

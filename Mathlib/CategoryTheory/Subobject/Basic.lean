@@ -3,13 +3,15 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Kim Morrison
 -/
+module
 
-import Mathlib.CategoryTheory.Limits.Skeleton
-import Mathlib.CategoryTheory.Subobject.MonoOver
-import Mathlib.CategoryTheory.Skeletal
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.Tactic.ApplyFun
-import Mathlib.Tactic.CategoryTheory.Elementwise
+public import Mathlib.CategoryTheory.Limits.Skeleton
+public import Mathlib.CategoryTheory.Subobject.MonoOver
+public import Mathlib.CategoryTheory.Skeletal
+public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public import Mathlib.Tactic.ApplyFun
+public import Mathlib.Tactic.CategoryTheory.Elementwise
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 /-!
 # Subobjects
@@ -70,6 +72,8 @@ In fact, in an abelian category (I'm not sure in what generality beyond that),
 
 -/
 
+@[expose] public section
+
 
 universe w' w v₁ v₂ v₃ u₁ u₂ u₃
 
@@ -103,9 +107,11 @@ instance (X : C) : PartialOrder (Subobject X) :=
 
 namespace Subobject
 
+lemma skeletal (X : C) : Skeletal (Subobject X) := ThinSkeleton.skeletal
+
 /-- Convenience constructor for a subobject. -/
 def mk {X A : C} (f : A ⟶ X) [Mono f] : Subobject X :=
-  (toThinSkeleton _).obj (MonoOver.mk' f)
+  (toThinSkeleton _).obj (MonoOver.mk f)
 
 section
 
@@ -113,16 +119,14 @@ attribute [local ext] CategoryTheory.Comma
 
 protected theorem ind {X : C} (p : Subobject X → Prop)
     (h : ∀ ⦃A : C⦄ (f : A ⟶ X) [Mono f], p (Subobject.mk f)) (P : Subobject X) : p P := by
-  apply Quotient.inductionOn'
-  intro a
+  induction P using Quotient.inductionOn' with | _ a
   exact h a.arrow
 
 protected theorem ind₂ {X : C} (p : Subobject X → Subobject X → Prop)
     (h : ∀ ⦃A B : C⦄ (f : A ⟶ X) (g : B ⟶ X) [Mono f] [Mono g],
       p (Subobject.mk f) (Subobject.mk g))
     (P Q : Subobject X) : p P Q := by
-  apply Quotient.inductionOn₂'
-  intro a b
+  induction P, Q using Quotient.inductionOn₂' with | _ a b
   exact h a.arrow b.arrow
 
 end
@@ -135,7 +139,7 @@ protected def lift {α : Sort*} {X : C} (F : ∀ ⦃A : C⦄ (f : A ⟶ X) [Mono
         i.hom ≫ g = f → F f = F g) :
     Subobject X → α := fun P =>
   Quotient.liftOn' P (fun m => F m.arrow) fun m n ⟨i⟩ =>
-    h m.arrow n.arrow ((MonoOver.forget X ⋙ Over.forget X).mapIso i) (Over.w i.hom)
+    h m.arrow n.arrow ((MonoOver.forget X ⋙ Over.forget X).mapIso i) (Over.w i.hom.hom)
 
 @[simp]
 protected theorem lift_mk {α : Sort*} {X : C} (F : ∀ ⦃A : C⦄ (f : A ⟶ X) [Mono f], α) {h A}
@@ -164,6 +168,11 @@ noncomputable def representativeIso {X : C} (A : MonoOver X) :
     representative.obj ((toThinSkeleton _).obj A) ≅ A :=
   (equivMonoOver X).counitIso.app A
 
+@[simp]
+lemma thinSkeleton_mk_representative_eq_self {X : C} (A : Subobject X) :
+    ThinSkeleton.mk (representative.obj A) = A :=
+  Subobject.skeletal _ ⟨((equivMonoOver X).unitIso.app _).symm⟩
+
 /-- Use choice to pick a representative underlying object in `C` for any `Subobject X`.
 
 Prefer to use the coercion `P : C` rather than explicitly writing `underlying.obj P`.
@@ -178,7 +187,7 @@ then pick an arbitrary choice of underlying object `(Subobject.mk f : C)` back i
 it is isomorphic (in `C`) to the original `X`.
 -/
 noncomputable def underlyingIso {X Y : C} (f : X ⟶ Y) [Mono f] : (Subobject.mk f : C) ≅ X :=
-  (MonoOver.forget _ ⋙ Over.forget _).mapIso (representativeIso (MonoOver.mk' f))
+  (MonoOver.forget _ ⋙ Over.forget _).mapIso (representativeIso (MonoOver.mk f))
 
 /-- The morphism in `C` from the arbitrarily chosen underlying object to the ambient object.
 -/
@@ -205,7 +214,7 @@ theorem representative_arrow (Y : Subobject X) : (representative.obj Y).arrow = 
 @[reassoc (attr := simp)]
 theorem underlying_arrow {X : C} {Y Z : Subobject X} (f : Y ⟶ Z) :
     underlying.map f ≫ arrow Z = arrow Y :=
-  Over.w (representative.map f)
+  Over.w (representative.map f).hom
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem underlyingIso_arrow {X Y : C} (f : X ⟶ Y) [Mono f] :
@@ -457,17 +466,20 @@ variable {P Q : MonoOver X} (f : P ⟶ Q)
 include f in
 lemma subobjectMk_le_mk_of_hom :
     Subobject.mk P.obj.hom ≤ Subobject.mk Q.obj.hom :=
-  Subobject.mk_le_mk_of_comm f.left (by simp)
+  Subobject.mk_le_mk_of_comm f.hom.left (by simp)
 
-lemma isIso_left_iff_subobjectMk_eq :
-    IsIso f.left ↔ Subobject.mk P.1.hom = Subobject.mk Q.1.hom :=
-  ⟨fun _ ↦ Subobject.mk_eq_mk_of_comm _ _ (asIso f.left) (by simp),
+lemma isIso_hom_left_iff_subobjectMk_eq :
+    IsIso f.hom.left ↔ Subobject.mk P.1.hom = Subobject.mk Q.1.hom :=
+  ⟨fun _ ↦ Subobject.mk_eq_mk_of_comm _ _ (asIso f.hom.left) (by simp),
     fun h ↦ ⟨Subobject.ofMkLEMk _ _ h.symm.le, by simp [← cancel_mono P.1.hom],
       by simp [← cancel_mono Q.1.hom]⟩⟩
 
+@[deprecated (since := "2025-12-18")]
+alias isIso_left_iff_subobjectMk_eq := isIso_hom_left_iff_subobjectMk_eq
+
 lemma isIso_iff_subobjectMk_eq :
     IsIso f ↔ Subobject.mk P.1.hom = Subobject.mk Q.1.hom := by
-  rw [isIso_iff_isIso_left, isIso_left_iff_subobjectMk_eq]
+  rw [isIso_iff_isIso_hom_left, isIso_hom_left_iff_subobjectMk_eq]
 
 end MonoOver
 
@@ -577,6 +589,7 @@ theorem pullback_obj_mk {A B X Y : C} {f : Y ⟶ X} {i : A ⟶ X} [Mono i]
   ((equivMonoOver Y).inverse.mapIso
     (MonoOver.pullbackObjIsoOfIsPullback _ _ _ _ h)).to_eq
 
+set_option backward.isDefEq.respectTransparency false in
 theorem pullback_obj {X Y : C} (f : Y ⟶ X) (x : Subobject X) :
     (pullback f).obj x = mk (pullback.snd x.arrow f) := by
   obtain ⟨Z, i, _, rfl⟩ := mk_surjective x
@@ -684,6 +697,7 @@ theorem pullback_map_self [HasPullbacks C] (f : X ⟶ Y) [Mono f] (g : Subobject
   revert g
   exact Quotient.ind (fun g' => Quotient.sound ⟨(MonoOver.pullbackMapSelf f).app _⟩)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_pullback [HasPullbacks C] {X Y Z W : C} {f : X ⟶ Y} {g : X ⟶ Z} {h : Y ⟶ W} {k : Z ⟶ W}
     [Mono h] [Mono g] (comm : f ≫ h = g ≫ k) (t : IsLimit (PullbackCone.mk f g comm))
     (p : Subobject Y) : (map g).obj ((pullback f).obj p) = (pullback k).obj ((map h).obj p) := by
@@ -693,8 +707,7 @@ theorem map_pullback [HasPullbacks C] {X Y Z W : C} {f : X ⟶ Y} {g : X ⟶ Z} 
   apply Quotient.sound
   apply ThinSkeleton.equiv_of_both_ways
   · refine MonoOver.homMk (pullback.lift (pullback.fst _ _) _ ?_) (pullback.lift_snd _ _ _)
-    change _ ≫ a.arrow ≫ h = (pullback.snd _ _ ≫ g) ≫ _
-    rw [assoc, ← comm, pullback.condition_assoc]
+    simp [← comm, pullback.condition_assoc]
   · refine MonoOver.homMk (pullback.lift (pullback.fst _ _)
       (PullbackCone.IsLimit.lift t (pullback.fst _ _ ≫ a.arrow) (pullback.snd _ _) _)
       (PullbackCone.IsLimit.lift_fst _ _ _ ?_).symm) ?_
@@ -753,10 +766,8 @@ def imageFactorisation (f : X ⟶ Y) (x : Subobject X) :
     ImageFactorisation.ofIsoI
       (Image.imageFactorisation (x.arrow ≫ f))
       (existsIsoImage f x).symm
-  ImageFactorisation.copy this
-    ((«exists» f).obj x).arrow
-    this.F.e
-    (by simpa [this, -Over.w] using (Over.w ((existsCompRepresentativeIso f).app x).hom).symm)
+  ImageFactorisation.copy this ((«exists» f).obj x).arrow this.F.e (by
+    simpa [this, -Over.w] using (Over.w ((existsCompRepresentativeIso f).app x).hom.hom).symm)
 
 end Exists
 

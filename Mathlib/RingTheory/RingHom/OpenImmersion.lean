@@ -3,8 +3,9 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+module
 
-import Mathlib.RingTheory.LocalProperties.Basic
+public import Mathlib.RingTheory.LocalProperties.Basic
 
 /-! # Standard Open Immersion
 
@@ -12,6 +13,8 @@ We define the property `RingHom.IsStandardOpenImmersion` on ring homomorphisms: 
 morphism is a localization map away from some element. We also define the equivalent
 `Algebra.IsStandardOpenImmersion`.
 -/
+
+@[expose] public section
 
 universe u
 

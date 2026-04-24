@@ -3,7 +3,9 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn, Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.ContMDiff.Basic
+module
+
+public import Mathlib.Geometry.Manifold.ContMDiff.Basic
 
 /-!
 ## Smoothness of standard maps associated to the product of manifolds
@@ -14,9 +16,13 @@ This file contains results about smoothness of standard maps associated to produ
 - the component projections from a product of manifolds are smooth.
 - functions into a product (*pi type*) are `C^n` iff their components are
 - if `M` and `N` are manifolds modelled over the same space, `Sum.inl` and `Sum.inr` are
-`C^n`, as are `Sum.elim`, `Sum.map` and `Sum.swap`.
+  `C^n`, as are `Sum.elim`, `Sum.map` and `Sum.swap`.
 
 -/
+
+assert_not_exists mfderiv
+
+public section
 
 open Set Function Filter ChartedSpace
 
@@ -387,9 +393,7 @@ lemma ContMDiff.inl : ContMDiff I I n (@Sum.inl M M') := by
   refine ⟨continuous_inl.continuousAt, ?_⟩
   -- In extended charts, .inl equals the identity (on the chart sources).
   apply contDiffWithinAt_id.congr_of_eventuallyEq; swap
-  · simp [ChartedSpace.sum_chartAt_inl]
-    congr
-    apply Sum.inl_injective.extend_apply (chartAt _ x)
+  · simp [ChartedSpace.sum_chartAt_inl, Sum.inl_injective.extend_apply (chartAt _ x)]
   set C := chartAt H x with hC
   have : I.symm ⁻¹' C.target ∩ range I ∈ 𝓝[range I] (extChartAt I x) x := by
     rw [← I.image_eq (chartAt H x).target]

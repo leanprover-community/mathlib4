@@ -3,7 +3,9 @@ Copyright (c) 2024 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
+module
+
+public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 
 /-!
 # seminormFromBounded
@@ -40,6 +42,8 @@ this condition holds.
 
 seminormFromBounded, RingSeminorm, Nonarchimedean
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -139,7 +143,7 @@ theorem seminormFromBounded_ge (f_nonneg : 0 ≤ f)
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded function, then
   `seminormFromBounded' f` is nonnegative. -/
 theorem seminormFromBounded_nonneg (f_nonneg : 0 ≤ f)
-    (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y)  :
+    (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y) :
     0 ≤ seminormFromBounded' f := fun x ↦
   le_csSup_of_le (seminormFromBounded_bddAbove_range f_nonneg f_mul x) ⟨1, rfl⟩
     (div_nonneg (f_nonneg _) (f_nonneg _))
@@ -243,6 +247,7 @@ theorem seminormFromBounded_add (f_nonneg : 0 ≤ f)
   · rw [← add_div, div_le_div_iff_of_pos_right (lt_of_le_of_ne' (f_nonneg _) hz), add_mul]
     exact f_add _ _
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- `seminormFromBounded'` is a ring seminorm on `R`. -/
 def seminormFromBounded (f_zero : f 0 = 0) (f_nonneg : 0 ≤ f)
     (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y)

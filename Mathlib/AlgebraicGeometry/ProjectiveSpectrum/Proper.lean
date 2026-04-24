@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patience Ablett, Kevin Buzzard, Harald Carlens, Wayne Ng Kwing King, Michael Schlößer,
   Justus Springer, Andrew Yang, Jujian Zhang
 -/
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Basic
-import Mathlib.AlgebraicGeometry.ValuativeCriterion
+module
+
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Basic
+public import Mathlib.AlgebraicGeometry.ValuativeCriterion
 
 /-!
 # Properness of `Proj A`
@@ -17,6 +19,8 @@ We show that `Proj 𝒜` is proper over `Spec 𝒜₀`.
 This contribution was created as part of the Durham Computational Algebraic Geometry Workshop
 
 -/
+
+@[expose] public section
 
 namespace AlgebraicGeometry.Proj
 
@@ -73,6 +77,7 @@ lemma lift_awayMapₐ_awayMapₐ_surjective {d e : ℕ} {f : A} (hf : f ∈ 𝒜
   · simp only [hx, add_tsub_cancel_right]
     ring
 
+set_option backward.isDefEq.respectTransparency false in
 open TensorProduct in
 instance isSeparated : IsSeparated (toSpecZero 𝒜) := by
   refine ⟨IsZariskiLocalAtTarget.of_openCover (Pullback.openCoverOfLeftRight
@@ -102,17 +107,17 @@ instance isSeparated : IsSeparated (toSpecZero 𝒜) := by
   apply pullback.hom_ext
   · simp only [Iso.trans_hom, congrHom_hom, Category.assoc, Iso.hom_inv_id, Category.comp_id,
       limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, e₂, e₁,
-      pullbackDiagonalMapIdIso_inv_snd_fst, pullbackSpecIso_inv_fst,
-      ← Spec.map_comp]
+      pullbackSpecIso_inv_fst, ← Spec.map_comp]
+    erw [pullbackDiagonalMapIdIso_inv_snd_fst]
     erw [pullbackAwayιIso_inv_fst]
     congr 1
     ext x : 2
     exact DFunLike.congr_fun (Algebra.TensorProduct.lift_comp_includeLeft
       (awayMapₐ 𝒜 j.2.2 rfl) (awayMapₐ 𝒜 i.2.2 (mul_comm _ _)) (fun _ _ ↦ .all _ _)).symm x
   · simp only [Iso.trans_hom, congrHom_hom, Category.assoc, Iso.hom_inv_id, Category.comp_id,
-      limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
-      pullbackDiagonalMapIdIso_inv_snd_snd, pullbackSpecIso_inv_snd, ←
-      Spec.map_comp, e₂, e₁]
+      limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, pullbackSpecIso_inv_snd,
+      ← Spec.map_comp, e₂, e₁]
+    erw [pullbackDiagonalMapIdIso_inv_snd_snd]
     erw [pullbackAwayιIso_inv_snd]
     congr 1
     ext x : 2

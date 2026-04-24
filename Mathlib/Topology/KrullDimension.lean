@@ -3,10 +3,12 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Fangming Li, Alessandro D'Angelo
 -/
-import Mathlib.Order.KrullDimension
-import Mathlib.Topology.Irreducible
-import Mathlib.Topology.Homeomorph.Lemmas
-import Mathlib.Topology.Sets.Closeds
+module
+
+public import Mathlib.Order.KrullDimension
+public import Mathlib.Topology.Irreducible
+public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Topology.Sets.Closeds
 
 /-!
 # The Krull dimension of a topological space
@@ -24,6 +26,8 @@ the length of longest series of closed irreducible subsets ordered by inclusion.
 The proofs use order-preserving maps between posets of irreducible closed sets to establish
 dimension inequalities.
 -/
+
+@[expose] public section
 
 open Set Function Order TopologicalSpace Topology TopologicalSpace.IrreducibleCloseds
 
@@ -61,3 +65,10 @@ ambient space. -/
 theorem topologicalKrullDim_subspace_le (X : Type*) [TopologicalSpace X] (Y : Set X) :
     topologicalKrullDim Y ≤ topologicalKrullDim X :=
   IsInducing.topologicalKrullDim_le IsInducing.subtypeVal
+
+theorem topologicalKrullDim_zero_of_discreteTopology
+    (X : Type*) [TopologicalSpace X] [DiscreteTopology X] :
+    topologicalKrullDim X ≤ 0 := by
+  refine krullDim_nonpos_iff_forall_isMax.mpr fun Z Y h ↦ (h.antisymm' fun x hx ↦ ?_).le
+  obtain ⟨z, hz⟩ := Z.2.nonempty
+  rwa [DiscreteTopology.isDiscrete.subsingleton_of_isPreirreducible Y.2.isPreirreducible hx (h hz)]

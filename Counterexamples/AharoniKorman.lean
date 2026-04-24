@@ -98,9 +98,9 @@ def equivHollom : ℕ × ℕ × ℕ ≃ Hollom where
 namespace Hollom
 
 @[simp] lemma «forall» {p : Hollom → Prop} : (∀ x, p x) ↔ ∀ x, p (toHollom x) := by aesop
-@[simp] lemma «forall₂» {p : Hollom → Hollom → Prop} :
+@[simp] lemma forall₂ {p : Hollom → Hollom → Prop} :
     (∀ x y, p x y) ↔ ∀ x y, p (toHollom x) (toHollom y) := by aesop
-@[simp] lemma «forall₃» {p : Hollom → Hollom → Hollom → Prop} :
+@[simp] lemma forall₃ {p : Hollom → Hollom → Hollom → Prop} :
     (∀ x y z, p x y z) ↔ ∀ x y z, p (toHollom x) (toHollom y) (toHollom z) := by aesop
 @[simp] lemma «exists» {p : Hollom → Prop} : (∃ x, p x) ↔ ∃ x, p (toHollom x) := by aesop
 
@@ -130,59 +130,59 @@ painfully slow to compile.
 -/
 lemma HollomOrder.trans :
     (x y z : ℕ × ℕ × ℕ) → (h₁ : HollomOrder x y) → (h₂ : HollomOrder y z) → HollomOrder x z
-  | _, _, _, .twice _, .twice _ => .twice (by omega)
-  | _, _, _, .twice _, .within _ _ => .twice (by omega)
-  | _, _, _, .twice _, .next_min _ => .twice (by omega)
-  | _, _, _, .twice _, .next_add _ => .twice (by omega)
-  | _, _, _, .within _ _, .twice _ => .twice (by omega)
-  | _, _, _, .within _ _, .within _ _ => .within (by omega) (by omega)
+  | _, _, _, .twice _, .twice _ => .twice (by lia)
+  | _, _, _, .twice _, .within _ _ => .twice (by lia)
+  | _, _, _, .twice _, .next_min _ => .twice (by lia)
+  | _, _, _, .twice _, .next_add _ => .twice (by lia)
+  | _, _, _, .within _ _, .twice _ => .twice (by lia)
+  | _, _, _, .within _ _, .within _ _ => .within (by lia) (by lia)
   | _, _, _, .within _ _, .next_min _ => .next_min (by omega)
-  | _, _, _, .within _ _, .next_add _ => .next_add (by omega)
-  | _, _, _, .next_min _, .twice _ => .twice (by omega)
+  | _, _, _, .within _ _, .next_add _ => .next_add (by lia)
+  | _, _, _, .next_min _, .twice _ => .twice (by lia)
   | _, _, _, .next_min _, .within _ _ => .next_min (by omega)
-  | _, _, _, .next_min _, .next_min _ => .twice (by omega)
-  | _, _, _, .next_min _, .next_add _ => .twice (by omega)
-  | _, _, _, .next_add _, .twice _ => .twice (by omega)
-  | _, _, _, .next_add _, .within _ _ => .next_add (by omega)
-  | _, _, _, .next_add _, .next_min _ => .twice (by omega)
-  | _, _, _, .next_add _, .next_add _ => .twice (by omega)
+  | _, _, _, .next_min _, .next_min _ => .twice (by lia)
+  | _, _, _, .next_min _, .next_add _ => .twice (by lia)
+  | _, _, _, .next_add _, .twice _ => .twice (by lia)
+  | _, _, _, .next_add _, .within _ _ => .next_add (by lia)
+  | _, _, _, .next_add _, .next_min _ => .twice (by lia)
+  | _, _, _, .next_add _, .next_add _ => .twice (by lia)
 
 instance : PartialOrder Hollom where
   le x y := HollomOrder (ofHollom x) (ofHollom y)
   le_refl _ := .within le_rfl le_rfl
   le_trans := «forall₃».2 HollomOrder.trans
   le_antisymm := «forall₂».2 fun
-  | _, _, .twice _, .twice _ => by omega
-  | _, (_, _, _), .twice _, .within _ _ => by omega -- see https://github.com/leanprover/lean4/issues/6416 about the `(_, _, _)`
-  | _, _, .twice _, .next_min _ => by omega
-  | _, _, .twice _, .next_add _ => by omega
-  | _, _, .within _ _, .twice _ => by omega
-  | _, _, .within _ _, .within _ _ => by congr 3 <;> omega
-  | _, _, .next_min _, .twice _ => by omega
-  | _, _, .next_add _, .twice _ => by omega
+  | _, _, .twice _, .twice _ => by lia
+  | _, (_, _, _), .twice _, .within _ _ => by lia -- see https://github.com/leanprover/lean4/issues/6416 about the `(_, _, _)`
+  | _, _, .twice _, .next_min _ => by lia
+  | _, _, .twice _, .next_add _ => by lia
+  | _, _, .within _ _, .twice _ => by lia
+  | _, _, .within _ _, .within _ _ => by congr 3 <;> lia
+  | _, _, .next_min _, .twice _ => by lia
+  | _, _, .next_add _, .twice _ => by lia
 
 @[simp] lemma toHollom_le_toHollom_iff_fixed_right {a b c d n : ℕ} :
     h(a, b, n) ≤ h(c, d, n) ↔ a ≤ c ∧ b ≤ d := by
   refine ⟨?_, ?_⟩
   · rintro (_ | _)
-    · omega
-    · omega
+    · lia
+    · lia
   · rintro ⟨h₁, h₂⟩
     exact .within h₁ h₂
 
 lemma le_of_toHollom_le_toHollom {a b c d e f : ℕ} :
     h(a, b, c) ≤ h(d, e, f) → f ≤ c
-  | .twice _ => by omega
-  | .within _ _ => by omega
-  | .next_add _ => by omega
-  | .next_min _ => by omega
+  | .twice _ => by lia
+  | .within _ _ => by lia
+  | .next_add _ => by lia
+  | .next_min _ => by lia
 
 lemma toHollom_le_toHollom {a b c d e f : ℕ} (h : (a, b) ≤ (d, e)) (hcf : f ≤ c) :
     h(a, b, c) ≤ h(d, e, f) := by
   simp only [Prod.mk_le_mk] at h
-  obtain rfl | rfl | hc : f = c ∨ f + 1 = c ∨ f + 2 ≤ c := by omega
+  obtain rfl | rfl | hc : f = c ∨ f + 1 = c ∨ f + 2 ≤ c := by lia
   · simpa using h
-  · exact .next_add (by omega)
+  · exact .next_add (by lia)
   · exact .twice hc
 
 /--
@@ -235,7 +235,7 @@ lemma to prove that fact later: `no_infinite_antichain`.
 -/
 lemma no_infinite_antichain_level {n : ℕ} {A : Set Hollom} (hA : A ⊆ level n)
     (hA' : IsAntichain (· ≤ ·) A) : A.Finite :=
-  hA'.finite_of_partiallyWellOrderedOn ((level_isPWO).mono hA)
+  hA'.finite_of_partiallyWellOrderedOn (level_isPWO.mono hA)
 
 /--
 Each level is order-connected, i.e. for any `x ∈ level n` and `y ∈ level n` we have
@@ -279,7 +279,7 @@ lemma line_mapsTo {x y : Hollom} (hxy : (ofHollom x).2.2 = (ofHollom y).2.2) :
   rintro p q r h₁ h₂ rfl
   obtain rfl := (le_of_toHollom_le_toHollom h₁).antisymm (le_of_toHollom_le_toHollom h₂)
   simp only [toHollom_le_toHollom_iff_fixed_right] at h₁ h₂
-  omega
+  lia
 
 lemma embed_image_Icc {a b c d n : ℕ} :
     embed n '' Set.Icc (a, b) (c, d) = Set.Icc h(a, b, n) h(c, d, n) := by
@@ -322,9 +322,8 @@ theorem scattered {f : ℚ → Hollom} (hf : StrictMono f) : False := by
   -- Take `x ≠ y` with `g x = g y`
   obtain ⟨x, y, hgxy, hxy'⟩ : ∃ x y, g x = g y ∧ x ≠ y := by simpa [Function.Injective] using hg''
   -- and wlog `x < y`
-  wlog hxy : x < y generalizing x y
-  · simp only [not_lt] at hxy
-    exact this y x hgxy.symm hxy'.symm (lt_of_le_of_ne' hxy hxy')
+  wlog! hxy : x < y generalizing x y
+  · exact this y x hgxy.symm hxy'.symm (lt_of_le_of_ne' hxy hxy')
   -- Now `f '' [x, y]` is infinite, as it is the image of an infinite set of rationals,
   have h₁ : (f '' Set.Icc x y).Infinite := (Set.Icc_infinite hxy).image hf.injective.injOn
   -- but it is contained in `[f x, f y]` by monotonicity
@@ -354,8 +353,7 @@ theorem no_infinite_antichain {A : Set Hollom} (hC : IsAntichain (· ≤ ·) A) 
     intro x hx
     exact no_infinite_antichain_level (this _) (hC.subset Set.inter_subset_left)
   case himage =>
-    rw [← Set.not_infinite]
-    intro h
+    by_contra! h
     obtain ⟨n, hn⟩ := h.nonempty
     suffices f '' A ⊆ Set.Iio (n + 2) from h ((Set.finite_Iio _).subset this)
     intro m
@@ -365,7 +363,7 @@ theorem no_infinite_antichain {A : Set Hollom} (hC : IsAntichain (· ≤ ·) A) 
     obtain ⟨a, b, hab⟩ := hn
     intro c d hcd
     by_contra!
-    exact hC hcd hab (by simp; omega) (HollomOrder.twice this)
+    exact hC hcd hab (by simp; lia) (HollomOrder.twice this)
 
 private lemma triangle_finite (n : ℕ) : {x : ℕ × ℕ | x.1 + x.2 ≤ n}.Finite :=
   (Set.finite_Iic (n, n)).subset <| by aesop
@@ -385,7 +383,6 @@ theorem exists_finite_intersection (hC : IsChain (· ≤ ·) C) :
   rw [frequently_atTop]
   intro n₀
   by_contra! hC'
-  simp only [← Set.not_infinite, not_not] at hC'
   -- Define `m n` to be the smallest value of `min x y` as `(x, y, n)` ranges over `C`.
   let m (n : ℕ) : ℕ := sInf {min (ofHollom x).1 (ofHollom x).2.1 | x ∈ C ∩ level n}
   -- `m n` is well-defined above `n₀`, since the set in question is nonempty (it's infinite).
@@ -410,7 +407,7 @@ theorem exists_finite_intersection (hC : IsChain (· ≤ ·) C) :
       refine .subset (.image (embed (n + 1)) (triangle_finite (2 * (u + v)))) ?_
       simp +contextual [Set.subset_def, D, embed_apply]
     -- ...and `C ∩ level (n + 1)` is infinite (by assumption).
-    specialize hC' (n + 1) (by omega)
+    specialize hC' (n + 1) (by lia)
     rw [← (C ∩ level (n + 1)).inter_union_diff D, Set.infinite_union] at hC'
     refine hC'.resolve_left ?_
     simpa using this
@@ -427,8 +424,8 @@ theorem exists_finite_intersection (hC : IsChain (· ≤ ·) C) :
   -- Whereas if `(x, y, n + 1) ≤ (u, v, n)`, as `2 * (u + v) < x + y`, we must have
   -- `min x y + 1 ≤ min u v`, which finishes the proof.
   · cases h3
-    case twice => omega
-    case next_add => omega
+    case twice => lia
+    case next_add => lia
     case next_min h3 =>
       rw [← Nat.add_one_le_iff]
       refine h3.trans' ?_
@@ -574,14 +571,13 @@ lemma chainBetween_isChain {a b c d : ℕ} :
   split_ifs
   · rintro ⟨v, w⟩ hvw ⟨x, y⟩ hxy
     simp_all
-    omega
+    lia
   · simp
 
 lemma image_chainBetween_isChain {a b c d n : ℕ} :
     IsChain (· ≤ ·) ((chainBetween a b c d).image (embed n) : Set Hollom) := by
   rw [coe_image]
   apply chainBetween_isChain.image
-  simp
 
 open Finset in
 lemma card_chainBetween {a b c d : ℕ} (hac : a ≤ c) (hbd : b ≤ d) :
@@ -589,10 +585,10 @@ lemma card_chainBetween {a b c d : ℕ} (hac : a ≤ c) (hbd : b ≤ d) :
   rw [chainBetween, if_pos ⟨hac, hbd⟩, card_union_of_disjoint, Finset.card_Icc_prod]
   · simp only [Icc_self, card_singleton, Nat.card_Icc]
     rw [← Finset.Ico_map_sectR, card_map, Nat.card_Ico]
-    omega
+    lia
   · rw [disjoint_left]
     simp
-    omega
+    lia
 
 lemma chainBetween_subset {a b c d : ℕ} :
     chainBetween a b c d ⊆ Finset.Icc (a, b) (c, d) := by
@@ -699,9 +695,9 @@ lemma apply_eq_of_line_eq_step (f : SpinalMap C) {n xl yl xh yh : ℕ}
   have cB : #B = xh + yh - (xl + yl) := by
     rw [card_image_of_injective _ (embed n).injective, card_union_of_disjoint,
       card_chainBetween h₂l.1 h₁l.2, card_chainBetween h₁h.1 h₂h.2]
-    · omega
+    · lia
     · simp [disjoint_left, chainBetween, *]
-      omega
+      lia
   -- It is easy to see that our chain `B` lives entirely within `int`
   have hB : B ⊆ int := by
     refine Finset.image_subset_image ?_
@@ -718,15 +714,15 @@ lemma apply_eq_of_line_eq_step (f : SpinalMap C) {n xl yl xh yh : ℕ}
     refine f.injOn_of_isChain ?_
     simp only [B]
     rw [coe_image]
-    refine IsChain.image (· ≤ ·) _ (embed n) (by simp) ?_
+    refine IsChain.image ?_ (embed n)
     rw [coe_union, isChain_union]
     refine ⟨chainBetween_isChain, chainBetween_isChain, ?_⟩
     simp [chainBetween, *]
-    omega
+    lia
   -- Thus the image of `B` under `f` is all of `I`, except for exactly one element.
   have card_eq : (I \ B.image f).card = 1 := by
     rw [card_sdiff_of_subset, cI, card_image_of_injOn f_inj, cB]
-    · omega
+    · lia
     · rw [← coe_subset, coe_image]
       exact f_maps.image_subset
   -- After applying `f`, both `(x + 1, y, n)` and `(x, y + 1, n)` are omitted from the image of `B`
@@ -773,11 +769,11 @@ lemma apply_eq_of_line_eq_aux (f : SpinalMap C) {n xl yl xh yh : ℕ}
         refine apply_eq_of_line_eq_step f hC hlo hhi hx hy h₁l ?_ h₁h ?_
         all_goals
           simp only [toHollom_le_toHollom_iff_fixed_right] at h₁l h₁h h₂l h₂h ⊢
-          omega
+          lia
       rw [this, ih, add_right_comm, add_assoc]
       all_goals
         simp only [toHollom_le_toHollom_iff_fixed_right] at h₁l h₁h h₂l h₂h ⊢
-        omega
+        lia
 
 /--
 For two points of `C` in the same level, and two points `(a, b, n)` and `(c, d, n)` between them,
@@ -797,7 +793,7 @@ theorem apply_eq_of_line_eq (f : SpinalMap C) {n : ℕ} (hC : IsChain (· ≤ ·
   simp only [] at hxy
   simp only [line_toHollom] at h
   obtain ⟨k, rfl⟩ := exists_add_of_le hxy
-  obtain rfl : y₂ = y₁ + k := by omega
+  obtain rfl : y₂ = y₁ + k := by lia
   induction hlo.2 using induction_on_level with | h xlo ylo =>
   induction hhi.2 using induction_on_level with | h xhi yhi =>
   exact apply_eq_of_line_eq_aux f hC hlo.1 hhi.1 (by simp_all) (by simp_all) h₁l h₂l h₁h h₂h
@@ -850,10 +846,10 @@ lemma square_subset_above (h : (C ∩ level n).Finite) :
   constructor
   · rintro c d n hcd rfl
     specialize hab c d hcd
-    omega
+    lia
   · intro hfg
     specialize hab _ _ hfg
-    omega
+    lia
 
 lemma square_subset_R (h : (C ∩ level n).Finite) :
     ∀ᶠ a in atTop, embed n '' Set.Ici (a, a) ⊆ R n C \ (C ∩ level n) := by
@@ -896,7 +892,7 @@ lemma x0y0_min (z : ℕ × ℕ) (hC : IsChain (· ≤ ·) C) (h : embed (n + 1) 
   have : (C ∩ level (n + 1)).Nonempty := ⟨_, h, by simp [level_eq_range]⟩
   refine hC.le_of_not_gt h (x0y0_mem this) ?_
   rw [x0y0, dif_pos this, OrderEmbedding.lt_iff_lt]
-  exact wellFounded_lt.not_lt_min {x | embed (n + 1) x ∈ C} ?_ h
+  exact wellFounded_lt.not_lt_min {x | embed (n + 1) x ∈ C} h
 
 /--
 Given a subset `C` of the Hollom partial order, and an index `n`, find the smallest element of
@@ -966,7 +962,7 @@ lemma square_subset_S_case_1 (h : (C ∩ level n).Finite) (h' : (C ∩ level (n 
     apply toHollom_le_toHollom _ (by simp)
     have := hab _ _ hgh
     simp only [Prod.mk_le_mk] at this ⊢
-    omega
+    lia
   -- Combined with the fact that sufficiently large `a` have
   -- `{(x, y, n) | x ≥ a ∧ y ≥ a} ⊆ R \ (C ∩ level n)`, we can easily finish.
   filter_upwards [square_subset_R h, this] with a h₁ h₂
@@ -1005,8 +1001,7 @@ lemma left_or_right_bias {n : ℕ} (a b : ℕ)
     (∀ i : ℕ, ∃ j ∈ C ∩ level n, h(a, i, n) ≤ j) ∨
     (∀ i : ℕ, ∃ j ∈ C ∩ level n, h(i, b, n) ≤ j) := by
   -- Suppose otherwise, and take `c` and `d` counterexamples to both alternatives
-  by_contra! h
-  obtain ⟨⟨c, hc⟩, d, hd⟩ := h
+  by_contra! ⟨⟨c, hc⟩, d, hd⟩
   -- Observe the set of points in `C ∩ level n` below `(d, c, n)` is finite, and aim to show that
   -- `C ∩ level n` is contained in this set, for a contradiction
   refine hCn (((Set.finite_Iic (d, c)).image (embed n)).subset ?_)
@@ -1059,13 +1054,13 @@ theorem not_S_hits_next (f : SpinalMap C) (hC : IsChain (· ≤ ·) C)
         intro h
         have : c + d < a + b := add_lt_add_of_lt h
         simp only [toHollom_le_toHollom_iff_fixed_right] at hj
-        omega
+        lia
       -- ...and `(x0, y0, n + 1) ≤ j`.
       have h0j : h(x0 n C, y0 n C, n + 1) ≤ j := hj'.trans' (by simp [ha, hb])
-      have : line h(a, b, n + 1) = line h(x0 n C, a + b - x0 n C, n + 1) := by simp; omega
+      have : line h(a, b, n + 1) = line h(x0 n C, a + b - x0 n C, n + 1) := by simp; lia
       -- Then we have `f(a, b, n + 1) = f(x0, a + b - x0, n + 1)` since they are at the same line
       have : f h(a, b, n + 1) = f h(x0 n C, a + b - x0 n C, n + 1) := apply_eq_of_line_eq f hC
-        ⟨x0_y0_mem h.nonempty, by simp⟩ hjCn ‹_› this (x0_y0_min hC hp.1) (by simp; omega) hj' hj
+        ⟨x0_y0_mem h.nonempty, by simp⟩ hjCn ‹_› this (x0_y0_min hC hp.1) (by simp; lia) hj' hj
       -- so `f(x, y, n) = (a, b, n + 1) = f(a, b, n + 1) = f(x0, a + b - x0, n + 1)`
       have : f h(x, y, n) = f h(x0 n C, a + b - x0 n C, n + 1) := by
         rw [← this, ← hfp, f.eq_self_of_mem hp.1]
@@ -1080,11 +1075,11 @@ theorem not_S_hits_next (f : SpinalMap C) (hC : IsChain (· ≤ ·) C)
         intro h
         have : c + d < a + b := add_lt_add_of_lt h
         simp only [toHollom_le_toHollom_iff_fixed_right] at hj
-        omega
+        lia
       have h0j : h(x0 n C, y0 n C, n + 1) ≤ j := hj'.trans' (by simp [ha, hb])
-      have : line h(a, b, n + 1) = line h(a + b - y0 n C, y0 n C, n + 1) := by simp; omega
+      have : line h(a, b, n + 1) = line h(a + b - y0 n C, y0 n C, n + 1) := by simp; lia
       have := apply_eq_of_line_eq f hC ⟨x0_y0_mem h.nonempty, by simp⟩ hjCn ‹_› this
-        (x0_y0_min hC hp.1) (by simp; omega) hj' hj
+        (x0_y0_min hC hp.1) (by simp; lia) hj' hj
       have : f h(x, y, n) = f h(a + b - y0 n C, y0 n C, n + 1) := by
         rw [← this, ← hfp, f.eq_self_of_mem hp.1]
       exact f.not_le_of_eq this.symm (by simp) (.next_min (hx.2.trans' (by simp)))
@@ -1122,15 +1117,15 @@ lemma S_mapsTo_previous (f : SpinalMap C) (hC : IsChain (· ≤ ·) C) (hn : n �
     intro h
     have := f.eq_of_le hp'.symm (.twice h)
     simp only [Prod.mk.injEq, Hollom.ext_iff] at this
-    omega
+    lia
   -- and `(a, b, m) ≤ (x, y, n)` if `n + 2 ≤ m`, so this cannot hold either
   have : ¬ n + 2 ≤ m := by
     intro h
     have := f.eq_of_le hp' (.twice h)
     simp only [Prod.mk.injEq, Hollom.ext_iff] at this
-    omega
+    lia
   -- So the only remaining option is that `m = n - 1`.
-  omega
+  lia
 
 open Finset in
 /--
@@ -1154,8 +1149,8 @@ theorem not_S_mapsTo_previous (hC : IsChain (· ≤ ·) C)
   -- ...and it has length `2a+1`.
   have card_F : #F = 2 * a + 1 := by
     rw [Finset.card_image_of_injective _ (embed n).injective,
-      card_chainBetween (by omega) (by simp)]
-    omega
+      card_chainBetween (by lia) (by simp)]
+    lia
   let T := {x ∈ C ∩ level (n - 1) | line x < 2 * a}
   -- Therefore, the image of `F` is within `C ∩ level (n - 1)`, and each of its points must be
   -- within `{(x, y, n - 1) | x + y < 2 * a}`. That is, the image of `F` under `f` is within `T`.
@@ -1165,7 +1160,7 @@ theorem not_S_mapsTo_previous (hC : IsChain (· ≤ ·) C)
     set c := f x with hc
     have hc' : c ∈ C ∩ level (n - 1) := h _ (F_subs hx)
     clear_value c
-    rw [coe_image, chainBetween, Ico_self, if_pos (by omega), empty_union, ← Icc_map_sectL] at hx
+    rw [coe_image, chainBetween, Ico_self, if_pos (by lia), empty_union, ← Icc_map_sectL] at hx
     simp only [embed_apply, coe_map, Function.Embedding.sectL_apply, coe_Icc,
       Set.mem_image, Set.mem_Icc, exists_exists_and_eq_and] at hx
     obtain ⟨b, ⟨hab, hba⟩, rfl⟩ := hx
@@ -1176,10 +1171,10 @@ theorem not_S_mapsTo_previous (hC : IsChain (· ≤ ·) C)
       match n, hn with
       | n + 1, _ =>
           simp only [add_tsub_cancel_right]
-          apply HollomOrder.next_add (by omega)
+          apply HollomOrder.next_add (by lia)
     have : f h(u, v, n - 1) = f h(b, a, n) := by rw [f.eq_self_of_mem hc'.1, hc]
     have := le_of_toHollom_le_toHollom (f.eq_of_le this.symm le).ge
-    omega
+    lia
   -- And `f` acts injectively on `F`, as it is a chain.
   have F_inj : Set.InjOn f F := f.injOn_of_isChain image_chainBetween_isChain
   -- By definition of `T`, the `line` map sends it to the interval `[0, 2a)`
@@ -1196,13 +1191,13 @@ theorem not_S_mapsTo_previous (hC : IsChain (· ≤ ·) C)
   -- which is a contradiction by cardinality arguments.
   have := card_le_card_of_injOn _ line_F_mapsTo (line_inj.comp F_inj F_mapsTo)
   simp only [Finset.card_range] at this
-  omega
+  lia
 
 /-- The Hollom partial order has no spinal maps. -/
 theorem no_spinalMap (hC : IsChain (· ≤ ·) C) (f : SpinalMap C) : False := by
   obtain ⟨n, hn, hn'⟩ : ∃ n, n ≠ 0 ∧ (C ∩ Hollom.level n).Finite := by
     obtain ⟨n, hn, hn'⟩ := Filter.frequently_atTop.1 (Hollom.exists_finite_intersection hC) 1
-    exact ⟨n, by omega, hn'⟩
+    exact ⟨n, by lia, hn'⟩
   exact Hollom.not_S_mapsTo_previous hC hn' hn (Hollom.S_mapsTo_previous f hC hn)
 
 end Hollom

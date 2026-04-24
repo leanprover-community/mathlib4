@@ -3,8 +3,10 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Ben Eltschig
 -/
-import Mathlib.Topology.Connected.PathConnected
-import Mathlib.Topology.AlexandrovDiscrete
+module
+
+public import Mathlib.Topology.Connected.PathConnected
+public import Mathlib.Topology.AlexandrovDiscrete
 
 /-!
 # Locally path-connected spaces
@@ -38,6 +40,8 @@ path-connected, but not necessarily open; that they can also be required to be o
 a theorem in `isOpen_isPathConnected_basis`.
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open Topology Filter unitInterval Set Function
@@ -46,7 +50,7 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {x y z : X} {ι
 
 section LocPathConnectedSpace
 
-/-- A topological space is locally path connected, at every point, path connected
+/-- A topological space is locally path connected if, at every point, path connected
 neighborhoods form a neighborhood basis. -/
 class LocPathConnectedSpace (X : Type*) [TopologicalSpace X] : Prop where
   /-- Each neighborhood filter has a basis of path-connected neighborhoods. -/
@@ -84,7 +88,7 @@ protected theorem IsClosed.pathComponent (x : X) : IsClosed (pathComponent x) :=
   intro y hxy
   rcases (path_connected_basis y).ex_mem with ⟨V, hVy, hVc⟩
   filter_upwards [hVy] with z hz hxz
-  exact hxy <|  hxz.trans (hVc.joinedIn _ hz _ (mem_of_mem_nhds hVy)).joined
+  exact hxy <| hxz.trans (hVc.joinedIn _ hz _ (mem_of_mem_nhds hVy)).joined
 
 /-- In a locally path connected space, each path component is a clopen set. -/
 protected theorem IsClopen.pathComponent (x : X) : IsClopen (pathComponent x) :=
@@ -104,6 +108,35 @@ theorem pathConnectedSpace_iff_connectedSpace : PathConnectedSpace X ↔ Connect
 theorem pathComponent_eq_connectedComponent (x : X) : pathComponent x = connectedComponent x :=
   (pathComponent_subset_component x).antisymm <|
     (IsClopen.pathComponent x).connectedComponent_subset (mem_pathComponent_self _)
+
+theorem connectedComponent_eq_iff_joined (x y : X) :
+    connectedComponent x = connectedComponent y ↔ Joined x y := by
+  rw [← mem_pathComponent_iff, pathComponent_eq_connectedComponent, eq_comm]
+  exact connectedComponent_eq_iff_mem
+
+theorem connectedComponentSetoid_eq_pathSetoid : connectedComponentSetoid X = pathSetoid X :=
+  Setoid.ext connectedComponent_eq_iff_joined
+
+/-- In a locally path-connected space, connected components and path-connected components align -/
+def connectedComponentsEquivZerothHomotopy : ConnectedComponents X ≃ ZerothHomotopy X where
+  toFun := Quotient.map id (connectedComponent_eq_iff_joined · · |>.mp ·)
+  invFun := ZerothHomotopy.toConnectedComponents
+  left_inv := Quot.ind <| congrFun rfl
+  right_inv := Quot.ind <| congrFun rfl
+
+@[simp]
+lemma connectedComponentsEquivZerothHomotopy_apply (x : X) :
+    connectedComponentsEquivZerothHomotopy ⟦x⟧ = (.mk x) :=
+  rfl
+
+@[simp]
+lemma coe_connectedComponentsEquivZerothHomotopy_symm :
+    ⇑connectedComponentsEquivZerothHomotopy.symm = ZerothHomotopy.toConnectedComponents (X := X) :=
+  rfl
+
+lemma connectedComponentsEquivZerothHomotopy_symm_apply (x : X) :
+    connectedComponentsEquivZerothHomotopy.symm (.mk x) = ⟦x⟧ :=
+  rfl
 
 theorem pathConnected_subset_basis {U : Set X} (h : IsOpen U) (hx : x ∈ U) :
     (𝓝 x).HasBasis (fun s : Set X => s ∈ 𝓝 x ∧ IsPathConnected s ∧ s ⊆ U) id :=
@@ -177,7 +210,7 @@ lemma LocPathConnectedSpace.coinduced {Y : Type*} (f : X → Y) :
 /-- Quotients of locally path-connected spaces are locally path-connected. -/
 lemma Topology.IsQuotientMap.locPathConnectedSpace {f : X → Y} (h : IsQuotientMap f) :
     LocPathConnectedSpace Y :=
-  h.2 ▸ LocPathConnectedSpace.coinduced f
+  h.isCoinducing.eq_coinduced ▸ LocPathConnectedSpace.coinduced f
 
 /-- Quotients of locally path-connected spaces are locally path-connected. -/
 instance Quot.locPathConnectedSpace {r : X → X → Prop} : LocPathConnectedSpace (Quot r) :=
@@ -188,9 +221,7 @@ instance Quotient.locPathConnectedSpace {s : Setoid X} : LocPathConnectedSpace (
   isQuotientMap_quotient_mk'.locPathConnectedSpace
 
 /-- Disjoint unions of locally path-connected spaces are locally path-connected. -/
-instance Sum.locPathConnectedSpace.{u} {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y]
-    [LocPathConnectedSpace X] [LocPathConnectedSpace Y] :
-    LocPathConnectedSpace (X ⊕ Y) := by
+instance Sum.locPathConnectedSpace [LocPathConnectedSpace Y] : LocPathConnectedSpace (X ⊕ Y) := by
   rw [locPathConnectedSpace_iff_pathComponentIn_mem_nhds]; intro x u hu hxu; rw [mem_nhds_iff]
   obtain x | y := x
   · refine ⟨Sum.inl '' (pathComponentIn (Sum.inl ⁻¹' u) x), ?_, ?_, ?_⟩
@@ -234,8 +265,8 @@ instance AlexandrovDiscrete.locPathConnectedSpace [AlexandrovDiscrete X] :
 /-- If a space is locally path-connected, the topology of its path components is discrete. -/
 instance : DiscreteTopology <| ZerothHomotopy X := by
   refine discreteTopology_iff_isOpen_singleton.mpr fun c ↦ ?_
-  obtain ⟨x, rfl⟩ := Quotient.mk_surjective c
-  rw [← isQuotientMap_quotient_mk'.isOpen_preimage]
+  obtain ⟨x, rfl⟩ := ZerothHomotopy.mk_surjective c
+  rw [← ZerothHomotopy.isQuotientMap_mk.isOpen_preimage]
   grind [ZerothHomotopy.preimage_singleton_eq_pathComponent, IsOpen.pathComponent]
 
 /-- A locally path-connected compact space has finitely many path components. -/

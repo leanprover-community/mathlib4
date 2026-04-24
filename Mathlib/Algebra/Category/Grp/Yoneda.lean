@@ -3,15 +3,19 @@ Copyright (c) 2025 Yaël Dillies, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Andrew Yang
 -/
-import Mathlib.Algebra.Category.Grp.Basic
-import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.CategoryTheory.Yoneda
+module
+
+public import Mathlib.Algebra.Category.Grp.Basic
+public import Mathlib.Algebra.Group.Pi.Lemmas
+public import Mathlib.CategoryTheory.Yoneda
 
 /-!
 # Yoneda embeddings
 
 This file defines a few Yoneda embeddings for the category of commutative groups.
 -/
+
+@[expose] public section
 
 open CategoryTheory
 
@@ -30,7 +34,9 @@ coyoneda embedding. -/
 coyoneda embedding. -/]
 def CommGrpCat.coyonedaForget :
     coyoneda ⋙ (Functor.whiskeringRight _ _ _).obj (forget _) ≅ CategoryTheory.coyoneda :=
-  NatIso.ofComponents fun X ↦ NatIso.ofComponents fun Y ↦ { hom f := ofHom f, inv f := f.hom }
+  dsimp% NatIso.ofComponents fun X ↦ NatIso.ofComponents fun Y ↦ {
+    hom := TypeCat.ofHom (fun f ↦ ofHom f),
+    inv := TypeCat.ofHom (fun f ↦ f.hom) }
 
 /-- The Hom bifunctor sending a type `X` and a commutative group `G` to the commutative group
 `X → G` with pointwise operations.

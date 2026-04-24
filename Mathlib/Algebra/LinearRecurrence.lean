@@ -3,8 +3,11 @@ Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Algebra.Polynomial.Eval.Defs
-import Mathlib.LinearAlgebra.Dimension.Constructions
+module
+
+public import Mathlib.Algebra.Polynomial.Degree.Operations
+public import Mathlib.Algebra.Polynomial.Eval.Defs
+public import Mathlib.LinearAlgebra.Dimension.Constructions
 
 /-!
 # Linear recurrence
@@ -35,6 +38,7 @@ properties of eigenvalues and eigenvectors.
 
 -/
 
+@[expose] public section
 
 noncomputable section
 
@@ -71,7 +75,7 @@ def mkSol (init : Fin E.order → R) : ℕ → R
     if h : n < E.order then init ⟨n, h⟩
     else
       ∑ k : Fin E.order,
-        have _ : n - E.order + k < n := by omega
+        have _ : n - E.order + k < n := by lia
         E.coeffs k * mkSol init (n - E.order + k)
 
 /-- `E.mkSol` indeed gives solutions to `E`. -/
@@ -112,7 +116,7 @@ def solSpace : Submodule R (ℕ → R) where
   carrier := { u | E.IsSolution u }
   zero_mem' n := by simp
   add_mem' {u v} hu hv n := by simp [mul_add, sum_add_distrib, hu n, hv n]
-  smul_mem' a u hu n := by simp [hu n, mul_sum]; congr; ext; ac_rfl
+  smul_mem' a u hu n := by simp [hu n, mul_sum]; ac_rfl
 
 /-- Defining property of the solution space : `u` is a solution
   iff it belongs to the solution space. -/
@@ -133,18 +137,34 @@ def toInit : E.solSpace ≃ₗ[R] Fin E.order → R where
   left_inv u := by ext n; symm; apply E.eq_mk_of_is_sol_of_eq_init u.2; intro k; rfl
   right_inv u := funext_iff.mpr fun n ↦ E.mkSol_eq_init u n
 
-/-- Two solutions are equal iff they are equal on `range E.order`. -/
-theorem sol_eq_of_eq_init (u v : ℕ → R) (hu : E.IsSolution u) (hv : E.IsSolution v) :
+theorem mkSol_injective : E.mkSol.Injective :=
+  Subtype.val_injective.comp E.toInit.symm.injective
+
+/-- A basis of the solution space given by solutions whose initial conditions are the standard basis
+vectors -/
+def basis : Module.Basis (Fin E.order) R E.solSpace :=
+  .ofEquivFun E.toInit
+
+/-- The coordinates of a solution in the basis are its first `E.order` values -/
+theorem repr_basis_eq (u : E.solSpace) :
+    E.basis.repr u = .ofSupportFinite (u ∘ Fin.val) (Set.toFinite _) :=
+  rfl
+
+/-- The nth coordinate of a solution in the basis equals its nth value -/
+@[simp]
+theorem repr_basis_apply (u : E.solSpace) (n : Fin E.order) : E.basis.repr u n = u.val n :=
+  rfl
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Two solutions are equal iff their initial conditions are equal. -/
+theorem eq_iff_eqOn_range_order (u v : ℕ → R) (hu : E.IsSolution u) (hv : E.IsSolution v) :
     u = v ↔ Set.EqOn u v ↑(range E.order) := by
-  refine Iff.intro (fun h x _ ↦ h ▸ rfl) ?_
-  intro h
-  set u' : ↥E.solSpace := ⟨u, hu⟩
-  set v' : ↥E.solSpace := ⟨v, hv⟩
-  change u'.val = v'.val
-  suffices h' : u' = v' from h' ▸ rfl
-  rw [← E.toInit.toEquiv.apply_eq_iff_eq, LinearEquiv.coe_toEquiv]
-  ext x
-  exact mod_cast h (mem_range.mpr x.2)
+  rw [← Subtype.mk.injEq u hu v hv, ← E.basis.repr.injective.eq_iff]
+  constructor
+  · exact fun h n hn ↦ congr($h ⟨n, Finset.mem_range.mp hn⟩)
+  · exact fun h ↦ Finsupp.ext fun n ↦ h <| Finset.mem_range.mpr n.prop
+
+@[deprecated (since := "2026-04-16")] alias sol_eq_of_eq_init := eq_iff_eqOn_range_order
 
 /-! `E.tupleSucc` maps `![s₀, s₁, ..., sₙ]` to `![s₁, ..., sₙ, ∑ (E.coeffs i) * sᵢ]`,
 where `n := E.order`. This operation is quite useful for determining closed-form
@@ -159,7 +179,8 @@ def tupleSucc : (Fin E.order → R) →ₗ[R] Fin E.order → R where
     split_ifs with h <;> simp [h, mul_add, sum_add_distrib]
   map_smul' x y := by
     ext i
-    split_ifs with h <;> simp [h, mul_sum]
+    split_ifs with h <;>
+      simp only [Pi.smul_apply, smul_eq_mul, RingHom.id_apply, h, ↓reduceDIte, mul_sum]
     exact sum_congr rfl fun x _ ↦ by ac_rfl
 
 end CommSemiring
@@ -171,9 +192,8 @@ section StrongRankCondition
 variable {R : Type*} [CommRing R] [StrongRankCondition R] (E : LinearRecurrence R)
 
 /-- The dimension of `E.solSpace` is `E.order`. -/
-theorem solSpace_rank : Module.rank R E.solSpace = E.order :=
-  letI := nontrivial_of_invariantBasisNumber R
-  @rank_fin_fun R _ _ E.order ▸ E.toInit.rank_eq
+theorem solSpace_rank : Module.rank R E.solSpace = E.order := by
+  simp [rank_eq_card_basis E.basis]
 
 end StrongRankCondition
 
@@ -185,6 +205,21 @@ variable {R : Type*} [CommRing R] (E : LinearRecurrence R)
 `X ^ E.order - ∑ i : Fin E.order, (E.coeffs i) * X ^ i`. -/
 def charPoly : R[X] :=
   Polynomial.monomial E.order 1 - ∑ i : Fin E.order, Polynomial.monomial i (E.coeffs i)
+
+@[simp]
+theorem charPoly_degree_eq_order [Nontrivial R] : (charPoly E).degree = E.order := by
+  rw [charPoly, degree_sub_eq_left_of_degree_lt]
+    <;> rw [degree_monomial E.order one_ne_zero]
+  simp_rw [← C_mul_X_pow_eq_monomial]
+  exact degree_sum_fin_lt E.coeffs
+
+theorem charPoly_monic : charPoly E |>.Monic := by
+  nontriviality R
+  rw [Monic, leadingCoeff, natDegree_eq_of_degree_eq_some <| charPoly_degree_eq_order _, charPoly,
+    coeff_sub, coeff_monomial_same, finset_sum_coeff, sub_eq_self]
+  refine sum_eq_zero fun _ _ ↦ coeff_eq_zero_of_degree_lt ?_
+  grw [degree_monomial_le]
+  simp
 
 /-- The geometric sequence `q^n` is a solution of `E` iff
   `q` is a root of `E`'s characteristic polynomial. -/

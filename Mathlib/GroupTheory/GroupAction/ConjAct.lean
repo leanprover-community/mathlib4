@@ -3,10 +3,11 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
-import Mathlib.Data.Fintype.Card
-import Mathlib.GroupTheory.GroupAction.Defs
-import Mathlib.GroupTheory.Subgroup.Centralizer
+module
+
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.GroupTheory.GroupAction.Defs
+public import Mathlib.GroupTheory.Subgroup.Centralizer
 
 /-!
 # Conjugation action of a group on itself
@@ -31,6 +32,8 @@ is that some theorems about the group actions will not apply when since this
 `MulAut.conj g • h` describes an action of `MulAut G` on `G`, and not an action of `G`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -165,6 +168,13 @@ end Units
 
 variable [Group G]
 
+theorem coe_smul {G : Type*} [Group G] {H : Subgroup G} (g h : H) :
+    (ConjAct.toConjAct g • h).1 = ConjAct.toConjAct g.1 • h.1 := by
+  rfl
+
+theorem toConjAct_inv_smul (g h : G) : toConjAct g⁻¹ • h = g⁻¹ * h * g := by
+  rw [toConjAct_smul, inv_inv]
+
 -- todo: this file is not in good order; I will refactor this after the PR
 
 instance : MulDistribMulAction (ConjAct G) G where
@@ -185,6 +195,9 @@ instance smulCommClass' [SMul α G] [SMulCommClass G α G] [IsScalarTower α G G
 theorem smul_eq_mulAut_conj (g : ConjAct G) (h : G) : g • h = MulAut.conj (ofConjAct g) h :=
   rfl
 
+theorem toConjAct_smul_eq_mulAut_conj (g h : G) : ConjAct.toConjAct g • h = MulAut.conj g h :=
+  rfl
+
 /-- The set of fixed points of the conjugation action of `G` on itself is the center of `G`. -/
 theorem fixedPoints_eq_center : fixedPoints (ConjAct G) G = center G := by
   ext x
@@ -203,9 +216,9 @@ theorem orbit_eq_carrier_conjClasses (g : G) :
   rw [ConjClasses.mem_carrier_iff_mk_eq, ConjClasses.mk_eq_mk_iff_isConj, mem_orbit_conjAct]
 
 theorem stabilizer_eq_centralizer (g : G) :
-    stabilizer (ConjAct G) g = centralizer (zpowers (toConjAct g) : Set (ConjAct G)) :=
-  le_antisymm (le_centralizer_iff.mp (zpowers_le.mpr fun _ => mul_inv_eq_iff_eq_mul.mp)) fun _ h =>
-    mul_inv_eq_of_eq_mul (h g (mem_zpowers g)).symm
+    stabilizer (ConjAct G) g = centralizer {toConjAct g} :=
+  le_antisymm (fun _ hg _ h ↦ h ▸ eq_mul_inv_iff_mul_eq.mp hg.symm) fun _ h =>
+    mul_inv_eq_of_eq_mul (h g rfl).symm
 
 theorem _root_.Subgroup.centralizer_eq_comap_stabilizer (g : G) :
     Subgroup.centralizer {g} = Subgroup.comap ConjAct.toConjAct.toMonoidHom

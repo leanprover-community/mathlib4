@@ -3,12 +3,14 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Filtered.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.WideEqualizers
-import Mathlib.CategoryTheory.Comma.CardinalArrow
-import Mathlib.SetTheory.Cardinal.Cofinality
-import Mathlib.SetTheory.Cardinal.HasCardinalLT
-import Mathlib.SetTheory.Cardinal.Arithmetic
+module
+
+public import Mathlib.CategoryTheory.Filtered.Final
+public import Mathlib.CategoryTheory.Limits.Shapes.WideEqualizers
+public import Mathlib.CategoryTheory.Comma.CardinalArrow
+public import Mathlib.SetTheory.Cardinal.Cofinality
+public import Mathlib.SetTheory.Cardinal.HasCardinalLT
+public import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-! # κ-filtered category
 
@@ -26,6 +28,8 @@ if any subset of `J` of cardinality `< κ` has an upper bound.
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
 -/
+
+@[expose] public section
 
 universe w v' v u' u
 
@@ -62,7 +66,7 @@ noncomputable def cocone {A : Type v'} [Category.{u'} A]
   have := small_of_small_arrow.{w} A
   have := locallySmall_of_small_arrow.{w} A
   let e := (Shrink.equivalence.{w} A).trans (ShrinkHoms.equivalence.{w} (Shrink.{w} A))
-  exact (Cocones.equivalenceOfReindexing e.symm (Iso.refl _)).inverse.obj
+  exact (Cocone.equivalenceOfReindexing e.symm (Iso.refl _)).inverse.obj
     (nonempty_cocone (κ := κ) (e.inverse ⋙ F) (by simpa)).some
 
 variable (J) in
@@ -83,13 +87,13 @@ variable {K : Type u'} (S : K → J) (hS : HasCardinalLT K κ)
 this is a choice of objects in `J` which is the target of a map from any of
 the objects `S k`. -/
 noncomputable def max : J :=
-  (cocone (Discrete.functor S) (by simpa using hS)).pt
+  (cocone (κ := κ) (Discrete.functor S) (by simpa using hS)).pt
 
 /-- If `S : K → J` is a family of objects of cardinality `< κ` in a `κ`-filtered category,
 this is a choice of map `S k ⟶ max S hS` for any `k : K`. -/
 noncomputable def toMax (k : K) :
     S k ⟶ max S hS :=
-  (cocone (Discrete.functor S) (by simpa using hS)).ι.app ⟨k⟩
+  (cocone (κ := κ) (Discrete.functor S) (by simpa using hS)).ι.app ⟨k⟩
 
 end max
 
@@ -147,8 +151,10 @@ lemma isFiltered_of_isCardinalFiltered (J : Type u) [Category.{v} J]
     infer_instance
   exact ⟨cocone F hA⟩
 
-@[deprecated (since := "2025-10-07")] alias isFiltered_of_isCardinalDirected :=
-  isFiltered_of_isCardinalFiltered
+lemma IsCardinalFiltered.nonempty (J : Type u) [Category.{v} J]
+    (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] [IsCardinalFiltered J κ] : Nonempty J :=
+  have := isFiltered_of_isCardinalFiltered J κ
+  IsFiltered.nonempty
 
 attribute [local instance] Cardinal.fact_isRegular_aleph0
 
@@ -164,6 +170,8 @@ lemma isCardinalFiltered_aleph0_iff (J : Type u) [Category.{v} J] :
     have := ((Arrow.finite_iff A).1 hA).some
     exact ⟨IsFiltered.cocone F⟩
 
+-- TODO: make a version specialized to linear orders.
+-- In a linear order, `h` is equivalent to `κ ≤ Order.cof J`
 lemma isCardinalFiltered_preorder (J : Type w) [Preorder J]
     (κ : Cardinal.{w}) [Fact κ.IsRegular]
     (h : ∀ ⦃K : Type w⦄ (s : K → J) (_ : Cardinal.mk K < κ),
@@ -177,14 +185,14 @@ lemma isCardinalFiltered_preorder (J : Type w) [Preorder J]
         naturality _ _ _ := rfl }⟩
 
 instance (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] :
-    IsCardinalFiltered κ.ord.toType κ :=
+    IsCardinalFiltered κ.ord.ToType κ :=
   isCardinalFiltered_preorder _ _ (fun ι f hs ↦ by
     have h : Function.Surjective (fun i ↦ (⟨f i, i, rfl⟩ : Set.range f)) := fun _ ↦ by aesop
-    obtain ⟨j, hj⟩ := Ordinal.lt_cof_type
-      (α := κ.ord.toType) (r := (· < ·)) (S := Set.range f)
-      (lt_of_le_of_lt (Cardinal.mk_le_of_surjective h)
-        (lt_of_lt_of_le hs (by simp [hκ.out.cof_eq])))
-    exact ⟨j, fun i ↦ (hj (f i) (by simp)).le⟩)
+    contrapose! hs
+    rw [← hκ.out.cof_ord, ← Ordinal.cof_toType]
+    refine (Order.cof_le fun j ↦ ?_).trans (Cardinal.mk_le_of_surjective h)
+    obtain ⟨k, hk⟩ := hs j
+    exact ⟨_, Set.mem_range_self k, hk.le⟩)
 
 open IsCardinalFiltered
 
@@ -270,7 +278,8 @@ variable (J κ) in
 /-- A category is `κ`-filtered iff
 1) any family of objects of cardinality `< κ` admits a map towards a common object, and
 2) any family of morphisms `j ⟶ k` of cardinality `< κ` (between *fixed* objects
-`j` and `k`) can be coequalized by a suitable morphism `k ⟶ l`. -/
+   `j` and `k`) can be coequalized by a suitable morphism `k ⟶ l`.
+-/
 lemma isCardinalFiltered_iff :
     IsCardinalFiltered J κ ↔
       (∀ ⦃ι : Type w⦄ (j : ι → J) (_ : HasCardinalLT ι κ),
@@ -301,5 +310,46 @@ lemma IsCardinalFiltered.multicoequalizer
   obtain ⟨l, a, b, h⟩ := IsCardinalFiltered.wideSpan
     (fun i ↦ IsFiltered.coeqHom (f₁ i) (f₂ i)) hι
   exact ⟨l, b, fun i ↦ by rw [← h i, IsFiltered.coeq_condition_assoc]⟩
+
+/-- If `F : J₁ ⥤ J₂` is final and `J₁` is `κ`-filtered, then
+`J₂` is also `κ`-filtered. See also `IsFiltered.of_final`
+(in `CategoryTheory.Limits.Final`) for the particular case of
+filtered categories (`κ = ℵ₀`). -/
+lemma IsCardinalFiltered.of_final
+    {J₁ : Type u} [Category.{v} J₁] {J₂ : Type u'} [Category.{v'} J₂]
+    (F : J₁ ⥤ J₂) [F.Final] (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    [IsCardinalFiltered J₁ κ] :
+    IsCardinalFiltered J₂ κ := by
+  have := isFiltered_of_isCardinalFiltered J₁ κ
+  obtain ⟨h₁, h₂⟩ := (Functor.final_iff_of_isFiltered F).1 inferInstance
+  rw [isCardinalFiltered_iff]
+  refine ⟨fun ι j hι ↦ ?_, fun ι j k f hι ↦ ?_⟩
+  · choose a ha using fun i ↦ h₁ (j i)
+    exact ⟨F.obj (IsCardinalFiltered.max a hι),
+      fun i ↦ ⟨(ha i).some ≫ F.map (toMax a hι i)⟩⟩
+  · by_cases h : Nonempty ι
+    · obtain ⟨l, ⟨a⟩⟩ := h₁ k
+      choose m b hb using fun (i : ι × ι) ↦ h₂ (f i.1 ≫ a) (f i.2 ≫ a)
+      simp only [Category.assoc, Prod.forall] at hb
+      obtain ⟨n, c, d, hn⟩ := wideSpan b
+        (hasCardinalLT_prod (Cardinal.IsRegular.aleph0_le Fact.out) hι hι)
+      let i₀ : ι := Classical.arbitrary _
+      exact ⟨F.obj n, a ≫ F.map d, f i₀ ≫ a ≫ F.map d,
+        fun i ↦ by rw [← hn (i₀, i), Functor.map_comp, reassoc_of% (hb i₀ i)]⟩
+    · simp only [not_nonempty_iff] at h
+      obtain ⟨j', ⟨a⟩⟩ := h₁ j
+      obtain ⟨k', ⟨b⟩⟩ := h₁ k
+      exact ⟨F.obj (IsFiltered.max j' k'), b ≫ F.map (IsFiltered.rightToMax _ _),
+        a ≫ F.map (IsFiltered.leftToMax _ _), by simp⟩
+
+lemma Limits.IsTerminal.isCardinalFiltered {J : Type u} [Category.{v} J]
+    {X : J} (hX : IsTerminal X) (κ : Cardinal.{w}) [Fact κ.IsRegular] :
+    IsCardinalFiltered J κ where
+  nonempty_cocone _ _ := ⟨{ pt := X, ι.app _ := hX.from _ }⟩
+
+lemma isCardinalFiltered_of_hasTerminal (J : Type u) [Category.{v} J]
+    [HasTerminal J] (κ : Cardinal.{w}) [Fact κ.IsRegular] :
+    IsCardinalFiltered J κ :=
+  terminalIsTerminal.isCardinalFiltered _
 
 end CategoryTheory

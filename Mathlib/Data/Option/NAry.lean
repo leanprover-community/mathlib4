@@ -3,8 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Batteries.Tactic.Init
-import Mathlib.Logic.Function.Defs
+module
+
+public import Mathlib.Init
 
 /-!
 # Binary map of options
@@ -24,6 +25,8 @@ This file is very similar to the n-ary section of `Mathlib/Data/Set/Basic.lean`,
 We do not define `Option.map₃` as its only purpose so far would be to prove properties of
 `Option.map₂` and casing already fulfills this task.
 -/
+
+@[expose] public section
 
 universe u
 

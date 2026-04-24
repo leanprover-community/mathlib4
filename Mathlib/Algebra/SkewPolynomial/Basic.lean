@@ -3,8 +3,10 @@ Copyright (c) 2025 Xavier Généreux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Généreux, María Inés de Frutos Fernández
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.SkewMonoidAlgebra.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.SkewMonoidAlgebra.Basic
 /-!
 # Univariate skew polynomials
 
@@ -36,7 +38,7 @@ Furthermore, with this notation `φ^[n](a) = (ofAdd n) • a`, see `φ_iterate_a
 
 ## Implementation notes
 
-The implementation uses `Muliplicative ℕ` instead of `ℕ` as some notion
+The implementation uses `Multiplicative ℕ` instead of `ℕ` as some notion
 of `AddSkewMonoidAlgebra` like the current implementation of `Polynomials` in Mathlib.
 
 This decision was made because we use the type class `MulSemiringAction` to specify the properties
@@ -66,13 +68,15 @@ multiplication is determined by  $Xa = \varphi (a)X + δ (a)$, where `ϕ` is as 
 
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open Multiplicative SkewMonoidAlgebra
 
 /-- The skew polynomials over `R` is the type of univariate polynomials over `R`
 endowed with a skewed convolution product. -/
-def SkewPolynomial (R : Type*) [AddCommMonoid R] := SkewMonoidAlgebra R (Multiplicative ℕ)
+abbrev SkewPolynomial (R : Type*) [AddCommMonoid R] := SkewMonoidAlgebra R (Multiplicative ℕ)
 
 namespace SkewPolynomial
 variable {R : Type*}
@@ -80,31 +84,7 @@ variable {R : Type*}
 section Semiring
 variable [Semiring R] {p q : SkewPolynomial R}
 
-instance : Inhabited (SkewPolynomial R) := SkewMonoidAlgebra.instInhabited
-
-instance : AddCommMonoid (SkewPolynomial R) := SkewMonoidAlgebra.instAddCommMonoid
-
-instance instSemiring [MulSemiringAction (Multiplicative ℕ) R] : Semiring (SkewPolynomial R) :=
-  SkewMonoidAlgebra.instSemiring
-
 variable {S S₁ S₂ : Type*}
-
-instance [Semiring S] [Module S R] : Module S (SkewPolynomial R) :=
-  SkewMonoidAlgebra.instModule
-
-instance [Semiring S₁] [Semiring S₂] [Module S₁ R] [Module S₂ R]
-    [SMulCommClass S₁ S₂ R] : SMulCommClass S₁ S₂ (SkewPolynomial R) :=
-  SkewMonoidAlgebra.instSMulCommClass
-
-instance [SMulZeroClass S R] : SMulZeroClass S (SkewPolynomial R) :=
-  SkewMonoidAlgebra.instSMulZeroClass
-
-instance [SMul S₁ S₂] [SMulZeroClass S₁ R] [SMulZeroClass S₂ R]
-    [IsScalarTower S₁ S₂ R] : IsScalarTower S₁ S₂ (SkewPolynomial R) :=
-  SkewMonoidAlgebra.instIsScalarTower
-
-instance [Subsingleton R] : Unique (SkewPolynomial R) :=
-  SkewMonoidAlgebra.instUniqueOfSubsingleton
 
 /--
 The set of all `n` such that `X^n` has a non-zero coefficient.

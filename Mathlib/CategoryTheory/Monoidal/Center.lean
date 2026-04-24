@@ -3,8 +3,10 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
 # Half braidings and the Drinfeld center of a monoidal category
@@ -28,6 +30,8 @@ More exciting, however, would be to make possible one of the following options:
 In this file, we take the second approach using the monoidal composition `⊗≫` and the
 `coherence` tactic.
 -/
+
+@[expose] public section
 
 
 universe v v₁ v₂ v₃ u u₁ u₂ u₃
@@ -170,6 +174,7 @@ def whiskerLeft (X : Center C) {Y₁ Y₂ : Center C} (f : Y₁ ⟶ Y₂) :
   f := X.1 ◁ f.f
   comm U := whiskerLeft_comm X f U
 
+set_option backward.isDefEq.respectTransparency false in -- Needed below.
 @[reassoc]
 theorem whiskerRight_comm {X₁ X₂ : Center C} (f : X₁ ⟶ X₂) (Y : Center C) (U : C) :
     f.f ▷ Y.1 ▷ U ≫ ((tensorObj X₂ Y).2.β U).hom =
@@ -192,6 +197,7 @@ def whiskerRight {X₁ X₂ : Center C} (f : X₁ ⟶ X₂) (Y : Center C) :
   f := f.f ▷ Y.1
   comm U := whiskerRight_comm f Y U
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 @[simps]
 def tensorHom {X₁ Y₁ X₂ Y₂ : Center C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
@@ -308,10 +314,11 @@ def forget : Center C ⥤ C where
   obj X := X.1
   map f := f.f
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (forget C).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
-      μIso := fun _ _ ↦ Iso.refl _}
+      μIso := fun _ _ ↦ Iso.refl _ }
 
 @[simp] lemma forget_ε : ε (forget C) = 𝟙 _ := rfl
 @[simp] lemma forget_η : η (forget C) = 𝟙 _ := rfl
@@ -363,6 +370,7 @@ def ofBraided : C ⥤ Center C where
     { f
       comm := fun U => braiding_naturality_left f U }
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (ofBraided C).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso :=

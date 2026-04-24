@@ -3,14 +3,18 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
 -/
-import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.Algebra.Group.Units.Hom
-import Mathlib.Algebra.Ring.Hom.Defs
+module
+
+public import Mathlib.Algebra.Ring.InjSurj
+public import Mathlib.Algebra.Group.Units.Hom
+public import Mathlib.Algebra.Ring.Hom.Defs
 
 /-!
 # Units in semirings and rings
 
 -/
+
+@[expose] public section
 
 
 universe u v w x
@@ -38,6 +42,10 @@ protected theorem val_neg (u : αˣ) : (↑(-u) : α) = -u :=
 @[simp, norm_cast]
 protected theorem coe_neg_one : ((-1 : αˣ) : α) = -1 :=
   rfl
+
+@[simp, norm_cast]
+theorem val_eq_neg_one {a : αˣ} : (a : α) = -1 ↔ a = -1 := by
+  rw [← Units.coe_neg_one, val_inj]
 
 instance : HasDistribNeg αˣ := val_injective.hasDistribNeg _ Units.val_neg val_mul
 
@@ -130,5 +138,3 @@ theorem isUnit_map (f : α →+* β) {a : α} : IsUnit a → IsUnit (f a) :=
 end Semiring
 
 end RingHom
-
-variable [Semiring α] [Semiring β]

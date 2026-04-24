@@ -3,9 +3,11 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Module.ZLattice.Basic
-import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
-import Mathlib.Analysis.PSeries
+module
+
+public import Mathlib.Algebra.Module.ZLattice.Basic
+public import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
+public import Mathlib.Analysis.PSeries
 
 /-!
 # Convergence of `p`-series on lattices
@@ -20,6 +22,8 @@ We show that `∑ z ∈ L, ‖z - x‖ʳ` is convergent for `r < -d`.
   `∑ z ∈ L, ‖z‖ʳ ≤ Aʳ * ∑ k : ℕ, kᵈ⁺ʳ⁻¹` for some `A > 0` depending only on `L`.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -106,22 +110,11 @@ lemma sum_piFinset_Icc_rpow_le {ι : Type*} [Fintype ι] [DecidableEq ι]
     simp [hd, hr'.ne]
   replace hd : 1 ≤ d := by rwa [Nat.one_le_iff_ne_zero]
   have hs0 : s 0 = {0} := by ext; simp [s, funext_iff]
-  have hs {a b : ℕ} (ha : a ≤ b) : s a ⊆ s b := by
-    intros x hx
-    simp only [Fintype.mem_piFinset, s] at hx ⊢
-    exact fun i ↦ Icc_subset_Icc (by simpa) (by simpa) (hx i)
+  have hs {a b : ℕ} (ha : a ≤ b) : s a ⊆ s b := by grind
   have (k : ℕ) : #(s (k + 1) \ s k) ≤ 2 * d * (2 * k + 3) ^ (d - 1) := by
-    trans (2 * k + 3) ^ d - (2 * k + 1) ^ d
-    · simp only [le_add_iff_nonneg_right, zero_le, hs, card_sdiff_of_subset, s]
-      simp only [Fintype.card_piFinset, Int.card_Icc, sub_neg_eq_add, prod_const, card_univ]
-      gcongr <;> norm_cast <;> omega
-    · have := abs_pow_sub_pow_le (α := ℤ) ↑(2 * k + 3) ↑(2 * k + 1) d
-      norm_num at this
-      zify
-      convert this using 3
-      · rw [abs_eq_self.mpr (sub_nonneg.mpr (by gcongr; omega)), Nat.cast_sub (by gcongr; omega)]
-        simp
-      · rw [max_eq_left (by gcongr; omega), abs_eq_self.mpr (by positivity)]
+    simp only [le_add_iff_nonneg_right, zero_le, hs, card_sdiff_of_subset, s, Fintype.card_piFinset,
+      Int.card_Icc, prod_const]
+    grind [abs_pow_sub_pow_le (α := ℤ) (2 * k + 3) (2 * k + 1) d]
   let ε := normBound b
   have hε : 0 < ε := normBound_pos b
   calc ∑ p ∈ s n, ‖∑ i, p i • b i‖ ^ r
@@ -142,7 +135,7 @@ lemma sum_piFinset_Icc_rpow_le {ι : Type*} [Fintype ι] [DecidableEq ι]
         gcongr with k hk
         refine (this _).trans ?_
         gcongr
-        omega
+        lia
     _ = 2 * d * 3 ^ (d - 1) * ε ^ r * ∑ k ∈ range n, (k + 1) ^ (d - 1) * (k + 1 : ℝ) ^ r := by
         simp_rw [Finset.mul_sum]
         congr with k
@@ -193,7 +186,7 @@ lemma exists_finsetSum_norm_rpow_le_tsum :
     obtain ⟨n, hn⟩ : ∃ n : ℕ, u ⊆ Fintype.piFinset fun _ : I ↦ Finset.Icc (-n : ℤ) n := by
       obtain ⟨r, hr, hr'⟩ := u.finite_toSet.isCompact.isBounded.subset_closedBall_lt 0 0
       refine ⟨⌊r⌋.toNat, fun x hx ↦ ?_⟩
-      have hr'' : ⌊r⌋ ⊔ 0 = ⌊r⌋ := by simp; positivity
+      have hr'' : ⌊r⌋ ⊔ 0 = ⌊r⌋ := by rw [sup_eq_left]; positivity
       have := hr' hx
       simp only [Metric.mem_closedBall, dist_zero_right, pi_norm_le_iff_of_nonneg hr.le,
         Int.norm_eq_abs, ← Int.cast_abs, ← Int.le_floor] at this
@@ -203,20 +196,18 @@ lemma exists_finsetSum_norm_rpow_le_tsum :
     simp only [Submodule.norm_coe]
     convert sum_piFinset_Icc_rpow_le b rfl n r hr with x
     simp [e, Finsupp.linearCombination]
-    rfl
   by_cases hA' : A ≤ 1
   · refine ⟨B, hB, fun r hr s ↦ (H r hr s).trans ?_⟩
     rw [mul_assoc]
     exact mul_le_of_le_one_left (mul_nonneg (by positivity) (by positivity)) hA'
   · refine ⟨A⁻¹ * B, mul_pos (inv_pos.mpr hA) hB, fun r hr s ↦ (H r hr s).trans ?_⟩
     rw [Real.mul_rpow (inv_pos.mpr hA).le hB.le, mul_assoc, mul_assoc]
-    refine mul_le_mul_of_nonneg_right ?_ (mul_nonneg (by positivity) (by positivity))
+    gcongr
     rw [← Real.rpow_neg_one, ← Real.rpow_mul hA.le]
     refine Real.self_le_rpow_of_one_le (not_le.mp hA').le ?_
     simp only [neg_mul, one_mul, le_neg (b := r)]
     refine hr.le.trans ?_
-    norm_num
-    exact Nat.one_le_iff_ne_zero.mpr hd
+    simpa [Nat.one_le_iff_ne_zero]
 
 /--
 Let `L` be a lattice with (possibly non-full) rank `d`, and `r : ℝ` such that `d < r`.
@@ -245,6 +236,7 @@ lemma tsum_norm_rpow_le (r : ℝ) (hr : r < -Module.finrank ℤ L) :
       tsumNormRPowBound L ^ r * ∑' k : ℕ, (k : ℝ) ^ (Module.finrank ℤ L - 1 + r) :=
   Summable.tsum_le_of_sum_le (summable_norm_rpow L r hr) (tsumNormRPowBound_spec L r hr)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma summable_norm_sub_rpow (r : ℝ) (hr : r < -Module.finrank ℤ L) (x : E) :
     Summable fun z : L ↦ ‖z - x‖ ^ r := by
   cases subsingleton_or_nontrivial L
@@ -253,7 +245,7 @@ lemma summable_norm_sub_rpow (r : ℝ) (hr : r < -Module.finrank ℤ L) (x : E) 
     (.mul_left ((1 / 2) ^ r) (summable_norm_rpow L r hr)) ?_
   have H : IsClosed (X := E) L := @AddSubgroup.isClosed_of_discrete _ _ _ _ _
     L.toAddSubgroup (inferInstanceAs (DiscreteTopology L))
-  refine ((Metric.finite_isBounded_inter_isClosed
+  refine ((Metric.finite_isBounded_inter_isClosed DiscreteTopology.isDiscrete
     (Metric.isBounded_closedBall (x := (0 : E)) (r := 2 * ‖x‖)) H).preimage_embedding
     (.subtype _)).subset ?_
   intro t ht

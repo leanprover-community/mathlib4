@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro
 -/
-import Mathlib.Algebra.Module.Submodule.Equiv
-import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+module
+
+public import Mathlib.Algebra.Module.Submodule.Equiv
+public import Mathlib.Algebra.Module.Torsion.Free
 
 /-!
 # Basics on bilinear maps
@@ -36,7 +38,9 @@ commuting actions, and `ρ₁₂ : R →+* R₂` and `σ₁₂ : S →+* S₂`.
 bilinear
 -/
 
-open Function
+@[expose] public section
+
+open Function Module
 
 namespace LinearMap
 
@@ -61,6 +65,7 @@ variable [SMulCommClass S₂ R P₂]
 variable {ρ₁₂ : R →+* R₂} {σ₁₂ : S →+* S₂}
 variable (ρ₁₂ σ₁₂)
 
+-- TODO: refactor to use a structure holding the assumptions, as in `IsBilinearMap` below.
 /-- Create a bilinear map from a function that is semilinear in each component.
 See `mk₂'` and `mk₂` for the linear case. -/
 def mk₂'ₛₗ (f : M → N → P) (H1 : ∀ m₁ m₂ n, f (m₁ + m₂) n = f m₁ n + f m₂ n)
@@ -157,7 +162,7 @@ def compl₂ (h : M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) (g : Q →ₛ�
   map_add' _ _ := by
     simp [map_add]
   map_smul' _ _ := by
-    simp [LinearMap.map_smulₛₗ, lcompₛₗ]
+    simp [map_smulₛₗ, lcompₛₗ]
 
 @[simp]
 theorem compl₂_apply (h : M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) (g : Q →ₛₗ[σ₄₂] N) (m : M) (q : Q) :
@@ -185,6 +190,10 @@ variable {S N}
 theorem lcomp_apply (f : M →ₗ[R] M₂) (g : M₂ →ₗ[R] N) (x : M) : lcomp S N f g x = g (f x) := rfl
 
 theorem lcomp_apply' (f : M →ₗ[R] M₂) (g : M₂ →ₗ[R] N) : lcomp S N f g = g ∘ₗ f := rfl
+
+lemma lcomp_injective_of_surjective (g : M →ₗ[R] M₂) (surj : Function.Surjective g) :
+    Function.Injective (LinearMap.lcomp S N g) :=
+  surj.injective_linearMapComp_right
 
 end lcomp
 
@@ -346,10 +355,8 @@ theorem compl₁₂_inj [SMulCommClass R₂ R₁ Pₗ]
   constructor <;> intro h
   · -- B₁.comp l r = B₂.comp l r → B₁ = B₂
     ext x y
-    obtain ⟨x', hx⟩ := hₗ x
-    subst hx
-    obtain ⟨y', hy⟩ := hᵣ y
-    subst hy
+    obtain ⟨x', rfl⟩ := hₗ x
+    obtain ⟨y', rfl⟩ := hᵣ y
     convert LinearMap.congr_fun₂ h x' y' using 0
   · -- B₁ = B₂ → B₁.comp l r = B₂.comp l r
     subst h; rfl
@@ -474,8 +481,11 @@ def lsmul : R →ₗ[R] M →ₗ[R] M :=
 
 variable {R}
 
-lemma lsmul_eq_DistribMulAction_toLinearMap (r : R) :
-    lsmul R M r = DistribMulAction.toLinearMap R M r := rfl
+lemma lsmul_eq_distribSMultoLinearMap (r : R) :
+    lsmul R M r = DistribSMul.toLinearMap R M r := rfl
+
+@[deprecated (since := "2026-01-07")]
+alias lsmul_eq_DistribMulAction_toLinearMap := lsmul_eq_distribSMultoLinearMap
 
 variable {M}
 
@@ -494,17 +504,17 @@ end CommSemiring
 
 section CommRing
 
-variable {R M : Type*} [CommRing R]
+variable {R M : Type*} [CommRing R] [IsDomain R]
 
 section AddCommGroup
 
 variable [AddCommGroup M] [Module R M]
 
-theorem lsmul_injective [NoZeroSMulDivisors R M] {x : R} (hx : x ≠ 0) :
+theorem lsmul_injective [IsTorsionFree R M] {x : R} (hx : x ≠ 0) :
     Function.Injective (lsmul R M x) :=
   smul_right_injective _ hx
 
-theorem ker_lsmul [NoZeroSMulDivisors R M] {a : R} (ha : a ≠ 0) :
+theorem ker_lsmul [IsTorsionFree R M] {a : R} (ha : a ≠ 0) :
     LinearMap.ker (LinearMap.lsmul R M a) = ⊥ :=
   LinearMap.ker_eq_bot_of_injective (LinearMap.lsmul_injective ha)
 
@@ -587,3 +597,31 @@ lemma restrictScalarsRange₂_apply_eq_zero_iff (m : M') (n : N') :
 end restrictScalarsRange₂
 
 end LinearMap
+
+section IsBilinearMap
+
+variable
+  (R : Type*) [CommSemiring R]
+  {E : Type*} [AddCommMonoid E] [Module R E]
+  {F : Type*} [AddCommMonoid F] [Module R F]
+  {G : Type*} [AddCommMonoid G] [Module R G]
+
+-- TODO Also make a semi-linear version.
+/-- Bundled statement of bilinearity for a function.
+
+The bundled type `E →ₗ[R] F →ₗ[R] G` should be preferred in cases where that can be used.
+`IsBilinearMap` can be useful to have `IsBilinearMap (myFunction ..)` as a hypothesis to a
+declaration. -/
+structure IsBilinearMap (f : E → F → G) : Prop where
+  add_left : ∀ (x₁ x₂ : E) (y : F), f (x₁ + x₂) y = f x₁ y + f x₂ y
+  smul_left : ∀ (c : R) (x : E) (y : F), f (c • x) y = c • f x y
+  add_right : ∀ (x : E) (y₁ y₂ : F), f x (y₁ + y₂) = f x y₁ + f x y₂
+  smul_right : ∀ (c : R) (x : E) (y : F), f x (c • y) = c • f x y
+
+variable {R} in
+/-- Make a bilinear map from a function and a bundled statement of bilinearity. -/
+def IsBilinearMap.toLinearMap {f : E → F → G} (hf : IsBilinearMap R f) :
+    E →ₗ[R] F →ₗ[R] G :=
+  LinearMap.mk₂ _ f hf.add_left hf.smul_left hf.add_right hf.smul_right
+
+end IsBilinearMap

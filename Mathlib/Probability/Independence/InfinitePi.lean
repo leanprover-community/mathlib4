@@ -3,8 +3,11 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.Probability.Independence.Basic
-import Mathlib.Probability.ProductMeasure
+module
+
+public import Mathlib.Probability.HasLaw
+public import Mathlib.Probability.Independence.Basic
+public import Mathlib.Probability.ProductMeasure
 
 /-!
 # Independence of an infinite family of random variables
@@ -19,9 +22,12 @@ There are several possible measurability assumptions:
 * For all `i`, the map `ω ↦ Xᵢ(ω)` is measurable.
 * The map `ω ↦ (Xᵢ(ω))ᵢ` is almost everywhere measurable.
 * For all `i`, the map `ω ↦ Xᵢ(ω)` is almost everywhere measurable.
+
 Although the first two options are equivalent, the last two are not if the index set is not
 countable.
 -/
+
+public section
 
 open MeasureTheory Measure ProbabilityTheory
 
@@ -49,7 +55,7 @@ lemma iIndepFun_iff_map_fun_eq_infinitePi_map₀ (mX : AEMeasurable (fun ω i �
       exact fun i ↦ mX.eval i
     any_goals fun_prop
     · exact mX
-    · exact .univ_pi fun i ↦ ht i i.2
+    · exact .univ_pi fun i ↦ ht i
   mpr h := by
     have _ i := isProbabilityMeasure_map (mX.eval i)
     rw [iIndepFun_iff_finset]
@@ -73,6 +79,24 @@ lemma iIndepFun_iff_map_fun_eq_infinitePi_map₀' [Countable ι] (mX : ∀ i, AE
 lemma iIndepFun_iff_map_fun_eq_infinitePi_map (mX : ∀ i, Measurable (X i)) :
     iIndepFun X P ↔ P.map (fun ω i ↦ X i ω) = infinitePi (fun i ↦ P.map (X i)) :=
   iIndepFun_iff_map_fun_eq_infinitePi_map₀ <| measurable_pi_iff.2 mX |>.aemeasurable
+
+omit [IsProbabilityMeasure P] in
+lemma iIndepFun.hasLaw_infinitePi {μ : (i : ι) → Measure (𝓧 i)} (hX : ∀ i, HasLaw (X i) (μ i) P)
+    (h1 : iIndepFun X P) (h2 : AEMeasurable (fun ω i ↦ X i ω) P) :
+    HasLaw (fun ω i ↦ X i ω) (infinitePi μ) P where
+  aemeasurable := h2
+  map_eq := by
+    have := h1.isProbabilityMeasure
+    rw [(iIndepFun_iff_map_fun_eq_infinitePi_map₀ h2).1 h1]
+    simp_rw [fun i ↦ (hX i).map_eq]
+
+lemma iIndepFun_iff_hasLaw_Pi_infinitePi {μ : (i : ι) → Measure (𝓧 i)}
+    (hX : ∀ i, HasLaw (X i) (μ i) P) (hm : AEMeasurable (fun ω i ↦ X i ω) P) :
+    iIndepFun X P ↔ HasLaw (fun ω i ↦ X i ω) (infinitePi μ) P where
+  mp h := h.hasLaw_infinitePi hX hm
+  mpr h := by
+    rw [iIndepFun_iff_map_fun_eq_infinitePi_map₀ hm, h.map_eq]
+    simp_rw [fun i ↦ (hX i).map_eq]
 
 /-- Given random variables `X i : Ω i → 𝓧 i`, they are independent when viewed as random
 variables defined on the product space `Π i, Ω i`. -/

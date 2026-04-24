@@ -3,10 +3,12 @@ Copyright (c) 2024 Paul Reichert. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Reichert
 -/
-import Mathlib.CategoryTheory.Limits.Types.Colimits
-import Mathlib.CategoryTheory.IsConnected
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.HomCongr
+module
+
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
+public import Mathlib.CategoryTheory.IsConnected
+public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.CategoryTheory.HomCongr
 
 /-!
 # Colimits of connected index categories
@@ -37,6 +39,8 @@ its codomain is connected.
 unit-valued, singleton, colimit
 -/
 
+@[expose] public section
+
 universe w v u
 
 namespace CategoryTheory
@@ -52,17 +56,19 @@ def constPUnitFunctor : C ⥤ Type w := (Functor.const C).obj PUnit.{w + 1}
 @[simps]
 def pUnitCocone : Cocone (constPUnitFunctor.{w} C) where
   pt := PUnit
-  ι := { app := fun _ => id }
+  ι := 𝟙 _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `C` is connected, the cocone on `constPUnitFunctor` with cone point `PUnit` is a colimit
 cocone. -/
 noncomputable def isColimitPUnitCocone [IsConnected C] : IsColimit (pUnitCocone.{w} C) where
   desc s := s.ι.app Classical.ofNonempty
   fac s j := by
     ext ⟨⟩
-    apply constant_of_preserves_morphisms (s.ι.app · PUnit.unit)
+    refine constant_of_preserves_morphisms (α := s.pt)
+      (fun (k : C) ↦ s.ι.app k PUnit.unit) ?_ Classical.ofNonempty j
     intro X Y f
-    exact congrFun (s.ι.naturality f).symm PUnit.unit
+    exact ConcreteCategory.congr_hom (s.ι.naturality f).symm PUnit.unit
   uniq s m h := by
     ext ⟨⟩
     simp [← h Classical.ofNonempty]
@@ -72,7 +78,7 @@ instance instHasColimitConstPUnitFunctor [IsConnected C] : HasColimit (constPUni
 
 instance instSubsingletonColimitPUnit
     [IsPreconnected C] [HasColimit (constPUnitFunctor.{w} C)] :
-    Subsingleton (colimit (constPUnitFunctor.{w} C)) where
+    Subsingleton <| colimit (constPUnitFunctor.{w} C) where
   allEq a b := by
     obtain ⟨c, ⟨⟩, rfl⟩ := jointly_surjective' a
     obtain ⟨d, ⟨⟩, rfl⟩ := jointly_surjective' b
@@ -84,8 +90,8 @@ noncomputable def colimitConstPUnitIsoPUnit [IsConnected C] :
     colimit (constPUnitFunctor.{w} C) ≅ PUnit.{w + 1} :=
   IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) (isColimitPUnitCocone.{w} C)
 
-/-- Let `F` be a `Type`-valued functor. If two elements `a : F c` and `b : F d` represent the same
-element of `colimit F`, then `c` and `d` are related by a `Zigzag`. -/
+/-- Let `F` be a `Type`-valued functor. If two elements `a : F c` and `b : F d` represent the
+same element of `colimit F`, then `c` and `d` are related by a `Zigzag`. -/
 theorem zigzag_of_eqvGen_colimitTypeRel (F : C ⥤ Type w) (c d : Σ j, F.obj j)
     (h : Relation.EqvGen F.ColimitTypeRel c d) : Zigzag c.1 d.1 := by
   induction h with
@@ -93,9 +99,6 @@ theorem zigzag_of_eqvGen_colimitTypeRel (F : C ⥤ Type w) (c d : Σ j, F.obj j)
   | refl _ => exact Zigzag.refl _
   | symm _ _ _ ih => exact zigzag_symmetric ih
   | trans _ _ _ _ _ ih₁ ih₂ => exact ih₁.trans ih₂
-
-@[deprecated (since := "2025-06-22")] alias zigzag_of_eqvGen_quot_rel :=
-  zigzag_of_eqvGen_colimitTypeRel
 
 /-- An index category is connected iff the colimit of the constant singleton-valued functor is a
 singleton. -/
@@ -142,7 +145,7 @@ end Functor
 
 section
 
-variable (C : Type*) [Category C]
+variable (C : Type*) [Category* C]
 
 /-- Prove that a category is connected by supplying an explicit initial object. -/
 lemma isConnected_of_isInitial {x : C} (h : Limits.IsInitial x) : IsConnected C := by

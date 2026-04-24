@@ -3,16 +3,17 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne
 -/
+module
 
-import Mathlib.CategoryTheory.Bicategory.Functor.Prelax
-import Mathlib.Tactic.CategoryTheory.Slice
-import Mathlib.Tactic.CategoryTheory.ToApp
+public import Mathlib.CategoryTheory.Bicategory.Functor.Prelax
+public import Mathlib.Tactic.CategoryTheory.Slice
+public import Mathlib.Tactic.CategoryTheory.ToApp
 
 /-!
 # Lax functors
 
 A lax functor `F` between bicategories `B` and `C` consists of
-* a function between objects `F.obj : B ⟶ C`,
+* a function between objects `F.obj : B → C`,
 * a family of functions between 1-morphisms `F.map : (a ⟶ b) → (F.obj a ⟶ F.obj b)`,
 * a family of functions between 2-morphisms `F.map₂ : (f ⟶ g) → (F.map f ⟶ F.map g)`,
 * a family of 2-morphisms `F.mapId a : 𝟙 (F.obj a) ⟶ F.map (𝟙 a)`,
@@ -21,11 +22,11 @@ A lax functor `F` between bicategories `B` and `C` consists of
 
 ## Main definitions
 
-* `CategoryTheory.LaxFunctor B C` : an lax functor between bicategories `B` and `C`, which we
+* `CategoryTheory.LaxFunctor B C` : a lax functor between bicategories `B` and `C`, which we
   denote by `B ⥤ᴸ C`.
 * `CategoryTheory.LaxFunctor.comp F G` : the composition of lax functors
-* `CategoryTheory.LaxFunctor.Pseudocore` : a structure on an Lax functor that promotes a
-  Lax functor to a pseudofunctor
+* `CategoryTheory.LaxFunctor.PseudoCore` : a structure on a lax functor that promotes a
+  lax functor to a pseudofunctor
 
 ## Future work
 
@@ -34,6 +35,8 @@ since lax functors had not yet been added (e.g `FunctorBicategory.lean`). A poss
 be to mirror these constructions for lax functors.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -46,11 +49,11 @@ universe w₁ w₂ w₃ v₁ v₂ v₃ u₁ u₂ u₃
 /-- A lax functor `F` between bicategories `B` and `C` consists of a function between objects
 `F.obj`, a function between 1-morphisms `F.map`, and a function between 2-morphisms `F.map₂`.
 
-Unlike functors between categories, `F.map` do not need to strictly commute with the composition,
-and do not need to strictly preserve the identity. Instead, there are specified 2-morphisms
+Unlike functors between categories, `F.map` does not need to strictly commute with composition,
+and does not need to strictly preserve the identity. Instead, there are specified 2-morphisms
 `𝟙 (F.obj a) ⟶ F.map (𝟙 a)` and `F.map f ≫ F.map g ⟶ F.map (f ≫ g)`.
 
-`F.map₂` strictly commute with compositions and preserve the identity. They also preserve the
+`F.map₂` strictly commutes with composition and preserves the identity. It also preserves the
 associator, the left unitor, and the right unitor modulo some adjustments of domains and codomains
 of 2-morphisms.
 -/
@@ -63,7 +66,7 @@ structure LaxFunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u₂)
   /-- Naturality of the lax functoriality constraint, on the left. -/
   mapComp_naturality_left :
     ∀ {a b c : B} {f f' : a ⟶ b} (η : f ⟶ f') (g : b ⟶ c),
-      mapComp f g ≫ map₂ (η ▷ g) = map₂ η ▷ map g ≫ mapComp f' g:= by cat_disch
+      mapComp f g ≫ map₂ (η ▷ g) = map₂ η ▷ map g ≫ mapComp f' g := by cat_disch
   /-- Naturality of the lax functoriality constraint, on the right. -/
   mapComp_naturality_right :
     ∀ {a b c : B} (f : a ⟶ b) {g g' : b ⟶ c} (η : g ⟶ g'),
@@ -92,41 +95,42 @@ namespace LaxFunctor
 
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
 
-attribute [reassoc (attr := simp), to_app (attr := simp)]
+attribute [to_app (attr := reassoc (attr := simp))]
   mapComp_naturality_left mapComp_naturality_right map₂_associator
-attribute [simp, reassoc, to_app] map₂_leftUnitor map₂_rightUnitor
+attribute [simp, to_app (attr := reassoc)] map₂_leftUnitor map₂_rightUnitor
 
 /-- The underlying prelax functor. -/
 add_decl_doc LaxFunctor.toPrelaxFunctor
 
 variable (F : B ⥤ᴸ C)
 
-@[reassoc, to_app]
+@[to_app (attr := reassoc)]
 lemma mapComp_assoc_left {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     F.mapComp f g ▷ F.map h ≫ F.mapComp (f ≫ g) h = (α_ (F.map f) (F.map g) (F.map h)).hom ≫
       F.map f ◁ F.mapComp g h ≫ F.mapComp f (g ≫ h) ≫ F.map₂ (α_ f g h).inv := by
   rw [← F.map₂_associator_assoc, ← F.map₂_comp]
   simp only [Iso.hom_inv_id, PrelaxFunctor.map₂_id, comp_id]
 
-@[reassoc, to_app]
+@[to_app (attr := reassoc)]
 lemma mapComp_assoc_right {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     F.map f ◁ F.mapComp g h ≫ F.mapComp f (g ≫ h) =
       (α_ (F.map f) (F.map g) (F.map h)).inv ≫ F.mapComp f g ▷ F.map h ≫
         F.mapComp (f ≫ g) h ≫ F.map₂ (α_ f g h).hom := by
   simp only [map₂_associator, Iso.inv_hom_id_assoc]
 
-@[reassoc, to_app]
+@[to_app (attr := reassoc)]
 lemma map₂_leftUnitor_hom {a b : B} (f : a ⟶ b) :
     (λ_ (F.map f)).hom = F.mapId a ▷ F.map f ≫ F.mapComp (𝟙 a) f ≫ F.map₂ (λ_ f).hom := by
   rw [← PrelaxFunctor.map₂Iso_hom, ← assoc, ← Iso.comp_inv_eq, ← Iso.eq_inv_comp]
   simp only [Functor.mapIso_inv, PrelaxFunctor.mapFunctor_map, map₂_leftUnitor]
 
-@[reassoc, to_app]
+@[to_app (attr := reassoc)]
 lemma map₂_rightUnitor_hom {a b : B} (f : a ⟶ b) :
     (ρ_ (F.map f)).hom = F.map f ◁ F.mapId b ≫ F.mapComp f (𝟙 b) ≫ F.map₂ (ρ_ f).hom := by
   rw [← PrelaxFunctor.map₂Iso_hom, ← assoc, ← Iso.comp_inv_eq, ← Iso.eq_inv_comp]
   simp only [Functor.mapIso_inv, PrelaxFunctor.mapFunctor_map, map₂_rightUnitor]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The identity lax functor. -/
 @[simps]
 def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : B ⥤ᴸ B where
@@ -158,6 +162,7 @@ lemma mapComp'_eq_mapComp {b₀ b₁ b₂ : B} (f : b₀ ⟶ b₁) (g : b₁ ⟶
     F.mapComp' f g _ rfl = F.mapComp f g := by
   simp [mapComp']
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Composition of lax functors. -/
 @[simps]
 def comp {D : Type u₃} [Bicategory.{w₃, v₃} D] (F : B ⥤ᴸ C) (G : C ⥤ᴸ D) :
@@ -189,7 +194,7 @@ def comp {D : Type u₃} [Bicategory.{w₃, v₃} D] (F : B ⥤ᴸ C) (G : C ⥤
     simp only [map₂_rightUnitor, PrelaxFunctor.map₂_comp, assoc, mapComp_naturality_right_assoc,
       Bicategory.whiskerLeft_comp]
 
-/-- A structure on an Lax functor that promotes an Lax functor to a pseudofunctor.
+/-- A structure on a lax functor that promotes a lax functor to a pseudofunctor.
 
 See `Pseudofunctor.mkOfLax`. -/
 structure PseudoCore (F : B ⥤ᴸ C) where

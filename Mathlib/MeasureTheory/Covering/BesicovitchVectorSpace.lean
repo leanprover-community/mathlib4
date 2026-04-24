@@ -3,10 +3,12 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-import Mathlib.MeasureTheory.Covering.Besicovitch
-import Mathlib.Tactic.AdaptationNote
-import Mathlib.Algebra.EuclideanDomain.Basic
+module
+
+public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+public import Mathlib.MeasureTheory.Covering.Besicovitch
+public import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Algebra.EuclideanDomain.Basic
 
 /-!
 # Satellite configurations for Besicovitch covering lemma in vector spaces
@@ -40,6 +42,8 @@ In particular, this number is bounded by `5 ^ dim` by a straightforward measure 
 * `isEmpty_satelliteConfig_multiplicity` is the main theorem, saying that there are
   no satellite configurations of `(multiplicity E) + 1` points, for the parameter `goodτ E`.
 -/
+
+@[expose] public section
 
 
 universe u
@@ -139,7 +143,7 @@ theorem card_le_of_separated (s : Finset E) (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
       _ = ENNReal.ofReal (ρ ^ finrank ℝ E) * μ (ball 0 1) := by
         simp only [μ.addHaar_ball_of_pos _ ρpos]
   have J : (s.card : ℝ≥0∞) * ENNReal.ofReal (δ ^ finrank ℝ E) ≤ ENNReal.ofReal (ρ ^ finrank ℝ E) :=
-    (ENNReal.mul_le_mul_right (measure_ball_pos _ _ zero_lt_one).ne' measure_ball_lt_top.ne).1 I
+    (ENNReal.mul_le_mul_iff_left (measure_ball_pos _ _ zero_lt_one).ne' measure_ball_lt_top.ne).1 I
   have K : (s.card : ℝ) ≤ (5 : ℝ) ^ finrank ℝ E := by
     have := ENNReal.toReal_le_of_le_ofReal (pow_nonneg ρpos.le _) J
     simpa [ρ, δ, div_eq_mul_inv, mul_pow] using this
@@ -372,7 +376,7 @@ theorem exists_normalized_aux2 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
         gcongr _ - ?_
         exact mul_le_of_le_one_left δnonneg (by linarith only [C])
       _ = (1 - δ / 4) * a.r j := by ring
-      _ ≤ (1 - δ / 4) * (τ * a.r i) := mul_le_mul_of_nonneg_left H.2 D
+      _ ≤ (1 - δ / 4) * (τ * a.r i) := by gcongr; exact H.2
       _ ≤ 1 * a.r i := by rw [← mul_assoc]; gcongr
       _ ≤ ‖a.c i - a.c j‖ := by rw [one_mul]; exact H.1
   set d := (2 / ‖a.c j‖) • a.c j with hd
@@ -431,14 +435,14 @@ theorem exists_normalized_aux3 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
           calc
             a.r j - ‖a.c j - a.c i‖ ≤ τ * a.r i - a.r i := sub_le_sub H.2 H.1
             _ = a.r i * (τ - 1) := by ring
-            _ ≤ s * (τ - 1) := mul_le_mul_of_nonneg_right A (sub_nonneg.2 hτ)
-      _ ≤ s * (δ / 2) := (mul_le_mul_of_nonneg_left (by linarith only [δnonneg, hδ1]) spos.le)
+            _ ≤ s * (τ - 1) := by gcongr; exact sub_nonneg.2 hτ
+      _ ≤ s * (δ / 2) := by gcongr; linarith only [δnonneg, hδ1]
       _ = s / 2 * δ := by ring
   have invs_nonneg : 0 ≤ 2 / s := div_nonneg zero_le_two (zero_le_two.trans hi.le)
   calc
     1 - δ = 2 / s * (s / 2 - s / 2 * δ) := by field
-    _ ≤ 2 / s * ‖d - a.c i‖ :=
-      (mul_le_mul_of_nonneg_left (by linarith only [hcrj, I, J, hi]) invs_nonneg)
+    _ ≤ 2 / s * ‖d - a.c i‖ := by
+      gcongr; linarith only [hcrj, I, J, hi]
     _ = ‖(2 / s) • a.c i - (2 / ‖a.c j‖) • a.c j‖ := by
       conv_lhs => rw [norm_sub_rev, ← abs_of_nonneg invs_nonneg]
       rw [← Real.norm_eq_abs, ← norm_smul, smul_sub, hd, smul_smul]

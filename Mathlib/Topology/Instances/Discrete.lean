@@ -3,8 +3,10 @@ Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Topology.Order.Basic
-import Mathlib.Order.SuccPred.LinearLocallyFinite
+module
+
+public import Mathlib.Topology.Order.Basic
+public import Mathlib.Order.SuccPred.LinearLocallyFinite
 
 /-!
 # Instances related to the discrete topology
@@ -19,6 +21,8 @@ When importing this file and `Data.Nat.SuccPred`, the instances `SecondCountable
 and `OrderTopology ℕ` become available.
 
 -/
+
+@[expose] public section
 
 
 open Order Set TopologicalSpace Filter
@@ -37,16 +41,20 @@ instance (priority := 100) DiscreteTopology.secondCountableTopology_of_countable
   secondCountableTopology_of_countable_cover (fun _ ↦ isOpen_discrete _)
     (iUnion_of_singleton α)
 
-theorem LinearOrder.bot_topologicalSpace_eq_generateFrom {α} [LinearOrder α] [PredOrder α]
-    [SuccOrder α] : (⊥ : TopologicalSpace α) = generateFrom { s | ∃ a, s = Ioi a ∨ s = Iio a } := by
+theorem LinearOrder.bot_topologicalSpace_eq_preorderTopology {α} [LinearOrder α] [PredOrder α]
+    [SuccOrder α] : (⊥ : TopologicalSpace α) = Preorder.topology α := by
   let _ := Preorder.topology α
   have : OrderTopology α := ⟨rfl⟩
   exact DiscreteTopology.of_predOrder_succOrder.eq_bot.symm
 
+@[deprecated (since := "2026-03-22")]
+alias LinearOrder.bot_topologicalSpace_eq_generateFrom :=
+  LinearOrder.bot_topologicalSpace_eq_preorderTopology
+
 theorem discreteTopology_iff_orderTopology_of_pred_succ [LinearOrder α] [PredOrder α]
     [SuccOrder α] : DiscreteTopology α ↔ OrderTopology α := by
   refine ⟨fun h ↦ ⟨?_⟩, fun h ↦ .of_predOrder_succOrder⟩
-  rw [h.eq_bot, LinearOrder.bot_topologicalSpace_eq_generateFrom]
+  rw [h.eq_bot, LinearOrder.bot_topologicalSpace_eq_preorderTopology]
 
 instance OrderTopology.of_discreteTopology [LinearOrder α] [PredOrder α] [SuccOrder α]
     [DiscreteTopology α] : OrderTopology α :=

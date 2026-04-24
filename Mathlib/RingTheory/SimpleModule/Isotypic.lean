@@ -3,9 +3,11 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Order.CompleteSublattice
-import Mathlib.RingTheory.SimpleModule.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Order.CompleteSublattice
+public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Isotypic modules and isotypic components
@@ -40,6 +42,8 @@ isotypic component, fully invariant submodule
 
 -/
 
+@[expose] public section
+
 universe u
 
 variable (R₀ R : Type*) (M : Type u) (N S : Type*) [CommSemiring R₀]
@@ -71,7 +75,17 @@ theorem IsIsotypicOfType.of_isSimpleModule [IsSimpleModule R M] : IsIsotypicOfTy
     rw [isSimpleModule_iff_isAtom, isAtom_iff_eq_top] at hS
     exact ⟨.trans (.ofEq _ _ hS) Submodule.topEquiv⟩
 
-variable {R M N S}
+variable {R}
+
+theorem IsIsotypic.of_self [IsSemisimpleRing R] (h : IsIsotypic R R) : IsIsotypic R M :=
+  fun m _ m' _ ↦
+    have ⟨_, ⟨e⟩⟩ := IsSemisimpleRing.exists_linearEquiv_ideal_of_isSimpleModule R m
+    have ⟨_, ⟨e'⟩⟩ := IsSemisimpleRing.exists_linearEquiv_ideal_of_isSimpleModule R m'
+    have := IsSimpleModule.congr e.symm
+    have := IsSimpleModule.congr e'.symm
+    ⟨e'.trans <| (h _ _).some.trans e.symm⟩
+
+variable {M N S}
 
 theorem IsIsotypicOfType.of_linearEquiv_type (h : IsIsotypicOfType R M S) (e : S ≃ₗ[R] N) :
     IsIsotypicOfType R M N := fun m _ ↦ ⟨(h m).some.trans e⟩
@@ -99,6 +113,7 @@ theorem LinearEquiv.isIsotypicOfType_iff_type (e : N ≃ₗ[R] S) :
 theorem LinearEquiv.isIsotypic_iff (e : M ≃ₗ[R] N) : IsIsotypic R M ↔ IsIsotypic R N :=
   ⟨(·.of_injective _ e.symm.injective), (·.of_injective _ e.injective)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isIsotypicOfType_submodule_iff {N : Submodule R M} :
     IsIsotypicOfType R N S ↔ ∀ m ≤ N, [IsSimpleModule R m] → Nonempty (m ≃ₗ[R] S) := by
   rw [Subtype.forall', ← (Submodule.MapSubtype.orderIso N).forall_congr_right]
@@ -106,6 +121,7 @@ theorem isIsotypicOfType_submodule_iff {N : Submodule R M} :
   simp_rw [Submodule.MapSubtype.orderIso, Equiv.coe_fn_mk, ← (e _).isSimpleModule_iff]
   exact forall₂_congr fun m _ ↦ ⟨fun ⟨e'⟩ ↦ ⟨(e m).symm.trans e'⟩, fun ⟨e'⟩ ↦ ⟨(e m).trans e'⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isIsotypic_submodule_iff {N : Submodule R M} :
     IsIsotypic R N ↔ ∀ m ≤ N, [IsSimpleModule R m] → IsIsotypicOfType R N m := by
   rw [Subtype.forall', ← (Submodule.MapSubtype.orderIso N).forall_congr_right]

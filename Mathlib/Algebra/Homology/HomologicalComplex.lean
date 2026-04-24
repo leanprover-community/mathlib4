@@ -3,10 +3,12 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison
 -/
-import Mathlib.Algebra.Homology.ComplexShape
-import Mathlib.CategoryTheory.Subobject.Limits
-import Mathlib.CategoryTheory.GradedObject
-import Mathlib.Algebra.Homology.ShortComplex.Basic
+module
+
+public import Mathlib.Algebra.Homology.ComplexShape
+public import Mathlib.CategoryTheory.Subobject.Limits
+public import Mathlib.CategoryTheory.GradedObject
+public import Mathlib.Algebra.Homology.ShortComplex.Basic
 
 /-!
 # Homological complexes.
@@ -33,6 +35,8 @@ Similarly we have `C.xPrev j`.
 Defined in terms of these we have `C.dFrom i : C.X i ⟶ C.xNext i` and
 `C.dTo j : C.xPrev j ⟶ C.X j`, which are either defined as `C.d i j`, or zero, as needed.
 -/
+
+@[expose] public section
 
 
 universe v u
@@ -168,7 +172,7 @@ theorem next (α : Type*) [AddGroup α] [One α] (i : α) : (ComplexShape.down �
 theorem next_nat_zero : (ComplexShape.down ℕ).next 0 = 0 := by
   classical
     refine dif_neg ?_
-    push_neg
+    push Not
     intro
     apply Nat.noConfusion
 
@@ -193,7 +197,7 @@ theorem next (α : Type*) [AddRightCancelSemigroup α] [One α] (i : α) :
 theorem prev_nat_zero : (ComplexShape.up ℕ).prev 0 = 0 := by
   classical
     refine dif_neg ?_
-    push_neg
+    push Not
     intro
     apply Nat.noConfusion
 
@@ -347,6 +351,11 @@ just picking out the `i`-th object. -/
 def forgetEval (i : ι) : forget V c ⋙ GradedObject.eval i ≅ eval V c i :=
   NatIso.ofComponents fun _ => Iso.refl _
 
+/-- The differential as a natural transformation between `eval`. -/
+@[simps] def dNatTrans (i j : ι) :
+    HomologicalComplex.eval V c i ⟶ HomologicalComplex.eval V c j where
+  app X := X.d i j
+
 end
 
 noncomputable section
@@ -404,7 +413,7 @@ def xPrevIsoSelf {j : ι} (h : ¬c.Rel (c.prev j) j) : C.xPrev j ≅ C.X j :=
       (by
         dsimp [ComplexShape.prev]
         rw [dif_neg]
-        push_neg; intro i hi
+        push Not; intro i hi
         have : c.prev j = i := c.prev_eq' hi
         rw [this] at h; contradiction)
 
@@ -622,7 +631,7 @@ def of (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ 
 variable (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ d n = 0)
 
 @[simp]
-theorem of_x (n : α) : (of X d sq).X n = X n :=
+theorem of_X : (of X d sq).X = X :=
   rfl
 
 @[simp]
@@ -631,8 +640,8 @@ theorem of_d (j : α) : (of X d sq).d (j + 1) j = d j := by
   rw [if_pos rfl, Category.id_comp]
 
 theorem of_d_ne {i j : α} (h : i ≠ j + 1) : (of X d sq).d i j = 0 := by
-  dsimp [of]
-  rw [dif_neg h]
+  rw [of]
+  simp [dif_neg h]
 
 end Of
 
@@ -650,11 +659,9 @@ def ofHom (f : ∀ i : α, X i ⟶ Y i) (comm : ∀ i : α, f (i + 1) ≫ d_Y i 
     of X d_X sq_X ⟶ of Y d_Y sq_Y :=
   { f
     comm' := fun n m => by
-      by_cases h : n = m + 1
-      · subst h
-        simpa using comm m
-      · rw [of_d_ne X _ _ h, of_d_ne Y _ _ h]
-        simp }
+      simp only [ComplexShape.down_Rel]
+      rintro rfl
+      simpa using comm m }
 
 end OfHom
 
@@ -716,11 +723,8 @@ lemma mk_congr_succ_d₂ {S S' : ShortComplex V} (h : S = S') :
 lemma mkAux_eq_shortComplex_mk_d_comp_d (n : ℕ) :
     mkAux X₀ X₁ X₂ d₀ d₁ s succ n =
       ShortComplex.mk _ _ ((mk X₀ X₁ X₂ d₀ d₁ s succ).d_comp_d (n + 2) (n + 1) n) := by
-  change ShortComplex.mk _ _ (mkAux X₀ X₁ X₂ d₀ d₁ s succ n).zero = _
-  dsimp [mk, of, mkAux]
-  congr
-  · rw [if_pos (by rfl), id_comp]
-  · simp
+  rw [show n + 2 = n + 1 + 1 from rfl]
+  simp only [mk, of_X, of_d, mkAux]
 
 /-- The isomorphism from `(mk X₀ X₁ X₂ d₀ d₁ s succ).X (n + 3)` that is given by
 the inductive construction. -/
@@ -738,7 +742,8 @@ lemma mk_d (n : ℕ) :
         (ShortComplex.mk _ _ ((mk X₀ X₁ X₂ d₀ d₁ s succ).d_comp_d (n + 2) (n + 1) n))).2.1 := by
   have eq := mk_congr_succ_d₂ succ
     (mkAux_eq_shortComplex_mk_d_comp_d X₀ X₁ X₂ d₀ d₁ s succ n)
-  rw [eqToHom_refl, comp_id] at eq
+  set_option backward.isDefEq.respectTransparency false in
+    rw [eqToHom_refl, comp_id] at eq
   refine Eq.trans ?_ eq
   dsimp only [mk, of]
   rw [dif_pos (by rfl), eqToHom_refl, id_comp]
@@ -775,7 +780,7 @@ theorem mk'_d_1_0 : (mk' X₀ X₁ d₀ succ').d 1 0 = d₀ := by
 the inductive construction. -/
 def mk'XIso (n : ℕ) :
     (mk' X₀ X₁ d₀ succ').X (n + 2) ≅ (succ' ((mk' X₀ X₁ d₀ succ').d (n + 1) n)).1 := by
-  obtain _|n := n
+  obtain _ | n := n
   · apply eqToIso
     dsimp [mk', mk, of, mkAux]
     rw [id_comp]
@@ -789,7 +794,7 @@ lemma mk'_congr_succ'_d {X Y : V} (f g : X ⟶ Y) (h : f = g) :
 lemma mk'_d (n : ℕ) :
     (mk' X₀ X₁ d₀ succ').d (n + 2) (n + 1) = (mk'XIso X₀ X₁ d₀ succ' n).hom ≫
       (succ' ((mk' X₀ X₁ d₀ succ').d (n + 1) n)).2.1 := by
-  obtain _|n := n
+  obtain _ | n := n
   · dsimp [mk'XIso, mk']
     rw [mk_d_2_1]
     apply mk'_congr_succ'_d
@@ -885,7 +890,7 @@ def of (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (n +
 variable (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (n + 1) = 0)
 
 @[simp]
-theorem of_x (n : α) : (of X d sq).X n = X n :=
+theorem of_X : (of X d sq).X = X :=
   rfl
 
 @[simp]
@@ -894,8 +899,8 @@ theorem of_d (j : α) : (of X d sq).d j (j + 1) = d j := by
   rw [if_pos rfl, Category.comp_id]
 
 theorem of_d_ne {i j : α} (h : i + 1 ≠ j) : (of X d sq).d i j = 0 := by
-  dsimp [of]
-  rw [dif_neg h]
+  rw [of]
+  simp [dif_neg h]
 
 end Of
 
@@ -914,11 +919,9 @@ def ofHom (f : ∀ i : α, X i ⟶ Y i) (comm : ∀ i : α, f i ≫ d_Y i = d_X 
     of X d_X sq_X ⟶ of Y d_Y sq_Y :=
   { f
     comm' := fun n m => by
-      by_cases h : n + 1 = m
-      · subst h
-        simpa using comm n
-      · rw [of_d_ne X _ _ h, of_d_ne Y _ _ h]
-        simp }
+      simp only [ComplexShape.up_Rel]
+      rintro rfl
+      simpa using comm n }
 
 end OfHom
 

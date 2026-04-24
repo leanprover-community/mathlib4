@@ -3,9 +3,12 @@ Copyright (c) 2020 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Eric Wieser
 -/
-import Mathlib.Data.ENNReal.Holder
-import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
-import Mathlib.MeasureTheory.Integral.MeanInequalities
+module
+
+public import Mathlib.Data.ENNReal.Holder
+public import Mathlib.MeasureTheory.Function.LpSeminorm.Indicator
+public import Mathlib.MeasureTheory.Function.LpSeminorm.SMul
+public import Mathlib.MeasureTheory.Integral.MeanInequalities
 
 /-!
 # Compare Lp seminorms for different values of `p`
@@ -13,6 +16,8 @@ import Mathlib.MeasureTheory.Integral.MeanInequalities
 In this file we compare `MeasureTheory.eLpNorm'` and `MeasureTheory.eLpNorm` for different
 exponents.
 -/
+
+public section
 
 open Filter ENNReal
 open scoped Topology
@@ -145,7 +150,7 @@ lemma MemLp.mono_exponent_of_measure_support_ne_top {p q : ℝ≥0∞} {f : α �
   have : (toMeasurable μ s).indicator f = f := by
     apply Set.indicator_eq_self.2
     apply Function.support_subset_iff'.2 fun x hx ↦ hf x ?_
-    contrapose! hx
+    contrapose hx
     exact subset_toMeasurable μ s hx
   rw [← this, memLp_indicator_iff_restrict (measurableSet_toMeasurable μ s)] at hfq ⊢
   have : Fact (μ (toMeasurable μ s) < ∞) := ⟨by simpa [lt_top_iff_ne_top] using hs⟩
@@ -178,8 +183,8 @@ theorem eLpNorm_le_eLpNorm_top_mul_eLpNorm (p : ℝ≥0∞) (f : α → E) {g : 
     simp_rw [eLpNorm_exponent_top, eLpNormEssSup_eq_essSup_enorm, enorm_mul, enorm_norm]
     exact ENNReal.essSup_mul_le (‖f ·‖ₑ) (‖g ·‖ₑ)
   obtain ⟨hp₁, hp₂⟩ := ENNReal.toReal_pos_iff.mp hp
-  simp_rw [eLpNorm_eq_lintegral_rpow_enorm hp₁.ne' hp₂.ne, eLpNorm_exponent_top, eLpNormEssSup,
-    one_div, ENNReal.rpow_inv_le_iff hp, enorm_mul, enorm_norm]
+  simp_rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp₁.ne' hp₂.ne, eLpNorm_exponent_top,
+    eLpNormEssSup, one_div, ENNReal.rpow_inv_le_iff hp, enorm_mul, enorm_norm]
   rw [ENNReal.mul_rpow_of_nonneg (hz := hp.le), ENNReal.rpow_inv_rpow hp.ne',
     ← lintegral_const_mul'' _ (by fun_prop)]
   simp only [← ENNReal.mul_rpow_of_nonneg (hz := hp.le)]
@@ -197,7 +202,7 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm_top (p : ℝ≥0∞) {f : α → E} (hf :
       eLpNorm_le_eLpNorm_top_mul_eLpNorm p g hf (flip b) c <| by
         convert h using 3 with x
         simp only [mul_assoc, mul_comm ‖f x‖₊]
-    _ = c *  eLpNorm f p μ * eLpNorm g ∞ μ := by
+    _ = c * eLpNorm f p μ * eLpNorm g ∞ μ := by
       simp only [mul_assoc]; rw [mul_comm (eLpNorm _ _ _)]
 
 theorem eLpNorm'_le_eLpNorm'_mul_eLpNorm' {p q r : ℝ} (hf : AEStronglyMeasurable f μ)
@@ -267,9 +272,7 @@ theorem MemLp.of_bilin {p q r : ℝ≥0∞} {f : α → E} {g : α → F} (b : E
     MemLp (fun x ↦ b (f x) (g x)) r μ := by
   refine ⟨h, ?_⟩
   apply (eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm hf.1 hg.1 b c hb (hpqr := hpqr)).trans_lt
-  have := hf.2
-  have := hg.2
-  finiteness
+  finiteness [hf.2, hg.2]
 
 end Bilinear
 

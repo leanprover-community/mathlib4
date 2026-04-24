@@ -3,10 +3,12 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Convex.Function
-import Mathlib.Analysis.Convex.StrictConvexSpace
-import Mathlib.MeasureTheory.Function.AEEqOfIntegral
-import Mathlib.MeasureTheory.Integral.Average
+module
+
+public import Mathlib.Analysis.Convex.Function
+public import Mathlib.Analysis.Convex.StrictConvexSpace
+public import Mathlib.MeasureTheory.Function.AEEqOfIntegral
+public import Mathlib.MeasureTheory.Integral.Average
 
 /-!
 # Jensen's inequality for integrals
@@ -33,6 +35,8 @@ In this file we prove several forms of Jensen's inequality for integrals.
 
 convex, integral, center mass, average value, Jensen's inequality
 -/
+
+public section
 
 
 open MeasureTheory MeasureTheory.Measure Metric Set Filter TopologicalSpace Function
@@ -217,7 +221,7 @@ values of `f` over `t` and `tᶜ` are different. -/
 theorem ae_eq_const_or_exists_average_ne_compl [IsFiniteMeasure μ] (hfi : Integrable f μ) :
     f =ᵐ[μ] const α (⨍ x, f x ∂μ) ∨
       ∃ t, MeasurableSet t ∧ μ t ≠ 0 ∧ μ tᶜ ≠ 0 ∧ (⨍ x in t, f x ∂μ) ≠ ⨍ x in tᶜ, f x ∂μ := by
-  refine or_iff_not_imp_right.mpr fun H => ?_; push_neg at H
+  refine or_iff_not_imp_right.mpr fun H => ?_; push Not at H
   refine hfi.ae_eq_of_forall_setIntegral_eq _ _ (integrable_const _) fun t ht ht' => ?_; clear ht'
   simp only [const_apply, setIntegral_const]
   by_cases h₀ : μ t = 0

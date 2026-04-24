@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.LinearAlgebra.AffineSpace.AffineMap
-import Mathlib.LinearAlgebra.GeneralLinearGroup
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
+public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 
 /-!
 # Affine equivalences
@@ -30,6 +32,8 @@ composition in `AffineEquiv.group`.
 
 affine space, affine equivalence
 -/
+
+@[expose] public section
 
 open Function Set
 
@@ -167,20 +171,12 @@ def symm (e : P₁ ≃ᵃ[k] P₂) : P₂ ≃ᵃ[k] P₁ where
 theorem toEquiv_symm (e : P₁ ≃ᵃ[k] P₂) : e.symm.toEquiv = e.toEquiv.symm :=
   rfl
 
-@[deprecated "use instead `toEquiv_symm`, in the reverse direction" (since := "2025-06-08")]
-theorem symm_toEquiv (e : P₁ ≃ᵃ[k] P₂) : e.toEquiv.symm = e.symm.toEquiv :=
-  rfl
-
 @[simp]
 theorem coe_symm_toEquiv (e : P₁ ≃ᵃ[k] P₂) : ⇑e.toEquiv.symm = e.symm :=
   rfl
 
 @[simp]
 theorem linear_symm (e : P₁ ≃ᵃ[k] P₂) : e.symm.linear = e.linear.symm :=
-  rfl
-
-@[deprecated "use instead `linear_symm`, in the reverse direction" (since := "2025-06-08")]
-theorem symm_linear (e : P₁ ≃ᵃ[k] P₂) : e.linear.symm = e.symm.linear :=
   rfl
 
 /-- See Note [custom simps projection] -/
@@ -576,6 +572,171 @@ theorem coe_toAffineEquiv (e : V₁ ≃ₗ[k] V₂) : ⇑e.toAffineEquiv = e :=
   rfl
 
 end LinearEquiv
+
+namespace AffineEquiv
+
+section ofLinearEquiv
+
+variable {k V P : Type*}
+variable [Ring k] [AddCommGroup V] [Module k V] [AddTorsor V P]
+
+/-- Construct an affine equivalence from a linear equivalence and two base points.
+
+Given a linear equivalence `A : V ≃ₗ[k] V` and base points `p₀ p₁ : P`, this constructs
+the affine equivalence `T x = A (x -ᵥ p₀) +ᵥ p₁`. This is the standard way to convert
+a linear automorphism into an affine automorphism with specified base point mapping. -/
+def ofLinearEquiv (A : V ≃ₗ[k] V) (p₀ p₁ : P) : P ≃ᵃ[k] P :=
+  (vaddConst k p₀).symm.trans (A.toAffineEquiv.trans (vaddConst k p₁))
+
+@[simp]
+theorem ofLinearEquiv_apply (A : V ≃ₗ[k] V) (p₀ p₁ : P) (x : P) :
+    ofLinearEquiv A p₀ p₁ x = A (x -ᵥ p₀) +ᵥ p₁ :=
+  rfl
+
+@[simp]
+theorem linear_ofLinearEquiv (A : V ≃ₗ[k] V) (p₀ p₁ : P) :
+    (ofLinearEquiv A p₀ p₁).linear = A :=
+  rfl
+
+@[simp]
+theorem ofLinearEquiv_refl (p : P) :
+    ofLinearEquiv (.refl k V) p p = .refl k P := by
+  ext x
+  simp [ofLinearEquiv_apply]
+
+@[simp]
+theorem ofLinearEquiv_trans_ofLinearEquiv (A B : V ≃ₗ[k] V) (p₀ p₁ p₂ : P) :
+    (ofLinearEquiv A p₀ p₁).trans (ofLinearEquiv B p₁ p₂) =
+      ofLinearEquiv (A.trans B) p₀ p₂ := by
+  ext x
+  simp
+
+end ofLinearEquiv
+
+section arrowCongrEquiv
+
+variable (e₁ : P₁ ≃ᵃ[k] P₂) (e₂ : P₃ ≃ᵃ[k] P₄)
+
+/-- Affine isomorphisms between the domains and codomains of two spaces of affine maps give a
+bijection between the two function spaces.
+
+See `AffineEquiv.arrowCongr` and `AffineEquiv.arrowCongrₗ` for the affine and linear versions of
+this bijection. -/
+def arrowCongrEquiv : (P₁ →ᵃ[k] P₃) ≃ (P₂ →ᵃ[k] P₄) where
+  toFun f := e₂.toAffineMap.comp <| f.comp e₁.symm.toAffineMap
+  invFun f := e₂.symm.toAffineMap.comp <| f.comp e₁.toAffineMap
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
+
+@[simp]
+theorem arrowCongrEquiv_apply (f : P₁ →ᵃ[k] P₃) (x : P₂) :
+    e₁.arrowCongrEquiv e₂ f x = e₂ (f (e₁.symm x)) :=
+  rfl
+
+@[simp]
+theorem arrowCongrEquiv_symm_apply (f : P₂ →ᵃ[k] P₄) (x : P₁) :
+    (e₁.arrowCongrEquiv e₂).symm f x = e₂.symm (f (e₁ x)) :=
+  rfl
+
+end arrowCongrEquiv
+
+section CommRing
+
+variable {R : Type*} [CommRing R] [Module R V₁] [Module R V₂] [Module R V₃] [Module R V₄]
+
+section arrowCongrₗ
+
+variable (e₁ : P₁ ≃ᵃ[R] P₂) (e₂ : V₃ ≃ₗ[R] V₄)
+
+/-- An affine isomorphism between the domains and a linear isomorphism between the codomains of two
+spaces of affine maps give a linear isomorphism between the two function spaces.
+
+See also `AffineEquiv.arrowCongrEquiv` and `AffineEquiv.arrowCongr`. -/
+def arrowCongrₗ : (P₁ →ᵃ[R] V₃) ≃ₗ[R] (P₂ →ᵃ[R] V₄) where
+  __ := e₁.arrowCongrEquiv e₂.toAffineEquiv
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
+
+@[simp]
+theorem arrowCongrₗ_apply (f : P₁ →ᵃ[R] V₃) (x : P₂) :
+    e₁.arrowCongrₗ e₂ f x = e₂ (f (e₁.symm x)) :=
+  rfl
+
+@[simp]
+theorem arrowCongrₗ_symm_apply (f : P₂ →ᵃ[R] V₄) (x : P₁) :
+    (e₁.arrowCongrₗ e₂).symm f x = e₂.symm (f (e₁ x)) :=
+  rfl
+
+end arrowCongrₗ
+
+section arrowCongr
+
+variable (e₁ : P₁ ≃ᵃ[R] P₂) (e₂ : P₃ ≃ᵃ[R] P₄)
+
+/-- Affine isomorphisms between the domains and codomains of two spaces of affine maps give an
+affine isomorphism between the two function spaces.
+
+See also `AffineEquiv.arrowCongrEquiv` and `AffineEquiv.arrowCongrₗ`. -/
+@[simps linear]
+def arrowCongr : (P₁ →ᵃ[R] P₃) ≃ᵃ[R] (P₂ →ᵃ[R] P₄) where
+  __ := e₁.arrowCongrEquiv e₂
+  linear := e₁.arrowCongrₗ e₂.linear
+  map_vadd' _ _ := by ext; simp
+
+@[simp]
+theorem arrowCongr_apply (f : P₁ →ᵃ[R] P₃) (x : P₂) :
+    e₁.arrowCongr e₂ f x = e₂ (f (e₁.symm x)) :=
+  rfl
+
+@[simp]
+theorem arrowCongr_symm_apply (f : P₂ →ᵃ[R] P₄) (x : P₁) :
+    (e₁.arrowCongr e₂).symm f x = e₂.symm (f (e₁ x)) :=
+  rfl
+
+end arrowCongr
+
+end CommRing
+
+section congrLeft
+
+variable (R W : Type*) [Ring R] [AddCommGroup W] [Module k W] [Module R W] [SMulCommClass k R W]
+  (e : P₁ ≃ᵃ[k] P₂)
+
+/-- An affine isomorphism between the domains of affine spaces induces a linear isomorphism over
+another ring between the two function spaces. -/
+def congrLeftₗ : (P₁ →ᵃ[k] W) ≃ₗ[R] (P₂ →ᵃ[k] W) where
+  __ := e.arrowCongrEquiv (.refl k W)
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
+
+@[simp]
+theorem congrLeftₗ_apply (f : P₁ →ᵃ[k] W) (x : P₂) : e.congrLeftₗ R W f x = f (e.symm x) :=
+  rfl
+
+@[simp]
+theorem congrLeftₗ_symm_apply (f : P₂ →ᵃ[k] W) (x : P₁) : (e.congrLeftₗ R W).symm f x = f (e x) :=
+  rfl
+
+variable {W} (Q : Type*) [AddTorsor W Q]
+
+/-- An affine isomorphism between the domains of affine spaces induces an affine isomorphism over
+another ring between the two function spaces. -/
+def congrLeft : (P₁ →ᵃ[k] Q) ≃ᵃ[R] (P₂ →ᵃ[k] Q) where
+  __ := e.arrowCongrEquiv (.refl k Q)
+  linear := e.congrLeftₗ R W
+  map_vadd' _ _ := by ext; simp
+
+@[simp]
+theorem congrLeft_apply (f : P₁ →ᵃ[k] Q) (x : P₂) : e.congrLeft R Q f x = f (e.symm x) :=
+  rfl
+
+@[simp]
+theorem congrLeft_symm_apply (f : P₂ →ᵃ[k] Q) (x : P₁) : (e.congrLeft R Q).symm f x = f (e x) :=
+  rfl
+
+end congrLeft
+
+end AffineEquiv
 
 namespace AffineMap
 

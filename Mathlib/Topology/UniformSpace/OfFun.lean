@@ -3,7 +3,9 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.UniformSpace.Defs
+module
+
+public import Mathlib.Topology.UniformSpace.Defs
 
 /-!
 # Construct a `UniformSpace` from a `dist`-like function
@@ -16,6 +18,8 @@ given a `dist`-like function
 RFC: use `UniformSpace.Core.mkOfBasis`? This will change defeq here and there
 -/
 
+@[expose] public section
+
 open Filter Set
 open scoped Uniformity
 
@@ -25,6 +29,7 @@ namespace UniformSpace
 
 /-- Define a `UniformSpace` using a "distance" function. The function can be, e.g., the
 distance in a (usual or extended) metric space or an absolute value on a ring. -/
+@[implicit_reducible]
 def ofFun [AddCommMonoid M] [PartialOrder M]
     (d : X → X → M) (refl : ∀ x, d x x = 0)
     (symm : ∀ x y, d x y = d y x) (triangle : ∀ x y z, d x z ≤ d x y + d y z)
@@ -55,6 +60,7 @@ distance in a (usual or extended) metric space or an absolute value on a ring. W
 there is a preexisting topology, for which the neighborhoods can be expressed using the "distance",
 and we make sure that the uniform space structure we construct has a topology which is defeq
 to the original one. -/
+@[implicit_reducible]
 def ofFunOfHasBasis [t : TopologicalSpace X] [AddCommMonoid M] [LinearOrder M]
     (d : X → X → M) (refl : ∀ x, d x x = 0)
     (symm : ∀ x y, d x y = d y x) (triangle : ∀ x y z, d x z ≤ d x y + d y z)

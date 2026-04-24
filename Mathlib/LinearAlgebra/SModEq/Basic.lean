@@ -3,13 +3,19 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Module.Submodule.Map
-import Mathlib.Algebra.Polynomial.Eval.Defs
-import Mathlib.RingTheory.Ideal.Quotient.Defs
+module
+
+public import Mathlib.Algebra.Module.Submodule.Map
+public import Mathlib.Algebra.Polynomial.Eval.Defs
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
+public import Mathlib.Algebra.Module.Submodule.RestrictScalars
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 
 /-!
 # modular equivalence for submodule
 -/
+
+@[expose] public section
 
 
 open Submodule
@@ -17,8 +23,9 @@ open Submodule
 open Polynomial
 
 variable {R : Type*} [Ring R]
+variable {S : Type*} [Ring S]
 variable {A : Type*} [CommRing A]
-variable {M : Type*} [AddCommGroup M] [Module R M] (U U₁ U₂ : Submodule R M)
+variable {M : Type*} [AddCommGroup M] [Module R M] [Module S M] (U U₁ U₂ : Submodule R M)
 variable {x x₁ x₂ y y₁ y₂ z z₁ z₂ : M}
 variable {N : Type*} [AddCommGroup N] [Module R N] (V V₁ V₂ : Submodule R N)
 
@@ -50,14 +57,19 @@ theorem bot : x ≡ y [SMOD (⊥ : Submodule R M)] ↔ x = y := by
 theorem mono (HU : U₁ ≤ U₂) (hxy : x ≡ y [SMOD U₁]) : x ≡ y [SMOD U₂] :=
   (Submodule.Quotient.eq U₂).2 <| HU <| (Submodule.Quotient.eq U₁).1 hxy
 
-@[refl]
+lemma of_toAddSubgroup_le {U : Submodule R M} {V : Submodule S M}
+    (h : U.toAddSubgroup ≤ V.toAddSubgroup) {x y : M} (hxy : x ≡ y [SMOD U]) : x ≡ y [SMOD V] := by
+  simp only [SModEq, Submodule.Quotient.eq] at hxy ⊢
+  exact h hxy
+
+@[refl, simp]
 protected theorem refl (x : M) : x ≡ x [SMOD U] :=
   @rfl _ _
 
 protected theorem rfl : x ≡ x [SMOD U] :=
   SModEq.refl _
 
-instance : IsRefl _ (SModEq U) :=
+instance : Std.Refl (SModEq U) :=
   ⟨SModEq.refl⟩
 
 @[symm]
@@ -126,7 +138,7 @@ lemma pow {I : Ideal A} {x y : A} (n : ℕ) (hxy : x ≡ y [SMOD I]) :
   rw [hxy]
 
 @[gcongr]
-lemma neg (hxy : x ≡ y [SMOD U]) : - x ≡ - y [SMOD U] := by
+lemma neg (hxy : x ≡ y [SMOD U]) : -x ≡ - y [SMOD U] := by
   simpa only [SModEq.def, Quotient.mk_neg, neg_inj]
 
 @[gcongr]
@@ -151,5 +163,36 @@ theorem eval {R : Type*} [CommRing R] {I : Ideal R} {x y : R} (h : x ≡ y [SMOD
     f.eval x ≡ f.eval y [SMOD I] := by
   simp_rw [Polynomial.eval_eq_sum, Polynomial.sum]
   gcongr
+
+variable (S) in
+theorem restrictScalars [SMul S R] [IsScalarTower S R M] : x ≡ y [SMOD U.restrictScalars S] ↔
+    x ≡ y [SMOD U] := by simp [SModEq.sub_mem]
+
+theorem idealQuotientMk {R : Type*} [CommRing R] {I : Ideal R} {x y : R} :
+    x ≡ y [SMOD I] ↔ Ideal.Quotient.mk I x = Ideal.Quotient.mk I y := Iff.rfl
+
+section Pointwise
+
+open scoped Pointwise
+
+@[simp]
+theorem _root_.Submodule.vadd_set_subset_vadd_set_iff :
+    x +ᵥ (U : Set M) ⊆ y +ᵥ (U : Set M) ↔ x ≡ y [SMOD U] := by
+  rw [SModEq.sub_mem]
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [Set.vadd_set_subset_iff_subset_neg_vadd_set, vadd_vadd, neg_add_eq_sub] at h
+    simpa [Set.mem_vadd_set_iff_neg_vadd_mem] using h U.zero_mem
+  · rw [Set.vadd_set_subset_iff_subset_neg_vadd_set, vadd_vadd, neg_add_eq_sub]
+    intro z hz
+    simpa [Set.mem_vadd_set_iff_neg_vadd_mem] using U.add_mem h hz
+
+@[simp]
+theorem _root_.Submodule.vadd_set_eq_vadd_set_iff :
+    x +ᵥ (U : Set M) = y +ᵥ (U : Set M) ↔ x ≡ y [SMOD U] :=
+  ⟨fun h ↦ Submodule.vadd_set_subset_vadd_set_iff.mp h.subset,
+    fun h ↦ Set.Subset.antisymm (Submodule.vadd_set_subset_vadd_set_iff.mpr h)
+      (Submodule.vadd_set_subset_vadd_set_iff.mpr h.symm)⟩
+
+end Pointwise
 
 end SModEq

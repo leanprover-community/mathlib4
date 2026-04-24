@@ -3,11 +3,13 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Data.ENat.Pow
-import Mathlib.Data.ULift
-import Mathlib.Data.ZMod.Defs
-import Mathlib.SetTheory.Cardinal.ToNat
-import Mathlib.SetTheory.Cardinal.ENat
+module
+
+public import Mathlib.Data.ENat.Pow
+public import Mathlib.Data.ULift
+public import Mathlib.Data.ZMod.Defs
+public import Mathlib.SetTheory.Cardinal.ToNat
+public import Mathlib.SetTheory.Cardinal.ENat
 
 /-!
 # Finite Cardinality Functions
@@ -19,6 +21,8 @@ import Mathlib.SetTheory.Cardinal.ENat
 * `ENat.card α` is the cardinality of `α` as an extended natural number.
   If `α` is infinite, `ENat.card α = ⊤`.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -149,7 +153,6 @@ lemma card_image_of_injOn {f : α → β} (hf : s.InjOn f) : Nat.card (f '' s) =
   classical
   obtain hs | hs := s.finite_or_infinite
   · have := hs.fintype
-    have := fintypeImage s f
     simp_rw [Nat.card_eq_fintype_card, Set.card_image_of_inj_on hf]
   · have := hs.to_subtype
     have := (hs.image hf).to_subtype
@@ -312,32 +315,33 @@ lemma card_le_card_of_injective {α β : Type*} {f : α → β} (hf : Injective 
   rw [← card_ulift α, ← card_ulift β]
   exact Cardinal.gciENat.gc.monotone_u <| Cardinal.lift_mk_le_lift_mk_of_injective hf
 
-@[simp]
+@[deprecated natCast_le_toENat (since := "2026-02-17")]
 theorem _root_.Cardinal.natCast_le_toENat_iff {n : ℕ} {c : Cardinal} :
     ↑n ≤ toENat c ↔ ↑n ≤ c := by
-  rw [← toENat_nat n, toENat_le_iff_of_le_aleph0 (le_of_lt (nat_lt_aleph0 n))]
+  rw [← toENat_nat n, toENat_le_iff_of_le_aleph0 natCast_le_aleph0]
 
+@[deprecated toENat_le_natCast (since := "2026-02-17")]
 theorem _root_.Cardinal.toENat_le_natCast_iff {c : Cardinal} {n : ℕ} :
     toENat c ≤ n ↔ c ≤ n := by simp
 
-@[simp]
+@[deprecated natCast_eq_toENat (since := "2026-02-17")]
 theorem _root_.Cardinal.natCast_eq_toENat_iff {n : ℕ} {c : Cardinal} :
     ↑n = toENat c ↔ ↑n = c := by
-  rw [le_antisymm_iff, le_antisymm_iff, Cardinal.toENat_le_natCast_iff,
-    Cardinal.natCast_le_toENat_iff]
+  rw [le_antisymm_iff, le_antisymm_iff, Cardinal.toENat_le_natCast, Cardinal.natCast_le_toENat]
 
+@[deprecated toENat_eq_natCast (since := "2026-02-17")]
 theorem _root_.Cardinal.toENat_eq_natCast_iff {c : Cardinal} {n : ℕ} :
     Cardinal.toENat c = n ↔ c = n := by simp
 
-@[simp]
+@[deprecated natCast_lt_toENat (since := "2026-02-17")]
 theorem _root_.Cardinal.natCast_lt_toENat_iff {n : ℕ} {c : Cardinal} :
     ↑n < toENat c ↔ ↑n < c := by
-  simp only [← not_le, Cardinal.toENat_le_natCast_iff]
+  simp only [← not_le, Cardinal.toENat_le_natCast]
 
-@[simp]
+@[deprecated toENat_lt_natCast (since := "2026-02-17")]
 theorem _root_.Cardinal.toENat_lt_natCast_iff {n : ℕ} {c : Cardinal} :
     toENat c < ↑n ↔ c < ↑n := by
-  simp only [← not_le, Cardinal.natCast_le_toENat_iff]
+  simp only [← not_le, Cardinal.natCast_le_toENat]
 
 theorem card_eq_zero_iff_empty (α : Type*) : card α = 0 ↔ IsEmpty α := by
   rw [← Cardinal.mk_eq_zero_iff]
@@ -352,6 +356,9 @@ theorem one_le_card_iff_nonempty (α : Type*) : 1 ≤ card α ↔ Nonempty α :=
 @[simp] lemma card_pos [Nonempty α] : 0 < card α := by
   simpa [pos_iff_ne_zero, card_ne_zero_iff_nonempty]
 
+lemma card_pos_iff_nonempty : 0 < ENat.card α ↔ Nonempty α := by
+  simp [pos_iff_ne_zero, card_ne_zero_iff_nonempty]
+
 theorem card_le_one_iff_subsingleton (α : Type*) : card α ≤ 1 ↔ Subsingleton α := by
   rw [← le_one_iff_subsingleton]
   simp [card]
@@ -365,10 +372,13 @@ lemma card_eq_one_iff_unique {α : Type*} : card α = 1 ↔ Nonempty (Unique α)
 theorem one_lt_card_iff_nontrivial (α : Type*) : 1 < card α ↔ Nontrivial α := by
   rw [← Cardinal.one_lt_iff_nontrivial]
   conv_rhs => rw [← Nat.cast_one]
-  rw [← natCast_lt_toENat_iff]
+  rw [← natCast_lt_toENat]
   simp only [ENat.card, Nat.cast_one]
 
 @[simp] lemma one_lt_card [Nontrivial α] : 1 < card α := by simpa [one_lt_card_iff_nontrivial]
+
+lemma exists_ne_ne_of_three_le (h : 3 ≤ ENat.card α) (x y : α) : ∃ z, z ≠ x ∧ z ≠ y :=
+  Cardinal.exists_ne_ne_of_three_le (by simpa [ENat.card] using h) x y
 
 @[simp]
 theorem card_prod (α β : Type*) : card (α × β) = card α * card β := by

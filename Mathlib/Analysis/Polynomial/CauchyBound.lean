@@ -3,9 +3,11 @@ Copyright (c) 2024 Daniel Weber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
-import Mathlib.Algebra.Order.Field.GeomSum
-import Mathlib.Algebra.Polynomial.Monic
-import Mathlib.Analysis.Normed.Field.Basic
+module
+
+public import Mathlib.Algebra.Order.Field.GeomSum
+public import Mathlib.Algebra.Polynomial.Monic
+public import Mathlib.Analysis.Normed.Field.Basic
 
 /-!
 # Cauchy's bound on polynomial roots.
@@ -15,6 +17,8 @@ The bound is given by `Polynomial.cauchyBound`, which for `a_n x^n + a_(n-1) x^(
 
 The theorem that this gives a bound to polynomial roots is `Polynomial.IsRoot.norm_lt_cauchyBound`.
 -/
+
+@[expose] public section
 
 variable {K : Type*} [NormedDivisionRing K]
 
@@ -58,7 +62,7 @@ lemma cauchyBound_X_sub_C (x : K) : cauchyBound (X - C x) = ‖x‖₊ + 1 := by
 
 @[simp]
 lemma cauchyBound_smul {x : K} (hx : x ≠ 0) (p : K[X]) : cauchyBound (x • p) = cauchyBound p := by
-  simp only [cauchyBound, (isRegular_of_ne_zero hx).left.isSMulRegular,
+  simp only [cauchyBound, (IsRegular.of_ne_zero hx).left.isSMulRegular,
     natDegree_smul_of_smul_regular, coeff_smul, smul_eq_mul, nnnorm_mul, ← mul_finset_sup,
     leadingCoeff_smul_of_smul_regular, add_left_inj]
   apply mul_div_mul_left

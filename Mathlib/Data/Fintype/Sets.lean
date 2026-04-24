@@ -3,9 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.BooleanAlgebra
-import Mathlib.Data.Finset.SymmDiff
-import Mathlib.Data.Fintype.OfMap
+module
+
+public import Mathlib.Data.Finset.BooleanAlgebra
+public import Mathlib.Data.Finset.SymmDiff
+public import Mathlib.Data.Fintype.OfMap
 
 /-!
 # Subsets of finite types
@@ -18,6 +20,8 @@ In a `Fintype`, all `Set`s are automatically `Finset`s, and there are only finit
 * `Finset.fintypeCoeSort`: `((s : Finset α) : Type*)` is a finite type
 * `Fintype.finsetEquivSet`: `Finset α` and `Set α` are equivalent if `α` is a `Fintype`
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -43,10 +47,11 @@ def toFinset (s : Set α) [Fintype s] : Finset α :=
 theorem toFinset_congr {s t : Set α} [Fintype s] [Fintype t] (h : s = t) :
     toFinset s = toFinset t := by subst h; congr!
 
-@[simp]
+@[simp, grind =]
 theorem mem_toFinset {s : Set α} [Fintype s] {a : α} : a ∈ s.toFinset ↔ a ∈ s := by
   simp [toFinset]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Many `Fintype` instances for sets are defined using an extensionally equal `Finset`.
 Rewriting `s.toFinset` with `Set.toFinset_ofFinset` replaces the term with such a `Finset`. -/
 theorem toFinset_ofFinset {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x ∈ p) :
@@ -113,6 +118,9 @@ theorem disjoint_toFinset [Fintype s] [Fintype t] :
 @[simp]
 theorem toFinset_nontrivial [Fintype s] : s.toFinset.Nontrivial ↔ s.Nontrivial := by
   rw [Finset.Nontrivial, coe_toFinset]
+
+theorem subsingleton_toFinset_iff [Fintype s] : Subsingleton s.toFinset ↔ s.Subsingleton := by
+  simp
 
 section DecidableEq
 
@@ -257,6 +265,7 @@ instance Subtype.fintype (p : α → Prop) [DecidablePred p] [Fintype α] : Fint
   Fintype.subtype (univ.filter p) (by simp)
 
 /-- A set on a fintype, when coerced to a type, is a fintype. -/
+@[implicit_reducible]
 def setFintype [Fintype α] (s : Set α) [DecidablePred (· ∈ s)] : Fintype s :=
   Subtype.fintype fun x => x ∈ s
 
@@ -318,6 +327,6 @@ elab (name := finsetStx) "finset% " t:term : term => do
 
 open Lean.Elab.Term.Quotation in
 /-- `quot_precheck` for the `finset%` syntax. -/
-@[quot_precheck finsetStx] def precheckFinsetStx : Precheck
+@[quot_precheck finsetStx] meta def precheckFinsetStx : Precheck
   | `(finset% $t) => precheck t
   | _ => Elab.throwUnsupportedSyntax

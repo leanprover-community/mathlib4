@@ -3,7 +3,9 @@ Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+module
+
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 
 /-!
 # Egorov theorem
@@ -19,6 +21,8 @@ convergence in measure.
   almost everywhere convergent functions converges uniformly except on an arbitrarily small set.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -57,7 +61,7 @@ theorem measure_inter_notConvergentSeq_eq_zero [SemilatticeSup ι] [Nonempty ι]
   rw [← nonpos_iff_eq_zero, ← hfg]
   refine measure_mono fun x => ?_
   simp only [Set.mem_inter_iff, Set.mem_iInter, mem_notConvergentSeq_iff]
-  push_neg
+  push Not
   rintro ⟨hmem, hx⟩
   refine ⟨hmem, (n : ℝ≥0∞)⁻¹, by simp, fun N => ?_⟩
   obtain ⟨n, hn₁, hn₂⟩ := hx N
@@ -169,7 +173,7 @@ theorem tendstoUniformlyOn_diff_iUnionNotConvergentSeq (hε : 0 < ε)
   obtain ⟨hxs, hx⟩ := hx
   specialize hx hxs N
   rw [Egorov.mem_notConvergentSeq_iff] at hx
-  push_neg at hx
+  push Not at hx
   rw [edist_comm]
   exact lt_of_le_of_lt (hx n hn) hN
 

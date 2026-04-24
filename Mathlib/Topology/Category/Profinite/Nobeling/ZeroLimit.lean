@@ -3,8 +3,10 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.LinearAlgebra.LinearIndependent.Basic
-import Mathlib.Topology.Category.Profinite.Nobeling.Basic
+module
+
+public import Mathlib.LinearAlgebra.LinearIndependent.Basic
+public import Mathlib.Topology.Category.Profinite.Nobeling.Basic
 
 /-!
 # The zero and limit cases in the induction for Nöbeling's theorem
@@ -18,6 +20,8 @@ For the overall proof outline see `Mathlib/Topology/Category/Profinite/Nobeling/
 
 - [scholze2019condensed], Theorem 5.4.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -91,9 +95,8 @@ instance (α : Type*) [TopologicalSpace α] : IsAddTorsionFree (LocallyConstant 
   LocallyConstant.coe_injective.isAddTorsionFree LocallyConstant.coeFnAddMonoidHom
 
 theorem GoodProducts.linearIndependentSingleton {I} [LinearOrder I] :
-    LinearIndependent ℤ (eval ({fun _ ↦ false} : Set (I → Bool))) := by
-  refine linearIndependent_unique (eval ({fun _ ↦ false} : Set (I → Bool))) ?_
-  simp [eval, Products.eval, Products.nil, default]
+    LinearIndependent ℤ (eval ({fun _ ↦ false} : Set (I → Bool))) :=
+  .of_subsingleton default <| by simp [eval, Products.eval, Products.nil, default]
 
 end Zero
 

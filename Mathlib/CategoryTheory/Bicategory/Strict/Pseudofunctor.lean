@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Christian Merten
 -/
-import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
-import Mathlib.CategoryTheory.CommSq
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+public import Mathlib.CategoryTheory.CommSq
 
 /-!
 # Pseudofunctors from strict bicategory
@@ -21,6 +23,8 @@ isomorphism `F.map t ≫ F.map r ≅ F.map l ≫ F.map b`
 (see `Pseudofunctor.isoMapOfCommSq`).
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -85,9 +89,6 @@ lemma mapComp'₀₁₃_hom_comp_whiskerLeft_mapComp'_hom (hf : f₀₁ ≫ f₁
   subst h₀₂ h₁₃ hf
   simp [mapComp_assoc_right_hom, Strict.associator_eqToIso, mapComp']
 
-@[deprecated (since := "2025-10-02")] alias mapComp'_hom_comp_whiskerLeft_mapComp'_hom :=
-  mapComp'₀₁₃_hom_comp_whiskerLeft_mapComp'_hom
-
 @[to_app (attr := reassoc)]
 lemma mapComp'₀₁₃_inv_comp_mapComp'₀₂₃_hom (hf : f₀₁ ≫ f₁₃ = f) :
     (F.mapComp' f₀₁ f₁₃ f).inv ≫ (F.mapComp' f₀₂ f₂₃ f).hom =
@@ -97,9 +98,6 @@ lemma mapComp'₀₁₃_inv_comp_mapComp'₀₂₃_hom (hf : f₀₁ ≫ f₁₃
     F.mapComp'₀₁₃_hom_comp_whiskerLeft_mapComp'_hom_assoc _ _ _ _ _ _ h₀₂ h₁₃ hf]
   simp
 
-@[deprecated (since := "2025-10-02")] alias mapComp'_inv_comp_mapComp'_hom :=
-  mapComp'₀₁₃_inv_comp_mapComp'₀₂₃_hom
-
 @[to_app (attr := reassoc)]
 lemma whiskerLeft_mapComp'_inv_comp_mapComp'₀₁₃_inv (hf : f₀₁ ≫ f₁₃ = f) :
     F.map f₀₁ ◁ (F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃).inv ≫ (F.mapComp' f₀₁ f₁₃ f hf).inv =
@@ -107,9 +105,6 @@ lemma whiskerLeft_mapComp'_inv_comp_mapComp'₀₁₃_inv (hf : f₀₁ ≫ f₁
       (F.mapComp' f₀₂ f₂₃ f).inv := by
   simp [← cancel_mono (F.mapComp' f₀₂ f₂₃ f).hom,
     F.mapComp'₀₁₃_inv_comp_mapComp'₀₂₃_hom _ _ _ _ _ _ h₀₂ h₁₃ hf]
-
-@[deprecated (since := "2025-10-02")] alias whiskerLeft_mapComp'_inv_comp_mapComp'_inv :=
-  whiskerLeft_mapComp'_inv_comp_mapComp'₀₁₃_inv
 
 @[to_app (attr := reassoc)]
 lemma mapComp'₀₂₃_hom_comp_mapComp'_hom_whiskerRight (hf : f₀₂ ≫ f₂₃ = f) :
@@ -119,9 +114,6 @@ lemma mapComp'₀₂₃_hom_comp_mapComp'_hom_whiskerRight (hf : f₀₂ ≫ f�
   rw [F.mapComp'₀₁₃_hom_comp_whiskerLeft_mapComp'_hom_assoc _ _ _ _ _ f h₀₂ h₁₃ (by cat_disch)]
   simp
 
-@[deprecated (since := "2025-10-02")] alias mapComp'_hom_comp_mapComp'_hom_whiskerRight :=
-  mapComp'₀₂₃_hom_comp_mapComp'_hom_whiskerRight
-
 @[to_app (attr := reassoc)]
 lemma mapComp'_inv_whiskerRight_mapComp'₀₂₃_inv (hf : f₀₂ ≫ f₂₃ = f) :
     (F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂).inv ▷ F.map f₂₃ ≫ (F.mapComp' f₀₂ f₂₃ f).inv =
@@ -129,9 +121,6 @@ lemma mapComp'_inv_whiskerRight_mapComp'₀₂₃_inv (hf : f₀₂ ≫ f₂₃ 
       (F.mapComp' f₀₁ f₁₃ f).inv := by
   rw [whiskerLeft_mapComp'_inv_comp_mapComp'₀₁₃_inv _ _ _ _ _ _ f h₀₂ h₁₃,
     Iso.hom_inv_id_assoc]
-
-@[deprecated (since := "2025-10-02")] alias mapComp'_inv_whiskerRight_comp_mapComp'_inv :=
-  mapComp'_inv_whiskerRight_mapComp'₀₂₃_inv
 
 @[to_app (attr := reassoc)]
 lemma mapComp'₀₁₃_inv (hf : f₀₁ ≫ f₁₃ = f) :
@@ -152,7 +141,7 @@ lemma mapComp'₀₁₃_hom (hf : f₀₁ ≫ f₁₃ = f) :
 lemma mapComp'₀₂₃_hom (hf : f₀₂ ≫ f₂₃ = f) :
     (F.mapComp' f₀₂ f₂₃ f).hom =
     (F.mapComp' f₀₁ f₁₃ f).hom ≫ F.map f₀₁ ◁ (F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃).hom ≫
-      (α_ _ _ _).inv ≫ (F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂).inv ▷ F.map f₂₃:= by
+      (α_ _ _ _).inv ≫ (F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂).inv ▷ F.map f₂₃ := by
   simp [← mapComp'₀₂₃_hom_comp_mapComp'_hom_whiskerRight_assoc _ _ _ _ _ _ f h₀₂ h₁₃ hf]
 
 @[to_app (attr := reassoc)]
@@ -181,7 +170,7 @@ section
 variable {t : X₁ ⟶ Y₁} {l : X₁ ⟶ X₂} {r : Y₁ ⟶ Y₂} {b : X₂ ⟶ Y₂} (sq : CommSq t l r b)
 
 /-- Given a commutative square `CommSq t l r b` in a strict bicategory `B` and
-a pseudofunctor from `B`, this is the natural isomorphism
+a pseudofunctor from `B`, this is the isomorphism
 `F.map t ≫ F.map r ≅ F.map l ≫ F.map b`. -/
 def isoMapOfCommSq : F.map t ≫ F.map r ≅ F.map l ≫ F.map b :=
   (F.mapComp t r).symm ≪≫ F.mapComp' _ _ _ (by rw [sq.w])

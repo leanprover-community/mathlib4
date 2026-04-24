@@ -3,9 +3,11 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
-import Mathlib.Topology.Spectral.Hom
-import Mathlib.AlgebraicGeometry.Limits
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
+public import Mathlib.Topology.Spectral.Hom
+public import Mathlib.AlgebraicGeometry.Limits
 
 /-!
 # Quasi-compact morphisms
@@ -17,6 +19,8 @@ It suffices to check that preimages of affine open sets are compact
 (`quasiCompact_iff_forall_isAffineOpen`).
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -48,8 +52,9 @@ theorem quasiCompact_iff_isSpectralMap : QuasiCompact f ↔ IsSpectralMap f :=
 theorem Scheme.Hom.isSpectralMap [QuasiCompact f] : IsSpectralMap f := by
   rwa [← quasiCompact_iff_isSpectralMap]
 
-@[deprecated (since := "2025-10-07")]
-alias quasiCompact_iff_spectral := quasiCompact_iff_isSpectralMap
+lemma Scheme.Hom.isCompact_preimage [QuasiCompact f] {U : Opens Y}
+    (hU : IsCompact (U : Set Y)) : IsCompact (f ⁻¹ᵁ U : Set X) :=
+  f.isSpectralMap.2 U.2 hU
 
 instance (priority := 900) quasiCompact_of_isIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
     QuasiCompact f := by
@@ -77,10 +82,6 @@ theorem isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens {U : Set X} :
   · rw [Subtype.range_coe]; exact X.isBasis_affineOpens
   · exact fun i => i.2.isCompact
 
-@[deprecated (since := "2025-10-14")]
-alias isCompactOpen_iff_eq_finset_affine_union :=
-  isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens
-
 theorem isCompact_iff_finite_and_eq_biUnion_affineOpens {U : X.Opens} :
     IsCompact (X := X) U ↔ ∃ s : Set X.affineOpens, s.Finite ∧ U = ⨆ i ∈ s, (i : X.Opens) := by
   convert isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens (U := U.1) using 4 with s
@@ -92,10 +93,6 @@ theorem isCompact_and_isOpen_iff_finite_and_eq_biUnion_basicOpen [IsAffine X] {U
   (isBasis_basicOpen X).isCompact_open_iff_eq_finite_iUnion _
     (fun _ => ((isAffineOpen_top _).basicOpen _).isCompact) _
 
-@[deprecated (since := "2025-10-14")]
-alias isCompactOpen_iff_eq_basicOpen_union :=
-  isCompact_and_isOpen_iff_finite_and_eq_biUnion_basicOpen
-
 variable {f} in
 theorem quasiCompact_iff_forall_isAffineOpen :
     QuasiCompact f ↔ ∀ U : Y.Opens, IsAffineOpen U → IsCompact (f ⁻¹ᵁ U : Set X) := by
@@ -105,9 +102,6 @@ theorem quasiCompact_iff_forall_isAffineOpen :
   obtain ⟨S, hS, rfl⟩ := isCompact_and_isOpen_iff_finite_and_eq_biUnion_affineOpens.mp ⟨hU', hU⟩
   simp only [Set.preimage_iUnion]
   exact Set.Finite.isCompact_biUnion hS (fun i _ => H i i.prop)
-
-@[deprecated (since := "2025-10-14")]
-alias quasiCompact_iff_forall_affine := quasiCompact_iff_forall_isAffineOpen
 
 theorem isCompact_basicOpen (X : Scheme) {U : X.Opens} (hU : IsCompact (U : Set X))
     (f : Γ(X, U)) : IsCompact (X.basicOpen f : Set X) := by
@@ -148,8 +142,8 @@ instance {X : Scheme} [CompactSpace X] : QuasiCompact X.toSpecΓ :=
   HasAffineProperty.iff_of_isAffine.mpr ‹_›
 
 /-
-A quasi-compact scheme over quasi-compact base is also quasi-compact as a topological space.
-For the coverse, see `quasiCompact_of_compactSpace` for the fact that
+A quasi-compact scheme over a quasi-compact base is also quasi-compact as a topological space.
+For the converse, see `quasiCompact_of_compactSpace` for the fact that
 a (topologically) quasi-compact scheme is quasi-compact over a base if the base is quasi-separated.
 -/
 lemma QuasiCompact.compactSpace_of_compactSpace {X Y : Scheme.{u}} (f : X ⟶ Y) [QuasiCompact f]
@@ -165,6 +159,7 @@ instance quasiCompact_isStableUnderComposition :
 instance : MorphismProperty.IsMultiplicative @QuasiCompact where
   id_mem _ := inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 instance quasiCompact_isStableUnderBaseChange :
     MorphismProperty.IsStableUnderBaseChange @QuasiCompact := by
   letI := HasAffineProperty.isLocal_affineProperty @QuasiCompact
@@ -187,15 +182,18 @@ instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact f] : QuasiCompact (pullback.s
 instance (f : X ⟶ Y) (V : Y.Opens) [QuasiCompact f] : QuasiCompact (f ∣_ V) :=
   IsZariskiLocalAtTarget.restrict ‹_› V
 
+instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact f] [CompactSpace Y] : CompactSpace ↑(pullback f g) :=
+  QuasiCompact.compactSpace_of_compactSpace (pullback.snd _ _)
+
+instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact g] [CompactSpace X] : CompactSpace ↑(pullback f g) :=
+  QuasiCompact.compactSpace_of_compactSpace (pullback.fst _ _)
+
 lemma compactSpace_iff_exists :
-    CompactSpace X ↔ ∃ R, ∃ f : Spec R ⟶ X, Function.Surjective f := by
-  refine ⟨fun h ↦ ?_, fun ⟨R, f, hf⟩ ↦ ⟨hf.range_eq ▸ isCompact_range f.continuous⟩⟩
-  let 𝒰 : X.OpenCover := X.affineCover.finiteSubcover
-  refine ⟨Γ(∐ 𝒰.X, ⊤), (∐ 𝒰.X).isoSpec.inv ≫ Sigma.desc 𝒰.f, ?_⟩
-  refine Function.Surjective.comp (g := Sigma.desc 𝒰.f)
-    (fun x ↦ ?_) (∐ 𝒰.X).isoSpec.inv.surjective
-  obtain ⟨y, hy⟩ := 𝒰.covers x
-  exact ⟨Sigma.ι 𝒰.X (𝒰.idx x) y, by rw [← Scheme.Hom.comp_apply, Sigma.ι_desc, hy]⟩
+    CompactSpace X ↔ ∃ R, ∃ f : Spec R ⟶ X, Function.Surjective f where
+  mp _ := let 𝒰 : X.OpenCover := X.affineCover.finiteSubcover
+    ⟨Γ(∐ 𝒰.X, ⊤), (∐ 𝒰.X).isoSpec.inv ≫ Sigma.desc 𝒰.f, Surjective.surj⟩
+  mpr := fun ⟨_, f, hf⟩ ↦ ⟨hf.range_eq ▸ isCompact_range f.continuous⟩
+
 
 lemma isCompact_iff_exists {U : X.Opens} :
     IsCompact (U : Set X) ↔ ∃ R, ∃ f : Spec R ⟶ X, Set.range f = U := by
@@ -208,7 +206,7 @@ lemma isCompact_iff_exists {U : X.Opens} :
   rwa [← Set.range_comp, ← TopCat.coe_comp, ← Scheme.Hom.comp_base, IsOpenImmersion.lift_fac]
 
 @[stacks 01K9]
-lemma isClosedMap_iff_specializingMap (f : X ⟶ Y) [QuasiCompact f] :
+nonrec lemma isClosedMap_iff_specializingMap (f : X ⟶ Y) [QuasiCompact f] :
     IsClosedMap f ↔ SpecializingMap f := by
   refine ⟨fun h ↦ h.specializingMap, fun H ↦ ?_⟩
   wlog hY : ∃ R, Y = Spec R
@@ -220,7 +218,6 @@ lemma isClosedMap_iff_specializingMap (f : X ⟶ Y) [QuasiCompact f] :
     exact IsZariskiLocalAtTarget.of_isPullback
       (P := topologically @SpecializingMap) (.of_hasPullback _ _) H
   obtain ⟨S, rfl⟩ := hY
-  clear * - H
   intro Z hZ
   replace H := hZ.stableUnderSpecialization.image H
   wlog hX : ∃ R, X = Spec R
@@ -283,7 +280,7 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
     subst e
     apply TopCat.Sheaf.eq_of_locally_eq X.sheaf fun i : s => (i : X.Opens)
     intro i
-    change _ = (X.sheaf.val.map _) 0
+    change _ = (X.sheaf.obj.map _) 0
     rw [map_zero]
     apply this
   intro i

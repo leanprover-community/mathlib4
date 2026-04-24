@@ -3,10 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Sheaf.Free
-import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackContinuous
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Final.Type
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Free
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackContinuous
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Final.Type
 
 /-!
 # Pullbacks of free sheaves of modules
@@ -26,6 +28,8 @@ of modules `free I` to `free I`, see `pullbackObjFreeIso` and
 `freeFunctorCompPullbackIso`.
 -/
 
+@[expose] public section
+
 universe v v₁ v₂ u₁ u₂ u
 
 open CategoryTheory Limits
@@ -35,20 +39,19 @@ namespace SheafOfModules
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   {J : GrothendieckTopology C} {K : GrothendieckTopology D} {F : C ⥤ D}
   {S : Sheaf J RingCat.{u}} {R : Sheaf K RingCat.{u}}
-  [Functor.IsContinuous.{u} F J K]
+  [Functor.IsContinuous F J K]
   (φ : S ⟶ (F.sheafPushforwardContinuous RingCat.{u} J K).obj R)
 
 /-- The canonical map from the (global) sections of a sheaf of modules
 to the (global) sections of its pushforward. -/
 @[simps]
-def pushforwardSections [Functor.IsContinuous.{v} F J K]
-    {M : SheafOfModules.{v} R} (s : M.sections) :
+def pushforwardSections {M : SheafOfModules.{v} R} (s : M.sections) :
     ((pushforward φ).obj M).sections where
   val _ := s.val _
   property _ := s.property _
 
 variable (M) in
-lemma bijective_pushforwardSections [Functor.IsContinuous.{v} F J K] [F.Final] :
+lemma bijective_pushforwardSections [F.Final] :
     Function.Bijective (pushforwardSections φ (M := M)) :=
   Functor.bijective_sectionsPrecomp _ _
 
@@ -57,17 +60,18 @@ variable [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
 
 /-- The canonical morphism `unit S ⟶ (pushforward.{u} φ).obj (unit R)`
 of sheaves of modules corresponding to a continuous map between ringed sites. -/
-def unitToPushforwardObjUnit : unit S ⟶ (pushforward.{u} φ).obj (unit R) where
-  val.app X := ModuleCat.homMk ((forget₂ RingCat AddCommGrpCat).map (φ.val.app X)) (fun r ↦ by
+noncomputable def unitToPushforwardObjUnit : unit S ⟶ (pushforward.{u} φ).obj (unit R) where
+  val.app X := ModuleCat.homMk ((forget₂ RingCat AddCommGrpCat).map (φ.hom.app X)) (fun r ↦ by
     ext m
-    exact ((φ.val.app X).hom.map_mul _ _).symm)
+    exact ((φ.hom.app X).hom.map_mul _ _).symm)
   val.naturality f := by
     ext
-    exact ConcreteCategory.congr_hom (φ.val.naturality f) _
+    exact ConcreteCategory.congr_hom (φ.hom.naturality f) _
 
-lemma unitToPushforwardObjUnit_val_app_apply {X : Cᵒᵖ} (a : S.val.obj X) :
-    (unitToPushforwardObjUnit φ).val.app X a = φ.val.app X a := rfl
+lemma unitToPushforwardObjUnit_val_app_apply {X : Cᵒᵖ} (a : S.obj.obj X) :
+    (unitToPushforwardObjUnit φ).val.app X a = φ.hom.app X a := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma pushforwardSections_unitHomEquiv
     {M : SheafOfModules.{u} R} (f : unit R ⟶ M) :
     pushforwardSections φ (M.unitHomEquiv f) =
@@ -76,7 +80,7 @@ lemma pushforwardSections_unitHomEquiv
   ext X
   have := unitToPushforwardObjUnit_val_app_apply φ (X := X) 1
   dsimp at this ⊢
-  simp [this, map_one]
+  simp +instances [this, map_one]
   rfl
 
 variable [(pushforward.{u} φ).IsRightAdjoint]
@@ -120,6 +124,7 @@ noncomputable def pullbackObjFreeIso (I : Type u) :
   (asIso (sigmaComparison _ _)).symm ≪≫
     Sigma.mapIso (fun _ ↦ asIso (pullbackObjUnitToUnit φ))
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pullback_map_ιFree_comp_pullbackObjFreeIso_hom {I : Type u} (i : I) :
     (pullback φ).map (ιFree i) ≫ (pullbackObjFreeIso φ I).hom =
@@ -137,6 +142,6 @@ lemma pullbackObjFreeIso_hom_naturality {I J : Type u} (f : I → J) :
 continuous map between ringed sites, when the underlying functor between the sites
 is final. -/
 noncomputable def freeFunctorCompPullbackIso : freeFunctor ⋙ pullback φ ≅ freeFunctor :=
-  NatIso.ofComponents (pullbackObjFreeIso φ)
+  NatIso.ofComponents (fun X ↦ pullbackObjFreeIso φ X)
 
 end SheafOfModules

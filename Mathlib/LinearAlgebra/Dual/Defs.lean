@@ -3,9 +3,10 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Fabian Glöckle, Kyle Miller
 -/
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.LinearAlgebra.BilinearMap
-import Mathlib.LinearAlgebra.Span.Defs
+module
+
+public import Mathlib.LinearAlgebra.BilinearMap
+public import Mathlib.LinearAlgebra.Span.Defs
 
 /-!
 # Dual vector spaces
@@ -38,6 +39,8 @@ The dual space of an $R$-module $M$ is the $R$-module of $R$-linear maps $M \to 
   * `Module.mapEvalEquiv` is the order isomorphism between subspaces of `V` and
     subspaces of `Dual K (Dual K V)`.
 -/
+
+@[expose] public section
 
 open Module Submodule
 
@@ -296,16 +299,9 @@ instance _root_.MulOpposite.instModuleIsReflexive : IsReflexive R (MulOpposite M
   equiv <| MulOpposite.opLinearEquiv _
 
 -- see Note [lower instance priority]
-instance (priority := 100) [IsDomain R] : NoZeroSMulDivisors R M := by
-  refine (noZeroSMulDivisors_iff R M).mpr ?_
-  intro r m hrm
-  rw [or_iff_not_imp_left]
-  intro hr
-  suffices Dual.eval R M m = Dual.eval R M 0 from (bijective_dual_eval R M).injective this
-  ext n
-  simp only [Dual.eval_apply, map_zero, LinearMap.zero_apply]
-  suffices r • n m = 0 from eq_zero_of_ne_zero_of_mul_left_eq_zero hr this
-  rw [← LinearMap.map_smul_of_tower, hrm, LinearMap.map_zero]
+instance (priority := 100) IsReflexive.to_isTorsionFree : IsTorsionFree R M where
+  isSMulRegular r hr m₁ m₂ hm :=
+    (bijective_dual_eval R M).injective <| by ext n; simpa [hr.1.eq_iff] using congr(n $hm)
 
 end IsReflexive
 

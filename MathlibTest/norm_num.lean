@@ -3,7 +3,7 @@ Copyright (c) 2017 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Mario Carneiro, Thomas Murrills
 -/
-
+module
 import Mathlib.Tactic.NormNum
 
 private axiom test_sorry : ∀ {α}, α
@@ -14,19 +14,19 @@ set_option autoImplicit true
 
 -- We deliberately mock R and C here so that we don't have to import the deps
 axiom Real : Type
-notation "ℝ" => Real
+local notation "ℝ" => Real
 @[instance] axiom Real.field : Field ℝ
 @[instance] axiom Real.linearOrder : LinearOrder ℝ
 @[instance] axiom Real.isStrictOrderedRing : IsStrictOrderedRing ℝ
 
 axiom NNReal : Type
-notation "ℝ≥0" => NNReal
+local notation "ℝ≥0" => NNReal
 @[instance] axiom NNReal.semifield : Semifield ℝ≥0
 @[instance] axiom NNReal.linearOrder : LinearOrder ℝ≥0
 @[instance] axiom NNReal.isStrictOrderedRing : IsStrictOrderedRing ℝ≥0
 
 axiom Complex : Type
-notation "ℂ" => Complex
+local notation "ℂ" => Complex
 @[instance] axiom Complex.field : Field ℂ
 @[instance] axiom Complex.charZero : CharZero ℂ
 
@@ -425,7 +425,7 @@ example : True := by norm_num1
 -- example : True ∧ True := by norm_num1
 
 /-!
-# Nat operations
+## Nat operations
 -/
 
 section Nat.sub
@@ -465,7 +465,7 @@ example : 1099 / 100 = 10 := by norm_num1
 end Nat.div
 
 /-!
-# Numbers in algebraic structures
+## Numbers in algebraic structures
 -/
 
 noncomputable def foo : ℝ := 1
@@ -572,9 +572,6 @@ example : (-2 : α) * 4 / 3 = -8 / 3 := by norm_num1
 example : - (-4 / 3) = 1 / (3 / (4 : α)) := by norm_num1
 
 end
-
--- user command
-set_option linter.style.commandStart false
 
 /-- info: True -/
 #guard_msgs in #norm_num 1 = 1

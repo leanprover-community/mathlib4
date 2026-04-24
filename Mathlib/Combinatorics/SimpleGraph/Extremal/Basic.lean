@@ -3,8 +3,10 @@ Copyright (c) 2025 Mitchell Horner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Horner
 -/
-import Mathlib.Algebra.Order.Floor.Semiring
-import Mathlib.Combinatorics.SimpleGraph.Copy
+module
+
+public import Mathlib.Algebra.Order.Floor.Semiring
+public import Mathlib.Combinatorics.SimpleGraph.Copy
 
 /-!
 # Extremal graph theory
@@ -21,6 +23,8 @@ This file introduces basic definitions for extremal graph theory, including extr
 
   If `H` is contained in all simple graphs on `n` vertices, then this is `0`.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -54,6 +58,13 @@ theorem exists_isExtremal_iff_exists (p : SimpleGraph V → Prop) :
 theorem exists_isExtremal_free {W : Type*} {H : SimpleGraph W} (h : H ≠ ⊥) :
     ∃ G : SimpleGraph V, ∃ _ : DecidableRel G.Adj, G.IsExtremal H.Free :=
   (exists_isExtremal_iff_exists H.Free).mpr ⟨⊥, free_bot h⟩
+
+open Classical in
+theorem IsExtremal.le_iff_eq
+    {p : SimpleGraph V → Prop} (hG : G.IsExtremal p) {H : SimpleGraph V} (hH : p H) :
+    G ≤ H ↔ G = H :=
+  ⟨fun hGH ↦ edgeFinset_inj.1 <|
+    eq_of_subset_of_card_le (edgeFinset_subset_edgeFinset.2 hGH) (hG.2 hH), le_of_eq⟩
 
 end IsExtremal
 
@@ -98,7 +109,7 @@ theorem card_edgeFinset_le_extremalNumber (h : H.Free G) :
 /-- If `G` has more than `extremalNumber (card V) H` edges, then `G` contains a copy of `H`. -/
 theorem IsContained.of_extremalNumber_lt_card_edgeFinset
     (h : extremalNumber (card V) H < #G.edgeFinset) : H ⊑ G := by
-  contrapose h; push_neg
+  contrapose h; push Not
   exact card_edgeFinset_le_extremalNumber h
 
 /-- `extremalNumber (card V) H` is at most `x` if and only if every `H`-free simple graph `G` has
@@ -154,7 +165,7 @@ theorem extremalNumber_congr {n₁ n₂ : ℕ} {W₁ W₂ : Type*} {H₁ : Simpl
     rw [← Fintype.card_fin n₂, extremalNumber_le_iff]
     intro G _ h
     apply card_edgeFinset_le_extremalNumber
-    contrapose! h
+    contrapose h
     exact h.trans' ⟨e.toCopy⟩
 
 /-- If `H₁ ≃g H₂`, then `extremalNumber n H₁` equals `extremalNumber n H₂`. -/
@@ -178,7 +189,7 @@ theorem card_edgeFinset_deleteIncidenceSet_le_extremalNumber
     #(G.deleteIncidenceSet v).edgeFinset ≤ extremalNumber (card V - 1) H := by
   rw [← card_edgeFinset_induce_compl_singleton, ← @card_unique ({v} : Set V), ← card_compl_set]
   apply card_edgeFinset_le_extremalNumber
-  contrapose! h
+  contrapose h
   exact h.trans ⟨Copy.induce G {v}ᶜ⟩
 
 end ExtremalNumber

@@ -3,12 +3,13 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+module
 
-import Mathlib.Data.Nat.Lattice
-import Mathlib.Logic.Denumerable
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Order.Hom.Basic
-import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Logic.Denumerable
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Relation embeddings from the naturals
@@ -24,6 +25,8 @@ defines the limit value of an eventually-constant sequence.
 * `monotonicSequenceLimitIndex`: The index of the first occurrence of `monotonicSequenceLimit`
   in the sequence.
 -/
+
+@[expose] public section
 
 
 variable {α : Type*}
@@ -48,9 +51,6 @@ def natGT (f : ℕ → α) (H : ∀ n : ℕ, r (f (n + 1)) (f n)) : ((· > ·) :
 @[simp]
 theorem coe_natGT {f : ℕ → α} {H : ∀ n : ℕ, r (f (n + 1)) (f n)} : ⇑(natGT f H) = f :=
   rfl
-
-@[deprecated (since := "2025-08-08")]
-alias exists_not_acc_lt_of_not_acc := exists_not_acc_lt_of_not_acc
 
 /-- A value is accessible iff it isn't contained in any infinite decreasing sequence. -/
 theorem acc_iff_isEmpty_subtype_mem_range {x} :
@@ -77,16 +77,6 @@ theorem not_wellFounded (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r) : ¬Well
   rw [wellFounded_iff_isEmpty, not_isEmpty_iff]
   exact ⟨f⟩
 
-@[deprecated (since := "2025-08-10")]
-alias acc_iff_no_decreasing_seq := acc_iff_isEmpty_subtype_mem_range
-
-@[deprecated (since := "2025-08-10")] alias not_acc_of_decreasing_seq := not_acc
-
-@[deprecated (since := "2025-08-10")]
-alias wellFounded_iff_no_descending_seq := wellFounded_iff_isEmpty
-
-@[deprecated (since := "2025-08-10")] alias not_wellFounded_of_decreasing_seq := not_wellFounded
-
 end RelEmbedding
 
 theorem not_strictAnti_of_wellFoundedLT [Preorder α] [WellFoundedLT α] (f : ℕ → α) :
@@ -105,7 +95,7 @@ variable (s : Set ℕ) [Infinite s]
 def orderEmbeddingOfSet [DecidablePred (· ∈ s)] : ℕ ↪o ℕ :=
   (RelEmbedding.orderEmbeddingOfLTEmbedding
     (RelEmbedding.natLT (Nat.Subtype.ofNat s) fun _ => Nat.Subtype.lt_succ_self _)).trans
-    (OrderEmbedding.subtype s)
+    (OrderEmbedding.subtype (· ∈ s))
 
 /-- `Nat.Subtype.ofNat` as an order isomorphism between `ℕ` and an infinite subset. See also
 `Nat.nth` for a version where the subset may be finite. -/
@@ -131,7 +121,9 @@ theorem orderEmbeddingOfSet_apply [DecidablePred (· ∈ s)] {n : ℕ} :
 @[simp]
 theorem Subtype.orderIsoOfNat_apply [dP : DecidablePred (· ∈ s)] {n : ℕ} :
     Subtype.orderIsoOfNat s n = Subtype.ofNat s n := by
-  simp [orderIsoOfNat]; congr!
+  simp only [orderIsoOfNat, RelIso.ofSurjective_apply,
+    RelEmbedding.orderEmbeddingOfLTEmbedding_apply, RelEmbedding.coe_natLT]
+  congr!
 
 variable (s)
 
@@ -174,9 +166,9 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
         have h := hm _ (Nat.le_add_left m n)
         simp only [bad, exists_prop, not_not, Set.mem_setOf_eq, not_forall] at h
         obtain ⟨n', hn1, hn2⟩ := h
-        refine ⟨n + n' - n - m, by cutsat, ?_⟩
+        refine ⟨n + n' - n - m, by lia, ?_⟩
         convert hn2
-        omega
+        lia
       let g' : ℕ → ℕ := @Nat.rec (fun _ => ℕ) m fun n gn => Nat.find (h gn)
       exact
         ⟨(RelEmbedding.natLT (fun n => g' n + m) fun n =>
@@ -230,6 +222,15 @@ theorem WellFoundedGT.monotone_chain_condition [PartialOrder α] [h : WellFounde
     ∃ n, ∀ m, n ≤ m → a n = a m :=
   wellFoundedGT_iff_monotone_chain_condition.1 h a
 
+/-- The **antitone chain** condition: an antitone sequence in a partially-ordered type with
+well-founded `<` is eventually constant.
+
+This is the dual of `WellFoundedGT.monotone_chain_condition`. It is provided for convenience,
+since it unbundles the antitone property from the order homomorphism. -/
+theorem WellFoundedLT.antitone_chain_condition [PartialOrder α] [WellFoundedLT α]
+    {f : ℕ → α} (hf : Antitone f) : ∃ n, ∀ m, n ≤ m → f n = f m :=
+  WellFoundedGT.monotone_chain_condition ⟨OrderDual.toDual ∘ f, hf⟩
+
 /-- Given an eventually-constant monotone sequence `a₀ ≤ a₁ ≤ a₂ ≤ ...` in a partially-ordered
 type, `monotonicSequenceLimitIndex a` is the least natural number `n` for which `aₙ` reaches the
 constant value. For sequences that are not eventually constant, `monotonicSequenceLimitIndex a`
@@ -265,7 +266,7 @@ theorem exists_covBy_seq_of_wellFoundedLT_wellFoundedGT (α) [Preorder α]
   have hα := Set.nonempty_iff_univ_nonempty.mp ‹_›
   classical
   let a : ℕ → α := Nat.rec (wfl.wf.min _ hα) fun _n a ↦ if ha : IsMax a then a else next ha
-  refine ⟨a, isMin_iff_forall_not_lt.mpr fun _ ↦ wfl.wf.not_lt_min _ hα trivial, ?_⟩
+  refine ⟨a, isMin_iff_forall_not_lt.mpr fun _ ↦ wfl.wf.not_lt_min _ (Set.mem_univ _), ?_⟩
   have cov n (hn : ¬ IsMax (a n)) : a n ⋖ a (n + 1) := by
     change a n ⋖ if ha : IsMax (a n) then a n else _
     rw [dif_neg hn]
@@ -273,7 +274,7 @@ theorem exists_covBy_seq_of_wellFoundedLT_wellFoundedGT (α) [Preorder α]
   have H : ∃ n, IsMax (a n) := by
     by_contra!
     exact (RelEmbedding.natGT a fun n ↦ (cov n (this n)).1).not_wellFounded wfg.wf
-  exact ⟨_, wellFounded_lt.min_mem _ H, fun i h ↦ cov _ fun h' ↦ wellFounded_lt.not_lt_min _ H h' h⟩
+  exact ⟨_, wellFounded_lt.min_mem _ H, fun i h ↦ cov _ (wellFounded_lt.not_lt_min _ · h)⟩
 
 theorem exists_covBy_seq_of_wellFoundedLT_wellFoundedGT_of_le {α : Type*} [PartialOrder α]
     [wfl : WellFoundedLT α] [wfg : WellFoundedGT α] {x y : α} (h : x ≤ y) :

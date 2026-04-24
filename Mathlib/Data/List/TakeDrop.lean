@@ -3,14 +3,19 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Data.List.Defs
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Data.List.Defs
+public import Mathlib.Tactic.Common
+public import Mathlib.Logic.Function.Iterate
 
 /-!
 # `Take` and `Drop` lemmas for lists
 
 This file provides lemmas about `List.take` and `List.drop` and related functions.
 -/
+
+public section
 
 assert_not_exists GroupWithZero
 assert_not_exists Lattice
@@ -76,6 +81,12 @@ lemma drop_length_sub_one {l : List α} (h : l ≠ []) : l.drop (l.length - 1) =
     · simp_all
     rw [length_cons, Nat.add_one_sub_one, List.drop_length_cons hl a]
     simp [getLast_cons, hl]
+
+/-- Applying `tail` to a list `n` times is equivalent to dropping `n` elements. -/
+theorem tail_iterate (l : List α) (n : ℕ) : (List.tail^[n]) l = l.drop n := by
+  induction n generalizing l with
+  | zero => rfl
+  | succ n ih => cases l <;> simp [*]
 
 section TakeI
 

@@ -3,8 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-import Mathlib.Topology.Order.ProjIcc
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+public import Mathlib.Topology.Order.ProjIcc
 
 /-!
 # Inverse trigonometric functions.
@@ -14,6 +16,8 @@ See also `Analysis.SpecialFunctions.Trigonometric.Arctan` for the inverse tan fu
 
 Basic inequalities on trigonometric functions.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -32,6 +36,7 @@ noncomputable def arcsin : ℝ → ℝ :=
 theorem arcsin_mem_Icc (x : ℝ) : arcsin x ∈ Icc (-(π / 2)) (π / 2) :=
   Subtype.coe_prop _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem range_arcsin : range arcsin = Icc (-(π / 2)) (π / 2) := by
   rw [arcsin, range_comp Subtype.val]
@@ -232,25 +237,6 @@ theorem pi_div_four_le_arcsin {x} : π / 4 ≤ arcsin x ↔ √2 / 2 ≤ x := by
   have := pi_pos
   constructor <;> linarith
 
-theorem mapsTo_sin_Ioo : MapsTo sin (Ioo (-(π / 2)) (π / 2)) (Ioo (-1) 1) := fun x h => by
-  rwa [mem_Ioo, ← arcsin_lt_pi_div_two, ← neg_pi_div_two_lt_arcsin, arcsin_sin h.1.le h.2.le]
-
-/-- `Real.sin` as an `OpenPartialHomeomorph` between `(-π / 2, π / 2)` and `(-1, 1)`. -/
-@[simp]
-def sinPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
-  toFun := sin
-  invFun := arcsin
-  source := Ioo (-(π / 2)) (π / 2)
-  target := Ioo (-1) 1
-  map_source' := mapsTo_sin_Ioo
-  map_target' _ hy := ⟨neg_pi_div_two_lt_arcsin.2 hy.1, arcsin_lt_pi_div_two.2 hy.2⟩
-  left_inv' _ hx := arcsin_sin hx.1.le hx.2.le
-  right_inv' _ hy := sin_arcsin hy.1.le hy.2.le
-  open_source := isOpen_Ioo
-  open_target := isOpen_Ioo
-  continuousOn_toFun := continuous_sin.continuousOn
-  continuousOn_invFun := continuous_arcsin.continuousOn
-
 theorem cos_arcsin_nonneg (x : ℝ) : 0 ≤ cos (arcsin x) :=
   cos_nonneg_of_mem_Icc ⟨neg_pi_div_two_le_arcsin _, arcsin_le_pi_div_two _⟩
 
@@ -317,7 +303,7 @@ theorem strictAntiOn_arccos : StrictAntiOn arccos (Icc (-1) 1) := fun _ hx _ hy 
 @[gcongr]
 lemma arccos_lt_arccos {x y : ℝ} (hx : -1 ≤ x) (hlt : x < y) (hy : y ≤ 1) :
     arccos y < arccos x := by
-  unfold arccos; gcongr <;> assumption
+  unfold arccos; gcongr
 
 @[gcongr]
 lemma arccos_le_arccos {x y : ℝ} (hlt : x ≤ y) : arccos y ≤ arccos x := by unfold arccos; gcongr
@@ -349,6 +335,8 @@ theorem arccos_eq_pi_div_two {x} : arccos x = π / 2 ↔ x = 0 := by simp [arcco
 @[simp]
 theorem arccos_eq_pi {x} : arccos x = π ↔ x ≤ -1 := by
   rw [arccos, sub_eq_iff_eq_add, ← sub_eq_iff_eq_add', div_two_sub_self, neg_pi_div_two_eq_arcsin]
+
+theorem arccos_lt_pi {x} : arccos x < π ↔ -1 < x := by grind [arccos_le_pi, arccos_eq_pi]
 
 theorem arccos_neg (x : ℝ) : arccos (-x) = π - arccos x := by
   rw [← add_halves π, arccos, arcsin_neg, arccos, add_sub_assoc, sub_sub_self, sub_neg_eq_add]
@@ -405,6 +393,76 @@ theorem arcsin_eq_arccos {x : ℝ} (h : 0 ≤ x) : arcsin x = arccos (√(1 - x 
     arccos_cos (arcsin_nonneg.2 h)
       ((arcsin_le_pi_div_two _).trans (div_le_self pi_pos.le one_le_two))
 
+/-- `Real.sin` as an `OpenPartialHomeomorph` between `(-π / 2, π / 2)` and `(-1, 1)`. -/
+@[simp]
+def sinPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
+  toFun := sin
+  invFun := arcsin
+  source := Ioo (-(π / 2)) (π / 2)
+  target := Ioo (-1) 1
+  map_source' := by grind [arcsin_lt_pi_div_two, neg_pi_div_two_lt_arcsin, arcsin_sin]
+  map_target' _ hy := ⟨neg_pi_div_two_lt_arcsin.2 hy.1, arcsin_lt_pi_div_two.2 hy.2⟩
+  left_inv' _ hx := arcsin_sin hx.1.le hx.2.le
+  right_inv' _ hy := sin_arcsin hy.1.le hy.2.le
+  open_source := isOpen_Ioo
+  open_target := isOpen_Ioo
+  continuousOn_toFun := continuous_sin.continuousOn
+  continuousOn_invFun := continuous_arcsin.continuousOn
+
+/-- `Real.sin` and `Real.arcsin` as a (partial) equivalence from `[-(π / 2), (π / 2)]` to
+`[-1, 1]` -/
+@[simp]
+def sinPartialEquiv : PartialEquiv ℝ ℝ where
+  toFun := sin
+  invFun := arcsin
+  source := Icc (-(π / 2)) (π / 2)
+  target := Icc (-1) 1
+  map_source' x hx := by simpa [← abs_le] using abs_sin_le_one x
+  map_target' θ hθ := arcsin_mem_Icc θ
+  left_inv' θ hθ := arcsin_sin (by aesop) (by aesop)
+  right_inv' x hx := sin_arcsin (by aesop) (by aesop)
+
+theorem mapsTo_sin_Ioo : MapsTo sin (Ioo (-(π / 2)) (π / 2)) (Ioo (-1) 1) :=
+  sinPartialHomeomorph.map_source'
+
+@[simp]
+lemma arcsin_image_Icc : arcsin '' Set.Icc (-1) 1 = Set.Icc (-(π / 2)) (π / 2) := by
+  simpa using sinPartialEquiv.symm.image_source_eq_target
+
+/-- `Real.cos` as an `OpenPartialHomeomorph` between `(0, π)` and `(-1, 1)`. -/
+@[simp]
+def cosPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
+  toFun := cos
+  invFun := arccos
+  source := Ioo 0 π
+  target := Ioo (-1) 1
+  map_source' := by grind [arccos_pos, arccos_lt_pi, arccos_cos]
+  map_target' _ hy := ⟨arccos_pos.mpr hy.2, arccos_lt_pi.mpr hy.1⟩
+  left_inv' _ hx := arccos_cos hx.1.le hx.2.le
+  right_inv' _ hy := cos_arccos hy.1.le hy.2.le
+  open_source := isOpen_Ioo
+  open_target := isOpen_Ioo
+  continuousOn_toFun := continuous_cos.continuousOn
+  continuousOn_invFun := continuous_arccos.continuousOn
+
+/-- `Real.cos` and `Real.arccos` as a (partial) equivalence from `[0, π]` to `[-1, 1]` -/
+@[simps, expose]
+noncomputable def cosPartialEquiv : PartialEquiv ℝ ℝ where
+  toFun θ := cos θ
+  invFun x := arccos x
+  source := Icc 0 π
+  target := Icc (-1) 1
+  map_source' x hx := by simpa [← abs_le] using abs_cos_le_one x
+  map_target' θ hθ := ⟨arccos_nonneg θ, arccos_le_pi θ⟩
+  left_inv' θ hθ := arccos_cos (by aesop) (by aesop)
+  right_inv' x hx := cos_arccos (by aesop) (by aesop)
+
+theorem mapsTo_cos_Ioo : MapsTo cos (Ioo 0 π) (Ioo (-1) 1) := cosPartialHomeomorph.map_source'
+
+@[simp]
+lemma arccos_image_Icc : arccos '' Icc (-1) 1 = Icc 0 π := by
+  simpa using cosPartialEquiv.symm.image_source_eq_target
+
 end Real
 
 open Real
@@ -437,7 +495,7 @@ theorem arccos_nhdsLE (h : Tendsto f l (𝓝[≤] x)) : Tendsto (arccos <| f ·)
 theorem arccos_nhdsGE (h : Tendsto f l (𝓝[≥] x)) :
     Tendsto (arccos <| f ·) l (𝓝[≤] (arccos x)) := by
   refine ((continuous_arccos.tendsto _).inf <| MapsTo.tendsto fun y hy ↦ ?_).comp h
-  simp only [mem_Ici, mem_Iic] at hy ⊢
+  push _ ∈ _ at hy ⊢
   exact antitone_arccos hy
 
 end Filter.Tendsto

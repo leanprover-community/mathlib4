@@ -3,10 +3,13 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Judith Ludwig, Christian Merten, Jiedong Jiang
 -/
-import Mathlib.Algebra.Ring.GeomSum
-import Mathlib.LinearAlgebra.SModEq.Basic
-import Mathlib.RingTheory.Ideal.Quotient.PowTransition
-import Mathlib.RingTheory.Jacobson.Ideal
+module
+
+public import Mathlib.Algebra.Ring.GeomSum
+public import Mathlib.LinearAlgebra.SModEq.Basic
+public import Mathlib.RingTheory.Ideal.Quotient.PowTransition
+public import Mathlib.RingTheory.Jacobson.Ideal
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Completion of a module with respect to an ideal.
@@ -28,6 +31,8 @@ with respect to an ideal `I`:
   Together with `mk_lift_apply` and `eq_lift`, it gives the universal property of being
   `I`-adically complete.
 -/
+
+@[expose] public section
 
 suppress_compilation
 
@@ -67,6 +72,71 @@ theorem IsHausdorff.eq_iff_smodEq [IsHausdorff I M] {x y : M} :
   apply IsHausdorff.haus' (I := I) (x - y)
   simpa [SModEq.sub_mem] using h
 
+theorem IsHausdorff.map_algebraMap_iff [CommRing S] [Module S M] [Algebra R S]
+    [IsScalarTower R S M] : IsHausdorff (I.map (algebraMap R S)) M ↔ IsHausdorff I M := by
+  simp [isHausdorff_iff, ← Ideal.map_pow, ← SModEq.restrictScalars R,
+    restrictScalars_map_smul_eq]
+
+theorem IsHausdorff.of_map [CommRing S] [Module S M] {J : Ideal S} [Algebra R S]
+    [IsScalarTower R S M] (hIJ : I.map (algebraMap R S) ≤ J) [IsHausdorff J M] :
+    IsHausdorff I M := by
+  refine ⟨fun x h ↦ IsHausdorff.haus ‹_› x fun n ↦ ?_⟩
+  apply SModEq.of_toAddSubgroup_le
+      (U := (I ^ n • ⊤ : Submodule R M)) (V := (J ^ n • ⊤ : Submodule S M))
+  · rw [← AddSubgroup.toAddSubmonoid_le]
+    simp only [Submodule.smul_toAddSubmonoid, Submodule.top_toAddSubmonoid]
+    rw [AddSubmonoid.smul_le]
+    intro r hr m hm
+    rw [← algebraMap_smul S r m]
+    apply AddSubmonoid.smul_mem_smul ?_ hm
+    have := Ideal.mem_map_of_mem (algebraMap R S) hr
+    simp only [Ideal.map_pow] at this
+    exact Ideal.pow_right_mono hIJ n this
+  · exact h n
+
+variable (I) in
+theorem IsHausdorff.funext {M : Type*} [IsHausdorff I N] {f g : M → N}
+    (h : ∀ n m, Submodule.Quotient.mk (p := (I ^ n • ⊤ : Submodule R N)) (f m) =
+    Submodule.Quotient.mk (g m)) :
+    f = g := by
+  ext m
+  rw [IsHausdorff.eq_iff_smodEq (I := I)]
+  intro n
+  exact h n m
+
+variable (I) in
+theorem IsHausdorff.StrictMono.funext {M : Type*} [IsHausdorff I N] {f g : M → N} {a : ℕ → ℕ}
+    (ha : StrictMono a) (h : ∀ n m, Submodule.Quotient.mk (p := (I ^ a n • ⊤ : Submodule R N))
+    (f m) = Submodule.Quotient.mk (g m)) : f = g := by
+  ext m
+  rw [IsHausdorff.eq_iff_smodEq (I := I)]
+  intro n
+  apply SModEq.mono (Submodule.pow_smul_top_le I N ha.le_apply)
+  exact h n m
+
+/--
+A variant of `IsHausdorff.funext`, where the target is a ring instead of a module.
+-/
+theorem IsHausdorff.funext' {R S : Type*} [CommRing S] (I : Ideal S) [IsHausdorff I S]
+    {f g : R → S} (h : ∀ n r, Ideal.Quotient.mk (I ^ n) (f r) = Ideal.Quotient.mk (I ^ n) (g r)) :
+    f = g := by
+  ext r
+  rw [IsHausdorff.eq_iff_smodEq (I := I)]
+  intro n
+  simpa using h n r
+
+/--
+A variant of `IsHausdorff.StrictMono.funext`, where the target is a ring instead of a module.
+-/
+theorem IsHausdorff.StrictMono.funext' {R S : Type*} [CommRing S] (I : Ideal S) [IsHausdorff I S]
+    {f g : R → S} {a : ℕ → ℕ} (ha : StrictMono a) (h : ∀ n r, Ideal.Quotient.mk (I ^ a n) (f r) =
+    Ideal.Quotient.mk (I ^ a n) (g r)) : f = g := by
+  ext m
+  rw [IsHausdorff.eq_iff_smodEq (I := I)]
+  intro n
+  apply SModEq.mono (Submodule.pow_smul_top_le I S ha.le_apply)
+  simpa using h n m
+
 theorem IsPrecomplete.prec (_ : IsPrecomplete I M) {f : ℕ → M} :
     (∀ {m n}, m ≤ n → f m ≡ f n [SMOD (I ^ m • ⊤ : Submodule R M)]) →
       ∃ L : M, ∀ n, f n ≡ L [SMOD (I ^ n • ⊤ : Submodule R M)] :=
@@ -78,6 +148,11 @@ theorem isPrecomplete_iff :
         (∀ {m n}, m ≤ n → f m ≡ f n [SMOD (I ^ m • ⊤ : Submodule R M)]) →
           ∃ L : M, ∀ n, f n ≡ L [SMOD (I ^ n • ⊤ : Submodule R M)] :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩
+
+theorem IsPrecomplete.map_algebraMap_iff [CommRing S] [Module S M] [Algebra R S]
+    [IsScalarTower R S M] : IsPrecomplete (I.map (algebraMap R S)) M ↔ IsPrecomplete I M := by
+  simp [isPrecomplete_iff, ← Ideal.map_pow, ← SModEq.restrictScalars R,
+    restrictScalars_map_smul_eq]
 
 variable (I M)
 
@@ -92,7 +167,7 @@ abbrev AdicCompletion.transitionMap {m n : ℕ} (hmn : m ≤ n) := factorPow I M
 /-- The completion of a module with respect to an ideal.
 
 This is Hausdorff but not necessarily complete: a classical sufficient condition for
-completeness is that `M` be finitely generated [Stacks, 0G1Q]. -/
+completeness is that `I` be finitely generated [Stacks, 05GG]. -/
 def AdicCompletion : Type _ :=
   { f : ∀ n : ℕ, M ⧸ (I ^ n • ⊤ : Submodule R M) //
     ∀ {m n} (hmn : m ≤ n), AdicCompletion.transitionMap I M hmn (f n) = f m }
@@ -192,10 +267,10 @@ namespace AdicCompletion
 `∀ n : ℕ, M ⧸ (I ^ n • ⊤)`. -/
 def submodule : Submodule R (∀ n : ℕ, M ⧸ (I ^ n • ⊤ : Submodule R M)) where
   carrier := { f | ∀ {m n} (hmn : m ≤ n), AdicCompletion.transitionMap I M hmn (f n) = f m }
-  zero_mem' hmn := by rw [Pi.zero_apply, Pi.zero_apply, LinearMap.map_zero]
+  zero_mem' hmn := by rw [Pi.zero_apply, Pi.zero_apply, map_zero]
   add_mem' hf hg m n hmn := by
-    rw [Pi.add_apply, Pi.add_apply, LinearMap.map_add, hf hmn, hg hmn]
-  smul_mem' c f hf m n hmn := by rw [Pi.smul_apply, Pi.smul_apply, LinearMap.map_smul, hf hmn]
+    rw [Pi.add_apply, Pi.add_apply, map_add, hf hmn, hg hmn]
+  smul_mem' c f hf m n hmn := by rw [Pi.smul_apply, Pi.smul_apply, map_smul, hf hmn]
 
 instance : Zero (AdicCompletion I M) where
   zero := ⟨0, by simp⟩
@@ -236,7 +311,7 @@ lemma val_smul_apply [SMul S R] [SMul S M] [IsScalarTower S R M] (s : S) (f : Ad
     (n : ℕ) : (s • f).val n = s • f.val n := rfl
 
 @[ext]
-lemma ext {x y : AdicCompletion I M} (h : ∀ n, x.val n = y.val n) : x = y := Subtype.eq <| funext h
+lemma ext {x y : AdicCompletion I M} (h : ∀ n, x.val n = y.val n) : x = y := Subtype.ext <| funext h
 
 variable (I M)
 
@@ -331,8 +406,8 @@ instance : IsHausdorff I (AdicCompletion I M) where
   haus' x h := ext fun n ↦ by
     refine smul_induction_on (SModEq.zero.1 <| h n) (fun r hr x _ ↦ ?_) (fun x y hx hy ↦ ?_)
     · simp only [val_smul_apply, val_zero]
-      exact Quotient.inductionOn' (x.val n)
-        (fun a ↦ SModEq.zero.2 <| smul_mem_smul hr mem_top)
+      induction x.val n using Quotient.inductionOn' with | _ a
+      exact SModEq.zero.2 <| smul_mem_smul hr mem_top
     · simp only [val_add_apply, hx, val_zero_apply, hy, add_zero]
 
 @[simp]
@@ -423,7 +498,7 @@ theorem smul_apply (n : ℕ) (r : R) (f : AdicCauchySequence I M) : (r • f) n 
 
 @[ext]
 theorem ext {x y : AdicCauchySequence I M} (h : ∀ n, x n = y n) : x = y :=
-  Subtype.eq <| funext h
+  Subtype.ext <| funext h
 
 /-- The defining property of an adic Cauchy sequence unwrapped. -/
 theorem mk_eq_mk {m n : ℕ} (hmn : m ≤ n) (f : AdicCauchySequence I M) :
@@ -470,10 +545,10 @@ theorem mk_zero_of (f : AdicCauchySequence I M)
     AdicCompletion.mk I M f = 0 := by
   obtain ⟨k, h⟩ := h
   ext n
-  obtain ⟨m, hnm, l, hnl, hl⟩ := h (n + k) (by cutsat)
+  obtain ⟨m, hnm, l, hnl, hl⟩ := h (n + k) (by lia)
   rw [mk_apply_coe, Submodule.mkQ_apply, val_zero,
-    ← AdicCauchySequence.mk_eq_mk (show n ≤ m by cutsat)]
-  simpa using (Submodule.smul_mono_left (Ideal.pow_le_pow_right (by cutsat))) hl
+    ← AdicCauchySequence.mk_eq_mk (show n ≤ m by lia)]
+  simpa using (Submodule.smul_mono_left (Ideal.pow_le_pow_right (by lia))) hl
 
 /-- Every element in the adic completion is represented by a Cauchy sequence. -/
 theorem mk_surjective : Function.Surjective (mk I M) := by
@@ -525,6 +600,7 @@ section Bijective
 
 variable {I}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem of_injective_iff : Function.Injective (of I M) ↔ IsHausdorff I M := by
   constructor
   · refine fun h ↦ ⟨fun x hx ↦ h ?_⟩
@@ -600,11 +676,29 @@ theorem of_ofLinearEquiv_symm (x : AdicCompletion I M) :
 
 end Bijective
 
+theorem pow_smul_top_le_ker_eval (n : ℕ) : I ^ n • ⊤ ≤ (eval I M n).ker := by
+  simp only [smul_le, mem_top, LinearMap.mem_ker, map_smul, coe_eval, forall_const]
+  intro r r_in x
+  rw [← Submodule.Quotient.mk_out (x.val n), ← Quotient.mk_smul, Quotient.mk_eq_zero]
+  exact smul_mem_smul r_in mem_top
+
+lemma val_apply_mem_smul_top_iff {m n : ℕ} {x : AdicCompletion I M}
+    (m_ge : n ≤ m) : x.val m ∈ I ^ n • (⊤ : Submodule R (M ⧸ I ^ m • ⊤)) ↔ x.val n = 0 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [← x.prop m_ge, transitionMap, Submodule.factorPow, Submodule.factor, mapQ,
+      ← LinearMap.mem_ker]
+    simpa [ker_liftQ]
+  simpa [mapQ, h, ← LinearMap.mem_ker, ker_liftQ] using x.prop m_ge
+
 end AdicCompletion
 
 namespace IsAdicComplete
 
 open AdicCompletion
+
+theorem map_algebraMap_iff [CommRing S] [Module S M] [Algebra R S]
+    [IsScalarTower R S M] : IsAdicComplete (I.map (algebraMap R S)) M ↔ IsAdicComplete I M := by
+  simp [isAdicComplete_iff, IsPrecomplete.map_algebraMap_iff, IsHausdorff.map_algebraMap_iff]
 
 section lift
 
@@ -647,7 +741,7 @@ theorem mk_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
 
 /--
 The composition of lift linear map `lift I f h : M →ₗ[R] N` with the canonical
-projection `N →ₗ[R] N ⧸ (I ^ n • ⊤)` is `f n` .
+projection `N →ₗ[R] N ⧸ (I ^ n • ⊤)` is `f n`.
 -/
 @[simp]
 theorem mkQ_comp_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
@@ -658,7 +752,7 @@ theorem mkQ_comp_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
 /--
 Uniqueness of the lift.
 Given a compatible family of linear maps `f n : M →ₗ[R] N ⧸ (I ^ n • ⊤)`.
-If `F : M →ₗ[R] N` makes the following diagram commutes
+If `F : M →ₗ[R] N` makes the following diagram commute
 ```
   N
   | \
@@ -672,10 +766,10 @@ Then it is the map `IsAdicComplete.lift`.
 theorem eq_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
     (h : ∀ {m n : ℕ} (hle : m ≤ n), factorPow I N hle ∘ₗ f n = f m) {F : M →ₗ[R] N}
     (hF : ∀ n, mkQ _ ∘ₗ F = f n) : F = lift I f h := by
-  ext s
-  rw [IsHausdorff.eq_iff_smodEq (I := I)]
-  intro n
-  simp [SModEq, ← hF n]
+  apply DFunLike.coe_injective
+  apply IsHausdorff.funext I
+  intro n m
+  simp [← hF n]
 
 end lift
 
@@ -753,11 +847,10 @@ theorem mkQ_comp_lift {n : ℕ} :
 
 theorem eq_lift {F : M →ₗ[R] N}
     (hF : ∀ n, mkQ _ ∘ₗ F = f n) : F = lift I ha f hf := by
-  ext s
-  rw [IsHausdorff.eq_iff_smodEq (I := I)]
-  intro n
-  apply SModEq.mono (smul_mono_left (Ideal.pow_le_pow_right (ha.id_le n)))
-  simp [SModEq, ← hF n, mk_lift I ha f hf]
+  apply DFunLike.coe_injective
+  apply IsHausdorff.StrictMono.funext I ha
+  intro n m
+  simp [← hF n]
 
 end StrictMono
 
@@ -778,7 +871,7 @@ theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson :=
   let f : ℕ → R := fun n => ∑ i ∈ range n, (x * y) ^ i
   have hf : ∀ m n, m ≤ n → f m ≡ f n [SMOD I ^ m • (⊤ : Submodule R R)] := by
     intro m n h
-    simp only [f, Algebra.id.smul_eq_mul, Ideal.mul_top, SModEq.sub_mem]
+    simp only [f, smul_eq_mul, Ideal.mul_top, SModEq.sub_mem]
     rw [← add_tsub_cancel_of_le h, Finset.sum_range_add, ← sub_sub, sub_self, zero_sub,
       @neg_mem_iff]
     apply Submodule.sum_mem
@@ -792,7 +885,7 @@ theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson :=
   apply IsHausdorff.haus (toIsHausdorff : IsHausdorff I R)
   intro n
   specialize hL n
-  rw [SModEq.sub_mem, Algebra.id.smul_eq_mul, Ideal.mul_top] at hL ⊢
+  rw [SModEq.sub_mem, smul_eq_mul, Ideal.mul_top] at hL ⊢
   rw [sub_zero]
   suffices (1 - x * y) * f n - 1 ∈ I ^ n by
     convert Ideal.sub_mem _ this (Ideal.mul_mem_left _ (1 + -(x * y)) hL) using 1

@@ -3,11 +3,11 @@ Copyright (c) 2024 Floris van Doorn and Hannah Scholz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Hannah Scholz
 -/
+module
 
-import Mathlib.Analysis.Normed.Module.RCLike.Real
-import Mathlib.Data.ENat.Basic
-import Mathlib.Logic.Equiv.PartialEquiv
-import Mathlib.Topology.MetricSpace.ProperSpace.Real
+public import Mathlib.Analysis.Normed.Module.RCLike.Real
+public import Mathlib.Data.ENat.Basic
+public import Mathlib.Logic.Equiv.PartialEquiv
 
 /-!
 # CW complexes
@@ -70,9 +70,11 @@ together.
 * [A. Hatcher, *Algebraic Topology*][hatcher02]
 -/
 
+@[expose] public section
+
 noncomputable section
 
-open Metric Set
+open Metric Set Function
 
 namespace Topology
 
@@ -162,7 +164,7 @@ instance (priority := high) CWComplex.instRelCWComplex {X : Type*} [TopologicalS
   union' := by simpa only [empty_union] using CWComplex.union'
 
 /-- A relative CW complex with an empty base is an absolute CW complex. -/
-@[simps -isSimp]
+@[simps -isSimp, implicit_reducible]
 def RelCWComplex.toCWComplex {X : Type*} [TopologicalSpace X] (C : Set X) [RelCWComplex C ∅] :
     CWComplex C where
   cell := cell C
@@ -277,7 +279,7 @@ private lemma RelCWComplex.subset_of_eq_union_iUnion [RelCWComplex C D] (I J : �
       (subset_iUnion_of_subset n (subset_iUnion_of_subset ⟨i, hi⟩ (subset_refl (openCell n i)))) D
   have h' : Disjoint (openCell n i) (D ∪ ⋃ n, ⋃ (j : J n), openCell (C := C) n j) := by
     simp_rw [disjoint_union_right, disjoint_iUnion_right]
-    exact ⟨disjointBase n i, fun m j ↦ disjoint_openCell_of_ne (by aesop)⟩
+    exact ⟨disjointBase n i, fun m j ↦ disjoint_openCell_of_ne (by lia)⟩
   rw [disjoint_of_subset_iff_left_eq_empty h] at h'
   exact notMem_empty _ (h' ▸ map_zero_mem_openCell n i)
 
@@ -354,6 +356,60 @@ lemma RelCWComplex.openCell_zero_eq_singleton [RelCWComplex C D] {j : cell C 0} 
 lemma RelCWComplex.cellFrontier_zero_eq_empty [RelCWComplex C D] {j : cell C 0} :
     cellFrontier 0 j = ∅ := by
   simp [cellFrontier, sphere_eq_empty_of_subsingleton]
+
+lemma RelCWComplex.nonempty_cellFrontier [CWComplex C] {n : ℕ} (hn : n ≠ 0) (j : cell C n) :
+    (cellFrontier n j).Nonempty := by
+  letI : NeZero n := ⟨hn⟩
+  use map n j (Pi.single 0 1)
+  simp only [cellFrontier, mem_image, mem_sphere_iff_norm, sub_zero]
+  use Pi.single 0 1, by simp [Pi.norm_single]
+
+/-- If two 0-cells have the same characteristic image point, they are equal. -/
+lemma RelCWComplex.injective_map_zero (C : Set X) [RelCWComplex C D] :
+    Injective ((map 0 · ![]) : cell C 0 → X) := by
+  rintro x z h
+  by_contra hne
+  exact not_disjoint_iff.mpr ⟨map 0 x ![], by simp [openCell_zero_eq_singleton, h]⟩
+    <| disjoint_openCell_of_ne (by grind : (⟨0, x⟩ : Σ n, cell C n) ≠ ⟨0, z⟩)
+
+@[simp]
+lemma RelCWComplex.map_zero_eq_self_iff (C : Set X) [RelCWComplex C D] {x z : cell C 0} :
+    map 0 x ![] = map 0 z ![] ↔ x = z :=
+  ⟨fun h ↦ injective_map_zero C h, fun h ↦ h ▸ rfl⟩
+
+lemma RelCWComplex.closedCell_zero_injective (C : Set X) [RelCWComplex C D] :
+    Injective (closedCell 0 : cell C 0 → _) := by
+  intro x y h
+  rw [closedCell_zero_eq_singleton, closedCell_zero_eq_singleton, singleton_eq_singleton_iff] at h
+  exact injective_map_zero C h
+
+lemma RelCWComplex.openCell_zero_injective (C : Set X) [RelCWComplex C D] :
+    Injective (openCell 0 : cell C 0 → _) := by
+  intro x y h
+  rw [openCell_zero_eq_singleton, openCell_zero_eq_singleton, singleton_eq_singleton_iff] at h
+  exact injective_map_zero C h
+
+lemma RelCWComplex.cellFrontier_one_eq [RelCWComplex C D] (e : cell C 1) :
+    cellFrontier 1 e = map 1 e '' {-1, 1} := by
+  rw [cellFrontier]
+  congr 1
+  ext f
+  simp only [mem_sphere_iff_norm, sub_zero, Pi.norm_def, Finset.univ_unique, Fin.default_eq_zero,
+    Fin.isValue, Finset.sup_singleton, coe_nnnorm, Real.norm_eq_abs, abs_eq (zero_le_one' ℝ),
+    mem_insert_iff, mem_singleton_iff]
+  rw [eq_const_of_unique (f := f), ← funext_iff_of_subsingleton (x := 0) (y := 0)]
+  simp [const_apply, or_comm]
+
+lemma CWComplex.exists_cellFrontier_one_eq [CWComplex C] (e : cell C 1) :
+    ∃ x y : cell C 0, cellFrontier 1 e = closedCell 0 x ∪ closedCell 0 y := by
+  obtain ⟨f, h⟩ := cellFrontier_subset_finite_closedCell 1 e
+  simp only [RelCWComplex.cellFrontier_one_eq, image_pair, Order.lt_one_iff, iUnion_iUnion_eq_left,
+    RelCWComplex.closedCell_zero_eq_singleton, pair_subset_iff, mem_iUnion, mem_singleton_iff,
+    exists_prop] at h
+  obtain ⟨⟨u, hu, hun1⟩, v, hv, hv1⟩ := h
+  use u, v
+  simp [RelCWComplex.cellFrontier_one_eq, image_pair, RelCWComplex.closedCell_zero_eq_singleton,
+    hun1, hv1, pair_comm]
 
 lemma RelCWComplex.base_subset_complex [RelCWComplex C D] : D ⊆ C := by
   simp_rw [← union]
@@ -568,6 +624,8 @@ instance : SetLike (Subcomplex C) X where
     apply eq_of_eq_union_iUnion
     rw [hE, hF]
     simpa using h
+
+instance : PartialOrder (Subcomplex C) := .ofSetLike (Subcomplex C) X
 
 initialize_simps_projections Subcomplex (carrier → coe, as_prefix coe)
 

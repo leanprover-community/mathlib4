@@ -3,11 +3,13 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
+module
+
+public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+public import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 
 /-!
 # Projective objects and categories with enough projectives
@@ -27,6 +29,8 @@ Given a morphism `f : X ⟶ Y`, `CategoryTheory.Projective.left f` is a projecti
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -43,6 +47,10 @@ An object `P` is called *projective* if every morphism out of `P` factors throug
 -/
 class Projective (P : C) : Prop where
   factors : ∀ {E X : C} (f : P ⟶ X) (e : E ⟶ X) [Epi e], ∃ f', f' ≫ e = f
+
+variable (C) in
+/-- The `ObjectProperty C` corresponding to the notion of projective objects in `C`. -/
+abbrev isProjective : ObjectProperty C := Projective
 
 lemma Limits.IsZero.projective {X : C} (h : IsZero X) : Projective X where
   factors _ _ _ := ⟨h.to_ _, h.eq_of_src _ _⟩
@@ -68,6 +76,8 @@ variable (C)
 an epimorphism `P ↠ X`. -/
 class EnoughProjectives : Prop where
   presentation : ∀ X : C, Nonempty (ProjectivePresentation X)
+
+attribute [instance low] EnoughProjectives.presentation
 
 end
 
@@ -105,15 +115,17 @@ theorem iso_iff {P Q : C} (i : P ≅ Q) : Projective P ↔ Projective Q :=
 instance (X : Type u) : Projective X where
   factors f e _ :=
     have he : Function.Surjective e := surjective_of_epi e
-    ⟨fun x => (he (f x)).choose, funext fun x ↦ (he (f x)).choose_spec⟩
+    ⟨TypeCat.ofHom (fun x => (he (f x)).choose), by ext x; exact (he (f x)).choose_spec⟩
 
 instance Type.enoughProjectives : EnoughProjectives (Type u) where
   presentation X := ⟨⟨X, 𝟙 X⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance {P Q : C} [HasBinaryCoproduct P Q] [Projective P] [Projective Q] : Projective (P ⨿ Q) where
   factors f e epi := ⟨coprod.desc (factorThru (coprod.inl ≫ f) e) (factorThru (coprod.inr ≫ f) e),
     by cat_disch⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance {β : Type v} (g : β → C) [HasCoproduct g] [∀ b, Projective (g b)] : Projective (∐ g) where
   factors f e epi := ⟨Sigma.desc fun b => factorThru (Sigma.ι g b ≫ f) e, by cat_disch⟩
 
@@ -197,6 +209,7 @@ theorem map_projective (adj : F ⊣ G) [G.PreservesEpimorphisms] (P : C) (hP : P
     rw [Category.assoc, ← Adjunction.counit_naturality, ← Category.assoc, ← F.map_comp, hf']
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem projective_of_map_projective (adj : F ⊣ G) [F.Full] [F.Faithful] (P : C)
     (hP : Projective (F.obj P)) : Projective P where
   factors f g _ := by
@@ -218,7 +231,7 @@ end Adjunction
 
 namespace Functor
 
-variable {D : Type*} [Category D] (F : C ⥤ D)
+variable {D : Type*} [Category* D] (F : C ⥤ D)
 
 theorem projective_of_map_projective [F.Full] [F.Faithful]
     [F.PreservesEpimorphisms] {P : C} (hP : Projective (F.obj P)) : Projective P where
@@ -235,6 +248,7 @@ variable {D : Type u'} [Category.{v'} D] (F : C ≌ D)
 theorem map_projective_iff (P : C) : Projective (F.functor.obj P) ↔ Projective P :=
   ⟨F.toAdjunction.projective_of_map_projective P, F.toAdjunction.map_projective P⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given an equivalence of categories `F`, a projective presentation of `F(X)` induces a
 projective presentation of `X.` -/
 def projectivePresentationOfMapProjectivePresentation (X : C)
@@ -253,5 +267,11 @@ theorem enoughProjectives_iff (F : C ≌ D) : EnoughProjectives C ↔ EnoughProj
       (Nonempty.some (H.presentation (F.functor.obj X)))
 
 end Equivalence
+
+lemma Retract.projective {X Y : C} (h : Retract X Y) [p : Projective Y] : Projective X := by
+  refine Projective.mk (fun {A B} f e _ ↦ ?_)
+  rcases p.factors (h.r ≫ f) e with ⟨g, hg⟩
+  use h.i ≫ g
+  simp [hg]
 
 end CategoryTheory

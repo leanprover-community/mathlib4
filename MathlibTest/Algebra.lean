@@ -8,6 +8,15 @@ example (x : ℚ) (n : ℕ) : n • x + x = (n: ℤ) • x + x := by
 example (x : ℚ) (a : ℤ) : algebraMap ℤ ℚ a * x = a • x := by
   algebra
 
+example {R A : Type*} {a : R} [CommSemiring R] [CommSemiring A] [Algebra R A] (x : A) :
+    a • x = a • x := by
+  algebra with R
+
+-- Test universe polymorphism.
+example {R : Type} {A : Type 1} {a : R} [CommSemiring R] [CommSemiring A] [Algebra R A] (x : A) :
+    a • x = a • x := by
+  algebra with R
+
 example {R A : Type*} {a b : R} [CommSemiring R] [CommSemiring A] [Algebra R A] (x y : A) :
     (a + b) • (x + y) = b • x + a • (x + y) + b • y := by
   algebra
@@ -105,3 +114,35 @@ example {A : Type*} [CommRing A] [Algebra ℚ A] (x y : A) :
 example {A : Type*} [CommRing A] [Algebra ℚ A] (x : A) :
     (3/4 : ℚ) • x + (1/4 : ℚ) • x = x := by
   algebra with ℚ
+
+
+/- This test exists to record the fact that `algebra` might infer the wrong ring
+if there are multiple incomparable rings. -/
+/--
+error: algebra failed, algebra expressions not equal
+A : Type u_1
+R : Type u_2
+R' : Type u_3
+inst✝⁴ : CommRing A
+inst✝³ : CommRing R
+inst✝² : CommRing R'
+inst✝¹ : Algebra R A
+inst✝ : Algebra R' A
+r : R
+r' : R'
+x : A
+⊢ x * (algebraMap R' A) r' + r • x * (algebraMap R' A) 1 + 1 • x * (algebraMap R' A) 1 =
+    x * (algebraMap R' A) r' + (r + 1) • x * (algebraMap R' A) 1
+-/
+#guard_msgs in
+example {A R R' : Type*} [CommRing A] [CommRing R] [CommRing R'] [Algebra R A] [Algebra R' A] (r : R) (r' : R') (x : A) :
+(r : R) • x + (1 : R) • x + (r' : R') • x = (r + 1 : R) • x + (r' : R') • x := by
+  algebra
+
+example {A R R' : Type*} [CommRing A] [CommRing R] [CommRing R'] [Algebra R A] [Algebra R' A] (r : R) (r' : R') (x : A) :
+(r : R) • x + (1 : R) • x + (r' : R') • x = (r + 1 : R) • x + (r' : R') • x := by
+  algebra with R
+
+example {A R R' : Type*} [CommRing A] [CommRing R] [CommRing R'] [Algebra R A] [Algebra R' A] (r : R) (r' : R') (x : A) :
+(r : R) • x + (1 : ℕ) • x + (r' : R') • x = (r' : R') • x + (1 : ℕ) • x + (r : R) • x:= by
+  algebra

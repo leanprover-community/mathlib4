@@ -3,8 +3,10 @@ Copyright (c) 2020 Ashvni Narayanan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan
 -/
-import Mathlib.Algebra.Ring.Subsemiring.Defs
-import Mathlib.RingTheory.NonUnitalSubring.Defs
+module
+
+public import Mathlib.Algebra.Ring.Subsemiring.Defs
+public import Mathlib.RingTheory.NonUnitalSubring.Defs
 
 /-!
 # Subrings
@@ -61,26 +63,28 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 subring, subrings
 -/
 
+@[expose] public section
+
 assert_not_exists RelIso Even IsOrderedMonoid
 
 universe u v w
 
-variable {R : Type u} {S : Type v} {T : Type w} [Ring R]
+variable {R : Type u} {S : Type v} {T : Type w} [NonAssocRing R]
 
 section SubringClass
 
 /-- `SubringClass S R` states that `S` is a type of subsets `s ⊆ R` that
 are both a multiplicative submonoid and an additive subgroup. -/
-class SubringClass (S : Type*) (R : outParam (Type u)) [Ring R] [SetLike S R] : Prop
+class SubringClass (S : Type*) (R : outParam (Type u)) [NonAssocRing R] [SetLike S R] : Prop
     extends SubsemiringClass S R, NegMemClass S R
 
 -- See note [lower instance priority]
 instance (priority := 100) SubringClass.addSubgroupClass (S : Type*) (R : Type u)
-    [SetLike S R] [Ring R] [h : SubringClass S R] : AddSubgroupClass S R :=
+    [SetLike S R] [NonAssocRing R] [h : SubringClass S R] : AddSubgroupClass S R :=
   { h with }
 
 instance (priority := 100) SubringClass.nonUnitalSubringClass (S : Type*) (R : Type u)
-    [SetLike S R] [Ring R] [SubringClass S R] : NonUnitalSubringClass S R where
+    [SetLike S R] [NonAssocRing R] [SubringClass S R] : NonUnitalSubringClass S R where
 
 variable [SetLike S R] [hSR : SubringClass S R] (s : S)
 
@@ -93,10 +97,25 @@ instance (priority := 75) toHasIntCast : IntCast s :=
   ⟨fun n => ⟨n, intCast_mem s n⟩⟩
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
+/-- A subring of a non-unital ring inherits a non-unital ring structure -/
+instance (priority := 75) toNonAssocRing (s : S) : NonAssocRing s := fast_instance%
+  Subtype.coe_injective.nonAssocRing Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
+
+-- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a ring inherits a ring structure -/
-instance (priority := 75) toRing : Ring s := fast_instance%
+instance (priority := 75) toRing {R} [Ring R] [SetLike S R] [SubringClass S R] :
+    Ring s := fast_instance%
   Subtype.coe_injective.ring Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
+
+-- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
+/-- A subring of a `NonAssocCommRing` is a `NonAssocCommRing`. -/
+instance (priority := 75) toNonAssocCommRing {R} [NonAssocCommRing R] [SetLike S R]
+    [SubringClass S R] : NonAssocCommRing s := fast_instance%
+  Subtype.coe_injective.nonAssocCommRing Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
+    fun _ => rfl
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a `CommRing` is a `CommRing`. -/
@@ -139,12 +158,10 @@ end SubringClass
 
 end SubringClass
 
-variable [Ring S] [Ring T]
-
 /-- `Subring R` is the type of subrings of `R`. A subring of `R` is a subset `s` that is a
   multiplicative submonoid and an additive subgroup. Note in particular that it shares the
   same 0 and 1 as R. -/
-structure Subring (R : Type u) [Ring R] extends Subsemiring R, AddSubgroup R
+structure Subring (R : Type u) [NonAssocRing R] extends Subsemiring R, AddSubgroup R
 
 /-- Reinterpret a `Subring` as a `Subsemiring`. -/
 add_decl_doc Subring.toSubsemiring
@@ -154,15 +171,29 @@ add_decl_doc Subring.toAddSubgroup
 
 namespace Subring
 
+lemma toSubsemiring_injective : (toSubsemiring : Subring R → Subsemiring R).Injective :=
+  fun ⟨s, hs⟩ t ↦ by congr!
+
+@[simp] lemma toSubsemiring_inj {s t : Subring R} : s.toSubsemiring = t.toSubsemiring ↔ s = t :=
+  toSubsemiring_injective.eq_iff
+
 instance : SetLike (Subring R) R where
   coe s := s.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
+  coe_injective' := SetLike.coe_injective.comp toSubsemiring_injective
+
+lemma toAddSubgroup_injective : (toAddSubgroup : Subring R → AddSubgroup R).Injective :=
+  fun _ _ h ↦ SetLike.ext (SetLike.ext_iff.mp h :)
+
+lemma toSubmonoid_injective : (fun s : Subring R => s.toSubmonoid).Injective :=
+  fun _ _ h ↦ SetLike.ext (SetLike.ext_iff.mp h :)
+
+instance : PartialOrder (Subring R) := .ofSetLike (Subring R) R
 
 initialize_simps_projections Subring (carrier → coe, as_prefix coe)
 
 /-- The actual `Subring` obtained from an element of a `SubringClass`. -/
 @[simps]
-def ofClass {S R : Type*} [Ring R] [SetLike S R] [SubringClass S R]
+def ofClass {S R : Type*} [NonAssocRing R] [SetLike S R] [SubringClass S R]
     (s : S) : Subring R where
   carrier := s
   add_mem' := add_mem
@@ -191,6 +222,7 @@ instance : SubringClass (Subring R) R where
   neg_mem {s} := s.neg_mem'
 
 /-- Turn a `Subring` into a `NonUnitalSubring` by forgetting that it contains `1`. -/
+@[reducible]
 def toNonUnitalSubring (S : Subring R) : NonUnitalSubring R where __ := S
 
 @[simp]
@@ -226,15 +258,6 @@ protected def copy (S : Subring R) (s : Set R) (hs : s = ↑S) : Subring R :=
 
 theorem copy_eq (S : Subring R) (s : Set R) (hs : s = ↑S) : S.copy s hs = S :=
   SetLike.coe_injective hs
-
-theorem toSubsemiring_injective : Function.Injective (toSubsemiring : Subring R → Subsemiring R)
-  | _, _, h => ext (SetLike.ext_iff.mp h :)
-
-theorem toAddSubgroup_injective : Function.Injective (toAddSubgroup : Subring R → AddSubgroup R)
-  | _, _, h => ext (SetLike.ext_iff.mp h :)
-
-theorem toSubmonoid_injective : Function.Injective (fun s : Subring R => s.toSubmonoid)
-  | _, _, h => ext (SetLike.ext_iff.mp h :)
 
 /-- Construct a `Subring R` from a set `s`, a submonoid `sm`, and an additive
 subgroup `sa` such that `x ∈ s ↔ x ∈ sm ↔ x ∈ sa`. -/
@@ -297,13 +320,13 @@ protected theorem sub_mem {x y : R} (hx : x ∈ s) (hy : y ∈ s) : x - y ∈ s 
   sub_mem hx hy
 
 /-- A subring of a ring inherits a ring structure -/
-instance toRing : Ring s := SubringClass.toRing s
+instance toRing {R} [Ring R] (s : Subring R) : Ring s := SubringClass.toRing s
 
 protected theorem zsmul_mem {x : R} (hx : x ∈ s) (n : ℤ) : n • x ∈ s :=
   zsmul_mem hx n
 
-protected theorem pow_mem {x : R} (hx : x ∈ s) (n : ℕ) : x ^ n ∈ s :=
-  pow_mem hx n
+protected theorem pow_mem {R : Type*} [Ring R] (s : Subring R) {x : R} (hx : x ∈ s) (n : ℕ) :
+    x ^ n ∈ s := pow_mem hx n
 
 @[simp, norm_cast]
 theorem coe_add (x y : s) : (↑(x + y) : R) = ↑x + ↑y :=
@@ -326,22 +349,24 @@ theorem coe_one : ((1 : s) : R) = 1 :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_pow (x : s) (n : ℕ) : ↑(x ^ n) = (x : R) ^ n :=
+theorem coe_pow {R} [Ring R] (s : Subring R) (x : s) (n : ℕ) : ↑(x ^ n) = (x : R) ^ n :=
   SubmonoidClass.coe_pow x n
 
 theorem coe_eq_zero_iff {x : s} : (x : R) = 0 ↔ x = 0 :=
   ⟨fun h => Subtype.ext (Trans.trans h s.coe_zero.symm), fun h => h.symm ▸ s.coe_zero⟩
+
+@[simp] lemma mk_eq_zero {x : R} (hx : x ∈ s) : (⟨x, hx⟩ : s) = 0 ↔ x = 0 := Subtype.ext_iff
 
 /-- A subring of a `CommRing` is a `CommRing`. -/
 instance toCommRing {R} [CommRing R] (s : Subring R) : CommRing s :=
   SubringClass.toCommRing s
 
 /-- A subring of a non-trivial ring is non-trivial. -/
-instance {R} [Ring R] [Nontrivial R] (s : Subring R) : Nontrivial s :=
+instance {R} [NonAssocRing R] [Nontrivial R] (s : Subring R) : Nontrivial s :=
   s.toSubsemiring.nontrivial
 
 /-- A subring of a ring with no zero divisors has no zero divisors. -/
-instance {R} [Ring R] [NoZeroDivisors R] (s : Subring R) : NoZeroDivisors s :=
+instance {R} [NonAssocRing R] [NoZeroDivisors R] (s : Subring R) : NoZeroDivisors s :=
   s.toSubsemiring.noZeroDivisors
 
 /-- A subring of a domain is a domain. -/
