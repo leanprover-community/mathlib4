@@ -118,17 +118,13 @@ end ContinuousGeneratedByCat
 /-- The faithful functor `TopCat ⥤ ContinuousGeneratedByCat X` which sends
 a topological space `Y` to the same type `Y`, with the same topology, but
 considered as an object of `ContinuousGeneratedByCat X`. -/
-@[simps obj]
+@[simps +dsimpLhs obj map_apply]
 def TopCat.toContinuousGeneratedByCat :
     TopCat.{v} ⥤ ContinuousGeneratedByCat.{v} X where
   obj Y := .of Y
   map f :=
     { toFun := f
       prop := f.hom.continuous.continuousGeneratedBy }
-
-@[simp]
-lemma TopCat.toContinuousGeneratedByCat_map_apply {Y Z : TopCat.{v}} (f : Y ⟶ Z) (y : Y) :
-    dsimp% (TopCat.toContinuousGeneratedByCat X).map f y = f y := rfl
 
 instance : (TopCat.toContinuousGeneratedByCat.{v} X).Faithful where
   map_injective {_ _ _ _ h} := by
@@ -194,14 +190,10 @@ instance : IsIso (adj.{v} (X := X)).unit := by dsimp; infer_instance
 part of the equivalence `ContinuousGeneratedByCat.equivalence`. It sends
 an `X`-generated topological space `Y` to the topological space `Y`, considered as
 an object of `ContinuousGeneratedByCat X`. -/
-@[simps obj]
+@[simps -dsimpLhs obj map_apply]
 def fromGeneratedByTopCat : GeneratedByTopCat.{v} X ⥤ ContinuousGeneratedByCat.{v} X where
   obj Y := .of Y.obj
   map f := ⟨f, f.hom.hom.continuous.continuousGeneratedBy⟩
-
-@[simp]
-lemma fromGeneratedByTopCat_map_apply {Y Z : GeneratedByTopCat.{v} X} (f : Y ⟶ Z) (y : Y) :
-    dsimp% fromGeneratedByTopCat.map f y = f y := rfl
 
 /-- The isomorphism between
 `fromGeneratedByTopCat ⋙ toTopCat X ≅ GeneratedByTopCat.toTopCat`. -/
