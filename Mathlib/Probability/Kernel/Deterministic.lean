@@ -101,7 +101,9 @@ variable {μ : Measure α} [IsZeroOneMeasure μ]
 instance : IsZeroOrProbabilityMeasure μ where
   measure_univ := μ.zero_one univ
 
-lemma exists_one_iff_univ_one : (∃ s, μ s = 1) ↔ μ univ = 1 := by
+namespace IsZeroOneMeasure
+
+lemma exists_measure_eq_one_iff_measure_univ_eq_one : (∃ s, μ s = 1) ↔ μ univ = 1 := by
   constructor
   · rintro ⟨s, h⟩
     rcases μ.zero_one univ with (h₀ | h₁)
@@ -112,7 +114,8 @@ lemma exists_one_iff_univ_one : (∃ s, μ s = 1) ↔ μ univ = 1 := by
   · intro h
     exact ⟨univ, h⟩
 
-lemma univ_one {s : Set α} (hμs : μ s = 1) : μ univ = 1 := (exists_one_iff_univ_one).mp ⟨s, hμs⟩
+lemma univ_one {s : Set α} (hμs : μ s = 1) : μ univ = 1 :=
+  (exists_measure_eq_one_iff_measure_univ_eq_one).mp ⟨s, hμs⟩
 
 lemma compl_eq_zero {s : Set α} (hs : MeasurableSet s) (hμs : μ s = 1) : μ sᶜ = 0 := by
   rw [measure_compl hs (by simp), univ_one hμs, hμs, tsub_self]
@@ -203,9 +206,13 @@ theorem eq_zero_or_dirac [StandardBorelSpace α] : μ = 0 ∨ ∃ x₀, μ = Mea
       rw [← hx₀, measure_compl mBn (by simp), measure_univ, hBn] at this
       simp_all
 
+end IsZeroOneMeasure
+
 end MeasureTheory
 
 namespace ProbabilityTheory.Kernel
+
+open IsZeroOneMeasure
 
 lemma copy_comp_apply_prod (κ : Kernel α β) (a : α) {s t : Set β} (hs : MeasurableSet s)
     (ht : MeasurableSet t) : (copy β ∘ₖ κ) a (s ×ˢ t) = κ a (s ∩ t) := by
