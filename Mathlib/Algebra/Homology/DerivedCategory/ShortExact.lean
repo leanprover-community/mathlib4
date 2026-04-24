@@ -45,7 +45,7 @@ noncomputable def triangleOfSESδ :
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma descShortComplex_triangleOfSESδ :
-    Q.map (CochainComplex.mappingCone.descShortComplex S) ≫ triangleOfSESδ hS =
+    dsimp% Q.map (CochainComplex.mappingCone.descShortComplex S) ≫ triangleOfSESδ hS =
     Q.map (CochainComplex.mappingCone.triangle S.f).mor₃ ≫
       (Functor.commShiftIso Q 1).hom.app S.X₁ := by
   simp [triangleOfSESδ]
