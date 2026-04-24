@@ -172,8 +172,7 @@ lemma σ₀Iter_succ (i : ℕ) {n m : ℕ} (h : n + (i + 1) = m) :
       grind [σ₀Iter_coe_eq_of_lt]
     · rw [Fin.predAbove_of_le_castSucc _ _ ?_, Fin.coe_castPred,
         σ₀Iter_coe_eq_of_ge .., tsub_self]
-      rw [Fin.le_def, σ₀Iter_coe_eq_of_ge ..]
-      simp
+      grind [σ₀Iter_coe_eq_of_ge]
   · rw [σ₀Iter_coe_eq_of_ge .., coe_σ,
       Fin.predAbove_of_castSucc_lt _ _ ?_, Fin.val_pred,
       σ₀Iter_coe_eq_of_ge .., Nat.sub_add_eq]
