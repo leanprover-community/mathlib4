@@ -58,7 +58,7 @@ lemma isIso_of_coversTop (hX : K.CoversTop X) {F G : Sheaf K A} {f : F ⟶ G}
     simp only [op_unop, Category.assoc, Category.id_comp]
     rw [Presheaf.IsSheaf.amalgamate_map, ← f.hom.naturality_assoc]
     simp
-  · refine G.2.hom_ext S _ _ fun I => ?_
+  · refine G.property.hom_ext S _ _ fun I => ?_
     simp only [op_unop, Category.assoc, Category.id_comp]
     rw [← f.hom.naturality, Presheaf.IsSheaf.amalgamate_map_assoc]
     simp
