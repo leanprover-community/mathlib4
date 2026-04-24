@@ -519,20 +519,6 @@ theorem Continuous.continuousLinearMapCoprod
   apply continuousOn_univ.mp
   fun_prop
 
-theorem ContinuousWithinAt.continuousLinearMapCoprod
-    {f : X → E →L[𝕜] G} {g : X → F →L[𝕜] G} {s : Set X} {x : X}
-    (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
-    ContinuousWithinAt (fun y => (f y).coprod (g y)) s x := by
-  simp only [← comp_fst_add_comp_snd]
-  exact (hf.clm_comp continuousWithinAt_const).add (hg.clm_comp continuousWithinAt_const)
-
-theorem ContinuousAt.continuousLinearMapCoprod
-    {f : X → E →L[𝕜] G} {g : X → F →L[𝕜] G} {x : X}
-    (hf : ContinuousAt f x) (hg : ContinuousAt g x) :
-    ContinuousAt (fun y => (f y).coprod (g y)) x :=
-  (hf.continuousWithinAt.continuousLinearMapCoprod
-    hg.continuousWithinAt).continuousAt Filter.univ_mem
-
 end
 
 namespace ContinuousLinearEquiv

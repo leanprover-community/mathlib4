@@ -3,7 +3,9 @@ Copyright (c) 2025 Igor Khavkine, A Tucker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Igor Khavkine, A Tucker
 -/
-import Mathlib.Analysis.Calculus.MeanValue
+module
+
+public import Mathlib.Analysis.Calculus.MeanValue
 
 /-!
 # Partial derivatives
@@ -47,7 +49,7 @@ open scoped Convex Topology
 theorem isLittleO_sub_sub_fderiv
     {α 𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜] [NormedAddCommGroup E]
     [NormedSpace ℝ E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-    {u : E} {v w : α → E} {l : Filter α} (hy : Tendsto v l (𝓝 u)) (hw : Tendsto w l (𝓝 u))
+    {u : E} {v w : α → E} {l : Filter α} (hv : Tendsto v l (𝓝 u)) (hw : Tendsto w l (𝓝 u))
     (s : Set E := Set.univ) (seg : ∀ᶠ χ in l, [w χ -[ℝ] v χ] ⊆ s := by simp)
     {f : α → E → F} {f' : α → E → E →L[𝕜] F}
     (df' : ∀ᶠ p in l ×ˢ 𝓝[s] u, HasFDerivWithinAt (f p.1) (f' p.1 p.2) s p.2)
@@ -56,10 +58,10 @@ theorem isLittleO_sub_sub_fderiv
   rw [isLittleO_iff]
   intro ε hε
   replace df' : ∀ᶠ χ in l, ∀ z ∈ [w χ -[ℝ] v χ], HasFDerivWithinAt (f χ) (f' χ z) s z :=
-    df'.segment_of_prod_nhdsWithin hw hy seg
-  replace cf' : ∀ᶠ χ in l, ∀ z ∈ [w χ -[ℝ] v χ], dist (f' χ z) φ < ε := by
-    rw [Metric.tendsto_nhds] at cf'
-    exact (cf' ε hε).segment_of_prod_nhdsWithin hw hy seg
+    df'.segment_of_prod_nhdsWithin hw hv seg
+  replace cf' : ∀ᶠ χ in l, ∀ z ∈ [w χ -[ℝ] v χ], ‖f' χ z - φ‖ < ε := by
+    simp_rw [Metric.tendsto_nhds, dist_eq_norm_sub] at cf'
+    exact (cf' ε hε).segment_of_prod_nhdsWithin hw hv seg
   filter_upwards [seg, df', cf'] with χ seg df' cf'
   exact Convex.norm_image_sub_le_of_norm_hasFDerivWithin_le'
     (fun z hz => (df' z hz).mono seg) (fun z hz => (cf' z hz).le)
@@ -71,7 +73,7 @@ variable {𝕜 E₁ E₂ F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCom
 /-- If a bivariate function `f` has partial derivatives `f₁` and `f₂` in a neighbourhood of a point
 `(u₁, u₂)` and if they are continuous at that point then the uncurried function `↿f` is strictly
 differentiable there with its derivative mapping `(z₁, z₂)` to `f₁ u₁ u₂ z₁ + f₂ u₁ u₂ z₂`. -/
-theorem hasStrictFDerivAt_uncurry_coprod
+public theorem hasStrictFDerivAt_uncurry_coprod
     [IsRCLikeNormedField 𝕜] {u : E₁ × E₂} {f : E₁ → E₂ → F} {f₁ : E₁ → E₂ → E₁ →L[𝕜] F}
     {f₂ : E₁ → E₂ → E₂ →L[𝕜] F} (df₁ : ∀ᶠ v in 𝓝 u, HasFDerivAt (f · v.2) (↿f₁ v) v.1)
     (df₂ : ∀ᶠ v in 𝓝 u, HasFDerivAt (f v.1 ·) (↿f₂ v) v.2) (cf₁ : ContinuousAt ↿f₁ u)
@@ -97,7 +99,7 @@ theorem hasStrictFDerivAt_uncurry_coprod
               tendsto_fst (f := (𝓝 u.1 ×ˢ 𝓝 u.2) ×ˢ (𝓝 u.1 ×ˢ 𝓝 u.2)) (g := 𝓝 u.1)
             let : NormedSpace ℝ E₁ := RestrictScalars.normedSpace ℝ 𝕜 E₁
             apply isLittleO_sub_sub_fderiv (α := (E₁ × E₂) × (E₁ × E₂))
-              (f := fun (v, w) u => f u w.2) (f' := fun (v, w) u => f₁ u w.2)
+              (f := fun (v, w) x => f x w.2) (f' := fun (v, w) x => f₁ x w.2)
               (tendsto_fst.comp tendsto_fst) (tendsto_fst.comp tendsto_snd)
             · simpa using h.eventually df₁
             · simpa using cf₁.comp h
@@ -119,14 +121,14 @@ theorem hasStrictFDerivAt_uncurry_coprod
 /-- If a bivariate function `f` has partial derivatives `f₁u` at `(u₁, u₂)` and `f₂` in a
 neighbourhood of `(u₁, u₂)`, continuous there, then the uncurried function `↿f` is differentiable at
 `(u₁, u₂)` with its derivative mapping `(z₁, z₂)` to `f₁u z₁ + f₂ u₁ u₂ z₂`. -/
-theorem hasFDerivWithinAt_uncurry_coprod_of_continuousWithinAt_snd
+public theorem hasFDerivWithinAt_uncurry_coprod_of_continuousWithinAt_snd
     [IsRCLikeNormedField 𝕜] [NormedSpace ℝ E₂] {u : E₁ × E₂} {s₁ : Set E₁} {s₂ : Set E₂}
     (seg : ∀ᶠ y in 𝓝[s₂] u.2, [u.2 -[ℝ] y] ⊆ s₂) {f : E₁ → E₂ → F} {f₁u : E₁ →L[𝕜] F}
     {f₂ : E₁ → E₂ → E₂ →L[𝕜] F} (df₁u : HasFDerivWithinAt (f · u.2) f₁u s₁ u.1)
     (df₂ : ∀ᶠ v in 𝓝[s₁ ×ˢ s₂] u, HasFDerivWithinAt (f v.1 ·) (↿f₂ v) s₂ v.2)
     (cf₂ : ContinuousWithinAt ↿f₂ (s₁ ×ˢ s₂) u) :
     HasFDerivWithinAt ↿f (f₁u.coprod (↿f₂ u)) (s₁ ×ˢ s₂) u := by
-  rw [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO]
+  rw [hasFDerivWithinAt_iff_isLittleO]
   unfold ContinuousWithinAt at cf₂
   rw [nhdsWithin_prod_eq] at ⊢ df₂ cf₂
   calc
@@ -141,7 +143,7 @@ theorem hasFDerivWithinAt_uncurry_coprod_of_continuousWithinAt_snd
           (fun x => f x u.2 - f u.1 u.2 - f₁u (x - u.1)) ∘ Prod.fst
           _ =o[𝓝[s₁] u.1 ×ˢ 𝓝[s₂] u.2] ((fun x => x - u.1) ∘ Prod.fst) := by
             apply IsLittleO.comp_fst
-            rwa [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO] at df₁u
+            rwa [hasFDerivWithinAt_iff_isLittleO] at df₁u
           _ =O[𝓝[s₁] u.1 ×ˢ 𝓝[s₂] u.2] fun v => (v.1 - u.1, v.2 - u.2) := by
             simp [isBigO_of_le]
       · calc
@@ -155,7 +157,7 @@ theorem hasFDerivWithinAt_uncurry_coprod_of_continuousWithinAt_snd
           _ =O[𝓝[s₁] u.1 ×ˢ 𝓝[s₂] u.2] fun v => (v.1 - u.1, v.2 - u.2) := by
             simp [isBigO_of_le]
 
-section PartialFDeriv
+public section PartialFDeriv
 
 open Set Function Metric
 
@@ -307,14 +309,14 @@ theorem hasFDerivWithinAt_of_partial_snd_continuousWithinAt_prod_open
             (mem_ball_iff_norm.mpr (lt_min h₂δu₂ h₂δs₂))
         · exact ContinuousLinearMap.le_opNorm _ _ -- operator norm estimate
         · rw [mul_comm]
-          by_cases hy₁nu : 0 < ‖v₁ - u.1‖
+          by_cases hv₁nu : 0 < ‖v₁ - u.1‖
           case neg => -- handle trivial y₁ = u.1 case
-            replace hy₁nu := (not_lt.mp hy₁nu).antisymm (norm_nonneg _)
-            have hy₁ny := eq_of_sub_eq_zero (norm_eq_zero.mp hy₁nu)
-            repeat rw [hy₁nu, hy₁ny]
+            replace hv₁nu := (not_lt.mp hv₁nu).antisymm (norm_nonneg _)
+            have hv₁nu' := eq_of_sub_eq_zero (norm_eq_zero.mp hv₁nu)
+            repeat rw [hv₁nu, hv₁nu']
             simp only [Prod.mk.eta, sub_self, map_zero, norm_zero, zero_mul, le_refl]
           case pos =>
-            apply (inv_mul_le_iff₀ hy₁nu).mp
+            apply (inv_mul_le_iff₀ hv₁nu).mp
             exact (hf₁u hs₁s₂.1.1 h₁δu₁).le -- apply differentiability estimate
     _ ≤ ε * ‖v₂ - u.2‖ + ε * ‖v₂ - u.2‖ + ε * ‖v₂ - u.2‖ + ε * ‖v₁ - u.1‖ := by
         rw [add_mul]
