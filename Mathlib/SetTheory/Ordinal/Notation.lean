@@ -54,10 +54,6 @@ instance : Zero ONote :=
 theorem zero_def : zero = 0 :=
   rfl
 
--- After leanprover/lean4#13363 (matchwhnf changes), `Zero.zero` doesn't unfold in match
--- discriminants.
-theorem zero_zero_eq : (Zero.zero : ONote) = zero := rfl
-
 instance : Inhabited ONote :=
   ⟨0⟩
 
@@ -65,7 +61,6 @@ instance : Inhabited ONote :=
 instance : One ONote :=
   ⟨oadd 0 1 0⟩
 
-theorem one_one_eq : (One.one : ONote) = oadd 0 1 0 := rfl
 
 /-- Notation for ω -/
 def omega : ONote :=
@@ -76,7 +71,6 @@ noncomputable def repr : ONote → Ordinal.{0}
   | 0 => 0
   | oadd e n a => ω ^ repr e * n + repr a
 @[simp] theorem repr_zero : repr 0 = 0 := rfl
-@[simp] theorem repr_zero' : repr zero = 0 := rfl
 attribute [simp] repr.eq_1 repr.eq_2
 
 set_option backward.privateInPublic true in
@@ -140,12 +134,6 @@ instance : WellFoundedRelation ONote :=
 
 instance (priority := low) nat (n : ℕ) : OfNat ONote n where
   ofNat := ofNat n
-
--- Unfold the OfNat class projection for ONote to the concrete `ofNat` function.
--- Needed because after leanprover/lean4#13363, class projections no longer unfold in match
--- discriminants.
-theorem ofNat_unfold (n : ℕ) : @OfNat.ofNat ONote n (nat n) = ofNat n := rfl
-
 
 @[simp 1200] theorem ofNat_one : ofNat 1 = 1 := rfl
 
