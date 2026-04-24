@@ -115,7 +115,8 @@ theorem Ideal.exists_minimalPrimes_comap_eq {I : Ideal S} (f : R →+* S) (p)
   refine ⟨q, hq, Eq.symm ?_⟩
   have := Ideal.minimalPrimes_isPrime hq
   have := (Ideal.comap_mono hq').trans_eq h₃
-  exact (H.2 ⟨inferInstance, Ideal.comap_mono (Ideal.le_of_mem_minimalPrimes hq)⟩ this).antisymm this
+  exact (H.2 ⟨inferInstance, Ideal.comap_mono (Ideal.le_of_mem_minimalPrimes hq)⟩ this).antisymm
+    this
 
 theorem Ideal.minimalPrimes_comap_subset (f : R →+* S) (J : Ideal S) :
     (J.comap f).minimalPrimes ⊆ Ideal.comap f '' J.minimalPrimes :=
@@ -179,7 +180,8 @@ theorem IsLocalization.minimalPrimes_map [IsLocalization S A] (J : Ideal R) :
   constructor
   · intro hp
     haveI := Ideal.minimalPrimes_isPrime hp
-    refine ⟨⟨Ideal.IsPrime.comap _, Ideal.map_le_iff_le_comap.mp (Ideal.le_of_mem_minimalPrimes hp)⟩, ?_⟩
+    refine ⟨⟨Ideal.IsPrime.comap _,
+      Ideal.map_le_iff_le_comap.mp (Ideal.le_of_mem_minimalPrimes hp)⟩, ?_⟩
     rintro I hI e
     have hI' : Disjoint (S : Set R) I := Set.disjoint_of_subset_right e
       ((IsLocalization.isPrime_iff_isPrime_disjoint S A _).mp (Ideal.minimalPrimes_isPrime hp)).2

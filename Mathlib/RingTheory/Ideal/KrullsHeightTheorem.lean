@@ -118,7 +118,8 @@ theorem Ideal.map_height_le_one_of_mem_minimalPrimes {I p : Ideal R} {x : R}
     (hp : p ∈ (I ⊔ span {x}).minimalPrimes) : (p.map (Ideal.Quotient.mk I)).height ≤ 1 :=
   let f := Ideal.Quotient.mk I
   have : p.IsPrime := Ideal.minimalPrimes_isPrime hp
-  have hfp : RingHom.ker f ≤ p := I.mk_ker.trans_le (le_sup_left.trans (Ideal.le_of_mem_minimalPrimes hp))
+  have hfp : RingHom.ker f ≤ p :=
+    I.mk_ker.trans_le (le_sup_left.trans (Ideal.le_of_mem_minimalPrimes hp))
   height_le_one_of_isPrincipal_of_mem_minimalPrimes ((span {x}).map f) (p.map f)
     ⟨⟨map_isPrime_of_surjective Quotient.mk_surjective hfp,
       map_mono (le_sup_right.trans (Ideal.le_of_mem_minimalPrimes hp))⟩,
