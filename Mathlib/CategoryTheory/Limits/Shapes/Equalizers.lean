@@ -210,29 +210,49 @@ theorem walkingParallelPairOpEquiv_counitIso_inv_app_op_one :
     walkingParallelPairOpEquiv.counitIso.inv.app (op one) = 𝟙 (op one) :=
   rfl
 
-variable {C : Type u} [Category.{v} C]
+variable {C : Type u}
 variable {X Y : C}
 
+namespace parallelPair
+
+/-- Implementation of `parallelPair`, do not use directly. -/
+@[instance_reducible]
+def parallelPairObj (X Y : C) (x : WalkingParallelPair) : C :=
+  match x with
+  | zero => X
+  | one => Y
+
+@[simp] theorem parallelPairObj_zero : parallelPairObj X Y zero = X := rfl
+@[simp] theorem parallelPairObj_one : parallelPairObj X Y one = Y := rfl
+
+variable [Category.{v} C]
+
+/-- Implementation of `parallelPair`, do not use directly. -/
+def parallelPairHom (f g : X ⟶ Y) {x y : WalkingParallelPair} (h : x ⟶ y) :
+    parallelPairObj X Y x ⟶ parallelPairObj X Y y :=
+  match h with
+  | .id _ => 𝟙 _
+  | .left => f
+  | .right => g
+
+@[simp] theorem parallelPairHom_id {f g : X ⟶ Y} {x : WalkingParallelPair} :
+  parallelPairHom f g (𝟙 x) = 𝟙 (parallelPairObj X Y x) := (rfl)
+@[simp] theorem parallelPairHom_left {f g : X ⟶ Y} :
+  parallelPairHom f g .left = f := (rfl)
+@[simp] theorem parallelPairHom_right {f g : X ⟶ Y} :
+  parallelPairHom f g .right = g := (rfl)
+
+end parallelPair
+
+variable [Category.{v} C]
+
+open parallelPair in
 /-- `parallelPair f g` is the diagram in `C` consisting of the two morphisms `f` and `g` with
 common domain and codomain. -/
 def parallelPair (f g : X ⟶ Y) : WalkingParallelPair ⥤ C where
-  obj x :=
-    match x with
-    | zero => X
-    | one => Y
-  map h :=
-    match h with
-    | WalkingParallelPairHom.id _ => 𝟙 _
-    | left => f
-    | right => g
-  map_comp := by
-    rintro _ _ _ ⟨⟩ ⟨⟩
-    · simp
-    · simp
-    · simp
-    · simp
-    · simp only [walkingParallelPairHom_id, Category.comp_id]
-      rw [← walkingParallelPairHom_id]
+  obj x := parallelPairObj X Y x
+  map h := parallelPairHom f g h
+  map_comp := by rintro _ _ _ ⟨⟩ ⟨⟩ <;> simp
 
 @[simp]
 theorem parallelPair_obj_zero (f g : X ⟶ Y) : (parallelPair f g).obj zero = X := rfl

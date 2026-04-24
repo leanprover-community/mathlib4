@@ -105,6 +105,10 @@ theorem normalizeObj_tensor (X Y : F C) (n : NormalMonoidalObject C) :
 /-- Auxiliary definition for `normalize`. -/
 def normalizeObj' (X : F C) : N C ⥤ N C := Discrete.functor fun n ↦ ⟨normalizeObj X n⟩
 
+@[simp]
+theorem as_obj_normalizeObj' (X : F C) (n : N C) :
+    ((normalizeObj' X).obj n).as = normalizeObj X n.as := rfl
+
 section
 
 open Hom
@@ -185,7 +189,6 @@ def normalizeIsoApp :
 
 /-- Almost non-definitionally equal to `normalizeIsoApp`, but has a better definitional property
 in the proof of `normalize_naturality`. -/
-@[simp]
 def normalizeIsoApp' :
     ∀ (X : F C) (n : NormalMonoidalObject C), inclusionObj n ⊗ X ≅ inclusionObj (normalizeObj X n)
   | of _, _ => Iso.refl _
@@ -193,9 +196,6 @@ def normalizeIsoApp' :
   | tensor X Y, n =>
     (α_ _ _ _).symm ≪≫ whiskerRightIso (normalizeIsoApp' X n) Y ≪≫ normalizeIsoApp' _ _
 
--- Equation lemmas for `normalizeIsoApp'` matching `⊗`/`𝟙_` instead of `tensor`/`unit`.
--- Needed because after leanprover/lean4#13363, `canUnfoldAtMatcher` no longer unfolds class
--- projections in match discriminants.
 @[simp] theorem normalizeIsoApp'_tensor (X Y : F C) (n : NormalMonoidalObject C) :
     normalizeIsoApp' C (X ⊗ Y) n =
       (α_ _ _ _).symm ≪≫ whiskerRightIso (normalizeIsoApp' C X n) Y ≪≫
@@ -211,7 +211,7 @@ theorem normalizeIsoApp_eq :
       rw [normalizeIsoApp, normalizeIsoApp']
       rw [normalizeIsoApp_eq X n]
       rw [normalizeIsoApp_eq Y ⟨normalizeObj X n.as⟩]
-      rfl
+      simp
 
 @[simp]
 theorem normalizeIsoApp_tensor (X Y : F C) (n : N C) :
@@ -277,7 +277,6 @@ theorem normalize_naturality (n : NormalMonoidalObject C) {X Y : F C} (f : X ⟶
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism between `n ⊗ X` and `normalize X n` is natural (in both `X` and `n`, but
 naturality in `n` is trivial and was "proved" in `normalizeIsoAux`). This is the real heart
 of our proof of the coherence theorem. -/
