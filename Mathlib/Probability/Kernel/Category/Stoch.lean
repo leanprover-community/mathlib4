@@ -23,14 +23,14 @@ The category of measurable spaces with Markov kernels is a Markov category.
 
 ## References
 * [A synthetic approach to
-Markov kernels, conditional independence and theorems on sufficient statistics][fritz2020]
+  Markov kernels, conditional independence and theorems on sufficient statistics][fritz2020]
 -/
 
 @[expose] public section
 
 open CategoryTheory ProbabilityTheory MeasureTheory
 
-open scoped MonoidalCategory
+open scoped MonoidalCategory SFinKer
 
 universe u
 
@@ -42,8 +42,8 @@ instance : StochHom.IsStableUnderBraiding where
   comp_mem κ η hκ hη := by dsimp [StochHom]; infer_instance
   whiskerLeft X Y Z κ hκ := by dsimp [StochHom]; infer_instance
   whiskerRight κ hκ Y := by dsimp [StochHom]; infer_instance
-  associator_hom_mem X Y Z := Kernel.IsMarkovKernel.map Kernel.id (by fun_prop)
-  associator_inv_mem X Y Z := Kernel.IsMarkovKernel.map Kernel.id (by fun_prop)
+  associator_hom_mem X Y Z := Kernel.isMarkovKernel_deterministic <| MeasurableEquiv.measurable _
+  associator_inv_mem X Y Z := Kernel.isMarkovKernel_deterministic <| MeasurableEquiv.measurable _
   leftUnitor_hom_mem X := Kernel.IsMarkovKernel.map Kernel.id (by fun_prop)
   leftUnitor_inv_mem X := Kernel.IsMarkovKernel.map Kernel.id (by fun_prop)
   rightUnitor_hom_mem X := Kernel.IsMarkovKernel.map Kernel.id (by fun_prop)

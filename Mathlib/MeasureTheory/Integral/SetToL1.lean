@@ -42,9 +42,11 @@ Linearity:
 - `setToFun_smul_left : setToFun μ (fun s ↦ c • (T s)) (hT.smul c) f = c • setToFun μ T hT f`
 - `setToFun_zero : setToFun μ T hT (0 : α → E) = 0`
 - `setToFun_neg : setToFun μ T hT (-f) = - setToFun μ T hT f`
+
 If `f` and `g` are integrable:
 - `setToFun_add : setToFun μ T hT (f + g) = setToFun μ T hT f + setToFun μ T hT g`
 - `setToFun_sub : setToFun μ T hT (f - g) = setToFun μ T hT f - setToFun μ T hT g`
+
 If `T` satisfies `∀ c : 𝕜, ∀ s x, T s (c • x) = c • T s x`:
 - `setToFun_smul : setToFun μ T hT (c • f) = c • setToFun μ T hT f`
 
@@ -330,12 +332,10 @@ theorem setToL1SCLM_smul_left' (c : ℝ) (hT : DominatedFinMeasAdditive μ T C)
     setToL1SCLM α E μ hT' f = c • setToL1SCLM α E μ hT f :=
   setToL1S_smul_left' T T' c h_smul f
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_setToL1SCLM_le {T : Set α → E →L[ℝ] F} {C : ℝ} (hT : DominatedFinMeasAdditive μ T C)
     (hC : 0 ≤ C) : ‖setToL1SCLM α E μ hT‖ ≤ C :=
   LinearMap.mkContinuous_norm_le _ hC _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_setToL1SCLM_le' {T : Set α → E →L[ℝ] F} {C : ℝ} (hT : DominatedFinMeasAdditive μ T C) :
     ‖setToL1SCLM α E μ hT‖ ≤ max C 0 :=
   LinearMap.mkContinuous_norm_le' _ _
@@ -570,7 +570,6 @@ theorem setToL1_mono [ClosedIciTopology G''] [IsOrderedAddMonoid G']
 
 end Order
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_setToL1_le_norm_setToL1SCLM (hT : DominatedFinMeasAdditive μ T C) :
     ‖setToL1 hT‖ ≤ ‖setToL1SCLM α E μ hT‖ :=
   calc
@@ -582,7 +581,6 @@ theorem norm_setToL1_le_norm_setToL1SCLM (hT : DominatedFinMeasAdditive μ T C) 
       simp [coeToLp]
     _ = ‖setToL1SCLM α E μ hT‖ := by rw [NNReal.coe_one, one_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_setToL1_le_mul_norm (hT : DominatedFinMeasAdditive μ T C) (hC : 0 ≤ C)
     (f : α →₁[μ] E) : ‖setToL1 hT f‖ ≤ C * ‖f‖ :=
   calc
@@ -590,7 +588,6 @@ theorem norm_setToL1_le_mul_norm (hT : DominatedFinMeasAdditive μ T C) (hC : 0 
       ContinuousLinearMap.le_of_opNorm_le _ (norm_setToL1_le_norm_setToL1SCLM hT) _
     _ ≤ C * ‖f‖ := mul_le_mul (norm_setToL1SCLM_le hT hC) le_rfl (norm_nonneg _) hC
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_setToL1_le_mul_norm' (hT : DominatedFinMeasAdditive μ T C) (f : α →₁[μ] E) :
     ‖setToL1 hT f‖ ≤ max C 0 * ‖f‖ :=
   calc

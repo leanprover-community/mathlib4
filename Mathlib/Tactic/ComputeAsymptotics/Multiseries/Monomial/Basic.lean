@@ -5,8 +5,6 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-public import Mathlib.Tactic.MoveAdd
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basis
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Monomial.Predicates
 
@@ -23,13 +21,11 @@ In this file we show how to find a limit of `Monomial` and how to asymptotically
 
 ## Main definitions
 
-* `UnitMonomial`: type to represent monomials without coefficient. It's easier to reason
-  about them and then translate the result to `Monomial`.
 * `Monomial`: type to represent monomials.
 * `UnitMonomial.toFun`/`Monomial.toFun`: converts structures to real functions.
 * `UnitMonomial.logToFun_isEquivalent_of_nonzero_head`: `log m.toFun` is asymptotically equivalent
   to its first summand - `m[0] • log basis[0]` if `m[0] ≠ 0`. Using this theorem we can prove that
-  the asymptotic behavior of the monomials is determined by its first non-zero exponent.
+  the asymptotic behaviour of the monomials is determined by its first non-zero exponent.
 * `toFun_tendsto_top_of_FirstNonzeroIsPos` and its variants are used to infer the limit of
   `t.toFun` from `FirstNonzeroIsPos`/`FirstNonzeroIsNeg`/`AllZero`.
 * `IsLittleO_of_lt_exps` and its variants are used to asymptotically compare two monomials.
@@ -41,10 +37,6 @@ In this file we show how to find a limit of `Monomial` and how to asymptotically
 namespace Tactic.ComputeAsymptotics
 
 open Asymptotics Filter Topology Real
-
-/-- Unit monomial, represented as a list of its exponents. `[e₁, e₂, ..., eₙ]` corresponds to
-`basis[0] ^ e₁ * ... * basis[n] ^ eₙ` where `basis` is the basis of functions. -/
-abbrev UnitMonomial := List ℝ
 
 /-- Structure for representing monomials with coefficients. -/
 structure Monomial where
@@ -132,9 +124,12 @@ theorem mul_toFun {m1 m2 : UnitMonomial} {basis : Basis} (h_basis : WellFormedBa
     cases basis with
     | nil => simp
     | cons basis_hd basis_tl =>
-    simp only [List.zipWith_cons_cons, List.prod_cons] at ih ⊢
-    rw [ih h_basis.tail (by grind) (by grind), Real.rpow_add (h_pos _ (by simp))]
-    grind
+      simp only [List.zipWith_cons_cons, List.prod_cons] at ih ⊢
+      have h1 : exps1.length = exps2.length := by grind
+      have h2 : ∀ f ∈ basis_tl, 0 < f x := by grind
+      have h3 : 0 < basis_hd x := h_pos _ (by simp)
+      rw [ih h_basis.tail h1 h2, Real.rpow_add h3]
+      grind
 
 theorem inv_toFun {m : UnitMonomial} {basis : Basis} (h_basis : WellFormedBasis basis) :
     m.inv.toFun basis =ᶠ[atTop] (m.toFun basis)⁻¹ := by
@@ -148,7 +143,7 @@ theorem inv_toFun {m : UnitMonomial} {basis : Basis} (h_basis : WellFormedBasis 
     | cons basis_hd basis_tl =>
       apply ((h_basis.head_eventually_pos).and (ih (h_basis.tail))).mono
       intro x ⟨h_pos, ih⟩
-      simp only [List.map_cons, List.zipWith_cons_cons, List.prod_cons, mul_inv_rev] at ih ⊢
+      simp only [List.map_cons, List.zipWith_cons_cons, List.prod_cons, mul_inv_rev]
       grind [Real.rpow_neg h_pos.le]
 
 theorem tail_toFun_IsLittleO_head {m : UnitMonomial} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
@@ -284,12 +279,12 @@ theorem toFun_tendsto_top_of_FirstNonzeroIsPos {m : UnitMonomial} {basis : Basis
     (h_firstIsPos : FirstNonzeroIsPos m) :
     Tendsto (UnitMonomial.toFun m basis) atTop atTop := by
   cases m with
-  | nil => simp [FirstNonzeroIsPos] at h_firstIsPos
+  | nil => simp at h_firstIsPos
   | cons exps_hd exps_tl =>
     cases basis with
     | nil => simp at h_length
     | cons basis_hd basis_tl =>
-      simp only [FirstNonzeroIsPos] at h_firstIsPos
+      simp only [FirstNonzeroIsPos.cons_iff] at h_firstIsPos
       obtain h | h := h_firstIsPos
       · exact toFun_tendsto_top_of_head_pos h_basis h
       · have h_eq : UnitMonomial.toFun (exps_hd :: exps_tl) (basis_hd :: basis_tl) =
@@ -303,12 +298,12 @@ theorem toFun_tendsto_zero_of_FirstNonzeroIsNeg {m : UnitMonomial} {basis : Basi
     (h_firstIsNeg : FirstNonzeroIsNeg m) :
     Tendsto (UnitMonomial.toFun m basis) atTop (𝓝 0) := by
   cases m with
-  | nil => simp [FirstNonzeroIsNeg] at h_firstIsNeg
+  | nil => simp at h_firstIsNeg
   | cons exps_hd exps_tl =>
     cases basis with
     | nil => simp at h_length
     | cons basis_hd basis_tl =>
-      simp only [FirstNonzeroIsNeg] at h_firstIsNeg
+      simp only [FirstNonzeroIsNeg.cons_iff] at h_firstIsNeg
       obtain h | h := h_firstIsNeg
       · exact toFun_tendsto_zero_of_head_neg h_basis h
       · have h_eq : UnitMonomial.toFun (exps_hd :: exps_tl) (basis_hd :: basis_tl) =
@@ -367,7 +362,7 @@ lemma IsLittleO_of_lt {basis : Basis} {m1 m2 : UnitMonomial}
       field
     · apply toFun_tendsto_top_of_FirstNonzeroIsPos h_basis
       · grind [inv_length, mul_length]
-      · apply FirstNonzeroIsPos_of_head
+      · apply FirstNonzeroIsPos.of_head
         grind
 
 end UnitMonomial
@@ -400,7 +395,7 @@ theorem zero_coef_toFun {t : Monomial} (basis : Basis) (h_coef : t.coef = 0) :
   simp [toFun, h_coef]
 
 /-- If `t.coef = 0`, then `t.toFun` is zero. -/
-theorem zero_coef_toFun' (basis : Basis) (exps : List ℝ) :
+theorem zero_coef_toFun' (basis : Basis) (exps : UnitMonomial) :
     Monomial.toFun ⟨0, exps⟩ basis = 0 := zero_coef_toFun _ rfl
 
 /-- Negation of a monomial. -/
@@ -465,13 +460,13 @@ theorem toFun_pos {t : Monomial} {basis : Basis}
   simp only [Pi.smul_apply, smul_eq_mul]
   positivity
 
-theorem zeros_append_toFun (coef : ℝ) {exps : List ℝ} {left right : Basis} :
+theorem zeros_append_toFun (coef : ℝ) {exps : UnitMonomial} {left right : Basis} :
     let t : Monomial := ⟨coef, List.replicate left.length 0 ++ exps⟩;
     t.toFun (left ++ right) = (mk coef exps).toFun right := by
   exact congrArg (coef • ·) UnitMonomial.zeros_append_toFun
 
 /-- `t.toFun` tends to `𝓝 0` when `t.coef = 0`. -/
-theorem tendsto_zero_of_coef_zero {coef : ℝ} {exps : List ℝ} (basis : Basis)
+theorem tendsto_zero_of_coef_zero {coef : ℝ} {exps : UnitMonomial} (basis : Basis)
     (h_coef : coef = 0) :
     let t : Monomial := ⟨coef, exps⟩;
     Tendsto (t.toFun basis) atTop (𝓝 0) := by
@@ -479,10 +474,10 @@ theorem tendsto_zero_of_coef_zero {coef : ℝ} {exps : List ℝ} (basis : Basis)
   rw [zero_coef_toFun _ (by simpa [t])]
   exact tendsto_const_nhds
 
-theorem toFun_tendsto_zero_of_FirstNonzeroIsNeg {coef : ℝ} {exps : List ℝ} {basis : Basis}
+theorem toFun_tendsto_zero_of_FirstNonzeroIsNeg {coef : ℝ} {exps : UnitMonomial} {basis : Basis}
     (h_basis : WellFormedBasis basis)
     (h_length : exps.length = basis.length)
-    (h_exps : FirstNonzeroIsNeg exps) :
+    (h_exps : exps.FirstNonzeroIsNeg) :
     let t : Monomial := ⟨coef, exps⟩
     Tendsto (t.toFun basis) atTop (𝓝 0) := by
   intro t
@@ -492,11 +487,11 @@ theorem toFun_tendsto_zero_of_FirstNonzeroIsNeg {coef : ℝ} {exps : List ℝ} {
     (UnitMonomial.toFun_tendsto_zero_of_FirstNonzeroIsNeg h_basis h_length h_exps)
   simp
 
-theorem toFun_tendsto_top_of_FirstNonzeroIsPos {coef : ℝ} {exps : List ℝ} {basis : Basis}
+theorem toFun_tendsto_top_of_FirstNonzeroIsPos {coef : ℝ} {exps : UnitMonomial} {basis : Basis}
     (h_basis : WellFormedBasis basis)
     (h_length : exps.length = basis.length)
     (h_coef : 0 < coef)
-    (h_exps : FirstNonzeroIsPos exps) :
+    (h_exps : exps.FirstNonzeroIsPos) :
     let t : Monomial := ⟨coef, exps⟩
     Tendsto (t.toFun basis) atTop atTop := by
   intro t
@@ -505,11 +500,11 @@ theorem toFun_tendsto_top_of_FirstNonzeroIsPos {coef : ℝ} {exps : List ℝ} {b
   convert Filter.Tendsto.const_mul_atTop h_coef
     (UnitMonomial.toFun_tendsto_top_of_FirstNonzeroIsPos h_basis h_length h_exps)
 
-theorem toFun_tendsto_bot_of_FirstNonzeroIsPos {coef : ℝ} {exps : List ℝ} {basis : Basis}
+theorem toFun_tendsto_bot_of_FirstNonzeroIsPos {coef : ℝ} {exps : UnitMonomial} {basis : Basis}
     (h_basis : WellFormedBasis basis)
     (h_length : exps.length = basis.length)
     (h_coef : coef < 0)
-    (h_exps : FirstNonzeroIsPos exps) :
+    (h_exps : exps.FirstNonzeroIsPos) :
     let t : Monomial := ⟨coef, exps⟩
     Tendsto (t.toFun basis) atTop atBot := by
   intro t
@@ -518,8 +513,8 @@ theorem toFun_tendsto_bot_of_FirstNonzeroIsPos {coef : ℝ} {exps : List ℝ} {b
   convert Filter.Tendsto.const_mul_atTop_of_neg h_coef
     (UnitMonomial.toFun_tendsto_top_of_FirstNonzeroIsPos h_basis h_length h_exps)
 
-theorem toFun_tendsto_const_of_AllZero {coef : ℝ} {exps : List ℝ} {basis : Basis}
-    (h_exps : AllZero exps) :
+theorem toFun_tendsto_const_of_AllZero {coef : ℝ} {exps : UnitMonomial} {basis : Basis}
+    (h_exps : exps.AllZero) :
     let t : Monomial := ⟨coef, exps⟩
     Tendsto (t.toFun basis) atTop (𝓝 coef) := by
   intro t
