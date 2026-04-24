@@ -114,7 +114,7 @@ theorem bind_apply (b : β) : p.bind f b = ∑' a, p a * f a b := rfl
 
 @[simp]
 theorem support_bind : (p.bind f).support = ⋃ a ∈ p.support, (f a).support :=
-  Set.ext fun b => by simp [mem_support_iff, ENNReal.tsum_eq_zero, not_or]
+  Set.ext fun b => by simp [mem_support_iff, tsum_eq_zero, not_or]
 
 theorem mem_support_bind_iff (b : β) :
     b ∈ (p.bind f).support ↔ ∃ a ∈ p.support, b ∈ (f a).support := by
