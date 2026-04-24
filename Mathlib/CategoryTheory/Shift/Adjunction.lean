@@ -257,8 +257,6 @@ lemma mk' (_ : NatTrans.CommShift adj.unit A) :
     refine (compatibilityCounit_of_compatibilityUnit adj _ _ (fun X ↦ ?_) _).symm
     simpa [Functor.commShiftIso_comp_hom_app] using NatTrans.shift_app_comm adj.unit a X⟩
 
-variable [adj.CommShift A]
-
 /-- The identity adjunction is compatible with the trivial `CommShift` structure on the
 identity functor.
 -/
@@ -633,6 +631,7 @@ this constructs the unique compatible `CommShift` structure on `E.functor`.
 noncomputable def commShiftFunctor [E.inverse.CommShift A] : E.functor.CommShift A :=
   E.symm.toAdjunction.rightAdjointCommShift A
 
+set_option backward.isDefEq.respectTransparency false in
 lemma commShift_of_inverse [E.inverse.CommShift A] :
     letI := E.commShiftFunctor A
     E.CommShift A := by

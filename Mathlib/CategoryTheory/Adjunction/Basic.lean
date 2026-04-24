@@ -293,7 +293,6 @@ lemma unit_comp_map_eq_iff {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj 
     dsimp% adj.unit.app A ≫ G.map f = g ↔ f = F.map g ≫ adj.counit.app B :=
   ⟨fun h => by simp [← h], fun h => by simp [h]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma eq_unit_comp_map_iff {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj B) :
     dsimp% g = adj.unit.app A ≫ G.map f ↔ F.map g ≫ adj.counit.app B = f :=
   ⟨fun h => by simp [h], fun h => by simp [← h]⟩
@@ -545,7 +544,6 @@ lemma homEquiv_ofNatIsoRight_symm_apply {F : C ⥤ D} {G H : D ⥤ C} (adj : F �
       (adj.homEquiv _ _).symm (f ≫ iso.inv.app _) := by
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism which an adjunction `F ⊣ G` induces on `G ⋙ yoneda`. This states that
 `Adjunction.homEquiv` is natural in both arguments. -/
 @[simps!]
@@ -687,7 +685,6 @@ def adjunctionOfEquivRight (he : ∀ X' X Y f g, e X' Y (F.map f ≫ g) = f ≫ 
 
 end ConstructRight
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If the unit and counit of a given adjunction are (pointwise) isomorphisms, then we can upgrade the
 adjunction to an equivalence.

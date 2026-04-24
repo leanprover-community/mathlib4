@@ -37,7 +37,6 @@ namespace CategoryTheory.CostructuredArrow
 
 namespace CreatesConnected
 
-set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation) Given a diagram in `CostructuredArrow K B`, produce a natural transformation
 from the diagram legs to the specific object.
 -/

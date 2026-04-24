@@ -43,16 +43,14 @@ section
 
 variable {ι} (M : ι → Type*) [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
 
-set_option backward.privateInPublic true in
-private def piRightHomBil : N →ₗ[S] (∀ i, M i) →ₗ[R] ∀ i, N ⊗[R] M i where
+/-- (Implementation): Bilinear map for defining `TensorProduct.piRightHom`. -/
+def piRightHomBil : N →ₗ[S] (∀ i, M i) →ₗ[R] ∀ i, N ⊗[R] M i where
   toFun n := LinearMap.pi (fun i ↦ mk R N (M i) n ∘ₗ LinearMap.proj i)
   map_add' _ _ := by
     ext
     simp
   map_smul' _ _ := rfl
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- For any `R`-module `N`, index type `ι` and family of `R`-modules `Mᵢ`, there is a natural
 linear map `N ⊗[R] (∀ i, M i) →ₗ ∀ i, N ⊗[R] M i`. This map is an isomorphism if `ι` is finite. -/
 def piRightHom : N ⊗[R] (∀ i, M i) →ₗ[S] ∀ i, N ⊗[R] M i :=
@@ -65,8 +63,7 @@ lemma piRightHom_tmul (x : N) (f : ∀ i, M i) :
 
 variable [Fintype ι] [DecidableEq ι]
 
-set_option backward.privateInPublic true in
-private
+/-- (Implementation): Inverse for `TensorProduct.piRight`. -/
 def piRightInv : (∀ i, N ⊗[R] M i) →ₗ[S] N ⊗[R] ∀ i, M i :=
   LinearMap.lsum S (fun i ↦ N ⊗[R] M i) S <| fun i ↦
     AlgebraTensorModule.map LinearMap.id (single R M i)
@@ -90,8 +87,6 @@ private lemma piRightInv_single (x : N) (i : ι) (m : M i) :
   rw [this]
   simp
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Tensor product commutes with finite products on the right. -/
 def piRight : N ⊗[R] (∀ i, M i) ≃ₗ[S] ∀ i, N ⊗[R] M i :=
   LinearEquiv.ofLinear
@@ -136,8 +131,6 @@ private def piScalarRightHomBil : N →ₗ[S] (ι → R) →ₗ[R] (ι → N) wh
     rw [← IsScalarTower.smul_assoc, _root_.Algebra.smul_def, mul_comm, mul_smul]
     simp
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- For any `R`-module `N` and index type `ι`, there is a natural
 linear map `N ⊗[R] (ι → R) →ₗ (ι → N)`. This map is an isomorphism if `ι` is finite. -/
 def piScalarRightHom : N ⊗[R] (ι → R) →ₗ[S] (ι → N) :=
@@ -151,8 +144,7 @@ lemma piScalarRightHom_tmul (x : N) (f : ι → R) :
 
 variable [Fintype ι] [DecidableEq ι]
 
-set_option backward.privateInPublic true in
-private
+/-- (Implementation): Inverse for `TensorProduct.piScalarRight`. -/
 def piScalarRightInv : (ι → N) →ₗ[S] N ⊗[R] (ι → R) :=
   LinearMap.lsum S (fun _ ↦ N) S <| fun i ↦ {
     toFun := fun n ↦ n ⊗ₜ Pi.single i 1
@@ -165,8 +157,6 @@ private lemma piScalarRightInv_single (x : N) (i : ι) :
     piScalarRightInv R S N ι (Pi.single i x) = x ⊗ₜ Pi.single i 1 := by
   simp [piScalarRightInv, Pi.single_apply, TensorProduct.ite_tmul]
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- For any `R`-module `N` and finite index type `ι`, `N ⊗[R] (ι → R)` is canonically
 isomorphic to `ι → N`. -/
 def piScalarRight : N ⊗[R] (ι → R) ≃ₗ[S] (ι → N) :=

@@ -1013,6 +1013,10 @@ theorem generate_map_eq_functorPushforward {s : Presieve X} :
   rw [arrows_generate_map_eq_functorPushforward]
   simp [functorPushforward_extend_eq]
 
+lemma functorPushforward_ofArrows {X : C} {ι : Type*} {Y : ι → C} (f : ∀ i, Y i ⟶ X) :
+    functorPushforward F (ofArrows Y f) = ofArrows _ fun i : ι ↦ F.map (f i) := by
+  rw [← generate_map_eq_functorPushforward, Presieve.map_ofArrows]
+
 @[simp]
 theorem functorPushforward_id (R : Sieve X) : R.functorPushforward (𝟭 _) = R := by
   ext X f

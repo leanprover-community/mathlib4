@@ -238,6 +238,7 @@ attribute [local instance] normedSpaceTangentSpaceVectorSpace
 
 variable (I)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eventually_norm_mfderiv_extChartAt_lt (x : M) :
     ∃ C > 0, ∀ᶠ y in 𝓝 x, ‖mfderiv% (extChartAt I x) y‖ < C := by
   rcases eventually_norm_trivializationAt_lt E (fun (x : M) ↦ TangentSpace I x) x
@@ -247,6 +248,7 @@ lemma eventually_norm_mfderiv_extChartAt_lt (x : M) :
   filter_upwards [hC, hx] with y hy h'y
   rwa [← TangentBundle.continuousLinearMapAt_trivializationAt h'y]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eventually_enorm_mfderiv_extChartAt_lt (x : M) :
     ∃ C > (0 : ℝ≥0), ∀ᶠ y in 𝓝 x, ‖mfderiv% (extChartAt I x) y‖ₑ < C := by
   rcases eventually_norm_mfderiv_extChartAt_lt I x with ⟨C, C_pos, hC⟩
@@ -257,6 +259,7 @@ lemma eventually_enorm_mfderiv_extChartAt_lt (x : M) :
   simp only [enorm, nnnorm]
   exact_mod_cast hy
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eventually_norm_mfderivWithin_symm_extChartAt_comp_lt (x : M) :
     ∃ C > 0, ∀ᶠ y in 𝓝 x, ‖mfderiv[range I] (extChartAt I x).symm (extChartAt I x y)‖ < C := by
   rcases eventually_norm_symmL_trivializationAt_lt E (fun (x : M) ↦ TangentSpace I x) x
@@ -269,6 +272,7 @@ lemma eventually_norm_mfderivWithin_symm_extChartAt_comp_lt (x : M) :
     (extChartAt I x).left_inv (by simpa using h'y)
   convert hy using 3 <;> congr
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eventually_norm_mfderivWithin_symm_extChartAt_lt (x : M) :
     ∃ C > 0, ∀ᶠ y in 𝓝[range I] (extChartAt I x x),
     ‖mfderiv[range I] (extChartAt I x).symm y‖ < C := by
@@ -283,6 +287,7 @@ lemma eventually_norm_mfderivWithin_symm_extChartAt_lt (x : M) :
   simp only [preimage_setOf_eq, mem_setOf_eq] at hy
   convert hy
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eventually_enorm_mfderivWithin_symm_extChartAt_lt (x : M) :
     ∃ C > (0 : ℝ≥0), ∀ᶠ y in 𝓝[range I] (extChartAt I x x),
     ‖mfderiv[range I] (extChartAt I x).symm y‖ₑ < C := by
@@ -294,6 +299,7 @@ lemma eventually_enorm_mfderivWithin_symm_extChartAt_lt (x : M) :
   simp only [enorm, nnnorm]
   exact_mod_cast hy
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Around any point `x`, the Riemannian distance between two points is controlled by the distance
 in the extended chart. In other words, the extended chart is locally Lipschitz. -/
 lemma eventually_riemannianEDist_le_edist_extChartAt (x : M) :
@@ -378,6 +384,7 @@ lemma eventually_riemannianEDist_lt (x : M) {c : ℝ≥0∞} (hc : 0 < c) :
   · exact Or.inl (mod_cast C_pos.ne')
   · simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any neighborhood of `x` contains all the points which are close enough to `x` for the
 Riemannian distance, `ℝ≥0` version. -/
 lemma setOf_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} (hs : s ∈ 𝓝 x) :

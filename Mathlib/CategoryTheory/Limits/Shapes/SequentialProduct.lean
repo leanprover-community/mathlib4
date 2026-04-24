@@ -130,10 +130,9 @@ noncomputable def cone : Cone (Functor.ofOpSequence (functorMap f)) where
         f m ≫ eqToHom (functorObj_eq_neg h).symm) (fun n ↦ ?_)
     apply Limits.Pi.hom_ext
     intro m
-    simp only [Functor.const_obj_obj, Functor.ofOpSequence_obj, homOfLE_leOfHom,
-      Functor.const_obj_map, Category.id_comp, limMap_π, Discrete.functor_obj_eq_as,
-      Discrete.natTrans_app, Functor.ofOpSequence_map_homOfLE_succ, functorMap, Category.assoc,
-      limMap_π_assoc]
+    simp only [Functor.const_obj_obj, dite_eq_ite, Functor.ofOpSequence_obj, homOfLE_leOfHom,
+      Functor.const_obj_map, Category.id_comp, Pi.map_π, Functor.ofOpSequence_map_homOfLE_succ,
+      functorMap, Category.assoc, Pi.map_π_assoc]
     split
     · simp [dif_pos (by lia : m < n + 1)]
     · split
@@ -197,8 +196,7 @@ noncomputable def isLimit : IsLimit (cone f) where
           rw [dif_pos h, dif_pos (by lia)]
         rw [← eqToHom_trans h₁ h₂]
         slice_lhs 2 4 => rw [ih (by lia)]
-        simp only [functorMap, dite_eq_ite, Pi.π, limMap_π_assoc, Discrete.functor_obj_eq_as,
-          Discrete.natTrans_app]
+        simp only [functorMap, dite_eq_ite, Pi.π, Pi.map_π_assoc]
         split_ifs
         rw [dif_pos (by lia)]
         simp

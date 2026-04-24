@@ -87,7 +87,7 @@ variable {D : Type u₃} [Category.{v₃} D]
 
 set_option backward.defeqAttrib.useBackward true in
 /-- These are actually equal, of course, but not definitionally equal
-  (the equality requires F.map (𝟙 _) = 𝟙 _). A natural isomorphism is
+  (the equality requires `F.map (𝟙 _) = 𝟙 _`). A natural isomorphism is
   more convenient than an equality between functors (compare id_to_iso). -/
 @[simps]
 def constComp (X : C) (F : C ⥤ D) : (const J).obj X ⋙ F ≅ (const J).obj (F.obj X) where

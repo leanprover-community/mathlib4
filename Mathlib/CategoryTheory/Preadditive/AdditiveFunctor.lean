@@ -151,7 +151,7 @@ omit [Preadditive C] [Preadditive D] in
 instance : (Functor.whiskeringRight C D E).Additive where
 
 omit [Preadditive C] [Preadditive D] in
-instance (F : C ⥤ D) [Preadditive E] : ((Functor.whiskeringLeft C D E).obj F).Additive where
+instance (F : C ⥤ D) : ((Functor.whiskeringLeft C D E).obj F).Additive where
 
 set_option backward.defeqAttrib.useBackward true in
 omit [Preadditive D] in
@@ -163,7 +163,7 @@ instance {E' : Type*} [Category* E'] [Preadditive E'] (G : C ⥤ D ⥤ E) (F : E
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 universe w in
-instance [HasCoproducts.{w} C] [Preadditive C] : (sigmaConst.{w} (C := C)).Additive where
+instance [HasCoproducts.{w} C] : (sigmaConst.{w} (C := C)).Additive where
 
 end
 

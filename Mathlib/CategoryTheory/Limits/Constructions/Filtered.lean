@@ -166,9 +166,7 @@ def liftToFinsetColimIso : liftToFinset C α ⋙ colim ≅ colim :=
       ext J
       simp only [liftToFinset_obj_obj]
       ext j
-      simp only [liftToFinset, ι_colimMap_assoc, liftToFinsetObj_obj, Discrete.functor_obj_eq_as,
-        Discrete.natTrans_app, liftToFinsetColimIso_aux, liftToFinsetColimIso_aux_assoc,
-        ι_colimMap])
+      simp [liftToFinset, liftToFinsetColimIso_aux, liftToFinsetColimIso_aux_assoc])
 
 end
 
@@ -285,7 +283,7 @@ def liftToFinsetEvaluationIso (I : Finset (Discrete α)) :
     liftToFinset C α ⋙ (evaluation _ _).obj ⟨I⟩ ≅
     (Functor.whiskeringLeft _ _ _).obj (Discrete.functor (·.val)) ⋙ lim (J := Discrete I) :=
   NatIso.ofComponents (fun _ => HasLimit.isoOfNatIso (Discrete.natIso fun _ => Iso.refl _))
-    fun _ => by dsimp; ext; simp
+    fun _ => by dsimp; ext; simp [Pi.map]
 
 end ProductsFromFiniteCofiltered
 

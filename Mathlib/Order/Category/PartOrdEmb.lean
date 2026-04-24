@@ -296,7 +296,6 @@ lemma CoconePt.fac_apply (s : Cocone F) (j : J) (x : F.obj j) :
     dsimp% CoconePt.desc hc s (c.ι.app j x) = s.ι.app j x :=
   ConcreteCategory.congr_hom (hc.fac ((forget _).mapCocone s) j) x
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A colimit cocone for `F : J ⥤ PartOrdEmb` (with `J` filtered) can be
 obtained from a colimit cocone for `F ⋙ forget _`. -/
 def isColimitCocone : IsColimit (cocone hc) where

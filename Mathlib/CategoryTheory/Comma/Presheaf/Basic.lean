@@ -521,7 +521,6 @@ lemma counitForward_val_fst (s : CostructuredArrow yoneda A) (x : F.obj (op s)) 
     (counitForward F s x).val.fst = s.hom := by
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma counitForward_val_snd (s : CostructuredArrow yoneda A) (x : F.obj (op s)) :
     (counitForward F s x).val.snd = F.map (eqToHom (by simp [← CostructuredArrow.eq_mk])) x :=
@@ -552,7 +551,6 @@ lemma counitForward_naturality₂ (s t : (CostructuredArrow yoneda A)ᵒᵖ) (f 
     map_mkPrecomp_eqToHom (h := by simp)
   cat_disch
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Backward direction of the counit. -/
 def counitBackward (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v)
     (s : CostructuredArrow yoneda A) :

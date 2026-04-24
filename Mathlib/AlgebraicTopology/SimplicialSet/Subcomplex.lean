@@ -252,6 +252,9 @@ lemma preimage_iSup {ι : Type*} (A : ι → X.Subcomplex) (p : Y ⟶ X) :
 lemma preimage_iInf {ι : Type*} (A : ι → X.Subcomplex) (p : Y ⟶ X) :
     (⨅ i, A i).preimage p = ⨅ i, (A i).preimage p := by aesop
 
+@[simp]
+lemma preimage_id (A : X.Subcomplex) : A.preimage (𝟙 X) = A := rfl
+
 lemma preimage_comp {Z : SSet.{u}} (A : Z.Subcomplex) (f : X ⟶ Y) (g : Y ⟶ Z) :
     A.preimage (f ≫ g) = (A.preimage g).preimage f := rfl
 
@@ -345,6 +348,16 @@ lemma preimage_image_of_isIso (f : X ⟶ Y) (B : Y.Subcomplex) [IsIso f] :
   apply le_antisymm (B.image_preimage_le f)
   · intro n y hy
     exact ⟨(inv f).app _ y, by simpa [← NatIso.isIso_inv_app, ← NatTrans.comp_app_apply]⟩
+
+lemma preimage_inv {X Y : SSet.{u}} (A : Subcomplex X) (f : X ⟶ Y) [IsIso f] :
+    A.preimage (inv f) = A.image f := by
+  ext _ x
+  simp only [preimage_obj, NatIso.isIso_inv_app, Set.mem_preimage, image_obj, Set.mem_image]
+  exact ⟨fun hx ↦ ⟨(inv f).app _ x, by simpa⟩, by rintro ⟨x, hx, rfl⟩; simpa⟩
+
+lemma image_inv {X Y : SSet.{u}} (A : Subcomplex Y) (f : X ⟶ Y) [IsIso f] :
+    A.image (inv f) = A.preimage f := by
+  simp [← preimage_inv]
 
 /-- Given a morphism of simplicial sets `p : Y ⟶ X` and
 `A : X.Subcomplex`, this is the induced morphism

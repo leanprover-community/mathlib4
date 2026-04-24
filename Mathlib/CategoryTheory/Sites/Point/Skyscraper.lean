@@ -119,7 +119,7 @@ variable [HasColimitsOfSize.{w, w} A]
 
 /-- Given a point of a site, the skyscraper presheaf functor is right adjoint
 to the fiber functor on presheaves. -/
-noncomputable def skyscraperPresheafAdjunction [HasColimitsOfSize.{w, w} A] :
+noncomputable def skyscraperPresheafAdjunction :
     Φ.presheafFiber (A := A) ⊣ Φ.skyscraperPresheafFunctor :=
   Adjunction.mkOfHomEquiv
     { homEquiv _ _ := Φ.skyscraperPresheafHomEquiv

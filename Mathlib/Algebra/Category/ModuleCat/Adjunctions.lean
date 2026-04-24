@@ -82,7 +82,6 @@ def freeHomEquiv {X : Type u} {M : ModuleCat.{u} R} :
 
 variable (R)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The free-forgetful adjunction for R-modules.
 -/
 def adj : free R ⊣ forget (ModuleCat.{u} R) :=

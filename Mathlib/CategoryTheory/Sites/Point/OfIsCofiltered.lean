@@ -118,7 +118,7 @@ instance [IsCofiltered N] : (functor.{w} p).Initial := by
       (show fiberMk.{w} φ₁ = fiberMk.{w} φ₂ by simpa using hφ₁.trans hφ₂.symm)
     exact ⟨_, g, by cat_disch⟩
 
-instance [IsCofiltered N] [InitiallySmall.{w} N] :
+instance [IsCofiltered N] :
     InitiallySmall.{w} (fiber.{w} p).Elements :=
   initiallySmall_of_initial_of_initiallySmall (functor.{w} p)
 

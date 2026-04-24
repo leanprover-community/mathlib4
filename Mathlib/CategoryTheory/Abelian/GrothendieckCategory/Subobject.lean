@@ -111,7 +111,6 @@ noncomputable def isColimitMapCoconeOfSubobjectMkEqISup
   rw [Category.assoc, Subobject.ofMkLEMk_comp, Over.w]
   apply colimit.ι_desc
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `C` is a Grothendieck abelian category, `X : C`, if `F : J ⥤ MonoOver X` is a
 functor from a `κ`-filtered category `J` with `κ` a regular cardinal such
 that `HasCardinalLT (Subobject X) κ`, and if the colimit of `F` (computed in `C`)

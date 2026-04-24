@@ -353,7 +353,6 @@ instance hasPullbacks [ChosenPullbacks C] : HasPullbacks C :=
 noncomputable def pullbackIsoOverPullback : ChosenPullbacksAlong.pullback g ≅ Over.pullback g :=
   (ChosenPullbacksAlong.mapPullbackAdj g).rightAdjointUniq (Over.mapPullbackAdj g)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem pullbackIsoOverPullback_hom_app_comp_fst (T : Over X) :
     ((pullbackIsoOverPullback g).hom.app T).left ≫ pullback.fst _ _ = fst _ _ := by
@@ -361,7 +360,6 @@ theorem pullbackIsoOverPullback_hom_app_comp_fst (T : Over X) :
     ((ChosenPullbacksAlong.mapPullbackAdj g).rightAdjointUniq_hom_app_counit
       (Over.mapPullbackAdj g) T)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem pullbackIsoOverPullback_hom_app_comp_snd (T : Over X) :
     ((pullbackIsoOverPullback g).hom.app T).left ≫ pullback.snd _ _ = snd _ _ :=
@@ -373,7 +371,6 @@ theorem pullbackIsoOverPullback_inv_app_comp_fst (T : Over X) :
     ((pullbackIsoOverPullback g).inv.app T).left ≫ fst _ _ = pullback.fst _ _ := by
   simp [← pullbackIsoOverPullback_hom_app_comp_fst, ← Over.comp_left_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem pullbackIsoOverPullback_inv_app_comp_snd (T : Over X) :
     ((pullbackIsoOverPullback g).inv.app T).left ≫ snd _ _ = pullback.snd _ _ :=

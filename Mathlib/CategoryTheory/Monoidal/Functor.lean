@@ -987,12 +987,10 @@ lemma unit_app_tensor_comp_map_δ (X Y : C) :
   simp [IsMonoidal.leftAdjoint_μ (adj := adj), ← adj.unit_naturality_assoc,
     ← Functor.map_comp, ← δ_natural_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma map_ε_comp_counit_app_unit : F.map (ε G) ≫ adj.counit.app (𝟙_ D) = η F := by
   simp [IsMonoidal.leftAdjoint_ε (adj := adj)]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma map_μ_comp_counit_app_tensor (X Y : D) :
     F.map (μ G X Y) ≫ adj.counit.app (X ⊗ Y) =
@@ -1239,7 +1237,7 @@ instance isMonoidal_refl : (Equivalence.refl (C := C)).IsMonoidal :=
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The inverse of a monoidal category equivalence is also a monoidal category equivalence. -/
-instance isMonoidal_symm [e.IsMonoidal] : e.symm.IsMonoidal where
+instance isMonoidal_symm : e.symm.IsMonoidal where
   leftAdjoint_ε := by
     simp only [toAdjunction]
     dsimp [symm]

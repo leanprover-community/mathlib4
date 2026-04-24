@@ -235,7 +235,6 @@ def isColimitCoconeOfLocallyDirected : IsColimit 𝒰.coconeOfLocallyDirected wh
   desc s := 𝒰.glueMorphismsOfLocallyDirected s.ι.app fun _ ↦ s.ι.naturality _
   uniq s m hm := 𝒰.hom_ext _ _ fun j ↦ by simpa using hm j
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `𝒰` is a directed open cover of `X`, to glue morphisms `{gᵢ : 𝒰ᵢ ⟶ Y}` over `S` it suffices
 to check compatibility with the transition maps. -/
 def glueMorphismsOverOfLocallyDirected {S : Scheme.{u}} {X : Over S}

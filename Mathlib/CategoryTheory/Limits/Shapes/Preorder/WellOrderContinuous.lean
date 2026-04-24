@@ -63,7 +63,7 @@ instance (F : ℕ ⥤ C) : F.IsWellOrderContinuous where
   nonempty_isColimit m hm := by simp at hm
 
 instance {n : ℕ} (F : Fin n ⥤ C) : F.IsWellOrderContinuous where
-  nonempty_isColimit _ hj := (Order.not_isSuccLimit hj).elim
+  nonempty_isColimit _ hj := (Order.not_isSuccLimit_of_isSuccArchimedean hj).elim
 
 set_option backward.defeqAttrib.useBackward true in
 lemma isWellOrderContinuous_of_iso {F G : J ⥤ C} (e : F ≅ G) [F.IsWellOrderContinuous] :

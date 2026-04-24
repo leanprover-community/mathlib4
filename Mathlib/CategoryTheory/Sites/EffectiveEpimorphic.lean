@@ -104,7 +104,8 @@ def isColimitOfEffectiveEpiStruct {X Y : C} (f : Y ⟶ X) (Hf : EffectiveEpiStru
     fac := by
       rintro S ⟨T, g, hT⟩
       dsimp
-      simp only [← hT, Category.assoc, Hf.fac]
+      generalize_proofs h₁ h₂ h₃
+      simp only [← hT, Category.assoc, Hf.fac _ h₂]
       let y : D := ⟨Over.mk f, 𝟙 _, by simp⟩
       let x : D := ⟨Over.mk T.hom, g, hT⟩
       let g' : x ⟶ y := ObjectProperty.homMk (Over.homMk g)
@@ -222,7 +223,8 @@ def isColimitOfEffectiveEpiFamilyStruct {B : C} {α : Type*}
     fac := by
       intro S ⟨T, a, (g : T.left ⟶ X a), hT⟩
       dsimp
-      simp only [← hT, Category.assoc, H.fac]
+      generalize_proofs h₁ h₂ h₃
+      simp only [← hT, Category.assoc, H.fac _ h₂]
       let A : D := ⟨Over.mk (π a), a, 𝟙 _, by simp⟩
       let B : D := ⟨Over.mk T.hom, a, g, hT⟩
       let i : B ⟶ A := ObjectProperty.homMk (Over.homMk g)
@@ -231,7 +233,8 @@ def isColimitOfEffectiveEpiFamilyStruct {B : C} {α : Type*}
       rfl
     uniq := by
       intro S m hm; dsimp
-      apply H.uniq
+      generalize_proofs h₁ h₂
+      apply H.uniq _ h₂
       intro a
       exact hm ⟨Over.mk (π a), a, 𝟙 _, by simp⟩ }
 

@@ -116,7 +116,6 @@ variable [Abelian.{v} C]
 
 section
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Pseudoequality is transitive: Just take the pullback. The pullback morphisms will
 be epimorphisms since in an abelian category, pullbacks of epimorphisms are epimorphisms. -/
 theorem pseudoEqual_trans {P : C} : IsTrans (Over P) (PseudoEqual P) := by
@@ -160,7 +159,6 @@ attribute [local instance] overToSort
 
 theorem over_coe_def {P Q : C} (a : Q ⟶ P) : (a : Pseudoelement P) = ⟦↑a⟧ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If two elements are pseudo-equal, then their composition with a morphism is, too. -/
 theorem pseudoApply_aux {P Q : C} (f : P ⟶ Q) (a b : Over P) : a ≈ b → app f a ≈ app f b :=
   fun ⟨R, p, q, ep, Eq, comm⟩ =>
@@ -270,7 +268,6 @@ theorem zero_morphism_ext' {P Q : C} (f : P ⟶ Q) : (∀ a, f a = 0) → 0 = f 
 theorem eq_zero_iff {P Q : C} (f : P ⟶ Q) : f = 0 ↔ ∀ a, f a = 0 :=
   ⟨fun h a => by simp [h], zero_morphism_ext _⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A monomorphism is injective on pseudoelements. -/
 theorem pseudo_injective_of_mono {P Q : C} (f : P ⟶ Q) [Mono f] : Function.Injective f := by
   intro abar abar'
@@ -441,7 +438,6 @@ theorem pseudo_pullback {P Q R : C} {f : P ⟶ R} {g : Q ⟶ R} {p : P} {q : Q} 
 
 section Module
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In the category `ModuleCat R`, if `x` and `y` are pseudoequal, then the range of the associated
 morphisms is the same. -/
 theorem ModuleCat.eq_range_of_pseudoequal {R : Type*} [Ring R] {G : ModuleCat R} {x y : Over G}

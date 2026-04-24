@@ -224,7 +224,7 @@ theorem range_lift
     AlgHom.map_adjoin, ← AlgHom.range_comp, Set.image_singleton, lift_apply_eps, lift_comp_inlHom,
     Algebra.map_top]
 
-/-- Show DualNumber with values x and y as an "x + y*ε" string -/
+/-- Show DualNumber with values x and y as an `"x + y*ε"` string -/
 instance instRepr [Repr R] : Repr (DualNumber R) where
   reprPrec f p :=
     (if p > 65 then (Std.Format.bracket "(" · ")") else (·)) <|

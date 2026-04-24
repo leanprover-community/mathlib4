@@ -6,6 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Comma.Over.Basic
+public import Mathlib.CategoryTheory.ObjectProperty.Opposite
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
 public import Mathlib.CategoryTheory.MorphismProperty.Factorization
 
@@ -53,7 +54,16 @@ lemma costructuredArrow_iso_iff (P : MorphismProperty T) [P.RespectsIso]
     P f.hom ↔ P g.hom :=
   P.comma_iso_iff e
 
+lemma structuredArrow_iso_iff (P : MorphismProperty T) [P.RespectsIso]
+    {L : A ⥤ T} {X : T} {f g : StructuredArrow X L} (e : f ≅ g) :
+    P f.hom ↔ P g.hom :=
+  P.comma_iso_iff e
+
 lemma over_iso_iff (P : MorphismProperty T) [P.RespectsIso] {X : T} {f g : Over X} (e : f ≅ g) :
+    P f.hom ↔ P g.hom :=
+  P.comma_iso_iff e
+
+lemma under_iso_iff (P : MorphismProperty T) [P.RespectsIso] {X : T} {f g : Under X} (e : f ≅ g) :
     P f.hom ↔ P g.hom :=
   P.comma_iso_iff e
 
@@ -123,6 +133,14 @@ def underObj (W : MorphismProperty T) {X : T} : ObjectProperty (Under X) := fun 
 
 instance [W.RespectsIso] : (W.underObj (X := X)).IsClosedUnderIsomorphisms :=
   inferInstanceAs <| (W.commaObj _ _).IsClosedUnderIsomorphisms
+
+@[simp]
+lemma inverseImage_op_overObj (W : MorphismProperty T) {X : T} :
+    W.overObj.op.inverseImage (Under.opEquivOpOver X).functor = W.op.underObj := rfl
+
+@[simp]
+lemma inverseImage_op_underObj (W : MorphismProperty T) {X : T} :
+    W.underObj.op.inverseImage (Over.opEquivOpUnder X).functor = W.op.overObj := rfl
 
 end
 
@@ -547,7 +565,6 @@ lemma Arrow.Hom.ext {A B : P.Arrow Q W} {f g : A ⟶ B}
   · exact hl
   · exact hr
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma Arrow.w {A B : P.Arrow Q W} (f : A ⟶ B) :
     f.left ≫ B.hom = A.hom ≫ f.right := f.w
@@ -640,7 +657,6 @@ lemma Over.Hom.ext {A B : P.Over Q X} {f g : A ⟶ B} (h : f.left = g.left) : f 
   · exact h
   · simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma Over.w {A B : P.Over Q X} (f : A ⟶ B) :
     f.left ≫ B.hom = A.hom := by
@@ -727,7 +743,6 @@ lemma Under.Hom.ext {A B : P.Under Q X} {f g : A ⟶ B} (h : f.right = g.right) 
   · simp
   · exact h
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma Under.w {A B : P.Under Q X} (f : A ⟶ B) :
     A.hom ≫ f.right = B.hom := by
@@ -779,7 +794,6 @@ protected abbrev CostructuredArrow.forget :
     P.CostructuredArrow Q F X ⥤ CostructuredArrow F X :=
   Comma.forget _ _ _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Reinterpreting an `F`-costructured arrow `F.obj A ⟶ X` as an arrow over `X`. -/
 @[simps]
 protected def CostructuredArrow.toOver : P.CostructuredArrow ⊤ F X ⥤ P.Over ⊤ X where
@@ -801,7 +815,6 @@ instance [F.Full] : (CostructuredArrow.toOver P F X).Full := by
 
 end CostructuredArrow
 
-set_option backward.isDefEq.respectTransparency false in
 instance HasFactorization.over
     {C : Type*} [Category* C] (W₁ W₂ : MorphismProperty C)
     [W₁.HasFactorization W₂] (S : C) :

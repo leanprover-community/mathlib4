@@ -147,7 +147,6 @@ instance (X : C) [HasLimitsOfSize.{w, w'} C] : HasLimitsOfSize.{w, w'} (Over X) 
 namespace WithInitial
 variable {X : C} {K : J ⥤ Under X} {F : C ⥤ D} {t : Cocone K}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The category of functors `J ⥤ Under X` can be seen as part of a comma category,
 namely the comma category constructed from the identity of the category of functors
 `J ⥤ C` and the functor that maps `X : C` to the constant functor `J ⥤ C`.

@@ -279,7 +279,6 @@ noncomputable def colimit.toOver (F : J ⥤ C) [HasColimit F] :
 def Cocone.mapCoconeToOver {F : J ⥤ C} (c : Cocone F) : (Over.forget c.pt).mapCocone c.toOver ≅ c :=
   Iso.refl _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a diagram `CostructuredArrow F X`s, we may obtain a cocone with cone point `X`. -/
 @[simps!]
 def Cocone.fromCostructuredArrow (F : C ⥤ D) {X : D} (G : J ⥤ CostructuredArrow F X) :

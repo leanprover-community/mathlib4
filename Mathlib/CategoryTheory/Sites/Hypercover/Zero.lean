@@ -393,6 +393,9 @@ def map (F : C ⥤ D) (E : PreZeroHypercover.{w} S) : PreZeroHypercover.{w} (F.o
 lemma presieve₀_map : (E.map F).presieve₀ = E.presieve₀.map F :=
   (Presieve.map_ofArrows _).symm
 
+lemma sieve₀_map : (E.map F).sieve₀ = E.sieve₀.functorPushforward F := by
+  simp [← Sieve.generate_map_eq_functorPushforward, Presieve.map_ofArrows, map]
+
 end Functoriality
 
 set_option backward.isDefEq.respectTransparency false in

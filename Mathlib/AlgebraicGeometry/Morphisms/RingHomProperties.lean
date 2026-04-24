@@ -251,7 +251,7 @@ and for `f : Spec B ⟶ Spec A`, it is equivalent to the ring hom property `Q`.
 To make the proofs easier, we state it instead as
 1. `Q` is local (See `RingHom.PropertyIsLocal`)
 2. `P f` if and only if `Q` holds for every `Γ(Y, U) ⟶ Γ(X, V)` for all affine `U`, `V`.
-See `HasRingHomProperty.iff_appLE`.
+  See `HasRingHomProperty.iff_appLE`.
 -/
 class HasRingHomProperty (P : MorphismProperty Scheme.{u})
     (Q : outParam (∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop)) : Prop where

@@ -439,7 +439,6 @@ section Image
 
 variable [HasImages C]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Taking the image of a morphism gives a functor `Over X ⥤ MonoOver X`.
 -/
 @[simps]

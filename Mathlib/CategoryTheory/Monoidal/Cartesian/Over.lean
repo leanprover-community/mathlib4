@@ -145,7 +145,6 @@ lemma rightUnitor_inv_left_snd (Y : Over X) :
     (ρ_ Y).inv.left ≫ pullback.snd _ (𝟙 X) = Y.hom :=
   limit.lift_π _ _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma whiskerLeft_left {R S T : Over X} (f : S ⟶ T) :
     (R ◁ f).left = pullback.map _ _ _ _ (𝟙 _) f.left (𝟙 _) (by simp) (by simp) := rfl
 
@@ -159,7 +158,6 @@ lemma whiskerLeft_left_snd {R S T : Over X} (f : S ⟶ T) :
     (R ◁ f).left ≫ pullback.snd _ _ = pullback.snd _ _ ≫ f.left :=
   limit.lift_π _ _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma whiskerRight_left {R S T : Over X} (f : S ⟶ T) :
     (f ▷ R).left = pullback.map _ _ _ _ f.left (𝟙 _) (𝟙 _) (by simp) (by simp) := rfl
 
@@ -173,7 +171,6 @@ lemma whiskerRight_left_snd {R S T : Over X} (f : S ⟶ T) :
     (f ▷ R).left ≫ pullback.snd _ _ = pullback.snd _ _ :=
   (limit.lift_π _ _).trans (Category.comp_id _)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma tensorHom_left {R S T U : Over X} (f : R ⟶ S) (g : T ⟶ U) :
     (f ⊗ₘ g).left = pullback.map _ _ _ _ f.left g.left (𝟙 _) (by simp) (by simp) := rfl
 

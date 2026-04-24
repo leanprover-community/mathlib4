@@ -203,7 +203,6 @@ def isoOfIsAffine [IsAffine S] :
           simp only [eval₂_X]
           exact homOfVector_appTop_coord _ _ _
 
-#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
 @[simp]
 lemma isoOfIsAffine_hom_appTop [IsAffine S] :
     (isoOfIsAffine n S).hom.appTop =
@@ -427,7 +426,7 @@ lemma isIntegralHom_over_iff_isEmpty : IsIntegralHom (𝔸(n; S) ↘ S) ↔ IsEm
     obtain ⟨p : Polynomial R, hp, hp'⟩ :=
       (MorphismProperty.arrow_mk_iso_iff (RingHom.toMorphismProperty RingHom.IsIntegral)
         (arrowIsoΓSpecOfIsAffine _)).mpr h.2 (X i)
-    have : (rename fun _ ↦ i).comp (pUnitAlgEquiv.{_, v} _).symm.toAlgHom p = 0 := by
+    have : (rename fun _ ↦ i).comp (uniqueAlgEquiv.{_, v} _ PUnit).symm.toAlgHom p = 0 := by
       simp [← hp', ← algebraMap_eq]
     rw [AlgHom.comp_apply, map_eq_zero_iff _ (rename_injective _ (fun _ _ _ ↦ rfl))] at this
     simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_coe, EmbeddingLike.map_eq_zero_iff] at this

@@ -154,7 +154,7 @@ def transportStruct (e : C ≌ D) : MonoidalCategoryStruct.{v₂} D where
       e.counitIso.app _
 
 #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
-the fields `whiskerList_eq` and following were all filled by the `cat_disch` auto_param. -/
+the fields `whiskerLeft_eq` and following were all filled by the `cat_disch` auto_param. -/
 attribute [local simp] transportStruct in
 /-- Transport a monoidal structure along an equivalence of (plain) categories.
 -/

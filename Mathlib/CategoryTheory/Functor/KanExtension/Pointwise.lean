@@ -340,7 +340,6 @@ lemma IsPointwiseLeftKanExtension.isLeftKanExtension :
     E.right.IsLeftKanExtension E.hom where
   nonempty_isUniversal := ⟨h.isUniversal⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsPointwiseLeftKanExtension.hasLeftKanExtension :
     HasLeftKanExtension L F :=
   have := h.isLeftKanExtension
@@ -520,7 +519,6 @@ lemma IsPointwiseRightKanExtension.isRightKanExtension :
     E.left.IsRightKanExtension E.hom where
   nonempty_isUniversal := ⟨h.isUniversal⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsPointwiseRightKanExtension.hasRightKanExtension :
     HasRightKanExtension L F :=
   have := h.isRightKanExtension
