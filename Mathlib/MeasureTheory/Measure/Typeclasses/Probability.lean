@@ -40,6 +40,7 @@ lemma prob_le_one {μ : Measure α} [IsZeroOrProbabilityMeasure μ] {s : Set α}
   apply (measure_mono (subset_univ _)).trans
   rcases IsZeroOrProbabilityMeasure.measure_univ (μ := μ) with h | h <;> simp [h]
 
+@[simp]
 lemma measureReal_le_one {μ : Measure α} [IsZeroOrProbabilityMeasure μ] {s : Set α} :
     μ.real s ≤ 1 :=
   ENNReal.toReal_le_of_le_ofReal zero_le_one (ENNReal.ofReal_one.symm ▸ prob_le_one)
@@ -110,7 +111,7 @@ instance isProbabilityMeasure_ite {p : Prop} [Decidable p] {μ ν : Measure α}
 open unitInterval in
 instance {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] {p : I} :
     IsProbabilityMeasure (toNNReal p • μ + toNNReal (σ p) • ν) where
-  measure_univ := by simp [← add_smul]
+  measure_univ := by simp [← ENNReal.coe_add]
 
 variable [IsProbabilityMeasure μ] {p : α → Prop} {f : β → α}
 
