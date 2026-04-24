@@ -1,0 +1,21 @@
+⏺ Two subcommands are usable today, both invoked as python3 scripts/lake_graph_extract.py … from /Users/chelo/mathlib4:
+
+  emit <module> — prints a node summary (command, env, outputs, setup_json keys). Try:
+  - emit Mathlib.Init — small leaf, 54 transitive imports.
+  - emit Mathlib.Tactic.Widget.Calc — exercises a widget-using module.
+  - emit Batteries.Tactic.OpenPrivate — cross-package; outputs land in batteries' own .lake/build/.
+  - emit Mathlib — the root, 8310+ imports. Useful to see how big the importArts get.
+
+  Each call invokes lake setup-file once (a few seconds) — that's the v0 oracle.
+
+  validate-commands <module> — runs the byte-exact diff against lake build -v. ⚠️ This is destructive: it deletes the module's .olean*, .ilean*, .ir*, .c*, .trace, .setup.json and lets Lake rebuild them. For a leaf,
+   this rebuilds only that module. For a deep module (anything not near the import frontier), Lake will only rebuild the target — but if its dependencies aren't cached, those will rebuild too. Safe choices to try:
+  - validate-commands Mathlib.Init
+  - validate-commands Cache.Hashing
+  - validate-commands Aesop.BaseM
+  - Pick any module you suspect might be unusual (e.g. one with import all or meta import) and validate it — that's where edge cases would surface.
+
+  What you can't do yet: run the extracted graph (no run_graph.py), produce a whole-project build_graph.json, see lean_exe nodes, or check setup.json content correctness independently of Lake. Those are the next
+  phases.
+
+  If you want something quick to gain confidence: pick a handful of modules from different libs/packages, run validate-commands on each, and confirm MATCH. If anything ever prints MISMATCH, that's a real signal.
