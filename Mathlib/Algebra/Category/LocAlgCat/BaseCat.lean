@@ -266,10 +266,6 @@ def ofPullback (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.hom.toAlgHom) : Ba
 abbrev pullbackFst (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.hom.toAlgHom) :
     ofPullback f g hg ⟶ A := ObjectProperty.homMk (LocAlgCat.pullbackFst f.hom g.hom hg)
 
-lemma surjective_pullbackFst (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.hom.toAlgHom) :
-    Surjective (pullbackFst f g hg).hom.toAlgHom :=
-  AlgHom.surjective_pullbackFst_of_surjective _ _ hg
-
 /-- Upgrades the second projection map from the pullback algebra to a morphism in `BaseCat`. -/
 abbrev pullbackSnd (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.hom.toAlgHom) :
     ofPullback f g hg ⟶ B := ObjectProperty.homMk (LocAlgCat.pullbackSnd f.hom g.hom hg)
@@ -305,7 +301,7 @@ instance pullbackFst_isSmallExtension (f : A ⟶ C) (g : B ⟶ C) [IsSmallExtens
       w (IsSmallExtension.surjective g) with ⟨z, m, m_in, hm⟩
     exact ⟨z, w + m, hm.symm, by rw [add_mul, hw, mul_comm, hx m m_in, add_zero]⟩
   · rw [mem_maximalIdeal, mem_nonunits_iff] at h
-    change ¬ IsUnit (⟨(a, b), hab⟩ : f.hom.toAlgHom.pullback g.hom.toAlgHom) at h
+    change ¬ @IsUnit (f.hom.toAlgHom.pullback g.hom.toAlgHom) _ _ at h
     rw [AlgHom.isUnit_pullback_mk_iff, not_and] at h
     change (⟨(0, x), this⟩ * ⟨(a, b), hab⟩ : f.hom.toAlgHom.pullback g.hom.toAlgHom) = 0
     suffices ¬ IsUnit b by simpa [← Subtype.val_inj] using hx b this
@@ -349,7 +345,7 @@ theorem isEssSurj_iff_isEssSurj_mapOfQuot (f : A ⟶ B) {I : Ideal A} {J : Ideal
     rw [← toOfQuot_comp_mapOfQuot (I := I) f hf, Category.assoc', ← pullback_comm_sq,
       Category.assoc, ObjectProperty.FullSubcategory.comp_hom, LocAlgCat.toAlgHom_comp,
       AlgHom.coe_comp]
-    exact hg.comp (surjective_pullbackFst _ _ Ideal.Quotient.mk_surjective)
+    exact hg.comp (LocAlgCat.surjective_pullbackFst _ _ Ideal.Quotient.mk_surjective)
   · apply LocAlgCat.surjective_of_surjective_mapCotangent
     apply Surjective.of_comp_left (f := LocAlgCat.mapCotangent (B.toOfQuot J).hom)
     · rw [← LinearMap.coe_comp, ← LocAlgCat.mapCotangent_comp,

@@ -75,6 +75,9 @@ instance : CoeSort (LocAlgCat Λ k) (Type w) := ⟨carrier⟩
 
 attribute [coe] carrier
 
+variable (X) in
+lemma coe_of : (of Λ k X hX : Type w) = X := rfl
+
 /-- The canonical residue map from an object `A` to `k`.
 This is a prefered way to apply residue maps in `LocAlgCat`. -/
 def residue (A : LocAlgCat Λ k) : A →ₐ[Λ] k :=
@@ -91,9 +94,6 @@ lemma residue_surjective : Surjective (residue A) := A.isSurjective
 
 lemma residue_eq_zero_iff {x : A} : residue A x = 0 ↔ x ∈ maximalIdeal A := by
   rw [← RingHom.mem_ker, ker_residue]
-
-variable (X) in
-lemma coe_of : (of Λ k X hX : Type w) = X := rfl
 
 @[simp]
 lemma residue_of_apply {x : (of Λ k X hX)} : (of Λ k X hX).residue x = algebraMap X k x := rfl
@@ -197,9 +197,8 @@ def ofIso (i : A ≅ B) : A ≃ₐ[Λ] B where
   right_inv x := by simp
 
 @[simp]
-lemma residue_comp_coe_ofIso (i : A ≅ B) : B.residue.comp (ofIso i) = A.residue := by
-  ext
-  simpa using DFunLike.congr_fun i.hom.residue_comp _
+lemma residue_comp_coe_ofIso (i : A ≅ B) : B.residue.comp (ofIso i) = A.residue :=
+  i.hom.residue_comp
 
 /-- Algebra equivalences compatible with residue maps are the same as
 isomorphisms in `LocAlgCat`. -/

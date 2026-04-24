@@ -118,15 +118,17 @@ lemma equivCotangent_apply (e : A ≅ B) (x : CotangentSpace A) :
 lemma equivCotangent_symm_apply (e : A ≅ B) (y : CotangentSpace B) :
     (equivCotangent e).symm y = mapCotangent e.inv y := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem surjective_mapCotangent_toOfQuot (I : Ideal A) [Nontrivial (A ⧸ I)] :
     Surjective (mapCotangent (A.toOfQuot I)) := by
-  have : RingHom.ker (algebraMap A (A.ofQuot I)) ≤ maximalIdeal A := le_maximalIdeal (by
-    change RingHom.ker (A.toOfQuot I).toAlgHom ≠ _
-    rwa [ker_toAlgHom_toOfQuot, ← Ideal.Quotient.nontrivial_iff])
+  have : IsLocalRing (A ⧸ I) := .of_surjective' _ Ideal.Quotient.mk_surjective
+  have : IsLocalHom (algebraMap A (A ⧸ I)) :=
+    ⟨Ideal.Quotient.mk_surjective.isLocalHom.map_nonunit⟩
+  change Surjective ((maximalIdeal A).mapCotangent (maximalIdeal (A ⧸ I)) (Algebra.ofId A (A ⧸ I))
+    (by rw [← Ideal.comap_coe, Algebra.toRingHom_ofId, maximalIdeal_comap]))
   refine Ideal.mapCotangent_surjective_of_comap_eq (fun _ ↦ Ideal.Quotient.mk_surjective _) ?_
-  rw [sup_eq_right.mpr this]
-  exact (A.toOfQuot I).comap_maximalIdeal_eq
+  rw [Ideal.Quotient.algebraMap_eq, Ideal.mk_ker, ← Ideal.Quotient.algebraMap_eq,
+    maximalIdeal_comap, right_eq_sup]
+  exact le_maximalIdeal (Ideal.Quotient.nontrivial_iff.mp ‹_›)
 
 theorem bijective_mapCotangent_toOfQuot_iff (I : Ideal A) [Nontrivial (A ⧸ I)] :
     Bijective (mapCotangent (A.toOfQuot I)) ↔ I ≤ maximalIdeal A ^ 2 := by
@@ -236,9 +238,8 @@ to the cotangent space of `A`, induced by the algebra structure map. -/
 def baseCotangentMap [Algebra.IsIntegral Λ k] (A : LocAlgCat.{w} Λ k) :
     k ⊗[ResidueField Λ] CotangentSpace Λ →ₗ[k] CotangentSpace A :=
   letI baseMap : CotangentSpace Λ →ₗ[ResidueField Λ] CotangentSpace A :=
-    ((maximalIdeal Λ).mapCotangent (maximalIdeal A) (Algebra.ofId Λ A) (by
-      change _ ≤ Ideal.comap (algebraMap Λ A) _
-      rw [comap_algebraMap_maximalIdeal])).extendScalarsOfSurjective
+    ((maximalIdeal Λ).mapCotangent (maximalIdeal A) (Algebra.ofId Λ A) (by rw [← Ideal.comap_coe,
+      Algebra.toRingHom_ofId, comap_algebraMap_maximalIdeal])).extendScalarsOfSurjective
     IsLocalRing.residue_surjective
   TensorProduct.AlgebraTensorModule.lift (LinearMap.toSpanSingleton k _ baseMap)
 

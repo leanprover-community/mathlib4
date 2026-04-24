@@ -56,8 +56,7 @@ lemma isLocalHom_algebraMap [IsLocalRing Λ] [Algebra.IsIntegral Λ k] :
 variable (A) in
 lemma comap_algebraMap_maximalIdeal [IsLocalRing Λ] [Algebra.IsIntegral Λ k] :
     (maximalIdeal A).comap (algebraMap Λ A) = maximalIdeal Λ := by
-  have : IsLocalHom (algebraMap Λ k) := isLocalHom_of_isIntegral Λ k
-  have := ((local_hom_TFAE (algebraMap Λ k)).out 0 4).mp ‹_›
+  have := ((local_hom_TFAE (algebraMap Λ k)).out 0 4).mp (isLocalHom_of_isIntegral Λ k)
   rw [eq_comm, ← this, IsScalarTower.algebraMap_eq Λ A, ← Ideal.comap_comap,
     eq_maximalIdeal (Ideal.comap_isMaximal_of_surjective _ A.isSurjective)]
 
@@ -151,15 +150,14 @@ def mapOfQuot (f : A ⟶ B) {J : Ideal B} [Nontrivial (A ⧸ I)] [Nontrivial (B 
   haveI : IsLocalRing (B ⧸ J) := .of_surjective' _ Ideal.Quotient.mk_surjective
   ofHom (Ideal.quotientMapₐ J f.toAlgHom hf) (by
     rw [← (Ideal.comap_injective_of_surjective _ Ideal.Quotient.mk_surjective).eq_iff,
-      ← Ideal.comap_coe (Ideal.quotientMapₐ J f.toAlgHom hf), Ideal.comap_comap]
-    change Ideal.comap (((Ideal.quotientMap J f.toAlgHom hf)).comp (Ideal.Quotient.mk I))
-      (maximalIdeal (B ⧸ J)) = _
-    rw [Ideal.quotientMap_comp_mk, ← Ideal.comap_comap, Ideal.comap_coe, eq_maximalIdeal
-      (Ideal.comap_isMaximal_of_surjective ((Ideal.Quotient.mk J)) Ideal.Quotient.mk_surjective),
-        f.comap_maximalIdeal_eq, eq_maximalIdeal (Ideal.comap_isMaximal_of_surjective
-          (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective)] ) (AlgHom.ext fun x ↦ by
+      ← Ideal.comap_coe (Ideal.quotientMapₐ J f.toAlgHom hf), Ideal.quotientMapₐ,
+      AlgHom.coe_ringHom_mk, Ideal.comap_comap, Ideal.quotientMap_comp_mk,
+      ← Ideal.comap_comap, Ideal.comap_coe, eq_maximalIdeal
+        (Ideal.comap_isMaximal_of_surjective ((Ideal.Quotient.mk J)) Ideal.Quotient.mk_surjective),
+      f.comap_maximalIdeal_eq, eq_maximalIdeal (Ideal.comap_isMaximal_of_surjective
+        (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective)]) (AlgHom.ext fun x ↦ by
     rcases Ideal.Quotient.mk_surjective x with ⟨x, rfl⟩
-    exact DFunLike.congr_fun f.residue_comp x )
+    exact DFunLike.congr_fun f.residue_comp x)
 
 @[simp]
 theorem toOfQuot_comp_mapOfQuot (f : A ⟶ B) {J : Ideal B} [Nontrivial (A ⧸ I)] [Nontrivial (B ⧸ J)]
@@ -296,6 +294,10 @@ abbrev pullbackFst (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.toAlgHom) :
   ⟨f.toAlgHom.pullbackFst g.toAlgHom, eq_maximalIdeal <| Ideal.comap_isMaximal_of_surjective _
     (AlgHom.surjective_pullbackFst_of_surjective f.toAlgHom g.toAlgHom hg), rfl⟩
 
+lemma surjective_pullbackFst (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.toAlgHom) :
+    Surjective (pullbackFst f g hg).toAlgHom :=
+  AlgHom.surjective_pullbackFst_of_surjective _ _ hg
+
 lemma residue_comp_pullbackFst (f : A ⟶ C) (g : B ⟶ C) :
     A.residue.comp (f.toAlgHom.pullbackFst g.toAlgHom) =
       B.residue.comp (f.toAlgHom.pullbackSnd g.toAlgHom) := by
@@ -360,8 +362,8 @@ theorem surjective_residue_comp_pullbackFst_of_isSeparable [IsLocalRing Λ] [Mod
       simpa using LocAlgCat.not_isUnit_aeval_of_aeval_eq_zero x (minpoly.aeval (ResidueField Λ) x)
         map_q ha)
     (by change IsUnit ((IsLocalRing.residue A) _); simpa using
-        LocAlgCat.isUnit_aeval_derivative_of_isSeparable (Algebra.IsSeparable.isSeparable
-          (ResidueField Λ) x) map_q ha)
+      LocAlgCat.isUnit_aeval_derivative_of_isSeparable (Algebra.IsSeparable.isSeparable
+        (ResidueField Λ) x) map_q ha)
   replace ha : A.residue a = x := by
     rw [← sub_add_cancel a a', map_add, ha, LocAlgCat.residue_eq_zero_iff.mpr a_sub, zero_add]
   obtain ⟨b', hb⟩ := B.residue_surjective x
@@ -370,8 +372,8 @@ theorem surjective_residue_comp_pullbackFst_of_isSeparable [IsLocalRing Λ] [Mod
       simpa using LocAlgCat.not_isUnit_aeval_of_aeval_eq_zero x (minpoly.aeval (ResidueField Λ) x)
         map_q hb)
     (by change IsUnit ((IsLocalRing.residue B) _); simpa using
-        LocAlgCat.isUnit_aeval_derivative_of_isSeparable
-          (Algebra.IsSeparable.isSeparable (ResidueField Λ) x) map_q hb)
+      LocAlgCat.isUnit_aeval_derivative_of_isSeparable (Algebra.IsSeparable.isSeparable
+        (ResidueField Λ) x) map_q hb)
   replace hb : B.residue b = x := by
     rw [← sub_add_cancel b b', map_add, hb, LocAlgCat.residue_eq_zero_iff.mpr b_sub, zero_add]
   clear a' a_sub b' b_sub
