@@ -19,6 +19,8 @@ public section
 
 namespace Sym2
 
+open scoped Cardinal
+
 variable {α : Type*}
 
 /-- The equivalence class of an unordered pair -/
@@ -55,7 +57,7 @@ theorem encard_mk_fiber_le (z : Sym2 α) : (Sym2.mk.uncurry ⁻¹' {z}).encard �
   rw [← z.finite_mk_fiber.cast_ncard_eq, z.ncard_mk_fiber]
   split_ifs <;> norm_cast
 
-theorem cardinalMk_prod_le (α : Type*) : Cardinal.mk (α × α) ≤ 2 * Cardinal.mk (Sym2 α) := by
+theorem cardinalMk_prod_le (α : Type*) : #(α × α) ≤ 2 * #(Sym2 α) := by
   rw [← Equiv.sigmaFiberEquiv Sym2.mk.uncurry |>.cardinal_eq, Cardinal.mk_sigma, mul_comm]
   grw [Cardinal.sum_le_mk_mul_iSup]
   apply mul_le_mul_right <| ciSup_le' fun z ↦ ?_
@@ -69,7 +71,7 @@ section fromRel
 variable {r : α → α → Prop} (sym : Symmetric r)
 
 theorem cardinalMk_prod_le_two_mul_cardinalMk_fromRel :
-    Cardinal.mk { p : α × α // r p.fst p.snd } ≤ 2 * Cardinal.mk (Sym2.fromRel sym) := by
+    #{ p : α × α // r p.fst p.snd } ≤ 2 * #(Sym2.fromRel sym) := by
   rw [← Equiv.sigmaSubtypeFiberEquivSubtype Sym2.mk.uncurry (q := (· ∈ Sym2.fromRel sym)) (by simp)
     |>.cardinal_eq, Cardinal.mk_sigma, mul_comm]
   grw [Cardinal.sum_le_mk_mul_iSup]
@@ -80,7 +82,7 @@ theorem cardinalMk_prod_le_two_mul_cardinalMk_fromRel :
     simp
 
 theorem cardinalMk_prod_eq_two_mul_cardinalMk_fromRel (irrefl : Std.Irrefl r) :
-    Cardinal.mk { p : α × α // r p.fst p.snd } = 2 * Cardinal.mk (Sym2.fromRel sym) := by
+    #{ p : α × α // r p.fst p.snd } = 2 * #(Sym2.fromRel sym) := by
   rw [← Equiv.sigmaSubtypeFiberEquivSubtype Sym2.mk.uncurry (q := (· ∈ Sym2.fromRel sym)) (by simp)
     |>.cardinal_eq, Cardinal.mk_sigma, mul_comm, ← Cardinal.sum_const']
   congr
