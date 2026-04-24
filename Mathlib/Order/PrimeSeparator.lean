@@ -117,7 +117,7 @@ theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : S
     _       = b ⊔ (a₁ ⊓ a₂) := (sup_inf_left b a₁ a₂).symm
   -- Note that c₁ ⊓ c₂ ∈ F, since c₁ and c₂ are both in F and F is a filter.
   -- Since F is an upper set, it now follows that b ⊔ (a₁ ⊓ a₂) ∈ F.
-  have ba₁a₂F : b ⊔ (a₁ ⊓ a₂) ∈ F := PFilter.mem_of_le ineq (PFilter.inf_mem c₁F c₂F)
+  have ba₁a₂F : b ⊔ (a₁ ⊓ a₂) ∈ F := F.upper ineq (F.inf_mem c₁F c₂F)
   -- Now, if we would have a₁ ⊓ a₂ ∈ J, then, since J is an ideal and b ∈ J, we would also get
   -- b ⊔ (a₁ ⊓ a₂) ∈ J. But this contradicts that J is disjoint from F.
   contrapose JF with ha₁a₂
