@@ -50,7 +50,6 @@ lemma δ₀Iter_succ' (i : ℕ) {n m : ℕ} (h : n + (i + 1) = m := by grind) :
     δ₀Iter (i + 1) h = δ 0 ≫ δ₀Iter i := by
   refine ConcreteCategory.hom_ext _ _ (fun k ↦ ?_)
   ext
-  dsimp
   rw [dsimp% ConcreteCategory.comp_apply (δ 0) (δ₀Iter i), coe_δ,
     δ₀Iter_apply .., δ₀Iter_apply ..]
   dsimp
