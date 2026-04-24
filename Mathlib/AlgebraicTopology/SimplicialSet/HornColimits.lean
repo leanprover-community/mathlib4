@@ -232,8 +232,7 @@ lemma exists_desc (hf : horn.IsCompatible f) :
 /-- Let `i : Fin (n + 2)`. Given a compatible family of morphisms `Δ[n] ⟶ X` for `j ≠ i`,
 this is the glued morphism `Λ[n + 1, i] ⟶ X`. -/
 @[no_expose]
-noncomputable def desc (hf : horn.IsCompatible f) :
-    (Λ[n + 1, i] : SSet) ⟶ X :=
+noncomputable def desc (hf : horn.IsCompatible f) : (Λ[n + 1, i] : SSet) ⟶ X :=
   hf.exists_desc.choose
 
 @[reassoc (attr := simp)]
