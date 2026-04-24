@@ -20,9 +20,14 @@ variable {R A B : Type*} [CommRing R] [CommRing A] [CommRing B] [Algebra R A] [A
 
 variable (p : Ideal A) (q : Ideal B) [q.LiesOver p]
 
+section maximal
+
+variable [p.IsMaximal] [q.IsMaximal] [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
+  [Localization.AtPrime.IsLiesOverAlgebra p q]
+
 attribute [local instance] Ideal.Quotient.field
 
-instance [p.IsMaximal] [q.IsMaximal] [Algebra.IsSeparable (A ⧸ p) (B ⧸ q)] :
+instance [Algebra.IsSeparable (A ⧸ p) (B ⧸ q)] :
     Algebra.IsSeparable p.ResidueField q.ResidueField := by
   refine Algebra.IsSeparable.of_equiv_equiv
     (.ofBijective _ p.bijective_algebraMap_quotient_residueField)
@@ -45,14 +50,21 @@ instance [p.IsMaximal] [q.IsMaximal] [Algebra.IsSeparable p.ResidueField q.Resid
   simp [RingHom.algebraMap_toAlgebra, ← IsScalarTower.algebraMap_apply]
 
 variable {p q} in
-lemma Algebra.isSeparable_residueField_iff [p.IsMaximal] [q.IsMaximal] :
+lemma Algebra.isSeparable_residueField_iff :
     Algebra.IsSeparable p.ResidueField q.ResidueField ↔ Algebra.IsSeparable (A ⧸ p) (B ⧸ q) :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
 
-instance [p.IsPrime] : Algebra.IsAlgebraic (A ⧸ p) p.ResidueField :=
+end maximal
+
+section prime
+
+variable [p.IsPrime] [q.IsPrime] [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
+  [Localization.AtPrime.IsLiesOverAlgebra p q]
+
+instance : Algebra.IsAlgebraic (A ⧸ p) p.ResidueField :=
   IsLocalization.isAlgebraic _ (nonZeroDivisors (A ⧸ p))
 
-instance [p.IsPrime] [q.IsPrime] [Algebra.IsIntegral A B] :
+instance [Algebra.IsIntegral A B] :
     Algebra.IsAlgebraic p.ResidueField q.ResidueField := by
   have : Algebra.IsIntegral (A ⧸ p) (B ⧸ q) :=
     .tower_top A
@@ -64,6 +76,8 @@ instance [p.IsPrime] [q.IsPrime] [Algebra.IsIntegral A B] :
     obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
     simp [RingHom.algebraMap_toAlgebra, ← IsScalarTower.algebraMap_apply]
   refine .extendScalars (Ideal.injective_algebraMap_quotient_residueField p)
+
+end prime
 
 namespace IsLocalRing
 
