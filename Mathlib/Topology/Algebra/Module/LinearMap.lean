@@ -450,8 +450,11 @@ end Add
 variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 
 /-- Composition of bounded linear maps. -/
-def comp (g : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) : M₁ →SL[σ₁₃] M₃ :=
-  ⟨(g : M₂ →ₛₗ[σ₂₃] M₃).comp (f : M₁ →ₛₗ[σ₁₂] M₂), g.2.comp f.2⟩
+@[implicit_reducible]
+def comp (g : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) : M₁ →SL[σ₁₃] M₃ where
+  toFun x := g (f x)
+  __ := (g : M₂ →ₛₗ[σ₂₃] M₃).comp (f : M₁ →ₛₗ[σ₁₂] M₂)
+  cont := g.2.comp f.2
 
 @[inherit_doc comp]
 infixr:80 " ∘L " =>
