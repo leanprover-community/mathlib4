@@ -72,7 +72,7 @@ noncomputable def CategoryTheory.Abelian.Ext.moduleCatUliftFunctorObjIso
 the linear equivalence `Ext M N n ≃ₗ[R] Ext M' N' n`. -/
 noncomputable def ModuleCat.extLinearEquivOfLinearEquiv [Small.{v} R] [Small.{v'} R]
     (e1 : M ≃ₗ[R] M') (e2 : N ≃ₗ[R] N') (n : ℕ) : Ext M N n ≃ₗ[R] Ext M' N' n :=
-  letI : Small.{max v v'} R := small_lift R
+  haveI : Small.{max v v'} R := small_lift R
   ((ModuleCat.extUliftLinearEquiv M N n).trans (Ext.moduleCatUliftFunctorObjIso e1 e2 n)).trans
     (ModuleCat.extUliftLinearEquiv M' N' n).symm
 
@@ -159,8 +159,8 @@ noncomputable def ModuleCat.extSemiLinearEquivOfSemiLinearEquiv [Small.{v} R] [S
     {M N : ModuleCat.{v} R} {M' N' : ModuleCat.{v'} R'}
     (e1 : M ≃ₛₗ[RingHomClass.toRingHom e] M') (e2 : N ≃ₛₗ[RingHomClass.toRingHom e] N')
     (n : ℕ) : Ext M' N' n ≃ₛₗ[RingHomClass.toRingHom e.symm] Ext M N n :=
-  letI : Small.{max v v'} R := small_lift R
-  letI : Small.{max v v'} R' := small_lift R'
+  haveI : Small.{max v v'} R := small_lift R
+  haveI : Small.{max v v'} R' := small_lift R'
   let e1' : (uliftFunctor.{v'} R).obj M ≃ₛₗ[RingHomClass.toRingHom e]
     (uliftFunctor.{v} R').obj M' :=
     (ULift.moduleEquiv.trans e1).trans ULift.moduleEquiv.symm
