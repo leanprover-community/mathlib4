@@ -134,9 +134,40 @@ alias postcomp_compactConvergenceCLM_apply := postcompCompactConvergenceCLM_appl
 
 end comp
 
-namespace ContinuousLinearEquiv
-
 /-! ### Continuous linear equivalences -/
+
+section Pi
+
+open scoped CompactConvergenceCLM
+
+variable [TopologicalSpace E] {ι : Type*} (F : ι → Type*)
+  [∀ i, AddCommGroup (F i)] [∀ i, Module 𝕜₁ (F i)] [∀ i, TopologicalSpace (F i)]
+  [∀ i, IsTopologicalAddGroup (F i)] [∀ i, ContinuousConstSMul 𝕜₁ (F i)]
+
+variable (𝕜₁ E) in
+/-- `ContinuousLinearMap.pi`, upgraded to a continuous linear equivalence between
+`Π i, E →L_c[𝕜] F i` and `E →L_c[𝕜] Π i, F i`. -/
+def CompactConvergenceCLM.piEquivL :
+    (Π i, E →L_c[𝕜₁] F i) ≃L[𝕜₁] (E →L_c[𝕜₁] Π i, F i) where
+  toFun F := ContinuousLinearMap.pi F
+  invFun f i := (ContinuousLinearMap.proj i).comp f
+  __ := UniformConvergenceCLM.piEquivL _ _ _
+
+@[simp]
+lemma CompactConvergenceCLM.piEquivL_apply
+    (T : Π i, E →L_c[𝕜₁] F i) (e : E) (i : ι) :
+    piEquivL 𝕜₁ E F T e i = T i e :=
+  rfl
+
+@[simp]
+lemma CompactConvergenceCLM.piEquivL_symm_apply
+    (T : E →L_c[𝕜₁] Π i, F i) (e : E) (i : ι) :
+    (piEquivL 𝕜₁ E F).symm T i e = T e i :=
+  rfl
+
+end Pi
+
+namespace ContinuousLinearEquiv
 
 open scoped CompactConvergenceCLM
 
@@ -206,37 +237,6 @@ lemma compactConvergenceCLMCongr_symm_apply (e₁ : E ≃L[𝕜] F) (e₂ : H �
   rfl
 
 end Linear
-
-section Pi
-
-open scoped CompactConvergenceCLM
-
-variable [TopologicalSpace E] {ι : Type*} (F : ι → Type*)
-  [∀ i, AddCommGroup (F i)] [∀ i, Module 𝕜₁ (F i)] [∀ i, TopologicalSpace (F i)]
-  [∀ i, IsTopologicalAddGroup (F i)] [∀ i, ContinuousConstSMul 𝕜₁ (F i)]
-
-variable (𝕜₁ E) in
-/-- `ContinuousLinearMap.pi`, upgraded to a continuous linear equivalence between
-`Π i, E →L_c[𝕜] F i` and `E →L_c[𝕜] Π i, F i`. -/
-def CompactConvergenceCLM.piEquivL :
-    (Π i, E →L_c[𝕜₁] F i) ≃L[𝕜₁] (E →L_c[𝕜₁] Π i, F i) where
-  toFun F := ContinuousLinearMap.pi F
-  invFun f i := (ContinuousLinearMap.proj i).comp f
-  __ := UniformConvergenceCLM.piEquivL _ _ _
-
-@[simp]
-lemma CompactConvergenceCLM.piEquivL_apply
-    (T : Π i, E →L_c[𝕜₁] F i) (e : E) (i : ι) :
-    piEquivL 𝕜₁ E F T e i = T i e :=
-  rfl
-
-@[simp]
-lemma CompactConvergenceCLM.piEquivL_symm_apply
-    (T : E →L_c[𝕜₁] Π i, F i) (e : E) (i : ι) :
-    (piEquivL 𝕜₁ E F).symm T i e = T e i :=
-  rfl
-
-end Pi
 
 end ContinuousLinearEquiv
 
