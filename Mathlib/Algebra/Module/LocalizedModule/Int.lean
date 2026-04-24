@@ -6,7 +6,6 @@ Authors: Christian Merten
 module
 
 public import Mathlib.Algebra.Module.LocalizedModule.Basic
-public import Mathlib.Algebra.Module.Submodule.Pointwise
 
 /-!
 
@@ -107,7 +106,7 @@ noncomputable def commonDenomOfFinset (s : Finset M') : S :=
 noncomputable def finsetIntegerMultiple [DecidableEq M] (s : Finset M') : Finset M :=
   s.attach.image fun t => integerMultiple S f s id t
 
-open Pointwise
+open scoped Pointwise
 
 theorem finsetIntegerMultiple_image [DecidableEq M] (s : Finset M') :
     f '' finsetIntegerMultiple S f s = commonDenomOfFinset S f s • (s : Set M') := by

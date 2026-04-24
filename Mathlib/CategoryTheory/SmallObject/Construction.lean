@@ -255,9 +255,7 @@ lemma functorMap_comm :
     functorObjLeft f πX ≫ functorMapTgt f τ =
       functorMapSrc f τ ≫ functorObjLeft f πY := by
   ext ⟨i, t, b, w⟩
-  simp only [ι_colimMap_assoc, Discrete.natTrans_app, ι_colimMap,
-    ι_functorMapTgt f τ i t b w _ rfl,
-    ι_functorMapSrc_assoc f τ i t b w _ rfl]
+  simp [ι_functorMapTgt f τ i t b w _ rfl, ι_functorMapSrc_assoc f τ i t b w _ rfl]
 
 variable [HasPushout (functorObjTop f πX) (functorObjLeft f πX)]
   [HasPushout (functorObjTop f πY) (functorObjLeft f πY)]

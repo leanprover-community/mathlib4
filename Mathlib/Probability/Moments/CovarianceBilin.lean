@@ -136,7 +136,7 @@ lemma covarianceBilin_map_const_add [CompleteSpace E] [IsProbabilityMeasure μ] 
   · ext
     rw [covarianceBilin_of_not_memLp, covarianceBilin_of_not_memLp h]
     rw [(measurableEmbedding_addLeft _).memLp_map_measure_iff.not]
-    contrapose! h
+    contrapose h
     convert (memLp_const (-c)).add h
     ext; simp
 

@@ -28,7 +28,7 @@ When `R` has `UniformSpace R`, we define the corresponding uniform structure.
 This topology can be included by writing `open scoped MvPowerSeries.WithPiTopology`.
 
 When the type of coefficients has the discrete topology, it corresponds to the topology defined by
-[N. Bourbaki, *Algebra {II}*, Chapter 4, §4, n°2][bourbaki1981].
+[N. Bourbaki, *Algebra II*, Chapter 4, §4, n°2][bourbaki1981].
 
 It is *not* the adic topology in general.
 
@@ -227,7 +227,7 @@ theorem isTopologicallyNilpotent_of_constantCoeff_zero [CommSemiring R]
 
 /-- Assuming the base ring has a discrete topology, the powers of a `MvPowerSeries` converge to 0
 iff its constant coefficient is nilpotent.
-[N. Bourbaki, *Algebra {II}*, Chapter 4, §4, n°2, corollary of prop. 3][bourbaki1981]
+[N. Bourbaki, *Algebra II*, Chapter 4, §4, n°2, corollary of prop. 3][bourbaki1981]
 
 See also `MvPowerSeries.LinearTopology.isTopologicallyNilpotent_iff_constantCoeff`. -/
 theorem isTopologicallyNilpotent_iff_constantCoeff_isNilpotent
@@ -336,7 +336,7 @@ theorem summable_prod_of_tendsto_weightedOrder_atTop_nhds_top {w : σ → ℕ}
   apply (Finset.Iio i).powerset.finite_toSet.subset
   suffices ∀ s : Finset ι, coeff d (∏ i ∈ s, f i) ≠ 0 → ↑s ⊆ Set.Iio i by simpa
   intro s hs
-  contrapose! hs
+  contrapose hs
   obtain ⟨x, hxs, hxi⟩ := Set.not_subset.mp hs
   rw [Set.mem_Iio, not_lt] at hxi
   refine coeff_eq_zero_of_lt_weightedOrder w <| (hi x hxi).trans_le <| ?_
