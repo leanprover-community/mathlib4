@@ -29,9 +29,9 @@ There are also three lemmas about `iUnionLift` intended to aid with proving that
 homomorphism when defined on a Union of substructures. There is one lemma each to show that
 constants, unary functions, or binary functions are preserved. These lemmas are:
 
-*`Set.iUnionLift_const`
-*`Set.iUnionLift_unary`
-*`Set.iUnionLift_binary`
+* `Set.iUnionLift_const`
+* `Set.iUnionLift_unary`
+* `Set.iUnionLift_binary`
 
 ## Tags
 

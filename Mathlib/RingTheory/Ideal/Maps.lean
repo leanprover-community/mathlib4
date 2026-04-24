@@ -503,6 +503,10 @@ theorem mem_map_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e
   · rintro ⟨x, hx, rfl⟩
     exact mem_map_of_mem e hx
 
+lemma _root_.RingEquiv.map_primeCompl_comap_eq (e : R ≃+* S) (p : Ideal S) [p.IsPrime] :
+    (p.comap e).primeCompl.map e = p.primeCompl := by
+  simp [SetLike.ext_iff, e.surjective.forall]
+
 section Bijective
 
 variable (hf : Function.Bijective f) {I : Ideal R} {K : Ideal S}
@@ -1028,7 +1032,7 @@ instance map_isPrime_of_equiv {F' : Type*} [EquivLike F' R S] [RingEquivClass F'
 
 theorem map_eq_bot_iff_of_injective {I : Ideal R} {f : F} (hf : Function.Injective f) :
     I.map f = ⊥ ↔ I = ⊥ := by
-  simp [map, span_eq_bot, ← map_zero f, -map_zero, hf.eq_iff, I.eq_bot_iff]
+  simp [map, ← map_zero f, -map_zero, hf.eq_iff, I.eq_bot_iff]
 
 end Semiring
 
