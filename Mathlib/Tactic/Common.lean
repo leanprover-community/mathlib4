@@ -11,10 +11,6 @@ public import Aesop
 public import Qq
 public import Plausible
 
--- Tools for analysing imports, like `#find_home`, `#minimize_imports`, ...
-public import ImportGraph.Tools
-public import ImportGraph.Lean.Environment
-
 -- Import common Batteries tactics and commands
 public import Batteries.Tactic.Basic
 public import Batteries.Tactic.Case
@@ -53,9 +49,11 @@ public import Mathlib.Tactic.Constructor
 public import Mathlib.Tactic.Contrapose
 public import Mathlib.Tactic.Conv
 public import Mathlib.Tactic.Convert
+public import Mathlib.Tactic.DefEqAbuse
 public import Mathlib.Tactic.DefEqTransformations
 public import Mathlib.Tactic.DeprecateTo
 public import Mathlib.Tactic.DepRewrite
+public import Mathlib.Tactic.DSimpPercent
 public import Mathlib.Tactic.ErwQuestion
 public import Mathlib.Tactic.Eqns
 public import Mathlib.Tactic.ExistsI
@@ -125,6 +123,8 @@ public import Mathlib.Util.TransImports
 public import Mathlib.Util.WhatsNew
 
 /-!
+# Common tactics, linters, and utilities
+
 This file imports all tactics which do not have significant theory imports,
 and hence can be imported very low in the theory import hierarchy,
 thereby making tactics widely available without needing specific imports.
@@ -139,7 +139,7 @@ import hierarchy.
 public meta section
 
 /-!
-# Register tactics with `hint`. Tactics with larger priority run first.
+### Register tactics with `hint`. Tactics with larger priority run first.
 -/
 
 section Hint
@@ -159,7 +159,7 @@ register_hint 200 fun_prop
 end Hint
 
 /-!
-# Register tactics with `try?`. Tactics with larger priority run first.
+### Register tactics with `try?`. Tactics with larger priority run first.
 -/
 
 section Try

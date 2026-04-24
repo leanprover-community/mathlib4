@@ -256,7 +256,7 @@ partial def derive (expensive := false) (e : Expr) : MetaM Simp.Result := do
   | none => throwError "internal error: reduce_mod_char not registered as simp extension"
   let ctx ← Simp.mkContext config (congrTheorems := congrTheorems)
     (simpTheorems := #[← ext.getTheorems])
-  let discharge := Mathlib.Meta.NormNum.discharge ctx
+  let discharge := Mathlib.Meta.NormNum.discharge
   let r : Simp.Result := {expr := e}
   let pre := Simp.preDefault #[] >> fun e =>
       try return (Simp.Step.done (← matchAndNorm (expensive := expensive) e))
@@ -296,11 +296,11 @@ elab_rules : tactic
 | `(tactic| reduce_mod_char $[$loc]?) => unsafe do
   let loc := expandOptLocation (Lean.mkOptionalNode loc)
   transformAtNondepPropLocation (derive (expensive := false) ·) "reduce_mod_char" loc
-    (failIfUnchanged := false)
+    (ifUnchanged := .silent)
 | `(tactic| reduce_mod_char! $[$loc]?) => unsafe do
   let loc := expandOptLocation (Lean.mkOptionalNode loc)
   transformAtNondepPropLocation (derive (expensive := true) ·) "reduce_mod_char"
-    loc (failIfUnchanged := false)
+    loc (ifUnchanged := .silent)
 
 end ReduceModChar
 

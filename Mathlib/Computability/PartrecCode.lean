@@ -28,11 +28,11 @@ of some code.
 
 ## Main Results
 
-* `Nat.Partrec.Code.rec_prim`: Recursion on `Nat.Partrec.Code` is primitive recursive.
-* `Nat.Partrec.Code.rec_computable`: Recursion on `Nat.Partrec.Code` is computable.
+* `Nat.Partrec.Code.primrec_recOn`: Recursion on `Nat.Partrec.Code` is primitive recursive.
+* `Nat.Partrec.Code.computable_recOn`: Recursion on `Nat.Partrec.Code` is computable.
 * `Nat.Partrec.Code.smn`: The $S_n^m$ theorem.
 * `Nat.Partrec.Code.exists_code`: Partial recursiveness is equivalent to being the eval of a code.
-* `Nat.Partrec.Code.evaln_prim`: `evaln` is primitive recursive.
+* `Nat.Partrec.Code.primrec_evaln`: `evaln` is primitive recursive.
 * `Nat.Partrec.Code.fixed_point`: Roger's fixed point theorem.
 * `Nat.Partrec.Code.fixed_point₂`: Kleene's second recursion theorem.
 
@@ -457,9 +457,9 @@ end
 * `Nat.Partrec.Code.prec`: Primitive recursion. Given an argument of the form `Nat.pair a n`:
   * If `n = 0`, returns `eval cf a`.
   * If `n = succ k`, returns `eval cg (pair a (pair k (eval (prec cf cg) (pair a k))))`
-* `Nat.Partrec.Code.rfind'`: Minimization. For `f` an argument of the form `Nat.pair a m`,
-  `rfind' f m` returns the least `a` such that `f a m = 0`, if one exists and `f b m` terminates
-  for `b < a`
+* `Nat.Partrec.Code.rfind'`: Minimization starting at a provided value. Given an argument of the
+  form `Nat.pair a m`, returns the least `n ≥ m` such that `eval cf (pair a n) = 0`, if such an `n`
+  exists and if `eval cf (pair a k)` terminates for all `m ≤ k ≤ n`.
 -/
 def eval : Code → ℕ →. ℕ
   | zero => pure 0

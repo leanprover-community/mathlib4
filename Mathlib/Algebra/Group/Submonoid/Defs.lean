@@ -76,6 +76,13 @@ attribute [to_additive] OneMemClass
 
 attribute [simp, aesop safe (rule_sets := [SetLike])] one_mem zero_mem
 
+/-- The underlying set of a term of a `OneMemClass` is nonempty. -/
+@[to_additive (attr := simp)
+/-- The underlying set of a term of a `ZeroMemClass` is nonempty. -/]
+theorem OneMemClass.coe_nonempty {S M : Type*} [One M] [SetLike S M] [OneMemClass S M] (s : S) :
+    (s : Set M).Nonempty :=
+  ⟨1, one_mem s⟩
+
 section
 
 /-- A submonoid of a monoid `M` is a subset containing 1 and closed under multiplication. -/
@@ -357,18 +364,12 @@ end OneMemClass
 
 variable {A : Type*} [MulOneClass M] [SetLike A M] [hA : SubmonoidClass A M] (S' : A)
 
-/-- An `AddSubmonoid` of an `AddMonoid` inherits a scalar multiplication. -/
-instance AddSubmonoidClass.nSMul {M} [AddMonoid M] {A : Type*} [SetLike A M]
-    [AddSubmonoidClass A M] (S : A) : SMul ℕ S :=
-  ⟨fun n a => ⟨n • a.1, nsmul_mem a.2 n⟩⟩
-
 namespace SubmonoidClass
 
 /-- A submonoid of a monoid inherits a power operator. -/
-instance nPow {M} [Monoid M] {A : Type*} [SetLike A M] [SubmonoidClass A M] (S : A) : Pow S ℕ :=
+@[to_additive /-- An `AddSubmonoid` of an `AddMonoid` inherits a scalar multiplication. -/]
+instance instPow {M} [Monoid M] {A : Type*} [SetLike A M] [SubmonoidClass A M] (S : A) : Pow S ℕ :=
   ⟨fun a n => ⟨a.1 ^ n, pow_mem a.2 n⟩⟩
-
-attribute [to_additive existing nSMul] nPow
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_pow {M} [Monoid M] {A : Type*} [SetLike A M] [SubmonoidClass A M] {S : A} (x : S)

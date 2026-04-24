@@ -6,6 +6,7 @@ Authors: Andrew Yang, Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Elementwise
+public import Mathlib.CategoryTheory.Types.Basic
 public import Mathlib.Data.Set.Lattice.Image
 
 /-!
@@ -25,7 +26,7 @@ We define subfunctors of a type-valued functors.
 
 universe w v u
 
-open Opposite CategoryTheory
+open Opposite CategoryTheory ConcreteCategory
 
 namespace CategoryTheory
 
@@ -49,7 +50,6 @@ variable {F F' F'' : C ⥤ Type w} (G G' : Subfunctor F)
 instance : PartialOrder (Subfunctor F) :=
   PartialOrder.lift Subfunctor.obj (fun _ _ => Subfunctor.ext)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : CompleteLattice (Subfunctor F) where
   sup F G :=
     { obj U := F.obj U ⊔ G.obj U
@@ -76,15 +76,13 @@ instance : CompleteLattice (Subfunctor F) where
         simp only [Set.sSup_eq_sUnion, Set.sUnion_image, Set.preimage_iUnion,
           Set.mem_iUnion, Set.mem_preimage, exists_prop]
         exact ⟨_, h, F.map f h'⟩ }
-  le_sSup _ _ _ _ _ := by aesop
-  sSup_le _ _ _ _ _ := by aesop
+  isLUB_sSup _ := ⟨fun _ _ _ _ ↦ by aesop, fun _ _ _ ↦ by aesop⟩
   sInf S :=
     { obj U := sInf (Set.image (fun T ↦ T.obj U) S)
       map f x hx := by
         rintro _ ⟨F, h, rfl⟩
         exact F.map f (hx _ ⟨_, h, rfl⟩) }
-  sInf_le _ _ _ _ _ := by aesop
-  le_sInf _ _ _ _ _ := by aesop
+  isGLB_sInf _ := ⟨fun _ _ _ _ ↦ by aesop, fun _ _ _ ↦ by aesop⟩
   bot :=
     { obj U := ⊥
       map := by simp }
@@ -112,12 +110,12 @@ lemma sInf_obj (S : Set (Subfunctor F)) (U : C) :
     (sInf S).obj U = sInf (Set.image (fun T ↦ T.obj U) S) := rfl
 
 @[simp]
-lemma iSup_obj {ι : Type*} (S : ι → Subfunctor F) (U : C) :
+lemma iSup_obj {ι : Sort*} (S : ι → Subfunctor F) (U : C) :
     (⨆ i, S i).obj U = ⋃ i, (S i).obj U := by
   simp [iSup, sSup_obj]
 
 @[simp]
-lemma iInf_obj {ι : Type*} (S : ι → Subfunctor F) (U : C) :
+lemma iInf_obj {ι : Sort*} (S : ι → Subfunctor F) (U : C) :
     (⨅ i, S i).obj U = ⋂ i, (S i).obj U := by
   simp [iInf, sInf_obj]
 
@@ -133,7 +131,7 @@ lemma max_min (S₁ S₂ T : Subfunctor F) :
     (S₁ ⊔ S₂) ⊓ T = (S₁ ⊓ T) ⊔ (S₂ ⊓ T) := by
   aesop
 
-lemma iSup_min {ι : Type*} (S : ι → Subfunctor F) (T : Subfunctor F) :
+lemma iSup_min {ι : Sort*} (S : ι → Subfunctor F) (T : Subfunctor F) :
     (⨆ i, S i) ⊓ T = ⨆ i, S i ⊓ T := by
   aesop
 
@@ -141,42 +139,30 @@ instance : Nonempty (Subfunctor F) :=
   inferInstance
 
 /-- The subfunctor as a functor. -/
-@[simps!]
+@[simps obj map]
 def toFunctor : C ⥤ Type w where
   obj U := G.obj U
-  map := @fun _ _ i x => ⟨F.map i x, G.map i x.prop⟩
-  map_id X := by
-    ext ⟨x, _⟩
-    dsimp
-    simp only [FunctorToTypes.map_id_apply]
-  map_comp := @fun X Y Z i j => by
-    ext ⟨x, _⟩
-    dsimp
-    simp only [FunctorToTypes.map_comp_apply]
+  map i := TypeCat.ofHom fun x => ⟨F.map i x, G.map i x.prop⟩
 
 instance {U} : CoeHead (G.toFunctor.obj U) (F.obj U) where
   coe := Subtype.val
 
 /-- The inclusion of a subfunctor to the original functor. -/
 @[simps]
-def ι : G.toFunctor ⟶ F where app _ x := x
+def ι : G.toFunctor ⟶ F where app _ := TypeCat.ofHom (fun x ↦ x)
 
 instance : Mono G.ι :=
   ⟨@fun _ _ _ e =>
-    NatTrans.ext <|
-      funext fun U => funext fun x => Subtype.ext <| congr_fun (congr_app e U) x⟩
+    NatTrans.ext <| funext fun U => hom_ext _ _ fun x => Subtype.ext <| congr_hom (congr_app e U) x⟩
 
 /-- The inclusion of a subfunctor to a larger subfunctor -/
 @[simps]
 def homOfLe {G G' : Subfunctor F} (h : G ≤ G') : G.toFunctor ⟶ G'.toFunctor where
-  app U x := ⟨x, h U x.prop⟩
+  app U := TypeCat.ofHom fun x ↦ ⟨x, h U x.prop⟩
 
 instance {G G' : Subfunctor F} (h : G ≤ G') : Mono (Subfunctor.homOfLe h) :=
-  ⟨fun _ _ e =>
-    NatTrans.ext <|
-      funext fun U =>
-        funext fun x =>
-          Subtype.ext <| (congr_arg Subtype.val <| (congr_fun (congr_app e U) x :) :)⟩
+  ⟨fun _ _ e => NatTrans.ext <| funext fun U => hom_ext _ _ fun x => by
+    exact Subtype.ext (congr_arg Subtype.val <| (congr_hom (congr_app e U) x) :)⟩
 
 @[reassoc (attr := simp)]
 theorem homOfLe_ι {G G' : Subfunctor F} (h : G ≤ G') :
@@ -202,7 +188,7 @@ theorem eq_top_iff_isIso : G = ⊤ ↔ IsIso G.ι := by
 
 theorem nat_trans_naturality (f : F' ⟶ G.toFunctor) {U V : C} (i : U ⟶ V)
     (x : F'.obj U) : (f.app V (F'.map i x)).1 = F.map i (f.app U x).1 :=
-  congr_arg Subtype.val (FunctorToTypes.naturality _ _ f i x)
+  congrArg Subtype.val (NatTrans.naturality_apply f i x)
 
 @[deprecated (since := "2025-12-11")] alias Subpresheaf.le_def := le_def
 @[deprecated (since := "2025-12-11")] alias Subpresheaf.top_obj := top_obj
@@ -223,7 +209,8 @@ theorem nat_trans_naturality (f : F' ⟶ G.toFunctor) {U V : C} (i : U ⟶ V)
 @[deprecated (since := "2025-12-11")] alias Subpresheaf.nat_trans_naturality := nat_trans_naturality
 @[deprecated (since := "2025-12-11")] alias Subpresheaf.toPresheaf := toFunctor
 @[deprecated (since := "2025-12-11")] alias Subpresheaf.toPresheaf_obj := toFunctor_obj
-@[deprecated (since := "2025-12-11")] alias Subpresheaf.toPresheaf_map_coe := toFunctor_map_coe
+@[deprecated (since := "2025-12-11")] alias Subpresheaf.toPresheaf_map_coe := toFunctor_map
+@[deprecated (since := "2026-02-10")] alias toFunctor_map_coe := toFunctor_map
 
 end Subfunctor
 

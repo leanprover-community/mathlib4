@@ -200,7 +200,6 @@ lemma normThreshold_eq (n : ℕ) : normThreshold a n = a * (1 + √2) * (√2 ^ 
   rw [normThreshold, arithGeom_same_eq_mul_div (by simp), div_eq_mul_inv, Real.inv_sqrt_two_sub_one]
   ring
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sq_normThreshold_add_one_le (n : ℕ) :
     normThreshold a (n + 1) ^ 2 ≤ a ^ 2 * (1 + √2) ^ 2 * 2 ^ (n + 2) := by
   simp_rw [normThreshold_eq, mul_pow, mul_assoc]
@@ -556,7 +555,7 @@ lemma exists_integrable_exp_sq_of_map_rotation_eq_self_of_isProbabilityMeasure
   -- Otherwise, we can find `b > 0` such that the ball of radius `b` has full measure
   obtain ⟨b, hb⟩ : ∃ b, μ {x | ‖x‖ ≤ b} = 1 := by
     by_contra h_ne
-    push_neg at h_meas_Ioo h_ne
+    push Not at h_meas_Ioo h_ne
     suffices μ .univ ≤ 2⁻¹ by simp at this
     have h_le a : μ {x | ‖x‖ ≤ a} ≤ 2⁻¹ := by
       have h_of_pos a' (ha : 0 < a') : μ {x | ‖x‖ ≤ a'} ≤ 2⁻¹ := by

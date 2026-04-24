@@ -387,7 +387,6 @@ theorem hasSum_iff_tendsto_nat {f : ℕ → ℝ≥0} {r : ℝ≥0} :
   simp only [← ENNReal.coe_finset_sum]
   exact ENNReal.tendsto_coe
 
-set_option backward.isDefEq.respectTransparency false in
 theorem not_summable_iff_tendsto_nat_atTop {f : ℕ → ℝ≥0} :
     ¬Summable f ↔ Tendsto (fun n : ℕ => ∑ i ∈ Finset.range n, f i) atTop atTop := by
   constructor
@@ -536,7 +535,6 @@ theorem Summable.of_nonneg_of_le {f g : β → ℝ} (hg : ∀ b, 0 ≤ g b) (hgf
   rw [NNReal.summable_coe] at hf ⊢
   exact NNReal.summable_of_le (fun b => NNReal.coe_le_coe.1 (hgf b)) hf
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Summable.toNNReal {f : α → ℝ} (hf : Summable f) : Summable fun n => (f n).toNNReal := by
   apply NNReal.summable_coe.1
   refine .of_nonneg_of_le (fun n => NNReal.coe_nonneg _) (fun n => ?_) hf.abs
@@ -576,7 +574,7 @@ theorem ENNReal.multipliable_of_le_one {f : α → ℝ≥0∞} (h₀ : ∀ i, f 
 
 theorem ENNReal.hasProd_iInf_prod {f : α → ℝ≥0∞} (h₀ : ∀ i, f i ≤ 1) :
     HasProd f (⨅ s : Finset α, ∏ i ∈ s, f i) :=
-  tendsto_atTop_iInf (Finset.prod_anti_set_of_le_one h₀)
+  tendsto_atTop_iInf (Finset.prod_anti_set_of_le_one' h₀)
 
 theorem ENNReal.tprod_eq_iInf_prod {f : α → ℝ≥0∞} (h₀ : ∀ i, f i ≤ 1) :
     ∏' i, f i = ⨅ s : Finset α, ∏ i ∈ s, f i :=
@@ -586,7 +584,6 @@ end tprod
 
 variable [PseudoEMetricSpace α]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the extended distance between consecutive points of a sequence is estimated
 by a summable series of `NNReal`s, then the original sequence is a Cauchy sequence. -/
 theorem cauchySeq_of_edist_le_of_summable {f : ℕ → α} (d : ℕ → ℝ≥0)
@@ -635,7 +632,6 @@ namespace ENNReal
 
 variable {α : Type*} (s : Set α)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma tsum_set_one : ∑' _ : s, (1 : ℝ≥0∞) = s.encard := by
   obtain (hfin | hinf) := Set.finite_or_infinite s
   · lift s to Finset α using hfin

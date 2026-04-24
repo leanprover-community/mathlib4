@@ -455,6 +455,7 @@ variable {F₂ : Type u → Type u} [q₂ : QPF F₂]
 variable {F₁ : Type u → Type u} [q₁ : QPF F₁]
 
 /-- composition of qpfs gives another qpf -/
+@[implicit_reducible]
 def comp : QPF (Functor.Comp F₂ F₁) where
   P := PFunctor.comp q₂.P q₁.P
   abs {α} := by
@@ -514,6 +515,7 @@ variable {FG_repr : ∀ {α}, G α → F α}
 functor `G α`, `G` is a qpf. We can consider `G` a quotient on `F` where
 elements `x y : F α` are in the same equivalence class if
 `FG_abs x = FG_abs y`. -/
+@[implicit_reducible]
 def quotientQPF (FG_abs_repr : ∀ {α} (x : G α), FG_abs (FG_repr x) = x)
     (FG_abs_map : ∀ {α β} (f : α → β) (x : F α), FG_abs (f <$> x) = f <$> FG_abs x) : QPF G where
   P := q.P
@@ -558,7 +560,7 @@ theorem has_good_supp_iff {α : Type u} (x : F α) :
       ∃ a f, abs ⟨a, f⟩ = x ∧ ∀ a' f', abs ⟨a', f'⟩ = x → f '' univ ⊆ f' '' univ := by
   constructor
   · intro h
-    have : Liftp (supp x) x := by rw [h]; intro u; exact id
+    have : Liftp (· ∈ supp x) x := by rw [h]; intro u; exact id
     rw [liftp_iff] at this
     rcases this with ⟨a, f, xeq, h'⟩
     refine ⟨a, f, xeq.symm, ?_⟩
@@ -633,8 +635,7 @@ theorem suppPreservation_iff_liftpPreservation : q.SuppPreservation ↔ q.LiftpP
     rw [suppPreservation_iff_uniform] at h'
     dsimp only [SuppPreservation, supp] at h
     rw [liftp_iff_of_isUniform h', supp_eq_of_isUniform h', PFunctor.liftp_iff']
-    simp only [image_univ, mem_range, exists_imp]
-    constructor <;> intros <;> subst_vars <;> solve_by_elim
+    simp
   · rintro α ⟨a, f⟩
     simp only [LiftpPreservation] at h
     simp only [supp, h]

@@ -6,7 +6,7 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Analysis.LocallyConvex.Bounded
-public import Mathlib.Topology.Algebra.Module.StrongTopology
+public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 
 /-!
 # Compact operators
@@ -74,8 +74,15 @@ theorem isCompactOperator_id_iff_locallyCompactSpace {E : Type*}
   ⟨fun ⟨_, hK, hK0⟩ ↦ hK.locallyCompactSpace_of_mem_nhds_of_addGroup hK0,
     fun _ ↦ exists_compact_mem_nhds 0⟩
 
-alias ⟨IsCompactOperator.locallyCompactSpace, isCompactOperator_id⟩ :=
+alias ⟨LocallyCompactSpace.of_isCompactOperator_id, _⟩ :=
   isCompactOperator_id_iff_locallyCompactSpace
+
+@[deprecated (since := "2026-03-04")] alias IsCompactOperator.locallyCompactSpace :=
+  LocallyCompactSpace.of_isCompactOperator_id
+
+lemma isCompactOperator_id {E : Type*} [AddGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E]
+    [LocallyCompactSpace E] : IsCompactOperator (id : E → E) :=
+  isCompactOperator_id_iff_locallyCompactSpace.2 ‹_›
 
 section Characterizations
 
@@ -277,6 +284,16 @@ theorem IsCompactOperator.clm_comp [AddCommMonoid M₂] [Module R₂ M₂] [AddC
     IsCompactOperator (g ∘ f) :=
   hf.continuous_comp g.continuous
 
+/-- Any continuous linear map to a locally compact space is a compact operator. -/
+theorem isCompactOperator_of_locallyCompactSpace_dom [AddCommGroup M₂] [Module R₂ M₂]
+    [IsTopologicalAddGroup M₂] [LocallyCompactSpace M₂] (T : M₁ →SL[σ₁₂] M₂) :
+    IsCompactOperator T := (isCompactOperator_id.comp_clm T :)
+
+/-- Any continuous linear map from a locally compact space is a compact operator. -/
+theorem isCompactOperator_of_locallyCompactSpace_rng [AddCommGroup M₂] [Module R₂ M₂]
+    [IsTopologicalAddGroup M₂] [LocallyCompactSpace M₂] [AddCommMonoid M₃] [Module R₃ M₃]
+    (T : M₂ →SL[σ₂₃] M₃) : IsCompactOperator T := isCompactOperator_id.clm_comp T
+
 end Comp
 
 section CodRestrict
@@ -338,8 +355,6 @@ variable {𝕜₁ 𝕜₂ : Type*} [NontriviallyNormedField 𝕜₁] [Nontrivial
 @[continuity]
 theorem IsCompactOperator.continuous {f : M₁ →ₛₗ[σ₁₂] M₂} (hf : IsCompactOperator f) :
     Continuous f := by
-  letI : UniformSpace M₂ := IsTopologicalAddGroup.rightUniformSpace _
-  haveI : IsUniformAddGroup M₂ := isUniformAddGroup_of_addCommGroup
   -- Since `f` is linear, we only need to show that it is continuous at zero.
   -- Let `U` be a neighborhood of `0` in `M₂`.
   refine continuous_of_continuousAt_zero f fun U hU => ?_
@@ -347,16 +362,16 @@ theorem IsCompactOperator.continuous {f : M₁ →ₛₗ[σ₁₂] M₂} (hf : I
   -- The compactness of `f` gives us a compact set `K : Set M₂` such that `f ⁻¹' K` is a
   -- neighborhood of `0` in `M₁`.
   rcases hf with ⟨K, hK, hKf⟩
-  -- But any compact set is totally bounded, hence Von-Neumann bounded. Thus, `K` absorbs `U`.
+  -- But any compact set Von-Neumann bounded. Thus, `K` absorbs `U`.
   -- This gives `r > 0` such that `∀ a : 𝕜₂, r ≤ ‖a‖ → K ⊆ a • U`.
-  rcases (hK.totallyBounded.isVonNBounded 𝕜₂ hU).exists_pos with ⟨r, hr, hrU⟩
+  rcases (hK.isVonNBounded 𝕜₂ hU).exists_pos with ⟨r, hr, hrU⟩
   -- Choose `c : 𝕜₂` with `r < ‖c‖`.
   rcases NormedField.exists_lt_norm 𝕜₁ r with ⟨c, hc⟩
   have hcnz : c ≠ 0 := ne_zero_of_norm_ne_zero (hr.trans hc).ne.symm
   -- We have `f ⁻¹' ((σ₁₂ c⁻¹) • K) = c⁻¹ • f ⁻¹' K ∈ 𝓝 0`. Thus, showing that
   -- `(σ₁₂ c⁻¹) • K ⊆ U` is enough to deduce that `f ⁻¹' U ∈ 𝓝 0`.
   suffices (σ₁₂ <| c⁻¹) • K ⊆ U by
-    refine mem_of_superset ?_ this
+    grw [← this]
     have : IsUnit c⁻¹ := hcnz.isUnit.inv
     rwa [mem_map, this.preimage_smul_setₛₗ σ₁₂, set_smul_mem_nhds_zero_iff (inv_ne_zero hcnz)]
   -- Since `σ₁₂ c⁻¹` = `(σ₁₂ c)⁻¹`, we have to prove that `K ⊆ σ₁₂ c • U`.

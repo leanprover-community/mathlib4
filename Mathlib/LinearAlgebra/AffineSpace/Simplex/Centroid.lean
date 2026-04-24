@@ -142,7 +142,6 @@ theorem face_centroid_eq_centroid {n : ℕ} (s : Simplex k P n) {fs : Finset (Fi
   rw [← Finset.coe_inj, Finset.coe_map, Finset.coe_univ, Set.image_univ]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Over a characteristic-zero division ring, the centroids given by
 two subsets of the points of a simplex are equal if and only if those
 faces are given by the same subset of points. -/
@@ -216,7 +215,6 @@ theorem centroid_reindex {m n : ℕ} (s : Simplex k P m)
   subst h_eq
   convert Finset.univ.affineCombination_map e.toEmbedding _ _ <;> simp [Function.comp_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem centroid_restrict [CharZero k] {n : ℕ} (s : Simplex k P n) (S : AffineSubspace k P)
     (hS : affineSpan k (Set.range s.points) ≤ S) :
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
@@ -305,14 +303,14 @@ theorem faceOppositeCentroid_vsub_faceOppositeCentroid [CharZero k] (s : Affine.
   rw [faceOppositeCentroid_eq_sum_vsub_vadd s i, faceOppositeCentroid_eq_sum_vsub_vadd s j,
     vadd_vsub_vadd_comm _ _ (s.points i) (s.points j)]
   have h1 (i : Fin (n + 1)) : ∑ x, (s.points x -ᵥ s.points i) =
-      ∑ x, (s.points x -ᵥ s.points 0 - (s.points i-ᵥ s.points 0)) := by
+      ∑ x, (s.points x -ᵥ s.points 0 - (s.points i -ᵥ s.points 0)) := by
     apply sum_congr rfl
     simp
   simp_rw [h1 i, h1 j, sum_sub_distrib]
   rw [smul_sub, smul_sub, sub_sub_sub_cancel_left, ← smul_sub, ← sum_sub_distrib,
     vsub_sub_vsub_cancel_right, sum_const, card_univ, Fintype.card_fin]
   have : (s.points i -ᵥ s.points j) = -(s.points j -ᵥ s.points i) := by simp
-  rw [this, ← sub_eq_add_neg, add_smul, sub_eq_iff_eq_add , one_smul, smul_add, add_comm]
+  rw [this, ← sub_eq_add_neg, add_smul, sub_eq_iff_eq_add, one_smul, smul_add, add_comm]
   have : (n : k)⁻¹ • n • (s.points j -ᵥ s.points i) =
       (n : k)⁻¹ • (n : k) • (s.points j -ᵥ s.points i) := by
     norm_cast0
@@ -400,7 +398,6 @@ theorem faceOppositeCentroid_eq_smul_vsub_vadd_point [CharZero k] (s : Simplex k
   rw [sum_centroidWeights_eq_one_of_card_ne_zero]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem faceOppositeCentroid_restrict [CharZero k] (s : Simplex k P n)
     (S : AffineSubspace k P) (hS : affineSpan k (Set.range s.points) ≤ S) {i : Fin (n + 1)} :
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
@@ -440,7 +437,6 @@ theorem median_map [CharZero k] {V₂ P₂ : Type*} [AddCommGroup V₂] [Module 
     (s.map f hf).median i = (s.median i).map f := by
   simp [median, map_span, Set.image_pair]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem median_restrict [CharZero k] (s : Simplex k P n) (i : Fin (n + 1)) (S : AffineSubspace k P)
     (hS : affineSpan k (Set.range s.points) ≤ S) :
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
@@ -491,7 +487,6 @@ theorem median_eq_line_point_centroid [CharZero k] (s : Simplex k P n) (i : Fin 
     exact centroid_mem_median s i
   exact le_antisymm h1 h2
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The medians of a simplex are concurrent at its centroid. -/
 theorem eq_centroid_of_forall_mem_median [CharZero k] (s : Simplex k P n) {hn : 1 < n} {p : P}
     (h : ∀ i, p ∈ s.median i) :
@@ -586,7 +581,6 @@ theorem affineSpan_range_medial [CharZero k] (s : Simplex k P n) :
   congrm ∃ a b, ?_ = v
   simp [← smul_neg]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem medial_restrict [CharZero k] (s : Simplex k P n) (S : AffineSubspace k P)
     (hS : affineSpan k (Set.range s.points) ≤ S) :
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance

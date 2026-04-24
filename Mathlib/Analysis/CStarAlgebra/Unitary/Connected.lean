@@ -181,7 +181,6 @@ lemma argSelfAdjoint_expUnitary {x : selfAdjoint A} (hx : ‖x‖ < π) :
   simp only [Real.norm_eq_abs, abs_lt] at hy
   rw [← Circle.coe_exp, Circle.arg_exp hy.1 hy.2.le]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma expUnitary_argSelfAdjoint {u : unitary A} (hu : ‖(u - 1 : A)‖ < 2) :
     expUnitary (argSelfAdjoint u) = u := by
   ext
@@ -320,7 +319,6 @@ lemma Unitary.expUnitary_eq_mul_inv (u v : unitary A) (huv : ‖(u - v : A)‖ <
 @[deprecated (since := "2025-10-29")] alias unitary.expUnitary_eq_mul_inv :=
   Unitary.expUnitary_eq_mul_inv
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For a selfadjoint element `x` in a C⋆-algebra, this is the path from `1` to `expUnitary x`
 given by `t ↦ expUnitary (t • x)`. -/
 @[simps]
@@ -336,7 +334,6 @@ lemma selfAdjoint.joined_one_expUnitary (x : selfAdjoint A) :
     Joined (1 : unitary A) (expUnitary x) :=
   ⟨expUnitaryPathToOne x⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The path `t ↦ expUnitary (t • argSelfAdjoint (v * star u)) * u`
 from `u : unitary A` to `v` when `‖v - u‖ < 2`. -/
 @[simps]

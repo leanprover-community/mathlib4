@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Spectrum.Basic
 public import Mathlib.Topology.Baire.Lemmas
 public import Mathlib.Topology.Baire.CompleteMetrizable
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
@@ -139,7 +140,7 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
         _ = ‖d⁻¹ • (f x - d • y)‖ := by rw [mul_smul, smul_sub]
         _ = ‖d‖⁻¹ * ‖f x - d • y‖ := by rw [norm_smul, norm_inv]
         _ ≤ ‖d‖⁻¹ * (2 * δ) := by gcongr
-        _ = 1 / 2 * ‖y‖ := by simpa [δ, field] using by norm_num
+        _ = 1 / 2 * ‖y‖ := by simp [δ, field]; norm_num
     rw [← dist_eq_norm] at J
     have K : ‖σ' d⁻¹ • x‖ ≤ (ε / 2)⁻¹ * ‖c‖ * 2 * ↑n * ‖y‖ :=
       calc
@@ -187,7 +188,7 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
   have ule : ∀ n, ‖u n‖ ≤ (1 / 2) ^ n * (C * ‖y‖) := fun n ↦ by
     apply le_trans (hg _).2
     calc
-      C * ‖h^[n] y‖ ≤ C * ((1 / 2) ^ n * ‖y‖) := mul_le_mul_of_nonneg_left (hnle n) C0
+      C * ‖h^[n] y‖ ≤ C * ((1 / 2) ^ n * ‖y‖) := by gcongr; exact hnle n
       _ = (1 / 2) ^ n * (C * ‖y‖) := by ring
   have sNu : Summable fun n => ‖u n‖ := by
     refine .of_nonneg_of_le (fun n => norm_nonneg _) ule ?_
@@ -340,7 +341,6 @@ namespace ContinuousLinearMap
 
 variable [CompleteSpace E] [RingHomInvPair σ' σ] {f : E →SL[σ] F}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An injective continuous linear map with a closed range defines a continuous linear equivalence
 between its domain and its range. -/
 noncomputable def equivRange (hinj : Injective f) (hclo : IsClosed (range f)) :
@@ -375,13 +375,24 @@ variable {E F : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   [CompleteSpace E] [CompleteSpace F]
 
--- TODO: once mathlib has Fredholm operators, generalise the next two lemmas accordingly
+-- TODO: once mathlib has Fredholm operators, generalise the next four lemmas accordingly
 
 /-- If `f : E →L[𝕜] F` is injective with closed range (and `E` and `F` are Banach spaces),
 `f` is anti-Lipschitz. -/
 lemma antilipschitz_of_injective_of_isClosed_range (f : E →L[𝕜] F)
     (hf : Injective f) (hf' : IsClosed (Set.range f)) : ∃ K, AntilipschitzWith K f :=
   ⟨_, .comp (.subtype_coe (Set.range f)) (f.equivRange hf hf').antilipschitz⟩
+
+/-- A choice of anti-Lipschitz constant for `f : E →L[𝕜] F` injective with closed range
+(assuming `E` and `F` are Banach spaces). -/
+noncomputable def antilipschitzConstant_of_injective_of_isClosed_range (f : E →L[𝕜] F)
+    (hf : Injective f) (hf' : IsClosed (Set.range f)) : ℝ≥0 :=
+  Classical.choose (f.antilipschitz_of_injective_of_isClosed_range hf hf')
+
+lemma antilipschitz_antiLipschitzConstant_of_injective_of_isClosed_range (f : E →L[𝕜] F)
+    (hf : Injective f) (hf' : IsClosed (Set.range f)) :
+    AntilipschitzWith (f.antilipschitzConstant_of_injective_of_isClosed_range hf hf') f :=
+  Classical.choose_spec (f.antilipschitz_of_injective_of_isClosed_range hf hf')
 
 /-- An injective bounded linear operator between Banach spaces has closed range
 iff it is anti-Lipschitz. -/
@@ -390,6 +401,22 @@ lemma isClosed_range_iff_antilipschitz_of_injective (f : E →L[𝕜] F)
   refine ⟨fun h ↦ f.antilipschitz_of_injective_of_isClosed_range hf h, fun h ↦ ?_⟩
   choose K hf' using h
   exact hf'.isClosed_range f.uniformContinuous
+
+/-- A choice of continuous left inverse of an injective continuous linear map with closed range:
+this is `LinearMap.leftInverse` as a continuous linear map;
+by injectivity, the junk value of `leftInverse` never matters, and continuity of the inverse
+follows form the closed range condition. -/
+noncomputable def leftInverse_of_injective_of_isClosed_range
+    (f : E →L[𝕜] F) (hf : Injective f) (hf' : IsClosed (range f)) : f.range →L[𝕜] E :=
+  letI K := f.antilipschitzConstant_of_injective_of_isClosed_range hf hf'
+  letI hfK := f.antilipschitz_antiLipschitzConstant_of_injective_of_isClosed_range hf hf'
+  LinearMap.mkContinuous f.rangeRestrict.leftInverse K (by
+    rintro ⟨y, x, rfl⟩
+    have aux := hfK.le_mul_dist x 0
+    simp only [dist_zero_right, map_zero] at aux
+    convert aux
+    exact f.rangeRestrict.leftInverse_apply_of_inj
+      (by rw [ker_codRestrict]; exact LinearMap.ker_eq_bot.mpr hf) x)
 
 end
 
@@ -451,7 +478,16 @@ theorem isUnit_iff_isUnit_toLinearMap {f : E →L[𝕜] E} :
     IsUnit f ↔ IsUnit (f : E →ₗ[𝕜] E) :=
   f.isUnit_iff_bijective.trans (Module.End.isUnit_iff _).symm
 
-set_option backward.isDefEq.respectTransparency false in
+/--
+The spectrum of a continuous linear map `f` over a Banach space is exactly the spectrum of `f`
+viewed as a mere linear map.
+-/
+theorem spectrum_eq {f : E →L[𝕜] E} :
+    spectrum 𝕜 f = spectrum 𝕜 (f : Module.End 𝕜 E) := by
+  ext μ
+  rw [spectrum.mem_iff, spectrum.mem_iff, ContinuousLinearMap.isUnit_iff_isUnit_toLinearMap]
+  rfl
+
 /-- Intermediate definition used to show
 `ContinuousLinearMap.closed_complemented_range_of_isCompl_of_ker_eq_bot`.
 
@@ -467,7 +503,6 @@ noncomputable def coprodSubtypeLEquivOfIsCompl {F : Type*} [NormedAddCommGroup F
         exact h.disjoint)
     (by simp only [range_coprod, Submodule.range_subtypeL, h.sup_eq_top])
 
-set_option backward.isDefEq.respectTransparency false in
 theorem range_eq_map_coprodSubtypeLEquivOfIsCompl {F : Type*} [NormedAddCommGroup F]
     [NormedSpace 𝕜 F] [CompleteSpace F] (f : E →L[𝕜] F) {G : Submodule 𝕜 F}
     (h : IsCompl f.range G) [CompleteSpace G] (hker : f.ker = ⊥) :
@@ -496,7 +531,6 @@ section ClosedGraphThm
 variable [CompleteSpace E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F] (g : E →ₗ[𝕜] F)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **closed graph theorem** : a linear map between two Banach spaces whose graph is closed
 is continuous. -/
 theorem LinearMap.continuous_of_isClosed_graph (hg : IsClosed (g.graph : Set <| E × F)) :

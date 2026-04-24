@@ -137,7 +137,6 @@ theorem bernoulliFun_eval_one_sub {k : ℕ} {x : ℝ} :
   simpa [bernoulliFun, Polynomial.aeval_comp]
     using congr_arg (·.aeval x) (Polynomial.bernoulli_comp_one_sub_X k)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The multiplication theorem. Proof follows https://math.stackexchange.com/a/1721099/38218. -/
 theorem bernoulliFun_mul (k : ℕ) {m : ℕ} (m0 : m ≠ 0) (x : ℝ) :
     bernoulliFun k (m * x) =
@@ -241,7 +240,6 @@ theorem bernoulliFourierCoeff_recurrence (k : ℕ) {n : ℤ} (hn : n ≠ 0) :
 theorem bernoulli_zero_fourier_coeff {n : ℤ} (hn : n ≠ 0) : bernoulliFourierCoeff 0 n = 0 := by
   simpa using bernoulliFourierCoeff_recurrence 0 hn
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `0`-th Fourier coefficient of `Bₖ(x)`. -/
 theorem bernoulliFourierCoeff_zero {k : ℕ} (hk : k ≠ 0) : bernoulliFourierCoeff k 0 = 0 := by
   simp_rw [bernoulliFourierCoeff, fourierCoeffOn_eq_integral, neg_zero, fourier_zero, sub_zero,
@@ -461,7 +459,8 @@ theorem hasSum_zeta_two : HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 2) (π 
   simp [Nat.factorial]; ring
 
 theorem hasSum_zeta_four : HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 4) (π ^ 4 / 90) := by
-  convert hasSum_zeta_nat two_ne_zero using 1; norm_num
+  convert hasSum_zeta_nat two_ne_zero using 1
+  simp only [Nat.reduceAdd, Nat.reduceMul, Nat.add_one_sub_one]
   rw [bernoulli_eq_bernoulli'_of_ne_one, bernoulli'_four]
   · simp [Nat.factorial]; ring
   · decide

@@ -124,7 +124,7 @@ theorem mem_of_mem_toEnumFinset {p : α × ℕ} (h : p ∈ m.toEnumFinset) : p.1
   obtain ⟨n, han, hn⟩ : ∃ n ≥ card (s.1.filter fun x ↦ a = x.1) - 1, (a, n) ∈ s := by
     by_contra! h
     replace h : {x ∈ s | x.1 = a} ⊆ {a} ×ˢ .range (card (s.1.filter fun x ↦ a = x.1) - 1) := by
-      simpa +contextual [forall_swap (β := _ = a), Finset.subset_iff,
+      simpa +contextual [forall_comm (β := _ = a), Finset.subset_iff,
         imp_not_comm, not_le, Nat.lt_sub_iff_add_lt] using h
     have : card (s.1.filter fun x ↦ a = x.1) ≤ card (s.1.filter fun x ↦ a = x.1) - 1 := by
       simpa [Finset.card, eq_comm] using Finset.card_mono h
@@ -153,7 +153,6 @@ def coeEmbedding (m : Multiset α) : m ↪ α × ℕ where
     rintro ⟨⟩
     rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Another way to coerce a `Multiset` to a type is to go through `m.toEnumFinset` and coerce
 that `Finset` to a type. -/
 @[simps]
@@ -171,9 +170,6 @@ def coeEquiv (m : Multiset α) : m ≃ m.toEnumFinset where
 theorem toEmbedding_coeEquiv_trans (m : Multiset α) :
     m.coeEquiv.toEmbedding.trans (Function.Embedding.subtype _) = m.coeEmbedding := by ext <;> rfl
 
-#adaptation_note /-- Before https://github.com/leanprover/lean4/pull/12247
-this was `@[irreducible]`, which is no longer allowed at the definition site,
-and must be applied afterwards. -/
 instance fintypeCoe : Fintype m :=
   Fintype.ofEquiv m.toEnumFinset m.coeEquiv.symm
 

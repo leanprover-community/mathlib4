@@ -42,13 +42,13 @@ random variables. Let `Yₙ` be the truncation of `Xₙ` up to `n`. We claim tha
   `1 + 𝔼[X]` (see `sum_prob_mem_Ioc_le` and `tsum_prob_mem_Ioi_lt_top`).
 * Let `c > 1`. Along the sequence `n = c ^ k`, then `(∑_{i=0}^{n-1} Yᵢ - 𝔼[Yᵢ])/n` converges almost
   surely to `0`. This follows from a variance control, as
-```
+  ```
   ∑_k ℙ (|∑_{i=0}^{c^k - 1} Yᵢ - 𝔼[Yᵢ]| > c^k ε)
     ≤ ∑_k (c^k ε)^{-2} ∑_{i=0}^{c^k - 1} Var[Yᵢ]    (by Markov inequality)
     ≤ ∑_i (C/i^2) Var[Yᵢ]                           (as ∑_{c^k > i} 1/(c^k)^2 ≤ C/i^2)
     ≤ ∑_i (C/i^2) 𝔼[Yᵢ^2]
     ≤ 2C 𝔼[X^2]                                     (see `sum_variance_truncation_le`)
-```
+  ```
 * As `𝔼[Yᵢ]` converges to `𝔼[X]`, it follows from the two previous items and Cesàro that, along
   the sequence `n = c^k`, one has `(∑_{i=0}^{n-1} Xᵢ) / n → 𝔼[X]` almost surely.
 * To generalize it to all indices, we use the fact that `∑_{i=0}^{n-1} Xᵢ` is nondecreasing and
@@ -310,7 +310,6 @@ theorem tsum_prob_mem_Ioi_lt_top {X : Ω → ℝ} (hint : Integrable X) (hnonneg
   filter_upwards [Ici_mem_atTop K] with N hN
   exact sum_prob_mem_Ioc_le hint hnonneg hN
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sum_variance_truncation_le {X : Ω → ℝ} (hint : Integrable X) (hnonneg : 0 ≤ X) (K : ℕ) :
     ∑ j ∈ range K, ((j : ℝ) ^ 2)⁻¹ * 𝔼[truncation X j ^ 2] ≤ 2 * 𝔼[X] := by
   set Y := fun n : ℕ => truncation X n
@@ -591,7 +590,6 @@ theorem strong_law_aux7 :
 
 end StrongLawNonneg
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Strong law of large numbers**, almost sure version: if `X n` is a sequence of independent
 identically distributed integrable real-valued random variables, then `∑ i ∈ range n, X i / n`
 converges almost surely to `𝔼[X 0]`. We give here the strong version, due to Etemadi, that only
@@ -692,7 +690,6 @@ lemma strong_law_ae_simpleFunc_comp (X : ℕ → Ω → E) (h' : Measurable (X 0
 
 variable [BorelSpace E]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Preliminary lemma for the strong law of large numbers for vector-valued random variables,
 assuming measurability in addition to integrability. This is weakened to ae measurability in
 the full version `ProbabilityTheory.strong_law_ae`. -/

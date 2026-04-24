@@ -692,11 +692,15 @@ def _root_.LinearEquiv.baseChange (e : M ≃ₗ[R] N) : A ⊗[R] M ≃ₗ[A] A �
 
 @[simp]
 theorem _root_.LinearEquiv.coe_baseChange (f : M ≃ₗ[R] N) :
-    (f.baseChange R A M N) = f.toLinearMap.baseChange A :=
+    f.baseChange R A M N = f.toLinearMap.baseChange A :=
    rfl
 
-theorem _root_.LinearEquiv.baseChange_tmul (e : M ≃ₗ[R] N) (a : A) (m : M) :
-    LinearEquiv.baseChange R A M N e (a ⊗ₜ[R] m) = a ⊗ₜ e m :=
+@[simp] lemma _root_.LinearEquiv.baseChange_tmul {e : M ≃ₗ[R] N} (a : A) (m : M) :
+    e.baseChange R A M N (a ⊗ₜ m) = a ⊗ₜ e m :=
+  rfl
+
+@[simp] lemma _root_.LinearEquiv.baseChange_symm_tmul {e : M ≃ₗ[R] N} (a : A) (n : N) :
+    (e.baseChange R A).symm (a ⊗ₜ n) = a ⊗ₜ e.symm n :=
   rfl
 
 @[simp]
@@ -776,7 +780,7 @@ namespace Submodule
 open TensorProduct
 
 variable {R M : Type*} (A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
-  [AddCommMonoid M] [Module R M] (p : Submodule R M)
+  [AddCommMonoid M] [Module R M] (p q : Submodule R M)
 
 /-- If `A` is an `R`-algebra, any `R`-submodule `p` of an `R`-module `M` may be pushed forward to
 an `A`-submodule of `A ⊗ M`.
@@ -808,9 +812,33 @@ lemma baseChange_top : (⊤ : Submodule R M).baseChange A = ⊤ := by
   rw [eq_top_iff, ← span_eq_top_of_span_eq_top R A _ (span_tmul_eq_top R ..)]
   exact span_le.2 fun _ ⟨a, m, h⟩ ↦ h ▸ tmul_mem_baseChange_of_mem _ trivial
 
+variable {p q} in
+theorem baseChange_mono (h : p ≤ q) : p.baseChange A ≤ q.baseChange A := by
+  rw [baseChange, LinearMap.baseChange, ← subtype_comp_inclusion p q h,
+    ← LinearMap.id_comp LinearMap.id, AlgebraTensorModule.map_comp]
+  apply LinearMap.range_comp_le_range
+
 @[simp]
 lemma baseChange_span (s : Set M) :
     (span R s).baseChange A = span A (TensorProduct.mk R A M 1 '' s) := by
   rw [baseChange_eq_span, map_span, span_span_of_tower]
+
+/-- Given an `R`-submodule `p` of `M`, and `R`-algebra `A`, we obtain an `A`-submodule of
+`A ⊗[R] M` by `p.baseChange A`. This is then the surjective `A`-linear map
+`A ⊗[R] M → p.baseChange A`. -/
+def toBaseChange : A ⊗[R] p →ₗ[A] p.baseChange A :=
+  LinearMap.rangeRestrict _
+
+@[simp] lemma coe_toBaseChange_tmul (a : A) (x : p) :
+    (p.toBaseChange A (a ⊗ₜ x) : A ⊗[R] M) = a ⊗ₜ (x : M) := rfl
+
+lemma toBaseChange_surjective : Function.Surjective (p.toBaseChange A) :=
+  LinearMap.surjective_rangeRestrict _
+
+/-- This version enables better pattern matching via the tactic `obtain`. -/
+lemma toBaseChange_surjective' {y : A ⊗[R] M} (hy : y ∈ p.baseChange A) :
+    ∃ x : A ⊗[R] p, p.toBaseChange A x = y := by
+  obtain ⟨x, hx⟩ := toBaseChange_surjective A p ⟨y, hy⟩
+  exact ⟨x, congr($hx)⟩
 
 end Submodule

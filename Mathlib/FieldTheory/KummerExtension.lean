@@ -16,21 +16,21 @@ public import Mathlib.RingTheory.Norm.Basic
 
 ## Main result
 - `isCyclic_tfae`:
-Suppose `L/K` is a finite extension of dimension `n`, and `K` contains all `n`-th roots of unity.
-Then `L/K` is cyclic iff
-`L` is a splitting field of some irreducible polynomial of the form `Xⁿ - a : K[X]` iff
-`L = K[α]` for some `αⁿ ∈ K`.
+  Suppose `L/K` is a finite extension of dimension `n`, and `K` contains all `n`-th roots of unity.
+  Then `L/K` is cyclic iff
+  `L` is a splitting field of some irreducible polynomial of the form `Xⁿ - a : K[X]` iff
+  `L = K[α]` for some `αⁿ ∈ K`.
 
 - `autEquivRootsOfUnity`:
-Given an instance `IsSplittingField K L (X ^ n - C a)`
-(perhaps via `isSplittingField_X_pow_sub_C_of_root_adjoin_eq_top`),
-then the Galois group is isomorphic to `rootsOfUnity n K`, by sending
-`σ ↦ σ α / α` for `α ^ n = a`, and the inverse is given by `μ ↦ (α ↦ μ • α)`.
+  Given an instance `IsSplittingField K L (X ^ n - C a)`
+  (perhaps via `isSplittingField_X_pow_sub_C_of_root_adjoin_eq_top`),
+  then the Galois group is isomorphic to `rootsOfUnity n K`, by sending
+  `σ ↦ σ α / α` for `α ^ n = a`, and the inverse is given by `μ ↦ (α ↦ μ • α)`.
 
 - `autEquivZmod`:
-Furthermore, given an explicit choice `ζ` of a primitive `n`-th root of unity, the Galois group is
-then isomorphic to `Multiplicative (ZMod n)` whose inverse is given by
-`i ↦ (α ↦ ζⁱ • α)`.
+  Furthermore, given an explicit choice `ζ` of a primitive `n`-th root of unity, the Galois group is
+  then isomorphic to `Multiplicative (ZMod n)` whose inverse is given by
+  `i ↦ (α ↦ ζⁱ • α)`.
 
 ## Other results
 Criteria for `X ^ n - C a` to be irreducible is given:
@@ -233,7 +233,6 @@ def AdjoinRootXPowSubCEquivToRootsOfUnity [NeZero n] (σ : K[n√a] ≃ₐ[K] K[
     rw [div_self]
     rwa [Ne, map_eq_zero_iff _ (algebraMap K _).injective]))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence between the roots of unity of `K` and `Gal(K[ⁿ√a]/K)`. -/
 noncomputable
 def autAdjoinRootXPowSubCEquiv [NeZero n] :
@@ -459,7 +458,6 @@ variable (hK : (primitiveRoots (Module.finrank K L) K).Nonempty)
 open Module
 variable (K L)
 
-set_option backward.isDefEq.respectTransparency false in
 include hK in
 /-- If `L/K` is a cyclic extension of degree `n`, and `K` contains all `n`-th roots of unity,
 then `L = K[α]` for some `α ^ n ∈ K`. -/

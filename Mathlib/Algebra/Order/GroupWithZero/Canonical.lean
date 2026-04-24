@@ -25,7 +25,7 @@ This file sets up a special class of linearly ordered commutative monoids
 that show up as the target of so-called “valuations” in algebraic number theory.
 
 Usually, in the informal literature, these objects are constructed
-by taking a linearly ordered commutative group Γ and formally adjoining a zero element: Γ ∪ {0}.
+by taking a linearly ordered commutative group Γ and formally adjoining a zero element: `Γ ∪ {0}`.
 
 The disadvantage is that a type such as `NNReal` is not of that form,
 whereas it is a very common target for valuations.
@@ -144,7 +144,6 @@ theorem lt_of_mul_lt_mul_of_le₀ (h : a * b < c * d) (hc : 0 < c) (hh : c ≤ a
   simpa [inv_mul_cancel_left₀ ha, inv_mul_cancel_left₀ hc.ne']
     using mul_lt_mul_of_le_of_lt_of_nonneg_of_pos hh h zero_le' (inv_pos.2 hc)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : LinearOrderedAddCommGroupWithTop (Additive αᵒᵈ) where
   top_add' := by simp
   neg_top := by ext; simp [bot_eq_zero'']
@@ -243,7 +242,7 @@ end Bot
 section LE
 variable [LE α] {x y : WithZero α} {a b : α}
 
-instance (priority := 10) le : LE (WithZero α) := WithBot.instLE
+instance (priority := 10) le : LE (WithZero α) := inferInstanceAs <| LE (WithBot α)
 
 lemma le_def : x ≤ y ↔ ∀ a : α, x = ↑a → ∃ b : α, y = ↑b ∧ a ≤ b := WithBot.le_iff_forall
 
@@ -251,9 +250,10 @@ lemma le_def : x ≤ y ↔ ∀ a : α, x = ↑a → ∃ b : α, y = ↑b ∧ a �
 
 lemma not_coe_le_zero (a : α) : ¬(a : WithZero α) ≤ 0 := WithBot.not_coe_le_bot _
 
-instance instOrderBot : OrderBot (WithZero α) := WithBot.instOrderBot
+instance instOrderBot : OrderBot (WithZero α) := inferInstanceAs <| OrderBot (WithBot α)
 
-instance instBoundedOrder [OrderTop α] : BoundedOrder (WithBot α) := WithBot.instBoundedOrder
+instance instBoundedOrder [OrderTop α] : BoundedOrder (WithZero α) :=
+  inferInstanceAs <| BoundedOrder (WithBot α)
 
 @[simp] lemma zero_le (a : WithZero α) : 0 ≤ a := bot_le (a := a)
 
@@ -282,7 +282,7 @@ section LT
 variable [LT α] {x y : WithZero α} {a b : α}
 
 /-- The order on `WithZero α`, defined by `⊥ < ↑a` and `a < b → ↑a < ↑b`. -/
-instance (priority := 10) instLT : LT (WithZero α) := WithBot.instLT
+instance (priority := 10) instLT : LT (WithZero α) := inferInstanceAs <| LT (WithBot α)
 
 lemma lt_def : x < y ↔ x = 0 ∧ (∃ b : α, y = b) ∨ ∃ a b : α, a < b ∧ x = ↑a ∧ y = ↑b :=
   WithBot.lt_def
@@ -313,7 +313,7 @@ section Preorder
 
 variable [Preorder α] [Preorder β] {x y : WithZero α} {a b : α}
 
-instance instPreorder : Preorder (WithZero α) := WithBot.instPreorder
+instance instPreorder : Preorder (WithZero α) := inferInstanceAs <| Preorder (WithBot α)
 
 instance instMulLeftMono [Mul α] [MulLeftMono α] :
     MulLeftMono (WithZero α) := by
@@ -402,7 +402,8 @@ end Preorder
 section PartialOrder
 variable [PartialOrder α]
 
-instance instPartialOrder : PartialOrder (WithZero α) := WithBot.instPartialOrder
+instance instPartialOrder : PartialOrder (WithZero α) :=
+  inferInstanceAs <| PartialOrder (WithBot α)
 
 instance instMulLeftReflectLT [Mul α] [MulLeftReflectLT α] :
     MulLeftReflectLT (WithZero α) := by
@@ -443,8 +444,7 @@ instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithZero α) where
 theorem coe_inf [SemilatticeInf α] (a b : α) : ((a ⊓ b : α) : WithZero α) = (a : WithZero α) ⊓ b :=
   rfl
 
-instance instLattice [Lattice α] : Lattice (WithZero α) :=
-  { WithZero.semilatticeSup, WithZero.semilatticeInf with }
+instance instLattice [Lattice α] : Lattice (WithZero α) where
 
 end Lattice
 

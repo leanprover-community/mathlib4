@@ -5,9 +5,11 @@ Authors: Chris Hughes
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Algebra.CharP.Two
+public import Mathlib.Algebra.Order.AbsoluteValue.Basic
 public import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
-public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 public import Mathlib.Data.Nat.Cast.Field
 public import Mathlib.Data.Nat.Factorization.Basic
 public import Mathlib.Data.Nat.Factorization.Induction
@@ -47,7 +49,6 @@ theorem totient_one : φ 1 = 1 := rfl
 
 theorem totient_eq_card_coprime (n : ℕ) : φ n = #{a ∈ range n | n.Coprime a} := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A characterisation of `Nat.totient` that avoids `Finset`. -/
 theorem totient_eq_card_lt_and_coprime (n : ℕ) : φ n = Nat.card { m | m < n ∧ n.Coprime m } := by
   let e : { m | m < n ∧ n.Coprime m } ≃ {x ∈ range n | n.Coprime x} :=
@@ -236,12 +237,8 @@ theorem card_units_zmod_lt_sub_one {p : ℕ} (hp : 1 < p) [Fintype (ZMod p)ˣ] :
 
 theorem prime_iff_card_units (p : ℕ) [Fintype (ZMod p)ˣ] :
     p.Prime ↔ Fintype.card (ZMod p)ˣ = p - 1 := by
-  rcases eq_zero_or_neZero p with hp | hp
-  · subst hp
-    simp only [ZMod, not_prime_zero, false_iff, zero_tsub]
-    -- the subst created a non-defeq but subsingleton instance diamond; resolve it
-    suffices Fintype.card ℤˣ ≠ 0 by convert this
-    simp
+  rcases eq_zero_or_neZero p with rfl | hp
+  · simp [ZMod, not_prime_zero, zero_tsub]
   rw [ZMod.card_units_eq_totient, Nat.totient_eq_iff_prime <| NeZero.pos p]
 
 @[simp]
@@ -299,7 +296,7 @@ theorem totient_mul_prod_primeFactors (n : ℕ) :
     (φ n * ∏ p ∈ n.primeFactors, p) = n * ∏ p ∈ n.primeFactors, (p - 1) := by
   by_cases hn : n = 0; · simp [hn]
   rw [totient_eq_prod_factorization hn]
-  nth_rw 3 [← factorization_prod_pow_eq_self hn]
+  nth_rw 3 [← prod_factorization_pow_eq_self hn]
   simp only [prod_primeFactors_prod_factorization, ← Finsupp.prod_mul]
   refine Finsupp.prod_congr (M := ℕ) (N := ℕ) fun p hp => ?_
   rw [Finsupp.mem_support_iff, ← zero_lt_iff] at hp
