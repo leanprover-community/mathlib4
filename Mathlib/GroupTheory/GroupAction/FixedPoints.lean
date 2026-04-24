@@ -50,7 +50,7 @@ all points in `s` are fixed by `g`, whereas the former only requires that `g •
 public section
 
 namespace MulAction
-open Pointwise
+open scoped Pointwise
 
 variable {α : Type*}
 variable {G : Type*} [Group G] [MulAction G α]

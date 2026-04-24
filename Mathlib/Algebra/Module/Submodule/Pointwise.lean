@@ -46,7 +46,7 @@ assert_not_exists Ideal
 
 variable {α : Type*} {R : Type*} {M : Type*}
 
-open Pointwise
+open scoped Pointwise
 
 namespace Submodule
 
@@ -71,7 +71,7 @@ protected def pointwiseNeg : Neg (Submodule R M) where
 
 scoped[Pointwise] attribute [instance] Submodule.pointwiseNeg
 
-open Pointwise
+open scoped Pointwise
 
 @[simp]
 theorem coe_set_neg (S : Submodule R M) : ↑(-S) = -(S : Set M) :=
@@ -139,7 +139,7 @@ variable {S : Type*} [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M]
 
 end Semiring
 
-open Pointwise
+open scoped Pointwise
 
 @[simp]
 theorem neg_eq_self [Ring R] [AddCommGroup M] [Module R M] (p : Submodule R M) : -p = p :=
@@ -201,7 +201,7 @@ scoped[Pointwise] attribute [instance] Submodule.pointwiseDistribMulAction
 theorem pointwise_smul_def {a : α} {S : Submodule R M} :
     a • S = S.map (DistribSMul.toLinearMap R M a) := rfl
 
-open Pointwise
+open scoped Pointwise
 
 @[simp, norm_cast]
 theorem coe_pointwise_smul (a : α) (S : Submodule R M) : ↑(a • S) = a • (S : Set M) :=
