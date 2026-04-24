@@ -30,8 +30,6 @@ public import Mathlib.Order.SuccPred.WithBot
 
 @[expose] public section
 
-noncomputable section
-
 open Finsupp Finset
 
 open Polynomial
