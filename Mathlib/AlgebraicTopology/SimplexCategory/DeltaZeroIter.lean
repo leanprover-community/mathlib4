@@ -61,7 +61,6 @@ lemma δ₀Iter_δ (i : ℕ) {n m : ℕ} (j : Fin (m + 2))
     δ₀Iter i hi ≫ δ j = δ₀Iter (i + 1) := by
   refine ConcreteCategory.hom_ext _ _ (fun k ↦ ?_)
   ext
-  dsimp
   rw [dsimp% ConcreteCategory.comp_apply (δ₀Iter i hi) (δ j), coe_δ,
     δ₀Iter_apply .., δ₀Iter_apply ..,
     Fin.succAbove_of_le_castSucc _ _ (by grind)]
