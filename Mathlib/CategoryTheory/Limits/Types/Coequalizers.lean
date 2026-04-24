@@ -65,7 +65,7 @@ theorem coequalizer_preimage_image_eq_of_preimage_eq (π : Y ⟶ Z) (e : f ≫ �
       (mono_iff_injective
             (h.coconePointUniqueUpToIso (coequalizerColimit f g).isColimit).inv).mp
         inferInstance
-    refine (eqv.eqvGen_iff.mp (Relation.EqvGen.mono lem _ _ (Quot.eqvGen_exact _ _ ?_))).mp hy
+    refine (eqv.eqvGen_iff.mp (Relation.EqvGen.mono lem _ _ (Quot.eqvGen_exact ?_))).mp hy
     apply e''
     convert e'
   · exact fun hx => ⟨_, hx, rfl⟩

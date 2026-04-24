@@ -57,7 +57,7 @@ lemma M.mk_surjective (m : M F) :
 
 theorem M.mk_eq (x y : Σ j, F.obj j)
     (h : ∃ (k : J) (f : x.1 ⟶ k) (g : y.1 ⟶ k), F.map f x.2 = F.map g y.2) : M.mk F x = M.mk F y :=
-  Quot.eqvGen_sound _ _ <|
+  Quot.eqvGen_sound <|
     Types.FilteredColimit.eqvGen_colimitTypeRel_of_rel (F ⋙ forget (ModuleCat R)) x y h
 
 lemma M.mk_map {j k : J} (f : j ⟶ k) (x : F.obj j) :

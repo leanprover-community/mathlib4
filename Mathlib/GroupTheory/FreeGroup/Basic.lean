@@ -645,7 +645,7 @@ lemma ext_hom {M : Type*} [Monoid M] (f g : FreeGroup α →* M) (h : ∀ a, f (
 @[to_additive]
 theorem Red.exact : mk L₁ = mk L₂ ↔ Join Red L₁ L₂ :=
   calc
-    mk L₁ = mk L₂ ↔ EqvGen Red.Step L₁ L₂ := ⟨Quot.eqvGen_exact _ _, Quot.eqvGen_sound _ _⟩
+    mk L₁ = mk L₂ ↔ EqvGen Red.Step L₁ L₂ := ⟨Quot.eqvGen_exact, Quot.eqvGen_sound⟩
     _ ↔ Join Red L₁ L₂ := eqvGen_step_iff_join_red
 
 /-- The canonical map from the type to the free group is an injection. -/
