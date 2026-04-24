@@ -21,21 +21,14 @@ public import Mathlib.RingTheory.Ideal.Maps
 
 universe v u
 
-open LinearMap CategoryTheory Abelian Limits
+open LinearMap CategoryTheory Limits
 
 variable {R : Type u} [CommRing R]
 
 variable {M N : Type v} [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
-lemma LinearMap.lsmul_eq_zero_iff_mem_annihilator {r : R} :
-    r ∈ Module.annihilator R M ↔ LinearMap.lsmul R M r = 0 := by
-  simp [Module.mem_annihilator, LinearMap.ext_iff]
-
 lemma LinearMap.lsmul_eq_smul_id (M : ModuleCat.{v} R) (r : R) :
     ModuleCat.ofHom (LinearMap.lsmul R M r) = r • 𝟙 M := rfl
-
-@[simp]
-lemma ModuleCat.ofHom_zero : ModuleCat.ofHom (0 : M →ₗ[R] N) = 0 := rfl
 
 namespace CategoryTheory.Abelian
 
@@ -45,7 +38,8 @@ set_option backward.isDefEq.respectTransparency false in
 lemma Ext.smul_id_postcomp_eq_zero_of_mem_annihilator {r : R} (mem_ann : r ∈ Module.annihilator R N)
     (n : ℕ) : AddCommGrpCat.ofHom ((Ext.mk₀ (r • (𝟙 M))).postcomp N (add_zero n)) = 0 := by
   ext h
-  have : r • (𝟙 N) = 0 := by simp [← lsmul_eq_smul_id, lsmul_eq_zero_iff_mem_annihilator.mp mem_ann]
+  have : r • (𝟙 N) = 0 := by
+    simp [← lsmul_eq_smul_id, mem_annihilator_iff_lsmul_eq_zero.mp mem_ann, ModuleCat.ofHom_zero]
   have smul_eq : r • h = (Ext.mk₀ (r • (𝟙 N))).comp h (zero_add n) := by simp [Ext.mk₀_smul]
   simp [Ext.mk₀_smul, this, smul_eq]
 
