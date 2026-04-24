@@ -32,9 +32,9 @@ properties about them.
 * `isDeterministic_eq_deterministic`: in a standard Borel space, a deterministic Markov kernel is
   a Dirac kernel of some measurable function.
 * `parallelComp_id_comp_copy_comp`: if the composition of two Markov kernels `η ∘ₖ κ` is
- deterministic, the distribution over both `η ∘ₖ κ` and `κ` can be obtained by computing `η ∘ₖ κ`
-and `κ` independently. This corresponds to the equation of a Positive Markov category.
-See Example 11.25 of [fritz2020].
+  deterministic, the distribution over both `η ∘ₖ κ` and `κ` can be obtained by computing `η ∘ₖ κ`
+  and `κ` independently. This corresponds to the equation of a Positive Markov category.
+  See Example 11.25 of [fritz2020].
 
 ## Implementation notes
 
