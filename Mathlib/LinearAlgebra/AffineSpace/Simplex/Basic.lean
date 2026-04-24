@@ -498,6 +498,10 @@ lemma point_mem_closedInterior [ZeroLEOneClass k] {n : ℕ} (s : Simplex k P n) 
   intro j
   by_cases hj : j = i <;> simp [hj]
 
+lemma nonempty_closedInterior [ZeroLEOneClass k] {n : ℕ} (s : Simplex k P n) :
+    s.closedInterior.Nonempty :=
+  ⟨s.points 0, s.point_mem_closedInterior 0⟩
+
 lemma interior_ssubset_closedInterior [ZeroLEOneClass k] {n : ℕ} (s : Simplex k P n) :
     s.interior ⊂ s.closedInterior := by
   rw [Set.ssubset_iff_exists]
