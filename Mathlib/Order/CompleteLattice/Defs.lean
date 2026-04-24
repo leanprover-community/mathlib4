@@ -291,23 +291,27 @@ end OrderDual
 
 section CompleteLinearOrder
 
-variable [CompleteLinearOrder α] {s : Set α} {a b : α}
+variable [CompleteLinearOrder α] {s : Set α} {a b l : α} {f : ι → α}
 
 @[to_dual sInf_lt_iff]
 theorem lt_sSup_iff : b < sSup s ↔ ∃ a ∈ s, b < a :=
   lt_isLUB_iff <| isLUB_sSup s
 
-@[to_dual]
-theorem sSup_eq_top : sSup s = ⊤ ↔ ∀ b < ⊤, ∃ a ∈ s, b < a :=
-  ⟨fun h _ hb => lt_sSup_iff.1 <| hb.trans_eq h.symm, fun h =>
-    top_unique <|
-      le_of_not_gt fun h' =>
-        let ⟨_, ha, h⟩ := h _ h'
-        (h.trans_le <| le_sSup ha).false⟩
-
 @[to_dual iInf_lt_iff]
 theorem lt_iSup_iff {f : ι → α} : a < iSup f ↔ ∃ i, a < f i :=
   lt_sSup_iff.trans exists_range_iff
+
+@[to_dual sInf_le_iff_forall_lt]
+theorem le_sSup_iff_forall_lt : l ≤ sSup s ↔ ∀ b < l, ∃ a ∈ s, b < a := by
+  grind [le_sSup_iff, mem_upperBounds, not_le, not_lt]
+
+@[to_dual iInf_le_iff_forall_lt]
+theorem le_iSup_iff_forall_lt : l ≤ iSup f ↔ ∀ b < l, ∃ i, b < f i :=
+  le_sSup_iff_forall_lt.trans <| forall₂_congr fun _ _ ↦ exists_range_iff
+
+@[to_dual]
+theorem sSup_eq_top : sSup s = ⊤ ↔ ∀ b < ⊤, ∃ a ∈ s, b < a := by
+  rw [eq_top_iff, le_sSup_iff_forall_lt]
 
 @[to_dual]
 theorem lt_biSup_iff {s : Set β} {f : β → α} : a < ⨆ i ∈ s, f i ↔ ∃ i ∈ s, a < f i := by
