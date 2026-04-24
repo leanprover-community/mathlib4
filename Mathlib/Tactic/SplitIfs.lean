@@ -146,7 +146,7 @@ condition does not contain another if-then-else expression.
   Note that names are not reused across splits: on a goal of the form
   `⊢ (if p then 1 else 2) + (if q then 3 else 4)`, use `split_ifs with hp hq hq` to name all
   the hypotheses.
-* `split_ifs at l` splits the if-then-else expressions at location(s) l.
+* `split_ifs at l` splits the if-then-else expressions at location(s) `l`.
 -/
 syntax (name := splitIfs) "split_ifs" (location)? (" with" (ppSpace colGt binderIdent)+)? : tactic
 
