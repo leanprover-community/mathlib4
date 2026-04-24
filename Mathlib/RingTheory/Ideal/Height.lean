@@ -46,6 +46,12 @@ lemma Ideal.height_eq_primeHeight [I.IsPrime] : I.height = I.primeHeight := by
   simp_rw [Ideal.minimalPrimes_eq_subsingleton_self]
   simp
 
+lemma Ideal.exists_prime_height_eq {I : Ideal R} {n : ℕ} (hI : I.height = n) :
+    ∃ (p : Ideal R) (_ : p.IsPrime) (_  : I ≤ p), p.height = n := by
+  simp only [Ideal.height, ENat.iInf_eq_coe_iff] at hI
+  rcases hI with ⟨⟨p, ⟨⟨⟨hpp, hIp⟩, _⟩, _⟩, _⟩, _⟩
+  use p, hpp, hIp, by rwa [p.height_eq_primeHeight]
+
 /-- An ideal has finite height if it is either the unit ideal or its height is finite.
 We include the unit ideal in order to have the instance `IsNoetherianRing R → FiniteHeight I`. -/
 @[mk_iff]
@@ -201,15 +207,19 @@ lemma Ideal.primeHeight_eq_zero_iff {I : Ideal R} [I.IsPrime] :
   · rintro ⟨hI, hI'⟩ b hb
     exact hI' (y := b.asIdeal) b.isPrime hb
 
-lemma Ideal.primeHeight_eq_zero_iff_eq_bot [IsDomain R] {p : Ideal R} [p.IsPrime] :
-    p.primeHeight = 0 ↔ p = ⊥ := by
-  rw [primeHeight_eq_zero_iff, IsDomain.minimalPrimes_eq_singleton_bot R, Set.mem_singleton_iff]
-
 @[simp]
 lemma Ideal.height_bot [Nontrivial R] : (⊥ : Ideal R).height = 0 := by
   obtain ⟨p, hp⟩ := Ideal.nonempty_minimalPrimes (R := R) (I := ⊥) top_ne_bot.symm
   simp only [Ideal.height, ENat.iInf_eq_zero]
   exact ⟨p, hp, haveI := hp.1.1; primeHeight_eq_zero_iff.mpr hp⟩
+
+lemma Ideal.height_eq_zero_iff_eq_bot [IsDomain R] {I : Ideal R} : I.height = 0 ↔ I = ⊥ := by
+  refine ⟨fun hI ↦ ?_, fun hI0 ↦ by simp [hI0]⟩
+  rcases exists_prime_height_eq hI with ⟨p, _, hIp, hp0⟩
+  have hpbot : p = ⊥ := by
+    rwa [height_eq_primeHeight, CharP.cast_eq_zero, primeHeight_eq_zero_iff,
+      IsDomain.minimalPrimes_eq_singleton_bot] at hp0
+  exact bot_unique (hIp.trans_eq hpbot)
 
 /-- In a trivial commutative ring, the height of any ideal is `∞`. -/
 @[simp, nontriviality]
@@ -488,11 +498,13 @@ lemma Ring.krullDimLE_of_isLocalization_maximal {n : ℕ}
 
 end isLocalization
 
-lemma Ideal.eq_span_singleton_of_primeHeight_eq_one [IsDomain R] {p : Ideal R} [p.IsPrime]
-    (h1 : p.primeHeight = 1) {x : R} (hxmem : x ∈ p) (hxp : Prime x) : p = span {x} := by
+lemma Ideal.eq_span_singleton_of_height_eq_one [IsDomain R] {p : Ideal R} [p.IsPrime]
+    (h1 : p.height = 1) {x : R} (hx : x ∈ p) (hxp : Prime x) : p = span {x} := by
   have : (span {x}).IsPrime := (span_singleton_prime hxp.ne_zero).2 hxp
-  have : p.FiniteHeight := p.finiteHeight_iff.mpr <| Or.inr <| by simp [height_eq_primeHeight, h1]
+  have : p.FiniteHeight := p.finiteHeight_iff.mpr <| Or.inr <| by simp [h1]
   by_contra! hne
-  exact hxp.ne_zero <| span_singleton_eq_bot.1 <| (span {x}).primeHeight_eq_zero_iff_eq_bot.mp <|
-    ENat.lt_one_iff_eq_zero.mp <| primeHeight_strict_mono
-      (lt_of_le_of_ne ((span_singleton_le_iff_mem p).2 hxmem) hne.symm) |>.trans_eq h1
+  refine hxp.ne_zero <| span_singleton_eq_bot.1 <| (span {x}).height_eq_zero_iff_eq_bot.mp <|
+    ENat.lt_one_iff_eq_zero.mp ?_
+  rw [height_eq_primeHeight] at h1 ⊢
+  exact primeHeight_strict_mono
+    (lt_of_le_of_ne (p.span_singleton_le_iff_mem.2 hx) hne.symm) |>.trans_eq h1

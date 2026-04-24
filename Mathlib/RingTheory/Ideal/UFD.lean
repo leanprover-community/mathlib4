@@ -94,9 +94,8 @@ theorem Ideal.isPrincipal_of_isPrincipal_localization_away_of_prime
 /-- Let `R` be a Noetherian domain, `x ∈ R` be a prime element. If `Rₓ` is a UFD,
   then `R` is also a UFD. -/
 theorem ufd_of_ufd_isLocalization_away_of_prime [IsNoetherianRing R] {x : R} (hx : Prime x)
-    (S : Type*) [CommRing S] [Algebra R S] [IsLocalization.Away x S] :
-    UniqueFactorizationMonoid R ↔ UniqueFactorizationMonoid S := by
-  refine ⟨fun _ ↦ by apply?, fun _ ↦ ?_⟩
+    (S : Type*) [CommRing S] [Algebra R S] [IsLocalization.Away x S]
+    [UniqueFactorizationMonoid S] : UniqueFactorizationMonoid R := by
   let M : Submonoid R := Submonoid.powers x
   have : IsDomain S := IsLocalization.Away.isDomain S hx.ne_zero
   have : IsNoetherianRing S := IsLocalization.isNoetherianRing (Submonoid.powers x) S inferInstance
