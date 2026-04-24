@@ -43,14 +43,14 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toSSetObj₁Equiv_apply_zero (s : toSSet.obj X _⦋1⦌) :
     X.toSSetObj₁Equiv s 0 = toSSetObj₀Equiv ((toSSet.obj X).δ 1 s) := by
-  simp [toSSetObj₀Equiv, toSSetObj₁Equiv, 
+  simp [toSSetObj₀Equiv, toSSetObj₁Equiv,
     Subsingleton.elim (default : stdSimplex ℝ (Fin 1)) (stdSimplex.vertex 0)]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toSSetObj₁Equiv_apply_one (s : toSSet.obj X _⦋1⦌) :
     X.toSSetObj₁Equiv s 1 = toSSetObj₀Equiv ((toSSet.obj X).δ 0 s) := by
-  simp [toSSetObj₀Equiv, toSSetObj₁Equiv, 
+  simp [toSSetObj₀Equiv, toSSetObj₁Equiv,
     Subsingleton.elim (default : stdSimplex ℝ (Fin 1)) (stdSimplex.vertex 0)]
 
 @[simp]
