@@ -271,11 +271,19 @@ lemma le_induction {m : ℕ} {P : ∀ n, m ≤ n → Prop} (base : P m m.le_refl
   @Nat.leRec (motive := P) _ base succ
 
 /-- Induction principle deriving the next case from the two previous ones. -/
-def twoStepInduction {P : ℕ → Sort*} (zero : P 0) (one : P 1)
-    (more : ∀ n, P n → P (n + 1) → P (n + 2)) : ∀ a, P a
+@[elab_as_elim]
+def twoStepInduction {motive : ℕ → Sort*} (zero : motive 0) (one : motive 1)
+    (more : ∀ n, motive n → motive (n + 1) → motive (n + 2)) : ∀ a, motive a
   | 0 => zero
   | 1 => one
   | _ + 2 => more _ (twoStepInduction zero one more _) (twoStepInduction zero one more _)
+
+/-- Induction principle deriving the next case from the `k` previous ones. -/
+@[elab_as_elim]
+def stepInduction {motive : ℕ → Sort*} (k : ℕ) (less : ∀ i < k, motive i)
+    (more : ∀ n, (∀ i < k, motive (n + i)) → motive (n + k)) (a : ℕ) : motive a :=
+  if h : a < k then less _ h else
+  (show a - k + k = a by lia) ▸ more (a - k) fun _ _ ↦ stepInduction k less more _
 
 @[elab_as_elim]
 protected theorem strong_induction_on {p : ℕ → Prop} (n : ℕ)
