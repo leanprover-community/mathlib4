@@ -38,7 +38,7 @@ This file defines tree decompositions on simple graphs and the treewidth paramet
 ## TODO
 
 * Prove `G.IsAcyclic ↔ G.treewidth ≤ 1`.
-* Prove that a complete graph with `n` vertices has treewidth `n`.
+* Prove that a complete graph with `n` vertices has treewidth `n-1`.
 
 ## Tags
 tree decomposition, treewidth
@@ -94,6 +94,12 @@ lemma TreeDecomp.ewidth_ge {k : ℕ} (t : TreeDecomp G) :
     (∃ w : t.W, #(t.𝓧 w) - 1 ≥ k) → t.ewidth ≥ k :=
   fun ⟨w, hw⟩ ↦ le_iSup_of_le w (by exact_mod_cast hw)
 
+lemma TreeDecomp.card_bag_le (t : G.TreeDecomp) (w : t.W) :
+    #(t.𝓧 w) ≤ t.ewidth + 1 := by
+  have h : (#(t.𝓧 w) - 1 : ℕ∞) ≤ t.ewidth := le_iSup (fun w => (#(t.𝓧 w) - 1 : ℕ∞)) w
+  calc (#(t.𝓧 w) : ℕ∞) ≤ #(t.𝓧 w) - 1 + 1 := le_tsub_add
+    _ ≤ t.ewidth + 1 := by gcongr
+
 /-- G has a tree decomposition with width at most n. -/
 def hasTreeDecomp (G : SimpleGraph V) (n : ℕ∞) : Prop := ∃ t : G.TreeDecomp, t.ewidth ≤ n
 
@@ -126,8 +132,14 @@ lemma Iso.hasTreeDecomp_iff {n : ℕ∞} {V' : Type u}
    fun ⟨t, ht⟩ ↦ ⟨t.map φ.symm, TreeDecomp.ewidth_map φ.symm t ▸ ht⟩⟩
 
 @[simp]
-lemma TreeDecomp.coe_width (t : TreeDecomp G) (h : t.ewidth ≠ ⊤) :
+lemma TreeDecomp.coe_width {t : TreeDecomp G} (h : t.ewidth ≠ ⊤) :
     (t.width : ℕ∞) = t.ewidth := ENat.coe_toNat h
+
+lemma TreeDecomp.card_bag_le_width (t : G.TreeDecomp) (hw : t.ewidth ≠ ⊤) (w : t.W) :
+    #(t.𝓧 w) ≤ t.width + 1 := by
+  have := t.card_bag_le w
+  rw [← t.coe_width hw] at this
+  exact_mod_cast this
 
 /-- The tree decomposition obtained by putting all vertices in one bag. -/
 def trivialTreeDecomp [Fintype V] (G : SimpleGraph V) : G.TreeDecomp where
@@ -304,6 +316,64 @@ theorem adhesion_imp_separator [DecidableEq V] (t : G.TreeDecomp) {x y : t.W} (h
   have hp_sub : p.val.support ⊆ q'.support := hpath ▸ Walk.support_toPath_subset q'
   exact ⟨hq_support x (hp_sub (p.val.fst_mem_support_of_mem_edges hxy)),
     hq_support y (hp_sub (p.val.snd_mem_support_of_mem_edges hxy))⟩
+
+/- Next plans: Try to prove Lem 12.3.1, which says that the adhesion set separates the vertices in
+each subtree. This is difficult currently for the following reasons:
+
+1. A notion of subtrees. Particularly, we need a lemma that says the subtrees formed after cutting
+  an edge are disjoint.
+2. Lemmas about vertex separators. I'm working on this in a separate branch.
+-/
+
+/-- If t is a tree decomposition with finite width, then either some bag contains every element,
+or there is a proper adhesion set between two distinct bags. -/
+theorem TreeDecomp.exists_proper_adhesion [Nonempty V] [DecidableEq V] (t : G.TreeDecomp)
+    (hw : t.ewidth ≠ ⊤) :
+    t.width + 1 = Nat.card V ∨ ∃ x y : t.W, ∃ h : t.T.Adj x y, #(t.adhesion h) ≤ t.width := by
+  by_cases! h : ∀ x y : t.W, t.𝓧 x = t.𝓧 y
+  · /- Because of h and t.vertexCover, every bag must contain V.univ -/
+    left
+    have h_univ : ∀ x : t.W, ∀ v : V, v ∈ t.𝓧 x := fun x v => by
+      obtain ⟨w, hw⟩ := t.vertexCover v
+      exact (h x w).symm ▸ hw
+    rcases finite_or_infinite V with hV | hV
+    · replace hV := Fintype.ofFinite V
+      rw [Nat.card_eq_fintype_card]
+      obtain w₀ := t.isTree.connected.nonempty.some
+      have hcard : #(t.𝓧 w₀) = Fintype.card V := by
+        rw [Finset.eq_univ_of_forall (h_univ w₀), Finset.card_univ]
+      have hle : Fintype.card V ≤ t.width + 1 := hcard ▸ t.card_bag_le_width hw w₀
+      have hge : t.width ≤ Fintype.card V - 1 := t.width_le_card
+      have hpos : 1 ≤ Fintype.card V := Fintype.card_pos
+      omega
+    /- Absurd because each bag is a finset. -/
+    · obtain w₀ := t.isTree.connected.nonempty.some
+      obtain ⟨v, hv⟩ := Infinite.exists_notMem_finset (t.𝓧 w₀)
+      exact absurd (h_univ w₀ v) hv
+  · right
+    obtain ⟨x, y, hxy⟩ := h
+    have ⟨p, hp⟩ := IsTree.existsUnique_path t.isTree x y
+    /- Induction on path, use hxy as a tool for contradiction. -/
+    induction p with
+    | nil => exact absurd rfl hxy
+    | @cons u v w h_adj p ih =>
+      by_cases! huv : t.𝓧 u = t.𝓧 v
+      · rw [huv] at hxy
+        exact ih hxy ⟨hp.1.of_cons, fun z hz ↦
+          congrArg Subtype.val (t.isTree.isAcyclic.path_unique ⟨z, hz⟩ ⟨p, hp.1.of_cons⟩)⟩
+      · refine ⟨u, v, h_adj, ?_⟩
+        rw [adhesion]
+        have hbu := t.card_bag_le_width hw u
+        have hbv := t.card_bag_le_width hw v
+        by_cases h_sub : t.𝓧 u ⊆ t.𝓧 v
+        · rw [Finset.inter_eq_left.mpr h_sub]
+          have := Finset.card_lt_card (h_sub.ssubset_of_ne huv)
+          omega
+        · obtain ⟨z, hzu, hzv⟩ := Finset.not_subset.mp h_sub
+          have := Finset.card_lt_card (Finset.ssubset_iff_of_subset
+            Finset.inter_subset_left |>.mpr ⟨z, hzu, fun h => hzv (Finset.mem_inter.mp h).2⟩)
+          omega
+
 
 end Adhesion
 
