@@ -173,4 +173,3 @@ protected theorem DirectedOn.csInf_le_csSup (hdb : DirectedOn (· ≥ ·) s)
   isGLB_le_isLUB (hdb.isGLB_csInf ne hb) (hda.isLUB_csSup ne ha) ne
 
 end ConditionallyCompletePartialOrder
-#lint
