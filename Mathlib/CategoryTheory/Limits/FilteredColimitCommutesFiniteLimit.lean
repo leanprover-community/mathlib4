@@ -90,18 +90,7 @@ theorem colimitLimitToLimitColimit_injective :
           ((limit.π ((curry.obj (swap K J ⋙ F)).obj kx) j) x) =
         (colimit.ι ((curry.obj F).obj j) ky)
           ((limit.π ((curry.obj (swap K J ⋙ F)).obj ky) j) y) := by
-      #adaptation_note /-- Proof repaired after leanprover/lean4#13492.
-      The body of this `have` was previously just
-      ```
-      simpa using ConcreteCategory.congr_arg (limit.π (curry.obj F ⋙ colim) j) h
-      ```
-      The replacement proof is a short-term fix, and we request that the authors/maintainers of
-      this file review the proof, and either approve it by removing this adaptation note, revise
-      the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
-      needs addressing. -/
-      have hj := ConcreteCategory.congr_arg (limit.π (curry.obj F ⋙ colim) j) h
-      simp only [ι_colimitLimitToLimitColimit_π_apply] at hj
-      exact hj
+      simpa [-comp_obj] using ConcreteCategory.congr_arg (limit.π (curry.obj F ⋙ colim) j) h
     -- and they are equations in a filtered colimit,
     -- so for each `j` we have some place `k j` to the right of both `kx` and `ky`
     simp only [colimit_eq_iff] at h
@@ -213,17 +202,7 @@ theorem colimitLimitToLimitColimit_surjective :
       nth_rw 2 [← Bifunctor.diagonal']
       simp only [← curry_obj_obj_map, ← curry_obj_obj_obj, comp_apply, colimit.w_apply]
       rw [e, ← limit.w_apply _ f, ← e]
-      #adaptation_note /-- Proof repaired after leanprover/lean4#13492.
-      The tail of this `have` body (the `change` + `rw [ι_colimMap]` + `simp`)
-      was previously just `simp [-curry_obj_obj_obj]`.
-      The replacement proof is a short-term fix, and we request that the authors/maintainers of
-      this file review the proof, and either approve it by removing this adaptation note, revise
-      the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
-      needs addressing. -/
-      change (ConcreteCategory.hom (colimit.ι ((curry.obj F).obj j) (k j) ≫
-          colimMap ((curry.obj F).map f))) (y j) = _
-      rw [ι_colimMap]
-      simp [-curry_obj_obj_obj]
+      simp [← comp_apply, -types_comp_apply]
     -- Because `K` is filtered, we can restate this as saying that
     -- for each such `f`, there is some place to the right of `k'`
     -- where these images of `y j` and `y j'` become equal.
@@ -332,24 +311,14 @@ theorem colimitLimitToLimitColimit_surjective :
       intro j
       -- and as each component is an equation in a colimit, we can verify it by
       -- pointing out the morphism which carries one representative to the other:
-      #adaptation_note /-- Proof repaired after leanprover/lean4#13492.
-      The next four lines used to be
-      ```
-      simp only [comp_obj, colim_obj, lim_obj, Bifunctor.map_id_comp, comp_apply, id_eq,
-        ι_colimitLimitToLimitColimit_π_apply]
-      generalize_proofs _ _ _ _ _ h
+      -- `simp? [← comp_apply, -types_comp_apply]` says:
+      simp only [comp_obj, colim_obj, lim_obj, Bifunctor.map_id_comp, id_eq, ← comp_apply, assoc,
+        ι_colimitLimitToLimitColimit_π, curry_obj_obj_obj, swap_obj]
+      generalize_proofs _ _ _ _ h
+      dsimp
       rw [← dsimp% e j, dsimp% Limit.π_mk _ _ h]
-      ```
-      The replacement proof is a short-term fix, and we request that the authors/maintainers of
-      this file review the proof, and either approve it by removing this adaptation note, revise
-      the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
-      needs addressing. -/
-      simp only [comp_obj, colim_obj, lim_obj, Bifunctor.map_id_comp, comp_apply, id_eq]
-      erw [ι_colimitLimitToLimitColimit_π_apply]
-      generalize_proofs p1 p2 p3 p4 p5 p6 p7
-      erw [Limit.π_mk (h := p6), ← e j]
       dsimp only [comp_obj, colim_obj, ← curry_obj_obj_obj]
-      erw [colimit_eq_iff]
+      rw [colimit_eq_iff]
       refine ⟨k'', 𝟙 k'', g j ≫ gf (𝟙 j) ≫ i (𝟙 j), ?_⟩
       simp
 
