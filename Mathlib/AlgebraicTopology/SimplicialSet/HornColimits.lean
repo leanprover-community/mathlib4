@@ -163,10 +163,10 @@ lemma hom_ext' {i : Fin (n + 2)} {f g : (Λ[n + 1, i] : SSet) ⟶ X}
 /-- Let `i : Fin (n + 2)`. This is the condition that a family of morphisms
 `Δ[n] ⟶ X` for `j ≠ i` are the "faces" of a morphism  `Λ[n + 1, i] ⟶ X`. -/
 protected def IsCompatible
-    {i : Fin (n + 2)} (f : ∀ (j : Fin (n + 2)) (_ : j ≠ i), Δ[n] ⟶ X) : Prop := by
+    {i : Fin (n + 2)} (f : ∀ (j : Fin (n + 2)) (_ : j ≠ i), Δ[n] ⟶ X) : Prop :=
   match n with
-  | 0 => exact True
-  | n + 1 => exact ∀ (j k : Fin (n + 3)) (hj : j ≠ i) (hk : k ≠ i) (hjk : j < k),
+  | 0 => True
+  | n + 1 => ∀ (j k : Fin (n + 3)) (hj : j ≠ i) (hk : k ≠ i) (hjk : j < k),
       stdSimplex.δ (k.pred (Fin.ne_zero_of_lt hjk)) ≫ f j hj =
       stdSimplex.δ (j.castPred (Fin.ne_last_of_lt hjk)) ≫ f k hk
 
