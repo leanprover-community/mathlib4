@@ -75,3 +75,17 @@ theorem IsNilpotent.isUnit_quotient_mk_iff {R : Type*} [CommRing R] {I : Ideal R
       rw [eq_comm, ← sub_eq_zero, ← this]
       ring
     exact .of_mul_eq_one _ this
+
+theorem Ideal.Quotient.isUnit_mk_pow_iff_isUnit_mk {x : S} {n : ℕ} (hn : n ≠ 0) :
+    IsUnit (Ideal.Quotient.mk (I ^ n) x) ↔ IsUnit (Ideal.Quotient.mk I x) := by
+  rw [← IsNilpotent.isUnit_quotient_mk_iff (I := Ideal.map (Ideal.Quotient.mk (I ^ n)) I)]
+  · rw [← isUnit_map_iff (DoubleQuot.quotQuotEquivQuotOfLE (Ideal.pow_le_self hn))]
+    rfl
+  · use n
+    simp [← Ideal.map_pow]
+
+theorem Ideal.Quotient.isUnit_mk_pow_iff_notMem [I.IsMaximal] {n : ℕ} (hn : n ≠ 0) {x : S} :
+    IsUnit (mk (I ^ n) x) ↔ x ∉ I := by
+  let := Ideal.Quotient.field I
+  rw [isUnit_mk_pow_iff_isUnit_mk I hn, isUnit_iff_ne_zero]
+  exact Ideal.Quotient.eq_zero_iff_mem.not

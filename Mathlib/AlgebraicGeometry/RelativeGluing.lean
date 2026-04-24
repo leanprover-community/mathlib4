@@ -24,6 +24,7 @@ open CategoryTheory Limits
 
 namespace AlgebraicGeometry
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Scheme.isLocallyDirected_of_equifibered_of_injective {J : Type*} [Category J]
     {F G : J ⥤ Scheme.{u}} (s : F ⟶ G) [Quiver.IsThin J] (hs : s.Equifibered)
     (H : ∀ {i j} (hij : i ⟶ j), Function.Injective (F.map hij))
@@ -33,7 +34,9 @@ lemma Scheme.isLocallyDirected_of_equifibered_of_injective {J : Type*} [Category
     simp only [Functor.comp_obj, Scheme.forget_obj, Functor.comp_map, Scheme.forget_map] at heq
     obtain ⟨l, fli, flj, x, hi, hj⟩ := (G ⋙ Scheme.forget).exists_map_eq_of_isLocallyDirected fi fj
         (s.app i xi) (s.app j xj) <| by
-      simp only [Functor.comp_obj, Scheme.forget_obj, Functor.comp_map, Scheme.forget_map]
+      simp only [Functor.comp_obj, forget_obj, Functor.comp_map, forget_map,
+        ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk]
+      dsimp at heq
       rw [← Scheme.Hom.comp_apply, ← s.naturality, Scheme.Hom.comp_apply, heq,
         ← Scheme.Hom.comp_apply, s.naturality]
       simp
@@ -43,8 +46,10 @@ lemma Scheme.isLocallyDirected_of_equifibered_of_injective {J : Type*} [Category
     refine ⟨e.inv z, ?_, ?_⟩
     · simp [← h1, ← Scheme.Hom.comp_apply, e]
     · apply H fj
-      simp only [Functor.comp_map, Scheme.forget_map, ← Scheme.Hom.comp_apply,
+      simp only [Functor.comp_obj, forget_obj, Functor.comp_map, forget_map,
+        ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk, ← Scheme.Hom.comp_apply,
         Category.assoc, ← Functor.map_comp, show flj ≫ fj = fli ≫ fi by subsingleton]
+      dsimp at heq
       simp [e, Functor.map_comp, ← heq, h1]
 
 namespace Scheme.Cover
@@ -116,6 +121,7 @@ lemma ι_toBase (i : 𝒰.I₀) :
     colimit.ι d.functor i ≫ d.toBase = d.natTrans.app i ≫ 𝒰.f i := by
   simp [toBase]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : d.cover.LocallyDirected where
   trans {i j} hij := d.functor.map hij
   directed {i j} x := by
@@ -137,6 +143,7 @@ instance : d.cover.LocallyDirected where
     rw [← Scheme.Hom.comp_apply]
     simp [h1, xj]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma preimage_toBase_eq_range_ι (i : 𝒰.I₀) :
     d.toBase ⁻¹' (Set.range <| 𝒰.f i) = Set.range (colimit.ι d.functor i) := by
   ext x
@@ -160,6 +167,7 @@ lemma toBase_preimage_eq_opensRange_ι (i : 𝒰.I₀) :
     d.toBase ⁻¹ᵁ (𝒰.f i).opensRange = (colimit.ι d.functor i).opensRange :=
   TopologicalSpace.Opens.coe_inj.mp (preimage_toBase_eq_range_ι d i)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isPullback_natTrans_ι_toBase (i : 𝒰.I₀) :
     IsPullback (d.natTrans.app i) (colimit.ι d.functor i) (𝒰.f i) d.toBase := by
   refine ⟨by simp, ⟨PullbackCone.IsLimit.mk _ ?_ ?_ ?_ ?_⟩⟩

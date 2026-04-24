@@ -44,7 +44,6 @@ theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : S
   obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_lt (len_lt_of_mono i fun h => by
         rw [← h] at h₁
         exact h₁ rfl)
-  simp only [len_mk] at hk
   rcases k with _ | k
   · change n = m + 1 at hk
     subst hk
@@ -77,6 +76,7 @@ theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : S
       by_contra
       exact hj₁ (by simp only [Fin.ext_iff, Fin.val_zero]; lia)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem Γ₀_obj_termwise_mapMono_comp_PInfty (X : SimplicialObject C) {Δ Δ' : SimplexCategory}
     (i : Δ ⟶ Δ') [Mono i] :
@@ -96,7 +96,6 @@ theorem Γ₀_obj_termwise_mapMono_comp_PInfty (X : SimplicialObject C) {Δ Δ' 
   · have h' : n' = n + 1 := hi.left
     subst h'
     simp only [Γ₀.Obj.Termwise.mapMono_δ₀' _ i hi]
-    dsimp
     rw [← PInfty.comm _ n, AlternatingFaceMapComplex.obj_d_eq]
     simp only [Preadditive.comp_sum]
     rw [Finset.sum_eq_single (0 : Fin (n + 2))]
@@ -124,6 +123,7 @@ variable [HasFiniteCoproducts C]
 
 namespace Γ₂N₁
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation `N₁ ⋙ Γ₂ ⟶ toKaroubi (SimplicialObject C)`. -/
 @[simps]
 def natTrans : (N₁ : SimplicialObject C ⥤ _) ⋙ Γ₂ ⟶ toKaroubi _ where
@@ -171,6 +171,7 @@ def natTrans : (N₂ : Karoubi (SimplicialObject C) ⥤ _) ⋙ Γ₂ ⟶ 𝟭 _ 
   ((Functor.whiskeringLeft _ _ _).obj (toKaroubi (SimplicialObject C))).preimage
     (Γ₂N₂ToKaroubiIso.hom ≫ Γ₂N₁.natTrans)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem natTrans_app_f_app (P : Karoubi (SimplicialObject C)) :
     Γ₂N₂.natTrans.app P =
       (N₂ ⋙ Γ₂).map P.decompId_i ≫
@@ -180,6 +181,7 @@ theorem natTrans_app_f_app (P : Karoubi (SimplicialObject C)) :
 
 end Γ₂N₂
 
+set_option backward.isDefEq.respectTransparency false in
 theorem compatibility_Γ₂N₁_Γ₂N₂_natTrans (X : SimplicialObject C) :
     Γ₂N₁.natTrans.app X =
       (Γ₂N₂ToKaroubiIso.app X).inv ≫
@@ -192,6 +194,7 @@ theorem compatibility_Γ₂N₁_Γ₂N₂_natTrans (X : SimplicialObject C) :
   erw [id_comp]
   rw [comp_id, Iso.inv_hom_id_app_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem identity_N₂_objectwise (P : Karoubi (SimplicialObject C)) :
     (N₂Γ₂.inv.app (N₂.obj P) : N₂.obj P ⟶ N₂.obj (Γ₂.obj (N₂.obj P))) ≫
     N₂.map (Γ₂N₂.natTrans.app P) = 𝟙 (N₂.obj P) := by
@@ -211,6 +214,7 @@ theorem identity_N₂_objectwise (P : Karoubi (SimplicialObject C)) :
   simp only [Karoubi.comp_f, HomologicalComplex.comp_f, Karoubi.id_f, N₂_obj_p_f, assoc,
     eq₁, eq₂, PInfty_f_naturality_assoc, app_idem, PInfty_f_idem_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem identity_N₂ :
     (𝟙 (N₂ : Karoubi (SimplicialObject C) ⥤ _) ◫ N₂Γ₂.inv) ≫
     (Functor.associator _ _ _).inv ≫ Γ₂N₂.natTrans ◫ 𝟙 (@N₂ C _ _) = 𝟙 N₂ := by
@@ -219,6 +223,7 @@ theorem identity_N₂ :
     NatTrans.id_app, Functor.comp_obj]
   rw [Γ₂.map_id, N₂.map_id, comp_id, id_comp, id_comp, identity_N₂_objectwise P]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsIso (Γ₂N₂.natTrans : (N₂ : Karoubi (SimplicialObject C) ⥤ _) ⋙ _ ⟶ _) := by
   have : ∀ P : Karoubi (SimplicialObject C), IsIso (Γ₂N₂.natTrans.app P) := by
     intro P
@@ -231,6 +236,7 @@ instance : IsIso (Γ₂N₂.natTrans : (N₂ : Karoubi (SimplicialObject C) ⥤ 
     exact isIso_of_reflects_iso _ N₂
   apply NatIso.isIso_of_isIso_app
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsIso (Γ₂N₁.natTrans : (N₁ : SimplicialObject C ⥤ _) ⋙ _ ⟶ _) := by
   have : ∀ X : SimplicialObject C, IsIso (Γ₂N₁.natTrans.app X) := by
     intro X

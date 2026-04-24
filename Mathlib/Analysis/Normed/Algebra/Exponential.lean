@@ -96,7 +96,7 @@ namespace NormedSpace
 
 open Filter RCLike ContinuousMultilinearMap NormedField Asymptotics FormalMultilinearSeries
 
-open scoped Nat Topology ENNReal
+open scoped Nat Topology ENNReal Ring
 
 section TopologicalAlgebra
 
@@ -130,6 +130,11 @@ noncomputable irreducible_def exp (x : 𝔸) : 𝔸 :=
     (NormedSpace.expSeries ℚ 𝔸).sum x
   else
     1
+
+/-- The junk value when `𝔸` can't be equipped with a `ℚ`-algebra structure. -/
+@[simp]
+theorem exp_of_isEmpty_algebra_rat [IsEmpty (Algebra ℚ 𝔸)] (x : 𝔸) : exp x = 1 := by
+  rw [exp, dif_neg (not_nonempty_iff.mpr ‹_›)]
 
 theorem expSeries_apply_eq (x : 𝔸) (n : ℕ) :
     (expSeries 𝕂 𝔸 n fun _ => x) = (n !⁻¹ : 𝕂) • x ^ n := by simp [expSeries]
@@ -173,7 +178,7 @@ theorem expSeries_apply_zero (n : ℕ) :
     expSeries 𝕂 𝔸 n (fun _ => (0 : 𝔸)) = Pi.single (M := fun _ => 𝔸) 0 1 n := by
   rw [expSeries_apply_eq]
   rcases n with - | n
-  · rw [pow_zero, Nat.factorial_zero, Nat.cast_one, inv_one, one_smul, Pi.single_eq_same]
+  · simp
   · rw [zero_pow (Nat.succ_ne_zero _), smul_zero, Pi.single_eq_of_ne n.succ_ne_zero]
 
 @[simp]
@@ -186,14 +191,11 @@ theorem exp_zero : exp (0 : 𝔸) = 1 := by
 @[simp]
 theorem exp_op [T2Space 𝔸] (x : 𝔸) :
     exp (MulOpposite.op x) = MulOpposite.op (exp x) := by
-  by_cases h : Nonempty (Algebra ℚ 𝔸)
-  · obtain ⟨_⟩ := h
-    rw [exp_eq_tsum ℚ, exp_eq_tsum ℚ]
+  obtain h | ⟨⟨_⟩⟩ := isEmpty_or_nonempty (Algebra ℚ 𝔸)
+  · have : IsEmpty (Algebra ℚ 𝔸ᵐᵒᵖ) := ⟨fun _ => h.elim <| (RingEquiv.opOp 𝔸).algebra ℚ⟩
+    simp
+  · rw [exp_eq_tsum ℚ, exp_eq_tsum ℚ]
     simp_rw [← MulOpposite.op_pow, ← MulOpposite.op_smul, tsum_op]
-  · have : ¬Nonempty (Algebra ℚ 𝔸ᵐᵒᵖ) := by
-      rintro ⟨h'⟩
-      exact h ⟨(RingEquiv.opOp 𝔸).algebra ℚ⟩
-    rw [exp, exp, dif_neg h, dif_neg this, MulOpposite.op_one]
 
 @[simp]
 theorem exp_unop [T2Space 𝔸] (x : 𝔸ᵐᵒᵖ) :
@@ -202,10 +204,19 @@ theorem exp_unop [T2Space 𝔸] (x : 𝔸ᵐᵒᵖ) :
 
 theorem star_exp [T2Space 𝔸] [StarRing 𝔸] [ContinuousStar 𝔸] (x : 𝔸) :
     star (exp x) = exp (star x) := by
-  by_cases h : Nonempty (Algebra ℚ 𝔸)
-  · obtain ⟨_⟩ := h
-    simp_rw [exp_eq_tsum ℚ, ← star_pow, ← star_inv_natCast_smul, ← tsum_star]
-  · rw [exp, exp, dif_neg h, dif_neg h, star_one]
+  obtain _ | ⟨⟨_⟩⟩ := isEmpty_or_nonempty (Algebra ℚ 𝔸)
+  · simp
+  · simp_rw [exp_eq_tsum ℚ, ← star_pow, ← star_inv_natCast_smul, ← tsum_star]
+
+/-- A subalgebra of `𝔸` that is closed topologically and under `ℚ`-scaling is closed under `exp`. -/
+theorem exp_mem
+    {R S : Type*} [Monoid R] [SMul ℚ R] [MulAction R 𝔸] [Algebra ℚ 𝔸] [IsScalarTower ℚ R 𝔸]
+    [SetLike S 𝔸] [SubsemiringClass S 𝔸] [SMulMemClass S R 𝔸] {s : S}
+    (h_closed : IsClosed (s : Set 𝔸)) {x : 𝔸} (h : x ∈ s) :
+    exp x ∈ s := by
+  have := SMulMemClass.ofIsScalarTower S ℚ R 𝔸
+  rw [exp_eq_tsum ℚ]
+  exact tsum_mem h_closed fun i => SMulMemClass.smul_mem _ <| pow_mem h _
 
 variable (𝕂)
 
@@ -216,12 +227,10 @@ theorem _root_.IsSelfAdjoint.exp [T2Space 𝔸] [StarRing 𝔸] [ContinuousStar 
 
 theorem _root_.Commute.exp_right [T2Space 𝔸] {x y : 𝔸} (h : Commute x y) :
     Commute x (exp y) := by
-  by_cases h : Nonempty (Algebra ℚ 𝔸)
-  · obtain ⟨_⟩ := h
-    rw [exp_eq_tsum ℚ]
+  obtain _ | ⟨⟨_⟩⟩ := isEmpty_or_nonempty (Algebra ℚ 𝔸)
+  · simp
+  · rw [exp_eq_tsum ℚ]
     exact Commute.tsum_right x fun n => (h.pow_right n).smul_right _
-  · rw [exp, dif_neg h]
-    exact Commute.one_right x
 
 theorem _root_.Commute.exp_left [T2Space 𝔸] {x y : 𝔸} (h : Commute x y) :
     Commute (exp x) y :=
@@ -343,6 +352,7 @@ theorem exp_add_of_commute_of_mem_ball [CharZero 𝕂] {x y : 𝔸} (hxy : Commu
   field_simp [n.factorial_ne_zero]
 
 /-- `NormedSpace.exp x` has explicit two-sided inverse `NormedSpace.exp (-x)`. -/
+@[implicit_reducible]
 noncomputable def invertibleExpOfMemBall [CharZero 𝕂] {x : 𝔸}
     (hx : x ∈ Metric.eball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) : Invertible (exp x)
     where
@@ -512,6 +522,7 @@ theorem exp_add_of_commute {x y : 𝔸} (hxy : Commute x y) : exp (x + y) = exp 
     ((expSeries_radius_eq_top ℚ 𝔸).symm ▸ edist_lt_top _ _)
 
 /-- `NormedSpace.exp x` has explicit two-sided inverse `NormedSpace.exp (-x)`. -/
+@[implicit_reducible]
 noncomputable def invertibleExp (x : 𝔸) : Invertible (exp x) :=
   invertibleExpOfMemBall <| (expSeries_radius_eq_top ℚ 𝔸).symm ▸ edist_lt_top _ _
 
@@ -521,7 +532,7 @@ theorem isUnit_exp (x : 𝔸) : IsUnit (exp x) :=
 theorem invOf_exp (x : 𝔸) [Invertible (exp x)] : ⅟(exp x) = exp (-x) :=
   invOf_exp_of_mem_ball <| (expSeries_radius_eq_top ℚ 𝔸).symm ▸ edist_lt_top _ _
 
-theorem _root_.Ring.inverse_exp (x : 𝔸) : Ring.inverse (exp x) = exp (-x) :=
+theorem _root_.Ring.inverse_exp (x : 𝔸) : (exp x)⁻¹ʳ = exp (-x) :=
   letI := invertibleExp x
   Ring.inverse_invertible _
 
@@ -530,6 +541,17 @@ theorem exp_mem_unitary_of_mem_skewAdjoint [StarRing 𝔸] [ContinuousStar 𝔸]
   rw [Unitary.mem_iff, star_exp, skewAdjoint.mem_iff.mp h, ←
     exp_add_of_commute (Commute.refl x).neg_left, ← exp_add_of_commute (Commute.refl x).neg_right,
     neg_add_cancel, add_neg_cancel, exp_zero, and_self_iff]
+
+lemma _root_.SemiconjBy.exp_right {x a b : 𝔸} (h : SemiconjBy x a b) :
+    SemiconjBy x (exp a) (exp b) := by
+  rw [exp_eq_tsum ℚ]
+  apply SemiconjBy.tsum_right x (expSeries_summable' _) (expSeries_summable' _)
+  exact fun _ ↦ h.pow_right _ |>.smul_right _
+
+lemma _root_.SemiconjBy.exp_neg_mul_mul_exp_eq_self {x a b : 𝔸} (h : SemiconjBy x a b) :
+    exp (-b) * x * exp a = x := by
+  let := invertibleExp b
+  simpa [← invOf_exp, mul_assoc, invOf_mul_eq_iff_eq_mul_left] using h.exp_right
 
 open scoped Function in -- required for scoped `on` notation
 /-- In a Banach-algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ`, if a family of elements `f i` mutually
@@ -662,6 +684,7 @@ theorem expSeries_eq_expSeries (n : ℕ) (x : 𝔸) :
     (expSeries 𝕂 𝔸 n fun _ => x) = expSeries 𝕂' 𝔸 n fun _ => x := by
   rw [expSeries_apply_eq, expSeries_apply_eq, inv_natCast_smul_eq 𝕂 𝕂']
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A version of `Complex.ofReal_exp` for `NormedSpace.exp` instead of `Complex.exp` -/
 @[simp, norm_cast]
 theorem ofReal_exp_ℝ_ℝ (r : ℝ) : ↑(exp r) = exp (r : ℂ) :=

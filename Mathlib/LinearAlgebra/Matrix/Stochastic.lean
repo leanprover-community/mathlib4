@@ -53,7 +53,7 @@ def rowStochastic (R n : Type*) [Fintype n] [DecidableEq n] [Semiring R] [Partia
     simp [zero_le_one_elem]
 
 lemma mem_rowStochastic :
-    M ∈ rowStochastic R n ↔ (∀ i j, 0 ≤ M i j) ∧  M *ᵥ 1 = 1 :=
+    M ∈ rowStochastic R n ↔ (∀ i j, 0 ≤ M i j) ∧ M *ᵥ 1 = 1 :=
   Iff.rfl
 
 /-- A square matrix is row stochastic if each element is non-negative and row sums to one. -/
@@ -221,7 +221,7 @@ lemma transpose_mem_rowStochastic_iff_mem_colStochastic :
     Mᵀ ∈ rowStochastic R n ↔ M ∈ colStochastic R n := by
   simp only [mem_colStochastic_iff_sum, mem_rowStochastic_iff_sum, transpose_apply,
     and_congr_left_iff]
-  exact fun _ ↦ forall_swap
+  exact fun _ ↦ forall_comm
 
 /-- The transpose of a matrix is column stochastic matrix if it is row stochastic. -/
 @[grind =]
@@ -229,7 +229,7 @@ lemma transpose_mem_colStochastic_iff_mem_rowStochastic :
     Mᵀ ∈ colStochastic R n ↔ M ∈ rowStochastic R n := by
   simp only [mem_colStochastic_iff_sum, mem_rowStochastic_iff_sum, transpose_apply,
     and_congr_left_iff]
-  exact fun _ ↦ forall_swap
+  exact fun _ ↦ forall_comm
 
 /-- Reindexing a matrix preserves row-stochasticity. -/
 @[aesop safe apply]

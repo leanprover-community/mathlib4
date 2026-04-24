@@ -74,6 +74,23 @@ theorem _root_.ULift.algebraMap_eq (r : R) :
 theorem _root_.ULift.down_algebraMap (r : R) : (algebraMap R (ULift A) r).down = algebraMap R A r :=
   rfl
 
+variable (R A) in
+/-- If `A` is an `R`-algebra, it is also a `ULift R`-algebra. In particular, `Ulift A` is a
+`ULift R` algebra. This is not an instance, because it causes a non-reducible diamond in the case
+where `A = Ulift R`. -/
+@[instance_reducible]
+def _root_.ULift.algebra' : Algebra (ULift.{u} R) A where
+  __ := ULift.module
+  algebraMap := (algebraMap R A).comp ULift.ringEquiv.toRingHom
+  commutes' _ _ := Algebra.commutes ..
+  smul_def' _ _ := Algebra.smul_def' ..
+
+attribute [local instance] ULift.algebra' in
+/-- This references the `ULift.algebra'` instance. -/
+@[simp]
+lemma _root_.ULift.algebraMap_apply' (r : ULift R) :
+    algebraMap (ULift R) A r = algebraMap R A r.down := rfl
+
 end ULift
 
 section SubsemiringAlgebra
@@ -121,7 +138,9 @@ end SubsemiringAlgebra
 def algebraMapSubmonoid (S : Type*) [Semiring S] [Algebra R S] (M : Submonoid R) : Submonoid S :=
   M.map (algebraMap R S)
 
-theorem mem_algebraMapSubmonoid_of_mem {S : Type*} [Semiring S] [Algebra R S] {M : Submonoid R}
+variable {S : Type*} [Semiring S] [Algebra R S]
+
+theorem mem_algebraMapSubmonoid_of_mem {M : Submonoid R}
     (x : M) : algebraMap R S x ∈ algebraMapSubmonoid S M :=
   Set.mem_image_of_mem (algebraMap R S) x.2
 
@@ -130,9 +149,14 @@ lemma algebraMapSubmonoid_self (M : Submonoid R) : Algebra.algebraMapSubmonoid R
   Submonoid.map_id M
 
 @[simp]
-lemma algebraMapSubmonoid_powers {S : Type*} [Semiring S] [Algebra R S] (r : R) :
+lemma algebraMapSubmonoid_powers (r : R) :
     Algebra.algebraMapSubmonoid S (.powers r) = Submonoid.powers (algebraMap R S r) := by
   simp [Algebra.algebraMapSubmonoid]
+
+lemma algebraMapSubmonoid_isUnit_le :
+    algebraMapSubmonoid S (IsUnit.submonoid R) ≤ IsUnit.submonoid S := by
+  rintro x ⟨y, hy, rfl⟩
+  exact hy.map _
 
 end Semiring
 
@@ -218,19 +242,19 @@ theorem End.algebraMap_isUnit_inv_apply_eq_iff {x : R}
     (h : IsUnit (algebraMap R (Module.End S M) x)) (m m' : M) :
     (↑(h.unit⁻¹) : Module.End S M) m = m' ↔ m = x • m' where
   mp H := H ▸ (isUnit_apply_inv_apply_of_isUnit h m).symm
-  mpr H :=
-    H.symm ▸ by
-      apply_fun ⇑h.unit.val using ((isUnit_iff _).mp h).injective
-      simpa using Module.End.isUnit_apply_inv_apply_of_isUnit h (x • m')
+  mpr H := by
+    apply_fun ⇑h.unit.val using ((isUnit_iff _).mp h).injective
+    rw [H]
+    simpa using Module.End.isUnit_apply_inv_apply_of_isUnit h (x • m')
 
 theorem End.algebraMap_isUnit_inv_apply_eq_iff' {x : R}
     (h : IsUnit (algebraMap R (Module.End S M) x)) (m m' : M) :
     m' = (↑h.unit⁻¹ : Module.End S M) m ↔ m = x • m' where
   mp H := H ▸ (isUnit_apply_inv_apply_of_isUnit h m).symm
-  mpr H :=
-    H.symm ▸ by
-      apply_fun (↑h.unit : M → M) using ((isUnit_iff _).mp h).injective
-      simpa using isUnit_apply_inv_apply_of_isUnit h (x • m') |>.symm
+  mpr H := by
+    apply_fun (↑h.unit : M → M) using ((isUnit_iff _).mp h).injective
+    rw [H]
+    simpa using isUnit_apply_inv_apply_of_isUnit h (x • m') |>.symm
 
 end
 

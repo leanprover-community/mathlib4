@@ -337,6 +337,7 @@ def binaryProductTriangle (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryProduct
     Triangle C :=
   Triangle.mk ((Limits.prod.lift (𝟙 X₁) 0)) (Limits.prod.snd : X₁ ⨯ X₂ ⟶ _) 0
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism of triangles
 `binaryProductTriangle X₁ X₂ ≅ binaryBiproductTriangle X₁ X₂`. -/
 @[simps!]
@@ -359,6 +360,7 @@ def productTriangle : Triangle C :=
     (Limits.Pi.map (fun j => (T j).mor₂))
     (Limits.Pi.map (fun j => (T j).mor₃) ≫ inv (piComparison _ _))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A projection from the product of a family of triangles. -/
 @[simps]
 def productTriangle.π (j : J) :
@@ -366,15 +368,12 @@ def productTriangle.π (j : J) :
   hom₁ := Pi.π _ j
   hom₂ := Pi.π _ j
   hom₃ := Pi.π _ j
-  comm₃ := by
-    dsimp
-    rw [← piComparison_comp_π, assoc, IsIso.inv_hom_id_assoc]
-    simp only [limMap_π, Discrete.natTrans_app]
 
 /-- The fan given by `productTriangle T`. -/
 @[simp]
 def productTriangle.fan : Fan T := Fan.mk (productTriangle T) (productTriangle.π T)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A family of morphisms `T' ⟶ T j` lifts to a morphism `T' ⟶ productTriangle T`. -/
 @[simps]
 def productTriangle.lift {T' : Triangle C} (φ : ∀ j, T' ⟶ T j) :
@@ -387,6 +386,7 @@ def productTriangle.lift {T' : Triangle C} (φ : ∀ j, T' ⟶ T j) :
     rw [← cancel_mono (piComparison _ _), assoc, assoc, assoc, IsIso.inv_hom_id, comp_id]
     cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The triangle `productTriangle T` satisfies the universal property of the categorical
 product of the triangles `T`. -/
 def productTriangle.isLimitFan : IsLimit (productTriangle.fan T) :=
@@ -396,6 +396,7 @@ def productTriangle.isLimitFan : IsLimit (productTriangle.fan T) :=
     all_goals
       exact Pi.hom_ext _ _ (fun j => (by simp [← hm])))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma productTriangle.zero₃₁ [HasZeroMorphisms C]
     (h : ∀ j, (T j).mor₃ ≫ (T j).mor₁⟦(1 : ℤ)⟧' = 0) :
     (productTriangle T).mor₃ ≫ (productTriangle T).mor₁⟦1⟧' = 0 := by
@@ -406,9 +407,7 @@ lemma productTriangle.zero₃₁ [HasZeroMorphisms C]
   change _ ≫ (Pi.lift (fun j => Pi.π _ j ≫ (T j).mor₁))⟦(1 : ℤ)⟧' = 0
   rw [assoc, ← cancel_mono (piComparison _ _), zero_comp, assoc, assoc]
   ext j
-  simp only [map_lift_piComparison, assoc, limit.lift_π, Fan.mk_π_app, zero_comp,
-    Functor.map_comp, ← piComparison_comp_π_assoc, IsIso.inv_hom_id_assoc,
-    limMap_π_assoc, Discrete.natTrans_app, h j, comp_zero]
+  simp [h j]
 
 end
 
@@ -474,6 +473,7 @@ open Functor
 
 variable {J : Type*} [Category* J]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Constructor for functors to the category of triangles. -/
 @[simps]
 def functorMk {obj₁ obj₂ obj₃ : J ⥤ C}
@@ -523,6 +523,7 @@ def functorHomMk'
     functorMk mor₁ mor₂ mor₃ ⟶ functorMk mor₁' mor₂' mor₃' :=
   functorHomMk _ _ hom₁ hom₂ hom₃ comm₁ comm₂ comm₃
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Constructor for natural isomorphisms between functors to the
 category of triangles. -/
 @[simps]

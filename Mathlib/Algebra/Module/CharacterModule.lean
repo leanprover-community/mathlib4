@@ -21,7 +21,7 @@ For commutative ring `R` and an `R`-module `M` and an injective module `D`, its 
 ## Main results
 
 - `CharacterModuleFunctor` : the contravariant functor of `R`-modules where `M ↦ M⋆` and
-an `R`-linear map `l : M ⟶ N` induces an `R`-linear map `l⋆ : f ↦ f ∘ l` where `f : N⋆`.
+  an `R`-linear map `l : M ⟶ N` induces an `R`-linear map `l⋆ : f ↦ f ∘ l` where `f : N⋆`.
 - `LinearMap.dual_surjective_of_injective` : If `l` is injective then `l⋆` is surjective,
   in another word taking character module as a functor sends monos to epis.
 - `CharacterModule.homEquiv` : there is a bijection between linear map `Hom(N, M⋆)` and
@@ -51,6 +51,7 @@ instance : FunLike (CharacterModule A) A (AddCircle (1 : ℚ)) where
   coe c := c.toFun
   coe_injective' _ _ _ := by simp_all
 
+set_option backward.isDefEq.respectTransparency false in
 instance : LinearMapClass (CharacterModule A) ℤ A (AddCircle (1 : ℚ)) where
   map_add _ _ _ := by rw [AddMonoidHom.map_add]
   map_smulₛₗ _ _ _ := by rw [AddMonoidHom.map_zsmul, RingHom.id_apply]
@@ -64,8 +65,9 @@ section module
 
 variable [Module R A] [Module R A'] [Module R B]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Module R (CharacterModule A) :=
-  Module.compHom (A →+ _) (RingEquiv.toOpposite _ |>.toRingHom : R →+* Rᵈᵐᵃ)
+  fast_instance% Module.compHom (A →+ _) (RingEquiv.toOpposite _ |>.toRingHom : R →+* Rᵈᵐᵃ)
 
 variable {R A B}
 
@@ -230,6 +232,7 @@ theorem _root_.rTensor_injective_iff_lcomp_surjective {f : A →ₗ[R] A'} :
     Function.Injective (f.rTensor B) ↔ Function.Surjective (f.lcomp R <| CharacterModule B) := by
   simp [← dual_rTensor_conj_homEquiv, dual_surjective_iff_injective]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma surjective_of_dual_injective (f : A →ₗ[R] A') (hf : Function.Injective (dual f)) :
     Function.Surjective f := by
   rw [← LinearMap.range_eq_top, ← Submodule.unique_quotient_iff_eq_top]

@@ -98,7 +98,7 @@ For this reason, `Matroid.map` requires injectivity to be well-defined in genera
 
 ## References
 
-* [E. Aigner-Horev, J. Carmesin, J. Fröhlic, Infinite Matroid Union][aignerhorev2012infinite]
+* [E. Aigner-Horev, J. Carmesin, J. Fröhlich, Infinite Matroid Union][aignerhorev2012infinite]
 * [H. Perfect, Independence Spaces and Combinatorial Problems][perfect1969matroid]
 * [J. Oxley, Matroid Theory][oxley2011]
 -/
@@ -290,6 +290,7 @@ instance comapOn_rankFinite [N.RankFinite] : (N.comapOn E f).RankFinite := by
 end comapOn
 section mapSetEmbedding
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Map a matroid `M` to an isomorphic copy in `β` using an embedding `M.E ↪ β`. -/
 def mapSetEmbedding (M : Matroid α) (f : M.E ↪ β) : Matroid β := Matroid.ofExistsMatroid
   (E := range f)

@@ -117,16 +117,16 @@ section Function
 @[simp]
 theorem mapsTo_sUnion {S : Set (Set α)} {t : Set β} {f : α → β} :
     MapsTo f (⋃₀ S) t ↔ ∀ s ∈ S, MapsTo f s t :=
-  sUnion_subset_iff
+  mapsTo_iff_subset_preimage.trans sUnion_subset_iff
 
 @[simp]
 theorem mapsTo_iUnion {s : ι → Set α} {t : Set β} {f : α → β} :
     MapsTo f (⋃ i, s i) t ↔ ∀ i, MapsTo f (s i) t :=
-  iUnion_subset_iff
+  mapsTo_iff_subset_preimage.trans iUnion_subset_iff
 
 theorem mapsTo_iUnion₂ {s : ∀ i, κ i → Set α} {t : Set β} {f : α → β} :
     MapsTo f (⋃ (i) (j), s i j) t ↔ ∀ i j, MapsTo f (s i j) t :=
-  iUnion₂_subset_iff
+  mapsTo_iff_subset_preimage.trans iUnion₂_subset_iff
 
 theorem mapsTo_iUnion_iUnion {s : ι → Set α} {t : ι → Set β} {f : α → β}
     (H : ∀ i, MapsTo f (s i) (t i)) : MapsTo f (⋃ i, s i) (⋃ i, t i) :=
@@ -139,7 +139,7 @@ theorem mapsTo_iUnion₂_iUnion₂ {s : ∀ i, κ i → Set α} {t : ∀ i, κ i
 @[simp]
 theorem mapsTo_sInter {s : Set α} {T : Set (Set β)} {f : α → β} :
     MapsTo f s (⋂₀ T) ↔ ∀ t ∈ T, MapsTo f s t :=
-  forall₂_swap
+  forall₂_comm
 
 @[simp]
 theorem mapsTo_iInter {s : Set α} {t : ι → Set β} {f : α → β} :
@@ -314,7 +314,7 @@ section Image
 
 theorem image_iUnion {f : α → β} {s : ι → Set α} : (f '' ⋃ i, s i) = ⋃ i, f '' s i := by
   ext1 x
-  simp only [mem_image, mem_iUnion, ← exists_and_right, exists_swap (α := α)]
+  simp only [mem_image, mem_iUnion, ← exists_and_right, exists_comm (α := α)]
 
 theorem image_iUnion₂ (f : α → β) (s : ∀ i, κ i → Set α) :
     (f '' ⋃ (i) (j), s i j) = ⋃ (i) (j), f '' s i j := by simp_rw [image_iUnion]

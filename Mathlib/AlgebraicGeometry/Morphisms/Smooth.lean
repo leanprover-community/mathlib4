@@ -86,7 +86,7 @@ lemma Smooth.iff_forall_exists_isStandardSmooth (f : X ⟶ Y) :
       ∀ (x : X), ∃ (U : Y.Opens) (_ : IsAffineOpen U) (V : X.Opens) (_ : IsAffineOpen V) (_ : x ∈ V)
         (e : V ≤ f ⁻¹ᵁ U), (f.appLE U V e).hom.IsStandardSmooth := by
   have : HasRingHomProperty @Smooth.{u} (Locally IsStandardSmooth) := by
-    convert (inferInstanceAs <| HasRingHomProperty @Smooth.{u} RingHom.Smooth)
+    convert (inferInstance : HasRingHomProperty @Smooth.{u} RingHom.Smooth)
     ext f
     rw [RingHom.smooth_iff_locally_isStandardSmooth]
   rw [HasRingHomProperty.iff_exists_appLE_locally (P := @Smooth)]
@@ -257,6 +257,7 @@ lemma formallySmooth_stalkMap_iff {f : X ⟶ Y} {x : X} (U : Y.Opens)
       (IsAffineOpen.arrowStalkMapIso f U hU V hV hVU hx)
   · exact Algebra.FormallySmooth.iff_restrictScalars.symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_smooth_of_formallySmooth_stalk
     (f : X ⟶ Y) [LocallyOfFinitePresentation f]
     (x : X) (H : (f.stalkMap x).hom.FormallySmooth) :
@@ -335,6 +336,7 @@ lemma Scheme.Hom.preimage_smoothLocus_eq {U : Scheme.{u}}
   rw [← CommRingCat.hom_comp, ← stalkMap_comp]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Scheme.Hom.genericPoint_mem_smoothLocus_of_perfectField
     {K : Type u} [Field K] [PerfectField K] [IsIntegral X]
     (f : X ⟶ Spec (.of K)) [LocallyOfFinitePresentation f] : genericPoint X ∈ f.smoothLocus := by

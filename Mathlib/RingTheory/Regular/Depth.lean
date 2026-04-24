@@ -72,7 +72,7 @@ lemma subsingleton_linearMap_iff [IsNoetherianRing R] [Module.Finite R M] [Modul
     let Mₚ' := Mₚ ⧸ (IsLocalRing.maximalIdeal (Localization.AtPrime p)) • (⊤ : Submodule Rₚ Mₚ)
     let _ : Module p.ResidueField Nₚ' :=
       Module.instQuotientIdealSubmoduleHSMulTop Nₚ (maximalIdeal (Localization.AtPrime p))
-    have := AssociatePrimes.mem_iff.mp
+    have := isAssociatedPrime_iff.mp <| AssociatedPrimes.mem_iff.mp
       (associatedPrimes.mem_associatedPrimes_atPrime_of_mem_associatedPrimes pass)
     rcases this.2 with ⟨x, hx⟩
     have : Nontrivial (Module.Dual p.ResidueField Nₚ') := by simpa using ntr
@@ -103,7 +103,7 @@ lemma subsingleton_linearMap_iff [IsNoetherianRing R] [Module.Finite R M] [Modul
       simp [eq0]
     absurd hom0
     let _ := Module.finitePresentation_of_finite R N
-    contrapose! f_ne0
+    contrapose f_ne0
     exact (Module.FinitePresentation.linearEquivMapExtendScalars
       p'.asIdeal.primeCompl).symm.map_eq_zero_iff.mp (Subsingleton.eq_zero _)
 

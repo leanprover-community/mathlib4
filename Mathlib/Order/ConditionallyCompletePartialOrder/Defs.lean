@@ -63,11 +63,14 @@ class ConditionallyCompletePartialOrderSup (α : Type*)
   isLUB_csSup_of_directed :
     ∀ s, DirectedOn (· ≤ ·) s → s.Nonempty → BddAbove s → IsLUB s (sSup s)
 
-/-- Conditionally complete partial orders (with suprema and infimae) are partial orders
+/-- Conditionally complete partial orders (with suprema and infima) are partial orders
 where every nonempty, directed set which is bounded above (respectively, below) has a
 least upper (respectively, greatest lower) bound. -/
 class ConditionallyCompletePartialOrder (α : Type*)
     extends ConditionallyCompletePartialOrderSup α, ConditionallyCompletePartialOrderInf α where
+
+attribute [to_dual existing]
+  ConditionallyCompletePartialOrder.toConditionallyCompletePartialOrderSup
 
 variable [ConditionallyCompletePartialOrderSup α]
 variable {f : ι → α} {s : Set α} {a : α}
@@ -90,7 +93,7 @@ protected lemma DirectedOn.csSup_le (hd : DirectedOn (· ≤ ·) s) (h_non : s.N
 @[to_dual ciInf_le]
 protected lemma Directed.le_ciSup (hf : Directed (· ≤ ·) f)
     (hf_bdd : BddAbove (Set.range f)) (i : ι) : f i ≤ ⨆ j, f j :=
-  hf.directedOn_range.le_csSup  hf_bdd <| Set.mem_range_self _
+  hf.directedOn_range.le_csSup hf_bdd <| Set.mem_range_self _
 
 @[to_dual le_ciInf]
 protected lemma Directed.ciSup_le [Nonempty ι] (hf : Directed (· ≤ ·) f)

@@ -371,6 +371,11 @@ lemma ofDual_intermediateFieldEquivSubgroup_apply (K : IntermediateField F E) :
 lemma intermediateFieldEquivSubgroup_symm_apply_toDual (H : Subgroup Gal(E/F)) :
     intermediateFieldEquivSubgroup.symm (.toDual H) = fixedField H := rfl
 
+theorem fixedField_eq_iff_fixingSubgroup_eq {K : IntermediateField F E} {H : Subgroup Gal(E/F)} :
+    fixedField H = K ↔ K.fixingSubgroup = H := by
+  simp [← OrderIso.apply_eq_iff_eq intermediateFieldEquivSubgroup, fixingSubgroup_fixedField,
+    eq_comm]
+
 end
 
 /-- The Galois correspondence as a `GaloisInsertion`. -/
@@ -688,10 +693,8 @@ instance IsQuadraticExtension.isCyclic : IsCyclic Gal(K/F) := by
   · exact @isCyclic_of_subsingleton _ _ (Finite.card_le_one_iff_subsingleton.mp h.le)
   · exact isCyclic_of_prime_card h
 
-/--
-A quadratic extension has abelian Galois group.
--/
-instance IsQuadraticExtension.isMulCommutative_galoisGroup :
-    IsMulCommutative Gal(K/F) := ⟨IsCyclic.commutative⟩
+@[deprecated inferInstance (since := "2026-04-09")]
+theorem IsQuadraticExtension.isMulCommutative_galoisGroup : IsMulCommutative Gal(K/F) :=
+  inferInstance
 
 end Algebra

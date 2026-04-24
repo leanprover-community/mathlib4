@@ -47,13 +47,12 @@ section SMul
 
 variable (𝕜) [SMul 𝕜 E] {s : Set E} {x y : E}
 
-/-- Segments in a vector space. -/
+/-- Segments in a vector space. Denoted as `[x -[𝕜] y]` within the `Convex` namespace. -/
 def segment (x y : E) : Set E :=
   { z : E | ∃ a b : 𝕜, 0 ≤ a ∧ 0 ≤ b ∧ a + b = 1 ∧ a • x + b • y = z }
 
 /-- Open segment in a vector space. Note that `openSegment 𝕜 x x = {x}` instead of being `∅` when
-the base semiring has some element between `0` and `1`.
-Denoted as `[x -[𝕜] y]` within the `Convex` namespace. -/
+the base semiring has some element between `0` and `1`. -/
 def openSegment (x y : E) : Set E :=
   { z : E | ∃ a b : 𝕜, 0 < a ∧ 0 < b ∧ a + b = 1 ∧ a • x + b • y = z }
 
@@ -246,11 +245,17 @@ theorem image_openSegment (f : E →ᵃ[𝕜] F) (a b : E) :
 @[simp]
 theorem vadd_segment [AddTorsor G E] [VAddCommClass G E E] (a : G) (b c : E) :
     a +ᵥ [b -[𝕜] c] = [a +ᵥ b -[𝕜] a +ᵥ c] :=
+  #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12286/
+  we didn't need this `let` statement. -/
+  let : AddTorsor E E := addGroupIsAddTorsor E
   image_segment 𝕜 ⟨_, LinearMap.id, fun _ _ => vadd_comm _ _ _⟩ b c
 
 @[simp]
 theorem vadd_openSegment [AddTorsor G E] [VAddCommClass G E E] (a : G) (b c : E) :
     a +ᵥ openSegment 𝕜 b c = openSegment 𝕜 (a +ᵥ b) (a +ᵥ c) :=
+  #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12286/
+  we didn't need this `let` statement. -/
+  let : AddTorsor E E := addGroupIsAddTorsor E
   image_openSegment 𝕜 ⟨_, LinearMap.id, fun _ _ => vadd_comm _ _ _⟩ b c
 
 @[simp]
@@ -324,17 +329,29 @@ section LinearOrderedRing
 
 variable [Ring 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] {x y : E}
 
-theorem midpoint_mem_segment [Invertible (2 : 𝕜)] (x y : E) : midpoint 𝕜 x y ∈ [x -[𝕜] y] := by
-  rw [segment_eq_image_lineMap]
-  exact ⟨⅟2, ⟨invOf_nonneg.mpr zero_le_two, invOf_le_one one_le_two⟩, rfl⟩
+theorem midpoint_mem_openSegment [Invertible (2 : 𝕜)] (x y : E) :
+    midpoint 𝕜 x y ∈ openSegment 𝕜 x y := by
+  rw [openSegment_eq_image_lineMap]
+  exact ⟨⅟2, ⟨invOf_pos.mpr two_pos, invOf_lt_one one_lt_two⟩, rfl⟩
 
-theorem mem_segment_sub_add [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x - y -[𝕜] x + y] := by
-  convert midpoint_mem_segment (𝕜 := 𝕜) (x - y) (x + y)
+theorem midpoint_mem_segment [Invertible (2 : 𝕜)] (x y : E) : midpoint 𝕜 x y ∈ [x -[𝕜] y] :=
+  openSegment_subset_segment _ _ _ <| midpoint_mem_openSegment _ _
+
+theorem mem_openSegment_sub_add [Invertible (2 : 𝕜)] (x y : E) :
+    x ∈ openSegment 𝕜 (x - y) (x + y) := by
+  convert midpoint_mem_openSegment (𝕜 := 𝕜) (x - y) (x + y)
   rw [midpoint_sub_add]
 
-theorem mem_segment_add_sub [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x + y -[𝕜] x - y] := by
-  convert midpoint_mem_segment (𝕜 := 𝕜) (x + y) (x - y)
+theorem mem_segment_sub_add [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x - y -[𝕜] x + y] :=
+  openSegment_subset_segment _ _ _ <| mem_openSegment_sub_add _ _
+
+theorem mem_openSegment_add_sub [Invertible (2 : 𝕜)] (x y : E) :
+    x ∈ openSegment 𝕜 (x + y) (x - y) := by
+  convert midpoint_mem_openSegment (𝕜 := 𝕜) (x + y) (x - y)
   rw [midpoint_add_sub]
+
+theorem mem_segment_add_sub [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x + y -[𝕜] x - y] :=
+  openSegment_subset_segment _ _ _ <| mem_openSegment_add_sub _ _
 
 @[simp]
 theorem left_mem_openSegment_iff [DenselyOrdered 𝕜] [IsTorsionFree 𝕜 E] :

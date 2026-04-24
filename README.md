@@ -1,7 +1,7 @@
 # mathlib4
 
 ![GitHub CI](https://github.com/leanprover-community/mathlib4/actions/workflows/build.yml/badge.svg?branch=master)
-[![Bors enabled](https://bors.tech/images/badge_small.svg)](https://mathlib-bors-ca18eefec4cb.herokuapp.com/repositories/16)
+[![Bors enabled](https://raw.githubusercontent.com/bors-ng/bors-ng.github.io/refs/heads/master/images/badge_small.svg)](https://mathlib-bors-ca18eefec4cb.herokuapp.com/repositories/16)
 [![project chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg)](https://leanprover.zulipchat.com)
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/leanprover-community/mathlib4)
 
@@ -151,6 +151,7 @@ For a list containing more detailed information, see https://leanprover-communit
 * Kyle Miller (@kmill): combinatorics, tactics, metaprogramming
 * Kim Morrison (@kim-em): category theory, tactics
 * Oliver Nash (@ocfnash): algebra, geometry, topology
+* Filippo A. E. Nuccio (@faenuccio): algebra, functional analysis, homology, number theory
 * Joël Riou (@joelriou): category theory, homology, algebraic geometry
 * Michael Rothgang (@grunweg): differential geometry, analysis, topology, linters
 * Damiano Testa (@adomani): algebra, algebraic geometry, number theory, tactics, linters

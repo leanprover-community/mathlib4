@@ -114,6 +114,9 @@ instance [Algebra S R] : Algebra S (AdicCompletion I R) where
   commutes' r x := Subtype.ext <| Algebra.commutes' r x.val
   smul_def' r x := Subtype.ext <| Algebra.smul_def' r x.val
 
+theorem algebraMap_apply [Algebra S R] (s : S) :
+    algebraMap S (AdicCompletion I R) s = of I R (algebraMap S R s) := rfl
+
 @[simp]
 theorem val_one (n : ℕ) : (1 : AdicCompletion I R).val n = 1 :=
   rfl
@@ -186,7 +189,7 @@ lemma evalOneₐ_surjective : Function.Surjective (evalOneₐ I) := by
 /-- `AdicCauchySequence I R` is an `R`-subalgebra of `ℕ → R`. -/
 def AdicCauchySequence.subalgebra : Subalgebra R (ℕ → R) :=
   Submodule.toSubalgebra (AdicCauchySequence.submodule I R)
-    (fun {m n} _ ↦ by simp; rfl)
+    (fun {m n} _ ↦ by simp)
     (fun x y hx hy {m n} hmn ↦ by
       simp only [Pi.mul_apply]
       exact SModEq.mul (hx hmn) (hy hmn))
@@ -263,7 +266,7 @@ good definitional behaviour for the module instance on adic completions -/
 instance : SMul (R ⧸ (I • ⊤ : Ideal R)) (M ⧸ (I • ⊤ : Submodule R M)) where
   smul r x :=
     Quotient.liftOn r (· • x) fun b₁ b₂ h ↦ by
-      refine Quotient.inductionOn' x (fun x ↦ ?_)
+      induction x using Quotient.inductionOn'
       have h : b₁ - b₂ ∈ (I : Submodule R R) := by
         rwa [show I = I • ⊤ by simp, ← Submodule.quotientRel_def]
       rw [← sub_eq_zero, ← sub_smul, Submodule.Quotient.mk''_eq_mk,
@@ -278,8 +281,7 @@ theorem mk_smul_mk (r : R) (x : M) :
 
 theorem val_smul_eq_evalₐ_smul (n : ℕ) (r : AdicCompletion I R)
     (x : M ⧸ (I ^ n • ⊤ : Submodule R M)) : r.val n • x = evalₐ I n r • x := by
-  apply induction_on I R r (fun r ↦ ?_)
-  exact Quotient.inductionOn' x (fun x ↦ rfl)
+  induction r using induction_on; rfl
 
 instance : Module (R ⧸ (I • ⊤ : Ideal R)) (M ⧸ (I • ⊤ : Submodule R M)) :=
   Function.Surjective.moduleLeft (Ideal.Quotient.mk (I • ⊤ : Ideal R))
@@ -287,8 +289,7 @@ instance : Module (R ⧸ (I • ⊤ : Ideal R)) (M ⧸ (I • ⊤ : Submodule R 
 
 instance : IsScalarTower R (R ⧸ (I • ⊤ : Ideal R)) (M ⧸ (I • ⊤ : Submodule R M)) where
   smul_assoc r s x := by
-    refine Quotient.inductionOn' s (fun s ↦ ?_)
-    refine Quotient.inductionOn' x (fun x ↦ ?_)
+    induction s, x using Quotient.inductionOn₂' with | _ s x
     simp only [Submodule.Quotient.mk''_eq_mk]
     rw [← Submodule.Quotient.mk_smul, Ideal.Quotient.mk_eq_mk, mk_smul_mk, smul_assoc]
     rfl
@@ -327,6 +328,7 @@ instance : IsScalarTower R (AdicCompletion I R) (AdicCompletion I M) where
     ext n
     rw [smul_eval, val_smul_apply, val_smul_apply, smul_eval, smul_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A priori `AdicCompletion I R` has two `AdicCompletion I R`-module instances.
 Both agree definitionally. -/
 example : module I = @Algebra.toModule (AdicCompletion I R)

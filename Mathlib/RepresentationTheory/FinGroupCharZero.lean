@@ -11,6 +11,7 @@ public import Mathlib.RepresentationTheory.Character
 public import Mathlib.RepresentationTheory.Maschke
 public import Mathlib.RingTheory.SimpleModule.InjectiveProjective
 public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.RepresentationTheory.Rep.Iso
 
 /-!
 # Applications of Maschke's theorem
@@ -24,15 +25,15 @@ then every object of `Rep k G` (resp. `FDRep k G`) is injective and projective.
 We also give two simpleness criteria for an object `V` of `FDRep k G`, when `k` is
 an algebraically closed field in which the order of `G` is invertible:
 * `FDRep.simple_iff_end_is_rank_one`: `V` is simple if and only `V ⟶ V` is a `k`-vector
-space of dimension `1`.
+  space of dimension `1`.
 * `FDRep.simple_iff_char_is_norm_one`: when `k` is characteristic zero, `V` is simple
-if and only if `∑ g : G, V.character g * V.character g⁻¹ = Fintype.card G`.
+  if and only if `∑ g : G, V.character g * V.character g⁻¹ = Fintype.card G`.
 
 -/
 
 @[expose] public section
 
-universe u
+universe u v w
 
 variable {k : Type u} [Field k] {G : Type u} [Finite G] [Group G]
 
@@ -46,7 +47,7 @@ variable [NeZero (Nat.card G : k)]
 If `G` is finite and its order is nonzero in the field `k`, then every object of
 `Rep k G` is injective.
 -/
-instance (V : Rep k G) : Injective V := by
+instance (V : Rep.{w} k G) : Injective V := by
   rw [← Rep.equivalenceModuleMonoidAlgebra.map_injective_iff,
     ← Module.injective_iff_injective_object]
   exact Module.injective_of_isSemisimpleRing _ _
@@ -56,7 +57,7 @@ If `G` is finite and its order is nonzero in the field `k`, then every object of
 `Rep k G` is projective.
 -/
 -- Will this clash with the previously defined `Projective` instances?
-instance (V : Rep k G) : Projective V := by
+instance (V : Rep.{u} k G) : Projective V := by
   rw [← Rep.equivalenceModuleMonoidAlgebra.map_projective_iff,
     ← IsProjective.iff_projective]
   exact Module.projective_of_isSemisimpleRing _ _

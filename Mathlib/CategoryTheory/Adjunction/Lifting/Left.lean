@@ -75,6 +75,7 @@ namespace LiftLeftAdjoint
 variable {U : B ⥤ C} {F : C ⥤ B} (R : A ⥤ B) (F' : C ⥤ A)
 variable (adj₁ : F ⊣ U) (adj₂ : F' ⊣ R ⋙ U)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- To show that `ε_X` is a coequalizer for `(FUε_X, ε_FUX)`, it suffices to assume it's always a
 coequalizer of something (i.e. a regular epi).
 -/
@@ -85,10 +86,9 @@ def counitCoequalises (h : ∀ X : B, RegularEpi (adj₁.counit.app X)) (X : B) 
     refine ⟨((h X).desc' s.π ?_).1, ?_, ?_⟩
     · rw [← cancel_epi (adj₁.counit.app (h X).W)]
       rw [← adj₁.counit_naturality_assoc (h X).left]
-      dsimp only [Functor.comp_obj]
-      rw [← s.condition, ← F.map_comp_assoc, ← U.map_comp, RegularEpi.w, U.map_comp,
+      dsimp
+      rw [← dsimp% s.condition, ← F.map_comp_assoc, ← U.map_comp, RegularEpi.w, U.map_comp,
         F.map_comp_assoc, s.condition, ← adj₁.counit_naturality_assoc (h X).right]
-      simp
     · apply ((h X).desc' s.π _).2
     · intro m hm
       rw [← cancel_epi (adj₁.counit.app X)]
@@ -106,6 +106,7 @@ We will show that this coequalizer exists and that it forms the object map for a
 def otherMap (X) : F'.obj (U.obj (F.obj (U.obj X))) ⟶ F'.obj (U.obj X) :=
   F'.map (U.map (F.map (adj₂.unit.app _) ≫ adj₁.counit.app _)) ≫ adj₂.counit.app _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `(F'Uε_X, otherMap X)` is a reflexive pair: in particular if `A` has reflexive coequalizers then
 this pair has a coequalizer.
 -/
@@ -128,6 +129,7 @@ variable [HasReflexiveCoequalizers A]
 noncomputable def constructLeftAdjointObj (Y : B) : A :=
   coequalizer (F'.map (U.map (adj₁.counit.app Y))) (otherMap _ _ adj₁ adj₂ Y)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The homset equivalence which helps show that `R` is a right adjoint. -/
 @[simps!]
 noncomputable def constructLeftAdjointEquiv (h : ∀ X : B, RegularEpi (adj₁.counit.app X)) (Y : A)
@@ -144,9 +146,10 @@ noncomputable def constructLeftAdjointEquiv (h : ∀ X : B, RegularEpi (adj₁.c
       rw [← (adj₂.homEquiv _ _).injective.eq_iff, eq_comm, adj₂.homEquiv_naturality_left,
         otherMap, assoc, adj₂.homEquiv_naturality_left, ← adj₂.counit_naturality,
         adj₂.homEquiv_naturality_left, adj₂.homEquiv_unit, adj₂.right_triangle_components,
-        comp_id, Functor.comp_map, ← U.map_comp, assoc, ← adj₁.counit_naturality,
-        adj₂.homEquiv_unit, adj₂.homEquiv_unit, F.map_comp, assoc]
-      rfl
+        comp_id, Functor.comp_map, ← U.map_comp, assoc]
+      dsimp
+      rw [← adj₁.counit_naturality]
+      simp [dsimp% adj₂.homEquiv_unit _ _ f ]
     _ ≃ { z : F.obj (U.obj X) ⟶ R.obj Y // _ } := by
       apply (adj₁.homEquiv _ _).symm.subtypeEquiv
       intro g
@@ -158,6 +161,7 @@ noncomputable def constructLeftAdjointEquiv (h : ∀ X : B, RegularEpi (adj₁.c
 
 attribute [local simp] Adjunction.homEquiv_counit
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Construct the left adjoint to `R`, with object map `constructLeftAdjointObj`. -/
 noncomputable def constructLeftAdjoint (h : ∀ X : B, RegularEpi (adj₁.counit.app X)) : B ⥤ A := by
   refine Adjunction.leftAdjointOfEquiv (fun X Y => constructLeftAdjointEquiv R _ adj₁ adj₂ h Y X) ?_

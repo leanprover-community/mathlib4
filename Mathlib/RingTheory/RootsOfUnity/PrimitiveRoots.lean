@@ -372,10 +372,17 @@ end DivisionCommMonoid
 
 section CommRing
 
-variable [CommRing R] {n : ℕ} {ζ : R}
+variable [CommRing R] {n n' : ℕ} {ζ : R}
 
 theorem sub_one_ne_zero (hn : 1 < n) (hζ : IsPrimitiveRoot ζ n) : ζ - 1 ≠ 0 :=
   sub_ne_zero.mpr <| hζ.ne_one hn
+
+theorem isRoot (hζ : IsPrimitiveRoot ζ n) : (X ^ n - 1 : R[X]).IsRoot ζ := by
+  simp [hζ.pow_eq_one]
+
+theorem isRoot_of_dvd (hζ : IsPrimitiveRoot ζ n) : n ∣ n' → (X ^ n' - 1 : R[X]).IsRoot ζ := by
+  rintro ⟨k, rfl⟩
+  simp [pow_mul, hζ.pow_eq_one]
 
 end CommRing
 
@@ -424,12 +431,17 @@ theorem geom_sum_eq_zero [IsDomain R] {ζ : R} (hζ : IsPrimitiveRoot ζ k) (hk 
   refine eq_zero_of_ne_zero_of_mul_left_eq_zero (sub_ne_zero_of_ne (hζ.ne_one hk).symm) ?_
   rw [mul_neg_geom_sum, hζ.pow_eq_one, sub_self]
 
+theorem isRoot_geom_sum [IsDomain R] {ζ : R} (hζ : IsPrimitiveRoot ζ k) (hk : 1 < k) :
+    (∑ i ∈ range k, X ^ i).IsRoot ζ := by
+  simp [geom_sum_eq_zero hζ hk]
+
 /-- If `1 < k`, then `ζ ^ k.pred = -(∑ i ∈ range k.pred, ζ ^ i)`. -/
 theorem pow_sub_one_eq [IsDomain R] {ζ : R} (hζ : IsPrimitiveRoot ζ k) (hk : 1 < k) :
     ζ ^ k.pred = -∑ i ∈ range k.pred, ζ ^ i := by
   rw [eq_neg_iff_add_eq_zero, add_comm, ← sum_range_succ, ← Nat.succ_eq_add_one,
     Nat.succ_pred_eq_of_pos (pos_of_gt hk), hζ.geom_sum_eq_zero hk]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The (additive) monoid equivalence between `ZMod k`
 and the powers of a primitive root of unity `ζ`. -/
 def zmodEquivZPowers (h : IsPrimitiveRoot ζ k) : ZMod k ≃+ Additive (Subgroup.zpowers ζ) :=
@@ -616,7 +628,7 @@ theorem card_nthRoots {n : ℕ} {ζ : R} (hζ : IsPrimitiveRoot ζ n) (a : R) :
   · obtain ⟨α, hα⟩ := h
     rw [nthRoots_eq hζ hα, Multiset.card_map, Multiset.card_range]
   · obtain (rfl | hn) := n.eq_zero_or_pos; · simp
-    push_neg at h
+    push Not at h
     simpa only [Multiset.card_eq_zero, Multiset.eq_zero_iff_forall_notMem, mem_nthRoots hn]
 
 /-- A variant of `IsPrimitiveRoot.card_rootsOfUnity` for `ζ : Rˣ`. -/
@@ -835,7 +847,7 @@ lemma IsCyclic.exists_apply_ne_one {G G' : Type*} [Group G] [IsCyclic G] [Finite
   have hφg : IsPrimitiveRoot (φ g) (Nat.card G) := by
     rwa [monoidHomOfForallMemZpowers_apply_gen hg hζg]
   use φ
-  contrapose! ha
+  contrapose ha
   specialize hg a
   rw [← mem_powers_iff_mem_zpowers, Submonoid.mem_powers_iff] at hg
   obtain ⟨k, hk⟩ := hg

@@ -57,6 +57,12 @@ lemma geometrically_eq_universally (P : ObjectProperty Scheme.{u}) :
     apply h.flip.of_iso (.refl _) (.refl _) W.isoSpec (.refl _) <;> simp
   · exact hf _ _ _ h.flip inferInstance inferInstance
 
+lemma geometrically_inf (P Q : ObjectProperty Scheme.{u}) :
+    geometrically (P ⊓ Q) = geometrically P ⊓ geometrically Q := by
+  simp only [geometrically_eq_universally, ← MorphismProperty.universally_inf]
+  congr with X Y f
+  exact ⟨fun H ↦ ⟨(H · · |>.1), (H · · |>.2)⟩, fun H a b ↦ ⟨H.1 a b, H.2 a b⟩⟩
+
 variable (P : ObjectProperty Scheme.{u})
 
 instance : (geometrically P).IsStableUnderBaseChange := by
@@ -94,6 +100,7 @@ lemma geometrically_iff_of_isClosedUnderIsomorphisms [P.IsClosedUnderIsomorphism
 lemma fiber_of_geometrically (hf : geometrically P f) (y : Y) : P (f.fiber y) :=
   pullback_of_geometrically hf _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `P` holds geometrically for `f` if and only if all fibers are geometrically `P`. -/
 lemma geometrically_iff_forall_fiberToSpecResidueField :
     geometrically P f ↔ ∀ (y : Y), geometrically P (f.fiberToSpecResidueField y) := by

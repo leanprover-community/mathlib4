@@ -52,13 +52,14 @@ theorem div_mem {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) (hxy : x ≤ y) : x / 
 theorem fract_mem (x : ℝ) : fract x ∈ I :=
   ⟨fract_nonneg _, (fract_lt_one _).le⟩
 
-@[deprecated (since := "2025-08-14")] alias mem_iff_one_sub_mem := Icc.mem_iff_one_sub_mem
-
 lemma univ_eq_Icc : (univ : Set I) = Icc (0 : I) (1 : I) := Icc_bot_top.symm
 
 @[norm_cast] theorem coe_ne_zero {x : I} : (x : ℝ) ≠ 0 ↔ x ≠ 0 := coe_eq_zero.not
+
 @[norm_cast] theorem coe_ne_one {x : I} : (x : ℝ) ≠ 1 ↔ x ≠ 1 := coe_eq_one.not
+
 @[simp, norm_cast] theorem coe_pos {x : I} : (0 : ℝ) < x ↔ 0 < x := Iff.rfl
+
 @[simp, norm_cast] theorem coe_lt_one {x : I} : (x : ℝ) < 1 ↔ x < 1 := Iff.rfl
 
 theorem mul_le_left {x y : I} : x * y ≤ x :=
@@ -229,7 +230,7 @@ instance : LinearOrderedCommMonoidWithZero I where
   mul_zero i := mul_zero i
   zero_le x := x.2.1
   mul_lt_mul_of_pos_left i hi j k hjk := by
-    simp only [← Subtype.coe_lt_coe, coe_mul]; gcongr; exact hi
+    simp only [← Subtype.coe_lt_coe, coe_mul]; gcongr
 
 lemma subtype_Iic_eq_Icc (x : I) : Subtype.val ⁻¹' (Iic ↑x) = Icc 0 x := by
   rw [preimage_subtype_val_Iic]
@@ -323,6 +324,14 @@ theorem convexCombo_one {a b : ℝ} (x y : Icc a b) : convexCombo x y 1 = y := b
   simp [convexCombo]
 
 @[simp, grind =]
+theorem convexCombo_zero_one (t : unitInterval) : convexCombo 0 1 t = t := by
+  simp [convexCombo]
+
+@[simp, grind =]
+theorem convexCombo_eq {a b : ℝ} (x : Icc a b) (t : unitInterval) : convexCombo x x t = x := by
+  simp [convexCombo, sub_mul]
+
+@[simp, grind =]
 theorem convexCombo_symm {a b : ℝ} (x y : Icc a b) (t : unitInterval) :
     convexCombo x y (unitInterval.symm t) = convexCombo y x t := by
   simp [convexCombo]
@@ -341,6 +350,17 @@ theorem convexCombo_le {a b : ℝ} {x y : Icc a b} (h : x ≤ y) (t : unitInterv
   rw [← Subtype.coe_le_coe] at h ⊢
   simp
   nlinarith [t.2.1, t.2.2]
+
+@[continuity, fun_prop]
+theorem continuous_convexCombo {a b : ℝ} (x y : Icc a b) : Continuous (convexCombo x y) := by
+  unfold Icc.convexCombo
+  fun_prop
+
+@[continuity, fun_prop]
+theorem continuous_convexCombo_prod {a b : ℝ} :
+    Continuous fun x : Icc a b × Icc a b × unitInterval ↦ Icc.convexCombo x.1 x.2.1 x.2.2 := by
+  unfold Icc.convexCombo
+  fun_prop
 
 /--
 Helper definition for `convexCombo_assoc`, giving one of the coefficients appearing
@@ -545,6 +565,7 @@ open NNReal
 def toNNReal : I → ℝ≥0 := fun i ↦ ⟨i.1, i.2.1⟩
 
 @[simp] lemma toNNReal_zero : toNNReal 0 = 0 := rfl
+
 @[simp] lemma toNNReal_one : toNNReal 1 = 1 := rfl
 
 @[fun_prop] lemma toNNReal_continuous : Continuous toNNReal := by delta toNNReal; fun_prop

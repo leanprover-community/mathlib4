@@ -39,6 +39,7 @@ section
 variable [HasZeroObject C] [∀ (n : ℤ), (shiftFunctor C n).Additive]
   [Pretriangulated C]
 
+@[stacks 0149]
 instance (A : Cᵒᵖ) : (preadditiveCoyoneda.obj A).IsHomological where
   exact T hT := by
     rw [ShortComplex.ab_exact_iff]
@@ -46,6 +47,7 @@ instance (A : Cᵒᵖ) : (preadditiveCoyoneda.obj A).IsHomological where
     obtain ⟨x₁, hx₁⟩ := T.coyoneda_exact₂ hT x₂ hx₂
     exact ⟨x₁, hx₁.symm⟩
 
+@[stacks 0149]
 instance (B : C) : (preadditiveYoneda.obj B).IsHomological where
   exact T hT := by
     rw [ShortComplex.ab_exact_iff]

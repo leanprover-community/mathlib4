@@ -6,7 +6,7 @@ Authors: Antoine Chambert-Loir
 
 module
 
-public import Mathlib.LinearAlgebra.Transvection
+public import Mathlib.LinearAlgebra.Transvection.Basic
 
 /-!
 # Center of the algebra of linear endomorphisms
@@ -21,13 +21,13 @@ the center of `Module.End R V`.
 In what follows, `V` is assumed to be a free `R`-module.
 
 * `LinearMap.commute_transvections_iff_of_basis`:
-  if an endomorphism `f : V →ₗ[R] V` commutes with every elementary transvections
-  (in a given basis), then it is an homothety with central ratio.
+  if an endomorphism `f : V →ₗ[R] V` commutes with every elementary transvection
+  (in a given basis), then it is a homothety with central ratio.
   (Assumes that the basis is provided and has a non trivial set of indices.)
 
 * `LinearMap.exists_eq_smul_id_of_forall_notLinearIndependent`:
   over a commutative ring `R` which is a domain, an endomorphism `f : V →ₗ[R] V`
-  of a free domain such that `v` and `f v` are not linearly independent,
+  of a free module such that `v` and `f v` are not linearly independent,
   for all `v : V`, is a homothety.
 
 * `LinearMap.exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent`:
@@ -41,7 +41,7 @@ In what follows, `V` is assumed to be a free `R`-module.
 Note. In the noncommutative case, the last two results do not hold
 when the rank is equal to 1. Indeed, right multiplications
 with noncentral ratio of the `R`-module `R` satisfy the property
-that `f v` and `v` are linearly independent, for all `v : V`,
+that `f v` and `v` are linearly dependent, for all `v : V`,
 but they are not left multiplication by some element.
 
 -/
@@ -54,6 +54,7 @@ namespace LinearMap
 
 variable {R V : Type*}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A linear endomorphism of a free module of rank at least 2
 that commutes with transvections consists of homotheties with central ratio. -/
 theorem commute_transvections_iff_of_basis
@@ -89,18 +90,19 @@ theorem commute_transvections_iff_of_basis
   intro j _
   simp [Subring.smul_def, h_allEq i j, hcomm j]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Over a domain, an endomorphism `f` of a free module `V`
-of rank ≠ 1 such that `f v` and `v` are colinear, for all `v : V`,
+of rank ≠ 1 such that `f v` and `v` are collinear, for all `v : V`,
 consists of homotheties with central ratio.
 
 In the commutative case, use `LinearMap.exists_eq_smul_id`.
 
 This is a variant of `LinearMap.exists_mem_center_apply_smul`
-which switches the use `StrongRankInduction` and `finrank`
+which switches the use of `StrongRankInduction` and `finrank`
 for the cardinality of a given basis.
 
 When `finrank R V = 1`, up to a linear equivalence `V ≃ₗ[R] R`,
-then any `f` is *right*-multiplication by some `a : K`,
+then any `f` is *right*-multiplication by some `a : R`,
 but not necessarily *left*-multiplication by an element of the center of `R`. -/
 theorem exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent_of_basis
     [Ring R] [IsDomain R] [AddCommGroup V] [Module R V]
@@ -173,19 +175,20 @@ theorem exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent_of_basis
     rw [commute_iff_eq, h' i j (Ne.symm hij), feq i j, feq i i]
     simp
   refine ⟨⟨b.coord i (f (b i)), ?_⟩, ?_⟩
-  · simpa  [Subring.mem_center_iff, commute_iff_eq, eq_comm] using ha
+  · simpa [Subring.mem_center_iff, commute_iff_eq, eq_comm] using ha
   apply b.ext
   simpa only [smul_apply, End.one_apply, Subring.smul_def] using feq i
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Over a domain `R`, an endomorphism `f` of a free module `V`
-of rank ≠ 1 such that `f v` and `v` are colinear, for all `v : V`,
+of rank ≠ 1 such that `f v` and `v` are collinear, for all `v : V`,
 consists of homotheties with central ratio.
 
-When `R`does not satisfy `StrongRankCondition`, use
+When `R` does not satisfy `StrongRankCondition`, use
 `LinearMap.exists_mem_center_apply_eq_smul_of_basis`.
 
 When `finrank R V = 1`, up to a linear equivalence `V ≃ₗ[R] R`,
-then any `f` is *right*-multiplication by some `a : K`,
+then any `f` is *right*-multiplication by some `a : R`,
 but not necessarily *left*-multiplication by an element of the center of `R`. -/
 theorem exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent
     [Ring R] [IsDomain R] [StrongRankCondition R]
@@ -207,7 +210,7 @@ theorem exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent
   exact exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent_of_basis b h
 
 /-- Over a commutative domain, an endomorphism `f` of a free module `V`
-such that `f v` and `v` are colinear, for all `v : V`,
+such that `f v` and `v` are collinear, for all `v : V`,
 consists of homotheties. -/
 theorem exists_eq_smul_id_of_forall_notLinearIndependent
     [CommRing R] [IsDomain R] [AddCommGroup V] [Module R V] [Free R V] {f : V →ₗ[R] V}

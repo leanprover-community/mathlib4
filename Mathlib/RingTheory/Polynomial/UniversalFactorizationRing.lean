@@ -160,7 +160,7 @@ lemma universalFactorizationMap_comp_map :
   · dsimp [universalFactorizationMap, mapEquivMonic]
     simp only [map_X, aeval_X, ← AlgHom.coe_toRingHom, ← Polynomial.coeff_map, Polynomial.map_mul,
       Polynomial.map_map, ← map_map_freeMonic (f := algebraMap R S)]
-    congr <;> ext <;> simp [← algebraMap_apply]
+    congr 2 <;> ext <;> simp
 
 /-- Lifts along `universalFactorizationMap` corresponds to factorization of `p` into
 monic polynomials with fixed degrees. -/
@@ -214,6 +214,7 @@ lemma ker_eval₂Hom_universalFactorizationMap :
     congr 1
     ext <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical presentation of `universalFactorizationMap`. -/
 @[simps] def universalFactorizationMapPresentation :
     letI := (universalFactorizationMap R n m k hn).toAlgebra
@@ -273,9 +274,8 @@ lemma pderiv_inr_universalFactorizationMap_X (i j) :
       Pi.single_apply, Fin.ext_iff, ← ite_and]
   · obtain h | h := lt_or_ge j.1 i.1
     · rw [Finset.sum_eq_zero, if_pos h]
-      simp only [Finset.mem_antidiagonal, Prod.forall]
-      intro a b hab
-      simp [show b ≠ i by lia]
+      simp only [Finset.mem_antidiagonal]
+      lia
     rw [Finset.sum_eq_single ⟨j.1 - i.1, i.1⟩, if_neg h.not_gt]
     · simp
     · simp only [Finset.mem_antidiagonal, ne_eq, ite_eq_right_iff, Prod.forall, Prod.mk.injEq]
@@ -318,8 +318,8 @@ lemma universalFactorizationMapPresentation_jacobian :
   rw [← (aeval _).coe_toRingHom, ← Polynomial.resultant_map_map,
     Polynomial.map_map, Polynomial.map_map]
   congr 2
-  · ext <;> simp [-algebraMap_apply, ← algebraMap_eq]
-  · ext <;> simp [-algebraMap_apply, ← algebraMap_eq]
+  · ext <;> simp [-algebraMap_apply, -AddMonoidAlgebra.coe_algebraMap, ← algebraMap_eq]
+  · ext <;> simp [-algebraMap_apply, -AddMonoidAlgebra.coe_algebraMap, ← algebraMap_eq]
   · rw [(monic_freeMonic ..).natDegree_map, natDegree_freeMonic]
   · rw [(monic_freeMonic ..).natDegree_map, natDegree_freeMonic]
 
@@ -328,6 +328,7 @@ lemma finitePresentation_universalFactorizationMap :
   letI := (universalFactorizationMap R n m k hn).toAlgebra
   (universalFactorizationMapPresentation R n m k hn).finitePresentation_of_isFinite
 
+set_option backward.isDefEq.respectTransparency false in
 lemma finite_universalFactorizationMap :
     (universalFactorizationMap R n m k hn).Finite := by
   refine RingHom.IsIntegral.to_finite ?_
@@ -397,6 +398,7 @@ def UniversalFactorizationRing : Type _ :=
 
 local notation "𝓡" => UniversalFactorizationRing m k hn p
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical map `R[X₁,...,Xₘ] ⊗ R[X₁,...,Xₙ] → UniversalFactorizationRing`. -/
 def UniversalFactorizationRing.fromTensor :
     (MvPolynomial (Fin m) R ⊗[R] MvPolynomial (Fin k) R) →ₐ[R] 𝓡 :=
@@ -439,6 +441,7 @@ lemma UniversalFactorizationRing.factor₁_mul_factor₂ :
   (MvPolynomial.universalFactorizationMapLiftEquiv _ _ n m k hn _
     ⟨fromTensor m k hn p, fromTensor_comp_universalFactorizationMap' m k hn p⟩).2
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [-instance] leftModule in
 /-- The universal factorization ring represents
 `S ↦ "factorizations of p into (monic deg m) * (monic deg k) in S"`. -/
@@ -488,6 +491,7 @@ instance : Module.Finite R 𝓡 :=
   letI : Module.Finite _ _ := MvPolynomial.finite_universalFactorizationMap R n m k hn
   inferInstanceAs (Module.Finite R (R ⊗[_] _))
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [-instance] leftModule in
 instance : Algebra.FinitePresentation R 𝓡 :=
   letI := (MvPolynomial.universalFactorizationMap R n m k hn).toAlgebra
@@ -574,6 +578,7 @@ instance : Algebra.Etale R 𝓡' := by
       simp [Algebra.Presentation.dimension, hn]⟩
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The universal factorization ring represents
 `S ↦ "factorizations of p into coprime (monic deg m) * (monic deg k) in S"`. -/
 def UniversalCoprimeFactorizationRing.homEquiv :
@@ -673,6 +678,7 @@ lemma UniversalCoprimeFactorizationRing.exists_liesOver_residueFieldMap_bijectiv
         MonicDegreeEq.map, Polynomial.map_map]
       rfl
 
+set_option maxHeartbeats 400000 in -- Needed after nightly-2026-03-04
 open UniversalCoprimeFactorizationRing in
 /-- If a monic polynomial `p : R[X]` factors into a product of coprime monic polynomials `p = f * g`
 in the residue field `κ(P)` of some `P : Spec R`,

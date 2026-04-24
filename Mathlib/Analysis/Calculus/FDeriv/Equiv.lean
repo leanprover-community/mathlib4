@@ -568,6 +568,7 @@ theorem hasFDerivWithinAt_comp_smul_iff_smul {c : 𝕜} (hc : c ≠ 0) :
   lift c to 𝕜ˣ using IsUnit.mk0 c hc
   exact (ContinuousLinearEquiv.smulLeft c).comp_hasFDerivWithinAt_iff.symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem fderivWithin_comp_smul_eq_fderivWithin_smul (c : 𝕜) :
     fderivWithin 𝕜 (f <| c • ·) s x = fderivWithin 𝕜 (c • f) (c • s) (c • x) := by
   rcases eq_or_ne c 0 with rfl | hc
@@ -585,5 +586,11 @@ theorem fderivWithin_comp_smul (c : 𝕜) (hs : UniqueDiffWithinAt 𝕜 s x) :
 theorem fderiv_comp_smul (c : 𝕜) : fderiv 𝕜 (f <| c • ·) x = c • fderiv 𝕜 f (c • x) := by
   rw [← fderivWithin_univ, fderivWithin_comp_smul _ uniqueDiffWithinAt_univ]
   rcases eq_or_ne c 0 with rfl | hc <;> simp [smul_set_univ₀, *]
+
+theorem fderivWithin_comp_neg {f : 𝕜 → F} {s : Set 𝕜} {x : 𝕜} :
+    fderivWithin 𝕜 (fun a => f (-a)) s x = -fderivWithin 𝕜 f (-s) (-x) := by
+  have t1 := fderivWithin_comp_smul_eq_fderivWithin_smul (-1 : 𝕜) (f := f) (s := s) (x := x)
+  simp only [neg_smul, one_smul, Set.neg_smul_set] at t1
+  exact t1.trans fderivWithin_neg'
 
 end SMulLeft

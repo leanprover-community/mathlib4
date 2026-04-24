@@ -45,7 +45,7 @@ variable [Ring α] [LinearOrder α] [IsOrderedRing α] {n : ℕ} {a b : α}
 
 lemma abs_two : |(2 : α)| = 2 := abs_of_nonneg zero_le_two
 
-@[simp]
+@[simp, grind =]
 lemma abs_mul (a b : α) : |a * b| = |a| * |b| := by
   rw [abs_eq (mul_nonneg (abs_nonneg a) (abs_nonneg b))]
   rcases le_total a 0 with ha | ha <;> rcases le_total b 0 with hb | hb <;>
@@ -58,7 +58,7 @@ def absHom : α →*₀ α where
   map_one' := abs_one
   map_mul' := abs_mul
 
-@[simp]
+@[simp, grind =]
 lemma abs_pow (a : α) (n : ℕ) : |a ^ n| = |a| ^ n := (absHom.toMonoidHom : α →* α).map_pow _ _
 
 lemma pow_abs (a : α) (n : ℕ) : |a| ^ n = |a ^ n| := (abs_pow a n).symm
@@ -173,8 +173,8 @@ private theorem abs_geomSum_le [IsOrderedRing α] : |geomSum a b n| ≤ (n + 1) 
   rw [abs_mul, abs_pow, Nat.cast_succ, add_one_mul]
   refine add_le_add ?_ (pow_le_pow_left₀ (abs_nonneg _) le_sup_right _)
   rw [pow_succ, ← mul_assoc, mul_comm |a|]
-  exact mul_le_mul ih le_sup_left (abs_nonneg _) (mul_nonneg
-    (@Nat.cast_succ α .. ▸ Nat.cast_nonneg _) <| pow_nonneg ((abs_nonneg _).trans le_sup_left) _)
+  gcongr
+  exacts [abs_nonneg _, (abs_nonneg _).trans ih, le_sup_left]
 
 omit [LinearOrder α] in
 private theorem pow_sub_pow_eq_sub_mul_geomSum :

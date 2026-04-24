@@ -6,6 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.PullbackCarrier
+public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 public import Mathlib.RingTheory.Spectrum.Prime.Jacobson
 public import Mathlib.AlgebraicGeometry.Morphisms.Affine
 public import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
@@ -55,6 +56,36 @@ lemma Scheme.Hom.fiberToSpecResidueField_apply (f : X ⟶ Y) (y : Y) (x : f.fibe
     f.fiberToSpecResidueField y x = IsLocalRing.closedPoint (Y.residueField y) :=
   Subsingleton.elim (α := PrimeSpectrum _) _ _
 
+set_option backward.isDefEq.respectTransparency false in
+lemma isPullback_fiberToSpecResidueField_of_isPullback {P X Y Z : Scheme.{u}} {fst : P ⟶ X}
+    {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ Z} (h : IsPullback fst snd f g) (y : Y) :
+    IsPullback (pullback.map _ _ _ _ fst (Spec.map (g.residueFieldMap y)) g h.w.symm (by simp))
+      (snd.fiberToSpecResidueField y)
+      (f.fiberToSpecResidueField (g y))
+      (Spec.map (g.residueFieldMap y)) := by
+  refine .of_right (h₁₂ := pullback.fst _ _) ?_ ?_
+      (IsPullback.of_hasPullback f (Z.fromSpecResidueField (g y)))
+  · simpa using (IsPullback.of_hasPullback _ _).paste_horiz h
+  · simp [Scheme.Hom.fiberToSpecResidueField]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The morphism from the fiber of `Spec S ⟶ Spec R` at some prime `p` to `Spec κ(p)`
+is isomorphic to the map induced by `κ(p) ⟶ κ(p) ⊗[R] S`. -/
+noncomputable def Spec.fiberToSpecResidueFieldIso (R S : Type u) [CommRing R] [CommRing S]
+    [Algebra R S] (p : PrimeSpectrum R) :
+    Arrow.mk ((Spec.map (CommRingCat.ofHom <| algebraMap R S)).fiberToSpecResidueField p) ≅
+      Arrow.mk (Spec.map <| CommRingCat.ofHom <|
+        algebraMap p.asIdeal.ResidueField (p.asIdeal.Fiber S)) := by
+  refine Arrow.isoMk' _ _
+    (pullbackSymmetry _ _ ≪≫ ?_ ≪≫ pullbackSpecIso R p.asIdeal.ResidueField S) ?_ ?_
+  · refine pullback.congrHom
+      (Scheme.Spec.map_residueFieldIso_inv_eq_fromSpecResidueField (.of R) p).symm rfl ≪≫ ?_
+    refine asIso <| pullback.map _ _ _ _ (Spec.map <| (Scheme.Spec.residueFieldIso (.of R) _).inv)
+      (𝟙 _) (𝟙 _) (by simp) (by simp)
+  · exact Scheme.Spec.mapIso (Scheme.Spec.residueFieldIso (.of R) _).symm.op
+  · cat_disch
+
+set_option backward.isDefEq.respectTransparency false in
 lemma Scheme.Hom.range_fiberι (f : X ⟶ Y) (y : Y) :
     Set.range (f.fiberι y) = f ⁻¹' {y} := by
   simp [fiber, fiberι, Scheme.Pullback.range_fst, Scheme.range_fromSpecResidueField]
