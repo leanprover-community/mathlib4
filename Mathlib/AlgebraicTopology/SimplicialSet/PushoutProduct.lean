@@ -29,14 +29,14 @@ namespace Subcomplex
 
 namespace unionProd
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The inclusion `(S.unionProd T).toSSet ⟶ X ⊗ Y` is isomorphic to the pushout-product
 `S.ι □ T.ι`. -/
 @[simps! -isSimp]
 noncomputable
 def ιIso : Arrow.mk (S.unionProd T).ι ≅ S.ι □ T.ι :=
   Arrow.isoMk' _ _ (isPushout S T).isoPushout (Iso.refl _)
-    (by apply (unionProd.isPushout S T).hom_ext <;> simp [Functor.PushoutObjObj.ofHasPushout_ι])
+    (by apply (unionProd.isPushout S T).hom_ext <;>
+      simp [Functor.PushoutObjObj.ofHasPushout, Functor.PushoutObjObj.ι])
 
 end unionProd
 

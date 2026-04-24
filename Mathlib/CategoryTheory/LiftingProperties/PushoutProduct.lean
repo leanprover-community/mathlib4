@@ -73,8 +73,9 @@ lemma hasLiftingProperty_mk_isInitial_iff [HasPushouts C] [HasPullbacks C]
     (i : IsInitial A) :
     HasLiftingProperty (i.to B □ g).hom h ↔
       HasLiftingProperty g ((ihom B).map h) := by
-  change HasLiftingProperty (ofHasPushout ..).ι _ ↔ _
-  rw [HasLiftingProperty.iff_of_arrow_iso_left (isInitialIso' _ _)]
+  dsimp
+  have := HasLiftingProperty.iff_of_arrow_iso_left (isInitialIso' g i (W := B)) h
+  rw [dsimp% this]
   exact Adjunction.hasLiftingProperty_iff (ihom.adjunction B) g h
 
 /-- `f □ (∅ ⟶ L)` lifts against `X ⟶ Y` if and only if `f` lifts against `L ⟹ X ⟶ L ⟹ Y`. -/
