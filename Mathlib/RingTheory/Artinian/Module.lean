@@ -591,9 +591,9 @@ theorem nilradical_eq_iInf : nilradical R = iInf MaximalSpectrum.asIdeal := by
 lemma setOf_isPrime_finite : {I : Ideal R | I.IsPrime}.Finite := by
   simpa only [isPrime_iff_isMaximal] using setOf_isMaximal_finite R
 
-noncomputable instance : Fintype (PrimeSpectrum R) :=
-  haveI : Fintype {I : Ideal R // I.IsPrime} := (setOf_isPrime_finite R).fintype
-  .ofEquiv _ (PrimeSpectrum.equivSubtype _).symm.toEquiv
+instance : Finite (PrimeSpectrum R) :=
+  haveI : Finite {I : Ideal R // I.IsPrime} := (setOf_isPrime_finite R).to_subtype
+  .of_equiv _ (PrimeSpectrum.equivSubtype _).symm.toEquiv
 
 /-- A temporary field instance on the quotients by maximal ideals. -/
 @[instance_reducible, local instance] noncomputable def fieldOfSubtypeIsMaximal
