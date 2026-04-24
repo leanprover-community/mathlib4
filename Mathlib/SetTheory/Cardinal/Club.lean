@@ -26,7 +26,7 @@ topology), `DirSupClosed s` and `IsClosed s` are equivalent predicates.
 
 universe u v
 
-open Cardinal
+open Cardinal Order
 
 /-- A club set is closed under suprema and cofinal. -/
 structure IsClub {α : Type*} [LinearOrder α] (s : Set α) where
@@ -68,14 +68,14 @@ theorem IsClub.iInter_of_orderTop {ι : Type*} {f : ι → Set α} [OrderTop α]
   rw [← Set.sInter_range]
   exact .sInter_of_orderTop (by simpa)
 
-theorem IsClub.sInter_of_cof_le_one {s : Set (Set α)} (hα : Order.cof α ≤ 1)
+theorem IsClub.sInter_of_cof_le_one {s : Set (Set α)} (hα : cof α ≤ 1)
     (hs : ∀ x ∈ s, IsClub x) : IsClub (⋂₀ s) := by
   cases isEmpty_or_nonempty α; · simp
   cases topOrderOrNoTopOrder α
   · exact .sInter_of_orderTop hs
-  · cases Order.one_lt_cof.not_ge hα
+  · cases one_lt_cof.not_ge hα
 
-theorem IsClub.iInter_of_cof_le_one {ι : Type*} {f : ι → Set α} (hα : Order.cof α ≤ 1)
+theorem IsClub.iInter_of_cof_le_one {ι : Type*} {f : ι → Set α} (hα : cof α ≤ 1)
     (hs : ∀ i, IsClub (f i)) : IsClub (⋂ i, f i) := by
   rw [← Set.sInter_range]
   exact .sInter_of_cof_le_one hα (by simpa)
@@ -87,45 +87,45 @@ variable [WellFoundedLT α]
 attribute [local instance]
   WellFoundedLT.toOrderBot WellFoundedLT.conditionallyCompleteLinearOrderBot
 
-theorem IsClub.sInter {s : Set (Set α)} (hα : Order.cof α ≠ ℵ₀) (hsα : #s < Order.cof α)
+theorem IsClub.sInter {s : Set (Set α)} (hα : cof α ≠ ℵ₀) (hsα : #s < cof α)
     (hs : ∀ x ∈ s, IsClub x) : IsClub (⋂₀ s) := by
   cases isEmpty_or_nonempty α; · simp
   obtain hα | hα := hα.lt_or_gt
-  · exact .sInter_of_cof_le_one (Order.cof_lt_aleph0_iff.1 hα) hs
+  · exact .sInter_of_cof_le_one (cof_lt_aleph0_iff.1 hα) hs
   refine ⟨.sInter fun x hx ↦ (hs x hx).dirSupClosed, fun a ↦ ?_⟩
   choose f hf using fun x : s ↦ (hs _ x.2).isCofinal
   let g : ℕ → α := Nat.rec a fun _ IH ↦ sSup (.range (f · IH))
   have hg : BddAbove (.range g) := by
-    refine .of_not_isCofinal fun hg ↦ (Order.cof_le hg).not_gt (hα.trans_le' ?_)
+    refine .of_not_isCofinal fun hg ↦ (cof_le hg).not_gt (hα.trans_le' ?_)
     simpa using mk_range_le_lift (f := g)
   refine ⟨_, fun t ht ↦ ?_, le_csSup hg ⟨0, rfl⟩⟩
   apply (hs t ht).isLUB_mem (t := .range fun n ↦ f ⟨t, ht⟩ (g n)) _ (Set.range_nonempty _)
   · refine ⟨?_, fun b hb ↦ csSup_le' ?_⟩ <;> rintro _ ⟨n, rfl⟩
     · apply (le_csSup (.of_not_isCofinal _) _).trans (le_csSup hg ⟨n + 1, rfl⟩)
-      · exact fun hg' ↦ (Order.cof_le hg').not_gt (mk_range_le.trans_lt hsα)
+      · exact fun hg' ↦ (cof_le hg').not_gt (mk_range_le.trans_lt hsα)
       · use ⟨t, ht⟩
     · exact (hf ⟨t, ht⟩ _).2.trans <| hb ⟨_, rfl⟩
   · grind
 
-theorem IsClub.iInter {ι : Type u} {f : ι → Set α} (hα : Order.cof α ≠ ℵ₀)
-    (hι : Cardinal.lift.{v} #ι < Cardinal.lift.{u} (Order.cof α)) (hf : ∀ i, IsClub (f i)) :
+theorem IsClub.iInter {ι : Type u} {f : ι → Set α} (hα : cof α ≠ ℵ₀)
+    (hι : Cardinal.lift.{v} #ι < Cardinal.lift.{u} (cof α)) (hf : ∀ i, IsClub (f i)) :
     IsClub (⋂ i, f i) := by
   rw [← Set.sInter_range]
   refine IsClub.sInter hα ?_ (by simpa)
   rw [← Cardinal.lift_lt]
   exact mk_range_le_lift.trans_lt hι
 
-theorem IsClub.inter {s t : Set α} (hα : Order.cof α ≠ ℵ₀) (hs : IsClub s) (ht : IsClub t) :
+theorem IsClub.inter {s t : Set α} (hα : cof α ≠ ℵ₀) (hs : IsClub s) (ht : IsClub t) :
     IsClub (s ∩ t) := by
   rw [← Set.sInter_pair]
   have H : ∀ x ∈ ({s, t} : Set _), IsClub x := by simpa [hs]
   obtain hα | hα' := hα.lt_or_gt
-  · rw [Order.cof_lt_aleph0_iff] at hα
+  · rw [cof_lt_aleph0_iff] at hα
     exact .sInter_of_cof_le_one hα H
   · exact .sInter hα (hα'.trans_le' <| by simp) H
 
-theorem Order.IsNormal.isClub_fixedPoints {f : α → α}
-    (hα : Order.cof α ≠ ℵ₀) (hf : Order.IsNormal f) : IsClub f.fixedPoints := by
+theorem IsNormal.isClub_fixedPoints {f : α → α} (hα : cof α ≠ ℵ₀) (hf : IsNormal f) :
+    IsClub f.fixedPoints := by
   cases isEmpty_or_nonempty α; · simp
   refine ⟨fun s hs hs₀ _ a ha ↦ (hf.map_isLUB ha hs₀).unique ?_, fun a ↦ ?_⟩
   · rwa [Set.image_congr hs, Set.image_id']
@@ -135,8 +135,8 @@ theorem Order.IsNormal.isClub_fixedPoints {f : α → α}
       rw [noTopOrder_iff_noMaxOrder] at h
       suffices BddAbove (.range fun n ↦ f^[n] a) from
         ⟨_, hf.iSup_iterate_mem_fixedPoints a this, le_csSup this ⟨0, rfl⟩⟩
-      refine .of_not_isCofinal fun h ↦ (Order.cof_le h).not_gt
-        ((Order.aleph0_le_cof.lt_of_ne' hα).trans_le' ?_)
+      refine .of_not_isCofinal fun h ↦ (cof_le h).not_gt
+        ((aleph0_le_cof.lt_of_ne' hα).trans_le' ?_)
       simpa using mk_range_le_lift (f := fun n : ℕ ↦ f^[n] a)
 
 end WellFoundedLT
