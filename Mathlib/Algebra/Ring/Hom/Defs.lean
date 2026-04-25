@@ -506,6 +506,7 @@ def mk' [NonAssocSemiring α] [NonAssocRing β] (f : α →* β)
 variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β}
 
 /-- The identity ring homomorphism from a semiring to itself. -/
+@[implicit_reducible]
 def id (α : Type*) [NonAssocSemiring α] : α →+* α where
   toFun := _root_.id
   map_zero' := rfl
