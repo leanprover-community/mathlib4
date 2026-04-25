@@ -679,8 +679,8 @@ theorem iSup_mem_iff {α : Sort*} [Finite α] {f : α → P} : ⨆ i, f i ∈ I 
 theorem sSup_gc : GaloisConnection (fun I : Ideal P => sSup I) fun x => principal x :=
   fun _ _ => by simp [le_def]
 
-/-- If `P` admits arbitrary `sSup`, `principal` and `sSup` form a Galois coinsertion. -/
-@[to_dual /-- If `P` admits arbitrary `sInf`, `principal` and `sInf` form a Galois coinsertion. -/]
+/-- If `P` admits arbitrary `sSup`, `sSup` and `principal` form a Galois insertion. -/
+@[to_dual /-- If `P` admits arbitrary `sInf`, `sInf` and `principal` form a Galois coinsertion. -/]
 def supGi : GaloisInsertion (fun I : Ideal P => sSup I) fun x => principal x :=
   sSup_gc.toGaloisInsertion fun _ => by simp [le_sSup]
 
