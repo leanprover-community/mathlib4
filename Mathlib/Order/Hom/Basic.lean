@@ -1245,7 +1245,7 @@ namespace Relation
 /-- For an injective function `f : α → β`, `Relation.Map · f f` is an order embedding from
 `α`-relations into `β`-relations. -/
 @[simps]
-def mapOrderEmbedding {f : α → β} (hf : f.Injective) : (α → α → Prop) ↪o (β → β → Prop) where
+def mapOrderEmbedding (f : α → β) (hf : f.Injective) : (α → α → Prop) ↪o (β → β → Prop) where
   toFun r := Relation.Map r f f
   inj' r s h := by
     dsimp at h
@@ -1259,7 +1259,7 @@ def mapOrderEmbedding {f : α → β} (hf : f.Injective) : (α → α → Prop) 
 /-- For a surjective function `f : α → β`, `Function.onFun · f` is an order embedding from
 `β`-relations into `α`-relations. -/
 @[simps]
-def onFunOrderEmbedding {f : α → β} (hf : f.Surjective) : (β → β → Prop) ↪o (α → α → Prop) where
+def onFunOrderEmbedding (f : α → β) (hf : f.Surjective) : (β → β → Prop) ↪o (α → α → Prop) where
   toFun r := r.onFun f
   inj' r s h := by
     dsimp at h
@@ -1274,8 +1274,8 @@ def onFunOrderEmbedding {f : α → β} (hf : f.Surjective) : (β → β → Pro
 /-- For a bijective function `f : α → β`, `Relation.Map · f f` and `Function.onFun · f` form an
 order isomorphism between `α`-relations and `β`-relations. -/
 @[simps]
-def mapOnFunOrderIso {f : α → β} (hf : f.Bijective) : (α → α → Prop) ≃o (β → β → Prop) where
-  __ := Relation.mapOrderEmbedding hf.injective
+def mapOnFunOrderIso (f : α → β) (hf : f.Bijective) : (α → α → Prop) ≃o (β → β → Prop) where
+  __ := Relation.mapOrderEmbedding f hf.injective
   invFun r := r.onFun f
   left_inv _ := Relation.onFun_map_eq_of_injective hf.injective
   right_inv _ := Relation.map_onFun_eq_of_surjective hf.surjective
