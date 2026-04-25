@@ -1025,4 +1025,16 @@ theorem isIsolated_bot : IsIsolated ⊥ v :=
 theorem eq_bot_iff_isIsolated : G = ⊥ ↔ ∀ v, G.IsIsolated v := by
   simp [eq_bot_iff_forall_not_adj, ← neighborSet_eq_empty, Set.eq_empty_iff_forall_notMem]
 
+/-- A vertex in a graph is universal if it's adjacent to every other vertex. -/
+def IsUniversal (G : SimpleGraph V) (v : V) : Prop := ∀ w, v ≠ w → G.Adj v w
+
+@[simp] lemma insert_neighborSet_eq_univ :
+    insert v (G.neighborSet v) = Set.univ ↔ G.IsUniversal v := by
+  simp [IsUniversal, Set.ext_iff]
+  grind
+
+@[simp] lemma neighborSet_eq_univ_diff : G.neighborSet v = Set.univ \ {v} ↔ G.IsUniversal v := by
+  rw [← insert_neighborSet_eq_univ]
+  grind [notMem_neighborSet_self]
+
 end SimpleGraph
