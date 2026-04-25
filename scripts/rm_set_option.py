@@ -380,7 +380,7 @@ def main():
     start_time = time.time()
 
     # Step 1: lakefile.lean
-    if not args.dry_run and os.path.exists(PROJECT_DIR / "lakefile.lean"):
+    if not args.dry_run and (PROJECT_DIR / "lakefile.lean").exists():
         handle_lakefile(options)
 
     # Step 2: build DAG
