@@ -257,8 +257,7 @@ lemma isRegular_of_maximalIdeal_mem_ofList_minimalPrimes
           intro r hr
           rcases List.mem_cons.mp hr with eqx|mem_rs'
           · apply Ideal.ker_le_comap
-            simpa [R', eqx, ← Submodule.ideal_span_singleton_smul x] using
-              Ideal.mem_span_singleton_self x
+            simp [R', eqx, ← Submodule.ideal_span_singleton_smul x]
           · apply Ideal.subset_span
             simp only [List.mem_map, Set.mem_setOf_eq]
             use r
@@ -317,7 +316,7 @@ lemma Ideal.exist_regular_sequence_length_eq_height [IsCohenMacaulayLocalRing R]
   refine ⟨?_, fun r hr ↦ le (le_of_eq span (Submodule.subset_span hr))⟩
   exact isRegular_of_ofList_height_eq_length_of_isCohenMacaulayLocalRing s.toList (fun r hr ↦
     le_maximalIdeal netop (le (le_of_eq span (Submodule.subset_span (Finset.mem_toList.mp hr)))))
-    (by simp [Ideal.ofList, span, ← Ideal.submodule_span_eq, rank, ht])
+    (by simp [Ideal.ofList, span, rank, ht])
 
 lemma Ideal.depth_eq_height [IsCohenMacaulayLocalRing R] (I : Ideal R) (netop : I ≠ ⊤) :
     I.depth (ModuleCat.of R R) = I.height := by
