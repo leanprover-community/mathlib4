@@ -934,37 +934,41 @@ theorem eLpNormEssSup_map_measure (hg : AEStronglyMeasurable g (Measure.map f μ
     (hf : AEMeasurable f μ) : eLpNormEssSup g (Measure.map f μ) = eLpNormEssSup (g ∘ f) μ :=
   essSup_map_measure hg.enorm hf
 
---TODO: Does this hold for `p = 0`?
 theorem eLpNorm_map_measure (hg : AEStronglyMeasurable g (Measure.map f μ))
-    (hf : AEMeasurable f μ) (hp_zero : p ≠ 0) :
+    (hf : AEMeasurable f μ) :
     eLpNorm g p (Measure.map f μ) = eLpNorm (g ∘ f) p μ := by
+  by_cases hp : p = 0
+  · simp only [hp, eLpNorm_exponent_zero, Function.comp_apply]
+    rw [MeasureTheory.Measure.map_apply₀ hf
+      <| AEStronglyMeasurable.nullMeasurableSet_support (by fun_prop)]
+    congr
   by_cases hp_top : p = ∞
   · simp_rw [hp_top, eLpNorm_exponent_top]
     exact eLpNormEssSup_map_measure hg hf
-  simp_rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp_zero hp_top,
+  simp_rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp hp_top,
     lintegral_map' (hg.enorm.pow_const p.toReal) hf, Function.comp_apply]
 
 theorem memLp_map_measure_iff (hg : AEStronglyMeasurable g (Measure.map f μ))
-    (hf : AEMeasurable f μ) (hp : p ≠ 0) : MemLp g p (Measure.map f μ) ↔ MemLp (g ∘ f) p μ := by
-  simp [MemLp, eLpNorm_map_measure hg hf hp, hg.comp_aemeasurable hf, hg]
+    (hf : AEMeasurable f μ) : MemLp g p (Measure.map f μ) ↔ MemLp (g ∘ f) p μ := by
+  simp [MemLp, eLpNorm_map_measure hg hf, hg.comp_aemeasurable hf, hg]
 
-theorem MemLp.comp_of_map (hg : MemLp g p (Measure.map f μ)) (hf : AEMeasurable f μ) (hp : p ≠ 0) :
+theorem MemLp.comp_of_map (hg : MemLp g p (Measure.map f μ)) (hf : AEMeasurable f μ) :
     MemLp (g ∘ f) p μ :=
-  (memLp_map_measure_iff hg.aestronglyMeasurable hf hp).1 hg
+  (memLp_map_measure_iff hg.aestronglyMeasurable hf).1 hg
 
 theorem eLpNorm_comp_measurePreserving {ν : MeasureTheory.Measure β} (hg : AEStronglyMeasurable g ν)
-    (hf : MeasurePreserving f μ ν) (hp : p ≠ 0) : eLpNorm (g ∘ f) p μ = eLpNorm g p ν :=
-  Eq.symm <| hf.map_eq ▸ eLpNorm_map_measure (hf.map_eq ▸ hg) hf.aemeasurable hp
+    (hf : MeasurePreserving f μ ν) : eLpNorm (g ∘ f) p μ = eLpNorm g p ν :=
+  Eq.symm <| hf.map_eq ▸ eLpNorm_map_measure (hf.map_eq ▸ hg) hf.aemeasurable
 
 theorem AEEqFun.eLpNorm_compMeasurePreserving {ν : MeasureTheory.Measure β} (g : β →ₘ[ν] E)
-    (hf : MeasurePreserving f μ ν) (hp : p ≠ 0) :
+    (hf : MeasurePreserving f μ ν) :
     eLpNorm (g.compMeasurePreserving f hf) p μ = eLpNorm g p ν := by
   rw [eLpNorm_congr_ae (g.coeFn_compMeasurePreserving _)]
-  exact eLpNorm_comp_measurePreserving g.aestronglyMeasurable hf hp
+  exact eLpNorm_comp_measurePreserving g.aestronglyMeasurable hf
 
 theorem MemLp.comp_measurePreserving {ν : MeasureTheory.Measure β} (hg : MemLp g p ν)
-    (hf : MeasurePreserving f μ ν) (hp : p ≠ 0) : MemLp (g ∘ f) p μ :=
-  .comp_of_map (hf.map_eq.symm ▸ hg) hf.aemeasurable hp
+    (hf : MeasurePreserving f μ ν) : MemLp (g ∘ f) p μ :=
+  .comp_of_map (hf.map_eq.symm ▸ hg) hf.aemeasurable
 
 
 theorem _root_.MeasurableEmbedding.eLpNormEssSup_map_measure (hf : MeasurableEmbedding f) :
@@ -980,7 +984,7 @@ theorem _root_.MeasurableEmbedding.eLpNorm_map_measure (hf : MeasurableEmbedding
   by_cases hp : p = ∞
   · simp_rw [hp, eLpNorm_exponent_top]
     exact hf.essSup_map_measure
-  · simp [eLpNorm_eq_lintegral_rpow_enorm_toReal hp_zero hp, hf.lintegral_map]
+  simp [eLpNorm_eq_lintegral_rpow_enorm_toReal hp_zero hp, hf.lintegral_map]
 
 theorem _root_.MeasurableEmbedding.memLp_map_measure_iff (hf : MeasurableEmbedding f) :
     MemLp g p (Measure.map f μ) ↔ MemLp (g ∘ f) p μ := by
