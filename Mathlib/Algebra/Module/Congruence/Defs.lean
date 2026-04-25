@@ -22,7 +22,7 @@ structure VAddCon [VAdd S M] extends Setoid M where
   vadd (s : S) {x y} : r x y → r (s +ᵥ x) (s +ᵥ y)
 
 /-- A congruence relation that preserves scalar multiplication. -/
-@[to_additive] structure SMulCon [SMul S M] extends Setoid M where
+@[to_additive existing VAddCon] structure SMulCon [SMul S M] extends Setoid M where
   /-- A `SMulCon` is closed under scalar multiplication. -/
   smul (s : S) {x y} : r x y → r (s • x) (s • y)
 
