@@ -528,6 +528,7 @@ lemma stronglyMeasurable_rpow {f : α → ℝ} (hf : AEStronglyMeasurable f μ) 
   rw [max_eq_left (f_pos _)]
 
 theorem memLp_norm_rpow_iff {q : ℝ≥0∞} {f : α → E} (hf : AEStronglyMeasurable f μ) (q_zero : q ≠ 0)
+<<<<<<< Updated upstream
     (q_top : q ≠ ∞) : MemLp (fun x : α => ‖f x‖ ^ q.toReal) (p / q) μ ↔ MemLp f p μ := by
   by_cases hp : p = 0
   · simp only [hp, ENNReal.zero_div, memLp_zero_iff_aestronglyMeasurable_and_volume_support_lt_top,
@@ -557,6 +558,20 @@ theorem memLp_norm_rpow_iff {q : ℝ≥0∞} {f : α → E} (hf : AEStronglyMeas
   rw [← Real.enorm_rpow_of_nonneg (Real.rpow_nonneg (norm_nonneg (f x)) q.toReal)
     ENNReal.toReal_nonneg, ← Real.rpow_mul (norm_nonneg (f x)), ENNReal.toReal_inv, mul_inv_cancel₀
     (ENNReal.toReal_ne_zero.mpr ⟨q_zero, q_top⟩), Real.rpow_one, enorm_norm]
+=======
+    (q_top : q ≠ ∞) (hp : p ≠ 0) : MemLp (fun x : α => ‖f x‖ ^ q.toReal) (p / q) μ ↔ MemLp f p μ := by
+  refine ⟨fun h => ?_, fun h => h.norm_rpow_div q⟩
+  have pq : p / q ≠ 0 := by
+    norm_num
+    exact ⟨hp, q_top⟩
+  convert h.enorm_rpow_div (ENNReal.inv_ne_top.mpr q_zero) pq using 1
+  · ext x
+    rw [Real.norm_eq_abs, Real.abs_rpow_of_nonneg (norm_nonneg _), ← Real.rpow_mul (abs_nonneg _),
+      ENNReal.toReal_inv, mul_inv_cancel₀, abs_of_nonneg (norm_nonneg _), Real.rpow_one]
+    simp [ENNReal.toReal_eq_zero_iff, q_zero, q_top]
+  · rw [div_eq_mul_inv, inv_inv, div_eq_mul_inv, mul_assoc, ENNReal.inv_mul_cancel q_zero q_top,
+      mul_one]
+>>>>>>> Stashed changes
 
 theorem MemLp.enorm_rpow {f : α → ε} (hf : MemLp f p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     MemLp (fun x : α => ‖f x‖ₑ ^ p.toReal) 1 μ := by
@@ -573,7 +588,35 @@ theorem AEEqFun.compMeasurePreserving_mem_Lp {β : Type*} [MeasurableSpace β]
     (hf : MeasurePreserving f μ μb) :
     g.compMeasurePreserving f hf ∈ Lp E p μ := by
   rw [Lp.mem_Lp_iff_eLpNorm_lt_top] at hg ⊢
-  rwa [eLpNorm_compMeasurePreserving]
+  by_cases hp: p = 0
+  · simp only [hp, eLpNorm_exponent_zero] at hg ⊢
+    apply lt_of_eq_of_lt ?_ hg
+    #check MeasureTheory.AEEqFun.coeFn_compMeasurePreserving
+    have : Function.support (fun x ↦ ‖(↑(g.compMeasurePreserving f hf) : α → E) x‖ₑ)
+        = f ⁻¹' (Function.support fun x ↦ ‖(↑g : β → E) x‖ₑ) := by
+      ext x
+      simp only [Function.mem_support, ne_eq, enorm_eq_zero, Set.mem_preimage]
+      --TODO: this should probably be its own lemma somewhere
+      have : (↑(g.compMeasurePreserving f hf) : α → E) x = g (f x) := by
+        apply Eq.trans (b := (↑g ∘ f) x) ?_ (by rw [Function.comp_apply])
+        congr!
+
+        rw [MeasureTheory.AEEqFun.compMeasurePreserving_eq_mk]
+
+        obtain ⟨g, _⟩ := g
+
+        simp only [quot_mk_eq_mk, compMeasurePreserving_mk]
+
+
+        sorry
+      rw [this]
+
+    rw [this]
+    apply MeasurePreserving.measure_preimage hf
+    apply MeasurableSet.nullMeasurableSet <| measurableSet_support ?_
+    fun_prop
+
+  rwa [eLpNorm_compMeasurePreserving (hp := hp)]
 
 namespace Lp
 
