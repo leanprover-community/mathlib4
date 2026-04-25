@@ -501,20 +501,6 @@ private lemma pIntegral_pow_div (p M N : ℕ) [Fact p.Prime] (hM : M ≠ 0)
     (hM'_cop.coprime_dvd_left (by
       rw [hM'_eq]; exact Int.natCast_dvd_natCast.mp (Rat.den_dvd _ _))).symm)
 
-/- The `i = 1` Faulhaber term is `p`-integral (handled separately for `p = 2` and odd `p`). -/
-private lemma pIntegral_bernoulli_one_term (k p : ℕ) (hk : k > 0) [Fact p.Prime] :
-    pIntegral p (bernoulli 1 * (2 * k) * (p : ℚ) ^ (2 * k - 1) / (2 * k)) := by
-  field_simp
-  rw [bernoulli_one]
-  obtain rfl | hp2 := eq_or_ne p 2
-  · have h : ((-1 / 2 : ℚ) * (2 : ℚ) ^ (2 * k - 1)) = -(2 : ℤ) ^ (2 * k - 2) := by
-      rw [(by lia : 2 * k - 1 = (2 * k - 2) + 1), pow_succ]; push_cast; field_simp
-    simpa [h] using Int.padicValuation_le_one _ (-(2 : ℤ) ^ (2 * k - 2))
-  · refine pIntegral_mul ?_ ?_ <;> rw [pIntegral, Rat.padicValuation_le_one_iff]
-    · norm_num
-      simpa [Nat.prime_dvd_prime_iff_eq Fact.out Nat.prime_two]
-    · simp [show p ≠ 1 from Nat.Prime.ne_one Fact.out]
-
 /- Main valuation estimate behind the contradiction step for even-index summands. -/
 private lemma factorization_succ_le_sub_one (p d : ℕ) [Fact p.Prime] (hd : d ≥ 2) :
     (d + 1).factorization p ≤ d - 1 := by
@@ -594,16 +580,24 @@ private lemma pIntegral_bernoulli_even_term (k m p : ℕ) (hm_lt : m < k) [Fact 
 private lemma pIntegral_faulhaber_sum (k p : ℕ) (hk : k > 0) [Fact p.Prime]
     (ih : ∀ m, 0 < m → m < k → pIntegral p (bernoulli (2 * m) + vonStaudtIndicator (2 * m) p / p)) :
     pIntegral p (∑ i ∈ range (2 * k),
-      bernoulli i * ((2 * k + 1).choose i) * (p : ℚ) ^ (2 * k - i) / (2 * k + 1)) := by
+      bernoulli i * ((2 * k + 1).choose i) * p ^ (2 * k - i) / (2 * k + 1)) := by
   refine (Rat.padicValuation p).map_sum_le fun i hi ↦ ?_
   rw [Finset.mem_range] at hi
   rcases i with _ | _ | i
   · simp only [bernoulli_zero, one_mul, Nat.choose_zero_right, Nat.cast_one, Nat.sub_zero]
     exact_mod_cast pIntegral_pow_div p (2 * k + 1) (2 * k) (by lia)
       (factorization_succ_le_sub_one p (2 * k) (by lia) |>.trans tsub_le_self)
-  · simp only [zero_add, Nat.choose_one_right]
-    convert pIntegral_bernoulli_one_term k p hk using 1
-    push_cast; field_simp
+  · rw [zero_add, Nat.choose_one_right, bernoulli_one]
+    have : (-1 / 2 : ℚ) * ((2 * k + 1 : ℕ) : ℚ) * p ^ (2 * k - 1) / (2 * k + 1) =
+        (-1 / 2 : ℚ) * p ^ (2 * k - 1) := by field_simp; push_cast; ring
+    rw [this]
+    obtain rfl | hp2 := eq_or_ne p 2
+    · have h : ((-1 / 2 : ℚ) * (2 : ℚ) ^ (2 * k - 1)) = -(2 : ℤ) ^ (2 * k - 2) := by
+        rw [show 2 * k - 1 = (2 * k - 2) + 1 by lia, pow_succ]; push_cast; field_simp
+      simpa [h] using Int.padicValuation_le_one 2 (-(2 : ℤ) ^ (2 * k - 2))
+    · refine pIntegral_mul ?_ ?_ <;> rw [pIntegral, Rat.padicValuation_le_one_iff]
+      · norm_num [Nat.prime_dvd_prime_iff_eq Fact.out Nat.prime_two, hp2]
+      · simp [show p ≠ 1 from Nat.Prime.ne_one Fact.out]
   · rcases Nat.even_or_odd (i + 2) with ⟨m, hm⟩ | hodd
     · have ⟨hm_pos, hm_lt, hi_eq⟩ : 0 < m ∧ m < k ∧ i + 2 = 2 * m := by lia
       simp only [hi_eq]
@@ -615,7 +609,7 @@ private lemma sum_pow_filter_eq_faulhaber (k p : ℕ) (hk : 0 < k) :
       (∑ i ∈ range (2 * k), bernoulli i * ((2 * k + 1).choose i) *
         (p : ℚ) ^ (2 * k + 1 - i) / (2 * k + 1)) + p * bernoulli (2 * k) := by
   have hfilter : (∑ v ∈ Ico 1 p, (v : ℚ) ^ (2 * k)) = ∑ v ∈ range p, (v : ℚ) ^ (2 * k) := by
-    cases p <;> simp [Finset.sum_range_eq_add_Ico, show 2 * k ≠ 0 by omega]
+    cases p <;> simp [Finset.sum_range_eq_add_Ico, show 2 * k ≠ 0 by lia]
   rw [hfilter, sum_range_pow, Finset.sum_range_succ, Nat.choose_succ_self_right,
     show 2 * k + 1 - 2 * k = 1 by lia]
   push_cast
