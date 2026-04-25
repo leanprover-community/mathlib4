@@ -67,7 +67,3 @@ abbrev IsArtinianRing (R) [Semiring R] :=
   IsArtinian R R
 
 theorem isArtinianRing_iff {R} [Semiring R] : IsArtinianRing R ↔ IsArtinian R R := Iff.rfl
-
-namespace IsArtinianRing
-
-end IsArtinianRing

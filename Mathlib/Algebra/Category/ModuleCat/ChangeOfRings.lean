@@ -282,7 +282,7 @@ end
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence of categories `ModuleCat S ≌ ModuleCat R` induced by `e : R ≃+* S`. -/
-def restrictScalarsEquivalenceOfRingEquiv {R S} [Ring R] [Ring S] (e : R ≃+* S) :
+def restrictScalarsEquivalenceOfRingEquiv {R S : Type*} [Ring R] [Ring S] (e : R ≃+* S) :
     ModuleCat S ≌ ModuleCat R where
   functor := ModuleCat.restrictScalars e.toRingHom
   inverse := ModuleCat.restrictScalars e.symm
@@ -298,23 +298,43 @@ def restrictScalarsEquivalenceOfRingEquiv {R S} [Ring R] [Ring S] (e : R ≃+* S
       map_smul' := fun r _ ↦ congr_arg (· • (_ : M)) (e.left_inv r) }) (by intros; rfl)
   functor_unitIso_comp := by intros; rfl
 
-instance restrictScalars_isEquivalence_of_ringEquiv {R S} [Ring R] [Ring S] (e : R ≃+* S) :
+instance restrictScalars_isEquivalence_of_ringEquiv {R S : Type*} [Ring R] [Ring S] (e : R ≃+* S) :
     (ModuleCat.restrictScalars e.toRingHom).IsEquivalence :=
   (restrictScalarsEquivalenceOfRingEquiv e).isEquivalence_functor
 
-instance {R S} [Ring R] [Ring S] (f : R →+* S) : (restrictScalars f).Additive where
+/-- If `R` and `S` are isomorphic rings, `S` viewed as an `R`-module is isomorphic to `R`. -/
+def restrictScalarsIsoOfEquiv {R S : Type v} [Ring R] [Ring S] (e : R ≃+* S) :
+    (ModuleCat.restrictScalars e.toRingHom).obj (ModuleCat.of S S) ≅ ModuleCat.of R R :=
+  letI : Module R (ModuleCat.of S S) := e.toRingHom.toModule
+  LinearEquiv.toModuleIso
+    { __ := e.symm
+      map_smul' x y := by simp [RingHom.toModule_smul] }
 
-instance restrictScalarsEquivalenceOfRingEquiv_additive {R S} [Ring R] [Ring S] (e : R ≃+* S) :
+@[simp]
+lemma restrictScalarsIsoOfEquiv_hom_apply {R S : Type v} [Ring R] [Ring S] (e : R ≃+* S) (x : S) :
+    dsimp% (ModuleCat.restrictScalarsIsoOfEquiv e).hom x = e.symm x :=
+  rfl
+
+@[simp]
+lemma restrictScalarsIsoOfEquiv_inv_apply {R S : Type v} [Ring R] [Ring S] (e : R ≃+* S) (x : R) :
+    dsimp% (ModuleCat.restrictScalarsIsoOfEquiv e).inv x = e x :=
+  rfl
+
+instance {R S : Type*} [Ring R] [Ring S] (f : R →+* S) : (restrictScalars f).Additive where
+
+instance restrictScalarsEquivalenceOfRingEquiv_additive {R S : Type*} [Ring R] [Ring S]
+    (e : R ≃+* S) :
     (restrictScalarsEquivalenceOfRingEquiv e).functor.Additive where
 
 namespace Algebra
 
-instance {R₀ R S} [CommSemiring R₀] [Ring R] [Ring S] [Algebra R₀ R] [Algebra R₀ S]
+instance {R₀ R S : Type*} [CommSemiring R₀] [Ring R] [Ring S] [Algebra R₀ R] [Algebra R₀ S]
     (f : R →ₐ[R₀] S) : (restrictScalars f.toRingHom).Linear R₀ where
   map_smul {M N} g r₀ := by ext m; exact congr_arg (· • g.hom m) (f.commutes r₀).symm
 
 instance restrictScalarsEquivalenceOfRingEquiv_linear
-    {R₀ R S} [CommSemiring R₀] [Ring R] [Ring S] [Algebra R₀ R] [Algebra R₀ S] (e : R ≃ₐ[R₀] S) :
+    {R₀ R S : Type*} [CommSemiring R₀] [Ring R] [Ring S] [Algebra R₀ R] [Algebra R₀ S]
+    (e : R ≃ₐ[R₀] S) :
     (restrictScalarsEquivalenceOfRingEquiv e.toRingEquiv).functor.Linear R₀ :=
   inferInstanceAs ((restrictScalars e.toAlgHom.toRingHom).Linear R₀)
 
@@ -551,7 +571,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Given `R`-module X and `S`-module Y, any `g : Y ⟶ (coextendScalars f).obj X`
 corresponds to `(restrictScalars f).obj Y ⟶ X` by `y ↦ g y 1`
 -/
-def HomEquiv.toRestriction {X Y} (g : Y ⟶ (coextendScalars f).obj X) :
+def HomEquiv.toRestriction {X : ModuleCat R} {Y : ModuleCat S} (g : Y ⟶ (coextendScalars f).obj X) :
     (restrictScalars f).obj Y ⟶ X :=
   -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(X := ...)`.
   -- This suggests `restrictScalars` needs to be redesigned.
@@ -677,7 +697,8 @@ map `S ⨂ X → Y`, there is a `X ⟶ (restrictScalars f).obj Y`, i.e. `R`-line
 `x ↦ g (1 ⊗ x)`.
 -/
 @[simps! hom_apply]
-def HomEquiv.toRestrictScalars {X Y} (g : (extendScalars f).obj X ⟶ Y) :
+def HomEquiv.toRestrictScalars {X : ModuleCat R} {Y : ModuleCat S}
+    (g : (extendScalars f).obj X ⟶ Y) :
     X ⟶ (restrictScalars f).obj Y :=
   -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`.
   -- This suggests `restrictScalars` needs to be redesigned.
@@ -718,7 +739,8 @@ Given `R`-module X and `S`-module Y and a map `X ⟶ (restrictScalars f).obj Y`,
 `s ⊗ x ↦ s • g x`.
 -/
 @[simps! hom_apply]
-def HomEquiv.fromExtendScalars {X Y} (g : X ⟶ (restrictScalars f).obj Y) :
+def HomEquiv.fromExtendScalars {X : ModuleCat R} {Y : ModuleCat S}
+    (g : X ⟶ (restrictScalars f).obj Y) :
     (extendScalars f).obj X ⟶ Y := by
   letI m1 : Module R S := Module.compHom S f; letI m2 : Module R Y := Module.compHom Y f
   refine ofHom
@@ -749,7 +771,7 @@ set_option backward.isDefEq.respectTransparency false in
 bijectively correspond to `R`-linear maps `X ⟶ (restrictScalars f).obj Y`.
 -/
 @[simps symm_apply]
-def homEquiv {X Y} :
+def homEquiv {X : ModuleCat R} {Y : ModuleCat S} :
     ((extendScalars f).obj X ⟶ Y) ≃ (X ⟶ (restrictScalars.{max v u₂, u₁, u₂} f).obj Y) where
   toFun := HomEquiv.toRestrictScalars.{u₁, u₂, v} f
   invFun := HomEquiv.fromExtendScalars.{u₁, u₂, v} f
@@ -782,7 +804,7 @@ set_option backward.isDefEq.respectTransparency false in
 For any `R`-module X, there is a natural `R`-linear map from `X` to `X ⨂ S` by sending `x ↦ x ⊗ 1`
 -/
 -- @[simps] Porting note: not in normal form and not used
-def Unit.map {X} : X ⟶ (extendScalars f ⋙ restrictScalars f).obj X :=
+def Unit.map {X : ModuleCat R} : X ⟶ (extendScalars f ⋙ restrictScalars f).obj X :=
   -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`.
   -- This suggests `restrictScalars` needs to be redesigned.
   ofHom (Y := (extendScalars f ⋙ restrictScalars f).obj X)
@@ -801,16 +823,15 @@ def unit : 𝟭 (ModuleCat R) ⟶ extendScalars f ⋙ restrictScalars.{max v u�
   app _ := Unit.map.{u₁, u₂, v} f
 
 set_option backward.isDefEq.respectTransparency false in
-set_option backward.proofsInPublic true in
 /-- For any `S`-module Y, there is a natural `R`-linear map from `S ⨂ Y` to `Y` by
 `s ⊗ y ↦ s • y` -/
 @[simps! hom_apply]
-def Counit.map {Y} : (restrictScalars f ⋙ extendScalars f).obj Y ⟶ Y :=
+def Counit.map {Y : ModuleCat S} : (restrictScalars f ⋙ extendScalars f).obj Y ⟶ Y :=
   ofHom
   { toFun :=
       letI m1 : Module R S := Module.compHom S f
       letI m2 : Module R Y := Module.compHom Y f
-      TensorProduct.lift
+      TensorProduct.lift (σ₁₂ := .id R)
       { toFun := fun s : S =>
         { toFun := fun y : Y => s • y,
           map_add' := smul_add _

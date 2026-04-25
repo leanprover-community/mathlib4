@@ -674,8 +674,7 @@ variable (A) in
 and `sheafPushforwardContinuous G A J₀ J` is an equivalence of categories
 this is a sheafification functor `(Dᵒᵖ ⥤ A) ⥤ Sheaf K A`
 when `HasWeakSheafify J A` holds. -/
-noncomputable def sheafifyOfIsEquivalence
-    [IsEquivalence (sheafPushforwardContinuous G A J K)] :
+noncomputable def sheafifyOfIsEquivalence :
     (Dᵒᵖ ⥤ A) ⥤ Sheaf K A :=
   (whiskeringLeft _ _ _).obj G.op ⋙ presheafToSheaf J A ⋙
     inv (G.sheafPushforwardContinuous A J K)
@@ -685,8 +684,7 @@ variable (A) in
 and `sheafPushforwardContinuous G A J₀ J` is an equivalence of categories, this is
 the isomorphism between `sheafifyOfIsEquivalence J K G A ⋙ G.sheafPushforwardContinuous A J K`
 and the functor which sends a presheaf to the sheafification of its precomposition by `G.op`. -/
-noncomputable def sheafifyOfIsEquivalenceCompIso
-    [IsEquivalence (sheafPushforwardContinuous G A J K)] :
+noncomputable def sheafifyOfIsEquivalenceCompIso :
     sheafifyOfIsEquivalence J K G A ⋙ G.sheafPushforwardContinuous A J K ≅
       (whiskeringLeft _ _ _).obj G.op ⋙ presheafToSheaf J A :=
   associator _ _ _ ≪≫ isoWhiskerLeft _ (associator _ _ _) ≪≫
