@@ -216,7 +216,6 @@ theorem pullback_snd {X Y S : C} (f : X ⟶ S) (g : Y ⟶ S) [HasPullback f g]
     [P.IsStableUnderBaseChangeAlong g] (H : P f) : P (pullback.snd f g) :=
   IsStableUnderBaseChangeAlong.of_isPullback (IsPullback.of_hasPullback f g) H
 
-set_option backward.isDefEq.respectTransparency false in
 theorem baseChange_obj {S S' : C} (f : S' ⟶ S)
     [HasPullbacksAlong f] [P.IsStableUnderBaseChangeAlong f] (X : Over S) (H : P X.hom) :
     P ((Over.pullback f).obj X).hom :=

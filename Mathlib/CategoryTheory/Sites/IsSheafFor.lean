@@ -348,13 +348,6 @@ theorem FamilyOfElements.Compatible.pullback (f : Y ⟶ X) {x : FamilyOfElements
 
 end Pullback
 
-/-- Given a morphism of presheaves `f : P ⟶ Q`, we can take a family of elements valued in `P` to a
-family of elements valued in `Q` by composing with `f`.
--/
-@[deprecated map (since := "2025-09-25")]
-def FamilyOfElements.compPresheafMap (f : P ⟶ Q) (x : FamilyOfElements P R) :
-    FamilyOfElements Q R := fun Y g hg => f.app (op Y) (x g hg)
-
 @[simp]
 lemma FamilyOfElements.map_id (x : FamilyOfElements P R) :
     x.map (𝟙 _) = x :=
@@ -370,15 +363,6 @@ theorem FamilyOfElements.Compatible.map (f : P ⟶ Q) {x : FamilyOfElements P R}
   intro Z₁ Z₂ W g₁ g₂ f₁ f₂ h₁ h₂ eq
   unfold FamilyOfElements.map
   rwa [← NatTrans.naturality_apply, ← NatTrans.naturality_apply, h]
-
-@[deprecated (since := "2025-09-25")] alias FamilyOfElements.compPresheafMap_id :=
-  FamilyOfElements.map_id
-
-@[deprecated (since := "2025-09-25")] alias FamilyOfElements.compPresheafMap_comp :=
-  FamilyOfElements.map_comp
-
-@[deprecated (since := "2025-09-25")] alias FamilyOfElements.Compatible.compPresheafMap :=
-  FamilyOfElements.Compatible.map
 
 /--
 The given element `t` of `P.obj (op X)` is an *amalgamation* for the family of elements `x` if every
@@ -397,9 +381,6 @@ theorem FamilyOfElements.IsAmalgamation.map {x : FamilyOfElements P R} {t} (f : 
   dsimp [FamilyOfElements.map]
   change (f.app _ ≫ Q.map _) _ = _
   rw [← f.naturality, comp_apply, h g hg]
-
-@[deprecated (since := "2025-09-25")] alias FamilyOfElements.IsAmalgamation.compPresheafMap :=
-  FamilyOfElements.IsAmalgamation.map
 
 theorem is_compatible_of_exists_amalgamation (x : FamilyOfElements P R)
     (h : ∃ t, x.IsAmalgamation t) : x.Compatible := by
@@ -662,7 +643,7 @@ theorem isSheafFor_iff_generate (R : Presieve X) :
     intro t ht
     simpa [hx] using isAmalgamation_restrict (le_generate R) _ _ ht
 
-/-- Every presheaf is a sheaf for the family {𝟙 X}.
+/-- Every presheaf is a sheaf for the family `{𝟙 X}`.
 
 [Elephant] C2.1.5(i)
 -/
@@ -922,7 +903,6 @@ lemma isSheafFor_over_map_op_comp_ofArrows_iff
     ← e.bijective.of_comp_iff']
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isSheafFor_over_map_op_comp_iff
     {B B' : C} (p : B ⟶ B') (P : (Over B')ᵒᵖ ⥤ Type w)
     {X : Over B} (R : Sieve X) {X' : Over B'}

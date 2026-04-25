@@ -47,7 +47,7 @@ set_option backward.isDefEq.respectTransparency false in
 category-theoretic version, provided the monad is lawful.
 -/
 @[simps]
-def eq : KleisliCat m ≌ Kleisli (ofTypeMonad m) where
+def kleisliCatEquivKleisli : KleisliCat m ≌ Kleisli (ofTypeMonad m) where
   functor :=
     { obj X := Kleisli.mk _ X
       map f := ⟨TypeCat.ofHom f⟩
@@ -70,6 +70,8 @@ def eq : KleisliCat m ≌ Kleisli (ofTypeMonad m) where
     change f >=> pure = pure >=> f
     simp [functor_norm]
   counitIso := NatIso.ofComponents fun X => Iso.refl X
+
+@[deprecated (since := "2026-04-16")] alias eq := kleisliCatEquivKleisli
 
 end
 

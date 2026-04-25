@@ -960,6 +960,10 @@ variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] {N : Subm
 theorem mem_annihilator' {r} : r ∈ N.annihilator ↔ N ≤ comap (r • (LinearMap.id : M →ₗ[R] M)) ⊥ :=
   mem_annihilator.trans ⟨fun H n hn => (mem_bot R).2 <| H n hn, fun H _ hn => (mem_bot R).1 <| H hn⟩
 
+lemma _root_.LinearMap.mem_annihilator_iff_lsmul_eq_zero {r : R} :
+    r ∈ Module.annihilator R M ↔ LinearMap.lsmul R M r = 0 := by
+  simp [Module.mem_annihilator, LinearMap.ext_iff]
+
 theorem mem_annihilator_span (s : Set M) (r : R) :
     r ∈ (Submodule.span R s).annihilator ↔ ∀ n : s, r • (n : M) = 0 := by
   rw [Submodule.mem_annihilator]
@@ -1028,7 +1032,7 @@ instance map_isPrime_of_equiv {F' : Type*} [EquivLike F' R S] [RingEquivClass F'
 
 theorem map_eq_bot_iff_of_injective {I : Ideal R} {f : F} (hf : Function.Injective f) :
     I.map f = ⊥ ↔ I = ⊥ := by
-  simp [map, span_eq_bot, ← map_zero f, -map_zero, hf.eq_iff, I.eq_bot_iff]
+  simp [map, ← map_zero f, -map_zero, hf.eq_iff, I.eq_bot_iff]
 
 end Semiring
 
