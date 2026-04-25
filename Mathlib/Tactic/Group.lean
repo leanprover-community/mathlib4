@@ -20,6 +20,11 @@ since `ring_nf` can normalize an exponent to zero, leading to a factor that can 
 before collecting exponents again. The simplifier step also uses some extra lemmas to avoid
 some `ring_nf` invocations.
 
+## TODO
+
+- Surface non-progress-related errors from `repeat`.
+- Allow `group`s `ifUnchanged` behavior to be configurable.
+
 ## Tags
 
 group theory
