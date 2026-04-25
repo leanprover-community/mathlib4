@@ -410,6 +410,15 @@ Note: This linter can be disabled with `set_option linter.style.longLine false`
 #guard_msgs in
 /-!                                                                                                -/
 
+set_option linter.style.longLine.maxLineWidth 80 in
+/--
+warning: This line exceeds the 80 character limit, please shorten it!
+
+Note: This linter can be disabled with `set_option linter.style.longLine false`
+-/
+#guard_msgs in
+/-!                                                                                 -/
+
 #guard_msgs in
 -- Lines with more than 100 characters containing URLs are allowed.
 /-!  http                                                                                          -/
