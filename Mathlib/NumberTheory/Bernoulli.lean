@@ -616,13 +616,8 @@ private lemma sum_pow_filter_eq_faulhaber (k p : ℕ) (hk : 0 < k) :
     (∑ v ∈ Ico 1 p, (v : ℚ) ^ (2 * k)) =
       (∑ i ∈ Finset.range (2 * k), bernoulli i * ((2 * k + 1).choose i) *
         (p : ℚ) ^ (2 * k + 1 - i) / (2 * k + 1)) + p * bernoulli (2 * k) := by
-  have hfilter : (∑ v ∈ Ico 1 p, (v : ℚ) ^ (2 * k)) = ∑ v ∈ Finset.range p, (v : ℚ) ^ (2 * k) :=
-    by
-      by_cases hp : 0 < p
-      · rw [Finset.sum_range_eq_add_Ico _ hp]
-        simp [show 2 * k ≠ 0 by omega]
-      · have hp0 : p = 0 := by omega
-        simp [hp0]
+  have hfilter : (∑ v ∈ Ico 1 p, (v : ℚ) ^ (2 * k)) = ∑ v ∈ Finset.range p, (v : ℚ) ^ (2 * k) := by
+    cases p <;> simp [Finset.sum_range_eq_add_Ico, show 2 * k ≠ 0 by omega]
   rw [hfilter, sum_range_pow, Finset.sum_range_succ, Nat.choose_succ_self_right,
     show 2 * k + 1 - 2 * k = 1 by lia]
   push_cast
