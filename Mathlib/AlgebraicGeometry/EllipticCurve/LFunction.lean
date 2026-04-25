@@ -73,14 +73,14 @@ we define the local polynomial `fₚ(T)` as:
 * `fₚ = 1 - T` if `W` has split multiplicative reduction at `p`,
 * `fₚ = 1 + T` if `W` has nonsplit multiplicative reduction at `p`,
 * `fₚ = 1` if `W` has additive reduction at `p`.
-Then the L-Function of `W` is the formal Dirichlet series defined as the product of `1 / fₚ(‖p‖⁻ˢ)`
+Then the L-function of `W` is the formal Dirichlet series defined as the product of `1 / fₚ(‖p‖⁻ˢ)`
 as `p` ranges over all prime ideals of the ring of integers of `K`.
 -/
 noncomputable def LFunction : ArithmeticFunction ℤ :=
   eulerProduct fun p : HeightOneSpectrum (𝓞 K) ↦
       (W.baseChange (p.adicCompletion K)).localEulerFactor (p.adicCompletionIntegers K)
 
-/-- The L-series of a Weierstrass curve. -/
+/-- The L-series of a Weierstrass curve over a number field. -/
 protected noncomputable def LSeries (W : WeierstrassCurve K) (s : ℂ) :=
   LSeries ((↑) ∘ W.LFunction) s
 
