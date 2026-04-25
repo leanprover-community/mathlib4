@@ -309,8 +309,6 @@ def powers (n : M) : Submonoid M :=
 theorem mem_powers (n : M) : n ∈ powers n :=
   ⟨1, pow_one _⟩
 
-lemma powers_nonempty {n : M} : Set.Nonempty (powers n : Set M) := ⟨n, mem_powers n⟩
-
 theorem coe_powers (x : M) : ↑(powers x) = Set.range fun n : ℕ => x ^ n :=
   rfl
 
@@ -505,7 +503,6 @@ def multiples (x : A) : AddSubmonoid A :=
 attribute [to_additive existing] Submonoid.powers
 
 attribute [to_additive (attr := simp)] Submonoid.mem_powers
-attribute [to_additive (attr := simp)] Submonoid.powers_nonempty
 
 attribute [to_additive (attr := norm_cast)] Submonoid.coe_powers
 
