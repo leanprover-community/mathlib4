@@ -1334,7 +1334,7 @@ measurable. -/
 theorem _root_.Measurable.simpleFunc_add
     {E : Type*} {_ : MeasurableSpace α} [MeasurableSpace E] [AddCancelMonoid E] [MeasurableAdd E]
     {g : α → E} (hg : Measurable g) (f : SimpleFunc α E) : Measurable ((f : α → E) + g) :=
-  f.measurable_bind (fun b a => b + g a) fun b => hg.const_add b
+  f.measurable_bind (fun b a ↦ b + g a) fun b ↦ hg.const_add b
 
 end SimpleFunc
 
