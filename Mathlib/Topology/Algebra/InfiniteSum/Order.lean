@@ -281,7 +281,7 @@ variable [CommMonoid α] [CompleteLattice α] [CanonicallyOrderedMul α] [Topolo
 theorem CompleteLattice.hasProd : HasProd f (⨆ s : Finset ι, ∏ a ∈ s, f a) :=
   tendsto_atTop_iSup fun _ _ ↦ Finset.prod_le_prod_of_subset'
 
-@[to_additive (attr := simp)] theorem CompleteLattice.multipliable : Multipliable f :=
+@[to_additive] theorem CompleteLattice.multipliable : Multipliable f :=
   ⟨_, CompleteLattice.hasProd⟩
 
 open CompleteLattice Set
@@ -381,7 +381,7 @@ variable [IsOrderedMonoid α] [OrderClosedTopology α]
 @[to_additive] theorem le_tprod_of_mem (hi : i ∈ s) : f i ≤ ∏' x : s, f x := by
   exact le_tprod (f ∘ (↑)) (⟨i, hi⟩ : s)
 
-@[to_additive (attr := simp)] theorem tprod_eq_one : ∏' i, f i = 1 ↔ ∀ i, f i = 1 :=
+@[to_additive] theorem tprod_eq_one : ∏' i, f i = 1 ↔ ∀ i, f i = 1 :=
   multipliable.tprod_eq_one_iff
 
 @[to_additive] theorem tprod_eq_top_of_eq_top : (∃ a, f a = ⊤) → ∏' a, f a = ⊤
