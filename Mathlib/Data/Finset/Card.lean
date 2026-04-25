@@ -920,13 +920,11 @@ theorem image_iterate_stabilises_lt_card [DecidableEq α] {f : α → α} {s : F
     ∃ n < #s, ∀ m, n ≤ m → s.image f^[m] = s.image f^[n] := by
   let g (i : ℕ) : Finset α := s.image f^[i]
   have : g 0 = s := by simp [g]
-  have (i : ℕ) : #(g i) ≠ 0 := by simp [g, hs₀.ne_empty]
+  have (i : ℕ) : 0 < #(g i) := (hs₀.image _).card_pos
   let G (i : ℕ) : ℕ := #(g i) - 1
-  have hg (i : ℕ) : g (i + 1) ⊆ g i := by
-    simp only [g]
-    rw [Function.iterate_succ, ← image_image]
-    exact image_subset_image hs.finsetImage_subset
-  replace hg : Antitone g := antitone_nat_of_succ_le hg
+  have hg : Antitone g := antitone_nat_of_succ_le <| fun i ↦ by
+    simp_rw [le_iff_subset, g, Function.iterate_succ, ← image_image]
+    grw [hs.finsetImage_subset]
   have G_eq (i j : ℕ) : G i = G j ↔ g i = g j := by
     wlog hij : j ≤ i generalizing i j
     · grind
@@ -936,7 +934,7 @@ theorem image_iterate_stabilises_lt_card [DecidableEq α] {f : α → α} {s : F
     simp only [G_eq, g, Function.iterate_succ', ← image_image]
     grind
   obtain ⟨n, hn, hn'⟩ := Nat.stabilises_of_antitone hG hG₁
-  exact ⟨n, by grind, by grind⟩
+  exact ⟨n, by grind⟩
 
 /--
 Given a function `f` which sends the finite set `s` to itself, the sequence of images of `s` under
