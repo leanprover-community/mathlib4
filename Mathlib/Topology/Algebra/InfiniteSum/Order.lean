@@ -344,9 +344,11 @@ variable [T3Space α]
 @[to_additive] theorem tprod_comm {f : ι → ι' → α} : ∏' (a) (b), f a b = ∏' (b) (a), f a b :=
   multipliable.tprod_comm' (fun _ ↦ multipliable) fun _ ↦ multipliable
 
+@[to_additive tsum_prod]
 theorem tprod_prod {f : ι → ι' → α} : ∏' p : ι × ι', f p.1 p.2 = ∏' (a) (b), f a b :=
   multipliable.tprod_prod' fun _ ↦ multipliable
 
+@[to_additive tsum_prod']
 theorem tprod_prod' {f : ι × ι' → α} : ∏' p : ι × ι', f p = ∏' (a) (b), f (a, b) :=
   multipliable.tprod_prod' fun _ => multipliable
 
@@ -458,22 +460,6 @@ omit [IsOrderedMonoid α] [T3Space α] in
   simp [← tprod_mul]
 
 end CompleteLattice
-
-section CompleteLatticeAdd
-
-open CompleteLattice
-
-variable [AddCommMonoid α] [CompleteLattice α] [CanonicallyOrderedAdd α] [TopologicalSpace α]
-  [SupConvergenceClass α] {ι' : Type*} {f g : ι → α} {s t : Set ι} {x : α} {i j : ι}
-  [ContinuousAdd α] [T3Space α]
-
-theorem tsum_prod {f : ι → ι' → α} : ∑' p : ι × ι', f p.1 p.2 = ∑' (a) (b), f a b :=
-  summable.tsum_prod' fun _ ↦ summable
-
-theorem tsum_prod' {f : ι × ι' → α} : ∑' p : ι × ι', f p = ∑' (a) (b), f (a, b) :=
-  summable.tsum_prod' fun _ => summable
-
-end CompleteLatticeAdd
 
 section LinearOrder
 
