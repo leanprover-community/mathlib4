@@ -382,11 +382,8 @@ theorem coe_linearMap : ⇑(Algebra.linearMap R A) = algebraMap R A :=
 
 /-- The identity map inducing an `Algebra` structure. -/
 instance (priority := 1100) id : Algebra R R where
-  -- We override `toFun` and `toSMul` because `RingHom.id` is not reducible and cannot
-  -- be made so without a significant performance hit.
-  -- see library note [reducible non-instances].
   toSMul := instSMulOfMul
-  __ := ({ RingHom.id R with toFun x := x }).toAlgebra
+  __ := (RingHom.id R).toAlgebra
 
 @[simp] lemma linearMap_self : Algebra.linearMap R R = .id := rfl
 
