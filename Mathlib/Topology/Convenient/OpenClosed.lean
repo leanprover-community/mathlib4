@@ -10,7 +10,7 @@ public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.Sets.Closeds
 
 /-!
-# Open or closed subsets that are all `X`-generated spaces
+# Open or closed subsets that are also `X`-generated spaces
 
 Let `X : ι → Type*` be a family of topological spaces.
 If all the opens (resp. closed) subsets of the `X i` are
