@@ -791,11 +791,9 @@ end NeWord
 
 section PingPongLemma
 
-open Pointwise
-
 open Cardinal
-
 open scoped Function -- required for scoped `on` notation
+open scoped Pointwise
 
 variable {G : Type*} [Group G]
 variable {H : ι → Type*} [∀ i, Group (H i)]
@@ -942,9 +940,9 @@ def _root_.freeGroupEquivCoprodI {ι : Type u_1} :
 
 section PingPongLemma
 
-open Pointwise Cardinal
-
+open Cardinal
 open scoped Function -- required for scoped `on` notation
+open scoped Pointwise
 
 variable [Nontrivial ι]
 variable {G : Type u_1} [Group G] (a : ι → G)

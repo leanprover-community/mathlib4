@@ -72,9 +72,8 @@ theorem lift_add_one (a : Ordinal.{v}) : lift.{u} (a + 1) = lift.{u} a + 1 := by
 theorem lift_succ (a : Ordinal.{v}) : lift.{u} (succ a) = succ (lift.{u} a) :=
   lift_add_one a
 
-instance instAddLeftReflectLE :
-    AddLeftReflectLE Ordinal.{u} where
-  elim c a b := by
+instance instAddLeftReflectLE : AddLeftReflectLE Ordinal.{u} where
+  le_of_add_le_add_left {c a b} := by
     refine inductionOn₃ a b c fun α r _ β s _ γ t _ ⟨f⟩ ↦ ?_
     have H₁ a : f (Sum.inl a) = Sum.inl a := by
       simpa using ((InitialSeg.leAdd t r).trans f).eq (InitialSeg.leAdd t s) a
@@ -1188,5 +1187,12 @@ theorem isSuccLimit_ord {c} (hc : ℵ₀ ≤ c) : IsSuccLimit (ord c) := by
 theorem noMaxOrder {c} (h : ℵ₀ ≤ c) : NoMaxOrder c.ord.ToType := by
   rw [← isSuccPrelimit_type_lt_iff, type_toType]
   exact (isSuccLimit_ord h).isSuccPrelimit
+
+instance : Nonempty (ℵ₀ : Cardinal.{u}).ord.ToType := by simp
+
+/-- This can be made a local instance in order to get `⊥`
+in `Cardinal.aleph0.ord.ToType`. -/
+abbrev orderBotAleph0OrdToType : OrderBot Cardinal.aleph0.{u}.ord.ToType :=
+  WellFoundedLT.toOrderBot _
 
 end Cardinal
