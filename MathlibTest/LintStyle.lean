@@ -410,7 +410,7 @@ Note: This linter can be disabled with `set_option linter.style.longLine false`
 #guard_msgs in
 /-!                                                                                                -/
 
-set_option linter.style.longLine.maxLineWidth 80 in
+set_option linter.style.longLine.maxLineLength 80 in
 /--
 warning: This line exceeds the 80 character limit, please shorten it!
 
