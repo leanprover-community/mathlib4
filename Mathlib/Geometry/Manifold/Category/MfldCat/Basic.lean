@@ -208,8 +208,6 @@ instance : HasForget₂ (MfldCat 𝕜 n) TopCat.{u} where
 def isoOfDiffeomorph {M N : MfldCat 𝕜 n} (f : M ≃ₘ^n⟮M.I, N.I⟯ N) : M ≅ N where
   hom := ofHom f.toContMDiffMap
   inv := ofHom f.symm.toContMDiffMap
-  hom_inv_id := by ext x; exact f.left_inv x
-  inv_hom_id := by ext x; exact f.right_inv x
 
 /-- Any isomorphism in `MfldCat` induces a diffeomorphism. -/
 @[simps]
