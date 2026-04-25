@@ -28,7 +28,6 @@ universe w v u
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
   {M G H X Y : C} [MonObj M] [GrpObj G] [GrpObj H]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (X) in
 /-- If `X` represents a presheaf of monoids, then `X` is a monoid object. -/
 @[to_additive (attr := implicit_reducible)
@@ -36,25 +35,23 @@ variable (X) in
 def GrpObj.ofRepresentableBy (F : Cᵒᵖ ⥤ GrpCat.{w}) (α : (F ⋙ forget _).RepresentableBy X) :
     GrpObj X where
   __ := MonObj.ofRepresentableBy X (F ⋙ forget₂ GrpCat MonCat) α
-  inv := α.homEquiv.symm (α.homEquiv (𝟙 _))⁻¹
+  inv := α.homEquiv'.symm (α.homEquiv (𝟙 _))⁻¹
   left_inv := by
-    change lift (α.homEquiv.symm (α.homEquiv (𝟙 X))⁻¹) (𝟙 X) ≫
-      α.homEquiv.symm (α.homEquiv (fst X X) * α.homEquiv (snd X X)) =
-        toUnit X ≫ α.homEquiv.symm 1
-    apply α.homEquiv.injective
-    simp only [α.homEquiv_comp, Equiv.apply_symm_apply]
-    simp only [Functor.comp_map, ConcreteCategory.forget_map_eq_coe, map_one, map_mul]
-    simp only [← ConcreteCategory.forget_map_eq_coe, ← Functor.comp_map, ← α.homEquiv_comp]
-    simp [-Functor.comp_obj]
+    change lift (α.homEquiv'.symm (α.homEquiv (𝟙 X))⁻¹) (𝟙 X) ≫
+      α.homEquiv'.symm (α.homEquiv' (fst X X) * α.homEquiv' (snd X X)) =
+        toUnit X ≫ α.homEquiv'.symm 1
+    apply α.homEquiv'.injective
+    simp only [α.homEquiv'_comp, Equiv.apply_symm_apply, map_mul, map_one]
+    simp only [← α.homEquiv'_comp, Functor.comp_obj, lift_fst, Equiv.apply_symm_apply, lift_snd]
+    exact inv_mul_cancel (α.homEquiv (𝟙 X))
   right_inv := by
-    change lift (𝟙 X) (α.homEquiv.symm (α.homEquiv (𝟙 X))⁻¹) ≫
-      α.homEquiv.symm (α.homEquiv (fst X X) * α.homEquiv (snd X X)) =
-        toUnit X ≫ α.homEquiv.symm 1
-    apply α.homEquiv.injective
-    simp only [α.homEquiv_comp, Equiv.apply_symm_apply]
-    simp only [Functor.comp_map, ConcreteCategory.forget_map_eq_coe, map_one, map_mul]
-    simp only [← ConcreteCategory.forget_map_eq_coe, ← Functor.comp_map, ← α.homEquiv_comp]
-    simp [-Functor.comp_obj]
+    change lift (𝟙 X) (α.homEquiv'.symm (α.homEquiv' (𝟙 X))⁻¹) ≫
+      α.homEquiv'.symm (α.homEquiv' (fst X X) * α.homEquiv' (snd X X)) =
+        toUnit X ≫ α.homEquiv'.symm 1
+    apply α.homEquiv'.injective
+    simp only [α.homEquiv'_comp, Equiv.apply_symm_apply, map_mul, map_one]
+    simp only [← α.homEquiv'_comp]
+    simp
 
 /-- If `G` is a group object, then `Hom(X, G)` has a group structure. -/
 @[to_additive
