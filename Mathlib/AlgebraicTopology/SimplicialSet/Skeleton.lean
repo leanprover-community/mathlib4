@@ -178,11 +178,11 @@ namespace relativeCellComplexOfMono
 The main next technical result is that if `i : X ⟶ Y` is a monomorphism
 of simplicial sets and `d : ℕ`, there is a pushout square:
 ```
-                                  t i d
+                                t i d
 ∐ fun (c : Cell i d) ↦ ∂Δ[d] ----------> skeletonOfMono i d
                |                                   |
          l i d |                                   | r i d
-               v                  b i d            v
+               v                b i d              v
 ∐ fun (c : Cell i d) ↦ Δ[d]  ----------> skeletonOfMono i (d + 1)
 ```
 
