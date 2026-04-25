@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.AlgebraicTopology.SimplicialSet.Op
 public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 
 /-!
@@ -74,6 +75,23 @@ lemma mem_degenerate_iff (x : X _⦋n⦌) :
     exact ⟨(image f).len, by lia, factorThruImage f, inferInstance, by aesop⟩
   · rintro ⟨m, hm, f, hf, hx⟩
     exact ⟨m, hm, f, hx⟩
+
+set_option backward.isDefEq.respectTransparency false in
+lemma opObjEquiv_mem_degenerate_iff (x : X.op _⦋n⦌) :
+    opObjEquiv x ∈ X.degenerate n ↔ x ∈ X.op.degenerate n := by
+  simp only [mem_degenerate_iff]
+  refine exists_congr (fun m ↦ exists_congr (fun _ ↦ ?_))
+  constructor
+  · obtain ⟨x, rfl⟩ := opObjEquiv.symm.surjective x
+    rintro ⟨f, _, y, rfl⟩
+    exact ⟨SimplexCategory.rev.map f, inferInstance, opObjEquiv.symm y, by simp [op_map]⟩
+  · rintro ⟨f, _, y, rfl⟩
+    exact ⟨SimplexCategory.rev.map f, inferInstance, opObjEquiv y, by simp [op_map]⟩
+
+lemma opObjEquiv_mem_nonDegenerate_iff (x : X.op _⦋n⦌) :
+    opObjEquiv x ∈ X.nonDegenerate n ↔ x ∈ X.op.nonDegenerate n := by
+  simp only [mem_nonDegenerate_iff_notMem_degenerate,
+    opObjEquiv_mem_degenerate_iff]
 
 lemma degenerate_eq_iUnion_range_σ :
     X.degenerate (n + 1) = ⋃ (i : Fin (n + 1)), Set.range (X.σ i) := by
