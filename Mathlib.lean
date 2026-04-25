@@ -1330,6 +1330,7 @@ public import Mathlib.AlgebraicGeometry.EllipticCurve.IsomOfJ
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Basic
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Formula
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Point
+public import Mathlib.AlgebraicGeometry.EllipticCurve.LFunction
 public import Mathlib.AlgebraicGeometry.EllipticCurve.ModelsWithJ
 public import Mathlib.AlgebraicGeometry.EllipticCurve.NormalForms
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Basic
