@@ -276,9 +276,8 @@ lemma map_equivalence {r : α → α → Prop} (hr : Equivalence r) (f : α → 
   symm := @(map_symmetric hr.symmetric _)
   trans := @(hr.isTrans.map hf_ker |>.trans)
 
--- TODO: state this using `≤`, after adjusting imports.
-lemma map_mono {r s : α → β → Prop} {f : α → γ} {g : β → δ} (h : ∀ x y, r x y → s x y) :
-    ∀ x y, Relation.Map r f g x y → Relation.Map s f g x y :=
+lemma map_mono {r s : α → β → Prop} {f : α → γ} {g : β → δ} (h : r ≤ s) :
+    Relation.Map r f g ≤ Relation.Map s f g :=
   fun _ _ ⟨x, y, hxy, hx, hy⟩ => ⟨x, y, h _ _ hxy, hx, hy⟩
 
 lemma le_onFun_map {r : α → α → Prop} (f : α → β) : r ≤ (Relation.Map r f f on f) := by
