@@ -26,14 +26,14 @@ properties of their minimum Hamming distance.
 
 ## Main statements
 
-* `minDist_eq_sInf_pairwiseDist`: The minimum distance of `C` equals the infimum of pairwise
-  Hamming distances between distinct codewords.
+* `minDist_eq_sInf_weights`: The minimum distance of `C` equals the infimum of Hamming weights
+  of nonzero codewords.
 * `disjoint_spheres`: If $2t < d$, the Hamming spheres of radius $t$ centred at distinct
   codewords are disjoint; equivalently, the code can correct up to $t$ errors.
 
 ## Implementation notes
 
-This file assumes that `F` is a finite field $\mathbb{F}_q$ and that `q` is its order.
+This file assumes that `F` is a finite field.
 
 ## Tags
 
@@ -45,23 +45,22 @@ linear code, minimum distance, Hamming sphere, error-correcting code
 namespace InformationTheory
 
 variable (F : Type*) [Field F] [Fintype F] [DecidableEq F]
-variable {q : ℕ} (hq : Fintype.card F = q)
 
-/-- A **word** of length `n` over the field `F`: an arbitrary vector in $\mathbb{F}_q^n$,
+/-- A **word** of length `n` over the field `F`: an arbitrary vector in $F^n$,
 equipped with the Hamming distance. -/
 abbrev Word (n : ℕ) : Type _ := Hamming (fun _ : Fin n ↦ F)
 
-/-- An **$[n, k]_q$-linear code** is a $k$-dimensional subspace of $\mathbb{F}_q^n$. -/
+/-- An **$[n, k]$-linear code** is a $k$-dimensional subspace of $F^n$. -/
 structure LinearCode (n k : ℕ) where
-  /-- The underlying $k$-dimensional subspace of $\mathbb{F}_q^n$, encoded as `Fin n → F`. -/
-  carrier : Subspace F (Fin n → F)
+  /-- The underlying $k$-dimensional subspace of $F^n$, encoded as `Word F n`. -/
+  carrier : Subspace F (Word F n)
   /-- The `F`-rank of `carrier` equals `k`. -/
   dim : Module.finrank F carrier = k
 
-/-- The **minimum distance** $d(C)$ of a code $C$ is the infimum of the Hamming weights of its
-non-zero elements. -/
+/-- The **minimum distance** $d(C)$ of a code $C$ is the infimum of Hamming distances between
+distinct codewords. -/
 noncomputable def minDist {n k : ℕ} (C : LinearCode F n k) : ℕ :=
-  sInf {w | ∃ x : Fin n → F, x ∈ C.carrier ∧ x ≠ 0 ∧ w = hammingNorm x}
+  sInf {d | ∃ x ∈ C.carrier, ∃ y ∈ C.carrier, x ≠ y ∧ d = hammingDist x y}
 
 /-- An **$[n, k, d]$-linear code** is an $[n, k]$-linear code with minimum distance at least
 `d`. -/
@@ -70,49 +69,45 @@ structure LinearCodeWithDist (n k d : ℕ) extends LinearCode F n k where
   dist_lower_bound : d ≤ minDist F toLinearCode
 
 omit [Fintype F] in
-/-- The minimum distance is a lower bound for the Hamming distance between any two distinct
-codewords. -/
-lemma minDist_le_hammingDist {n k : ℕ} (C : LinearCode F n k) {x y : Fin n → F}
-    (hx : x ∈ C.carrier) (hy : y ∈ C.carrier) (hxy : x ≠ y) :
-    minDist F C ≤ hammingDist x y := by
+/-- The minimum distance is a lower bound for the Hamming weight of any nonzero codeword. -/
+lemma minDist_le_hammingNorm {n k : ℕ} (C : LinearCode F n k) {x : Fin n → F}
+    (hx : x ∈ C.carrier) (hx_ne : x ≠ 0) :
+    minDist F C ≤ hammingNorm x := by
   apply Nat.sInf_le
-  refine ⟨-x + y, ?_, ?_, ?_⟩
-  · exact Submodule.add_mem _ (Submodule.neg_mem _ hx) hy
-  · exact fun h ↦ hxy (neg_add_eq_zero.mp h)
-  · rw [hammingDist_eq_hammingNorm]
+  exact ⟨x, hx, 0, Submodule.zero_mem _, hx_ne, (hammingDist_zero_right x).symm⟩
 
 omit [Fintype F] in
-/-- A nontrivial code attains its minimum distance at some pair of distinct codewords. -/
-lemma exists_pair_hammingDist_eq_minDist {n k : ℕ} (C : LinearCode F n k)
+/-- A nontrivial code attains its minimum distance as the Hamming weight of some nonzero
+codeword. -/
+lemma exists_hammingNorm_eq_minDist {n k : ℕ} (C : LinearCode F n k)
     [Nontrivial C.carrier] :
-    ∃ x ∈ C.carrier, ∃ y ∈ C.carrier, x ≠ y ∧ hammingDist x y = minDist F C := by
-  have hne : {w | ∃ x : Fin n → F, x ∈ C.carrier ∧ x ≠ 0 ∧ w = hammingNorm x}.Nonempty := by
+    ∃ x ∈ C.carrier, x ≠ 0 ∧ hammingNorm x = minDist F C := by
+  have hne : {d | ∃ x ∈ C.carrier, ∃ y ∈ C.carrier, x ≠ y ∧ d = hammingDist x y}.Nonempty := by
     obtain ⟨⟨z, hz_mem⟩, hz_ne⟩ := exists_ne (0 : C.carrier)
-    exact ⟨hammingNorm z, z, hz_mem, fun h ↦ hz_ne (Subtype.ext h), rfl⟩
-  obtain ⟨z, hz_mem, hz_ne, hz_eq⟩ := Nat.sInf_mem hne
-  refine ⟨z, hz_mem, 0, Submodule.zero_mem _, hz_ne, ?_⟩
-  rw [hammingDist_zero_right]
-  exact hz_eq.symm
+    refine ⟨hammingDist z 0, z, hz_mem, 0, Submodule.zero_mem _, ?_, rfl⟩
+    exact fun h ↦ hz_ne (Subtype.ext h)
+  obtain ⟨x, hx_mem, y, hy_mem, hxy, hxy_eq⟩ := Nat.sInf_mem hne
+  exact ⟨-x + y, Submodule.add_mem _ (Submodule.neg_mem _ hx_mem) hy_mem,
+    fun h ↦ hxy (neg_add_eq_zero.mp h),
+    (hammingDist_eq_hammingNorm x y).symm.trans hxy_eq.symm⟩
 
 omit [Fintype F] in
-/-- The minimum distance of a code coincides with the infimum of pairwise Hamming distances
-between distinct codewords. -/
-lemma minDist_eq_sInf_pairwiseDist {n k : ℕ} (C : LinearCode F n k) :
-    minDist F C = sInf {d | ∃ x ∈ C.carrier, ∃ y ∈ C.carrier, x ≠ y ∧ d = hammingDist x y} := by
+/-- The minimum distance of a code coincides with the infimum of Hamming weights of nonzero
+codewords. -/
+lemma minDist_eq_sInf_weights {n k : ℕ} (C : LinearCode F n k) :
+    minDist F C = sInf {w | ∃ x : Fin n → F, x ∈ C.carrier ∧ x ≠ 0 ∧ w = hammingNorm x} := by
   unfold minDist
   congr 1
   ext w
   simp only [Set.mem_setOf_eq]
   constructor
-  · rintro ⟨x, hx_space, hx_ne, rfl⟩
-    exact ⟨x, hx_space, 0, Submodule.zero_mem C.carrier, hx_ne, rfl⟩
   · rintro ⟨x, hx, y, hy, hxy, rfl⟩
-    refine ⟨y - x, Submodule.sub_mem _ hy hx, sub_ne_zero.mpr (Ne.symm hxy), ?_⟩
-    rw [hammingDist_eq_hammingNorm x y]
-    congr 1
-    abel
+    exact ⟨-x + y, Submodule.add_mem _ (Submodule.neg_mem _ hx) hy,
+      fun h ↦ hxy (neg_add_eq_zero.mp h), hammingDist_eq_hammingNorm x y⟩
+  · rintro ⟨x, hx_space, hx_ne, rfl⟩
+    exact ⟨x, hx_space, 0, Submodule.zero_mem _, hx_ne, rfl⟩
 
-/-- The **Hamming sphere** $S_t(c)$ is the set of all vectors in $\mathbb{F}_q^n$ at Hamming
+/-- The **Hamming sphere** $S_t(c)$ is the set of all vectors in $F^n$ at Hamming
 distance at most `radius` from `center`. -/
 def hammingSphere {n : ℕ} (center : Fin n → F) (radius : ℕ) : Set (Fin n → F) :=
   {v | hammingDist center v ≤ radius}
@@ -135,7 +130,6 @@ theorem disjoint_spheres {n k d t : ℕ} (C : LinearCodeWithDist F n k d)
       _ ≤ t + t                               := add_le_add hz₁ hz₂
       _ = 2 * t                               := by omega
   have h_minDist_le_dist : minDist F C.toLinearCode ≤ hammingDist c₁ c₂ := by
-    rw [minDist_eq_sInf_pairwiseDist F C.toLinearCode]
     apply csInf_le (OrderBot.bddBelow _)
     simp only [Set.mem_setOf_eq]
     exact ⟨c₁, hc₁, c₂, hc₂, h_ne, rfl⟩
