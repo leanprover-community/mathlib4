@@ -427,8 +427,7 @@ private lemma sum_pow_add_indicator_eq_zero (p l : ℕ) [Fact p.Prime] :
   have hbij : (∑ v ∈ Ico 1 p, (v : ZMod p) ^ l) = ∑ u : (ZMod p)ˣ, (u : ZMod p) ^ l :=
     Finset.sum_bij'
       (fun v hv ↦ Units.mk0 (v : ZMod p) (mt (ZMod.natCast_eq_zero_iff v p).mp (by
-        obtain ⟨hvpos, hvlt⟩ := Finset.mem_Ico.mp hv
-        exact Nat.not_dvd_of_pos_of_lt (by omega) hvlt)))
+        grind [not_dvd_of_pos_of_lt])))
       (fun u _ ↦ (u : ZMod p).val)
       (fun _ _ ↦ Finset.mem_univ _)
       (fun u _ ↦ by
