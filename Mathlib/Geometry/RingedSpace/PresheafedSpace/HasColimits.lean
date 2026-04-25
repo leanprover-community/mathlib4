@@ -327,10 +327,8 @@ theorem colimitPresheafObjIsoComponentwiseLimit_inv_ι_app (F : J ⥤ Presheafed
     congr_app (Iso.symm_inv _)]
   dsimp
   rw [map_id, comp_id, assoc, assoc, assoc, NatTrans.naturality,
-      ← comp_c_app_assoc,
-      congr_app (colimit.isoColimitCocone_ι_hom _ _), assoc]
-  rw [colimitCocone_ι_app_c]
-  rw [limitObjIsoLimitCompEvaluation_inv_π_app_assoc, limMap_π_assoc]
+      ← comp_c_app_assoc, congr_app (colimit.isoColimitCocone_ι_hom _ _), assoc,
+      colimitCocone_ι_app_c, limitObjIsoLimitCompEvaluation_inv_π_app_assoc, limMap_π_assoc]
   simp
 
 set_option backward.isDefEq.respectTransparency false in
