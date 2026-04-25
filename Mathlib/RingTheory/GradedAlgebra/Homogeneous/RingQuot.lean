@@ -157,7 +157,6 @@ noncomputable def quotDecomposition [GradedAlgebra 𝒜] (hrel : Rel.IsHomogeneo
 @[implicit_reducible]
 noncomputable def quotGradedAlgebra [GradedAlgebra 𝒜] (hrel : Rel.IsHomogeneous 𝒜 rel) :
     GradedAlgebra (quotSubmodule 𝒜 rel) where
-  toGradedMonoid  := inferInstance
   toDecomposition := quotDecomposition 𝒜 rel hrel
 
 end AddCommMonoid
@@ -227,7 +226,7 @@ theorem quotDecomposeAux_ker :
 
 /-- The `R`-linear map from `M ⧸ P` to the direct sum of its graded components. -/
 def quotDecompose :
-    M ⧸ P →ₗ[R] DirectSum ι fun i ↦ quotSubmodule ℳ P i :=
+    M ⧸ P →ₗ[R] ⨁ i, quotSubmodule ℳ P i :=
   Submodule.liftQ P (quotDecomposeAux ℳ P) (quotDecomposeAux_ker ℳ hP)
 
 theorem quotDecomposeAux_apply_mk (m : M) :
@@ -354,7 +353,7 @@ def Ideal.quotDecomposition : Decomposition (I.quotSubmodule 𝒜) :=
 /-- The quotient of a graded algebra by a homogeneous ideal, as a graded algebra -/
 @[implicit_reducible]
 def Ideal.gradedQuotAlg [I.IsTwoSided] :
-  GradedAlgebra (I.quotSubmodule 𝒜) where
+    GradedAlgebra (I.quotSubmodule 𝒜) where
   toDecomposition := I.quotDecomposition 𝒜 hI
   toGradedMonoid :=
     { one_mem := by
