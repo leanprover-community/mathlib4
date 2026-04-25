@@ -46,6 +46,11 @@ in the product space.
 open Asymptotics Filter
 open scoped Convex Topology
 
+/-- Suppose that along `l : Filter α` each of `v w : α → E` tends to `u : E` and that along
+`l ×ˢ 𝓝[s] u` the derivative of `f : α → E → F` tends to `φ : E →L[𝕜] F`. Then the difference
+between `f χ (v χ)` and `f χ (w χ)` is, to first order, `φ (v χ - w χ)`. This can be useful where
+`χ : α` stands for a point (or a pair of points) in a space containing `E`, and `v χ` or `w χ` is
+its projection (or both are projections). -/
 theorem isLittleO_sub_sub_fderiv
     {α 𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜] [NormedAddCommGroup E]
     [NormedSpace ℝ E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
@@ -70,9 +75,10 @@ theorem isLittleO_sub_sub_fderiv
 variable {𝕜 E₁ E₂ F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E₁] [NormedSpace 𝕜 E₁]
   [NormedAddCommGroup E₂] [NormedSpace 𝕜 E₂] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
-/-- If a bivariate function `f` has partial derivatives `f₁` and `f₂` in a neighbourhood of a point
-`(u₁, u₂)` and if they are continuous at that point then the uncurried function `↿f` is strictly
-differentiable there with its derivative mapping `(z₁, z₂)` to `f₁ u₁ u₂ z₁ + f₂ u₁ u₂ z₂`. -/
+/-- If bivariate `f : E₁ → E₂ → F` has partial derivatives `f₁` and `f₂` in a neighbourhood of
+`u : E₁ × E₂` and if they are continuous there then the uncurried function `↿f` is strictly
+differentiable at `u` with its derivative mapping `z : E₁ × E₂` to
+`f₁ u.1 u.2 z.1 + f₂ u.1 u.2 z.2`. -/
 public theorem hasStrictFDerivAt_uncurry_coprod
     [IsRCLikeNormedField 𝕜] {u : E₁ × E₂} {f : E₁ → E₂ → F} {f₁ : E₁ → E₂ → E₁ →L[𝕜] F}
     {f₂ : E₁ → E₂ → E₂ →L[𝕜] F} (df₁ : ∀ᶠ v in 𝓝 u, HasFDerivAt (f · v.2) (↿f₁ v) v.1)
