@@ -96,7 +96,7 @@ theorem exists_eq_colon_of_mem_minimalPrimes [IsNoetherianRing R]
     exact ⟨hz', hJI, hz⟩
   by_cases hn' : n - 1 = 0
   · simp [K, show n = 1 by grind] at hz'
-    exact (hK.2 (hz'.trans (Ideal.le_minimalPrimes hI))).elim
+    exact (hK.2 (hz'.trans (Ideal.le_of_mem_minimalPrimes hI))).elim
   · grind [Nat.find_min' key ⟨hn', J * Ideal.span {z}, hK⟩]
 
 end Submodule
