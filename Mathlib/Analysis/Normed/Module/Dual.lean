@@ -118,8 +118,7 @@ theorem polar_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [
 theorem polar_ball {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {r : ℝ}
     (hr : 0 < r) : StrongDual.polar 𝕜 (ball (0 : E) r) = closedBall (0 : StrongDual 𝕜 E) r⁻¹ := by
   letI : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E
-  rw [← polar_closure (𝕜 := 𝕜) (s := ball (0 : E) r), closure_ball (0 : E) hr.ne',
-    polar_closedBall hr]
+  rw [← polar_closedBall hr, ← closure_ball _ hr.ne', polar_closure]
 
 /-- Given a neighborhood `s` of the origin in a normed space `E`, the dual norms of all elements of
 the polar `polar 𝕜 s` are bounded by a constant. -/
