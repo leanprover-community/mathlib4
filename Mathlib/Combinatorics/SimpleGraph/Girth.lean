@@ -66,18 +66,15 @@ lemma three_le_egirth : 3 ≤ G.egirth := by
 
 @[simp] lemma egirth_bot : egirth (⊥ : SimpleGraph α) = ⊤ := by simp
 
-private lemma Iso.egirth_le (f : G ≃g G') : G'.egirth ≤ G.egirth := by
+lemma Hom.egirth_le (f : G →g G') (hinj : Function.Injective f) : G'.egirth ≤ G.egirth := by
   by_cases h : G.IsAcyclic
-  · simp [h.egirth_eq_top, (f.isAcyclic_iff.mp h).egirth_eq_top]
-  have h' : ¬G'.IsAcyclic := f.isAcyclic_iff.not.mp h
+  · simp [h.egirth_eq_top]
   obtain ⟨a, w, hw, hwl⟩ := exists_egirth_eq_length.mpr h
-  let w' := w.map f.toHom
-  have hw' : w'.IsCycle := hw.map f.toEquiv.injective
-  rw [hwl, ← w.length_map f.toHom]
-  apply egirth_le_length hw'
+  rw [hwl, ← w.length_map f]
+  exact egirth_le_length (hw.map hinj)
 
 lemma Iso.egirth_eq (f : G ≃g G') : G.egirth = G'.egirth :=
-  le_antisymm f.symm.egirth_le f.egirth_le
+  le_antisymm (f.symm.toHom.egirth_le f.symm.injective) (f.toHom.egirth_le f.injective)
 
 end egirth
 
