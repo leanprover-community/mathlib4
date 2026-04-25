@@ -12,24 +12,24 @@ public import Mathlib.Topology.Order.Monotone
 public import Mathlib.Topology.Order.SuccPred
 
 /-!
-### Topology of ordinals
+# Topology of ordinals
 
 We prove some miscellaneous results involving the order topology of ordinals.
 
-### Main results
+## Main results
 
-* `Ordinal.isClosed_iff_iSup` / `Ordinal.isClosed_iff_bsup`: A set of ordinals is closed iff it's
+* `Ordinal.isClosed_iff_iSup`: A set of ordinals is closed iff it's
   closed under suprema.
-* `Ordinal.isNormal_iff_strictMono_and_continuous`: A characterization of normal ordinal
-  functions.
 * `Ordinal.enumOrd_isNormal_iff_isClosed`: The function enumerating the ordinals of a set is
   normal iff the set is closed.
+
+## Todo
+
+Most things in this file should be generalized to other well-orders, or to Scott-Hausdorff
+topologies.
 -/
 
-@[expose] public section
-
-
-noncomputable section
+@[expose] public noncomputable section
 
 universe u v
 
@@ -60,8 +60,6 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
       a ∈ closure (s ∩ Iic a),
       (s ∩ Iic a).Nonempty ∧ sSup (s ∩ Iic a) = a,
       ∃ t, t ⊆ s ∧ t.Nonempty ∧ BddAbove t ∧ sSup t = a,
-      ∃ (o : Ordinal.{u}), o ≠ 0 ∧ ∃ (f : ∀ x < o, Ordinal),
-        (∀ x hx, f x hx ∈ s) ∧ bsup.{u, u} o f = a,
       ∃ (ι : Type u), Nonempty ι ∧ ∃ f : ι → Ordinal, (∀ i, f i ∈ s) ∧ ⨆ i, f i = a] := by
   tfae_have 1 → 2 := by
     simpa only [mem_closure_iff_nhdsWithin_neBot, inter_comm s, nhdsWithin_inter',
@@ -75,29 +73,23 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
   tfae_have 3 → 4
   | h => ⟨_, inter_subset_left, h.1, bddAbove_Iic.mono inter_subset_right, h.2⟩
   tfae_have 4 → 5 := by
-    rintro ⟨t, hts, hne, hbdd, rfl⟩
-    have hlub : IsLUB t (sSup t) := isLUB_csSup hne hbdd
-    let ⟨y, hyt⟩ := hne
-    classical
-      refine ⟨sSup t + 1, add_one_ne_zero _, fun x _ => if x ∈ t then x else y, fun x _ => ?_, ?_⟩
-      · simp only
-        split_ifs with h <;> exact hts ‹_›
-      · refine le_antisymm (bsup_le fun x _ => ?_) (csSup_le hne fun x hx => ?_)
-        · split_ifs <;> exact hlub.1 ‹_›
-        · refine (if_pos hx).symm.trans_le (le_bsup _ _ <| (hlub.1 hx).trans_lt (lt_succ _))
-  tfae_have 5 → 6 := by
-    rintro ⟨o, h₀, f, hfs, rfl⟩
-    exact ⟨_, nonempty_toType_iff.2 h₀, familyOfBFamily o f, fun _ => hfs _ _, rfl⟩
-  tfae_have 6 → 1 := by
+    rintro ⟨t, ht, ht₀, ht₁, rfl⟩
+    rw [bddAbove_iff_small] at ht₁
+    refine ⟨Shrink t, ?_, Subtype.val ∘ (equivShrink _).symm, ?_, ?_⟩
+    · have := ht₀.to_subtype
+      exact (equivShrink _).symm.nonempty
+    · simpa [← (equivShrink t).forall_congr_left (p := (·.1 ∈ s))]
+    · simp [(equivShrink t).symm.iSup_comp, ← sSup_eq_iSup']
+  tfae_have 5 → 1 := by
     rintro ⟨ι, hne, f, hfs, rfl⟩
     exact closure_mono (range_subset_iff.2 hfs) <| csSup_mem_closure (range_nonempty f)
-      (bddAbove_range.{u, u} f)
+      bddAbove_of_small
   tfae_finish
 
 theorem mem_closure_iff_iSup :
     a ∈ closure s ↔
       ∃ (ι : Type u) (_ : Nonempty ι) (f : ι → Ordinal), (∀ i, f i ∈ s) ∧ ⨆ i, f i = a := by
-  apply ((mem_closure_tfae a s).out 0 5).trans
+  apply ((mem_closure_tfae a s).out 0 4).trans
   simp_rw [exists_prop]
 
 theorem mem_iff_iSup_of_isClosed (hs : IsClosed s) :
@@ -105,13 +97,21 @@ theorem mem_iff_iSup_of_isClosed (hs : IsClosed s) :
       (∀ i, f i ∈ s) ∧ ⨆ i, f i = a := by
   rw [← mem_closure_iff_iSup, hs.closure_eq]
 
+set_option linter.deprecated false in
+@[deprecated mem_closure_iff_iSup (since := "2026-04-05")]
 theorem mem_closure_iff_bsup :
     a ∈ closure s ↔
       ∃ (o : Ordinal) (_ho : o ≠ 0) (f : ∀ a < o, Ordinal),
         (∀ i hi, f i hi ∈ s) ∧ bsup.{u, u} o f = a := by
-  apply ((mem_closure_tfae a s).out 0 4).trans
-  simp_rw [exists_prop]
+  rw [mem_closure_iff_iSup]
+  constructor
+  · rintro ⟨ι, _, f, hf, rfl⟩
+    exact ⟨_, by simp, bfamilyOfFamily f, fun i hi ↦ hf .., bsup_eq_iSup f⟩
+  · rintro ⟨o, ho, f, hf, rfl⟩
+    exact ⟨_, by simpa, familyOfBFamily _ f, fun i ↦ hf .., iSup_eq_bsup f⟩
 
+set_option linter.deprecated false in
+@[deprecated mem_closure_iff_iSup (since := "2026-04-05")]
 theorem mem_closed_iff_bsup (hs : IsClosed s) :
     a ∈ s ↔
       ∃ (o : Ordinal) (_ho : o ≠ 0) (f : ∀ a < o, Ordinal),
@@ -127,6 +127,8 @@ theorem isClosed_iff_iSup :
   rcases mem_closure_iff_iSup.1 hx with ⟨ι, hι, f, hf, rfl⟩
   exact h hι f hf
 
+set_option linter.deprecated false in
+@[deprecated isClosed_iff_iSup (since := "2026-04-05")]
 theorem isClosed_iff_bsup :
     IsClosed s ↔
       ∀ {o : Ordinal}, o ≠ 0 → ∀ f : ∀ a < o, Ordinal,
@@ -152,22 +154,20 @@ theorem enumOrd_isNormal_iff_isClosed (hs : ¬ BddAbove s) :
     suffices enumOrd s (⨆ i, g i) = ⨆ i, f i by
       rw [← this]
       exact enumOrd_mem hs _
-    rw [h.map_iSup (bddAbove_of_small _)]
+    rw [h.map_iSup bddAbove_of_small]
     congr
     ext x
     change (enumOrdOrderIso s hs _).val = f x
     rw [OrderIso.apply_symm_apply]
-  · rw [isClosed_iff_bsup] at h
-    suffices enumOrd s a ≤ bsup.{u, u} a fun b (_ : b < a) => enumOrd s b from
-      this.trans (bsup_le H)
-    obtain ⟨b, hb⟩ := enumOrd_surjective hs (h ha.ne_bot (fun b _ => enumOrd s b)
-      fun b _ => enumOrd_mem hs b)
-    rw [← hb]
-    apply Hs.monotone
-    by_contra! hba
-    apply (Hs (lt_succ b)).not_ge
-    rw [hb]
-    exact le_bsup.{u, u} _ _ (ha.succ_lt hba)
+  · have := csSup_mem_closure (ha.nonempty_Iio.image (enumOrd s)) bddAbove_of_small
+    have := h.closure_eq ▸ closure_mono (t := s) ?_ this
+    · apply (Set.image_subset_range ..).trans_eq
+      rw [range_enumOrd hs]
+    · apply (enumOrd_le_of_forall_lt this _).trans
+      · apply csSup_le'
+        grind [upperBounds]
+      · exact fun b hb ↦ (enumOrd_strictMono hs (lt_add_one b)).trans_le <|
+          le_csSup bddAbove_of_small <| Set.mem_image_of_mem _ (ha.add_one_lt hb)
 
 open Set Filter Set.Notation
 

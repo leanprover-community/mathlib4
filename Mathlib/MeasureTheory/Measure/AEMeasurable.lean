@@ -25,7 +25,7 @@ variable {ι α β γ δ R : Type*} {m0 : MeasurableSpace α} [MeasurableSpace �
 
 section
 
-@[nontriviality, measurability]
+@[nontriviality]
 theorem Subsingleton.aemeasurable [Subsingleton α] : AEMeasurable f μ :=
   Subsingleton.measurable.aemeasurable
 
@@ -107,7 +107,7 @@ theorem sum_measure [Countable ι] {μ : ι → Measure α} (h : ∀ i, AEMeasur
       rw [hs _ _ hi]
       exact fun h => ⟨i, h, hi⟩
   · refine measure_mono_null (fun x (hx : f x ≠ g x) => ?_) (hsμ i)
-    contrapose! hx
+    contrapose hx
     refine (piecewise_eq_of_notMem _ _ _ ?_).symm
     exact fun h => hx (mem_iInter.1 h i)
 
@@ -210,7 +210,7 @@ theorem exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀
     by_cases hx : x ∈ s
     · simpa [g, hx] using h₀.some_mem
     · simp only [g, hx, piecewise_eq_of_notMem, not_false_iff]
-      contrapose! hx
+      contrapose hx
       apply subset_toMeasurable
       simp +contextual only [hx, mem_compl_iff, mem_setOf_eq, not_and,
         not_false_iff, imp_true_iff]
@@ -437,6 +437,16 @@ lemma map_sum {ι : Type*} {m : ι → Measure α} {f : α → β} (hf : AEMeasu
   rw [map_apply_of_aemeasurable hf hs, sum_apply₀ _ (hf.nullMeasurable hs), sum_apply _ hs]
   have M i : AEMeasurable f (m i) := hf.mono_measure (le_sum m i)
   simp_rw [map_apply_of_aemeasurable (M _) hs]
+
+lemma map_finset_sum {ι β : Type*} {mβ : MeasurableSpace β} {m : ι → Measure α}
+    {f : α → β} {s : Finset ι} (hf : AEMeasurable f (∑ i ∈ s, m i)) :
+    map f (∑ i ∈ s, m i) = ∑ i ∈ s, (m i).map f := by
+  rw [← sum_coe_finset, ← sum_coe_finset, Measure.map_sum]
+  rwa [sum_coe_finset]
+
+lemma map_finset_sum' {ι β : Type*} [Fintype ι] {mβ : MeasurableSpace β} {m : ι → Measure α}
+    {f : α → β} (hf : AEMeasurable f (∑ i, m i)) :
+    map f (∑ i, m i) = ∑ i, (m i).map f := map_finset_sum hf
 
 instance (μ : Measure α) (f : α → β) [SFinite μ] : SFinite (μ.map f) := by
   by_cases H : AEMeasurable f μ
