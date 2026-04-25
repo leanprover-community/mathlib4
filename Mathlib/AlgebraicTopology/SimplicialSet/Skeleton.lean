@@ -25,11 +25,11 @@ of dimension `< n`.
 If `i : X ⟶ Y` is a monomorphism, we define
 `skeletonOfMono i : ℕ →o Y.Subcomplex` so that
 `skeletonOfMono i n = Subcomplex.range i ⊔ Y.skeleton n`.
+We show that this filtration is part of a relative cell complex structure for `i`,
+with basic cells given by boundary inclusions `∂Δ[d] ⟶ Δ[d]` for all
+nondegenerate `d`-simplices of `Y` which do not belong to the range of `i`.
 
 ## TODO
-* show that `X.skeleton (n + 1)` is obtained from `X.skeleton n` by
-  attaching `∂Δ[n] ⟶ Δ[n]` cells (this also holds
-  for `skeletonOfMono i`) (@joelriou).
 * show that `(SSet.sk n).obj X` is isomorphic to `X.skeleton (n + 1)`
 
 -/
