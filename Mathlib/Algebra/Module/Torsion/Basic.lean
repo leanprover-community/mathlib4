@@ -83,8 +83,7 @@ variable (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
 /-- The torsion ideal of `x`, containing all `a` such that `a • x = 0`. -/
 @[simps!]
 def torsionOf (x : M) : Ideal R :=
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): broken dot notation on LinearMap.ker https://github.com/leanprover/lean4/issues/1629
-  LinearMap.ker (LinearMap.toSpanSingleton R M x)
+  (LinearMap.toSpanSingleton R M x).ker
 
 @[simp]
 theorem torsionOf_zero : torsionOf R M (0 : M) = ⊤ := by simp [torsionOf]
@@ -619,7 +618,8 @@ theorem IsTorsionBySet.quotient (N : Submodule R M) {s}
 
 variable (M I) (s : Set R) (r : R)
 
-open Pointwise Submodule
+open scoped Pointwise
+open Submodule
 
 lemma isTorsionBySet_quotient_set_smul :
     IsTorsionBySet R (M ⧸ s • (⊤ : Submodule R M)) s :=
