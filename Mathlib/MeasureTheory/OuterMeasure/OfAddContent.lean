@@ -42,7 +42,7 @@ the outer measure induced by `m`. The induced outer measure is equal to `m` on `
 
 @[expose] public section
 
-open Set CompleteLattice
+open Set
 
 open scoped ENNReal
 
@@ -64,7 +64,7 @@ theorem ofFunction_eq (hC : IsSetSemiring C) (m : AddContent ℝ≥0∞ C)
       refine m_sigma_subadd (fun i ↦ hC.inter_mem _ hs _ (hf i)) ?_
       rwa [← inter_iUnion, inter_eq_self_of_subset_left hs_subset]
     _ ≤ ∑' i, m (f i) := by
-      refine summable.tsum_le_tsum (fun i ↦ ?_) summable
+      refine CompleteLattice.summable.tsum_le_tsum (fun i ↦ ?_) CompleteLattice.summable
       exact addContent_mono hC (hC.inter_mem _ hs _ (hf i)) (hf i) Set.inter_subset_right
 
 /-- For `m : AddContent C` sigma-sub-additive, finite on `C`, the `inducedOuterMeasure` given by `m`

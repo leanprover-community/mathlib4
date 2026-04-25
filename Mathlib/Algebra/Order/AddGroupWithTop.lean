@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Algebra.Order.Monoid.WithTop
 public import Mathlib.Algebra.Regular.Basic
-public import Mathlib.Order.CompleteLattice.Basic
 
 /-!
 # Linearly ordered commutative additive groups and monoids with a top element adjoined

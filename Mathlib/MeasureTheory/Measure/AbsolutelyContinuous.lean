@@ -37,7 +37,7 @@ variable {α β δ ι R : Type*}
 
 namespace MeasureTheory
 
-open Set ENNReal NNReal CompleteLattice
+open Set ENNReal NNReal
 
 variable {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
   {μ μ₁ μ₂ μ₃ ν ν' : Measure α} {s t : Set α}

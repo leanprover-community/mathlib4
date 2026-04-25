@@ -28,7 +28,7 @@ See `MeasureTheory.Measure.absolutelyContinuous_iff_withDensity_rnDeriv_eq`.
 
 open Set hiding restrict restrict_apply
 
-open Filter ENNReal NNReal MeasureTheory.Measure CompleteLattice
+open Filter ENNReal NNReal MeasureTheory.Measure
 
 namespace MeasureTheory
 
@@ -184,7 +184,7 @@ theorem withDensity_tsum {ι : Type*} [Countable ι] {f : ι → α → ℝ≥0�
   simp_rw [sum_apply _ hs, withDensity_apply _ hs]
   change ∫⁻ x in s, (∑' n, f n) x ∂μ = ∑' i, ∫⁻ x, f i x ∂μ.restrict s
   rw [← lintegral_tsum fun i => (h i).aemeasurable]
-  exact lintegral_congr fun x => tsum_apply (Pi.summable.2 fun _ => summable)
+  exact lintegral_congr fun x => tsum_apply (Pi.summable.2 fun _ => CompleteLattice.summable)
 
 theorem withDensity_indicator {s : Set α} (hs : MeasurableSet s) (f : α → ℝ≥0∞) :
     μ.withDensity (s.indicator f) = (μ.restrict s).withDensity f := by

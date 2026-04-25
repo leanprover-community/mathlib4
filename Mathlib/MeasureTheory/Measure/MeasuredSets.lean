@@ -27,7 +27,7 @@ an element of `C`.
 
 @[expose] public section
 
-open MeasurableSpace Set Filter CompleteLattice
+open MeasurableSpace Set Filter
 open scoped symmDiff ENNReal Topology
 
 namespace MeasureTheory

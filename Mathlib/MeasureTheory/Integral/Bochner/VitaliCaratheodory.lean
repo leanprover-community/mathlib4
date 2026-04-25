@@ -75,7 +75,7 @@ public section
 
 open scoped ENNReal NNReal
 
-open MeasureTheory MeasureTheory.Measure CompleteLattice
+open MeasureTheory MeasureTheory.Measure
 
 variable {α : Type*} [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α] (μ : Measure α)
   [WeaklyRegular μ]

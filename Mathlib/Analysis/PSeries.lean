@@ -26,8 +26,6 @@ p-series, Cauchy condensation test
 
 @[expose] public section
 
-open CompleteLattice
-
 /-!
 ### Schlömilch's generalization of the Cauchy condensation test
 

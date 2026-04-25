@@ -57,7 +57,7 @@ universe u v w
 
 noncomputable section
 
-open Set TopologicalSpace CompleteLattice NNReal ENNReal MeasureTheory
+open Set TopologicalSpace NNReal ENNReal MeasureTheory
 
 namespace MeasureTheory
 

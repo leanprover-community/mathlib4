@@ -42,7 +42,7 @@ convergence in measure and other notions of convergence.
 
 @[expose] public section
 
-open TopologicalSpace Filter CompleteLattice
+open TopologicalSpace Filter
 
 open scoped NNReal ENNReal MeasureTheory Topology
 

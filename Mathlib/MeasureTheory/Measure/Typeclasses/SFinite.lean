@@ -22,7 +22,6 @@ We introduce the following typeclasses for measures:
 namespace MeasureTheory
 
 open Set Filter Function Measure MeasurableSpace NNReal ENNReal
-  CompleteLattice
 open scoped Topology
 
 variable {α β ι : Type*} {m0 : MeasurableSpace α} [MeasurableSpace β] {μ ν : Measure α}

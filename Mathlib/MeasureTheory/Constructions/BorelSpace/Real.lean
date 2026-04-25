@@ -31,7 +31,7 @@ public import Mathlib.Topology.Instances.Real.Lemmas
 
 @[expose] public section
 
-open Set Filter MeasureTheory MeasurableSpace CompleteLattice
+open Set Filter MeasureTheory MeasurableSpace
 
 open scoped Topology NNReal ENNReal
 
@@ -359,7 +359,7 @@ theorem Measurable.ennreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0�
 theorem Measurable.ennreal_tsum' {ι} [Countable ι] {f : ι → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
     Measurable (∑' i, f i) := by
   convert Measurable.ennreal_tsum h with x
-  exact tsum_apply (Pi.summable.2 fun _ => summable)
+  exact tsum_apply (Pi.summable.2 fun _ => CompleteLattice.summable)
 
 @[fun_prop]
 theorem Measurable.nnreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0} (h : ∀ i, Measurable (f i)) :

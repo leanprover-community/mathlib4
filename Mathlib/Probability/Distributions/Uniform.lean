@@ -45,7 +45,7 @@ This file defines a number of uniform `PMF` distributions from various inputs,
 open scoped Finset MeasureTheory NNReal ENNReal
 
 -- TODO: We can't `open ProbabilityTheory` without opening the `ProbabilityTheory` scope :(
-open TopologicalSpace MeasureTheory.Measure PMF CompleteLattice
+open TopologicalSpace MeasureTheory.Measure PMF
 
 noncomputable section
 
@@ -327,7 +327,7 @@ open scoped Classical in
   elements in `s` that are `a`. -/
 def ofMultiset (s : Multiset α) (hs : s ≠ 0) : PMF α :=
   ⟨fun a => s.count a / (Multiset.card s),
-    summable.hasSum_iff.2
+    CompleteLattice.summable.hasSum_iff.2
       (calc
         (∑' b : α, (s.count b : ℝ≥0∞) / (Multiset.card s))
           = (Multiset.card s : ℝ≥0∞)⁻¹ * ∑' b, (s.count b : ℝ≥0∞) := by

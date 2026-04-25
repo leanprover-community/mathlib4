@@ -97,7 +97,7 @@ Change of variables in integrals
 public section
 
 open MeasureTheory MeasureTheory.Measure Metric Filter Set Module Asymptotics
-  TopologicalSpace CompleteLattice
+  TopologicalSpace
 
 open scoped NNReal ENNReal Topology Pointwise
 

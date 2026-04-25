@@ -31,7 +31,7 @@ outer measure
 
 noncomputable section
 
-open Set Function Filter CompleteLattice
+open Set Function Filter
 open scoped NNReal Topology ENNReal
 
 namespace MeasureTheory

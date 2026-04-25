@@ -32,7 +32,7 @@ assert_not_exists Module.Basis Norm MeasureTheory.MeasurePreserving MeasureTheor
 
 open Set hiding restrict restrict_apply
 
-open Filter ENNReal Topology NNReal CompleteLattice
+open Filter ENNReal Topology NNReal
 
 namespace MeasureTheory
 
@@ -444,7 +444,7 @@ theorem lintegral_sum_measure {m : MeasurableSpace α} {ι} (f : α → ℝ≥0�
 
 theorem hasSum_lintegral_measure {ι} {_ : MeasurableSpace α} (f : α → ℝ≥0∞) (μ : ι → Measure α) :
     HasSum (fun i => ∫⁻ a, f a ∂μ i) (∫⁻ a, f a ∂Measure.sum μ) :=
-  (lintegral_sum_measure f μ).symm ▸ summable.hasSum
+  (lintegral_sum_measure f μ).symm ▸ CompleteLattice.summable.hasSum
 
 @[simp]
 theorem lintegral_of_isEmpty {α} [MeasurableSpace α] [IsEmpty α] (μ : Measure α) (f : α → ℝ≥0∞) :

@@ -78,7 +78,6 @@ make no sense. However, the measure is not globally zero if the space is big eno
 @[expose] public section
 
 open MeasureTheory Metric Set Filter TopologicalSpace MeasureTheory.Measure
-  CompleteLattice
 
 open scoped Filter ENNReal MeasureTheory NNReal Topology
 

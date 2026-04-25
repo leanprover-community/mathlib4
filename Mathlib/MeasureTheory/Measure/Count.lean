@@ -18,7 +18,7 @@ and prove basic properties of this measure.
 
 @[expose] public section
 
-open Set CompleteLattice
+open Set
 open scoped ENNReal Finset
 
 variable {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] {s : Set α}

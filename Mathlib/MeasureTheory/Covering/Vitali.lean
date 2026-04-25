@@ -39,7 +39,7 @@ This version is given in `Vitali.vitaliFamily`.
 
 variable {α ι : Type*}
 
-open Set Metric MeasureTheory TopologicalSpace Filter CompleteLattice
+open Set Metric MeasureTheory TopologicalSpace Filter
 open scoped NNReal ENNReal Topology
 
 namespace Vitali

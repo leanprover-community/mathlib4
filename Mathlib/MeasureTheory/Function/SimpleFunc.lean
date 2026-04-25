@@ -28,7 +28,7 @@ noncomputable section
 
 open Set hiding restrict restrict_apply
 
-open Filter ENNReal CompleteLattice Topology NNReal ENNReal MeasureTheory
+open Filter ENNReal Topology NNReal ENNReal MeasureTheory
 
 open Function (support)
 

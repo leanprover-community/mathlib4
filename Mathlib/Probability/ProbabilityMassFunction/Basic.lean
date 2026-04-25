@@ -38,7 +38,7 @@ noncomputable section
 
 variable {α : Type*}
 
-open NNReal ENNReal MeasureTheory CompleteLattice
+open NNReal ENNReal MeasureTheory
 
 /-- A probability mass function, or discrete probability measures is a function `α → ℝ≥0∞` such
   that the values have (infinite) sum `1`. -/
@@ -103,7 +103,7 @@ theorem apply_eq_one_iff (p : PMF α) (a : α) : p a = 1 ↔ p.support = {a} := 
   suffices 1 < ∑' a, p a from ne_of_lt this p.tsum_coe.symm
   classical
   have : 0 < ∑' b, ite (b = a) 0 (p b) := by
-    rw [pos_iff_ne_zero, summable.tsum_ne_zero_iff]
+    rw [pos_iff_ne_zero, CompleteLattice.summable.tsum_ne_zero_iff]
     exact ⟨a', ite_ne_left_iff.2 ⟨ha, Ne.symm <| (p.mem_support_iff a').2 ha'⟩⟩
   calc
     1 = 1 + 0 := (add_zero 1).symm
@@ -303,7 +303,7 @@ is the measure of the singleton set under the original measure. -/
 def toPMF [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α] (μ : Measure α)
     [h : IsProbabilityMeasure μ] : PMF α :=
   ⟨fun x => μ ({x} : Set α),
-    summable.hasSum_iff.2
+    CompleteLattice.summable.hasSum_iff.2
       (_root_.trans
         (symm <|
           (tsum_indicator_apply_singleton μ Set.univ MeasurableSet.univ).symm.trans

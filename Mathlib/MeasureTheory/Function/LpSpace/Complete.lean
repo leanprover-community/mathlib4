@@ -17,7 +17,7 @@ in `MeasureTheory.Lp.instCompleteSpace`.
 
 @[expose] public section
 
-open MeasureTheory Filter CompleteLattice
+open MeasureTheory Filter
 open scoped ENNReal Topology
 
 variable {α E : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α} [SeminormedAddGroup E]
@@ -174,7 +174,7 @@ theorem completeSpace_lp_of_cauchy_complete_eLpNorm [hp : Fact (1 ≤ p)]
       change (∑' n : ℕ, ENNReal.ofReal (B n)) = ENNReal.ofReal M
       rw [← hB.tsum_eq]
       exact (ENNReal.ofReal_tsum_of_nonneg (fun n => le_of_lt (hB_pos n)) hB.summable).symm
-    have h_sum := (summable (f := B1)).hasSum
+    have h_sum := (CompleteLattice.summable (f := B1)).hasSum
     rwa [h_tsum_B1] at h_sum
   have hB1 : ∑' i, B1 i < ∞ := by
     rw [hB1_has.tsum_eq]

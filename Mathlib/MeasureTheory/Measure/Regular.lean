@@ -195,7 +195,7 @@ proofs or statements do not apply directly.
 
 @[expose] public section
 
-open Set Filter ENNReal NNReal TopologicalSpace CompleteLattice
+open Set Filter ENNReal NNReal TopologicalSpace
 open scoped symmDiff Topology
 
 namespace MeasureTheory
@@ -641,7 +641,7 @@ theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [IsFiniteMeasu
     -- taking the union of these (finitely many) `F i`.
     have : Tendsto (fun t => (∑ k ∈ t, μ (s k)) + ε / 2) atTop (𝓝 <| μ (⋃ n, s n) + ε / 2) := by
       rw [measure_iUnion hsd hsm]
-      exact Tendsto.add summable.hasSum tendsto_const_nhds
+      exact Tendsto.add CompleteLattice.summable.hasSum tendsto_const_nhds
     rcases (this.eventually <| lt_mem_nhds <| ENNReal.lt_add_right hfin ε0').exists with ⟨t, ht⟩
     -- the approximating open set is constructed by taking for each `s n` an approximating open set
     -- `U n` with measure at most `μ (s n) + δ n` for a summable `δ`, and taking the union of these.
@@ -797,7 +797,7 @@ instance {ι : Type*} {μ : ι → Measure α} [∀ i, InnerRegular (μ i)] :
   intro s hs r hr
   have : Tendsto (fun (a : Finset ι) ↦ ∑ i ∈ a, μ i s) atTop (𝓝 (Measure.sum μ s)) := by
     simp only [hs, Measure.sum_apply]
-    exact summable.hasSum
+    exact CompleteLattice.summable.hasSum
   obtain ⟨a, ha⟩ : ∃ (a : Finset ι), r < (∑ i ∈ a, μ i) s := by
     simp only [coe_finset_sum, Finset.sum_apply]
     exact ((tendsto_order.1 this).1 r hr).exists

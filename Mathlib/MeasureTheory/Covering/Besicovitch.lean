@@ -98,7 +98,7 @@ noncomputable section
 
 universe u
 
-open Metric Set Filter Fin MeasureTheory TopologicalSpace CompleteLattice
+open Metric Set Filter Fin MeasureTheory TopologicalSpace
 
 open scoped Topology ENNReal MeasureTheory NNReal
 
@@ -606,8 +606,8 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
   obtain ⟨w, hw⟩ :
     ∃ w : Finset (u i), μ s / (N + 1) <
       ∑ x ∈ w, μ (o ∩ closedBall (x : α) (r (x : α))) := by
-    have C : HasSum (fun x : u i => μ (o ∩ closedBall x (r x))) (μ (o ∩ v i)) := by
-      rw [B]; exact summable.hasSum
+    have C : HasSum (fun x : u i => μ (o ∩ closedBall x (r x))) (μ (o ∩ v i)) :=
+      B ▸ CompleteLattice.summable.hasSum
     have : μ s / (N + 1) < μ (o ∩ v i) := hi.trans_le (measure_mono (inter_subset_inter_left _ so))
     exact ((tendsto_order.1 C).1 _ this).exists
   -- Bring back the finset `w i` of `↑(u i)` to a finset of `α`, and check that it works by design.

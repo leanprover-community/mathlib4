@@ -27,7 +27,7 @@ probability.
 
 @[expose] public section
 
-open Set MeasureTheory TopologicalSpace CompleteLattice
+open Set MeasureTheory TopologicalSpace
 
 open scoped ENNReal Uniformity
 
