@@ -6,10 +6,7 @@ Authors: Archibald Browne
 module
 
 
-public import Mathlib.Topology.Algebra.MulAction
-public import Mathlib.Analysis.Calculus.ContDiff.Defs
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
-public import Mathlib.Tactic
 
 
 /-!
