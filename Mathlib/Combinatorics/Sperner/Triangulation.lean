@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2026 RJ Walters. All rights reserved.
+Copyright (c) 2026 Robb Walters. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robb Walters
 -/
@@ -176,18 +176,11 @@ theorem boundary_doors_odd (T : Triangulation V n)
     (c : V → Fin (n + 1))
     (onFace : V → Fin (n + 1) → Prop)
     [∀ v k, Decidable (onFace v k)]
-    (_hSperner : IsSpernerColoring c onFace)
-    (_hBoundaryOnFace : ∀ s k, T.adj s k = none →
+    (hSperner : IsSpernerColoring c onFace)
+    (hBoundaryOnFace : ∀ s k, T.adj s k = none →
       ∃ faceIdx : Fin (n + 1), ∀ j : Fin (n + 1),
         j ≠ k → onFace (T.vertex s j) faceIdx)
-    (_hLowerDim : ∀ faceIdx : Fin (n + 1),
-      faceIdx.val < n →
-      Even (Finset.univ.filter (fun p : T.Cell × Fin (n + 1) =>
-        CellComplex.IsDoor c (T.toCellComplex) p.1 p.2 ∧
-        T.adj p.1 p.2 = none ∧
-        (∀ j : Fin (n + 1), j ≠ p.2 →
-          onFace (T.vertex p.1 j) faceIdx))).card)
-    (_hLastFace : Odd (Finset.univ.filter
+    (hLastFace : Odd (Finset.univ.filter
       (fun p : T.Cell × Fin (n + 1) =>
         CellComplex.IsDoor c (T.toCellComplex) p.1 p.2 ∧
         T.adj p.1 p.2 = none ∧
@@ -199,7 +192,7 @@ theorem boundary_doors_odd (T : Triangulation V n)
         CellComplex.IsDoor c (T.toCellComplex) p.1 p.2 ∧
         T.adj p.1 p.2 = none)).card := by
   -- Strategy: show S = S_n (every boundary door must be on the last face)
-  -- then |S| = |S_n| is odd by _hLastFace.
+  -- then |S| = |S_n| is odd by hLastFace.
   --
   -- Key insight: if a boundary door (s,k) is on face faceIdx with faceIdx.val < n,
   -- the Sperner condition contradicts the door condition (IsDoor requires color
@@ -214,7 +207,7 @@ theorem boundary_doors_odd (T : Triangulation V n)
         T.adj p.1 p.2 = none ∧
         (∀ j : Fin (n + 1), j ≠ p.2 →
           onFace (T.vertex p.1 j) ⟨n, by omega⟩)) by
-    rw [h]; exact _hLastFace
+    rw [h]; exact hLastFace
   -- Prove the two filter sets are equal
   ext ⟨s, k⟩
   simp only [Finset.mem_filter, Finset.mem_univ, true_and]
@@ -222,8 +215,8 @@ theorem boundary_doors_odd (T : Triangulation V n)
   · -- S ⊆ S_n: every boundary door is on the last face
     intro ⟨hDoor, hAdj⟩
     refine ⟨hDoor, hAdj, ?_⟩
-    -- By _hBoundaryOnFace, this door is on some face faceIdx
-    obtain ⟨faceIdx, hOnFace⟩ := _hBoundaryOnFace s k hAdj
+    -- By hBoundaryOnFace, this door is on some face faceIdx
+    obtain ⟨faceIdx, hOnFace⟩ := hBoundaryOnFace s k hAdj
     -- Show faceIdx = ⟨n, _⟩ by contradiction
     by_cases hlt : faceIdx.val < n
     · -- Contradiction: IsDoor requires color faceIdx on some non-k vertex,
@@ -235,7 +228,7 @@ theorem boundary_doors_odd (T : Triangulation V n)
       -- Vertex i is on face faceIdx (since i ≠ k)
       have hOnFace_i := hOnFace i hi_ne
       -- Sperner says c(vertex s i) ≠ faceIdx
-      have hSperner_i := _hSperner (T.vertex s i) faceIdx hOnFace_i
+      have hSperner_i := hSperner (T.vertex s i) faceIdx hOnFace_i
       -- But hi_color says c(vertex s i) = castSucc ⟨faceIdx.val, hlt⟩ = faceIdx
       -- T.toCellComplex.vertex = T.vertex by definition
       change c (T.vertex s i) = _ at hi_color
@@ -833,12 +826,12 @@ section Interval
 variable {m : ℕ}
 
 /-- Vertex map for the interval triangulation. -/
-def ivtx (i : Fin m) (k : Fin 2) : ℕ :=
+def intervalVertex (i : Fin m) (k : Fin 2) : ℕ :=
   if k.val = 0 then i.val else i.val + 1
 
 /-- Adjacency for the interval triangulation. Defined as an
 opaque `if/dite` chain. -/
-def iadj (m : ℕ) (i : Fin m)
+def intervalAdj (m : ℕ) (i : Fin m)
     (k : Fin 2) : Option (Fin m × Fin 2) :=
   if hk : k.val = 0 then
     if h : i.val + 1 < m then
@@ -851,15 +844,15 @@ def iadj (m : ℕ) (i : Fin m)
     else
       none
 
-/-- Extract data from iadj = some. -/
-lemma iadj_cases {s s' : Fin m}
+/-- Extract data from intervalAdj = some. -/
+lemma intervalAdj_cases {s s' : Fin m}
     {k k' : Fin 2}
-    (hadj : iadj m s k = some (s', k')) :
+    (hadj : intervalAdj m s k = some (s', k')) :
     (k.val = 0 ∧ s'.val = s.val + 1 ∧ k'.val = 1 ∧
       s.val + 1 < m) ∨
     (k.val ≠ 0 ∧ s'.val = s.val - 1 ∧ k'.val = 0 ∧
       0 < s.val) := by
-  unfold iadj at hadj
+  unfold intervalAdj at hadj
   by_cases hk : k.val = 0
   · -- k.val = 0
     rw [dif_pos hk] at hadj
@@ -886,26 +879,26 @@ lemma iadj_cases {s s' : Fin m}
         h⟩
     · rw [dif_neg h] at hadj; exact nomatch hadj
 
-lemma iadj_symm' {s s' : Fin m}
+lemma intervalAdj_symm {s s' : Fin m}
     {k k' : Fin 2}
-    (hadj : iadj m s k = some (s', k')) :
-    iadj m s' k' = some (s, k) := by
+    (hadj : intervalAdj m s k = some (s', k')) :
+    intervalAdj m s' k' = some (s, k) := by
   obtain (⟨hk, hs', hk', hlt⟩ | ⟨hk, hs', hk', hpos⟩) :=
-    iadj_cases hadj
-  · -- k.val=0, s'=s+1, k'.val=1: need iadj m s' k' = some (s, k)
-    -- i.e. iadj m ⟨s.val+1,_⟩ ⟨1,_⟩ = some (s, ⟨0,_⟩)
+    intervalAdj_cases hadj
+  · -- k.val=0, s'=s+1, k'.val=1: need intervalAdj m s' k' = some (s, k)
+    -- i.e. intervalAdj m ⟨s.val+1,_⟩ ⟨1,_⟩ = some (s, ⟨0,_⟩)
     -- which reduces to: 0 < s'.val → some (⟨s'.val-1,_⟩, ⟨0,_⟩)
-    show iadj m s' k' = some (s, k)
-    unfold iadj
+    show intervalAdj m s' k' = some (s, k)
+    unfold intervalAdj
     have : ¬(k'.val = 0) := by omega
     rw [dif_neg this]
     have : (0 : ℕ) < s'.val := by omega
     rw [dif_pos this]
     simp only [Option.some.injEq, Prod.mk.injEq]
     exact ⟨Fin.ext (by simp; omega), Fin.ext (by simp; omega)⟩
-  · -- k.val≠0, s'=s-1, k'.val=0: need iadj m s' k' = some (s, k)
-    show iadj m s' k' = some (s, k)
-    unfold iadj
+  · -- k.val≠0, s'=s-1, k'.val=0: need intervalAdj m s' k' = some (s, k)
+    show intervalAdj m s' k' = some (s, k)
+    unfold intervalAdj
     have : k'.val = 0 := by omega
     rw [dif_pos this]
     have : s'.val + 1 < m := by omega
@@ -913,21 +906,21 @@ lemma iadj_symm' {s s' : Fin m}
     simp only [Option.some.injEq, Prod.mk.injEq]
     exact ⟨Fin.ext (by simp; omega), Fin.ext (by simp; omega)⟩
 
-lemma iadj_ne' {s s' : Fin m}
+lemma intervalAdj_ne {s s' : Fin m}
     {k k' : Fin 2}
-    (hadj : iadj m s k = some (s', k')) :
+    (hadj : intervalAdj m s k = some (s', k')) :
     s ≠ s' := by
-  obtain (⟨_, hs', _, _⟩ | ⟨_, hs', _, _⟩) := iadj_cases hadj
+  obtain (⟨_, hs', _, _⟩ | ⟨_, hs', _, _⟩) := intervalAdj_cases hadj
   · intro heq; have := congr_arg Fin.val heq; omega
   · intro heq; have := congr_arg Fin.val heq; omega
 
-lemma iadj_vertex' {s s' : Fin m}
+lemma intervalAdj_vertex {s s' : Fin m}
     {k k' : Fin 2}
-    (hadj : iadj m s k = some (s', k')) :
-    (univ.erase k).image (ivtx s) =
-    (univ.erase k').image (ivtx s') := by
+    (hadj : intervalAdj m s k = some (s', k')) :
+    (univ.erase k).image (intervalVertex s) =
+    (univ.erase k').image (intervalVertex s') := by
   obtain (⟨hk, hs', hk', _⟩ | ⟨hk, hs', hk', _⟩) :=
-    iadj_cases hadj
+    intervalAdj_cases hadj
   · -- k.val=0, s'=s+1, k'.val=1
     have hkeq : k = ⟨0, by omega⟩ := Fin.ext hk
     have hk'eq : k' = ⟨1, by omega⟩ := Fin.ext hk'
@@ -941,7 +934,7 @@ lemma iadj_vertex' {s s' : Fin m}
       refine ⟨⟨0, by omega⟩,
         mem_erase.mpr ⟨by omega, mem_univ _⟩, ?_⟩
       rw [show a = ⟨1, by omega⟩ from Fin.ext ha1] at ha_eq
-      simp [ivtx] at ha_eq ⊢; omega
+      simp [intervalVertex] at ha_eq ⊢; omega
     · intro hv
       rw [mem_image] at hv ⊢
       obtain ⟨a, ha_mem, ha_eq⟩ := hv
@@ -950,7 +943,7 @@ lemma iadj_vertex' {s s' : Fin m}
       refine ⟨⟨1, by omega⟩,
         mem_erase.mpr ⟨by omega, mem_univ _⟩, ?_⟩
       rw [show a = ⟨0, by omega⟩ from Fin.ext ha0] at ha_eq
-      simp [ivtx] at ha_eq ⊢; omega
+      simp [intervalVertex] at ha_eq ⊢; omega
   · -- k.val≠0 (so k.val=1), s'=s-1, k'.val=0
     have hk1 : k.val = 1 := by have := k.isLt; omega
     have hkeq : k = ⟨1, by omega⟩ := Fin.ext hk1
@@ -965,7 +958,7 @@ lemma iadj_vertex' {s s' : Fin m}
       refine ⟨⟨1, by omega⟩,
         mem_erase.mpr ⟨by omega, mem_univ _⟩, ?_⟩
       rw [show a = ⟨0, by omega⟩ from Fin.ext ha0] at ha_eq
-      simp [ivtx] at ha_eq ⊢; omega
+      simp [intervalVertex] at ha_eq ⊢; omega
     · intro hv
       rw [mem_image] at hv ⊢
       obtain ⟨a, ha_mem, ha_eq⟩ := hv
@@ -974,7 +967,7 @@ lemma iadj_vertex' {s s' : Fin m}
       refine ⟨⟨0, by omega⟩,
         mem_erase.mpr ⟨by omega, mem_univ _⟩, ?_⟩
       rw [show a = ⟨1, by omega⟩ from Fin.ext ha1] at ha_eq
-      simp [ivtx] at ha_eq ⊢; omega
+      simp [intervalVertex] at ha_eq ⊢; omega
 
 /-- A subdivision of [0,m] into m unit intervals, as a
 `Triangulation Nat 1`. All axioms fully proved. -/
@@ -983,15 +976,15 @@ def intervalTriangulation (m : ℕ) :
   Cell := Fin m
   cellDecEq := inferInstance
   cellFintype := inferInstance
-  vertex := ivtx
+  vertex := intervalVertex
   vertex_injective := by
     intro i a b hab
-    simp only [ivtx] at hab
+    simp only [intervalVertex] at hab
     fin_cases a <;> fin_cases b <;> simp_all
-  adj := iadj m
-  adj_symm := fun s k s' k' hadj => iadj_symm' hadj
-  adj_vertex := fun s k s' k' hadj => iadj_vertex' hadj
-  adj_ne := fun s k s' k' hadj => iadj_ne' hadj
+  adj := intervalAdj m
+  adj_symm := fun s k s' k' hadj => intervalAdj_symm hadj
+  adj_vertex := fun s k s' k' hadj => intervalAdj_vertex hadj
+  adj_ne := fun s k s' k' hadj => intervalAdj_ne hadj
 
 end Interval
 

@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2026 RJ Walters. All rights reserved.
+Copyright (c) 2026 Robb Walters. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robb Walters
 -/
@@ -59,7 +59,7 @@ open Finset
 
 /-- A fixed-point-free involution on a finset has even
 cardinality: every element pairs with its distinct image. -/
-theorem Finset.even_card_of_fpf_invol {α : Type*}
+theorem Finset.even_card_of_fixedPointFree_involution {α : Type*}
     (S : Finset α) (f : α → α)
     (hInv : ∀ x ∈ S, f (f x) = x)
     (hMem : ∀ x ∈ S, f x ∈ S)
@@ -518,7 +518,7 @@ theorem even_card_interiorDoors
   set S := univ.filter
     (fun p : K.Cell × Fin (d + 1) =>
       IsDoor c K p.1 p.2 ∧ K.adj p.1 p.2 ≠ none)
-  apply Finset.even_card_of_fpf_invol S (adjMap K)
+  apply Finset.even_card_of_fixedPointFree_involution S (adjMap K)
   · intro p hp
     simp only [S, mem_filter, mem_univ,
       true_and] at hp
