@@ -321,7 +321,6 @@ theorem foldMap_map [Monoid γ] (f : α → β) (g : β → γ) (xs : t α) :
     foldMap g (f <$> xs) = foldMap (g ∘ f) xs := by
   simp only [foldMap, traverse_map, Function.comp_def]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem foldl_toList (f : α → β → α) (xs : t β) (x : α) :
     foldl f x xs = List.foldl f x (toList xs) := by
   rw [← FreeMonoid.toList_ofList (toList xs), ← foldl.unop_ofFreeMonoid]

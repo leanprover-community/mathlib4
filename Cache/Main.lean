@@ -52,10 +52,13 @@ Options:
 Valid arguments are:
 
 * Module names like 'Mathlib.Init'
+* Module globs like 'Mathlib.Data.+' (find all Lean files inside `Mathlib/Data/`)
+* Module globs like 'Mathlib.Data.*' (both of the above)
 * File names like 'Mathlib/Init.lean'
 * Folder names like 'Mathlib/Data/' (find all Lean files inside `Mathlib/Data/`)
 * With bash's automatic glob expansion one can also write things like
-  'Mathlib/**/Order/*.lean'.
+  'Mathlib/**/Order/*.lean'. However, one would need to write `Mathlib.Data.\\*`
+  to prevent glob expansion.
 
 # Environment variables
 
