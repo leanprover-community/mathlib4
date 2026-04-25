@@ -251,7 +251,7 @@ def _root_.Order.PFilter.dual (F : PFilter P) : Ideal Pᵒᵈ :=
   ⟨⟨F.carrier, F.upper⟩, F.nonempty', F.directed'⟩
 
 set_option linter.deprecated false in
-@[deprecated "`PFilter` was defined as a stucture of `toDual : Ideal P`" (since := "2026-04-23")]
+@[deprecated "`PFilter` was defined as a stucture of `dual : Ideal Pᵒᵈ`" (since := "2026-04-23")]
 theorem _root_.Order.PFilter.mem_mk (x : P) (I : Ideal Pᵒᵈ) :
     x ∈ (PFilter.mk' I : PFilter P) ↔ OrderDual.toDual x ∈ I := Iff.rfl
 
@@ -332,7 +332,7 @@ theorem IsProper.ne_top (_ : IsProper I) : I ≠ ⊤ :=
 theorem isProper_of_isCoatom (hI : IsCoatom I) : IsProper I :=
   isProper_of_ne_top hI.1
 
-@[deprecated isProper_of_isCoatom (since := "2026-02-04")]
+@[deprecated isProper_of_isCoatom (since := "2026-04-25")]
 theorem _root_.IsCoatom.isProper (hI : IsCoatom I) : IsProper I :=
   isProper_of_ne_top hI.1
 
@@ -352,7 +352,7 @@ theorem IsMaximal.isCoatom' [IsMaximal I] : IsCoatom I :=
 theorem isMaximal_of_isCoatom (hI : IsCoatom I) : IsMaximal I :=
   { isProper_of_isCoatom hI with maximal_proper := fun _ hJ ↦ by simp [hI.2 _ hJ] }
 
-@[deprecated isMaximal_of_isCoatom (since := "2026-02-04")]
+@[deprecated isMaximal_of_isCoatom (since := "2026-04-25")]
 theorem _root_.IsCoatom.isMaximal (hI : IsCoatom I) : IsMaximal I :=
   isMaximal_of_isCoatom hI
 
