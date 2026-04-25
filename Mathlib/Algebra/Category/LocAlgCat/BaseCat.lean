@@ -126,9 +126,8 @@ class IsSmallExtension (f : A ⟶ B) : Prop where
   le_annihilator_ker (f) : maximalIdeal A ≤ (RingHom.ker f.hom.toAlgHom).annihilator
 
 variable (f) in
-theorem isSmallExtenstion_iff : IsSmallExtension f ↔ Function.Surjective f.hom.toAlgHom ∧
-    ∃ x : A, Ideal.span {x} = RingHom.ker f.hom.toAlgHom ∧
-      ∀ y ∈ maximalIdeal A, x * y = 0 := by
+theorem isSmallExtenstion_iff : IsSmallExtension f ↔ Surjective f.hom.toAlgHom ∧
+    ∃ x : A, Ideal.span {x} = RingHom.ker f.hom.toAlgHom ∧ ∀ y ∈ maximalIdeal A, x * y = 0 := by
   refine ⟨fun ⟨_, ⟨x, hx⟩, h⟩ ↦ ⟨IsSmallExtension.surjective f, x, ?_, fun y y_in ↦ ?_⟩,
     fun ⟨h, x, x_span, hx⟩ ↦ ⟨h, ⟨x, ?_⟩, ?_⟩⟩
   · simp [hx]
@@ -193,21 +192,19 @@ theorem induction_on_isSmallExtension (hf : Surjective f.hom.toAlgHom)
       exact ⟨maximalIdeal A, maximalIdeal.isMaximal A, le_maximalIdeal
         (RingHom.ker_ne_top f.hom.toAlgHom)⟩
     have : IsLocalRing (A ⧸ Ideal.span {x}) := .of_surjective' _ Ideal.Quotient.mk_surjective
-    have aux : ∀ a ∈ Ideal.span {x}, (LocAlgCat.Hom.toAlgHom f.hom) a = 0 := by
-      intro _ h; rw [Ideal.mem_span_singleton'] at h
-      rcases h with ⟨_, rfl⟩; rw [← RingHom.mem_ker]
-      exact Ideal.mul_mem_left _ _ x_in
     let C := A.ofQuot (Ideal.span {x})
     let g : A ⟶ C := A.toOfQuot (Ideal.span {x})
     have hg : IsSmallExtension g := IsSmallExtension.toOfQuot_span_singleton A x hx
-    let f' : C ⟶ B := ObjectProperty.homMk (LocAlgCat.liftToOfQuot (Ideal.span {x}) f.hom aux)
+    let f' : C ⟶ B := ObjectProperty.homMk (LocAlgCat.liftToOfQuot (Ideal.span {x}) f.hom
+      (by simpa [← RingHom.mem_ker, ← SetLike.le_def]))
     have g_comp : g ≫ f' = f := by ext; simpa using LocAlgCat.toOfQuot_comp_liftToOfQuot ..
     obtain ⟨m, hm⟩ : ∃ n : ℕ, n = Module.length C C :=
       ENat.ne_top_iff_exists.mp Module.length_ne_top
     suffices h : m < n by
       simp_rw [← g_comp]; apply comp
       · apply ih m h; exact hm
-      · exact Ideal.Quotient.lift_surjective_of_surjective (Ideal.span {x}) aux hf
+      · exact Ideal.Quotient.lift_surjective_of_surjective (Ideal.span {x})
+          (by simpa [← RingHom.mem_ker, ← SetLike.le_def]) hf
     have := Submodule.length_le_length_restrictScalars (R := (A ⧸ Ideal.span {x}))
       (M := (A ⧸ Ideal.span {x})) A ⊤
     rw [Module.length_top, restrictScalars_top, Module.length_top] at this
@@ -293,8 +290,7 @@ instance pullbackFst_isSmallExtension (f : A ⟶ C) (g : B ⟶ C) [IsSmallExtens
     suffices u = 0 → ∃ x_1 x_2, f.hom.toAlgHom x_1 = g.hom.toAlgHom x_2 ∧ v = x_2 * x by
       simpa [Ideal.mem_span_singleton', eq_comm, and_left_comm]
     intro u_eq
-    simp only [u_eq, AlgHom.mem_equalizer, AlgHom.coe_comp, Function.comp_apply,
-      AlgHom.fst_apply, map_zero, AlgHom.snd_apply] at h
+    replace h : 0 = g.hom.toAlgHom v := by simpa [u_eq] using h
     rw [eq_comm, ← RingHom.mem_ker, ← x_span, Ideal.mem_span_singleton'] at h
     rcases h with ⟨w, hw⟩
     rcases LocAlgCat.exists_mem_maximalIdeal_toAlgHom_apply_add_eq g.hom f.hom
@@ -327,13 +323,10 @@ theorem isEssSurj_iff_isEssSurj_mapOfQuot (f : A ⟶ B) {I : Ideal A} {J : Ideal
     [Nontrivial (A ⧸ I)] [Nontrivial (B ⧸ J)] (hI : I ≤ maximalIdeal A ^ 2)
     (hJ : J ≤ maximalIdeal B ^ 2) (hf : I ≤ J.comap f.hom.toAlgHom) :
     IsEssSurj f ↔ IsEssSurj (mapOfQuot f hf) := by
-  refine ⟨fun h ↦ ⟨?_, ?_⟩, fun h ↦ ⟨?_, ?_⟩⟩
-  · apply Surjective.of_comp (g := (A.toOfQuot I).hom.toAlgHom)
-    simp only [ObjectProperty.homMk_hom, ← AlgHom.coe_comp, ← LocAlgCat.toAlgHom_comp]
-    simp only [ofQuot, LocAlgCat.toOfQuot_comp_mapOfQuot, LocAlgCat.toAlgHom_comp]
-    exact fun r ↦ Surjective.comp (B.obj.surjective_toAlgHom_toOfQuot (I := J)) h.surjective r
-  · intro C g hg
-    let C' := ofPullback g (A.toOfQuot I) Ideal.Quotient.mk_surjective
+  refine ⟨fun h ↦ ⟨?_, fun {C} g hg ↦ ?_⟩, fun h ↦ ⟨?_, fun {C} g hg ↦ ?_⟩⟩
+  · exact Surjective.of_comp (g := (A.toOfQuot I).hom.toAlgHom) fun r ↦
+      Surjective.comp (B.obj.surjective_toAlgHom_toOfQuot (I := J)) h.surjective r
+  · let C' := ofPullback g (A.toOfQuot I) Ideal.Quotient.mk_surjective
     let p : C' ⟶ C := pullbackFst g (A.toOfQuot I) Ideal.Quotient.mk_surjective
     apply Surjective.of_comp (g := p.hom.toAlgHom)
     rw [← AlgHom.coe_comp, ← LocAlgCat.toAlgHom_comp, ← ObjectProperty.FullSubcategory.comp_hom,
@@ -354,8 +347,7 @@ theorem isEssSurj_iff_isEssSurj_mapOfQuot (f : A ⟶ B) {I : Ideal A} {J : Ideal
       exact Surjective.comp (LocAlgCat.surjective_mapCotangent_of_surjective h.surjective)
         <| LocAlgCat.surjective_mapCotangent_of_surjective Ideal.Quotient.mk_surjective
     · exact ((LocAlgCat.bijective_mapCotangent_toOfQuot_iff J).mpr hJ).injective
-  · intro C g hg
-    apply isEssSurj_toOfQuot_of_le at hI
+  · apply isEssSurj_toOfQuot_of_le at hI
     apply IsEssSurj.surjective_of_comp_left (A.toOfQuot I ≫ (mapOfQuot f hf))
     rw [toOfQuot_comp_mapOfQuot, Category.assoc', ObjectProperty.FullSubcategory.comp_hom,
       LocAlgCat.toAlgHom_comp, AlgHom.coe_comp]
