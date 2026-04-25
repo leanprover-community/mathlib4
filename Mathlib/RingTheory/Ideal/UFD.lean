@@ -56,31 +56,27 @@ theorem Ideal.isPrincipal_of_isPrincipal_isLocalization_away_of_prime
     [WfDvdMonoid R] {x : R} (hx : Prime x) {p : Ideal R} [p.IsPrime] (hxp : x ∉ p)
     (S : Type*) [CommRing S] [Algebra R S] [IsLocalization.Away x S]
     (hp : (map (algebraMap R S) p).IsPrincipal) : p.IsPrincipal := by
-  let M : Submonoid R := Submonoid.powers x
-  have hM : M ≤ nonZeroDivisors R := powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero
   have hd : Disjoint (Submonoid.powers x : Set R) p := by
     rwa [← Ideal.disjoint_powers_iff_notMem_of_isPrime x] at hxp
-  have : IsDomain S := IsLocalization.Away.isDomain S hx.ne_zero
   by_cases hpbot : p = ⊥
-  · simpa [hpbot] using bot_isPrincipal
-  · have hpb : map (algebraMap R S) p ≠ ⊥ := by
-      simpa [Ideal.map_eq_bot_iff_of_injective (IsLocalization.injective S hM)] using hpbot
+  · simp [hpbot, bot_isPrincipal]
+  · have hi := IsLocalization.injective S (powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero)
+    have hpb : map (algebraMap R S) p ≠ ⊥ := by simp [Ideal.map_eq_bot_iff_of_injective hi, hpbot]
     obtain ⟨g, hg⟩ := hp
-    have hg0 : g ≠ 0 := fun hg0 ↦ hpb <| by simpa [hg0] using hg
+    have hg0 : g ≠ 0 := fun hg0 ↦ hpb <| by simp [hg0, hg]
     obtain ⟨a, n, hxa, hag⟩ := exists_reduced_fraction' x S hg0 hx.irreducible
     have hu : IsUnit (selfZPow x S n) :=
-      IsUnit.of_mul_eq_one (selfZPow x _ (- n)) (selfZPow_mul_neg x _ n)
+      IsUnit.of_mul_eq_one (selfZPow x S (- n)) (selfZPow_mul_neg x S n)
     have : algebraMap R S a ∈ map (algebraMap R S) p := by
       rw [← Ideal.unit_mul_mem_iff_mem (map (algebraMap R S) p) hu, hag, hg]
       exact Ideal.mem_span_singleton_self g
-    have haeq : map (algebraMap R S) p = map (algebraMap R _) (span {a}) := by
-      simpa [hg, map_span, hag] using span_singleton_mul_left_unit hu (algebraMap R _ a)
+    have haeq : map (algebraMap R S) p = map (algebraMap R S) (span {a}) := by
+      simpa [hg, map_span, hag] using span_singleton_mul_left_unit hu (algebraMap R S a)
     refine ⟨a, le_antisymm (fun z hz ↦ ?_) (p.span_singleton_le_iff_mem.2 <| by
-      rwa [← IsLocalization.comap_map_of_isPrime_disjoint M S ‹_› hd])⟩
+      rwa [← IsLocalization.comap_map_of_isPrime_disjoint (Submonoid.powers x) S ‹_› hd])⟩
     have hzmap := mem_map_of_mem (algebraMap R S) hz
-    rw [haeq, IsLocalization.algebraMap_mem_map_algebraMap_iff M] at hzmap
-    rcases hzmap with ⟨s, hs, hsz⟩
-    rcases (Submonoid.mem_powers_iff s x).1 hs with ⟨n, rfl⟩
+    rw [haeq, IsLocalization.algebraMap_mem_map_algebraMap_iff (Submonoid.powers x)] at hzmap
+    rcases hzmap with ⟨s, ⟨n, rfl⟩, hsz⟩
     rcases mem_span_singleton.mp hsz with ⟨a, ha⟩
     rcases hx.pow_dvd_of_dvd_mul_right n hxa ⟨z, by rw [mul_comm, ← ha]⟩ with ⟨b, hb⟩
     exact mem_span_singleton.2 ⟨b, mul_left_cancel₀ (pow_ne_zero n hx.ne_zero) <| by
@@ -94,21 +90,20 @@ theorem Ideal.isPrincipal_of_isPrincipal_localization_away_of_prime
 theorem ufd_iff_ufd_isLocalization_away_of_prime [IsNoetherianRing R] {x : R} (hx : Prime x)
     (S : Type*) [CommRing S] [Algebra R S] [IsLocalization.Away x S] :
     UniqueFactorizationMonoid R ↔ UniqueFactorizationMonoid S := by
-  let M : Submonoid R := Submonoid.powers x
   have : IsDomain S := IsLocalization.Away.isDomain S hx.ne_zero
-  have hM : M ≤ nonZeroDivisors R := powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero
-  refine ⟨fun _ ↦ isLocalization_ufd hM S, fun _ ↦ ?_⟩
+  refine ⟨fun _ ↦ isLocalization_ufd (powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero) S, ?_⟩
+  intro
   have : IsNoetherianRing S := IsLocalization.isNoetherianRing (Submonoid.powers x) S inferInstance
   rw [ufd_iff_height_one_primes_principal]
   intro p hp h1
   by_cases hxp : x ∈ p
   · exact ⟨x, p.eq_span_singleton_of_height_eq_one h1 hxp hx⟩
   · have hd := by rwa [← Ideal.disjoint_powers_iff_notMem_of_isPrime x] at hxp
-    have := IsLocalization.isPrime_of_isPrime_disjoint M S p hp hd
+    have := IsLocalization.isPrime_of_isPrime_disjoint (Submonoid.powers x) S p hp hd
     exact p.isPrincipal_of_isPrincipal_isLocalization_away_of_prime hx hxp S <|
-      ufd_iff_height_one_primes_principal.1 ‹_› _ <| by
-        rw [← IsLocalization.height_comap M (Ideal.map (algebraMap R S) p)]
-        simp_rw [IsLocalization.comap_map_of_isPrime_disjoint M S hp hd, h1]
+      (Ideal.map (algebraMap R S) p).height_one_primes_principal_of_ufd <| by
+        rw [← IsLocalization.height_comap (Submonoid.powers x),
+          IsLocalization.comap_map_of_isPrime_disjoint (Submonoid.powers x) S hp hd, h1]
 
 /-- Let `R` be a Noetherian domain, `x ∈ R` be a prime element. Then `R` is a UFD if and only if
   `Rₓ` is a UFD. -/
