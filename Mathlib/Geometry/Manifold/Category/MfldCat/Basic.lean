@@ -187,18 +187,6 @@ def Hom.equivContMDiffMap (M N : MfldCat 𝕜 n) :
   toFun f := f.hom
   invFun f := ofHom f
 
-/-- Replace a function coercion for a morphism `MfldCat.of X E H I ⟶ MfldCat.of Y E' H' I'` with
-the definitionally equal function coercion for a `ContMDiffMap I I' X Y n`. -/
-@[simp] theorem coe_of_of {f : ContMDiffMap I I' X Y n} {x} :
-    @DFunLike.coe (of (n := n) X E H I ⟶ of (n := n) Y E' H' I')
-      ((CategoryTheory.forget (MfldCat 𝕜 n)).obj (of (n := n) X E H I))
-      (fun _ ↦ (CategoryTheory.forget (MfldCat 𝕜 n)).obj (of (n := n) Y E' H' I'))
-      ConcreteCategory.instFunLike
-      (ofHom f) x =
-    @DFunLike.coe (ContMDiffMap I I' X Y n) X
-      (fun _ ↦ Y) _
-      f x :=
-  rfl
 
 instance inhabited : Inhabited (MfldCat 𝕜 n) :=
   ⟨of 𝕜 𝕜 𝕜 (modelWithCornersSelf 𝕜 𝕜)⟩
