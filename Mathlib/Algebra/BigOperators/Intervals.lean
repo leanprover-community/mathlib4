@@ -241,25 +241,6 @@ theorem prod_Icc_div (hmn : m ≤ n) (f : ℕ → M) :
 end Group
 
 end Nat
-
-section TelescopingSum
-
-variable {R : Type*} [Ring R]
-
-/-- If `w` alternates sign under a shift by `c` (i.e., `w (k + c) = -w k`), then the shifted
-pair of sums over adjacent `Ico` intervals cancels. -/
-theorem sum_Ico_add_sum_Ico_shift_neg_cancel
-    [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
-    [ExistsAddOfLE α] [LocallyFiniteOrder α]
-    (w f : α → R) (a b c : α)
-    (hw : ∀ k, w (k + c) = -w k) :
-    ∑ k ∈ Ico (a + c) (b + c), w k * f k +
-    ∑ k ∈ Ico a b, w k * f (k + c) = 0 := by
-  rw [← sum_Ico_add' (fun x => w x * f x) a b c]
-  simp_rw [hw, neg_mul, sum_neg_distrib, neg_add_cancel]
-
-end TelescopingSum
-
 end Finset
 
 section Fin

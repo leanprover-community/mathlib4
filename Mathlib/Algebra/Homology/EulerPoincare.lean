@@ -11,6 +11,7 @@ public import Mathlib.LinearAlgebra.Dimension.RankNullity
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.Data.Int.Interval
 public import Mathlib.Data.Int.SuccPred
+public import Mathlib.Algebra.BigOperators.Periodic
 public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 
@@ -256,7 +257,8 @@ theorem eulerChar_eq_homologyEulerChar
           ↑(Module.finrank k ↥(LinearMap.range (C.dFrom (x + 1)).hom))
     from Finset.sum_congr rfl fun x _ => by
       rw [dFrom_succ_range_finrank_eq_dTo C x]]
-  exact Finset.sum_Ico_add_sum_Ico_shift_neg_cancel _ _ a b 1
-    (fun j => by simp [← Int.coe_negOnePow, Int.negOnePow_succ])
+  have hw : Function.Antiperiodic (fun j : ℤ => (-1 : ℤ) ^ j.natAbs) 1 :=
+    fun j => by simp [← Int.coe_negOnePow, Int.negOnePow_succ]
+  exact hw.sum_Ico_mul_add_sum_Ico_mul_shift_eq_zero _ a b
 
 end ChainComplex
