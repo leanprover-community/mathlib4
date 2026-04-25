@@ -19,7 +19,7 @@ an `X`-generated space is `X`-generated.
 
 -/
 
-@[expose] public section
+public section
 
 open Topology
 
