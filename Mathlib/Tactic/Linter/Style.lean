@@ -463,7 +463,7 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
       else return stx
     let sstr := stx.getSubstring?
     let fm ← getFileMap
-    let maxLineLength : Nat := linter.style.longLine.maxLineLength.get (← getOptions)
+    let maxLineLength := linter.style.longLine.maxLineLength.get (← getOptions)
     let longLines := ((sstr.getD default).splitOn "\n").filter fun line ↦
       (maxLineLength < (fm.toPosition line.stopPos).column)
     for line in longLines do
