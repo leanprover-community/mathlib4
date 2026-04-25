@@ -604,7 +604,7 @@ def dischargeSide (mvarId : MVarId) : GCongrM Unit := do
   catch _ => setMCtx mctx; pushNewGoal mvarId
 
 def applyGCongrLemma (g : MVarId) (lem : GCongr.GCongrLemma) :
-    GCongrM (Array (MVarId × Bool) × Array MVarId) := do
+    GCongrM (Array (MVarId × Bool × Bool) × Array MVarId) := do
   let const ← mkConstWithFreshMVarLevels lem.declName
   let type ← inferType const
   -- we use `withDefault` so that we can unfold `Monotone`
@@ -623,9 +623,10 @@ def applyGCongrLemma (g : MVarId) (lem : GCongr.GCongrLemma) :
       let lambdaNames := if lhsNames.size ≥ rhsNames.size then lhsNames else rhsNames
       let names := h.hypsPos.map fun | some n => lambdaNames.getD n `_ | none => `_
       let mvarId := (← mvars[h.hypIdx]!.mvarId!.introN h.hypsPos.length names).2
-      return #[(mvarId, h.isContra)]
+      return #[(mvarId, h.isContra, names.isEmpty)]
     else
-      return (← introN mvars[h.hypIdx]!.mvarId! h.hypsPos.length).map (·, h.isContra)
+      return (← introN mvars[h.hypIdx]!.mvarId! h.hypsPos.length).map
+        (·, h.isContra, h.hypsPos.isEmpty)
   return (mainGoals, sideGoals)
 where
   lambdaBinderNames (e : Expr) (acc : Array Name := #[]) : Array Name :=
@@ -704,7 +705,7 @@ partial def _root_.Lean.MVarId.gcongr
           guard <| ← isDefEq (.mvar mvarId) inst
         else
           dischargeSide mvarId
-      for (mvarId, isContra) in mainGoals do
+      for (mvarId, isContra, _) in mainGoals do
         -- Recurse: call ourself (`Lean.MVarId.gcongr`) on the subgoal
         let mdataLhs?' := mdataLhs?.map (· != isContra)
         discard <| mvarId.gcongr mdataLhs?' depth

@@ -51,6 +51,8 @@ example (h₁ : a + e ≤ b + e) (h₂ : b < c) (h₃ : c ≤ d) : a + e ≤ d +
 
 example (f g : α → α) (h : ∀ x : α, f x ≤ g x) (h₂ : g a + g b ≤ 5) : f a + f b ≤ 5 := by
   grw [h]
+  guard_target =ₛ g a + f b ≤ 5
+  grw [h]
   guard_target =ₛ g a + g b ≤ 5
   grw [h₂]
 
@@ -371,5 +373,13 @@ section binders
 lemma biSup_inf_le {α β : Type*} [CompleteLattice β] (f : α → β) (s : Set α) (b : β) :
     ⨆ a ∈ s, (f a ⊓ b) ≤ (⨆ a ∈ s, f a) ⊓ b := by
   grw [iSup_inf_le_iSup_inf, iSup_inf_le_iSup_inf]
+
+example (n m : Nat) : ∅ ∪ { a : Int | a - 1 > 5 } ⊆ { b : Int | b - 1 < 5 } := by
+  grw [sub_one_lt, sub_one_lt]
+  exact test_sorry
+
+example (n m : Nat) : ∅ ∪ { a : Int | a - 1 ≥ 5 } ⊆ Set.univ := by
+  grw [sub_le_self _ (by positivity)]
+  exact test_sorry
 
 end binders

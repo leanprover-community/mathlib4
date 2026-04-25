@@ -28,53 +28,51 @@ namespace Mathlib.Tactic.GRewrite
 
 open Lean Meta Elab Parser Tactic
 
+def elabGRewrite (mvarId : MVarId) (e : Expr) (stx : Syntax) (forwardImp symm : Bool)
+    (config : GRewrite.Config) : TacticM GRewriteResult := do
+  let mvarCounterSaved := (← getMCtx).mvarCounter
+  let thm ← elabTerm stx none true
+  if thm.hasSyntheticSorry then
+    throwAbortTactic
+  let mvarIds ← getMVars thm
+  if mvarIds.contains mvarId then
+    throwErrorAt stx
+      "Occurs check failed: Expression{indentExpr thm}\ncontains the goal {Expr.mvar mvarId}"
+  let mctx ← getMCtx
+  let mvarIds := mvarIds.filter fun mvarId ↦ mvarCounterSaved ≤ (mctx.getDecl mvarId).index
+  let r ← mvarId.grewrite e thm mvarIds (forwardImp := forwardImp) (symm := symm) (config := config)
+  let mctx ← getMCtx
+  let mvarIds := r.mvarIds.filter fun mvarId => mvarCounterSaved ≤ (mctx.getDecl mvarId).index
+  return { r with mvarIds }
+
+def finishElabGRewrite (r : GRewriteResult) : MetaM GRewriteResult := do
+  let mvarIds ← r.mvarIds.filterM (not <$> ·.isAssigned)
+  mvarIds.forM fun newMVarId => newMVarId.withContext do
+    if ← Meta.isProp (← newMVarId.getType) then
+      newMVarId.setKind .syntheticOpaque
+  return { r with mvarIds }
+
 /-- Apply the `grewrite` tactic to the current goal. -/
-def grewriteTarget' (stx : Syntax) (symm : Bool) (config : GRewrite.Config) : TacticM Unit := do
+def grewriteTarget (stx : Syntax) (symm : Bool) (config : GRewrite.Config) : TacticM Unit := do
   let goal ← getMainGoal
-  Term.withSynthesize <| goal.withContext do
-    let e ← elabTerm stx none true
-    if e.hasSyntheticSorry then
-      throwAbortTactic
-    let goal ← getMainGoal
-    let target ← goal.getType
-    let r ← goal.grewrite' target e (forwardImp := false) (symm := symm) (config := config)
-    let mvarNew ← mkFreshExprSyntheticOpaqueMVar r.eNew (← goal.getTag)
-    goal.assign (mkApp r.impProof mvarNew)
-    replaceMainGoal (mvarNew.mvarId! :: r.mvarIds)
+  let r ← Term.withSynthesize <| withMainContext do
+    elabGRewrite goal (← getMainTarget) stx symm (forwardImp := false) (config := config)
+  let r ← finishElabGRewrite r
+  let mvarNew ← mkFreshExprSyntheticOpaqueMVar r.eNew (← goal.getTag)
+  goal.assign (mkApp r.impProof mvarNew)
+  replaceMainGoal (mvarNew.mvarId! :: r.mvarIds)
 
 /-- Apply the `grewrite` tactic to a local hypothesis. -/
-def grewriteLocalDecl' (stx : Syntax) (symm : Bool) (fvarId : FVarId) (config : GRewrite.Config) :
+def grewriteLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId) (config : GRewrite.Config) :
     TacticM Unit := withMainContext do
   -- Note: we cannot execute `replace` inside `Term.withSynthesize`.
   -- See issues https://github.com/leanprover-community/mathlib4/issues/2711 and https://github.com/leanprover-community/mathlib4/issues/2727.
   let goal ← getMainGoal
   let r ← Term.withSynthesize <| withMainContext do
-    let e ← elabTerm stx none true
-    if e.hasSyntheticSorry then
-      throwAbortTactic
     let localDecl ← fvarId.getDecl
-    goal.grewrite' localDecl.type e (forwardImp := true) (symm := symm) (config := config)
-  let proof := .app (r.impProof) (.fvar fvarId)
-  let { mvarId, .. } ← goal.replace fvarId proof r.eNew
-  replaceMainGoal (mvarId :: r.mvarIds)
-
-/-- Apply the `grewrite` tactic to the current goal. -/
-def grewriteTarget (stx : Syntax) (symm : Bool) (config : Config) : TacticM Unit := do
-  let goal ← getMainGoal
-  goal.withContext do
-    let target ← goal.getType
-    let r ← elabGRewrite goal target stx (forwardImp := false) (symm := symm) (config := config)
-    let mvarNew ← mkFreshExprSyntheticOpaqueMVar r.eNew (← goal.getTag)
-    goal.assign (mkApp r.impProof mvarNew)
-    replaceMainGoal (mvarNew.mvarId! :: r.mvarIds)
-
-/-- Apply the `grewrite` tactic to a local hypothesis. -/
-def grewriteLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId) (config : Config) :
-    TacticM Unit := withMainContext do
-  let goal ← getMainGoal
-  let type ← fvarId.getType
-  let r ← elabGRewrite goal type stx (forwardImp := true) (symm := symm) (config := config)
-  let proof := .app (r.impProof) (.fvar fvarId)
+    elabGRewrite (← getMainGoal) localDecl.type stx symm (forwardImp := true) (config := config)
+  let r ← finishElabGRewrite r
+  let proof := r.impProof.app (.fvar fvarId)
   let { mvarId, .. } ← goal.replace fvarId proof r.eNew
   replaceMainGoal (mvarId :: r.mvarIds)
 
@@ -133,11 +131,12 @@ syntax (name := grewriteSeq') "grewrite'" optConfig rwRuleSeq (location)? : tact
 @[tactic grewriteSeq', inherit_doc grewriteSeq]
 public def evalGRewriteSeq' : Tactic := fun stx => do
   let cfg ← elabGRewriteConfig stx[1]
+  let cfg := { cfg with useKAbstract := true}
   let loc := expandOptLocation stx[3]
   withRWRulesSeq stx[0] stx[2] fun symm term => do
     withLocation loc
-      (grewriteLocalDecl' term symm · cfg)
-      (grewriteTarget' term symm cfg)
+      (grewriteLocalDecl term symm · cfg)
+      (grewriteTarget term symm cfg)
       (throwTacticEx `grewrite · "did not find instance of the pattern in the current goal")
 
 /--

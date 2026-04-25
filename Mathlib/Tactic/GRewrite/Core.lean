@@ -6,7 +6,7 @@ Authors: Sebastian Zimmer, Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
 module
 
 public meta import Lean.Meta.Tactic.Rewrite
-public import Mathlib.Tactic.GCongr.Core
+public import Mathlib.Tactic.GRewrite.SinglePass
 
 /-!
 
@@ -31,11 +31,11 @@ public meta section
 
 open Lean Meta
 
-namespace Mathlib.Tactic
+namespace Mathlib.Tactic.GRewrite
 
 /-- Given a proof of `a ~ b`, close a goal of the form `a ~' b` or `b ~' a`
 for some possibly different relation `~'`. -/
-def GRewrite.dischargeMain (hrel : Expr) (goal : MVarId) : MetaM Bool := do
+def dischargeMain (hrel : Expr) (goal : MVarId) : MetaM Bool := do
   if ← goal.gcongrForward #[hrel] then
     return true
   else
@@ -50,14 +50,6 @@ structure GRewriteResult where
   /-- The new side goals -/
   mvarIds : List MVarId -- new goals
 
-/-- Configures the behavior of the `rewrite` and `rw` tactics. -/
-structure GRewrite.Config extends Rewrite.Config where
-  /-- When `useRewrite = true`, switch to using the default `rewrite` tactic when the goal is
-  and equality or iff. -/
-  useRewrite : Bool := true
-  /-- When `implicationHyp = true`, interpret the rewrite rule as an implication. -/
-  implicationHyp : Bool := false
-
 /--
 Rewrite `e` using the relation `hrel : x ~ y`, and construct an implication proof
 using the `gcongr` tactic to discharge this goal.
@@ -68,7 +60,7 @@ If `symm = false`, we rewrite `e` to `eNew := e[x/y]`; otherwise `eNew := e[y/x]
 
 The code aligns with `Lean.MVarId.rewrite` as much as possible.
 -/
-def _root_.Lean.MVarId.grewrite' (goal : MVarId) (e : Expr) (hrel : Expr)
+def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr) (mvarIds : Array MVarId)
     (forwardImp symm : Bool) (config : GRewrite.Config) : MetaM GRewriteResult :=
   goal.withContext do
     goal.checkNotAssigned `grewrite
@@ -99,39 +91,65 @@ def _root_.Lean.MVarId.grewrite' (goal : MVarId) (e : Expr) (hrel : Expr)
     let hrel := mkAppN hrel newMVars
     let some (_, lhs, rhs) := GCongr.getRel hrelType |
       throwTacticEx `grewrite goal m!"{hrelType} is not a relation"
-    let (lhs, rhs) := if symm then (rhs, lhs) else (lhs, rhs)
-    if lhs.getAppFn.isMVar then
+    let (pattern, replacement) := if symm then (rhs, lhs) else (lhs, rhs)
+    if pattern.getAppFn.isMVar then
       throwTacticEx `grewrite goal
-        m!"pattern is a metavariable{indentExpr lhs}\nfrom relation{indentExpr hrelType}"
+        m!"pattern is a metavariable{indentExpr pattern}\nfrom relation{indentExpr hrelType}"
     -- abstract the occurrences of `lhs` from `e` to get `eAbst`
     let e ← instantiateMVars e
-    let eAbst ←
-      withConfig (fun oldConfig => { config, oldConfig with }) <| kabstract e lhs config.occs
-    unless eAbst.hasLooseBVars do
-      throwTacticEx `grewrite goal
-        m!"did not find instance of the pattern in the target expression{indentExpr lhs}"
-    -- construct `eNew` by instantiating `eAbst` with `rhs`.
-    let eNew := eAbst.instantiate1 rhs
-    let eNew ← instantiateMVars eNew
-    -- check that `eNew` is well typed
-    try
-      check eNew
-    catch ex =>
-      throwTacticEx `grewrite goal m!"\
-        rewritten expression is not type correct:{indentD eNew}\nError: {ex.toMessageData}\
-        \n\n\
-        Possible solutions: use grewrite's 'occs' configuration option to limit which occurrences \
-        are rewritten, or specify what the rewritten expression should be and use 'gcongr'."
-    let eNew ← if rhs.hasBinderNameHint then eNew.resolveBinderNameHint else pure eNew
-    -- Construct the implication proof using `gcongr`.
-    -- Although `e` and `e'` are defEq, they may not be defEq in the `reducible` transparency.
-    -- So, it is important to use `e'` in the `gcongr` goal.
-    let e' := eAbst.instantiate1 (GCongr.mkHoleAnnotation lhs)
-    let mkImp (e₁ e₂ : Expr) : Expr := .forallE `_a e₁ e₂ .default
-    let imp := if forwardImp then mkImp e' eNew else mkImp eNew e'
-    let gcongrGoal ← mkFreshExprMVar imp
-    let (_, sideGoals) ← gcongrGoal.mvarId!.gcongr forwardImp
-      |>.run (mainGoalDischarger := GRewrite.dischargeMain hrel)
+    let (eNew, impProof, sideGoals) ←
+      if config.useKAbstract then
+        let eAbst ← withConfig ({ config, · with }) <| kabstract e pattern config.occs
+        unless eAbst.hasLooseBVars do
+          throwTacticEx `grewrite goal
+            m!"did not find instance of the pattern in the target expression{indentExpr pattern}"
+        -- construct `eNew` by instantiating `eAbst` with `replacement`.
+        let eNew := eAbst.instantiate1 replacement
+        let eNew ← instantiateMVars eNew
+        -- check that `eNew` is well typed
+        try
+          check eNew
+        catch ex =>
+          throwTacticEx `grewrite goal m!"\
+            rewritten expression is not type correct:{indentD eNew}\nError: {ex.toMessageData}\
+            \n\n\
+            Possible solutions: use grewrite's 'occs' configuration option \
+            to limit which occurrences are rewritten, \
+            or specify what the rewritten expression should be and use 'gcongr'."
+        let eNew ← if replacement.hasBinderNameHint then eNew.resolveBinderNameHint else pure eNew
+        -- Construct the implication proof using `gcongr`.
+        -- Although `e` and `e'` are defEq, they may not be defEq in the `reducible` transparency.
+        -- So, it is important to use `e'` in the `gcongr` goal.
+        let e' := eAbst.instantiate1 (GCongr.mkHoleAnnotation pattern)
+        let mkImp (e₁ e₂ : Expr) : Expr := .forallE `_a e₁ e₂ .default
+        let imp := if forwardImp then mkImp e' eNew else mkImp eNew e'
+        let gcongrGoal ← mkFreshExprMVar imp
+        let (_, sideGoals) ← gcongrGoal.mvarId!.gcongr forwardImp
+          |>.run (mainGoalDischarger := GRewrite.dischargeMain hrel)
+        pure (eNew, gcongrGoal, sideGoals)
+      else
+        withReducible do
+        let some (relName, lhs', rhs') := GCongr.getRel (← whnf hrelType) |
+          throwTacticEx `grewrite goal m!"{hrelType} is not a valid relation"
+        let mut symm := symm
+        unless lhs' == lhs && rhs' == rhs do
+          if lhs' == rhs && rhs' == lhs then
+            symm := !symm
+          else
+            throwTacticEx `grewrite goal m!"{hrelType} is not a valid relation"
+        let (headIdx, headNumArgs) := (pattern.toHeadIndex, pattern.headNumArgs)
+        let mvarIds := mvarIds ++ newMVars.map (·.mvarId!)
+        if let (some (eNew, impProof), newGoals) ←
+          grewriteCore `_Implies none e (!forwardImp) config |>.run
+            { symm, proof := hrel, type := hrelType, headIdx, headNumArgs, relName, mvarIds }
+            |>.run' {} |>.run then
+          pure (eNew, impProof, newGoals)
+        else
+          throwTacticEx `grewrite goal
+            m!"Did not find a suitable occurrence of {indentExpr pattern}\n\
+            in the target expression{indentExpr e}"
+
+
     -- post-process the metavariables
     postprocessAppMVars `grewrite goal newMVars binderInfos
       (synthAssignedInstances := !tactic.skipAssignedInstances.get (← getOptions))
@@ -139,6 +157,6 @@ def _root_.Lean.MVarId.grewrite' (goal : MVarId) (e : Expr) (hrel : Expr)
     let otherMVarIds ← getMVarsNoDelayed hrelIn
     let otherMVarIds := otherMVarIds.filter (!newMVarIds.contains ·)
     let newMVarIds := newMVarIds ++ otherMVarIds
-    pure { eNew, impProof := ← instantiateMVars gcongrGoal, mvarIds := newMVarIds.toList }
+    pure { eNew, impProof, mvarIds := newMVarIds.toList }
 
-end Mathlib.Tactic
+end Mathlib.Tactic.GRewrite
