@@ -56,9 +56,9 @@ The proof of von Staudt-Clausen's theorem follows Rado's JLMS 1934 paper
 
 ## Main theorems
 
-* `sum_bernoulli : ∑ k ∈ Finset.range n, (n.choose k : ℚ) * bernoulli k =
+* `sum_bernoulli : ∑ k ∈ range n, (n.choose k : ℚ) * bernoulli k =
   if n = 1 then 1 else 0`
-* `bernoulli.vonStaudt_clausen : bernoulli (2 * k) + ∑ p ∈ Finset.range (2 * k + 2)
+* `bernoulli.vonStaudt_clausen : bernoulli (2 * k) + ∑ p ∈ range (2 * k + 2)
   with p.Prime ∧ (p - 1) ∣ 2 * k, (1 : ℚ) / p ∈ Set.range Int.cast`
 
 ## References
@@ -419,7 +419,7 @@ private noncomputable def vonStaudtIndicator (k p : ℕ) : ℚ :=
 /- The primes `q < 2k + 2` with `(q - 1) ∣ 2k` — the primes appearing in the
 von Staudt-Clausen correction sum. -/
 private abbrev vonStaudtPrimes (k : ℕ) : Finset ℕ :=
-  (Finset.range (2 * k + 2)).filter fun q => q.Prime ∧ (q - 1) ∣ 2 * k
+  (range (2 * k + 2)).filter fun q => q.Prime ∧ (q - 1) ∣ 2 * k
 
 /- Over `ZMod p`, the nonzero `l`-th power sum equals the negative indicator of `(p - 1) ∣ l`. -/
 private lemma sum_pow_add_indicator_eq_zero (p l : ℕ) [Fact p.Prime] :
@@ -595,7 +595,7 @@ private lemma pIntegral_bernoulli_even_term (k m p : ℕ) (hm_lt : m < k) [Fact 
 /- The full remainder sum in Faulhaber's formula is `p`-integral. -/
 private lemma pIntegral_faulhaber_sum (k p : ℕ) (hk : k > 0) [Fact p.Prime]
     (ih : ∀ m, 0 < m → m < k → pIntegral p (bernoulli (2 * m) + vonStaudtIndicator (2 * m) p / p)) :
-    pIntegral p (∑ i ∈ Finset.range (2 * k),
+    pIntegral p (∑ i ∈ range (2 * k),
       bernoulli i * ((2 * k + 1).choose i) * (p : ℚ) ^ (2 * k - i) / (2 * k + 1)) := by
   refine (Rat.padicValuation p).map_sum_le fun i hi ↦ ?_
   rw [Finset.mem_range] at hi
@@ -614,9 +614,9 @@ private lemma pIntegral_faulhaber_sum (k p : ℕ) (hk : k > 0) [Fact p.Prime]
 
 private lemma sum_pow_filter_eq_faulhaber (k p : ℕ) (hk : 0 < k) :
     (∑ v ∈ Ico 1 p, (v : ℚ) ^ (2 * k)) =
-      (∑ i ∈ Finset.range (2 * k), bernoulli i * ((2 * k + 1).choose i) *
+      (∑ i ∈ range (2 * k), bernoulli i * ((2 * k + 1).choose i) *
         (p : ℚ) ^ (2 * k + 1 - i) / (2 * k + 1)) + p * bernoulli (2 * k) := by
-  have hfilter : (∑ v ∈ Ico 1 p, (v : ℚ) ^ (2 * k)) = ∑ v ∈ Finset.range p, (v : ℚ) ^ (2 * k) := by
+  have hfilter : (∑ v ∈ Ico 1 p, (v : ℚ) ^ (2 * k)) = ∑ v ∈ range p, (v : ℚ) ^ (2 * k) := by
     cases p <;> simp [Finset.sum_range_eq_add_Ico, show 2 * k ≠ 0 by omega]
   rw [hfilter, sum_range_pow, Finset.sum_range_succ, Nat.choose_succ_self_right,
     show 2 * k + 1 - 2 * k = 1 by lia]
@@ -624,9 +624,9 @@ private lemma sum_pow_filter_eq_faulhaber (k p : ℕ) (hk : 0 < k) :
   field_simp
 
 private lemma faulhaber_sum_div_prime_eq (k p : ℕ) [Fact p.Prime] :
-    (∑ i ∈ Finset.range (2 * k), bernoulli i * ((2 * k + 1).choose i : ℚ) *
+    (∑ i ∈ range (2 * k), bernoulli i * ((2 * k + 1).choose i : ℚ) *
       (p : ℚ) ^ (2 * k + 1 - i) / (2 * k + 1 : ℚ)) / (p : ℚ) =
-      ∑ i ∈ Finset.range (2 * k), bernoulli i * ((2 * k + 1).choose i : ℚ) *
+      ∑ i ∈ range (2 * k), bernoulli i * ((2 * k + 1).choose i : ℚ) *
         (p : ℚ) ^ (2 * k - i) / (2 * k + 1 : ℚ) := by
   have hp_ne : (p : ℚ) ≠ 0 := mod_cast (Fact.out : p.Prime).ne_zero
   rw [Finset.sum_div]
@@ -639,7 +639,7 @@ private lemma faulhaber_sum_div_prime_eq (k p : ℕ) [Fact p.Prime] :
 `bernoulli (2*k) + vonStaudtIndicator (2*k) p / p`. -/
 private lemma bernoulli_add_indicator_eq_sub (k p : ℕ) (hk : k > 0) [Fact p.Prime] :
     ∃ T : ℤ, bernoulli (2 * k) + vonStaudtIndicator (2 * k) p / p =
-      T - (∑ i ∈ Finset.range (2 * k),
+      T - (∑ i ∈ range (2 * k),
         bernoulli i * ((2 * k + 1).choose i) * (p : ℚ) ^ (2 * k - i) / (2 * k + 1)) := by
   have hcast : (↑((∑ v ∈ Ico 1 p, (v : ℤ) ^ (2 * k)) +
       (if (p - 1) ∣ 2 * k then 1 else 0)) : ZMod p) = 0 :=
@@ -650,7 +650,7 @@ private lemma bernoulli_add_indicator_eq_sub (k p : ℕ) (hk : k > 0) [Fact p.Pr
       p * T := by unfold vonStaudtIndicator; exact_mod_cast hT_int
   have hp_ne : (p : ℚ) ≠ 0 := Nat.cast_ne_zero.mpr (Fact.out : p.Prime).ne_zero
   have hAlg : bernoulli (2 * k) + vonStaudtIndicator (2 * k) p / p =
-      T - (∑ i ∈ Finset.range (2 * k), bernoulli i * ((2 * k + 1).choose i) *
+      T - (∑ i ∈ range (2 * k), bernoulli i * ((2 * k + 1).choose i) *
         (p : ℚ) ^ (2 * k + 1 - i) / (2 * k + 1)) / p := by
     field_simp [hp_ne]; linarith [hT, sum_pow_filter_eq_faulhaber k p hk]
   rw [hAlg]; congr 1; simpa using faulhaber_sum_div_prime_eq k p
@@ -682,7 +682,7 @@ private lemma not_dvd_den_vonStaudt_sum (k p : ℕ) (hk : k > 0) [Fact p.Prime] 
 $$B_{2k} + \sum_{p - 1 \mid 2k} \frac{1}{p}$$ is an integer.
 -/
 theorem vonStaudt_clausen (k : ℕ) :
-    bernoulli (2 * k) + ∑ p ∈ Finset.range (2 * k + 2) with p.Prime ∧ (p - 1) ∣ 2 * k,
+    bernoulli (2 * k) + ∑ p ∈ range (2 * k + 2) with p.Prime ∧ (p - 1) ∣ 2 * k,
       (1 : ℚ) / p ∈ Set.range Int.cast := by
   rcases Nat.eq_zero_or_pos k with rfl | hk
   · exact ⟨1, by decide +kernel⟩
