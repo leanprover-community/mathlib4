@@ -65,13 +65,13 @@ lemma Partrec.turingReducible (pF : Partrec f) : f ≤ᵀ g :=
   pF.recursiveIn
 
 /-- If a function is recursive in a constant partial function, then it is partial recursive. -/
-lemma TuringReducible.partrec_of_const {s} (hf : f ≤ᵀ fun _ => s) : Partrec f :=
+lemma TuringReducible.partrec_of_const {s} (hf : f ≤ᵀ PFun.const s) : Partrec f :=
   RecursiveIn.partrec_of_const hf
 
 /-- A partial function `f` is partial recursive if and only if it is recursive in
 every partial function `g`. -/
 theorem partrec_iff_forall_turingReducible : Partrec f ↔ ∀ g, f ≤ᵀ g :=
-  ⟨fun hf _ => hf.turingReducible, fun hf => hf (fun _ => .none) |>.partrec_of_const⟩
+  ⟨fun hf _ => hf.turingReducible, fun hf => hf PFun.empty |>.partrec_of_const⟩
 
 protected theorem TuringReducible.refl (f : ℕ →. ℕ) : f ≤ᵀ f := .oracle _ <| by simp
 protected theorem TuringReducible.rfl : f ≤ᵀ f := .refl _

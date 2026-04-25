@@ -666,7 +666,7 @@ theorem pell_dioph :
     (D≡ (D&1) (D&6) (D.4 D* (D&8))))) :)
   exact Dioph.ext this fun v => matiyasevic.symm
 
-theorem xn_dioph : DiophPFun fun v : Vector3 ℕ 2 => ⟨1 < v &0, fun h => xn h (v &1)⟩ :=
+theorem xn_dioph : DiophPFun (PFun.mk fun v : Vector3 ℕ 2 => ⟨1 < v &0, fun h => xn h (v &1)⟩) :=
   have : Dioph fun v : Vector3 ℕ 3 => ∃ y, ∃ h : 1 < v &1, xn h (v &2) = v &0 ∧ yn h (v &2) = y :=
     let D_pell := pell_dioph.reindex_dioph (Fin2 4) [&2, &3, &1, &0]
     (D∃) 3 D_pell
