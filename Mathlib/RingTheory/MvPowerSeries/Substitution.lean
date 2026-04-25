@@ -410,13 +410,12 @@ variable {υ : Type*}
   {T : Type*} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
   {b : τ → MvPowerSeries υ T}
 
-lemma IsNilpotent_subst' {a : σ → MvPowerSeries τ S}
-    (ha : HasSubst a) {f : MvPowerSeries σ R} (hf : IsNilpotent f.constantCoeff) :
-      IsNilpotent (constantCoeff (f.subst a)) := by
+lemma IsNilpotent_subst' (ha : HasSubst a)
+    {f : MvPowerSeries σ R} (hf : IsNilpotent f.constantCoeff) :
+    IsNilpotent (constantCoeff (f.subst a)) := by
   classical
   rw [constantCoeff_subst ha]
-  refine isNilpotent_finsum ?_
-  intro d
+  refine isNilpotent_finsum fun d => ?_
   by_cases hd : d = 0
   · rw [← algebraMap_smul S, smul_eq_mul, mul_comm, ← smul_eq_mul, hd]
     apply IsNilpotent.smul
