@@ -240,14 +240,6 @@ lemma preimage_map : ((skeletonOfMono i) d).preimage c.map = ∂Δ[d] := by
 end Cell
 
 variable {i d} in
-lemma ιSigmaBoundary_jointly_surjective
-    {n : ℕ} (a : (sigmaBoundary i d) _⦋n⦌) :
-    ∃ (c : Cell i d) (x : (∂Δ[d] : SSet) _⦋n⦌), c.ιSigmaBoundary.app _ x = a :=
-  Cofan.inj_jointly_surjective_of_isColimit
-    ((isColimitCofanMkObjOfIsColimit ((CategoryTheory.evaluation _ _).obj _) _ _
-      (coproductIsCoproduct _))) a
-
-variable {i d} in
 lemma ιSigmaStdSimplex_jointly_surjective
     {n : ℕ} (a : (sigmaStdSimplex i d) _⦋n⦌) :
     ∃ (c : Cell i d) (x : Δ[d] _⦋n⦌), c.ιSigmaStdSimplex.app _ x = a :=
@@ -411,8 +403,7 @@ noncomputable abbrev relativeCellComplex :
 
 variable (X) in
 @[simps]
-def relativeCellComplexCellsEquiv :
-    (relativeCellComplex X).Cells ≃ X.N where
+def relativeCellComplexCellsEquiv : (relativeCellComplex X).Cells ≃ X.N where
   toFun c := N.mk _ c.k.nonDegenerate
   invFun s :=
     { j := s.dim
