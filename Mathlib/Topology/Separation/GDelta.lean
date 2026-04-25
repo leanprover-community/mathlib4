@@ -90,7 +90,7 @@ theorem perfectlyNormalSpace_iff_forall_isClosed_preimage_zero :
     -- consider the infinite sum of `f n x * (1 / 2 / 2 ^ n)`, which is uniformly convergent and
     -- thus continuous because it is dominated by a geometric series
     let h : C(X, ℝ) := {
-      toFun x := ∑' (n : ℕ), f n x * (1 / 2 / 2 ^ n)
+      toFun x := ∑' n, f n x * (1 / 2 / 2 ^ n)
       continuous_toFun :=
         continuous_tsum (fun n => by fun_prop) (summable_geometric_two' 1) fun n x => hsb x n
       }
@@ -109,8 +109,8 @@ theorem perfectlyNormalSpace_iff_forall_isClosed_preimage_zero :
         _ ≤ _ := (hsx x).le_tsum i fun j hj => by positivity [(hfr j x).1]
     · exact hx ▸ tsum_nonneg fun n => by simp [(hfr n x).1]
     · calc
-      _ = ∑' (n : ℕ), f n x * (1 / 2 / 2 ^ n) := by simp [← hx, h]
-      _ ≤ ∑' (n : ℕ), 1 / 2 / 2 ^ n :=
+      _ = ∑' n, f n x * (1 / 2 / 2 ^ n) := by simp [← hx, h]
+      _ ≤ ∑' n, 1 / 2 / 2 ^ n :=
         (hsx x).tsum_le_tsum (fun n => by simp [(hfr n x).2]) (summable_geometric_two' 1)
       _ = _ := tsum_geometric_two' 1
   mpr h := {
