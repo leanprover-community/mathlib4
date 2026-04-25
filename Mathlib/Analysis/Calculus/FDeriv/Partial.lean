@@ -76,9 +76,8 @@ variable {𝕜 E₁ E₂ F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCom
   [NormedAddCommGroup E₂] [NormedSpace 𝕜 E₂] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 /-- If bivariate `f : E₁ → E₂ → F` has partial derivatives `f₁` and `f₂` in a neighbourhood of
-`u : E₁ × E₂` and if they are continuous there then the uncurried function `↿f` is strictly
-differentiable at `u` with its derivative mapping `z : E₁ × E₂` to
-`f₁ u.1 u.2 z.1 + f₂ u.1 u.2 z.2`. -/
+`u : E₁ × E₂`, both continuous at `u`, then the uncurried function `↿f` is strictly differentiable
+at `u` with its derivative mapping `z : E₁ × E₂` to `f₁ u.1 u.2 z.1 + f₂ u.1 u.2 z.2`. -/
 public theorem hasStrictFDerivAt_uncurry_coprod
     [IsRCLikeNormedField 𝕜] {u : E₁ × E₂} {f : E₁ → E₂ → F} {f₁ : E₁ → E₂ → E₁ →L[𝕜] F}
     {f₂ : E₁ → E₂ → E₂ →L[𝕜] F} (df₁ : ∀ᶠ v in 𝓝 u, HasFDerivAt (f · v.2) (↿f₁ v) v.1)
@@ -124,9 +123,9 @@ public theorem hasStrictFDerivAt_uncurry_coprod
           _ =O[(𝓝 u.1 ×ˢ 𝓝 u.2) ×ˢ (𝓝 u.1 ×ˢ 𝓝 u.2)] (fun (v, w) => v - w : _ → E₁ × E₂) := by
             simp [isBigO_of_le]
 
-/-- If a bivariate function `f` has partial derivatives `f₁u` at `(u₁, u₂)` and `f₂` in a
-neighbourhood of `(u₁, u₂)`, continuous there, then the uncurried function `↿f` is differentiable at
-`(u₁, u₂)` with its derivative mapping `(z₁, z₂)` to `f₁u z₁ + f₂ u₁ u₂ z₂`. -/
+/-- If bivariate `f : E₁ → E₂ → F` has partial derivatives `f₁u` at `u : E₁ × E₂` and `f₂` in a
+neighbourhood of `u`, the latter continuous at `u`, then the uncurried function `↿f` is
+differentiable at `u` with its derivative mapping `z : E₁ × E₂` to `f₁u z.1 + f₂ u.1 u.2 z.2`. -/
 public theorem hasFDerivWithinAt_uncurry_coprod_of_continuousWithinAt_snd
     [IsRCLikeNormedField 𝕜] [NormedSpace ℝ E₂] {u : E₁ × E₂} {s₁ : Set E₁} {s₂ : Set E₂}
     (seg : ∀ᶠ y in 𝓝[s₂] u.2, [u.2 -[ℝ] y] ⊆ s₂) {f : E₁ → E₂ → F} {f₁u : E₁ →L[𝕜] F}
@@ -230,13 +229,13 @@ theorem hasFDerivWithinAt_of_partial_snd_continuousWithinAt_prod_open
   use (min δu₁ (min δu₂ δs₂)) -- derive desired δ
   refine ⟨?pos, ?_⟩
   case pos => exact lt_min hδu₁ (lt_min hδu₂ hδs₂.1) -- positivity of δ
-  -- get working point (y₁,u₂) ∈ E₁ × E₂ within δ distance of u
+  -- get working point (v₁,v₂) ∈ E₁ × E₂ within δ distance of u
   intro (v₁,v₂) hs₁s₂ hδ
   replace hs₁s₂ : _ ∧ _ := ⟨mem_prod.mp hs₁s₂, hs₁s₂⟩
   simp only at hs₁s₂
   simp only [Prod.fst_sub, Prod.snd_sub]
   rw [mul_comm]
-  -- simplify norm conditions into bounds on ‖y₁-u.1‖ and ‖y₂-u.2‖
+  -- simplify norm conditions into bounds on ‖v₁-u.1‖ and ‖v₂-u.2‖
   simp only [Prod.norm_def, Prod.fst_sub, Prod.snd_sub] at hδ
   simp only [lt_inf_iff, sup_lt_iff] at hδ
   obtain ⟨⟨h₁δu₁, h₂δu₁⟩, ⟨⟨h₁δu₂, h₂δu₂⟩, ⟨h₁δs₂, h₂δs₂⟩⟩⟩ := hδ
@@ -316,7 +315,7 @@ theorem hasFDerivWithinAt_of_partial_snd_continuousWithinAt_prod_open
         · exact ContinuousLinearMap.le_opNorm _ _ -- operator norm estimate
         · rw [mul_comm]
           by_cases hv₁nu : 0 < ‖v₁ - u.1‖
-          case neg => -- handle trivial y₁ = u.1 case
+          case neg => -- handle trivial v₁ = u.1 case
             replace hv₁nu := (not_lt.mp hv₁nu).antisymm (norm_nonneg _)
             have hv₁nu' := eq_of_sub_eq_zero (norm_eq_zero.mp hv₁nu)
             repeat rw [hv₁nu, hv₁nu']
