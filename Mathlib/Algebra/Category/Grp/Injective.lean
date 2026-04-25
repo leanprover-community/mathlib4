@@ -28,8 +28,6 @@ in `Mathlib/Algebra/Category/Grp/EnoughInjectives.lean`.
 
 open CategoryTheory
 
-open Pointwise
-
 universe u
 
 variable (A : Type u) [AddCommGroup A]

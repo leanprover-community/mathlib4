@@ -307,7 +307,7 @@ lemma HasUnifEigenvalue.le {f : End R M} {μ : R} {k m : ℕ∞}
     (hm : k ≤ m) (hk : f.HasUnifEigenvalue μ k) :
     f.HasUnifEigenvalue μ m := by
   unfold HasUnifEigenvalue at *
-  contrapose! hk
+  contrapose hk
   rw [← le_bot_iff, ← hk]
   exact (f.genEigenspace _).monotone hm
 
