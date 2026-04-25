@@ -104,27 +104,31 @@ structure PFilter (P : Type*) [LE P] extends UpperSet P where
 @[mk_iff]
 structure IsIdeal {P} [LE P] (I : Set P) : Prop where
   /-- The ideal is downward closed. -/
-  IsLowerSet : IsLowerSet I
+  isLowerSet : IsLowerSet I
   /-- The ideal is nonempty. -/
-  Nonempty : I.Nonempty
+  nonempty : I.Nonempty
   /-- The ideal is upward directed. -/
-  Directed : DirectedOn (· ≤ ·) I
+  directed : DirectedOn (· ≤ ·) I
+
+@[deprecated (since := "2026-04-25")] alias IsIdeal.IsLowerSet := IsIdeal.isLowerSet
+@[deprecated (since := "2026-04-25")] alias IsIdeal.Nonempty := IsIdeal.nonempty
+@[deprecated (since := "2026-04-25")] alias IsIdeal.Directed := IsIdeal.directed
 
 /-- A predicate for when a subset of `P` is a filter (see `PFilter`). -/
 @[to_dual existing, mk_iff]
 structure IsPFilter {P} [LE P] (F : Set P) : Prop where
   /-- The filter is upward closed. -/
-  IsUpperSet : IsUpperSet F
+  isUpperSet : IsUpperSet F
   /-- The filter is nonempty. -/
-  Nonempty : F.Nonempty
+  nonempty : F.Nonempty
   /-- The filter is downward directed. -/
-  Directed : DirectedOn (· ≥ ·) F
+  directed : DirectedOn (· ≥ ·) F
 
 /-- Create an element of type `Order.Ideal` from a set satisfying the predicate `Order.IsIdeal`. -/
 @[to_dual /-- Create an element of type `Order.PFilter` from a set satisfying the predicate
 `Order.IsPFilter`. -/]
 def IsIdeal.toIdeal [LE P] {I : Set P} (h : IsIdeal I) : Ideal P :=
-  ⟨⟨I, h.IsLowerSet⟩, h.Nonempty, h.Directed⟩
+  ⟨⟨I, h.isLowerSet⟩, h.nonempty, h.directed⟩
 
 @[deprecated IsPFilter.mk (since := "2026-04-23")]
 theorem IsPFilter.of_def [Preorder P] {F : Set P} (nonempty : F.Nonempty)
