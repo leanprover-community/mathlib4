@@ -112,6 +112,10 @@ lemma exists_girth_eq_length :
 @[simp] lemma girth_bot : girth (⊥ : SimpleGraph α) = 0 := by
   simp [girth]
 
+lemma Hom.girth_le (f : G →g G') (hG : ¬G.IsAcyclic) (hinj : Function.Injective f) :
+    G'.girth ≤ G.girth :=
+  ENat.toNat_le_toNat (f.egirth_le hinj) (egirth_eq_top.not.mpr hG)
+
 lemma Iso.girth_eq (f : G ≃g G') : G.girth = G'.girth := by
   simp [girth, f.egirth_eq]
 
