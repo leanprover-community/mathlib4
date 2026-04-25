@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 RJ Walters. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: RJ Walters
+Authors: Robb Walters
 -/
 module
 
