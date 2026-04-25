@@ -229,8 +229,7 @@ theorem of_isoOfDiffeomorph {M N : MfldCat 𝕜 n} (f : M ≃ₘ^n⟮M.I, N.I⟯
 
 @[simp]
 theorem of_diffeomorphOfIso {M N : MfldCat 𝕜 n} (f : M ≅ N) :
-    isoOfDiffeomorph (diffeomorphOfIso f) = f := by
-  ext
+    isoOfDiffeomorph (diffeomorphOfIso f) = f :=
   rfl
 
 /-- The constant morphism `M ⟶ N` in `MfldCat` given by `y : N`. -/
