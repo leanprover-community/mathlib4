@@ -171,8 +171,8 @@ instance isOrderedCancelAddMonoid [AddCommMonoid α] [Preorder α] [IsOrderedCan
   { le_of_add_le_add_left := fun _f _g _i h s => le_of_add_le_add_left (h s) }
 
 instance addLeftReflectLE [AddCommMonoid α] [Preorder α] [AddLeftReflectLE α] :
-    AddLeftReflectLE (ι →₀ α) :=
-  ⟨fun _f _g _h H x => le_of_add_le_add_left <| H x⟩
+    AddLeftReflectLE (ι →₀ α) where
+  le_of_add_le_add_left H x := le_of_add_le_add_left <| H x
 
 section SMulZeroClass
 variable [Zero α] [Preorder α] [Zero β] [Preorder β] [SMulZeroClass α β]
