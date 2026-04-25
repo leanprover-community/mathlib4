@@ -23,13 +23,10 @@ finite-dimensional vector spaces over `𝕜`.
 # Implementation Notes
 * We do not assume `[FiniteDimensional 𝕜 E] [T2Space M] [SigmaCompactSpace M]`, so this category
   includes non-Hausdorff, non-paracompact, and infite-dimensional manifolds.
-* We keep `E`, `H` and `carrier` all in the same `Type u` since we do not care about large manifolds
-  modelled on small spaces. `𝕜` is given a seperate `Type v`.
+* We keep `E`, `H` and `carrier` all in the same `Type u`; `𝕜` is given a seperate `Type v`.
 -/
 
 @[expose] public section
-
-set_option autoImplicit false
 
 open CategoryTheory
 open scoped Manifold ContDiff
@@ -135,30 +132,9 @@ lemma hom_id {M : MfldCat 𝕜 n} :
     (𝟙 M : M ⟶ M).hom = ContMDiffMap.id := rfl
 
 @[simp]
-theorem id_app (M : MfldCat 𝕜 n) (x : ↑M) : (𝟙 M : M ⟶ M) x = x := rfl
-
-@[simp]
-theorem coe_id (M : MfldCat 𝕜 n) : (𝟙 M : M → M) = _root_.id := rfl
-
-@[simp]
 lemma hom_comp {M N P : MfldCat 𝕜 n} (f : M ⟶ N) (g : N ⟶ P) :
     (f ≫ g).hom = g.hom.comp f.hom := rfl
 
-@[simp]
-theorem comp_app {M N P : MfldCat 𝕜 n} (f : M ⟶ N) (g : N ⟶ P) (x : M) :
-    (f ≫ g : M → P) x = g (f x) := rfl
-
-@[simp]
-theorem coe_comp {M N P : MfldCat 𝕜 n} (f : M ⟶ N) (g : N ⟶ P) :
-    (f ≫ g : M → P) = g ∘ f := rfl
-
-@[ext]
-lemma hom_ext {M N : MfldCat 𝕜 n} {f g : M ⟶ N} (hf : f.hom = g.hom) : f = g :=
-  Hom.ext hf
-
-@[ext]
-lemma ext {M N : MfldCat 𝕜 n} {f g : M ⟶ N} (w : ∀ x : M, f x = g x) : f = g :=
-  ConcreteCategory.hom_ext _ _ w
 
 section ofHom
 
@@ -180,12 +156,6 @@ lemma ofHom_comp (f : ContMDiffMap I I' X Y n) (g : ContMDiffMap I' I'' Y Z n) :
 
 end ofHom
 
-/-- Morphisms in `MfldCat` are equivalent to `ContMDiffMap`s. -/
-@[simps]
-def Hom.equivContMDiffMap (M N : MfldCat 𝕜 n) :
-    (M ⟶ N) ≃ ContMDiffMap M.I N.I M N n where
-  toFun f := f.hom
-  invFun f := ofHom f
 
 
 instance inhabited : Inhabited (MfldCat 𝕜 n) :=
