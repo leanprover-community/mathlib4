@@ -280,10 +280,10 @@ def twoStepInduction {motive : ℕ → Sort*} (zero : motive 0) (one : motive 1)
 
 /-- Induction principle deriving the next case from the `k` previous ones. -/
 @[elab_as_elim]
-def stepInduction {motive : ℕ → Sort*} (k : ℕ) (less : ∀ i < k, motive i)
-    (more : ∀ n, (∀ i < k, motive (n + i)) → motive (n + k)) (a : ℕ) : motive a :=
-  if h : a < k then less _ h else
-  (show a - k + k = a by lia) ▸ more (a - k) fun _ _ ↦ stepInduction k less more _
+def stepInduction {motive : ℕ → Sort*} (k : ℕ) (base : ∀ i < k, motive i)
+    (step : ∀ n, (∀ i < k, motive (n + i)) → motive (n + k)) (a : ℕ) : motive a :=
+  if h : a < k then base _ h else
+  (show a - k + k = a by lia) ▸ step (a - k) fun _ _ ↦ stepInduction k base step _
 
 @[elab_as_elim]
 protected theorem strong_induction_on {p : ℕ → Prop} (n : ℕ)
