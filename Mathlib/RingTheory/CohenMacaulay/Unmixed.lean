@@ -145,13 +145,13 @@ theorem isCohenMacaulayRing_iff_unmixed : IsCohenMacaulayRing R ↔
     apply le_antisymm (Ideal.ofList_height_le_length' _ mem)
     simpa only [List.length_map, ← ht, ← Ideal.map_ofList]
       using IsLocalization.height_le_height_map p.primeCompl _
-  let _ := cm p hp.1
+  have := cm p hp.1
   have reg := isRegular_of_ofList_height_eq_length_of_isCohenMacaulayLocalRing _ mem ht_eq_len
   have CM := (quotient_regular_isCohenMacaulay_iff_isCohenMacaulay
     (ModuleCat.of (Localization.AtPrime p) (Localization.AtPrime p))
     (l.map (algebraMap R (Localization.AtPrime p))) reg).mp
     ((isCohenMacaulayLocalRing_iff _).mp (cm p hp.1))
-  let _ := IsRegular.quot_ofList_smul_nontrivial reg ⊤
+  have := IsRegular.quot_ofList_smul_nontrivial reg ⊤
   let S := ((Localization.AtPrime p) ⧸ Ideal.ofList
     (l.map (algebraMap R (Localization.AtPrime p))) • (⊤ : Ideal (Localization.AtPrime p)))
   have ann : Module.annihilator (Localization.AtPrime p) S =
@@ -165,7 +165,7 @@ theorem isCohenMacaulayRing_iff_unmixed : IsCohenMacaulayRing R ↔
     let f := Submodule.toLocalizedQuotient' (Localization.AtPrime p) p.primeCompl
       (Algebra.linearMap R (Localization.AtPrime p)) (Ideal.ofList l)
     exact LinearEquiv.AssociatedPrimes.eq
-      ((Submodule.quotEquivOfEq _ _ (by simp [Ideal.localized'_eq_map])).trans
+      ((Submodule.quotEquivOfEq _ _ (by simp [← Ideal.map_span])).trans
       (IsLocalizedModule.mapEquiv p.primeCompl f
       (LocalizedModule.mkLinearMap p.primeCompl (R ⧸ Ideal.ofList l)) (Localization.AtPrime p)
       (LinearEquiv.refl R _)))
