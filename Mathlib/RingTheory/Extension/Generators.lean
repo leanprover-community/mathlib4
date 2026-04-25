@@ -8,7 +8,7 @@ module
 public import Mathlib.RingTheory.Ideal.Cotangent
 public import Mathlib.RingTheory.Localization.Away.Basic
 public import Mathlib.RingTheory.MvPolynomial.Tower
-public import Mathlib.RingTheory.TensorProduct.Basic
+public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 public import Mathlib.RingTheory.Extension.Basic
 
 /-!
@@ -209,13 +209,14 @@ def localizationAway : Generators R S Unit where
 
 end Localization
 
-variable {ι' : Type*} {T} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+variable {ι' : Type*} {T} [CommRing T] [Algebra R T]
 
 /-- Given two families of generators `S[X] → T` and `R[Y] → S`,
 we may construct the family of generators `R[X, Y] → T`. -/
 @[simps val, simps -isSimp σ]
 noncomputable
-def comp (Q : Generators S T ι') (P : Generators R S ι) : Generators R T (ι' ⊕ ι) where
+def comp [Algebra S T] [IsScalarTower R S T]
+    (Q : Generators S T ι') (P : Generators R S ι) : Generators R T (ι' ⊕ ι) where
   val := Sum.elim Q.val (algebraMap S T ∘ P.val)
   σ' x := (Q.σ x).sum (fun n r ↦ rename Sum.inr (P.σ r) * monomial (n.mapDomain Sum.inl) 1)
   aeval_val_σ' s := by
@@ -231,7 +232,8 @@ variable (S) in
 gives a family of generators `S[X] → T`. -/
 @[simps val]
 noncomputable
-def extendScalars (P : Generators R T ι) : Generators S T ι where
+def extendScalars [Algebra S T] [IsScalarTower R S T] (P : Generators R T ι) :
+    Generators S T ι where
   val := P.val
   σ' x := map (algebraMap R S) (P.σ x)
   aeval_val_σ' s := by simp [@aeval_def S, ← IsScalarTower.algebraMap_eq, ← @aeval_def R]
@@ -265,6 +267,39 @@ def baseChange (T) [CommRing T] [Algebra R T] (P : Generators R S ι) :
     obtain ⟨b, hb⟩ := ey
     use (a + b)
     rw [map_add, ha, hb]
+
+variable (T) in
+set_option backward.isDefEq.respectTransparency false in
+/-- The forwards direction of the canonical isomorphism `T ⊗[R] R[Xᵢ] ≃ₐ[T] T[Xᵢ]` as
+a map of extensions. -/
+noncomputable def baseChangeFromBaseChange :
+    (P.toExtension.baseChange (T := T)).Hom (P.baseChange (T := T)).toExtension :=
+  .ofAlgHom (MvPolynomial.algebraTensorAlgEquiv R T).toAlgHom <| by
+    dsimp [Extension.baseChange]
+    ext
+    simp [RingHom.algebraMap_toAlgebra]
+
+@[simp]
+lemma baseChangeFromBaseChange_apply (x : P.toExtension.baseChange.Ring) :
+    dsimp% (P.baseChangeFromBaseChange T).toRingHom x = MvPolynomial.algebraTensorAlgEquiv R T x :=
+  rfl
+
+variable (T) in
+set_option backward.isDefEq.respectTransparency false in
+/-- The backwards direction of the canonical isomorphism `T ⊗[R] R[Xᵢ] ≃ₐ[T] T[Xᵢ]` as
+a map of extensions. -/
+noncomputable def baseChangeToBaseChange :
+    (P.baseChange (T := T)).toExtension.Hom (P.toExtension.baseChange (T := T)) :=
+  .ofAlgHom (MvPolynomial.algebraTensorAlgEquiv R T).symm.toAlgHom <| by
+    dsimp [Extension.baseChange]
+    ext
+    simp [RingHom.algebraMap_toAlgebra]
+
+@[simp]
+lemma baseChangeToBaseChange_apply (x : (baseChange T P).toExtension.Ring) :
+    dsimp% (P.baseChangeToBaseChange T).toRingHom x =
+      (MvPolynomial.algebraTensorAlgEquiv R T).symm x :=
+  rfl
 
 /-- Extend generators by more variables. -/
 noncomputable def extend (P : Generators R S ι) (b : ι' → S) : Generators R S (ι ⊕ ι') :=

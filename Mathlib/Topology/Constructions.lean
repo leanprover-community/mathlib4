@@ -196,7 +196,6 @@ theorem continuous_map_sInf {α : Type*} [TopologicalSpace α]
     {S : Set (Setoid α)} {s : Setoid α} (h : s ∈ S) : Continuous (Setoid.map_sInf h) :=
   continuous_coinduced_rng
 
-set_option backward.isDefEq.respectTransparency false in
 instance {p : X → Prop} [TopologicalSpace X] [DiscreteTopology X] : DiscreteTopology (Subtype p) :=
   ⟨bot_unique fun s _ => ⟨(↑) '' s, isOpen_discrete _, preimage_image_eq _ Subtype.val_injective⟩⟩
 
@@ -207,6 +206,14 @@ instance Sum.discreteTopology [TopologicalSpace X] [TopologicalSpace Y] [h : Dis
 instance Sigma.discreteTopology {ι : Type*} {Y : ι → Type v} [∀ i, TopologicalSpace (Y i)]
     [h : ∀ i, DiscreteTopology (Y i)] : DiscreteTopology (Sigma Y) :=
   ⟨iSup_eq_bot.2 fun _ => by simp only [(h _).eq_bot, coinduced_bot]⟩
+
+instance Prod.indiscreteTopology [TopologicalSpace X] [TopologicalSpace Y]
+    [h : IndiscreteTopology X] [hY : IndiscreteTopology Y] : IndiscreteTopology (X × Y) :=
+  ⟨inf_eq_top_iff.2 <| by simp [h.eq_top, hY.eq_top]⟩
+
+instance Pi.indiscreteTopology {ι : Type*} {Y : ι → Type v} [∀ i, TopologicalSpace (Y i)]
+    [h : ∀ i, IndiscreteTopology (Y i)] : IndiscreteTopology ((i : ι) → Y i) :=
+  ⟨iInf_eq_top.2 fun _ => by simp only [(h _).eq_top, induced_top]⟩
 
 @[simp] lemma comap_nhdsWithin_range {α β} [TopologicalSpace β] (f : α → β) (y : β) :
     comap f (𝓝[range f] y) = comap f (𝓝 y) := comap_inf_principal_range

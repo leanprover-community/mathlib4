@@ -6,7 +6,7 @@ Authors: Vasilii Nesterov
 module
 
 public import Mathlib.Data.Seq.Basic
-public import Mathlib.Data.Real.Basic
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Majorized
 
 /-!
 
@@ -26,6 +26,8 @@ in the basis `[b₂, ..., bₙ]` (`basis_tl`).
 * `MultiseriesExpansion basis` is a multiseries expansion of some function `f : ℝ → ℝ`.
   If `basis = []`, then the multiseries represents a constant function, otherwise it is
   a pair of a multiseries `ms : Multiseries basis_hd basis_tl` and a function `f : ℝ → ℝ`.
+* `MultiseriesExpansion.Approximates ms` means that the multiseries `ms` can be used to obtain
+  an asymptotical approximation of its attached function.
 
 ## Implementation details
 
@@ -38,7 +40,7 @@ in the basis `[b₂, ..., bₙ]` (`basis_tl`).
 
 namespace ComputeAsymptotics
 
-open Stream'
+open Filter Topology Stream'
 
 /-- List of functions used to construct monomials in multiseries. -/
 abbrev Basis := List (ℝ → ℝ)
@@ -403,6 +405,121 @@ theorem replaceFun_toFun {basis_hd basis_tl}
 theorem replaceFun_seq {basis_hd basis_tl}
     (ms : MultiseriesExpansion (basis_hd :: basis_tl)) (f : ℝ → ℝ) :
     (ms.replaceFun f).seq = ms.seq := rfl
+
+section Approximates
+
+open Tactic.ComputeAsymptotics
+
+/-- Coinductive predicate stating that `ms` approximates its attached function on `basis`.
+* If `basis = []`, i.e. `ms` is just a real number, `Approximates` holds unconditionally.
+* If `basis = basis_hd :: basis_tl` and `ms = nil`, then `f =ᶠ[atTop] 0`.
+* If `basis = basis_hd :: basis_tl` and `ms = cons exp coef tl`, then
+  `f` is `Majorized` with exponent `exp` by `basis_hd`,
+  `coef` approximates its attached function, and
+  `tl` approximates `f - basis_hd ^ exp * coef.toFun`.
+-/
+coinductive Approximates : {basis : Basis} → (ms : MultiseriesExpansion basis) → Prop
+/-- Constant multiseries always approximates its attached function. -/
+| const (ms : MultiseriesExpansion []) : Approximates ms
+/-- Empty multiseries approximates (eventually) zero function. -/
+| nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ → ℝ} (hf : f =ᶠ[atTop] 0) :
+  Approximates (mk (@Multiseries.nil basis_hd basis_tl) f)
+/-- `cons (exp, coef) tl` approximates `f` when `coef` approximates some function `fC`, `f` is
+majorized with exponent `exp` by `basis_hd`, and `tl` approximates `f - fC * basis_hd ^ exp`. -/
+| cons {basis_hd f : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ} {coef : MultiseriesExpansion basis_tl}
+    {tl : Multiseries basis_hd basis_tl}
+    (h_coef : Approximates coef) (h_maj : Majorized f basis_hd exp)
+    (h_tl : Approximates (mk tl (f - basis_hd ^ exp * coef.toFun))) :
+  Approximates (mk (.cons exp coef tl) f)
+
+variable {f basis_hd : ℝ → ℝ} {basis_tl : Basis}
+
+attribute [simp] Approximates.const
+
+namespace Approximates
+
+theorem coind {ms : MultiseriesExpansion (basis_hd :: basis_tl)}
+    (motive : MultiseriesExpansion (basis_hd :: basis_tl) → Prop)
+    (h_base : motive ms)
+    (h_step : ∀ ms, motive ms →
+      (ms.seq = .nil ∧ ms.toFun =ᶠ[atTop] 0) ∨
+      (∃ exp coef tl, ms.seq = .cons exp coef tl ∧
+        coef.Approximates ∧
+        Majorized ms.toFun basis_hd exp ∧
+        motive (mk (basis_hd := basis_hd) tl (ms.toFun - basis_hd ^ exp * coef.toFun)))) :
+    ms.Approximates := by
+  apply coinduct fun {basis} ms =>
+    ms.Approximates ∨ ∃ (h_basis : basis = basis_hd :: basis_tl), (motive (h_basis ▸ ms))
+  · rintro basis ms (h_ms | ⟨rfl, h_ms⟩)
+    · cases h_ms <;> grind
+    simp only [reduceCtorEq, List.cons.injEq, ↓existsAndEq, and_true, heq_eq_eq, ms_eq_mk_iff,
+      true_and, exists_eq_right_right', exists_and_left, false_or] at h_ms ⊢
+    rcases h_step _ h_ms with h_step | ⟨exp, coef, tl, h_seq, h_coef, h_maj, h_tl⟩
+    · grind
+    · refine .inr ⟨basis_hd, ms.toFun, basis_tl, exp, coef, by simpa, ‹_›, tl, ?_⟩
+      simp
+      grind
+  · grind
+
+/-- If `[]` approximates `f`, then `f = 0` eventually. -/
+theorem elim_nil (h : @Approximates (basis_hd :: basis_tl) (mk .nil f)) :
+    f =ᶠ[atTop] 0 := by
+  generalize h_ms : (mk .nil f) = ms at h
+  cases h <;> simp at h_ms; grind
+
+@[simp]
+theorem nil_iff {f : ℝ → ℝ} :
+    (mk (basis_hd := basis_hd) (basis_tl := basis_tl) .nil f).Approximates ↔ f =ᶠ[atTop] 0 :=
+  ⟨elim_nil, nil⟩
+
+/-- If `cons (exp, coef) tl` approximates `f`, then `f` can be Majorized with exponent `exp`, and
+there exists function `fC` such that `coef` approximates `fC` and `tl` approximates
+`f - fC * basis_hd ^ exp`. -/
+theorem elim_cons {exp : ℝ}
+    {coef : MultiseriesExpansion basis_tl} {tl : Multiseries basis_hd basis_tl}
+    (h : Approximates (basis := basis_hd :: basis_tl) (mk (.cons exp coef tl) f)) :
+    coef.Approximates ∧
+    Majorized f basis_hd exp ∧
+    (mk (basis_hd := basis_hd) tl (f - basis_hd ^ exp * coef.toFun)).Approximates := by
+  generalize h_ms : (mk (.cons exp coef tl) f) = ms at h
+  cases h <;> simp at h_ms; grind
+
+/-- One can replace `f` in `Approximates` with the funcion that eventually equals `f`. -/
+theorem replaceFun_Approximates {ms : MultiseriesExpansion (basis_hd :: basis_tl)} {f : ℝ → ℝ}
+    (h_equiv : ms.toFun =ᶠ[atTop] f) (h_approx : ms.Approximates) :
+    (ms.replaceFun f).Approximates := by
+  let motive (ms : MultiseriesExpansion (basis_hd :: basis_tl)) : Prop :=
+      ∃ (ms' : MultiseriesExpansion (basis_hd :: basis_tl)) (f' : ℝ → ℝ),
+      ms = ms'.replaceFun f' ∧ ms'.Approximates ∧ ms'.toFun =ᶠ[atTop] f'
+  apply Approximates.coind motive ⟨ms, f, by grind⟩
+  rintro _ ⟨ms, f, rfl, h_approx, h_eq⟩
+  cases ms with
+  | nil g =>
+    simp only [nil_iff, mk_toFun, mk_replaceFun, mk_seq, true_and,
+      Multiseries.nil_ne_cons, false_and, exists_const, or_false] at h_approx h_eq ⊢
+    grw [← h_eq, h_approx]
+  | cons exp coef tl g =>
+    obtain ⟨h_coef, h_maj, h_tl⟩ := h_approx.elim_cons
+    refine .inr ⟨exp, coef, tl, ?_⟩
+    simp only [mk_replaceFun, mk_seq, h_coef, mk_toFun, true_and]
+    simp only [mk_toFun] at h_eq
+    refine ⟨h_maj.of_eventuallyEq h_eq.symm, mk tl (g - basis_hd ^ exp * coef.toFun), _, rfl,
+      h_tl, ?_⟩
+    grw [mk_toFun, h_eq]
+
+end Approximates
+
+instance (basis_hd : ℝ → ℝ) (basis_tl : Basis) :
+    Setoid (MultiseriesExpansion (basis_hd :: basis_tl)) where
+  r x y := x.seq = y.seq ∧ x.toFun =ᶠ[atTop] y.toFun
+  iseqv := ⟨by simp, by grind [EventuallyEq.symm], by grind [EventuallyEq.trans]⟩
+
+@[simp]
+theorem equiv_def {x y : MultiseriesExpansion (basis_hd :: basis_tl)} :
+    x ≈ y ↔ x.seq = y.seq ∧ x.toFun =ᶠ[atTop] y.toFun := by
+  rfl
+
+end Approximates
 
 end MultiseriesExpansion
 

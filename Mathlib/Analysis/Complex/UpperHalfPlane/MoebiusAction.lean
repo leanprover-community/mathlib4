@@ -41,7 +41,7 @@ lemma denom_neg (g : GL (Fin 2) ℝ) (z : ℂ) : denom (-g) z = -(denom g z) := 
 
 theorem linear_ne_zero_of_im {cd : Fin 2 → ℝ} {z : ℂ} (hz : z.im ≠ 0) (h : cd ≠ 0) :
     (cd 0 : ℂ) * z + cd 1 ≠ 0 := by
-  contrapose! h
+  contrapose h
   have : cd 0 = 0 := by
     -- we will need this twice
     apply_fun Complex.im at h
@@ -228,7 +228,7 @@ theorem c_mul_im_sq_le_normSq_denom : (g 1 0 * z.im) ^ 2 ≤ Complex.normSq (den
   set d := g 1 1
   calc
     (c * z.im) ^ 2 ≤ (c * z.im) ^ 2 + (c * z.re + d) ^ 2 := by nlinarith
-    _ = Complex.normSq (denom g z) := by dsimp [c, d, denom, Complex.normSq]; ring
+    _ = Complex.normSq (denom g z) := by simp [denom, Complex.normSq]; ring
 
 @[simp]
 theorem neg_smul : -g • z = g • z := by

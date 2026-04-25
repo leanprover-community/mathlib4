@@ -287,7 +287,7 @@ lemma isParabolic_iff_of_upperTriangular {g : GL (Fin 2) K} (hg : g 1 0 = 0) :
 discrete subgroups of `GL(2, ℝ)`. -/
 lemma isParabolic_iff_of_upperTriangular_of_det [LinearOrder K] [IsStrictOrderedRing K]
     {g : GL (Fin 2) K} (h_det : g.det = 1 ∨ g.det = -1) (hg10 : g 1 0 = 0) :
-    g.IsParabolic ↔ (∃ x ≠ 0, g = upperRightHom x) ∨ (∃ x ≠ 0, g = -upperRightHom x) := by
+    g.IsParabolic ↔ (∃ x ≠ 0, g = upperRightHom x) ∨ (∃ x ≠ (0 : K), g = -upperRightHom x) := by
   rw [isParabolic_iff_of_upperTriangular hg10]
   constructor
   · rintro ⟨hg00, hg01⟩

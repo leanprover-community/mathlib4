@@ -715,12 +715,7 @@ theorem eq_univ_of_card_lt [hX : Finite X] (hB : IsBlock G B) (hB' : Nat.card X 
 theorem subsingleton_of_card_lt [Finite X] (hB : IsBlock G B)
     (hB' : Nat.card X < 2 * Set.ncard (orbit G B)) :
     B.Subsingleton := by
-  suffices Set.ncard B < 2 by
-    rw [Nat.lt_succ_iff, Set.ncard_le_one_iff_eq] at this
-    cases this with
-    | inl h => rw [h]; exact Set.subsingleton_empty
-    | inr h =>
-      obtain ⟨a, ha⟩ := h; rw [ha]; exact Set.subsingleton_singleton
+  suffices Set.ncard B < 2 by simp_all
   cases Set.eq_empty_or_nonempty B with
   | inl h => rw [h, Set.ncard_empty]; simp
   | inr h =>
