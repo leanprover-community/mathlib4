@@ -44,7 +44,7 @@ bound is tight for small `d` (e.g. halfspaces in `ℝ` realise the `d = 1` case)
 VC dimension, dual VC dimension, shattering, Assouad
 -/
 
-@[expose] public section
+public section
 
 namespace Finset
 
@@ -56,6 +56,7 @@ variable {α : Type*} [DecidableEq α] {𝒜 : Finset (Finset α)} {X : Finset �
 
 Viewing `𝒜` as rows of a binary incidence matrix indexed by `X × 𝒜`, the
 dual family is the collection of its columns. -/
+@[expose]
 def dualFamily (𝒜 : Finset (Finset α)) (X : Finset α) :
     Finset (Finset (Finset α)) :=
   X.image fun x ↦ 𝒜.filter fun A ↦ x ∈ A
@@ -64,6 +65,15 @@ def dualFamily (𝒜 : Finset (Finset α)) (X : Finset α) :
 lemma mem_dualFamily :
     𝒞 ∈ 𝒜.dualFamily X ↔ ∃ x ∈ X, 𝒜.filter (fun A ↦ x ∈ A) = 𝒞 := by
   simp only [dualFamily, mem_image]
+
+/-- A subfamily shattered by `𝒜.dualFamily X` is itself a subfamily of `𝒜`:
+take `t = S` in the shattering hypothesis, then any superset `u ∈ 𝒜.dualFamily X`
+of `S` is a filter on `𝒜`. -/
+private lemma subset_of_dualFamily_shatters {S : Finset (Finset α)}
+    (hS : (𝒜.dualFamily X).Shatters S) : S ⊆ 𝒜 := by
+  obtain ⟨u, hu, hSu⟩ := hS.exists_superset
+  obtain ⟨_, _, rfl⟩ := mem_dualFamily.mp hu
+  exact hSu.trans (filter_subset _ _)
 
 /-- **Bitstring coding (Assouad 1983, Theorem 2.13).** If `𝒜.dualFamily X`
 shatters a subfamily `S` of size at least `2 ^ (d + 1)`, then `𝒜` shatters
@@ -79,90 +89,62 @@ theorem exists_shatters_of_dualFamily_shatters
     {d : ℕ} (hcard : 2 ^ (d + 1) ≤ S.card) :
     ∃ T : Finset α, T ⊆ X ∧ T.card = d + 1 ∧ 𝒜.Shatters T := by
   classical
-  -- `S ⊆ 𝒜`: shatter `S` with `t = S`, extract `u ∈ 𝒜.dualFamily X` with
-  -- `S ⊆ u ⊆ 𝒜`.
-  have hSsub : S ⊆ 𝒜 := by
-    obtain ⟨u, hu, huS⟩ := hS (Finset.Subset.refl S)
-    obtain ⟨x, _, rfl⟩ := mem_dualFamily.mp hu
-    have hS_sub_filter : S ⊆ 𝒜.filter (fun A ↦ x ∈ A) := by
-      rw [← huS]; exact Finset.inter_subset_right
-    exact fun A hA ↦ (mem_filter.mp (hS_sub_filter hA)).1
-  -- Embed `(Fin (d + 1) → Bool)` injectively into `S` via cardinality.
+  have hSsub : S ⊆ 𝒜 := subset_of_dualFamily_shatters hS
+  -- Embed `(Fin (d + 1) → Bool)` into `↥S` as a `Function.Embedding` via
+  -- cardinality: `(Fin (d + 1) → Bool) ≃ Fin (2 ^ (d + 1)) ↪ Fin #S ≃ ↥S`.
   have hcardeq : Fintype.card (Fin (d + 1) → Bool) = Fintype.card (Fin (2 ^ (d + 1))) := by
     rw [Fintype.card_pi_const, Fintype.card_bool, Fintype.card_fin]
-  let equivBool : (Fin (d + 1) → Bool) ≃ Fin (2 ^ (d + 1)) :=
-    Fintype.equivOfCardEq hcardeq
-  let embed : (Fin (d + 1) → Bool) → ↥S :=
-    S.equivFin.symm ∘ Fin.castLEEmb hcard ∘ equivBool
-  have hembed_inj : Function.Injective embed :=
-    S.equivFin.symm.injective.comp ((Fin.castLEEmb hcard).injective.comp
-      equivBool.injective)
-  -- For each coordinate `k`, `T_k := {A ∈ S | (embed⁻¹ A) k = true}`.
+  let cube : (Fin (d + 1) → Bool) ↪ ↥S :=
+    ((Fintype.equivOfCardEq hcardeq).toEmbedding.trans (Fin.castLEEmb hcard)).trans
+      S.equivFin.symm.toEmbedding
+  -- For each coordinate `k`, the codeword-bit slice of `S`.
   let T_k (k : Fin (d + 1)) : Finset (Finset α) :=
-    S.filter fun A ↦ ∃ b : Fin (d + 1) → Bool, (embed b).val = A ∧ b k = true
-  have hT_k_sub (k) : T_k k ⊆ S := Finset.filter_subset _ _
-  -- Extract distinguishing ground-set elements `x k ∈ X`.
+    S.filter fun A ↦ ∃ b : Fin (d + 1) → Bool, (cube b).val = A ∧ b k = true
+  -- A codeword `(cube b).val` lies in `T_k k` exactly when `b k = true`.
+  have mem_Tk_cube_iff (b : Fin (d + 1) → Bool) (k : Fin (d + 1)) :
+      (cube b).val ∈ T_k k ↔ b k = true := by
+    refine ⟨fun hb ↦ ?_, fun hk ↦ mem_filter.mpr ⟨(cube b).property, b, rfl, hk⟩⟩
+    obtain ⟨_, b', hb'eq, hb'k⟩ := mem_filter.mp hb
+    rwa [cube.injective (Subtype.ext hb'eq)] at hb'k
+  -- Extract distinguishing ground-set elements `x k ∈ X` from shattering
+  -- of the slice `T_k k`.
+  have hT_k_sub (k) : T_k k ⊆ S := filter_subset _ _
   have hcols (k : Fin (d + 1)) :
       ∃ x : α, x ∈ X ∧ ∀ A ∈ S, x ∈ A ↔ A ∈ T_k k := by
     obtain ⟨u, hu, huT⟩ := hS (hT_k_sub k)
     obtain ⟨x, hxX, rfl⟩ := mem_dualFamily.mp hu
     refine ⟨x, hxX, fun A hA ↦ ?_⟩
-    have hAu : A ∈ 𝒜.filter (fun B ↦ x ∈ B) ↔ x ∈ A := by
-      rw [mem_filter]
-      exact ⟨And.right, fun h ↦ ⟨hSsub hA, h⟩⟩
-    refine ⟨fun hxA ↦ ?_, fun hAT ↦ ?_⟩
-    · have hA' : A ∈ S ∩ 𝒜.filter (fun B ↦ x ∈ B) :=
-        mem_inter.mpr ⟨hA, hAu.mpr hxA⟩
-      rw [huT] at hA'; exact hA'
-    · have hA' : A ∈ S ∩ 𝒜.filter (fun B ↦ x ∈ B) := by rw [huT]; exact hAT
-      exact hAu.mp (mem_inter.mp hA').2
+    rw [← huT]; simp [mem_inter, mem_filter, hA, hSsub hA]
   choose x hxX hx using hcols
-  -- Bit-value witness: `x k ∈ (embed b).val ↔ b k = true`.
-  have hx_embed (b : Fin (d + 1) → Bool) (k : Fin (d + 1)) :
-      x k ∈ (embed b).val ↔ b k = true := by
-    have hmem : (embed b).val ∈ S := (embed b).property
-    by_cases hbk : b k = true
-    · refine ⟨fun _ ↦ hbk, fun _ ↦ (hx k (embed b).val hmem).mpr ?_⟩
-      exact mem_filter.mpr ⟨hmem, b, rfl, hbk⟩
-    · simp only [Bool.not_eq_true] at hbk
-      refine ⟨fun hxA ↦ ?_,
-        fun h ↦ by rw [hbk] at h; exact absurd h (by decide)⟩
-      obtain ⟨_, b', hb'eq, hb'k⟩ :=
-        mem_filter.mp ((hx k (embed b).val hmem).mp hxA)
-      have : b' = b := hembed_inj (Subtype.ext hb'eq)
-      rw [this, hbk] at hb'k
-      exact absurd hb'k (by decide)
-  -- `x` is injective on `Fin (d + 1)`.
-  have hx_inj : Function.Injective x := by
-    intro j k hjk
+  -- The bit-value witness collapses to a one-line composition of equivalences:
+  -- `x k ∈ A ↔ A ∈ T_k k` (from `hx`) followed by `A ∈ T_k k ↔ b k = true`
+  -- (from `mem_Tk_cube_iff`), specialised to `A := (cube b).val`.
+  have hx_cube (b : Fin (d + 1) → Bool) (k : Fin (d + 1)) :
+      x k ∈ (cube b).val ↔ b k = true :=
+    (hx k (cube b).val (cube b).property).trans (mem_Tk_cube_iff b k)
+  -- `x` is injective on `Fin (d + 1)` via the singleton bitstring `b i := (i = j)`.
+  have hx_inj : Function.Injective x := fun j k hjk ↦ by
     by_contra hne
-    let b₀ : Fin (d + 1) → Bool := fun i ↦ i == j
-    have h1 : x j ∈ (embed b₀).val :=
-      (hx_embed b₀ j).mpr (by simp [b₀])
-    have h2 : x k ∉ (embed b₀).val := fun hxk ↦ by
-      have : b₀ k = true := (hx_embed b₀ k).mp hxk
-      simp only [b₀] at this
-      exact hne (beq_iff_eq.mp this).symm
+    have h1 : x j ∈ (cube fun i ↦ decide (i = j)).val :=
+      (hx_cube _ j).mpr (by simp)
+    have h2 : x k ∉ (cube fun i ↦ decide (i = j)).val := fun hxk ↦
+      hne (of_decide_eq_true ((hx_cube _ k).mp hxk)).symm
     exact h2 (hjk ▸ h1)
-  -- Assemble `T := image x`. The three bullets discharge `T ⊆ X`,
-  -- `#T = d + 1` (by injectivity of `x`), and `𝒜.Shatters T` (decode
-  -- each `t ⊆ T` as a bit-pattern, then apply `hx_embed`).
-  refine ⟨Finset.univ.image x, ?_, ?_, ?_⟩
-  · rintro y hy
-    obtain ⟨k, _, rfl⟩ := mem_image.mp hy
+  -- Assemble `T := univ.map ⟨x, hx_inj⟩`. The three bullets discharge
+  -- `T ⊆ X` (each `x k ∈ X`), `#T = d + 1` (by `card_map`), and
+  -- `𝒜.Shatters T` (decode each `t ⊆ T` as a Boolean codeword `g k := x k ∈ t`
+  -- and apply `hx_cube`).
+  refine ⟨univ.map ⟨x, hx_inj⟩, ?_, by simp, fun t ht ↦ ?_⟩
+  · intro y hy
+    obtain ⟨k, _, rfl⟩ := mem_map.mp hy
     exact hxX k
-  · rw [card_image_of_injective _ hx_inj, card_univ, Fintype.card_fin]
-  · intro t ht
-    let g : Fin (d + 1) → Bool := fun k ↦ decide (x k ∈ t)
-    refine ⟨(embed g).val, hSsub (embed g).property, ?_⟩
+  · refine ⟨(cube fun k ↦ decide (x k ∈ t)).val, hSsub (cube _).property, ?_⟩
     ext y
-    simp only [mem_inter]
-    refine ⟨fun ⟨hyT, hyE⟩ ↦ ?_, fun hyt ↦ ?_⟩
-    · obtain ⟨k, _, rfl⟩ := mem_image.mp hyT
-      exact of_decide_eq_true ((hx_embed g k).mp hyE)
-    · have hyT : y ∈ Finset.univ.image x := ht hyt
-      obtain ⟨k, _, rfl⟩ := mem_image.mp hyT
-      exact ⟨hyT, (hx_embed g k).mpr (decide_eq_true hyt)⟩
+    refine mem_inter.trans ⟨fun ⟨hyT, hyA⟩ ↦ ?_, fun hyt ↦ ?_⟩
+    · obtain ⟨k, _, rfl⟩ := mem_map.mp hyT
+      exact of_decide_eq_true ((hx_cube _ k).mp hyA)
+    · obtain ⟨k, _, rfl⟩ := mem_map.mp (ht hyt)
+      exact ⟨ht hyt, (hx_cube _ k).mpr (decide_eq_true hyt)⟩
 
 /-- **Assouad's dual VC bound.** If `𝒜 : Finset (Finset α)` has VC dimension
 at most `d`, then for any ground set `X : Finset α` the dual family has VC
@@ -176,7 +158,7 @@ theorem vcDim_dualFamily_le (𝒜 : Finset (Finset α)) (X : Finset α)
     (𝒜.dualFamily X).vcDim ≤ 2 ^ (d + 1) - 1 := by
   by_contra hlt
   push Not at hlt
-  have hge : 2 ^ (d + 1) ≤ (𝒜.dualFamily X).vcDim := by omega
+  have hge : 2 ^ (d + 1) ≤ (𝒜.dualFamily X).vcDim := by grind
   have hpos : 0 < 2 ^ (d + 1) := Nat.two_pow_pos (d + 1)
   obtain ⟨S, hS_mem, hS_card⟩ :=
     (Finset.le_sup_iff hpos).mp (hge : 2 ^ (d + 1) ≤ _)
