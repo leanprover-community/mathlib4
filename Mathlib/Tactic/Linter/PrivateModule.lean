@@ -78,6 +78,10 @@ def privateModule : Linter where run stx := do
     if (← getEnv).header.isModule then
       -- Don't lint an imports-only module:
       if !(← getEnv).constants.map₂.isEmpty then
+        let mut hasDef := false
+        for (decl, val) in (← getEnv).constants.map₂ do
+          if val.isDefinition then
+            hasDef := true
         -- Exit if any declaration from the current module is public:
         for (decl, _) in (← getEnv).constants.map₂ do
           -- Ignore both private and reserved names; see implementation notes
@@ -85,9 +89,9 @@ def privateModule : Linter where run stx := do
         -- Lint if all names are private:
         let topOfFileRef := Syntax.atom (.synthetic ⟨0⟩ ⟨0⟩) ""
         logLint linter.privateModule topOfFileRef
-          "The current module only contains private declarations.\n\n\
-          Consider adding `@[expose] public section` at the beginning of the module, \
-          or selectively marking declarations as `public`."
+          s!"The current module only contains private declarations.\n\n\
+          Consider adding `{if hasDef then "`@[expose] " else ""}public section` \
+          at the beginning of the module, or selectively marking declarations as `public`."
 
 initialize addLinter privateModule
 
