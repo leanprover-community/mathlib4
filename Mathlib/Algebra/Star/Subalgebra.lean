@@ -337,11 +337,9 @@ end Centralizer
 end StarSubalgebra
 
 /-! ### The star closure of a subalgebra -/
-
-
 namespace Subalgebra
 
-open Pointwise
+open scoped Pointwise
 
 variable {F R A B : Type*} [CommSemiring R] [StarRing R]
 variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
@@ -515,7 +513,7 @@ theorem _root_.Subalgebra.starClosure_eq_adjoin (S : Subalgebra R A) :
 @[elab_as_elim]
 theorem adjoin_induction {s : Set A} {p : (x : A) → x ∈ adjoin R s → Prop}
     (mem : ∀ (x) (h : x ∈ s), p x (subset_adjoin R s h))
-    (algebraMap : ∀ r, p (Algebra.algebraMap R _ r) (algebraMap_mem _ r))
+    (algebraMap : ∀ r, p (algebraMap R _ r) (algebraMap_mem _ r))
     (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
     (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
     (star : ∀ x hx, p x hx → p (star x) (star_mem hx))
