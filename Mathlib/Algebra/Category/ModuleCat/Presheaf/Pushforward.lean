@@ -61,6 +61,15 @@ def pushforward₀ (R : Dᵒᵖ ⥤ RingCat.{u}) :
   obj M := pushforward₀_obj F R M
   map {M₁ M₂} φ := { app X := φ.app _ }
 
+/-- If `F : C ⥤ D` if a functor and `R : Dᵒᵖ ⥤ CommRingCat` is a presheaf
+of commutative rings, this is the pushforward functor from the category
+of presheaves of modules on `R` to the category of presheaves of
+modules on `F.op ⋙ R`. -/
+abbrev pushforward₀OfCommRingCat (R : Dᵒᵖ ⥤ CommRingCat.{u}) :
+    PresheafOfModules.{v} (R ⋙ forget₂ _ _) ⥤
+      PresheafOfModules.{v} ((F.op ⋙ R) ⋙ forget₂ _ _) :=
+  pushforward₀ F (R ⋙ forget₂ _ _)
+
 /-- The pushforward of presheaves of modules commutes with the forgetful functor
 to presheaves of abelian groups. -/
 noncomputable def pushforward₀CompToPresheaf (R : Dᵒᵖ ⥤ RingCat.{u}) :

@@ -79,7 +79,7 @@ topology either is dense in `G` or is a cyclic subgroup. -/
 with order topology either is dense in `G` or is a cyclic subgroup. -/]
 theorem dense_or_cyclic (S : Subgroup G) : Dense (S : Set G) ∨ ∃ a : G, S = closure {a} := by
   refine (em _).imp (dense_of_not_isolated_one S) fun h => ?_
-  push_neg at h
+  push Not at h
   rcases h with ⟨ε, ε1, hε⟩
   exact cyclic_of_isolated_one ε1 (disjoint_left.2 hε)
 

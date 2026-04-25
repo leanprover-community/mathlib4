@@ -21,15 +21,13 @@ that `Data.PNat.Defs` can have very few imports.
 
 @[expose] public section
 
-deriving instance AddLeftCancelSemigroup, AddRightCancelSemigroup, AddCommSemigroup,
-  Add, Mul, Distrib for PNat
+deriving instance Add, Mul, Distrib, AddLeftCancelSemigroup, AddRightCancelSemigroup,
+  AddCommSemigroup, CommMonoid, IsOrderedCancelMonoid, WellFoundedLT, AddLeftMono,
+  AddLeftStrictMono, AddLeftReflectLE, AddLeftReflectLT for PNat
 
 namespace PNat
 
-instance instCommMonoid : CommMonoid ℕ+ := Positive.commMonoid
-instance instIsOrderedCancelMonoid : IsOrderedCancelMonoid ℕ+ := Positive.isOrderedCancelMonoid
 instance instCancelCommMonoid : CancelCommMonoid ℕ+ where
-instance instWellFoundedLT : WellFoundedLT ℕ+ := WellFoundedRelation.isWellFounded
 
 @[simp]
 theorem one_add_natPred (n : ℕ+) : 1 + n.natPred = n := by
@@ -122,17 +120,6 @@ def coeAddHom : AddHom ℕ+ ℕ where
   toFun := (↑)
   map_add' := add_coe
 
-instance addLeftMono : AddLeftMono ℕ+ :=
-  Positive.addLeftMono
-
-instance addLeftStrictMono : AddLeftStrictMono ℕ+ :=
-  Positive.addLeftStrictMono
-
-instance addLeftReflectLE : AddLeftReflectLE ℕ+ :=
-  Positive.addLeftReflectLE
-
-instance addLeftReflectLT : AddLeftReflectLT ℕ+ :=
-  Positive.addLeftReflectLT
 
 /-- The order isomorphism between ℕ and ℕ+ given by `succ`. -/
 @[simps! -fullyApplied apply]

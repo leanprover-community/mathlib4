@@ -11,7 +11,7 @@ public import Mathlib.Tactic.Linarith
 
 /-!
 
-# Behaviour of P_infty with respect to degeneracies
+# Behaviour of `P_infty` with respect to degeneracies
 
 For any `X : SimplicialObject C` where `C` is an abelian category,
 the projector `PInfty : K[X] ⟶ K[X]` is supposed to be the projection

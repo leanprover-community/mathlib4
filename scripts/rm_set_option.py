@@ -10,8 +10,9 @@ whether the file still builds. Processes files in reverse import-DAG order
 import argparse
 import hashlib
 import json
-import re
+import os
 import subprocess
+import threading
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -22,6 +23,7 @@ from dag_traversal import (
     DAG,
     DAGTraverser,
     Display,
+    ShutdownError,
 )
 from set_option_utils import (
     DEFAULT_OPTIONS,
@@ -104,6 +106,7 @@ class Summary:
     files_partially_cleaned: int = 0
     files_unchanged: int = 0
     files_errored: int = 0
+    files_timed_out: int = 0
     total_removed: int = 0
     total_kept: int = 0
     total_skipped: int = 0
@@ -296,10 +299,24 @@ def print_summary(summary: Summary):
     print(f"  Partially cleaned:      {summary.files_partially_cleaned}")
     print(f"  Unchanged:              {summary.files_unchanged}")
     print(f"  Errors:                 {summary.files_errored}")
+    if summary.files_timed_out:
+        print(f"  Not yet processed:      {summary.files_timed_out}  (global timeout reached)")
     print(f"  Lines removed:          {summary.total_removed}")
     print(f"  Lines kept:             {summary.total_kept}")
     print(f"  Lines skipped (comment):{summary.total_skipped}")
     print(f"  Duration:               {summary.duration:.0f}s")
+
+
+def write_github_outputs(summary: Summary):
+    """Write key stats to $GITHUB_OUTPUT when running in GitHub Actions."""
+    output_file = os.environ.get("GITHUB_OUTPUT")
+    if not output_file:
+        return
+    files_modified = summary.files_fully_cleaned + summary.files_partially_cleaned
+    with open(output_file, "a") as f:
+        f.write(f"lines_removed={summary.total_removed}\n")
+        f.write(f"files_modified={files_modified}\n")
+        f.write(f"files_timed_out={summary.files_timed_out}\n")
 
 
 def main():
@@ -338,9 +355,17 @@ def main():
         help="Skip the initial lake build (assumes .oleans are already fresh)",
     )
     parser.add_argument(
-        "--no-resume",
+        "--resume",
         action="store_true",
-        help="Ignore progress from a previous interrupted run",
+        help="Resume a previous interrupted run, skipping already-processed modules",
+    )
+    parser.add_argument(
+        "--global-timeout",
+        type=int,
+        default=None,
+        metavar="SECONDS",
+        help="Stop processing new modules after this many seconds and exit "
+             "gracefully, preserving the progress file for the next run",
     )
     args = parser.parse_args()
 
@@ -374,7 +399,7 @@ def main():
 
     # Step 3b: filter out modules completed in a previous run
     resumed = 0
-    if not args.no_resume:
+    if args.resume:
         progress = load_progress()
         if progress:
             to_skip = []
@@ -434,6 +459,21 @@ def main():
         init_progress()
 
     traverser = DAGTraverser()
+
+    _timer = None
+    if args.global_timeout:
+        def _global_timeout_handler():
+            print(
+                f"\nGlobal timeout ({args.global_timeout}s) reached — "
+                "stopping gracefully and preserving progress for next run...",
+                flush=True,
+            )
+            traverser.shutdown_event.set()
+
+        _timer = threading.Timer(args.global_timeout, _global_timeout_handler)
+        _timer.daemon = True
+        _timer.start()
+
     display = _RemoveDisplay()
     action = make_process_file(removable_map, options, args.timeout, traverser)
 
@@ -455,6 +495,8 @@ def main():
         traverser.force_exit(1)
     finally:
         display.stop()
+        if _timer is not None:
+            _timer.cancel()
 
     # Step 6: summarize (only count target modules, not skipped ones)
     target_results = [tr for tr in results if tr.module_name in target_modules]
@@ -463,7 +505,10 @@ def main():
     for tr in target_results:
         r: FileResult | None = tr.result
         if tr.error:
-            summary.files_errored += 1
+            if isinstance(tr.error, ShutdownError):
+                summary.files_timed_out += 1
+            else:
+                summary.files_errored += 1
             continue
         if r is None:
             continue
@@ -478,11 +523,15 @@ def main():
             summary.files_unchanged += 1
 
     print_summary(summary)
+    write_github_outputs(summary)
 
-    # Clean up progress file on successful complete run
-    if summary.files_errored == 0 and PROGRESS_FILE.exists():
+    # Clean up progress file only when the run fully completed without errors.
+    # If a global timeout fired or there were errors, keep it for the next run.
+    if summary.files_errored == 0 and summary.files_timed_out == 0 and PROGRESS_FILE.exists():
         PROGRESS_FILE.unlink()
         print("  (progress file cleaned up)")
+    elif summary.files_timed_out > 0:
+        print("  (progress file kept — resume on next run)")
 
 
 if __name__ == "__main__":

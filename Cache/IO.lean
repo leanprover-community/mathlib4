@@ -5,11 +5,12 @@ Authors: Arthur Paulino, Jon Eugster
 -/
 import Std.Data.TreeSet
 import Cache.Lean
+import Lake.Load.Toml
+import Batteries.Tactic.OpenPrivate
 
 variable {α : Type}
 
 open Lean
-
 namespace Cache.IO
 
 open System (FilePath)
@@ -79,15 +80,7 @@ def CURLBIN :=
   -- change file name if we ever need a more recent version to trigger re-download
   IO.CACHEDIR / s!"curl-{CURLVERSION}"
 
-/-- leantar version at https://github.com/digama0/leangz -/
-def LEANTARVERSION :=
-  "0.1.16"
-
 def EXE := if System.Platform.isWindows then ".exe" else ""
-
-def LEANTARBIN :=
-  -- change file name if we ever need a more recent version to trigger re-download
-  IO.CACHEDIR / s!"leantar-{LEANTARVERSION}{EXE}"
 
 def LAKEPACKAGESDIR : FilePath :=
   ".lake" / "packages"
@@ -95,8 +88,16 @@ def LAKEPACKAGESDIR : FilePath :=
 def getCurl : IO String := do
   return if (← CURLBIN.pathExists) then CURLBIN.toString else "curl"
 
-def getLeanTar : IO String := do
-  return if (← LEANTARBIN.pathExists) then LEANTARBIN.toString else "leantar"
+/-- Path to the `leantar` binary bundled with the Lean toolchain.
+    This has been bundled since `nightly-2026-03-09` (lean4#12822). -/
+private initialize leantarSysrootBin : String ← do
+  let out ← IO.Process.output { cmd := "lean", args := #["--print-prefix"] }
+  if out.exitCode == 0 then
+    let path : FilePath := out.stdout.trimAscii.toString / "bin" / s!"leantar{EXE}"
+    if ← path.pathExists then return path.toString
+  throw <| IO.userError "leantar not found in Lean sysroot. This toolchain may predate nightly-2026-03-09."
+
+def getLeanTar : IO String := return leantarSysrootBin
 
 /-- Spawn a `leantar` process for decompression, writing the given JSON config to its stdin.
     Returns the process exit code. -/
@@ -122,15 +123,12 @@ def rootHashGeneration : UInt64 := 4
   folders are located. However, `lake` has multiple options to customise these paths, like
   setting `srcDir` in a `lean_lib`. See `mkBuildPaths` below which currently assumes
   that no such options are set in any mathlib dependency)
-* the build directory for proofwidgets
 -/
 structure CacheM.Context where
   /-- source directory for mathlib files -/
   mathlibDepPath : FilePath
   /-- the Lean source search path -/
   srcSearchPath : SearchPath
-  /-- build directory for proofwidgets -/
-  proofWidgetsBuildDir : FilePath
 
 @[inherit_doc CacheM.Context]
 abbrev CacheM := ReaderT CacheM.Context IO
@@ -158,8 +156,7 @@ private def CacheM.getContext : IO CacheM.Context := do
   let mathlibSource ← CacheM.mathlibDepPath sp
   return {
     mathlibDepPath := mathlibSource,
-    srcSearchPath := sp,
-    proofWidgetsBuildDir := LAKEPACKAGESDIR / "proofwidgets" / ".lake" / "build"}
+    srcSearchPath := sp}
 
 /-- Run a `CacheM` in `IO` by loading the context from `LEAN_SRC_PATH`. -/
 def CacheM.run (f : CacheM α) : IO α := do ReaderT.run f (← getContext)
@@ -212,7 +209,9 @@ def validateCurl : IO Bool := do
   match (← runCmd "curl" #["--version"]).splitOn " " with
   | "curl" :: v :: _ => match v.splitOn "." with
     | maj :: min :: _ =>
-      let version := (maj.toNat!, min.toNat!)
+      let some majN := String.toNat? maj | throw <| IO.userError "Invalidly formatted version of `curl`"
+      let some minN := String.toNat? min | throw <| IO.userError "Invalidly formatted version of `curl`"
+      let version := (majN, minN)
       let _ := @lexOrd
       let _ := @leOfOrd
       if version >= (7, 81) then return true
@@ -235,45 +234,6 @@ def validateCurl : IO Bool := do
         return false
     | _ => throw <| IO.userError "Invalidly formatted version of `curl`"
   | _ => throw <| IO.userError "Invalidly formatted response from `curl --version`"
-
-def Version := Nat × Nat × Nat
-  deriving Inhabited, DecidableEq
-
-instance : Ord Version := let _ := @lexOrd; lexOrd
-instance : LE Version := leOfOrd
-
-def parseVersion (s : String) : Option Version := do
-  let [maj, min, patch] := s.splitOn "." | none
-  some (maj.toNat!, min.toNat!, patch.toNat!)
-
-def validateLeanTar : IO Unit := do
-  if (← LEANTARBIN.pathExists) then return
-  if let some version ← some <$> runCmd "leantar" #["--version"] <|> pure none then
-    let "leantar" :: v :: _ := version.splitOn " "
-      | throw <| IO.userError "Invalidly formatted response from `leantar --version`"
-    let some v := parseVersion v | throw <| IO.userError "Invalidly formatted version of `leantar`"
-    -- currently we need exactly one version of leantar, change this to reflect compatibility
-    if v = (parseVersion LEANTARVERSION).get! then return
-  let win := System.Platform.getIsWindows ()
-  let target ← if win then
-    pure "x86_64-pc-windows-msvc"
-  else
-    let mut arch ← (·.trimAscii.copy) <$> runCmd "uname" #["-m"] false
-    if arch = "arm64" then arch := "aarch64"
-    unless arch ∈ ["x86_64", "aarch64"] do
-      throw <| IO.userError s!"unsupported architecture {arch}"
-    pure <|
-      if System.Platform.getIsOSX () then s!"{arch}-apple-darwin"
-      else s!"{arch}-unknown-linux-musl"
-  IO.println s!"installing leantar {LEANTARVERSION}"
-  IO.FS.createDirAll IO.CACHEDIR
-  let ext := if win then "zip" else "tar.gz"
-  let _ ← runCmd "curl" (stderrAsErr := false) #[
-    s!"https://github.com/digama0/leangz/releases/download/v{LEANTARVERSION}/leantar-v{LEANTARVERSION}-{target}.{ext}",
-    "-L", "-o", s!"{LEANTARBIN}.{ext}"]
-  let _ ← runCmd "tar" #["-xf", s!"{LEANTARBIN}.{ext}",
-    "-C", IO.CACHEDIR.toString, "--strip-components=1"]
-  IO.FS.rename (IO.CACHEDIR / s!"leantar{EXE}").toString LEANTARBIN.toString
 
 /-- Recursively gets all files from a directory with a certain extension -/
 partial def getFilesWithExtension
@@ -524,22 +484,27 @@ def lookup (hashMap : ModuleHashMap) (modules : List Name) : IO Unit := do
       println! "  comment: {line}"
   if err then IO.Process.exit 1
 
+open private Lake.Glob.ofString? from Lake.Load.Toml in
+
 /--
 Parse a string as either a path or a Lean module name.
-TODO: If the argument describes a folder, use `walkDir` to find all `.lean` files within.
+If the argument describes a folder, use `walkDir` to find all `.lean` files within.
 
 Return tuples of the form ("module name", "path to .lean file").
 
 The input string `arg` takes one of the following forms:
 
 1. `Mathlib.Algebra.Field.Basic`: there exists such a Lean file
-2. `Mathlib.Algebra.Field`: no Lean file exists but a folder (TODO)
-3. `Mathlib/Algebra/Field/Basic.lean`: the file exists (note potentially `\` on Windows)
-4. `Mathlib/Algebra/Field/`: the folder exists (TODO)
+2. `Mathlib.Algebra.Field.+`: no Lean file exists but a folder `Field`
+3. `Mathlib.Algebra.Field.*`: either a file or a folder
+    (note in some shells escaping as `.\*` might be necessary)
+4. `Mathlib/Algebra/Field/Basic.lean`: the file exists
+    (note potentially `\` on Windows)
+5. `Mathlib/Algebra/Field/`: the folder exists
 
 Not supported yet:
 
-5. `Aesop/Builder.lean`: the file does not exist, it's actually somewhere in `.lake`.
+6. `Aesop/Builder.lean`: the file does not exist, it's actually somewhere in `.lake`.
 
 Note: An argument like `Archive` is treated as module, not a path.
 -/
@@ -555,39 +520,73 @@ def leanModulesFromSpec (sp : SearchPath) (argₛ : String) :
     -- provided file name of a Lean file
     let mod : Name := arg.withExtension "" |>.components.foldl .str .anonymous
     if !(← arg.pathExists) then
-      -- TODO: (5.) We could use `getSrcDir` to allow arguments like `Aesop/Builder.lean` which
+      -- TODO: (6.) We could use `getSrcDir` to allow arguments like `Aesop/Builder.lean` which
       -- refer to a file located under `.lake/packages/...`
       return .error s!"Invalid argument: non-existing path {arg}"
     if arg.extension == "lean" then
-      -- (3.) provided existing `.lean` file
+      -- (4.) provided existing `.lean` file
       return .ok #[(mod, arg)]
     else
-      -- (4.) provided existing directory: walk it
-      return .error "Searching lean files in a folder is not supported yet!"
+      -- (5.) provided existing directory: walk it
+      IO.println s!"Searching directory {arg} for .lean files"
+      let leanModulesInFolder ← walkDir sp arg mod
+      return .ok leanModulesInFolder
   else
     -- provided a module
-    let mod := argₛ.toName
-    if mod.isAnonymous then
-      -- provided a module name which is not a valid Lean identifier
+    -- user might provide `.*` or `.+` to include folders
+    match Lake.Glob.ofString? argₛ with
+    | none =>
       return .error s!"Invalid argument: expected path or module name, not {argₛ}"
-    let sourceFile ← Lean.findLean sp mod
-    if ← sourceFile.pathExists then
-      -- (1.) provided valid module
-      return .ok #[(mod, sourceFile)]
-    else
-      -- provided "pseudo-module" (like `Mathlib.Data`) which
-      -- does not correspond to a Lean file, but to an existing folder
-      -- `Mathlib/Data/`
-      let folder := sourceFile.withExtension ""
-      IO.println s!"Searching directory {folder} for .lean files"
-      if ← folder.pathExists then
-        -- (2.) provided "module name" of an existing folder: walk dir
-        -- TODO: will be implemented in https://github.com/leanprover-community/mathlib4/issues/21838
-        return .error "Entering a part of a module name \
-          (i.e. `Mathlib.Data` when only the folder `Mathlib/Data/` but no \
-          file `Mathlib/Data.lean` exists) is not supported yet!"
+    | some glob =>
+      let modules ← match glob with
+      | .one mod =>
+        let sourceFile ← Lean.findLean sp mod
+        pure #[(mod, sourceFile)]
+      | .submodules mod =>
+        let sourceFile ← Lean.findLean sp mod
+        let folder := sourceFile.withExtension ""
+        if ← folder.pathExists then
+          IO.println s!"Searching directory {folder} for .lean files"
+          let leanModulesInFolder ← walkDir sp folder mod
+          pure leanModulesInFolder
+        else
+          pure #[]
+      | .andSubmodules mod =>
+        let sourceFile ← Lean.findLean sp mod
+        let folder := sourceFile.withExtension ""
+        if ← folder.pathExists then
+          IO.println s!"Searching directory {folder} for .lean files"
+          let leanModulesInFolder ← walkDir sp folder mod
+          pure <| #[(mod, sourceFile)] ++ leanModulesInFolder
+        else
+          pure #[]
+      if !modules.isEmpty then
+        return .ok modules
       else
-        return .error s!"Invalid argument: non-existing module {mod}"
+        return .error s!"Invalid argument: {argₛ}"
+
+where
+  /--
+  Search all `.lean` files inside `folder`.
+
+  In order to figure out the module name corresponding
+  to the found files, we use `mod` and the search path `sp` to figure out how much of
+  the relative path needs to be trimmed.
+
+  This assumes the `folder` exists.
+  -/
+  walkDir (sp : SearchPath) (folder : FilePath) (mod : Name) : IO <| Array (Name × FilePath) := do
+    -- The source direcory where `mod` is located
+    let srcDir ← getSrcDir sp mod
+    -- find all Lean files in the folder only skipping special entries such as `.` and `..`
+    let files ← folder.walkDir (pure ·.fileName.isSome)
+    let leanFiles := files.filter (·.extension == some "lean")
+    let mut leanModulesInFolder : Array (Name × FilePath) := #[]
+    for file in leanFiles do
+      let path := file.withoutParent srcDir
+      let mod : Name := path.withExtension "" |>.components.foldl .str .anonymous
+      leanModulesInFolder := leanModulesInFolder.push (mod, file)
+    pure leanModulesInFolder
 
 /--
 Parse command line arguments.

@@ -106,8 +106,8 @@ theorem app_hom {P Q : C} (f : P ⟶ Q) (a : Over P) : (app f a).hom = a.hom ≫
 def PseudoEqual (P : C) (f g : Over P) : Prop :=
   ∃ (R : C) (p : R ⟶ f.1) (q : R ⟶ g.1) (_ : Epi p) (_ : Epi q), p ≫ f.hom = q ≫ g.hom
 
-theorem pseudoEqual_refl {P : C} : Reflexive (PseudoEqual P) :=
-  fun f => ⟨f.1, 𝟙 f.1, 𝟙 f.1, inferInstance, inferInstance, by simp⟩
+theorem pseudoEqual_refl {P : C} : Std.Refl (PseudoEqual P) where
+  refl f := ⟨f.1, 𝟙 f.1, 𝟙 f.1, inferInstance, inferInstance, by simp⟩
 
 theorem pseudoEqual_symm {P : C} : Symmetric (PseudoEqual P) :=
   fun _ _ ⟨R, p, q, ep, Eq, comm⟩ => ⟨R, q, p, Eq, ep, comm.symm⟩
@@ -116,11 +116,10 @@ variable [Abelian.{v} C]
 
 section
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Pseudoequality is transitive: Just take the pullback. The pullback morphisms will
 be epimorphisms since in an abelian category, pullbacks of epimorphisms are epimorphisms. -/
-theorem pseudoEqual_trans {P : C} : Transitive (PseudoEqual P) := by
-  intro f g h ⟨R, p, q, ep, Eq, comm⟩ ⟨R', p', q', ep', eq', comm'⟩
+theorem pseudoEqual_trans {P : C} : IsTrans (Over P) (PseudoEqual P) := by
+  refine ⟨fun f g h ⟨R, p, q, ep, Eq, comm⟩ ⟨R', p', q', ep', eq', comm'⟩ ↦ ?_⟩
   refine ⟨pullback q p', pullback.fst _ _ ≫ p, pullback.snd _ _ ≫ q',
     epi_comp _ _, epi_comp _ _, ?_⟩
   rw [Category.assoc, comm, ← Category.assoc, pullback.condition, Category.assoc, comm',
@@ -131,7 +130,7 @@ end
 /-- The arrows with codomain `P` equipped with the equivalence relation of being pseudo-equal. -/
 @[instance_reducible]
 def Pseudoelement.setoid (P : C) : Setoid (Over P) :=
-  ⟨_, ⟨pseudoEqual_refl, @pseudoEqual_symm _ _ _, @pseudoEqual_trans _ _ _ _⟩⟩
+  ⟨_, ⟨pseudoEqual_refl.refl, @pseudoEqual_symm _ _ _, pseudoEqual_trans.trans _ _ _⟩⟩
 
 attribute [local instance] Pseudoelement.setoid
 
@@ -160,7 +159,6 @@ attribute [local instance] overToSort
 
 theorem over_coe_def {P Q : C} (a : Q ⟶ P) : (a : Pseudoelement P) = ⟦↑a⟧ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If two elements are pseudo-equal, then their composition with a morphism is, too. -/
 theorem pseudoApply_aux {P Q : C} (f : P ⟶ Q) (a b : Over P) : a ≈ b → app f a ≈ app f b :=
   fun ⟨R, p, q, ep, Eq, comm⟩ =>
@@ -269,12 +267,11 @@ theorem zero_morphism_ext' {P Q : C} (f : P ⟶ Q) : (∀ a, f a = 0) → 0 = f 
 theorem eq_zero_iff {P Q : C} (f : P ⟶ Q) : f = 0 ↔ ∀ a, f a = 0 :=
   ⟨fun h a => by simp [h], zero_morphism_ext _⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A monomorphism is injective on pseudoelements. -/
 theorem pseudo_injective_of_mono {P Q : C} (f : P ⟶ Q) [Mono f] : Function.Injective f := by
   intro abar abar'
-  refine Quotient.inductionOn₂ abar abar' fun a a' ha => ?_
-  apply Quotient.sound
+  induction abar, abar' using Quotient.inductionOn₂ with | _ a a'
+  refine fun ha ↦ Quotient.sound ?_
   have : (⟦(a.hom ≫ f : Over Q)⟧ : Quotient (setoid Q)) = ⟦↑(a'.hom ≫ f)⟧ := by convert ha
   have ⟨R, p, q, ep, Eq, comm⟩ := Quotient.exact this
   exact ⟨R, p, q, ep, Eq, (cancel_mono f).1 <| by
@@ -439,7 +436,6 @@ theorem pseudo_pullback {P Q R : C} {f : P ⟶ R} {g : Q ⟶ R} {p : P} {q : Q} 
 
 section Module
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In the category `ModuleCat R`, if `x` and `y` are pseudoequal, then the range of the associated
 morphisms is the same. -/
 theorem ModuleCat.eq_range_of_pseudoequal {R : Type*} [Ring R] {G : ModuleCat R} {x y : Over G}

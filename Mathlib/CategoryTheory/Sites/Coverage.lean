@@ -164,9 +164,6 @@ structure Coverage extends Precoverage C where
 
 namespace Coverage
 
-@[deprecated (since := "2025-08-28")]
-alias covering := Precoverage.coverings
-
 instance : CoeFun (Coverage C) (fun _ => (X : C) → Set (Presieve X)) where
   coe J := J.coverings
 
@@ -187,15 +184,9 @@ def GrothendieckTopology.toCoverage (J : GrothendieckTopology C) : Coverage C wh
     rw [Sieve.generate_sieve]
     exact J.pullback_stable _ hS
 
-@[deprecated (since := "2025-09-19")]
-alias Coverage.ofGrothendieck := GrothendieckTopology.toCoverage
-
 lemma GrothendieckTopology.mem_toCoverage_iff {X : C} {S : Presieve X}
     (J : GrothendieckTopology C) :
     S ∈ J.toCoverage X ↔ Sieve.generate S ∈ J X := Iff.rfl
-
-@[deprecated (since := "2025-09-19")]
-alias ofGrothendieck_iff := GrothendieckTopology.mem_toCoverage_iff
 
 namespace Coverage
 
@@ -384,21 +375,16 @@ def Precoverage.toCoverage (J : Precoverage C) [J.HasPullbacks] [J.IsStableUnder
     exact ⟨S.pullbackArrows f, J.pullbackArrows_mem _ hS,
       Presieve.FactorsThruAlong.pullbackArrows f S⟩
 
+lemma Precoverage.toCoverage_le_toCoverage {J : Precoverage C} [J.HasPullbacks]
+    [J.IsStableUnderBaseChange] (K : GrothendieckTopology C) :
+    (J.toCoverage ≤ K.toCoverage) =
+      (∀ ⦃X : C⦄, ∀ S ∈ J.coverings X, Sieve.generate S ∈ K X) := rfl
+
 lemma Precoverage.toGrothendieck_toCoverage {J : Precoverage C} [J.HasPullbacks]
     [J.IsStableUnderBaseChange] :
     J.toCoverage.toGrothendieck = J.toGrothendieck := by
-  refine le_antisymm ?_ ?_
-  · intro _ _ hS
-    induction hS with
-    | of _ _ hS => exact generate_mem_toGrothendieck hS
-    | top => exact J.toGrothendieck.top_mem _
-    | transitive _ _ _ _ _ ih1 ih2 => exact J.toGrothendieck.transitive ih1 _ ih2
-  · intro _ _ hS
-    induction hS with
-    | of _ _ hS => exact .of _ _ hS
-    | top => exact J.toCoverage.toGrothendieck.top_mem _
-    | pullback _ _ _ _ _ ih => exact J.toCoverage.toGrothendieck.pullback_stable _ ih
-    | transitive _ _ _ _ _ ih1 ih2 => exact J.toCoverage.toGrothendieck.transitive ih1 _ ih2
+  grind [toGrothendieck_eq_sInf, Coverage.toGrothendieck_eq_sInf,
+    Precoverage.toCoverage_le_toCoverage]
 
 lemma Coverage.toGrothendieck_toPrecoverage (J : Coverage C) :
     J.toPrecoverage.toGrothendieck = J.toGrothendieck := by

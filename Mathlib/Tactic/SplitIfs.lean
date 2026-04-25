@@ -114,7 +114,7 @@ private def valueKnown (cond : Expr) : TacticM Bool := do
     if not_cond == ty then return true
   return false
 
-/-- Main loop of split_ifs. Pulls names for new hypotheses from `hNames`.
+/-- Main loop of `split_ifs`. Pulls names for new hypotheses from `hNames`.
 Stops if it encounters a condition in the passed-in `List Expr`.
 -/
 private partial def splitIfsCore
@@ -136,14 +136,17 @@ private partial def splitIfsCore
     andThenOnSubgoals (splitIf1 cond hName loc) ((splitIfsCore loc hNames (cond::done)) <|>
       pure ())
 
-/-- Splits all if-then-else-expressions into multiple goals.
-Given a goal of the form `g (if p then x else y)`, `split_ifs` will produce
-two goals: `p ⊢ g x` and `¬p ⊢ g y`.
-If there are multiple ite-expressions, then `split_ifs` will split them all,
-starting with a top-most one whose condition does not contain another
-ite-expression.
-`split_ifs at *` splits all ite-expressions in all hypotheses as well as the goal.
-`split_ifs with h₁ h₂ h₃` overrides the default names for the hypotheses.
+/-- `split_ifs` splits the main goal in two goals for every if-then-else expression it contains,
+by applying excluded middle to the condition. If the goal has the form `g (if p then x else y)`,
+`split_ifs` will result in two goals `h✝ : p ⊢ g x` and `h✝ : ¬p ⊢ g y`. If there are multiple
+if-then-else expressions, then `split_ifs` will split them all, starting with a top-most one whose
+condition does not contain another if-then-else expression.
+
+* `split_ifs with h₁ h₂ h₃` names the introduced hypotheses.
+  Note that names are not reused across splits: on a goal of the form
+  `⊢ (if p then 1 else 2) + (if q then 3 else 4)`, use `split_ifs with hp hq hq` to name all
+  the hypotheses.
+* `split_ifs at l` splits the if-then-else expressions at location(s) `l`.
 -/
 syntax (name := splitIfs) "split_ifs" (location)? (" with" (ppSpace colGt binderIdent)+)? : tactic
 

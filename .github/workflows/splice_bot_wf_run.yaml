@@ -8,22 +8,53 @@ on:
 permissions: {}
 
 jobs:
-  run-reusable:
+  run-splice-bot:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    uses: leanprover-community/SpliceBot/.github/workflows/splice_wf_run.yaml@fdb442693d6f613b25d2599ad64fd87cf019b9ce # master
-    with:
-      source_workflow: ${{ github.event.workflow_run.name }}
-      push_to_fork: leanprover-community/mathlib4_copy
-      allow_pr_author: true
-      allowed_teams: |
-        leanprover-community/mathlib-reviewers
-        leanprover-community/mathlib-maintainers
-      # Installation owner used when minting token from app secrets below.
-      token_app_owner: leanprover-community
-    secrets:
-      token_app_id: ${{ secrets.MATHLIB_SPLICEBOT_APP_ID }}
-      token_app_private_key: ${{ secrets.MATHLIB_SPLICEBOT_PRIVATE_KEY }}
-      authz_token_app_id: ${{ secrets.LPC_TEAM_CHECK_APP_ID }}
-      authz_token_app_private_key: ${{ secrets.LPC_TEAM_CHECK_PRIVATE_KEY }}
-      branch_token_app_id: ${{ secrets.MATHLIB_COPY_SPLICEBOT_APP_ID }}
-      branch_token_app_private_key: ${{ secrets.MATHLIB_COPY_SPLICEBOT_PRIVATE_KEY }}
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+      - name: Mint splicebot token
+        id: token
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
+        with:
+          app-id: ${{ secrets.MATHLIB_SPLICEBOT_APP_ID }}
+          key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
+          key-name: mathlib-splicebot-app-pk
+          azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_SPLICEBOT }}
+          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
+          owner: leanprover-community
+
+      - name: Mint branch token
+        id: branch-token
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
+        with:
+          app-id: ${{ secrets.MATHLIB_COPY_SPLICEBOT_APP_ID }}
+          key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
+          key-name: mathlib-copy-splicebot-app-pk
+          azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_SPLICEBOT }}
+          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
+          owner: leanprover-community
+
+      - name: Mint authz token
+        id: authz-token
+        uses: actions/create-github-app-token@f8d387b68d61c58ab83c6c016672934102569859 # v3.0.0
+        with:
+          app-id: ${{ secrets.LPC_TEAM_CHECK_APP_ID }}
+          private-key: ${{ secrets.LPC_TEAM_CHECK_PRIVATE_KEY }}
+          owner: leanprover-community
+
+      - name: Run splice bot action
+        uses: leanprover-community/SpliceBot/.github/actions/splice-wf-run@a463ae17022e8eb5929a208c1b136aeebcaf77e1
+        with:
+          source_workflow: ${{ github.event.workflow_run.name }}
+          push_to_fork: leanprover-community/mathlib4_copy
+          min_repo_permission: 'disabled'
+          allow_pr_author: 'true'
+          allowed_teams: |
+            leanprover-community/mathlib-reviewers
+            leanprover-community/mathlib-maintainers
+          token: ${{ steps.token.outputs.token }}
+          authz_token: ${{ steps.authz-token.outputs.token }}
+          branch_token: ${{ steps.branch-token.outputs.token }}
+          label_commands: ${{ vars.SPLICEBOT_LABEL_COMMANDS }}

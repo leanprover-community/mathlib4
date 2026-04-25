@@ -151,14 +151,14 @@ theorem card_vonNeumann (o : Ordinal.{u}) : card (V_ o) = preBeth o := by
     rw [← lift_le.{u + 1}]
     apply lift_card_iUnion_le_sum_card.trans
     refine (sum_eq_lift_iSup_of_lift_mk_le_lift_iSup ?_ ?_).le
-    · rw [Ordinal.mk_Iio_ordinal, ← lift_aleph0.{u + 1, u}, lift_le, Ordinal.aleph0_le_card]
+    · rw [mk_Iio_ordinal, ← lift_aleph0.{u + 1, u}, lift_le, Ordinal.aleph0_le_card]
       exact Ordinal.omega0_le_of_isSuccLimit ho
-    · rw [Ordinal.mk_Iio_ordinal, lift_lift, lift_le]
+    · rw [mk_Iio_ordinal, lift_lift, lift_le]
       by_contra! h
       refine (⨆ i : Set.Iio o, (V_ ↑i).card).card_ord.not_lt <|
         (Ordinal.card_le_card_vonNeumann _).trans_lt <| (cantor _).trans_le ?_
       rw [← card_powerset, ← vonNeumann_succ]
-      refine le_ciSup (bddAbove_of_small _) (⟨_, ho.succ_lt ?_⟩ : Set.Iio o)
+      refine le_ciSup bddAbove_of_small (⟨_, ho.succ_lt ?_⟩ : Set.Iio o)
       exact (ord_card_le _).trans_lt' (ord_strictMono h)
 
 end ZFSet

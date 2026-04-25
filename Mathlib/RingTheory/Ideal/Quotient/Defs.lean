@@ -60,22 +60,21 @@ protected def ringCon (I : Ideal R) [I.IsTwoSided] : RingCon R where
     rw [Submodule.quotientRel_def] at h₁ h₂ ⊢
     exact mul_sub_mul_mem I h₁ h₂
 
-instance ring (I : Ideal R) [I.IsTwoSided] : Ring (R ⧸ I) := fast_instance%
-  { __ : AddCommGroup (R ⧸ I) := inferInstance
-    __ : Ring (Quotient.ringCon I).Quotient := inferInstance }
+instance ring (I : Ideal R) [I.IsTwoSided] : Ring (R ⧸ I) :=
+  inferInstanceAs <| Ring (Quotient.ringCon I).Quotient
 
-instance commRing {R} [CommRing R] (I : Ideal R) : CommRing (R ⧸ I) := fast_instance%
-  { mul_comm := by rintro ⟨a⟩ ⟨b⟩; exact congr_arg _ (mul_comm a b) }
+instance semiring {R} [CommRing R] (I : Ideal R) : Semiring (R ⧸ I) := (ring I).toSemiring
+instance commSemiring {R} [CommRing R] (I : Ideal R) : CommSemiring (R ⧸ I) where
+  mul_comm := by rintro ⟨a⟩ ⟨b⟩; exact congr_arg _ (mul_comm a b)
 
-instance {R} [CommRing R] (I : Ideal R) : Ring (R ⧸ I) := fast_instance% inferInstance
-instance commSemiring {R} [CommRing R] (I : Ideal R) : CommSemiring (R ⧸ I) := fast_instance%
-  inferInstance
-instance semiring {R} [CommRing R] (I : Ideal R) : Semiring (R ⧸ I) := fast_instance% inferInstance
+instance {R} [CommRing R] (I : Ideal R) : Ring (R ⧸ I) := ring I
+instance commRing {R} [CommRing R] (I : Ideal R) : CommRing (R ⧸ I) where
 
 variable [I.IsTwoSided]
 
 -- Sanity test to make sure no diamonds have emerged in `commRing`
-example : (ring I).toAddCommGroup = Submodule.Quotient.addCommGroup I := rfl
+example : (ring I).toAddCommGroup = Submodule.Quotient.addCommGroup I := by
+  with_reducible_and_instances rfl
 
 variable (I) in
 /-- The ring homomorphism from a ring `R` to a quotient ring `R/I`. -/
@@ -110,7 +109,6 @@ theorem mk_eq_mk (x : R) : (Submodule.Quotient.mk x : R ⧸ I) = mk I x := rfl
 theorem eq_zero_iff_mem : mk I a = 0 ↔ a ∈ I :=
   Submodule.Quotient.mk_eq_zero _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mk_eq_mk_iff_sub_mem (x y : R) : mk I x = mk I y ↔ x - y ∈ I := by
   rw [← eq_zero_iff_mem, map_sub, sub_eq_zero]
 

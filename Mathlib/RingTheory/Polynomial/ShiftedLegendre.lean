@@ -40,6 +40,7 @@ These polynomials appear in combinatorics and the theory of orthogonal polynomia
 noncomputable def shiftedLegendre (n : ℕ) : ℤ[X] :=
   ∑ k ∈ Finset.range (n + 1), C ((-1 : ℤ) ^ k * n.choose k * (n + k).choose n) * X ^ k
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The shifted Legendre polynomial multiplied by a factorial equals the higher-order derivative of
 the combinatorial function `X ^ n * (1 - X) ^ n`. This is the analogue of Rodrigues' formula for
 the shifted Legendre polynomials. -/
@@ -106,7 +107,7 @@ theorem neg_one_pow_mul_shiftedLegendre_comp_one_sub_X_eq (n : ℕ) :
     factorial_mul_shiftedLegendre_eq, ← iterate_derivative_comp_one_sub_X]
   simp [mul_comm]
 
-/-- The values ​​of the Legendre polynomial at `x` and `1 - x` differ by a factor `(-1)ⁿ`. -/
+/-- The values of the Legendre polynomial at `x` and `1 - x` differ by a factor `(-1)ⁿ`. -/
 lemma shiftedLegendre_eval_symm (n : ℕ) {R : Type*} [Ring R] (x : R) :
     aeval x (shiftedLegendre n) = (-1) ^ n * aeval (1 - x) (shiftedLegendre n) := by
   have := congr(aeval x $(neg_one_pow_mul_shiftedLegendre_comp_one_sub_X_eq n))

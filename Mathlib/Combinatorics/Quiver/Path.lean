@@ -221,9 +221,6 @@ theorem isChain_cons_toList_nonempty :
   | _, nil => .singleton _
   | _, cons p f => p.isChain_cons_toList_nonempty.cons_cons ⟨f⟩
 
-@[deprecated (since := "2025-09-19")]
-alias toList_chain_nonempty := isChain_cons_toList_nonempty
-
 variable [∀ a b : V, Subsingleton (a ⟶ b)]
 
 theorem toList_injective (a : V) : ∀ b, Injective (toList : Path a b → List V)
