@@ -221,7 +221,7 @@ theorem prod_eq_prod_fintype [Fintype ι] [∀ i, Zero (β i)] [∀ (i : ι) (x 
   rw [hi, hf]
 
 @[to_additive addCon_sum]
-lemma Con_prod {A : Type*} [CommMonoid A] {r : Con A}
+lemma con_prod {A : Type*} [CommMonoid A] {r : Con A}
     [∀ i, Zero (β i)] [∀ i (y : β i), Decidable (y ≠ 0)]
     (h : (i : ι) → β i → A) (h' : (i : ι) → β i → A)
     {f g : Π₀ i, β i} (hf : ∀ i, h i 0 = 1) (hf' : ∀ i, h' i 0 = 1)
