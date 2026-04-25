@@ -452,7 +452,9 @@ lemma AbstractSimplicialData.vertexEnum_image_univ
     obtain ⟨idx, hidx_lt, hidx_eq⟩ := hv_sort
     have hidx_lt' : idx < n + 1 := by
       rwa [Finset.length_sort, D.card_eq s hs] at hidx_lt
-    exact ⟨⟨idx, hidx_lt'⟩, by show (s.sort (· ≤ ·)).get _ = v; simp only [List.get_eq_getElem]; exact hidx_eq⟩
+    exact ⟨⟨idx, hidx_lt'⟩, by
+      change (s.sort (· ≤ ·)).get _ = v
+      simp only [List.get_eq_getElem]; exact hidx_eq⟩
 
 /-- Image of `univ.erase k` under vertexEnum equals faceOf. -/
 lemma AbstractSimplicialData.vertexEnum_image_erase
@@ -475,13 +477,15 @@ lemma AbstractSimplicialData.vertexEnum_image_erase
     · intro heq
       apply hne
       have : D.vertexEnum s hs ⟨idx, hidx_lt'⟩ = v := by
-        show (s.sort (· ≤ ·)).get _ = v; simp only [List.get_eq_getElem]; exact hidx_eq
+        change (s.sort (· ≤ ·)).get _ = v
+        simp only [List.get_eq_getElem]; exact hidx_eq
       rw [← this, heq]
-    · show (s.sort (· ≤ ·)).get _ = v; simp only [List.get_eq_getElem]; exact hidx_eq
+    · change (s.sort (· ≤ ·)).get _ = v
+      simp only [List.get_eq_getElem]; exact hidx_eq
 
 /-- Unfold faceOf. -/
 lemma AbstractSimplicialData.faceOf_eq
-    (s : Finset V) (hs : s ∈ D.topSimplices) (k : Fin (n+1)) :
+    (s : Finset V) (hs : s ∈ D.topSimplices) (k : Fin (n + 1)) :
     D.faceOf s hs k = s.erase (D.vertexEnum s hs k) := rfl
 
 /-- Vertex j is not in face k iff j = k.
@@ -489,7 +493,7 @@ The forward direction: if vertexEnum j is not in s.erase(vertexEnum k),
 then vertexEnum j = vertexEnum k (since vertexEnum j ∈ s), hence j = k by injectivity.
 The backward direction: vertexEnum k ∉ s.erase(vertexEnum k) by Finset.not_mem_erase. -/
 lemma AbstractSimplicialData.vertexEnum_not_mem_faceOf_iff
-    (s : Finset V) (hs : s ∈ D.topSimplices) (j k : Fin (n+1)) :
+    (s : Finset V) (hs : s ∈ D.topSimplices) (j k : Fin (n + 1)) :
     D.vertexEnum s hs j ∉ D.faceOf s hs k ↔ j = k := by
   simp only [faceOf, Finset.mem_erase, not_and_or, not_not]
   constructor

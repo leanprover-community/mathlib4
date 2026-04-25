@@ -60,11 +60,12 @@ open Finset
 /-- A fixed-point-free involution on a finset has even
 cardinality: every element pairs with its distinct image. -/
 theorem Finset.even_card_of_fpf_invol {α : Type*}
-    [DecidableEq α] (S : Finset α) (f : α → α)
+    (S : Finset α) (f : α → α)
     (hInv : ∀ x ∈ S, f (f x) = x)
     (hMem : ∀ x ∈ S, f x ∈ S)
     (hNe : ∀ x ∈ S, f x ≠ x) :
     Even S.card := by
+  classical
   -- Pair each element with its involution image: ∑ _ ∈ S, (1 : ZMod 2) = 0
   have hsum : ∑ _ ∈ S, (1 : ZMod 2) = 0 :=
     Finset.sum_involution (fun a _ => f a)
@@ -107,10 +108,11 @@ private lemma door_filter_empty_of_missing_color (d : ℕ)
 
 /-- If natural numbers indexed by a finset sum to 1, exactly one
 equals 1 and the rest equal 0. -/
-private lemma exists_of_sum_eq_one {ι : Type*} [DecidableEq ι]
+private lemma exists_of_sum_eq_one {ι : Type*}
     {s : Finset ι} {f : ι → ℕ}
     (hsum : ∑ i ∈ s, f i = 1) :
     ∃ a ∈ s, f a = 1 ∧ ∀ b ∈ s, b ≠ a → f b = 0 := by
+  classical
   have ⟨a, ha, hfa⟩ : ∃ a ∈ s, 0 < f a := by
     by_contra h; push_neg at h
     have := Finset.sum_eq_zero (fun i hi =>
@@ -527,7 +529,7 @@ theorem even_card_interiorDoors
       obtain ⟨s', k'⟩ := sk
       have hadj_back :=
         K.adj_symm p.1 p.2 s' k' hadj_eq
-      show adjMap K (adjMap K p) = p
+      change adjMap K (adjMap K p) = p
       simp only [adjMap, hadj_eq, hadj_back]
   · intro p hp
     simp only [S, mem_filter, mem_univ,
@@ -539,7 +541,7 @@ theorem even_card_interiorDoors
       obtain ⟨s', k'⟩ := sk
       have hadj_back :=
         K.adj_symm p.1 p.2 s' k' hadj_eq
-      show IsDoor c K (adjMap K p).1
+      change IsDoor c K (adjMap K p).1
           (adjMap K p).2 ∧
         K.adj (adjMap K p).1 (adjMap K p).2 ≠ none
       simp only [adjMap, hadj_eq]
