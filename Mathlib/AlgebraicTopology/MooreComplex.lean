@@ -132,8 +132,7 @@ def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
         rw [Category.assoc, SimplicialObject.δ, ← f.naturality,
           ← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ i (by simp)),
           Category.assoc]
-        erw [kernelSubobject_arrow_comp_assoc]
-        rw [zero_comp, comp_zero]))
+        rw [← SimplicialObject.δ_def, kernelSubobject_arrow_comp_assoc, zero_comp, comp_zero]))
     fun n => by
     cases n <;> dsimp [objD, objX] <;> cat_disch
 
