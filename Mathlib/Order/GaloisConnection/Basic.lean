@@ -438,14 +438,17 @@ def WithBot.giUnbotDBot [Preorder α] [OrderBot α] :
   choice o _ := o.unbotD ⊥
   choice_eq _ _ := rfl
 
+/-- For a function `f`, `Relation.Map · f f` and `· on f` form a Galois connection. -/
 theorem gc_map_onFun (f : α → β) : GaloisConnection (Relation.Map · f f) (· on f) := by
   refine fun r s ↦ ⟨?_, ?_⟩
   · exact fun h _ _ ↦ Relation.map_le_iff_le_onFun.mp <| h _ _
   · exact fun h _ _ ↦ Relation.map_le_iff_le_onFun.mpr <| h _ _
 
+/-- For an injective function `f`, `Relation.Map · f f` and `· on f` form a Galois coinsertion. -/
 def gci_map_onFun {f : α → β} (hf : f.Injective) :
     GaloisCoinsertion (Relation.Map · f f) (· on f) :=
   gc_map_onFun f |>.toGaloisCoinsertion fun _ ↦ Relation.onFun_map_eq_of_injective hf |>.le
 
+/-- For a surjective function `f`, `Relation.Map · f f` and `· on f` form a Galois insertion. -/
 def gi_map_onFun {f : α → β} (hf : f.Surjective) : GaloisInsertion (Relation.Map · f f) (· on f) :=
   gc_map_onFun f |>.toGaloisInsertion fun _ ↦ Relation.map_onFun_eq_of_surjective hf |>.symm.le
