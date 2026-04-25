@@ -187,7 +187,7 @@ def image (H : Hypergraph α) (f : α → β) : Hypergraph β where
   vertexSet := V(H).image f
   edgeSet := E(H).image (Set.image f)
   edge_isSubset_vertexSet' := by
-    simp
+    simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, image_subset_iff]
     intro e he
     have hev : e ⊆ V(H) := by exact Membership.mem.subset_vertexSet he
     refine image_subset_iff.mp ?_
