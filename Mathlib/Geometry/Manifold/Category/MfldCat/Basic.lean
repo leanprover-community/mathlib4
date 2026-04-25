@@ -223,8 +223,7 @@ def diffeomorphOfIso {M N : MfldCat 𝕜 n} (f : M ≅ N) : M ≃ₘ^n⟮M.I, N.
 
 @[simp]
 theorem of_isoOfDiffeomorph {M N : MfldCat 𝕜 n} (f : M ≃ₘ^n⟮M.I, N.I⟯ N) :
-    diffeomorphOfIso (isoOfDiffeomorph f) = f := by
-  ext
+    diffeomorphOfIso (isoOfDiffeomorph f) = f :=
   rfl
 
 @[simp]
