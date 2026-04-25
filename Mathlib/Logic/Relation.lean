@@ -278,17 +278,17 @@ lemma map_mono {r s : α → β → Prop} {f : α → γ} {g : β → δ} (h : �
     ∀ x y, Relation.Map r f g x y → Relation.Map s f g x y :=
   fun _ _ ⟨x, y, hxy, hx, hy⟩ => ⟨x, y, h _ _ hxy, hx, hy⟩
 
+theorem onFun_le_of_le_map {α β : Type*} {r : α → α → Prop} {s : β → β → Prop} {f : α → β}
+    (hf : f.Injective) (hle : Subrelation s (Relation.Map r f f)) : Subrelation (s.onFun f) r := by
+  intro a b hs
+  grind [hle hs, Relation.Map]
+
 theorem le_map_of_onFun_le {α β : Type*} {r : α → α → Prop} {s : β → β → Prop} {f : α → β}
     (hf : f.Surjective) (hle : Subrelation (s.onFun f) r) : Subrelation s (Relation.Map r f f) := by
   intro a b hs
   obtain ⟨a, rfl⟩ := hf a
   obtain ⟨b, rfl⟩ := hf b
   exact ⟨a, b, hle hs, rfl, rfl⟩
-
-theorem onFun_le_of_le_map {α β : Type*} {r : α → α → Prop} {s : β → β → Prop} {f : α → β}
-    (hf : f.Injective) (hle : Subrelation s (Relation.Map r f f)) : Subrelation (s.onFun f) r := by
-  intro a b hs
-  grind [hle hs, Relation.Map]
 
 theorem le_map_iff_onFun_le {α β : Type*} {r : α → α → Prop} {s : β → β → Prop} {f : α → β}
     (hf : f.Bijective) : Subrelation s (Relation.Map r f f) ↔ Subrelation (s.onFun f) r :=
