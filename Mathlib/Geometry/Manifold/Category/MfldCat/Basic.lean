@@ -24,6 +24,10 @@ finite-dimensional vector spaces over `𝕜`.
 * We do not assume `[FiniteDimensional 𝕜 E] [T2Space M] [SigmaCompactSpace M]`, so this category
   includes non-Hausdorff, non-paracompact, and infite-dimensional manifolds.
 * We keep `E`, `H` and `carrier` all in the same `Type u`; `𝕜` is given a seperate `Type v`.
+
+# Future Work
+* Define a functor `FGModuleCat 𝕜 ⥤ MfldCat 𝕜 n`.
+* Show that `MfldCat` is a `CartesianMonoidalCategory`.
 -/
 
 @[expose] public section
@@ -170,8 +174,6 @@ abbrev ofNormedSpace (n : ℕ∞ω) (E : Type u) [NormedAddCommGroup E] [NormedS
 instance : HasForget₂ (MfldCat 𝕜 n) TopCat.{u} where
   forget₂.obj M := TopCat.of M
   forget₂.map f := TopCat.ofHom ⟨f.hom, f.hom.contMDiff.continuous⟩
-
--- TODO: define a functor `FGModuleCat 𝕜 ⥤ MfldCat 𝕜 n`.
 
 /-- Any diffeomorphism induces an isomorphism in `MfldCat`. -/
 @[simps]
