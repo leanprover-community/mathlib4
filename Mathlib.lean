@@ -4497,6 +4497,7 @@ public import Mathlib.Geometry.Manifold.BumpFunction
 public import Mathlib.Geometry.Manifold.ChartedSpace
 public import Mathlib.Geometry.Manifold.Complex
 public import Mathlib.Geometry.Manifold.ConformalGroupoid
+public import Mathlib.Geometry.Manifold.ContDiffMulAction
 public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
 public import Mathlib.Geometry.Manifold.ContMDiff.Basic
 public import Mathlib.Geometry.Manifold.ContMDiff.Constructions
