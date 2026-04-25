@@ -846,3 +846,45 @@ def ofUniqueOfRefl (r : α → α → Prop) (s : β → β → Prop) [Std.Refl r
   ⟨Equiv.ofUnique α β, iff_of_true (rel_of_subsingleton s _ _) (rel_of_subsingleton r _ _)⟩
 
 end RelIso
+
+namespace Relation
+
+/-- A function `f : α → β` induces a relation homomorphism from an `α`-relation `r` to
+`Relation.Map r f f`. -/
+@[simps]
+def mapRelHom (r : α → α → Prop) (f : α → β) : r →r Relation.Map r f f where
+  toFun := f
+  map_rel' {a b} hr := ⟨a, b, hr, rfl, rfl⟩
+
+/-- An embedding `f : α ↪ β` induces a relation embedding from an `α`-relation `r` to
+`Relation.Map r f f`. -/
+def mapRelEmbedding (r : α → α → Prop) (f : α ↪ β) : r ↪r Relation.Map r f f where
+  __ := f
+  map_rel_iff' {a b} := by grind [Relation.onFun_map_eq_of_injective (r := r) f.injective]
+
+/-- An equivalence `f : α ≃ β` induces a relation isomorphism from an `α`-relation `r` to
+`Relation.Map r f f`. -/
+def mapRelIso (r : α → α → Prop) (f : α ≃ β) : r ≃r Relation.Map r f f where
+  __ := f
+  __ := Relation.mapRelEmbedding r f.toEmbedding
+
+/-- For a `β`-relation `r`, a function `f : α → β` induces a relation homomorphism from `r.onFun f`
+to `r`. -/
+@[simps]
+def onFunRelHom (r : β → β → Prop) (f : α → β) : r.onFun f →r r where
+  toFun := f
+  map_rel' := id
+
+/-- For a `β`-relation `r`, an embedding `f : α ↪ β` induces a relation embedding from `r.onFun f`
+to `r`. -/
+def onFunRelEmbedding (r : β → β → Prop) (f : α ↪ β) : r.onFun f ↪r r where
+  __ := f
+  map_rel_iff' := by rfl
+
+/-- For a `β`-relation `r`, an equivalence `f : α ≃ β` induces a relation isomorphism from
+`r.onFun f` to `r`. -/
+def onFunRelIso (r : β → β → Prop) (f : α ≃ β) : r.onFun f ≃r r where
+  __ := f
+  __ := Relation.onFunRelEmbedding r f.toEmbedding
+
+end Relation
