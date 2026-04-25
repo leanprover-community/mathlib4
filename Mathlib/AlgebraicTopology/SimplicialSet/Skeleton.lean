@@ -258,15 +258,13 @@ lemma range_map_le : Subcomplex.range c.map ≤ skeletonOfMono i (d + 1) := by
 @[simp]
 lemma preimage_map : ((skeletonOfMono i) d).preimage c.map = ∂Δ[d] := by
   rw [stdSimplex.eq_boundary_iff]
-  constructor
+  refine ⟨?_, fun h ↦ c.notMem ?_⟩
   · rw [Subcomplex.le_iff_contains_nonDegenerate]
     rintro n ⟨y, hy₁⟩ hy₂
     have : n < d := dim_lt_of_nonDegenerate (X := ∂Δ[d])
-      (⟨⟨y, hy₂⟩, by simpa [Subcomplex.mem_nonDegenerate_iff]⟩) d
+      ⟨⟨y, hy₂⟩, by simpa [Subcomplex.mem_nonDegenerate_iff]⟩ d
     simp [skeletonOfMono_obj_eq_top i this]
-  · intro h
-    apply c.notMem
-    simpa [mem_skeletonOfMono_obj_iff] using
+  · simpa [mem_skeletonOfMono_obj_iff] using
       h.symm.le _ (show stdSimplex.objEquiv.symm (𝟙 ⦋d⦌) ∈ _ by simp)
 
 end Cell
@@ -307,6 +305,7 @@ namespace Cell
 
 variable {i d}
 
+@[reassoc]
 lemma ι_t_ι_eq_ι_l_b_ι (c : Cell i d) :
     c.ιSigmaBoundary ≫ t i d ≫ Subcomplex.ι _ = ∂Δ[d].ι ≫
       c.ιSigmaStdSimplex ≫ b i d ≫ Subcomplex.ι _ := by
@@ -350,7 +349,7 @@ lemma isPullback : IsPullback (t i d) (l i d) (r i d) (b i d) where
       exact ConcreteCategory.congr_hom (NatTrans.congr_app c.ι_t_ι_eq_ι_l_b_ι _) _
     · exact ConcreteCategory.congr_hom (NatTrans.congr_app c.ι_l _) _)⟩
 
-lemma sup_range_r_range_b :
+lemma max_range_r_range_b :
     Subcomplex.range (r i d) ⊔ Subcomplex.range (b i d) = ⊤ := by
   rw [← top_le_iff]
   rintro ⟨n⟩ ⟨x, hx⟩ _
@@ -369,7 +368,7 @@ lemma sup_range_r_range_b :
 lemma range_r_app_union_range_b_app (n : SimplexCategoryᵒᵖ) :
     Set.range ((r i d).app n) ∪
       Set.range ((b i d).app n) = Set.univ :=
-  congr_fun (congr_arg Subfunctor.obj (sup_range_r_range_b i d)) n
+  congr_fun (congr_arg Subfunctor.obj (max_range_r_range_b i d)) n
 
 variable {i d} in
 lemma isPushout_aux {n : ℕ} (y : (sigmaStdSimplex i d) _⦋n⦌)
