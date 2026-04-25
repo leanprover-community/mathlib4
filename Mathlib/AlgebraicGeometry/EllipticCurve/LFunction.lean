@@ -19,7 +19,7 @@ In this file, we define the L-function of a Weierstrass curve.
 
 ## Main definitions
 
-* `WeierstrassCurve.Lfunction`: the L-function of a Weierstrass equation.
+* `WeierstrassCurve.LFunction`: the L-function of a Weierstrass equation.
 
 ## References
 
@@ -36,7 +36,10 @@ variable (R : Type*) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] {K : 
   [Field K] [Algebra R K] [IsFractionRing R K] (W : WeierstrassCurve K)
 
 open Classical Polynomial in
-/-- The polynomial associated to a Weierstrass curve over a nonarchimedean local field. -/
+/-- The local polynomial associated to a Weierstrass curve `W` over a nonarchimedean local field.
+In the case of good reduction it is given by `1 - a T + q T ^ 2` where `q` is the cardinality of the
+residue field `κ` and `a = q + 1 - |W(κ)|`. Note that `q` (and also `|W(κ)|`) is defined via
+`Nat.card`, so `q` has junk value `0` when the residue field is infinite. -/
 noncomputable def localPolynomial : ℤ[X] :=
   letI W' := W.minimal R
   letI q : ℤ := Nat.card (IsLocalRing.ResidueField R)
@@ -46,7 +49,7 @@ noncomputable def localPolynomial : ℤ[X] :=
   else if W'.HasMultiplicativeReduction R then 1 + X
   else 1
 
-/-- The power series associated to a Weierstrass curve over a nonarchimedean local field. -/
+/-- The local power series associated to a Weierstrass curve over a nonarchimedean local field. -/
 noncomputable def localPowerSeries : PowerSeries ℤ :=
   PowerSeries.invOfUnit (W.localPolynomial R) 1
 
@@ -62,11 +65,16 @@ open ArithmeticFunction IsDedekindDomain NumberField
 
 variable {K : Type*} [Field K] [NumberField K] (W : WeierstrassCurve K)
 
-/-- The L-function of a Weierstrass curve is the product over places of `1 / fₚ(‖p‖⁻ˢ)` where:
-* `fₚ = 1 - aₚ T + ‖p‖ T ^ 2` where `aₚ = ‖p‖ + 1 - |E(K_p)|` if `E` has good reduction at `p`,
-* `fₚ = 1 - T` if `E` has split multiplicative reduction at `p`,
-* `fₚ = 1 + T` if `E` has nonsplit multiplicative reduction at `p`,
-* `fₚ = 1` if `E` has additive reduction at `p`.
+/-- The L-function of a Weierstrass curve `W` over a number field `K` as a formal Dirichlet series.
+
+For each prime ideal `p` of the ring of integers of `K` with norm `‖p‖` residue field `κ_p`,
+we define the local polynomial `fₚ(T)` as:
+* `fₚ = 1 - aₚ T + ‖p‖ T ^ 2` where `aₚ = ‖p‖ + 1 - |W(κ_p)|` if `W` has good reduction at `p`,
+* `fₚ = 1 - T` if `W` has split multiplicative reduction at `p`,
+* `fₚ = 1 + T` if `W` has nonsplit multiplicative reduction at `p`,
+* `fₚ = 1` if `W` has additive reduction at `p`.
+Then the L-Function of `W` is the formal Dirichlet series defined as the product of `1 / fₚ(‖p‖⁻ˢ)`
+as `p` ranges over all prime ideals of the ring of integers of `K`.
 -/
 noncomputable def LFunction : ArithmeticFunction ℤ :=
   eulerProduct fun p : HeightOneSpectrum (𝓞 K) ↦
