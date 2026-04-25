@@ -616,3 +616,35 @@ example [Semiring S] [PartialOrder S] [IsOrderedRing S] [Semiring R]
     (abv : R → S) [IsAbsoluteValue abv] (x : R) :
     0 ≤ abv x := by
   positivity
+
+/- ## Nonzeroness -/
+
+example {α : Type*} [Zero α] {a : α} (ha : a ≠ 0) : a ≠ 0 := by positivity
+example {α : Type*} [Zero α] {a : α} (ha : a ≠ 0) : 0 ≠ a := by positivity
+example {α : Type*} [Zero α] {a : α} (ha : 0 ≠ a) : a ≠ 0 := by positivity
+
+example {α : Type*} [Semifield α] {x : α} (hx : x ≠ 0) : x⁻¹ ≠ 0 := by positivity
+example {α : Type*} [Semifield α] {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) : x / y ≠ 0 := by positivity
+
+example {α : Type*} [MonoidWithZero α] [NoZeroDivisors α] {x : α} (hx : x ≠ 0) (n : ℕ) :
+    x ^ n ≠ 0 := by
+  positivity
+
+example {α : Type*} [MonoidWithZero α] [NoZeroDivisors α] {x y : α}
+    (hx : x ≠ 0) (hy : y ≠ 0) : x * y ≠ 0 := by
+  positivity
+
+example {α : Type*} [AddMonoidWithOne α] [CharZero α] {n : ℕ} (hn : n ≠ 0) :
+    (n : α) ≠ 0 := by
+  positivity
+
+example {α : Type*} [AddGroupWithOne α] [CharZero α] {z : ℤ} (hz : z ≠ 0) :
+    (z : α) ≠ 0 := by
+  positivity
+
+example {α : Type*} [DivisionRing α] [CharZero α] {q : ℚ} (hq : q ≠ 0) :
+    (q : α) ≠ 0 := by
+  positivity
+
+example {α : Type*} [Semiring α] [Nontrivial α] (x : α) : x ^ 0 ≠ 0 := by
+  positivity

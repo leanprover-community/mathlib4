@@ -217,9 +217,9 @@ because `compareHyp` can't look for assumptions behind binders.
 -/
 @[positivity Finset.prod _ _]
 meta def evalFinsetProd : PositivityExt where eval {u α} zα pα? e := do
-  let some pα := pα? | pure .none
   match e with
   | ~q(@Finset.prod $ι _ $instα $s $f) =>
+    let some pα := pα? | pure .none
     let i : Q($ι) ← mkFreshExprMVarQ q($ι) .syntheticOpaque
     have body : Q($α) := Expr.betaRev f #[i]
     let rbody ← core zα pα body
