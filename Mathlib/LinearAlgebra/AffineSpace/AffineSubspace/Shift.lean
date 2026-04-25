@@ -61,6 +61,10 @@ theorem direction_shift (s : AffineSubspace k P) (c : P) (r : k) :
   simp [shift, h]
 
 @[simp]
+theorem shift_top (c : P) (r : k) : shift ⊤ c r = ⊤ := by
+  simp [shift, AffineEquiv.surjective]
+
+@[simp]
 theorem shift_bot (c : P) (r : k) : shift ⊥ c r = ⊥ := by
   simp [shift]
 
