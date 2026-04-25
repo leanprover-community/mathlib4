@@ -79,13 +79,13 @@ def mapCotangent (f : A ⟶ B) : CotangentSpace A →ₗ[k] CotangentSpace B whe
     obtain ⟨t, ht⟩ := B.residue_surjective r
     obtain ⟨x, rfl⟩ := (maximalIdeal A).toCotangent_surjective x
     nth_rw 1 [← hs, ← ht]
-    simp only [residue_smul_cotangent, RingHom.id_apply, Ideal.mapCotangent_toCotangent,
-      ← map_smul, Ideal.toCotangent_eq]
-    simp only [SetLike.val_smul, smul_eq_mul, map_mul, ← sub_mul, pow_two]
+    rw [residue_smul_cotangent, ← map_smul, Ideal.mapCotangent_toCotangent, RingHom.id_apply,
+      residue_smul_cotangent, Ideal.mapCotangent_toCotangent, ← map_smul, Ideal.toCotangent_eq]
+    simp only [pow_two, SetLike.val_smul, smul_eq_mul, map_mul, ← sub_mul]
     refine Ideal.mul_mem_mul ?_ ?_
     · rwa [← residue_eq_zero_iff, map_sub, sub_eq_zero, ← AlgHom.comp_apply, f.residue_comp, ht]
-    · rw [← Ideal.mem_comap]; convert x.prop
-      exact f.comap_maximalIdeal_eq
+    · rw [← Ideal.mem_comap, f.comap_maximalIdeal_eq]
+      exact x.prop
 
 @[simp]
 lemma mapCotangent_toCotangent (f : A ⟶ B) (a : maximalIdeal A) :
@@ -130,28 +130,24 @@ theorem surjective_mapCotangent_toOfQuot (I : Ideal A) [Nontrivial (A ⧸ I)] :
     maximalIdeal_comap, right_eq_sup]
   exact le_maximalIdeal (Ideal.Quotient.nontrivial_iff.mp ‹_›)
 
+open Submodule in
 theorem bijective_mapCotangent_toOfQuot_iff (I : Ideal A) [Nontrivial (A ⧸ I)] :
     Bijective (mapCotangent (A.toOfQuot I)) ↔ I ≤ maximalIdeal A ^ 2 := by
+  have : IsLocalRing (A ⧸ I) := .of_surjective' _ Ideal.Quotient.mk_surjective
+  have : IsLocalHom (algebraMap A (A ⧸ I)) :=
+    ⟨Ideal.Quotient.mk_surjective.isLocalHom.map_nonunit⟩
+  have I_le : I ≤ maximalIdeal A :=
+    le_maximalIdeal (J := I) (Ideal.Quotient.nontrivial_iff.mp ‹_›)
   simp only [Bijective, surjective_mapCotangent_toOfQuot I, and_true]
-  simp_rw [← LinearMap.ker_eq_bot, Submodule.eq_bot_iff, LinearMap.mem_ker]
-  refine ⟨fun h x hx ↦ ?_, fun h ↦ ?_⟩
-  · have x_mem_m : x ∈ maximalIdeal A :=
-      le_maximalIdeal (Ideal.Quotient.nontrivial_iff.mp inferInstance) hx
-    let x_cot := (maximalIdeal A).toCotangent ⟨x, x_mem_m⟩
-    have h_map_zero : mapCotangent (A.toOfQuot I) x_cot = 0 := by
-      rw [mapCotangent_toCotangent, Ideal.toCotangent_eq_zero]
-      change (A.toOfQuot I).toAlgHom x ∈ _
-      rw [← ker_toAlgHom_toOfQuot (I := I), RingHom.mem_ker] at hx
-      exact hx ▸ zero_mem _
-    specialize h x_cot h_map_zero
-    rwa [Ideal.toCotangent_eq_zero] at h
-  intro x hx
-  rcases (maximalIdeal A).toCotangent_surjective x with ⟨x, rfl⟩
-  simp only [mapCotangent_toCotangent, toAlgHom_toOfQuot_apply, Ideal.toCotangent_eq_zero] at hx ⊢
-  change (A.toOfQuot I).toAlgHom x ∈ _ at hx
-  rwa [← map_toAlgHom_toOfQuot_maximalIdeal_eq, ← Ideal.mem_comap, ← Ideal.map_pow,
-    Ideal.comap_map_of_surjective' _ surjective_toAlgHom_toOfQuot, ker_toAlgHom_toOfQuot,
-    sup_eq_left.mpr h] at hx
+  change Injective ((maximalIdeal A).mapCotangent (maximalIdeal (A ⧸ I)) (Algebra.ofId A (A ⧸ I))
+    (by rw [← Ideal.comap_coe, Algebra.toRingHom_ofId, maximalIdeal_comap])) ↔ _
+  rw [← LinearMap.ker_eq_bot, Ideal.mapCotangent_ker_of_surjective Ideal.Quotient.mk_surjective (by
+      rwa [maximalIdeal_comap, right_eq_sup, Ideal.Quotient.algebraMap_eq, Ideal.mk_ker]),
+    Ideal.Quotient.algebraMap_eq, Ideal.mk_ker, ← left_eq_inf.mpr I_le,
+    ← (comap_injective_of_surjective (maximalIdeal A).toCotangent_surjective).eq_iff,
+    comap_map_eq, ← LinearMap.ker, eq_comm, right_eq_sup,
+    ← map_le_map_iff_of_injective (subtype_injective _), map_comap_eq, Ideal.map_toCotangent_ker,
+    ← right_eq_inf.mpr (by rwa [range_subtype])]
 
 @[stacks 06S3 "(1) => (2)"]
 theorem surjective_mapCotangent_of_surjective {f : A ⟶ B} (h : Surjective f.toAlgHom) :
@@ -162,20 +158,9 @@ theorem surjective_mapCotangent_of_surjective {f : A ⟶ B} (h : Surjective f.to
 
 theorem bijective_mapCotangent_iff {f : A ⟶ B} (hf : Surjective f.toAlgHom) :
     Function.Bijective (mapCotangent f) ↔ RingHom.ker f.toAlgHom ≤ maximalIdeal A ^ 2 := by
-  rw [← bijective_mapCotangent_toOfQuot_iff]
-  have h_comp : mapCotangent f = (mapCotangent (ofQuotKerIsoOfSurjective f hf).hom) ∘ₗ
-      (mapCotangent (A.toOfQuot (RingHom.ker f.toAlgHom))) := by
-    rw [← mapCotangent_comp, toOfQuot_comp_ofQuotKerIsoOfSurjective_hom hf]
-  refine ⟨fun h_bij ↦ ?_, fun h_bij ↦ ?_⟩
-  · suffices ⇑(mapCotangent (A.toOfQuot (RingHom.ker f.toAlgHom))) =
-      ⇑(equivCotangent (ofQuotKerIsoOfSurjective f hf)).symm ∘ ⇑(mapCotangent f) from
-      this ▸ Bijective.comp (equivCotangent (ofQuotKerIsoOfSurjective f hf)).symm.bijective h_bij
-    ext
-    simp only [h_comp, LinearMap.coe_comp, Function.comp_apply, equivCotangent_symm_apply]
-    rw [← LinearMap.comp_apply, ← mapCotangent_comp]
-    simp
-  · rw [h_comp, LinearMap.coe_comp]
-    exact Bijective.comp (equivCotangent (ofQuotKerIsoOfSurjective f hf)).bijective h_bij
+  nth_rw 1 [← bijective_mapCotangent_toOfQuot_iff, ← toOfQuot_comp_ofQuotKerIsoOfSurjective_hom hf,
+    mapCotangent_comp, LinearMap.coe_comp, Bijective.of_comp_iff']
+  exact (equivCotangent (ofQuotKerIsoOfSurjective f hf)).bijective
 
 @[stacks 06S3 "(2) => (3)"]
 theorem mapCotangent_mapOfQuot_surjective_of_mapCotangent_surjective {I : Ideal A} {J : Ideal B}
@@ -201,7 +186,6 @@ theorem surjective_of_surjective_mapCotangent [IsPrecomplete (maximalIdeal A) A]
     intro x
     obtain ⟨x, rfl⟩ := h x
     obtain ⟨x, rfl⟩ := (maximalIdeal A).toCotangent_surjective x
-    rw [mapCotangent_toCotangent]
     exact Submodule.mem_map_of_mem <| Ideal.mem_map_of_mem f.toAlgHom x.prop
   rw [← map_eq, ← Ideal.map_coe, ← AlgHom.toRingHom_eq_coe] at haus
   apply surjective_of_mk_map_comp_surjective (I := maximalIdeal A)
