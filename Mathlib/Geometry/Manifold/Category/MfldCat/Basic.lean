@@ -177,13 +177,6 @@ lemma ofHom_id :
 lemma ofHom_comp (f : ContMDiffMap I I' X Y n) (g : ContMDiffMap I' I'' Y Z n) :
     ofHom (g.comp f) = ofHom f ≫ ofHom g := rfl
 
-lemma ofHom_apply (f : ContMDiffMap I I' X Y n) (x : X) : (ofHom f) x = f x := rfl
-
-lemma hom_inv_id_apply {M N : MfldCat 𝕜 n} (f : M ≅ N) (x : M) : f.inv (f.hom x) = x := by
-  simp
-
-lemma inv_hom_id_apply {M N : MfldCat 𝕜 n} (f : M ≅ N) (y : N) : f.hom (f.inv y) = y := by
-  simp
 
 end ofHom
 
