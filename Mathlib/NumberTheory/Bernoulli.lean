@@ -612,16 +612,6 @@ private lemma pIntegral_faulhaber_sum (k p : ℕ) (hk : k > 0) [Fact p.Prime]
       exact pIntegral_bernoulli_even_term k m p hm_lt (ih m hm_pos hm_lt)
     · simp [bernoulli_eq_zero_of_odd hodd (by lia)]
 
-private lemma exists_int_sum_pow_add_indicator_eq (k p : ℕ) [Fact p.Prime] :
-    ∃ T : ℤ, (∑ v ∈ Ico 1 p, (v : ℚ) ^ (2 * k)) + vonStaudtIndicator (2 * k) p = p * T := by
-  have hcast : (↑((∑ v ∈ Ico 1 p, (v : ℤ) ^ (2 * k)) +
-      (if (p - 1) ∣ 2 * k then 1 else 0)) : ZMod p) = 0 :=
-    mod_cast sum_pow_add_indicator_eq_zero p (2 * k)
-  obtain ⟨T, hT⟩ := (ZMod.intCast_zmod_eq_zero_iff_dvd _ _).mp hcast
-  refine ⟨T, ?_⟩
-  unfold vonStaudtIndicator
-  exact_mod_cast hT
-
 private lemma sum_pow_filter_eq_faulhaber (k p : ℕ) (hk : 0 < k) :
     (∑ v ∈ Ico 1 p, (v : ℚ) ^ (2 * k)) =
       (∑ i ∈ Finset.range (2 * k), bernoulli i * ((2 * k + 1).choose i) *
@@ -656,8 +646,13 @@ private lemma bernoulli_add_indicator_eq_sub (k p : ℕ) (hk : k > 0) [Fact p.Pr
     ∃ T : ℤ, bernoulli (2 * k) + vonStaudtIndicator (2 * k) p / p =
       T - (∑ i ∈ Finset.range (2 * k),
         bernoulli i * ((2 * k + 1).choose i) * (p : ℚ) ^ (2 * k - i) / (2 * k + 1)) := by
-  obtain ⟨T, hT⟩ := exists_int_sum_pow_add_indicator_eq k p
+  have hcast : (↑((∑ v ∈ Ico 1 p, (v : ℤ) ^ (2 * k)) +
+      (if (p - 1) ∣ 2 * k then 1 else 0)) : ZMod p) = 0 :=
+    mod_cast sum_pow_add_indicator_eq_zero p _
+  obtain ⟨T, hT_int⟩ := (ZMod.intCast_zmod_eq_zero_iff_dvd _ _).mp hcast
   use T
+  have hT : (∑ v ∈ Ico 1 p, (v : ℚ) ^ (2 * k)) + vonStaudtIndicator (2 * k) p =
+      p * T := by unfold vonStaudtIndicator; exact_mod_cast hT_int
   have hp_ne : (p : ℚ) ≠ 0 := Nat.cast_ne_zero.mpr (Fact.out : p.Prime).ne_zero
   have hAlg : bernoulli (2 * k) + vonStaudtIndicator (2 * k) p / p =
       T - (∑ i ∈ Finset.range (2 * k), bernoulli i * ((2 * k + 1).choose i) *
@@ -681,7 +676,7 @@ private lemma not_dvd_den_bernoulli_add_indicator (k p : ℕ) (hk : k > 0) [Fact
 private lemma not_dvd_den_vonStaudt_sum (k p : ℕ) (hk : k > 0) [Fact p.Prime] :
     ¬ p ∣ (bernoulli (2 * k) + ∑ q ∈ vonStaudtPrimes k, (1 : ℚ) / q).den := by
   rw [sum_one_div_prime_eq_indicator_div_add k p hk, ← add_assoc]
-  have hcop_ind := ((Nat.Prime.coprime_iff_not_dvd Fact.out).2
+  have hcop_ind := ((Nat.Prime.coprime_iff_not_dvd Fact.out).mpr
     (not_dvd_den_bernoulli_add_indicator k p hk)).symm
   have hcop_rest := Nat.Coprime.of_dvd_left (den_sum_dvd_prod_den _ _)
     (prod_one_div_prime_den_coprime k p)
