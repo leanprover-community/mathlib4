@@ -288,18 +288,20 @@ See `Complex.lift` for this as an equiv. -/
 def liftAux (I' : A) (hf : I' * I' = -1) : ℂ →ₐ[ℝ] A :=
   AlgHom.ofLinearMap
     ((Algebra.linearMap ℝ A).comp reLm + (LinearMap.toSpanSingleton _ _ I').comp imLm)
-    (show algebraMap ℝ A 1 + (0 : ℝ) • I' = 1 by rw [map_one, zero_smul, add_zero])
-    fun ⟨x₁, y₁⟩ ⟨x₂, y₂⟩ =>
-    show
-      algebraMap ℝ A (x₁ * x₂ - y₁ * y₂) + (x₁ * y₂ + y₁ * x₂) • I' =
-        (algebraMap ℝ A x₁ + y₁ • I') * (algebraMap ℝ A x₂ + y₂ • I') by
-      rw [add_mul, mul_add, mul_add, add_comm _ (y₁ • I' * y₂ • I'), add_add_add_comm]
-      congr 1
-      -- equate "real" and "imaginary" parts
-      · rw [smul_mul_smul_comm, hf, smul_neg, ← algebraMap_eq_smul_one, ← sub_eq_add_neg,
-          ← map_mul, ← map_sub]
-      · rw [smul_def, smul_def, smul_def, ← right_comm _ x₂,
-          ← mul_assoc, ← add_mul, ← map_mul, ← map_mul, ← map_add]
+    (show algebraMap ℝ A 1 + (0 : ℝ) • I' = 1 by rw [map_one, zero_smul, add_zero]) ?_
+where finally
+  rintro ⟨x₁, y₁⟩ ⟨x₂, y₂⟩
+  rw [mk_mul_mk]
+  change
+    algebraMap ℝ A (x₁ * x₂ - y₁ * y₂) + (x₁ * y₂ + y₁ * x₂) • I' =
+      (algebraMap ℝ A x₁ + y₁ • I') * (algebraMap ℝ A x₂ + y₂ • I')
+  rw [add_mul, mul_add, mul_add, add_comm _ (y₁ • I' * y₂ • I'), add_add_add_comm]
+  congr 1
+  -- equate "real" and "imaginary" parts
+  · rw [smul_mul_smul_comm, hf, smul_neg, ← algebraMap_eq_smul_one, ← sub_eq_add_neg,
+      ← map_mul, ← map_sub]
+  · rw [smul_def, smul_def, smul_def, ← right_comm _ x₂,
+      ← mul_assoc, ← add_mul, ← map_mul, ← map_mul, ← map_add]
 
 @[simp]
 theorem liftAux_apply (I' : A) (hI') (z : ℂ) : liftAux I' hI' z = algebraMap ℝ A z.re + z.im • I' :=

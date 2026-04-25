@@ -137,8 +137,8 @@ def ValueGroup₀.restrict₀ : A →*₀ ValueGroup₀ f where
   toFun a :=
     letI : DecidablePred fun b : B ↦ b = 0 := Classical.decPred fun b ↦ b = 0
     if h : f a = 0 then 0 else (⟨Units.mk0 (f a) h, mem_valueGroup _ ⟨a, rfl⟩⟩ : valueGroup f)
-  map_one'  := by simp [← WithZero.coe_one]
-  map_mul'  := by aesop
+  map_one' := by simp [← WithZero.coe_one]
+  map_mul' := by aesop
   map_zero' := by simp
 
 namespace ValueGroup₀
@@ -212,8 +212,6 @@ open Function
 
 lemma ValueGroup₀.restrict₀_surjective : Surjective (ValueGroup₀.restrict₀ f) :=
   fun _ ↦ mem_range.mp (by simp [ValueGroup₀.restrict₀_range_eq_top])
-
-open Function
 
 end GroupWithZero
 section CommGroupWithZero

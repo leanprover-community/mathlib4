@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Category.MonCat.Limits
 public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 public import Mathlib.CategoryTheory.Monoidal.Mon_
+public import Mathlib.CategoryTheory.ConcreteCategory.Representable
 
 /-!
 # Yoneda embedding of `Mon C`
@@ -149,41 +150,33 @@ instance [IsCommMonObj M.X] : IsCommMonObj M where
 
 end Mon
 
-set_option backward.isDefEq.respectTransparency false in
 variable (X) in
 /-- If `X` represents a presheaf of monoids, then `X` is a monoid object. -/
 @[to_additive (attr := simps, implicit_reducible)
 /-- If `X` represents a presheaf of additive monoids, then `X` is an additive monoid object. -/]
 def MonObj.ofRepresentableBy (F : Cᵒᵖ ⥤ MonCat.{w}) (α : (F ⋙ forget _).RepresentableBy X) :
     MonObj X where
-  one := α.homEquiv.symm 1
-  mul := α.homEquiv.symm (α.homEquiv (fst X X) * α.homEquiv (snd X X))
+  one := α.homEquiv'.symm 1
+  mul := α.homEquiv'.symm (α.homEquiv' (fst X X) * α.homEquiv' (snd X X))
   one_mul := by
-    apply α.homEquiv.injective
-    simp only [α.homEquiv_comp, Equiv.apply_symm_apply]
-    simp only [Functor.comp_map, ConcreteCategory.forget_map_eq_coe, map_mul]
-    simp only [← ConcreteCategory.forget_map_eq_coe, ← Functor.comp_map, ← α.homEquiv_comp]
-    simp only [whiskerRight_fst, whiskerRight_snd]
-    simp only [α.homEquiv_comp, Equiv.apply_symm_apply]
-    simp [leftUnitor_hom]
+    apply α.homEquiv'.injective
+    simp only [α.homEquiv'_comp, Equiv.apply_symm_apply, map_mul]
+    simp only [← α.homEquiv'_comp]
+    simp only [whiskerRight_fst, whiskerRight_snd, α.homEquiv'_comp, Equiv.apply_symm_apply]
+    simp [leftUnitor_hom, -op_tensorObj, -op_whiskerRight, -op_tensorUnit]
   mul_one := by
-    apply α.homEquiv.injective
-    simp only [α.homEquiv_comp, Equiv.apply_symm_apply]
-    simp only [Functor.comp_map, ConcreteCategory.forget_map_eq_coe, map_mul]
-    simp only [← ConcreteCategory.forget_map_eq_coe, ← Functor.comp_map, ← α.homEquiv_comp]
-    simp only [whiskerLeft_fst, whiskerLeft_snd]
-    simp only [α.homEquiv_comp, Equiv.apply_symm_apply]
-    simp [rightUnitor_hom]
+    apply α.homEquiv'.injective
+    simp only [α.homEquiv'_comp, Equiv.apply_symm_apply, map_mul]
+    simp only [← α.homEquiv'_comp]
+    simp only [whiskerLeft_fst, whiskerLeft_snd, α.homEquiv'_comp, Equiv.apply_symm_apply]
+    simp [rightUnitor_hom, -op_tensorObj, -op_whiskerRight, -op_tensorUnit]
   mul_assoc := by
-    apply α.homEquiv.injective
-    simp only [α.homEquiv_comp, Equiv.apply_symm_apply]
-    simp only [Functor.comp_map, ConcreteCategory.forget_map_eq_coe, map_mul]
-    simp only [← ConcreteCategory.forget_map_eq_coe, ← Functor.comp_map, ← α.homEquiv_comp]
-    simp only [whiskerRight_fst, whiskerRight_snd, whiskerLeft_fst,
-      associator_hom_fst, whiskerLeft_snd]
-    simp only [α.homEquiv_comp, Equiv.apply_symm_apply]
-    simp only [Functor.comp_map, ConcreteCategory.forget_map_eq_coe, map_mul, _root_.mul_assoc]
-    simp only [← ConcreteCategory.forget_map_eq_coe, ← Functor.comp_map, ← α.homEquiv_comp]
+    apply α.homEquiv'.injective
+    simp only [α.homEquiv'_comp, Equiv.apply_symm_apply, map_mul]
+    simp only [← α.homEquiv'_comp]
+    simp only [whiskerRight_fst, whiskerRight_snd, whiskerLeft_fst, associator_hom_fst,
+      whiskerLeft_snd, α.homEquiv'_comp, Equiv.apply_symm_apply, map_mul, _root_.mul_assoc]
+    simp only [← α.homEquiv'_comp]
     simp
 
 /-- If `M` is a monoid object, then `Hom(X, M)` has a monoid structure. -/
@@ -214,6 +207,7 @@ abbrev Hom.monoid : Monoid (X ⟶ M) where
     exact lift_fst _ _
 
 scoped[CategoryTheory.MonObj] attribute [instance] Hom.monoid
+scoped[CategoryTheory.AddMonObj] attribute [instance] Hom.addMonoid
 
 @[to_additive]
 lemma Hom.one_def : (1 : X ⟶ M) = toUnit X ≫ η := rfl
@@ -293,7 +287,6 @@ def yonedaMonObj : Cᵒᵖ ⥤ MonCat.{v} where
   map_id _ := MonCat.hom_ext (MonoidHom.ext Category.id_comp)
   map_comp _ _ := MonCat.hom_ext (MonoidHom.ext (Category.assoc _ _))
 
-set_option backward.isDefEq.respectTransparency false in
 variable (X) in
 /-- If `X` represents a presheaf of monoids `F`, then `Hom(-, X)` is isomorphic to `F` as
 a presheaf of monoids. -/
@@ -306,14 +299,13 @@ def yonedaMonObjIsoOfRepresentableBy
     yonedaMonObj X ≅ F :=
   letI := MonObj.ofRepresentableBy X F α
   NatIso.ofComponents (fun Y ↦ MulEquiv.toMonCatIso
-    { toEquiv := α.homEquiv
+    { toEquiv := α.homEquiv'
       map_mul' f₁ f₂ := by
-        change α.homEquiv (lift f₁ f₂ ≫ α.homEquiv.symm (α.homEquiv (fst X X) *
-          α.homEquiv (snd X X))) = α.homEquiv f₁ * α.homEquiv f₂
-        simp only [α.homEquiv_comp, Equiv.apply_symm_apply,
-          Functor.comp_map, ConcreteCategory.forget_map_eq_coe, map_mul]
-        simp only [← Functor.comp_map, ← ConcreteCategory.forget_map_eq_coe, ← α.homEquiv_comp]
-        simp }) (fun φ ↦ MonCat.hom_ext (MonoidHom.ext (α.homEquiv_comp φ.unop)))
+        change α.homEquiv' (lift f₁ f₂ ≫ α.homEquiv'.symm (α.homEquiv' (fst X X) *
+          α.homEquiv' (snd X X))) = α.homEquiv' f₁ * α.homEquiv' f₂
+        simp only [α.homEquiv'_comp, Equiv.apply_symm_apply, map_mul]
+        simp only [← α.homEquiv'_comp]
+        simp }) (fun φ ↦ MonCat.hom_ext (MonoidHom.ext (α.homEquiv'_comp φ.unop)))
 
 /-- The yoneda embedding of `Mon C` into presheaves of monoids. -/
 @[to_additive (attr := simps)
@@ -437,6 +429,7 @@ def mulEquivCongrRight (e : M ≅ N) [IsMonHom e.hom] (X : C) : (X ⟶ M) ≃* (
 
 end Hom
 
+open scoped IsMulCommutative in
 /-- A monoid object `M` is commutative if and only if `X ⟶ M` is commutative for all `X`. -/
 @[to_additive]
 lemma isCommMonObj_iff_isMulCommutative (M : C) [MonObj M] [BraidedCategory C] :

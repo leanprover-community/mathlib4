@@ -42,8 +42,8 @@ in a style inspired by the [Flypitch project](https://flypitch.github.io/).
 ## References
 
 For the Flypitch project:
-- [J. Han, F. van Doorn, *A formal proof of the independence of the continuum hypothesis*]
-  [flypitch_cpp]
+- [J. Han, F. van Doorn, *A formal proof of the independence of the continuum
+  hypothesis*][flypitch_cpp]
 - [J. Han, F. van Doorn, *A formalization of forcing and the unprovability of
   the continuum hypothesis*][flypitch_itp]
 -/
@@ -957,21 +957,23 @@ open BoundedFormula
 variable {r : L.Relations 2}
 
 @[simp]
-theorem realize_reflexive : M ⊨ r.reflexive ↔ Reflexive fun x y : M => RelMap r ![x, y] :=
-  forall_congr' fun _ => realize_rel₂
+theorem realize_reflexive : M ⊨ r.reflexive ↔ Std.Refl fun x y : M => RelMap r ![x, y] := by
+  rw [refl_def]
+  exact forall_congr' fun _ ↦ realize_rel₂
 
 @[simp]
-theorem realize_irreflexive : M ⊨ r.irreflexive ↔ Std.Irrefl fun x y : M => RelMap r ![x, y] :=
-  (forall_congr' fun _ ↦ not_congr realize_rel₂).trans ⟨(⟨·⟩), (·.irrefl)⟩
+theorem realize_irreflexive : M ⊨ r.irreflexive ↔ Std.Irrefl fun x y : M => RelMap r ![x, y] := by
+  rw [irrefl_def]
+  exact forall_congr' fun _ ↦ not_congr realize_rel₂
 
 @[simp]
 theorem realize_symmetric : M ⊨ r.symmetric ↔ Symmetric fun x y : M => RelMap r ![x, y] :=
-  forall_congr' fun _ => forall_congr' fun _ => imp_congr realize_rel₂ realize_rel₂
+  forall₂_congr fun _ _ ↦ imp_congr realize_rel₂ realize_rel₂
 
 @[simp]
 theorem realize_antisymmetric :
     M ⊨ r.antisymmetric ↔ Std.Antisymm fun x y : M => RelMap r ![x, y] := by
-  refine .trans ?_ ⟨Std.Antisymm.mk, (·.antisymm)⟩
+  rw [antisymm_def]
   exact forall₂_congr fun _ _ ↦ imp_congr realize_rel₂ <| imp_congr realize_rel₂ .rfl
 
 @[simp]
@@ -981,8 +983,8 @@ theorem realize_transitive : M ⊨ r.transitive ↔ IsTrans M fun x y ↦ RelMap
 
 @[simp]
 theorem realize_total : M ⊨ r.total ↔ Std.Total fun x y : M ↦ RelMap r ![x, y] := by
-  refine .trans ?_ ⟨Std.Total.mk, (·.total)⟩
-  exact forall₂_congr fun _ _ ↦ realize_sup.trans (or_congr realize_rel₂ realize_rel₂)
+  rw [total_def]
+  exact forall₂_congr fun _ _ ↦ realize_sup.trans <| or_congr realize_rel₂ realize_rel₂
 
 end Relations
 
@@ -1000,10 +1002,7 @@ theorem Sentence.realize_cardGe (n) : M ⊨ Sentence.cardGe L n ↔ ↑n ≤ #M 
   · rintro ⟨xs, h⟩
     refine ⟨⟨xs, fun i j ij => ?_⟩⟩
     contrapose! ij
-    have hij := h _ i j (by simpa using ij) rfl
-    simp only [BoundedFormula.realize_not, Term.realize, BoundedFormula.realize_bdEqual,
-      Sum.elim_inr] at hij
-    exact hij
+    exact h _ i j (by simpa using ij) rfl
   · rintro _ i j ij rfl
     simpa using ij
 

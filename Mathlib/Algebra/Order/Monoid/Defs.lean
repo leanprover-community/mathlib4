@@ -78,18 +78,15 @@ variable [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α]
 -- See note [lower instance priority]
 @[to_additive]
 instance (priority := 200) IsOrderedCancelMonoid.toMulLeftReflectLE
-  {α : Type*} [CommMonoid α] [Preorder α] [IsOrderedCancelMonoid α] :
-    MulLeftReflectLE α :=
-  ⟨IsOrderedCancelMonoid.le_of_mul_le_mul_left⟩
+  {α : Type*} [CommMonoid α] [Preorder α] [IsOrderedCancelMonoid α] : MulLeftReflectLE α where
+  le_of_mul_le_mul_left' := IsOrderedCancelMonoid.le_of_mul_le_mul_left _ _ _
 
 @[to_additive]
-instance (priority := 900) IsOrderedCancelMonoid.toMulLeftReflectLT :
-    MulLeftReflectLT α where
-  elim := contravariant_lt_of_contravariant_le α α _ ContravariantClass.elim
+instance (priority := 900) IsOrderedCancelMonoid.toMulLeftReflectLT : MulLeftReflectLT α where
+  elim := contravariant_lt_of_contravariant_le α α _ fun _ ↦ MulLeftReflectLE.le_of_mul_le_mul_left'
 
 @[to_additive]
-theorem IsOrderedCancelMonoid.toMulRightReflectLT :
-    MulRightReflectLT α :=
+theorem IsOrderedCancelMonoid.toMulRightReflectLT : MulRightReflectLT α :=
   inferInstance
 
 -- See note [lower instance priority]
@@ -117,11 +114,11 @@ variable [CommMonoid α] [LinearOrder α] [IsOrderedMonoid α] {a : α}
 
 @[to_additive (attr := simp)]
 theorem one_le_mul_self_iff : 1 ≤ a * a ↔ 1 ≤ a :=
-  ⟨(fun h ↦ by push_neg at h ⊢; exact mul_lt_one' h h).mtr, fun h ↦ one_le_mul h h⟩
+  ⟨fun h ↦ by contrapose! h; exact mul_lt_one' h h, fun h ↦ one_le_mul h h⟩
 
 @[to_additive (attr := simp)]
 theorem one_lt_mul_self_iff : 1 < a * a ↔ 1 < a :=
-  ⟨(fun h ↦ by push_neg at h ⊢; exact mul_le_one' h h).mtr, fun h ↦ one_lt_mul'' h h⟩
+  ⟨fun h ↦ by contrapose! h; exact mul_le_one' h h, fun h ↦ one_lt_mul'' h h⟩
 
 @[to_additive (attr := simp)]
 theorem mul_self_le_one_iff : a * a ≤ 1 ↔ a ≤ 1 := by contrapose!; exact one_lt_mul_self_iff

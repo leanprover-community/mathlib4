@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.ModCases
 
 private axiom test_sorry : ∀ {a}, a

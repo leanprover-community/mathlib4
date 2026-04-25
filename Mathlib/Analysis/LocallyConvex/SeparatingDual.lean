@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Central.Basic
 public import Mathlib.Analysis.LocallyConvex.Separation
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.LinearAlgebra.Dual.Lemmas
-public import Mathlib.Topology.Algebra.Module.StrongTopology
+public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 
 /-!
 # Spaces with separating dual
@@ -111,7 +111,7 @@ theorem _root_.separatingDual_iff_injective : SeparatingDual R V ↔
   simp_rw [separatingDual_def, Ne, injective_iff_map_eq_zero]
   congrm ∀ v, ?_
   rw [not_imp_comm, LinearMap.ext_iff]
-  push_neg; rfl
+  push Not; rfl
 
 variable [SeparatingDual R V]
 

@@ -264,8 +264,6 @@ variable {S : Type*} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalHom f]
 theorem map.isLocalHom : IsLocalHom (map f) :=
   MvPowerSeries.map.isLocalHom f
 
-variable [IsLocalRing R]
-
 end IsLocalRing
 
 section IsDiscreteValuationRing

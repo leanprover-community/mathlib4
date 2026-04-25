@@ -22,7 +22,7 @@ The category of measurable spaces with s-finite kernels is a copy-discard catego
 
 ## References
 * [A synthetic approach to
-Markov kernels, conditional independence and theorems on sufficient statistics][fritz2020]
+  Markov kernels, conditional independence and theorems on sufficient statistics][fritz2020]
 -/
 
 @[expose] public section
@@ -55,8 +55,10 @@ structure Hom (X Y : SFinKer.{u}) where
 
 instance {X Y : SFinKer} {κ : Hom X Y} : IsSFiniteKernel κ.hom := κ.property
 
-@[simps]
-noncomputable instance : LargeCategory SFinKer where
+noncomputable section
+
+@[simps (attr := scoped simp) -isSimp]
+instance : LargeCategory SFinKer where
   Hom X Y := Hom X Y
   id X := ⟨Kernel.id, inferInstance⟩
   comp κ η := ⟨η.1 ∘ₖ κ.1, inferInstance⟩
@@ -66,33 +68,22 @@ noncomputable instance : LargeCategory SFinKer where
 lemma hom_ext {X Y : SFinKer.{u}} {κ η : X ⟶ Y} (h : κ.hom = η.hom) :
     κ = η := SFinKer.Hom.ext h
 
-end SFinKer
-
-noncomputable section
-
-@[simps]
+open MeasurableEquiv in
+@[simps (attr := scoped simp) -isSimp]
 instance : MonoidalCategory SFinKer.{u} where
   tensorObj X Y := SFinKer.of (X × Y)
   whiskerLeft X Y₁ Y₂ κ := ⟨Kernel.id ∥ₖ κ.1, inferInstance⟩
   whiskerRight κ Y := ⟨κ.1 ∥ₖ Kernel.id, inferInstance⟩
   tensorUnit := SFinKer.of PUnit
   associator X Y Z := by
-    let f₁ := fun (x : (X × Y) × Z) ↦ (x.1.1, x.1.2, x.2)
-    let f₂ := fun (x : X × Y × Z) ↦ ((x.1, x.2.1), x.2.2)
-    have hf₁ : Measurable f₁ := by fun_prop
-    have hf₂ : Measurable f₂ := by fun_prop
-    refine ⟨⟨Kernel.id.map f₁, inferInstance⟩,
-      ⟨Kernel.id.map f₂, inferInstance⟩, ?_, ?_⟩
+    refine ⟨⟨Kernel.deterministic prodAssoc (by fun_prop), inferInstance⟩,
+      ⟨Kernel.deterministic prodAssoc.symm (by fun_prop), inferInstance⟩, ?_, ?_⟩
     · ext : 1; dsimp
-      rw [Kernel.id_map hf₁, Kernel.id_map hf₂, Kernel.deterministic_comp_eq_map hf₂,
-        Kernel.deterministic_map hf₁ hf₂]
-      ext : 1
-      simp [Kernel.deterministic_apply, Kernel.id_apply, f₁, f₂]
+      rw [Kernel.deterministic_comp_deterministic, Kernel.id]
+      congr
     · ext : 1; dsimp
-      rw [Kernel.id_map hf₂, Kernel.id_map hf₁, Kernel.deterministic_comp_eq_map hf₁,
-        Kernel.deterministic_map hf₂ hf₁]
-      ext : 1
-      simp [Kernel.deterministic_apply, Kernel.id_apply, f₁, f₂]
+      rw [Kernel.deterministic_comp_deterministic, Kernel.id]
+      congr
   leftUnitor X := by
     let f₁ := fun (x : X) ↦ (PUnit.unit, x)
     have hf₁ : Measurable f₁ := by fun_prop
@@ -153,8 +144,7 @@ instance : MonoidalCategory SFinKer.{u} where
   associator_naturality κ₁ κ₂ η := by
     ext : 1; dsimp
     simp only [Kernel.id_parallelComp_comp_parallelComp_id]
-    rw [Kernel.id_map (by fun_prop), Kernel.id_map (by fun_prop),
-      Kernel.deterministic_comp_eq_map, Kernel.comp_deterministic_eq_comap]
+    rw [Kernel.deterministic_comp_eq_map, Kernel.comp_deterministic_eq_comap]
     ext _ _ hs
     rw [Kernel.map_apply' _ (by fun_prop) _ hs, Kernel.comap_apply' _ (by fun_prop)]
     repeat rw [Kernel.parallelComp_apply]
@@ -167,7 +157,6 @@ instance : MonoidalCategory SFinKer.{u} where
   pentagon W X Y Z := by
     ext : 1; dsimp
     simp only [Kernel.id]
-    repeat rw [Kernel.deterministic_map (by fun_prop) (by fun_prop)]
     repeat rw [Kernel.deterministic_parallelComp_deterministic (by fun_prop) (by fun_prop)]
     simp [Kernel.deterministic_comp_deterministic]
     congr 1
@@ -179,7 +168,7 @@ instance : MonoidalCategory SFinKer.{u} where
     simp [Kernel.deterministic_comp_deterministic]
     congr 1
 
-@[simps]
+@[simps (attr := scoped simp) -isSimp]
 instance : SymmetricCategory SFinKer.{u} where
   braiding X Y := by
     refine ⟨⟨Kernel.swap _ _, by rw [Kernel.swap]; infer_instance⟩,
@@ -194,24 +183,20 @@ instance : SymmetricCategory SFinKer.{u} where
     exact Kernel.swap_parallelComp
   hexagon_forward X Y Z := by
     ext : 1; dsimp
-    repeat rw [Kernel.id_map]
-    · simp only [Kernel.id, Kernel.swap]
-      repeat rw [Kernel.deterministic_parallelComp_deterministic]
-      repeat rw [Kernel.deterministic_comp_deterministic]
-      congr 1
-    all_goals fun_prop
+    simp only [Kernel.id, Kernel.swap]
+    repeat rw [Kernel.deterministic_parallelComp_deterministic]
+    repeat rw [Kernel.deterministic_comp_deterministic]
+    congr 1
   hexagon_reverse X Y Z := by
     ext : 1; dsimp
-    repeat rw [Kernel.id_map]
-    · simp only [Kernel.id, Kernel.swap]
-      repeat rw [Kernel.deterministic_parallelComp_deterministic]
-      repeat rw [Kernel.deterministic_comp_deterministic]
-      congr 1
-    all_goals fun_prop
+    simp only [Kernel.id, Kernel.swap]
+    repeat rw [Kernel.deterministic_parallelComp_deterministic]
+    repeat rw [Kernel.deterministic_comp_deterministic]
+    congr 1
   symmetry X Y := by
     ext : 1; simp
 
-@[simps]
+@[simps (attr := scoped simp) -isSimp]
 instance {X : SFinKer} : ComonObj X where
   counit := ⟨Kernel.discard X, by rw [Kernel.discard]; infer_instance⟩
   comul := ⟨Kernel.copy X, by rw [Kernel.copy]; infer_instance⟩
@@ -229,7 +214,6 @@ instance {X : SFinKer} : ComonObj X where
     congr 1
   comul_assoc := by
     ext : 1; dsimp
-    rw [Kernel.id_map (by fun_prop)]
     simp [Kernel.copy, Kernel.id, Kernel.deterministic_comp_deterministic,
       Kernel.deterministic_parallelComp_deterministic]
     congr 1
@@ -238,7 +222,6 @@ instance : CopyDiscardCategory SFinKer.{u} where
   isCommComonObj X := ⟨by ext : 1; dsimp; exact Kernel.swap_copy⟩
   copy_tensor X Y := by
     ext : 1; dsimp [MonoidalCategory.tensorμ]
-    repeat rw [Kernel.id_map (by fun_prop)]
     simp only [Kernel.copy, Kernel.id, Kernel.swap]
     repeat rw [Kernel.deterministic_parallelComp_deterministic]
     repeat rw [Kernel.deterministic_comp_deterministic]
@@ -257,3 +240,5 @@ instance : CopyDiscardCategory SFinKer.{u} where
     simp [Kernel.copy_apply, Kernel.deterministic_apply]
 
 end
+
+end SFinKer

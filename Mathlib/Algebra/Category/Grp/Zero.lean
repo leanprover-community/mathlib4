@@ -17,10 +17,7 @@ rather than from the existence of a zero object.
 
 @[expose] public section
 
-
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 universe u
 
