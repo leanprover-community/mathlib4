@@ -350,6 +350,12 @@ def main():
         help="Only process these files (paths relative to project root)",
     )
     parser.add_argument(
+        "--directories",
+        nargs="+",
+        default=None,
+        help="Directories to scan when building the import DAG (default: Mathlib MathlibTest Archive Counterexamples)",
+    )
+    parser.add_argument(
         "--no-initial",
         action="store_true",
         help="Skip the initial lake build (assumes .oleans are already fresh)",
@@ -373,13 +379,13 @@ def main():
 
     start_time = time.time()
 
-    # Step 1: lakefile
-    if not args.dry_run:
+    # Step 1: lakefile.lean
+    if not args.dry_run and os.path.exists(PROJECT_DIR / "lakefile.lean"):
         handle_lakefile(options)
 
     # Step 2: build DAG
     print("Building import DAG...", flush=True)
-    full_dag = DAG.from_directories(PROJECT_DIR)
+    full_dag = DAG.from_directories(PROJECT_DIR, args.directories)
     print(f"  {len(full_dag.modules)} modules parsed")
 
     # Step 3: scan for removable lines
