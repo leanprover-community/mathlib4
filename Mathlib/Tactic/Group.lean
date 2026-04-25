@@ -70,20 +70,21 @@ example {G : Type} [Group G] (a b c d : G) (h : c = (a*b^2)*((b*b)⁻¹*a⁻¹)*
 syntax (name := group) "group" (location)? : tactic
 
 macro_rules
-| `(tactic| group $[$loc]?) => do
-  let simpTacStx ← `(tactic| simp -decide -failIfUnchanged only
-    [commutatorElement_def, mul_one, one_mul,
-      ← zpow_neg_one, ← zpow_natCast, ← zpow_mul,
-      Int.natCast_add, Int.natCast_mul,
-      Int.mul_neg, Int.neg_mul, neg_neg,
-      one_zpow, zpow_zero, zpow_one, mul_zpow_neg_one,
-      ← mul_assoc,
-      ← zpow_add, ← zpow_add_one, ← zpow_one_add,
-      _zpow_trick, _zpow_trick_one, _zpow_trick_one',
-      tsub_self, sub_self, add_neg_cancel, neg_add_cancel]
-    $[$loc]?)
+| `(tactic| group $[$loc]?) =>
   `(tactic| first
-    | repeat1 fail_if_no_progress ($simpTacStx <;> ring_nf (ifUnchanged := .silent) $[$loc]?)
+    | repeat1 fail_if_no_progress
+        (simp -decide -failIfUnchanged only
+          [commutatorElement_def, mul_one, one_mul,
+            ← zpow_neg_one, ← zpow_natCast, ← zpow_mul,
+            Int.natCast_add, Int.natCast_mul,
+            Int.mul_neg, Int.neg_mul, neg_neg,
+            one_zpow, zpow_zero, zpow_one, mul_zpow_neg_one,
+            ← mul_assoc,
+            ← zpow_add, ← zpow_add_one, ← zpow_one_add,
+            _zpow_trick, _zpow_trick_one, _zpow_trick_one',
+            tsub_self, sub_self, add_neg_cancel, neg_add_cancel]
+          $[$loc]?
+        <;> ring_nf (ifUnchanged := .silent) $[$loc]?)
     | fail "`group` made no progress")
 
 end Mathlib.Tactic.Group
