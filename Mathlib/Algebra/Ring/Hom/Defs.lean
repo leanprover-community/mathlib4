@@ -537,7 +537,7 @@ variable {_ : NonAssocSemiring γ}
 @[implicit_reducible]
 def comp (g : β →+* γ) (f : α →+* β) : α →+* γ :=
   { g.toNonUnitalRingHom.comp f.toNonUnitalRingHom with
-    toFun := fun x ↦ g (f x), map_one' := by simp }
+    toFun x := g (f x), map_one' := by simp }
 
 /-- Composition of semiring homomorphisms is associative. -/
 theorem comp_assoc {δ} {_ : NonAssocSemiring δ} (f : α →+* β) (g : β →+* γ) (h : γ →+* δ) :
