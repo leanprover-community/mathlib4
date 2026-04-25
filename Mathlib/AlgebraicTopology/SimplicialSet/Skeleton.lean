@@ -174,17 +174,44 @@ end
 
 namespace relativeCellComplexOfMono
 
+/-!
+The main next technical result is that if `i : X ⟶ Y` is a monomorphism
+of simplicial sets and `d : ℕ`, there is a pushout square:
+```
+                                  t i d
+∐ fun (c : Cell i d) ↦ ∂Δ[d] ----------> skeletonOfMono i d
+               |                                   |
+         l i d |                                   | r i d
+               v                  b i d            v
+∐ fun (c : Cell i d) ↦ Δ[d]  ----------> skeletonOfMono i (d + 1)
+```
+
+The index type `Cell i d` identifies to the type of nondegenerate `d`-simplices
+of `Y` not in the range of `i`.
+
+-/
+
+/-- If `i : X ⟶ Y` is a monomorphism of simplicial sets and `d : ℕ`, this is
+the type of nondegenerate `d`-simplices of `Y` which do not belong to
+the range of `i`. -/
 @[ext]
 structure Cell [Mono i] (d : ℕ) where
+  /-- a `d`-simplex in the target of the monomorphism -/
   simplex : Y _⦋d⦌
   nonDegenerate : simplex ∈ Y.nonDegenerate d
   notMem : simplex ∉ Set.range (i.app _)
 
 variable [Mono i] (d : ℕ)
 
+/-- If `i : X ⟶ Y` is a monomorphism of simplicial sets and `d : ℕ`, this is
+a coproduct of copies of `Δ[d]` indexed by the nondegenerate `d`-simplices of `Y`
+not in the range of `i`. -/
 noncomputable abbrev sigmaStdSimplex : SSet.{u} :=
   ∐ fun (_ : Cell i d) ↦ Δ[d]
 
+/-- If `i : X ⟶ Y` is a monomorphism of simplicial sets and `d : ℕ`, this is
+a coproduct of copies of `∂Δ[d]` indexed by the nondegenerate `d`-simplices of `Y`
+not in the range of `i`. -/
 noncomputable abbrev sigmaBoundary : SSet.{u} :=
   ∐ fun (_ : Cell i d) ↦ ∂Δ[d]
 
@@ -192,12 +219,20 @@ namespace Cell
 
 variable {i d} (c : Cell i d)
 
+/-- Given a monomorphism `i : X ⟶ Y` of simplicial sets and a nondegenerate `d`-simplex
+of `Y` not in the range of `i`, this is the inclusion of the corresponding summand
+of the coproduct `sigmaStdSimplex i d`. -/
 noncomputable abbrev ιSigmaStdSimplex : Δ[d] ⟶ sigmaStdSimplex i d :=
   Sigma.ι (fun (_ : Cell i d) ↦ Δ[d]) c
 
+/-- Given a monomorphism `i : X ⟶ Y` of simplicial sets and a nondegenerate `d`-simplex
+of `Y` not in the range of `i`, this is the inclusion of the corresponding summand
+of the coproduct `sigmaStdBoundary i d`. -/
 noncomputable abbrev ιSigmaBoundary : (∂Δ[d] : SSet) ⟶ sigmaBoundary i d :=
   Sigma.ι (fun (_ : Cell i d) ↦ (∂Δ[d] : SSet)) c
 
+/-- Given a monomorphism `i : X ⟶ Y` of simplicial sets and a nondegenerate `d`-simplex
+of `Y` not in the range of `i`, this is the corresponding morphism `Δ[d] ⟶ Y`. -/
 def map : Δ[d] ⟶ Y := yonedaEquiv.symm c.simplex
 
 lemma map_app_objEquiv_symm {n : SimplexCategory} (f : n ⟶ ⦋d⦌) :
@@ -244,16 +279,22 @@ lemma ιSigmaStdSimplex_jointly_surjective
     ((isColimitCofanMkObjOfIsColimit ((CategoryTheory.evaluation _ _).obj _) _ _
       (coproductIsCoproduct _))) a
 
+/-- the left morphism of the pushout square `isPushout i d`: this is
+the coproduct of copies of the boundary inclusion `∂Δ[d] ⟶ Δ[d]` indexed
+by the nondegenerate `d`-simplices of `Y` not in the range of `i`. -/
 noncomputable abbrev l : sigmaBoundary i d ⟶ sigmaStdSimplex i d :=
   Limits.Sigma.map (fun _ ↦ ∂Δ[d].ι)
 
+/-- the top morphism of the pushout square `isPushout i d`. -/
 noncomputable abbrev t : sigmaBoundary i d ⟶ skeletonOfMono i d :=
   Sigma.desc (fun c ↦ Subcomplex.lift (∂Δ[d].ι ≫ c.map)
     (by simp [Subcomplex.range_comp, Subcomplex.image_le_iff]))
 
+/-- the bottom morphism of the pushout square `isPushout i d`. -/
 noncomputable abbrev b : sigmaStdSimplex i d ⟶ skeletonOfMono i (d + 1) :=
   Sigma.desc (fun c ↦ Subcomplex.lift c.map c.range_map_le)
 
+/-- the right morphism of the pushout square `isPushout i d`. -/
 abbrev r : (skeletonOfMono i d : SSet) ⟶ skeletonOfMono i (d + 1) :=
   Subcomplex.homOfLE ((skeletonOfMono i).monotone (by simp))
 
@@ -370,6 +411,9 @@ lemma isPushout : IsPushout (t i d) (l i d) (r i d) (b i d) where
 end relativeCellComplexOfMono
 
 open relativeCellComplexOfMono in
+/-- If `i : X ⟶ Y` is a monomorphism of simplicial sets, then it is a relative cell
+complex with basic cells given by boundary inclusions `∂Δ[d] ⟶ Δ[d]`, one for each
+nondegenerate `d`-simplex of `Y` not in the range of `X`. -/
 @[simps]
 noncomputable def relativeCellComplexOfMono [Mono i] :
     RelativeCellComplex.{u} (basicCell := fun (n : ℕ) (_ : Unit) ↦ ∂Δ[n].ι) i where
@@ -393,12 +437,16 @@ noncomputable def relativeCellComplexOfMono [Mono i] :
       isPushout := isPushout i d }
 
 variable (X) in
+/-- If `X` is a simplicial set, then the inclusion `(⊥ : SSet) ⟶ X` of the empty
+subcomplex of `X` is a relative cell complex with basic cells given by boundary
+inclusions `∂Δ[d] ⟶ Δ[d]`, one for each nondegenerate `d`-simplex of `X`. -/
 noncomputable abbrev relativeCellComplex :
     RelativeCellComplex.{u} (basicCell := fun (n : ℕ) (_ : Unit) ↦ ∂Δ[n].ι)
       (Subcomplex.ι ⊥ : _ ⟶ X) :=
   relativeCellComplexOfMono _
 
-variable (X) in
+/-- The bijection between the cells of `relativeCellComplex X` and the type
+`X.N` of nondegenerate simplices of the simplicial set `X`. -/
 @[simps]
 def relativeCellComplexCellsEquiv : (relativeCellComplex X).Cells ≃ X.N where
   toFun c := N.mk _ c.k.nonDegenerate
