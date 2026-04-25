@@ -603,8 +603,11 @@ theorem mem_sInf : x ∈ sInf S ↔ ∀ s ∈ S, x ∈ s := by
   simp_rw [← SetLike.mem_coe, coe_sInf, mem_iInter₂]
 
 @[to_dual]
-instance : CompleteLattice (Ideal P) :=
-  completeLatticeOfInf (Ideal P) fun S ↦ by
+instance instCompleteLattice : CompleteLattice (Ideal P) where
+  __ := (inferInstance : Lattice (Ideal P))
+  __ := (inferInstance : OrderTop (Ideal P))
+  __ := (inferInstance : OrderBot (Ideal P))
+  __ := completeLatticeOfInf (Ideal P) fun S => by
     refine ⟨fun s hs ↦ ?_, fun s hs ↦ by rwa [← coe_subset_coe, coe_sInf, subset_iInter₂_iff]⟩
     rw [← coe_subset_coe, coe_sInf]
     exact biInter_subset_of_mem hs
