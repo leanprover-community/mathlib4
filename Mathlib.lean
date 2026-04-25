@@ -331,6 +331,7 @@ public import Mathlib.Algebra.FreeAlgebra
 public import Mathlib.Algebra.FreeAlgebra.Cardinality
 public import Mathlib.Algebra.FreeMonoid.Basic
 public import Mathlib.Algebra.FreeMonoid.Count
+public import Mathlib.Algebra.FreeMonoid.FreeSemigroup
 public import Mathlib.Algebra.FreeMonoid.Symbols
 public import Mathlib.Algebra.FreeMonoid.UniqueProds
 public import Mathlib.Algebra.FreeNonUnitalNonAssocAlgebra
@@ -1329,6 +1330,7 @@ public import Mathlib.AlgebraicGeometry.EllipticCurve.IsomOfJ
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Basic
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Formula
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Point
+public import Mathlib.AlgebraicGeometry.EllipticCurve.LFunction
 public import Mathlib.AlgebraicGeometry.EllipticCurve.ModelsWithJ
 public import Mathlib.AlgebraicGeometry.EllipticCurve.NormalForms
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Basic
@@ -3281,6 +3283,7 @@ public import Mathlib.CategoryTheory.Sites.IsSheafFor
 public import Mathlib.CategoryTheory.Sites.JointlySurjective
 public import Mathlib.CategoryTheory.Sites.LeftExact
 public import Mathlib.CategoryTheory.Sites.Limits
+public import Mathlib.CategoryTheory.Sites.LocalProperties
 public import Mathlib.CategoryTheory.Sites.Localization
 public import Mathlib.CategoryTheory.Sites.LocallyBijective
 public import Mathlib.CategoryTheory.Sites.LocallyFullyFaithful
