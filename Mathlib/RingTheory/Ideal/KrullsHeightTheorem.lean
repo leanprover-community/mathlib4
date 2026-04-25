@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Wanyi He, Jiedong Jiang, Christian Merten, Haoming Ning, Jingting Wang, Andrew Yang, Shouxin Zhang
+Authors: Wanyi He, Jiedong Jiang, Christian Merten, Jingting Wang, Andrew Yang, Shouxin Zhang
 -/
 module
 
@@ -131,11 +131,10 @@ theorem Ideal.height_span_singleton [IsDomain R] {p : R} (hp : Prime p) :
     (span {p}).height = 1 := by
   have : (span {p}).IsPrime := (span_singleton_prime hp.ne_zero).mpr hp
   apply le_antisymm
-  · exact height_le_one_of_isPrincipal_of_mem_minimalPrimes _ _
-      ((span {p}).minimalPrimes_eq_subsingleton_self ▸ Set.mem_singleton _)
-  · simp_rw [height_eq_primeHeight, ENat.one_le_iff_ne_zero, ne_eq, primeHeight_eq_zero_iff,
-      IsDomain.minimalPrimes_eq_singleton_bot, Set.mem_singleton_iff, span_singleton_eq_bot,
-      hp.ne_zero, not_false_eq_true]
+  · exact (height_le_one_of_isPrincipal_of_mem_minimalPrimes _ _
+      ((span {p}).minimalPrimes_eq_subsingleton_self ▸ Set.mem_singleton _))
+  · exact (one_le_height_span_singleton_of_mem_nonZeroDivisors
+      (mem_nonZeroDivisors_of_ne_zero hp.ne_zero))
 
 /-- If `q < p` are prime ideals such that `p` is minimal over `span (s ∪ {x})` and
 `t` is a set contained in `q` such that `s ⊆ √span (t ∪ {x})`, then `q` is minimal over `span t`.
