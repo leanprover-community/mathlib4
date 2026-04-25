@@ -585,6 +585,8 @@ lemma cfcₙ_neg : cfcₙ (fun x ↦ -(f x)) a = -(cfcₙ f a) := by
     · rw [cfcₙ_apply_of_not_map_zero a h0, cfcₙ_apply_of_not_map_zero, neg_zero]
       exact (h0 <| neg_eq_zero.mp ·)
 
+lemma cfcₙ_neg' : cfcₙ (-f) = (-cfcₙ f : A → A) := by ext1 a; exact (cfcₙ_neg f a)
+
 lemma cfcₙ_neg_id (ha : p a := by cfc_tac) :
     cfcₙ (- · : R → R) a = -a := by
   rw [cfcₙ_neg .., cfcₙ_id' R a]
