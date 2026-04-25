@@ -485,7 +485,7 @@ theorem det_eq_zero_of_not_linearIndependent_rows [IsDomain R] {A : Matrix m m R
 
 theorem linearIndependent_rows_of_det_ne_zero [IsDomain R] {A : Matrix m m R} (hA : A.det ≠ 0) :
     LinearIndependent R (fun i ↦ A i) := by
-  contrapose! hA
+  contrapose hA
   exact det_eq_zero_of_not_linearIndependent_rows hA
 
 theorem linearIndependent_cols_of_det_ne_zero [IsDomain R] {A : Matrix m m R} (hA : A.det ≠ 0) :

@@ -498,10 +498,14 @@ theorem mem_map_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e
     {I : Ideal R} (y : S) : y ∈ map e I ↔ ∃ x ∈ I, e x = y := by
   constructor
   · intro h
-    simp_rw [show map e I = _ from map_comap_of_equiv (e : R ≃+* S)] at h
-    exact ⟨(e : R ≃+* S).symm y, h, (e : R ≃+* S).apply_symm_apply y⟩
+    simp_rw [show map e I = _ from map_comap_of_equiv (RingEquivClass.toRingEquiv e : R ≃+* S)] at h
+    exact ⟨(EquivLike.toEquiv e).symm y, h, (EquivLike.toEquiv e).apply_symm_apply y⟩
   · rintro ⟨x, hx, rfl⟩
     exact mem_map_of_mem e hx
+
+lemma _root_.RingEquiv.map_primeCompl_comap_eq (e : R ≃+* S) (p : Ideal S) [p.IsPrime] :
+    (p.comap e).primeCompl.map e = p.primeCompl := by
+  simp [SetLike.ext_iff, e.surjective.forall]
 
 section Bijective
 
@@ -1018,13 +1022,13 @@ theorem ker_le_comap {K : Ideal S} (f : F) : RingHom.ker f ≤ comap f K := fun 
 /-- A ring isomorphism sends a prime ideal to a prime ideal. -/
 instance map_isPrime_of_equiv {F' : Type*} [EquivLike F' R S] [RingEquivClass F' R S]
     (f : F') {I : Ideal R} [IsPrime I] : IsPrime (map f I) := by
-  have h : I.map f = I.map ((f : R ≃+* S) : R →+* S) := rfl
-  rw [h, map_comap_of_equiv (f : R ≃+* S)]
-  exact Ideal.IsPrime.comap (RingEquiv.symm (f : R ≃+* S))
+  have h : I.map f = I.map ((RingEquivClass.toRingEquiv f : R ≃+* S) : R →+* S) := rfl
+  rw [h, map_comap_of_equiv (RingEquivClass.toRingEquiv f : R ≃+* S)]
+  exact Ideal.IsPrime.comap (RingEquivClass.toRingEquiv f : R ≃+* S).symm
 
 theorem map_eq_bot_iff_of_injective {I : Ideal R} {f : F} (hf : Function.Injective f) :
     I.map f = ⊥ ↔ I = ⊥ := by
-  simp [map, span_eq_bot, ← map_zero f, -map_zero, hf.eq_iff, I.eq_bot_iff]
+  simp [map, ← map_zero f, -map_zero, hf.eq_iff, I.eq_bot_iff]
 
 end Semiring
 

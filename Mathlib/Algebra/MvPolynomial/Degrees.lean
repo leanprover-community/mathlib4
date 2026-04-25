@@ -352,7 +352,7 @@ theorem degreeOf_mul_X_eq_degreeOf_add_one_iff (j : σ) (f : MvPolynomial σ R) 
   refine ⟨fun h => by by_contra ha; simp [ha] at h, fun h => ?_⟩
   apply Nat.le_antisymm (degreeOf_mul_X_self j f)
   have : (f.support.sup fun m ↦ m j) + 1 = (f.support.sup fun m ↦ (m j + 1)) :=
-    Finset.comp_sup_eq_sup_comp_of_nonempty @Nat.succ_le_succ (support_nonempty.mpr h)
+    Finset.apply_sup_eq_sup_comp_of_nonempty @Nat.succ_le_succ (support_nonempty.mpr h)
   simp only [degreeOf_eq_sup, support_mul_X, this]
   apply Finset.sup_le
   intro x hx

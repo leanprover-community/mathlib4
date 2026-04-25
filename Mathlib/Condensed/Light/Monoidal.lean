@@ -9,7 +9,11 @@ public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
 public import Mathlib.CategoryTheory.Monoidal.Braided.Reflection
 public import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
 public import Mathlib.CategoryTheory.Sites.Monoidal
-public import Mathlib.Condensed.Light.CartesianClosed
+public import Mathlib.CategoryTheory.Monoidal.Closed.Types
+public import Mathlib.CategoryTheory.Sites.CartesianClosed
+public import Mathlib.CategoryTheory.Sites.Equivalence
+public import Mathlib.Condensed.Light.Basic
+public import Mathlib.Condensed.Light.Instances
 public import Mathlib.Condensed.Light.Module
 
 /-!

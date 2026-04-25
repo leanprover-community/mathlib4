@@ -876,8 +876,8 @@ theorem lift_eq_iff_equiv (c₁ c₂ : Computation α) : LiftRel (· = ·) c₁ 
      fun a2 => by let ⟨b, b1, ab⟩ := h2 a2; rwa [← ab]⟩,
     fun e => ⟨fun {a} a1 => ⟨a, (e _).1 a1, rfl⟩, fun {a} a2 => ⟨a, (e _).2 a2, rfl⟩⟩⟩
 
-theorem LiftRel.refl (R : α → α → Prop) (H : Reflexive R) : Reflexive (LiftRel R) := fun _ =>
-  ⟨fun {a} as => ⟨a, as, H a⟩, fun {b} bs => ⟨b, bs, H b⟩⟩
+instance LiftRel.refl (R : α → α → Prop) [Std.Refl R] : Std.Refl (LiftRel R) where
+  refl _ := ⟨fun {a} as => ⟨a, as, refl_of R a⟩, fun {b} bs => ⟨b, bs, refl_of R b⟩⟩
 
 theorem LiftRel.symm (R : α → α → Prop) (H : Symmetric R) : Symmetric (LiftRel R) :=
   fun _ _ ⟨l, r⟩ =>
@@ -888,19 +888,21 @@ theorem LiftRel.symm (R : α → α → Prop) (H : Symmetric R) : Symmetric (Lif
     let ⟨b, b2, ab⟩ := l a1
     ⟨b, b2, H ab⟩⟩
 
-theorem LiftRel.trans (R : α → α → Prop) (H : IsTrans α R) : IsTrans _ (LiftRel R) :=
+instance LiftRel.trans (R : α → α → Prop) [IsTrans α R] : IsTrans _ (LiftRel R) :=
   ⟨fun _ _ _ ⟨l1, r1⟩ ⟨l2, r2⟩ =>
-  ⟨fun {a} a1 =>
-    let ⟨b, b2, ab⟩ := l1 a1
+  ⟨fun {_a} a1 =>
+    let ⟨_b, b2, ab⟩ := l1 a1
     let ⟨c, c3, bc⟩ := l2 b2
-    ⟨c, c3, H.trans a b c ab bc⟩,
-    fun {c} c3 =>
-    let ⟨b, b2, bc⟩ := r2 c3
+    ⟨c, c3, trans_of R ab bc⟩,
+    fun {_c} c3 =>
+    let ⟨_b, b2, bc⟩ := r2 c3
     let ⟨a, a1, ab⟩ := r1 b2
-    ⟨a, a1, H.trans a b c ab bc⟩⟩⟩
+    ⟨a, a1, trans_of R ab bc⟩⟩⟩
 
-theorem LiftRel.equiv (R : α → α → Prop) (H : Equivalence R) : Equivalence (LiftRel R) :=
-  ⟨LiftRel.refl R H.refl, @LiftRel.symm _ R @H.symm, LiftRel.trans R H.isTrans |>.trans _ _ _⟩
+theorem LiftRel.equiv (R : α → α → Prop) (H : Equivalence R) : Equivalence (LiftRel R) where
+  refl := @LiftRel.refl α R H.stdRefl |>.refl
+  symm := @LiftRel.symm α R H.symmetric
+  trans := @LiftRel.trans α R H.isTrans |>.trans _ _ _
 
 theorem LiftRel.imp {R S : α → β → Prop} (H : ∀ {a b}, R a b → S a b) (s t) :
     LiftRel R s t → LiftRel S s t
