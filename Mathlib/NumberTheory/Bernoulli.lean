@@ -430,9 +430,7 @@ private lemma sum_pow_add_indicator_eq_zero (p l : ℕ) [Fact p.Prime] :
         grind [not_dvd_of_pos_of_lt])))
       (fun u _ ↦ (u : ZMod p).val)
       (fun _ _ ↦ Finset.mem_univ _)
-      (fun u _ ↦ by
-        refine Finset.mem_Ico.mpr ⟨?_, ZMod.val_lt _⟩
-        exact Nat.succ_le_of_lt <| Nat.pos_of_ne_zero <| (ZMod.val_ne_zero _).mpr u.ne_zero)
+      (fun u _ ↦ by grind [u.ne_zero, ZMod.val_ne_zero, ZMod.val_lt])
       (fun v hv ↦ by simp [ZMod.val_cast_of_lt (Finset.mem_Ico.mp hv).2])
       (fun u _ ↦ Units.ext (ZMod.natCast_zmod_val _))
       (fun _ _ ↦ rfl)
