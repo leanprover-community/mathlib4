@@ -50,6 +50,11 @@ local infixl:50 " ≺ " => r
 def IsChain (s : Set α) : Prop :=
   s.Pairwise fun x y => x ≺ y ∨ y ≺ x
 
+/-- An abbreviation of `IsChain (· ≤ ·) s` so that `to_dual` does not translate it to
+`IsChain (· ≥ ·) s`. -/
+abbrev IsLEChain [LE α] (s : Set α) :=
+  IsChain (· ≤ ·) s
+
 /-- `SuperChain s t` means that `t` is a chain that strictly includes `s`. -/
 def SuperChain (s t : Set α) : Prop :=
   IsChain r t ∧ s ⊂ t
@@ -76,6 +81,8 @@ theorem IsChain.mono_rel {r' : α → α → Prop} (h : IsChain r s) (h_imp : �
 /-- This can be used to turn `IsChain (≥)` into `IsChain (≤)` and vice-versa. -/
 theorem IsChain.symm (h : IsChain r s) : IsChain (flip r) s :=
   h.mono' fun _ _ => Or.symm
+
+to_dual_insert_cast IsLEChain := propext ⟨IsChain.symm, IsChain.symm⟩
 
 theorem isChain_of_trichotomous [Std.Trichotomous r] (s : Set α) : IsChain r s :=
   fun a _ b _ hab => (trichotomous_of r a b).imp_right fun h => h.resolve_left hab
