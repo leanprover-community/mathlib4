@@ -557,6 +557,28 @@ theorem card_commonNeighbors_top [DecidableEq V] {v w : V} (h : v ≠ w) :
   simp only [commonNeighbors_top_eq, ← Set.toFinset_card, Set.toFinset_diff]
   simp [Finset.card_sdiff, h]
 
+@[simp] lemma insert_neighborFinset_eq_univ [DecidableEq V] [DecidableRel G.Adj] (v : V) :
+    insert v (G.neighborFinset v) = univ ↔ G.IsUniversal v := by
+  simp [IsUniversal, Finset.ext_iff]
+  grind
+
+@[simp] lemma neighborFinset_eq_erase_univ [DecidableEq V] [DecidableRel G.Adj] (v : V) :
+    G.neighborFinset v = univ.erase v ↔ G.IsUniversal v := by
+  rw [← insert_neighborFinset_eq_univ]
+  grind [notMem_neighborFinset_self]
+
+lemma degree_eq_card_sub_one [DecidableRel G.Adj] (v : V) :
+    G.degree v = Fintype.card V - 1 ↔ G.IsUniversal v := by
+  classical
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · refine (G.insert_neighborFinset_eq_univ v).mp <| (Finset.card_eq_iff_eq_univ _).mp ?_
+    simp [h, Nat.sub_add_cancel <| Fintype.card_pos_iff.mpr ⟨v⟩]
+  · simp [← card_neighborFinset_eq_degree, (G.neighborFinset_eq_erase_univ v).mpr h]
+
+lemma degree_lt_card_sub_one [DecidableRel G.Adj] (v : V) :
+    G.degree v < Fintype.card V - 1 ↔ ¬ G.IsUniversal v := by
+  grind [degree_eq_card_sub_one, Nat.le_sub_one_of_lt <| G.degree_lt_card_verts v]
+
 end Finite
 
 namespace Iso

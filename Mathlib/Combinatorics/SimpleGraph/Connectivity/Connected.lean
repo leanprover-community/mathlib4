@@ -379,6 +379,13 @@ theorem connected_or_preconnected_compl : G.Connected ∨ Gᶜ.Preconnected := b
 theorem connected_or_connected_compl [Nonempty V] : G.Connected ∨ Gᶜ.Connected :=
   G.connected_or_preconnected_compl.elim .inl (.inr ⟨·⟩)
 
+lemma Connected.of_isUniversal (v : V) (h : G.IsUniversal v) : G.Connected := by
+  have (u : V) : G.Reachable v u := by
+    by_cases! h' : u = v
+    · exact h' ▸ Reachable.rfl
+    · exact Adj.reachable (h u h'.symm)
+  exact connected_iff _ |>.mpr ⟨fun u w ↦ (this u).symm.trans (this w), ⟨v⟩⟩
+
 /-- The quotient of `V` by the `SimpleGraph.Reachable` relation gives the connected
 components of a graph. -/
 def ConnectedComponent := Quot G.Reachable
