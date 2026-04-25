@@ -209,7 +209,7 @@ instance : CompleteLattice my_T where
   __ := completeLatticeOfSup my_T _
 ```
 -/
-@[implicit_reducible]
+@[to_dual existing, implicit_reducible]
 def completeLatticeOfSup (α : Type*) [H1 : PartialOrder α] [H2 : SupSet α]
     (isLUB_sSup : ∀ s : Set α, IsLUB s (sSup s)) : CompleteLattice α where
   __ := H1; __ := H2

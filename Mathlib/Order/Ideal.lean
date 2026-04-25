@@ -19,8 +19,8 @@ import Mathlib.Order.ZornAtoms
 
 ## Main definitions
 
-Throughout this file, `P` is at least a preorder, but some sections require more
-structure, such as a bottom element, a top element, or a join-semilattice structure.
+Throughout this file, `P` is at least `LE`, but some sections require more structure, such as
+preorder, a bottom element, a top element, or a join-semilattice structure.
 - `Order.Ideal P`: the type of nonempty, upward directed, and downward closed subsets of `P`.
   Dual to `Order.PFilter P`, the notion of a filter on a preorder.
 - `Order.IsIdeal I`: a predicate for when a `Set P` is an ideal. Dual to `Order.IsPFilter`.
@@ -42,8 +42,8 @@ The relation between `Order/Filter` and `Order/PFilter`: for any type `α`, `Fil
 same mathematical object as `PFilter (Set α)`.
 
 To align with the order on `Filter`, the instance of `LE (PFilter P)` is the *reversed* set
-inclusion. Therefore, ultrafilters are actually minimal proper filters. (Though, in the documtations
-we still call them maximal, which means the underlying set is maximal.)
+inclusion. Therefore, ultrafilters are actually minimal proper filters. (Though, in the docs we
+still call them maximal, which means the underlying set is maximal.)
 
 ## TODO
 
@@ -91,9 +91,9 @@ initialize_simps_projections Ideal (+toLowerSet, -carrier)
 
 /-- A filter on a preorder `P` is a subset of `P` that is
   - nonempty
-  - downward directed (any pair of elements in the ideal has a lower bound in the ideal)
+  - downward directed (any pair of elements in the filter has a lower bound in the filter)
   - upward closed (any element greater than an element of the filter is in the filter). -/
-@[to_dual existing]
+@[to_dual]
 structure PFilter (P : Type*) [LE P] extends UpperSet P where
   /-- The filter is nonempty. -/
   nonempty' : carrier.Nonempty
@@ -115,7 +115,7 @@ structure IsIdeal {P} [LE P] (I : Set P) : Prop where
 @[deprecated (since := "2026-04-25")] alias IsIdeal.Directed := IsIdeal.directed
 
 /-- A predicate for when a subset of `P` is a filter (see `PFilter`). -/
-@[to_dual existing, mk_iff]
+@[to_dual, mk_iff]
 structure IsPFilter {P} [LE P] (F : Set P) : Prop where
   /-- The filter is upward closed. -/
   isUpperSet : IsUpperSet F
@@ -262,7 +262,7 @@ class IsProper (I : Ideal P) : Prop where
   ne_univ : (I : Set P) ≠ univ
 
 /-- A proper filter is one that is not `Set.univ` (note `Set.univ` might not be a filter). -/
-@[to_dual existing, mk_iff]
+@[to_dual, mk_iff]
 class _root_.Order.PFilter.IsProper (F : PFilter P) : Prop where
   /-- This filter is not `Set.univ`. -/
   ne_univ : (F : Set P) ≠ univ
@@ -288,7 +288,7 @@ reversed inclusion order).
 
 Note that `IsAtom` is less general because filters only have a bottom element when `P` is codirected
 and nonempty. -/
-@[to_dual existing Ideal.IsMaximal, mk_iff]
+@[to_dual Ideal.IsMaximal, mk_iff]
 class _root_.Order.PFilter.IsUltra (F : PFilter P) : Prop extends F.IsProper where
   /-- This filter is maximal (minimal over reversed inclusion order) among proper filter. -/
   minimal_proper : ∀ ⦃G : PFilter P⦄, G < F → (G : Set P) = univ
@@ -602,32 +602,18 @@ theorem coe_sInf : (↑(sInf S) : Set P) = ⋂ s ∈ S, ↑s :=
 theorem mem_sInf : x ∈ sInf S ↔ ∀ s ∈ S, x ∈ s := by
   simp_rw [← SetLike.mem_coe, coe_sInf, mem_iInter₂]
 
-instance : CompleteLattice (Ideal P) where
-  __ := (inferInstance : Lattice (Ideal P))
-  __ := (inferInstance : OrderTop (Ideal P))
-  __ := (inferInstance : OrderBot (Ideal P))
-  __ := completeLatticeOfInf (Ideal P) fun S ↦ by
-      refine ⟨fun s hs ↦ ?_, fun s hs ↦ by rwa [← coe_subset_coe, coe_sInf, subset_iInter₂_iff]⟩
-      rw [← coe_subset_coe, coe_sInf]
-      exact biInter_subset_of_mem hs
-
-omit [SemilatticeSup P] [OrderBot P] in
-@[to_dual existing]
-instance _root_.Order.PFilter.instCompleteLattice [SemilatticeInf P] [OrderTop P] :
-    CompleteLattice (PFilter P) :=
-  { (inferInstance : Lattice (PFilter P)),
-    completeLatticeOfSup (PFilter P) fun S ↦ by
-      refine ⟨fun s hs ↦ ?_, fun s hs ↦ by
-        rwa [← PFilter.coe_subset_coe, PFilter.coe_sSup, subset_iInter₂_iff]⟩
-      rw [← PFilter.coe_subset_coe, PFilter.coe_sSup]
-      exact biInter_subset_of_mem hs with }
+@[to_dual]
+instance : CompleteLattice (Ideal P) :=
+  completeLatticeOfInf (Ideal P) fun S ↦ by
+    refine ⟨fun s hs ↦ ?_, fun s hs ↦ by rwa [← coe_subset_coe, coe_sInf, subset_iInter₂_iff]⟩
+    rw [← coe_subset_coe, coe_sInf]
+    exact biInter_subset_of_mem hs
 
 end SemilatticeSupOrderBot
 
 section DistribLattice
 
-variable [DistribLattice P]
-variable {I J : Ideal P}
+variable [DistribLattice P] {I J : Ideal P}
 
 @[to_dual]
 theorem eq_sup_of_le_sup {x i j : P} (hi : i ∈ I) (hj : j ∈ J) (hx : x ≤ i ⊔ j) :
