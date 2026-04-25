@@ -56,9 +56,7 @@ def iwasawaStructure_two [∀ s : Set α, DecidablePred fun x ↦ x ∈ s] :
     IwasawaStructure (Perm α) (Set.powersetCard α 2) where
   T s := (ofSubtype : Perm (s : Set α) →* Perm α).range
   is_comm s := by
-    have : IsMulCommutative (Perm s) :=
-      isMulCommutative_iff_card_le_two.mpr (by simp)
---    exact Subgroup.range_isMulCommutative ofSubtype
+    have : IsMulCommutative (Perm s) := isMulCommutative_iff_card_le_two.mpr (by simp)
     infer_instance
   is_conj g s := by
     convert (conj_smul_range_ofSubtype g s).symm
@@ -66,7 +64,7 @@ def iwasawaStructure_two [∀ s : Set α, DecidablePred fun x ↦ x ∈ s] :
     rw [eq_top_iff, ← Equiv.Perm.closure_isSwap, Subgroup.closure_le]
     rintro g ⟨a, b, hab, rfl⟩
     apply Subgroup.mem_iSup_of_mem ⟨{a, b}, Finset.card_pair hab⟩
-    exact ⟨swap ⟨a, by aesop⟩ ⟨b, by aesop⟩, Equiv.Perm.ofSubtype_swap_eq _ _⟩
+    exact ⟨swap ⟨a, by simp⟩ ⟨b, by simp⟩, Equiv.Perm.ofSubtype_swap_eq _ _⟩
 
 /-- If `α` has at least 5 elements, then the only nontrivial
 normal subgroup of `Equiv.Perm α` is `alternatingGroup α`. -/
@@ -120,7 +118,7 @@ theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_six
 theorem mem_map_kleinFour_ofSubtype (s : Finset α) (hs : s.card = 4) (k : alternatingGroup α) :
     k ∈ (kleinFour s).map (ofSubtype s) ↔
       (k : Perm α).support ⊆ s ∧ ((k : Perm α) = 1 ∨ (k : Perm α).cycleType = {2, 2}) := by
-  have hs : Nat.card s = 4 := by aesop
+  have hs : Nat.card s = 4 := by simpa
   by_cases hk : (k : Perm α).support ⊆ s
   · obtain ⟨σ, rfl⟩ := (mem_range_ofSubtype_iff s k).mpr hk
     simp_rw [and_iff_right hk, Subgroup.mem_map, ofSubtype_inj, existsAndEq, and_true,
@@ -133,22 +131,14 @@ theorem mem_map_kleinFour_ofSubtype (s : Finset α) (hs : s.card = 4) (k : alter
     exact (mem_range_ofSubtype_iff s k).mp (Subgroup.map_le_range _ _ hk)
 
 theorem map_kleinFour_conj (s : Finset α) (hs : s.card = 4) (g : alternatingGroup α) :
-    (kleinFour _).map (ofSubtype (g • s)) =
-        MulAut.conj g • ((kleinFour s).map (ofSubtype s)) := by
+    (kleinFour _).map (ofSubtype (g • s)) = MulAut.conj g • ((kleinFour s).map (ofSubtype s)) := by
   rcases g with ⟨g, hg⟩
   ext ⟨k, hk⟩
-  rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem]
-  simp only [mem_map_kleinFour_ofSubtype s hs, Subgroup.mk_smul,
-    MulAut.smul_def, MulAut.inv_apply,
-    MulAut.conj_symm_apply, Subgroup.coe_mul, InvMemClass.coe_inv]
-  rw [← ConjAct.toConjAct_inv_smul]
-  rw [Equiv.Perm.support_conj_eq_smul_support,
-    mem_map_kleinFour_ofSubtype (g • s) (by rw [Finset.card_smul_finset, hs])]
-  rw [Finset.subset_smul_finset_iff]
-  simp only [ConjAct.toConjAct_smul]
-  apply and_congr Iff.rfl (or_congr ?_ ?_)
-  · simp [mul_eq_one_iff_inv_eq']
-  · simp only [cycleType_conj]
+  simp_rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem, mem_map_kleinFour_ofSubtype s hs,
+    Subgroup.mk_smul, MulAut.smul_def, MulAut.inv_apply, MulAut.conj_symm_apply, Subgroup.coe_mul,
+    Subgroup.coe_inv, ← ConjAct.toConjAct_inv_smul, Equiv.Perm.support_toConjAct_eq_smul_support,
+    mem_map_kleinFour_ofSubtype (g • s) (by simpa), Finset.subset_smul_finset_iff,
+    ConjAct.toConjAct_smul, cycleType_conj, mul_inv_eq_one, mul_eq_left]
 
 /-- The Iwasawa structure of `alternatingGroup α` acting on `Set.powersetCard α 4`,
 provided `α` has at least 5 elements. -/
@@ -157,19 +147,15 @@ def iwasawaStructure_four (h5 : 5 ≤ Nat.card α) :
   T s := (kleinFour s).map (ofSubtype s)
   is_comm s := by
     have : IsMulCommutative (kleinFour s) :=
-      (kleinFour_isKleinFour (by aesop)).isMulCommutative
-    apply Subgroup.map_isMulCommutative
+      (kleinFour_isKleinFour (by simp)).isMulCommutative
+    infer_instance
   is_conj g s := map_kleinFour_conj s.val s.prop g
   is_generator := by
     rw [eq_top_iff, ← closure_cycleType_eq_two_two_eq_top h5, Subgroup.closure_le]
     intro g hg
     simp only [Set.mem_setOf_eq] at hg
-    simp only [SetLike.mem_coe]
-    apply Subgroup.mem_iSup_of_mem ⟨(g : Perm α).support, by
-      simp [← sum_cycleType, hg]⟩
-    rw [mem_map_kleinFour_ofSubtype]
-    · simp [hg]
-    · simp [← sum_cycleType, hg]
+    apply Subgroup.mem_iSup_of_mem ⟨(g : Perm α).support, by simp [← sum_cycleType, hg]⟩
+    rw [mem_map_kleinFour_ofSubtype] <;> simp [hg, ← sum_cycleType]
 
 /-- If `α` has at least 5 elements, but not 8,
 then the only nontrivial normal subgroup of `alternatingGroup α`
