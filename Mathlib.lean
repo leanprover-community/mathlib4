@@ -6649,6 +6649,7 @@ public import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
 public import Mathlib.RingTheory.Polynomial.Eisenstein.Criterion
 public import Mathlib.RingTheory.Polynomial.Eisenstein.Distinguished
 public import Mathlib.RingTheory.Polynomial.Eisenstein.IsIntegral
+public import Mathlib.RingTheory.Polynomial.Favard
 public import Mathlib.RingTheory.Polynomial.GaussLemma
 public import Mathlib.RingTheory.Polynomial.GaussNorm
 public import Mathlib.RingTheory.Polynomial.Hermite.Basic
