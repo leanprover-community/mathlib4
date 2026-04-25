@@ -66,15 +66,17 @@ lemma three_le_egirth : 3 ≤ G.egirth := by
 
 @[simp] lemma egirth_bot : egirth (⊥ : SimpleGraph α) = ⊤ := by simp
 
-lemma Hom.egirth_le (f : G →g G') (hinj : Function.Injective f) : G'.egirth ≤ G.egirth := by
-  by_cases h : G.IsAcyclic
-  · simp [h.egirth_eq_top]
-  obtain ⟨a, w, hw, hwl⟩ := exists_egirth_eq_length.mpr h
-  rw [hwl, ← w.length_map f]
-  exact egirth_le_length (hw.map hinj)
+@[gcongr]
+lemma IsContained.egirth_le (h : G ⊑ G') : G'.egirth ≤ G.egirth := by
+  by_cases hacyc : G.IsAcyclic
+  · simp [hacyc.egirth_eq_top]
+  obtain ⟨a, w, hw, hwl⟩ := exists_egirth_eq_length.mpr hacyc
+  rw [hwl, ← w.length_map h.some.toHom]
+  exact egirth_le_length <| hw.map h.some.injective
 
+@[gcongr]
 lemma Iso.egirth_eq (f : G ≃g G') : G.egirth = G'.egirth :=
-  le_antisymm (f.symm.toHom.egirth_le f.symm.injective) (f.toHom.egirth_le f.injective)
+  le_antisymm f.isContained'.egirth_le f.isContained.egirth_le
 
 end egirth
 
@@ -112,9 +114,8 @@ lemma exists_girth_eq_length :
 @[simp] lemma girth_bot : girth (⊥ : SimpleGraph α) = 0 := by
   simp [girth]
 
-lemma Hom.girth_le (f : G →g G') (hG : ¬G.IsAcyclic) (hinj : Function.Injective f) :
-    G'.girth ≤ G.girth :=
-  ENat.toNat_le_toNat (f.egirth_le hinj) (egirth_eq_top.not.mpr hG)
+lemma IsContained.girth_le (h : G ⊑ G') (hG : ¬G.IsAcyclic) : G'.girth ≤ G.girth :=
+  ENat.toNat_le_toNat h.egirth_le <| egirth_eq_top.not.mpr hG
 
 lemma Iso.girth_eq (f : G ≃g G') : G.girth = G'.girth := by
   simp [girth, f.egirth_eq]
