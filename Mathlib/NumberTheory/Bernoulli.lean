@@ -423,18 +423,18 @@ private abbrev vonStaudtPrimes (k : ℕ) : Finset ℕ :=
 
 /- Over `ZMod p`, the nonzero `l`-th power sum equals the negative indicator of `(p - 1) ∣ l`. -/
 private lemma sum_pow_add_indicator_eq_zero (p l : ℕ) [Fact p.Prime] :
-    (∑ v ∈ Finset.range p with v ≠ 0, (v : ZMod p) ^ l) +
-    (if (p - 1) ∣ l then (1 : ZMod p) else 0) = 0 := by
-  have hbij : (∑ v ∈ Finset.range p with v ≠ 0, (v : ZMod p) ^ l) =
-      ∑ u : (ZMod p)ˣ, (u : ZMod p) ^ l :=
+    (∑ v ∈ Ico 1 p, (v : ZMod p) ^ l) + (if (p - 1) ∣ l then (1 : ZMod p) else 0) = 0 := by
+  have hbij : (∑ v ∈ Ico 1 p, (v : ZMod p) ^ l) = ∑ u : (ZMod p)ˣ, (u : ZMod p) ^ l :=
     Finset.sum_bij'
       (fun v hv ↦ Units.mk0 (v : ZMod p) (mt (ZMod.natCast_eq_zero_iff v p).mp (by
-        obtain ⟨hlt, hne⟩ := Finset.mem_filter.mp hv
-        exact Nat.not_dvd_of_pos_of_lt (Nat.pos_of_ne_zero hne) (Finset.mem_range.mp hlt))))
+        obtain ⟨hvpos, hvlt⟩ := Finset.mem_Ico.mp hv
+        exact Nat.not_dvd_of_pos_of_lt (by omega) hvlt)))
       (fun u _ ↦ (u : ZMod p).val)
       (fun _ _ ↦ Finset.mem_univ _)
-      (fun u _ ↦ by simp [ZMod.val_lt, u.ne_zero])
-      (fun v hv ↦ by simp [ZMod.val_cast_of_lt (Finset.mem_range.mp (Finset.mem_filter.mp hv).1)])
+      (fun u _ ↦ by
+        refine Finset.mem_Ico.mpr ⟨?_, ZMod.val_lt _⟩
+        exact Nat.succ_le_of_lt <| Nat.pos_of_ne_zero <| (ZMod.val_ne_zero _).2 u.ne_zero)
+      (fun v hv ↦ by simp [ZMod.val_cast_of_lt (Finset.mem_Ico.mp hv).2])
       (fun u _ ↦ Units.ext (ZMod.natCast_zmod_val _))
       (fun _ _ ↦ rfl)
   rw [hbij, FiniteField.sum_pow_units, ZMod.card]
@@ -613,9 +613,8 @@ private lemma pIntegral_faulhaber_sum (k p : ℕ) (hk : k > 0) [Fact p.Prime]
     · simp [bernoulli_eq_zero_of_odd hodd (by lia)]
 
 private lemma exists_int_sum_pow_add_indicator_eq (k p : ℕ) [Fact p.Prime] :
-    ∃ T : ℤ, (∑ v ∈ Finset.range p with v ≠ 0, (v : ℚ) ^ (2 * k)) +
-      vonStaudtIndicator (2 * k) p = p * T := by
-  have hcast : (↑((∑ v ∈ Finset.range p with v ≠ 0, (v : ℤ) ^ (2 * k)) +
+    ∃ T : ℤ, (∑ v ∈ Ico 1 p, (v : ℚ) ^ (2 * k)) + vonStaudtIndicator (2 * k) p = p * T := by
+  have hcast : (↑((∑ v ∈ Ico 1 p, (v : ℤ) ^ (2 * k)) +
       (if (p - 1) ∣ 2 * k then 1 else 0)) : ZMod p) = 0 :=
     mod_cast sum_pow_add_indicator_eq_zero p (2 * k)
   obtain ⟨T, hT⟩ := (ZMod.intCast_zmod_eq_zero_iff_dvd _ _).mp hcast
@@ -624,12 +623,16 @@ private lemma exists_int_sum_pow_add_indicator_eq (k p : ℕ) [Fact p.Prime] :
   exact_mod_cast hT
 
 private lemma sum_pow_filter_eq_faulhaber (k p : ℕ) (hk : 0 < k) :
-    (∑ v ∈ Finset.range p with v ≠ 0, (v : ℚ) ^ (2 * k)) =
+    (∑ v ∈ Ico 1 p, (v : ℚ) ^ (2 * k)) =
       (∑ i ∈ Finset.range (2 * k), bernoulli i * ((2 * k + 1).choose i) *
         (p : ℚ) ^ (2 * k + 1 - i) / (2 * k + 1)) + p * bernoulli (2 * k) := by
-  have hfilter : (∑ v ∈ Finset.range p with v ≠ 0, (v : ℚ) ^ (2 * k)) =
-      ∑ v ∈ Finset.range p, (v : ℚ) ^ (2 * k) :=
-    Finset.sum_filter_of_ne fun v _ hne ↦ ne_zero_pow (by lia) (mod_cast hne)
+  have hfilter : (∑ v ∈ Ico 1 p, (v : ℚ) ^ (2 * k)) = ∑ v ∈ Finset.range p, (v : ℚ) ^ (2 * k) :=
+    by
+      by_cases hp : 0 < p
+      · rw [Finset.sum_range_eq_add_Ico _ hp]
+        simp [show 2 * k ≠ 0 by omega]
+      · have hp0 : p = 0 := by omega
+        simp [hp0]
   rw [hfilter, sum_range_pow, Finset.sum_range_succ, Nat.choose_succ_self_right,
     show 2 * k + 1 - 2 * k = 1 by lia]
   push_cast
