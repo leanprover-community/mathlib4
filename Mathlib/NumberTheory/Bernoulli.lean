@@ -433,7 +433,7 @@ private lemma sum_pow_add_indicator_eq_zero (p l : ℕ) [Fact p.Prime] :
       (fun _ _ ↦ Finset.mem_univ _)
       (fun u _ ↦ by
         refine Finset.mem_Ico.mpr ⟨?_, ZMod.val_lt _⟩
-        exact Nat.succ_le_of_lt <| Nat.pos_of_ne_zero <| (ZMod.val_ne_zero _).2 u.ne_zero)
+        exact Nat.succ_le_of_lt <| Nat.pos_of_ne_zero <| (ZMod.val_ne_zero _).mpr u.ne_zero)
       (fun v hv ↦ by simp [ZMod.val_cast_of_lt (Finset.mem_Ico.mp hv).2])
       (fun u _ ↦ Units.ext (ZMod.natCast_zmod_val _))
       (fun _ _ ↦ rfl)
@@ -548,8 +548,7 @@ private lemma choose_two_mul_succ_mul_div_eq (k m : ℕ) (x : ℚ) (hm_lt : m < 
 /- `p`-integrality of the core even-index summand after denominator normalization. -/
 private lemma pIntegral_choose_mul_pow_div (k m p : ℕ) (hm_lt : m < k) [Fact p.Prime]
     (hd : 2 * k - 2 * m ≥ 2) :
-    pIntegral p (((2 * k).choose (2 * m) : ℚ) * (p : ℚ) ^ (2 * k - 2 * m - 1) /
-      (2 * k - 2 * m + 1)) := by
+    pIntegral p (((2 * k).choose (2 * m) : ℚ) * p ^ (2 * k - 2 * m - 1) / (2 * k - 2 * m + 1)) := by
   set d := 2 * k - 2 * m with hd_def
   have ⟨hd_plus_one_ne_zero, h_exp, hkm⟩ :
       d + 1 ≠ 0 ∧ 2 * k - 2 * m - 1 = d - 1 ∧ 2 * m ≤ 2 * k := by lia
@@ -568,7 +567,7 @@ private lemma pIntegral_bernoulli_even_term (k m p : ℕ) (hm_lt : m < k) [Fact 
   have hp_ne : (p : ℚ) ≠ 0 := mod_cast (Nat.Prime.ne_zero Fact.out)
   set P := (p : ℚ) ^ (2 * k - 2 * m - 1)
   have hpow : (p : ℚ) ^ (2 * k - 2 * m) = P * p := by
-    rw [(by lia : 2 * k - 2 * m = (2 * k - 2 * m - 1) + 1), pow_succ]
+    rw [show 2 * k - 2 * m = (2 * k - 2 * m - 1) + 1 by lia, pow_succ]
   have hdecomp : bernoulli (2 * m) * ((2 * k + 1).choose (2 * m)) *
       (p : ℚ) ^ (2 * k - 2 * m) / (2 * k + 1) =
     (bernoulli (2 * m) + vonStaudtIndicator (2 * m) p / p) *
