@@ -26,6 +26,18 @@ smooth measures, which in particular are satisfied by outer regular sigma finite
 
 ## Main results
 
+### Global versions (`∃ s, p s ∧ μ sᶜ ≤ ε ∧ ContinuousOn f s`)
+* `Measurable.exists_continuous_restrict`: measurable `s`, requires `Smooth μ`.
+* `AEMeasurable.exists_continuous_restrict`: null-measurable `s`, for a.e. measurable functions.
+* `Measurable.exists_isClosed_restrict`: closed `s`, requires `InternallySmoothClosed μ`.
+* `Measurable.exists_isCompact_restrict`: compact `s`, requires `InternallySmoothCompact μ` and
+  `T2Space`.
+
+### Localized versions (`∃ K ⊆ A, p K ∧ ContinuousOn f K ∧ μ (A \ K) < ε`)
+* `Measurable.exists_isClosed_continuousOn`: closed `K`, requires `InternallySmoothClosed μ`.
+* `Measurable.exists_isCompact_continuousOn`: compact `K`, requires `InternallySmoothCompact μ`
+  and `T2Space`.
+
 ## References
 * https://www.jstor.org/stable/2320466
 * On the continuity of measurable functions in Neighborhood Spaces by HM Schaerf
@@ -309,7 +321,7 @@ theorem InternallySmoothClosed.internallySmoothCompact_of_isTightMeasureSet
 
 instance [PerfectlyNormalSpace α] [IsFiniteMeasure μ] [BorelSpace α] :
     μ.InternallySmoothClosed := by
-  sorry
+    sorry
 
 instance [IsCompletelyPseudoMetrizableSpace α] [SecondCountableTopology α] [BorelSpace α]
     [IsFiniteMeasure μ] :
@@ -522,6 +534,101 @@ theorem AEMeasurable.exists_continuous_restrict [μ.Smooth] {f : α → β}
       suffices μ {x | f x = g x}ᶜ = 0 from by simp_all
       simpa [EventuallyEq, ae_iff, ← compl_setOf] using hg.2
   · exact (hc.mono inter_subset_left).congr fun x hx => hx.2
+
+/-! ### Lusin's theorem: closed and compact versions
+
+We provide both **global** versions (matching the shape of `exists_continuous_restrict`:
+`∃ s, p s ∧ μ sᶜ ≤ ε ∧ ContinuousOn f s`) and **localized** versions (restricting to a measurable
+set `A` of finite measure: `∃ K ⊆ A, p K ∧ ContinuousOn f K ∧ μ (A \ K) < ε`). -/
+
+/-- Helper for global closed/compact Lusin: combines `exists_continuous_restrict` with inner
+approximation by sets satisfying `p`. -/
+private theorem Measurable.exists_restrict_of_approx (μ : Measure α) [μ.Smooth]
+    {f : α → β} [SecondCountableTopology β] [MeasurableSpace β] [OpensMeasurableSpace α]
+    [OpensMeasurableSpace β] (hf : Measurable f) {ε : ℝ≥0∞} (hε : 0 < ε)
+    {p : Set α → Prop} (h_approx : μ.InternallySmooth p) :
+    ∃ s, p s ∧ μ sᶜ ≤ ε ∧ ContinuousOn f s := by
+  have hε2 : (0 : ℝ≥0∞) < ε / 2 := ENNReal.half_pos hε.ne'
+  obtain ⟨s, hs, hsμ, hsc⟩ := hf.exists_continuous_restrict μ hε2
+  obtain ⟨K, hK, hpK, hKμ⟩ := h_approx hs (ε / 2) hε2
+  refine ⟨K, hpK, ?_, hsc.mono hK⟩
+  calc μ Kᶜ
+      ≤ μ sᶜ + μ (s \ K) := by
+        simp only [compl_eq_univ_diff]
+        exact (measure_mono (sdiff_triangle _ s K)).trans (measure_union_le _ _)
+    _ ≤ ε / 2 + ε / 2 := add_le_add hsμ hKμ.le
+    _ = ε := ENNReal.add_halves ε
+
+/-- **Lusin's theorem** (global, closed): if `f : α → β` is a measurable function, `μ` is
+internally smooth with respect to closed sets, and `β` is second countable, then for all `ε > 0`,
+there exists a closed set `s` such that `μ sᶜ ≤ ε` and the restriction of `f` onto `s` is
+continuous. -/
+theorem Measurable.exists_isClosed_restrict (μ : Measure α) [μ.InternallySmoothClosed]
+    {f : α → β} [SecondCountableTopology β] [MeasurableSpace β] [OpensMeasurableSpace α]
+    [OpensMeasurableSpace β] (hf : Measurable f) {ε : ℝ≥0∞} (hε : 0 < ε) :
+    ∃ s, IsClosed s ∧ μ sᶜ ≤ ε ∧ ContinuousOn f s :=
+  hf.exists_restrict_of_approx μ hε Measure.InternallySmoothClosed.internally_smooth_closed
+
+/-- **Lusin's theorem** (global, compact): if `f : α → β` is a measurable function, `μ` is
+internally smooth with respect to compact sets, `α` is T₂, and `β` is second countable, then for
+all `ε > 0`, there exists a compact set `s` such that `μ sᶜ ≤ ε` and the restriction of `f` onto
+`s` is continuous. -/
+theorem Measurable.exists_isCompact_restrict (μ : Measure α) [T2Space α] [μ.InternallySmoothCompact]
+    {f : α → β} [SecondCountableTopology β] [MeasurableSpace β] [OpensMeasurableSpace α]
+    [OpensMeasurableSpace β] (hf : Measurable f) {ε : ℝ≥0∞} (hε : 0 < ε) :
+    ∃ s, IsCompact s ∧ μ sᶜ ≤ ε ∧ ContinuousOn f s :=
+  hf.exists_restrict_of_approx μ hε Measure.InternallySmoothCompact.internally_smooth_compact
+
+/-- Helper for localized closed/compact Lusin: combines `exists_continuous_restrict` with inner
+approximation on a finite-measure set. -/
+private theorem Measurable.exists_continuousOn_of_approx[μ.Smooth]
+    {f : α → β} [SecondCountableTopology β] [MeasurableSpace β] [OpensMeasurableSpace α]
+    [OpensMeasurableSpace β] (hf : Measurable f)
+    {A : Set α} (hA : MeasurableSet A) (hAμ : μ A ≠ ⊤) {ε : ℝ≥0∞} (hε : 0 < ε)
+    {p : Set α → Prop} (h_approx : μ.InternallySmooth p) :
+    ∃ K ⊆ A, p K ∧ ContinuousOn f K ∧ μ (A \ K) < ε := by
+  rcases eq_or_ne ε ⊤ with rfl | hε_fin
+  · obtain ⟨s, hs, _, hsc⟩ := hf.exists_continuous_restrict μ one_pos
+    obtain ⟨K, hK, hpK, _⟩ := h_approx (hA.inter hs) 1 one_pos
+    exact ⟨K, hK.trans inter_subset_left, hpK, hsc.mono (hK.trans inter_subset_right),
+      (measure_mono diff_subset).trans_lt hAμ.lt_top⟩
+  · have hε2 : (0 : ℝ≥0∞) < ε / 2 := ENNReal.half_pos hε.ne'
+    obtain ⟨s, hs, hsμ, hsc⟩ := hf.exists_continuous_restrict μ hε2
+    obtain ⟨K, hK, hpK, hKμ⟩ := h_approx (hA.inter hs) (ε / 2) hε2
+    refine ⟨K, hK.trans inter_subset_left, hpK, hsc.mono (hK.trans inter_subset_right), ?_⟩
+    calc μ (A \ K)
+        ≤ μ (A \ (A ∩ s)) + μ ((A ∩ s) \ K) :=
+          (measure_mono (sdiff_triangle A (A ∩ s) K)).trans (measure_union_le _ _)
+      _ ≤ μ sᶜ + μ ((A ∩ s) \ K) := by
+          gcongr; intro x ⟨_, hx⟩; exact fun h ↦ hx ⟨‹_›, h⟩
+      _ < ε / 2 + ε / 2 := ENNReal.add_lt_add_of_le_of_lt
+          (ne_top_of_le_ne_top (ENNReal.div_ne_top hε_fin (by positivity)) hsμ) hsμ hKμ
+      _ = ε := ENNReal.add_halves ε
+
+/-- **Lusin's theorem** (localized, closed): if `f : α → β` is a measurable function, `μ` is
+internally smooth with respect to closed sets, and `β` is second countable, then for any measurable
+set `A` of finite measure and all `ε > 0`, there exists a closed set `K ⊆ A` such that
+`μ (A \ K) < ε` and the restriction of `f` onto `K` is continuous. -/
+theorem Measurable.exists_isClosed_continuousOn (μ : Measure α) [μ.InternallySmoothClosed]
+    {f : α → β} [SecondCountableTopology β] [MeasurableSpace β] [OpensMeasurableSpace α]
+    [OpensMeasurableSpace β] (hf : Measurable f)
+    {A : Set α} (hA : MeasurableSet A) (hAμ : μ A ≠ ⊤) {ε : ℝ≥0∞} (hε : 0 < ε) :
+    ∃ K ⊆ A, IsClosed K ∧ ContinuousOn f K ∧ μ (A \ K) < ε :=
+  hf.exists_continuousOn_of_approx hA hAμ hε
+    Measure.InternallySmoothClosed.internally_smooth_closed
+
+/-- **Lusin's theorem** (localized, compact): if `f : α → β` is a measurable function, `μ` is
+internally smooth with respect to compact sets, `α` is T₂, and `β` is second countable, then for
+any measurable set `A` of finite measure and all `ε > 0`, there exists a compact set `K ⊆ A` such
+that `μ (A \ K) < ε` and the restriction of `f` onto `K` is continuous. -/
+theorem Measurable.exists_isCompact_continuousOn (μ : Measure α) [T2Space α]
+    [μ.InternallySmoothCompact]
+    {f : α → β} [SecondCountableTopology β] [MeasurableSpace β] [OpensMeasurableSpace α]
+    [OpensMeasurableSpace β] (hf : Measurable f)
+    {A : Set α} (hA : MeasurableSet A) (hAμ : μ A ≠ ⊤) {ε : ℝ≥0∞} (hε : 0 < ε) :
+    ∃ K ⊆ A, IsCompact K ∧ ContinuousOn f K ∧ μ (A \ K) < ε :=
+  hf.exists_continuousOn_of_approx hA hAμ hε
+    Measure.InternallySmoothCompact.internally_smooth_compact
 
 end MeasureTheory
 
