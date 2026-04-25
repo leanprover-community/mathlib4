@@ -175,6 +175,16 @@ theorem degree_eq_of_mem_mem {x : M} {i j : ι} (hxi : x ∈ ℳ i) (hxj : x ∈
     i = j := by
   contrapose! hx; rw [← coe_decompose_of_mem_same ℳ hxj, coe_decompose_of_mem_ne ℳ hxi hx]
 
+theorem mem_iff_exists_decompose_eq_of_same {m : M} {i : ι} :
+    m ∈ ℳ i ↔ ∃ x, decompose ℳ m = DirectSum.of (fun i ↦ ℳ i) i x := by
+  constructor
+  · intro hm
+    use decompose ℳ m i
+    rw [← Equiv.eq_symm_apply, decompose_symm_of, coe_decompose_of_mem_same ℳ hm]
+  · rintro ⟨⟨x, xmem⟩, hx⟩
+    simp only [← Equiv.eq_symm_apply, decompose_symm_of] at hx
+    rwa [hx]
+
 theorem mem_iff_forall_ne_decompose_eq_zero {m : M} {i : ι} :
     m ∈ ℳ i ↔ ∀ j ≠ i, decompose ℳ m j = 0 := by
   constructor
