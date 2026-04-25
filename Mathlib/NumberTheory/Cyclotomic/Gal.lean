@@ -56,24 +56,10 @@ variable [CommRing L] [IsDomain L] (hμ : IsPrimitiveRoot μ n) [Algebra K L]
 field extension. -/
 theorem autToPow_injective : Function.Injective <| hμ.autToPow K := by
   intro f g hfg
-  apply_fun Units.val at hfg
-  simp only [IsPrimitiveRoot.coe_autToPow_apply] at hfg
-  generalize_proofs hf' hg' at hfg
-  have hf := hf'.choose_spec
-  have hg := hg'.choose_spec
-  generalize_proofs hζ at hf hg
-  suffices f (hμ.toRootsOfUnity : Lˣ) = g (hμ.toRootsOfUnity : Lˣ) by
-    apply AlgEquiv.coe_algHom_injective
-    apply (hμ.powerBasis K).algHom_ext
-    exact this
-  rw [ZMod.natCast_eq_natCast_iff] at hfg
-  refine (hf.trans ?_).trans hg.symm
-  rw [← rootsOfUnity.coe_pow _ hf'.choose, ← rootsOfUnity.coe_pow _ hg'.choose]
-  congr 2
-  rw [pow_eq_pow_iff_modEq]
-  convert hfg
-  conv => enter [2]; rw [hμ.eq_orderOf, ← hμ.val_toRootsOfUnity_coe]
-  rw [orderOf_units, Subgroup.orderOf_coe]
+  apply AlgEquiv.coe_algHom_injective
+  apply (hμ.powerBasis K).algHom_ext
+  simpa only [IsPrimitiveRoot.autToPow_spec] using
+    congrArg (fun t : (ZMod n)ˣ ↦ μ ^ (t : ZMod n).val) hfg
 
 end IsPrimitiveRoot
 
