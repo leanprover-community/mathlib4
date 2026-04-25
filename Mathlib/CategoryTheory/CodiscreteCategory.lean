@@ -75,9 +75,6 @@ lemma eq_iso_hom {A : Type u} {x y : Codiscrete A} (f : x ⟶ y) : f = (iso x y)
 
 lemma eq_iso_inv {A : Type u} {x y : Codiscrete A} (f : x ⟶ y) : f = (iso y x).inv := rfl
 
-@[simp]
-lemma eq_id {A : Type u} {x : Codiscrete A} (f : x ⟶ x) : f = 𝟙 _ := rfl
-
 @[simps]
 instance uniqueHom {A : Type u} (x y : Codiscrete A) : Unique (x ⟶ y) where
   default := (iso x y).hom
