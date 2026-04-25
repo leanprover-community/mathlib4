@@ -18,10 +18,7 @@ or, having constructed that monoidal structure directly, show this functor is mo
 
 @[expose] public section
 
-
 open CategoryTheory
-
-open CategoryTheory.Equivalence
 
 universe u
 

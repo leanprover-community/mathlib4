@@ -25,7 +25,7 @@ variable {ι α β γ δ R : Type*} {m0 : MeasurableSpace α} [MeasurableSpace �
 
 section
 
-@[nontriviality, measurability]
+@[nontriviality]
 theorem Subsingleton.aemeasurable [Subsingleton α] : AEMeasurable f μ :=
   Subsingleton.measurable.aemeasurable
 

@@ -618,7 +618,8 @@ theorem IsTorsionBySet.quotient (N : Submodule R M) {s}
 
 variable (M I) (s : Set R) (r : R)
 
-open Pointwise Submodule
+open scoped Pointwise
+open Submodule
 
 lemma isTorsionBySet_quotient_set_smul :
     IsTorsionBySet R (M ⧸ s • (⊤ : Submodule R M)) s :=
