@@ -66,7 +66,7 @@ variable (𝕜) in
 theorem ofScalars_series_injective [Nontrivial E] : Function.Injective (ofScalars E (𝕜 := 𝕜)) := by
   intro c c' h
   funext n
-  simpa [ofScalars] using congrArg (fun p => p n fun _ ↦ (1 : E)) h
+  simpa [ofScalars] using congrArg (fun p ↦ p n fun _ ↦ (1 : E)) h
 
 variable (c)
 
