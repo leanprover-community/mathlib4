@@ -50,7 +50,6 @@ lemma IsOpen.isGeneratedBy [IsGeneratedBy X Y] {U : Set Y} (hU : IsOpen U) :
   convert (W ⟨i, f⟩).isOpen.isOpenMap_subtype_val _ (hV ⟨i, f⟩)
   aesop
 
-
 lemma Topology.IsOpenEmbedding.isGeneratedBy [IsGeneratedBy X Y]
     {F : Type*} [TopologicalSpace F] {f : F → Y}
     (hf : IsOpenEmbedding f) :
