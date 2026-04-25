@@ -100,14 +100,19 @@ lemma of_carrier (M : MfldCat 𝕜 n) : of (n := n) M.carrier M.E M.H M.I = M :=
 /-- The type of morphisms in `MfldCat`. -/
 @[ext]
 structure Hom (M N : MfldCat.{u, v} 𝕜 n) where
+  private mk ::
   /-- The underlying `C^n` map. -/
   hom' : ContMDiffMap M.I N.I M N n
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category (MfldCat 𝕜 n) where
   Hom M N := Hom M N
   id M := ⟨ContMDiffMap.id⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory (MfldCat 𝕜 n)
     (fun M N => ContMDiffMap M.I N.I M N n) where
   hom f := f.hom'
@@ -157,10 +162,7 @@ lemma ofHom_id :
 lemma ofHom_comp (f : ContMDiffMap I I' X Y n) (g : ContMDiffMap I' I'' Y Z n) :
     ofHom (g.comp f) = ofHom f ≫ ofHom g := rfl
 
-
 end ofHom
-
-
 
 instance inhabited : Inhabited (MfldCat 𝕜 n) :=
   ⟨of 𝕜 𝕜 𝕜 (modelWithCornersSelf 𝕜 𝕜)⟩
