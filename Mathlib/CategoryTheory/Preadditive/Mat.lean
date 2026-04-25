@@ -195,7 +195,7 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
               simp_rw [dite_comp, comp_dite]
               simp only [ite_self, dite_eq_ite, Limits.comp_zero, Limits.zero_comp,
                 eqToHom_trans]
-              erw [Finset.sum_sigma]
+              rw [← Finset.univ_sigma_univ, Finset.sum_sigma]
               dsimp +instances
               simp only [if_true, Finset.sum_dite_irrel, Finset.mem_univ,
                 Finset.sum_const_zero, Finset.sum_dite_eq']
@@ -499,10 +499,7 @@ where the morphisms are matrices with components in `R`. -/
 @[nolint unusedArguments]
 def Mat (_ : Type u) :=
   FintypeCat.{u}
-
-instance (R : Type u) : Inhabited (Mat R) := by
-  dsimp [Mat]
-  infer_instance
+deriving Inhabited
 
 instance (R : Type u) : CoeSort (Mat R) (Type u) :=
   FintypeCat.instCoeSort
@@ -601,9 +598,8 @@ and the category of matrices over that ring considered as a single-object catego
 def equivalenceSingleObj : Mat R ≌ Mat_ (SingleObj Rᵐᵒᵖ) :=
   (equivalenceSingleObjInverse R).asEquivalence.symm
 
-instance (X Y : Mat R) : AddCommGroup (X ⟶ Y) := by
-  change AddCommGroup (Matrix X Y R)
-  infer_instance
+instance (X Y : Mat R) : AddCommGroup (X ⟶ Y) :=
+  inferInstanceAs <| AddCommGroup (Matrix X Y R)
 
 variable {R}
 

@@ -56,7 +56,8 @@ class EDist (α : Type*) where
 export EDist (edist)
 
 /-- Creating a uniform space from an extended distance. -/
-@[reducible] def uniformSpaceOfEDist (edist : α → α → ℝ≥0∞) (edist_self : ∀ x : α, edist x x = 0)
+@[reducible] noncomputable def uniformSpaceOfEDist
+    (edist : α → α → ℝ≥0∞) (edist_self : ∀ x : α, edist x x = 0)
     (edist_comm : ∀ x y : α, edist x y = edist y x)
     (edist_triangle : ∀ x y z : α, edist x z ≤ edist x y + edist y z) : UniformSpace α :=
   .ofFun edist edist_self edist_comm edist_triangle fun ε ε0 =>
@@ -348,7 +349,6 @@ theorem ULift.edist_up_up (x y : α) : edist (ULift.up x) (ULift.up y) = edist x
 
 end ULift
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The product of two pseudoemetric spaces, with the max distance, is an extended
 pseudometric spaces. We make sure that the uniform structure thus constructed is the one
 corresponding to the product of uniform spaces, to avoid diamond problems. -/
@@ -507,6 +507,8 @@ theorem tendsto_atTop [Nonempty β] [SemilatticeSup β] {u : β → α} {a : α}
   (atTop_basis.tendsto_iff nhds_basis_eball).trans <| by
     simp only [true_and, mem_Ici, mem_eball]
 
+section
+
 variable [PseudoEMetricSpace β] {f : α → β}
 
 theorem tendsto_nhdsWithin_nhdsWithin {t : Set β} {a b} :
@@ -525,6 +527,48 @@ theorem tendsto_nhdsWithin_nhds {a b} :
 theorem tendsto_nhds_nhds {a b} :
     Tendsto f (𝓝 a) (𝓝 b) ↔ ∀ ε > 0, ∃ δ > 0, ∀ ⦃x⦄, edist x a < δ → edist (f x) b < ε :=
   nhds_basis_eball.tendsto_iff nhds_basis_eball
+
+theorem continuousAt_iff {a} :
+    ContinuousAt f a ↔ ∀ ε > 0, ∃ δ > 0, ∀ ⦃x : α⦄, edist x a < δ → edist (f x) (f a) < ε := by
+  rw [ContinuousAt, tendsto_nhds_nhds]
+
+theorem continuousWithinAt_iff {a s} :
+    ContinuousWithinAt f s a ↔
+      ∀ ε > 0, ∃ δ > 0, ∀ ⦃x : α⦄, x ∈ s → edist x a < δ → edist (f x) (f a) < ε := by
+  rw [ContinuousWithinAt, tendsto_nhdsWithin_nhds]
+
+theorem continuousOn_iff {s} :
+    ContinuousOn f s ↔
+      ∀ b ∈ s, ∀ ε > 0, ∃ δ > 0, ∀ a ∈ s, edist a b < δ → edist (f a) (f b) < ε := by
+  simp [ContinuousOn, continuousWithinAt_iff]
+
+theorem continuous_iff :
+    Continuous f ↔ ∀ b, ∀ ε > 0, ∃ δ > 0, ∀ a, edist a b < δ → edist (f a) (f b) < ε :=
+  continuous_iff_continuousAt.trans <| forall_congr' fun _ ↦ tendsto_nhds_nhds
+
+end
+
+section
+
+variable [TopologicalSpace β] {f : β → α}
+
+theorem continuousAt_iff' {b} :
+    ContinuousAt f b ↔ ∀ ε > 0, ∀ᶠ x in 𝓝 b, edist (f x) (f b) < ε := by
+  rw [ContinuousAt, tendsto_nhds]
+
+theorem continuousWithinAt_iff' {b s} :
+    ContinuousWithinAt f s b ↔ ∀ ε > 0, ∀ᶠ x in 𝓝[s] b, edist (f x) (f b) < ε := by
+  rw [ContinuousWithinAt, tendsto_nhds]
+
+theorem continuousOn_iff' {s} :
+    ContinuousOn f s ↔ ∀ b ∈ s, ∀ ε > 0, ∀ᶠ x in 𝓝[s] b, edist (f x) (f b) < ε := by
+  simp [ContinuousOn, continuousWithinAt_iff']
+
+theorem continuous_iff' :
+    Continuous f ↔ ∀ a, ∀ ε > 0, ∀ᶠ x in 𝓝 a, edist (f x) (f a) < ε :=
+  continuous_iff_continuousAt.trans <| forall_congr' fun _ ↦ tendsto_nhds
+
+end
 
 end EMetric
 
@@ -545,7 +589,6 @@ theorem eball_mem_nhds (x : α) {ε : ℝ≥0∞} (ε0 : 0 < ε) : eball x ε �
 theorem closedEBall_mem_nhds (x : α) {ε : ℝ≥0∞} (ε0 : 0 < ε) : closedEBall x ε ∈ 𝓝 x :=
   mem_of_superset (eball_mem_nhds x ε0) eball_subset_closedEBall
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eball_prod_same [PseudoEMetricSpace β] (x : α) (y : β) (r : ℝ≥0∞) :
     eball x r ×ˢ eball y r = eball (x, y) r :=
   ext fun z => by simp [Prod.edist_eq]

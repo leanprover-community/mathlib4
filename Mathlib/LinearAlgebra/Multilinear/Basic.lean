@@ -214,6 +214,10 @@ theorem coe_smul (c : S) (f : MultilinearMap R M₁ M₂) : ⇑(c • f) = c •
 
 end SMul
 
+-- The `AddMonoid` instance exists to help speedup unification
+instance : AddMonoid (MultilinearMap R M₁ M₂) := fast_instance%
+  coe_injective.addMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
+
 instance addCommMonoid : AddCommMonoid (MultilinearMap R M₁ M₂) := fast_instance%
   coe_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 
@@ -285,7 +289,6 @@ def constOfIsEmpty [IsEmpty ι] (m : M₂) : MultilinearMap R M₁ M₂ where
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a multilinear map `f` on `n` variables (parameterized by `Fin n`) and a subset `s` of `k`
 of these variables, one gets a new multilinear map on `Fin k` by varying these variables, and fixing
 the other ones equal to a given value `z`. It is denoted by `f.restr s hk z`, where `hk` is a
@@ -1342,7 +1345,7 @@ lemma map_sub_map_piecewise [LinearOrder ι] (a b : (i : ι) → M₁ i) (s : Fi
       · exact fun h ↦ (h₁ <| .inl h).ne h
     · cases h₂
       rw [update_self, s.piecewise_eq_of_notMem _ _ (lt_irrefl _ <| hk k ·)]
-    · push_neg at h₁
+    · push Not at h₁
       rw [update_of_ne (Ne.symm h₂), s.piecewise_eq_of_mem _ _ (h₁.1.resolve_left <| Ne.symm h₂)]
   · apply sum_congr rfl
     grind

@@ -56,13 +56,8 @@ theorem isInvariant_iff_image : IsInvariant ϕ s ↔ ∀ t, ϕ t '' s ⊆ s := b
 def IsForwardInvariant [Preorder τ] [Zero τ] (ϕ : τ → α → α) (s : Set α) : Prop :=
   ∀ ⦃t⦄, 0 ≤ t → MapsTo (ϕ t) s s
 
-@[deprecated (since := "2025-09-25")] alias IsFwInvariant := IsForwardInvariant
-
 theorem IsInvariant.isForwardInvariant [Preorder τ] [Zero τ] {ϕ : τ → α → α} {s : Set α}
     (h : IsInvariant ϕ s) : IsForwardInvariant ϕ s := fun t _ht => h t
-
-@[deprecated (since := "2025-09-25")]
-alias IsInvariant.isFwInvariant := IsInvariant.isForwardInvariant
 
 /-- If `τ` is a `CanonicallyOrderedAdd` monoid (e.g., `ℕ` or `ℝ≥0`), then the notions
 `IsForwardInvariant` and `IsInvariant` are equivalent. -/
@@ -70,18 +65,12 @@ theorem IsForwardInvariant.isInvariant [AddMonoid τ] [PartialOrder τ] [Canonic
     {ϕ : τ → α → α} {s : Set α}
     (h : IsForwardInvariant ϕ s) : IsInvariant ϕ s := fun t => h (zero_le t)
 
-@[deprecated (since := "2025-09-25")]
-alias IsFwInvariant.isInvariant := IsForwardInvariant.isInvariant
-
 /-- If `τ` is a `CanonicallyOrderedAdd` monoid (e.g., `ℕ` or `ℝ≥0`), then the notions
 `IsForwardInvariant` and `IsInvariant` are equivalent. -/
 theorem isForwardInvariant_iff_isInvariant [AddMonoid τ] [PartialOrder τ] [CanonicallyOrderedAdd τ]
     {ϕ : τ → α → α} {s : Set α} :
     IsForwardInvariant ϕ s ↔ IsInvariant ϕ s :=
   ⟨IsForwardInvariant.isInvariant, IsInvariant.isForwardInvariant⟩
-
-@[deprecated (since := "2025-09-25")]
-alias isFwInvariant_iff_isInvariant := isForwardInvariant_iff_isInvariant
 
 end Invariant
 
@@ -105,13 +94,21 @@ namespace Flow
 variable {τ : Type*} [AddMonoid τ] [TopologicalSpace τ] [ContinuousAdd τ]
   {α : Type*} [TopologicalSpace α] (ϕ : Flow τ α)
 
-instance : Inhabited (Flow τ α) :=
-  ⟨{  toFun := fun _ x => x
-      cont' := continuous_snd
-      map_add' := fun _ _ _ => rfl
-      map_zero' := fun _ => rfl }⟩
-
 instance : CoeFun (Flow τ α) fun _ => τ → α → α := ⟨Flow.toFun⟩
+
+variable (τ α) in
+/-- The identity map as a constant flow. -/
+protected def id : Flow τ α where
+  toFun _ := id
+  cont' := continuous_snd
+  map_add' _ _ _ := rfl
+  map_zero' _ := rfl
+
+@[simp]
+theorem id_apply (t : τ) : Flow.id τ α t = id := rfl
+
+instance : Inhabited (Flow τ α) :=
+  ⟨Flow.id τ α⟩
 
 @[ext]
 theorem ext : ∀ {ϕ₁ ϕ₂ : Flow τ α}, (∀ t x, ϕ₁ t x = ϕ₂ t x) → ϕ₁ = ϕ₂

@@ -157,7 +157,8 @@ theorem add_thirds (a : α) : a / 3 + a / 3 + a / 3 = a := by
 theorem div_mul_le_div_mul_of_div_le_div (h : a / b ≤ c / d) (he : 0 ≤ e) :
     a / (b * e) ≤ c / (d * e) := by
   rw [div_mul_eq_div_mul_one_div, div_mul_eq_div_mul_one_div]
-  exact mul_le_mul_of_nonneg_right h (one_div_nonneg.2 he)
+  gcongr
+  exact one_div_nonneg.2 he
 
 omit [IsStrictOrderedRing α] in
 theorem mul_le_mul_of_mul_div_le (h : a * (b / c) ≤ d) (hc : 0 < c) : b * a ≤ d * c := by
@@ -683,8 +684,9 @@ theorem uniform_continuous_npow_on_bounded (B : α) {ε : α} (hε : 0 < ε) (n 
   obtain h | h := (abs_nonneg (q - r)).eq_or_lt
   · simpa only [← h, zero_mul] using hε
   refine (lt_of_le_of_lt ?_ <| lt_add_of_pos_left _ h).trans_le hqr.2
-  refine mul_le_mul_of_nonneg_left (pow_le_pow_left₀ ((abs_nonneg _).trans le_sup_left) ?_ _)
-    (mul_nonneg (abs_nonneg _) n.cast_nonneg)
+  gcongr
+  · exact mul_nonneg (abs_nonneg _) n.cast_nonneg
+  · exact (abs_nonneg _).trans le_sup_left
   refine max_le ?_ (hr.trans <| le_add_of_nonneg_right zero_le_one)
   exact add_sub_cancel r q ▸ (abs_add_le ..).trans (add_le_add hr hqr.1)
 

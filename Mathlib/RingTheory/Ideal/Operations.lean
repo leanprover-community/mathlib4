@@ -395,17 +395,7 @@ protected theorem pow_succ : I ^ (n + 1) = I * I ^ n := by
 
 end IsTwoSided
 
-@[simp]
-theorem mul_eq_bot [NoZeroDivisors R] : I * J = ⊥ ↔ I = ⊥ ∨ J = ⊥ :=
-  ⟨fun hij =>
-    or_iff_not_imp_left.mpr fun I_ne_bot =>
-      J.eq_bot_iff.mpr fun j hj =>
-        let ⟨i, hi, ne0⟩ := I.ne_bot_iff.mp I_ne_bot
-        Or.resolve_left (mul_eq_zero.mp ((I * J).eq_bot_iff.mp hij _ (mul_mem_mul hi hj))) ne0,
-    fun h => by obtain rfl | rfl := h; exacts [bot_mul _, mul_bot _]⟩
-
-instance [NoZeroDivisors R] : NoZeroDivisors (Ideal R) where
-  eq_zero_or_eq_zero_of_mul_eq_zero := mul_eq_bot.1
+theorem mul_eq_bot [NoZeroDivisors R] : I * J = ⊥ ↔ I = ⊥ ∨ J = ⊥ := Submodule.mul_eq_bot
 
 instance {S A : Type*} [Semiring S] [SMul R S] [AddCommMonoid A] [Module R A] [Module S A]
     [IsScalarTower R S A] [IsTorsionFree R A] {I : Submodule S A} : IsTorsionFree R I :=
@@ -1194,9 +1184,8 @@ theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι →
         rw [Finset.coe_insert, Set.biUnion_insert, ← Set.union_self (f b : Set R),
           subset_union_prime' hp', ← or_assoc, or_self_iff] at h
         rwa [Finset.exists_mem_insert]
-      rcases s.eq_empty_or_nonempty with hse | hsne
-      · subst hse
-        rw [Finset.coe_empty, Set.biUnion_empty] at h
+      rcases s.eq_empty_or_nonempty with rfl | hsne
+      · rw [Finset.coe_empty, Set.biUnion_empty] at h
         exact (h I.zero_mem).elim
       · obtain ⟨i, his⟩ := hsne
         obtain ⟨t, _, rfl⟩ : ∃ t, i ∉ t ∧ insert i t = s :=
@@ -1380,8 +1369,11 @@ theorem Ideal.primeCompl_le_nonZeroDivisors {R : Type*} [CommSemiring R] [NoZero
 
 namespace Submodule
 
-variable {R : Type u} {M : Type v}
-variable [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable {R : Type*}
+
+section
+
+variable [CommSemiring R] {M : Type*} [AddCommMonoid M] [Module R M]
 
 instance moduleSubmodule : Module (Ideal R) (Submodule R M) where
   smul_add := smul_sup
@@ -1437,6 +1429,20 @@ instance algebraIdeal : Algebra (Ideal R) (Submodule R A) where
     (congr_arg (map · I) <| LinearMap.ext (f.left_inv ·)).trans (map_id I)
   right_inv I := (map_comp _ _ I).symm.trans <|
     (congr_arg (map · I) <| LinearMap.ext (f.right_inv ·)).trans (map_id I)
+
+end
+
+variable [Semiring R] {M N : Type*}
+
+lemma smul_top_le_comap_smul_top [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
+    (I : Ideal R) (f : M →ₗ[R] N) : I • ⊤ ≤ comap f (I • ⊤) :=
+  map_le_iff_le_comap.mp <| le_of_eq_of_le (map_smul'' _ _ _) <|
+    smul_mono_right _ le_top
+
+lemma comap_smul_top_of_surjective [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+    (I : Ideal R) (f : M →ₗ[R] N) (h : Function.Surjective f) :
+    comap f (I • ⊤) = I • ⊤ ⊔ (LinearMap.ker f) := by
+  rw [← Submodule.comap_map_eq f, Submodule.map_smul'', map_top, LinearMap.range_eq_top.mpr h]
 
 end Submodule
 

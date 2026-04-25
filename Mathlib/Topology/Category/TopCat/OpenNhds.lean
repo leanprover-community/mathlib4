@@ -47,6 +47,8 @@ variable {x : X} {U V W : OpenNhds x}
 instance partialOrder (x : X) : PartialOrder (OpenNhds x) :=
   inferInstanceAs (PartialOrder { U : Opens X // x ∈ U })
 
+theorem le_def (U V : OpenNhds x) : U ≤ V ↔ U.1 ≤ V.1 := Iff.rfl
+
 instance (x : X) : Lattice (OpenNhds x) :=
   { inf := fun U V => ⟨U.1 ⊓ V.1, ⟨U.2, V.2⟩⟩
     le_inf := fun U V W => @le_inf _ _ U.1.1 V.1.1 W.1.1
@@ -59,7 +61,9 @@ instance (x : X) : Lattice (OpenNhds x) :=
 
 instance (x : X) : OrderTop (OpenNhds x) where
   top := ⟨⊤, trivial⟩
-  le_top _ := by simp [LE.le]
+  le_top x := by
+    cases x
+    simp [le_def]
 
 instance (x : X) : Inhabited (OpenNhds x) :=
   ⟨⊤⟩

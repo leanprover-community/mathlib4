@@ -5,8 +5,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Haitao Zhang
 -/
 module
 
-public import Mathlib.Tactic.Lemma
-public import Mathlib.Tactic.TypeStar
+public import Mathlib.Init
 
 import Mathlib.Tactic.Attr.Register
 
@@ -76,9 +75,24 @@ variable {α : Type u₁} {β : Type u₂}
 /-- A point `x` is a fixed point of `f : α → α` if `f x = x`. -/
 def IsFixedPt (f : α → α) (x : α) := f x = x
 
+/-- If `x` is a fixed point of `f`, then `f x = x`. This is useful, e.g., for `rw` or `simp`. -/
+protected theorem IsFixedPt.eq {f : α → α} {x : α} (hf : IsFixedPt f x) : f x = x :=
+  hf
+
+instance IsFixedPt.decidable [h : DecidableEq α] {f : α → α} {x : α} : Decidable (IsFixedPt f x) :=
+  h (f x) x
+
 @[nontriviality]
 theorem IsFixedPt.of_subsingleton [Subsingleton α] (f : α → α) (x : α) : IsFixedPt f x :=
   Subsingleton.elim _ _
+
+/-- Every point is a fixed point of `id`. -/
+theorem isFixedPt_id (x : α) : IsFixedPt id x :=
+  rfl
+
+/-- A function fixes every point iff it is the identity. -/
+@[simp] theorem forall_isFixedPt_iff {f : α → α} : (∀ x, IsFixedPt f x) ↔ f = id :=
+  ⟨funext, fun h ↦ h ▸ isFixedPt_id⟩
 
 end Function
 
