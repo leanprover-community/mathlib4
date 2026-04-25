@@ -27,8 +27,12 @@ of the formal group law `F(X,Y)`.
 
 * Additive formal group laws `𝔾ₐ` and multiplicative formal group laws `𝔾ₘ`.
 
-* Instance: Group instance defined by the formal group law `F` over the ideal
-  `PowerSeries.hasEvalIdeal`.
+* `F.Point σ` taking values in the formal power series ring `MvPowerSeries σ R` with the property
+that constant coefficient is nilpotent. We have the following typeclass:
+- `AddZeroClass (F.Point σ)`
+- `AddMonoid (F.Point σ)`
+when `F` is a commutative formal group law
+- `AddCommMonoid (F.Point σ)`
 
 ## References
 * [Hazewinkel, Michiel. Formal Groups and Applications][hazewinkel1978]
@@ -99,6 +103,14 @@ lemma FormalGroup.assoc' (F : FormalGroup R) {f₀ f₁ f₂ : MvPowerSeries σ 
         congr! 2 with s
         fin_cases s <;> simp [subst]
 
+lemma FormalGroup.comm' (F : FormalGroup R) [F.IsComm] {f g : MvPowerSeries σ R}
+    (hf : PowerSeries.HasSubst f) (hg : PowerSeries.HasSubst g) :
+    F.toPowerSeries.subst ![f, g] = F.toPowerSeries.subst ![g, f] := by
+  nth_rw 1 [IsComm.comm]
+  rw [subst_comp_subst_apply HasSubst.X_X <| hasSubst_of_constantCoeff_nilpotent (by simp [hf, hg])]
+  congr! 2 with s
+  fin_cases s <;> simp [subst]
+
 namespace FormalGroup
 
 variable {σ : Type*} (F : FormalGroup R)
@@ -114,14 +126,24 @@ via the substitution operation $x +_F y = F(x, y)$. -/
 @[nolint unusedArguments]
 def Point (F : FormalGroup R) (σ : Type*) := {f : MvPowerSeries σ R // PowerSeries.HasSubst f}
 
+lemma HasSubst.match {σ : Type*} [Finite σ] {x : σ → MvPowerSeries τ R}
+  (hx : ∀ i, PowerSeries.HasSubst (x i)) :
+    HasSubst x := hasSubst_of_constantCoeff_nilpotent hx
+
 instance : Add (F.Point σ) where
-  add x y := ⟨(F : MvPowerSeries (Fin 2) R).subst ![x.val, y.val],
-    isNilpotent_constCoeff_subst_of_isNilpotent_constCoeff
-      (hasSubst_of_constantCoeff_nilpotent fun s => by fin_cases s <;> simp [x.prop, y.prop])
-        (by simp [F.zero_constantCoeff])⟩
+  add x y :=  ⟨(F : MvPowerSeries (Fin 2) R).subst ![x.val, y.val],
+    IsNilpotent_subst' (by simp [hasSubst_of_constantCoeff_nilpotent, x.prop, y.prop])
+      (F.zero_constantCoeff ▸ IsNilpotent.zero)⟩
+
+@[simp]
+lemma add_apply {x y : F.Point σ} : (x + y).val = F.toPowerSeries.subst ![x.val, y.val] := by
+  rfl
 
 instance : Zero (F.Point σ) where
   zero := ⟨0, PowerSeries.HasSubst.zero⟩
+
+@[simp]
+lemma zero_apply : (0 : F.Point σ).val = (0 : MvPowerSeries σ R) := rfl
 
 /- TODO : Zero, SMul, Inv instance. -/
 
@@ -316,6 +338,13 @@ theorem zero_add {f : MvPowerSeries σ R} (hf : PowerSeries.HasSubst f) :
 instance : AddZeroClass (F.Point σ) where
   zero_add x := Subtype.ext (zero_add F x.prop)
   add_zero x := Subtype.ext (add_zero F x.prop)
+
+instance : AddMonoid (F.Point σ) where
+  nsmul := nsmulRec
+  add_assoc x y z := Subtype.ext <| F.assoc' x.prop y.prop z.prop
+
+instance [F.IsComm] : AddCommMonoid (F.Point σ) where
+  add_comm x y := Subtype.ext <| F.comm' x.prop y.prop
 
 end FormalGroup
 

@@ -312,20 +312,6 @@ theorem constantCoeff_subst (ha : HasSubst a) (f : MvPowerSeries σ R) :
       finsum (fun d ↦ coeff d f • (constantCoeff (d.prod fun s e => (a s) ^ e))) := by
   simp only [← coeff_zero_eq_constantCoeff_apply, coeff_subst ha f 0]
 
-lemma isNilpotent_constCoeff_subst_of_isNilpotent_constCoeff {a : σ → MvPowerSeries τ R}
-    (ha : MvPowerSeries.HasSubst a) {f : MvPowerSeries σ R} (hf : IsNilpotent f.constantCoeff) :
-      IsNilpotent (constantCoeff (f.subst a)) := by
-  classical
-  rw [constantCoeff_subst ha]
-  refine isNilpotent_finsum ?_
-  intro d
-  by_cases hd : d = 0
-  · simp [hd, hf]
-  obtain ⟨i, hi⟩ : d.support.Nonempty := d.support_nonempty_iff.mpr hd
-  rw [Finsupp.prod, map_prod, ← Finset.prod_erase_mul _ _ hi, smul_eq_mul, ← mul_assoc, map_pow]
-  exact Commute.isNilpotent_mul_left (Commute.all _ _)
-    <| (IsNilpotent.pow_iff_pos (d.mem_support_iff.mp hi)).mpr (ha.const_coeff i)
-
 theorem constantCoeff_subst_eq_zero (ha : HasSubst a) (ha' : ∀ i, (a i).constantCoeff = 0)
     {f : MvPowerSeries σ R} (hf : f.constantCoeff = 0) :
     MvPowerSeries.constantCoeff (subst a f) = 0 := by
@@ -424,28 +410,27 @@ variable {υ : Type*}
   {T : Type*} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
   {b : τ → MvPowerSeries υ T}
 
-theorem IsNilpotent_subst (ha : HasSubst a)
-    {f : MvPowerSeries σ R} (hf : IsNilpotent (constantCoeff f)) :
-    IsNilpotent (constantCoeff (substAlgHom ha f)) := by
+lemma IsNilpotent_subst' {a : σ → MvPowerSeries τ S}
+    (ha : HasSubst a) {f : MvPowerSeries σ R} (hf : IsNilpotent f.constantCoeff) :
+      IsNilpotent (constantCoeff (f.subst a)) := by
   classical
-  rw [coe_substAlgHom, constantCoeff_subst ha]
-  apply isNilpotent_finsum
+  rw [constantCoeff_subst ha]
+  refine isNilpotent_finsum ?_
   intro d
   by_cases hd : d = 0
   · rw [← algebraMap_smul S, smul_eq_mul, mul_comm, ← smul_eq_mul, hd]
     apply IsNilpotent.smul
     simpa using IsNilpotent.map hf (algebraMap R S)
-  · apply IsNilpotent.smul
-    rw [← ne_eq, Finsupp.ne_iff] at hd
-    obtain ⟨t, hs⟩ := hd
-    rw [← Finsupp.prod_filter_mul_prod_filter_not (fun i ↦ i = t), map_mul,
-      mul_comm, ← smul_eq_mul]
-    apply IsNilpotent.smul
-    rw [Finsupp.prod_eq_single t]
-    · simpa using IsNilpotent.pow_of_pos (ha.const_coeff t) hs
-    · intro t' htt' ht'
-      simp [ht'] at htt'
-    · exact fun _ ↦ by rw [pow_zero]
+  obtain ⟨i, hi⟩ : d.support.Nonempty := d.support_nonempty_iff.mpr hd
+  rw [Finsupp.prod, map_prod, ← Finset.prod_erase_mul _ _ hi, ← algebraMap_smul S,
+    smul_eq_mul, ← mul_assoc, map_pow]
+  exact Commute.isNilpotent_mul_left (Commute.all _ _)
+    <| (IsNilpotent.pow_iff_pos (d.mem_support_iff.mp hi)).mpr (ha.const_coeff i)
+
+theorem IsNilpotent_subst (ha : HasSubst a)
+    {f : MvPowerSeries σ R} (hf : IsNilpotent (constantCoeff f)) :
+    IsNilpotent (constantCoeff (substAlgHom ha f)) := by
+  simpa using IsNilpotent_subst' ha hf
 
 theorem HasSubst.comp (ha : HasSubst a) (hb : HasSubst b) :
     HasSubst (fun s ↦ substAlgHom hb (a s)) where
