@@ -134,9 +134,14 @@ lemma comp_mem_paths_iff {W : MorphismProperty C} {X Y Z : C} {p : Path X Y} {q 
     | nil => exact hp
     | cons q q' h => exact ⟨h ⟨hp, hq.1⟩ hq.1, hq.2⟩
 
+@[simp]
+lemma comp_mem_paths_iff' {W : MorphismProperty C} {X Y Z : Paths C} {p : X ⟶ Y} {q : Y ⟶ Z} :
+    W.paths (p ≫ q) ↔ W.paths p ∧ W.paths q :=
+  W.comp_mem_paths_iff
+
 instance (W : MorphismProperty C) : W.paths.IsMultiplicative where
   id_mem _ := nil_mem_paths
-  comp_mem _ _ hf hg := W.comp_mem_paths_iff.2 ⟨hf, hg⟩
+  comp_mem _ _ hf hg := W.comp_mem_paths_iff'.2 ⟨hf, hg⟩
 
 /-- If `W` and `W'` are morphism properties on `C` such that `W ≤ W'`, then `W.paths ≤ W'.paths`. -/
 @[gcongr]
