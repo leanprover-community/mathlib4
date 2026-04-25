@@ -15,7 +15,7 @@ require "leanprover-community" / "proofwidgets" @ git "v0.0.97"
     Please report this issue on the Lean Zulip."
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
-require plausible from git "https://github.com/Kha/plausible" @ "push-nuzuuroszpvz"
+require "leanprover-community" / "plausible" @ git "main"
 
 
 /-!

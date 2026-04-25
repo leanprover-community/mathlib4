@@ -133,6 +133,25 @@ def normalizeIso {a : B} :
   | _, _, p, Hom.comp f g =>
     (α_ _ _ _).symm ≪≫ whiskerRightIso (normalizeIso p f) g ≪≫ normalizeIso (normalizeAux p f) g
 
+-- Equation lemmas for `normalizeIso`/`normalizeAux` matching `≫`/`𝟙`
+-- (i.e., `CategoryStruct.comp`/`CategoryStruct.id` for `FreeBicategory`) instead of
+-- `Hom.comp`/`Hom.id`. Needed because after leanprover/lean4#13363, `canUnfoldAtMatcher`
+-- no longer unfolds class projections in match discriminants.
+@[simp] theorem normalizeAux_comp {a : B} {b c d : FreeBicategory B}
+    (p : Path a b) (f : b ⟶ c) (g : c ⟶ d) :
+    normalizeAux p (f ≫ g) = normalizeAux (normalizeAux p f) g := rfl
+@[simp] theorem normalizeAux_id {a : B} {b : FreeBicategory B} (p : Path a b) :
+    normalizeAux p (𝟙 b) = p := rfl
+@[simp] theorem normalizeIso_comp {a : B} {b c d : FreeBicategory B}
+    (p : Path a b) (f : b ⟶ c) (g : c ⟶ d) :
+    normalizeIso p (f ≫ g) =
+      (α_ _ _ _).symm ≪≫ whiskerRightIso (normalizeIso p f) g ≪≫
+        normalizeIso (normalizeAux p f) g := rfl
+@[simp] theorem normalizeIso_id {a : B} {b : FreeBicategory B} (p : Path a b) :
+    normalizeIso p (𝟙 b) = ρ_ _ := rfl
+@[simp] theorem quot_whisker_left {a b c : FreeBicategory B} (f : a ⟶ b) {g h : b ⟶ c}
+    (η : Hom₂ g h) : Quot.mk Rel (Hom₂.whisker_left f η) = f ◁ (Quot.mk Rel η) := rfl
+
 /-- Given a 2-morphism between `f` and `g` in the free bicategory, we have the equality
 `normalizeAux p f = normalizeAux p g`.
 -/

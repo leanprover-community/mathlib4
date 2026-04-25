@@ -117,8 +117,20 @@ def multicospanComp : (S.index (P ⋙ F)).multicospan ≅ (S.index P).multicospa
       | WalkingMulticospan.left _ => Iso.refl _
       | WalkingMulticospan.right _ => Iso.refl _)
     (by
+      #adaptation_note /-- Proof repaired after leanprover/lean4#13363.
+      The body of this `by` block was previously
+      ```
       rintro (a | b) (a | b) (f | f | f)
-      all_goals cat_disch)
+      all_goals cat_disch
+      ```
+      The replacement proof is a short-term fix, and we request that the authors/maintainers of
+      this file review the proof, and either approve it by removing this adaptation note, revise
+      the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
+      needs addressing. -/
+      rintro (a | b) (a | b) (f | f | f) <;>
+        simp only [WalkingMulticospan.Hom.id_eq_id, Iso.refl_hom, Category.id_comp,
+          Category.comp_id, Functor.map_id] <;>
+        dsimp [CategoryStruct.comp] <;> simp)
 
 /-- Mapping the multifork associated to a cover `S : J.Cover X` and a presheaf `P` with
 respect to a functor `F` is isomorphic (upto a natural isomorphism of the underlying functors)
