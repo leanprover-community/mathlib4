@@ -15,7 +15,7 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 assert_not_exists MulAction MonoidWithZero
 
-open Pointwise
+open scoped Pointwise
 
 variable {F α β γ : Type*}
 
