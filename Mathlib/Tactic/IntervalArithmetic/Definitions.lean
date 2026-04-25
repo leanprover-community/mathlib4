@@ -149,6 +149,16 @@ structure Interval (α : Type*) where
   lb : LowerBound α
   ub : UpperBound α
 
+instance [Repr α] : Repr (Interval α) where
+  reprPrec x _ :=
+    let left := match x.lb with
+    | ⊥ => f!"(-∞"
+    | some ⟨c, a⟩ => if c then f!"[{repr a}" else f!"({repr a}"
+    let right := match x.ub with
+    | ⊤ => f!"∞)"
+    | some ⟨c, a⟩ => if c then f!"{repr a}]" else f!"{repr a})"
+    f!"{left},{right}"
+
 def Interval.univ (α : Type*) : Interval α := ⟨⊥, ⊤⟩
 
 def Interval.toSet [Preorder β] (φ : α → β) (x : Interval α) : Set β :=

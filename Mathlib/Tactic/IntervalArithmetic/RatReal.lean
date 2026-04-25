@@ -4,10 +4,14 @@ public import Mathlib.Tactic.IntervalArithmetic.Core
 public import Mathlib.Data.Rat.Cast.CharZero
 public import Mathlib.Data.Rat.Cast.Order
 public import Mathlib.Data.Real.Sqrt
+public import Mathlib.Data.Nat.Factorial.Basic
+public import Mathlib.Analysis.Complex.Exponential
 
 set_option linter.style.header false
 
 @[expose] public section
+
+open Nat
 
 namespace IntervalArithmetic
 
@@ -18,7 +22,7 @@ theorem strictMono_rat_to_real : StrictMono rat_to_real := by
   intro x y hxy
   simp [rat_to_real, hxy]
 
-/- Constants -/
+/- "Unfolders / Converters" -/
 
 def rat_const (q : ℚ) : Interval ℚ := ⟨some ⟨true, q⟩, some ⟨true,q⟩⟩
 
@@ -123,6 +127,38 @@ theorem rat_sub_inclusion {r s : ℝ} {x y : Interval ℚ}
          Rat.cast_sub] at hrx hsy ⊢ <;> grind
     all_goals simp
 
+-- mul
+
+def Interval.rat_mul (x y : Interval ℚ) : Interval ℚ :=
+  sorry
+
+def Interval.rat_pow (x : Interval ℚ) (n : ℕ) : Interval ℚ :=
+  let zero_lb : LowerBound ℚ := some ⟨true, 0⟩
+  let zero_ub : UpperBound ℚ := some ⟨true, 0⟩
+  if n = 0 then rat_const 1
+  else if zero_lb ≤ x.lb || Odd n then
+    let lb := match x.lb with | ⊥ => ⊥ | some ⟨c, q⟩ => some ⟨c, q ^ n⟩
+    let ub := match x.ub with | ⊤ => ⊤ | some ⟨c, q⟩ => some ⟨c, q ^ n⟩
+    ⟨lb, ub⟩
+  else if decide (x.ub ≤ zero_ub) then
+    let lb := match x.ub with | ⊤ => ⊥ | some ⟨c, q⟩ => some ⟨c, q ^ n⟩
+    let ub := match x.lb with | ⊥ => ⊤ | some ⟨c, q⟩ => some ⟨c, q ^ n⟩
+    ⟨lb, ub⟩
+  else
+    let ub := match x.lb, x.ub with
+    | some ⟨c₁, q₁⟩, some ⟨c₂, q₂⟩ =>
+      let q₁' := q₁.abs
+      if q₁' < q₂ then some ⟨c₂, q₂ ^ n⟩
+      else if q₁' = q₂ then some ⟨c₁ || c₂, q₂ ^ n⟩
+      else some ⟨c₁, q₁' ^ n⟩
+    | _, _ => ⊤
+    ⟨zero_lb, ub⟩
+
+@[exact_interval_op RatReal]
+theorem rat_pow_inclusion {r : ℝ} {x : Interval ℚ} (n : ℕ) (hrx : r ∈ x.toSet rat_to_real) :
+    (r ^ n) ∈ (x.rat_pow n).toSet rat_to_real := by
+  sorry
+
 /- Approx Uniary Operation -/
 
 def rat_sqrt_lb (n : ℕ) (q : ℚ) : ℚ :=
@@ -146,160 +182,49 @@ theorem rat_sqrt_inclusion (n : ℕ) {r : ℝ} {x : Interval ℚ} (hrx : r ∈ x
     √ r ∈ (x.rat_sqrt n).toSet rat_to_real := by
   sorry
 
-/- ## Tactic Tests -/
+-- exp
 
-example : (0 : ℝ) ≤ 1 := by
-  interval RatReal 0
+def exp_aux_aux (n : ℕ) (q : ℚ) (term : ℚ) : ℕ → ℚ
+  | 0 => 1
+  | k + 1 =>
+    let term := term * (q / (n - k))
+    term + exp_aux_aux n q term k
 
-example : (0 : ℝ) < 1 := by
-  interval RatReal 10
+-- ∑ i ∈ Finset.range (2*(n + 1) + 1), (q ^ i) / (i !)
+def exp_lb_aux (n : ℕ) (q : ℚ) : ℚ := exp_aux_aux (2*(n + 1) + 1) q 1 (2*(n + 1) + 1)
 
-example : (1 : ℝ) ≤ 1 := by
-  interval RatReal 10
+-- ∑ i ∈ Finset.range (2*(n + 1)), (q ^ i) / (i !)
+def exp_ub_aux (n : ℕ) (q : ℚ) : ℚ := exp_aux_aux (2*(n + 1)) q 1 (2*(n + 1))
 
-example : (1 : ℝ) < 2 := by
-  interval RatReal 10
+def exp_lb_non_pos (n : ℕ) (q : ℚ) : ℚ :=
+  if q < -1 then (exp_lb_aux n (q / -q.floor)) ^ (- q.floor)
+  else if q < 0 then exp_lb_aux n q
+  else 1
 
-example : (2 : ℝ) + √ 3 ≤ √ 24 := by
-  interval RatReal 10
+def exp_ub_non_pos (n : ℕ) (q : ℚ) : ℚ :=
+  if q < -1 then (exp_ub_aux n (q / -q.floor)) ^ (- q.floor)
+  else if q < 0 then exp_ub_aux n q
+  else 1
 
-example : (2 : ℝ) + 3 < 6 := by
-  interval RatReal 10
+def exp_lb (n : ℕ) (q : ℚ) : ℚ :=
+  if q < 0 then exp_lb_non_pos n q
+  else 1 / exp_ub_non_pos n (- q)
 
--- Sqrt Tests
+def exp_ub (n : ℕ) (q : ℚ) : ℚ :=
+  if q < 0 then exp_ub_non_pos n q
+  else 1 / exp_lb_non_pos n (- q)
 
-example : √ 2 ≤ 1.41421356237309504881 := by interval RatReal 100000000000000000000
+def Interval.rat_exp (n : ℕ) (x : Interval ℚ) : Interval ℚ where
+  lb := match x.lb with
+    | ⊥ => some ⟨false, 0⟩
+    | some ⟨c, a⟩ => some ⟨c, exp_lb n a⟩
+  ub := match x.ub with
+    | ⊤ => ⊤
+    | some ⟨c, a⟩ => some ⟨c, exp_ub n a⟩
 
--- Two variables
-example {r s : ℝ}
-    (hr : r ∈ (rat_const (1 : ℚ)).toSet rat_to_real)
-    (hs : s ∈ (rat_const (2 : ℚ)).toSet rat_to_real) :
-    r + s ≤ 3 := by
-  interval RatReal 10
-
--- Repeated variable
-example {r : ℝ}
-    (hr : r ∈ (nat_const 1).toSet rat_to_real) :
-    r + r ≤ 2 := by
-  interval RatReal 10
-
--- same variable on both sides
-example {r : ℝ} (hr : r ∈ (nat_const 2).toSet rat_to_real) : r ≤ r := by
-  interval RatReal 10
-
-example {r s : ℝ}
-    (hr : r ∈ (nat_const 0).toSet rat_to_real)
-    (hs : s ∈ (nat_const 1).toSet rat_to_real) :
-    r < s := by
-  interval RatReal 10
-
--- variables embedded in larger expressions on both sides
-example {r s : ℝ}
-    (hr : r ∈ (nat_const 1).toSet rat_to_real)
-    (hs : s ∈ (nat_const 2).toSet rat_to_real) :
-    r + 1 ≤ s + 0 := by
-  interval RatReal 10
-
-def Iccq (a b : ℚ) : Interval ℚ := ⟨some ⟨true, a⟩,  some ⟨true, b⟩⟩
-def Icoq (a b : ℚ) : Interval ℚ := ⟨some ⟨true, a⟩,  some ⟨false, b⟩⟩
-def Iocq (a b : ℚ) : Interval ℚ := ⟨some ⟨false, a⟩, some ⟨true, b⟩⟩
-def Iooq (a b : ℚ) : Interval ℚ := ⟨some ⟨false, a⟩, some ⟨false, b⟩⟩
-def Iciq (a : ℚ) : Interval ℚ := ⟨some ⟨true, a⟩, ⊤⟩
-def Iicq (b : ℚ) : Interval ℚ := ⟨⊥, some ⟨true, b⟩⟩
-
-/- ## Non-singleton interval tests -/
-
--- plain variable-vs-variable
-example {r s : ℝ}
-    (hr : r ∈ (Iccq 0 1).toSet rat_to_real)
-    (hs : s ∈ (Iccq 2 3).toSet rat_to_real) :
-    r ≤ s := by
-  interval RatReal 10
-
-example {r s : ℝ}
-    (hr : r ∈ (Iccq 0 1).toSet rat_to_real)
-    (hs : s ∈ (Iccq 2 3).toSet rat_to_real) :
-    r < s := by
-  interval RatReal 10
-
--- touching closed intervals: only ≤ should work
-example {r s : ℝ}
-    (hr : r ∈ (Iccq 0 1).toSet rat_to_real)
-    (hs : s ∈ (Iccq 1 2).toSet rat_to_real) :
-    r ≤ s := by
-  interval RatReal 10
-
--- open/closed endpoint interaction for strict inequality
-example {r s : ℝ}
-    (hr : r ∈ (Icoq 0 1).toSet rat_to_real)
-    (hs : s ∈ (Iccq 1 2).toSet rat_to_real) :
-    r < s := by
-  interval RatReal 10
-
-example {r s : ℝ}
-    (hr : r ∈ (Iccq 0 1).toSet rat_to_real)
-    (hs : s ∈ (Iocq 1 2).toSet rat_to_real) :
-    r < s := by
-  interval RatReal 10
-
-example {r s : ℝ}
-    (hr : r ∈ (Iooq 0 1).toSet rat_to_real)
-    (hs : s ∈ (Iccq 1 2).toSet rat_to_real) :
-    r < s := by
-  interval RatReal 10
-
--- variables on both sides inside larger expressions
-
-example {r s : ℝ}
-    (hr : r ∈ (Iccq 0 1).toSet rat_to_real)
-    (hs : s ∈ (Iccq 2 3).toSet rat_to_real) :
-    r + 1 ≤ s := by
-  interval RatReal 10
-
-example {r s : ℝ}
-    (hr1 : r ∈ (Iccq 0 2).toSet rat_to_real)
-    (hr2 : r ∈ (Iccq 1 3).toSet rat_to_real)
-    (hs1 : s ∈ (Iccq 0 1).toSet rat_to_real)
-    (hs2 : s ∈ (Iccq (-1) 2).toSet rat_to_real) :
-    r + s ≤ 3 := by
-  interval RatReal 10
-
--- clean!
-
-example {r : ℝ} (h0 : 0 ≤ r) (h1 : r ≤ 1) : r ≤ 1 := by
-  interval RatReal 10
-
-example {r : ℝ} (h0 : 0 ≤ r) (h1 : r ≤ 1) : 0 ≤ r := by
-  interval RatReal 10
-
-example {r : ℝ} (h0 : 0 ≤ r) (h1 : r ≤ 1) : r + 1 ≤ 2 := by
-  interval RatReal 10
-
-example {r s : ℝ} (hr : 0 < r) (hs : 0 ≤ s) : 0 < r + s := by
-  interval RatReal 10
-
-example {r : ℝ} (h0 : 0 < r) (h1 : r ≤ 1) : 0 < r := by
-  interval RatReal 10
-
-example {r : ℝ} (h0 : 0 ≤ r) (h1 : r < 1) : r < 1 := by
-  interval RatReal 10
-
-example {r : ℝ} (h0 : -1 ≤ r) (h1 : r ≤ 2) : r + 1 ≤ 3 := by
-  interval RatReal 10
-
-/- # MORE EXAMPLES -/
-
-example : 0 ≤ ((0.34 : ℚ) : ℝ) := by
-  interval RatReal 10
-
-example (x : ℝ) (hx₁ : 1 ≤ x) (hx₂ : x ≤ 2) :
-    0 ≤ x - 1 := by
-  interval RatReal 10
-
-example : Real.sqrt 2 ≤ 2 := by
-  interval RatReal 10
-
-example (x : ℝ) (hx : 1 ≤ x) (hx : x ≤ 2) : 0 ≤ x - x + 1 := by
-  interval RatReal 10
+@[approx_interval_op RatReal]
+theorem rat_exp_inclusion (n : ℕ) {r : ℝ} {x : Interval ℚ} (hrx : r ∈ x.toSet rat_to_real) :
+    (Real.exp r) ∈ (x.rat_exp n).toSet rat_to_real := by
+  sorry
 
 end IntervalArithmetic
