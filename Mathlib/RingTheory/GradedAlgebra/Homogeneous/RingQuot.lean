@@ -205,34 +205,34 @@ variable [DecidableEq ι] [DirectSum.Decomposition ℳ] (hP : P.IsHomogeneous �
 
 /-- The linear map that will induce `IsHomogeneous.Submodule.quotDecompose`
 after passing to the quotient -/
-def quotDecomposeLaux :
+def quotDecomposeAux :
     M →ₗ[R] ⨁ i, quotSubmodule ℳ P i :=
   lmap (quotCompMap ℳ P) ∘ₗ (decomposeLinearEquiv ℳ)
 
 variable {P}
 
 include hP in
-theorem quotDecomposeLaux_of_mem_eq_zero {x : M} (hx : x ∈ P) (i : ι) :
-    (quotDecomposeLaux ℳ P) x i = 0 := by
-  rw [quotDecomposeLaux, LinearMap.comp_apply, lmap_apply, quotCompMap]
+theorem quotDecomposeAux_of_mem_eq_zero {x : M} (hx : x ∈ P) (i : ι) :
+    (quotDecomposeAux ℳ P) x i = 0 := by
+  rw [quotDecomposeAux, LinearMap.comp_apply, lmap_apply, quotCompMap]
   simp only [LinearMap.coe_mk, AddHom.coe_mk, Submodule.mk_eq_zero,
     ← LinearMap.mem_ker, Submodule.ker_mkQ]
   exact hP i hx
 
 
 include hP in
-theorem quotDecomposeLaux_ker :
-    P ≤ LinearMap.ker (quotDecomposeLaux ℳ P) :=
-  fun _ hx =>  LinearMap.mem_ker.mpr (DFinsupp.ext (quotDecomposeLaux_of_mem_eq_zero ℳ hP hx))
+theorem quotDecomposeAux_ker :
+    P ≤ LinearMap.ker (quotDecomposeAux ℳ P) :=
+  fun _ hx =>  LinearMap.mem_ker.mpr (DFinsupp.ext (quotDecomposeAux_of_mem_eq_zero ℳ hP hx))
 
 /-- The `R`-linear map from `M ⧸ P` to the direct sum of its graded components. -/
 def quotDecompose :
     M ⧸ P →ₗ[R] DirectSum ι fun i ↦ quotSubmodule ℳ P i :=
-  Submodule.liftQ P (quotDecomposeLaux ℳ P) (quotDecomposeLaux_ker ℳ hP)
+  Submodule.liftQ P (quotDecomposeAux ℳ P) (quotDecomposeAux_ker ℳ hP)
 
-theorem quotDecomposeLaux_apply_mk (m : M) :
-    quotDecompose ℳ hP (P.mkQ m) = quotDecomposeLaux ℳ P m :=
-  Submodule.liftQ_apply P (quotDecomposeLaux ℳ P) m
+theorem quotDecomposeAux_apply_mk (m : M) :
+    quotDecompose ℳ hP (P.mkQ m) = quotDecomposeAux ℳ P m :=
+  Submodule.liftQ_apply P (quotDecomposeAux ℳ P) m
 
 private theorem quotDecomposition_left_inv' :
     LeftInverse (coeLinearMap (quotSubmodule ℳ P)) (quotDecompose ℳ hP) := by
@@ -240,7 +240,7 @@ private theorem quotDecomposition_left_inv' :
   intro x
   obtain ⟨(m : M), rfl⟩ := Submodule.mkQ_surjective P x
   conv_lhs =>
-    rw [quotDecomposeLaux_apply_mk, quotDecomposeLaux, LinearMap.comp_apply]
+    rw [quotDecomposeAux_apply_mk, quotDecomposeAux, LinearMap.comp_apply]
     simp only [AlgEquiv.toLinearMap_apply, ← LinearMap.comp_apply]
   rw [← LinearMap.comp_assoc, Submodule.quotDecomposition_left_inv'_aux]
   simp [LinearMap.comp_apply, coeLinearMap_apply, LinearEquiv.coe_coe, decomposeLinearEquiv_apply]
@@ -258,7 +258,7 @@ private theorem quotDecomposition_right_inv' :
   ext y : 1
   obtain ⟨x, hx, hxy⟩ := y.prop
   simp only [LinearMap.coe_comp, comp_apply, LinearMap.id_comp, lof_eq_of, coeLinearMap_of,
-    ← hxy, Submodule.quotDecomposeLaux_apply_mk, Submodule.quotDecomposeLaux, LinearEquiv.coe_coe]
+    ← hxy, Submodule.quotDecomposeAux_apply_mk, Submodule.quotDecomposeAux, LinearEquiv.coe_coe]
   rw [DirectSum.decomposeLinearEquiv_apply, ← Subtype.coe_mk x hx, decompose_coe, lmap_of]
   congr
   rw [← Subtype.coe_inj, Subtype.coe_mk, ← hxy]
@@ -315,55 +315,35 @@ theorem Ideal.isHomogeneous_restrictScalars_iff :
   Iff.rfl
 
 /-- The decomposition at the higher level -/
-def Ideal.quotDecomposeLaux :
+def Ideal.quotDecomposeAux :
     A →ₗ[R] ⨁ i, I.quotSubmodule 𝒜 i :=
-  IsHomogeneous.Submodule.quotDecomposeLaux 𝒜 (I.restrictScalars R)
+  IsHomogeneous.Submodule.quotDecomposeAux 𝒜 (I.restrictScalars R)
 
 include hI in
-theorem Ideal.quotDecomposeLaux_of_mem_eq_zero {x : A} (hx : x ∈ I) (i : ι) :
-    (I.quotDecomposeLaux 𝒜) x i = 0 := by
-  apply IsHomogeneous.Submodule.quotDecomposeLaux_of_mem_eq_zero
+theorem Ideal.quotDecomposeAux_of_mem_eq_zero {x : A} (hx : x ∈ I) (i : ι) :
+    (I.quotDecomposeAux 𝒜) x i = 0 := by
+  apply IsHomogeneous.Submodule.quotDecomposeAux_of_mem_eq_zero
   · simpa
   · rwa [Submodule.restrictScalars_mem R I x]
 
 include hI in
-theorem Ideal.quotDecomposeLaux_ker :
-    I.restrictScalars R ≤ LinearMap.ker (I.quotDecomposeLaux 𝒜) := fun x hx ↦ by
+theorem Ideal.quotDecomposeAux_ker :
+    I.restrictScalars R ≤ LinearMap.ker (I.quotDecomposeAux 𝒜) := fun x hx ↦ by
   simp only [Submodule.restrictScalars_mem] at hx
   simp only [LinearMap.mem_ker]
-  apply IsHomogeneous.Submodule.quotDecomposeLaux_ker <;> simpa
+  apply IsHomogeneous.Submodule.quotDecomposeAux_ker <;> simpa
 
 /-- The `R`-linear map from `A/I` to the direct sum of its graded components. -/
 def Ideal.quotDecompose :
     A ⧸ I →ₗ[R] DirectSum ι fun (i : ι) ↦ (I.quotSubmodule 𝒜 i) :=
   @Submodule.liftQ R A _ _ _ (I.restrictScalars R) R (⨁ i, I.quotSubmodule 𝒜 i)
-    _ _ instModule (RingHom.id R) (quotDecomposeLaux 𝒜 I)
-    (I.quotDecomposeLaux_ker 𝒜 hI)
+    _ _ instModule (RingHom.id R) (quotDecomposeAux 𝒜 I)
+    (I.quotDecomposeAux_ker 𝒜 hI)
 
-theorem Ideal.quotDecomposeLaux_apply_mk [I.IsTwoSided] (a : A) :
-    I.quotDecompose 𝒜 hI (Ideal.Quotient.mk I a) = I.quotDecomposeLaux 𝒜 a :=
+theorem Ideal.quotDecomposeAux_apply_mk [I.IsTwoSided] (a : A) :
+    I.quotDecompose 𝒜 hI (Ideal.Quotient.mk I a) = I.quotDecomposeAux 𝒜 a :=
   @Submodule.liftQ_apply R A _ _ _ (I.restrictScalars R) R
-    (⨁ i, I.quotSubmodule 𝒜 i) _ _ instModule _ (quotDecomposeLaux 𝒜 I) _ a
-
-/-
-private theorem Ideal.quotDecomposition_left_inv' :
-    LeftInverse (coeLinearMap (I.quotSubmodule 𝒜)) (I.quotDecompose 𝒜 hI) := by
-  apply IsHomogeneous.Submodule.quotDecomposition_left_inv'
-  simpa
-
-private theorem Ideal.quotDecomposition_left_inv :
-    LeftInverse (DirectSum.coeAddMonoidHom (I.quotSubmodule 𝒜)) (I.quotDecompose 𝒜 hI) :=
-  I.quotDecomposition_left_inv' 𝒜 hI
-
-private theorem Ideal.quotDecomposition_right_inv' :
-    RightInverse (coeLinearMap (I.quotSubmodule 𝒜)) (I.quotDecompose 𝒜 hI) := by
-  apply IsHomogeneous.Submodule.quotDecomposition_right_inv'
-  simpa
-
-private theorem Ideal.quotDecomposition_right_inv :
-    RightInverse (DirectSum.coeAddMonoidHom (I.quotSubmodule 𝒜)) (I.quotDecompose 𝒜 hI) :=
-  I.quotDecomposition_right_inv' 𝒜 hI
--/
+    (⨁ i, I.quotSubmodule 𝒜 i) _ _ instModule _ (quotDecomposeAux 𝒜 I) _ a
 
 include hI in
 /-- The decomposition of `A ⧸ I` as the direct sum of its graded components. -/
