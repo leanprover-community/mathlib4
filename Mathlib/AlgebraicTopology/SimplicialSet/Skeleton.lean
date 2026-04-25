@@ -227,7 +227,7 @@ noncomputable abbrev ιSigmaStdSimplex : Δ[d] ⟶ sigmaStdSimplex i d :=
 
 /-- Given a monomorphism `i : X ⟶ Y` of simplicial sets and a nondegenerate `d`-simplex
 of `Y` not in the range of `i`, this is the inclusion of the corresponding summand
-of the coproduct `sigmaStdBoundary i d`. -/
+of the coproduct `sigmaBoundary i d`. -/
 noncomputable abbrev ιSigmaBoundary : (∂Δ[d] : SSet) ⟶ sigmaBoundary i d :=
   Sigma.ι (fun (_ : Cell i d) ↦ (∂Δ[d] : SSet)) c
 
