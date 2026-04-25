@@ -103,7 +103,7 @@ private lemma door_filter_empty_of_missing_color (d : ℕ)
       ∀ j : Fin d, ∃ i : Fin (d + 1), i ≠ k ∧
         f i = ⟨j.val, by omega⟩)) = ∅ := by
   rw [filter_eq_empty_iff]
-  intro k _; push_neg
+  intro k _; push Not
   exact ⟨j₀, fun i _ h => hmiss ⟨i, h⟩⟩
 
 /-- If natural numbers indexed by a finset sum to 1, exactly one
@@ -114,7 +114,7 @@ private lemma exists_of_sum_eq_one {ι : Type*}
     ∃ a ∈ s, f a = 1 ∧ ∀ b ∈ s, b ≠ a → f b = 0 := by
   classical
   have ⟨a, ha, hfa⟩ : ∃ a ∈ s, 0 < f a := by
-    by_contra h; push_neg at h
+    by_contra h; push Not at h
     have := Finset.sum_eq_zero (fun i hi =>
       Nat.eq_zero_of_le_zero (h i hi))
     omega
@@ -324,7 +324,7 @@ private lemma door_count_even_of_not_surj (d : ℕ)
     have ⟨j₀, hj₀⟩ : ∃ j : Fin d,
         ¬∃ i, f i =
           ⟨j.val, Nat.lt_succ_of_lt j.isLt⟩ := by
-      by_contra hall; push_neg at hall; apply hnsurj
+      by_contra hall; push Not at hall; apply hnsurj
       intro ⟨y, hy⟩; by_cases hyd : y = d
       · subst hyd; exact hd_app
       · exact hall ⟨y, by omega⟩
@@ -333,10 +333,10 @@ private lemma door_count_even_of_not_surj (d : ℕ)
     exact ⟨0, by omega⟩
   · -- Top color d never appears. Truncate to
     -- g : Fin (d+1) → Fin d.
-    push_neg at hd_app
+    push Not at hd_app
     have hlt : ∀ i, (f i).val < d := by
       intro i; have := (f i).isLt
-      by_contra h; push_neg at h
+      by_contra h; push Not at h
       have hlt2 := (f i).isLt
       have : (f i).val = d := by omega
       exact hd_app i (Fin.ext this)
@@ -370,7 +370,7 @@ private lemma door_count_even_of_not_surj (d : ℕ)
     · -- g not surjective: some lower color missing. No doors.
       have ⟨j₀, hj₀⟩ :
           ∃ j : Fin d, ¬∃ i, g i = j := by
-        by_contra h; push_neg at h; exact hgsurj h
+        by_contra h; push Not at h; exact hgsurj h
       suffices h0 : (univ.filter
           (fun k : Fin (d + 1) =>
             ∀ j : Fin d,
@@ -378,7 +378,7 @@ private lemma door_count_even_of_not_surj (d : ℕ)
                 f i = ⟨j.val, by omega⟩)).card =
           0 by rw [h0]; exact ⟨0, by omega⟩
       rw [Finset.card_eq_zero, filter_eq_empty_iff]
-      intro k _; push_neg
+      intro k _; push Not
       exact ⟨j₀, fun i _ h =>
         hj₀ ⟨i, Fin.ext (show (g i).val = j₀.val by
           change (f i).val = j₀.val

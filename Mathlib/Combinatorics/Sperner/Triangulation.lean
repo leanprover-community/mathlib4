@@ -368,7 +368,7 @@ noncomputable def AbstractSimplicialData.findOppositeIdx
   -- vertex of t is not in f.
   have hex : ∃ k : Fin (n + 1), D.vertexEnum t ht k ∉ f := by
     by_contra hall
-    push_neg at hall
+    push Not at hall
     -- Every vertex of t is in f, so t ⊆ f (contradicting |f| < |t|)
     have hsub : t ⊆ f := by
       intro v hv
