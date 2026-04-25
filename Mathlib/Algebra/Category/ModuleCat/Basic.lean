@@ -385,6 +385,13 @@ lemma isZero_iff_subsingleton : IsZero M ↔ Subsingleton M where
 lemma isZero_of_iff_subsingleton {M : Type*} [AddCommGroup M] [Module R M] :
     IsZero (of R M) ↔ Subsingleton M := isZero_iff_subsingleton
 
+lemma ofHom_zero {M N : Type v} [AddCommGroup M] [Module R M]
+    [AddCommGroup N] [Module R N] : ModuleCat.ofHom (0 : M →ₗ[R] N) = 0 := rfl
+
+lemma ofHom_add {M N : Type v} [AddCommGroup M] [Module R M]
+    [AddCommGroup N] [Module R N] (f g : M →ₗ[R] N) :
+    ModuleCat.ofHom (f + g) = ModuleCat.ofHom f + ModuleCat.ofHom g := rfl
+
 end AddCommGroup
 
 section SMul
@@ -509,26 +516,10 @@ def smulNatTrans : R →+* End (forget₂ (ModuleCat R) AddCommGrpCat) where
   toFun r :=
     { app := fun M => M.smul r
       naturality := fun _ _ _ => smul_naturality _ r }
-  map_one' := NatTrans.ext (by
-    #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
-    this was just `cat_disch`. -/
-    simp +instances only [forget₂_obj, map_one, End.one_def]
-    cat_disch)
-  map_zero' := NatTrans.ext (by
-    #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
-    this was just `cat_disch`. -/
-    simp +instances only [forget₂_obj, map_zero]
-    cat_disch)
-  map_mul' _ _ := NatTrans.ext (by
-    #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
-    this was just `cat_disch`. -/
-    simp +instances only [forget₂_obj, map_mul, End.mul_def]
-    cat_disch)
-  map_add' _ _ := NatTrans.ext (by
-    #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
-    this was just `cat_disch`. -/
-    simp +instances only [forget₂_obj, map_add]
-    cat_disch)
+  map_one' := by cat_disch
+  map_zero' := by cat_disch
+  map_mul' _ _ := by cat_disch
+  map_add' _ _ := by cat_disch
 
 /-- Given `A : AddCommGrpCat` and a ring morphism `R →+* End A`, this is a type synonym
 for `A`, on which we shall define a structure of `R`-module. -/
