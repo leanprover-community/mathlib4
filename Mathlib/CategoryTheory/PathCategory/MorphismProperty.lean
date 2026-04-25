@@ -114,7 +114,7 @@ lemma toPath_mem_paths {W : MorphismProperty C} {X Y : C} {f : X ⟶ Y} (hf : W 
 @[simp]
 lemma toPath_mem_paths_iff {W : MorphismProperty C} {X Y : C} {f : X ⟶ Y} :
     W.paths f.toPath ↔ W f :=
-  ⟨fun h ↦ h.2, fun h ↦ ⟨trivial, h⟩⟩
+  ⟨fun h ↦ h.2, toPath_mem_paths⟩
 
 @[simp]
 lemma comp_mem_paths_iff {W : MorphismProperty C} {X Y Z : C} {p : Path X Y} {q : Path Y Z} :
