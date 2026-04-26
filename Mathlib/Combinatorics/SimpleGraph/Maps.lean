@@ -88,6 +88,7 @@ theorem edgeSet_map (f : V ↪ W) (G : SimpleGraph V) :
     rw [Embedding.sym2Map_apply, Sym2.map_mk, Sym2.eq_iff] at he
     exact he.elim (fun ⟨h, h'⟩ ↦ ⟨_, _, hadj, h, h'⟩) (fun ⟨h', h⟩ ↦ ⟨_, _, hadj.symm, h, h'⟩)
 
+@[simp]
 theorem neighborSet_map (f : V ↪ W) (v : V) :
     (G.map f).neighborSet (f v) = f '' G.neighborSet v := by
   refine Set.ext fun u ↦ ⟨?_, ?_⟩
@@ -449,6 +450,7 @@ abbrev toHom : G →g G' :=
 theorem map_mem_edgeSet_iff {e : Sym2 V} : e.map f ∈ G'.edgeSet ↔ e ∈ G.edgeSet :=
   Sym2.ind (fun _ _ => f.map_adj_iff) e
 
+@[simp]
 theorem preimage_edgeSet : Sym2.map f ⁻¹' G'.edgeSet = G.edgeSet :=
   Set.ext fun _ ↦ map_mem_edgeSet_iff f
 
@@ -456,6 +458,7 @@ theorem apply_mem_neighborSet_iff {v w : V} : f w ∈ G'.neighborSet (f v) ↔ w
   map_adj_iff f
 
 variable (v) in
+@[simp]
 theorem preimage_neighborSet : f ⁻¹' G'.neighborSet (f v) = G.neighborSet v :=
   Set.ext fun _ ↦ apply_mem_neighborSet_iff f
 
