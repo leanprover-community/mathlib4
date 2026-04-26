@@ -579,7 +579,6 @@ theorem preimage_piEquivPiSubtypeProd_symm_pi {α : Type*} {β : α → Type*} (
   ext ⟨f, g⟩
   simp only [mem_preimage, mem_univ_pi, prodMk_mem_set_prod_eq, Subtype.forall, ← forall_and]
   refine forall_congr' fun i => ?_
-  dsimp only [Subtype.coe_mk]
   by_cases hi : p i <;> simp [hi]
 
 -- See also `Equiv.sigmaFiberEquiv`.

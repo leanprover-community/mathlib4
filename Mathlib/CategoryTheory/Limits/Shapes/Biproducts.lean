@@ -562,7 +562,6 @@ theorem biproduct.map_eq_map' {f g : J → C} [HasBiproduct f] [HasBiproduct g] 
     biproduct.map p = biproduct.map' p := by
   classical
   ext
-  dsimp
   simp only [Discrete.natTrans_app, Limits.IsColimit.ι_map_assoc, Limits.IsLimit.map_π,
     ← Bicone.toCone_π_app_mk, ← Bicone.toCocone_ι_app_mk]
   dsimp
@@ -742,7 +741,7 @@ theorem biproduct.fromSubtype_π [DecidablePred p] (j : J) :
     biproduct.fromSubtype f p ≫ biproduct.π f j =
       if h : p j then biproduct.π (Subtype.restrict p f) ⟨j, h⟩ else 0 := by
   classical
-  ext i; dsimp
+  ext i
   rw [biproduct.fromSubtype, biproduct.ι_desc_assoc, biproduct.ι_π]
   by_cases h : p j
   · rw [dif_pos h, biproduct.ι_π]

@@ -125,12 +125,10 @@ noncomputable def partialLeftAdjoint : F.PartialLeftAdjointSource ⥤ D where
   map := F.partialLeftAdjointMap
   map_id X := by
     apply F.partialLeftAdjointHomEquiv.injective
-    dsimp
     rw [partialLeftAdjointHomEquiv_map]
     erw [id_comp]
   map_comp {X Y Z} f g := by
     apply F.partialLeftAdjointHomEquiv.injective
-    dsimp
     rw [partialLeftAdjointHomEquiv_map, partialLeftAdjointHomEquiv_comp,
       partialLeftAdjointHomEquiv_map, assoc]
     erw [assoc]
@@ -281,12 +279,10 @@ noncomputable def partialRightAdjoint : F.PartialRightAdjointSource ⥤ C where
   map := F.partialRightAdjointMap
   map_id X := by
     apply F.partialRightAdjointHomEquiv.injective
-    dsimp
     rw [partialRightAdjointHomEquiv_map]
     erw [comp_id]
   map_comp {X Y Z} f g := by
     apply F.partialRightAdjointHomEquiv.injective
-    dsimp
     rw [partialRightAdjointHomEquiv_map, partialRightAdjointHomEquiv_comp,
       partialRightAdjointHomEquiv_map, ← assoc]
     erw [← assoc]

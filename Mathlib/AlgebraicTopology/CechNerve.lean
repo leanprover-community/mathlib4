@@ -272,8 +272,7 @@ def equivalenceRightToLeft (F : Arrow C) (X : CosimplicialObject.Augmented C)
         intro x y f
         dsimp
         ext
-        · dsimp
-          simp only [WidePushout.ι_desc_assoc, WidePushout.ι_desc]
+        · simp only [WidePushout.ι_desc_assoc, WidePushout.ι_desc]
           rw [Category.assoc, ← X.right.map_comp]
           rfl
         · simp [← NatTrans.naturality] }

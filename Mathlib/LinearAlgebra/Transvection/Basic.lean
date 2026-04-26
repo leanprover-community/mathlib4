@@ -377,7 +377,6 @@ theorem mem_dilatransvections_iff_rank {e : V ≃ₗ[K] V} :
     rintro _ ⟨x, rfl⟩
     simp [mem_span_singleton, he, LinearMap.transvection.apply]
   · intro he
-    simp only at he
     simp only [Set.mem_setOf_eq]
     set u := (e : V →ₗ[K] V) - LinearMap.id with hu
     rw [eq_sub_iff_add_eq] at hu

@@ -79,7 +79,6 @@ abbrev liftToDiagramLimitObj {X : C} {K : Type s} [SmallCategory K] [HasLimitsOf
       intro i
       dsimp
       ext k
-      dsimp
       simp only [Category.assoc, NatTrans.naturality, liftToDiagramLimitObjAux_fac_assoc]
       erw [Multiequalizer.condition]
       rfl)

@@ -91,8 +91,7 @@ lemma zero₁ (j j' : J) (h : ¬ c.Rel j' j) :
     apply h
     rw [← h', ← h₄]
     exact ComplexShape.rel_π₁ c₂ c h₃ i₂
-  · dsimp
-    rw [h₁.zero _ _ h₃, Functor.map_zero, zero_app, zero_comp, smul_zero]
+  · rw [h₁.zero _ _ h₃, Functor.map_zero, zero_app, zero_comp, smul_zero]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma comm₁_aux {i₁ i₁' : I₁} (hi₁ : c₁.Rel i₁ i₁') {i₂ i₂' : I₂} (hi₂ : c₂.Rel i₂ i₂') (j : J)
@@ -153,8 +152,7 @@ lemma comm₁ (j : J) :
     · rw [h₁.zero _ _ h₃, Functor.map_zero, zero_app, zero_comp, zero_comp, smul_zero, zero_comp]
   · rw [ιMapBifunctor_hom₁_assoc _ _ _ _ _ _ _ _ _ _ rfl]
     by_cases h₃ : c₁.Rel (c₁.prev i₁) i₁
-    · dsimp
-      rw [Linear.units_smul_comp, assoc, assoc,
+    · rw [Linear.units_smul_comp, assoc, assoc,
         ιMapBifunctorOrZero_eq _ _ _ _ _ _ _ (by rw [← ComplexShape.prev_π₁ c₂ c h₃, h]),
         HomologicalComplex₂.ι_D₂]
       by_cases h₄ : c₂.Rel i₂ (c₂.next i₂)

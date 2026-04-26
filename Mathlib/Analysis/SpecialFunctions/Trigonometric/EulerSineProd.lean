@@ -118,7 +118,6 @@ theorem integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) (hz : z ≠ 0) :
     · apply Continuous.intervalIntegrable <| by fun_prop
     · exact Nat.sub_ne_zero_of_lt hn
     refine integral_congr fun x _ => ?_
-    dsimp only
     -- get rid of real trig functions and divisions by 2 * z:
     rw [Complex.ofReal_cos, Complex.ofReal_sin, Complex.sin_sq, ← mul_div_right_comm, ←
       mul_div_right_comm, ← sub_div, mul_div, ← neg_div]

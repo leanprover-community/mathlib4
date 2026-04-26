@@ -586,7 +586,7 @@ def showLinter : Linter where run := withSetOptionIn fun stx => do
         let (goal :: goals) := tac.goalsBefore | return
         let (goal' :: goals') := tac.goalsAfter | return
         if goals != goals' then return -- `show` didn't act on first goal -> can't replace with `change`
-        if goal == goal' then return -- same goal, no need to check
+        -- Even if `goal == goal'`, the tactic may have assigned metavariables.
         let diff ← ci.runCoreM do
           let before ← (do instantiateMVars (← goal.getType)).run' {} { mctx := tac.mctxBefore }
           let after ← (do instantiateMVars (← goal'.getType)).run' {} { mctx := tac.mctxAfter }

@@ -584,7 +584,6 @@ theorem app_surjective_of_injective_of_locally_surjective {F G : Sheaf C X} (f :
   intro z hz
   -- Here, we need to use injectivity of the stalk maps.
   apply hinj z ((iVU x).le ((inf_le_left : V x ⊓ V y ≤ V x) hz))
-  dsimp only
   rw [stalkFunctor_map_germ_apply, stalkFunctor_map_germ_apply]
   simp_rw [← ConcreteCategory.comp_apply, f.1.naturality, ConcreteCategory.comp_apply, heq,
     ← ConcreteCategory.comp_apply, ← G.1.map_comp]

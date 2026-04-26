@@ -632,7 +632,6 @@ lemma presheafMap_id (X : C) :
 lemma presheafMap_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     presheafMap data G₀ (f ≫ g) = presheafMap data G₀ g ≫ presheafMap data G₀ f := by
   ext i
-  dsimp
   rw [assoc, presheafMap_π, presheafMap_π, presheafMap_restriction, assoc]
 
 /-- Let `F : C₀ ⥤ C` be a dense subsite and `data : ∀ X, F.OneHypercoverDenseData J₀ J X`

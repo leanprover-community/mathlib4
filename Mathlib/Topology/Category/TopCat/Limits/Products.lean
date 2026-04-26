@@ -73,9 +73,8 @@ theorem piIsoPi_hom_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι)
 /-- The inclusion to the coproduct as a bundled continuous map. -/
 abbrev sigmaι {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) : α i ⟶ TopCat.of (Σ i, α i) := by
   refine ofHom (ContinuousMap.mk ?_ ?_)
-  · dsimp
-    apply Sigma.mk i
-  · dsimp; continuity
+  · apply Sigma.mk i
+  · continuity
 
 /-- The explicit cofan of a family of topological spaces given by the sigma type. -/
 @[simps! pt ι_app]

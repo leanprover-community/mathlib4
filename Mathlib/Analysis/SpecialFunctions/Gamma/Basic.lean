@@ -114,7 +114,6 @@ set_option backward.isDefEq.respectTransparency false in
 theorem GammaIntegral_conj (s : ℂ) : GammaIntegral (conj s) = conj (GammaIntegral s) := by
   rw [GammaIntegral, GammaIntegral, ← integral_conj]
   refine setIntegral_congr_fun measurableSet_Ioi fun x hx => ?_
-  dsimp only
   rw [map_mul, conj_ofReal, cpow_def_of_ne_zero (ofReal_ne_zero.mpr (ne_of_gt hx)),
     cpow_def_of_ne_zero (ofReal_ne_zero.mpr (ne_of_gt hx)), ← exp_conj, map_mul,
     ← ofReal_log (le_of_lt hx), conj_ofReal, map_sub, map_one]

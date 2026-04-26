@@ -814,7 +814,6 @@ theorem MeasurableSet.nullMeasurableSet_subtype_coe {t : Set s} (hs : NullMeasur
     simp only [← range_diff_image Subtype.coe_injective, Subtype.range_coe_subtype, setOf_mem_eq]
     exact hs.diff ht'
   | iUnion f _ hf =>
-    dsimp only []
     rw [image_iUnion]
     exact .iUnion hf
 
@@ -1109,7 +1108,7 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
     · simp_rw [P, mem_inter_iff, mem_iInter, Finset.mem_sdiff, mem_filter]; tauto
   have iUnion_P : ⋃ C ∈ Cs, P C ⊆ ⋃ i, s i := by
     intro x hx
-    simp_rw [Cs, toFinset_diff, Finset.mem_sdiff, mem_iUnion] at hx
+    simp_rw [Cs, Finset.mem_sdiff, mem_iUnion] at hx
     have ⟨C, ⟨_, C_nonempty⟩, hxC⟩ := hx
     have ⟨i, hi⟩ := Finset.nonempty_iff_ne_empty.mpr <| Finset.notMem_singleton.mp C_nonempty
     exact ⟨s i, ⟨i, rfl⟩, hxC.1 (s i) ⟨i, by simp [hi]⟩⟩

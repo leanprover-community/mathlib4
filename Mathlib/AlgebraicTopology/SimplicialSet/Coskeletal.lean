@@ -188,7 +188,6 @@ noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
     obtain ⟨i, rfl⟩ : ∃ j, ⦋j⦌ = i := ⟨_, i.mk_len⟩
     dsimp at hi ⊢
     apply sx.spineInjective
-    dsimp
     ext k
     · dsimp only [spineEquiv, Equiv.coe_fn_mk]
       rw [dsimp% show op f = f.op from rfl]

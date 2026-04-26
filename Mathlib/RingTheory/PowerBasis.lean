@@ -418,7 +418,6 @@ theorem linearIndependent_pow [Algebra K S] (x : S) :
   · rw [minpoly.eq_zero h, natDegree_zero]
     exact linearIndependent_empty_type
   refine Fintype.linearIndependent_iff.2 fun g hg i => ?_
-  simp only at hg
   simp_rw [Algebra.smul_def, ← aeval_monomial, ← map_sum] at hg
   apply (fun hn0 => (minpoly.degree_le_of_ne_zero K x (mt (fun h0 => ?_) hn0) hg).not_gt).mtr
   · simp_rw [← C_mul_X_pow_eq_monomial]

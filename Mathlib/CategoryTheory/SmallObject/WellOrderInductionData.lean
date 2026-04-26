@@ -240,7 +240,6 @@ def limit (j : J) (hj : Order.IsSuccLimit j)
       dsimp
       rw [this]
       congr
-      dsimp
       ext ⟨⟨l, hl⟩⟩
       rw [map_lift _ _ _ _ _ (hl.trans hij')]
       apply compatibility

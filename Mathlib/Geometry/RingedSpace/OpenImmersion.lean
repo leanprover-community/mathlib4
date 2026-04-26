@@ -1084,7 +1084,6 @@ instance forgetToTop_preservesPullback_of_left :
     (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace) ⋙
     PresheafedSpace.forget _
   apply +allowSynthFailures Limits.comp_preservesLimit
-  dsimp
   apply +allowSynthFailures preservesLimit_of_iso_diagram
   · exact (diagramIsoCospan _).symm
   dsimp

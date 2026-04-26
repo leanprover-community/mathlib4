@@ -54,7 +54,6 @@ theorem slash_action_generators_SL2Z {f : ℍ → ℂ} {k : ℤ}
     (hS : f ∣[k] S = f) (hT : f ∣[k] T = f) : ∀ γ : SL(2, ℤ), f ∣[k] γ = f := by
   intro γ
   have h𝒮ℒ : 𝒮ℒ = Subgroup.closure ({↑S, ↑T} : Set (GL (Fin 2) ℝ)) := by
-    change (Matrix.SpecialLinearGroup.mapGL ℝ).range = _
     rw [MonoidHom.range_eq_map, ← SpecialLinearGroup.SL2Z_generators, MonoidHom.map_closure,
       Set.image_pair]
     rfl

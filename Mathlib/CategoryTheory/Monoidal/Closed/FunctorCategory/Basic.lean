@@ -68,7 +68,6 @@ noncomputable def homEquiv : (F₁ ⊗ F₂ ⟶ F₃) ≃ (F₂ ⟶ functorEnric
         rw [pre_id, NatTrans.id_app, enrichedOrdinaryCategorySelf_eHomWhiskerLeft,
           Functor.map_id, Category.comp_id, Category.comp_id]
         congr 2
-        dsimp
         rw [← enrichedOrdinaryCategorySelf_eHomWhiskerRight,
           ← enrichedOrdinaryCategorySelf_eHomWhiskerLeft]
         let α : Under.mk (𝟙 j) ⟶ (Under.map φ).obj (Under.mk (𝟙 j')) := Under.homMk φ

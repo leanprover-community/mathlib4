@@ -333,7 +333,6 @@ theorem Real.Gamma_one_half_eq : Real.Gamma (1 / 2) = √π := by
   convert congr_arg (fun x : ℝ => 2 * x) (integral_gaussian_Ioi 1) using 1
   · rw [← integral_const_mul]
     refine setIntegral_congr_fun measurableSet_Ioi fun x hx => ?_
-    dsimp only
     have : (x ^ (2 : ℝ)) ^ (1 / (2 : ℝ) - 1) = x⁻¹ := by
       rw [← rpow_mul (le_of_lt hx)]
       norm_num

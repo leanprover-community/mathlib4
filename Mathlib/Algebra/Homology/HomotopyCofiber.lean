@@ -226,8 +226,7 @@ noncomputable def homotopyCofiber : HomologicalComplex C c where
   shape i j hij := homotopyCofiber.shape φ i j hij
   d_comp_d' i j k hij hjk := by
     apply homotopyCofiber.ext_from_X φ j i hij
-    · dsimp
-      simp only [comp_zero, homotopyCofiber.inlX_d_assoc φ i j k hij hjk,
+    · simp only [comp_zero, homotopyCofiber.inlX_d_assoc φ i j k hij hjk,
         add_comp, assoc, homotopyCofiber.inrX_d, Hom.comm_assoc, neg_comp]
       by_cases hk : c.Rel k (c.next k)
       · simp [homotopyCofiber.inlX_d φ j k _ hjk hk]
@@ -496,8 +495,7 @@ lemma inrX_nullHomotopy_f (j : ι) :
     rw [← cancel_epi (biprodXIso K K j).inv]
     ext
     · simp [ι₀]
-    · dsimp
-      simp only [inr_biprodXIso_inv_assoc, biprod_inr_snd_f_assoc, comp_sub,
+    · simp only [inr_biprodXIso_inv_assoc, biprod_inr_snd_f_assoc, comp_sub,
         biprod_inr_desc_f_assoc, id_f, id_comp, ι₀, comp_f, this,
         sub_f_apply, sub_comp, homotopyCofiber_X, homotopyCofiber.inr_f]
   · simp only [not_exists] at hj

@@ -460,7 +460,6 @@ def imageForgetAdj : image ⊣ forget X :=
     { homEquiv := fun f g =>
         { toFun := fun k => by
             apply Over.homMk (factorThruImage f.hom ≫ k.hom.left) _
-            change (factorThruImage f.hom ≫ k.hom.left) ≫ _ = f.hom
             rw [assoc, Over.w k.hom]
             apply image.fac
           invFun k :=

@@ -1024,7 +1024,7 @@ lemma apply_add_index_le_apply_add_index_nat (p : LTSeries ℕ) (i j : Fin (p.le
   | succ j _hij ih =>
     specialize ih (Nat.lt_of_succ_lt hj)
     have step : p ⟨j, _⟩ < p ⟨j + 1, _⟩ := p.step ⟨j, by lia⟩
-    norm_cast at *; lia
+    lia
 
 /--
 In ℤ, two entries in an `LTSeries` differ by at least the difference of their indices.
@@ -1043,7 +1043,7 @@ lemma apply_add_index_le_apply_add_index_int (p : LTSeries ℤ) (i j : Fin (p.le
   | succ j _hij ih =>
     specialize ih (Nat.lt_of_succ_lt hj)
     have step : p ⟨j, _⟩ < p ⟨j + 1, _⟩:= p.step ⟨j, by lia⟩
-    norm_cast at *; lia
+    lia
 
 /-- In ℕ, the head and tail of an `LTSeries` differ at least by the length of the series -/
 lemma head_add_length_le_nat (p : LTSeries ℕ) : p.head + p.length ≤ p.last :=

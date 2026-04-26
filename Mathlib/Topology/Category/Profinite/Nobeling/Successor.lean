@@ -303,7 +303,6 @@ theorem union_succ : GoodProducts C = GoodProducts (π C (ord I · < o)) ∪ Max
       apply h
       have h' := Products.prop_of_isGood_of_contained C _ h hsC
       simp only [Order.lt_succ_iff] at h'
-      simp only at hh
       have hh' : ∀ a ∈ l.val, ord I a < o := by
         intro a ha
         refine (h' a ha).lt_of_ne ?_

@@ -724,7 +724,6 @@ lemma aeval_apply_smul_mem_of_le_comap'
     simp_rw [map_add, add_smul]
     exact Submodule.add_mem q h₁ h₂
   | monomial n t hmq =>
-    dsimp only at hmq ⊢
     rw [pow_succ', mul_left_comm, map_mul, aeval_X, mul_smul]
     solve_by_elim
 

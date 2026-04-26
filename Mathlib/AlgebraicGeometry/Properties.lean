@@ -105,7 +105,7 @@ instance {X : Scheme} {U : X.Opens} [IsReduced X] : IsReduced U :=
 
 instance {R : CommRingCat.{u}} [H : _root_.IsReduced R] : IsReduced (Spec R) := by
   apply +allowSynthFailures isReduced_of_isReduced_stalk
-  intro x; dsimp
+  intro x
   have : _root_.IsReduced (CommRingCat.of <| Localization.AtPrime (PrimeSpectrum.asIdeal x)) := by
     dsimp; infer_instance
   exact isReduced_of_injective (Spec.stalkIso R x).hom.hom
