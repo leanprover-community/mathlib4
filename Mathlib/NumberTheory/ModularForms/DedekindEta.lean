@@ -65,13 +65,7 @@ noncomputable def eta (z : ℂ) := 𝕢 24 z * ∏' n, (1 - eta_q n z)
 /-- Notation for the Dedekind eta function. -/
 scoped[ModularForm] notation "η" => eta
 
-/-! ### q-coordinate facts about `∏ (1 - q^(n+1))`
-
-The following lemmas describe the analytic behaviour of the infinite product
-`∏' n, (1 - q^(n+1))` viewed as a function of `q` on the open unit disc, including the
-behaviour at `q = 0` (the cusp at infinity). The eta-side lemmas below derive from these
-by pulling back along `qParam 1 : ℍₒ → 𝔻 \ {0}`.
--/
+/-! ### q-coordinate facts about `∏ (1 - q^(n+1))` -/
 
 /-- For `‖q‖ < 1`, the infinite product `∏ (1 - q^(n+1))` is multipliable. -/
 lemma multipliable_one_sub_pow {q : ℂ} (hq : ‖q‖ < 1) :
