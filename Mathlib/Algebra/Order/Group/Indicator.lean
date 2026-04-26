@@ -109,7 +109,7 @@ lemma mulIndicator_le_mulIndicator' (h : a ∈ s → f a ≤ g a) :
     mulIndicator s f a ≤ mulIndicator s g a :=
   mulIndicator_rel_mulIndicator le_rfl h
 
-set_option linter.gcongr.grw false
+set_option linter.gcongr.grw false in
 @[to_additive (attr := mono, gcongr)]
 lemma mulIndicator_le_mulIndicator (h : f a ≤ g a) : mulIndicator s f a ≤ mulIndicator s g a :=
   mulIndicator_rel_mulIndicator le_rfl fun _ ↦ h
