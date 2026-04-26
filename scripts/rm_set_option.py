@@ -353,7 +353,7 @@ def main():
         "--directories",
         nargs="+",
         default=None,
-        help="Directories to scan when building the import DAG (default: Mathlib MathlibTest Archive Counterexamples)",
+        help="Directories to scan when building the import DAG (default: '.')",
     )
     parser.add_argument(
         "--no-initial",
