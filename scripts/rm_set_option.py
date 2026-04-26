@@ -323,7 +323,7 @@ def main():
         description="Remove unnecessary `set_option ... false in` lines in a Lean project.\n\n"
                     "To use outside mathlib, copy `rm_set_option.py`, `dag_traversal.py` and "
                     "`set_option_utils.py` to a subdirectory of your project named `scripts/` "
-                    "and then run from the project root with `scripts/rm_set_optyion.py`.",
+                    "and then run from the project root with `scripts/rm_set_option.py`.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
