@@ -179,27 +179,23 @@ local notation "M̄" => K̄ ⊗[K] M
 omit [CharZero K] in
 lemma traceForm_baseChange_eq_zero (h : traceForm K L M = 0) :
     traceForm K̄ L̄ M̄ = 0 := by
-  refine LinearMap.ext fun u ↦ TensorProduct.induction_on u ?_ ?_ ?_
-  · simp
-  · intro a x
-    refine LinearMap.ext fun v ↦ TensorProduct.induction_on v ?_ ?_ ?_
-    · simp
-    · intro b y
-      rw [LinearMap.zero_apply, LinearMap.zero_apply, traceForm_apply_apply]
-      have hx : toEnd K̄ L̄ M̄ (a ⊗ₜ[K] x) = a • (toEnd K L M x).baseChange K̄ := by
-        rw [TensorProduct.tmul_eq_smul_one_tmul, map_smul, toEnd_baseChange]
-      have hy : toEnd K̄ L̄ M̄ (b ⊗ₜ[K] y) = b • (toEnd K L M y).baseChange K̄ := by
-        rw [TensorProduct.tmul_eq_smul_one_tmul, map_smul, toEnd_baseChange]
-      rw [hx, hy, LinearMap.smul_comp, LinearMap.comp_smul, smul_smul,
-        ← LinearMap.baseChange_comp, map_smul, LinearMap.trace_baseChange]
-      have ht : trace K M (toEnd K L M x ∘ₗ toEnd K L M y) = 0 := by
-        have := LinearMap.congr_fun (LinearMap.congr_fun h x) y
-        rwa [traceForm_apply_apply, LinearMap.zero_apply, LinearMap.zero_apply] at this
-      simp [ht]
-    · intro v₁ v₂ hv₁ hv₂
-      rw [map_add, hv₁, hv₂, map_add]
-  · intro u₁ u₂ hu₁ hu₂
-    rw [map_add, hu₁, hu₂, map_add]
+  refine LinearMap.ext fun u ↦ TensorProduct.induction_on u
+    (by simp) ?_ (fun u₁ u₂ hu₁ hu₂ ↦ by simp [hu₁, hu₂])
+  intro a x
+  refine LinearMap.ext fun v ↦ TensorProduct.induction_on v
+    (by simp) ?_ (fun v₁ v₂ hv₁ hv₂ ↦ by simp [hv₁, hv₂])
+  intro b y
+  rw [LinearMap.zero_apply, LinearMap.zero_apply, traceForm_apply_apply]
+  have hx : toEnd K̄ L̄ M̄ (a ⊗ₜ[K] x) = a • (toEnd K L M x).baseChange K̄ := by
+    rw [TensorProduct.tmul_eq_smul_one_tmul, map_smul, toEnd_baseChange]
+  have hy : toEnd K̄ L̄ M̄ (b ⊗ₜ[K] y) = b • (toEnd K L M y).baseChange K̄ := by
+    rw [TensorProduct.tmul_eq_smul_one_tmul, map_smul, toEnd_baseChange]
+  rw [hx, hy, LinearMap.smul_comp, LinearMap.comp_smul, smul_smul,
+    ← LinearMap.baseChange_comp, map_smul, LinearMap.trace_baseChange]
+  have ht : trace K M (toEnd K L M x ∘ₗ toEnd K L M y) = 0 := by
+    have := LinearMap.congr_fun (LinearMap.congr_fun h x) y
+    rwa [traceForm_apply_apply, LinearMap.zero_apply, LinearMap.zero_apply] at this
+  simp [ht]
 
 /-- If the trace form of `M` is zero, then the `⁅L, L⁆`-module `M` is nilpotent. The proof reduces
 by scalar extension to the algebraically closed case, then closes by
