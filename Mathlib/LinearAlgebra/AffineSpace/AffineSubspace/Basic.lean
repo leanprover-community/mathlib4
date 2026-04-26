@@ -585,6 +585,38 @@ theorem map_span (s : Set P₁) : (affineSpan k s).map f = affineSpan k (f '' s)
   · exact ⟨f p, mem_image_of_mem f (subset_affineSpan k _ hp),
           subset_affineSpan k _ (mem_image_of_mem f hp)⟩
 
+theorem affineSpan_prod_eq (s : Set P₁) (t : Set P₂) :
+    (affineSpan k (s ×ˢ t) : Set (P₁ × P₂)) =
+      (affineSpan k s : Set P₁) ×ˢ (affineSpan k t : Set P₂) := by
+  ext p; constructor
+  · exact fun hp => affineSpan_induction hp
+      (fun q hq ↦ ⟨subset_affineSpan k s hq.1, subset_affineSpan k t hq.2⟩)
+      (fun c u v w hu hv hw ↦
+        ⟨(affineSpan k s).smul_vsub_vadd_mem c hu.1 hv.1 hw.1,
+          (affineSpan k t).smul_vsub_vadd_mem c hu.2 hv.2 hw.2⟩)
+  · rintro ⟨hp1, hp2⟩
+    rcases s.eq_empty_or_nonempty with rfl | ⟨x0, hx0⟩
+    · simp at hp1
+    rcases t.eq_empty_or_nonempty with rfl | ⟨y0, hy0⟩
+    · simp at hp2
+    have hleft : ∀ x ∈ affineSpan k s, (x, y0) ∈ affineSpan k (s ×ˢ t) := by
+      intro x hx
+      let f : P₁ →ᵃ[k] P₁ × P₂ := AffineMap.mk (fun z ↦ (z, y0)) (LinearMap.inl k V₁ V₂)
+        (by intro p v; ext <;> simp [LinearMap.inl])
+      have hsub : (affineSpan k s).map f ≤ affineSpan k (s ×ˢ t) := by
+        rw [map_span]; exact affineSpan_mono k (by rintro _ ⟨z, hz, rfl⟩; exact ⟨hz, hy0⟩)
+      exact hsub ⟨x, hx, rfl⟩
+    have hright : ∀ y ∈ affineSpan k t, (x0, y) ∈ affineSpan k (s ×ˢ t) := by
+      intro y hy
+      let g : P₂ →ᵃ[k] P₁ × P₂ := AffineMap.mk (fun z ↦ (x0, z)) (LinearMap.inr k V₁ V₂)
+        (by intro p v; ext <;> simp [LinearMap.inr])
+      have hsub : (affineSpan k t).map g ≤ affineSpan k (s ×ˢ t) := by
+        rw [map_span]; exact affineSpan_mono k (by rintro _ ⟨z, hz, rfl⟩; exact ⟨hx0, hz⟩)
+      exact hsub ⟨y, hy, rfl⟩
+    simpa using (affineSpan k (s ×ˢ t)).smul_vsub_vadd_mem (1 : k)
+      (hleft p.1 hp1) (subset_affineSpan k _ (show (x0, y0) ∈ s ×ˢ t from ⟨hx0, hy0⟩))
+      (hright p.2 hp2)
+
 @[gcongr]
 theorem map_mono {s₁ s₂ : AffineSubspace k P₁} (h : s₁ ≤ s₂) : s₁.map f ≤ s₂.map f :=
   Set.image_mono h

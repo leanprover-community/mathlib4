@@ -211,6 +211,33 @@ theorem intrinsicClosure_eq_closure_inter_affineSpan (s : Set P) :
   rw [Subtype.range_coe]
   apply subset_affineSpan
 
+@[simp]
+theorem intrinsicInterior_prod_eq [AddCommGroup W] [Module 𝕜 W] [TopologicalSpace Q]
+    [AddTorsor W Q] (s : Set P) (t : Set Q) :
+    intrinsicInterior 𝕜 (s ×ˢ t) = intrinsicInterior 𝕜 s ×ˢ intrinsicInterior 𝕜 t := by
+  let e : affineSpan 𝕜 (s ×ˢ t) ≃ₜ affineSpan 𝕜 s × affineSpan 𝕜 t :=
+    (Homeomorph.setCongr (affineSpan_prod_eq s t)).trans
+      (Homeomorph.Set.prod (affineSpan 𝕜 s : Set P) (affineSpan 𝕜 t : Set Q))
+  have himage : e '' ((↑) ⁻¹' (s ×ˢ t)) = ((↑) ⁻¹' s) ×ˢ ((↑) ⁻¹' t) := by
+    ext ⟨a, b⟩; constructor
+    · rintro ⟨z, hz, heq⟩; exact heq ▸ hz
+    · intro h; exact ⟨e.symm (a, b), by simpa [e] using h, e.apply_symm_apply _⟩
+  have hfst : ∀ x : affineSpan 𝕜 (s ×ˢ t), ((e x).1 : P) = (x : P × Q).1 := fun _ => rfl
+  have hsnd : ∀ x : affineSpan 𝕜 (s ×ˢ t), ((e x).2 : Q) = (x : P × Q).2 := fun _ => rfl
+  simp only [intrinsicInterior]; ext ⟨p1, p2⟩; simp only [mem_image, mem_prod]
+  constructor
+  · rintro ⟨x, hx, hx_eq⟩
+    have hmem : e x ∈ interior (((↑) ⁻¹' s) ×ˢ ((↑) ⁻¹' t)) := by
+      rw [← himage, ← e.image_interior]; exact mem_image_of_mem e hx
+    rw [interior_prod_eq] at hmem
+    exact ⟨⟨(e x).1, hmem.1, by rw [hfst, hx_eq]⟩, ⟨(e x).2, hmem.2, by rw [hsnd, hx_eq]⟩⟩
+  · rintro ⟨⟨a, ha, rfl⟩, ⟨b, hb, rfl⟩⟩
+    have hab : (a, b) ∈ interior (((↑) ⁻¹' s) ×ˢ ((↑) ⁻¹' t)) := by
+      rw [interior_prod_eq]; exact ⟨ha, hb⟩
+    rw [← himage, ← e.image_interior] at hab
+    obtain ⟨x, hx, hx_eq⟩ := hab
+    exact ⟨x, hx, Prod.ext (by rw [← hfst]; exact congrArg (Subtype.val ∘ Prod.fst) hx_eq)
+                             (by rw [← hsnd]; exact congrArg (Subtype.val ∘ Prod.snd) hx_eq)⟩
 end AddTorsor
 
 namespace AffineIsometry
