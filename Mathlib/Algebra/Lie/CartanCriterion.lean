@@ -189,7 +189,7 @@ variable {K L M : Type*}
 open Algebra LieAlgebra LinearMap Module Module.End
 
 omit [CharZero K] in
-private lemma traceForm_baseChange_eq_zero
+lemma traceForm_baseChange_eq_zero
     {Kbar : Type*} [Field Kbar] [Algebra K Kbar] (h : traceForm K L M = 0) :
     traceForm Kbar (Kbar ⊗[K] L) (Kbar ⊗[K] M) = 0 := by
   refine LinearMap.ext fun u ↦ TensorProduct.induction_on u ?_ ?_ ?_
