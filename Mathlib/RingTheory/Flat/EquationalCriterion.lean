@@ -54,7 +54,7 @@ every finitely presented flat module is projective (`Module.Flat.projective_of_f
 
 -/
 
-@[expose] public section
+public section
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 

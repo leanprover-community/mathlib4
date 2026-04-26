@@ -18,7 +18,7 @@ public import Mathlib.Order.UpperLower.Closure
 Upper/lower sets are preserved under pointwise algebraic operations in ordered groups.
 -/
 
-@[expose] public section
+public section
 
 open Set
 open scoped Pointwise
