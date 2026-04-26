@@ -94,10 +94,10 @@ def coneOfConeForget : Cone F where
   π :=
     { app j := ofHom (ContinuousMap.mk (c.π.app j) (by
         rw [continuous_iff_le_induced]
-        exact iInf_le (fun j ↦ (F.obj j).str.induced (c.π.app j)) j))
+        exact iInf_le _ _ ))
       naturality j j' φ := by
         ext
-        apply congr_fun (c.π.naturality φ) }
+        apply ConcreteCategory.congr_hom (c.π.naturality φ) }
 
 /-- Given a functor `F : J ⥤ TopCat` and a cone `c : Cone (F ⋙ forget)`
 of the underlying functor to types, the limit of `F` is `c.pt` equipped
@@ -112,7 +112,8 @@ def isLimitConeOfForget (c : Cone (F ⋙ forget)) (hc : IsLimit c) :
   intro j
   rw [coinduced_le_iff_le_induced, induced_compose]
   convert continuous_iff_le_induced.1 (s.π.app j).hom.continuous
-  exact hc.fac ((forget).mapCone s) j
+  ext x
+  exact ConcreteCategory.hom_ext_iff.mp (hc.fac ((forget).mapCone s) j) x
 
 end
 
@@ -205,10 +206,11 @@ def coconeOfCoconeForget : Cocone F where
   ι :=
     { app j := ofHom (ContinuousMap.mk (c.ι.app j) (by
         rw [continuous_iff_coinduced_le]
-        exact le_iSup (fun j ↦ (F.obj j).str.coinduced (c.ι.app j)) j))
+        dsimp [topologicalSpaceCoconePtOfCoconeForget]
+        exact le_iSup (fun j ↦ (F.obj j).str.coinduced _) j))
       naturality j j' φ := by
         ext
-        apply congr_fun (c.ι.naturality φ) }
+        apply ConcreteCategory.congr_hom (c.ι.naturality φ) }
 
 /-- Given a functor `F : J ⥤ TopCat` and a cocone `c : Cocone (F ⋙ forget)`
 of the underlying cocone of types, the colimit of `F` is `c.pt` equipped
@@ -223,7 +225,8 @@ def isColimitCoconeOfForget (c : Cocone (F ⋙ forget)) (hc : IsColimit c) :
   intro j
   rw [coinduced_le_iff_le_induced, induced_compose]
   convert continuous_iff_le_induced.1 (s.ι.app j).hom.continuous
-  exact hc.fac ((forget).mapCocone s) j
+  ext x
+  exact ConcreteCategory.hom_ext_iff.mp (hc.fac ((forget).mapCocone s) j) x
 
 end
 

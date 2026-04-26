@@ -181,12 +181,12 @@ theorem floor_one : ⌊(1 : R)⌋ = 1 := by rw [← cast_one, floor_intCast]
 @[simp] theorem floor_ofNat (n : ℕ) [n.AtLeastTwo] : ⌊(ofNat(n) : R)⌋ = ofNat(n) :=
   floor_natCast n
 
-@[simp]
+@[simp, push]
 theorem floor_add_intCast (a : R) (z : ℤ) : ⌊a + z⌋ = ⌊a⌋ + z :=
   eq_of_forall_le_iff fun a => by
     rw [le_floor, ← sub_le_iff_le_add, ← sub_le_iff_le_add, le_floor, Int.cast_sub]
 
-@[simp]
+@[simp, push]
 theorem floor_add_one (a : R) : ⌊a + 1⌋ = ⌊a⌋ + 1 := by
   rw [← cast_one, floor_add_intCast]
 
@@ -202,24 +202,24 @@ theorem le_floor_add_floor (a b : R) : ⌊a + b⌋ - 1 ≤ ⌊a⌋ + ⌊b⌋ := 
   rw [sub_le_iff_le_add', ← add_sub_assoc, sub_le_sub_iff_right]
   exact floor_le _
 
-@[simp]
+@[simp, push]
 theorem floor_intCast_add (z : ℤ) (a : R) : ⌊↑z + a⌋ = z + ⌊a⌋ := by
   simpa only [add_comm] using floor_add_intCast a z
 
-@[simp]
+@[simp, push]
 theorem floor_add_natCast (a : R) (n : ℕ) : ⌊a + n⌋ = ⌊a⌋ + n := by
   rw [← Int.cast_natCast, floor_add_intCast]
 
-@[simp]
+@[simp, push]
 theorem floor_add_ofNat (a : R) (n : ℕ) [n.AtLeastTwo] :
     ⌊a + ofNat(n)⌋ = ⌊a⌋ + ofNat(n) :=
   floor_add_natCast a n
 
-@[simp]
+@[simp, push]
 theorem floor_natCast_add (n : ℕ) (a : R) : ⌊↑n + a⌋ = n + ⌊a⌋ := by
   rw [← Int.cast_natCast, floor_intCast_add]
 
-@[simp]
+@[simp, push]
 theorem floor_ofNat_add (n : ℕ) [n.AtLeastTwo] (a : R) :
     ⌊ofNat(n) + a⌋ = ofNat(n) + ⌊a⌋ :=
   floor_natCast_add n a

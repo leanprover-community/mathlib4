@@ -54,7 +54,7 @@ immediate predecessors and what conditions are added to each of them.
   - `IsDomain` & linear order structure
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidHom
 
@@ -186,6 +186,10 @@ lemma one_sub_le_one_sub_mul_one_add (h : b + b * c ≤ a + c) : 1 - a ≤ (1 - 
 lemma one_sub_le_one_add_mul_one_sub (h : c + b * c ≤ a + b) : 1 - a ≤ (1 + b) * (1 - c) := by
   rw [mul_one_sub, one_add_mul, sub_le_sub_iff, add_assoc, add_comm b]
   gcongr
+
+/-- A nontrivial ordered ring is of characteristic zero.
+This is not made a global instance for performance reasons. -/
+theorem IsOrderedRing.toCharZero [Nontrivial R] : CharZero R := AddMonoidWithOne.toCharZero
 
 instance [Nontrivial R] : NoMaxOrder R := ⟨fun a ↦ ⟨a + 1, by simp⟩⟩
 

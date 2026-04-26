@@ -341,6 +341,21 @@ theorem eq_unit_mul_pow_irreducible {x : R} (hx : x ≠ 0) {ϖ : R} (hirr : Irre
   use n, u
   apply mul_comm
 
+/--
+If `K` is the fraction field of a discrete valuation ring `R`, any element `x` of `K` can be
+expressed as `u • (algebraMap R K ϖ) ^ n` for some `u : Rˣ` and `n : ℤ`.
+-/
+lemma exists_units_eq_smul_zpow_of_irreducible
+    {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
+    {ϖ : R} (hϖ : Irreducible ϖ) {x : K} (hx : x ≠ 0) :
+    ∃ (n : ℤ) (u : Rˣ), x = u • algebraMap R K ϖ ^ n := by
+  obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (A := R) x
+  obtain ⟨n, u, rfl⟩ := eq_unit_mul_pow_irreducible (x := x) (by simp_all) hϖ
+  obtain ⟨m, v, rfl⟩ := eq_unit_mul_pow_irreducible (by simpa using hy) hϖ
+  have hϖ' : algebraMap R K ϖ ≠ 0 := by simpa using hϖ.ne_zero
+  refine ⟨n - m, u / v, ?_⟩
+  simp [hϖ', zpow_sub₀, div_smul_div_comm, Units.smul_def u, Units.smul_def v, Algebra.smul_def]
+
 open Submodule.IsPrincipal
 
 theorem ideal_eq_span_pow_irreducible {s : Ideal R} (hs : s ≠ ⊥) {ϖ : R} (hirr : Irreducible ϖ) :
@@ -468,6 +483,28 @@ lemma addVal_eq_zero_iff {x : R} :
   obtain ⟨ϖ, hϖ⟩ := exists_irreducible R
   obtain ⟨n, u, rfl⟩ := eq_unit_mul_pow_irreducible hx hϖ
   simp [isUnit_pow_iff_of_not_isUnit hϖ.not_isUnit, hϖ]
+
+lemma addVal_eq_iff_associated (x y : R) :
+    addVal R x = addVal R y ↔ Associated x y := by
+  constructor
+  · intro h
+    by_cases hx : x = 0
+    · simp_all only [AddValuation.map_zero]
+      rw [addVal_eq_top_iff.mp h.symm]
+    by_cases hy : y = 0
+    · simp_all only [AddValuation.map_zero, associated_zero_iff_eq_zero]
+      exact hx (addVal_eq_top_iff.mp h)
+    obtain ⟨ϖ, hϖ⟩ := exists_irreducible R
+    obtain ⟨m, α, hx'⟩ := eq_unit_mul_pow_irreducible hx hϖ
+    obtain ⟨n, β, hy'⟩ := eq_unit_mul_pow_irreducible hy hϖ
+    simp only [hx', AddValuation.map_mul, addVal_eq_zero_of_unit, AddValuation.map_pow,
+      nsmul_eq_mul, zero_add, hy', associated_unit_mul_right_iff,
+      associated_unit_mul_left_iff] at h ⊢
+    simp only [addVal_uniformizer hϖ, mul_one, ENat.coe_inj] at h
+    rw [h]
+    exact Associates.mk_eq_mk_iff_associated.mp rfl
+  · rintro ⟨u, rfl⟩
+    simp_all
 
 end
 

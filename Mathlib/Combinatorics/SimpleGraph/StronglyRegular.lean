@@ -28,7 +28,7 @@ public import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
   `I` be the identity matrix, then `A ^ 2 = k • I + ℓ • A + μ • C`.
 -/
 
-@[expose] public section
+public section
 
 
 open Finset
