@@ -147,7 +147,7 @@ lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular (M : ModuleCat.{v
     | top => simp
     | coe n => simpa using aux n
 
-lemma projectiveDimension_quotient_regular_sequence [Small.{v} R] (M : ModuleCat.{v} R)
+lemma projectiveDimension_quotient_eq_add_length_of_isWeaklyRegular (M : ModuleCat.{v} R)
     [Nontrivial M] [Module.Finite R M] (rs : List R) (reg : IsWeaklyRegular M rs)
     (mem : ∀ r ∈ rs, r ∈ maximalIdeal R) :
     projectiveDimension (ModuleCat.of R (M ⧸ Ideal.ofList rs • (⊤ : Submodule R M))) =
@@ -184,7 +184,7 @@ lemma projectiveDimension_quotient_eq_length (rs : List R) (reg : IsRegular R rs
       nth_rw 1 [← (Ideal.ofList rs).mul_top, ← smul_eq_mul, Submodule.map_smul'']
       simp )))
   rw [projectiveDimension_eq_of_iso e.toModuleIso,
-    projectiveDimension_quotient_regular_sequence (ModuleCat.of R (Shrink.{v} R)) rs
+    projectiveDimension_quotient_eq_add_length_of_isWeaklyRegular (ModuleCat.of R (Shrink.{v} R)) rs
     (((Shrink.linearEquiv R R).isWeaklyRegular_congr rs).mpr reg.1) mem_max,
     ModuleCat.projectiveDimension_eq_zero_of_projective, zero_add]
 
