@@ -593,6 +593,12 @@ protected lemma Topology.IsOpenEmbedding.prodMap {f : X → Y} {g : Z → W} (hf
     (hg : IsOpenEmbedding g) : IsOpenEmbedding (Prod.map f g) :=
   .of_isEmbedding_isOpenMap (hf.1.prodMap hg.1) (hf.isOpenMap.prodMap hg.isOpenMap)
 
+protected lemma Topology.IsClosedEmbedding.prodMap {f : X → Y} {g : Z → W}
+    (hf : IsClosedEmbedding f) (hg : IsClosedEmbedding g) :
+    IsClosedEmbedding (Prod.map f g) :=
+  { hf.isEmbedding.prodMap hg.isEmbedding with
+    isClosed_range := range_prodMap ▸ hf.isClosed_range.prod hg.isClosed_range }
+
 lemma isEmbedding_graph {f : X → Y} (hf : Continuous f) : IsEmbedding fun x => (x, f x) :=
   .of_comp (continuous_id.prodMk hf) continuous_fst .id
 

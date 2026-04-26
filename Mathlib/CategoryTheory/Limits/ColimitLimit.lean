@@ -87,18 +87,10 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Since `colimit_limit_to_limit_colimit` is a morphism from a colimit to a limit,
 this lemma characterises it.
 -/
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 theorem ι_colimitLimitToLimitColimit_π (j) (k) :
     colimit.ι _ k ≫ colimitLimitToLimitColimit F ≫ limit.π _ j =
       limit.π ((curry.obj (Prod.swap K J ⋙ F)).obj k) j ≫ colimit.ι ((curry.obj F).obj j) k := by
-  dsimp [colimitLimitToLimitColimit]
-  simp
-
-@[simp]
-theorem ι_colimitLimitToLimitColimit_π_apply [Small.{v} J] [Small.{v} K] (F : J × K ⥤ Type v)
-    (j : J) (k : K) (f) : limit.π (curry.obj F ⋙ colim) j
-        (colimitLimitToLimitColimit F (colimit.ι (curry.obj (Prod.swap K J ⋙ F) ⋙ lim) k f)) =
-      colimit.ι ((curry.obj F).obj j) k (limit.π ((curry.obj (Prod.swap K J ⋙ F)).obj k) j f) := by
   dsimp [colimitLimitToLimitColimit]
   simp
 
