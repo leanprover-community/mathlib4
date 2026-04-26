@@ -72,7 +72,7 @@ lemma exists_polynomial_eval_sub_aux
   rw [← (algebraMap R K).map_sub, ← (algebraMap R K).map_sub, ← map_sub, ← map_sub, heq]
 
 /-- The algebraically closed case of `isNilpotent_derivedSeries_of_traceForm_eq_zero`. -/
-theorem isNilpotent_derivedSeries_of_traceForm_eq_zero_algClosed_aux (h : traceForm K L M = 0) :
+public theorem isNilpotent_derivedSeries_of_traceForm_eq_zero_aux (h : traceForm K L M = 0) :
     IsNilpotent (derivedSeries K L 1) M := by
   /- By Engel's theorem it suffices to prove that `⁅L, L⁆` acts nilpotently on `M`. -/
   suffices ∀ x ∈ derivedSeries K L 1, _root_.IsNilpotent (φ x) from
@@ -187,7 +187,7 @@ lemma traceForm_baseChange_eq_zero (h : traceForm K L M = 0) : traceForm K̄ L̄
 
 /-- If the trace form of `M` is zero, then the `⁅L, L⁆`-module `M` is nilpotent. The proof reduces
 by scalar extension to the algebraically closed case, then closes by
-`isNilpotent_derivedSeries_of_traceForm_eq_zero_algClosed_aux`. -/
+`isNilpotent_derivedSeries_of_traceForm_eq_zero_algClosed`. -/
 public theorem isNilpotent_derivedSeries_of_traceForm_eq_zero (h : traceForm K L M = 0) :
     IsNilpotent (derivedSeries K L 1) M := by
   haveI : FiniteDimensional K̄ M̄ := Module.Finite.base_change K K̄ M
@@ -199,15 +199,12 @@ public theorem isNilpotent_derivedSeries_of_traceForm_eq_zero (h : traceForm K L
     have hx_bar : (1 : K̄) ⊗ₜ[K] x ∈ derivedSeries K̄ L̄ 1 := by
       rw [derivedSeries_baseChange]
       exact Submodule.tmul_mem_baseChange_of_mem 1 hx
-    have step : _root_.IsNilpotent (toEnd K̄ L̄ M̄ ((1 : K̄) ⊗ₜ[K] x)) :=
-      key ⟨_, hx_bar⟩
+    have step : _root_.IsNilpotent (toEnd K̄ L̄ M̄ ((1 : K̄) ⊗ₜ[K] x)) := key ⟨_, hx_bar⟩
     rw [toEnd_baseChange] at step
     have hbc_inj : Function.Injective (End.baseChangeHom K K̄ M) := fun f g hfg ↦ by
       ext m
       simpa using FaithfullyFlat.tensorProduct_mk_injective (A := K) (B := K̄) M
         (LinearMap.congr_fun hfg ((1 : K̄) ⊗ₜ[K] m))
     exact (IsNilpotent.map_iff hbc_inj).mp step
-  exact isNilpotent_derivedSeries_of_traceForm_eq_zero_algClosed_aux
-    (traceForm_baseChange_eq_zero h)
-
+  exact isNilpotent_derivedSeries_of_traceForm_eq_zero_aux (traceForm_baseChange_eq_zero_aux h)
 end LieModule
