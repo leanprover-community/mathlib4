@@ -52,6 +52,7 @@ variable {L : C ⥤ D} {R : D ⥤ C} (h : L ⊣ R)
 
 attribute [local simp] homEquiv_unit homEquiv_counit
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If the left adjoint is faithful, then each component of the unit is a monomorphism. -/
 instance unit_mono_of_L_faithful [L.Faithful] (X : C) : Mono (h.unit.app X) where
   right_cancellation {Y} f g hfg :=

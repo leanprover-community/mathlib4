@@ -1258,6 +1258,7 @@ namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Auxiliary definition for `Over.coprod`. -/
 @[simps]
 noncomputable def Over.coprodObj [HasBinaryCoproducts C] {A : C} :
