@@ -15,10 +15,10 @@ public import Mathlib.Data.Fintype.Card
 
 public section
 
-
 namespace Set
 
-open Pointwise Function
+open Function
+open scoped Pointwise
 
 variable {ι α β F : Type*} [FunLike F α β]
 

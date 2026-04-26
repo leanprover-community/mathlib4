@@ -217,8 +217,7 @@ section Ideals
 variable {L : Type w} [LieRing L] [LieAlgebra R L] (I : ι → LieIdeal R L)
 
 /-- The fact that this instance is necessary seems to be a bug in typeclass inference. See
-[this Zulip thread](https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/
-Typeclass.20resolution.20under.20binders/near/245151099). -/
+[this Zulip thread](https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Typeclass.20resolution.20under.20binders/near/245151099). -/
 instance lieRingOfIdeals : LieRing (⨁ i, I i) :=
   DirectSum.lieRing fun i => ↥(I i)
 

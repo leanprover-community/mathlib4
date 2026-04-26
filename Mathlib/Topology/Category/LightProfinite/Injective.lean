@@ -37,7 +37,7 @@ category `LightProfinite`. The proof uses an inductive extension argument along 
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 

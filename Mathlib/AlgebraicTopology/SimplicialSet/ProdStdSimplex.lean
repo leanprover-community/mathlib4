@@ -34,7 +34,6 @@ namespace prodStdSimplex
 
 variable {p q : ℕ}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `n`-simplices in `Δ[p] ⊗ Δ[q]` identify to order preserving maps
 `Fin (n + 1) →o Fin (p + 1) × Fin (q + 1)`. -/
 def objEquiv {n : ℕ} :
