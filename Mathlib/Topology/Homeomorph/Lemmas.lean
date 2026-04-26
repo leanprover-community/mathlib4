@@ -520,6 +520,13 @@ lemma isHomeomorph_iff_isEmbedding_surjective : IsHomeomorph f ↔ IsEmbedding f
   mpr h := ⟨h.1.continuous, ((isOpenEmbedding_iff f).2 ⟨h.1, h.2.range_eq ▸ isOpen_univ⟩).isOpenMap,
     h.1.injective, h.2⟩
 
+/-- A map is a homeomorphism iff it is a quotient map and injective. -/
+lemma isHomeomorph_iff_isQuotientMap_injective {f : X → Y} :
+    IsHomeomorph f ↔ IsQuotientMap f ∧ Injective f := by
+  refine ⟨fun h ↦ ⟨h.isQuotientMap, h.injective⟩,
+    fun h ↦ ⟨h.1.continuous, fun s hs ↦ ?_, h.2, h.1.surjective⟩⟩
+  rwa [← h.1.isOpen_preimage, Set.preimage_image_eq _ h.2]
+
 /-- A map is a homeomorphism iff it is continuous, closed and bijective. -/
 lemma isHomeomorph_iff_continuous_isClosedMap_bijective : IsHomeomorph f ↔
     Continuous f ∧ IsClosedMap f ∧ Function.Bijective f :=

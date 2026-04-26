@@ -725,7 +725,7 @@ noncomputable abbrev free (k G : Type*) [CommSemiring k] [Monoid G] (α : Type*)
 
 noncomputable instance (k G : Type*) [CommRing k] [Monoid G] (α : Type*) :
     AddCommGroup (free k G α).asModule :=
-  Finsupp.instAddCommGroup
+  inferInstanceAs <| AddCommGroup (α →₀ G →₀ k)
 
 lemma free_single_single (g h : G) (i : α) (r : k) :
     free k G α g (single i (single h r)) = single i (single (g * h) r) := by
