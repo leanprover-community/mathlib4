@@ -16,9 +16,6 @@ In this file we introduce notation for indexed suprema, infima, unions, and inte
 
 ## Main definitions
 
-- `SupSet α`: typeclass introducing the operation `SupSet.sSup` (exported to the root namespace);
-  `sSup s` is the supremum of the set `s`;
-- `InfSet`: similar typeclass for infimum of a set;
 - `iSup f`, `iInf f`: supremum and infimum of an indexed family of elements,
   defined as `sSup (Set.range f)` and `sInf (Set.range f)`, respectively;
 - `Set.sUnion s`, `Set.sInter s`: same as `sSup s` and `sInf s`,
@@ -40,21 +37,6 @@ open Set
 
 universe u v
 variable {α : Type u} {ι : Sort v}
-
-/-- Class for the `sSup` operator -/
-class SupSet (α : Type*) where
-  /-- Supremum of a set -/
-  sSup : Set α → α
-
-/-- Class for the `sInf` operator -/
-@[to_dual existing]
-class InfSet (α : Type*) where
-  /-- Infimum of a set -/
-  sInf : Set α → α
-
-export SupSet (sSup)
-
-export InfSet (sInf)
 
 /-- Indexed supremum -/
 @[to_dual /-- Indexed infimum -/]
@@ -131,23 +113,6 @@ meta def iInf_delab : Delab := whenPPOption Lean.getPPNotation <| withOverApp 4 
     | _ => pure stx
   return stx
 end delaborators
-
-section OrderSupSet
-
-variable [LE α]
-
-/-- `OrderSupSet α` expresses that `α` is equipped with the operation `sSup` that returns
-the least upper bound of a set whenever one exists. -/
-class OrderSupSet (α : Type*) [LE α] extends SupSet α where
-  protected isLUB_sSup_of_isLUB s a : IsLUB s a → IsLUB s (sSup s)
-
-/-- `OrderInfSet α` expresses that `α` is equipped with the operation `sInf` that returns
-the greatest lower bound of a set whenever one exists. -/
-@[to_dual existing]
-class OrderInfSet (α : Type*) [LE α] extends InfSet α where
-  protected isGLB_sInf_of_isGLB s a : IsGLB s a → IsGLB s (sInf s)
-
-end OrderSupSet
 
 namespace Set
 
