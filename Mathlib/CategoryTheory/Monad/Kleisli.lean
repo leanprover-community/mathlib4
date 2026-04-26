@@ -43,6 +43,10 @@ variable {T : Monad C}
 @[simp] lemma mk_of (c : Kleisli T) : Kleisli.mk T c.of = c := rfl
 lemma of_mk (c : C) : (Kleisli.mk T c).of = c := rfl
 
+theorem comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ T.η.app Y) ≫ T.map (g ≫ T.η.app Z) ≫ T.μ.app Z = (f ≫ g) ≫ T.η.app Z := by
+  simp [Monad.unit_naturality, Monad.mu_naturality, Monad.right_unit_assoc]
+
 /-- For (T : Monad C), morphisms `c ⟶ c'` in the Kleisli category of `T` are
 morphisms ` c ⟶ T.obj c'` in `C`. -/
 structure Hom (c c' : Kleisli T) where
@@ -78,7 +82,7 @@ lemma hom_ext {x y : Kleisli T} {f g : x ⟶ y} (h : f.of = g.of) : f = g :=
 
 namespace Adjunction
 
-set_option backward.isDefEq.respectTransparency false in
+attribute [local ext] Hom in
 /-- The left adjoint of the adjunction which induces the monad `(T, η_ T, μ_ T)`. -/
 @[simps]
 def toKleisli : C ⥤ Kleisli T where
@@ -86,7 +90,7 @@ def toKleisli : C ⥤ Kleisli T where
   map {X} {Y} f := .mk <| f ≫ T.η.app Y
   map_comp {X} {Y} {Z} f g := by
     unfold_projs
-    simp [← T.η.naturality g]
+    rw [comp]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The right adjoint of the adjunction which induces the monad `(T, η_ T, μ_ T)`. -/
