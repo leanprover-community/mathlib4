@@ -19,7 +19,7 @@ Prove that the product of a perfectly normal space and a metric space is perfect
 
 -/
 
-public section
+@[expose] public section
 
 open Set Topology
 
