@@ -18,7 +18,7 @@ public import Mathlib.CategoryTheory.Limits.Preserves.SigmaConst
 In this file, we introduce the normalized chain complex `X.normalizedChainComplex R`
 of a simplicial set `X` with coefficients in `R` (where `R` is an object of a
 preadditive category `C` with coproducts). The `n`-chains of this complex
-identifies to the coproduct of copies of `R` indexed by the nondegenerate
+identify to the coproduct of copies of `R` indexed by the nondegenerate
 `n`-simplices of `X`. In particular, we deduce that the homology is zero in degree `≥ d`
 when `X` has dimension `< d`.
 
