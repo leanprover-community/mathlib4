@@ -219,10 +219,7 @@ theorem orderEmbOfFin_mem (s : Finset α) {k : ℕ} (h : s.card = k) (i : Fin k)
 @[simp]
 theorem range_orderEmbOfFin (s : Finset α) {k : ℕ} (h : s.card = k) :
     Set.range (s.orderEmbOfFin h) = s := by
-  simp only [orderEmbOfFin, Set.range_comp ((↑) : _ → α) (s.orderIsoOfFin h),
-  RelEmbedding.coe_trans, Set.image_univ, Finset.orderEmbOfFin, RelIso.range_eq,
-    OrderEmbedding.coe_subtype, OrderIso.coe_toOrderEmbedding,
-    Subtype.range_coe_subtype, Finset.setOf_mem]
+  simp [orderEmbOfFin]
 
 @[simp]
 theorem image_orderEmbOfFin_univ (s : Finset α) {k : ℕ} (h : s.card = k) :
@@ -294,8 +291,7 @@ def orderEmbOfCardLe (s : Finset α) {k : ℕ} (h : k ≤ s.card) : Fin k ↪o �
 
 theorem orderEmbOfCardLe_mem (s : Finset α) {k : ℕ} (h : k ≤ s.card) (a) :
     orderEmbOfCardLe s h a ∈ s := by
-  simp only [orderEmbOfCardLe, RelEmbedding.coe_trans, Finset.orderEmbOfFin_mem,
-    Function.comp_apply]
+  simp [orderEmbOfCardLe]
 
 lemma orderEmbOfFin_compl_singleton {n : ℕ} {i : Fin (n + 1)} {k : ℕ}
     (h : ({i}ᶜ : Finset _).card = k) :
