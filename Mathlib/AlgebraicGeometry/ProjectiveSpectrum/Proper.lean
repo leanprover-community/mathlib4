@@ -279,7 +279,7 @@ theorem valuativeCriterion_existence_aux
           rw [Localization.mk_eq_mk_iff, Localization.r_iff_exists]
           use 1
           simp only [OneMemClass.coe_one, ← pow_mul, Submonoid.coe_mul,
-            SubmonoidClass.coe_finset_prod, one_mul]
+            SubmonoidClass.coe_finsetProd, one_mul]
           simp_rw [← mul_assoc, Finset.prod_erase_mul _ d (h := Finset.mem_univ _), mul_assoc,
             ← mul_assoc (Finset.prod ..), Finset.prod_erase_mul _ d (h := Finset.mem_univ _),
             SubmonoidClass.coe_pow, ← pow_mul, Finset.prod_pow_eq_pow_sum,
