@@ -40,8 +40,6 @@ criterion.
 * [J. Humphreys, *Introduction to Lie Algebras and ...*](humphreys1972) Chapter II 4.3
 -/
 
-open scoped TensorProduct
-
 namespace LieModule
 
 variable {K L M : Type*}
@@ -171,6 +169,8 @@ theorem isNilpotent_derivedSeries_of_traceForm_eq_zero_algClosed_aux (h : traceF
   rw [hX_ns, add_mul, map_add, htr_n, htr_s, zero_add]
 
 end AlgClosed
+
+open TensorProduct
 
 local notation "K̄" => AlgebraicClosure K
 local notation "L̄" => K̄ ⊗[K] L
