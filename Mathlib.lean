@@ -1733,6 +1733,7 @@ public import Mathlib.Analysis.Calculus.FDeriv.Linear
 public import Mathlib.Analysis.Calculus.FDeriv.Measurable
 public import Mathlib.Analysis.Calculus.FDeriv.Mul
 public import Mathlib.Analysis.Calculus.FDeriv.Norm
+public import Mathlib.Analysis.Calculus.FDeriv.Partial
 public import Mathlib.Analysis.Calculus.FDeriv.Pi
 public import Mathlib.Analysis.Calculus.FDeriv.Pow
 public import Mathlib.Analysis.Calculus.FDeriv.Prod
@@ -1744,6 +1745,7 @@ public import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 public import Mathlib.Analysis.Calculus.Gradient.Basic
 public import Mathlib.Analysis.Calculus.Implicit
 public import Mathlib.Analysis.Calculus.ImplicitContDiff
+public import Mathlib.Analysis.Calculus.ImplicitFunction.Bivariate
 public import Mathlib.Analysis.Calculus.ImplicitFunction.ProdDomain
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Analytic
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ApproximatesLinearOn
@@ -3581,6 +3583,7 @@ public import Mathlib.Combinatorics.SimpleGraph.UniversalVerts
 public import Mathlib.Combinatorics.SimpleGraph.VertexCover
 public import Mathlib.Combinatorics.SimpleGraph.Walk
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Basic
+public import Mathlib.Combinatorics.SimpleGraph.Walk.Chord
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Counting
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Decomp
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Maps
@@ -6921,6 +6924,7 @@ public import Mathlib.SetTheory.Lists
 public import Mathlib.SetTheory.Ordinal.Arithmetic
 public import Mathlib.SetTheory.Ordinal.Basic
 public import Mathlib.SetTheory.Ordinal.CantorNormalForm
+public import Mathlib.SetTheory.Ordinal.Commute
 public import Mathlib.SetTheory.Ordinal.Enum
 public import Mathlib.SetTheory.Ordinal.Exponential
 public import Mathlib.SetTheory.Ordinal.Family

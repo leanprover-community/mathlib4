@@ -15,7 +15,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 rather than from the existence of a zero object.
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Limits
 
