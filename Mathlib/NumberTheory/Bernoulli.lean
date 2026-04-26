@@ -585,7 +585,7 @@ private lemma pIntegral_faulhaber_sum {k p : ℕ} (hk : k > 0) [Fact p.Prime]
       rw [show 2 * k - 1 = (2 * k - 2) + 1 by lia, pow_succ, mul_div_cancel_right₀ _ two_ne_zero]
       exact_mod_cast Int.padicValuation_le_one ..
     · rw [Valuation.map_neg]
-      refine pIntegral_pow_div _ _ _ two_ne_zero <|
+      refine pIntegral_pow_div two_ne_zero <|
          (factorization_eq_zero_of_lt ?_).trans_le (by lia)
       exact (Prime.odd_iff Fact.out).mp <| Prime.odd_of_ne_two Fact.out hp2
   · rcases Nat.even_or_odd (i + 2) with ⟨m, hm⟩ | hodd
