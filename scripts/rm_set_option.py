@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Remove unnecessary `set_option ... false in` from Mathlib.
+Remove unnecessary `set_option ... false in` from a Lean project.
 
 Tries removing each occurrence (that isn't followed by a comment), testing
 whether the file still builds. Processes files in reverse import-DAG order
@@ -11,7 +11,6 @@ import argparse
 import hashlib
 import json
 import os
-import subprocess
 import threading
 import time
 from dataclasses import dataclass
@@ -321,7 +320,9 @@ def write_github_outputs(summary: Summary):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Remove unnecessary set_option ... false in lines"
+        description="Remove unnecessary `set_option ... false in` lines in a Lean project.\n\n"
+                    "Copy `rm_set_option.py`, `dag_traversal.py` and `set_option_utils.py` to "
+                    "a subdirectory of your project named `scripts/` and run from the project root."
     )
     parser.add_argument(
         "--option",
