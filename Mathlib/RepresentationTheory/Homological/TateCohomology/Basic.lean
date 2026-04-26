@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Yunzhou Xie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Class Field Theory Workshop 2025
+Authors: Yunzhou Xie, Yaël Dillies
 -/
 module
 
@@ -34,6 +34,9 @@ norm map.
 ## Tags
 
 Tate cohomology, homological algebra
+
+This file comes from a collaborative work in 2025 ClassFieldTheory workshop, see
+https://github.com/kbuzzard/ClassFieldTheory/ for more information.
 -/
 
 @[expose] public noncomputable section
