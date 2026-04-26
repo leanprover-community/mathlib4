@@ -1330,6 +1330,7 @@ public import Mathlib.AlgebraicGeometry.EllipticCurve.IsomOfJ
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Basic
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Formula
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Point
+public import Mathlib.AlgebraicGeometry.EllipticCurve.LFunction
 public import Mathlib.AlgebraicGeometry.EllipticCurve.ModelsWithJ
 public import Mathlib.AlgebraicGeometry.EllipticCurve.NormalForms
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Basic
@@ -1732,6 +1733,7 @@ public import Mathlib.Analysis.Calculus.FDeriv.Linear
 public import Mathlib.Analysis.Calculus.FDeriv.Measurable
 public import Mathlib.Analysis.Calculus.FDeriv.Mul
 public import Mathlib.Analysis.Calculus.FDeriv.Norm
+public import Mathlib.Analysis.Calculus.FDeriv.Partial
 public import Mathlib.Analysis.Calculus.FDeriv.Pi
 public import Mathlib.Analysis.Calculus.FDeriv.Pow
 public import Mathlib.Analysis.Calculus.FDeriv.Prod
@@ -1743,6 +1745,7 @@ public import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 public import Mathlib.Analysis.Calculus.Gradient.Basic
 public import Mathlib.Analysis.Calculus.Implicit
 public import Mathlib.Analysis.Calculus.ImplicitContDiff
+public import Mathlib.Analysis.Calculus.ImplicitFunction.Bivariate
 public import Mathlib.Analysis.Calculus.ImplicitFunction.ProdDomain
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Analytic
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ApproximatesLinearOn
@@ -3282,6 +3285,7 @@ public import Mathlib.CategoryTheory.Sites.IsSheafFor
 public import Mathlib.CategoryTheory.Sites.JointlySurjective
 public import Mathlib.CategoryTheory.Sites.LeftExact
 public import Mathlib.CategoryTheory.Sites.Limits
+public import Mathlib.CategoryTheory.Sites.LocalProperties
 public import Mathlib.CategoryTheory.Sites.Localization
 public import Mathlib.CategoryTheory.Sites.LocallyBijective
 public import Mathlib.CategoryTheory.Sites.LocallyFullyFaithful
