@@ -26,7 +26,7 @@ quotient `R ⧸ I` is finite.
 
 -/
 
-@[expose] public section
+public section
 
 /--
 A ring `R` has finite quotients if the quotient `R ⧸ I` is finite for all nonzero ideals of `R`.
