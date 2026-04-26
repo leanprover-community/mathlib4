@@ -190,8 +190,8 @@ theorem Dense.lowerBounds_image {α : Type*} [TopologicalSpace α] [Preorder α]
 /-- The supremum of a bounded above, continuous function on a dense set is equal to the supremum on
 the universe. -/
 theorem Dense.ciSup {α : Type*} [TopologicalSpace α]
-    [ConditionallyCompleteLattice α] [ClosedIicTopology α] {f : γ → α} [TopologicalSpace γ]
-    {S : Set γ} (hS : Dense S) (hf : Continuous f) (h : BddAbove (range f)) :
+    [PartialOrder α] [ConditionallyCompleteLattice α] [ClosedIicTopology α] [TopologicalSpace γ]
+    {f : γ → α} {S : Set γ} (hS : Dense S) (hf : Continuous f) (h : BddAbove (range f)) :
     ⨆ s : S, f s = ⨆ i, f i := by
   rw [← sSup_range, ← sSup_range]
   obtain (_ | _) := isEmpty_or_nonempty γ
@@ -203,16 +203,16 @@ theorem Dense.ciSup {α : Type*} [TopologicalSpace α]
 /-- The infimum of a bounded below, continuous function on a dense set is equal to the infimum on
 the universe. -/
 theorem Dense.ciInf {α : Type*} [TopologicalSpace α]
-    [ConditionallyCompleteLattice α] [ClosedIciTopology α] {f : γ → α} [TopologicalSpace γ]
-    {S : Set γ} (hS : Dense S) (hf : Continuous f) (h : BddBelow (range f)) :
+    [PartialOrder α] [ConditionallyCompleteLattice α] [ClosedIciTopology α] [TopologicalSpace γ]
+    {f : γ → α} {S : Set γ} (hS : Dense S) (hf : Continuous f) (h : BddBelow (range f)) :
     ⨅ s : S, f s = ⨅ i, f i :=
   hS.ciSup (α := αᵒᵈ) hf h
 
 /-- This is an analogue of `Dense.continuous_sup` for functions taking values in a conditionally
 complete linear order. The assumption of `BddAbove (range f)` is not needed in this theorem. -/
 theorem Dense.ciSup' {α : Type*} [TopologicalSpace α]
-    [ConditionallyCompleteLinearOrder α] [ClosedIicTopology α] {f : γ → α} [TopologicalSpace γ]
-    {S : Set γ} (hS : Dense S) (hf : Continuous f) :
+    [LinearOrder α] [ConditionallyCompleteLinearOrder α] [ClosedIicTopology α] [TopologicalSpace γ]
+    {f : γ → α} {S : Set γ} (hS : Dense S) (hf : Continuous f) :
     ⨆ s : S, f s = ⨆ i, f i := by
   by_cases h : BddAbove (range (fun x : S ↦ f x))
   · refine hS.ciSup hf <| h.closure.mono ?_
@@ -224,14 +224,15 @@ theorem Dense.ciSup' {α : Type*} [TopologicalSpace α]
 /-- This is an analogue of `Dense.continuous_inf` for functions taking values in a conditionally
 complete linear order. The assumption of `BddBelow (range f)` is not needed in this theorem. -/
 theorem Dense.ciInf' {α : Type*} [TopologicalSpace α]
-    [ConditionallyCompleteLinearOrder α] [ClosedIciTopology α] {f : γ → α} [TopologicalSpace γ]
-    {S : Set γ} (hS : Dense S) (hf : Continuous f) :
+    [LinearOrder α] [ConditionallyCompleteLinearOrder α] [ClosedIciTopology α] [TopologicalSpace γ]
+    {f : γ → α} {S : Set γ} (hS : Dense S) (hf : Continuous f) :
     ⨅ s : S, f s = ⨅ i, f i :=
   hS.ciSup' (α := αᵒᵈ) hf
 
 section ConditionallyCompleteLinearOrder
 
-variable {α : Type*} [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α]
+variable {α : Type*} [LinearOrder α] [ConditionallyCompleteLinearOrder α] [TopologicalSpace α]
+  [OrderTopology α]
 
 /-- A closed interval in a conditionally complete linear order is compact.
 Also see general API on `CompactIccSpace`. -/
@@ -324,7 +325,7 @@ theorem exists_seq_strictMono_tendsto_nhdsWithin [DenselyOrdered α] [NoMinOrder
   let ⟨u, hu, hx, h⟩ := exists_seq_strictMono_tendsto x
   ⟨u, hu, hx, tendsto_nhdsWithin_mono_right (range_subset_iff.2 hx) <| tendsto_nhdsWithin_range.2 h⟩
 
-theorem exists_seq_tendsto_sSup {α : Type*} [ConditionallyCompleteLinearOrder α]
+theorem exists_seq_tendsto_sSup {α : Type*} [LinearOrder α] [ConditionallyCompleteLinearOrder α]
     [TopologicalSpace α] [OrderTopology α] [FirstCountableTopology α] {S : Set α} (hS : S.Nonempty)
     (hS' : BddAbove S) : ∃ u : ℕ → α, Monotone u ∧ Tendsto u atTop (𝓝 (sSup S)) ∧ ∀ n, u n ∈ S := by
   rcases (isLUB_csSup hS hS').exists_seq_monotone_tendsto hS with ⟨u, hu⟩
@@ -404,7 +405,7 @@ theorem exists_seq_strictAnti_strictMono_tendsto [DenselyOrdered α] [FirstCount
     ⟨u, v, hu_anti, hv_mono, hu_mem, fun l => ⟨(hu_mem 0).1.trans (hv_mem l).1, (hv_mem l).2⟩,
       fun k l => (hu_anti.antitone (zero_le k)).trans_lt (hv_mem l).1, hux, hvy⟩
 
-theorem exists_seq_tendsto_sInf {α : Type*} [ConditionallyCompleteLinearOrder α]
+theorem exists_seq_tendsto_sInf {α : Type*} [LinearOrder α] [ConditionallyCompleteLinearOrder α]
     [TopologicalSpace α] [OrderTopology α] [FirstCountableTopology α] {S : Set α} (hS : S.Nonempty)
     (hS' : BddBelow S) : ∃ u : ℕ → α, Antitone u ∧ Tendsto u atTop (𝓝 (sInf S)) ∧ ∀ n, u n ∈ S :=
   exists_seq_tendsto_sSup (α := αᵒᵈ) hS hS'

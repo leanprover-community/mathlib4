@@ -21,7 +21,8 @@ open Order Set
 variable {ι : Sort*} {α : Type*}
 
 section ConditionallyCompleteLinearOrder
-variable [ConditionallyCompleteLinearOrder α] [Nonempty ι] {f : ι → α} {s : Set α} {x : α}
+variable [LinearOrder α] [ConditionallyCompleteLinearOrder α] [Nonempty ι]
+  {f : ι → α} {s : Set α} {x : α}
 
 lemma csSup_mem_of_not_isSuccPrelimit
     (hne : s.Nonempty) (hbdd : BddAbove s) (hlim : ¬ IsSuccPrelimit (sSup s)) : sSup s ∈ s := by
@@ -69,7 +70,8 @@ noncomputable def ConditionallyCompleteLinearOrder.toSuccOrder [WellFoundedLT α
 end ConditionallyCompleteLinearOrder
 
 section ConditionallyCompleteLinearOrderBot
-variable [ConditionallyCompleteLinearOrderBot α] {f : ι → α} {s : Set α} {x : α}
+variable [LinearOrder α] [OrderBot α] [ConditionallyCompleteLinearOrderBot α]
+  {f : ι → α} {s : Set α} {x : α}
 
 /-- See `csSup_mem_of_not_isSuccPrelimit` for the `ConditionallyCompleteLinearOrder` version. -/
 lemma csSup_mem_of_not_isSuccPrelimit' (hlim : ¬ IsSuccPrelimit (sSup s)) : sSup s ∈ s := by

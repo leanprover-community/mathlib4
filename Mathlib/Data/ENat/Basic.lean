@@ -43,12 +43,16 @@ open Function
 assert_not_exists Field
 
 deriving instance Nontrivial,
-  Add, Sub, LE, LT, Bot,
+  Add, Sub, LE, LT, Bot, DecidableEq, DecidableLE, DecidableLT,
   Preorder, LinearOrder, OrderTop, OrderBot, WellFoundedLT, SuccOrder,
   AddMonoidWithOne, CommSemiring, LinearOrderedAddCommMonoidWithTop,
   ZeroLEOneClass, OrderedSub, CanonicallyOrderedAdd, IsOrderedRing,
   CharZero, NoZeroDivisors
   for ENat
+
+set_option allowUnsafeReducibility true in
+attribute [semireducible] instDecidableEqENat._aux_1 instDecidableLEENat._aux_1
+  instDecidableLTENat._aux_1
 
 namespace ENat
 

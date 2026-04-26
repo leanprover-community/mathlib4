@@ -340,7 +340,8 @@ variable (E)
 
 /-- If `E` is a fiber bundle over a conditionally complete linear order,
 then it is trivial over any closed interval. -/
-theorem FiberBundle.exists_trivialization_Icc_subset [ConditionallyCompleteLinearOrder B]
+theorem FiberBundle.exists_trivialization_Icc_subset
+    [LinearOrder B] [ConditionallyCompleteLinearOrder B]
     [OrderTopology B] [FiberBundle F E] (a b : B) :
     ∃ e : Trivialization F (π F E), Icc a b ⊆ e.baseSet := by
   obtain ⟨ea, hea⟩ : ∃ ea : Trivialization F (π F E), a ∈ ea.baseSet :=

@@ -143,7 +143,8 @@ end CompleteLattice
 
 section ConditionallyCompleteLattice
 
-variable [ConditionallyCompleteLattice α] [ConditionallyCompleteLattice β] [Nonempty ι] {f : α → β}
+variable [PartialOrder α] [ConditionallyCompleteLattice α]
+  [PartialOrder β] [ConditionallyCompleteLattice β] [Nonempty ι] {f : α → β}
 
 @[to_dual]
 theorem map_csSup (hf : LeftOrdContinuous f) {s : Set α} (sne : s.Nonempty) (sbdd : BddAbove s) :

@@ -75,7 +75,7 @@ instance [TopologicalSpace α] [Preorder α] [CompactIccSpace α] : CompactIccSp
 
 /-- A closed interval in a conditionally complete linear order is compact. -/
 instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (α : Type*)
-    [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α] :
+    [LinearOrder α] [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α] :
     CompactIccSpace α := ⟨fun {_ _} ↦ ConditionallyCompleteLinearOrder.isCompact_Icc _ _⟩
 
 instance {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)] [∀ i, TopologicalSpace (α i)]
@@ -349,7 +349,7 @@ end LinearOrder
 
 section ConditionallyCompleteLinearOrder
 
-variable {α β γ : Type*} [ConditionallyCompleteLinearOrder α] [TopologicalSpace α]
+variable {α β γ : Type*} [LinearOrder α] [ConditionallyCompleteLinearOrder α] [TopologicalSpace α]
   [TopologicalSpace β] [TopologicalSpace γ]
 
 theorem IsCompact.sSup_lt_iff_of_continuous [ClosedIciTopology α] {f : β → α} {K : Set β}
@@ -374,7 +374,7 @@ end ConditionallyCompleteLinearOrder
 
 section InfSup
 
-variable {α β : Type*} [ConditionallyCompleteLinearOrder α] [TopologicalSpace α]
+variable {α β : Type*} [LinearOrder α] [ConditionallyCompleteLinearOrder α] [TopologicalSpace α]
   [TopologicalSpace β]
 
 theorem IsCompact.sInf_mem [ClosedIicTopology α] {s : Set α} (hs : IsCompact s)
@@ -456,7 +456,7 @@ theorem IsCompact.exists_isLocalMax_mem_open [ClosedIciTopology α] {f : β → 
 
 end ExistsExtr
 
-variable {α β γ : Type*} [ConditionallyCompleteLinearOrder α] [TopologicalSpace α]
+variable {α β γ : Type*} [LinearOrder α] [ConditionallyCompleteLinearOrder α] [TopologicalSpace α]
   [OrderTopology α] [TopologicalSpace β] [TopologicalSpace γ]
 
 theorem eq_Icc_of_connected_compact {s : Set α} (h₁ : IsConnected s) (h₂ : IsCompact s) :
@@ -511,8 +511,8 @@ namespace ContinuousOn
 ### Image of a closed interval
 -/
 
-variable [DenselyOrdered α] [ConditionallyCompleteLinearOrder β] [OrderTopology β] {f : α → β}
-  {a b c : α}
+variable [DenselyOrdered α] [LinearOrder β] [ConditionallyCompleteLinearOrder β] [OrderTopology β]
+  {f : α → β} {a b c : α}
 
 open scoped Interval
 

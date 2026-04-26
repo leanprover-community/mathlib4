@@ -849,7 +849,7 @@ This is not an instance since this is also shown for the more general σ-finite 
 theorem haveLebesgueDecomposition_of_finiteMeasure [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     HaveLebesgueDecomposition μ ν where
   lebesgue_decomposition := by
-    have h := @exists_seq_tendsto_sSup _ _ _ _ _ (measurableLEEval ν μ)
+    have h := @exists_seq_tendsto_sSup _ _ _ _ _ _ (measurableLEEval ν μ)
       ⟨0, 0, zero_mem_measurableLE, by simp⟩ (OrderTop.bddAbove _)
     choose g _ hg₂ f hf₁ hf₂ using h
     -- we set `ξ` to be the supremum of an increasing sequence of functions obtained from above

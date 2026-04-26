@@ -183,7 +183,8 @@ end LinearOrder
 
 section ConditionallyCompleteLinearOrderBot
 
-variable [ConditionallyCompleteLinearOrderBot ι] [TopologicalSpace ι] [OrderTopology ι]
+variable [LinearOrder ι] [OrderBot ι] [ConditionallyCompleteLinearOrderBot ι]
+  [TopologicalSpace ι] [OrderTopology ι]
   {𝓕 : Filtration ι mΩ} {X : ι → Ω → E} {p q : (ι → Ω → E) → Prop}
 
 lemma IsPreLocalizingSequence.isLocalizingSequence_biInf
@@ -225,6 +226,7 @@ section
 
 variable [SecondCountableTopology ι] [IsFiniteMeasure P]
 
+omit [ConditionallyCompleteLinearOrderBot ι] in
 private lemma isPreLocalizingSequence_of_isLocalizingSequence_aux'
     {τ : ℕ → Ω → WithTop ι} {σ : ℕ → ℕ → Ω → WithTop ι}
     (hτ : IsLocalizingSequence 𝓕 τ P) (hσ : ∀ n, IsLocalizingSequence 𝓕 (σ n) P) :
@@ -270,6 +272,7 @@ private lemma le_mkStrictMonoAux (x : ℕ → ℕ) : ∀ n, x n ≤ mkStrictMono
   | 0 => by simp [mkStrictMonoAux]
   | n + 1 => by grind [mkStrictMonoAux]
 
+omit [ConditionallyCompleteLinearOrderBot ι] in
 private lemma isPreLocalizingSequence_of_isLocalizingSequence_aux
     {τ : ℕ → Ω → WithTop ι} {σ : ℕ → ℕ → Ω → WithTop ι}
     (hτ : IsLocalizingSequence 𝓕 τ P) (hσ : ∀ n, IsLocalizingSequence 𝓕 (σ n) P) :
@@ -284,6 +287,7 @@ private lemma isPreLocalizingSequence_of_isLocalizingSequence_aux
   simp [setOf]
   grind
 
+omit [ConditionallyCompleteLinearOrderBot ι] in
 lemma IsLocalizingSequence.isPrelocalizingSequence_inf_extraction
     [NoMaxOrder ι] {τ : ℕ → Ω → WithTop ι} {σ : ℕ → ℕ → Ω → WithTop ι}
     (hτ : IsLocalizingSequence 𝓕 τ P) (hσ : ∀ n, IsLocalizingSequence 𝓕 (σ n) P) :

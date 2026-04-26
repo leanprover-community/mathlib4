@@ -54,28 +54,29 @@ instance [SupSet R] : SupSet (Tropical R) where sSup s := trop (sSup (untrop '' 
 
 instance [InfSet R] : InfSet (Tropical R) where sInf s := trop (sInf (untrop '' s))
 
-instance instConditionallyCompleteLatticeTropical [ConditionallyCompleteLattice R] :
+instance instConditionallyCompleteLatticeTropical
+    [PartialOrder R] [ConditionallyCompleteLattice R] :
     ConditionallyCompleteLattice (Tropical R) where
   isLUB_csSup _ hn hb :=
     .of_image untrop_le_iff <| isLUB_csSup (hn.image _) (untrop_monotone.map_bddAbove hb)
   isGLB_csInf _ hn hb :=
     .of_image untrop_le_iff <| isGLB_csInf (hn.image _) (untrop_monotone.map_bddBelow hb)
 
-instance [ConditionallyCompleteLinearOrder R] : ConditionallyCompleteLinearOrder (Tropical R) :=
-  { instConditionallyCompleteLatticeTropical, Tropical.instLinearOrderTropical with
-    csSup_of_not_bddAbove := by
-      intro s hs
-      have : Set.range untrop = (Set.univ : Set R) := Equiv.range_eq_univ tropEquiv.symm
-      simp only [sSup, Set.image_empty, trop_inj_iff]
-      apply csSup_of_not_bddAbove
-      contrapose hs
-      change BddAbove (tropOrderIso.symm '' s) at hs
-      exact tropOrderIso.symm.bddAbove_image.1 hs
-    csInf_of_not_bddBelow := by
-      intro s hs
-      have : Set.range untrop = (Set.univ : Set R) := Equiv.range_eq_univ tropEquiv.symm
-      simp only [sInf, Set.image_empty, trop_inj_iff]
-      apply csInf_of_not_bddBelow
-      contrapose hs
-      change BddBelow (tropOrderIso.symm '' s) at hs
-      exact tropOrderIso.symm.bddBelow_image.1 hs }
+instance [LinearOrder R] [ConditionallyCompleteLinearOrder R] :
+    ConditionallyCompleteLinearOrder (Tropical R) where
+  csSup_of_not_bddAbove := by
+    intro s hs
+    have : Set.range untrop = (Set.univ : Set R) := Equiv.range_eq_univ tropEquiv.symm
+    simp only [sSup, Set.image_empty, trop_inj_iff]
+    apply csSup_of_not_bddAbove
+    contrapose hs
+    change BddAbove (tropOrderIso.symm '' s) at hs
+    exact tropOrderIso.symm.bddAbove_image.1 hs
+  csInf_of_not_bddBelow := by
+    intro s hs
+    have : Set.range untrop = (Set.univ : Set R) := Equiv.range_eq_univ tropEquiv.symm
+    simp only [sInf, Set.image_empty, trop_inj_iff]
+    apply csInf_of_not_bddBelow
+    contrapose hs
+    change BddBelow (tropOrderIso.symm '' s) at hs
+    exact tropOrderIso.symm.bddBelow_image.1 hs

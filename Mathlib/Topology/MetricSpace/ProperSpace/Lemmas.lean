@@ -52,7 +52,7 @@ theorem exists_lt_subset_ball (hs : IsClosed s) (h : s ⊆ ball x r) : ∃ r' < 
     exact (exists_lt r).imp fun r' hr' => ⟨hr', empty_subset _⟩
   · exact (exists_pos_lt_subset_ball hr hs h).imp fun r' hr' => ⟨hr'.1.2, hr'.2⟩
 
-theorem Metric.exists_isLocalMin_mem_ball [TopologicalSpace β]
+theorem Metric.exists_isLocalMin_mem_ball [TopologicalSpace β] [LinearOrder β]
     [ConditionallyCompleteLinearOrder β] [OrderTopology β] {f : α → β} {a z : α} {r : ℝ}
     (hf : ContinuousOn f (closedBall a r)) (hz : z ∈ closedBall a r)
     (hf1 : ∀ z' ∈ sphere a r, f z < f z') : ∃ z ∈ ball a r, IsLocalMin f z := by

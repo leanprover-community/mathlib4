@@ -172,8 +172,8 @@ end LinearOrder
 
 section ConditionallyCompleteLinearOrder
 
-variable [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α]
-  [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderClosedTopology β]
+variable [LinearOrder α] [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α]
+  [LinearOrder β] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderClosedTopology β]
 
 /-- A monotone function continuous at the supremum of a nonempty set sends this supremum to
 the supremum of the image of this set. -/
@@ -379,7 +379,7 @@ end CompleteLinearOrder
 
 section ConditionallyCompleteLinearOrder
 
-variable [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α]
+variable [LinearOrder α] [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α]
 
 theorem csSup_mem_closure {s : Set α} (hs : s.Nonempty) (B : BddAbove s) : sSup s ∈ closure s :=
   (isLUB_csSup hs B).mem_closure hs
@@ -403,8 +403,9 @@ theorem IsClosed.isGreatest_csSup {s : Set α} (hc : IsClosed s) (hs : s.Nonempt
     IsGreatest s (sSup s) :=
   IsClosed.isLeast_csInf (α := αᵒᵈ) hc hs B
 
-lemma MonotoneOn.tendsto_nhdsWithin_Ioo_left {α β : Type*} [LinearOrder α] [TopologicalSpace α]
-    [OrderTopology α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
+lemma MonotoneOn.tendsto_nhdsWithin_Ioo_left {α β : Type*}
+    [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
+    [LinearOrder β] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
     {f : α → β} {x y : α} (h_nonempty : (Ioo y x).Nonempty) (Mf : MonotoneOn f (Ioo y x))
     (h_bdd : BddAbove (f '' Ioo y x)) :
     Tendsto f (𝓝[<] x) (𝓝 (sSup (f '' Ioo y x))) := by
@@ -418,8 +419,9 @@ lemma MonotoneOn.tendsto_nhdsWithin_Ioo_left {α β : Type*} [LinearOrder α] [T
     filter_upwards [Ioo_mem_nhdsLT (hy.trans hx)] with w hw
     exact (le_csSup h_bdd (mem_image_of_mem _ hw)).trans_lt hm
 
-lemma MonotoneOn.tendsto_nhdsWithin_Ioo_right {α β : Type*} [LinearOrder α] [TopologicalSpace α]
-    [OrderTopology α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
+lemma MonotoneOn.tendsto_nhdsWithin_Ioo_right {α β : Type*}
+    [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
+    [LinearOrder β] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
     {f : α → β} {x y : α} (h_nonempty : (Ioo x y).Nonempty) (Mf : MonotoneOn f (Ioo x y))
     (h_bdd : BddBelow (f '' Ioo x y)) :
     Tendsto f (𝓝[>] x) (𝓝 (sInf (f '' Ioo x y))) := by
@@ -434,8 +436,8 @@ lemma MonotoneOn.tendsto_nhdsWithin_Ioo_right {α β : Type*} [LinearOrder α] [
     exact (Mf ⟨hw.1, hw.2.trans zy⟩ ⟨xz, zy⟩ hw.2.le).trans_lt zm
 
 lemma MonotoneOn.tendsto_nhdsLT {α β : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
-    [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β] {f : α → β} {x : α}
-    (Mf : MonotoneOn f (Iio x)) (h_bdd : BddAbove (f '' Iio x)) :
+    [LinearOrder β] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
+    {f : α → β} {x : α} (Mf : MonotoneOn f (Iio x)) (h_bdd : BddAbove (f '' Iio x)) :
     Tendsto f (𝓝[<] x) (𝓝 (sSup (f '' Iio x))) := by
   rcases eq_empty_or_nonempty (Iio x) with (h | h); · simp [h]
   refine tendsto_order.2 ⟨fun l hl => ?_, fun m hm => ?_⟩
@@ -447,59 +449,65 @@ lemma MonotoneOn.tendsto_nhdsLT {α β : Type*} [LinearOrder α] [TopologicalSpa
     exact le_csSup h_bdd (mem_image_of_mem _ hy)
 
 lemma MonotoneOn.tendsto_nhdsGT {α β : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
-    [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β] {f : α → β} {x : α}
-    (Mf : MonotoneOn f (Ioi x)) (h_bdd : BddBelow (f '' Ioi x)) :
+    [LinearOrder β] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
+    {f : α → β} {x : α} (Mf : MonotoneOn f (Ioi x)) (h_bdd : BddBelow (f '' Ioi x)) :
     Tendsto f (𝓝[>] x) (𝓝 (sInf (f '' Ioi x))) :=
   MonotoneOn.tendsto_nhdsLT (α := αᵒᵈ) (β := βᵒᵈ) Mf.dual h_bdd
 
 /-- A monotone map has a limit to the left of any point `x`, equal to `sSup (f '' (Iio x))`. -/
 theorem Monotone.tendsto_nhdsLT {α β : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
-    [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β] {f : α → β}
-    (Mf : Monotone f) (x : α) : Tendsto f (𝓝[<] x) (𝓝 (sSup (f '' Iio x))) :=
+    [LinearOrder β] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
+    {f : α → β} (Mf : Monotone f) (x : α) :
+    Tendsto f (𝓝[<] x) (𝓝 (sSup (f '' Iio x))) :=
   MonotoneOn.tendsto_nhdsLT (Mf.monotoneOn _) (Mf.map_bddAbove bddAbove_Iio)
 
 /-- A monotone map has a limit to the right of any point `x`, equal to `sInf (f '' (Ioi x))`. -/
 theorem Monotone.tendsto_nhdsGT {α β : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
-    [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β] {f : α → β}
-    (Mf : Monotone f) (x : α) : Tendsto f (𝓝[>] x) (𝓝 (sInf (f '' Ioi x))) :=
+    [LinearOrder β] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
+    {f : α → β} (Mf : Monotone f) (x : α) :
+    Tendsto f (𝓝[>] x) (𝓝 (sInf (f '' Ioi x))) :=
   Monotone.tendsto_nhdsLT (α := αᵒᵈ) (β := βᵒᵈ) Mf.dual x
 
-lemma AntitoneOn.tendsto_nhdsWithin_Ioo_left {α β : Type*} [LinearOrder α] [TopologicalSpace α]
-    [OrderTopology α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
+lemma AntitoneOn.tendsto_nhdsWithin_Ioo_left {α β : Type*}
+    [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
+    [LinearOrder β] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
     {f : α → β} {x y : α} (h_nonempty : (Ioo y x).Nonempty) (Af : AntitoneOn f (Ioo y x))
     (h_bdd : BddBelow (f '' Ioo y x)) :
     Tendsto f (𝓝[<] x) (𝓝 (sInf (f '' Ioo y x))) :=
   MonotoneOn.tendsto_nhdsWithin_Ioo_left h_nonempty Af.dual_right h_bdd
 
-lemma AntitoneOn.tendsto_nhdsWithin_Ioo_right {α β : Type*} [LinearOrder α] [TopologicalSpace α]
-    [OrderTopology α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
+lemma AntitoneOn.tendsto_nhdsWithin_Ioo_right {α β : Type*}
+    [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
+    [LinearOrder β] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
     {f : α → β} {x y : α} (h_nonempty : (Ioo x y).Nonempty) (Af : AntitoneOn f (Ioo x y))
     (h_bdd : BddAbove (f '' Ioo x y)) :
     Tendsto f (𝓝[>] x) (𝓝 (sSup (f '' Ioo x y))) :=
   MonotoneOn.tendsto_nhdsWithin_Ioo_right h_nonempty Af.dual_right h_bdd
 
 lemma AntitoneOn.tendsto_nhdsLT {α β : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
-    [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β] {f : α → β} {x : α}
-    (Af : AntitoneOn f (Iio x)) (h_bdd : BddBelow (f '' Iio x)) :
+    [LinearOrder β] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
+    {f : α → β} {x : α} (Af : AntitoneOn f (Iio x)) (h_bdd : BddBelow (f '' Iio x)) :
     Tendsto f (𝓝[<] x) (𝓝 (sInf (f '' Iio x))) :=
   MonotoneOn.tendsto_nhdsLT Af.dual_right h_bdd
 
 lemma AntitoneOn.tendsto_nhdsGT {α β : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
-    [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β] {f : α → β} {x : α}
-    (Af : AntitoneOn f (Ioi x)) (h_bdd : BddAbove (f '' Ioi x)) :
+    [LinearOrder β] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
+    {f : α → β} {x : α} (Af : AntitoneOn f (Ioi x)) (h_bdd : BddAbove (f '' Ioi x)) :
     Tendsto f (𝓝[>] x) (𝓝 (sSup (f '' Ioi x))) :=
   MonotoneOn.tendsto_nhdsGT Af.dual_right h_bdd
 
 /-- An antitone map has a limit to the left of any point `x`, equal to `sInf (f '' (Iio x))`. -/
 theorem Antitone.tendsto_nhdsLT {α β : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
-    [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β] {f : α → β}
-    (Af : Antitone f) (x : α) : Tendsto f (𝓝[<] x) (𝓝 (sInf (f '' Iio x))) :=
+    [LinearOrder β] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
+    {f : α → β} (Af : Antitone f) (x : α) :
+    Tendsto f (𝓝[<] x) (𝓝 (sInf (f '' Iio x))) :=
   Monotone.tendsto_nhdsLT Af.dual_right x
 
 /-- An antitone map has a limit to the right of any point `x`, equal to `sSup (f '' (Ioi x))`. -/
 theorem Antitone.tendsto_nhdsGT {α β : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
-    [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β] {f : α → β}
-    (Af : Antitone f) (x : α) : Tendsto f (𝓝[>] x) (𝓝 (sSup (f '' Ioi x))) :=
+    [LinearOrder β] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
+    {f : α → β} (Af : Antitone f) (x : α) :
+    Tendsto f (𝓝[>] x) (𝓝 (sSup (f '' Ioi x))) :=
   Monotone.tendsto_nhdsGT Af.dual_right x
 
 end ConditionallyCompleteLinearOrder

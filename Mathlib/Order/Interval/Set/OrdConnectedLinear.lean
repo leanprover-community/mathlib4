@@ -32,7 +32,7 @@ public section
 
 variable {α : Type*} {I : Set α}
 
-lemma Set.Nonempty.ordConnected_iff_of_bdd
+lemma Set.Nonempty.ordConnected_iff_of_bdd [LinearOrder α]
     [ConditionallyCompleteLinearOrder α] [LocallyFiniteOrder α]
     (h₀ : I.Nonempty) (h₁ : BddBelow I) (h₂ : BddAbove I) :
     I.OrdConnected ↔ I = Icc (sInf I) (sSup I) :=
@@ -42,7 +42,7 @@ lemma Set.Nonempty.ordConnected_iff_of_bdd
 
 /-- A version of `Set.Nonempty.ordConnected_iff_of_bdd` for complete linear orders, such as `Fin n`,
 in which the explicit boundedness hypotheses are not necessary. -/
-lemma Set.Nonempty.ordConnected_iff_of_bdd' [ConditionallyCompleteLinearOrder α]
+lemma Set.Nonempty.ordConnected_iff_of_bdd' [LinearOrder α] [ConditionallyCompleteLinearOrder α]
     [OrderTop α] [OrderBot α] [LocallyFiniteOrder α]
     (h₀ : I.Nonempty) :
     I.OrdConnected ↔ I = Icc (sInf I) (sSup I) :=

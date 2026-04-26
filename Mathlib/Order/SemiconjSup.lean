@@ -50,7 +50,8 @@ def IsOrderRightAdjoint [Preorder α] [Preorder β] (f : α → β) (g : β → 
 theorem isOrderRightAdjoint_sSup [CompleteSemilatticeSup α] [Preorder β] (f : α → β) :
     IsOrderRightAdjoint f fun y => sSup { x | f x ≤ y } := fun _ => isLUB_sSup _
 
-theorem isOrderRightAdjoint_csSup [ConditionallyCompleteLattice α] [Preorder β] (f : α → β)
+theorem isOrderRightAdjoint_csSup [PartialOrder α] [ConditionallyCompleteLattice α] [Preorder β]
+    (f : α → β)
     (hne : ∀ y, ∃ x, f x ≤ y) (hbdd : ∀ y, BddAbove { x | f x ≤ y }) :
     IsOrderRightAdjoint f fun y => sSup { x | f x ≤ y } := fun y => isLUB_csSup (hne y) (hbdd y)
 
@@ -116,7 +117,8 @@ Then the map `x ↦ sSup s(x)` semiconjugates each `f₁ g'` to `f₂ g'`.
 
 This is a version of Proposition 5.4 from [Étienne Ghys, Groupes d'homéomorphismes du cercle et
 cohomologie bornée][ghys87:groupes]. -/
-theorem csSup_div_semiconj [ConditionallyCompleteLattice α] [Group G] (f₁ f₂ : G →* α ≃o α)
+theorem csSup_div_semiconj [PartialOrder α] [ConditionallyCompleteLattice α] [Group G]
+    (f₁ f₂ : G →* α ≃o α)
     (hbdd : ∀ x, BddAbove (range fun g => (f₁ g)⁻¹ (f₂ g x))) (g : G) :
     Function.Semiconj (fun x => ⨆ g' : G, (f₁ g')⁻¹ (f₂ g' x)) (f₂ g) (f₁ g) :=
   semiconj_of_isLUB f₁ f₂ (fun x => isLUB_csSup (range_nonempty _) (hbdd x)) _

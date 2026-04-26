@@ -32,7 +32,7 @@ variable [CompleteLinearOrder α] in
 #guard_msgs in
 #check max a b
 
-variable [ConditionallyCompleteLinearOrder α] in
+variable [LinearOrder α] [ConditionallyCompleteLinearOrder α] in
 /-- info: max a b : α -/
 #guard_msgs in
 #check max a b
@@ -56,11 +56,11 @@ info: fun α [CompleteLinearOrder α] a b => max a b : (α : Type u) → [Comple
 #check fun (α : Type u) [CompleteLinearOrder α] (a b : α) => max a b
 
 /--
-info: fun α [ConditionallyCompleteLinearOrder α] a b =>
-  max a b : (α : Type u) → [ConditionallyCompleteLinearOrder α] → α → α → α
+info: fun α [LinearOrder α] [ConditionallyCompleteLinearOrder α] a b =>
+  max a b : (α : Type u) → [inst : LinearOrder α] → [ConditionallyCompleteLinearOrder α] → α → α → α
 -/
 #guard_msgs in
-#check fun (α : Type u) [ConditionallyCompleteLinearOrder α] (a b : α) => max a b
+#check fun (α : Type u) [LinearOrder α] [ConditionallyCompleteLinearOrder α] (a b : α) => max a b
 
 -- In this section we check that the delaborator respects the options `pp.explicit` and `pp.notation`.
 section

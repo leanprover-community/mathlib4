@@ -410,7 +410,7 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
       have B : p.c (p.index (G b)) ∉ p.iUnionUpTo (G a) := by
         intro H; exact (fGn b hb).1 (p.monotone_iUnionUpTo G_lt.le H)
       let b' : { t // p.c t ∉ p.iUnionUpTo (G a) } := ⟨p.index (G b), B⟩
-      apply @le_ciSup _ _ _ (fun t : { t // p.c t ∉ p.iUnionUpTo (G a) } => p.r t) _ b'
+      apply @le_ciSup _ _ _ _ (fun t : { t // p.c t ∉ p.iUnionUpTo (G a) } => p.r t) _ b'
       refine ⟨p.r_bound, fun t ht => ?_⟩
       simp only [exists_prop, mem_range, Subtype.exists] at ht
       rcases ht with ⟨u, hu⟩

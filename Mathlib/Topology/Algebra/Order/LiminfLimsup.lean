@@ -35,7 +35,7 @@ variable {ι α β R S : Type*} {X : ι → Type*}
 
 section LiminfLimsupAdd
 
-variable [AddCommGroup α] [ConditionallyCompleteLinearOrder α] [DenselyOrdered α]
+variable [AddCommGroup α] [LinearOrder α] [ConditionallyCompleteLinearOrder α] [DenselyOrdered α]
   [AddLeftMono α]
   {f : Filter ι} [f.NeBot] {u v : ι → α}
 
@@ -157,7 +157,7 @@ lemma liminf_mul_le [f.NeBot] (h₁ : 0 ≤ᶠ[f] u) (h₂ : IsBoundedUnder (fun
 
 end LiminfLimsupMul
 section LiminfLimsupAddSub
-variable [ConditionallyCompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
+variable [LinearOrder R] [ConditionallyCompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
 
 /-- `liminf (c + xᵢ) = c + liminf xᵢ`. -/
 lemma limsup_const_add (F : Filter ι) [NeBot F] [Add R] [ContinuousAdd R]

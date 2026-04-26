@@ -121,14 +121,14 @@ lemma HasFiniteMulSupport.inf [SemilatticeInf M] {f g : α → M} (hf : HasFinit
   (hf.union hg).subset <| mulSupport_inf ..
 
 @[to_additive (attr := fun_prop)]
-lemma HasFiniteMulSupport.iSup [ConditionallyCompleteLattice M] {ι : Sort*} [Nonempty ι]
-    [Finite ι] {f : ι → α → M} (hf : ∀ i, HasFiniteMulSupport (f i)) :
+lemma HasFiniteMulSupport.iSup [PartialOrder M] [ConditionallyCompleteLattice M]
+    {ι : Sort*} [Nonempty ι] [Finite ι] {f : ι → α → M} (hf : ∀ i, HasFiniteMulSupport (f i)) :
     HasFiniteMulSupport fun a ↦ ⨆ i, f i a :=
   (Set.finite_iUnion hf).subset <| mulSupport_iSup f
 
 @[to_additive (attr := fun_prop)]
-lemma HasFiniteMulSupport.iInf [ConditionallyCompleteLattice M] {ι : Sort*} [Nonempty ι]
-    [Finite ι] {f : ι → α → M} (hf : ∀ i, HasFiniteMulSupport (f i)) :
+lemma HasFiniteMulSupport.iInf [PartialOrder M] [ConditionallyCompleteLattice M]
+    {ι : Sort*} [Nonempty ι] [Finite ι] {f : ι → α → M} (hf : ∀ i, HasFiniteMulSupport (f i)) :
     HasFiniteMulSupport fun a ↦ ⨅ i, f i a :=
   (Set.finite_iUnion hf).subset <| mulSupport_iInf f
 

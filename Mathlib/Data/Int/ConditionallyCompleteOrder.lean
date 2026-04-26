@@ -24,8 +24,6 @@ noncomputable section
 
 open scoped Classical in
 instance instConditionallyCompleteLinearOrder : ConditionallyCompleteLinearOrder ℤ where
-  __ := instLinearOrder
-  __ := LinearOrder.toLattice
   sSup s :=
     if h : s.Nonempty ∧ BddAbove s then
       greatestOfBdd (Classical.choose h.2) (Classical.choose_spec h.2) h.1
@@ -90,7 +88,3 @@ theorem csInf_mem {s : Set ℤ} (h1 : s.Nonempty) (h2 : BddBelow s) : sInf s ∈
 end Int
 
 end
-
---  this example tests that the `Lattice ℤ` instance is computable;
--- i.e., that it is not found via the noncomputable instance in this file.
-example : Lattice ℤ := inferInstance

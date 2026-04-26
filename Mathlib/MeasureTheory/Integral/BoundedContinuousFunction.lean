@@ -175,7 +175,7 @@ lemma tendsto_integral_of_forall_integral_le_liminf_integral {ι : Type*} {L : F
   have obs := BoundedContinuousFunction.isBounded_range_integral μs f
   have bdd_above := BddAbove.isBoundedUnder L.univ_mem (by simpa using obs.bddAbove)
   have bdd_below := BddBelow.isBoundedUnder L.univ_mem (by simpa using obs.bddBelow)
-  apply @tendsto_of_le_liminf_of_limsup_le ℝ ι _ _ _ L (fun i ↦ ∫ x, f x ∂(μs i)) (∫ x, f x ∂μ)
+  apply @tendsto_of_le_liminf_of_limsup_le ℝ ι _ _ _ _ L (fun i ↦ ∫ x, f x ∂(μs i)) (∫ x, f x ∂μ)
   · have key := h _ (f.add_norm_nonneg)
     simp_rw [f.integral_add_const ‖f‖] at key
     simp only [probReal_univ, smul_eq_mul, one_mul] at key

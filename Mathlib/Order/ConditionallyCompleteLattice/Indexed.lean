@@ -86,7 +86,9 @@ end
 
 section ConditionallyCompleteLattice
 
-variable [ConditionallyCompleteLattice α] {a b : α}
+section PartialOrder
+
+variable [PartialOrder α] [ConditionallyCompleteLattice α] {a b : α}
 
 theorem isLUB_ciSup [Nonempty ι] {f : ι → α} (H : BddAbove (range f)) :
     IsLUB (range f) (⨆ i, f i) :=
@@ -147,7 +149,9 @@ theorem le_ciSup_of_le {f : ι → α} (H : BddAbove (range f)) (c : ι) (h : a 
   le_trans h (le_ciSup H c)
 
 /-- If the set of all `f i j` is bounded above, then so is the set of the supremums of every row -/
-theorem BddAbove.range_iSup_of_iUnion_range {κ : ι → Sort*} {f : ∀ i, κ i → α}
+theorem BddAbove.range_iSup_of_iUnion_range
+    {α : Type*} [SemilatticeSup α] [ConditionallyCompleteLattice α]
+    {κ : ι → Sort*} {f : ∀ i, κ i → α}
     (H : BddAbove <| ⋃ i, range (f i)) : BddAbove <| range fun i ↦ ⨆ j, f i j := by
   have ⟨a, h⟩ := H
   refine ⟨a ⊔ (sSup ∅), fun x ⟨i, hx⟩ ↦ hx ▸ ?_⟩
@@ -155,7 +159,8 @@ theorem BddAbove.range_iSup_of_iUnion_range {κ : ι → Sort*} {f : ∀ i, κ i
   · exact iSup_of_empty' (f i) ▸ le_sup_right
   exact ciSup_le fun j ↦ le_sup_of_le_left <| h ⟨_, ⟨i, rfl⟩, ⟨j, rfl⟩⟩
 
-theorem le_ciSup₂ {κ : ι → Sort*} {f : ∀ i, κ i → α} (H : BddAbove <| ⋃ i, range (f i)) (i : ι)
+theorem le_ciSup₂ {α : Type*} [SemilatticeSup α] [ConditionallyCompleteLattice α]
+    {κ : ι → Sort*} {f : ∀ i, κ i → α} (H : BddAbove <| ⋃ i, range (f i)) (i : ι)
     (j : κ i) : f i j ≤ ⨆ (i) (j), f i j :=
   le_ciSup_of_le H.range_iSup_of_iUnion_range i <|
     le_ciSup (H.mono <| subset_iUnion (range <| f ·) i) j
@@ -189,7 +194,9 @@ theorem ciInf_le_of_le {f : ι → α} (H : BddBelow (range f)) (c : ι) (h : f 
   le_ciSup_of_le (α := αᵒᵈ) H c h
 
 /-- If the set of all `f i j` is bounded below, then so is the set of the infimums of every row -/
-theorem BddBelow.range_iInf_of_iUnion_range {κ : ι → Sort*} {f : ∀ i, κ i → α}
+theorem BddBelow.range_iInf_of_iUnion_range
+    {α : Type*} [SemilatticeInf α] [ConditionallyCompleteLattice α]
+    {κ : ι → Sort*} {f : ∀ i, κ i → α}
     (H : BddBelow <| ⋃ i, range (f i)) : BddBelow <| range fun i ↦ ⨅ j, f i j := by
   have ⟨a, h⟩ := H
   refine ⟨a ⊓ (sInf ∅), fun x ⟨i, hx⟩ ↦ hx ▸ ?_⟩
@@ -197,7 +204,8 @@ theorem BddBelow.range_iInf_of_iUnion_range {κ : ι → Sort*} {f : ∀ i, κ i
   · exact iInf_of_isEmpty (f i) ▸ inf_le_right
   exact le_ciInf fun j ↦ inf_le_of_left_le <| h ⟨_, ⟨i, rfl⟩, ⟨j, rfl⟩⟩
 
-theorem ciInf₂_le {κ : ι → Sort*} {f : ∀ i, κ i → α} (H : BddBelow <| ⋃ i, range (f i)) (i : ι)
+theorem ciInf₂_le {α : Type*} [SemilatticeInf α] [ConditionallyCompleteLattice α]
+    {κ : ι → Sort*} {f : ∀ i, κ i → α} (H : BddBelow <| ⋃ i, range (f i)) (i : ι)
     (j : κ i) : ⨅ (i) (j), f i j ≤ f i j :=
   ciInf_le_of_le H.range_iInf_of_iUnion_range i <|
     ciInf_le (H.mono <| subset_iUnion (range <| f ·) i) j
@@ -259,7 +267,14 @@ lemma Set.Ici_ciSup [Nonempty ι] {f : ι → α} (hf : BddAbove (range f)) :
     Ici (⨆ i, f i) = ⋂ i, Ici (f i) :=
   Iic_ciInf (α := αᵒᵈ) hf
 
-theorem ciSup_subtype {p : ι → Prop} {f : Subtype p → α}
+end PartialOrder
+
+section Lattice
+
+variable {α : Type*} [Lattice α] [ConditionallyCompleteLattice α]
+
+theorem ciSup_subtype
+    {p : ι → Prop} {f : Subtype p → α}
     (hf : BddAbove (Set.range f)) (hf' : sSup ∅ ≤ iSup f) :
     iSup f = ⨆ (i) (h : p i), f ⟨i, h⟩ := by
   cases isEmpty_or_nonempty (Subtype p)
@@ -360,11 +375,13 @@ lemma ciInf_image {ι ι' : Type*} {s : Set ι} {f : ι → ι'} {g : ι' → α
     ⨅ i ∈ (f '' s), g i = ⨅ x ∈ s, g (f x) :=
   ciSup_image (α := αᵒᵈ) hf hg'
 
+end Lattice
+
 end ConditionallyCompleteLattice
 
 section ConditionallyCompleteLinearOrder
 
-variable [ConditionallyCompleteLinearOrder α] {a b : α}
+variable [LinearOrder α] [ConditionallyCompleteLinearOrder α] {a b : α}
 
 /-- Indexed version of `exists_lt_of_lt_csSup`.
 When `b < iSup f`, there is an element `i` such that `b < f i`.
@@ -451,7 +468,7 @@ In this case we have `Sup ∅ = ⊥`, so we can drop some `Nonempty`/`Set.Nonemp
 
 section ConditionallyCompleteLinearOrderBot
 
-variable [ConditionallyCompleteLinearOrderBot α] {f : ι → α} {a : α}
+variable [LinearOrder α] [OrderBot α] [ConditionallyCompleteLinearOrderBot α] {f : ι → α} {a : α}
 
 @[simp]
 theorem ciSup_of_empty [IsEmpty ι] (f : ι → α) : ⨆ i, f i = ⊥ := by
@@ -505,7 +522,8 @@ end ConditionallyCompleteLinearOrderBot
 
 namespace GaloisConnection
 
-variable [ConditionallyCompleteLattice α] [ConditionallyCompleteLattice β] [Nonempty ι] {l : α → β}
+variable [PartialOrder α] [ConditionallyCompleteLattice α]
+  [PartialOrder β] [ConditionallyCompleteLattice β] [Nonempty ι] {l : α → β}
   {u : β → α}
 
 theorem l_csSup (gc : GaloisConnection l u) {s : Set α} (hne : s.Nonempty) (hbdd : BddAbove s) :
@@ -545,7 +563,8 @@ end GaloisConnection
 namespace OrderIso
 
 section ConditionallyCompleteLattice
-variable [ConditionallyCompleteLattice α] [ConditionallyCompleteLattice β] [Nonempty ι]
+variable [PartialOrder α] [ConditionallyCompleteLattice α]
+  [PartialOrder β] [ConditionallyCompleteLattice β] [Nonempty ι]
 
 theorem map_csSup (e : α ≃o β) {s : Set α} (hne : s.Nonempty) (hbdd : BddAbove s) :
     e (sSup s) = ⨆ x : s, e x :=
@@ -582,7 +601,8 @@ theorem map_ciInf_set (e : α ≃o β) {s : Set γ} {f : γ → α} (hf : BddBel
 end ConditionallyCompleteLattice
 
 section ConditionallyCompleteLinearOrderBot
-variable [ConditionallyCompleteLinearOrderBot α] [ConditionallyCompleteLinearOrderBot β]
+variable [LinearOrder α] [OrderBot α] [ConditionallyCompleteLinearOrderBot α]
+  [LinearOrder β] [OrderBot β] [ConditionallyCompleteLinearOrderBot β]
 
 @[simp]
 lemma map_ciSup' (e : α ≃o β) (f : ι → α) : e (⨆ i, f i) = ⨆ i, e (f i) := by
@@ -600,7 +620,7 @@ end OrderIso
 section WithTopBot
 
 namespace WithTop
-variable [ConditionallyCompleteLinearOrderBot α] {f : ι → α}
+variable [LinearOrder α] [OrderBot α] [ConditionallyCompleteLinearOrderBot α] {f : ι → α}
 
 lemma iSup_coe_eq_top : ⨆ x, (f x : WithTop α) = ⊤ ↔ ¬BddAbove (range f) := by
   rw [iSup_eq_top, not_bddAbove_iff]
