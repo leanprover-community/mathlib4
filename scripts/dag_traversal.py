@@ -852,13 +852,13 @@ def _cli_main():
         "--dir",
         type=Path,
         default=Path("."),
-        help="Project root directory (default: '.')",
+        help="Project root directory (default: cwd)",
     )
     parser.add_argument(
         "--directories",
         nargs="+",
         default=None,
-        help="Directories to scan (default: '.')",
+        help="Directories to scan (default: '.', relative to project root specified by --dir)",
     )
 
     args = parser.parse_args()
