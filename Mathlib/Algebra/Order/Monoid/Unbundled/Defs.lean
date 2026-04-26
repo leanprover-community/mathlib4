@@ -162,7 +162,7 @@ attribute [to_additive existing] MulLeftMono MulRightMono
 namely `b₁ < b₂ → a * b₁ < a * b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsStrictOrderedMonoid`. -/
+`IsOrderedMonoid`. -/
 abbrev MulLeftStrictMono [Mul M] [LT M] : Prop :=
   CovariantClass M M (· * ·) (· < ·)
 
@@ -170,7 +170,7 @@ abbrev MulLeftStrictMono [Mul M] [LT M] : Prop :=
 namely `a₁ < a₂ → a₁ * b < a₂ * b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsStrictOrderedMonoid`. -/
+`IsOrderedMonoid`. -/
 abbrev MulRightStrictMono [Mul M] [LT M] : Prop :=
   CovariantClass M M (swap (· * ·)) (· < ·)
 
@@ -178,7 +178,7 @@ abbrev MulRightStrictMono [Mul M] [LT M] : Prop :=
 namely `b₁ < b₂ → a + b₁ < a + b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsStrictOrderedAddMonoid`. -/
+`IsOrderedAddMonoid`. -/
 abbrev AddLeftStrictMono [Add M] [LT M] : Prop :=
   CovariantClass M M (· + ·) (· < ·)
 
@@ -186,7 +186,7 @@ abbrev AddLeftStrictMono [Add M] [LT M] : Prop :=
 namely `a₁ < a₂ → a₁ + b < a₂ + b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsStrictOrderedAddMonoid`. -/
+`IsOrderedAddMonoid`. -/
 abbrev AddRightStrictMono [Add M] [LT M] : Prop :=
   CovariantClass M M (swap (· + ·)) (· < ·)
 
@@ -196,7 +196,7 @@ attribute [to_additive existing] MulLeftStrictMono MulRightStrictMono
 namely `a * b₁ < a * b₂ → b₁ < b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsStrictOrderedMonoid`. -/
+`IsOrderedMonoid`. -/
 abbrev MulLeftReflectLT [Mul M] [LT M] : Prop :=
   ContravariantClass M M (· * ·) (· < ·)
 
@@ -204,7 +204,7 @@ abbrev MulLeftReflectLT [Mul M] [LT M] : Prop :=
 namely `a₁ * b < a₂ * b → a₁ < a₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsStrictOrderedMonoid`. -/
+`IsOrderedMonoid`. -/
 abbrev MulRightReflectLT [Mul M] [LT M] : Prop :=
   ContravariantClass M M (swap (· * ·)) (· < ·)
 
@@ -212,7 +212,7 @@ abbrev MulRightReflectLT [Mul M] [LT M] : Prop :=
 namely `a + b₁ < a + b₂ → b₁ < b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsStrictOrderedAddMonoid`. -/
+`IsOrderedAddMonoid`. -/
 abbrev AddLeftReflectLT [Add M] [LT M] : Prop :=
   ContravariantClass M M (· + ·) (· < ·)
 
@@ -220,7 +220,7 @@ abbrev AddLeftReflectLT [Add M] [LT M] : Prop :=
 namely `a₁ * b < a₂ * b → a₁ < a₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`IsStrictOrderedAddMonoid`. -/
+`IsOrderedAddMonoid`. -/
 abbrev AddRightReflectLT [Add M] [LT M] : Prop :=
   ContravariantClass M M (swap (· + ·)) (· < ·)
 
