@@ -24,19 +24,20 @@ namespace Module
 theorem injective_object_of_injective_module [inj : Injective R M] :
     CategoryTheory.Injective (ModuleCat.of R M) where
   factors g f m :=
-    have ⟨l, h⟩ := inj.out f.hom ((ModuleCat.mono_iff_injective f).mp m) g.hom
-    ⟨ModuleCat.ofHom l, by ext x; simpa using h x⟩
+    have ⟨l, h⟩ := inj.extension_property R M _ _ f.hom ((ModuleCat.mono_iff_injective f).mp m) g.hom
+    ⟨ModuleCat.ofHom l, by ext x; simpa using DFunLike.congr_fun h x⟩
 
-theorem injective_module_of_injective_object
+theorem injective_module_of_injective_object [Small.{v} R]
     [inj : CategoryTheory.Injective <| ModuleCat.of R M] :
-    Module.Injective R M where
-  out X Y _ _ _ _ f hf g := by
-    have : CategoryTheory.Mono (ModuleCat.ofHom f) := (ModuleCat.mono_iff_injective _).mpr hf
-    obtain ⟨l, h⟩ := inj.factors (ModuleCat.ofHom g) (ModuleCat.ofHom f)
-    obtain rfl := ModuleCat.hom_ext_iff.mp h
-    exact ⟨l.hom, fun _ => rfl⟩
+    Module.Injective R M := by
+  refine Injective.of_extension_property ?_
+  intro X Y _ _ _ _ f hf g
+  have : CategoryTheory.Mono (ModuleCat.ofHom f) := (ModuleCat.mono_iff_injective _).mpr hf
+  obtain ⟨l, h⟩ := inj.factors (ModuleCat.ofHom g) (ModuleCat.ofHom f)
+  obtain rfl := ModuleCat.hom_ext_iff.mp h
+  exact ⟨l.hom, rfl⟩
 
-theorem injective_iff_injective_object :
+theorem injective_iff_injective_object [Small.{v} R] :
     Module.Injective R M ↔
     CategoryTheory.Injective (ModuleCat.of R M) :=
   ⟨fun _ => injective_object_of_injective_module R M,

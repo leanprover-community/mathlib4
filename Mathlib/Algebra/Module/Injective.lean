@@ -452,8 +452,25 @@ lemma Module.Injective.extension_property
     (g : P →ₗ[R] M) : ∃ h : P' →ₗ[R] M, h ∘ₗ f = g :=
   (Module.Baer.of_injective inj).extension_property f hf g
 
-end lifting_property
+/-- A variant that we only consider modules over `Type v`.
+  Should be only used when we consider `ModuleCat`s. -/
+lemma Module.Injective.of_extension_property {R : Type u} [Ring R] {M : Type v} [AddCommGroup M]
+    [Module R M] [Small.{v} R]
+    -- If for all injection of `R`-modules `X →ₗ Y`, all maps `X →ₗ M` extend to `Y →ₗ M`,
+    (h : ∀ {X Y : Type v} [AddCommGroup X] [AddCommGroup Y] [Module R X] [Module R Y]
+      (f : X →ₗ[R] Y) (_ : Function.Injective f) (g : X →ₗ[R] M),
+      ∃ h : Y →ₗ[R] M, h ∘ₗ f = g) :
+    -- then `P` is projective.
+    Injective R M := by
+  refine Module.Baer.injective fun I g ↦ ?_
+  let eI := Shrink.linearEquiv R I
+  let eR := Shrink.linearEquiv R R
+  obtain ⟨g', hg'⟩ := h (eR.symm.toLinearMap ∘ₗ I.subtype ∘ₗ eI.toLinearMap)
+    (eR.symm.injective.comp <| Subtype.val_injective.comp eI.injective) (g ∘ₗ eI.toLinearMap)
+  exact ⟨g' ∘ₗ eR.symm.toLinearMap, fun x mx ↦ by
+    simpa [eI, eR] using DFunLike.congr_fun hg' (equivShrink I ⟨x, mx⟩)⟩
 
+end lifting_property
 
 universe w in
 instance Module.Injective.pi
