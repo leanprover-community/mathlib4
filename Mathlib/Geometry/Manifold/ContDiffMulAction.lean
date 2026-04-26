@@ -16,7 +16,7 @@ the map `(c, x) ↦ c • x` is `n` times continuously differentiable on `M × X
 
 ## Main definitions
 
-* `ContDiffSMul 𝕜 M X n` : typeclass saysing that the map `(c, x) ↦ c • x` is `n` times continuously
+* `ContDiffSMul 𝕜 M X n` : typeclass saying that the map `(c, x) ↦ c • x` is `n` times continuously
   differentiable on `M × X`
 
 ## Main results
