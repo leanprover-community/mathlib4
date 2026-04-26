@@ -68,7 +68,7 @@ abbrev of (X : Type w) [CommRing X] [IsLocalRing X] [Algebra Λ X] [Algebra X k]
     [IsScalarTower Λ X k] [IsArtinianRing X] (hX : Surjective (algebraMap X k)) :
     BaseCat Λ k := ⟨.of Λ k X hX, inferInstance⟩
 
-/-- The quotient of an object `A` in `BaseCat` by a proper ideal `I`. -/
+/-- The object in `BaseCat` obtained from the quotient by a proper ideal. -/
 def ofQuot (A : BaseCat.{w} Λ k) (I : Ideal A) [Nontrivial (A ⧸ I)] : BaseCat Λ k :=
   ⟨A.obj.ofQuot I, Ideal.Quotient.mk_surjective.isArtinianRing⟩
 
