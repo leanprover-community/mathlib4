@@ -38,6 +38,7 @@ include adj
 lemma right_adjoint_additive [F.Additive] : G.Additive where
   map_add {X Y} f g := (adj.homEquiv _ _).symm.injective (by simp [homEquiv_counit])
 
+set_option backward.defeqAttrib.useBackward true in
 lemma left_adjoint_additive [G.Additive] : F.Additive where
   map_add {X Y} f g := (adj.homEquiv _ _).injective (by simp [homEquiv_unit])
 
