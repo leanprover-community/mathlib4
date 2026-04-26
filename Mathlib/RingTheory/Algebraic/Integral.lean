@@ -233,7 +233,7 @@ theorem restrictScalars [Algebra.IsAlgebraic R S]
   have := Algebra.nontrivial_of_isAlgebraic R S
   have : IsDomain R := NoZeroDivisors.to_isDomain _
   classical
-  have ⟨r, hr, int⟩ := Algebra.IsAlgebraic.exists_integral_multiples R (p.support.image (coeff p))
+  have ⟨r, hr, int⟩ := Algebra.IsAlgebraic.exists_integral_multiples R p.coeffs
   let p := (r • p).toSubring (integralClosure R S).toSubring fun s hs ↦ by
     obtain ⟨n, hn, rfl⟩ := mem_coeffs_iff.mp hs
     exact int _ (Finset.mem_image_of_mem _ <| support_smul _ _ hn)

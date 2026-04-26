@@ -13,6 +13,7 @@ public import Mathlib.Algebra.MonoidAlgebra.Basic
 public import Mathlib.Algebra.Polynomial.Eval.Algebra
 public import Mathlib.Algebra.Polynomial.Eval.Degree
 public import Mathlib.Algebra.Polynomial.Monomial
+public import Mathlib.RingTheory.Polynomial.Subring
 
 /-!
 # Theory of univariate polynomials

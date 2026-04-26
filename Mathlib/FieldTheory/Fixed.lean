@@ -180,9 +180,8 @@ variable [Fintype G] (x : F)
 
 /-- `minpoly G F x` is the minimal polynomial of `(x : F)` over `FixedPoints.subfield G F`. -/
 def minpoly : Polynomial (FixedPoints.subfield G F) :=
-  (prodXSubSMul G F x).toSubring (FixedPoints.subfield G F).toSubring fun _ hc g =>
-    let ⟨n, _, hn⟩ := Polynomial.mem_coeffs_iff.1 hc
-    hn.symm ▸ prodXSubSMul.coeff G F x g n
+  (prodXSubSMul G F x).toSubring (FixedPoints.subfield G F).toSubring <|
+    Polynomial.coeffs_subset_iff.2 fun n g ↦ prodXSubSMul.coeff G F x g n
 
 namespace minpoly
 

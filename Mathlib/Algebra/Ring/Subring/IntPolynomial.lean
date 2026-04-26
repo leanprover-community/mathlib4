@@ -28,6 +28,7 @@ open scoped Polynomial
 
 /-- Given a polynomial in `K[X]` such that all coefficients belong to the subring `R`,
   `Polynomial.int` is the corresponding polynomial in `R[X]`. -/
+@[deprecated toSubring (since := "2026-02-10")]
 def Polynomial.int (P : K[X]) (hP : ∀ n : ℕ, P.coeff n ∈ R) : R[X] where
   toFinsupp :=
   { support := P.support
@@ -39,22 +40,27 @@ namespace Polynomial
 
 variable (P : K[X]) (hP : ∀ n : ℕ, P.coeff n ∈ R)
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated coeff_toSubring (since := "2026-02-10")]
 theorem int_coeff_eq (n : ℕ) : ↑((P.int R hP).coeff n) = P.coeff n := rfl
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated leadingCoeff_toSubring (since := "2026-02-10")]
 theorem int_leadingCoeff_eq : ↑(P.int R hP).leadingCoeff = P.leadingCoeff := rfl
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated monic_toSubring (since := "2026-02-10")]
 theorem int_monic_iff : (P.int R hP).Monic ↔ P.Monic := by
   rw [Monic, Monic, ← int_leadingCoeff_eq, OneMemClass.coe_eq_one]
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated natDegree_toSubring (since := "2026-02-10")]
 theorem int_natDegree : (P.int R hP).natDegree = P.natDegree := rfl
 
 variable {L : Type*} [Field L] [Algebra K L]
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated leadingCoeff_toSubring (since := "2026-02-10")]
 theorem int_eval₂_eq (x : L) :
     eval₂ (algebraMap R L) x (P.int R hP) = aeval x P := by
   rw [aeval_eq_sum_range, eval₂_eq_sum_range]

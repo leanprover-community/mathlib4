@@ -1063,6 +1063,17 @@ theorem coeffs_monomial (n : ℕ) {c : R} (hc : c ≠ 0) : (monomial n c).coeffs
   rw [coeffs, support_monomial n hc]
   simp
 
+theorem coeffs_subset_iff {S} {p : R[X]} [SetLike S R] [ZeroMemClass S R] {T : S} :
+    (p.coeffs : Set R) ⊆ T ↔ ∀ n, p.coeff n ∈ T where
+  mp hp n := by
+    by_cases hp₀ : p.coeff n = 0
+    · rw [hp₀]
+      exact zero_mem T
+    · exact hp (coeff_mem_coeffs hp₀)
+  mpr := by
+    simp_rw [Set.subset_def, Finset.mem_coe, mem_coeffs_iff]
+    aesop
+
 end Semiring
 
 section CommSemiring
