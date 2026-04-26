@@ -7,7 +7,6 @@ module
 
 
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
-public import Mathlib.Tactic
 
 /-!
 # Continuously differentiable monoid actions
