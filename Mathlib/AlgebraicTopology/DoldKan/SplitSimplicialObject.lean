@@ -252,6 +252,10 @@ noncomputable def fromNondegComplex : s.nondegComplex ⟶ K[X] :=
     (s.toKaroubiNondegComplexIsoN₁.hom ≫ { f := PInfty })
 
 @[reassoc (attr := simp)]
+lemma PInfty_toNondegComplex : PInfty ≫ s.toNondegComplex = s.toNondegComplex :=
+  (toKaroubi _).map_injective (by simp [toNondegComplex])
+
+@[reassoc (attr := simp)]
 lemma fromNondegComplex_toNondegComplex :
     s.fromNondegComplex ≫ s.toNondegComplex = 𝟙 _ :=
   (toKaroubi _).map_injective (by simp [toNondegComplex, fromNondegComplex])
