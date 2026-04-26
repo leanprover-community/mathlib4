@@ -36,8 +36,8 @@ section
 universe u' v'
 
 open IsLocalizedModule in
-theorem Module.injective_of_isLocalizedModule [Small.{v} R] [IsNoetherianRing R] {Rₛ : Type u'}
-    [Small.{v'} Rₛ] [CommRing Rₛ] [Algebra R Rₛ] {Mₛ : Type v'} [AddCommGroup Mₛ] [Module R Mₛ]
+theorem Module.injective_of_isLocalizedModule [IsNoetherianRing R] {Rₛ : Type u'}
+    [CommRing Rₛ] [Algebra R Rₛ] {Mₛ : Type v'} [AddCommGroup Mₛ] [Module R Mₛ]
     [Module Rₛ Mₛ] [IsScalarTower R Rₛ Mₛ] (f : M →ₗ[R] Mₛ) [IsLocalization S Rₛ]
     [IsLocalizedModule S f] [Module.Injective R M] : Module.Injective Rₛ Mₛ := by
   have MB : Baer R M := Baer.of_injective ‹_›
@@ -59,7 +59,7 @@ theorem Module.injective_of_isLocalizedModule [Small.{v} R] [IsNoetherianRing R]
 
 end
 
-theorem Module.injective_of_localization_maximal [Small.{v} R] [IsNoetherianRing R]
+theorem Module.injective_of_localization_maximal [IsNoetherianRing R]
     (H : ∀ (I : Ideal R) (_ : I.IsMaximal),
       Module.Injective (Localization.AtPrime I) (LocalizedModule I.primeCompl M)) :
     Module.Injective R M := by
@@ -115,7 +115,7 @@ include f in
 /--
 A variant of `Module.injective_of_localization_maximal` that accepts `IsLocalizedModule`.
 -/
-theorem Module.injective_of_localization_maximal' [Small.{v} R] [IsNoetherianRing R]
+theorem Module.injective_of_localization_maximal' [IsNoetherianRing R]
     (H : ∀ (I : Ideal R) (_ : I.IsMaximal), Module.Injective (Rₚ I) (Mₚ I)) :
     Module.Injective R M := by
   apply Module.injective_of_localization_maximal
