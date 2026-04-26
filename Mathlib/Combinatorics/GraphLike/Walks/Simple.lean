@@ -17,11 +17,12 @@ we can prove some useful lemmas that characterize `p.darts` in terms of `p.suppo
 
 -/
 
-@[expose] public section
+public section
 
-open GraphLike DartLike
+open GraphLike
 
-variable {α Gr : Type*} [GraphLike α (α × α) Gr] {u v w : α} {G : Gr} {p : Walk G u v}
+variable {V : Type*} {Gr : Type _ → Type*} {G : Gr V} [SimpleGraphLike G] {u v w : V}
+  {p : Walk G u v}
 
 namespace GraphLike.Walk
 
@@ -46,7 +47,7 @@ theorem darts_getElem_eq_fst_snd {u v} {p : Walk G u v} {i : ℕ} (hi : i < p.da
   match i, p with
   | 0, .cons s_2 p_2 => simp
   | n_1 + 1, .cons s_2 p_2 =>
-    simp only [darts_cons, fst_eq, snd_eq, step_val_eq, List.getElem_cons_succ, support_cons]
+    simp only [darts_cons, fst_eq, snd_eq, val_step_eq, List.getElem_cons_succ, support_cons]
     exact p_2.darts_getElem_eq_fst_snd _
 
 end GraphLike.Walk

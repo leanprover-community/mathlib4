@@ -146,8 +146,7 @@ lemma dartStep_val (d : darts G) : (dartStep d).val = d.val := by simp [dartStep
 /-- Two darts are said to be adjacent if they could be consecutive
 darts in a walk -- that is, the first dart's second vertex is equal to
 the second dart's first vertex. -/
-def DartAdj (d d' : darts G) : Prop := (snd G d.val : V) = (fst G d'.val : V)
-
+@[expose] def DartAdj (d d' : darts G) : Prop := (snd G d.val : V) = (fst G d'.val : V)
 
 section SimpleGraphLike
 
