@@ -30,12 +30,12 @@ class GraphLike (V D : outParam Type*) {Gr : Type*} (G : Gr) where
   fst : D → V
   /-- The second/target vertex of a dart. -/
   snd : D → V
-  fst_mem_of_darts {d : D} : d ∈ darts → fst d ∈ verts
-  snd_mem_of_darts {d : D} : d ∈ darts → snd d ∈ verts
+  fst_mem_of_darts : ∀ ⦃d⦄, d ∈ darts → fst d ∈ verts
+  snd_mem_of_darts : ∀ ⦃d⦄, d ∈ darts → snd d ∈ verts
   /-- The adjacency relation of a graph-like structure. -/
   Adj : V → V → Prop := fun u v ↦ ∃ d ∈ darts, fst d = u ∧ snd d = v
   /-- Two vertices are adjacent if and only if there is a dart between them. -/
-  exists_darts_iff_adj {u v : V} : (∃ d ∈ darts, fst d = u ∧ snd d = v) ↔ Adj u v
+  exists_darts_iff_adj : ∀ ⦃u v⦄, (∃ d ∈ darts, fst d = u ∧ snd d = v) ↔ Adj u v
 
 namespace GraphLike
 
@@ -63,6 +63,9 @@ lemma Adj.right_mem (h : Adj G v w) : w ∈ V(G) := by
   rw [← exists_darts_iff_adj] at h
   obtain ⟨d, hd, rfl, rfl⟩ := h
   exact snd_mem_of_darts hd
+
+/-- Convert a dart to a pair of vertices. -/
+@[expose] def toProd (d : D(G)) : V × V := (fst G d.val, snd G d.val)
 
 /-- The step from `u` to `v` is a dart from `u` to `v`. -/
 @[expose]
@@ -166,13 +169,13 @@ class SimpleGraphLike {Gr : Type _ → Type*} (G : Gr V) where
   /-- The set of darts (oriented edges) of a graph-like structure. -/
   darts : Set (V × V)
   /-- The first/source vertex of a dart is in the set of vertices. -/
-  fst_mem_of_darts {d : V × V} : d ∈ darts → d.fst ∈ verts
+  fst_mem_of_darts : ∀ ⦃d⦄, d ∈ darts → d.fst ∈ verts
   /-- The second/target vertex of a dart is in the set of vertices. -/
-  snd_mem_of_darts {d : V × V} : d ∈ darts → d.snd ∈ verts
+  snd_mem_of_darts : ∀ ⦃d⦄, d ∈ darts → d.snd ∈ verts
   /-- The adjacency relation of a graph-like structure. -/
   Adj : V → V → Prop := fun u v ↦ ∃ d ∈ darts, d.fst = u ∧ d.snd = v
   /-- Two vertices are adjacent if and only if there is a dart between them. -/
-  exists_darts_iff_adj {u v : V} : (∃ d ∈ darts, d.fst = u ∧ d.snd = v) ↔ Adj u v
+  exists_darts_iff_adj : ∀ ⦃u v⦄, (∃ d ∈ darts, d.fst = u ∧ d.snd = v) ↔ Adj u v
 
 instance [SimpleGraphLike G] : GraphLike V (V × V) G where
   verts := SimpleGraphLike.verts G
