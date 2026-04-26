@@ -48,11 +48,9 @@ attribute [simp] SymmGraphLike.symm_invol SymmGraphLike.symm_ne SymmGraphLike.sy
   SymmGraphLike.symm_snd SymmGraphLike.symm_mem_darts_iff
 
 open SymmGraphLike
-namespace GraphLike
-
 variable {V D Gr : Type*} {G : Gr} {u v w : V} {d : D}
 
-section SymmGraphLike
+namespace GraphLike
 
 variable [SymmGraphLike V D G]
 
@@ -120,7 +118,7 @@ theorem dartSym2_eq_mk'_iff' {d : darts G} : dartSym2 d = s(u, v) ↔
   obtain ⟨p, hp⟩ := d
   simp
 
-end SymmGraphLike
+end GraphLike
 
 section GraphLikeProd
 
@@ -131,20 +129,27 @@ This section defines `SimpleSymmGraphLike` to give a simplified constructor for 
 that is symmetric in the sense that `d` and `d.swap` are both in the set of darts.
 -/
 
+open GraphLike
 variable {d : V × V} {Gr : Type _ → Type*} {G : Gr V}
 
 class SimpleSymmGraphLike (G : Gr V) extends SimpleGraphLike G where
+  loopless : ∀ ⦃d⦄, d ∈ darts → d.fst ≠ d.snd
   symm_mem_darts_iff : ∀ ⦃d⦄, d.swap ∈ darts ↔ d ∈ darts
+
+lemma GraphLike.Adj.ne [SimpleSymmGraphLike G] {u v : V} (h : Adj G u v) : u ≠ v := by
+  rw [← exists_darts_iff_adj (G := G)] at h
+  obtain ⟨d, hd, rfl, rfl⟩ := h
+  exact SimpleSymmGraphLike.loopless hd
+
+instance GraphLike.Std.Irrefl [SimpleSymmGraphLike G] : Std.Irrefl (Adj G) where
+  irrefl _ h := h.ne rfl
 
 instance [SimpleSymmGraphLike G] : SymmGraphLike V (V × V) G where
   symm := Prod.swap
   symm_invol := Prod.swap_swap
-  symm_ne d hd heq := by
-    obtain ⟨a, b⟩ := d
-    grind [(mem_darts_iff_adj.mp hd).ne]
+  symm_ne d hd heq := by grind [(mem_darts_iff_adj.mp hd).ne]
   symm_fst d := Prod.fst_swap
   symm_snd d := Prod.snd_swap
   symm_mem_darts_iff := SimpleSymmGraphLike.symm_mem_darts_iff
 
 end GraphLikeProd
-end GraphLike

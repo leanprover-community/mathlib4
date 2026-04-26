@@ -171,7 +171,6 @@ class SimpleGraphLike {Gr : Type _ → Type*} (G : Gr V) where
   fst_mem_of_darts : ∀ ⦃d⦄, d ∈ darts → d.fst ∈ verts
   /-- The second/target vertex of a dart is in the set of vertices. -/
   snd_mem_of_darts : ∀ ⦃d⦄, d ∈ darts → d.snd ∈ verts
-  loopless : ∀ ⦃d⦄, d ∈ darts → d.fst ≠ d.snd
   /-- The adjacency relation of a graph-like structure. -/
   Adj : V → V → Prop := fun u v ↦ ∃ d ∈ darts, d.fst = u ∧ d.snd = v
   /-- Two vertices are adjacent if and only if there is a dart between them. -/
@@ -208,14 +207,6 @@ instance : Subsingleton (step G u v) where
     rintro ⟨p₁, h₁, rfl, rfl⟩ ⟨p₂, h₂, h1, h2⟩
     obtain rfl := Prod.ext h1 h2
     exact Subtype.ext rfl
-
-lemma Adj.ne {u v : V} (h : Adj G u v) : u ≠ v := by
-  rw [← exists_darts_iff_adj (G := G)] at h
-  obtain ⟨d, hd, rfl, rfl⟩ := h
-  exact SimpleGraphLike.loopless hd
-
-instance : Std.Irrefl (Adj G) where
-  irrefl _ h := h.ne rfl
 
 @[simp]
 lemma val_step_eq {s : step G u v} : s.val = (u, v) := by

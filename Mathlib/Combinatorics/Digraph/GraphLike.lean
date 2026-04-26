@@ -23,8 +23,8 @@ variable {V : Type*} {G : Digraph V}
 instance : SimpleGraphLike G where
   verts := Set.univ
   darts := { (u, v) | G.Adj u v }
-  fst_mem_of_darts _ := Set.mem_univ _
-  snd_mem_of_darts _ := Set.mem_univ _
+  fst_mem_of_darts _ _ := Set.mem_univ _
+  snd_mem_of_darts _ _ := Set.mem_univ _
   Adj := G.Adj
   exists_darts_iff_adj {u v : V} := by simp
 
