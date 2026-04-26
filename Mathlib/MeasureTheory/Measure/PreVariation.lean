@@ -31,7 +31,7 @@ measure.
 
 variable {X : Type*} [MeasurableSpace X]
 
-open MeasureTheory BigOperators NNReal ENNReal Function
+open MeasureTheory BigOperators NNReal ENNReal Function CompleteLattice
 
 namespace MeasureTheory
 
@@ -202,7 +202,7 @@ variable {f : Set X → ℝ≥0∞}
 lemma iUnion (hf : IsSigmaSubadditiveSetFun f) (hf' : f ∅ = 0) (s : ℕ → Set X)
     (hs : ∀ i, MeasurableSet (s i)) (hs' : Pairwise (Disjoint on s)) :
     HasSum (fun i ↦ preVariationFun f (s i)) (preVariationFun f (⋃ i, s i)) := by
-  refine ENNReal.summable.hasSum_iff.mpr (le_antisymm (sum_le_preVariationFun_iUnion f hs hs') ?_)
+  refine summable.hasSum_iff.mpr (le_antisymm (sum_le_preVariationFun_iUnion f hs hs') ?_)
   refine ENNReal.le_tsum_of_forall_lt_exists_sum fun b hb ↦ ?_
   simp only [preVariationFun, MeasurableSet.iUnion hs, reduceDIte, lt_iSup_iff] at hb
   obtain ⟨Q, hQ⟩ := hb
@@ -223,7 +223,7 @@ lemma iUnion (hf : IsSigmaSubadditiveSetFun f) (hf' : f ∅ = 0) (s : ℕ → Se
             _ ≤ ∑' i, f (t i) := hf t ht_disj
             _ = ∑' i, f (q ⊓ s' i) := rfl
       _ = ∑' i, ∑ q ∈ Q.parts, f (q ⊓ s' i) :=
-          (Summable.tsum_finsetSum (fun _ _ ↦ ENNReal.summable)).symm
+          (Summable.tsum_finsetSum (fun _ _ ↦ summable)).symm
       _ = ∑' i, ∑ p ∈ (P i).parts, f p := by
           congr 1; funext i
           exact (Q.sum_restrict _ (fun p => f p) hf').symm

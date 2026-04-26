@@ -129,7 +129,7 @@ theorem exists_isCompact_closure_measure_compl_lt [TopologicalSpace α]
     refine ⟨interUnionBalls seq u t, isCompact_closure_interUnionBalls h_basis.toHasBasis seq u, ?_⟩
     rw [interUnionBalls, Set.compl_iInter]
     refine ((measure_iUnion_le _).trans ?_).trans_lt hδ2
-    refine ENNReal.tsum_le_tsum (fun n ↦ ?_)
+    refine tsum_le_tsum (fun n ↦ ?_)
     have h'' n : Prod.swap ⁻¹' t n = t n := by ext; exact (t n).comm
     simp only [h'', compl_iUnion, ge_iff_le]
     exact (s'bound n (δ n) (hδ1 n)).le

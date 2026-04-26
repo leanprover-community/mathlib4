@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Real.ENatENNReal
 public import Mathlib.Data.Set.Card
+public import Mathlib.Topology.Algebra.InfiniteSum.Order
 public import Mathlib.Topology.Instances.ENNReal.Lemmas
 public import Mathlib.Tactic.Bound
 
@@ -20,15 +21,12 @@ these sums.
 
 ## TODO
 
-+ Once we have a topology on `ENat`, provide an `ENat`-valued version
 + Provide versions which sum over the whole type.
 -/
 
 public section
 
-open Set Function
-
-open Filter Function Metric Set Topology
+open Set Function Filter Metric Topology CompleteLattice
 open scoped Finset ENNReal NNReal
 
 variable {α : Type*} {β : Type*} {γ : Type*}
@@ -52,116 +50,118 @@ protected theorem tsum_coe_eq {f : α → ℝ≥0} (h : HasSum f r) : (∑' a, (
 protected theorem coe_tsum {f : α → ℝ≥0} : Summable f → ↑(tsum f) = ∑' a, (f a : ℝ≥0∞)
   | ⟨r, hr⟩ => by rw [hr.tsum_eq, ENNReal.tsum_coe_eq hr]
 
-protected theorem hasSum : HasSum f (⨆ s : Finset α, ∑ a ∈ s, f a) :=
-  tendsto_atTop_iSup fun _ _ => Finset.sum_le_sum_of_subset
+@[deprecated CompleteLattice.hasSum (since := "2026-04-17")]
+protected theorem hasSum : HasSum f (⨆ s : Finset α, ∑ a ∈ s, f a) := hasSum
 
-@[simp]
-protected theorem summable : Summable f :=
-  ⟨_, ENNReal.hasSum⟩
+@[deprecated CompleteLattice.summable (since := "2026-04-17")]
+protected theorem summable : Summable f := summable
 
-macro_rules | `(tactic| gcongr_discharger) => `(tactic| apply ENNReal.summable)
+macro_rules | `(tactic| gcongr_discharger) => `(tactic| apply summable)
 
 theorem tsum_coe_ne_top_iff_summable {f : β → ℝ≥0} : (∑' b, (f b : ℝ≥0∞)) ≠ ∞ ↔ Summable f := by
   refine ⟨fun h => ?_, fun h => ENNReal.coe_tsum h ▸ ENNReal.coe_ne_top⟩
   lift ∑' b, (f b : ℝ≥0∞) to ℝ≥0 using h with a ha
   refine ⟨a, ENNReal.hasSum_coe.1 ?_⟩
   rw [ha]
-  exact ENNReal.summable.hasSum
+  exact summable.hasSum
 
-protected theorem tsum_eq_iSup_sum : ∑' a, f a = ⨆ s : Finset α, ∑ a ∈ s, f a :=
-  ENNReal.hasSum.tsum_eq
+@[deprecated tsum_eq_iSup_sum (since := "2026-04-17")]
+protected theorem tsum_eq_iSup_sum : ∑' a, f a = ⨆ s : Finset α, ∑ a ∈ s, f a := tsum_eq_iSup_sum
 
+@[deprecated tsum_eq_iSup_sum' (since := "2026-04-17")]
 protected theorem tsum_eq_iSup_sum' {ι : Type*} (s : ι → Finset α) (hs : ∀ t, ∃ i, t ⊆ s i) :
-    ∑' a, f a = ⨆ i, ∑ a ∈ s i, f a := by
-  rw [ENNReal.tsum_eq_iSup_sum]
-  symm
-  change ⨆ i : ι, (fun t : Finset α => ∑ a ∈ t, f a) (s i) = ⨆ s : Finset α, ∑ a ∈ s, f a
-  exact (Finset.sum_mono_set f).iSup_comp_eq hs
+    ∑' a, f a = ⨆ i, ∑ a ∈ s i, f a := tsum_eq_iSup_sum' s hs
 
+@[deprecated tsum_sigma (since := "2026-04-17")]
 protected theorem tsum_sigma {β : α → Type*} (f : ∀ a, β a → ℝ≥0∞) :
-    ∑' p : Σ a, β a, f p.1 p.2 = ∑' (a) (b), f a b :=
-  ENNReal.summable.tsum_sigma' fun _ => ENNReal.summable
+    ∑' p : Σ a, β a, f p.1 p.2 = ∑' (a) (b), f a b := tsum_sigma f
 
+@[deprecated tsum_sigma' (since := "2026-04-17")]
 protected theorem tsum_sigma' {β : α → Type*} (f : (Σ a, β a) → ℝ≥0∞) :
-    ∑' p : Σ a, β a, f p = ∑' (a) (b), f ⟨a, b⟩ :=
-  ENNReal.summable.tsum_sigma' fun _ => ENNReal.summable
+    ∑' p : Σ a, β a, f p = ∑' (a) (b), f ⟨a, b⟩ := tsum_sigma' f
 
+@[deprecated tsum_biUnion' (since := "2026-04-17")]
 protected theorem tsum_biUnion' {ι : Type*} {S : Set ι} {f : α → ENNReal} {t : ι → Set α}
-    (h : S.PairwiseDisjoint t) : ∑' x : ⋃ i ∈ S, t i, f x = ∑' (i : S), ∑' (x : t i), f x := by
-  simp [← ENNReal.tsum_sigma, ← (Set.biUnionEqSigmaOfDisjoint h).tsum_eq]
+    (h : S.PairwiseDisjoint t) : ∑' x : ⋃ i ∈ S, t i, f x = ∑' (i : S), ∑' (x : t i), f x :=
+  tsum_biUnion' h
 
+@[deprecated tsum_biUnion (since := "2026-04-17")]
 protected theorem tsum_biUnion {ι : Type*} {f : α → ENNReal} {t : ι → Set α}
-    (h : Set.univ.PairwiseDisjoint t) : ∑' x : ⋃ i, t i, f x = ∑' (i) (x : t i), f x := by
-  nth_rw 2 [← tsum_univ]
-  rw [← ENNReal.tsum_biUnion' h, Set.biUnion_univ]
+    (h : Set.univ.PairwiseDisjoint t) : ∑' x : ⋃ i, t i, f x = ∑' (i) (x : t i), f x :=
+  tsum_biUnion h
 
+@[deprecated tsum_prod (since := "2026-04-17")]
 protected theorem tsum_prod {f : α → β → ℝ≥0∞} : ∑' p : α × β, f p.1 p.2 = ∑' (a) (b), f a b :=
-  ENNReal.summable.tsum_prod' fun _ => ENNReal.summable
+  tsum_prod
 
+@[deprecated tsum_prod' (since := "2026-04-17")]
 protected theorem tsum_prod' {f : α × β → ℝ≥0∞} : ∑' p : α × β, f p = ∑' (a) (b), f (a, b) :=
-  ENNReal.summable.tsum_prod' fun _ => ENNReal.summable
+  tsum_prod'
 
+@[deprecated tsum_comm (since := "2026-04-17")]
 protected theorem tsum_comm {f : α → β → ℝ≥0∞} : ∑' a, ∑' b, f a b = ∑' b, ∑' a, f a b :=
-  ENNReal.summable.tsum_comm' (fun _ => ENNReal.summable) fun _ => ENNReal.summable
+  tsum_comm
 
+@[deprecated tsum_add (since := "2026-04-17")]
 protected theorem tsum_add : ∑' a, (f a + g a) = ∑' a, f a + ∑' a, g a :=
-  ENNReal.summable.tsum_add ENNReal.summable
+  tsum_add
 
+@[deprecated sum_add_tsum_compl (since := "2026-04-17")]
 protected lemma sum_add_tsum_compl {ι : Type*} (s : Finset ι) (f : ι → ℝ≥0∞) :
-    ∑ i ∈ s, f i + ∑' i : ↥(s : Set ι)ᶜ, f i = ∑' i, f i := by
-  rw [tsum_subtype, sum_eq_tsum_indicator]
-  simp [← ENNReal.tsum_add]
+    ∑ i ∈ s, f i + ∑' i : ↥(s : Set ι)ᶜ, f i = ∑' i, f i := sum_add_tsum_compl s f
 
-protected theorem tsum_le_tsum (h : ∀ a, f a ≤ g a) : ∑' a, f a ≤ ∑' a, g a :=
-  ENNReal.summable.tsum_le_tsum h ENNReal.summable
+@[deprecated tsum_le_tsum (since := "2026-04-17")]
+protected theorem tsum_le_tsum (h : ∀ a, f a ≤ g a) : ∑' a, f a ≤ ∑' a, g a := tsum_le_tsum h
 
+@[deprecated sum_le_tsum (since := "2026-04-17")]
 protected theorem sum_le_tsum {f : α → ℝ≥0∞} (s : Finset α) : ∑ x ∈ s, f x ≤ ∑' x, f x :=
-  ENNReal.summable.sum_le_tsum s (fun _ _ => zero_le _)
+  sum_le_tsum s
 
 protected lemma le_tsum_of_forall_lt_exists_sum
     (h : ∀ b < a, ∃ I : Finset α, b < ∑ i ∈ I, f i) : a ≤ ∑' i, f i := by
   refine le_of_forall_lt fun b hb ↦ ?_
   obtain ⟨I, hI⟩ := h b hb
-  exact lt_of_lt_of_le hI (ENNReal.sum_le_tsum I)
+  exact lt_of_lt_of_le hI (sum_le_tsum I)
 
 protected theorem tsum_eq_iSup_nat' {f : ℕ → ℝ≥0∞} {N : ℕ → ℕ} (hN : Tendsto N atTop atTop) :
     ∑' i : ℕ, f i = ⨆ i : ℕ, ∑ a ∈ Finset.range (N i), f a :=
-  ENNReal.tsum_eq_iSup_sum' _ fun t =>
+  tsum_eq_iSup_sum' _ fun t =>
     let ⟨n, hn⟩ := t.exists_nat_subset_range
     let ⟨k, _, hk⟩ := exists_le_of_tendsto_atTop hN 0 n
     ⟨k, Finset.Subset.trans hn (Finset.range_mono hk)⟩
 
 protected theorem tsum_eq_iSup_nat {f : ℕ → ℝ≥0∞} :
     ∑' i : ℕ, f i = ⨆ i : ℕ, ∑ a ∈ Finset.range i, f a :=
-  ENNReal.tsum_eq_iSup_sum' _ Finset.exists_nat_subset_range
+  tsum_eq_iSup_sum' _ Finset.exists_nat_subset_range
 
 protected theorem tsum_eq_liminf_sum_nat {f : ℕ → ℝ≥0∞} :
     ∑' i, f i = liminf (fun n => ∑ i ∈ Finset.range n, f i) atTop :=
-  ENNReal.summable.hasSum.tendsto_sum_nat.liminf_eq.symm
+  summable.hasSum.tendsto_sum_nat.liminf_eq.symm
 
 protected theorem tsum_eq_limsup_sum_nat {f : ℕ → ℝ≥0∞} :
     ∑' i, f i = limsup (fun n => ∑ i ∈ Finset.range n, f i) atTop :=
-  ENNReal.summable.hasSum.tendsto_sum_nat.limsup_eq.symm
+  summable.hasSum.tendsto_sum_nat.limsup_eq.symm
 
+@[deprecated le_tsum (since := "2026-04-17")]
 protected theorem le_tsum (a : α) : f a ≤ ∑' a, f a :=
-  ENNReal.summable.le_tsum' a
+  summable.le_tsum' a
 
-@[simp]
-protected theorem tsum_eq_zero : ∑' i, f i = 0 ↔ ∀ i, f i = 0 :=
-  ENNReal.summable.tsum_eq_zero_iff
+@[deprecated tsum_eq_zero (since := "2026-04-17")]
+protected theorem tsum_eq_zero : ∑' i, f i = 0 ↔ ∀ i, f i = 0 := tsum_eq_zero
 
-protected theorem tsum_eq_top_of_eq_top : (∃ a, f a = ∞) → ∑' a, f a = ∞
-  | ⟨a, ha⟩ => top_unique <| ha ▸ ENNReal.le_tsum a
+@[deprecated tsum_eq_top_of_eq_top (since := "2026-04-17")]
+protected theorem tsum_eq_top_of_eq_top : (∃ a, f a = ∞) → ∑' a, f a = ∞ :=
+  tsum_eq_top_of_eq_top
 
 protected theorem lt_top_of_tsum_ne_top {a : α → ℝ≥0∞} (tsum_ne_top : ∑' i, a i ≠ ∞) (j : α) :
     a j < ∞ := by
   contrapose! tsum_ne_top with h
-  exact ENNReal.tsum_eq_top_of_eq_top ⟨j, top_unique h⟩
+  exact tsum_eq_top_of_eq_top ⟨j, top_unique h⟩
 
 @[simp]
 protected theorem tsum_top [Nonempty α] : ∑' _ : α, ∞ = ∞ :=
   let ⟨a⟩ := ‹Nonempty α›
-  ENNReal.tsum_eq_top_of_eq_top ⟨a, rfl⟩
+  tsum_eq_top_of_eq_top ⟨a, rfl⟩
 
 theorem tsum_const_eq_top_of_ne_zero {α : Type*} [Infinite α] {c : ℝ≥0∞} (hc : c ≠ 0) :
     ∑' _ : α, c = ∞ := by
@@ -170,19 +170,20 @@ theorem tsum_const_eq_top_of_ne_zero {α : Type*} [Infinite α] {c : ℝ≥0∞}
     simp only [true_or, top_ne_zero, Ne, not_false_iff]
   have B : ∀ n : ℕ, (n : ℝ≥0∞) * c ≤ ∑' _ : α, c := fun n => by
     rcases Infinite.exists_subset_card_eq α n with ⟨s, hs⟩
-    simpa [hs] using @ENNReal.sum_le_tsum α (fun _ => c) s
+    simpa [hs] using sum_le_tsum (f := fun _ => c) s
   simpa [hc] using le_of_tendsto' A B
 
-protected theorem ne_top_of_tsum_ne_top (h : ∑' a, f a ≠ ∞) (a : α) : f a ≠ ∞ := fun ha =>
-  h <| ENNReal.tsum_eq_top_of_eq_top ⟨a, ha⟩
+@[deprecated ne_top_of_tsum_ne_top (since := "2026-04-17")]
+protected theorem ne_top_of_tsum_ne_top (h : ∑' a, f a ≠ ∞) (a : α) : f a ≠ ∞ :=
+  ne_top_of_tsum_ne_top h a
 
 protected theorem tsum_mul_left : ∑' i, a * f i = a * ∑' i, f i := by
   by_cases hf : ∀ i, f i = 0
   · simp [hf]
-  · rw [← ENNReal.tsum_eq_zero] at hf
+  · rw [← tsum_eq_zero] at hf
     have : Tendsto (fun s : Finset α => ∑ j ∈ s, a * f j) atTop (𝓝 (a * ∑' i, f i)) := by
       simp only [← Finset.mul_sum]
-      exact ENNReal.Tendsto.const_mul ENNReal.summable.hasSum (Or.inl hf)
+      exact ENNReal.Tendsto.const_mul summable.hasSum (Or.inl hf)
     exact HasSum.tsum_eq this
 
 protected theorem tsum_mul_right : ∑' i, f i * a = (∑' i, f i) * a := by
@@ -192,7 +193,7 @@ protected theorem tsum_const_smul {R} [SMul R ℝ≥0∞] [IsScalarTower R ℝ�
     ∑' i, a • f i = a • ∑' i, f i := by
   simpa only [smul_one_mul] using @ENNReal.tsum_mul_left _ (a • (1 : ℝ≥0∞)) _
 
-@[simp]
+@[deprecated tsum_iSup_eq (since := "2026-04-17")]
 theorem tsum_iSup_eq {α : Type*} (a : α) {f : α → ℝ≥0∞} : (∑' b : α, ⨆ _ : a = b, f b) = f a :=
   (tsum_eq_single a fun _ h => by simp [h.symm]).trans <| by simp
 
@@ -200,17 +201,17 @@ theorem hasSum_iff_tendsto_nat {f : ℕ → ℝ≥0∞} (r : ℝ≥0∞) :
     HasSum f r ↔ Tendsto (fun n : ℕ => ∑ i ∈ Finset.range n, f i) atTop (𝓝 r) := by
   refine ⟨HasSum.tendsto_sum_nat, fun h => ?_⟩
   rw [← iSup_eq_of_tendsto _ h, ← ENNReal.tsum_eq_iSup_nat]
-  · exact ENNReal.summable.hasSum
+  · exact summable.hasSum
   · exact fun s t hst => Finset.sum_le_sum_of_subset (Finset.range_subset_range.2 hst)
 
 theorem tendsto_nat_tsum (f : ℕ → ℝ≥0∞) :
     Tendsto (fun n : ℕ => ∑ i ∈ Finset.range n, f i) atTop (𝓝 (∑' n, f n)) := by
   rw [← hasSum_iff_tendsto_nat]
-  exact ENNReal.summable.hasSum
+  exact summable.hasSum
 
 theorem toNNReal_apply_of_tsum_ne_top {α : Type*} {f : α → ℝ≥0∞} (hf : ∑' i, f i ≠ ∞) (x : α) :
     (((ENNReal.toNNReal ∘ f) x : ℝ≥0) : ℝ≥0∞) = f x :=
-  coe_toNNReal <| ENNReal.ne_top_of_tsum_ne_top hf _
+  coe_toNNReal <| ne_top_of_tsum_ne_top hf _
 
 theorem summable_toNNReal_of_tsum_ne_top {α : Type*} {f : α → ℝ≥0∞} (hf : ∑' i, f i ≠ ∞) :
     Summable (ENNReal.toNNReal ∘ f) := by
@@ -218,7 +219,7 @@ theorem summable_toNNReal_of_tsum_ne_top {α : Type*} {f : α → ℝ≥0∞} (h
 
 theorem tendsto_cofinite_zero_of_tsum_ne_top {α} {f : α → ℝ≥0∞} (hf : ∑' x, f x ≠ ∞) :
     Tendsto f cofinite (𝓝 0) := by
-  have f_ne_top : ∀ n, f n ≠ ∞ := ENNReal.ne_top_of_tsum_ne_top hf
+  have f_ne_top : ∀ n, f n ≠ ∞ := ne_top_of_tsum_ne_top hf
   have h_f_coe : f = fun n => ((f n).toNNReal : ENNReal) :=
     funext fun n => (coe_toNNReal (f_ne_top n)).symm
   rw [h_f_coe, ← @coe_zero, tendsto_coe]
@@ -233,67 +234,60 @@ theorem tendsto_atTop_zero_of_tsum_ne_top {f : ℕ → ℝ≥0∞} (hf : ∑' x,
 space. This does not need a summability assumption, as otherwise all sums are zero. -/
 theorem tendsto_tsum_compl_atTop_zero {α : Type*} {f : α → ℝ≥0∞} (hf : ∑' x, f x ≠ ∞) :
     Tendsto (fun s : Finset α => ∑' b : { x // x ∉ s }, f b) atTop (𝓝 0) := by
-  lift f to α → ℝ≥0 using ENNReal.ne_top_of_tsum_ne_top hf
+  lift f to α → ℝ≥0 using ne_top_of_tsum_ne_top hf
   convert ENNReal.tendsto_coe.2 (NNReal.tendsto_tsum_compl_atTop_zero f)
   rw [ENNReal.coe_tsum]
   exact NNReal.summable_comp_injective (tsum_coe_ne_top_iff_summable.1 hf) Subtype.coe_injective
 
 protected theorem tsum_apply {ι α : Type*} {f : ι → α → ℝ≥0∞} {x : α} :
     (∑' i, f i) x = ∑' i, f i x :=
-  tsum_apply <| Pi.summable.mpr fun _ => ENNReal.summable
+  tsum_apply <| Pi.summable.mpr fun _ => summable
 
 theorem tsum_sub {f : ℕ → ℝ≥0∞} {g : ℕ → ℝ≥0∞} (h₁ : ∑' i, g i ≠ ∞) (h₂ : g ≤ f) :
     ∑' i, (f i - g i) = ∑' i, f i - ∑' i, g i :=
   have : ∀ i, f i - g i + g i = f i := fun i => tsub_add_cancel_of_le (h₂ i)
-  ENNReal.eq_sub_of_add_eq h₁ <| by simp only [← ENNReal.tsum_add, this]
+  ENNReal.eq_sub_of_add_eq h₁ <| by simp only [← tsum_add, this]
 
-theorem tsum_comp_le_tsum_of_injective {f : α → β} (hf : Injective f) (g : β → ℝ≥0∞) :
-    ∑' x, g (f x) ≤ ∑' y, g y :=
-  ENNReal.summable.tsum_le_tsum_of_inj f hf (fun _ _ => zero_le _) (fun _ => le_rfl)
-    ENNReal.summable
+@[deprecated tsum_comp_le_tsum_of_injective (since := "2026-04-17")]
+protected theorem tsum_comp_le_tsum_of_injective {f : α → β} (hf : Injective f) (g : β → ℝ≥0∞) :
+    ∑' x, g (f x) ≤ ∑' y, g y := tsum_comp_le_tsum_of_injective hf g
 
-theorem tsum_le_tsum_comp_of_surjective {f : α → β} (hf : Surjective f) (g : β → ℝ≥0∞) :
-    ∑' y, g y ≤ ∑' x, g (f x) :=
-  calc ∑' y, g y = ∑' y, g (f (surjInv hf y)) := by simp only [surjInv_eq hf]
-  _ ≤ ∑' x, g (f x) := tsum_comp_le_tsum_of_injective (injective_surjInv hf) _
+@[deprecated tsum_le_tsum_comp_of_surjective (since := "2026-04-17")]
+protected theorem tsum_le_tsum_comp_of_surjective {f : α → β} (hf : Surjective f) (g : β → ℝ≥0∞) :
+    ∑' y, g y ≤ ∑' x, g (f x) := tsum_le_tsum_comp_of_surjective hf g
 
-theorem tsum_mono_subtype (f : α → ℝ≥0∞) {s t : Set α} (h : s ⊆ t) :
-    ∑' x : s, f x ≤ ∑' x : t, f x :=
-  tsum_comp_le_tsum_of_injective (inclusion_injective h) _
+@[deprecated tsum_mono_subtype (since := "2026-04-17")]
+protected theorem tsum_mono_subtype (f : α → ℝ≥0∞) {s t : Set α} (h : s ⊆ t) :
+    ∑' x : s, f x ≤ ∑' x : t, f x := tsum_mono_subtype f h
 
-theorem tsum_iUnion_le_tsum {ι : Type*} (f : α → ℝ≥0∞) (t : ι → Set α) :
-    ∑' x : ⋃ i, t i, f x ≤ ∑' i, ∑' x : t i, f x :=
-  calc ∑' x : ⋃ i, t i, f x ≤ ∑' x : Σ i, t i, f x.2 :=
-    tsum_le_tsum_comp_of_surjective (sigmaToiUnion_surjective t) _
-  _ = ∑' i, ∑' x : t i, f x := ENNReal.tsum_sigma' _
+@[deprecated tsum_iUnion_le_tsum (since := "2026-04-17")]
+protected theorem tsum_iUnion_le_tsum {ι : Type*} (f : α → ℝ≥0∞) (t : ι → Set α) :
+    ∑' x : ⋃ i, t i, f x ≤ ∑' i, ∑' x : t i, f x := tsum_iUnion_le_tsum f t
 
-theorem tsum_biUnion_le_tsum {ι : Type*} (f : α → ℝ≥0∞) (s : Set ι) (t : ι → Set α) :
-    ∑' x : ⋃ i ∈ s, t i, f x ≤ ∑' i : s, ∑' x : t i, f x :=
-  calc ∑' x : ⋃ i ∈ s, t i, f x = ∑' x : ⋃ i : s, t i, f x := tsum_congr_set_coe _ <| by simp
-  _ ≤ ∑' i : s, ∑' x : t i, f x := tsum_iUnion_le_tsum _ _
+@[deprecated tsum_biUnion_le_tsum (since := "2026-04-17")]
+protected theorem tsum_biUnion_le_tsum {ι : Type*} (f : α → ℝ≥0∞) (s : Set ι) (t : ι → Set α) :
+    ∑' x : ⋃ i ∈ s, t i, f x ≤ ∑' i : s, ∑' x : t i, f x := tsum_biUnion_le_tsum f s t
 
-theorem tsum_biUnion_le {ι : Type*} (f : α → ℝ≥0∞) (s : Finset ι) (t : ι → Set α) :
-    ∑' x : ⋃ i ∈ s, t i, f x ≤ ∑ i ∈ s, ∑' x : t i, f x :=
-  (tsum_biUnion_le_tsum f s t).trans_eq (Finset.tsum_subtype s fun i => ∑' x : t i, f x)
+@[deprecated tsum_biUnion_le (since := "2026-04-17")]
+protected theorem tsum_biUnion_le {ι : Type*} (f : α → ℝ≥0∞) (s : Finset ι) (t : ι → Set α) :
+    ∑' x : ⋃ i ∈ s, t i, f x ≤ ∑ i ∈ s, ∑' x : t i, f x := tsum_biUnion_le f s t
 
-theorem tsum_iUnion_le {ι : Type*} [Fintype ι] (f : α → ℝ≥0∞) (t : ι → Set α) :
-    ∑' x : ⋃ i, t i, f x ≤ ∑ i, ∑' x : t i, f x := by
-  rw [← tsum_fintype (L := SummationFilter.unconditional _)]
-  exact tsum_iUnion_le_tsum f t
+@[deprecated tsum_iUnion_le (since := "2026-04-17")]
+protected theorem tsum_iUnion_le {ι : Type*} [Fintype ι] (f : α → ℝ≥0∞) (t : ι → Set α) :
+    ∑' x : ⋃ i, t i, f x ≤ ∑ i, ∑' x : t i, f x := tsum_iUnion_le f t
 
-theorem tsum_union_le (f : α → ℝ≥0∞) (s t : Set α) :
-    ∑' x : ↑(s ∪ t), f x ≤ ∑' x : s, f x + ∑' x : t, f x :=
-  calc ∑' x : ↑(s ∪ t), f x = ∑' x : ⋃ b, cond b s t, f x := tsum_congr_set_coe _ union_eq_iUnion
-  _ ≤ _ := by simpa using tsum_iUnion_le f (cond · s t)
+@[deprecated tsum_union_le (since := "2026-04-17")]
+protected theorem tsum_union_le (f : α → ℝ≥0∞) (s t : Set α) :
+    ∑' x : ↑(s ∪ t), f x ≤ ∑' x : s, f x + ∑' x : t, f x := tsum_union_le f s t
 
 open Classical in
-theorem tsum_eq_add_tsum_ite {f : β → ℝ≥0∞} (b : β) :
-    ∑' x, f x = f b + ∑' x, ite (x = b) 0 (f x) :=
-  ENNReal.summable.tsum_eq_add_tsum_ite' b
+@[deprecated tsum_eq_add_tsum_ite (since := "2026-04-17")]
+protected theorem tsum_eq_add_tsum_ite {f : β → ℝ≥0∞} (b : β) :
+    ∑' x, f x = f b + ∑' x, ite (x = b) 0 (f x) := tsum_eq_add_tsum_ite b
 
 theorem tsum_add_one_eq_top {f : ℕ → ℝ≥0∞} (hf : ∑' n, f n = ∞) (hf0 : f 0 ≠ ∞) :
     ∑' n, f (n + 1) = ∞ := by
-  rw [tsum_eq_zero_add' ENNReal.summable, add_eq_top] at hf
+  rw [tsum_eq_zero_add' summable, add_eq_top] at hf
   exact hf.resolve_left hf0
 
 /-- A sum of extended nonnegative reals which is finite can have only finitely many terms
@@ -304,8 +298,8 @@ theorem finite_const_le_of_tsum_ne_top {ι : Type*} {a : ι → ℝ≥0∞} (tsu
   have := Infinite.to_subtype h
   refine tsum_ne_top (top_unique ?_)
   calc ∞ = ∑' _ : { i | ε ≤ a i }, ε := (tsum_const_eq_top_of_ne_zero ε_ne_zero).symm
-  _ ≤ ∑' i, a i := ENNReal.summable.tsum_le_tsum_of_inj (↑)
-    Subtype.val_injective (fun _ _ => zero_le _) (fun i => i.2) ENNReal.summable
+  _ ≤ ∑' i, a i := summable.tsum_le_tsum_of_inj (↑)
+    Subtype.val_injective (fun _ _ => zero_le _) (fun i => i.2) summable
 
 /-- Markov's inequality for `Finset.card` and `tsum` in `ℝ≥0∞`. -/
 theorem finset_card_const_le_le_of_tsum_le {ι : Type*} {a : ι → ℝ≥0∞} {c : ℝ≥0∞} (c_ne_top : c ≠ ∞)
@@ -316,15 +310,12 @@ theorem finset_card_const_le_le_of_tsum_le {ι : Type*} {a : ι → ℝ≥0∞} 
   refine ⟨hf, (ENNReal.le_div_iff_mul_le (.inl ε_ne_zero) (.inr c_ne_top)).2 ?_⟩
   calc #hf.toFinset * ε = ∑ _i ∈ hf.toFinset, ε := by rw [Finset.sum_const, nsmul_eq_mul]
     _ ≤ ∑ i ∈ hf.toFinset, a i := Finset.sum_le_sum fun i => hf.mem_toFinset.1
-    _ ≤ ∑' i, a i := ENNReal.sum_le_tsum _
+    _ ≤ ∑' i, a i := sum_le_tsum _
     _ ≤ c := tsum_le_c
 
-theorem tsum_fiberwise (f : β → ℝ≥0∞) (g : β → γ) :
-    ∑' x, ∑' b : g ⁻¹' {x}, f b = ∑' i, f i := by
-  apply HasSum.tsum_eq
-  let equiv := Equiv.sigmaFiberEquiv g
-  apply (equiv.hasSum_iff.mpr ENNReal.summable.hasSum).sigma
-  exact fun _ ↦ ENNReal.summable.hasSum_iff.mpr rfl
+@[deprecated tsum_fiberwise (since := "2026-04-17")]
+protected theorem tsum_fiberwise (f : β → ℝ≥0∞) (g : β → γ) :
+    ∑' x, ∑' b : g ⁻¹' {x}, f b = ∑' i, f i := tsum_fiberwise f g
 
 end tsum
 
@@ -339,7 +330,7 @@ theorem tsum_coe_eq_top_iff_not_summable_coe {f : α → ℝ≥0} :
 
 theorem hasSum_toReal {f : α → ℝ≥0∞} (hsum : ∑' x, f x ≠ ∞) :
     HasSum (fun x => (f x).toReal) (∑' x, (f x).toReal) := by
-  lift f to α → ℝ≥0 using ENNReal.ne_top_of_tsum_ne_top hsum
+  lift f to α → ℝ≥0 using ne_top_of_tsum_ne_top hsum
   simp only [coe_toReal, ← NNReal.coe_tsum, NNReal.hasSum_coe]
   exact (tsum_coe_ne_top_iff_summable.1 hsum).hasSum
 
@@ -362,10 +353,10 @@ theorem tsum_eq_toNNReal_tsum {f : β → ℝ≥0} : ∑' b, f b = (∑' b, (f b
 theorem exists_le_hasSum_of_le {f g : β → ℝ≥0} {r : ℝ≥0} (hgf : ∀ b, g b ≤ f b) (hfr : HasSum f r) :
     ∃ p ≤ r, HasSum g p :=
   have : (∑' b, (g b : ℝ≥0∞)) ≤ r := by
-    refine hasSum_le (fun b => ?_) ENNReal.summable.hasSum (ENNReal.hasSum_coe.2 hfr)
+    refine hasSum_le (fun b => ?_) summable.hasSum (ENNReal.hasSum_coe.2 hfr)
     exact ENNReal.coe_le_coe.2 (hgf _)
   let ⟨p, Eq, hpr⟩ := ENNReal.le_coe_iff.1 this
-  ⟨p, hpr, ENNReal.hasSum_coe.1 <| Eq ▸ ENNReal.summable.hasSum⟩
+  ⟨p, hpr, ENNReal.hasSum_coe.1 <| Eq ▸ summable.hasSum⟩
 
 /-- Comparison test of convergence of `ℝ≥0`-valued series. -/
 theorem summable_of_le {f g : β → ℝ≥0} (hgf : ∀ b, g b ≤ f b) : Summable f → Summable g
@@ -421,7 +412,7 @@ theorem summable_sigma {β : α → Type*} {f : (Σ x, β x) → ℝ≥0} :
   · simp only [← NNReal.summable_coe, NNReal.coe_tsum]
     exact fun h => ⟨h.sigma_factor, h.sigma⟩
   · rintro ⟨h₁, h₂⟩
-    simpa only [← ENNReal.tsum_coe_ne_top_iff_summable, ENNReal.tsum_sigma',
+    simpa only [← ENNReal.tsum_coe_ne_top_iff_summable, tsum_sigma',
       ENNReal.coe_tsum (h₁ _)] using h₂
 
 theorem indicator_summable {f : α → ℝ≥0} (hf : Summable f) (s : Set α) :
@@ -472,6 +463,7 @@ theorem tsum_pos {g : α → ℝ≥0} (hg : Summable g) (i : α) (hi : 0 < g i) 
   simpa using tsum_lt_tsum (fun a => zero_le _) hi hg
 
 open Classical in
+@[deprecated tsum_eq_add_tsum_ite (since := "2026-04-17")]
 theorem tsum_eq_add_tsum_ite {f : α → ℝ≥0} (hf : Summable f) (i : α) :
     ∑' x, f x = f i + ∑' x, ite (x = i) 0 (f x) := by
   refine (NNReal.summable_of_le (fun i' => ?_) hf).tsum_eq_add_tsum_ite' i
@@ -493,20 +485,20 @@ theorem tsum_toReal_eq {f : α → ℝ≥0∞} (hf : ∀ a, f a ≠ ∞) :
 
 theorem tendsto_sum_nat_add (f : ℕ → ℝ≥0∞) (hf : ∑' i, f i ≠ ∞) :
     Tendsto (fun i => ∑' k, f (k + i)) atTop (𝓝 0) := by
-  lift f to ℕ → ℝ≥0 using ENNReal.ne_top_of_tsum_ne_top hf
+  lift f to ℕ → ℝ≥0 using ne_top_of_tsum_ne_top hf
   replace hf : Summable f := tsum_coe_ne_top_iff_summable.1 hf
   simp only [← ENNReal.coe_tsum, NNReal.summable_nat_add _ hf, ← ENNReal.coe_zero]
   exact mod_cast NNReal.tendsto_sum_nat_add f
 
 theorem tsum_le_of_sum_range_le {f : ℕ → ℝ≥0∞} {c : ℝ≥0∞}
     (h : ∀ n, ∑ i ∈ Finset.range n, f i ≤ c) : ∑' n, f n ≤ c :=
-  ENNReal.summable.tsum_le_of_sum_range_le h
+  summable.tsum_le_of_sum_range_le h
 
 theorem hasSum_lt {f g : α → ℝ≥0∞} {sf sg : ℝ≥0∞} {i : α} (h : ∀ a : α, f a ≤ g a) (hi : f i < g i)
     (hsf : sf ≠ ∞) (hf : HasSum f sf) (hg : HasSum g sg) : sf < sg := by
   by_cases hsg : sg = ∞
   · exact hsg.symm ▸ lt_of_le_of_ne le_top hsf
-  · have hg' : ∀ x, g x ≠ ∞ := ENNReal.ne_top_of_tsum_ne_top (hg.tsum_eq.symm ▸ hsg)
+  · have hg' : ∀ x, g x ≠ ∞ := ne_top_of_tsum_ne_top (hg.tsum_eq.symm ▸ hsg)
     lift f to α → ℝ≥0 using fun x =>
       ne_of_lt (lt_of_le_of_lt (h x) <| lt_of_le_of_ne le_top (hg' x))
     lift g to α → ℝ≥0 using hg'
@@ -517,7 +509,7 @@ theorem hasSum_lt {f g : α → ℝ≥0∞} {sf sg : ℝ≥0∞} {i : α} (h : �
 
 theorem tsum_lt_tsum {f g : α → ℝ≥0∞} {i : α} (hfi : tsum f ≠ ∞) (h : ∀ a : α, f a ≤ g a)
     (hi : f i < g i) : ∑' x, f x < ∑' x, g x :=
-  hasSum_lt h hi hfi ENNReal.summable.hasSum ENNReal.summable.hasSum
+  hasSum_lt h hi hfi summable.hasSum summable.hasSum
 
 end ENNReal
 
@@ -551,7 +543,7 @@ lemma Summable.tsum_ofReal_ne_top {f : α → ℝ} (hf : Summable f) : ∑' i, .
 /-- Finitely summable non-negative functions have countable support -/
 theorem _root_.Summable.countable_support_ennreal {f : α → ℝ≥0∞} (h : ∑' (i : α), f i ≠ ∞) :
     f.support.Countable := by
-  lift f to α → ℝ≥0 using ENNReal.ne_top_of_tsum_ne_top h
+  lift f to α → ℝ≥0 using ne_top_of_tsum_ne_top h
   simpa [support] using (ENNReal.tsum_coe_ne_top_iff_summable.1 h).countable_support_nnreal
 
 /-- A series of non-negative real numbers converges to `r` in the sense of `HasSum` if and only if
@@ -570,7 +562,7 @@ section tprod
 
 theorem ENNReal.multipliable_of_le_one {f : α → ℝ≥0∞} (h₀ : ∀ i, f i ≤ 1) :
     Multipliable f :=
-  ⟨_, _root_.hasProd_of_isGLB_of_le_one _ h₀ (isGLB_sInf _)⟩
+  ⟨_, _root_.hasProd_of_isGLB_of_le_one _ h₀ (_root_.isGLB_sInf _)⟩
 
 theorem ENNReal.hasProd_iInf_prod {f : α → ℝ≥0∞} (h₀ : ∀ i, f i ≤ 1) :
     HasProd f (⨅ s : Finset α, ∏ i ∈ s, f i) :=
@@ -606,7 +598,7 @@ theorem cauchySeq_of_edist_le_of_summable {f : ℕ → α} (d : ℕ → ℝ≥0)
 
 theorem cauchySeq_of_edist_le_of_tsum_ne_top {f : ℕ → α} (d : ℕ → ℝ≥0∞)
     (hf : ∀ n, edist (f n) (f n.succ) ≤ d n) (hd : tsum d ≠ ∞) : CauchySeq f := by
-  lift d to ℕ → NNReal using fun i => ENNReal.ne_top_of_tsum_ne_top hd i
+  lift d to ℕ → NNReal using fun i => ne_top_of_tsum_ne_top hd i
   rw [ENNReal.tsum_coe_ne_top_iff_summable] at hd
   exact cauchySeq_of_edist_le_of_summable d hf hd
 
@@ -619,7 +611,7 @@ theorem edist_le_tsum_of_edist_le_of_tendsto {f : ℕ → α} (d : ℕ → ℝ�
   change edist _ _ ≤ _
   refine le_trans (edist_le_Ico_sum_of_edist_le hnm fun _ _ => hf _) ?_
   rw [Finset.sum_Ico_eq_sum_range]
-  exact ENNReal.summable.sum_le_tsum _ (fun _ _ => zero_le _)
+  exact summable.sum_le_tsum _ (fun _ _ => zero_le _)
 
 /-- If `edist (f n) (f (n+1))` is bounded above by a function `d : ℕ → ℝ≥0∞`,
 then the distance from `f 0` to the limit is bounded by `∑'_{k=0}^∞ d k`. -/

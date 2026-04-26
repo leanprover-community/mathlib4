@@ -438,13 +438,13 @@ theorem lintegral_finset_sum_measure {ι} (s : Finset ι) (f : α → ℝ≥0∞
 @[simp]
 theorem lintegral_sum_measure {m : MeasurableSpace α} {ι} (f : α → ℝ≥0∞) (μ : ι → Measure α) :
     ∫⁻ a, f a ∂Measure.sum μ = ∑' i, ∫⁻ a, f a ∂μ i := by
-  simp_rw [ENNReal.tsum_eq_iSup_sum, ← lintegral_finset_sum_measure,
-    lintegral, SimpleFunc.lintegral_sum, ENNReal.tsum_eq_iSup_sum,
+  simp_rw [tsum_eq_iSup_sum, ← lintegral_finset_sum_measure,
+    lintegral, SimpleFunc.lintegral_sum, tsum_eq_iSup_sum,
     SimpleFunc.lintegral_finset_sum, iSup_comm (ι := Finset ι)]
 
 theorem hasSum_lintegral_measure {ι} {_ : MeasurableSpace α} (f : α → ℝ≥0∞) (μ : ι → Measure α) :
     HasSum (fun i => ∫⁻ a, f a ∂μ i) (∫⁻ a, f a ∂Measure.sum μ) :=
-  (lintegral_sum_measure f μ).symm ▸ ENNReal.summable.hasSum
+  (lintegral_sum_measure f μ).symm ▸ CompleteLattice.summable.hasSum
 
 @[simp]
 theorem lintegral_of_isEmpty {α} [MeasurableSpace α] [IsEmpty α] (μ : Measure α) (f : α → ℝ≥0∞) :

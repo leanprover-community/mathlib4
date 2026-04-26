@@ -60,9 +60,7 @@ ones for lower semicontinuous functions using `OrderDual`.
 
 public section
 
-open Topology ENNReal
-
-open Set Function Filter
+open Topology ENNReal Set Function Filter
 
 variable {α β γ : Type*} [TopologicalSpace α] [TopologicalSpace γ] {f : α → β} {s t : Set α}
   {x : α} {y z : β}
@@ -713,7 +711,7 @@ variable {ι : Type*}
 theorem lowerSemicontinuousWithinAt_tsum {f : ι → α → ℝ≥0∞}
     (h : ∀ i, LowerSemicontinuousWithinAt (f i) s x) :
     LowerSemicontinuousWithinAt (fun x' => ∑' i, f i x') s x := by
-  simp_rw [ENNReal.tsum_eq_iSup_sum]
+  simp_rw [tsum_eq_iSup_sum]
   refine lowerSemicontinuousWithinAt_iSup fun b => ?_
   exact lowerSemicontinuousWithinAt_sum fun i _hi => h i
 

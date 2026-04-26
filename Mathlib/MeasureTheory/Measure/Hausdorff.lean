@@ -111,7 +111,6 @@ Hausdorff measure, measure, metric measure
 
 @[expose] public section
 
-
 open scoped NNReal ENNReal Topology
 
 open Metric EMetric Set Function Filter Encodable Module TopologicalSpace
@@ -201,7 +200,7 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
   /- While the sets `S (k + 1) \ S k` are not pairwise metric separated, the sets in each
     subsequence `S (2 * k + 1) \ S (2 * k)` and `S (2 * k + 2) \ S (2 * k)` are metric separated,
     so `m` is additive on each of those sequences. -/
-  rw [← tsum_even_add_odd ENNReal.summable ENNReal.summable, ENNReal.add_ne_top]
+  rw [← tsum_even_add_odd CompleteLattice.summable CompleteLattice.summable, ENNReal.add_ne_top]
   suffices ∀ a, (∑' k : ℕ, μ (S (2 * k + 1 + a) \ S (2 * k + a))) ≠ ∞ from
     ⟨by simpa using this 0, by simpa using this 1⟩
   refine fun r => ne_top_of_le_ne_top htop ?_
@@ -483,7 +482,7 @@ theorem mkMetric_apply (m : ℝ≥0∞ → ℝ≥0∞) (s : Set X) :
     simp only [iInf_eq_if, htr n, if_true]
   · rw [iInf_eq_if, if_neg htr]
     push Not at htr; rcases htr with ⟨n, hn⟩
-    refine ENNReal.tsum_eq_top_of_eq_top ⟨n, ?_⟩
+    refine tsum_eq_top_of_eq_top ⟨n, ?_⟩
     rw [iSup_eq_if, if_pos, iInf_eq_if, if_neg]
     · exact hn.not_ge
     rcases ediam_pos_iff.1 ((zero_le r).trans_lt hn) with ⟨x, hx, -⟩
@@ -516,7 +515,7 @@ theorem mkMetric_le_liminf_tsum {β : Type*} {ι : β → Type*} [∀ n, Countab
   · calc
       (∑' j : ℕ, ⨆ _ : (u j).Nonempty, m (ediam (u j))) = _ :=
         tsum_iUnion_decode₂ (fun t : Set X => ⨆ _ : t.Nonempty, m (ediam t)) (by simp) _
-      _ ≤ ∑' i : ι n, m (ediam (t n i)) := ENNReal.tsum_le_tsum fun b => iSup_le fun _ => le_rfl
+      _ ≤ ∑' i : ι n, m (ediam (t n i)) := tsum_le_tsum fun b => iSup_le fun _ => le_rfl
       _ ≤ c := hn.le
 
 /-- To bound the Hausdorff measure (or, more generally, for a measure defined using
@@ -635,7 +634,7 @@ theorem hausdorffMeasure_zero_singleton (x : X) : μH[0] ({x} : Set X) = 1 := by
     have A : (t m).Nonempty := ⟨x, hm⟩
     calc
       (1 : ℝ≥0∞) = ⨆ h : (t m).Nonempty, 1 := by simp only [A, ciSup_pos]
-      _ ≤ ∑' n, ⨆ h : (t n).Nonempty, 1 := ENNReal.le_tsum _
+      _ ≤ ∑' n, ⨆ h : (t n).Nonempty, 1 := le_tsum (fun n ↦ ⨆ h : (t n).Nonempty, 1) m
 
 theorem one_le_hausdorffMeasure_zero_of_nonempty {s : Set X} (h : s.Nonempty) : 1 ≤ μH[0] s := by
   rcases h with ⟨x, hx⟩
@@ -704,7 +703,7 @@ theorem hausdorffMeasure_image_le (h : HolderOnWith C r f s) (hr : 0 < r) {d : �
       ⟨fun n => f '' (t n ∩ s), ?_, iInf_mono' fun htδ ↦
         ⟨fun n => (h.ediam_image_inter_le (t n)).trans (H (htδ n)).le, ?_⟩⟩
     · grw [← image_iUnion, ← iUnion_inter, ← hst, inter_self]
-    · refine ENNReal.tsum_le_tsum fun n => ?_
+    · refine tsum_le_tsum fun n => ?_
       simp only [iSup_le_iff, image_nonempty]
       intro hft
       simp only [Nonempty.mono ((t n).inter_subset_left) hft, ciSup_pos]
@@ -790,7 +789,7 @@ theorem hausdorffMeasure_preimage_le (hf : AntilipschitzWith K f) (hd : 0 ≤ d)
   replace hst : f ⁻¹' s ⊆ _ := preimage_mono hst; rw [preimage_iUnion] at hst
   refine iInf₂_le_of_le _ hst (iInf_le_of_le (fun n => ?_) ?_)
   · exact (hf.ediam_preimage_le _).trans (ENNReal.mul_le_of_le_div' <| htε n)
-  · refine ENNReal.tsum_le_tsum fun n => iSup_le_iff.2 fun hft => ?_
+  · refine tsum_le_tsum fun n => iSup_le_iff.2 fun hft => ?_
     simp only [nonempty_of_nonempty_preimage hft, ciSup_pos]
     rw [← ENNReal.mul_rpow_of_nonneg _ _ hd]
     exact ENNReal.rpow_le_rpow (hf.ediam_preimage_le _) hd

@@ -148,28 +148,28 @@ theorem le_tsum_schlomilch (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f 
   gcongr
   have (k : ℕ) : (u (k + 1) - u k : ℝ≥0∞) = (u (k + 1) - (u k : ℕ) : ℕ) := by simp
   simp only [nsmul_eq_mul, this]
-  apply ENNReal.sum_le_tsum
+  apply sum_le_tsum
 
 theorem le_tsum_condensed (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) :
     ∑' k, f k ≤ f 0 + ∑' k : ℕ, 2 ^ k * f (2 ^ k) := by
   rw [ENNReal.tsum_eq_iSup_nat' (tendsto_pow_atTop_atTop_of_one_lt _root_.one_lt_two)]
   refine iSup_le fun n => (Finset.le_sum_condensed hf n).trans ?_
   simp only [nsmul_eq_mul, Nat.cast_pow, Nat.cast_two]
-  grw [ENNReal.sum_le_tsum]
+  grw [sum_le_tsum]
 
 theorem tsum_schlomilch_le {C : ℕ} (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (h_pos : ∀ n, 0 < u n)
     (h_nonneg : ∀ n, 0 ≤ f n) (hu : Monotone u) (h_succ_diff : SuccDiffBounded C u) :
     ∑' k : ℕ, (u (k + 1) - u k) * f (u k) ≤ (u 1 - u 0) * f (u 0) + C * ∑' k, f k := by
   rw [ENNReal.tsum_eq_iSup_nat' (tendsto_atTop_mono Nat.le_succ tendsto_id)]
   refine iSup_le fun n => ?_
-  grw [← ENNReal.sum_le_tsum <| Finset.Ico (u 0 + 1) (u n + 1)]
+  grw [← sum_le_tsum <| Finset.Ico (u 0 + 1) (u n + 1)]
   simpa using Finset.sum_schlomilch_le hf h_pos h_nonneg hu h_succ_diff n
 
 theorem tsum_condensed_le (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) :
     (∑' k : ℕ, 2 ^ k * f (2 ^ k)) ≤ f 1 + 2 * ∑' k, f k := by
   rw [ENNReal.tsum_eq_iSup_nat' (tendsto_atTop_mono Nat.le_succ tendsto_id), two_mul, ← two_nsmul]
   refine iSup_le fun n => ?_
-  grw [← ENNReal.sum_le_tsum <| Finset.Ico 2 (2 ^ n + 1)]
+  grw [← sum_le_tsum <| Finset.Ico 2 (2 ^ n + 1)]
   simpa using Finset.sum_condensed_le hf n
 
 end ENNReal

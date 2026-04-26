@@ -61,7 +61,7 @@ instance instAdd : Add (OuterMeasure α) :=
         calc
           m₁ (⋃ i, s i) + m₂ (⋃ i, s i) ≤ (∑' i, m₁ (s i)) + ∑' i, m₂ (s i) :=
             add_le_add (measure_iUnion_le s) (measure_iUnion_le s)
-          _ = _ := ENNReal.tsum_add.symm }⟩
+          _ = _ := tsum_add.symm }⟩
 
 @[simp]
 theorem coe_add (m₁ m₂ : OuterMeasure α) : ⇑(m₁ + m₂) = m₁ + m₂ :=
@@ -165,7 +165,7 @@ instance instSupSet : SupSet (OuterMeasure α) :=
           calc
             m (⋃ i, f i) ≤ ∑' i : ℕ, m (f i) := measure_iUnion_le _
             _ ≤ ∑' i, ⨆ m ∈ ms, (m : OuterMeasure α) (f i) :=
-               ENNReal.tsum_le_tsum fun i => by apply le_iSup₂ m hm
+               tsum_le_tsum fun i => by apply le_iSup₂ m hm
              }⟩
 
 instance instCompleteLattice : CompleteLattice (OuterMeasure α) :=
@@ -248,7 +248,7 @@ def dirac (a : α) : OuterMeasure α where
   iUnion_nat s _ := calc
     indicator (⋃ n, s n) 1 a = ⨆ n, indicator (s n) 1 a :=
       indicator_iUnion_apply (M := ℝ≥0∞) rfl _ _ _
-    _ ≤ ∑' n, indicator (s n) 1 a := iSup_le fun _ ↦ ENNReal.le_tsum _
+    _ ≤ ∑' n, indicator (s n) 1 a := iSup_le fun _ ↦ le_tsum (fun n ↦ indicator (s n) 1 a) _
 
 @[simp]
 theorem dirac_apply (a : α) (s : Set α) : dirac a s = indicator s (fun _ => 1) a :=
@@ -258,9 +258,9 @@ theorem dirac_apply (a : α) (s : Set α) : dirac a s = indicator s (fun _ => 1)
 def sum {ι} (f : ι → OuterMeasure α) : OuterMeasure α where
   measureOf s := ∑' i, f i s
   empty := by simp
-  mono {_ _} h := ENNReal.tsum_le_tsum fun _ => measure_mono h
+  mono {_ _} h := tsum_le_tsum fun _ => measure_mono h
   iUnion_nat s _ := by
-    rw [ENNReal.tsum_comm]; exact ENNReal.tsum_le_tsum fun i => measure_iUnion_le _
+    rw [tsum_comm]; exact tsum_le_tsum fun i => measure_iUnion_le _
 
 @[simp]
 theorem sum_apply {ι} (f : ι → OuterMeasure α) (s : Set α) : sum f s = ∑' i, f i s :=

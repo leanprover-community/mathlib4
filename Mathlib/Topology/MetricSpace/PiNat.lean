@@ -809,7 +809,8 @@ lemma edist_eq_tsum (x y : ∀ i, F i) :
     edist x y = ∑' i, min (2⁻¹ ^ encode i) (edist (x i) (y i)) := rfl
 
 lemma min_edist_le_edist_pi (x y : ∀ i, F i) (i : ι) :
-    min (2⁻¹ ^ encode i) (edist (x i) (y i)) ≤ edist x y := ENNReal.le_tsum _
+    min (2⁻¹ ^ encode i) (edist (x i) (y i)) ≤ edist x y :=
+  le_tsum (fun i ↦ min (2⁻¹ ^ encode i) (edist (x i) (y i))) _
 
 lemma edist_le_two : edist x y ≤ 2 :=
   (ENNReal.tsum_geometric_two_encode_le_two).trans' <| by
@@ -842,7 +843,7 @@ protected def pseudoEMetricSpace : PseudoEMetricSpace (∀ i, F i) where
     _ ≤ ∑' i, (min (2⁻¹ ^ encode i) (edist (x i) (y i)) +
          min (2⁻¹ ^ encode i) (edist (y i) (z i))) := by
       gcongr with n; grw [edist_triangle _ (y n), min_add_distrib, min_le_right]
-    _ = _ := ENNReal.tsum_add ..
+    _ = _ := tsum_add ..
   toUniformSpace := Pi.uniformSpace _
   uniformity_edist := by
     simp only [Pi.uniformity, comap_iInf, gt_iff_lt, preimage_setOf_eq, comap_principal,
@@ -867,7 +868,7 @@ protected def pseudoEMetricSpace : PseudoEMetricSpace (∀ i, F i) where
           edist x y = ∑' i : ι, min (2⁻¹ ^ encode i) (edist (x i) (y i)) := rfl
           _ = ∑ i ∈ K, min (2⁻¹ ^ encode i) (edist (x i) (y i)) +
                 ∑' i : ↑(K : Set ι)ᶜ, min (2⁻¹ ^ encode (i : ι)) (edist (x i) (y i)) :=
-            (ENNReal.sum_add_tsum_compl ..).symm
+            (sum_add_tsum_compl ..).symm
           _ ≤ ∑ i ∈ K, edist (x i) (y i) + ∑' i : ↑(K : Set ι)ᶜ, 2⁻¹ ^ encode (i : ι) := by
             gcongr
             · apply min_le_right

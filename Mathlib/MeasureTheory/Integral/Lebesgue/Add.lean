@@ -356,7 +356,7 @@ theorem lintegral_finset_sum (s : Finset β) {f : β → α → ℝ≥0∞} (hf 
 theorem lintegral_tsum [Countable β] {f : β → α → ℝ≥0∞} (hf : ∀ i, AEMeasurable (f i) μ) :
     ∫⁻ a, ∑' i, f i a ∂μ = ∑' i, ∫⁻ a, f i a ∂μ := by
   classical
-  simp only [ENNReal.tsum_eq_iSup_sum]
+  simp only [tsum_eq_iSup_sum]
   rw [lintegral_iSup_directed]
   · simp [lintegral_finset_sum' _ fun i _ => hf i]
   · intro b

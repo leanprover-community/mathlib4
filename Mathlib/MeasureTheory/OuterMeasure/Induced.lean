@@ -116,7 +116,7 @@ theorem extend_iUnion_le_tsum_nat' (s : ℕ → Set α) :
     funext i
     apply extend_eq _ (h i)
   · obtain ⟨i, hi⟩ := h
-    exact le_trans (le_iInf fun h => hi.elim h) (ENNReal.le_tsum i)
+    exact le_trans (le_iInf fun h => hi.elim h) (le_tsum (extend m ∘ s) i)
 
 end Subadditive
 
@@ -288,7 +288,7 @@ theorem extend_iUnion_le_tsum_nat : ∀ s : ℕ → Set α,
   refine extend_iUnion_le_tsum_nat' MeasurableSet.iUnion ?_; intro f h
   simp +singlePass only [iUnion_disjointed.symm]
   rw [mU (MeasurableSet.disjointed h) (disjoint_disjointed _)]
-  refine ENNReal.tsum_le_tsum fun i => ?_
+  refine tsum_le_tsum fun i => ?_
   rw [← extend_eq m, ← extend_eq m]
   exact extend_mono m0 mU (MeasurableSet.disjointed h _) (disjointed_le f _)
 
@@ -331,7 +331,7 @@ theorem trim_congr {m₁ m₂ : OuterMeasure α} (H : ∀ {s : Set α}, Measurab
 
 @[mono]
 theorem trim_mono : Monotone (trim : OuterMeasure α → OuterMeasure α) := fun _m₁ _m₂ H _s =>
-  iInf₂_mono fun _f _hs => ENNReal.tsum_le_tsum fun _b => iInf_mono fun _hf => H _
+  iInf₂_mono fun _f _hs => tsum_le_tsum fun _b => iInf_mono fun _hf => H _
 
 /-- `OuterMeasure.trim` is antitone in the σ-algebra. -/
 theorem trim_anti_measurableSpace {α} (m : OuterMeasure α) {m0 m1 : MeasurableSpace α}
@@ -375,7 +375,7 @@ theorem trim_sum_ge {ι} (m : ι → OuterMeasure α) : (sum fun i => (m i).trim
   fun s => by
   simp only [sum_apply, trim_eq_iInf, le_iInf_iff]
   exact fun t st ht =>
-    ENNReal.tsum_le_tsum fun i => iInf_le_of_le t <| iInf_le_of_le st <| iInf_le _ ht
+    tsum_le_tsum fun i => iInf_le_of_le t <| iInf_le_of_le st <| iInf_le _ ht
 
 theorem exists_measurable_superset_eq_trim (m : OuterMeasure α) (s : Set α) :
     ∃ t, s ⊆ t ∧ MeasurableSet t ∧ m t = m.trim s := by

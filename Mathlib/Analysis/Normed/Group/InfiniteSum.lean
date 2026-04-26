@@ -36,9 +36,7 @@ infinite series, absolute convergence, normed group
 
 public section
 
-open Topology ENNReal NNReal
-
-open Finset Filter Metric
+open Topology ENNReal NNReal CompleteLattice Finset Filter Metric
 
 variable {ι α E F ε : Type*} [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
   [TopologicalSpace ε] [ESeminormedAddCommMonoid ε]
@@ -132,7 +130,7 @@ theorem tsum_of_enorm_bounded {f : ι → ε} {g : ι → ℝ≥0∞} {a : ℝ�
 
 theorem enorm_tsum_le_tsum_enorm {f : ι → ε} :
     ‖∑' i, f i‖ₑ ≤ ∑' i, ‖f i‖ₑ :=
-  tsum_of_enorm_bounded ENNReal.summable.hasSum fun _i => le_rfl
+  tsum_of_enorm_bounded summable.hasSum fun _i => le_rfl
 
 /-- Quantitative result associated to the direct comparison test for series:  If `∑' i, g i` is
 summable, and for all `i`, `‖f i‖ ≤ g i`, then `‖∑' i, f i‖ ≤ ∑' i, g i`. Note that we do not

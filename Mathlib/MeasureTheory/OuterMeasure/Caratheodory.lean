@@ -206,8 +206,8 @@ theorem ofFunction_caratheodory {m : Set α → ℝ≥0∞} {s : Set α} {h₀ :
     exact inter_subset_inter_left _ hf
   · rw [← iUnion_diff]
     exact diff_subset_diff_left hf
-  · rw [← ENNReal.tsum_add]
-    exact ENNReal.tsum_le_tsum fun i => hs _
+  · rw [← tsum_add]
+    exact tsum_le_tsum fun i => hs _
 
 theorem boundedBy_caratheodory {m : Set α → ℝ≥0∞} {s : Set α}
     (hs : ∀ t, m (t ∩ s) + m (t \ s) ≤ m t) : MeasurableSet[(boundedBy m).caratheodory] s := by
@@ -234,7 +234,7 @@ theorem le_add_caratheodory (m₁ m₂ : OuterMeasure α) :
 
 theorem le_sum_caratheodory {ι} (m : ι → OuterMeasure α) :
     ⨅ i, (m i).caratheodory ≤ (sum m).caratheodory := fun s h t => by
-  simp [fun i => MeasurableSpace.measurableSet_iInf.1 h i t, ENNReal.tsum_add]
+  simp [fun i => MeasurableSpace.measurableSet_iInf.1 h i t, tsum_add]
 
 theorem le_smul_caratheodory (a : ℝ≥0∞) (m : OuterMeasure α) :
     m.caratheodory ≤ (a • m).caratheodory := fun s h t => by

@@ -25,10 +25,7 @@ measure, mutually singular
 
 @[expose] public section
 
-
-open Set
-
-open MeasureTheory NNReal ENNReal Filter
+open Set MeasureTheory NNReal ENNReal Filter
 
 namespace MeasureTheory
 
@@ -113,7 +110,7 @@ theorem sum_left {ι : Type*} [Countable ι] {μ : ι → Measure α} : sum μ �
   refine ⟨fun h i => h.mono (le_sum _ _) le_rfl, fun H => ?_⟩
   choose s hsm hsμ hsν using H
   refine ⟨⋂ i, s i, MeasurableSet.iInter hsm, ?_, ?_⟩
-  · rw [sum_apply _ (MeasurableSet.iInter hsm), ENNReal.tsum_eq_zero]
+  · rw [sum_apply _ (MeasurableSet.iInter hsm), tsum_eq_zero]
     exact fun i => measure_mono_null (iInter_subset _ _) (hsμ i)
   · rwa [compl_iInter, measure_iUnion_null_iff]
 
@@ -198,8 +195,8 @@ lemma exists_null_set_measure_lt_of_disjoint (h : Disjoint μ ν) {ε : ℝ≥0}
   · rw [compl_iInter, (by simp [ENNReal.tsum_mul_left, mul_comm] :
       2 * (ε : ℝ≥0∞) = ∑' (n : ℕ), ε * (1 / 2 : ℝ≥0∞) ^ n)]
     refine (measure_iUnion_le _).trans ?_
-    exact ENNReal.summable.tsum_le_tsum (fun n ↦ (le_add_left le_rfl).trans (ht₂ n).le)
-      ENNReal.summable
+    exact CompleteLattice.summable.tsum_le_tsum (fun n ↦ (le_add_left le_rfl).trans (ht₂ n).le)
+      CompleteLattice.summable
 
 lemma mutuallySingular_of_disjoint (h : Disjoint μ ν) : μ ⟂ₘ ν := by
   have h' (n : ℕ) : ∃ s, μ s = 0 ∧ ν sᶜ ≤ (1 / 2) ^ n := by

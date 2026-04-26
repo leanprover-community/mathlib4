@@ -73,7 +73,6 @@ See result `MeasureTheory.Lp.boundedContinuousFunction_dense`, in the file
 
 public section
 
-
 open scoped ENNReal NNReal
 
 open MeasureTheory MeasureTheory.Measure
@@ -176,7 +175,7 @@ theorem exists_le_lowerSemicontinuous_lintegral_ge (f : α → ℝ≥0∞) (hf :
   choose g f_le_g gcont hg using this
   refine ⟨fun x => ∑' n, g n x, fun x => ?_, ?_, ?_⟩
   · rw [← tsum_eapproxDiff f hf]
-    exact ENNReal.tsum_le_tsum fun n => ENNReal.coe_le_coe.2 (f_le_g n x)
+    exact tsum_le_tsum fun n => ENNReal.coe_le_coe.2 (f_le_g n x)
   · refine lowerSemicontinuous_tsum fun n => ?_
     exact
       ENNReal.continuous_coe.comp_lowerSemicontinuous (gcont n) fun x y hxy =>
@@ -184,8 +183,8 @@ theorem exists_le_lowerSemicontinuous_lintegral_ge (f : α → ℝ≥0∞) (hf :
   · calc
       ∫⁻ x, ∑' n : ℕ, g n x ∂μ = ∑' n, ∫⁻ x, g n x ∂μ := by
         rw [lintegral_tsum fun n => (gcont n).measurable.coe_nnreal_ennreal.aemeasurable]
-      _ ≤ ∑' n, ((∫⁻ x, eapproxDiff f n x ∂μ) + δ n) := ENNReal.tsum_le_tsum hg
-      _ = ∑' n, ∫⁻ x, eapproxDiff f n x ∂μ + ∑' n, δ n := ENNReal.tsum_add
+      _ ≤ ∑' n, ((∫⁻ x, eapproxDiff f n x ∂μ) + δ n) := tsum_le_tsum hg
+      _ = ∑' n, ∫⁻ x, eapproxDiff f n x ∂μ + ∑' n, δ n := tsum_add
       _ ≤ (∫⁻ x : α, f x ∂μ) + ε := by
         refine add_le_add ?_ hδ.le
         rw [← lintegral_tsum]

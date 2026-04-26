@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Algebra.Order.Monoid.WithTop
 public import Mathlib.Algebra.Regular.Basic
 
-
 /-!
 # Linearly ordered commutative additive groups and monoids with a top element adjoined
 

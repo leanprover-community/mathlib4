@@ -64,7 +64,7 @@ theorem ofFunction_eq (hC : IsSetSemiring C) (m : AddContent ℝ≥0∞ C)
       refine m_sigma_subadd (fun i ↦ hC.inter_mem _ hs _ (hf i)) ?_
       rwa [← inter_iUnion, inter_eq_self_of_subset_left hs_subset]
     _ ≤ ∑' i, m (f i) := by
-      refine ENNReal.summable.tsum_le_tsum (fun i ↦ ?_) ENNReal.summable
+      refine CompleteLattice.summable.tsum_le_tsum (fun i ↦ ?_) CompleteLattice.summable
       exact addContent_mono hC (hC.inter_mem _ hs _ (hf i)) (hf i) Set.inter_subset_right
 
 /-- For `m : AddContent C` sigma-sub-additive, finite on `C`, the `inducedOuterMeasure` given by `m`
@@ -96,7 +96,7 @@ theorem isCaratheodory_ofFunction_of_mem (hC : IsSetSemiring C) (m : AddContent 
   have h_m_eq i : m (f i) = m (f i ∩ s) + ∑ u ∈ A i, m u :=
     eq_add_disjointOfDiff_of_subset hC (hC.inter_mem (f i) (hf i) s hs) (hf i) inter_subset_left
   simp_rw [h_m_eq]
-  rw [ENNReal.tsum_add]
+  rw [tsum_add]
   refine add_le_add ?_ ?_
   · refine iInf_le_of_le (fun i ↦ f i ∩ s) <| iInf_le_of_le ?_ le_rfl
     rw [← iUnion_inter]
@@ -106,10 +106,10 @@ theorem isCaratheodory_ofFunction_of_mem (hC : IsSetSemiring C) (m : AddContent 
     simp only [OuterMeasure.measureOf_eq_coe, A]
     apply le_trans <| measure_iUnion_le (μ := OuterMeasure.ofFunction m addContent_empty)
       (fun i ↦ f i \ s)
-    apply ENNReal.tsum_le_tsum
+    apply tsum_le_tsum
     intro i
     simp_rw [sUnion_eq_biUnion] at h_diff_eq_sUnion
-    rw [h_diff_eq_sUnion]
+    simp_rw [h_diff_eq_sUnion]
     obtain h6 := MeasureTheory.measure_biUnion_finset_le
       (μ := OuterMeasure.ofFunction m addContent_empty) (A i) id
     simp only [id_eq] at h6

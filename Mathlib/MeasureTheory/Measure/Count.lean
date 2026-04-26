@@ -36,7 +36,7 @@ def count : Measure α :=
 theorem le_count_apply : ∑' _ : s, (1 : ℝ≥0∞) ≤ count s :=
   calc
     (∑' _ : s, 1 : ℝ≥0∞) = ∑' i, indicator s 1 i := tsum_subtype s 1
-    _ ≤ ∑' i, dirac i s := ENNReal.tsum_le_tsum fun _ => le_dirac_apply
+    _ ≤ ∑' i, dirac i s := tsum_le_tsum fun _ => le_dirac_apply
     _ ≤ count s := le_sum_apply _ _
 
 theorem count_apply (hs : MeasurableSet s) : count s = s.encard := by
@@ -100,7 +100,7 @@ theorem count_apply_lt_top [MeasurableSingletonClass α] : count s < ∞ ↔ s.F
 @[simp]
 theorem count_eq_zero_iff : count s = 0 ↔ s = ∅ where
   mp h := eq_empty_of_forall_notMem fun x hx ↦ by
-    simpa [hx] using ((ENNReal.le_tsum x).trans <| le_sum_apply _ _).trans_eq h
+    simpa [hx] using ((le_tsum _ x).trans <| le_sum_apply _ _).trans_eq h
   mpr := by rintro rfl; exact measure_empty
 
 lemma count_ne_zero_iff : count s ≠ 0 ↔ s.Nonempty :=

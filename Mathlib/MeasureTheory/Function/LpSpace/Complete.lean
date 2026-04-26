@@ -174,7 +174,7 @@ theorem completeSpace_lp_of_cauchy_complete_eLpNorm [hp : Fact (1 ≤ p)]
       change (∑' n : ℕ, ENNReal.ofReal (B n)) = ENNReal.ofReal M
       rw [← hB.tsum_eq]
       exact (ENNReal.ofReal_tsum_of_nonneg (fun n => le_of_lt (hB_pos n)) hB.summable).symm
-    have h_sum := (@ENNReal.summable _ B1).hasSum
+    have h_sum := (CompleteLattice.summable (f := B1)).hasSum
     rwa [h_tsum_B1] at h_sum
   have hB1 : ∑' i, B1 i < ∞ := by
     rw [hB1_has.tsum_eq]
@@ -203,7 +203,7 @@ private theorem eLpNorm'_sum_norm_sub_le_tsum_of_cauchy_eLpNorm' {f : ℕ → α
   rw [hgf_norm_diff]
   refine (eLpNorm'_sum_le (fun i _ => ((hf (i + 1)).sub (hf i)).norm) hp1).trans ?_
   simp_rw [eLpNorm'_norm]
-  refine (Finset.sum_le_sum ?_).trans <| ENNReal.sum_le_tsum _
+  refine (Finset.sum_le_sum ?_).trans <| sum_le_tsum _
   exact fun m _ => (h_cau m (m + 1) m (Nat.le_succ m) (le_refl m)).le
 
 private theorem lintegral_rpow_sum_enorm_sub_le_rpow_tsum
@@ -318,7 +318,7 @@ theorem ae_tendsto_of_cauchy_eLpNorm [CompleteSpace E] {f : ℕ → α → E}
     · intro n m N hnN hmN
       specialize hx N n m hnN hmN
       rw [_root_.dist_eq_norm,
-        ← ENNReal.ofReal_le_iff_le_toReal (ENNReal.ne_top_of_tsum_ne_top hB N),
+        ← ENNReal.ofReal_le_iff_le_toReal (ne_top_of_tsum_ne_top hB N),
         ofReal_norm_eq_enorm]
       exact hx.le
     · rw [← ENNReal.toReal_zero]

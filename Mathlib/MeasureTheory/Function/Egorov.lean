@@ -24,10 +24,9 @@ convergence in measure.
 
 @[expose] public section
 
-
 noncomputable section
 
-open MeasureTheory NNReal ENNReal Topology
+open MeasureTheory NNReal ENNReal Topology CompleteLattice
 
 namespace MeasureTheory
 
@@ -143,7 +142,7 @@ theorem measure_iUnionNotConvergentSeq (hε : 0 < ε)
     (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) :
     μ (iUnionNotConvergentSeq hε hf hsm hs hfg) ≤ ENNReal.ofReal ε := by
   refine le_trans (measure_iUnion_le _) (le_trans
-    (ENNReal.tsum_le_tsum <| notConvergentSeqLTIndex_spec (half_pos hε) hf hsm hs hfg) ?_)
+    (tsum_le_tsum <| notConvergentSeqLTIndex_spec (half_pos hε) hf hsm hs hfg) ?_)
   simp_rw [ENNReal.ofReal_mul (half_pos hε).le]
   rw [ENNReal.tsum_mul_left, ← ENNReal.ofReal_tsum_of_nonneg, inv_eq_one_div, tsum_geometric_two,
     ← ENNReal.ofReal_mul (half_pos hε).le, div_mul_cancel₀ ε two_ne_zero]
