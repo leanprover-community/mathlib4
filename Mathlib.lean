@@ -1855,6 +1855,7 @@ public import Mathlib.Analysis.Complex.ValueDistribution.LogCounting.Asymptotic
 public import Mathlib.Analysis.Complex.ValueDistribution.LogCounting.Basic
 public import Mathlib.Analysis.Complex.ValueDistribution.Proximity.Basic
 public import Mathlib.Analysis.ConstantSpeed
+public import Mathlib.Analysis.ContDiffMulAction
 public import Mathlib.Analysis.Convex.AmpleSet
 public import Mathlib.Analysis.Convex.Approximation
 public import Mathlib.Analysis.Convex.Basic
@@ -4500,7 +4501,6 @@ public import Mathlib.Geometry.Manifold.BumpFunction
 public import Mathlib.Geometry.Manifold.ChartedSpace
 public import Mathlib.Geometry.Manifold.Complex
 public import Mathlib.Geometry.Manifold.ConformalGroupoid
-public import Mathlib.Geometry.Manifold.ContDiffMulAction
 public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
 public import Mathlib.Geometry.Manifold.ContMDiff.Basic
 public import Mathlib.Geometry.Manifold.ContMDiff.Constructions
