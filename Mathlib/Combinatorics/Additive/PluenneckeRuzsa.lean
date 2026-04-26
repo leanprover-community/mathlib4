@@ -29,7 +29,7 @@ inequality.
 ## References
 
 * [Giorgis Petridis, *The Plünnecke-Ruzsa inequality: an overview*][petridis2014]
-* [Terrence Tao, Van Vu, *Additive Combinatorics][tao-vu]
+* [Terence Tao, Van Vu, *Additive Combinatorics*][tao-vu]
 
 ## See also
 
