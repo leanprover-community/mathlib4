@@ -26,7 +26,7 @@ has finite products.
 
 universe w
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.ObjectProperty
 

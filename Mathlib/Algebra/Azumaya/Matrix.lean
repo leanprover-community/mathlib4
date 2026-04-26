@@ -20,7 +20,7 @@ is an Azumaya algebra where `R` is a commutative ring.
 
 -/
 
-@[expose] public section
+public section
 open scoped TensorProduct
 
 variable (R n : Type*) [CommSemiring R] [Fintype n] [DecidableEq n]

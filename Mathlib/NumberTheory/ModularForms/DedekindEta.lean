@@ -110,12 +110,8 @@ private theorem one_sub_eta_logDeriv_eq (z : ℂ) (n : ℕ) :
     logDeriv (1 - eta_q n ·) z = 2 * π * I * (n + 1) * -eta_q n z / (1 - eta_q n z) := by
   have h2 : (fun x ↦ 1 - cexp (2 * ↑π * I * (n + 1) * x)) =
       ((fun z ↦ 1 - 1 * cexp z) ∘ fun x ↦ 2 * ↑π * I * (n + 1) * x) := by aesop
-  have h3 : deriv (fun x : ℂ ↦ (2 * π * I * (n + 1) * x)) =
-      fun _ ↦ 2 * π * I * (n + 1) := by
-    ext y
-    simpa using deriv_const_mul (2 * π * I * (n + 1)) (d := fun (x : ℂ) ↦ x) (x := y)
   simp_rw [eta_q_eq_cexp, h2, logDeriv_one_sub_mul_cexp_comp 1
-    (g := fun x ↦ (2 * π * I * (n + 1) * x)) (by fun_prop), h3]
+    (g := fun x ↦ (2 * π * I * (n + 1) * x)) (by fun_prop), deriv_const_mul_id]
   simp
 
 lemma tsum_logDeriv_eta_q (z : ℂ) : ∑' n, logDeriv (fun x ↦ 1 - eta_q n x) z =
@@ -138,7 +134,7 @@ lemma logDeriv_qParam (h : ℝ) (z : ℂ) : logDeriv (𝕢 h) z = 2 * π * I / h
   have : 𝕢 h = cexp ∘ ((2 * π * I / h) * ·) := by
     ext
     grind [Periodic.qParam]
-  rw [this, logDeriv_comp (by fun_prop) (by fun_prop), deriv_const_mul _ (by fun_prop)]
+  rw [this, logDeriv_comp (by fun_prop) (by fun_prop), deriv_const_mul_id]
   simp [logDeriv_exp]
 
 lemma summable_logDeriv_one_sub_eta_q {z : ℂ} (hz : z ∈ ℍₒ) :
