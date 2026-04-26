@@ -106,7 +106,7 @@ def zifyProof (simpArgs : Option (Syntax.TSepArray `Lean.Parser.Tactic.simpStar 
   let (r, _) ← simp prop ctx_result.ctx
   applySimpResultToProp' proof prop r
 
-attribute [zify_simps← ] Int.ofNat_inj Int.ofNat_le Int.ofNat_lt Int.ofNat_dvd
+attribute [zify_simps ←] Int.ofNat_inj Int.ofNat_le Int.ofNat_lt Int.ofNat_dvd
 
 @[zify_simps] lemma natCast_ne (a b : Nat) : a ≠ b ↔ (a : Int) ≠ (b : Int) :=
   not_congr Int.ofNat_inj.symm
