@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Leonardo de Moura
 module
 
 public import Mathlib.Order.BooleanAlgebra.Set
+public import Mathlib.Order.SetNotation
 public import Mathlib.Order.SymmDiff
 
 /-! # Symmetric differences of sets -/
@@ -17,7 +18,7 @@ assert_not_exists RelIso
 namespace Set
 
 universe u
-variable {α : Type u} {a : α} {s t u v : Set α}
+variable {ι α : Type u} {a : α} {s t u v : Set α}
 
 open scoped symmDiff
 
@@ -58,5 +59,9 @@ lemma symmDiff_union_subset : s ∆ (t ∪ u) ⊆ s ∆ t ∪ s ∆ u := by
 
 lemma union_symmDiff_union_subset : (s ∪ t) ∆ (u ∪ v) ⊆ s ∆ u ∪ t ∆ v := by
   grind
+
+lemma iUnion_symmDiff_iUnion_subset {f g : ι → Set α} :
+    (⋃ n, f n) ∆ ⋃ n, g n ⊆ ⋃ n, f n ∆ g n := by
+  intro; simp [symmDiff]; grind
 
 end Set
