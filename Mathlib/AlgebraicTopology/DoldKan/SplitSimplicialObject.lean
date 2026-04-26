@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialObject.Split
 public import Mathlib.AlgebraicTopology.DoldKan.Degeneracies
-public import Mathlib.AlgebraicTopology.DoldKan.FunctorN
+public import Mathlib.AlgebraicTopology.DoldKan.HomotopyEquivalence
+public import Mathlib.AlgebraicTopology.SimplicialObject.Split
 
 /-!
 
@@ -157,7 +157,9 @@ theorem ιSummand_comp_d_comp_πSummand_eq_zero (j k : ℕ) (A : IndexSet (op �
 set_option backward.isDefEq.respectTransparency false in
 /-- If `s` is a splitting of a simplicial object `X` in a preadditive category,
 `s.nondegComplex` is a chain complex which is given in degree `n` by
-the nondegenerate `n`-simplices of `X`. -/
+the nondegenerate `n`-simplices of `X`. This chain complex should be thought
+as the normalized chain complex of `X` because of the isomorphism
+`toKaroubiNondegComplexIsoN₁`. -/
 @[simps]
 noncomputable def nondegComplex : ChainComplex C ℕ where
   X := s.N
@@ -235,10 +237,16 @@ lemma toKaroubiNondegComplexIsoN₁_hom_inv_id_f :
     s.toKaroubiNondegComplexIsoN₁.inv, Iso.hom_inv_id]
   simp
 
+/-- Given a splitting `s` of a simplicial object `X` in a preadditive category,
+this is the split epimorphism from the alternating face map complex of `X` to the chain
+complex `s.nondegComplex`. -/
 noncomputable def toNondegComplex : K[X] ⟶ s.nondegComplex :=
   (fullyFaithfulToKaroubi _).preimage
     ({ f := by exact PInfty } ≫ s.toKaroubiNondegComplexIsoN₁.inv)
 
+/-- Given a splitting `s` of a simplicial object `X` in a preadditive category,
+this is the split monomormphism from the chain complex `s.nondegComplex` to
+the alternating face map complex fo `X`. -/
 noncomputable def fromNondegComplex : s.nondegComplex ⟶ K[X] :=
   (fullyFaithfulToKaroubi _).preimage
     (s.toKaroubiNondegComplexIsoN₁.hom ≫ { f := PInfty })
@@ -248,12 +256,32 @@ lemma fromNondegComplex_toNondegComplex :
     s.fromNondegComplex ≫ s.toNondegComplex = 𝟙 _ :=
   (toKaroubi _).map_injective (by simp [toNondegComplex, fromNondegComplex])
 
+@[reassoc]
+lemma fromNondegComplex_f (n : ℕ) :
+    s.fromNondegComplex.f n = s.ι n ≫ PInfty.f n := by
+  simp [fromNondegComplex, fullyFaithfulToKaroubi,
+    cofan, IndexSet.id, IndexSet.e]
+
+instance isSplitEpi_toNondegComplex : IsSplitEpi s.toNondegComplex where
+  exists_splitEpi := ⟨⟨s.fromNondegComplex, by simp⟩⟩
+
+instance isSplitMono_fromNondegComplex : IsSplitMono s.fromNondegComplex where
+  exists_splitMono := ⟨⟨s.toNondegComplex, by simp⟩⟩
+
+@[reassoc (attr := simp)]
+lemma toNondegComplex_fromNondegComplex :
+    s.toNondegComplex ≫ s.fromNondegComplex = PInfty :=
+  (toKaroubi _).map_injective (by simp [toNondegComplex, fromNondegComplex])
+
+/-- Given a splitting `s` of a simplicial object `X` in a preadditive category,
+this is the homotopy equivalence from the alternating face map complex of `X`
+to the chain complex `s.nondegComplex`. -/
 @[simps hom inv]
 noncomputable def homotopyEquivNondegComplex :
     HomotopyEquiv K[X] s.nondegComplex where
   hom := s.toNondegComplex
   inv := s.fromNondegComplex
-  homotopyHomInvId := by sorry
+  homotopyHomInvId := .trans (.ofEq (by simp)) (homotopyPInftyToId X)
   homotopyInvHomId := .ofEq (by simp)
 
 end Splitting
