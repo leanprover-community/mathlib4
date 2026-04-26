@@ -69,6 +69,16 @@ theorem _root_.HasCompactSupport.memLp_of_bound {f : X → E} (hf : HasCompactSu
   exact this.mono_exponent_of_measure_support_ne_top
     (fun x ↦ image_eq_zero_of_notMem_tsupport) (hf.measure_lt_top.ne) le_top
 
+/-- A bounded measurable function with compact support is in L^p.
+This is the `ENNReal`-valued version of `HasCompactSupport.memLp_of_bound`. -/
+theorem _root_.HasCompactSupport.memLp_of_enorm_bound {f : X → E} (hf : HasCompactSupport f)
+    (h2f : AEStronglyMeasurable f μ) {C : ℝ≥0∞} (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C) (hC : C ≠ ⊤) :
+      MemLp f p μ := by
+  have : MemLp f ∞ μ :=
+    ⟨h2f, eLpNormEssSup_le_of_ae_enorm_bound hfC |>.trans_lt hC.lt_top⟩
+  exact this.mono_exponent_of_measure_support_ne_top
+    (fun x ↦ image_eq_zero_of_notMem_tsupport) hf.measure_ne_top le_top
+
 /-- A continuous function with compact support is in L^p. -/
 theorem _root_.Continuous.memLp_of_hasCompactSupport [OpensMeasurableSpace X]
     {f : X → E} (hf : Continuous f) (h'f : HasCompactSupport f) : MemLp f p μ := by
@@ -148,17 +158,15 @@ theorem enorm_indicatorConstLp_le :
   simpa [ENNReal.coe_rpow_of_nonneg, ENNReal.coe_toNNReal hμs, Lp.enorm_def, ← enorm_eq_nnnorm]
     using ENNReal.coe_le_coe.2 <| nnnorm_indicatorConstLp_le (c := c) (hμs := hμs)
 
-set_option backward.proofsInPublic true in
 theorem edist_indicatorConstLp_eq_enorm {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞} :
     edist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
-      ‖indicatorConstLp p (hs.symmDiff ht) (by finiteness) c‖ₑ := by
+      ‖indicatorConstLp (μ := μ) p (hs.symmDiff ht) (by finiteness) c‖ₑ := by
   unfold indicatorConstLp
   rw [Lp.edist_toLp_toLp, eLpNorm_indicator_sub_indicator, Lp.enorm_toLp]
 
-set_option backward.proofsInPublic true in
 theorem dist_indicatorConstLp_eq_norm {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞} :
     dist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
-      ‖indicatorConstLp p (hs.symmDiff ht) (by finiteness) c‖ := by
+      ‖indicatorConstLp (μ := μ) p (hs.symmDiff ht) (by finiteness) c‖ := by
   -- Squeezed for performance reasons
   simp only [Lp.dist_edist, edist_indicatorConstLp_eq_enorm, enorm, ENNReal.coe_toReal,
     Lp.coe_nnnorm]

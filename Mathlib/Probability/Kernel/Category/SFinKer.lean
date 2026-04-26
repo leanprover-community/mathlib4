@@ -22,7 +22,7 @@ The category of measurable spaces with s-finite kernels is a copy-discard catego
 
 ## References
 * [A synthetic approach to
-Markov kernels, conditional independence and theorems on sufficient statistics][fritz2020]
+  Markov kernels, conditional independence and theorems on sufficient statistics][fritz2020]
 -/
 
 @[expose] public section
