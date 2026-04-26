@@ -13,7 +13,7 @@ public import Mathlib.Algebra.Order.AddGroupWithTop
 This file collects facts about ordered algebraic structures on the one-element type.
 -/
 
-@[expose] public section
+public section
 
 namespace PUnit
 

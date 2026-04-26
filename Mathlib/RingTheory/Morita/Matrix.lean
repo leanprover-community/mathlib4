@@ -128,7 +128,6 @@ def fromModuleCatToModuleCatLinearEquiv (M : Type*) [AddCommGroup M] [Module R M
     simp [← hy]
   right_inv x := by simp
 
-#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
 set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism showing that `toModuleCat` is the left inverse of `toMatrixModCat`. -/
 def MatrixModCat.unitIso (i : ι) :
@@ -151,7 +150,7 @@ def toModuleCatFromModuleCatLinearEquiv (M : ModuleCat (Matrix ι ι R)) (j : ι
     letI := Module.compHom M (Matrix.scalar (α := R) ι)
     haveI := MatrixModCat.isScalarTower_toModuleCat R M
     simp only [← SemigroupAction.mul_smul, RingHom.id_apply, Module.smul_apply,
-      AddSubmonoidClass.coe_finset_sum, SetLike.val_smul, ← smul_assoc, ← Finset.sum_smul]
+      AddSubmonoidClass.coe_finsetSum, SetLike.val_smul, ← smul_assoc, ← Finset.sum_smul]
     congr
     ext i1 j1
     simp only [mul_apply, smul_single, smul_eq_mul, mul_one, sum_apply]
@@ -178,7 +177,6 @@ def MatrixModCat.counitIso (i : ι) :
     ext
     simp [toModuleCatFromModuleCatLinearEquiv]
 
-#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
 set_option backward.isDefEq.respectTransparency false in
 /-- `ModuleCat.toMatrixModCat R ι` and `MatrixModCat.toModuleCat R i` together form
   an equivalence of categories. -/

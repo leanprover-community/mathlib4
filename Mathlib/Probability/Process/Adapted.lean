@@ -222,17 +222,17 @@ protected theorem mul [Mul β] [ContinuousMul β] (hu : IsStronglyProgressive f 
   (hu i).mul (hv i)
 
 @[to_additive]
-protected theorem finset_prod' {γ} [CommMonoid β] [ContinuousMul β] {U : γ → ι → Ω → β}
+protected theorem finsetProd' {γ} [CommMonoid β] [ContinuousMul β] {U : γ → ι → Ω → β}
     {s : Finset γ} (h : ∀ c ∈ s, IsStronglyProgressive f (U c)) :
     IsStronglyProgressive f (∏ c ∈ s, U c) :=
   Finset.prod_induction U (IsStronglyProgressive f) (fun _ _ => .mul)
     (isStronglyProgressive_const _ 1) h
 
 @[to_additive]
-protected theorem finset_prod {γ} [CommMonoid β] [ContinuousMul β] {U : γ → ι → Ω → β}
-    {s : Finset γ} (h : ∀ c ∈ s, IsStronglyProgressive f (U c)) :
-    IsStronglyProgressive f fun i a => ∏ c ∈ s, U c i a := by
-  convert IsStronglyProgressive.finset_prod' h using 1; ext (i a); simp only [Finset.prod_apply]
+protected theorem finsetProd {γ} [CommMonoid β] [ContinuousMul β] {U : γ → ι → Ω → β}
+    {s : Finset γ} (h : ∀ c ∈ s, ProgMeasurable f (U c)) :
+    ProgMeasurable f fun i a => ∏ c ∈ s, U c i a := by
+  convert ProgMeasurable.finset_prod' h using 1; ext (i a); simp only [Finset.prod_apply]
 
 @[to_additive]
 protected theorem inv [Group β] [ContinuousInv β] (hu : IsStronglyProgressive f u) :
@@ -299,16 +299,16 @@ alias ProgMeasurable.stronglyAdapted := IsStronglyProgressive.stronglyAdapted
 alias ProgMeasurable.mul := IsStronglyProgressive.mul
 
 @[deprecated (since := "2026-04-24")]
-alias ProgMeasurable.finset_sum' := IsStronglyProgressive.finset_sum'
+alias ProgMeasurable.finset_sum' := IsStronglyProgressive.finsetSum'
 
 @[to_additive existing, deprecated (since := "2026-04-24")]
-alias ProgMeasurable.finset_prod' := IsStronglyProgressive.finset_prod'
+alias ProgMeasurable.finset_prod' := IsStronglyProgressive.finsetProd'
 
 @[deprecated (since := "2026-04-24")]
-alias ProgMeasurable.finset_sum := IsStronglyProgressive.finset_sum
+alias ProgMeasurable.finset_sum := IsStronglyProgressive.finsetSum
 
 @[to_additive existing, deprecated (since := "2026-04-24")]
-alias ProgMeasurable.finset_prod := IsStronglyProgressive.finset_prod
+alias ProgMeasurable.finset_prod := IsStronglyProgressive.finsetProd
 
 @[deprecated (since := "2026-04-24")]
 alias ProgMeasurable.neg := IsStronglyProgressive.neg

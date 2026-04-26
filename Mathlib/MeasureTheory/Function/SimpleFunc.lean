@@ -1020,9 +1020,11 @@ theorem lintegral_smul {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0�
 theorem lintegral_zero [MeasurableSpace α] (f : α →ₛ ℝ≥0∞) : f.lintegral 0 = 0 :=
   (lintegralₗ f).map_zero
 
-theorem lintegral_finset_sum {ι} (f : α →ₛ ℝ≥0∞) (μ : ι → Measure α) (s : Finset ι) :
+theorem lintegral_finsetSum {ι} (f : α →ₛ ℝ≥0∞) (μ : ι → Measure α) (s : Finset ι) :
     f.lintegral (∑ i ∈ s, μ i) = ∑ i ∈ s, f.lintegral (μ i) :=
   map_sum (lintegralₗ f) ..
+
+@[deprecated (since := "2026-04-08")] alias lintegral_finset_sum := lintegral_finsetSum
 
 theorem lintegral_sum {m : MeasurableSpace α} {ι} (f : α →ₛ ℝ≥0∞) (μ : ι → Measure α) :
     f.lintegral (Measure.sum μ) = ∑' i, f.lintegral (μ i) := by
