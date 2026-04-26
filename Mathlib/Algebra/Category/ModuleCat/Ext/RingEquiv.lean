@@ -41,14 +41,18 @@ noncomputable def extRestrictScalarsSemiLinearMap [Small.{v} R] [Small.{v} R']
     (M N : ModuleCat.{v} R') (n : ℕ) : Ext M N n →ₛₗ[RingHomClass.toRingHom e.symm]
     Ext ((ModuleCat.restrictScalars (RingHomClass.toRingHom e)).obj M)
     ((ModuleCat.restrictScalars (RingHomClass.toRingHom e)).obj N) n where
-  __ := Functor.mapExtAddHom (ModuleCat.restrictScalars.{v} e.toRingHom) M N n
+  __ := (ModuleCat.restrictScalars.{v} (RingHomClass.toRingHom e)).mapExtAddHom M N n
   map_smul' r x := by
-    simp only [RingEquiv.toRingHom_eq_coe, Functor.mapExtAddHom, Ext.smul_eq_comp_mk₀,
-      ZeroHom.toFun_eq_coe, ZeroHom.coe_mk, RingHom.coe_coe]
-    rw [Ext.mapExactFunctor_comp, Ext.mapExactFunctor_mk₀]
+    simp only [Functor.mapExtAddHom, Ext.smul_eq_comp_mk₀, Ext.mapExactFunctor_comp,
+      Ext.mapExactFunctor_mk₀]
     congr 2
     ext
     simp
+
+lemma extRestrictScalarsSemiLinearMap_toAddMonoidHom [Small.{v} R] [Small.{v} R']
+    (M N : ModuleCat.{v} R') (n : ℕ) : extRestrictScalarsSemiLinearMap e M N n =
+    (ModuleCat.restrictScalars.{v} (RingHomClass.toRingHom e)).mapExtAddHom M N n :=
+  rfl
 
 /-- For `R'` module `M N` and ring isomorphism `R ≃+* R'`,
 the semi-linear equivalence `Ext (↑R M) (↑R N) n ≃ Ext M N n` -/
