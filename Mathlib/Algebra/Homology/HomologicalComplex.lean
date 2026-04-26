@@ -604,7 +604,6 @@ theorem sqTo_left (f : Hom C₁ C₂) (j : ι) : (f.sqTo j).left = f.prev j :=
 theorem sqTo_right (f : Hom C₁ C₂) (j : ι) : (f.sqTo j).right = f.f j :=
   rfl
 
-
 instance (f : C₁ ⟶ C₂) [IsIso f] (j : ι) : IsIso (f.f j) :=
   inferInstanceAs (IsIso ((eval _ _ j).map f))
 
@@ -613,6 +612,12 @@ instance (f : C₁ ⟶ C₂) [IsSplitEpi f] (j : ι) : IsSplitEpi (f.f j) :=
 
 instance (f : C₁ ⟶ C₂) [IsSplitMono f] (j : ι) : IsSplitMono (f.f j) :=
   inferInstanceAs (IsSplitMono ((eval _ _ j).map f))
+
+@[push ←, simp]
+lemma inv_f_apply (f : C₁ ⟶ C₂) [IsIso f] (j : ι) :
+   (inv f).f j = inv (f.f j) := by
+  apply IsIso.eq_inv_of_inv_hom_id
+  simp [← comp_f]
 
 end Hom
 
