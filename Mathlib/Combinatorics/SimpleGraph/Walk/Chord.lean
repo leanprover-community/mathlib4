@@ -50,7 +50,7 @@ theorem isChordless_iff_forall_mem_edges {p : G.Walk u v} :
       ∀ ⦃u' v' : V⦄, u' ∈ p.support → v' ∈ p.support → G.Adj u' v' → s(u', v') ∈ p.edges := by
   simp [IsChordless, Sym2.forall, isChord_sym2Mk]; grind
 
-theorem IsChordless.mem_edges {p : G.Walk u v} (h : p.IsChordless) {u' v' : V}
+@[grind →] theorem IsChordless.mem_edges {p : G.Walk u v} (h : p.IsChordless) {u' v' : V}
     (hu' : u' ∈ p.support) (hv' : v' ∈ p.support) (hadj : G.Adj u' v') : s(u', v') ∈ p.edges :=
   isChordless_iff_forall_mem_edges.mp h hu' hv' hadj
 
