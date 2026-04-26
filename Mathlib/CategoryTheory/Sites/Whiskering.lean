@@ -124,9 +124,9 @@ def multicospanComp : (S.index (P ⋙ F)).multicospan ≅ (S.index P).multicospa
       all_goals cat_disch
       ```
       The replacement proof is a short-term fix, and we request that the authors/maintainers of
-      this file review the proof, and either approve it by removing this adaptation note, revise
-      the proof or the prerequisites appropriately, or minimize a problem in lean4 that still
-      needs addressing. -/
+      this file review the proof, and either approve it by removing this note,
+      revise the proof or the prerequisites appropriately, or minimize a problem in lean4 that
+      still needs addressing. -/
       rintro (a | b) (a | b) (f | f | f) <;>
         simp only [WalkingMulticospan.Hom.id_eq_id, Iso.refl_hom, Category.id_comp,
           Category.comp_id, Functor.map_id] <;>
