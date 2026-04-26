@@ -40,17 +40,24 @@ criterion.
 * [J. Humphreys, *Introduction to Lie Algebras and ...*](humphreys1972) Chapter II 4.3
 -/
 
+open scoped TensorProduct
 
 namespace LieModule
 
 variable {K L M : Type*}
-  [Field K] [CharZero K] [IsAlgClosed K]
+  [Field K] [CharZero K]
   [LieRing L] [LieAlgebra K L]
   [AddCommGroup M] [Module K M] [LieRingModule L M] [LieModule K L M] [FiniteDimensional K M]
 
+open Algebra LieAlgebra LinearMap Module Module.End
+
+section AlgClosed
+
+variable [IsAlgClosed K]
+
 local notation "φ" => toEnd K L M
 
-open Algebra LieAlgebra LinearMap Module Module.End Polynomial
+open Polynomial
 
 lemma exists_polynomial_eval_sub_aux
     {ι R K : Type*} [Finite ι] [CommRing R] [Field K] [Algebra R K]
@@ -163,30 +170,7 @@ theorem isNilpotent_derivedSeries_of_traceForm_eq_zero_algClosed_aux (h : traceF
     exact Finset.sum_congr rfl <| by simp [toMatrix_apply, hyv, hsv]
   rw [hX_ns, add_mul, map_add, htr_n, htr_s, zero_add]
 
-end LieModule
-
-open scoped TensorProduct
-
-namespace Module.End
-
-variable {K : Type*} [Field K] {Kbar : Type*} [Field Kbar] [Algebra K Kbar]
-  {V : Type*} [AddCommGroup V] [Module K V]
-
-lemma baseChangeHom_injective : Function.Injective (End.baseChangeHom K Kbar V) := fun f g hfg ↦ by
-  ext v
-  simpa using FaithfullyFlat.tensorProduct_mk_injective (A := K) (B := Kbar) V
-    (LinearMap.congr_fun hfg ((1 : Kbar) ⊗ₜ[K] v))
-
-end Module.End
-
-namespace LieModule
-
-variable {K L M : Type*}
-  [Field K] [CharZero K]
-  [LieRing L] [LieAlgebra K L]
-  [AddCommGroup M] [Module K M] [LieRingModule L M] [LieModule K L M] [FiniteDimensional K M]
-
-open Algebra LieAlgebra LinearMap Module Module.End
+end AlgClosed
 
 local notation "K̄" => AlgebraicClosure K
 local notation "L̄" => K̄ ⊗[K] L
@@ -234,7 +218,11 @@ public theorem isNilpotent_derivedSeries_of_traceForm_eq_zero (h : traceForm K L
     have step : _root_.IsNilpotent (toEnd K̄ L̄ M̄ ((1 : K̄) ⊗ₜ[K] x)) :=
       key ⟨_, hx_bar⟩
     rw [toEnd_baseChange] at step
-    exact (IsNilpotent.map_iff End.baseChangeHom_injective).mp step
+    have hbc_inj : Function.Injective (End.baseChangeHom K K̄ M) := fun f g hfg ↦ by
+      ext m
+      simpa using FaithfullyFlat.tensorProduct_mk_injective (A := K) (B := K̄) M
+        (LinearMap.congr_fun hfg ((1 : K̄) ⊗ₜ[K] m))
+    exact (IsNilpotent.map_iff hbc_inj).mp step
   exact isNilpotent_derivedSeries_of_traceForm_eq_zero_algClosed_aux
     (traceForm_baseChange_eq_zero h)
 
