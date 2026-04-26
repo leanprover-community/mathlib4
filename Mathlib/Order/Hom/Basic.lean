@@ -350,6 +350,9 @@ theorem id_comp (f : α →o β) : comp id f = f := by
   ext
   rfl
 
+theorem comp_assoc (f : γ →o δ) (g : β →o γ) (h : α →o β) : (f.comp g).comp h = f.comp (g.comp h) :=
+  rfl
+
 /-- Constant function bundled as an `OrderHom`. -/
 @[simps -fullyApplied]
 def const (α : Type*) [Preorder α] {β : Type*} [Preorder β] : β →o α →o β where
@@ -558,6 +561,47 @@ theorem RelEmbedding.orderEmbeddingOfLTEmbedding_apply [PartialOrder α] [Partia
 
 namespace OrderEmbedding
 
+variable [LE α] [LE β] [LE γ] [LE δ]
+
+variable (α) in
+/-- Identity order embedding -/
+def refl : α ↪o α :=
+  RelEmbedding.refl (· ≤ ·)
+
+@[simp]
+theorem coe_refl : ⇑(refl α) = id :=
+  rfl
+
+@[simp]
+theorem refl_toEmbedding : (refl α).toEmbedding = Function.Embedding.refl α :=
+  rfl
+
+/-- Composition of two order embeddings is an order embedding -/
+def trans (f : α ↪o β) (g : β ↪o γ) : α ↪o γ :=
+  RelEmbedding.trans f g
+
+@[simp]
+theorem coe_trans (f : α ↪o β) (g : β ↪o γ) : f.trans g = g ∘ f :=
+  rfl
+
+@[simp]
+theorem refl_trans (f : α ↪o β) : (refl α).trans f = f := by
+  ext
+  rfl
+
+@[simp]
+theorem trans_refl (f : α ↪o β) : f.trans (refl β) = f := by
+  ext
+  rfl
+
+theorem trans_assoc (f : α ↪o β) (g : β ↪o γ) (h : γ ↪o δ) :
+    (f.trans g).trans h = f.trans (g.trans h) :=
+  rfl
+
+end OrderEmbedding
+
+namespace OrderEmbedding
+
 variable [Preorder α] [Preorder β] (f : α ↪o β)
 
 /-- `<` is preserved by order embeddings of preorders. -/
@@ -716,7 +760,7 @@ namespace OrderIso
 
 section LE
 
-variable [LE α] [LE β] [LE γ]
+variable [LE α] [LE β] [LE γ] [LE δ]
 
 instance : EquivLike (α ≃o β) α β where
   coe f := f.toFun
@@ -857,6 +901,10 @@ theorem self_trans_symm (e : α ≃o β) : e.trans e.symm = OrderIso.refl α :=
 @[simp]
 theorem symm_trans_self (e : α ≃o β) : e.symm.trans e = OrderIso.refl β :=
   RelIso.symm_trans_self e
+
+theorem trans_assoc (f : α ≃o β) (g : β ≃o γ) (h : γ ≃o δ) :
+    (f.trans g).trans h = f.trans (g.trans h) :=
+  rfl
 
 /-- An order isomorphism between the domains and codomains of two prosets of
 order homomorphisms gives an order isomorphism between the two function prosets. -/
