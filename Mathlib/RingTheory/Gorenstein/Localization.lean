@@ -44,7 +44,7 @@ lemma isGoresteinLocalRing_localization [IsGorensteinLocalRing R] [IsNoetherianR
 
 variable {R} in
 lemma isGoresteinLocalRing_of_isLocalizationAtPrime [IsGorensteinLocalRing R] [IsNoetherianRing R]
-    (p : Ideal R) [p.IsPrime] (Rₚ : Type*) [CommRing Rₚ] [Algebra R Rₚ]
+    (p : Ideal R) [p.IsPrime] (Rₚ : Type u) [CommRing Rₚ] [Algebra R Rₚ]
     [IsLocalization.AtPrime Rₚ p] : IsGorensteinLocalRing Rₚ :=
   have := isGoresteinLocalRing_localization p
   IsGorensteinLocalRing.of_ringEquiv
@@ -86,13 +86,15 @@ open IsLocalRing
 lemma IsGorensteinRing.of_isGorensteinLocalRing [IsGorensteinLocalRing R]
     [IsNoetherianRing R] : IsGorensteinRing R := by
   apply (isGorensteinRing_iff R).mpr (fun m hm ↦ ?_)
-  have := IsLocalization.at_units m.primeCompl (fun x hx ↦ by simpa [eq_maximalIdeal hm] using hx)
+  have := IsLocalization.of_le_isUnit (S := m.primeCompl)
+    (fun x hx ↦ by simpa [eq_maximalIdeal hm] using hx)
   let e := (IsLocalization.algEquiv m.primeCompl R (Localization.AtPrime m)).toRingEquiv
   exact IsGorensteinLocalRing.of_ringEquiv e
 
 lemma IsGorensteinLocalRing.of_isLocalRing_of_isGorensteinRing [IsLocalRing R]
     [IsGorensteinRing R] : IsGorensteinLocalRing R := by
-  have := IsLocalization.at_units (maximalIdeal R).primeCompl (fun x hx ↦ by simpa using hx)
+  have := IsLocalization.of_le_isUnit (S :=  (maximalIdeal R).primeCompl)
+    (fun x hx ↦ by simpa using hx)
   have := (isGorensteinRing_def R).mp ‹_› (maximalIdeal R) inferInstance
   let e := (IsLocalization.algEquiv (maximalIdeal R).primeCompl R
     (Localization.AtPrime (maximalIdeal R))).toRingEquiv
