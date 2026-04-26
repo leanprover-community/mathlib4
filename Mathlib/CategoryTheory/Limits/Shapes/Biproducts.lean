@@ -608,6 +608,7 @@ def biproduct.mapIso {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p : ∀ 
   hom := biproduct.map fun b => (p b).hom
   inv := biproduct.map fun b => (p b).inv
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance biproduct.map_epi {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p : ∀ j, f j ⟶ g j)
     [∀ j, Epi (p j)] : Epi (biproduct.map p) := by
@@ -619,7 +620,9 @@ instance biproduct.map_epi {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p 
       ι_colimMap_assoc, Discrete.functor_obj_eq_as, Discrete.natTrans_app, colimit.ι_desc_assoc,
         Cofan.mk_ι_app, ι_π, ι_π_assoc]
     split
-    all_goals simp_all
+    · subst_vars
+      simp
+    · simp_all
   rw [this]
   infer_instance
 
