@@ -244,9 +244,19 @@ theorem IsCompl.projection_add_projection_eq_self (hpq : IsCompl p q) (x : E) :
   rw [← prodComm_trans_prodEquivOfIsCompl _ _ hpq]
   exact (prodEquivOfIsCompl _ _ hpq).apply_symm_apply x
 
+theorem IsCompl.projection_add_projection_eq_id (hpq : IsCompl p q) :
+    hpq.projection + hpq.symm.projection = .id := by
+  ext
+  apply IsCompl.projection_add_projection_eq_self hpq
+
 lemma IsCompl.projection_eq_self_sub_projection (hpq : IsCompl p q) (x : E) :
     hpq.symm.projection x = x - hpq.projection x := by
   rw [eq_sub_iff_add_eq, projection_add_projection_eq_self]
+
+lemma IsCompl.projection_eq_id_sub_projection (hpq : IsCompl p q) :
+    hpq.symm.projection = .id - hpq.projection := by
+  ext
+  apply IsCompl.projection_eq_self_sub_projection hpq
 
 /-- The projection to `p` along `q` of `x` equals `x` if and only if `x ∈ p`. -/
 @[simp] lemma IsCompl.projection_eq_self_iff (hpq : IsCompl p q) (x : E) :
