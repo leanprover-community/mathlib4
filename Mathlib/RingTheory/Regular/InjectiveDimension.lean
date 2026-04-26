@@ -94,8 +94,6 @@ lemma ext_subsingleton_of_all_gt (M : ModuleCat.{v} R) [Module.Finite R M] (n : 
     Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ p))) M n) := by
   have plt : p < maximalIdeal R :=  lt_of_le_of_ne (le_maximalIdeal_of_isPrime p) ne
   obtain ⟨x, hx, nmem⟩ : ∃ x ∈ maximalIdeal R, x ∉ p := Set.exists_of_ssubset plt
-  have : Small.{v} (QuotSMulTop x (R ⧸ p)) :=
-    small_of_surjective (Submodule.Quotient.mk_surjective _)
   have := nontrivial_quotSMulTop_of_mem_maximalIdeal (Shrink.{v} (R ⧸ p)) hx
   have : Subsingleton (Ext (ModuleCat.of R (QuotSMulTop x (Shrink.{v, u} (R ⧸ p)))) M (n + 1)) := by
     apply ext_subsingleton_of_support_subset
@@ -208,10 +206,6 @@ section restrictScalars
 universe u'
 
 variable {R' : Type u'} [CommRing R'] (f : R →+* R')
-
-instance ModuleCat.restrictScalars_additive :
-    (ModuleCat.restrictScalars.{v} f).Additive where
-  map_add := by simp
 
 lemma ModuleCat.restrictScalars_map_exact' (S : ShortComplex (ModuleCat.{v} R')) (h : S.Exact) :
     (S.map (ModuleCat.restrictScalars.{v} f)).Exact := by
@@ -334,7 +328,7 @@ theorem extClass_comp_mapExt_bijective {M : ModuleCat.{v} R} {x : R} (regR : IsS
   · rename_i n ih
     let S := N.projectiveShortComplex
     have S_exact : S.ShortExact := N.shortExact_projectiveShortComplex
-    let _ : HasProjectiveDimensionLT (S.map Fr).X₂ 2 :=
+    have : HasProjectiveDimensionLT (S.map Fr).X₂ 2 :=
       hasProjectiveDimensionLE_finsupp_quotient_regular N regR
     let MxM := (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M))
     let f : Ext S.X₂ MxM n →+ Ext S.X₁ MxM n := (Ext.mk₀ S.f).precomp MxM (zero_add n)
@@ -394,9 +388,7 @@ lemma ext_residueField_subsingleton_iff {M : ModuleCat.{v} R} {x : R}
     letI : IsLocalRing (R ⧸ Ideal.span {x}) :=
       have : Nontrivial (R ⧸ Ideal.span {x}) :=
         Ideal.Quotient.nontrivial_iff.mpr (by simpa [← Submodule.ideal_span_singleton_smul])
-      have : IsLocalHom (Ideal.Quotient.mk (Ideal.span {x})) :=
-        IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
-      IsLocalRing.of_surjective (Ideal.Quotient.mk (Ideal.span {x})) Ideal.Quotient.mk_surjective
+      IsLocalRing.of_surjective' (Ideal.Quotient.mk (Ideal.span {x})) Ideal.Quotient.mk_surjective
     Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) M (n + 1)) ↔
     Subsingleton (Ext (ModuleCat.of (R ⧸ Ideal.span {x})
     (Shrink.{v} ((R ⧸ Ideal.span {x}) ⧸ maximalIdeal (R ⧸ Ideal.span {x}))))
@@ -427,11 +419,8 @@ lemma ext_residueField_subsingleton_iff {M : ModuleCat.{v} R} {x : R}
 end
 
 local instance finite_QuotSMulTop' (M : Type*) [AddCommGroup M] [Module R M] [Module.Finite R M]
-    (x : R) : Module.Finite (R ⧸ Ideal.span {x}) (QuotSMulTop x M) := by
-  let f : M →ₛₗ[Ideal.Quotient.mk (Ideal.span {x})] (QuotSMulTop x M) := {
-    __ := Submodule.mkQ _
-    map_smul' r m := rfl }
-  exact Module.Finite.of_surjective f (Submodule.mkQ_surjective _)
+    (x : R) : Module.Finite (R ⧸ Ideal.span {x}) (QuotSMulTop x M) :=
+  Module.Finite.of_restrictScalars_finite R _ _
 
 set_option backward.isDefEq.respectTransparency false in
 theorem injectiveDimension_quotSMulTop_succ_eq_injectiveDimension [Small.{v} R] [IsNoetherianRing R]
