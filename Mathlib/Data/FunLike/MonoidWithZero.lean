@@ -10,9 +10,11 @@ public import Mathlib.Algebra.GroupWithZero.InjSurj
 public import Mathlib.Algebra.GroupWithZero.Pi
 import Mathlib.Tactic.FastInstance
 
-/-! # Group with zero structure for `FunLike` -/
+/-! # Monoid with zero instances for `FunLike` types
+In this file we define various instances related to monoids with zero for `FunLike` types.
+-/
 
-@[expose] public section
+public section
 
 namespace FunLike
 
@@ -20,31 +22,31 @@ variable {F α β : Type*} [FunLike F α β]
 
 variable [Zero F] [Mul F]
 
-instance instMulZeroClass [MulZeroClass β] [FunLikeZero F α β] [FunLikeMul F α β] :
+instance instMulZeroClass [MulZeroClass β] [IsZeroApply F α β] [IsMulApply F α β] :
     MulZeroClass F :=
   fast_instance% DFunLike.coe_injective.mulZeroClass (fun (f : F) ↦ (f : α → β)) coe_zero coe_mul
 
-instance instSemigroupWithZero [SemigroupWithZero β] [FunLikeZero F α β] [FunLikeMul F α β] :
+instance instSemigroupWithZero [SemigroupWithZero β] [IsZeroApply F α β] [IsMulApply F α β] :
     SemigroupWithZero F :=
   DFunLike.coe_injective.semigroupWithZero _ coe_zero coe_mul
 
 variable [One F]
 
-instance instMulZeroOneClass [MulZeroOneClass β] [FunLikeZero F α β] [FunLikeOne F α β]
-    [FunLikeMul F α β] : MulZeroOneClass F :=
+instance instMulZeroOneClass [MulZeroOneClass β] [IsZeroApply F α β] [IsOneApply F α β]
+    [IsMulApply F α β] : MulZeroOneClass F :=
   fast_instance% DFunLike.coe_injective.mulZeroOneClass (fun (f : F) ↦ (f : α → β)) coe_zero coe_one
     coe_mul
 
 variable [Pow F ℕ]
 
-instance instMonoidWithZero [MonoidWithZero β] [FunLikeZero F α β] [FunLikeOne F α β]
-    [FunLikeMul F α β] [FunLikePow ℕ F α β] :
+instance instMonoidWithZero [MonoidWithZero β] [IsZeroApply F α β] [IsOneApply F α β]
+    [IsMulApply F α β] [IsPowApply ℕ F α β] :
     MonoidWithZero F :=
   fast_instance% DFunLike.coe_injective.monoidWithZero (fun (f : F) ↦ (f : α → β)) coe_zero coe_one
     coe_mul coe_pow
 
-instance instCommMonoidWithZero [CommMonoidWithZero β] [FunLikeZero F α β] [FunLikeOne F α β]
-    [FunLikeMul F α β] [FunLikePow ℕ F α β] :
+instance instCommMonoidWithZero [CommMonoidWithZero β] [IsZeroApply F α β] [IsOneApply F α β]
+    [IsMulApply F α β] [IsPowApply ℕ F α β] :
     CommMonoidWithZero F :=
   fast_instance% DFunLike.coe_injective.commMonoidWithZero (fun (f : F) ↦ (f : α → β)) coe_zero
     coe_one coe_mul coe_pow

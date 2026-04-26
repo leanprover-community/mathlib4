@@ -8,9 +8,11 @@ module
 public import Mathlib.Data.FunLike.Group
 public import Mathlib.Algebra.Module.Pi
 
-/-! # Module structure for `FunLike` -/
+/-! # Module instances for `FunLike` types
+In this file we define various instances related to modules for `FunLike` types.
+-/
 
-@[expose] public section
+public section
 
 variable {M M' F α β : Type*} [FunLike F α β]
 
@@ -18,7 +20,7 @@ namespace FunLike
 
 section SMulInstances
 
-variable [SMul M β] [SMul M' β] [SMul M F] [SMul M' F] [FunLikeSMul M F α β] [FunLikeSMul M' F α β]
+variable [SMul M β] [SMul M' β] [SMul M F] [SMul M' F] [IsSMulApply M F α β] [IsSMulApply M' F α β]
 
 instance instIsScalarTower [SMul M M'] [IsScalarTower M M' β] : IsScalarTower M M' F :=
   ⟨fun a b f => DFunLike.ext _ _ fun _ ↦ by simp⟩
@@ -31,7 +33,7 @@ end SMulInstances
 section ModuleInstance
 
 instance instIsCentralScalar [SMul M F] [SMul Mᵐᵒᵖ F] [SMul M β] [SMul Mᵐᵒᵖ β] [IsCentralScalar M β]
-    [FunLikeSMul M F α β] [FunLikeSMul Mᵐᵒᵖ F α β] :
+    [IsSMulApply M F α β] [IsSMulApply Mᵐᵒᵖ F α β] :
     IsCentralScalar M F where
   op_smul_eq_smul a b := by
     apply DFunLike.ext
@@ -39,23 +41,23 @@ instance instIsCentralScalar [SMul M F] [SMul Mᵐᵒᵖ F] [SMul M β] [SMul M�
     simp [op_smul_eq_smul]
 
 instance instDistribSMul [AddZeroClass β] [AddZeroClass F] [DistribSMul M β]
-    [SMul M F] [FunLikeZero F α β] [FunLikeAdd F α β] [FunLikeSMul M F α β] :
+    [SMul M F] [IsZeroApply F α β] [IsAddApply F α β] [IsSMulApply M F α β] :
     DistribSMul M F :=
   DFunLike.coe_injective.distribSMul (coeAddHom F α β) FunLike.coe_smul
 
 @[to_additive]
-instance instMulAction [SMul M F] [Monoid M] [MulAction M β] [FunLikeSMul M F α β] :
+instance instMulAction [SMul M F] [Monoid M] [MulAction M β] [IsSMulApply M F α β] :
     MulAction M F :=
   DFunLike.coe_injective.mulAction _ FunLike.coe_smul
 
 instance instDistribMulAction [Monoid M] [AddMonoid β] [AddMonoid F] [DistribMulAction M β]
-    [SMul M F] [FunLikeZero F α β] [FunLikeAdd F α β] [FunLikeSMul M F α β] :
+    [SMul M F] [IsZeroApply F α β] [IsAddApply F α β] [IsSMulApply M F α β] :
     DistribMulAction M F :=
   DFunLike.coe_injective.distribMulAction (coeAddHom F α β) FunLike.coe_smul
 
 variable [Semiring M] [AddCommMonoid β] [Module M β]
   [Zero F] [Add F] [SMul ℕ F] [SMul M F]
-  [FunLikeZero F α β] [FunLikeAdd F α β] [FunLikeSMul ℕ F α β] [FunLikeSMul M F α β]
+  [IsZeroApply F α β] [IsAddApply F α β] [IsSMulApply ℕ F α β] [IsSMulApply M F α β]
 
 instance instModule : Module M F :=
   coeAddHom_injective.module M (coeAddHom F α β) coe_smul
