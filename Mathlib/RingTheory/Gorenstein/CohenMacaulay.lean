@@ -114,11 +114,9 @@ noncomputable def quotSMulTop_ext_equiv_ext_quotSMulTop (M : ModuleCat.{v} R) (n
     have exac := Ext.contravariant_sequence_exact₁' S_exact N n (n + 1) (add_comm 1 n)
     have exac' : Function.Exact (a • LinearMap.id (R := R) (M := (Ext M N n))) f := by
       convert (ShortComplex.ab_exact_iff_function_exact _).mp exac
-      have : S.f = a • 𝟙 _ := by
-        ext
-        simp [S]
       ext x
-      simp [this, Ext.mk₀_smul]
+      simp only [S, M.smulShortComplex_f_eq_smul_id]
+      simp [ModuleCat.smulShortComplex, Ext.mk₀_smul]
     rw [LinearMap.exact_iff.mp exac']
     ext y
     simp [Submodule.mem_smul_pointwise_iff_exists]
@@ -169,7 +167,7 @@ noncomputable def ext_quotient_regular_sequence_length [IsLocalRing R] [IsNoethe
       map_smul' r x := by simp [Iso.addCommGroupIsoToAddEquiv] }
     let _ : HasProjectiveDimensionLE (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs'))) n :=
       have : projectiveDimension (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs'))) = n := by
-        simp [projectiveDimension_quotient_eq_length rs' rs'reg, rs', len]
+        simp [ModuleCat.projectiveDimension_quotient_eq_length rs' rs'reg, rs', len]
       (projectiveDimension_le_iff _ n).mp (le_of_eq this)
     let e2 : QuotSMulTop a (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs'))) M n) ≃ₗ[R]
       Ext (ModuleCat.of R (QuotSMulTop a (Shrink.{v} (R ⧸ Ideal.ofList rs')))) M (n + 1) :=
@@ -447,7 +445,7 @@ lemma supportDim_le_injectiveDimension [IsLocalRing R] [IsNoetherianRing R] (M :
     have : IsScalarTower R (Localization qq.1.1.primeCompl) (Shrink.{v} qq.1.1.ResidueField) :=
       Equiv.isScalarTower R (Localization qq.1.1.primeCompl) (equivShrink qq.1.1.ResidueField).symm
     have : IsLocalization qq.1.1.primeCompl R :=
-      IsLocalization.at_units _ (fun x hx ↦ by simpa [qqeq] using hx)
+      IsLocalization.of_le_isUnit (fun x hx ↦ by simpa [qqeq] using hx)
     have surj : Function.Surjective (algebraMap R (Localization qq.1.1.primeCompl)) :=
       (IsLocalization.bijective qq.1.1.primeCompl
         (algebraMap R (Localization qq.1.1.primeCompl)) rfl).2
@@ -516,17 +514,9 @@ lemma injectiveDimension_eq_depth [IsLocalRing R] [IsNoetherianRing R]
     apply Nat.cast_le.mpr
     have projdim : projectiveDimension (ModuleCat.of R
       ((Shrink.{v} R) ⧸ Ideal.ofList rs • (⊤ : Submodule R (Shrink.{v} R)))) = rs.length := by
-      have : projectiveDimension (ModuleCat.of R (Shrink.{v} R)) = 0 := by
-        apply le_antisymm
-        · apply (projectiveDimension_le_iff _ 0).mpr
-          simpa [HasProjectiveDimensionLE, ← projective_iff_hasProjectiveDimensionLT_one]
-            using ModuleCat.projective_of_categoryTheory_projective _
-        · have : projectiveDimension (ModuleCat.of R (Shrink.{v, u} R)) ≠ ⊥ := by
-            simpa [projectiveDimension_eq_bot_iff] using not_subsingleton (Shrink.{v, u} R)
-          rw [← WithBot.coe_unbot _ this, ← WithBot.coe_zero, WithBot.coe_le_coe]
-          exact zero_le _
-      simp [projectiveDimension_quotient_regular_sequence (ModuleCat.of R (Shrink.{v} R)) rs
-        reg'.1 mem, this]
+      simp [ModuleCat.projectiveDimension_quotient_eq_add_length_of_isWeaklyRegular
+        (ModuleCat.of R (Shrink.{v} R)) rs reg'.1 mem,
+        ModuleCat.projectiveDimension_eq_zero_of_projective]
     have ntr : Nontrivial (Ext.{v} (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) M r) := by
       by_contra! sub
       have (i : ℕ) (lt : r < i) :
