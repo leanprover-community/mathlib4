@@ -17,7 +17,7 @@ public import Mathlib.CategoryTheory.Sites.Sheafification
 (chosen) finite products, and there exists a sheafification functor.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
