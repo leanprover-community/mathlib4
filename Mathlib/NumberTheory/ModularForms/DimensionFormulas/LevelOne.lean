@@ -63,7 +63,7 @@ private lemma divByDiscriminant_slash_eq (f : CuspForm 𝒮ℒ k) (γ : SL(2, �
   have hΔ z := (ModularGroup.sl_moeb γ z).symm ▸ slash_action_eqn'' discriminantCuspForm hγ z
   ext z; rw [SL_slash_apply, hf, show Δ (γ • z) = denom γ z ^ (12 : ℤ) * Δ z from hΔ z,
     div_mul_eq_mul_div, mul_right_comm, ← zpow_add₀ (denom_ne_zero γ z),
-    show k + -(k - 12) = (12 : ℤ) from by ring]
+    show k + -(k - 12) = (12 : ℤ) by ring]
   exact mul_div_mul_left (f z) (Δ z) (zpow_ne_zero _ (denom_ne_zero γ z))
 
 lemma exp_decay_isBigO_discriminant (f : CuspForm 𝒮ℒ k) : f =O[atImInfty] Δ := by
@@ -115,8 +115,8 @@ def discriminantEquiv : CuspForm 𝒮ℒ k ≃ₗ[ℂ] ModularForm 𝒮ℒ (k - 
   map_add' a b := by ext z; simp [add_div]
   map_smul' c a := by ext z; simp [mul_div_assoc]
   invFun := ofMulDiscriminant
-  left_inv f := by ext z; simpa using div_mul_cancel₀ (f z) (discriminant_ne_zero z)
-  right_inv f := by ext z; simpa using mul_div_cancel_right₀ (f z) (discriminant_ne_zero z)
+  left_inv f := by ext z; exact div_mul_cancel₀ (f z) (discriminant_ne_zero z)
+  right_inv f := by ext z; exact mul_div_cancel_right₀ (f z) (discriminant_ne_zero z)
 
 end CuspForm
 
@@ -135,7 +135,7 @@ lemma cuspForm_rank_lt_twelve (hk : k < 12) : Module.rank ℂ (CuspForm 𝒮ℒ 
 
 /-- The space of weight 12 cusp forms for `𝒮ℒ` has rank 1. -/
 lemma cuspForm_rank_twelve : Module.rank ℂ (CuspForm 𝒮ℒ 12) = 1 := by
-  rw [LinearEquiv.rank_eq CuspForm.discriminantEquiv, show (12 : ℤ) - 12 = 0 from by decide]
+  rw [LinearEquiv.rank_eq CuspForm.discriminantEquiv, show (12 : ℤ) - 12 = 0 by decide]
   exact levelOne_weight_zero_rank_one
 
 /-- Every weight 12 cusp form for `𝒮ℒ` is a scalar multiple of the discriminant. -/
@@ -181,26 +181,24 @@ end RankIdentity
 
 section DimensionFormula
 
-/-- Weight 4 modular forms for `𝒮ℒ` are 1-dimensional. -/
 private lemma weight_four_rank_one : Module.rank ℂ (ModularForm 𝒮ℒ 4) = 1 :=
   (rank_eq_one_add_rank_cuspForm (by norm_num) ⟨2, rfl⟩).trans
     ((congrArg (1 + ·) (cuspForm_rank_lt_twelve (by norm_num))).trans (by norm_cast))
 
-/-- Weight 6 modular forms for `𝒮ℒ` are 1-dimensional. -/
 private lemma weight_six_rank_one : Module.rank ℂ (ModularForm 𝒮ℒ 6) = 1 :=
   (rank_eq_one_add_rank_cuspForm (by norm_num) ⟨3, rfl⟩).trans
     ((congrArg (1 + ·) (cuspForm_rank_lt_twelve (by norm_num))).trans (by norm_cast))
 
 private lemma E₄_qExpansion_coeff_one : (qExpansion 1 E₄).coeff 1 = 240 := by
-  rw [E_qExpansion_coeff _ ⟨2, rfl⟩, show bernoulli (4 : ℕ) = ((-1 : ℚ) / 30 : ℚ) from by
+  rw [E_qExpansion_coeff _ ⟨2, rfl⟩, show bernoulli (4 : ℕ) = ((-1 : ℚ) / 30 : ℚ) by
     rw [bernoulli_eq_bernoulli'_of_ne_one (by norm_num)]; exact bernoulli'_four]
   simp [ArithmeticFunction.sigma_one]; norm_num
 
 private lemma E₆_qExpansion_coeff_one : (qExpansion 1 E₆).coeff 1 = -504 := by
-  rw [E_qExpansion_coeff _ ⟨3, rfl⟩, show bernoulli (6 : ℕ) = ((1 : ℚ) / 42 : ℚ) from by
+  rw [E_qExpansion_coeff _ ⟨3, rfl⟩, show bernoulli (6 : ℕ) = ((1 : ℚ) / 42 : ℚ) by
     rw [bernoulli_eq_bernoulli'_of_ne_one (by norm_num), bernoulli'_def]
     norm_num [Finset.sum_range_succ, Finset.sum_range_zero,
-      show Nat.choose 6 2 = 15 from by decide, show Nat.choose 6 4 = 15 from by decide,
+      show Nat.choose 6 2 = 15 by decide, show Nat.choose 6 4 = 15 by decide,
       bernoulli'_eq_zero_of_odd (show Odd 5 from ⟨2, rfl⟩) (by norm_num)]]
   simp [ArithmeticFunction.sigma_one]; norm_num
 
@@ -269,20 +267,20 @@ theorem ModularForm.dimension_level_one (k : ℕ) (hk : 3 ≤ (k : ℤ)) (hk2 : 
       ((Nat.even_sub (by omega)).mpr (by simp only [hk2, true_iff]; decide))
     have hk12 : (((k - 12) : ℕ) : ℤ) = k - 12 := by grind
     rw [hk12] at iH
-    rw [iH, show ((k - 12 : ℕ) : ℚ) = (k : ℚ) - 12 from by norm_cast]
+    rw [iH, show ((k - 12 : ℕ) : ℚ) = (k : ℚ) - 12 by norm_cast]
     have hfl (hk' : (12 : ℚ) ≤ k) :
         ⌊(k : ℚ) / 12⌋₊ = 1 + ⌊((k : ℚ) - 12) / 12⌋₊ :=
       Nat.floor_div_eq_one_add_floor_sub_div (k : ℚ) 12 (by norm_num) hk'
     by_cases h12 : 12 ∣ (k : ℤ) - 2
-    · simp only [show 12 ∣ (k : ℤ) - 12 - 2 from by omega, ↓reduceIte, h12]; norm_cast at *
+    · simp only [show 12 ∣ (k : ℤ) - 12 - 2 by omega, ↓reduceIte, h12]; norm_cast at *
       rw [hfl (by exact_mod_cast (by omega : (12 : ℤ) ≤ k))]
-    · simp only [show ¬ 12 ∣ (k : ℤ) - 12 - 2 from by omega, ↓reduceIte, h12,
+    · simp only [show ¬ 12 ∣ (k : ℤ) - 12 - 2 by omega, ↓reduceIte, h12,
         Nat.cast_add, Nat.cast_one]; norm_cast at *
       rw [← add_assoc, ← hfl (by exact_mod_cast (by omega : (12 : ℤ) ≤ k))]
   · simp only [not_le] at HK
     have hkop : k ∈ Finset.filter Even (Finset.Icc 3 14) := by
       simp only [Finset.mem_filter, Finset.mem_Icc, hk2, and_true]; omega
-    rw [show Finset.filter Even (Finset.Icc 3 14) = ({4, 6, 8, 10, 12, 14} : Finset ℕ) from by
+    rw [show Finset.filter Even (Finset.Icc 3 14) = ({4, 6, 8, 10, 12, 14} : Finset ℕ) by
       decide] at hkop
     fin_cases hkop <;> simp only [Nat.cast_ofNat, Int.reduceSub, Int.reduceNeg] at *
     all_goals first

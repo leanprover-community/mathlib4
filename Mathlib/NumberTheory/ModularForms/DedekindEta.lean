@@ -70,7 +70,7 @@ scoped[ModularForm] notation "η" => eta
 /-- For `‖q‖ < 1`, the infinite product `∏ (1 - q^(n+1))` is multipliable. -/
 lemma multipliable_one_sub_pow {q : ℂ} (hq : ‖q‖ < 1) :
     Multipliable fun n : ℕ ↦ 1 - q ^ (n + 1) := by
-  rw [show (fun n : ℕ ↦ 1 - q ^ (n + 1)) = (fun n ↦ 1 + (-q ^ (n + 1))) from by ext; ring]
+  rw [show (fun n : ℕ ↦ 1 - q ^ (n + 1)) = (fun n ↦ 1 + (-q ^ (n + 1))) by ext; ring]
   apply multipliable_one_add_of_summable
   simp only [norm_neg, norm_pow]
   exact (summable_nat_add_iff 1).mpr (summable_geometric_of_lt_one (norm_nonneg _) hq)
