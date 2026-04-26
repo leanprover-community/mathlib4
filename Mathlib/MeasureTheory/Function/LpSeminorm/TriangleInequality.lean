@@ -15,7 +15,7 @@ In this file we prove several versions of the triangle inequality for the `Lp` s
 as well as simple corollaries.
 -/
 
-@[expose] public section
+public section
 
 open Filter ENNReal
 open scoped Topology
@@ -151,5 +151,7 @@ theorem memLp_finset_sum [ContinuousAdd ε']
     {ι} (s : Finset ι) {f : ι → α → ε'} (hf : ∀ i ∈ s, MemLp (f i) p μ) :
     MemLp (fun a => ∑ i ∈ s, f i a) p μ := by
   simpa only [← Finset.sum_apply] using memLp_finset_sum' (μ := μ) (p := p) s hf
+
+@[deprecated (since := "2026-04-08")] alias memLp_finset_sum' := memLp_finsetSum'
 
 end MeasureTheory

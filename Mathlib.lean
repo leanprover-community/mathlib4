@@ -331,6 +331,7 @@ public import Mathlib.Algebra.FreeAlgebra
 public import Mathlib.Algebra.FreeAlgebra.Cardinality
 public import Mathlib.Algebra.FreeMonoid.Basic
 public import Mathlib.Algebra.FreeMonoid.Count
+public import Mathlib.Algebra.FreeMonoid.FreeSemigroup
 public import Mathlib.Algebra.FreeMonoid.Symbols
 public import Mathlib.Algebra.FreeMonoid.UniqueProds
 public import Mathlib.Algebra.FreeNonUnitalNonAssocAlgebra
@@ -1329,6 +1330,7 @@ public import Mathlib.AlgebraicGeometry.EllipticCurve.IsomOfJ
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Basic
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Formula
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Point
+public import Mathlib.AlgebraicGeometry.EllipticCurve.LFunction
 public import Mathlib.AlgebraicGeometry.EllipticCurve.ModelsWithJ
 public import Mathlib.AlgebraicGeometry.EllipticCurve.NormalForms
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Basic
@@ -1731,6 +1733,7 @@ public import Mathlib.Analysis.Calculus.FDeriv.Linear
 public import Mathlib.Analysis.Calculus.FDeriv.Measurable
 public import Mathlib.Analysis.Calculus.FDeriv.Mul
 public import Mathlib.Analysis.Calculus.FDeriv.Norm
+public import Mathlib.Analysis.Calculus.FDeriv.Partial
 public import Mathlib.Analysis.Calculus.FDeriv.Pi
 public import Mathlib.Analysis.Calculus.FDeriv.Pow
 public import Mathlib.Analysis.Calculus.FDeriv.Prod
@@ -1742,6 +1745,7 @@ public import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 public import Mathlib.Analysis.Calculus.Gradient.Basic
 public import Mathlib.Analysis.Calculus.Implicit
 public import Mathlib.Analysis.Calculus.ImplicitContDiff
+public import Mathlib.Analysis.Calculus.ImplicitFunction.Bivariate
 public import Mathlib.Analysis.Calculus.ImplicitFunction.ProdDomain
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Analytic
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ApproximatesLinearOn
@@ -2974,6 +2978,7 @@ public import Mathlib.CategoryTheory.LocallyCartesianClosed.Over
 public import Mathlib.CategoryTheory.LocallyCartesianClosed.Sections
 public import Mathlib.CategoryTheory.LocallyDirected
 public import Mathlib.CategoryTheory.MarkovCategory.Basic
+public import Mathlib.CategoryTheory.MarkovCategory.Positive
 public import Mathlib.CategoryTheory.Monad.Adjunction
 public import Mathlib.CategoryTheory.Monad.Algebra
 public import Mathlib.CategoryTheory.Monad.Basic
@@ -3074,6 +3079,7 @@ public import Mathlib.CategoryTheory.Monoidal.Rigid.Braided
 public import Mathlib.CategoryTheory.Monoidal.Rigid.Functor
 public import Mathlib.CategoryTheory.Monoidal.Rigid.FunctorCategory
 public import Mathlib.CategoryTheory.Monoidal.Rigid.OfEquivalence
+public import Mathlib.CategoryTheory.Monoidal.Ring
 public import Mathlib.CategoryTheory.Monoidal.Skeleton
 public import Mathlib.CategoryTheory.Monoidal.Subcategory
 public import Mathlib.CategoryTheory.Monoidal.Tor
@@ -3279,6 +3285,7 @@ public import Mathlib.CategoryTheory.Sites.IsSheafFor
 public import Mathlib.CategoryTheory.Sites.JointlySurjective
 public import Mathlib.CategoryTheory.Sites.LeftExact
 public import Mathlib.CategoryTheory.Sites.Limits
+public import Mathlib.CategoryTheory.Sites.LocalProperties
 public import Mathlib.CategoryTheory.Sites.Localization
 public import Mathlib.CategoryTheory.Sites.LocallyBijective
 public import Mathlib.CategoryTheory.Sites.LocallyFullyFaithful
@@ -3576,6 +3583,7 @@ public import Mathlib.Combinatorics.SimpleGraph.UniversalVerts
 public import Mathlib.Combinatorics.SimpleGraph.VertexCover
 public import Mathlib.Combinatorics.SimpleGraph.Walk
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Basic
+public import Mathlib.Combinatorics.SimpleGraph.Walk.Chord
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Counting
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Decomp
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Maps
@@ -6916,6 +6924,7 @@ public import Mathlib.SetTheory.Lists
 public import Mathlib.SetTheory.Ordinal.Arithmetic
 public import Mathlib.SetTheory.Ordinal.Basic
 public import Mathlib.SetTheory.Ordinal.CantorNormalForm
+public import Mathlib.SetTheory.Ordinal.Commute
 public import Mathlib.SetTheory.Ordinal.Enum
 public import Mathlib.SetTheory.Ordinal.Exponential
 public import Mathlib.SetTheory.Ordinal.Family
