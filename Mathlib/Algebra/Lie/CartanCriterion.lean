@@ -191,20 +191,21 @@ by scalar extension to the algebraically closed case, then closes by
 public theorem isNilpotent_derivedSeries_of_traceForm_eq_zero (h : traceForm K L M = 0) :
     IsNilpotent (derivedSeries K L 1) M := by
   haveI : FiniteDimensional K̄ M̄ := Module.Finite.base_change K K̄ M
-  suffices key : IsNilpotent (derivedSeries K̄ L̄ 1) M̄ by
+  suffices nilp_ext : IsNilpotent (derivedSeries K̄ L̄ 1) M̄ by
     rw [LieModule.isNilpotent_iff_forall' (R := K)]
-    rw [LieModule.isNilpotent_iff_forall' (R := K̄)] at key
+    rw [LieModule.isNilpotent_iff_forall' (R := K̄)] at nilp_ext
     intro ⟨x, hx⟩
     change _root_.IsNilpotent (toEnd K L M x)
-    have hx_bar : (1 : K̄) ⊗ₜ[K] x ∈ derivedSeries K̄ L̄ 1 := by
+    have hx_ext : 1 ⊗ₜ[K] x ∈ derivedSeries K̄ L̄ 1 := by
       rw [derivedSeries_baseChange]
       exact Submodule.tmul_mem_baseChange_of_mem 1 hx
-    have step : _root_.IsNilpotent (toEnd K̄ L̄ M̄ ((1 : K̄) ⊗ₜ[K] x)) := key ⟨_, hx_bar⟩
-    rw [toEnd_baseChange] at step
-    have hbc_inj : Function.Injective (End.baseChangeHom K K̄ M) := fun f g hfg ↦ by
+    have hbc_inj : Function.Injective (End.baseChangeHom K K̄ M) := by
+      intro f g hfg
       ext m
-      simpa using FaithfullyFlat.tensorProduct_mk_injective (A := K) (B := K̄) M
-        (LinearMap.congr_fun hfg ((1 : K̄) ⊗ₜ[K] m))
-    exact (IsNilpotent.map_iff hbc_inj).mp step
+      simpa using FaithfullyFlat.tensorProduct_mk_injective M (LinearMap.congr_fun hfg (1 ⊗ₜ[K] m))
+    rw [← IsNilpotent.map_iff hbc_inj]
+    change _root_.IsNilpotent ((toEnd K L M x).baseChange K̄)
+    rw [← toEnd_baseChange]
+    exact nilp_ext ⟨_, hx_ext⟩
   exact isNilpotent_derivedSeries_of_traceForm_eq_zero_aux (traceForm_baseChange_eq_zero h)
 end LieModule
