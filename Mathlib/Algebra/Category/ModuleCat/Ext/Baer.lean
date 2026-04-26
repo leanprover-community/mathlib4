@@ -55,15 +55,13 @@ lemma ext_quotient_one_subsingleton_iff [Small.{v} R] (M : ModuleCat.{v} R) (I :
     intro x hx
     have := ConcreteCategory.congr_hom ((Ext.mk₀_bijective _ _).1 hf')
       ((Shrink.linearEquiv R I).symm ⟨x, hx⟩)
-    simpa [-Shrink.linearEquiv_apply, -Shrink.linearEquiv_symm_apply, S, shortComplexOfConj]
-      using this
+    simpa [S]
   · obtain ⟨g', hg'⟩ := h ((Ext.addEquiv₀ e).hom.comp (Shrink.linearEquiv R I).symm.toLinearMap)
     use Ext.mk₀ (ModuleCat.ofHom (g'.comp (Shrink.linearEquiv R R).toLinearMap))
     rw [Ext.bilinearComp_apply_apply, Ext.mk₀_comp_mk₀, ← Ext.mk₀_addEquiv₀_apply e]
     congr
     ext x
-    simp [-Shrink.linearEquiv_apply, -Shrink.linearEquiv_symm_apply,
-      LinearMap.comp_apply, S, shortComplexOfConj, hg' _ ((Shrink.linearEquiv R I) x).2]
+    simp_all [S]
 
 lemma injective_of_subsingleton_ext_quotient_one [Small.{v} R] (M : ModuleCat.{v} R)
     (h : ∀ (I : Ideal R), Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M 1)) :
