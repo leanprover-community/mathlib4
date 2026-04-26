@@ -144,46 +144,45 @@ theorem zpow_apply_comm {α : Type*} (σ : Perm α) (m n : ℤ) {x : α} :
 The assumption made here is that if you're using the group structure, you want to preserve it after
 simp. -/
 
-
-/-@[simp]
+@[deprecated "use `equiv_simps` simpset instead" (since := "2026-04-27")]
 theorem trans_one {α : Sort*} {β : Type*} (e : α ≃ β) : e.trans (1 : Perm β) = e :=
   Equiv.trans_refl e
 
-@[simp]
+@[deprecated "use `equiv_simps` simpset instead" (since := "2026-04-27")]
 theorem mul_refl (e : Perm α) : e * Equiv.refl α = e :=
   Equiv.trans_refl e
 
-@[simp]
+@[deprecated "use `equiv_simps` simpset instead" (since := "2026-04-27")]
 theorem one_symm : (1 : Perm α).symm = 1 :=
   rfl
 
-@[simp]
+@[deprecated "use `equiv_simps` simpset instead" (since := "2026-04-27")]
 theorem refl_inv : (Equiv.refl α : Perm α)⁻¹ = 1 :=
   rfl
 
-@[simp]
+@[deprecated "use `equiv_simps` simpset instead" (since := "2026-04-27")]
 theorem one_trans {α : Type*} {β : Sort*} (e : α ≃ β) : (1 : Perm α).trans e = e :=
   rfl
 
-@[simp]
+@[deprecated "use `equiv_simps` simpset instead" (since := "2026-04-27")]
 theorem refl_mul (e : Perm α) : Equiv.refl α * e = e :=
   rfl
 
-@[simp]
+@[deprecated "use `equiv_simps` simpset instead" (since := "2026-04-27")]
 theorem inv_trans_self (e : Perm α) : e⁻¹.trans e = 1 :=
   Equiv.symm_trans_self e
 
-@[simp]
+@[deprecated "use `equiv_simps` simpset instead" (since := "2026-04-27")]
 theorem mul_symm (e : Perm α) : e * e.symm = 1 :=
   Equiv.symm_trans_self e
 
-@[simp]
+@[deprecated "use `equiv_simps` simpset instead" (since := "2026-04-27")]
 theorem self_trans_inv (e : Perm α) : e.trans e⁻¹ = 1 :=
   Equiv.self_trans_symm e
 
-@[simp]
+@[deprecated "use `equiv_simps` simpset instead" (since := "2026-04-27")]
 theorem symm_mul (e : Perm α) : e.symm * e = 1 :=
-  Equiv.self_trans_symm e-/
+  Equiv.self_trans_symm e
 
 /-! Lemmas about `Equiv.Perm.sumCongr` re-expressed via the group structure. -/
 
