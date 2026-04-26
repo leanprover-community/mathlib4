@@ -291,23 +291,26 @@ protected theorem LinearIndependent.eventually {ι} [Finite ι] {f : ι → E}
     (hf : LinearIndependent 𝕜 f) : ∀ᶠ g in 𝓝 f, LinearIndependent 𝕜 g := by
   cases nonempty_fintype ι
   classical
-  let e : ((ι → 𝕜) →L[𝕜] E) ≃L[𝕜] ι → E := ContinuousLinearEquiv.piRing (𝕜 := 𝕜) (E := E) ι
-  have hopen : IsOpen {g : ι → E | LinearIndependent 𝕜 g} := by
-    convert
-      ContinuousLinearMap.isOpen_injective (𝕜 := 𝕜) (E := ι → 𝕜) (F := E) |>.preimage
-        e.symm.continuous using 1
-    ext g
-    change LinearIndependent 𝕜 g ↔ Function.Injective ⇑(e.symm g)
-    let L : (ι → 𝕜) →ₗ[𝕜] E :=
-      LinearMap.lsum 𝕜 (fun _ ↦ 𝕜) ℕ fun i ↦ LinearMap.id.smulRight (g i)
-    have hL : (e.symm g : (ι → 𝕜) →L[𝕜] E) = L.toContinuousLinearMap := by
-      ext c
-      change (LinearEquiv.piRing 𝕜 E ι 𝕜).symm g c = _
-      rw [LinearEquiv.piRing_symm_apply]
-      simp [L]
-    rw [show LinearIndependent 𝕜 g ↔ Function.Injective L from Fintype.linearIndependent_iff'ₛ]
-    simp [hL]
-  exact IsOpen.mem_nhds hopen hf
+  simp only [Fintype.linearIndependent_iff'] at hf ⊢
+  rcases LinearMap.exists_antilipschitzWith _ hf with ⟨K, K0, hK⟩
+  have : Tendsto (fun g : ι → E => ∑ i, ‖g i - f i‖) (𝓝 f) (𝓝 <| ∑ i, ‖f i - f i‖) :=
+    tendsto_finsetSum _ fun i _ =>
+      Tendsto.norm <| ((continuous_apply i).tendsto _).sub tendsto_const_nhds
+  simp only [sub_self, norm_zero, Finset.sum_const_zero] at this
+  refine (this.eventually (gt_mem_nhds <| inv_pos.2 K0)).mono fun g hg => ?_
+  replace hg : ∑ i, ‖g i - f i‖₊ < K⁻¹ := by
+    rw [← NNReal.coe_lt_coe]
+    push_cast
+    exact hg
+  rw [LinearMap.ker_eq_bot]
+  refine (hK.add_sub_lipschitzWith (LipschitzWith.of_dist_le_mul fun v u => ?_) hg).injective
+  simp only [dist_eq_norm, LinearMap.lsum_apply, Pi.sub_apply, LinearMap.sum_apply,
+    LinearMap.comp_apply, LinearMap.proj_apply, LinearMap.smulRight_apply, LinearMap.id_apply, ←
+    Finset.sum_sub_distrib, ← smul_sub, ← sub_smul, NNReal.coe_sum, coe_nnnorm, Finset.sum_mul]
+  refine norm_sum_le_of_le _ fun i _ => ?_
+  rw [norm_smul, mul_comm]
+  gcongr
+  exact norm_le_pi_norm (v - u) i
 
 theorem isOpen_setOf_linearIndependent {ι : Type*} [Finite ι] :
     IsOpen { f : ι → E | LinearIndependent 𝕜 f } :=

@@ -33,7 +33,7 @@ In this file we study polar sets in the strong dual `StrongDual` of a normed spa
 strong dual, polar
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
