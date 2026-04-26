@@ -538,13 +538,13 @@ theorem Submodule.closed_of_finiteDimensional
 
 /-- If `s` is a closed subspace with finite codimension, any subspace containing `s` is closed. -/
 theorem Submodule.isClosed_mono_of_finiteDimensional_quotient
-    {s t : Submodule 𝕜 E} (s_le_t : s ≤ t) [FiniteDimensional 𝕜 (E ⧸ s)]
-    (s_closed : IsClosed (s : Set E)) :
+    {s t : Submodule 𝕜 E} [FiniteDimensional 𝕜 (E ⧸ s)] (s_closed : IsClosed (s : Set E))
+    (s_le_t : s ≤ t) :
     IsClosed (t : Set E) := by
   rw [show t = comap s.mkQ (map s.mkQ t) by simpa]
   exact (map s.mkQ t).closed_of_finiteDimensional.preimage continuous_quot_mk
 
-/-- The supremum of a closed subspace and a finite dimensional subspace is still closed. -/
+/-- The supremum of a closed subspace and a finite dimensional subspace is closed. -/
 theorem Submodule.isClosed_sup_finiteDimensional
     (s t : Submodule 𝕜 E) (hs : IsClosed (s : Set E)) [ht : FiniteDimensional 𝕜 t] :
     IsClosed ((s ⊔ t : Submodule 𝕜 E) : Set E) := by
