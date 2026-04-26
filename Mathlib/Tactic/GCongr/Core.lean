@@ -616,7 +616,7 @@ def applyGCongrLemma (g : MVarId) (lem : GCongr.GCongrLemma) :
       unless lem.mainSubgoals.any (fun h ↦ h.lhsIdx == i || h.rhsIdx == i || h.hypIdx == i) do
         if bis[i]!.isInstImplicit then
           -- Allow synthesis to get stuck, in case there are still metavariables to be filled in.
-          match ← trySynthInstance type with
+          match ← trySynthInstance (← mvarId.getType) with
           | .some inst => mvarId.assign inst; continue
           | .none => failure
           | .undef => sideGoals := sideGoals.push mvarId
