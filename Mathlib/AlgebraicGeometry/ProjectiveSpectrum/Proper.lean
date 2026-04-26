@@ -20,7 +20,7 @@ This contribution was created as part of the Durham Computational Algebraic Geom
 
 -/
 
-@[expose] public section
+public section
 
 namespace AlgebraicGeometry.Proj
 
