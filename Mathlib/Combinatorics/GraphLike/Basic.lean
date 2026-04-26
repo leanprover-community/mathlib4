@@ -64,6 +64,7 @@ lemma Adj.right_mem (h : Adj G v w) : w ∈ V(G) := by
   obtain ⟨d, hd, rfl, rfl⟩ := h
   exact snd_mem_of_darts hd
 
+/-- Convert a dart to a pair of vertices. -/
 @[expose] def toProd (d : D(G)) : V × V := (fst G d.val, snd G d.val)
 
 /-- The step from `u` to `v` is a dart from `u` to `v`. -/
