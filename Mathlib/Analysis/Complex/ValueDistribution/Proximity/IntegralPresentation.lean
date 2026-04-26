@@ -47,7 +47,7 @@ noncomputable def cartanKernel (f : ℂ → ℂ) (R : ℝ) (α β : ℝ) : ℝ :
   log ‖f (circleMap 0 R β) - circleMap 0 1 α‖
 
 private lemma integrable_cartanKernel_in_alpha (f : ℂ → ℂ) (R : ℝ) (β : ℝ) :
-    Integrable (cartanKernel f R · β) (volume.restrict (Ioc 0 (2 * π))) := by
+    IntegrableOn (cartanKernel f R · β) (Ioc 0 (2 * π)) := by
   apply (intervalIntegrable_iff_integrableOn_Ioc_of_le two_pi_pos.le).1
   simpa [cartanKernel, norm_sub_rev, CircleIntegrable] using circleIntegrable_log_norm_sub_const 1
 
@@ -57,12 +57,7 @@ private lemma integral_norm_eq_two_mul_integral_max_sub
     ∫ x, ‖g x‖ ∂μ = 2 * ∫ x, max (g x) 0 ∂μ - ∫ x, g x ∂μ := by
   have h_eq : ∀ x, ‖g x‖ = 2 * max (g x) 0 - g x := by
     intro x
-    by_cases hx : 0 ≤ g x
-    · rw [norm_eq_abs, abs_of_nonneg hx, max_eq_left hx]
-      ring
-    · rw [norm_eq_abs, abs_of_neg (lt_of_not_ge hx),
-        max_eq_right (le_of_lt (lt_of_not_ge hx))]
-      ring
+    grind [norm_eq_abs]
   rw [integral_congr_ae (Eventually.of_forall h_eq), integral_sub (hmax.const_mul 2) hg,
     integral_const_mul]
 
@@ -78,7 +73,7 @@ theorem measurable_cartanKernel (hf : Measurable f) :
 
 /- Formula for the `L¹` norm of an angular slice of the Cartan kernel. -/
 private lemma integral_norm_cartanKernel_eq (f : ℂ → ℂ) (R β : ℝ) :
-    ∫ α, ‖cartanKernel f R α β‖ ∂(volume.restrict (Ioc 0 (2 * π))) =
+    ∫ α in Ioc 0 (2 * π), ‖cartanKernel f R α β‖ = 
       2 * (∫ α, max (cartanKernel f R α β) 0 ∂(volume.restrict (Ioc 0 (2 * π)))) -
         (2 * π) * log⁺ ‖f (circleMap 0 R β)‖ := by
   let μ : Measure ℝ := volume.restrict (Ioc 0 (2 * π))
@@ -87,7 +82,7 @@ private lemma integral_norm_cartanKernel_eq (f : ℂ → ℂ) (R β : ℝ) :
       have h_slice : Integrable (cartanKernel f R · β) μ :=
         integrable_cartanKernel_in_alpha f R β
       exact integral_norm_eq_two_mul_integral_max_sub h_slice (h_slice.sup (integrable_const 0))
-    _ = 2 * (∫ α, max (cartanKernel f R α β) 0 ∂μ) - (2 * π) * log⁺ ‖f (circleMap 0 R β)‖ := by
+    _ = 2 * (∫ α, max (cartanKernel f R α β) 0 ∂μ) - 2 * π * log⁺ ‖f (circleMap 0 R β)‖ := by
       congr
       let z := f (circleMap 0 R β)
       have h_avg : circleAverage (log ‖z - ·‖) 0 1 = log⁺ ‖z‖ := by
@@ -142,7 +137,7 @@ private lemma integrable_integral_norm_cartanKernel (h : Meromorphic f) :
 If `f : ℂ → ℂ` is meromorphic, then the Cartan kernel of integration is integrable as a function in
 the two variables `α` and `β`.
 -/
-private lemma integrable_cartanKernel (h : Meromorphic f) :
+lemma integrable_cartanKernel (h : Meromorphic f) :
     Integrable (fun p ↦ cartanKernel f R p.1 p.2)
       ((volume.restrict (uIoc 0 (2 * π))).prod
        (volume.restrict (uIoc 0 (2 * π)))) := by
@@ -157,8 +152,7 @@ end Cartan
 Presentation of the proximity function as iterated circle averages.
 -/
 @[simp] theorem proximity_top_eq_circleAverage_circleAverage (h : Meromorphic f) :
-    (fun R ↦ circleAverage (fun a ↦ circleAverage (log ‖f · - a‖) 0 R) 0 1) =
-      proximity f ⊤ := by
+    (fun R ↦ circleAverage (fun a ↦ circleAverage (log ‖f · - a‖) 0 R) 0 1) = proximity f ⊤ := by
   ext R
   let F : ℝ → ℝ → ℝ := Cartan.cartanKernel f R
   calc circleAverage (fun a ↦ circleAverage (log ‖f · - a‖) 0 R) 0 1
@@ -196,8 +190,7 @@ Presentation of the proximity function as iterated circle averages.
 Complementary statement to `proximity_top_eq_circleAverage_circleAverage`, providing circle
 integrability of the integrand.
 -/
-theorem circleIntegrable_circleAverage_log_norm_sub
-    (h : Meromorphic f) :
+theorem circleIntegrable_circleAverage_log_norm_sub (h : Meromorphic f) :
     CircleIntegrable (fun a ↦ circleAverage (log ‖f · - a‖) 0 R) 0 1 := by
   by_cases hR : R = 0
   · simp [hR, circleAverage_zero, norm_sub_rev, circleIntegrable_log_norm_sub_const]
