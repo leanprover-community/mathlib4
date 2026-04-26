@@ -177,8 +177,7 @@ local notation "L̄" => K̄ ⊗[K] L
 local notation "M̄" => K̄ ⊗[K] M
 
 omit [CharZero K] in
-lemma traceForm_baseChange_eq_zero (h : traceForm K L M = 0) :
-    traceForm K̄ L̄ M̄ = 0 := by
+lemma traceForm_baseChange_eq_zero (h : traceForm K L M = 0) : traceForm K̄ L̄ M̄ = 0 := by
   refine LinearMap.ext fun u ↦ TensorProduct.induction_on u
     (by simp) ?_ (fun u₁ u₂ hu₁ hu₂ ↦ by simp [hu₁, hu₂])
   intro a x
