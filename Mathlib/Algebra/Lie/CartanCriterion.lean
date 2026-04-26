@@ -206,5 +206,5 @@ public theorem isNilpotent_derivedSeries_of_traceForm_eq_zero (h : traceForm K L
       simpa using FaithfullyFlat.tensorProduct_mk_injective (A := K) (B := K̄) M
         (LinearMap.congr_fun hfg ((1 : K̄) ⊗ₜ[K] m))
     exact (IsNilpotent.map_iff hbc_inj).mp step
-  exact isNilpotent_derivedSeries_of_traceForm_eq_zero_aux (traceForm_baseChange_eq_zero_aux h)
+  exact isNilpotent_derivedSeries_of_traceForm_eq_zero_aux (traceForm_baseChange_eq_zero h)
 end LieModule
