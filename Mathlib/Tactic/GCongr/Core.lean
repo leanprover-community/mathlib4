@@ -601,40 +601,53 @@ def dischargeSide (mvarId : MVarId) : GCongrM Unit := do
   try (← read).sideGoalDischarger (← mvarId.intros).2
   catch _ => setMCtx mctx; pushNewGoal mvarId
 
+/-- Apply generalized congruence lemma `lem` to goal `g`, throwing an error if it fails.
+Return an array of main subgoals and an array of side goals.
+For each main subgoal, also return whether the sides of the relation are swapped
+(i.e. whether it is contravariant).
+
+This function is used by both the `gcongr` and `grw` tactic.
+In the case of `grw`, one of the two sides of the goal is a metavariable that is filled in
+by this function. -/
 def applyGCongrLemma (g : MVarId) (lem : GCongr.GCongrLemma) :
-    GCongrM (Array (MVarId × Bool × Bool) × Array MVarId) := do
+    GCongrM (Array (MVarId × Bool) × Array MVarId) := do
   let const ← mkConstWithFreshMVarLevels lem.declName
   let type ← inferType const
-  -- we use `withDefault` so that we can unfold `Monotone`
+  -- Use `withDefault` so that we can unfold `Monotone`.
   let (mvars, bis, type) ← withDefault <| forallMetaTelescopeReducing type lem.numHyps
   guard <| ← approxDefEq <| isDefEq (← g.getType) type
   g.assign (mkAppN const mvars)
   let mut sideGoals := #[]
   for mvar in mvars, i in 0...* do
     let mvarId := mvar.mvarId!
-    unless ← mvarId.isAssigned do
-      unless lem.mainSubgoals.any (fun h ↦ h.lhsIdx == i || h.rhsIdx == i || h.hypIdx == i) do
-        if bis[i]!.isInstImplicit then
-          -- Allow synthesis to get stuck, in case there are still metavariables to be filled in.
-          match ← trySynthInstance (← mvarId.getType) with
-          | .some inst => mvarId.assign inst; continue
-          | .none => failure
-          | .undef => sideGoals := sideGoals.push mvarId
-        else
-          sideGoals := sideGoals.push mvarId
+    if ← mvarId.isAssigned then continue
+    -- Filter out metavariables from the main subgoals
+    if lem.mainSubgoals.any (fun h ↦ h.lhsIdx == i || h.rhsIdx == i || h.hypIdx == i) then continue
+    -- Synthesize instance implicit arguments.
+    -- We allow synthesis to get stuck, because in the case of `grw`
+    -- there may be unassigned metavariables in the type.
+    if bis[i]!.isInstImplicit then
+      match ← trySynthInstance (← mvarId.getType) with
+      | .some inst => mvarId.assign inst; continue
+      | .none => failure
+      | .undef => sideGoals := sideGoals.push mvarId
+    else
+      sideGoals := sideGoals.push mvarId
   let mainGoals ← lem.mainSubgoals.flatMapM fun h ↦ do
+    let mvarId := mvars[h.hypIdx]!.mvarId!
     if (← get).patterns.isEmpty then
+      -- If the user did not provide binders (using `gcongr with ...`),
+      -- instead use binder names appearing in the LHS/RHS of the target relation.
       let lhsNames := lambdaBinderNames (← instantiateMVars mvars[h.lhsIdx]!)
       let rhsNames := lambdaBinderNames (← instantiateMVars mvars[h.rhsIdx]!)
       let lambdaNames := if lhsNames.size ≥ rhsNames.size then lhsNames else rhsNames
-      let names := h.hypsPos.map fun | some n => lambdaNames.getD n `_ | none => `_
-      let mvarId := (← mvars[h.hypIdx]!.mvarId!.introN h.hypsPos.length names).2
-      return #[(mvarId, h.isContra, names.isEmpty)]
+      let names := h.hypsPos.map (·.elim `_ (lambdaNames.getD · `_))
+      return #[((← mvarId.introN h.hypsPos.length names).2, h.isContra)]
     else
-      return (← introN mvars[h.hypIdx]!.mvarId! h.hypsPos.length).toArray.map
-        (·, h.isContra, h.hypsPos.isEmpty)
+      return (← introN mvarId h.hypsPos.length).toArray.map (·, h.isContra)
   return (mainGoals, sideGoals)
 where
+  /-- Get the binder names from a lambda function. -/
   lambdaBinderNames (e : Expr) (acc : Array Name := #[]) : Array Name :=
     match e with
     | .lam n _ b _ => lambdaBinderNames b (acc.push n)
@@ -706,7 +719,7 @@ partial def _root_.Lean.MVarId.gcongr
       setMCtx mctx
       continue
     sideGoals.forM dischargeSide
-    for (mvarId, isContra, _) in mainGoals do
+    for (mvarId, isContra) in mainGoals do
       let mdataLhs?' := mdataLhs?.map (· != isContra)
       -- Recurse on the subgoal.
       discard <| mvarId.gcongr mdataLhs?' depth
