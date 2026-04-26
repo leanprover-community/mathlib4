@@ -143,6 +143,7 @@ instance StructuredArrow.closedUnderColimitsOfShape_discrete_empty [L.Faithful] 
     simpa [MorphismProperty.structuredArrowObj_iff,
       P.structuredArrow_iso_iff e] using P.id_mem (L.obj Y)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma StructuredArrow.isClosedUnderLimitsOfShape {J : Type*} [Category* J]
     {P : MorphismProperty T} [P.RespectsIso] [PreservesLimitsOfShape J L] [HasLimitsOfShape J A]
@@ -297,6 +298,7 @@ noncomputable instance [P.ContainsIdentities] [P.RespectsIso] :
   · exact inferInstanceAs (HasColimitsOfShape _ (Under X))
   · apply Under.closedUnderColimitsOfShape_discrete_empty _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {X} in
 instance [P.ContainsIdentities] (Y : P.Under ⊤ X) :

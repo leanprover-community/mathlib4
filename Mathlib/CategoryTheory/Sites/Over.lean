@@ -135,6 +135,7 @@ lemma overEquiv_ofArrows {X : C} {Y : Over X} {I : Type*} (Z : I → Over X) (g 
     overEquiv Y (ofArrows Z g) = ofArrows (fun i => (Z i).left) (fun i => (g i).left) := by
   simp [Sieve.overEquiv, functorPushforward_ofArrows]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma overEquiv_preOneHypercover_sieve₁ {X : C} {Y : Over X} (E : PreOneHypercover.{w} Y)
     {i₁ i₂ : E.I₀} {W : Over X} (p₁ : W ⟶ E.X i₁) (p₂ : W ⟶ E.X i₂) :
     overEquiv W (E.sieve₁ p₁ p₂) =
@@ -155,6 +156,7 @@ lemma overEquiv_generate {X : C} {Y : Over X} (R : Presieve Y) :
     rintro Z g ⟨W, u, v, hu, rfl⟩
     exact (overEquiv_iff _ _).mpr ⟨W, Over.homMk v, u, hu, rfl⟩
 
+set_option backward.defeqAttrib.useBackward true in
 lemma overEquiv_symm_generate {X : C} {Y : Over X} (R : Presieve Y.left) :
     (overEquiv Y).symm (.generate R) =
       .generate (Presieve.functorPullback (Over.forget X) R) := by
@@ -331,6 +333,7 @@ lemma _root_.CategoryTheory.CoverPreserving.overPost {D : Type*} [Category* D]
     rw [Sieve.overEquiv_functorPushforward_post]
     exact h.cover_preserve hS
 
+set_option backward.defeqAttrib.useBackward true in
 instance {J : GrothendieckTopology C} (X : C) :
     (Over.forget X).PreservesOneHypercovers (J.over _) J := by
   intro Y E
@@ -345,6 +348,7 @@ instance {J : GrothendieckTopology C} (X : C) :
       (Over.homMk (U := Over.mk (p₁ ≫ Over.hom _)) p₂ this.symm) (by ext; simpa)
     rwa [GrothendieckTopology.mem_over_iff, Sieve.overEquiv_preOneHypercover_sieve₁] at this
 
+set_option backward.defeqAttrib.useBackward true in
 instance {D : Type*} [Category* D] {J : GrothendieckTopology C} {K : GrothendieckTopology D}
     (F : C ⥤ D) (X : C) [Functor.PreservesOneHypercovers.{w} F J K] :
     Functor.PreservesOneHypercovers.{w} (Over.post F) (J.over X) (K.over _) := by
