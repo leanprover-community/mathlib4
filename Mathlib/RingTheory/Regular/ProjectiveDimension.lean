@@ -34,7 +34,7 @@ The analogus version for quotient regular sequence is also provided.
 
 universe v u
 
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [CommRing R] [Small.{v} R]
 
 open CategoryTheory Abelian IsLocalRing Module RingTheory.Sequence
 
@@ -42,7 +42,7 @@ namespace ModuleCat
 
 section
 
-variable [IsNoetherianRing R] [Small.{v} R]
+variable [IsNoetherianRing R]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma hasProjectiveDimensionLT_of_forall_finite (M : ModuleCat.{v} R) (n : ℕ) [Module.Finite R M]
@@ -50,7 +50,7 @@ lemma hasProjectiveDimensionLT_of_forall_finite (M : ModuleCat.{v} R) (n : ℕ) 
     HasProjectiveDimensionLT M n := by
   induction n generalizing M with
   | zero =>
-    have : Subsingleton (M ⟶ M) := @Ext.homEquiv₀.symm.subsingleton _ _ (h M ‹_›)
+    have : Subsingleton (M ⟶ M) := Ext.homEquiv₀.subsingleton_congr.mp (h M ‹_›)
     have : Limits.IsZero M := (Limits.IsZero.iff_id_eq_zero M).mpr (Subsingleton.eq_zero (𝟙 M))
     exact this.hasProjectiveDimensionLT_zero
   | succ n hn =>
@@ -70,8 +70,7 @@ lemma hasProjectiveDimensionLT_of_forall_finite (M : ModuleCat.{v} R) (n : ℕ) 
       rw [hS.hasProjectiveDimensionLT_X₃_iff n inferInstance]
       have (L : ModuleCat.{v} R) : Subsingleton (Ext S.X₁ L (n + 1)) ↔
         Subsingleton (Ext M L (n + 2)) := by
-        have (m : ℕ) : Subsingleton (Ext S.X₂ L (m + 1)) :=
-          subsingleton_of_forall_eq 0 (fun y ↦ Ext.eq_zero_of_projective y)
+        have (m : ℕ) : Subsingleton (Ext S.X₂ L (m + 1)) := Ext.subsingleton_of_projective S.X₂ L m
         have isi : IsIso (AddCommGrpCat.ofHom (hS.extClass.precomp L (add_comm 1 _))) :=
           (Ext.contravariantSequence_exact hS L (n + 1) (n + 2)
             (add_comm 1 _)).isIso_map' 1 (by decide)
@@ -87,7 +86,7 @@ end
 variable [IsLocalRing R] [IsNoetherianRing R]
 
 set_option backward.isDefEq.respectTransparency false in
-lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular [Small.{v} R] (M : ModuleCat.{v} R)
+lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular (M : ModuleCat.{v} R)
     [Module.Finite R M] (x : R) (reg : IsSMulRegular M x) (mem : x ∈ maximalIdeal R) :
     projectiveDimension (ModuleCat.of R (QuotSMulTop x M)) = projectiveDimension M + 1 := by
   have sub : Subsingleton M ↔ Subsingleton (QuotSMulTop x M) := by
@@ -141,9 +140,8 @@ lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular [Small.{v} R] (M 
   refine eq_of_forall_ge_iff (fun N ↦ ?_)
   induction N with
   | bot =>
-    simpa only [le_bot_iff, projectiveDimension_eq_bot_iff,
-      ModuleCat.isZero_iff_subsingleton, WithBot.add_eq_bot, WithBot.one_ne_bot, or_false]
-      using sub.symm
+    simpa only [le_bot_iff, projectiveDimension_eq_bot_iff, WithBot.add_eq_bot, WithBot.one_ne_bot,
+      ModuleCat.isZero_iff_subsingleton, or_false] using sub.symm
   | coe N =>
     induction N with
     | top => simp
@@ -173,8 +171,6 @@ lemma projectiveDimension_quotient_regular_sequence [Small.{v} R] (M : ModuleCat
         ← add_assoc, ← projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular M x this mem.1,
         ← hn (ModuleCat.of R (QuotSMulTop x M)) rs' ((isWeaklyRegular_cons_iff M _ _).mp reg).2
           mem.2 len]
-
-variable [Small.{v} R]
 
 lemma projectiveDimension_quotient_eq_length (rs : List R) (reg : IsRegular R rs) :
     projectiveDimension (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs))) = rs.length := by
