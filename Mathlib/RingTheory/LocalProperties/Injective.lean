@@ -100,7 +100,6 @@ universe u' v'
 variable
   (Rₚ : ∀ (P : Ideal R) [P.IsMaximal], Type u')
   [∀ (P : Ideal R) [P.IsMaximal], CommRing (Rₚ P)]
-  [∀ (P : Ideal R) [P.IsMaximal], Small.{v'} (Rₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], Algebra R (Rₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], IsLocalization.AtPrime (Rₚ P) P]
   (Mₚ : ∀ (P : Ideal R) [P.IsMaximal], Type v')

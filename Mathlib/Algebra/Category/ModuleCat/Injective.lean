@@ -24,7 +24,8 @@ namespace Module
 theorem injective_object_of_injective_module [inj : Injective R M] :
     CategoryTheory.Injective (ModuleCat.of R M) where
   factors g f m :=
-    have ⟨l, h⟩ := inj.extension_property R M _ _ f.hom ((ModuleCat.mono_iff_injective f).mp m) g.hom
+    have ⟨l, h⟩ := inj.extension_property R M _ _ f.hom
+      ((ModuleCat.mono_iff_injective f).mp m) g.hom
     ⟨ModuleCat.ofHom l, by ext x; simpa using DFunLike.congr_fun h x⟩
 
 theorem injective_module_of_injective_object [Small.{v} R]

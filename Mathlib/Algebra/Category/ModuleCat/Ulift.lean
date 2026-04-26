@@ -95,7 +95,8 @@ instance [Small.{v} R] : (uliftFunctor.{v', v} R).PreservesInjectiveObjects wher
   injective_obj {M} inj := by
     have := small_lift R
     rw [← Module.injective_iff_injective_object]
-    exact Module.ulift_injective_of_injective R ((Module.injective_iff_injective_object R M).mpr inj)
+    exact Module.ulift_injective_of_injective R
+      ((Module.injective_iff_injective_object R M).mpr inj)
 
 end Ring
 
