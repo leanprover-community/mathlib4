@@ -302,7 +302,6 @@ instance restrictScalars_isEquivalence_of_ringEquiv {R S : Type*} [Ring R] [Ring
     (ModuleCat.restrictScalars e.toRingHom).IsEquivalence :=
   (restrictScalarsEquivalenceOfRingEquiv e).isEquivalence_functor
 
-instance {R S} [Ring R] [Ring S] (f : R →+* S) : (restrictScalars f).Additive where
 /-- If `R` and `S` are isomorphic rings, `S` viewed as an `R`-module is isomorphic to `R`. -/
 def restrictScalarsIsoOfEquiv {R S : Type v} [Ring R] [Ring S] (e : R ≃+* S) :
     (ModuleCat.restrictScalars e.toRingHom).obj (ModuleCat.of S S) ≅ ModuleCat.of R R :=
