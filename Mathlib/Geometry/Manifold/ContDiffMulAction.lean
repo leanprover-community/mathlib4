@@ -227,6 +227,9 @@ instance NormedAlgebra.contDiffSMul_self {A : Type*} [NormedRing A] [NormedAlgeb
 
 end Normed
 
+instance ContinuousLinearMap.contDiffSMul :
+    ContDiffSMul 𝕜 (M →L[𝕜] M) M n where
+  contdiff_smul := isBoundedBilinearMap_apply.contDiff
 
 variable [NormedAddCommGroup Y] [NormedSpace 𝕜 Y]
 
