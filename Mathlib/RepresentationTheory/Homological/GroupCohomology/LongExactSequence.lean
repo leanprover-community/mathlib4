@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Homology.ConcreteCategory
 public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
+public import Mathlib.Algebra.Homology.HomologySequenceLemmas
 
 /-!
 # Long exact sequence in group cohomology
@@ -175,5 +176,17 @@ theorem δ₁_apply
       ext g
       simpa [← hx] using congr_fun (congr($((CommSq.vert_inv
         ⟨cochainsMap_f_2_comp_cochainsIso₂ (MonoidHom.id G) X.f⟩).w) x)) g
+
+lemma map_cochainsFunctor_eval_shortExact (n : ℕ) :
+    ShortExact (X.map <| cochainsFunctor k G ⋙ HomologicalComplex.eval (ModuleCat k) (.up ℕ) n) :=
+  (map_cochainsFunctor_shortExact hX).map_of_exact (HomologicalComplex.eval ..)
+
+omit hX in
+theorem δ_naturality {X1 X2 : ShortComplex (Rep k G)} (hX1 : X1.ShortExact)
+    (hX2 : X2.ShortExact) (F : X1 ⟶ X2) (i j : ℕ) (hij : i + 1 = j) :
+    (δ hX1 i j hij) ≫ map (.id G) F.τ₁ j  = map (.id G) F.τ₃ i ≫ δ hX2 i j hij :=
+  HomologicalComplex.HomologySequence.δ_naturality
+    ((cochainsFunctor k G).mapShortComplex.map F)
+    (map_cochainsFunctor_shortExact hX1) (map_cochainsFunctor_shortExact hX2) i j hij
 
 end groupCohomology
