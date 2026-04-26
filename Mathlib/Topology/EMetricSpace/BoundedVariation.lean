@@ -1085,7 +1085,7 @@ theorem _root_.BoundedVariationOn.continuousWithinAt_variationOnFromTo_Ici
     ext y
     rw [variationOnFromTo.add hf.locallyBoundedVariationOn (mem_univ _) (mem_univ _) (mem_univ _)]
   rw [this]
-  apply continuousWithinAt_const.add
+  apply ContinuousWithinAt.const.add
   suffices H : ContinuousWithinAt (fun y ↦ (eVariationOn f (univ ∩ Icc x y)).toReal) (Ici x) x from
     H.congr_of_mem (fun y hy ↦ by grind [variationOnFromTo]) self_mem_Iic
   simp only [ContinuousWithinAt, Icc_self]

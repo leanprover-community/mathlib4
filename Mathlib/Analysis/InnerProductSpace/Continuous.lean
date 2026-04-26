@@ -105,8 +105,8 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 theorem Dense.eq_zero_of_inner_left (hS : Dense S) (h : ∀ v ∈ S, ⟪x, v⟫ = 0) : x = 0 := by
   let K := span 𝕜 S
   have hK : Dense (K : Set E) := hS.mono subset_span
-  have : (⟪x, ·⟫) = 0 := (continuous_const.inner continuous_id).ext_on
-    hK continuous_const fun v ↦ Submodule.span_induction h (by simp)
+  have : (⟪x, ·⟫) = 0 := (Continuous.const.inner continuous_id).ext_on
+    hK .const fun v ↦ Submodule.span_induction h (by simp)
       (by simp +contextual [inner_add_right]) (by simp +contextual [inner_smul_right])
   simpa using congr_fun this x
 

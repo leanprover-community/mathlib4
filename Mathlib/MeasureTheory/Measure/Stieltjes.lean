@@ -173,7 +173,7 @@ variable (R) in
 protected def const (c : ℝ) : StieltjesFunction R where
   toFun := fun _ ↦ c
   mono' _ _ := by simp
-  right_continuous' _ := continuousWithinAt_const
+  right_continuous' _ := ContinuousWithinAt.const
 
 instance instInhabited : Inhabited (StieltjesFunction R) :=
   ⟨StieltjesFunction.const R 0⟩
@@ -398,7 +398,7 @@ theorem outer_Ioc [DenselyOrdered R] (a b : R) : f.outer (Ioc a b) = ofReal (f b
   rcases ENNReal.exists_pos_sum_of_countable δpos.ne' ℕ with ⟨ε', ε'0, hε⟩
   obtain ⟨a', ha', aa'⟩ : ∃ a', f a' - f a < δ ∧ a < a' := by
     have A : ContinuousWithinAt (fun r => f r - f a) (Ioi a) a := by
-      refine ContinuousWithinAt.sub ?_ continuousWithinAt_const
+      refine ContinuousWithinAt.sub ?_ .const
       exact (f.right_continuous a).mono Ioi_subset_Ici_self
     have B : f a - f a < δ := by rwa [sub_self, NNReal.coe_pos, ← ENNReal.coe_pos]
     have : (𝓝[>] a).NeBot := nhdsGT_neBot_of_exists_gt ⟨b, hab⟩
@@ -426,7 +426,7 @@ theorem outer_Ioc [DenselyOrdered R] (a b : R) : f.outer (Ioc a b) = ofReal (f b
     have : (𝓝[>] q').NeBot := by simp [Filter.neBot_iff, nhdsGT_eq_bot_iff, htq', not_covBy]
     have : ContinuousWithinAt (fun r => ofReal (f r - f p)) (Ioi q') q' := by
       apply ENNReal.continuous_ofReal.continuousAt.comp_continuousWithinAt
-      refine ContinuousWithinAt.sub ?_ continuousWithinAt_const
+      refine ContinuousWithinAt.sub ?_ .const
       exact (f.right_continuous q').mono Ioi_subset_Ici_self
     rcases (((tendsto_order.1 this).2 _ hq').and self_mem_nhdsWithin).exists with ⟨q, hq, q'q⟩
     exact ⟨⟨p, q⟩, A.trans ((Ioc_subset_Ioo_right q'q).trans Ioo_subset_Iotop), hq⟩
@@ -782,7 +782,7 @@ lemma measure_const (c : ℝ) : (StieltjesFunction.const R c).measure = 0 := by
     tsub_le_iff_right, zero_add]
   rw [ContinuousWithinAt.leftLim_eq]
   · simp
-  · exact continuousWithinAt_const
+  · exact ContinuousWithinAt.const
 
 @[simp]
 lemma measure_zero : (0 : StieltjesFunction R).measure = 0 := measure_const 0

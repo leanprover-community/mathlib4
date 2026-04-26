@@ -137,7 +137,7 @@ theorem _root_.HasCompactSupport.convolution_integrand_bound_right (hcg : HasCom
 
 theorem _root_.Continuous.convolution_integrand_fst [ContinuousSub G] (hg : Continuous g) (t : G) :
     Continuous fun x => L (f t) (g (x - t)) :=
-  L.continuous₂.comp₂ continuous_const <| by fun_prop
+  L.continuous₂.comp₂ .const <| by fun_prop
 
 theorem _root_.HasCompactSupport.convolution_integrand_bound_left (hcf : HasCompactSupport f)
     (hf : Continuous f) {x t : G} {s : Set G} (hx : x ∈ s) :
@@ -543,7 +543,7 @@ theorem continuousOn_convolution_right_with_param {g : P → G → E'} {s : Set 
   /- First get rid of the case where the space is not locally compact. Then `g` vanishes everywhere
   and the conclusion is trivial. -/
   by_cases! H : ∀ p ∈ s, ∀ x, g p x = 0
-  · apply (continuousOn_const (c := 0)).congr
+  · apply (ContinuousOn.const (c := 0)).congr
     rintro ⟨p, x⟩ ⟨hp, -⟩
     apply integral_eq_zero_of_ae (Eventually.of_forall (fun y ↦ ?_))
     simp [H p hp _]

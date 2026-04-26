@@ -447,7 +447,7 @@ theorem isClosed_le [TopologicalSpace β] {f g : β → α} (hf : Continuous f) 
 
 @[to_dual]
 instance : ClosedIicTopology α where
-  isClosed_Iic _ := isClosed_le continuous_id continuous_const
+  isClosed_Iic _ := isClosed_le continuous_id .const
 
 instance : OrderClosedTopology αᵒᵈ :=
   ⟨isClosed_le_prod' (α := α)⟩
@@ -625,7 +625,7 @@ theorem frontier_le_subset_eq (hf : Continuous f) (hg : Continuous g) :
 
 @[to_dual]
 theorem frontier_Iic_subset (a : α) : frontier (Iic a) ⊆ {a} :=
-  frontier_le_subset_eq (@continuous_id α _) continuous_const
+  frontier_le_subset_eq (@continuous_id α _) .const
 
 @[to_dual (reorder := f g, hf hg) frontier_gt_subset_eq]
 theorem frontier_lt_subset_eq (hf : Continuous f) (hg : Continuous g) :

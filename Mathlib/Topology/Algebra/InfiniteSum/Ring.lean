@@ -37,10 +37,10 @@ variable [NonUnitalNonAssocSemiring α] [TopologicalSpace α] [IsTopologicalSemi
   {a₁ : α}
 
 theorem HasSum.mul_left (a₂) (h : HasSum f a₁ L) : HasSum (fun i ↦ a₂ * f i) (a₂ * a₁) L := by
-  simpa only using h.map (AddMonoidHom.mulLeft a₂) (continuous_const.mul continuous_id)
+  simpa only using h.map (AddMonoidHom.mulLeft a₂) (Continuous.const.mul continuous_id)
 
 theorem HasSum.mul_right (a₂) (hf : HasSum f a₁ L) : HasSum (fun i ↦ f i * a₂) (a₁ * a₂) L := by
-  simpa only using hf.map (AddMonoidHom.mulRight a₂) (continuous_id.mul continuous_const)
+  simpa only using hf.map (AddMonoidHom.mulRight a₂) (continuous_id.mul Continuous.const)
 
 theorem Summable.mul_left (a) (hf : Summable f L) : Summable (fun i ↦ a * f i) L :=
   (hf.hasSum.mul_left _).summable

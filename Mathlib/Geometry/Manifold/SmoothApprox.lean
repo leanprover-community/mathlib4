@@ -97,7 +97,7 @@ theorem Continuous.exists_contMDiff_approx_and_eqOn (n : ℕ∞)
   · refine ⟨U, mem_nhdsSet_iff_forall.mp hU x hx, ?_⟩
     exact ⟨f, hfU, fun y _ ↦ ⟨dist_f_f y, fun _ ↦ rfl, id⟩⟩
   · have : ∀ᶠ y in 𝓝 x, y ∉ S ∧ dist (f x) (f y) < ε y := (hS.isOpen_compl.eventually_mem hx).and
-      ((continuous_const.dist f_cont).continuousAt.eventually_lt ε_cont.continuousAt (dist_f_f x))
+      ((Continuous.const.dist f_cont).continuousAt.eventually_lt ε_cont.continuousAt (dist_f_f x))
     have : ∀ᶠ y in 𝓝 x, (y ∉ S ∧ dist (f x) (f y) < ε y) ∧ (f y = 0 → f x = 0) := by
       by_cases hx' : f x = 0
       · simpa [hx'] using this

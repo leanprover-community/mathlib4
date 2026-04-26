@@ -444,8 +444,8 @@ theorem Λ_residue_k :
   · rw [(by rw [sub_self, zero_smul] : 𝓝 0 = 𝓝 ((P.k - P.k : ℂ) • P.Λ₀ P.k))]
     apply ((continuous_sub_right _).smul P.differentiable_Λ₀.continuous).tendsto
   · rw [(by rw [sub_self, zero_smul] : 𝓝 0 = 𝓝 ((P.k - P.k : ℂ) • (1 / P.k : ℂ) • P.f₀))]
-    refine (continuous_sub_right _).continuousAt.smul (ContinuousAt.smul ?_ continuousAt_const)
-    have := ofReal_ne_zero.mpr P.hk.ne'
+    refine (continuous_sub_right _).continuousAt.smul (ContinuousAt.smul ?_ .const)
+    have := (ofReal_ne_zero.mpr P.hk.ne')
     fun_prop (discharger := assumption)
   · refine (tendsto_const_nhds.mono_left nhdsWithin_le_nhds).congr' ?_
     refine eventually_nhdsWithin_of_forall (fun s (hs : s ≠ P.k) ↦ ?_)
@@ -463,7 +463,7 @@ theorem Λ_residue_zero :
     match_scalars
     field [sub_ne_zero.mpr hs.symm]
   · rw [show 𝓝 0 = 𝓝 ((0 : ℂ) • (P.ε / (P.k - 0 : ℂ)) • P.g₀) by rw [zero_smul]]
-    exact (continuousAt_id.smul ((continuousAt_const.div ((continuous_sub_left _).continuousAt)
-      (by simpa using P.hk.ne')).smul continuousAt_const)).mono_left nhdsWithin_le_nhds
+    exact (continuousAt_id.smul ((ContinuousAt.const.div ((continuous_sub_left _).continuousAt)
+      (by simpa using P.hk.ne')).smul ContinuousAt.const)).mono_left nhdsWithin_le_nhds
 
 end WeakFEPair

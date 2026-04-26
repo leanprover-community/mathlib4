@@ -222,7 +222,7 @@ def genLoopGenLoopEquiv : Ω^ M (Ω^ N X x) GenLoop.const ≃ₜ Ω^ (M ⊕ N) X
   right_inv p := by ext; simp
   continuous_toFun := ((ContinuousMap.continuous_uncurry.comp' ((ContinuousMap.continuous_postcomp
     ⟨_, continuous_subtype_val⟩).comp continuous_subtype_val)).compCM
-      continuous_const).subtype_mk _
+      Continuous.const).subtype_mk _
 
 end
 

@@ -82,6 +82,10 @@ def condensedSetToTopCat : CondensedSet.{u} ⥤ TopCat.{u + 1} where
 
 namespace CondensedSet
 
+section
+-- TODO: without this, `continuity` times out
+attribute [-aesop] Continuous.comp'
+attribute [aesop (rule_sets := [Continuous]) safe apply] Continuous.comp'
 /-- The counit of the adjunction `condensedSetToTopCat ⊣ topCatToCondensedSet` -/
 noncomputable def topCatAdjunctionCounit (X : TopCat.{u + 1}) : X.toCondensedSet.toTopCat ⟶ X :=
   TopCat.ofHom
@@ -89,6 +93,7 @@ noncomputable def topCatAdjunctionCounit (X : TopCat.{u + 1}) : X.toCondensedSet
     continuous_toFun := by
       rw [continuous_coinduced_dom]
       continuity }
+end
 
 /-- `simp`-normal form of the lemma that `@[simps]` would generate. -/
 @[simp] lemma topCatAdjunctionCounit_hom_apply (X : TopCat) (x) :

@@ -81,6 +81,11 @@ def _root_.lightCondSetToTopCat : LightCondSet.{u} ⥤ TopCat.{u} where
   obj X := X.toTopCat
   map f := toTopCatMap f
 
+section
+
+-- TODO: without this, `continuity` times out
+attribute [-aesop] Continuous.comp'
+attribute [aesop (rule_sets := [Continuous]) safe apply] Continuous.comp'
 /-- The counit of the adjunction `lightCondSetToTopCat ⊣ topCatToLightCondSet` -/
 noncomputable def topCatAdjunctionCounit (X : TopCat.{u}) : X.toLightCondSet.toTopCat ⟶ X :=
   TopCat.ofHom
@@ -88,6 +93,8 @@ noncomputable def topCatAdjunctionCounit (X : TopCat.{u}) : X.toLightCondSet.toT
     continuous_toFun := by
       rw [continuous_coinduced_dom]
       continuity }
+
+end
 
 /-- The counit of the adjunction `lightCondSetToTopCat ⊣ topCatToLightCondSet` is always bijective,
 but not an isomorphism in general (the inverse isn't continuous unless `X` is sequential).

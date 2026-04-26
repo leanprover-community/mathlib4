@@ -79,8 +79,7 @@ lemma LFunction_eq_LSeries (χ : DirichletCharacter ℂ N) {s : ℂ} (hs : 1 < r
 lemma deriv_LFunction_eq_deriv_LSeries (χ : DirichletCharacter ℂ N) {s : ℂ} (hs : 1 < s.re) :
     deriv (LFunction χ) s = deriv (LSeries (χ ·)) s := by
   refine Filter.EventuallyEq.deriv_eq ?_
-  have h : {z | 1 < z.re} ∈ nhds s :=
-    (isOpen_lt continuous_const continuous_re).mem_nhds hs
+  have h : {z | 1 < z.re} ∈ nhds s := (isOpen_lt .const continuous_re).mem_nhds hs
   filter_upwards [h] with z hz
   exact LFunction_eq_LSeries χ hz
 

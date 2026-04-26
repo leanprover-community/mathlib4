@@ -69,7 +69,7 @@ lemma continuous_upperRightHom {R : Type*} [Ring R] [TopologicalSpace R] [IsTopo
     Units.embedProduct_apply, Units.inv_mk, continuous_prodMk, MulOpposite.unop_op]
   constructor <;>
   · refine continuous_matrix fun i j ↦ ?_
-    fin_cases i <;> fin_cases j <;> simp [continuous_const, continuous_neg, continuous_id']
+    fin_cases i <;> fin_cases j <;> dsimp <;> fun_prop
 
 end Matrix.GeneralLinearGroup
 

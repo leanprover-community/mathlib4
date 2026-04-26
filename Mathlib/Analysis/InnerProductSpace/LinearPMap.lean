@@ -245,8 +245,7 @@ theorem _root_.IsSelfAdjoint.dense_domain (hA : IsSelfAdjoint A) : Dense (A.doma
     intro x
     rw [mem_adjoint_domain_iff, ← hA]
     refine (innerSL 𝕜 x).cont.comp ?_
-    simp only [adjoint, h]
-    exact continuous_const
+    simpa only [adjoint, h] using .const
   simp [h'] at h
 
 end LinearPMap

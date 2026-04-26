@@ -346,7 +346,7 @@ theorem continuousWithinAt_primitive (hb₀ : μ {b₀} = 0)
       · exact ⟨min_le_of_left_le (min_le_right _ _),
           le_max_of_le_right (h₁.trans <| h₂.trans (le_max_right a b₂))⟩
     apply ContinuousWithinAt.congr _ this (this _ h₀); clear this
-    refine continuousWithinAt_const.add ?_
+    refine ContinuousWithinAt.const.add ?_
     have :
       (fun b => ∫ x in b₁..b, f x ∂μ) =ᶠ[𝓝[Icc b₁ b₂] b₀] fun b =>
         ∫ x in b₁..b₂, indicator {x | x ≤ b} f x ∂μ := by
@@ -376,14 +376,14 @@ theorem continuousWithinAt_primitive (hb₀ : μ {b₀} = 0)
           apply Eventually.mono (Ioi_mem_nhds hx₀)
           intro x hx
           simp [hx.le]
-        apply continuousWithinAt_const.congr_of_eventuallyEq this
+        apply ContinuousWithinAt.const.congr_of_eventuallyEq this
         simp [hx₀.le]
       · have : ∀ᶠ x in 𝓝[Icc b₁ b₂] b₀, {t : ℝ | t ≤ x}.indicator f x₀ = 0 := by
           apply mem_nhdsWithin_of_mem_nhds
           apply Eventually.mono (Iio_mem_nhds hx₀)
           intro x hx
           simp [hx]
-        apply continuousWithinAt_const.congr_of_eventuallyEq this
+        apply ContinuousWithinAt.const.congr_of_eventuallyEq this
         simp [hx₀]
   · apply continuousWithinAt_of_notMem_closure
     rwa [closure_Icc]
@@ -601,7 +601,7 @@ theorem continuous_parametric_primitive_of_continuous
   _ ≤ ∫ t in Icc (b₀ - δ) (b₀ + δ), M + 1 ∂μ + ∫ _t in Icc a b, δ ∂μ := by
       gcongr with x hx x hx
       · exact (hf.uncurry_left _).norm.integrableOn_Icc
-      · exact continuous_const.integrableOn_Icc
+      · exact Continuous.const.integrableOn_Icc
       · exact nullMeasurableSet_Icc
       · calc ‖f p x‖ = ‖f q x + (f p x - f q x)‖ := by congr; abel
         _ ≤ ‖f q x‖ + ‖f p x - f q x‖ := norm_add_le _ _
@@ -615,7 +615,7 @@ theorem continuous_parametric_primitive_of_continuous
             · exact le_of_lt (hv _ hp _ (h'δ hx))
         _ ≤ M + 1 := by linarith
       · exact ((hf.uncurry_left _).sub (hf.uncurry_left _)).norm.integrableOn_Icc
-      · exact continuous_const.integrableOn_Icc
+      · exact Continuous.const.integrableOn_Icc
       · exact nullMeasurableSet_Icc
       · exact le_of_lt (hv _ hp _ hx)
   _ = (M + 1) * μ.real (Icc (b₀ - δ) (b₀ + δ)) + δ * μ.real (Icc a b) := by simp [mul_comm]
@@ -676,7 +676,7 @@ theorem continuousOn_Ici_primitive_Ioi [NoAtoms μ] {a₀ : ℝ} (hf : Integrabl
       simp [← integral_Ioi_sub_Ioi hf hb.1]
     have h_cwa : ContinuousWithinAt (fun b ↦ ∫ x in a₀..b, f x ∂μ) (Icc a₀ a) a :=
       continuousWithinAt_primitive (measure_singleton a) (by simpa [ha])
-    exact (continuousWithinAt_const.sub h_cwa).congr h_split (h_split a (right_mem_Icc.2 ha))
+    exact (ContinuousWithinAt.const.sub h_cwa).congr h_split (h_split a (right_mem_Icc.2 ha))
   · simpa [ha] using (hf.mono_set (Ioi_subset_Ioi ha)).continuousWithinAt_Ici_primitive_Ioi
 
 theorem continuousWithinAt_Iic_primitive_Iio {a₀ : ℝ} (hf : IntegrableOn f (Iio a₀) μ) :
@@ -712,7 +712,7 @@ theorem continuousOn_Iic_primitive_Iio [NoAtoms μ] {a₀ : ℝ} (hf : Integrabl
       simp [integral_symm b a₀, ← integral_Iio_sub_Iio' hf (hf.mono_set (Iio_subset_Iio hb.2))]
     have h_cwa : ContinuousWithinAt (fun b ↦ ∫ x in a₀..b, f x ∂μ) (Icc a a₀) a :=
       continuousWithinAt_primitive (measure_singleton a) (by simpa [ha])
-    exact (continuousWithinAt_const.add h_cwa).congr h_split (h_split a (left_mem_Icc.2 ha))
+    exact (ContinuousWithinAt.const.add h_cwa).congr h_split (h_split a (left_mem_Icc.2 ha))
 
 theorem continuousOn_Ici_primitive_Ici [NoAtoms μ] {a₀ : ℝ} (hf : IntegrableOn f (Ici a₀) μ) :
     ContinuousOn (fun b ↦ ∫ x in Ici b, f x ∂μ) (Ici a₀) := by

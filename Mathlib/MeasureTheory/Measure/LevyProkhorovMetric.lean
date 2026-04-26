@@ -443,7 +443,7 @@ lemma tendsto_integral_meas_thickening_le (f : Ω →ᵇ ℝ)
     apply (ENNReal.tendsto_toNNReal _).comp
     · apply tendsto_measure_thickening_of_isClosed ?_ ?_
       · exact ⟨1, ⟨Real.zero_lt_one, measure_ne_top _ _⟩⟩
-      · exact isClosed_le continuous_const f.continuous
+      · exact isClosed_le .const f.continuous
     · finiteness
 
 /-- The identity map `LevyProkhorov (ProbabilityMeasure Ω) → ProbabilityMeasure Ω` is continuous. -/

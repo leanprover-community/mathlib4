@@ -115,8 +115,8 @@ variable {M : Type*} [TopologicalSpace M] [Mul M]
 
 @[to_additive]
 instance [ContinuousMul M] : SeparatelyContinuousMul M where
-  continuous_const_mul := continuous_const.mul continuous_id
-  continuous_mul_const := continuous_id.mul continuous_const
+  continuous_const_mul := by fun_prop
+  continuous_mul_const := by fun_prop
 
 variable [SeparatelyContinuousMul M]
 

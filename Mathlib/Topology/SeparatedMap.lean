@@ -215,12 +215,12 @@ theorem eqOn_of_comp_eqOn (hs : IsPreconnected s) (h₁ : ContinuousOn g₁ s) (
 
 theorem const_of_comp [PreconnectedSpace A] (cont : Continuous g)
     (he : ∀ a a', p (g a) = p (g a')) (a a') : g a = g a' :=
-  congr_fun (sep.eq_of_comp_eq inj cont continuous_const (funext fun a ↦ he a a') a' rfl) a
+  congr_fun (sep.eq_of_comp_eq inj cont .const (funext fun a ↦ he a a') a' rfl) a
 
 theorem constOn_of_comp (hs : IsPreconnected s) (cont : ContinuousOn g s)
     (he : ∀ a ∈ s, ∀ a' ∈ s, p (g a) = p (g a'))
     {a a'} (ha : a ∈ s) (ha' : a' ∈ s) : g a = g a' :=
-  sep.eqOn_of_comp_eqOn inj hs cont continuous_const.continuousOn
+  sep.eqOn_of_comp_eqOn inj hs cont .const
     (fun a ha ↦ he a ha a' ha') ha' rfl ha
 
 end IsSeparatedMap

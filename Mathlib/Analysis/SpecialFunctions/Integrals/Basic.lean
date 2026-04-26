@@ -346,7 +346,7 @@ theorem integral_cos_sq_sub_sin_sq :
 theorem integral_one_div_one_add_sq :
     (∫ x : ℝ in a..b, ↑1 / (↑1 + x ^ 2)) = arctan b - arctan a := by
   refine integral_deriv_eq_sub' _ Real.deriv_arctan (fun _ _ => differentiableAt_arctan _)
-    (continuous_const.div ?_ fun x => ?_).continuousOn
+    (Continuous.const.div ?_ fun x => ?_).continuousOn
   · fun_prop
   · nlinarith
 
@@ -396,7 +396,7 @@ theorem integral_mul_cpow_one_add_sq {t : ℂ} (ht : t ≠ -1) :
     · exact mod_cast add_pos_of_pos_of_nonneg zero_lt_one (sq_nonneg x)
   · apply Continuous.intervalIntegrable
     refine continuous_ofReal.mul ?_
-    apply Continuous.cpow (by fun_prop) continuous_const
+    apply Continuous.cpow (by fun_prop) .const
     intro a
     norm_cast
     exact ofReal_mem_slitPlane.2 <| add_pos_of_pos_of_nonneg one_pos <| sq_nonneg a

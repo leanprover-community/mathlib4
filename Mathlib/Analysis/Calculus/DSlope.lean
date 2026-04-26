@@ -84,8 +84,7 @@ theorem continuousAt_dslope_same : ContinuousAt (dslope f a) a ↔ Differentiabl
 
 theorem ContinuousWithinAt.of_dslope (h : ContinuousWithinAt (dslope f a) s b) :
     ContinuousWithinAt f s b := by
-  have : ContinuousWithinAt (fun x => (x - a) • dslope f a x + f a) s b :=
-    ((continuousWithinAt_id.sub continuousWithinAt_const).smul h).add continuousWithinAt_const
+  have : ContinuousWithinAt (fun x => (x - a) • dslope f a x + f a) s b := by fun_prop
   simpa only [sub_smul_dslope, sub_add_cancel] using this
 
 theorem ContinuousAt.of_dslope (h : ContinuousAt (dslope f a) b) : ContinuousAt f b :=
@@ -99,8 +98,7 @@ theorem continuousWithinAt_dslope_of_ne (h : b ≠ a) :
   refine ⟨ContinuousWithinAt.of_dslope, fun hc => ?_⟩
   classical
   simp only [dslope, continuousWithinAt_update_of_ne h]
-  exact ((continuousWithinAt_id.sub continuousWithinAt_const).inv₀ (sub_ne_zero.2 h)).smul
-    (hc.sub continuousWithinAt_const)
+  exact ((continuousWithinAt_id.sub .const).inv₀ (sub_ne_zero.2 h)).smul (by fun_prop)
 
 theorem continuousAt_dslope_of_ne (h : b ≠ a) : ContinuousAt (dslope f a) b ↔ ContinuousAt f b := by
   simp only [← continuousWithinAt_univ, continuousWithinAt_dslope_of_ne h]

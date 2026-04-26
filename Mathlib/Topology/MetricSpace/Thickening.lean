@@ -110,7 +110,7 @@ theorem mem_thickening_iff_exists_edist_lt {δ : ℝ} (E : Set α) (x : α) :
 set. -/
 theorem frontier_thickening_subset (E : Set α) {δ : ℝ} :
     frontier (thickening δ E) ⊆ { x : α | infEDist x E = ENNReal.ofReal δ } :=
-  frontier_lt_subset_eq continuous_infEDist continuous_const
+  frontier_lt_subset_eq continuous_infEDist Continuous.const
 
 open scoped Function in -- required for scoped `on` notation
 theorem frontier_thickening_disjoint (A : Set α) :
@@ -547,7 +547,7 @@ theorem closure_eq_iInter_thickening (E : Set α) :
 set. -/
 theorem frontier_cthickening_subset (E : Set α) {δ : ℝ} :
     frontier (cthickening δ E) ⊆ { x : α | infEDist x E = ENNReal.ofReal δ } :=
-  frontier_le_subset_eq continuous_infEDist continuous_const
+  frontier_le_subset_eq continuous_infEDist Continuous.const
 
 /-- The closed ball of radius `δ` centered at a point of `E` is included in the closed
 thickening of `E`. -/

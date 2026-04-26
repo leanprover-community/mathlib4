@@ -60,7 +60,7 @@ instance vectorBundle : VectorBundle 𝕜 F (Bundle.Trivial B F) where
     obtain rfl := eq_trivialization B F e
     obtain rfl := eq_trivialization B F e'
     simp only [trivialization.coordChangeL]
-    exact continuous_const.continuousOn
+    exact .const
 
 @[simp] lemma linearMapAt_trivialization (x : B) :
     (trivialization B F).linearMapAt 𝕜 x = LinearMap.id := by

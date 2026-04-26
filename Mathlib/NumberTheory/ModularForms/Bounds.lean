@@ -282,7 +282,7 @@ lemma qExpansion_coeff_isBigO_of_norm_isBigO {k : ℤ} {Γ : Subgroup (GL (Fin 2
   refine (intervalIntegral.integral_mono (by positivity) ?_ ?_ this).trans (le_of_eq ?_)
   · apply Continuous.intervalIntegrable
     fun_prop (disch := simp [Function.Periodic.qParam_ne_zero])
-  · exact continuous_const.intervalIntegrable ..
+  · exact Continuous.const.intervalIntegrable ..
   · simp [field, intervalIntegral.integral_const, hne]
 
 /-- Bound for the coefficients of a modular form: if `f` is a weight `k` modular form for an

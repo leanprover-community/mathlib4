@@ -84,7 +84,7 @@ instance : IsTopologicalSemiring ℝ≥0 where
   toContinuousMul := continuousMul_induced toRealHom
 
 instance : ContinuousSub ℝ≥0 :=
-  ⟨((continuous_coe.fst'.sub continuous_coe.snd').max continuous_const).subtype_mk _⟩
+  ⟨((continuous_coe.fst'.sub continuous_coe.snd').max Continuous.const).subtype_mk _⟩
 
 instance : ContinuousInv₀ ℝ≥0 := inferInstance
 

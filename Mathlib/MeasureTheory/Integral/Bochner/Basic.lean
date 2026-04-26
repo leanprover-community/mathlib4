@@ -335,7 +335,7 @@ theorem continuous_integral : Continuous fun f : α →₁[μ] G => ∫ a, f a �
   by_cases hG : CompleteSpace G
   · simp only [integral, hG, L1.integral]
     exact continuous_setToFun (dominatedFinMeasAdditive_weightedSMul μ)
-  · simp [integral, hG, continuous_const]
+  · simp [integral, hG, Continuous.const]
 
 theorem norm_integral_le_lintegral_norm (f : α → G) :
     ‖∫ a, f a ∂μ‖ ≤ ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) := by
@@ -444,7 +444,7 @@ theorem continuousWithinAt_of_dominated {F : X → α → G} {x₀ : X} {bound :
   · simp only [integral, hG, L1.integral]
     exact continuousWithinAt_setToFun_of_dominated (dominatedFinMeasAdditive_weightedSMul μ)
       hF_meas h_bound bound_integrable h_cont
-  · simp [integral, hG, continuousWithinAt_const]
+  · simp [integral, hG, ContinuousWithinAt.const]
 
 theorem continuousAt_of_dominated {F : X → α → G} {x₀ : X} {bound : α → ℝ}
     (hF_meas : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (F x) μ)
@@ -455,7 +455,7 @@ theorem continuousAt_of_dominated {F : X → α → G} {x₀ : X} {bound : α �
   · simp only [integral, hG, L1.integral]
     exact continuousAt_setToFun_of_dominated (dominatedFinMeasAdditive_weightedSMul μ)
       hF_meas h_bound bound_integrable h_cont
-  · simp [integral, hG, continuousAt_const]
+  · simp [integral, hG, ContinuousAt.const]
 
 theorem continuousOn_of_dominated {F : X → α → G} {bound : α → ℝ} {s : Set X}
     (hF_meas : ∀ x ∈ s, AEStronglyMeasurable (F x) μ)
@@ -466,7 +466,7 @@ theorem continuousOn_of_dominated {F : X → α → G} {bound : α → ℝ} {s :
   · simp only [integral, hG, L1.integral]
     exact continuousOn_setToFun_of_dominated (dominatedFinMeasAdditive_weightedSMul μ)
       hF_meas h_bound bound_integrable h_cont
-  · simp [integral, hG, continuousOn_const]
+  · simp [integral, hG, ContinuousOn.const]
 
 theorem continuous_of_dominated {F : X → α → G} {bound : α → ℝ}
     (hF_meas : ∀ x, AEStronglyMeasurable (F x) μ) (h_bound : ∀ x, ∀ᵐ a ∂μ, ‖F x a‖ ≤ bound a)
@@ -476,7 +476,7 @@ theorem continuous_of_dominated {F : X → α → G} {bound : α → ℝ}
   · simp only [integral, hG, L1.integral]
     exact continuous_setToFun_of_dominated (dominatedFinMeasAdditive_weightedSMul μ)
       hF_meas h_bound bound_integrable h_cont
-  · simp [integral, hG, continuous_const]
+  · simp [integral, hG, Continuous.const]
 
 /-- The Bochner integral of a real-valued function `f : α → ℝ` is the difference between the
   integral of the positive part of `f` and the integral of the negative part of `f`. -/

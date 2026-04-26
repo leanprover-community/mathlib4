@@ -85,10 +85,10 @@ instance ring : Ring (Completion α) :=
   { AddMonoidWithOne.unary, ((inferInstance : AddCommGroup (Completion α))),
       ((inferInstance : Mul (Completion α))), ((inferInstance : One (Completion α))) with
     zero_mul a :=
-      Completion.induction_on a (isClosed_eq (by fun_prop) continuous_const)
+      Completion.induction_on a (isClosed_eq (by fun_prop) .const)
         fun a => by rw [← coe_zero, ← coe_mul, zero_mul]
     mul_zero a :=
-      Completion.induction_on a (isClosed_eq (by fun_prop) continuous_const)
+      Completion.induction_on a (isClosed_eq (by fun_prop) .const)
         fun a ↦ by rw [← coe_zero, ← coe_mul, mul_zero]
     one_mul a :=
       Completion.induction_on a

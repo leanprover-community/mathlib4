@@ -62,7 +62,7 @@ instance : SFinite (volume.comap UpperHalfPlane.coe) := inferInstance
 
 instance : IsLocallyFiniteMeasure (volume : Measure ℍ) := by
   refine .withDensity_coe ?_
-  refine .pow (.div₀ continuous_const ?_ ?_) _
+  refine .pow (.div₀ .const ?_ ?_) _
   · exact continuous_im.subtype_mk _
   · exact fun x ↦ NNReal.ne_iff.mp x.im_ne_zero
 

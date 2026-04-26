@@ -27,9 +27,23 @@ example {g : X → X} (y : Y) : Continuous ((fun _ ↦ y) ∘ g) := by continuit
 
 example {f : X → Y} (x : X) : Continuous (fun (_ : X) ↦ f x) := by continuity
 
+-- This test points at an internal error in aesop. With fewer imports, `continuity` succeeds.
+-- See https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/aesop.20error.20during.20proof.20reconstruction.2C.20goal.20not.20normalised/with/580202602.
+/-- error: aesop: internal error during proof reconstruction: goal 31 was not normalised. -/
+#guard_msgs in
 example (f₁ f₂ : X → Y) (hf₁ : Continuous f₁) (hf₂ : Continuous f₂)
     (g : Y → ℝ) (hg : Continuous g) : Continuous (fun x => (max (g (f₁ x)) (g (f₂ x))) + 1) := by
   continuity
+
+section
+
+attribute [-aesop] Continuous.comp'
+attribute [aesop (rule_sets := [Continuous]) safe apply] Continuous.comp'
+example (f₁ f₂ : X → Y) (hf₁ : Continuous f₁) (hf₂ : Continuous f₂)
+    (g : Y → ℝ) (hg : Continuous g) : Continuous (fun x => (max (g (f₁ x)) (g (f₂ x))) + 1) := by
+  continuity
+
+end
 
 example {κ ι : Type}
     (K : κ → Type) [∀ k, TopologicalSpace (K k)] (I : ι → Type) [∀ i, TopologicalSpace (I i)]
@@ -39,11 +53,32 @@ example {κ ι : Type}
 
 open Real
 
+section
+
+attribute [-aesop] Continuous.comp'
+attribute [aesop (rule_sets := [Continuous]) unsafe 99% apply] Continuous.comp'
+
+/--
+error: tactic 'aesop' failed, failed to prove the goal. Some goals were not explored because the maximum rule application depth (30) was reached. Set option 'maxRuleApplicationDepth' to increase the limit.
+-/
+#guard_msgs (substring := true) in
+example : Continuous (fun x : ℝ => exp ((max x (-x)) + sin x)^2) := by
+  continuity
+  sorry
+
+-- If we make this a safe rule instead, the test succeeds quickly.
+attribute [-aesop] Continuous.comp'
+attribute [aesop (rule_sets := [Continuous]) safe apply] Continuous.comp'
+
 example : Continuous (fun x : ℝ => exp ((max x (-x)) + sin x)^2) := by
   continuity
 
+-- The story for this more complicated example is similar.
+
 example : Continuous (fun x : ℝ => exp ((max x (-x)) + sin (cos x))^2) := by
   continuity
+
+end
 
 -- Examples taken from `Topology.ContinuousMap.Basic`:
 
@@ -62,12 +97,12 @@ example (s : Set X) (f : C(X, Y)) : Continuous (f ∘ ((↑) : s → X)) := by c
 -- Examples taken from `Topology.CompactOpen`:
 
 example (b : Y) : Continuous (Function.const X b) := --by continuity
-  continuous_const
+  Continuous.const
 
 example (b : Y) : Continuous (@Prod.mk Y X b) := by continuity
 
 example (f : C(X × Y, Z)) (a : X) : Continuous (Function.curry f a) := --by continuity
-  f.continuous.comp (continuous_const.prodMk continuous_id)
+  f.continuous.comp (Continuous.const.prodMk continuous_id)
 
 end basic
 

@@ -191,10 +191,7 @@ theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
     Tendsto (fun g : { g : SL(2, ℤ) // g 1 = cd } => lcRow0 cd ↑(↑g : SL(2, ℝ))) cofinite
       (cocompact ℝ) := by
   let mB : ℝ → Matrix (Fin 2) (Fin 2) ℝ := fun t => of ![![t, (-(1 : ℤ) : ℝ)], (↑) ∘ cd]
-  have hmB : Continuous mB := by
-    refine continuous_matrix ?_
-    simp only [mB, Fin.forall_fin_two, continuous_const, continuous_id', of_apply, cons_val_zero,
-      cons_val_one, and_self_iff]
+  have hmB : Continuous mB := continuous_matrix (by simp [mB, Continuous.const, continuous_id'])
   refine Filter.Tendsto.of_tendsto_comp ?_ (comap_cocompact_le hmB)
   let f₁ : SL(2, ℤ) → Matrix (Fin 2) (Fin 2) ℝ := fun g =>
     Matrix.map (↑g : Matrix _ _ ℤ) ((↑) : ℤ → ℝ)
@@ -811,11 +808,11 @@ section Topology
 
 lemma isClosed_fd : IsClosed 𝒟 := by
   refine .inter (.preimage (by fun_prop) isClosed_Ici) ?_
-  exact isClosed_le (f := fun z : ℍ ↦ |z.re|) (by fun_prop) continuous_const
+  exact isClosed_le (f := fun z : ℍ ↦ |z.re|) (by fun_prop) .const
 
 lemma isOpen_fdo : IsOpen 𝒟ᵒ := by
   refine .inter (.preimage (by fun_prop) isOpen_Ioi) ?_
-  exact isOpen_lt (f := fun z : ℍ ↦ |z.re|) (by fun_prop) continuous_const
+  exact isOpen_lt (f := fun z : ℍ ↦ |z.re|) (by fun_prop) .const
 
 /-- Explicit formula for the image of `ModularGroup.fdo` in `ℂ`. -/
 lemma coe_fdo : (↑) '' 𝒟ᵒ = {z : ℂ | 0 < z.im ∧ 1 < ‖z‖ ∧ |z.re| < 1/2} := by
@@ -840,9 +837,9 @@ lemma isClosed_coe_fd : IsClosed ((↑) '' 𝒟 : Set ℂ) := by
   rw [coe_fd]
   have : IsClosed {z : ℂ | 0 ≤ z.im ∧ 1 ≤ ‖z‖ ∧ |z.re| ≤ 1/2} := by
     refine .inter ?_ (.inter ?_ ?_)
-    · exact isClosed_le continuous_const Complex.continuous_im
-    · exact isClosed_le continuous_const continuous_norm
-    · exact isClosed_le (continuous_abs.comp Complex.continuous_re) continuous_const
+    · exact isClosed_le .const Complex.continuous_im
+    · exact isClosed_le .const continuous_norm
+    · exact isClosed_le (continuous_abs.comp Complex.continuous_re) .const
   convert this using 1
   ext x
   refine ⟨fun ⟨him, hre, hnorm⟩ ↦ ⟨him.le, hre, hnorm⟩, fun ⟨him, hre, hnorm⟩ ↦ ⟨?_, hre, hnorm⟩⟩
@@ -963,10 +960,10 @@ lemma isCompact_truncatedFundamentalDomain (y : ℝ) :
     Metric.isCompact_iff_isClosed_bounded]
   constructor
   · -- show closed
-    apply (isClosed_le continuous_const Complex.continuous_im).inter
-    apply (isClosed_le Complex.continuous_im continuous_const).inter
-    apply (isClosed_le (continuous_abs.comp Complex.continuous_re) continuous_const).inter
-    exact isClosed_le continuous_const continuous_norm
+    apply (isClosed_le .const Complex.continuous_im).inter
+    apply (isClosed_le Complex.continuous_im .const).inter
+    apply (isClosed_le (continuous_abs.comp Complex.continuous_re) .const).inter
+    exact isClosed_le .const continuous_norm
   · -- show bounded
     refine (Metric.isBounded_iff_subset_closedBall 0).mpr ⟨√((1 / 2) ^ 2 + y ^ 2), fun z hz ↦ ?_⟩
     simp only [mem_closedBall_zero_iff]

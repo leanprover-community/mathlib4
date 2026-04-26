@@ -184,11 +184,11 @@ theorem intervalIntegrable_id : IntervalIntegrable (fun x => x) μ a b :=
   continuous_id.intervalIntegrable a b
 
 theorem intervalIntegrable_const : IntervalIntegrable (fun _ => c) μ a b :=
-  continuous_const.intervalIntegrable a b
+  Continuous.const.intervalIntegrable a b
 
 theorem intervalIntegrable_one_div (h : ∀ x : ℝ, x ∈ [[a, b]] → f x ≠ 0)
     (hf : ContinuousOn f [[a, b]]) : IntervalIntegrable (fun x => 1 / f x) μ a b :=
-  (continuousOn_const.div hf h).intervalIntegrable
+  (ContinuousOn.const.div hf h).intervalIntegrable
 
 @[simp]
 theorem intervalIntegrable_inv (h : ∀ x : ℝ, x ∈ [[a, b]] → f x ≠ 0)

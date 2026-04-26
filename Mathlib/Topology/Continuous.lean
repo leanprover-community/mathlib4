@@ -115,9 +115,14 @@ theorem Continuous.comp {g : Y → Z} (hg : Continuous g) (hf : Continuous f) :
   continuous_def.2 fun _ h => (h.preimage hg).preimage hf
 
 -- This is needed due to reducibility issues with the `continuity` tactic.
-@[continuity, fun_prop]
+@[fun_prop]
 theorem Continuous.comp' {g : Y → Z} (hg : Continuous g) (hf : Continuous f) :
     Continuous (fun x => g (f x)) := hg.comp hf
+
+-- The `continuity` attribute adds a lemma as a *safe* aesop rule. This rule is *unsafe*,
+-- however: the composition of any function with a constant function is continuous,
+-- and we don't want aesop to get stuck proving that an arbitrary function is continuous.
+attribute [aesop (rule_sets := [Continuous]) unsafe 95% apply] Continuous.comp'
 
 @[fun_prop]
 theorem Continuous.iterate {f : X → X} (h : Continuous f) (n : ℕ) : Continuous f^[n] :=
@@ -154,12 +159,14 @@ theorem continuous_iff_continuousAt : Continuous f ↔ ∀ x, ContinuousAt f x :
     hf x <| hU.mem_nhds hx⟩
 
 @[fun_prop]
-theorem continuousAt_const : ContinuousAt (fun _ : X => y) x :=
+theorem ContinuousAt.const : ContinuousAt (fun _ : X => y) x :=
   tendsto_const_nhds
+@[deprecated (since := "2025-11-13")] alias continuousAt_const := ContinuousAt.const
 
 @[continuity, fun_prop]
-theorem continuous_const : Continuous fun _ : X => y :=
-  continuous_iff_continuousAt.mpr fun _ => continuousAt_const
+theorem Continuous.const : Continuous fun _ : X => y :=
+  continuous_iff_continuousAt.mpr fun _ => .const
+@[deprecated (since := "2025-11-13")] alias continuous_const := Continuous.const
 
 theorem Filter.EventuallyEq.continuousAt (h : f =ᶠ[𝓝 x] fun _ => y) :
     ContinuousAt f x :=

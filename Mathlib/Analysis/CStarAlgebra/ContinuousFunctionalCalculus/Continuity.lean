@@ -207,7 +207,7 @@ theorem continuous_cfcHomSuperset_left
   induction f using ContinuousMap.induction_on_of_compact with
   | const r =>
     have : ContinuousMap.const s r = algebraMap 𝕜 C(s, 𝕜) r := rfl
-    simpa only [this, AlgHomClass.commutes] using continuous_const
+    simpa only [this, AlgHomClass.commutes] using Continuous.const
   | id =>
     simp only [cfcHomSuperset_id]
     fun_prop
@@ -708,7 +708,7 @@ theorem continuous_cfcₙHomSuperset_left
     Continuous (fun x ↦ cfcₙHomSuperset (ha' x) (ha x) f) := by
   have : CompactSpace s := by rwa [isCompact_iff_compactSpace] at hs
   induction f using ContinuousMapZero.induction_on_of_compact with
-  | zero => simpa [map_zero] using continuous_const
+  | zero => simpa [map_zero] using .const
   | id => simpa only [cfcₙHomSuperset_id]
   | star_id => simp only [map_star, cfcₙHomSuperset_id]; fun_prop
   | add f g hf hg => simpa only [map_add] using hf.add hg

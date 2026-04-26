@@ -62,7 +62,7 @@ theorem continuousAt_oangle {x : V × V} (hx1 : x.1 ≠ 0) (hx2 : x.2 ≠ 0) :
   refine (Complex.continuousAt_arg_coe_angle ?_).comp ?_
   · exact o.kahler_ne_zero hx1 hx2
   exact ((continuous_ofReal.comp continuous_inner).add
-    ((continuous_ofReal.comp o.areaForm'.continuous₂).mul continuous_const)).continuousAt
+    ((continuous_ofReal.comp o.areaForm'.continuous₂).mul .const)).continuousAt
 
 /-- If the first vector passed to `oangle` is 0, the result is 0. -/
 @[simp]

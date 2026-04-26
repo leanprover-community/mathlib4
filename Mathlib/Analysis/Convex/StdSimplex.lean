@@ -180,8 +180,8 @@ theorem isClosed_stdSimplex : IsClosed (stdSimplex 𝕜 ι) := by
   rw [stdSimplex_eq_inter]
   apply IsClosed.inter
   · apply isClosed_iInter
-    exact fun i ↦ isClosed_le continuous_const (continuous_apply i)
-  · exact isClosed_eq (by fun_prop) continuous_const
+    exact fun i ↦ isClosed_le .const (continuous_apply i)
+  · exact isClosed_eq (by fun_prop) .const
 
 /-- `stdSimplex 𝕜 ι` is compact. -/
 theorem isCompact_stdSimplex [CompactIccSpace 𝕜] [IsOrderedAddMonoid 𝕜] :
@@ -230,7 +230,7 @@ def stdSimplexHomeomorphUnitInterval : stdSimplex ℝ (Fin 2) ≃ₜ unitInterva
   continuous_invFun := by
     apply Continuous.subtype_mk
     exact (continuous_pi <| Fin.forall_fin_two.2
-      ⟨continuous_const.sub continuous_subtype_val, continuous_subtype_val⟩)
+      ⟨Continuous.const.sub continuous_subtype_val, continuous_subtype_val⟩)
 
 @[simp]
 lemma stdSimplexHomeomorphUnitInterval_zero :

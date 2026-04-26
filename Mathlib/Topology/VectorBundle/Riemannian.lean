@@ -78,7 +78,7 @@ instance : IsContinuousRiemannianBundle F₁ (Bundle.Trivial B F₁) := by
   intro x
   rw [FiberBundle.continuousAt_totalSpace]
   refine ⟨continuousAt_id, ?_⟩
-  convert continuousAt_const (y := innerSL ℝ)
+  convert ContinuousAt.const (y := innerSL ℝ)
   ext v w
   simp [hom_trivializationAt_apply, inCoordinates]
 

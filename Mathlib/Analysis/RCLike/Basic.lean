@@ -1141,7 +1141,7 @@ theorem ofRealCLM_apply : (ofRealCLM : ℝ → K) = ofReal :=
 theorem continuous_ofReal : Continuous (ofReal : ℝ → K) :=
   ofRealLI.continuous
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_normSq : Continuous (normSq : K → ℝ) :=
   (continuous_re.mul continuous_re).add (continuous_im.mul continuous_im)
 

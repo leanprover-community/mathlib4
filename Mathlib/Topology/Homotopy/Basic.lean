@@ -228,7 +228,7 @@ on `[1/2, 1]`.
 def trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁ f₂) : Homotopy f₀ f₂ where
   toFun x := if (x.1 : ℝ) ≤ 1 / 2 then F.extend (2 * x.1) x.2 else G.extend (2 * x.1 - 1) x.2
   continuous_toFun :=
-    continuous_if_le (by fun_prop) continuous_const
+    continuous_if_le (by fun_prop) .const
       (F.continuous.comp (by fun_prop)).continuousOn
       (G.continuous.comp (by fun_prop)).continuousOn (fun x hx ↦ by norm_num [hx])
   map_zero_left x := by norm_num

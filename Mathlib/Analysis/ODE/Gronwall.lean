@@ -122,7 +122,7 @@ theorem le_gronwallBound_of_liminf_deriv_right_le {f f' : ℝ → ℝ} {δ K ε 
     · exact hx
   intro x hx
   change f x ≤ (fun ε' => gronwallBound δ K ε' (x - a)) ε
-  convert continuousWithinAt_const.closure_le _ _ (H x hx)
+  convert ContinuousWithinAt.const.closure_le _ _ (H x hx)
   · simp only [closure_Ioi, self_mem_Ici]
   exact (gronwallBound_continuous_ε δ K (x - a)).continuousWithinAt
 

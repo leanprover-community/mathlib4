@@ -57,7 +57,7 @@ lemma continuousOn_sqrt : ContinuousOn sqrt {a : A | 0 ≤ a} :=
 
 lemma continuousOn_nnrpow (r : ℝ≥0) : ContinuousOn (· ^ r) {a : A | 0 ≤ a} := by
   obtain (rfl | hr) := eq_zero_or_pos r
-  · simpa using continuousOn_const
+  · simpa using .const
   · exact continuousOn_id.cfcₙ_nnreal_of_mem_nhdsSet _ Filter.univ_mem
 
 end nonunital

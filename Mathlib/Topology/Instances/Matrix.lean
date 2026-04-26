@@ -238,7 +238,7 @@ theorem Continuous.matrix_cramer [Fintype n] [DecidableEq n] [CommRing R] [IsTop
 theorem Continuous.matrix_adjugate [Fintype n] [DecidableEq n] [CommRing R] [IsTopologicalRing R]
     {A : X → Matrix n n R} (hA : Continuous A) : Continuous fun x => (A x).adjugate :=
   continuous_matrix fun _j k =>
-    (hA.matrix_transpose.matrix_updateCol k continuous_const).matrix_det
+    (hA.matrix_transpose.matrix_updateCol k .const).matrix_det
 
 /-- When `Ring.inverse` is continuous at the determinant (such as in a `NormedRing`, or a
 topological field), so is `Matrix.inv`. -/
@@ -299,7 +299,7 @@ theorem Continuous.matrix_blockDiagonal' [Zero R] [DecidableEq l]
     split_ifs with h
     · subst h
       exact ((continuous_apply i₁).comp hA).matrix_elem i₂ j₂
-    · exact continuous_const
+    · exact .const
 
 @[continuity, fun_prop]
 theorem Continuous.matrix_blockDiag'

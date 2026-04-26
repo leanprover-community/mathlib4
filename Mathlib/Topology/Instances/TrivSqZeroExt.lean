@@ -62,10 +62,10 @@ nonrec theorem continuous_snd : Continuous (snd : tsze R M → M) :=
   continuous_snd
 
 theorem continuous_inl [Zero M] : Continuous (inl : R → tsze R M) :=
-  continuous_id.prodMk continuous_const
+  continuous_id.prodMk .const
 
 theorem continuous_inr [Zero R] : Continuous (inr : M → tsze R M) :=
-  continuous_const.prodMk continuous_id
+  Continuous.const.prodMk continuous_id
 
 theorem IsEmbedding.inl [Zero M] : IsEmbedding (inl : R → tsze R M) :=
   .of_comp continuous_inl continuous_fst .id

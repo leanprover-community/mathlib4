@@ -400,7 +400,7 @@ protected theorem continuous_div_const (c : ℝ≥0∞) (c_ne_zero : c ≠ 0) :
 @[continuity, fun_prop]
 protected theorem continuous_pow (n : ℕ) : Continuous fun a : ℝ≥0∞ => a ^ n := by
   induction n with
-  | zero => simp [continuous_const]
+  | zero => simp [Continuous.const]
   | succ n IH =>
     simp_rw [pow_add, pow_one, continuous_iff_continuousAt]
     intro x
@@ -434,7 +434,7 @@ theorem continuousOn_sub_left (a : ℝ≥0∞) : ContinuousOn (a - ·) { x : ℝ
 
 theorem continuous_sub_right (a : ℝ≥0∞) : Continuous fun x : ℝ≥0∞ => x - a := by
   by_cases a_infty : a = ∞
-  · simp [a_infty, continuous_const, tsub_eq_zero_of_le]
+  · simp [a_infty, Continuous.const, tsub_eq_zero_of_le]
   · rw [show (fun x => x - a) = (fun p : ℝ≥0∞ × ℝ≥0∞ => p.fst - p.snd) ∘ fun x => ⟨x, a⟩ by rfl]
     apply continuousOn_sub.comp_continuous (by fun_prop)
     intro x
@@ -640,7 +640,7 @@ theorem Filter.Tendsto.edist {f g : β → α} {x : Filter β} {a b : α} (hf : 
   (continuous_edist.tendsto (a, b)).comp (hf.prodMk_nhds hg)
 
 theorem Metric.isClosed_closedEBall {a : α} {r : ℝ≥0∞} : IsClosed (closedEBall a r) :=
-  isClosed_le (by fun_prop) continuous_const
+  isClosed_le (by fun_prop) .const
 
 @[deprecated (since := "2026-01-24")]
 alias EMetric.isClosed_closedBall := Metric.isClosed_closedEBall
@@ -662,7 +662,7 @@ theorem isClosed_setOf_lipschitzOnWith {α β} [PseudoEMetricSpace α] [PseudoEM
     (s : Set α) : IsClosed { f : α → β | LipschitzOnWith K f s } := by
   simp only [LipschitzOnWith, setOf_forall]
   refine isClosed_biInter fun x _ => isClosed_biInter fun y _ => isClosed_le ?_ ?_
-  exacts [.edist (continuous_apply x) (continuous_apply y), continuous_const]
+  exacts [.edist (continuous_apply x) (continuous_apply y), Continuous.const]
 
 theorem isClosed_setOf_lipschitzWith {α β} [PseudoEMetricSpace α] [PseudoEMetricSpace β] (K : ℝ≥0) :
     IsClosed { f : α → β | LipschitzWith K f } := by

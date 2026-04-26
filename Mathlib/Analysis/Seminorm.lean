@@ -1172,7 +1172,7 @@ theorem continuous_of_le [TopologicalSpace E] [IsTopologicalAddGroup E]
   refine Seminorm.continuous_of_forall (fun r hr ↦ Filter.mem_of_superset
     (IsOpen.mem_nhds ?_ <| q.mem_ball_self hr) (ball_antitone hpq))
   rw [ball_zero_eq]
-  exact isOpen_lt hq continuous_const
+  exact isOpen_lt hq .const
 
 lemma ball_mem_nhds [TopologicalSpace E] {p : Seminorm 𝕝 E} (hp : Continuous p) {r : ℝ}
     (hr : 0 < r) : p.ball 0 r ∈ (𝓝 0 : Filter E) := by
