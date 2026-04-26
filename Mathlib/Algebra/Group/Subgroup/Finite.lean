@@ -20,7 +20,7 @@ This file provides some result on multiplicative and additive subgroups in the f
 subgroup, subgroups
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 
