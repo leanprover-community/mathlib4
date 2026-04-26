@@ -92,8 +92,10 @@ instance [Small.{v} R] : (uliftFunctor.{v', v} R).PreservesProjectiveObjects whe
     exact Module.Projective.of_equiv ULift.moduleEquiv.symm
 
 instance [Small.{v} R] : (uliftFunctor.{v', v} R).PreservesInjectiveObjects where
-  injective_obj {M} inj := (Module.injective_iff_injective_object R _).mp
-    (Module.ulift_injective_of_injective R ((Module.injective_iff_injective_object R M).mpr inj))
+  injective_obj {M} inj := by
+    have := small_lift R
+    rw [← Module.injective_iff_injective_object]
+    exact Module.ulift_injective_of_injective R ((Module.injective_iff_injective_object R M).mpr inj)
 
 end Ring
 
