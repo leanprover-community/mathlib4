@@ -17,25 +17,27 @@ public import Mathlib.LinearAlgebra.ConvexSpace.AffineSpace
 A convex space has a compatible metric structure if `dist(∑ tᵢ xᵢ, ∑ tᵢ yᵢ) ≤ ∑ tᵢ dist(xᵢ, yᵢ)`.
 This is what one would expect from the triangle inequality.
 
-Note that there is a separate notion of convex metric spaces in the literature
+Note that there is a separate notion of
+[convex metric spaces](https://en.wikipedia.org/wiki/Convex_metric_space) in the literature
 that has little to do with this definition.
 
 ## Main results
+
 - `Convexity.ConvexSpace.IsMetricCompatible`: The (`Prop`-valued) class of convex spaces with
-  compatible .
+  compatible metric structure.
 - `Convexity.continuous_convexComboPair`: Binary convex combination is continuous.
 - `Convexity.ConvexSpace.IsMetricCompatible.of_convex`:
   Convex subspaces of normed spaces are convex metric spaces.
 
 ## TODO
+
 - Equip `StdSimplex` with a topology and show the analogous continuity result for n-ary
   convex combinations.
 - Tidy up the imports with `Mathlib.LinearAlgebra.ConvexSpace.AffineSpace` etc once those files
   are moved to proper places.
-
 -/
 
-@[expose] public section
+public section
 
 namespace Convexity
 
@@ -50,7 +52,8 @@ which is what one would expect from the triangle inequality.
 
 In particular, convex subsets of normed affine spaces are convex metric spaces.
 
-Note that there is a separate notion of convex metric spaces in the literature
+Note that there is a separate notion of
+[convex metric spaces](https://en.wikipedia.org/wiki/Convex_metric_space) in the literature
 that has little to do with this definition. -/
 class ConvexSpace.IsMetricCompatible : Prop where
   /-- Use `dist_convexCombination_map_le` instead. -/
@@ -263,11 +266,9 @@ lemma continuous_convexComboPair' [BoundedSpace X]
       (add_sub_cancel ..) (x i) (y i) :=
   continuous_convexComboPair_of_isBounded f hf hf0 hf1 x y hx hy (.all _) (.all _)
 
-section Convex
-
 /-- A convex subset of a vector space is a convex space. -/
 -- TODO: this should generalize to arbitrary convex space once `Convex` is redefined.
-@[implicit_reducible]
+@[expose, implicit_reducible]
 noncomputable def ConvexSpace.ofConvex
     {R E : Type*} [LinearOrder R] [Field R] [IsStrictOrderedRing R]
       [AddCommGroup E] [Module R E] {S : Set E} (H : Convex R S) :
@@ -325,7 +326,5 @@ instance ConvexSpace.IsMetricCompatible.of_convex {E : Type*} [NormedAddCommGrou
   letI : ConvexSpace ℝ S := .ofConvex H
   refine ⟨fun f σ₁ σ₂ ↦ .trans ?_ (dist_iConvexCombo_le (X := E) f (σ₁ ·) (σ₂ ·))⟩
   simp [Subtype.dist_eq]
-
-end Convex
 
 end Convexity

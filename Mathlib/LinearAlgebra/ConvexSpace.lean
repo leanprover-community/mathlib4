@@ -63,7 +63,7 @@ namespace StdSimplex
 
 variable {R : Type u} [PartialOrder R] [Semiring R] {M N P : Type*}
 
-@[simp] lemma weights_nonneg (f : StdSimplex R M) (i : M) : 0 ≤ f.weights i := f.nonneg i
+@[simp] lemma weights_nonneg {f : StdSimplex R M} (i : M) : 0 ≤ f.weights i := f.nonneg i
 
 lemma nonempty [Nontrivial R] (f : StdSimplex R M) : Nonempty M := by
   by_contra!
@@ -149,7 +149,6 @@ private lemma map_join (f : StdSimplex R (StdSimplex R M)) (g : M → N) :
 
 @[simp] private lemma join_single (x : StdSimplex R M) : join (.single x) = x := by
   ext; simp [join, ← mk_single]
-
 end StdSimplex
 
 /--
@@ -161,6 +160,9 @@ class ConvexSpace (R : Type u) (M : Type v)
   /-- Use `mk` instead. -/
   mk' ::
   /-- Take a convex combination with the given probability distribution over points. -/
+  /- FIXME: Lean makes `inst₁`, `inst₂`, `inst₃` implicit by default, which renders `sConvexCombo`
+  unusable. Why is this so? Shouldn't typeclass arguments to a `structure` also be typeclass
+  arguments to its fields? -/
   sConvexCombo [inst₁] [inst₂] [inst₃] (f : StdSimplex R M) : M
   /-- Associativity of convex combination (monadic join law). -/
   assoc (f : StdSimplex R (StdSimplex R M)) :
@@ -230,7 +232,7 @@ lemma IsAffineMap.comp {g : N → P} (hg : IsAffineMap R g) {f : M → N} (hf : 
 variable (R) in
 @[fun_prop]
 lemma StdSimplex.isAffineMap_map (f : I → J) : IsAffineMap R (StdSimplex.map (R := R) f) :=
-  ⟨fun s ↦ s.map_sConvexCombo f⟩
+  ⟨(map_sConvexCombo · f)⟩
 
 section iConvexCombo
 
@@ -239,6 +241,7 @@ def iConvexCombo (s : StdSimplex R I) (f : I → M) : M := (s.map f).sConvexComb
 
 namespace StdSimplex
 
+-- We export `iConvexCombo` to allow dot notation on the `StdSimplex` argument.
 export Convexity (iConvexCombo)
 
 end StdSimplex
