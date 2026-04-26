@@ -47,7 +47,7 @@ structure GRewriteLemma where
   headIdx : HeadIndex
   headNumArgs : Nat
   relName : Name -- change to Bool for whether it is `Eq`/`Iff`.
-  mvarIds : Array MVarId
+  mvarIds : Array (MVarId × Array LocalDecl)
 
 abbrev GRewriteM := ReaderT GRewriteLemma
   StateRefT State GCongr.GCongrM
@@ -116,9 +116,10 @@ partial def processGCongrHypothesisIntro (g : MVarId) (sameLCtx : Bool) (inv : B
       -- Hack: modify the local context of the metavariables
       let mctx ← getMCtx
       let lctx ← getLCtx
-      setMCtx <| (← read).mvarIds.foldl (init := mctx) fun mctx mvarId ↦
+      setMCtx <| (← read).mvarIds.foldl (init := mctx) fun mctx (mvarId, decls) ↦
         let decl := mctx.getDecl mvarId
-        { mctx with decls := mctx.decls.insert mvarId { decl with lctx } }
+        let decl' := { decl with lctx := decls.foldl (·.addDecl ·) lctx }
+        { mctx with decls := mctx.decls.insert mvarId decl' }
       let result ← processGCongrHypothesis g inv config
       if (← get).progress matches .none then setMCtx mctx
       return result

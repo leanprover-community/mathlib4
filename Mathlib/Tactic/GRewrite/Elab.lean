@@ -40,6 +40,13 @@ def elabGRewrite (mvarId : MVarId) (e : Expr) (stx : Syntax) (forwardImp symm : 
       "Occurs check failed: Expression{indentExpr thm}\ncontains the goal {Expr.mvar mvarId}"
   let mctx ← getMCtx
   let mvarIds := mvarIds.filter fun mvarId ↦ mvarCounterSaved ≤ (mctx.getDecl mvarId).index
+  let lctx ← getLCtx
+  let mvarIds ← mvarIds.mapM fun mvarId ↦ do
+    let mut fvarIds := #[]
+    for decl in (← mvarId.getDecl).lctx do
+      unless lctx.contains decl.fvarId do
+        fvarIds := fvarIds.push decl
+    return (mvarId, fvarIds)
   let r ← mvarId.grewrite e thm mvarIds (forwardImp := forwardImp) (symm := symm) (config := config)
   let mctx ← getMCtx
   let mvarIds := r.mvarIds.filter fun mvarId => mvarCounterSaved ≤ (mctx.getDecl mvarId).index

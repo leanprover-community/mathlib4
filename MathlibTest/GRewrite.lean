@@ -3,13 +3,15 @@ Copyright (c) 2023 Sebastian Zimmer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Zimmer, Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
 -/
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Pi
+import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.Int.ModEq
+import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Order.Antisymmetrization
 import Mathlib.Tactic.GRewrite
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.NormNum
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 
 /- In many examples in this module, we rewrite expressions which do not make it into the final term.
 
@@ -289,6 +291,10 @@ example (h : p → q) (h' : q → r) : p → r := by
   apply_rw [← h] at h'
   exact h'
 
+example (h : p → q) (h' : p ∧ p) : q ∧ q := by
+  apply_rw [← h]
+  exact h'
+
 end apply
 
 -- previously, `grw` failed to rewrite in expressions with syntheticOpaque metavariables
@@ -374,12 +380,17 @@ lemma biSup_inf_le {α β : Type*} [CompleteLattice β] (f : α → β) (s : Set
     ⨆ a ∈ s, (f a ⊓ b) ≤ (⨆ a ∈ s, f a) ⊓ b := by
   grw [iSup_inf_le_iSup_inf, iSup_inf_le_iSup_inf]
 
-example (n m : Nat) : ∅ ∪ { a : Int | a - 1 > 5 } ⊆ { b : Int | b - 1 < 5 } := by
+example : ∅ ∪ { a : Int | a - 1 > 5 } ⊆ { b : Int | b - 1 < 5 } := by
   grw [sub_one_lt, sub_one_lt]
   exact test_sorry
 
-example (n m : Nat) : ∅ ∪ { a : Int | a - 1 ≥ 5 } ⊆ Set.univ := by
+-- Unforturnately, the "Expected type" gets messed up with stuff like `_fvar.78119`
+example : ∅ ∪ { a : Int | a - 1 ≥ 5 } ⊆ Set.univ := by
   grw [sub_le_self _ (by positivity)]
+  exact test_sorry
+
+example : ∅ ∪ { a : Int → Int | a - 1 ≥ 5 } ⊆ Set.univ := by
+  grw [sub_le_self _ fun x ↦ by simp]
   exact test_sorry
 
 end binders

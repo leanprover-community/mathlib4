@@ -60,8 +60,9 @@ If `symm = false`, we rewrite `e` to `eNew := e[x/y]`; otherwise `eNew := e[y/x]
 
 The code aligns with `Lean.MVarId.rewrite` as much as possible.
 -/
-def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr) (mvarIds : Array MVarId)
-    (forwardImp symm : Bool) (config : GRewrite.Config) : MetaM GRewriteResult :=
+def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
+    (mvarIds : Array (MVarId × Array LocalDecl)) (forwardImp symm : Bool)
+    (config : GRewrite.Config) : MetaM GRewriteResult :=
   goal.withContext do
     goal.checkNotAssigned `grewrite
     let hrelType ← instantiateMVars (← inferType hrel)
@@ -138,7 +139,7 @@ def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr) (mvarId
           else
             throwTacticEx `grewrite goal m!"{hrelType} is not a valid relation"
         let (headIdx, headNumArgs) := (pattern.toHeadIndex, pattern.headNumArgs)
-        let mvarIds := mvarIds ++ newMVars.map (·.mvarId!)
+        let mvarIds := mvarIds ++ newMVars.map (·.mvarId!, #[])
         if let (some (eNew, impProof), newGoals) ←
           grewriteCore `_Implies none e (!forwardImp) config |>.run
             { symm, proof := hrel, type := hrelType, headIdx, headNumArgs, relName, mvarIds }
