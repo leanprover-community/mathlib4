@@ -56,10 +56,11 @@ variable [CommRing L] [IsDomain L] (hμ : IsPrimitiveRoot μ n) [Algebra K L]
 field extension. -/
 theorem autToPow_injective : Function.Injective <| hμ.autToPow K := by
   intro f g hfg
-  apply AlgEquiv.coe_algHom_injective
-  apply (hμ.powerBasis K).algHom_ext
-  simpa only [IsPrimitiveRoot.autToPow_spec] using
-    congrArg (fun t : (ZMod n)ˣ ↦ μ ^ (t : ZMod n).val) hfg
+  have : f.toAlgHom = g.toAlgHom := by
+    apply (hμ.powerBasis K).algHom_ext
+    rw [AlgEquiv.toAlgHom_eq_coe, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_coe, AlgHom.coe_coe,
+      powerBasis_gen, ← autToPow_spec K hμ g, ← autToPow_spec K hμ f, hfg]
+  exact AlgEquiv.coe_algHom_injective this
 
 end IsPrimitiveRoot
 
