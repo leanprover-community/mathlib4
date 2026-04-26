@@ -205,6 +205,24 @@ theorem MulAction.contDiffSMul_compHom {N} [NormedAddCommGroup N] [NormedSpace �
 
 end Monoid
 
+section Normed
+
+variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
+
+/-- Scalar multiplication by a normed field on a normed space is C^n. -/
+instance NormedSpace.contDiffSMul {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+    [Module 𝕜' F] [IsBoundedSMul 𝕜' F] [IsScalarTower 𝕜 𝕜' F] :
+    ContDiffSMul 𝕜 𝕜' F n where
+  contdiff_smul := contDiff_smul
+
+
+/-- Multiplication in a normed algebra is C^n as a scalar action on itself. -/
+instance NormedAlgebra.contDiffSMul_self {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A] :
+    ContDiffSMul 𝕜 A A n where
+  contdiff_smul := contDiff_mul
+
+end Normed
+
 
 variable [NormedAddCommGroup Y] [NormedSpace 𝕜 Y]
 
