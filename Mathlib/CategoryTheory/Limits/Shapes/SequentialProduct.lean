@@ -86,7 +86,7 @@ lemma functorMap_commSq_aux {n m k : ℕ} (h : n ≤ m) (hh : ¬(k < m)) :
     rw [this, op_comp, Functor.map_comp]
     slice_lhs 2 4 => rw [ih]
     simp only [ homOfLE_leOfHom, Functor.ofOpSequence_map_homOfLE_succ,
-      functorMap, dite_eq_ite, limMap_π_assoc, Discrete.functor_obj_eq_as, Discrete.natTrans_app]
+      functorMap, dite_eq_ite]
     split_ifs
     · omega
     simp [dif_neg (by lia : ¬(k < m)), dif_neg hh]
@@ -149,14 +149,14 @@ set_option backward.isDefEq.respectTransparency false in
 lemma cone_π_app_comp_Pi_π_pos (m n : ℕ) (h : n < m) : (cone f).π.app ⟨m⟩ ≫
     Pi.π (fun i ↦ if _ : i < m then M i else N i) n =
     Pi.π _ n ≫ eqToHom (functorObj_eq_pos h).symm := by
-  simp [cone_π_app, limMap_π, Discrete.functor_obj_eq_as, Discrete.natTrans_app, dif_pos h]
+  simp [cone_π_app, dif_pos h]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma cone_π_app_comp_Pi_π_neg (m n : ℕ) (h : ¬(n < m)) : (cone f).π.app ⟨m⟩ ≫ Pi.π _ n =
     Pi.π _ n ≫ f n ≫ eqToHom (functorObj_eq_neg h).symm := by
-  simp [cone_π_app, limMap_π, Discrete.functor_obj_eq_as, Discrete.natTrans_app, dif_neg h]
+  simp [cone_π_app, dif_neg h]
 
 set_option backward.isDefEq.respectTransparency false in
 /--
