@@ -43,7 +43,6 @@ noncomputable def splitting : X.Splitting where
       exact ⟨.mk f, y, rfl⟩
     · exact unique_nonDegenerate_simplex _ _ _ _ rfl _ _ h
     · obtain rfl : m = p := unique_nonDegenerate_dim _ _ _ _ rfl _ _ h
-      obtain rfl : x = y := unique_nonDegenerate_simplex _ _ _ _ rfl _ _ h
       obtain rfl : f = g := unique_nonDegenerate_map _ _ _ _ rfl _ _ h
       dsimp)
 
