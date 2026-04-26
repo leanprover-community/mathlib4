@@ -186,6 +186,21 @@ theorem ContDiff.contdiff_smul (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g)
 
 end SMul
 
+section Monoid
+
+variable [Monoid M] [MulAction M X] [ContDiffSMul 𝕜 M X n]
+
+theorem MulAction.contDiffSMul_compHom {N} [NormedAddCommGroup N] [NormedSpace 𝕜 N]
+    [Monoid N] {f : N →* M} (hf : ContDiff 𝕜 n f) :
+    letI := MulAction.compHom X f
+    ContDiffSMul 𝕜 N X n := by
+  letI := MulAction.compHom X f
+  exact ⟨(hf.comp contDiff_fst).contdiff_smul contDiff_snd⟩
+
+
+end Monoid
+
+
 variable [NormedAddCommGroup Y] [NormedSpace 𝕜 Y]
 
 instance Prod.contDiffSMul [SMul M X] [SMul M Y] [ContDiffSMul 𝕜 M X n] [ContDiffSMul 𝕜 M Y n] :
