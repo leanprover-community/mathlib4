@@ -11,7 +11,7 @@ public import Mathlib.Topology.Order.IsLUB
 # Order topology on a densely ordered set
 -/
 
-@[expose] public section
+public section
 
 open Set Filter TopologicalSpace Topology Function
 
@@ -46,6 +46,26 @@ theorem closure_Iio' (h : (Iio a).Nonempty) : closure (Iio a) = Iic a :=
 @[simp]
 theorem closure_Iio (a : α) [NoMinOrder α] : closure (Iio a) = Iic a :=
   closure_Iio' nonempty_Iio
+
+theorem IsMax.of_disjoint_nhds_Ioi {x : α} {u : Set α} (hu : u ∈ nhds x)
+    (hd : Disjoint u (Set.Ioi x)) : IsMax x := by
+  by_contra hx
+  exact (mem_closure_iff_nhds.mp (closure_Ioi' (not_isMax_iff.mp hx) ▸ self_mem_Ici) u hu).ne_empty
+    (disjoint_iff.mp hd)
+
+theorem IsMin.of_disjoint_nhds_Iio {x : α} {u : Set α} (hu : u ∈ nhds x)
+    (hd : Disjoint u (Set.Iio x)) : IsMin x :=
+  IsMax.of_disjoint_nhds_Ioi (α := αᵒᵈ) hu hd
+
+theorem nonempty_nhds_inter_Ioi {x : α} {u : Set α} (hu : u ∈ nhds x) (hx : ¬IsMax x) :
+    (u ∩ Set.Ioi x).Nonempty := by
+  by_contra h
+  exact hx (IsMax.of_disjoint_nhds_Ioi hu (Set.disjoint_iff_inter_eq_empty.mpr
+    (Set.not_nonempty_iff_eq_empty.mp h)))
+
+theorem nonempty_nhds_inter_Iio {x : α} {u : Set α} (hu : u ∈ nhds x) (hx : ¬IsMin x) :
+    (u ∩ Set.Iio x).Nonempty :=
+  nonempty_nhds_inter_Ioi (α := αᵒᵈ) hu hx
 
 /-- The closure of the open interval `(a, b)` is the closed interval `[a, b]`. -/
 @[simp]

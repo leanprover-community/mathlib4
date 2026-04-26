@@ -20,7 +20,7 @@ This file provides some result on multiplicative and additive subgroups in the f
 subgroup, subgroups
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 
@@ -173,12 +173,6 @@ section Pi
 open Set
 
 variable {η : Type*} {f : η → Type*} [∀ i, Group (f i)]
-
-@[to_additive (attr := deprecated Submonoid.pi_mem_of_mulSingle_mem_aux (since := "2025-10-08"))]
-theorem pi_mem_of_mulSingle_mem_aux [DecidableEq η] (I : Finset η) {H : Subgroup (∀ i, f i)}
-    (x : ∀ i, f i) (h1 : ∀ i, i ∉ I → x i = 1) (h2 : ∀ i, i ∈ I → Pi.mulSingle i (x i) ∈ H) :
-    x ∈ H :=
-  Submonoid.pi_mem_of_mulSingle_mem_aux I x h1 h2
 
 @[to_additive]
 theorem pi_mem_of_mulSingle_mem [Finite η] [DecidableEq η] {H : Subgroup (∀ i, f i)} (x : ∀ i, f i)

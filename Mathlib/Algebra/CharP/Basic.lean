@@ -24,7 +24,7 @@ imports of `Mathlib/Algebra/CharP/Lemmas.lean`.
 As such, we can probably reorganize and find a better home for most of these lemmas.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset TwoSidedIdeal
 

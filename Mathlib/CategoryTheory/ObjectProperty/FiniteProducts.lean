@@ -23,7 +23,7 @@ has finite products.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.ObjectProperty
 
@@ -53,6 +53,11 @@ lemma prop_of_isTerminal [P.IsClosedUnderLimitsOfShape (Discrete.{0} PEmpty)]
 lemma prop_terminal [P.IsClosedUnderLimitsOfShape (Discrete.{0} PEmpty)] [HasTerminal C] :
     P (⊤_ C) :=
   P.prop_of_isTerminal _ terminalIsTerminal
+
+-- see Note [lower instance priority]
+instance (priority := 100) [P.IsClosedUnderLimitsOfShape (Discrete.{0} PEmpty)] [HasTerminal C] :
+    P.Nonempty :=
+  nonempty_of_prop P.prop_terminal
 
 lemma IsClosedUnderBinaryProducts.closedUnderIsomorphisms [HasTerminal C]
     [P.IsClosedUnderLimitsOfShape (Discrete.{0} PEmpty)] [P.IsClosedUnderBinaryProducts] :
@@ -142,6 +147,11 @@ lemma prop_of_isInitial [P.IsClosedUnderColimitsOfShape (Discrete.{0} PEmpty)]
 lemma prop_initial [P.IsClosedUnderColimitsOfShape (Discrete.{0} PEmpty)] [HasInitial C] :
     P (⊥_ C) :=
   P.prop_of_isInitial _ initialIsInitial
+
+-- see Note [lower instance priority]
+instance (priority := 100) [P.IsClosedUnderColimitsOfShape (Discrete.{0} PEmpty)] [HasInitial C] :
+    P.Nonempty :=
+  nonempty_of_prop P.prop_initial
 
 lemma IsClosedUnderBinaryCoproducts.closedUnderIsomorphisms [HasInitial C]
     [P.IsClosedUnderColimitsOfShape (Discrete.{0} PEmpty)] [P.IsClosedUnderBinaryCoproducts] :

@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Ring.Parity
 # Canonically ordered rings and semirings.
 -/
 
-@[expose] public section
+public section
 
 
 open Function

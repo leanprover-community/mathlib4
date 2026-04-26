@@ -45,7 +45,7 @@ Show that certain morphism properties can also be spread out.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 

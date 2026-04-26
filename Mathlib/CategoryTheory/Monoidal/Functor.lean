@@ -911,7 +911,7 @@ def rightAdjointLaxMonoidal : G.LaxMonoidal where
     simpa using NatTrans.whiskerLeft_app_tensor_app adj.counit adj.counit (f := g) _
   associativity X Y Z := (adj.homEquiv _ _).symm.injective (by
     simp only [homEquiv_unit, comp_obj, map_comp, comp_whiskerRight, assoc, homEquiv_counit,
-      counit_naturality, id_obj, counit_naturality_assoc, left_triangle_components_assoc,
+      counit_naturality, counit_naturality_assoc, left_triangle_components_assoc,
       MonoidalCategory.whiskerLeft_comp]
     rw [← δ_natural_left_assoc, ← δ_natural_left_assoc, ← δ_natural_left_assoc]
     haveI := @NatTrans.whiskerRight_app_tensor_app_assoc _ _ _ _ _ _ _ _ _ adj.counit adj.counit
@@ -969,19 +969,16 @@ variable [G.LaxMonoidal] [adj.IsMonoidal]
 lemma unit_app_unit_comp_map_η : adj.unit.app (𝟙_ C) ≫ G.map (η F) = ε G :=
   Adjunction.IsMonoidal.leftAdjoint_ε.symm
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma unit_app_tensor_comp_map_δ (X Y : C) :
     adj.unit.app (X ⊗ Y) ≫ G.map (δ F X Y) = (adj.unit.app X ⊗ₘ adj.unit.app Y) ≫ μ G _ _ := by
   simp [IsMonoidal.leftAdjoint_μ (adj := adj), ← adj.unit_naturality_assoc,
     ← Functor.map_comp, ← δ_natural_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma map_ε_comp_counit_app_unit : F.map (ε G) ≫ adj.counit.app (𝟙_ D) = η F := by
   simp [IsMonoidal.leftAdjoint_ε (adj := adj)]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma map_μ_comp_counit_app_tensor (X Y : D) :
     F.map (μ G X Y) ≫ adj.counit.app (X ⊗ Y) =
@@ -1053,7 +1050,6 @@ def leftAdjointOplaxMonoidal : F.OplaxMonoidal where
       tensorHom_comp_tensorHom_assoc]
     simp [tensorHom_def, homEquiv_unit, homEquiv_counit])
 
-set_option backward.isDefEq.respectTransparency false in
 instance :
     letI := adj.leftAdjointOplaxMonoidal
     adj.IsMonoidal := by
@@ -1064,7 +1060,6 @@ instance :
 
 end OplaxMonoidal
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] leftAdjointOplaxMonoidal_η leftAdjointOplaxMonoidal_δ
   rightAdjointLaxMonoidal_ε rightAdjointLaxMonoidal_μ in
 /-- If `F ⊣ G` is an adjunction, the `G` is lax monoidal iff `F` is oplax monoidal.
@@ -1222,7 +1217,7 @@ instance isMonoidal_refl : (Equivalence.refl (C := C)).IsMonoidal :=
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The inverse of a monoidal category equivalence is also a monoidal category equivalence. -/
-instance isMonoidal_symm [e.IsMonoidal] : e.symm.IsMonoidal where
+instance isMonoidal_symm : e.symm.IsMonoidal where
   leftAdjoint_ε := by
     simp only [toAdjunction]
     dsimp [symm]

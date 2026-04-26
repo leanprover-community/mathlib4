@@ -54,7 +54,7 @@ every finitely presented flat module is projective (`Module.Flat.projective_of_f
 
 -/
 
-@[expose] public section
+public section
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 
@@ -234,14 +234,13 @@ private theorem exists_factorization_of_comp_eq_zero_of_free_aux [Flat R M] {K :
       x = y ∘ₗ a ∧ a ∘ₗ f = 0 := by
   have (K' : Submodule R K) (hK' : K'.FG) : ∃ (k : ℕ) (a : (Fin n →₀ R) →ₗ[R] (Fin k →₀ R))
       (y : (Fin k →₀ R) →ₗ[R] M), x = y ∘ₗ a ∧ K' ≤ LinearMap.ker (a ∘ₗ f) := by
-    revert n
-    apply Submodule.fg_induction (N := K') (hN := hK')
-    · intro k n f x hfx
-      have : x (f k) = 0 := by simpa using LinearMap.congr_fun hfx k
+    induction K', hK' using Submodule.fg_induction generalizing n with
+    | singleton k =>
+      have : x (f k) = 0 := by simpa using LinearMap.congr_fun h k
       simpa using exists_factorization_of_apply_eq_zero_of_free this
-    · intro K₁ K₂ ih₁ ih₂ n f x hfx
-      obtain ⟨k₁, a₁, y₁, rfl, ha₁⟩ := ih₁ hfx
-      have : y₁ ∘ₗ (a₁ ∘ₗ f) = 0 := by rw [← comp_assoc, hfx]
+    | sup K₁ K₂ _ _ ih₁ ih₂ =>
+      obtain ⟨k₁, a₁, y₁, rfl, ha₁⟩ := ih₁ h
+      have : y₁ ∘ₗ (a₁ ∘ₗ f) = 0 := by rw [← comp_assoc, h]
       obtain ⟨k₂, a₂, y₂, rfl, ha₂⟩ := ih₂ this
       use k₂, a₂ ∘ₗ a₁, y₂
       simp_rw [comp_assoc]

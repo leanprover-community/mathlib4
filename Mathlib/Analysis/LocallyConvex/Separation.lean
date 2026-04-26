@@ -38,7 +38,7 @@ We provide many variations to stricten the result under more assumptions on the 
 * `geometric_hahn_banach_point_point`: Both sets are singletons. Strict separation.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists ContinuousLinearMap.hasOpNorm
 
@@ -78,7 +78,7 @@ theorem separate_convex_open_set [TopologicalSpace E] [AddCommGroup E] [IsTopolo
   simp only [mul_one, smul_eq_mul]
   obtain h | h := le_or_gt y 0
   · exact h.trans (gauge_nonneg _)
-  · rw [gauge_smul_of_nonneg h.le, smul_eq_mul, le_mul_iff_one_le_right h]
+  · rw [gauge_smul_of_nonneg h.le, smul_eq_mul, RingHom.id_apply, le_mul_iff_one_le_right h]
     exact
       one_le_gauge_of_notMem (hs₁.starConvex hs₀)
         (absorbent_nhds_zero <| hs₂.mem_nhds hs₀).absorbs hx₀
