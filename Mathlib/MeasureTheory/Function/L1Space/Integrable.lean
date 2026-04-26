@@ -247,7 +247,8 @@ lemma integrable_norm_pow_of_le [IsFiniteMeasure μ] {f : α → β} (hf : AEStr
 theorem Integrable.mono_measure {f : α → ε} (h : Integrable f ν) (hμ : μ ≤ ν) : Integrable f μ :=
   ⟨h.aestronglyMeasurable.mono_measure hμ, h.hasFiniteIntegral.mono_measure hμ⟩
 
-theorem Integrable.of_measure_le_smul {ε} [TopologicalSpace ε] [ESeminormedAddMonoid ε]
+theorem Integrable.of_measure_le_smul {ε}
+    [TopologicalSpace ε] [AddMonoid ε] [ESeminormedAddMonoid ε]
     {μ' : Measure α} {c : ℝ≥0∞} (hc : c ≠ ∞) (hμ'_le : μ' ≤ c • μ)
     {f : α → ε} (hf : Integrable f μ) : Integrable f μ' := by
   rw [← memLp_one_iff_integrable] at hf ⊢
@@ -305,7 +306,7 @@ theorem integrable_finset_sum_measure [PseudoMetrizableSpace ε]
 
 section
 
-variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε]
+variable {ε : Type*} [TopologicalSpace ε] [AddMonoid ε] [ESeminormedAddMonoid ε]
 
 @[fun_prop]
 theorem Integrable.smul_measure {f : α → ε} (h : Integrable f μ) {c : ℝ≥0∞} (hc : c ≠ ∞) :
@@ -399,7 +400,7 @@ theorem lintegral_edist_lt_top {f g : α → β} (hf : Integrable f μ) (hg : In
 
 section ESeminormedAddMonoid
 
-variable {ε' : Type*} [TopologicalSpace ε'] [ESeminormedAddMonoid ε']
+variable {ε' : Type*} [TopologicalSpace ε'] [AddMonoid ε'] [ESeminormedAddMonoid ε']
 
 variable (α ε') in
 @[simp]
@@ -430,7 +431,8 @@ end ESeminormedAddMonoid
 
 section ESeminormedAddCommMonoid
 
-variable {ε' : Type*} [TopologicalSpace ε'] [ESeminormedAddCommMonoid ε'] [ContinuousAdd ε']
+variable {ε' : Type*} [TopologicalSpace ε'] [AddCommMonoid ε'] [ESeminormedAddMonoid ε']
+  [ContinuousAdd ε']
 
 @[fun_prop]
 theorem integrable_finset_sum' {ι} (s : Finset ι) {f : ι → α → ε'}
@@ -950,7 +952,7 @@ end PosPart
 section IsBoundedSMul
 
 variable {𝕜 : Type*}
-  {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε]
+  {ε : Type*} [TopologicalSpace ε] [AddMonoid ε] [ESeminormedAddMonoid ε]
 
 @[to_fun (attr := fun_prop)]
 theorem Integrable.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β] [IsBoundedSMul 𝕜 β] (c : 𝕜)

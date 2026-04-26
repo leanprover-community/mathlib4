@@ -77,7 +77,7 @@ theorem memLp_zero_iff_aestronglyMeasurable [TopologicalSpace ε] {f : α → ε
 
 section ESeminormedAddMonoid
 
-variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε]
+variable {ε : Type*} [TopologicalSpace ε] [AddMonoid ε] [ESeminormedAddMonoid ε]
 
 @[simp]
 theorem eLpNorm'_zero (hp0_lt : 0 < q) : eLpNorm' (0 : α → ε) q μ = 0 := by
@@ -175,7 +175,7 @@ end Neg
 section Const
 
 variable {ε' ε'' : Type*} [TopologicalSpace ε'] [ContinuousENorm ε']
-  [TopologicalSpace ε''] [ESeminormedAddMonoid ε'']
+  [TopologicalSpace ε''] [AddMonoid ε''] [ESeminormedAddMonoid ε'']
 
 theorem eLpNorm'_const (c : ε) (hq_pos : 0 < q) :
     eLpNorm' (fun _ : α => c) q μ = ‖c‖ₑ * μ Set.univ ^ (1 / q) := by
@@ -380,7 +380,7 @@ theorem eLpNormEssSup_lt_top_of_ae_bound {f : α → F} {C : ℝ} (hfC : ∀ᵐ 
     eLpNormEssSup f μ < ∞ :=
   (eLpNormEssSup_le_of_ae_bound hfC).trans_lt ENNReal.ofReal_lt_top
 
-theorem eLpNorm_le_of_ae_enorm_bound {ε} [TopologicalSpace ε] [ESeminormedAddMonoid ε]
+theorem eLpNorm_le_of_ae_enorm_bound {ε} [TopologicalSpace ε] [AddMonoid ε] [ESeminormedAddMonoid ε]
     {f : α → ε} {C : ℝ≥0∞} (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C) :
     eLpNorm f p μ ≤ C • μ Set.univ ^ p.toReal⁻¹ := by
   rcases eq_zero_or_neZero μ with rfl | hμ
@@ -590,7 +590,7 @@ end ContinuousENorm
 
 section ENormedAddMonoid
 
-variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+variable {ε : Type*} [TopologicalSpace ε] [AddMonoid ε] [ENormedAddMonoid ε]
 
 /-- For a function `f` with support in `s`, the Lᵖ norms of `f` with respect to `μ` and
 `μ.restrict s` are the same. -/
@@ -747,7 +747,7 @@ end ContinuousENorm
 
 section ESeminormedAddMonoid
 
-variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε]
+variable {ε : Type*} [TopologicalSpace ε] [AddMonoid ε] [ESeminormedAddMonoid ε]
 
 theorem eLpNorm'_eq_zero_of_ae_zero {f : α → ε} (hq0_lt : 0 < q) (hf_zero : f =ᵐ[μ] 0) :
     eLpNorm' f q μ = 0 := by rw [eLpNorm'_congr_ae hf_zero, eLpNorm'_zero hq0_lt]
@@ -804,7 +804,7 @@ end ESeminormedAddMonoid
 
 section ENormedAddMonoid
 
-variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+variable {ε : Type*} [TopologicalSpace ε] [AddMonoid ε] [ENormedAddMonoid ε]
 
 theorem ae_eq_zero_of_eLpNorm'_eq_zero {f : α → ε} (hq0 : 0 ≤ q) (hf : AEStronglyMeasurable f μ)
     (h : eLpNorm' f q μ = 0) : f =ᵐ[μ] 0 := by

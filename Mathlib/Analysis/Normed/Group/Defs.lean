@@ -111,36 +111,30 @@ class ContinuousENorm (E : Type*) [TopologicalSpace E] extends ENorm E where
 /-- An e-seminormed monoid is an additive monoid endowed with a continuous enorm.
 Note that we do not ask for the enorm to be positive definite:
 non-trivial elements may have enorm zero. -/
-class ESeminormedAddMonoid (E : Type*) [TopologicalSpace E]
-    extends ContinuousENorm E, AddMonoid E where
+class ESeminormedAddMonoid (E : Type*) [TopologicalSpace E] [AddMonoid E]
+    extends ContinuousENorm E where
   enorm_zero : ‖(0 : E)‖ₑ = 0
   protected enorm_add_le : ∀ x y : E, ‖x + y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
-
--- see Note [lower instance priority]
-attribute [instance 200] ESeminormedAddMonoid.toAddMonoid
 
 /-- An enormed monoid is an additive monoid endowed with a continuous enorm,
 which is positive definite: in other words, this is an `ESeminormedAddMonoid` with a positive
 definiteness condition added. -/
-class ENormedAddMonoid (E : Type*) [TopologicalSpace E]
+class ENormedAddMonoid (E : Type*) [TopologicalSpace E] [AddMonoid E]
     extends ESeminormedAddMonoid E where
   enorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 0
 
 /-- An e-seminormed monoid is a monoid endowed with a continuous enorm.
 Note that we only ask for the enorm to be a semi-norm: non-trivial elements may have enorm zero. -/
 @[to_additive]
-class ESeminormedMonoid (E : Type*) [TopologicalSpace E] extends ContinuousENorm E, Monoid E where
+class ESeminormedMonoid (E : Type*) [TopologicalSpace E] [Monoid E] extends ContinuousENorm E where
   enorm_zero : ‖(1 : E)‖ₑ = 0
   enorm_mul_le : ∀ x y : E, ‖x * y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
-
--- see Note [lower instance priority]
-attribute [instance 200] ESeminormedMonoid.toMonoid
 
 /-- An enormed monoid is a monoid endowed with a continuous enorm,
 which is positive definite: in other words, this is an `ESeminormedMonoid` with a positive
 definiteness condition added. -/
 @[to_additive]
-class ENormedMonoid (E : Type*) [TopologicalSpace E] extends ESeminormedMonoid E where
+class ENormedMonoid (E : Type*) [TopologicalSpace E] [Monoid E] extends ESeminormedMonoid E where
   enorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 1
 
 /-- An e-seminormed commutative monoid is an additive commutative monoid endowed with a continuous
@@ -149,34 +143,40 @@ enorm.
 We don't have `ESeminormedAddCommMonoid` extend `EMetricSpace`, since the canonical instance `ℝ≥0∞`
 is not an `EMetricSpace`. This is because `ℝ≥0∞` carries the order topology, which is distinct from
 the topology coming from `edist`. -/
-class ESeminormedAddCommMonoid (E : Type*) [TopologicalSpace E]
-  extends ESeminormedAddMonoid E, AddCommMonoid E where
+@[deprecated "Use `[AddCommMonoid E] [ESeminormedAddMonoid E]` instead." (since := "2026-04-14")]
+structure ESeminormedAddCommMonoid (E : Type*) [TopologicalSpace E]
+  extends AddCommMonoid E, ESeminormedAddMonoid E where
 
--- see Note [lower instance priority]
-attribute [instance 200] ESeminormedAddCommMonoid.toAddCommMonoid
-
+set_option linter.deprecated false in
 /-- An enormed commutative monoid is an additive commutative monoid
 endowed with a continuous enorm which is positive definite.
 
 We don't have `ENormedAddCommMonoid` extend `EMetricSpace`, since the canonical instance `ℝ≥0∞`
 is not an `EMetricSpace`. This is because `ℝ≥0∞` carries the order topology, which is distinct from
 the topology coming from `edist`. -/
-class ENormedAddCommMonoid (E : Type*) [TopologicalSpace E]
+@[deprecated "Use `[AddCommMonoid E] [ENormedAddMonoid E]` instead." (since := "2026-04-14")]
+structure ENormedAddCommMonoid (E : Type*) [TopologicalSpace E]
   extends ESeminormedAddCommMonoid E, ENormedAddMonoid E where
 
+attribute [nolint docBlame] ENormedAddCommMonoid.toENormedAddMonoid
+
+set_option linter.existingAttributeWarning false in
 /-- An e-seminormed commutative monoid is a commutative monoid endowed with a continuous enorm. -/
-@[to_additive]
-class ESeminormedCommMonoid (E : Type*) [TopologicalSpace E]
-  extends ESeminormedMonoid E, CommMonoid E where
+@[to_additive,
+  deprecated "Use `[CommMonoid E] [ESeminormedMonoid E]` instead." (since := "2026-04-14")]
+structure ESeminormedCommMonoid (E : Type*) [TopologicalSpace E]
+  extends CommMonoid E, ESeminormedMonoid E where
 
--- see Note [lower instance priority]
-attribute [instance 200] ESeminormedCommMonoid.toCommMonoid
-
+set_option linter.deprecated false in
+set_option linter.existingAttributeWarning false in
 /-- An enormed commutative monoid is a commutative monoid endowed with a continuous enorm
 which is positive definite. -/
-@[to_additive]
-class ENormedCommMonoid (E : Type*) [TopologicalSpace E]
+@[to_additive,
+  deprecated "Use `[CommMonoid E] [ENormedMonoid E]` instead." (since := "2026-04-14")]
+structure ENormedCommMonoid (E : Type*) [TopologicalSpace E]
   extends ESeminormedCommMonoid E, ENormedMonoid E where
+
+attribute [nolint docBlame] ENormedCommMonoid.toENormedMonoid
 
 /-- A seminormed group is an additive group endowed with a norm for which `dist x y = ‖-x + y‖`
 defines a pseudometric space structure. -/

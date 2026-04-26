@@ -608,11 +608,12 @@ end NNNorm
 section ENorm
 
 @[to_additive (attr := simp) enorm_zero]
-lemma enorm_one' {E : Type*} [TopologicalSpace E] [ESeminormedMonoid E] : ‖(1 : E)‖ₑ = 0 := by
+lemma enorm_one' {E : Type*} [TopologicalSpace E] [Monoid E] [ESeminormedMonoid E] :
+    ‖(1 : E)‖ₑ = 0 := by
   rw [ESeminormedMonoid.enorm_zero]
 
 @[to_additive exists_enorm_lt]
-lemma exists_enorm_lt' (E : Type*) [TopologicalSpace E] [ESeminormedMonoid E]
+lemma exists_enorm_lt' (E : Type*) [TopologicalSpace E] [Monoid E] [ESeminormedMonoid E]
     [hbot : NeBot (𝓝[≠] (1 : E))] {c : ℝ≥0∞} (hc : c ≠ 0) : ∃ x ≠ (1 : E), ‖x‖ₑ < c :=
   frequently_iff_neBot.mpr hbot |>.and_eventually
     (ContinuousENorm.continuous_enorm.tendsto' 1 0 (by simp) |>.eventually_lt_const hc.bot_lt)
@@ -650,7 +651,7 @@ end ENorm
 
 section ESeminormedMonoid
 
-variable {E : Type*} [TopologicalSpace E] [ESeminormedMonoid E]
+variable {E : Type*} [TopologicalSpace E] [Monoid E] [ESeminormedMonoid E]
 
 @[to_additive enorm_add_le]
 lemma enorm_mul_le' (a b : E) : ‖a * b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := ESeminormedMonoid.enorm_mul_le a b
@@ -672,7 +673,7 @@ end ESeminormedMonoid
 
 section ENormedMonoid
 
-variable {E : Type*} [TopologicalSpace E] [ENormedMonoid E]
+variable {E : Type*} [TopologicalSpace E] [Monoid E] [ENormedMonoid E]
 
 @[to_additive (attr := simp) enorm_eq_zero]
 lemma enorm_eq_zero' {a : E} : ‖a‖ₑ = 0 ↔ a = 1 := by
@@ -752,7 +753,7 @@ end Induced
 section SeminormedCommGroup
 
 variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a b : E} {r : ℝ}
-variable {ε : Type*} [TopologicalSpace ε] [ESeminormedCommMonoid ε]
+variable {ε : Type*} [TopologicalSpace ε] [CommMonoid ε] [ESeminormedMonoid ε]
 
 @[to_additive]
 theorem dist_eq_norm_div (a b : E) : dist a b = ‖a / b‖ := by
@@ -804,7 +805,7 @@ theorem norm_multiset_sum_le {E} [SeminormedAddCommGroup E] (m : Multiset E) :
     ‖m.sum‖ ≤ (m.map fun x => ‖x‖).sum :=
   m.le_sum_of_subadditive norm norm_zero.le norm_add_le
 
-variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddCommMonoid ε] in
+variable {ε : Type*} [TopologicalSpace ε] [AddCommMonoid ε] [ESeminormedAddMonoid ε] in
 theorem enorm_multisetSum_le (m : Multiset ε) :
     ‖m.sum‖ₑ ≤ (m.map fun x => ‖x‖ₑ).sum :=
   m.le_sum_of_subadditive enorm enorm_zero.le enorm_add_le
@@ -813,13 +814,13 @@ theorem enorm_multisetSum_le (m : Multiset ε) :
 theorem norm_multiset_prod_le (m : Multiset E) : ‖m.prod‖ ≤ (m.map fun x => ‖x‖).sum :=
   m.apply_prod_le_sum_map _ norm_one'.le norm_mul_le'
 
-variable {ε : Type*} [TopologicalSpace ε] [ESeminormedCommMonoid ε] in
+variable {ε : Type*} [TopologicalSpace ε] [CommMonoid ε] [ESeminormedMonoid ε] in
 @[to_additive existing]
 theorem enorm_multisetProd_le (m : Multiset ε) :
     ‖m.prod‖ₑ ≤ (m.map fun x => ‖x‖ₑ).sum :=
   m.apply_prod_le_sum_map _ enorm_one'.le enorm_mul_le'
 
-variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddCommMonoid ε] in
+variable {ε : Type*} [TopologicalSpace ε] [AddCommMonoid ε] [ESeminormedAddMonoid ε] in
 @[bound]
 theorem enorm_sum_le (s : Finset ι) (f : ι → ε) :
     ‖∑ i ∈ s, f i‖ₑ ≤ ∑ i ∈ s, ‖f i‖ₑ :=

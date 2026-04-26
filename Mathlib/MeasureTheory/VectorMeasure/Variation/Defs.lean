@@ -38,7 +38,7 @@ open MeasureTheory BigOperators NNReal ENNReal Function
 
 namespace MeasureTheory.VectorMeasure
 
-variable {V : Type*} [TopologicalSpace V] [ENormedAddCommMonoid V] [T2Space V]
+variable {V : Type*} [TopologicalSpace V] [AddCommMonoid V] [ENormedAddMonoid V] [T2Space V]
 
 /-- The norm of a vector measure is σ-subadditive on measurable sets. -/
 lemma isSigmaSubadditiveSetFun_enorm (μ : VectorMeasure X V) :

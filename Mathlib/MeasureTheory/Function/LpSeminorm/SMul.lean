@@ -59,8 +59,8 @@ end IsBoundedSMul
 section ENormSMulClass
 
 variable {𝕜 : Type*} [NormedRing 𝕜]
-  {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε] [SMul 𝕜 ε] [ENormSMulClass 𝕜 ε]
-  {c : 𝕜} {f : α → ε}
+  {ε : Type*} [TopologicalSpace ε] [AddMonoid ε] [ESeminormedAddMonoid ε]
+  [SMul 𝕜 ε] [ENormSMulClass 𝕜 ε] {c : 𝕜} {f : α → ε}
 
 theorem eLpNorm'_const_smul_le' (hq : 0 < q) : eLpNorm' (c • f) q μ ≤ ‖c‖ₑ * eLpNorm' f q μ :=
   eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul'
