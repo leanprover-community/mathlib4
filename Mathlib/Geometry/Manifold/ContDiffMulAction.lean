@@ -37,7 +37,7 @@ times continuously differentiable in both arguments. -/
 class ContDiffSMul (𝕜 M X : Type*) (n : WithTop ℕ∞) [SMul M X] [NormedAddCommGroup X]
     [NontriviallyNormedField 𝕜] [NormedAddCommGroup M] [NormedSpace 𝕜 M]
     [NormedSpace 𝕜 X] : Prop where
-  /-- The scalar multiplication `(•)` is contiuously differnentiable. -/
+  /-- The scalar multiplication `(•)` is continuously differentiable. -/
   contdiff_smul : ContDiff 𝕜 n fun p : M × X => p.1 • p.2
 
 export ContDiffSMul (contdiff_smul)
