@@ -249,7 +249,7 @@ abbrev Pi.lift {f : β → C} [HasProduct f] {P : C} (p : ∀ b, P ⟶ f b) : P 
   limit.lift _ (Fan.mk P p)
 
 set_option backward.isDefEq.respectTransparency false in
-@[reassoc]
+@[reassoc, elementwise]
 theorem Pi.lift_π {β : Type w} {f : β → C} [HasProduct f] {P : C} (p : ∀ b, P ⟶ f b) (b : β) :
     Pi.lift p ≫ Pi.π f b = p b := by
   simp only [limit.lift_π, Fan.mk_pt, Fan.mk_π_app]
@@ -329,7 +329,7 @@ abbrev Pi.map {f g : β → C} [HasProduct f] [HasProduct g] (p : ∀ b, f b ⟶
   limMap (Discrete.natTrans fun X => p X.as)
 
 set_option backward.isDefEq.respectTransparency false in
-@[reassoc (attr := simp high)]
+@[reassoc (attr := simp high), elementwise nosimp]
 lemma Pi.map_π {f g : β → C} [HasProduct f] [HasProduct g] (p : ∀ b, f b ⟶ g b) (b : β) :
     Pi.map p ≫ Pi.π g b = Pi.π f b ≫ p b := by simp
 
@@ -635,7 +635,7 @@ def piComparison [HasProduct f] [HasProduct fun b => G.obj (f b)] :
     G.obj (∏ᶜ f) ⟶ ∏ᶜ fun b => G.obj (f b) :=
   Pi.lift fun b => G.map (Pi.π f b)
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), elementwise nosimp]
 theorem piComparison_comp_π [HasProduct f] [HasProduct fun b => G.obj (f b)] (b : β) :
     piComparison G f ≫ Pi.π _ b = G.map (Pi.π f b) :=
   limit.lift_π _ (Discrete.mk b)
@@ -732,14 +732,14 @@ open Opposite in
 /-- The functor sending `(X, n)` to the product of copies of `X` indexed by `n`. -/
 @[simps]
 def piConst [Limits.HasProducts.{w} C] : C ⥤ Type wᵒᵖ ⥤ C where
-  obj X := { obj n := ∏ᶜ fun _ : (unop n) ↦ X, map f := Limits.Pi.map' f.unop fun _ ↦ 𝟙 _ }
+  obj X := { obj n := ∏ᶜ fun _ : (unop n :) ↦ X, map f := Limits.Pi.map' f.unop fun _ ↦ 𝟙 _ }
   map f := { app n := Limits.Pi.map fun _ ↦ f }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `n ↦ ∏ₙ X` is left adjoint to `Hom(-, X)`. -/
 def piConstAdj [Limits.HasProducts.{v} C] (X : C) :
     (piConst.obj X).rightOp ⊣ yoneda.obj X where
-  unit := { app n i := Limits.Pi.π (fun _ : n ↦ X) i }
+  unit := { app n := TypeCat.ofHom (fun i ↦ Limits.Pi.π (fun _ : n ↦ X) i) }
   counit :=
   { app Y := (Limits.Pi.lift id).op,
     naturality _ _ _ := by apply Quiver.Hom.unop_inj; cat_disch }
@@ -755,7 +755,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- `n ↦ ∐ₙ X` is left adjoint to `Hom(X, -)`. -/
 def sigmaConstAdj [Limits.HasCoproducts.{v} C] (X : C) :
     sigmaConst.obj X ⊣ coyoneda.obj (Opposite.op X) where
-  unit := { app n i := Limits.Sigma.ι (fun _ : n ↦ X) i }
+  unit := { app n := TypeCat.ofHom (fun i ↦ Limits.Sigma.ι (fun _ : n ↦ X) i) }
   counit := { app Y := Limits.Sigma.desc id }
 
 /-!
@@ -777,8 +777,7 @@ def limitConeOfUnique [Unique β] (f : β → C) : LimitCone (Discrete.functor f
   isLimit :=
     { lift := fun s => s.π.app default
       fac := fun s j => by
-        have h := Subsingleton.elim j default
-        subst h
+        obtain rfl := Subsingleton.elim j default
         simp
       uniq := fun s m w => by
         specialize w default
@@ -813,8 +812,7 @@ def colimitCoconeOfUnique [Unique β] (f : β → C) : ColimitCocone (Discrete.f
   isColimit :=
     { desc := fun s => s.ι.app default
       fac := fun s j => by
-        have h := Subsingleton.elim j default
-        subst h
+        obtain rfl := Subsingleton.elim j default
         apply Category.id_comp
       uniq := fun s m w => by
         specialize w default
@@ -956,7 +954,7 @@ end Fubini
 the product of copies of `X` indexed by `α`. -/
 @[simps]
 def piFunctor [HasProducts.{w} C] :
-    C ⥤ (Type w)ᵒᵖ ⥤ C where
+    C ⥤ Type wᵒᵖ ⥤ C where
   obj X :=
     { obj α := ∏ᶜ (fun (t : α.unop) ↦ X)
       map f := Pi.map' f.unop (fun _ ↦ 𝟙 _) }

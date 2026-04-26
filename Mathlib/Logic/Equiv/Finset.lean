@@ -97,9 +97,6 @@ theorem isChain_cons_raise'_of_lt (l) {m n} (h : m < n) :
     List.IsChain (· < ·) (m :: raise' l n) := by
   unfold raise'; cases l with grind [isChain_cons_raise']
 
-@[deprecated (since := "2025-09-19")]
-alias raise'_chain := isChain_cons_raise'_of_lt
-
 /-- `raise' l n` is a strictly increasing sequence. -/
 theorem raise'_sorted (l n) : List.SortedLT (raise' l n) := (isChain_raise' _ _).sortedLT
 

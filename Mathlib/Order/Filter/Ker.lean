@@ -52,7 +52,7 @@ lemma ker_surjective : Surjective (ker : Filter α → Set α) := gi_principal_k
 
 @[simp] lemma ker_comap (m : α → β) (f : Filter β) : ker (comap m f) = m ⁻¹' ker f := by
   ext a
-  simp only [mem_ker, mem_comap, forall_exists_index, and_imp, @forall_swap (Set α), mem_preimage]
+  simp only [mem_ker, mem_comap, forall_exists_index, and_imp, @forall_comm (Set α), mem_preimage]
   exact forall₂_congr fun s _ ↦ ⟨fun h ↦ h _ Subset.rfl, fun ha t ht ↦ ht ha⟩
 
 @[simp]

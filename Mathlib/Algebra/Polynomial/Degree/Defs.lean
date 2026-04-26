@@ -67,7 +67,8 @@ def Monic (p : R[X]) :=
 theorem Monic.def : Monic p ↔ leadingCoeff p = 1 :=
   Iff.rfl
 
-instance Monic.decidable [DecidableEq R] : Decidable (Monic p) := by unfold Monic; infer_instance
+instance Monic.decidable [DecidableEq R] : Decidable (Monic p) :=
+  inferInstanceAs <| Decidable (p.leadingCoeff = 1)
 
 @[simp]
 theorem Monic.leadingCoeff {p : R[X]} (hp : p.Monic) : leadingCoeff p = 1 :=

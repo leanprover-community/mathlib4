@@ -292,8 +292,9 @@ variable [Preorder M] [L.OrderedStructure M]
 
 instance model_preorder : M ⊨ L.preorderTheory := by
   simp only [preorderTheory, Theory.model_insert_iff, Relations.realize_reflexive, relMap_leSymb,
-    Theory.model_singleton_iff, Relations.realize_transitive]
-  exact ⟨le_refl, fun _ _ _ => le_trans⟩
+    Theory.model_singleton_iff, Relations.realize_transitive, Matrix.cons_val_zero,
+    Matrix.cons_val_one]
+  exact ⟨inferInstance, inferInstance⟩
 
 @[simp]
 theorem Term.realize_lt {t₁ t₂ : L.Term (α ⊕ (Fin n))}
@@ -377,10 +378,10 @@ def decidableLEOfStructure
 @[implicit_reducible]
 def preorderOfModels [h : M ⊨ L.preorderTheory] : Preorder M where
   __ := L.leOfStructure M
-  le_refl := Relations.realize_reflexive.1 ((Theory.model_iff _).1 h _
-    (by simp only [preorderTheory, Set.mem_insert_iff, Set.mem_singleton_iff, true_or]))
-  le_trans := Relations.realize_transitive.1 ((Theory.model_iff _).1 h _
-    (by simp only [preorderTheory, Set.mem_insert_iff, Set.mem_singleton_iff, or_true]))
+  le_refl := (Relations.realize_reflexive.mp <|
+    Theory.model_iff _ |>.mp h _ <| by simp [preorderTheory]).refl
+  le_trans := (Relations.realize_transitive.mp <|
+    Theory.model_iff _ |>.mp h _ <| by simp [preorderTheory]).trans
 
 /-- Any model of a theory of partial orders is a partial order. -/
 @[implicit_reducible]
@@ -395,8 +396,8 @@ def linearOrderOfModels [h : M ⊨ L.linearOrderTheory]
     [DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a, b])] :
     LinearOrder M where
   __ := L.partialOrderOfModels M
-  le_total := (Relations.realize_total.1 <| (Theory.model_iff _).1 h _ <|
-    by simp only [linearOrderTheory, Set.mem_insert_iff, true_or]).total
+  le_total := (Relations.realize_total.mp <|
+    Theory.model_iff _ |>.mp h _ <| by simp [linearOrderTheory]).total
   toDecidableLE := inferInstance
 
 end structure_to_order

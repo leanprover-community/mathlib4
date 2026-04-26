@@ -53,16 +53,20 @@ positions, or labels `Λ`, each of which executes a finite sequence of basic sta
 
 For this program we will need four stacks, each on an alphabet `Γ'` like so:
 
+```
     inductive Γ'  | consₗ | cons | bit0 | bit1
+```
 
 We represent a number as a bit sequence, lists of numbers by putting `cons` after each element, and
 lists of lists of natural numbers by putting `consₗ` after each list. For example:
 
+```
     0 ~> []
     1 ~> [bit1]
     6 ~> [bit0, bit1, bit1]
     [1, 2] ~> [bit1, cons, bit0, bit1, cons]
     [[], [1, 2]] ~> [consₗ, bit1, cons, bit0, bit1, cons, consₗ]
+```
 
 The four stacks are `main`, `rev`, `aux`, `stack`. In normal mode, `main` contains the input to the
 current program (a `List ℕ`) and `stack` contains data (a `List (List ℕ)`) associated to the
@@ -438,10 +442,12 @@ theorem trNat_default : trNat default = [] :=
 /-- Lists are translated with a `cons` after each encoded number.
 For example:
 
+```
     [] = []
     [0] = [cons]
     [1] = [bit1, cons]
     [6, 0] = [bit0, bit1, bit1, cons, cons]
+```
 -/
 @[simp]
 def trList : List ℕ → List Γ'
@@ -451,11 +457,13 @@ def trList : List ℕ → List Γ'
 /-- Lists of lists are translated with a `consₗ` after each encoded list.
 For example:
 
+```
     [] = []
     [[]] = [consₗ]
     [[], []] = [consₗ, consₗ]
     [[0]] = [cons, consₗ]
     [[1, 2], [0]] = [bit1, cons, bit0, bit1, cons, consₗ, cons, consₗ]
+```
 -/
 @[simp]
 def trLList : List (List ℕ) → List Γ'
@@ -1122,7 +1130,7 @@ theorem supports_union {K₁ K₂ S} : Supports (K₁ ∪ K₂) S ↔ Supports K
 
 theorem supports_biUnion {K : Option Γ' → Finset Λ'} {S} :
     Supports (Finset.univ.biUnion K) S ↔ ∀ a, Supports (K a) S := by
-  simpa [Supports] using forall_swap
+  simpa [Supports] using forall_comm
 
 theorem head_supports {S k q} (H : (q : Λ').Supports S) : (head k q).Supports S := fun _ => by
   dsimp only; split_ifs <;> exact H

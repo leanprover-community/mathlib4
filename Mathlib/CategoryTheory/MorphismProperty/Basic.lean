@@ -45,7 +45,7 @@ variable (C : Type u) [CategoryStruct.{v} C]
 
 instance : CompleteBooleanAlgebra (MorphismProperty C) where
   le P₁ P₂ := ∀ ⦃X Y : C⦄ (f : X ⟶ Y), P₁ f → P₂ f
-  __ := inferInstanceAs (CompleteBooleanAlgebra (∀ ⦃X Y : C⦄ (_ : X ⟶ Y), Prop))
+  __ := (inferInstance : CompleteBooleanAlgebra (∀ ⦃X Y : C⦄ (_ : X ⟶ Y), Prop))
 
 lemma le_def {P Q : MorphismProperty C} :
     P ≤ Q ↔ ∀ {X Y : C} (f : X ⟶ Y), P f → Q f := Iff.rfl
