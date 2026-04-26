@@ -185,11 +185,7 @@ structure GCongrLemma where
   key : GCongrKey
   /-- The name of the lemma. -/
   declName : Name
-  /-- `mainSubgoals` are the subgoals on which `gcongr` will be recursively called. They store
-  - the indices of the two compared variables
-  - the index of the hypothesis
-  - the number of parameters in the hypothesis
-  - whether it is contravariant (i.e. switches the order of the two arguments) -/
+  /-- `mainSubgoals` are the subgoals on which `gcongr` will be recursively called. -/
   mainSubgoals : Array GCongrHyp
   /-- The number of arguments that `declName` takes when applying it. -/
   numHyps : Nat
@@ -199,7 +195,8 @@ structure GCongrLemma where
   This is used for sorting the lemmas.
   For example, `a + b ≤ a + c` has `numVarying := 1`. -/
   numVarying : Nat
-  /-- Whether the lemma is suitable for use in `grw`. -/
+  /-- Whether the lemma is suitable for use in `grw`. For most lemmas this is `true`,
+  but there are lemmas that aren't quite congruence lemmas, but can still be used in `gcongr`. -/
   forGrw : Bool
   deriving Inhabited
 
@@ -276,25 +273,26 @@ def makeGCongrLemma (hyps : Array Expr) (target : Expr) (declName : Name) (prio 
   let mut pairs := #[]
   -- iterate through each pair of corresponding (LHS/RHS) inputs to the head function `head` in
   -- the conclusion of the lemma
-  for e1 in lhsArgs, e2 in rhsArgs do
+  for lhs in lhsArgs, rhs in rhsArgs do
     -- we call such a pair a "varying argument" pair if the LHS/RHS inputs are not defeq
     -- (and not proofs)
-    if ← isDefEq e1 e2 <||> (isProof e1 <&&> isProof e2) then continue
-    let e1 := e1.eta; let e2 := e2.eta
+    if ← isDefEq lhs rhs <||> (isProof lhs <&&> isProof rhs) then continue
+    let lhs := lhs.eta; let rhs := rhs.eta
     -- verify that the "varying argument" pairs are free variables (after eta-reduction)
-    unless e1.isFVar && e2.isFVar do fail "Not all varying arguments are free variables"
-    if (← e1.fvarId!.getBinderInfo).isInstImplicit &&
-        (← e2.fvarId!.getBinderInfo).isInstImplicit then
+    unless lhs.isFVar && rhs.isFVar do fail "Not all varying arguments are free variables"
+    -- Instance implicit arguments should be synthesized, rather than solved by congruence
+    if (← lhs.fvarId!.getBinderInfo).isInstImplicit &&
+      (← rhs.fvarId!.getBinderInfo).isInstImplicit then
       continue
     -- add such a pair to the `pairs` array
-    pairs := pairs.push (e1, e2)
+    pairs := pairs.push (lhs, rhs)
   let numVarying := pairs.size
   if numVarying = 0 then
     fail "LHS and RHS are the same"
   let mut mainSubgoals := #[]
   -- iterate over antecedents `hyp` to the lemma
-  for hyp in hyps, hypIdx in 0...* do
-    match ← forallTelescopeReducing (← inferType hyp) fun xs hypTy => do
+  for hyp in hyps, i in 0...* do
+    if let some (mainSubgoal, pair) ← forallTelescopeReducing (← inferType hyp) fun xs hypTy => do
       -- pull out the conclusion `hypTy` of the antecedent, and check whether it is of the form
       -- `lhs₁ _ ... _ ≈ rhs₁ _ ... _` (for a possibly different relation `≈` than the relation
       -- `rel` above)
@@ -309,22 +307,20 @@ def makeGCongrLemma (hyps : Array Expr) (target : Expr) (declName : Name) (prio 
             if (lhs, rhs) == pair then some (pair, false) else
             if (rhs, lhs) == pair then some (pair, true) else none
           let hypsPos := xs.toList.map lhsArgs.idxOf?
-          some ({ lhsIdx, rhsIdx, hypIdx, hypsPos, isContra }, pair)
+          some ({ lhsIdx, rhsIdx, hypIdx := i, hypsPos, isContra }, pair)
       if let some (_, lhs₁, rhs₁) := getRel (← whnf hypTy) then
         return findGoal lhs₁ rhs₁ xs
       else if let some lastFVar := xs.back? then
         return findGoal (← inferType lastFVar) hypTy xs.pop
       return none
-      with
-    | none => pure ()
-    | some (mainSubgoal, pair) =>
+      then
       mainSubgoals := mainSubgoals.push mainSubgoal
       pairs := pairs.erase pair
   let forGrw := pairs.isEmpty
   unless forGrw do
     Linter.logLintIf linter.gcongr.grw (← getRef)
-      m!"Not all varying arguments have a corresponding hypothesis. \
-        This means that the lemma cannot be used in `grw`."
+      m!"Not all varying argument pairs have a corresponding hypothesis. \
+        This means that the `@[gcongr]` lemma cannot be used in `grw`."
   -- store all the information from this parse of the lemma's structure in a `GCongrLemma`
   let key := { relName, head, arity := lhsArgs.size }
   return { key, declName, mainSubgoals, numHyps := hyps.size, prio, numVarying, forGrw }
@@ -429,6 +425,7 @@ initialize registerBuiltinAttribute {
 
 initialize registerTraceClass `Meta.gcongr
 
+/-- A version of the `rfl` tactic that also closes goals of the form `⊢ p → p`. -/
 def _root_.Lean.MVarId.applyRflOrId (goal : MVarId) : MetaM Unit := goal.withContext do
   let t ← whnfR (← goal.getType)
   if t.isForall then
@@ -439,6 +436,7 @@ def _root_.Lean.MVarId.applyRflOrId (goal : MVarId) : MetaM Unit := goal.withCon
     goal.assign (.lam t.bindingName! lhs (.bvar 0) t.bindingInfo!)
   else
     goal.applyRfl
+
 /-- `gcongr_discharger` is used by `gcongr` to discharge side goals.
 
 This is an extensible tactic using [`macro_rules`](lean-manual://section/tactic-macro-extension).
@@ -588,10 +586,10 @@ def pushNewGoal (g : MVarId) : GCongrM Unit :=
   modify fun s ↦ { s with newGoals := s.newGoals.push g}
 
 /-- Run the `intro` tactic `n` times on the given goal. -/
-private def introN (goal : MVarId) (n : Nat) : GCongrM (Array MVarId) := do
+private def introN (goal : MVarId) (n : Nat) : GCongrM (List MVarId) := do
   let (goals, patterns) ← goal.rintroWithPats (← get).patterns n
   modify ({· with patterns})
-  return goals.toArray
+  return goals
 
 /-- Run the discharger for main goals. -/
 private def dischargeMain (mvarId : MVarId) : GCongrM Bool := do
@@ -608,14 +606,22 @@ def applyGCongrLemma (g : MVarId) (lem : GCongr.GCongrLemma) :
   let const ← mkConstWithFreshMVarLevels lem.declName
   let type ← inferType const
   -- we use `withDefault` so that we can unfold `Monotone`
-  let (mvars, _, type) ← withDefault <| forallMetaTelescopeReducing type lem.numHyps
+  let (mvars, bis, type) ← withDefault <| forallMetaTelescopeReducing type lem.numHyps
   guard <| ← approxDefEq <| isDefEq (← g.getType) type
   g.assign (mkAppN const mvars)
   let mut sideGoals := #[]
   for mvar in mvars, i in 0...* do
-    unless ← mvar.mvarId!.isAssigned do
+    let mvarId := mvar.mvarId!
+    unless ← mvarId.isAssigned do
       unless lem.mainSubgoals.any (fun h ↦ h.lhsIdx == i || h.rhsIdx == i || h.hypIdx == i) do
-        sideGoals := sideGoals.push mvar.mvarId!
+        if bis[i]!.isInstImplicit then
+          -- Allow synthesis to get stuck, in case there are still metavariables to be filled in.
+          match ← trySynthInstance type with
+          | .some inst => mvarId.assign inst; continue
+          | .none => failure
+          | .undef => sideGoals := sideGoals.push mvarId
+        else
+          sideGoals := sideGoals.push mvarId
   let mainGoals ← lem.mainSubgoals.flatMapM fun h ↦ do
     if (← get).patterns.isEmpty then
       let lhsNames := lambdaBinderNames (← instantiateMVars mvars[h.lhsIdx]!)
@@ -625,7 +631,7 @@ def applyGCongrLemma (g : MVarId) (lem : GCongr.GCongrLemma) :
       let mvarId := (← mvars[h.hypIdx]!.mvarId!.introN h.hypsPos.length names).2
       return #[(mvarId, h.isContra, names.isEmpty)]
     else
-      return (← introN mvars[h.hypIdx]!.mvarId! h.hypsPos.length).map
+      return (← introN mvars[h.hypIdx]!.mvarId! h.hypsPos.length).toArray.map
         (·, h.isContra, h.hypsPos.isEmpty)
   return (mainGoals, sideGoals)
 where
@@ -694,25 +700,17 @@ partial def _root_.Lean.MVarId.gcongr
   let key := { relName, head := lhsHead, arity := lhsArgs.size }
   let lemmas := ((gcongrExt.getState (← getEnv)).get? key).getD (relImpRelLemma lhsArgs.size)
   for lem in lemmas do
-    try
-      -- Try `apply`-ing such a lemma to the goal.
-      let (mainGoals, sideGoals) ← withReducible (applyGCongrLemma g lem)
-      -- Try the discharger on any side goals which were not resolved by the `apply`.
-      for mvarId in sideGoals do
-        let type ← mvarId.getType
-        if (← isClass? type).isSome then
-          let some inst ← synthInstance? type | failure
-          guard <| ← isDefEq (.mvar mvarId) inst
-        else
-          dischargeSide mvarId
-      for (mvarId, isContra, _) in mainGoals do
-        -- Recurse: call ourself (`Lean.MVarId.gcongr`) on the subgoal
-        let mdataLhs?' := mdataLhs?.map (· != isContra)
-        discard <| mvarId.gcongr mdataLhs?' depth
-      return true
+    let (mainGoals, sideGoals) ← try
+      withReducible <| applyGCongrLemma g lem
     catch _ =>
       setMCtx mctx
       continue
+    sideGoals.forM dischargeSide
+    for (mvarId, isContra, _) in mainGoals do
+      let mdataLhs?' := mdataLhs?.map (· != isContra)
+      -- Recurse on the subgoal.
+      discard <| mvarId.gcongr mdataLhs?' depth
+    return true
   -- A. If there is no template, and there was no `@[gcongr]` lemma which matched the goal,
   -- report this goal back.
   if mdataLhs?.isNone then

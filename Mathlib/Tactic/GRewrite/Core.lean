@@ -12,6 +12,15 @@ public import Mathlib.Tactic.GCongr.Core
 # The generalized rewriting tactic
 
 This module defines the core of the `grw`/`grewrite` tactic.
+
+There are two distinct implementation of the tactic.
+1. The simple implementation uses `kabstract` to determine where to rewrite,
+   and then calls `MVarId.gcongr` to prove that the rewrite is valid.
+   This is used by `nth_grw` and `grw'`
+2. The more involved implementation has its own congruence loop, applying `gcongr` lemmas to
+   create the replacement expression, and at the same time proving that it is related to the
+   original expression.
+   This is used by `grw` and `apply_rw`.
 -/
 
 public meta section
@@ -151,18 +160,7 @@ partial def processGCongrLemma (g : MVarId) (lem : GCongrLemma) (inv : Bool)
   withTraceNode `Meta.grewrite (fun _ ↦
     return m!"applying `gcongr` lemma {.ofConstName lem.declName}") do
   let (mainGoals, sideGoals) ← try applyGCongrLemma g lem catch _ => return false
-  /- Firstly, synthesize instances to ensure that the lemma is applicable in this setting.
-  We allow synthesis to get stuck, because there are still metavariables to be filled in. -/
-  let mut unsolvedSideGoals := #[]
-  for mvarId in sideGoals do
-    let type ← mvarId.getType
-    if (← isClass? type).isSome then
-      match ← trySynthInstance type with
-      | .some inst => mvarId.assign inst; continue
-      | .none => return false
-      | .undef => pure ()
-    unsolvedSideGoals := unsolvedSideGoals.push mvarId
-  -- Then, recursively rewrite in the main subgoals
+  -- Recursively rewrite in the main subgoals
   let mut anyProgress := false
   for (g, isContra, sameLCtx) in mainGoals do
     unless (← get).progress matches .matchedOutOfScope do
@@ -178,7 +176,7 @@ partial def processGCongrLemma (g : MVarId) (lem : GCongrLemma) (inv : Bool)
   -- Only continue if at least one rewrite happened
   unless anyProgress do return false
   -- Finally, close all remaining side goals
-  for mvarId in unsolvedSideGoals do
+  for mvarId in sideGoals do
     let type ← mvarId.getType
     if (← isClass? type).isSome then
       let some inst ← synthInstance? type | return false
