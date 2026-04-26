@@ -132,7 +132,6 @@ symmetrizes the relation and makes it irreflexive. -/
 def SimpleGraph.fromRel {V : Type u} (r : V → V → Prop) : SimpleGraph V where
   Adj a b := a ≠ b ∧ (r a b ∨ r b a)
   symm := fun _ _ ⟨hn, hr⟩ => ⟨hn.symm, hr.symm⟩
-  loopless := ⟨fun _ ⟨hn, _⟩ => hn rfl⟩
 
 @[simp]
 theorem SimpleGraph.fromRel_adj {V : Type u} (r : V → V → Prop) (v w : V) :
@@ -241,8 +240,7 @@ are adjacent in the complement, and every nonadjacent pair of vertices is adjace
 instance : Compl (SimpleGraph V) where
   compl G :=
     { Adj := fun v w => v ≠ w ∧ ¬G.Adj v w
-      symm := fun v w ⟨hne, _⟩ => ⟨hne.symm, by rwa [adj_comm]⟩
-      loopless := ⟨fun _ ⟨hne, _⟩ => (hne rfl).elim⟩ }
+      symm := fun v w ⟨hne, _⟩ => ⟨hne.symm, by rwa [adj_comm]⟩ }
 
 @[simp]
 theorem compl_adj (G : SimpleGraph V) (v w : V) : Gᶜ.Adj v w ↔ v ≠ w ∧ ¬G.Adj v w :=
@@ -261,14 +259,12 @@ theorem sdiff_adj (x y : SimpleGraph V) (v w : V) : (x \ y).Adj v w ↔ x.Adj v 
 instance supSet : SupSet (SimpleGraph V) where
   sSup s :=
     { Adj := fun a b => ∃ G ∈ s, Adj G a b
-      symm := fun _ _ => Exists.imp fun _ => And.imp_right Adj.symm
-      loopless := ⟨fun _ ⟨_, _, ha⟩ ↦ ha.ne rfl⟩ }
+      symm := fun _ _ => Exists.imp fun _ => And.imp_right Adj.symm }
 
 instance infSet : InfSet (SimpleGraph V) where
   sInf s :=
     { Adj := fun a b => (∀ ⦃G⦄, G ∈ s → Adj G a b) ∧ a ≠ b
-      symm := fun _ _ => And.imp (forall₂_imp fun _ _ => Adj.symm) Ne.symm
-      loopless := ⟨fun _ h => h.2 rfl⟩ }
+      symm := fun _ _ => And.imp (forall₂_imp fun _ _ => Adj.symm) Ne.symm }
 
 @[simp]
 theorem sSup_adj {s : Set (SimpleGraph V)} {a b : V} : (sSup s).Adj a b ↔ ∃ G ∈ s, Adj G a b :=
@@ -510,7 +506,7 @@ theorem edgeSet_top : (⊤ : SimpleGraph V).edgeSet = Sym2.diagSetᶜ :=
 
 @[simp]
 theorem edgeSet_subset_compl_diagSet : G.edgeSet ⊆ Sym2.diagSetᶜ := by
-  simpa [Set.subset_compl_iff_disjoint_left, edgeSet, edgeSetEmbedding] using G.loopless
+  simp [Set.subset_compl_iff_disjoint_left, edgeSet, edgeSetEmbedding, Std.irrefl_iff]
 
 @[deprecated (since := "2025-12-10")]
 alias edgeSet_subset_setOf_not_isDiag := edgeSet_subset_compl_diagSet

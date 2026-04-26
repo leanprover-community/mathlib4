@@ -117,7 +117,6 @@ This is surjective when `f` is injective (see `SimpleGraph.comap_surjective`). -
 protected def comap (f : V → W) (G : SimpleGraph W) : SimpleGraph V where
   Adj u v := G.Adj (f u) (f v)
   symm _ _ h := h.symm
-  loopless := ⟨fun _ ↦ G.loopless.irrefl _⟩
 
 @[simp] lemma comap_adj {G : SimpleGraph W} {f : V → W} :
     (G.comap f).Adj u v ↔ G.Adj (f u) (f v) := Iff.rfl

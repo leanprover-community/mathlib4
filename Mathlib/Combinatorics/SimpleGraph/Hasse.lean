@@ -41,7 +41,6 @@ variable [Preorder α]
 def hasse : SimpleGraph α where
   Adj a b := a ⋖ b ∨ b ⋖ a
   symm _a _b := Or.symm
-  loopless := ⟨fun _a h ↦ h.elim (irrefl _) (irrefl _)⟩
 
 variable {α β} {a b : α}
 
