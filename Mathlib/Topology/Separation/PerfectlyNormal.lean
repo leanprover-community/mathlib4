@@ -118,7 +118,7 @@ theorem Topology.IsEmbedding.perfectlyNormalSpace {e : X → Y} (he : IsEmbeddin
   refine ⟨⟨f ∘ e, f.continuous.comp he.continuous⟩, ?_, (range_comp_subset_range e f).trans hf⟩
   ext x
   refine ⟨fun hx => ?_, fun hx => ?_⟩
-  · have hx' : e x ∈ e '' t := by grind
+  · have hx' : e x ∈ e '' t := mem_image_of_mem e hx
     simp_all
   · have hx' : e x ∈ e '' t := by simp_all
     exact he.injective.mem_set_image.1 hx'
