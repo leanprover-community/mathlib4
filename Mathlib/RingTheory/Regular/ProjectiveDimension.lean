@@ -26,13 +26,11 @@ For `M` a finitely generated module over Noetherian local ring `R` and an `R`-re
 
 universe v u
 
-variable (R : Type u) [CommRing R]
+variable {R : Type u} [CommRing R]
 
 open CategoryTheory Abelian IsLocalRing Module RingTheory.Sequence
 
 section
-
-variable {R}
 
 variable [IsNoetherianRing R] [Small.{v} R]
 
@@ -76,7 +74,7 @@ lemma subsingleton_ext_of_forall_finite (M : ModuleCat.{v} R) (n : ℕ) [Module.
 
 end
 
-variable {R} [IsLocalRing R] [IsNoetherianRing R]
+variable [IsLocalRing R] [IsNoetherianRing R]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular [Small.{v} R] (M : ModuleCat.{v} R)
