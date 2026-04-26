@@ -662,10 +662,13 @@ lemma opObjEquiv_opObjEquiv_symm_apply {d n : ℕ} (f : (Δ[n] _⦋d⦌)) (i : F
     SSet.opObjEquiv (stdSimplex.opObjEquiv.{u}.symm f) i = (f i.rev).rev :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 lemma map_rev_map_op_apply {n d d' : ℕ} (f : ⦋d⦌ ⟶ ⦋d'⦌) (g : Δ[n] _⦋d'⦌) (i : Fin (d + 1)) :
     dsimp% (show Δ[n] _⦋d⦌ from (Δ[n] : SSet.{u}).map (rev.map f).op g : Δ[n] _⦋d⦌) i =
       g (f i.rev).rev := rfl
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The opposite of `Δ[n]` is isomorphic to `Δ[n]`. -/
 @[simps! hom_app_hom_apply inv_app_hom_apply]
 def opIso (n : SimplexCategory) :
