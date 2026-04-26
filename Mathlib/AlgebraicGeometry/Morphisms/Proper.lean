@@ -118,8 +118,6 @@ instance [UniversallyClosed f] : UniversallyClosed f.toImage :=
 lemma IsProper.of_comp [IsProper (f ≫ g)] [IsSeparated g] : IsProper f :=
   MorphismProperty.of_postcomp _ _ g ‹_› ‹_›
 
-@[deprecated (since := "2025-10-15")] alias IsProper.of_comp_of_isSeparated := IsProper.of_comp
-
 lemma IsProper.comp_iff {f : X ⟶ Y} {g : Y ⟶ Z} [IsProper g] :
     IsProper (f ≫ g) ↔ IsProper f :=
   ⟨fun _ ↦ .of_comp f g, fun _ ↦ inferInstance⟩

@@ -712,6 +712,16 @@ instance [IsTriangularizable R L M] : IsTriangularizable R (LieModule.toEnd R L 
     rintro ⟨-, x, rfl⟩
     exact IsTriangularizable.maxGenEigenspace_eq_top x
 
+omit [LieRing.IsNilpotent L] in
+lemma IsTriangularizable.exists_hasEigenvalue [Nontrivial M] [IsTriangularizable R L M] (x : L) :
+    ∃ φ, (toEnd R L M x).HasEigenvalue φ := by
+  suffices ∃ φ, (toEnd R L M x).maxGenEigenspace φ ≠ ⊥ by
+    obtain ⟨φ, hφ⟩ := this
+    exact ⟨φ, (Module.End.hasUnifEigenvalue_iff_hasUnifEigenvalue_one ENat.top_pos).mp hφ⟩
+  have := maxGenEigenspace_eq_top (R := R) (L := L) (M := M) x
+  contrapose! this
+  simp [this]
+
 @[simp]
 lemma iSup_genWeightSpaceOf_eq_top [IsTriangularizable R L M] (x : L) :
     ⨆ (φ : R), genWeightSpaceOf M φ x = ⊤ := by

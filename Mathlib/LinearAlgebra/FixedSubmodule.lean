@@ -6,7 +6,6 @@ Authors: Antoine Chambert-Loir
 
 module
 
-public import Mathlib.Algebra.Module.Submodule.Pointwise
 public import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 public import Mathlib.GroupTheory.GroupAction.Ring
