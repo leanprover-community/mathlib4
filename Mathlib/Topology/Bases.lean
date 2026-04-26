@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Set.Constructions
 public import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
 public import Mathlib.Topology.Constructions
+public import Mathlib.Topology.ContinuousOn
 public import Mathlib.Topology.NhdsWithin
 
 /-!
@@ -229,7 +230,7 @@ theorem IsTopologicalBasis.dense_iff {b : Set (Set α)} (hb : IsTopologicalBasis
   simp only [Dense, hb.mem_closure_iff]
   exact ⟨fun h o hb ⟨a, ha⟩ => h a o hb ha, fun h a o hb ha => h o hb ⟨a, ha⟩⟩
 
-theorem IsTopologicalBasis.isOpenMap_iff {β} [TopologicalSpace β] {B : Set (Set α)}
+theorem IsTopologicalBasis.isOpenMap_iff [TopologicalSpace β] {B : Set (Set α)}
     (hB : IsTopologicalBasis B) {f : α → β} : IsOpenMap f ↔ ∀ s ∈ B, IsOpen (f '' s) := by
   refine ⟨fun H o ho => H _ (hB.isOpen ho), fun hf o ho => ?_⟩
   rw [hB.open_eq_sUnion' ho, sUnion_eq_iUnion, image_iUnion]
@@ -244,7 +245,7 @@ theorem IsTopologicalBasis.exists_nonempty_subset {B : Set (Set α)} (hb : IsTop
 theorem isTopologicalBasis_opens : IsTopologicalBasis { U : Set α | IsOpen U } :=
   isTopologicalBasis_of_isOpen_of_nhds (by tauto) (by tauto)
 
-protected lemma IsTopologicalBasis.isInducing {β} [TopologicalSpace β] {f : α → β} {T : Set (Set β)}
+protected lemma IsTopologicalBasis.isInducing [TopologicalSpace β] {f : α → β} {T : Set (Set β)}
     (hf : IsInducing f) (h : IsTopologicalBasis T) : IsTopologicalBasis ((preimage f) '' T) :=
   .of_hasBasis_nhds fun a ↦ by
     convert (hf.basis_nhds (h.nhds_hasBasis (a := f a))).to_image_id with s
@@ -269,7 +270,7 @@ theorem IsTopologicalBasis.inf_induced {γ} [s : TopologicalSpace β] {B₁ : Se
     IsTopologicalBasis (t := induced f₁ t ⊓ induced f₂ s) (image2 (f₁ ⁻¹' · ∩ f₂ ⁻¹' ·) B₁ B₂) := by
   simpa only [image2_image_left, image2_image_right] using (h₁.induced f₁).inf (h₂.induced f₂)
 
-protected theorem IsTopologicalBasis.prod {β} [TopologicalSpace β] {B₁ : Set (Set α)}
+protected theorem IsTopologicalBasis.prod [TopologicalSpace β] {B₁ : Set (Set α)}
     {B₂ : Set (Set β)} (h₁ : IsTopologicalBasis B₁) (h₂ : IsTopologicalBasis B₂) :
     IsTopologicalBasis (image2 (· ×ˢ ·) B₁ B₂) :=
   h₁.inf_induced h₂ Prod.fst Prod.snd
@@ -289,13 +290,26 @@ theorem isTopologicalBasis_of_cover {ι} {U : ι → Set α} (Uo : ∀ i, IsOpen
     exact ⟨(↑) '' v, mem_iUnion.2 ⟨i, mem_image_of_mem _ hvb⟩, mem_image_of_mem _ hav,
       image_subset_iff.2 hvu⟩
 
-protected theorem IsTopologicalBasis.continuous_iff {β : Type*} [TopologicalSpace β]
+protected theorem IsTopologicalBasis.continuous_iff [TopologicalSpace β]
     {B : Set (Set β)} (hB : IsTopologicalBasis B) {f : α → β} :
     Continuous f ↔ ∀ s ∈ B, IsOpen (f ⁻¹' s) := by
   rw [hB.eq_generateFrom, continuous_generateFrom_iff]
 
+theorem IsTopologicalBasis.continuousOn_iff [TopologicalSpace β]
+    {B : Set (Set β)} (hB : IsTopologicalBasis B) {f : α → β} :
+    ContinuousOn f s ↔ ∀ t ∈ B, ∃ u, IsOpen u ∧ f ⁻¹' t ∩ s = u ∩ s := by
+  rw [continuousOn_iff']
+  refine ⟨fun h t ht => h t (hB.isOpen ht), fun h t ht => ?_⟩
+  obtain ⟨ι, g, rfl, hg⟩ := hB.open_eq_iUnion ht
+  choose v hv he using (fun i => h (g i) (hg i))
+  exact ⟨⋃ i, v i, isOpen_iUnion hv, by simp_all [iUnion_inter]⟩
+
 @[simp] lemma isTopologicalBasis_empty : IsTopologicalBasis (∅ : Set (Set α)) ↔ IsEmpty α where
   mp h := by simpa using h.sUnion_eq.symm
+  mpr h := ⟨by simp, by simp [Set.univ_eq_empty_iff.2], Subsingleton.elim ..⟩
+
+@[simp] lemma isTopologicalBasis_empty' : IsTopologicalBasis {(∅ : Set α)} ↔ IsEmpty α where
+  mp h := by simpa using h.diff_empty
   mpr h := ⟨by simp, by simp [Set.univ_eq_empty_iff.2], Subsingleton.elim ..⟩
 
 variable (α)
@@ -776,6 +790,14 @@ theorem exists_countable_basis [SecondCountableTopology α] :
   obtain ⟨b, hb₁, hb₂⟩ := @SecondCountableTopology.is_open_generated_countable α _ _
   refine ⟨_, ?_, notMem_diff_of_mem ?_, (isTopologicalBasis_of_subbasis hb₂).diff_empty⟩
   exacts [((countable_setOf_finite_subset hb₁).image _).mono diff_subset, rfl]
+
+theorem exists_seq_basis [SecondCountableTopology α] :
+    ∃ b : ℕ → Set α, IsTopologicalBasis (range b) := by
+  obtain ⟨t, ht⟩ :=  TopologicalSpace.exists_countable_basis α
+  by_cases! hn : t.Nonempty
+  · obtain ⟨b, rfl⟩ := ht.1.exists_eq_range hn
+    exact ⟨b, ht.2.2⟩
+  · exact ⟨fun n => ∅, by simp_all⟩
 
 /-- A countable topological basis of `α`. -/
 def countableBasis [SecondCountableTopology α] : Set (Set α) :=
