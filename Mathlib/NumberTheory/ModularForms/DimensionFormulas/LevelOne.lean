@@ -58,13 +58,12 @@ lemma ofMulDiscriminant_apply (f : ModularForm 𝒮ℒ (k - 12)) (z : ℍ) :
 
 private lemma divByDiscriminant_slash_eq (f : CuspForm 𝒮ℒ k) (γ : SL(2, ℤ)) :
     (fun z ↦ f z / Δ z) ∣[k - 12] γ = fun z ↦ f z / Δ z := by
-  have : SlashInvariantFormClass (CuspForm 𝒮ℒ k) Γ(1) k := Gamma_one_coe_eq_SL ▸ inferInstance
-  have : SlashInvariantFormClass (CuspForm 𝒮ℒ 12) Γ(1) 12 := Gamma_one_coe_eq_SL ▸ inferInstance
-  have hf := slash_action_eqn_SL'' f (mem_Gamma_one γ)
-  have hΔ := slash_action_eqn_SL'' discriminantCuspForm (mem_Gamma_one γ)
-  ext z; rw [SL_slash_apply, hf, show Δ (γ • z) = denom γ z ^ (12 : ℤ) * Δ z from by
-    exact_mod_cast hΔ z, div_mul_eq_mul_div, mul_right_comm,
-    ← zpow_add₀ (denom_ne_zero γ z), show k + -(k - 12) = (12 : ℤ) from by ring]
+  have hγ : (γ : GL (Fin 2) ℝ) ∈ 𝒮ℒ := ⟨γ, rfl⟩
+  have hf z := (ModularGroup.sl_moeb γ z).symm ▸ slash_action_eqn'' f hγ z
+  have hΔ z := (ModularGroup.sl_moeb γ z).symm ▸ slash_action_eqn'' discriminantCuspForm hγ z
+  ext z; rw [SL_slash_apply, hf, show Δ (γ • z) = denom γ z ^ (12 : ℤ) * Δ z from hΔ z,
+    div_mul_eq_mul_div, mul_right_comm, ← zpow_add₀ (denom_ne_zero γ z),
+    show k + -(k - 12) = (12 : ℤ) from by ring]
   exact mul_div_mul_left (f z) (Δ z) (zpow_ne_zero _ (denom_ne_zero γ z))
 
 lemma exp_decay_isBigO_discriminant (f : CuspForm 𝒮ℒ k) : f =O[atImInfty] Δ := by
