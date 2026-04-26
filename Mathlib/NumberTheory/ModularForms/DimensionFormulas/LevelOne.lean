@@ -40,18 +40,17 @@ local notation "Δ" => ModularForm.discriminant
 namespace CuspForm
 
 /-- Multiply a modular form of weight `k - 12` by the discriminant to get a cusp form of
-weight `k`. Built directly as a CuspForm (no `IsCuspForm` intermediary). -/
+weight `k`. Built directly as a `CuspForm` (no `IsCuspForm` intermediary). -/
 def ofMulDiscriminant (f : ModularForm 𝒮ℒ (k - 12)) : CuspForm 𝒮ℒ k := by
   let Δ' : ModularForm 𝒮ℒ 12 := discriminantCuspForm
   apply ModularForm.toCuspForm (ModularForm.mcast (by ring) (f.mul Δ'))
-  have hΔ' : (qExpansion 1 (Δ' : ℍ → ℂ)).coeff 0 = 0 :=
-    (qExpansion_coeff_zero Δ' one_pos one_mem_strictPeriods_SL).trans
-      (CuspFormClass.zero_at_infty discriminantCuspForm).valueAtInfty_eq_zero
-  rw [show (ModularForm.mcast _ (f.mul Δ')) = (f : ℍ → ℂ) * Δ' from rfl,
+  rw [show (ModularForm.mcast _ (f.mul Δ')) = (⇑f : ℍ → ℂ) * Δ' from rfl,
     qExpansion_mul_coeff_zero
-      (analyticAt_cuspFunction_zero f one_pos one_mem_strictPeriods_SL).continuousAt
-      (analyticAt_cuspFunction_zero Δ' one_pos one_mem_strictPeriods_SL).continuousAt,
-    hΔ', mul_zero]
+      (ModularFormClass.analyticAt_cuspFunction_zero f one_pos
+        one_mem_strictPeriods_SL).continuousAt
+      (ModularFormClass.analyticAt_cuspFunction_zero Δ' one_pos
+        one_mem_strictPeriods_SL).continuousAt,
+    (isCuspForm_iff_coeffZero_eq_zero Δ').mp ⟨discriminantCuspForm, rfl⟩, mul_zero]
 
 @[simp]
 lemma ofMulDiscriminant_apply (f : ModularForm 𝒮ℒ (k - 12)) (z : ℍ) :
@@ -145,7 +144,7 @@ lemma cuspForm_rank_twelve : Module.rank ℂ (CuspForm 𝒮ℒ 12) = 1 := by
 lemma cuspForm_twelve_smul_discriminant (f : CuspForm 𝒮ℒ 12) :
     ∃ c : ℂ, c • discriminantCuspForm = f :=
   (finrank_eq_one_iff_of_nonzero' discriminantCuspForm (fun h ↦
-      discriminant_ne_zero UpperHalfPlane.I (congr_fun (congr_arg DFunLike.coe h) _))).mp
+      discriminant_ne_zero UpperHalfPlane.I (DFunLike.congr_fun h _))).mp
     (Module.rank_eq_one_iff_finrank_eq_one.mp cuspForm_rank_twelve) f
 
 /-- For even `k ≥ 3`, the rank of `𝒮ℒ` modular forms is one more than the rank of
@@ -169,8 +168,10 @@ lemma ModularForm.rank_eq_one_add_rank_cuspForm {k : ℕ} (hk : 3 ≤ k) (hk2 : 
       set c := (qExpansion 1 ↑f).coeff 0 with hc
       have hsub := (qExpansionAddHom one_pos one_mem_strictPeriods_SL (k := k)).map_sub f (c • E hk)
       simp only [qExpansionAddHom, AddMonoidHom.coe_mk, ZeroHom.coe_mk] at hsub
-      rw [hsub]; simp [qExpansion_smul one_pos one_mem_strictPeriods_SL c (E hk),
-        _root_.map_sub, _root_.map_smul, hE, mul_one, ← hc]
+      rw [hsub, show qExpansion 1 ⇑(c • E hk) = c • qExpansion 1 ⇑(E hk) from
+        qExpansion_smul (ModularFormClass.analyticAt_cuspFunction_zero (E hk) one_pos
+          one_mem_strictPeriods_SL) c,
+        _root_.map_sub, _root_.map_smul, smul_eq_mul, hE, mul_one, ← hc, sub_self]
     have h0 : (cuspFormSubmodule 𝒮ℒ k).mkQ (f - (qExpansion 1 ↑f).coeff 0 • E hk) = 0 :=
       (Submodule.Quotient.mk_eq_zero _).mpr h_mem
     rwa [map_sub, LinearMap.map_smul, Submodule.mkQ_apply, Submodule.mkQ_apply,
@@ -235,12 +236,12 @@ private lemma weight_two_eq_zero_of_not_cuspForm (f : ModularForm 𝒮ℒ 2) (hf
     (Module.rank_eq_one_iff_finrank_eq_one.mp weight_six_rank_one) ((f.mul f).mul f)
   have hqc4 : c4 • qExpansion 1 (E₄ : ℍ → ℂ) = qExpansion 1 (f : ℍ → ℂ) * qExpansion 1 f := by
     rw [← ModularForm.qExpansion_mul one_pos one_mem_strictPeriods_SL f f,
-      ← qExpansion_smul one_pos one_mem_strictPeriods_SL c4 E₄,
+      ← ModularFormClass.qExpansion_smul one_pos one_mem_strictPeriods_SL c4 E₄,
       show (c4 • E₄ : ℍ → ℂ) = (f.mul f) from congrArg DFunLike.coe hc4]
   have hqc6 : c6 • qExpansion 1 E₆ = qExpansion 1 f * qExpansion 1 f * qExpansion 1 f := by
     rw [← ModularForm.qExpansion_mul one_pos one_mem_strictPeriods_SL f f,
       ← ModularForm.qExpansion_mul one_pos one_mem_strictPeriods_SL (f.mul f) f,
-      ← qExpansion_smul one_pos one_mem_strictPeriods_SL c6 E₆,
+      ← ModularFormClass.qExpansion_smul one_pos one_mem_strictPeriods_SL c6 E₆,
       show (c6 • E₆ : ℍ → ℂ) = (f.mul f).mul f from congrArg DFunLike.coe hc6]
   exact hf <| (isCuspForm_iff_coeffZero_eq_zero f).mpr <|
     coeffZero_eq_zero_of_pow_eq_smul (E_qExpansion_coeff_zero _ ⟨2, rfl⟩)
