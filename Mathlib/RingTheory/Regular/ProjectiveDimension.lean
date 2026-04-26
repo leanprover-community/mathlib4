@@ -45,40 +45,40 @@ section
 variable [IsNoetherianRing R] [Small.{v} R]
 
 set_option backward.isDefEq.respectTransparency false in
-lemma subsingleton_ext_of_forall_finite (M : ModuleCat.{v} R) (n : ℕ) [Module.Finite R M]
+lemma hasProjectiveDimensionLT_of_forall_finite (M : ModuleCat.{v} R) (n : ℕ) [Module.Finite R M]
     (h : ∀ L : ModuleCat.{v} R, Module.Finite R L →  Subsingleton (Ext M L n)) :
-    ∀ N : ModuleCat.{v} R, Subsingleton (Ext M N n) := by
+    HasProjectiveDimensionLT M n := by
   induction n generalizing M with
   | zero =>
     have : Subsingleton (M ⟶ M) := @Ext.homEquiv₀.symm.subsingleton _ _ (h M ‹_›)
     have : Limits.IsZero M := (Limits.IsZero.iff_id_eq_zero M).mpr (Subsingleton.eq_zero (𝟙 M))
-    intro N
-    rw [Ext.homEquiv₀.subsingleton_congr]
-    exact subsingleton_of_forall_eq 0 (fun f ↦ this.eq_zero_of_src f)
+    exact this.hasProjectiveDimensionLT_zero
   | succ n hn =>
     rcases Module.exists_finite_presentation R M with ⟨_, _, _, _, _, f, surjf⟩
     let S : ShortComplex (ModuleCat.{v} R) := f.shortComplexKer
-    have S_exact : S.ShortExact := LinearMap.shortExact_shortComplexKer surjf
+    have hS : S.ShortExact := LinearMap.shortExact_shortComplexKer surjf
     match n with
     | 0 =>
-      simp only [zero_add, ← projective_iff_subsingleton_ext_one]
+      simp only [zero_add, ← projective_iff_hasProjectiveDimensionLT_one]
       have : Subsingleton (Ext M S.X₁ 1) := h S.X₁ inferInstance
-      rcases Ext.covariant_sequence_exact₃ M S_exact (Ext.mk₀ (𝟙 M)) (zero_add 1)
+      rcases Ext.covariant_sequence_exact₃ M hS (Ext.mk₀ (𝟙 M)) (zero_add 1)
         (Subsingleton.eq_zero _) with ⟨f', hf'⟩
       rcases (Ext.mk₀_bijective M S.X₂).2 f' with ⟨f, hf⟩
       rw [← hf, Ext.mk₀_comp_mk₀, (Ext.mk₀_bijective _ _).1.eq_iff] at hf'
       exact (Retract.mk f S.g hf').projective
     | n + 1 =>
+      rw [hS.hasProjectiveDimensionLT_X₃_iff n inferInstance]
       have (L : ModuleCat.{v} R) : Subsingleton (Ext S.X₁ L (n + 1)) ↔
         Subsingleton (Ext M L (n + 2)) := by
         have (m : ℕ) : Subsingleton (Ext S.X₂ L (m + 1)) :=
           subsingleton_of_forall_eq 0 (fun y ↦ Ext.eq_zero_of_projective y)
-        have isi := (Ext.contravariantSequence_exact S_exact L (n + 1) (n + 2)
-          (add_comm 1 _)).isIso_map' 1 (by decide)
-          ((AddCommGrpCat.of _).isZero_of_subsingleton.eq_zero_of_src _)
-          ((AddCommGrpCat.of _).isZero_of_subsingleton.eq_zero_of_tgt _)
-        exact (@asIso _ _ _ _ _ isi).addCommGroupIsoToAddEquiv.subsingleton_congr
-      simp only [← this]
+        have isi : IsIso (AddCommGrpCat.ofHom (hS.extClass.precomp L (add_comm 1 _))) :=
+          (Ext.contravariantSequence_exact hS L (n + 1) (n + 2)
+            (add_comm 1 _)).isIso_map' 1 (by decide)
+              ((AddCommGrpCat.of _).isZero_of_subsingleton.eq_zero_of_src _)
+                ((AddCommGrpCat.of _).isZero_of_subsingleton.eq_zero_of_tgt _)
+        exact (asIso (AddCommGrpCat.ofHom (hS.extClass.precomp L
+          (add_comm 1 _)))).addCommGroupIsoToAddEquiv.subsingleton_congr
       apply hn S.X₁
       simpa [this] using h
 
@@ -115,33 +115,29 @@ lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular [Small.{v} R] (M 
       nth_rw 2 [← Nat.cast_one, Nat.cast_add]
       simp only [ENat.WithBot.add_le_add_natCast_right_iff, projectiveDimension_le_iff]
       let S := M.smulShortComplex x
-      have S_exact : S.ShortExact := reg.smulShortComplex_shortExact
-      refine ⟨fun h ↦ ?_, fun h ↦ S_exact.hasProjectiveDimensionLT_X₃ (n + 1) h
-          (hasProjectiveDimensionLT_of_ge M (n + 1) (n + 1 + 1) (Nat.le_add_right _ 1))⟩
-      simp only [HasProjectiveDimensionLE, hasProjectiveDimensionLT_iff]
-      intro i hi
-      have : ∀ N : ModuleCat.{v} R, Subsingleton (Ext M N i) := by
-        apply subsingleton_ext_of_forall_finite M _
-        intro L _
-        have zero := HasProjectiveDimensionLT.subsingleton (ModuleCat.of R (QuotSMulTop x M))
-          (n + 1 + 1) (i + 1) (Nat.add_le_add_right hi 1) L
-        have exac := Ext.contravariant_sequence_exact₁' S_exact L i (i + 1) (add_comm 1 i)
-        have epi := exac.epi_f ((@AddCommGrpCat.isZero_of_subsingleton _ zero).eq_zero_of_tgt _)
-        have : S.f = x • 𝟙 M := rfl
-        simp only [S, this, AddCommGrpCat.epi_iff_surjective, AddCommGrpCat.hom_ofHom] at epi
-        by_contra ntr
-        have : Nontrivial (Ext M L i) := not_subsingleton_iff_nontrivial.mp ntr
-        have : x ∈ (Module.annihilator R (Ext M L i)).jacobson :=
-          (IsLocalRing.maximalIdeal_le_jacobson _) mem
-        absurd Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator this
-        rw [eq_comm, eq_top_iff]
-        intro y hy
-        rcases epi y with ⟨z, hz⟩
-        simp only [ModuleCat.smulShortComplex, Ext.mk₀_smul,
-          Ext.bilinearComp_apply_apply, Ext.smul_comp, Ext.mk₀_id_comp] at hz
-        simpa [← hz] using Submodule.smul_mem_pointwise_smul _ _ ⊤ trivial
-      intro N e
-      exact (this N).eq_zero e
+      have hS : S.ShortExact := reg.smulShortComplex_shortExact
+      refine ⟨fun h ↦ ?_, fun h ↦ hS.hasProjectiveDimensionLT_X₃ (n + 1) h
+        (hasProjectiveDimensionLT_of_ge M (n + 1) (n + 1 + 1) (Nat.le_add_right _ 1))⟩
+      simp only [HasProjectiveDimensionLE]
+      apply hasProjectiveDimensionLT_of_forall_finite
+      intro L _
+      have zero := HasProjectiveDimensionLT.subsingleton (ModuleCat.of R (QuotSMulTop x M))
+        (n + 1 + 1) _ (le_refl _) L
+      have exac := Ext.contravariant_sequence_exact₁' hS L (n + 1) (n + 1 + 1) (add_comm 1 (n + 1))
+      have epi := exac.epi_f ((@AddCommGrpCat.isZero_of_subsingleton _ zero).eq_zero_of_tgt _)
+      have : S.f = x • 𝟙 M := rfl
+      simp only [S, this, AddCommGrpCat.epi_iff_surjective, AddCommGrpCat.hom_ofHom] at epi
+      by_contra ntr
+      have : Nontrivial (Ext M L (n + 1)) := not_subsingleton_iff_nontrivial.mp ntr
+      have : x ∈ (Module.annihilator R (Ext M L (n + 1))).jacobson :=
+        (IsLocalRing.maximalIdeal_le_jacobson _) mem
+      absurd Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator this
+      rw [eq_comm, eq_top_iff]
+      intro y hy
+      rcases epi y with ⟨z, hz⟩
+      simp only [ModuleCat.smulShortComplex, Ext.mk₀_smul,
+        Ext.bilinearComp_apply_apply, Ext.smul_comp, Ext.mk₀_id_comp] at hz
+      simpa [← hz] using Submodule.smul_mem_pointwise_smul _ _ ⊤ trivial
   refine eq_of_forall_ge_iff (fun N ↦ ?_)
   induction N with
   | bot =>
