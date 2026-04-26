@@ -27,7 +27,8 @@ of even weight `k ≥ 3`.
 @[expose] public noncomputable section
 
 open UpperHalfPlane ModularForm Complex SlashInvariantForm SlashInvariantFormClass
-  ModularFormClass CongruenceSubgroup MatrixGroups OnePoint Filter Topology EisensteinSeries
+  ModularFormClass CuspFormClass CongruenceSubgroup MatrixGroups OnePoint Filter Topology
+  EisensteinSeries Asymptotics
 
 /-! ### Delta isomorphism: `CuspForm 𝒮ℒ k ≃ₗ[ℂ] ModularForm 𝒮ℒ (k - 12)` -/
 
@@ -67,7 +68,7 @@ private lemma divByDiscriminant_slash_eq (f : CuspForm 𝒮ℒ k) (γ : SL(2, �
   exact mul_div_mul_left (f z) (Δ z) (zpow_ne_zero _ (denom_ne_zero γ z))
 
 lemma exp_decay_isBigO_discriminant (f : CuspForm 𝒮ℒ k) : f =O[atImInfty] Δ := by
-  have hf_decay := CuspFormClass.exp_decay_atImInfty (h := 1) f one_pos one_mem_strictPeriods_SL
+  have hf_decay := exp_decay_atImInfty (h := 1) f one_pos one_mem_strictPeriods_SL
   have hΔ_lower : ∀ᶠ τ : ℍ in atImInfty,
       ‖(fun τ : ℍ ↦ Real.exp (-2 * Real.pi * τ.im / 1)) τ‖ ≤ 2 * ‖Δ τ‖ := by
     have hprod := discriminant_bounded_factor.eventually
@@ -87,7 +88,7 @@ lemma exp_decay_isBigO_discriminant (f : CuspForm 𝒮ℒ k) : f =O[atImInfty] �
       linarith [norm_sub_rev (1 : ℂ) (∏' (n : ℕ), (1 - eta_q n τ) ^ 24)]
     linarith [norm_nonneg (Function.Periodic.qParam 1 (τ : ℂ)), mul_le_mul_of_nonneg_left
       hprod_bound (norm_nonneg (Function.Periodic.qParam 1 (τ : ℂ)))]
-  exact hf_decay.trans (Asymptotics.IsBigO.of_bound 2 hΔ_lower)
+  exact hf_decay.trans (IsBigO.of_bound 2 hΔ_lower)
 
 /-- Divide a cusp form by the discriminant to get a modular form of weight `k - 12`. -/
 def divDiscriminant (f : CuspForm 𝒮ℒ k) : ModularForm 𝒮ℒ (k - 12) where
@@ -101,8 +102,7 @@ def divDiscriminant (f : CuspForm 𝒮ℒ k) : ModularForm 𝒮ℒ (k - 12) wher
   bdd_at_cusps' {c} hc := by
     rw [Subgroup.IsArithmetic.isCusp_iff_isCusp_SL2Z] at hc; rw [isBoundedAt_iff_forall_SL2Z hc]
     intro γ _; rw [divByDiscriminant_slash_eq f γ, IsBoundedAtImInfty, BoundedAtFilter]
-    exact (Asymptotics.div_isBoundedUnder_of_isBigO
-      (exp_decay_isBigO_discriminant f)).isBigO_one ℝ
+    exact (div_isBoundedUnder_of_isBigO (exp_decay_isBigO_discriminant f)).isBigO_one ℝ
 
 @[simp]
 lemma divDiscriminant_apply (f : CuspForm 𝒮ℒ k) (z : ℍ) :
