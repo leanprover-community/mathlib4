@@ -188,10 +188,13 @@ variable {K L M : Type*}
 
 open Algebra LieAlgebra LinearMap Module Module.End
 
+local notation "K̄" => AlgebraicClosure K
+local notation "L̄" => K̄ ⊗[K] L
+local notation "M̄" => K̄ ⊗[K] M
+
 omit [CharZero K] in
-lemma traceForm_baseChange_eq_zero
-    {Kbar : Type*} [Field Kbar] [Algebra K Kbar] (h : traceForm K L M = 0) :
-    traceForm Kbar (Kbar ⊗[K] L) (Kbar ⊗[K] M) = 0 := by
+lemma traceForm_baseChange_eq_zero (h : traceForm K L M = 0) :
+    traceForm K̄ L̄ M̄ = 0 := by
   refine LinearMap.ext fun u ↦ TensorProduct.induction_on u ?_ ?_ ?_
   · simp
   · intro a x
@@ -199,11 +202,9 @@ lemma traceForm_baseChange_eq_zero
     · simp
     · intro b y
       rw [LinearMap.zero_apply, LinearMap.zero_apply, traceForm_apply_apply]
-      have hx : toEnd Kbar (Kbar ⊗[K] L) (Kbar ⊗[K] M) (a ⊗ₜ[K] x) =
-          a • (toEnd K L M x).baseChange Kbar := by
+      have hx : toEnd K̄ L̄ M̄ (a ⊗ₜ[K] x) = a • (toEnd K L M x).baseChange K̄ := by
         rw [TensorProduct.tmul_eq_smul_one_tmul, map_smul, toEnd_baseChange]
-      have hy : toEnd Kbar (Kbar ⊗[K] L) (Kbar ⊗[K] M) (b ⊗ₜ[K] y) =
-          b • (toEnd K L M y).baseChange Kbar := by
+      have hy : toEnd K̄ L̄ M̄ (b ⊗ₜ[K] y) = b • (toEnd K L M y).baseChange K̄ := by
         rw [TensorProduct.tmul_eq_smul_one_tmul, map_smul, toEnd_baseChange]
       rw [hx, hy, LinearMap.smul_comp, LinearMap.comp_smul, smul_smul,
         ← LinearMap.baseChange_comp, map_smul, LinearMap.trace_baseChange]
@@ -221,18 +222,16 @@ by scalar extension to the algebraically closed case, then closes by
 `isNilpotent_derivedSeries_of_traceForm_eq_zero_algClosed_aux`. -/
 public theorem isNilpotent_derivedSeries_of_traceForm_eq_zero (h : traceForm K L M = 0) :
     IsNilpotent (derivedSeries K L 1) M := by
-  let Kbar := AlgebraicClosure K
-  haveI : FiniteDimensional Kbar (Kbar ⊗[K] M) := Module.Finite.base_change K Kbar M
-  suffices key : IsNilpotent (derivedSeries Kbar (Kbar ⊗[K] L) 1) (Kbar ⊗[K] M) by
+  haveI : FiniteDimensional K̄ M̄ := Module.Finite.base_change K K̄ M
+  suffices key : IsNilpotent (derivedSeries K̄ L̄ 1) M̄ by
     rw [LieModule.isNilpotent_iff_forall' (R := K)]
-    rw [LieModule.isNilpotent_iff_forall' (R := Kbar)] at key
+    rw [LieModule.isNilpotent_iff_forall' (R := K̄)] at key
     intro ⟨x, hx⟩
     change _root_.IsNilpotent (toEnd K L M x)
-    have hx_bar : (1 : Kbar) ⊗ₜ[K] x ∈ derivedSeries Kbar (Kbar ⊗[K] L) 1 := by
+    have hx_bar : (1 : K̄) ⊗ₜ[K] x ∈ derivedSeries K̄ L̄ 1 := by
       rw [derivedSeries_baseChange]
       exact Submodule.tmul_mem_baseChange_of_mem 1 hx
-    have step : _root_.IsNilpotent
-        (toEnd Kbar (Kbar ⊗[K] L) (Kbar ⊗[K] M) ((1 : Kbar) ⊗ₜ[K] x)) :=
+    have step : _root_.IsNilpotent (toEnd K̄ L̄ M̄ ((1 : K̄) ⊗ₜ[K] x)) :=
       key ⟨_, hx_bar⟩
     rw [toEnd_baseChange] at step
     exact (IsNilpotent.map_iff End.baseChangeHom_injective).mp step
