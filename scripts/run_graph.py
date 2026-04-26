@@ -53,6 +53,8 @@ def _absolutize_list(seq: Iterable[str], ctx: list[tuple[str, str]]) -> list[str
 
 def _absolutize_obj(obj, ctx: list[tuple[str, str]]):
     if isinstance(obj, str):
+        if obj.startswith("@"):
+            return "@" + _absolutize(obj[1:], ctx)
         return _absolutize(obj, ctx)
     if isinstance(obj, list):
         return [_absolutize_obj(x, ctx) for x in obj]
@@ -61,34 +63,50 @@ def _absolutize_obj(obj, ctx: list[tuple[str, str]]):
     return obj
 
 
+def _absolutize_argv(argv: list[str], ctx: list[tuple[str, str]]) -> list[str]:
+    """Like _absolutize_list but supports ``@<path>`` rsp args."""
+    out: list[str] = []
+    for s in argv:
+        if s.startswith("@"):
+            out.append("@" + _absolutize(s[1:], ctx))
+        else:
+            out.append(_absolutize(s, ctx))
+    return out
+
+
 def _topo_subgraph_order(
     nodes_by_id: dict[str, dict],
     target_id: str | None,
 ) -> list[str]:
     """Return node IDs in topo order; if ``target_id`` is set, restrict to its
     transitive build dependencies (plus the target itself)."""
-    # We trust the input ordering (lake_graph_extract emits topo-ordered),
-    # we just filter to the target's closure if requested.
     pkg_module_to_id: dict[str, str] = {}
+    exe_name_to_id: dict[str, str] = {}
     for nid, n in nodes_by_id.items():
         if n.get("kind") == "lean_module":
             pkg_module_to_id[n["module"]] = nid
+        if n.get("kind") == "cc_link":
+            # cc_link is the ultimate root of an exe build; prefer it over
+            # the lean_module of the same name when resolving an exe target.
+            exe_name_to_id[n["exe_name"]] = nid
 
     if target_id is None:
         return list(nodes_by_id.keys())
 
     if target_id in nodes_by_id:
         seed_id = target_id
+    elif target_id in exe_name_to_id:
+        seed_id = exe_name_to_id[target_id]
     elif target_id in pkg_module_to_id:
         seed_id = pkg_module_to_id[target_id]
     else:
         raise KeyError(
-            f"target {target_id!r} is not a node id or known module"
+            f"target {target_id!r} is not a node id, exe name, or known module"
         )
 
-    # BFS over graph_deps (which use module names, not ids) to find the
-    # closure. graph_deps were emitted from setup_json importArts which only
-    # cover lean_module nodes, so module-name lookup is sufficient.
+    # BFS over graph_deps. graph_deps may be either node ids (cc_compile /
+    # cc_link emit them as ids) OR module names (lean_module emits the
+    # module-name list from setup_json.importArts). Look up both.
     closure_ids: set[str] = set()
     queue = [seed_id]
     while queue:
@@ -97,37 +115,55 @@ def _topo_subgraph_order(
             continue
         closure_ids.add(nid)
         node = nodes_by_id[nid]
-        for dep_module in node.get("graph_deps", []):
-            dep_id = pkg_module_to_id.get(dep_module)
+        for dep in node.get("graph_deps", []):
+            dep_id = (
+                dep if dep in nodes_by_id
+                else pkg_module_to_id.get(dep)
+            )
             if dep_id is not None and dep_id not in closure_ids:
                 queue.append(dep_id)
 
-    # Preserve the input file's order for the subset (which is topological).
     return [nid for nid in nodes_by_id.keys() if nid in closure_ids]
 
 
 def execute_node(node: dict, ctx: list[tuple[str, str]]) -> None:
-    """Run one graph node's command after writing its setup.json."""
-    abs_command = _absolutize_list(node["command"], ctx)
+    """Run one graph node's command after writing any side-input files.
+
+    Side-inputs handled by the executor (vs the node's command):
+      * setup.json — for ``lean_module`` nodes, written from
+        ``node['setup_json']``. ``lean --setup`` reads it before compiling.
+      * .rsp — for ``cc_link`` nodes, written from ``node['rsp_args']`` in
+        Lake's quoted-line format.
+    """
+    abs_command = _absolutize_argv(node["command"], ctx)
     abs_env = {k: _absolutize(v, ctx) for k, v in node["env"].items()}
 
-    # Write setup.json. We absolutize *its* paths too, so the on-disk file
-    # matches what Lake would have produced.
+    # 1. setup.json side-input for lean_module nodes.
     setup_path_rel = _find_setup_path_in_outputs(node)
-    if setup_path_rel is not None:
+    if setup_path_rel is not None and "setup_json" in node:
         setup_path = _absolutize(setup_path_rel, ctx)
         setup_content = _absolutize_obj(node["setup_json"], ctx)
         Path(setup_path).parent.mkdir(parents=True, exist_ok=True)
-        # Lake writes setup.json with `(toJson setup).pretty` — its exact
+        # Lake writes setup.json with `(toJson setup).pretty`; the exact
         # whitespace differs from Python's, but the JSON content is what
         # `lean --setup` reads, so semantic equivalence suffices.
         Path(setup_path).write_text(json.dumps(setup_content, indent=1))
+
+    # 2. .rsp side-input for cc_link nodes. Lake's mkArgs writes one quoted
+    #    arg per line, with backslash-escaping of '\' and '"'.
+    if node.get("kind") == "cc_link":
+        rsp_path = _absolutize(node["rsp_path"], ctx)
+        rsp_args_abs = _absolutize_list(node["rsp_args"], ctx)
+        Path(rsp_path).parent.mkdir(parents=True, exist_ok=True)
+        with open(rsp_path, "w") as f:
+            for arg in rsp_args_abs:
+                escaped = arg.replace("\\", "\\\\").replace('"', '\\"')
+                f.write(f'"{escaped}"\n')
 
     # Pre-create output directories the command itself doesn't auto-create.
     for out_rel in node["outputs"]:
         Path(_absolutize(out_rel, ctx)).parent.mkdir(parents=True, exist_ok=True)
 
-    # Subprocess env is the caller's env extended with the node's env.
     env = os.environ.copy()
     env.update(abs_env)
 
@@ -163,14 +199,22 @@ def main(argv: list[str] | None = None) -> int:
              "(assumes deps are already built on disk; useful for single-node "
              "validation)",
     )
+    parser.add_argument(
+        "--missing", action="store_true",
+        help="execute only nodes whose declared outputs aren't all already on "
+             "disk (incremental mode; useful for partial-rebuild validation)",
+    )
     args = parser.parse_args(argv)
 
     graph = json.loads(args.graph_json.read_text())
     ws = graph["workspace"]
+    # Order matters: most-specific prefix first for absolutize. TOOLCHAIN
+    # (= <root>/bin) must come before TOOLCHAIN_ROOT.
     ctx = [
         ("LAKE_HOME", ws["LAKE_HOME"]),
         ("WORKSPACE", ws["WORKSPACE"]),
         ("TOOLCHAIN", ws["TOOLCHAIN"]),
+        ("TOOLCHAIN_ROOT", ws.get("TOOLCHAIN_ROOT", str(Path(ws["TOOLCHAIN"]).parent))),
     ]
 
     nodes_by_id = {n["id"]: n for n in graph["nodes"]}
@@ -183,6 +227,15 @@ def main(argv: list[str] | None = None) -> int:
         # the right node id even if `target` was supplied as a module name.
         target_id = order[-1] if order else None
         order = [target_id] if target_id is not None else []
+
+    if args.missing:
+        order = [
+            nid for nid in order
+            if not all(
+                Path(_absolutize(o, ctx)).exists() for o in nodes_by_id[nid]["outputs"]
+            )
+        ]
+        sys.stderr.write(f"[run_graph] --missing: {len(order)} nodes need rebuild\n")
 
     if args.clean:
         # Wipe .lake/build for every package referenced by these nodes — that

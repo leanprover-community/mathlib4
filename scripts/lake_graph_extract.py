@@ -161,6 +161,22 @@ def module_to_relpath(module: str) -> Path:
     return Path(*module.split(".")).with_suffix(".lean")
 
 
+_VALID_LEAN_IDENT = re.compile(r"^[A-Za-z_][A-Za-z0-9_']*$")
+
+
+def lean_name_repr(module: str) -> str:
+    """Serialize a dotted module name the way Lake does in setup.json.
+
+    Lake parses the ``name`` field as a Lean ``Name``, so segments that aren't
+    valid identifiers (e.g. ``check-yaml``) must be wrapped in French
+    guillemets ``«...»``. Valid-identifier segments stay literal.
+    """
+    return ".".join(
+        seg if _VALID_LEAN_IDENT.match(seg) else f"«{seg}»"
+        for seg in module.split(".")
+    )
+
+
 # ---------------------------------------------------------------------------
 # setup-file oracle
 # ---------------------------------------------------------------------------
@@ -706,7 +722,7 @@ def derive_setup_json(
     }
 
     return {
-        "name": module,
+        "name": lean_name_repr(module),
         "package": entry.pkg,
         "isModule": entry.is_module,
         "options": options,
@@ -714,6 +730,148 @@ def derive_setup_json(
         "dynlibs": [],
         "importArts": importArts,
     }
+
+
+# ---------------------------------------------------------------------------
+# lean_exe configuration (mathlib's lakefile.lean)
+#
+# We mirror the static declarations rather than parsing the lakefile DSL —
+# all eight exes are declared with literal fields, so a hand-written table
+# matches the file 1:1 today and the validate-commands sub-command will trip
+# if anyone edits the lakefile in a way that drifts from this table.
+# ---------------------------------------------------------------------------
+
+@dataclass
+class LeanExeConfig:
+    name: str          # exe name (e.g. "autolabel"), also the exe binary's name
+    root: str          # root module name as Lake sees it (e.g. "autolabel" or "Cache.Main")
+    src_dir: str       # srcDir under the package; "" if root maps to <pkg>/<root>.lean
+    src_file: str      # path under the package, with extension (e.g. "scripts/autolabel.lean")
+    support_interpreter: bool
+    weak_link_args: list[str]
+
+
+LEAN_EXES: dict[str, LeanExeConfig] = {
+    "autolabel": LeanExeConfig(
+        "autolabel", "autolabel", "scripts", "scripts/autolabel.lean",
+        support_interpreter=False, weak_link_args=[],
+    ),
+    "cache": LeanExeConfig(
+        "cache", "Cache.Main", "", "Cache/Main.lean",
+        support_interpreter=False, weak_link_args=[],
+    ),
+    "check-yaml": LeanExeConfig(
+        "check-yaml", "check-yaml", "scripts", "scripts/check-yaml.lean",
+        support_interpreter=True, weak_link_args=[],
+    ),
+    "mk_all": LeanExeConfig(
+        "mk_all", "mk_all", "scripts", "scripts/mk_all.lean",
+        support_interpreter=True, weak_link_args=["-lLake"],
+    ),
+    "lint-style": LeanExeConfig(
+        "lint-style", "lint-style", "scripts", "scripts/lint-style.lean",
+        support_interpreter=True, weak_link_args=["-lLake"],
+    ),
+    "check_title_labels": LeanExeConfig(
+        "check_title_labels", "check_title_labels", "scripts",
+        "scripts/check_title_labels.lean",
+        support_interpreter=False, weak_link_args=[],
+    ),
+    "nightly-testing-checklist": LeanExeConfig(
+        "nightly-testing-checklist", "nightly-testing-checklist", "scripts",
+        "scripts/nightly-testing-checklist.lean",
+        support_interpreter=False, weak_link_args=[],
+    ),
+    "mathlib_test_executable": LeanExeConfig(
+        "mathlib_test_executable", "MathlibTest.MathlibTestExecutable", "",
+        "MathlibTest/MathlibTestExecutable.lean",
+        support_interpreter=False, weak_link_args=[],
+    ),
+}
+
+
+# Toolchain-static cc flags. Captured empirically from `lake build -v autolabel`
+# (§5.3). All paths are relative to the toolchain root; the placeholder
+# substitution turns them into absolute paths at execution time. validate-cc
+# (planned) will diff these against a fresh capture to flag toolchain drift.
+CC_COMPILE_FLAGS = [
+    "-fstack-clash-protection",
+    "-fdata-sections",
+    "-ffunction-sections",
+    "-fvisibility=hidden",
+    "-Wno-unused-command-line-argument",
+    "--sysroot", "$TOOLCHAIN_ROOT",
+    "-nostdinc",
+    "-isystem", "$TOOLCHAIN_ROOT/include/clang",
+    "-O3",
+    "-DNDEBUG",
+]
+
+# Static tail of the cc_link rsp. Same toolchain provenance as
+# CC_COMPILE_FLAGS. Note that ``-lLake`` already appears here, so the
+# weakLinkArgs=["-lLake"] declared on mk_all/lint-style produces a redundant
+# (but harmless) double ``-lLake`` on those exes' rsps. We mirror Lake's
+# behavior verbatim.
+CC_LINK_RSP_TAIL = [
+    "-L", "$TOOLCHAIN_ROOT/lib/lean",
+    "--sysroot", "$TOOLCHAIN_ROOT",
+    "-L", "$TOOLCHAIN_ROOT/lib",
+    "-L", "$TOOLCHAIN_ROOT/lib/libc",
+    "-fuse-ld=lld",
+    "-lleancpp", "-lInit", "-lStd", "-lLean", "-lleanrt",
+    "-lc++", "-lLake", "-lgmp", "-luv",
+    "-Wl,-dead_strip",
+]
+
+
+# ---------------------------------------------------------------------------
+# Raw transitive imports (Lake's recComputeTransImports — no isExported filter)
+#
+# Distinct from `transitive_imports` (which mirrors fetchTransImportArts and
+# is used for setup.json importArts). Used for collecting object files at the
+# link step, which needs every transitive import regardless of export flags.
+# Order matches the OrdModuleSet insertion order Lake uses in
+# collectImportsAux: post-order DFS, dedup preserving first occurrence.
+# ---------------------------------------------------------------------------
+
+def raw_transitive_imports(
+    module: str, registry: dict[str, ModuleEntry],
+) -> list[str]:
+    """Return all transitive imports of `module` in Lake's link-time order."""
+    if module not in registry:
+        raise KeyError(module)
+    cache: dict[str, list[str]] = {}
+
+    def trans(mod: str) -> list[str]:
+        if mod in cache:
+            return cache[mod]
+        if mod not in registry:
+            cache[mod] = []
+            return cache[mod]
+        out: list[str] = []
+        seen: set[str] = set()
+        # Module-name dedup at the source: Lake's recParseImports collapses
+        # multiple flag-distinct edges to the same module into a single Module
+        # before walking, so we walk by unique module names.
+        unique_imports: list[str] = []
+        seen_imports: set[str] = set()
+        for imp in registry[mod].imports:
+            if imp.module in seen_imports:
+                continue
+            seen_imports.add(imp.module)
+            unique_imports.append(imp.module)
+        for d in unique_imports:
+            for x in trans(d):
+                if x not in seen:
+                    seen.add(x)
+                    out.append(x)
+            if d in registry and d not in seen:
+                seen.add(d)
+                out.append(d)
+        cache[mod] = out
+        return out
+
+    return trans(module)
 
 
 # ---------------------------------------------------------------------------
@@ -726,12 +884,14 @@ def _placeholder_ctx(lean_bin: Path) -> list[tuple[str, str]]:
 
     Order is most-specific first so a path under ``$LAKE_HOME`` doesn't get
     matched as ``$WORKSPACE/.lake/...``. ``$TOOLCHAIN`` points at the bin
-    directory because the actual ``lean``/``leanir`` binaries live there.
+    directory; ``$TOOLCHAIN_ROOT`` at the toolchain sysroot — cc and link
+    flags reference both ``<toolchain>/bin`` and ``<toolchain>/lib*``.
     """
     return [
         ("LAKE_HOME", str(LAKE_HOME)),
         ("WORKSPACE", str(WORKSPACE)),
-        ("TOOLCHAIN", str(lean_bin.parent)),
+        ("TOOLCHAIN", str(lean_bin.parent)),       # <root>/bin
+        ("TOOLCHAIN_ROOT", str(lean_bin.parent.parent)),  # <root>
     ]
 
 
@@ -756,8 +916,14 @@ def absolutize(s: str, ctx: list[tuple[str, str]]) -> str:
 
 
 def _relativize_obj(obj, ctx: list[tuple[str, str]]):
-    """Recursively relativize every string value in a JSON-ish structure."""
+    """Recursively relativize every string value in a JSON-ish structure.
+
+    Handles the ``@<path>`` form used by ``cc -o foo @foo.rsp`` — strips the
+    ``@`` prefix, relativizes the path part, re-adds ``@``.
+    """
     if isinstance(obj, str):
+        if obj.startswith("@"):
+            return "@" + relativize(obj[1:], ctx)
         return relativize(obj, ctx)
     if isinstance(obj, list):
         return [_relativize_obj(x, ctx) for x in obj]
@@ -850,6 +1016,242 @@ def _build_lean_module_node_dict(
     }
 
 
+def _build_exe_lean_module_node(
+    exe: LeanExeConfig,
+    *,
+    registry: dict[str, ModuleEntry],
+    packages: dict[str, Path],
+    lib_options: _LibOptionsCache,
+    lean_bin: Path,
+) -> dict:
+    """Build the lean_module node that compiles the exe's root .lean file.
+
+    Differs from a regular library module's node:
+      * The Lake-side module name is ``exe.root`` (not the file's path-derived
+        name). E.g. ``scripts/autolabel.lean`` → module ``autolabel``.
+      * Outputs land at ``<pkg>/.lake/build/lib/lean/<root>.olean`` etc., not
+        nested under the original directory of the source file.
+      * Options come from the exe's owning lib, which for mathlib is none —
+        the captured `lake setup-file` says ``options: {}``. We reflect that
+        by *not* applying any per-lib options for these nodes.
+      * isModule is read off the file's deps-json result.
+
+    Transitive imports' artifact paths still come from the regular module
+    registry (paths in their owning packages' build dirs), so the importArts
+    structure is consistent.
+    """
+    # The exe's root .lean file. Its path-derived registry entry uses the
+    # full dotted path (e.g. "scripts.autolabel"); we use that to read flags.
+    src_abs = WORKSPACE / exe.src_file
+    if not src_abs.exists():
+        raise FileNotFoundError(f"lean_exe {exe.name} source not found: {src_abs}")
+
+    # Find the registry entry (keyed by path-derived module name).
+    file_module_name = _path_to_module(WORKSPACE, src_abs)
+    if file_module_name not in registry:
+        raise RuntimeError(
+            f"lean_exe {exe.name}: source file not in registry as "
+            f"{file_module_name!r} — registry-walk regression"
+        )
+    file_entry = registry[file_module_name]
+
+    # Build a synthetic "exe view" of the entry that uses the Lake-side root
+    # name. We don't mutate the registry (other code keys off the path-name).
+    pkg_dir = packages["mathlib"]  # all mathlib lean_exes belong to mathlib
+    rel = Path(*exe.root.split(".")).with_suffix(".olean").parent / (
+        Path(*exe.root.split(".")).with_suffix(".olean").name
+    )
+    # Output paths use the exe.root dotted path -> file path mapping under
+    # .lake/build/{lib/lean,ir}/<dots-as-slashes>.<ext>
+    root_rel = Path(*exe.root.split("."))
+    lib_dir = pkg_dir / ".lake" / "build" / "lib" / "lean"
+    ir_dir = pkg_dir / ".lake" / "build" / "ir"
+    olean = str(lib_dir / root_rel.with_suffix(".olean"))
+    ilean = str(lib_dir / root_rel.with_suffix(".ilean"))
+    c     = str(ir_dir  / root_rel.with_suffix(".c"))
+    setup_path = str(ir_dir / root_rel.with_suffix(".setup.json"))
+
+    # Setup.json content: derive from the file's imports. Because the lean_exe
+    # has no associated lean_lib, options come back empty (verified empirically
+    # for autolabel: setup.json options == {}).
+    deps, importAll_map = transitive_imports(file_module_name, registry)
+    importArts = {
+        m: module_artifact_paths(m, registry, packages, import_all=importAll_map[m])
+        for m in deps
+    }
+    setup_json = {
+        "name": lean_name_repr(exe.root),
+        "package": file_entry.pkg,  # = "mathlib"
+        "isModule": file_entry.is_module,
+        "options": {},
+        "plugins": [],
+        "dynlibs": [],
+        "importArts": importArts,
+    }
+
+    command = [
+        str(lean_bin),
+        str(src_abs),
+        "-o", olean,
+        "-i", ilean,
+        "-c", c,
+        "--setup", setup_path,
+        "--json",
+    ]
+    env = {"LEAN_PATH": lean_path_string(packages)}
+
+    inputs: list[dict] = [
+        {"path": str(src_abs), "kind": "source"},
+        {"path": setup_path, "kind": "setup_json"},
+    ]
+    for art_module, paths in importArts.items():
+        for p in paths:
+            inputs.append({"path": p, "kind": "import_art", "module": art_module})
+
+    outputs = [olean, ilean, c]
+    if file_entry.is_module:
+        outputs.extend([
+            str(lib_dir / root_rel.with_suffix(".olean.server")),
+            str(lib_dir / root_rel.with_suffix(".olean.private")),
+            str(lib_dir / root_rel.with_suffix(".ir")),
+        ])
+    outputs.append(setup_path)
+
+    return {
+        "id": f"mathlib:exe:{exe.name}:lean",
+        "kind": "lean_module",
+        "module": exe.root,
+        "package": "mathlib",
+        "command": command,
+        "env": env,
+        "inputs": inputs,
+        "outputs": outputs,
+        "setup_json": setup_json,
+        "graph_deps": sorted(importArts.keys()),
+    }
+
+
+def _module_c_path(module: str, registry: dict[str, ModuleEntry],
+                   packages: dict[str, Path]) -> str:
+    """Absolute path to ``module``'s ``.c`` artifact."""
+    entry = registry[module]
+    pkg_dir = packages[entry.pkg]
+    rel = module_to_relpath(module).with_suffix("")
+    return str(pkg_dir / ".lake" / "build" / "ir" / rel.with_suffix(".c"))
+
+
+def _module_c_o_export_path(module: str, registry: dict[str, ModuleEntry],
+                             packages: dict[str, Path]) -> str:
+    """Absolute path to ``module``'s ``.c.o.export`` artifact."""
+    entry = registry[module]
+    pkg_dir = packages[entry.pkg]
+    rel = module_to_relpath(module).with_suffix("")
+    return str(pkg_dir / ".lake" / "build" / "ir" / rel.with_suffix(".c.o.export"))
+
+
+def _exe_root_c_path(exe: LeanExeConfig, packages: dict[str, Path]) -> str:
+    pkg_dir = packages["mathlib"]
+    root_rel = Path(*exe.root.split("."))
+    return str(pkg_dir / ".lake" / "build" / "ir" / root_rel.with_suffix(".c"))
+
+
+def _exe_root_c_o_export_path(exe: LeanExeConfig, packages: dict[str, Path]) -> str:
+    pkg_dir = packages["mathlib"]
+    root_rel = Path(*exe.root.split("."))
+    return str(pkg_dir / ".lake" / "build" / "ir" / root_rel.with_suffix(".c.o.export"))
+
+
+def _build_cc_compile_node(
+    *,
+    src_c_path: str,
+    out_co_export_path: str,
+    module_label: str,
+    package: str,
+    cc_bin: Path,
+    toolchain_root: Path,
+) -> dict:
+    """Build the cc -c node that compiles a module's ``.c`` to ``.c.o.export``.
+
+    The argv shape is:
+
+        cc -c -o <out> <src> -I <toolchain>/include <CC_COMPILE_FLAGS> -DLEAN_EXPORTING
+
+    No environment variables. CC_COMPILE_FLAGS uses the ``$TOOLCHAIN_ROOT``
+    placeholder so the same node JSON is portable across machines.
+    """
+    cmd = [
+        str(cc_bin),
+        "-c",
+        "-o", out_co_export_path,
+        src_c_path,
+        "-I", f"{toolchain_root}/include",
+        *[arg.replace("$TOOLCHAIN_ROOT", str(toolchain_root)) for arg in CC_COMPILE_FLAGS],
+        "-DLEAN_EXPORTING",
+    ]
+    return {
+        "id": f"{package}:cc_compile:{module_label}",
+        "kind": "cc_compile",
+        "module": module_label,
+        "package": package,
+        "command": cmd,
+        "env": {},
+        "inputs": [{"path": src_c_path, "kind": "c_source"}],
+        "outputs": [out_co_export_path],
+        "graph_deps": [],  # filled in by caller (the lean_module that produced .c)
+    }
+
+
+def _build_cc_link_node(
+    exe: LeanExeConfig,
+    *,
+    obj_paths: list[str],
+    cc_bin: Path,
+    toolchain_root: Path,
+    packages: dict[str, Path],
+) -> dict:
+    """Build the cc -o node that links the exe.
+
+    Lake produces the rsp file as a side effect of mkArgs; we do the same in
+    the worker (so the rsp is an *output* of this node, not an input).
+    """
+    pkg_dir = packages["mathlib"]
+    bin_dir = pkg_dir / ".lake" / "build" / "bin"
+    bin_path = str(bin_dir / exe.name)
+    rsp_path = str(bin_dir / f"{exe.name}.rsp")
+
+    # rsp content order mirrors recBuildExe: objs ++ weakArgs ++ traceArgs ++
+    # ["-L", leanLibDir] ++ ccLinkFlags. traceArgs (= linkArgs) is empty for
+    # every mathlib exe.
+    rsp_args = list(obj_paths) + list(exe.weak_link_args) + [
+        arg.replace("$TOOLCHAIN_ROOT", str(toolchain_root))
+        for arg in CC_LINK_RSP_TAIL
+    ]
+
+    cmd = [
+        str(cc_bin),
+        "-o", bin_path,
+        f"@{rsp_path}",
+    ]
+    env = {"MACOSX_DEPLOYMENT_TARGET": "99.0"}
+
+    inputs = [{"path": p, "kind": "obj"} for p in obj_paths]
+    inputs.append({"path": rsp_path, "kind": "response_file"})
+
+    return {
+        "id": f"mathlib:cc_link:{exe.name}",
+        "kind": "cc_link",
+        "exe_name": exe.name,
+        "package": "mathlib",
+        "command": cmd,
+        "env": env,
+        "inputs": inputs,
+        "outputs": [bin_path, rsp_path],
+        "rsp_path": rsp_path,
+        "rsp_args": rsp_args,
+        "graph_deps": [],  # filled in by caller
+    }
+
+
 def _topo_order_modules(
     targets: Iterable[str],
     registry: dict[str, ModuleEntry],
@@ -913,27 +1315,111 @@ def _topo_order_modules(
 
 
 def emit_graph(target: str, *, output_path: Optional[Path]) -> dict:
-    """Emit the full lean_module subgraph for `target`'s transitive closure."""
+    """Emit the build subgraph for ``target``.
+
+    Dispatch:
+      * ``target`` is a key in ``LEAN_EXES`` → emit the exe graph: regular
+        lean_module closure + the exe's lean_module + cc_compile per object +
+        cc_link.
+      * Otherwise → treat as a module name and emit just the lean_module
+        subgraph (existing v1 behavior).
+    """
     packages = package_dirs()
     registry = build_module_registry(packages)
     lib_options = _LibOptionsCache()
     lean_bin = discover_lean_binary()
+    cc_bin = lean_bin.parent / "clang"
+    toolchain_root = lean_bin.parent.parent
 
-    if target not in registry:
-        raise KeyError(f"target {target!r} not in registry")
+    nodes: list[dict] = []
 
-    ordered = _topo_order_modules([target], registry)
-    nodes = [
-        _build_lean_module_node_dict(
-            m, registry=registry, packages=packages,
+    if target in LEAN_EXES:
+        exe = LEAN_EXES[target]
+        # 1. Regular lean_module closure for the exe's transitive imports.
+        #    The closure uses *registry* module names — which for the exe's
+        #    own root file is the path-derived name (e.g. `scripts.autolabel`),
+        #    *not* the Lake-side root (e.g. `autolabel`). We exclude the
+        #    file-name entry because the lean_exe builds the source under a
+        #    *different* output path; we'll add a dedicated exe-lean node next.
+        file_module_name = _path_to_module(WORKSPACE, WORKSPACE / exe.src_file)
+
+        # The exe's setup.json importArts gives us the *user* modules whose
+        # oleans the lean compile reads. For closure-of-build, we need raw
+        # transImports (no isExported filter) so cc_link can pick up every
+        # module's .c.o.export.
+        raw_deps = raw_transitive_imports(file_module_name, registry)
+
+        # lean_module nodes for every transitive import (in topo order).
+        for m in _topo_order_modules(raw_deps, registry):
+            nodes.append(_build_lean_module_node_dict(
+                m, registry=registry, packages=packages,
+                lib_options=lib_options, lean_bin=lean_bin,
+            ))
+
+        # 2. lean_module node for the exe's own root.
+        exe_lean_node = _build_exe_lean_module_node(
+            exe, registry=registry, packages=packages,
             lib_options=lib_options, lean_bin=lean_bin,
         )
-        for m in ordered
-    ]
+        nodes.append(exe_lean_node)
+
+        # 3. cc_compile nodes — one per module whose .c is going into the
+        #    link. Order = exe.root first, then raw_deps (matching Lake's
+        #    objJobs accumulation order in recBuildExe).
+        cc_nodes_by_module: dict[str, dict] = {}
+        # exe root cc_compile
+        cc_root = _build_cc_compile_node(
+            src_c_path=_exe_root_c_path(exe, packages),
+            out_co_export_path=_exe_root_c_o_export_path(exe, packages),
+            module_label=exe.root,
+            package="mathlib",
+            cc_bin=cc_bin,
+            toolchain_root=toolchain_root,
+        )
+        cc_root["graph_deps"] = [exe_lean_node["id"]]
+        nodes.append(cc_root)
+        cc_nodes_by_module[exe.root] = cc_root
+
+        for m in raw_deps:
+            entry = registry[m]
+            cc = _build_cc_compile_node(
+                src_c_path=_module_c_path(m, registry, packages),
+                out_co_export_path=_module_c_o_export_path(m, registry, packages),
+                module_label=m,
+                package=entry.pkg,
+                cc_bin=cc_bin,
+                toolchain_root=toolchain_root,
+            )
+            # cc_compile depends on the module's lean_module having produced .c
+            cc["graph_deps"] = [f"{entry.pkg}:{m}"]
+            nodes.append(cc)
+            cc_nodes_by_module[m] = cc
+
+        # 4. cc_link node.
+        link_objs: list[str] = [_exe_root_c_o_export_path(exe, packages)]
+        for m in raw_deps:
+            link_objs.append(_module_c_o_export_path(m, registry, packages))
+        link_node = _build_cc_link_node(
+            exe, obj_paths=link_objs, cc_bin=cc_bin,
+            toolchain_root=toolchain_root, packages=packages,
+        )
+        link_node["graph_deps"] = [n["id"] for n in cc_nodes_by_module.values()]
+        nodes.append(link_node)
+    else:
+        # Module-only target.
+        if target not in registry:
+            raise KeyError(f"target {target!r} not in registry")
+        ordered = _topo_order_modules([target], registry)
+        nodes = [
+            _build_lean_module_node_dict(
+                m, registry=registry, packages=packages,
+                lib_options=lib_options, lean_bin=lean_bin,
+            )
+            for m in ordered
+        ]
 
     ctx = _placeholder_ctx(lean_bin)
     nodes_rel = [_relativize_obj(n, ctx) for n in nodes]
-
     graph = {
         "version": "v1",
         "target": target,
@@ -941,6 +1427,7 @@ def emit_graph(target: str, *, output_path: Optional[Path]) -> dict:
             "WORKSPACE": str(WORKSPACE),
             "LAKE_HOME": str(LAKE_HOME),
             "TOOLCHAIN": str(lean_bin.parent),
+            "TOOLCHAIN_ROOT": str(toolchain_root),
         },
         "node_count": len(nodes_rel),
         "nodes": nodes_rel,
@@ -949,6 +1436,166 @@ def emit_graph(target: str, *, output_path: Optional[Path]) -> dict:
     if output_path is not None:
         output_path.write_text(json.dumps(graph, indent=1))
     return graph
+
+
+# ---------------------------------------------------------------------------
+# Pre-flight (§10.11): refuse to emit a graph from an unsupported workspace
+# ---------------------------------------------------------------------------
+
+# Lakefile constructs that would push the workspace out of regime 1 (the
+# only regime where static graph extraction is sound). We grep for these
+# across mathlib's lakefile *and* every active package's lakefile.
+_DYNAMIC_FEATURES = ("target", "module_facet", "library_facet",
+                     "extern_lib", "precompileModules")
+
+# proofwidgets ships JS via dynamic targets — the analysis doc explicitly
+# carves it out as an opaque `package_extra_dep` node, so its targets are
+# expected and don't disqualify the workspace.
+_KNOWN_DYNAMIC_PACKAGES = {"proofwidgets"}
+
+
+def _grep_dynamic_features() -> list[tuple[str, int, str]]:
+    """Find lakefile lines that declare a dynamic feature.
+
+    Returns a list of (path, line_number, line_text). Excludes:
+      * declarations under known-opaque packages (proofwidgets).
+      * the literal ``precompileModules = false`` line aesop uses to
+        explicitly *opt out* — keyword present, behavior off.
+    """
+    pattern = re.compile(
+        r"^\s*("
+        + "|".join(re.escape(f) for f in _DYNAMIC_FEATURES)
+        + r")\b"
+    )
+    candidates: list[Path] = [WORKSPACE / "lakefile.lean"]
+    if PACKAGES_DIR.exists():
+        for pkg_dir in sorted(PACKAGES_DIR.iterdir()):
+            if not pkg_dir.is_dir() or pkg_dir.name in _KNOWN_DYNAMIC_PACKAGES:
+                continue
+            for fname in ("lakefile.lean", "lakefile.toml"):
+                p = pkg_dir / fname
+                if p.exists():
+                    candidates.append(p)
+
+    hits: list[tuple[str, int, str]] = []
+    for path in candidates:
+        for i, line in enumerate(path.read_text().splitlines(), 1):
+            m = pattern.search(line)
+            if not m:
+                continue
+            # Filter `precompileModules = false` — boolean off is fine.
+            if m.group(1) == "precompileModules" and re.search(r"=\s*false\b", line):
+                continue
+            hits.append((str(path), i, line.rstrip()))
+    return hits
+
+
+def preflight() -> int:
+    """Run the §10.11 health check; report and return non-zero on any failure."""
+    print("=== preflight: §10.11 health check ===")
+    print()
+    failed = False
+
+    # 1. lake binary version vs lean-toolchain.
+    res = subprocess.run(
+        ["lake", "--version"], cwd=WORKSPACE,
+        capture_output=True, text=True, check=True,
+    )
+    lake_version_line = res.stdout.strip()
+    print(f"[lake] {lake_version_line}")
+    toolchain_text = (WORKSPACE / "lean-toolchain").read_text().strip()
+    print(f"[toolchain pin] {toolchain_text}")
+    # Extract `Lean version 4.X.Y...` and compare against toolchain.
+    m = re.search(r"Lean version (\S+?)\)", lake_version_line)
+    if m:
+        lake_lean_version = m.group(1)
+        # toolchain pin is like "leanprover/lean4:v4.30.0-rc2"; strip prefix
+        pin_version = toolchain_text.split(":")[-1].lstrip("v")
+        if lake_lean_version != pin_version:
+            print(f"  ! mismatch: lake reports {lake_lean_version!r} but "
+                  f"lean-toolchain pins {pin_version!r}")
+            failed = True
+    print()
+
+    # 2. dynamic feature scan.
+    print("[dynamic feature scan]")
+    hits = _grep_dynamic_features()
+    if hits:
+        print(f"  ! {len(hits)} unexpected dynamic-feature declaration(s):")
+        for p, ln, text in hits[:20]:
+            print(f"    {p}:{ln}: {text}")
+        if len(hits) > 20:
+            print(f"    ... and {len(hits) - 20} more")
+        failed = True
+    else:
+        print("  OK — no `target`/`module_facet`/`library_facet`/`extern_lib`"
+              " outside proofwidgets, no enabled `precompileModules`.")
+    print()
+
+    # 3. plugins/dynlibs spot check via setup-file.
+    #    One sample per mathlib lean_lib + each upstream package.
+    print("[plugins/dynlibs spot check (one module per lib)]")
+    samples: list[tuple[str, Path]] = [
+        ("Mathlib", WORKSPACE / "Mathlib" / "Init.lean"),
+        ("Cache", WORKSPACE / "Cache" / "Hashing.lean"),
+        ("Archive", WORKSPACE / "Archive.lean"),
+        ("Counterexamples", WORKSPACE / "Counterexamples.lean"),
+    ]
+    # Use lake-manifest's authoritative package set, not raw .lake/packages/
+    # iterdir (which includes stale dirs like `lean4-cli`).
+    active_packages = package_dirs()
+    for pkg_name, child in sorted(active_packages.items()):
+        if pkg_name == "mathlib":
+            continue
+        # Prefer a deep file (a typical lib module) over top-level test
+        # entrypoints — some packages have test "root" files that
+        # `lake setup-file` doesn't accept.
+        sample = None
+        for f in sorted(child.rglob("*.lean")):
+            rel_parts = f.relative_to(child).parts
+            if ".lake" in rel_parts or rel_parts[-1] == "lakefile.lean":
+                continue
+            if len(rel_parts) < 2:
+                # Top-level files like `LeanSearchClientTest.lean` aren't
+                # always sample-able; prefer a nested file when available.
+                continue
+            sample = f
+            break
+        if sample is None:
+            # Fall back to a top-level non-lakefile if no nested file exists.
+            for f in sorted(child.rglob("*.lean")):
+                rel_parts = f.relative_to(child).parts
+                if ".lake" in rel_parts or rel_parts[-1] == "lakefile.lean":
+                    continue
+                sample = f
+                break
+        if sample is not None:
+            samples.append((pkg_name, sample))
+    for label, src in samples:
+        if not src.exists():
+            print(f"  - {label:20s} SKIP (no sample file at {src})")
+            continue
+        try:
+            setup = lake_setup_file(src)
+        except subprocess.CalledProcessError:
+            print(f"  - {label:20s} ERROR running setup-file on {src}")
+            failed = True
+            continue
+        plugins = setup.get("plugins", [])
+        dynlibs = setup.get("dynlibs", [])
+        ok = not plugins and not dynlibs
+        marker = "OK" if ok else "FAIL"
+        print(f"  - {label:20s} {marker}  plugins={len(plugins)} dynlibs={len(dynlibs)}")
+        if not ok:
+            failed = True
+
+    print()
+    if failed:
+        print("PREFLIGHT FAILED — workspace is NOT in regime 1. Static graph "
+              "extraction is unsound; fall back to instrumentation (§9).")
+        return 1
+    print("PREFLIGHT OK — static graph extraction is sound.")
+    return 0
 
 
 # ---------------------------------------------------------------------------
@@ -1024,8 +1671,9 @@ def validate_outputs(target: str, *, full: bool = False) -> int:
     """
     packages = package_dirs()
     registry = build_module_registry(packages)
-    if target not in registry:
-        raise KeyError(f"target {target!r} not in registry")
+    is_exe = target in LEAN_EXES
+    if not is_exe and target not in registry:
+        raise KeyError(f"target {target!r} not in registry or LEAN_EXES")
 
     graph_path = Path(tempfile.mkstemp(prefix="build_graph_", suffix=".json")[1])
     try:
@@ -1036,12 +1684,21 @@ def validate_outputs(target: str, *, full: bool = False) -> int:
             ("LAKE_HOME", ws["LAKE_HOME"]),
             ("WORKSPACE", ws["WORKSPACE"]),
             ("TOOLCHAIN", ws["TOOLCHAIN"]),
+            ("TOOLCHAIN_ROOT", ws.get("TOOLCHAIN_ROOT", str(Path(ws["TOOLCHAIN"]).parent))),
         ]
 
-        nodes_to_check: list[dict] = (
-            graph["nodes"] if full
-            else [n for n in graph["nodes"] if n["module"] == target]
-        )
+        if full:
+            nodes_to_check = list(graph["nodes"])
+        elif is_exe:
+            exe_cfg = LEAN_EXES[target]
+            nodes_to_check = [
+                n for n in graph["nodes"]
+                if (n.get("kind") == "cc_link" and n.get("exe_name") == target)
+                or (n.get("kind") == "cc_compile" and n.get("module") == exe_cfg.root)
+                or (n.get("kind") == "lean_module" and n.get("module") == exe_cfg.root)
+            ]
+        else:
+            nodes_to_check = [n for n in graph["nodes"] if n.get("module") == target]
 
         outputs_abs: list[Path] = []
         for n in nodes_to_check:
@@ -1081,7 +1738,13 @@ def validate_outputs(target: str, *, full: bool = False) -> int:
         # Run.
         run_graph_path = Path(__file__).parent / "run_graph.py"
         run_args = [sys.executable, str(run_graph_path), str(graph_path)]
-        if not full:
+        if full:
+            pass  # run all nodes
+        elif is_exe:
+            # exe single-target: only the lean_module + cc_compile + cc_link
+            # for the exe itself need rebuilding; transitive deps are golden.
+            run_args.append("--missing")
+        else:
             run_args.append("--only")
         res = subprocess.run(run_args, capture_output=True, text=True)
         if res.returncode != 0:
@@ -1227,6 +1890,12 @@ def main(argv: list[str] | None = None) -> int:
     p_emit_graph.add_argument("-o", "--output", type=Path, default=None,
                               help="output path (default: stdout)")
 
+    sub.add_parser(
+        "preflight",
+        help="run the §10.11 health check; exit non-zero if the workspace "
+             "isn't in regime 1",
+    )
+
     p_val_out = sub.add_parser(
         "validate-outputs",
         help="end-to-end byte-equivalence check: delete the target's outputs, "
@@ -1276,6 +1945,9 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.cmd == "validate-outputs":
         return validate_outputs(args.target, full=args.full)
+
+    if args.cmd == "preflight":
+        return preflight()
 
     parser.error(f"unknown subcommand: {args.cmd}")
     return 2
