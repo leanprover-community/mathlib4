@@ -27,16 +27,6 @@ variable {M : Type*} [TopologicalSpace M]
   [ProperlyDiscontinuousSMul G M] [ContinuousConstSMul G M] [IsCancelSMul G M]
   [T2Space M] [LocallyCompactSpace M]
 
-namespace MulAction
-
-/-- If a group `G` acts properly discontinuously on a topological space `M`, the quotient map
-`Quotient.mk _ : M → M⧸G` is a covering map. -/
-lemma isCoveringMap_quotientMk_of_properlyDiscontinuousSMul :
-    IsCoveringMap (Quotient.mk _ : M → orbitRel.Quotient G M) :=
-  isQuotientCoveringMap_quotientMk_of_properlyDiscontinuousSMul.isCoveringMap
-
-end MulAction
-
 noncomputable section
 
 namespace QuotientMk

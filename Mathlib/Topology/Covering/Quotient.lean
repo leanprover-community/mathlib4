@@ -231,6 +231,14 @@ namespace IsQuotientCoveringMap
 
 end IsQuotientCoveringMap
 
+/-- If a group `G` acts properly discontinuously on a locally compact Hausdorff space `E`, the
+quotient map `Quotient.mk _ : E → E⧸G` is a covering map. -/
+@[to_additive] lemma isCoveringMap_quotientMk_of_properlyDiscontinuousSMul
+    {G : Type*} [Group G] [MulAction G E] [ProperlyDiscontinuousSMul G E] [ContinuousConstSMul G E]
+    [IsCancelSMul G E] [T2Space E] [LocallyCompactSpace E]
+    : IsCoveringMap (Quotient.mk _ : E → MulAction.orbitRel.Quotient G E) :=
+  isQuotientCoveringMap_quotientMk_of_properlyDiscontinuousSMul.isCoveringMap
+
 @[to_additive] theorem isQuotientCoveringMap_iff_isCoveringMap_and :
     IsQuotientCoveringMap f G ↔ IsCoveringMap f ∧ f.Surjective ∧ ContinuousConstSMul G E ∧
       IsCancelSMul G E ∧ ∀ {e₁ e₂}, f e₁ = f e₂ ↔ e₁ ∈ MulAction.orbit G e₂ where
