@@ -466,7 +466,7 @@ theorem norm_eq_zero_iff' {x : mixedSpace K} (hx : x ∈ Set.range (mixedEmbeddi
 variable (K) in
 @[fun_prop]
 protected theorem continuous_norm : Continuous (mixedEmbedding.norm : (mixedSpace K) → ℝ) := by
-  refine continuous_finset_prod Finset.univ fun _ _ ↦ ?_
+  refine continuous_finsetProd Finset.univ fun _ _ ↦ ?_
   simp_rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, dite_pow]
   split_ifs <;> fun_prop
 
