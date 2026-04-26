@@ -62,8 +62,6 @@ lemma union_symmDiff_union_subset : (s ∪ t) ∆ (u ∪ v) ⊆ s ∆ u ∪ t �
 
 lemma iUnion_symmDiff_iUnion_subset {f g : ι → Set α} :
     (⋃ n, f n) ∆ ⋃ n, g n ⊆ ⋃ n, f n ∆ g n := by
-  intro
-  simp_all [symmDiff]
-  grind
+  intro; simp [symmDiff]; grind
 
 end Set
