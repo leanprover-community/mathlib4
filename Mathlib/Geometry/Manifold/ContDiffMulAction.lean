@@ -197,6 +197,15 @@ instance Prod.contDiffSMul [SMul M X] [SMul M Y] [ContDiffSMul 𝕜 M X n] [Cont
     · exact ContDiff.contdiff_smul contDiff_fst (ContDiff.snd' contDiff_fst)
     · exact ContDiff.contdiff_smul contDiff_fst (ContDiff.snd' contDiff_snd)
 
+instance {ι : Type*} [Fintype ι] {γ : ι → Type*} [∀ i, SMul M (γ i)]
+    [∀ i, NormedAddCommGroup (γ i)]
+    [∀ i, NormedSpace 𝕜 (γ i)] [∀ i, ContDiffSMul 𝕜 M (γ i) n] :
+    ContDiffSMul 𝕜 M (∀ i, γ i) n :=
+  ⟨contDiff_pi.mpr fun i => by
+    simp only [Pi.smul_apply]
+    have hi : ContDiff 𝕜 n (fun x : M × (∀ i, γ i) => x.2 i) :=
+      (ContinuousLinearMap.proj (R := 𝕜) (ι := ι) (φ := γ) i).contDiff.comp contDiff_snd
+    exact contDiff_fst.contdiff_smul hi⟩
 
 end Main
 
