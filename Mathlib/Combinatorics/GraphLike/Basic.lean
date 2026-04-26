@@ -64,6 +64,7 @@ lemma Adj.right_mem (h : Adj G v w) : w ∈ V(G) := by
   obtain ⟨d, hd, rfl, rfl⟩ := h
   exact snd_mem_of_darts hd
 
+/-- Convert a dart to a pair of vertices. -/
 @[expose] def toProd (d : D(G)) : V × V := (fst G d.val, snd G d.val)
 
 /-- The step from `u` to `v` is a dart from `u` to `v`. -/
@@ -146,7 +147,8 @@ lemma dartStep_val (d : darts G) : (dartStep d).val = d.val := by simp [dartStep
 /-- Two darts are said to be adjacent if they could be consecutive
 darts in a walk -- that is, the first dart's second vertex is equal to
 the second dart's first vertex. -/
-@[expose] def DartAdj (d d' : darts G) : Prop := (snd G d.val : V) = (fst G d'.val : V)
+def DartAdj (d d' : darts G) : Prop := (snd G d.val : V) = (fst G d'.val : V)
+
 
 section SimpleGraphLike
 

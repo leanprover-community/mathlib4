@@ -37,6 +37,7 @@ public section
 
 /-- `SymmGraphLike` extends `GraphLike` for graph-like structures where darts are symmetric. -/
 class SymmGraphLike (V D : outParam Type*) {Gr : Type*} (G : Gr) extends GraphLike V D G where
+  /-- The inverse of a dart. -/
   symm : D → D
   symm_invol : ∀ ⦃d⦄, symm (symm d) = d
   symm_ne : ∀ ⦃d⦄, d ∈ darts → symm d ≠ d
@@ -132,6 +133,8 @@ that is symmetric in the sense that `d` and `d.swap` are both in the set of dart
 open GraphLike
 variable {d : V × V} {Gr : Type _ → Type*} {G : Gr V}
 
+/-- `SimpleSymmGraphLike` extends `SimpleGraphLike` for graph-like structures where darts are
+  paired with their inverses. -/
 class SimpleSymmGraphLike (G : Gr V) extends SimpleGraphLike G where
   loopless : ∀ ⦃d⦄, d ∈ darts → d.fst ≠ d.snd
   symm_mem_darts_iff : ∀ ⦃d⦄, d.swap ∈ darts ↔ d ∈ darts
