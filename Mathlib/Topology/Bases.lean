@@ -308,7 +308,8 @@ theorem IsTopologicalBasis.continuousOn_iff [TopologicalSpace β]
   mp h := by simpa using h.sUnion_eq.symm
   mpr h := ⟨by simp, by simp [Set.univ_eq_empty_iff.2], Subsingleton.elim ..⟩
 
-@[simp] lemma isTopologicalBasis_singleton_empty : IsTopologicalBasis {(∅ : Set α)} ↔ IsEmpty α where
+@[simp]
+lemma isTopologicalBasis_singleton_empty : IsTopologicalBasis {(∅ : Set α)} ↔ IsEmpty α where
   mp h := by simpa using h.diff_empty
   mpr h := ⟨by simp, by simp [Set.univ_eq_empty_iff.2], Subsingleton.elim ..⟩
 
