@@ -191,9 +191,7 @@ lemma mulHeight_eq_max_abs_of_gcd_eq_one (hx : Finset.univ.gcd x = 1) :
     rw [Function.comp_eq_zero_iff x intCast_injective Rat.intCast_zero] at hx
     rw [hx, Finset.gcd_eq_zero_iff.mpr (by simp)]
     exact zero_ne_one
-  have : ⨆ i, (↑|x i| : ℝ) = ↑(⨆ i, |x i|) :=
-    (Monotone.map_ciSup_of_continuousAt continuous_of_discreteTopology.continuousAt
-      (Int.cast_mono (R := ℝ)) (Finite.bddAbove_range _)).symm
+  have : ⨆ i, (↑|x i| : ℝ) = ↑(⨆ i, |x i|) := (Finite.map_iSup_of_monotone _ Int.cast_mono).symm
   simp_rw [NumberField.mulHeight_eq hx₀, Function.comp_apply, infinitePlace_apply, ← Int.cast_abs]
   simp [-Int.cast_abs,
     finprod_eq_one_of_forall_eq_one (iSup_finitePlace_apply_eq_one_of_gcd_eq_one · hx), this]
