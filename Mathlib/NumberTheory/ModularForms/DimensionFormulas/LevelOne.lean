@@ -44,8 +44,8 @@ namespace CuspForm
 weight `k`. Built directly as a `CuspForm` (no `IsCuspForm` intermediary). -/
 def ofMulDiscriminant (f : ModularForm 𝒮ℒ (k - 12)) : CuspForm 𝒮ℒ k := by
   let Δ' : ModularForm 𝒮ℒ 12 := discriminantCuspForm
-  apply ModularForm.toCuspForm (ModularForm.mcast (by ring) (f.mul Δ'))
-  rw [show (ModularForm.mcast _ (f.mul Δ')) = (⇑f : ℍ → ℂ) * Δ' from rfl,
+  apply toCuspForm (mcast (by ring) (f.mul Δ'))
+  rw [show (mcast _ (f.mul Δ')) = (⇑f : ℍ → ℂ) * Δ' from rfl,
     qExpansion_mul_coeff_zero
       (ModularFormClass.analyticAt_cuspFunction_zero f one_pos
         one_mem_strictPeriods_SL).continuousAt
