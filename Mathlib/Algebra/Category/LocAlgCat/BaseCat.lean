@@ -185,12 +185,8 @@ theorem induction_on_isSmallExtension (hf : Surjective f.hom.toAlgHom)
       ((isArtinianRing_iff_isNilpotent_maximalIdeal A).mp inferInstance) hI)
     have x_in : x ∈ I := (mem_inf.mp hx).right
     replace hx : ∀ y ∈ maximalIdeal A, x * y = 0 := mem_annihilator.mp (mem_inf.mp hx).left
-    have : Nontrivial (A ⧸ Ideal.span {x}) := by
-      rw [Ideal.Quotient.nontrivial_iff]
-      refine Ideal.span_singleton_ne_top (le_maximalIdeal ?_ x_in)
-      rw [Ideal.ne_top_iff_exists_maximal]
-      exact ⟨maximalIdeal A, maximalIdeal.isMaximal A, le_maximalIdeal
-        (RingHom.ker_ne_top f.hom.toAlgHom)⟩
+    have : Nontrivial (A ⧸ Ideal.span {x}) := Ideal.Quotient.nontrivial_iff.mpr <|
+      Ideal.span_singleton_ne_top <| le_maximalIdeal (RingHom.ker_ne_top _) x_in
     have : IsLocalRing (A ⧸ Ideal.span {x}) := .of_surjective' _ Ideal.Quotient.mk_surjective
     let C := A.ofQuot (Ideal.span {x})
     let g : A ⟶ C := A.toOfQuot (Ideal.span {x})
@@ -275,18 +271,21 @@ lemma pullback_comm_sq (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.hom.toAlgH
 @[stacks 06GH "(2)"]
 instance pullbackFst_isSmallExtension (f : A ⟶ C) (g : B ⟶ C) [IsSmallExtension g] :
     IsSmallExtension (pullbackFst f g (IsSmallExtension.surjective g)) := by
+  have : IsLocalRing ↥(f.hom.toAlgHom.pullback g.hom.toAlgHom) :=
+    RingHom.isLocalRing_pullback f.hom.toAlgHom.toRingHom g.hom.toAlgHom.toRingHom
+      ⟨(IsSmallExtension.surjective g).isLocalHom.map_nonunit⟩
   obtain ⟨x, x_span, hx⟩ := ((isSmallExtenstion_iff g).mp ‹_›).right
+  have g_apply : g.hom.toAlgHom x = 0 := by
+    rw [← RingHom.mem_ker, ← x_span]
+    exact Ideal.mem_span_singleton_self x
   rw [isSmallExtenstion_iff]
   refine ⟨(f.hom.toAlgHom.surjective_pullbackFst_of_surjective g.hom.toAlgHom
     (IsSmallExtension.surjective g)), ?_⟩
-  have : (0, x) ∈ f.hom.toAlgHom.pullback g.hom.toAlgHom := by
-    suffices 0 = g.hom.toAlgHom x by simpa
-    rw [eq_comm, ← RingHom.mem_ker, ← x_span]
-    exact Ideal.mem_span_singleton_self x
-  refine ⟨⟨(0, x), this⟩, ?_, fun ⟨⟨a, b⟩, hab⟩ h ↦ ?_⟩
-  · change (Ideal.span {⟨(0, x), this⟩} : Ideal (f.hom.toAlgHom.pullback g.hom.toAlgHom)) =
-      RingHom.ker (AlgHom.pullbackFst ..)
-    ext ⟨⟨u, v⟩, h⟩
+  change ∃ x : f.hom.toAlgHom.pullback g.hom.toAlgHom, Ideal.span {x} =
+    RingHom.ker (AlgHom.pullbackFst ..) ∧
+      ∀ y ∈ maximalIdeal (f.hom.toAlgHom.pullback g.hom.toAlgHom), x * y = 0
+  refine ⟨⟨(0, x), by simpa using g_apply.symm⟩, ?_, fun ⟨⟨a, b⟩, hab⟩ h ↦ ?_⟩
+  · ext ⟨⟨u, v⟩, h⟩
     suffices u = 0 → ∃ x_1 x_2, f.hom.toAlgHom x_1 = g.hom.toAlgHom x_2 ∧ v = x_2 * x by
       simpa [Ideal.mem_span_singleton', eq_comm, and_left_comm]
     intro u_eq
@@ -296,17 +295,12 @@ instance pullbackFst_isSmallExtension (f : A ⟶ C) (g : B ⟶ C) [IsSmallExtens
     rcases LocAlgCat.exists_mem_maximalIdeal_toAlgHom_apply_add_eq g.hom f.hom
       w (IsSmallExtension.surjective g) with ⟨z, m, m_in, hm⟩
     exact ⟨z, w + m, hm.symm, by rw [add_mul, hw, mul_comm, hx m m_in, add_zero]⟩
-  · rw [mem_maximalIdeal, mem_nonunits_iff] at h
-    change ¬ @IsUnit (f.hom.toAlgHom.pullback g.hom.toAlgHom) _ _ at h
-    rw [AlgHom.isUnit_pullback_mk_iff, not_and] at h
-    change (⟨(0, x), this⟩ * ⟨(a, b), hab⟩ : f.hom.toAlgHom.pullback g.hom.toAlgHom) = 0
-    suffices ¬ IsUnit b by simpa [← Subtype.val_inj] using hx b this
-    intro hb
+  · suffices x * b = 0 by simpa [← Subtype.val_inj]
+    simp only [mem_maximalIdeal, mem_nonunits_iff, AlgHom.isUnit_pullback_mk_iff, not_and] at h
     simp only [AlgHom.mem_equalizer, AlgHom.coe_comp, Function.comp_apply, AlgHom.fst_apply,
       AlgHom.snd_apply] at hab
-    have : IsUnit ((LocAlgCat.Hom.toAlgHom f.hom) a) := hab ▸ IsUnit.map g.hom.toAlgHom hb
-    apply f.hom.isLocalHom_toAlgHom.map_nonunit at this
-    exact (iff_false_intro (h this)).mp hb
+    apply hx; intro hb; revert h
+    simpa [hb] using f.hom.isLocalHom_toAlgHom.map_nonunit a (hab ▸ IsUnit.map g.hom.toAlgHom hb)
 
 /-- When `Λ` is a local ring and `k / ResidueField Λ` is a finite separable field extension,
 `ofPullbackOfIsSeparable` is the object in `BaseCat` obtained from the pullback of
@@ -324,8 +318,10 @@ theorem isEssSurj_iff_isEssSurj_mapOfQuot (f : A ⟶ B) {I : Ideal A} {J : Ideal
     (hJ : J ≤ maximalIdeal B ^ 2) (hf : I ≤ J.comap f.hom.toAlgHom) :
     IsEssSurj f ↔ IsEssSurj (mapOfQuot f hf) := by
   refine ⟨fun h ↦ ⟨?_, fun {C} g hg ↦ ?_⟩, fun h ↦ ⟨?_, fun {C} g hg ↦ ?_⟩⟩
-  · exact Surjective.of_comp (g := (A.toOfQuot I).hom.toAlgHom) fun r ↦
-      Surjective.comp (B.obj.surjective_toAlgHom_toOfQuot (I := J)) h.surjective r
+  · apply Surjective.of_comp (g := (A.toOfQuot I).hom.toAlgHom)
+    rw [← AlgHom.coe_comp, ← LocAlgCat.toAlgHom_comp, ← ObjectProperty.FullSubcategory.comp_hom,
+      toOfQuot_comp_mapOfQuot]
+    simpa using Surjective.comp (B.obj.surjective_toAlgHom_toOfQuot (I := J)) h.surjective
   · let C' := ofPullback g (A.toOfQuot I) Ideal.Quotient.mk_surjective
     let p : C' ⟶ C := pullbackFst g (A.toOfQuot I) Ideal.Quotient.mk_surjective
     apply Surjective.of_comp (g := p.hom.toAlgHom)

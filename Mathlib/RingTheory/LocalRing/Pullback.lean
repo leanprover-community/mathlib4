@@ -95,6 +95,17 @@ theorem surjective_pullbackSnd_of_surjective (f : R →+* T) (g : S →+* T)
     (h : Function.Surjective f) : Function.Surjective (f.pullbackSnd g) :=
   fun s ↦ by simpa [eq_comm] using h (g s)
 
+theorem map_pullbackSnd_ker_pullbackFst_eq (f : R →+* T) (g : S →+* T) :
+    Ideal.map (f.pullbackSnd g) (RingHom.ker (f.pullbackFst g)) = RingHom.ker g := by
+  apply le_antisymm
+  · rw [Ideal.map_le_iff_le_comap]
+    rintro ⟨⟨_, _⟩, h⟩
+    simp at h ⊢; grind
+  · intro s hs
+    rw [RingHom.mem_ker] at hs
+    exact Ideal.mem_map_of_mem (f.pullbackSnd g) (x := ⟨(0, s), by simpa using hs.symm⟩)
+      (I := RingHom.ker (f.pullbackFst g)) (by simp)
+
 theorem isLocalRing_pullback [IsLocalRing R] (f : R →+* T) (g : S →+* T) (hg : IsLocalHom g) :
     IsLocalRing (f.pullback g) where
   isUnit_or_isUnit_of_add_one {a b} h := by
