@@ -30,7 +30,7 @@ This file proves the Bourbaki-Witt Theorem.
 The proof used can be found in [serge_lang_algebra]
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*}
 

@@ -184,6 +184,14 @@ theorem isPrincipal_add_iff_add_self_lt : IsPrincipal (· + ·) a ↔ ∀ b < a,
   isPrincipal_iff_of_monotone
     (fun x _ _ h ↦ add_le_add_right h x) (fun x _ _ h ↦ add_le_add_left h x)
 
+theorem IsPrincipal.mul_natCast_lt (ho : IsPrincipal (· + ·) o) (ha : a < o) (n : ℕ) :
+    a * n < o := by
+  induction n with
+  | zero => simpa using ha.pos
+  | succ n h =>
+    rw [Nat.cast_add_one, mul_add_one]
+    exact ho h ha
+
 theorem isPrincipal_add_one : IsPrincipal (· + ·) 1 := by simp
 
 @[deprecated (since := "2026-03-17")]
@@ -287,26 +295,13 @@ theorem add_of_lt_omega0_opow_log (hlt : a < ω ^ log ω o) : a + o = o := by
 /-- The main characterization theorem for additive principal ordinals. -/
 theorem isPrincipal_add_iff_zero_or_omega0_opow :
     IsPrincipal (· + ·) o ↔ o = 0 ∨ o ∈ Set.range (ω ^ · : Ordinal → Ordinal) := by
-  rcases eq_or_ne o 0 with (rfl | ho)
-  · simp only [isPrincipal_zero, Or.inl]
-  · rw [isPrincipal_add_iff_add_left_eq_self]
-    simp only [ho, false_or]
-    refine
-      ⟨fun H => ⟨_, ((lt_or_eq_of_le (opow_log_le_self _ ho)).resolve_left fun h => ?_)⟩,
-        fun ⟨b, e⟩ => e.symm ▸ fun a => add_omega0_opow⟩
-    have := H _ h
-    have := lt_opow_succ_log_self one_lt_omega0 o
-    rw [opow_succ, lt_mul_iff_of_isSuccLimit isSuccLimit_omega0] at this
-    rcases this with ⟨a, ao, h'⟩
-    rcases lt_omega0.1 ao with ⟨n, rfl⟩
-    clear ao
-    revert h'
-    apply not_lt_of_ge
-    suffices e : ω ^ log ω o * n + o = o by
-      simpa only [e] using le_self_add (a := ω ^ log ω o * ↑n) (b := o)
-    induction n with
-    | zero => simp [Nat.cast_zero, mul_zero, zero_add]
-    | succ n IH => simp only [Nat.cast_succ, mul_add_one, add_assoc, this, IH]
+  constructor
+  · rw [or_iff_not_imp_left]
+    refine fun H ho ↦ ⟨log ω o, (opow_log_le_self ω ho).eq_of_not_lt ?_⟩
+    obtain ⟨n, hn⟩ := lt_omega0_opow_succ.1 (lt_opow_succ_log_self one_lt_omega0 o)
+    exact fun h ↦ hn.not_gt <| H.mul_natCast_lt h n
+  · rintro (rfl | ⟨a, rfl⟩)
+    exacts [isPrincipal_zero, isPrincipal_add_omega0_opow a]
 
 @[deprecated (since := "2026-03-17")]
 alias principal_add_iff_zero_or_omega0_opow := isPrincipal_add_iff_zero_or_omega0_opow

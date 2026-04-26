@@ -57,21 +57,48 @@ private def newTrie (e : LazyEntry × α) : TreeM α TrieIndex := do
 private def addLazyEntryToTrie (i : TrieIndex) (e : LazyEntry × α) : TreeM α Unit :=
   modify (·.modify i fun node => { node with pending := node.pending.push e })
 
+/-- Process a specified range of pending entries.
+returns the computed values and pending nodes. -/
+private def processPending (pending : Array (LazyEntry × α)) (start stop : Nat) :
+    MetaM (Array α × Array (Key × LazyEntry × α)) := do
+  Core.checkInterrupted
+  let mut values := #[]
+  let mut newEntries := #[]
+  for (entry, value) in pending[start...stop] do
+    match ← evalLazyEntry entry true with
+    | some entries =>
+      for (key, entry) in entries do
+        newEntries := newEntries.push (key, entry, value)
+    | none =>
+      values := values.push value
+  return (values, newEntries)
+
 /--
 Evaluate the `Trie α` at index `trie`,
 replacing it with the evaluated value,
 and returning the `Trie α`.
+
+Performance note: In the `apply` search discrimination tree, after root node `⟨Eq, 3⟩`,
+there are about `150,000` entries in the `pending` array.
+To deal with this smoothly, we parallellize the computation into chunks of `5000` entries.
 -/
 private def evalNode (trie : TrieIndex) : TreeM α (Trie α) := do
   let node := (← get)[trie]!
   if node.pending.isEmpty then
     return node
+  let numTasks := node.pending.size / 5000 + 1
+  Core.checkInterrupted
+  let tasks ← numTasks.foldM (init := #[]) fun i _ tasks ↦ do
+    return tasks.push <| ← EIO.asTask <|
+      Core.withCurrHeartbeats (processPending node.pending (i * 5000) ((i + 1) * 5000))
+        |>.run' (← readThe _) (← getThe _)
+        |>.run' (← readThe _) (← getThe _)
   setTrie trie default -- reduce the reference count to `node` to be 1
-  let mut { values, star, labelledStars, children, pending } := node
-  for (entry, value) in pending do
-    let some newEntries ← evalLazyEntry entry true | values := values.push value
+  let mut { values, star, labelledStars, children, .. } := node
+  for task in tasks do
+    let (values', newEntries) ← MonadExcept.ofExcept task.get
+    values := values ++ values'
     for (key, entry) in newEntries do
-      let entry := (entry, value)
       match key with
       | .labelledStar label =>
         if let some trie := labelledStars[label]? then
