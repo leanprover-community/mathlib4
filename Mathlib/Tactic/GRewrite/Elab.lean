@@ -62,8 +62,8 @@ def finishElabGRewrite (r : GRewriteResult) : MetaM GRewriteResult := do
 /-- Apply the `grewrite` tactic to the current goal. -/
 def grewriteTarget (stx : Syntax) (symm : Bool) (config : GRewrite.Config) : TacticM Unit := do
   let goal ← getMainGoal
-  let r ← Term.withSynthesize <| withMainContext do
-    elabGRewrite goal (← getMainTarget) stx symm (forwardImp := false) (config := config)
+  let r ← Term.withSynthesize <| goal.withContext do
+    elabGRewrite goal (← goal.getType) stx (forwardImp := false) (symm := symm) (config := config)
   let r ← finishElabGRewrite r
   let mvarNew ← mkFreshExprSyntheticOpaqueMVar r.eNew (← goal.getTag)
   goal.assign (mkApp r.impProof mvarNew)
@@ -76,13 +76,11 @@ def grewriteLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId) (config : G
   -- See issues https://github.com/leanprover-community/mathlib4/issues/2711 and https://github.com/leanprover-community/mathlib4/issues/2727.
   let goal ← getMainGoal
   let r ← Term.withSynthesize <| withMainContext do
-    let localDecl ← fvarId.getDecl
-    elabGRewrite (← getMainGoal) localDecl.type stx symm (forwardImp := true) (config := config)
+    elabGRewrite (← getMainGoal) (← fvarId.getType) stx symm (forwardImp := true) (config := config)
   let r ← finishElabGRewrite r
   let proof := r.impProof.app (.fvar fvarId)
   let { mvarId, .. } ← goal.replace fvarId proof r.eNew
   replaceMainGoal (mvarId :: r.mvarIds)
-
 
 /-- Function elaborating `GRewrite.Config`. -/
 declare_config_elab elabGRewriteConfig GRewrite.Config
