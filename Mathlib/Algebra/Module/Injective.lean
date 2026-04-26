@@ -59,7 +59,7 @@ map to `Q`, i.e. in the following diagram, if `f` is injective then there is an 
   ```
 -/
 @[mk_iff] class Module.Injective : Prop where
-  out : ∀ ⦃X Y : Type v⦄ [AddCommGroup X] [AddCommGroup Y] [Module R X] [Module R Y]
+  out : ∀ ⦃X Y : Type u⦄ [AddCommGroup X] [AddCommGroup Y] [Module R X] [Module R Y]
     (f : X →ₗ[R] Y) (_ : Function.Injective f) (g : X →ₗ[R] Q),
     ∃ h : Y →ₗ[R] Q, ∀ x, h (f x) = g x
 
@@ -402,15 +402,12 @@ protected theorem injective (h : Module.Baer R Q) : Module.Injective R Q where
     obtain ⟨h, H⟩ := Module.Baer.extension_property h i hi f
     exact ⟨h, DFunLike.congr_fun H⟩
 
-protected theorem of_injective [Small.{v} R] (inj : Module.Injective R Q) : Module.Baer R Q := by
+protected theorem of_injective (inj : Module.Injective R Q) : Module.Baer R Q := by
   intro I g
-  let eI := Shrink.linearEquiv R I
-  let eR := Shrink.linearEquiv R R
-  obtain ⟨g', hg'⟩ := Module.Injective.out (eR.symm.toLinearMap ∘ₗ I.subtype ∘ₗ eI.toLinearMap)
-    (eR.symm.injective.comp <| Subtype.val_injective.comp eI.injective) (g ∘ₗ eI.toLinearMap)
-  exact ⟨g' ∘ₗ eR.symm.toLinearMap, fun x mx ↦ by simpa [eI, eR] using hg' (equivShrink I ⟨x, mx⟩)⟩
+  obtain ⟨g', hg'⟩ := Module.Injective.out I.subtype Subtype.val_injective g
+  exact ⟨g', fun x mx ↦ hg' ⟨x, mx⟩⟩
 
-protected theorem iff_injective [Small.{v} R] : Module.Baer R Q ↔ Module.Injective R Q :=
+protected theorem iff_injective : Module.Baer R Q ↔ Module.Injective R Q :=
   ⟨Module.Baer.injective, Module.Baer.of_injective⟩
 
 end Module.Baer
@@ -419,7 +416,7 @@ section ULift
 
 variable {M : Type v} [AddCommGroup M] [Module R M]
 
-lemma Module.ulift_injective_of_injective [Small.{v} R]
+lemma Module.ulift_injective_of_injective
     (inj : Module.Injective R M) :
     Module.Injective R (ULift.{v'} M) := Module.Baer.injective fun I g ↦
   have ⟨g', hg'⟩ := Module.Baer.iff_injective.mpr inj I (ULift.moduleEquiv.toLinearMap ∘ₗ g)
@@ -428,15 +425,11 @@ lemma Module.ulift_injective_of_injective [Small.{v} R]
 lemma Module.injective_of_ulift_injective
     (inj : Module.Injective R (ULift.{v'} M)) :
     Module.Injective R M where
-  out X Y _ _ _ _ f hf g :=
-    let eX := ULift.moduleEquiv.{_, _, v'} (R := R) (M := X)
-    have ⟨g', hg'⟩ := inj.out (ULift.moduleEquiv.{_, _, v'}.symm.toLinearMap ∘ₗ f ∘ₗ eX.toLinearMap)
-      (by exact ULift.moduleEquiv.symm.injective.comp <| hf.comp eX.injective)
-      (ULift.moduleEquiv.symm.toLinearMap ∘ₗ g ∘ₗ eX.toLinearMap)
-    ⟨ULift.moduleEquiv.toLinearMap ∘ₗ g' ∘ₗ ULift.moduleEquiv.symm.toLinearMap,
-      fun x ↦ by exact congr(ULift.down $(hg' ⟨x⟩))⟩
+  out _ _ _ _ _ _ f hf g :=
+    have ⟨g', hg'⟩ := inj.out f hf (ULift.moduleEquiv.symm.toLinearMap ∘ₗ g)
+    ⟨ULift.moduleEquiv.toLinearMap ∘ₗ g', fun x ↦ congr(ULift.down $(hg' x))⟩
 
-variable (M) [Small.{v} R]
+variable (M)
 
 lemma Module.injective_iff_ulift_injective :
     Module.Injective R M ↔ Module.Injective R (ULift.{v'} M) :=
@@ -449,7 +442,7 @@ section lifting_property
 
 universe uR uM uP uP'
 
-variable (R : Type uR) [Ring R] [Small.{uM} R]
+variable (R : Type uR) [Ring R]
 variable (M : Type uM) [AddCommGroup M] [Module R M] [inj : Module.Injective R M]
 variable (P : Type uP) [AddCommGroup P] [Module R P]
 variable (P' : Type uP') [AddCommGroup P'] [Module R P']
@@ -464,7 +457,7 @@ end lifting_property
 
 universe w in
 instance Module.Injective.pi
-    (R : Type u) [Ring R] {ι : Type w} (M : ι → Type v) [Small.{v} R]
+    (R : Type u) [Ring R] {ι : Type w} (M : ι → Type v)
     [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
     [∀ i, Module.Injective R (M i)] :
     Module.Injective R (∀ i, M i) :=
@@ -476,7 +469,7 @@ instance Module.Injective.pi
 
 universe u' in
 attribute [local instance] RingHomInvPair.of_ringEquiv in
-theorem Module.Injective.of_ringEquiv {R : Type u} [Ring R] [Small.{v} R] {S : Type u'} [Ring S]
+theorem Module.Injective.of_ringEquiv {R : Type u} [Ring R] {S : Type u'} [Ring S]
     {M : Type v} {N : Type v'} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module S N]
     (e₁ : R ≃+* S) (e₂ : M ≃ₛₗ[RingHomClass.toRingHom e₁] N)
     [inj : Module.Injective R M] : Module.Injective S N := by
