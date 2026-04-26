@@ -172,12 +172,12 @@ end AlgClosed
 
 open TensorProduct
 
-local notation "K̄" => AlgebraicClosure K
-local notation "L̄" => K̄ ⊗[K] L
-local notation "M̄" => K̄ ⊗[K] M
+local notation "Kbar" => AlgebraicClosure K
+local notation "Lbar" => Kbar ⊗[K] L
+local notation "Mbar" => Kbar ⊗[K] M
 
 omit [CharZero K] in
-lemma traceForm_baseChange_eq_zero (h : traceForm K L M = 0) : traceForm K̄ L̄ M̄ = 0 := by
+lemma traceForm_baseChange_eq_zero (h : traceForm K L M = 0) : traceForm Kbar Lbar Mbar = 0 := by
   rw [← LieModule.traceForm_baseChange, h]
   refine LinearMap.ext fun u ↦ TensorProduct.induction_on u
     (by simp) ?_ (fun u₁ u₂ hu₁ hu₂ ↦ by simp [hu₁, hu₂])
@@ -190,21 +190,21 @@ by scalar extension to the algebraically closed case, then closes by
 `isNilpotent_derivedSeries_of_traceForm_eq_zero_aux`. -/
 public theorem isNilpotent_derivedSeries_of_traceForm_eq_zero (h : traceForm K L M = 0) :
     IsNilpotent (derivedSeries K L 1) M := by
-  haveI : FiniteDimensional K̄ M̄ := Module.Finite.base_change K K̄ M
-  suffices nilp_ext : IsNilpotent (derivedSeries K̄ L̄ 1) M̄ by
+  haveI : FiniteDimensional Kbar Mbar := Module.Finite.base_change K Kbar M
+  suffices nilp_ext : IsNilpotent (derivedSeries Kbar Lbar 1) Mbar by
     rw [LieModule.isNilpotent_iff_forall' (R := K)]
-    rw [LieModule.isNilpotent_iff_forall' (R := K̄)] at nilp_ext
+    rw [LieModule.isNilpotent_iff_forall' (R := Kbar)] at nilp_ext
     intro ⟨x, hx⟩
     change _root_.IsNilpotent (toEnd K L M x)
-    have hx_ext : 1 ⊗ₜ[K] x ∈ derivedSeries K̄ L̄ 1 := by
+    have hx_ext : 1 ⊗ₜ[K] x ∈ derivedSeries Kbar Lbar 1 := by
       rw [derivedSeries_baseChange]
       exact Submodule.tmul_mem_baseChange_of_mem 1 hx
-    have hbc_inj : Function.Injective (End.baseChangeHom K K̄ M) := by
+    have hbc_inj : Function.Injective (End.baseChangeHom K Kbar M) := by
       intro f g hfg
       ext m
       simpa using FaithfullyFlat.tensorProduct_mk_injective M (LinearMap.congr_fun hfg (1 ⊗ₜ[K] m))
     rw [← IsNilpotent.map_iff hbc_inj]
-    change _root_.IsNilpotent ((toEnd K L M x).baseChange K̄)
+    change _root_.IsNilpotent ((toEnd K L M x).baseChange Kbar)
     rw [← toEnd_baseChange]
     exact nilp_ext ⟨_, hx_ext⟩
   exact isNilpotent_derivedSeries_of_traceForm_eq_zero_aux (traceForm_baseChange_eq_zero h)
