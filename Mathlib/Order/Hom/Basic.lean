@@ -718,6 +718,9 @@ section LE
 
 variable [LE α] [LE β] [LE γ]
 
+instance : EquivLike (α ≃o β) α β :=
+  inferInstance
+
 instance : OrderIsoClass (α ≃o β) α β where
   map_le_map_iff f _ _ := f.map_rel_iff'
 
