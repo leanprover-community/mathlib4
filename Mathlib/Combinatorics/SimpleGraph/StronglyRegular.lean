@@ -54,7 +54,6 @@ structure IsSRGWith (n k ℓ μ : ℕ) : Prop where
 
 variable {G} {n k ℓ μ : ℕ}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Empty graphs are strongly regular. Note that `ℓ` can take any value
 for empty graphs, since there are no pairs of adjacent vertices. -/
 theorem bot_strongly_regular : (⊥ : SimpleGraph V).IsSRGWith (Fintype.card V) 0 ℓ 0 where

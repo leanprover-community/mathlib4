@@ -172,7 +172,6 @@ theorem subsingleton_iff_indiscreteTopology {α} [EMetricSpace α] :
 instance (priority := 100) {α} [EMetricSpace α] [Nontrivial α] : NontrivialTopology α :=
   nontrivial_iff_nontrivialTopology.1 ‹_›
 
--- see Note [nolint_ge]
 /-- In a pseudoemetric space, Cauchy sequences are characterized by the fact that, eventually,
 the pseudoedistance between its elements is arbitrarily small -/
 theorem cauchySeq_iff [Nonempty β] [SemilatticeSup β] {u : β → α} :

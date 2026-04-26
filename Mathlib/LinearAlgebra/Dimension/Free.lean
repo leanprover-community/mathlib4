@@ -84,10 +84,49 @@ theorem Module.finrank_div_finrank_left (F K A : Type*) [Ring F] [Ring K] [AddCo
 end Tower
 
 variable {R : Type u} {S : Type*} {M M₁ : Type v} {M' : Type v'}
-variable [Semiring R] [StrongRankCondition R]
+variable [Semiring R]
 variable [AddCommMonoid M] [Module R M] [Module.Free R M]
 variable [AddCommMonoid M'] [Module R M'] [Module.Free R M']
 variable [AddCommMonoid M₁] [Module R M₁] [Module.Free R M₁]
+
+namespace Module.Free
+
+variable {N : Type v} [AddCommMonoid N] [Module R N]
+variable {N' : Type v'} [AddCommMonoid N'] [Module R N']
+
+theorem exists_linearMap_injective_of_linearIndependent_of_lift_rank_le
+    {ι : Type w} {v : ι → N'} (hv : LinearIndependent R v)
+    (cnd : Cardinal.lift.{w} (Module.rank R M) ≤ Cardinal.lift.{v} #ι) :
+    ∃ f : M →ₗ[R] N', Function.Injective f := by
+  nontriviality M
+  have := Module.nontrivial R M
+  rcases Module.Free.exists_set R M with ⟨_, ⟨B⟩⟩
+  replace cnd := (Cardinal.lift_le.2 B.linearIndependent.cardinal_le_rank).trans cnd
+  rw [Cardinal.lift_mk_le'] at cnd
+  rcases cnd with ⟨i, hi⟩
+  refine ⟨B.constr ℕ (v ∘ i), B.injective_constr_of_linearIndependent (hv.comp _ hi)⟩
+
+theorem exists_linearMap_injective_of_linearIndependent_of_rank_le
+    {ι : Type v} {v : ι → N} (hv : LinearIndependent R v) (cnd : Module.rank R M ≤ #ι) :
+    ∃ f : M →ₗ[R] N, Function.Injective f :=
+  exists_linearMap_injective_of_linearIndependent_of_lift_rank_le hv (by simpa using cnd)
+
+theorem exists_linearMap_injective_of_lift_rank_lt
+    (cnd : Cardinal.lift.{v'} (Module.rank R M) < Cardinal.lift.{v} (Module.rank R N')) :
+    ∃ f : M →ₗ[R] N', Function.Injective f := by
+  rcases exists_set_linearIndependent_of_lt_lift_rank cnd with ⟨s, hs, hs₂⟩
+  exact exists_linearMap_injective_of_linearIndependent_of_lift_rank_le
+    hs₂.linearIndependent hs.symm.le
+
+theorem exists_linearMap_injective_of_rank_lt (cnd : Module.rank R M < Module.rank R N) :
+    ∃ f : M →ₗ[R] N, Function.Injective f :=
+  exists_linearMap_injective_of_lift_rank_lt (by simpa using cnd)
+
+end Module.Free
+
+section StrongRankCondition
+
+variable [StrongRankCondition R]
 
 namespace Module.Free
 
@@ -118,6 +157,23 @@ end Module.Free
 open Module.Free
 
 open Cardinal
+
+theorem lift_rank_le_iff_exists_linearMap :
+    Cardinal.lift.{v'} (Module.rank R M) ≤ Cardinal.lift.{v} (Module.rank R M') ↔
+    ∃ f : M →ₗ[R] M', Function.Injective f where
+  mp h := by
+    rcases Module.Free.exists_set R M' with ⟨_, ⟨B⟩⟩
+    exact exists_linearMap_injective_of_linearIndependent_of_lift_rank_le B.linearIndependent
+      (B.mk_eq_rank''.symm ▸ h)
+  mpr := fun ⟨f, hf⟩ ↦ LinearMap.lift_rank_le_of_injective f hf
+
+theorem rank_le_iff_exists_linearMap :
+    Module.rank R M ≤ Module.rank R M₁ ↔ ∃ f : M →ₗ[R] M₁, Function.Injective f := by
+  simp [← lift_rank_le_iff_exists_linearMap]
+
+theorem finrank_le_iff_exists_linearMap [Module.Finite R M] [Module.Finite R M'] :
+    finrank R M ≤ finrank R M' ↔ ∃ f : M →ₗ[R] M', Function.Injective f := by
+  simp [← lift_rank_le_iff_exists_linearMap, ← finrank_eq_rank]
 
 /-- Two vector spaces are isomorphic if they have the same dimension. -/
 theorem nonempty_linearEquiv_of_lift_rank_eq
@@ -323,6 +379,8 @@ noncomputable def _root_.LinearEquiv.smul_id_of_finrank_eq_one (d1 : Module.finr
   right_inv u := ((u.existsUnique_eq_smul_id_of_finrank_eq_one d1).choose_spec.1).symm
 
 end Module
+
+end StrongRankCondition
 
 namespace Algebra
 

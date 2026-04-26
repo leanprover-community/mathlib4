@@ -24,7 +24,7 @@ properties of its epimorphisms and monomorphisms.
 
 @[expose] public section
 
-universe v
+universe u
 
 open Simplicial CategoryTheory Limits
 
@@ -87,7 +87,6 @@ theorem Hom.ext_one_left {n : SimplexCategory} (f g : ⦋1⦌ ⟶ n)
   | 0 => exact h0 ▸ rfl
   | 1 => exact h1 ▸ rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eq_of_one_to_one (f : ⦋1⦌ ⟶ ⦋1⦌) :
     (∃ a, f = const ⦋1⦌ _ a) ∨ f = 𝟙 _ := by
   match e0 : f.toOrderHom 0, e1 : f.toOrderHom 1 with
@@ -177,7 +176,6 @@ def subinterval {n} (j l : ℕ) (hjl : j + l ≤ n) :
     monotone' := fun i i' hii' => by simpa only [Fin.mk_le_mk, add_le_add_iff_right] using hii'
   }
 
-set_option backward.isDefEq.respectTransparency false in
 lemma const_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin (l + 1)) :
     ⦋0⦌.const ⦋l⦌ i ≫ subinterval j l hjl =
     ⦋0⦌.const ⦋n⦌ ⟨j + i.1, lt_add_of_lt_add_right (Nat.add_lt_add_left i.2 j) hjl⟩  := by
@@ -187,7 +185,6 @@ lemma const_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin (l + 1))
   dsimp [subinterval]
   rw [add_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma mkOfSucc_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin l) :
     mkOfSucc i ≫ subinterval j l hjl =
@@ -196,7 +193,6 @@ lemma mkOfSucc_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin l) :
   ext (i : Fin 2)
   match i with | 0 | 1 => simp; lia
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma diag_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) :
     diag l ≫ subinterval j l hjl = intervalEdge j l hjl := by
@@ -236,7 +232,6 @@ def δ {n} (i : Fin (n + 2)) : ⦋n⦌ ⟶ ⦋n + 1⦌ :=
 def σ {n} (i : Fin (n + 1)) : ⦋n + 1⦌ ⟶ ⦋n⦌ :=
   mkHom i.predAboveOrderHom
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The generic case of the first simplicial identity -/
 theorem δ_comp_δ {n} {i j : Fin (n + 2)} (H : i ≤ j) :
     δ i ≫ δ j.succ = δ j ≫ δ i.castSucc := by
@@ -274,7 +269,6 @@ theorem δ_comp_δ_self' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : j = i.cast
   subst H
   rw [δ_comp_δ_self]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The second simplicial identity -/
 @[reassoc]
 theorem δ_comp_σ_of_le {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : i ≤ j.castSucc) :
@@ -296,7 +290,6 @@ theorem δ_comp_σ_of_le {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : i ≤ j.ca
       Fin.castSucc_castPred]
     rwa [Fin.castSucc_castPred]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The first part of the third simplicial identity -/
 @[reassoc]
 theorem δ_comp_σ_self {n} {i : Fin (n + 1)} :
@@ -315,7 +308,6 @@ theorem δ_comp_σ_self' {n} {j : Fin (n + 2)} {i : Fin (n + 1)} (H : j = i.cast
   subst H
   rw [δ_comp_σ_self]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The second part of the third simplicial identity -/
 @[reassoc]
 theorem δ_comp_σ_succ {n} {i : Fin (n + 1)} : δ i.succ ≫ σ i = 𝟙 ⦋n⦌ := by
@@ -331,7 +323,6 @@ theorem δ_comp_σ_succ' {n} {j : Fin (n + 2)} {i : Fin (n + 1)} (H : j = i.succ
   subst H
   rw [δ_comp_σ_succ]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The fourth simplicial identity -/
 @[reassoc]
 theorem δ_comp_σ_of_gt {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : j.castSucc < i) :
@@ -366,7 +357,6 @@ theorem δ_comp_σ_of_gt' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.succ < 
   · rw [Fin.castSucc_castLT, ← Fin.succ_lt_succ_iff, Fin.succ_pred]
     exact H
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The fifth simplicial identity -/
 @[reassoc]
 theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) :
@@ -413,7 +403,6 @@ then `factor_δ f j` is a morphism `⦋m⦌ ⟶ ⦋n⦌` such that
 def factor_δ {m n : ℕ} (f : ⦋m⦌ ⟶ ⦋n + 1⦌) (j : Fin (n + 2)) : ⦋m⦌ ⟶ ⦋n⦌ :=
   f ≫ σ (Fin.predAbove 0 j)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma factor_δ_spec {m n : ℕ} (f : ⦋m⦌ ⟶ ⦋n + 1⦌) (j : Fin (n + 2))
     (hj : ∀ (k : Fin (m + 1)), f.toOrderHom k ≠ j) :
     factor_δ f j ≫ δ j = f := by
@@ -434,7 +423,6 @@ lemma δ_one_mkOfSucc {n : ℕ} (i : Fin n) :
   fin_cases x
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `i + 1 < j`, `mkOfSucc i ≫ δ j` is the morphism `⦋1⦌ ⟶ ⦋n⦌` that
 sends `0` and `1` to `i` and `i + 1`, respectively. -/
 lemma mkOfSucc_δ_lt {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
@@ -445,7 +433,6 @@ lemma mkOfSucc_δ_lt {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
   · simp [δ, Fin.succAbove_of_castSucc_lt _ _ (Nat.lt_trans _ h)]
   · simp [δ, Fin.succAbove_of_castSucc_lt _ _ h]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `i + 1 > j`, `mkOfSucc i ≫ δ j` is the morphism `⦋1⦌ ⟶ ⦋n⦌` that
 sends `0` and `1` to `i + 1` and `i + 2`, respectively. -/
 lemma mkOfSucc_δ_gt {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
@@ -460,7 +447,6 @@ lemma mkOfSucc_δ_gt {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
   · rfl
   · exact Nat.le_of_lt h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `i + 1 = j`, `mkOfSucc i ≫ δ j` is the morphism `⦋1⦌ ⟶ ⦋n⦌` that
 sends `0` and `1` to `i` and `i + 2`, respectively. -/
 lemma mkOfSucc_δ_eq {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
@@ -612,6 +598,12 @@ lemma toType_apply (x : SimplexCategory) : ToType x = Fin (x.len + 1) := rfl
 @[simp]
 lemma concreteCategoryHom_id (n : SimplexCategory) : ConcreteCategory.hom (𝟙 n) = .id := rfl
 
+lemma coe_δ {n : ℕ} (i : Fin (n + 2)) :
+    dsimp% ⇑(δ i) = Fin.succAbove i := rfl
+
+lemma coe_σ {n : ℕ} (i : Fin (n + 1)) :
+    dsimp% ⇑(σ i) = Fin.predAbove i := rfl
+
 end Concrete
 
 section EpiMono
@@ -674,13 +666,11 @@ instance : (forget SimplexCategory).ReflectsIsomorphisms :=
                       (asIso ((forget SimplexCategory).map f))) _).symm
                 · rw [eq_of_le_of_not_lt h h'] }
         hom_inv_id := by
-          ext1
-          ext1
-          exact Iso.hom_inv_id (asIso ((forget _).map f))
+          ext x : 3
+          exact Iso.hom_inv_id_apply (asIso ((forget _).map f)) x
         inv_hom_id := by
-          ext1
-          ext1
-          exact Iso.inv_hom_id (asIso ((forget _).map f)) }⟩
+          ext x : 3
+          exact Iso.inv_hom_id_apply (asIso ((forget _).map f)) x }⟩
 
 theorem isIso_of_bijective {x y : SimplexCategory} {f : x ⟶ y}
     (hf : Function.Bijective f.toOrderHom.toFun) : IsIso f :=
@@ -733,7 +723,6 @@ theorem iso_eq_iso_refl {x : SimplexCategory} (e : x ≅ x) : e = Iso.refl x := 
 theorem eq_id_of_isIso {x : SimplexCategory} (f : x ⟶ x) [IsIso f] : f = 𝟙 _ :=
   congr_arg (fun φ : _ ≅ _ => φ.hom) (iso_eq_iso_refl (asIso f))
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : ⦋n + 1⦌ ⟶ Δ')
     (i : Fin (n + 1)) (hi : θ.toOrderHom (Fin.castSucc i) = θ.toOrderHom i.succ) :
     ∃ θ' : ⦋n⦌ ⟶ Δ', θ = σ i ≫ θ' := by
@@ -765,7 +754,6 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : ⦋
         Nat.lt_succ_iff, Fin.ext_iff] at h' h'' ⊢
       lia
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eq_σ_comp_of_not_injective {n : ℕ} {Δ' : SimplexCategory} (θ : ⦋n + 1⦌ ⟶ Δ')
     (hθ : ¬Function.Injective θ.toOrderHom) :
     ∃ (i : Fin (n + 1)) (θ' : ⦋n⦌ ⟶ Δ'), θ = σ i ≫ θ' := by
@@ -868,6 +856,20 @@ theorem factorThruImage_eq {Δ Δ'' : SimplexCategory} {φ : Δ ⟶ Δ''} {e : �
   rw [← cancel_mono i, fac, ← image_ι_eq fac, image.fac]
 
 end EpiMono
+
+/-- The functor which sends `⦋n⦌ : SimplexCategory` to the partially ordered
+type `{0, 1, ..., n}` (ulifted to `Type u`). -/
+def toPartOrd : SimplexCategory ⥤ PartOrd.{u} :=
+  skeletalFunctor ⋙ forget₂ NonemptyFinLinOrd FinPartOrd ⋙
+    forget₂ FinPartOrd PartOrd ⋙ PartOrd.uliftFunctor
+
+@[simp]
+lemma toPartOrd_obj (n : SimplexCategory) :
+    toPartOrd.{u}.obj n = .of (ULift.{u} (Fin (n.len + 1))) := rfl
+
+@[simp]
+lemma toPartOrd_map_apply {n m : SimplexCategory} (f : n ⟶ m) (i : (Fin (n.len + 1))) :
+    dsimp% toPartOrd.{u}.map f (ULift.up i) = ULift.up (f i) := rfl
 
 /-- This functor `SimplexCategory ⥤ Cat` sends `⦋n⦌` (for `n : ℕ`)
 to the category attached to the ordered set `{0, 1, ..., n}` -/
