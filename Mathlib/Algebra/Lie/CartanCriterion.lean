@@ -208,7 +208,7 @@ public theorem isNilpotent_derivedSeries_of_traceForm_eq_zero (h : traceForm K L
     rw [← toEnd_baseChange]
     exact nilp_ext ⟨_, hx_ext⟩
   exact isNilpotent_derivedSeries_of_traceForm_eq_zero_aux (traceForm_baseChange_eq_zero h)
-  
+
 @[deprecated (since := "2026-04-26")]
 alias isNilpotent_derivedSeries_of_traceForm_eq_zero_algClosed := isNilpotent_derivedSeries_of_traceForm_eq_zero
 end LieModule
