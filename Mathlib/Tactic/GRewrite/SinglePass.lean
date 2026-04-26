@@ -108,21 +108,24 @@ partial def processGCongrHypothesis (g : MVarId) (inv : Bool) (config : Config) 
 
 partial def processGCongrHypothesisIntro (g : MVarId) (sameLCtx : Bool) (inv : Bool)
     (config : Config) : GRewriteM Bool := do
-  if sameLCtx then processGCongrHypothesis g inv config else
-  if (← get).progress matches .matched then return false
-  g.withContext do
-  -- Hack: modify the local context of the metavariables in the given term
-  let mctx ← getMCtx
-  let lctx ← getLCtx
-  setMCtx <| (← read).mvarIds.foldl (init := mctx) fun mctx mvarId ↦
-    let decl := mctx.getDecl mvarId
-    { mctx with decls := mctx.decls.insert mvarId { decl with lctx } }
-  let result ← processGCongrHypothesis g inv config
-  match (← get).progress with
-  | .none => setMCtx mctx
-  | .matched => modify ({ · with progress := .done })
-  | .done => pure ()
-  return result
+  if sameLCtx then
+    processGCongrHypothesis g inv config
+  else
+    g.withContext do
+    if (← get).progress matches .none then
+      -- Hack: modify the local context of the metavariables
+      let mctx ← getMCtx
+      let lctx ← getLCtx
+      setMCtx <| (← read).mvarIds.foldl (init := mctx) fun mctx mvarId ↦
+        let decl := mctx.getDecl mvarId
+        { mctx with decls := mctx.decls.insert mvarId { decl with lctx } }
+      let result ← processGCongrHypothesis g inv config
+      if (← get).progress matches .none then setMCtx mctx
+      return result
+    else
+      let result ← processGCongrHypothesis g inv config
+      modify ({ · with progress := .done })
+      return result
 
 partial def processGCongrLemma (g : MVarId) (lem : GCongrLemma) (inv : Bool)
     (config : Config) : GRewriteM Bool := do
