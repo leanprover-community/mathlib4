@@ -241,8 +241,8 @@ theorem IsTheta.rpow (hf : 0 ≤ᶠ[l] f) (hg : 0 ≤ᶠ[l] g) (h : f =Θ[l] g) 
     (fun x => f x ^ r) =Θ[l] fun x => g x ^ r := by
   wlog hr : r ≥ 0 with rpow_pos
   · rw [← isTheta_inv]
-    grw' [← EventuallyEq.isTheta <| hf.mono fun x hfx ↦ Real.rpow_neg hfx r]
-    grw' [← EventuallyEq.isTheta <| hg.mono fun x hgx ↦ Real.rpow_neg hgx r]
+    grw [← EventuallyEq.isTheta <| hf.mono fun x hfx ↦ Real.rpow_neg hfx r]
+    grw [← EventuallyEq.isTheta <| hg.mono fun x hgx ↦ Real.rpow_neg hgx r]
     exact rpow_pos hf hg h <| by linarith
   exact ⟨h.1.rpow hr hg, h.2.rpow hr hf⟩
 

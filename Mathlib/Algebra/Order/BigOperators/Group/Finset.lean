@@ -391,11 +391,11 @@ theorem card_le_card_biUnion_add_card_fiber {s : Finset ι} {f : ι → Finset �
     (hs : (s : Set ι).PairwiseDisjoint f) : #s ≤ #(s.biUnion f) + #{i ∈ s | f i = ∅} := by
   rw [← Finset.card_filter_add_card_filter_not fun i ↦ f i = ∅, add_comm]
   grw [card_le_card_biUnion (hs.subset <| filter_subset _ _) fun i hi ↦
-    nonempty_of_ne_empty (mem_filter.1 hi).2, filter_subset (f · ≠ ∅)]
+    nonempty_of_ne_empty (mem_filter.1 hi).2, filter_subset]
 
 theorem card_le_card_biUnion_add_one {s : Finset ι} {f : ι → Finset α} (hf : Injective f)
     (hs : (s : Set ι).PairwiseDisjoint f) : #s ≤ #(s.biUnion f) + 1 := by
-  grw' [card_le_card_biUnion_add_card_fiber hs,
+  grw [card_le_card_biUnion_add_card_fiber hs,
     card_le_one.2 fun _ hi _ hj ↦ hf <| (mem_filter.1 hi).2.trans (mem_filter.1 hj).2.symm]
 
 end DoubleCounting

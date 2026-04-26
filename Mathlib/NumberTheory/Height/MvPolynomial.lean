@@ -72,7 +72,7 @@ lemma AbsoluteValue.iSup_abv_linearMap_apply_le (v : AbsoluteValue K ℝ) (A : �
   refine ciSup_le fun j ↦ ?_
   grw [v.sum_le]
   simp only [map_mul]
-  grw' [Finset.sum_le_sum (g := fun _ ↦ (⨆ ji, v (A ji)) * ⨆ i, v (x i)) fun i _ ↦ ?h]
+  grw [Finset.sum_le_sum (g := fun _ ↦ (⨆ ji, v (A ji)) * ⨆ i, v (x i)) fun i _ ↦ ?h]
   case h =>
     dsimp only
     gcongr

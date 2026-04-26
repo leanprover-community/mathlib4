@@ -59,14 +59,12 @@ lemma sum_Ico_le_sum {s : Finset ℤ} {c : ℤ} (hs : ∀ x ∈ s, c ≤ x) :
   set r := Ico c (c + #s)
   calc
     _ ≤ ∑ x ∈ r ∩ s, x + #(r \ s) • (c + #s) := by
-      grw [← sum_inter_add_sum_diff r s, ← sum_le_card_nsmul _ _ _ ?_]
-      grind
+      grw [← sum_inter_add_sum_diff r s, ← sum_le_card_nsmul _ _ _ (by grind)]
     _ = ∑ x ∈ s ∩ r, x + #(s \ r) • (c + #s) := by
       rw [inter_comm, card_sdiff_comm]
       rw [Int.card_Ico, add_sub_cancel_left, Int.toNat_natCast]
     _ ≤ _ := by
-      grw [← sum_inter_add_sum_diff s r, card_nsmul_le_sum _ _ _ ?_]
-      grind
+      grw [← sum_inter_add_sum_diff s r, card_nsmul_le_sum _ _ _ (by grind)]
 
 /-- Sharp lower bound for the sum of a finset of integers that is bounded below, `range` version. -/
 lemma sum_range_le_sum {s : Finset ℤ} {c : ℤ} (hs : ∀ x ∈ s, c ≤ x) :

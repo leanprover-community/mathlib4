@@ -106,7 +106,7 @@ alias lucas_theorem_nat := choose_modEq_prod_range_choose_nat
 Also see `choose_mul_mul_modEq_choose_nat` for the version with `MOD`. -/
 theorem choose_mul_mul_modEq_choose :
     choose (p * a) (p * b) ≡ choose a b [ZMOD p] := by
-  nth_grw 1 [choose_modEq_choose_mod_mul_choose_div]
+  grw [choose_modEq_choose_mod_mul_choose_div]
   simp [NeZero.pos, Int.ModEq.refl]
 
 /-- For primes `p`, `choose (p * a) (p * b)` is congruent to `choose a b` modulo `p`.

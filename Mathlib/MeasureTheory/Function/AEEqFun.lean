@@ -239,7 +239,7 @@ theorem compQuasiMeasurePreserving_congr (g : β →ₘ[ν] γ) (hf : QuasiMeasu
     {f' : α → β} (hf' : Measurable f') (h : f =ᵐ[μ] f') :
     compQuasiMeasurePreserving g f hf = compQuasiMeasurePreserving g f' (hf.congr hf' h) := by
   ext
-  grw [coeFn_compQuasiMeasurePreserving, h]
+  grw [coeFn_compQuasiMeasurePreserving, coeFn_compQuasiMeasurePreserving, h]
 
 @[simp]
 theorem compQuasiMeasurePreserving_id (g : β →ₘ[ν] γ) :
@@ -253,7 +253,8 @@ theorem compQuasiMeasurePreserving_comp {γ : Type*} {mγ : MeasurableSpace γ}
     compQuasiMeasurePreserving g (f ∘ f') (hf.comp hf') =
     compQuasiMeasurePreserving (compQuasiMeasurePreserving g f hf) f' hf' := by
   ext
-  grw [coeFn_compQuasiMeasurePreserving, coeFn_compQuasiMeasurePreserving, comp_assoc]
+  grw [coeFn_compQuasiMeasurePreserving, coeFn_compQuasiMeasurePreserving,
+    coeFn_compQuasiMeasurePreserving, comp_assoc]
 
 theorem compQuasiMeasurePreserving_iterate (g : α →ₘ[μ] γ) {f : α → α}
     (hf : QuasiMeasurePreserving f μ μ) (n : ℕ) :

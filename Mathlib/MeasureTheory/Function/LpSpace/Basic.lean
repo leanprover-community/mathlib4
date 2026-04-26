@@ -762,14 +762,14 @@ end RCLike
 theorem add_compLp (L L' : E →SL[σ] F) (f : Lp E p μ) :
     (L + L').compLp f = L.compLp f + L'.compLp f := by
   ext1
-  grw [Lp.coeFn_add, coeFn_compLp']
+  grw [Lp.coeFn_add, coeFn_compLp', coeFn_compLp', coeFn_compLp']
   rfl
 
 theorem smul_compLp {𝕜''} [NormedRing 𝕜''] [Module 𝕜'' F] [IsBoundedSMul 𝕜'' F]
     [SMulCommClass 𝕜' 𝕜'' F] (c : 𝕜'') (L : E →SL[σ] F) (f : Lp E p μ) :
     (c • L).compLp f = c • L.compLp f := by
   ext1
-  grw [Lp.coeFn_smul, coeFn_compLp']
+  grw [Lp.coeFn_smul, coeFn_compLp', coeFn_compLp']
   rfl
 
 theorem norm_compLp_le (L : E →SL[σ] F) (f : Lp E p μ) : ‖L.compLp f‖ ≤ ‖L‖ * ‖f‖ :=

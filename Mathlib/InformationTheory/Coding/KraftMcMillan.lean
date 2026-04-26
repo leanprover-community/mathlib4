@@ -154,7 +154,7 @@ public theorem kraft_mcmillan_inequality {S : Finset (List α)} [Fintype α] [No
   let K := ∑ w ∈ S, (1 / (Fintype.card α : ℝ)) ^ w.length
   let maxLen : ℕ := S.sup List.length
   have hAbs : |1 / K| < 1 := by
-    grw' [abs_of_pos (by positivity), div_lt_one] <;> grind
+    grw [abs_of_pos (by positivity), div_lt_one] <;> grind
   have : Tendsto (fun r : ℕ => r * maxLen / K ^ r) atTop (nhds 0) := by
     simpa [mul_left_comm, mul_div_assoc] using
       (tendsto_self_mul_const_pow_of_abs_lt_one hAbs).const_mul (maxLen : ℝ)

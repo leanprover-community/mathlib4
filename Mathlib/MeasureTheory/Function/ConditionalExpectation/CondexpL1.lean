@@ -94,18 +94,21 @@ theorem condExpIndL1Fin_add (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x y : 
     condExpIndL1Fin hm hs hμs x + condExpIndL1Fin hm hs hμs y := by
   ext1
   unfold condExpIndL1Fin Integrable.toL1
-  grw [Lp.coeFn_add, MemLp.coeFn_toLp, condExpIndSMul_add, Lp.coeFn_add]
+  grw [Lp.coeFn_add, MemLp.coeFn_toLp, MemLp.coeFn_toLp, MemLp.coeFn_toLp, condExpIndSMul_add,
+    Lp.coeFn_add]
 
 theorem condExpIndL1Fin_smul (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : ℝ) (x : G) :
     condExpIndL1Fin hm hs hμs (c • x) = c • condExpIndL1Fin hm hs hμs x := by
   ext1
-  grw [Lp.coeFn_smul, condExpIndL1Fin_ae_eq_condExpIndSMul, condExpIndSMul_smul, Lp.coeFn_smul]
+  grw [Lp.coeFn_smul, condExpIndL1Fin_ae_eq_condExpIndSMul, condExpIndL1Fin_ae_eq_condExpIndSMul,
+    condExpIndSMul_smul, Lp.coeFn_smul]
 
 theorem condExpIndL1Fin_smul' [NormedSpace ℝ F] [SMulCommClass ℝ 𝕜 F] (hs : MeasurableSet s)
     (hμs : μ s ≠ ∞) (c : 𝕜) (x : F) :
     condExpIndL1Fin hm hs hμs (c • x) = c • condExpIndL1Fin hm hs hμs x := by
   ext1
-  grw [Lp.coeFn_smul, condExpIndL1Fin_ae_eq_condExpIndSMul, condExpIndSMul_smul, Lp.coeFn_smul]
+  grw [Lp.coeFn_smul, condExpIndL1Fin_ae_eq_condExpIndSMul, condExpIndL1Fin_ae_eq_condExpIndSMul,
+    condExpIndSMul_smul, Lp.coeFn_smul]
 
 theorem norm_condExpIndL1Fin_le (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : G) :
     ‖condExpIndL1Fin hm hs hμs x‖ ≤ μ.real s * ‖x‖ := by

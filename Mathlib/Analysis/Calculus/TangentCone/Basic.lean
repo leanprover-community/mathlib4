@@ -43,7 +43,7 @@ theorem tangentConeAt_mono_field
   simp only [tangentConeAt_def, setOf_subset_setOf]
   refine fun y hy ↦ hy.mono ?_
   rw [← smul_one_smul (Filter 𝕜')]
-  grw' [le_top (a := ⊤ • 1)]
+  grw [le_top (a := ⊤ • 1)]
 
 theorem Filter.HasBasis.tangentConeAt_eq_biInter_closure {ι} {p : ι → Prop} {U : ι → Set E}
     (h : (𝓝 0).HasBasis p U) :

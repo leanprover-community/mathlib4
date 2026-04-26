@@ -121,4 +121,4 @@ theorem IsUpperSet.le_card_inter_finset (h𝒜 : IsUpperSet (𝒜 : Set (Finset 
     card_sdiff_of_subset inter_subset_right, sdiff_inter_self_right, sdiff_compl,
     _root_.inf_comm] at this
   · grw [inter_subset_right]
-  · grw [← Fintype.card_finset, card_le_univ 𝒜]
+  · grw [← Fintype.card_finset, card_le_univ]
