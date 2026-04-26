@@ -449,6 +449,18 @@ alias ⟨IsIndContained.exists_iso_subgraph, IsIndContained.of_exists_iso_subgra
     (⊤ : SimpleGraph V) ⊴ H ↔ (⊤ : SimpleGraph V) ⊑ H :=
   ⟨IsIndContained.isContained, fun ⟨f⟩ ↦ ⟨f.topEmbedding⟩⟩
 
+protected theorem IsContained.top {G : SimpleGraph V} : G ⊑ completeGraph V :=
+  .of_le le_top
+
+theorem isContained_top_iff {G : SimpleGraph V} : G ⊑ completeGraph W ↔ Nonempty (V ↪ W) :=
+  ⟨(⟨·.some.toEmbedding⟩), (.trans (.of_le le_top) ⟨Embedding.completeGraph ·.some |>.toCopy⟩)⟩
+
+theorem top_isIndContained_top_iff : completeGraph V ⊴ completeGraph W ↔ Nonempty (V ↪ W) :=
+  ⟨(⟨·.some.toEmbedding⟩), (⟨.completeGraph ·.some⟩)⟩
+
+theorem eq_top_of_isIndContained_top (h : G ⊴ completeGraph W) : G = ⊤ :=
+  h.some.comap_eq ▸ comap_top h.some.injective
+
 @[simp] lemma compl_isIndContained_compl : Gᶜ ⊴ Hᶜ ↔ G ⊴ H :=
   Embedding.complEquiv.symm.nonempty_congr
 
