@@ -27,7 +27,6 @@ finite-dimensional vector spaces over `𝕜`.
 
 # Future Work
 * Define a functor `FGModuleCat 𝕜 ⥤ MfldCat 𝕜 n`.
-* Show that `MfldCat` is a `CartesianMonoidalCategory`.
 -/
 
 @[expose] public section
