@@ -578,16 +578,16 @@ private lemma pIntegral_faulhaber_sum {k p : ℕ} (hk : k > 0) [Fact p.Prime]
     exact_mod_cast pIntegral_pow_div (by lia)
       (factorization_succ_le_sub_one (by lia) |>.trans tsub_le_self)
   · rw [zero_add, Nat.choose_one_right, bernoulli_one]
-    have : (-1 / 2 : ℚ) * ((2 * k + 1 : ℕ) : ℚ) * p ^ (2 * k - 1) / (2 * k + 1) =
-        (-1 / 2 : ℚ) * p ^ (2 * k - 1) := by field_simp; push_cast; ring
-    rw [this]
+    push_cast
+    field_simp
     obtain rfl | hp2 := eq_or_ne p 2
-    · have h : ((-1 / 2 : ℚ) * (2 : ℚ) ^ (2 * k - 1)) = -(2 : ℤ) ^ (2 * k - 2) := by
-        rw [show 2 * k - 1 = (2 * k - 2) + 1 by lia, pow_succ]; push_cast; field_simp
-      simpa [h] using Int.padicValuation_le_one 2 (-(2 : ℤ) ^ (2 * k - 2))
-    · refine pIntegral_mul ?_ ?_ <;> rw [pIntegral, Rat.padicValuation_le_one_iff]
-      · norm_num [Nat.prime_dvd_prime_iff_eq Fact.out Nat.prime_two, hp2]
-      · simp [show p ≠ 1 from Nat.Prime.ne_one Fact.out]
+    · push_cast
+      rw [show 2 * k - 1 = (2 * k - 2) + 1 by lia, pow_succ, mul_div_cancel_right₀ _ two_ne_zero]
+      exact_mod_cast Int.padicValuation_le_one ..
+    · rw [Valuation.map_neg]
+      refine pIntegral_pow_div _ _ _ two_ne_zero <|
+         (factorization_eq_zero_of_lt ?_).trans_le (by lia)
+      exact (Prime.odd_iff Fact.out).mp <| Prime.odd_of_ne_two Fact.out hp2
   · rcases Nat.even_or_odd (i + 2) with ⟨m, hm⟩ | hodd
     · have ⟨hm_pos, hm_lt, hi_eq⟩ : 0 < m ∧ m < k ∧ i + 2 = 2 * m := by lia
       simp only [hi_eq]
