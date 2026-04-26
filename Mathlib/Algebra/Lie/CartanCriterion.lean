@@ -72,7 +72,7 @@ lemma exists_polynomial_eval_sub_aux
   rw [← (algebraMap R K).map_sub, ← (algebraMap R K).map_sub, ← map_sub, ← map_sub, heq]
 
 /-- The algebraically closed case of `isNilpotent_derivedSeries_of_traceForm_eq_zero`. -/
-public theorem isNilpotent_derivedSeries_of_traceForm_eq_zero_aux (h : traceForm K L M = 0) :
+theorem isNilpotent_derivedSeries_of_traceForm_eq_zero_aux (h : traceForm K L M = 0) :
     IsNilpotent (derivedSeries K L 1) M := by
   /- By Engel's theorem it suffices to prove that `⁅L, L⁆` acts nilpotently on `M`. -/
   suffices ∀ x ∈ derivedSeries K L 1, _root_.IsNilpotent (φ x) from
