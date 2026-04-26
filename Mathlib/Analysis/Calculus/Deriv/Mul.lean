@@ -392,6 +392,13 @@ theorem deriv_const_mul_field (u : 𝕜') : deriv (fun y => u * v y) x = u * der
 theorem deriv_const_mul_field' (u : 𝕜') : (deriv fun x => u * v x) = fun x => u * deriv v x :=
   funext fun _ => deriv_const_mul_field u
 
+theorem deriv_const_mul_id (c : 𝕜) : deriv (fun y => c * y) x = c := by
+  simp only [deriv_const_mul c differentiableAt_fun_id, deriv_id'', mul_one]
+
+@[simp]
+theorem deriv_const_mul_id' (c : 𝕜) : deriv (fun x => c * x) = fun _ => c :=
+  funext fun _ => by simp only [deriv_const_mul_id]
+
 end Mul
 
 section Prod

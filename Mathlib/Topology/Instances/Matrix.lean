@@ -36,7 +36,7 @@ This file is a place to collect topological results about matrices.
   * `Matrix.blockDiagonal'_tsum`: non-uniform block diagonal commutes with infinite sums
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Matrix.GeneralLinearGroup Matrix.SpecialLinearGroup -- guard against import creep
 
