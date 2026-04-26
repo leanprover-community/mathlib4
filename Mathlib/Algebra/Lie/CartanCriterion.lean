@@ -187,7 +187,7 @@ lemma traceForm_baseChange_eq_zero (h : traceForm K L M = 0) : traceForm K̄ L̄
 
 /-- If the trace form of `M` is zero, then the `⁅L, L⁆`-module `M` is nilpotent. The proof reduces
 by scalar extension to the algebraically closed case, then closes by
-`isNilpotent_derivedSeries_of_traceForm_eq_zero_algClosed`. -/
+`isNilpotent_derivedSeries_of_traceForm_eq_zero_aux`. -/
 public theorem isNilpotent_derivedSeries_of_traceForm_eq_zero (h : traceForm K L M = 0) :
     IsNilpotent (derivedSeries K L 1) M := by
   haveI : FiniteDimensional K̄ M̄ := Module.Finite.base_change K K̄ M
