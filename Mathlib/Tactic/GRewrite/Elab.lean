@@ -130,18 +130,8 @@ public def evalGRewriteSeq : Tactic := fun stx => do
       (throwTacticEx `grewrite · "did not find instance of the pattern in the current goal")
 
 @[tactic_alt grewriteSeq]
-syntax (name := grewriteSeq') "grewrite'" optConfig rwRuleSeq (location)? : tactic
-
-@[tactic grewriteSeq', inherit_doc grewriteSeq]
-public def evalGRewriteSeq' : Tactic := fun stx => do
-  let cfg ← elabGRewriteConfig stx[1]
-  let cfg := { cfg with useKAbstract := true}
-  let loc := expandOptLocation stx[3]
-  withRWRulesSeq stx[0] stx[2] fun symm term => do
-    withLocation loc
-      (grewriteLocalDecl term symm · cfg)
-      (grewriteTarget term symm cfg)
-      (throwTacticEx `grewrite · "did not find instance of the pattern in the current goal")
+macro "grewrite'" c:optConfig s:rwRuleSeq loc:(location)? : tactic => do
+  `(tactic| grewrite $[$(getConfigItems c)]* (useKAbstract := true) $s:rwRuleSeq $(loc)?)
 
 /--
 `grw [e₁, ..., eₙ]` uses each expression `eᵢ : Rᵢ aᵢ bᵢ` (where `Rᵢ` is any two-argument
@@ -204,12 +194,8 @@ macro (name := grwSeq) "grw " c:optConfig s:rwRuleSeq l:(location)? : tactic =>
   | _ => Macro.throwUnsupported
 
 @[tactic_alt grwSeq]
-macro (name := grwSeq') "grw' " c:optConfig s:rwRuleSeq l:(location)? : tactic =>
-  match s with
-  | `(rwRuleSeq| [$rs,*]%$rbrak) =>
-    -- We show the `rfl` state on `]`
-    `(tactic| (grewrite' $c [$rs,*] $(l)?; with_annotate_state $rbrak (try (with_reducible rfl))))
-  | _ => Macro.throwUnsupported
+macro "grw'" c:optConfig s:rwRuleSeq loc:(location)? : tactic => do
+  `(tactic| grw $[$(getConfigItems c)]* (useKAbstract := true) $s:rwRuleSeq $(loc)?)
 
 /--
 `apply_rewrite [e₁, ..., eₙ]` uses the expressions `e₁`, ..., `eₙ` as generalized rewrite rules, of
