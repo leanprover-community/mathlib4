@@ -149,7 +149,7 @@ lemma ContDiffSMul.of_retraction [SMul M N]
   exact π.contDiff.comp (contdiff_smul.comp
     (ContDiff.prodMk contDiff_fst (ι.contDiff.comp contDiff_snd)))⟩
 
-/-- Transfer `ContDiffSMul` along a smooth map on the acting type. -/
+/-- Transfer `ContDiffSMul` along a continuously differentiable map on the acting type. -/
 @[to_additive]
 lemma ContDiffSMul.comp [SMul N X] {f : N → M}
     (hf : ContDiff 𝕜 n f)
