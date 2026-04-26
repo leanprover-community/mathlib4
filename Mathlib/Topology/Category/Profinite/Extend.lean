@@ -117,7 +117,6 @@ section Limit
 
 variable {C : Type*} [Category* C] (G : Profinite ⥤ C)
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given a functor `G` from `Profinite` and `S : Profinite`, we obtain a cone on
 `(StructuredArrow.proj S toProfinite ⋙ toProfinite ⋙ G)` with cone point `G.obj S`.
