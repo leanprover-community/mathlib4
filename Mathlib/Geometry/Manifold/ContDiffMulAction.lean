@@ -32,8 +32,20 @@ analogues of the results in the module `Mathlib.Topology.Algebra.MulAction`.
 open Topology Pointwise
 open Filter
 
+
+/-- The class `ContDiffVAdd 𝕜 M X n` says that the additive action `(+ᵥ) : M → X → X`
+is `n` times continuously differentiable on `M × X`. -/
+class ContDiffVAdd (𝕜 M X : Type*) (n : WithTop ℕ∞) [VAdd M X] [NormedAddCommGroup X]
+    [NontriviallyNormedField 𝕜] [NormedAddCommGroup M] [NormedSpace 𝕜 M]
+    [NormedSpace 𝕜 X] : Prop where
+  /-- The additive action `(+ᵥ)` is continuous. -/
+  contdiff_vadd : ContDiff 𝕜 n fun p : M × X => p.1 +ᵥ p.2
+
+
+
 /-- The class `ContDiffSMul 𝕜 M X n` says that the scalar multiplication `(•) : M → X → X` is `n`
-times continuously differentiable in both arguments. -/
+times continuously differentiable on `M × X`. -/
+@[to_additive]
 class ContDiffSMul (𝕜 M X : Type*) (n : WithTop ℕ∞) [SMul M X] [NormedAddCommGroup X]
     [NontriviallyNormedField 𝕜] [NormedAddCommGroup M] [NormedSpace 𝕜 M]
     [NormedSpace 𝕜 X] : Prop where
@@ -42,17 +54,10 @@ class ContDiffSMul (𝕜 M X : Type*) (n : WithTop ℕ∞) [SMul M X] [NormedAdd
 
 export ContDiffSMul (contdiff_smul)
 
-/-- The class `ContDiffVAdd 𝕜 M X n` says that the additive action `(+ᵥ) : M → X → X`
-is `n` times continuously differentiable in both arguments. -/
-class ContDiffVAdd (𝕜 M X : Type*) (n : WithTop ℕ∞) [VAdd M X] [NormedAddCommGroup X]
-    [NontriviallyNormedField 𝕜] [NormedAddCommGroup M] [NormedSpace 𝕜 M]
-    [NormedSpace 𝕜 X] : Prop where
-  /-- The additive action `(+ᵥ)` is continuous. -/
-  contdiff_vadd : ContDiff 𝕜 n fun p : M × X => p.1 +ᵥ p.2
+
 
 export ContDiffVAdd (contdiff_vadd)
 
-attribute [to_additive] ContDiffSMul
 
 attribute [continuity, fun_prop] contdiff_smul contdiff_vadd
 
