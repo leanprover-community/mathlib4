@@ -47,8 +47,7 @@ theorem isUnit_eqLocus_mk_iff (f g : R →+* T) {r : R} (r_in : r ∈ f.eqLocus 
     grind
   rw [mem_eqLocus] at r_in
   obtain ⟨s, hs⟩ := isUnit_iff_exists.mp h
-  simp only [isUnit_iff_exists, ← Subtype.val_inj, Subring.coe_mul, OneMemClass.coe_one,
-    Subtype.exists, mem_eqLocus, exists_and_left, exists_prop]
+  suffices ∃ a, r * a = 1 ∧ f a = g a ∧ a * r = 1 by simpa [isUnit_iff_exists, ← Subtype.val_inj]
   refine ⟨s, hs.left, ?_, hs.right⟩
   rw [← mul_one (f s), ← map_one g, ← hs.left, map_mul, ← mul_assoc, ← r_in, ← map_mul, hs.right,
     map_one, one_mul]
