@@ -1614,6 +1614,7 @@ Q1361031:
 
 Q1361393:
   title: Luzin's theorem
+  decl: MeasureTheory.Measurable.exists_continuous_restrict
 
 Q1366581:
   title: Erdős–Rado theorem
