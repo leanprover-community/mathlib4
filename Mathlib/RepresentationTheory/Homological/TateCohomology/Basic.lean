@@ -246,4 +246,7 @@ non-zero. -/
 def isoGroupHomology (m : ℤ) (n : ℕ) (hmn : m = -↑(n + 1)) [NeZero n] :
     tateCohomologyFunctor m ≅ groupHomology.functor R G n :=
   NatIso.ofComponents (fun M ↦ (tateComplexConnectData M).homologyIsoNeg _ _ hmn) fun {X Y} f ↦ by
-    simp [tateCohomologyFunctor, CochainComplex.ConnectData.homologyMap_map_of_eq_neg_succ (hmn := hmn)]
+    simp [tateCohomologyFunctor,
+      CochainComplex.ConnectData.homologyMap_map_of_eq_neg_succ (hmn := hmn)]
+
+end TateCohomology
