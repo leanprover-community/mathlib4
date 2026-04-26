@@ -398,7 +398,6 @@ theorem bound (hN : 4096 ≤ N) : (N : ℝ) ^ (nValue N : ℝ)⁻¹ / exp 1 < dV
     · rw [mul_comm, ← div_div, div_sqrt, le_div_iff₀]
       · norm_num [le_sqrt_log hN]
       · norm_num1
-    swap
     · rw [cast_pos, lt_ceil, cast_zero, Real.sqrt_pos]
       refine log_pos ?_
       rw [one_lt_cast]

@@ -150,7 +150,9 @@ partial def processGCongrLemma (g : MVarId) (lem : GCongrLemma) (inv : Bool)
       if ← processGCongrHypothesisIntro g sameLCtx (inv != isContra) config then
         anyProgress := true
         continue
-    try g.applyRflOrId
+    try
+      -- Due to an issue in `rfl`, we need this transparency bump. See https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/.60with_reducible.20rfl.60.20failing/with/590957602
+      withReducibleAndInstances g.applyRflOrId
     catch _ =>
       trace[Meta.grewrite] "{← g.getType} could not be closed with `rfl`"
       return false
