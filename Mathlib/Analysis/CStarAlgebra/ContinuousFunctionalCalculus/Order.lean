@@ -39,7 +39,7 @@ the spectral order.
 continuous functional calculus, normal, selfadjoint
 -/
 
-@[expose] public section
+public section
 
 open scoped NNReal CStarAlgebra
 

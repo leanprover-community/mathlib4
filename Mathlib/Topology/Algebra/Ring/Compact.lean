@@ -37,7 +37,7 @@ See https://ncatlab.org/nlab/show/compact+Hausdorff+rings+are+profinite
 
 -/
 
-@[expose] public section
+public section
 
 attribute [local instance] Ideal.Quotient.field Fintype.ofFinite finite_of_compact_of_discrete
   DivisionRing.finite_of_compactSpace_of_t2Space
