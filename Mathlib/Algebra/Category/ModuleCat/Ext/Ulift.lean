@@ -27,57 +27,7 @@ variable {R : Type u} [CommRing R]
 
 open CategoryTheory Abelian
 
-section
-
-/-- The linear equivalence `Ext M N n ≃ₗ[R] Ext (ULift M) (ULift N) n`. -/
-noncomputable def ModuleCat.extUliftLinearEquiv [Small.{v} R] (M N : ModuleCat.{v} R) (n : ℕ) :
-    haveI : Small.{max v v'} R := small_lift R
-    Ext M N n ≃ₗ[R] Ext ((uliftFunctor.{v', v} R).obj M)
-    ((uliftFunctor.{v', v} R).obj N) n :=
-  haveI : Small.{max v v'} R := small_lift R
-  LinearEquiv.ofBijective (Functor.mapExtLinearMap (uliftFunctor.{v', v} R) R M N n)
-    (Functor.mapExt_bijective_of_preservesProjectiveObjects
-    (uliftFunctor.{v', v} R) M N n)
-
-lemma ModuleCat.extUliftLinearEquiv_apply [Small.{v} R] (M N : ModuleCat.{v} R) (n : ℕ) :
-    haveI : Small.{max v v'} R := small_lift R
-    ModuleCat.extUliftLinearEquiv M N n =
-      (Functor.mapExtLinearMap (uliftFunctor.{v', v} R) R M N n) :=
-  rfl
-
-end
-
-section
-
-variable {M N : ModuleCat.{v} R} {M' N' : ModuleCat.{v'} R}
-
-set_option backward.isDefEq.respectTransparency false in
-/-- Auxiliary definition for the connection of `ModuleCat.extUliftLinearEquiv`. -/
-noncomputable def ModuleCat.extUliftFunctorObjIso
-    [Small.{max v v'} R] (e1 : M ≃ₗ[R] M') (e2 : N ≃ₗ[R] N') (n : ℕ) :
-    Ext ((ModuleCat.uliftFunctor.{v'} R).obj M) ((ModuleCat.uliftFunctor.{v'} R).obj N) n ≃ₗ[R]
-    Ext ((ModuleCat.uliftFunctor.{v} R).obj M') ((ModuleCat.uliftFunctor.{v} R).obj N') n := {
-  __ := ((((extFunctor n).obj ⟨(ModuleCat.uliftFunctor.{v'} R).obj M⟩).mapIso
-    (ModuleCat.uliftFunctorObjIso e2)).trans (((extFunctor n).mapIso
-      (ModuleCat.uliftFunctorObjIso e1).symm.op).app
-        ((ModuleCat.uliftFunctor.{v} R).obj N'))).addCommGroupIsoToAddEquiv
-  map_smul' r' x := by simp [Iso.addCommGroupIsoToAddEquiv] }
-
-/-- Given linear equivalence of `R`-modules `M ≃ₗ[R] M'` and `N ≃ₗ[R] N'`,
-the linear equivalence `Ext M N n ≃ₗ[R] Ext M' N' n`. -/
-noncomputable def ModuleCat.extLinearEquivOfLinearEquiv [Small.{v} R] [Small.{v'} R]
-    (e1 : M ≃ₗ[R] M') (e2 : N ≃ₗ[R] N') (n : ℕ) : Ext M N n ≃ₗ[R] Ext M' N' n :=
-  haveI : Small.{max v v'} R := small_lift R
-  ((ModuleCat.extUliftLinearEquiv M N n).trans (ModuleCat.extUliftFunctorObjIso e1 e2 n)).trans
-    (ModuleCat.extUliftLinearEquiv M' N' n).symm
-
-end
-
-section restrictScalars
-
 variable {R' : Type u'} [CommRing R']
-
-section
 
 variable (e : R ≃+* R')
 
@@ -100,15 +50,14 @@ noncomputable def extRestrictScalarsSemiLinearMap [Small.{v} R] [Small.{v} R']
     ext
     simp
 
-instance : (restrictScalars (RingHomClass.toRingHom e)).IsEquivalence :=
-  restrictScalars_isEquivalence_of_ringEquiv e
-
 /-- For `R'` module `M N` and ring isomorphism `R ≃+* R'`,
 the semi-linear equivalence `Ext (↑R M) (↑R N) n ≃ Ext M N n` -/
 noncomputable def extRestrictScalarsSemiLinearEquiv [Small.{v} R] [Small.{v} R']
     (M N : ModuleCat.{v} R') (n : ℕ) : Ext M N n ≃ₛₗ[RingHomClass.toRingHom e.symm]
     Ext ((ModuleCat.restrictScalars (RingHomClass.toRingHom e)).obj M)
     ((ModuleCat.restrictScalars (RingHomClass.toRingHom e)).obj N) n :=
+  haveI : (restrictScalars (RingHomClass.toRingHom e)).IsEquivalence :=
+    restrictScalars_isEquivalence_of_ringEquiv e
   LinearEquiv.ofBijective (ModuleCat.extRestrictScalarsSemiLinearMap e M N n)
     (Functor.mapExt_bijective_of_preservesProjectiveObjects
     (ModuleCat.restrictScalars.{v} (RingHomClass.toRingHom e)) M N n)
@@ -116,7 +65,7 @@ noncomputable def extRestrictScalarsSemiLinearEquiv [Small.{v} R] [Small.{v} R']
 set_option backward.isDefEq.respectTransparency false in
 /-- Given semi linear equivalence `M ≃ M'` and `N ≃ N'` with respect to `R ≃+* R'`
 within same universe, the semi linear equivalence `Ext M N n ≃ Ext M' N' n`. -/
-noncomputable def extSemiLinearEquivOfSemiLinearEquivEqualUniverse [Small.{v} R] [Small.{v} R']
+noncomputable def extSemiLinearEquivOfSemiLinearEquiv [Small.{v} R] [Small.{v} R']
     {M N : ModuleCat.{v} R} {M' N' : ModuleCat.{v} R'}
     (e1 : M ≃ₛₗ[RingHomClass.toRingHom e] M') (e2 : N ≃ₛₗ[RingHomClass.toRingHom e] N')
     (n : ℕ) :  Ext M' N' n ≃ₛₗ[RingHomClass.toRingHom e.symm] Ext M N n :=
@@ -130,33 +79,3 @@ noncomputable def extSemiLinearEquivOfSemiLinearEquivEqualUniverse [Small.{v} R]
   (ModuleCat.extRestrictScalarsSemiLinearEquiv e M' N' n).trans e3
 
 end ModuleCat
-
-end
-
-section
-
-variable (e : R ≃+* R')
-
-attribute [local instance] RingHomInvPair.of_ringEquiv
-
-/-- Given semi linear equivalence `M ≃ M'` and `N ≃ N'` with respect to `R ≃+* R'`,
-the semi linear equivalence `Ext M N n ≃ Ext M' N' n`. -/
-noncomputable def ModuleCat.extSemiLinearEquivOfSemiLinearEquiv [Small.{v} R] [Small.{v'} R']
-    {M N : ModuleCat.{v} R} {M' N' : ModuleCat.{v'} R'}
-    (e1 : M ≃ₛₗ[RingHomClass.toRingHom e] M') (e2 : N ≃ₛₗ[RingHomClass.toRingHom e] N')
-    (n : ℕ) : Ext M' N' n ≃ₛₗ[RingHomClass.toRingHom e.symm] Ext M N n :=
-  haveI : Small.{max v v'} R := small_lift R
-  haveI : Small.{max v v'} R' := small_lift R'
-  let e1' : (uliftFunctor.{v'} R).obj M ≃ₛₗ[RingHomClass.toRingHom e]
-    (uliftFunctor.{v} R').obj M' :=
-    (ULift.moduleEquiv.trans e1).trans ULift.moduleEquiv.symm
-  let e2' : (uliftFunctor.{v'} R).obj N ≃ₛₗ[RingHomClass.toRingHom e]
-    (uliftFunctor.{v} R').obj N' :=
-    (ULift.moduleEquiv.trans e2).trans ULift.moduleEquiv.symm
-  ((ModuleCat.extUliftLinearEquiv M' N' n).trans
-    (extSemiLinearEquivOfSemiLinearEquivEqualUniverse e e1' e2' n)).trans
-      (ModuleCat.extUliftLinearEquiv M N n).symm
-
-end
-
-end restrictScalars
