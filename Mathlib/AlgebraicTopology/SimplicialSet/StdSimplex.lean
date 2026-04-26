@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Finite
 public import Mathlib.AlgebraicTopology.SimplicialSet.NerveNondegenerate
+public import Mathlib.AlgebraicTopology.SimplicialSet.Op
 public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.Order.Fin.Finset
@@ -137,6 +138,10 @@ lemma map_apply {m₁ m₂ : SimplexCategoryᵒᵖ} (f : m₁ ⟶ m₂) {n : Sim
     (x : (stdSimplex.{u}.obj n).obj m₁) :
     (stdSimplex.{u}.obj n).map f x = objEquiv.symm (f.unop ≫ objEquiv x) := by
   rfl
+
+@[simp]
+lemma coe_asOrderHom_objEquiv_symm {n m : ℕ} (α : ⦋n⦌ ⟶ ⦋m⦌) :
+    ⇑(asOrderHom (objEquiv.{u}.symm α)) = α := rfl
 
 end stdSimplex
 
@@ -302,8 +307,7 @@ lemma range_eq_ofSimplex {n : ℕ} (f : Δ[n] ⟶ X) :
 
 lemma yonedaEquiv_coe {A : X.Subcomplex} {n : SimplexCategory}
     (f : stdSimplex.obj n ⟶ A) :
-    (DFunLike.coe (F := ((stdSimplex.obj n ⟶ Subfunctor.toFunctor A) ≃ A.obj (op n)))
-      yonedaEquiv f).val = yonedaEquiv (f ≫ A.ι) := by
+    (yonedaEquiv f).val = yonedaEquiv (f ≫ A.ι) := by
   rfl
 
 end Subcomplex
@@ -396,12 +400,12 @@ def isoNerve (n : ℕ) :
 @[simp]
 lemma isoNerve_hom_app_apply {n d : ℕ}
     (s : (Δ[n] _⦋d⦌)) (i : Fin (d + 1)) :
-    ((isoNerve.{u} n).hom.app _ s).obj i = ULift.up (s i) := rfl
+    dsimp% ((isoNerve.{u} n).hom.app _ s).obj i = ULift.up (s i) := rfl
 
 @[simp]
 lemma isoNerve_inv_app_apply {n d : ℕ}
     (F : (nerve (ULift.{u} (Fin (n + 1)))) _⦋d⦌) (i : Fin (d + 1)) :
-    (isoNerve.{u} n).inv.app _ F i = (F.obj i).down := rfl
+    dsimp% (isoNerve.{u} n).inv.app _ F i = (F.obj i).down := rfl
 
 lemma mem_nonDegenerate_iff_strictMono {n d : ℕ} (s : (Δ[n] : SSet.{u}) _⦋d⦌) :
     s ∈ Δ[n].nonDegenerate d ↔ StrictMono s := by
@@ -639,6 +643,38 @@ lemma not_hasDimensionLT (n : ℕ) (_ : HasDimensionLT.{u} Δ[n] n := by infer_i
     False :=
   (lt_self_iff_false n).1 (Δ[n].dim_lt_of_nonDegenerate
     (nonDegenerateEquiv.2 (.refl _)) n)
+
+/-- The bijection `(stdSimplex.obj n).op.obj d ≃ (stdSimplex.obj n).obj d` for any
+`n : ℕ` and `d : ℕ`. See also `stdSimplex.opIso`. -/
+protected def opObjEquiv {n : SimplexCategory} {d : SimplexCategoryᵒᵖ} :
+    (stdSimplex.{u}.obj n).op.obj d ≃ (stdSimplex.obj n).obj d :=
+  SSet.opObjEquiv.trans (objEquiv.trans
+    (SimplexCategory.revEquivalence.fullyFaithfulFunctor.homEquiv.trans objEquiv.symm))
+
+protected lemma opObjEquiv_apply {d n : ℕ} (f : Δ[n].op _⦋d⦌) (i : Fin (d + 1)) :
+    stdSimplex.opObjEquiv.{u} f i = (opObjEquiv f i.rev).rev := rfl
+
+lemma opObjEquiv_opObjEquiv_symm_apply {d n : ℕ} (f : (Δ[n] _⦋d⦌)) (i : Fin (d + 1)) :
+    SSet.opObjEquiv (stdSimplex.opObjEquiv.{u}.symm f) i = (f i.rev).rev :=
+  rfl
+
+lemma map_rev_map_op_apply {n d d' : ℕ} (f : ⦋d⦌ ⟶ ⦋d'⦌) (g : Δ[n] _⦋d'⦌) (i : Fin (d + 1)) :
+    dsimp% (show Δ[n] _⦋d⦌ from (Δ[n] : SSet.{u}).map (rev.map f).op g : Δ[n] _⦋d⦌) i =
+      g (f i.rev).rev := rfl
+
+/-- The opposite of `Δ[n]` is isomorphic to `Δ[n]`. -/
+@[simps! hom_app_hom_apply inv_app_hom_apply]
+def opIso (n : SimplexCategory) :
+    (stdSimplex.{u}.obj n).op ≅ stdSimplex.obj n :=
+  NatIso.ofComponents (fun d ↦ stdSimplex.opObjEquiv.toIso) (fun {d d'} f ↦ by
+    ext g
+    refine stdSimplex.ext _ _ (fun i ↦ ?_)
+    dsimp
+    rw [stdSimplex.opObjEquiv_apply, op_map]
+    erw [Equiv.apply_symm_apply]
+    dsimp
+    rw [map_rev_map_op_apply]
+    aesop)
 
 end stdSimplex
 

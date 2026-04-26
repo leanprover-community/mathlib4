@@ -15,7 +15,7 @@ public import Mathlib.Condensed.Limits
 # The functor from compact Hausdorff spaces to condensed sets preserves effective epimorphisms
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory CompHausLike
 
