@@ -891,7 +891,7 @@ lemma extClass_postcomp_surjective (M N : ModuleCat.{v} R) (x : R) (reg : IsSMul
     (mem : x ∈ Module.annihilator R N) {a b : ℕ} (h : a + 1 = b) :
     Function.Surjective (reg.smulShortComplex_shortExact.extClass.postcomp N h) := by
   have epi := (Ext.covariant_sequence_exact₁' N reg.smulShortComplex_shortExact a b h).epi_f
-    (Ext.smul_id_postcomp_eq_zero_of_mem_ann mem b)
+    (Ext.smul_id_postcomp_eq_zero_of_mem_annihilator mem b)
   exact (AddCommGrpCat.epi_iff_surjective _).mp epi
 
 lemma ext_subsingleton_of_regualr_sequence (M N : ModuleCat.{v} R) {rs : List R}
@@ -1407,7 +1407,7 @@ theorem isGroensteinLocalRing_tfae [IsNoetherianRing R] (n : ℕ) (h : ringKrull
       · apply le_of_le_of_eq (Submodule.spanFinrank_span_le_ncard_of_finite S.finite_toSet)
         simpa [← ENat.coe_inj, hS] using hteq
       · rw [← ENat.coe_le_coe, ← hteq]
-        apply le_of_le_of_eq (Ideal.height_le_spanRank_toENat_of_mem_minimal_primes _ _ min)
+        apply le_of_le_of_eq (Ideal.height_le_spanRank_toENat_of_mem_minimalPrimes _ _ min)
         simpa [Submodule.fg_iff_spanRank_eq_spanFinrank] using
           (isNoetherianRing_iff_ideal_fg R).mp ‹_› _
     use Ideal.span (S : Set R)
