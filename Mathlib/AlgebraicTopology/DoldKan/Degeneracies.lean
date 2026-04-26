@@ -58,7 +58,7 @@ theorem HigherFacesVanish.comp_σ {Y : C} {X : SimplicialObject C} {n b q : ℕ}
 
 set_option backward.isDefEq.respectTransparency false in
 theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1)) (hi : n + 1 ≤ i + q) :
-    X.σ i ≫ (P q).f (n + 1) = 0 := by
+    dsimp% X.σ i ≫ (P q).f (n + 1) = 0 := by
   induction q generalizing i with
   | zero => lia
   | succ q hq =>
@@ -119,13 +119,14 @@ theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1))
 
 @[reassoc (attr := simp)]
 theorem σ_comp_PInfty (X : SimplicialObject C) {n : ℕ} (i : Fin (n + 1)) :
-    X.σ i ≫ PInfty.f (n + 1) = 0 := by
+    dsimp% X.σ i ≫ PInfty.f (n + 1) = 0 := by
   rw [PInfty_f, σ_comp_P_eq_zero X i]
   simp only [le_add_iff_nonneg_left, zero_le]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem degeneracy_comp_PInfty (X : SimplicialObject C) (n : ℕ) {Δ' : SimplexCategory}
-    (θ : ⦋n⦌ ⟶ Δ') (hθ : ¬Mono θ) : X.map θ.op ≫ PInfty.f n = 0 := by
+    (θ : ⦋n⦌ ⟶ Δ') (hθ : ¬Mono θ) : dsimp% X.map θ.op ≫ PInfty.f n = 0 := by
   rw [SimplexCategory.mono_iff_injective] at hθ
   cases n
   · exfalso
@@ -137,6 +138,62 @@ theorem degeneracy_comp_PInfty (X : SimplicialObject C) (n : ℕ) {Δ' : Simplex
   · obtain ⟨i, α, h⟩ := SimplexCategory.eq_σ_comp_of_not_injective θ hθ
     rw [h, op_comp, X.map_comp, assoc, show X.map (SimplexCategory.σ i).op = X.σ i by rfl,
       σ_comp_PInfty, comp_zero]
+
+section
+
+variable {X : SimplicialObject C} {n : ℕ} {T : C}
+
+/-- If `X` is a simplicial object in a preadditive category and `f : X _⦋n⦌ ⟶ T`
+is a morphism, we say that is vanishes on degeneracies if `n = 0` or if
+maps `X.σ i ≫ f` all vanish. -/
+def DegeneraciesVanish (f : X _⦋n⦌ ⟶ T) : Prop :=
+  match n with
+  | 0 => True
+  | n + 1 =>
+    ∀ (i : Fin (n + 1)), X.σ i ≫ f = 0
+
+@[simp]
+lemma degeneraciesVanish_zero_iff_true (f : X _⦋0⦌ ⟶ T) :
+    DegeneraciesVanish f ↔ True := Iff.rfl
+
+lemma degeneraciesVanish_succ_iff (f : X _⦋n + 1⦌ ⟶ T) :
+    DegeneraciesVanish f ↔ ∀ (i : Fin (n + 1)), X.σ i ≫ f = 0 := Iff.rfl
+
+@[reassoc]
+lemma DegeneraciesVanish.σ_comp {f : X _⦋n + 1⦌ ⟶ T} (hf : DegeneraciesVanish f)
+    (i : Fin (n + 1)) :
+    X.σ i ≫ f = 0 := hf i
+
+variable {f} in
+lemma DegeneraciesVanish.comp
+    {f : X _⦋n⦌ ⟶ T} (hf : DegeneraciesVanish f) {U : C} (g : T ⟶ U) :
+    DegeneraciesVanish (f ≫ g) := by
+  obtain _ | n := n
+  · simp
+  · simp [degeneraciesVanish_succ_iff, hf.σ_comp_assoc]
+
+set_option backward.isDefEq.respectTransparency false in
+variable (X) in
+lemma degeneraciesVanishPInfty_f (n : ℕ) :
+    DegeneraciesVanish ((PInfty (X := X)).f n) := by
+  obtain _ | n := n
+  · simp
+  · simp [degeneraciesVanish_succ_iff]
+
+set_option backward.isDefEq.respectTransparency false in
+lemma degeneraciesVanish_iff_QInfty_f_comp (f : X _⦋n⦌ ⟶ T) :
+    DegeneraciesVanish f ↔ QInfty.f n ≫ f = 0 := by
+  obtain _ | n := n
+  · simp
+  · refine ⟨fun hf ↦ ?_, fun hf ↦ ?_⟩
+    · simp [QInfty_f, decomposition_Q, Preadditive.sum_comp, hf.σ_comp]
+    · have := PInfty_f_add_QInfty_f (n + 1) =≫ f
+      dsimp at this
+      rw [Category.id_comp] at this
+      rw [degeneraciesVanish_succ_iff, ← this]
+      simp [hf]
+
+end
 
 end DoldKan
 
