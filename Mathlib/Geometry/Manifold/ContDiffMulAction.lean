@@ -72,6 +72,11 @@ variable {𝕜 M X Y α : Type*} {n : WithTop ℕ∞} [NontriviallyNormedField �
   [NormedAddCommGroup M] [NormedSpace 𝕜 M]
   [NormedAddCommGroup X] [NormedSpace 𝕜 X]
 
+theorem ContDiffSMul.of_le {m : WithTop ℕ∞} [SMul M X] [ContDiffSMul 𝕜 M X n] (h : m ≤ n) :
+    ContDiffSMul 𝕜 M X m where
+  contdiff_smul := contdiff_smul.of_le h
+
+
 section SMul
 
 variable [SMul M X] [ContDiffSMul 𝕜 M X n]
