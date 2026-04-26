@@ -1537,6 +1537,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.HoFunctorMonoidal
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.HomologyZero
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.HomotopyInvariance
+public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.Nondegenerate
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homotopy
 public import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
 public import Mathlib.AlgebraicTopology.SimplicialSet.Horn

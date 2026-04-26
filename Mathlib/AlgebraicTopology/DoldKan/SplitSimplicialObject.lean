@@ -222,6 +222,40 @@ noncomputable def toKaroubiNondegComplexIsoN₁ :
     simp only [πSummand_comp_cofan_inj_id_comp_PInfty_eq_PInfty, Karoubi.comp_f,
       HomologicalComplex.comp_f, N₁_obj_p, Karoubi.id_f]
 
+@[reassoc (attr := simp)]
+lemma toKaroubiNondegComplexIsoN₁_hom_f_PInfty :
+    dsimp% s.toKaroubiNondegComplexIsoN₁.hom.f ≫ PInfty =
+      s.toKaroubiNondegComplexIsoN₁.hom.f := by
+  simpa using s.toKaroubiNondegComplexIsoN₁.hom.comm
+
+@[reassoc (attr := simp)]
+lemma toKaroubiNondegComplexIsoN₁_hom_inv_id_f :
+    dsimp% s.toKaroubiNondegComplexIsoN₁.hom.f ≫ s.toKaroubiNondegComplexIsoN₁.inv.f = 𝟙 _ := by
+  rw [← dsimp% [-Karoubi.comp_f] Karoubi.comp_f s.toKaroubiNondegComplexIsoN₁.hom
+    s.toKaroubiNondegComplexIsoN₁.inv, Iso.hom_inv_id]
+  simp
+
+noncomputable def toNondegComplex : K[X] ⟶ s.nondegComplex :=
+  (fullyFaithfulToKaroubi _).preimage
+    ({ f := by exact PInfty } ≫ s.toKaroubiNondegComplexIsoN₁.inv)
+
+noncomputable def fromNondegComplex : s.nondegComplex ⟶ K[X] :=
+  (fullyFaithfulToKaroubi _).preimage
+    (s.toKaroubiNondegComplexIsoN₁.hom ≫ { f := PInfty })
+
+@[reassoc (attr := simp)]
+lemma fromNondegComplex_toNondegComplex :
+    s.fromNondegComplex ≫ s.toNondegComplex = 𝟙 _ :=
+  (toKaroubi _).map_injective (by simp [toNondegComplex, fromNondegComplex])
+
+@[simps hom inv]
+noncomputable def homotopyEquivNondegComplex :
+    HomotopyEquiv K[X] s.nondegComplex where
+  hom := s.toNondegComplex
+  inv := s.fromNondegComplex
+  homotopyHomInvId := by sorry
+  homotopyInvHomId := .ofEq (by simp)
+
 end Splitting
 
 namespace Split

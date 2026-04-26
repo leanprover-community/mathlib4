@@ -6,7 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 public import Mathlib.Data.Fintype.Sigma
 
 /-!
@@ -45,7 +46,7 @@ open Simplicial
 
 universe u
 
-variable {C : Type*} [Category* C]
+variable {C D : Type*} [Category* C] [Category D]
 
 namespace CategoryTheory.SimplicialObject
 
@@ -285,6 +286,17 @@ theorem cofan_inj_epi_naturality {Δ₁ Δ₂ : SimplexCategoryᵒᵖ} (A : Inde
   dsimp [cofan]
   rw [assoc, ← X.map_comp]
   rfl
+
+/-- The image of a splitting of simplicial object by a functor which preserves
+finite coproducts -/
+@[simps]
+def map (F : C ⥤ D) [PreservesFiniteCoproducts F] :
+    (((whiskering _ _).obj F).obj X).Splitting where
+  N n := F.obj (s.N n)
+  ι n := F.map (s.ι n)
+  isColimit' n :=
+    IsColimit.ofIsoColimit (isColimitCofanMkObjOfIsColimit F _ _ (s.isColimit n))
+      (Cofan.ext (Iso.refl _))
 
 end Splitting
 
