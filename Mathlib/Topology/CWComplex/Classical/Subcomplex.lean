@@ -343,19 +343,12 @@ lemma RelCWComplex.Subcomplex.coe_iInf [T2Space X] [RelCWComplex C D]
   simp [iInf, coe_sInf]
 
 @[simp]
-lemma RelCWComplex.Subcomplex.iInf_coe_eq_of_nonempty [T2Space X] [RelCWComplex C D]
+lemma RelCWComplex.Subcomplex.coe_iInf_eq_of_nonempty [T2Space X] [RelCWComplex C D]
     {J : Type*} [Nonempty J] (f : J → Subcomplex C) :
     (((⨅ (j : J), f j) : Subcomplex C) : Set X) = ⋂ j, f j := by
   simp only [coe_iInf, inter_eq_right]
   apply iInter_subset_of_subset (Classical.choice (α := J) inferInstance)
   exact subset_complex _
-
-@[simp]
-lemma RelCWComplex.Subcomplex.iInf_coe_eq_of_empty [T2Space X] [RelCWComplex C D]
-    {J : Type*} [IsEmpty J] (f : J → Subcomplex C) :
-    ⨅ (j : J), f j = ⊤ := by
-  ext
-  simp only [← SetLike.mem_coe, coe_iInf, coe_top, iInter_of_empty, inter_univ]
 
 @[simp]
 lemma RelCWComplex.Subcomplex.iInf_I [T2Space X] [RelCWComplex C D]
@@ -451,7 +444,7 @@ protected def RelCWComplex.Subcomplex.CompletelyDistribLattice.MinimalAxioms [T2
         rw [iSup_of_empty, eq_bot_iff]
         exact iInf_le_of_le i <| by rw [iSup_of_empty]
     · rw [not_nonempty_iff] at h
-      simp
+      simp [iInf_of_empty]
 
 instance RelCWComplex.Subcomplex.instCompletelyDistribLattice [T2Space X]
     [RelCWComplex C D] : CompletelyDistribLattice (Subcomplex C) := fast_instance%
@@ -472,7 +465,7 @@ export RelCWComplex.Subcomplex (closedCell_subset_of_mem openCell_subset_of_mem
   finiteType_subcomplex_of_finiteType finiteDimensional_subcomplex_of_finiteDimensional
   finite_subcomplex_of_finite instDistribLattice instCompletelyDistribLattice coe_top top_I coe_bot
   bot_I finite_bot iSup_I finiteDimensional_finite_iSup_of_finiteDimensional
-  finiteType_finite_iSup_of_finiteType coe_iInf iInf_coe_eq_of_nonempty iInf_coe_eq_of_empty iInf_I
+  finiteType_finite_iSup_of_finiteType coe_iInf coe_iInf_eq_of_nonempty iInf_I
   finiteDimensional_iInf_of_exists_finiteDimensional finiteDimensional_iInf_of_finiteDimensional
   finiteType_iInf_of_exists_finiteType finiteType_iInf_of_finiteType finite_iInf_of_exists_finite
   instInhabited)
