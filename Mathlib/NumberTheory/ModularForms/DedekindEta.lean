@@ -164,7 +164,8 @@ lemma differentiableAt_eta_tprod {z : ℂ} (hz : z ∈ ℍₒ) :
     simpa [Metric.mem_ball, dist_zero_right] using
       (by exact_mod_cast norm_qParam_lt_one 1 ⟨z, hz⟩ : ‖(𝕢 (1 : ℝ) z : ℂ)‖ < 1)
   exact (((differentiableOn_tprod_one_sub_pow).differentiableAt
-    (Metric.isOpen_ball.mem_nhds hq)).comp z (by fun_prop : DifferentiableAt ℂ (𝕢 (1 : ℝ)) z))
+    (Metric.isOpen_ball.mem_nhds hq)).comp z
+      (by fun_prop : DifferentiableAt ℂ (𝕢 (1 : ℝ)) z))
 
 theorem differentiableAt_eta_of_mem_upperHalfPlaneSet {z : ℂ} (hz : z ∈ ℍₒ) :
     DifferentiableAt ℂ eta z :=
