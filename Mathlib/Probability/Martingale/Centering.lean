@@ -97,13 +97,13 @@ lemma Submartingale.predictablePart_nonneg [PartialOrder E] [IsOrderedAddMonoid 
   filter_upwards [hf.monotone_predictablePart] with ω hω n
   simpa [predictablePart_zero] using hω (Nat.zero_le n)
 
-lemma IsPredictable.predictablePart_eq [SecondCountableTopology E] [MeasurableSpace E]
-    [BorelSpace E] [SigmaFiniteFiltration μ ℱ] (hf : IsPredictable ℱ f)
+lemma IsStronglyPredictable.predictablePart_eq [SecondCountableTopology E] [MeasurableSpace E]
+    [BorelSpace E] [SigmaFiniteFiltration μ ℱ] (hf : IsStronglyPredictable ℱ f)
     (hfint : ∀ n, Integrable (f n) μ) (n : ℕ) :
     predictablePart f ℱ μ n =ᵐ[μ] f n - f 0 := by
   simp only [predictablePart, ← Finset.sum_range_sub]
   exact eventuallyEq_sum fun i hi => (condExp_of_stronglyMeasurable (ℱ.le i)
-    ((hf.measurable_add_one i).stronglyMeasurable.sub (hf.adapted i))
+    ((hf.measurable_add_one i).sub (hf.stronglyAdapted i))
     ((hfint (i + 1)).sub (hfint i))).eventuallyEq
 
 theorem stronglyAdapted_predictablePart :
@@ -112,9 +112,9 @@ theorem stronglyAdapted_predictablePart :
     stronglyMeasurable_condExp.mono (ℱ.mono (Finset.mem_range_succ_iff.mp hin))
 
 lemma isPredictable_predictablePart [SecondCountableTopology E] [MeasurableSpace E] [BorelSpace E] :
-    IsPredictable ℱ (predictablePart f ℱ μ) :=
-  isPredictable_of_measurable_add_one (by simp [measurable_const'])
-    fun n ↦ (stronglyAdapted_predictablePart n).measurable
+    IsStronglyPredictable ℱ (predictablePart f ℱ μ) :=
+  IsStronglyPredictable.of_measurable_add_one (by measurability)
+    fun n ↦ (stronglyAdapted_predictablePart n)
 
 theorem stronglyAdapted_predictablePart' : StronglyAdapted ℱ fun n => predictablePart f ℱ μ n :=
   fun _ => Finset.stronglyMeasurable_sum _ fun _ hin =>
@@ -147,7 +147,7 @@ lemma Martingale.martingalePart_eq (hf : Martingale f ℱ μ) (n : ℕ) :
   simp [martingalePart, hω]
 
 lemma IsPredictable.martingalePart_eq [SecondCountableTopology E] [MeasurableSpace E]
-    [BorelSpace E] [SigmaFiniteFiltration μ ℱ] (hf : IsPredictable ℱ f)
+    [BorelSpace E] [SigmaFiniteFiltration μ ℱ] (hf : IsStronglyPredictable ℱ f)
     (hfint : ∀ n, Integrable (f n) μ) (n : ℕ) :
     martingalePart f ℱ μ n =ᵐ[μ] f 0 := by
   filter_upwards [hf.predictablePart_eq (μ := μ) hfint n] with ω hω
