@@ -25,7 +25,7 @@ The category of measurable spaces with s-finite kernels is a copy-discard catego
   Markov kernels, conditional independence and theorems on sufficient statistics][fritz2020]
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory ProbabilityTheory MeasureTheory
 

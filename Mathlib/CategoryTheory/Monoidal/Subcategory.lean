@@ -27,7 +27,7 @@ braided/symmetric structure.
 * Add monoidal/braided versions of `ObjectProperty.Lift`
 -/
 
-@[expose] public section
+public section
 
 
 universe u v

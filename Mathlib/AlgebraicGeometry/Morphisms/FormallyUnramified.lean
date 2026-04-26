@@ -20,7 +20,7 @@ We show that these properties are local, and are stable under compositions and b
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

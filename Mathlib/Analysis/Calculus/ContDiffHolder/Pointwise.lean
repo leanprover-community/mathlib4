@@ -36,7 +36,7 @@ In Moreira's paper, `k` is assumed to be a strictly positive number.
 We define the predicate for any `k : ℕ`, then assume `k ≠ 0` whenever it is necessary.
 -/
 
-@[expose] public section
+public section
 
 open scoped unitInterval Topology NNReal
 open Asymptotics Filter Set

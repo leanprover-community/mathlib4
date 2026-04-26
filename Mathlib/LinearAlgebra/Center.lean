@@ -46,7 +46,7 @@ but they are not left multiplication by some element.
 
 -/
 
-@[expose] public section
+public section
 
 open Module LinearMap LinearEquiv Set Finsupp
 

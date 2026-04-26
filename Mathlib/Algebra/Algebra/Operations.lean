@@ -804,7 +804,7 @@ theorem prod_span {ι : Type*} (s : Finset ι) (M : ι → Set A) :
 
 theorem prod_span_singleton {ι : Type*} (s : Finset ι) (x : ι → A) :
     (∏ i ∈ s, span R ({x i} : Set A)) = span R {∏ i ∈ s, x i} := by
-  rw [prod_span, Set.finset_prod_singleton]
+  rw [prod_span, Set.finsetProd_singleton]
 
 variable (R A)
 
@@ -923,7 +923,7 @@ theorem restrictScalars_image_smul_eq {S M : Type*}
       exact mem_set_smul_of_mem_mem r_in x_in
     · intro r y h h'
       obtain ⟨c, c_supp, hc⟩ := (mem_set_smul ..).mp <| smul_mem _ r h
-      simp only [hc, Finsupp.sum, AddSubmonoidClass.coe_finset_sum, SetLike.val_smul]
+      simp only [hc, Finsupp.sum, AddSubmonoidClass.coe_finsetSum, SetLike.val_smul]
       refine sum_mem fun u u_in ↦ ?_
       obtain ⟨u, u_in', rfl⟩ := c_supp (Finset.mem_coe.mpr u_in)
       rw [algebraMap_smul]
