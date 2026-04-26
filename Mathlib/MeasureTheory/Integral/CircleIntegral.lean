@@ -415,7 +415,7 @@ theorem integral_fun_sum {ι : Type*} {s : Finset ι} {f : ι → ℂ → E} {c 
     (h : ∀ i ∈ s, CircleIntegrable (f i) c R) :
     (∮ z in C(c, R), ∑ i ∈ s, f i z) = ∑ i ∈ s, ∮ z in C(c, R), f i z := by
   simp only [circleIntegral, Finset.smul_sum,
-    intervalIntegral.integral_finset_sum fun i hi ↦ (h i hi).out]
+    intervalIntegral.integral_finsetSum fun i hi ↦ (h i hi).out]
 
 theorem norm_integral_le_of_norm_le_const' {f : ℂ → E} {c : ℂ} {R C : ℝ}
     (hf : ∀ z ∈ sphere c |R|, ‖f z‖ ≤ C) : ‖∮ z in C(c, R), f z‖ ≤ 2 * π * |R| * C :=

@@ -182,7 +182,7 @@ instance (priority := 100) [IsLocallyNoetherian X] : X.IsGermInjective := by
   rw [← hs, Ideal.span_le]
   intro i hi
   rw [SetLike.mem_coe, Submodule.mem_annihilator_span_singleton, smul_eq_mul,
-    mul_comm, ← smul_eq_mul, ← Submodule.mem_annihilator_span_singleton, Submonoid.coe_finset_prod]
+    mul_comm, ← smul_eq_mul, ← Submodule.mem_annihilator_span_singleton, Submonoid.coe_finsetProd]
   refine Ideal.mem_of_dvd _ (Finset.dvd_prod_of_mem _ (s.mem_attach ⟨i, hi⟩)) ?_
   rw [Submodule.mem_annihilator_span_singleton, smul_eq_mul]
   exact hf i _
