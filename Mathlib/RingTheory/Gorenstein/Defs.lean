@@ -33,13 +33,9 @@ lemma isGorensteinLocalRing_def [IsLocalRing R] :
     IsGorensteinLocalRing R ↔ injectiveDimension (ModuleCat.of R R) ≠ ⊤ :=
   ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
-section
-
-universe u'
-
 variable {R} in
 attribute [local instance] RingHomInvPair.of_ringEquiv in
-lemma IsGorensteinLocalRing.of_ringEquiv {R' : Type u'} [CommRing R'] (e : R ≃+* R')
+lemma IsGorensteinLocalRing.of_ringEquiv {R' : Type u} [CommRing R'] (e : R ≃+* R')
     [IsGorensteinLocalRing R] : IsGorensteinLocalRing R' := by
   let eR : (ModuleCat.of R R) ≃ₛₗ[RingHomClass.toRingHom e] (ModuleCat.of R' R') :=
     e.toSemilinearEquiv
@@ -47,8 +43,6 @@ lemma IsGorensteinLocalRing.of_ringEquiv {R' : Type u'} [CommRing R'] (e : R ≃
   have := (isGorensteinLocalRing_def R).mp ‹_›
   rw [injectiveDimension_eq_of_semiLinearEquiv e eR] at this
   exact (isGorensteinLocalRing_def R').mpr this
-
-end
 
 /-- A commutative ring is Gorenstein if its localization at every prime
 `IsGorensteinLocalRing`. -/
@@ -64,11 +58,7 @@ lemma isGorensteinRing_def' : IsGorensteinRing R ↔
     ∀ p : PrimeSpectrum R, IsGorensteinLocalRing (Localization.AtPrime p.1) :=
   ⟨fun ⟨h⟩ ↦ fun p ↦ h p.1 p.2, fun h ↦ ⟨fun p hp ↦ h ⟨p, hp⟩⟩⟩
 
-section
-
-universe u'
-
-lemma isGorensteinRing_of_ringEquiv {R' : Type u'} [CommRing R']
+lemma isGorensteinRing_of_ringEquiv {R' : Type u} [CommRing R']
     (e : R ≃+* R') [G : IsGorensteinRing R] : IsGorensteinRing R' := by
   apply (isGorensteinRing_def R').mpr (fun p' hp' ↦ ?_)
   let p := p'.comap e
@@ -80,5 +70,3 @@ lemma isGorensteinRing_of_ringEquiv {R' : Type u'} [CommRing R']
     simpa only [p]
   exact IsGorensteinLocalRing.of_ringEquiv
     (IsLocalization.ringEquivOfRingEquiv (Localization.AtPrime p) (Localization.AtPrime p') e this)
-
-end
