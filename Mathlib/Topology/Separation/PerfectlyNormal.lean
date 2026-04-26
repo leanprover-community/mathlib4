@@ -45,11 +45,10 @@ theorem perfectlyNormalSpace_iff_forall_isClosed_preimage_zero :
       (summable_geometric_two' 1).of_norm_bounded fun n => hsb x n
     -- consider the infinite sum of `f n x * (1 / 2 / 2 ^ n)`, which is uniformly convergent and
     -- thus continuous because it is dominated by a geometric series
-    let h : C(X, ℝ) := {
-      toFun x := ∑' n, f n x * (1 / 2 / 2 ^ n)
-      continuous_toFun :=
-        continuous_tsum (fun n => by fun_prop) (summable_geometric_two' 1) fun n x => hsb x n
-      }
+    let h : C(X, ℝ) :=
+      { toFun x := ∑' n, f n x * (1 / 2 / 2 ^ n)
+        continuous_toFun :=
+          continuous_tsum (fun n => by fun_prop) (summable_geometric_two' 1) fun n x => hsb x n }
     refine ⟨h, ?_, fun r ⟨x, hx⟩ => ⟨?_, ?_⟩⟩
     · ext x
       refine ⟨fun hp => ?_, fun hp => ?_⟩
@@ -69,44 +68,44 @@ theorem perfectlyNormalSpace_iff_forall_isClosed_preimage_zero :
       _ ≤ ∑' n, 1 / 2 / 2 ^ n :=
         (hsx x).tsum_le_tsum (fun n => by simp [(hfr n x).2]) (summable_geometric_two' 1)
       _ = _ := tsum_geometric_two' 1
-  mpr h := {
-    normal s t hs ht hst := by
-      -- pick `f, g` such that `s = f ⁻¹' {0}` and `t = g ⁻¹' {0}`, and then the function
-      -- `f / (f  + g)` separates `s` and `t`.
-      obtain ⟨f, hf, hfr⟩ := h s hs
-      obtain ⟨g, hg, hgr⟩ := h t ht
-      have hsn : SeparatedNhds {(0 : ℝ)} {1} :=
-        SeparatedNhds.of_finite (finite_singleton _) (finite_singleton _)
-        (disjoint_singleton.2 zero_ne_one)
-      have hfg (x : X) : f x + g x ≠ 0 := by
-        simp_all only [preimage, mem_singleton_iff]
-        by_cases! hfx : f x = 0
-        · simpa [hfx] using hst.notMem_of_mem_left hfx
-        · simp only [range, Icc, setOf_subset_setOf, forall_exists_index,
-            forall_apply_eq_imp_iff] at hfr hgr
-          positivity [(hgr x).1, (hfr x).1]
-      have hp : s = (fun a => f a / (f a + g a)) ⁻¹' {0} := by simp_all [preimage]
-      have : t = (fun a => f a / (f a + g a)) ⁻¹' {1} := by simp_all [preimage, div_eq_one_iff_eq]
-      rw [hp, this]
-      exact hsn.preimage (f.continuous.div₀ (f.continuous.add g.continuous) hfg)
-    closed_gdelta s hs := by
-      by_cases! hse : s = ∅
-      · simp_all
-      -- pick `f` such that `s = f ⁻¹' {0} = ⋂ n, f ⁻¹' {(-1, 1 / (n + 1))}`
-      obtain ⟨f, hf, hfr⟩ := h s hs
-      refine isGδ_iff_eq_iInter_nat.2 ⟨fun n => f ⁻¹' (Ioo (-1 : ℝ) (1 / (n + 1))), fun n => ?_, ?_⟩
-      · exact f.continuous.isOpen_preimage _ isOpen_Ioo
-      · simp only [hf, ← preimage_iInter,
-          ← preimage_range_inter (s := ⋂ (n : ℕ), Ioo (-1 : ℝ) (1 / (n + 1))), inter_iInter]
-        congr
-        rw [eq_comm, eq_singleton_iff_unique_mem]
-        refine ⟨mem_iInter_of_mem fun n => ?_, fun x h => ?_⟩
-        · exact ⟨(hf ▸ hse : (f ⁻¹' {0}).Nonempty), by norm_num, by positivity⟩
-        · apply le_antisymm
-          · simp only [mem_iInter, mem_inter_iff, mem_Ioo] at h
-            exact ge_of_tendsto' tendsto_one_div_add_atTop_nhds_zero_nat (fun n => (h n).2.2.le)
-          · exact (hfr (mem_iInter.1 h 0).1).1
-  }
+  mpr h :=
+    { normal s t hs ht hst := by
+        -- pick `f, g` such that `s = f ⁻¹' {0}` and `t = g ⁻¹' {0}`, and then the function
+        -- `f / (f  + g)` separates `s` and `t`.
+        obtain ⟨f, hf, hfr⟩ := h s hs
+        obtain ⟨g, hg, hgr⟩ := h t ht
+        have hsn : SeparatedNhds {(0 : ℝ)} {1} :=
+          SeparatedNhds.of_finite (finite_singleton _) (finite_singleton _)
+          (disjoint_singleton.2 zero_ne_one)
+        have hfg (x : X) : f x + g x ≠ 0 := by
+          simp_all only [preimage, mem_singleton_iff]
+          by_cases! hfx : f x = 0
+          · simpa [hfx] using hst.notMem_of_mem_left hfx
+          · simp only [range, Icc, setOf_subset_setOf, forall_exists_index,
+              forall_apply_eq_imp_iff] at hfr hgr
+            positivity [(hgr x).1, (hfr x).1]
+        have hp : s = (fun a => f a / (f a + g a)) ⁻¹' {0} := by simp_all [preimage]
+        have : t = (fun a => f a / (f a + g a)) ⁻¹' {1} := by simp_all [preimage, div_eq_one_iff_eq]
+        rw [hp, this]
+        exact hsn.preimage (f.continuous.div₀ (f.continuous.add g.continuous) hfg)
+      closed_gdelta s hs := by
+        by_cases! hse : s = ∅
+        · simp_all
+        -- pick `f` such that `s = f ⁻¹' {0} = ⋂ n, f ⁻¹' {(-1, 1 / (n + 1))}`
+        obtain ⟨f, hf, hfr⟩ := h s hs
+        refine isGδ_iff_eq_iInter_nat.2 ⟨fun n => f ⁻¹' (Ioo (-1 : ℝ) (1 / (n + 1))),
+          fun n => ?_, ?_⟩
+        · exact f.continuous.isOpen_preimage _ isOpen_Ioo
+        · simp only [hf, ← preimage_iInter,
+            ← preimage_range_inter (s := ⋂ (n : ℕ), Ioo (-1 : ℝ) (1 / (n + 1))), inter_iInter]
+          congr
+          rw [eq_comm, eq_singleton_iff_unique_mem]
+          refine ⟨mem_iInter_of_mem fun n => ?_, fun x h => ?_⟩
+          · exact ⟨(hf ▸ hse : (f ⁻¹' {0}).Nonempty), by norm_num, by positivity⟩
+          · apply le_antisymm
+            · simp only [mem_iInter, mem_inter_iff, mem_Ioo] at h
+              exact ge_of_tendsto' tendsto_one_div_add_atTop_nhds_zero_nat (fun n => (h n).2.2.le)
+            · exact (hfr (mem_iInter.1 h 0).1).1 }
 
 theorem Topology.IsEmbedding.perfectlyNormalSpace {e : X → Y} (he : IsEmbedding e)
     [PerfectlyNormalSpace Y] : PerfectlyNormalSpace X := by
