@@ -18,7 +18,7 @@ public import Mathlib.Data.Fintype.Option
 A typeclass for categories with all finite (co)limits.
 -/
 
-@[expose] public section
+public section
 
 
 universe w' w v' u' v u

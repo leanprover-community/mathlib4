@@ -78,7 +78,7 @@ But future contributors wishing to clean this up should feel free to give it a t
 
 -/
 
-@[expose] public section
+public section
 
 namespace MvPowerSeries
 

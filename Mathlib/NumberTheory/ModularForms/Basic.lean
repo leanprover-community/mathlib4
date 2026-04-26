@@ -108,7 +108,7 @@ instance (priority := 100) ModularForm.funLike :
   coe f := f.toFun
   coe_injective' f g h := by cases f; cases g; congr; exact DFunLike.ext' h
 
-instance (priority := 100) ModularFormClass.modularForm :
+instance (priority := 100) ModularForm.instModularFormClass :
     ModularFormClass (ModularForm Γ k) Γ k where
   slash_action_eq f := f.slash_action_eq'
   holo := ModularForm.holo'
@@ -135,6 +135,19 @@ initialize_simps_projections CuspForm (toFun → coe, as_prefix coe)
 
 variable {F Γ k}
 
+/-- Build a `ModularForm Γ k` from any element of a type carrying a `ModularFormClass Γ k`
+instance. -/
+@[simps -fullyApplied]
+def ModularFormClass.modularForm [FunLike F ℍ ℂ] [ModularFormClass F Γ k] (f : F) :
+    ModularForm Γ k where
+  toFun := f
+  slash_action_eq' := SlashInvariantFormClass.slash_action_eq f
+  holo' := ModularFormClass.holo f
+  bdd_at_cusps' := ModularFormClass.bdd_at_cusps f
+
+instance [FunLike F ℍ ℂ] [ModularFormClass F Γ k] : CoeTC F (ModularForm Γ k) :=
+  ⟨ModularFormClass.modularForm⟩
+
 theorem ModularForm.toFun_eq_coe (f : ModularForm Γ k) : f.toFun = (f : ℍ → ℂ) :=
   rfl
 
@@ -156,20 +169,23 @@ theorem ModularForm.ext {f g : ModularForm Γ k} (h : ∀ x, f x = g x) : f = g 
 theorem CuspForm.ext {f g : CuspForm Γ k} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 
-/-- Copy of a `ModularForm` with a new `toFun` equal to the old one. Useful to fix
-definitional equalities. -/
-protected def ModularForm.copy (f : ModularForm Γ k) (f' : ℍ → ℂ) (h : f' = ⇑f) :
-    ModularForm Γ k where
-  toSlashInvariantForm := f.1.copy f' h
+/-- Copy of a `ModularForm` with a new `toFun` equal to the old one, optionally transporting
+along an equality of subgroups. Useful to fix definitional equalities. -/
+protected def ModularForm.copy {Γ' : Subgroup (GL (Fin 2) ℝ)} (f : ModularForm Γ k) (f' : ℍ → ℂ)
+    (h : f' = ⇑f) (hΓ : Γ' = Γ := by rfl) : ModularForm Γ' k where
+  toFun := f'
+  slash_action_eq' A hA := h.symm ▸ f.slash_action_eq' A (hΓ ▸ hA)
   holo' := h.symm ▸ f.holo'
-  bdd_at_cusps' A := h.symm ▸ f.bdd_at_cusps' A
+  bdd_at_cusps' hc := h.symm ▸ f.bdd_at_cusps' (hΓ ▸ hc)
 
-/-- Copy of a `CuspForm` with a new `toFun` equal to the old one. Useful to fix
-definitional equalities. -/
-protected def CuspForm.copy (f : CuspForm Γ k) (f' : ℍ → ℂ) (h : f' = ⇑f) : CuspForm Γ k where
-  toSlashInvariantForm := f.1.copy f' h
+/-- Copy of a `CuspForm` with a new `toFun` equal to the old one, optionally transporting
+along an equality of subgroups. Useful to fix definitional equalities. -/
+protected def CuspForm.copy {Γ' : Subgroup (GL (Fin 2) ℝ)} (f : CuspForm Γ k) (f' : ℍ → ℂ)
+    (h : f' = ⇑f) (hΓ : Γ' = Γ := by rfl) : CuspForm Γ' k where
+  toFun := f'
+  slash_action_eq' A hA := h.symm ▸ f.slash_action_eq' A (hΓ ▸ hA)
   holo' := h.symm ▸ f.holo'
-  zero_at_cusps' A := h.symm ▸ f.zero_at_cusps' A
+  zero_at_cusps' hc := h.symm ▸ f.zero_at_cusps' (hΓ ▸ hc)
 
 end ModularForm
 
