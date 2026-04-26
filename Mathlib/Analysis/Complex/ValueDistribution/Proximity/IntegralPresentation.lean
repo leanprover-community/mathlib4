@@ -73,7 +73,7 @@ theorem measurable_cartanKernel (hf : Measurable f) :
 
 /- Formula for the `L¹` norm of an angular slice of the Cartan kernel. -/
 private lemma integral_norm_cartanKernel_eq (f : ℂ → ℂ) (R β : ℝ) :
-    ∫ α in Ioc 0 (2 * π), ‖cartanKernel f R α β‖ = 
+    ∫ α in Ioc 0 (2 * π), ‖cartanKernel f R α β‖ =
       2 * (∫ α, max (cartanKernel f R α β) 0 ∂(volume.restrict (Ioc 0 (2 * π)))) -
         (2 * π) * log⁺ ‖f (circleMap 0 R β)‖ := by
   let μ : Measure ℝ := volume.restrict (Ioc 0 (2 * π))
@@ -137,7 +137,7 @@ private lemma integrable_integral_norm_cartanKernel (h : Meromorphic f) :
 If `f : ℂ → ℂ` is meromorphic, then the Cartan kernel of integration is integrable as a function in
 the two variables `α` and `β`.
 -/
-lemma integrable_cartanKernel (h : Meromorphic f) :
+theorem integrable_cartanKernel (h : Meromorphic f) :
     Integrable (fun p ↦ cartanKernel f R p.1 p.2)
       ((volume.restrict (uIoc 0 (2 * π))).prod
        (volume.restrict (uIoc 0 (2 * π)))) := by
