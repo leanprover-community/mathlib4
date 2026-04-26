@@ -193,10 +193,6 @@ instance Prod.contDiffSMul [SMul M X] [SMul M Y] [ContDiffSMul 𝕜 M X n] [Cont
   contdiff_smul := by
     suffices ContDiff 𝕜 n (fun p : M × (X × Y) => p.1 • p.2) by
       simpa only [Prod.smul_def] using this
-    have h1 : ContDiff 𝕜 n (fun p : M × X => p.1 • p.2) :=
-      contdiff_smul (M := M) (X := X)
-    have h2 : ContDiff 𝕜 n (fun p : M × Y => p.1 • p.2) :=
-      contdiff_smul (M := M) (X := Y)
     refine ContDiff.prodMk ?_ ?_
     · exact ContDiff.contdiff_smul contDiff_fst (ContDiff.snd' contDiff_fst)
     · exact ContDiff.contdiff_smul contDiff_fst (ContDiff.snd' contDiff_snd)
