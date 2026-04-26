@@ -49,7 +49,7 @@ We provide a few instances for concrete types:
 * `Bool.completeBooleanAlgebra`
 -/
 
-@[expose] public section
+public section
 
 
 open Finset

@@ -67,6 +67,10 @@ theorem toFinsupp_support :
     l.toFinsupp.support = {i ∈ Finset.range l.length | getD l i 0 ≠ 0} :=
   rfl
 
+lemma toFinsupp_support_subset :
+    l.toFinsupp.support ⊆ Finset.range l.length := by
+  simp [List.toFinsupp_support]
+
 theorem toFinsupp_apply_lt (hn : n < l.length) : l.toFinsupp n = l[n] :=
   getD_eq_getElem _ _ hn
 
@@ -106,7 +110,7 @@ theorem toFinsupp_append {R : Type*} [AddZeroClass R] (l₁ l₂ : List R)
 theorem toFinsupp_cons_eq_single_add_embDomain {R : Type*} [AddZeroClass R] (x : R) (xs : List R)
     [DecidablePred (getD (x::xs) · 0 ≠ 0)] [DecidablePred (getD xs · 0 ≠ 0)] :
     toFinsupp (x::xs) =
-      Finsupp.single 0 x + (toFinsupp xs).embDomain ⟨Nat.succ, Nat.succ_injective⟩ := by
+      Finsupp.single 0 x + (toFinsupp xs).embDomain (addRightEmbedding 1) := by
   classical
     convert toFinsupp_append [x] xs using 3
     · exact (toFinsupp_singleton x).symm

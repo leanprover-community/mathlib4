@@ -85,7 +85,7 @@ theorem cardinal_lift_le_rank {ι : Type w} {v : ι → M}
     (hv : LinearIndependent R v) :
     Cardinal.lift.{v} #ι ≤ Cardinal.lift.{w} (Module.rank R M) := by
   rw [Module.rank]
-  refine le_trans ?_ (lift_le.mpr <| le_ciSup (bddAbove_range _) ⟨_, hv.linearIndepOn_id⟩)
+  refine le_trans ?_ (lift_le.mpr <| le_ciSup bddAbove_of_small ⟨_, hv.linearIndepOn_id⟩)
   exact lift_mk_le'.mpr ⟨(Equiv.ofInjective _ hv.injective).toEmbedding⟩
 
 lemma aleph0_le_rank {ι : Type w} [Infinite ι] {v : ι → M}
@@ -108,8 +108,23 @@ end LinearIndependent
 
 namespace Module
 
-variable [Semiring R] [AddCommMonoid M] [Module R M] [Nontrivial R]
+variable [Semiring R] [AddCommMonoid M] [Module R M]
 
+theorem exists_set_linearIndependent_of_lt_lift_rank {c : Cardinal.{w}}
+    (h : Cardinal.lift.{v} c < Cardinal.lift.{w} (Module.rank R M)) :
+    ∃ s : Set M, Cardinal.lift.{w} #s = Cardinal.lift.{v} c ∧ LinearIndepOn R id s := by
+  rcases Cardinal.lt_lift_iff.mp h with ⟨c', hc', hcc'⟩
+  rcases exists_lt_of_lt_ciSup (by simpa [← hcc', Module.rank_def] using h) with ⟨⟨s, hs⟩, h⟩
+  rcases Cardinal.le_mk_iff_exists_subset.mp h.le with ⟨t, hst, ht⟩
+  exact ⟨t, by simp [ht, hcc'], hs.mono hst⟩
+
+theorem exists_set_linearIndependent_of_lt_rank {c : Cardinal.{v}} (h : c < Module.rank R M) :
+    ∃ s : Set M, #s = c ∧ LinearIndepOn R id s := by
+  simpa using exists_set_linearIndependent_of_lt_lift_rank (Cardinal.lift_lt.mpr h)
+
+variable [Nontrivial R]
+
+-- TODO: the forward directions of the next few theorems don't need [Nontrivial R]
 /-- Note: if the rank of a module is infinite, it may not contain a linear independent subset
 with cardinality equal to the rank, see
 https://mathoverflow.net/questions/263020/maximum-cardinal-of-a-set-of-linearly-independent-vectors-in-a-module. -/
@@ -118,10 +133,10 @@ theorem le_rank_iff_exists_finset {n : ℕ} :
   mp le := by
     contrapose! le
     obtain _ | n := n; · simp at le
-    rw [Module.rank, nat_succ, Order.lt_succ_iff, ciSup_le_iff (bddAbove_range _)]
+    rw [Module.rank, Nat.cast_add_one, lt_natCast_add_one_iff, ciSup_le_iff bddAbove_of_small]
     intro s
     contrapose! le
-    rw [← Order.succ_le_iff, ← nat_succ] at le
+    rw [← natCast_add_one_le_iff, ← Nat.cast_add_one] at le
     have ⟨t, ht⟩ := exists_finset_eq_card le
     exact ⟨t.map (.subtype _), by simpa using ht.symm, s.2.mono <| by simp⟩
   mpr := fun ⟨s, card_s, ind_s⟩ ↦ ind_s.cardinal_le_rank'.trans_eq' <| by simpa using card_s
@@ -173,8 +188,8 @@ theorem lift_rank_le_of_injective_injectiveₛ (i : R' → R) (j : M →+ M')
     (hi : Injective i) (hj : Injective j)
     (hc : ∀ (r : R') (m : M), j (i r • m) = r • j m) :
     lift.{v'} (Module.rank R M) ≤ lift.{v} (Module.rank R' M') := by
-  simp_rw [Module.rank, lift_iSup (bddAbove_range _)]
-  exact ciSup_mono' (bddAbove_range _) fun ⟨s, h⟩ ↦ ⟨⟨j '' s,
+  simp_rw [Module.rank, lift_iSup bddAbove_of_small]
+  exact ciSup_mono' bddAbove_of_small fun ⟨s, h⟩ ↦ ⟨⟨j '' s,
     LinearIndepOn.id_image (h.linearIndependent.map_of_injective_injectiveₛ i j hi hj hc)⟩,
     lift_mk_le'.mpr ⟨(Equiv.Set.image j s hj).toEmbedding⟩⟩
 
@@ -236,8 +251,8 @@ Rings `R` that fail the strong rank condition but satisfy `rank R R = 1` are exp
 https://mathoverflow.net/questions/317422/rings-that-fail-to-satisfy-the-strong-rank-condition. -/
 theorem CommSemiring.rank_self (R) [CommSemiring R] : Module.rank R R = 1 := by
   nontriviality R
-  rw [le_antisymm_iff, ← not_lt, ← Order.succ_le_iff, ← Nat.cast_one, ← nat_succ,
-    Module.le_rank_iff_exists_linearMap, Nat.cast_one, Module.one_le_rank_iff]
+  rw [le_antisymm_iff, ← not_lt, ← two_le_iff_one_lt, ← Nat.cast_two,
+    Module.le_rank_iff_exists_linearMap, Module.one_le_rank_iff]
   refine ⟨fun ⟨f, inj⟩ ↦ ?_, _, (LinearEquiv.refl ..).injective⟩
   have := inj (a₁ := f ![0, 1] • ![1, 0]) (a₂ := f ![1, 0] • ![0, 1]) <| by
     simp_rw [map_smul, smul_eq_mul]; apply mul_comm
@@ -257,8 +272,8 @@ theorem lift_rank_le_of_injective_injective [AddCommGroup M'] [Module R' M']
     (i : R' → R) (j : M →+ M') (hi : ∀ r, i r = 0 → r = 0) (hj : Injective j)
     (hc : ∀ (r : R') (m : M), j (i r • m) = r • j m) :
     lift.{v'} (Module.rank R M) ≤ lift.{v} (Module.rank R' M') := by
-  simp_rw [Module.rank, lift_iSup (bddAbove_range _)]
-  exact ciSup_mono' (bddAbove_range _) fun ⟨s, h⟩ ↦
+  simp_rw [Module.rank, lift_iSup bddAbove_of_small]
+  exact ciSup_mono' bddAbove_of_small fun ⟨s, h⟩ ↦
     ⟨⟨j '' s, LinearIndepOn.id_image <| h.linearIndependent.map_of_injective_injective i j hi
       (fun _ _ ↦ hj <| by rwa [j.map_zero]) hc⟩,
     lift_mk_le'.mpr ⟨(Equiv.Set.image j s hj).toEmbedding⟩⟩
@@ -358,13 +373,13 @@ theorem LinearMap.rank_le_of_injective (f : M →ₗ[R] M₁) (i : Injective f) 
 theorem lift_rank_range_le (f : M →ₗ[R] M') : Cardinal.lift.{v}
     (Module.rank R (LinearMap.range f)) ≤ Cardinal.lift.{v'} (Module.rank R M) := by
   simp only [Module.rank_def]
-  rw [Cardinal.lift_iSup (Cardinal.bddAbove_range _)]
+  rw [Cardinal.lift_iSup Cardinal.bddAbove_of_small]
   apply ciSup_le'
   rintro ⟨s, li⟩
   apply le_trans
   swap
   · apply Cardinal.lift_le.mpr
-    refine le_ciSup (Cardinal.bddAbove_range _) ⟨rangeSplitting f '' s, ?_⟩
+    refine le_ciSup Cardinal.bddAbove_of_small ⟨rangeSplitting f '' s, ?_⟩
     apply LinearIndependent.of_comp f.rangeRestrict
     convert li.comp (Equiv.Set.rangeSplittingImageEquiv f s) (Equiv.injective _) using 1
   · exact (Cardinal.lift_mk_eq'.mpr ⟨Equiv.Set.rangeSplittingImageEquiv f s⟩).ge
@@ -451,7 +466,7 @@ lemma Module.rank_top_le_rank_of_isScalarTower [Module R' M]
     [SMulWithZero R R'] [IsScalarTower R R' M] [FaithfulSMul R R'] [IsScalarTower R R' R'] :
     Module.rank R' M ≤ Module.rank R M := by
   rw [Module.rank, Module.rank]
-  exact ciSup_le' fun ⟨s, hs⟩ ↦ le_ciSup_of_le (Cardinal.bddAbove_range _)
+  exact ciSup_le' fun ⟨s, hs⟩ ↦ le_ciSup_of_le Cardinal.bddAbove_of_small
     ⟨s, hs.restrict_scalars (by simpa [← faithfulSMul_iff_injective_smul_one])⟩ le_rfl
 
 variable (R R') in

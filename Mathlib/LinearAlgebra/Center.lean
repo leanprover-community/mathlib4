@@ -46,7 +46,7 @@ but they are not left multiplication by some element.
 
 -/
 
-@[expose] public section
+public section
 
 open Module LinearMap LinearEquiv Set Finsupp
 
@@ -175,7 +175,7 @@ theorem exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent_of_basis
     rw [commute_iff_eq, h' i j (Ne.symm hij), feq i j, feq i i]
     simp
   refine ⟨⟨b.coord i (f (b i)), ?_⟩, ?_⟩
-  · simpa  [Subring.mem_center_iff, commute_iff_eq, eq_comm] using ha
+  · simpa [Subring.mem_center_iff, commute_iff_eq, eq_comm] using ha
   apply b.ext
   simpa only [smul_apply, End.one_apply, Subring.smul_def] using feq i
 

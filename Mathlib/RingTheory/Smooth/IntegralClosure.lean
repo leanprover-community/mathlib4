@@ -149,8 +149,7 @@ lemma TensorProduct.toIntegralClosure_mvPolynomial_bijective {σ : Type*} :
       (Algebra.TensorProduct.map (AlgHom.id R (MvPolynomial σ R)) (integralClosure R B).val) =
       (MvPolynomial.mapAlgHom (integralClosure R B).val).comp
       MvPolynomial.scalarRTensorAlgEquiv.toAlgHom := by
-    ext <;> simp [e₀, -MvPolynomial.mapAlgHom_apply, MvPolynomial.mapAlgHom, MvPolynomial.coeff_map,
-      MvPolynomial.scalarRTensorAlgEquiv]
+    ext <;> simp [e₀, MvPolynomial.coeff_map, MvPolynomial.scalarRTensorAlgEquiv]
   exact congr($this y)
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in

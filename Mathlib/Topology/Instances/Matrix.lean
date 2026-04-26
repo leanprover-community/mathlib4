@@ -36,7 +36,7 @@ This file is a place to collect topological results about matrices.
   * `Matrix.blockDiagonal'_tsum`: non-uniform block diagonal commutes with infinite sums
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Matrix.GeneralLinearGroup Matrix.SpecialLinearGroup -- guard against import creep
 
@@ -101,6 +101,13 @@ theorem continuous_matrix [TopologicalSpace α] {f : α → Matrix m n R}
 theorem Continuous.matrix_elem {A : X → Matrix m n R} (hA : Continuous A) (i : m) (j : n) :
     Continuous fun x => A x i j :=
   (continuous_apply_apply i j).comp hA
+
+lemma continuous_matrixOf [TopologicalSpace α] {f : α → m → n → R} :
+    Continuous (fun x ↦ Matrix.of (f x)) ↔ Continuous f := by
+  rfl
+
+@[fun_prop]
+alias ⟨_, Continuous.matrixOf⟩ := continuous_matrixOf
 
 @[continuity, fun_prop]
 theorem Continuous.matrix_map [TopologicalSpace S] {A : X → Matrix m n S} {f : S → R}

@@ -127,6 +127,10 @@ protected def comap (f : V → W) (G : SimpleGraph W) : SimpleGraph V where
 @[simp] lemma comap_comap {G : SimpleGraph X} (f : V → W) (g : W → X) :
     (G.comap g).comap f = G.comap (g ∘ f) := rfl
 
+theorem support_comap_subset (f : V → W) (G : SimpleGraph W) :
+    (G.comap f).support ⊆ f ⁻¹' G.support :=
+  fun _ ⟨v, h⟩ ↦ ⟨f v, h⟩
+
 instance instDecidableComapAdj (f : V → W) (G : SimpleGraph W) [DecidableRel G.Adj] :
     DecidableRel (G.comap f).Adj := fun _ _ ↦ ‹DecidableRel G.Adj› _ _
 
@@ -217,6 +221,16 @@ lemma induce_adj {s : Set V} {u v : s} : (G.induce s).Adj u v ↔ G.Adj u v := .
 @[simp] lemma induce_top (s : Set V) : (completeGraph V).induce s = completeGraph s :=
   comap_top Subtype.val_injective
 
+lemma induce_bot (s : Set V) : (⊥ : SimpleGraph V).induce s = ⊥ := by
+  dsimp
+
+lemma support_induce_subset_coe_preimage (s : Set V) : (G.induce s).support ⊆ (↑) ⁻¹' s :=
+  fun v _ ↦ v.prop
+
+lemma support_induce_subset_coe_preimage_support (s : Set V) :
+    (G.induce s).support ⊆ (↑) ⁻¹' G.support :=
+  fun _ ⟨v, hadj⟩ ↦ ⟨v, hadj⟩
+
 @[simp] lemma induce_singleton_eq_top (v : V) : G.induce {v} = ⊤ := by
   rw [eq_top_iff]; apply le_comap_of_subsingleton
 
@@ -226,11 +240,30 @@ This is a wrapper around `SimpleGraph.map`. -/
 abbrev spanningCoe {s : Set V} (G : SimpleGraph s) : SimpleGraph V :=
   G.map (Function.Embedding.subtype _)
 
+theorem support_spanningCoe {s : Set V} (G : SimpleGraph s) :
+    G.spanningCoe.support = (↑) '' G.support :=
+  G.support_map _
+
 theorem induce_spanningCoe {s : Set V} {G : SimpleGraph s} : G.spanningCoe.induce s = G :=
   comap_map_eq _ _
 
 theorem spanningCoe_induce_le (s : Set V) : (G.induce s).spanningCoe ≤ G :=
   map_comap_le _ _
+
+theorem spanningCoe_induce_eq_self (s : Set V) : (G.induce s).spanningCoe = G ↔ G.support ⊆ s := by
+  refine ⟨fun h v hv ↦ ?_, fun h ↦ le_antisymm (G.spanningCoe_induce_le s) fun u v hadj ↦ ?_⟩
+  · rw [← h, support_spanningCoe] at hv
+    have ⟨u, _, hvu⟩ := hv
+    exact hvu ▸ u.prop
+  · exact ⟨hadj.ne, ⟨u, h hadj.left_mem_support⟩, ⟨v, h hadj.right_mem_support⟩, hadj, rfl, rfl⟩
+
+@[simp]
+theorem spanningCoe_induce_support : (G.induce G.support).spanningCoe = G :=
+  G.spanningCoe_induce_eq_self _ |>.mpr .rfl
+
+@[simp]
+theorem spanningCoe_induce_univ : (G.induce .univ).spanningCoe = G :=
+  G.spanningCoe_induce_eq_self _ |>.mpr G.support.subset_univ
 
 open Set.Notation in
 theorem IsCompleteBetween.induce {s t : Set V} (h : G.IsCompleteBetween s t) (u : Set V) :
