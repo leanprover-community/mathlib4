@@ -3859,6 +3859,7 @@ public import Mathlib.Data.Fintype.Basic
 public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Data.Fintype.Card
 public import Mathlib.Data.Fintype.CardEmbedding
+public import Mathlib.Data.Fintype.Choose
 public import Mathlib.Data.Fintype.Defs
 public import Mathlib.Data.Fintype.EquivFin
 public import Mathlib.Data.Fintype.Fin
