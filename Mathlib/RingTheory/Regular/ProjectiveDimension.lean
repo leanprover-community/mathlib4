@@ -30,6 +30,8 @@ variable {R : Type u} [CommRing R]
 
 open CategoryTheory Abelian IsLocalRing Module RingTheory.Sequence
 
+namespace ModuleCat
+
 section
 
 variable [IsNoetherianRing R] [Small.{v} R]
@@ -185,3 +187,5 @@ lemma projectiveDimension_quotient_eq_length (rs : List R) (reg : IsRegular R rs
     projectiveDimension_quotient_regular_sequence (ModuleCat.of R (Shrink.{v} R)) rs
     (((Shrink.linearEquiv R R).isWeaklyRegular_congr rs).mpr reg.1) mem_max,
     ModuleCat.projectiveDimension_eq_zero_of_projective, zero_add]
+
+end ModuleCat
