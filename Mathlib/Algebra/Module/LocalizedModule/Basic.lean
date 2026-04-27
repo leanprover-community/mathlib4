@@ -739,6 +739,13 @@ lemma IsLocalizedModule.of_restrictScalars (S : Submonoid R)
     obtain ⟨c, hc⟩ := IsLocalizedModule.exists_of_eq (S := S) (f := f.restrictScalars R) e
     refine ⟨⟨_, c, c.2, rfl⟩, by simpa [Submonoid.smul_def]⟩
 
+lemma IsLocalizedModule.restrictScalars_iff (S : Submonoid R)
+    {N : Type*} [AddCommMonoid N] [Module R N] [Module A M] [Module A N]
+    [IsScalarTower R A M] [IsScalarTower R A N] (f : M →ₗ[A] N) :
+    IsLocalizedModule (Algebra.algebraMapSubmonoid A S) f ↔
+    IsLocalizedModule S (f.restrictScalars R) :=
+  ⟨fun _ => restrictScalars _ _, fun _ => of_restrictScalars _ _⟩
+
 lemma IsLocalizedModule.of_exists_mul_mem {N : Type*} [AddCommMonoid N] [Module R N]
     (S T : Submonoid R) (h : S ≤ T) (h' : ∀ x : T, ∃ m : R, m * x ∈ S)
     (f : M →ₗ[R] N) [IsLocalizedModule S f] :
