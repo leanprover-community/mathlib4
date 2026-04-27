@@ -9,6 +9,7 @@ public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 public import Mathlib.Data.DFinsupp.Ext
 public import Mathlib.GroupTheory.Congruence.BigOperators
+public import Mathlib.RingTheory.Congruence.Defs
 
 /-!
 # Dependent functions with finite support
@@ -232,6 +233,22 @@ lemma _root_.Con.dfinsuppProd {A : Type*} [CommMonoid A] {r : Con A}
     prod_of_support_subset (fun i _ ↦ hf' i)
       (Finset.subset_union_right (s₁ := f.support) (s₂ := g.support))]
   exact Con.finset_prod r (f.support ∪ g.support) fun i _ ↦ H i
+
+lemma _root_.RingCon.dfinsuppProd {A : Type*} [CommSemiring A] {r : RingCon A}
+    [∀ i, Zero (β i)] [∀ i (y : β i), Decidable (y ≠ 0)]
+    (h : (i : ι) → β i → A) (h' : (i : ι) → β i → A)
+    {f g : Π₀ i, β i} (hf : ∀ i, h i 0 = 1) (hf' : ∀ i, h' i 0 = 1)
+    (H : ∀ i, r (h i (f i)) (h' i (g i))) :
+    r (f.prod h) (g.prod h') :=
+  Con.dfinsuppProd h h' hf hf' H
+
+lemma _root_.RingCon.dfinsuppSum {A : Type*} [Semiring A] {r : RingCon A}
+    [∀ i, Zero (β i)] [∀ i (y : β i), Decidable (y ≠ 0)]
+    (h : (i : ι) → β i → A) (h' : (i : ι) → β i → A)
+    {f g : Π₀ i, β i} (hf : ∀ i, h i 0 = 0) (hf' : ∀ i, h' i 0 = 0)
+    (H : ∀ i, r (h i (f i)) (h' i (g i))) :
+    r (f.sum h) (g.sum h') :=
+  AddCon.dfinsuppSum (r := r.toAddCon) h h' hf hf' H
 
 section CommMonoidWithZero
 variable [Π i, Zero (β i)] [CommMonoidWithZero γ] [Nontrivial γ] [NoZeroDivisors γ]
