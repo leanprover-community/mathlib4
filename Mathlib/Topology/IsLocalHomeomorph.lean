@@ -311,9 +311,8 @@ lemma apply_localInverseAt_of_mem {y : Y} (hx : y ∈ (hf.localInverseAt x).sour
   exact (hf.localInverseAt x).left_inv' hx
 
 /-- The function `localInverseAt x` sends `f x` back to `x`. -/
-@[simp] lemma localInverseAt_apply_self : hf.localInverseAt x (f x) = x := by
-  refine hf.injOn_localInverseAt_target ?_ hf.self_mem_localInverseAt_target <|
+@[simp] lemma localInverseAt_apply_self : hf.localInverseAt x (f x) = x :=
+  hf.injOn_localInverseAt_target (by simp) hf.self_mem_localInverseAt_target <|
     hf.apply_localInverseAt_of_mem hf.apply_self_mem_localInverseAt_source
-  simp
 
 end IsLocalHomeomorph
