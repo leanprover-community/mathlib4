@@ -28,7 +28,7 @@ domains and valuation rings.
   flat `R`-module.
 -/
 
-@[expose] public section
+public section
 -- TODO: Add definition and properties of Prüfer domains.
 -- TODO: Use `IsTorsionFree`.
 
