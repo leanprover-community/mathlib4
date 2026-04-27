@@ -506,7 +506,7 @@ theorem edgeSet_top : (⊤ : SimpleGraph V).edgeSet = Sym2.diagSetᶜ :=
 
 @[simp]
 theorem edgeSet_subset_compl_diagSet : G.edgeSet ⊆ Sym2.diagSetᶜ := by
-  simp [Set.subset_compl_iff_disjoint_left, edgeSet, edgeSetEmbedding, Std.irrefl_iff]
+  simpa [Set.subset_compl_iff_disjoint_left, edgeSet, edgeSetEmbedding] using G.loopless
 
 @[deprecated (since := "2025-12-10")]
 alias edgeSet_subset_setOf_not_isDiag := edgeSet_subset_compl_diagSet
