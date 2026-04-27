@@ -305,13 +305,10 @@ noncomputable def mk' (S : Type w) [CommRing S] (h_isLocalRing : IsLocalRing S)
     (hg : g.comp (ResidueField.map f) = algebraMap (ResidueField R) K)
     (eqmap : maximalIdeal S = (maximalIdeal R).map f) : FlatExtension.{w} R K := by
   algebraize [f, g]
-  let : IsLocalHom (algebraMap R S) := hf
-  exact {
-    Ring := S
-    isLocalHom := hf
-    isScalarTower := IsScalarTower.of_algebraMap_eq' hg.symm
-    eqmap := eqmap
-  }
+  have : IsLocalHom (algebraMap R S) := hf
+  have : IsScalarTower (ResidueField R) (ResidueField S) K :=
+    IsScalarTower.of_algebraMap_eq' hg.symm
+  exact FlatExtension.mk S eqmap
 
 noncomputable def trivial [Small.{w} R] : FlatExtension R K := by
   let e : R ≃+* Shrink.{w} R := (Shrink.ringEquiv R).symm
