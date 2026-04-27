@@ -138,24 +138,22 @@ variable {r : A → A → Prop}
 theorem RingConGen.Rel.isHomogeneous_of (hr : Rel.IsHomogeneous 𝒜 r) :
     Rel.IsHomogeneous 𝒜 (RingConGen.Rel r) := by
   classical
-  intro a b h
-  induction h with
-  | of x y h => exact fun i =>  RingConGen.Rel.of _ _ (hr h i)
-  | refl x => exact fun _ => RingConGen.Rel.refl _
-  | symm _ h' => exact fun i => RingConGen.Rel.symm (h' i)
-  | trans _ _ k k' => exact fun i => RingConGen.Rel.trans (k i) (k' i)
+  intro a b h n
+  induction h generalizing n with
+  | of x y h => exact RingConGen.Rel.of _ _ (hr h n)
+  | refl x => exact RingConGen.Rel.refl _
+  | symm _ h' => exact RingConGen.Rel.symm (h' n)
+  | trans _ _ k k' => exact RingConGen.Rel.trans (k n) (k' n)
   | add _ _  k k' =>
-    intro i
     simp only [decompose_add]
-    exact RingConGen.Rel.add (k i) (k' i)
+    exact RingConGen.Rel.add (k n) (k' n)
   | @mul a b c d _ _ k k' =>
-    intro n
     simp only [decompose_mul, coe_mul_apply_eq_dfinsuppSum]
-    apply DFinsupp.addCon_sum (r := (ringConGen r).toAddCon)
+    apply AddCon.dfinsuppSum (r := (ringConGen r).toAddCon)
       (fun x ↦ gMulRight 𝒜 n _ x) (fun y ↦ gMulRight 𝒜 n _ y)
       (by simp) (by simp)
     intro i
-    apply DFinsupp.addCon_sum _ _ (by simp) (by simp)
+    apply AddCon.dfinsuppSum _ _ (by simp) (by simp)
     intro j
     by_cases hn : i + j = n
     · simp only [gMul, if_pos hn]

@@ -51,54 +51,56 @@ namespace Rel
 
 open DirectSum Function
 
-variable {R ι A : Type*} [CommSemiring R] [DecidableEq ι] [Semiring A] [Algebra R A]
+variable {R ι A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
   (𝒜 : ι → Submodule R A) (rel : A → A → Prop)
 
 /-- The graded pieces of `RingQuot rel`. -/
 def quotSubmodule (i : ι) : Submodule R (RingQuot rel) :=
   Submodule.map (RingQuot.mkAlgHom R rel).toLinearMap (𝒜 i)
 
-omit [DecidableEq ι] in
+
 theorem mem_quotSubmodule {x : RingQuot rel} {i : ι} :
     x ∈ quotSubmodule 𝒜 rel i ↔
       ∃ y ∈ 𝒜 i, RingQuot.mkAlgHom R rel y = x := by
   simp [quotSubmodule]
 
-open SetLike in
-instance [AddMonoid ι] [GradedMonoid 𝒜] :
-    GradedMonoid (quotSubmodule 𝒜 rel) where
-  one_mem :=  ⟨1, GradedOne.one_mem, by simp [map_one]⟩
-  mul_mem := fun i j x y => by
-    rintro ⟨a, ha, rfl⟩ ⟨b, hb, rfl⟩
-    exact ⟨a * b, ⟨GradedMul.mul_mem ha hb, by simp [map_mul]⟩⟩
-
 /-- The canonical `LinearMap` from the graded pieces of `A` to that of `RingQuot rel` . -/
 def quotSubmoduleMap (i : ι) : 𝒜 i →ₗ[R] quotSubmodule 𝒜 rel i :=
   (RingQuot.mkAlgHom R rel).toLinearMap.submoduleMap (𝒜 i)
 
-omit [DecidableEq ι] in
 @[simp]
-theorem quotSubmoduleMap_mk (i : ι) (y : 𝒜 i) :
-    (quotSubmoduleMap 𝒜 rel i y : RingQuot rel) =
-      RingQuot.mkAlgHom R rel y :=
+theorem coe_quotSubmoduleMap (i : ι) (y : 𝒜 i) :
+    (quotSubmoduleMap 𝒜 rel i y : RingQuot rel) = RingQuot.mkAlgHom R rel y :=
   LinearMap.submoduleMap_coe_apply _ y
 
-theorem coeLinearMap_quotSubmodule_comp_lmap_quotSubmoduleMap :
-    (coeLinearMap (quotSubmodule 𝒜 rel)).comp (lmap (quotSubmoduleMap 𝒜 rel)) =
-      (RingQuot.mkAlgHom R rel).toLinearMap.comp (coeLinearMap 𝒜) := by
+theorem coeLinearMap_quotSubmodule_comp_lmap_quotSubmoduleMap [DecidableEq ι] :
+    (coeLinearMap (quotSubmodule 𝒜 rel)) ∘ₗ (lmap (quotSubmoduleMap 𝒜 rel)) =
+      (RingQuot.mkAlgHom R rel).toLinearMap ∘ₗ (coeLinearMap 𝒜) := by
   ext; simp
 
+open SetLike in
+theorem GradedMonoid.submoduleMap {B : Type*} [Semiring B] [Algebra R B] (f : A →ₐ[R] B)
+    [AddMonoid ι] [SetLike.GradedMonoid 𝒜] :
+    SetLike.GradedMonoid (fun i ↦ Submodule.map f.toLinearMap (𝒜 i)) where
+  one_mem := ⟨1, GradedOne.one_mem, by simp⟩
+  mul_mem i j x y := by
+    rintro ⟨a, ha, rfl⟩ ⟨b, hb, rfl⟩
+    exact ⟨a * b, ⟨GradedMul.mul_mem ha hb, by simp [map_mul]⟩⟩
+
+open SetLike in
+instance [AddMonoid ι] [GradedMonoid 𝒜] :
+    GradedMonoid (quotSubmodule 𝒜 rel) :=
+  GradedMonoid.submoduleMap _ _
+
 @[simp]
-theorem coeLinearMap_quotSubmodule_lmap_quotSubmoduleMap_apply (x : ⨁ i, 𝒜 i) :
+theorem coeLinearMap_quotSubmodule_lmap_quotSubmoduleMap_apply [DecidableEq ι] (x : ⨁ i, 𝒜 i) :
     coeLinearMap (quotSubmodule 𝒜 rel) (lmap (quotSubmoduleMap 𝒜 rel) x) =
-      (RingQuot.mkAlgHom R rel) (coeLinearMap 𝒜 x) := by
-  have e := coeLinearMap_quotSubmodule_comp_lmap_quotSubmoduleMap 𝒜 rel
-  simp only [LinearMap.ext_iff, LinearMap.comp_apply, AlgHom.toLinearMap_apply] at e
-  apply e
+      (RingQuot.mkAlgHom R rel) (coeLinearMap 𝒜 x) :=
+  DFunLike.congr_fun (coeLinearMap_quotSubmodule_comp_lmap_quotSubmoduleMap 𝒜 rel) x
 
 section AddCommMonoid
 
-variable [AddMonoid ι] [GradedAlgebra 𝒜]
+variable [AddMonoid ι] [DecidableEq ι] [GradedAlgebra 𝒜]
 
 lemma lmap_quotSubmoduleMap_apply (i : ι) (a : ⨁ i, 𝒜 i) :
     lmap (quotSubmoduleMap 𝒜 rel) a i =
@@ -121,8 +123,7 @@ theorem coeLinearMap_quotSubmodule_injective (hrel : Rel.IsHomogeneous 𝒜 rel)
     Injective (coeLinearMap (quotSubmodule 𝒜 rel)) := by
   have surj : Surjective (lmap (quotSubmoduleMap 𝒜 rel)) := by
     rw [lmap_surjective]
-    rintro i ⟨x, ⟨a, ha, rfl⟩⟩
-    exact ⟨⟨a, ha⟩, rfl⟩
+    exact fun _ ↦ LinearMap.submoduleMap_surjective _ _
   intro x y hxy
   obtain ⟨a, ha, rfl⟩ := surj x
   obtain ⟨b, hb, rfl⟩ := surj y
@@ -181,18 +182,18 @@ def quotSubmodule (i : ι) : Submodule R (M ⧸ P) :=
 /-- The canonical `LinearMap` from the graded pieces of `M` to those of `M ⧸ P`
 
 It is only meaningful when `I` is homogeneous -/
-def toQuotSubmodule (i : ι) : ℳ i →ₗ[R] (quotSubmodule ℳ P i) where
-  toFun u := ⟨P.mkQ u, by
-    rw [quotSubmodule, Submodule.mem_map]
-    exact ⟨u, u.prop, rfl⟩⟩
-  map_add' _ _ := by simp
-  map_smul' := by simp
+def toQuotSubmodule (i : ι) : ℳ i →ₗ[R] (quotSubmodule ℳ P i) :=
+  P.mkQ.submoduleMap _
+
+@[simp]
+theorem coe_toQuotSubmodule (i : ι) (x : ℳ i) :
+  ((toQuotSubmodule ℳ P i x) : M ⧸ P) = P.mkQ x := rfl
 
 variable {ℳ P} in
 theorem toQuotSubmodule_decompose_of_mem_self
     [DecidableEq ι] [Decomposition ℳ] {m : M} {i : ι} (hm : m ∈ ℳ i) :
     (toQuotSubmodule ℳ P i (decompose ℳ m i) : M ⧸ P) = Submodule.Quotient.mk m := by
-  simp [toQuotSubmodule, coe_decompose_of_mem_same ℳ hm]
+  simp [coe_decompose_of_mem_same ℳ hm]
 
 variable {ℳ P} in
 theorem mem_quotSubmodule_iff {i : ι} {g : M ⧸ P} :
@@ -212,10 +213,9 @@ variable {P}
 include hP in
 theorem quotDecomposeAux_of_mem_eq_zero {x : M} (hx : x ∈ P) (i : ι) :
     (quotDecomposeAux ℳ P) x i = 0 := by
-  rw [quotDecomposeAux, LinearMap.comp_apply, lmap_apply, toQuotSubmodule]
-  simp only [LinearMap.coe_mk, AddHom.coe_mk, Submodule.mk_eq_zero,
-    ← LinearMap.mem_ker, Submodule.ker_mkQ]
-  exact hP i hx
+  rw [quotDecomposeAux, LinearMap.comp_apply, lmap_apply, LinearEquiv.coe_coe,
+    decomposeLinearEquiv_apply, Submodule.mk_eq_zero]
+  simp only [coe_toQuotSubmodule, Submodule.mkQ_apply, Submodule.Quotient.mk_eq_zero, hP i hx]
 
 include hP in
 theorem quotDecomposeAux_ker :
@@ -243,8 +243,7 @@ def quotDecomposition : Decomposition (quotSubmodule ℳ P) := by
     suffices coeLinearMap (quotSubmodule ℳ P) ∘ₗlmap (toQuotSubmodule ℳ P) =
       P.mkQ ∘ₗcoeLinearMap ℳ  by
       simp [← LinearMap.comp_apply, this, coeLinearMap_apply]
-    ext
-    simp [LinearMap.comp_apply, lof_eq_of, toQuotSubmodule]
+    ext; simp
   · ext i ⟨x, hx⟩ j
     simp only [quotSubmodule, Submodule.mem_map, Submodule.mkQ_apply] at hx
     obtain ⟨m, hm, rfl⟩ := hx
