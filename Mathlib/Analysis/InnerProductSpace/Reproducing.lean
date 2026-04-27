@@ -309,6 +309,8 @@ theorem kernel_ofKernel : kernel (OfKernel K) = K := by
 end OfKernel
 
 variable (𝕜) in
+/-- The kernel generated from a function `f : X → V` with its entries `f x ⊗ₜ[𝕜] f y` at index
+`(x, y)` interpreted as a bounded linear map on `V`. -/
 def outerKernel (f : X → V) : Matrix X X (V →L[𝕜] V) :=
   Matrix.of fun x y ↦ InnerProductSpace.rankOne 𝕜 (f x) (f y)
 
@@ -321,7 +323,6 @@ lemma outerKernel_def (f : X → V) (x y) :
 
 omit [CompleteSpace V] in
 variable (𝕜) in
-@[simp]
 lemma outerKernel_apply (f : X → V) (xv₁ xv₂ : X × V) :
     ⟪ (outerKernel 𝕜 f xv₂.1 xv₁.1) xv₁.2, xv₂.2 ⟫_𝕜
     = (starRingEnd 𝕜) ⟪ f xv₁.1, xv₁.2⟫_𝕜 * ⟪ f xv₂.1, xv₂.2⟫_𝕜 := by
@@ -428,3 +429,5 @@ theorem mem_iff (f : X → V) : (∃ (g : H), (g : X → V) = f) ↔
     ∃ (c : ℝ), 0 ≤ c ∧ ((c : 𝕜)^2 • kernel H - outerKernel 𝕜 f).PosSemidef :=
   ⟨fun ⟨g, hg⟩ => ⟨‖g‖, norm_nonneg _, hg ▸ posSemidef_of_mem g⟩,
    fun ⟨_, _, hc⟩ => mem_of_posSemidef f hc⟩
+
+end RKHS
