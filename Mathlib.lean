@@ -4487,7 +4487,10 @@ public import Mathlib.Geometry.Euclidean.Sphere.Ptolemy
 public import Mathlib.Geometry.Euclidean.Sphere.SecondInter
 public import Mathlib.Geometry.Euclidean.Sphere.Tangent
 public import Mathlib.Geometry.Euclidean.Triangle
+public import Mathlib.Geometry.Euclidean.Volume.Basic
+public import Mathlib.Geometry.Euclidean.Volume.Def
 public import Mathlib.Geometry.Euclidean.Volume.Measure
+public import Mathlib.Geometry.Euclidean.Volume.MeasureSimplex
 public import Mathlib.Geometry.Group.Growth.LinearLowerBound
 public import Mathlib.Geometry.Group.Growth.QuotientInter
 public import Mathlib.Geometry.Manifold.Algebra.LeftInvariantDerivation
@@ -4780,6 +4783,7 @@ public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
+public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Shift
 public import Mathlib.LinearAlgebra.AffineSpace.Basis
 public import Mathlib.LinearAlgebra.AffineSpace.Centroid
 public import Mathlib.LinearAlgebra.AffineSpace.Ceva
