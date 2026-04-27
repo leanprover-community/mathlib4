@@ -208,7 +208,7 @@ variable {p : M →ₗ[R] N →ₗ[R] R}
 variable {C : PointedCone R M}
 
 lemma dual_univ_eq_ker : dual p ⊤ = ker p.flip := by
-  ext x; simpa [Eq.comm, Iff.comm] using AddMonoidHom.ext_iff_le (f := 0) (g := p.flip x)
+  ext x; simpa [Eq.comm, Iff.comm] using AddMonoidHomClass.ext_iff_le (f := 0) (g := p.flip x)
 
 lemma dual_top (hp : Injective p.flip) : dual p ⊤ = 0 := by
   simpa [dual_univ_eq_ker] using ker_eq_bot_of_injective hp
