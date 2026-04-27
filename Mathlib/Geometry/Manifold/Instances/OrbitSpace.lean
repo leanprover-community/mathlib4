@@ -47,16 +47,8 @@ variable {M : Type*} [TopologicalSpace M]
 
 /-- The orbit space of a properly discontinuous group action on a manifold inherits a
 `ChartedSpace` structure modeled on the same space. -/
-instance : ChartedSpace H (orbitRel.Quotient G M) where
-  atlas := {(localInverseAt G q.out).trans (chartAt H q.out) | q : orbitRel.Quotient G M}
-  chartAt q := (localInverseAt G q.out).trans (chartAt H q.out)
-  mem_chart_source q := by
-    simp only [OpenPartialHomeomorph.trans_toPartialEquiv,
-      PartialEquiv.trans_source, OpenPartialHomeomorph.toFun_eq_coe,
-      Set.mem_inter_iff, Set.mem_preimage]
-    set p := q.out
-    rw [← q.out_eq, localInverseAt_apply_self]
-    exact ⟨mem_localInverseAt_source, mem_chart_source H p⟩
-  chart_mem_atlas := by simp
+instance : ChartedSpace H (orbitRel.Quotient G M) :=
+  IsLocalHomeomorph.chartedSpace isLocalHomeomorph_of_properlyDiscontinuousSMul
+    Quotient.mk''_surjective
 
 end

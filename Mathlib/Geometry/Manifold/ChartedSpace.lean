@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Geometry.Manifold.StructureGroupoid
 public import Mathlib.Topology.Connected.LocPathConnected
+public import Mathlib.Topology.IsLocalHomeomorph
 public import Mathlib.Topology.OpenPartialHomeomorph.Constructions
 
 /-!
@@ -564,6 +565,26 @@ lemma ChartedSpace.mem_atlas_sum [h : Nonempty H]
   · rw [← hxe]; right; use x
 
 end sum
+
+section IsLocalHomeomorph
+
+variable [TopologicalSpace M] [TopologicalSpace M'] [TopologicalSpace H] [ChartedSpace H M]
+
+/-- Given a surjective local homeomorphism `f : M → M'`, this endows `M'` with a `ChartedSpace`
+structure by pushing forward the `ChartedSpace` structure from `M`. -/
+@[implicit_reducible]
+def IsLocalHomeomorph.chartedSpace
+    {f : M → M'} (hf : IsLocalHomeomorph f) (hf' : Function.Surjective f) :
+    ChartedSpace H M' where
+  atlas := {(hf.localInverseAt (hf' q).choose).trans (chartAt H (hf' q).choose) | q : M'}
+  chartAt q := (hf.localInverseAt (hf' q).choose).trans (chartAt H (hf' q).choose)
+  mem_chart_source q := by
+    generalize_proofs h
+    nth_rw 3 [← h.choose_spec]
+    simp
+  chart_mem_atlas := by simp
+
+end IsLocalHomeomorph
 
 end Constructions
 

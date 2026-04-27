@@ -280,4 +280,40 @@ theorem isTopologicalBasis (hf : IsLocalHomeomorph f) : IsTopologicalBasis
       rw [Set.preimage_inter, ← Set.inter_assoc, Set.inter_eq_self_of_subset_left
         f.source_preimage_target, f.source_inter_preimage_inv_preimage]
 
+variable (hf : IsLocalHomeomorph f) {x : X}
+
+variable (x) in
+/-- A chosen local inverse for a local homeomorphism `f` at a point `x`. -/
+noncomputable def localInverseAt : OpenPartialHomeomorph Y X := (hf x).choose.symm
+
+/-- The point `x` lies in the target of `localInverseAt x`. -/
+@[simp] lemma self_mem_localInverseAt_target : x ∈ (hf.localInverseAt x).target :=
+  (hf x).choose_spec.1
+
+/-- The inverse function of `localInverseAt x` coincides with `f`. -/
+@[simp] lemma localInverseAt_invFun_eq : f = (hf.localInverseAt x).invFun :=
+  (hf x).choose_spec.2
+
+/-- The point `f x` lies in the source of `localInverseAt x`. -/
+@[simp] lemma apply_self_mem_localInverseAt_source : f x ∈ (hf.localInverseAt x).source := by
+  rw [congrFun (localInverseAt_invFun_eq hf)]
+  exact (hf.localInverseAt x).map_target' (self_mem_localInverseAt_target hf)
+
+/-- The function `f` is injective on the target of `localInverseAt x`. -/
+lemma injOn_localInverseAt_target : (hf.localInverseAt x).target.InjOn f := by
+  refine (Set.EqOn.injOn_iff (fun y _ ↦ ?_)).mp (hf.localInverseAt x).symm.injOn
+  simp [congrFun (localInverseAt_invFun_eq hf (x:=x))]
+
+/-- If `y` lies in the source of `localInverseAt x`, then `f (localInverseAt x y) = y`. -/
+lemma apply_localInverseAt_of_mem {y : Y} (hx : y ∈ (hf.localInverseAt x).source) :
+    f (hf.localInverseAt x y) = y := by
+  rw [congrFun (localInverseAt_invFun_eq hf (x:=x))]
+  exact (hf.localInverseAt x).left_inv' hx
+
+/-- The function `localInverseAt x` sends `f x` back to `x`. -/
+@[simp] lemma localInverseAt_apply_self : hf.localInverseAt x (f x) = x := by
+  refine hf.injOn_localInverseAt_target ?_ hf.self_mem_localInverseAt_target <|
+    hf.apply_localInverseAt_of_mem hf.apply_self_mem_localInverseAt_source
+  simp
+
 end IsLocalHomeomorph
