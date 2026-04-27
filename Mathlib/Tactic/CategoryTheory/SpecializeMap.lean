@@ -173,6 +173,7 @@ private partial def elabSpecializeMapTerm (t : Syntax) : TermElabM Expr := do
       elabTerm t none
   | _ => elabTerm t none
 
+/-- Optional `suffix := "..."` argument for `@[specialize_map ...]`. -/
 syntax specializeMapSuffix := " (" &"suffix" " := " str ")"
 
 /--
