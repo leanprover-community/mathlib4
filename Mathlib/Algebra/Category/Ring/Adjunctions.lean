@@ -27,9 +27,7 @@ noncomputable section
 
 universe v u
 
-open MvPolynomial Opposite
-
-open CategoryTheory
+open MvPolynomial Opposite CategoryTheory
 
 namespace CommRingCat
 

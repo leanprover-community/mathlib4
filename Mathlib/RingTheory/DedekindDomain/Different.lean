@@ -439,7 +439,7 @@ variable [IsTorsionFree B C]
 
 theorem dual_eq_dual_mul_dual :
     dual A K (1 : FractionalIdeal C⁰ M) = dual B L (1 : FractionalIdeal C⁰ M) *
-        (dual A K (1 : FractionalIdeal B⁰ L)).extendedHomₐ M C := by
+        (dual A K (1 : FractionalIdeal B⁰ L)).extendedHom M C := by
   have := IsIntegralClosure.isLocalization B L M C
   have h : B⁰ ≤ Submonoid.comap (algebraMap B C) C⁰ :=
     nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ <| FaithfulSMul.algebraMap_injective _ _
@@ -448,8 +448,8 @@ theorem dual_eq_dual_mul_dual :
   refine le_antisymm ?_ ?_
   · intro x hx
     rw [← spanSingleton_le_iff_mem, ← mul_inv_le_iff₀ (bot_lt_iff_ne_bot.mpr
-      (by simp [-extendedHom_apply])), ← map_inv₀, ← FractionalIdeal.coe_le_coe,
-        extendedHom_apply, coe_mul, coe_spanSingleton, coe_extended_eq_span, coe_dual_one,
+      (by simp [-extendedHom'_apply])), ← map_inv₀, ← FractionalIdeal.coe_le_coe,
+        extendedHom'_apply, coe_mul, coe_spanSingleton, coe_extended_eq_span, coe_dual_one,
         span_mul_span, span_le]
     rintro _ ⟨x, rfl, _, ⟨a, ha, rfl⟩, rfl⟩ _ ⟨m, rfl⟩
     simp only [← h_alg, mul_comm _ (algebraMap _ _ _), ← Algebra.smul_def a, map_smul,
@@ -458,7 +458,7 @@ theorem dual_eq_dual_mul_dual :
     rw [← FractionalIdeal.coe_one (S := B⁰)]
     refine (mem_inv_iff (by simp)).mp ha _ (trace_mem_dual_one A K L B C M _ ?_)
     exact Algebra.smul_def m x ▸ smul_mem _ _ hx
-  · rw [← FractionalIdeal.coe_le_coe, coe_mul, extendedHom_apply,
+  · rw [← FractionalIdeal.coe_le_coe, coe_mul, extendedHom'_apply,
       coe_extended_eq_span, ← span_eq (coeToSubmodule _), span_mul_span, span_le]
     rintro _ ⟨a, ha, _, ⟨b, hb, rfl⟩, rfl⟩
     simp only [SetLike.mem_coe, mem_coe, ← h_alg, mul_comm a, ← Algebra.smul_def] at ha hb ⊢
@@ -577,7 +577,7 @@ theorem differentIdeal_eq_differentIdeal_mul_differentIdeal (C : Type*) [IsDomai
   haveI : FiniteDimensional (FractionRing B) (FractionRing C) := .of_isLocalization B C B⁰
   rw [← coeIdeal_inj (K := FractionRing C), coeIdeal_mul, coeIdeal_differentIdeal A
     (FractionRing A), coeIdeal_differentIdeal B (FractionRing B)]
-  rw [← extendedHomₐ_coeIdeal_eq_map (K := FractionRing B), coeIdeal_differentIdeal A
+  rw [← extendedHom_coeIdeal_eq_map (K := FractionRing B), coeIdeal_differentIdeal A
     (FractionRing A), map_inv₀, ← mul_inv, ← inv_eq_iff_eq_inv, inv_inv]
   exact dual_eq_dual_mul_dual A (FractionRing A) (FractionRing B) B C (FractionRing C)
 
