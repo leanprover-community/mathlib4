@@ -204,6 +204,7 @@ def normalizeIsoApp' :
 @[simp] theorem normalizeIsoApp'_unit (n : NormalMonoidalObject C) :
     normalizeIsoApp' C (𝟙_ (F C)) n = ρ_ _ := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 theorem normalizeIsoApp_eq :
     ∀ (X : F C) (n : N C), normalizeIsoApp C X n = normalizeIsoApp' C X n.as
   | of _, _ => rfl
