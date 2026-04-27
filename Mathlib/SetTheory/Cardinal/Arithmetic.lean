@@ -264,6 +264,12 @@ theorem add_lt_of_lt {a b c : Cardinal} (hc : ℵ₀ ≤ c) (h1 : a < c) (h2 : b
     (lt_or_ge (max a b) ℵ₀).elim (fun h => (add_lt_aleph0 h h).trans_le hc) fun h => by
       rw [add_eq_self h]; exact max_lt h1 h2
 
+theorem add_one_lt_of_lt {a b : Cardinal} (hb : ℵ₀ ≤ b) (ha : a < b) : a + 1 < b :=
+  add_lt_of_lt hb ha (one_lt_aleph0.trans_le hb)
+
+theorem one_add_lt_of_lt {a b : Cardinal} (hb : ℵ₀ ≤ b) (ha : a < b) : 1 + a < b :=
+  add_lt_of_lt hb (one_lt_aleph0.trans_le hb) ha
+
 theorem eq_of_add_eq_of_aleph0_le {a b c : Cardinal} (h : a + b = c) (ha : a < c) (hc : ℵ₀ ≤ c) :
     b = c := by
   apply le_antisymm
@@ -313,6 +319,15 @@ theorem add_one_eq {a : Cardinal} (ha : ℵ₀ ≤ a) : a + 1 = a :=
 theorem mk_add_one_eq {α : Type*} [Infinite α] : #α + 1 = #α :=
   add_one_eq (aleph0_le_mk α)
 
+theorem mk_Iic_lt {α : Type*} [LinearOrder α] [WellFoundedLT α] (i : α)
+    (h : ord #α = typeLT α) (hα : ℵ₀ ≤ #α) : #(Iic i) < #α := by
+  rw [← Iio_insert, mk_insert self_notMem_Iio]
+  exact add_one_lt_of_lt hα (mk_Iio_lt i h)
+
+theorem mk_Ici_lt {α : Type*} [LinearOrder α] [WellFoundedGT α] (i : α)
+    (h : ord #α = typeLT αᵒᵈ) (hα : ℵ₀ ≤ #α) : #(Ici i) < #α :=
+  mk_Iic_lt (OrderDual.toDual i) h hα
+
 protected theorem eq_of_add_eq_add_left {a b c : Cardinal} (h : a + b = a + c) (ha : a < ℵ₀) :
     b = c := by
   rcases le_or_gt ℵ₀ b with hb | hb
@@ -340,6 +355,15 @@ protected theorem eq_of_add_eq_add_right {a b c : Cardinal} (h : a + b = c + b) 
 
 end add
 
+/-- Infinite types permit a relation where fewer elements than its cardinality
+are missed along all verticals and fewer elements than its cardinality are hit
+along all horizontals. -/
+theorem exists_rel_mk_fibers_lt (α : Type*) [Infinite α] :
+    ∃ r : α → α → Prop, (∀ x, #{y // ¬ r x y} < #α) ∧ (∀ y, #{x // r x y} < #α) := by
+  obtain ⟨α, _, hα⟩ := exists_ord_eq_type_lt α
+  refine ⟨LT.lt, fun x ↦ ?_, fun y ↦ mk_Iio_lt _ hα⟩
+  simpa using mk_Iic_lt _ hα (aleph0_le_mk _)
+
 /-! ### Properties of `ciSup` -/
 section ciSup
 
@@ -355,8 +379,7 @@ protected theorem ciSup_add (hf : BddAbove (range f)) (c : Cardinal.{v}) :
   refine le_antisymm ?_ (ciSup_le' this)
   have bdd : BddAbove (range (f · + c)) := ⟨_, forall_mem_range.mpr this⟩
   obtain hs | hs := lt_or_ge (⨆ i, f i) ℵ₀
-  · obtain ⟨i, hi⟩ := exists_eq_of_iSup_eq_of_not_isSuccLimit
-      f hf (not_isSuccLimit_of_lt_aleph0 hs) rfl
+  · obtain ⟨i, hi⟩ := exists_eq_ciSup_of_not_isSuccLimit hf (not_isSuccLimit_of_lt_aleph0 hs)
     exact hi ▸ le_ciSup bdd i
   rw [add_eq_max hs, max_le_iff]
   exact ⟨ciSup_mono bdd fun i ↦ self_le_add_right _ c,
@@ -384,8 +407,7 @@ protected theorem ciSup_mul (c : Cardinal.{v}) : (⨆ i, f i) * c = ⨆ i, f i *
   refine le_antisymm ?_ (ciSup_le' this)
   have bdd : BddAbove (range (f · * c)) := ⟨_, forall_mem_range.mpr this⟩
   obtain hs | hs := lt_or_ge (⨆ i, f i) ℵ₀
-  · obtain ⟨i, hi⟩ := exists_eq_of_iSup_eq_of_not_isSuccLimit
-      f hf (not_isSuccLimit_of_lt_aleph0 hs) rfl
+  · obtain ⟨i, hi⟩ := exists_eq_ciSup_of_not_isSuccLimit hf (not_isSuccLimit_of_lt_aleph0 hs)
     exact hi ▸ le_ciSup bdd i
   rw [mul_eq_max_of_aleph0_le_left hs h0, max_le_iff]
   obtain ⟨i, hi⟩ := exists_lt_of_lt_ciSup' (one_lt_aleph0.trans_le hs)
@@ -401,11 +423,11 @@ protected theorem ciSup_mul_ciSup (g : ι' → Cardinal.{v}) :
 
 theorem sum_eq_lift_iSup_of_lift_mk_le_lift_iSup [Small.{v} ι] {f : ι → Cardinal.{v}} (hι : ℵ₀ ≤ #ι)
     (h : lift.{v} #ι ≤ lift.{u} (⨆ i, f i)) : sum f = lift (⨆ i, f i) := by
-  rw [lift_iSup (bddAbove_of_small _)] at h
+  rw [lift_iSup bddAbove_of_small] at h
   apply (lift_iSup_le_sum f).antisymm'
   convert sum_le_lift_mk_mul_iSup_lift f
   rw [mul_eq_max (aleph0_le_lift.mpr hι) ((aleph0_le_lift.mpr hι).trans h), max_eq_right h,
-    lift_iSup (bddAbove_of_small _)]
+    lift_iSup bddAbove_of_small]
 
 theorem sum_eq_iSup_of_lift_mk_le_iSup {f : ι → Cardinal.{max u v}} (hι : ℵ₀ ≤ #ι)
     (h : lift.{v} #ι ≤ ⨆ i, f i) : sum f = ⨆ i, f i := by
