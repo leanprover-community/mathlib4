@@ -570,19 +570,26 @@ section IsLocalHomeomorph
 
 variable [TopologicalSpace M] [TopologicalSpace M'] [TopologicalSpace H] [ChartedSpace H M]
 
+/-- Given a right inverse for a local homeomorphism `f : M → M'`, endow `M'` with a `ChartedSpace`
+structure by pushing forward the `ChartedSpace` structure from `M`. -/
+@[implicit_reducible]
+def IsLocalHomeomorph.chartedSpace_of_rightInverse
+    {f : M → M'} (hf : IsLocalHomeomorph f) {g : M' → M} (hg : Function.RightInverse g f) :
+    ChartedSpace H M' where
+  atlas := {(hf.localInverseAt (g q)).trans (chartAt H (g q)) | q : M'}
+  chartAt q := (hf.localInverseAt (g q)).trans (chartAt H (g q))
+  mem_chart_source q := by
+    nth_rw 3 [← hg.eq q]
+    simp
+  chart_mem_atlas := by simp
+
 /-- Given a surjective local homeomorphism `f : M → M'`, endow `M'` with a `ChartedSpace` structure
 by pushing forward the `ChartedSpace` structure from `M`. -/
 @[implicit_reducible]
 def IsLocalHomeomorph.chartedSpace
     {f : M → M'} (hf : IsLocalHomeomorph f) (hf' : Function.Surjective f) :
-    ChartedSpace H M' where
-  atlas := {(hf.localInverseAt (hf' q).choose).trans (chartAt H (hf' q).choose) | q : M'}
-  chartAt q := (hf.localInverseAt (hf' q).choose).trans (chartAt H (hf' q).choose)
-  mem_chart_source q := by
-    generalize_proofs h
-    nth_rw 3 [← h.choose_spec]
-    simp
-  chart_mem_atlas := by simp
+    ChartedSpace H M' :=
+  hf.chartedSpace_of_rightInverse hf'.hasRightInverse.choose_spec
 
 end IsLocalHomeomorph
 
