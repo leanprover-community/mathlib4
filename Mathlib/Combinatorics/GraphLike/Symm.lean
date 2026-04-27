@@ -35,10 +35,13 @@ of graph structures including `SimpleGraph`, `Graph`, and `Digraph`.
 
 public section
 
+/-- `HasInvol D` is a typeclass with a function `symm : D → D` that gives the inverse of a dart. -/
 class HasInvol (D : Type*) where
+  /-- The inverse of a dart. -/
   symm : D → D
   symm_invol : ∀ ⦃d⦄, symm (symm d) = d
 
+/-- `SymmDartLike` extends `HasSourceTarget` and `HasInvol` for darts that are symmetric. -/
 class SymmDartLike (V D : Type*) extends HasSourceTarget V D, HasInvol D where
   symm_fst (d : D) : src (symm d) = (tgt d : V)
   symm_snd (d : D) : tgt (symm d) = (src d : V)
@@ -57,7 +60,7 @@ class SymmGraphLike (V D E : outParam Type*) [HasEdge D E] [SymmDartLike V D]
 open SymmGraphLike
 
 attribute [simp, grind =] symm_invol symm_fst symm_snd symm_mem_darts_iff
-attribute [simp, grind →] symm_ne
+attribute [grind →] symm_ne
 
 variable {V D E Gr : Type*} {G : Gr} {u v w : V} {d : D}
 
