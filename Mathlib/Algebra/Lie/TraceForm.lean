@@ -107,27 +107,11 @@ lemma traceForm_lieInvariant : (traceForm R L M).lieInvariant L := by
   apply LinearMap.isNilpotent_trace_of_isNilpotent
   exact isNilpotent_toEnd_of_isNilpotent₂ R L M x y
 
-open TensorProduct in
-lemma traceForm_baseChange [Module.Free R M] [Module.Finite R M]
+open scoped TensorProduct in
+@[simp] lemma traceForm_baseChange [Module.Free R M] [Module.Finite R M]
     (A : Type*) [CommRing A] [Algebra R A] :
-    (traceForm R L M).baseChange A = traceForm A (A ⊗[R] L) (A ⊗[R] M) := by
-  refine LinearMap.ext fun u ↦ TensorProduct.induction_on u
-    (by simp) ?_ (fun u₁ u₂ hu₁ hu₂ ↦ by simp [hu₁, hu₂])
-  intro a x
-  refine LinearMap.ext fun v ↦ TensorProduct.induction_on v
-    (by simp) ?_ (fun v₁ v₂ hv₁ hv₂ ↦ by simp [hv₁, hv₂])
-  intro b y
-  rw [LinearMap.BilinForm.baseChange_tmul]
-  simp only [traceForm_apply_apply]
-  have hx : toEnd A (A ⊗[R] L) (A ⊗[R] M) (a ⊗ₜ[R] x) =
-      a • (toEnd R L M x).baseChange A := by
-    rw [TensorProduct.tmul_eq_smul_one_tmul, map_smul, toEnd_baseChange]
-  have hy : toEnd A (A ⊗[R] L) (A ⊗[R] M) (b ⊗ₜ[R] y) =
-      b • (toEnd R L M y).baseChange A := by
-    rw [TensorProduct.tmul_eq_smul_one_tmul, map_smul, toEnd_baseChange]
-  rw [hx, hy, LinearMap.smul_comp, LinearMap.comp_smul, smul_smul,
-    ← LinearMap.baseChange_comp, map_smul, LinearMap.trace_baseChange,
-    Algebra.smul_def, smul_eq_mul, mul_comm]
+    traceForm A (A ⊗[R] L) (A ⊗[R] M) = (traceForm R L M).baseChange A := by
+  ext; simp [traceForm_apply_apply, ← LinearMap.baseChange_comp, Algebra.algebraMap_eq_smul_one]
 
 variable {R L M} in
 lemma trace_toEnd_mul_eq_zero_of_traceForm_eq_zero (h : traceForm R L M = 0)
