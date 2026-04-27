@@ -14,16 +14,14 @@ import Mathlib.Tactic.FastInstance
 In this file we define various instances related to ring for `FunLike` types.
 -/
 
-public section
-
-namespace FunLike
+@[expose] public section
 
 variable {F α β : Type*} [FunLike F α β]
 
 section Cast
 
 /-- `IsNatCastApply F α β` states for all `n : ℕ` and `x : α`, `(n : F) x = n`. -/
-class IsNatCastApply (F : Type*) (α β : outParam Type*) [FunLike F α β] [AddMonoidWithOne β]
+class IsNatCastApply (F : Type*) (α β : outParam Type*) [FunLike F α β] [NatCast β]
     [NatCast F] where
   natCast_apply (n : ℕ) (x : α) : (n : F) x = n
 
@@ -34,7 +32,7 @@ theorem coe_natCast [AddMonoidWithOne β] [NatCast F] [IsNatCastApply F α β] (
   ↑(n : F) = (n : α → β) := by ext; simp only [natCast_apply]; rfl
 
 /-- `IsIntCastApply F α β` states for all `n : ℤ` and `x : α`, `(n : F) x = n`. -/
-class IsIntCastApply (F : Type*) (α β : outParam Type*) [FunLike F α β] [AddGroupWithOne β]
+class IsIntCastApply (F : Type*) (α β : outParam Type*) [FunLike F α β] [IntCast β]
     [IntCast F] where
   intCast_apply (n : ℤ) (x : α) : (n : F) x = n
 
@@ -45,6 +43,8 @@ theorem coe_intCast [AddGroupWithOne β] [IntCast F] [IsIntCastApply F α β] (n
   ↑(n : F) = (n : α → β) := by ext; simp only [intCast_apply]; rfl
 
 end Cast
+
+namespace FunLike
 
 variable [Mul F]
 
