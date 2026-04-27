@@ -58,7 +58,6 @@ variable {R ι A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 def quotSubmodule (i : ι) : Submodule R (RingQuot rel) :=
   Submodule.map (RingQuot.mkAlgHom R rel).toLinearMap (𝒜 i)
 
-
 theorem mem_quotSubmodule {x : RingQuot rel} {i : ι} :
     x ∈ quotSubmodule 𝒜 rel i ↔
       ∃ y ∈ 𝒜 i, RingQuot.mkAlgHom R rel y = x := by
