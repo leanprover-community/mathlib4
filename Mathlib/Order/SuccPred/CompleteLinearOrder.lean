@@ -194,6 +194,7 @@ end CompleteLinearOrder
 
 namespace WithTop
 
+-- #38244
 @[to_dual]
 theorem isSuccPrelimit_top [LT α] [NoMaxOrder α] : IsSuccPrelimit (⊤ : WithTop α) := by
   intro a ha
