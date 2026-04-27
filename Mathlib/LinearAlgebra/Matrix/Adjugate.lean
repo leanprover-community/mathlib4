@@ -272,6 +272,18 @@ theorem adjugate_mul (A : Matrix n n α) : adjugate A * A = A.det • (1 : Matri
       rw [← adjugate_transpose, ← transpose_mul, transpose_transpose]
     _ = _ := by rw [mul_adjugate Aᵀ, det_transpose, transpose_smul, transpose_one]
 
+/-- If `M * N = c • 1` and `det M ≠ 0` over an integral domain, then `N * M = c • 1`. -/
+theorem mul_eq_smul_one_symm [IsDomain α] {M N : Matrix n n α} {c : α}
+    (h : M * N = c • (1 : Matrix n n α)) (hdet : M.det ≠ 0) :
+    N * M = c • (1 : Matrix n n α) := by
+  have h1 : M.det • N = c • adjugate M := by
+    have := mul_assoc (adjugate M) M N
+    rwa [adjugate_mul, h, smul_mul_assoc, one_mul, mul_smul_comm, mul_one] at this
+  have h2 : M.det • (N * M) = M.det • (c • (1 : Matrix n n α)) := by
+    rw [← smul_mul_assoc, h1, smul_mul_assoc, adjugate_mul, smul_comm]
+  ext i j
+  exact mul_left_cancel₀ hdet (by simpa using congr_fun (congr_fun h2 i) j)
+
 theorem adjugate_smul (r : α) (A : Matrix n n α) :
     adjugate (r • A) = r ^ (Fintype.card n - 1) • adjugate A := by
   rw [adjugate, adjugate, transpose_smul, cramer_smul]
