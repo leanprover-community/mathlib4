@@ -85,6 +85,18 @@ theorem integerNormalization_coeff (p : S[X]) (i : ℕ) :
     (integerNormalization M p).coeff i = coeffIntegerNormalization M p i :=
   rfl
 
+variable {M} in
+theorem integerNormalization_eq_zero_iff [IsDomain R] (hM : M ≤ nonZeroDivisors R) (p : S[X]) :
+    integerNormalization M p = 0 ↔ p = 0 := by
+  obtain ⟨_, hb₁, hb₂⟩ := integerNormalization_spec M p
+  letI := isDomain_of_le_nonZeroDivisors S hM
+  letI := (faithfulSMul_iff_algebraMap_injective R S).mpr <| IsLocalization.injective S hM
+  letI : Function.Injective <| mapRingHom (algebraMap R S) := by
+    rw [coe_mapRingHom, map_injective_iff]
+    exact IsLocalization.injective S hM
+  rw [← _root_.map_eq_zero_iff (mapRingHom (algebraMap R S)) this, coe_mapRingHom, hb₂]
+  exact smul_eq_zero_iff_right <| nonZeroDivisors.ne_zero (hM hb₁)
+
 @[deprecated integerNormalization_spec (since := "2026-02-05")]
 theorem integerNormalization_map_to_map (p : S[X]) :
     ∃ b : M, (integerNormalization M p).map (algebraMap R S) = (b : R) • p := by
@@ -115,11 +127,8 @@ variable {A K C : Type*} [CommRing A] [IsDomain A] [Field K] [Algebra A K] [IsFr
 variable [CommRing C]
 
 theorem integerNormalization_eq_zero_iff {p : K[X]} :
-    integerNormalization (nonZeroDivisors A) p = 0 ↔ p = 0 := by
-  obtain ⟨b, hb₁, hb₂⟩ := integerNormalization_spec (nonZeroDivisors A) p
-  rw [← _root_.map_eq_zero_iff (mapRingHom _)
-    (map_injective _ (FaithfulSMul.algebraMap_injective A K)), coe_mapRingHom, hb₂]
-  exact smul_eq_zero_iff_right (nonZeroDivisors.ne_zero hb₁)
+    integerNormalization (nonZeroDivisors A) p = 0 ↔ p = 0 :=
+  IsLocalization.integerNormalization_eq_zero_iff le_rfl p
 
 variable (A K C)
 
@@ -248,7 +257,7 @@ theorem IsLocalization.scaleRoots_commonDenom_mem_lifts (p : Rₘ[X])
 theorem IsIntegral.exists_multiple_integral_of_isLocalization [Algebra Rₘ S] [IsScalarTower R Rₘ S]
     (x : S) (hx : IsIntegral Rₘ x) : ∃ m : M, IsIntegral R (m • x) := by
   rcases subsingleton_or_nontrivial Rₘ with _ | nontriv
-  · haveI := (_root_.algebraMap Rₘ S).codomain_trivial
+  · haveI := (algebraMap Rₘ S).codomain_trivial
     exact ⟨1, Polynomial.X, Polynomial.monic_X, Subsingleton.elim _ _⟩
   obtain ⟨p, hp₁, hp₂⟩ := hx
   -- Porting note: obtain doesn't support side goals
@@ -333,7 +342,7 @@ lemma isIntegral_of_isIntegral_adjoin_of_mul_eq_one
     · refine natDegree_sum_le_of_forall_le _ _ fun i hi ↦ ?_
       grw [natDegree_mul_le, natDegree_pow_le, natDegree_X_le, natDegree_reflect_le]
       simp [max_eq_left (hN _), le_natDegree_of_mem_supp _ hi]
-    · simp only [sum, finset_sum_coeff, coeff_X_pow_mul', coeff_reflect, q']
+    · simp only [sum, finsetSum_coeff, coeff_X_pow_mul', coeff_reflect, q']
       rw [Finset.sum_eq_single q.natDegree]
       · simp [hqm.leadingCoeff]
       · intro i hi₁ hi₂
@@ -393,7 +402,7 @@ the integral closure `C` of `A` in `L` has fraction field `L`. -/
 theorem isFractionRing_of_finite_extension [IsDomain A] [Algebra K L] [IsScalarTower A K L]
     [FiniteDimensional K L] : IsFractionRing C L :=
   have : Algebra.IsAlgebraic A L := IsFractionRing.comap_isAlgebraic_iff.mpr
-    (inferInstanceAs (Algebra.IsAlgebraic K L))
+    (inferInstance : Algebra.IsAlgebraic K L)
   isFractionRing_of_algebraic A C
     fun _ hx =>
     IsFractionRing.to_map_eq_zero_iff.mp

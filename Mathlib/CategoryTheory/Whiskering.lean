@@ -43,7 +43,7 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `α : G ⟶ H` then `whiskerLeft F α : F ⋙ G ⟶ F ⋙ H` has components `α.app (F.obj X)`. -/
-@[to_dual self, simps (attr := to_dual self (reorder := G H))]
+@[to_dual self, simps (attr := to_dual self)]
 def whiskerLeft (F : C ⥤ D) {G H : D ⥤ E} (α : G ⟶ H) :
     F ⋙ G ⟶ F ⋙ H where
   app X := α.app (F.obj X)
@@ -56,7 +56,7 @@ lemma id_hcomp (F : C ⥤ D) {G H : D ⥤ E} (α : G ⟶ H) : 𝟙 F ◫ α = wh
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `α : G ⟶ H` then `whiskerRight α F : G ⋙ F ⟶ H ⋙ F` has components `F.map (α.app X)`. -/
-@[to_dual self, simps (attr := to_dual self (reorder := G H))]
+@[to_dual self, simps (attr := to_dual self)]
 def whiskerRight {G H : C ⥤ D} (α : G ⟶ H) (F : D ⥤ E) :
     G ⋙ F ⟶ H ⋙ F where
   app X := F.map (α.app X)

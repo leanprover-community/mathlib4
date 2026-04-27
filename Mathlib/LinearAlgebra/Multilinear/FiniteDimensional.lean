@@ -20,7 +20,7 @@ We do not put this in `LinearAlgebra.Multilinear.Basic` to avoid making the impo
 there.
 -/
 
-@[expose] public section
+public section
 
 
 namespace MultilinearMap

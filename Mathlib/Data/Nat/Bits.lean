@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Nat.BinaryRec
 public import Mathlib.Data.List.Defs
-public import Mathlib.Tactic.Lemma
 
 /-!
 # Additional properties of binary recursion on `Nat`
@@ -110,14 +109,8 @@ lemma bodd_add_div2 (n : ℕ) : (bodd n).toNat + 2 * div2 n = n := by
 lemma bit_bodd_div2 (n : Nat) : bit (bodd n) (div2 n) = n :=
   (bit_val _ _).trans <| (Nat.add_comm _ _).trans <| bodd_add_div2 _
 
-@[deprecated (since := "2025-09-24")]
-alias bit_decomp := bit_bodd_div2
-
 lemma bit_false_zero : bit false 0 = 0 :=
   rfl
-
-@[deprecated (since := "2025-09-24")]
-alias bit_zero := bit_false_zero
 
 /-- `shiftLeft' b m n` performs a left shift of `m` `n` times
 and adds the bit `b` as the least significant bit each time.
@@ -134,8 +127,6 @@ lemma shiftLeft'_false : ∀ n, shiftLeft' false m n = m <<< n
       rw [Nat.mul_comm, Nat.mul_assoc, ← Nat.pow_succ]; simp
     simp [shiftLeft_eq, shiftLeft', bit_val, shiftLeft'_false, this]
 
-/-- Lean takes the unprimed name for `Nat.shiftLeft_eq m n : m <<< n = m * 2 ^ n`. -/
-@[simp] lemma shiftLeft_eq' (m n : Nat) : shiftLeft m n = m <<< n := rfl
 @[simp] lemma shiftRight_eq (m n : Nat) : shiftRight m n = m >>> n := rfl
 
 lemma binaryRec_decreasing (h : n ≠ 0) : div2 n < n := by grind

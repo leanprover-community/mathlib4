@@ -132,7 +132,6 @@ can be expressed in matrix form.
 noncomputable def jacobiMatrix : Matrix σ σ P.Ring :=
   LinearMap.toMatrix P.basis P.basis P.differential
 
-set_option backward.isDefEq.respectTransparency false in
 lemma jacobian_eq_jacobiMatrix_det : P.jacobian = algebraMap P.Ring S P.jacobiMatrix.det := by
   simp [jacobiMatrix, jacobian]
 
@@ -460,9 +459,8 @@ lemma jacobian_reindex (P : PreSubmersivePresentation R S ι σ)
 section
 
 variable {v : ι → MvPolynomial σ R} (a : ι → σ) (ha : Function.Injective a)
-  (s : MvPolynomial σ R ⧸ (Ideal.span <| Set.range v) → MvPolynomial σ R :=
-    Function.surjInv Ideal.Quotient.mk_surjective)
-  (hs : ∀ x, Ideal.Quotient.mk _ (s x) = x := by apply Function.surjInv_eq)
+  (s : MvPolynomial σ R ⧸ (Ideal.span <| Set.range v) → MvPolynomial σ R)
+  (hs : ∀ x, Ideal.Quotient.mk _ (s x) = x)
 
 /--
 The naive pre-submersive presentation of a quotient `R[Xᵢ] ⧸ (vⱼ)`.
@@ -482,7 +480,6 @@ def naive {v : ι → MvPolynomial σ R} (a : ι → σ) (ha : Function.Injectiv
   map := a
   map_inj := ha
 
-set_option backward.privateInPublic true in
 @[simp] lemma jacobiMatrix_naive [Fintype ι] [DecidableEq ι] (i j : ι) :
     (naive a ha s hs).jacobiMatrix i j = (v j).pderiv (a i) :=
   jacobiMatrix_apply _ _ _
@@ -619,7 +616,7 @@ noncomputable def aevalDifferentialEquiv (P : SubmersivePresentation R S ι σ) 
 variable (P : SubmersivePresentation R S ι σ)
 
 @[simp]
-lemma aevalDifferentialEquiv_apply [Finite σ] (x : σ → S) :
+lemma aevalDifferentialEquiv_apply (x : σ → S) :
     P.aevalDifferentialEquiv x = P.aevalDifferential x :=
   rfl
 

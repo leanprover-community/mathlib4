@@ -244,11 +244,20 @@ theorem Bijective.of_comp_iff' {f : α → β} (hf : Bijective f) (g : γ → α
     Function.Bijective (f ∘ g) ↔ Function.Bijective g :=
   and_congr (Injective.of_comp_iff hf.injective _) (Surjective.of_comp_iff' hf _)
 
+/-- If `f : α → α → β` is surjective, then every endofunction on `β` has a fixed point.
+This is an instance of Lawvere's fixed-point theorem applied to the category of types
+and functions. It is the diagonal argument underlying `cantor_surjective` and
+`cantor_injective`. -/
+theorem exists_fixed_point_of_surjective {α β : Type*} (f : α → α → β)
+    (hf : Surjective f) (g : β → β) : ∃ x, g x = x :=
+  let ⟨a, ha⟩ := hf fun a => g (f a a)
+  ⟨f a a, (congr_fun ha a).symm⟩
+
 /-- **Cantor's diagonal argument** implies that there are no surjective functions from `α`
 to `Set α`. -/
-theorem cantor_surjective {α} (f : α → Set α) : ¬Surjective f
-  | h => let ⟨D, e⟩ := h {a | a ∉ f a}
-        @iff_not_self (D ∈ f D) <| iff_of_eq <| congr_arg (D ∈ ·) e
+theorem cantor_surjective {α} (f : α → Set α) : ¬Surjective f := fun h =>
+  let ⟨_, hx⟩ := exists_fixed_point_of_surjective f h (¬·)
+  not_iff_self (iff_of_eq hx)
 
 /-- **Cantor's diagonal argument** implies that there are no injective functions from `Set α`
 to `α`. -/
@@ -849,31 +858,6 @@ theorem uncurry_update_update {α α' β : Type*} [DecidableEq α] [DecidableEq 
   simp [curry_update]
 
 end CurryAndUncurry
-
-section Bicomp
-
-variable {α β γ δ ε : Type*}
-
-/-- Compose a binary function `f` with a pair of unary functions `g` and `h`.
-If both arguments of `f` have the same type and `g = h`, then `bicompl f g g = f on g`. -/
-def bicompl (f : γ → δ → ε) (g : α → γ) (h : β → δ) (a b) :=
-  f (g a) (h b)
-
-/-- Compose a unary function `f` with a binary function `g`. -/
-def bicompr (f : γ → δ) (g : α → β → γ) (a b) :=
-  f (g a b)
-
--- Suggested local notation:
-local notation f " ∘₂ " g => bicompr f g
-
-theorem uncurry_bicompr (f : α → β → γ) (g : γ → δ) : uncurry (g ∘₂ f) = g ∘ uncurry f :=
-  rfl
-
-theorem uncurry_bicompl (f : γ → δ → ε) (g : α → γ) (h : β → δ) :
-    uncurry (bicompl f g h) = uncurry f ∘ Prod.map g h :=
-  rfl
-
-end Bicomp
 
 section Uncurry
 

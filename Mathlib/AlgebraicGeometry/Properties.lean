@@ -22,7 +22,7 @@ We provide some basic properties of schemes
   are reduced.
 -/
 
-@[expose] public section
+public section
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
@@ -60,6 +60,9 @@ instance {X : Scheme.{u}} : PrespectralSpace X :=
 
 instance : ObjectProperty.IsClosedUnderIsomorphisms (C := Scheme) (IrreducibleSpace ·) :=
   ⟨fun e ↦ e.hom.homeomorph.irreducibleSpace_iff.mp⟩
+
+instance : ObjectProperty.IsClosedUnderIsomorphisms (C := Scheme) (ConnectedSpace ·) :=
+  ⟨fun e ↦ e.hom.homeomorph.connectedSpace_iff.mp⟩
 
 /-- A scheme `X` is reduced if all `𝒪ₓ(U)` are reduced. -/
 class IsReduced : Prop where
@@ -246,7 +249,6 @@ instance Scheme.component_nontrivial (X : Scheme.{u}) (U : X.Opens) [Nonempty U]
     Nontrivial Γ(X, U) :=
   LocallyRingedSpace.component_nontrivial (hU := ‹_›)
 
-set_option backward.isDefEq.respectTransparency false in
 instance irreducibleSpace_of_isIntegral [IsIntegral X] : IrreducibleSpace X := by
   by_contra H
   replace H : ¬IsPreirreducible .univ := fun h =>

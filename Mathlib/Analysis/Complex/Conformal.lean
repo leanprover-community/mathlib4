@@ -124,7 +124,7 @@ theorem isConformalMap_iff_is_complex_or_conj_linear :
   · exact fun h => ⟨h.is_complex_or_conj_linear, h.ne_zero⟩
   · rintro ⟨⟨map, rfl⟩ | ⟨map, hmap⟩, h₂⟩
     · refine isConformalMap_complex_linear ?_
-      contrapose! h₂ with w
+      contrapose h₂ with w
       simp only [w, restrictScalars_zero]
     · have minor₁ : g = map.restrictScalars ℝ ∘L ↑conjCLE := by
         ext1
@@ -132,7 +132,7 @@ theorem isConformalMap_iff_is_complex_or_conj_linear :
           conjCLE_apply, starRingEnd_self_apply]
       rw [minor₁] at h₂ ⊢
       refine isConformalMap_complex_linear_conj ?_
-      contrapose! h₂ with w
+      contrapose h₂ with w
       simp only [w, restrictScalars_zero, zero_comp]
 
 end ConformalIntoComplexPlane

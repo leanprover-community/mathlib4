@@ -92,7 +92,7 @@ section Definitions
 /-- A family of sets of sets `π : ι → Set (Set Ω)` is independent with respect to a measure `μ` if
 for any finite set of indices `s = {i_1, ..., i_n}`, for any sets
 `f i_1 ∈ π i_1, ..., f i_n ∈ π i_n`, then `μ (⋂ i in s, f i) = ∏ i ∈ s, μ (f i) `.
-It will be used for families of pi_systems. -/
+It will be used for families of π-systems. -/
 def iIndepSets {_mΩ : MeasurableSpace Ω}
     (π : ι → Set (Set Ω)) (μ : Measure Ω := by volume_tac) : Prop :=
   Kernel.iIndepSets π (Kernel.const Unit μ) (Measure.dirac () : Measure Unit)
@@ -972,16 +972,22 @@ section CommMonoid
 variable {β : Type*} {m : MeasurableSpace β} [CommMonoid β] [MeasurableMul₂ β] {f : ι → Ω → β}
 
 @[to_additive]
-lemma iIndepFun.indepFun_finset_prod_of_notMem (hf_Indep : iIndepFun f μ)
+lemma iIndepFun.indepFun_finsetProd_of_notMem (hf_Indep : iIndepFun f μ)
     (hf_meas : ∀ i, Measurable (f i)) {s : Finset ι} {i : ι} (hi : i ∉ s) :
     IndepFun (∏ j ∈ s, f j) (f i) μ :=
-  Kernel.iIndepFun.indepFun_finset_prod_of_notMem hf_Indep hf_meas hi
+  Kernel.iIndepFun.indepFun_finsetProd_of_notMem hf_Indep hf_meas hi
+
+@[deprecated (since := "2026-04-08")]
+alias iIndepFun.indepFun_finset_prod_of_notMem := iIndepFun.indepFun_finsetProd_of_notMem
 
 @[to_additive]
-lemma iIndepFun.indepFun_finset_prod_of_notMem₀ (hf_Indep : iIndepFun f μ)
+lemma iIndepFun.indepFun_finsetProd_of_notMem₀ (hf_Indep : iIndepFun f μ)
     (hf_meas : ∀ i, AEMeasurable (f i) μ) {s : Finset ι} {i : ι} (hi : i ∉ s) :
     IndepFun (∏ j ∈ s, f j) (f i) μ :=
-  Kernel.iIndepFun.indepFun_finset_prod_of_notMem₀ hf_Indep (by simp [hf_meas]) hi
+  Kernel.iIndepFun.indepFun_finsetProd_of_notMem₀ hf_Indep (by simp [hf_meas]) hi
+
+@[deprecated (since := "2026-04-08")]
+alias iIndepFun.indepFun_finset_prod_of_notMem₀ := iIndepFun.indepFun_finsetProd_of_notMem₀
 
 @[to_additive]
 lemma iIndepFun.indepFun_prod_range_succ {f : ℕ → Ω → β} (hf_Indep : iIndepFun f μ)
@@ -992,7 +998,7 @@ lemma iIndepFun.indepFun_prod_range_succ {f : ℕ → Ω → β} (hf_Indep : iIn
 lemma iIndepFun.indepFun_prod_range_succ₀ {f : ℕ → Ω → β} (hf_Indep : iIndepFun f μ)
     (hf_meas : ∀ i, AEMeasurable (f i) μ) (n : ℕ) :
     IndepFun (∏ j ∈ Finset.range n, f j) (f n) μ :=
-  hf_Indep.indepFun_finset_prod_of_notMem₀ hf_meas (by simp)
+  hf_Indep.indepFun_finsetProd_of_notMem₀ hf_meas (by simp)
 
 end CommMonoid
 

@@ -61,7 +61,7 @@ theorem frobeniusNumber_pair (cop : Coprime m n) (hm : 1 < m) (hn : 1 < n) :
   simp_rw [FrobeniusNumber, AddSubmonoid.mem_closure_pair]
   have hmn : m + n ≤ m * n := add_le_mul hm hn
   constructor
-  · push_neg
+  · push Not
     intro a b h
     apply cop.mul_add_mul_ne_mul (add_one_ne_zero a) (add_one_ne_zero b)
     simp only [Nat.sub_sub, smul_eq_mul] at h

@@ -83,7 +83,7 @@ section Homomorphism
 set_option backward.isDefEq.respectTransparency false in
 theorem mapRange_eq_map {R S : Type*} [CommSemiring R] [CommSemiring S] (p : MvPolynomial σ R)
     (f : R →+* S) : Finsupp.mapRange f f.map_zero p = map f p := by
-  rw [p.as_sum, Finsupp.mapRange_finset_sum, map_sum (map f)]
+  rw [p.as_sum, Finsupp.mapRange_finsetSum, map_sum (map f)]
   refine Finset.sum_congr rfl fun n _ => ?_
   rw [map_monomial, ← single_eq_monomial, Finsupp.mapRange_single, single_eq_monomial]
 
@@ -116,7 +116,6 @@ lemma monomial_mem_restrictSupport {s : Set (σ →₀ ℕ)} {m} {r : R} :
   classical
   by_cases r = 0 <;> simp [mem_restrictSupport_iff, support_monomial, *]
 
-set_option backward.isDefEq.respectTransparency false in
 open Pointwise in
 lemma restrictSupport_add (s t : Set (σ →₀ ℕ)) :
     restrictSupport R (s + t) = restrictSupport R s * restrictSupport R t := by
@@ -142,7 +141,6 @@ open Pointwise in
 lemma restrictSupport_univ : restrictSupport R (.univ : Set (σ →₀ ℕ)) = ⊤ := by
   ext; simp [mem_restrictSupport_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 open Pointwise in
 lemma restrictSupport_nsmul (n : ℕ) (s : Set (σ →₀ ℕ)) :
     restrictSupport R (n • s) = restrictSupport R s ^ n := by

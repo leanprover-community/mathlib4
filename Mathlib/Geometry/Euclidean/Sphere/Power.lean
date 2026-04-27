@@ -189,8 +189,12 @@ theorem cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi {p₁ p₂ p₃ p₄ 
   have hp₁'p₂' : ∠ p₁' p' p₂' = π := by simpa [AffineIsometry.angle_map s_isom]
   have hp₃'p₄' : ∠ p₃' p' p₄' = π := by simpa [AffineIsometry.angle_map s_isom]
   suffices h_cospherical' : Cospherical {p₁', p₂', p₃', p₄'} by
-    have h_cosp := Cospherical.subtype_val h_cospherical'
-    grind [Set.image_insert_eq, Set.image_singleton]
+    #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+    (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
+    It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+    canonicalizer; a minimization would help. The original proof was:
+    `grind [Set.image_insert_eq, Set.image_singleton]` -/
+    simpa [Set.image_insert_eq, Set.image_singleton] using Cospherical.subtype_val h_cospherical'
   have hf2 : Fact (finrank ℝ S.direction = 2) := ⟨by
     rw [hS, direction_affineSpan, t.independent.finrank_vectorSpan]
     simp⟩
