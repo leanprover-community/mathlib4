@@ -6986,6 +6986,7 @@ public import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
 public import Mathlib.Tactic.CategoryTheory.Coherence.PureCoherence
 public import Mathlib.Tactic.CategoryTheory.Elementwise
 public import Mathlib.Tactic.CategoryTheory.IsoReassoc
+public import Mathlib.Tactic.CategoryTheory.MkConcreteCategory
 public import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
 public import Mathlib.Tactic.CategoryTheory.Monoidal.Datatypes
 public import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
