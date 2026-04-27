@@ -209,7 +209,7 @@ theorem hasseDeriv_mul (f g : R[X]) :
   change
     (compHom (D k)).comp Φ f g = ∑ ij ∈ antidiagonal k,
       ((compHom (M := R[X]) (N := R[X])).comp (compHom Φ (D ij.1))).flip (D ij.2) f g
-  simp only [← finset_sum_apply]
+  simp only [← finsetSum_apply]
   congr 2
   clear f g
   ext m r n s : 4
