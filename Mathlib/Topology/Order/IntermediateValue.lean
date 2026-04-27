@@ -44,7 +44,7 @@ on intervals.
 intermediate value theorem, connected space, connected set
 -/
 
-@[expose] public section
+public section
 
 
 open Filter OrderDual TopologicalSpace Function Set
