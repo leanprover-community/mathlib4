@@ -861,12 +861,15 @@ end CurryAndUncurry
 
 section Bicomp
 
-variable {α β γ δ ε : Type*}
+variable {α β γ δ ε : Sort*}
 
 /-- Compose a binary function `f` with a pair of unary functions `g` and `h`.
 If both arguments of `f` have the same type and `g = h`, then `bicompl f g g = f on g`. -/
 def bicompl (f : γ → δ → ε) (g : α → γ) (h : β → δ) (a b) :=
   f (g a) (h b)
+
+theorem bicompl_self_eq_onFun (f : γ → γ → ε) (g : α → γ) : bicompl f g g = (f on g) :=
+  rfl
 
 /-- Compose a unary function `f` with a binary function `g`. -/
 def bicompr (f : γ → δ) (g : α → β → γ) (a b) :=
@@ -874,6 +877,8 @@ def bicompr (f : γ → δ) (g : α → β → γ) (a b) :=
 
 -- Suggested local notation:
 local notation f " ∘₂ " g => bicompr f g
+
+variable {α β γ δ : Type*}
 
 theorem uncurry_bicompr (f : α → β → γ) (g : γ → δ) : uncurry (g ∘₂ f) = g ∘ uncurry f :=
   rfl
