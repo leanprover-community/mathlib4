@@ -21,10 +21,12 @@ complexes
 Since the cohomology of `inhomogeneousCochains Xᵢ` is the group cohomology of `Xᵢ`, this allows us
 to specialize API about long exact sequences to group cohomology.
 
-## Main definitions
+## Main Results
 
 * `groupCohomology.δ hX i j hij`: the connecting homomorphism `Hⁱ(G, X₃) ⟶ Hʲ(G, X₁)` associated
   to an exact sequence `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` of representations.
+
+* `groupCohomology.δ_naturality`: naturality of the connecting homomorphism.
 
 -/
 
@@ -177,11 +179,14 @@ theorem δ₁_apply
       simpa [← hx] using congr_fun (congr($((CommSq.vert_inv
         ⟨cochainsMap_f_2_comp_cochainsIso₂ (MonoidHom.id G) X.f⟩).w) x)) g
 
+/-- `S.map (cochainsFunctor k G)` is short exact in each degree. -/
 lemma map_cochainsFunctor_eval_shortExact (n : ℕ) :
     ShortExact (X.map <| cochainsFunctor k G ⋙ HomologicalComplex.eval (ModuleCat k) (.up ℕ) n) :=
   (map_cochainsFunctor_shortExact hX).map_of_exact (HomologicalComplex.eval ..)
 
 omit hX in
+/-- The connecting homomorphism `δ` is actually a natural transformation between
+  `groupCohomology.funtor`s. -/
 theorem δ_naturality {X1 X2 : ShortComplex (Rep k G)} (hX1 : X1.ShortExact)
     (hX2 : X2.ShortExact) (F : X1 ⟶ X2) (i j : ℕ) (hij : i + 1 = j) :
     (δ hX1 i j hij) ≫ map (.id G) F.τ₁ j  = map (.id G) F.τ₃ i ≫ δ hX2 i j hij :=

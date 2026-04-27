@@ -169,6 +169,7 @@ theorem δ₁_apply
     ((chainsIso₂ X.X₂).inv y) (Finsupp.ext fun _ => by simp [chainsIso₂, ← hy])
     ((chainsIso₁ X.X₁).inv x) (Finsupp.ext fun _ => by simp [chainsIso₁, ← hx])
 
+/-- `S.map (chainsFunctor k G)` is short exact in each degree. -/
 lemma map_chainsFunctor_eval_shortExact (n : ℕ) :
     ShortExact (X.map <| chainsFunctor k G ⋙ HomologicalComplex.eval (ModuleCat k) (.down ℕ) n) :=
   (map_chainsFunctor_shortExact hX).map_of_exact (HomologicalComplex.eval ..)
