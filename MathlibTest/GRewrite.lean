@@ -297,6 +297,31 @@ example (h : p → q) (h' : p ∧ p) : q ∧ q := by
   apply_rw [← h]
   exact h'
 
+example (h : p → q) (h' : (False ∧ p) ∧ p) : (False ∧ q) ∧ q := by
+  apply_rw [← h]
+  exact h'
+
+-- When rewriting in `_ ∧ _`, side goals created in the RHS get access to the LHS as a hypothesis
+/--
+trace: p q r s : Prop
+h : True → p → q
+h' : (False ∧ p) ∧ p
+a✝ : False ∧ p
+⊢ True
+
+p q r s : Prop
+h : True → p → q
+h' : (False ∧ p) ∧ p
+a✝ : False
+⊢ True
+-/
+#guard_msgs in
+example (h : True → p → q) (h' : (False ∧ p) ∧ p) : (False ∧ q) ∧ q := by
+  apply_rw [← h, ← h]
+  exact h'
+  trace_state
+  all_goals trivial
+
 end apply
 
 -- previously, `grw` failed to rewrite in expressions with syntheticOpaque metavariables
@@ -388,13 +413,29 @@ example : ∅ ∪ { a : Int | a - 1 > 5 } ⊆ { b : Int | b - 1 < 5 } := by
   grw [sub_one_lt, sub_one_lt]
   exact test_sorry
 
--- Unforturnately, the "Expected type" gets messed up with stuff like `_fvar.78119`
+-- Unforturnately, the "Expected type" view gets messed up with stuff like `_fvar.78119`
 example : ∅ ∪ { a : Int | a - 1 ≥ 5 } ⊆ Set.univ := by
   grw [sub_le_self _ (by positivity)]
-  exact test_sorry
+  simp
 
 example : ∅ ∪ { a : Int → Int | a - 1 ≥ 5 } ⊆ Set.univ := by
   grw [sub_le_self _ fun x ↦ by simp]
-  exact test_sorry
+  simp
+
+example : ∅ ∪ { a : Int → Int | 0 ≤ a → 1 - a ≥ 5 } ⊆ Set.univ := by
+  grw [sub_le_self _ (by assumption)]
+  simp
 
 end binders
+
+section cache
+-- Test that `grw` can explore large expressions without a noticeable slowdown.
+example {a b c d e f g h i j k : Rat} : a + b + c + d + e + f + g + h + i + j + k ≤ 1 := by
+  grw [← show (0 : Rat) ≤ 1 by norm_num]
+  exact test_sorry
+
+example {a b c d e f g h i j k : Rat} : a * b * c * d * e * f * g * h * i * j * k ≤ 1 := by
+  grw [← show (0 : Rat) ≤ 1 by norm_num]
+  exact test_sorry
+
+end cache
