@@ -736,9 +736,21 @@ lemma pow_right_comm (a : M) (m n : ℕ) : (a ^ m) ^ n = (a ^ n) ^ m := by
     (eq : a * b = 1) : b * a = 1 :=
   reg <| by simp [← mul_assoc, eq]
 
+@[to_additive] protected lemma IsLeftRegular.mul_eq_of_comm {a b c : M} (reg : IsLeftRegular a)
+    (eq : a * b = c) (hc : c * a = a * c) : b * a = c :=
+  reg <| by
+    change a * (b * a) = a * c
+    rw [← mul_assoc, eq, hc]
+
 @[to_additive] protected lemma IsRightRegular.mul_eq_one_symm {a b : M} (reg : IsRightRegular a)
     (eq : b * a = 1) : a * b = 1 :=
   reg <| by simp [mul_assoc, eq]
+
+@[to_additive] protected lemma IsRightRegular.mul_eq_of_comm {a b c : M} (reg : IsRightRegular a)
+    (eq : b * a = c) (hc : a * c = c * a) : a * b = c :=
+  reg <| by
+    change (a * b) * a = c * a
+    rw [mul_assoc, eq, hc]
 
 variable (M)
 
