@@ -322,7 +322,7 @@ lemma eRk_le_eRk_add_eRk_diff (M : Matroid α) (h : Y ⊆ X) :
 
 lemma eRk_union_le_encard_add_eRk (M : Matroid α) (X Y : Set α) :
     M.eRk (X ∪ Y) ≤ X.encard + M.eRk Y :=
-  (M.eRk_union_le_eRk_add_eRk X Y).trans <| by grw [← M.eRk_le_encard]
+  (M.eRk_union_le_eRk_add_eRk X Y).trans <| by grw [M.eRk_le_encard]
 
 lemma eRk_union_le_eRk_add_encard (M : Matroid α) (X Y : Set α) :
     M.eRk (X ∪ Y) ≤ M.eRk X + Y.encard :=

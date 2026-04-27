@@ -121,12 +121,12 @@ def diagonalStrongDualProd
   LinearMap.mkContinuous₂ g (‖L₁‖ + ‖L₂‖) <| by
     intro x y
     simp only [LinearMap.mk₂_apply, g]
-    grw [norm_add_le, le_opNorm₂, le_opNorm₂, add_mul, add_mul]
+    grw [norm_add_le, add_mul, add_mul]
     gcongr
-    · grw [opNorm_comp_le, norm_inl_le_one, mul_one]
-    · grw [opNorm_comp_le, norm_inl_le_one, mul_one]
-    · grw [opNorm_comp_le, norm_inr_le_one, mul_one]
-    · grw [opNorm_comp_le, norm_inr_le_one, mul_one]
+    · grw [le_opNorm₂]
+      gcongr <;> grw [opNorm_comp_le, norm_inl_le_one, mul_one]
+    · grw [le_opNorm₂]
+      gcongr <;> grw [opNorm_comp_le, norm_inr_le_one, mul_one]
 
 lemma diagonalStrongDualProd_apply (x y : StrongDual ℝ (E × F)) :
     diagonalStrongDualProd L₁ L₂ x y =
