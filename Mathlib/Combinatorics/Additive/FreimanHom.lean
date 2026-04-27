@@ -168,7 +168,7 @@ lemma IsMulFreimanHom.toIsMulFreimanIso {g : β → α} (h : InvOn g f A B)
     case g2 => exact h.1 (htA hx)
 
 @[to_additive]
-lemma IsMulFreimanIso.isMulFreimanIso_invFunOn (hf : IsMulFreimanIso n A B f) :
+protected lemma IsMulFreimanIso.invFunOn (hf : IsMulFreimanIso n A B f) :
     IsMulFreimanIso n B A (f.invFunOn A) :=
   hf.symm hf.bijOn.surjOn.mapsTo_invFunOn hf.bijOn.surjOn.rightInvOn_invFunOn
 
@@ -338,7 +338,7 @@ variable [CancelCommMonoid α] [CancelCommMonoid β] {A : Set α} {B : Set β} {
 lemma IsMulFreimanIso.mono {hmn : m ≤ n} (hf : IsMulFreimanIso n A B f) :
     IsMulFreimanIso m A B f :=
   (hf.isMulFreimanHom.mono hmn).toIsMulFreimanIso hf.bijOn.invOn_invFunOn
-    (hf.isMulFreimanIso_invFunOn.isMulFreimanHom.mono hmn)
+    (hf.invFunOn.isMulFreimanHom.mono hmn)
 
 end CancelCommMonoid
 
@@ -403,8 +403,7 @@ lemma IsMulFreimanIso.prodMap (h₁ : IsMulFreimanIso n A₁ B₁ f₁) (h₂ : 
     IsMulFreimanIso n (A₁ ×ˢ A₂) (B₁ ×ˢ B₂) (Prod.map f₁ f₂) :=
   (h₁.isMulFreimanHom.prodMap h₂.isMulFreimanHom).toIsMulFreimanIso
     (h₁.bijOn.invOn_invFunOn.prodMap h₂.bijOn.invOn_invFunOn)
-    (h₁.isMulFreimanIso_invFunOn.isMulFreimanHom.prodMap
-     h₂.isMulFreimanIso_invFunOn.isMulFreimanHom)
+    (h₁.invFunOn.isMulFreimanHom.prodMap h₂.invFunOn.isMulFreimanHom)
 
 end
 
