@@ -577,6 +577,21 @@ def prodAssoc : ((M × N) × N') ≃ₘ^n⟮(I.prod J).prod J', I.prod (J.prod J
       (contMDiff_snd.comp contMDiff_snd)
   toEquiv := Equiv.prodAssoc M N N'
 
+/-- The identity diffeomorphism between the product of two normed spaces `E` and `E'` with the
+model `𝓘(𝕜, E × E')` and the same product with the model `𝓘(𝕜, E).prod 𝓘(𝕜, E')`.
+This can be used in combination with `Diffeomorph.contMDiff_comp_diffeomorph_iff` and
+`Diffeomorph.contMDiff_diffeomorph_comp_iff` to prove that a map involving such a product is
+smooth with respect to one model iff it is with respect to the other. -/
+@[simps!]
+def modelWithCornersSelfProdComparison {n : ℕ∞ω} :
+    Diffeomorph 𝓘(𝕜, E × E') (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (E × E') (E × E') n where
+  toEquiv := .refl _
+  contMDiff_toFun :=
+    (ContinuousLinearMap.fst 𝕜 E E').contMDiff.prodMk (ContinuousLinearMap.snd 𝕜 E E').contMDiff
+  contMDiff_invFun := by
+    rw [contMDiff_prod_module_iff, ← contMDiff_prod_iff]
+    exact contMDiff_id
+
 end
 
 end Product
