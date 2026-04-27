@@ -115,6 +115,11 @@ lemma trace_mul_cycle' (f g h : M →ₗ[R] M) :
     trace R M (f * (g * h)) = trace R M (h * (f * g)) := by
   rw [← mul_assoc, LinearMap.trace_mul_comm]
 
+lemma trace_lie_mul_eq {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+    (f g h : M →ₗ[R] M) : trace R M (⁅f, g⁆ * h) = trace R M (f * ⁅g, h⁆) := by
+  simp only [Ring.lie_def, sub_mul, mul_sub, map_sub, mul_assoc]
+  rw [trace_mul_comm R g (f * h), mul_assoc]
+
 /-- The trace of an endomorphism is invariant under conjugation -/
 @[simp]
 theorem trace_conj (g : M →ₗ[R] M) (f : (M →ₗ[R] M)ˣ) :
