@@ -261,7 +261,8 @@ lemma nonempty_divisors : (divisors n).Nonempty ↔ n ≠ 0 :=
 
 @[simp]
 lemma divisors_eq_empty : divisors n = ∅ ↔ n = 0 := by
-  contrapose!; exact nonempty_divisors
+  contrapose!
+  exact nonempty_divisors
 
 theorem properDivisors_subset_divisors : properDivisors n ⊆ divisors n :=
   filter_subset_filter _ <| Ico_subset_Ico_right n.le_succ
@@ -317,7 +318,8 @@ lemma nonempty_properDivisors : n.properDivisors.Nonempty ↔ 1 < n :=
 
 @[simp]
 lemma properDivisors_eq_empty : n.properDivisors = ∅ ↔ n ≤ 1 := by
-  contrapose!; exact nonempty_properDivisors
+  contrapose!
+  exact nonempty_properDivisors
 
 @[simp]
 theorem divisorsAntidiagonal_zero : divisorsAntidiagonal 0 = ∅ := by
@@ -626,7 +628,7 @@ local notation "negNatCast" =>
 
 /-- `divisors z` is the `Finset` of divisors of `z`. By convention, we set `divisors 0 = ∅`. -/
 def divisors (z : ℤ) : Finset ℤ :=
-  let s := z.natAbs.divisors
+  letI s := z.natAbs.divisors
   (s.map natCast).disjUnion (s.map negNatCast) <| by
     simp +contextual [s, disjoint_left, Eq.comm, forall_comm (β := _ = _)]
 
@@ -672,11 +674,12 @@ lemma divisors_zero : divisors 0 = ∅ := by
 
 @[simp]
 lemma nonempty_divisors : (divisors z).Nonempty ↔ z ≠ 0 :=
-  ⟨fun ⟨z, hz⟩ hx ↦ by simp [hx] at hz, fun hx ↦ ⟨_, one_mem_divisors.mpr hx⟩⟩
+  ⟨fun ⟨z, hz⟩ hx ↦ by simp [hx] at hz, fun hx ↦ ⟨1, one_mem_divisors.mpr hx⟩⟩
 
 @[simp]
 lemma divisors_eq_empty : divisors z = ∅ ↔ z = 0 := by
-  contrapose!; exact nonempty_divisors
+  contrapose!
+  exact nonempty_divisors
 
 @[simp]
 theorem divisors_one : divisors 1 = {1, -1} := rfl
