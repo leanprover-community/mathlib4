@@ -444,7 +444,9 @@ def substInvFun : ℕ → R
       (coeff (n + 1) (P.subst (∑ i : Fin (n + 1), C (substInvFun i.1) * X ^ i.1)))
 
 /-- Given a power series `P = u • X + O(X²)` with `u` invertible,
-this is the power series `Q` such that `P(Q(X)) = X`. See `PowerSeries.subst_substInv`. -/
+this is the power series `Q` such that `P(Q(X)) = X`. See `PowerSeries.subst_substInv_right`.
+
+See also `PowerSeries.substInvOfIsUnit` for a variant using `IsUnit`. -/
 noncomputable
 def substInv : PowerSeries R := .mk (substInvFun P)
 
@@ -500,7 +502,8 @@ lemma coeff_subst_sum_C_substInvFun_mul_X_pow_sub_X (n : ℕ) :
     · simp [HasSubst, ← PowerSeries.constantCoeff.eq_def, hB']
 
 include hP in
-lemma subst_substInv_right : P.subst (substInv P) = X := by
+lemma subst_substInv_right :
+    P.subst (substInv P) = X := by
   ext n
   have := coeff_subst_sum_C_substInvFun_mul_X_pow_sub_X P hP n
   rw [map_sub, sub_eq_zero] at this
@@ -522,6 +525,9 @@ lemma constantCoeff_substInv : P.substInv.constantCoeff = 0 := by
   simp [substInv, substInvFun]
 
 lemma HasSubst.substInv : HasSubst P.substInv := by simp [HasSubst, ← constantCoeff.eq_def]
+
+@[deprecated (since := "2026-04-27")]
+alias hasSubst_substInv := HasSubst.substInv
 
 @[simp]
 lemma coeff_one_substInv : P.substInv.coeff 1 = ⅟(P.coeff 1) := by
@@ -547,38 +553,41 @@ section IsUnit
 variable (P : R⟦X⟧) (hP : P.constantCoeff = 0) (hP' : IsUnit (P.coeff 1))
 
 /-- Given a power series `P = u • X + O(X²)` with `u` is an unit in ring `R`,
-this is the power series `Q` such that `P(Q(X)) = X`. See `PowerSeries.subst_substInv'`. -/
-noncomputable
-def substInv' : PowerSeries R :=
-  letI := hP'.invertible
-  .mk (substInvFun P)
+this is the power series `Q` such that `P(Q(X)) = X`.
+See `PowerSeries.subst_substInvOfIsUnit_right`.
 
-lemma substInv'_eq_substInv :
+See also `PowerSeries.substInv` for a variant using `Invertible`. -/
+noncomputable
+def substInvOfIsUnit : PowerSeries R :=
+  letI := hP'.invertible
+  substInv P
+
+lemma substInvOfIsUnit_eq_substInv :
     letI := hP'.invertible
-    P.substInv' hP' = P.substInv := rfl
+    P.substInvOfIsUnit hP' = P.substInv := rfl
 
 @[simp]
-lemma constantCoeff_substInv' : (P.substInv' hP').constantCoeff = 0 := by
-  simp [substInv'_eq_substInv]
+lemma constantCoeff_substInvOfIsUnit : (P.substInvOfIsUnit hP').constantCoeff = 0 := by
+  simp [substInvOfIsUnit_eq_substInv]
 
-lemma HasSubst.substInv' : HasSubst (P.substInv' hP') := by
+lemma HasSubst.substInvOfIsUnit : HasSubst (P.substInvOfIsUnit hP') := by
   simp [HasSubst, ← constantCoeff.eq_def]
 
 @[simp]
-lemma coeff_one_substInv' : (P.substInv' hP').coeff 1 = hP'.unit⁻¹ := by
+lemma coeff_one_substInvOfIsUnit : (P.substInvOfIsUnit hP').coeff 1 = hP'.unit⁻¹ := by
   letI := hP'.invertible
-  rw [substInv'_eq_substInv, coeff_one_substInv]
+  rw [substInvOfIsUnit_eq_substInv, coeff_one_substInv]
   exact Units.mul_eq_one_iff_eq_inv.mp Invertible.invOf_mul_self
 
 include hP in
-lemma subst_substInv'_right : P.subst (substInv' P hP') = X :=
+lemma subst_substInvOfIsUnit_right : P.subst (substInvOfIsUnit P hP') = X := by
   letI := hP'.invertible
-  (P.substInv'_eq_substInv hP') ▸ (P.subst_substInv_right hP)
+  rw [P.substInvOfIsUnit_eq_substInv hP', P.subst_substInv_right hP]
 
 include hP in
-lemma subst_substInv'_left : (P.substInv' hP').subst P = X :=
+lemma subst_substInvOfIsUnit_left : (P.substInvOfIsUnit hP').subst P = X := by
   letI := hP'.invertible
-  (P.substInv'_eq_substInv hP') ▸ (P.subst_substInv_left hP)
+  rw [P.substInvOfIsUnit_eq_substInv hP', P.subst_substInv_left hP]
 
 end IsUnit
 
