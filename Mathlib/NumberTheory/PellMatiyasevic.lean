@@ -468,7 +468,7 @@ theorem dvd_of_ysq_dvd {n t} (h : yn a1 n * yn a1 n ∣ yn a1 t) : yn a1 n ∣ t
 
 theorem pellZd_succ_succ (n) :
     pellZd a1 (n + 2) + pellZd a1 n = (2 * a : ℕ) * pellZd a1 (n + 1) := by
-  ext <;> simp [pellZd, xn_succ, yn_succ, dz_val, az] <;> ring_nf
+  ext <;> simp [dz_val, az] <;> ring_nf
 
 theorem xy_succ_succ (n) :
     xn a1 (n + 2) + xn a1 n =
