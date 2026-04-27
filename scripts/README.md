@@ -146,28 +146,6 @@ behaviour. They share a common DAG traversal library that parallelises work in i
   falls back to one-at-a-time removal.
   Usage: `python3 scripts/rm_set_option.py [--option NAME] [--dry-run] [--max-workers N] [--files FILE ...] [--resume]`
 
-- `add_module_set_option.py`, `rm_module_set_option.py`
-  File-level variants of `add_set_option.py` / `rm_set_option.py`: they insert or remove a
-  `set_option ...` at the top of the file rather than scoped to individual declarations.
-
-- `fix_nonlocal_set_option.py`
-  Helper that bisects the import DAG to find the upstream file whose missing
-  `set_option ...` is causing a downstream failure — useful when the direct fix is in a
-  different module than the one reporting the error.
-
-- `fix_unused_simp_args.py`
-  Parses `lake build` warnings of the form `This simp argument is unused: X` and removes `X`
-  from the corresponding `simp`/`simp only` call. For `← X` arguments it rewrites to `- X`
-  instead, because the `←` form has side effects on the simp set even when the rewrite itself
-  is unused.
-  Usage: `lake build 2>&1 | scripts/fix_unused_simp_args.py`
-
-- `fix_long_lines.py`
-  Breaks a too-long line at the last comma before column 100 and indents the continuation.
-  Takes `path:line` pairs as arguments; intended as a follow-up to scripts that rewrite simp
-  lists (which occasionally leave lines over the 100-char limit).
-  Usage: `scripts/fix_long_lines.py path:line ...`
-
 **CI workflow**
 - `lake-build-with-retry.sh`
   Runs `lake build` on a target until `lake build --no-build` succeeds. Used in the main build workflows.
