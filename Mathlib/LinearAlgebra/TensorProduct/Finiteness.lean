@@ -125,9 +125,6 @@ theorem exists_finite_submodule_of_setFinite (s : Set (M ⊗[R] N)) (hs : s.Fini
     · exact range_mapIncl_mono le_sup_right le_sup_right (h₂ (Set.mem_insert y s))
     · exact range_mapIncl_mono le_sup_left le_sup_left (h₁ (Set.subset_insert x s hz))
 
-@[deprecated (since := "2025-10-11")] alias exists_finite_submodule_of_finite :=
-  exists_finite_submodule_of_setFinite
-
 /-- For a finite subset `s` of `M ⊗[R] N`, there exists a finitely generated
 submodule `M'` of `M`, such that `s` is contained in the image
 of `M' ⊗[R] N` in `M ⊗[R] N`. -/
@@ -138,9 +135,6 @@ theorem exists_finite_submodule_left_of_setFinite (s : Set (M ⊗[R] N)) (hs : s
   rw [mapIncl, ← LinearMap.rTensor_comp_lTensor] at h
   exact h.trans (LinearMap.range_comp_le_range _ _)
 
-@[deprecated (since := "2025-10-11")] alias exists_finite_submodule_left_of_finite :=
-  exists_finite_submodule_left_of_setFinite
-
 /-- For a finite subset `s` of `M ⊗[R] N`, there exists a finitely generated
 submodule `N'` of `N`, such that `s` is contained in the image
 of `M ⊗[R] N'` in `M ⊗[R] N`. -/
@@ -150,9 +144,6 @@ theorem exists_finite_submodule_right_of_setFinite (s : Set (M ⊗[R] N)) (hs : 
   refine ⟨N', hfin, ?_⟩
   rw [mapIncl, ← LinearMap.lTensor_comp_rTensor] at h
   exact h.trans (LinearMap.range_comp_le_range _ _)
-
-@[deprecated (since := "2025-10-11")] alias exists_finite_submodule_right_of_finite :=
-  exists_finite_submodule_right_of_setFinite
 
 /-- Variation of `TensorProduct.exists_finite_submodule_of_setFinite` where `M` and `N` are
 already submodules. -/
@@ -170,9 +161,6 @@ theorem exists_finite_submodule_of_setFinite' (s : Set (M₁ ⊗[R] N₁)) (hs :
     map_comp] at h
   exact h.trans (LinearMap.range_comp_le_range _ _)
 
-@[deprecated (since := "2025-10-11")] alias exists_finite_submodule_of_finite' :=
-  exists_finite_submodule_of_setFinite'
-
 /-- Variation of `TensorProduct.exists_finite_submodule_left_of_setFinite` where `M` and `N` are
 already submodules. -/
 theorem exists_finite_submodule_left_of_setFinite' (s : Set (M₁ ⊗[R] N₁)) (hs : s.Finite) :
@@ -183,9 +171,6 @@ theorem exists_finite_submodule_left_of_setFinite' (s : Set (M₁ ⊗[R] N₁)) 
   rw [← LinearMap.rTensor_comp_lTensor] at h
   exact h.trans (LinearMap.range_comp_le_range _ _)
 
-@[deprecated (since := "2025-10-11")] alias exists_finite_submodule_left_of_finite' :=
-  exists_finite_submodule_left_of_setFinite'
-
 /-- Variation of `TensorProduct.exists_finite_submodule_right_of_setFinite` where `M` and `N` are
 already submodules. -/
 theorem exists_finite_submodule_right_of_setFinite' (s : Set (M₁ ⊗[R] N₁)) (hs : s.Finite) :
@@ -195,9 +180,6 @@ theorem exists_finite_submodule_right_of_setFinite' (s : Set (M₁ ⊗[R] N₁))
   refine ⟨N', hN, hfin, ?_⟩
   rw [← LinearMap.lTensor_comp_rTensor] at h
   exact h.trans (LinearMap.range_comp_le_range _ _)
-
-@[deprecated (since := "2025-10-11")] alias exists_finite_submodule_right_of_finite' :=
-  exists_finite_submodule_right_of_setFinite'
 
 /-- Avoid using this and use the induction principle on `M ⊗[R] N` instead. -/
 lemma exists_sum_tmul_eq (x : M ⊗[R] N) :
