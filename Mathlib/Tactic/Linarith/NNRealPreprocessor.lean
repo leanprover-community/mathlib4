@@ -7,7 +7,7 @@ module
 
 public meta import Mathlib.Tactic.Linarith
 public meta import Mathlib.Tactic.Rify
-public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Data.NNReal.Basic -- shake: keep (tactic dependency)
 
 /-!
 # NNReal linarith preprocessing
