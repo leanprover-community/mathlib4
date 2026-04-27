@@ -75,6 +75,7 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
 
 end Imo2019Q4
 
+set_option linter.flexible false in -- TODO: fix non-terminal simp
 theorem imo2019_q4 {k n : ℕ} (hk : 0 < k) (hn : 0 < n) :
     (k ! : ℤ) = ∏ i ∈ range n, ((2 : ℤ) ^ n - (2 : ℤ) ^ i) ↔ (k, n) = (1, 1) ∨ (k, n) = (3, 2) := by
   -- The implication `←` holds.
@@ -90,7 +91,7 @@ theorem imo2019_q4 {k n : ℕ} (hk : 0 < k) (hn : 0 < n) :
   -- n = 2
   · right; congr; norm_num [prod_range_succ] at h; norm_cast at h; rwa [← factorial_inj']
     norm_num
-  all_goals exfalso; norm_num [prod_range_succ] at h; norm_cast at h
+  all_goals exfalso; simp [prod_range_succ] at h; norm_cast at h
   -- n = 3
   · refine monotone_factorial.ne_of_lt_of_lt_nat 5 ?_ ?_ _ h <;> decide
   -- n = 4

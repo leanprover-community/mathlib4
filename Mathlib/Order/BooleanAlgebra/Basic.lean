@@ -26,7 +26,7 @@ generalized Boolean algebras, Boolean algebras, lattices, sdiff, compl
 
 -/
 
-@[expose] public section
+public section
 
 universe u v
 
@@ -220,8 +220,6 @@ theorem sdiff_eq_sdiff_iff_inf_eq_inf : y \ x = y \ z ↔ y ⊓ x = y ⊓ z :=
     fun h => by rw [← sdiff_inf_self_right, ← sdiff_inf_self_right z y, inf_comm, h, inf_comm]⟩
 
 theorem sdiff_eq_self_iff_disjoint : x \ y = x ↔ Disjoint y x := sdiff_eq_left.trans disjoint_comm
-
-@[deprecated (since := "2025-10-12")] alias sdiff_eq_self_iff_disjoint' := sdiff_eq_left
 
 theorem sdiff_lt (hx : y ≤ x) (hy : y ≠ ⊥) : x \ y < x := by
   refine sdiff_le.lt_of_ne fun h => hy ?_
