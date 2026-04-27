@@ -31,7 +31,7 @@ about simple and semisimple Lie algebras.
 lie algebra, radical, simple, semisimple
 -/
 
-@[expose] public section
+public section
 
 section Irreducible
 

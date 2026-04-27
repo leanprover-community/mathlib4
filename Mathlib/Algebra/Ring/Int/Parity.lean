@@ -15,7 +15,7 @@ public import Mathlib.Algebra.Group.Int.Even
 See note [foundational algebra order theory].
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists DenselyOrdered Set.Subsingleton
 
