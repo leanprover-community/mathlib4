@@ -224,7 +224,7 @@ theorem normalizedFactorsMapEquivNormalizedFactorsMinPolyMk_symm_apply_eq_span
     IsDedekindDomain.idealFactorsEquivOfQuotEquiv, OrderIso.ofHomInv]
   simp only [map_span, image_singleton, coe_coe, quotMapEquivQuotQuotMap_symm_apply hx hx' Q]
   refine le_antisymm (fun a ha ↦ ?_) (span_le.mpr <| union_subset_iff.mpr <|
-    ⟨le_comap_of_map_le (by simp), by simp [mem_span_singleton]⟩)
+    ⟨le_comap_of_map_le (by simp), by simp⟩)
   rw [mem_comap, Ideal.mem_span_singleton] at ha
   obtain ⟨a', ha'⟩ := ha
   obtain ⟨b, hb⟩ := Ideal.Quotient.mk_surjective a'

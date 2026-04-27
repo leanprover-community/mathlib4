@@ -40,7 +40,7 @@ In case `f` is a polynomial, `v` is a non-negative function with `v 0 = 0` and `
   the Gauss norm has the non-archimedean property.
 -/
 
-@[expose] public section
+public section
 
 namespace PowerSeries
 
