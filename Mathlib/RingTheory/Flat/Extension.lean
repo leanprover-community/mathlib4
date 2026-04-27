@@ -300,6 +300,10 @@ namespace FlatExtension
 
 attribute [instance] commRing algebra isLocalRing isLocalHom algebraK isScalarTower flat
 
+instance : CoeSort (FlatExtension.{w} R K) (Type w) := ⟨FlatExtension.Ring⟩
+
+attribute [coe] FlatExtension.Ring
+
 noncomputable def mk' (S : Type w) [CommRing S] [Algebra R S] [Module.Flat R S]
     [IsLocalRing S] (hf : IsLocalHom (algebraMap R S)) (g : (ResidueField S) →+* K)
     (hg : g.comp (ResidueField.map (algebraMap R S)) = algebraMap (ResidueField R) K)
@@ -310,6 +314,7 @@ noncomputable def mk' (S : Type w) [CommRing S] [Algebra R S] [Module.Flat R S]
     IsScalarTower.of_algebraMap_eq' hg.symm
   exact FlatExtension.mk S eqmap
 
+/-
 noncomputable def mk'' (S : Type w) [CommRing S] (h_isLocalRing : IsLocalRing S)
     (f : R →+* S) (hf : IsLocalHom f) (hf_flat : f.Flat) (g : (ResidueField S) →+* K)
     (hg : g.comp (ResidueField.map f) = algebraMap (ResidueField R) K)
@@ -319,6 +324,7 @@ noncomputable def mk'' (S : Type w) [CommRing S] (h_isLocalRing : IsLocalRing S)
   have : IsScalarTower (ResidueField R) (ResidueField S) K :=
     IsScalarTower.of_algebraMap_eq' hg.symm
   exact FlatExtension.mk S eqmap
+-/
 
 noncomputable def trivial [Small.{w} R] : FlatExtension R K := by
   let e : R ≃+* Shrink.{w} R := (Shrink.ringEquiv R).symm
@@ -452,31 +458,22 @@ lemma algebraMap_range_lt_of_not_surjective [Small.{w} R] (S : FlatExtension R K
       adjoinTranscendental_mem_range K S.Ring _ int,
       Classical.choose_spec (Decidable.not_forall.mp nsurj)⟩
 
-instance : CoeSort (FlatExtension.{w} R K) (Type w) := ⟨FlatExtension.Ring⟩
-
-attribute [coe] FlatExtension.Ring
-
 instance (S S' : FlatExtension R K) :
-    FunLike {f : S →+* S' // f.comp (algebraMap R S) = algebraMap R S' ∧
-    ∃ _ : IsLocalHom f, (algebraMap (ResidueField S') K).comp
-    (ResidueField.map f) = (algebraMap (ResidueField S) K)} S S' where
+    FunLike {f : S →ₐ[R] S' //
+      ∃ _ : IsLocalHom f, (algebraMap (ResidueField S') K).comp
+        (ResidueField.map f) = (algebraMap (ResidueField S) K)} S S' where
   coe f := f
-  coe_injective' _ _ h := Subtype.ext (RingHom.ext fun x ↦ congr($h x))
+  coe_injective' _ _ h := Subtype.ext (AlgHom.ext fun x ↦ congr($h x))
 
 instance : ConcreteCategory (FlatExtension R K)
-    fun S S' ↦ {f : S →+* S' // f.comp (algebraMap R S) = algebraMap R S' ∧
+    fun S S' ↦ {f : S →ₐ[R] S' //
     ∃ _ : IsLocalHom f, (algebraMap (ResidueField S') K).comp
     (ResidueField.map f) = (algebraMap (ResidueField S) K)} where
-  hom {S S'} f := ⟨f.algHom, by simp, ⟨isLocalHom_toRingHom f.algHom, f.comm⟩⟩
+  hom {S S'} f := ⟨f.algHom, f.isLocalHom, f.comm⟩
   ofHom {S S'} f := {
-    algHom := ⟨f, fun r ↦ congr($(f.2.1) r)⟩
-    isLocalHom := by
-      obtain ⟨inst, _⟩ := f.2.2
-      exact ⟨inst.map_nonunit⟩
-    comm := by
-      obtain ⟨_, h⟩ := f.2.2
-      exact h
-  }
+    algHom := f.1
+    isLocalHom := f.2.1
+    comm := f.2.2 }
 
 def Hom.mk' {S₁ S₂ : FlatExtension.{w} R K} (f : S₁ →ₐ[R] S₂)
     (isl : IsLocalHom f) (comm : (algebraMap (ResidueField S₂) K).comp
@@ -484,60 +481,10 @@ def Hom.mk' {S₁ S₂ : FlatExtension.{w} R K} (f : S₁ →ₐ[R] S₂)
   algHom := f
   comm := comm
 
-abbrev Hom.hom {X Y : FlatExtension.{w} R K} (f : X ⟶ Y) := ConcreteCategory.hom f
-
-abbrev ofHom {S S' : FlatExtension.{w} R K}
-    (f : {f : S →+* S' // f.comp (algebraMap R S) = algebraMap R S' ∧
-    ∃ _ : IsLocalHom f, (algebraMap (ResidueField S') K).comp
-    (ResidueField.map f) = (algebraMap (ResidueField S) K)}) :=
-  ConcreteCategory.ofHom (X := S) f
-
-instance : HasForget₂ (FlatExtension.{w} R K) CommRingCat.{w} where
-  forget₂ := {
-    obj R := CommRingCat.of R.Ring
-    map f := CommRingCat.ofHom f.hom.1 }
-
 instance : HasForget₂ (FlatExtension.{w} R K) (CommAlgCat.{w} R) where
   forget₂ := {
     obj S := CommAlgCat.of R S.Ring
     map f := CommAlgCat.ofHom f.1 }
-
-/-
-namespace FilteredColimit
-
-variable {R K} {J : Type w} [Category.{w} J] [IsFiltered J] {F : J ⥤ FlatExtension.{w} R K}
-
-noncomputable def coconeOfCoconeForget (c : Cocone (F ⋙ (forget₂ _ CommRingCat.{w})))
-    (hc : IsColimit c) : Cocone F where
-  pt := by
-    apply FlatExtension.mk' R K c.pt
-    all_goals sorry
-  ι := {
-    app j := by
-      refine FlatExtension.ofHom R K ⟨(c.ι.app j).hom, ?_, ?_⟩
-      all_goals sorry
-    naturality j j' f := by
-      ext x
-      exact congr($(c.ι.naturality f) x)
-  }
-
-noncomputable def isColimit_coconeOfCoconeForget (c : Cocone (F ⋙ (forget₂ _ CommRingCat.{w})))
-    (hc : IsColimit c) : IsColimit (coconeOfCoconeForget c hc) := by
-  refine IsColimit.ofFaithful (forget₂ (FlatExtension.{w} R K) CommRingCat.{w}) hc
-    (fun s ↦ FlatExtension.ofHom R K ⟨(hc.desc ((forget₂ _ CommRingCat.{w}).mapCocone s)).hom,
-    ?_, ?_, ?_⟩) (fun s ↦ rfl)
-  all_goals sorry
-
-instance : HasColimitsOfShape J (FlatExtension.{w} R K) where
-  has_colimit F := by
-    obtain ⟨⟨c, hc⟩⟩ : HasColimit (F ⋙ (forget₂ _ CommRingCat.{w})) := inferInstance
-    exact ⟨⟨⟨coconeOfCoconeForget c hc, isColimit_coconeOfCoconeForget c hc⟩⟩⟩
-
-instance : HasFilteredColimitsOfSize.{w, w} (FlatExtension.{w} R K) where
-  HasColimitsOfShape _ _ _ := inferInstance
-
-end FilteredColimit
--/
 
 namespace FilteredColimit
 
@@ -586,12 +533,11 @@ noncomputable def coconeOfCoconeForget (c : Cocone (F ⋙ (forget₂ _ (CommAlgC
     app j := by
       refine FlatExtension.Hom.mk' R K (c.ι.app j).hom (ι_isLocalHom_of_isColimit c hc j) ?_
       change (residueFieldDescOfIsColimit c hc).comp _ = _
-
+      -- this should be from residue field is colimit
       sorry
     naturality j j' f := by
       ext x
-      exact congr($(c.ι.naturality f) x)
-  }
+      exact congr($(c.ι.naturality f) x) }
 
 noncomputable def isColimit_coconeOfCoconeForget (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat.{w} R))))
     (hc : IsColimit c) : IsColimit (coconeOfCoconeForget c hc) := by
