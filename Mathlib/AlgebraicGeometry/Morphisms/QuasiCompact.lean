@@ -20,7 +20,7 @@ It suffices to check that preimages of affine open sets are compact
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
