@@ -455,8 +455,7 @@ Formally: if `x` avoids every `p ∈ F` at every position, then for any `h : G`,
 the shifted configuration `shift h x` also avoids every `p ∈ F` at every position. -/]
 lemma mapsTo_mulShift_mulForbidden {A G : Type*} [Inhabited A] [Monoid G]
     (F : Set (Pattern A G)) (h : G) :
-    Set.MapsTo (fun x => mulShift h x)
-    (mulForbidden (A := A) (G := G) F) (mulForbidden F) := by
+    Set.MapsTo (mulShift h) (mulForbidden (A := A) (G := G) F) (mulForbidden F) := by
   -- unfold `MapsTo`
   intro x hx p hp g
   specialize hx p hp (h * g)
