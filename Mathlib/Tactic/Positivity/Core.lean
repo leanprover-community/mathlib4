@@ -63,13 +63,6 @@ inductive Strictness (e : Q($α)) : Option Q(PartialOrder $α) → Type where
   | nonzero {pα?} (pf : Q($e ≠ 0)) : Strictness e pα?
   | none {pα?} : Strictness e pα?
 
--- inductive Strictness (e : Q($α)) where
---   | positive (pα : Q(PartialOrder $α)) (pf : Q(0 < $e))
---   | nonnegative (pα : Q(PartialOrder $α)) (pf : Q(0 ≤ $e))
---   | nonzero (pf : Q($e ≠ 0))
---   | none
---   deriving Repr
-
 /-- Gives a generic description of the `positivity` result. -/
 def Strictness.toString {e pα?} : Strictness zα e pα? → String
   | positive _ => "positive"
