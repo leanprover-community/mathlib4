@@ -24,6 +24,13 @@ root of unity.
 * `Polynomial.cyclotomic_eq_minpoly` : `cyclotomic n ℤ` is the minimal polynomial of a primitive
   `n`-th root of unity `μ`.
 * `Polynomial.cyclotomic.irreducible` : `cyclotomic n ℤ` is irreducible.
+* `IsPrimitiveRoot.cyclotomic_dvd_of_aeval_eq_zero` : divisibility by `cyclotomic n ℤ`.
+* `IsPrimitiveRoot.exists_int_smul_cyclotomic_of_natDegree_le_totient` : low-degree
+  vanishing integer polynomials are integer multiples of `cyclotomic n ℤ`.
+* `IsPrimitiveRoot.sum_eq_zero_iff_forall_eq` : vanishing-sum criterion at primitive `p`-th roots.
+* `IsPrimitiveRoot.sum_zmod_eq_zero_iff_forall_eq` : `ZMod p`-indexed variant.
+* `IsPrimitiveRoot.sum_fiber_eq_sum_fiber_of_sum_weighted_pow_eq_zero` : equal weighted fiber sums.
+* `IsPrimitiveRoot.card_fiber_eq_card_div_of_sum_pow_eq_zero` : fiber equidistribution.
 
 ## Implementation details
 
@@ -216,9 +223,28 @@ open Polynomial
 variable {K : Type*} [Field K] [CharZero K]
 variable {p : ℕ} {ζ : K}
 
+theorem cyclotomic_dvd_of_aeval_eq_zero {n : ℕ} (hpos : 0 < n) (hζ : IsPrimitiveRoot ζ n)
+    {f : ℤ[X]} (heval : aeval ζ f = 0) : cyclotomic n ℤ ∣ f := by
+  rw [cyclotomic_eq_minpoly hζ hpos]
+  exact minpoly.isIntegrallyClosed_dvd (hζ.isIntegral hpos) heval
+
+theorem exists_int_smul_cyclotomic_of_natDegree_le_totient {n : ℕ} (hpos : 0 < n)
+    (hζ : IsPrimitiveRoot ζ n) {f : ℤ[X]} (hdeg : f.natDegree ≤ n.totient)
+    (heval : aeval ζ f = 0) : ∃ c : ℤ, f = c • cyclotomic n ℤ := by
+  rcases eq_or_ne f 0 with rfl | hne
+  · exact ⟨0, by simp⟩
+  obtain ⟨r, rfl⟩ := cyclotomic_dvd_of_aeval_eq_zero hpos hζ heval
+  have hr : r.natDegree = 0 := by
+    have := natDegree_mul (cyclotomic_ne_zero n ℤ) <| right_ne_zero_of_mul hne
+    rw [natDegree_cyclotomic] at this; lia
+  refine ⟨r.coeff 0, ?_⟩
+  conv_lhs => rw [eq_C_of_natDegree_eq_zero hr]
+  rw [mul_comm, Polynomial.C_mul']
+  rfl
+
 /-- For a prime `p`, a ℚ-linear combination `∑_{i < p} αᵢ ζⁱ` vanishes if and only if all
 coefficients `αᵢ` are equal. This follows from the irreducibility of the `p`-th cyclotomic
-polynomial. See de Launey–Flannery, *Algebraic Design Theory*, Lemma 2.8.5. -/
+polynomial, and is a full-`p` version of [deLauneyFlannery2011, Lemma 2.8.5]. -/
 lemma sum_eq_zero_iff_forall_eq (hp : p.Prime) (hζ : IsPrimitiveRoot ζ p) (α : Fin p → ℚ) :
     ∑ i, α i * ζ ^ i.val = 0 ↔ ∀ i j, α i = α j := by
   haveI : Fact p.Prime := ⟨hp⟩
@@ -236,9 +262,81 @@ lemma sum_eq_zero_iff_forall_eq (hp : p.Prime) (hζ : IsPrimitiveRoot ζ p) (α 
   · lift i to Fin p using h; simp [cyclotomic_prime, ← hP, H i 0]
   · simp [cyclotomic_prime, P, h, Fin.forall_iff, @forall_comm _ (_ = _), Finset.sum_eq_zero]
 
-/-- Variant of `sum_eq_zero_iff_forall_eq` with integer coefficients. -/
+/-- Variant of `sum_eq_zero_iff_forall_eq` with integer coefficients;
+see [armario2024, Lemma 7]. -/
 lemma sum_eq_zero_iff_forall_eq_int (hp : p.Prime) (hζ : IsPrimitiveRoot ζ p) (α : Fin p → ℤ) :
     ∑ i, α i * ζ ^ i.val = 0 ↔ ∀ i j, α i = α j := by
   simpa using sum_eq_zero_iff_forall_eq hp hζ (Int.cast ∘ α)
+
+/-- ZMod-indexed variant of `sum_eq_zero_iff_forall_eq`. -/
+lemma sum_zmod_eq_zero_iff_forall_eq [NeZero p] (hp : p.Prime) (hζ : IsPrimitiveRoot ζ p)
+    (α : ZMod p → ℚ) :
+    ∑ t : ZMod p, α t * ζ ^ t.val = 0 ↔ ∀ t₁ t₂, α t₁ = α t₂ := by
+  classical
+  let e := (ZMod.finEquiv p).toEquiv
+  have hval : ∀ i : Fin p, (e i).val = i.val := by
+    obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hp.ne_zero; intro i; rfl
+  constructor
+  · intro hsum
+    have hEqAll := (sum_eq_zero_iff_forall_eq hp hζ (fun i => α (e i))).mp (by
+      rw [← Equiv.sum_comp e (fun t : ZMod p => α t * ζ ^ t.val)] at hsum
+      simpa [hval] using hsum)
+    intro t₁ t₂
+    simpa [e.apply_symm_apply] using hEqAll (e.symm t₁) (e.symm t₂)
+  · intro hEqAll
+    rw [← Equiv.sum_comp e (fun t : ZMod p => α t * ζ ^ t.val)]
+    simpa [hval] using (sum_eq_zero_iff_forall_eq hp hζ (fun i => α (e i))).mpr
+      fun i j => hEqAll (e i) (e j)
+
+/-- If `∑ a, w a * ζ ^ (d a).val = 0` for `d : A → ZMod p` and integer weights `w`,
+then all weighted fiber sums of `d` are equal. See [armario2024, Theorem 3]. -/
+theorem sum_fiber_eq_sum_fiber_of_sum_weighted_pow_eq_zero
+    {A : Type*} [Fintype A] (hp : p.Prime)
+    (hζ : IsPrimitiveRoot ζ p) (d : A → ZMod p) (w : A → ℤ)
+    (hsum : ∑ a : A, (w a : K) * ζ ^ (d a).val = 0) :
+    ∀ t₁ t₂ : ZMod p,
+      (∑ a : {a : A // d a = t₁}, w a) = (∑ a : {a : A // d a = t₂}, w a) := by
+  classical
+  haveI : NeZero p := ⟨hp.ne_zero⟩
+  have hsum0 : ∑ t : ZMod p,
+      ((∑ a : {a : A // d a = t}, w a : ℤ) : K) * ζ ^ t.val = 0 := by
+    have : (∑ a : A, (w a : K) * ζ ^ (d a).val) =
+        ∑ t : ZMod p, ((∑ a : {a : A // d a = t}, w a : ℤ) : K) * ζ ^ t.val := by
+      rw [(Fintype.sum_fiberwise (g := d)
+        (f := fun a => (w a : K) * ζ ^ (d a).val)).symm]
+      exact Finset.sum_congr rfl fun t _ => by
+        calc
+          (∑ a : {a // d a = t}, (w a : K) * ζ ^ (d a).val)
+              = ∑ a : {a // d a = t}, (w a : K) * ζ ^ t.val := by
+                exact Finset.sum_congr rfl fun a _ => by rw [a.2]
+          _ = (∑ a : {a // d a = t}, (w a : K)) * ζ ^ t.val := by
+                rw [Finset.sum_mul]
+          _ = ((∑ a : {a // d a = t}, w a : ℤ) : K) * ζ ^ t.val := by simp
+    simpa [this] using hsum
+  have h := (sum_zmod_eq_zero_iff_forall_eq hp hζ
+    (Int.cast ∘ fun t => ∑ a : {a : A // d a = t}, w a)).mp (by simpa using hsum0)
+  intro t₁ t₂
+  exact_mod_cast (show ((∑ a : {a // d a = t₁}, w a : ℤ) : ℚ) =
+    ((∑ a : {a // d a = t₂}, w a : ℤ) : ℚ) from h t₁ t₂)
+
+/-- **Fiber equidistribution**: if `∑ a, ζ ^ (d a).val = 0` for `d : A → ZMod p`,
+then every fiber of `d` has cardinality `|A| / p`. See [armario2024, Lemma 7]. -/
+theorem card_fiber_eq_card_div_of_sum_pow_eq_zero
+    {A : Type*} [Fintype A] (hp : p.Prime)
+    (hζ : IsPrimitiveRoot ζ p) (d : A → ZMod p)
+    (hsum : ∑ a : A, ζ ^ (d a).val = 0) :
+    ∀ t : ZMod p, Fintype.card {a : A // d a = t} = Fintype.card A / p := by
+  classical
+  haveI : NeZero p := ⟨hp.ne_zero⟩
+  intro t
+  have hEqNat (t' : ZMod p) : Fintype.card {a // d a = t'} = Fintype.card {a // d a = t} :=
+    Int.ofNat.inj <| by
+      simpa using sum_fiber_eq_sum_fiber_of_sum_weighted_pow_eq_zero hp hζ d (fun _ => 1)
+        (by simpa using hsum) t' t
+  have hmul : Fintype.card A = p * Fintype.card {a // d a = t} := by
+    rw [← Fintype.card_congr (Equiv.sigmaFiberEquiv d), Fintype.card_sigma,
+      Finset.sum_congr rfl (fun t' _ => hEqNat t'), Finset.sum_const, Finset.card_univ,
+      ZMod.card, smul_eq_mul]
+  rw [hmul, Nat.mul_div_cancel_left _ hp.pos]
 
 end IsPrimitiveRoot
