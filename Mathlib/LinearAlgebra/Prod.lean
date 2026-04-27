@@ -640,6 +640,18 @@ theorem prod_eq_top_iff {p₁ : Submodule R M} {p₂ : Submodule R M₂} :
     p₁.prod p₂ = ⊤ ↔ p₁ = ⊤ ∧ p₂ = ⊤ := by
   simp only [eq_top_iff, le_prod_iff, map_top, range_fst, range_snd]
 
+theorem span_prod_eq {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+  {M' : Type*} [AddCommMonoid M'] [Module R M'] (s : Set M) (t : Set M') (hs : 0 ∈ s) (ht : 0 ∈ t) :
+  span R (s ×ˢ t) = (span R s).prod (span R t) := by
+  apply le_antisymm
+  · exact span_prod_le s t;
+  · rw [Submodule.prod_le_iff];
+    constructor <;> rw [map_span];
+    · rw [span_le];
+      rintro _ ⟨x, hx, rfl⟩;
+      exact Submodule.subset_span (Set.mk_mem_prod hx ht);
+    · exact Submodule.span_mono (Set.image_subset_iff.mpr fun x hx => ⟨hs, hx⟩)
+
 end Submodule
 
 namespace LinearEquiv

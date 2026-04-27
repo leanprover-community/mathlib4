@@ -17,6 +17,7 @@ public import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Module.Submodule.EqLocus
 import Mathlib.Algebra.Module.Torsion.Field
+-- import Mathlib.LinearAlgebra.Prod
 
 /-!
 # The span of a set of vectors, as a submodule

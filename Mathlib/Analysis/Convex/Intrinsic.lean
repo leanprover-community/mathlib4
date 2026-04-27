@@ -216,7 +216,7 @@ theorem intrinsicInterior_prod_eq [AddCommGroup W] [Module 𝕜 W] [TopologicalS
     [AddTorsor W Q] (s : Set P) (t : Set Q) :
     intrinsicInterior 𝕜 (s ×ˢ t) = intrinsicInterior 𝕜 s ×ˢ intrinsicInterior 𝕜 t := by
   let e : affineSpan 𝕜 (s ×ˢ t) ≃ₜ affineSpan 𝕜 s × affineSpan 𝕜 t :=
-    (Homeomorph.setCongr (affineSpan_prod_eq s t)).trans
+    (Homeomorph.setCongr (AffineSubspace.affineSpan_prod_set_eq s t)).trans
       (Homeomorph.Set.prod (affineSpan 𝕜 s : Set P) (affineSpan 𝕜 t : Set Q))
   have himage : e '' ((↑) ⁻¹' (s ×ˢ t)) = ((↑) ⁻¹' s) ×ˢ ((↑) ⁻¹' t) := by
     ext ⟨a, b⟩; constructor

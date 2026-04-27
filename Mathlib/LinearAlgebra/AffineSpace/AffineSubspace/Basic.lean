@@ -585,38 +585,6 @@ theorem map_span (s : Set P₁) : (affineSpan k s).map f = affineSpan k (f '' s)
   · exact ⟨f p, mem_image_of_mem f (subset_affineSpan k _ hp),
           subset_affineSpan k _ (mem_image_of_mem f hp)⟩
 
-theorem affineSpan_prod_eq (s : Set P₁) (t : Set P₂) :
-    (affineSpan k (s ×ˢ t) : Set (P₁ × P₂)) =
-      (affineSpan k s : Set P₁) ×ˢ (affineSpan k t : Set P₂) := by
-  ext p; constructor
-  · exact fun hp => affineSpan_induction hp
-      (fun q hq ↦ ⟨subset_affineSpan k s hq.1, subset_affineSpan k t hq.2⟩)
-      (fun c u v w hu hv hw ↦
-        ⟨(affineSpan k s).smul_vsub_vadd_mem c hu.1 hv.1 hw.1,
-          (affineSpan k t).smul_vsub_vadd_mem c hu.2 hv.2 hw.2⟩)
-  · rintro ⟨hp1, hp2⟩
-    rcases s.eq_empty_or_nonempty with rfl | ⟨x0, hx0⟩
-    · simp at hp1
-    rcases t.eq_empty_or_nonempty with rfl | ⟨y0, hy0⟩
-    · simp at hp2
-    have hleft : ∀ x ∈ affineSpan k s, (x, y0) ∈ affineSpan k (s ×ˢ t) := by
-      intro x hx
-      let f : P₁ →ᵃ[k] P₁ × P₂ := AffineMap.mk (fun z ↦ (z, y0)) (LinearMap.inl k V₁ V₂)
-        (by intro p v; ext <;> simp [LinearMap.inl])
-      have hsub : (affineSpan k s).map f ≤ affineSpan k (s ×ˢ t) := by
-        rw [map_span]; exact affineSpan_mono k (by rintro _ ⟨z, hz, rfl⟩; exact ⟨hz, hy0⟩)
-      exact hsub ⟨x, hx, rfl⟩
-    have hright : ∀ y ∈ affineSpan k t, (x0, y) ∈ affineSpan k (s ×ˢ t) := by
-      intro y hy
-      let g : P₂ →ᵃ[k] P₁ × P₂ := AffineMap.mk (fun z ↦ (x0, z)) (LinearMap.inr k V₁ V₂)
-        (by intro p v; ext <;> simp [LinearMap.inr])
-      have hsub : (affineSpan k t).map g ≤ affineSpan k (s ×ˢ t) := by
-        rw [map_span]; exact affineSpan_mono k (by rintro _ ⟨z, hz, rfl⟩; exact ⟨hx0, hz⟩)
-      exact hsub ⟨y, hy, rfl⟩
-    simpa using (affineSpan k (s ×ˢ t)).smul_vsub_vadd_mem (1 : k)
-      (hleft p.1 hp1) (subset_affineSpan k _ (show (x0, y0) ∈ s ×ˢ t from ⟨hx0, hy0⟩))
-      (hright p.2 hp2)
-
 @[gcongr]
 theorem map_mono {s₁ s₂ : AffineSubspace k P₁} (h : s₁ ≤ s₂) : s₁.map f ≤ s₂.map f :=
   Set.image_mono h
@@ -840,6 +808,116 @@ lemma comap_map_eq_of_injective {f : P₁ →ᵃ[k] P₂} (hf : Function.Injecti
 end AffineSubspace
 
 end MapComap
+
+section Prod
+
+namespace AffineSubspace
+
+variable {k : Type*} {V₁ : Type*} {P₁ : Type*} {V₂ : Type*} {P₂ : Type*}
+  [Ring k] [AddCommGroup V₁] [Module k V₁] [AffineSpace V₁ P₁]
+  [AddCommGroup V₂] [Module k V₂] [AffineSpace V₂ P₂]
+
+/-- The product of two affine subspaces is an affine subspace. -/
+def prod (s : AffineSubspace k P₁) (t : AffineSubspace k P₂) : AffineSubspace k (P₁ × P₂) where
+  carrier := (s : Set P₁) ×ˢ (t : Set P₂)
+  smul_vsub_vadd_mem c _ _ _ hp₁ hp₂ hp₃ :=
+    ⟨s.smul_vsub_vadd_mem c hp₁.1 hp₂.1 hp₃.1, t.smul_vsub_vadd_mem c hp₁.2 hp₂.2 hp₃.2⟩
+
+@[simp]
+theorem prod_coe (s : AffineSubspace k P₁) (t : AffineSubspace k P₂) :
+    (s.prod t : Set (P₁ × P₂)) = (s : Set P₁) ×ˢ (t : Set P₂) :=
+  rfl
+
+@[simp]
+theorem mem_prod {s : AffineSubspace k P₁} {t : AffineSubspace k P₂} {x : P₁ × P₂} :
+    x ∈ s.prod t ↔ x.1 ∈ s ∧ x.2 ∈ t :=
+  Set.mem_prod
+
+theorem prod_mono {s₁ s₂ : AffineSubspace k P₁} {t₁ t₂ : AffineSubspace k P₂}
+    (hs : s₁ ≤ s₂) (ht : t₁ ≤ t₂) : s₁.prod t₁ ≤ s₂.prod t₂ :=
+  Set.prod_mono hs ht
+
+@[simp]
+theorem prod_top : (⊤ : AffineSubspace k P₁).prod (⊤ : AffineSubspace k P₂) = ⊤ := by
+  ext; simp
+
+@[simp]
+theorem prod_bot : (⊥ : AffineSubspace k P₁).prod (⊥ : AffineSubspace k P₂) = ⊥ := by
+  rw [AffineSubspace.ext_iff, prod_coe, bot_coe, bot_coe, bot_coe, Set.empty_prod]
+
+@[simp]
+theorem prod_inf_prod (s₁ s₂ : AffineSubspace k P₁) (t₁ t₂ : AffineSubspace k P₂) :
+    s₁.prod t₁ ⊓ s₂.prod t₂ = (s₁ ⊓ s₂).prod (t₁ ⊓ t₂) :=
+  SetLike.coe_injective Set.prod_inter_prod
+
+end AffineSubspace
+
+theorem vectorSpan_prod (k : Type*) {V₁ : Type*} {P₁ : Type*} {V₂ : Type*} {P₂ : Type*}
+    [Ring k] [AddCommGroup V₁] [Module k V₁] [AffineSpace V₁ P₁]
+    [AddCommGroup V₂] [Module k V₂] [AffineSpace V₂ P₂]
+    (s : Set P₁) (t : Set P₂) (hs : s.Nonempty) (ht : t.Nonempty) :
+    vectorSpan k (s ×ˢ t) = (vectorSpan k s).prod (vectorSpan k t) := by
+  simp only [vectorSpan_def]
+  have h : (s ×ˢ t) -ᵥ (s ×ˢ t) = (s -ᵥ s) ×ˢ (t -ᵥ t) := by
+    ext ⟨v₁, v₂⟩
+    simp only [Set.mem_vsub, Set.mem_prod]
+    constructor
+    · rintro ⟨⟨a₁, b₁⟩, ⟨ha₁, hb₁⟩, ⟨a₂, b₂⟩, ⟨ha₂, hb₂⟩, h⟩
+      simp only [Prod.mk_vsub_mk] at h
+      obtain ⟨rfl, rfl⟩ := Prod.mk.inj h
+      exact ⟨⟨a₁, ha₁, a₂, ha₂, rfl⟩, ⟨b₁, hb₁, b₂, hb₂, rfl⟩⟩
+    · rintro ⟨⟨a₁, ha₁, a₂, ha₂, rfl⟩, ⟨b₁, hb₁, b₂, hb₂, rfl⟩⟩
+      exact ⟨(a₁, b₁), ⟨ha₁, hb₁⟩, (a₂, b₂), ⟨ha₂, hb₂⟩, rfl⟩
+  rw [h]
+  apply Submodule.span_prod_eq
+  · obtain ⟨p, hp⟩ := hs
+    exact ⟨p, hp, p, hp, vsub_self p⟩
+  · obtain ⟨q, hq⟩ := ht
+    exact ⟨q, hq, q, hq, vsub_self q⟩
+
+theorem affineSpan_prod_eq (k : Type*) {V₁ : Type*} {P₁ : Type*} {V₂ : Type*} {P₂ : Type*}
+    [Ring k] [AddCommGroup V₁] [Module k V₁] [AffineSpace V₁ P₁]
+    [AddCommGroup V₂] [Module k V₂] [AffineSpace V₂ P₂]
+    (s : Set P₁) (t : Set P₂) :
+    affineSpan k (s ×ˢ t) = (affineSpan k s).prod (affineSpan k t) := by
+  rcases s.eq_empty_or_nonempty with rfl | hs
+  · simp only [Set.empty_prod, AffineSubspace.span_empty]
+    rw [AffineSubspace.ext_iff, AffineSubspace.bot_coe, AffineSubspace.prod_coe,
+      AffineSubspace.bot_coe, Set.empty_prod]
+  rcases t.eq_empty_or_nonempty with rfl | ht
+  · simp only [Set.prod_empty, AffineSubspace.span_empty]
+    rw [AffineSubspace.ext_iff, AffineSubspace.bot_coe, AffineSubspace.prod_coe,
+      AffineSubspace.bot_coe, Set.prod_empty]
+  apply le_antisymm
+  · rw [affineSpan_le]
+    intro q hq
+    exact ⟨subset_affineSpan k s hq.1, subset_affineSpan k t hq.2⟩
+  · intro p hp
+    obtain ⟨hp1, hp2⟩ := AffineSubspace.mem_prod.mp hp
+    obtain ⟨x0, hx0⟩ := hs
+    obtain ⟨y0, hy0⟩ := ht
+    have hbase : (x0, y0) ∈ affineSpan k (s ×ˢ t) :=
+      subset_affineSpan k _ (Set.mk_mem_prod hx0 hy0)
+    have hdir : p -ᵥ (x0, y0) ∈ (affineSpan k (s ×ˢ t)).direction := by
+      rw [direction_affineSpan, vectorSpan_prod k s t ⟨x0, hx0⟩ ⟨y0, hy0⟩, Submodule.mem_prod]
+      exact ⟨vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan hp1
+              (subset_affineSpan k s hx0),
+            vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan hp2
+              (subset_affineSpan k t hy0)⟩
+    simpa using AffineSubspace.vadd_mem_of_mem_direction hdir hbase
+
+theorem AffineSubspace.affineSpan_prod_set_eq {k : Type*} {V₁ : Type*} {P₁ : Type*}
+    {V₂ : Type*} {P₂ : Type*}
+    [Ring k] [AddCommGroup V₁] [Module k V₁] [AddTorsor V₁ P₁]
+    [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
+    (s : Set P₁) (t : Set P₂) :
+    (affineSpan k (s ×ˢ t) : Set (P₁ × P₂)) =
+      (affineSpan k s : Set P₁) ×ˢ (affineSpan k t : Set P₂) := by
+  have := affineSpan_prod_eq k s t
+  simp only [AffineSubspace.ext_iff, AffineSubspace.prod_coe] at this
+  exact this
+
+end Prod
 
 namespace AffineSubspace
 
