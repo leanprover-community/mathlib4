@@ -221,6 +221,8 @@ error: Tactic `grewrite` failed: Did not find a suitable occurrence of ⏎
 in the target expression
   2 * x ≤ b
 
+Use the command `set_option trace.Meta.grewrite true` to inspect this.
+
 x y b : ℚ
 h : x ≥ y
 ⊢ 2 * x ≤ b
@@ -364,6 +366,8 @@ error: Tactic `grewrite` failed: Did not find a suitable occurrence of ⏎
   double 2
 in the target expression
   4 ≤ 20
+
+Use the command `set_option trace.Meta.grewrite true` to inspect this.
 
 h : double 2 ≤ 10
 ⊢ 4 ≤ 20
