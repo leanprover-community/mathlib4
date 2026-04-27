@@ -34,7 +34,6 @@ namespace prodStdSimplex
 
 variable {p q : ℕ}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `n`-simplices in `Δ[p] ⊗ Δ[q]` identify to order preserving maps
 `Fin (n + 1) →o Fin (p + 1) × Fin (q + 1)`. -/
 def objEquiv {n : ℕ} :
@@ -75,10 +74,7 @@ variable (p q) in
 /-- The binary product `Δ[p] ⊗ Δ[q]` identifies to the nerve
 of `ULift (Fin (p + 1) × Fin (q + 1))`. -/
 def isoNerve : Δ[p] ⊗ Δ[q] ≅ nerve (ULift.{u} (Fin (p + 1) × Fin (q + 1))) :=
-  NatIso.ofComponents (fun d ↦ Equiv.toIso (by
-    obtain ⟨d⟩ := d
-    induction d using SimplexCategory.rec with | _ d
-    exact objEquiv.trans
+  NatIso.ofComponents (fun ⟨⟨d⟩⟩ ↦ Equiv.toIso (objEquiv.trans
       { toFun f := (ULift.orderIso.symm.monotone.comp f.monotone).functor
         invFun s := ULift.orderIso.toOrderEmbedding.toOrderHom.comp ⟨_, s.monotone⟩ }))
 
