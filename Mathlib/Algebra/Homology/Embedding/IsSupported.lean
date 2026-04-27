@@ -25,7 +25,7 @@ complementary embedding `e'`.)
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Limits ZeroObject
 

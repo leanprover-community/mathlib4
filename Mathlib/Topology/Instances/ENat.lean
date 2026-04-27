@@ -15,7 +15,7 @@ public import Mathlib.Topology.Algebra.Monoid.Defs
 # Topology on extended natural numbers
 -/
 
-@[expose] public section
+public section
 
 open Filter Set Topology
 

@@ -19,7 +19,7 @@ public import Mathlib.RingTheory.Smooth.Basic
 
 -/
 
-@[expose] public section
+public section
 
 namespace Algebra.FormallySmooth
 
