@@ -574,7 +574,7 @@ theorem meromorphicOrderAt_add (hf₁ : MeromorphicAt f₁ x) (hf₂ : Meromorph
   exact le_add_of_nonneg_right h₁g.meromorphicOrderAt_nonneg
 
 /--
-Helper lemma for meromorphicOrderAt_add_of_ne.
+Helper lemma for `meromorphicOrderAt_add_of_ne`.
 -/
 lemma meromorphicOrderAt_add_eq_left_of_lt (hf₂ : MeromorphicAt f₂ x)
     (h : meromorphicOrderAt f₁ x < meromorphicOrderAt f₂ x) :
@@ -604,7 +604,7 @@ lemma meromorphicOrderAt_add_eq_left_of_lt (hf₂ : MeromorphicAt f₂ x)
     simp_all [smul_add, ← smul_assoc, ← zpow_add', sub_ne_zero]
 
 /--
-Helper lemma for meromorphicOrderAt_add_of_ne.
+Helper lemma for `meromorphicOrderAt_add_of_ne`.
 -/
 lemma meromorphicOrderAt_add_eq_right_of_lt (hf₁ : MeromorphicAt f₁ x)
     (h : meromorphicOrderAt f₂ x < meromorphicOrderAt f₁ x) :
