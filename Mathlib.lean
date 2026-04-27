@@ -4515,6 +4515,7 @@ public import Mathlib.Geometry.Manifold.Diffeomorph
 public import Mathlib.Geometry.Manifold.GroupLieAlgebra
 public import Mathlib.Geometry.Manifold.HasGroupoid
 public import Mathlib.Geometry.Manifold.Immersion
+public import Mathlib.Geometry.Manifold.Instances.Graph
 public import Mathlib.Geometry.Manifold.Instances.Icc
 public import Mathlib.Geometry.Manifold.Instances.Real
 public import Mathlib.Geometry.Manifold.Instances.Sphere
@@ -7564,6 +7565,7 @@ public import Mathlib.Topology.Connected.Separation
 public import Mathlib.Topology.Connected.TotallyDisconnected
 public import Mathlib.Topology.Constructible
 public import Mathlib.Topology.Constructions
+public import Mathlib.Topology.Constructions.Graph
 public import Mathlib.Topology.Constructions.SumProd
 public import Mathlib.Topology.Continuous
 public import Mathlib.Topology.ContinuousMap.Algebra

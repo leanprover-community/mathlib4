@@ -600,6 +600,12 @@ theorem ModelWithCorners.range_eq_univ {𝕜 : Type*} [NontriviallyNormedField �
     (I : ModelWithCorners 𝕜 E H) [I.Boundaryless] :
     range I = univ := ModelWithCorners.Boundaryless.range_eq_univ
 
+@[simp]
+theorem ModelWithCorners.mem_range {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+    {I : ModelWithCorners 𝕜 E H} [I.Boundaryless] (x : E) :
+    x ∈ range I := I.range_eq_univ ▸ mem_univ x
+
 /-- If `I` is a `ModelWithCorners.Boundaryless` model, then it is a homeomorphism. -/
 @[simps +simpRhs]
 def ModelWithCorners.toHomeomorph {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}

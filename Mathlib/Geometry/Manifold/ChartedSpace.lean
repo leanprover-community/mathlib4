@@ -565,6 +565,14 @@ lemma ChartedSpace.mem_atlas_sum [h : Nonempty H]
 
 end sum
 
+/-- A homeomorphism from `M'` to a charted space `M` induces a charted space structure on `M'`. -/
+def Homeomorph.chartedSpace [TopologicalSpace H] [TopologicalSpace M] [TopologicalSpace M']
+    [ChartedSpace H M] (f : M' ≃ₜ M) : ChartedSpace H M' where
+  atlas := { f.toOpenPartialHomeomorph.trans e | e ∈ atlas H M }
+  chartAt x := f.toOpenPartialHomeomorph.trans (chartAt H (f x))
+  mem_chart_source x := by simp
+  chart_mem_atlas x := ⟨chartAt H (f x), chart_mem_atlas H _, rfl⟩
+
 end Constructions
 
 end ChartedSpace
