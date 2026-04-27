@@ -37,7 +37,7 @@ variable (F : C ⥤ D)
 set_option backward.isDefEq.respectTransparency false in
 /-- Implementation of `pushforward₀`. -/
 @[simps]
-def pushforward₀_obj (R : Dᵒᵖ ⥤ RingCat.{u}) (M : PresheafOfModules R) :
+def pushforward₀Obj (R : Dᵒᵖ ⥤ RingCat.{u}) (M : PresheafOfModules R) :
     PresheafOfModules (F.op ⋙ R) :=
   { obj X := ModuleCat.of _ (M.obj (F.op.obj X))
     map {X Y} f := M.map (F.op.map f)
@@ -58,7 +58,7 @@ set_option backward.isDefEq.respectTransparency false in
 by the precomposition with `F.op`. -/
 def pushforward₀ (R : Dᵒᵖ ⥤ RingCat.{u}) :
     PresheafOfModules.{v} R ⥤ PresheafOfModules.{v} (F.op ⋙ R) where
-  obj M := pushforward₀_obj F R M
+  obj M := pushforward₀Obj F R M
   map {M₁ M₂} φ := { app X := φ.app _ }
 
 /-- If `F : C ⥤ D` if a functor and `R : Dᵒᵖ ⥤ CommRingCat` is a presheaf
