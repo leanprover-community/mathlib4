@@ -5,11 +5,12 @@ Authors: Arthur Paulino, Jon Eugster
 -/
 import Std.Data.TreeSet
 import Cache.Lean
+import Lake.Load.Toml
+import Batteries.Tactic.OpenPrivate
 
 variable {α : Type}
 
 open Lean
-
 namespace Cache.IO
 
 open System (FilePath)
@@ -483,22 +484,27 @@ def lookup (hashMap : ModuleHashMap) (modules : List Name) : IO Unit := do
       println! "  comment: {line}"
   if err then IO.Process.exit 1
 
+open private Lake.Glob.ofString? from Lake.Load.Toml in
+
 /--
 Parse a string as either a path or a Lean module name.
-TODO: If the argument describes a folder, use `walkDir` to find all `.lean` files within.
+If the argument describes a folder, use `walkDir` to find all `.lean` files within.
 
 Return tuples of the form ("module name", "path to .lean file").
 
 The input string `arg` takes one of the following forms:
 
 1. `Mathlib.Algebra.Field.Basic`: there exists such a Lean file
-2. `Mathlib.Algebra.Field`: no Lean file exists but a folder (TODO)
-3. `Mathlib/Algebra/Field/Basic.lean`: the file exists (note potentially `\` on Windows)
-4. `Mathlib/Algebra/Field/`: the folder exists (TODO)
+2. `Mathlib.Algebra.Field.+`: no Lean file exists but a folder `Field`
+3. `Mathlib.Algebra.Field.*`: either a file or a folder
+    (note in some shells escaping as `.\*` might be necessary)
+4. `Mathlib/Algebra/Field/Basic.lean`: the file exists
+    (note potentially `\` on Windows)
+5. `Mathlib/Algebra/Field/`: the folder exists
 
 Not supported yet:
 
-5. `Aesop/Builder.lean`: the file does not exist, it's actually somewhere in `.lake`.
+6. `Aesop/Builder.lean`: the file does not exist, it's actually somewhere in `.lake`.
 
 Note: An argument like `Archive` is treated as module, not a path.
 -/
@@ -514,39 +520,73 @@ def leanModulesFromSpec (sp : SearchPath) (argₛ : String) :
     -- provided file name of a Lean file
     let mod : Name := arg.withExtension "" |>.components.foldl .str .anonymous
     if !(← arg.pathExists) then
-      -- TODO: (5.) We could use `getSrcDir` to allow arguments like `Aesop/Builder.lean` which
+      -- TODO: (6.) We could use `getSrcDir` to allow arguments like `Aesop/Builder.lean` which
       -- refer to a file located under `.lake/packages/...`
       return .error s!"Invalid argument: non-existing path {arg}"
     if arg.extension == "lean" then
-      -- (3.) provided existing `.lean` file
+      -- (4.) provided existing `.lean` file
       return .ok #[(mod, arg)]
     else
-      -- (4.) provided existing directory: walk it
-      return .error "Searching lean files in a folder is not supported yet!"
+      -- (5.) provided existing directory: walk it
+      IO.println s!"Searching directory {arg} for .lean files"
+      let leanModulesInFolder ← walkDir sp arg mod
+      return .ok leanModulesInFolder
   else
     -- provided a module
-    let mod := argₛ.toName
-    if mod.isAnonymous then
-      -- provided a module name which is not a valid Lean identifier
+    -- user might provide `.*` or `.+` to include folders
+    match Lake.Glob.ofString? argₛ with
+    | none =>
       return .error s!"Invalid argument: expected path or module name, not {argₛ}"
-    let sourceFile ← Lean.findLean sp mod
-    if ← sourceFile.pathExists then
-      -- (1.) provided valid module
-      return .ok #[(mod, sourceFile)]
-    else
-      -- provided "pseudo-module" (like `Mathlib.Data`) which
-      -- does not correspond to a Lean file, but to an existing folder
-      -- `Mathlib/Data/`
-      let folder := sourceFile.withExtension ""
-      IO.println s!"Searching directory {folder} for .lean files"
-      if ← folder.pathExists then
-        -- (2.) provided "module name" of an existing folder: walk dir
-        -- TODO: will be implemented in https://github.com/leanprover-community/mathlib4/issues/21838
-        return .error "Entering a part of a module name \
-          (i.e. `Mathlib.Data` when only the folder `Mathlib/Data/` but no \
-          file `Mathlib/Data.lean` exists) is not supported yet!"
+    | some glob =>
+      let modules ← match glob with
+      | .one mod =>
+        let sourceFile ← Lean.findLean sp mod
+        pure #[(mod, sourceFile)]
+      | .submodules mod =>
+        let sourceFile ← Lean.findLean sp mod
+        let folder := sourceFile.withExtension ""
+        if ← folder.pathExists then
+          IO.println s!"Searching directory {folder} for .lean files"
+          let leanModulesInFolder ← walkDir sp folder mod
+          pure leanModulesInFolder
+        else
+          pure #[]
+      | .andSubmodules mod =>
+        let sourceFile ← Lean.findLean sp mod
+        let folder := sourceFile.withExtension ""
+        if ← folder.pathExists then
+          IO.println s!"Searching directory {folder} for .lean files"
+          let leanModulesInFolder ← walkDir sp folder mod
+          pure <| #[(mod, sourceFile)] ++ leanModulesInFolder
+        else
+          pure #[]
+      if !modules.isEmpty then
+        return .ok modules
       else
-        return .error s!"Invalid argument: non-existing module {mod}"
+        return .error s!"Invalid argument: {argₛ}"
+
+where
+  /--
+  Search all `.lean` files inside `folder`.
+
+  In order to figure out the module name corresponding
+  to the found files, we use `mod` and the search path `sp` to figure out how much of
+  the relative path needs to be trimmed.
+
+  This assumes the `folder` exists.
+  -/
+  walkDir (sp : SearchPath) (folder : FilePath) (mod : Name) : IO <| Array (Name × FilePath) := do
+    -- The source direcory where `mod` is located
+    let srcDir ← getSrcDir sp mod
+    -- find all Lean files in the folder only skipping special entries such as `.` and `..`
+    let files ← folder.walkDir (pure ·.fileName.isSome)
+    let leanFiles := files.filter (·.extension == some "lean")
+    let mut leanModulesInFolder : Array (Name × FilePath) := #[]
+    for file in leanFiles do
+      let path := file.withoutParent srcDir
+      let mod : Name := path.withExtension "" |>.components.foldl .str .anonymous
+      leanModulesInFolder := leanModulesInFolder.push (mod, file)
+    pure leanModulesInFolder
 
 /--
 Parse command line arguments.

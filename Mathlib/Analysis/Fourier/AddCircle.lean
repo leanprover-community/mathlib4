@@ -330,7 +330,7 @@ theorem fourierCoeff.sum {ι : Type*} (s : Finset ι) (f : ι → AddCircle T �
   | insert a s ha iha =>
       obtain ⟨hf₁, hf₂⟩ := by simpa using hf
       rw [s.sum_insert ha, s.sum_insert ha,
-        fourierCoeff.add hf₁ (integrable_finset_sum' s hf₂), iha hf₂]
+        fourierCoeff.add hf₁ (integrable_finsetSum' s hf₂), iha hf₂]
 
 
 theorem fourierCoeff.const_smul (f : AddCircle T → E) (c : ℂ) (n : ℤ) :

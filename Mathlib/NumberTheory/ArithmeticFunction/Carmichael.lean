@@ -109,14 +109,16 @@ theorem carmichael_finset_lcm {α : Type*} (s : Finset α) (f : α → ℕ) :
   rw [Finset.lcm_insert, Finset.lcm_insert, ← ih]
   exact carmichael_lcm ..
 
-theorem carmichael_finset_prod {α : Type*} {s : Finset α} {f : α → ℕ}
+theorem carmichael_finsetProd {α : Type*} {s : Finset α} {f : α → ℕ}
     (h : Set.Pairwise s <| Coprime.onFun f) : Carmichael (s.prod f) = s.lcm (Carmichael ∘ f) :=
   s.lcm_eq_prod h ▸ carmichael_finset_lcm ..
+
+@[deprecated (since := "2026-04-08")] alias carmichael_finset_prod := carmichael_finsetProd
 
 theorem carmichael_factorization (n : ℕ) [NeZero n] :
     Carmichael n = n.primeFactors.lcm fun p ↦ Carmichael (p ^ n.factorization p) := by
   nth_rw 1 [← n.prod_factorization_pow_eq_self <| NeZero.ne _]
-  exact carmichael_finset_prod pairwise_coprime_pow_primeFactors_factorization.set_of_subtype
+  exact carmichael_finsetProd pairwise_coprime_pow_primeFactors_factorization.set_of_subtype
 
 theorem carmichael_two_pow_of_le_two_eq_totient {n : ℕ} (hn : n ≤ 2) :
     Carmichael (2 ^ n) = (2 ^ n).totient := by

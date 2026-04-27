@@ -16,7 +16,7 @@ In this file we prove that various shapes are connected.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

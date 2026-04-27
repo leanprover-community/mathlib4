@@ -21,7 +21,7 @@ The same lemmas are true in the additive/multiplicative worlds. To avoid code du
 provide `HasUpperLowerClosure`, an ad hoc axiomatisation of the properties we need.
 -/
 
-@[expose] public section
+public section
 
 
 open Function Set
