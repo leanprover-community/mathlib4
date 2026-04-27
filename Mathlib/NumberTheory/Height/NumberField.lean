@@ -163,23 +163,14 @@ lemma iSup_finitePlace_apply_eq_one_of_gcd_eq_one (v : FinitePlace ℚ) (hx : Fi
     ⨆ i, v (x i) = 1 := by
   have hv : IsNonarchimedean (v ·) := FinitePlace.add_le v
   have H (n : ℤ) : v n ≤ 1 := IsNonarchimedean.apply_intCast_le_one hv
-  obtain ⟨f, hf⟩ := by classical exact Finset.gcd_eq_sum_mul .univ x
-  rw [hx] at hf
-  obtain ⟨j, hj⟩ : ∃ j, v (x j) = 1 := by
-    have h' : v (∑ i, x i * f i) ≤ ⨆ i, v (x i * f i) := by
-      convert IsNonarchimedean.apply_sum_le hv
-      rw [← cbiSup_eq_of_forall (by grind)]
-      simp [Finset.mem_univ, ciSup_unique]
-    by_contra! h
-    replace h i : v (x i) < 1 := lt_of_le_of_ne (H <| x i) (h i)
-    rw [← map_one v, show (1 : ℚ) = (1 : ℤ) from rfl, hf] at h
-    push_cast at h
-    replace h i : v (x i * f i) < ⨆ i, v (x i * f i) := by
-      rw [map_mul, ← mul_one (iSup _)]
-      exact mul_lt_mul_of_nonneg_of_pos ((h i).trans_le h') (H _) (by positivity) zero_lt_one
-    obtain ⟨i, hi⟩ := exists_eq_ciSup_of_finite (f := fun i ↦ v (x i * f i))
-    exact (h i).ne hi
-  exact le_antisymm (ciSup_le fun i ↦ H (x i)) <| Finite.le_ciSup_of_le j hj.symm.le
+  obtain ⟨f, hf⟩ := Finset.gcd_eq_sum_mul .univ x
+  apply_fun v at hf
+  simp_rw [hx, Int.cast_one, map_one, Int.cast_sum, Int.cast_mul] at hf
+  replace hf := hf.trans_le hv.apply_sum_univ_le
+  obtain ⟨i, hi⟩ := exists_eq_ciSup_of_finite (f := fun i ↦ v (x i * f i))
+  rw [← hi, map_mul] at hf
+  replace hf : 1 ≤ v (x i) := hf.trans <| mul_le_of_le_one_right (apply_nonneg v _) (H _)
+  exact le_antisymm (ciSup_le (H <| x ·)) <| Finite.le_ciSup_of_le i hf
 
 open AdmissibleAbsValues in
 /-- The multiplicative height of a tuple of rational numbers that consists of coprime integers
