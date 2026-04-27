@@ -33,7 +33,7 @@ def elabGRewrite (mvarId : MVarId) (e : Expr) (stx : Syntax) (forwardImp symm : 
   let thm ← elabTerm stx none true
   if thm.hasSyntheticSorry then
     throwAbortTactic
-  let mvarIds ← getMVars thm
+  let mvarIds ← getMVarsNoDelayed thm
   if mvarIds.contains mvarId then
     throwErrorAt stx
       "Occurs check failed: Expression{indentExpr thm}\ncontains the goal {Expr.mvar mvarId}"

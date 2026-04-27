@@ -140,7 +140,7 @@ If `symm := true`, first use the `symm` tactic to swap the direction of the lemm
 -/
 def GRewriteLemma.apply (lem : GRewriteLemma) (goal : MVarId) (symm : Bool)
     (config : GRewrite.Config) : MetaM Bool := do
-  withTraceNode `Meta.grewrite (fun _ ↦ return m!"applying grewrite lemma `{lem.proof}`") do
+  withTraceNode `Meta.grewrite (fun _ ↦ return m!"rewriting with `{lem.proof}`") do
   let (type, proof) ←
     if symm then
       let proof ← try lem.proof.applySymm catch _ => return false
@@ -195,13 +195,16 @@ partial def processGCongrHypothesisAux (goal : MVarId) (inv : Bool) (config : Co
   else
     return false
 
-/-- If this subgoal of a `gcongr` lemma has an expanded local context, then update the
-local contexts of the metavariables appropriately. This is a bit of a hack. -/
+/-- Update the local contexts of the metavariables to include the variables introduced by the
+`gcongr` lemma. This is a bit of a hack. -/
 partial def processGCongrHypothesis (goal : MVarId) (inv : Bool)
     (config : Config) : GRewriteM Bool := do
+  -- If the local context was not changed, we don't need to modify the local contexts.
   if (← goal.getDecl).lctx.numIndices == (← getLCtx).numIndices then
     processGCongrHypothesisAux goal inv config
-  else goal.withContext do
+  else
+  let outerLCtx ← getLCtx
+  goal.withContext do
   -- We can only modify the metavariable local contexts if no match has happened yet.
   if (← get).progress matches .noMatch then
     let mctx ← getMCtx
@@ -215,9 +218,13 @@ partial def processGCongrHypothesis (goal : MVarId) (inv : Bool)
       -- If we still don't have a match, then revert the changes to the metavaraible local contexts.
       setMCtx mctx
     else
-      -- If we did get a match, then we are now exiting the scope where this rewrite makes sense,
-      -- so we will not try rewriting any more.
-      modify ({ · with progress := .matchedOutOfScope })
+      -- If we did get a match, then we might be exiting the scope where this rewrite makes sense,
+      -- in which case we should not rewrite any more.
+      let validInOuterLCtx ← (← read).mvarIds.allM fun (mvarId, _) ↦ do
+        let some val ← getExprMVarAssignment? mvarId | return false
+        return (Lean.collectFVars {} val).fvarIds.all outerLCtx.contains
+      unless validInOuterLCtx do
+        modify ({ · with progress := .matchedOutOfScope })
     return result
   else
     processGCongrHypothesisAux goal inv config
