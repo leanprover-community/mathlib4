@@ -161,7 +161,7 @@ def associator
           pushout.desc (_ ◁ pushout.inr _ _ ≫ pushout.inl _ _) (pushout.inr _ _)
           (by simp [Limits.pushout.associator_naturality_left_condition]))
         (((tensorRight _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext
-          (by simp [Limits.pushout.whiskerLeft_condition_assoc, ← whisker_exchange_assoc])
+          (by simp [Limits.pushout.condition_tensorLeft_assoc, ← whisker_exchange_assoc])
           (by simp [← whisker_exchange_assoc, Limits.pushout.associator_naturality_left_condition]))
     · exact pushout.desc ((whiskerLeftIso _ _).hom.left ≫
           pushout.desc (pushout.inl _ _) ((pushout.inl _ _ ▷ _) ≫ pushout.inr _ _)
@@ -170,7 +170,7 @@ def associator
         (((tensorLeft _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext
           (by simp [whisker_exchange_assoc,
             Limits.pushout.associator_inv_naturality_right_condition])
-          (by simp [whisker_exchange_assoc, Limits.pushout.condition_whiskerRight_assoc]))
+          (by simp [whisker_exchange_assoc, Limits.pushout.condition_tensorRight_assoc]))
     · apply pushout.hom_ext (by simp)
       apply ((tensorRight _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext <;> simp
     · refine pushout.hom_ext ?_ (by simp)
