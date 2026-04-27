@@ -162,7 +162,7 @@ of a tuple of rational numbers equals `1` if the tuple consists of coprime integ
 lemma iSup_finitePlace_apply_eq_one_of_gcd_eq_one (v : FinitePlace ℚ) (hx : Finset.univ.gcd x = 1) :
     ⨆ i, v (x i) = 1 := by
   have hv : IsNonarchimedean (v ·) := FinitePlace.add_le v
-  have H (n : ℤ) : v n ≤ 1 := IsNonarchimedean.apply_intCast_le_one_of_isNonarchimedean hv
+  have H (n : ℤ) : v n ≤ 1 := IsNonarchimedean.apply_intCast_le_one hv
   obtain ⟨f, hf⟩ := by classical exact Finset.gcd_eq_sum_mul .univ x
   rw [hx] at hf
   obtain ⟨j, hj⟩ : ∃ j, v (x j) = 1 := by
