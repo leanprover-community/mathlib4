@@ -13,6 +13,7 @@ public meta import Lean.Linter.Basic
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public import Mathlib.Tactic.Linter.Header  --shake: keep
+public import Batteries.Tactic.Alias
 public import Batteries.Tactic.Lint.Basic
 public import Batteries.Tactic.Lint.Misc
 
@@ -195,7 +196,8 @@ def _root_.Lean.ConstantVal.onUnusedInstancesWhere (decl : ConstantVal)
     TermElabM Unit := do
   let unusedInstances ← decl.type.collectUnnecessaryInstanceBinderIdxsWhere p
   if let some maxIdx := unusedInstances.back? then
-    if (← getRef).find? (·.isOfKind `Batteries.Tactic.Alias.alias) |>.isSome then return
+    -- Don't lint after all if the declaration is an alias:
+    if (← Batteries.Tactic.Alias.getAliasInfo decl.name).isSome then return
     unless decl.type.hasSorry do -- only check for `sorry` in the "expensive" interactive case
       forallBoundedTelescope decl.type (some <| maxIdx + 1)
         (cleanupAnnotations := true) fun fvars _ => do
