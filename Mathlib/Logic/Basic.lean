@@ -250,6 +250,9 @@ theorem xor_not_not : Xor (¬a) (¬b) ↔ Xor a b := by grind
 
 protected theorem Xor.or (h : Xor a b) : a ∨ b := by grind
 
+@[deprecated (since := "2026-04-27")]
+protected alias Xor'.or := Xor.or
+
 /-! ### Declarations about `and` -/
 
 alias Iff.and := and_congr
