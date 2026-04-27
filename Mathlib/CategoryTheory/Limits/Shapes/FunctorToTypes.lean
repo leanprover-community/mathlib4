@@ -175,7 +175,7 @@ def terminalCone : Cone (Functor.empty.{w'} (C ⥤ Type w)) where
 /-- The constant functor with value `PUnit` is terminal. -/
 def terminalConeLimit : IsLimit (terminalCone.{w', w} C) where
   lift s :=
-    { app := fun _ _ => PUnit.unit }
+    { app := fun _ => TypeCat.ofHom (fun _ ↦ PUnit.unit) }
   fac _ := by rintro ⟨⟨⟩⟩
 
 /-- The limit cone corresponding to the terminal object of `C ⥤ Type w`

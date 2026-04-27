@@ -99,11 +99,10 @@ lemma hasCoproduct_of_direct_factor [HasCoproduct Y] : HasCoproduct X := by
   dsimp at m ⊢
   rw [← cancel_epi h.r]
   ext i
-  dsimp at hm
-  simp only [← hm, reassoc_of% fac]
+  simp only [← dsimp% hm, reassoc_of% fac]
   dsimp [p]
-  simp only [Category.assoc, ι_colimMap_assoc, Discrete.functor_obj_eq_as, Discrete.natTrans_app,
-    colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app, Retract.retract_assoc]
+  simp only [Category.assoc, Sigma.ι_map_assoc, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app,
+    Retract.retract_assoc]
   simp only [← Category.assoc]
   congr 1
   rw [← cancel_mono h.i]

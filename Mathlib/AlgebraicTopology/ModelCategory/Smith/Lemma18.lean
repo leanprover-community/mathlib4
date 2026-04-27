@@ -346,8 +346,9 @@ include hJ₁ hJ₂ hκ in
 lemma lemma_1_8' {X Y : C} (f : X ⟶ Y) (hf : W f) :
     ∃ (Z : C) (a : X ⟶ Z) (b : Z ⟶ Y)
       (_ : J.rlp.llp a) (_ : I.rlp b), a ≫ b = f := by
-  letI : OrderBot κ.ord.ToType :=
-    Cardinal.toTypeOrderBot (Cardinal.IsRegular.ne_zero Fact.out)
+  have : Nonempty κ.ord.ToType := by
+    simpa using Cardinal.IsRegular.ne_zero Fact.out
+  letI : OrderBot κ.ord.ToType := WellFoundedLT.toOrderBot _
   obtain ⟨Z, a, b, ha, hb, fac⟩ := lemma_1_8 hJ₁ hJ₂ κ hκ f hf
   refine ⟨Z, a, b, ?_, hb, fac⟩
   apply MorphismProperty.transfiniteCompositionsOfShape_pushouts_coproducts_le_llp_rlp

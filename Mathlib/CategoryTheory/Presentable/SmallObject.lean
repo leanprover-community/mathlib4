@@ -44,8 +44,10 @@ instance (W : MorphismProperty C) [MorphismProperty.IsSmall.{w} W] :
     have : Fact κ.IsRegular := ⟨by assumption⟩
     replace hκ (w : W.toSet) : IsCardinalPresentable w.1.left κ :=
       isCardinalPresentable_of_le _ (by simpa using (hκ w).le)
-    haveI : OrderBot κ.ord.ToType :=
-      Cardinal.toTypeOrderBot (Cardinal.IsRegular.ne_zero Fact.out)
+    have : Nonempty κ.ord.ToType := by
+      simp only [Ordinal.nonempty_toType_iff, ne_eq, Cardinal.ord_eq_zero]
+      exact Cardinal.IsRegular.ne_zero Fact.out
+    haveI : OrderBot κ.ord.ToType := WellFoundedLT.toOrderBot _
     exact ⟨κ, inferInstance, inferInstance,
       { preservesColimit {A _ _ _} i hi _ _ := by
           have : IsCardinalPresentable A κ := hκ ⟨i, hi⟩

@@ -217,7 +217,7 @@ lemma isPushout (i : J) :
       rw [← cancel_epi ((objIso₂ f (Order.succ i) i (Order.lt_succ i)).inv), hl₂, hφ₁]
     · replace hl₁ := Sigma.ι _ j ≫= hl₁
       dsimp at hl₁
-      rw [Sigma.ι_map_assoc, ← hφ₂] at hl₁
+      erw [Sigma.ι_map_assoc, ← hφ₂] at hl₁
       have : IsIso (map f _ _ (Order.le_succ i) j) := by
         dsimp [map]
         split_ifs
@@ -391,10 +391,10 @@ instance [HasCoproducts.{w} C] [IsStableUnderTransfiniteComposition.{w} W]
       Discrete.equivalence (Nonempty.some (by simp [κ, ← Cardinal.eq]))
     have : W.IsStableUnderColimitsOfShape (Discrete κ.ord.ToType) := by
       have := Cardinal.noMaxOrder hκ
-      have : OrderBot κ.ord.ToType :=
-        Cardinal.toTypeOrderBot (by
-          rintro h
-          exact Cardinal.aleph0_ne_zero (by rwa [h, nonpos_iff_eq_zero] at hκ))
+      have : Nonempty κ.ord.ToType := by
+        simp only [Ordinal.nonempty_toType_iff, ne_eq, Cardinal.ord_eq_zero]
+        exact fun h ↦ Cardinal.aleph0_ne_zero (by rwa [h, nonpos_iff_eq_zero] at hκ)
+      have : OrderBot κ.ord.ToType := WellFoundedLT.toOrderBot _
       infer_instance
     exact IsStableUnderColimitsOfShape.of_equivalence e.symm
 

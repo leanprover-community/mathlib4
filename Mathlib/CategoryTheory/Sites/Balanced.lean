@@ -38,8 +38,6 @@ variable {C : Type u} [Category.{v} C]
   [∀ X Y, FunLike (FD X Y) (DD X) (DD Y)] [ConcreteCategory.{w} D FD]
   {J : GrothendieckTopology C}
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory
-
 namespace Sheaf
 
 section
@@ -70,9 +68,8 @@ lemma isIso_iff_bijective [(forget D).ReflectsIsomorphisms] :
   rw [this]
   constructor
   · intro _ X
-    rw [← CategoryTheory.isIso_iff_bijective]
-    change IsIso ((forget D).map (φ.hom.app X))
-    infer_instance
+    have : IsIso ((forget D).map (φ.hom.app X)) := inferInstance
+    rwa [CategoryTheory.isIso_iff_bijective] at this
   · intro hφ
     have : ∀ (X : Cᵒᵖ), IsIso (φ.1.app X) := fun X => by
       have : IsIso ((forget D).map (φ.hom.app X)) := by
@@ -104,8 +101,7 @@ noncomputable def isLimit_of_isPushout_of_injective {X Y S : Type w} {f : X ⟶ 
         (@pullback.fst _ _ _ _ _ f g _ t)
         (@pullback.snd _ _ _ _ _ f g _ t)).1 (by
           dsimp
-          rw [← types_comp_apply (pullback.fst f g) f,
-            ← types_comp_apply (pullback.snd f g) g, pullback.condition])
+          simp only [← ConcreteCategory.comp_apply, pullback.condition])
       refine ⟨x, ?_⟩
       apply (Types.pullbackIsoPullback f g).toEquiv.injective
       ext

@@ -139,7 +139,8 @@ instance : (trivialCofibrations (CategoryWithSmithStructure hIW₁ hIW₃)).HasF
     refine ⟨κ, inferInstance, fun {A _} i hi ↦ ?_⟩
     have : IsCardinalPresentable A (κ' ⟨Arrow.mk i, hi⟩) := hκ' ⟨i, hi⟩
     exact isCardinalPresentable_of_le _ (by simpa using (hκ ⟨i, hi⟩).le)
-  have : OrderBot κ.ord.ToType := Cardinal.toTypeOrderBot (Cardinal.IsRegular.ne_zero Fact.out)
+  have : Nonempty κ.ord.ToType := by simpa using Cardinal.IsRegular.ne_zero Fact.out
+  have : OrderBot κ.ord.ToType := WellFoundedLT.toOrderBot _
   simp only [trivialCofibrations, cofibrations_eq, weakEquivalences_eq, fibrations_eq,
     ← llp_rlp_J hIW₁ hIW₃ κ hκ, rlp_llp_rlp]
   infer_instance
