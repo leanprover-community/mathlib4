@@ -12,11 +12,11 @@ public import Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSe
 
 
 /-!
-## Tate Cohomology
+# Tate Cohomology
 
-This file defines Tate cohomology of finite groups by taking homology of Tate complex. We
-define Tate complex by connecting the inhomogeneous chain complex and cochain complex using
-norm map.
+This file defines the Tate cohomology of finite groups by taking homology of the Tate complex. We
+define the Tate complex by connecting the inhomogeneous chain complex with the inhomogeneous
+cochain complex using the norm map.
 
 ## Key definitions
 
