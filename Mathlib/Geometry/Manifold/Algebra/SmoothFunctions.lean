@@ -5,6 +5,7 @@ Authors: Nicolò Cavalleri
 -/
 module
 
+public import Mathlib.Geometry.Manifold.Algebra.SMul
 public import Mathlib.Geometry.Manifold.Algebra.Structures
 
 /-!
@@ -235,7 +236,7 @@ field `𝕜` inherit a vector space structure.
 
 instance instSMul {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
     SMul 𝕜 C^n⟮I, N; 𝓘(𝕜, V), V⟯ :=
-  ⟨fun r f => ⟨r • ⇑f, contMDiff_const.smul f.contMDiff⟩⟩
+  ⟨fun r f => ⟨r • ⇑f, contMDiff_const.smul (I := 𝓘(𝕜, 𝕜)) f.contMDiff⟩⟩
 
 @[simp]
 theorem coe_smul {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] (r : 𝕜)
@@ -282,7 +283,7 @@ def C : 𝕜 →+* C^n⟮I, N; 𝓘(𝕜, A), A⟯ where
   map_add' c₁ c₂ := by ext; exact (algebraMap 𝕜 A).map_add _ _
 
 instance algebra : Algebra 𝕜 C^n⟮I, N; 𝓘(𝕜, A), A⟯ where
-  smul := fun r f => ⟨r • f, contMDiff_const.smul f.contMDiff⟩
+  smul := fun r f => ⟨r • f, contMDiff_const.smul (I := 𝓘(𝕜, 𝕜)) f.contMDiff⟩
   algebraMap := ContMDiffMap.C
   commutes' := fun c f => by ext x; exact Algebra.commutes' _ _
   smul_def' := fun c f => by ext x; exact Algebra.smul_def' _ _

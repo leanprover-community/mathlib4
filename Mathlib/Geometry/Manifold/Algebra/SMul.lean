@@ -97,30 +97,30 @@ variable [SMul G M] {n : WithTop ℕ∞} [ContMDiffSMul I I' n G M]
   {f : N → G} {g : N → M} {s : Set N} {x : N}
 
 @[to_additive]
-theorem ContMDiffWithinAt.smul' (hf : ContMDiffWithinAt I'' I n f s x)
+theorem ContMDiffWithinAt.smul (hf : ContMDiffWithinAt I'' I n f s x)
     (hg : ContMDiffWithinAt I'' I' n g s x) : ContMDiffWithinAt I'' I' n (f • g) s x :=
   (contMDiff_smul (I := I) (I' := I')).contMDiffAt.comp_contMDiffWithinAt x (hf.prodMk hg)
 
 @[to_additive]
-nonrec theorem ContMDiffAt.smul' (hf : ContMDiffAt I'' I n f x) (hg : ContMDiffAt I'' I' n g x) :
+nonrec theorem ContMDiffAt.smul (hf : ContMDiffAt I'' I n f x) (hg : ContMDiffAt I'' I' n g x) :
     ContMDiffAt I'' I' n (f • g) x :=
-  hf.smul' hg
+  hf.smul hg
 
 @[to_additive]
-theorem ContMDiffOn.smul' (hf : ContMDiffOn I'' I n f s) (hg : ContMDiffOn I'' I' n g s) :
-    ContMDiffOn I'' I' n (f • g) s := fun x hx => (hf x hx).smul' (hg x hx)
+theorem ContMDiffOn.smul (hf : ContMDiffOn I'' I n f s) (hg : ContMDiffOn I'' I' n g s) :
+    ContMDiffOn I'' I' n (f • g) s := fun x hx => (hf x hx).smul (hg x hx)
 
 @[to_additive]
-theorem ContMDiff.smul' (hf : ContMDiff I'' I n f) (hg : ContMDiff I'' I' n g) :
-    ContMDiff I'' I' n (f • g) := fun x => (hf x).smul' (hg x)
+theorem ContMDiff.smul (hf : ContMDiff I'' I n f) (hg : ContMDiff I'' I' n g) :
+    ContMDiff I'' I' n (f • g) := fun x => (hf x).smul (hg x)
 
 end
 
 @[to_additive prod]
 instance ContMDiffSMul.prod [SMul G M] [SMul G N] {n : WithTop ℕ∞} [ContMDiffSMul I I' n G M]
     [ContMDiffSMul I I'' n G N] : ContMDiffSMul I (I'.prod I'') n G (M × N) where
-  contMDiff_smul := (contMDiff_fst.smul' <| contMDiff_fst.comp contMDiff_snd).prodMk <|
-      contMDiff_fst.smul' <| contMDiff_snd.comp contMDiff_snd
+  contMDiff_smul := (contMDiff_fst.smul <| contMDiff_fst.comp contMDiff_snd).prodMk <|
+      contMDiff_fst.smul <| contMDiff_snd.comp contMDiff_snd
 
 /-- If `G` acts continuously differentiably on `G'` and `G'` acts continuously differentiably on
 `M`, then `G` acts continuously differentiably on `M`. -/
@@ -129,7 +129,7 @@ lemma IsScalarTower.contMDiffSMul (G' : Type*) [TopologicalSpace G'] [ChartedSpa
     [ContMDiffSMul I I'' n G G'] [ContMDiffSMul I'' I' n G' M] : ContMDiffSMul I I' n G M where
   contMDiff_smul := by
     suffices ContMDiff (I.prod I') I' n (fun p : G × M ↦ (p.1 • (1 : G')) • p.2) by simpa
-    exact (contMDiff_fst.smul' contMDiff_const).smul' (I := I'') contMDiff_snd
+    exact (contMDiff_fst.smul contMDiff_const).smul (I := I'') contMDiff_snd
 
 /-- If an action is continuously differentiable, then composing this action with a continuously
 differentiable homomorphism gives again a continuous action. -/
@@ -140,7 +140,7 @@ theorem MulAction.contMDiffSMul_compHom [Monoid G] [MulAction G M] {n : WithTop 
     letI : MulAction G' M := MulAction.compHom _ f
     ContMDiffSMul I'' I' n G' M := by
   let _ : MulAction G' M := MulAction.compHom _ f
-  exact ⟨(hf.comp contMDiff_fst).smul' contMDiff_snd⟩
+  exact ⟨(hf.comp contMDiff_fst).smul contMDiff_snd⟩
 
 /-- If a complete normed ring acts continuously differentiably on a manifold `M`, its submanifold
 of units does as well. -/
@@ -159,13 +159,18 @@ def Diffeomorph.modelWithCornersSelfProdComparison {n : WithTop ℕ∞} :
     rw [contMDiff_prod_module_iff, ← contMDiff_prod_iff]
     exact contMDiff_id
 
+/-- The scalar multiplication `𝕜 × E → E` of any normed vector space `E` over `𝕜` is smooth. -/
+instance {n : WithTop ℕ∞} : ContMDiffSMul 𝓘(𝕜) 𝓘(𝕜, E) n 𝕜 E where
+  contMDiff_smul := by
+    rw [← Diffeomorph.modelWithCornersSelfProdComparison.contMDiff_comp_diffeomorph_iff le_rfl]
+    exact contDiff_smul.contMDiff
+
 /-- The monoid `E →L[𝕜] E` of continuous linear endomorphisms of `E` acts smoothly on `E`. -/
 instance [CompleteSpace E] {n : WithTop ℕ∞} :
     ContMDiffSMul 𝓘(𝕜, E →L[𝕜] E) 𝓘(𝕜, E) n (E →L[𝕜] E) E where
   contMDiff_smul := by
     rw [← Diffeomorph.modelWithCornersSelfProdComparison.contMDiff_comp_diffeomorph_iff le_rfl]
-    refine ContDiff.contMDiff ?_
-    exact isBoundedBilinearMap_apply.contDiff
+    exact isBoundedBilinearMap_apply.contDiff.contMDiff
 
 /-- The general linear group `(E →L[𝕜] E)ˣ` on `E` acts smoothly on `E`. -/
 example [CompleteSpace E] (n : WithTop ℕ∞) :
