@@ -115,3 +115,4 @@ example {X Y : TestCat} (f : Fun X Y) (x : X.α) : ofHom f x = f x := by
   dsimp
 
 end TestCat
+--
