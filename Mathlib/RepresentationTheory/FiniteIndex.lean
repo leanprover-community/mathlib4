@@ -147,7 +147,7 @@ lemma coindToInd_indToCoind : A.indToCoind ∘ₗ A.coindToInd = LinearMap.id :=
   ext g a
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.id_coe, id_eq]
   conv_lhs => rw [coindToInd_apply]
-  simp only [map_sum, AddSubmonoidClass.coe_finset_sum, Finset.sum_apply]
+  simp only [map_sum, AddSubmonoidClass.coe_finsetSum, Finset.sum_apply]
   rw [Finset.sum_eq_single ⟦a⟧]
   · simp
   · intro b _ hb
