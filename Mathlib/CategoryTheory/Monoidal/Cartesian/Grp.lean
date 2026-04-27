@@ -6,8 +6,8 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Category.Grp.Limits
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
-public import Mathlib.CategoryTheory.Monoidal.Grp_
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon
+public import Mathlib.CategoryTheory.Monoidal.Grp
 
 /-!
 # Yoneda embedding of `Grp C`
