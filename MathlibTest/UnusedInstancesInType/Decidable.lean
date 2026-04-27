@@ -7,6 +7,7 @@ set_option linter.unusedDecidableInType true
 section unused
 
 /--
+@ +1:8...11
 warning: `foo` does not use the following hypothesis in its type:
   • [DecidableEq α] (#2)
 
@@ -14,7 +15,7 @@ Consider removing this hypothesis and using `classical` in the proof instead. Fo
 
 Note: This linter can be disabled with `set_option linter.unusedDecidableInType false`
 -/
-#guard_msgs in
+#guard_msgs (positions := true) in
 theorem foo {α} [DecidableEq α] : True := True.intro
 
 def Foo (α) [DecidableEq α] := Unit
