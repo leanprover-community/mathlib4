@@ -7,6 +7,7 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Fréd
 module
 
 public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.Topology.Algebra.Module.Equiv
 
 /-!
 # Topological complements of submodules
@@ -61,7 +62,7 @@ There is still a significant part of the algebraic API which should be ported to
 topological setting. Notably, we should:
 * show that `Submodule.prodEquivOfIsCompl` is an homeomorphism if and only if
   the two subspaces are topological complements, and bundle it as a `ContinuousLinearEquiv` when
-  this is the case.
+  this is the case. (See the existing `ClosedComplemented.exists_submodule_equiv_prod`).
 * show that `Submodule.quotientEquivOfIsCompl` is an homeomorphism if and only if
   the two subspaces are topological complements, and bundle it as a `ContinuousLinearEquiv` when
   this is the case.
@@ -358,6 +359,20 @@ theorem _root_.ContinuousLinearMap.closedComplemented_ker_of_rightInverse [Conti
     (f₁ : M →L[R] N) (f₂ : N →L[R] M) (h : Function.RightInverse f₂ f₁) :
     f₁.ker.ClosedComplemented :=
   f₂.isTopCompl_range_ker_of_leftInverse f₁ h.leftInverse |>.symm.closedComplemented
+
+/-- If `p` is a closed complemented submodule,
+then there exists a submodule `q` and a continuous linear equivalence `M ≃L[R] (p × q)` such that
+`e (x : p) = (x, 0)`, `e (y : q) = (0, y)`, and `e.symm x = x.1 + x.2`.
+
+In fact, the properties of `e` imply the properties of `e.symm` and vice versa,
+but we provide both for convenience. -/
+lemma ClosedComplemented.exists_submodule_equiv_prod [IsTopologicalAddGroup M]
+    {p : Submodule R M} (hp : p.ClosedComplemented) :
+    ∃ (q : Submodule R M) (e : M ≃L[R] (p × q)),
+      (∀ x : p, e x = (x, 0)) ∧ (∀ y : q, e y = (0, y)) ∧ (∀ x, e.symm x = x.1 + x.2) :=
+  let ⟨f, hf⟩ := hp
+  ⟨f.ker, .equivOfRightInverse f p.subtypeL hf,
+    fun _ ↦ by ext <;> simp [hf], fun _ ↦ by ext <;> simp, fun _ ↦ rfl⟩
 
 end ClosedComplemented
 

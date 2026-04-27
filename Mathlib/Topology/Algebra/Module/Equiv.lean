@@ -1378,28 +1378,6 @@ end ContinuousLinearEquiv
 
 end map
 
-namespace Submodule
-
-variable {R : Type*} [Ring R] {M : Type*} [TopologicalSpace M] [AddCommGroup M] [Module R M]
-
-open ContinuousLinearMap
-
-/-- If `p` is a closed complemented submodule,
-then there exists a submodule `q` and a continuous linear equivalence `M ≃L[R] (p × q)` such that
-`e (x : p) = (x, 0)`, `e (y : q) = (0, y)`, and `e.symm x = x.1 + x.2`.
-
-In fact, the properties of `e` imply the properties of `e.symm` and vice versa,
-but we provide both for convenience. -/
-lemma ClosedComplemented.exists_submodule_equiv_prod [IsTopologicalAddGroup M]
-    {p : Submodule R M} (hp : p.ClosedComplemented) :
-    ∃ (q : Submodule R M) (e : M ≃L[R] (p × q)),
-      (∀ x : p, e x = (x, 0)) ∧ (∀ y : q, e y = (0, y)) ∧ (∀ x, e.symm x = x.1 + x.2) :=
-  let ⟨f, hf⟩ := hp
-  ⟨f.ker, .equivOfRightInverse f p.subtypeL hf,
-    fun _ ↦ by ext <;> simp [hf], fun _ ↦ by ext <;> simp, fun _ ↦ rfl⟩
-
-end Submodule
-
 namespace MulOpposite
 
 variable (R : Type*) [Semiring R] [τR : TopologicalSpace R] [IsTopologicalSemiring R]
