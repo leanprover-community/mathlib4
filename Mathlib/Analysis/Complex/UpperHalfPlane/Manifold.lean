@@ -31,7 +31,7 @@ open Filter
 
 open scoped Manifold ContDiff MatrixGroups Topology
 
-variable {n : WithTop ℕ∞}
+variable {n : ℕ∞ω}
 
 namespace UpperHalfPlane
 
