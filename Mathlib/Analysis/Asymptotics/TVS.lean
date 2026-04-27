@@ -67,7 +67,7 @@ and `Asymptotics.IsBigOTVS` was defined in a similar manner.
 
 @[expose] public section
 
-open Set Filter Asymptotics Metric
+open Set Filter Asymptotics Metric Topology
 open scoped Topology Pointwise ENNReal NNReal
 
 namespace Asymptotics
@@ -443,6 +443,59 @@ lemma _root_.ContinuousLinearMap.isThetaTVS_comp (g : E →L[𝕜] F) (hg : Topo
     (g ∘ f) =Θ[𝕜; l] f :=
   ⟨g.isBigOTVS_comp, g.isBigOTVS_rev_comp <| by simp [hg.nhds_eq_comap]⟩
 
+lemma _root_.Topology.IsInducing.isBigOTVS_iff_left (φ : E →ₗ[𝕜] G) (hφ : IsInducing φ) :
+    ((φ ∘ f) =O[𝕜; l] g) ↔ (f =O[𝕜; l] g) := by
+  let Φ : E →L[𝕜] G := ⟨φ, hφ.continuous⟩
+  have hφ' : comap φ (𝓝 0) ≤ 𝓝 0 := by rw [hφ.nhds_eq_comap, map_zero]
+  exact ⟨(φ.isBigOTVS_rev_comp hφ').trans, Φ.isBigOTVS_comp.trans⟩
+
+lemma _root_.Topology.IsInducing.isBigOTVS_iff_right (φ : F →ₗ[𝕜] G) (hφ : IsInducing φ) :
+    (f =O[𝕜; l] (φ ∘ g)) ↔ (f =O[𝕜; l] g) := by
+  let Φ : F →L[𝕜] G := ⟨φ, hφ.continuous⟩
+  have hφ' : comap φ (𝓝 0) ≤ 𝓝 0 := by rw [hφ.nhds_eq_comap, map_zero]
+  exact ⟨fun H ↦ H.trans Φ.isBigOTVS_comp, fun H ↦ H.trans (φ.isBigOTVS_rev_comp hφ')⟩
+
+lemma _root_.Topology.IsInducing.isLittleOTVS_iff_left (φ : E →ₗ[𝕜] G) (hφ : IsInducing φ) :
+    ((φ ∘ f) =o[𝕜; l] g) ↔ (f =o[𝕜; l] g) := by
+  let Φ : E →L[𝕜] G := ⟨φ, hφ.continuous⟩
+  have hφ' : comap φ (𝓝 0) ≤ 𝓝 0 := by rw [hφ.nhds_eq_comap, map_zero]
+  exact ⟨(φ.isBigOTVS_rev_comp hφ').trans_isLittleOTVS, Φ.isBigOTVS_comp.trans_isLittleOTVS⟩
+
+lemma _root_.Topology.IsInducing.isLittleOTVS_iff_right (φ : F →ₗ[𝕜] G) (hφ : IsInducing φ) :
+    (f =o[𝕜; l] (φ ∘ g)) ↔ (f =o[𝕜; l] g) := by
+  let Φ : F →L[𝕜] G := ⟨φ, hφ.continuous⟩
+  have hφ' : comap φ (𝓝 0) ≤ 𝓝 0 := by rw [hφ.nhds_eq_comap, map_zero]
+  exact ⟨fun H ↦ H.trans_isBigOTVS Φ.isBigOTVS_comp,
+    fun H ↦ H.trans_isBigOTVS (φ.isBigOTVS_rev_comp hφ')⟩
+
+omit [TopologicalSpace E] [TopologicalSpace G] in
+lemma isBigOTVS_induced_left {tG : TopologicalSpace G} (φ : E →ₗ[𝕜] G) :
+    letI : TopologicalSpace E := .induced φ tG
+    (f =O[𝕜; l] g) ↔ ((φ ∘ f) =O[𝕜; l] g) :=
+  letI : TopologicalSpace E := .induced φ tG
+  IsInducing.isBigOTVS_iff_left _ ⟨rfl⟩ |>.symm
+
+omit [TopologicalSpace F] [TopologicalSpace G] in
+lemma isBigOTVS_induced_right {tG : TopologicalSpace G} (φ : F →ₗ[𝕜] G) :
+    letI : TopologicalSpace F := .induced φ tG
+    (f =O[𝕜; l] g) ↔ (f =O[𝕜; l] (φ ∘ g)) :=
+  letI : TopologicalSpace F := .induced φ tG
+  IsInducing.isBigOTVS_iff_right _ ⟨rfl⟩ |>.symm
+
+omit [TopologicalSpace E] [TopologicalSpace G] in
+lemma isLittleOTVS_induced_left {tG : TopologicalSpace G} (φ : E →ₗ[𝕜] G) :
+    letI : TopologicalSpace E := .induced φ tG
+    (f =o[𝕜; l] g) ↔ ((φ ∘ f) =o[𝕜; l] g) :=
+  letI : TopologicalSpace E := .induced φ tG
+  IsInducing.isLittleOTVS_iff_left _ ⟨rfl⟩ |>.symm
+
+omit [TopologicalSpace F] [TopologicalSpace G] in
+lemma isLittleOTVS_induced_right {tG : TopologicalSpace G} (φ : F →ₗ[𝕜] G) :
+    letI : TopologicalSpace F := .induced φ tG
+    (f =o[𝕜; l] g) ↔ (f =o[𝕜; l] (φ ∘ g)) :=
+  letI : TopologicalSpace F := .induced φ tG
+  IsInducing.isLittleOTVS_iff_right _ ⟨rfl⟩ |>.symm
+
 @[simp]
 lemma IsLittleOTVS.zero (g : α → F) (l : Filter α) : (0 : α → E) =o[𝕜; l] g := by
   refine ⟨fun U hU ↦ ?_⟩
@@ -639,6 +692,36 @@ theorem isLittleOTVS_pi {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E 
     {f : α → ∀ i, E i} : f =o[𝕜; l] g ↔ ∀ i, (f · i) =o[𝕜; l] g :=
   ⟨.proj, .pi⟩
 
+omit [TopologicalSpace E] in
+theorem isLittleOTVS_iInf {ι : Type*} {t : ι → TopologicalSpace E}
+    (ht : ∀ i, @ContinuousSMul 𝕜 E _ _ (t i)) :
+    (letI : TopologicalSpace E := ⨅ i, t i; f =o[𝕜; l] g) ↔ ∀ i,
+      (letI : TopologicalSpace E := t i; f =o[𝕜; l] g) := by
+  let Φ : E →ₗ[𝕜] (ι → E) := .pi fun _ ↦ .id
+  have : ⨅ i, t i = .induced Φ (@Pi.topologicalSpace _ _ t) := by
+    simp_rw [Pi.topologicalSpace, induced_iInf, induced_compose]
+    congr!
+    exact (@induced_id _ ?_).symm
+  rw [this, isLittleOTVS_induced_left, @isLittleOTVS_pi]
+  rfl
+
+omit [TopologicalSpace E] in
+theorem isLittleOTVS_sInf {s : Set (TopologicalSpace E)}
+    (hs : ∀ t ∈ s, @ContinuousSMul 𝕜 E _ _ t) :
+    (letI : TopologicalSpace E := sInf s; f =o[𝕜; l] g) ↔ ∀ t ∈ s,
+      (letI : TopologicalSpace E := t; f =o[𝕜; l] g) := by
+  rw [Subtype.forall'] at hs ⊢
+  simp_rw [sInf_eq_iInf', isLittleOTVS_iInf]
+
+omit [TopologicalSpace E] in
+theorem isLittleOTVS_inf {t₁ t₂ : TopologicalSpace E}
+    [@ContinuousSMul 𝕜 E _ _ t₁] [@ContinuousSMul 𝕜 E _ _ t₂] :
+    (letI : TopologicalSpace E := t₁ ⊓ t₂; f =o[𝕜; l] g) ↔
+      (letI : TopologicalSpace E := t₁; f =o[𝕜; l] g) ∧
+      (letI : TopologicalSpace E := t₂; f =o[𝕜; l] g) := by
+  rw [inf_eq_iInf, isLittleOTVS_iInf, Bool.forall_bool, cond_false, cond_true, and_comm]
+  intro i; cases i <;> assumption
+
 protected theorem IsBigOTVS.pi {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)]
     [∀ i, Module 𝕜 (E i)] [∀ i, TopologicalSpace (E i)] [∀ i, ContinuousSMul 𝕜 (E i)]
     {f : ∀ i, α → E i} (h : ∀ i, f i =O[𝕜; l] g) : (fun x i ↦ f i x) =O[𝕜; l] g := by
@@ -661,6 +744,36 @@ theorem isBigOTVS_pi {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)]
     [∀ i, Module 𝕜 (E i)] [∀ i, TopologicalSpace (E i)] [∀ i, ContinuousSMul 𝕜 (E i)]
     {f : α → ∀ i, E i} : f =O[𝕜; l] g ↔ ∀ i, (f · i) =O[𝕜; l] g :=
   ⟨.proj, .pi⟩
+
+omit [TopologicalSpace E] in
+theorem isBigOTVS_iInf {ι : Type*} {t : ι → TopologicalSpace E}
+    (ht : ∀ i, @ContinuousSMul 𝕜 E _ _ (t i)) :
+    (letI : TopologicalSpace E := ⨅ i, t i; f =O[𝕜; l] g) ↔ ∀ i,
+      (letI : TopologicalSpace E := t i; f =O[𝕜; l] g) := by
+  let Φ : E →ₗ[𝕜] (ι → E) := .pi fun _ ↦ .id
+  have : ⨅ i, t i = .induced Φ (@Pi.topologicalSpace _ _ t) := by
+    simp_rw [Pi.topologicalSpace, induced_iInf, induced_compose]
+    congr!
+    exact (@induced_id _ ?_).symm
+  rw [this, isBigOTVS_induced_left, @isBigOTVS_pi]
+  rfl
+
+omit [TopologicalSpace E] in
+theorem isBigOTVS_sInf {s : Set (TopologicalSpace E)}
+    (hs : ∀ t ∈ s, @ContinuousSMul 𝕜 E _ _ t) :
+    (letI : TopologicalSpace E := sInf s; f =O[𝕜; l] g) ↔ ∀ t ∈ s,
+      (letI : TopologicalSpace E := t; f =O[𝕜; l] g) := by
+  rw [Subtype.forall'] at hs ⊢
+  simp_rw [sInf_eq_iInf', isBigOTVS_iInf]
+
+omit [TopologicalSpace E] in
+theorem isBigOTVS_inf {t₁ t₂ : TopologicalSpace E}
+    [@ContinuousSMul 𝕜 E _ _ t₁] [@ContinuousSMul 𝕜 E _ _ t₂] :
+    (letI : TopologicalSpace E := t₁ ⊓ t₂; f =O[𝕜; l] g) ↔
+      (letI : TopologicalSpace E := t₁; f =O[𝕜; l] g) ∧
+      (letI : TopologicalSpace E := t₂; f =O[𝕜; l] g) := by
+  rw [inf_eq_iInf, isBigOTVS_iInf, Bool.forall_bool, cond_false, cond_true, and_comm]
+  intro i; cases i <;> assumption
 
 protected lemma IsLittleOTVS.smul_left (h : f =o[𝕜; l] g) (c : α → 𝕜) :
     (fun x ↦ c x • f x) =o[𝕜; l] (fun x ↦ c x • g x) := by

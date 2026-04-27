@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Convex.Function
 public import Mathlib.Analysis.LocallyConvex.Basic
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Data.Real.Pointwise
+public import Mathlib.Topology.Order.Lattice
 
 /-!
 # Seminorms
@@ -211,6 +212,13 @@ theorem coeFnAddMonoidHom_injective : Function.Injective (coeFnAddMonoidHom 𝕜
   show @Function.Injective (Seminorm 𝕜 E) (E → ℝ) (↑) from DFunLike.coe_injective
 
 variable {𝕜 E}
+
+theorem coe_sum (p : ι → Seminorm 𝕜 E) (s : Finset ι) : ⇑(∑ i ∈ s, p i) = ∑ i ∈ s, ⇑(p i) :=
+  map_sum (coeFnAddMonoidHom 𝕜 E) _ _
+
+@[simp]
+theorem sum_apply (p : ι → Seminorm 𝕜 E) (s : Finset ι) : (∑ i ∈ s, p i) x = ∑ i ∈ s, p i x := by
+  rw [coe_sum, Finset.sum_apply]
 
 instance instDistribMulAction [Monoid R] [DistribMulAction R ℝ] [SMul R ℝ≥0]
     [IsScalarTower R ℝ≥0 ℝ] : DistribMulAction R (Seminorm 𝕜 E) :=
@@ -1062,6 +1070,25 @@ section Continuity
 
 variable [NontriviallyNormedField 𝕜] [SeminormedRing 𝕝] [AddCommGroup E] [Module 𝕜 E]
 variable [Module 𝕝 E]
+
+@[fun_prop]
+protected theorem continuous_finset_sum [TopologicalSpace E]
+    {p : ι → Seminorm 𝕝 E} {s : Finset ι} (hcont : ∀ i ∈ s, Continuous (p i)) :
+    Continuous (∑ i ∈ s, p i : Seminorm 𝕝 E) := by
+  suffices Continuous fun x ↦ ∑ i ∈ s, p i x from this.congr (fun x ↦ by simp)
+  exact continuous_finset_sum _ hcont
+
+@[fun_prop]
+theorem continuous_finset_sup [TopologicalSpace E]
+    {p : ι → Seminorm 𝕝 E} {s : Finset ι} (hcont : ∀ i ∈ s, Continuous (p i)) :
+    Continuous (s.sup p : Seminorm 𝕝 E) := by
+  classical
+  induction s using Finset.induction with
+  | empty => rw [Finset.sup_empty, coe_bot]; fun_prop
+  | insert j t _ H =>
+    rw [Finset.sup_insert, coe_sup]
+    exact (hcont _ <| Finset.mem_insert_self j _).sup
+      (H fun i hi ↦ hcont i (Finset.mem_insert_of_mem hi))
 
 /-- A seminorm is continuous at `0` if `p.closedBall 0 r ∈ 𝓝 0` for *all* `r > 0`.
 Over a `NontriviallyNormedField` it is actually enough to check that this is true
