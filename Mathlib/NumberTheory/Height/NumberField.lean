@@ -185,16 +185,15 @@ open AdmissibleAbsValues in
 /-- The multiplicative height of a tuple of rational numbers that consists of coprime integers
 is the maximum of the absolute values of the entries. -/
 lemma mulHeight_eq_max_abs_of_gcd_eq_one (hx : Finset.univ.gcd x = 1) :
-    mulHeight (((↑) : ℤ →  ℚ) ∘ x) = ⨆ i, |x i| := by
+    mulHeight (((↑) : ℤ → ℚ) ∘ x) = ⨆ i, |x i| := by
   have hx₀ : Int.cast ∘ x ≠ (0 : ι → ℚ) := by
     contrapose! hx
     rw [Function.comp_eq_zero_iff x intCast_injective Rat.intCast_zero] at hx
     rw [hx, Finset.gcd_eq_zero_iff.mpr (by simp)]
     exact zero_ne_one
-  have : ⨆ i, (↑|x i| : ℝ) = ↑(⨆ i, |x i|) := (Finite.map_iSup_of_monotone _ Int.cast_mono).symm
-  simp_rw [NumberField.mulHeight_eq hx₀, Function.comp_apply, infinitePlace_apply, ← Int.cast_abs]
-  simp [-Int.cast_abs,
-    finprod_eq_one_of_forall_eq_one (iSup_finitePlace_apply_eq_one_of_gcd_eq_one · hx), this]
+  simp_rw [Finite.map_iSup_of_monotone _ Int.cast_mono, NumberField.mulHeight_eq hx₀,
+    infinitePlace_apply]
+  simp [finprod_eq_one_of_forall_eq_one (iSup_finitePlace_apply_eq_one_of_gcd_eq_one · hx)]
 
 open Real in
 /-- The logarithmic height of a tuple of rational numbers that consists of coprime integers
@@ -222,8 +221,7 @@ lemma mulHeight₁_eq_max (q : ℚ) : mulHeight₁ q = max q.num.natAbs q.den :=
       Int.isCoprime_iff_gcd_eq_one.mp <| isCoprime_num_den q
   convert mulHeight_eq_max_abs_of_gcd_eq_one this
   · ext i; fin_cases i <;> simp
-  · rw [show (↑(max q.num.natAbs q.den) : ℝ) = (max q.num.natAbs q.den : ℤ) by norm_cast]
-    norm_cast
+  · rw [← Int.cast_natCast, Int.cast_inj]
     push_cast
     refine le_antisymm (max_le ?_ ?_) <| ciSup_le fun i ↦ ?_
     · exact Finite.le_ciSup_of_le 0 <| by simp
