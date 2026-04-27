@@ -208,6 +208,7 @@ abbrev Hom.monoid : Monoid (X ⟶ M) where
     exact lift_fst _ _
 
 scoped[CategoryTheory.MonObj] attribute [instance] Hom.monoid
+scoped[CategoryTheory.AddMonObj] attribute [instance] Hom.addMonoid
 
 @[to_additive]
 lemma Hom.one_def : (1 : X ⟶ M) = toUnit X ≫ η := rfl

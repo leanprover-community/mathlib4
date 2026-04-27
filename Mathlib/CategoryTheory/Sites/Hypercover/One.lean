@@ -766,7 +766,9 @@ def Hom.mapMulticospan {E : PreOneHypercover.{w} S} {F : PreOneHypercover.{w'} S
     | .id _ => .id _
     | .fst i => WalkingMulticospan.Hom.fst (J := F.multicospanShape) (f.s₁' i)
     | .snd i => WalkingMulticospan.Hom.snd (J := F.multicospanShape) (f.s₁' i)
-  map_id := by simp
+  map_id
+    | .left _ => rfl
+    | .right _ => rfl
   map_comp
     | .id _, _ => by simp
     | .fst _, .id _ => by simp

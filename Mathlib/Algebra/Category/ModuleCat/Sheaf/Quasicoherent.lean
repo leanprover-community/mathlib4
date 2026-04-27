@@ -148,7 +148,7 @@ variable {C' : Type u₂} [Category.{v₂} C'] {J' : GrothendieckTopology C'} {S
 
 variable {M : SheafOfModules.{u} R} (P : Presentation M)
   (F : SheafOfModules.{u} R ⥤ SheafOfModules.{u} S) [PreservesColimitsOfSize.{u, u} F]
-  (η : F.obj (unit R) ≅ unit S)
+  (η : unit S ≅ F.obj (unit R))
 
 -- `preservesColimitsOfSize_shrink` is not a global instance because it loops indefinitely.
 -- But here it is fine as an instance since the universe `u` is inferrable from the type of `F`.
@@ -158,19 +158,19 @@ local instance : PreservesColimitsOfSize.{0, 0} F := preservesColimitsOfSize_shr
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will obtain
 relations of `Presentation (F.obj M)`. -/
 def Presentation.mapRelations : free P.relations.I (R := S) ⟶ free P.generators.I :=
-  (mapFree F η P.relations.I).inv ≫ F.map ((freeHomEquiv _).symm P.relations.s) ≫
-    F.map (kernel.ι _) ≫ (mapFree F η P.generators.I).hom
+  (mapFreeIso F P.relations.I η).hom ≫ F.map ((freeHomEquiv _).symm P.relations.s) ≫
+    F.map (kernel.ι _) ≫ (mapFreeIso F P.generators.I η).inv
 
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will obtain
 generators of `Presentation (F.obj M)`. -/
 def Presentation.mapGenerators : free P.generators.I ⟶ F.obj M :=
-  (mapFree F η P.generators.I).inv ≫ F.map (P.generators.π)
+  (mapFreeIso F P.generators.I η).hom ≫ F.map (P.generators.π)
 
 @[reassoc (attr := simp)]
 theorem Presentation.mapRelations_mapGenerators :
     P.mapRelations F η ≫ P.mapGenerators F η = 0 := by
-  simp only [mapRelations, mapGenerators, Category.assoc, Iso.hom_inv_id_assoc,
+  simp only [mapRelations, mapGenerators, Category.assoc, Iso.inv_hom_id_assoc,
     ← Functor.map_comp, kernel.condition, Functor.map_zero, comp_zero]
 
 set_option backward.defeqAttrib.useBackward true in
@@ -181,13 +181,14 @@ colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we 
 def Presentation.map : Presentation (F.obj M) :=
   presentationOfIsCokernelFree (P.mapRelations F η) (P.mapGenerators F η)
     (P.mapRelations_mapGenerators F η) <| by
-    refine IsColimit.equivOfNatIsoOfIso (parallelPairIsoMk (mapFree F η _) (mapFree F η _)
-      (by simp [Presentation.mapRelations]) (by simp)) _ _ ?_ (isColimitOfPreserves F P.isColimit)
+    refine IsColimit.equivOfNatIsoOfIso
+      (parallelPairIsoMk (mapFreeIso F _ η).symm (mapFreeIso F _ η).symm
+        (by simp [Presentation.mapRelations]) (by simp)) _ _ ?_ (isColimitOfPreserves F P.isColimit)
     exact (Cocone.ext (Iso.refl _) <| by rintro (_ | _)
       <;> simp [Presentation.mapRelations, Presentation.mapGenerators, ← Functor.map_comp])
 
 theorem Presentation.map_π_eq :
-    (P.map F η).generators.π = (mapFree F η _).inv ≫ F.map (P.generators.π) :=
+    (P.map F η).generators.π = (mapFreeIso F _ η).hom ≫ F.map (P.generators.π) :=
   (F.obj M).freeHomEquiv.symm_apply_eq.mpr rfl
 
 end

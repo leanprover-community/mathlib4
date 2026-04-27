@@ -107,8 +107,8 @@ def multicospanMap {P Q : C₀ᵒᵖ ⥤ A} (f : P ⟶ Q) :
     | WalkingMulticospan.left i => f.app _
     | WalkingMulticospan.right j => f.app _
   naturality := by
-    rintro (i₁ | j₁) (i₂ | j₂) (_ | _)
-    all_goals simp
+    rintro (i₁ | j₁) (i₂ | j₂) (_ | _) <;>
+    simp [MulticospanIndex.multicospan]
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism between the diagrams attached to `data : F.PreOneHypercoverDenseData X`
