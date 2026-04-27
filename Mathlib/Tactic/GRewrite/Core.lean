@@ -30,7 +30,7 @@ namespace Mathlib.Tactic.GRewrite
 open Lean Meta GCongr
 
 /-- The result returned by `Lean.MVarId.grewrite`. -/
-structure GRewriteResult where
+public structure GRewriteResult where
   /-- The rewritten expression -/
   eNew : Expr
   /-- The proof of the implication. The direction depends on the argument `forwardImp`. -/
@@ -39,7 +39,7 @@ structure GRewriteResult where
   mvarIds : List MVarId -- new goals
 
 /-- Configures the behavior of the `rewrite` and `rw` tactics. -/
-structure Config extends Rewrite.Config where
+public structure Config extends Rewrite.Config where
   /-- When `useRewrite = true`, switch to using the default `rewrite` tactic when the goal is
   and equality or iff. -/
   useRewrite : Bool := true
@@ -294,7 +294,7 @@ If `symm = false`, we rewrite `e` to `eNew := e[x/y]`; otherwise `eNew := e[y/x]
 
 The code aligns with `Lean.MVarId.rewrite` as much as possible.
 -/
-def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
+public def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
     (mvarIds : Array (MVarId × Array LocalDecl)) (forwardImp symm : Bool)
     (config : GRewrite.Config) : MetaM GRewriteResult :=
   goal.withContext do
