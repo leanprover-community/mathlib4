@@ -137,7 +137,7 @@ jobs:
             MISMATCH_REASON=pr_vs_base
           elif [ "$BASE_REF" = "master" ] && [ "$TOOLS_TC" != "$PR_TC" ]; then
             # it's unlikely we'll be in a situation where we run this against a PR not into master
-            # but just in case, we will them to have a different toolchain from the tools branch (master)
+            # but just in case, we will allow them to have a different toolchain from the tools branch (master)
             MATCH=false
             MISMATCH_REASON=tools_vs_pr
           fi
