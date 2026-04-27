@@ -85,7 +85,7 @@ theorem HasProd.hasProd_of_prod_eq {g : γ → α}
     (h_eq : ∀ u : Finset γ, ∃ v : Finset β, ∀ v', v ⊆ v' →
       ∃ u', u ⊆ u' ∧ ∏ x ∈ u', g x = ∏ b ∈ v', f b)
     (hf : HasProd g a) : HasProd f a :=
-  le_trans (map_atTop_finset_prod_le_of_prod_eq h_eq) hf
+  le_trans (map_atTop_finsetProd_le_of_prod_eq h_eq) hf
 
 @[to_additive]
 theorem hasProd_iff_hasProd {g : γ → α}

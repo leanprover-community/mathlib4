@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.Functor.RegularEpi
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.NumberTheory.NumberField.ProductFormula
 public import Mathlib.NumberTheory.Height.Basic
 
+import Mathlib.NumberTheory.Height.MvPolynomial
+import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
+
 /-!
 # Heights over number fields
 
@@ -16,9 +19,7 @@ and set up some API.
 
 ## TODO
 
-Prove that the height of `(x₀ : x₁ : ··· : xₙ) ∈ ℙⁿ(ℚ)` equals the
-maximum of the absolute values of the `xᵢ` when they are chosen to be coprime integers. This
-should then be split off into a separate `Mathlib.NumberTheory.Height.Rat` file.
+When this file gets long, split the material on heights over `ℚ` off into a file `Rat.lean`.
 -/
 
 @[expose] public section
@@ -140,32 +141,101 @@ lemma totalWeight_pos : 0 < totalWeight K := by
 end NumberField
 
 /-!
-### Heights of rational numbers
+### Heights over the rational numbers
 
-Since `ℚ` has a unique infinite place (the usual absolute value)
-and every finite place satisfies `v n ≤ 1` for `n : ℕ`, the height simplifies to
-`mulHeight₁ (n : ℚ) = n` and `logHeight₁ (n : ℚ) = Real.log n` for `1 ≤ n`.
+We show that the `Height.mulHeight` of a tuple of coprime integers (considered as rational numbers)
+equals the maximum of their absolute values and that the `Height.mulHeight₁` of a rational
+number is the maximum of the absolute value of the numerator and the denominator.
+We add the corresponding results for logarithmic heights.
 -/
 
 namespace Rat
 
 open NumberField Height
 
-/-- The multiplicative height of a positive natural number cast to `ℚ` equals `n`. -/
+section tuples
+
+variable {ι : Type*} [Fintype ι] [Nonempty ι] {x : ι → ℤ}
+
+/-- The term corresponding to a finite place in the definition of the multiplicative height
+of a tuple of rational numbers equals `1` if the tuple consists of coprime integers. -/
+lemma iSup_finitePlace_apply_eq_one_of_gcd_eq_one (v : FinitePlace ℚ) (hx : Finset.univ.gcd x = 1) :
+    ⨆ i, v (x i) = 1 := by
+  have hv : IsNonarchimedean (v ·) := FinitePlace.add_le v
+  have H (n : ℤ) : v n ≤ 1 := IsNonarchimedean.apply_intCast_le_one hv
+  obtain ⟨f, hf⟩ := Finset.gcd_eq_sum_mul .univ x
+  apply_fun v at hf
+  simp_rw [hx, Int.cast_one, map_one, Int.cast_sum, Int.cast_mul] at hf
+  replace hf := hf.trans_le hv.apply_sum_univ_le
+  obtain ⟨i, hi⟩ := exists_eq_ciSup_of_finite (f := fun i ↦ v (x i * f i))
+  rw [← hi, map_mul] at hf
+  replace hf : 1 ≤ v (x i) := hf.trans <| mul_le_of_le_one_right (apply_nonneg v _) (H _)
+  exact le_antisymm (ciSup_le (H <| x ·)) <| Finite.le_ciSup_of_le i hf
+
+open AdmissibleAbsValues in
+/-- The multiplicative height of a tuple of rational numbers that consists of coprime integers
+is the maximum of the absolute values of the entries. -/
+lemma mulHeight_eq_max_abs_of_gcd_eq_one (hx : Finset.univ.gcd x = 1) :
+    mulHeight (((↑) : ℤ → ℚ) ∘ x) = ⨆ i, |x i| := by
+  have hx₀ : Int.cast ∘ x ≠ (0 : ι → ℚ) := by
+    contrapose! hx
+    rw [Function.comp_eq_zero_iff x intCast_injective Rat.intCast_zero] at hx
+    rw [hx, Finset.gcd_eq_zero_iff.mpr (by simp)]
+    exact zero_ne_one
+  simp_rw [Finite.map_iSup_of_monotone _ Int.cast_mono, NumberField.mulHeight_eq hx₀,
+    infinitePlace_apply]
+  simp [finprod_eq_one_of_forall_eq_one (iSup_finitePlace_apply_eq_one_of_gcd_eq_one · hx)]
+
+open Real in
+/-- The logarithmic height of a tuple of rational numbers that consists of coprime integers
+is the logarithm of the maximum of the absolute values of the entries. -/
+lemma logHeight_eq_max_abs_of_gcd_eq_one (hx : Finset.univ.gcd x = 1) :
+    logHeight (((↑) : ℤ →  ℚ) ∘ x) = log ↑(⨆ i, |x i|) := by
+  rw [logHeight_eq_log_mulHeight, mulHeight_eq_max_abs_of_gcd_eq_one hx]
+
+end tuples
+
+section mulHeight₁
+
+lemma mulHeight_self_one_eq_mulHeight_num_den (q : ℚ) :
+    mulHeight ![q, 1] = mulHeight ![(q.num : ℚ), q.den] := by
+  have hq₀ : (q.den : ℚ) ≠ 0 := mod_cast q.den_nz
+  rw [← mulHeight_smul_eq_mulHeight _ hq₀]
+  simp
+
+/-- The multiplicative height of a rational number is the maximum of the absolute value of
+its numerator and its denominator. -/
+lemma mulHeight₁_eq_max (q : ℚ) : mulHeight₁ q = max q.num.natAbs q.den := by
+  rw [mulHeight₁_eq_mulHeight, mulHeight_self_one_eq_mulHeight_num_den, ← intCast_natCast q.den]
+  have : (.univ : Finset (Fin 2)).gcd ![q.num, q.den] = 1 := by
+    simpa [Finset.univ_fin2, Int.normalize_coe_nat, ← Int.coe_gcd q.num q.den] using
+      Int.isCoprime_iff_gcd_eq_one.mp <| isCoprime_num_den q
+  convert mulHeight_eq_max_abs_of_gcd_eq_one this
+  · ext i; fin_cases i <;> simp
+  · rw [← Int.cast_natCast, Int.cast_inj]
+    push_cast
+    refine le_antisymm (max_le ?_ ?_) <| ciSup_le fun i ↦ ?_
+    · exact Finite.le_ciSup_of_le 0 <| by simp
+    · exact Finite.le_ciSup_of_le 1 <| by simp
+    · fin_cases i <;> simp
+
+open Real in
+/-- The logarithmic height of a rational number is the logarithm of the maximum of the absolute
+value of its numerator and its denominator. -/
+lemma logHeight₁_eq_log_max (q : ℚ) : logHeight₁ q = log ↑(max q.num.natAbs q.den) := by
+  rw [logHeight₁_eq_log_mulHeight₁, mulHeight₁_eq_max]
+
+/-- The multiplicative height of a positive natural number `n` cast to `ℚ` equals `n`. -/
 theorem mulHeight₁_natCast (n : ℕ) [NeZero n] :
     mulHeight₁ (n : ℚ) = n := by
-  have hfin (v : FinitePlace ℚ) : max (v n) 1 = 1 :=
-    max_eq_right (IsNonarchimedean.apply_natCast_le_one_of_isNonarchimedean
-      (NonarchimedeanHomClass.map_add_le_max v))
-  rw [NumberField.mulHeight₁_eq, finprod_eq_one_of_forall_eq_one hfin, Fintype.prod_unique,
-    show (default : InfinitePlace ℚ) = infinitePlace from Subsingleton.elim _ _]
-  have hn : 1 ≤ n := by grind [NeZero.ne n]
-  simp [hn, InfinitePlace.mult, isReal_infinitePlace]
+  simp [mulHeight₁_eq_max, show 1 ≤ n by grind [NeZero.ne n]]
 
-/-- The logarithmic height of a positive natural number cast to `ℚ` equals `log n`. -/
+/-- The logarithmic height of a positive natural number `n` cast to `ℚ` equals `log n`. -/
 theorem logHeight₁_natCast (n : ℕ) [NeZero n] :
     logHeight₁ (n : ℚ) = Real.log n := by
   simp [logHeight₁_eq_log_mulHeight₁, mulHeight₁_natCast n]
+
+end mulHeight₁
 
 end Rat
 

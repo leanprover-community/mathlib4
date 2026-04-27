@@ -174,12 +174,12 @@ lemma traceForm_apply_eq_zero_of_mem_lcs_of_mem_center {x y : L}
   · simpa using hy
 
 -- This is barely worth having: it usually follows from `LieModule.traceForm_eq_zero_of_isNilpotent`
-@[simp] lemma traceForm_eq_zero_of_isTrivial [IsTrivial L M] :
+lemma traceForm_eq_zero_of_isTrivial [IsTrivial L M] :
     traceForm R L M = 0 := by
   ext x y
   suffices φ x ∘ₗ φ y = 0 by simp [traceForm_apply_apply, this]
   ext m
-  simp
+  simp [trivial_lie_zero]
 
 /-- Given a bilinear form `B` on a representation `M` of a nilpotent Lie algebra `L`, if `B` is
 invariant (in the sense that the action of `L` is skew-adjoint w.r.t. `B`) then components of the

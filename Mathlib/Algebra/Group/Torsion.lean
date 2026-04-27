@@ -15,7 +15,7 @@ This file proves lemmas about torsion-free monoids.
 A monoid `M` is *torsion-free* if `n • · : M → M` is injective for all non-zero natural numbers `n`.
 -/
 
-@[expose] public section
+public section
 
 open Function
 

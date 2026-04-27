@@ -15,7 +15,7 @@ We show that the separation quotient and the completion of an inner product spac
 product spaces.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

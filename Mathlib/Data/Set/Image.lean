@@ -34,7 +34,7 @@ set, sets, image, preimage, pre-image, range
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists WithTop OrderIso
 

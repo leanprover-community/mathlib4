@@ -23,7 +23,7 @@ There is an alternative characterization as the numbers of the form `a^2 * b`, w
 natural number such that `-1` is a square modulo `b`; see `Nat.eq_sq_add_sq_iff_eq_sq_mul`.
 -/
 
-@[expose] public section
+public section
 
 
 section Fermat

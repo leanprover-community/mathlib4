@@ -249,7 +249,7 @@ private theorem fixed_of_fixed1_aux1 :
   let r := ∑ i ∈ Finset.range (k + 1), Polynomial.monomial i (f.coeff (i + j))
   have hr : r.map (algebraMap B (B ⧸ Q)) = q := by
     ext n
-    rw [Polynomial.coeff_map, Polynomial.finset_sum_coeff]
+    rw [Polynomial.coeff_map, Polynomial.finsetSum_coeff]
     simp only [Polynomial.coeff_monomial, Finset.sum_ite_eq', Finset.mem_range_succ_iff]
     split_ifs with hn
     · rw [← Polynomial.coeff_map, hq, Polynomial.coeff_X_pow_mul]

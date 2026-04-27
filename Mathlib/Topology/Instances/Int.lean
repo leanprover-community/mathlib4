@@ -19,7 +19,7 @@ public import Mathlib.Topology.Order.Bornology
 The structure of a metric space on `ℤ` is introduced in this file, induced from `ℝ`.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

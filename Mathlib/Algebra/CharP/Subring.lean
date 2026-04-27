@@ -11,7 +11,7 @@ public import Mathlib.Algebra.CharP.Algebra
 # Characteristic of subrings
 -/
 
-@[expose] public section
+public section
 
 
 universe u v

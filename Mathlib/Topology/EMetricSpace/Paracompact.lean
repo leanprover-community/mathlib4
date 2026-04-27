@@ -28,7 +28,7 @@ Generalize to `PseudoMetrizableSpace`s.
 metric space, paracompact space, normal space
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*}
 

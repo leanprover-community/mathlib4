@@ -15,7 +15,7 @@ if and only if it is a sheaf in the Zariski topology and a sheaf on single objec
 `P`-coverings of affine schemes.
 -/
 
-@[expose] public section
+public section
 
 universe w' w v u
 

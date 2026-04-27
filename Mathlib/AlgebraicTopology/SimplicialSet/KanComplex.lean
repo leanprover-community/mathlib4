@@ -25,7 +25,7 @@ we show that every Kan complex is a quasicategory.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 

@@ -46,9 +46,11 @@ theorem coe_multiset_prod {M} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] 
   (SubmonoidClass.subtype S : _ →* M).map_multiset_prod m
 
 @[to_additive (attr := norm_cast, simp)]
-theorem coe_finset_prod {ι M} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] (f : ι → S)
+theorem coe_finsetProd {ι M} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] (f : ι → S)
     (s : Finset ι) : ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : M) :=
   map_prod (SubmonoidClass.subtype S) f s
+
+@[deprecated (since := "2026-04-08")] alias coe_finset_prod := coe_finsetProd
 
 end SubmonoidClass
 
@@ -98,9 +100,11 @@ theorem coe_multiset_prod {M} [CommMonoid M] (S : Submonoid M) (m : Multiset S) 
   S.subtype.map_multiset_prod m
 
 @[to_additive (attr := norm_cast)]
-theorem coe_finset_prod {ι M} [CommMonoid M] (S : Submonoid M) (f : ι → S) (s : Finset ι) :
+theorem coe_finsetProd {ι M} [CommMonoid M] (S : Submonoid M) (f : ι → S) (s : Finset ι) :
     ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : M) :=
   map_prod S.subtype f s
+
+@[deprecated (since := "2026-04-08")] alias coe_finset_prod := coe_finsetProd
 
 /-- Product of a list of elements in a submonoid is in the submonoid. -/
 @[to_additive /-- Sum of a list of elements in an `AddSubmonoid` is in the `AddSubmonoid`. -/]

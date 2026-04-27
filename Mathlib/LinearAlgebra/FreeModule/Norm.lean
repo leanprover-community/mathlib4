@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.Norm.Defs
 # Norms on free modules over principal ideal domains
 -/
 
-@[expose] public section
+public section
 
 open Ideal Module Polynomial
 

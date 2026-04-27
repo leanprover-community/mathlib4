@@ -232,7 +232,7 @@ theorem char_orthonormal [IsIrreducible ρ] [IsIrreducible σ] :
       if Nonempty (Equiv σ ρ) then ↑1 else ↑0 := by
   cases isEmpty_or_nonempty (Equiv σ ρ)
   · rw [card_inv_mul_sum_char_mul_char_eq_finrank]
-    simpa
+    simpa [finrank_eq_zero_of_subsingleton]
   · obtain φ : σ.Equiv ρ := Classical.choice inferInstance
     rw [char_iso φ, card_inv_mul_sum_char_mul_char_eq_finrank]
     simp

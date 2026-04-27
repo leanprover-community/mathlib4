@@ -20,7 +20,7 @@ Note: the definitions of the operations included in this file can be found in
 `Mathlib/Data/ENNReal/Basic.lean`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset
 

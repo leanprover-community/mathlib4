@@ -16,10 +16,7 @@ public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 
 @[expose] public section
 
-
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 universe w v u
 

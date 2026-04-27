@@ -23,7 +23,7 @@ can also be useful as a recursive description of this set when `V` is finite.
 TODO: should this be extended further?
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 

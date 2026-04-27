@@ -29,7 +29,7 @@ express compatibility of `F` with the action of `C`:
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.Functor
 

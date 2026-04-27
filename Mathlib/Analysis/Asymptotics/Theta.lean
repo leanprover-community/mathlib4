@@ -15,7 +15,7 @@ In this file we prove basic properties of the equivalence relation
 given by `f =Θ[l] g ↔ f =O[l] g ∧ g =O[l] f`.
 -/
 
-@[expose] public section
+public section
 
 
 open Filter

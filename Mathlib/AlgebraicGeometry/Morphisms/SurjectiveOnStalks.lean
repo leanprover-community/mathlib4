@@ -21,7 +21,7 @@ if `Y ⟶ S` is surjective on stalks, then for every `X ⟶ S`, `X ×ₛ Y` is a
 `X × Y` (Cartesian product as topological spaces) with the induced topology.
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory CategoryTheory.Limits Topology
 

@@ -175,7 +175,7 @@ theorem bernoulliFun_mul (k : ℕ) {m : ℕ} (m0 : m ≠ 0) (x : ℝ) :
         mul_inv_cancel₀ m0', integral_bernoulliFun_eq_zero (by lia), smul_zero, sub_eq_zero,
         intervalIntegral.integral_const_mul, eq_comm (a := 0), mul_eq_zero]
       · right
-        rw [intervalIntegral.integral_finset_sum]
+        rw [intervalIntegral.integral_finsetSum]
         · simp only [intervalIntegral.integral_comp_add_right, zero_add, ← one_div, ← add_div,
             add_comm (1 : ℝ), ← Nat.cast_add_one]
           rw [intervalIntegral.sum_integral_adjacent_intervals]

@@ -20,7 +20,7 @@ depending on Mathlib definitions.
 See note [foundational algebra order theory].
 -/
 
-@[expose] public section
+public section
 
 /- We don't want to import the algebraic hierarchy in this file. -/
 assert_not_exists Monoid

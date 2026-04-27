@@ -42,7 +42,6 @@ This theory will serve as the foundation for spectral theory in Banach algebras.
 
 @[expose] public section
 
-
 open Set
 
 open scoped Pointwise Ring

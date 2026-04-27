@@ -31,7 +31,7 @@ A Z-group is a group whose Sylow subgroups are all cyclic.
 
 -/
 
-@[expose] public section
+public section
 
 variable (G G' G'' : Type*) [Group G] [Group G'] [Group G''] (f : G →* G') (f' : G' →* G'')
 

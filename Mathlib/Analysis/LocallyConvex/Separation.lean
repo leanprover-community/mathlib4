@@ -38,7 +38,7 @@ We provide many variations to stricten the result under more assumptions on the 
 * `geometric_hahn_banach_point_point`: Both sets are singletons. Strict separation.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists ContinuousLinearMap.hasOpNorm
 

@@ -25,7 +25,7 @@ we can equip bounded continuous functions with the corresponding operations.
 
 -/
 
-@[expose] public section
+public section
 
 open scoped NNReal
 

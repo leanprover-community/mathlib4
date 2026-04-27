@@ -20,7 +20,7 @@ In this file, we proved that projective dimension equal to supremum over localiz
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

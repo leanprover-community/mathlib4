@@ -12,7 +12,7 @@ public import Mathlib.Logic.Small.Set
 # Small instances for pointwise operations
 -/
 
-@[expose] public section
+public section
 
 universe u
 

@@ -16,7 +16,7 @@ Here we prove a technical result about small sets in the category of structured 
 be used in the proof of the Special Adjoint Functor Theorem.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

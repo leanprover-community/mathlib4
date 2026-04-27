@@ -18,7 +18,7 @@ This file shows that `ℚ` and `ℚ≥0` are `StarOrderedRing`s. In particular, 
 nonnegative rational number is a sum of squares.
 -/
 
-@[expose] public section
+public section
 
 open AddSubmonoid Set
 open scoped NNRat

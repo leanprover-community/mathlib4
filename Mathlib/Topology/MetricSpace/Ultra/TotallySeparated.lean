@@ -19,7 +19,7 @@ In a metric space with an ultrametric, the space is totally separated, hence tot
 ultrametric, nonarchimedean, totally separated, totally disconnected
 -/
 
-@[expose] public section
+public section
 open Metric IsUltrametricDist
 
 instance {X : Type*} [MetricSpace X] [IsUltrametricDist X] : TotallySeparatedSpace X :=

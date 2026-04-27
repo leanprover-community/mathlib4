@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
 
 -/
 
-@[expose] public section
+public section
 
 
 open scoped Polynomial

@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.SingleObj
 
 -/
 
-@[expose] public section
+public section
 
 
 namespace CategoryTheory

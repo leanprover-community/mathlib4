@@ -35,7 +35,7 @@ the present file is about their interaction.
 `Semiring`, `CommSemiring`, `Ring`, `CommRing`, domain, `IsDomain`, nonzero, units
 -/
 
-@[expose] public section
+public section
 
 
 /-!

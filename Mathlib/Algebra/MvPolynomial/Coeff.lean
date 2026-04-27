@@ -17,7 +17,7 @@ public import Mathlib.Data.Nat.Choose.Multinomial
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

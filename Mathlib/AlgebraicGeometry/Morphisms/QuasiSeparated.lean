@@ -31,7 +31,7 @@ and is stable under compositions and base-changes.
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

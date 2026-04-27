@@ -21,7 +21,7 @@ sequence associated to a short exact sequence of homological complexes.
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists TwoSidedIdeal
 

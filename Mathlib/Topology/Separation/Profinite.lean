@@ -13,7 +13,7 @@ public import Mathlib.Topology.Connected.TotallyDisconnected
 # Separation properties: profinite spaces
 -/
 
-@[expose] public section
+public section
 
 open Function Set Filter Topology TopologicalSpace
 

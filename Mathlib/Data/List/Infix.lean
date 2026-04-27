@@ -31,7 +31,7 @@ All those (except `insert`) are defined in `Mathlib/Data/List/Defs.lean`.
 * `l₁ <:+: l₂`: `l₁` is an infix of `l₂`.
 -/
 
-@[expose] public section
+public section
 
 variable {α β : Type*}
 

@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.Unramified.Field
 We prove that a domain finite and unramified over a Dedekind domain is a Dedekind domain.
 -/
 
-@[expose] public section
+public section
 
 variable (A B : Type*) [CommRing A] [CommRing B] [Algebra A B] [Module.Finite A B]
     [IsDedekindDomain A] [IsDomain B] [Algebra.FormallyUnramified A B]

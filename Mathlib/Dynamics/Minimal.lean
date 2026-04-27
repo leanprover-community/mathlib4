@@ -23,7 +23,7 @@ and prove some basic facts about minimal actions.
 group action, minimal
 -/
 
-@[expose] public section
+public section
 
 
 open Pointwise

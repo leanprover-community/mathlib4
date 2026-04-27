@@ -26,7 +26,7 @@ multisets are typically used computationally.
 
 -/
 
-@[expose] public section
+public section
 
 
 open Finset DFinsupp Function

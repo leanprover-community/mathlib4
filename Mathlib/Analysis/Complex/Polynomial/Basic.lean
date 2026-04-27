@@ -24,7 +24,7 @@ of non-real roots.
 We also show that an irreducible real polynomial has degree at most two.
 -/
 
-@[expose] public section
+public section
 
 open Polynomial Bornology Complex
 

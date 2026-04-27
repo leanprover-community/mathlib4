@@ -12,7 +12,7 @@ public import Mathlib.Order.CompactlyGenerated.Basic
 # Results about compactness properties for intervals in complete lattices
 -/
 
-@[expose] public section
+public section
 
 variable {ι α : Type*} [CompleteLattice α]
 

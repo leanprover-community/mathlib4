@@ -15,7 +15,7 @@ This file contains a fintype instance for set-like objects such as subgroups. If
 and `Fintype B` then `Fintype A`.
 -/
 
-@[expose] public section
+public section
 
 
 namespace SetLike

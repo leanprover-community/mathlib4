@@ -38,7 +38,7 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 -/
 
-@[expose] public section
+public section
 
 open Set Filter MeasureTheory MeasurableSpace TopologicalSpace
 

@@ -20,7 +20,7 @@ is a localization functor.
 
 -/
 
-@[expose] public section
+public section
 
 universe v u v' u'
 

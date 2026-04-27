@@ -51,6 +51,9 @@ the last section, various properties of matrices are explored.
 - `stdOrthonormalBasis`: provides an arbitrarily-chosen `OrthonormalBasis` of a given
   finite-dimensional inner product space
 
+- `orthonormalBasisSingleton`: an orthonormal basis formed by a single unit vector in a
+  one-dimensional inner product space.
+
 For consequences in infinite dimension (Hilbert bases, etc.), see the file
 `Analysis.InnerProductSpace.L2Space`.
 
@@ -636,7 +639,7 @@ variable (ι 𝕜) in
 /-- `OrthonormalBasis.singleton ι 𝕜` is the orthonormal basis sending the unique element of `ι` to
 `1 : 𝕜`. -/
 protected noncomputable def singleton : OrthonormalBasis ι 𝕜 𝕜 :=
-  (Basis.singleton ι 𝕜).toOrthonormalBasis (by simp [orthonormal_iff_ite, Unique.eq_default])
+  (Basis.singleton ι 𝕜).toOrthonormalBasis (by simp)
 
 @[simp]
 theorem singleton_apply (i) : OrthonormalBasis.singleton ι 𝕜 i = 1 := Basis.singleton_apply _ _ _
@@ -1312,3 +1315,34 @@ theorem InnerProductSpace.symm_toEuclideanLin_rankOne {𝕜 m n : Type*} [RCLike
     [Fintype n] [DecidableEq n] (x : EuclideanSpace 𝕜 m) (y : EuclideanSpace 𝕜 n) :
     toEuclideanLin.symm (rankOne 𝕜 x y) = .vecMulVec x (star y) := by
   simp [toLpLin, toMatrix', ← ext_iff, vecMulVec_apply, inner_single_right, mul_comm]
+
+namespace FiniteDimensional
+variable [Unique ι] (h : Module.finrank 𝕜 E = 1) {v : E} (hv : ‖v‖ = 1)
+
+variable (ι 𝕜 v) in
+/-- In an inner product space with dimension 1, a set `{v}` is an orthonormal basis for
+`‖v‖ = 1`. -/
+def orthonormalBasisSingleton : OrthonormalBasis ι 𝕜 E :=
+  (basisSingleton ι h v (by aesop)).toOrthonormalBasis (by simpa)
+
+@[simp]
+theorem orthonormalBasisSingleton_apply (i : ι) :
+   orthonormalBasisSingleton ι 𝕜 h v hv i = v := by
+  simp [orthonormalBasisSingleton]
+
+@[simp]
+theorem toBasis_orthonormalBasisSingleton :
+    (orthonormalBasisSingleton ι 𝕜 h v hv).toBasis = basisSingleton ι h v (by aesop) := by
+  simp [orthonormalBasisSingleton]
+
+@[simp]
+theorem orthonormalBasisSingleton_repr_apply (w : E) :
+    (orthonormalBasisSingleton ι 𝕜 h v hv).repr w = .single default ⟪v, w⟫ := by
+  ext
+  simp [OrthonormalBasis.repr_apply_apply, Unique.eq_default]
+
+theorem range_orthonormalBasisSingleton :
+    Set.range (orthonormalBasisSingleton ι 𝕜 h v hv) = {v} := by
+  simp
+
+end FiniteDimensional

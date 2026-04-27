@@ -23,7 +23,7 @@ them to construct monoidal, braided, and symmetric structures on
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

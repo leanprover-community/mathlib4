@@ -33,7 +33,7 @@ One can also deduce similar result via `charP_of_injective_ringHom` and
 
 -/
 
-@[expose] public section
+public section
 
 namespace Module
 

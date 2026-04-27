@@ -20,7 +20,7 @@ public import Mathlib.Topology.UniformSpace.UniformEmbedding
 Further results about extended metric spaces.
 -/
 
-@[expose] public section
+public section
 
 open Set Filter
 

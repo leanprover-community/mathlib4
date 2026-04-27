@@ -14,7 +14,7 @@ This file contains lemmas about short exact sequences in abelian categories.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.ShortExact
 

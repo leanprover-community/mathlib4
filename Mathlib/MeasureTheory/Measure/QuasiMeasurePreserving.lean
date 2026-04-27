@@ -23,7 +23,7 @@ absolutely continuous with respect to `μb`).
 
 -/
 
-@[expose] public section
+public section
 
 variable {α β γ δ : Type*}
 

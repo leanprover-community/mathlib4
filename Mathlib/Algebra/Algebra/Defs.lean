@@ -88,24 +88,17 @@ assert_not_exists Field Finset Module.End
 
 universe u v w u₁ v₁
 
-section Prio
-
 /-- An associative unital `R`-algebra is a semiring `A` equipped with a map into its center `R → A`.
 
 See the implementation notes in this file for discussion of the details of this definition.
 -/
 class Algebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends SMul R A where
-  /-- Embedding `R →+* A` given by `Algebra` structure.
-  Use `algebraMap` from the root namespace instead. -/
-  protected algebraMap : R →+* A
+  /-- Embedding `R →+* A` given by `Algebra` structure. -/
+  algebraMap (R) (A) : R →+* A
   commutes' : ∀ r x, algebraMap r * x = x * algebraMap r
   smul_def' : ∀ r x, r • x = algebraMap r * x
 
-end Prio
-
-/-- Embedding `R →+* A` given by `Algebra` structure. -/
-def algebraMap (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra R A] : R →+* A :=
-  Algebra.algebraMap
+export Algebra (algebraMap)
 
 theorem Algebra.subsingleton (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra R A]
     [Subsingleton R] : Subsingleton A :=

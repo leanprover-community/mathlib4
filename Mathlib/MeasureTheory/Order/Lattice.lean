@@ -29,7 +29,7 @@ measurable function, lattice operation
 
 -/
 
-@[expose] public section
+public section
 
 
 open MeasureTheory

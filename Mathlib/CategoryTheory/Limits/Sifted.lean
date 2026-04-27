@@ -34,7 +34,7 @@ preserves finite products. We achieve this characterization in this file.
 - [*Algebraic Theories*, Chapter 2.][Adamek_Rosicky_Vitale_2010]
 -/
 
-@[expose] public section
+public section
 
 universe w v v₁ v₂ u u₁ u₂
 

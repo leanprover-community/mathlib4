@@ -20,7 +20,7 @@ multiplication. This allows downstream files to write general results about `IsB
 then deduce `const_mul` and `mul_const` results as an immediate corollary.
 -/
 
-@[expose] public section
+public section
 
 
 variable {α β : Type*}

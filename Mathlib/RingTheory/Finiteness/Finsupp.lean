@@ -17,7 +17,7 @@ public import Mathlib.Algebra.Exact
 
 -/
 
-@[expose] public section
+public section
 
 open Function (Surjective)
 open Finsupp

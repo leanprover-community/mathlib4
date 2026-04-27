@@ -20,7 +20,7 @@ public import Mathlib.Tactic.Attr.Core
 # Basic properties of lists
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Lattice
 assert_not_exists Monoid

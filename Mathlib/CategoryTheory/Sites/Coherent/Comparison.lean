@@ -22,7 +22,7 @@ This file compares the regular, extensive and coherent topologies.
   generates the coherent topology on `C` if `C` is precoherent, preextensive and preregular.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

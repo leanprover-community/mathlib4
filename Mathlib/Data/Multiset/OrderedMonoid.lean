@@ -15,7 +15,7 @@ The `IsOrderedCancelAddMonoid` and `CanonicallyOrderedAdd` instances on `Multise
 
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*}
 

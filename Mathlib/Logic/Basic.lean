@@ -676,6 +676,13 @@ lemma iff_eq_eq {a b : Prop} : (a ↔ b) = (a = b) := propext ⟨propext, Eq.to_
 @[simp] theorem forall_true_left (p : True → Prop) : (∀ x, p x) ↔ p True.intro :=
   forall_prop_of_true _
 
+@[simp]
+lemma Subsingleton.forall₂_iff {ι : Sort*} [Subsingleton ι] (P : ι → ι → Prop) :
+    (∀ i j, P i j) ↔ (∀ i, P i i) := by
+  refine forall_congr' fun i ↦ ?_
+  have : Nonempty ι := ⟨i⟩
+  simp [Subsingleton.elim _ i]
+
 end Quantifiers
 
 /-! ### Classical lemmas -/

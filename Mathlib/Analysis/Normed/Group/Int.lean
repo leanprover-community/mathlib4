@@ -10,7 +10,7 @@ public import Mathlib.Topology.Instances.Int
 
 /-! # ℤ as a normed group -/
 
-@[expose] public section
+public section
 
 open NNReal
 

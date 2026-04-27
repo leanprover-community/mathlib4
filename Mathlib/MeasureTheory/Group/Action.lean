@@ -22,7 +22,7 @@ typeclass for measures invariant under action of an (additive or multiplicative)
 some basic properties of such measures.
 -/
 
-@[expose] public section
+public section
 
 
 open scoped ENNReal NNReal Pointwise Topology symmDiff

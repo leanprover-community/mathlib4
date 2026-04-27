@@ -21,7 +21,7 @@ If this is something we really want, we should consider changing the category in
 `ThinSkeleton C`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

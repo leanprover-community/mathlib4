@@ -15,7 +15,7 @@ In this file we show that `Lp` is a complete space for `1 ≤ p`,
 in `MeasureTheory.Lp.instCompleteSpace`.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Filter
 open scoped ENNReal Topology

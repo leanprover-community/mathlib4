@@ -20,7 +20,7 @@ This file develops theory about the `List.Perm` relation.
 The notation `~` is used for permutation equivalence.
 -/
 
-@[expose] public section
+public section
 
 -- Make sure we don't import algebra
 assert_not_exists Monoid Preorder

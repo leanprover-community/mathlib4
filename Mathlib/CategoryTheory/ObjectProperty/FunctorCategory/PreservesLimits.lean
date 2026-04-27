@@ -18,7 +18,7 @@ commute to limits of shape `K` (resp. to finite limits).
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

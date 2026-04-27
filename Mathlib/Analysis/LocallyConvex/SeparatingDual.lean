@@ -35,7 +35,7 @@ Under the assumption `SeparatingDual R V`, we show in
 equivalences acts transitively on the set of nonzero vectors.
 -/
 
-@[expose] public section
+public section
 /-- When `E` is a topological module over a topological ring `R`, the class `SeparatingDual R E`
 registers that continuous linear forms on `E` separate points of `E`. -/
 @[mk_iff separatingDual_def]

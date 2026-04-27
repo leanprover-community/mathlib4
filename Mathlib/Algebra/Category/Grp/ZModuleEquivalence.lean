@@ -16,12 +16,9 @@ either use this equivalence to transport the monoidal structure from `Module ℤ
 or, having constructed that monoidal structure directly, show this functor is monoidal.
 -/
 
-@[expose] public section
-
+public section
 
 open CategoryTheory
-
-open CategoryTheory.Equivalence
 
 universe u
 

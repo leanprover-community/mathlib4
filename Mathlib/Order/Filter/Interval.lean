@@ -75,7 +75,7 @@ that need topology are defined in `Mathlib/Topology/Algebra/Ordered`.
 
 -/
 
-@[expose] public section
+public section
 
 
 variable {α β : Type*}

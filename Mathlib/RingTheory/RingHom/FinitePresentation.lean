@@ -18,7 +18,7 @@ The main result is `RingHom.finitePresentation_isLocal`.
 
 -/
 
-@[expose] public section
+public section
 
 open scoped Pointwise TensorProduct
 

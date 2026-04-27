@@ -28,7 +28,7 @@ Noetherian local domain that is not a field `(R, m, k)`:
 Also see `tfae_of_isNoetherianRing_of_isLocalRing_of_isDomain` for a version without `¬ IsField R`.
 -/
 
-@[expose] public section
+public section
 
 
 variable (R : Type*) [CommRing R]

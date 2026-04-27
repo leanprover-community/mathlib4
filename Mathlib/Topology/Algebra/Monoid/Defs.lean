@@ -28,7 +28,7 @@ instead of extending typeclasses with these fields.
 We also provide convenience dot notation lemmas like `Filter.Tendsto.mul` and `ContinuousAt.add`.
 -/
 
-@[expose] public section
+public section
 
 open scoped Topology
 

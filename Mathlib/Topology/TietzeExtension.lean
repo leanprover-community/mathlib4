@@ -39,7 +39,7 @@ topological space, then specialize them to the case `X = s : Set Y`, `e = (↑)`
 Tietze extension theorem, Urysohn's lemma, normal topological space
 -/
 
-@[expose] public section
+public section
 
 open Topology
 

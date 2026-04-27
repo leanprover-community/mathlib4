@@ -34,7 +34,7 @@ For Gaussian distributions in `ℝ`, see the file
 
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Complex
 open scoped ENNReal NNReal

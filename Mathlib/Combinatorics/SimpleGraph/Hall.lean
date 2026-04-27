@@ -27,7 +27,7 @@ This file derives Hall's Marriage Theorem for bipartite graphs from the combinat
 Hall's Marriage Theorem
 -/
 
-@[expose] public section
+public section
 
 open Function
 

@@ -23,7 +23,7 @@ There are two main results here:
 
 -/
 
-@[expose] public section
+public section
 
 universe u u₁ v w
 

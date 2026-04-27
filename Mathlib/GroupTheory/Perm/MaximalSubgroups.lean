@@ -35,7 +35,7 @@ The argument is taken from [M. Liebeck, C. Praeger, J. Saxl,
 alternating and symmetric groups*, 1987][LiebeckPraegerSaxl-1987].
 -/
 
-@[expose] public section
+public section
 
 open scoped Pointwise
 

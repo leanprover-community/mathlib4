@@ -20,7 +20,7 @@ and `Φ.sheafFiber : Sheaf J A ⥤ A` are monoidal.
 
 -/
 
-@[expose] public section
+public section
 
 universe w w' v v' u u'
 

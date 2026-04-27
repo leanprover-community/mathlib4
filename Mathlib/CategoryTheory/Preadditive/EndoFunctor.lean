@@ -16,7 +16,7 @@ If `C` is a preadditive category and `F` is an additive endofunctor on `C` then 
 also preadditive. Dually, the category `Coalgebra F` is also preadditive.
 -/
 
-@[expose] public section
+public section
 
 
 universe v₁ u₁

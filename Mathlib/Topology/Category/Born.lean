@@ -14,7 +14,7 @@ public import Mathlib.Topology.Bornology.Hom
 This defines `Born`, the category of bornologies.
 -/
 
-@[expose] public section
+public section
 
 
 universe u

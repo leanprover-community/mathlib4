@@ -14,7 +14,7 @@ public import Mathlib.Topology.ContinuousMap.Ordered
 # Continuous maps as a lattice ordered group
 -/
 
-@[expose] public section
+public section
 
 
 /-!

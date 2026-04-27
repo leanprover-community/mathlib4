@@ -69,7 +69,7 @@ public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 -/
 
-@[expose] public section
+public section
 
 open Pointwise
 

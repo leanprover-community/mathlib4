@@ -14,7 +14,7 @@ public import Mathlib.Data.Nat.SuccPred
 In this file, we show that `ℤ` is both an archimedean `SuccOrder` and an archimedean `PredOrder`.
 -/
 
-@[expose] public section
+public section
 
 
 open Function Order

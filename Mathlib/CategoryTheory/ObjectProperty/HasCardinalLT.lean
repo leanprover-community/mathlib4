@@ -16,7 +16,7 @@ Given `P : ObjectProperty C` and `κ : Cardinal`, we introduce a predicate
 
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 

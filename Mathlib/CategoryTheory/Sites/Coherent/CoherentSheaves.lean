@@ -21,7 +21,7 @@ This file characterises sheaves for the coherent topology
   effective epimorphic family.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

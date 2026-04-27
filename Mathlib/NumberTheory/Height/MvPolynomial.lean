@@ -32,14 +32,14 @@ private lemma Height.iSup_fun_eq_max (f : Fin 2 → ℝ) : iSup f = max (f 0) (f
 
 namespace IsNonarchimedean
 
-variable {R α : Type*} [CommRing R]
+variable {R α β F : Type*} [CommRing R] [AddCommMonoid β] [FunLike F β ℝ] [NonnegHomClass F β ℝ]
+    [ZeroHomClass F β ℝ] {v : F} {l : α → β}
 
 -- NOTE: The following cannot be moved to Mathlib.Algebra.Order.Ring.IsNonarchimedean,
 --       because it needs the target to be the reals (to have the default value zero
 --       for empty iSups), which are not known there.
 /-- The ultrametric triangle inequality for finite sums. -/
-lemma apply_sum_le {α β F : Type*} [AddCommMonoid β] [FunLike F β ℝ] [NonnegHomClass F β ℝ]
-    [ZeroHomClass F β ℝ] {v : F} (hv : IsNonarchimedean v) {l : α → β} {s : Finset α} :
+lemma apply_sum_le (hv : IsNonarchimedean v) {s : Finset α} :
     v (∑ i ∈ s, l i) ≤ ⨆ i : s, v (l i) := by
   classical
   induction s using Finset.induction with
@@ -52,6 +52,12 @@ lemma apply_sum_le {α β F : Type*} [AddCommMonoid β] [FunLike F β ℝ] [Nonn
     · rcases isEmpty_or_nonempty s with hs | hs
       · simpa using Real.iSup_nonneg_of_nonnegHomClass v _
       exact ciSup_le fun i ↦ Finite.le_ciSup_of_le (⟨i.val, Finset.mem_insert_of_mem i.prop⟩) le_rfl
+
+/-- The ultrametric triangle inequality for finite sums. -/
+lemma apply_sum_univ_le [Fintype α] (hv : IsNonarchimedean v) :
+    v (∑ i, l i) ≤ ⨆ i, v (l i) := by
+  grw [hv.apply_sum_le, ← cbiSup_eq_of_forall (by grind)]
+  simp
 
 end IsNonarchimedean
 

@@ -14,7 +14,7 @@ public import Mathlib.MeasureTheory.Integral.Bochner.Set
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

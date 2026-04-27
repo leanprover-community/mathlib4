@@ -64,16 +64,21 @@ namespace PreOneHypercover
 variable {X : C} (E : PreOneHypercover X) (F : C ⥤ D)
 
 /-- The image of a 1-pre-hypercover by a functor. -/
-@[simps]
+@[simps toPreZeroHypercover I₁ Y p₁ p₂]
 def map : PreOneHypercover (F.obj X) where
-  I₀ := E.I₀
-  X i := F.obj (E.X i)
-  f i := F.map (E.f i)
+  __ := E.toPreZeroHypercover.map F
   I₁ := E.I₁
   Y _ _ j := F.obj (E.Y j)
   p₁ _ _ j := F.map (E.p₁ j)
   p₂ _ _ j := F.map (E.p₂ j)
   w _ _ j := by simpa using F.congr_map (E.w j)
+
+@[simp]
+lemma map_id : E.map (𝟭 _) = E :=
+  rfl
+
+lemma map_comp {D' : Type*} [Category* D'] (G : D ⥤ D') : E.map (F ⋙ G) = (E.map F).map G :=
+  rfl
 
 /-- If `F : C ⥤ D`, `P : Dᵒᵖ ⥤ A` and `E` is a 1-pre-hypercover of an object of `X`,
 then `(E.map F).multifork P` is a limit iff `E.multifork (F.op ⋙ P)` is a limit. -/

@@ -18,7 +18,7 @@ public import Mathlib.RingTheory.Unramified.Basic
 
 -/
 
-@[expose] public section
+public section
 
 namespace Algebra.FormallyUnramified
 

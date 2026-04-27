@@ -712,7 +712,7 @@ theorem setToFun_add (hT : DominatedFinMeasAdditive μ T C) (hf : Integrable f �
   rw [setToFun_eq hT (hf.add hg), setToFun_eq hT hf, setToFun_eq hT hg, Integrable.toL1_add,
     (L1.setToL1 hT).map_add]
 
-theorem setToFun_finset_sum' (hT : DominatedFinMeasAdditive μ T C) {ι} (s : Finset ι)
+theorem setToFun_finsetSum' (hT : DominatedFinMeasAdditive μ T C) {ι} (s : Finset ι)
     {f : ι → α → E} (hf : ∀ i ∈ s, Integrable (f i) μ) :
     setToFun μ T hT (∑ i ∈ s, f i) = ∑ i ∈ s, setToFun μ T hT (f i) := by
   classical
@@ -724,13 +724,17 @@ theorem setToFun_finset_sum' (hT : DominatedFinMeasAdditive μ T C) {ι} (s : Fi
     simp only [his, Finset.sum_insert, not_false_iff]
     rw [setToFun_add hT (hf i (Finset.mem_insert_self i s)) _]
     · rw [ih fun i hi => hf i (Finset.mem_insert_of_mem hi)]
-    · convert integrable_finset_sum s fun i hi => hf i (Finset.mem_insert_of_mem hi) with x
+    · convert integrable_finsetSum s fun i hi => hf i (Finset.mem_insert_of_mem hi) with x
       simp
 
-theorem setToFun_finset_sum (hT : DominatedFinMeasAdditive μ T C) {ι} (s : Finset ι) {f : ι → α → E}
+@[deprecated (since := "2026-04-08")] alias setToFun_finset_sum' := setToFun_finsetSum'
+
+theorem setToFun_finsetSum (hT : DominatedFinMeasAdditive μ T C) {ι} (s : Finset ι) {f : ι → α → E}
     (hf : ∀ i ∈ s, Integrable (f i) μ) :
     (setToFun μ T hT fun a => ∑ i ∈ s, f i a) = ∑ i ∈ s, setToFun μ T hT (f i) := by
-  convert setToFun_finset_sum' hT s hf with a; simp
+  convert setToFun_finsetSum' hT s hf with a; simp
+
+@[deprecated (since := "2026-04-08")] alias setToFun_finset_sum := setToFun_finsetSum
 
 theorem setToFun_neg (hT : DominatedFinMeasAdditive μ T C) (f : α → E) :
     setToFun μ T hT (-f) = -setToFun μ T hT f := by

@@ -22,7 +22,7 @@ We provide some basic properties of schemes
   are reduced.
 -/
 
-@[expose] public section
+public section
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 

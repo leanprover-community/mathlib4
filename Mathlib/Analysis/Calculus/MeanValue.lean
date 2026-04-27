@@ -50,7 +50,7 @@ In this file we prove the following facts:
   strictly differentiable. (This is a corollary of the mean value inequality.)
 -/
 
-@[expose] public section
+public section
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {F : Type*} [NormedAddCommGroup F]
   [NormedSpace ℝ F]

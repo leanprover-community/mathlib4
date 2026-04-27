@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 # Presheaves in `C` have limits and colimits when `C` does.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

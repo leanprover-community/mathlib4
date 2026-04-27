@@ -55,7 +55,7 @@ not depend on the choice of the localization functors.
 
 -/
 
-@[expose] public section
+public section
 universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory

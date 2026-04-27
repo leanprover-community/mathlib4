@@ -19,7 +19,7 @@ is again finitely generated.
 
 -/
 
-@[expose] public section
+public section
 
 open Function (Surjective)
 open Finsupp

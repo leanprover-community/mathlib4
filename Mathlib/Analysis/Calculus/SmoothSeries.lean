@@ -23,7 +23,7 @@ More specifically,
 We also give versions of these statements which are localized to a set.
 -/
 
-@[expose] public section
+public section
 
 
 open Set Metric TopologicalSpace Function Asymptotics Filter

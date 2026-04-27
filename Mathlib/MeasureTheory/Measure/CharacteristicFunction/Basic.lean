@@ -112,7 +112,7 @@ theorem ext_of_integral_char_eq (he : Continuous e) (he' : e ≠ 1)
   rw [hw]
   have hsum (P : Measure V) [IsFiniteMeasure P] :
       ∫ v, ∑ a ∈ w.support, w a * e (L v a) ∂P = ∑ a ∈ w.support, ∫ v, w a * e (L v a) ∂P :=
-    integral_finset_sum w.support
+    integral_finsetSum w.support
       fun a ha => Integrable.const_mul (integrable P (char he hL a)) _
   rw [hsum P, hsum P']
   apply Finset.sum_congr rfl fun i _ => ?_

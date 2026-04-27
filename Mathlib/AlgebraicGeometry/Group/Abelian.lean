@@ -19,7 +19,7 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp_
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Limits
 

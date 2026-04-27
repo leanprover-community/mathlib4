@@ -419,7 +419,7 @@ theorem relNorm_eq_pow_of_isPrime_isGalois [p.IsMaximal] [P.IsPrime]
     obtain ⟨σ, rfl⟩ := Ideal.exists_smul_eq_of_isGaloisGroup p P Q G
     rw [relNorm_smul, hs, ← pow_mul, mul_comm]
   have h := (congr_arg (relNorm R ·) <|
-    map_algebraMap_eq_finset_prod_pow hp).symm.trans <| relNorm_algebraMap S p
+    map_algebraMap_eq_finsetProd_pow hp).symm.trans <| relNorm_algebraMap S p
   simp +contextual only [map_prod, map_pow, h₀, Finset.prod_const, ← pow_mul] at h
   rwa [← IsGaloisGroup.card_eq_finrank G (FractionRing R) (FractionRing S),
     ← Ideal.ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hp S G, mul_comm,

@@ -33,7 +33,7 @@ and any nonzero morphism into a simple object has trivial cokernel.
 We show that any simple object is indecomposable.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

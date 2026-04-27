@@ -18,7 +18,7 @@ public import Mathlib.CategoryTheory.Monoidal.Grp_
   of finite type, then `G` is smooth over `k`.
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory
 

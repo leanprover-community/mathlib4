@@ -13,7 +13,7 @@ public import Mathlib.Algebra.Order.Ring.Canonical
 # Canonically ordered semifields
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*} [Semifield α] [LinearOrder α] [CanonicallyOrderedAdd α]
 

@@ -200,7 +200,7 @@ instance self : FinitePresentation R R :=
 /-- `R[X]` is finitely presented as `R`-algebra. -/
 instance polynomial [FinitePresentation R A] : FinitePresentation R A[X] :=
   letI := FinitePresentation.mvPolynomial R A Unit
-  have := equiv (MvPolynomial.pUnitAlgEquiv.{_, 0} A)
+  have := equiv (MvPolynomial.uniqueAlgEquiv.{_, 0} A PUnit)
   .trans _ A _
 
 open MvPolynomial

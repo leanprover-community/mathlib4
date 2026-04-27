@@ -15,7 +15,7 @@ public import Mathlib.Control.Traversable.Basic
 Provides a `Traversable` instance for the `Tree` type.
 -/
 
-@[expose] public section
+public section
 
 universe u v w
 

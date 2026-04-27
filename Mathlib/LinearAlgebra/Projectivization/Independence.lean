@@ -30,7 +30,7 @@ ambient vector space. Similarly for the definition of dependence.
 - Define projective linear subspaces.
 -/
 
-@[expose] public section
+public section
 
 open scoped LinearAlgebra.Projectivization
 

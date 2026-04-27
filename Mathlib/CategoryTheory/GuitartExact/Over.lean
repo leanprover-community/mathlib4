@@ -27,7 +27,7 @@ exists and `F` commutes with it.
 
 -/
 
-@[expose] public section
+public section
 
 universe v₁ v₂ u₁ u₂
 

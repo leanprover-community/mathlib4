@@ -30,7 +30,7 @@ literature, and we introduce it as part of the formalization of Liouville's theo
 
 -/
 
-@[expose] public section
+public section
 
 open Differential algebraMap IntermediateField Finset Polynomial
 

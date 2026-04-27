@@ -26,7 +26,7 @@ This file proves that:
 absolutely continuous, fundamental theorem of calculus, integration by parts
 -/
 
-@[expose] public section
+public section
 
 variable {X F : Type*} [PseudoMetricSpace X] [NormedAddCommGroup F] [NormedSpace ℝ F]
 

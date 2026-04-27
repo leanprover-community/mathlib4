@@ -25,7 +25,7 @@ occasionally the literature swaps definitions for e.g. T₃ and regular.
 
 -/
 
-@[expose] public section
+public section
 
 open Function Set Filter Topology TopologicalSpace
 

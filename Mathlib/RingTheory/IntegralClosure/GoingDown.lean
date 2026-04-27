@@ -18,7 +18,7 @@ if `R` is integrally closed.
 
 -/
 
-@[expose] public section
+public section
 
 open Polynomial
 

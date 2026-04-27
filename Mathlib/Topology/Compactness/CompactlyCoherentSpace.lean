@@ -29,7 +29,7 @@ are both referred to as compactly generated spaces in the literature.
 * <https://en.wikipedia.org/wiki/Compactly_generated_space>
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

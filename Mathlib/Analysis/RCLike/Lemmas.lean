@@ -11,7 +11,7 @@ public import Mathlib.Topology.Instances.RealVectorSpace
 
 /-! # Further lemmas about `RCLike` -/
 
-@[expose] public section
+public section
 
 open scoped Finset
 

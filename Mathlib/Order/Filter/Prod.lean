@@ -32,7 +32,7 @@ As product filter we want to have `F` as result.
 
 -/
 
-@[expose] public section
+public section
 
 open Set
 

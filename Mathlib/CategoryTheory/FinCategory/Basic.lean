@@ -22,7 +22,7 @@ so we have removed these requirements to avoid
 having to supply instances or delay with non-defeq conflicts between instances.
 -/
 
-@[expose] public section
+public section
 
 
 universe w v u

@@ -38,7 +38,7 @@ Conversely, let `B` be a flat `A`-algebra:
 
 -/
 
-@[expose] public section
+public section
 
 universe u v
 

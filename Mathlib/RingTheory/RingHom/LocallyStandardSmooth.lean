@@ -19,7 +19,7 @@ smooth.
 
 universe u
 
-@[expose] public section
+public section
 
 namespace RingHom
 

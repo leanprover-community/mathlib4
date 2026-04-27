@@ -100,7 +100,7 @@ protected lemma multipliable_one_add_of_summable (hf : Summable f) :
 
 end Real
 
-lemma summable_finset_prod_of_summable_nonneg {f : ι → ℝ} (hf : ∀ i, 0 ≤ f i)
+lemma summable_finsetProd_of_summable_nonneg {f : ι → ℝ} (hf : ∀ i, 0 ≤ f i)
     (hfs : Summable f) : Summable (fun s : Finset ι ↦ ∏ i ∈ s, f i) := by
   classical
   refine summable_of_sum_le (c := Real.exp (∑' i, f i))
@@ -114,15 +114,21 @@ lemma summable_finset_prod_of_summable_nonneg {f : ι → ℝ} (hf : ∀ i, 0 �
     _ ≤ Real.exp (∑' i, f i) :=
         Real.exp_le_exp.mpr (hfs.sum_le_tsum _ fun _ _ ↦ hf _)
 
+@[deprecated (since := "2026-04-08")]
+alias summable_finset_prod_of_summable_nonneg := summable_finsetProd_of_summable_nonneg
+
 section NormedRing
 
-lemma Multipliable.eventually_bounded_finset_prod {v : ι → ℝ} (hv : Multipliable v) :
+lemma Multipliable.eventually_bounded_finsetProd {v : ι → ℝ} (hv : Multipliable v) :
     ∃ r₁ > 0, ∃ s₁, ∀ t, s₁ ⊆ t → ∏ i ∈ t, v i ≤ r₁ := by
   obtain ⟨r₁, hr₁⟩ := exists_gt (max 0 <| ∏' i, v i)
   rw [max_lt_iff] at hr₁
   have := hv.hasProd.eventually_le_const hr₁.2
   rw [unconditional, eventually_atTop] at this
   exact ⟨r₁, hr₁.1, this⟩
+
+@[deprecated (since := "2026-04-08")]
+alias Multipliable.eventually_bounded_finset_prod := Multipliable.eventually_bounded_finsetProd
 
 variable {R : Type*} [NormedCommRing R] [NormOneClass R] {f : ι → R}
 
@@ -166,7 +172,7 @@ lemma multipliable_one_add_of_summable [CompleteSpace R]
   classical
   refine CompleteSpace.complete <| Metric.cauchy_iff.mpr ⟨by infer_instance, fun ε hε ↦ ?_⟩
   obtain ⟨r₁, hr₁, s₁, hs₁⟩ :=
-    (multipliable_norm_one_add_of_summable_norm hf).eventually_bounded_finset_prod
+    (multipliable_norm_one_add_of_summable_norm hf).eventually_bounded_finsetProd
   obtain ⟨s₂, hs₂⟩ := prod_vanishing_of_summable_norm hf (show 0 < ε / (2 * r₁) by positivity)
   simp only [unconditional, Filter.mem_map, mem_atTop_sets, ge_iff_le, le_eq_subset,
     Set.mem_preimage]
@@ -190,10 +196,13 @@ lemma multipliable_one_add_of_summable [CompleteSpace R]
   · intro x hx y hy
     exact (dist_triangle_right _ _ (∏ i ∈ s, (1 + f i))).trans_lt (add_halves ε ▸ add_lt_add hx hy)
 
-lemma summable_finset_prod_of_summable_norm [CompleteSpace R] (hf : Summable (fun i ↦ ‖f i‖)) :
+lemma summable_finsetProd_of_summable_norm [CompleteSpace R] (hf : Summable (fun i ↦ ‖f i‖)) :
     Summable (fun s ↦ ∏ i ∈ s, f i) :=
-  (summable_finset_prod_of_summable_nonneg (fun _ ↦ norm_nonneg _) hf).of_norm_bounded
+  (summable_finsetProd_of_summable_nonneg (fun _ ↦ norm_nonneg _) hf).of_norm_bounded
     fun _ ↦ Finset.norm_prod_le _ _
+
+@[deprecated (since := "2026-04-08")]
+alias summable_finset_prod_of_summable_norm := summable_finsetProd_of_summable_norm
 
 lemma Summable.summable_log_norm_one_add (hu : Summable fun n ↦ ‖f n‖) :
     Summable fun i ↦ Real.log ‖1 + f i‖ := by

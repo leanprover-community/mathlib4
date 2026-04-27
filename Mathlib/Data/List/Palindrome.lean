@@ -26,7 +26,7 @@ principle. Also provided are conversions to and from other equivalent definition
 palindrome, reverse, induction
 -/
 
-@[expose] public section
+public section
 
 
 variable {α β : Type*}

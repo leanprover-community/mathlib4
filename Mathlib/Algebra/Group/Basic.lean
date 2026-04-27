@@ -20,7 +20,7 @@ one-liners from the corresponding axioms. For the definitions of semigroups, mon
 `Mathlib/Algebra/Group/Defs.lean`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero DenselyOrdered
 

@@ -46,7 +46,7 @@ lemma charFun_inv_sqrt_mul_sum (hindep : iIndepFun X P)
     charFun (P.map (fun ω ↦ (√n)⁻¹ * ∑ k ∈ Finset.range n, X k ω)) t =
       (charFun (P.map (X 0)) ((√n)⁻¹ * t)) ^ n := by
   have mX n := (hident n).aemeasurable_fst
-  rw [charFun_map_mul_comp, (hindep.restrict _).charFun_map_fun_finset_sum_eq_prod (fun _ _ ↦ mX _)]
+  rw [charFun_map_mul_comp, (hindep.restrict _).charFun_map_fun_finsetSum_eq_prod (fun _ _ ↦ mX _)]
   · simp [fun i ↦ (hident i).map_eq]
   · exact Finset.aemeasurable_fun_sum _ fun _ _ ↦ mX _
 

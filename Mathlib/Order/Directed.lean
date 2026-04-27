@@ -42,12 +42,12 @@ variable {α : Type u} {β : Type v} {ι : Sort w} (r r' s : α → α → Prop)
 /-- Local notation for a relation -/
 local infixl:50 " ≼ " => r
 
-/-- A family of elements of α is directed (with respect to a relation `≼` on α)
+/-- A family of elements of `α` is directed (with respect to a relation `≼` on `α`)
   if there is a member of the family `≼`-above any pair in the family. -/
 def Directed (f : ι → α) :=
   ∀ x y, ∃ z, f x ≼ f z ∧ f y ≼ f z
 
-/-- A subset of α is directed if there is an element of the set `≼`-above any
+/-- A subset of `α` is directed if there is an element of the set `≼`-above any
   pair of elements in the set. -/
 def DirectedOn (s : Set α) :=
   ∀ x ∈ s, ∀ y ∈ s, ∃ z ∈ s, x ≼ z ∧ y ≼ z
@@ -134,7 +134,7 @@ theorem Std.Total.directedOn [Std.Total r] (s : Set α) : DirectedOn r s := fun 
 
 /-- `IsDirected α r` states that for any elements `a`, `b` there exists an element `c` such that
 `r a c` and `r b c`. -/
-class IsDirected (α : Type*) (r : α → α → Prop) : Prop where
+class IsDirected (α : Sort*) (r : α → α → Prop) : Prop where
   /-- For every pair of elements `a` and `b` there is a `c` such that `r a c` and `r b c` -/
   directed (a b : α) : ∃ c, r a c ∧ r b c
 
@@ -151,10 +151,13 @@ theorem directed_of₃ (r : α → α → Prop) [IsDirected α r] [IsTrans α r]
   have ⟨f, hef, hcf⟩ := directed_of r e c
   ⟨f, Trans.trans hae hef, Trans.trans hbe hef, hcf⟩
 
+theorem isDirected_onFun {f : ι → α} : IsDirected ι (r on f) ↔ Directed r f :=
+  ⟨(·.directed), (⟨·⟩)⟩
+
 theorem directed_id [IsDirected α r] : Directed r id := directed_of r
 
 theorem directed_id_iff : Directed r id ↔ IsDirected α r :=
-  ⟨fun h => ⟨h⟩, @directed_id _ _⟩
+  isDirected_onFun.symm
 
 theorem directedOn_univ [IsDirected α r] : DirectedOn r Set.univ := fun a _ b _ =>
   let ⟨c, hc⟩ := directed_of r a b

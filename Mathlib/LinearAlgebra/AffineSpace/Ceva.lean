@@ -18,7 +18,7 @@ This file proves various versions of Ceva's theorem.
 
 -/
 
-@[expose] public section
+public section
 
 
 open scoped Affine

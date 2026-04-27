@@ -5,9 +5,7 @@ Authors: Kim Morrison, Robin Carlier
 -/
 module
 
-public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.CategoryTheory.Quotient
-public import Mathlib.Combinatorics.Quiver.Path
 
 /-!
 # The category paths on a quiver.
@@ -21,7 +19,6 @@ We check that the quotient of the path category of a category by the canonical r
 -/
 
 @[expose] public section
-
 
 universe v₁ v₂ u₁ u₂
 

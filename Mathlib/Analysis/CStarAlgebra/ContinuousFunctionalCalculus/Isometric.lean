@@ -19,7 +19,7 @@ the main purpose is to allow for the continuous functional calculus to be an iso
 scalar rings `ℝ` and `ℝ≥0` too.
 -/
 
-@[expose] public section
+public section
 
 local notation "σ" => spectrum
 local notation "σₙ" => quasispectrum

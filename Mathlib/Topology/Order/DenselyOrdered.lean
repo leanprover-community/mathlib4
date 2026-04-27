@@ -11,7 +11,7 @@ public import Mathlib.Topology.Order.IsLUB
 # Order topology on a densely ordered set
 -/
 
-@[expose] public section
+public section
 
 open Set Filter TopologicalSpace Topology Function
 

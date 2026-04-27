@@ -416,7 +416,7 @@ set_option backward.isDefEq.respectTransparency false in
 def isoStandardComplex : barComplex k G ≅ standardComplex k G :=
   HomologicalComplex.Hom.isoOfComponents (fun i => (diagonalSuccIsoFree k G i).symm) fun i j => by
     rintro (rfl : j + 1 = i)
-    simp only [ChainComplex.of_x, Iso.symm_hom, d_def, d_comp_diagonalSuccIsoFree_inv_eq]
+    simp only [ChainComplex.of_X, Iso.symm_hom, d_def, d_comp_diagonalSuccIsoFree_inv_eq]
 
 end barComplex
 

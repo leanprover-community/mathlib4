@@ -16,7 +16,7 @@ public import Mathlib.Order.SetNotation
 This file proves results on `IsRelUpperSet` and `IsRelLowerSet`.
 -/
 
-@[expose] public section
+public section
 
 open Set
 

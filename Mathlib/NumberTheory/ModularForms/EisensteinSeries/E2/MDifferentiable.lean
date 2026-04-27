@@ -16,7 +16,7 @@ function `ℍ → ℂ`). The proof uses the relation between `E2` and the logari
 the Dedekind eta function.
 -/
 
-@[expose] public section
+public section
 
 open UpperHalfPlane hiding I
 open Real Complex EisensteinSeries ModularForm Manifold

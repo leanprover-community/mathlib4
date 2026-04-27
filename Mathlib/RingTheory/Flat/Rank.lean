@@ -26,7 +26,7 @@ bijectivity of `R → S` with the rank of `S` over `R`.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 

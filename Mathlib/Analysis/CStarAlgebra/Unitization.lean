@@ -18,7 +18,7 @@ involution is isometric, that multiplication on the right is also an isometry (i
 `Isometry (ContinuousLinearMap.mul 𝕜 E).flip`).
 -/
 
-@[expose] public section
+public section
 
 open ContinuousLinearMap
 

@@ -24,7 +24,7 @@ A bifunctor is a function `F : Type* → Type* → Type*` along with a bimap whi
 * `LawfulBifunctor`: A typeclass asserting this bimap respects the bifunctor laws.
 -/
 
-@[expose] public section
+public section
 
 
 universe u₀ u₁ u₂ v₀ v₁ v₂

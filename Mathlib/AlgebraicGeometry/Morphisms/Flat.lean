@@ -22,7 +22,7 @@ We show that this property is local, and are stable under compositions and base 
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

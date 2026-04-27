@@ -503,6 +503,10 @@ theorem mem_map_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e
   · rintro ⟨x, hx, rfl⟩
     exact mem_map_of_mem e hx
 
+lemma _root_.RingEquiv.map_primeCompl_comap_eq (e : R ≃+* S) (p : Ideal S) [p.IsPrime] :
+    (p.comap e).primeCompl.map e = p.primeCompl := by
+  simp [SetLike.ext_iff, e.surjective.forall]
+
 section Bijective
 
 variable (hf : Function.Bijective f) {I : Ideal R} {K : Ideal S}

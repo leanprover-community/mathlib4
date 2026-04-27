@@ -28,7 +28,7 @@ See also `Mathlib/LinearAlgebra/Dimension/ErdosKaplansky.lean` for the Erdős-Ka
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

@@ -268,6 +268,9 @@ theorem encard_strictMono [Finite α] : StrictMono (encard : Set α → ℕ∞) 
 theorem Finite.encard_strictMonoOn : StrictMonoOn (α := Set α) encard (setOf Set.Finite) :=
   fun _ hs _ _ hlt ↦ hs.encard_lt_encard hlt.ssubset
 
+theorem Finite.encard_lt_card (hfin : s.Finite) (hne : s ≠ univ) : s.encard < ENat.card α :=
+  encard_univ α ▸ hfin.encard_lt_encard (ssubset_univ_iff.mpr hne)
+
 theorem encard_diff_add_encard (s t : Set α) : (s \ t).encard + t.encard = (s ∪ t).encard := by
   rw [← encard_union_eq disjoint_sdiff_left, diff_union_self]
 

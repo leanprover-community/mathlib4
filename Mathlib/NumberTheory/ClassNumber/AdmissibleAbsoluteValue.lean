@@ -29,7 +29,7 @@ of the ring of integers of a global field is finite.
   mapping `p : Polynomial 𝔽_q` to `q ^ degree p`, is admissible
 -/
 
-@[expose] public section
+public section
 
 local infixl:50 " ≺ " => EuclideanDomain.r
 

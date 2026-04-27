@@ -17,7 +17,7 @@ as `scoped` instances. These are scoped because they create non-defeq instance d
 `K = L`.
 -/
 
-@[expose] public section
+public section
 
 namespace NumberField.LiesOver
 

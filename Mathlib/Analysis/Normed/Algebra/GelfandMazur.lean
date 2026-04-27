@@ -262,7 +262,7 @@ variable {F : Type*} [NormedRing F] [NormedAlgebra ℝ F]
 
 /- A (private) abbreviation introduced for conciseness below.
 We will show that for every `x : F`, `φ x` takes the value zero. -/
-private abbrev φ (x : F) (u : ℝ × ℝ) : F := x ^ 2 - u.1 • x + algebraMap ℝ F u.2
+private noncomputable abbrev φ (x : F) (u : ℝ × ℝ) : F := x ^ 2 - u.1 • x + algebraMap ℝ F u.2
 
 private lemma continuous_φ (x : F) : Continuous (φ x) := by fun_prop
 

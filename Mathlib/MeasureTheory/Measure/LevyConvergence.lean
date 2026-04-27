@@ -184,14 +184,14 @@ lemma ProbabilityMeasure.tendsto_charPoly_of_tendsto_charFun {μ : ι → Probab
   have h_eq (μ : Measure E) (hμ : IsProbabilityMeasure μ) :
       ∫ x, g x ∂μ = ∑ a ∈ w.support, w a * ∫ x, (probChar (innerₗ E x a) : ℂ) ∂μ := by
     simp_rw [hw]
-    rw [integral_finset_sum]
+    rw [integral_finsetSum]
     · congr with y
       rw [integral_const_mul]
     · refine fun i hi ↦ Integrable.const_mul ?_ _
       change Integrable (innerProbChar i) μ
       exact BoundedContinuousFunction.integrable μ _
   simp_rw [h_eq (μ _), h_eq μ₀]
-  refine tendsto_finset_sum _ fun y hy ↦ Tendsto.const_mul _ ?_
+  refine tendsto_finsetSum _ fun y hy ↦ Tendsto.const_mul _ ?_
   simpa [← charFun_eq_integral_probChar] using h y
 
 variable {μ : ℕ → ProbabilityMeasure E}

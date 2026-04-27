@@ -28,7 +28,7 @@ In this file we show some global properties satisfy fpqc descent.
   (`AlgebraicGeometry.descendsAlong_isOpenImmersion_surjective_inf_flat_inf_quasicompact`)
 -/
 
-@[expose] public section
+public section
 
 universe u
 

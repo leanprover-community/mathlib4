@@ -76,6 +76,13 @@ attribute [to_additive] OneMemClass
 
 attribute [simp, aesop safe (rule_sets := [SetLike])] one_mem zero_mem
 
+/-- The underlying set of a term of a `OneMemClass` is nonempty. -/
+@[to_additive (attr := simp)
+/-- The underlying set of a term of a `ZeroMemClass` is nonempty. -/]
+theorem OneMemClass.coe_nonempty {S M : Type*} [One M] [SetLike S M] [OneMemClass S M] (s : S) :
+    (s : Set M).Nonempty :=
+  ⟨1, one_mem s⟩
+
 section
 
 /-- A submonoid of a monoid `M` is a subset containing 1 and closed under multiplication. -/

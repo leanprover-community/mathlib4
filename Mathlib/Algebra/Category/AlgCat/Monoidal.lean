@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.TensorProduct.Maps
 # The monoidal category structure on R-algebras
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory
 open scoped MonoidalCategory

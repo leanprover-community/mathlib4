@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Order.Ring.InjSurj
 # Ordered instances on subfields
 -/
 
-@[expose] public section
+public section
 
 namespace Subfield
 variable {K : Type*}

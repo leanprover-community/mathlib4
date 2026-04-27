@@ -13,7 +13,7 @@ public import Mathlib.Algebra.GroupWithZero.TransferInstance
 # Transfer group with zero structures from `α` to `Shrink α`
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

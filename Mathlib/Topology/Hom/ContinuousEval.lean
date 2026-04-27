@@ -16,7 +16,7 @@ saying that `F` is a bundled morphism class (in the sense of `FunLike`)
 with a topology such that `fun (f, x) : F × X ↦ f x` is a continuous function.
 -/
 
-@[expose] public section
+public section
 
 open scoped Topology
 open Filter

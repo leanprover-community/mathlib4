@@ -16,7 +16,7 @@ public import Mathlib.Order.Interval.Set.Defs
 # Canonically ordered monoids
 -/
 
-@[expose] public section
+public section
 
 universe u
 

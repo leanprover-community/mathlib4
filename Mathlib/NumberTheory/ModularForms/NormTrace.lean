@@ -99,7 +99,7 @@ protected def CuspForm.trace [CuspFormClass F 𝒢 k] : CuspForm ℋ k where
       SlashAction.sum_slash, Finset.sum_fn]
     let := Fintype.ofFinite 𝒬
     rw [show (0 : ℂ) = ∑ c : ℋ ⧸ 𝒢.subgroupOf ℋ, 0 by simp]
-    refine tendsto_finset_sum _ (Quotient.forall.mpr fun ⟨r, hr⟩ _ ↦ ?_)
+    refine tendsto_finsetSum _ (Quotient.forall.mpr fun ⟨r, hr⟩ _ ↦ ?_)
     refine (translate f _).zero_at_cusps' ?_ γ rfl
     simpa using h.of_isFiniteRelIndex_conj hr
 
@@ -142,20 +142,17 @@ lemma ModularForm.isZero_of_neg_weight [𝒢.IsArithmetic]
     {k : ℤ} (hk : k < 0) (f : ModularForm 𝒢 k) : f = 0 := by
   suffices ModularForm.norm 𝒮ℒ f = 0 by simpa [ModularForm.norm_eq_zero_iff]
   ext
-  -- some friction here because `levelOne_neg_weight_eq_zero` uses `Γ(1)` for the level
-  rw [@ModularFormClass.levelOne_neg_weight_eq_zero (f := ModularForm.norm 𝒮ℒ f) _ _ _,
-    Pi.zero_apply, zero_apply]
-  · rw [CongruenceSubgroup.Gamma_one_top, ← MonoidHom.range_eq_map]
-    infer_instance
-  · exact mul_neg_of_neg_of_pos hk <| mod_cast Nat.pos_of_ne_zero 𝒢.relIndex_ne_zero
+  rw [ModularFormClass.levelOne_neg_weight_eq_zero
+    (mul_neg_of_neg_of_pos hk <| mod_cast Nat.pos_of_ne_zero 𝒢.relIndex_ne_zero)
+    (ModularForm.norm 𝒮ℒ f), Pi.zero_apply, zero_apply]
 
 private lemma ModularForm.eq_const_of_weight_zero₀ [𝒢.IsArithmetic] [𝒢.HasDetOne]
     (f : ModularForm 𝒢 0) : ∃ c, (f : ℍ → ℂ) = Function.const ℍ c := by
   -- Consider the norm of `f - (f I)`. This must be a constant, since it's a weight 0 level 1 form.
-  obtain ⟨c, hc⟩ : ∃ c, (ModularForm.norm 𝒮ℒ (f - .const (f I)) : ℍ → ℂ) = Function.const ℍ c := by
-    convert @ModularFormClass.levelOne_weight_zero_const
-      (f := ModularForm.norm 𝒮ℒ (f - .const (f I))) _ (by infer_instance)
-      (by rw [zero_mul, CongruenceSubgroup.Gamma_one_top, MonoidHom.range_eq_map]; infer_instance)
+  let : ModularFormClass (ModularForm 𝒮ℒ (0 * Nat.card (𝒮ℒ ⧸ 𝒢.subgroupOf 𝒮ℒ))) 𝒮ℒ 0 := by
+    rw [zero_mul]; infer_instance
+  obtain ⟨c, hc⟩ := ModularFormClass.levelOne_weight_zero_const
+    (ModularForm.norm 𝒮ℒ (f - .const (f I)))
   -- But the constant must be 0, since `f - f I` vanishes at `I`.
   have : ModularForm.norm 𝒮ℒ (f - .const (f I)) I = 0 := by
     simpa [Finset.prod_eq_zero_iff, QuotientGroup.exists_mk] using ⟨1, by simp⟩
