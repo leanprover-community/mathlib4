@@ -90,7 +90,7 @@ def privateModule : Linter where run stx := do
         let topOfFileRef := Syntax.atom (.synthetic ⟨0⟩ ⟨0⟩) ""
         logLint linter.privateModule topOfFileRef
           s!"The current module only contains private declarations.\n\n\
-          Consider adding `{if hasDef then "`@[expose] " else ""}public section` \
+          Consider adding `{if hasDef then "@[expose] " else ""}public section` \
           at the beginning of the module, or selectively marking declarations as `public`."
 
 initialize addLinter privateModule
