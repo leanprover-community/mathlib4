@@ -248,8 +248,16 @@ protected theorem Decidable.eq_or_lt_of_le [DecidableLE α] (h : a ≤ b) : a = 
 @[to_dual eq_or_lt_of_le']
 theorem eq_or_lt_of_le (h : a ≤ b) : a = b ∨ a < b := (lt_or_eq_of_le h).symm
 
+section decidable
+
+-- Note: we want to treat these as though they're under the `Decidable` namespace.
+set_option linter.unusedDecidableInType false
+
 @[to_dual lt_or_eq_dec'] alias LE.le.lt_or_eq_dec := Decidable.lt_or_eq_of_le
 @[to_dual eq_or_lt_dec'] alias LE.le.eq_or_lt_dec := Decidable.eq_or_lt_of_le
+
+end decidable
+
 @[to_dual lt_or_eq'] alias LE.le.lt_or_eq := lt_or_eq_of_le
 @[to_dual eq_or_lt'] alias LE.le.eq_or_lt := eq_or_lt_of_le
 
