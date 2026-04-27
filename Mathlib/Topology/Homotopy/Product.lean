@@ -149,7 +149,7 @@ theorem proj_pi (i : ι) (paths : ∀ i, Path.Homotopic.Quotient (as i) (bs i)) 
 theorem pi_proj (p : Path.Homotopic.Quotient as bs) : (pi fun i => proj i p) = p := by
   induction p using Quotient.inductionOn
   simp_rw [Quotient.mk''_eq_mk, proj, ← Path.Homotopic.Quotient.mk_map]
-  erw [pi_lift]
+  rw [pi_lift]
   congr
 
 end Pi
