@@ -844,8 +844,8 @@ lemma Polynomial.toMvPolynomial_X (i : σ) : X.toMvPolynomial i = MvPolynomial.X
   simp [toMvPolynomial]
 
 lemma Polynomial.toMvPolynomial_eq_rename_comp (i : σ) :
-    toMvPolynomial (R := R) i =
-      (MvPolynomial.rename (fun _ : Unit ↦ i)).comp (MvPolynomial.uniqueAlgEquiv R Unit).symm := by
+    toMvPolynomial (R := R) i = (MvPolynomial.rename (fun _ : Unit ↦ i)).comp
+      (MvPolynomial.uniqueAlgEquiv R Unit).symm.toAlgHom := by
   ext
   simp
 
