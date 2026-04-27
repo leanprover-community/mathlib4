@@ -79,7 +79,7 @@ lemma bodd_mul (m n : ℕ) : bodd (m * n) = (bodd m && bodd n) := by
 lemma bodd_bit (b n) : bodd (bit b n) = b := by
   cases b <;> simp [bodd]
 
-lemma mod_two_of_bodd (n : ℕ) : n % 2 = cond (bodd n) 1 0 := by
+lemma mod_two_of_bodd (n : ℕ) : n % 2 = (bodd n).toNat := by
   cases n using bitCasesOn with
   | bit b n => cases b <;> simp
 

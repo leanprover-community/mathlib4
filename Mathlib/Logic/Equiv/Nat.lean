@@ -31,8 +31,8 @@ variable {α : Type*}
 def boolProdNatEquivNat : Bool × ℕ ≃ ℕ where
   toFun := uncurry bit
   invFun n := ⟨n.bodd, n.div2⟩
-  left_inv := fun ⟨b, n⟩ => by simp only [bodd_bit, div2_bit, uncurry_apply_pair]
-  right_inv n := by simp only [bit_bodd_div2, uncurry_apply_pair]
+  left_inv := fun ⟨b, n⟩ => by simp
+  right_inv n := by simp
 
 /-- An equivalence between `ℕ ⊕ ℕ` and `ℕ`, by mapping `(Sum.inl x)` to `2 * x` and `(Sum.inr x)` to
 `2 * x + 1`.
