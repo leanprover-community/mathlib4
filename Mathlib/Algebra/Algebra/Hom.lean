@@ -97,18 +97,16 @@ variable (F : Type*) {R S : outParam Type*}
 
 variable {F} {A B} {φ} (f : F)
 
+/-- Turn an element of a type `F` satisfying `SemialgHomClass F α β` into an actual
+`AlgHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
 @[coe]
-def semialgHom : A →ₛₐ[φ] B where
-  toFun := f
-  map_add' := map_add f
-  map_one' := map_one f
-  map_mul' := map_mul f
-  map_zero' := map_zero f
+def toAlgHom : A →ₛₐ[φ] B where
+  __ := (f : A →+* B)
   commutes' := commutes f
 
 /-- Reinterpret an element of a type of semialgebra maps as a semialgebra map. -/
-instance : CoeTC F (A →ₛₐ[φ] B) where
-  coe f := semialgHom f
+instance : CoeHead F (A →ₛₐ[φ] B) where
+  coe f := toAlgHom f
 
 instance (priority := 100) semilinearMapClass : SemilinearMapClass F φ A B :=
   { ‹SemialgHomClass F φ A B› with
@@ -130,14 +128,13 @@ instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass
 
 /-- Turn an element of a type `F` satisfying `AlgHomClass F α β` into an actual
 `AlgHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
-@[coe]
 def toAlgHom {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) : A →ₐ[R] B where
   __ := (f : A →+* B)
   toFun := f
   commutes' := AlgHomClass.commutes f
 
-instance coeTC {F : Type*} [FunLike F A B] [AlgHomClass F R A B] : CoeTC F (A →ₐ[R] B) :=
-  ⟨AlgHomClass.toAlgHom⟩
+-- instance {F : Type*} [FunLike F A B] [AlgHomClass F R A B] : CoeHead F (A →ₐ[R] B) :=
+--   ⟨AlgHomClass.toAlgHom⟩
 
 end AlgHomClass
 
@@ -171,7 +168,7 @@ lemma _root_.Algebra.algHom_apply (R A B : Type*) [CommSemiring R] [CommSemiring
 
 @[simp] lemma _root_.AlgHomClass.toLinearMap_toAlgHom {R A B F : Type*} [CommSemiring R]
     [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] [FunLike F A B] [AlgHomClass F R A B]
-    (f : F) : (AlgHomClass.toAlgHom f : A →ₗ[R] B) = f := rfl
+    (f : F) : (SemialgHomClass.toAlgHom f : A →ₗ[R] B) = f := rfl
 
 /-- See Note [custom simps projection] -/
 def Simps.apply {R : Type u} {S : Type v} [CommSemiring R] [CommSemiring S]
@@ -181,7 +178,12 @@ def Simps.apply {R : Type u} {S : Type v} [CommSemiring R] [CommSemiring S]
 initialize_simps_projections AlgHom (toFun → apply)
 
 @[simp]
-protected theorem coe_coe {F : Type*} [FunLike F A B] [SemialgHomClass F φ A B] (f : F) :
+protected theorem coe_coe [Algebra R B] {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
+    ⇑(f : A →ₐ[R] B) = f :=
+  rfl
+
+@[simp]
+protected theorem coe_coeₛₐ {F : Type*} [FunLike F A B] [SemialgHomClass F φ A B] (f : F) :
     ⇑(f : A →ₛₐ[φ] B) = f :=
   rfl
 
@@ -470,7 +472,7 @@ namespace SemialgHomClass
 lemma toRingHom_toAlgHom {R S A B : Type*} [CommSemiring R] [CommSemiring S] {φ : R →+* S}
     [Semiring A] [Semiring B] [Algebra R A] [Algebra S B] {F : Type*} [FunLike F A B]
     [SemialgHomClass F φ A B] (f : F) :
-    RingHomClass.toRingHom (SemialgHomClass.semialgHom f) = RingHomClass.toRingHom f := rfl
+    RingHomClass.toRingHom (SemialgHomClass.toAlgHom f) = RingHomClass.toRingHom f := rfl
 
 end SemialgHomClass
 

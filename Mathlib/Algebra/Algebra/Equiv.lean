@@ -226,7 +226,10 @@ def toAlgHom : A₁ →ₛₐ[φ] A₂ :=
     map_zero' := map_zero e
     commutes' _:= e.commutes' _ }
 
-theorem toAlgHom_eq_coe : e.toAlgHom = e :=
+theorem toAlgHom_eq_coeₛₐ : e.toAlgHom = e :=
+  rfl
+
+theorem toAlgHom_eq_coe [Algebra R₁ A₂] (e : A₁ ≃ₐ[R₁] A₂) : e.toAlgHom = e :=
   rfl
 
 theorem toAlgHom_apply (x : A₁) : e.toAlgHom x = e x :=
