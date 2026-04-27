@@ -7,7 +7,7 @@ Authors: Michael Rothgang, Pepa Montero, Archibald Browne, Enrique Díaz, Juan J
 module
 
 public import Mathlib.Geometry.Manifold.ChartedSpace
-public import Mathlib.Topology.Algebra.OrbitSpace
+public import Mathlib.Topology.Covering.Quotient
 
 /-!
 # Manifold structure on orbit spaces
@@ -33,7 +33,7 @@ smooth manifold, smooth action, quotient manifold
 
 public noncomputable section
 
-open MulAction QuotientMk
+open MulAction
 
 variable {M : Type*} [TopologicalSpace M]
   {G : Type*} [Group G] [MulAction G M]
@@ -48,7 +48,8 @@ variable {M : Type*} [TopologicalSpace M]
 /-- The orbit space of a properly discontinuous group action on a manifold inherits a
 `ChartedSpace` structure modeled on the same space. -/
 instance : ChartedSpace H (orbitRel.Quotient G M) :=
-  IsLocalHomeomorph.chartedSpace isLocalHomeomorph_of_properlyDiscontinuousSMul
+  IsLocalHomeomorph.chartedSpace
+    isCoveringMap_quotientMk_of_properlyDiscontinuousSMul.isLocalHomeomorph
     Quotient.mk''_surjective
 
 end
