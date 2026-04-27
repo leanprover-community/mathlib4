@@ -54,8 +54,11 @@ namespace SimpleGraph
 
 variable {V : Type u} (G : SimpleGraph V)
 
-/-- A partition of the vertices of a simple graph into independent sets. -/
-structure Partition where
+/-- A `Partition` of a simple graph `G` is a structure constituted by:
+* `parts`: a set of subsets of the vertices `V` of `G`.
+* `isPartition`: a proof that `parts` is a proper partition of `V`.
+* `independent`: a proof that each element of `parts` doesn't have a pair of adjacent vertices.
+-/structure Partition where
   /-- A set of subsets of the vertices `V` of `G`. -/
   parts : Set (Set V)
   /-- A proof that `parts` is a proper partition of `V`. -/
