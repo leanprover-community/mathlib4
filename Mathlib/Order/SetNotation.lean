@@ -1,11 +1,12 @@
 /-
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Patrick Massot, Yury Kudryashov
+Authors: Johannes Hölzl, Patrick Massot, Yury Kudryashov, Yuyang Zhao
 -/
 module
 
 public import Mathlib.Data.Set.Operations
+public import Mathlib.Order.Bounds.Defs
 public import Mathlib.Util.Notation3
 
 /-!
@@ -130,6 +131,23 @@ meta def iInf_delab : Delab := whenPPOption Lean.getPPNotation <| withOverApp 4 
     | _ => pure stx
   return stx
 end delaborators
+
+section OrderSupSet
+
+variable [LE α]
+
+/-- `OrderSupSet α` expresses that `α` is equipped with the operation `sSup` that returns
+the least upper bound of a set whenever one exists. -/
+class OrderSupSet (α : Type*) [LE α] extends SupSet α where
+  protected isLUB_sSup_of_isLUB s a : IsLUB s a → IsLUB s (sSup s)
+
+/-- `OrderInfSet α` expresses that `α` is equipped with the operation `sInf` that returns
+the greatest lower bound of a set whenever one exists. -/
+@[to_dual existing]
+class OrderInfSet (α : Type*) [LE α] extends InfSet α where
+  protected isGLB_sInf_of_isGLB s a : IsGLB s a → IsGLB s (sInf s)
+
+end OrderSupSet
 
 namespace Set
 

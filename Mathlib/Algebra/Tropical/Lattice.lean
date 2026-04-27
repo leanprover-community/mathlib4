@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Tropical.Basic
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Order.Bounds.OrderIso
 
 /-!
 
@@ -56,10 +57,16 @@ instance [InfSet R] : InfSet (Tropical R) where sInf s := trop (sInf (untrop '' 
 
 instance instConditionallyCompleteLatticeTropical [ConditionallyCompleteLattice R] :
     ConditionallyCompleteLattice (Tropical R) where
-  isLUB_csSup _ hn hb :=
-    .of_image untrop_le_iff <| isLUB_csSup (hn.image _) (untrop_monotone.map_bddAbove hb)
-  isGLB_csInf _ hn hb :=
-    .of_image untrop_le_iff <| isGLB_csInf (hn.image _) (untrop_monotone.map_bddBelow hb)
+  isLUB_sSup_of_isLUB _ _ hx := by
+    rw [← tropOrderIso.symm.isLUB_image'] at hx ⊢
+    exact hx.isLUB_sSup
+  isGLB_sInf_of_isGLB _ _ hx := by
+    rw [← tropOrderIso.symm.isGLB_image'] at hx ⊢
+    exact hx.isGLB_sInf
+  exists_isLUB_cond s hn hb := ⟨sSup s,
+    .of_image untrop_le_iff <| isLUB_csSup (hn.image _) (untrop_monotone.map_bddAbove hb)⟩
+  exists_isGLB_cond s hn hb := ⟨sInf s,
+    .of_image untrop_le_iff <| isGLB_csInf (hn.image _) (untrop_monotone.map_bddBelow hb)⟩
 
 instance [ConditionallyCompleteLinearOrder R] : ConditionallyCompleteLinearOrder (Tropical R) :=
   { instConditionallyCompleteLatticeTropical, Tropical.instLinearOrderTropical with

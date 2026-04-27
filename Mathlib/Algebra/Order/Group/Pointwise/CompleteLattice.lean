@@ -32,8 +32,8 @@ variable [ConditionallyCompleteLattice M]
 section One
 variable [One M]
 
-@[to_additive (attr := simp)] lemma csSup_one : sSup (1 : Set M) = 1 := csSup_singleton _
-@[to_additive (attr := simp)] lemma csInf_one : sInf (1 : Set M) = 1 := csInf_singleton _
+@[to_additive (attr := simp)] lemma csSup_one : sSup (1 : Set M) = 1 := sSup_singleton
+@[to_additive (attr := simp)] lemma csInf_one : sInf (1 : Set M) = 1 := sInf_singleton
 
 end One
 

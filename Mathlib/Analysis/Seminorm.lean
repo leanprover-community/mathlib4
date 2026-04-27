@@ -566,13 +566,19 @@ protected theorem sSup_empty : sSup (∅ : Set (Seminorm 𝕜 E)) = ⊥ := by
   rfl
 
 set_option backward.privateInPublic true in
-private theorem isLUB_sSup (s : Set (Seminorm 𝕜 E)) (hs₁ : BddAbove s) (hs₂ : s.Nonempty) :
+private theorem isLUB_sSup (s : Set (Seminorm 𝕜 E)) (hs₁ : BddAbove s) :
     IsLUB s (sSup s) := by
+  obtain rfl | hs₂ := eq_empty_or_nonempty s
+  · simp [Seminorm.sSup_empty]
   refine ⟨fun p hp x => ?_, fun p hp x => ?_⟩ <;> haveI : Nonempty ↑s := hs₂.coe_sort <;>
     dsimp <;> rw [Seminorm.coe_sSup_eq hs₁, iSup_apply]
   · rcases hs₁ with ⟨q, hq⟩
     exact le_ciSup ⟨q x, forall_mem_range.mpr fun i : s => hq i.2 x⟩ ⟨p, hp⟩
   · exact ciSup_le fun q => hp q.2 x
+
+noncomputable instance instOrderSupSet :
+    OrderSupSet (Seminorm 𝕜 E) where
+  isLUB_sSup_of_isLUB s _ h := by exact Seminorm.isLUB_sSup _ h.bddAbove
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -585,7 +591,7 @@ need to use `sInf` on seminorms, then you should probably provide a more workabl
 but this is unlikely to happen so we keep the "bad" definition for now. -/
 noncomputable instance instConditionallyCompleteLattice :
     ConditionallyCompleteLattice (Seminorm 𝕜 E) :=
-  conditionallyCompleteLatticeOfLatticeOfsSup (Seminorm 𝕜 E) Seminorm.isLUB_sSup
+  conditionallyCompleteLatticeOfLatticeOfsSup (Seminorm 𝕜 E) fun _ hb _ ↦ Seminorm.isLUB_sSup _ hb
 
 end Classical
 
