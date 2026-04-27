@@ -50,7 +50,7 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {x y z : X} {ι
 
 section LocPathConnectedSpace
 
-/-- A topological space is locally path connected, at every point, path connected
+/-- A topological space is locally path connected if, at every point, path connected
 neighborhoods form a neighborhood basis. -/
 class LocPathConnectedSpace (X : Type*) [TopologicalSpace X] : Prop where
   /-- Each neighborhood filter has a basis of path-connected neighborhoods. -/
