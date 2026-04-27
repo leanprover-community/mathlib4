@@ -73,7 +73,7 @@ topological setting. Notably, we should:
 @[expose] public section
 
 open LinearMap (ker range)
-open Topology ContinuousLinearMap Function
+open Topology ContinuousLinearMap Function Submodule
 
 namespace Submodule
 
@@ -86,7 +86,7 @@ open ContinuousLinearMap
 the projection on `p` parallel to `q` is continuous. -/
 structure IsTopCompl (p q : Submodule R M) : Prop where
   isCompl : IsCompl p q
-  continuous_projection : Continuous (IsCompl.projection isCompl)
+  continuous_projection : Continuous (isCompl.projection)
 
 /-- A submodule `p` is called *complemented* if there exists a continuous projection `M →ₗ[R] p`. -/
 def ClosedComplemented (p : Submodule R M) : Prop :=
@@ -96,14 +96,14 @@ variable {p q : Submodule R M}
 
 section IsTopCompl
 
-theorem _root_.IsCompl.isTopCompl_iff (h : IsCompl p q) :
-    IsTopCompl p q ↔ Continuous (IsCompl.projection h) :=
+theorem IsCompl.isTopCompl_iff (h : IsCompl p q) :
+    IsTopCompl p q ↔ Continuous h.projection :=
   ⟨IsTopCompl.continuous_projection, fun h' ↦ ⟨h, h'⟩⟩
 
 protected theorem IsTopCompl.symm [ContinuousSub M] (h : IsTopCompl p q) : IsTopCompl q p where
   isCompl := h.isCompl.symm
   continuous_projection := by
-    rw [IsCompl.projection_eq_id_sub_projection h.isCompl]
+    rw [h.isCompl.projection_eq_id_sub_projection]
     exact continuous_id.sub h.continuous_projection
 
 theorem _root_.IsIdempotentElem.isTopCompl {f : M →L[R] M} (hf : IsIdempotentElem f) :
@@ -201,7 +201,7 @@ protected noncomputable def IsTopCompl.projection (h : IsTopCompl p q) : M →L[
 
 @[simp]
 theorem IsTopCompl.projection_toLinearMap (h : IsTopCompl p q) :
-    (h.projection : M →ₗ[R] M) = IsCompl.projection h.isCompl :=
+    (h.projection : M →ₗ[R] M) = h.isCompl.projection :=
   rfl
 
 theorem IsTopCompl.projection_apply (h : IsTopCompl p q) (x : M) :
@@ -221,16 +221,16 @@ theorem IsTopCompl.projection_apply_mem (h : IsTopCompl p q) (x : M) :
 @[simp]
 theorem IsTopCompl.projection_apply_left (h : IsTopCompl p q) (x : p) :
     h.projection x = x :=
-  IsCompl.projection_apply_left h.isCompl x
+  h.isCompl.projection_apply_left x
 
 theorem IsTopCompl.range_projection (h : IsTopCompl p q) :
     h.projection.range = p :=
-  IsCompl.projection_range h.isCompl
+  h.isCompl.projection_range
 
 @[simp]
 theorem IsTopCompl.projection_apply_eq_zero_iff (h : IsTopCompl p q) {x : M} :
     h.projection x = 0 ↔ x ∈ q :=
-  IsCompl.projection_apply_eq_zero_iff h.isCompl
+  h.isCompl.projection_apply_eq_zero_iff
 
 alias ⟨_, IsTopCompl.projection_apply_eq_zero_of_mem_right⟩ :=
   IsTopCompl.projection_apply_eq_zero_iff
@@ -242,7 +242,7 @@ theorem IsTopCompl.projection_apply_right (h : IsTopCompl p q) (x : q) :
 
 theorem IsTopCompl.ker_projection (h : IsTopCompl p q) :
     ker (h.projection : M →ₗ[R] M) = q :=
-  IsCompl.projection_ker h.isCompl
+  h.isCompl.projection_ker
 
 @[simp]
 theorem IsTopCompl.projection_isIdempotentElem (h : IsTopCompl p q) :
@@ -252,7 +252,7 @@ theorem IsTopCompl.projection_isIdempotentElem (h : IsTopCompl p q) :
 theorem IsTopCompl.projection_add_projection_eq_self [ContinuousSub M]
     (h : IsTopCompl p q) (x : M) :
     h.projection x + h.symm.projection x = x :=
-  IsCompl.projection_add_projection_eq_self h.isCompl x
+  h.isCompl.projection_add_projection_eq_self x
 
 theorem IsTopCompl.projection_add_projection_eq_id [IsTopologicalAddGroup M] (h : IsTopCompl p q) :
     h.projection + h.symm.projection = .id R M := by
@@ -271,7 +271,7 @@ lemma IsTopCompl.projection_eq_id_sub_projection [IsTopologicalAddGroup M] (h : 
 /-- The projection to `p` along `q` of `x` equals `x` if and only if `x ∈ p`. -/
 @[simp] lemma IsTopCompl.projection_eq_self_iff [ContinuousSub M] (h : IsTopCompl p q) (x : M) :
     h.projection x = x ↔ x ∈ p :=
-  IsCompl.projection_eq_self_iff h.isCompl x
+  h.isCompl.projection_eq_self_iff x
 
 end projection
 
