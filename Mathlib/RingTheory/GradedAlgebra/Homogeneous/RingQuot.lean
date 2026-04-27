@@ -188,12 +188,11 @@ def toQuotSubmodule (i : ι) : ℳ i →ₗ[R] (quotSubmodule ℳ P i) where
   map_add' _ _ := by simp
   map_smul' := by simp
 
-private theorem quotDecomposition_left_inv'_aux [DecidableEq ι] :
-    coeLinearMap (quotSubmodule ℳ P) ∘ₗlmap (toQuotSubmodule ℳ P) =
-      P.mkQ ∘ₗcoeLinearMap ℳ := by
-  ext i x
-  simp only [LinearMap.comp_apply, lof_eq_of]
-  rfl
+variable {ℳ P} in
+theorem toQuotSubmodule_decompose_of_mem_self
+    [DecidableEq ι] [Decomposition ℳ] {m : M} {i : ι} (hm : m ∈ ℳ i) :
+    (toQuotSubmodule ℳ P i (decompose ℳ m i) : M ⧸ P) = Submodule.Quotient.mk m := by
+  simp [toQuotSubmodule, coe_decompose_of_mem_same ℳ hm]
 
 variable {ℳ P} in
 theorem mem_quotSubmodule_iff {i : ι} {g : M ⧸ P} :
@@ -218,7 +217,6 @@ theorem quotDecomposeAux_of_mem_eq_zero {x : M} (hx : x ∈ P) (i : ι) :
     ← LinearMap.mem_ker, Submodule.ker_mkQ]
   exact hP i hx
 
-
 include hP in
 theorem quotDecomposeAux_ker :
     P ≤ LinearMap.ker (quotDecomposeAux ℳ P) :=
@@ -229,51 +227,35 @@ def quotDecompose :
     M ⧸ P →ₗ[R] ⨁ i, quotSubmodule ℳ P i :=
   Submodule.liftQ P (quotDecomposeAux ℳ P) (quotDecomposeAux_ker ℳ hP)
 
-theorem quotDecomposeAux_apply_mk (m : M) :
-    quotDecompose ℳ hP (P.mkQ m) = quotDecomposeAux ℳ P m :=
+theorem quotDecompose_apply_quotient (m : M) :
+    quotDecompose ℳ hP (Submodule.Quotient.mk m) =
+      ((lmap (toQuotSubmodule ℳ P)) ((decompose ℳ) m)) :=
   Submodule.liftQ_apply P (quotDecomposeAux ℳ P) m
-
-private theorem quotDecomposition_left_inv' :
-    LeftInverse (coeLinearMap (quotSubmodule ℳ P)) (quotDecompose ℳ hP) := by
-  rename_i _ _ hℳ
-  intro x
-  obtain ⟨(m : M), rfl⟩ := Submodule.mkQ_surjective P x
-  conv_lhs =>
-    rw [quotDecomposeAux_apply_mk, quotDecomposeAux, LinearMap.comp_apply]
-    simp only [AlgEquiv.toLinearMap_apply, ← LinearMap.comp_apply]
-  rw [← LinearMap.comp_assoc, Submodule.quotDecomposition_left_inv'_aux]
-  simp [LinearMap.comp_apply, coeLinearMap_apply, LinearEquiv.coe_coe, decomposeLinearEquiv_apply]
-
-private theorem quotDecomposition_left_inv :
-    LeftInverse (DirectSum.coeAddMonoidHom (quotSubmodule ℳ P)) (quotDecompose ℳ hP) :=
-  quotDecomposition_left_inv' ℳ hP
-
-private theorem quotDecomposition_right_inv' :
-    RightInverse (coeLinearMap (quotSubmodule ℳ P)) (quotDecompose ℳ hP) := by
-  rw [rightInverse_iff_comp, ← LinearMap.coe_comp, ← @LinearMap.id_coe R]
-  apply congr_arg
-  apply linearMap_ext
-  intro i
-  ext y : 1
-  obtain ⟨x, hx, hxy⟩ := y.prop
-  simp only [LinearMap.coe_comp, comp_apply, LinearMap.id_comp, lof_eq_of, coeLinearMap_of,
-    ← hxy, Submodule.quotDecomposeAux_apply_mk, Submodule.quotDecomposeAux, LinearEquiv.coe_coe]
-  rw [DirectSum.decomposeLinearEquiv_apply, ← Subtype.coe_mk x hx, decompose_coe, lmap_of]
-  congr
-  rw [← Subtype.coe_inj, Subtype.coe_mk, ← hxy]
-  simp [toQuotSubmodule]
-
-private theorem quotDecomposition_right_inv :
-    RightInverse (DirectSum.coeAddMonoidHom (quotSubmodule ℳ P)) (quotDecompose ℳ hP) :=
-  quotDecomposition_right_inv' ℳ hP
 
 include hP in
 /-- The decomposition of `M ⧸ P` as the direct sum of its graded components. -/
 @[implicit_reducible]
-def quotDecomposition : Decomposition (quotSubmodule ℳ P) where
-  decompose' := quotDecompose ℳ hP
-  left_inv   := by exact quotDecomposition_left_inv ℳ hP
-  right_inv  := by exact quotDecomposition_right_inv ℳ hP
+def quotDecomposition : Decomposition (quotSubmodule ℳ P) := by
+  apply DirectSum.Decomposition.ofLinearMap _ (quotDecompose ℳ hP)
+  · ext m
+    simp only [LinearMap.coe_comp, comp_apply, Submodule.mkQ_apply, quotDecompose_apply_quotient,
+      LinearMap.id_comp]
+    suffices coeLinearMap (quotSubmodule ℳ P) ∘ₗlmap (toQuotSubmodule ℳ P) =
+      P.mkQ ∘ₗcoeLinearMap ℳ  by
+      simp [← LinearMap.comp_apply, this, coeLinearMap_apply]
+    ext
+    simp [LinearMap.comp_apply, lof_eq_of, toQuotSubmodule]
+  · ext i ⟨x, hx⟩ j
+    simp only [quotSubmodule, Submodule.mem_map, Submodule.mkQ_apply] at hx
+    obtain ⟨m, hm, rfl⟩ := hx
+    simp only [LinearMap.coe_comp, comp_apply, coeLinearMap_lof, LinearMap.id_comp,
+      SetLike.coe_eq_coe]
+    rw [quotDecompose_apply_quotient, lmap_apply]
+    rw [← Subtype.coe_inj, Subtype.coe_mk]
+    by_cases h : j = i
+    · subst h
+      simp [toQuotSubmodule_decompose_of_mem_self hm]
+    · simp [decompose_of_mem_ne ℳ hm (Ne.symm h), lof_eq_of, of_eq_of_ne i j _ h]
 
 end IsHomogeneous.Submodule
 
@@ -296,17 +278,24 @@ It is only meaningful when `I` is homogeneous -/
 def Ideal.toQuotSubmodule (i : ι) : 𝒜 i →ₗ[R] (quotSubmodule 𝒜 I i) :=
   IsHomogeneous.Submodule.toQuotSubmodule 𝒜 (I.restrictScalars R) i
 
-private theorem Ideal.quotDecomposition_left_inv'_aux [DecidableEq ι] :
-    coeLinearMap (I.quotSubmodule 𝒜) ∘ₗ lmap (I.toQuotSubmodule 𝒜) =
-      (I.restrictScalars R).mkQ ∘ₗ coeLinearMap 𝒜 :=
-  IsHomogeneous.Submodule.quotDecomposition_left_inv'_aux 𝒜 (I.restrictScalars R)
-
 variable {𝒜 I} in
 theorem Ideal.mem_quotSubmodule_iff [I.IsTwoSided] {i : ι} {g : A ⧸ I} :
     g ∈ I.quotSubmodule 𝒜 i ↔ ∃ a ∈ 𝒜 i, Ideal.Quotient.mk I a = g :=
   IsHomogeneous.Submodule.mem_quotSubmodule_iff
 
-variable [DecidableEq ι] [AddMonoid ι] [GradedAlgebra 𝒜] (hI : I.IsHomogeneous 𝒜)
+variable [DecidableEq ι] [AddMonoid ι] [GradedAlgebra 𝒜]
+
+instance [I.IsTwoSided] :
+    SetLike.GradedMonoid (I.quotSubmodule 𝒜) where
+  one_mem := by
+    rw [Ideal.quotSubmodule]
+    exact ⟨1, SetLike.one_mem_graded 𝒜, rfl⟩
+  mul_mem := fun i j gi gj hgi hgj ↦ by
+    obtain ⟨ai, hai, rfl⟩ := hgi
+    obtain ⟨aj, haj, rfl⟩ := hgj
+    have (a : A) : (I.restrictScalars R).mkQ a = Ideal.Quotient.mk I a := rfl
+    exact ⟨ai * aj, ⟨SetLike.mul_mem_graded hai haj, by simp only [this, map_mul]⟩⟩
+
 
 variable {𝒜 I} in
 theorem Ideal.isHomogeneous_restrictScalars_iff :
@@ -318,14 +307,15 @@ def Ideal.quotDecomposeAux :
     A →ₗ[R] ⨁ i, I.quotSubmodule 𝒜 i :=
   IsHomogeneous.Submodule.quotDecomposeAux 𝒜 (I.restrictScalars R)
 
-include hI in
+variable (hI : I.IsHomogeneous 𝒜)
+include hI
+
 theorem Ideal.quotDecomposeAux_of_mem_eq_zero {x : A} (hx : x ∈ I) (i : ι) :
     (I.quotDecomposeAux 𝒜) x i = 0 := by
   apply IsHomogeneous.Submodule.quotDecomposeAux_of_mem_eq_zero
   · simpa
   · rwa [Submodule.restrictScalars_mem R I x]
 
-include hI in
 theorem Ideal.quotDecomposeAux_ker :
     I.restrictScalars R ≤ LinearMap.ker (I.quotDecomposeAux 𝒜) := fun x hx ↦ by
   simp only [Submodule.restrictScalars_mem] at hx
@@ -339,12 +329,6 @@ def Ideal.quotDecompose :
     _ _ instModule (RingHom.id R) (quotDecomposeAux 𝒜 I)
     (I.quotDecomposeAux_ker 𝒜 hI)
 
-theorem Ideal.quotDecomposeAux_apply_mk [I.IsTwoSided] (a : A) :
-    I.quotDecompose 𝒜 hI (Ideal.Quotient.mk I a) = I.quotDecomposeAux 𝒜 a :=
-  @Submodule.liftQ_apply R A _ _ _ (I.restrictScalars R) R
-    (⨁ i, I.quotSubmodule 𝒜 i) _ _ instModule _ (quotDecomposeAux 𝒜 I) _ a
-
-include hI in
 /-- The decomposition of `A ⧸ I` as the direct sum of its graded components. -/
 @[implicit_reducible]
 def Ideal.quotDecomposition : Decomposition (I.quotSubmodule 𝒜) :=
@@ -355,14 +339,5 @@ def Ideal.quotDecomposition : Decomposition (I.quotSubmodule 𝒜) :=
 def Ideal.gradedQuotAlg [I.IsTwoSided] :
     GradedAlgebra (I.quotSubmodule 𝒜) where
   toDecomposition := I.quotDecomposition 𝒜 hI
-  toGradedMonoid :=
-    { one_mem := by
-        rw [Ideal.quotSubmodule]
-        exact ⟨1, SetLike.one_mem_graded 𝒜, rfl⟩
-      mul_mem := fun i j gi gj hgi hgj ↦ by
-        obtain ⟨ai, hai, rfl⟩ := hgi
-        obtain ⟨aj, haj, rfl⟩ := hgj
-        have (a : A) : (I.restrictScalars R).mkQ a = Ideal.Quotient.mk I a := rfl
-        exact ⟨ai * aj, ⟨SetLike.mul_mem_graded hai haj, by simp only [this, map_mul]⟩⟩ }
 
 end Ideal
