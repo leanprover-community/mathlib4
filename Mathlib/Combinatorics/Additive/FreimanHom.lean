@@ -418,12 +418,11 @@ lemma isAddFreimanIso_image_val (hm : m ≠ 0) (hkmn : m * k ≤ n) (S : Set (Fi
     rw [← this.map_sum_eq_map_sum, Multiset.map_map, Multiset.map_map]
     · refine IsAddFreimanIso.map_sum_eq_map_sum (B := Nat.cast ∘ val '' S) ?_ hsS htS hs ht
       -- TODO: The next two lines abuse the definition of `ZMod`.
-      let addEquivZMod : Fin (n + 1) ≃+ ZMod (n + 1) := AddEquiv.refl _
-      have : addEquivZMod ∘ Fin.ofNat (n + 1) = Nat.cast := rfl
-      have : EqOn (⇑addEquivZMod) (Nat.cast ∘ val) S := by
+      have : ZMod.finEquiv (n + 1) ∘ Fin.ofNat (n + 1) = Nat.cast := rfl
+      have : EqOn (ZMod.finEquiv (n + 1)) (Nat.cast ∘ val) S := by
         rintro ⟨i, hi⟩ -
         simp [← this, Fin.ext_iff, Nat.mod_eq_of_modEq rfl hi]
-      apply (AddEquivClass.isAddFreimanIso addEquivZMod _).congr this
+      apply (AddEquivClass.isAddFreimanIso (ZMod.finEquiv (n + 1)) _).congr this
       rw [this.symm.image_eq]
       exact Equiv.bijOn_image _
     all_goals simp; grind
