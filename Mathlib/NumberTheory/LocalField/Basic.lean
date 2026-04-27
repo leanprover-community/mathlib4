@@ -129,9 +129,6 @@ def valueGroupWithZeroIsoInt : ValueGroupWithZero K ≃*o ℤᵐ⁰ := by
 instance : IsCyclic (ValueGroupWithZero K)ˣ :=
   (Units.mapEquiv (valueGroupWithZeroIsoInt K).toMulEquiv).isCyclic.mpr inferInstance
 
-instance : Nontrivial (ValueGroupWithZero K)ˣ :=
-  ValuativeRel.isNontrivial_iff_nontrivial_units.mp inferInstance
-
 instance : ValuativeRel.IsDiscrete K :=
   (ValuativeRel.nonempty_orderIso_withZeroMul_int_iff.mp ⟨valueGroupWithZeroIsoInt K⟩).1
 
