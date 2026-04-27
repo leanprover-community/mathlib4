@@ -291,7 +291,7 @@ noncomputable def localInverseAt : OpenPartialHomeomorph Y X := (hf x).choose.sy
   (hf x).choose_spec.1
 
 /-- The inverse function of `localInverseAt x` coincides with `f`. -/
-@[simp] lemma localInverseAt_invFun_eq : f = (hf.localInverseAt x).invFun :=
+lemma localInverseAt_invFun_eq : f = (hf.localInverseAt x).invFun :=
   (hf x).choose_spec.2
 
 /-- The point `f x` lies in the source of `localInverseAt x`. -/
