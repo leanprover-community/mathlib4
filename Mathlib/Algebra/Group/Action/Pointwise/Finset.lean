@@ -150,6 +150,16 @@ theorem pairwiseDisjoint_smul_iff {s : Set α} {t : Finset α} :
 
 end IsLeftCancelMul
 
+section IsLeftCancelSMul
+variable [SMul α β] [IsLeftCancelSMul α β] [DecidableEq β]
+
+@[to_additive]
+theorem pairwiseDisjoint_smul_iff' {s : Set α} {t : Finset β} :
+    s.PairwiseDisjoint (· • t) ↔ (s ×ˢ t : Set (α × β)).InjOn fun p => p.1 • p.2 := by
+  simp_rw [← pairwiseDisjoint_coe, coe_smul_finset, Set.pairwiseDisjoint_smul_iff']
+
+end IsLeftCancelSMul
+
 @[to_additive]
 theorem image_smul_distrib [DecidableEq α] [DecidableEq β] [Mul α] [Mul β] [FunLike F α β]
     [MulHomClass F α β] (f : F) (a : α) (s : Finset α) : (a • s).image f = f a • s.image f :=

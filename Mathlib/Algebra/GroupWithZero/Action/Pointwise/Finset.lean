@@ -112,6 +112,11 @@ lemma mem_inv_smul_finset_iff₀ (ha : a ≠ 0) : b ∈ a⁻¹ • s ↔ a • b
 lemma smul_finset_subset_smul_finset_iff₀ (ha : a ≠ 0) : a • s ⊆ a • t ↔ s ⊆ t :=
   show Units.mk0 a ha • _ ⊆ _ ↔ _ from smul_finset_subset_smul_finset_iff
 
+theorem pairwiseDisjoint_smul_iff₀ {s : Set α} {t : Finset β} (hs : ∀ a ∈ s, a ≠ 0) :
+    s.PairwiseDisjoint (· • t) ↔ (s ×ˢ t : Set (α × β)).InjOn fun p => p.1 • p.2 := by
+  simp_rw [← pairwiseDisjoint_coe, coe_smul_finset]
+  exact Set.pairwiseDisjoint_image_right_iff (fun a ha => MulAction.injective₀ (hs a ha))
+
 lemma smul_finset_subset_iff₀ (ha : a ≠ 0) : a • s ⊆ t ↔ s ⊆ a⁻¹ • t :=
   show Units.mk0 a ha • _ ⊆ _ ↔ _ from smul_finset_subset_iff
 
@@ -163,18 +168,14 @@ open scoped RightActions
 @[simp] lemma inv_smul_finset_distrib₀ (a : α) (s : Finset α) : (a • s)⁻¹ = s⁻¹ <• a⁻¹ := by
   obtain rfl | ha := eq_or_ne a 0
   · obtain rfl | hs := s.eq_empty_or_nonempty <;> simp [*]
-  -- was `simp` and very slow (https://github.com/leanprover-community/mathlib4/issues/19751)
-  · ext; simp only [mem_inv', ne_eq, not_false_eq_true, ← inv_smul_mem_iff₀, smul_eq_mul,
-      MulOpposite.op_inv, inv_eq_zero, MulOpposite.op_eq_zero_iff, inv_inv,
-      MulOpposite.smul_eq_mul_unop, MulOpposite.unop_op, mul_inv_rev, ha]
+  · ext
+    simp [← inv_smul_mem_iff₀, ha]
 
 lemma inv_op_smul_finset_distrib₀ (a : α) (s : Finset α) : (s <• a)⁻¹ = a⁻¹ • s⁻¹ := by
   obtain rfl | ha := eq_or_ne a 0
   · obtain rfl | hs := s.eq_empty_or_nonempty <;> simp [*]
-  -- was `simp` and very slow (https://github.com/leanprover-community/mathlib4/issues/19751)
-  · ext; simp only [mem_inv', ne_eq, MulOpposite.op_eq_zero_iff, not_false_eq_true, ←
-      inv_smul_mem_iff₀, MulOpposite.smul_eq_mul_unop, MulOpposite.unop_inv, MulOpposite.unop_op,
-      inv_eq_zero, inv_inv, smul_eq_mul, mul_inv_rev, ha]
+  · ext
+    simp [← inv_smul_mem_iff₀, ha]
 
 end GroupWithZero
 

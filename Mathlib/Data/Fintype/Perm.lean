@@ -33,6 +33,8 @@ variable {α β γ : Type*}
 
 open Finset List Equiv Equiv.Perm
 
+section
+
 variable [DecidableEq α] [DecidableEq β]
 
 /-- Given a list, produce a list of all permutations of its elements. -/
@@ -163,3 +165,59 @@ theorem Fintype.card_perm [Fintype α] : Fintype.card (Perm α) = (Fintype.card 
 theorem Fintype.card_equiv [Fintype α] [Fintype β] (e : α ≃ β) :
     Fintype.card (α ≃ β) = (Fintype.card α)! :=
   Fintype.card_congr (equivCongr (Equiv.refl α) e) ▸ Fintype.card_perm
+
+end
+
+theorem Fintype.exists_iterate_eq_id [Fintype α] {f : α → α} (hf : f.Bijective) :
+    ∃ m ≤ (card α)!, 0 < m ∧ f^[m] = id := by
+  classical
+  let g : Perm α := Equiv.ofBijective f hf
+  let F : ℕ → Perm α := (g ^ ·)
+  obtain ⟨n, hn, m, hm, hdiff, heq⟩ := exists_ne_map_eq_of_card_lt_of_maps_to
+    (f := F) (s := Finset.range ((Fintype.card α)! + 1)) (t := Finset.univ)
+    (by simp [Fintype.card_perm]) (by simp)
+  simp only [F] at heq
+  wlog hlt : n < m generalizing n m
+  · grind
+  use m - n, by grind, by grind
+  have : ⇑(g ^ (m - n)) = id := by simp [pow_sub _ hlt.le, ← heq]
+  exact this
+
+theorem Finset.exists_iterate_eqOn_id {f : α → α} {s : Finset α} (hfs : Set.BijOn f s s) :
+    ∃ m ≤ (#s)!, 0 < m ∧ Set.EqOn f^[m] id s := by
+  obtain ⟨m, hm', hm₀, h⟩ := Fintype.exists_iterate_eq_id hfs.bijective
+  refine ⟨m, by simpa using hm', hm₀, fun x hx ↦ ?_⟩
+  have := congr(($h ⟨x, hx⟩).1)
+  rwa [Set.MapsTo.iterate_restrict, Set.MapsTo.val_restrict_apply] at this
+
+theorem Finset.stabilises_periodic_bounded {f : α → α} {s : Finset α}
+    (hs : Set.MapsTo f s s) (hne : s.Nonempty) :
+    ∃ n < #s, ∃ m ≤ (#s)!, 0 < m ∧ ∀ k ≥ n, Set.EqOn f^[m + k] f^[k] s := by
+  classical
+  obtain ⟨n, hn', hn⟩ := image_stabilises hs hne
+  use n, hn'
+  set t := s.image f^[n]
+  have : t.image f = t := by simpa [-iterate_succ, iterate_succ', ← image_image, t] using hn (n + 1)
+  have ht : Set.BijOn f t t := by rwa [← image_eq_iff_bijOn_of_card rfl]
+  obtain ⟨m, hm', hm₀, hm⟩ := exists_iterate_eqOn_id ht
+  have : m ≤ (#s)! := by grw [hm', card_image_le]
+  use m, this, hm₀
+  intro k hk
+  rwa [← hn k hk, coe_image, ← Set.eqOn_comp_right_iff, id_comp, ← iterate_add] at hm
+
+theorem Fintype.stabilises_periodic_bounded [Fintype α] [Nonempty α] {f : α → α} :
+    ∃ n < card α, ∃ m ≤ (card α)!, 0 < m ∧ ∀ k ≥ n, f^[m + k] = f^[k] := by
+  simpa using Finset.stabilises_periodic_bounded (s := univ) (f := f) (by simp) (by simp)
+
+-- theorem Set.Finite.exists_iterate_eqOn_id {f : α → α} {s : Set α} (hfs : Set.BijOn f s s)
+--     (hs : s.Finite) :
+--     ∃ m, 0 < m ∧ Set.EqOn f^[m] id s := by
+--   lift s to Finset α
+--   obtain ⟨m, hm', hm₀, h⟩ := Fintype.exists_iterate_eq_id hs.bijective
+--   refine ⟨m, by simpa using hm', hm₀, fun x hx ↦ ?_⟩
+--   have := congr(($h ⟨x, hx⟩).1)
+--   rwa [Set.MapsTo.iterate_restrict, Set.MapsTo.val_restrict_apply] at this
+
+-- theorem Set.Finite.stabilises_periodic_bounded {f : α → α} {s : Finset α}
+--     (hs : Set.MapsTo f s s) (hne : s.Nonempty) :
+--     ∃ n < #s, ∃ m ≤ (#s)!, 0 < m ∧ ∀ k ≥ n, Set.EqOn f^[m + k] f^[k] s := by
