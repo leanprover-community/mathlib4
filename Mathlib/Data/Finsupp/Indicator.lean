@@ -73,7 +73,7 @@ lemma indicator_singleton (a : ι) (f : ∀ j ∈ ({a} : Finset ι), α) :
   simp only [single_apply, indicator_apply, mem_singleton, @eq_comm _ a j]
   split_ifs with h <;> simp [h]
 
-@[deprecated indicator_singleton (since := "2026-04-02")]
+@[deprecated indicator_singleton (since := "2026-04-27")]
 lemma single_eq_indicator (b : α) : single i b = indicator {i} (fun _ _ => b) :=
   (indicator_singleton i (fun _ _ => b)).symm
 

@@ -68,7 +68,7 @@ theorem set_indicator_singleton (a : α) (f : α → M) :
     Set.indicator {a} f = ⇑(single a (f a)) := by
   classical rw [Set.indicator_singleton, single_eq_pi_single]
 
-@[deprecated set_indicator_singleton (since := "2026-04-02")]
+@[deprecated set_indicator_singleton (since := "2026-04-27")]
 theorem single_eq_set_indicator : ⇑(single a b) = Set.indicator {a} fun _ => b :=
   (set_indicator_singleton a (fun _ => b)).symm
 
