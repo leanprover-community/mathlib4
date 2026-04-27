@@ -27,7 +27,7 @@ then `f n ≤ a` for all `n`.
 monotone convergence
 -/
 
-@[expose] public section
+public section
 
 open Filter Set Function
 open scoped Topology
