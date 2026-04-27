@@ -90,20 +90,18 @@ theorem comap_rename (f : σ → τ) (x : τ → R) : comap (rename f) x = x ∘
 there is a bijection between the types of functions from their variable types to `R`.
 -/
 noncomputable def comapEquiv (f : MvPolynomial σ R ≃ₐ[R] MvPolynomial τ R) : (τ → R) ≃ (σ → R) where
-  toFun := comap f.toAlgHom
-  invFun := comap f.symm.toAlgHom
+  toFun := comap f
+  invFun := comap f.symm
   left_inv := by
     intro x
     rw [← comap_comp_apply]
     apply comap_eq_id_of_eq_id
-    intro
-    simp [AlgHom.id_apply, AlgEquiv.comp_symm]
+    simp
   right_inv := by
     intro x
     rw [← comap_comp_apply]
     apply comap_eq_id_of_eq_id
-    intro
-    simp only [AlgHom.id_apply, AlgEquiv.symm_comp]
+    simp
 
 @[simp]
 theorem comapEquiv_coe (f : MvPolynomial σ R ≃ₐ[R] MvPolynomial τ R) :

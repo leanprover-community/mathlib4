@@ -364,8 +364,8 @@ def sumAlgEquiv : MvPolynomial (S₁ ⊕ S₂) R ≃ₐ[R] MvPolynomial S₁ (Mv
       intro r
       have A : algebraMap R (MvPolynomial S₁ (MvPolynomial S₂ R)) r = (C (C r) :) := rfl
       have B : algebraMap R (MvPolynomial (S₁ ⊕ S₂) R) r = C r := rfl
-      simp [sumRingEquiv, mvPolynomialEquivMvPolynomial, Equiv.toFun_as_coe,
-        Equiv.coe_fn_mk, sumToIter_C, A] }
+      simp only [sumRingEquiv, mvPolynomialEquivMvPolynomial, Equiv.toFun_as_coe,
+        Equiv.coe_fn_mk, B, sumToIter_C, A, RingHom.id_apply] }
 
 lemma sumAlgEquiv_comp_rename_inr :
     (sumAlgEquiv R S₁ S₂).toAlgHom.comp (rename Sum.inr) = IsScalarTower.toAlgHom R

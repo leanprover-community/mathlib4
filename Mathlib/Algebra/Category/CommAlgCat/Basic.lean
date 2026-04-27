@@ -154,8 +154,8 @@ instance hasForgetToAlgCat : HasForget₂ (CommAlgCat.{v} R) (AlgCat.{v} R) wher
 @[simps]
 def isoMk {X Y : Type v} {_ : CommRing X} {_ : CommRing Y} {_ : Algebra R X} {_ : Algebra R Y}
     (e : X ≃ₐ[R] Y) : of R X ≅ of R Y where
-  hom := ofHom e.toAlgHom
-  inv := ofHom e.symm.toAlgHom
+  hom := ofHom e
+  inv := ofHom e.symm
 
 /-- Build an `AlgEquiv` from an isomorphism in the category `CommAlgCat R`. -/
 @[simps]

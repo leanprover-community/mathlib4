@@ -48,7 +48,7 @@ lemma AlgHom.mulLeftRight_bij [h : IsAzumaya R A] :
 abbrev tensorEquivEnd : R ⊗[R] Rᵐᵒᵖ ≃ₐ[R] Module.End R R :=
   Algebra.TensorProduct.lid R Rᵐᵒᵖ |>.trans <| .moduleEndSelf R
 
-lemma coe_tensorEquivEnd : (tensorEquivEnd R).toAlgHom = AlgHom.mulLeftRight R R := by
+lemma coe_tensorEquivEnd : tensorEquivEnd R = AlgHom.mulLeftRight R R := by
   ext; simp
 
 instance id : IsAzumaya R R where

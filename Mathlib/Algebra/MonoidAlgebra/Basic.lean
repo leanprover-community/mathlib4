@@ -433,8 +433,8 @@ variable (R M) in
 /-- The algebra isomorphism of additive monoid algebras induced by an isomorphism of the base
 algebras. -/]
 noncomputable def mapAlgEquiv (e : A ≃ₐ[R] B) : A[M] ≃ₐ[R] B[M] where
-  __ := mapAlgHom M e.toAlgHom
-  invFun := mapAlgHom M e.symm.toAlgHom
+  __ := mapAlgHom M e
+  invFun := mapAlgHom M (e.symm : B →ₐ[R] A)
   left_inv _ := by aesop
   right_inv _ := by aesop
 

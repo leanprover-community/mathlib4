@@ -66,11 +66,9 @@ variable [SemialgEquivClass F φ A B]
 instance (priority := 100) : SemialgHomClass F φ A B where __ := ‹SemialgEquivClass F φ A B›
 
 @[coe]
-def semialgEquiv (f : F) : A ≃ₛₐ[φ] B where
+def toAlgEquiv (f : F) : A ≃ₛₐ[φ] B where
   __ := RingEquivClass.toRingEquiv f
   commutes' := SemialgEquivClass.commutes f
-
-instance : CoeHead F (A ≃ₛₐ[φ] B) where coe f := semialgEquiv f
 
 end SemialgEquivClass
 
@@ -184,8 +182,8 @@ theorem toEquiv_eq_coe : e.toEquiv = e :=
   rfl
 
 @[simp]
-protected theorem coe_coe (e : A₁ ≃ₛₐ[φ] A₂) :
-    ⇑(e : A₁ →ₛₐ[φ] A₂) = e :=
+protected theorem coe_coe {F : Type*} [EquivLike F A₁ A₂] [SemialgEquivClass F φ A₁ A₂] (e : F) :
+    ⇑(SemialgEquivClass.toAlgEquiv e) = e :=
   rfl
 
 theorem coe_fun_injective : @Function.Injective (A₁ ≃ₛₐ[φ] A₂) (A₁ → A₂) fun e => (e : A₁ → A₂) :=
@@ -308,13 +306,13 @@ theorem invFun_eq_symm {e : A₁ ≃ₛₐ[φ] A₂} : e.invFun = e.symm :=
 @[simp]
 theorem coe_apply_coe_coe_symm_apply {F : Type*} [EquivLike F A₁ A₂] [SemialgEquivClass F φ A₁ A₂]
     (f : F) (x : A₂) :
-    f ((SemialgEquivClass.semialgEquiv f).symm x) = x :=
+    f ((SemialgEquivClass.toAlgEquiv f).symm x) = x :=
   EquivLike.right_inv f x
 
 @[simp]
 theorem coe_coe_symm_apply_coe_apply {F : Type*} [EquivLike F A₁ A₂] [SemialgEquivClass F φ A₁ A₂]
     (f : F) (x : A₁) :
-    (SemialgEquivClass.semialgEquiv f).symm (f x) = x :=
+    (SemialgEquivClass.toAlgEquiv f).symm (f x) = x :=
   EquivLike.left_inv f x
 
 @[simp]
