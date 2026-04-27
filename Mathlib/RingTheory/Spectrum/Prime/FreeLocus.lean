@@ -365,4 +365,20 @@ lemma rankAtStalk_eq (p : PrimeSpectrum R) :
     AlgebraTensorModule.cancelBaseChange _ _ _ _ _
   rw [← e.finrank_eq, finrank_baseChange, rankAtStalk_eq_finrank_tensorProduct]
 
+variable (M) in
+lemma exists_notMem_rankAtStalk_eq [FinitePresentation R M] (p : Ideal R) [p.IsPrime] :
+    ∃ r ∉ p,
+      rankAtStalk (R := Localization.Away r) (Localization.Away r ⊗[R] M) =
+        rankAtStalk M ⟨p, inferInstance⟩ := by
+  obtain ⟨U, hU, hp, heq⟩ := (isLocallyConstant_rankAtStalk (M := M)).exists_open ⟨p, ‹_›⟩
+  obtain ⟨V, ⟨r, rfl⟩, (hr : r ∉ p), hrU⟩ :=
+    PrimeSpectrum.isTopologicalBasis_basic_opens.exists_subset_of_mem_open hp hU
+  refine ⟨r, hr, ?_⟩
+  ext ⟨q, hq⟩
+  rw [Module.rankAtStalk_baseChange]
+  refine heq _ (hrU ?_)
+  rw [IsLocalization.isPrime_iff_isPrime_disjoint (.powers r) _ q, Set.disjoint_left] at hq
+  apply hq.right
+  simp
+
 end Module

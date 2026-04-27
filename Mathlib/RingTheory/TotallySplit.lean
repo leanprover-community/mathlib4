@@ -157,38 +157,13 @@ lemma exists_tensorProduct_of_etale_of_rankAtStalk [Etale R S] [Module.Finite R 
     · exact Algebra.Etale.comp R S V
     · exact .of_algEquiv e.symm
 
--- TODO: move me
-lemma _root_.Algebra.exists_cover_rankAtStalk_eq {R : Type*} (S : Type*) [CommRing R] [CommRing S]
-    [Algebra R S] [Module.FinitePresentation R S] [Module.Flat R S] (p : Ideal R) [p.IsPrime] :
-    ∃ r ∉ p,
-      Module.rankAtStalk (R := Localization.Away r) (Localization.Away r ⊗[R] S) =
-        Module.rankAtStalk S ⟨p, inferInstance⟩ := by
-  obtain ⟨U, hU, hp, heq⟩ := (Module.isLocallyConstant_rankAtStalk (M := S)).exists_open ⟨p, ‹_›⟩
-  obtain ⟨V, ⟨r, rfl⟩, (hr : r ∉ p), hrU⟩ :=
-    PrimeSpectrum.isTopologicalBasis_basic_opens.exists_subset_of_mem_open hp hU
-  refine ⟨r, hr, ?_⟩
-  ext q
-  rw [Module.rankAtStalk_baseChange]
-  apply heq
-  apply hrU
-  simp only [PrimeSpectrum.basicOpen_eq_zeroLocus_compl, Set.mem_compl_iff,
-    PrimeSpectrum.mem_zeroLocus, Set.singleton_subset_iff,
-    SetLike.mem_coe]
-  obtain ⟨-, b⟩ := (IsLocalization.isPrime_iff_isPrime_disjoint (.powers r) _ q.asIdeal).mp q.2
-  rw [Set.disjoint_left] at b
-  simp only [SetLike.mem_coe, Ideal.coe_comap, Set.mem_preimage] at b
-  apply b
-  use 1
-  simp
-
 attribute [local instance] Module.FinitePresentation.of_finite_of_finitePresentation in
 lemma exists_tensorProduct_of_etale [Module.Finite R S] [Etale R S] (p : PrimeSpectrum R) :
-    ∃ (T : Type u) (_ : CommRing T) (_ : Algebra R T),
-      Etale R T ∧
+    ∃ (T : Type u) (_ : CommRing T) (_ : Algebra R T), Etale R T ∧
       p ∈ Set.range (PrimeSpectrum.comap (algebraMap R T)) ∧
       IsFiniteSplit T (T ⊗[R] S) := by
   wlog h : ∃ (n : ℕ), Module.rankAtStalk (R := R) S = n
-  · obtain ⟨r, hr, hn⟩ := Algebra.exists_cover_rankAtStalk_eq S p.asIdeal
+  · obtain ⟨r, hr, hn⟩ := Module.exists_notMem_rankAtStalk_eq S p.asIdeal
     obtain ⟨p', rfl⟩ : p ∈ Set.range
         (PrimeSpectrum.comap <| algebraMap R (Localization.Away r)) := by
       rwa [PrimeSpectrum.localization_away_comap_range _ r]
@@ -211,7 +186,7 @@ end Algebra
 
 section
 
-variable {R S A B : Type u} [CommRing R] [CommRing S] [CommRing A] [CommRing B]
+variable {R S A B : Type*} [CommRing R] [CommRing S] [CommRing A] [CommRing B]
   [Algebra R A] [Algebra R S] [Algebra R B]
 
 /-- A homomorphism of `R`-algebras `f : A →ₐ[R] B` is split if there exist `n`, `m` such
@@ -229,139 +204,103 @@ lemma AlgHom.IsFiniteSplit.mk (f : A →ₐ[R] B) {E F : Type*} [_root_.Finite E
   cases nonempty_fintype F
   let eE := Fintype.equivFin E
   let eF := Fintype.equivFin F
-  refine ⟨Fintype.card E, Fintype.card F, eA.trans ?_, eB.trans ?_, eE ∘ σ ∘ eF.symm, ?_⟩
-  · exact AlgEquiv.piCongrLeft R (fun _ ↦ R) eE
-  · exact AlgEquiv.piCongrLeft R (fun _ ↦ R) eF
-  · ext x
-    apply eB.injective
-    have := DFunLike.congr_fun h x
-    simp only [AlgEquiv.toAlgHom_eq_coe, coe_comp, AlgHom.coe_coe, Function.comp_apply] at this
-    ext i
-    simp [this, AlgHom.compRight]
+  refine ⟨Fintype.card E, Fintype.card F, eA.trans <| .piCongrLeft R (fun _ ↦ R) eE,
+    eB.trans <| .piCongrLeft R (fun _ ↦ R) eF, eE ∘ σ ∘ eF.symm, ?_⟩
+  ext x
+  apply eB.injective
+  ext i
+  simp [dsimp% congr($h x), AlgHom.compRight]
 
 variable (S) in
 lemma AlgHom.IsFiniteSplit.tensorProductMap {f : A →ₐ[R] B} (hf : f.IsFiniteSplit) :
     (Algebra.TensorProduct.map (.id S S) f).IsFiniteSplit := by
   obtain ⟨n, m, eA, eB, σ, hf⟩ := hf
-  refine AlgHom.IsFiniteSplit.mk (E := Fin n) (F := Fin m) _
+  refine .mk _
     ((Algebra.TensorProduct.congr .refl eA).trans (Algebra.TensorProduct.piScalarRight ..))
     ((Algebra.TensorProduct.congr .refl eB).trans (Algebra.TensorProduct.piScalarRight ..)) σ ?_
-  ext a
+  ext
   simp [hf]
 
 variable (S) in
 lemma AlgHom.IsFiniteSplit.iff_of_isScalarTower
-    (T : Type u) [CommRing T] [Algebra R T] [Algebra S T]
-    [IsScalarTower R S T] (f : A →ₐ[R] B) :
+    (T : Type*) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T] (f : A →ₐ[R] B) :
     (Algebra.TensorProduct.map (.id T T) f).IsFiniteSplit ↔
       (Algebra.TensorProduct.map (.id T T)
         (Algebra.TensorProduct.map (.id S S) f)).IsFiniteSplit := by
-  refine ⟨?_, ?_⟩
-  · rintro ⟨n, m, eA, eB, σ, hf⟩
-    refine AlgHom.IsFiniteSplit.mk (E := Fin n) (F := Fin m) _ ?_ ?_ σ ?_
+  refine ⟨fun ⟨n, m, eA, eB, σ, hf⟩ ↦ ?_, fun ⟨n, m, eA, eB, σ, hf⟩ ↦ ?_⟩
+  · refine .mk _ ?_ ?_ σ ?_
     · exact (Algebra.TensorProduct.cancelBaseChange _ _ _ _ _).trans eA
     · exact (Algebra.TensorProduct.cancelBaseChange _ _ _ _ _).trans eB
-    ext a i
-    have := DFunLike.congr_fun hf (1 ⊗ₜ a)
-    simp only [Algebra.TensorProduct.map_tmul, coe_id, id_eq, AlgEquiv.toAlgHom_eq_coe, coe_comp,
-      AlgHom.coe_coe, Function.comp_apply] at this
-    simp [this]
-  · rintro ⟨n, m, eA, eB, σ, hf⟩
-    refine AlgHom.IsFiniteSplit.mk (E := Fin n) (F := Fin m) _ ?_ ?_ σ ?_
+    · ext a i
+      simp [dsimp% congr($hf (1 ⊗ₜ a))]
+  · refine .mk _ ?_ ?_ σ ?_
     · exact (Algebra.TensorProduct.cancelBaseChange _ _ _ _ _).symm.trans eA
     · exact (Algebra.TensorProduct.cancelBaseChange _ _ _ _ _).symm.trans eB
-    ext a i
-    have := DFunLike.congr_fun hf (1 ⊗ₜ (1 ⊗ₜ a))
-    simp only [Algebra.TensorProduct.map_tmul, coe_id, id_eq, AlgEquiv.toAlgHom_eq_coe, coe_comp,
-      AlgHom.coe_coe, Function.comp_apply] at this
-    simp [this]
+    · ext a i
+      simp [dsimp% congr($hf (1 ⊗ₜ (1 ⊗ₜ a)))]
 
-lemma AlgHom.eq_compRight_of_no_nontrivial_isIdempotentElem {R E F : Type*} [_root_.Finite E]
-    [Nonempty E] [CommRing R] (H : ∀ e : R, IsIdempotentElem e → e = 0 ∨ e = 1)
-    (f : (E → R) →ₐ[R] F → R) : ∃ (σ : F → E), f = .compRight R _ σ := by
+end
+
+section
+
+variable {R E F : Type*} [_root_.Finite E] [CommRing R]
+
+/--
+If `R` has no non-trivial idempotents, any algebra map `(E → R) → (F → R)` is given by
+reindexing.
+This lemma assumes `Nonempty E`. For a version assuming `Nontrivial R` instead, see
+`AlgHom.eq_compRight_of_forall_isIdempotentElem_or`.
+-/
+lemma AlgHom.eq_compRight_of_forall_or_of_isIdempotentElem_of_nonempty [Nonempty E]
+    (H : ∀ e : R, IsIdempotentElem e → e = 0 ∨ e = 1) (f : (E → R) →ₐ[R] F → R) :
+    ∃ (σ : F → E), f = .compRight R _ σ := by
+  classical
   nontriviality R
   cases nonempty_fintype E
-  classical
   have hor (i) (j) : f (Pi.single j 1) i = 0 ∨ f (Pi.single j 1) i = 1 := by
     apply H
-    unfold IsIdempotentElem
-    rw [← Pi.mul_apply, ← map_mul, ← Pi.single_mul_left]
+    rw [IsIdempotentElem, ← Pi.mul_apply, ← map_mul, ← Pi.single_mul_left]
     simp
-  have (x : F) : ∃ (y : E), f (Pi.single y 1) x = 1 := by
-    by_contra! hc
-    replace hc (y : E) : f (Pi.single y 1) x = 0 := by
-      obtain (h|h) := hor x y
-      · assumption
-      · simp [hc] at h
-    have : 1 = ∑ y : E, f (Pi.single y 1) x := by
-      rw [← Fintype.sum_apply]
-      rw [← map_sum, Finset.univ_sum_single, ← Pi.one_def, map_one, Pi.one_apply]
-    simp_rw [hc] at this
-    simp at this
   have (x : F) : ∃! (y : E), f (Pi.single y 1) x = 1 := by
-    apply existsUnique_of_exists_of_unique
-    · exact this x
-    · intro a b ha hb
-      by_contra! h
-      have : (Pi.single a 1) * (Pi.single b 1 : E → R) = 0 := by
-        simp [← Pi.single_mul_left, h]
-      apply_fun ((f ·) · x) at this
+    refine existsUnique_of_exists_of_unique ?_ fun a b ha hb ↦ ?_
+    · by_contra! hc
+      replace hc (y : E) : f (Pi.single y 1) x = 0 := by grind
+      have : 1 = ∑ y : E, f (Pi.single y 1) x := by
+        rw [← Fintype.sum_apply, ← map_sum, Finset.univ_sum_single, ← Pi.one_def, map_one,
+          Pi.one_apply]
+      simp [hc] at this
+    · by_contra! h
+      have : f (Pi.single a 1 * Pi.single b 1) x = f 0 x := by simp [← Pi.single_mul_left, h]
       simp [ha, hb] at this
   choose σ hσ hun using this
   use σ
-  simp only at hσ
   ext x i
   induction x using Pi.single_induction with
   | zero => simp
   | add x y hx hy => simp [hx, hy]
   | single j r =>
-      have : Pi.single j r = r • (Pi.single j 1 : E → R) := by simp [← Pi.single_smul]
-      rw [this]
-      simp only [map_smul, Pi.smul_apply, smul_eq_mul, AlgHom.compRight_apply]
-      congr
-      obtain (h|h) := hor i j
-      · have : j ≠ σ i := by
-          intro hj
-          subst hj
-          simp [hσ] at h
-        simp [this, h]
-      · have := hun i j h
-        subst this
-        simp [hσ]
+    rw [← mul_one r, ← smul_eq_mul, Pi.single_smul, map_smul, Pi.smul_apply, smul_eq_mul,
+      compRight_apply]
+    obtain (h | h) := hor i j <;> grind [Pi.smul_apply, smul_eq_mul]
 
-lemma AlgHom.eq_compRight_of_no_nontrivial_isIdempotentElem' {R E F : Type*} [_root_.Finite E]
-    [CommRing R] [Nontrivial R] (H : ∀ e : R, IsIdempotentElem e → e = 0 ∨ e = 1)
-    (f : (E → R) →ₐ[R] F → R) : ∃ (σ : F → E), f = .compRight R _ σ := by
+/-- Variant of `AlgHom.eq_compRight_of_forall_or_of_isIdempotentElem_of_nonempty` that assumes
+`Nontrivial R` instead. -/
+lemma AlgHom.eq_compRight_of_forall_or_of_isIdempotentElem [Nontrivial R]
+    (H : ∀ e : R, IsIdempotentElem e → e = 0 ∨ e = 1) (f : (E → R) →ₐ[R] F → R) :
+    ∃ (σ : F → E), f = .compRight R _ σ := by
   cases isEmpty_or_nonempty E
   · have : Subsingleton (F → R) := f.codomain_trivial
     cases isEmpty_or_nonempty F
-    · use default
-      apply Subsingleton.elim
+    · use default, Subsingleton.elim _ _
     · simpa using false_of_nontrivial_of_subsingleton (F → R)
-  · apply eq_compRight_of_no_nontrivial_isIdempotentElem H
+  · exact f.eq_compRight_of_forall_or_of_isIdempotentElem_of_nonempty H
 
-lemma IsIdempotentElem.eq_one_of_isUnit {R : Type*} [CommRing R]
-    {e : R} (he : IsIdempotentElem e) (heu : IsUnit e) : e = 1 := by
-  rw [eq_comm, ← sub_eq_zero]
-  apply heu.mul_left_cancel
-  simp [he]
-
-lemma IsLocalRing.isIdempotentElem_iff_eq_zero_or_eq_one {R : Type*} [CommRing R] [IsLocalRing R]
-    {e : R} : IsIdempotentElem e ↔ e = 0 ∨ e = 1 := by
-  refine ⟨fun he ↦ ?_, ?_⟩
-  · obtain (h|h) := IsLocalRing.isUnit_or_isUnit_one_sub_self e
-    · exact Or.inr (he.eq_one_of_isUnit h)
-    · exact Or.inl (by simpa using he.one_sub.eq_one_of_isUnit h)
-  · rintro (h|h) <;> subst h
-    · exact IsIdempotentElem.zero
-    · exact IsIdempotentElem.one
-
-lemma RingHom.eq_compRight_of_isLocalHom {R E F : Type*} [_root_.Finite E] [CommRing R]
-    (f : (E → R) →ₐ[R] F → R) [IsLocalRing R] :
+lemma AlgHom.eq_compRight_of_isLocalRing [IsLocalRing R] (f : (E → R) →ₐ[R] F → R) :
     ∃ (σ : F → E), f = .compRight R _ σ := by
-  apply AlgHom.eq_compRight_of_no_nontrivial_isIdempotentElem'
-  intro e he
+  refine f.eq_compRight_of_forall_or_of_isIdempotentElem fun e he ↦ ?_
   rwa [IsLocalRing.isIdempotentElem_iff_eq_zero_or_eq_one] at he
+
+end
 
 open Localization in
 lemma AlgHom.exists_cover_eq_of_eq {R A B : Type*} [CommRing R] (S : Submonoid R)
@@ -426,7 +365,7 @@ lemma AlgHom.exists_cover_eq_compRight'' {R : Type*} {E F : Type u}
     IsLocalization.mapₐ p.primeCompl (Localization.AtPrime p)
       (E → Localization.AtPrime p)
       (F → Localization.AtPrime p) f
-  obtain ⟨σ, hσ⟩ := RingHom.eq_compRight_of_isLocalHom fₚ
+  obtain ⟨σ, hσ⟩ := fₚ.eq_compRight_of_isLocalRing
   let gₚ : (E → Localization.AtPrime p) →ₐ[Localization.AtPrime p] F → Localization.AtPrime p :=
     IsLocalization.mapₐ p.primeCompl (Localization.AtPrime p)
       (E → Localization.AtPrime p)
@@ -441,6 +380,9 @@ lemma AlgHom.exists_cover_eq_compRight'' {R : Type*} {E F : Type u}
     rfl
   obtain ⟨⟨r, hr⟩, heq⟩ := AlgHom.exists_cover_eq_of_eq _ _ _ _ f (.compRight R _ σ) this
   exact ⟨r, hr, σ, heq⟩
+
+variable {R S A B : Type u} [CommRing R] [CommRing S] [CommRing A] [CommRing B]
+  [Algebra R A] [Algebra R S] [Algebra R B]
 
 lemma AlgHom.exists_isSplit [Module.Finite R A] [Algebra.Etale R A] [Module.Finite R B]
     [Algebra.Etale R B] (f : A →ₐ[R] B) (p : PrimeSpectrum R) :
