@@ -5,13 +5,16 @@ Authors: Ben Eltschig
 -/
 module
 
-public import Mathlib.Geometry.Manifold.Instances.UnitsOfNormedAlgebra
+public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 
 /-!
 # Cⁿ monoid actions
 In this file we define Cⁿ actions on manifolds: we say `ContMDiffSMul I I' n G M` if `G` acts
 multiplicatively on `M` and the action map `fun p : G × M ↦ p.1 • p.2` is Cⁿ. We also provide API
 for additive actions using `@[to_additive]`.
+
+We also provide `ContMDiffSMul` instances for scalar multiplication in normed spaces and for
+the action of the monoid `E →L[𝕜] E` of continuous linear maps on any normed space `E`.
 -/
 
 open scoped Manifold ContDiff
@@ -141,13 +144,6 @@ theorem MulAction.contMDiffSMul_compHom [Monoid G] [MulAction G M] {n : ℕ∞ω
   let _ : MulAction G' M := MulAction.compHom _ f
   exact ⟨(hf.comp contMDiff_fst).smul contMDiff_snd⟩
 
-/-- If a complete normed ring acts continuously differentiably on a manifold `M`, its submanifold
-of units does as well. -/
-instance Units.contMDiffSMul {R : Type*} [NormedRing R] [CompleteSpace R] [NormedAlgebra 𝕜 R]
-    [MulAction R M] {n : ℕ∞ω} [ContMDiffSMul 𝓘(𝕜, R) I' n R M] :
-    ContMDiffSMul 𝓘(𝕜, R) I' n Rˣ M :=
-  MulAction.contMDiffSMul_compHom (f := coeHom R) contMDiff_val
-
 /-- The scalar multiplication `𝕜 × E → E` of any normed vector space `E` over `𝕜` is smooth. -/
 instance {n : ℕ∞ω} : ContMDiffSMul 𝓘(𝕜) 𝓘(𝕜, E) n 𝕜 E where
   contMDiff_smul := by
@@ -163,8 +159,3 @@ instance [CompleteSpace E] {n : ℕ∞ω} :
         (@id ((E →L[𝕜] E) × E)) := by
       rw [contMDiff_prod_module_iff, ← contMDiff_prod_iff]; exact contMDiff_id
     exact isBoundedBilinearMap_apply.contDiff.contMDiff.comp h
-
-/-- The general linear group `(E →L[𝕜] E)ˣ` on `E` acts smoothly on `E`. -/
-example [CompleteSpace E] (n : ℕ∞ω) :
-    ContMDiffSMul 𝓘(𝕜, E →L[𝕜] E) 𝓘(𝕜, E) n (E →L[𝕜] E)ˣ E :=
-  inferInstance
