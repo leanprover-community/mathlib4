@@ -570,8 +570,8 @@ section IsLocalHomeomorph
 
 variable [TopologicalSpace M] [TopologicalSpace M'] [TopologicalSpace H] [ChartedSpace H M]
 
-/-- Given a surjective local homeomorphism `f : M → M'`, this endows `M'` with a `ChartedSpace`
-structure by pushing forward the `ChartedSpace` structure from `M`. -/
+/-- Given a surjective local homeomorphism `f : M → M'`, endow `M'` with a `ChartedSpace` structure
+by pushing forward the `ChartedSpace` structure from `M`. -/
 @[implicit_reducible]
 def IsLocalHomeomorph.chartedSpace
     {f : M → M'} (hf : IsLocalHomeomorph f) (hf' : Function.Surjective f) :
