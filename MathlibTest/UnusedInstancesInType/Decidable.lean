@@ -34,6 +34,19 @@ Note: This linter can be disabled with `set_option linter.unusedDecidableInType 
 theorem foo₂ (a : Type) [∀ α : Type, Decidable (Nonempty α)] (_ : Unit) [Nonempty a] : True :=
   trivial
 
+
+/--
+warning: `fooUnfinished` does not use the following hypothesis in its type:
+  • [(α : Type) → Decidable (Nonempty α)] (#2)
+
+Consider removing this hypothesis and using `classical` in the proof instead. For terms, consider using `open scoped Classical in` at the term level (not the command level).
+
+Note: This linter can be disabled with `set_option linter.unusedDecidableInType false`
+-/
+#guard_msgs(warning, drop error) in
+theorem fooUnfinished (a : Type) [∀ α : Type, Decidable (Nonempty α)] (_ : Unit) [Nonempty a] :
+    True := by skip
+
 /--
 warning: `foo₃` does not use the following hypotheses in its type:
   • [(α : Type) → Decidable (Nonempty α)] (#2)
