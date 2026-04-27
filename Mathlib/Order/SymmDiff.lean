@@ -85,7 +85,7 @@ theorem bihimp_def [Min α] [HImp α] (a b : α) : a ⇔ b = (b ⇨ a) ⊓ (a �
 theorem symmDiff_eq_xor (p q : Prop) : p ∆ q = Xor p q :=
   rfl
 
-@[deprecated (since := "2026-04-04")] alias symmDiff_eq_Xor' := symmDiff_eq_xor
+@[deprecated (since := "2026-04-27")] alias symmDiff_eq_Xor' := symmDiff_eq_xor
 
 @[simp]
 theorem bihimp_iff_iff {p q : Prop} : p ⇔ q ↔ (p ↔ q) :=

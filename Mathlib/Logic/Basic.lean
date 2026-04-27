@@ -226,7 +226,7 @@ lemma Iff.ne_right {α β : Sort*} {a b : α} {c d : β} : (a ≠ b ↔ c = d) �
 /-- `Xor a b` is the exclusive-or of propositions. -/
 def Xor (a b : Prop) := (a ∧ ¬b) ∨ (b ∧ ¬a)
 
-@[deprecated (since := "2026-04-04")] alias Xor' := Xor
+@[deprecated (since := "2026-04-27")] alias Xor' := Xor
 
 @[grind =] theorem xor_def {a b : Prop} : Xor a b ↔ (a ∧ ¬b) ∨ (b ∧ ¬a) := Iff.rfl
 
