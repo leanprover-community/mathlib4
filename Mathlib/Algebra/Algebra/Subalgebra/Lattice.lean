@@ -824,7 +824,6 @@ theorem mem_adjoin_iff {s : Set A} {x : A} :
 
 variable (R)
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped IsMulCommutative in
 /-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a commutative
 ring. -/

@@ -910,14 +910,12 @@ and `M` is commutative, then `N` is commutative. -/
 @[to_additive
 /-- If `M` and `N` have additions, `f : M →ₙ+ N` is a surjective additive map,
 and `M` is commutative, then `N` is commutative. -/]
-theorem Function.Surjective.mul_comm [Mul M] [Mul N] {f : M →ₙ* N}
-    (is_surj : Function.Surjective f) (is_comm : Std.Commutative (· * · : M → M → M)) :
-    Std.Commutative (· * · : N → N → N) where
-  comm := fun a b ↦ by
-    obtain ⟨a', ha'⟩ := is_surj a
-    obtain ⟨b', hb'⟩ := is_surj b
-    simp only [← ha', ← hb', ← map_mul]
-    rw [is_comm.comm]
+theorem Function.Surjective.mul_comm [Mul M] [Mul N] {f : M →ₙ* N} (is_surj : Function.Surjective f)
+    (is_comm : IsMulCommutative M) : IsMulCommutative N where
+  is_comm.comm a b := by
+    have ⟨a', ha'⟩ := is_surj a
+    have ⟨b', hb'⟩ := is_surj b
+    simp [← ha', ← hb', ← map_mul, mul_comm']
 
 /-- The inverse of a bijective `MonoidHom` is a `MonoidHom`. -/
 @[to_additive (attr := simps)
@@ -940,9 +938,15 @@ protected def End := M →* M
 namespace End
 
 @[to_additive]
-instance instFunLike : FunLike (Monoid.End M) M M := MonoidHom.instFunLike
+instance instFunLike : FunLike (Monoid.End M) M M := inferInstanceAs <| FunLike (M →* M) M M
+
+@[to_additive (attr := ext)]
+theorem ext {f g : Monoid.End M} (h : ∀ x : M, f x = g x) : f = g :=
+  DFunLike.ext _ _ h
+
 @[to_additive]
-instance instMonoidHomClass : MonoidHomClass (Monoid.End M) M M := MonoidHom.instMonoidHomClass
+instance instMonoidHomClass : MonoidHomClass (Monoid.End M) M M :=
+  inferInstanceAs <| MonoidHomClass (M →* M) M M
 
 @[to_additive instOne]
 instance instOne : One (Monoid.End M) where one := .id _

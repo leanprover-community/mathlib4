@@ -36,7 +36,7 @@ In lemma names,
 * `⨅ i, f i` : `iInf f`, the infimum of the range of `f`.
 -/
 
-@[expose] public section
+public section
 
 open Function OrderDual Set
 
@@ -166,7 +166,11 @@ theorem biSup_congr {p : ι → Prop} (h : ∀ i, p i → f i = g i) :
 theorem biSup_congr' {p : ι → Prop} {f g : (i : ι) → p i → α}
     (h : ∀ i (hi : p i), f i hi = g i hi) :
     ⨆ i, ⨆ (hi : p i), f i hi = ⨆ i, ⨆ (hi : p i), g i hi := by
-  grind
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
+  It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+  canonicalizer; a minimization would help. The original proof was: `grind` -/
+  simp_all
 
 @[to_dual]
 theorem Function.Surjective.iSup_comp {f : ι → ι'} (hf : Surjective f) (g : ι' → α) :
@@ -990,3 +994,18 @@ protected abbrev Function.Injective.completeLattice [Max α] [Min α] [LE α] [L
   __ := BoundedOrder.lift f (fun _ _ ↦ le.1) map_top map_bot
   isLUB_sSup _ := .of_image le (by rw [map_sSup]; exact isLUB_biSup)
   isGLB_sInf _ := .of_image le (by rw [map_sInf]; exact isGLB_biInf)
+
+namespace Equiv
+
+variable (e : α ≃ β)
+
+/-- Transfer `CompleteLattice` across an `Equiv`. -/
+protected abbrev completeLattice [CompleteLattice β] : CompleteLattice α := by
+  let top := e.top
+  let bot := e.bot
+  let supSet := e.supSet
+  let infSet := e.infSet
+  let lattice := e.lattice
+  apply e.injective.completeLattice <;> intros <;> first | rfl | exact e.apply_symm_apply _
+
+end Equiv

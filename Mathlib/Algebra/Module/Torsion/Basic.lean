@@ -83,8 +83,7 @@ variable (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
 /-- The torsion ideal of `x`, containing all `a` such that `a • x = 0`. -/
 @[simps!]
 def torsionOf (x : M) : Ideal R :=
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): broken dot notation on LinearMap.ker https://github.com/leanprover/lean4/issues/1629
-  LinearMap.ker (LinearMap.toSpanSingleton R M x)
+  (LinearMap.toSpanSingleton R M x).ker
 
 @[simp]
 theorem torsionOf_zero : torsionOf R M (0 : M) = ⊤ := by simp [torsionOf]
@@ -534,16 +533,17 @@ namespace Module
 variable [Ring R] [AddCommGroup M] [Module R M]
 variable {I : Ideal R} {r : R}
 
--- adding `@[implicit_reducible]` causes downstream breakage
-set_option warn.classDefReducibility false in
 /-- can't be an instance because `hM` can't be inferred -/
+@[implicit_reducible]
 def IsTorsionBySet.hasSMul (hM : IsTorsionBySet R M I) : SMul (R ⧸ I) M where
   smul b := QuotientAddGroup.lift I.toAddSubgroup (smulAddHom R M)
     (by rwa [isTorsionBySet_iff_subset_annihilator] at hM) b
 
 /-- can't be an instance because `hM` can't be inferred -/
 abbrev IsTorsionBy.hasSMul (hM : IsTorsionBy R M r) : SMul (R ⧸ Ideal.span {r}) M :=
-  ((isTorsionBySet_span_singleton_iff r).mpr hM).hasSMul
+  Module.IsTorsionBySet.hasSMul ?_
+where finally
+  rwa [← isTorsionBySet_span_singleton_iff r] at hM
 
 @[simp]
 theorem IsTorsionBySet.mk_smul [I.IsTwoSided] (hM : IsTorsionBySet R M I) (b : R) (x : M) :
@@ -557,17 +557,16 @@ theorem IsTorsionBy.mk_smul [(Ideal.span {r}).IsTwoSided] (hM : IsTorsionBy R M 
     Ideal.Quotient.mk (Ideal.span {r}) b • x = b • x :=
   rfl
 
--- adding `@[implicit_reducible]` causes downstream breakage
-set_option warn.classDefReducibility false in
 /-- An `(R ⧸ I)`-module is an `R`-module which `IsTorsionBySet R M I`. -/
+@[implicit_reducible]
 def IsTorsionBySet.module [I.IsTwoSided] (hM : IsTorsionBySet R M I) : Module (R ⧸ I) M :=
-  letI := hM.hasSMul; I.mkQ_surjective.moduleLeft _ (IsTorsionBySet.mk_smul hM)
+  letI := hM.hasSMul; fast_instance% I.mkQ_surjective.moduleLeft _ (IsTorsionBySet.mk_smul hM)
 
 instance IsTorsionBySet.isScalarTower [I.IsTwoSided] (hM : IsTorsionBySet R M I)
     {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M] [IsScalarTower S R R] :
-    @IsScalarTower S (R ⧸ I) M _ (IsTorsionBySet.module hM).toSMul _ :=
+    @IsScalarTower S (R ⧸ I) M _ hM.hasSMul _ :=
   -- Porting note: still needed to be fed the Module R / I M instance
-  @IsScalarTower.mk S (R ⧸ I) M _ (IsTorsionBySet.module hM).toSMul _
+  @IsScalarTower.mk S (R ⧸ I) M _ hM.hasSMul _
     (fun b d x => Quotient.inductionOn' d fun c => (smul_assoc b c x :))
 
 /-- If an `R`-module `M` is annihilated by a two-sided ideal `I`, then the identity is a semilinear
@@ -580,20 +579,21 @@ def IsTorsionBySet.semilinearMap [I.IsTwoSided] (hM : IsTorsionBySet R M I) :
     map_smul' := fun _ _ ↦ rfl }
 
 theorem IsTorsionBySet.isSemisimpleModule_iff [I.IsTwoSided]
-    (hM : Module.IsTorsionBySet R M I) : let _ := hM.module
+    (hM : Module.IsTorsionBySet R M I) : letI := hM.module
     IsSemisimpleModule (R ⧸ I) M ↔ IsSemisimpleModule R M :=
-  let _ := hM.module
+  letI := hM.module
   (hM.semilinearMap.isSemisimpleModule_iff_of_bijective Function.bijective_id).symm
 
 /-- An `(R ⧸ Ideal.span {r})`-module is an `R`-module for which `IsTorsionBy R M r`. -/
 abbrev IsTorsionBy.module [h : (Ideal.span {r}).IsTwoSided] (hM : IsTorsionBy R M r) :
-    Module (R ⧸ Ideal.span {r}) M := by
-  rw [Ideal.span] at h; exact ((isTorsionBySet_span_singleton_iff r).mpr hM).module
+    Module (R ⧸ Ideal.span {r}) M :=
+  IsTorsionBySet.module ?_
+where finally
+  rwa [← isTorsionBySet_span_singleton_iff] at hM
 
--- adding `@[implicit_reducible]` causes downstream breakage
-set_option warn.classDefReducibility false in
 /-- Any module is also a module over the quotient of the ring by the annihilator.
 Not an instance because it causes synthesis failures / timeouts. -/
+@[implicit_reducible]
 def quotientAnnihilator : Module (R ⧸ Module.annihilator R M) M :=
   (isTorsionBySet_annihilator R M).module
 
@@ -618,7 +618,8 @@ theorem IsTorsionBySet.quotient (N : Submodule R M) {s}
 
 variable (M I) (s : Set R) (r : R)
 
-open Pointwise Submodule
+open scoped Pointwise
+open Submodule
 
 lemma isTorsionBySet_quotient_set_smul :
     IsTorsionBySet R (M ⧸ s • (⊤ : Submodule R M)) s :=
@@ -697,7 +698,6 @@ instance (a : R) {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M] [IsScal
     IsScalarTower S (R ⧸ R ∙ a) (torsionBy R M a) :=
   inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an `R`-module `M` and an element `a` in `R`, submodules of the `a`-torsion submodule of
 `M` do not depend on whether we take scalars to be `R` or `R ⧸ R ∙ a`. -/
 def submodule_torsionBy_orderIso (a : R) :
@@ -791,7 +791,7 @@ theorem _root_.Submodule.annihilator_top_inter_nonZeroDivisors [Module.Finite R 
     (hM : Module.IsTorsion R M) : ((⊤ : Submodule R M).annihilator ∩ R⁰ : Set R).Nonempty := by
   obtain ⟨S, hS⟩ := ‹Module.Finite R M›.fg_top
   refine ⟨_, ?_, (∏ x ∈ S, (@hM x).choose : R⁰).prop⟩
-  rw [Submonoid.coe_finset_prod, SetLike.mem_coe, ← hS, mem_annihilator_span]
+  rw [Submonoid.coe_finsetProd, SetLike.mem_coe, ← hS, mem_annihilator_span]
   intro n
   letI := Classical.decEq M
   rw [← Finset.prod_erase_mul _ _ n.prop, mul_smul, ← Submonoid.smul_def, (@hM n).choose_spec,
@@ -989,9 +989,8 @@ lemma torsionBy.mod_self_nsmul' (s : ℕ) {x : A} (h : x ∈ A[n]) :
     s • x = (s % n) • x :=
   nsmul_eq_mod_nsmul s (torsionBy.nsmul_iff.mp h)
 
--- adding `@[implicit_reducible]` causes downstream breakage
-set_option warn.classDefReducibility false in
 /-- For a natural number `n`, the `n`-torsion subgroup of `A` is a `ZMod n` module. -/
+@[implicit_reducible]
 def torsionBy.zmodModule : Module (ZMod n) A[n] :=
   AddCommGroup.zmodModule torsionBy.nsmul
 
