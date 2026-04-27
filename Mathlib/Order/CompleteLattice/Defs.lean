@@ -6,7 +6,6 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Order.Bounds.Basic
-public import Mathlib.Order.SetNotation
 
 /-!
 # Definition of complete lattices
@@ -52,6 +51,10 @@ variable {α β γ : Type*} {ι ι' : Sort*} {κ : ι → Sort*} {κ' : ι' → 
 instance OrderDual.supSet (α) [h : InfSet α] : SupSet αᵒᵈ :=
   ⟨fun s ↦ h.sInf s⟩
 
+@[to_dual]
+instance OrderDual.orderSupSet (α) [Preorder α] [OrderInfSet α] : OrderSupSet αᵒᵈ where
+  isLUB_sSup_of_isLUB _ _ := isGLB_sInf_of_isGLB (α := α)
+
 /-- Note that we rarely use `CompleteSemilatticeSup`
 (in fact, any such object is always a `CompleteLattice`, so it's usually best to start there).
 
@@ -79,6 +82,11 @@ variable [CompleteSemilatticeSup α] {s t : Set α} {a b : α}
 theorem isLUB_sSup (s : Set α) : IsLUB s (sSup s) :=
   CompleteSemilatticeSup.isLUB_sSup _
 
+@[to_dual]
+instance (priority := 100) CompleteSemilatticeSup.toOrderSupSet [CompleteSemilatticeSup α] :
+    OrderSupSet α where
+  isLUB_sSup_of_isLUB _ _ _ := isLUB_sSup _
+
 @[to_dual sInf_le]
 theorem le_sSup (h : a ∈ s) : a ≤ sSup s :=
   (isLUB_sSup s).1 h
@@ -90,9 +98,6 @@ theorem sSup_le (h : ∀ b ∈ s, b ≤ a) : sSup s ≤ a :=
 @[to_dual]
 lemma isLUB_iff_sSup_eq : IsLUB s a ↔ sSup s = a :=
   ⟨(isLUB_sSup s).unique, by rintro rfl; exact isLUB_sSup _⟩
-
-@[to_dual]
-alias ⟨IsLUB.sSup_eq, _⟩ := isLUB_iff_sSup_eq
 
 @[to_dual sInf_le_of_le]
 theorem le_sSup_of_le (hb : b ∈ s) (h : a ≤ b) : a ≤ sSup s :=

@@ -455,7 +455,7 @@ variable [ConditionallyCompleteLinearOrderBot α] {f : ι → α} {a : α}
 
 @[simp]
 theorem ciSup_of_empty [IsEmpty ι] (f : ι → α) : ⨆ i, f i = ⊥ := by
-  rw [iSup_of_empty', csSup_empty]
+  rw [iSup_of_empty', sSup_empty]
 
 theorem ciSup_false (f : False → α) : ⨆ i, f i = ⊥ :=
   ciSup_of_empty f
@@ -479,8 +479,8 @@ theorem ciSup_le_iff' {f : ι → α} (h : BddAbove (range f)) {a : α} :
 theorem ciSup_le' {f : ι → α} {a : α} (h : ∀ i, f i ≤ a) : ⨆ i, f i ≤ a :=
   csSup_le' <| forall_mem_range.2 h
 
-@[simp]
-theorem ciSup_bot : ⨆ _ : ι, (⊥ : α) = ⊥ := le_bot_iff.mp (ciSup_le' fun _ ↦ bot_le)
+@[deprecated iSup_bot (since := "2026-04-24")]
+theorem ciSup_bot : ⨆ _ : ι, (⊥ : α) = ⊥ := iSup_bot
 
 /-- In conditionally complete orders with a bottom element, the nonempty condition can be omitted
 from `lt_ciSup_iff`. -/

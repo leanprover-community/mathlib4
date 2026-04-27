@@ -175,7 +175,8 @@ theorem inducedOuterMeasure_union_of_false_of_nonempty_inter {s t : Set α}
     (h : ∀ u, (s ∩ u).Nonempty → (t ∩ u).Nonempty → ¬P u) :
     inducedOuterMeasure m P0 m0 (s ∪ t) =
       inducedOuterMeasure m P0 m0 s + inducedOuterMeasure m P0 m0 t :=
-  ofFunction_union_of_top_of_nonempty_inter fun u hsu htu => @iInf_of_empty _ _ _ ⟨h u hsu htu⟩ _
+  ofFunction_union_of_top_of_nonempty_inter
+    fun u hsu htu => @iInf_of_empty _ _ _ _ _ ⟨h u hsu htu⟩ _
 
 include PU msU m_mono
 

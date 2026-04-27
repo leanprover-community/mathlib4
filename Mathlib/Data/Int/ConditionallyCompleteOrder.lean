@@ -22,6 +22,9 @@ open Int
 
 noncomputable section
 
+instance : NoBotOrder ℤ := ⟨fun x ↦ ⟨x - 1, (Int.sub_one_lt_of_le le_rfl).not_ge⟩⟩
+instance : NoTopOrder ℤ := ⟨fun x ↦ ⟨x + 1, (Int.lt_add_one_of_le le_rfl).not_ge⟩⟩
+
 open scoped Classical in
 instance instConditionallyCompleteLinearOrder : ConditionallyCompleteLinearOrder ℤ where
   __ := instLinearOrder
@@ -34,12 +37,16 @@ instance instConditionallyCompleteLinearOrder : ConditionallyCompleteLinearOrder
     if h : s.Nonempty ∧ BddBelow s then
       leastOfBdd (Classical.choose h.2) (Classical.choose_spec h.2) h.1
     else 0
-  isLUB_csSup _ hn hb := by
-    rw [dif_pos ⟨hn, hb⟩]
+  isLUB_sSup_of_isLUB s _ h := by
+    rw [dif_pos ⟨h.nonempty, h.bddAbove⟩]
     exact (isGreatest_coe_greatestOfBdd ..).isLUB
-  isGLB_csInf _ hn hb := by
-    rw [dif_pos ⟨hn, hb⟩]
+  isGLB_sInf_of_isGLB s _ h := by
+    rw [dif_pos ⟨h.nonempty, h.bddBelow⟩]
     exact (isLeast_coe_leastOfBdd ..).isGLB
+  exists_isLUB_cond _ hn hb :=
+    ⟨greatestOfBdd hb.choose hb.choose_spec hn, (isGreatest_coe_greatestOfBdd ..).isLUB⟩
+  exists_isGLB_cond _ hn hb :=
+    ⟨leastOfBdd hb.choose hb.choose_spec hn, (isLeast_coe_leastOfBdd ..).isGLB⟩
   csSup_of_not_bddAbove := fun s hs ↦ by simp [hs]
   csInf_of_not_bddBelow := fun s hs ↦ by simp [hs]
 

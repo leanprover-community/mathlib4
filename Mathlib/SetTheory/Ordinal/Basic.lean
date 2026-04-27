@@ -891,10 +891,6 @@ theorem max_zero_right : ∀ a : Ordinal, max a 0 = a :=
 theorem max_eq_zero {a b : Ordinal} : max a b = 0 ↔ a = 0 ∧ b = 0 :=
   max_eq_bot
 
-@[simp]
-theorem sInf_empty : sInf (∅ : Set Ordinal) = 0 :=
-  dif_neg Set.not_nonempty_empty
-
 /-! ### Successor order properties -/
 
 private theorem succ_le_iff' {a b : Ordinal} : a + 1 ≤ b ↔ a < b := by
@@ -911,6 +907,10 @@ instance : SuccOrder Ordinal.{u} :=
   SuccOrder.ofSuccLeIff (fun o => o + 1) (by exact succ_le_iff')
 
 instance : SuccAddOrder Ordinal := ⟨fun _ => rfl⟩
+
+@[simp]
+theorem sInf_empty : sInf (∅ : Set Ordinal) = 0 :=
+  dif_neg (fun ⟨_, h⟩ ↦ not_isTop _ (isGLB_empty_iff.mp h))
 
 @[deprecated succ_eq_add_one (since := "2026-02-26")]
 theorem add_one_eq_succ (o : Ordinal) : o + 1 = succ o :=

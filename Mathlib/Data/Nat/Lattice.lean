@@ -130,13 +130,14 @@ open scoped Classical in
 noncomputable instance : ConditionallyCompleteLinearOrderBot ℕ :=
   { (inferInstance : OrderBot ℕ), (LinearOrder.toLattice : Lattice ℕ),
     (inferInstance : LinearOrder ℕ) with
-    isLUB_csSup _ hn hb := sSup_def hb ▸ Nat.isLeast_find hb
-    isGLB_csInf _ hn hb := sInf_def hn ▸ (Nat.isLeast_find hn).isGLB
-    csSup_empty := by
-      simp only [sSup_def, Set.mem_empty_iff_false, forall_const, forall_prop_of_false,
-        not_false_iff, exists_const]
-      apply bot_unique (Nat.find_min' _ _)
-      trivial
+    isLUB_sSup_of_isLUB s _ h := by
+      rw [sSup_def h.bddAbove]
+      exact Nat.isLeast_find _
+    isGLB_sInf_of_isGLB s _ h := by
+      rw [sInf_def h.nonempty]
+      exact (Nat.isLeast_find _).isGLB
+    exists_isLUB_cond s hn hb := ⟨_, Nat.isLeast_find hb⟩
+    exists_isGLB_cond s hn hb := ⟨_, (Nat.isLeast_find hn).isGLB⟩
     csSup_of_not_bddAbove := by
       intro s hs
       simp only [sSup,

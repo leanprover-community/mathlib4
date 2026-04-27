@@ -278,7 +278,7 @@ def log (b x : Ordinal) : Ordinal :=
 @[simp]
 theorem log_of_left_le_one {b : Ordinal} (h : b ≤ 1) (x : Ordinal) : log b x = 0 := by
   obtain rfl | rfl := le_one_iff.1 h
-  · apply (csSup_of_not_bddAbove _).trans csSup_empty
+  · apply (csSup_of_not_bddAbove _).trans sSup_empty
     by_contra! hb
     refine not_bddAbove_Ici 1 (hb.mono fun a ↦ ?_)
     simp +contextual [one_le_iff_ne_zero]
@@ -293,7 +293,7 @@ theorem log_zero_right (b : Ordinal) : log b 0 = 0 := by
   obtain rfl | hb := eq_or_ne b 0
   · exact log_zero_left 0
   · rw [log]
-    convert csSup_empty
+    convert sSup_empty
     aesop
 
 /-- `opow b` and `log b` (almost) form a Galois connection.
