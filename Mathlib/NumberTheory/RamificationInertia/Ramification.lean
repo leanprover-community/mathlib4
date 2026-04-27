@@ -24,6 +24,7 @@ Often the above theory is set up in the case where:
 * `S` is the integral closure of `R` in `L`,
 * `p` and `P` are maximal ideals,
 * `P` is an ideal lying over `p`.
+
 We will try to relax the above hypotheses as much as possible.
 
 ## Notation
@@ -72,7 +73,7 @@ theorem ramificationIdx_eq_find [DecidablePred fun n ↦ ∀ (k : ℕ), map f p 
 
 theorem ramificationIdx_eq_zero (h : ∀ n : ℕ, ∃ k, map f p ≤ P ^ k ∧ n < k) :
     ramificationIdx p P = 0 :=
-  dif_neg (by push_neg; exact h)
+  dif_neg (by push Not; exact h)
 
 theorem ramificationIdx_spec {n : ℕ} (hle : map f p ≤ P ^ n) (hgt : ¬map f p ≤ P ^ (n + 1)) :
     ramificationIdx p P = n := by
@@ -146,8 +147,8 @@ variable (p) in
 lemma ramificationIdx_map_eq {E : Type*} [EquivLike E S S₁] [AlgEquivClass E R S S₁]
     (P : Ideal S) (e : E) :
     ramificationIdx p (P.map e) = ramificationIdx p P := by
-  rw [show P.map e = _ from P.map_comap_of_equiv (e : S ≃+* S₁)]
-  exact p.ramificationIdx_comap_eq (e : S ≃ₐ[R] S₁).symm P
+  rw [show P.map e = _ from P.map_comap_of_equiv (RingEquivClass.toRingEquiv e : S ≃+* S₁)]
+  exact p.ramificationIdx_comap_eq (AlgEquivClass.toAlgEquiv e).symm P
 
 lemma ramificationIdx_ne_one_iff (hp : map f p ≤ P) :
     ramificationIdx p P ≠ 1 ↔ p.map f ≤ P ^ 2 := by
@@ -160,7 +161,7 @@ lemma ramificationIdx_ne_one_iff (hp : map f p ≤ P) :
   · intro he
     have : 1 ≤ Nat.find H := Nat.find_spec H 1 (by simpa)
     have := Nat.find_min H (m := 1) (by lia)
-    push_neg at this
+    push Not at this
     obtain ⟨k, hk, h1k⟩ := this
     exact hk.trans (Ideal.pow_le_pow_right (Nat.succ_le_iff.mpr h1k))
   · intro he
@@ -194,6 +195,15 @@ theorem ramificationIdx_map_self_eq_one [IsDedekindDomain S] (h₁ : map f p ≠
     exact le_antisymm h <| pow_le_self two_ne_zero
   have := IsMulTorsionFree.pow_right_injective₀ (by rwa [one_eq_top]) h₂ this
   simp_all
+
+variable (p P) in
+theorem ramificationIdx_le_ramificationIdx {T : Type*} [CommRing T] [Algebra R T]
+    [Algebra S T] [IsScalarTower R S T] (Q : Ideal T) (hp : p = comap f P)
+    (h : ramificationIdx p Q ≠ 0) : ramificationIdx P Q ≤ ramificationIdx p Q := by
+  simp_rw [ramificationIdx, Ne] at *
+  refine csSup_le_csSup' (h.imp_symm Nat.sSup_of_not_bddAbove) fun n hn ↦ ?_
+  simp_rw [hp, IsScalarTower.algebraMap_eq R S T, ← map_map, map_le_iff_le_comap]
+  exact comap_mono <| by rwa [← map_le_iff_le_comap]
 
 namespace IsDedekindDomain
 
@@ -262,6 +272,13 @@ lemma ramificationIdx_eq_one_iff
   on_goal 2 => infer_instance
   rw [← not_ne_iff, IsLocalization.map_algebraMap_ne_top_iff_disjoint P.primeCompl]
   simpa [primeCompl, Set.disjoint_compl_left_iff_subset]
+
+theorem ramificationIdx_le_ramificationIdx [IsDomain R] [IsTorsionFree R S] {S₀ : Type*}
+    [CommRing S₀] [Algebra R S₀] [Algebra S₀ S] [IsScalarTower R S₀ S] (p : Ideal R)
+    (P : Ideal S₀) (Q : Ideal S) [Q.LiesOver p] [hP : P.LiesOver p] [Q.IsPrime] (hp : p ≠ ⊥) :
+    Ideal.ramificationIdx P Q ≤ Ideal.ramificationIdx p Q :=
+  p.ramificationIdx_le_ramificationIdx P Q ((liesOver_iff ..).mp hP) <|
+    ramificationIdx_ne_zero_of_liesOver _ hp
 
 theorem emultiplicity_map_eq_zero_of_ne [IsDedekindDomain R] {v : Ideal R}
     {w : Ideal S} {p : Ideal R} (hv : Irreducible v) (hp : Prime p) (hvp : v ≠ p) [w.LiesOver v] :
@@ -351,7 +368,7 @@ theorem ramificationIdx_algebra_tower' [IsDedekindDomain S] [IsDedekindDomain T]
       ramificationIdx p P * ramificationIdx P Q := by
   obtain rfl | hp := eq_or_ne p ⊥
   · simp
-  have : P.IsPrime := Ideal.over_def Q P ▸ Ideal.IsPrime.under S Q
+  have : P.IsPrime := isPrime_of_liesOver Q P
   have : Module.IsTorsionFree R T := by
     refine Module.IsTorsionFree.of_smul_eq_zero fun r m h ↦ ?_
     rwa [algebra_compatible_smul S, smul_eq_zero, FaithfulSMul.algebraMap_eq_zero_iff] at h

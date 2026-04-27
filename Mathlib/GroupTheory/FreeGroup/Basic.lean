@@ -321,10 +321,10 @@ theorem Step.sublist (H : Red.Step L₁ L₂) : L₂ <+ L₁ := by
 @[to_additive
 /-- If `w₁ w₂` are words such that `w₁` reduces to `w₂`, then `w₂` is a sublist of `w₁`. -/]
 protected theorem sublist : Red L₁ L₂ → L₂ <+ L₁ :=
-  @reflTransGen_of_transitive_reflexive
+  @reflTransGen_of_isTrans_reflexive
     _ (fun a b => b <+ a) _ _ _
-    (fun l => List.Sublist.refl l)
-    (fun _a _b _c hab hbc => List.Sublist.trans hbc hab)
+    ⟨List.Sublist.refl⟩
+    ⟨fun _a _b _c hab hbc => List.Sublist.trans hbc hab⟩
     (fun _ _ => Red.Step.sublist)
 
 @[to_additive]
@@ -367,8 +367,9 @@ theorem equivalence_join_red : Equivalence (Join (@Red α)) :=
     | _, _, Or.inr ⟨d, hbd, hcd⟩ => ⟨d, ReflGen.single hbd, ReflTransGen.single hcd⟩
 
 @[to_additive]
-theorem join_red_of_step (h : Red.Step L₁ L₂) : Join Red L₁ L₂ :=
-  join_of_single reflexive_reflTransGen h.to_red
+theorem join_red_of_step (h : Red.Step L₁ L₂) : Join Red L₁ L₂ := by
+  unfold Red
+  exact join_of_single h.to_red
 
 @[to_additive]
 theorem eqvGen_step_iff_join_red : EqvGen Red.Step L₁ L₂ ↔ Join Red L₁ L₂ :=
@@ -962,7 +963,7 @@ def mulEquivIntOfUnique [Unique α] : FreeGroup α ≃* Multiplicative ℤ where
   invFun := equivIntOfUnique.symm ∘ Multiplicative.toAdd
   left_inv _ := by simp
   right_inv _ := by simp
-  map_mul' _ _  := by simp [equivIntOfUnique]
+  map_mul' _ _ := by simp [equivIntOfUnique]
 
 /-- A free group over one generator is an instance of a cyclic group. -/
 instance [Unique α] : IsCyclic (FreeGroup α) :=

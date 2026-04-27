@@ -74,7 +74,7 @@ instance isProbabilityMeasure_stdGaussian : IsProbabilityMeasure (stdGaussian E)
 
 @[simp]
 lemma integral_id_stdGaussian : ∫ x, x ∂(stdGaussian E) = 0 := by
-  rw [stdGaussian, integral_map _ (by fun_prop), integral_finset_sum]
+  rw [stdGaussian, integral_map _ (by fun_prop), integral_finsetSum]
   · simp [integral_smul_const, integral_eval]
   · exact fun i _ ↦ Integrable.smul_const (integrable_eval IsGaussian.integrable_id) _
   · exact (Finset.measurable_sum _ (by fun_prop)).aemeasurable
@@ -161,7 +161,6 @@ section multivariateGaussian
 
 variable [DecidableEq ι]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Multivariate Gaussian measure on `EuclideanSpace ℝ ι` with mean `μ` and covariance
 matrix `S`. This only makes sense when `S` is positive semidefinite,
 as then `CFC.sqrt S * CFC.sqrt S = S`. Otherwise `CFC.sqrt S = 0`, and
@@ -171,7 +170,6 @@ def multivariateGaussian (μ : EuclideanSpace ℝ ι) (S : Matrix ι ι ℝ) :
     Measure (EuclideanSpace ℝ ι) :=
   (stdGaussian (EuclideanSpace ℝ ι)).map (fun x ↦ μ + toEuclideanCLM (𝕜 := ℝ) (CFC.sqrt S) x)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma multivariateGaussian_of_not_posSemidef (μ : EuclideanSpace ℝ ι) {S : Matrix ι ι ℝ}
     (hS : ¬ S.PosSemidef) : multivariateGaussian μ S = .dirac μ := by
   rw [multivariateGaussian, CFC.sqrt, cfcₙ_apply_of_not_predicate]
@@ -179,7 +177,6 @@ lemma multivariateGaussian_of_not_posSemidef (μ : EuclideanSpace ℝ ι) {S : M
   change ¬ (S - 0).PosSemidef
   simpa
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma multivariateGaussian_zero_one :
     multivariateGaussian 0 (1 : Matrix ι ι ℝ) = stdGaussian (EuclideanSpace ℝ ι) := by
@@ -187,7 +184,6 @@ lemma multivariateGaussian_zero_one :
 
 variable {μ : EuclideanSpace ℝ ι} {S : Matrix ι ι ℝ}
 
-set_option backward.isDefEq.respectTransparency false in
 instance isGaussian_multivariateGaussian : IsGaussian (multivariateGaussian μ S) := by
   have h : (fun x ↦ μ + (toEuclideanCLM (𝕜 := ℝ) (CFC.sqrt S)) x) =
     (fun x ↦ μ + x) ∘ ((toEuclideanCLM (𝕜 := ℝ) (CFC.sqrt S))) := rfl

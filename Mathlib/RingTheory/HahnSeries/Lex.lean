@@ -408,7 +408,7 @@ def embDomainOrderEmbedding [Zero R] : Lex R⟦Γ⟧ ↪o Lex R⟦Γ'⟧ where
     constructor
     · rintro (⟨i, hj, hi⟩ | heq)
       · have himem : i ∈ Set.range f := by
-          contrapose! hi
+          contrapose hi
           simp [embDomain_notin_range hi]
         obtain ⟨k, rfl⟩ := himem
         refine Or.inl ⟨k, fun j hjk ↦ ?_, by simpa using hi⟩

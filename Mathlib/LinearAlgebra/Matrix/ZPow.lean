@@ -35,9 +35,9 @@ namespace Matrix
 variable {n' : Type*} [DecidableEq n'] [Fintype n'] {R : Type*} [CommRing R]
 
 local notation "M" => Matrix n' n' R
-
-noncomputable instance : DivInvMonoid M :=
-  { show Monoid M by infer_instance, show Inv M by infer_instance with }
+noncomputable instance : DivInvMonoid (Matrix n' n' R) where
+  __ : Monoid M := inferInstance
+  __ : Inv M := inferInstance
 
 section NatPow
 
@@ -249,7 +249,7 @@ theorem coe_units_zpow (u : Mˣ) : ∀ n : ℤ, ((u ^ n : Mˣ) : M) = (u : M) ^ 
 theorem zpow_ne_zero_of_isUnit_det [Nonempty n'] [Nontrivial R] {A : M} (ha : IsUnit A.det)
     (z : ℤ) : A ^ z ≠ 0 := by
   have := ha.det_zpow z
-  contrapose! this
+  contrapose this
   rw [this, det_zero ‹_›]
   exact not_isUnit_zero
 

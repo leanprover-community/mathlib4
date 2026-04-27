@@ -195,7 +195,6 @@ private lemma bojanic_mahler_step2 {f : C(ℤ_[p], E)} {s t : ℕ}
       apply hst
       rw [Nat.cast_pow, add_sub_cancel_left, norm_pow, norm_p, inv_pow, zpow_neg, zpow_natCast]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Explicit bound for the decay rate of the Mahler coefficients of a continuous function on `ℤ_[p]`.
 This will be used to prove Mahler's theorem.

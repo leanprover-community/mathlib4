@@ -199,7 +199,7 @@ theorem factors'_cong {a b : α} (h : a ~ᵤ b) : factors' a = factors' b := by
   · rw [associated_zero_iff_eq_zero] at h
     rw [h]
   have ha : a ≠ 0 := by
-    contrapose! hb with ha
+    contrapose hb with ha
     rw [← associated_zero_iff_eq_zero, ← ha]
     exact h.symm
   rw [← Multiset.map_eq_map Subtype.coe_injective, map_subtype_coe_factors',
@@ -258,8 +258,6 @@ theorem factors_eq_some_iff_ne_zero {a : Associates α} :
 theorem eq_of_factors_eq_factors {a b : Associates α} (h : a.factors = b.factors) : a = b := by
   have : a.factors.prod = b.factors.prod := by rw [h]
   rwa [factors_prod, factors_prod] at this
-
-@[deprecated (since := "2025-10-06")] alias eq_of_prod_eq_prod := FactorSet.unique
 
 @[simp]
 theorem factors_mul (a b : Associates α) : (a * b).factors = a.factors + b.factors := by
@@ -393,7 +391,7 @@ open Classical in
 theorem exists_prime_dvd_of_not_inf_one {a b : α} (ha : a ≠ 0) (hb : b ≠ 0)
     (h : Associates.mk a ⊓ Associates.mk b ≠ 1) : ∃ p : α, Prime p ∧ p ∣ a ∧ p ∣ b := by
   have hz : factors (Associates.mk a) ⊓ factors (Associates.mk b) ≠ 0 := by
-    contrapose! h with hf
+    contrapose h with hf
     change (factors (Associates.mk a) ⊓ factors (Associates.mk b)).prod = 1
     rw [hf]
     exact Multiset.prod_zero

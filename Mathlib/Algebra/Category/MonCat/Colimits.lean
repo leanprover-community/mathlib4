@@ -54,9 +54,7 @@ assert_not_exists MonoidWithZero
 
 universe v u
 
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 namespace MonCat.Colimits
 
@@ -118,10 +116,7 @@ instance colimitSetoid : Setoid (Prequotient F) where
 -/
 def ColimitType : Type v :=
   Quotient (colimitSetoid F)
-
-instance : Inhabited (ColimitType F) := by
-  dsimp [ColimitType]
-  infer_instance
+deriving Inhabited
 
 instance monoidColimitType : Monoid (ColimitType F) where
   one := Quotient.mk _ one

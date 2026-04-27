@@ -265,7 +265,6 @@ def ιInv : TensorAlgebra R M →ₗ[R] M := by
   haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
   exact (TrivSqZeroExt.sndHom R M).comp toTrivSqZeroExt.toLinearMap
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ι_leftInverse : Function.LeftInverse ιInv (ι R : M → TensorAlgebra R M) := fun x ↦ by
   simp [ιInv]
 

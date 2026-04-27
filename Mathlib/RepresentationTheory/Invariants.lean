@@ -115,7 +115,7 @@ def invariantsEquivIntertwiningMap : (linHom ρ σ).invariants ≃ₗ[k] Intertw
   invFun g :=
     { val := g.toLinearMap
       property := (mem_linHom_invariants_iff_isIntertwining g.toLinearMap).mpr
-        {isIntertwining := g.isIntertwining} }
+        { isIntertwining := g.isIntertwining } }
 
 section
 
@@ -245,7 +245,6 @@ abbrev quotientToInvariants : Rep k (G ⧸ S) := Rep.of (A.ρ.quotientToInvarian
 
 variable (k G)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor sending a representation to its submodule of invariants. -/
 @[simps! obj_carrier map_hom]
 noncomputable def invariantsFunctor : Rep.{w} k G ⥤ ModuleCat k where
@@ -267,16 +266,7 @@ noncomputable def quotientToInvariantsFunctor (S : Subgroup G) [S.Normal] :
     Rep.{w} k G ⥤ Rep k (G ⧸ S) where
   obj X := X.quotientToInvariants S
   map {X Y} f := Rep.ofHom ⟨((invariantsFunctor k S).map ((Rep.resFunctor S.subtype).map f)).hom,
-    fun g ↦ by
-      ext x
-      simp only [invariantsFunctor_map_hom, hom_ofHom, Representation.quotientToInvariants,
-        LinearMap.comp_codRestrict, LinearMap.codRestrict_apply, LinearMap.coe_comp,
-        LinearMap.coe_coe, IntertwiningMap.coe_mk, Submodule.coe_subtype, Function.comp_apply]
-      -- this change is unnecessary but just for clearness
-      change _ = ((((Y.ρ.toInvariants S).ofQuotient S) g) ((LinearMap.codRestrict _
-          (f.hom.toLinearMap ∘ₗ (invariants (MonoidHom.comp X.ρ S.subtype)).subtype) _) x)).1
-      induction g using QuotientGroup.induction_on with
-      | H g => simp [hom_comm_apply]⟩
+    fun g ↦ QuotientGroup.induction_on g fun g ↦ by ext x; simp [hom_comm_apply]⟩
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction between the functor equipping a module with the trivial representation, and

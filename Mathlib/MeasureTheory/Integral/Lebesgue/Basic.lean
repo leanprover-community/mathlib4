@@ -357,7 +357,6 @@ theorem setLIntegral_pos_iff {f : α → ℝ≥0∞} (hf : Measurable f) {s : Se
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` has finite integral, then `∫⁻ x in s, f x ∂μ` is absolutely continuous in `s`: it tends
 to zero as `μ s` tends to zero. This lemma states this fact in terms of `ε` and `δ`. -/
 theorem exists_pos_setLIntegral_lt_of_measure_lt {f : α → ℝ≥0∞} (h : ∫⁻ x, f x ∂μ ≠ ∞) {ε : ℝ≥0∞}
@@ -428,7 +427,7 @@ theorem lintegral_add_measure (f : α → ℝ≥0∞) (μ ν : Measure α) :
   exacts [le_sup_left, le_sup_right]
 
 @[simp]
-theorem lintegral_finset_sum_measure {ι} (s : Finset ι) (f : α → ℝ≥0∞) (μ : ι → Measure α) :
+theorem lintegral_finsetSum_measure {ι} (s : Finset ι) (f : α → ℝ≥0∞) (μ : ι → Measure α) :
     ∫⁻ a, f a ∂(∑ i ∈ s, μ i) = ∑ i ∈ s, ∫⁻ a, f a ∂μ i :=
   let F : Measure α →+ ℝ≥0∞ :=
     { toFun := (lintegral · f),
@@ -436,12 +435,15 @@ theorem lintegral_finset_sum_measure {ι} (s : Finset ι) (f : α → ℝ≥0∞
       map_add' := lintegral_add_measure f }
   map_sum F μ s
 
+@[deprecated (since := "2026-04-08")]
+alias lintegral_finset_sum_measure := lintegral_finsetSum_measure
+
 @[simp]
 theorem lintegral_sum_measure {m : MeasurableSpace α} {ι} (f : α → ℝ≥0∞) (μ : ι → Measure α) :
     ∫⁻ a, f a ∂Measure.sum μ = ∑' i, ∫⁻ a, f a ∂μ i := by
-  simp_rw [ENNReal.tsum_eq_iSup_sum, ← lintegral_finset_sum_measure,
+  simp_rw [ENNReal.tsum_eq_iSup_sum, ← lintegral_finsetSum_measure,
     lintegral, SimpleFunc.lintegral_sum, ENNReal.tsum_eq_iSup_sum,
-    SimpleFunc.lintegral_finset_sum, iSup_comm (ι := Finset ι)]
+    SimpleFunc.lintegral_finsetSum, iSup_comm (ι := Finset ι)]
 
 theorem hasSum_lintegral_measure {ι} {_ : MeasurableSpace α} (f : α → ℝ≥0∞) (μ : ι → Measure α) :
     HasSum (fun i => ∫⁻ a, f a ∂μ i) (∫⁻ a, f a ∂Measure.sum μ) :=
@@ -487,7 +489,7 @@ theorem lintegral_indicator_le (f : α → ℝ≥0∞) (s : Set α) :
   congr with x
   simp only [mem_preimage, mem_singleton_iff, mem_inter_iff, iff_self_and]
   rintro rfl
-  contrapose! H
+  contrapose H
   simpa [H] using hg x
 
 @[simp]

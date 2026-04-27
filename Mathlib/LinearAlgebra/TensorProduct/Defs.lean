@@ -211,7 +211,6 @@ theorem SMul.aux_of {R' : Type*} [SMul R' M] (r : R') (m : M) (n : N) :
 
 variable [SMulCommClass R R' M] [SMulCommClass R R'' M]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given two modules over a commutative semiring `R`, if one of the factors carries a
 (distributive) action of a second type of scalars `R'`, which commutes with the action of `R`, then
 the tensor product (over `R`) carries an action of `R'`.
