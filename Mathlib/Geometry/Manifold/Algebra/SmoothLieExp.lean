@@ -148,6 +148,7 @@ public lemma IsMIntegralCurve.exists_global
   exact ⟨γ, hγ_start, hγ⟩
 
 public noncomputable def expLie (v : GroupLieAlgebra IG G)
+    [LieGroup IG (minSmoothness ℝ 3) G]
     [BoundarylessManifold IG G] [CompleteSpace EG] : G :=
   (IsMIntegralCurve.exists_global v).choose 1
 
@@ -424,3 +425,27 @@ public lemma IsMIntegralCurve.mul
       ((contMDiff_mulInvariantVectorField v).of_le (le_trans (by norm_num) le_minSmoothness))
       hshift htranslate h0
   exact congr_fun heq t
+
+public lemma expLie_zero
+    [T2Space G]
+    [BoundarylessManifold IG G] [CompleteSpace EG] :
+    expLie (0 : GroupLieAlgebra IG G) = 1 := by
+  have hconst : IsMIntegralCurve (fun _ ↦ (1 : G))
+               (mulInvariantVectorField (0 : GroupLieAlgebra IG G)) := by
+    unfold mulInvariantVectorField
+    apply isMIntegralCurve_const
+    simp only [map_zero]
+    exact rfl
+  have hγ := (IsMIntegralCurve.exists_global (0 : GroupLieAlgebra IG G)).choose_spec
+  have heq : (fun _ : ℝ ↦ (1 : G)) =
+             (IsMIntegralCurve.exists_global (0 : GroupLieAlgebra IG G)).choose :=
+    IsMIntegralCurve.unique_global 0 _ _ hconst hγ.2 rfl hγ.1
+  have := congr_fun heq 1
+  simp only [expLie] at this ⊢
+  exact this.symm
+
+public lemma expLie_add (A : GroupLieAlgebra IG G) (s t : ℝ)
+    [T2Space G] [CompleteSpace EG] [BoundarylessManifold IG G] :
+    expLie (IG := IG) ((s + t) • A) = expLie (IG := IG) (s • A) * expLie (IG := IG) (t • A) :=
+  IsMIntegralCurve.mul _ A (isMIntegralCurve_expLie_smul A)
+    (by simp only [zero_smul]; exact expLie_zero) s t

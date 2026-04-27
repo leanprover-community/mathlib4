@@ -179,31 +179,6 @@ structure ConnectionForm where
 
    See also the relationship with `FiberBundleCore` and `PrincipalBundleCore`. -/
 
-omit [CompleteSpace EG] [BoundarylessManifold IG G] in
-lemma expLie_zero
-    [BoundarylessManifold IG G] [CompleteSpace EG] :
-    expLie (0 : GroupLieAlgebra IG G) = 1 := by
-  have hconst : IsMIntegralCurve (fun _ ↦ (1 : G))
-               (mulInvariantVectorField (0 : GroupLieAlgebra IG G)) := by
-    unfold mulInvariantVectorField
-    apply isMIntegralCurve_const
-    simp only [map_zero]
-    exact rfl
-  have hγ := (IsMIntegralCurve.exists_global (0 : GroupLieAlgebra IG G)).choose_spec
-  have heq : (fun _ : ℝ ↦ (1 : G)) =
-             (IsMIntegralCurve.exists_global (0 : GroupLieAlgebra IG G)).choose :=
-    IsMIntegralCurve.unique_global 0 _ _ hconst hγ.2 rfl hγ.1
-  have := congr_fun heq 1
-  simp only [expLie] at this ⊢
-  exact this.symm
-
-omit [T2Space G] [CompleteSpace EG] [BoundarylessManifold IG G] in
-lemma expLie_add (A : GroupLieAlgebra IG G) (s t : ℝ)
-    [T2Space G] [CompleteSpace EG] [BoundarylessManifold IG G] :
-    expLie (IG := IG) ((s + t) • A) = expLie (IG := IG) (s • A) * expLie (IG := IG) (t • A) :=
-  IsMIntegralCurve.mul _ A (isMIntegralCurve_expLie_smul A)
-    (by simp only [zero_smul]; exact expLie_zero) s t
-
 lemma fundamentalVectorField_mem_vertical
   [SmoothRightGAction ∞ IG IP G P]
     (A : GroupLieAlgebra IG G) (p : P) :
@@ -544,21 +519,127 @@ lemma fundamentalVectorField_injective (p : P)
 
 end
 
-example (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E] (a : E) :
-    ContMDiff 𝓘(ℝ, ℝ) 𝓘(ℝ, E) ∞ (fun t : ℝ ↦ t • a) :=
-  (contDiff_id.smul_const a).contMDiff
+section
 
-example (a : GroupLieAlgebra IG G) :
-    ContMDiff 𝓘(ℝ, ℝ) 𝓘(ℝ, EG) ∞ (fun t : ℝ ↦ t • (show EG from a)) :=
-  (contDiff_id.smul_const (show EG from a)).contMDiff
+open RightActions
 
-example : ModelWithCorners ℝ EG HG := IG
+variable
+  [MulAction (MulOpposite G) P]
+  (ρ : P → B)
+  [IsPrincipalBundle G P B ρ IP IB]
 
-#check @TangentSpace
-#check mfderiv_comp (0 : ℝ)
-#check LieAlgebra.ad
-#check MulAut.conj
-#check SmoothRightGAction.smooth_smul
-#check contDiff_id.smul_const
-#check ContinuousLinearMap.smulRight
-#check (inferInstance : ChartedSpace EG EG)
+/-- The Yang-Mills field associated to a local section `σ` of the principal bundle `ρ : P → B`
+    and a connection 1-form `ω` on `P`.
+
+    Given a smooth local section `σ : U → P` over an open set `U ⊆ B`, the Yang-Mills field
+    is the pullback `σ*ω` of the connection 1-form along `σ`. At each point `m ∈ U` it is
+    the Lie-algebra-valued linear map:
+
+        (σ*ω)_m : T_mB → g
+        v ↦ ω_{σ(m)}(dσ_m(v))
+
+    i.e. first push forward `v ∈ T_mB` to `T_{σ(m)}P` via the differential `dσ_m`, then
+    apply the connection form `ω_{σ(m)}`.
+
+    In physics, this is the local gauge field or Yang-Mills potential on `U`, and it encodes
+    all the local information of the connection on the trivialised patch `U`. -/
+noncomputable def yangMillsField
+    [MulAction (MulOpposite G) P]
+    [T2Space G]
+    [CompleteSpace EG]
+    [BoundarylessManifold IG G]
+    (ρ : P → B)
+    [IsPrincipalBundle G P B ρ IP IB]
+    (τ : ConnectionForm (G := G) (IG := IG) (P := P) (IP := IP) (EP := EP))
+    (σ : B → P) :
+    ∀ m : B, TangentSpace IB m →L[ℝ] GroupLieAlgebra IG G :=
+    letI : NormedAddCommGroup (GroupLieAlgebra IG G) :=
+      show NormedAddCommGroup EG from inferInstance
+    letI : NormedSpace ℝ (GroupLieAlgebra IG G) :=
+      show NormedSpace ℝ EG from inferInstance
+    fun m ↦ (τ.form.toFun (σ m)).comp (mfderiv IB IP σ m)
+
+/-- The Maurer-Cartan form on a Lie group `G`. At each point `g : G` it is the differential
+    of left multiplication by `g⁻¹`, mapping `T_gG → T_eG = g`.
+
+    Concretely, `Ξ_g(v) = d(L_{g⁻¹})_g(v)` where `L_{g⁻¹} : G → G` is `h ↦ g⁻¹ * h`.
+
+    The Maurer-Cartan form is the unique left-invariant `g`-valued 1-form on `G` satisfying
+    `Ξ_e = id`. -/
+noncomputable def maurerCartan (g : G) : TangentSpace IG g →L[ℝ] GroupLieAlgebra IG G :=
+  mfderiv IG IG (fun h ↦ g⁻¹ * h) g
+
+def IsLocalSection (σ : B → P) (U : Set B) : Prop :=
+  IsOpen U ∧
+  ContMDiffOn IB IP ∞ σ U ∧
+  ∀ m ∈ U, ρ (σ m) = m
+
+omit [IsManifold IP ∞ P] in
+lemma gaugeMap_exists
+    (σ₁ σ₂ : B → P)
+    (U₁ U₂ : Set B)
+    (hσ₁ : IsLocalSection (HP := HP) (EP := EP) (IB := IB) (IP := IP) ρ σ₁ U₁)
+    (hσ₂ : IsLocalSection (HP := HP) (EP := EP) (IB := IB) (IP := IP) ρ σ₂ U₂)
+    (m : B) (hm : m ∈ U₁ ∩ U₂) :
+    ∃ g : G, σ₂ m = σ₁ m <• g := by
+  have h1 : ρ (σ₁ m) = m := hσ₁.2.2 m hm.1
+  have h2 : ρ (σ₂ m) = m := hσ₂.2.2 m hm.2
+  exact (IsPrincipalBundle.is_transitive (G := G) IP IB m (σ₁ m) (σ₂ m) h1 h2).imp
+    (fun g hg ↦ hg.symm)
+
+omit [IsManifold IP ∞ P] in
+lemma gaugeMap_unique
+    (ρ : P → B)
+    [IsPrincipalBundle G P B ρ IP IB]
+    (σ₁ σ₂ : B → P)
+    (m : B) (g h : G)
+    (hg : σ₁ m <• g = σ₂ m)
+    (hh : σ₁ m <• h = σ₂ m) :
+    g = h := by
+  have heq : σ₁ m <• g = σ₁ m <• h := hg.trans hh.symm
+  have hfree := IsPrincipalBundle.is_free (ρ := ρ) (IP := IP) (IB := IB) (σ₁ m) (g * h⁻¹)
+  have haction : σ₁ m <• (g * h⁻¹) = σ₁ m := by
+    simp only [MulOpposite.op_mul, mul_smul]
+    rw [heq]
+    simp only [MulOpposite.op_inv, inv_smul_smul]
+  have hone : g * h⁻¹ = 1 := hfree haction
+  exact eq_of_mul_inv_eq_one hone
+
+/-- Theorem 22.6 (Schuller) / Theorem 1.2.5 (Bleecker): The transformation law for
+    Yang-Mills fields. Given two local sections σ₁, σ₂ of the principal bundle and
+    the gauge map Ω defined by σ₁(m) ◁ Ω(m) = σ₂(m), the Yang-Mills fields satisfy:
+
+        ω^{U₂}(v) = Ad_{Ω⁻¹}(ω^{U₁}(v)) + Ξ_{Ω(m)}(dΩ_m(v)) -/
+theorem yangMills_transformation
+    (ρ : P → B) [IsPrincipalBundle G P B ρ IP IB]
+    [SmoothRightGAction ∞ IG IP G P]
+    [T2Space G]
+    [CompleteSpace EG]
+    [BoundarylessManifold IG G]
+    (τ : ConnectionForm (IP := IP))
+    (σ₁ σ₂ : B → P) (U₁ U₂ : Set B)
+    (hσ₁ : IsLocalSection (IP := IP) (IB := IB) ρ σ₁ U₁)
+    (hσ₂ : IsLocalSection (IP := IP) (IB := IB) ρ σ₂ U₂)
+    (Ω : B → G) (hΩ : ∀ m ∈ U₁ ∩ U₂, σ₁ m <• Ω m = σ₂ m)
+    (m : B) (hm : m ∈ U₁ ∩ U₂) (v : TangentSpace IB m) :
+    yangMillsField ρ τ σ₂ m v =
+      Ad (Ω m)⁻¹ (yangMillsField ρ τ σ₁ m v) +
+      maurerCartan (Ω m) (mfderiv IB IG Ω m v) := by
+  sorry
+
+end
+
+-- #check FiberBundleCore
+-- #check PrincipalBundleCore
+
+-- #check @FiberBundleCore
+-- example (ι B G : Type*) [TopologicalSpace B] [TopologicalSpace G]
+--     (Z : FiberBundleCore ι B G) : FiberBundle G Z.Fiber := by
+--   exact Z.fiberBundle
+
+#check @FiberBundleCore.fiberBundle
+#check @FiberBundleCore.Fiber
+#check @FiberBundleCore.coordChange
+#check @FiberBundleCore.mem_baseSet_at
+
+#check @Bundle.TotalSpace
