@@ -105,7 +105,7 @@ lemma innerAnodyneExtensions_eq_retracts_transfiniteCompositionsOfShape :
     SmallObject.llp_rlp_of_isCardinalForSmallObjectArgument_aleph0]
 
 def strongInnerAnodyneExtensions : MorphismProperty SSet.{u} :=
-  strongAnodyneExtensions ⊓ innerAnodyneExtensions
+  fun _ _ f ↦ Mono f ∧ ∃ (P : (Subcomplex.range f).Pairing) (_ : P.IsRegular), P.IsInner
 
 lemma Subcomplex.Pairing.innerAnodyneExtensions {X : SSet.{u}} {A : X.Subcomplex}
     (P : A.Pairing) [P.IsRegular] [P.IsInner] :
@@ -124,10 +124,16 @@ lemma Subcomplex.Pairing.innerAnodyneExtensions {X : SSet.{u}} {A : X.Subcomplex
 lemma Subcomplex.Pairing.strongInnerAnodyneExtensions {X : SSet.{u}} {A : X.Subcomplex}
     (P : A.Pairing) [P.IsRegular] [P.IsInner] :
     strongInnerAnodyneExtensions A.ι :=
-  ⟨⟨inferInstance, by
+  ⟨inferInstance, by
+
+    sorry
+    /-
     generalize h : Subcomplex.range A.ι = B
     obtain rfl : B = A := by simpa using h.symm
-    exact ⟨P, inferInstance⟩⟩, P.innerAnodyneExtensions⟩
+    exact ⟨P, inferInstance⟩⟩, P.innerAnodyneExtensions
+    -/
+
+    ⟩
 
 lemma strongInnerAnodyneExtensions_ι_iff {X : SSet.{u}} (A : X.Subcomplex) :
     strongInnerAnodyneExtensions A.ι ↔ ∃ (P : A.Pairing) (_ : P.IsRegular), P.IsInner :=
