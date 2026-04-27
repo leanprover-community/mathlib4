@@ -318,7 +318,6 @@ theorem closedComplemented_iff_exists_isTopCompl :
     ClosedComplemented p ↔ ∃ q, IsTopCompl p q :=
   ⟨ClosedComplemented.exists_isTopCompl, fun H ↦ H.elim fun _ hq ↦ hq.closedComplemented⟩
 
-@[deprecated ClosedComplemented.exists_isTopCompl (since := "2026-04-27")]
 theorem ClosedComplemented.exists_isClosed_isCompl [T1Space p] (h : ClosedComplemented p) :
     ∃ q : Submodule R M, IsClosed (q : Set M) ∧ IsCompl p q :=
   Exists.elim h.exists_isTopCompl fun q hq => ⟨q, hq.isClosed', hq.isCompl⟩
