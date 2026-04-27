@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.LocalProperties.Exactness
 
 # Being injective is a local property
 
-# Main Results
+## Main Results
 
 * `Module.injective_of_isLocalizedModule` : For module `M` over Noetherian ring `R`,
   being injective is preserved under localization.
@@ -27,7 +27,7 @@ public import Mathlib.RingTheory.LocalProperties.Exactness
 
 universe u v
 
-@[expose] public section
+public section
 
 variable {R : Type u} [CommRing R] {M : Type v} [AddCommGroup M] [Module R M] (S : Submonoid R)
 

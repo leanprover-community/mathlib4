@@ -189,6 +189,12 @@ open scoped Pointwise
 variable {G : Type*} [Group G] [MulSemiringAction G S] [SMulCommClass G R S]
 variable {Q : Ideal S} {σ σ' : G}
 
+theorem mem_stabilizer [Q.IsPrime] (h : IsArithFrobAt R σ Q) : σ ∈ MulAction.stabilizer G Q := by
+  rw [MulAction.mem_stabilizer_iff]
+  conv_lhs => rw [← h.comap_eq]
+  rw [Ideal.pointwise_smul_def]
+  exact Q.map_comap_eq_self_of_equiv (MulSemiringAction.toRingEquiv G S σ)
+
 lemma mul_inv_mem_inertia (H : IsArithFrobAt R σ Q) (H' : IsArithFrobAt R σ' Q) :
     σ * σ'⁻¹ ∈ Q.inertia G := by
   intro x
@@ -256,6 +262,10 @@ def _root_.arithFrobAt [Q.IsPrime] [Finite (S ⧸ Q)] : G :=
 protected lemma arithFrobAt [Q.IsPrime] [Finite (S ⧸ Q)] : IsArithFrobAt R (arithFrobAt R G Q) Q :=
   (exists_primesOver_isConj S G (Q.under R)
     ⟨⟨Q, ‹_›, ⟨rfl⟩⟩, ‹Finite (S ⧸ Q)›⟩).choose_spec.1 ⟨Q, ‹_›, ⟨rfl⟩⟩
+
+theorem arithFrobAt_mem_stabilizer [Q.IsPrime] [Finite (S ⧸ Q)] :
+    arithFrobAt R G Q ∈ MulAction.stabilizer G Q :=
+  mem_stabilizer (.arithFrobAt R G Q)
 
 lemma _root_.isConj_arithFrobAt
     [Q.IsPrime] [Finite (S ⧸ Q)] (Q' : Ideal S) [Q'.IsPrime] [Finite (S ⧸ Q')]

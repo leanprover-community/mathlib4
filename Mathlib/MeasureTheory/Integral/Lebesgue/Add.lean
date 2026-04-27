@@ -56,7 +56,7 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
     have : (rs.map c) x < ⨆ n : ℕ, f n x := by
       refine lt_of_lt_of_le (ENNReal.coe_lt_coe.2 ?_) (hsf x)
       suffices r * s x < 1 * s x by simpa
-      exact mul_lt_mul_of_pos_right ha (pos_iff_ne_zero.2 this)
+      gcongr
     rcases lt_iSup_iff.1 this with ⟨i, hi⟩
     exact mem_iUnion.2 ⟨i, le_of_lt hi⟩
   have mono : ∀ r : ℝ≥0∞, Monotone fun n => rs.map c ⁻¹' {r} ∩ { a | r ≤ f n a } := by
@@ -338,7 +338,7 @@ theorem lintegral_add_right (f : α → ℝ≥0∞) {g : α → ℝ≥0∞} (hg 
     ∫⁻ a, f a + g a ∂μ = ∫⁻ a, f a ∂μ + ∫⁻ a, g a ∂μ :=
   lintegral_add_right' f hg.aemeasurable
 
-theorem lintegral_finset_sum' (s : Finset β) {f : β → α → ℝ≥0∞}
+theorem lintegral_finsetSum' (s : Finset β) {f : β → α → ℝ≥0∞}
     (hf : ∀ b ∈ s, AEMeasurable (f b) μ) :
     ∫⁻ a, ∑ b ∈ s, f b a ∂μ = ∑ b ∈ s, ∫⁻ a, f b a ∂μ := by
   classical
@@ -349,16 +349,20 @@ theorem lintegral_finset_sum' (s : Finset β) {f : β → α → ℝ≥0∞}
     rw [Finset.forall_mem_insert] at hf
     rw [lintegral_add_left' hf.1, ih hf.2]
 
-theorem lintegral_finset_sum (s : Finset β) {f : β → α → ℝ≥0∞} (hf : ∀ b ∈ s, Measurable (f b)) :
+@[deprecated (since := "2026-04-08")] alias lintegral_finset_sum' := lintegral_finsetSum'
+
+theorem lintegral_finsetSum (s : Finset β) {f : β → α → ℝ≥0∞} (hf : ∀ b ∈ s, Measurable (f b)) :
     ∫⁻ a, ∑ b ∈ s, f b a ∂μ = ∑ b ∈ s, ∫⁻ a, f b a ∂μ :=
-  lintegral_finset_sum' s fun b hb => (hf b hb).aemeasurable
+  lintegral_finsetSum' s fun b hb => (hf b hb).aemeasurable
+
+@[deprecated (since := "2026-04-08")] alias lintegral_finset_sum := lintegral_finsetSum
 
 theorem lintegral_tsum [Countable β] {f : β → α → ℝ≥0∞} (hf : ∀ i, AEMeasurable (f i) μ) :
     ∫⁻ a, ∑' i, f i a ∂μ = ∑' i, ∫⁻ a, f i a ∂μ := by
   classical
   simp only [ENNReal.tsum_eq_iSup_sum]
   rw [lintegral_iSup_directed]
-  · simp [lintegral_finset_sum' _ fun i _ => hf i]
+  · simp [lintegral_finsetSum' _ fun i _ => hf i]
   · intro b
     exact Finset.aemeasurable_fun_sum _ fun i _ => hf i
   · intro s t

@@ -29,7 +29,7 @@ is implied by the fact that a nonarchimedean group is totally separated.
 See Proposition 2.3.9 and Problem 63 in [F. Q. Gouvêa, *p-adic numbers*][gouvea1997].
 -/
 
-@[expose] public section
+public section
 
 open Pointwise TopologicalSpace
 

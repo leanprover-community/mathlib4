@@ -196,7 +196,6 @@ theorem continuous_map_sInf {α : Type*} [TopologicalSpace α]
     {S : Set (Setoid α)} {s : Setoid α} (h : s ∈ S) : Continuous (Setoid.map_sInf h) :=
   continuous_coinduced_rng
 
-set_option backward.isDefEq.respectTransparency false in
 instance {p : X → Prop} [TopologicalSpace X] [DiscreteTopology X] : DiscreteTopology (Subtype p) :=
   ⟨bot_unique fun s _ => ⟨(↑) '' s, isOpen_discrete _, preimage_image_eq _ Subtype.val_injective⟩⟩
 

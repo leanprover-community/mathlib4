@@ -20,7 +20,7 @@ Note: the definitions of the operations included in this file can be found in
 `Mathlib/Data/ENNReal/Basic.lean`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset
 
@@ -500,7 +500,6 @@ theorem image_coe_Ioc (x y : ℝ≥0) : (↑) '' Ioc x y = Ioc (x : ℝ≥0∞) 
 @[simp]
 theorem image_coe_Ioo (x y : ℝ≥0) : (↑) '' Ioo x y = Ioo (x : ℝ≥0∞) y := WithTop.image_coe_Ioo
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem image_coe_uIcc (x y : ℝ≥0) : (↑) '' uIcc x y = uIcc (x : ℝ≥0∞) y := by simp [uIcc]
 

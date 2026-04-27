@@ -12,7 +12,7 @@ public import Mathlib.AlgebraicTopology.ModelCategory.Basic
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

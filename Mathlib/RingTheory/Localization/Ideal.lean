@@ -144,7 +144,7 @@ theorem under_map_of_isPrimary_disjoint
     {I : Ideal R} (hI : I.IsPrimary) (hM : Disjoint (M : Set R) I) :
     (Ideal.map (algebraMap R S) I).under R = I := by
   have key : Disjoint (M : Set R) I.radical := by
-    contrapose! hM
+    contrapose hM
     rw [Set.not_disjoint_iff] at hM ⊢
     obtain ⟨a, ha, k, hk⟩ := hM
     exact ⟨a ^ k, pow_mem ha k, hk⟩
@@ -398,6 +398,11 @@ lemma of_surjective {R' S' : Type*} [CommRing R'] [CommRing S'] [Algebra R' S']
       ← IsLocalization.mk'_one (M := M)] at e
     obtain ⟨r, hr, hr'⟩ := (IsLocalization.mk'_mem_map_algebraMap_iff M _ _ _ _).mp (H' e)
     exact ⟨⟨_, r, hr, rfl⟩, by simpa [sub_eq_zero, mul_sub] using hr'⟩
+
+instance (I : Ideal R) :
+    IsLocalization (Algebra.algebraMapSubmonoid (R ⧸ I) M) (S ⧸ I.map (algebraMap R S)) :=
+  of_surjective M S (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective
+    (Ideal.Quotient.mk (I.map (algebraMap R S))) Ideal.Quotient.mk_surjective rfl (by simp)
 
 open Algebra in
 instance {P : Ideal R} [P.IsPrime] [IsDomain R] [IsDomain S] [FaithfulSMul R S] :
