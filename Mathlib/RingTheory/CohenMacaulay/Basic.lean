@@ -7,7 +7,7 @@ module
 
 public import Mathlib.RingTheory.KrullDimension.Regular
 public import Mathlib.RingTheory.Regular.Flat
-public import Mathlib.RingTheory.Regular.Ischebeck
+public import Mathlib.RingTheory.Depth.Ischebeck
 
 /-!
 
@@ -126,7 +126,7 @@ lemma associated_prime_minimal_of_isCohenMacaulay (M : ModuleCat.{v} R)
     rw [Order.krullDim_withBot, eq, ← ringKrullDim_quotient] at dim_le
     have nebot : ringKrullDim (R ⧸ p) ≠ ⊥ := quotient_prime_ringKrullDim_ne_bot mem.1
     have netop : (ringKrullDim (R ⧸ p)).unbot nebot ≠ ⊤ := by
-      have : FiniteRingKrullDim R := instFiniteRingKrullDimOfIsNoetherianRingOfIsLocalRing
+      have : FiniteRingKrullDim R := inferInstance
       have : ringKrullDim (R ⧸ p) ≠ ⊤ :=
         ne_top_of_le_ne_top ringKrullDim_ne_top
          (ringKrullDim_le_of_surjective (Ideal.Quotient.mk p) (Ideal.Quotient.mk_surjective))
@@ -518,14 +518,16 @@ lemma isCohenMacaulayRing_of_ringEquiv {R R' : Type*} [CommRing R] [CommRing R']
 lemma IsCohenMacaulayRing.of_isCohenMacaulayLocalRing [IsCohenMacaulayLocalRing R]
     [IsNoetherianRing R] : IsCohenMacaulayRing R := by
   apply (isCohenMacaulayRing_iff R).mpr (fun m hm ↦ ?_)
-  let _ := IsLocalization.at_units m.primeCompl (fun x hx ↦ by simpa [eq_maximalIdeal hm] using hx)
+  have := IsLocalization.of_le_isUnit (S := m.primeCompl)
+    (fun x hx ↦ by simpa [eq_maximalIdeal hm] using hx)
   let e := (IsLocalization.algEquiv m.primeCompl R (Localization.AtPrime m)).toRingEquiv
   exact isCohenMacaulayLocalRing_of_ringEquiv e
 
 lemma IsCohenMacaulayLocalRing.of_isLocalRing_of_isCohenMacaulayRing [IsLocalRing R]
     [IsNoetherianRing R] [IsCohenMacaulayRing R] : IsCohenMacaulayLocalRing R := by
-  let _ := IsLocalization.at_units (maximalIdeal R).primeCompl (fun x hx ↦ by simpa using hx)
-  let _ := (isCohenMacaulayRing_def R).mp ‹_› (maximalIdeal R) inferInstance
+  have := IsLocalization.of_le_isUnit (S := (maximalIdeal R).primeCompl)
+    (fun x hx ↦ by simpa using hx)
+  have := (isCohenMacaulayRing_def R).mp ‹_› (maximalIdeal R) inferInstance
   let e := (IsLocalization.algEquiv (maximalIdeal R).primeCompl R
     (Localization.AtPrime (maximalIdeal R))).toRingEquiv
   exact isCohenMacaulayLocalRing_of_ringEquiv e.symm
