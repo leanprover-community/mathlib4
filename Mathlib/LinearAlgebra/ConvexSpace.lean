@@ -90,7 +90,7 @@ theorem mk_single (x : M) {nonneg total} :
 def duple (x y : M) {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) : StdSimplex R M where
   weights := Finsupp.single x s + Finsupp.single y t
   nonneg := add_nonneg (by simpa) (by simpa)
-  total := by classical simp [sum_add_index, h]
+  total := by classical simpa [sum_add_index]
 
 /--
 Map a function over the support of a standard simplex.
