@@ -6,7 +6,10 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
+public import Mathlib.MeasureTheory.Function.LpSeminorm.SMul
 public import Mathlib.MeasureTheory.Integral.MeanInequalities
+public import Mathlib.Algebra.Algebra.Rat
+import Mathlib.Data.NNReal.Defs
 
 /-!
 # Triangle inequality for `Lp`-seminorm
@@ -18,7 +21,7 @@ as well as simple corollaries.
 public section
 
 open Filter ENNReal
-open scoped Topology
+open scoped Topology BigOperators
 
 namespace MeasureTheory
 
@@ -132,7 +135,35 @@ theorem eLpNorm_sum_le [ContinuousAdd ε'] {ι} {f : ι → α → ε'} {s : Fin
     (fun _f _g hf hg => eLpNorm_add_le hf hg hp1)
     (fun _f _g hf hg => hf.add hg) _ hfs
 
--- TODO: We can prove `eLpNorm_expect_le` once we have `Module ℚ≥0 ℝ≥0∞`
+noncomputable local instance : Module ℚ≥0 ℝ≥0∞ :=
+  Module.compHom ℝ≥0∞ (algebraMap ℚ≥0 NNReal)
+
+local instance : PosSMulMono ℚ≥0 ℝ≥0∞ where
+  smul_le_smul_of_nonneg_left q _ a b hab := by
+    rw [← NNRat.cast_smul_eq_nnqsmul NNReal, ← NNRat.cast_smul_eq_nnqsmul NNReal]
+    refine PosSMulMono.smul_le_smul_of_nonneg_left ?_ hab
+    exact NNRat.cast_nonneg q
+
+theorem eLpNorm_expect_le {F : Type*} [NormedAddCommGroup F] [inst : Module ℚ≥0 F] [NormedSpace ℝ F]
+    {ι} {s : Finset ι} {f : ι → α → F} (hfs : ∀ i ∈ s, AEStronglyMeasurable (f i) μ)
+    (hp1 : 1 ≤ p) :
+    eLpNorm (𝔼 i ∈ s, f i) p μ ≤ 𝔼 i ∈ s, eLpNorm (f i) p μ := by
+  refine Finset.le_expect_of_subadditive_on_pred (m := fun f : α → F ↦ eLpNorm f p μ)
+    (p := fun f ↦ AEStronglyMeasurable f μ) eLpNorm_zero ?_ ?_ ?_ hfs
+  · intro f g hf hg
+    exact eLpNorm_add_le hf hg hp1
+  · intro f g hf hg
+    exact hf.add hg
+  · intro n f hf
+    simp only
+    set q : ℚ≥0 := (n : ℚ≥0)⁻¹
+    have hq : ‖(q : ℝ)‖ₑ = (q : NNReal) := by
+      change ‖((q : NNReal) : ℝ)‖ₑ = (q : NNReal)
+      simp
+    change eLpNorm (q • f) p μ = (q : NNReal) * eLpNorm f p μ
+    rw [show q • f = (q : ℝ) • f by
+      rw [← NNRat.cast_smul_eq_nnqsmul ℝ]]
+    rw [eLpNorm_const_smul, hq]
 
 theorem MemLp.add [ContinuousAdd ε] (hf : MemLp f p μ) (hg : MemLp g p μ) : MemLp (f + g) p μ :=
   ⟨AEStronglyMeasurable.add hf.1 hg.1, eLpNorm_add_lt_top hf hg⟩
@@ -141,26 +172,18 @@ theorem MemLp.sub {f g : α → E} (hf : MemLp f p μ) (hg : MemLp g p μ) : Mem
   rw [sub_eq_add_neg]
   exact hf.add hg.neg
 
+theorem memLp_finsetSum' [ContinuousAdd ε']
+    {ι} (s : Finset ι) {f : ι → α → ε'} (hf : ∀ i ∈ s, MemLp (f i) p μ) :
+    MemLp (∑ i ∈ s, f i) p μ :=
+  Finset.sum_induction f (fun g ↦ MemLp g p μ) (fun _ _ ↦ MemLp.add) MemLp.zero' hf
+
 theorem memLp_finsetSum [ContinuousAdd ε']
     {ι} (s : Finset ι) {f : ι → α → ε'} (hf : ∀ i ∈ s, MemLp (f i) p μ) :
     MemLp (fun a => ∑ i ∈ s, f i a) p μ := by
-  haveI : DecidableEq ι := Classical.decEq _
-  revert hf
-  refine Finset.induction_on s ?_ ?_
-  · simp only [MemLp.zero', Finset.sum_empty, imp_true_iff]
-  · intro i s his ih hf
-    simp only [his, Finset.sum_insert, not_false_iff]
-    exact (hf i (s.mem_insert_self i)).add (ih fun j hj => hf j (Finset.mem_insert_of_mem hj))
-
-@[deprecated (since := "2026-04-08")] alias memLp_finset_sum := memLp_finsetSum
-
-theorem memLp_finsetSum' [ContinuousAdd ε']
-    {ι} (s : Finset ι) {f : ι → α → ε'} (hf : ∀ i ∈ s, MemLp (f i) p μ) :
-    MemLp (∑ i ∈ s, f i) p μ := by
-  convert memLp_finsetSum s hf using 1
-  ext x
-  simp
+  simp [← Finset.sum_apply, memLp_finsetSum' s hf]
 
 @[deprecated (since := "2026-04-08")] alias memLp_finset_sum' := memLp_finsetSum'
+
+@[deprecated (since := "2026-04-08")] alias memLp_finset_sum := memLp_finsetSum
 
 end MeasureTheory
