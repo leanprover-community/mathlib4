@@ -341,7 +341,7 @@ theorem isEssSurj_iff_isEssSurj_mapOfQuot (f : A ⟶ B) {I : Ideal A} {J : Ideal
         ← ObjectProperty.FullSubcategory.comp_hom, ← toOfQuot_comp_mapOfQuot (I := I) f hf,
         ObjectProperty.FullSubcategory.comp_hom, LocAlgCat.mapCotangent_comp, LinearMap.coe_comp]
       exact Surjective.comp (LocAlgCat.surjective_mapCotangent_of_surjective h.surjective)
-        <| LocAlgCat.surjective_mapCotangent_of_surjective Ideal.Quotient.mk_surjective
+        (LocAlgCat.surjective_mapCotangent_of_surjective Ideal.Quotient.mk_surjective)
     · exact ((LocAlgCat.bijective_mapCotangent_toOfQuot_iff J).mpr hJ).injective
   · apply isEssSurj_toOfQuot_of_le at hI
     apply IsEssSurj.surjective_of_comp_left (A.toOfQuot I ≫ (mapOfQuot f hf))

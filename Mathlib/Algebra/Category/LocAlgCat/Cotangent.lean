@@ -176,26 +176,18 @@ theorem surjective_of_surjective_mapCotangent [IsPrecomplete (maximalIdeal A) A]
     [IsNoetherianRing B] [haus : IsHausdorff (maximalIdeal B) B] (f : A ⟶ B)
     (h : Surjective (mapCotangent f)) : Surjective f.toAlgHom := by
   have map_eq : (maximalIdeal A).map f.toAlgHom = maximalIdeal B := by
-    let M : Submodule B (maximalIdeal B) := Submodule.comap (maximalIdeal B).subtype
-      ((maximalIdeal A).map f.toAlgHom)
-    suffices M = ⊤ by
-      refine le_antisymm f.map_maximalIdeal_le fun b hb ↦ ?_
-      have hb_mem : (⟨b, hb⟩ : maximalIdeal B) ∈ (⊤ : Submodule B (maximalIdeal B)) := trivial
-      rwa [← this] at hb_mem
-    rw [← CotangentSpace.map_eq_top_iff, Submodule.eq_top_iff']
-    intro x
-    obtain ⟨x, rfl⟩ := h x
+    refine le_antisymm f.map_maximalIdeal_le ?_
+    rw [← Submodule.comap_subtype_eq_top, ← CotangentSpace.map_eq_top_iff, Submodule.eq_top_iff']
+    intro x; obtain ⟨x, rfl⟩ := h x
     obtain ⟨x, rfl⟩ := (maximalIdeal A).toCotangent_surjective x
     exact Submodule.mem_map_of_mem <| Ideal.mem_map_of_mem f.toAlgHom x.prop
   rw [← map_eq, ← Ideal.map_coe, ← AlgHom.toRingHom_eq_coe] at haus
-  apply surjective_of_mk_map_comp_surjective (I := maximalIdeal A)
-  intro y
+  refine surjective_of_mk_map_comp_surjective (I := maximalIdeal A) _ fun y ↦ ?_
   obtain ⟨y, rfl⟩ := Ideal.Quotient.mk_surjective y
   obtain ⟨x, hx⟩ := A.residue_surjective (B.residue y)
-  use x
-  rw [RingHom.comp_apply, Ideal.Quotient.eq, AlgHom.toRingHom_eq_coe, Ideal.map_coe, map_eq,
-    ← residue_eq_zero_iff, map_sub, sub_eq_zero, ← hx]
-  exact DFunLike.congr_fun f.residue_comp x
+  exact ⟨x, by rw [RingHom.comp_apply, Ideal.Quotient.eq, AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
+    Ideal.map_coe, map_eq, ← residue_eq_zero_iff, map_sub, sub_eq_zero, ← hx, ← AlgHom.comp_apply,
+    f.residue_comp]⟩
 
 section IsLocalRing
 
@@ -246,43 +238,41 @@ lemma mapCotangent_baseCotangentMap_apply [Algebra.IsIntegral Λ k] (f : A ⟶ B
 
 open Submodule in
 theorem range_baseCotangentMap [Algebra.IsIntegral Λ k] :
-    A.baseCotangentMap.range = (mapCotangent A.toSpecialFiber).ker := ext fun x ↦ by
-  rcases (maximalIdeal A).toCotangent_surjective x with ⟨x, rfl⟩
-  rw [LinearMap.mem_range, LinearMap.mem_ker]
-  refine ⟨fun ⟨y, hy⟩ ↦ ?_, fun hx ↦ ?_⟩
-  · rw [← hy]; clear * -
+    A.baseCotangentMap.range = (mapCotangent A.toSpecialFiber).ker := by
+  refine le_antisymm (fun x hx ↦ ?_) (fun x hx ↦ ?_)
+  · rcases (maximalIdeal A).toCotangent_surjective x with ⟨x, rfl⟩
+    rcases hx with ⟨y, hy⟩
+    rw [← hy]; clear * -
     induction y with
     | zero => simp
     | tmul x y =>
       rcases (maximalIdeal Λ).toCotangent_surjective y with ⟨y, rfl⟩
       simp [Ideal.toCotangent_eq_zero]
-    | add x y hx hy => simp [hx, hy]
-  · rcases x with ⟨x, x_in⟩
-    simp only [mapCotangent_toCotangent, toAlgHom_toOfQuot_apply, Ideal.toCotangent_eq_zero] at hx
+    | add x y hx hy => rw [map_add]; exact add_mem hx hy
+  · rcases (maximalIdeal A).toCotangent_surjective x with ⟨⟨x, x_in⟩, rfl⟩
+    simp only [LinearMap.mem_ker, mapCotangent_toCotangent, toAlgHom_toOfQuot_apply,
+      Ideal.toCotangent_eq_zero] at hx
     rw [← toAlgHom_toOfQuot_apply, ← map_toAlgHom_toOfQuot_maximalIdeal_eq, ← Ideal.map_pow,
       ← Ideal.mem_comap, Ideal.comap_map_of_surjective' _ surjective_toAlgHom_toOfQuot,
       ker_toAlgHom_toOfQuot, mem_sup] at hx
     rcases hx with ⟨u, u_in, v, v_in, huv⟩
-    simp_rw [← LinearMap.mem_range, ← huv]
+    simp_rw [← huv]
     have pow_le : maximalIdeal A ^ 2 ≤ maximalIdeal A := Ideal.pow_le_self (by simp)
     have : IsLocalHom (algebraMap Λ A) := isLocalHom_algebraMap A
-    change (maximalIdeal A).toCotangent ⟨u, pow_le u_in⟩ + (maximalIdeal A).toCotangent
-      ⟨v, map_maximalIdeal_le _ v_in⟩ ∈ _
-    rw [(Ideal.toCotangent_eq_zero ..).mpr ‹_›, zero_add]
+    rw [← AddMemClass.mk_add_mk _ u v (pow_le u_in) (map_maximalIdeal_le _ v_in), map_add,
+      (Ideal.toCotangent_eq_zero ..).mpr ‹_›, zero_add]
     clear * -; rw [Ideal.map, Ideal.span] at v_in
     induction v_in using span_induction with
     | mem _ hx =>
       obtain ⟨x, x_in, rfl⟩ := hx
       exact ⟨1 ⊗ₜ (maximalIdeal Λ).toCotangent ⟨x, x_in⟩, by simp⟩
-    | zero => use 0; simp [show (⟨0, _⟩ : maximalIdeal A) = 0 by rfl]
+    | zero => simp [(mk_eq_zero ..).mpr]
     | add z w hz hw ihz ihw =>
-      rw [show (⟨z + w, _⟩ : maximalIdeal A) = ⟨z, map_maximalIdeal_le _ hz⟩ +
-        ⟨w, map_maximalIdeal_le _ hw⟩ by simp, map_add]
-      exact add_mem (ihz hz) (ihw hw)
+      simpa only [← AddMemClass.mk_add_mk _ z w (map_maximalIdeal_le _ hz)
+        (map_maximalIdeal_le _ hw)] using add_mem (ihz hz) (ihw hw)
     | smul a x hx ihx =>
-      rw [show (⟨a • x, _⟩ : maximalIdeal A) = a • ⟨x, map_maximalIdeal_le _ hx⟩ by simp, map_smul,
-        ← residue_smul_cotangent]
-      exact smul_mem _ _ (ihx hx)
+      simpa only [← SetLike.mk_smul_mk _ _ _ (map_maximalIdeal_le _ hx), map_smul,
+        ← residue_smul_cotangent] using smul_mem _ _ (ihx hx)
 
 theorem exact_baseCotangentMap_mapCotangent_toSpecialFiber [Algebra.IsIntegral Λ k] :
     Exact A.baseCotangentMap (mapCotangent A.toSpecialFiber) :=
