@@ -319,7 +319,6 @@ lemma outerKernel_def (f : X → V) (x y) :
     (outerKernel 𝕜 f) x y = InnerProductSpace.rankOne 𝕜 (f x) (f y) :=
   coe_inj.mp rfl
 
-
 omit [CompleteSpace V] in
 variable (𝕜) in
 @[simp]
@@ -328,19 +327,16 @@ lemma outerKernel_apply (f : X → V) (xv₁ xv₂ : X × V) :
     = (starRingEnd 𝕜) ⟪ f xv₁.1, xv₁.2⟫_𝕜 * ⟪ f xv₂.1, xv₂.2⟫_𝕜 := by
   simp_rw [outerKernel_def, rankOne_apply, inner_smul_left]
 
-
 variable (𝕜) in
 lemma outerKernel_posSemidef (f : X → V) : (outerKernel 𝕜 f).PosSemidef := by
-  have h := (posSemidef_tfae (K := outerKernel 𝕜 f)).out 0 2
-  rw [h]
-  refine ⟨?_, ?_⟩
+  apply ((posSemidef_tfae (K := outerKernel 𝕜 f)).out 0 2).mpr
+  refine ⟨?_, fun x ↦ ?_⟩
   · ext
     simp_rw [Matrix.conjTranspose_apply, outerKernel_def, star_eq_adjoint,
       InnerProductSpace.adjoint_rankOne]
-  intro x
-  simp_rw [outerKernel_def, rankOne_apply, inner_smul_left, Finsupp.sum, <-Finset.mul_sum,
-    <-Finset.sum_mul, ← map_sum, RCLike.conj_mul, RCLike.re_ofReal_pow]
-  simp
+  · simp_rw [outerKernel_def, rankOne_apply, inner_smul_left, Finsupp.sum, <-Finset.mul_sum,
+      <-Finset.sum_mul, ← map_sum, RCLike.conj_mul]
+    simp
 
 lemma posSemidef_of_mem (f : H) : ((‖f‖ : 𝕜) ^ 2 • kernel H - outerKernel 𝕜 f).PosSemidef := by
   apply ((posSemidef_tfae (K := (‖f‖ : 𝕜) ^ 2 • kernel H - outerKernel 𝕜 f)).out 0 2).mpr
@@ -350,7 +346,7 @@ lemma posSemidef_of_mem (f : H) : ((‖f‖ : 𝕜) ^ 2 • kernel H - outerKern
   simp_rw [Matrix.sub_apply, Matrix.smul_apply, outerKernel_def, coe_sub', coe_smul',
     Pi.sub_apply, Pi.smul_apply, rankOne_apply, inner_sub_left, Finsupp.sum,
     Finset.sum_sub_distrib, map_sub, map_sum, sub_nonneg, inner_smul_left, ← inner_kerFun,
-    kernel_inner, ← map_sum, ← Finset.mul_sum, ← Finset.sum_mul, ← map_sum, <-inner_sum,
+    kernel_inner, ← map_sum, ← Finset.mul_sum, ← Finset.sum_mul, ← map_sum, ← inner_sum,
     ← sum_inner, inner_self_eq_norm_sq_to_K, RCLike.conj_mul, RCLike.re_ofReal_pow, map_pow,
     RCLike.conj_ofReal, RCLike.mul_re, RCLike.im_ofReal_pow, mul_zero, sub_zero,
     RCLike.re_ofReal_pow, ← mul_pow]
