@@ -435,9 +435,9 @@ of `ℕ` assuming there is no wrap-around. -/
 lemma isAddFreimanIso_Iic (hm : m ≠ 0) (hkmn : m * k ≤ n) :
     IsAddFreimanIso m (Iic (Fin.ofNat (n + 1) k)) (Iic k) val := by
   have aux : k < n + 1 := Nat.lt_succ_iff.2 <| le_trans (Nat.le_mul_of_pos_left _ hm.bot_lt) hkmn
-  have h := isAddFreimanIso_image_val hm hkmn (Iic (Fin.ofNat (n + 1) k)) <| by
+  convert isAddFreimanIso_image_val hm hkmn (Iic (Fin.ofNat (n + 1) k)) <| by
     simp [le_def, Nat.mod_eq_of_lt aux]
-  suffices (val '' Iic (Fin.ofNat (n + 1) k)) = Set.Iic k by rwa [this] at h
+  symm
   ext i
   simp only [ofNat_eq_cast, mem_image, Set.mem_Iic, le_def, val_natCast, Nat.mod_eq_of_lt aux]
   constructor
@@ -451,10 +451,10 @@ assuming there is no wrap-around. -/
 lemma isAddFreimanIso_Iio (hm : m ≠ 0) (hkmn : m * k ≤ n) :
     IsAddFreimanIso m (Iio (Fin.ofNat (n + 1) k)) (Iio k) val := by
   have aux : k < n + 1 := Nat.lt_succ_iff.2 <| le_trans (Nat.le_mul_of_pos_left _ hm.bot_lt) hkmn
-  have h := isAddFreimanIso_image_val hm hkmn (Iio (Fin.ofNat (n + 1) k)) <| by
+  convert isAddFreimanIso_image_val hm hkmn (Iio (Fin.ofNat (n + 1) k)) <| by
     simp only [ofNat_eq_cast, Set.mem_Iio, lt_def, val_natCast, Nat.mod_eq_of_lt aux]
     grind
-  suffices (val '' Iio (Fin.ofNat (n + 1) k)) = Set.Iio k by rwa [this] at h
+  symm
   ext i
   simp only [ofNat_eq_cast, mem_image, Set.mem_Iio, lt_def, val_natCast, Nat.mod_eq_of_lt aux]
   constructor
