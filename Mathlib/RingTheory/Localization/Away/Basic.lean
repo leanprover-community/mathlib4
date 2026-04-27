@@ -332,16 +332,7 @@ noncomputable def atOne [IsLocalization.Away (1 : R) S] : R ≃ₐ[R] S :=
 theorem away_of_isUnit_of_bijective {R : Type*} (S : Type*) [CommSemiring R] [CommSemiring S]
     [Algebra R S] {r : R} (hr : IsUnit r) (H : Function.Bijective (algebraMap R S)) :
     IsLocalization.Away r S :=
-  { map_units := by
-      rintro ⟨_, n, rfl⟩
-      exact (algebraMap R S).isUnit_map (hr.pow _)
-    surj := fun z => by
-      obtain ⟨z', rfl⟩ := H.2 z
-      exact ⟨⟨z', 1⟩, by simp⟩
-    exists_of_eq := fun {x y} => by
-      rw [H.1.eq_iff]
-      rintro rfl
-      exact ⟨1, rfl⟩ }
+  .of_le_isUnit_of_bijective (by simpa [Submonoid.powers_le] using hr.map (algebraMap R S)) H
 
 variable {R S}
 
