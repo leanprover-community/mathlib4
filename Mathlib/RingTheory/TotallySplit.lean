@@ -214,23 +214,17 @@ section
 variable {R S A B : Type u} [CommRing R] [CommRing S] [CommRing A] [CommRing B]
   [Algebra R A] [Algebra R S] [Algebra R B]
 
-@[expose, simps!]
-def AlgHom.compRight {E F : Type*} (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
-    (σ : E → F) :
-    (F → S) →ₐ[R] E → S :=
-  Pi.algHom R _ (fun f ↦ Pi.evalAlgHom R _ (σ f))
-
 /-- A homomorphism of `R`-algebras `f : A →ₐ[R] B` is split if there exist `n`, `m` such
 that `A ≃ₐ[R] Fin n → R` and `B ≃ₐ[R] Fin m → R` and modulo these isomorphisms, `f` is induced
 by a reindexing `σ : Fin m → Fin n`. -/
-def AlgHom.IsSplit (f : A →ₐ[R] B) : Prop :=
+def AlgHom.IsFiniteSplit (f : A →ₐ[R] B) : Prop :=
   ∃ (n m : ℕ) (eA : A ≃ₐ[R] Fin n → R) (eB : B ≃ₐ[R] Fin m → R) (σ : Fin m → Fin n),
-    f = eB.symm.toAlgHom.comp ((AlgHom.compRight R R σ).comp eA)
+    f = eB.symm.toAlgHom.comp ((AlgHom.compRight R (fun _ ↦ R) σ).comp eA)
 
-lemma AlgHom.IsSplit.mk (f : A →ₐ[R] B) {E F : Type*} [_root_.Finite E] [_root_.Finite F]
+lemma AlgHom.IsFiniteSplit.mk (f : A →ₐ[R] B) {E F : Type*} [_root_.Finite E] [_root_.Finite F]
     (eA : A ≃ₐ[R] (E → R)) (eB : B ≃ₐ[R] (F → R)) (σ : F → E)
-    (h : eB.toAlgHom.comp f = (AlgHom.compRight R R σ).comp eA.toAlgHom) :
-    f.IsSplit := by
+    (h : eB.toAlgHom.comp f = (AlgHom.compRight R _ σ).comp eA.toAlgHom) :
+    f.IsFiniteSplit := by
   cases nonempty_fintype E
   cases nonempty_fintype F
   let eE := Fintype.equivFin E
@@ -245,31 +239,26 @@ lemma AlgHom.IsSplit.mk (f : A →ₐ[R] B) {E F : Type*} [_root_.Finite E] [_ro
     ext i
     simp [this, AlgHom.compRight]
 
-lemma AlgHom.compRight_apply' {E F : Type*} (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
-    (σ : E → F) (x : F → S) :
-    AlgHom.compRight R S σ x = fun i ↦ x (σ i) :=
-  rfl
-
 variable (S) in
-lemma AlgHom.IsSplit.tensorProductMap {f : A →ₐ[R] B} (hf : f.IsSplit) :
-    (Algebra.TensorProduct.map (.id S S) f).IsSplit := by
+lemma AlgHom.IsFiniteSplit.tensorProductMap {f : A →ₐ[R] B} (hf : f.IsFiniteSplit) :
+    (Algebra.TensorProduct.map (.id S S) f).IsFiniteSplit := by
   obtain ⟨n, m, eA, eB, σ, hf⟩ := hf
-  refine AlgHom.IsSplit.mk (E := Fin n) (F := Fin m) _
+  refine AlgHom.IsFiniteSplit.mk (E := Fin n) (F := Fin m) _
     ((Algebra.TensorProduct.congr .refl eA).trans (Algebra.TensorProduct.piScalarRight ..))
     ((Algebra.TensorProduct.congr .refl eB).trans (Algebra.TensorProduct.piScalarRight ..)) σ ?_
   ext a
   simp [hf]
 
 variable (S) in
-lemma AlgHom.IsSplit.iff_of_isScalarTower
+lemma AlgHom.IsFiniteSplit.iff_of_isScalarTower
     (T : Type u) [CommRing T] [Algebra R T] [Algebra S T]
     [IsScalarTower R S T] (f : A →ₐ[R] B) :
-    (Algebra.TensorProduct.map (.id T T) f).IsSplit ↔
+    (Algebra.TensorProduct.map (.id T T) f).IsFiniteSplit ↔
       (Algebra.TensorProduct.map (.id T T)
-        (Algebra.TensorProduct.map (.id S S) f)).IsSplit := by
+        (Algebra.TensorProduct.map (.id S S) f)).IsFiniteSplit := by
   refine ⟨?_, ?_⟩
   · rintro ⟨n, m, eA, eB, σ, hf⟩
-    refine AlgHom.IsSplit.mk (E := Fin n) (F := Fin m) _ ?_ ?_ σ ?_
+    refine AlgHom.IsFiniteSplit.mk (E := Fin n) (F := Fin m) _ ?_ ?_ σ ?_
     · exact (Algebra.TensorProduct.cancelBaseChange _ _ _ _ _).trans eA
     · exact (Algebra.TensorProduct.cancelBaseChange _ _ _ _ _).trans eB
     ext a i
@@ -278,7 +267,7 @@ lemma AlgHom.IsSplit.iff_of_isScalarTower
       AlgHom.coe_coe, Function.comp_apply] at this
     simp [this]
   · rintro ⟨n, m, eA, eB, σ, hf⟩
-    refine AlgHom.IsSplit.mk (E := Fin n) (F := Fin m) _ ?_ ?_ σ ?_
+    refine AlgHom.IsFiniteSplit.mk (E := Fin n) (F := Fin m) _ ?_ ?_ σ ?_
     · exact (Algebra.TensorProduct.cancelBaseChange _ _ _ _ _).symm.trans eA
     · exact (Algebra.TensorProduct.cancelBaseChange _ _ _ _ _).symm.trans eB
     ext a i
@@ -289,7 +278,7 @@ lemma AlgHom.IsSplit.iff_of_isScalarTower
 
 lemma AlgHom.eq_compRight_of_no_nontrivial_isIdempotentElem {R E F : Type*} [_root_.Finite E]
     [Nonempty E] [CommRing R] (H : ∀ e : R, IsIdempotentElem e → e = 0 ∨ e = 1)
-    (f : (E → R) →ₐ[R] F → R) : ∃ (σ : F → E), f = .compRight R R σ := by
+    (f : (E → R) →ₐ[R] F → R) : ∃ (σ : F → E), f = .compRight R _ σ := by
   nontriviality R
   cases nonempty_fintype E
   classical
@@ -342,7 +331,7 @@ lemma AlgHom.eq_compRight_of_no_nontrivial_isIdempotentElem {R E F : Type*} [_ro
 
 lemma AlgHom.eq_compRight_of_no_nontrivial_isIdempotentElem' {R E F : Type*} [_root_.Finite E]
     [CommRing R] [Nontrivial R] (H : ∀ e : R, IsIdempotentElem e → e = 0 ∨ e = 1)
-    (f : (E → R) →ₐ[R] F → R) : ∃ (σ : F → E), f = .compRight R R σ := by
+    (f : (E → R) →ₐ[R] F → R) : ∃ (σ : F → E), f = .compRight R _ σ := by
   cases isEmpty_or_nonempty E
   · have : Subsingleton (F → R) := f.codomain_trivial
     cases isEmpty_or_nonempty F
@@ -369,7 +358,7 @@ lemma IsLocalRing.isIdempotentElem_iff_eq_zero_or_eq_one {R : Type*} [CommRing R
 
 lemma RingHom.eq_compRight_of_isLocalHom {R E F : Type*} [_root_.Finite E] [CommRing R]
     (f : (E → R) →ₐ[R] F → R) [IsLocalRing R] :
-    ∃ (σ : F → E), f = .compRight R R σ := by
+    ∃ (σ : F → E), f = .compRight R _ σ := by
   apply AlgHom.eq_compRight_of_no_nontrivial_isIdempotentElem'
   intro e he
   rwa [IsLocalRing.isIdempotentElem_iff_eq_zero_or_eq_one] at he
@@ -441,7 +430,7 @@ lemma AlgHom.exists_cover_eq_compRight'' {R : Type*} {E F : Type u}
   let gₚ : (E → Localization.AtPrime p) →ₐ[Localization.AtPrime p] F → Localization.AtPrime p :=
     IsLocalization.mapₐ p.primeCompl (Localization.AtPrime p)
       (E → Localization.AtPrime p)
-      (F → Localization.AtPrime p) (.compRight R R σ)
+      (F → Localization.AtPrime p) (.compRight R (fun _ ↦ R) σ)
   have : fₚ = gₚ := by
     rw [hσ]
     apply AlgHom.coe_ringHom_injective
@@ -450,7 +439,7 @@ lemma AlgHom.exists_cover_eq_compRight'' {R : Type*} {E F : Type u}
     simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
       AlgHom.compRight_apply, IsLocalization.mapₐ_coe, IsLocalization.map_eq, gₚ]
     rfl
-  obtain ⟨⟨r, hr⟩, heq⟩ := AlgHom.exists_cover_eq_of_eq _ _ _ _ f (.compRight R R σ) this
+  obtain ⟨⟨r, hr⟩, heq⟩ := AlgHom.exists_cover_eq_of_eq _ _ _ _ f (.compRight R _ σ) this
   exact ⟨r, hr, σ, heq⟩
 
 lemma AlgHom.exists_isSplit [Module.Finite R A] [Algebra.Etale R A] [Module.Finite R B]
@@ -458,7 +447,7 @@ lemma AlgHom.exists_isSplit [Module.Finite R A] [Algebra.Etale R A] [Module.Fini
     ∃ (S : Type u) (_ : CommRing S) (_ : Algebra R S),
       Algebra.Etale R S ∧
       p ∈ Set.range (PrimeSpectrum.comap (algebraMap R S)) ∧
-      (Algebra.TensorProduct.map (AlgHom.id S S) f).IsSplit := by
+      (Algebra.TensorProduct.map (AlgHom.id S S) f).IsFiniteSplit := by
   classical
   wlog hA : Algebra.IsFiniteSplit R A
   · obtain ⟨S, _, _, _, ⟨p, rfl⟩, hS⟩ := Algebra.IsFiniteSplit.exists_tensorProduct_of_etale p
@@ -468,7 +457,7 @@ lemma AlgHom.exists_isSplit [Module.Finite R A] [Algebra.Etale R A] [Module.Fini
     have : IsScalarTower R S S' := .of_algebraMap_eq' rfl
     refine ⟨S', inferInstance, inferInstance, ?_, ⟨q, rfl⟩, ?_⟩
     · exact .comp _ S _
-    · rwa [AlgHom.IsSplit.iff_of_isScalarTower S]
+    · rwa [AlgHom.IsFiniteSplit.iff_of_isScalarTower S]
   wlog hB : Algebra.IsFiniteSplit R B
   · obtain ⟨S, _, _, _, ⟨p, rfl⟩, hS⟩ := Algebra.IsFiniteSplit.exists_tensorProduct_of_etale p
       (S := B)
@@ -479,7 +468,7 @@ lemma AlgHom.exists_isSplit [Module.Finite R A] [Algebra.Etale R A] [Module.Fini
     have : IsScalarTower R S S' := .of_algebraMap_eq' rfl
     refine ⟨S', inferInstance, inferInstance, ?_, ⟨q, rfl⟩, ?_⟩
     · exact .comp _ S _
-    · rwa [AlgHom.IsSplit.iff_of_isScalarTower S]
+    · rwa [AlgHom.IsFiniteSplit.iff_of_isScalarTower S]
   obtain ⟨n, ⟨eA⟩⟩ := hA
   obtain ⟨m, ⟨eB⟩⟩ := hB
   let f' : (Fin n → R) →ₐ[R] Fin m → R := eB.toAlgHom.comp (f.comp eA.symm.toAlgHom)
@@ -489,7 +478,7 @@ lemma AlgHom.exists_isSplit [Module.Finite R A] [Algebra.Etale R A] [Module.Fini
   · change p ∈ Set.range (PrimeSpectrum.comap <| algebraMap R (Localization.Away r))
     rwa [PrimeSpectrum.localization_away_comap_range _ r]
   · let e := TensorProduct.piScalarRight R (Localization.Away r) (Localization.Away r) (Fin m)
-    apply AlgHom.IsSplit.mk (E := Fin n) (F := Fin m) _
+    apply AlgHom.IsFiniteSplit.mk (E := Fin n) (F := Fin m) _
       (Algebra.TensorProduct.congr .refl eA |>.trans (Algebra.TensorProduct.piScalarRight ..))
       (Algebra.TensorProduct.congr .refl eB |>.trans (Algebra.TensorProduct.piScalarRight ..)) σ
     ext a : 2
