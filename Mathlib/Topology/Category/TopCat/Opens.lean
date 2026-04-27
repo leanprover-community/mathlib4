@@ -275,7 +275,6 @@ theorem mapIso_inv_app (f g : X ⟶ Y) (h : f = g) (U : Opens Y) :
   rfl
 
 /-- A homeomorphism of spaces gives an equivalence of categories of open sets. -/
-@[simps! unitIso counitIso]
 def mapMapIso {X Y : TopCat.{u}} (H : X ≅ Y) : Opens Y ≌ Opens X :=
   (TopCat.homeoOfIso H).opensCongr.equivalence.symm
 
@@ -286,6 +285,16 @@ lemma mapMapIso_functor {X Y : TopCat} (H : X ≅ Y) :
 @[simp]
 lemma mapMapIso_inverse {X Y : TopCat} (H : X ≅ Y) :
     (mapMapIso H).inverse = map H.inv := rfl
+
+@[simp]
+lemma mapMapIso_unitIso {X Y : TopCat} (H : X ≅ Y) :
+    (mapMapIso H).unitIso = NatIso.ofComponents (fun U ↦ eqToIso (by cat_disch))
+    (by cat_disch) := rfl
+
+@[simp]
+lemma mapMapIso_counitIso {X Y : TopCat} (H : X ≅ Y) :
+    (mapMapIso H).counitIso = NatIso.ofComponents (fun U ↦ eqToIso (by cat_disch))
+    (by cat_disch) := rfl
 
 end TopologicalSpace.Opens
 
