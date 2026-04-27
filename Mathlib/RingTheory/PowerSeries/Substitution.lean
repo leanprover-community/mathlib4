@@ -317,16 +317,6 @@ theorem subst_X (ha : HasSubst a) :
     subst a (X : R⟦X⟧) = a := by
   rw [← coe_substAlgHom ha, substAlgHom_X]
 
-/-- Given a power series `f`, if substition `f` into any power series is identity, then `f = X`. -/
-theorem subst_eq_id_iff_eq_X (f : PowerSeries R) (hf : HasSubst f) :
-    subst f = id ↔ f = X := by
-  constructor
-  · intro h
-    rw [← PowerSeries.subst_X hf (R := R), h, id_eq]
-  · intro h
-    funext
-    simp [h]
-
 omit [Algebra R S] in
 theorem map_subst {a : MvPowerSeries τ R} (ha : HasSubst a) {h : R →+* S} (f : PowerSeries R) :
     (f.subst a).map h = (f.map h).subst (a.map h) := by
