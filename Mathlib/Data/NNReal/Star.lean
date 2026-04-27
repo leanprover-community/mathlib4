@@ -12,7 +12,7 @@ public import Mathlib.Data.Real.Star
 # The non-negative real numbers are a \*-ring, with the trivial \*-structure
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset
 

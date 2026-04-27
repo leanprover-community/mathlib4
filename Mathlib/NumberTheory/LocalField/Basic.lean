@@ -126,6 +126,9 @@ def valueGroupWithZeroIsoInt : ValueGroupWithZero K ≃*o ℤᵐ⁰ := by
     (Units.map_injective (f := e.symm.toMonoidHom) e.symm.injective).nontrivial
   exact ⟨e.symm.trans (LocallyFiniteOrder.orderMonoidWithZeroEquiv _)⟩
 
+instance : IsCyclic (ValueGroupWithZero K)ˣ :=
+  (Units.mapEquiv (valueGroupWithZeroIsoInt K).toMulEquiv).isCyclic.mpr inferInstance
+
 instance : ValuativeRel.IsDiscrete K :=
   (ValuativeRel.nonempty_orderIso_withZeroMul_int_iff.mp ⟨valueGroupWithZeroIsoInt K⟩).1
 

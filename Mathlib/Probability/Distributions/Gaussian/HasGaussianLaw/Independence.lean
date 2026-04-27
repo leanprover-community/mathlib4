@@ -205,7 +205,7 @@ lemma HasGaussianLaw.iIndepFun_of_covariance_strongDual (hX : HasGaussianLaw (fu
     sum_sub_distrib, ← sum_mul, this]
   congr
   · simp_rw [← Complex.ofReal_sum]
-    rw [integral_finset_sum _ fun i _ ↦ ((hX.eval i).map_fun _).integrable.ofReal]
+    rw [integral_finsetSum _ fun i _ ↦ ((hX.eval i).map_fun _).integrable.ofReal]
   · rw [variance_fun_sum fun i ↦ ((hX.eval i).map_fun _).memLp_two]
     simp only [← sum_div, ← ofReal_sum, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
       div_left_inj', ofReal_inj]
