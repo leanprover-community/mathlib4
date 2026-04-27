@@ -48,8 +48,7 @@ variable {M : Type*} [TopologicalSpace M]
 /-- The orbit space of a properly discontinuous group action on a manifold inherits a
 `ChartedSpace` structure modeled on the same space. -/
 instance : ChartedSpace H (orbitRel.Quotient G M) :=
-  IsLocalHomeomorph.chartedSpace
-    isCoveringMap_quotientMk_of_properlyDiscontinuousSMul.isLocalHomeomorph
+  isCoveringMap_quotientMk_of_properlyDiscontinuousSMul.isLocalHomeomorph.chartedSpace
     Quotient.mk''_surjective
 
 end
