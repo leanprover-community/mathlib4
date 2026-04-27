@@ -3,17 +3,19 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Pi
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.Opposites
-import Mathlib.Algebra.Ring.Opposite
-import Mathlib.CategoryTheory.FintypeCat
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Preadditive.Basic
-import Mathlib.CategoryTheory.Preadditive.SingleObj
-import Mathlib.Data.Matrix.DMatrix
-import Mathlib.Data.Matrix.Mul
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Pi
+public import Mathlib.Algebra.BigOperators.Pi
+public import Mathlib.Algebra.Opposites
+public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.CategoryTheory.FintypeCat
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+public import Mathlib.CategoryTheory.Preadditive.Basic
+public import Mathlib.CategoryTheory.Preadditive.SingleObj
+public import Mathlib.Data.Matrix.DMatrix
+public import Mathlib.Data.Matrix.Mul
 
 /-!
 # Matrices over a category.
@@ -47,6 +49,8 @@ and whose morphisms are matrices with components in `R`.
 Ideally this would conveniently interact with both `Mat_` and `Matrix`.
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory CategoryTheory.Preadditive
@@ -145,11 +149,8 @@ instance (M N : Mat_ C) : Inhabited (M ⟶ N) :=
 
 end
 
--- Porting note: to ease the construction of the preadditive structure, the `AddCommGroup`
--- was introduced separately and the lemma `add_apply` was moved upwards
-instance (M N : Mat_ C) : AddCommGroup (M ⟶ N) := by
-  change AddCommGroup (DMatrix M.ι N.ι _)
-  infer_instance
+instance (M N : Mat_ C) : AddCommGroup (M ⟶ N) :=
+  inferInstanceAs <| AddCommGroup (DMatrix M.ι N.ι _)
 
 @[simp]
 theorem add_apply {M N : Mat_ C} (f g : M ⟶ N) (i j) : (f + g) i j = f i j + g i j :=
@@ -161,6 +162,7 @@ instance : Preadditive (Mat_ C) where
 
 open CategoryTheory.Limits
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- We now prove that `Mat_ C` has finite biproducts.
 
@@ -193,8 +195,8 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
               simp_rw [dite_comp, comp_dite]
               simp only [ite_self, dite_eq_ite, Limits.comp_zero, Limits.zero_comp,
                 eqToHom_trans]
-              erw [Finset.sum_sigma]
-              dsimp
+              rw [← Finset.univ_sigma_univ, Finset.sum_sigma]
+              dsimp +instances
               simp only [if_true, Finset.sum_dite_irrel, Finset.mem_univ,
                 Finset.sum_const_zero, Finset.sum_dite_eq']
               split_ifs with h h'
@@ -251,6 +253,7 @@ def mapMat_ (F : C ⥤ D) [Functor.Additive F] : Mat_ C ⥤ Mat_ D where
   obj M := ⟨M.ι, fun i => F.obj (M.X i)⟩
   map f i j := F.map (f i j)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The identity functor induces the identity functor on matrix categories.
 -/
 @[simps!]
@@ -261,6 +264,7 @@ def mapMatId : (𝟭 C).mapMat_ ≅ 𝟭 (Mat_ C) :=
     cases M; cases N
     simp [comp_dite, dite_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Composite functors induce composite functors on matrix categories.
 -/
 @[simps!]
@@ -303,6 +307,7 @@ open CategoryTheory.Limits
 
 variable {C}
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- Every object in `Mat_ C` is isomorphic to the biproduct of its summands.
 -/
@@ -338,14 +343,12 @@ def isoBiproductEmbedding (M : Mat_ C) : M ≅ ⨁ fun i => (embedding C).obj (M
 
 variable {D : Type u₁} [Category.{v₁} D] [Preadditive D]
 
--- Porting note: added because it was not found automatically
+/-- This instance can be found using `Functor.hasBiproduct_of_preserves'`, but it is faster
+to keep it here. -/
 instance (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) :
     HasBiproduct (fun i => F.obj ((embedding C).obj (M.X i))) :=
   F.hasBiproduct_of_preserves _
 
--- Porting note: removed the @[simps] attribute as the automatically generated lemmas
--- are not very useful; two more useful lemmas have been added just after this
--- definition in order to ease the proof of `additiveObjIsoBiproduct_naturality`
 /-- Every `M` is a direct sum of objects from `C`, and `F` preserves biproducts. -/
 def additiveObjIsoBiproduct (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) :
     F.obj M ≅ ⨁ fun i => F.obj ((embedding C).obj (M.X i)) :=
@@ -360,6 +363,7 @@ lemma additiveObjIsoBiproduct_hom_π (F : Mat_ C ⥤ D) [Functor.Additive F] (M 
   erw [biproduct.lift_π, ← F.map_comp]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_additiveObjIsoBiproduct_inv (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) (i : M.ι) :
     biproduct.ι _ i ≫ (additiveObjIsoBiproduct F M).inv =
@@ -369,6 +373,7 @@ lemma ι_additiveObjIsoBiproduct_inv (F : Mat_ C ⥤ D) [Functor.Additive F] (M 
 
 variable [HasFiniteBiproducts D]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem additiveObjIsoBiproduct_naturality (F : Mat_ C ⥤ D) [Functor.Additive F] {M N : Mat_ C}
     (f : M ⟶ N) :
@@ -409,6 +414,7 @@ def lift (F : C ⥤ D) [Functor.Additive F] : Mat_ C ⥤ D where
     · subst h; simp
     · simp [h]
 
+set_option backward.isDefEq.respectTransparency false in
 instance lift_additive (F : C ⥤ D) [Functor.Additive F] : Functor.Additive (lift F) where
 
 /-- An additive functor `C ⥤ D` factors through its lift to `Mat_ C ⥤ D`. -/
@@ -419,6 +425,7 @@ def embeddingLiftIso (F : C ⥤ D) [Functor.Additive F] : embedding C ⋙ lift F
       { hom := biproduct.desc fun _ => 𝟙 (F.obj X)
         inv := biproduct.lift fun _ => 𝟙 (F.obj X) })
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `Mat_.lift F` is the unique additive functor `L : Mat_ C ⥤ D` such that `F ≅ embedding C ⋙ L`.
 -/
 def liftUnique (F : C ⥤ D) [Functor.Additive F] (L : Mat_ C ⥤ D) [Functor.Additive L]
@@ -492,16 +499,14 @@ where the morphisms are matrices with components in `R`. -/
 @[nolint unusedArguments]
 def Mat (_ : Type u) :=
   FintypeCat.{u}
-
-instance (R : Type u) : Inhabited (Mat R) := by
-  dsimp [Mat]
-  infer_instance
+deriving Inhabited
 
 instance (R : Type u) : CoeSort (Mat R) (Type u) :=
   FintypeCat.instCoeSort
 
 open Matrix
 
+attribute [local instance] FintypeCat.fintype in
 open scoped Classical in
 instance (R : Type u) [Semiring R] : Category (Mat R) where
   Hom X Y := Matrix X Y R
@@ -536,10 +541,12 @@ theorem id_apply_self (M : Mat R) (i : M) : (𝟙 M : Matrix M M R) i i = 1 := b
 theorem id_apply_of_ne (M : Mat R) (i j : M) (h : i ≠ j) : (𝟙 M : Matrix M M R) i j = 0 := by
   simp [id_apply, h]
 
+attribute [local instance] FintypeCat.fintype in
 theorem comp_def {M N K : Mat R} (f : M ⟶ N) (g : N ⟶ K) :
     f ≫ g = fun i k => ∑ j : N, f i j * g j k :=
   rfl
 
+attribute [local instance] FintypeCat.fintype in
 @[simp]
 theorem comp_apply {M N K : Mat R} (f : M ⟶ N) (g : N ⟶ K) (i k) :
     (f ≫ g) i k = ∑ j : N, f i j * g j k :=
@@ -567,7 +574,7 @@ def equivalenceSingleObjInverse : Mat_ (SingleObj Rᵐᵒᵖ) ⥤ Mat R where
     -- Porting note: this proof was automatic in mathlib3
     ext
     simp only [Mat_.comp_apply, comp_apply]
-    apply Finset.unop_sum
+    convert Finset.unop_sum _ _
 
 instance : (equivalenceSingleObjInverse R).Faithful where
   map_injective w := by
@@ -578,6 +585,7 @@ instance : (equivalenceSingleObjInverse R).Faithful where
 instance : (equivalenceSingleObjInverse R).Full where
   map_surjective f := ⟨fun i j => MulOpposite.op (f i j), rfl⟩
 
+attribute [local instance] FintypeCat.fintype in
 instance : (equivalenceSingleObjInverse R).EssSurj where
   mem_essImage X :=
     ⟨{  ι := X
@@ -590,14 +598,11 @@ and the category of matrices over that ring considered as a single-object catego
 def equivalenceSingleObj : Mat R ≌ Mat_ (SingleObj Rᵐᵒᵖ) :=
   (equivalenceSingleObjInverse R).asEquivalence.symm
 
--- Porting note: added as this was not found automatically
-instance (X Y : Mat R) : AddCommGroup (X ⟶ Y) := by
-  change AddCommGroup (Matrix X Y R)
-  infer_instance
+instance (X Y : Mat R) : AddCommGroup (X ⟶ Y) :=
+  inferInstanceAs <| AddCommGroup (Matrix X Y R)
 
 variable {R}
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[simp]
 theorem add_apply {M N : Mat R} (f g : M ⟶ N) (i j) : (f + g) i j = f i j + g i j :=
   rfl

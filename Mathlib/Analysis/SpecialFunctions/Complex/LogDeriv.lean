@@ -3,15 +3,20 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
-import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Deriv
-import Mathlib.Analysis.Calculus.LogDeriv
-import Mathlib.Analysis.SpecialFunctions.Complex.Log
-import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+module
+
+public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Deriv
+public import Mathlib.Analysis.Calculus.LogDeriv
+public import Mathlib.Analysis.Meromorphic.Basic
+public import Mathlib.Analysis.SpecialFunctions.Complex.Log
+public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
 /-!
 # Differentiability of the complex `log` function
 
 -/
+
+public section
 
 assert_not_exists IsConformalMap Conformal
 
@@ -24,33 +29,9 @@ namespace Complex
 theorem isOpenMap_exp : IsOpenMap exp :=
   isOpenMap_of_hasStrictDerivAt hasStrictDerivAt_exp exp_ne_zero
 
-/-- `Complex.exp` as a `PartialHomeomorph` with `source = {z | -π < im z < π}` and
-`target = {z | 0 < re z} ∪ {z | im z ≠ 0}`. This definition is used to prove that `Complex.log`
-is complex differentiable at all points but the negative real semi-axis. -/
-noncomputable def expPartialHomeomorph : PartialHomeomorph ℂ ℂ :=
-  PartialHomeomorph.ofContinuousOpen
-    { toFun := exp
-      invFun := log
-      source := {z : ℂ | z.im ∈ Ioo (-π) π}
-      target := slitPlane
-      map_source' := by
-        rintro ⟨x, y⟩ ⟨h₁ : -π < y, h₂ : y < π⟩
-        refine (not_or_of_imp fun hz => ?_).symm
-        obtain rfl : y = 0 := by
-          rw [exp_im] at hz
-          simpa [(Real.exp_pos _).ne', Real.sin_eq_zero_iff_of_lt_of_lt h₁ h₂] using hz
-        rw [← ofReal_def, exp_ofReal_re]
-        exact Real.exp_pos x
-      map_target' := fun z h => by
-        simp only [mem_setOf, log_im, mem_Ioo, neg_pi_lt_arg, arg_lt_pi_iff, true_and]
-        exact h.imp_left le_of_lt
-      left_inv' := fun _ hx => log_exp hx.1 (le_of_lt hx.2)
-      right_inv' := fun _ hx => exp_log <| slitPlane_ne_zero hx }
-    continuous_exp.continuousOn isOpenMap_exp (isOpen_Ioo.preimage continuous_im)
-
 theorem hasStrictDerivAt_log {x : ℂ} (h : x ∈ slitPlane) : HasStrictDerivAt log x⁻¹ x :=
   have h0 : x ≠ 0 := slitPlane_ne_zero h
-  expPartialHomeomorph.hasStrictDerivAt_symm h h0 <| by
+  expOpenPartialHomeomorph.hasStrictDerivAt_symm h h0 <| by
     simpa [exp_log h0] using hasStrictDerivAt_exp (log x)
 
 lemma hasDerivAt_log {z : ℂ} (hz : z ∈ slitPlane) : HasDerivAt log z⁻¹ z :=
@@ -66,7 +47,7 @@ theorem hasStrictFDerivAt_log_real {x : ℂ} (h : x ∈ slitPlane) :
   (hasStrictDerivAt_log h).complexToReal_fderiv
 
 theorem contDiffAt_log {x : ℂ} (h : x ∈ slitPlane) {n : WithTop ℕ∞} : ContDiffAt ℂ n log x :=
-  expPartialHomeomorph.contDiffAt_symm_deriv (exp_ne_zero <| log x) h (hasDerivAt_exp _)
+  expOpenPartialHomeomorph.contDiffAt_symm_deriv (exp_ne_zero <| log x) h (hasDerivAt_exp _)
     contDiff_exp.contDiffAt
 
 end Complex
@@ -79,8 +60,9 @@ open scoped Topology
 
 variable {α : Type*} [TopologicalSpace α] {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
-theorem HasStrictFDerivAt.clog {f : E → ℂ} {f' : E →L[ℂ] ℂ} {x : E} (h₁ : HasStrictFDerivAt f f' x)
-    (h₂ : f x ∈ slitPlane) : HasStrictFDerivAt (fun t => log (f t)) ((f x)⁻¹ • f') x :=
+theorem HasStrictFDerivAt.clog {f : E → ℂ} {f' : StrongDual ℂ E} {x : E}
+    (h₁ : HasStrictFDerivAt f f' x) (h₂ : f x ∈ slitPlane) :
+    HasStrictFDerivAt (fun t => log (f t)) ((f x)⁻¹ • f') x :=
   (hasStrictDerivAt_log h₂).comp_hasStrictFDerivAt x h₁
 
 theorem HasStrictDerivAt.clog {f : ℂ → ℂ} {f' x : ℂ} (h₁ : HasStrictDerivAt f f' x)
@@ -91,7 +73,7 @@ theorem HasStrictDerivAt.clog_real {f : ℝ → ℂ} {x : ℝ} {f' : ℂ} (h₁ 
     (h₂ : f x ∈ slitPlane) : HasStrictDerivAt (fun t => log (f t)) (f' / f x) x := by
   simpa only [div_eq_inv_mul] using (hasStrictFDerivAt_log_real h₂).comp_hasStrictDerivAt x h₁
 
-theorem HasFDerivAt.clog {f : E → ℂ} {f' : E →L[ℂ] ℂ} {x : E} (h₁ : HasFDerivAt f f' x)
+theorem HasFDerivAt.clog {f : E → ℂ} {f' : StrongDual ℂ E} {x : E} (h₁ : HasFDerivAt f f' x)
     (h₂ : f x ∈ slitPlane) : HasFDerivAt (fun t => log (f t)) ((f x)⁻¹ • f') x :=
   (hasStrictDerivAt_log h₂).hasDerivAt.comp_hasFDerivAt x h₁
 
@@ -108,7 +90,7 @@ theorem DifferentiableAt.clog {f : E → ℂ} {x : E} (h₁ : DifferentiableAt �
     (h₂ : f x ∈ slitPlane) : DifferentiableAt ℂ (fun t => log (f t)) x :=
   (h₁.hasFDerivAt.clog h₂).differentiableAt
 
-theorem HasFDerivWithinAt.clog {f : E → ℂ} {f' : E →L[ℂ] ℂ} {s : Set E} {x : E}
+theorem HasFDerivWithinAt.clog {f : E → ℂ} {f' : StrongDual ℂ E} {s : Set E} {x : E}
     (h₁ : HasFDerivWithinAt f f' s x) (h₂ : f x ∈ slitPlane) :
     HasFDerivWithinAt (fun t => log (f t)) ((f x)⁻¹ • f') s x :=
   (hasStrictDerivAt_log h₂).hasDerivAt.comp_hasFDerivWithinAt x h₁
@@ -144,5 +126,15 @@ lemma Complex.deriv_log_comp_eq_logDeriv {f : ℂ → ℂ} {x : ℂ} (h₁ : Dif
   have A := (HasDerivAt.clog h₁.hasDerivAt h₂).deriv
   rw [← h₁.hasDerivAt.deriv] at A
   simp only [logDeriv, Pi.div_apply, ← A, Function.comp_def]
+
+protected theorem MeromorphicOn.logDeriv {𝕜 𝕜' : Type*} [NontriviallyNormedField 𝕜]
+    [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [CompleteSpace 𝕜']
+    {f : 𝕜 → 𝕜'} {s : Set 𝕜} (h : MeromorphicOn f s) : MeromorphicOn (logDeriv f) s :=
+  h.deriv.div h
+
+protected theorem Meromorphic.logDeriv {𝕜 𝕜' : Type*} [NontriviallyNormedField 𝕜]
+    [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [CompleteSpace 𝕜']
+    {f : 𝕜 → 𝕜'} (h : Meromorphic f) : Meromorphic (logDeriv f) :=
+  h.deriv.div h
 
 end LogDeriv

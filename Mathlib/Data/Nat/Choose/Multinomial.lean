@@ -3,29 +3,56 @@ Copyright (c) 2022 Pim Otte. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Pim Otte
 -/
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.Order.Antidiag.Pi
-import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.Data.Nat.Factorial.BigOperators
-import Mathlib.Data.Nat.Factorial.DoubleFactorial
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Finset.Sym
-import Mathlib.Data.Finsupp.Multiset
+module
 
+public import Mathlib.Algebra.Order.Antidiag.Pi
+public import Mathlib.Data.Finsupp.Multiset
+public import Mathlib.Data.List.ToFinsupp
+public import Mathlib.Data.Nat.Choose.Sum
+public import Mathlib.Data.Nat.Factorial.BigOperators
+public import Mathlib.Data.Nat.Factorial.DoubleFactorial
 /-!
 # Multinomial
 
-This file defines the multinomial coefficient and several small lemma's for manipulating it.
+This file defines the multinomial coefficients and several small lemmas for manipulating them.
 
-## Main declarations
+- `Nat.multinomial`: the multinomial coefficient,
+  Given a function `f : α → ℕ` and `s : Finset α`, this is the number of strings
+  consisting of symbols from `s`, where `c ∈ s` appears with multiplicity `f c`.
 
-- `Nat.multinomial`: the multinomial coefficient
+  It is defined as `(∑ i ∈ s, f i)! / ∏ i ∈ s, (f i)!`.
 
-## Main results
+- `Multiset.countPerms`: multinomial coefficient associated with the `Multiset.count` function
+  of a multiset. This is the number of lists that induce the given multiset.
 
 - `Finset.sum_pow`: The expansion of `(s.sum x) ^ n` using multinomial coefficients
 
+- `Multiset.multinomial`.
+  Given a multiset `m` of natural numbers, `m.multinomial` is the
+  multinomial coefficient defined by `(m.sum) ! / ∏ i ∈ m, m i !`.
+
+This should not be confused with `m.countPerms` which
+is defined as `m.toFinsupp.multinomial`.
+
+As an example, one has `Multiset.multinomial {1, 2, 2} = 30`,
+while `Multiset.countPerms {1, 2, 2} = 3`.
+
+- `Multiset.multinomial_cons` proves that
+  `(x ::ₘ m).multinomial = Nat.choose (x + m.sum) x * m.multinomial`
+- `Multiset.multinomial_add` proves that
+  `(m + m').multinomial = Nat.choose (m + m').sum m.sum * m.multinomial * m'.multinomial`
+
+## Implementation note for `Multiset.multinomial`.
+
+To avoid the definition of `Multiset.multinomial` as a quotient given above,
+we define it in terms of `Finsupp.multinomial`, via lists:
+If `m : Multiset ℕ` is the multiset associated with a list `l : List ℕ`,
+then `m.multinomial = l.toFinsupp.multinomial`.
+Then we prove its invariance under permutation.
+
 -/
+
+@[expose] public section
 
 open Finset
 open scoped Nat
@@ -82,6 +109,32 @@ theorem multinomial_congr {f g : α → ℕ} (h : ∀ a ∈ s, f a = g a) :
   · rw [Finset.sum_congr rfl h]
   · exact Finset.prod_congr rfl fun a ha => by rw [h a ha]
 
+theorem multinomial_congr_of_eq_on_inter [DecidableEq α] {f g : α → ℕ} {s t : Finset α}
+    (hf : ∀ a ∈ s \ t, f a = 0) (hg : ∀ a ∈ t \ s, g a = 0) (hfg : ∀ a ∈ s ∩ t, f a = g a) :
+    multinomial s f = multinomial t g := by
+  rw [← Nat.mul_right_inj (prod_ne_zero_iff.mpr (fun x _ ↦ factorial_ne_zero (g x))),
+    multinomial_spec, prod_congr_of_eq_on_inter (g := fun a ↦ (f a)!) (s₂ := s) (by aesop)
+    (by aesop) (by aesop), multinomial_spec s f]
+  congr 1
+  exact sum_congr_of_eq_on_inter (by grind) (by grind) (by grind)
+
+theorem multinomial_congr_of_sdiff [DecidableEq α] {f g : α → ℕ} {s t : Finset α}
+    (hst : s ⊆ t) (hg : ∀ a ∈ t \ s, g a = 0) (hfg : ∀ a ∈ s, f a = g a) :
+    multinomial s f = multinomial t g :=
+  multinomial_congr_of_eq_on_inter (by grind) hg (by grind)
+
+variable (s a) in
+theorem multinomial_single [DecidableEq α] :
+    multinomial s (Pi.single a n) = 1 := by
+  rw [← Nat.mul_right_inj (prod_ne_zero_iff.mpr (fun _ _ ↦ factorial_ne_zero _)), mul_one,
+    multinomial_spec, sum_pi_single']
+  split_ifs with ha
+  · rw [Finset.prod_eq_single a (by simp_all) (by simp_all), Pi.single_eq_same]
+  · rw [eq_comm, factorial_zero]
+    apply Finset.prod_eq_one
+    intro _ hb
+    rw [Pi.single_apply, if_neg (ne_of_mem_of_not_mem hb ha), factorial_zero]
+
 /-! ### Connection to binomial coefficients
 
 When `Nat.multinomial` is applied to a `Finset` of two elements `{a, b}`, the
@@ -120,7 +173,7 @@ theorem succ_mul_binomial [DecidableEq α] (h : a ≠ b) :
       (f a).succ * multinomial {a, b} (Function.update f a (f a).succ) := by
   rw [binomial_eq_choose h, binomial_eq_choose h, mul_comm (f a).succ, Function.update_self,
     Function.update_of_ne h.symm]
-  rw [succ_mul_choose_eq (f a + f b) (f a), succ_add (f a) (f b)]
+  rw [succ_eq_add_one, add_one_mul_choose_eq (f a + f b) (f a), succ_add (f a) (f b)]
 
 /-! ### Simple cases -/
 
@@ -139,7 +192,6 @@ end Nat
 
 /-! ### Alternative definitions -/
 
-
 namespace Finsupp
 
 variable {α : Type*}
@@ -152,6 +204,14 @@ def multinomial (f : α →₀ ℕ) : ℕ :=
 
 theorem multinomial_eq (f : α →₀ ℕ) : f.multinomial = Nat.multinomial f.support f :=
   rfl
+
+theorem multinomial_eq_of_support_subset {f : α →₀ ℕ} {s : Finset α} (h : f.support ⊆ s) :
+    f.multinomial = Nat.multinomial s f := by
+  simp only [Finsupp.multinomial_eq, Nat.multinomial]
+  congr 1
+  · simp [Finset.sum_subset h]
+  · rw [Finset.prod_subset h]
+    grind [Nat.factorial_eq_one]
 
 theorem multinomial_update (a : α) (f : α →₀ ℕ) :
     f.multinomial = (f.sum fun _ => id).choose (f a) * (f.update a 0).multinomial := by
@@ -171,15 +231,13 @@ namespace Multiset
 
 variable {α : Type*}
 
-/-- Alternative definition of multinomial based on `Multiset` delegating to the
-  finsupp definition
--/
-def multinomial [DecidableEq α] (m : Multiset α) : ℕ :=
+/-- The number of permutations of a given multiset. -/
+noncomputable def countPerms [DecidableEq α] (m : Multiset α) : ℕ :=
   m.toFinsupp.multinomial
 
-theorem multinomial_filter_ne [DecidableEq α] (a : α) (m : Multiset α) :
-    m.multinomial = m.card.choose (m.count a) * (m.filter (a ≠ ·)).multinomial := by
-  dsimp only [multinomial]
+theorem countPerms_filter_ne [DecidableEq α] (a : α) (m : Multiset α) :
+    m.countPerms = m.card.choose (m.count a) * (m.filter (a ≠ ·)).countPerms := by
+  dsimp only [countPerms]
   convert Finsupp.multinomial_update a _
   · rw [← Finsupp.card_toMultiset, m.toFinsupp_toMultiset]
   · ext1 a
@@ -189,8 +247,8 @@ theorem multinomial_filter_ne [DecidableEq α] (a : α) (m : Multiset α) :
     · rw [not_ne_iff.1 h, Function.update_self]
 
 @[simp]
-theorem multinomial_zero [DecidableEq α] : multinomial (0 : Multiset α) = 1 := by
-  simp [multinomial, Finsupp.multinomial]
+theorem countPerms_zero [DecidableEq α] : countPerms (0 : Multiset α) = 1 := by
+  simp [countPerms, Finsupp.multinomial]
 
 end Multiset
 
@@ -213,8 +271,9 @@ lemma sum_pow_eq_sum_piAntidiag_of_commute (s : Finset α) (f : α → R)
     (∑ i ∈ s, f i) ^ n = ∑ k ∈ piAntidiag s n, multinomial s k *
       s.noncommProd (fun i ↦ f i ^ k i) (hc.mono' fun _ _ h ↦ h.pow_pow ..) := by
   classical
-  induction' s using Finset.cons_induction with a s has ih generalizing n
-  · cases n <;> simp
+  induction s using Finset.cons_induction generalizing n with
+  | empty => cases n <;> simp
+  | cons a s has ih => ?_
   rw [Finset.sum_cons, piAntidiag_cons, sum_disjiUnion]
   simp only [sum_map, Pi.add_apply, multinomial_cons,
     Pi.add_apply, if_true, Nat.cast_mul, noncommProd_cons,
@@ -253,11 +312,12 @@ theorem sum_pow_of_commute (x : α → R) (s : Finset α)
     ∀ n,
       s.sum x ^ n =
         ∑ k : s.sym n,
-          k.1.1.multinomial *
+          k.1.1.countPerms *
             (k.1.1.map <| x).noncommProd
               (Multiset.map_set_pairwise <| hc.mono <| mem_sym_iff.1 k.2) := by
-  induction' s using Finset.induction with a s ha ih
-  · rw [sum_empty]
+  induction s using Finset.induction with
+  | empty =>
+    rw [sum_empty]
     rintro (_ | n)
     · rw [_root_.pow_zero, Fintype.sum_subsingleton]
       swap
@@ -268,13 +328,14 @@ theorem sum_pow_of_commute (x : α → R) (s : Finset α)
     · rw [_root_.pow_succ, mul_zero]
       haveI : IsEmpty (Finset.sym (∅ : Finset α) n.succ) := Finset.instIsEmpty
       apply (Fintype.sum_empty _).symm
+  | insert a s ha ih => ?_
   intro n; specialize ih (hc.mono <| s.subset_insert a)
   rw [sum_insert ha, (Commute.sum_right s _ _ _).add_pow, sum_range]; swap
   · exact fun _ hb => hc (mem_insert_self a s) (mem_insert_of_mem hb)
       (ne_of_mem_of_not_mem hb ha).symm
   · simp_rw [ih, mul_sum, sum_mul, sum_sigma', univ_sigma_univ]
     refine (Fintype.sum_equiv (symInsertEquiv ha) _ _ fun m => ?_).symm
-    rw [m.1.1.multinomial_filter_ne a]
+    rw [m.1.1.countPerms_filter_ne a]
     conv in m.1.1.map _ => rw [← m.1.1.filter_add_not (a = ·), Multiset.map_add]
     simp_rw [Multiset.noncommProd_add, m.1.1.filter_eq, Multiset.map_replicate, m.1.2]
     rw [Multiset.noncommProd_eq_pow_card _ _ _ fun _ => Multiset.eq_of_mem_replicate]
@@ -292,7 +353,7 @@ lemma sum_pow_eq_sum_piAntidiag (s : Finset α) (f : α → R) (n : ℕ) :
   rw [← sum_pow_eq_sum_piAntidiag_of_commute _ _ fun _ _ _ _ _ ↦ Commute.all ..]
 
 theorem sum_pow (x : α → R) (n : ℕ) :
-    s.sum x ^ n = ∑ k ∈ s.sym n, k.val.multinomial * (k.val.map x).prod := by
+    s.sum x ^ n = ∑ k ∈ s.sym n, k.val.countPerms * (k.val.map x).prod := by
   conv_rhs => rw [← sum_coe_sort]
   convert sum_pow_of_commute x s (fun _ _ _ _ _ ↦ Commute.all ..) n
   rw [Multiset.noncommProd_eq_prod]
@@ -326,9 +387,9 @@ namespace Sym
 
 variable {n : ℕ} {α : Type*} [DecidableEq α]
 
-theorem multinomial_coe_fill_of_notMem {m : Fin (n + 1)} {s : Sym α (n - m)} {x : α} (hx : x ∉ s) :
-    (fill x m s : Multiset α).multinomial = n.choose m * (s : Multiset α).multinomial := by
-  rw [Multiset.multinomial_filter_ne x]
+theorem countPerms_coe_fill_of_notMem {m : Fin (n + 1)} {s : Sym α (n - m)} {x : α} (hx : x ∉ s) :
+    (fill x m s : Multiset α).countPerms = n.choose m * (s : Multiset α).countPerms := by
+  rw [Multiset.countPerms_filter_ne x]
   rw [← mem_coe] at hx
   refine congrArg₂ _ ?_ ?_
   · rw [card_coe, count_coe_fill_self_of_notMem hx]
@@ -340,7 +401,104 @@ theorem multinomial_coe_fill_of_notMem {m : Fin (n + 1)} {s : Sym α (n - m)} {x
       exact fun j hj ↦ by simp [Multiset.mem_replicate.mp hj]
     · exact fun j hj h ↦ hx <| by simpa [h] using hj
 
-@[deprecated (since := "2025-05-23")]
-alias multinomial_coe_fill_of_not_mem := multinomial_coe_fill_of_notMem
-
 end Sym
+
+theorem Finsupp.multinomial_of_support_subset {σ : Type*} {d : σ →₀ ℕ} {s : Finset σ}
+    (h : d.support ⊆ s) : Nat.multinomial s d = d.multinomial := by
+  rw [Nat.multinomial, Finsupp.multinomial,
+    sum_of_support_subset _ h _ (by simp), prod_of_support_subset _ h _ (by simp)]
+  simp
+
+namespace List
+
+open Nat
+
+lemma toFinsupp_sum {α : Type*} [AddCommMonoid α] [DecidableEq α] (l : List α) :
+    l.toFinsupp.sum (fun _ a ↦ a) = l.sum := by
+  match l with
+  | nil => simp
+  | x :: l =>
+    simp only [toFinsupp_cons_eq_single_add_embDomain, sum_cons]
+    rw [Finsupp.sum_add_index (by simp) (by simp)]
+    simp [Finsupp.sum_embDomain, l.toFinsupp_sum]
+
+/-- The multinomial coefficients given by a list of natural numbers.
+
+See also `Multiset.multinomial` -/
+abbrev multinomial (l : List ℕ) : ℕ := l.toFinsupp.multinomial
+
+theorem multinomial_cons (x : ℕ) (l : List ℕ) :
+    (x :: l).multinomial = Nat.choose (x + l.sum) x * l.multinomial := by
+  simp only [multinomial]
+  rw [Finsupp.multinomial_update 0 (x :: l).toFinsupp]
+  congr 1
+  · congr
+    exact List.toFinsupp_sum (x :: l)
+  let succEmb : ℕ ↪ ℕ := addRightEmbedding 1
+  have : (Finsupp.single 0 x + l.toFinsupp.embDomain succEmb).update 0 0 =
+    (l.toFinsupp.embDomain succEmb).update 0 0 := by
+    ext i
+    by_cases hi : i = 0
+    · simp [hi]
+    · simp [Finsupp.update_apply, if_neg hi, Finsupp.single_eq_of_ne hi]
+  have h (x) : (l.toFinsupp.embDomain succEmb) (x + 1) = l[x]?.getD 0 := by
+    rw [Finsupp.embDomain_apply, dif_pos ⟨x, by simp [succEmb]⟩]
+    simp [succEmb]
+  simp [toFinsupp_cons_eq_single_add_embDomain, Finsupp.multinomial_eq,
+    succEmb, this, Nat.multinomial, h]
+
+end List
+
+namespace Multiset
+
+/-- The `multinomial` coefficients on `Multiset ℕ`. -/
+def multinomial (m : Multiset ℕ) : ℕ := Quot.liftOn m List.multinomial <| fun l l' h ↦ by
+  induction h with
+  | nil => simp
+  | @cons x l l' hl hl' => simp [List.multinomial_cons, hl', hl.sum_nat]
+  | @swap x y l =>
+    simp only [List.multinomial_cons, ← mul_assoc, List.sum_cons]
+    rw [← Nat.choose_symm (Nat.le_add_right y _), add_tsub_cancel_left]
+    rw [add_left_comm, Nat.choose_mul (Nat.le_add_right _ _), add_tsub_cancel_left]
+    simp [← Nat.choose_symm (Nat.le_add_right _ _), add_tsub_cancel_left]
+  | @trans l l' l'' h h' ih ih' => rw [ih, ih']
+
+theorem multinomial_cons (x : ℕ) (m : Multiset ℕ) :
+    (x ::ₘ m).multinomial = Nat.choose (x + m.sum) x * m.multinomial := by
+  obtain ⟨l, rfl⟩ := Quotient.exists_rep m
+  exact List.multinomial_cons x l
+
+@[simp]
+theorem multinomial_zero : Multiset.multinomial 0 = 1 := rfl
+
+@[simp]
+theorem multinomial_singleton (n : ℕ) :
+    Multiset.multinomial {n} = 1 := by
+  simp [← cons_zero, multinomial_cons]
+
+theorem multinomial_add (m m' : Multiset ℕ) :
+    (m + m').multinomial = Nat.choose (m + m').sum m.sum * m.multinomial * m'.multinomial := by
+  induction m using Multiset.induction_on with
+  | empty => simp
+  | cons x m hind =>
+    simp only [cons_add, sum_cons, sum_add, multinomial_cons, hind, ← mul_assoc]
+    congr 2
+    rw [← Nat.choose_symm (Nat.le_add_right _ _), add_tsub_cancel_left, eq_comm,
+      Nat.choose_mul (Nat.le_add_right _ _), ← Nat.choose_symm (Nat.le_add_right x _)]
+    simp [add_tsub_cancel_left]
+
+theorem multinomial_nsmul (k : ℕ) (m : Multiset ℕ) :
+    (k • m).multinomial = Nat.multinomial (Finset.range k) (fun _ ↦ m.sum) * m.multinomial ^ k := by
+  induction k with
+  | zero => simp
+  | succ k hk =>
+    rw [succ_nsmul', multinomial_add, hk, Finset.range_add_one,
+      Nat.multinomial_insert (by simp), sum_add, sum_nsmul, pow_succ']
+    simp [smul_eq_mul, Finset.sum_const, Finset.card_range]
+    ring
+
+theorem multinomial_nsmul_singleton (k n : ℕ) :
+    (k • {n} : Multiset ℕ).multinomial = Nat.multinomial (Finset.range k) (fun _ ↦ n) := by
+  simp [multinomial_nsmul]
+
+end Multiset

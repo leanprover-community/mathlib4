@@ -3,7 +3,10 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
-import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
+module
+
+public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
+public import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # `C^n` bundled maps
@@ -11,6 +14,8 @@ import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 In this file we define the type `ContMDiffMap` of `n` times continuously differentiable
 bundled maps.
 -/
+
+@[expose] public section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type*}
@@ -24,12 +29,14 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
   {J : ModelWithCorners 𝕜 F G} {N : Type*} [TopologicalSpace N] [ChartedSpace G N] (n : WithTop ℕ∞)
 
+open scoped Manifold
+
 variable (I I') in
 /-- Bundled `n` times continuously differentiable maps,
 denoted as `C^n(I, M; I', M')` and `C^n(I, M; k)` (when the target is a normed space `k` with
 the trivial model) in the `Manifold` namespace. -/
 def ContMDiffMap :=
-  { f : M → M' // ContMDiff I I' n f }
+  { f : M → M' // CMDiff n f }
 
 @[inherit_doc]
 scoped[Manifold] notation "C^" n "⟮" I ", " M "; " I' ", " M' "⟯" => ContMDiffMap I I' M M' n
@@ -48,19 +55,14 @@ instance instFunLike : FunLike C^n⟮I, M; I', M'⟯ M M' where
   coe := Subtype.val
   coe_injective' := Subtype.coe_injective
 
-protected theorem contMDiff (f : C^n⟮I, M; I', M'⟯) : ContMDiff I I' n f :=
-  f.prop
-
--- Porting note: use generic instance instead
--- instance : Coe C^n⟮I, M; I', M'⟯ C(M, M') :=
---   ⟨fun f => ⟨f, f.contMDiff.continuous⟩⟩
+protected theorem contMDiff (f : C^n⟮I, M; I', M'⟯) : CMDiff n f := f.prop
 
 attribute [to_additive_ignore_args 21] ContMDiffMap ContMDiffMap.instFunLike
 
 variable {f g : C^n⟮I, M; I', M'⟯}
 
 @[simp]
-theorem coeFn_mk (f : M → M') (hf : ContMDiff I I' n f) :
+theorem coeFn_mk (f : M → M') (hf : CMDiff n f) :
     DFunLike.coe (F := C^n⟮I, M; I', M'⟯) ⟨f, hf⟩ = f :=
   rfl
 

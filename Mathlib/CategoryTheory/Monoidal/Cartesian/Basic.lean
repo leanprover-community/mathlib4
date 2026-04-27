@@ -3,10 +3,12 @@ Copyright (c) 2019 Kim Morrison, Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Simon Hudon, Adam Topaz, Robin Carlier
 -/
-import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
-import Mathlib.CategoryTheory.Limits.FullSubcategory
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
+public import Mathlib.CategoryTheory.Limits.FullSubcategory
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 
 /-!
 # Categories with chosen finite products
@@ -20,18 +22,18 @@ For better defeqs, we also extend `MonoidalCategory`.
 
 ## Implementation notes
 
-For cartesian monoidal categories, the oplax-monoidal/monoidal/braided structure of a functor `F`
+For Cartesian monoidal categories, the oplax-monoidal/monoidal/braided structure of a functor `F`
 preserving finite products is uniquely determined. See the `ofChosenFiniteProducts` declarations.
 
 We however develop the theory for any `F.OplaxMonoidal`/`F.Monoidal`/`F.Braided` instance instead of
 requiring it to be the `ofChosenFiniteProducts` one. This is to avoid diamonds: Consider
-eg `𝟭 C` and `F ⋙ G`.
+e.g. `𝟭 C` and `F ⋙ G`.
 
-In applications requiring a finite preserving functor to be oplax-monoidal/monoidal/braided,
-avoid `attribute [local instance] ofChosenFiniteProducts` but instead turn on the corresponding
-`ofChosenFiniteProducts` declaration for that functor only.
+In applications requiring a finite-product-preserving functor to be
+oplax-monoidal/monoidal/braided, avoid `attribute [local instance] ofChosenFiniteProducts` but
+instead turn on the corresponding `ofChosenFiniteProducts` declaration for that functor only.
 
-# Projects
+## Projects
 
 - Construct an instance of chosen finite products in the category of affine scheme, using
   the tensor product.
@@ -39,11 +41,52 @@ avoid `attribute [local instance] ofChosenFiniteProducts` but instead turn on th
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 universe v v₁ v₂ v₃ u u₁ u₂ u₃
 
 open MonoidalCategory Limits
+
+/-- A monoidal category is semicartesian if the unit for the tensor product is a terminal object. -/
+class SemiCartesianMonoidalCategory (C : Type u) [Category.{v} C] extends MonoidalCategory C where
+  /-- The tensor unit is a terminal object. -/
+  isTerminalTensorUnit : IsTerminal (𝟙_ C)
+  /-- The first projection from the product. -/
+  fst (X Y : C) : X ⊗ Y ⟶ X
+  /-- The second projection from the product. -/
+  snd (X Y : C) : X ⊗ Y ⟶ Y
+  fst_def (X Y : C) : fst X Y = X ◁ isTerminalTensorUnit.from Y ≫ (ρ_ X).hom := by cat_disch
+  snd_def (X Y : C) : snd X Y = isTerminalTensorUnit.from X ▷ Y ≫ (λ_ Y).hom := by cat_disch
+
+namespace SemiCartesianMonoidalCategory
+
+variable {C : Type u} [Category.{v} C] [SemiCartesianMonoidalCategory C]
+
+/-- The unique map to the terminal object. -/
+def toUnit (X : C) : X ⟶ 𝟙_ C := isTerminalTensorUnit.from X
+
+instance (X : C) : Unique (X ⟶ 𝟙_ C) := isTerminalEquivUnique _ _ isTerminalTensorUnit _
+
+lemma default_eq_toUnit (X : C) : default = toUnit X := rfl
+
+/--
+This lemma follows from the preexisting `Unique` instance, but
+it is often convenient to use it directly as `apply toUnit_unique` forcing
+lean to do the necessary elaboration.
+-/
+@[ext]
+lemma toUnit_unique {X : C} (f g : X ⟶ 𝟙_ _) : f = g :=
+  Subsingleton.elim _ _
+
+@[simp] lemma toUnit_unit : toUnit (𝟙_ C) = 𝟙 (𝟙_ C) := toUnit_unique ..
+
+@[reassoc (attr := simp)]
+theorem comp_toUnit {X Y : C} (f : X ⟶ Y) : f ≫ toUnit Y = toUnit X :=
+  toUnit_unique _ _
+
+end SemiCartesianMonoidalCategory
 
 variable (C) in
 /--
@@ -53,21 +96,15 @@ product of two objects of `C`, and a terminal object in `C`.
 Users should use the monoidal notation: `X ⊗ Y` for the product and `𝟙_ C` for
 the terminal object.
 -/
-class CartesianMonoidalCategory (C : Type u) [Category.{v} C] extends MonoidalCategory C where
-  /-- The tensor unit is a terminal object. -/
-  isTerminalTensorUnit : IsTerminal (𝟙_ C)
-  /-- The first projection from the product. -/
-  fst (X Y : C) : X ⊗ Y ⟶ X
-  /-- The second projection from the product. -/
-  snd (X Y : C) : X ⊗ Y ⟶ Y
+class CartesianMonoidalCategory (C : Type u) [Category.{v} C] extends
+    SemiCartesianMonoidalCategory C where
   /-- The monoidal product is the categorical product. -/
   tensorProductIsBinaryProduct (X Y : C) : IsLimit <| BinaryFan.mk (fst X Y) (snd X Y)
-  fst_def (X Y : C) : fst X Y = X ◁ isTerminalTensorUnit.from Y ≫ (ρ_ X).hom := by aesop_cat
-  snd_def (X Y : C) : snd X Y = isTerminalTensorUnit.from X ▷ Y ≫ (λ_ Y).hom := by aesop_cat
-
-@[deprecated (since := "2025-05-15")] alias ChosenFiniteProducts := CartesianMonoidalCategory
 
 namespace CartesianMonoidalCategory
+
+export SemiCartesianMonoidalCategory (isTerminalTensorUnit fst snd fst_def snd_def toUnit
+  toUnit_unique toUnit_unit comp_toUnit comp_toUnit_assoc default_eq_toUnit)
 
 variable {C : Type u} [Category.{v} C]
 
@@ -86,13 +123,16 @@ abbrev tensorHom (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) : tensorObj ℬ X₁ X�
   (BinaryFan.IsLimit.lift' (ℬ Y₁ Y₂).isLimit ((ℬ X₁ X₂).cone.π.app ⟨.left⟩ ≫ f)
       (((ℬ X₁ X₂).cone.π.app ⟨.right⟩ : (ℬ X₁ X₂).cone.pt ⟶ X₂) ≫ g)).val
 
-lemma tensor_id (X Y : C) : tensorHom ℬ (𝟙 X) (𝟙 Y) = 𝟙 (tensorObj ℬ X Y) :=
+set_option backward.isDefEq.respectTransparency false in
+lemma id_tensorHom_id (X Y : C) : tensorHom ℬ (𝟙 X) (𝟙 Y) = 𝟙 (tensorObj ℬ X Y) :=
   (ℬ _ _).isLimit.hom_ext <| by rintro ⟨_ | _⟩ <;> simp [tensorHom]
 
-lemma tensor_comp (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
-    tensorHom ℬ (f₁ ≫ g₁) (f₂ ≫ g₂) = tensorHom ℬ f₁ f₂ ≫ tensorHom ℬ g₁ g₂ :=
+set_option backward.isDefEq.respectTransparency false in
+lemma tensorHom_comp_tensorHom (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
+    tensorHom ℬ f₁ f₂ ≫ tensorHom ℬ g₁ g₂ = tensorHom ℬ (f₁ ≫ g₁) (f₂ ≫ g₂) :=
   (ℬ _ _).isLimit.hom_ext <| by rintro ⟨_ | _⟩ <;> simp [tensorHom]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma pentagon (W X Y Z : C) :
     tensorHom ℬ (BinaryFan.associatorOfLimitCone ℬ W X Y).hom (𝟙 Z) ≫
         (BinaryFan.associatorOfLimitCone ℬ W (tensorObj ℬ X Y) Z).hom ≫
@@ -109,22 +149,26 @@ lemma pentagon (W X Y Z : C) :
   apply (ℬ _ _).isLimit.hom_ext
   rintro ⟨_ | _⟩ <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma triangle (X Y : C) :
     (BinaryFan.associatorOfLimitCone ℬ X 𝒯.cone.pt Y).hom ≫
         tensorHom ℬ (𝟙 X) (BinaryFan.leftUnitor 𝒯.isLimit (ℬ 𝒯.cone.pt Y).isLimit).hom =
       tensorHom ℬ (BinaryFan.rightUnitor 𝒯.isLimit (ℬ X 𝒯.cone.pt).isLimit).hom (𝟙 Y) :=
   (ℬ _ _).isLimit.hom_ext <| by rintro ⟨_ | _⟩ <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma leftUnitor_naturality (f : X₁ ⟶ X₂) :
     tensorHom ℬ (𝟙 𝒯.cone.pt) f ≫ (BinaryFan.leftUnitor 𝒯.isLimit (ℬ 𝒯.cone.pt X₂).isLimit).hom =
       (BinaryFan.leftUnitor 𝒯.isLimit (ℬ 𝒯.cone.pt X₁).isLimit).hom ≫ f := by
   simp [tensorHom]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma rightUnitor_naturality (f : X₁ ⟶ X₂) :
     tensorHom ℬ f (𝟙 𝒯.cone.pt) ≫ (BinaryFan.rightUnitor 𝒯.isLimit (ℬ X₂ 𝒯.cone.pt).isLimit).hom =
       (BinaryFan.rightUnitor 𝒯.isLimit (ℬ X₁ 𝒯.cone.pt).isLimit).hom ≫ f := by
   simp [tensorHom]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma associator_naturality (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃) :
     tensorHom ℬ (tensorHom ℬ f₁ f₂) f₃ ≫ (BinaryFan.associatorOfLimitCone ℬ Y₁ Y₂ Y₃).hom =
       (BinaryFan.associatorOfLimitCone ℬ X₁ X₂ X₃).hom ≫ tensorHom ℬ f₁ (tensorHom ℬ f₂ f₃) := by
@@ -139,6 +183,7 @@ end ofChosenFiniteProducts
 
 open ofChosenFiniteProducts
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Construct an instance of `CartesianMonoidalCategory C` given a terminal object and limit cones
 over arbitrary pairs of objects. -/
 abbrev ofChosenFiniteProducts : CartesianMonoidalCategory C :=
@@ -154,8 +199,8 @@ abbrev ofChosenFiniteProducts : CartesianMonoidalCategory C :=
   }
   {
   toMonoidalCategory := .ofTensorHom
-    (tensor_id := tensor_id ℬ)
-    (tensor_comp := tensor_comp ℬ)
+    (id_tensorHom_id := id_tensorHom_id ℬ)
+    (tensorHom_comp_tensorHom := tensorHom_comp_tensorHom ℬ)
     (pentagon := pentagon ℬ)
     (triangle := triangle 𝒯 ℬ)
     (leftUnitor_naturality := leftUnitor_naturality 𝒯 ℬ)
@@ -178,12 +223,10 @@ abbrev ofChosenFiniteProducts : CartesianMonoidalCategory C :=
   }
 
 omit 𝒯 in
-/-- Construct an instance of `CartesianMonoidalCategory C` given the existence of finite products
+/-- Constructs an instance of `CartesianMonoidalCategory C` given the existence of finite products
 in `C`. -/
 noncomputable abbrev ofHasFiniteProducts [HasFiniteProducts C] : CartesianMonoidalCategory C :=
   .ofChosenFiniteProducts (getLimitCone (.empty C)) (getLimitCone <| pair · ·)
-
-@[deprecated (since := "2025-05-08")] alias ofFiniteProducts := ofHasFiniteProducts
 
 end OfChosenFiniteProducts
 
@@ -192,29 +235,7 @@ variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
 open MonoidalCategory
 
 /--
-The unique map to the terminal object.
--/
-def toUnit (X : C) : X ⟶ 𝟙_ C := isTerminalTensorUnit.from _
-
-instance (X : C) : Unique (X ⟶ 𝟙_ C) := isTerminalEquivUnique _ _ isTerminalTensorUnit _
-
-lemma default_eq_toUnit (X : C) : default = toUnit X := rfl
-
-/--
-This lemma follows from the preexisting `Unique` instance, but
-it is often convenient to use it directly as `apply toUnit_unique` forcing
-lean to do the necessary elaboration.
--/
-@[ext]
-lemma toUnit_unique {X : C} (f g : X ⟶ 𝟙_ _) : f = g :=
-  Subsingleton.elim _ _
-
-@[reassoc (attr := simp)]
-theorem comp_toUnit {X Y : C} (f : X ⟶ Y) : f ≫ toUnit Y = toUnit X :=
-  toUnit_unique _ _
-
-/--
-Construct a morphism to the product given its two components.
+Constructs a morphism to the product given its two components.
 -/
 def lift {T X Y : C} (f : T ⟶ X) (g : T ⟶ Y) : T ⟶ X ⊗ Y :=
   (BinaryFan.IsLimit.lift' (tensorProductIsBinaryProduct X Y) f g).1
@@ -254,7 +275,7 @@ lemma lift_fst_snd {X Y : C} : lift (fst X Y) (snd X Y) = 𝟙 (X ⊗ Y) := by e
 @[simp]
 lemma lift_comp_fst_snd {X Y Z : C} (f : X ⟶ Y ⊗ Z) :
     lift (f ≫ fst _ _) (f ≫ snd _ _) = f := by
-  aesop_cat
+  cat_disch
 
 @[reassoc (attr := simp)]
 lemma whiskerLeft_fst (X : C) {Y Z : C} (f : Y ⟶ Z) : X ◁ f ≫ fst _ _ = fst _ _ := by
@@ -291,12 +312,12 @@ lemma lift_fst_comp_snd_comp {W X Y Z : C} (g : W ⟶ X) (g' : Y ⟶ Z) :
 @[reassoc (attr := simp)]
 lemma lift_whiskerRight {X Y Z W : C} (f : X ⟶ Y) (g : X ⟶ Z) (h : Y ⟶ W) :
     lift f g ≫ (h ▷ Z) = lift (f ≫ h) g := by
-  aesop_cat
+  cat_disch
 
 @[reassoc (attr := simp)]
 lemma lift_whiskerLeft {X Y Z W : C} (f : X ⟶ Y) (g : X ⟶ Z) (h : Z ⟶ W) :
     lift f g ≫ (Y ◁ h) = lift f (g ≫ h) := by
-  aesop_cat
+  cat_disch
 
 @[reassoc (attr := simp)]
 lemma associator_hom_fst (X Y Z : C) :
@@ -321,9 +342,6 @@ lemma associator_inv_fst_fst (X Y Z : C) :
   simp [fst_def, ← whiskerLeft_rightUnitor_assoc, -whiskerLeft_rightUnitor,
     ← whiskerLeft_comp_assoc]
 
-@[deprecated (since := "2025-04-01")] alias associator_inv_fst := associator_inv_fst_fst
-@[deprecated (since := "2025-04-01")] alias associator_inv_fst_assoc := associator_inv_fst_fst_assoc
-
 @[reassoc (attr := simp)]
 lemma associator_inv_fst_snd (X Y Z : C) :
     (α_ X Y Z).inv ≫ fst _ _ ≫ snd _ _ = snd _ _ ≫ fst _ _ := by
@@ -338,12 +356,12 @@ lemma associator_inv_snd (X Y Z : C) :
 @[reassoc (attr := simp)]
 lemma lift_lift_associator_hom {X Y Z W : C} (f : X ⟶ Y) (g : X ⟶ Z) (h : X ⟶ W) :
     lift (lift f g) h ≫ (α_ Y Z W).hom = lift f (lift g h) := by
-  aesop_cat
+  cat_disch
 
 @[reassoc (attr := simp)]
 lemma lift_lift_associator_inv {X Y Z W : C} (f : X ⟶ Y) (g : X ⟶ Z) (h : X ⟶ W) :
     lift f (lift g h) ≫ (α_ Y Z W).inv = lift (lift f g) h := by
-  aesop_cat
+  cat_disch
 
 lemma leftUnitor_hom (X : C) : (λ_ X).hom = snd _ _ := by simp [snd_def]
 lemma rightUnitor_hom (X : C) : (ρ_ X).hom = fst _ _ := by simp [fst_def]
@@ -376,13 +394,22 @@ lemma whiskerRight_toUnit_comp_leftUnitor_hom (X Y : C) : toUnit X ▷ Y ≫ (λ
 lemma lift_leftUnitor_hom {X Y : C} (f : X ⟶ 𝟙_ C) (g : X ⟶ Y) :
     lift f g ≫ (λ_ Y).hom = g := by
   rw [← Iso.eq_comp_inv]
-  aesop_cat
+  cat_disch
 
 @[reassoc (attr := simp)]
 lemma lift_rightUnitor_hom {X Y : C} (f : X ⟶ Y) (g : X ⟶ 𝟙_ C) :
     lift f g ≫ (ρ_ Y).hom = f := by
   rw [← Iso.eq_comp_inv]
-  aesop_cat
+  cat_disch
+
+/-- Universal property of the Cartesian product: Maps to `X ⊗ Y` correspond to pairs of maps to `X`
+and to `Y`. -/
+@[simps]
+def homEquivToProd {X Y Z : C} : (Z ⟶ X ⊗ Y) ≃ (Z ⟶ X) × (Z ⟶ Y) where
+  toFun f := ⟨f ≫ fst _ _, f ≫ snd _ _⟩
+  invFun f := lift f.1 f.2
+  left_inv _ := by simp
+  right_inv _ := by simp
 
 section BraidedCategory
 
@@ -404,11 +431,27 @@ theorem braiding_inv_fst (X Y : C) : (β_ X Y).inv ≫ fst _ _ = snd _ _ := by
 theorem braiding_inv_snd (X Y : C) : (β_ X Y).inv ≫ snd _ _ = fst _ _ := by
   simp [fst_def, snd_def, ← BraidedCategory.braiding_inv_naturality_right_assoc]
 
-theorem lift_snd_fst {X Y : C} : lift (snd X Y) (fst X Y) = (β_ X Y).hom := by aesop_cat
+@[reassoc (attr := simp)]
+lemma tensorμ_fst (W X Y Z : C) : tensorμ W X Y Z ≫ fst (W ⊗ Y) (X ⊗ Z) = fst W X ⊗ₘ fst Y Z := by
+  ext <;> simp [tensorμ]
+
+@[reassoc (attr := simp)]
+lemma tensorμ_snd (W X Y Z : C) : tensorμ W X Y Z ≫ snd (W ⊗ Y) (X ⊗ Z) = snd W X ⊗ₘ snd Y Z := by
+  ext <;> simp [tensorμ]
+
+@[reassoc (attr := simp)]
+lemma tensorδ_fst (W X Y Z : C) : tensorδ W X Y Z ≫ fst (W ⊗ X) (Y ⊗ Z) = fst W Y ⊗ₘ fst X Z := by
+  ext <;> simp [tensorδ]
+
+@[reassoc (attr := simp)]
+lemma tensorδ_snd (W X Y Z : C) : tensorδ W X Y Z ≫ snd (W ⊗ X) (Y ⊗ Z) = snd W Y ⊗ₘ snd X Z := by
+  ext <;> simp [tensorδ]
+
+theorem lift_snd_fst {X Y : C} : lift (snd X Y) (fst X Y) = (β_ X Y).hom := by cat_disch
 
 @[simp, reassoc]
 lemma lift_snd_comp_fst_comp {W X Y Z : C} (g : W ⟶ X) (g' : Y ⟶ Z) :
-    lift (snd _ _ ≫ g') (fst _ _ ≫ g) = (β_ _ _).hom ≫ (g' ⊗ₘ g) := by aesop_cat
+    lift (snd _ _ ≫ g') (fst _ _ ≫ g) = (β_ _ _).hom ≫ (g' ⊗ₘ g) := by cat_disch
 
 @[reassoc (attr := simp)]
 lemma lift_braiding_hom {T X Y : C} (f : T ⟶ X) (g : T ⟶ Y) :
@@ -419,16 +462,13 @@ lemma lift_braiding_inv {T X Y : C} (f : T ⟶ X) (g : T ⟶ Y) :
     lift f g ≫ (β_ Y X).inv = lift g f := by aesop
 
 -- See note [lower instance priority]
-instance (priority := low) toSymmetricCategory [BraidedCategory C] : SymmetricCategory C where
+instance (priority := low) toSymmetricCategory : SymmetricCategory C where
 
 /-- `CartesianMonoidalCategory` implies `BraidedCategory`.
 This is not an instance to prevent diamonds. -/
+@[implicit_reducible]
 def _root_.CategoryTheory.BraidedCategory.ofCartesianMonoidalCategory : BraidedCategory C where
   braiding X Y := { hom := lift (snd _ _) (fst _ _), inv := lift (snd _ _) (fst _ _) }
-
-@[deprecated (since := "2025-05-15")]
-alias _root_.CategoryTheory.BraidedCategory.ofChosenFiniteProducts :=
-  BraidedCategory.ofCartesianMonoidalCategory
 
 instance : Nonempty (BraidedCategory C) := ⟨.ofCartesianMonoidalCategory⟩
 
@@ -469,12 +509,6 @@ abbrev terminalComparison : F.obj (𝟙_ C) ⟶ 𝟙_ D := toUnit _
 lemma map_toUnit_comp_terminalComparison (A : C) :
     F.map (toUnit A) ≫ terminalComparison F = toUnit _ := toUnit_unique _ _
 
-@[deprecated (since := "2025-04-09")]
-alias map_toUnit_comp_terminalCompariso := map_toUnit_comp_terminalComparison
-
-@[deprecated (since := "2025-04-09")]
-alias map_toUnit_comp_terminalCompariso_assoc := map_toUnit_comp_terminalComparison_assoc
-
 open Limits
 
 /-- If `terminalComparison F` is an Iso, then `F` preserves terminal objects. -/
@@ -482,7 +516,7 @@ lemma preservesLimit_empty_of_isIso_terminalComparison [IsIso (terminalCompariso
     PreservesLimit (Functor.empty.{0} C) F := by
   apply preservesLimit_of_preserves_limit_cone isTerminalTensorUnit
   apply isLimitChangeEmptyCone D isTerminalTensorUnit
-  exact asIso (terminalComparison F)|>.symm
+  exact asIso (terminalComparison F) |>.symm
 
 /-- If `F` preserves terminal objects, then `terminalComparison F` is an isomorphism. -/
 noncomputable def preservesTerminalIso [h : PreservesLimit (Functor.empty.{0} C) F] :
@@ -501,14 +535,14 @@ instance terminalComparison_isIso_of_preservesLimits [PreservesLimit (Functor.em
 
 @[simp]
 lemma preservesTerminalIso_id : preservesTerminalIso (𝟭 C) = .refl _ := by
-  aesop_cat
+  cat_disch
 
 @[simp]
 lemma preservesTerminalIso_comp [PreservesLimit (Functor.empty.{0} C) F]
     [PreservesLimit (Functor.empty.{0} D) G] [PreservesLimit (Functor.empty.{0} C) (F ⋙ G)] :
     preservesTerminalIso (F ⋙ G) =
       G.mapIso (preservesTerminalIso F) ≪≫ preservesTerminalIso G := by
-  aesop_cat
+  cat_disch
 
 end terminalComparison
 
@@ -663,10 +697,6 @@ noncomputable def isLimitCartesianMonoidalCategoryOfPreservesLimits :
     (tensorProductIsBinaryProduct A B).ofIsoLimit <|
       isoBinaryFanMk (BinaryFan.mk (fst A B) (snd A B))
 
-@[deprecated (since := "2025-05-15")]
-alias isLimitChosenFiniteProductsOfPreservesLimits :=
-  isLimitCartesianMonoidalCategoryOfPreservesLimits
-
 /-- If `F` preserves the limit of the pair `(A, B)`, then `prodComparison F A B` is an isomorphism.
 -/
 noncomputable def prodComparisonIso : F.obj (A ⊗ B) ≅ F.obj A ⊗ F.obj B :=
@@ -711,6 +741,7 @@ end PreservesLimitPairs
 
 section ProdComparisonIso
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `prodComparison F A B` is an isomorphism, then `F` preserves the limit of `pair A B`. -/
 lemma preservesLimit_pair_of_isIso_prodComparison (A B : C)
     [IsIso (prodComparison F A B)] :
@@ -740,26 +771,40 @@ end prodComparison
 
 end CartesianMonoidalCategoryComparison
 
+set_option backward.isDefEq.respectTransparency false in
+/-- In a cartesian monoidal category, `tensorLeft X` is naturally isomorphic `prod.functor.obj X`.
+-/
+noncomputable def tensorLeftIsoProd [HasBinaryProducts C] (X : C) :
+    MonoidalCategory.tensorLeft X ≅ prod.functor.obj X :=
+  NatIso.ofComponents fun Y ↦
+    (CartesianMonoidalCategory.tensorProductIsBinaryProduct X Y).conePointUniqueUpToIso
+      (limit.isLimit _)
+
 open Limits
 
 variable {P : ObjectProperty C}
 
 -- TODO: Introduce `ClosedUnderFiniteProducts`?
-/-- The restriction of a cartesian-monoidal category along an object property that's closed under
-finite products is cartesian-monoidal. -/
-noncomputable def fullSubcategory (hP₀ : ClosedUnderLimitsOfShape (Discrete PEmpty) P)
-    (hP₂ : ClosedUnderLimitsOfShape (Discrete WalkingPair) P) :
+/-- The restriction of a Cartesian-monoidal category along an object property that's closed under
+finite products is Cartesian-monoidal. -/
+@[simps!]
+instance fullSubcategory
+    [P.IsClosedUnderLimitsOfShape (Discrete PEmpty)]
+    [P.IsClosedUnderLimitsOfShape (Discrete WalkingPair)] :
     CartesianMonoidalCategory P.FullSubcategory where
-  __ := MonoidalCategory.fullSubcategory P (hP₀ isTerminalTensorUnit <| by simp)
-    fun X Y hX hY ↦ hP₂ (tensorProductIsBinaryProduct X Y) (by rintro ⟨_ | _⟩ <;> simp [hX, hY])
-  isTerminalTensorUnit := .ofUniqueHom (fun X ↦ toUnit X.1) fun _ _ ↦ by ext
-  fst X Y := fst X.1 Y.1
-  snd X Y := snd X.1 Y.1
+  __ := MonoidalCategory.fullSubcategory P
+      (P.prop_of_isLimit isTerminalTensorUnit (by simp))
+      (fun X Y hX hY ↦ P.prop_of_isLimit (tensorProductIsBinaryProduct X Y)
+        (by rintro (_ | _) <;> assumption))
+  isTerminalTensorUnit := .ofUniqueHom (fun X ↦ ObjectProperty.homMk (toUnit X.1))
+    fun _ _ ↦ by ext; apply toUnit_unique
+  fst X Y := ObjectProperty.homMk (fst X.1 Y.1)
+  snd X Y := ObjectProperty.homMk (snd X.1 Y.1)
   tensorProductIsBinaryProduct X Y :=
-    BinaryFan.IsLimit.mk _ (lift (C := C)) (lift_fst (C := C)) (lift_snd (C := C))
-      (by rintro T f g m rfl rfl; symm; exact lift_comp_fst_snd _)
-  fst_def X Y := fst_def X.1 Y.1
-  snd_def X Y := snd_def X.1 Y.1
+    BinaryFan.IsLimit.mk _ (fun f g ↦ ObjectProperty.homMk (lift f.hom g.hom))
+      (by aesop_cat) (by aesop_cat) (by aesop_cat)
+  fst_def X Y := by ext; exact fst_def X.1 Y.1
+  snd_def X Y := by ext; exact snd_def X.1 Y.1
 
 end CartesianMonoidalCategory
 
@@ -801,7 +846,7 @@ lemma lift_δ (f : X ⟶ Y) (g : X ⟶ Z) : F.map (lift f g) ≫ δ F _ _ = lift
   ext <;> simp [← map_comp]
 
 lemma δ_of_cartesianMonoidalCategory (X Y : C) :
-    δ F X Y = CartesianMonoidalCategory.prodComparison F X Y := by aesop_cat
+    δ F X Y = CartesianMonoidalCategory.prodComparison F X Y := by cat_disch
 
 variable [PreservesFiniteProducts F]
 
@@ -812,10 +857,11 @@ instance (X Y : C) : IsIso (δ F X Y) :=
   δ_of_cartesianMonoidalCategory F X Y ▸ isIso_prodComparison_of_preservesLimit_pair F X Y
 
 omit [F.OplaxMonoidal] in
-/-- Any functor between cartesian-monoidal categories is oplax monoidal.
+/-- Any functor between Cartesian-monoidal categories is oplax monoidal.
 
 This is not made an instance because it would create a diamond for the oplax monoidal structure on
 the identity and composition of functors. -/
+@[instance_reducible]
 def ofChosenFiniteProducts (F : C ⥤ D) : F.OplaxMonoidal where
   η := terminalComparison F
   δ X Y := prodComparison F X Y
@@ -826,7 +872,7 @@ def ofChosenFiniteProducts (F : C ⥤ D) : F.OplaxMonoidal where
   oplax_right_unitality _ := by ext; simp [← Functor.map_comp]
 
 omit [F.OplaxMonoidal] in
-/-- Any functor between cartesian-monoidal categories is oplax monoidal in a unique way. -/
+/-- Any functor between Cartesian-monoidal categories is oplax monoidal in a unique way. -/
 instance : Subsingleton F.OplaxMonoidal where
   allEq a b := by
     ext1
@@ -854,6 +900,7 @@ lemma μ_fst (X Y : C) : μ F X Y ≫ F.map (fst X Y) = fst (F.obj X) (F.obj Y) 
 lemma μ_snd (X Y : C) : μ F X Y ≫ F.map (snd X Y) = snd (F.obj X) (F.obj Y) :=
   (cancel_epi (μIso _ _ _).inv).1 (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [-instance] Functor.LaxMonoidal.comp Functor.Monoidal.instComp in
 @[reassoc]
 lemma μ_comp [(F ⋙ G).Monoidal] (X Y : C) : μ (F ⋙ G) X Y = μ G _ _ ≫ G.map (μ F X Y) := by
@@ -869,10 +916,11 @@ lemma μ_of_cartesianMonoidalCategory (X Y : C) : μ F X Y = (prodComparisonIso 
 
 attribute [local instance] Functor.OplaxMonoidal.ofChosenFiniteProducts in
 omit [F.Monoidal] in
-/-- A finite-product-preserving functor between cartesian monoidal categories is monoidal.
+/-- A finite-product-preserving functor between Cartesian monoidal categories is monoidal.
 
 This is not made an instance because it would create a diamond for the monoidal structure on
 the identity and composition of functors. -/
+@[instance_reducible]
 noncomputable def ofChosenFiniteProducts (F : C ⥤ D) [PreservesFiniteProducts F] : F.Monoidal :=
   .ofOplaxMonoidal F
 
@@ -894,7 +942,7 @@ instance [F.Monoidal] : PreservesFiniteProducts F :=
 
 attribute [local instance] OplaxMonoidal.ofChosenFiniteProducts in
 /--
-A functor between cartesian monoidal categories is monoidal iff it preserves finite products.
+A functor between Cartesian monoidal categories is monoidal iff it preserves finite products.
 -/
 lemma nonempty_monoidal_iff_preservesFiniteProducts :
     Nonempty F.Monoidal ↔ PreservesFiniteProducts F :=
@@ -906,10 +954,11 @@ namespace Braided
 variable [BraidedCategory C] [BraidedCategory D]
 
 attribute [local instance] Functor.Monoidal.ofChosenFiniteProducts in
-/-- A finite-product-preserving functor between cartesian monoidal categories is braided.
+/-- A finite-product-preserving functor between Cartesian monoidal categories is braided.
 
 This is not made an instance because it would create a diamond for the monoidal structure on
 the identity and composition of functors. -/
+@[instance_reducible]
 noncomputable def ofChosenFiniteProducts (F : C ⥤ D) [PreservesFiniteProducts F] : F.Braided where
   braided X Y := by rw [← cancel_mono (Monoidal.μIso _ _ _).inv]; ext <;> simp [← F.map_comp]
 
@@ -917,34 +966,21 @@ instance : Subsingleton F.Braided := (Braided.toMonoidal_injective F).subsinglet
 
 end Braided
 
-@[deprecated (since := "2025-04-24")]
-alias oplaxMonoidalOfChosenFiniteProducts := OplaxMonoidal.ofChosenFiniteProducts
-
-@[deprecated (since := "2025-04-24")]
-alias monoidalOfChosenFiniteProducts := Monoidal.ofChosenFiniteProducts
-
-@[deprecated (since := "2025-04-24")]
-alias braidedOfChosenFiniteProducts := Braided.ofChosenFiniteProducts
-
 namespace EssImageSubcategory
 variable [F.Full] [F.Faithful] [PreservesFiniteProducts F] {T X Y Z : F.EssImageSubcategory}
 
-@[simps!]
-noncomputable instance instCartesianMonoidalCategory :
-     CartesianMonoidalCategory F.EssImageSubcategory :=
-  .fullSubcategory (.essImage _) (.essImage _)
-
 lemma tensor_obj (X Y : F.EssImageSubcategory) : (X ⊗ Y).obj = X.obj ⊗ Y.obj := rfl
 
-lemma lift_def (f : T ⟶ X) (g : T ⟶ Y) : lift f g = lift (T := T.1) f g := rfl
+lemma lift_def (f : T ⟶ X) (g : T ⟶ Y) : lift f g = ObjectProperty.homMk (lift f.hom g.hom) := rfl
 
 lemma associator_hom_def (X Y Z : F.EssImageSubcategory) :
-    (α_ X Y Z).hom = (α_ X.obj Y.obj Z.obj).hom := rfl
+    (α_ X Y Z).hom = ObjectProperty.homMk (α_ X.obj Y.obj Z.obj).hom := rfl
 
 lemma associator_inv_def (X Y Z : F.EssImageSubcategory) :
-    (α_ X Y Z).inv = (α_ X.obj Y.obj Z.obj).inv := rfl
+    (α_ X Y Z).inv = ObjectProperty.homMk (α_ X.obj Y.obj Z.obj).inv := rfl
 
-lemma toUnit_def (X : F.EssImageSubcategory) : toUnit X = toUnit X.obj := toUnit_unique ..
+lemma toUnit_def (X : F.EssImageSubcategory) :
+    toUnit X = ObjectProperty.homMk (toUnit X.obj) := rfl
 
 end Functor.EssImageSubcategory
 

@@ -3,10 +3,13 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Wen Yang
 -/
-import Mathlib.LinearAlgebra.Matrix.Adjugate
-import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.LinearAlgebra.Matrix.Transvection
-import Mathlib.RingTheory.RootsOfUnity.Basic
+module
+
+public import Mathlib.Data.Fintype.Parity
+public import Mathlib.LinearAlgebra.Matrix.Adjugate
+public import Mathlib.LinearAlgebra.Matrix.ToLin
+public import Mathlib.LinearAlgebra.Matrix.Transvection
+public import Mathlib.RingTheory.RootsOfUnity.Basic
 
 /-!
 # The Special Linear group $SL(n, R)$
@@ -25,7 +28,7 @@ the group structure on `SpecialLinearGroup n R` and the embedding into the gener
 ## Notation
 
 For `m : ℕ`, we introduce the notation `SL(m,R)` for the special linear group on the fintype
-`n = Fin m`, in the locale `MatrixGroups`.
+`n = Fin m`, in the scope `MatrixGroups`.
 
 ## Implementation notes
 The inverse operation in the `SpecialLinearGroup` is defined to be the adjugate
@@ -47,6 +50,8 @@ of a regular `↑` coercion.
 
 matrix group, group, matrix inverse
 -/
+
+@[expose] public section
 
 
 namespace Matrix
@@ -72,6 +77,9 @@ scoped[MatrixGroups] notation "SL(" n ", " R ")" => Matrix.SpecialLinearGroup (F
 namespace SpecialLinearGroup
 
 variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [CommRing R]
+
+/-- If `R` and `n` have decidable equality then so does `SL(n, R)`. -/
+instance [DecidableEq R] : DecidableEq (SpecialLinearGroup n R) := Subtype.instDecidableEq
 
 instance hasCoeToMatrix : Coe (SpecialLinearGroup n R) (Matrix n n R) :=
   ⟨fun A => A.val⟩
@@ -295,6 +303,19 @@ noncomputable def center_equiv_rootsOfUnity :
     (max_eq_left (NeZero.one_le : 1 ≤ Fintype.card n)).symm ▸
       center_equiv_rootsOfUnity' (Classical.arbitrary n))
 
+theorem eq_scalar_center_equiv_rootsOfUnity
+    (A : center (SpecialLinearGroup n R)) :
+    A = scalar n ((Matrix.SpecialLinearGroup.center_equiv_rootsOfUnity A : Rˣ) : R) := by
+  unfold center_equiv_rootsOfUnity Or.by_cases
+  split_ifs with h
+  · subsingleton
+  dsimp only
+  generalize_proofs _ eq
+  generalize max (Fintype.card n) 1 = c at eq
+  subst eq
+  rw [center_equiv_rootsOfUnity'_apply, rootsOfUnity.val_mkOfPowEq_coe,
+    scalar_eq_coe_self_center]
+
 end center
 
 section cast
@@ -329,7 +350,8 @@ variable [Fact (Even (Fintype.card n))]
 each element. -/
 instance instNeg : Neg (SpecialLinearGroup n R) :=
   ⟨fun g => ⟨-g, by
-    simpa [(@Fact.out <| Even <| Fintype.card n).neg_one_pow, g.det_coe] using det_smul (↑ₘg) (-1)⟩⟩
+    simpa [(@Fact.out <| Even <| Fintype.card n).neg_one_pow, g.det_coe]
+      using det_smul (↑ₘg) (-1)⟩⟩
 
 @[simp]
 theorem coe_neg (g : SpecialLinearGroup n R) : ↑(-g) = -(g : Matrix n n R) :=
@@ -452,14 +474,16 @@ This element acts naturally on the Euclidean plane as a rotation about the origi
 This element also acts naturally on the hyperbolic plane as rotation about `i` by `π`. It
 represents the Mobiüs transformation `z ↦ -1/z` and is an involutive elliptic isometry. -/
 def S : SL(2, ℤ) :=
-  ⟨!![0, -1; 1, 0], by norm_num [Matrix.det_fin_two_of]⟩
+  ⟨!![0, -1; 1, 0], by simp [Matrix.det_fin_two_of]⟩
 
 /-- The matrix `T = [[1, 1], [0, 1]]` as an element of `SL(2, ℤ)`. -/
 def T : SL(2, ℤ) :=
-  ⟨!![1, 1; 0, 1], by norm_num [Matrix.det_fin_two_of]⟩
+  ⟨!![1, 1; 0, 1], by simp [Matrix.det_fin_two_of]⟩
 
 theorem coe_S : ↑S = !![0, -1; 1, 0] :=
   rfl
+
+lemma S_inv : S⁻¹ = -S := by decide
 
 theorem coe_T : ↑T = (!![1, 1; 0, 1] : Matrix _ _ ℤ) :=
   rfl

@@ -3,8 +3,9 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.Gamma.Deligne
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Deligne
 /-!
 # Dirichlet series as Mellin transforms
 
@@ -12,11 +13,14 @@ Here we prove general results of the form "the Mellin transform of a power serie
 a Dirichlet series".
 -/
 
+public section
+
 open Filter Topology Asymptotics Real Set MeasureTheory
 open Complex
 
 variable {ι : Type*} [Countable ι]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Most basic version of the "Mellin transform = Dirichlet series" argument. -/
 lemma hasSum_mellin {a : ι → ℂ} {p : ι → ℝ} {F : ℝ → ℂ} {s : ℂ}
     (hp : ∀ i, a i = 0 ∨ 0 < p i) (hs : 0 < s.re)
@@ -144,8 +148,7 @@ lemma hasSum_mellin_pi_mul_sq' {a : ι → ℂ} {r : ι → ℝ} {F : ℝ → �
     · rw [cpow_add _ _ (ofReal_ne_zero.mpr <| abs_ne_zero.mpr h), cpow_one]
       conv_rhs => enter [1]; rw [← sign_mul_abs (r i), ofReal_mul, ← ofRealHom_eq_coe,
         SignType.map_cast]
-      field_simp [h]
-      ring_nf
+      field [h]
   · convert h_sum using 2 with i
     rcases eq_or_ne (r i) 0 with h | h
     · rw [h, abs_zero, ofReal_zero, zero_rpow hs₂.ne', zero_rpow hs.ne', div_zero, div_zero]

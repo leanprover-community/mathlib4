@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Eric Wieser, Bhavik Mehta,
   Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
-import Mathlib.Data.Fin.Tuple.NatAntidiagonal
-import Mathlib.Data.Finset.Sym
+module
+
+public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
+public import Mathlib.Data.Fin.Tuple.NatAntidiagonal
+public import Mathlib.Data.Finset.Sym
 
 /-!
 # Antidiagonal of functions as finsets
@@ -39,6 +41,8 @@ identification. See `Finset.finAntidiag` for the details.
 `Finset.finsuppAntidiag` for the `Finset (ι →₀ μ)`-valued version of `Finset.piAntidiag`.
 -/
 
+@[expose] public section
+
 open Function
 
 variable {ι μ μ' : Type*}
@@ -54,44 +58,43 @@ In this section, we define the antidiagonals in `Fin d → μ` by recursion on `
 computationally efficient, although probably not as efficient as `Finset.Nat.antidiagonalTuple`.
 -/
 
+/-- Auxiliary construction for `finAntidiagonal` that bundles a proof of lawfulness
+(`mem_finAntidiagonal`), as this is needed to invoke `disjiUnion`. Using `Finset.disjiUnion` makes
+this computationally much more efficient than using `Finset.biUnion`. -/
+def finAntidiagonal.aux (d : ℕ) (n : μ) : {s : Finset (Fin d → μ) // ∀ f, f ∈ s ↔ ∑ i, f i = n} :=
+  match d with
+  | 0 =>
+    if h : n = 0 then
+      ⟨{0}, by simp [h, Subsingleton.elim _ ![]]⟩
+    else
+      ⟨∅, by simp [Ne.symm h]⟩
+  | d + 1 =>
+    { val := (antidiagonal n).disjiUnion
+        (fun ab => (aux d ab.2).1.map {
+            toFun := Fin.cons (ab.1)
+            inj' := Fin.cons_right_injective _ })
+        (fun i _hi j _hj hij => Finset.disjoint_left.2 fun t hti htj => hij <| by
+          simp_rw [Finset.mem_map, Embedding.coeFn_mk] at hti htj
+          obtain ⟨ai, hai, hij'⟩ := hti
+          obtain ⟨aj, haj, rfl⟩ := htj
+          rw [Fin.cons_inj] at hij'
+          ext
+          · exact hij'.1
+          · obtain ⟨-, rfl⟩ := hij'
+            rw [← (aux d i.2).prop ai |>.mp hai, ← (aux d j.2).prop ai |>.mp haj])
+      property := fun f => by
+        simp_rw [mem_disjiUnion, mem_antidiagonal, mem_map, Embedding.coeFn_mk, Prod.exists,
+          (aux d _).prop, Fin.sum_univ_succ]
+        constructor
+        · rintro ⟨a, b, rfl, g, rfl, rfl⟩
+          simp only [Fin.cons_zero, Fin.cons_succ]
+        · intro hf
+          exact ⟨_, _, hf, _, rfl, Fin.cons_self_tail f⟩ }
+
 /-- `finAntidiagonal d n` is the type of `d`-tuples with sum `n`.
 
 TODO: deduplicate with the less general `Finset.Nat.antidiagonalTuple`. -/
-def finAntidiagonal (d : ℕ) (n : μ) : Finset (Fin d → μ) :=
-  aux d n
-where
-  /-- Auxiliary construction for `finAntidiagonal` that bundles a proof of lawfulness
-  (`mem_finAntidiagonal`), as this is needed to invoke `disjiUnion`. Using `Finset.disjiUnion` makes
-  this computationally much more efficient than using `Finset.biUnion`. -/
-  aux (d : ℕ) (n : μ) : {s : Finset (Fin d → μ) // ∀ f, f ∈ s ↔ ∑ i, f i = n} :=
-    match d with
-    | 0 =>
-      if h : n = 0 then
-        ⟨{0}, by simp [h, Subsingleton.elim _ ![]]⟩
-      else
-        ⟨∅, by simp [Ne.symm h]⟩
-    | d + 1 =>
-      { val := (antidiagonal n).disjiUnion
-          (fun ab => (aux d ab.2).1.map {
-              toFun := Fin.cons (ab.1)
-              inj' := Fin.cons_right_injective _ })
-          (fun i _hi j _hj hij => Finset.disjoint_left.2 fun t hti htj => hij <| by
-            simp_rw [Finset.mem_map, Embedding.coeFn_mk] at hti htj
-            obtain ⟨ai, hai, hij'⟩ := hti
-            obtain ⟨aj, haj, rfl⟩ := htj
-            rw [Fin.cons_inj] at hij'
-            ext
-            · exact hij'.1
-            · obtain ⟨-, rfl⟩ := hij'
-              rw [← (aux d i.2).prop ai |>.mp hai, ← (aux d j.2).prop ai |>.mp haj])
-        property := fun f => by
-          simp_rw [mem_disjiUnion, mem_antidiagonal, mem_map, Embedding.coeFn_mk, Prod.exists,
-            (aux d _).prop, Fin.sum_univ_succ]
-          constructor
-          · rintro ⟨a, b, rfl, g, rfl, rfl⟩
-            simp only [Fin.cons_zero, Fin.cons_succ]
-          · intro hf
-            exact ⟨_, _, hf, _, rfl, Fin.cons_self_tail f⟩ }
+def finAntidiagonal (d : ℕ) (n : μ) : Finset (Fin d → μ) := finAntidiagonal.aux d n
 
 @[simp] lemma mem_finAntidiagonal {d : ℕ} {f : Fin d → μ} :
     f ∈ finAntidiagonal d n ↔ ∑ i, f i = n := (finAntidiagonal.aux d n).prop f
@@ -116,20 +119,20 @@ def piAntidiag (s : Finset ι) (n : μ) : Finset (ι → μ) := by
     simp only [mem_map, mem_finAntidiagonal]
     refine Equiv.exists_congr ((e₁.symm.trans e₂).arrowCongr <| .refl _) fun g ↦ ?_
     have := Fintype.sum_equiv (e₂.symm.trans e₁) _ g fun _ ↦ rfl
-    aesop
+    simp_all
 
 variable {s : Finset ι} {n : μ} {f : ι → μ}
 
 @[simp] lemma mem_piAntidiag : f ∈ piAntidiag s n ↔ s.sum f = n ∧ ∀ i, f i ≠ 0 → i ∈ s := by
   rw [piAntidiag]
-  induction' Fintype.truncEquivFinOfCardEq (Fintype.card_coe s) using Trunc.ind with e
+  induction Fintype.truncEquivFinOfCardEq (Fintype.card_coe s) using Trunc.ind with | _ e
   simp only [Trunc.lift_mk, mem_map, mem_finAntidiagonal, Embedding.coeFn_mk]
   constructor
   · rintro ⟨f, ⟨hf, rfl⟩, rfl⟩
     rw [sum_dite_of_true fun _ ↦ id]
     exact ⟨Fintype.sum_equiv e _ _ (by simp), by simp +contextual⟩
   · rintro ⟨rfl, hf⟩
-    refine ⟨f ∘ (↑) ∘ e.symm, ?_, by ext i; have := not_imp_comm.1 (hf i); aesop⟩
+    refine ⟨f ∘ (↑) ∘ e.symm, ?_, by grind⟩
     rw [← sum_attach s]
     exact Fintype.sum_equiv e.symm _ _ (by simp)
 
@@ -201,7 +204,7 @@ variable [DecidableEq ι]
 
 /-- Local notation for the pointwise operation `n • s := {n • a | a ∈ s}` to avoid conflict with the
 pointwise operation `n • s := s + ... + s` (`n` times). -/
-local infixr:73 "•ℕ" => @SMul.smul _ _ Finset.smulFinset
+local infixr:73 " •ℕ " => @SMul.smul _ _ Finset.smulFinset
 
 lemma piAntidiag_univ_fin_eq_antidiagonalTuple (n k : ℕ) :
     piAntidiag univ n = Nat.antidiagonalTuple k n := by
@@ -223,7 +226,7 @@ lemma nsmul_piAntidiag [DecidableEq (ι → ℕ)] (s : Finset ι) (m : ℕ) {n :
       exact dvd_zero _
   refine ⟨fun i ↦ f i / n, ?_⟩
   simp [funext_iff, Nat.mul_div_cancel', ← Nat.sum_div, *]
-  aesop
+  grind
 
 lemma map_nsmul_piAntidiag (s : Finset ι) (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
     (piAntidiag s m).map

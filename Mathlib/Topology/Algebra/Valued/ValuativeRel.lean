@@ -3,8 +3,9 @@ Copyright (c) 2025 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.RingTheory.Valuation.ValuativeRel
-import Mathlib.Topology.Algebra.Valued.ValuationTopology
+module
+
+public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
 
 /-!
 
@@ -17,108 +18,66 @@ to facilitate a refactor.
 
 -/
 
-namespace ValuativeRel
+public section
 
-variable {R : Type*} [CommRing R]
+namespace IsValuativeTopology
 
-instance [UniformSpace R] [IsUniformAddGroup R] [ValuativeRel R] [ValuativeTopology R] :
-    Valued R (ValueGroupWithZero R) :=
-  .mk (valuation R) ValuativeTopology.mem_nhds_iff
+section
 
-end ValuativeRel
+/-! ### Alternate constructors -/
 
-namespace ValuativeTopology
-
-variable {R : Type*} [CommRing R] [ValuativeRel R] [TopologicalSpace R] [ValuativeTopology R]
+variable {R : Type*} [CommRing R] [ValuativeRel R] [TopologicalSpace R]
 
 open ValuativeRel TopologicalSpace Filter Topology Set
 
 local notation "v" => valuation R
 
-variable (R) in
-theorem hasBasis_nhds_zero :
-    (𝓝 (0 : R)).HasBasis (fun _ => True)
-      fun γ : (ValueGroupWithZero R)ˣ => { x | v x < γ } := by
-  simp [Filter.hasBasis_iff, mem_nhds_iff]
+/-- Assuming `ContinuousConstVAdd R R`, we only need to check the neighbourhood of `0` in order to
+prove `IsValuativeTopology R`. -/
+theorem of_zero [ContinuousConstVAdd R R]
+    (h₀ : ∀ s : Set R, s ∈ 𝓝 0 ↔ ∃ γ : (ValueGroupWithZero R)ˣ, { z | v z < γ } ⊆ s) :
+    IsValuativeTopology R where
+  mem_nhds_iff {s x} := by
+    simpa [← vadd_mem_nhds_vadd_iff (t := s) (-x), ← image_vadd, ← image_subset_iff] using
+      h₀ ((x + ·) ⁻¹' s)
 
-variable [IsTopologicalAddGroup R]
+end
 
-theorem mem_nhds {s : Set R} {x : R} :
-    s ∈ 𝓝 x ↔ ∃ γ : (ValueGroupWithZero R)ˣ, { y | v (y - x) < γ } ⊆ s := by
-  simp only [← nhds_translation_add_neg x, ← sub_eq_add_neg, preimage_setOf_eq, true_and,
-    ((hasBasis_nhds_zero R).comap fun y => y - x).mem_iff]
+variable {R : Type*} [CommRing R] [ValuativeRel R] [TopologicalSpace R] [IsValuativeTopology R]
 
-theorem isOpen_ball (r : ValueGroupWithZero R) :
-    IsOpen {x | v x < r} := by
-  rw [isOpen_iff_mem_nhds]
-  rcases eq_or_ne r 0 with rfl | hr
-  · simp
-  · intro x hx
-    rw [mem_nhds]
-    simp only [setOf_subset_setOf]
-    exact ⟨Units.mk0 _ hr,
-      fun y hy => (sub_add_cancel y x).symm ▸ ((v).map_add _ x).trans_lt (max_lt hy hx)⟩
+open ValuativeRel TopologicalSpace Filter Topology Set
 
-theorem isClosed_ball (r : ValueGroupWithZero R) :
-    IsClosed {x | v x < r} := by
-  rcases eq_or_ne r 0 with rfl | hr
-  · simp
-  · exact AddSubgroup.isClosed_of_isOpen (Valuation.ltAddSubgroup v (Units.mk0 r hr))
-      (isOpen_ball _)
-
-theorem isClopen_ball (r : ValueGroupWithZero R) :
-    IsClopen {x | v x < r} :=
-  ⟨isClosed_ball _, isOpen_ball _⟩
-
-lemma isOpen_closedBall {r : ValueGroupWithZero R} (hr : r ≠ 0) :
-    IsOpen {x | v x ≤ r} := by
-  rw [isOpen_iff_mem_nhds]
-  intro x hx
-  rw [mem_nhds]
-  simp only [setOf_subset_setOf]
-  exact ⟨Units.mk0 _ hr, fun y hy => (sub_add_cancel y x).symm ▸
-    le_trans ((v).map_add _ _) (max_le (le_of_lt hy) hx)⟩
-
-theorem isClosed_closedBall (r : ValueGroupWithZero R) :
-    IsClosed {x | v x ≤ r} := by
-  rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
-  intro x hx
-  simp only [mem_compl_iff, mem_setOf_eq, not_le] at hx
-  rw [mem_nhds]
-  have hx' : v x ≠ 0 := ne_of_gt <| lt_of_le_of_lt zero_le' <| hx
-  exact ⟨Units.mk0 _ hx', fun y hy hy' => ne_of_lt hy <| Valuation.map_sub_swap v x y ▸
-      (Valuation.map_sub_eq_of_lt_left _ <| lt_of_le_of_lt hy' hx)⟩
-
-theorem isClopen_closedBall {r : ValueGroupWithZero R} (hr : r ≠ 0) :
-    IsClopen {x | v x ≤ r} :=
-  ⟨isClosed_closedBall _, isOpen_closedBall hr⟩
-
-theorem isClopen_sphere {r : ValueGroupWithZero R} (hr : r ≠ 0) :
-    IsClopen {x | v x = r} := by
-  have h : {x : R | v x = r} = {x | v x ≤ r} \ {x | v x < r} := by
-    ext x
-    simp [← le_antisymm_iff]
-  rw [h]
-  exact IsClopen.diff (isClopen_closedBall hr) (isClopen_ball _)
-
-lemma isOpen_sphere {r : ValueGroupWithZero R} (hr : r ≠ 0) :
-    IsOpen {x | v x = r} :=
-  isClopen_sphere hr |>.isOpen
-
-end ValuativeTopology
-
-namespace Valued
-
-variable {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpace R]
-  [IsUniformAddGroup R] [ValuativeTopology R]
+local notation "v" => valuation R
 
 /-- Helper `Valued` instance when `ValuativeTopology R` over a `UniformSpace R`,
 for use in porting files from `Valued` to `ValuativeRel`. -/
-scoped instance : Valued R (ValuativeRel.ValueGroupWithZero R) where
-  v := ValuativeRel.valuation R
-  is_topological_valuation := ValuativeTopology.mem_nhds_iff
+instance (priority := low) {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpace R]
+    [IsUniformAddGroup R] [IsValuativeTopology R] :
+    Valued R (ValueGroupWithZero R) where
+  «v» := valuation R
+  is_topological_valuation := by
+    simp_rw [Valuation.restrict_lt_iff_lt_embedding]
+    convert mem_nhds_zero_iff (R := R)
+    simpa [← Valuation.restrict_lt_iff_lt_embedding] using
+      (valuation R).exists_setOf_restrict_le_iff 0 _
 
-end Valued
+lemma v_eq_valuation {R : Type*} [CommRing R] [ValuativeRel R] [UniformSpace R]
+    [IsUniformAddGroup R] [IsValuativeTopology R] :
+    Valued.v = valuation R := rfl
+
+open WithZeroTopology in
+lemma continuous_valuation : Continuous v := by
+  simp only [continuous_iff_continuousAt, ContinuousAt]
+  rintro x
+  by_cases hx : v x = 0
+  · simpa [hx, ((valuation R).hasBasis_nhds _).tendsto_iff WithZeroTopology.hasBasis_nhds_zero]
+      using fun i hi ↦ ⟨(Units.mk0 i hi).mapEquiv (ValueGroupWithZero.orderMonoidIso (valuation R)),
+        fun y ↦ by simp [Valuation.map_sub_of_right_eq_zero _ hx]⟩
+  · simpa [((valuation R).hasBasis_nhds _).tendsto_iff (hasBasis_nhds_of_ne_zero hx)]
+      using ⟨(Units.mk0 (v x) hx).mapEquiv (ValueGroupWithZero.orderMonoidIso (valuation R)),
+        fun _ ↦ by simpa [← (valuation R).restrict_def] using Valuation.map_eq_of_sub_lt _⟩
+
+end IsValuativeTopology
 
 namespace ValuativeRel
 
@@ -126,9 +85,9 @@ namespace ValuativeRel
 scoped notation "𝒪[" R "]" => Valuation.integer (valuation R)
 
 @[inherit_doc]
-scoped notation "𝓂[" K "]" => IsLocalRing.maximalIdeal 𝒪[K]
+scoped notation "𝓂[" K "]" => IsLocalRing.maximalIdeal ↥𝒪[K]
 
 @[inherit_doc]
-scoped notation "𝓀[" K "]" => IsLocalRing.ResidueField 𝒪[K]
+scoped notation "𝓀[" K "]" => IsLocalRing.ResidueField ↥𝒪[K]
 
 end ValuativeRel

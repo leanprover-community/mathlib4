@@ -3,24 +3,30 @@ Copyright (c) 2022 Joshua Clune. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joshua Clune
 -/
-import Lean.Elab.Tactic.ElabTerm
-import Mathlib.Tactic.TypeStar
+module
+
+public meta import Lean.Elab.Tactic.ElabTerm
+public import Mathlib.Init
 
 /-!
 Defines the `inhabit α` tactic, which tries to construct an `Inhabited α` instance,
 constructively or otherwise.
 -/
 
+public meta section
+
 open Lean.Meta
 
 namespace Lean.Elab.Tactic
 
 /-- Derives `Inhabited α` from `Nonempty α` with `Classical.choice`. -/
+@[implicit_reducible]
 noncomputable def nonempty_to_inhabited (α : Sort*) (_ : Nonempty α) : Inhabited α :=
   Inhabited.mk (Classical.ofNonempty)
 
 /-- Derives `Inhabited α` from `Nonempty α` without `Classical.choice`
 assuming `α` is of type `Prop`. -/
+@[implicit_reducible]
 def nonempty_prop_to_inhabited (α : Prop) (α_nonempty : Nonempty α) : Inhabited α :=
   Inhabited.mk <| Nonempty.elim α_nonempty id
 

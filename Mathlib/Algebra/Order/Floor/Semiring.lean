@@ -3,12 +3,13 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Kappelmann
 -/
-import Mathlib.Algebra.Order.Floor.Defs
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Tactic.Linarith
+module
+
+public import Mathlib.Algebra.Order.Floor.Defs
+public import Mathlib.Order.Interval.Set.Defs
 
 /-!
-# Lemmas on `Nat.floor` and `Nat.ceil`
+# Lemmas on `Nat.floor` and `Nat.ceil` for semirings
 
 This file contains basic results on the natural-valued floor and ceiling functions.
 
@@ -20,6 +21,8 @@ This file contains basic results on the natural-valued floor and ceiling functio
 
 rounding, floor, ceil
 -/
+
+public section
 
 assert_not_exists Finset
 
@@ -82,13 +85,14 @@ theorem floor_of_nonpos (ha : a ≤ 0) : ⌊a⌋₊ = 0 :=
     rintro rfl
     exact floor_zero
 
+@[gcongr]
 theorem floor_mono : Monotone (floor : R → ℕ) := fun a b h => by
   obtain ha | ha := le_total a 0
   · rw [floor_of_nonpos ha]
     exact Nat.zero_le _
   · exact le_floor ((floor_le ha).trans h)
 
-@[gcongr, bound] lemma floor_le_floor (hab : a ≤ b) : ⌊a⌋₊ ≤ ⌊b⌋₊ := floor_mono hab
+@[bound] lemma floor_le_floor (hab : a ≤ b) : ⌊a⌋₊ ≤ ⌊b⌋₊ := floor_mono hab
 
 theorem le_floor_iff' (hn : n ≠ 0) : n ≤ ⌊a⌋₊ ↔ (n : R) ≤ a := by
   obtain ha | ha := le_total a 0
@@ -144,6 +148,19 @@ theorem preimage_floor_of_ne_zero {n : ℕ} (hn : n ≠ 0) :
     (floor : R → ℕ) ⁻¹' {n} = Ico (n : R) (n + 1) :=
   ext fun _ => floor_eq_iff' hn
 
+theorem mul_cast_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : R) : ⌊a * n⌋₊ / n = ⌊a⌋₊ := by
+  rcases le_total a 0 with ha | ha
+  · rw [floor_of_nonpos, floor_of_nonpos ha]
+    · simp
+    apply mul_nonpos_of_nonpos_of_nonneg ha n.cast_nonneg
+  refine eq_of_forall_le_iff fun m ↦ ?_
+  rw [le_div_iff_mul_le (zero_lt_of_ne_zero hn), le_floor_iff (mul_nonneg ha (cast_nonneg' n)),
+    le_floor_iff ha, cast_mul, mul_le_mul_iff_of_pos_right (cast_pos'.mpr (zero_lt_of_ne_zero hn))]
+
+theorem cast_mul_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : R) :
+    ⌊n * a⌋₊ / n = ⌊a⌋₊ := by
+  rw [Nat.cast_comm, mul_cast_floor_div_cancel hn]
+
 end floor
 
 /-! #### Ceil -/
@@ -189,7 +206,7 @@ theorem ceil_le_floor_add_one (a : R) : ⌈a⌉₊ ≤ ⌊a⌋₊ + 1 := by
   exact (lt_floor_add_one a).le
 
 @[simp]
-theorem ceil_intCast {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R]
+theorem ceil_intCast {R : Type*} [Ring R] [LinearOrder R] [IsOrderedRing R]
     [FloorSemiring R] (z : ℤ) :
     ⌈(z : R)⌉₊ = z.toNat :=
   eq_of_forall_ge_iff fun a => by
@@ -275,6 +292,7 @@ theorem preimage_Iic {a : R} (ha : 0 ≤ a) : (Nat.cast : ℕ → R) ⁻¹' Set.
   ext
   simp [le_floor_iff, ha]
 
+@[push]
 theorem floor_add_natCast [IsStrictOrderedRing R] (ha : 0 ≤ a) (n : ℕ) : ⌊a + n⌋₊ = ⌊a⌋₊ + n :=
   eq_of_forall_le_iff fun b => by
     rw [le_floor_iff (add_nonneg ha n.cast_nonneg)]
@@ -287,13 +305,13 @@ theorem floor_add_natCast [IsStrictOrderedRing R] (ha : 0 ≤ a) (n : ℕ) : ⌊
       refine iff_of_true ?_ le_self_add
       exact le_add_of_nonneg_right <| ha.trans <| le_add_of_nonneg_right d.cast_nonneg
 
-@[deprecated (since := "2025-04-01")] alias floor_add_nat := floor_add_natCast
-
 variable [IsStrictOrderedRing R]
 
+@[push]
 theorem floor_add_one (ha : 0 ≤ a) : ⌊a + 1⌋₊ = ⌊a⌋₊ + 1 := by
   rw [← cast_one, floor_add_natCast ha 1]
 
+@[push]
 theorem floor_add_ofNat (ha : 0 ≤ a) (n : ℕ) [n.AtLeastTwo] :
     ⌊a + ofNat(n)⌋₊ = ⌊a⌋₊ + ofNat(n) :=
   floor_add_natCast ha n
@@ -309,8 +327,6 @@ theorem floor_sub_natCast [Sub R] [OrderedSub R] [ExistsAddOfLE R] (a : R) (n : 
   · rw [eq_tsub_iff_add_eq_of_le (le_floor h), ← floor_add_natCast _, tsub_add_cancel_of_le h]
     exact le_tsub_of_add_le_left ((add_zero _).trans_le h)
 
-@[deprecated (since := "2025-04-01")] alias floor_sub_nat := floor_sub_natCast
-
 @[simp]
 theorem floor_sub_one [Sub R] [OrderedSub R] [ExistsAddOfLE R] (a : R) : ⌊a - 1⌋₊ = ⌊a⌋₊ - 1 :=
   mod_cast floor_sub_natCast a 1
@@ -322,14 +338,13 @@ theorem floor_sub_ofNat [Sub R] [OrderedSub R] [ExistsAddOfLE R] (a : R) (n : �
 
 theorem ceil_add_natCast (ha : 0 ≤ a) (n : ℕ) : ⌈a + n⌉₊ = ⌈a⌉₊ + n :=
   eq_of_forall_ge_iff fun b => by
-    rw [← not_lt, ← not_lt, not_iff_not, lt_ceil]
+    contrapose!
+    rw [lt_ceil]
     obtain hb | hb := le_or_gt n b
     · obtain ⟨d, rfl⟩ := exists_add_of_le hb
       rw [Nat.cast_add, add_comm n, add_comm (n : R), add_lt_add_iff_right, add_lt_add_iff_right,
         lt_ceil]
     · exact iff_of_true (lt_add_of_nonneg_of_lt ha <| cast_lt.2 hb) (Nat.lt_add_left _ hb)
-
-@[deprecated (since := "2025-04-01")] alias ceil_add_nat := ceil_add_natCast
 
 theorem ceil_add_one (ha : 0 ≤ a) : ⌈a + 1⌉₊ = ⌈a⌉₊ + 1 := by
   rw [cast_one.symm, ceil_add_natCast ha 1]
@@ -388,83 +403,6 @@ lemma abs_ceil_sub_le {a : R} (ha : 0 ≤ a) : |⌈a⌉₊ - a| ≤ 1 :=
   abs_sub_comm a ⌈a⌉₊ ▸ abs_sub_ceil_le ha
 
 end LinearOrderedRing
-
-section LinearOrderedSemifield
-
-variable [Semifield K] [LinearOrder K] [IsStrictOrderedRing K] [FloorSemiring K]
-
--- TODO: should these lemmas be `simp`? `norm_cast`?
-
-theorem floor_div_natCast (a : K) (n : ℕ) : ⌊a / n⌋₊ = ⌊a⌋₊ / n := by
-  rcases le_total a 0 with ha | ha
-  · rw [floor_of_nonpos, floor_of_nonpos ha]
-    · simp
-    apply div_nonpos_of_nonpos_of_nonneg ha n.cast_nonneg
-  obtain rfl | hn := n.eq_zero_or_pos
-  · simp
-  refine eq_of_forall_le_iff fun m ↦ ?_
-  rw [Nat.le_div_iff_mul_le hn, le_floor_iff (by positivity), le_floor_iff ha,
-    le_div_iff₀ (by positivity), cast_mul]
-
-theorem cast_mul_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : K) : ⌊n * a⌋₊ / n = ⌊a⌋₊ := by
-  simpa [hn] using (floor_div_natCast (n * a) n).symm
-
-theorem mul_cast_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : K) : ⌊a * n⌋₊ / n = ⌊a⌋₊ := by
-  rw [mul_comm, cast_mul_floor_div_cancel hn]
-
-@[deprecated (since := "2025-04-01")] alias floor_div_nat := floor_div_natCast
-
-theorem floor_div_ofNat (a : K) (n : ℕ) [n.AtLeastTwo] :
-    ⌊a / ofNat(n)⌋₊ = ⌊a⌋₊ / ofNat(n) :=
-  floor_div_natCast a n
-
-/-- Natural division is the floor of field division. -/
-theorem floor_div_eq_div (m n : ℕ) : ⌊(m : K) / n⌋₊ = m / n := by
-  convert floor_div_natCast (m : K) n
-  rw [m.floor_natCast]
-
-end LinearOrderedSemifield
-
-section LinearOrderedField
-variable [Field K] [LinearOrder K] [IsStrictOrderedRing K] [FloorSemiring K] {a b : K}
-
-lemma mul_lt_floor (hb₀ : 0 < b) (hb : b < 1) (hba : ⌈b / (1 - b)⌉₊ ≤ a) : b * a < ⌊a⌋₊ := by
-  calc
-    b * a < b * (⌊a⌋₊ + 1) := by gcongr; apply lt_floor_add_one
-    _ ≤ ⌊a⌋₊ := by
-      rw [_root_.mul_add_one, ← le_sub_iff_add_le', ← one_sub_mul, ← div_le_iff₀' (by linarith),
-        ← ceil_le]
-      exact le_floor hba
-
-lemma ceil_lt_mul (hb : 1 < b) (hba : ⌈(b - 1)⁻¹⌉₊ / b < a) : ⌈a⌉₊ < b * a := by
-  obtain hab | hba := le_total a (b - 1)⁻¹
-  · calc
-      ⌈a⌉₊ ≤ (⌈(b - 1)⁻¹⌉₊ : K) := by gcongr
-      _ < b * a := by rwa [← div_lt_iff₀']; positivity
-  · rw [← sub_pos] at hb
-    calc
-      ⌈a⌉₊ < a + 1 := ceil_lt_add_one <| hba.trans' <| by positivity
-      _ = a + (b - 1) * (b - 1)⁻¹ := by rw [mul_inv_cancel₀]; positivity
-      _ ≤ a + (b - 1) * a := by gcongr
-      _ = b * a := by rw [sub_one_mul, add_sub_cancel]
-
-lemma ceil_le_mul (hb : 1 < b) (hba : ⌈(b - 1)⁻¹⌉₊ / b ≤ a) : ⌈a⌉₊ ≤ b * a := by
-  obtain rfl | hba := hba.eq_or_lt
-  · rw [mul_div_cancel₀, cast_le, ceil_le]
-    · exact _root_.div_le_self (by positivity) hb.le
-    · positivity
-  · exact (ceil_lt_mul hb hba).le
-
-lemma div_two_lt_floor (ha : 1 ≤ a) : a / 2 < ⌊a⌋₊ := by
-  rw [div_eq_inv_mul]; refine mul_lt_floor ?_ ?_ ?_ <;> norm_num; assumption
-
-lemma ceil_lt_two_mul (ha : 2⁻¹ < a) : ⌈a⌉₊ < 2 * a :=
-  ceil_lt_mul one_lt_two (by norm_num at ha ⊢; exact ha)
-
-lemma ceil_le_two_mul (ha : 2⁻¹ ≤ a) : ⌈a⌉₊ ≤ 2 * a :=
-  ceil_le_mul one_lt_two (by norm_num at ha ⊢; exact ha)
-
-end LinearOrderedField
 
 variable [Semiring R] [LinearOrder R] [FloorSemiring R] {a : R}
 variable {S : Type*} [Semiring S] [LinearOrder S] [FloorSemiring S] {b : S}

@@ -3,12 +3,14 @@ Copyright (c) 2021 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Bhavik Mehta
 -/
-import Mathlib.Analysis.Calculus.Deriv.Support
-import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
-import Mathlib.MeasureTheory.Function.JacobianOneDim
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
-import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
-import Mathlib.MeasureTheory.Measure.Haar.Unique
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Support
+public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+public import Mathlib.MeasureTheory.Function.JacobianOneDim
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
+public import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
+public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!
 # Links between an integral and its "improper" version
@@ -64,7 +66,7 @@ in analysis. In particular,
 - `MeasureTheory.integral_Ioi_of_hasDerivAt_of_nonneg` gives the same result assuming that
   `g'` is nonnegative instead of integrable. Its automatic integrability in this context is proved
   in `MeasureTheory.integrableOn_Ioi_deriv_of_nonneg`.
-- `MeasureTheory.integral_comp_smul_deriv_Ioi` is a version of the change of variables formula
+- `MeasureTheory.integral_deriv_smul_comp_Ioi` is a version of the change of variables formula
   on semi-infinite intervals.
 - `MeasureTheory.tendsto_limUnder_of_hasDerivAt_of_integrableOn_Ioi` shows that a function whose
   derivative is integrable on `(a, +∞)` has a limit at `+∞`.
@@ -74,6 +76,8 @@ in analysis. In particular,
 Versions of these results are also given on the intervals `(-∞, a]` and `(-∞, +∞)`, as well as
 the corresponding versions of integration by parts.
 -/
+
+@[expose] public section
 
 open MeasureTheory Filter Set TopologicalSpace Topology
 open scoped ENNReal NNReal
@@ -85,14 +89,13 @@ section AECover
 variable {α ι : Type*} [MeasurableSpace α] (μ : Measure α) (l : Filter ι)
 
 /-- A sequence `φ` of subsets of `α` is a `MeasureTheory.AECover` w.r.t. a measure `μ` and a filter
-    `l` if almost every point (w.r.t. `μ`) of `α` eventually belongs to `φ n` (w.r.t. `l`), and if
-    each `φ n` is measurable.  This definition is a technical way to avoid duplicating a lot of
-    proofs.  It should be thought of as a sufficient condition for being able to interpret
-    `∫ x, f x ∂μ` (if it exists) as the limit of `∫ x in φ n, f x ∂μ` as `n` tends to `l`.
-
-    See for example `MeasureTheory.AECover.lintegral_tendsto_of_countably_generated`,
-    `MeasureTheory.AECover.integrable_of_integral_norm_tendsto` and
-    `MeasureTheory.AECover.integral_tendsto_of_countably_generated`. -/
+`l` if almost every point (w.r.t. `μ`) of `α` eventually belongs to `φ n` (w.r.t. `l`), and if
+each `φ n` is measurable.  This definition is a technical way to avoid duplicating a lot of
+proofs.  It should be thought of as a sufficient condition for being able to interpret
+`∫ x, f x ∂μ` (if it exists) as the limit of `∫ x in φ n, f x ∂μ` as `n` tends to `l`.
+See for example `MeasureTheory.AECover.lintegral_tendsto_of_countably_generated`,
+`MeasureTheory.AECover.integrable_of_integral_norm_tendsto` and
+`MeasureTheory.AECover.integral_tendsto_of_countably_generated`. -/
 structure AECover (φ : ι → Set α) : Prop where
   ae_eventually_mem : ∀ᵐ x ∂μ, ∀ᶠ i in l, x ∈ φ i
   protected measurableSet : ∀ i, MeasurableSet <| φ i
@@ -190,7 +193,8 @@ end LinearOrderα
 section FiniteIntervals
 
 variable [LinearOrder α] [TopologicalSpace α] [OrderClosedTopology α] [OpensMeasurableSpace α]
-  {a b : ι → α} {A B : α} (ha : Tendsto a l (𝓝 A)) (hb : Tendsto b l (𝓝 B))
+  {a b c d : ι → α} {A B : α} (ha : Tendsto a l (𝓝 A)) (hb : Tendsto b l (𝓝 B))
+  (hc : Tendsto c l atBot) (hd : Tendsto d l atTop)
 
 include ha in
 theorem aecover_Ioi_of_Ioi : AECover (μ.restrict (Ioi A)) l fun i ↦ Ioi (a i) where
@@ -209,6 +213,22 @@ theorem aecover_Ioi_of_Ici : AECover (μ.restrict (Ioi A)) l fun i ↦ Ici (a i)
 include hb in
 theorem aecover_Iio_of_Iic : AECover (μ.restrict (Iio B)) l fun i ↦ Iic (b i) :=
   aecover_Ioi_of_Ici (α := αᵒᵈ) hb
+
+include hb hc in
+theorem aecover_Iio_of_Ico : AECover (μ.restrict (Iio B)) l fun i ↦ Ico (c i) (b i) where
+  ae_eventually_mem := by
+    refine (ae_restrict_mem measurableSet_Iio).mono fun _x hx ↦ ?_
+    simp only [mem_Ico, eventually_and]
+    exact ⟨hc.eventually (eventually_le_atBot _x), hb.eventually (eventually_gt_nhds hx)⟩
+  measurableSet _ := measurableSet_Ico
+
+include hd in
+theorem aecover_Ici_of_Ico [NoMaxOrder α] : AECover (μ.restrict (Ici B)) l fun i ↦ Ico B (d i) where
+  ae_eventually_mem := by
+    refine (ae_restrict_mem measurableSet_Ici).mono fun _x hx ↦ ?_
+    simp only [mem_Ico, eventually_and]
+    exact⟨.of_forall fun i => hx, hd.eventually (eventually_gt_atTop _x)⟩
+  measurableSet _ := measurableSet_Ico
 
 include ha hb in
 theorem aecover_Ioo_of_Ioo : AECover (μ.restrict <| Ioo A B) l fun i => Ioo (a i) (b i) :=
@@ -332,7 +352,7 @@ variable {α ι : Type*} [Countable ι] [MeasurableSpace α] {μ : Measure α}
 
 theorem AECover.biUnion_Iic_aecover [Preorder ι] {φ : ι → Set α} (hφ : AECover μ atTop φ) :
     AECover μ atTop fun n : ι => ⋃ (k) (_h : k ∈ Iic n), φ k :=
-  hφ.superset (fun _ ↦ subset_biUnion_of_mem right_mem_Iic) fun _ ↦ .biUnion (to_countable _)
+  hφ.superset (fun _ ↦ subset_biUnion_of_mem self_mem_Iic) fun _ ↦ .biUnion (to_countable _)
     fun _ _ ↦ (hφ.2 _)
 
 theorem AECover.biInter_Ici_aecover [Preorder ι] {φ : ι → Set α}
@@ -352,8 +372,8 @@ private theorem lintegral_tendsto_of_monotone_of_nat {φ : ℕ → Set α} (hφ 
     Tendsto (fun i => ∫⁻ x in φ i, f x ∂μ) atTop (𝓝 <| ∫⁻ x, f x ∂μ) :=
   let F n := (φ n).indicator f
   have key₁ : ∀ n, AEMeasurable (F n) μ := fun n => hfm.indicator (hφ.measurableSet n)
-  have key₂ : ∀ᵐ x : α ∂μ, Monotone fun n => F n x := ae_of_all _ fun x _i _j hij =>
-    indicator_le_indicator_of_subset (hmono hij) (fun x => zero_le <| f x) x
+  have key₂ : ∀ᵐ x : α ∂μ, Monotone fun n => F n x := ae_of_all _ fun x _i _j hij => by
+    dsimp [F]; grw [(hmono hij).subset]
   have key₃ : ∀ᵐ x : α ∂μ, Tendsto (fun n => F n x) atTop (𝓝 (f x)) := hφ.ae_tendsto_indicator f
   (lintegral_tendsto_of_tendsto_of_monotone key₁ key₂ key₃).congr fun n =>
     lintegral_indicator (hφ.measurableSet n) _
@@ -365,8 +385,8 @@ theorem AECover.lintegral_tendsto_of_nat {φ : ℕ → Set α} (hφ : AECover μ
   have lim₂ := lintegral_tendsto_of_monotone_of_nat hφ.biUnion_Iic_aecover
     (fun i j hij => biUnion_subset_biUnion_left (Iic_subset_Iic.mpr hij)) hfm
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le lim₁ lim₂ (fun n ↦ ?_) fun n ↦ ?_
-  exacts [lintegral_mono_set (biInter_subset_of_mem left_mem_Ici),
-    lintegral_mono_set (subset_biUnion_of_mem right_mem_Iic)]
+  exacts [lintegral_mono_set (biInter_subset_of_mem self_mem_Ici),
+    lintegral_mono_set (subset_biUnion_of_mem self_mem_Iic)]
 
 theorem AECover.lintegral_tendsto_of_countably_generated [l.IsCountablyGenerated] {φ : ι → Set α}
     (hφ : AECover μ l φ) {f : α → ℝ≥0∞} (hfm : AEMeasurable f μ) :
@@ -398,10 +418,6 @@ theorem AECover.integrable_of_lintegral_enorm_bounded [l.NeBot] [l.IsCountablyGe
   refine ⟨hfm, (le_of_tendsto ?_ hbounded).trans_lt ENNReal.ofReal_lt_top⟩
   exact hφ.lintegral_tendsto_of_countably_generated hfm.enorm
 
-@[deprecated (since := "2025-01-22")]
-alias AECover.integrable_of_lintegral_nnnorm_bounded :=
-  AECover.integrable_of_lintegral_enorm_bounded
-
 theorem AECover.integrable_of_lintegral_enorm_tendsto [l.NeBot] [l.IsCountablyGenerated]
     {φ : ι → Set α} (hφ : AECover μ l φ) {f : α → E} (I : ℝ) (hfm : AEStronglyMeasurable f μ)
     (htendsto : Tendsto (fun i => ∫⁻ x in φ i, ‖f x‖ₑ ∂μ) l (𝓝 <| .ofReal I)) :
@@ -411,29 +427,17 @@ theorem AECover.integrable_of_lintegral_enorm_tendsto [l.NeBot] [l.IsCountablyGe
   refine (ENNReal.ofReal_lt_ofReal_iff (lt_max_of_lt_left zero_lt_one)).2 ?_
   exact lt_max_of_lt_right (lt_add_one I)
 
-@[deprecated (since := "2025-01-22")]
-alias AECover.integrable_of_lintegral_nnnorm_tendsto :=
-  AECover.integrable_of_lintegral_enorm_tendsto
-
 theorem AECover.integrable_of_lintegral_enorm_bounded' [l.NeBot] [l.IsCountablyGenerated]
     {φ : ι → Set α} (hφ : AECover μ l φ) {f : α → E} (I : ℝ≥0) (hfm : AEStronglyMeasurable f μ)
     (hbounded : ∀ᶠ i in l, ∫⁻ x in φ i, ‖f x‖ₑ ∂μ ≤ I) : Integrable f μ :=
   hφ.integrable_of_lintegral_enorm_bounded I hfm
     (by simpa only [ENNReal.ofReal_coe_nnreal] using hbounded)
 
-@[deprecated (since := "2025-01-22")]
-alias AECover.integrable_of_lintegral_nnnorm_bounded' :=
-  AECover.integrable_of_lintegral_enorm_bounded'
-
 theorem AECover.integrable_of_lintegral_enorm_tendsto' [l.NeBot] [l.IsCountablyGenerated]
     {φ : ι → Set α} (hφ : AECover μ l φ) {f : α → E} (I : ℝ≥0) (hfm : AEStronglyMeasurable f μ)
     (htendsto : Tendsto (fun i => ∫⁻ x in φ i, ‖f x‖ₑ ∂μ) l (𝓝 I)) : Integrable f μ :=
   hφ.integrable_of_lintegral_enorm_tendsto I hfm
     (by simpa only [ENNReal.ofReal_coe_nnreal] using htendsto)
-
-@[deprecated (since := "2025-01-22")]
-alias AECover.integrable_of_lintegral_nnnorm_tendsto' :=
-  AECover.integrable_of_lintegral_enorm_tendsto'
 
 theorem AECover.integrable_of_integral_norm_bounded [l.NeBot] [l.IsCountablyGenerated]
     {φ : ι → Set α} (hφ : AECover μ l φ) {f : α → E} (I : ℝ) (hfi : ∀ i, IntegrableOn f (φ i) μ)
@@ -486,8 +490,7 @@ theorem AECover.integral_tendsto_of_countably_generated [l.IsCountablyGenerated]
     (Eventually.of_forall fun _ => ae_of_all _ fun _ => norm_indicator_le_norm_self _ _) hfi.norm
     (hφ.ae_tendsto_indicator f)
 
-/-- Slight reformulation of
-    `MeasureTheory.AECover.integral_tendsto_of_countably_generated`. -/
+/-- Slight reformulation of `MeasureTheory.AECover.integral_tendsto_of_countably_generated`. -/
 theorem AECover.integral_eq_of_tendsto [l.NeBot] [l.IsCountablyGenerated] {φ : ι → Set α}
     (hφ : AECover μ l φ) {f : α → E} (I : E) (hfi : Integrable f μ)
     (h : Tendsto (fun n => ∫ x in φ n, f x ∂μ) l (𝓝 I)) : ∫ x, f x ∂μ = I :=
@@ -581,9 +584,12 @@ theorem integrableOn_Ioc_of_intervalIntegral_norm_bounded {I a₀ b₀ : ℝ}
   refine (aecover_Ioc_of_Ioc ha hb).integrable_of_integral_norm_bounded I
     (fun i => (hfi i).restrict) (h.mono fun i hi ↦ ?_)
   rw [Measure.restrict_restrict measurableSet_Ioc]
-  refine le_trans (setIntegral_mono_set (hfi i).norm ?_ ?_) hi <;> apply ae_of_all
-  · simp only [Pi.zero_apply, norm_nonneg, forall_const]
-  · intro c hc; exact hc.1
+  grw [← hi]
+  gcongr
+  · apply ae_of_all
+    simp
+  · exact (hfi i).norm
+  · exact inter_subset_left
 
 theorem integrableOn_Ioc_of_intervalIntegral_norm_bounded_left {I a₀ b : ℝ}
     (hfi : ∀ i, IntegrableOn f <| Ioc (a i) b) (ha : Tendsto a l <| 𝓝 a₀)
@@ -621,6 +627,36 @@ theorem intervalIntegral_tendsto_integral_Iic (b : ℝ) (hfi : IntegrableOn f (I
   rw [intervalIntegral.integral_of_le hai, Measure.restrict_restrict (hφ.measurableSet i)]
   rfl
 
+theorem tendsto_integral_Iic_zero (ha : Tendsto a l atBot) :
+    Tendsto (fun i => ∫ x in Iic (a i), f x ∂μ) l (𝓝 0) := by
+  by_cases! h : ∀ b, ¬ IntegrableOn f (Iic b) μ
+  · exact tendsto_const_nhds.congr (fun i => (integral_undef (h (a i))).symm)
+  obtain ⟨b, hb⟩ := h
+  have : ∀ᶠ i in l, ∫ x in Iic b, f x ∂μ - ∫ x in a i..b, f x ∂μ = ∫ x in Iic (a i), f x ∂μ := by
+    filter_upwards [ha.eventually_mem (Iic_mem_atBot b)] with i hi
+    rw [sub_eq_iff_comm,
+      intervalIntegral.integral_Iic_sub_Iic (hb.mono_set (Iic_subset_Iic.2 hi)) hb]
+  rw [← sub_self (∫ x in Iic b, f x ∂μ)]
+  exact Tendsto.congr' this (Tendsto.const_sub _ <| intervalIntegral_tendsto_integral_Iic b hb ha)
+
+theorem tendsto_integral_Ico_integral_Iio (b : ℝ) (hfi : IntegrableOn f (Iio b) μ)
+    (ha : Tendsto a l atBot) :
+    Tendsto (fun i => ∫ x in Ico (a i) b, f x ∂μ) l (𝓝 <| ∫ x in Iio b, f x ∂μ) :=
+  ((aecover_Iio_of_Ico tendsto_const_nhds ha).integral_tendsto_of_countably_generated hfi).congr'
+    (by simp)
+
+theorem tendsto_integral_Iio_zero (ha : Tendsto a l atBot) :
+    Tendsto (fun i => ∫ x in Iio (a i), f x ∂μ) l (𝓝 0) := by
+  by_cases! h : ∀ b, ¬ IntegrableOn f (Iio b) μ
+  · exact tendsto_const_nhds.congr (fun i => (integral_undef (h (a i))).symm)
+  obtain ⟨b, hb⟩ := h
+  have : ∀ᶠ i in l, ∫ x in Iio b, f x ∂μ - ∫ x in Ico (a i) b, f x ∂μ =
+      ∫ x in Iio (a i), f x ∂μ := by
+    filter_upwards [ha.eventually_mem (Iic_mem_atBot b)] with i hi
+    rw [sub_eq_iff_comm, intervalIntegral.integral_Iio_sub_Iio hb hi]
+  rw [← sub_self (∫ x in Iio b, f x ∂μ)]
+  exact Tendsto.congr' this (Tendsto.const_sub _ <| tendsto_integral_Ico_integral_Iio b hb ha)
+
 theorem intervalIntegral_tendsto_integral_Ioi (a : ℝ) (hfi : IntegrableOn f (Ioi a) μ)
     (hb : Tendsto b l atTop) :
     Tendsto (fun i => ∫ x in a..b i, f x ∂μ) l (𝓝 <| ∫ x in Ioi a, f x ∂μ) := by
@@ -631,6 +667,35 @@ theorem intervalIntegral_tendsto_integral_Ioi (a : ℝ) (hfi : IntegrableOn f (I
   rw [intervalIntegral.integral_of_le hbi, Measure.restrict_restrict (hφ.measurableSet i),
     inter_comm]
   rfl
+
+theorem tendsto_integral_Ioi_zero (hb : Tendsto b l atTop) :
+    Tendsto (fun i => ∫ x in Ioi (b i), f x ∂μ) l (𝓝 0) := by
+  by_cases! h : ∀ a, ¬ IntegrableOn f (Ioi a) μ
+  · exact tendsto_const_nhds.congr (fun i => (integral_undef (h (b i))).symm)
+  obtain ⟨a, ha⟩ := h
+  have : ∀ᶠ i in l, ∫ x in Ioi a, f x ∂μ - ∫ x in a..b i, f x ∂μ = ∫ x in Ioi (b i), f x ∂μ := by
+    filter_upwards [hb.eventually_mem (Ici_mem_atTop a)] with i hi
+    rw [sub_eq_iff_eq_add',
+      intervalIntegral.integral_interval_add_Ioi ha (ha.mono_set (Ioi_subset_Ioi hi))]
+  rw [← sub_self (∫ x in Ioi a, f x ∂μ)]
+  exact Tendsto.congr' this (Tendsto.const_sub _ <| intervalIntegral_tendsto_integral_Ioi a ha hb)
+
+theorem tendsto_integral_Ico_integral_Ici (b : ℝ) (hfi : IntegrableOn f (Ici b) μ)
+    (ha : Tendsto a l atTop) :
+    Tendsto (fun i => ∫ x in Ico b (a i), f x ∂μ) l (𝓝 <| ∫ x in Ici b, f x ∂μ) :=
+  ((aecover_Ici_of_Ico ha).integral_tendsto_of_countably_generated hfi).congr' (by simp)
+
+theorem tendsto_integral_Ici_zero (ha : Tendsto a l atTop) :
+    Tendsto (fun i => ∫ x in Ici (a i), f x ∂μ) l (𝓝 0) := by
+  by_cases! h : ∀ b, ¬ IntegrableOn f (Ici b) μ
+  · exact tendsto_const_nhds.congr (fun i => (integral_undef (h (a i))).symm)
+  obtain ⟨b, hb⟩ := h
+  have : ∀ᶠ i in l, ∫ x in Ici b, f x ∂μ - ∫ x in Ico b (a i), f x ∂μ =
+      ∫ x in Ici (a i), f x ∂μ := by
+    filter_upwards [ha.eventually_mem (Ici_mem_atTop b)] with i hi
+    rw [sub_eq_iff_comm, intervalIntegral.integral_Ici_sub_Ici hb hi]
+  rw [← sub_self (∫ x in Ici b, f x ∂μ)]
+  exact Tendsto.congr' this (Tendsto.const_sub _ <| tendsto_integral_Ico_integral_Ici b hb ha)
 
 end IntegralOfIntervalIntegral
 
@@ -726,7 +791,7 @@ theorem integral_Ioi_of_hasDerivAt_of_tendsto (hcont : ContinuousWithinAt f (Ici
     (hf : Tendsto f atTop (𝓝 m)) : ∫ x in Ioi a, f' x = m - f a := by
   have hcont : ContinuousOn f (Ici a) := by
     intro x hx
-    rcases hx.out.eq_or_lt with rfl|hx
+    rcases hx.out.eq_or_lt with rfl | hx
     · exact hcont
     · exact (hderiv x hx).continuousAt.continuousWithinAt
   refine tendsto_nhds_unique (intervalIntegral_tendsto_integral_Ioi a f'int tendsto_id) ?_
@@ -752,13 +817,13 @@ theorem integral_Ioi_of_hasDerivAt_of_tendsto' (hderiv : ∀ x ∈ Ici a, HasDer
     ∫ x in Ioi a, f' x = m - f a := by
   refine integral_Ioi_of_hasDerivAt_of_tendsto ?_ (fun x hx => hderiv x hx.out.le)
     f'int hf
-  exact (hderiv a left_mem_Ici).continuousAt.continuousWithinAt
+  exact (hderiv a self_mem_Ici).continuousAt.continuousWithinAt
 
 /-- A special case of `integral_Ioi_of_hasDerivAt_of_tendsto` where we assume that `f` is C^1 with
 compact support. -/
 theorem _root_.HasCompactSupport.integral_Ioi_deriv_eq (hf : ContDiff ℝ 1 f)
     (h2f : HasCompactSupport f) (b : ℝ) : ∫ x in Ioi b, deriv f x = - f b := by
-  have := fun x (_ : x ∈ Ioi b) ↦ hf.differentiable le_rfl x |>.hasDerivAt
+  have := fun x (_ : x ∈ Ioi b) ↦ hf.differentiable one_ne_zero x |>.hasDerivAt
   rw [integral_Ioi_of_hasDerivAt_of_tendsto hf.continuous.continuousWithinAt this, zero_sub]
   · refine hf.continuous_deriv le_rfl |>.integrable_of_hasCompactSupport h2f.deriv |>.integrableOn
   rw [hasCompactSupport_iff_eventuallyEq, Filter.coclosedCompact_eq_cocompact] at h2f
@@ -772,7 +837,7 @@ theorem integrableOn_Ioi_deriv_of_nonneg (hcont : ContinuousWithinAt g (Ici a) a
     (hg : Tendsto g atTop (𝓝 l)) : IntegrableOn g' (Ioi a) := by
   have hcont : ContinuousOn g (Ici a) := by
     intro x hx
-    rcases hx.out.eq_or_lt with rfl|hx
+    rcases hx.out.eq_or_lt with rfl | hx
     · exact hcont
     · exact (hderiv x hx).continuousAt.continuousWithinAt
   refine integrableOn_Ioi_of_intervalIntegral_norm_tendsto (l - g a) a (fun x => ?_) tendsto_id ?_
@@ -802,7 +867,7 @@ on `[a, +∞)`. -/
 theorem integrableOn_Ioi_deriv_of_nonneg' (hderiv : ∀ x ∈ Ici a, HasDerivAt g (g' x) x)
     (g'pos : ∀ x ∈ Ioi a, 0 ≤ g' x) (hg : Tendsto g atTop (𝓝 l)) : IntegrableOn g' (Ioi a) := by
   refine integrableOn_Ioi_deriv_of_nonneg ?_ (fun x hx => hderiv x hx.out.le) g'pos hg
-  exact (hderiv a left_mem_Ici).continuousAt.continuousWithinAt
+  exact (hderiv a self_mem_Ici).continuousAt.continuousWithinAt
 
 /-- When a function has a limit at infinity `l`, and its derivative is nonnegative, then the
 integral of the derivative on `(a, +∞)` is `l - g a` (and the derivative is integrable, see
@@ -838,7 +903,7 @@ on `[a, +∞)`. -/
 theorem integrableOn_Ioi_deriv_of_nonpos' (hderiv : ∀ x ∈ Ici a, HasDerivAt g (g' x) x)
     (g'neg : ∀ x ∈ Ioi a, g' x ≤ 0) (hg : Tendsto g atTop (𝓝 l)) : IntegrableOn g' (Ioi a) := by
   refine integrableOn_Ioi_deriv_of_nonpos ?_ (fun x hx ↦ hderiv x hx.out.le) g'neg hg
-  exact (hderiv a left_mem_Ici).continuousAt.continuousWithinAt
+  exact (hderiv a self_mem_Ici).continuousAt.continuousWithinAt
 
 /-- When a function has a limit at infinity `l`, and its derivative is nonpositive, then the
 integral of the derivative on `(a, +∞)` is `l - g a` (and the derivative is integrable, see
@@ -874,7 +939,7 @@ theorem tendsto_limUnder_of_hasDerivAt_of_integrableOn_Iic [CompleteSpace E]
   let g := f ∘ (fun x ↦ -x)
   have hdg : ∀ x ∈ Ioi (-a), HasDerivAt g (-f' (-x)) x := by
     intro x hx
-    have : -x ∈ Iic a := by simp only [mem_Iic, mem_Ioi, neg_le] at *; exact hx.le
+    have : -x ∈ Iic a := by grind
     simpa using HasDerivAt.scomp x (hderiv (-x) this) (hasDerivAt_neg' x)
   have L : Tendsto g atTop (𝓝 (limUnder atTop g)) := by
     apply tendsto_limUnder_of_hasDerivAt_of_integrableOn_Ioi hdg
@@ -923,7 +988,7 @@ theorem integral_Iic_of_hasDerivAt_of_tendsto (hcont : ContinuousWithinAt f (Iic
     (hf : Tendsto f atBot (𝓝 m)) : ∫ x in Iic a, f' x = f a - m := by
   have hcont : ContinuousOn f (Iic a) := by
     intro x hx
-    rcases hx.out.eq_or_lt with rfl|hx
+    rcases hx.out.eq_or_lt with rfl | hx
     · exact hcont
     · exact (hderiv x hx).continuousAt.continuousWithinAt
   refine tendsto_nhds_unique (intervalIntegral_tendsto_integral_Iic a f'int tendsto_id) ?_
@@ -947,13 +1012,13 @@ theorem integral_Iic_of_hasDerivAt_of_tendsto'
     (hf : Tendsto f atBot (𝓝 m)) : ∫ x in Iic a, f' x = f a - m := by
   refine integral_Iic_of_hasDerivAt_of_tendsto ?_ (fun x hx => hderiv x hx.out.le)
     f'int hf
-  exact (hderiv a right_mem_Iic).continuousAt.continuousWithinAt
+  exact (hderiv a self_mem_Iic).continuousAt.continuousWithinAt
 
 /-- A special case of `integral_Iic_of_hasDerivAt_of_tendsto` where we assume that `f` is C^1 with
 compact support. -/
 theorem _root_.HasCompactSupport.integral_Iic_deriv_eq (hf : ContDiff ℝ 1 f)
     (h2f : HasCompactSupport f) (b : ℝ) : ∫ x in Iic b, deriv f x = f b := by
-  have := fun x (_ : x ∈ Iio b) ↦ hf.differentiable le_rfl x |>.hasDerivAt
+  have := fun x (_ : x ∈ Iio b) ↦ hf.differentiable one_ne_zero x |>.hasDerivAt
   rw [integral_Iic_of_hasDerivAt_of_tendsto hf.continuous.continuousWithinAt this, sub_zero]
   · refine hf.continuous_deriv le_rfl |>.integrable_of_hasCompactSupport h2f.deriv |>.integrableOn
   rw [hasCompactSupport_iff_eventuallyEq, Filter.coclosedCompact_eq_cocompact] at h2f
@@ -973,13 +1038,9 @@ lemma _root_.HasCompactSupport.enorm_le_lintegral_Ici_deriv
     exact enorm_integral_le_lintegral_enorm _
   convert this with y
   · simp [f', I, Completion.enorm_coe]
-  · rw [fderiv_comp_deriv _ I.differentiableAt (hf.differentiable le_rfl _)]
+  · rw [fderiv_comp_deriv _ I.differentiableAt (hf.differentiable one_ne_zero _)]
     simp only [ContinuousLinearMap.fderiv]
     simp [I]
-
-@[deprecated (since := "2025-01-22")]
-alias _root_.HasCompactSupport.ennnorm_le_lintegral_Ici_deriv :=
-  HasCompactSupport.enorm_le_lintegral_Ici_deriv
 
 end IicFTC
 
@@ -1031,7 +1092,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- Change-of-variables formula for `Ioi` integrals of vector-valued functions, proved by taking
 limits from the result for finite intervals. -/
-theorem integral_comp_smul_deriv_Ioi {f f' : ℝ → ℝ} {g : ℝ → E} {a : ℝ}
+theorem integral_deriv_smul_comp_Ioi {f f' : ℝ → ℝ} {g : ℝ → E} {a : ℝ}
     (hf : ContinuousOn f <| Ici a) (hft : Tendsto f atTop atTop)
     (hff' : ∀ x ∈ Ioi a, HasDerivWithinAt f (f' x) (Ioi x) x)
     (hg_cont : ContinuousOn g <| f '' Ioi a) (hg1 : IntegrableOn g <| f '' Ici a)
@@ -1043,17 +1104,20 @@ theorem integral_comp_smul_deriv_Ioi {f f' : ℝ → ℝ} {g : ℝ → E} {a : �
       exact Ioo_subset_Ioi_self
     have i2 : [[a, b]] ⊆ Ici a := by rw [uIcc_of_le hb.le]; exact Icc_subset_Ici_self
     refine
-      intervalIntegral.integral_comp_smul_deriv''' (hf.mono i2)
-        (fun x hx => hff' x <| mem_of_mem_of_subset hx i1) (hg_cont.mono <| image_subset _ ?_)
-        (hg1.mono_set <| image_subset _ ?_) (hg2.mono_set i2) <;> assumption
+      intervalIntegral.integral_deriv_smul_comp''' (hf.mono i2)
+        (fun x hx => hff' x <| mem_of_mem_of_subset hx i1) (hg_cont.mono <| image_mono ?_)
+        (hg1.mono_set <| image_mono ?_) (hg2.mono_set i2) <;> assumption
   rw [integrableOn_Ici_iff_integrableOn_Ioi] at hg2
   have t2 := intervalIntegral_tendsto_integral_Ioi _ hg2 tendsto_id
   have : Ioi (f a) ⊆ f '' Ici a :=
     Ioi_subset_Ici_self.trans <|
-      IsPreconnected.intermediate_value_Ici isPreconnected_Ici left_mem_Ici
+      IsPreconnected.intermediate_value_Ici isPreconnected_Ici self_mem_Ici
         (le_principal_iff.mpr <| Ici_mem_atTop _) hf hft
   have t1 := (intervalIntegral_tendsto_integral_Ioi _ (hg1.mono_set this) tendsto_id).comp hft
   exact tendsto_nhds_unique (Tendsto.congr' (eventuallyEq_of_mem (Ioi_mem_atTop a) eq) t2) t1
+
+@[deprecated (since := "2026-03-19")]
+alias integral_comp_smul_deriv_Ioi := integral_deriv_smul_comp_Ioi
 
 /-- Change-of-variables formula for `Ioi` integrals of scalar-valued functions -/
 theorem integral_comp_mul_deriv_Ioi {f f' : ℝ → ℝ} {g : ℝ → ℝ} {a : ℝ}
@@ -1063,7 +1127,7 @@ theorem integral_comp_mul_deriv_Ioi {f f' : ℝ → ℝ} {g : ℝ → ℝ} {a : 
     (hg2 : IntegrableOn (fun x => (g ∘ f) x * f' x) (Ici a)) :
     (∫ x in Ioi a, (g ∘ f) x * f' x) = ∫ u in Ioi (f a), g u := by
   have hg2' : IntegrableOn (fun x => f' x • (g ∘ f) x) (Ici a) := by simpa [mul_comm] using hg2
-  simpa [mul_comm] using integral_comp_smul_deriv_Ioi hf hft hff' hg_cont hg1 hg2'
+  simpa [mul_comm] using integral_deriv_smul_comp_Ioi hf hft hff' hg_cont hg1 hg2'
 
 /-- Substitution `y = x ^ p` in integrals over `Ioi 0` -/
 theorem integral_comp_rpow_Ioi (g : ℝ → E) {p : ℝ} (hp : p ≠ 0) :
@@ -1102,7 +1166,7 @@ theorem integral_comp_mul_left_Ioi (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 <
     ← abs_of_pos (inv_pos.mpr hb), ← Measure.integral_comp_mul_left]
   congr
   ext1 x
-  rw [← indicator_comp_right, preimage_const_mul_Ioi _ hb, mul_div_cancel_left₀ _ hb.ne',
+  rw [← indicator_comp_right, preimage_const_mul_Ioi₀ _ hb, mul_div_cancel_left₀ _ hb.ne',
     Function.comp_def]
 
 theorem integral_comp_mul_right_Ioi (g : ℝ → E) (a : ℝ) {b : ℝ} (hb : 0 < b) :
@@ -1157,7 +1221,7 @@ theorem integrableOn_Ioi_comp_mul_left_iff (f : ℝ → E) (c : ℝ) {a : ℝ} (
   rw [← integrable_indicator_iff (measurableSet_Ioi : MeasurableSet <| Ioi <| a * c)]
   convert integrable_comp_mul_left_iff ((Ioi (a * c)).indicator f) ha.ne' using 2
   ext1 x
-  rw [← indicator_comp_right, preimage_const_mul_Ioi _ ha, mul_comm a c,
+  rw [← indicator_comp_right, preimage_const_mul_Ioi₀ _ ha, mul_comm a c,
     mul_div_cancel_right₀ _ ha.ne', Function.comp_def]
 
 theorem integrableOn_Ioi_comp_mul_right_iff (f : ℝ → E) (c : ℝ) {a : ℝ} (ha : 0 < a) :
@@ -1178,7 +1242,8 @@ variable {E F G : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {m n : G}
 
 theorem integral_bilinear_hasDerivAt_eq_sub [CompleteSpace G]
-    (hu : ∀ x, HasDerivAt u (u' x) x) (hv : ∀ x, HasDerivAt v (v' x) x)
+    (hu : ∀ x ∈ tsupport v, HasDerivAt u (u' x) x)
+    (hv : ∀ x ∈ tsupport u, HasDerivAt v (v' x) x)
     (huv : Integrable (fun x ↦ L (u x) (v' x) + L (u' x) (v x)))
     (h_bot : Tendsto (fun x ↦ L (u x) (v x)) atBot (𝓝 m))
     (h_top : Tendsto (fun x ↦ L (u x) (v x)) atTop (𝓝 n)) :
@@ -1190,7 +1255,8 @@ theorem integral_bilinear_hasDerivAt_eq_sub [CompleteSpace G]
 With respect to a general bilinear form. For the specific case of multiplication, see
 `integral_mul_deriv_eq_deriv_mul`. -/
 theorem integral_bilinear_hasDerivAt_right_eq_sub [CompleteSpace G]
-    (hu : ∀ x, HasDerivAt u (u' x) x) (hv : ∀ x, HasDerivAt v (v' x) x)
+    (hu : ∀ x ∈ tsupport v, HasDerivAt u (u' x) x)
+    (hv : ∀ x ∈ tsupport u, HasDerivAt v (v' x) x)
     (huv' : Integrable (fun x ↦ L (u x) (v' x))) (hu'v : Integrable (fun x ↦ L (u' x) (v x)))
     (h_bot : Tendsto (fun x ↦ L (u x) (v x)) atBot (𝓝 m))
     (h_top : Tendsto (fun x ↦ L (u x) (v x)) atTop (𝓝 n)) :
@@ -1202,7 +1268,8 @@ theorem integral_bilinear_hasDerivAt_right_eq_sub [CompleteSpace G]
 With respect to a general bilinear form, assuming moreover that the total function is integrable.
 -/
 theorem integral_bilinear_hasDerivAt_right_eq_neg_left_of_integrable
-    (hu : ∀ x, HasDerivAt u (u' x) x) (hv : ∀ x, HasDerivAt v (v' x) x)
+    (hu : ∀ x ∈ tsupport v, HasDerivAt u (u' x) x)
+    (hv : ∀ x ∈ tsupport u, HasDerivAt v (v' x) x)
     (huv' : Integrable (fun x ↦ L (u x) (v' x))) (hu'v : Integrable (fun x ↦ L (u' x) (v x)))
     (huv : Integrable (fun x ↦ L (u x) (v x))) :
     ∫ (x : ℝ), L (u x) (v' x) = - ∫ (x : ℝ), L (u' x) (v x) := by
@@ -1227,16 +1294,19 @@ variable {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
 
 /-- For finite intervals, see: `intervalIntegral.integral_deriv_mul_eq_sub`. -/
 theorem integral_deriv_mul_eq_sub [CompleteSpace A]
-    (hu : ∀ x, HasDerivAt u (u' x) x) (hv : ∀ x, HasDerivAt v (v' x) x)
+    (hu : ∀ x ∈ tsupport v, HasDerivAt u (u' x) x)
+    (hv : ∀ x ∈ tsupport u, HasDerivAt v (v' x) x)
     (huv : Integrable (u' * v + u * v'))
     (h_bot : Tendsto (u * v) atBot (𝓝 a')) (h_top : Tendsto (u * v) atTop (𝓝 b')) :
-    ∫ (x : ℝ), u' x * v x + u x * v' x = b' - a' :=
-  integral_of_hasDerivAt_of_tendsto (fun x ↦ (hu x).mul (hv x)) huv h_bot h_top
+    ∫ (x : ℝ), u' x * v x + u x * v' x = b' - a' := by
+  refine integral_of_hasDerivAt_of_tendsto (fun x ↦ ?_) huv h_bot h_top
+  simpa [add_comm] using (ContinuousLinearMap.mul ℝ A).hasDerivAt_of_bilinear (hu x) (hv x)
 
 /-- **Integration by parts on (-∞, ∞).**
 For finite intervals, see: `intervalIntegral.integral_mul_deriv_eq_deriv_mul`. -/
 theorem integral_mul_deriv_eq_deriv_mul [CompleteSpace A]
-    (hu : ∀ x, HasDerivAt u (u' x) x) (hv : ∀ x, HasDerivAt v (v' x) x)
+    (hu : ∀ x ∈ tsupport v, HasDerivAt u (u' x) x)
+    (hv : ∀ x ∈ tsupport u, HasDerivAt v (v' x) x)
     (huv' : Integrable (u * v')) (hu'v : Integrable (u' * v))
     (h_bot : Tendsto (u * v) atBot (𝓝 a')) (h_top : Tendsto (u * v) atTop (𝓝 b')) :
     ∫ (x : ℝ), u x * v' x = b' - a' - ∫ (x : ℝ), u' x * v x :=
@@ -1246,7 +1316,8 @@ theorem integral_mul_deriv_eq_deriv_mul [CompleteSpace A]
 /-- **Integration by parts on (-∞, ∞).**
 Version assuming that the total function is integrable -/
 theorem integral_mul_deriv_eq_deriv_mul_of_integrable
-    (hu : ∀ x, HasDerivAt u (u' x) x) (hv : ∀ x, HasDerivAt v (v' x) x)
+    (hu : ∀ x ∈ tsupport v, HasDerivAt u (u' x) x)
+    (hv : ∀ x ∈ tsupport u, HasDerivAt v (v' x) x)
     (huv' : Integrable (u * v')) (hu'v : Integrable (u' * v)) (huv : Integrable (u * v)) :
     ∫ (x : ℝ), u x * v' x = - ∫ (x : ℝ), u' x * v x :=
   integral_bilinear_hasDerivAt_right_eq_neg_left_of_integrable (L := ContinuousLinearMap.mul ℝ A)
@@ -1307,7 +1378,7 @@ theorem integral_Iic_deriv_mul_eq_sub
   simpa using integral_Iic_of_hasDerivAt_of_tendsto
     (continuousWithinAt_update_same.mpr h_zero) hderiv huv htendsto
 
-/-- **Integration by parts on (∞, a].**
+/-- **Integration by parts on $(∞, a]$.**
 For finite intervals, see: `intervalIntegral.integral_mul_deriv_eq_deriv_mul`. -/
 theorem integral_Iic_mul_deriv_eq_deriv_mul
     (hu : ∀ x ∈ Iio a, HasDerivAt u (u' x) x) (hv : ∀ x ∈ Iio a, HasDerivAt v (v' x) x)

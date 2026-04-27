@@ -3,9 +3,13 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Basic
-import Mathlib.Analysis.Calculus.ContDiff.Operations
-import Mathlib.Analysis.InnerProductSpace.CanonicalTensor
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Basic
+public import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+public import Mathlib.Analysis.Distribution.DerivNotation
+public import Mathlib.Analysis.InnerProductSpace.CanonicalTensor
 
 /-!
 # The Laplacian
@@ -18,6 +22,8 @@ canonical covariant tensor of `E`, as defined and discussed in
 We show that the Laplacian is `ℝ`-linear on continuously differentiable functions, and establish the
 standard formula for computing the Laplacian in terms of orthonormal bases of `E`.
 -/
+
+@[expose] public section
 
 open Filter TensorProduct Topology
 
@@ -41,18 +47,18 @@ variable
 variable (𝕜) in
 /--
 Convenience reformulation of the second iterated derivative, as a map from `E` to bilinear maps
-`E →ₗ[ℝ] E →ₗ[ℝ] ℝ
+`E →ₗ[ℝ] E →ₗ[ℝ] ℝ`.
 -/
 noncomputable def bilinearIteratedFDerivWithinTwo (f : E → F) (s : Set E) : E → E →ₗ[𝕜] E →ₗ[𝕜] F :=
-  fun x ↦ (fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x).toLinearMap₂
+  fun x ↦ (fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x).toLinearMap₁₂
 
 variable (𝕜) in
 /--
 Convenience reformulation of the second iterated derivative, as a map from `E` to bilinear maps
-`E →ₗ[ℝ] E →ₗ[ℝ] ℝ
+`E →ₗ[ℝ] E →ₗ[ℝ] ℝ`.
 -/
 noncomputable def bilinearIteratedFDerivTwo (f : E → F) : E → E →ₗ[𝕜] E →ₗ[𝕜] F :=
-  fun x ↦ (fderiv 𝕜 (fderiv 𝕜 f) x).toLinearMap₂
+  fun x ↦ (fderiv 𝕜 (fderiv 𝕜 f) x).toLinearMap₁₂
 
 /--
 Expression of `bilinearIteratedFDerivWithinTwo` in terms of `iteratedFDerivWithin`.
@@ -92,16 +98,15 @@ lemma tensorIteratedFDerivWithinTwo_eq_iteratedFDerivWithin {e : E} {s : Set E} 
     (hs : UniqueDiffOn 𝕜 s) (he : e ∈ s) (e₁ e₂ : E) :
     tensorIteratedFDerivWithinTwo 𝕜 f s e (e₁ ⊗ₜ[𝕜] e₂) =
       iteratedFDerivWithin 𝕜 2 f s e ![e₁, e₂] := by
-  rw [← bilinearIteratedFDerivWithinTwo_eq_iteratedFDeriv f hs he, tensorIteratedFDerivWithinTwo]
-  rfl
+  rw [← bilinearIteratedFDerivWithinTwo_eq_iteratedFDeriv f hs he, tensorIteratedFDerivWithinTwo,
+    lift.tmul]
 
 /--
 Expression of `tensorIteratedFDerivTwo` in terms of `iteratedFDeriv`.
 -/
 lemma tensorIteratedFDerivTwo_eq_iteratedFDeriv (f : E → F) (e e₁ e₂ : E) :
     tensorIteratedFDerivTwo 𝕜 f e (e₁ ⊗ₜ[𝕜] e₂) = iteratedFDeriv 𝕜 2 f e ![e₁, e₂] := by
-  rw [← bilinearIteratedFDerivTwo_eq_iteratedFDeriv, tensorIteratedFDerivTwo]
-  rfl
+  rw [← bilinearIteratedFDerivTwo_eq_iteratedFDeriv, tensorIteratedFDerivTwo, lift.tmul]
 
 end secondDerivativeAPI
 
@@ -110,8 +115,9 @@ end secondDerivativeAPI
 -/
 
 variable
+  {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜]
   {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [IsScalarTower ℝ 𝕜 F]
   {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
   {f f₁ f₂ : E → F} {x : E} {s : Set E}
 
@@ -126,25 +132,23 @@ noncomputable def laplacianWithin : E → F :=
   fun x ↦ tensorIteratedFDerivWithinTwo ℝ f s x (InnerProductSpace.canonicalCovariantTensor E)
 
 @[inherit_doc]
-scoped[InnerProductSpace] notation "Δ[" s "]" f:60 => laplacianWithin f s
+scoped[InnerProductSpace] notation "Δ[" s "] " f:60 => laplacianWithin f s
 
-variable (f) in
-/--
-Laplacian for functions on real inner product spaces. Use `open InnerProductSpace` to access the
-notation `Δ` for `InnerProductSpace.Laplacian`.
--/
-noncomputable def laplacian : E → F :=
-  fun x ↦ tensorIteratedFDerivTwo ℝ f x (InnerProductSpace.canonicalCovariantTensor E)
+noncomputable
+instance instLaplacian : Laplacian (E → F) (E → F) where
+  laplacian f x := tensorIteratedFDerivTwo ℝ f x (InnerProductSpace.canonicalCovariantTensor E)
 
-@[inherit_doc]
-scoped[InnerProductSpace] notation "Δ" => laplacian
+@[deprecated (since := "2025-12-31")]
+alias InnerProduct.laplacian := _root_.Laplacian.laplacian
+
+open Laplacian
 
 /--
 The Laplacian equals the Laplacian with respect to `Set.univ`.
 -/
 @[simp]
 theorem laplacianWithin_univ :
-    Δ[(Set.univ: Set E)] f = Δ f := by
+    Δ[(Set.univ : Set E)] f = Δ f := by
   ext x
   simp [laplacian, tensorIteratedFDerivTwo, bilinearIteratedFDerivTwo,
     laplacianWithin, tensorIteratedFDerivWithinTwo, bilinearIteratedFDerivWithinTwo]
@@ -171,8 +175,7 @@ theorem laplacian_eq_iteratedFDeriv_orthonormalBasis {ι : Type*} [Fintype ι]
     (v : OrthonormalBasis ι ℝ E) :
     Δ f = fun x ↦ ∑ i, iteratedFDeriv ℝ 2 f x ![v i, v i] := by
   ext x
-  simp [InnerProductSpace.laplacian, canonicalCovariantTensor_eq_sum E v,
-    tensorIteratedFDerivTwo_eq_iteratedFDeriv]
+  simp [laplacian, canonicalCovariantTensor_eq_sum E v, tensorIteratedFDerivTwo_eq_iteratedFDeriv]
 
 variable (f) in
 /--
@@ -195,6 +198,26 @@ theorem laplacian_eq_iteratedFDeriv_stdOrthonormalBasis :
       ∑ i, iteratedFDeriv ℝ 2 f x ![(stdOrthonormalBasis ℝ E) i, (stdOrthonormalBasis ℝ E) i] :=
   laplacian_eq_iteratedFDeriv_orthonormalBasis f (stdOrthonormalBasis ℝ E)
 
+set_option backward.isDefEq.respectTransparency false in
+/-- For a function on `ℝ`, the Laplacian is the second derivative: version within a set. -/
+theorem laplacianWithin_eq_iteratedDerivWithin_real {e : ℝ} {s : Set ℝ} (f : ℝ → F)
+    (hs : UniqueDiffOn ℝ s) (he : e ∈ s) :
+    (Δ[s] f) e = iteratedDerivWithin 2 f s e := by
+  simp only [laplacianWithin_eq_iteratedFDerivWithin_orthonormalBasis f hs he
+        (OrthonormalBasis.singleton (Fin 1) ℝ),
+    Finset.univ_unique, Fin.default_eq_zero, Fin.isValue, OrthonormalBasis.singleton_apply,
+    Finset.sum_const, Finset.card_singleton, one_smul, iteratedDerivWithin_eq_iteratedFDerivWithin]
+  congr with i
+  fin_cases i <;> simp
+
+/-- For a function on `ℝ`, the Laplacian is the second derivative. -/
+@[simp]
+theorem laplacian_eq_iteratedDeriv_real {e : ℝ} (f : ℝ → F) :
+    Δ f e = iteratedDeriv 2 f e := by
+  rw [← laplacianWithin_univ, ← iteratedDerivWithin_univ,
+    laplacianWithin_eq_iteratedDerivWithin_real _ (by simp) (by simp)]
+
+set_option backward.isDefEq.respectTransparency false in
 /--
 Special case of the standard formula for functions on `ℂ`, with the standard real inner product
 structure.
@@ -206,6 +229,7 @@ theorem laplacianWithin_eq_iteratedFDerivWithin_complexPlane {e : ℂ} {s : Set 
   simp [laplacianWithin_eq_iteratedFDerivWithin_orthonormalBasis f hs he
     Complex.orthonormalBasisOneI]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Special case of the standard formula for functions on `ℂ`, with the standard real inner product
 structure.
@@ -214,6 +238,14 @@ theorem laplacian_eq_iteratedFDeriv_complexPlane (f : ℂ → F) :
     Δ f = fun x ↦
       iteratedFDeriv ℝ 2 f x ![1, 1] + iteratedFDeriv ℝ 2 f x ![Complex.I, Complex.I] := by
   simp [laplacian_eq_iteratedFDeriv_orthonormalBasis f Complex.orthonormalBasisOneI]
+
+/--
+The Laplacian of a constant function is zero.
+-/
+@[simp] theorem laplacian_const {c : F} :
+    Laplacian.laplacian (fun (_ : E) ↦ c) = 0 := by
+  simp [laplacian_eq_iteratedFDeriv_stdOrthonormalBasis, iteratedFDeriv_const_of_ne two_ne_zero,
+    Pi.zero_def]
 
 /-!
 ## Congruence Lemmata for Δ
@@ -237,7 +269,7 @@ theorem laplacian_congr_nhds (h : f₁ =ᶠ[𝓝 x] f₂) :
   simp [laplacian_eq_iteratedFDeriv_stdOrthonormalBasis, hx]
 
 /-!
-## ℝ-Linearity of Δ on Continuously Differentiable Functions
+## 𝕜-Linearity of Δ on Continuously Differentiable Functions
 -/
 
 /-- The Laplacian commutes with addition. -/
@@ -256,7 +288,7 @@ theorem _root_.ContDiffAt.laplacian_add (h₁ : ContDiffAt ℝ 2 f₁ x) (h₂ :
 /-- The Laplacian commutes with addition. -/
 theorem _root_.ContDiffAt.laplacianWithin_add_nhdsWithin (h₁ : ContDiffWithinAt ℝ 2 f₁ s x)
     (h₂ : ContDiffWithinAt ℝ 2 f₂ s x) (hs : UniqueDiffOn ℝ s) (hx : x ∈ s) :
-    Δ[s] (f₁ + f₂) =ᶠ[𝓝[s] x] (Δ[s] f₁) + Δ[s] f₂:= by
+    Δ[s] (f₁ + f₂) =ᶠ[𝓝[s] x] (Δ[s] f₁) + Δ[s] f₂ := by
   nth_rw 1 [← s.insert_eq_of_mem hx]
   filter_upwards [h₁.eventually (by simp), h₂.eventually (by simp),
     eventually_mem_nhdsWithin] with y h₁y h₂y h₃y
@@ -269,8 +301,50 @@ theorem _root_.ContDiffAt.laplacian_add_nhds (h₁ : ContDiffAt ℝ 2 f₁ x) (h
   filter_upwards [h₁.eventually (by simp), h₂.eventually (by simp)] with x h₁x h₂x
   exact h₁x.laplacian_add h₂x
 
+/-- The Laplacian commutes with negation. -/
+theorem laplacianWithin_neg (hs : UniqueDiffOn ℝ s) (hx : x ∈ s) :
+    (Δ[s] (-f)) x = -(Δ[s] f) x := by
+  simp only [laplacianWithin_eq_iteratedFDerivWithin_stdOrthonormalBasis _ hs hx]
+  rw [iteratedFDerivWithin_neg_apply hs hx]
+  aesop
+
+/-- The Laplacian commutes with negation. -/
+theorem laplacian_neg :
+    Δ (-f) = -(Δ f) := by
+  simp only [laplacian_eq_iteratedFDeriv_stdOrthonormalBasis, iteratedFDeriv_neg]
+  aesop
+
+/-- The Laplacian commutes with subtraction. -/
+theorem _root_.ContDiffWithinAt.laplacianWithin_sub (h₁ : ContDiffWithinAt ℝ 2 f₁ s x)
+    (h₂ : ContDiffWithinAt ℝ 2 f₂ s x) (hs : UniqueDiffOn ℝ s) (hx : x ∈ s) :
+    (Δ[s] (f₁ - f₂)) x = (Δ[s] f₁) x - (Δ[s] f₂) x := by
+  simp [laplacianWithin_eq_iteratedFDerivWithin_stdOrthonormalBasis _ hs hx,
+    ← Finset.sum_sub_distrib, iteratedFDerivWithin_sub_apply h₁ h₂ hs hx]
+
+/-- The Laplacian commutes with subtraction. -/
+theorem _root_.ContDiffAt.laplacian_sub (h₁ : ContDiffAt ℝ 2 f₁ x) (h₂ : ContDiffAt ℝ 2 f₂ x) :
+    Δ (f₁ - f₂) x = Δ f₁ x - Δ f₂ x := by
+  simp [laplacian_eq_iteratedFDeriv_stdOrthonormalBasis,
+    ← Finset.sum_sub_distrib, iteratedFDeriv_sub_apply h₁ h₂]
+
+/-- The Laplacian commutes with subtraction. -/
+theorem _root_.ContDiffAt.laplacianWithin_sub_nhdsWithin (h₁ : ContDiffWithinAt ℝ 2 f₁ s x)
+    (h₂ : ContDiffWithinAt ℝ 2 f₂ s x) (hs : UniqueDiffOn ℝ s) (hx : x ∈ s) :
+    Δ[s] (f₁ - f₂) =ᶠ[𝓝[s] x] (Δ[s] f₁) - Δ[s] f₂ := by
+  nth_rw 1 [← s.insert_eq_of_mem hx]
+  filter_upwards [h₁.eventually (by simp), h₂.eventually (by simp),
+    eventually_mem_nhdsWithin] with y h₁y h₂y h₃y
+  rw [s.insert_eq_of_mem hx] at h₃y
+  simp [h₁y.laplacianWithin_sub h₂y hs h₃y]
+
+/-- The Laplacian commutes with subtraction. -/
+theorem _root_.ContDiffAt.laplacian_sub_nhds (h₁ : ContDiffAt ℝ 2 f₁ x) (h₂ : ContDiffAt ℝ 2 f₂ x) :
+    Δ (f₁ - f₂) =ᶠ[𝓝 x] (Δ f₁) - (Δ f₂) := by
+  filter_upwards [h₁.eventually (by simp), h₂.eventually (by simp)] with x h₁x h₂x
+  exact h₁x.laplacian_sub h₂x
+
 /-- The Laplacian commutes with scalar multiplication. -/
-theorem laplacianWithin_smul (v : ℝ) (hf : ContDiffWithinAt ℝ 2 f s x) (hs : UniqueDiffOn ℝ s)
+theorem laplacianWithin_smul (v : 𝕜) (hf : ContDiffWithinAt ℝ 2 f s x) (hs : UniqueDiffOn ℝ s)
     (hx : x ∈ s) :
     (Δ[s] (v • f)) x = v • (Δ[s] f) x := by
   simp [laplacianWithin_eq_iteratedFDerivWithin_stdOrthonormalBasis _ hs hx,
@@ -278,21 +352,21 @@ theorem laplacianWithin_smul (v : ℝ) (hf : ContDiffWithinAt ℝ 2 f s x) (hs :
     Finset.smul_sum]
 
 /-- The Laplacian commutes with scalar multiplication. -/
-theorem laplacian_smul (v : ℝ) (hf : ContDiffAt ℝ 2 f x) : Δ (v • f) x = v • (Δ f) x := by
+theorem laplacian_smul (v : 𝕜) (hf : ContDiffAt ℝ 2 f x) : Δ (v • f) x = v • (Δ f) x := by
   simp [laplacian_eq_iteratedFDeriv_stdOrthonormalBasis, iteratedFDeriv_const_smul_apply hf,
     Finset.smul_sum]
 
 /-- The Laplacian commutes with scalar multiplication. -/
 theorem laplacianWithin_smul_nhds
-    (v : ℝ) (hf : ContDiffWithinAt ℝ 2 f s x) (hs : UniqueDiffOn ℝ s) :
+    (v : 𝕜) (hf : ContDiffWithinAt ℝ 2 f s x) (hs : UniqueDiffOn ℝ s) :
     Δ[s] (v • f) =ᶠ[𝓝[s] x] v • (Δ[s] f) := by
   filter_upwards [(hf.eventually (by simp)).filter_mono (nhdsWithin_mono _ (Set.subset_insert ..)),
     eventually_mem_nhdsWithin] with a h₁a using laplacianWithin_smul v h₁a hs
 
 /-- The Laplacian commutes with scalar multiplication. -/
-theorem laplacian_smul_nhds (v : ℝ) (h : ContDiffAt ℝ 2 f x) :
+theorem laplacian_smul_nhds (v : 𝕜) (h : ContDiffAt ℝ 2 f x) :
     Δ (v • f) =ᶠ[𝓝 x] v • (Δ f) := by
-  filter_upwards [h.eventually (not_eq_of_beq_eq_false rfl)] with a ha
+  filter_upwards [h.eventually (by simp)] with a ha
   simp [laplacian_smul v ha]
 
 /-!

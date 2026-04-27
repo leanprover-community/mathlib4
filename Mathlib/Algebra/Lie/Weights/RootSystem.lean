@@ -3,17 +3,19 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Lie.Weights.Killing
-import Mathlib.LinearAlgebra.RootSystem.Basic
-import Mathlib.LinearAlgebra.RootSystem.Irreducible
-import Mathlib.LinearAlgebra.RootSystem.Reduced
-import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
-import Mathlib.Algebra.Algebra.Rat
+module
+
+public import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.Algebra.Lie.Weights.Killing
+public import Mathlib.Algebra.Module.Torsion.Free
+public import Mathlib.LinearAlgebra.RootSystem.Basic
+public import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
+public import Mathlib.LinearAlgebra.RootSystem.Reduced
 
 /-!
 # The root system associated with a Lie algebra
 
-We show that the roots of a finite dimensional splitting semisimple Lie algebra over a field of
+We show that the roots of a finite-dimensional splitting semisimple Lie algebra over a field of
 characteristic 0 form a root system. We achieve this by studying root chains.
 
 ## Main results
@@ -34,6 +36,8 @@ characteristic 0 form a root system. We achieve this by studying root chains.
 
 -/
 
+@[expose] public section
+
 noncomputable section
 
 namespace LieAlgebra.IsKilling
@@ -46,6 +50,7 @@ variable {K L : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L]
 
 variable (α β : Weight K H L)
 
+set_option backward.privateInPublic true in
 private lemma chainLength_aux (hα : α.IsNonZero) {x} (hx : x ∈ rootSpace H (chainTop α β)) :
     ∃ n : ℕ, n • x = ⁅coroot α, x⁆ := by
   by_cases hx' : x = 0
@@ -59,6 +64,8 @@ private lemma chainLength_aux (hα : α.IsNonZero) {x} (hx : x ∈ rootSpace H (
   obtain ⟨μ, hμ⟩ := this.exists_nat
   exact ⟨μ, by rw [← Nat.cast_smul_eq_nsmul K, ← hμ, lie_eq_smul_of_mem_rootSpace hx]⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The length of the `α`-chain through `β`. See `chainBotCoeff_add_chainTopCoeff`. -/
 def chainLength (α β : Weight K H L) : ℕ :=
   letI := Classical.propDecidable
@@ -97,7 +104,7 @@ lemma apply_coroot_eq_cast' :
     this, mul_comm (2 : K)]
 
 lemma rootSpace_neg_nsmul_add_chainTop_of_le {n : ℕ} (hn : n ≤ chainLength α β) :
-    rootSpace H (- (n • α) + chainTop α β) ≠ ⊥ := by
+    rootSpace H (-(n • α) + chainTop α β) ≠ ⊥ := by
   by_cases hα : α.IsZero
   · simpa only [hα.eq, smul_zero, neg_zero, chainTop_zero, zero_add, ne_eq] using β.2
   obtain ⟨x, hx, x_ne0⟩ := (chainTop α β).exists_ne_zero
@@ -110,10 +117,10 @@ lemma rootSpace_neg_nsmul_add_chainTop_of_le {n : ℕ} (hn : n ≤ chainLength �
   exact ⟨_, toEnd_pow_apply_mem hf hx n, prim.pow_toEnd_f_ne_zero_of_eq_nat rfl hn⟩
 
 lemma rootSpace_neg_nsmul_add_chainTop_of_lt (hα : α.IsNonZero) {n : ℕ} (hn : chainLength α β < n) :
-    rootSpace H (- (n • α) + chainTop α β) = ⊥ := by
+    rootSpace H (-(n • α) + chainTop α β) = ⊥ := by
   by_contra e
   let W : Weight K H L := ⟨_, e⟩
-  have hW : (W : H → K) = - (n • α) + chainTop α β := rfl
+  have hW : (W : H → K) = -(n • α) + chainTop α β := rfl
   have H₁ : 1 + n + chainTopCoeff (-α) W ≤ chainLength (-α) W := by
     have := apply_coroot_eq_cast' (-α) W
     simp only [coroot_neg, map_neg, hW, nsmul_eq_mul, Pi.natCast_def, coe_chainTop, zsmul_eq_mul,
@@ -121,7 +128,7 @@ lemma rootSpace_neg_nsmul_add_chainTop_of_lt (hα : α.IsNonZero) {n : ℕ} (hn 
       apply_coroot_eq_cast' α β, Int.cast_sub, Int.cast_mul, Int.cast_ofNat, mul_comm (2 : K),
       add_sub_cancel, add_sub, Nat.cast_inj, eq_sub_iff_add_eq, ← Nat.cast_add, ← sub_eq_neg_add,
       sub_eq_iff_eq_add] at this
-    omega
+    lia
   have H₂ : ((1 + n + chainTopCoeff (-α) W) • α + chainTop (-α) W : H → K) =
       (chainTopCoeff α β + 1) • α + β := by
     simp only [Weight.coe_neg, ← Nat.cast_smul_eq_nsmul ℤ, Nat.cast_add, Nat.cast_one, coe_chainTop,
@@ -135,7 +142,7 @@ lemma rootSpace_neg_nsmul_add_chainTop_of_lt (hα : α.IsNonZero) {n : ℕ} (hn 
 lemma chainTopCoeff_le_chainLength : chainTopCoeff α β ≤ chainLength α β := by
   by_cases hα : α.IsZero
   · simp only [hα.eq, chainTopCoeff_zero, zero_le]
-  rw [← not_lt, ← Nat.succ_le]
+  rw [← not_lt, ← Nat.succ_le_iff]
   intro e
   apply genWeightSpace_nsmul_add_ne_bot_of_le α β
     (Nat.sub_le (chainTopCoeff α β) (chainLength α β).succ)
@@ -149,7 +156,7 @@ lemma chainBotCoeff_add_chainTopCoeff :
   · rw [hα.eq, chainTopCoeff_zero, chainBotCoeff_zero, zero_add, chainLength_of_isZero α β hα]
   apply le_antisymm
   · rw [← Nat.le_sub_iff_add_le (chainTopCoeff_le_chainLength α β),
-      ← not_lt, ← Nat.succ_le, chainBotCoeff, ← Weight.coe_neg]
+      ← not_lt, ← Nat.succ_le_iff, chainBotCoeff, ← Weight.coe_neg]
     intro e
     apply genWeightSpace_nsmul_add_ne_bot_of_le _ _ e
     rw [← Nat.cast_smul_eq_nsmul ℤ, Nat.cast_succ, Nat.cast_sub (chainTopCoeff_le_chainLength α β),
@@ -186,7 +193,7 @@ lemma chainLength_zero [Nontrivial L] : chainLength 0 β = 0 := by
   `β (coroot α) = q - r`. In particular, it is an integer. -/
 lemma apply_coroot_eq_cast :
     β (coroot α) = (chainBotCoeff α β - chainTopCoeff α β : ℤ) := by
-  rw [apply_coroot_eq_cast', ← chainTopCoeff_add_chainBotCoeff]; congr 1; omega
+  rw [apply_coroot_eq_cast', ← chainTopCoeff_add_chainBotCoeff]; congr 1; lia
 
 lemma le_chainBotCoeff_of_rootSpace_ne_top
     (hα : α.IsNonZero) (n : ℤ) (hn : rootSpace H (-n • α + β) ≠ ⊥) :
@@ -279,7 +286,7 @@ lemma chainTopCoeff_zero_right [Nontrivial L] (hα : α.IsNonZero) :
   have := (apply_coroot_eq_cast' α 0).symm
   simp only [← @Nat.cast_two ℤ, ← Nat.cast_mul, Weight.zero_apply, Int.cast_eq_zero, sub_eq_zero,
     Nat.cast_inj] at this
-  rwa [this, Nat.succ_le, two_mul, add_lt_add_iff_left]
+  rwa [this, Nat.succ_le_iff, two_mul, add_lt_add_iff_left]
 
 lemma chainBotCoeff_zero_right [Nontrivial L] (hα : α.IsNonZero) :
     chainBotCoeff α (0 : Weight K H L) = 1 :=
@@ -314,7 +321,7 @@ lemma eq_neg_one_or_eq_zero_or_eq_one_of_eq_smul
   have H := apply_coroot_eq_cast' α β
   rw [h] at H
   simp only [Pi.smul_apply, root_apply_coroot hα] at H
-  rcases (chainLength α β).even_or_odd with (⟨n, hn⟩|⟨n, hn⟩)
+  rcases (chainLength α β).even_or_odd with (⟨n, hn⟩ | ⟨n, hn⟩)
   · rw [hn, ← two_mul] at H
     simp only [smul_eq_mul, Nat.cast_mul, Nat.cast_ofNat, ← mul_sub, ← mul_comm (2 : K),
       Int.cast_sub, Int.cast_mul, Int.cast_ofNat, Int.cast_natCast,
@@ -337,7 +344,7 @@ lemma eq_neg_one_or_eq_zero_or_eq_one_of_eq_smul
     swap
     · simp only [tsub_le_iff_right, le_add_iff_nonneg_right, Nat.cast_nonneg, neg_sub, true_and]
       rw [← Nat.cast_add, chainBotCoeff_add_chainTopCoeff, hn]
-      omega
+      lia
     rw [h, hk, ← Int.cast_smul_eq_zsmul K, ← add_smul] at this
     simp only [Int.cast_sub, Int.cast_natCast,
       sub_add_sub_cancel', add_sub_cancel_left, ne_eq] at this
@@ -361,7 +368,7 @@ def reflectRoot (α β : Weight K H L) : Weight K H L where
     · simpa [hα.eq] using β.genWeightSpace_ne_bot
     rw [sub_eq_neg_add, apply_coroot_eq_cast α β, ← neg_smul, ← Int.cast_neg,
       Int.cast_smul_eq_zsmul, rootSpace_zsmul_add_ne_bot_iff α β hα]
-    omega
+    lia
 
 lemma reflectRoot_isNonZero (α β : Weight K H L) (hβ : β.IsNonZero) :
     (reflectRoot α β).IsNonZero := by
@@ -369,7 +376,6 @@ lemma reflectRoot_isNonZero (α β : Weight K H L) (hβ : β.IsNonZero) :
   have : β (coroot α) = 0 := by
     by_cases hα : α.IsZero
     · simp [coroot_eq_zero_iff.mpr hα]
-    apply add_left_injective (β (coroot α))
     simpa [root_apply_coroot hα, mul_two] using congr_fun (sub_eq_zero.mp e) (coroot α)
   have : reflectRoot α β = β := by ext; simp [reflectRoot, this]
   exact hβ (this ▸ e)
@@ -379,12 +385,12 @@ variable (H)
 /-- The root system of a finite-dimensional Lie algebra with non-degenerate Killing form over a
 field of characteristic zero, relative to a splitting Cartan subalgebra. -/
 def rootSystem :
-    RootSystem H.root K (Dual K H) H :=
-  RootSystem.mk'
-    IsReflexive.toPerfectPairingDual
+    RootPairing H.root K (Dual K H) H :=
+  RootPairing.mk''
+    .id
     { toFun := (↑)
       inj' := by
-        intro α β h; ext x; simpa using LinearMap.congr_fun h x  }
+        intro α β h; ext x; simpa using LinearMap.congr_fun h x }
     { toFun := coroot ∘ (↑)
       inj' := by rintro ⟨α, hα⟩ ⟨β, hβ⟩ h; simpa using h }
     (fun ⟨α, hα⟩ ↦ by simpa using root_apply_coroot <| by simpa using hα)
@@ -393,8 +399,10 @@ def rootSystem :
       simpa using
         ⟨reflectRoot α β, by simpa using reflectRoot_isNonZero α β <| by simpa using hβ, rfl⟩)
     (by convert span_weight_isNonZero_eq_top K L H; ext; simp)
-    (fun α β ↦
-      ⟨chainBotCoeff β.1 α.1 - chainTopCoeff β.1 α.1, by simp [apply_coroot_eq_cast β.1 α.1]⟩)
+
+instance : (rootSystem H).IsRootSystem :=
+  RootPairing.isRootSystem_mk'' fun α β ↦
+    ⟨chainBotCoeff β.1 α.1 - chainTopCoeff β.1 α.1, by simp [apply_coroot_eq_cast β.1 α.1]⟩
 
 @[simp]
 lemma corootForm_rootSystem_eq_killing :
@@ -402,11 +410,29 @@ lemma corootForm_rootSystem_eq_killing :
   rw [restrict_killingForm_eq_sum, RootPairing.CorootForm, ← Finset.sum_coe_sort (s := H.root)]
   rfl
 
-@[simp] lemma rootSystem_toPerfectPairing_apply (f x) : (rootSystem H).toPerfectPairing f x = f x :=
-  rfl
+@[simp] lemma rootSystem_toLinearMap_apply (f x) : (rootSystem H).toLinearMap f x = f x := rfl
 @[simp] lemma rootSystem_pairing_apply (α β) : (rootSystem H).pairing β α = β.1 (coroot α.1) := rfl
 @[simp] lemma rootSystem_root_apply (α) : (rootSystem H).root α = α := rfl
 @[simp] lemma rootSystem_coroot_apply (α) : (rootSystem H).coroot α = coroot α := rfl
+
+open LieSubmodule in
+@[simp]
+lemma biSup_corootSpace_eq_top :
+    ⨆ α : Weight K H L, ⨆ (_ : α.IsNonZero), corootSpace α = ⊤ := by
+  simp only [← toSubmodule_inj, top_toSubmodule, iSup_toSubmodule,
+    ← RootPairing.IsRootSystem.span_coroot_eq_top (P := rootSystem H),
+    coe_corootSpace_eq_span_singleton, Submodule.iSup_span]
+  congr
+  ext α
+  simp [eq_comm]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma biSup_corootSubmodule_eq_cartan :
+    ⨆ α : Weight K H L, ⨆ (_ : α.IsNonZero), corootSubmodule α = H.toLieSubmodule := by
+  suffices ⨆ α : Weight K H L, ⨆ (_ : α.IsNonZero), corootSpace α = ⊤ from
+    le_antisymm (by simp) (by simp [← LieSubmodule.map_iSup, this])
+  simp
 
 instance : (rootSystem H).IsCrystallographic where
   exists_value α β :=
@@ -422,180 +448,5 @@ instance : (rootSystem H).IsReduced where
       (by ext x; exact DFunLike.congr_fun hu.symm x)
     · right; ext x; simpa [neg_eq_iff_eq_neg] using DFunLike.congr_fun h.symm x
     · left; ext x; simpa using DFunLike.congr_fun h.symm x
-
-section IsSimple
-
--- Note that after #10068 (Cartan's criterion) is complete we can omit `[IsKilling K L]`
-variable [IsSimple K L]
-
-open Weight in
-lemma eq_top_of_invtSubmodule_ne_bot
-   (q : Submodule K (Dual K H))
-   (h₀ : ∀ (i : H.root), q ∈ End.invtSubmodule ((rootSystem H).reflection i))
-   (h₁ : q ≠ ⊥) : q = ⊤ := by
-  have _i := nontrivial_of_isIrreducible K L L
-  let S := rootSystem H
-  by_contra h₃
-  suffices h₂ : ∀ Φ, Φ.Nonempty → S.root '' Φ ⊆ q → (∀ i ∉ Φ, q ≤ LinearMap.ker (S.coroot' i)) →
-      Φ = Set.univ by
-    have := (S.eq_top_of_mem_invtSubmodule_of_forall_eq_univ q h₁ h₀) h₂
-    apply False.elim (h₃ this)
-  intro Φ hΦ₁ hΦ₂ hΦ₃
-  by_contra hc
-  have hΦ₂' : ∀ i ∈ Φ, (S.root i) ∈ q := by
-    intro i hi
-    apply hΦ₂
-    exact Set.mem_image_of_mem S.root hi
-  have s₁ (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : S.root i (S.coroot j) = 0 :=
-    (hΦ₃ j h₂) (hΦ₂' i h₁)
-  have s₁' (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : S.root j (S.coroot i) = 0 :=
-    (S.pairing_eq_zero_iff (i := i) (j := j)).1 (s₁ i j h₁ h₂)
-  have s₂ (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : i.1 (coroot j) = 0 := s₁ i j h₁ h₂
-  have s₂' (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : j.1 (coroot i) = 0 := s₁' i j h₁ h₂
-  have s₃ (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : genWeightSpace L (i.1.1 + j.1.1) = ⊥ := by
-    by_contra h
-    have i_non_zero : i.1.IsNonZero := by
-      obtain ⟨val, hval⟩ := i
-      simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hval
-      exact hval
-    have j_non_zero : j.1.IsNonZero := by
-      obtain ⟨val, hval⟩ := j
-      simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hval
-      exact hval
-    let r := Weight.mk (R := K) (L := H) (M := L) (i.1.1 + j.1.1) h
-    have r₁ : r ≠ 0 := by
-      intro a
-      have h_eq : i.1 = -j.1 := Weight.ext <| congrFun (eq_neg_of_add_eq_zero_left <| by
-        have := congr_arg Weight.toFun a
-        simp at this; exact this)
-      have := s₂ i j h₁ h₂
-      rw [h_eq, coe_neg, Pi.neg_apply, root_apply_coroot j_non_zero] at this
-      field_simp at this
-    have r₂ : r ∈ H.root := by simp [isNonZero_iff_ne_zero, r₁]
-    cases Classical.em (⟨r, r₂⟩ ∈ Φ) with
-    | inl hl =>
-      have e₁ : i.1.1 (coroot j) = 0 := s₂ i j h₁ h₂
-      have e₂ : j.1.1 (coroot j) = 2 := root_apply_coroot j_non_zero
-      have : (0 : K) = 2 := calc
-        0 = (i.1.1 + j.1.1) (coroot j) := (s₂ ⟨r, r₂⟩ j hl h₂).symm
-        _ = i.1.1 (coroot j) + j.1.1 (coroot j) := rfl
-        _ = 2 := by rw [e₁, e₂, zero_add]
-      simp at this
-    | inr hr =>
-      have e₁ : j.1.1 (coroot i) = 0 := s₂' i j h₁ h₂
-      have e₂ : i.1.1 (coroot i) = 2 := root_apply_coroot i_non_zero
-      have : (0 : K) = 2 := calc
-        0 = (i.1.1 + j.1.1) (coroot i) := (s₂' i ⟨r, r₂⟩ h₁ hr).symm
-        _ = i.1.1 (coroot i) + j.1.1 (coroot i) := rfl
-        _ = 2 := by rw [e₁, e₂, add_zero]
-      simp at this
-  have s₄ (i j : H.root) (h1 : i ∈ Φ) (h2 : j ∉ Φ) (li : rootSpace H i.1.1)
-      (lj : rootSpace H j.1.1) : ⁅li.1, lj.1⁆ = 0 := by
-    have h₃ := lie_mem_genWeightSpace_of_mem_genWeightSpace li.2 lj.2
-    rw [s₃ i j h1 h2] at h₃
-    exact h₃
-  let g := ⋃ i ∈ Φ, (rootSpace H i : Set L)
-  let I := LieSubalgebra.lieSpan K L g
-  have s₅ : I ≠ ⊤ := by
-    obtain ⟨j, hj⟩ := (Set.ne_univ_iff_exists_notMem Φ).mp hc
-    obtain ⟨z, hz₁, hz₂⟩ := exists_ne_zero (R := K) (L := H) (M := L) j
-    by_contra! hI
-    have center_element : z ∈ center K L := by
-      have commutes_with_all (x : L) : ⁅x, z⁆ = 0 := by
-        have x_mem_I : x ∈ I := by rw [hI]; exact trivial
-        induction x_mem_I using LieSubalgebra.lieSpan_induction with
-        | mem x hx =>
-          obtain ⟨i, hi, hx1_mem⟩ := Set.mem_iUnion₂.mp hx
-          have := s₄ i j hi hj
-          simp only [Subtype.forall] at this
-          exact (this x hx1_mem) z hz₁
-        | zero => exact zero_lie z
-        | add _ _ _ _ e f => rw [add_lie, e, f, add_zero]
-        | smul _ _ _ d =>
-          simp only [smul_lie, smul_eq_zero]
-          right
-          exact d
-        | lie _ _ _ _ e f => rw [lie_lie, e, f, lie_zero, lie_zero, sub_self]
-      exact commutes_with_all
-    rw [center_eq_bot] at center_element
-    exact hz₂ center_element
-  have s₆ : I ≠ ⊥ := by
-    obtain ⟨r, hr⟩ := Set.nonempty_def.mp hΦ₁
-    obtain ⟨x, hx₁, hx₂⟩ := exists_ne_zero (R := K) (L := H) (M := L) r
-    have x_in_g : x ∈ g := by
-      apply Set.mem_iUnion_of_mem r
-      simp only [Set.mem_iUnion]
-      exact ⟨hr, hx₁⟩
-    have x_mem_I : x ∈ I := LieSubalgebra.mem_lieSpan.mpr (fun _ a ↦ a x_in_g)
-    by_contra h
-    exact hx₂ (I.eq_bot_iff.mp h x x_mem_I)
-  have s₇ : ∀ x y : L, y ∈ I → ⁅x, y⁆ ∈ I := by
-    have gen : ⨆ χ : Weight K H L, (genWeightSpace L χ).toSubmodule = ⊤ := by
-      simp only [LieSubmodule.iSup_toSubmodule_eq_top]
-      exact iSup_genWeightSpace_eq_top' K H L
-    intro x y hy
-    have hx : x ∈ ⨆ χ : Weight K H L, (genWeightSpace L χ).toSubmodule := by
-      simp only [gen, Submodule.mem_top]
-    induction hx using Submodule.iSup_induction' with
-    | mem j x hx =>
-      induction hy using LieSubalgebra.lieSpan_induction with
-      | mem x₁ hx₁ =>
-        obtain ⟨i, hi, x₁_mem⟩ := Set.mem_iUnion₂.mp hx₁
-        have r₁ (j : Weight K H L) : j = 0 ∨ j ∈ H.root := by
-          rcases (eq_or_ne j 0) with h | h
-          · left
-            exact h
-          · right
-            refine Finset.mem_filter.mpr ?_
-            exact ⟨Finset.mem_univ j, isNonZero_iff_ne_zero.mpr h⟩
-        rcases (r₁ j) with h | h
-        have h₁ : ⁅x, x₁⁆ ∈ g := by
-          have h₂ := lie_mem_genWeightSpace_of_mem_genWeightSpace hx x₁_mem
-          rw [h, coe_zero, zero_add] at h₂
-          exact Set.mem_biUnion hi h₂
-        exact LieSubalgebra.mem_lieSpan.mpr fun _ a ↦ a h₁
-        rcases (Classical.em (⟨j, h⟩ ∈ Φ)) with h₁ | h₁
-        exact I.lie_mem
-          (LieSubalgebra.mem_lieSpan.mpr fun _ a ↦ a (Set.mem_biUnion h₁ hx))
-          (LieSubalgebra.mem_lieSpan.mpr fun _ a ↦ a hx₁)
-        have : ⁅x, x₁⁆ = 0 := by
-          rw [← neg_eq_zero, lie_skew x₁ x, (s₄ i ⟨j, h⟩ hi h₁ ⟨x₁, x₁_mem⟩ ⟨x, hx⟩)]
-        rw [this]
-        exact I.zero_mem
-      | zero => simp only [lie_zero, zero_mem, I]
-      | add _ _ _ _ e f =>
-        simp only [lie_add]
-        exact add_mem e f
-      | smul a _ _ d =>
-        simp only [lie_smul]
-        exact I.smul_mem a d
-      | lie a b c d e f =>
-        have : ⁅x, ⁅a, b⁆⁆ = ⁅⁅x, a⁆, b⁆ + ⁅a, ⁅x, b⁆⁆ := by
-          simp only [lie_lie, sub_add_cancel]
-        rw [this]
-        exact add_mem (I.lie_mem e d) (I.lie_mem c f)
-    | zero => simp only [zero_lie, zero_mem]
-    | add x1 y1 _ _ hx hy =>
-      simp only [add_lie]
-      exact add_mem hx hy
-  obtain ⟨I', h⟩ := (LieSubalgebra.exists_lieIdeal_coe_eq_iff (K := I)).2 s₇
-  have : IsSimple K L := inferInstance
-  have : I' = ⊥ ∨ I' = ⊤ := this.eq_bot_or_eq_top I'
-  have c₁ : I' ≠ ⊤ := by
-    rw [← h] at s₅
-    exact ne_of_apply_ne (LieIdeal.toLieSubalgebra K L) s₅
-  have c₂ : I' ≠ ⊥ := by
-    rw [← h] at s₆
-    exact ne_of_apply_ne (LieIdeal.toLieSubalgebra K L) s₆
-  rcases this with h_bot | h_top
-  · contradiction
-  · contradiction
-
-instance : (rootSystem H).IsIrreducible := by
-  have _i := nontrivial_of_isIrreducible K L L
-  exact RootPairing.IsIrreducible.mk' (rootSystem H).toRootPairing <|
-    eq_top_of_invtSubmodule_ne_bot H
-
-end IsSimple
 
 end LieAlgebra.IsKilling

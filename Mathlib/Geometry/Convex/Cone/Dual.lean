@@ -3,14 +3,15 @@ Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Module.Submodule.Pointwise
-import Mathlib.Geometry.Convex.Cone.Pointed
+module
+
+public import Mathlib.Geometry.Convex.Cone.Pointed
 
 /-!
 # The algebraic dual of a cone
 
 Given a bilinear pairing `p` between two `R`-modules `M` and `N` and a set `s` in `M`, we define
-`PointedCone.dual p C` to be the pointed cone in `N` consisting of all points `y` such that
+`PointedCone.dual p s` to be the pointed cone in `N` consisting of all points `y` such that
 `0 ≤ p x y` for all `x ∈ s`.
 
 When the pairing is perfect, this gives us the algebraic dual of a cone. This is developed here.
@@ -20,26 +21,31 @@ dual instead. See `Mathlib/Analysis/Convex/Cone/Dual.lean` for that case.
 ## Implementation notes
 
 We do not provide a `ConvexCone`-valued version of `PointedCone.dual` since the dual cone of any set
-always contains `0`, ie is a pointed cone.
+always contains `0`, i.e. is a pointed cone.
 Furthermore, the strict version `{y | ∀ x ∈ s, 0 < p x y}` is a candidate to the name
 `ConvexCone.dual`.
 
-## TODO
-
-Deduce from `dual_flip_dual_dual_flip` that polyhedral cones are invariant under taking double duals
 -/
+
+@[expose] public section
 
 assert_not_exists TopologicalSpace Real Cardinal
 
 open Function LinearMap Pointwise Set
 
 namespace PointedCone
-variable {R M N : Type*} [CommRing R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup M]
-  [AddCommGroup N] [Module R M] [Module R N] {p : M →ₗ[R] N →ₗ[R] R} {s t : Set M} {y : N}
+
+section CommSemiring
+
+variable {R : Type*} [CommSemiring R] [PartialOrder R] [IsOrderedRing R]
+variable {M : Type*} [AddCommMonoid M] [Module R M]
+variable {N : Type*} [AddCommMonoid N] [Module R N]
+variable {p : M →ₗ[R] N →ₗ[R] R} {s t : Set M} {y : N}
 
 local notation3 "R≥0" => {c : R // 0 ≤ c}
 
-variable (p s) in
+set_option backward.isDefEq.respectTransparency false in
+variable (p) in
 /-- The dual cone of a set `s` with respect to a bilinear pairing `p` is the cone consisting of all
 points `y` such that for all points `x ∈ s` we have `0 ≤ p x y`. -/
 def dual (s : Set M) : PointedCone R N where
@@ -52,13 +58,14 @@ def dual (s : Set M) : PointedCone R N where
 
 @[simp] lemma dual_empty : dual p ∅ = ⊤ := by ext; simp
 @[simp] lemma dual_zero : dual p 0 = ⊤ := by ext; simp
+@[simp] lemma dual_singleton_zero : dual p {0} = ⊤ := dual_zero
+@[simp] lemma dual_ker : dual p (ker p) = ⊤ := by ext; simp +contextual
 
-lemma dual_univ (hp : Injective p.flip) : dual p univ = 0 := by
-  refine le_antisymm (fun y hy ↦ (_root_.map_eq_zero_iff p.flip hp).1 ?_) (by simp)
-  ext x
-  exact (hy <| mem_univ x).antisymm' <| by simpa using hy <| mem_univ (-x)
+@[gcongr] lemma dual_anti (h : t ⊆ s) : dual p s ≤ dual p t := fun _y hy _x hx ↦ hy (h hx)
 
-@[gcongr] lemma dual_le_dual (h : t ⊆ s) : dual p s ≤ dual p t := fun _y hy _x hx ↦ hy (h hx)
+alias dual_le_dual := dual_anti
+
+lemma dual_antitone : Antitone (dual p) := fun _ _ h => dual_anti h
 
 /-- The inner dual cone of a singleton is given by the preimage of the positive cone under the
 linear map `p x`. -/
@@ -70,10 +77,10 @@ lemma dual_insert (x : M) (s : Set M) : dual p (insert x s) = dual p {x} ⊓ dua
   rw [insert_eq, dual_union]
 
 lemma dual_iUnion {ι : Sort*} (f : ι → Set M) : dual p (⋃ i, f i) = ⨅ i, dual p (f i) := by
-  ext; simp [forall_swap (α := M)]
+  ext; simp [forall_comm (α := M)]
 
 lemma dual_sUnion (S : Set (Set M)) : dual p (⋃₀ S) = sInf (dual p '' S) := by
-  ext; simp [forall_swap (α := M)]
+  ext; simp [forall_comm (α := M)]
 
 /-- The dual cone of `s` equals the intersection of dual cones of the points in `s`. -/
 lemma dual_eq_iInter_dual_singleton (s : Set M) :
@@ -82,20 +89,71 @@ lemma dual_eq_iInter_dual_singleton (s : Set M) :
 /-- Any set is a subset of its double dual cone. -/
 lemma subset_dual_dual : s ⊆ dual p.flip (dual p s) := fun _x hx _y hy ↦ hy hx
 
+@[simp] lemma subset_dual_flip_iff_subset_dual {s : Set M} {t : Set N} :
+    s ⊆ dual p.flip t ↔ t ⊆ dual p s := by
+  constructor <;> exact (le_trans subset_dual_dual <| dual_antitone ·)
+
 variable (s) in
 @[simp] lemma dual_dual_flip_dual : dual p (dual p.flip (dual p s)) = dual p s :=
-  le_antisymm (dual_le_dual subset_dual_dual) subset_dual_dual
+  le_antisymm (dual_anti subset_dual_dual) subset_dual_dual
 
 @[simp] lemma dual_flip_dual_dual_flip (s : Set N) :
     dual p.flip (dual p (dual p.flip s)) = dual p.flip s := dual_dual_flip_dual _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
-lemma dual_span (s : Set M) : dual p (Submodule.span R≥0 s) = dual p s := by
-  refine le_antisymm (dual_le_dual Submodule.subset_span) (fun x hx y hy => ?_)
+lemma dual_hull (s : Set M) : dual p (hull R s) = dual p s := by
+  refine le_antisymm (dual_anti Submodule.subset_span) (fun x hx y hy => ?_)
   induction hy using Submodule.span_induction with
   | mem _y h => exact hx h
   | zero => simp
   | add y z _hy _hz hy hz => rw [map_add, add_apply]; exact add_nonneg hy hz
   | smul t y _hy hy => rw [map_smul_of_tower, Nonneg.mk_smul, smul_apply]; exact mul_nonneg t.2 hy
+
+@[deprecated "`PointedCone.span` was renamed to `PointedCone.hull`" (since := "2026-03-22")]
+alias dual_span := dual_hull
+
+@[simp] lemma dual_sup (C D : PointedCone R M) : dual p (C ⊔ D : PointedCone R M) = dual p (C ∪ D)
+  := by simp [← dual_hull]
+
+variable {M' : Type*} [AddCommMonoid M'] [Module R M']
+
+@[simp] lemma dual_image (s : Set M') (q : M' →ₗ[R] M) : dual p (q '' s) = dual (p.comp q) s :=
+  by ext; simp
+
+/-- Duality with respect to a general bilinear map can be expressed as duality using the
+  identity pairing. -/
+lemma dual_eq_dual_id_image (s : Set M) : dual p s = dual .id (p '' s) := by simp
+
+/-- Duality with respect to a general bilinear map can be expressed as duality using the
+  identity pairing. -/
+lemma dual_eq_dual_id_map (C : PointedCone R M) : dual p C = dual .id (map p C) := by simp
+
+/-- Duality with respect to a general bilinear map can be expressed as duality using the
+  standard pairing `Dual.eval`. -/
+lemma dual_eq_comap_dual_eval (s : Set M) :
+    dual p s = comap p.flip (dual (Module.Dual.eval R M) s) := by
+  ext; simp
+
+end CommSemiring
+
+section CommRing
+
+variable {R : Type*} [CommRing R] [PartialOrder R] [IsOrderedRing R]
+variable {M : Type*} [AddCommGroup M] [Module R M]
+variable {N : Type*} [AddCommMonoid N] [Module R N]
+variable {p : M →ₗ[R] N →ₗ[R] R}
+
+lemma dual_univ (hp : Injective p.flip) : dual p univ = 0 := by
+  refine le_antisymm (fun y hy ↦ (map_eq_zero_iff p.flip hp).1 ?_) (by simp)
+  ext x
+  exact (hy <| mem_univ x).antisymm' <| by simpa using hy <| mem_univ (-x)
+
+variable {N : Type*} [AddCommGroup N] [Module R N]
+variable {p : M →ₗ[R] N →ₗ[R] R}
+
+@[simp] lemma dual_neg {s : Set M} : dual p (-s) = -dual p s := by ext; simp
+
+end CommRing
 
 end PointedCone

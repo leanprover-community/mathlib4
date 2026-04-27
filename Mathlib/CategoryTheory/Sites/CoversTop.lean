@@ -3,7 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Sites.Sheaf
+module
+
+public import Mathlib.CategoryTheory.Sites.Sheaf
 
 /-! Objects which cover the terminal object
 
@@ -16,10 +18,12 @@ holds iff `Sieve.ofObjects Y X` is covering for `J`.
 We introduce a notion of compatible family of elements on objects `Y`
 and obtain `Presheaf.FamilyOfElementsOnObjects.IsCompatible.existsUnique_section`
 which asserts that if a presheaf of types is a sheaf, then any compatible
-family of elements on objects `Y` which cover the final object extends as
+family of elements on objects `Y` which cover the final object extends to
 a section of this presheaf.
 
 -/
+
+@[expose] public section
 
 universe w v' v u' u
 
@@ -65,12 +69,11 @@ lemma ext (F : Sheaf J A) {c : Cone F.1} (hc : IsLimit c) {X : A} {f g : X ⟶ c
   rintro ⟨W, a, ⟨i, ⟨b⟩⟩⟩
   simpa using h i =≫ F.1.map b.op
 
-lemma sections_ext (F : Sheaf J (Type _)) {x y : F.1.sections}
+lemma sections_ext (F : Sheaf J Type*) {x y : F.1.sections}
     (h : ∀ (i : I), x.1 (Opposite.op (Y i)) = y.1 (Opposite.op (Y i))) :
     x = y := by
   ext W
-  apply (Presieve.isSeparated_of_isSheaf J F.1
-    ((isSheaf_iff_isSheaf_of_type _ _).1 F.2) _ (hY W.unop)).ext
+  apply (((isSheaf_iff_isSheaf_of_type _ _).1 F.2).isSeparated _ (hY W.unop)).ext
   rintro T a ⟨i, ⟨b⟩⟩
   simpa using congr_arg (F.1.map b.op) (h i)
 
@@ -140,14 +143,12 @@ lemma existsUnique_section (hx : x.IsCompatible) (hY : J.CoversTop Y) (hF : IsSh
     refine ⟨⟨fun X => s X.unop, ?_⟩, fun i => (hs i (𝟙 (Y i))).trans (by simp)⟩
     rintro ⟨Y₁⟩ ⟨Y₂⟩ ⟨f : Y₂ ⟶ Y₁⟩
     change F.map f.op (s Y₁) = s Y₂
-    apply (Presieve.isSeparated_of_isSheaf J F H _ (hY Y₂)).ext
+    apply (H.isSeparated _ (hY Y₂)).ext
     rintro Z φ ⟨i, ⟨g⟩⟩
     rw [hs' φ i g, ← hs' (φ ≫ f) i g, op_comp, F.map_comp]
     rfl
   · intro y₁ y₂ hy₁ hy₂
     exact hY.sections_ext ⟨F, hF⟩ (fun i => by rw [hy₁, hy₂])
-
-@[deprecated (since := "2024-12-17")] alias exists_unique_section := existsUnique_section
 
 variable (hx : x.IsCompatible) (hY : J.CoversTop Y) (hF : IsSheaf J F)
 

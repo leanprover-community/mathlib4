@@ -3,9 +3,11 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
-import Mathlib.Analysis.Calculus.ParametricIntegral
-import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
+module
+
+public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+public import Mathlib.Analysis.Calculus.ParametricIntegral
+public import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
 
 /-! # The Mellin transform
 
@@ -23,11 +25,13 @@ differentiable in a suitable vertical strip.
 
 -/
 
+@[expose] public section
+
 open MeasureTheory Set Filter Asymptotics TopologicalSpace
 
 open Real
 
-open Complex hiding exp log abs_of_nonneg
+open Complex hiding exp log
 
 open scoped Topology
 
@@ -107,14 +111,16 @@ theorem mellin_const_smul (f : ℝ → E) (s : ℂ) {𝕜 : Type*}
     mellin (fun t => c • f t) s = c • mellin f s := by
   simp only [mellin, smul_comm, integral_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mellin_div_const (f : ℝ → ℂ) (s a : ℂ) : mellin (fun t => f t / a) s = mellin f s / a := by
   simp_rw [mellin, smul_eq_mul, ← mul_div_assoc, integral_div]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mellin_comp_rpow (f : ℝ → E) (s : ℂ) (a : ℝ) :
     mellin (fun t => f (t ^ a)) s = |a|⁻¹ • mellin f (s / a) := by
   /- This is true for `a = 0` as all sides are undefined but turn out to vanish thanks to our
   convention. The interesting case is `a ≠ 0` -/
-  rcases eq_or_ne a 0 with rfl|ha
+  rcases eq_or_ne a 0 with rfl | ha
   · by_cases hE : CompleteSpace E
     · simp [integral_smul_const, mellin, setIntegral_Ioi_zero_cpow]
     · simp [integral, mellin, hE]
@@ -170,7 +176,7 @@ theorem hasMellin_sub {f g : ℝ → E} {s : ℂ} (hf : MellinConvergent f s)
 
 theorem hasMellin_const_smul {f : ℝ → E} {s : ℂ} (hf : MellinConvergent f s)
     {R : Type*} [NormedRing R] [Module R E] [IsBoundedSMul R E] [SMulCommClass ℂ R E] (c : R) :
-    HasMellin (fun t => c • f t) s  (c • mellin f s) :=
+    HasMellin (fun t => c • f t) s (c • mellin f s) :=
   ⟨hf.const_smul c, by simp [mellin, smul_comm, hf.integral_smul]⟩
 
 end Defs
@@ -230,7 +236,7 @@ theorem mellin_convergent_zero_of_isBigO {b : ℝ} {f : ℝ → ℝ}
   obtain ⟨d, _, hd'⟩ := hf.exists_pos
   simp_rw [IsBigOWith, eventually_nhdsWithin_iff, Metric.eventually_nhds_iff, gt_iff_lt] at hd'
   obtain ⟨ε, hε, hε'⟩ := hd'
-  refine ⟨ε, hε, integrableOn_Ioc_iff_integrableOn_Ioo.mpr ⟨?_, ?_⟩⟩
+  refine ⟨ε, hε, Iff.mpr integrableOn_Ioc_iff_integrableOn_Ioo ⟨?_, ?_⟩⟩
   · refine AEStronglyMeasurable.mul ?_ (hfc.mono_set Ioo_subset_Ioi_self)
     refine (continuousOn_of_forall_continuousAt fun t ht => ?_).aestronglyMeasurable
       measurableSet_Ioo
@@ -244,11 +250,11 @@ theorem mellin_convergent_zero_of_isBigO {b : ℝ} {f : ℝ → ℝ}
     · refine (ae_restrict_iff' measurableSet_Ioo).mpr (Eventually.of_forall fun t ht => ?_)
       rw [mul_comm, norm_mul]
       specialize hε' _ ht.1
-      · rw [dist_eq_norm, sub_zero, norm_of_nonneg (le_of_lt ht.1)]
+      · rw [dist_eq_norm, sub_zero, norm_of_nonneg ht.1.le]
         exact ht.2
       · calc _ ≤ d * ‖t ^ (-b)‖ * ‖t ^ (s - 1)‖ := by gcongr
           _ = d * t ^ (s - b - 1) := ?_
-        simp_rw [norm_of_nonneg (rpow_nonneg (le_of_lt ht.1) _), mul_assoc]
+        simp_rw [norm_of_nonneg (rpow_nonneg ht.1.le _), mul_assoc]
         rw [← rpow_add ht.1]
         congr 2
         abel
@@ -266,7 +272,7 @@ theorem mellin_convergent_of_isBigO_scalar {a b : ℝ} {f : ℝ → ℝ} {s : �
     rw [union_assoc, Ioc_union_Ioi (le_max_right _ _),
       Ioc_union_Ioi ((min_le_left _ _).trans (le_max_right _ _)), min_eq_left (lt_min hc2 hc1).le]
   rw [this, integrableOn_union, integrableOn_union]
-  refine ⟨⟨hc2', integrableOn_Icc_iff_integrableOn_Ioc.mp ?_⟩, hc1'⟩
+  refine ⟨⟨hc2', Iff.mp integrableOn_Icc_iff_integrableOn_Ioc ?_⟩, hc1'⟩
   refine
     (hfc.continuousOn_mul ?_ isOpen_Ioi.isLocallyClosed).integrableOn_compact_subset
       (fun t ht => (hc2.trans_le ht.1 : 0 < t)) isCompact_Icc
@@ -343,16 +349,16 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [NormedSpace ℂ E] {a b : ℝ}
       ((continuousOn_of_forall_continuousAt fun t ht => ?_).mul ?_)
     · exact continuousAt_ofReal_cpow_const _ _ (Or.inr <| ne_of_gt ht)
     · refine continuous_ofReal.comp_continuousOn ?_
-      exact continuousOn_log.mono (subset_compl_singleton_iff.mpr notMem_Ioi_self)
+      exact continuousOn_log.mono (subset_compl_singleton_iff.mpr self_notMem_Ioi)
   have h4 : ∀ᵐ t : ℝ ∂volume.restrict (Ioi 0),
       ∀ z : ℂ, z ∈ Metric.ball s v → ‖F' z t‖ ≤ bound t := by
     refine (ae_restrict_mem measurableSet_Ioi).mono fun t ht z hz => ?_
-    simp_rw [F', bound, norm_smul, norm_mul, norm_real, mul_assoc]
+    simp_rw [F', bound, norm_smul, norm_mul, norm_real, mul_assoc, norm_eq_abs]
     gcongr
     rw [norm_cpow_eq_rpow_re_of_pos ht]
     rcases le_or_gt 1 t with h | h
     · refine le_add_of_le_of_nonneg (rpow_le_rpow_of_exponent_le h ?_)
-        (rpow_nonneg (zero_le_one.trans h) _)
+        (by positivity)
       rw [sub_re, one_re, sub_le_sub_iff_right]
       rw [mem_ball_iff_norm] at hz
       have hz' := (re_le_norm _).trans hz.le
@@ -376,7 +382,7 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [NormedSpace ℂ E] {a b : ℝ}
       · simp_rw [mul_comm]
         refine hfc.norm.mul_continuousOn ?_ isOpen_Ioi.isLocallyClosed
         refine Continuous.comp_continuousOn _root_.continuous_abs (continuousOn_log.mono ?_)
-        exact subset_compl_singleton_iff.mpr notMem_Ioi_self
+        exact subset_compl_singleton_iff.mpr self_notMem_Ioi
       · refine (isBigO_rpow_top_log_smul hw2' hf_top).norm_left.congr_left fun t ↦ ?_
         simp only [norm_smul, Real.norm_eq_abs]
       · refine (isBigO_rpow_zero_log_smul hw1 hf_bot).norm_left.congr_left fun t ↦ ?_
@@ -390,7 +396,8 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [NormedSpace ℂ E] {a b : ℝ}
       rw [ofReal_log (le_of_lt ht)]
       ring
     exact u1.smul_const (f t)
-  have main := hasDerivAt_integral_of_dominated_loc_of_deriv_le hv0 h1 h2 h3 h4 h5 h6
+  have main :=
+    hasDerivAt_integral_of_dominated_loc_of_deriv_le (Metric.ball_mem_nhds _ hv0) h1 h2 h3 h4 h5 h6
   simpa only [F', mul_smul] using main
 
 /-- Suppose `f` is locally integrable on `(0, ∞)`, is `O(x ^ (-a))` as `x → ∞`, and is

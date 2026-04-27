@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.Subsingleton
 
 private axiom test_sorry : ∀ {α}, α
@@ -62,7 +63,10 @@ example (α : Type) (inst1 inst2 : BEq α) [@LawfulBEq α inst1] [@LawfulBEq α 
 /-!
 `subsingleton` suggests `rfl` when it fails
 -/
-/-- info: Try this: rfl -/
+/--
+info: Try this:
+  [apply] rfl
+-/
 #guard_msgs in
 example : 1 + 1 = 2 := by
   subsingleton
@@ -75,7 +79,10 @@ example : 1 + 1 = 2 := by
   guard_target =ₛ 1 + 1 = 2
   rfl
 
-/-- info: Try this: (intros; rfl) -/
+/--
+info: Try this:
+  [apply] (intros; rfl)
+-/
 #guard_msgs in
 example : ∀ (n : Nat), n = n := by
   subsingleton
@@ -132,6 +139,7 @@ example {α : Type} [BEq α] (f : ∀ {β : Type} [BEq β], Subsingleton β) (x 
 /-!
 The same, but now there's a universe level metavariable.
 -/
+set_option warn.classDefReducibility false in
 def fdef : ∀ {β : Type _} [BEq β], Subsingleton β := test_sorry
 
 example {α : Type} [BEq α] (x y : α) : x = y := by

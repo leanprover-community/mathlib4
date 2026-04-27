@@ -3,15 +3,17 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, David Loeffler
 -/
-import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-import Mathlib.Analysis.SpecialFunctions.Complex.Circle
-import Mathlib.Analysis.InnerProductSpace.l2Space
-import Mathlib.MeasureTheory.Function.ContinuousMapDense
-import Mathlib.MeasureTheory.Function.L2Space
-import Mathlib.MeasureTheory.Group.Integral
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
-import Mathlib.Topology.ContinuousMap.StoneWeierstrass
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
+module
+
+public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
+public import Mathlib.Analysis.InnerProductSpace.l2Space
+public import Mathlib.MeasureTheory.Function.ContinuousMapDense
+public import Mathlib.MeasureTheory.Function.L2Space
+public import Mathlib.MeasureTheory.Group.Integral
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
+public import Mathlib.Topology.ContinuousMap.StoneWeierstrass
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 
 /-!
 
@@ -50,7 +52,7 @@ Using this and general theory on approximation of Lᵖ functions by continuous f
 dense in the Lᵖ space of `AddCircle T`. For `p = 2` we show (`orthonormal_fourier`) that the
 monomials are also orthonormal, so they form a Hilbert basis for L², which is named as
 `fourierBasis`; in particular, for `L²` functions `f`, the Fourier series of `f` converges to `f`
-in the `L²` topology (`hasSum_fourier_series_L2`). Parseval's identity, `tsum_sq_fourierCoeff`, is
+in the `L²` topology (`hasSum_fourier_series_L2`). Parseval's identity, `hasSum_sq_fourierCoeff`, is
 a direct consequence.
 
 For continuous maps `f : AddCircle T → ℂ`, the theorem
@@ -58,6 +60,8 @@ For continuous maps `f : AddCircle T → ℂ`, the theorem
 coefficients of `f` is summable, then the Fourier series `∑ (i : ℤ), fourierCoeff f i * fourier i`
 converges to `f` in the uniform-convergence topology of `C(AddCircle T, ℂ)`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -80,11 +84,7 @@ variable [hT : Fact (0 < T)]
 /-- Haar measure on the additive circle, normalised to have total measure 1. -/
 def haarAddCircle : Measure (AddCircle T) :=
   addHaarMeasure ⊤
-
--- The `IsAddHaarMeasure` instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-instance : IsAddHaarMeasure (@haarAddCircle T _) :=
-  Measure.isAddHaarMeasure_addHaarMeasure ⊤
+deriving IsAddHaarMeasure
 
 instance : IsProbabilityMeasure (@haarAddCircle T _) :=
   IsProbabilityMeasure.mk addHaarMeasure_self
@@ -93,7 +93,26 @@ theorem volume_eq_smul_haarAddCircle :
     (volume : Measure (AddCircle T)) = ENNReal.ofReal T • (@haarAddCircle T _) :=
   rfl
 
+lemma integral_haarAddCircle {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {f : AddCircle T → E} : ∫ t, f t ∂haarAddCircle = T⁻¹ • ∫ t, f t := by
+  rw [volume_eq_smul_haarAddCircle, integral_smul_measure, ENNReal.toReal_ofReal hT.out.le,
+    inv_smul_smul₀ hT.out.ne']
+
 end AddCircle
+
+namespace MeasureTheory
+
+lemma memLp_haarAddCircle_iff [hT : Fact (0 < T)] {f : AddCircle T → ℂ} {p : ℝ≥0∞} :
+    MemLp f p AddCircle.haarAddCircle ↔ MemLp f p := by
+  rw [AddCircle.volume_eq_smul_haarAddCircle]
+  have hT' := hT.out
+  refine ⟨fun h ↦ h.smul_measure (by finiteness), fun h ↦ ?_⟩
+  have := h.smul_measure (c := (ENNReal.ofReal T)⁻¹) (by finiteness)
+  rwa [smul_smul, ENNReal.inv_mul_cancel (by positivity) (by finiteness), one_smul] at this
+
+alias ⟨MemLp.of_haarAddCircle, MemLp.haarAddCircle⟩ := memLp_haarAddCircle_iff
+
+end MeasureTheory
 
 open AddCircle
 
@@ -125,13 +144,10 @@ theorem fourier_coe_apply' {n : ℤ} {x : ℝ} :
 
 -- simp normal form is `fourier_zero'`
 theorem fourier_zero {x : AddCircle T} : fourier 0 x = 1 := by
-  induction x using QuotientAddGroup.induction_on
-  simp only [fourier_coe_apply]
-  norm_num
+  simp
 
-theorem fourier_zero' {x : AddCircle T} : @toCircle T 0 = (1 : ℂ) := by
-  have : fourier 0 x = @toCircle T 0 := by rw [fourier_apply, zero_smul]
-  rw [← this]; exact fourier_zero
+theorem fourier_zero' : @toCircle T 0 = (1 : ℂ) := by
+  simp
 
 -- simp normal form is *also* `fourier_zero'`
 theorem fourier_eval_zero (n : ℤ) : fourier n (0 : AddCircle T) = 1 := by
@@ -153,7 +169,8 @@ theorem fourier_neg' {n : ℤ} {x : AddCircle T} : @toCircle T (-(n • x)) = co
   rw [← neg_smul, ← fourier_apply]; exact fourier_neg
 
 -- simp normal form is `fourier_add'`
-theorem fourier_add {m n : ℤ} {x : AddCircle T} : fourier (m+n) x = fourier m x * fourier n x := by
+theorem fourier_add {m n : ℤ} {x : AddCircle T} :
+    fourier (m + n) x = fourier m x * fourier n x := by
   simp_rw [fourier_apply, add_zsmul, toCircle_add, Circle.coe_mul]
 
 @[simp]
@@ -165,19 +182,18 @@ theorem fourier_norm [Fact (0 < T)] (n : ℤ) : ‖@fourier T n‖ = 1 := by
   rw [ContinuousMap.norm_eq_iSup_norm]
   have : ∀ x : AddCircle T, ‖fourier n x‖ = 1 := fun x => Circle.norm_coe _
   simp_rw [this]
-  exact @ciSup_const _ _ _ Zero.instNonempty _
+  exact ciSup_const
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For `n ≠ 0`, a translation by `T / 2 / n` negates the function `fourier n`. -/
 theorem fourier_add_half_inv_index {n : ℤ} (hn : n ≠ 0) (hT : 0 < T) (x : AddCircle T) :
     @fourier T n (x + ↑(T / 2 / n)) = -fourier n x := by
   rw [fourier_apply, zsmul_add, ← QuotientAddGroup.mk_zsmul, toCircle_add,
     Metric.unitSphere.coe_mul]
-  have : (n : ℂ) ≠ 0 := by simpa using hn
   have : (@toCircle T (n • (T / 2 / n) : ℝ) : ℂ) = -1 := by
     rw [zsmul_eq_mul, toCircle, Function.Periodic.lift_coe, Circle.coe_exp]
-    replace hT := Complex.ofReal_ne_zero.mpr hT.ne'
     convert Complex.exp_pi_mul_I using 3
-    field_simp; ring
+    field_simp
   rw [this]; simp
 
 /-- The star subalgebra of `C(AddCircle T, ℂ)` generated by `fourier n` for `n ∈ ℤ` . -/
@@ -215,7 +231,7 @@ theorem fourierSubalgebra_separatesPoints : (@fourierSubalgebra T).SeparatesPoin
   intro x y hxy
   refine ⟨_, ⟨fourier 1, subset_adjoin ⟨1, rfl⟩, rfl⟩, ?_⟩
   dsimp only; rw [fourier_one, fourier_one]
-  contrapose! hxy
+  contrapose hxy
   rw [Subtype.coe_inj] at hxy
   exact injective_toCircle hT.elim.ne' hxy
 
@@ -258,10 +274,7 @@ theorem orthonormal_fourier : Orthonormal ℂ (@fourierLp T _ 2 _) := by
   rw [ContinuousMap.inner_toLp (@haarAddCircle T hT) (fourier i) (fourier j)]
   simp_rw [← fourier_neg, ← fourier_add]
   split_ifs with h
-  · simp_rw [h, add_neg_cancel]
-    have : ⇑(@fourier T 0) = (fun _ => 1 : AddCircle T → ℂ) := by ext1; exact fourier_zero
-    rw [this, integral_const, measureReal_univ_eq_one, Complex.real_smul,
-      Complex.ofReal_one, mul_one]
+  · simp [h]
   have hij : j + -i ≠ 0 := by
     exact sub_ne_zero.mpr (Ne.symm h)
   convert integral_eq_zero_of_add_right_eq_neg (μ := haarAddCircle)
@@ -276,7 +289,7 @@ variable [hT : Fact (0 < T)]
 
 section fourierCoeff
 
-variable {E : Type} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 /-- The `n`-th Fourier coefficient of a function `AddCircle T → E`, for `E` a complete normed
 `ℂ`-vector space, defined as the integral over `AddCircle T` of `fourier (-n) t • f t`. -/
@@ -289,11 +302,36 @@ theorem fourierCoeff_eq_intervalIntegral (f : AddCircle T → E) (n : ℤ) (a : 
     fourierCoeff f n = (1 / T) • ∫ x in a..a + T, @fourier T (-n) x • f x := by
   have : ∀ x : ℝ, @fourier T (-n) x • f x = (fun z : AddCircle T => @fourier T (-n) z • f z) x := by
     intro x; rfl
-  -- After https://github.com/leanprover/lean4/pull/3124, we need to add `singlePass := true` to avoid an infinite loop.
   simp_rw +singlePass [this]
   rw [fourierCoeff, AddCircle.intervalIntegral_preimage T a (fun z => _ • _),
     volume_eq_smul_haarAddCircle, integral_smul_measure, ENNReal.toReal_ofReal hT.out.le,
     ← smul_assoc, smul_eq_mul, one_div_mul_cancel hT.out.ne', one_smul]
+
+theorem MeasureTheory.Integrable.fourier_smul {f : AddCircle T → E}
+    (hf : Integrable f haarAddCircle) (n : ℤ) :
+    Integrable (fun t ↦ fourier n t • f t) haarAddCircle := by
+  apply hf.bdd_smul 1
+  · exact (map_continuous (fourier n)).aestronglyMeasurable
+  · apply ae_of_all; intro t
+    rw [fourier_apply, Circle.norm_coe]
+
+theorem fourierCoeff.add {f g : AddCircle T → E} (hf : Integrable f haarAddCircle)
+    (hg : Integrable g haarAddCircle) :
+    fourierCoeff (f + g) = fourierCoeff f + fourierCoeff g := by
+  ext x
+  simpa [fourierCoeff, -fourier_apply] using integral_add (hf.fourier_smul _) (hg.fourier_smul _)
+
+theorem fourierCoeff.sum {ι : Type*} (s : Finset ι) (f : ι → AddCircle T → E)
+    (hf : ∀ i ∈ s, Integrable (f i) haarAddCircle) :
+    fourierCoeff (∑ i ∈ s, f i) = ∑ i ∈ s, fourierCoeff (f i) := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => ext; simp [fourierCoeff]
+  | insert a s ha iha =>
+      obtain ⟨hf₁, hf₂⟩ := by simpa using hf
+      rw [s.sum_insert ha, s.sum_insert ha,
+        fourierCoeff.add hf₁ (integrable_finsetSum' s hf₂), iha hf₂]
+
 
 theorem fourierCoeff.const_smul (f : AddCircle T → E) (c : ℂ) (n : ℤ) :
     fourierCoeff (c • f :) n = c • fourierCoeff f n := by
@@ -303,6 +341,10 @@ theorem fourierCoeff.const_smul (f : AddCircle T → E) (c : ℂ) (n : ℤ) :
 theorem fourierCoeff.const_mul (f : AddCircle T → ℂ) (c : ℂ) (n : ℤ) :
     fourierCoeff (fun x => c * f x) n = c * fourierCoeff f n :=
   fourierCoeff.const_smul f c n
+
+lemma fourierCoeff_congr_ae {f g : AddCircle T → E}
+    (h : f =ᵐ[haarAddCircle] g) : fourierCoeff f = fourierCoeff g :=
+  funext fun _ ↦ integral_congr_ae <| .smul (.refl _ _) h
 
 /-- For a function on `ℝ`, the Fourier coefficients of `f` on `[a, b]` are defined as the
 Fourier coefficients of the unique periodic function agreeing with `f` on `Ioc a b`. -/
@@ -330,6 +372,17 @@ theorem fourierCoeffOn.const_mul {a b : ℝ} (f : ℝ → ℂ) (c : ℂ) (n : �
     fourierCoeffOn hab (fun x => c * f x) n = c * fourierCoeffOn hab f n :=
   fourierCoeffOn.const_smul _ _ _ _
 
+lemma fourierCoeffOn_congr_ae {a b : ℝ} (hab : a < b) {f g : ℝ → E}
+    (h : f =ᵐ[volume.restrict (Ioc a b)] g) :
+    fourierCoeffOn hab f = fourierCoeffOn hab g := by
+  ext n
+  rw [fourierCoeffOn_eq_integral, fourierCoeffOn_eq_integral]
+  congr! 1
+  apply intervalIntegral.integral_congr_ae_restrict
+  simp only [uIoc_of_le hab.le]
+  filter_upwards [h] with x hx
+  rw [hx]
+
 theorem fourierCoeff_liftIoc_eq {a : ℝ} (f : ℝ → ℂ) (n : ℤ) :
     fourierCoeff (AddCircle.liftIoc T a f) n =
     fourierCoeffOn (lt_add_of_pos_right a hT.out) f n := by
@@ -356,7 +409,7 @@ section FourierL2
 /-- We define `fourierBasis` to be a `ℤ`-indexed Hilbert basis for `Lp ℂ 2 haarAddCircle`,
 which by definition is an isometric isomorphism from `Lp ℂ 2 haarAddCircle` to `ℓ²(ℤ, ℂ)`. -/
 def fourierBasis : HilbertBasis ℤ ℂ (Lp ℂ 2 <| @haarAddCircle T hT) :=
-  HilbertBasis.mk orthonormal_fourier (span_fourierLp_closure_eq_top (by norm_num)).ge
+  HilbertBasis.mk orthonormal_fourier (span_fourierLp_closure_eq_top (by simp)).ge
 
 /-- The elements of the Hilbert basis `fourierBasis` are the functions `fourierLp 2`, i.e. the
 monomials `fourier n` on the circle considered as elements of `L²`. -/
@@ -364,6 +417,7 @@ monomials `fourier n` on the circle considered as elements of `L²`. -/
 theorem coe_fourierBasis : ⇑(@fourierBasis T hT) = @fourierLp T hT 2 _ :=
   HilbertBasis.coe_mk _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Under the isometric isomorphism `fourierBasis` from `Lp ℂ 2 haarAddCircle` to `ℓ²(ℤ, ℂ)`, the
 `i`-th coefficient is `fourierCoeff f i`, i.e., the integral over `AddCircle T` of
 `fun t => fourier (-i) t * f t` with respect to the Haar measure of total mass 1. -/
@@ -384,18 +438,44 @@ theorem hasSum_fourier_series_L2 (f : Lp ℂ 2 <| @haarAddCircle T hT) :
 
 /-- **Parseval's identity**: for an `L²` function `f` on `AddCircle T`, the sum of the squared
 norms of the Fourier coefficients equals the `L²` norm of `f`. -/
-theorem tsum_sq_fourierCoeff (f : Lp ℂ 2 <| @haarAddCircle T hT) :
-    ∑' i : ℤ, ‖fourierCoeff f i‖ ^ 2 = ∫ t : AddCircle T, ‖f t‖ ^ 2 ∂haarAddCircle := by
+theorem hasSum_sq_fourierCoeff (f : Lp ℂ 2 <| @haarAddCircle T hT) :
+    HasSum (fun i => ‖fourierCoeff f i‖ ^ 2) (∫ t : AddCircle T, ‖f t‖ ^ 2 ∂haarAddCircle) := by
   simp_rw [← fourierBasis_repr]
-  have H₁ : ‖fourierBasis.repr f‖ ^ 2 = ∑' i, ‖fourierBasis.repr f i‖ ^ 2 := by
-    apply_mod_cast lp.norm_rpow_eq_tsum ?_ (fourierBasis.repr f)
-    norm_num
+  have H₁ : HasSum (fun i => ‖fourierBasis.repr f i‖ ^ 2) (‖fourierBasis.repr f‖ ^ 2) := by
+    apply_mod_cast lp.hasSum_norm ?_ (fourierBasis.repr f)
+    simp
   have H₂ : ‖fourierBasis.repr f‖ ^ 2 = ‖f‖ ^ 2 := by simp
   have H₃ := congr_arg RCLike.re (@L2.inner_def (AddCircle T) ℂ ℂ _ _ _ _ _ f f)
   rw [← integral_re] at H₃
   · simp only [← norm_sq_eq_re_inner] at H₃
-    rw [← H₁, H₂, H₃]
+    rwa [H₂, H₃] at H₁
   · exact L2.integrable_inner f f
+
+theorem tsum_sq_fourierCoeff (f : Lp ℂ 2 <| @haarAddCircle T hT) :
+    ∑' i : ℤ, ‖fourierCoeff f i‖ ^ 2 = ∫ t : AddCircle T, ‖f t‖ ^ 2 ∂haarAddCircle :=
+  (hasSum_sq_fourierCoeff _).tsum_eq
+
+/-- **Parseval's identity**: for a function `f` which is square integrable on `(a,b]`,
+the sum of the squared norms of the Fourier coefficients equals the `L²` norm of `f`. -/
+theorem hasSum_sq_fourierCoeffOn
+    {a b : ℝ} {f : ℝ → ℂ} (hab : a < b) (hL2 : MemLp f 2 (volume.restrict (Ioc a b))) :
+    HasSum (fun i => ‖fourierCoeffOn hab f i‖ ^ 2) ((b - a)⁻¹ • ∫ x in a..b, ‖f x‖ ^ 2) := by
+  haveI := Fact.mk (by linarith : 0 < b - a)
+  rw [← add_sub_cancel a b] at hL2
+  have h := hL2.memLp_liftIoc.haarAddCircle
+  convert hasSum_sq_fourierCoeff h.toLp using 1
+  · simp [fourierCoeff_congr_ae h.coeFn_toLp, fourierCoeff_liftIoc_eq]
+  · nth_rw 2 [← add_sub_cancel a b]
+    rw [← AddCircle.integral_liftIoc_eq_intervalIntegral, ← Function.comp_def (f := (‖·‖ ^ 2))]
+    simp only [liftIoc_comp_apply, ← AddCircle.integral_haarAddCircle]
+    apply integral_congr_ae
+    filter_upwards [h.coeFn_toLp] with x hx
+    simp [hx]
+
+theorem tsum_sq_fourierCoeffOn
+    {a b : ℝ} {f : ℝ → ℂ} (hab : a < b) (hL2 : MemLp f 2 (volume.restrict (Ioc a b))) :
+    ∑' (i : ℤ), ‖fourierCoeffOn hab f i‖ ^ 2 = (b - a)⁻¹ • ∫ x in a..b, ‖f x‖ ^ 2 :=
+  (hasSum_sq_fourierCoeffOn _ hL2).tsum_eq
 
 end FourierL2
 
@@ -410,6 +490,7 @@ theorem fourierCoeff_toLp (n : ℤ) :
 
 variable {f}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the sequence of Fourier coefficients of `f` is summable, then the Fourier series converges
 uniformly to `f`. -/
 theorem hasSum_fourier_series_of_summable (h : Summable (fourierCoeff f)) :
@@ -429,6 +510,19 @@ theorem has_pointwise_sum_fourier_series_of_summable (h : Summable (fourierCoeff
 end Convergence
 
 end ScopeHT
+
+section computations
+
+theorem fourierCoeff_fourier {T : ℝ} [hT : Fact (0 < T)] (n : ℤ) :
+    fourierCoeff (T := T) (fourier n) = Pi.single n 1 := by
+  ext m
+  rw [← fourierCoeff_congr_ae (coeFn_fourierLp 2 n), ← fourierBasis_repr,
+    HilbertBasis.repr_apply_apply, coe_fourierBasis]
+  obtain (rfl | hmn) := eq_or_ne m n
+  · rw [inner_self_eq_norm_sq_to_K, (orthonormal_fourier (hT := hT)).1 m]; simp
+  · rw [(orthonormal_fourier (hT := hT)).2 hmn]; simp [hmn]
+
+end computations
 
 section deriv
 
@@ -462,6 +556,7 @@ theorem has_antideriv_at_fourier_neg (hT : Fact (0 < T)) {n : ℤ} (hn : n ≠ 0
   · ext1 y; rw [div_div_eq_mul_div]; ring
   · simp [mul_div_cancel_left₀, hn, (Fact.out : 0 < T).ne', Real.pi_pos.ne']
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Express Fourier coefficients of `f` on an interval in terms of those of its derivative. -/
 theorem fourierCoeffOn_of_hasDeriv_right {a b : ℝ} (hab : a < b) {f f' : ℝ → ℂ}
     {n : ℤ} (hn : n ≠ 0)

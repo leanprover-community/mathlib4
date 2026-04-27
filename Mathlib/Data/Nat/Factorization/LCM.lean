@@ -3,8 +3,10 @@ Copyright (c) 2025 Paul Lezeau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Lezeau
 -/
-import Mathlib.Data.Nat.Factorization.Basic
-import Mathlib.Data.Nat.GCD.BigOperators
+module
+
+public import Mathlib.Data.Nat.Factorization.Basic
+public import Mathlib.Data.Nat.GCD.BigOperators
 
 /-!
 # Lemmas about `factorizationLCMLeft`
@@ -12,6 +14,8 @@ import Mathlib.Data.Nat.GCD.BigOperators
 This file contains some lemmas about `factorizationLCMLeft`.
 These were split from `Mathlib.Data.Nat.Factorization.Basic` to reduce transitive imports.
 -/
+
+public section
 
 open Finset List Finsupp
 
@@ -56,13 +60,13 @@ lemma coprime_factorizationLCMLeft_factorizationLCMRight :
   dsimp only; split_ifs with h h'
   any_goals simp only [coprime_one_right_eq_true, coprime_one_left_eq_true]
   refine coprime_pow_primes _ _ (prime_of_mem_primeFactors hp) (prime_of_mem_primeFactors hq) ?_
-  contrapose! h'; rwa [← h']
+  contrapose h'; rwa [← h']
 
 variable {a b}
 
 lemma factorizationLCMLeft_mul_factorizationLCMRight (ha : a ≠ 0) (hb : b ≠ 0) :
     (factorizationLCMLeft a b) * (factorizationLCMRight a b) = lcm a b := by
-  rw [← factorization_prod_pow_eq_self (lcm_ne_zero ha hb), factorizationLCMLeft,
+  rw [← prod_factorization_pow_eq_self (lcm_ne_zero ha hb), factorizationLCMLeft,
     factorizationLCMRight, ← prod_mul]
   congr; ext p n; split_ifs <;> simp
 
@@ -73,7 +77,7 @@ lemma factorizationLCMLeft_dvd_left : factorizationLCMLeft a b ∣ a := by
   · simp only [dvd_zero]
   rcases eq_or_ne b 0 with rfl | hb
   · simp [factorizationLCMLeft]
-  nth_rewrite 2 [← factorization_prod_pow_eq_self ha]
+  nth_rewrite 2 [← prod_factorization_pow_eq_self ha]
   rw [prod_of_support_subset (s := (lcm a b).factorization.support)]
   · apply prod_dvd_prod_of_dvd; rintro p -; dsimp only; split_ifs with le
     · rw [factorization_lcm ha hb]; apply pow_dvd_pow; exact sup_le le_rfl le
@@ -87,7 +91,7 @@ lemma factorizationLCMRight_dvd_right : factorizationLCMRight a b ∣ b := by
   · simp [factorizationLCMRight]
   rcases eq_or_ne b 0 with rfl | hb
   · simp only [dvd_zero]
-  nth_rewrite 2 [← factorization_prod_pow_eq_self hb]
+  nth_rewrite 2 [← prod_factorization_pow_eq_self hb]
   rw [prod_of_support_subset (s := (lcm a b).factorization.support)]
   · apply Finset.prod_dvd_prod_of_dvd; rintro p -; dsimp only; split_ifs with le
     · apply one_dvd

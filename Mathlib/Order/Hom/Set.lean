@@ -3,24 +3,29 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Logic.Equiv.Set
-import Mathlib.Order.Hom.Basic
-import Mathlib.Order.Interval.Set.Defs
-import Mathlib.Order.WellFounded
-import Mathlib.Tactic.MinImports
+module
+
+public import Mathlib.Logic.Equiv.Set
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.Order.Interval.Set.Defs
+public import Mathlib.Order.WellFounded
+public import Mathlib.Tactic.MinImports
 
 /-!
 # Order homomorphisms and sets
 -/
 
+@[expose] public section
+
 
 open OrderDual Set
 
-variable {α β : Type*}
+variable {α β γ : Type*}
 
 namespace Set
 
 /-- Sets on sum types are order-equivalent to pairs of sets on each summand. -/
+@[simps apply]
 def sumEquiv : Set (α ⊕ β) ≃o Set α × Set β where
   toFun s := (Sum.inl ⁻¹' s, Sum.inr ⁻¹' s)
   invFun s := Sum.inl '' s.1 ∪ Sum.inr '' s.2
@@ -28,6 +33,20 @@ def sumEquiv : Set (α ⊕ β) ≃o Set α × Set β where
   right_inv s := by
     simp [preimage_image_eq _ Sum.inl_injective, preimage_image_eq _ Sum.inr_injective]
   map_rel_iff' := by simp [subset_def]
+
+@[simp]
+theorem sumEquiv_symm_apply {s : Set α × Set β} :
+    sumEquiv.symm s = Sum.inl '' s.1 ∪ Sum.inr '' s.2 := rfl
+
+theorem MapsTo.sumElim {f : α → γ} {g : β → γ} {s : Set α × Set β} {t : Set γ}
+    (hf : Set.MapsTo f s.1 t) (hg : Set.MapsTo g s.2 t) :
+    Set.MapsTo (Sum.elim f g) (Set.sumEquiv.symm s) t := by
+  rintro (a | b) <;> aesop
+
+theorem InjOn.sumElim {f : α → γ} {g : β → γ} {s : Set α × Set β}
+    (hf : Set.InjOn f s.1) (hg : Set.InjOn g s.2) (hfg : ∀ᵉ (a ∈ s.1) (b ∈ s.2), f a ≠ g b) :
+    Set.InjOn (Sum.elim f g) (Set.sumEquiv.symm s) := by
+  rintro (a₁ | b₁) h₁ (a₂ | b₂) h₂ heq <;> aesop
 
 end Set
 
@@ -48,8 +67,8 @@ theorem symm_image_image (e : α ≃o β) (s : Set α) : e.symm '' (e '' s) = s 
 theorem image_symm_image (e : α ≃o β) (s : Set β) : e '' (e.symm '' s) = s :=
   e.toEquiv.image_symm_image s
 
-theorem image_eq_preimage (e : α ≃o β) (s : Set α) : e '' s = e.symm ⁻¹' s :=
-  e.toEquiv.image_eq_preimage s
+theorem image_eq_preimage_symm (e : α ≃o β) (s : Set α) : e '' s = e.symm ⁻¹' s :=
+  e.toEquiv.image_eq_preimage_symm s
 
 @[simp]
 theorem preimage_symm_preimage (e : α ≃o β) (s : Set α) : e ⁻¹' (e.symm ⁻¹' s) = s :=
@@ -212,8 +231,8 @@ variable (α) [BooleanAlgebra α]
 /-- Taking complements as an order isomorphism to the order dual. -/
 @[simps!]
 def OrderIso.compl : α ≃o αᵒᵈ where
-  toFun := OrderDual.toDual ∘ HasCompl.compl
-  invFun := HasCompl.compl ∘ OrderDual.ofDual
+  toFun := OrderDual.toDual ∘ Compl.compl
+  invFun := Compl.compl ∘ OrderDual.ofDual
   left_inv := compl_compl
   right_inv := compl_compl (α := αᵒᵈ)
   map_rel_iff' := compl_le_compl_iff_le

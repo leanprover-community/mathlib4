@@ -3,8 +3,11 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
-import Mathlib.CategoryTheory.Category.Cat
+module
+
+public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
+public import Mathlib.CategoryTheory.Category.Cat
+public import Mathlib.CategoryTheory.EssentiallySmall
 
 /-!
 # The category of elements
@@ -30,6 +33,8 @@ more convenient API. We prove the equivalence in
 category of elements, Grothendieck construction, comma category
 -/
 
+@[expose] public section
+
 
 namespace CategoryTheory
 
@@ -51,28 +56,26 @@ lemma Functor.Elements.ext {F : C ⥤ Type w} (x y : F.Elements) (h₁ : x.fst =
   cases x
   cases y
   cases h₁
-  simp only [eqToHom_refl, FunctorToTypes.map_id_apply] at h₂
-  simp [h₂]
+  simp_all
 
 /-- The category structure on `F.Elements`, for `F : C ⥤ Type`.
-    A morphism `(X, x) ⟶ (Y, y)` is a morphism `f : X ⟶ Y` in `C`, so `F.map f` takes `x` to `y`.
--/
+A morphism `(X, x) ⟶ (Y, y)` is a morphism `f : X ⟶ Y` in `C`, so `F.map f` takes `x` to `y`. -/
 instance categoryOfElements (F : C ⥤ Type w) : Category.{v} F.Elements where
   Hom p q := { f : p.1 ⟶ q.1 // (F.map f) p.2 = q.2 }
   id p := ⟨𝟙 p.1, by simp⟩
   comp {X Y Z} f g := ⟨f.val ≫ g.val, by simp [f.2, g.2]⟩
 
-/-- Natural transformations are mapped to functors between category of elements -/
+/-- Natural transformations are mapped to functors between categories of elements. -/
 @[simps]
 def NatTrans.mapElements {F G : C ⥤ Type w} (φ : F ⟶ G) : F.Elements ⥤ G.Elements where
   obj := fun ⟨X, x⟩ ↦ ⟨_, φ.app X x⟩
-  map {p q} := fun ⟨f, h⟩ ↦ ⟨f, by have hb := congrFun (φ.naturality f) p.2; aesop_cat⟩
+  map {p q} := fun ⟨f, h⟩ ↦ ⟨f, by have hb := φ.naturality_apply f p.2; cat_disch⟩
 
 /-- The functor mapping functors `C ⥤ Type w` to their category of elements -/
 @[simps]
 def Functor.elementsFunctor : (C ⥤ Type w) ⥤ Cat where
   obj F := Cat.of F.Elements
-  map n := NatTrans.mapElements n
+  map n := (NatTrans.mapElements n).toCatHom
 
 namespace CategoryOfElements
 
@@ -84,7 +87,7 @@ def homMk {F : C ⥤ Type w} (x y : F.Elements) (f : x.1 ⟶ y.1) (hf : F.map f 
 
 @[ext]
 theorem ext (F : C ⥤ Type w) {x y : F.Elements} (f g : x ⟶ y) (w : f.val = g.val) : f = g :=
-  Subtype.ext_val w
+  Subtype.ext w
 
 @[simp]
 theorem comp_val {F : C ⥤ Type w} {p q r : F.Elements} {f : p ⟶ q} {g : q ⟶ r} :
@@ -101,10 +104,15 @@ theorem map_snd {F : C ⥤ Type w} {p q : F.Elements} (f : p ⟶ q) : (F.map f.v
 
 /-- Constructor for isomorphisms in the category of elements of a functor to types. -/
 @[simps]
-def isoMk {F : C ⥤ Type w} (x y : F.Elements) (e : x.1 ≅ y.1) (he : F.map e.hom x.snd = y.snd) :
-    x ≅ y where
+def isoMk {F : C ⥤ Type w} (x y : F.Elements) (e : x.1 ≅ y.1)
+    (he : F.map e.hom x.snd = y.snd) : x ≅ y where
   hom := homMk x y e.hom he
-  inv := homMk y x e.inv (by rw [← he, FunctorToTypes.map_inv_map_hom_apply])
+  inv := homMk y x e.inv (by rw [← he, Functor.map_hom_inv'_apply])
+
+instance [LocallySmall.{w} C] (F : C ⥤ Type w) : LocallySmall.{w} F.Elements where
+  hom_small := by
+    rintro ⟨X, _⟩ ⟨Y, y⟩
+    exact small_of_injective (f := fun g ↦ g.val) (by cat_disch)
 
 end CategoryOfElements
 
@@ -139,15 +147,19 @@ def π : F.Elements ⥤ C where
 instance : (π F).Faithful where
 
 instance : (π F).ReflectsIsomorphisms where
-  reflects {X Y} f h := ⟨⟨⟨inv ((π F).map f),
-    by rw [← map_snd f, ← FunctorToTypes.map_comp_apply]; simp⟩, by aesop_cat⟩⟩
+  reflects f h := by
+    refine ⟨⟨(inv ((π F).map f) :), ?_⟩, ?_, ?_⟩
+    · simp only [← map_snd f, ← Functor.map_comp_apply,
+        π_obj, π_map, IsIso.hom_inv_id, Functor.map_id_apply]
+    · cat_disch
+    · cat_disch
 
 /-- A natural transformation between functors induces a functor between the categories of elements.
 -/
 @[simps]
 def map {F₁ F₂ : C ⥤ Type w} (α : F₁ ⟶ F₂) : F₁.Elements ⥤ F₂.Elements where
   obj t := ⟨t.1, α.app t.1 t.2⟩
-  map {t₁ t₂} k := ⟨k.1, by simpa [map_snd] using (FunctorToTypes.naturality _ _ α k.1 t₁.2).symm⟩
+  map {t₁ t₂} k := ⟨k.1, by simpa [map_snd] using (NatTrans.naturality_apply α k.1 t₁.2).symm⟩
 
 @[simp]
 theorem map_π {F₁ F₂ : C ⥤ Type w} (α : F₁ ⟶ F₂) : map α ⋙ π F₂ = π F₁ :=
@@ -155,15 +167,15 @@ theorem map_π {F₁ F₂ : C ⥤ Type w} (α : F₁ ⟶ F₂) : map α ⋙ π F
 
 /-- The forward direction of the equivalence `F.Elements ≅ (*, F)`. -/
 def toStructuredArrow : F.Elements ⥤ StructuredArrow PUnit F where
-  obj X := StructuredArrow.mk fun _ => X.2
-  map {X Y} f := StructuredArrow.homMk f.val (by funext; simp [f.2])
+  obj X := StructuredArrow.mk <| TypeCat.ofHom (fun _ => X.2)
+  map {X Y} f := StructuredArrow.homMk f.val (by ext; simp [f.2])
 
 @[simp]
 theorem toStructuredArrow_obj (X) :
     (toStructuredArrow F).obj X =
       { left := ⟨⟨⟩⟩
         right := X.1
-        hom := fun _ => X.2 } :=
+        hom := TypeCat.ofHom (fun _ => X.2) } :=
   rfl
 
 @[simp]
@@ -172,8 +184,8 @@ theorem to_comma_map_right {X Y} (f : X ⟶ Y) : ((toStructuredArrow F).map f).r
 
 /-- The reverse direction of the equivalence `F.Elements ≅ (*, F)`. -/
 def fromStructuredArrow : StructuredArrow PUnit F ⥤ F.Elements where
-  obj X := ⟨X.right, X.hom PUnit.unit⟩
-  map f := ⟨f.right, congr_fun f.w.symm PUnit.unit⟩
+  obj X := Functor.elementsMk _ X.right (X.hom .unit)
+  map f := ⟨f.right, by simp [ConcreteCategory.congr_hom f.w.symm .unit]; rfl⟩
 
 @[simp]
 theorem fromStructuredArrow_obj (X) : (fromStructuredArrow F).obj X = ⟨X.right, X.hom PUnit.unit⟩ :=
@@ -181,11 +193,12 @@ theorem fromStructuredArrow_obj (X) : (fromStructuredArrow F).obj X = ⟨X.right
 
 @[simp]
 theorem fromStructuredArrow_map {X Y} (f : X ⟶ Y) :
-    (fromStructuredArrow F).map f = ⟨f.right, congr_fun f.w.symm PUnit.unit⟩ :=
+    (fromStructuredArrow F).map f =
+      ⟨f.right, by simp [ConcreteCategory.congr_hom f.w.symm PUnit.unit]; rfl⟩ :=
   rfl
 
 /-- The equivalence between the category of elements `F.Elements`
-    and the comma category `(*, F)`. -/
+and the comma category `(*, F)`. -/
 @[simps]
 def structuredArrowEquivalence : F.Elements ≌ StructuredArrow PUnit F where
   functor := toStructuredArrow F
@@ -204,25 +217,16 @@ def toCostructuredArrow (F : Cᵒᵖ ⥤ Type v) : F.Elementsᵒᵖ ⥤ Costruct
   map f :=
     CostructuredArrow.homMk f.unop.val.unop (by
       ext Z y
-      dsimp [yonedaEquiv]
-      simp only [FunctorToTypes.map_comp_apply, ← f.unop.2])
+      simp [yonedaEquiv])
 
 /-- The reverse direction of the equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)`,
 given by `CategoryTheory.yonedaEquiv`.
 -/
 @[simps]
-def fromCostructuredArrow (F : Cᵒᵖ ⥤ Type v) : (CostructuredArrow yoneda F)ᵒᵖ ⥤ F.Elements where
+def fromCostructuredArrow (F : Cᵒᵖ ⥤ Type v) :
+    (CostructuredArrow yoneda F)ᵒᵖ ⥤ F.Elements where
   obj X := ⟨op (unop X).1, yonedaEquiv.1 (unop X).3⟩
-  map {X Y} f :=
-    ⟨f.unop.1.op, by
-      convert (congr_fun ((unop X).hom.naturality f.unop.left.op) (𝟙 _)).symm
-      simp only [Equiv.toFun_as_coe, Quiver.Hom.unop_op, yonedaEquiv_apply, types_comp_apply,
-        Category.comp_id, yoneda_obj_map]
-      have : yoneda.map f.unop.left ≫ (unop X).hom = (unop Y).hom := by
-        convert f.unop.3
-      rw [← this]
-      simp only [yoneda_map_app, FunctorToTypes.comp]
-      rw [Category.id_comp]⟩
+  map {X Y} f := ⟨f.unop.1.op, by simp [yonedaEquiv_naturality]⟩
 
 @[simp]
 theorem fromCostructuredArrow_obj_mk (F : Cᵒᵖ ⥤ Type v) {X : C} (f : yoneda.obj X ⟶ F) :
@@ -237,10 +241,13 @@ def costructuredArrowYonedaEquivalence (F : Cᵒᵖ ⥤ Type v) :
   inverse := (fromCostructuredArrow F).rightOp
   unitIso :=
     NatIso.ofComponents
-      (fun X ↦ Iso.op (CategoryOfElements.isoMk _ _ (Iso.refl _) (by simp))) (by
+      (fun X ↦ Iso.op (CategoryOfElements.isoMk _ _ (Iso.refl _) (by simp; rfl))) (by
         rintro ⟨x⟩ ⟨y⟩ ⟨f : y ⟶ x⟩
         exact Quiver.Hom.unop_inj (by ext; simp))
-  counitIso := NatIso.ofComponents (fun X ↦ CostructuredArrow.isoMk (Iso.refl _))
+  counitIso := NatIso.ofComponents (fun X ↦ CostructuredArrow.isoMk (Iso.refl _) (by
+    dsimp
+    simpa only [Functor.map_id, Category.id_comp] using
+      (yonedaEquiv.symm_apply_apply X.hom).symm))
 
 /-- The equivalence `(-.Elements)ᵒᵖ ≅ (yoneda, -)` of is actually a natural isomorphism of functors.
 -/
@@ -252,7 +259,7 @@ theorem costructuredArrow_yoneda_equivalence_naturality {F₁ F₂ : Cᵒᵖ ⥤
       Functor.comp_obj]
     congr
     ext _ f
-    simpa using congr_fun (α.naturality f.op).symm (unop X).snd
+    exact (α.naturality_apply f.op (unop X).snd).symm
   · simp
 
 /-- The equivalence `F.elementsᵒᵖ ≌ (yoneda, F)` is compatible with the forgetful functors. -/
@@ -267,9 +274,67 @@ def costructuredArrowYonedaEquivalenceInverseπ (F : Cᵒᵖ ⥤ Type v) :
     (costructuredArrowYonedaEquivalence F).inverse ⋙ (π F).leftOp ≅ CostructuredArrow.proj _ _ :=
   Iso.refl _
 
+set_option backward.isDefEq.respectTransparency false in
+/-- The opposite of the category of elements of a presheaf of types
+is equivalent to a category of costructured arrows for the Yoneda embedding functor. -/
+@[simps]
+def costructuredArrowULiftYonedaEquivalence (F : Cᵒᵖ ⥤ Type (max w v)) :
+    F.Elementsᵒᵖ ≌ CostructuredArrow uliftYoneda.{w} F where
+  functor :=
+    { obj x := CostructuredArrow.mk (uliftYonedaEquiv.{w}.symm x.unop.2)
+      map f := CostructuredArrow.homMk f.1.1.unop (by
+        dsimp
+        rw [← uliftYonedaEquiv_symm_map, map_snd]) }
+  inverse :=
+    { obj X := op (F.elementsMk _ (uliftYonedaEquiv.{w} X.hom))
+      map f := (homMk _ _ f.left.op (by
+        dsimp
+        rw [← CostructuredArrow.w f, uliftYonedaEquiv_naturality, Quiver.Hom.unop_op])).op }
+  unitIso := NatIso.ofComponents (fun x ↦ Iso.op (isoMk _ _ (Iso.refl _) (by
+    dsimp
+    simpa only [Functor.map_id_apply] using
+      uliftYonedaEquiv.apply_symm_apply (unop x).snd)))
+    (fun f ↦ Quiver.Hom.unop_inj (by aesop))
+  counitIso := NatIso.ofComponents (fun X ↦ CostructuredArrow.isoMk (Iso.refl _))
+
+/-- The equivalence of categories `costructuredArrowULiftYonedaEquivalence`
+commutes with the projections. -/
+def costructuredArrowULiftYonedaEquivalenceFunctorCompProjIso (F : Cᵒᵖ ⥤ Type (max w v)) :
+    (costructuredArrowULiftYonedaEquivalence.{w} F).functor ⋙ CostructuredArrow.proj _ _ ≅
+      (π F).leftOp :=
+  Iso.refl _
+
 end CategoryOfElements
 
 namespace Functor
+
+/-- The initial object in `F.Elements` if `F` is representable. -/
+@[simps]
+def Elements.initialOfRepresentableBy {F : Cᵒᵖ ⥤ Type*} {X : C} (h : F.RepresentableBy X) :
+    F.Elements :=
+  ⟨.op X, h.homEquiv (𝟙 X)⟩
+
+set_option backward.isDefEq.respectTransparency false in
+/-- If `F` is represented by `X`, `X` with its universal element is the initial object of
+`F.Elements.` -/
+def Elements.isInitialOfRepresentableBy {F : Cᵒᵖ ⥤ Type*} {X : C} (h : F.RepresentableBy X) :
+    Limits.IsInitial (initialOfRepresentableBy h) :=
+  .ofUniqueHom (fun Y ↦ ⟨h.homEquiv.symm Y.snd |>.op, by simp [← h.homEquiv_comp]⟩) fun Y m ↦ by
+    simp [← m.2, ← h.homEquiv_unop_comp]
+
+/-- The initial object in `F.Elements` if `F` is corepresentable. -/
+@[simps]
+def Elements.initialOfCorepresentableBy {F : C ⥤ Type*} {X : C} (h : F.CorepresentableBy X) :
+    F.Elements :=
+  ⟨X, h.homEquiv (𝟙 X)⟩
+
+set_option backward.isDefEq.respectTransparency false in
+/-- If `F` is corepresented by `X`, `X` with its universal element is the initial object of
+`F.Elements.` -/
+def Elements.isInitialOfCorepresentableBy {F : C ⥤ Type*} {X : C} (h : F.CorepresentableBy X) :
+    Limits.IsInitial (initialOfCorepresentableBy h) :=
+  .ofUniqueHom (fun Y ↦ ⟨h.homEquiv.symm Y.snd, by simp [← h.homEquiv_comp]⟩) fun Y m ↦ by
+    simp [← m.2, ← h.homEquiv_comp]
 
 /--
 The initial object in the category of elements for a representable functor. In `isInitial` it is
@@ -280,13 +345,8 @@ def Elements.initial (A : C) : (yoneda.obj A).Elements :=
 
 /-- Show that `Elements.initial A` is initial in the category of elements for the `yoneda` functor.
 -/
-def Elements.isInitial (A : C) : Limits.IsInitial (Elements.initial A) where
-  desc s := ⟨s.pt.2.op, Category.comp_id _⟩
-  uniq s m _ := by
-    simp_rw [← m.2]
-    dsimp [Elements.initial]
-    simp
-  fac := by rintro s ⟨⟨⟩⟩
+def Elements.isInitial (A : C) : Limits.IsInitial (Elements.initial A) :=
+  isInitialOfRepresentableBy (.yoneda A)
 
 end Functor
 

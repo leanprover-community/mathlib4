@@ -3,10 +3,12 @@ Copyright (c) 2021 Bhavik Mehta, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
 -/
-import Mathlib.Data.Fintype.Powerset
-import Mathlib.Order.Antichain
-import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Order.Antichain
+public import Mathlib.Order.Interval.Finset.Nat
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # `r`-sets and slice
@@ -24,8 +26,10 @@ the set family made of its `r`-sets.
 
 ## Notation
 
-`A # r` is notation for `A.slice r` in locale `finset_family`.
+`A # r` is notation for `A.slice r` in scope `finset_family`.
 -/
+
+@[expose] public section
 
 
 open Finset Nat
@@ -57,7 +61,7 @@ alias ⟨_, sized.union⟩ := sized_union
 @[simp]
 theorem sized_iUnion {f : ι → Set (Finset α)} : (⋃ i, f i).Sized r ↔ ∀ i, (f i).Sized r := by
   simp_rw [Set.Sized, Set.mem_iUnion, forall_exists_index]
-  exact forall_swap
+  exact forall_comm
 
 -- `simp` normal form is `sized_iUnion`.
 theorem sized_iUnion₂ {f : ∀ i, κ i → Set (Finset α)} :

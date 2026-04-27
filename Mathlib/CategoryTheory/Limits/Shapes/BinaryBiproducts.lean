@@ -3,8 +3,10 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 
 /-!
 # Binary biproducts
@@ -26,6 +28,8 @@ Such a `BinaryBicone` is a biproduct if the cone is a limit cone, and the cocone
 cocone.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -67,13 +71,13 @@ structure BinaryBiconeMorphism {P Q : C} (A B : BinaryBicone P Q) where
   /-- A morphism between the two vertex objects of the bicones -/
   hom : A.pt ⟶ B.pt
   /-- The triangle consisting of the two natural transformations and `hom` commutes -/
-  wfst : hom ≫ B.fst = A.fst := by aesop_cat
+  wfst : hom ≫ B.fst = A.fst := by cat_disch
   /-- The triangle consisting of the two natural transformations and `hom` commutes -/
-  wsnd : hom ≫ B.snd = A.snd := by aesop_cat
+  wsnd : hom ≫ B.snd = A.snd := by cat_disch
   /-- The triangle consisting of the two natural transformations and `hom` commutes -/
-  winl : A.inl ≫ hom = B.inl := by aesop_cat
+  winl : A.inl ≫ hom = B.inl := by cat_disch
   /-- The triangle consisting of the two natural transformations and `hom` commutes -/
-  winr : A.inr ≫ hom = B.inr := by aesop_cat
+  winr : A.inr ≫ hom = B.inr := by cat_disch
 
 attribute [reassoc (attr := simp)] BinaryBiconeMorphism.wfst BinaryBiconeMorphism.wsnd
 attribute [reassoc (attr := simp)] BinaryBiconeMorphism.winl BinaryBiconeMorphism.winr
@@ -85,9 +89,9 @@ instance BinaryBicone.category {P Q : C} : Category (BinaryBicone P Q) where
   comp f g := { hom := f.hom ≫ g.hom }
   id B := { hom := 𝟙 B.pt }
 
--- Porting note: if we do not have `simps` automatically generate the lemma for simplifying
--- the `hom` field of a category, we need to write the `ext` lemma in terms of the categorical
--- morphism, rather than the underlying structure.
+/- We do not want `simps` automatically generate the lemma for simplifying the `Hom` field of
+-- a category. So we need to write the `ext` lemma in terms of the categorical morphism, rather than
+the underlying structure. -/
 @[ext]
 theorem BinaryBiconeMorphism.ext {P Q : C} {c c' : BinaryBicone P Q}
     (f g : c ⟶ c') (w : f.hom = g.hom) : f = g := by
@@ -102,10 +106,10 @@ namespace BinaryBicones
   maps. -/
 @[aesop apply safe (rule_sets := [CategoryTheory]), simps]
 def ext {P Q : C} {c c' : BinaryBicone P Q} (φ : c.pt ≅ c'.pt)
-    (winl : c.inl ≫ φ.hom = c'.inl := by aesop_cat)
-    (winr : c.inr ≫ φ.hom = c'.inr := by aesop_cat)
-    (wfst : φ.hom ≫ c'.fst = c.fst := by aesop_cat)
-    (wsnd : φ.hom ≫ c'.snd = c.snd := by aesop_cat) : c ≅ c' where
+    (winl : c.inl ≫ φ.hom = c'.inl := by cat_disch)
+    (winr : c.inr ≫ φ.hom = c'.inr := by cat_disch)
+    (wfst : φ.hom ≫ c'.fst = c.fst := by cat_disch)
+    (wsnd : φ.hom ≫ c'.snd = c.snd := by cat_disch) : c ≅ c' where
   hom := { hom := φ.hom }
   inv :=
     { hom := φ.inv
@@ -143,7 +147,7 @@ instance functoriality_full [F.Full] [F.Faithful] : (functoriality P Q F).Full w
       winl := F.map_injective (by simpa using t.winl)
       winr := F.map_injective (by simpa using t.winr)
       wfst := F.map_injective (by simpa using t.wfst)
-      wsnd := F.map_injective (by simpa using t.wsnd) }, by aesop_cat⟩
+      wsnd := F.map_injective (by simpa using t.wsnd) }, by cat_disch⟩
 
 instance functoriality_faithful [F.Faithful] : (functoriality P Q F).Faithful where
   map_injective {_X} {_Y} f g h :=
@@ -198,26 +202,25 @@ theorem binary_cofan_inl_toCocone (c : BinaryBicone P Q) : BinaryCofan.inl c.toC
 theorem binary_cofan_inr_toCocone (c : BinaryBicone P Q) : BinaryCofan.inr c.toCocone = c.inr :=
   rfl
 
-instance (c : BinaryBicone P Q) : IsSplitMono c.inl :=
-  IsSplitMono.mk'
-    { retraction := c.fst
-      id := c.inl_fst }
+/-- The retract of a binary bicone `c` given by `c.inl` and `c.fst`. -/
+def retract_left (c : BinaryBicone P Q) : Retract P c.pt where
+  i := c.inl
+  r := c.fst
 
-instance (c : BinaryBicone P Q) : IsSplitMono c.inr :=
-  IsSplitMono.mk'
-    { retraction := c.snd
-      id := c.inr_snd }
+/-- The retract of a binary bicone `c` given by `c.inr` and `c.snd`. -/
+def retract_right (c : BinaryBicone P Q) : Retract Q c.pt where
+  i := c.inr
+  r := c.snd
 
-instance (c : BinaryBicone P Q) : IsSplitEpi c.fst :=
-  IsSplitEpi.mk'
-    { section_ := c.inl
-      id := c.inl_fst }
+instance (c : BinaryBicone P Q) : IsSplitMono c.inl := c.retract_left.instIsSplitMonoI
 
-instance (c : BinaryBicone P Q) : IsSplitEpi c.snd :=
-  IsSplitEpi.mk'
-    { section_ := c.inr
-      id := c.inr_snd }
+instance (c : BinaryBicone P Q) : IsSplitMono c.inr := c.retract_right.instIsSplitMonoI
 
+instance (c : BinaryBicone P Q) : IsSplitEpi c.fst := c.retract_left.instIsSplitEpiR
+
+instance (c : BinaryBicone P Q) : IsSplitEpi c.snd := c.retract_right.instIsSplitEpiR
+
+set_option backward.isDefEq.respectTransparency false in
 /-- Convert a `BinaryBicone` into a `Bicone` over a pair. -/
 @[simps]
 def toBiconeFunctor {X Y : C} : BinaryBicone X Y ⥤ Bicone (pairFunction X Y) where
@@ -239,18 +242,19 @@ abbrev toBicone {X Y : C} (b : BinaryBicone X Y) : Bicone (pairFunction X Y) :=
 /-- A binary bicone is a limit cone if and only if the corresponding bicone is a limit cone. -/
 def toBiconeIsLimit {X Y : C} (b : BinaryBicone X Y) :
     IsLimit b.toBicone.toCone ≃ IsLimit b.toCone :=
-  IsLimit.equivIsoLimit <| Cones.ext (Iso.refl _) fun ⟨as⟩ => by cases as <;> simp
+  IsLimit.equivIsoLimit <| Cone.ext (Iso.refl _) fun ⟨as⟩ => by cases as <;> simp
 
 /-- A binary bicone is a colimit cocone if and only if the corresponding bicone is a colimit
-    cocone. -/
+cocone. -/
 def toBiconeIsColimit {X Y : C} (b : BinaryBicone X Y) :
     IsColimit b.toBicone.toCocone ≃ IsColimit b.toCocone :=
-  IsColimit.equivIsoColimit <| Cocones.ext (Iso.refl _) fun ⟨as⟩ => by cases as <;> simp
+  IsColimit.equivIsoColimit <| Cocone.ext (Iso.refl _) fun ⟨as⟩ => by cases as <;> simp
 
 end BinaryBicone
 
 namespace Bicone
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Convert a `Bicone` over a function on `WalkingPair` to a BinaryBicone. -/
 @[simps]
 def toBinaryBiconeFunctor {X Y : C} : Bicone (pairFunction X Y) ⥤ BinaryBicone X Y where
@@ -272,16 +276,16 @@ abbrev toBinaryBicone {X Y : C} (b : Bicone (pairFunction X Y)) : BinaryBicone X
   toBinaryBiconeFunctor.obj b
 
 /-- A bicone over a pair is a limit cone if and only if the corresponding binary bicone is a limit
-    cone. -/
+cone. -/
 def toBinaryBiconeIsLimit {X Y : C} (b : Bicone (pairFunction X Y)) :
     IsLimit b.toBinaryBicone.toCone ≃ IsLimit b.toCone :=
-  IsLimit.equivIsoLimit <| Cones.ext (Iso.refl _) fun j => by rcases j with ⟨⟨⟩⟩ <;> simp
+  IsLimit.equivIsoLimit <| Cone.ext (Iso.refl _) fun j => by rcases j with ⟨⟨⟩⟩ <;> simp
 
 /-- A bicone over a pair is a colimit cocone if and only if the corresponding binary bicone is a
-    colimit cocone. -/
+colimit cocone. -/
 def toBinaryBiconeIsColimit {X Y : C} (b : Bicone (pairFunction X Y)) :
     IsColimit b.toBinaryBicone.toCocone ≃ IsColimit b.toCocone :=
-  IsColimit.equivIsoColimit <| Cocones.ext (Iso.refl _) fun j => by rcases j with ⟨⟨⟩⟩ <;> simp
+  IsColimit.equivIsoColimit <| Cocone.ext (Iso.refl _) fun j => by rcases j with ⟨⟨⟩⟩ <;> simp
 
 end Bicone
 
@@ -302,7 +306,7 @@ def BinaryBicone.toBiconeIsBilimit {X Y : C} (b : BinaryBicone X Y) :
   right_inv := fun ⟨h, h'⟩ => by dsimp only; simp
 
 /-- A bicone over a pair is a bilimit bicone if and only if the corresponding binary bicone is a
-    bilimit. -/
+bilimit. -/
 def Bicone.toBinaryBiconeIsBilimit {X Y : C} (b : Bicone (pairFunction X Y)) :
     b.toBinaryBicone.IsBilimit ≃ b.IsBilimit where
   toFun h := ⟨b.toBinaryBiconeIsLimit h.isLimit, b.toBinaryBiconeIsColimit h.isColimit⟩
@@ -529,11 +533,13 @@ theorem biprod.hom_ext' {X Y Z : C} [HasBinaryBiproduct X Y] (f g : X ⊞ Y ⟶ 
 def biprod.isoProd (X Y : C) [HasBinaryBiproduct X Y] : X ⊞ Y ≅ X ⨯ Y :=
   IsLimit.conePointUniqueUpToIso (BinaryBiproduct.isLimit X Y) (limit.isLimit _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem biprod.isoProd_hom {X Y : C} [HasBinaryBiproduct X Y] :
     (biprod.isoProd X Y).hom = prod.lift biprod.fst biprod.snd := by
       ext <;> simp [biprod.isoProd]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem biprod.isoProd_inv {X Y : C} [HasBinaryBiproduct X Y] :
     (biprod.isoProd X Y).inv = biprod.lift prod.fst prod.snd := by
@@ -543,16 +549,19 @@ theorem biprod.isoProd_inv {X Y : C} [HasBinaryBiproduct X Y] :
 def biprod.isoCoprod (X Y : C) [HasBinaryBiproduct X Y] : X ⊞ Y ≅ X ⨿ Y :=
   IsColimit.coconePointUniqueUpToIso (BinaryBiproduct.isColimit X Y) (colimit.isColimit _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem biprod.isoCoprod_inv {X Y : C} [HasBinaryBiproduct X Y] :
     (biprod.isoCoprod X Y).inv = coprod.desc biprod.inl biprod.inr := by
   ext <;> simp [biprod.isoCoprod]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem biprod_isoCoprod_hom {X Y : C} [HasBinaryBiproduct X Y] :
     (biprod.isoCoprod X Y).hom = biprod.desc coprod.inl coprod.inr := by
   ext <;> simp [← Iso.eq_comp_inv]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem biprod.map_eq_map' {W X Y Z : C} [HasBinaryBiproduct W X] [HasBinaryBiproduct Y Z]
     (f : W ⟶ Y) (g : X ⟶ Z) : biprod.map f g = biprod.map' f g := by
   ext
@@ -625,6 +634,7 @@ theorem biprod.conePointUniqueUpToIso_hom (X Y : C) [HasBinaryBiproduct X Y] {b 
     (hb.isLimit.conePointUniqueUpToIso (BinaryBiproduct.isLimit _ _)).hom =
       biprod.lift b.fst b.snd := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary lemma for `biprod.uniqueUpToIso`. -/
 theorem biprod.conePointUniqueUpToIso_inv (X Y : C) [HasBinaryBiproduct X Y] {b : BinaryBicone X Y}
     (hb : b.IsBilimit) :
@@ -637,9 +647,9 @@ theorem biprod.conePointUniqueUpToIso_inv (X Y : C) [HasBinaryBiproduct X Y] {b 
   all_goals simp
 
 /-- Binary biproducts are unique up to isomorphism. This already follows because bilimits are
-    limits, but in the case of biproducts we can give an isomorphism with particularly nice
-    definitional properties, namely that `biprod.lift b.fst b.snd` and `biprod.desc b.inl b.inr`
-    are inverses of each other. -/
+limits, but in the case of biproducts we can give an isomorphism with particularly nice
+definitional properties, namely that `biprod.lift b.fst b.snd` and `biprod.desc b.inl b.inr`
+are inverses of each other. -/
 @[simps]
 def biprod.uniqueUpToIso (X Y : C) [HasBinaryBiproduct X Y] {b : BinaryBicone X Y}
     (hb : b.IsBilimit) : b.pt ≅ X ⊞ Y where
@@ -666,6 +676,7 @@ theorem biprod.isIso_inl_iff_id_eq_fst_comp_inl (X Y : C) [HasBinaryBiproduct X 
   · intro h
     exact ⟨⟨biprod.fst, biprod.inl_fst, h.symm⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance biprod.map_epi {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Epi f]
     [Epi g] [HasBinaryBiproduct W X] [HasBinaryBiproduct Y Z] : Epi (biprod.map f g) := by
   rw [show biprod.map f g =
@@ -678,6 +689,7 @@ instance prod.map_epi {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Epi f]
     (biprod.isoProd _ _).hom by simp]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance biprod.map_mono {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Mono f]
     [Mono g] [HasBinaryBiproduct W X] [HasBinaryBiproduct Y Z] : Mono (biprod.map f g) := by
   rw [show biprod.map f g = (biprod.isoProd _ _).hom ≫ prod.map f g ≫
@@ -730,22 +742,26 @@ theorem BinaryBicone.inrCokernelCofork_π : (BinaryBicone.inrCokernelCofork c).�
 
 variable {c}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The fork defined in `BinaryBicone.fstKernelFork` is indeed a kernel. -/
 def BinaryBicone.isLimitFstKernelFork (i : IsLimit c.toCone) : IsLimit c.fstKernelFork :=
   Fork.IsLimit.mk' _ fun s =>
     ⟨s.ι ≫ c.snd, by apply BinaryFan.IsLimit.hom_ext i <;> simp, fun hm => by simp [← hm]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The fork defined in `BinaryBicone.sndKernelFork` is indeed a kernel. -/
 def BinaryBicone.isLimitSndKernelFork (i : IsLimit c.toCone) : IsLimit c.sndKernelFork :=
   Fork.IsLimit.mk' _ fun s =>
     ⟨s.ι ≫ c.fst, by apply BinaryFan.IsLimit.hom_ext i <;> simp, fun hm => by simp [← hm]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The cofork defined in `BinaryBicone.inlCokernelCofork` is indeed a cokernel. -/
 def BinaryBicone.isColimitInlCokernelCofork (i : IsColimit c.toCocone) :
     IsColimit c.inlCokernelCofork :=
   Cofork.IsColimit.mk' _ fun s =>
     ⟨c.inr ≫ s.π, by apply BinaryCofan.IsColimit.hom_ext i <;> simp, fun hm => by simp [← hm]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The cofork defined in `BinaryBicone.inrCokernelCofork` is indeed a cokernel. -/
 def BinaryBicone.isColimitInrCokernelCofork (i : IsColimit c.toCocone) :
     IsColimit c.inrCokernelCofork :=
@@ -907,23 +923,23 @@ def biprod.braiding' (P Q : C) : P ⊞ Q ≅ Q ⊞ P where
   inv := biprod.desc biprod.inr biprod.inl
 
 theorem biprod.braiding'_eq_braiding {P Q : C} : biprod.braiding' P Q = biprod.braiding P Q := by
-  aesop_cat
+  cat_disch
 
 /-- The braiding isomorphism can be passed through a map by swapping the order. -/
 @[reassoc]
 theorem biprod.braid_natural {W X Y Z : C} (f : X ⟶ Y) (g : Z ⟶ W) :
     biprod.map f g ≫ (biprod.braiding _ _).hom = (biprod.braiding _ _).hom ≫ biprod.map g f := by
-  aesop_cat
+  cat_disch
 
 @[reassoc]
 theorem biprod.braiding_map_braiding {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) :
     (biprod.braiding X W).hom ≫ biprod.map f g ≫ (biprod.braiding Y Z).hom = biprod.map g f := by
-  aesop_cat
+  cat_disch
 
 @[reassoc (attr := simp)]
 theorem biprod.symmetry' (P Q : C) :
     biprod.lift biprod.snd biprod.fst ≫ biprod.lift biprod.snd biprod.fst = 𝟙 (P ⊞ Q) := by
-  aesop_cat
+  cat_disch
 
 /-- The braiding isomorphism is symmetric. -/
 @[reassoc]
@@ -941,14 +957,14 @@ def biprod.associator (P Q R : C) : (P ⊞ Q) ⊞ R ≅ P ⊞ (Q ⊞ R) where
 theorem biprod.associator_natural {U V W X Y Z : C} (f : U ⟶ X) (g : V ⟶ Y) (h : W ⟶ Z) :
     biprod.map (biprod.map f g) h ≫ (biprod.associator _ _ _).hom
       = (biprod.associator _ _ _).hom ≫ biprod.map f (biprod.map g h) := by
-  aesop_cat
+  cat_disch
 
 /-- The associator isomorphism can be passed through a map by swapping the order. -/
 @[reassoc]
 theorem biprod.associator_inv_natural {U V W X Y Z : C} (f : U ⟶ X) (g : V ⟶ Y) (h : W ⟶ Z) :
     biprod.map f (biprod.map g h) ≫ (biprod.associator _ _ _).inv
       = (biprod.associator _ _ _).inv ≫ biprod.map (biprod.map f g) h := by
-  aesop_cat
+  cat_disch
 
 end
 

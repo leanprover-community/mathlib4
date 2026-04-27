@@ -3,7 +3,9 @@ Copyright (c) 2023 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
 
 /-!
 # Construct a tripartite graph from its triangles
@@ -35,10 +37,12 @@ This construction shows up unrelatedly twice in the theory of Roth numbers:
   corner-free.
 -/
 
+@[expose] public section
+
 open Finset Function Sum3
 
 variable {α β γ 𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
-  {t : Finset (α × β × γ)} {a a' : α} {b b' : β} {c c' : γ} {x : α × β × γ}
+  {t : Finset (α × β × γ)}
 
 namespace SimpleGraph
 namespace TripartiteFromTriangles
@@ -57,11 +61,13 @@ Two vertices are related iff there exists a triangle index containing them both.
 open Rel
 
 lemma rel_irrefl : ∀ x, ¬ Rel t x x := fun _x hx ↦ nomatch hx
-lemma rel_symm : Symmetric (Rel t) := fun x y h ↦  by cases h <;> constructor <;> assumption
+lemma rel_symm : Symmetric (Rel t) := fun x y h ↦ by cases h <;> constructor <;> assumption
 
 /-- The tripartite-from-triangles graph. Two vertices are related iff there exists a triangle index
 containing them both. -/
-def graph (t : Finset (α × β × γ)) : SimpleGraph (α ⊕ β ⊕ γ) := ⟨Rel t, rel_symm, rel_irrefl⟩
+def graph (t : Finset (α × β × γ)) : SimpleGraph (α ⊕ β ⊕ γ) := ⟨Rel t, rel_symm, ⟨rel_irrefl⟩⟩
+
+variable {a a' : α} {b b' : β} {c c' : γ} {x : α × β × γ}
 
 namespace Graph
 
@@ -143,7 +149,7 @@ instance graph.instDecidableRelAdj : DecidableRel (graph t).Adj
 /-- This lemma reorders the elements of a triangle in the tripartite graph. It turns a triangle
 `{x, y, z}` into a triangle `{a, b, c}` where `a : α `, `b : β`, `c : γ`. -/
 lemma graph_triple ⦃x y z⦄ :
-  (graph t).Adj x y → (graph t).Adj x z → (graph t).Adj y z → ∃ a b c,
+    (graph t).Adj x y → (graph t).Adj x z → (graph t).Adj y z → ∃ a b c,
     ({in₀ a, in₁ b, in₂ c} : Finset (α ⊕ β ⊕ γ)) = {x, y, z} ∧ (graph t).Adj (in₀ a) (in₁ b) ∧
       (graph t).Adj (in₀ a) (in₂ c) ∧ (graph t).Adj (in₁ b) (in₂ c) := by
   rintro (_ | _ | _) (_ | _ | _) (_ | _ | _) <;>

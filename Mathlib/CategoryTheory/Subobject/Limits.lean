@@ -3,7 +3,9 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Subobject.Lattice
+module
+
+public import Mathlib.CategoryTheory.Subobject.Lattice
 
 /-!
 # Specific subobjects
@@ -12,10 +14,11 @@ We define `equalizerSubobject`, `kernelSubobject` and `imageSubobject`, which ar
 represented by the equalizer, kernel and image of (a pair of) morphism(s) and provide conditions
 for `P.factors f`, where `P` is one of these special subobjects.
 
-TODO: Add conditions for when `P` is a pullback subobject.
 TODO: an iff characterisation of `(imageSubobject f).Factors h`
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -28,6 +31,27 @@ variable {C : Type u} [Category.{v} C] {X Y Z : C}
 namespace CategoryTheory
 
 namespace Limits
+
+section Pullback
+
+variable {W : C} (f : X ⟶ Y) [HasPullbacks C]
+
+theorem pullback_factors (y : Subobject Y) (h : W ⟶ X) (hF : y.Factors (h ≫ f)) :
+    Subobject.Factors ((Subobject.pullback f).obj y) h :=
+  let h' := Subobject.factorThru _ _ hF
+  let w := Subobject.factorThru_arrow _ _ hF
+  (factors_iff _ _).mpr
+    ⟨(Subobject.isPullback f y).lift h' h w,
+      (Subobject.isPullback f y).lift_snd h' h w⟩
+
+theorem pullback_factors_iff (y : Subobject Y) (h : W ⟶ X) :
+    Subobject.Factors ((Subobject.pullback f).obj y) h ↔ y.Factors (h ≫ f) := by
+  refine ⟨fun hf ↦ ?_, fun hF ↦ pullback_factors f y h hF⟩
+  rw [factors_iff]
+  use Subobject.factorThru _ _ hf ≫ Subobject.pullbackπ f y
+  simp [(Subobject.isPullback f y).w]
+
+end Pullback
 
 section Equalizer
 
@@ -57,6 +81,11 @@ theorem equalizerSubobject_arrow_comp :
     (equalizerSubobject f g).arrow ≫ f = (equalizerSubobject f g).arrow ≫ g := by
   rw [← equalizerSubobject_arrow, Category.assoc, Category.assoc, equalizer.condition]
 
+@[simp]
+theorem equalizerSubobject_of_self : equalizerSubobject f f = ⊤ := by
+  apply mk_eq_top_of_isIso
+
+set_option backward.isDefEq.respectTransparency false in
 theorem equalizerSubobject_factors {W : C} (h : W ⟶ X) (w : h ≫ f = h ≫ g) :
     (equalizerSubobject f g).Factors h :=
   ⟨equalizer.lift h w, by simp⟩
@@ -67,6 +96,20 @@ theorem equalizerSubobject_factors_iff {W : C} (h : W ⟶ X) :
     rw [← Subobject.factorThru_arrow _ _ w, Category.assoc, equalizerSubobject_arrow_comp,
       Category.assoc],
     equalizerSubobject_factors f g h⟩
+
+@[simp]
+lemma pullback_equalizer {W : C} (h : W ⟶ X) [HasPullbacks C] :
+  (Subobject.pullback h).obj (equalizerSubobject f g) =
+    equalizerSubobject (h ≫ f) (h ≫ g) := by
+  refine skeletal _ ⟨iso_of_both_ways (homOfFactors ?_) (homOfFactors ?_)⟩
+  · apply equalizerSubobject_factors
+    have := (Subobject.isPullback h (equalizerSubobject f g)).w
+    rw [← reassoc_of% (Subobject.isPullback h (equalizerSubobject f g)).w,
+      ← reassoc_of% (Subobject.isPullback h (equalizerSubobject f g)).w,
+      equalizerSubobject_arrow_comp]
+  · apply pullback_factors
+    apply equalizerSubobject_factors
+    rw [assoc, assoc, equalizerSubobject_arrow_comp]
 
 end Equalizer
 
@@ -128,6 +171,7 @@ section
 
 variable {f} {X' Y' : C} {f' : X' ⟶ Y'} [HasKernel f']
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A commuting square induces a morphism between the kernel subobjects. -/
 def kernelSubobjectMap (sq : Arrow.mk f ⟶ Arrow.mk f') :
     (kernelSubobject f : C) ⟶ (kernelSubobject f' : C) :=
@@ -140,18 +184,18 @@ theorem kernelSubobjectMap_arrow (sq : Arrow.mk f ⟶ Arrow.mk f') :
   simp [kernelSubobjectMap]
 
 @[simp]
-theorem kernelSubobjectMap_id : kernelSubobjectMap (𝟙 (Arrow.mk f)) = 𝟙 _ := by aesop_cat
+theorem kernelSubobjectMap_id : kernelSubobjectMap (𝟙 (Arrow.mk f)) = 𝟙 _ := by cat_disch
 
 @[simp]
 theorem kernelSubobjectMap_comp {X'' Y'' : C} {f'' : X'' ⟶ Y''} [HasKernel f'']
     (sq : Arrow.mk f ⟶ Arrow.mk f') (sq' : Arrow.mk f' ⟶ Arrow.mk f'') :
     kernelSubobjectMap (sq ≫ sq') = kernelSubobjectMap sq ≫ kernelSubobjectMap sq' := by
-  aesop_cat
+  cat_disch
 
 @[reassoc]
 theorem kernel_map_comp_kernelSubobjectIso_inv (sq : Arrow.mk f ⟶ Arrow.mk f') :
     kernel.map f f' sq.1 sq.2 sq.3.symm ≫ (kernelSubobjectIso _).inv =
-      (kernelSubobjectIso _).inv ≫ kernelSubobjectMap sq := by aesop_cat
+      (kernelSubobjectIso _).inv ≫ kernelSubobjectMap sq := by cat_disch
 
 @[reassoc]
 theorem kernelSubobjectIso_comp_kernel_map (sq : Arrow.mk f ⟶ Arrow.mk f') :
@@ -161,12 +205,11 @@ theorem kernelSubobjectIso_comp_kernel_map (sq : Arrow.mk f ⟶ Arrow.mk f') :
 
 end
 
-@[simp]
-theorem kernelSubobject_zero {A B : C} : kernelSubobject (0 : A ⟶ B) = ⊤ :=
-  (isIso_iff_mk_eq_top _).mp (by infer_instance)
+theorem kernelSubobject_zero {A B : C} : kernelSubobject (0 : A ⟶ B) = ⊤ := by
+  simp
 
 instance isIso_kernelSubobject_zero_arrow : IsIso (kernelSubobject (0 : X ⟶ Y)).arrow :=
-  (isIso_arrow_iff_eq_top _).mpr kernelSubobject_zero
+  (isIso_arrow_iff_eq_top _).mpr (by simp)
 
 theorem le_kernelSubobject (A : Subobject X) (h : A.arrow ≫ f = 0) : A ≤ kernelSubobject f :=
   Subobject.le_mk_of_comm (kernel.lift f A.arrow h) (by simp)
@@ -207,8 +250,9 @@ instance kernelSubobject_comp_mono_isIso (f : X ⟶ Y) [HasKernel f] {Z : C} (h 
   · infer_instance
   · simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Taking cokernels is an order-reversing map from the subobjects of `X` to the quotient objects
-    of `X`. -/
+of `X`. -/
 @[simps]
 def cokernelOrderHom [HasCokernels C] (X : C) : Subobject X →o (Subobject (op X))ᵒᵈ where
   toFun :=
@@ -229,8 +273,9 @@ def cokernelOrderHom [HasCokernels C] (X : C) : Subobject X →o (Subobject (op 
       · rw [← Subobject.ofMkLEMk_comp h, Category.assoc, cokernel.condition, comp_zero]
       · exact Quiver.Hom.unop_inj (cokernel.π_desc _ _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Taking kernels is an order-reversing map from the quotient objects of `X` to the subobjects of
-    `X`. -/
+`X`. -/
 @[simps]
 def kernelOrderHom [HasKernels C] (X : C) : (Subobject (op X))ᵒᵈ →o Subobject X where
   toFun :=
@@ -403,8 +448,10 @@ def imageSubobjectMap {W X Y Z : C} {f : W ⟶ X} [HasImage f] {g : Y ⟶ Z} [Ha
 theorem imageSubobjectMap_arrow {W X Y Z : C} {f : W ⟶ X} [HasImage f] {g : Y ⟶ Z} [HasImage g]
     (sq : Arrow.mk f ⟶ Arrow.mk g) [HasImageMap sq] :
     imageSubobjectMap sq ≫ (imageSubobject g).arrow = (imageSubobject f).arrow ≫ sq.right := by
-  simp only [imageSubobjectMap, Category.assoc, imageSubobject_arrow']
-  erw [image.map_ι, ← Category.assoc, imageSubobject_arrow]
+  simp only [imageSubobjectMap, Category.assoc, Arrow.mk_left, Arrow.mk_right,
+    Arrow.mk_hom, imageSubobject_arrow']
+  rw [dsimp% image.map_ι sq]
+  simp
 
 theorem image_map_comp_imageSubobjectIso_inv {W X Y Z : C} {f : W ⟶ X} [HasImage f] {g : Y ⟶ Z}
     [HasImage g] (sq : Arrow.mk f ⟶ Arrow.mk g) [HasImageMap sq] :
@@ -417,8 +464,7 @@ theorem imageSubobjectIso_comp_image_map {W X Y Z : C} {f : W ⟶ X} [HasImage f
     [HasImage g] (sq : Arrow.mk f ⟶ Arrow.mk g) [HasImageMap sq] :
     (imageSubobjectIso _).hom ≫ image.map sq =
       imageSubobjectMap sq ≫ (imageSubobjectIso _).hom := by
-  erw [← Iso.comp_inv_eq, Category.assoc, ← (imageSubobjectIso f).eq_inv_comp,
-    image_map_comp_imageSubobjectIso_inv sq]
+  simp [imageSubobjectMap]
 
 end Image
 

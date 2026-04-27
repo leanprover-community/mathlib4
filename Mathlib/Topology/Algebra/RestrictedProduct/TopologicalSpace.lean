@@ -3,9 +3,11 @@ Copyright (c) 2025 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Topology.Algebra.Group.Pointwise
-import Mathlib.Topology.Algebra.RestrictedProduct.Basic
-import Mathlib.Topology.Algebra.Ring.Basic
+module
+
+public import Mathlib.Topology.Algebra.Group.Pointwise
+public import Mathlib.Topology.Algebra.RestrictedProduct.Basic
+public import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
 # Restricted products of topological spaces, topological groups and rings
@@ -28,11 +30,11 @@ compact, then `Πʳ i, [R i, A i]` is a locally compact topological ring.
 
 The topology on the restricted product `Πʳ i, [R i, A i]_[𝓕]` is defined in the following way:
 1. If `𝓕` is some principal filter `𝓟 s`, recall that `Πʳ i, [R i, A i]_[𝓟 s]` is canonically
-identified with `(Π i ∈ s, A i) × (Π i ∉ s, R i)`. We endow it with the product topology,
-which is also the topology induced from the full product `Π i, R i`.
+   identified with `(Π i ∈ s, A i) × (Π i ∉ s, R i)`. We endow it with the product topology,
+   which is also the topology induced from the full product `Π i, R i`.
 2. In general, we note that `𝓕` is the infimum of the principal filters coarser than `𝓕`. We
-then endow `Πʳ i, [R i, A i]_[𝓕]` with the inductive limit / final topology associated to the
-inclusion maps `Πʳ i, [R i, A i]_[𝓟 s] → Πʳ i, [R i, A i]_[𝓕]` where `𝓕 ≤ 𝓟 s`.
+   then endow `Πʳ i, [R i, A i]_[𝓕]` with the inductive limit / final topology associated to the
+   inclusion maps `Πʳ i, [R i, A i]_[𝓟 s] → Πʳ i, [R i, A i]_[𝓕]` where `𝓕 ≤ 𝓟 s`.
 
 In particular:
 * On the classical restricted product, with respect to the cofinite filter, this corresponds to
@@ -55,11 +57,11 @@ and that the topology for a general `𝓕` is indeed the expected inductive limi
   inductive limit / final topology associated to the natural maps
   `Πʳ i, [R i, A i]_[𝓟 S] → Πʳ i, [R i, A i]_[𝓕]`, where `𝓕 ≤ 𝓟 S`.
 * `RestrictedProduct.continuous_dom`: a map from `Πʳ i, [R i, A i]_[𝓕]` is continuous
-*if and only if* its restriction to each `Πʳ i, [R i, A i]_[𝓟 s]` (with `𝓕 ≤ 𝓟 s`) is continuous.
-* `RestrictedProduct.continuous_dom_prod_left`: assume that each `A i` is an **open** subset of
-`R i`. Then, for any topological space `Y`, a map from `Y × Πʳ i, [R i, A i]` is continuous
-*if and only if* its restriction to each `Y × Πʳ i, [R i, A i]_[𝓟 S]` (with `S` cofinite)
-is continuous.
+  *if and only if* its restriction to each `Πʳ i, [R i, A i]_[𝓟 s]` (with `𝓕 ≤ 𝓟 s`) is continuous.
+  * `RestrictedProduct.continuous_dom_prod_left`: assume that each `A i` is an **open** subset of
+    `R i`. Then, for any topological space `Y`, a map from `Y × Πʳ i, [R i, A i]` is continuous
+    *if and only if* its restriction to each `Y × Πʳ i, [R i, A i]_[𝓟 S]` (with `S` cofinite)
+    is continuous.
 
 * `RestrictedProduct.isTopologicalGroup`: if each `R i` is a topological group and each `A i` is an
   open subgroup of `R i`, then `Πʳ i, [R i, A i]` is a topological group.
@@ -89,6 +91,8 @@ restrain from specializing these instances to principal and cofinite filters if 
 restricted product, adeles, ideles
 -/
 
+@[expose] public section
+
 open Set Topology Filter
 
 variable {ι : Type*}
@@ -106,11 +110,11 @@ section Topology
 
 The topology on the restricted product `Πʳ i, [R i, A i]_[𝓕]` is defined in the following way:
 1. If `𝓕` is some principal filter `𝓟 s`, recall that `Πʳ i, [R i, A i]_[𝓟 s]` is canonically
-identified with `(Π i ∈ s, A i) × (Π i ∉ s, R i)`. We endow it with the product topology,
-which is also the topology induced from the full product `Π i, R i`.
+   identified with `(Π i ∈ s, A i) × (Π i ∉ s, R i)`. We endow it with the product topology,
+   which is also the topology induced from the full product `Π i, R i`.
 2. In general, we note that `𝓕` is the infimum of the principal filters coarser than `𝓕`. We
-then endow `Πʳ i, [R i, A i]_[𝓕]` with the inductive limit / final topology associated to the
-inclusion maps `Πʳ i, [R i, A i]_[𝓟 s] → Πʳ i, [R i, A i]_[𝓕]` where `𝓕 ≤ 𝓟 s`.
+   then endow `Πʳ i, [R i, A i]_[𝓕]` with the inductive limit / final topology associated to the
+   inclusion maps `Πʳ i, [R i, A i]_[𝓟 s] → Πʳ i, [R i, A i]_[𝓕]` where `𝓕 ≤ 𝓟 s`.
 
 In particular:
 * On the classical restricted product, with respect to the cofinite filter, this corresponds to
@@ -299,7 +303,8 @@ See also `RestrictedProduct.continuous_dom_prod_left`. -/
 theorem continuous_dom {X : Type*} [TopologicalSpace X]
     {f : Πʳ i, [R i, A i]_[𝓕] → X} :
     Continuous f ↔ ∀ (S : Set ι) (hS : 𝓕 ≤ 𝓟 S), Continuous (f ∘ inclusion R A hS) := by
-  simp_rw [topologicalSpace_eq_of_principal, continuous_iSup_dom, continuous_coinduced_dom]
+  simp_rw +instances [topologicalSpace_eq_of_principal, continuous_iSup_dom,
+    continuous_coinduced_dom]
 
 theorem isEmbedding_inclusion_principal {S : Set ι} (hS : 𝓕 ≤ 𝓟 S) :
     IsEmbedding (inclusion R A hS) :=
@@ -326,7 +331,7 @@ properties when each `A i` is an open subset of `R i`. The key fact is that each
 `Πʳ i, [R i, A i]`.
 
 This allows us to prove a "universal property with parameters", expressing that for any
-arbitrary topolgical space `X` (of "parameters"), the product `X × Πʳ i, [R i, A i]`
+arbitrary topological space `X` (of "parameters"), the product `X × Πʳ i, [R i, A i]`
 is still the inductive limit of the `X × Πʳ i, [R i, A i]_[𝓟 S]` for `S` cofinite.
 
 This fact, which is **not true** for a general inductive limit, will allow us to prove continuity
@@ -355,13 +360,13 @@ theorem isOpen_forall_mem_of_principal {S : Set ι} (hS : cofinite ≤ 𝓟 S) :
 include hAopen in
 theorem isOpen_forall_imp_mem {p : ι → Prop} :
     IsOpen {f : Πʳ i, [R i, A i] | ∀ i, p i → f.1 i ∈ A i} := by
-  simp_rw [topologicalSpace_eq_iSup cofinite, isOpen_iSup_iff, isOpen_coinduced]
+  simp_rw +instances [topologicalSpace_eq_iSup cofinite, isOpen_iSup_iff, isOpen_coinduced]
   exact fun S hS ↦ isOpen_forall_imp_mem_of_principal hAopen hS
 
 include hAopen in
 theorem isOpen_forall_mem :
     IsOpen {f : Πʳ i, [R i, A i] | ∀ i, f.1 i ∈ A i} := by
-  simp_rw [topologicalSpace_eq_iSup cofinite, isOpen_iSup_iff, isOpen_coinduced]
+  simp_rw +instances [topologicalSpace_eq_iSup cofinite, isOpen_iSup_iff, isOpen_coinduced]
   exact fun S hS ↦ isOpen_forall_mem_of_principal hAopen hS
 
 include hAopen in
@@ -478,7 +483,7 @@ theorem continuous_dom_prod {R' : ι → Type*} {A' : (i : ι) → Set (R' i)}
   exact (H U hU).comp ((continuous_inclusion hSU).prodMap (continuous_inclusion hTU))
 
 /-- A finitary (instead of binary) version of `continuous_dom_prod`. -/
-theorem continuous_dom_pi {n : Type*} [Fintype n] {X : Type*}
+theorem continuous_dom_pi {n : Type*} [Finite n] {X : Type*}
     [TopologicalSpace X] {A : n → ι → Type*}
     [∀ j i, TopologicalSpace (A j i)]
     {C : (j : n) → (i : ι) → Set (A j i)}
@@ -609,9 +614,9 @@ instance isTopologicalRing [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)]
 Assume also that all but finitely many `A i`s are compact.
 Then the restricted product `Πʳ i, [R i, A i]` is a locally compact group. -/
 @[to_additive
-"Assume that each `R i` is a locally compact additive group with `A i` an open subgroup.
+/-- Assume that each `R i` is a locally compact additive group with `A i` an open subgroup.
 Assume also that all but finitely many `A i`s are compact.
-Then the restricted product `Πʳ i, [R i, A i]` is a locally compact additive group."]
+Then the restricted product `Πʳ i, [R i, A i]` is a locally compact additive group. -/]
 theorem locallyCompactSpace_of_group [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)]
     [∀ i, IsTopologicalGroup (R i)] [∀ i, LocallyCompactSpace (R i)]
     (hBcompact : ∀ᶠ i in cofinite, IsCompact (B i : Set (R i))) :
@@ -646,7 +651,8 @@ variable (f : ι₂ → ι₁) (hf : Tendsto f 𝓕₂ 𝓕₁)
 
 variable (φ : ∀ j, R₁ (f j) → R₂ j) (hφ : ∀ᶠ j in 𝓕₂, MapsTo (φ j) (A₁ (f j)) (A₂ j))
 
-theorem map_continuous (φ_cont : ∀ j, Continuous (φ j)) : Continuous (map R₁ R₂ f hf φ hφ) := by
+theorem mapAlong_continuous (φ_cont : ∀ j, Continuous (φ j)) :
+    Continuous (mapAlong R₁ R₂ f hf φ hφ) := by
   rw [continuous_dom]
   intro S hS
   set T := f ⁻¹' S ∩ {j | MapsTo (φ j) (A₁ (f j)) (A₂ j)}
@@ -655,8 +661,8 @@ theorem map_continuous (φ_cont : ∀ j, Continuous (φ j)) : Continuous (map R�
     exact inter_mem (hf hS) hφ
   have hf' : Tendsto f (𝓟 T) (𝓟 S) := by aesop
   have hφ' : ∀ᶠ j in 𝓟 T, MapsTo (φ j) (A₁ (f j)) (A₂ j) := by aesop
-  have key : map R₁ R₂ f hf φ hφ ∘ inclusion R₁ A₁ hS =
-      inclusion R₂ A₂ hT ∘ map R₁ R₂ f hf' φ hφ' := rfl
+  have key : mapAlong R₁ R₂ f hf φ hφ ∘ inclusion R₁ A₁ hS =
+      inclusion R₂ A₂ hT ∘ mapAlong R₁ R₂ f hf' φ hφ' := rfl
   rw [key]
   exact continuous_inclusion _ |>.comp <|
     continuous_rng_of_principal.mpr <|

@@ -3,11 +3,13 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Uni Marx
 -/
-import Mathlib.CategoryTheory.Iso
-import Mathlib.CategoryTheory.EssentialImage
-import Mathlib.CategoryTheory.Types
-import Mathlib.CategoryTheory.Opposites
-import Mathlib.Data.Rel
+module
+
+public import Mathlib.CategoryTheory.EssentialImage
+public import Mathlib.CategoryTheory.Iso
+public import Mathlib.CategoryTheory.Opposites
+public import Mathlib.CategoryTheory.Types.Basic
+public import Mathlib.Data.Rel
 
 /-!
 # Basics on the category of relations
@@ -21,28 +23,29 @@ By flipping the arguments to a relation, we construct an equivalence `opEquivale
 `RelCat` and its opposite.
 -/
 
-open Rel
+@[expose] public section
+
+open SetRel
 
 namespace CategoryTheory
 
 universe u
 
 /-- A type synonym for `Type u`, which carries the category instance for which
-    morphisms are binary relations. -/
+morphisms are binary relations. -/
 def RelCat :=
   Type u
+deriving Inhabited
 
 namespace RelCat
 variable {X Y Z : RelCat.{u}}
-
-instance inhabited : Inhabited RelCat := by unfold RelCat; infer_instance
 
 /-- The morphisms in the relation category are relations. -/
 structure Hom (X Y : RelCat.{u}) : Type u where
   /-- Build a morphism `X ⟶ Y` for `X Y : RelCat` from a relation between `X` and `Y`. -/
   ofRel ::
   /-- The underlying relation between `X` and `Y` of a morphism `X ⟶ Y` for `X Y : RelCat`. -/
-  rel : Rel X Y
+  rel : SetRel X Y
 
 initialize_simps_projections Hom (as_prefix rel)
 
@@ -71,18 +74,17 @@ from the category of types and functions into the category of types and relation
 @[simps obj map_rel]
 def graphFunctor : Type u ⥤ RelCat.{u} where
   obj X := X
-  map f := .ofRel f.graph
-
-@[deprecated rel_graphFunctor_map (since := "2025-06-08")]
-theorem graphFunctor_map {X Y : Type u} (f : X ⟶ Y) (x : X) (y : Y) :
-    x ~[(graphFunctor.map f).rel] y ↔ f x = y := .rfl
+  map f := .ofRel (f : _ → _).graph
 
 instance graphFunctor_faithful : graphFunctor.Faithful where
-  map_injective h := Function.graph_injective congr(($h).rel)
+  map_injective h := by
+    ext
+    simp [Function.graph_injective congr(($h).rel)]
 
 instance graphFunctor_essSurj : graphFunctor.EssSurj :=
     graphFunctor.essSurj_of_surj Function.surjective_id
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A relation is an isomorphism in `RelCat` iff it is the image of an isomorphism in
 `Type u`. -/
 theorem rel_iso_iff {X Y : RelCat} (r : X ⟶ Y) :
@@ -94,11 +96,11 @@ theorem rel_iso_iff {X Y : RelCat} (r : X ⟶ Y) :
     simp only [RelCat.Hom.rel_comp_apply₂, RelCat.Hom.rel_id_apply₂, eq_iff_iff] at h1 h2
     obtain ⟨f, hf⟩ := Classical.axiomOfChoice (fun a => (h1 a a).mpr rfl)
     obtain ⟨g, hg⟩ := Classical.axiomOfChoice (fun a => (h2 a a).mpr rfl)
-    suffices hif : IsIso (C := Type u) f by
-      use asIso f
+    suffices hif : IsIso (C := Type u) (TypeCat.ofHom f) by
+      use asIso (TypeCat.ofHom f)
       ext ⟨x, y⟩
       exact ⟨by aesop, fun hxy ↦ (h2 (f x) y).1 ⟨x, (hf x).2, hxy⟩⟩
-    use g
+    use TypeCat.ofHom g
     constructor
     · ext x
       apply (h1 _ _).mp
@@ -128,8 +130,9 @@ def unopFunctor : RelCatᵒᵖ ⥤ RelCat where
 @[simp] theorem unopFunctor_comp_opFunctor_eq :
     Functor.comp unopFunctor opFunctor = Functor.id _ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `RelCat` is self-dual: The map that swaps the argument order of a
-    relation induces an equivalence between `RelCat` and its opposite. -/
+relation induces an equivalence between `RelCat` and its opposite. -/
 @[simps]
 def opEquivalence : RelCat ≌ RelCatᵒᵖ where
   functor := opFunctor

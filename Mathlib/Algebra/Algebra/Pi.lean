@@ -3,8 +3,11 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.Algebra.Algebra.Prod
+module
+
+public import Mathlib.Algebra.Algebra.Equiv
+public import Mathlib.Algebra.Algebra.Opposite
+public import Mathlib.Algebra.Algebra.Prod
 
 /-!
 # The R-algebra structure on families of R-algebras
@@ -17,6 +20,8 @@ The R-algebra structure on `Π i : I, A i` when each `A i` is an R-algebra.
 * `Pi.evalAlgHom`
 * `Pi.constAlgHom`
 -/
+
+@[expose] public section
 
 namespace Pi
 
@@ -35,6 +40,7 @@ instance algebra : Algebra R (Π i, A i) where
   commutes' := fun a f ↦ by ext; simp [Algebra.commutes]
   smul_def' := fun a f ↦ by ext; simp [Algebra.smul_def]
 
+@[push ←]
 theorem algebraMap_def (a : R) : algebraMap R (Π i, A i) a = fun i ↦ algebraMap R (A i) a :=
   rfl
 
@@ -159,13 +165,21 @@ theorem piCongrRight_trans (e₁ : ∀ i, A₁ i ≃ₐ[R] A₂ i) (e₂ : ∀ i
   rfl
 
 variable (R A₁) in
+/-- The opposite of a direct product is isomorphic to the direct product of the opposites as
+algebras. -/
+def piMulOpposite : (Π i, A₁ i)ᵐᵒᵖ ≃ₐ[R] Π i, (A₁ i)ᵐᵒᵖ where
+  __ := RingEquiv.piMulOpposite A₁
+  commutes' _ := rfl
+
+variable (R A₁) in
 /--
 Transport dependent functions through an equivalence of the base space.
 
 This is `Equiv.piCongrLeft'` as an `AlgEquiv`.
 -/
-def piCongrLeft' {ι' : Type*} (e : ι ≃ ι') : (Π i, A₁ i) ≃ₐ[R] Π i, A₁ (e.symm i) :=
-  .ofRingEquiv (f := .piCongrLeft' A₁ e) (by intro; ext; simp)
+def piCongrLeft' {ι' : Type*} (e : ι ≃ ι') : (Π i, A₁ i) ≃ₐ[R] Π i, A₁ (e.symm i) where
+  __ := RingEquiv.piCongrLeft' A₁ e
+  commutes' _ := rfl
 
 -- Priority `low` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
 @[simp low]
@@ -202,7 +216,7 @@ section
 variable (S : Type*) [Semiring S] [Algebra R S]
 
 variable (ι R) in
-/-- If `ι` as a unique element, then `ι → S` is isomorphic to `S` as an `R`-algebra. -/
+/-- If `ι` has a unique element, then `ι → S` is isomorphic to `S` as an `R`-algebra. -/
 def funUnique [Unique ι] : (ι → S) ≃ₐ[R] S :=
   .ofRingEquiv (f := .piUnique (fun i : ι ↦ S)) (by simp)
 
@@ -234,3 +248,10 @@ lemma sumArrowEquivProdArrow_symm_apply_inr (x : (α → S) × (β → S)) :
 end
 
 end AlgEquiv
+
+/-- Apply an algebra map component-wise along a vector. -/
+protected def Pi.algebraMap (ι R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A] :
+    (ι → R) →ₗ[R] (ι → A) where
+  toFun v := algebraMap R A ∘ v
+  map_add' v w := by simp
+  map_smul' t v := by ext; simp [Algebra.smul_def]

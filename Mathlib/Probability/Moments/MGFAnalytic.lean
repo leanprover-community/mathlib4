@@ -3,25 +3,30 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Moments.ComplexMGF
-import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
+module
+
+public import Mathlib.Probability.Moments.ComplexMGF
+public import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
+public import Mathlib.Analysis.Calculus.Taylor
 
 /-!
-# The moment generating function is analytic
+# The moment-generating function is analytic
 
-The moment generating function `mgf X μ` of a random variable `X` with respect to a measure `μ`
+The moment-generating function `mgf X μ` of a random variable `X` with respect to a measure `μ`
 is analytic on the interior of `integrableExpSet X μ`, the interval on which it is defined.
 
 ## Main results
 
-* `analyticOn_mgf`: the moment generating function is analytic on the interior of the interval
+* `analyticOn_mgf`: the moment-generating function is analytic on the interior of the interval
   on which it is defined.
 * `iteratedDeriv_mgf`: the n-th derivative of the mgf at `t` is `μ[X ^ n * exp (t * X)]`.
 
-* `analyticOn_cgf`: the cumulant generating function is analytic on the interior of the interval
+* `analyticOn_cgf`: the cumulant-generating function is analytic on the interior of the interval
   `integrableExpSet X μ`.
 
 -/
+
+public section
 
 
 open MeasureTheory Filter Finset Real
@@ -32,6 +37,7 @@ namespace ProbabilityTheory
 
 variable {Ω ι : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {μ : Measure Ω} {t u v : ℝ}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For `t : ℝ` with `t ∈ interior (integrableExpSet X μ)`, the derivative of the function
 `x ↦ μ[X ^ n * exp (x * X)]` at `t` is `μ[X ^ (n + 1) * exp (t * X)]`. -/
 lemma hasDerivAt_integral_pow_mul_exp_real (ht : t ∈ interior (integrableExpSet X μ)) (n : ℕ) :
@@ -83,7 +89,7 @@ lemma iteratedDeriv_mgf (ht : t ∈ interior (integrableExpSet X μ)) (n : ℕ) 
     rw [iteratedDeriv_succ]
     exact (hasDerivAt_iteratedDeriv_mgf ht n).deriv
 
-/-- The derivatives of the moment generating function at zero are the moments. -/
+/-- The derivatives of the moment-generating function at zero are the moments. -/
 lemma iteratedDeriv_mgf_zero (h : 0 ∈ interior (integrableExpSet X μ)) (n : ℕ) :
     iteratedDeriv n (mgf X μ) 0 = μ[X ^ n] := by
   simp [iteratedDeriv_mgf h n]
@@ -101,7 +107,7 @@ end DerivMGF
 
 section AnalyticMGF
 
-/-- The moment generating function is analytic at every `t ∈ interior (integrableExpSet X μ)`. -/
+/-- The moment-generating function is analytic at every `t ∈ interior (integrableExpSet X μ)`. -/
 lemma analyticAt_mgf (ht : t ∈ interior (integrableExpSet X μ)) :
     AnalyticAt ℝ (mgf X μ) t := by
   rw [← re_complexMGF_ofReal']
@@ -110,7 +116,7 @@ lemma analyticAt_mgf (ht : t ∈ interior (integrableExpSet X μ)) :
 lemma analyticOnNhd_mgf : AnalyticOnNhd ℝ (mgf X μ) (interior (integrableExpSet X μ)) :=
   fun _ hx ↦ analyticAt_mgf hx
 
-/-- The moment generating function is analytic on the interior of the interval on which it is
+/-- The moment-generating function is analytic on the interior of the interval on which it is
 defined. -/
 lemma analyticOn_mgf : AnalyticOn ℝ (mgf X μ) (interior (integrableExpSet X μ)) :=
   analyticOnNhd_mgf.analyticOn
@@ -171,7 +177,7 @@ lemma analyticAt_cgf (h : v ∈ interior (integrableExpSet X μ)) : AnalyticAt �
 lemma analyticOnNhd_cgf : AnalyticOnNhd ℝ (cgf X μ) (interior (integrableExpSet X μ)) :=
   fun _ hx ↦ analyticAt_cgf hx
 
-/-- The cumulant generating function is analytic on the interior of the interval
+/-- The cumulant-generating function is analytic on the interior of the interval
   `integrableExpSet X μ`. -/
 lemma analyticOn_cgf : AnalyticOn ℝ (cgf X μ) (interior (integrableExpSet X μ)) :=
   analyticOnNhd_cgf.analyticOn
@@ -197,7 +203,7 @@ lemma deriv_cgf_zero (h : 0 ∈ interior (integrableExpSet X μ)) :
 
 lemma iteratedDeriv_two_cgf (h : v ∈ interior (integrableExpSet X μ)) :
     iteratedDeriv 2 (cgf X μ) v
-      = μ[fun ω ↦ (X ω)^2 * exp (v * X ω)] / mgf X μ v - deriv (cgf X μ) v ^ 2 := by
+      = μ[fun ω ↦ (X ω) ^ 2 * exp (v * X ω)] / mgf X μ v - deriv (cgf X μ) v ^ 2 := by
   rw [iteratedDeriv_succ, iteratedDeriv_one]
   by_cases hμ : μ = 0
   · simp [hμ]
@@ -233,9 +239,9 @@ lemma iteratedDeriv_two_cgf (h : v ∈ interior (integrableExpSet X μ)) :
 
 lemma iteratedDeriv_two_cgf_eq_integral (h : v ∈ interior (integrableExpSet X μ)) :
     iteratedDeriv 2 (cgf X μ) v
-      = μ[fun ω ↦ (X ω - deriv (cgf X μ) v)^2 * exp (v * X ω)] / mgf X μ v := by
+      = μ[fun ω ↦ (X ω - deriv (cgf X μ) v) ^ 2 * exp (v * X ω)] / mgf X μ v := by
   by_cases hμ : μ = 0
-  · simp [hμ, iteratedDeriv_succ]
+  · simp [hμ]
   rw [iteratedDeriv_two_cgf h]
   calc (∫ ω, (X ω) ^ 2 * exp (v * X ω) ∂μ) / mgf X μ v - deriv (cgf X μ) v ^ 2
   _ = (∫ ω, (X ω) ^ 2 * exp (v * X ω) ∂μ - 2 * (∫ ω, X ω * exp (v * X ω) ∂μ) * deriv (cgf X μ) v
@@ -269,6 +275,22 @@ lemma iteratedDeriv_two_cgf_eq_integral (h : v ∈ interior (integrableExpSet X 
   _ = (∫ ω, (X ω - deriv (cgf X μ) v) ^ 2 * exp (v * X ω) ∂μ) / mgf X μ v := by
     congr with ω
     ring
+
+lemma exists_cgf_eq_iteratedDeriv_two_cgf_mul [IsZeroOrProbabilityMeasure μ] (ht : 0 < t)
+    (hc : μ[X] = 0) (hs : Set.Icc 0 t ⊆ interior (integrableExpSet X μ)) :
+    ∃ u ∈ Set.Ioo 0 t, cgf X μ t = (iteratedDeriv 2 (cgf X μ) u) * t ^ 2 / 2 := by
+  have hu : UniqueDiffOn ℝ (Set.Icc 0 t) := uniqueDiffOn_Icc ht
+  rw [← sub_zero (cgf X μ t)]
+  nth_rw 3 [← sub_zero t]
+  rw [← Set.uIoo_of_lt ht]
+  convert taylor_mean_remainder_lagrange_iteratedDeriv ht.ne ?_
+  · have hd : derivWithin (cgf X μ) (Set.Icc 0 t) 0 = 0 := by
+      convert (analyticAt_cgf (hs ⟨le_refl 0, le_of_lt ht⟩)).differentiableAt.derivWithin _
+      · simpa [hc] using (deriv_cgf_zero (hs ⟨le_refl 0, le_of_lt ht⟩)).symm
+      · exact hu 0 ⟨le_refl 0, le_of_lt ht⟩
+    simp [hd, Set.uIcc_of_lt ht]
+  · rw [Set.uIcc_of_lt ht]
+    exact (analyticOn_cgf.mono hs).contDiffOn hu
 
 end DerivCGF
 

@@ -3,12 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Algebra.Ring.Regular
-import Mathlib.Data.Real.Sqrt
-import Mathlib.Data.Real.Star
-import Mathlib.Tactic.Polyrith
+module
+
+public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Data.Real.Sqrt
+public import Mathlib.Data.Real.Star
 
 /-!
 # The Clauser-Horne-Shimony-Holt inequality and Tsirelson's inequality.
@@ -19,12 +19,12 @@ This is a foundational result which implies that
 quantum mechanics is not a local hidden variable theory.
 
 As usually stated the CHSH inequality requires substantial language from physics and probability,
-but it is possible to give a statement that is purely about ordered `*`-algebras.
+but it is possible to give a statement that is purely about ordered \*-algebras.
 We do that here, to avoid as many practical and logical dependencies as possible.
-Since the algebra of observables of any quantum system is an ordered `*`-algebra
+Since the algebra of observables of any quantum system is an ordered \*-algebra
 (in particular a von Neumann algebra) this is a strict generalization of the usual statement.
 
-Let `R` be a `*`-ring.
+Let `R` be a \*-ring.
 
 A CHSH tuple in `R` consists of
 * four elements `A₀ A₁ B₀ B₁ : R`, such that
@@ -35,12 +35,12 @@ The physical interpretation is that the four elements are observables (hence sel
 that take values ±1 (hence involutions), and that the `Aᵢ` are spacelike separated from the `Bⱼ`
 (and hence commute).
 
-The CHSH inequality says that when `R` is an ordered `*`-ring
-(that is, a `*`-ring which is ordered, and for every `r : R`, `0 ≤ star r * r`),
+The CHSH inequality says that when `R` is an ordered \*-ring
+(that is, a \*-ring which is ordered, and for every `r : R`, `0 ≤ star r * r`),
 which is moreover *commutative*, we have
 `A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ 2`
 
-On the other hand, Tsirelson's inequality says that for any ordered `*`-ring we have
+On the other hand, Tsirelson's inequality says that for any ordered \*-ring we have
 `A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ 2√2`
 
 (A caveat: in the commutative case we need 2⁻¹ in the ring,
@@ -49,9 +49,9 @@ To keep things simple we just assume our rings are ℝ-algebras.)
 
 The proofs I've seen in the literature either
 assume a significant framework for quantum mechanics,
-or assume the ring is a `C^*`-algebra.
-In the `C^*`-algebra case,
-the order structure is completely determined by the `*`-algebra structure:
+or assume the ring is a C⋆-algebra.
+In the C⋆-algebra case,
+the order structure is completely determined by the \*-algebra structure:
 `0 ≤ A` iff there exists some `B` so `A = star B * B`.
 There's a nice proof of both bounds in this setting at
 https://en.wikipedia.org/wiki/Tsirelson%27s_bound
@@ -60,7 +60,7 @@ The proof given here is purely algebraic.
 ## Future work
 
 One can show that Tsirelson's inequality is tight.
-In the `*`-ring of n-by-n complex matrices, if `A ≤ λ I` for some `λ : ℝ`,
+In the \*-ring of n-by-n complex matrices, if `A ≤ λ I` for some `λ : ℝ`,
 then every eigenvalue has absolute value at most `λ`.
 There is a CHSH tuple in 4-by-4 matrices such that
 `A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁` has `2√2` as an eigenvalue.
@@ -74,14 +74,16 @@ There is a CHSH tuple in 4-by-4 matrices such that
 
 -/
 
+public section
+
 
 universe u
 
-/-- A CHSH tuple in a *-monoid consists of 4 self-adjoint involutions `A₀ A₁ B₀ B₁` such that
+/-- A CHSH tuple in a \*-monoid consists of 4 self-adjoint involutions `A₀ A₁ B₀ B₁` such that
 the `Aᵢ` commute with the `Bⱼ`.
 
-The physical interpretation is that `A₀` and `A₁` are a pair of boolean observables which
-are spacelike separated from another pair `B₀` and `B₁` of boolean observables.
+The physical interpretation is that `A₀` and `A₁` are a pair of Boolean observables which
+are spacelike separated from another pair `B₀` and `B₁` of Boolean observables.
 -/
 structure IsCHSHTuple {R} [Monoid R] [StarMul R] (A₀ A₁ B₀ B₁ : R) : Prop where
   A₀_inv : A₀ ^ 2 = 1
@@ -103,20 +105,15 @@ theorem CHSH_id [CommRing R] {A₀ A₁ B₀ B₁ : R} (A₀_inv : A₀ ^ 2 = 1)
     (B₀_inv : B₀ ^ 2 = 1) (B₁_inv : B₁ ^ 2 = 1) :
     (2 - A₀ * B₀ - A₀ * B₁ - A₁ * B₀ + A₁ * B₁) * (2 - A₀ * B₀ - A₀ * B₁ - A₁ * B₀ + A₁ * B₁) =
       4 * (2 - A₀ * B₀ - A₀ * B₁ - A₁ * B₀ + A₁ * B₁) := by
-  -- polyrith suggests:
-  linear_combination
-    (2 * B₀ * B₁ + 2) * A₀_inv + (B₀ ^ 2 - 2 * B₀ * B₁ + B₁ ^ 2) * A₁_inv +
-        (A₀ ^ 2 + 2 * A₀ * A₁ + 1) * B₀_inv +
-      (A₀ ^ 2 - 2 * A₀ * A₁ + 1) * B₁_inv
+  grind
 
-/-- Given a CHSH tuple (A₀, A₁, B₀, B₁) in a *commutative* ordered `*`-algebra over ℝ,
+/-- Given a CHSH tuple (A₀, A₁, B₀, B₁) in a *commutative* ordered \*-algebra over ℝ,
 `A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ 2`.
 
 (We could work over ℤ[⅟2] if we wanted to!)
 -/
 theorem CHSH_inequality_of_comm [CommRing R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
-    [Algebra ℝ R]
-    [OrderedSMul ℝ R] (A₀ A₁ B₀ B₁ : R) (T : IsCHSHTuple A₀ A₁ B₀ B₁) :
+    [Algebra ℝ R] [IsOrderedModule ℝ R] (A₀ A₁ B₀ B₁ : R) (T : IsCHSHTuple A₀ A₁ B₀ B₁) :
     A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ 2 := by
   let P := 2 - A₀ * B₀ - A₀ * B₁ - A₁ * B₀ + A₁ * B₁
   have i₁ : 0 ≤ P := by
@@ -124,13 +121,13 @@ theorem CHSH_inequality_of_comm [CommRing R] [PartialOrder R] [StarRing R] [Star
     have idem' : P = (1 / 4 : ℝ) • (P * P) := by
       have h : 4 * P = (4 : ℝ) • P := by simp [map_ofNat, Algebra.smul_def]
       rw [idem, h, ← mul_smul]
-      norm_num
+      simp
     have sa : star P = P := by
       dsimp [P]
       simp only [star_add, star_sub, star_mul, star_ofNat, T.A₀_sa, T.A₁_sa, T.B₀_sa,
         T.B₁_sa, mul_comm B₀, mul_comm B₁]
     simpa only [← idem', sa]
-      using smul_nonneg (by norm_num : (0 : ℝ) ≤ 1 / 4) (star_mul_self_nonneg P)
+      using smul_nonneg (by simp : (0 : ℝ) ≤ 1 / 4) (star_mul_self_nonneg P)
   apply le_of_sub_nonneg
   simpa only [sub_add_eq_sub_sub, ← sub_add] using i₁
 
@@ -147,24 +144,15 @@ Before proving Tsirelson's bound,
 we prepare some easy lemmas about √2.
 -/
 
-
--- This calculation, which we need for Tsirelson's bound,
--- defeated me. Thanks for the rescue from Shing Tak Lam!
-theorem tsirelson_inequality_aux : √2 * √2 ^ 3 = √2 * (2 * (√2)⁻¹ + 4 * ((√2)⁻¹ * 2⁻¹)) := by
-  ring_nf
-  rw [mul_inv_cancel₀ (ne_of_gt (Real.sqrt_pos.2 (show (2 : ℝ) > 0 by norm_num)))]
-  convert congr_arg (· ^ 2) (@Real.sq_sqrt 2 (by norm_num)) using 1 <;>
-    (try simp only [← pow_mul]) <;> norm_num
-
 theorem sqrt_two_inv_mul_self : (√2)⁻¹ * (√2)⁻¹ = (2⁻¹ : ℝ) := by
   rw [← mul_inv]
-  norm_num
+  simp
 
 end TsirelsonInequality
 
 open TsirelsonInequality
 
-/-- In a noncommutative ordered `*`-algebra over ℝ,
+/-- In a noncommutative ordered \*-algebra over ℝ,
 Tsirelson's bound for a CHSH tuple (A₀, A₁, B₀, B₁) is
 `A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ 2^(3/2) • 1`.
 
@@ -174,8 +162,8 @@ of the difference.
 (We could work over `ℤ[2^(1/2), 2^(-1/2)]` if we really wanted to!)
 -/
 theorem tsirelson_inequality [Ring R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
-  [Algebra ℝ R]
-    [OrderedSMul ℝ R] [StarModule ℝ R] (A₀ A₁ B₀ B₁ : R) (T : IsCHSHTuple A₀ A₁ B₀ B₁) :
+    [Algebra ℝ R] [IsOrderedModule ℝ R] [StarModule ℝ R]
+    (A₀ A₁ B₀ B₁ : R) (T : IsCHSHTuple A₀ A₁ B₀ B₁) :
     A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ √2 ^ 3 • (1 : R) := by
   -- abel will create `ℤ` multiplication. We will `simp` them away to `ℝ` multiplication.
   have M : ∀ (m : ℤ) (a : ℝ) (x : R), m • a • x = ((m : ℝ) * a) • x := fun m a x => by
@@ -197,11 +185,8 @@ theorem tsirelson_inequality [Ring R] [PartialOrder R] [StarRing R] [StarOrdered
     -- all terms coincide, but the last one. Simplify all other terms
     simp only [M]
     simp only [neg_mul, mul_inv_cancel_of_invertible, add_assoc, add_comm,
-      add_left_comm, one_smul, Int.cast_neg, neg_smul, Int.cast_ofNat]
-    simp only [← add_assoc, ← add_smul]
-    -- just look at the coefficients now:
-    congr
-    exact mul_left_cancel₀ (by norm_num) tsirelson_inequality_aux
+      add_left_comm, one_smul, Int.cast_neg, neg_smul, Int.cast_ofNat, ← add_smul]
+    grind
   have pos : 0 ≤ (√2)⁻¹ • (P ^ 2 + Q ^ 2) := by
     have P_sa : star P = P := by
       simp only [P, star_smul, star_add, star_sub, star_id_of_comm, T.A₀_sa, T.A₁_sa, T.B₀_sa]

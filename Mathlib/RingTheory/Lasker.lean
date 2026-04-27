@@ -1,54 +1,56 @@
 /-
 Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yakov Pechersky
+Authors: Thomas Browning, Yakov Pechersky
 -/
-import Mathlib.Order.Irreducible
-import Mathlib.RingTheory.Ideal.Colon
-import Mathlib.RingTheory.Ideal.IsPrimary
-import Mathlib.RingTheory.Noetherian.Defs
+module
+
+public import Mathlib.Algebra.Module.LocalizedModule.Submodule
+public import Mathlib.Order.Irreducible
+public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
 
 /-!
 # Lasker ring
 
 ## Main declarations
 
-- `IsLasker`: A ring `R` satisfies `IsLasker R` when any `I : Ideal R` can be decomposed into
-  finitely many primary ideals.
-- `IsLasker.minimal`: Any `I : Ideal R` in a ring `R` satisfying `IsLasker R` can be
-  decomposed into primary ideals, such that the decomposition is minimal:
-  each primary ideal is necessary, and each primary ideal has an independent radical.
-- `Ideal.isLasker`: Every Noetherian commutative ring is a Lasker ring.
-
-## Implementation details
-
-There is a generalization for submodules that needs to be implemented.
-Also, one needs to prove that the radicals of minimal decompositions are independent of the
-  precise decomposition.
+- `IsLasker`: An `R`-module `M` satisfies `IsLasker R M` when any `N : Submodule R M` can be
+  decomposed into finitely many primary submodules.
+- `IsLasker.exists_isMinimalPrimaryDecomposition`: Any `N : Submodule R N` in an `R`-module `M`
+  satisfying `IsLasker R M` can be decomposed into finitely many primary submodules `Nᵢ`, such
+  that the decomposition is minimal: each `Nᵢ` is necessary, and the `√Ann(M/Nᵢ)` are distinct.
+- `IsMinimalPrimaryDecomposition.image_radical_eq_associated_primes`: The first uniqueness theorem
+  for primary decomposition, Theorem 4.5 in Atiyah-Macdonald: In any minimal primary decomposition
+  `I = ⨅ i, q_i`, the ideals `radical (q_i.colon M)` are exactly the associated primes of `I`.
+- `Submodule.isLasker`: Every Noetherian module is Lasker.
 
 -/
 
+@[expose] public section
+
 section IsLasker
 
-variable (R : Type*) [CommSemiring R]
+open Ideal
 
-/-- A ring `R` satisfies `IsLasker R` when any `I : Ideal R` can be decomposed into
-finitely many primary ideals. -/
+variable (R M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M]
+
+/-- An `R`-module `M` satisfies `IsLasker R M` when any `N : Submodule R M` can be
+  decomposed into finitely many primary submodules. -/
 def IsLasker : Prop :=
-  ∀ I : Ideal R, ∃ s : Finset (Ideal R), s.inf id = I ∧ ∀ ⦃J⦄, J ∈ s → J.IsPrimary
+  ∀ N : Submodule R M, ∃ s : Finset (Submodule R M), s.inf id = N ∧ ∀ ⦃J⦄, J ∈ s → J.IsPrimary
 
-variable {R}
+variable {R M}
 
-namespace Ideal
+namespace Submodule
 
-lemma decomposition_erase_inf [DecidableEq (Ideal R)] {I : Ideal R}
-    {s : Finset (Ideal R)} (hs : s.inf id = I) :
-    ∃ t : Finset (Ideal R), t ⊆ s ∧ t.inf id = I ∧ (∀ ⦃J⦄, J ∈ t → ¬ (t.erase J).inf id ≤ J) := by
+lemma decomposition_erase_inf {N : Submodule R M}
+    {s : Finset (Submodule R M)} (hs : s.inf id = N) :
+    ∃ t : Finset (Submodule R M), t ⊆ s ∧ t.inf id = N ∧
+      ∀ ⦃J⦄, J ∈ t → ¬ (t.erase J).inf id ≤ J := by
   induction s using Finset.eraseInduction with
   | H s IH =>
-    by_cases H : ∀ J ∈ s, ¬ (s.erase J).inf id ≤ J
+    by_cases! H : ∀ J ∈ s, ¬ (s.erase J).inf id ≤ J
     · exact ⟨s, Finset.Subset.rfl, hs, H⟩
-    push_neg at H
     obtain ⟨J, hJ, hJ'⟩ := H
     refine (IH _ hJ ?_).imp
       fun t ↦ And.imp_left (fun ht ↦ ht.trans (Finset.erase_subset _ _))
@@ -57,27 +59,19 @@ lemma decomposition_erase_inf [DecidableEq (Ideal R)] {I : Ideal R}
 
 open scoped Function -- required for scoped `on` notation
 
-lemma isPrimary_decomposition_pairwise_ne_radical {I : Ideal R}
-    {s : Finset (Ideal R)} (hs : s.inf id = I) (hs' : ∀ ⦃J⦄, J ∈ s → J.IsPrimary) :
-    ∃ t : Finset (Ideal R), t.inf id = I ∧ (∀ ⦃J⦄, J ∈ t → J.IsPrimary) ∧
-      (t : Set (Ideal R)).Pairwise ((· ≠ ·) on radical) := by
+lemma isPrimary_decomposition_pairwise_ne_radical {N : Submodule R M}
+    {s : Finset (Submodule R M)} (hs : s.inf id = N) (hs' : ∀ ⦃J⦄, J ∈ s → J.IsPrimary) :
+    ∃ t : Finset (Submodule R M), t.inf id = N ∧ (∀ ⦃J⦄, J ∈ t → J.IsPrimary) ∧
+      (t : Set (Submodule R M)).Pairwise ((· ≠ ·) on fun J ↦ (J.colon Set.univ).radical) := by
   classical
-  refine ⟨(s.image (fun J ↦ {I ∈ s | I.radical = J.radical})).image fun t ↦ t.inf id,
-    ?_, ?_, ?_⟩
-  · rw [← hs]
-    refine le_antisymm ?_ ?_ <;> intro x hx
-    · simp only [Finset.inf_image, CompTriple.comp_eq, Submodule.mem_finset_inf,
-      Function.comp_apply, Finset.mem_filter, id_eq, and_imp] at hx ⊢
-      intro J hJ
-      exact hx J hJ J hJ rfl
-    · simp only [Submodule.mem_finset_inf, id_eq, Finset.inf_image, CompTriple.comp_eq,
-      Function.comp_apply, Finset.mem_filter, and_imp] at hx ⊢
-      intro J _ K hK _
-      exact hx K hK
+  refine ⟨(s.image fun J ↦ {I ∈ s | (I.colon .univ).radical = (J.colon .univ).radical}).image
+    fun t ↦ t.inf id, ?_, ?_, ?_⟩
+  · ext
+    grind [Finset.inf_image, Submodule.mem_finsetInf]
   · simp only [Finset.mem_image, exists_exists_and_eq_and, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂]
     intro J hJ
-    refine isPrimary_finset_inf (i := J) ?_ ?_ (by simp)
+    refine isPrimary_finsetInf (i := J) ?_ ?_ (by simp)
     · simp [hJ]
     · simp only [Finset.mem_filter, id_eq, and_imp]
       intro y hy
@@ -87,82 +81,228 @@ lemma isPrimary_decomposition_pairwise_ne_radical {I : Ideal R}
     obtain ⟨I', hI', hI⟩ := hI
     obtain ⟨J', hJ', hJ⟩ := hJ
     simp only [Function.onFun, ne_eq]
-    contrapose! hIJ
-    suffices I'.radical = J'.radical by
+    contrapose hIJ
+    suffices (I'.colon Set.univ).radical = (J'.colon Set.univ).radical by
       rw [← hI, ← hJ, this]
-    · rw [← hI, radical_finset_inf (i := I') (by simp [hI']) (by simp), id_eq] at hIJ
-      rw [hIJ, ← hJ, radical_finset_inf (i := J') (by simp [hJ']) (by simp), id_eq]
+    · rw [← hI, colon_finsetInf,
+        radical_finset_inf (i := I') (by simp [hI']) (by simp), id_eq] at hIJ
+      rw [hIJ, ← hJ, colon_finsetInf,
+        radical_finset_inf (i := J') (by simp [hJ']) (by simp), id_eq]
 
-lemma exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition [DecidableEq (Ideal R)]
-    {I : Ideal R} {s : Finset (Ideal R)} (hs : s.inf id = I) (hs' : ∀ ⦃J⦄, J ∈ s → J.IsPrimary) :
-    ∃ t : Finset (Ideal R), t.inf id = I ∧ (∀ ⦃J⦄, J ∈ t → J.IsPrimary) ∧
-      ((t : Set (Ideal R)).Pairwise ((· ≠ ·) on radical)) ∧
+lemma exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition
+    {N : Submodule R M} {s : Finset (Submodule R M)}
+    (hs : s.inf id = N) (hs' : ∀ ⦃J⦄, J ∈ s → J.IsPrimary) :
+    ∃ t : Finset (Submodule R M), t.inf id = N ∧ (∀ ⦃J⦄, J ∈ t → J.IsPrimary) ∧
+      ((t : Set (Submodule R M)).Pairwise ((· ≠ ·) on fun J ↦ (J.colon Set.univ).radical)) ∧
       (∀ ⦃J⦄, J ∈ t → ¬ (t.erase J).inf id ≤ J) := by
   obtain ⟨t, ht, ht', ht''⟩ := isPrimary_decomposition_pairwise_ne_radical hs hs'
   obtain ⟨u, hut, hu, hu'⟩ := decomposition_erase_inf ht
   exact ⟨u, hu, fun _ hi ↦ ht' (hut hi), ht''.mono hut, hu'⟩
 
-lemma IsLasker.minimal [DecidableEq (Ideal R)] (h : IsLasker R) (I : Ideal R) :
-    ∃ t : Finset (Ideal R), t.inf id = I ∧ (∀ ⦃J⦄, J ∈ t → J.IsPrimary) ∧
-      ((t : Set (Ideal R)).Pairwise ((· ≠ ·) on radical)) ∧
-      (∀ ⦃J⦄, J ∈ t → ¬ (t.erase J).inf id ≤ J) := by
-  obtain ⟨s, hs, hs'⟩ := h I
-  exact exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition hs hs'
+/-- A `Finset` of submodules is a minimal primary decomposition of `N` if the submodules `Nᵢ`
+intersect to `N`, are primary, the `√Ann(M/Nᵢ)` are distinct, and each `Nᵢ` is necessary. -/
+structure IsMinimalPrimaryDecomposition
+    (N : Submodule R M) (t : Finset (Submodule R M)) where
+  inf_eq : t.inf id = N
+  primary : ∀ ⦃J⦄, J ∈ t → J.IsPrimary
+  distinct : (t : Set (Submodule R M)).Pairwise ((· ≠ ·) on fun J ↦ (J.colon Set.univ).radical)
+  minimal : ∀ ⦃J⦄, J ∈ t → ¬ (t.erase J).inf id ≤ J
 
-end Ideal
+lemma IsLasker.exists_isMinimalPrimaryDecomposition
+    (h : IsLasker R M) (N : Submodule R M) :
+    ∃ t : Finset (Submodule R M), N.IsMinimalPrimaryDecomposition t := by
+  obtain ⟨s, hs1, hs2⟩ := h N
+  obtain ⟨t, h1, h2, h3, h4⟩ :=
+    exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition hs1 hs2
+  exact ⟨t, h1, h2, h3, h4⟩
+
+namespace IsMinimalPrimaryDecomposition
+
+lemma injOn (N : Submodule R M)
+    (t : Finset (Submodule R M)) (ht : N.IsMinimalPrimaryDecomposition t) :
+    Set.InjOn (fun J ↦ (J.colon Set.univ).radical) (t : Set (Submodule R M)) :=
+  Set.injOn_iff_pairwise_ne.mpr ht.distinct
+
+/-- The first uniqueness theorem for primary decomposition, Theorem 4.5 in Atiyah-Macdonald:
+In any minimal primary decomposition `I = ⨅ i, q_i`, the ideals `radical (q_i.colon M)` are exactly
+the associated primes of `I`. -/
+lemma image_radical_eq_associated_primes
+    {N : Submodule R M} {t : Finset (Submodule R M)} (ht : IsMinimalPrimaryDecomposition N t) :
+    (fun J : Submodule R M ↦ (J.colon Set.univ).radical) '' t = N.associatedPrimes := by
+  classical
+  replace h x : radical (N.colon {x}) = (t.filter (x ∉ ·)).inf fun q ↦ radical (q.colon .univ) := by
+    simp_rw [← ht.inf_eq, colon_finsetInf, ← radicalInfTopHom_apply, map_finset_inf,
+      Function.comp_def, radicalInfTopHom_apply, id_eq]
+    rw [Finset.inf_congr rfl (fun q hq ↦ (ht.primary hq).radical_colon_singleton_eq_ite x),
+      Finset.inf_ite, Finset.inf_top, top_inf_eq]
+  ext p
+  constructor
+  · rintro ⟨q, hqt, rfl⟩
+    obtain ⟨x, hxt, hxq⟩ := SetLike.not_le_iff_exists.mp (ht.minimal hqt)
+    use (ht.primary hqt).isPrime_radical_colon, x
+    rw [h, ← Finset.insert_erase (Finset.mem_filter.mpr ⟨hqt, hxq⟩), Finset.inf_insert,
+      eq_comm, inf_eq_left, Finset.le_inf_iff]
+    simp only [mem_finsetInf, Finset.mem_erase] at hxt
+    grind
+  · rintro ⟨hp, x, rfl⟩
+    rw [h] at hp ⊢
+    obtain ⟨q, hq1, hq2⟩ := eq_inf_of_isPrime_inf hp
+    exact ⟨q, Finset.mem_of_mem_filter q hq1, hq2⟩
+
+@[deprecated (since := "2026-01-19")]
+alias mem_image_radical_colon_iff := image_radical_eq_associated_primes
+
+lemma mem_associatedPrimes {N : Submodule R M} {t : Finset (Submodule R M)}
+    (ht : IsMinimalPrimaryDecomposition N t) {q : Submodule R M} (hq : q ∈ t) :
+    (q.colon Set.univ).radical ∈ N.associatedPrimes := by
+  rw [← ht.image_radical_eq_associated_primes]
+  exact Set.mem_image_of_mem _ hq
+
+section CommRing
+
+variable {R M : Type*} [CommRing R] [AddCommMonoid M] [Module R M] {N : Submodule R M}
+
+open LocalizedModule in
+lemma comap_localized₀_eq_ite
+    (s₀ : Finset N.associatedPrimes) (hs₀ : IsLowerSet (s₀ : Set N.associatedPrimes))
+    (q : Submodule R M) (hqp : q.IsPrimary)
+    (p : N.associatedPrimes) (hq : (q.colon Set.univ).radical = p) :
+    letI S := ⨅ q ∈ s₀, q.1.primeCompl
+    letI f := mkLinearMap S M
+    (localized₀ S f q).comap f = if p ∈ s₀ then q else ⊤ := by
+  set S := ⨅ q ∈ s₀, q.1.primeCompl
+  set f := mkLinearMap S M
+  split_ifs with hp
+  · refine le_antisymm (fun x hx ↦ ?_) (map_le_iff_le_comap.mp (map_le_localized₀ S f q))
+    obtain ⟨b, hb, a, ha⟩ := hx
+    rw [IsLocalizedModule.mk'_eq_iff, ← LinearMap.map_smul_of_tower] at ha
+    obtain ⟨c, hc⟩ := (IsLocalizedModule.eq_iff_exists S f).mp ha
+    replace hb := q.smul_mem c hb
+    rw [← Submonoid.smul_def, hc, smul_smul] at hb
+    apply (hqp.mem_or_mem hb).resolve_right
+    grind [Submonoid.mem_iInf, mem_primeCompl_iff]
+  · replace hq : ¬ (q.colon Set.univ : Set R) ⊆ ⋃ r ∈ s₀, r := by
+      contrapose hp
+      obtain ⟨r, hrs, h⟩ := (subset_union_prime p p fun i _ _ _ ↦ i.2.1).mp hp
+      rw [← r.2.1.radical_le_iff, hq] at h
+      exact hs₀ h hrs
+    obtain ⟨y, hy1, hy2⟩ := Set.not_subset_iff_exists_mem_notMem.mp hq
+    replace hy2 : y ∈ S := by
+      simp only [Submonoid.mem_iInf, Ideal.mem_primeCompl_iff, Subtype.forall, S]
+      intro r hrI hrs
+      contrapose hy2
+      exact Set.mem_biUnion hrs hy2
+    rw [eq_top_iff, ← map_le_iff_le_comap, map_top]
+    rintro - ⟨x, rfl⟩
+    simp_rw [mem_localized₀, IsLocalizedModule.mk'_eq_iff, ← LinearMap.map_smul_of_tower]
+    exact ⟨y • x, hy1 (Set.smul_mem_smul_set (Set.mem_univ x)), ⟨y, hy2⟩, rfl⟩
+
+open LocalizedModule IsLocalizedModule in
+/-- The second uniqueness theorem for primary decomposition, Theorem 4.10 in Atiyah-Macdonald. -/
+lemma comap_localized₀_eq_iInf
+    {t : Finset (Submodule R M)} (ht : N.IsMinimalPrimaryDecomposition t)
+    (s₀ : Finset N.associatedPrimes) (hs₀ : IsLowerSet (s₀ : Set N.associatedPrimes))
+    (s : Finset (Submodule R M)) (hs : s ⊆ t)
+    (hs' : (s.image fun q ↦ (q.colon Set.univ).radical) = s₀.image (↑)) :
+    letI S := ⨅ q ∈ s₀, q.1.primeCompl
+    letI f := mkLinearMap S M
+    (N.localized₀ S f).comap f = ⨅ q ∈ s, q := by
+  set S := ⨅ q ∈ s₀, q.1.primeCompl
+  set f := mkLinearMap S M
+  rw [← ht.inf_eq, ← localized₀FrameHom_apply, map_finset_inf, Submodule.comap_finsetInf]
+  simp_rw [Function.comp_def, id_eq, localized₀FrameHom_apply]
+  suffices ∀ q ∈ t, (localized₀ S f q).comap f = if q ∈ s then q else ⊤ by
+    rw [Finset.inf_congr rfl this, Finset.inf_ite, Finset.inf_top, inf_top_eq,
+      Finset.filter_mem_eq_inter, Finset.inter_eq_right.mpr hs, Finset.inf_eq_iInf]
+  refine fun q hqt ↦ (IsMinimalPrimaryDecomposition.comap_localized₀_eq_ite s₀ hs₀ q
+    (ht.primary hqt) ⟨(q.colon Set.univ).radical, ht.mem_associatedPrimes hqt⟩ rfl).trans
+    (ite_cond_congr (Iff.trans ?_ (ht.injOn.mem_image_iff hs hqt)).eq)
+  grind [Finset.mem_image_of_mem]
+
+end CommRing
+
+end Submodule.IsMinimalPrimaryDecomposition
+
+lemma Ideal.IsMinimalPrimaryDecomposition.minimalPrimes_subset_image_radical
+    {I : Ideal R} {t : Finset (Ideal R)} (ht : I.IsMinimalPrimaryDecomposition t) :
+    I.minimalPrimes ⊆ radical '' t := by
+  intro p hp
+  have htp : t.inf radical ≤ p := by
+    rw [← hp.1.1.radical]
+    refine le_trans ?_ (radical_mono hp.1.2)
+    rw [← ht.inf_eq, ← radicalInfTopHom_apply, map_finset_inf]
+    rfl
+  obtain ⟨q, hqt, hqp⟩ := (IsPrime.inf_le' hp.1.1).mp htp
+  exact ⟨q, hqt, le_antisymm hqp (hp.2 ⟨isPrime_radical (ht.primary hqt),
+    ht.inf_eq.symm.trans_le ((Finset.inf_le hqt).trans le_radical)⟩ hqp)⟩
+
+@[deprecated (since := "2026-01-19")]
+alias Ideal.decomposition_erase_inf := Submodule.decomposition_erase_inf
+
+@[deprecated (since := "2026-01-19")]
+alias Ideal.isPrimary_decomposition_pairwise_ne_radical :=
+  Submodule.isPrimary_decomposition_pairwise_ne_radical
+
+@[deprecated (since := "2026-01-19")]
+alias Ideal.exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition :=
+  Submodule.exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition
+
+@[deprecated (since := "2026-01-19")]
+alias Ideal.IsMinimalPrimaryDecomposition := Submodule.IsMinimalPrimaryDecomposition
+
+@[deprecated (since := "2026-01-19")]
+alias Ideal.IsLasker.exists_isMinimalPrimaryDecomposition :=
+  Submodule.IsLasker.exists_isMinimalPrimaryDecomposition
+
+@[deprecated (since := "2026-01-19")]
+alias Ideal.IsLasker.minimal := Submodule.IsLasker.exists_isMinimalPrimaryDecomposition
 
 end IsLasker
 
-namespace Ideal
+namespace Submodule
 
 section Noetherian
 
-variable {R : Type*} [CommRing R] [IsNoetherianRing R]
+open Pointwise
 
-lemma _root_.InfIrred.isPrimary {I : Ideal R} (h : InfIrred I) : I.IsPrimary := by
-  rw [Ideal.isPrimary_iff]
+variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] [IsNoetherian R M]
+
+lemma _root_.InfIrred.isPrimary {N : Submodule R M} (h : InfIrred N) : N.IsPrimary := by
+  rw [Submodule.IsPrimary]
   refine ⟨h.ne_top, fun {a b} hab ↦ ?_⟩
-  let f : ℕ → Ideal R := fun n ↦ (I.colon (span {b ^ n}))
+  let f : ℕ → Submodule R M := fun n ↦
+  { carrier := {x | a ^ n • x ∈ N}
+    add_mem' hx hy := by simp [N.add_mem hx hy]
+    zero_mem' := by simp
+    smul_mem' x y h := by simp [smul_comm _ x, N.smul_mem x h] }
   have hf : Monotone f := by
-    intro n m hnm
-    simp_rw [f]
-    exact (Submodule.colon_mono le_rfl (Ideal.span_singleton_le_span_singleton.mpr
-      (pow_dvd_pow b hnm)))
+    intro n m hnm x hx
+    simpa [hnm, smul_smul, ← pow_add] using N.smul_mem (a ^ (m - n)) hx
   obtain ⟨n, hn⟩ := monotone_stabilizes_iff_noetherian.mpr ‹_› ⟨f, hf⟩
   rcases h with ⟨-, h⟩
-  specialize @h (I.colon (span {b ^ n})) (I + (span {b ^ n})) ?_
-  · refine le_antisymm (fun r ↦ ?_) (le_inf (fun _ ↦ ?_) ?_)
-    · simp only [Submodule.add_eq_sup, sup_comm I, mem_inf, mem_colon_singleton,
-        mem_span_singleton_sup, and_imp, forall_exists_index]
-      rintro hrb t s hs rfl
-      refine add_mem ?_ hs
-      have := hn (n + n) (by simp)
-      simp only [OrderHom.coe_mk, f] at this
-      rw [add_mul, mul_assoc, ← pow_add] at hrb
-      rwa [← mem_colon_singleton, this, mem_colon_singleton,
-           ← Ideal.add_mem_iff_left _ (Ideal.mul_mem_right _ _ hs)]
-    · simpa only [mem_colon_singleton] using mul_mem_right _ _
-    · simp
-  rcases h with (h|h)
-  · replace h : I = I.colon (span {b}) := by
-      rcases eq_or_ne n 0 with rfl|hn'
-      · simpa [f] using hn 1 zero_le_one
-      refine le_antisymm ?_ (h.le.trans' (Submodule.colon_mono le_rfl ?_))
-      · intro
-        simpa only [mem_colon_singleton] using mul_mem_right _ _
-      · exact span_singleton_le_span_singleton.mpr (dvd_pow_self b hn')
-    rw [← mem_colon_singleton, ← h] at hab
-    exact Or.inl hab
-  · rw [← h]
-    refine Or.inr ⟨n, ?_⟩
-    simpa using mem_sup_right (mem_span_singleton_self _)
+  specialize @h (f n) (N + a ^ n • ⊤) ?_
+  · refine le_antisymm (fun r ⟨h1, h2⟩ ↦ ?_) (le_inf (fun x ↦ N.smul_mem (a ^ n)) (by simp))
+    simp only [add_eq_sup, SetLike.mem_coe, mem_sup, mem_smul_pointwise_iff_exists] at h2
+    obtain ⟨x, hx, -, ⟨y, -, rfl⟩, rfl⟩ := h2
+    have h : (a ^ n • y ∈ N) = (a ^ (n + n) • y ∈ N) := congr_arg (y ∈ ·) (hn (n + n) le_add_self)
+    rw [pow_add, mul_smul] at h
+    rwa [N.add_mem_iff_right hx, h, ← N.add_mem_iff_right (N.smul_mem (a ^ n) hx), ← smul_add]
+  rw [add_eq_sup, sup_eq_left] at h
+  refine h.imp (fun h ↦ ?_) (fun h ↦ ⟨n, h⟩)
+  replace hn : f n = f (n + 1) := hn (n + 1) n.le_succ
+  rw [← h, hn]
+  rw [← h] at hab
+  simpa [f, pow_succ, mul_smul] using hab
 
-variable (R) in
-/-- The Lasker--Noether theorem: every ideal in a Noetherian ring admits a decomposition into
-  primary ideals. -/
-lemma isLasker : IsLasker R := fun I ↦
+variable (R M) in
+/-- The Lasker--Noether theorem: every submodule in a Noetherian module admits a decomposition into
+  primary submodules. -/
+lemma isLasker : IsLasker R M := fun I ↦
   (exists_infIrred_decomposition I).imp fun _ h ↦ h.imp_right fun h' _ ht ↦ (h' ht).isPrimary
 
 end Noetherian
 
-end Ideal
+end Submodule
+
+@[deprecated (since := "2026-01-19")]
+alias Ideal.isLasker := Submodule.isLasker

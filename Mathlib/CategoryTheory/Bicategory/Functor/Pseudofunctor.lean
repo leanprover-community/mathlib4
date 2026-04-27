@@ -3,9 +3,11 @@ Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno, Calle Sönne
 -/
-import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
-import Mathlib.CategoryTheory.Bicategory.Functor.Lax
-import Mathlib.Tactic.CategoryTheory.ToApp
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
+public import Mathlib.CategoryTheory.Bicategory.Functor.Lax
+public import Mathlib.Tactic.CategoryTheory.ToApp
 
 /-!
 # Pseudofunctors
@@ -17,24 +19,25 @@ We provide several constructors for pseudofunctors:
 
 * `Pseudofunctor.mkOfOplax` : construct a pseudofunctor from an oplax functor whose
   `mapId` and `mapComp` are isomorphisms. This constructor uses `Iso` to describe isomorphisms.
-* `pseudofunctor.mkOfOplax'` : similar to `mkOfOplax`, but uses `IsIso` to describe isomorphisms.
+* `Pseudofunctor.mkOfOplax'` : similar to `mkOfOplax`, but uses `IsIso` to describe isomorphisms.
 
 * `Pseudofunctor.mkOfLax` : construct a pseudofunctor from a lax functor whose
   `mapId` and `mapComp` are isomorphisms. This constructor uses `Iso` to describe isomorphisms.
-* `pseudofunctor.mkOfLax'` : similar to `mkOfLax`, but uses `IsIso` to describe isomorphisms.
+* `Pseudofunctor.mkOfLax'` : similar to `mkOfLax`, but uses `IsIso` to describe isomorphisms.
 
 ## Main definitions
 
-* `CategoryTheory.Pseudofunctor B C` : a pseudofunctor between bicategories `B` and `C`
+* `CategoryTheory.Pseudofunctor B C` : a pseudofunctor between bicategories `B` and `C`, which we
+  denote by `B ⥤ᵖ C`.
 * `CategoryTheory.Pseudofunctor.comp F G` : the composition of pseudofunctors
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Bicategory
-
-open Bicategory
 
 universe w₁ w₂ w₃ v₁ v₂ v₃ u₁ u₂ u₃
 
@@ -44,11 +47,11 @@ variable {D : Type u₃} [Bicategory.{w₃, v₃} D]
 /-- A pseudofunctor `F` between bicategories `B` and `C` consists of a function between objects
 `F.obj`, a function between 1-morphisms `F.map`, and a function between 2-morphisms `F.map₂`.
 
-Unlike functors between categories, `F.map` do not need to strictly commute with the compositions,
-and do not need to strictly preserve the identity. Instead, there are specified 2-isomorphisms
+Unlike functors between categories, `F.map` does not need to strictly commute with composition,
+and does not need to strictly preserve the identity. Instead, there are specified 2-isomorphisms
 `F.map (𝟙 a) ≅ 𝟙 (F.obj a)` and `F.map (f ≫ g) ≅ F.map f ≫ F.map g`.
 
-`F.map₂` strictly commute with compositions and preserve the identity. They also preserve the
+`F.map₂` strictly commutes with compositions and preserves the identity. It also preserves the
 associator, the left unitor, and the right unitor modulo some adjustments of domains and codomains
 of 2-morphisms.
 -/
@@ -59,31 +62,35 @@ structure Pseudofunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u�
   map₂_whisker_left :
     ∀ {a b c : B} (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h),
       map₂ (f ◁ η) = (mapComp f g).hom ≫ map f ◁ map₂ η ≫ (mapComp f h).inv := by
-    aesop_cat
+    cat_disch
   map₂_whisker_right :
     ∀ {a b c : B} {f g : a ⟶ b} (η : f ⟶ g) (h : b ⟶ c),
       map₂ (η ▷ h) = (mapComp f h).hom ≫ map₂ η ▷ map h ≫ (mapComp g h).inv := by
-    aesop_cat
+    cat_disch
   map₂_associator :
     ∀ {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d),
       map₂ (α_ f g h).hom = (mapComp (f ≫ g) h).hom ≫ (mapComp f g).hom ▷ map h ≫
       (α_ (map f) (map g) (map h)).hom ≫ map f ◁ (mapComp g h).inv ≫
       (mapComp f (g ≫ h)).inv := by
-    aesop_cat
+    cat_disch
   map₂_left_unitor :
     ∀ {a b : B} (f : a ⟶ b),
       map₂ (λ_ f).hom = (mapComp (𝟙 a) f).hom ≫ (mapId a).hom ▷ map f ≫ (λ_ (map f)).hom := by
-    aesop_cat
+    cat_disch
   map₂_right_unitor :
     ∀ {a b : B} (f : a ⟶ b),
       map₂ (ρ_ f).hom = (mapComp f (𝟙 b)).hom ≫ map f ◁ (mapId b).hom ≫ (ρ_ (map f)).hom := by
-    aesop_cat
+    cat_disch
+
+/-- Notation for a pseudofunctor between bicategories. -/
+-- Given similar precedence as ⥤ (26).
+scoped[CategoryTheory.Bicategory] infixr:26 " ⥤ᵖ " => Pseudofunctor -- type as \func\^p
 
 initialize_simps_projections Pseudofunctor (+toPrelaxFunctor, -obj, -map, -map₂)
 
 namespace Pseudofunctor
 
-attribute [simp, reassoc, to_app]
+attribute [simp, to_app (attr := reassoc)]
   map₂_whisker_left map₂_whisker_right map₂_associator map₂_left_unitor map₂_right_unitor
 
 section
@@ -102,21 +109,21 @@ attribute [nolint docBlame] CategoryTheory.Pseudofunctor.mapId
   CategoryTheory.Pseudofunctor.map₂_left_unitor
   CategoryTheory.Pseudofunctor.map₂_right_unitor
 
-variable (F : Pseudofunctor B C)
+variable (F : B ⥤ᵖ C)
 
 /-- The oplax functor associated with a pseudofunctor. -/
 @[simps]
-def toOplax : OplaxFunctor B C where
+def toOplax : B ⥤ᵒᵖᴸ C where
   toPrelaxFunctor := F.toPrelaxFunctor
   mapId := fun a => (F.mapId a).hom
   mapComp := fun f g => (F.mapComp f g).hom
 
-instance hasCoeToOplax : Coe (Pseudofunctor B C) (OplaxFunctor B C) :=
+instance hasCoeToOplax : Coe (B ⥤ᵖ C) (B ⥤ᵒᵖᴸ C) :=
   ⟨toOplax⟩
 
-/-- The Lax functor associated with a pseudofunctor. -/
+/-- The lax functor associated with a pseudofunctor. -/
 @[simps]
-def toLax : LaxFunctor B C where
+def toLax : B ⥤ᴸ C where
   toPrelaxFunctor := F.toPrelaxFunctor
   mapId := fun a => (F.mapId a).inv
   mapComp := fun f g => (F.mapComp f g).inv
@@ -127,65 +134,61 @@ def toLax : LaxFunctor B C where
     rw [← F.map₂Iso_inv, eq_inv_comp, comp_inv_eq]
     simp
 
-instance hasCoeToLax : Coe (Pseudofunctor B C) (LaxFunctor B C) :=
+instance hasCoeToLax : Coe (B ⥤ᵖ C) (B ⥤ᴸ C) :=
   ⟨toLax⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The identity pseudofunctor. -/
 @[simps]
-def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : Pseudofunctor B B where
+def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : B ⥤ᵖ B where
   toPrelaxFunctor := PrelaxFunctor.id B
   mapId := fun a => Iso.refl (𝟙 a)
   mapComp := fun f g => Iso.refl (f ≫ g)
 
-instance : Inhabited (Pseudofunctor B B) :=
+instance : Inhabited (B ⥤ᵖ B) :=
   ⟨id B⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Composition of pseudofunctors. -/
 @[simps]
-def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D where
+def comp (F : B ⥤ᵖ C) (G : C ⥤ᵖ D) : B ⥤ᵖ D where
   toPrelaxFunctor := F.toPrelaxFunctor.comp G.toPrelaxFunctor
   mapId := fun a => G.map₂Iso (F.mapId a) ≪≫ G.mapId (F.obj a)
   mapComp := fun f g => (G.map₂Iso (F.mapComp f g)) ≪≫ G.mapComp (F.map f) (F.map g)
-  -- Note: whilst these are all provable by `aesop_cat`, the proof is very slow
-  map₂_whisker_left f η := by simp
-  map₂_whisker_right η h := by simp
-  map₂_associator f g h := by simp
-  map₂_left_unitor f := by simp
-  map₂_right_unitor f := by simp
 
 section
 
-variable (F : Pseudofunctor B C) {a b : B}
+variable (F : B ⥤ᵖ C) {a b : B}
 
-@[reassoc, to_app]
+@[to_app (attr := reassoc)]
 lemma mapComp_assoc_right_hom {c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     (F.mapComp f (g ≫ h)).hom ≫ F.map f ◁ (F.mapComp g h).hom = F.map₂ (α_ f g h).inv ≫
     (F.mapComp (f ≫ g) h).hom ≫ (F.mapComp f g).hom ▷ F.map h ≫
     (α_ (F.map f) (F.map g) (F.map h)).hom :=
   F.toOplax.mapComp_assoc_right _ _ _
 
-@[reassoc, to_app]
+@[to_app (attr := reassoc)]
 lemma mapComp_assoc_left_hom {c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     (F.mapComp (f ≫ g) h).hom ≫ (F.mapComp f g).hom ▷ F.map h =
     F.map₂ (α_ f g h).hom ≫ (F.mapComp f (g ≫ h)).hom ≫ F.map f ◁ (F.mapComp g h).hom
     ≫ (α_ (F.map f) (F.map g) (F.map h)).inv :=
   F.toOplax.mapComp_assoc_left _ _ _
 
-@[reassoc, to_app]
+@[to_app (attr := reassoc)]
 lemma mapComp_assoc_right_inv {c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     F.map f ◁ (F.mapComp g h).inv ≫ (F.mapComp f (g ≫ h)).inv =
     (α_ (F.map f) (F.map g) (F.map h)).inv ≫ (F.mapComp f g).inv ▷ F.map h ≫
     (F.mapComp (f ≫ g) h).inv ≫ F.map₂ (α_ f g h).hom :=
   F.toLax.mapComp_assoc_right _ _ _
 
-@[reassoc, to_app]
+@[to_app (attr := reassoc)]
 lemma mapComp_assoc_left_inv {c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     (F.mapComp f g).inv ▷ F.map h ≫ (F.mapComp (f ≫ g) h).inv =
     (α_ (F.map f) (F.map g) (F.map h)).hom ≫ F.map f ◁ (F.mapComp g h).inv ≫
     (F.mapComp f (g ≫ h)).inv ≫ F.map₂ (α_ f g h).inv :=
   F.toLax.mapComp_assoc_left _ _ _
 
-@[reassoc, to_app]
+@[to_app (attr := reassoc)]
 lemma mapComp_id_left_hom (f : a ⟶ b) : (F.mapComp (𝟙 a) f).hom =
     F.map₂ (λ_ f).hom ≫ (λ_ (F.map f)).inv ≫ (F.mapId a).inv ▷ F.map f := by
   simp
@@ -194,7 +197,7 @@ lemma mapComp_id_left (f : a ⟶ b) : (F.mapComp (𝟙 a) f) = F.map₂Iso (λ_ 
     (λ_ (F.map f)).symm ≪≫ (whiskerRightIso (F.mapId a) (F.map f)).symm :=
   Iso.ext <| F.mapComp_id_left_hom f
 
-@[reassoc, to_app]
+@[to_app (attr := reassoc)]
 lemma mapComp_id_left_inv (f : a ⟶ b) : (F.mapComp (𝟙 a) f).inv =
     (F.mapId a).hom ▷ F.map f ≫ (λ_ (F.map f)).hom ≫ F.map₂ (λ_ f).inv := by
   simp [mapComp_id_left]
@@ -203,17 +206,17 @@ lemma whiskerRightIso_mapId (f : a ⟶ b) : whiskerRightIso (F.mapId a) (F.map f
     (F.mapComp (𝟙 a) f).symm ≪≫ F.map₂Iso (λ_ f) ≪≫ (λ_ (F.map f)).symm := by
   simp [mapComp_id_left]
 
-@[reassoc, to_app]
+@[to_app (attr := reassoc)]
 lemma whiskerRight_mapId_hom (f : a ⟶ b) : (F.mapId a).hom ▷ F.map f =
     (F.mapComp (𝟙 a) f).inv ≫ F.map₂ (λ_ f).hom ≫ (λ_ (F.map f)).inv := by
   simp
 
-@[reassoc, to_app]
+@[to_app (attr := reassoc)]
 lemma whiskerRight_mapId_inv (f : a ⟶ b) : (F.mapId a).inv ▷ F.map f =
     (λ_ (F.map f)).hom ≫ F.map₂ (λ_ f).inv ≫ (F.mapComp (𝟙 a) f).hom := by
   simpa using congrArg (·.inv) (F.whiskerRightIso_mapId f)
 
-@[reassoc, to_app]
+@[to_app (attr := reassoc)]
 lemma mapComp_id_right_hom (f : a ⟶ b) : (F.mapComp f (𝟙 b)).hom =
     F.map₂ (ρ_ f).hom ≫ (ρ_ (F.map f)).inv ≫ F.map f ◁ (F.mapId b).inv := by
   simp
@@ -222,7 +225,7 @@ lemma mapComp_id_right (f : a ⟶ b) : (F.mapComp f (𝟙 b)) = F.map₂Iso (ρ_
     (ρ_ (F.map f)).symm ≪≫ (whiskerLeftIso (F.map f) (F.mapId b)).symm :=
   Iso.ext <| F.mapComp_id_right_hom f
 
-@[reassoc, to_app]
+@[to_app (attr := reassoc)]
 lemma mapComp_id_right_inv (f : a ⟶ b) : (F.mapComp f (𝟙 b)).inv =
     F.map f ◁ (F.mapId b).hom ≫ (ρ_ (F.map f)).hom ≫ F.map₂ (ρ_ f).inv := by
   simp [mapComp_id_right]
@@ -231,19 +234,19 @@ lemma whiskerLeftIso_mapId (f : a ⟶ b) : whiskerLeftIso (F.map f) (F.mapId b) 
     (F.mapComp f (𝟙 b)).symm ≪≫ F.map₂Iso (ρ_ f) ≪≫ (ρ_ (F.map f)).symm := by
   simp [mapComp_id_right]
 
-@[reassoc, to_app]
+@[to_app (attr := reassoc)]
 lemma whiskerLeft_mapId_hom (f : a ⟶ b) : F.map f ◁ (F.mapId b).hom =
     (F.mapComp f (𝟙 b)).inv ≫ F.map₂ (ρ_ f).hom ≫ (ρ_ (F.map f)).inv := by
   simp
 
-@[reassoc, to_app]
+@[to_app (attr := reassoc)]
 lemma whiskerLeft_mapId_inv (f : a ⟶ b) : F.map f ◁ (F.mapId b).inv =
     (ρ_ (F.map f)).hom ≫ F.map₂ (ρ_ f).inv ≫ (F.mapComp f (𝟙 b)).hom := by
   simpa using congrArg (·.inv) (F.whiskerLeftIso_mapId f)
 
 /-- More flexible variant of `mapId`. (See the file `Bicategory.Functor.Strict`
 for applications to strict bicategories.) -/
-def mapId' {b : B} (f : b ⟶ b) (hf : f = 𝟙 b := by aesop_cat) :
+def mapId' {b : B} (f : b ⟶ b) (hf : f = 𝟙 b := by cat_disch) :
     F.map f ≅ 𝟙 (F.obj b) :=
   F.map₂Iso (eqToIso (by rw [hf])) ≪≫ F.mapId _
 
@@ -251,10 +254,20 @@ lemma mapId'_eq_mapId (b : B) :
     F.mapId' (𝟙 b) rfl = F.mapId b := by
   simp [mapId']
 
+@[simp]
+lemma toLax_mapId' {b : B} (f : b ⟶ b) (hf : f = 𝟙 b := by cat_disch) :
+    F.toLax.mapId' f hf = (F.mapId' f hf).inv :=
+  rfl
+
+@[simp]
+lemma toOplax_mapId' {b : B} (f : b ⟶ b) (hf : f = 𝟙 b := by cat_disch) :
+    F.toOplax.mapId' f hf = (F.mapId' f hf).hom :=
+  rfl
+
 /-- More flexible variant of `mapComp`. (See `Bicategory.Functor.Strict`
 for applications to strict bicategories.) -/
 def mapComp' {b₀ b₁ b₂ : B} (f : b₀ ⟶ b₁) (g : b₁ ⟶ b₂) (fg : b₀ ⟶ b₂)
-    (h : f ≫ g = fg := by aesop_cat) :
+    (h : f ≫ g = fg := by cat_disch) :
     F.map fg ≅ F.map f ≫ F.map g :=
   F.map₂Iso (eqToIso (by rw [h])) ≪≫ F.mapComp f g
 
@@ -262,11 +275,23 @@ lemma mapComp'_eq_mapComp {b₀ b₁ b₂ : B} (f : b₀ ⟶ b₁) (g : b₁ ⟶
     F.mapComp' f g _ rfl = F.mapComp f g := by
   simp [mapComp']
 
+@[simp]
+lemma toLax_mapComp' {b₀ b₁ b₂ : B} (f : b₀ ⟶ b₁) (g : b₁ ⟶ b₂) (fg : b₀ ⟶ b₂)
+    (h : f ≫ g = fg := by cat_disch) :
+    F.toLax.mapComp' f g fg h = (F.mapComp' f g fg h).inv :=
+  rfl
+
+@[simp]
+lemma toOplax_mapComp' {b₀ b₁ b₂ : B} (f : b₀ ⟶ b₁) (g : b₁ ⟶ b₂) (fg : b₀ ⟶ b₂)
+    (h : f ≫ g = fg := by cat_disch) :
+    F.toOplax.mapComp' f g fg h = (F.mapComp' f g fg h).hom :=
+  rfl
+
 end
 
 /-- Construct a pseudofunctor from an oplax functor whose `mapId` and `mapComp` are isomorphisms. -/
 @[simps]
-def mkOfOplax (F : OplaxFunctor B C) (F' : F.PseudoCore) : Pseudofunctor B C where
+def mkOfOplax (F : B ⥤ᵒᵖᴸ C) (F' : F.PseudoCore) : B ⥤ᵖ C where
   toPrelaxFunctor := F.toPrelaxFunctor
   mapId := F'.mapIdIso
   mapComp := F'.mapCompIso
@@ -283,8 +308,8 @@ def mkOfOplax (F : OplaxFunctor B C) (F' : F.PseudoCore) : Pseudofunctor B C whe
 
 /-- Construct a pseudofunctor from an oplax functor whose `mapId` and `mapComp` are isomorphisms. -/
 @[simps!]
-noncomputable def mkOfOplax' (F : OplaxFunctor B C) [∀ a, IsIso (F.mapId a)]
-    [∀ {a b c} (f : a ⟶ b) (g : b ⟶ c), IsIso (F.mapComp f g)] : Pseudofunctor B C where
+noncomputable def mkOfOplax' (F : B ⥤ᵒᵖᴸ C) [∀ a, IsIso (F.mapId a)]
+    [∀ {a b c} (f : a ⟶ b) (g : b ⟶ c), IsIso (F.mapComp f g)] : B ⥤ᵖ C where
   toPrelaxFunctor := F.toPrelaxFunctor
   mapId := fun a => asIso (F.mapId a)
   mapComp := fun f g => asIso (F.mapComp f g)
@@ -302,7 +327,7 @@ noncomputable def mkOfOplax' (F : OplaxFunctor B C) [∀ a, IsIso (F.mapId a)]
 
 /-- Construct a pseudofunctor from a lax functor whose `mapId` and `mapComp` are isomorphisms. -/
 @[simps]
-def mkOfLax (F : LaxFunctor B C) (F' : F.PseudoCore) : Pseudofunctor B C where
+def mkOfLax (F : B ⥤ᴸ C) (F' : F.PseudoCore) : B ⥤ᵖ C where
   toPrelaxFunctor := F.toPrelaxFunctor
   mapId := F'.mapIdIso
   mapComp := F'.mapCompIso
@@ -320,8 +345,8 @@ def mkOfLax (F : LaxFunctor B C) (F' : F.PseudoCore) : Pseudofunctor B C where
 
 /-- Construct a pseudofunctor from a lax functor whose `mapId` and `mapComp` are isomorphisms. -/
 @[simps!]
-noncomputable def mkOfLax' (F : LaxFunctor B C) [∀ a, IsIso (F.mapId a)]
-    [∀ {a b c} (f : a ⟶ b) (g : b ⟶ c), IsIso (F.mapComp f g)] : Pseudofunctor B C :=
+noncomputable def mkOfLax' (F : B ⥤ᴸ C) [∀ a, IsIso (F.mapId a)]
+    [∀ {a b c} (f : a ⟶ b) (g : b ⟶ c), IsIso (F.mapComp f g)] : B ⥤ᵖ C :=
   mkOfLax F
   { mapIdIso := fun a => (asIso (F.mapId a)).symm
     mapCompIso := fun f g => (asIso (F.mapComp f g)).symm }

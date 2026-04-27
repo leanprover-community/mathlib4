@@ -3,8 +3,10 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
-import Mathlib.CategoryTheory.Limits.Elements
+module
+
+public import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
+public import Mathlib.CategoryTheory.Limits.Elements
 
 /-!
 # Finite-limit-preserving presheaves
@@ -39,6 +41,8 @@ is small, we leave this as a TODO.
 * [F. Borceux, *Handbook of Categorical Algebra 1*][borceux-vol1], Proposition 6.1.2
 -/
 
+@[expose] public section
+
 open CategoryTheory Limits Functor
 
 universe v u
@@ -50,7 +54,7 @@ section LargeCategory
 variable {C : Type u} [Category.{v} C] [HasFiniteColimits C] (A : Cᵒᵖ ⥤ Type v)
 
 /-- If `C` is a finitely cocomplete category and `A : Cᵒᵖ ⥤ Type u` is a presheaf that preserves
-finite limites, then `CostructuredArrow yoneda A` is filtered.
+finite limits, then `CostructuredArrow yoneda A` is filtered.
 
 One direction of Proposition 3.3.13 of [Kashiwara2006].
 -/
@@ -86,7 +90,7 @@ def functorToInterchangeIso : functorToInterchange A K ≅
 association because the type of `Presheaf.tautologicalCocone` is
 `Cocone (CostructuredArrow.proj yoneda P ⋙ yoneda)`, so this association will show up in the
 proof. -/
-@[simps!]
+@[simps! +dsimpLhs]
 def flipFunctorToInterchange : (functorToInterchange A K).flip ≅
     ((CostructuredArrow.proj yoneda A ⋙ yoneda) ⋙ (whiskeringLeft J Cᵒᵖ (Type u)).obj K) :=
   Iso.refl _
@@ -127,6 +131,7 @@ noncomputable def iso [IsFiltered (CostructuredArrow yoneda A)] :
         (IsColimit.coconePointUniqueUpToIso
           (colimit.isColimit _) (Presheaf.isColimitTautologicalCocone A)))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem iso_hom [IsFiltered (CostructuredArrow yoneda A)] : (iso A K).hom = limit.post K A := by
   -- We will have to use `ι_colimitLimitIso_limit_π` eventually, so let's start by
   -- transforming the goal into something from a colimit to a limit so that we can apply
@@ -156,7 +161,7 @@ theorem iso_hom [IsFiltered (CostructuredArrow yoneda A)] : (iso A K).hom = limi
   dsimp only [yoneda_obj_obj, Functor.const_obj_obj] at this
   rw [← this]
   ext
-  simp
+  simp [flipFunctorToInterchange, functorToInterchangeIso, functorToInterchange]
 
 theorem isIso_post [IsFiltered (CostructuredArrow yoneda A)] : IsIso (limit.post K A) :=
   iso_hom A K ▸ inferInstance

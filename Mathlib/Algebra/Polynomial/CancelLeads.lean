@@ -3,8 +3,10 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.Polynomial.Degree.Lemmas
-import Mathlib.Tactic.ComputeDegree
+module
+
+public import Mathlib.Algebra.Polynomial.Degree.Lemmas
+public import Mathlib.Tactic.ComputeDegree
 
 /-!
 # Cancel the leading terms of two polynomials
@@ -18,6 +20,8 @@ import Mathlib.Tactic.ComputeDegree
 The degree of `cancelLeads` is less than that of the larger of the two polynomials being cancelled.
 Thus it is useful for induction or minimal-degree arguments.
 -/
+
+@[expose] public section
 
 
 namespace Polynomial
@@ -58,7 +62,7 @@ theorem natDegree_cancelLeads_lt_of_natDegree_le_natDegree_of_comm
   apply lt_of_le_of_ne
   · compute_degree!
     rwa [Nat.sub_add_cancel]
-  · contrapose! h0
+  · contrapose h0
     rw [← leadingCoeff_eq_zero, leadingCoeff, h0, mul_assoc, X_pow_mul, ← tsub_add_cancel_of_le h,
       add_comm _ p.natDegree]
     simp only [coeff_mul_X_pow, coeff_neg, coeff_C_mul, add_tsub_cancel_left, coeff_add]

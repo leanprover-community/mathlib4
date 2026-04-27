@@ -3,13 +3,17 @@ Copyright (c) 2023 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching, Ashvni Narayanan, Michael Stoll
 -/
-import Mathlib.Algebra.BigOperators.Associated
-import Mathlib.Data.ZMod.Basic
-import Mathlib.RingTheory.Coprime.Lemmas
+module
+
+public import Mathlib.Algebra.BigOperators.Associated
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.RingTheory.Coprime.Lemmas
 
 /-!
 # Lemmas about units in `ZMod`.
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -39,8 +43,6 @@ lemma unitsMap_val (h : n ∣ m) (a : (ZMod m)ˣ) :
 
 lemma isUnit_cast_of_dvd (hm : n ∣ m) (a : Units (ZMod m)) : IsUnit (cast (a : ZMod m) : ZMod n) :=
   Units.isUnit (unitsMap hm a)
-@[deprecated (since := "2024-12-16")] alias IsUnit_cast_of_dvd := isUnit_cast_of_dvd
-
 theorem unitsMap_surjective [hm : NeZero m] (h : n ∣ m) :
     Function.Surjective (unitsMap h) := by
   suffices ∀ x : ℕ, x.Coprime n → ∃ k : ℕ, (x + k * n).Coprime m by
@@ -48,7 +50,7 @@ theorem unitsMap_surjective [hm : NeZero m] (h : n ∣ m) :
     have ⟨k, hk⟩ := this x.val.val (val_coe_unit_coprime x)
     refine ⟨unitOfCoprime _ hk, Units.ext ?_⟩
     have : NeZero n := ⟨fun hn ↦ hm.out (eq_zero_of_zero_dvd (hn ▸ h))⟩
-    simp [unitsMap_def, - castHom_apply]
+    simp [unitsMap_def, -castHom_apply]
   intro x hx
   let ps : Finset ℕ := {p ∈ m.primeFactors | ¬p ∣ x}
   use ps.prod id
@@ -58,7 +60,7 @@ theorem unitsMap_surjective [hm : NeZero m] (h : n ∣ m) :
   · have h := Nat.dvd_sub hp hpx
     rw [add_comm, Nat.add_sub_cancel] at h
     rcases pp.dvd_mul.mp h with h | h
-    · have ⟨q, hq, hq'⟩ := (pp.prime.dvd_finset_prod_iff id).mp h
+    · have ⟨q, hq, hq'⟩ := (pp.prime.dvd_finsetProd_iff id).mp h
       rw [Finset.mem_filter, Nat.mem_primeFactors,
         ← (Nat.prime_dvd_prime_iff_eq pp hq.1.1).mp hq'] at hq
       exact hq.2 hpx
@@ -75,6 +77,7 @@ lemma not_isUnit_of_mem_primeFactors {n p : ℕ} (h : p ∈ n.primeFactors) :
   rw [isUnit_iff_coprime]
   exact (Prime.dvd_iff_not_coprime <| prime_of_mem_primeFactors h).mp <| dvd_of_mem_primeFactors h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any element of `ZMod N` has the form `u * d` where `u` is a unit and `d` is a divisor of `N`. -/
 lemma eq_unit_mul_divisor {N : ℕ} (a : ZMod N) :
     ∃ d : ℕ, d ∣ N ∧ ∃ (u : ZMod N), IsUnit u ∧ a = u * d := by

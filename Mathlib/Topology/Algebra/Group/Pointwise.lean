@@ -3,12 +3,17 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Topology.Algebra.Group.Basic
+module
+
+public import Mathlib.Topology.Algebra.Group.Basic
+public import Mathlib.Topology.Maps.Proper.Basic
 
 /-!
 # Pointwise operations on sets in topological groups
 
 -/
+
+public section
 
 open Set Filter TopologicalSpace Function Topology Pointwise MulOpposite
 
@@ -44,39 +49,33 @@ section ContinuousSMul
 variable [TopologicalSpace α] [TopologicalSpace β] [Group α] [MulAction α β] [ContinuousInv α]
   [ContinuousSMul α β] {s : Set α} {t : Set β}
 
-@[to_additive]
+open Prod in
+/-- If `G` acts on `X` continuously, the set `s • t` is closed when `s : Set G` is *compact* and
+`t : Set X` is *closed*.
+
+See also `IsClosed.smul_right_of_isCompact` for a version with the assumptions on `s` and `t`
+reversed, assuming that the action is *proper*. -/
+@[to_additive
+/-- If `G` acts on `X` continuously, the set `s +ᵥ t` is closed when `s : Set G` is *compact* and
+`t : Set X` is *closed*.
+
+See also `IsClosed.vadd_right_of_isCompact` for a version with the assumptions on `s` and `t`
+reversed, assuming that the action is *proper*. -/]
 theorem IsClosed.smul_left_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
     IsClosed (s • t) := by
-  have : ∀ x ∈ s • t, ∃ g ∈ s, g⁻¹ • x ∈ t := by
-    rintro x ⟨g, hgs, y, hyt, rfl⟩
-    refine ⟨g, hgs, ?_⟩
-    rwa [inv_smul_smul]
-  choose! f hf using this
-  refine isClosed_of_closure_subset (fun x hx ↦ ?_)
-  rcases mem_closure_iff_ultrafilter.mp hx with ⟨u, hust, hux⟩
-  have : Ultrafilter.map f u ≤ 𝓟 s :=
-    calc Ultrafilter.map f u ≤ map f (𝓟 (s • t)) := map_mono (le_principal_iff.mpr hust)
-      _ = 𝓟 (f '' (s • t)) := map_principal
-      _ ≤ 𝓟 s := principal_mono.mpr (image_subset_iff.mpr (fun x hx ↦ (hf x hx).1))
-  rcases hs.ultrafilter_le_nhds (Ultrafilter.map f u) this with ⟨g, hg, hug⟩
-  suffices g⁻¹ • x ∈ t from
-    ⟨g, hg, g⁻¹ • x, this, smul_inv_smul _ _⟩
-  exact ht.mem_of_tendsto ((Tendsto.inv hug).smul hux)
-    (Eventually.mono hust (fun y hy ↦ (hf y hy).2))
-
-/-! One may expect a version of `IsClosed.smul_left_of_isCompact` where `t` is compact and `s` is
-closed, but such a lemma can't be true in this level of generality. For a counterexample, consider
-`ℚ` acting on `ℝ` by translation, and let `s : Set ℚ := univ`, `t : set ℝ := {0}`. Then `s` is
-closed and `t` is compact, but `s +ᵥ t` is the set of all rationals, which is definitely not
-closed in `ℝ`.
-To fix the proof, we would need to make two additional assumptions:
-- for any `x ∈ t`, `s • {x}` is closed
-- for any `x ∈ t`, there is a continuous function `g : s • {x} → s` such that, for all
-  `y ∈ s • {x}`, we have `y = (g y) • x`
-These are fairly specific hypotheses so we don't state this version of the lemmas, but an
-interesting fact is that these two assumptions are verified in the case of a `NormedAddTorsor`
-(or really, any `AddTorsor` with continuous `-ᵥ`). We prove this special case in
-`IsClosed.vadd_right_of_isCompact`. -/
+  let Φ : s × β ≃ₜ s × β :=
+  { toFun := fun gx ↦ (gx.1, (gx.1 : α) • gx.2)
+    invFun := fun gx ↦ (gx.1, (gx.1 : α)⁻¹ • gx.2)
+    left_inv := fun _ ↦ by simp
+    right_inv := fun _ ↦ by simp }
+  have : s • t = (snd ∘ Φ) '' (snd ⁻¹' t) :=
+    subset_antisymm
+      (smul_subset_iff.mpr fun g hg x hx ↦ mem_image_of_mem (snd ∘ Φ) (x := ⟨⟨g, hg⟩, x⟩) hx)
+      (image_subset_iff.mpr fun ⟨⟨g, hg⟩, x⟩ hx ↦ smul_mem_smul hg hx)
+  rw [this]
+  have : CompactSpace s := isCompact_iff_compactSpace.mp hs
+  exact (isProperMap_snd_of_compactSpace.comp Φ.isProperMap).isClosedMap _
+    (ht.preimage continuous_snd)
 
 @[to_additive]
 theorem MulAction.isClosedMap_quotient [CompactSpace α] :
@@ -295,12 +294,12 @@ theorem IsTopologicalGroup.t2Space_of_one_sep (H : ∀ x : G, x ≠ 1 → ∃ U 
   suffices T1Space G from inferInstance
   refine t1Space_iff_specializes_imp_eq.2 fun x y hspec ↦ by_contra fun hne ↦ ?_
   rcases H (x * y⁻¹) (by rwa [Ne, mul_inv_eq_one]) with ⟨U, hU₁, hU⟩
-  exact hU <| mem_of_mem_nhds <| hspec.map (continuous_mul_right y⁻¹) (by rwa [mul_inv_cancel])
+  exact hU <| mem_of_mem_nhds <| hspec.map (continuous_mul_const y⁻¹) (by rwa [mul_inv_cancel])
 
 /-- Given a neighborhood `U` of the identity, one may find a neighborhood `V` of the identity which
 is closed, symmetric, and satisfies `V * V ⊆ U`. -/
-@[to_additive "Given a neighborhood `U` of the identity, one may find a neighborhood `V` of the
-identity which is closed, symmetric, and satisfies `V + V ⊆ U`."]
+@[to_additive /-- Given a neighborhood `U` of the identity, one may find a neighborhood `V` of the
+identity which is closed, symmetric, and satisfies `V + V ⊆ U`. -/]
 theorem exists_closed_nhds_one_inv_eq_mul_subset {U : Set G} (hU : U ∈ 𝓝 1) :
     ∃ V ∈ 𝓝 1, IsClosed V ∧ V⁻¹ = V ∧ V * V ⊆ U := by
   rcases exists_open_nhds_one_mul_subset hU with ⟨V, V_open, V_mem, hV⟩
@@ -312,6 +311,24 @@ theorem exists_closed_nhds_one_inv_eq_mul_subset {U : Set G} (hU : U ∈ 𝓝 1)
     ⊆ W * W := mul_subset_mul inter_subset_left inter_subset_left
   _ ⊆ V * V := mul_subset_mul hW hW
   _ ⊆ U := hV
+
+@[to_additive] lemma IsDiscrete.exists_nhds_eq_one_of_image_mulLeft_inter_nonempty
+    (S : Subgroup G) (hS : IsDiscrete (S : Set G)) :
+    ∃ U ∈ 𝓝 (1 : G), U⁻¹ = U ∧ ∀ g ∈ S, ((g * ·) '' U ∩ U).Nonempty → g = 1 := by
+  obtain ⟨V, hV⟩ := nhds_inter_eq_singleton_of_mem_discrete hS S.one_mem
+  obtain ⟨U, hU, -, hUinv, hUV⟩ := exists_closed_nhds_one_inv_eq_mul_subset hV.1
+  refine ⟨U, hU, hUinv, fun g hgS ↦ ?_⟩
+  rintro ⟨_, ⟨x, hx, rfl⟩, hgx⟩
+  refine hV.2.subset ⟨hUV ?_, hgS⟩
+  rw [← hUinv] at hx
+  exact ⟨_, hgx, _, hx, by simp⟩
+
+@[to_additive] lemma IsDiscrete.exists_nhds_eq_one_of_image_mulRight_inter_nonempty
+    (S : Subgroup G) (hS : IsDiscrete (S : Set G)) :
+    ∃ U ∈ 𝓝 (1 : G), U⁻¹ = U ∧ ∀ g ∈ S, ((· * g) '' U ∩ U).Nonempty → g = 1 := by
+  have ⟨U, hU, hUinv, h⟩ := hS.exists_nhds_eq_one_of_image_mulLeft_inter_nonempty
+  refine ⟨U, hU, hUinv, fun g hgS hgU ↦ inv_eq_one.mp (h _ (S.inv_mem hgS) ?_)⟩
+  rwa [Set.nonempty_image_mulLeft_inv_inter_iff, hUinv]
 
 end
 
@@ -333,15 +350,15 @@ theorem IsCompact.locallyCompactSpace_of_mem_nhds_of_group {K : Set G} (hK : IsC
 /-- If a function defined on a topological group has a support contained in a
 compact set, then either the function is trivial or the group is locally compact. -/
 @[to_additive
-      "If a function defined on a topological additive group has a support contained in a compact
-      set, then either the function is trivial or the group is locally compact."]
+      /-- If a function defined on a topological additive group has a support contained in a compact
+      set, then either the function is trivial or the group is locally compact. -/]
 theorem eq_zero_or_locallyCompactSpace_of_support_subset_isCompact_of_group
     [TopologicalSpace α] [Zero α] [T1Space α]
     {f : G → α} {k : Set G} (hk : IsCompact k) (hf : support f ⊆ k) (h'f : Continuous f) :
     f = 0 ∨ LocallyCompactSpace G := by
   refine or_iff_not_imp_left.mpr fun h => ?_
   simp_rw [funext_iff, Pi.zero_apply] at h
-  push_neg at h
+  push Not at h
   obtain ⟨x, hx⟩ : ∃ x, f x ≠ 0 := h
   have : k ∈ 𝓝 x :=
     mem_of_superset (h'f.isOpen_support.mem_nhds hx) hf
@@ -350,8 +367,8 @@ theorem eq_zero_or_locallyCompactSpace_of_support_subset_isCompact_of_group
 /-- If a function defined on a topological group has compact support, then either
 the function is trivial or the group is locally compact. -/
 @[to_additive
-      "If a function defined on a topological additive group has compact support,
-      then either the function is trivial or the group is locally compact."]
+      /-- If a function defined on a topological additive group has compact support,
+      then either the function is trivial or the group is locally compact. -/]
 theorem HasCompactSupport.eq_zero_or_locallyCompactSpace_of_group
     [TopologicalSpace α] [Zero α] [T1Space α]
     {f : G → α} (hf : HasCompactSupport f) (h'f : Continuous f) :

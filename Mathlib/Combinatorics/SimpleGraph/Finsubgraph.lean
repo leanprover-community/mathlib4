@@ -3,8 +3,10 @@ Copyright (c) 2022 Joanna Choules. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joanna Choules
 -/
-import Mathlib.CategoryTheory.CofilteredSystem
-import Mathlib.Combinatorics.SimpleGraph.Subgraph
+module
+
+public import Mathlib.CategoryTheory.CofilteredSystem
+public import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
 /-!
 # Homomorphisms from finite subgraphs
@@ -18,7 +20,7 @@ for homomorphisms to a finite codomain.
   infinite) graph `G` has a homomorphism to some finite graph `F`, then there is also a homomorphism
   `G →g F`.
 
-## Notations
+## Notation
 
 `→fg` is a module-local variant on `→g` where the domain is a finite subgraph of some supergraph
 `G`.
@@ -29,6 +31,8 @@ The proof here uses compactness as formulated in `nonempty_sections_of_finite_in
 finite subgraphs `G'' ≤ G'`, the inverse system `finsubgraphHomFunctor` restricts homomorphisms
 `G' →fg F` to domain `G''`.
 -/
+
+@[expose] public section
 
 
 open Set CategoryTheory
@@ -76,13 +80,13 @@ lemma coe_inf (G₁ G₂ : G.Finsubgraph) : ↑(G₁ ⊓ G₂) = (G₁ ⊓ G₂ 
 lemma coe_sdiff (G₁ G₂ : G.Finsubgraph) : ↑(G₁ \ G₂) = (G₁ \ G₂ : G.Subgraph) := rfl
 
 instance instGeneralizedCoheytingAlgebra : GeneralizedCoheytingAlgebra G.Finsubgraph :=
-  Subtype.coe_injective.generalizedCoheytingAlgebra _ coe_sup coe_inf coe_bot coe_sdiff
+  Subtype.coe_injective.generalizedCoheytingAlgebra _ .rfl .rfl coe_sup coe_inf coe_bot coe_sdiff
 
 section Finite
 variable [Finite V]
 
 instance instTop : Top G.Finsubgraph where top := ⟨⊤, finite_univ⟩
-instance instHasCompl : HasCompl G.Finsubgraph where compl G' := ⟨G'ᶜ, Set.toFinite _⟩
+instance instCompl : Compl G.Finsubgraph where compl G' := ⟨G'ᶜ, Set.toFinite _⟩
 instance instHNot : HNot G.Finsubgraph where hnot G' := ⟨￢G', Set.toFinite _⟩
 instance instHImp : HImp G.Finsubgraph where himp G₁ G₂ := ⟨G₁ ⇨ G₂, Set.toFinite _⟩
 instance instSupSet : SupSet G.Finsubgraph where sSup s := ⟨⨆ G ∈ s, ↑G, Set.toFinite _⟩
@@ -110,8 +114,8 @@ lemma coe_iInf {ι : Sort*} (f : ι → G.Finsubgraph) : ⨅ i, f i = (⨅ i, f 
   rw [iInf, coe_sInf, iInf_range]
 
 instance instCompletelyDistribLattice : CompletelyDistribLattice G.Finsubgraph :=
-  Subtype.coe_injective.completelyDistribLattice _ coe_sup coe_inf coe_sSup coe_sInf coe_top coe_bot
-    coe_compl coe_himp coe_hnot coe_sdiff
+  Subtype.coe_injective.completelyDistribLattice _ .rfl .rfl coe_sup coe_inf coe_sSup coe_sInf
+    coe_top coe_bot coe_compl coe_himp coe_hnot coe_sdiff
 
 end Finite
 end Finsubgraph
@@ -141,9 +145,9 @@ def FinsubgraphHom.restrict {G' G'' : G.Finsubgraph} (h : G'' ≤ G') (f : G' �
 
 /-- The inverse system of finite homomorphisms. -/
 def finsubgraphHomFunctor (G : SimpleGraph V) (F : SimpleGraph W) :
-    G.Finsubgraphᵒᵖ ⥤ Type max u v where
+    G.Finsubgraphᵒᵖ ⥤ Type (max u v) where
   obj G' := G'.unop →fg F
-  map g f := f.restrict (CategoryTheory.leOfHom g.unop)
+  map g := TypeCat.ofHom (fun f ↦ f.restrict (CategoryTheory.leOfHom g.unop))
 
 /-- If every finite subgraph of a graph `G` has a homomorphism to a finite graph `F`, then there is
 a homomorphism from the whole of `G` to `F`. -/
@@ -179,7 +183,7 @@ theorem nonempty_hom_of_forall_finite_subgraph_hom [Finite W]
       Quiver.Hom.op (CategoryTheory.homOfLE singletonFinsubgraph_le_adj_right)
     rw [← hu hv, ← hu hv']
     -- Porting note: was `apply Hom.map_adj`
-    refine Hom.map_adj (u (Opposite.op (finsubgraphOfAdj e))) ?_
+    apply Hom.map_adj (u _) ?_
     -- `v` and `v'` are definitionally adjacent in `finsubgraphOfAdj e`
     simp [finsubgraphOfAdj]
 

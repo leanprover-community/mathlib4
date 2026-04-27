@@ -3,9 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Homology.HomologicalComplex
-import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-import Mathlib.CategoryTheory.Abelian.Basic
+module
+
+public import Mathlib.Algebra.Homology.HomologicalComplex
+public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
+public import Mathlib.CategoryTheory.Abelian.Basic
 
 /-!
 ## Moore complex
@@ -28,6 +30,8 @@ This functor is one direction of the Dold-Kan equivalence, which we're still wor
 * https://ncatlab.org/nlab/show/Moore+complex
 -/
 
+@[expose] public section
+
 
 universe v u
 
@@ -37,9 +41,11 @@ open CategoryTheory CategoryTheory.Limits
 
 open Opposite
 
+open scoped Simplicial
+
 namespace AlgebraicTopology
 
-variable {C : Type*} [Category C] [Abelian C]
+variable {C : Type*} [Category* C] [Abelian C]
 
 attribute [local instance] Abelian.hasPullbacks
 
@@ -55,7 +61,7 @@ variable (X : SimplicialObject C)
 
 /-- The normalized Moore complex in degree `n`, as a subobject of `X n`.
 -/
-def objX : ∀ n : ℕ, Subobject (X.obj (op (SimplexCategory.mk n)))
+def objX : ∀ n : ℕ, Subobject (X.obj (op ⦋n⦌))
   | 0 => ⊤
   | n + 1 => Finset.univ.inf fun k : Fin (n + 1) => kernelSubobject (X.δ k.succ)
 
@@ -66,6 +72,7 @@ def objX : ∀ n : ℕ, Subobject (X.obj (op (SimplexCategory.mk n)))
     objX X (n + 1) = Finset.univ.inf fun k : Fin (n + 1) => kernelSubobject (X.δ k.succ) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The differentials in the normalized Moore complex.
 -/
 @[simp]
@@ -88,6 +95,7 @@ def objD : ∀ n : ℕ, (objX X (n + 1) : C) ⟶ (objX X n : C)
     rw [← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ i.succ (by simp)),
       Category.assoc, kernelSubobject_arrow_comp_assoc, zero_comp, comp_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
   -- It's a pity we need to do a case split here;
     -- after the first rw the proofs are almost identical
@@ -117,17 +125,16 @@ variable {X} {Y : SimplicialObject C} (f : X ⟶ Y)
 @[simps!]
 def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
   ChainComplex.ofHom _ _ _ _ _ _
-    (fun n => factorThru _ (arrow _ ≫ f.app (op (SimplexCategory.mk n))) (by
+    (fun n => factorThru _ (arrow _ ≫ f.app (op ⦋n⦌)) (by
       cases n <;> dsimp
       · apply top_factors
       · refine (finset_inf_factors _).mpr fun i _ => kernelSubobject_factors _ _ ?_
         rw [Category.assoc, SimplicialObject.δ, ← f.naturality,
           ← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ i (by simp)),
           Category.assoc]
-        erw [kernelSubobject_arrow_comp_assoc]
-        rw [zero_comp, comp_zero]))
+        rw [← SimplicialObject.δ_def, kernelSubobject_arrow_comp_assoc, zero_comp, comp_zero]))
     fun n => by
-    cases n <;> dsimp [objD, objX] <;> aesop_cat
+    cases n <;> dsimp [objD, objX] <;> cat_disch
 
 end NormalizedMooreComplex
 
@@ -147,7 +154,7 @@ def normalizedMooreComplex : SimplicialObject C ⥤ ChainComplex C ℕ where
   obj := obj
   map f := map f
 
--- Porting note: removed @[simp] as it is not in normal form
+-- Not `@[simp]` as `simp` can prove this.
 theorem normalizedMooreComplex_objD (X : SimplicialObject C) (n : ℕ) :
     ((normalizedMooreComplex C).obj X).d (n + 1) n = NormalizedMooreComplex.objD X n :=
   ChainComplex.of_d _ _ (d_squared X) n

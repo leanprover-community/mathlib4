@@ -3,7 +3,9 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Loic Simon
 -/
-import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
+module
+
+public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
 
 /-!
 # Unsigned Hahn decomposition theorem
@@ -27,6 +29,8 @@ This file proves the unsigned version of the Hahn decomposition theorem.
 
 Hahn decomposition
 -/
+
+public section
 
 assert_not_exists MeasureTheory.Measure.rnDeriv
 assert_not_exists MeasureTheory.VectorMeasure
@@ -102,22 +106,21 @@ theorem hahn_decomposition (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMe
       simp_rw [f, Nat.Ico_succ_singleton, Finset.inf_singleton]
       linarith
     · intro n (hmn : m ≤ n) ih
-      have : γ + (γ - 2 * (1 / 2) ^ m + (1 / 2) ^ (n + 1)) ≤ γ + d (f m (n + 1)) := by
-        calc
-          γ + (γ - 2 * (1 / 2) ^ m + (1 / 2) ^ (n + 1)) =
-              γ + (γ - 2 * (1 / 2) ^ m + ((1 / 2) ^ n - (1 / 2) ^ (n + 1))) := by
-            rw [pow_succ, mul_one_div, _root_.sub_half]
-          _ = γ - (1 / 2) ^ (n + 1) + (γ - 2 * (1 / 2) ^ m + (1 / 2) ^ n) := by
-            simp only [sub_eq_add_neg]; abel
-          _ ≤ d (e (n + 1)) + d (f m n) := add_le_add (le_of_lt <| he₂ _) ih
-          _ ≤ d (e (n + 1)) + d (f m n \ e (n + 1)) + d (f m (n + 1)) := by
-            rw [f_succ _ _ hmn, d_split (f m n) (e (n + 1)) (he₁ _), add_assoc]
-          _ = d (e (n + 1) ∪ f m n) + d (f m (n + 1)) := by
-            rw [d_split (e (n + 1) ∪ f m n) (e (n + 1)), union_diff_left, union_inter_cancel_left]
-            · abel
-            · exact he₁ _
-          _ ≤ γ + d (f m (n + 1)) := add_le_add_right (d_le_γ _ <| (he₁ _).union (hf _ _)) _
-      exact (add_le_add_iff_left γ).1 this
+      refine le_of_add_le_add_left (a := γ) ?_
+      calc
+        γ + (γ - 2 * (1 / 2) ^ m + (1 / 2) ^ (n + 1)) =
+            γ + (γ - 2 * (1 / 2) ^ m + ((1 / 2) ^ n - (1 / 2) ^ (n + 1))) := by
+          rw [pow_succ, mul_one_div, _root_.sub_half]
+        _ = γ - (1 / 2) ^ (n + 1) + (γ - 2 * (1 / 2) ^ m + (1 / 2) ^ n) := by
+          simp only [sub_eq_add_neg]; abel
+        _ ≤ d (e (n + 1)) + d (f m n) := add_le_add (le_of_lt <| he₂ _) ih
+        _ ≤ d (e (n + 1)) + d (f m n \ e (n + 1)) + d (f m (n + 1)) := by
+          rw [f_succ _ _ hmn, d_split (f m n) (e (n + 1)) (he₁ _), add_assoc]
+        _ = d (e (n + 1) ∪ f m n) + d (f m (n + 1)) := by
+          rw [d_split (e (n + 1) ∪ f m n) (e (n + 1)), union_diff_left, union_inter_cancel_left]
+          · abel
+          · exact he₁ _
+        _ ≤ γ + d (f m (n + 1)) := by grw [d_le_γ _ <| (he₁ _).union (hf _ _)]
   let s := ⋃ m, ⋂ n, f m n
   have γ_le_d_s : γ ≤ d s := by
     have hγ : Tendsto (fun m : ℕ => γ - 2 * (1 / 2) ^ m) atTop (𝓝 γ) := by

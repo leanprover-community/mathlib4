@@ -3,10 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
-import Mathlib.AlgebraicTopology.SimplicialSet.Boundary
-import Mathlib.AlgebraicTopology.SimplicialSet.Horn
-import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
+module
+
+public import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
+public import Mathlib.AlgebraicTopology.SimplicialSet.Boundary
+public import Mathlib.AlgebraicTopology.SimplicialSet.Horn
+public import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
 
 /-!
 # Cofibrations and fibrations in the category of simplicial sets
@@ -20,6 +22,8 @@ Then, when stating lemmas about cofibrations of simplicial sets, it is advisable
 to use the assumption `[Mono f]` instead of `[Cofibration f]`.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory HomotopicalAlgebra MorphismProperty Simplicial
 
@@ -42,10 +46,12 @@ which consists of horn inclusions `Λ[n, i].ι : Λ[n, i] ⟶ Δ[n]` (for positi
 def J : MorphismProperty SSet.{u} :=
   ⨆ n, .ofHoms (fun (i : Fin (n + 2)) ↦ Λ[n + 1, i].ι)
 
-lemma horn_ι_mem_J (n : ℕ) (i : Fin (n + 2)) :
-    J (horn.{u} (n + 1) i).ι := by
-  simp only [J, iSup_iff]
-  exact ⟨n, ⟨i⟩⟩
+lemma horn_ι_mem_J (n : ℕ) [NeZero n] (i : Fin (n + 1)) :
+    J (horn.{u} n i).ι := by
+  obtain _ | n := n
+  · exact (NeZero.ne 0 rfl).elim
+  · simp only [J, iSup_iff]
+    exact ⟨n, ⟨i⟩⟩
 
 lemma I_le_monomorphisms : I.{u} ≤ monomorphisms _ := by
   rintro _ _ _ ⟨n⟩

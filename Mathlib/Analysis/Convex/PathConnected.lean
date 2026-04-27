@@ -3,9 +3,11 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Analysis.Convex.Basic
-import Mathlib.LinearAlgebra.Projection
-import Mathlib.Topology.Connected.PathConnected
+module
+
+public import Mathlib.Analysis.Convex.Basic
+public import Mathlib.LinearAlgebra.Projection
+public import Mathlib.Topology.Connected.PathConnected
 
 /-!
 # Segment between 2 points as a bundled path
@@ -18,8 +20,10 @@ then use it to show that a nonempty convex set is path connected.
 In particular, a topological vector space over `ℝ` is path connected.
 -/
 
-open Set
-open scoped Convex
+@[expose] public section
+
+open AffineMap Set
+open scoped Convex unitInterval
 
 variable {E : Type*} [AddCommGroup E] [Module ℝ E]
   [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E]
@@ -29,7 +33,8 @@ namespace Path
 /-- The path from `a` to `b` going along a straight line segment -/
 @[simps]
 protected def segment (a b : E) : Path a b where
-  toFun t := AffineMap.lineMap a b (t : ℝ)
+  toFun t := lineMap a b (t : ℝ)
+  continuous_toFun := by dsimp [lineMap]; fun_prop
   source' := by simp
   target' := by simp
 
@@ -43,18 +48,26 @@ protected theorem segment_same (a : E) : Path.segment a a = .refl a := by ext; s
 
 @[simp]
 protected theorem segment_symm (a b : E) : (Path.segment a b).symm = .segment b a := by
-  ext; simp [AffineMap.lineMap_apply_one_sub]
+  ext; simp
 
 @[simp]
 theorem segment_add_segment (a b c d : E) :
     (Path.segment a b).add (.segment c d) = .segment (a + c) (b + d) := by
   ext
-  simp [AffineMap.lineMap_apply_module, add_add_add_comm]
+  simp [lineMap_apply_module, add_add_add_comm]
 
 @[simp]
 theorem cast_segment {a b c d : E} (hac : c = a) (hbd : d = b) :
     (Path.segment a b).cast hac hbd = .segment c d := by
   subst_vars; rfl
+
+theorem eqOn_extend_segment (a b : E) :
+    EqOn (Path.segment a b).extend (AffineMap.lineMap a b) I := by
+  intro t ht
+  simp [ht]
+
+theorem segment_injective_of_ne {a b : E} (hne : a ≠ b) :
+    Function.Injective (Path.segment a b) := (lineMap_injective _ hne).comp Subtype.coe_injective
 
 end Path
 
@@ -98,8 +111,24 @@ theorem isPathConnected_compl_of_isPathConnected_compl_zero {p q : Submodule ℝ
     (hpq : IsCompl p q) (hpc : IsPathConnected ({0}ᶜ : Set p)) : IsPathConnected (qᶜ : Set E) := by
   convert (hpc.image continuous_subtype_val).add q.isPathConnected using 1
   trans Submodule.prodEquivOfIsCompl p q hpq '' ({0}ᶜ ×ˢ univ)
-  · rw [prod_univ, LinearEquiv.image_eq_preimage]
+  · rw [prod_univ, LinearEquiv.image_eq_preimage_symm]
     ext
     simp
   · ext
     simp [mem_add, and_assoc]
+
+section Real
+
+theorem segment_image_Ico {x y : ℝ} (h : x < y) : (Path.segment x y) '' Ico 0 1 = Ico x y := by
+  simp_rw [Path.segment_apply, ← image_image _ Subtype.val (Ico 0 1)]
+  simp only [lineMap_apply, vsub_eq_sub, smul_eq_mul, vadd_eq_add, image_subtype_val_Ico,
+    Icc.coe_zero, Icc.coe_one]
+  convert image_affine_Ico (sub_pos_of_lt h) x 0 1 using 2 <;> ring
+
+theorem segment_image_Ioc {x y : ℝ} (h : x < y) : (Path.segment x y) '' Ioc 0 1 = Ioc x y := by
+  simp_rw [Path.segment_apply, ← image_image _ Subtype.val (Ioc 0 1)]
+  simp only [lineMap_apply, vsub_eq_sub, smul_eq_mul, vadd_eq_add, image_subtype_val_Ioc,
+    Icc.coe_zero, Icc.coe_one]
+  convert image_affine_Ioc (sub_pos_of_lt h) x 0 1 using 2 <;> ring
+
+end Real

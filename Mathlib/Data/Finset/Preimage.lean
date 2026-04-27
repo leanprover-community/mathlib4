@@ -3,14 +3,17 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Finset.Pi
-import Mathlib.Data.Finset.Sigma
-import Mathlib.Data.Finset.Sum
-import Mathlib.Data.Set.Finite.Basic
+module
+
+public import Mathlib.Data.Finset.Pi
+public import Mathlib.Data.Finset.Sigma
+public import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Preimage of a `Finset` under an injective map.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset.sum
 
@@ -45,6 +48,12 @@ theorem preimage_empty {f : α → β} : preimage ∅ f (by simp [InjOn]) = ∅ 
 @[simp]
 theorem preimage_univ {f : α → β} [Fintype α] [Fintype β] (hf) : preimage univ f hf = univ :=
   Finset.coe_injective (by simp)
+
+@[simp]
+theorem disjoint_preimage {f : α → β} {s t : Finset β}
+    {hs : Set.InjOn f (f ⁻¹' ↑s)} {ht : Set.InjOn f (f ⁻¹' ↑t)} (hd : Disjoint s t) :
+    Disjoint (s.preimage f hs) (t.preimage f ht) := by
+  grind [not_disjoint_iff, mem_preimage]
 
 @[simp]
 theorem preimage_inter [DecidableEq α] [DecidableEq β] {f : α → β} {s t : Finset β}
@@ -99,6 +108,12 @@ theorem image_preimage [DecidableEq β] (f : α → β) (s : Finset β) [∀ x, 
     simp only [coe_image, coe_preimage, coe_filter, Set.image_preimage_eq_inter_range,
       ← Set.sep_mem_eq]; rfl
 
+theorem image_eq_preimage_of_leftInvOn_injOn {α β : Type*} [DecidableEq β] {f : α → β}
+    {g : β → α} {s : Finset α} (hgf : Set.LeftInvOn g f s) (ginj : Set.InjOn g (g ⁻¹' s)) :
+    s.image f = s.preimage g ginj := by
+  simp only [SetLike.ext'_iff, coe_preimage, coe_image]
+  rw [Set.image_eq_preimage_of_leftInvOn_injOn hgf ginj]
+
 theorem image_preimage_of_bij [DecidableEq β] (f : α → β) (s : Finset β)
     (hf : Set.BijOn f (f ⁻¹' ↑s) ↑s) : image f (preimage s f hf.injOn) = s :=
   Finset.coe_inj.1 <| by simpa using hf.image_eq
@@ -114,6 +129,30 @@ theorem subset_map_iff {f : α ↪ β} {s : Finset β} {t : Finset α} :
     s ⊆ t.map f ↔ ∃ u ⊆ t, s = u.map f := by
   classical
   simp_rw [map_eq_image, subset_image_iff, eq_comm]
+
+@[simp]
+theorem sup_preimage_self {α β : Type*} [Nonempty α] [SemilatticeSup β] [OrderBot β]
+    {s : Finset β} {f : α → β} (hf : Set.BijOn f (f ⁻¹' ↑s) s) :
+    (preimage s f hf.2.1).sup f = s.sup id := by
+  classical
+  have hfinvs : ∀ x ∈ s, (f ∘ invFunOn f (f ⁻¹' ↑s)) x = id x := hf.invOn_invFunOn.2
+  rw [← sup_congr (Eq.refl s) hfinvs, ← sup_image]
+  congr
+  exact (image_eq_preimage_of_leftInvOn_injOn hf.invOn_invFunOn.2 hf.2.1).symm
+
+lemma sup_preimage_val_id [Lattice α] [OrderBot α] {P : α → Prop}
+    (Psup : ∀ ⦃s t : α⦄, P s → P t → P (s ⊔ t)) (Pbot : P ⊥) {t : Finset α}
+    (ht : ∀ x ∈ t, P x) :
+    letI := Subtype.semilatticeSup Psup
+    letI := Subtype.orderBot Pbot
+    (t.preimage Subtype.val Subtype.val_injective.injOn).sup id =
+      (⟨t.sup id, sup_induction Pbot (fun _ h _ => Psup h) ht⟩ : Subtype P) := by
+  letI : OrderBot (Subtype P) := Subtype.orderBot Pbot
+  ext
+  simp only [sup_coe, id_eq]
+  apply sup_preimage_self
+  refine ⟨mapsTo_preimage _ _, injOn_of_injective Subtype.val_injective, ?_⟩
+  intro x hx; simpa using ⟨hx, ht x hx⟩
 
 theorem sigma_preimage_mk {β : α → Type*} [DecidableEq α] (s : Finset (Σ a, β a)) (t : Finset α) :
     t.sigma (fun a => s.preimage (Sigma.mk a) sigma_mk_injective.injOn) = {a ∈ s | a.1 ∈ t} := by
@@ -154,6 +193,7 @@ def restrictPreimageFinset (e : α ≃ β) (s : Finset β) : (s.preimage e e.inj
 
 end Equiv
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Reindexing and then restricting to a `Finset` is the same as first restricting to the preimage
 of this `Finset` and then reindexing. -/
 lemma Finset.restrict_comp_piCongrLeft {π : β → Type*} (s : Finset β) (e : α ≃ β) :

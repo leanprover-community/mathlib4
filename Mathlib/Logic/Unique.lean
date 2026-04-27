@@ -3,8 +3,11 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Logic.IsEmpty
-import Mathlib.Tactic.Inhabit
+module
+
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.Logic.IsEmpty.Defs
+public import Mathlib.Tactic.Inhabit
 
 /-!
 # Types with a unique term
@@ -19,7 +22,7 @@ In other words, a type that is `Inhabited` and a `Subsingleton`.
 
 ## Main statements
 
-* `Unique.mk'`: an inhabited subsingleton type is `Unique`. This can not be an instance because it
+* `Unique.mk'`: an inhabited subsingleton type is `Unique`. This cannot be an instance because it
   would lead to loops in typeclass inference.
 
 * `Function.Surjective.unique`: if the domain of a surjective function is `Unique`, then its
@@ -38,6 +41,8 @@ rather than a `Prop`-valued predicate,
 for good definitional properties of the default term.
 
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -58,17 +63,12 @@ theorem unique_iff_existsUnique (α : Sort u) : Nonempty (Unique α) ↔ ∃! _ 
   ⟨fun ⟨u⟩ ↦ ⟨u.default, trivial, fun a _ ↦ u.uniq a⟩,
    fun ⟨a, _, h⟩ ↦ ⟨⟨⟨a⟩, fun _ ↦ h _ trivial⟩⟩⟩
 
-@[deprecated (since := "2024-12-17")] alias unique_iff_exists_unique := unique_iff_existsUnique
-
 theorem unique_subtype_iff_existsUnique {α} (p : α → Prop) :
     Nonempty (Unique (Subtype p)) ↔ ∃! a, p a :=
   ⟨fun ⟨u⟩ ↦ ⟨u.default.1, u.default.2, fun a h ↦ congr_arg Subtype.val (u.uniq ⟨a, h⟩)⟩,
    fun ⟨a, ha, he⟩ ↦ ⟨⟨⟨⟨a, ha⟩⟩, fun ⟨b, hb⟩ ↦ by
       congr
       exact he b hb⟩⟩⟩
-
-@[deprecated (since := "2024-12-17")]
-alias unique_subtype_iff_exists_unique := unique_subtype_iff_existsUnique
 
 /-- Given an explicit `a : α` with `Subsingleton α`, we can construct
 a `Unique α` instance. This is a def because the typeclass search cannot
@@ -82,13 +82,14 @@ abbrev uniqueOfSubsingleton {α : Sort*} [Subsingleton α] (a : α) : Unique α 
 
 instance PUnit.instUnique : Unique PUnit.{u} where
   default := PUnit.unit
-  uniq x := subsingleton x _
+  uniq x := ext x _
 
 @[simp]
 theorem PUnit.default_eq_unit : (default : PUnit) = PUnit.unit :=
   rfl
 
 /-- Every provable proposition is unique, as all proofs are equal. -/
+@[implicit_reducible]
 def uniqueProp {p : Prop} (h : p) : Unique.{0} p where
   default := h
   uniq _ := rfl
@@ -153,7 +154,7 @@ theorem unique_iff_subsingleton_and_nonempty (α : Sort u) :
 
 variable {α : Sort*}
 
-@[simp]
+@[simp, push ←]
 theorem Pi.default_def {β : α → Sort v} [∀ a, Inhabited (β a)] :
     @default (∀ a, β a) _ = fun a : α ↦ @default (β a) _ :=
   rfl
@@ -197,15 +198,18 @@ protected theorem Surjective.subsingleton [Subsingleton α] (hf : Surjective f) 
 
 /-- If the domain of a surjective function is a singleton,
 then the codomain is a singleton as well. -/
+@[implicit_reducible]
 protected def Surjective.unique {α : Sort u} (f : α → β) (hf : Surjective f) [Unique.{u} α] :
     Unique β :=
   @Unique.mk' _ ⟨f default⟩ hf.subsingleton
 
 /-- If `α` is inhabited and admits an injective map to a subsingleton type, then `α` is `Unique`. -/
+@[implicit_reducible]
 protected def Injective.unique [Inhabited α] [Subsingleton β] (hf : Injective f) : Unique α :=
   @Unique.mk' _ _ hf.subsingleton
 
 /-- If a constant function is surjective, then the codomain is a singleton. -/
+@[implicit_reducible]
 def Surjective.uniqueOfSurjectiveConst (α : Type*) {β : Type*} (b : β)
     (h : Function.Surjective (Function.const α b)) : Unique β :=
   @uniqueOfSubsingleton _ (subsingleton_of_forall_eq b <| h.forall.mpr fun _ ↦ rfl) b
@@ -242,7 +246,7 @@ namespace Option
 
 /-- `Option α` is a `Subsingleton` if and only if `α` is empty. -/
 theorem subsingleton_iff_isEmpty {α : Type u} : Subsingleton (Option α) ↔ IsEmpty α :=
-  ⟨fun h ↦ ⟨fun x ↦ Option.noConfusion <| @Subsingleton.elim _ h x none⟩,
+  ⟨fun h ↦ ⟨fun x ↦ Option.noConfusion rfl (heq_of_eq (@Subsingleton.elim _ h x none))⟩,
    fun h ↦ ⟨fun x y ↦
      Option.casesOn x (Option.casesOn y rfl fun x ↦ h.elim x) fun x ↦ h.elim x⟩⟩
 

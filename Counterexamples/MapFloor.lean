@@ -42,11 +42,9 @@ noncomputable section
 
 open Function Int Polynomial
 
-open scoped Polynomial
-
 /-- The integers with infinitesimals adjoined. -/
 def IntWithEpsilon :=
-  ℤ[X] deriving Nontrivial
+  ℤ[X] deriving Nontrivial, CommRing, Inhabited
 
 local notation "ℤ[ε]" => IntWithEpsilon
 
@@ -54,21 +52,12 @@ local notation "ε" => (X : ℤ[ε])
 
 namespace IntWithEpsilon
 
-instance nontrivial : Nontrivial IntWithEpsilon := inferInstance
-
--- The `CommRing` and `Inhabited` instances should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-instance commRing : CommRing IntWithEpsilon := Polynomial.commRing
-
-instance inhabited : Inhabited IntWithEpsilon := ⟨69⟩
-
 instance linearOrder : LinearOrder ℤ[ε] :=
   LinearOrder.lift' (toLex ∘ coeff) coeff_injective
 
-instance isOrderedAddMonoid : IsOrderedAddMonoid ℤ[ε] := by
-  refine (toLex.injective.comp coeff_injective).isOrderedAddMonoid _ ?_ ?_ ?_ <;>
-  (first | rfl | intros) <;> funext <;>
-  (simp only [comp_apply, Pi.toLex_apply, coeff_add]; rfl)
+instance isOrderedAddMonoid : IsOrderedAddMonoid ℤ[ε] :=
+  Function.Injective.isOrderedAddMonoid
+    (toLex ∘ coeff) (fun _ _ => funext fun _ => coeff_add _ _ _) .rfl
 
 theorem pos_iff {p : ℤ[ε]} : 0 < p ↔ 0 < p.trailingCoeff := by
   rw [trailingCoeff]
@@ -80,12 +69,16 @@ theorem pos_iff {p : ℤ[ε]} : 0 < p ↔ 0 < p.trailingCoeff := by
   exact (natTrailingDegree_le_of_ne_zero hn.2.ne').antisymm
     (le_natTrailingDegree (by rintro rfl; cases hn.2.false) fun m hm => (hn.1 _ hm).symm)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : ZeroLEOneClass ℤ[ε] :=
   { zero_le_one := Or.inr ⟨0, by simp⟩ }
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsStrictOrderedRing ℤ[ε] :=
   .of_mul_pos fun p q => by simp_rw [pos_iff]; rw [trailingCoeff_mul]; exact mul_pos
 
+set_option backward.isDefEq.respectTransparency false in
+set_option linter.flexible false in
 instance : FloorRing ℤ[ε] :=
   FloorRing.ofFloor _ (fun p => if (p.coeff 0 : ℤ[ε]) ≤ p then p.coeff 0 else p.coeff 0 - 1)
     fun p q => by
@@ -121,6 +114,7 @@ def forgetEpsilons : ℤ[ε] →+*o ℤ where
 theorem forgetEpsilons_apply (p : ℤ[ε]) : forgetEpsilons p = coeff p 0 :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The floor of `n - ε` is `n - 1` but its image under `forgetEpsilons` is `n`, whose floor is
 itself. -/
 theorem forgetEpsilons_floor_lt (n : ℤ) :

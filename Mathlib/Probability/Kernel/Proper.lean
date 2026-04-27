@@ -3,7 +3,9 @@ Copyright (c) 2024 Yaël Dillies, Kalle Kytölä, Kin Yau James Wong. All rights
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Kalle Kytölä, Kin Yau James Wong
 -/
-import Mathlib.Probability.Kernel.Composition.CompNotation
+module
+
+public import Mathlib.Probability.Kernel.Composition.CompNotation
 
 /-!
 # Proper kernels
@@ -24,6 +26,8 @@ event.
 
 Prove the `integral` versions of the `lintegral` lemmas below
 -/
+
+public section
 
 open MeasureTheory ENNReal NNReal Set
 open scoped ProbabilityTheory
@@ -48,7 +52,7 @@ structure IsProper (π : Kernel[𝓑, 𝓧] X X) : Prop where
 lemma isProper_iff_restrict_eq_indicator_smul (h𝓑𝓧 : 𝓑 ≤ 𝓧) :
     IsProper π ↔ ∀ ⦃B : Set X⦄ (hB : MeasurableSet[𝓑] B) (x : X),
       π.restrict (h𝓑𝓧 _ hB) x = B.indicator (fun _ ↦ (1 : ℝ≥0∞)) x • π x := by
-  refine ⟨fun ⟨h⟩ ↦ ?_, fun h ↦ ⟨?_⟩⟩ <;> simpa only [inf_eq_left.2 h𝓑𝓧] using h
+  refine ⟨fun ⟨h⟩ ↦ ?_, fun h ↦ ⟨?_⟩⟩ <;> simpa +instances only [inf_eq_left.2 h𝓑𝓧] using h
 
 lemma isProper_iff_inter_eq_indicator_mul (h𝓑𝓧 : 𝓑 ≤ 𝓧) :
     IsProper π ↔
@@ -74,9 +78,6 @@ lemma IsProper.setLIntegral_eq_comp (hπ : IsProper π) (h𝓑𝓧 : 𝓑 ≤ �
   rw [← lintegral_indicator (h𝓑𝓧 _ hB)]
   rfl
 
-@[deprecated (since := "2025-01-24")]
-alias IsProper.setLIntegral_eq_bind := IsProper.setLIntegral_eq_comp
-
 /-- Auxiliary lemma for `IsProper.lintegral_mul` and
 `IsProper.setLIntegral_eq_indicator_mul_lintegral`. -/
 private lemma IsProper.lintegral_indicator_mul_indicator (hπ : IsProper π) (h𝓑𝓧 : 𝓑 ≤ 𝓧)
@@ -89,7 +90,6 @@ private lemma IsProper.lintegral_indicator_mul_indicator (hπ : IsProper π) (h�
     Pi.one_apply, one_mul]
   rw [← hπ.inter_eq_indicator_mul h𝓑𝓧 hA hB, inter_comm]
 
-set_option linter.style.multiGoal false in -- false positive
 /-- Auxiliary lemma for `IsProper.lintegral_mul` and
 `IsProper.setLIntegral_eq_indicator_mul_lintegral`. -/
 private lemma IsProper.lintegral_indicator_mul (hπ : IsProper π) (h𝓑𝓧 : 𝓑 ≤ 𝓧)
@@ -106,7 +106,7 @@ private lemma IsProper.lintegral_indicator_mul (hπ : IsProper π) (h𝓑𝓧 : 
   · rintro f' hf'_meas hf'_mono hf'
     simp_rw [ENNReal.mul_iSup]
     rw [lintegral_iSup (by measurability), lintegral_iSup hf'_meas hf'_mono, ENNReal.mul_iSup]
-    simp_rw [hf']
+    · simp_rw [hf']
     · exact hf'_mono.const_mul (zero_le _)
 
 lemma IsProper.setLIntegral_eq_indicator_mul_lintegral (hπ : IsProper π) (h𝓑𝓧 : 𝓑 ≤ 𝓧)

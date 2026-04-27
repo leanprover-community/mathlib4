@@ -3,9 +3,11 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.BoxIntegral.Basic
-import Mathlib.Analysis.BoxIntegral.Partition.Additive
-import Mathlib.Analysis.Calculus.FDeriv.Prod
+module
+
+public import Mathlib.Analysis.BoxIntegral.Basic
+public import Mathlib.Analysis.BoxIntegral.Partition.Additive
+public import Mathlib.Analysis.Calculus.FDeriv.Prod
 
 /-!
 # Divergence integral for Henstock-Kurzweil integral
@@ -37,6 +39,8 @@ Henstock-Kurzweil integral.
 
 Henstock-Kurzweil integral, integral, Stokes theorem, divergence theorem
 -/
+
+public section
 
 open scoped NNReal ENNReal Topology BoxIntegral
 
@@ -166,7 +170,7 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
   -- Thus our statement follows from some local estimates.
   change HasIntegral I GP (fun x => f' x (Pi.single i 1)) _ (F I)
   refine HasIntegral.of_le_Henstock_of_forall_isLittleO gp_le ?_ ?_ _ s hs ?_ ?_
-  ·-- We use the volume as an upper estimate.
+  · -- We use the volume as an upper estimate.
     exact (volume : Measure (Fin (n + 1) → ℝ)).toBoxAdditive.restrict _ le_top
   · exact fun J => ENNReal.toReal_nonneg
   · intro c x hx ε ε0
@@ -216,8 +220,8 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
           _ ≤ δ + δ := add_le_add (hJδ J.upper_mem_Icc) (hJδ J.lower_mem_Icc)
           _ = 2 * δ := (two_mul δ).symm
       calc
-        ∏ j, |J.upper j - J.lower j| ≤ ∏ j : Fin (n + 1), 2 * δ :=
-          prod_le_prod (fun _ _ => abs_nonneg _) fun j _ => this j
+        ∏ j, |J.upper j - J.lower j| ≤ ∏ j : Fin (n + 1), 2 * δ := by
+          gcongr with j _; exact this j
         _ = (2 * δ) ^ (n + 1) := by simp
     · refine (norm_integral_le_of_le_const (fun y hy => hdfδ _ (Hmaps _ Hu hy) _
         (Hmaps _ Hl hy)) volume).trans ?_
@@ -245,7 +249,8 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
       (Hc.mono <| Box.le_iff_Icc.1 hle) hxJ ε'0 (fun y hy => Hδ ?_) (hJc rfl)).trans ?_
     · exact ⟨hJδ hy, Box.le_iff_Icc.1 hle hy⟩
     · rw [mul_right_comm (2 : ℝ), ← Box.volume_apply]
-      exact mul_le_mul_of_nonneg_right hlt.le ENNReal.toReal_nonneg
+      gcongr
+      exacts [by dsimp; positivity, by simp]
 
 /-- Divergence theorem for a Henstock-Kurzweil style integral.
 

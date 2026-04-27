@@ -3,7 +3,9 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Meromorphic.Basic
+module
+
+public import Mathlib.Analysis.Meromorphic.Basic
 
 /-!
 # Principles of Isolated Zeros and Identity Principles for Meromorphic Functions
@@ -16,6 +18,8 @@ Compared to the results for analytic functions, the principles established here 
 complicated to state. This is because meromorphic functions can be modified at will along discrete
 subsets and still remain meromorphic.
 -/
+
+public section
 
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -47,7 +51,7 @@ that is codiscrete within `U`, then `f` vanishes in a punctured neighbourhood of
 
 For a typical application, let `U` be a path in the complex plane and let `x` be one of the end
 points. If `f` is meromorphic at `x` and vanishes on `U`, then it will vanish in a punctured
-neighbourhood of `x`, which intersects `U` non-trivally but is not contained in `U`.
+neighbourhood of `x`, which intersects `U` non-trivially but is not contained in `U`.
 
 The assumption that `x` is not an isolated point of `U` is expressed as `AccPt x (𝓟 U)`. See
 `accPt_iff_frequently` and `accPt_iff_frequently_nhdsNE` for useful reformulations.
@@ -89,5 +93,30 @@ theorem eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin (hf : MeromorphicAt
     f =ᶠ[𝓝[≠] x] g := by
   rw [eventuallyEq_iff_sub] at *
   apply (hf.sub hg).eventuallyEq_zero_nhdsNE_of_eventuallyEq_zero_codiscreteWithin h₁x h₂x h
+
+/-
+Variant of `MeromorphicAt.eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin`, as a statement
+about meromorphic functions that agree outside a set codiscrete within a perfect set.
+-/
+theorem eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin_preperfect (hf : MeromorphicAt f x)
+    (hg : MeromorphicAt g x) (hx : x ∈ U) (hU : Preperfect U) (h : f =ᶠ[codiscreteWithin U] g) :
+    f =ᶠ[𝓝[≠] x] g :=
+  hf.eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin hg hx (hU x hx) h
+
+/-
+Variant of `MeromorphicAt.eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin`, as a statement
+about meromorphic functions agreeing in a neighborhood of a preperfect set.
+-/
+theorem eventually_nhdsSet_eventuallyEq_codiscreteWithin (hf : MeromorphicOn f U)
+    (hg : MeromorphicOn g U) (hU : Preperfect U) (h : f =ᶠ[codiscreteWithin U] g) :
+    ∀ᶠ x in 𝓝ˢ U, f =ᶠ[𝓝[≠] x] g := by
+  rw [eventually_nhdsSet_iff_exists]
+  use {x | f =ᶠ[𝓝[≠] x] g}
+  simp only [Set.mem_setOf_eq, imp_self, implies_true, and_true]
+  constructor
+  · apply isOpen_setOf_eventually_nhdsWithin
+  · intro x hx
+    rw [Set.mem_setOf]
+    exact eventuallyEq_nhdsNE_of_eventuallyEq_codiscreteWithin (hf x hx) (hg x hx) hx (hU x hx) h
 
 end MeromorphicAt

@@ -3,7 +3,9 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Isomorphisms about functors which preserve (co)limits
@@ -14,8 +16,10 @@ We also show that we can commute `IsLimit.lift` of a preserved limit with `Funct
 `(PreservesLimit.preserves t).lift (G.mapCone c₂) = G.map (t.lift c₂)`.
 
 The duals of these are also given. For functors which preserve (co)limits of specific shapes, see
-`preserves/shapes.lean`.
+the files in the directory `Mathlib/CategoryTheory/Limits/Preserves/Shapes/`.
 -/
+
+@[expose] public section
 
 
 universe w' w v₁ v₂ u₁ u₂
@@ -54,15 +58,12 @@ theorem preservesLimitIso_hom_π (j) :
     (preservesLimitIso G F).hom ≫ limit.π _ j = G.map (limit.π F j) :=
   IsLimit.conePointUniqueUpToIso_hom_comp _ _ j
 
-@[deprecated (since := "2024-10-27")] alias preservesLimitsIso_hom_π := preservesLimitIso_hom_π
-
 @[reassoc (attr := simp)]
 theorem preservesLimitIso_inv_π (j) :
     (preservesLimitIso G F).inv ≫ G.map (limit.π F j) = limit.π _ j :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ j
 
-@[deprecated (since := "2024-10-27")] alias preservesLimitsIso_inv_π := preservesLimitIso_inv_π
-
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem lift_comp_preservesLimitIso_hom (t : Cone F) :
     G.map (limit.lift _ t) ≫ (preservesLimitIso G F).hom =
@@ -70,16 +71,14 @@ theorem lift_comp_preservesLimitIso_hom (t : Cone F) :
   ext
   simp [← G.map_comp]
 
-@[deprecated (since := "2024-10-27")]
-alias lift_comp_preservesLimitsIso_hom := lift_comp_preservesLimitIso_hom
-
 instance : IsIso (limit.post F G) :=
   show IsIso (preservesLimitIso G F).hom from inferInstance
 
 variable [PreservesLimitsOfShape J G] [HasLimitsOfShape J D] [HasLimitsOfShape J C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `C, D` has all limits of shape `J`, and `G` preserves them, then `preservesLimitsIso` is
-functorial wrt `F`. -/
+functorial w.r.t. `F`. -/
 @[simps!]
 def preservesLimitNatIso : lim ⋙ G ≅ (Functor.whiskeringRight J C D).obj G ⋙ lim :=
   NatIso.ofComponents (fun F => preservesLimitIso G F)
@@ -97,7 +96,7 @@ section
 variable [HasLimit F] [HasLimit (F ⋙ G)]
 
 /-- If the comparison morphism `G.obj (limit F) ⟶ limit (F ⋙ G)` is an isomorphism, then `G`
-    preserves limits of `F`. -/
+preserves limits of `F`. -/
 lemma preservesLimit_of_isIso_post [IsIso (limit.post F G)] : PreservesLimit F G :=
   preservesLimit_of_preserves_limit_cone (limit.isLimit F) (by
     convert IsLimit.ofPointIso (limit.isLimit (F ⋙ G))
@@ -109,6 +108,7 @@ section
 
 variable [PreservesColimit F G]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem preserves_desc_mapCocone (c₁ c₂ : Cocone F) (t : IsColimit c₁) :
     (isColimitOfPreserves G t).desc (G.mapCocone _) = G.map (t.desc c₂) :=
@@ -128,17 +128,12 @@ theorem ι_preservesColimitIso_inv (j : J) :
     colimit.ι _ j ≫ (preservesColimitIso G F).inv = G.map (colimit.ι F j) :=
   IsColimit.comp_coconePointUniqueUpToIso_inv _ (colimit.isColimit (F ⋙ G)) j
 
-@[deprecated (since := "2024-10-27")]
-alias ι_preservesColimitsIso_inv := ι_preservesColimitIso_inv
-
 @[reassoc (attr := simp)]
 theorem ι_preservesColimitIso_hom (j : J) :
     G.map (colimit.ι F j) ≫ (preservesColimitIso G F).hom = colimit.ι (F ⋙ G) j :=
   (isColimitOfPreserves G (colimit.isColimit _)).comp_coconePointUniqueUpToIso_hom _ j
 
-@[deprecated (since := "2024-10-27")]
-alias ι_preservesColimitsIso_hom := ι_preservesColimitIso_hom
-
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem preservesColimitIso_inv_comp_desc (t : Cocone F) :
     (preservesColimitIso G F).inv ≫ G.map (colimit.desc _ t) =
@@ -146,16 +141,14 @@ theorem preservesColimitIso_inv_comp_desc (t : Cocone F) :
   ext
   simp [← G.map_comp]
 
-@[deprecated (since := "2024-10-27")]
-alias preservesColimitsIso_inv_comp_desc := preservesColimitIso_inv_comp_desc
-
 instance : IsIso (colimit.post F G) :=
   show IsIso (preservesColimitIso G F).inv from inferInstance
 
 variable [PreservesColimitsOfShape J G] [HasColimitsOfShape J D] [HasColimitsOfShape J C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `C, D` has all colimits of shape `J`, and `G` preserves them, then `preservesColimitIso`
-is functorial wrt `F`. -/
+is functorial w.r.t. `F`. -/
 @[simps!]
 def preservesColimitNatIso : colim ⋙ G ≅ (Functor.whiskeringRight J C D).obj G ⋙ colim :=
   NatIso.ofComponents (fun F => preservesColimitIso G F)
@@ -176,7 +169,7 @@ section
 variable [HasColimit F] [HasColimit (F ⋙ G)]
 
 /-- If the comparison morphism `colimit (F ⋙ G) ⟶ G.obj (colimit F)` is an isomorphism, then `G`
-    preserves colimits of `F`. -/
+preserves colimits of `F`. -/
 lemma preservesColimit_of_isIso_post [IsIso (colimit.post F G)] : PreservesColimit F G :=
   preservesColimit_of_preserves_colimit_cocone (colimit.isColimit F) (by
     convert IsColimit.ofPointIso (colimit.isColimit (F ⋙ G))

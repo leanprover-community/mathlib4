@@ -3,14 +3,13 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Data.Nat.Cast.Field
-import Mathlib.GroupTheory.Abelianization
-import Mathlib.GroupTheory.GroupAction.CardCommute
-import Mathlib.GroupTheory.SpecificGroups.Dihedral
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.LinearCombination
-import Mathlib.Tactic.Qify
+module
+
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.GroupTheory.Abelianization.Finite
+public import Mathlib.GroupTheory.SpecificGroups.Dihedral
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.Qify
 
 /-!
 # Commuting Probability
@@ -22,6 +21,8 @@ This file introduces the commuting probability of finite groups.
 ## TODO
 * Neumann's theorem.
 -/
+
+@[expose] public section
 
 assert_not_exists Ideal TwoSidedIdeal
 
@@ -76,14 +77,13 @@ theorem commProb_le_one : commProb M ≤ 1 := by
 
 variable {M}
 
-theorem commProb_eq_one_iff [h : Nonempty M] :
-    commProb M = 1 ↔ Std.Commutative ((· * ·) : M → M → M) := by
+theorem commProb_eq_one_iff [h : Nonempty M] : commProb M = 1 ↔ IsMulCommutative M := by
   classical
   haveI := Fintype.ofFinite M
   rw [commProb, ← Set.coe_setOf, Nat.card_eq_fintype_card, Nat.card_eq_fintype_card]
   rw [div_eq_one_iff_eq, ← Nat.cast_pow, Nat.cast_inj, sq, ← card_prod,
     set_fintype_card_eq_univ_iff, Set.eq_univ_iff_forall]
-  · exact ⟨fun h ↦ ⟨fun x y ↦ h (x, y)⟩, fun h x ↦ h.comm x.1 x.2⟩
+  · exact ⟨fun h ↦ ⟨⟨fun x y ↦ h (x, y)⟩⟩, fun h x ↦ mul_comm' ..⟩
   · exact pow_ne_zero 2 (Nat.cast_ne_zero.mpr card_ne_zero)
 
 variable (G : Type*) [Group G]
@@ -102,7 +102,7 @@ theorem Subgroup.commProb_subgroup_le : commProb H ≤ commProb G * (H.index : �
       commuting pairs as `H`. -/
   rw [commProb_def, commProb_def, div_le_iff₀, mul_assoc, ← mul_pow, ← Nat.cast_mul,
     mul_comm H.index, H.card_mul_index, div_mul_cancel₀, Nat.cast_le]
-  · refine Finite.card_le_of_injective (fun p ↦ ⟨⟨p.1.1, p.1.2⟩, Subtype.ext_iff.mp p.2⟩) ?_
+  · refine Nat.card_le_card_of_injective (fun p ↦ ⟨⟨p.1.1, p.1.2⟩, Subtype.ext_iff.mp p.2⟩) ?_
     exact fun p q h ↦ by simpa only [Subtype.ext_iff, Prod.ext_iff] using h
   · exact pow_ne_zero 2 (Nat.cast_ne_zero.mpr Finite.card_pos.ne')
   · exact pow_pos (Nat.cast_pos.mpr Finite.card_pos) 2
@@ -112,7 +112,7 @@ theorem Subgroup.commProb_quotient_le [H.Normal] : commProb (G ⧸ H) ≤ commPr
       conjugacy classes as `G ⧸ H`. -/
   rw [commProb_def', commProb_def', div_le_iff₀, mul_assoc, ← Nat.cast_mul, ← Subgroup.index,
     H.card_mul_index, div_mul_cancel₀, Nat.cast_le]
-  · apply Finite.card_le_of_surjective
+  · apply Nat.card_le_card_of_surjective
     show Function.Surjective (ConjClasses.map (QuotientGroup.mk' H))
     exact ConjClasses.map_surjective Quotient.mk''_surjective
   · exact Nat.cast_ne_zero.mpr Finite.card_pos.ne'
@@ -122,7 +122,7 @@ variable (G)
 
 theorem inv_card_commutator_le_commProb : (↑(Nat.card (commutator G)))⁻¹ ≤ commProb G :=
   (inv_le_iff_one_le_mul₀ (Nat.cast_pos.mpr Finite.card_pos)).mpr
-    (le_trans (ge_of_eq (commProb_eq_one_iff.mpr ⟨(Abelianization.commGroup G).mul_comm⟩))
+    (le_trans (ge_of_eq (commProb_eq_one_iff.mpr (Abelianization.commGroup G).to_isCommutative))
       (commutator G).commProb_quotient_le)
 
 -- Construction of group with commuting probability 1/n
@@ -135,13 +135,6 @@ lemma commProb_odd {n : ℕ} (hn : Odd n) :
   rw [div_div, ← mul_assoc]
   congr
   norm_num
-
-private lemma div_two_lt {n : ℕ} (h0 : n ≠ 0) : n / 2 < n :=
-  Nat.div_lt_self (Nat.pos_of_ne_zero h0) (lt_add_one 1)
-
-private lemma div_four_lt : {n : ℕ} → (h0 : n ≠ 0) → (h1 : n ≠ 1) → n / 4 + 1 < n
-  | 0 | 1 | 2 | 3 => by decide
-  | n + 4 => by omega
 
 /-- A list of Dihedral groups whose product will have commuting probability `1 / n`. -/
 def reciprocalFactors (n : ℕ) : List ℕ :=
@@ -179,6 +172,7 @@ abbrev Product (l : List ℕ) : Type :=
 lemma commProb_nil : commProb (Product []) = 1 := by
   simp [Product, commProb_pi]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma commProb_cons (n : ℕ) (l : List ℕ) :
     commProb (Product (n :: l)) = commProb (DihedralGroup n) * commProb (Product l) := by
   simp only [commProb_pi, Fin.prod_univ_succ, Fin.getElem_fin, Fin.val_succ, Fin.val_zero,
@@ -193,21 +187,14 @@ theorem commProb_reciprocal (n : ℕ) :
   by_cases h1 : n = 1
   · rw [h1, reciprocalFactors_one, commProb_nil, Nat.cast_one, div_one]
   rcases Nat.even_or_odd n with h2 | h2
-  · have := div_two_lt h0
-    rw [reciprocalFactors_even h0 h2, commProb_cons, commProb_reciprocal (n / 2),
+  · rw [reciprocalFactors_even h0 h2, commProb_cons, commProb_reciprocal (n / 2),
         commProb_odd (by decide)]
-    field_simp [h0, h2.two_dvd]
+    simp [field, h2.two_dvd]
     norm_num
-  · have := div_four_lt h0 h1
-    rw [reciprocalFactors_odd h1 h2, commProb_cons, commProb_reciprocal (n / 4 + 1)]
-    have key : n % 4 = 1 ∨ n % 4 = 3 := Nat.odd_mod_four_iff.mp (Nat.odd_iff.mp h2)
-    have hn : Odd (n % 4) := by rcases key with h | h <;> rw [h] <;> decide
-    rw [commProb_odd (hn.mul h2), div_mul_div_comm, mul_one, div_eq_div_iff, one_mul] <;> norm_cast
-    · have h0 : (n % 4) ^ 2 + 3 = n % 4 * 4 := by rcases key with h | h <;> rw [h] <;> norm_num
-      have h1 := (Nat.div_add_mod n 4).symm
-      zify at h0 h1 ⊢
-      linear_combination (h0 + h1 * (n % 4)) * n
-    · have := hn.pos.ne'
-      positivity
+  · rw [reciprocalFactors_odd h1 h2, commProb_cons, commProb_reciprocal (n / 4 + 1)]
+    have hn : Odd (n % 4) := by grind
+    rw [commProb_odd (hn.mul h2), div_mul_div_comm, div_eq_div_iff] <;> norm_cast
+    · grind [Nat.div_add_mod n 4, Odd]
+    · positivity [hn.pos.ne']
 
 end DihedralGroup

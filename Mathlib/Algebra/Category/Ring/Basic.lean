@@ -3,10 +3,11 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Algebra.Category.Grp.Basic
-import Mathlib.Algebra.Ring.Equiv
-import Mathlib.Algebra.Ring.PUnit
-import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
+module
+
+public import Mathlib.Algebra.Category.Grp.Basic
+public import Mathlib.Algebra.Ring.Equiv
+public import Mathlib.Algebra.Ring.PUnit
 
 /-!
 # Category instances for `Semiring`, `Ring`, `CommSemiring`, and `CommRing`.
@@ -20,16 +21,31 @@ We introduce the bundled categories:
 along with the relevant forgetful functors between them.
 -/
 
+@[expose] public section
+
 universe u v
 
 open CategoryTheory
 
 /-- The category of semirings. -/
 structure SemiRingCat where
-  private mk ::
+  /-- The object in the category of semirings associated to a type equipped with the appropriate
+  typeclasses. -/
+  of ::
   /-- The underlying type. -/
   carrier : Type u
   [semiring : Semiring carrier]
+
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prevents `SemiRingCat.of R` being printed as `{ carrier := R, semiring := ... }` by
+`delabStructureInstance`. -/
+@[app_delab SemiRingCat.of]
+meta def SemiRingCat.delabOf : Delab := delabApp
+
+end Notation
 
 attribute [instance] SemiRingCat.semiring
 
@@ -37,21 +53,17 @@ initialize_simps_projections SemiRingCat (-semiring)
 
 namespace SemiRingCat
 
-instance : CoeSort (SemiRingCat) (Type u) :=
+instance : CoeSort SemiRingCat (Type u) :=
   ⟨SemiRingCat.carrier⟩
 
 attribute [coe] SemiRingCat.carrier
-
-/-- The object in the category of R-algebras associated to a type equipped with the appropriate
-typeclasses. This is the preferred way to construct a term of `SemiRingCat`. -/
-abbrev of (R : Type u) [Semiring R] : SemiRingCat :=
-  ⟨R⟩
 
 lemma coe_of (R : Type u) [Semiring R] : (of R : Type u) = R :=
   rfl
 
 lemma of_carrier (R : SemiRingCat.{u}) : of R = R := rfl
 
+set_option backward.privateInPublic true in
 variable {R} in
 /-- The type of morphisms in `SemiRingCat`. -/
 @[ext]
@@ -60,11 +72,15 @@ structure Hom (R S : SemiRingCat.{u}) where
   /-- The underlying ring hom. -/
   hom' : R →+* S
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category SemiRingCat where
   Hom R S := Hom R S
   id R := ⟨RingHom.id R⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory.{u} SemiRingCat (fun R S => R →+* S) where
   hom := Hom.hom'
   ofHom f := ⟨f⟩
@@ -139,14 +155,11 @@ unif_hint forget_obj_eq_coe (R R' : SemiRingCat) where
   R ≟ R' ⊢
   (forget SemiRingCat).obj R ≟ SemiRingCat.carrier R'
 
-lemma forget_obj {R : SemiRingCat} : (forget SemiRingCat).obj R = R := rfl
-
-lemma forget_map {R S : SemiRingCat} (f : R ⟶ S) :
-    (forget SemiRingCat).map f = f :=
-  rfl
+@[deprecated (since := "2026-02-16")] alias forget_obj := CategoryTheory.forget_obj
+@[deprecated (since := "2026-02-16")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
 
 instance {R : SemiRingCat} : Semiring ((forget SemiRingCat).obj R) :=
-  (inferInstance : Semiring R.carrier)
+  inferInstanceAs <| Semiring R.carrier
 
 instance hasForgetToMonCat : HasForget₂ SemiRingCat MonCat where
   forget₂ :=
@@ -158,7 +171,13 @@ instance hasForgetToAddCommMonCat : HasForget₂ SemiRingCat AddCommMonCat where
     { obj := fun R ↦ AddCommMonCat.of R
       map := fun f ↦ AddCommMonCat.ofHom f.hom.toAddMonoidHom }
 
-/-- Ring equivalence are isomorphisms in category of semirings -/
+@[simp] lemma forget₂_monCat_map {R S : SemiRingCat} (f : R ⟶ S) (x) :
+    (forget₂ SemiRingCat MonCat).map f x = f x := rfl
+
+@[simp] lemma forget₂_addCommMonCat_map {R S : SemiRingCat} (f : R ⟶ S) (x) :
+    (forget₂ SemiRingCat AddCommMonCat).map f x = f x := rfl
+
+/-- Ring equivalences are isomorphisms in category of semirings -/
 @[simps]
 def _root_.RingEquiv.toSemiRingCatIso {R S : Type u} [Semiring R] [Semiring S] (e : R ≃+* S) :
     of R ≅ of S where
@@ -176,10 +195,23 @@ end SemiRingCat
 
 /-- The category of rings. -/
 structure RingCat where
-  private mk ::
+  /-- The object in the category of rings associated to a type equipped with the appropriate
+  typeclasses. -/
+  of ::
   /-- The underlying type. -/
   carrier : Type u
   [ring : Ring carrier]
+
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prevents `RingCat.of R` being printed as `{ carrier := R, ring := ... }` by
+`delabStructureInstance`. -/
+@[app_delab RingCat.of]
+meta def RingCat.delabOf : Delab := delabApp
+
+end Notation
 
 attribute [instance] RingCat.ring
 
@@ -187,21 +219,17 @@ initialize_simps_projections RingCat (-ring)
 
 namespace RingCat
 
-instance : CoeSort (RingCat) (Type u) :=
+instance : CoeSort RingCat (Type u) :=
   ⟨RingCat.carrier⟩
 
 attribute [coe] RingCat.carrier
-
-/-- The object in the category of R-algebras associated to a type equipped with the appropriate
-typeclasses. This is the preferred way to construct a term of `RingCat`. -/
-abbrev of (R : Type u) [Ring R] : RingCat :=
-  ⟨R⟩
 
 lemma coe_of (R : Type u) [Ring R] : (of R : Type u) = R :=
   rfl
 
 lemma of_carrier (R : RingCat.{u}) : of R = R := rfl
 
+set_option backward.privateInPublic true in
 variable {R} in
 /-- The type of morphisms in `RingCat`. -/
 @[ext]
@@ -210,11 +238,15 @@ structure Hom (R S : RingCat.{u}) where
   /-- The underlying ring hom. -/
   hom' : R →+* S
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category RingCat where
   Hom R S := Hom R S
   id R := ⟨RingHom.id R⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory.{u} RingCat (fun R S => R →+* S) where
   hom := Hom.hom'
   ofHom f := ⟨f⟩
@@ -293,19 +325,19 @@ unif_hint forget_obj_eq_coe (R R' : RingCat) where
   R ≟ R' ⊢
   (forget RingCat).obj R ≟ RingCat.carrier R'
 
-lemma forget_obj {R : RingCat} : (forget RingCat).obj R = R := rfl
-
-lemma forget_map {R S : RingCat} (f : R ⟶ S) :
-    (forget RingCat).map f = f :=
-  rfl
+@[deprecated (since := "2026-02-16")] alias forget_obj := CategoryTheory.forget_obj
+@[deprecated (since := "2026-02-16")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
 
 instance {R : RingCat} : Ring ((forget RingCat).obj R) :=
-  (inferInstance : Ring R.carrier)
+  inferInstanceAs <| Ring R.carrier
 
 instance hasForgetToSemiRingCat : HasForget₂ RingCat SemiRingCat where
   forget₂ :=
     { obj := fun R ↦ SemiRingCat.of R
       map := fun f ↦ SemiRingCat.ofHom f.hom }
+
+@[simp] lemma forget₂_map {R S : RingCat} (f : R ⟶ S) (x) :
+    (forget₂ RingCat SemiRingCat).map f x = f x := rfl
 
 /-- The forgetful functor from `RingCat` to `SemiRingCat` is fully faithful. -/
 def fullyFaithfulForget₂ToSemiRingCat :
@@ -315,12 +347,12 @@ def fullyFaithfulForget₂ToSemiRingCat :
 instance : (forget₂ RingCat SemiRingCat).Full :=
   fullyFaithfulForget₂ToSemiRingCat.full
 
-instance hasForgetToAddCommGrp : HasForget₂ RingCat AddCommGrp where
+instance hasForgetToAddCommGrp : HasForget₂ RingCat AddCommGrpCat where
   forget₂ :=
-    { obj := fun R ↦ AddCommGrp.of R
-      map := fun f ↦ AddCommGrp.ofHom f.hom.toAddMonoidHom }
+    { obj := fun R ↦ AddCommGrpCat.of R
+      map := fun f ↦ AddCommGrpCat.ofHom f.hom.toAddMonoidHom }
 
-/-- Ring equivalence are isomorphisms in category of semirings -/
+/-- Ring equivalences are isomorphisms in category of rings -/
 @[simps]
 def _root_.RingEquiv.toRingCatIso {R S : Type u} [Ring R] [Ring S] (e : R ≃+* S) :
     of R ≅ of S where
@@ -338,10 +370,23 @@ end RingCat
 
 /-- The category of commutative semirings. -/
 structure CommSemiRingCat where
-  private mk ::
+  /-- The object in the category of commutative semirings associated to a type equipped with the
+  appropriate typeclasses. -/
+  of ::
   /-- The underlying type. -/
   carrier : Type u
   [commSemiring : CommSemiring carrier]
+
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prevents `CommSemiRingCat.of R` being printed as `{ carrier := R, commSemiring := ... }` by
+`delabStructureInstance`. -/
+@[app_delab CommSemiRingCat.of]
+meta def CommSemiRingCat.delabOf : Delab := delabApp
+
+end Notation
 
 attribute [instance] CommSemiRingCat.commSemiring
 
@@ -354,16 +399,12 @@ instance : CoeSort (CommSemiRingCat) (Type u) :=
 
 attribute [coe] CommSemiRingCat.carrier
 
-/-- The object in the category of R-algebras associated to a type equipped with the appropriate
-typeclasses. This is the preferred way to construct a term of `CommSemiRingCat`. -/
-abbrev of (R : Type u) [CommSemiring R] : CommSemiRingCat :=
-  ⟨R⟩
-
 lemma coe_of (R : Type u) [CommSemiring R] : (of R : Type u) = R :=
   rfl
 
 lemma of_carrier (R : CommSemiRingCat.{u}) : of R = R := rfl
 
+set_option backward.privateInPublic true in
 variable {R} in
 /-- The type of morphisms in `CommSemiRingCat`. -/
 @[ext]
@@ -372,11 +413,15 @@ structure Hom (R S : CommSemiRingCat.{u}) where
   /-- The underlying ring hom. -/
   hom' : R →+* S
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category CommSemiRingCat where
   Hom R S := Hom R S
   id R := ⟨RingHom.id R⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory.{u} CommSemiRingCat (fun R S => R →+* S) where
   hom := Hom.hom'
   ofHom f := ⟨f⟩
@@ -420,7 +465,7 @@ lemma hom_ext {R S : CommSemiRingCat} {f g : R ⟶ S} (hf : f.hom = g.hom) : f =
 
 @[simp]
 lemma hom_ofHom {R S : Type u} [CommSemiring R] [CommSemiring S] (f : R →+* S) :
-  (ofHom f).hom = f := rfl
+    (ofHom f).hom = f := rfl
 
 @[simp]
 lemma ofHom_hom {R S : CommSemiRingCat} (f : R ⟶ S) :
@@ -452,15 +497,14 @@ unif_hint forget_obj_eq_coe (R R' : CommSemiRingCat) where
   R ≟ R' ⊢
   (forget CommSemiRingCat).obj R ≟ CommSemiRingCat.carrier R'
 
-lemma forget_obj {R : CommSemiRingCat} : (forget CommSemiRingCat).obj R = R := rfl
-
-lemma forget_map {R S : CommSemiRingCat} (f : R ⟶ S) :
-    (forget CommSemiRingCat).map f = f :=
-  rfl
+@[deprecated (since := "2026-02-16")] alias forget_obj := CategoryTheory.forget_obj
+@[deprecated (since := "2026-02-16")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
 
 instance {R : CommSemiRingCat} : CommSemiring ((forget CommSemiRingCat).obj R) :=
-  (inferInstance : CommSemiring R.carrier)
+  inferInstanceAs <| CommSemiring R.carrier
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance hasForgetToSemiRingCat : HasForget₂ CommSemiRingCat SemiRingCat where
   forget₂ :=
     { obj := fun R ↦ ⟨R⟩
@@ -480,7 +524,7 @@ instance hasForgetToCommMonCat : HasForget₂ CommSemiRingCat CommMonCat where
     { obj := fun R ↦ CommMonCat.of R
       map := fun f ↦ CommMonCat.ofHom f.hom.toMonoidHom }
 
-/-- Ring equivalence are isomorphisms in category of semirings -/
+/-- Ring equivalences are isomorphisms in category of commutative semirings -/
 @[simps]
 def _root_.RingEquiv.toCommSemiRingCatIso
     {R S : Type u} [CommSemiring R] [CommSemiring S] (e : R ≃+* S) :
@@ -499,10 +543,23 @@ end CommSemiRingCat
 
 /-- The category of commutative rings. -/
 structure CommRingCat where
-  private mk ::
+  /-- The object in the category of commutative rings associated to a type equipped with the
+  appropriate typeclasses. -/
+  of ::
   /-- The underlying type. -/
   carrier : Type u
   [commRing : CommRing carrier]
+
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prevents `CommRingCat.of R` being printed as `{ carrier := R, commRing := ... }` by
+`delabStructureInstance`. -/
+@[app_delab CommRingCat.of]
+meta def CommRingCat.delabOf : Delab := delabApp
+
+end Notation
 
 attribute [instance] CommRingCat.commRing
 
@@ -510,21 +567,17 @@ initialize_simps_projections CommRingCat (-commRing)
 
 namespace CommRingCat
 
-instance : CoeSort (CommRingCat) (Type u) :=
+instance : CoeSort CommRingCat (Type u) :=
   ⟨CommRingCat.carrier⟩
 
 attribute [coe] CommRingCat.carrier
-
-/-- The object in the category of R-algebras associated to a type equipped with the appropriate
-typeclasses. This is the preferred way to construct a term of `CommRingCat`. -/
-abbrev of (R : Type u) [CommRing R] : CommRingCat :=
-  ⟨R⟩
 
 lemma coe_of (R : Type u) [CommRing R] : (of R : Type u) = R :=
   rfl
 
 lemma of_carrier (R : CommRingCat.{u}) : of R = R := rfl
 
+set_option backward.privateInPublic true in
 variable {R} in
 /-- The type of morphisms in `CommRingCat`. -/
 @[ext]
@@ -533,11 +586,15 @@ structure Hom (R S : CommRingCat.{u}) where
   /-- The underlying ring hom. -/
   hom' : R →+* S
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category CommRingCat where
   Hom R S := Hom R S
   id R := ⟨RingHom.id R⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory.{u} CommRingCat (fun R S => R →+* S) where
   hom := Hom.hom'
   ofHom f := ⟨f⟩
@@ -580,8 +637,7 @@ lemma hom_ext {R S : CommRingCat} {f g : R ⟶ S} (hf : f.hom = g.hom) : f = g :
   Hom.ext hf
 
 @[simp]
-lemma hom_ofHom {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) :
-  (ofHom f).hom = f := rfl
+lemma hom_ofHom {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : (ofHom f).hom = f := rfl
 
 @[simp]
 lemma ofHom_hom {R S : CommRingCat} (f : R ⟶ S) :
@@ -608,7 +664,8 @@ lemma hom_inv_apply {R S : CommRingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) 
 instance : Inhabited CommRingCat :=
   ⟨of PUnit⟩
 
-lemma forget_obj {R : CommRingCat} : (forget CommRingCat).obj R = R := rfl
+@[deprecated (since := "2026-02-16")] alias forget_obj := CategoryTheory.forget_obj
+@[deprecated (since := "2026-02-16")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
 
 /-- This unification hint helps with problems of the form `(forget ?C).obj R =?= carrier R'`.
 
@@ -618,12 +675,8 @@ unif_hint forget_obj_eq_coe (R R' : CommRingCat) where
   R ≟ R' ⊢
   (forget CommRingCat).obj R ≟ CommRingCat.carrier R'
 
-lemma forget_map {R S : CommRingCat} (f : R ⟶ S) :
-    (forget CommRingCat).map f = f :=
-  rfl
-
 instance {R : CommRingCat} : CommRing ((forget CommRingCat).obj R) :=
-  (inferInstance : CommRing R.carrier)
+  inferInstanceAs <| CommRing R.carrier
 
 instance hasForgetToRingCat : HasForget₂ CommRingCat RingCat where
   forget₂ :=
@@ -651,12 +704,12 @@ instance hasForgetToAddCommMonCat : HasForget₂ CommRingCat CommSemiRingCat whe
     { obj := fun R ↦ CommSemiRingCat.of R
       map := fun f ↦ CommSemiRingCat.ofHom f.hom }
 
-@[simps]
+@[simps (nameStem := "commMon")]
 instance : HasForget₂ CommRingCat CommMonCat where
   forget₂ := { obj M := .of M, map f := CommMonCat.ofHom f.hom }
   forget_comp := rfl
 
-/-- Ring equivalence are isomorphisms in category of semirings -/
+/-- Ring equivalences are isomorphisms in category of commutative rings -/
 @[simps]
 def _root_.RingEquiv.toCommRingCatIso
     {R S : Type u} [CommRing R] [CommRing S] (e : R ≃+* S) :
@@ -677,31 +730,31 @@ namespace CategoryTheory.Iso
 
 /-- Build a `RingEquiv` from an isomorphism in the category `SemiRingCat`. -/
 def semiRingCatIsoToRingEquiv {R S : SemiRingCat.{u}} (e : R ≅ S) : R ≃+* S :=
-  RingEquiv.ofHomInv e.hom.hom e.inv.hom (by ext; simp) (by ext; simp)
+  RingEquiv.ofRingHom e.hom.hom e.inv.hom (by ext; simp) (by ext; simp)
 
 /-- Build a `RingEquiv` from an isomorphism in the category `RingCat`. -/
 def ringCatIsoToRingEquiv {R S : RingCat.{u}} (e : R ≅ S) : R ≃+* S :=
-  RingEquiv.ofHomInv e.hom.hom e.inv.hom (by ext; simp) (by ext; simp)
+  RingEquiv.ofRingHom e.hom.hom e.inv.hom (by ext; simp) (by ext; simp)
 
 /-- Build a `RingEquiv` from an isomorphism in the category `CommSemiRingCat`. -/
 def commSemiRingCatIsoToRingEquiv {R S : CommSemiRingCat.{u}} (e : R ≅ S) : R ≃+* S :=
-  RingEquiv.ofHomInv e.hom.hom e.inv.hom (by ext; simp) (by ext; simp)
+  RingEquiv.ofRingHom e.hom.hom e.inv.hom (by ext; simp) (by ext; simp)
 
 /-- Build a `RingEquiv` from an isomorphism in the category `CommRingCat`. -/
 def commRingCatIsoToRingEquiv {R S : CommRingCat.{u}} (e : R ≅ S) : R ≃+* S :=
-  RingEquiv.ofHomInv e.hom.hom e.inv.hom (by ext; simp) (by ext; simp)
+  RingEquiv.ofRingHom e.hom.hom e.inv.hom (by ext; simp) (by ext; simp)
 
 @[simp] lemma semiRingCatIsoToRingEquiv_toRingHom {R S : SemiRingCat.{u}} (e : R ≅ S) :
-  (e.semiRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
+    (e.semiRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
 
 @[simp] lemma ringCatIsoToRingEquiv_toRingHom {R S : RingCat.{u}} (e : R ≅ S) :
-  (e.ringCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
+    (e.ringCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
 
 @[simp] lemma commSemiRingCatIsoToRingEquiv_toRingHom {R S : CommSemiRingCat.{u}} (e : R ≅ S) :
-  (e.commSemiRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
+    (e.commSemiRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
 
 @[simp] lemma commRingCatIsoToRingEquiv_toRingHom {R S : CommRingCat.{u}} (e : R ≅ S) :
-  (e.commRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
+    (e.commRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
 
 end CategoryTheory.Iso
 

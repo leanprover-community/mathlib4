@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Sheaf.ChangeOfRings
-import Mathlib.CategoryTheory.Sites.LocallySurjective
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.ChangeOfRings
+public import Mathlib.CategoryTheory.Sites.LocallySurjective
 
 /-!
 # The associated sheaf of a presheaf of modules
@@ -21,6 +23,8 @@ general construction allows the sheafification of both the presheaf of rings
 and the presheaf of modules.
 
 -/
+
+@[expose] public section
 
 universe w v v₁ u₁ u
 
@@ -47,7 +51,7 @@ end smul
 section
 
 variable {R₀ R : Cᵒᵖ ⥤ RingCat.{u}} (α : R₀ ⟶ R) [Presheaf.IsLocallyInjective J α]
-  {M₀ : PresheafOfModules.{v} R₀} {A : Cᵒᵖ ⥤ AddCommGrp.{v}} (φ : M₀.presheaf ⟶ A)
+  {M₀ : PresheafOfModules.{v} R₀} {A : Cᵒᵖ ⥤ AddCommGrpCat.{v}} (φ : M₀.presheaf ⟶ A)
   [Presheaf.IsLocallyInjective J φ] (hA : Presheaf.IsSeparated J A)
   {X : C} (r : R.obj (Opposite.op X)) (m : A.obj (Opposite.op X)) {P : Presieve X}
   (r₀ : FamilyOfElements (R₀ ⋙ forget _) P) (m₀ : FamilyOfElements (M₀.presheaf ⋙ forget _) P)
@@ -69,6 +73,7 @@ lemma _root_.PresheafOfModules.Sheafify.app_eq_of_isLocallyInjective
     erw [M₀.map_smul, M₀.map_smul, hg.1, hg.2]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isCompatible_map_smul_aux {Y Z : C} (f : Y ⟶ X) (g : Z ⟶ Y)
     (r₀ : R₀.obj (Opposite.op Y)) (r₀' : R₀.obj (Opposite.op Z))
     (m₀ : M₀.obj (Opposite.op Y)) (m₀' : M₀.obj (Opposite.op Z))
@@ -79,7 +84,7 @@ lemma isCompatible_map_smul_aux {Y Z : C} (f : Y ⟶ X) (g : Z ⟶ Y)
     (M₀.map g.op m₀) m₀', M₀.map_smul]
   · rw [hr₀', R.map_comp, RingCat.comp_apply, ← hr₀, ← RingCat.comp_apply, NatTrans.naturality,
       RingCat.comp_apply]
-  · rw [hm₀', A.map_comp, AddCommGrp.coe_comp, Function.comp_apply, ← hm₀]
+  · rw [hm₀', A.map_comp, AddCommGrpCat.coe_comp, Function.comp_apply, ← hm₀]
     erw [NatTrans.naturality_apply φ]
 
 variable (hr₀ : (r₀.map (whiskerRight α (forget _))).IsAmalgamation r)
@@ -99,7 +104,6 @@ lemma isCompatible_map_smul : ((r₀.smul m₀).map (whiskerRight φ (forget _))
   have hb₁ : (φ.app (Opposite.op Y₁)) b₁ = (A.map f₁.op) m := (hm₀ f₁ h₁).symm
   have hb₂ : (φ.app (Opposite.op Y₂)) b₂ = (A.map f₂.op) m := (hm₀ f₂ h₂).symm
   have ha₀ : (α.app (Opposite.op Z)) a₀ = (R.map (f₁.op ≫ g₁.op)) r := by
-    dsimp [a₀]
     rw [← RingCat.comp_apply, NatTrans.naturality, RingCat.comp_apply, ha₁, Functor.map_comp,
       RingCat.comp_apply]
   have hb₀ : (φ.app (Opposite.op Z)) b₀ = (A.map (f₁.op ≫ g₁.op)) m := by
@@ -120,18 +124,18 @@ end Presieve.FamilyOfElements
 
 end CategoryTheory
 
-variable {R₀ : Cᵒᵖ ⥤ RingCat.{u}} {R : Sheaf J RingCat.{u}} (α : R₀ ⟶ R.val)
+variable {R₀ : Cᵒᵖ ⥤ RingCat.{u}} {R : Sheaf J RingCat.{u}} (α : R₀ ⟶ R.obj)
   [Presheaf.IsLocallyInjective J α] [Presheaf.IsLocallySurjective J α]
 
 namespace PresheafOfModules
 
-variable {M₀ : PresheafOfModules.{v} R₀} {A : Sheaf J AddCommGrp.{v}}
-  (φ : M₀.presheaf ⟶ A.val)
+variable {M₀ : PresheafOfModules.{v} R₀} {A : Sheaf J AddCommGrpCat.{v}}
+  (φ : M₀.presheaf ⟶ A.obj)
   [Presheaf.IsLocallyInjective J φ] [Presheaf.IsLocallySurjective J φ]
 
 namespace Sheafify
 
-variable {X Y : Cᵒᵖ} (π : X ⟶ Y) (r r' : R.val.obj X) (m m' : A.val.obj X)
+variable {X Y : Cᵒᵖ} (π : X ⟶ Y) (r r' : R.obj.obj X) (m m' : A.obj.obj X)
 
 /-- Assuming `α : R₀ ⟶ R.val` is the sheafification map of a presheaf of rings `R₀`
 and `φ : M₀.presheaf ⟶ A.val` is the sheafification map of the underlying
@@ -141,9 +145,9 @@ of `x : A.val.obj X` along with the property which makes `x` a good candidate
 for the definition of the scalar multiplication `r • m`. -/
 structure SMulCandidate where
   /-- The candidate for the scalar product `r • m`. -/
-  x : A.val.obj X
-  h ⦃Y : Cᵒᵖ⦄ (f : X ⟶ Y) (r₀ : R₀.obj Y) (hr₀ : α.app Y r₀ = R.val.map f r)
-    (m₀ : M₀.obj Y) (hm₀ : φ.app Y m₀ = A.val.map f m) : A.val.map f x = φ.app Y (r₀ • m₀)
+  x : A.obj.obj X
+  h ⦃Y : Cᵒᵖ⦄ (f : X ⟶ Y) (r₀ : R₀.obj Y) (hr₀ : α.app Y r₀ = R.obj.map f r)
+    (m₀ : M₀.obj Y) (hm₀ : φ.app Y m₀ = A.obj.map f m) : A.obj.map f x = φ.app Y (r₀ • m₀)
 
 /-- Constructor for `SMulCandidate`. -/
 def SMulCandidate.mk' (S : Sieve X.unop) (hS : S ∈ J X.unop)
@@ -151,7 +155,7 @@ def SMulCandidate.mk' (S : Sieve X.unop) (hS : S ∈ J X.unop)
     (m₀ : Presieve.FamilyOfElements (M₀.presheaf ⋙ forget _) S.arrows)
     (hr₀ : (r₀.map (whiskerRight α (forget _))).IsAmalgamation r)
     (hm₀ : (m₀.map (whiskerRight φ (forget _))).IsAmalgamation m)
-    (a : A.val.obj X)
+    (a : A.obj.obj X)
     (ha : ((r₀.smul m₀).map (whiskerRight φ (forget _))).IsAmalgamation a) :
     SMulCandidate α φ r m where
   x := a
@@ -159,12 +163,13 @@ def SMulCandidate.mk' (S : Sieve X.unop) (hS : S ∈ J X.unop)
     apply A.isSeparated _ _ (J.pullback_stable f.unop hS)
     rintro Z g hg
     dsimp at hg
-    rw [← ConcreteCategory.comp_apply, ← A.val.map_comp, ← NatTrans.naturality_apply (D := Ab)]
+    rw [← ConcreteCategory.comp_apply, ← A.obj.map_comp, ← NatTrans.naturality_apply (D := Ab)]
     erw [M₀.map_smul] -- Mismatch between `M₀.map` and `M₀.presheaf.map`
     refine (ha _ hg).trans (app_eq_of_isLocallyInjective α φ A.isSeparated _ _ _ _ ?_ ?_)
     · rw [← RingCat.comp_apply, NatTrans.naturality, RingCat.comp_apply, ha₀]
       apply (hr₀ _ hg).symm.trans
       simp
+      rfl
     · erw [NatTrans.naturality_apply φ, hb₀]
       apply (hm₀ _ hg).symm.trans
       dsimp
@@ -211,11 +216,11 @@ noncomputable instance : Unique (SMulCandidate α φ r m) :=
 noncomputable def smulCandidate : SMulCandidate α φ r m := default
 
 /-- The scalar multiplication on the sheafification of a presheaf of modules. -/
-noncomputable def smul : A.val.obj X := (smulCandidate α φ r m).x
+noncomputable def smul : A.obj.obj X := (smulCandidate α φ r m).x
 
-lemma map_smul_eq {Y : Cᵒᵖ} (f : X ⟶ Y) (r₀ : R₀.obj Y) (hr₀ : α.app Y r₀ = R.val.map f r)
-    (m₀ : M₀.obj Y) (hm₀ : φ.app Y m₀ = A.val.map f m) :
-    A.val.map f (smul α φ r m) = φ.app Y (r₀ • m₀) :=
+lemma map_smul_eq {Y : Cᵒᵖ} (f : X ⟶ Y) (r₀ : R₀.obj Y) (hr₀ : α.app Y r₀ = R.obj.map f r)
+    (m₀ : M₀.obj Y) (hm₀ : φ.app Y m₀ = A.obj.map f m) :
+    A.obj.map f (smul α φ r m) = φ.app Y (r₀ • m₀) :=
   (smulCandidate α φ r m).h f r₀ hr₀ m₀ hm₀
 
 protected lemma one_smul : smul α φ 1 m = m := by
@@ -223,18 +228,21 @@ protected lemma one_smul : smul α φ 1 m = m := by
   rintro Y f ⟨m₀, hm₀⟩
   rw [← hm₀, map_smul_eq α φ 1 m f.op 1 (by simp) m₀ hm₀, one_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 protected lemma zero_smul : smul α φ 0 m = 0 := by
   apply A.isSeparated _ _ (Presheaf.imageSieve_mem J φ m)
   rintro Y f ⟨m₀, hm₀⟩
   rw [map_smul_eq α φ 0 m f.op 0 (by simp) m₀ hm₀, zero_smul, map_zero,
-    (A.val.map f.op).hom.map_zero]
+    (A.obj.map f.op).hom.map_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 protected lemma smul_zero : smul α φ r 0 = 0 := by
   apply A.isSeparated _ _ (Presheaf.imageSieve_mem J α r)
   rintro Y f ⟨r₀, hr₀⟩
-  rw [(A.val.map f.op).hom.map_zero, map_smul_eq α φ r 0 f.op r₀ hr₀ 0 (by simp),
+  rw [(A.obj.map f.op).hom.map_zero, map_smul_eq α φ r 0 f.op r₀ hr₀ 0 (by simp),
     smul_zero, map_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 protected lemma smul_add : smul α φ r (m + m') = smul α φ r m + smul α φ r m' := by
   let S := Presheaf.imageSieve α r ⊓ Presheaf.imageSieve φ m ⊓ Presheaf.imageSieve φ m'
   have hS : S ∈ J X.unop := by
@@ -243,21 +251,22 @@ protected lemma smul_add : smul α φ r (m + m') = smul α φ r m + smul α φ r
   apply A.isSeparated _ _ hS
   rintro Y f ⟨⟨⟨r₀, hr₀⟩, ⟨m₀ : M₀.obj _, hm₀ : (φ.app _) _ = _⟩⟩,
     ⟨m₀' : M₀.obj _, hm₀' : (φ.app _) _ = _⟩⟩
-  rw [(A.val.map f.op).hom.map_add, map_smul_eq α φ r m f.op r₀ hr₀ m₀ hm₀,
+  rw [(A.obj.map f.op).hom.map_add, map_smul_eq α φ r m f.op r₀ hr₀ m₀ hm₀,
     map_smul_eq α φ r m' f.op r₀ hr₀ m₀' hm₀',
     map_smul_eq α φ r (m + m') f.op r₀ hr₀ (m₀ + m₀')
       (by rw [_root_.map_add, _root_.map_add, hm₀, hm₀']),
     smul_add, _root_.map_add]
 
+set_option backward.isDefEq.respectTransparency false in
 protected lemma add_smul : smul α φ (r + r') m = smul α φ r m + smul α φ r' m := by
   let S := Presheaf.imageSieve α r ⊓ Presheaf.imageSieve α r' ⊓ Presheaf.imageSieve φ m
   have hS : S ∈ J X.unop := by
     refine J.intersection_covering (J.intersection_covering ?_ ?_) ?_
     all_goals apply Presheaf.imageSieve_mem
   apply A.isSeparated _ _ hS
-  rintro Y f ⟨⟨⟨r₀ : R₀.obj _, (hr₀ : (α.app (Opposite.op Y)) r₀ = (R.val.map f.op) r)⟩,
-    ⟨r₀' : R₀.obj _, (hr₀' : (α.app (Opposite.op Y)) r₀' = (R.val.map f.op) r')⟩⟩, ⟨m₀, hm₀⟩⟩
-  rw [(A.val.map f.op).hom.map_add, map_smul_eq α φ r m f.op r₀ hr₀ m₀ hm₀,
+  rintro Y f ⟨⟨⟨r₀ : R₀.obj _, (hr₀ : (α.app (Opposite.op Y)) r₀ = (R.obj.map f.op) r)⟩,
+    ⟨r₀' : R₀.obj _, (hr₀' : (α.app (Opposite.op Y)) r₀' = (R.obj.map f.op) r')⟩⟩, ⟨m₀, hm₀⟩⟩
+  rw [(A.obj.map f.op).hom.map_add, map_smul_eq α φ r m f.op r₀ hr₀ m₀ hm₀,
     map_smul_eq α φ r' m f.op r₀' hr₀' m₀ hm₀,
     map_smul_eq α φ (r + r') m f.op (r₀ + r₀') (by rw [_root_.map_add, _root_.map_add, hr₀, hr₀'])
       m₀ hm₀, add_smul, _root_.map_add]
@@ -268,8 +277,8 @@ protected lemma mul_smul : smul α φ (r * r') m = smul α φ r (smul α φ r' m
     refine J.intersection_covering (J.intersection_covering ?_ ?_) ?_
     all_goals apply Presheaf.imageSieve_mem
   apply A.isSeparated _ _ hS
-  rintro Y f ⟨⟨⟨r₀ : R₀.obj _, (hr₀ : (α.app (Opposite.op Y)) r₀ = (R.val.map f.op) r)⟩,
-    ⟨r₀' : R₀.obj _, (hr₀' : (α.app (Opposite.op Y)) r₀' = (R.val.map f.op) r')⟩⟩,
+  rintro Y f ⟨⟨⟨r₀ : R₀.obj _, (hr₀ : (α.app (Opposite.op Y)) r₀ = (R.obj.map f.op) r)⟩,
+    ⟨r₀' : R₀.obj _, (hr₀' : (α.app (Opposite.op Y)) r₀' = (R.obj.map f.op) r')⟩⟩,
     ⟨m₀ : M₀.obj _, hm₀⟩⟩
   rw [map_smul_eq α φ (r * r') m f.op (r₀ * r₀')
     (by rw [map_mul, map_mul, hr₀, hr₀']) m₀ hm₀, mul_smul,
@@ -280,7 +289,8 @@ variable (X)
 
 /-- The module structure on the sections of the sheafification of the underlying
 presheaf of abelian groups of a presheaf of modules. -/
-noncomputable def module : Module (R.val.obj X) (A.val.obj X) where
+@[implicit_reducible]
+noncomputable def module : Module (R.obj.obj X) (A.obj.obj X) where
   smul r m := smul α φ r m
   one_smul := Sheafify.one_smul α φ
   zero_smul := Sheafify.zero_smul α φ
@@ -290,30 +300,30 @@ noncomputable def module : Module (R.val.obj X) (A.val.obj X) where
   mul_smul := Sheafify.mul_smul α φ
 
 protected lemma map_smul :
-    A.val.map π (smul α φ r m) = smul α φ (R.val.map π r) (A.val.map π m) := by
-  let S := Presheaf.imageSieve α (R.val.map π r) ⊓ Presheaf.imageSieve φ (A.val.map π m)
+    A.obj.map π (smul α φ r m) = smul α φ (R.obj.map π r) (A.obj.map π m) := by
+  let S := Presheaf.imageSieve α (R.obj.map π r) ⊓ Presheaf.imageSieve φ (A.obj.map π m)
   have hS : S ∈ J Y.unop := by
     apply J.intersection_covering
     all_goals apply Presheaf.imageSieve_mem
   apply A.isSeparated _ _ hS
   rintro Y f ⟨⟨r₀,
-    (hr₀ : (α.app (Opposite.op Y)).hom r₀ = (R.val.map f.op).hom ((R.val.map π).hom r))⟩,
+    (hr₀ : (α.app (Opposite.op Y)).hom r₀ = (R.obj.map f.op).hom ((R.obj.map π).hom r))⟩,
     ⟨m₀, (hm₀ : (φ.app _) _ = _)⟩⟩
   rw [← ConcreteCategory.comp_apply, ← Functor.map_comp,
     map_smul_eq α φ r m (π ≫ f.op) r₀ (by rw [hr₀, Functor.map_comp, RingCat.comp_apply]) m₀
       (by rw [hm₀, Functor.map_comp, ConcreteCategory.comp_apply]),
-    map_smul_eq α φ (R.val.map π r) (A.val.map π m) f.op r₀ hr₀ m₀ hm₀]
+    map_smul_eq α φ (R.obj.map π r) (A.obj.map π m) f.op r₀ hr₀ m₀ hm₀]
 
 end Sheafify
 
-/-- Assuming `α : R₀ ⟶ R.val` is the sheafification map of a presheaf of rings `R₀`
-and `φ : M₀.presheaf ⟶ A.val` is the sheafification map of the underlying
+/-- Assuming `α : R₀ ⟶ R.obj` is the sheafification map of a presheaf of rings `R₀`
+and `φ : M₀.presheaf ⟶ A.obj` is the sheafification map of the underlying
 sheaf of abelian groups of a presheaf of modules `M₀` over `R₀`, this is
 the sheaf of modules over `R` which is obtained by endowing the sections of
-`A.val` with a scalar multiplication. -/
+`A.obj` with a scalar multiplication. -/
 noncomputable def sheafify : SheafOfModules.{v} R where
-  val := letI := Sheafify.module α φ; ofPresheaf A.val (Sheafify.map_smul _ _)
-  isSheaf := A.cond
+  val := letI := Sheafify.module α φ; ofPresheaf A.obj (Sheafify.map_smul _ _)
+  isSheaf := A.property
 
 /-- The canonical morphism from a presheaf of modules to its associated sheaf. -/
 noncomputable def toSheafify : M₀ ⟶ (restrictScalars α).obj (sheafify α φ).val :=
@@ -333,27 +343,29 @@ lemma toSheafify_app_apply' (X : Cᵒᵖ) (x : M₀.obj X) :
 @[simp]
 lemma toPresheaf_map_toSheafify : (toPresheaf R₀).map (toSheafify α φ) = φ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsLocallyInjective J (toSheafify α φ) := by
   dsimp [IsLocallyInjective]; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsLocallySurjective J (toSheafify α φ) := by
   dsimp [IsLocallySurjective]; infer_instance
 
-variable [J.WEqualsLocallyBijective AddCommGrp.{v}]
+variable [J.WEqualsLocallyBijective AddCommGrpCat.{v}]
 
 /-- The bijection `((sheafify α φ).val ⟶ F) ≃ (M₀ ⟶ (restrictScalars α).obj F)` which
 is part of the universal property of the sheafification of the presheaf of modules `M₀`,
 when `F` is a presheaf of modules which is a sheaf. -/
-noncomputable def sheafifyHomEquiv' {F : PresheafOfModules.{v} R.val}
+noncomputable def sheafifyHomEquiv' {F : PresheafOfModules.{v} R.obj}
     (hF : Presheaf.IsSheaf J F.presheaf) :
     ((sheafify α φ).val ⟶ F) ≃ (M₀ ⟶ (restrictScalars α).obj F) :=
   (restrictHomEquivOfIsLocallySurjective α hF).trans
     (homEquivOfIsLocallyBijective (f := toSheafify α φ)
       (N := (restrictScalars α).obj F) hF)
 
-lemma comp_toPresheaf_map_sheafifyHomEquiv'_symm_hom {F : PresheafOfModules.{v} R.val}
+lemma comp_toPresheaf_map_sheafifyHomEquiv'_symm_hom {F : PresheafOfModules.{v} R.obj}
     (hF : Presheaf.IsSheaf J F.presheaf) (f : M₀ ⟶ (restrictScalars α).obj F) :
-    φ ≫ (toPresheaf R.val).map ((sheafifyHomEquiv' α φ hF).symm f) = (toPresheaf R₀).map f :=
+    φ ≫ (toPresheaf R.obj).map ((sheafifyHomEquiv' α φ hF).symm f) = (toPresheaf R₀).map f :=
   (toPresheaf _).congr_map ((sheafifyHomEquiv' α φ hF).apply_symm_apply f)
 
 /-- The bijection
@@ -368,21 +380,22 @@ noncomputable def sheafifyHomEquiv {F : SheafOfModules.{v} R} :
 
 section
 
-variable {M₀' : PresheafOfModules.{v} R₀} {A' : Sheaf J AddCommGrp.{v}}
-  (φ' : M₀'.presheaf ⟶ A'.val)
+variable {M₀' : PresheafOfModules.{v} R₀} {A' : Sheaf J AddCommGrpCat.{v}}
+  (φ' : M₀'.presheaf ⟶ A'.obj)
   [Presheaf.IsLocallyInjective J φ'] [Presheaf.IsLocallySurjective J φ']
   (τ₀ : M₀ ⟶ M₀') (τ : A ⟶ A')
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The morphism of sheaves of modules `sheafify α φ ⟶ sheafify α φ'`
 induced by morphisms `τ₀ : M₀ ⟶ M₀'` and `τ : A ⟶ A'`
 which satisfy `τ₀.hom ≫ φ' = φ ≫ τ.val`. -/
 @[simps]
-noncomputable def sheafifyMap (fac : (toPresheaf R₀).map τ₀ ≫ φ' = φ ≫ τ.val) :
+noncomputable def sheafifyMap (fac : (toPresheaf R₀).map τ₀ ≫ φ' = φ ≫ τ.hom) :
     sheafify α φ ⟶ sheafify α φ' where
-  val := homMk τ.val (fun X r m ↦ by
-    let f := (sheafifyHomEquiv' α φ (by exact A'.cond)).symm (τ₀ ≫ toSheafify α φ')
-    suffices τ.val = (toPresheaf _).map f by simpa only [this] using (f.app X).hom.map_smul r m
-    apply ((J.W_of_isLocallyBijective φ).homEquiv _ A'.cond).injective
+  val := homMk τ.hom (fun X r m ↦ by
+    let f := (sheafifyHomEquiv' α φ (by exact A'.property)).symm (τ₀ ≫ toSheafify α φ')
+    suffices τ.hom = (toPresheaf _).map f by simpa only [this] using (f.app X).hom.map_smul r m
+    apply ((J.W_of_isLocallyBijective φ).homEquiv _ A'.property).injective
     dsimp [f]
     erw [comp_toPresheaf_map_sheafifyHomEquiv'_symm_hom]
     rw [← fac, Functor.map_comp, toPresheaf_map_toSheafify])

@@ -3,10 +3,11 @@ Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
+module
 
-import Mathlib.RingTheory.MvPowerSeries.Evaluation
-import Mathlib.RingTheory.PowerSeries.PiTopology
-import Mathlib.Algebra.MvPolynomial.Equiv
+public import Mathlib.RingTheory.MvPowerSeries.Evaluation
+public import Mathlib.RingTheory.PowerSeries.PiTopology
+public import Mathlib.Algebra.MvPolynomial.Equiv
 
 /-! # Evaluation of power series
 
@@ -42,6 +43,8 @@ the following lemmas furnish the properties of evaluation:
 We refer to the documentation of `MvPowerSeries.eval₂` for more details.
 
 -/
+
+@[expose] public section
 namespace PowerSeries
 
 open WithPiTopology
@@ -131,15 +134,13 @@ noncomputable def eval₂ : PowerSeries R → S :=
 
 @[simp]
 theorem eval₂_coe (f : Polynomial R) : eval₂ φ a f = f.eval₂ φ a := by
-  let g : MvPolynomial Unit R := (MvPolynomial.pUnitAlgEquiv R).symm f
-  have : f = MvPolynomial.pUnitAlgEquiv R g := by
-    simp only [g, ← AlgEquiv.symm_apply_eq]
-  simp only [this, PowerSeries.eval₂, MvPolynomial.eval₂_const_pUnitAlgEquiv]
+  rw [← (MvPolynomial.uniqueAlgEquiv R Unit).apply_symm_apply f]
+  simp only [PowerSeries.eval₂, MvPolynomial.eval₂_const_uniqueAlgEquiv]
   rw [← MvPolynomial.toMvPowerSeries_pUnitAlgEquiv, MvPowerSeries.eval₂_coe]
 
 @[simp]
 theorem eval₂_C (r : R) :
-    eval₂ φ a (C R r) = φ r := by
+    eval₂ φ a (C r) = φ r := by
   rw [← Polynomial.coe_C, eval₂_coe, Polynomial.eval₂_C]
 
 @[simp]
@@ -174,7 +175,7 @@ theorem continuous_eval₂ (hφ : Continuous φ) (ha : HasEval a) :
   (uniformContinuous_eval₂ hφ ha).continuous
 
 theorem hasSum_eval₂ (hφ : Continuous φ) (ha : HasEval a) (f : PowerSeries R) :
-    HasSum (fun (d : ℕ) ↦ φ (coeff R d f) * a ^ d) (f.eval₂ φ a) := by
+    HasSum (fun (d : ℕ) ↦ φ (coeff d f) * a ^ d) (f.eval₂ φ a) := by
   have := MvPowerSeries.hasSum_eval₂ hφ (hasEval ha) f
   simp only [PowerSeries.eval₂]
   rw [← (Finsupp.single_injective ()).hasSum_iff] at this
@@ -184,28 +185,24 @@ theorem hasSum_eval₂ (hφ : Continuous φ) (ha : HasEval a) (f : PowerSeries R
 
 theorem eval₂_eq_tsum (hφ : Continuous φ) (ha : HasEval a) (f : PowerSeries R) :
     PowerSeries.eval₂ φ a f =
-      ∑' d : ℕ, φ (coeff R d f) * a ^ d :=
+      ∑' d : ℕ, φ (coeff d f) * a ^ d :=
   (hasSum_eval₂ hφ ha f).tsum_eq.symm
 
 theorem eval₂_unique (hφ : Continuous φ) (ha : HasEval a)
     {ε : PowerSeries R → S} (hε : Continuous ε)
     (h : ∀ p : Polynomial R, ε p = Polynomial.eval₂ φ a p) :
     ε = eval₂ φ a := by
-  apply MvPowerSeries.eval₂_unique hφ (hasEval ha) hε
-  intro p
-  rw [MvPolynomial.toMvPowerSeries_pUnitAlgEquiv, h, ← MvPolynomial.eval₂_pUnitAlgEquiv]
+  refine MvPowerSeries.eval₂_unique hφ (hasEval ha) hε (fun p ↦ ?_)
+  rw [MvPolynomial.toMvPowerSeries_pUnitAlgEquiv, h, ← MvPolynomial.eval₂_uniqueAlgEquiv]
 
 theorem comp_eval₂ (hφ : Continuous φ) (ha : HasEval a)
     {T : Type*} [UniformSpace T] [CompleteSpace T] [T2Space T]
     [CommRing T] [IsTopologicalRing T] [IsLinearTopology T T] [IsUniformAddGroup T]
     {ε : S →+* T} (hε : Continuous ε) :
     ε ∘ eval₂ φ a = eval₂ (ε.comp φ) (ε a) := by
-  apply eval₂_unique _ (ha.map hε)
-  · exact Continuous.comp hε (continuous_eval₂ hφ ha)
-  · intro p
-    simp only [Function.comp_apply, eval₂_coe]
-    exact Polynomial.hom_eval₂ p φ ε a
-  · simp only [RingHom.coe_comp, Continuous.comp hε hφ]
+  refine eval₂_unique (by simp only [RingHom.coe_comp, hε.comp hφ]) (ha.map hε)
+    (hε.comp (continuous_eval₂ hφ ha)) (fun p ↦ ?_)
+  simpa [Function.comp_apply, eval₂_coe] using p.hom_eval₂ φ ε a
 
 variable [Algebra R S] [ContinuousSMul R S]
 
@@ -233,12 +230,12 @@ theorem aeval_unique {ε : PowerSeries R →ₐ[R] S} (hε : Continuous ε) :
   MvPowerSeries.aeval_unique hε
 
 theorem hasSum_aeval (ha : HasEval a) (f : PowerSeries R) :
-    HasSum (fun d ↦ coeff R d f • a ^ d) (f.aeval ha) := by
+    HasSum (fun d ↦ coeff d f • a ^ d) (f.aeval ha) := by
   simp_rw [coe_aeval, ← algebraMap_smul (R := R) S, smul_eq_mul]
   exact hasSum_eval₂ (continuous_algebraMap R S) ha f
 
 theorem aeval_eq_sum (ha : HasEval a) (f : PowerSeries R) :
-    aeval ha f = tsum fun d ↦ coeff R d f • a ^ d :=
+    aeval ha f = tsum fun d ↦ coeff d f • a ^ d :=
   (hasSum_aeval ha f).tsum_eq.symm
 
 theorem comp_aeval (ha : HasEval a)

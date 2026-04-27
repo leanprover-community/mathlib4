@@ -3,7 +3,9 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Symmetric
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
 
 /-!
 # Vector fields in vector spaces
@@ -28,12 +30,14 @@ In addition to comprehensive API on these two notions, the main results are the 
 
 -/
 
+@[expose] public section
+
 open Set
-open scoped Topology
+open scoped Topology ContDiff
 
 noncomputable section
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω}
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
@@ -97,9 +101,7 @@ lemma lieBracketWithin_const_smul_left {c : 𝕜} (hV : DifferentiableWithinAt �
     (hs : UniqueDiffWithinAt 𝕜 s x) :
     lieBracketWithin 𝕜 (c • V) W s x =
       c • lieBracketWithin 𝕜 V W s x := by
-  simp only [lieBracketWithin, Pi.smul_apply, map_smul, smul_sub]
-  rw [fderivWithin_const_smul hs hV]
-  rfl
+  simp [lieBracketWithin, smul_sub, fderivWithin_const_smul hs hV]
 
 lemma lieBracket_const_smul_left {c : 𝕜} (hV : DifferentiableAt 𝕜 V x) :
     lieBracket 𝕜 (c • V) W x = c • lieBracket 𝕜 V W x := by
@@ -110,9 +112,7 @@ lemma lieBracketWithin_const_smul_right {c : 𝕜} (hW : DifferentiableWithinAt 
     (hs : UniqueDiffWithinAt 𝕜 s x) :
     lieBracketWithin 𝕜 V (c • W) s x =
       c • lieBracketWithin 𝕜 V W s x := by
-  simp only [lieBracketWithin, Pi.smul_apply, map_smul, smul_sub]
-  rw [fderivWithin_const_smul hs hW]
-  rfl
+  simp [lieBracketWithin, smul_sub, fderivWithin_const_smul hs hW]
 
 lemma lieBracket_const_smul_right {c : 𝕜} (hW : DifferentiableAt 𝕜 W x) :
     lieBracket 𝕜 V (c • W) x = c • lieBracket 𝕜 V W x := by
@@ -148,7 +148,7 @@ we have `[f • V, W] = - (df W) • V + f • [V, W]`
 lemma lieBracketWithin_smul_left {f : E → 𝕜} (hf : DifferentiableWithinAt 𝕜 f s x)
     (hV : DifferentiableWithinAt 𝕜 V s x) (hs : UniqueDiffWithinAt 𝕜 s x) :
     lieBracketWithin 𝕜 (fun y ↦ f y • V y) W s x =
-      - (fderivWithin 𝕜 f s x) (W x) • (V x)  + (f x) • lieBracketWithin 𝕜 V W s x := by
+      - (fderivWithin 𝕜 f s x) (W x) • (V x) + (f x) • lieBracketWithin 𝕜 V W s x := by
   rw [lieBracketWithin_swap, Pi.neg_apply, lieBracketWithin_smul_right hf hV hs,
     lieBracketWithin_swap, add_comm]
   simp
@@ -157,10 +157,10 @@ lemma lieBracketWithin_smul_left {f : E → 𝕜} (hf : DifferentiableWithinAt �
 Product rule for Lie Brackets: given two vector fields `V W : E → E` and a function `f : E → 𝕜`,
 we have `[f • V, W] = - (df W) • V + f • [V, W]`
 -/
-lemma lieBracket_fmul_left {f : E → 𝕜} (hf : DifferentiableAt 𝕜 f x)
+lemma lieBracket_smul_left {f : E → 𝕜} (hf : DifferentiableAt 𝕜 f x)
     (hV : DifferentiableAt 𝕜 V x) :
     lieBracket 𝕜 (fun y ↦ f y • V y) W x =
-      - (fderiv 𝕜 f x) (W x) • (V x)  + (f x) • lieBracket 𝕜 V W x := by
+      - (fderiv 𝕜 f x) (W x) • (V x) + (f x) • lieBracket 𝕜 V W x := by
   rw [lieBracket_swap, lieBracket_smul_right hf hV, lieBracket_swap, add_comm]
   simp
 
@@ -173,7 +173,7 @@ lemma lieBracketWithin_add_left (hV : DifferentiableWithinAt 𝕜 V s x)
   abel
 
 lemma lieBracket_add_left (hV : DifferentiableAt 𝕜 V x) (hV₁ : DifferentiableAt 𝕜 V₁ x) :
-    lieBracket 𝕜 (V + V₁) W  x =
+    lieBracket 𝕜 (V + V₁) W x =
       lieBracket 𝕜 V W x + lieBracket 𝕜 V₁ W x := by
   simp only [lieBracket, Pi.add_apply, map_add]
   rw [fderiv_add hV hV₁, ContinuousLinearMap.add_apply]
@@ -214,8 +214,59 @@ lemma lieBracket_add_right (hW : DifferentiableAt 𝕜 W x) (hW₁ : Differentia
   rw [fderiv_add hW hW₁, ContinuousLinearMap.add_apply]
   abel
 
+/-- The differentiation operator along `[W, V]`
+is the commutator of the differentiation operators along `W` and `V`. -/
+lemma fderivWithin_apply_lieBracket_of_isSymmSndFDerivWithinAt {f : E → F}
+    (hf : ContDiffWithinAt 𝕜 2 f s x) (hsymm : IsSymmSndFDerivWithinAt 𝕜 f s x)
+    (hs : UniqueDiffOn 𝕜 s) (hxs : x ∈ s)
+    (hW : DifferentiableWithinAt 𝕜 W s x) (hV : DifferentiableWithinAt 𝕜 V s x) :
+    fderivWithin 𝕜 f s x (lieBracketWithin 𝕜 V W s x) =
+      fderivWithin 𝕜 (fun x ↦ fderivWithin 𝕜 f s x (W x)) s x (V x) -
+        fderivWithin 𝕜 (fun x ↦ fderivWithin 𝕜 f s x (V x)) s x (W x) := by
+  have H₀ : DifferentiableWithinAt 𝕜 (fderivWithin 𝕜 f s) s x :=
+    (hf.fderivWithin_right hs (by decide) hxs).differentiableWithinAt one_ne_zero
+  have H₁ : UniqueDiffWithinAt 𝕜 s x := hs x hxs
+  rw [fderivWithin_clm_apply, fderivWithin_clm_apply] <;> try assumption
+  simp [lieBracketWithin, hsymm (V _) (W _)]
+
+/-- The differentiation operator along `[W, V]`
+is the commutator of the differentiation operators along `W` and `V`. -/
+lemma fderiv_apply_lieBracket_of_isSymmSndFDerivAt {f : E → F}
+    (hf : ContDiffAt 𝕜 2 f x) (hsymm : IsSymmSndFDerivAt 𝕜 f x)
+    (hW : DifferentiableAt 𝕜 W x) (hV : DifferentiableAt 𝕜 V x) :
+    fderiv 𝕜 f x (lieBracket 𝕜 V W x) =
+      fderiv 𝕜 (fun x ↦ fderiv 𝕜 f x (W x)) x (V x) -
+        fderiv 𝕜 (fun x ↦ fderiv 𝕜 f x (V x)) x (W x) := by
+  simp only [← fderivWithin_univ, ← lieBracketWithin_univ, ← contDiffWithinAt_univ,
+    ← isSymmSndFDerivWithinAt_univ, ← differentiableWithinAt_univ] at *
+  exact fderivWithin_apply_lieBracket_of_isSymmSndFDerivWithinAt hf hsymm (by simp) (by simp)
+    hW hV
+
+/-- The differentiation operator along `[W, V]`
+is the commutator of the differentiation operators along `W` and `V`. -/
+lemma fderivWithin_apply_lieBracket {f : E → F} {n : ℕ∞ω}
+    (hf : ContDiffWithinAt 𝕜 n f s x) (hn : minSmoothness 𝕜 2 ≤ n)
+    (hs : UniqueDiffOn 𝕜 s) (hxs' : x ∈ closure (interior s)) (hxs : x ∈ s)
+    (hW : DifferentiableWithinAt 𝕜 W s x) (hV : DifferentiableWithinAt 𝕜 V s x) :
+    fderivWithin 𝕜 f s x (lieBracketWithin 𝕜 V W s x) =
+      fderivWithin 𝕜 (fun x ↦ fderivWithin 𝕜 f s x (W x)) s x (V x) -
+        fderivWithin 𝕜 (fun x ↦ fderivWithin 𝕜 f s x (V x)) s x (W x) := by
+  apply fderivWithin_apply_lieBracket_of_isSymmSndFDerivWithinAt <;> try assumption
+  exacts [hf.of_le <| le_minSmoothness.trans hn, hf.isSymmSndFDerivWithinAt hn hs hxs' hxs]
+
+/-- The differentiation operator along `[W, V]`
+is the commutator of the differentiation operators along `W` and `V`. -/
+lemma fderiv_apply_lieBracket {f : E → F} {n : ℕ∞ω}
+    (hf : ContDiffAt 𝕜 n f x) (hn : minSmoothness 𝕜 2 ≤ n)
+    (hW : DifferentiableAt 𝕜 W x) (hV : DifferentiableAt 𝕜 V x) :
+    fderiv 𝕜 f x (lieBracket 𝕜 V W x) =
+      fderiv 𝕜 (fun x ↦ fderiv 𝕜 f x (W x)) x (V x) -
+        fderiv 𝕜 (fun x ↦ fderiv 𝕜 f x (V x)) x (W x) := by
+  apply fderiv_apply_lieBracket_of_isSymmSndFDerivAt <;> try assumption
+  exacts [hf.of_le <| le_minSmoothness.trans hn, hf.isSymmSndFDerivAt hn]
+
 lemma _root_.ContDiffWithinAt.lieBracketWithin_vectorField
-    {m n : WithTop ℕ∞} (hV : ContDiffWithinAt 𝕜 n V s x)
+    {m n : ℕ∞ω} (hV : ContDiffWithinAt 𝕜 n V s x)
     (hW : ContDiffWithinAt 𝕜 n W s x) (hs : UniqueDiffOn 𝕜 s) (hmn : m + 1 ≤ n) (hx : x ∈ s) :
     ContDiffWithinAt 𝕜 m (lieBracketWithin 𝕜 V W s) s x := by
   apply ContDiffWithinAt.sub
@@ -224,19 +275,19 @@ lemma _root_.ContDiffWithinAt.lieBracketWithin_vectorField
   · exact ContDiffWithinAt.clm_apply (hV.fderivWithin_right hs hmn hx)
       (hW.of_le (le_trans le_self_add hmn))
 
-lemma _root_.ContDiffAt.lieBracket_vectorField {m n : WithTop ℕ∞} (hV : ContDiffAt 𝕜 n V x)
+lemma _root_.ContDiffAt.lieBracket_vectorField {m n : ℕ∞ω} (hV : ContDiffAt 𝕜 n V x)
     (hW : ContDiffAt 𝕜 n W x) (hmn : m + 1 ≤ n) :
     ContDiffAt 𝕜 m (lieBracket 𝕜 V W) x := by
   rw [← contDiffWithinAt_univ] at hV hW ⊢
   simp_rw [← lieBracketWithin_univ]
   exact hV.lieBracketWithin_vectorField hW uniqueDiffOn_univ hmn (mem_univ _)
 
-lemma _root_.ContDiffOn.lieBracketWithin_vectorField {m n : WithTop ℕ∞} (hV : ContDiffOn 𝕜 n V s)
+lemma _root_.ContDiffOn.lieBracketWithin_vectorField {m n : ℕ∞ω} (hV : ContDiffOn 𝕜 n V s)
     (hW : ContDiffOn 𝕜 n W s) (hs : UniqueDiffOn 𝕜 s) (hmn : m + 1 ≤ n) :
     ContDiffOn 𝕜 m (lieBracketWithin 𝕜 V W s) s :=
   fun x hx ↦ (hV x hx).lieBracketWithin_vectorField (hW x hx) hs hmn hx
 
-lemma _root_.ContDiff.lieBracket_vectorField {m n : WithTop ℕ∞} (hV : ContDiff 𝕜 n V)
+lemma _root_.ContDiff.lieBracket_vectorField {m n : ℕ∞ω} (hV : ContDiff 𝕜 n V)
     (hW : ContDiff 𝕜 n W) (hmn : m + 1 ≤ n) :
     ContDiff 𝕜 m (lieBracket 𝕜 V W) :=
   contDiff_iff_contDiffAt.2 (fun _ ↦ hV.contDiffAt.lieBracket_vectorField hW.contDiffAt hmn)
@@ -280,7 +331,7 @@ theorem lieBracketWithin_congr_set (h : s =ᶠ[𝓝 x] t) :
   lieBracketWithin_congr_set' x <| h.filter_mono inf_le_left
 
 /-- Variant of `lieBracketWithin_eventually_congr_set` where one requires the sets to coincide only
-in  the complement of a point. -/
+in the complement of a point. -/
 theorem lieBracketWithin_eventually_congr_set' (y : E) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
     lieBracketWithin 𝕜 V W s =ᶠ[𝓝 x] lieBracketWithin 𝕜 V W t :=
   (eventually_nhds_nhdsWithin.2 h).mono fun _ => lieBracketWithin_congr_set' y
@@ -372,13 +423,13 @@ lemma leibniz_identity_lieBracketWithin_of_isSymmSndFDerivWithinAt
   have aux₁ {U V : E → E} (hU : ContDiffWithinAt 𝕜 2 U s x) (hV : ContDiffWithinAt 𝕜 2 V s x) :
       DifferentiableWithinAt 𝕜 (fun x ↦ (fderivWithin 𝕜 V s x) (U x)) s x :=
     have := hV.fderivWithin_right_apply (hU.of_le one_le_two) hs le_rfl hx
-    this.differentiableWithinAt le_rfl
+    this.differentiableWithinAt one_ne_zero
   have aux₂ {U V : E → E} (hU : ContDiffWithinAt 𝕜 2 U s x) (hV : ContDiffWithinAt 𝕜 2 V s x) :
       fderivWithin 𝕜 (fun y ↦ (fderivWithin 𝕜 U s y) (V y)) s x =
         (fderivWithin 𝕜 U s x).comp (fderivWithin 𝕜 V s x) +
         (fderivWithin 𝕜 (fderivWithin 𝕜 U s) s x).flip (V x) := by
-    refine fderivWithin_clm_apply (hs x hx) ?_ (hV.differentiableWithinAt one_le_two)
-    exact (hU.fderivWithin_right hs le_rfl hx).differentiableWithinAt le_rfl
+    refine fderivWithin_clm_apply (hs x hx) ?_ (hV.differentiableWithinAt two_ne_zero)
+    exact (hU.fderivWithin_right hs le_rfl hx).differentiableWithinAt one_ne_zero
   rw [fderivWithin_fun_sub (hs x hx) (aux₁ hV hW) (aux₁ hW hV)]
   rw [fderivWithin_fun_sub (hs x hx) (aux₁ hU hV) (aux₁ hV hU)]
   rw [fderivWithin_fun_sub (hs x hx) (aux₁ hU hW) (aux₁ hW hU)]
@@ -488,7 +539,7 @@ lemma _root_.exists_continuousLinearEquiv_fderivWithin_symm_eq
     ∧ ContDiffWithinAt 𝕜 1 (fun y ↦ ((N y).symm : F →L[𝕜] E)) s x
     ∧ (∀ᶠ y in 𝓝[s] x, N y = fderivWithin 𝕜 f s y)
     ∧ ∀ v, fderivWithin 𝕜 (fun y ↦ ((N y).symm : F →L[𝕜] E)) s x v
-      = - (N x).symm  ∘L ((fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x v)) ∘L (N x).symm := by
+      = - (N x).symm ∘L ((fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x v)) ∘L (N x).symm := by
   classical
   rcases hf with ⟨M, hM⟩
   let U := {y | ∃ (N : E ≃L[𝕜] F), N = fderivWithin 𝕜 f s y}
@@ -521,8 +572,8 @@ lemma _root_.exists_continuousLinearEquiv_fderivWithin_symm_eq
     simp [A', fderivWithin_const_apply]
   have I : (N x : E →L[𝕜] F) ∘L (fderivWithin 𝕜 (fun y ↦ ((N y).symm : F →L[𝕜] E)) s x v) =
       - (fderivWithin 𝕜 (fun y ↦ (N y : E →L[𝕜] F)) s x v) ∘L ((N x).symm : F →L[𝕜] E) := by
-    rw [ContinuousLinearMap.fderivWithin_of_bilinear _ (hN.differentiableWithinAt le_rfl)
-      (hN'.differentiableWithinAt le_rfl) (hs x hx)] at this
+    rw [ContinuousLinearMap.fderivWithin_of_bilinear _ (hN.differentiableWithinAt one_ne_zero)
+      (hN'.differentiableWithinAt one_ne_zero) (hs x hx)] at this
     simpa [eq_neg_iff_add_eq_zero] using this
   have B (M : F →L[𝕜] E) : M = ((N x).symm : F →L[𝕜] E) ∘L ((N x) ∘L M) := by
     ext; simp
@@ -539,8 +590,8 @@ lemma DifferentiableWithinAt.pullbackWithin {f : E → F} {V : F → F} {s : Set
   simp only [pullbackWithin_eq]
   have : DifferentiableWithinAt 𝕜 (fun y ↦ ((M y).symm : F →L[𝕜] E) (V (f y))) s x := by
     apply DifferentiableWithinAt.clm_apply
-    · exact M_symm_smooth.differentiableWithinAt le_rfl
-    · exact hV.comp _ (hf.differentiableWithinAt one_le_two) hst
+    · exact M_symm_smooth.differentiableWithinAt one_ne_zero
+    · exact hV.comp _ (hf.differentiableWithinAt two_ne_zero) hst
   apply this.congr_of_eventuallyEq
   · filter_upwards [hM] with y hy using by simp [← hy]
   · have hMx : M x = fderivWithin 𝕜 f s x := by apply mem_of_mem_nhdsWithin hx hM
@@ -555,13 +606,13 @@ lemma _root_.exists_continuousLinearEquiv_fderiv_symm_eq
     ∧ ContDiffAt 𝕜 1 (fun y ↦ ((N y).symm : F →L[𝕜] E)) x
     ∧ (∀ᶠ y in 𝓝 x, N y = fderiv 𝕜 f y)
     ∧ ∀ v, fderiv 𝕜 (fun y ↦ ((N y).symm : F →L[𝕜] E)) x v
-      = - (N x).symm  ∘L ((fderiv 𝕜 (fderiv 𝕜 f) x v)) ∘L (N x).symm := by
+      = - (N x).symm ∘L ((fderiv 𝕜 (fderiv 𝕜 f) x v)) ∘L (N x).symm := by
   simp only [← fderivWithin_univ, ← contDiffWithinAt_univ, ← nhdsWithin_univ] at hf h'f ⊢
   exact exists_continuousLinearEquiv_fderivWithin_symm_eq h'f hf uniqueDiffOn_univ (mem_univ _)
 
 /-- The Lie bracket commutes with taking pullbacks. This requires the function to have symmetric
 second derivative. Version in a complete space. One could also give a version avoiding
-completeness but requiring that `f` is a local diffeo. -/
+completeness but requiring that `f` is a local diffeomorphism. -/
 lemma pullbackWithin_lieBracketWithin_of_isSymmSndFDerivWithinAt
     {f : E → F} {V W : F → F} {x : E} {t : Set F}
     (hf : IsSymmSndFDerivWithinAt 𝕜 f s x) (h'f : ContDiffWithinAt 𝕜 2 f s x)
@@ -582,22 +633,22 @@ lemma pullbackWithin_lieBracketWithin_of_isSymmSndFDerivWithinAt
       fderivWithin 𝕜 (fun y ↦ ((M y).symm : F →L[𝕜] E) (W (f y))) s x := by
     apply Filter.EventuallyEq.fderivWithin_eq_of_mem _ hx
     filter_upwards [hM] with y hy using pullbackWithin_eq_of_fderivWithin_eq hy _
-  have Af : DifferentiableWithinAt 𝕜 f s x := h'f.differentiableWithinAt one_le_two
+  have Af : DifferentiableWithinAt 𝕜 f s x := h'f.differentiableWithinAt two_ne_zero
   simp only [lieBracketWithin_eq, pullbackWithin_eq_of_fderivWithin_eq hMx, map_sub, AV, AW]
   rw [fderivWithin_clm_apply, fderivWithin_clm_apply]
   · simp [fderivWithin_comp' x hW Af hst (hu x hx), ← hMx,
       fderivWithin_comp' x hV Af hst (hu x hx), M_diff, hf.eq]
   · exact hu x hx
-  · exact M_symm_smooth.differentiableWithinAt le_rfl
+  · exact M_symm_smooth.differentiableWithinAt one_ne_zero
   · exact hV.comp x Af hst
   · exact hu x hx
-  · exact M_symm_smooth.differentiableWithinAt le_rfl
+  · exact M_symm_smooth.differentiableWithinAt one_ne_zero
   · exact hW.comp x Af hst
 
 /-- The Lie bracket commutes with taking pullbacks. This requires the function to have symmetric
 second derivative. Version in a complete space. One could also give a version avoiding
-completeness but requiring that `f` is a local diffeo. Variant where unique differentiability and
-the invariance property are only required in a smaller set `u`. -/
+completeness but requiring that `f` is a local diffeomorphism. Variant where unique
+differentiability and the invariance property are only required in a smaller set `u`. -/
 lemma pullbackWithin_lieBracketWithin_of_isSymmSndFDerivWithinAt_of_eventuallyEq
     {f : E → F} {V W : F → F} {x : E} {t : Set F} {u : Set E}
     (hf : IsSymmSndFDerivWithinAt 𝕜 f s x) (h'f : ContDiffWithinAt 𝕜 2 f s x)
@@ -626,7 +677,7 @@ lemma pullbackWithin_lieBracketWithin_of_isSymmSndFDerivWithinAt_of_eventuallyEq
 
 /-- The Lie bracket commutes with taking pullbacks. This requires the function to have symmetric
 second derivative. Version in a complete space. One could also give a version avoiding
-completeness but requiring that `f` is a local diffeo. -/
+completeness but requiring that `f` is a local diffeomorphism. -/
 lemma pullback_lieBracket_of_isSymmSndFDerivAt {f : E → F} {V W : F → F} {x : E}
     (hf : IsSymmSndFDerivAt 𝕜 f x) (h'f : ContDiffAt 𝕜 2 f x)
     (hV : DifferentiableAt 𝕜 V (f x)) (hW : DifferentiableAt 𝕜 W (f x)) :
@@ -638,7 +689,7 @@ lemma pullback_lieBracket_of_isSymmSndFDerivAt {f : E → F} {V W : F → F} {x 
 
 /-- The Lie bracket commutes with taking pullbacks. This requires the function to have symmetric
 second derivative. Version in a complete space. One could also give a version avoiding
-completeness but requiring that `f` is a local diffeo. -/
+completeness but requiring that `f` is a local diffeomorphism. -/
 lemma pullbackWithin_lieBracketWithin
     {f : E → F} {V W : F → F} {x : E} {t : Set F} (hn : minSmoothness 𝕜 2 ≤ n)
     (h'f : ContDiffWithinAt 𝕜 n f s x)
@@ -650,7 +701,7 @@ lemma pullbackWithin_lieBracketWithin
   (h'f.isSymmSndFDerivWithinAt hn hu h'x hx) (h'f.of_le (le_minSmoothness.trans hn)) hV hW hu hx hst
 
 /-- The Lie bracket commutes with taking pullbacks. One could also give a version avoiding
-completeness but requiring that `f` is a local diffeo. -/
+completeness but requiring that `f` is a local diffeomorphism. -/
 lemma pullback_lieBracket (hn : minSmoothness 𝕜 2 ≤ n)
     {f : E → F} {V W : F → F} {x : E} (h'f : ContDiffAt 𝕜 n f x)
     (hV : DifferentiableAt 𝕜 V (f x)) (hW : DifferentiableAt 𝕜 W (f x)) :

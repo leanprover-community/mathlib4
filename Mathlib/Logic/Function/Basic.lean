@@ -3,21 +3,28 @@ Copyright (c) 2016 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Set.Defs
-import Mathlib.Logic.Basic
-import Mathlib.Logic.ExistsUnique
-import Mathlib.Logic.Nonempty
-import Mathlib.Logic.Nontrivial.Defs
-import Batteries.Tactic.Init
-import Mathlib.Order.Defs.Unbundled
+module
+
+public import Mathlib.Data.Set.Defs
+public import Mathlib.Logic.Basic
+public import Mathlib.Logic.Function.Defs
+public import Mathlib.Logic.ExistsUnique
+public import Mathlib.Logic.Nonempty
+public import Mathlib.Logic.Nontrivial.Defs
+public import Batteries.Tactic.Init
+public import Mathlib.Order.Defs.Unbundled
+
+import Mathlib.Tactic.Attr.Register
 
 /-!
 # Miscellaneous function constructions and lemmas
 -/
 
+@[expose] public section
+
 open Function
 
-universe u v w
+universe u v w x
 
 namespace Function
 
@@ -52,9 +59,7 @@ lemma hfunext {α α' : Sort u} {β : α → Sort v} {β' : α' → Sort v} {f :
   have : ∀ a, f a ≍ f' a := fun a ↦ h a a (HEq.refl a)
   have : β = β' := by funext a; exact type_eq_of_heq (this a)
   subst this
-  apply heq_of_eq
-  funext a
-  exact eq_of_heq (this a)
+  grind
 
 theorem ne_iff {β : α → Sort*} {f₁ f₂ : ∀ a, β a} : f₁ ≠ f₂ ↔ ∃ a, f₁ a ≠ f₂ a :=
   funext_iff.not.trans not_forall
@@ -75,6 +80,12 @@ protected theorem Bijective.surjective {f : α → β} (hf : Bijective f) : Surj
 
 theorem not_injective_iff : ¬ Injective f ↔ ∃ a b, f a = f b ∧ a ≠ b := by
   simp only [Injective, not_forall, exists_prop]
+
+@[simp] lemma not_injective_const {α β : Type*} [Nontrivial α] {b : β} :
+    ¬ Injective (fun _ : α ↦ b) := by
+  rw [not_injective_iff]
+  obtain ⟨a₁, a₂, h⟩ := exists_pair_ne α
+  exact ⟨a₁, a₂, rfl, h⟩
 
 /-- If the co-domain `β` of an injective function `f : α → β` has decidable equality, then
 the domain `α` also has decidable equality. -/
@@ -128,12 +139,7 @@ lemma Injective.dite (p : α → Prop) [DecidablePred p]
     (hf : Injective f) (hf' : Injective f')
     (im_disj : ∀ {x x' : α} {hx : p x} {hx' : ¬ p x'}, f ⟨x, hx⟩ ≠ f' ⟨x', hx'⟩) :
     Function.Injective (fun x ↦ if h : p x then f ⟨x, h⟩ else f' ⟨x, h⟩) := fun x₁ x₂ h => by
-  dsimp only at h
-  by_cases h₁ : p x₁ <;> by_cases h₂ : p x₂
-  · rw [dif_pos h₁, dif_pos h₂] at h; injection (hf h)
-  · rw [dif_pos h₁, dif_neg h₂] at h; exact (im_disj h).elim
-  · rw [dif_neg h₁, dif_pos h₂] at h; exact (im_disj h.symm).elim
-  · rw [dif_neg h₁, dif_neg h₂] at h; injection (hf' h)
+  grind
 
 theorem Surjective.of_comp {g : γ → α} (S : Surjective (f ∘ g)) : Surjective f := fun y ↦
   let ⟨x, h⟩ := S y
@@ -238,16 +244,25 @@ theorem Bijective.of_comp_iff' {f : α → β} (hf : Bijective f) (g : γ → α
     Function.Bijective (f ∘ g) ↔ Function.Bijective g :=
   and_congr (Injective.of_comp_iff hf.injective _) (Surjective.of_comp_iff' hf _)
 
+/-- If `f : α → α → β` is surjective, then every endofunction on `β` has a fixed point.
+This is an instance of Lawvere's fixed-point theorem applied to the category of types
+and functions. It is the diagonal argument underlying `cantor_surjective` and
+`cantor_injective`. -/
+theorem exists_fixed_point_of_surjective {α β : Type*} (f : α → α → β)
+    (hf : Surjective f) (g : β → β) : ∃ x, g x = x :=
+  let ⟨a, ha⟩ := hf fun a => g (f a a)
+  ⟨f a a, (congr_fun ha a).symm⟩
+
 /-- **Cantor's diagonal argument** implies that there are no surjective functions from `α`
 to `Set α`. -/
-theorem cantor_surjective {α} (f : α → Set α) : ¬Surjective f
-  | h => let ⟨D, e⟩ := h {a | ¬ f a a}
-        @iff_not_self (D ∈ f D) <| iff_of_eq <| congr_arg (D ∈ ·) e
+theorem cantor_surjective {α} (f : α → Set α) : ¬Surjective f := fun h =>
+  let ⟨_, hx⟩ := exists_fixed_point_of_surjective f h (¬·)
+  not_iff_self (iff_of_eq hx)
 
 /-- **Cantor's diagonal argument** implies that there are no injective functions from `Set α`
 to `α`. -/
 theorem cantor_injective {α : Type*} (f : Set α → α) : ¬Injective f
-  | i => cantor_surjective (fun a ↦ {b | ∀ U, a = f U → U b}) <|
+  | i => cantor_surjective (fun a ↦ {b | ∀ U, a = f U → b ∈ U}) <|
          RightInverse.surjective (fun U ↦ Set.ext fun _ ↦ ⟨fun h ↦ h U rfl, fun h _ e ↦ i e ▸ h⟩)
 
 /-- There is no surjection from `α : Type u` into `Type (max u v)`. This theorem
@@ -271,16 +286,38 @@ theorem not_surjective_Type {α : Type u} (f : α → Type max u v) : ¬Surjecti
 def IsPartialInv {α β} (f : α → β) (g : β → Option α) : Prop :=
   ∀ x y, g y = some x ↔ f x = y
 
-theorem isPartialInv_left {α β} {f : α → β} {g} (H : IsPartialInv f g) (x) : g (f x) = some x :=
+theorem IsPartialInv.eq {α β} {f : α → β} {g} (H : IsPartialInv f g) (x) : g (f x) = some x :=
   (H _ _).2 rfl
 
-theorem injective_of_isPartialInv {α β} {f : α → β} {g} (H : IsPartialInv f g) :
+theorem IsPartialInv.get_eq {α β} {f : α → β} {g} (H : IsPartialInv f g) (x) (h : g x |>.isSome) :
+    f (g x |>.get h) = x :=
+  (H _ _).1 (Option.eq_some_of_isSome h)
+
+theorem IsPartialInv.surjective_getD {α β} {f : α → β} {g} (H : IsPartialInv f g) (x) :
+    Function.Surjective (g · |>.getD x) :=
+  fun y => ⟨f y, by simp [H.eq]⟩
+
+@[deprecated (since := "2026-03-11")] alias isPartialInv_left := IsPartialInv.eq
+
+theorem IsPartialInv.injective {α β} {f : α → β} {g} (H : IsPartialInv f g) :
     Injective f := fun _ _ h ↦
   Option.some.inj <| ((H _ _).2 h).symm.trans ((H _ _).2 rfl)
+
+@[deprecated (since := "2026-03-11")] alias injective_of_isPartialInv := IsPartialInv.injective
 
 theorem injective_of_isPartialInv_right {α β} {f : α → β} {g} (H : IsPartialInv f g) (x y b)
     (h₁ : b ∈ g x) (h₂ : b ∈ g y) : x = y :=
   ((H _ _).1 h₁).symm.trans ((H _ _).1 h₂)
+
+theorem IsPartialInv.comp {α β γ} {f : α → β} {g : β → Option α} {h : β → γ} {i : γ → Option β}
+    (hf : IsPartialInv f g) (hh : IsPartialInv h i) :
+    IsPartialInv (h ∘ f) (i · |>.bind g) := by
+  intros a b
+  simp [Option.bind_eq_some_iff, hh _, hf _]
+
+lemma LeftInverse.eq {g : β → α} {f : α → β} (h : LeftInverse g f) (x : α) : g (f x) = x := h x
+
+lemma RightInverse.eq {g : β → α} {f : α → β} (h : RightInverse g f) (x : β) : f (g x) = x := h x
 
 theorem LeftInverse.comp_eq_id {f : α → β} {g : β → α} (h : LeftInverse f g) : f ∘ g = id :=
   funext h
@@ -342,7 +379,7 @@ noncomputable def partialInv {α β} (f : α → β) (b : β) : Option α :=
   open scoped Classical in
   if h : ∃ a, f a = b then some (Classical.choose h) else none
 
-theorem partialInv_of_injective {α β} {f : α → β} (I : Injective f) : IsPartialInv f (partialInv f)
+theorem Injective.isPartialInv {α β} {f : α → β} (I : Injective f) : IsPartialInv f (partialInv f)
   | a, b =>
   ⟨fun h =>
     open scoped Classical in
@@ -357,8 +394,10 @@ theorem partialInv_of_injective {α β} {f : α → β} (I : Injective f) : IsPa
   fun e => e ▸ have h : ∃ a', f a' = f a := ⟨_, rfl⟩
               (dif_pos h).trans (congr_arg _ (I <| Classical.choose_spec h))⟩
 
+@[deprecated (since := "2026-03-11")] alias partialInv_of_injective := Injective.isPartialInv
+
 theorem partialInv_left {α β} {f : α → β} (I : Injective f) : ∀ x, partialInv f (f x) = some x :=
-  isPartialInv_left (partialInv_of_injective I)
+  I.isPartialInv.eq
 
 end
 
@@ -423,6 +462,10 @@ noncomputable def surjInv {f : α → β} (h : Surjective f) (b : β) : α :=
 theorem surjInv_eq (h : Surjective f) (b) : f (surjInv h b) = b :=
   Classical.choose_spec (h b)
 
+@[simp]
+lemma comp_surjInv (hf : f.Surjective) : f ∘ f.surjInv hf = id :=
+  funext (Function.surjInv_eq _)
+
 theorem rightInverse_surjInv (hf : Surjective f) : RightInverse (surjInv hf) f :=
   surjInv_eq hf
 
@@ -479,6 +522,7 @@ variable {α : Sort u} {β : α → Sort v} {α' : Sort w} [DecidableEq α]
 
 
 /-- Replacing the value of a function at a given point by a given value. -/
+@[grind]
 def update (f : ∀ a, β a) (a' : α) (v : β a') (a : α) : β a :=
   if h : a = a' then Eq.ndrec v h.symm else f a
 
@@ -486,13 +530,9 @@ def update (f : ∀ a, β a) (a' : α) (v : β a') (a : α) : β a :=
 theorem update_self (a : α) (v : β a) (f : ∀ a, β a) : update f a v a = v :=
   dif_pos rfl
 
-@[deprecated (since := "2024-12-28")] alias update_same := update_self
-
 @[simp]
 theorem update_of_ne {a a' : α} (h : a ≠ a') (v : β a') (f : ∀ a, β a) : update f a' v a = f a :=
   dif_neg h
-
-@[deprecated (since := "2024-12-28")] alias update_noteq := update_of_ne
 
 /-- On non-dependent functions, `Function.update` can be expressed as an `ite` -/
 theorem update_apply {β : Sort*} (f : α → β) (a' : α) (b : β) (a : α) :
@@ -578,51 +618,37 @@ such as `(Sum.rec · g)`.
 
 In future, we should build some automation to generate applications like `Option.rec_update` for all
 inductive types. -/
+@[nolint unusedArguments]
 lemma rec_update {ι κ : Sort*} {α : κ → Sort*} [DecidableEq ι] [DecidableEq κ]
-    {ctor : ι → κ} (hctor : Function.Injective ctor)
+    {ctor : ι → κ} (_ : Function.Injective ctor)
     (recursor : ((i : ι) → α (ctor i)) → ((i : κ) → α i))
     (h : ∀ f i, recursor f (ctor i) = f i)
     (h2 : ∀ f₁ f₂ k, (∀ i, ctor i ≠ k) → recursor f₁ k = recursor f₂ k)
     (f : (i : ι) → α (ctor i)) (i : ι) (x : α (ctor i)) :
     recursor (update f i x) = update (recursor f) (ctor i) x := by
-  ext k
-  by_cases h : ∃ i, ctor i = k
-  · obtain ⟨i', rfl⟩ := h
-    obtain rfl | hi := eq_or_ne i' i
-    · simp [h]
-    · have hk := hctor.ne hi
-      simp [h, hi, hk, Function.update_of_ne]
-  · rw [not_exists] at h
-    rw [h2 _ f _ h]
-    rw [Function.update_of_ne (Ne.symm <| h i)]
+  grind
 
 @[simp]
 lemma _root_.Option.rec_update {α : Type*} {β : Option α → Sort*} [DecidableEq α]
     (f : β none) (g : ∀ a, β (.some a)) (a : α) (x : β (.some a)) :
     Option.rec f (update g a x) = update (Option.rec f g) (.some a) x :=
   Function.rec_update (@Option.some.inj _) (Option.rec f) (fun _ _ => rfl) (fun
-    | _, _, .some _, h => (h _ rfl).elim
-    | _, _, .none, _ => rfl) _ _ _
+    | _, _, some _, h => (h _ rfl).elim
+    | _, _, none, _ => rfl) _ _ _
 
 theorem apply_update {ι : Sort*} [DecidableEq ι] {α β : ι → Sort*} (f : ∀ i, α i → β i)
     (g : ∀ i, α i) (i : ι) (v : α i) (j : ι) :
     f j (update g i v j) = update (fun k ↦ f k (g k)) i (f i v) j := by
-  by_cases h : j = i
-  · subst j
-    simp
-  · simp [h]
+  grind
 
 theorem apply_update₂ {ι : Sort*} [DecidableEq ι] {α β γ : ι → Sort*} (f : ∀ i, α i → β i → γ i)
     (g : ∀ i, α i) (h : ∀ i, β i) (i : ι) (v : α i) (w : β i) (j : ι) :
     f j (update g i v j) (update h i w j) = update (fun k ↦ f k (g k) (h k)) i (f i v w) j := by
-  by_cases h : j = i
-  · subst j
-    simp
-  · simp [h]
+  grind
 
 theorem pred_update (P : ∀ ⦃a⦄, β a → Prop) (f : ∀ a, β a) (a' : α) (v : β a') (a : α) :
     P (update f a' v a) ↔ a = a' ∧ P v ∨ a ≠ a' ∧ P (f a) := by
-  rw [apply_update P, update_apply, ite_prop_iff_or]
+  grind
 
 theorem comp_update {α' : Sort*} {β : Sort*} (f : α' → β) (g : α → α') (i : α) (v : α') :
     f ∘ update g i v = update (f ∘ g) i (f v) :=
@@ -630,20 +656,12 @@ theorem comp_update {α' : Sort*} {β : Sort*} (f : α' → β) (g : α → α')
 
 theorem update_comm {α} [DecidableEq α] {β : α → Sort*} {a b : α} (h : a ≠ b) (v : β a) (w : β b)
     (f : ∀ a, β a) : update (update f a v) b w = update (update f b w) a v := by
-  funext c
-  simp only [update]
-  by_cases h₁ : c = b <;> by_cases h₂ : c = a
-  · rw [dif_pos h₁, dif_pos h₂]
-    cases h (h₂.symm.trans h₁)
-  · rw [dif_pos h₁, dif_pos h₁, dif_neg h₂]
-  · rw [dif_neg h₁, dif_neg h₁]
-  · rw [dif_neg h₁, dif_neg h₁]
+  grind
 
 @[simp]
 theorem update_idem {α} [DecidableEq α] {β : α → Sort*} {a : α} (v w : β a) (f : ∀ a, β a) :
     update (update f a v) a w = update f a w := by
-  funext b
-  by_cases h : b = a <;> simp [update, h]
+  grind
 
 @[simp]
 theorem _root_.Pi.map_update {ι : Sort*} [DecidableEq ι] {α β : ι → Sort*}
@@ -716,6 +734,27 @@ theorem extend_apply' (g : α → γ) (e' : β → γ) (b : β) (hb : ¬∃ a, f
   classical
   simp [Function.extend_def, hb]
 
+@[simp]
+theorem extend_id (g : α → γ) (e' : α → γ) :
+    extend id g e' = g :=
+  funext <| injective_id.extend_apply g _
+
+theorem Injective.extend_comp {α₁ α₂ α₃ : Sort*} {f₁₂ : α₁ → α₂} (h₁₂ : Function.Injective f₁₂)
+    {f₂₃ : α₂ → α₃} (h₂₃ : Function.Injective f₂₃) (g : α₁ → γ) (e' : α₃ → γ) :
+    extend (f₂₃ ∘ f₁₂) g e' = extend f₂₃ (extend f₁₂ g (e' ∘ f₂₃)) e' := by
+  ext a
+  by_cases h₃ : ∃ b, f₂₃ b = a
+  · obtain ⟨b, rfl⟩ := h₃
+    rw [Injective.extend_apply h₂₃]
+    by_cases h₂ : ∃ c, f₁₂ c = b
+    · obtain ⟨c, rfl⟩ := h₂
+      rw [h₁₂.extend_apply]
+      exact (h₂₃.comp h₁₂).extend_apply _ _ _
+    · rw [extend_apply' _ _ _ h₂, extend_apply', comp_apply]
+      exact fun h ↦ h₂ (Exists.casesOn h fun c hc ↦ Exists.intro c (h₂₃ hc))
+  · rw [extend_apply' _ _ _ h₃, extend_apply']
+    exact fun h ↦ h₃ (Exists.casesOn h fun c hc ↦ Exists.intro (f₁₂ c) (hc))
+
 lemma factorsThrough_iff (g : α → γ) [Nonempty γ] : g.FactorsThrough f ↔ ∃ (e : β → γ), g = e ∘ f :=
   ⟨fun hf => ⟨extend f g (const β (Classical.arbitrary γ)),
       funext (fun x => by simp only [comp_apply, hf.extend_apply])⟩,
@@ -746,7 +785,7 @@ theorem extend_comp (hf : Injective f) (g : α → γ) (e' : β → γ) : extend
 
 theorem Injective.surjective_comp_right' (hf : Injective f) (g₀ : β → γ) :
     Surjective fun g : β → γ ↦ g ∘ f :=
-  fun g ↦ ⟨extend f g g₀, extend_comp hf _ _⟩
+  fun g ↦ ⟨extend f g g₀, Function.extend_comp hf _ _⟩
 
 theorem Injective.surjective_comp_right [Nonempty γ] (hf : Injective f) :
     Surjective fun g : β → γ ↦ g ∘ f :=
@@ -786,33 +825,39 @@ theorem comp_right {α β γ δ : Sort*} {f : α → β} {g : α → γ} (h : Fa
 
 end FactorsThrough
 
+section CurryAndUncurry
+
 theorem uncurry_def {α β γ} (f : α → β → γ) : uncurry f = fun p ↦ f p.1 p.2 :=
   rfl
 
-section Bicomp
+theorem uncurry_injective {α β γ} : Function.Injective (uncurry : (α → β → γ) → _) :=
+  LeftInverse.injective curry_uncurry
 
-variable {α β γ δ ε : Type*}
+theorem curry_injective {α β γ} : Function.Injective (curry : (α × β → γ) → _) :=
+  LeftInverse.injective uncurry_curry
 
-/-- Compose a binary function `f` with a pair of unary functions `g` and `h`.
-If both arguments of `f` have the same type and `g = h`, then `bicompl f g g = f on g`. -/
-def bicompl (f : γ → δ → ε) (g : α → γ) (h : β → δ) (a b) :=
-  f (g a) (h b)
-
-/-- Compose a unary function `f` with a binary function `g`. -/
-def bicompr (f : γ → δ) (g : α → β → γ) (a b) :=
-  f (g a b)
-
--- Suggested local notation:
-local notation f " ∘₂ " g => bicompr f g
-
-theorem uncurry_bicompr (f : α → β → γ) (g : γ → δ) : uncurry (g ∘₂ f) = g ∘ uncurry f :=
+theorem uncurry_flip {α β γ} (f : α → β → γ) : uncurry (flip f) = uncurry f ∘ Prod.swap :=
   rfl
 
-theorem uncurry_bicompl (f : γ → δ → ε) (g : α → γ) (h : β → δ) :
-    uncurry (bicompl f g h) = uncurry f ∘ Prod.map g h :=
+theorem flip_curry {α β γ} (f : α × β → γ) : flip (curry f) = curry (f ∘ Prod.swap) :=
   rfl
 
-end Bicomp
+theorem curry_update {α α' β : Type*} [DecidableEq α] [DecidableEq α']
+    (f : α × α' → β) (aa' : α × α') (b : β) :
+    curry (Function.update f aa' b) =
+      Function.update (curry f) aa'.1 (Function.update (curry f aa'.1) aa'.2 b) := by
+  ext a a'
+  let ⟨a₂, a₂'⟩ := aa'
+  obtain rfl | ha := eq_or_ne a a₂ <;> obtain rfl | ha' := eq_or_ne a' a₂' <;> simp [*]
+
+theorem uncurry_update_update {α α' β : Type*} [DecidableEq α] [DecidableEq α']
+    (f : α → α' → β) (a : α) (a' : α') (b : β) :
+    uncurry (Function.update f a (Function.update (f a) a' b)) =
+      Function.update (uncurry f) (a, a') b := by
+  apply curry_injective
+  simp [curry_update]
+
+end CurryAndUncurry
 
 section Uncurry
 
@@ -827,13 +872,13 @@ class HasUncurry (α : Type*) (β : outParam Type*) (γ : outParam Type*) where
   for bundled maps. -/
   uncurry : α → β → γ
 
-@[inherit_doc] notation:arg "↿" x:arg => HasUncurry.uncurry x
+@[inherit_doc] prefix:max "↿" => HasUncurry.uncurry
 
 instance hasUncurryBase : HasUncurry (α → β) α β :=
   ⟨id⟩
 
 instance hasUncurryInduction [HasUncurry β γ δ] : HasUncurry (α → β) (α × γ) δ :=
-  ⟨fun f p ↦ (↿(f p.1)) p.2⟩
+  ⟨fun f p ↦ ↿(f p.1) p.2⟩
 
 end Uncurry
 
@@ -1034,7 +1079,7 @@ theorem Function.LeftInverse.eq_rec_on_eq {γ : β → Sort v} {f : α → β} {
 theorem Function.LeftInverse.cast_eq {γ : β → Sort v} {f : α → β} {g : β → α}
     (h : Function.LeftInverse g f) (C : ∀ a : α, γ (f a)) (a : α) :
     cast (congr_arg (fun a ↦ γ (f a)) (h a)) (C (g (f a))) = C a := by
-  rw [cast_eq_iff_heq, h]
+  grind
 
 /-- A set of functions "separates points"
 if for each pair of distinct points there is a function taking different values on them. -/
@@ -1046,9 +1091,23 @@ theorem InvImage.equivalence {α : Sort u} {β : Sort v} (r : β → β → Prop
   ⟨fun _ ↦ h.1 _, h.symm, h.trans⟩
 
 instance {α β : Type*} {r : α → β → Prop} {x : α × β} [Decidable (r x.1 x.2)] :
-  Decidable (uncurry r x) :=
-‹Decidable _›
+    Decidable (uncurry r x) :=
+  ‹Decidable _›
 
 instance {α β : Type*} {r : α × β → Prop} {a : α} {b : β} [Decidable (r (a, b))] :
-  Decidable (curry r a b) :=
-‹Decidable _›
+    Decidable (curry r a b) :=
+  ‹Decidable _›
+
+namespace Pi
+
+variable {ι : Type*}
+
+@[simp] theorem map_id {α : ι → Type*} : Pi.map (fun i => @id (α i)) = id := rfl
+
+@[simp] theorem map_id' {α : ι → Type*} : Pi.map (fun i (a : α i) => a) = fun x ↦ x := rfl
+
+theorem map_comp_map {α β γ : ι → Type*} (f : ∀ i, α i → β i) (g : ∀ i, β i → γ i) :
+    Pi.map g ∘ Pi.map f = Pi.map fun i => g i ∘ f i :=
+  rfl
+
+end Pi

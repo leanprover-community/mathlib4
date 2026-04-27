@@ -3,10 +3,12 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Set.Image
-import Mathlib.Topology.Bases
-import Mathlib.Topology.Inseparable
-import Mathlib.Topology.Compactness.NhdsKer
+module
+
+public import Mathlib.Data.Set.Image
+public import Mathlib.Topology.Bases
+public import Mathlib.Topology.Inseparable
+public import Mathlib.Topology.Compactness.NhdsKer
 
 /-!
 # Alexandrov-discrete topological spaces
@@ -21,19 +23,18 @@ minimal neighborhood, which we call the *neighborhoods kernel* of the set.
 
 * `AlexandrovDiscrete`: Prop-valued typeclass for a topological space to be Alexandrov-discrete
 
-## TODO
-
-Finite product of Alexandrov-discrete spaces is Alexandrov-discrete.
-
 ## Tags
 
 Alexandroff, discrete, finitely generated, fg space
 -/
 
+public section
+
 open Filter Set TopologicalSpace Topology
 
 /-- A topological space is **Alexandrov-discrete** or **finitely generated** if the intersection of
 a family of open sets is open. -/
+@[mk_iff]
 class AlexandrovDiscrete (α : Type*) [TopologicalSpace α] : Prop where
   /-- The intersection of a family of open sets is an open set. Use `isOpen_sInter` in the root
   namespace instead. -/
@@ -42,6 +43,15 @@ class AlexandrovDiscrete (α : Type*) [TopologicalSpace α] : Prop where
 variable {ι : Sort*} {κ : ι → Sort*} {α β : Type*}
 section
 variable [TopologicalSpace α] [TopologicalSpace β]
+
+lemma alexandrovDiscrete_iff_isClosed :
+    AlexandrovDiscrete α ↔ ∀ S : Set (Set α), (∀ s ∈ S, IsClosed s) → IsClosed (⋃₀ S) := by
+  conv_lhs => tactic =>
+    simp_rw +singlePass [alexandrovDiscrete_iff, compl_surjective.image_surjective.forall,
+      forall_mem_image, ← compl_sUnion, isOpen_compl_iff]
+
+instance IndiscreteTopology.toAlexandrovDiscrete [IndiscreteTopology α] : AlexandrovDiscrete α where
+  isOpen_sInter := by grind [isOpen_iff]
 
 instance DiscreteTopology.toAlexandrovDiscrete [DiscreteTopology α] : AlexandrovDiscrete α where
   isOpen_sInter _ _ := isOpen_discrete _
@@ -61,8 +71,8 @@ lemma isOpen_iInter₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsOpen (f i j
     IsOpen (⋂ i, ⋂ j, f i j) :=
   isOpen_iInter fun _ ↦ isOpen_iInter <| hf _
 
-lemma isClosed_sUnion (hS : ∀ s ∈ S, IsClosed s) : IsClosed (⋃₀ S) := by
-  simp only [← isOpen_compl_iff, compl_sUnion] at hS ⊢; exact isOpen_sInter <| forall_mem_image.2 hS
+lemma isClosed_sUnion (hS : ∀ s ∈ S, IsClosed s) : IsClosed (⋃₀ S) :=
+  alexandrovDiscrete_iff_isClosed.mp inferInstance S hS
 
 lemma isClosed_iUnion (hf : ∀ i, IsClosed (f i)) : IsClosed (⋃ i, f i) :=
   isClosed_sUnion <| forall_mem_range.2 hf
@@ -115,9 +125,6 @@ lemma Topology.IsInducing.alexandrovDiscrete [AlexandrovDiscrete α] {f : β →
     refine ⟨_, isOpen_iInter₂ hU, ?_⟩
     simp_rw [preimage_iInter, htU, sInter_eq_biInter]
 
-@[deprecated (since := "2024-10-28")]
-alias Inducing.alexandrovDiscrete := IsInducing.alexandrovDiscrete
-
 end
 
 lemma AlexandrovDiscrete.sup {t₁ t₂ : TopologicalSpace α} (_ : @AlexandrovDiscrete α t₁)
@@ -140,49 +147,29 @@ variable [TopologicalSpace α] [TopologicalSpace β] [AlexandrovDiscrete α] [Al
 @[simp] lemma isOpen_nhdsKer : IsOpen (nhdsKer s) := by
   rw [nhdsKer_def]; exact isOpen_sInter fun _ ↦ And.left
 
-@[deprecated (since := "2025-07-09")] alias isOpen_exterior := isOpen_nhdsKer
-
 lemma nhdsKer_mem_nhdsSet : nhdsKer s ∈ 𝓝ˢ s := isOpen_nhdsKer.mem_nhdsSet.2 subset_nhdsKer
-
-@[deprecated (since := "2025-07-09")] alias exterior_mem_nhdsSet := nhdsKer_mem_nhdsSet
 
 @[simp] lemma nhdsKer_eq_iff_isOpen : nhdsKer s = s ↔ IsOpen s :=
   ⟨fun h ↦ h ▸ isOpen_nhdsKer, IsOpen.nhdsKer_eq⟩
 
-@[deprecated (since := "2025-07-09")] alias exterior_eq_iff_isOpen := nhdsKer_eq_iff_isOpen
-
 @[simp] lemma nhdsKer_subset_iff_isOpen : nhdsKer s ⊆ s ↔ IsOpen s := by
   simp only [nhdsKer_eq_iff_isOpen.symm, Subset.antisymm_iff, subset_nhdsKer, and_true]
-
-@[deprecated (since := "2025-07-09")] alias exterior_subset_iff_isOpen := nhdsKer_subset_iff_isOpen
 
 lemma nhdsKer_subset_iff : nhdsKer s ⊆ t ↔ ∃ U, IsOpen U ∧ s ⊆ U ∧ U ⊆ t :=
   ⟨fun h ↦ ⟨nhdsKer s, isOpen_nhdsKer, subset_nhdsKer, h⟩,
     fun ⟨_U, hU, hsU, hUt⟩ ↦ (nhdsKer_minimal hsU hU).trans hUt⟩
 
-@[deprecated (since := "2025-07-09")] alias exterior_subset_iff := nhdsKer_subset_iff
-
 lemma nhdsKer_subset_iff_mem_nhdsSet : nhdsKer s ⊆ t ↔ t ∈ 𝓝ˢ s :=
   nhdsKer_subset_iff.trans mem_nhdsSet_iff_exists.symm
-
-@[deprecated (since := "2025-07-09")]
-alias exterior_subset_iff_mem_nhdsSet := nhdsKer_subset_iff_mem_nhdsSet
 
 lemma nhdsKer_singleton_subset_iff_mem_nhds : nhdsKer {a} ⊆ t ↔ t ∈ 𝓝 a := by
   simp [nhdsKer_subset_iff_mem_nhdsSet]
 
-@[deprecated (since := "2025-07-09")]
-alias exterior_singleton_subset_iff_mem_nhds := nhdsKer_singleton_subset_iff_mem_nhds
-
 lemma gc_nhdsKer_interior : GaloisConnection (nhdsKer : Set α → Set α) interior :=
   fun s t ↦ by simp [nhdsKer_subset_iff, subset_interior_iff]
 
-@[deprecated (since := "2025-07-09")] alias gc_exterior_interior := gc_nhdsKer_interior
-
 @[simp] lemma principal_nhdsKer (s : Set α) : 𝓟 (nhdsKer s) = 𝓝ˢ s := by
   rw [← nhdsSet_nhdsKer, isOpen_nhdsKer.nhdsSet_eq]
-
-@[deprecated (since := "2025-07-09")] alias principal_exterior := principal_nhdsKer
 
 lemma principal_nhdsKer_singleton (a : α) : 𝓟 (nhdsKer {a}) = 𝓝 a := by
   rw [principal_nhdsKer, nhdsSet_singleton]
@@ -197,7 +184,19 @@ lemma nhds_basis_nhdsKer_singleton (a : α) :
 
 lemma isOpen_iff_forall_specializes : IsOpen s ↔ ∀ x y, x ⤳ y → y ∈ s → x ∈ s := by
   simp only [← nhdsKer_subset_iff_isOpen, Set.subset_def, mem_nhdsKer_iff_specializes, exists_imp,
-    and_imp, @forall_swap (_ ⤳ _)]
+    and_imp, @forall_comm (_ ⤳ _)]
+
+omit [AlexandrovDiscrete α] in
+lemma alexandrovDiscrete_iff_nhds : AlexandrovDiscrete α ↔ (∀ a : α, 𝓝 a = 𝓟 (nhdsKer {a})) where
+  mp _ a := principal_nhdsKer_singleton a |>.symm
+  mpr hα := by
+    simp only [alexandrovDiscrete_iff_isClosed, isClosed_iff_clusterPt, ClusterPt, funext hα,
+      inf_principal, principal_neBot_iff]
+    intro S hS a ha
+    rw [sUnion_eq_biUnion, inter_iUnion₂, nonempty_biUnion] at ha
+    obtain ⟨s, hs, has⟩ := ha
+    specialize hS s hs a has
+    exact mem_sUnion_of_mem hS hs
 
 lemma alexandrovDiscrete_coinduced {β : Type*} {f : α → β} :
     @AlexandrovDiscrete β (coinduced f ‹_›) :=
@@ -224,5 +223,15 @@ instance Sum.instAlexandrovDiscrete : AlexandrovDiscrete (α ⊕ β) :=
 instance Sigma.instAlexandrovDiscrete {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
     [∀ i, AlexandrovDiscrete (X i)] : AlexandrovDiscrete (Σ i, X i) :=
   alexandrovDiscrete_iSup fun _ ↦ alexandrovDiscrete_coinduced
+
+instance Prod.instAlexandrovDiscrete : AlexandrovDiscrete (α × β) := by
+  simp_rw [alexandrovDiscrete_iff_nhds, Prod.forall, nhds_prod_eq, ← principal_nhdsKer_singleton,
+    prod_principal_principal, nhdsKer_pair, forall_true_iff]
+
+instance Pi.instAlexandrovDiscreteOfFinite {ι : Type*} [Finite ι] {X : ι → Type*}
+    [Π i, TopologicalSpace (X i)] [∀ i, AlexandrovDiscrete (X i)] :
+    AlexandrovDiscrete (Π i, X i) := by
+  simp_rw [alexandrovDiscrete_iff_nhds, nhds_pi, ← principal_nhdsKer_singleton,
+    pi_principal, nhdsKer_singleton_pi, forall_true_iff]
 
 end

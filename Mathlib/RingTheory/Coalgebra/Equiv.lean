@@ -3,22 +3,26 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.RingTheory.Coalgebra.Hom
+module
+
+public import Mathlib.RingTheory.Coalgebra.Hom
 
 /-!
 # Isomorphisms of `R`-coalgebras
 
-This file defines bundled isomorphisms of `R`-coalgebras. We simply mimic the early parts of
-`Mathlib/Algebra/Module/Equiv.lean`.
+This file defines bundled isomorphisms of `R`-coalgebras. We largely mirror the basic API of
+`Mathlib/Algebra/Module/Equiv/Defs.lean`.
 
 ## Main definitions
 
 * `CoalgEquiv R A B`: the type of `R`-coalgebra isomorphisms between `A` and `B`.
 
-## Notations
+## Notation
 
 * `A ≃ₗc[R] B` : `R`-coalgebra equivalence from `A` to `B`.
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -256,7 +260,7 @@ theorem trans_toCoalgHom :
 theorem coe_toEquiv_trans : (e₁₂ : A ≃ B).trans e₂₃ = (e₁₂.trans e₂₃ : A ≃ C) :=
   rfl
 
-/-- If an coalgebra morphism has an inverse, it is an coalgebra isomorphism. -/
+/-- If a coalgebra morphism has an inverse, it is a coalgebra isomorphism. -/
 def ofCoalgHom (f : A →ₗc[R] B) (g : B →ₗc[R] A) (h₁ : f.comp g = CoalgHom.id R B)
     (h₂ : g.comp f = CoalgHom.id R A) : A ≃ₗc[R] B where
   __ := f
@@ -288,7 +292,8 @@ theorem coe_ofBijective : (CoalgEquiv.ofBijective hf : A → B) = f :=
   rfl
 
 end
-variable [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A]
+variable
+  [AddCommMonoid A] [Module R A] [Coalgebra R A]
   [AddCommMonoid B] [Module R B] [CoalgebraStruct R B]
 
 /-- Let `A` be an `R`-coalgebra and let `B` be an `R`-module with a `CoalgebraStruct`.

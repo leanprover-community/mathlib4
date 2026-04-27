@@ -3,14 +3,18 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Finset.Max
-import Mathlib.Data.Set.Finite.Lattice
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+module
+
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Set.Finite.Lattice
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
 # Conditionally complete lattices and finite sets.
 
 -/
+
+public section
 
 
 open Set
@@ -114,12 +118,8 @@ theorem Set.Finite.ciSup_lt_iff {s : Set ι} {f : ι → α} (hs : s.Finite)
     · simp only [mem_range]
       refine ⟨x, ?_⟩
       simp [hx]
-  · intro H
-    have := hs.ciSup_mem_image _ h
-    simp only [mem_image] at this
-    obtain ⟨_, hmem, hx⟩ := this
-    rw [← hx]
-    exact H _ hmem
+  · have := hs.ciSup_mem_image _ h
+    grind
 
 theorem Set.Finite.lt_ciInf_iff {s : Set ι} {f : ι → α} (hs : s.Finite)
     (h : ∃ x ∈ s, f x ≤ sInf ∅) :

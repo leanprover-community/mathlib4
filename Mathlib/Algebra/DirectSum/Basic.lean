@@ -3,9 +3,11 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Data.DFinsupp.Sigma
-import Mathlib.Data.DFinsupp.Submonoid
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Operations
+public import Mathlib.Data.DFinsupp.Sigma
+public import Mathlib.Data.DFinsupp.Submonoid
 
 /-!
 # Direct sum
@@ -22,6 +24,8 @@ This notation is in the `DirectSum` locale, accessible after `open DirectSum`.
 * https://en.wikipedia.org/wiki/Direct_sum
 -/
 
+@[expose] public section
+
 open Function
 
 universe u v w u₁
@@ -33,21 +37,10 @@ variable (ι : Type v) (β : ι → Type w)
 Note: `open DirectSum` will enable the notation `⨁ i, β i` for `DirectSum ι β`. -/
 def DirectSum [∀ i, AddCommMonoid (β i)] : Type _ :=
   Π₀ i, β i
+deriving AddCommMonoid, Inhabited, DFunLike
 
--- The `AddCommMonoid, Inhabited` instances should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-instance [∀ i, AddCommMonoid (β i)] : Inhabited (DirectSum ι β) :=
-  inferInstanceAs (Inhabited (Π₀ i, β i))
-
-instance [∀ i, AddCommMonoid (β i)] : AddCommMonoid (DirectSum ι β) :=
-  inferInstanceAs (AddCommMonoid (Π₀ i, β i))
-
-instance [∀ i, AddCommMonoid (β i)] : DFunLike (DirectSum ι β) _ fun i : ι => β i :=
-  inferInstanceAs (DFunLike (Π₀ i, β i) _ _)
-
-instance [∀ i, AddCommMonoid (β i)] : CoeFun (DirectSum ι β) fun _ => ∀ i : ι, β i :=
-  inferInstanceAs (CoeFun (Π₀ i, β i) fun _ => ∀ i : ι, β i)
+set_option backward.inferInstanceAs.wrap.data false in
+deriving instance CoeFun for DirectSum
 
 /-- `⨁ i, f i` is notation for `DirectSum _ f` and equals the direct sum of `fun i ↦ f i`.
 Taking the direct sum over multiple arguments is possible, e.g. `⨁ (i) (j), f i j`. -/
@@ -88,6 +81,7 @@ variable [∀ i, AddCommGroup (β i)]
 
 instance : AddCommGroup (DirectSum ι β) :=
   inferInstanceAs (AddCommGroup (Π₀ i, β i))
+
 variable {β}
 
 @[simp]
@@ -110,6 +104,11 @@ variable {β}
 @[simp]
 theorem add_apply (g₁ g₂ : ⨁ i, β i) (i : ι) : (g₁ + g₂) i = g₁ i + g₂ i :=
   rfl
+
+@[simp]
+theorem sum_apply {α} (s : Finset α) (g : α → ⨁ i, β i) (i : ι) :
+    (∑ a ∈ s, g a) i = ∑ a ∈ s, g a i :=
+  DFinsupp.finsetSum_apply s g i
 
 section DecidableEq
 
@@ -134,23 +133,19 @@ variable {β}
 theorem of_eq_same (i : ι) (x : β i) : (of _ i x) i = x :=
   DFinsupp.single_eq_same
 
-theorem of_eq_of_ne (i j : ι) (x : β i) (h : i ≠ j) : (of _ i x) j = 0 :=
+theorem of_eq_of_ne (i j : ι) (x : β i) (h : j ≠ i) : (of _ i x) j = 0 :=
   DFinsupp.single_eq_of_ne h
 
 lemma of_apply {i : ι} (j : ι) (x : β i) : of β i x j = if h : i = j then Eq.recOn h x else 0 :=
   DFinsupp.single_apply
 
 theorem mk_apply_of_mem {s : Finset ι} {f : ∀ i : (↑s : Set ι), β i.val} {n : ι} (hn : n ∈ s) :
-    mk β s f n = f ⟨n, hn⟩ := by
-  dsimp only [Finset.coe_sort_coe, mk, AddMonoidHom.coe_mk, ZeroHom.coe_mk, DFinsupp.mk_apply]
-  rw [dif_pos hn]
+    mk β s f n = f ⟨n, hn⟩ :=
+  DFinsupp.mk_of_mem hn
 
 theorem mk_apply_of_notMem {s : Finset ι} {f : ∀ i : (↑s : Set ι), β i.val} {n : ι} (hn : n ∉ s) :
-    mk β s f n = 0 := by
-  dsimp only [Finset.coe_sort_coe, mk, AddMonoidHom.coe_mk, ZeroHom.coe_mk, DFinsupp.mk_apply]
-  rw [dif_neg hn]
-
-@[deprecated (since := "2025-05-23")] alias mk_apply_of_not_mem := mk_apply_of_notMem
+    mk β s f n = 0 :=
+  DFinsupp.mk_of_notMem hn
 
 @[simp]
 theorem support_zero [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] : (0 : ⨁ i, β i).support = ∅ :=
@@ -171,8 +166,7 @@ theorem sum_support_of [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] (x : ⨁ i
 
 theorem sum_univ_of [Fintype ι] (x : ⨁ i, β i) :
     ∑ i ∈ Finset.univ, of β i (x i) = x := by
-  apply DFinsupp.ext (fun i ↦ ?_)
-  rw [DFinsupp.finset_sum_apply]
+  ext i
   simp [of_apply]
 
 theorem mk_injective (s : Finset ι) : Function.Injective (mk β s) :=
@@ -188,6 +182,13 @@ protected theorem induction_on {motive : (⨁ i, β i) → Prop} (x : ⨁ i, β 
   apply DFinsupp.induction x zero
   intro i b f h1 h2 ih
   solve_by_elim
+
+/-- An alternative induction, where the addition assumption is restricted to singles. -/
+@[elab_as_elim]
+protected theorem induction_on' {motive : (⨁ i, β i) → Prop} (f : ⨁ i, β i) (h0 : motive 0)
+    (hadd : ∀ (i b) (f : ⨁ i, β i), f i = 0 → b ≠ 0 → motive f → motive (of β i b + f)) :
+    motive f :=
+  DFinsupp.induction f h0 hadd
 
 /-- If two additive homomorphisms from `⨁ i, β i` are equal on each `of β i y`,
 then they are equal. -/
@@ -226,7 +227,9 @@ theorem toAddMonoid.unique (f : ⨁ i, β i) : ψ f = toAddMonoid (fun i => ψ.c
   congr
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` applies addHom_ext' here, which isn't what we want.
   apply DFinsupp.addHom_ext'
-  simp [toAddMonoid, of]
+  intro
+  simp [toAddMonoid]
+  rfl
 
 lemma toAddMonoid_injective : Injective (toAddMonoid : (∀ i, β i →+ γ) → (⨁ i, β i) →+ γ) :=
   DFinsupp.liftAddHom.injective
@@ -262,7 +265,7 @@ variable (β)
 /-- `setToSet β S T h` is the natural homomorphism `⨁ (i : S), β i → ⨁ (i : T), β i`,
 where `h : S ⊆ T`. -/
 def setToSet (S T : Set ι) (H : S ⊆ T) : (⨁ i : S, β i) →+ ⨁ i : T, β i :=
-  toAddMonoid fun i => of (fun i : Subtype T => β i) ⟨↑i, H i.2⟩
+  toAddMonoid fun i => of (fun i : T => β i) ⟨↑i, H i.2⟩
 
 end DecidableEq
 
@@ -276,17 +279,24 @@ instance uniqueOfIsEmpty [IsEmpty ι] : Unique (⨁ i, β i) :=
 /-- The natural equivalence between `⨁ _ : ι, M` and `M` when `Unique ι`. -/
 protected def id (M : Type v) (ι : Type* := PUnit) [AddCommMonoid M] [Unique ι] :
     (⨁ _ : ι, M) ≃+ M :=
-  {
-    DirectSum.toAddMonoid fun _ =>
-      AddMonoidHom.id
-        M with
+  { DirectSum.toAddMonoid fun _ => AddMonoidHom.id M with
     toFun := DirectSum.toAddMonoid fun _ => AddMonoidHom.id M
     invFun := of (fun _ => M) default
-    left_inv := fun x =>
-      DirectSum.induction_on x (by rw [AddMonoidHom.map_zero, AddMonoidHom.map_zero])
-        (fun p x => by rw [Unique.default_eq p, toAddMonoid_of]; rfl) fun x y ihx ihy => by
-        rw [AddMonoidHom.map_add, AddMonoidHom.map_add, ihx, ihy]
-    right_inv := fun _ => toAddMonoid_of _ _ _ }
+    left_inv x :=
+      DirectSum.induction_on x
+        (by rw [map_zero, map_zero])
+        (fun p x => by rw [Unique.default_eq p, toAddMonoid_of, AddMonoidHom.id_apply])
+        (fun x y ihx ihy => by grind)
+    right_inv _ := toAddMonoid_of _ _ _ }
+
+@[simp] lemma id_symm_apply {M : Type v} {ι : Type*} [AddCommMonoid M] [Unique ι] (x : M) :
+    (DirectSum.id M ι).symm x = of _ default x :=
+  rfl
+
+@[simp] lemma id_apply {M : Type v} {ι : Type*} [AddCommMonoid M] [Unique ι] (x : ⨁ _ : ι, M) :
+    DirectSum.id M ι x = x default := by
+  rw [← AddEquiv.eq_symm_apply, id_symm_apply, eq_comm]
+  induction x using DirectSum.induction_on <;> simp [Unique.eq_default, *]
 
 section CongrLeft
 
@@ -294,7 +304,7 @@ variable {κ : Type*}
 
 /-- Reindexing terms of a direct sum. -/
 def equivCongrLeft (h : ι ≃ κ) : (⨁ i, β i) ≃+ ⨁ k, β (h.symm k) :=
-  { DFinsupp.equivCongrLeft h with map_add' := DFinsupp.comapDomain'_add _ h.right_inv}
+  { DFinsupp.equivCongrLeft h with map_add' := DFinsupp.comapDomain'_add _ h.right_inv }
 
 @[simp]
 theorem equivCongrLeft_apply (h : ι ≃ κ) (f : ⨁ i, β i) (k : κ) :
@@ -363,9 +373,6 @@ theorem coeAddMonoidHom_eq_dfinsuppSum [DecidableEq ι]
     Equiv.coe_fn_mk]
   exact DFinsupp.sumAddHom_apply _ x
 
-@[deprecated (since := "2025-04-06")]
-alias coeAddMonoidHom_eq_dfinsupp_sum := coeAddMonoidHom_eq_dfinsuppSum
-
 @[simp]
 theorem coeAddMonoidHom_of {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
     [AddSubmonoidClass S M] (A : ι → S) (i : ι) (x : A i) :
@@ -375,9 +382,9 @@ theorem coeAddMonoidHom_of {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [Set
 theorem coe_of_apply {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
     [AddSubmonoidClass S M] {A : ι → S} (i j : ι) (x : A i) :
     (of (fun i ↦ {x // x ∈ A i}) i x j : M) = if i = j then x else 0 := by
-  obtain rfl | h := Decidable.eq_or_ne i j
+  obtain rfl | h := Decidable.eq_or_ne j i
   · rw [DirectSum.of_eq_same, if_pos rfl]
-  · rw [DirectSum.of_eq_of_ne _ _ _ h, if_neg h, ZeroMemClass.coe_zero, ZeroMemClass.coe_zero]
+  · rw [DirectSum.of_eq_of_ne _ _ _ h, if_neg h.symm, ZeroMemClass.coe_zero, ZeroMemClass.coe_zero]
 
 /-- The `DirectSum` formed by a collection of additive submonoids (or subgroups, or submodules) of
 `M` is said to be internal if the canonical map `(⨁ i, A i) →+ M` is bijective.
@@ -402,10 +409,12 @@ theorem support_subset [DecidableEq ι] [DecidableEq M] (A : ι → S) (x : Dire
   simp only [Function.mem_support, Finset.mem_coe, DFinsupp.mem_support_toFun, not_imp_not,
     ZeroMemClass.coe_eq_zero, imp_self]
 
-theorem finite_support (A : ι → S) (x : DirectSum ι fun i => A i) :
-    (Function.support fun i => (x i : M)).Finite := by
+theorem hasFiniteSupport (A : ι → S) (x : DirectSum ι fun i => A i) :
+    (fun i => (x i : M)).HasFiniteSupport := by
   classical
   exact (DFinsupp.support x).finite_toSet.subset (DirectSum.support_subset _ x)
+
+@[deprecated (since := "2026-03-03")] alias finite_support := hasFiniteSupport
 
 section map
 
@@ -444,6 +453,7 @@ end map
 
 end DirectSum
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism of a finite direct sum of additive commutative monoids
 and the corresponding finite product. -/
 def DirectSum.addEquivProd {ι : Type*} [Fintype ι] (G : ι → Type*) [(i : ι) → AddCommMonoid (G i)] :

@@ -3,15 +3,19 @@ Copyright (c) 2022 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.RingTheory.Localization.AsSubring
-import Mathlib.RingTheory.Spectrum.Maximal.Basic
-import Mathlib.RingTheory.Spectrum.Prime.RingHom
+module
+
+public import Mathlib.RingTheory.Localization.AsSubring
+public import Mathlib.RingTheory.Spectrum.Maximal.Basic
+public import Mathlib.RingTheory.Spectrum.Prime.RingHom
 
 /-!
 # Maximal spectrum of a commutative (semi)ring
 
 Localization results.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -67,7 +71,7 @@ abbrev PiLocalization : Type _ := Π I : MaximalSpectrum R, Localization.AtPrime
 
 /-- The canonical ring homomorphism from a commutative semiring to the product of its
 localizations at all maximal ideals. It is always injective. -/
-def toPiLocalization : R →+* PiLocalization R := algebraMap R _
+def toPiLocalization : R →ₐ[R] PiLocalization R := Algebra.ofId R (PiLocalization R)
 
 theorem toPiLocalization_injective : Function.Injective (toPiLocalization R) := fun r r' eq ↦ by
   rw [← one_mul r, ← one_mul r']
@@ -88,7 +92,7 @@ noncomputable def mapPiLocalization : PiLocalization R →+* PiLocalization S :=
 
 theorem mapPiLocalization_naturality :
     (mapPiLocalization f hf).comp (toPiLocalization R) =
-      (toPiLocalization S).comp f := by
+      (toPiLocalization S).toRingHom.comp f := by
   ext r I
   change Localization.localRingHom _ _ _ rfl (algebraMap _ _ r) = algebraMap _ _ (f r)
   simp_rw [← IsLocalization.mk'_one (M := (I.1.comap f).primeCompl), Localization.localRingHom_mk',
@@ -138,7 +142,7 @@ variable {R}
 theorem finite_of_toPiLocalization_pi_surjective
     (h : Function.Surjective (toPiLocalization (Π i, R i))) :
     Finite ι := by
-  contrapose h; rw [not_finite_iff_infinite] at h
+  contrapose! h
   exact toPiLocalization_not_surjective_of_infinite _
 
 end Pi
@@ -148,7 +152,8 @@ theorem finite_of_toPiLocalization_surjective
     Finite (MaximalSpectrum R) := by
   replace surj := mapPiLocalization_bijective _ ⟨toPiLocalization_injective R, surj⟩
     |>.2.comp surj
-  rw [← RingHom.coe_comp, mapPiLocalization_naturality, RingHom.coe_comp] at surj
+  rw [← AlgHom.coe_toRingHom,
+    ← RingHom.coe_comp, mapPiLocalization_naturality, RingHom.coe_comp] at surj
   exact finite_of_toPiLocalization_pi_surjective surj.of_comp
 
 end MaximalSpectrum
@@ -160,7 +165,7 @@ abbrev PiLocalization : Type _ := Π p : PrimeSpectrum R, Localization p.asIdeal
 
 /-- The canonical ring homomorphism from a commutative semiring to the product of its
 localizations at all prime ideals. It is always injective. -/
-def toPiLocalization : R →+* PiLocalization R := algebraMap R _
+def toPiLocalization : R →ₐ[R] PiLocalization R := Algebra.ofId R (PiLocalization R)
 
 theorem toPiLocalization_injective : Function.Injective (toPiLocalization R) :=
   fun _ _ eq ↦ MaximalSpectrum.toPiLocalization_injective R <|
@@ -168,8 +173,8 @@ theorem toPiLocalization_injective : Function.Injective (toPiLocalization R) :=
 
 /-- The projection from the product of localizations at primes to the product of
 localizations at maximal ideals. -/
-def piLocalizationToMaximal : PiLocalization R →+* MaximalSpectrum.PiLocalization R :=
-  Pi.ringHom fun I ↦ Pi.evalRingHom _ I.toPrimeSpectrum
+def piLocalizationToMaximal : PiLocalization R →ₐ[R] MaximalSpectrum.PiLocalization R :=
+  Pi.algHom _ _  fun I ↦ Pi.evalAlgHom _ _ I.toPrimeSpectrum
 
 open scoped Classical in
 theorem piLocalizationToMaximal_surjective : Function.Surjective (piLocalizationToMaximal R) :=
@@ -211,10 +216,10 @@ variable (f : R →+* S)
 
 /-- A ring homomorphism induces a homomorphism between the products of localizations at primes. -/
 noncomputable def mapPiLocalization : PiLocalization R →+* PiLocalization S :=
-  Pi.ringHom fun I ↦ (Localization.localRingHom _ I.1 f rfl).comp (Pi.evalRingHom _ (f.specComap I))
+  Pi.ringHom fun I ↦ (Localization.localRingHom _ I.1 f rfl).comp (Pi.evalRingHom _ (comap f I))
 
 theorem mapPiLocalization_naturality :
-    (mapPiLocalization f).comp (toPiLocalization R) = (toPiLocalization S).comp f := by
+    (mapPiLocalization f).comp (toPiLocalization R) = (toPiLocalization S).toRingHom.comp f := by
   ext r I
   change Localization.localRingHom _ _ _ rfl (algebraMap _ _ r) = algebraMap _ _ (f r)
   simp_rw [← IsLocalization.mk'_one (M := (I.1.comap f).primeCompl), Localization.localRingHom_mk',
@@ -243,7 +248,7 @@ variable {ι} (R : ι → Type*) [∀ i, CommSemiring (R i)] [∀ i, Nontrivial 
 theorem toPiLocalization_not_surjective_of_infinite [Infinite ι] :
     ¬ Function.Surjective (toPiLocalization (Π i, R i)) :=
   fun surj ↦ MaximalSpectrum.toPiLocalization_not_surjective_of_infinite R <| by
-    rw [← piLocalizationToMaximal_comp_toPiLocalization]
+    rw [← AlgHom.coe_toRingHom, ← piLocalizationToMaximal_comp_toPiLocalization]
     exact (piLocalizationToMaximal_surjective _).comp surj
 
 variable {R}
@@ -251,7 +256,7 @@ variable {R}
 theorem finite_of_toPiLocalization_pi_surjective
     (h : Function.Surjective (toPiLocalization (Π i, R i))) :
     Finite ι := by
-  contrapose h; rw [not_finite_iff_infinite] at h
+  contrapose! h
   exact toPiLocalization_not_surjective_of_infinite _
 
 end Pi
@@ -260,7 +265,8 @@ theorem finite_of_toPiLocalization_surjective
     (surj : Function.Surjective (toPiLocalization R)) :
     Finite (PrimeSpectrum R) := by
   replace surj := (mapPiLocalization_bijective _ ⟨toPiLocalization_injective R, surj⟩).2.comp surj
-  rw [← RingHom.coe_comp, mapPiLocalization_naturality, RingHom.coe_comp] at surj
+  rw [← AlgHom.coe_toRingHom,
+    ← RingHom.coe_comp, mapPiLocalization_naturality, RingHom.coe_comp] at surj
   exact finite_of_toPiLocalization_pi_surjective surj.of_comp
 
 end PrimeSpectrum

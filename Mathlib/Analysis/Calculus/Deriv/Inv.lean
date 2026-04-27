@@ -3,8 +3,10 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.Deriv.Mul
-import Mathlib.Analysis.Calculus.Deriv.Comp
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Mul
+public import Mathlib.Analysis.Calculus.Deriv.Comp
 
 /-!
 # Derivatives of `x ↦ x⁻¹` and `f x / g x`
@@ -20,13 +22,15 @@ For a more detailed overview of one-dimensional derivatives in mathlib, see the 
 derivative
 -/
 
+public section
+
 
 universe u
 
 open scoped Topology
 open Filter Asymptotics Set
 
-open ContinuousLinearMap (smulRight)
+open ContinuousLinearMap (toSpanSingleton)
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {x : 𝕜} {s : Set 𝕜}
 
@@ -42,8 +46,7 @@ theorem hasStrictDerivAt_inv (hx : x ≠ 0) : HasStrictDerivAt Inv.inv (-(x ^ 2)
     refine Eventually.mono ((isOpen_ne.prod isOpen_ne).mem_nhds ⟨hx, hx⟩) ?_
     rintro ⟨y, z⟩ ⟨hy, hz⟩
     simp only [mem_setOf_eq] at hy hz
-    -- hy : y ≠ 0, hz : z ≠ 0
-    field_simp [hx, hy, hz]
+    simp [field]
     ring
   refine (isBigO_refl (fun p : 𝕜 × 𝕜 => p.1 - p.2) _).mul_isLittleO ((isLittleO_one_iff 𝕜).2 ?_)
   rw [← sub_self (x * x)⁻¹]
@@ -62,7 +65,8 @@ theorem differentiableAt_inv_iff : DifferentiableAt 𝕜 (fun x => x⁻¹) x ↔
 
 theorem deriv_inv : deriv (fun x => x⁻¹) x = -(x ^ 2)⁻¹ := by
   rcases eq_or_ne x 0 with (rfl | hne)
-  · simp [deriv_zero_of_not_differentiableAt (mt differentiableAt_inv_iff.1 (not_not.2 rfl))]
+  · rw [deriv_zero_of_not_differentiableAt (mt differentiableAt_inv_iff.1 (not_not.2 rfl))]
+    simp
   · exact (hasDerivAt_inv hne).deriv
 
 @[simp]
@@ -75,44 +79,38 @@ theorem derivWithin_inv (x_ne_zero : x ≠ 0) (hxs : UniqueDiffWithinAt 𝕜 s x
   exact deriv_inv
 
 theorem hasFDerivAt_inv (x_ne_zero : x ≠ 0) :
-    HasFDerivAt (fun x => x⁻¹) (smulRight (1 : 𝕜 →L[𝕜] 𝕜) (-(x ^ 2)⁻¹) : 𝕜 →L[𝕜] 𝕜) x :=
+    HasFDerivAt (fun x => x⁻¹) (toSpanSingleton 𝕜 (-(x ^ 2)⁻¹) : 𝕜 →L[𝕜] 𝕜) x :=
   hasDerivAt_inv x_ne_zero
 
 theorem hasStrictFDerivAt_inv (x_ne_zero : x ≠ 0) :
-    HasStrictFDerivAt (fun x => x⁻¹) (smulRight (1 : 𝕜 →L[𝕜] 𝕜) (-(x ^ 2)⁻¹) : 𝕜 →L[𝕜] 𝕜) x :=
+    HasStrictFDerivAt (fun x => x⁻¹) (toSpanSingleton 𝕜 (-(x ^ 2)⁻¹) : 𝕜 →L[𝕜] 𝕜) x :=
   hasStrictDerivAt_inv x_ne_zero
 
 theorem hasFDerivWithinAt_inv (x_ne_zero : x ≠ 0) :
-    HasFDerivWithinAt (fun x => x⁻¹) (smulRight (1 : 𝕜 →L[𝕜] 𝕜) (-(x ^ 2)⁻¹) : 𝕜 →L[𝕜] 𝕜) s x :=
+    HasFDerivWithinAt (fun x => x⁻¹) (toSpanSingleton 𝕜 (-(x ^ 2)⁻¹) : 𝕜 →L[𝕜] 𝕜) s x :=
   (hasFDerivAt_inv x_ne_zero).hasFDerivWithinAt
 
-theorem fderiv_inv : fderiv 𝕜 (fun x => x⁻¹) x = smulRight (1 : 𝕜 →L[𝕜] 𝕜) (-(x ^ 2)⁻¹) := by
-  rw [← deriv_fderiv, deriv_inv]
+theorem fderiv_inv : fderiv 𝕜 (fun x => x⁻¹) x = toSpanSingleton 𝕜 (-(x ^ 2)⁻¹) := by
+  rw [← toSpanSingleton_deriv, deriv_inv]
 
 theorem fderivWithin_inv (x_ne_zero : x ≠ 0) (hxs : UniqueDiffWithinAt 𝕜 s x) :
-    fderivWithin 𝕜 (fun x => x⁻¹) s x = smulRight (1 : 𝕜 →L[𝕜] 𝕜) (-(x ^ 2)⁻¹) := by
+    fderivWithin 𝕜 (fun x => x⁻¹) s x = toSpanSingleton 𝕜 (-(x ^ 2)⁻¹) := by
   rw [DifferentiableAt.fderivWithin (differentiableAt_inv x_ne_zero) hxs]
   exact fderiv_inv
 
 variable {c : 𝕜 → 𝕜} {c' : 𝕜}
 
-theorem HasDerivWithinAt.fun_inv (hc : HasDerivWithinAt c c' s x) (hx : c x ≠ 0) :
-    HasDerivWithinAt (fun y => (c y)⁻¹) (-c' / c x ^ 2) s x := by
-  convert (hasDerivAt_inv hx).comp_hasDerivWithinAt x hc using 1
-  field_simp
-
+@[to_fun]
 theorem HasDerivWithinAt.inv (hc : HasDerivWithinAt c c' s x) (hx : c x ≠ 0) :
-    HasDerivWithinAt (c⁻¹) (-c' / c x ^ 2) s x :=
-  hc.fun_inv hx
+    HasDerivWithinAt (c⁻¹) (-c' / c x ^ 2) s x := by
+  convert (hasDerivAt_inv hx).comp_hasDerivWithinAt x hc using 1
+  ring
 
-theorem HasDerivAt.fun_inv (hc : HasDerivAt c c' x) (hx : c x ≠ 0) :
-    HasDerivAt (fun y => (c y)⁻¹) (-c' / c x ^ 2) x := by
+@[to_fun]
+theorem HasDerivAt.inv (hc : HasDerivAt c c' x) (hx : c x ≠ 0) :
+    HasDerivAt (c⁻¹) (-c' / c x ^ 2) x := by
   rw [← hasDerivWithinAt_univ] at *
   exact hc.inv hx
-
-theorem HasDerivAt.inv (hc : HasDerivAt c c' x) (hx : c x ≠ 0) :
-    HasDerivAt (c⁻¹) (-c' / c x ^ 2) x :=
-  hc.fun_inv hx
 
 theorem derivWithin_fun_inv' (hc : DifferentiableWithinAt 𝕜 c s x) (hx : c x ≠ 0) :
     derivWithin (fun x => (c x)⁻¹) s x = -derivWithin c s x / c x ^ 2 := by
@@ -147,7 +145,7 @@ theorem HasDerivWithinAt.fun_div (hc : HasDerivWithinAt c c' s x) (hd : HasDeriv
     HasDerivWithinAt (fun y => c y / d y) ((c' * d x - c x * d') / d x ^ 2) s x := by
   convert hc.fun_mul ((hasDerivAt_inv hx).comp_hasDerivWithinAt x hd) using 1
   · simp only [div_eq_mul_inv, (· ∘ ·)]
-  · field_simp
+  · simp [field]
     ring
 
 theorem HasDerivWithinAt.div (hc : HasDerivWithinAt c c' s x) (hd : HasDerivWithinAt d d' s x)
@@ -159,7 +157,7 @@ theorem HasStrictDerivAt.fun_div (hc : HasStrictDerivAt c c' x) (hd : HasStrictD
     (hx : d x ≠ 0) : HasStrictDerivAt (fun y => c y / d y) ((c' * d x - c x * d') / d x ^ 2) x := by
   convert hc.fun_mul ((hasStrictDerivAt_inv hx).comp x hd) using 1
   · simp only [div_eq_mul_inv, (· ∘ ·)]
-  · field_simp
+  · simp [field]
     ring
 
 theorem HasStrictDerivAt.div (hc : HasStrictDerivAt c c' x) (hd : HasStrictDerivAt d d' x)

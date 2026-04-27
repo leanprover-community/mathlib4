@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
-import Mathlib.Topology.Sheaves.SheafOfFunctions
-import Mathlib.Topology.Sheaves.Stalks
-import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
+module
+
+public import Mathlib.Topology.Sheaves.SheafOfFunctions
+public import Mathlib.Topology.Sheaves.Stalks
+public import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
 
 /-!
 # Functions satisfying a local predicate form a sheaf.
@@ -33,6 +35,8 @@ to the types in the ambient type family.
 
 We give conditions sufficient to show that this map is injective and/or surjective.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -90,7 +94,7 @@ a `P : LocalPredicate T` consists of:
 -/
 structure LocalPredicate extends PrelocalPredicate T where
   /-- A local predicate must be local --- provided that it is locally satisfied, it is also globally
-    satisfied -/
+  satisfied -/
   locality :
     ∀ {U : Opens X} (f : ∀ x : U, T x)
       (_ : ∀ x : U, ∃ (V : Opens X) (_ : x.1 ∈ V) (i : V ⟶ U),
@@ -152,16 +156,77 @@ def PrelocalPredicate.sheafify {T : X → Type*} (P : PrelocalPredicate T) : Loc
     rcases p with ⟨V', m', i', p'⟩
     exact ⟨V', m', i' ≫ i, p'⟩
 
-theorem PrelocalPredicate.sheafifyOf {T : X → Type*} {P : PrelocalPredicate T} {U : Opens X}
+namespace PrelocalPredicate
+
+theorem sheafifyOf {T : X → Type*} {P : PrelocalPredicate T} {U : Opens X}
     {f : ∀ x : U, T x} (h : P.pred f) : P.sheafify.pred f := fun x ↦
   ⟨U, x.2, 𝟙 _, by convert h⟩
 
+/-- For a unary operation (e.g. `x ↦ -x`) defined at each stalk, if a prelocal predicate is closed
+under the operation on each open set (possibly by refinement), then the sheafified predicate is
+also closed under the operation. See `sheafify_inductionOn'` for the version without refinement. -/
+theorem sheafify_inductionOn {X : TopCat} {T : X → Type*} (P : PrelocalPredicate T)
+    (op : {x : X} → T x → T x)
+    (hop : ∀ {U : Opens X} {a : (x : U) → T x}, P.pred a →
+      ∀ (p : U), ∃ (W : Opens X) (i : W ⟶ U), p.1 ∈ W ∧ P.pred fun x : W ↦ op (a (i x)))
+    {U : Opens X} {a : (x : U) → T x} (ha : P.sheafify.pred a) :
+    P.sheafify.pred (fun x : U ↦ op (a x)) := by
+  intro x
+  rcases ha x with ⟨Va, ma, ia, ha⟩
+  rcases hop ha ⟨x, ma⟩ with ⟨W, sa, hx, hw⟩
+  exact ⟨W, hx, sa ≫ ia, hw⟩
+
+/-- For a unary operation (e.g. `x ↦ -x`) defined at each stalk, if a prelocal predicate is closed
+under the operation on each open set, then the sheafified predicate is also closed under the
+operation. See `sheafify_inductionOn` for the version with refinement. -/
+theorem sheafify_inductionOn' {X : TopCat} {T : X → Type*} (P : PrelocalPredicate T)
+    (op : {x : X} → T x → T x)
+    (hop : ∀ {U : Opens X} {a : (x : U) → T x}, P.pred a → P.pred fun x : U ↦ op (a x))
+    {U : Opens X} {a : (x : U) → T x} (ha : P.sheafify.pred a) :
+    P.sheafify.pred (fun x : U ↦ op (a x)) :=
+  P.sheafify_inductionOn op (fun ha p ↦ ⟨_, 𝟙 _, p.2, hop ha⟩) ha
+
+/-- For a binary operation (e.g. `x ↦ y ↦ x + y`) defined at each stalk, if a prelocal predicate is
+closed under the operation on each open set (possibly by refinement), then the sheafified predicate
+is also closed under the operation. See `sheafify_inductionOn₂'` for the version without
+refinement. -/
+theorem sheafify_inductionOn₂ {X : TopCat} {T₁ T₂ T₃ : X → Type*}
+    (P₁ : PrelocalPredicate T₁) (P₂ : PrelocalPredicate T₂) (P₃ : PrelocalPredicate T₃)
+    (op : {x : X} → T₁ x → T₂ x → T₃ x)
+    (hop : ∀ {U V : Opens X} {a : (x : U) → T₁ x} {b : (x : V) → T₂ x}, P₁.pred a → P₂.pred b →
+      ∀ (p : (U ⊓ V : Opens X)), ∃ (W : Opens X) (ia : W ⟶ U) (ib : W ⟶ V),
+      p.1 ∈ W ∧ P₃.pred fun x : W ↦ op (a (ia x)) (b (ib x)))
+    {U : Opens X} {a : (x : U) → T₁ x} {b : (x : U) → T₂ x}
+    (ha : P₁.sheafify.pred a) (hb : P₂.sheafify.pred b) :
+    P₃.sheafify.pred (fun x : U ↦ op (a x) (b x)) := by
+  intro x
+  rcases ha x with ⟨Va, ma, ia, ha⟩
+  rcases hb x with ⟨Vb, mb, ib, hb⟩
+  rcases hop ha hb ⟨x, ma, mb⟩ with ⟨W, sa, sb, hx, hw⟩
+  exact ⟨W, hx, sa ≫ ia, hw⟩
+
+/-- For a binary operation (e.g. `x ↦ y ↦ x + y`) defined at each stalk, if a prelocal predicate is
+closed under the operation on each open set, then the sheafified predicate is also closed under the
+operation. See `sheafify_inductionOn₂` for the version with refinement. -/
+theorem sheafify_inductionOn₂' {X : TopCat} {T₁ T₂ T₃ : X → Type*}
+    (P₁ : PrelocalPredicate T₁) (P₂ : PrelocalPredicate T₂) (P₃ : PrelocalPredicate T₃)
+    (op : {x : X} → T₁ x → T₂ x → T₃ x)
+    (hop : ∀ {U V : Opens X} {a : (x : U) → T₁ x} {b : (x : V) → T₂ x}, P₁.pred a → P₂.pred b →
+      P₃.pred fun x : (U ⊓ V : Opens X) ↦ op (a ⟨x, x.2.1⟩) (b ⟨x, x.2.2⟩))
+    {U : Opens X} {a : (x : U) → T₁ x} {b : (x : U) → T₂ x}
+    (ha : P₁.sheafify.pred a) (hb : P₂.sheafify.pred b) :
+    P₃.sheafify.pred (fun x : U ↦ op (a x) (b x)) :=
+  P₁.sheafify_inductionOn₂ P₂ P₃ op
+    (fun ha hb p ↦ ⟨_, Opens.infLELeft _ _, Opens.infLERight _ _, p.2, hop ha hb⟩) ha hb
+
+end PrelocalPredicate
+
 /-- The subpresheaf of dependent functions on `X` satisfying the "pre-local" predicate `P`.
 -/
-@[simps!]
+@[simps]
 def subpresheafToTypes (P : PrelocalPredicate T) : Presheaf (Type _) X where
-  obj U := { f : ∀ x : U.unop , T x // P.pred f }
-  map {_ _} i f := ⟨fun x ↦ f.1 (i.unop x), P.res i.unop f.1 f.2⟩
+  obj U := { f : ∀ x : U.unop, T x // P.pred f }
+  map i := TypeCat.ofHom fun f ↦ ⟨fun x ↦ f.1 (i.unop x), P.res i.unop f.1 f.2⟩
 
 namespace subpresheafToTypes
 
@@ -170,11 +235,10 @@ variable (P : PrelocalPredicate T)
 /-- The natural transformation including the subpresheaf of functions satisfying a local predicate
 into the presheaf of all functions.
 -/
-def subtype : subpresheafToTypes P ⟶ presheafToTypes X T where app _ f := f.1
+def subtype : subpresheafToTypes P ⟶ presheafToTypes X T where app _ := TypeCat.ofHom (fun f ↦ f.1)
 
 open TopCat.Presheaf
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /-- The functions satisfying a local predicate satisfy the sheaf condition.
 -/
 theorem isSheaf (P : LocalPredicate T) : (subpresheafToTypes P.toPrelocalPredicate).IsSheaf :=
@@ -218,21 +282,30 @@ end subpresheafToTypes
 def subsheafToTypes (P : LocalPredicate T) : Sheaf (Type _) X :=
   ⟨subpresheafToTypes P.toPrelocalPredicate, subpresheafToTypes.isSheaf P⟩
 
+/-- Auxiliary definition for `stalkToFiber`. -/
+def LocalPredicate.cocone (P : LocalPredicate T) (x : X) :
+    Cocone ((OpenNhds.inclusion x).op ⋙ subpresheafToTypes P.toPrelocalPredicate) where
+  pt := T x
+  ι := { app U := TypeCat.ofHom (fun f ↦ f.1 ⟨x, (unop U).2⟩) }
+
 /-- There is a canonical map from the stalk to the original fiber, given by evaluating sections.
 -/
-def stalkToFiber (P : LocalPredicate T) (x : X) : (subsheafToTypes P).presheaf.stalk x ⟶ T x := by
-  refine
-    colimit.desc _
-      { pt := T x
-        ι :=
-          { app := fun U f ↦ ?_
-            naturality := ?_ } }
-  · exact f.1 ⟨x, (unop U).2⟩
-  · aesop
+def stalkToFiber (P : LocalPredicate T) (x : X) :
+    (subsheafToTypes P).presheaf.stalk x ⟶ T x :=
+  colimit.desc _ (P.cocone x)
+
+@[simp]
+lemma stalkToFiber_ι (P : LocalPredicate T) (x : X) (U : (OpenNhds x)ᵒᵖ)
+    (fU : {f //  P.pred f}) :
+    dsimp% (stalkToFiber P x)
+      (colimit.ι ((OpenNhds.inclusion x).op ⋙ subpresheafToTypes P.toPrelocalPredicate) U fU) =
+      (P.cocone x).ι.app U fU :=
+  colimit.ι_desc_apply _ _ _
 
 theorem stalkToFiber_germ (P : LocalPredicate T) (U : Opens X) (x : X) (hx : x ∈ U) (f) :
     stalkToFiber P x ((subsheafToTypes P).presheaf.germ U x hx f) = f.1 ⟨x, hx⟩ := by
-  simp [Presheaf.germ, stalkToFiber]
+  dsimp [stalkToFiber, Presheaf.germ]
+  exact colimit.ι_desc_apply _ _ _
 
 /-- The `stalkToFiber` map is surjective at `x` if
 every point in the fiber `T x` has an allowed section passing through it.
@@ -245,6 +318,7 @@ theorem stalkToFiber_surjective (P : LocalPredicate T) (x : X)
   · exact (subsheafToTypes P).presheaf.germ _ x U.2 ⟨f, h⟩
   · exact stalkToFiber_germ P U.1 x U.2 ⟨f, h⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `stalkToFiber` map is injective at `x` if any two allowed sections which agree at `x`
 agree on some neighborhood of `x`.
 -/
@@ -264,18 +338,19 @@ theorem stalkToFiber_injective (P : LocalPredicate T) (x : X)
   · choose W s hW e using Q
     exact e.1.trans e.2.symm
   -- Then use induction to pick particular representatives of `tU tV : stalk x`
+  dsimp at tU tV h
   obtain ⟨U, ⟨fU, hU⟩, rfl⟩ := jointly_surjective' tU
   obtain ⟨V, ⟨fV, hV⟩, rfl⟩ := jointly_surjective' tV
   -- Decompose everything into its constituent parts:
-  dsimp
-  simp only [stalkToFiber, Types.Colimit.ι_desc_apply'] at h
+  simp only [Functor.whiskeringLeft_obj_obj, Functor.comp_obj, Functor.op_obj,
+    subpresheafToTypes_obj, stalkToFiber_ι] at h
   specialize w (unop U) (unop V) fU hU fV hV h
   rcases w with ⟨W, iU, iV, w⟩
   -- and put it back together again in the correct order.
   refine ⟨op W, fun w ↦ fU (iU w : (unop U).1), P.res ?_ _ hU, ?_⟩
   · rcases W with ⟨W, m⟩
     exact iU
-  · exact ⟨colimit_sound iU.op (Subtype.eq rfl), colimit_sound iV.op (Subtype.eq (funext w).symm)⟩
+  · exact ⟨colimit_sound iU.op (Subtype.ext rfl), colimit_sound iV.op (Subtype.ext (funext w).symm)⟩
 
 universe u
 
@@ -286,8 +361,8 @@ the presheaf of continuous functions.
 def subpresheafContinuousPrelocalIsoPresheafToTop {X : TopCat.{u}} (T : TopCat.{u}) :
     subpresheafToTypes (continuousPrelocal X T) ≅ presheafToTop X T :=
   NatIso.ofComponents fun X ↦
-    { hom := by rintro ⟨f, c⟩; exact ofHom ⟨f, c⟩
-      inv := by rintro ⟨f, c⟩; exact ⟨f, c⟩ }
+    { hom := TypeCat.ofHom <| by rintro ⟨f, c⟩; exact ofHom ⟨f, c⟩
+      inv := TypeCat.ofHom <| by rintro ⟨f, c⟩; exact ⟨f, c⟩ }
 
 /-- The sheaf of continuous functions on `X` with values in a space `T`.
 -/

@@ -3,7 +3,9 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Products
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
 /-!
 
 # Effective epimorphisms
@@ -21,7 +23,7 @@ of the family).
 We have defined the notion of effective epi for morphisms and families of morphisms in such a
 way that avoids requiring the existence of pullbacks. However, if the relevant pullbacks exist
 then these definitions are equivalent, see the file
-`CategoryTheory/EffectiveEpi/RegularEpi.lean`
+`Mathlib/CategoryTheory/EffectiveEpi/RegularEpi.lean`
 See [nlab: *Effective Epimorphism*](https://ncatlab.org/nlab/show/effective+epimorphism) and
 [Stacks 00WP](https://stacks.math.columbia.edu/tag/00WP) for the standard definitions. Note that
 our notion of `EffectiveEpi` is often called "strict epi" in the literature.
@@ -33,11 +35,13 @@ our notion of `EffectiveEpi` is often called "strict epi" in the literature.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
-open Limits
+open Limits Category
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 /--
 This structure encodes the data required for a morphism to be an effective epimorphism.
@@ -91,13 +95,21 @@ lemma EffectiveEpi.uniq {X Y W : C} (f : Y ⟶ X) [EffectiveEpi f]
     m = EffectiveEpi.desc f e h :=
   (EffectiveEpi.getStruct f).uniq e h _ hm
 
-instance epiOfEffectiveEpi {X Y : C} (f : Y ⟶ X) [EffectiveEpi f] : Epi f := by
-  constructor
-  intro W m₁ m₂ h
-  have : m₂ = EffectiveEpi.desc f (f ≫ m₂)
-    (fun {Z} g₁ g₂ h => by simp only [← Category.assoc, h]) := EffectiveEpi.uniq _ _ _ _ rfl
-  rw [this]
-  exact EffectiveEpi.uniq _ _ _ _ h
+open EffectiveEpi Category
+
+instance epi_of_effectiveEpi {X Y : C} (f : Y ⟶ X) [EffectiveEpi f] : Epi f where
+  left_cancellation m₁ m₂ h := by
+    rw [show m₂ = desc f (f ≫ m₂) (fun _ _ h => by simp [← assoc, h]) from uniq _ _ _ _ rfl]
+    exact uniq _ _ _ _ h
+
+@[deprecated (since := "2025-11-20")] alias epiOfEffectiveEpi := epi_of_effectiveEpi
+
+instance (priority := 100) strongEpi_of_effectiveEpi {X Y : C} (f : X ⟶ Y) [EffectiveEpi f] :
+    StrongEpi f :=
+  StrongEpi.mk' fun A B z hz u v sq ↦
+    have : ∀ {Z : C} (g₁ g₂ : Z ⟶ X), g₁ ≫ f = g₂ ≫ f → g₁ ≫ u = g₂ ≫ u := fun _ _ h ↦ by
+      simpa [← sq.w, cancel_mono_assoc_iff] using h =≫ v
+    CommSq.HasLift.mk' ⟨desc f u this, fac f u this, (cancel_epi f).1 ((by simp [← sq.w]))⟩
 
 /--
 This structure encodes the data required for a family of morphisms to be effective epimorphic.
@@ -110,7 +122,7 @@ structure EffectiveEpiFamilyStruct {B : C} {α : Type*}
   `X ⟶ W`...
   -/
   desc : ∀ {W} (e : (a : α) → (X a ⟶ W)),
-          (∀ {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂),
+      (∀ {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂),
       g₁ ≫ π _ = g₂ ≫ π _ → g₁ ≫ e _ = g₂ ≫ e _) → (B ⟶ W)
   /-- ...factorizing the components of `e` through the components of `π`... -/
   fac : ∀ {W} (e : (a : α) → (X a ⟶ W))
@@ -167,7 +179,7 @@ lemma EffectiveEpiFamily.hom_ext {B W : C} {α : Type*} (X : α → C) (π : (a 
     [EffectiveEpiFamily X π] (m₁ m₂ : B ⟶ W) (h : ∀ a, π a ≫ m₁ = π a ≫ m₂) :
     m₁ = m₂ := by
   have : m₂ = EffectiveEpiFamily.desc X π (fun a => π a ≫ m₂)
-      (fun a₁ a₂ g₁ g₂ h => by simp only [← Category.assoc, h]) := by
+      (fun a₁ a₂ g₁ g₂ h => by simp only [← assoc, h]) := by
     apply EffectiveEpiFamily.uniq; intro; rfl
   rw [this]
   exact EffectiveEpiFamily.uniq _ _ _ _ _ h
@@ -207,6 +219,7 @@ theorem effectiveEpi_iff_effectiveEpiFamily {B X : C} (f : X ⟶ B) :
     EffectiveEpi f ↔ EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f) :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 A family of morphisms with the same target inducing an isomorphism from the coproduct to the target
 is an `EffectiveEpiFamily`.
@@ -220,7 +233,7 @@ def effectiveEpiFamilyStructOfIsIsoDesc {B : C} {α : Type*} (X : α → C)
     intro a
     have : π a = Sigma.ι X a ≫ (asIso (Sigma.desc π)).hom := by simp only [asIso_hom,
       colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
-    rw [this, Category.assoc]
+    rw [this, assoc]
     simp only [asIso_hom, asIso_inv, IsIso.hom_inv_id_assoc, colimit.ι_desc, Cofan.mk_pt,
       Cofan.mk_ι_app]
   uniq e h m hm := by
@@ -257,7 +270,7 @@ def EffectiveEpiFamilyStruct.reindex
     EffectiveEpiFamilyStruct X π where
   desc := fun f h => P.desc (fun _ => f _) (fun _ _ => h _ _)
   fac _ _ a := by
-    obtain ⟨a,rfl⟩ := e.surjective a
+    obtain ⟨a, rfl⟩ := e.surjective a
     apply P.fac
   uniq _ _ _ hm := P.uniq _ _ _ fun _ => hm _
 

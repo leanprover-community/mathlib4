@@ -3,8 +3,10 @@ Copyright (c) 2025 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.NormLeOne
-import Mathlib.NumberTheory.NumberField.ClassNumber
+module
+
+public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.NormLeOne
+public import Mathlib.NumberTheory.NumberField.ClassNumber
 
 /-!
 # Asymptotics on integral ideals of a number field
@@ -19,6 +21,8 @@ We prove several asymptotics involving integral ideals of a number field.
   of bounded norm.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -60,8 +64,8 @@ private def tendsto_norm_le_and_mk_eq_div_atTop_aux₂ :
   simp_rw [mem_idealSet, Set.mem_image, Set.mem_inter_iff, Set.mem_preimage, SetLike.mem_coe,
     mem_idealLattice, FractionalIdeal.coe_mk0]
   constructor
-  · rintro ⟨_, ⟨⟨hx₁, hx₂⟩, _, ⟨x, hx₃, rfl⟩, rfl⟩, rfl⟩
-    exact ⟨⟨hx₁, x, hx₃, rfl⟩, hx₂⟩
+  · rintro ⟨_, ⟨⟨hx₁, hx₂⟩, _, ⟨x, hx₃, rfl⟩, h⟩, rfl⟩
+    exact ⟨⟨hx₁, x, hx₃, h⟩, hx₂⟩
   · rintro ⟨⟨hx₁, ⟨x, hx₂, rfl⟩⟩, hx₃⟩
     exact ⟨(toMixed K).symm (mixedEmbedding K x), ⟨⟨hx₁, hx₃⟩, ⟨(x : K), by simp [hx₂], rfl⟩⟩, rfl⟩
 
@@ -75,7 +79,7 @@ theorem tendsto_norm_le_and_mk_eq_div_atTop :
       (Nat.card {I : (Ideal (𝓞 K))⁰ //
         absNorm (I : Ideal (𝓞 K)) ≤ s ∧ ClassGroup.mk0 I = C} : ℝ) / s) atTop
           (𝓝 ((2 ^ nrRealPlaces K * (2 * π) ^ nrComplexPlaces K * regulator K) /
-            (torsionOrder K *  Real.sqrt |discr K|))) := by
+            (torsionOrder K * Real.sqrt |discr K|))) := by
   classical
   have h₁ : ∀ s : ℝ,
     {x | x ∈ toMixed K ⁻¹' fundamentalCone K ∧ mixedEmbedding.norm (toMixed K x) ≤ s} =
@@ -87,9 +91,9 @@ theorem tendsto_norm_le_and_mk_eq_div_atTop :
     (ZLattice.comap ℝ (mixedEmbedding.idealLattice K (FractionalIdeal.mk0 K J))
       (toMixed K).toLinearMap)
     (F := fun x ↦ mixedEmbedding.norm (toMixed K x))
-    (X := (toMixed K)⁻¹' (fundamentalCone K)) (fun _ _ _ h ↦ ?_) (fun _ _ h ↦ ?_)
-    (isBounded_normLeOne K) ?_ ?_).mul (tendsto_const_nhds
-      (x := (absNorm (J : Ideal (𝓞 K)) : ℝ) * (torsionOrder K : ℝ)⁻¹))).comp
+    (X := (toMixed K) ⁻¹' (fundamentalCone K)) (fun _ _ _ h ↦ ?_) (fun _ _ h ↦ ?_)
+    ((toMixed K).antilipschitz.isBounded_preimage (isBounded_normLeOne K)) ?_ ?_).mul
+      (tendsto_const_nhds (x := (absNorm (J : Ideal (𝓞 K)) : ℝ) * (torsionOrder K : ℝ)⁻¹))).comp
     (tendsto_id.atTop_mul_const' <| Nat.cast_pos.mpr (absNorm_pos_of_nonZeroDivisors J))
     using 2 with s
   · simp_rw [Ideal.tendsto_norm_le_and_mk_eq_div_atTop_aux₁ K hJ, id_eq,
@@ -122,10 +126,10 @@ theorem tendsto_norm_le_div_atTop₀ :
     Tendsto (fun s : ℝ ↦
       (Nat.card {I : (Ideal (𝓞 K))⁰ // absNorm (I : Ideal (𝓞 K)) ≤ s} : ℝ) / s) atTop
           (𝓝 ((2 ^ nrRealPlaces K * (2 * π) ^ nrComplexPlaces K * regulator K * classNumber K) /
-            (torsionOrder K *  Real.sqrt |discr K|))) := by
+            (torsionOrder K * Real.sqrt |discr K|))) := by
   classical
   convert Filter.Tendsto.congr' ?_
-    (tendsto_finset_sum Finset.univ (fun C _  ↦ tendsto_norm_le_and_mk_eq_div_atTop K C))
+    (tendsto_finsetSum Finset.univ (fun C _ ↦ tendsto_norm_le_and_mk_eq_div_atTop K C))
   · rw [Finset.sum_const, Finset.card_univ, nsmul_eq_mul, classNumber]
     ring
   · filter_upwards [eventually_ge_atTop 0] with s hs
@@ -144,7 +148,7 @@ The limit of the number of integral ideals of norm `≤ s` divided by `s` when `
 theorem tendsto_norm_le_div_atTop :
     Tendsto (fun s : ℝ ↦ (Nat.card {I : Ideal (𝓞 K) // absNorm I ≤ s} : ℝ) / s) atTop
       (𝓝 ((2 ^ nrRealPlaces K * (2 * π) ^ nrComplexPlaces K * regulator K * classNumber K) /
-        (torsionOrder K *  Real.sqrt |discr K|))) := by
+        (torsionOrder K * Real.sqrt |discr K|))) := by
   have := (tendsto_norm_le_div_atTop₀ K).add tendsto_inv_atTop_zero
   rw [add_zero] at this
   apply this.congr'

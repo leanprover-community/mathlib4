@@ -3,8 +3,10 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Scalar
-import Mathlib.Data.Set.SMulAntidiagonal
+module
+
+public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
+public import Mathlib.Data.Set.SMulAntidiagonal
 
 /-!
 # Antidiagonal for scalar multiplication as a `Finset`.
@@ -19,6 +21,8 @@ scalar-multiply to `a`.
 * Finset.VAddAntidiagonal : Finset antidiagonal for PWO inputs.
 
 -/
+
+@[expose] public section
 
 variable {G P : Type*}
 
@@ -61,10 +65,10 @@ variable [PartialOrder G] [PartialOrder P] [SMul G P] [IsOrderedCancelSMul G P] 
 /-- `Finset.SMulAntidiagonal hs ht a` is the set of all pairs of an element in `s` and an
 element in `t` whose scalar multiplication yields `a`, but its construction requires proofs that `s`
 and `t` are well-ordered. -/
-@[to_additive "`Finset.VAddAntidiagonal hs ht a` is the set of all pairs of an element in `s` and an
-element in `t` whose vector addition yields `a`, but its construction requires proofs that `s` and
-`t` are well-ordered."]
-noncomputable def SMulAntidiagonal [PartialOrder G] [PartialOrder P] [IsOrderedCancelSMul G P]
+@[to_additive /-- `Finset.VAddAntidiagonal hs ht a` is the set of all pairs of an element in `s`
+and an element in `t` whose vector addition yields `a`, but its construction requires proofs that
+`s` and `t` are well-ordered. -/]
+noncomputable def SMulAntidiagonal
     {s : Set G} {t : Set P} (hs : s.IsPWO) (ht : t.IsPWO) (a : P) : Finset (G × P) :=
   (SMulAntidiagonal.finite_of_isPWO hs ht a).toFinset
 
@@ -86,14 +90,8 @@ theorem smulAntidiagonal_mono_right {a : P} {hs : s.IsPWO} {ht : t.IsPWO} (h : v
 
 @[to_additive]
 theorem support_smulAntidiagonal_subset_smul {hs : s.IsPWO} {ht : t.IsPWO} :
-    { a | (SMulAntidiagonal hs ht a).Nonempty } ⊆ (s • t) :=
-  fun a ⟨b, hb⟩ => by
-  rw [mem_smulAntidiagonal] at hb
-  rw [Set.mem_smul]
-  use b.1
-  refine { left := hb.1, right := ?_ }
-  use b.2
-  exact { left := hb.2.1, right := hb.2.2 }
+    { a | (SMulAntidiagonal hs ht a).Nonempty } ⊆ (s • t) := by
+  grind [mem_smul, mem_smulAntidiagonal]
 
 @[to_additive]
 theorem isPWO_support_smulAntidiagonal {hs : s.IsPWO} {ht : t.IsPWO} :

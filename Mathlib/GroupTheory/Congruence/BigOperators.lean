@@ -3,21 +3,24 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
+module
 
-import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
-import Mathlib.Algebra.BigOperators.Group.List.Lemmas
-import Mathlib.GroupTheory.Congruence.Defs
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
+public import Mathlib.Algebra.BigOperators.Group.List.Lemmas
+public import Mathlib.GroupTheory.Congruence.Defs
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Interactions between `∑, ∏` and `(Add)Con`
 
 -/
 
+public section
+
 namespace Con
 
 /-- Multiplicative congruence relations preserve product indexed by a list. -/
-@[to_additive "Additive congruence relations preserve sum indexed by a list."]
+@[to_additive /-- Additive congruence relations preserve sum indexed by a list. -/]
 protected theorem list_prod {ι M : Type*} [MulOneClass M] (c : Con M) {l : List ι} {f g : ι → M}
     (h : ∀ x ∈ l, c (f x) (g x)) :
     c (l.map f).prod (l.map g).prod := by
@@ -29,17 +32,19 @@ protected theorem list_prod {ι M : Type*} [MulOneClass M] (c : Con M) {l : List
     exact c.mul (h _ <| .head _) <| ih fun k hk ↦ h _ (.tail _ hk)
 
 /-- Multiplicative congruence relations preserve product indexed by a multiset. -/
-@[to_additive "Additive congruence relations preserve sum indexed by a multiset."]
+@[to_additive /-- Additive congruence relations preserve sum indexed by a multiset. -/]
 protected theorem multiset_prod {ι M : Type*} [CommMonoid M] (c : Con M) {s : Multiset ι}
     {f g : ι → M} (h : ∀ x ∈ s, c (f x) (g x)) :
     c (s.map f).prod (s.map g).prod := by
   rcases s; simpa using c.list_prod h
 
 /-- Multiplicative congruence relations preserve finite product. -/
-@[to_additive "Additive congruence relations preserve finite sum."]
-protected theorem finset_prod {ι M : Type*} [CommMonoid M] (c : Con M) (s : Finset ι)
+@[to_additive /-- Additive congruence relations preserve finite sum. -/]
+protected theorem finsetProd {ι M : Type*} [CommMonoid M] (c : Con M) (s : Finset ι)
     {f g : ι → M} (h : ∀ i ∈ s, c (f i) (g i)) :
     c (s.prod f) (s.prod g) :=
   c.multiset_prod h
+
+@[deprecated (since := "2026-04-08")] protected alias finset_prod := Con.finsetProd
 
 end Con

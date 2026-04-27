@@ -3,16 +3,20 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Aurélien Saue, Mario Carneiro
 -/
-import Lean.Elab.PreDefinition.Basic
-import Lean.Elab.Tactic.ElabTerm
-import Lean.Meta.Tactic.Intro
-import Mathlib.Lean.Expr.Basic
-import Batteries.Tactic.OpenPrivate
+module
+
+public meta import Lean.Elab.PreDefinition.Basic
+public meta import Lean.Elab.Tactic.ElabTerm
+public meta import Lean.Elab.Tactic.RCases
+public meta import Batteries.Lean.Expr
+public import Mathlib.Init
 
 /-!
 # Generally useful tactics.
 
 -/
+
+public meta section
 
 open Lean.Elab.Tactic
 
@@ -29,14 +33,13 @@ def toModifiers (nm : Name) (newDoc : Option (TSyntax `Lean.Parser.Command.docCo
   let env ← getEnv
   let d ← getConstInfo nm
   let mods : Modifiers :=
-  { docString? := newDoc
+  { docString? := newDoc.map (·, doc.verso.get (← getOptions))
     visibility :=
     if isPrivateNameExport nm then
       Visibility.private
-    else if isProtected env nm then
-      Visibility.regular
     else
-      Visibility.protected
+      Visibility.regular
+    isProtected := isProtected env nm
     computeKind := if (env.find? <| nm.mkStr "_cstage1").isSome then .regular else .noncomputable
     recKind := RecKind.default -- nonrec only matters for name resolution, so is irrelevant (?)
     isUnsafe := d.isUnsafe
@@ -56,6 +59,7 @@ def toPreDefinition (nm newNm : Name) (newType newValue : Expr)
   let mods ← toModifiers nm newDoc
   let predef : PreDefinition :=
   { ref := Syntax.missing
+    binders := mkNullNode #[]
     kind := if d.isDef then DefKind.def else DefKind.theorem
     levelParams := d.levelParams
     modifiers := mods
@@ -69,12 +73,24 @@ def toPreDefinition (nm newNm : Name) (newType newValue : Expr)
 def setProtected {m : Type → Type} [MonadEnv m] (nm : Name) : m Unit :=
   modifyEnv (addProtected · nm)
 
+/-- Introduce variables, using rintro patterns from a specified list. -/
+def MVarId.rintroWithPats (g : MVarId) (patterns : List (TSyntax `rintroPat))
+    (numIntros? : Option Nat := none) : MetaM (List MVarId × List (TSyntax `rintroPat)) := do
+  let n ← numIntros?.getDM (return getIntrosSize (← instantiateMVars (← g.getType)))
+  if n == 0 then
+    return ([g], patterns)
+  let (pats, remaining) := patterns.splitAt n
+  let pats := pats.toArray
+  let pats := (n - pats.size).repeat (·.push (Unhygienic.run `(rintroPat| _))) pats
+  return (← RCases.rintro pats none g |>.run', remaining)
+
 /-- Introduce variables, giving them names from a specified list. -/
+@[deprecated MVarId.rintroWithPats (since := "2026-04-17")]
 def MVarId.introsWithBinderIdents
     (g : MVarId) (ids : List (TSyntax ``binderIdent)) (maxIntros? : Option Nat := none) :
     MetaM (List (TSyntax ``binderIdent) × Array FVarId × MVarId) := do
   let type ← g.getType
-  let type ← instantiateMVars type
+  let type ← Lean.instantiateMVars type
   let n := getIntrosSize type
   let n := match maxIntros? with | none => n | some maxIntros => min n maxIntros
   if n == 0 then

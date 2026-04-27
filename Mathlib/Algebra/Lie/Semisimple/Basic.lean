@@ -3,8 +3,10 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Semisimple.Defs
-import Mathlib.Order.BooleanGenerators
+module
+
+public import Mathlib.Algebra.Lie.Semisimple.Defs
+public import Mathlib.Order.BooleanGenerators
 
 /-!
 # Semisimple Lie algebras
@@ -17,7 +19,7 @@ about simple and semisimple Lie algebras.
 
 * `LieAlgebra.IsSemisimple.instHasTrivialRadical`: A semisimple Lie algebra has trivial radical.
 * `LieAlgebra.IsSemisimple.instBooleanAlgebra`:
-  The lattice of ideals in a semisimple Lie algebra is a boolean algebra.
+  The lattice of ideals in a semisimple Lie algebra is a Boolean algebra.
   In particular, this implies that the lattice of ideals is atomistic:
   every ideal is a direct sum of atoms (simple ideals) in a unique way.
 * `LieAlgebra.hasTrivialRadical_iff_no_solvable_ideals`
@@ -28,6 +30,8 @@ about simple and semisimple Lie algebras.
 
 lie algebra, radical, simple, semisimple
 -/
+
+public section
 
 section Irreducible
 
@@ -51,6 +55,7 @@ theorem HasTrivialRadical.eq_bot_of_isSolvable [HasTrivialRadical R L]
     (I : LieIdeal R L) [hI : IsSolvable I] : I = ⊥ :=
   sSup_eq_bot.mp radical_eq_bot _ hI
 
+set_option backward.isDefEq.respectTransparency false in
 instance [HasTrivialRadical R L] : LieModule.IsFaithful R L L := by
   rw [isFaithful_self_iff]
   exact HasTrivialRadical.eq_bot_of_isSolvable _
@@ -64,6 +69,7 @@ theorem hasTrivialRadical_iff_no_solvable_ideals :
     HasTrivialRadical R L ↔ ∀ I : LieIdeal R L, IsSolvable I → I = ⊥ :=
   ⟨@HasTrivialRadical.eq_bot_of_isSolvable _ _ _ _ _, hasTrivialRadical_of_no_solvable_ideals⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hasTrivialRadical_iff_no_abelian_ideals :
     HasTrivialRadical R L ↔ ∀ I : LieIdeal R L, IsLieAbelian I → I = ⊥ := by
   rw [hasTrivialRadical_iff_no_solvable_ideals]
@@ -80,7 +86,7 @@ instance : LieModule.IsIrreducible R L L := by
   suffices Nontrivial (LieIdeal R L) from ⟨IsSimple.eq_bot_or_eq_top⟩
   rw [LieSubmodule.nontrivial_iff, ← not_subsingleton_iff_nontrivial]
   have _i : ¬ IsLieAbelian L := IsSimple.non_abelian R
-  contrapose! _i
+  contrapose _i
   infer_instance
 
 protected lemma isAtom_top : IsAtom (⊤ : LieIdeal R L) := isAtom_top
@@ -91,6 +97,7 @@ protected lemma isAtom_iff_eq_top (I : LieIdeal R L) : IsAtom I ↔ I = ⊤ := i
 variable {R L} in
 lemma eq_top_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : I = ⊤ := isAtom_iff_eq_top.mp hI
 
+set_option backward.isDefEq.respectTransparency false in
 instance : HasTrivialRadical R L := by
   rw [hasTrivialRadical_iff_no_abelian_ideals]
   intro I hI
@@ -100,6 +107,15 @@ instance : HasTrivialRadical R L := by
   exact IsSimple.non_abelian R (L := L) hI
 
 end IsSimple
+
+lemma isSimple_iff_of_not_isLieAbelian (hL : ¬ IsLieAbelian L) :
+    IsSimpleOrder (LieIdeal R L) ↔ IsSimple R L :=
+  ⟨fun _ ↦ ⟨IsSimpleOrder.eq_bot_or_eq_top, hL⟩, fun _ ↦ inferInstance⟩
+
+@[nontriviality]
+lemma not_isSimple_of_subsingleton [Subsingleton L] :
+    ¬ IsSimple R L :=
+  fun contra ↦ contra.non_abelian inferInstance
 
 namespace IsSemisimple
 
@@ -169,13 +185,14 @@ lemma isSimple_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
       exact x.2
     -- So we need to show `J ≠ I` as ideals of `L`.
     -- This follows from our assumption that `J ≠ ⊤` as ideals of `I`.
-    contrapose! hJ
+    contrapose hJ
     rw [eq_top_iff]
     rintro ⟨x, hx⟩ -
     rw [← hJ] at hx
     rcases hx with ⟨y, hy, rfl⟩
     exact hy
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 In a semisimple Lie algebra,
 Lie ideals that are contained in the supremum of a finite collection of atoms
@@ -207,10 +224,7 @@ lemma finitelyAtomistic : ∀ s : Finset (LieIdeal R L), ↑s ⊆ {I : LieIdeal 
   set K := s'.sup id
   suffices I ≤ K by
     obtain ⟨t, hts', htI⟩ := finitelyAtomistic s' hs'S I this
-    #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-    we could write `hts'.trans hs'.subset` instead of
-    `Finset.Subset.trans hts' hs'.subset` in the next line. -/
-    exact ⟨t, Finset.Subset.trans hts' hs'.subset, htI⟩
+    exact ⟨t, hts'.trans hs'.subset, htI⟩
   -- Since `I` is contained in the supremum of `J` with the supremum of `s'`,
   -- any element `x` of `I` can be written as `y + z` for some `y ∈ J` and `z ∈ K`.
   intro x hx
@@ -222,10 +236,7 @@ lemma finitelyAtomistic : ∀ s : Finset (LieIdeal R L), ↑s ⊆ {I : LieIdeal 
   -- Since `x` was arbitrary, we have shown that `I` is contained in the supremum of `s'`.
   suffices ⟨y, hy⟩ ∈ LieAlgebra.center R J by
     have _inst := isSimple_of_isAtom J (hs hJs)
-    rw [center_eq_bot R J, LieSubmodule.mem_bot] at this
-    apply_fun Subtype.val at this
-    dsimp at this
-    rwa [this, zero_add]
+    simp_all
   -- To show that `y` is in the center of `J`,
   -- we show that any `j ∈ J` brackets to `0` with `z` and with `x = y + z`.
   -- By a simple computation, that implies `⁅j, y⁆ = 0`, for all `j`, as desired.
@@ -249,7 +260,7 @@ lemma finitelyAtomistic : ∀ s : Finset (LieIdeal R L), ↑s ⊆ {I : LieIdeal 
     exact LieSubmodule.lie_mem_lie j.2 hx
   -- Indeed `J ⊓ I = ⊥`, since `J` is an atom that is not contained in `I`.
   apply ((hs hJs).le_iff.mp _).resolve_right
-  · contrapose! hJI
+  · contrapose hJI
     rw [← hJI]
     exact inf_le_right
   exact inf_le_left
@@ -285,6 +296,7 @@ instance (priority := 100) instHasTrivialRadical : HasTrivialRadical R L := by
 
 end IsSemisimple
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A simple Lie algebra is semisimple. -/
 instance (priority := 100) IsSimple.instIsSemisimple [IsSimple R L] :
     IsSemisimple R L := by

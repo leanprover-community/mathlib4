@@ -3,12 +3,15 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Minchao Wu
 -/
-import Mathlib.Data.Sigma.Lex
-import Mathlib.Util.Notation3
-import Init.NotationExtra
-import Mathlib.Data.Sigma.Basic
-import Mathlib.Order.Lattice
-import Mathlib.Order.BoundedOrder.Basic
+module
+
+public import Mathlib.Data.Sigma.Lex
+public import Mathlib.Util.Notation3
+public import Init.NotationExtra
+public import Mathlib.Data.Sigma.Basic
+public import Mathlib.Order.BoundedOrder.Basic
+public import Mathlib.Order.Lattice
+public import Mathlib.Order.Lex
 
 /-!
 # Lexicographic order on a sigma type
@@ -30,6 +33,8 @@ Prove that a sigma type is a `NoMaxOrder`, `NoMinOrder`, `DenselyOrdered` when i
 are.
 -/
 
+public section
+
 
 variable {ι : Type*} {α : ι → Type*}
 
@@ -38,7 +43,7 @@ namespace PSigma
 /-- The notation `Σₗ' i, α i` refers to a sigma type which is locally equipped with the
 lexicographic order. -/
 -- TODO: make `Lex` be `Sort u -> Sort u` so we can remove `.{_+1, _+1}`
-notation3 "Σₗ' "(...)", "r:(scoped p => _root_.Lex (PSigma.{_+1, _+1} p)) => r
+notation3 "Σₗ' " (...) ", " r:(scoped p => _root_.Lex (PSigma.{_ + 1, _ + 1} p)) => r
 
 namespace Lex
 
@@ -76,7 +81,7 @@ instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ' i, �
         · exact Lex.left _ _ hij
         · exact Lex.right _ (hab.lt_of_not_ge fun h => hba <| Lex.right _ h) }
 
-/-- Dictionary / lexicographic partial_order for dependent pairs. -/
+/-- Dictionary / lexicographic `PartialOrder` for dependent pairs. -/
 instance partialOrder [PartialOrder ι] [∀ i, PartialOrder (α i)] : PartialOrder (Σₗ' i, α i) :=
   { Lex.preorder with
     le_antisymm := by
@@ -86,7 +91,7 @@ instance partialOrder [PartialOrder ι] [∀ i, PartialOrder (α i)] : PartialOr
       · exact (lt_irrefl a₁ hlt₂).elim
       · rw [hlt₁.antisymm hlt₂] }
 
-/-- Dictionary / lexicographic linear_order for pairs. -/
+/-- Dictionary / lexicographic `LinearOrder` for pairs. -/
 instance linearOrder [LinearOrder ι] [∀ i, LinearOrder (α i)] : LinearOrder (Σₗ' i, α i) :=
   { Lex.partialOrder with
     le_total := by
