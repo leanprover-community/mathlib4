@@ -298,6 +298,15 @@ theorem codiscreteWithin_iff_locallyFiniteComplementWithin [T1Space X] {s U : Se
     use t \ (t ∩ (U \ s)), nhdsNE_of_nhdsNE_sdiff_finite (mem_nhdsWithin_of_mem_nhds h₁t) h₂t
     simp
 
+/-- In a T1Space, complements of subsingletons are codiscrete within any set. -/
+@[simp] theorem compl_subsingleton_mem_codiscreteWithin
+    {X : Type*} [TopologicalSpace X] [T1Space X] {s t : Set X} (h : Set.Subsingleton t) :
+    tᶜ ∈ codiscreteWithin s := by
+  rw [codiscreteWithin_iff_locallyEmptyComplementWithin]
+  intro z hz
+  use univ \ t
+  exact ⟨nhdsNE_of_nhdsNE_sdiff_finite univ_mem h.finite, by aesop⟩
+
 /-- In any topological space, the open sets with discrete complement form a filter,
 defined as the supremum of all punctured neighborhoods.
 
