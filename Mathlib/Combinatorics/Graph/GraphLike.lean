@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Jun Kwon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jun Kwon
+Authors: Jun Kwon, Laura Monk, Freddie Nash
 -/
 module
 
@@ -9,7 +9,7 @@ public import Mathlib.Combinatorics.GraphLike.Symm
 public import Mathlib.Combinatorics.Graph.Basic
 
 /-!
-In this file we make `Graph` an instance of `GraphLike`.
+We define a `Dart` type as a directed edge, and a `GraphLike` instance for `Graph`.
 -/
 
 public section
@@ -18,51 +18,62 @@ variable {α β γ : Type*} {G : Graph α β}
 
 namespace Graph
 
-/-- `HasDart` is a typeclass for graphs with a dart structure. -/
-class HasDart (G : Graph α β) (γ : outParam Type*) where
-  /-- The set of darts of a graph. -/
-  dartSet : Set γ
-  /-- The opposite dart, provided by fixed-point-free involution. -/
-  symm : γ → γ
-  symm_invol : ∀ ⦃d⦄, symm (symm d) = d
-  symm_ne : ∀ ⦃d⦄, symm d ≠ d
-  symm_mem : ∀ ⦃d⦄, d ∈ dartSet → symm d ∈ dartSet
-  /-- The edge of a dart. -/
-  edge : γ → β
-  edge_eq_edge_iff : ∀ ⦃d₁ d₂⦄, edge d₁ = edge d₂ ↔ d₁ = d₂ ∨ d₁ = symm d₂
-  edge_surj : ∀ ⦃e⦄, e ∈ G.edgeSet → ∃ d ∈ dartSet, e = edge d
-  /-- The base point of a dart. -/
-  basePt : γ → α
-  isLink : ∀ ⦃d⦄, d ∈ dartSet → G.IsLink (edge d) (basePt d) (basePt (symm d))
+/-- `Graph.Dart` is a type for darts or length 1 walks of `Graph`. Every edge of a graph is composed
+  of two darts: for loops, there are `fwd` and `bwd` darts, and for non-loops, there are two `dir`
+  darts. -/
+inductive Dart (α β : Type*) : Type _ where
+  | dir : β → ∀ (u v : α), u ≠ v → Dart α β
+  | fwd : β → α → Dart α β
+  | bwd : β → α → Dart α β
 
-attribute [simp] HasDart.symm_invol
+open Dart HasSourceTarget HasEdge
 
-@[simp]
-lemma HasDart.symm_mem_dartSet_iff [HasDart G γ] {d : γ} :
-    HasDart.symm G d ∈ HasDart.dartSet G ↔ d ∈ HasDart.dartSet G :=
-  ⟨fun h ↦ symm_invol (G := G) (d := d) ▸ symm_mem (d := symm G d) h, symm_mem (d := d)⟩
+instance : HasSourceTarget α (Dart α β) where
+  src d := match d with
+    | dir _ u _ _ => u
+    | fwd _ u => u
+    | bwd _ u => u
+  tgt d := match d with
+    | dir _ _ v _ => v
+    | fwd _ v => v
+    | bwd _ v => v
 
-instance [HasDart G γ] : SymmGraphLike α γ G where
-  verts := V(G)
-  darts := HasDart.dartSet G
-  fst := HasDart.basePt G
-  snd := (HasDart.basePt G <| HasDart.symm G ·)
-  fst_mem_of_darts d hd := (HasDart.isLink hd).left_mem
-  snd_mem_of_darts d hd := (HasDart.isLink hd).right_mem
-  symm := HasDart.symm G
-  symm_invol := HasDart.symm_invol
-  symm_ne d hd := HasDart.symm_ne (d := d)
-  symm_fst d := by simp
-  symm_snd d := by simp
-  symm_mem_darts_iff d := HasDart.symm_mem_dartSet_iff
-  Adj u v := G.Adj u v
-  exists_darts_iff_adj {u v : α} := by
-    refine ⟨?_, fun ⟨e, he⟩ => ?_⟩
-    · rintro ⟨d, hd, rfl, rfl⟩
-      exact (HasDart.isLink hd).adj
-    obtain ⟨d, hd, rfl, rfl⟩ := HasDart.edge_surj he.edge_mem
-    obtain ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ := he.eq_and_eq_or_eq_and_eq <| HasDart.isLink hd
-    · use d, hd
-    exact ⟨HasDart.symm G d, HasDart.symm_mem hd, by simp [HasDart.symm_invol]⟩
+@[grind =]
+lemma src_eq (d : Dart α β) : src d = match d with
+    | dir _ u _ _ => u
+    | fwd _ u => u
+    | bwd _ u => u := rfl
+
+@[grind =]
+lemma tgt_eq (d : Dart α β) : tgt d = match d with
+    | dir _ _ v _ => v
+    | fwd _ v => v
+    | bwd _ v => v := rfl
+
+instance : HasEdge (Dart α β) β where
+  edge d := match d with
+    | dir e _ _ _ => e
+    | fwd e _ => e
+    | bwd e _ => e
+
+@[grind =]
+lemma edge_eq (d : Dart α β) : edge d = match d with
+    | dir e _ _ _ => e
+    | fwd e _ => e
+    | bwd e _ => e := rfl
+
+instance : GraphLike α (Dart α β) β (Graph α β) where
+  verts G := V(G)
+  darts G := {d : Dart α β | G.IsLink (edge d) (src d) (tgt d)}
+  edges G := E(G)
+  src_mem_of_darts _ _ := IsLink.left_mem
+  tgt_mem_of_darts _ _ := IsLink.right_mem
+  edge_mem_of_darts _ _ := IsLink.edge_mem
+  Adj G u v := G.Adj u v
+  exists_darts_iff_adj G u v := by
+    refine ⟨fun ⟨d, hd, hu, hv⟩ ↦ hu ▸ hv ▸ hd.adj, fun ⟨e, he⟩ => ?_⟩
+    obtain rfl | hne := eq_or_ne u v
+    · exact ⟨Dart.fwd e u, by grind⟩
+    exact ⟨Dart.dir e u v hne, by grind⟩
 
 end Graph

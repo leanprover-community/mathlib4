@@ -9,7 +9,8 @@ public import Mathlib.Combinatorics.GraphLike.Symm
 public import Mathlib.Combinatorics.SimpleGraph.Basic
 
 /-!
-In this file we make `SimpleGraph` an instance of `GraphLike`.
+In this file we make `SimpleGraph` an instance of `GraphLike`. Every adjacent pair is a dart and
+every adjacent `Sym2 V` is an edge.
 -/
 
 public section
@@ -20,16 +21,18 @@ open GraphLike
 
 namespace SimpleGraph
 
-instance : SimpleSymmGraphLike G where
-  verts := Set.univ
-  darts := { (u, v) | G.Adj u v }
-  fst_mem_of_darts _ _ := Set.mem_univ _
-  snd_mem_of_darts _ _ := Set.mem_univ _
-  loopless d hd := Adj.ne hd
-  symm_mem_darts_iff := by simp [adj_comm]
-  Adj := G.Adj
-  exists_darts_iff_adj {u v : V} := by simp
+instance : GraphLike V (V × V) (Sym2 V) (SimpleGraph V) where
+  verts _ := Set.univ
+  darts G := { (u, v) | G.Adj u v }
+  edges G := { s | ∃ u v, s = s(u, v) ∧ G.Adj u v }
+  src_mem_of_darts _ _ _ := Set.mem_univ _
+  tgt_mem_of_darts _ _ _ := Set.mem_univ _
+  edge_mem_of_darts G d hd := ⟨d.fst, d.snd, rfl, hd⟩
+  Adj G := G.Adj
+  exists_darts_iff_adj := by simp
 
 lemma darts_def (G : SimpleGraph V) : D(G) = { (u, v) | G.Adj u v } := rfl
+
+lemma edges_def (G : SimpleGraph V) : E(G) = { s | ∃ u v, s = s(u, v) ∧ G.Adj u v } := rfl
 
 end SimpleGraph
