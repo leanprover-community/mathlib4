@@ -5,7 +5,6 @@ Authors: Ben Eltschig
 -/
 module
 
-public import Mathlib.Geometry.Manifold.Diffeomorph
 public import Mathlib.Geometry.Manifold.Instances.UnitsOfNormedAlgebra
 
 /-!
@@ -152,15 +151,18 @@ instance Units.contMDiffSMul {R : Type*} [NormedRing R] [CompleteSpace R] [Norme
 /-- The scalar multiplication `𝕜 × E → E` of any normed vector space `E` over `𝕜` is smooth. -/
 instance {n : ℕ∞ω} : ContMDiffSMul 𝓘(𝕜) 𝓘(𝕜, E) n 𝕜 E where
   contMDiff_smul := by
-    rw [← Diffeomorph.modelWithCornersSelfProdComparison.contMDiff_comp_diffeomorph_iff le_rfl]
-    exact contDiff_smul.contMDiff
+    have h : ContMDiff (𝓘(𝕜).prod 𝓘(𝕜, E)) 𝓘(𝕜, 𝕜 × E) n (@id (𝕜 × E)) := by
+      rw [contMDiff_prod_module_iff, ← contMDiff_prod_iff]; exact contMDiff_id
+    exact contDiff_smul.contMDiff.comp h
 
 /-- The monoid `E →L[𝕜] E` of continuous linear endomorphisms of `E` acts smoothly on `E`. -/
 instance [CompleteSpace E] {n : ℕ∞ω} :
     ContMDiffSMul 𝓘(𝕜, E →L[𝕜] E) 𝓘(𝕜, E) n (E →L[𝕜] E) E where
   contMDiff_smul := by
-    rw [← Diffeomorph.modelWithCornersSelfProdComparison.contMDiff_comp_diffeomorph_iff le_rfl]
-    exact isBoundedBilinearMap_apply.contDiff.contMDiff
+    have h : ContMDiff (𝓘(𝕜, E →L[𝕜] E).prod 𝓘(𝕜, E)) 𝓘(𝕜, (E →L[𝕜] E) × E) n
+        (@id ((E →L[𝕜] E) × E)) := by
+      rw [contMDiff_prod_module_iff, ← contMDiff_prod_iff]; exact contMDiff_id
+    exact isBoundedBilinearMap_apply.contDiff.contMDiff.comp h
 
 /-- The general linear group `(E →L[𝕜] E)ˣ` on `E` acts smoothly on `E`. -/
 example [CompleteSpace E] (n : ℕ∞ω) :
