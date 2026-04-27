@@ -15,20 +15,17 @@ public import Mathlib.RingTheory.Polynomial.GaussLemma
 
 /-!
 
-# Separably generated extensions
+# Characterization of separably generated extensions
 
-We aim to formalize the following result:
-
-Let `K/k` be a finitely generated field extension with characteristic `p > 0`, then TFAE
-1. `K/k` is separably generated
-2. If `{ sᵢ } ⊆ K` is an arbitrary `k`-linearly independent set,
-  `{ sᵢᵖ } ⊆ K` is also `k`-linearly independent
-3. `K ⊗ₖ k^{1/p}` is reduced
-4. `K` is geometrically reduced over `k`.
-5. `k` and `Kᵖ` are linearly disjoint over `kᵖ` in `K`.
+In this file we prove for finitely generated field extension `K/k`,
+if `{ sᵢ } ⊆ K` is an arbitrary `k`-linearly independent set implies
+`{ sᵢᵖ } ⊆ K` is also `k`-linearly independent, then `K/k` is finite separably generated.
 
 ## Main result
-- `exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow`: (2) ⇒ (1)
+- `exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_essFiniteType`:
+  Suppose `k` has characteristic `p` and `K/k` is finitely generated.
+  Suppose furthermore that if `{ sᵢ } ⊆ K` is an arbitrary `k`-linearly independent set,
+  `{ sᵢᵖ } ⊆ K` is also `k`-linearly independent, then `K/k` is finite separably generated.
 
 -/
 
@@ -164,7 +161,7 @@ theorem exists_mem_support_not_dvd_of_forall_totalDegree_le (hF0 : F ≠ 0) (hFa
     simp only [← hF', F'', ← this]; rfl
   suffices hpm : p * F''.totalDegree ≤ F.totalDegree by
     have hF''0' : F''.totalDegree ≠ 0 := by
-      contrapose! hF''0
+      contrapose hF''0
       rw [totalDegree_eq_zero_iff_eq_C.mp hF''0, aeval_C, map_eq_zero] at hF''
       rw [totalDegree_eq_zero_iff_eq_C.mp hF''0, hF'', map_zero]
     replace this := hpm.trans ((HF F'' hF''0 hF'').trans_eq (one_mul _).symm)
@@ -223,7 +220,7 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow
   have hF₂irr := (hF₁irr.isPrimitive fun h ↦ coeff_ne <| Polynomial.coeff_eq_zero_of_natDegree_lt <|
     h.trans_lt <| Nat.pos_iff_ne_zero.2 hσi).irreducible_iff_irreducible_map_fraction_map
     (K := k').1 hF₁irr
-  contrapose! coeff_ne with Hsep
+  contrapose coeff_ne with Hsep
   have : CharP k' p := (expChar_of_injective_algebraMap (algebraMap k k').injective p).casesOn
     (fun e ↦ (e rfl).elim) (fun _ _ _ ↦ ‹_›) hp.ne_one
   obtain ⟨g, hg, eq⟩ := (((minpoly k' (a i)).separable_or p (minpoly.irreducible
@@ -274,11 +271,9 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_adjoin
 /--
 Suppose `k` has characteristic `p` and `K/k` is finitely generated.
 Suppose furthermore that if `{ sᵢ } ⊆ K` is an arbitrary `k`-linearly independent set,
-`{ sᵢᵖ } ⊆ K` is also `k`-linearly independent (which is true when `K ⊗ₖ k^{1/p}` is reduced).
+`{ sᵢᵖ } ⊆ K` is also `k`-linearly independent, then `K/k` is finite separably generated.
 
-Then `K/k` is finite separably generated.
-
-TODO: show that this is an if and only if.
+For if and only if, see `Algebra.isTranscendentalSeparable_tfae`.
 -/
 @[stacks 030W "(2) ⇒ (1) finitely generated case"]
 lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_essFiniteType

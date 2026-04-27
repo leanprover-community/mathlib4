@@ -98,12 +98,10 @@ theorem cast_neg {n : ℕ} {R} [Ring R] {a : R} :
     IsInt a (.negOfNat n) → a = (Int.negOfNat n).rawCast + 0
   | ⟨e⟩ => by simp [e]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem cast_nnrat {n : ℕ} {d : ℕ} {R} [DivisionSemiring R] {a : R} :
     IsNNRat a n d → a = NNRat.rawCast n d + 0
   | ⟨_, e⟩ => by simp [e, div_eq_mul_inv]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem cast_rat {n : ℤ} {d : ℕ} {R} [DivisionRing R] {a : R} :
     IsRat a n d → a = Rat.rawCast n d + 0
   | ⟨_, e⟩ => by simp [e, div_eq_mul_inv]
@@ -467,7 +465,7 @@ partial def inv {u : Lean.Level} {α : Q(Type u)} (_sα : Q(CommSemiring $α))
     return some ⟨_, vc, q($pc)⟩
   | none => return none
 
-/-- Try to evaluate an expression as a rational constant using norm_num. -/
+/-- Try to evaluate an expression as a rational constant using `norm_num`. -/
 partial def derive {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α)) (x : Q($α)) :
     MetaM (Result (Common.ExSum RatCoeff sα) q($x)) := do
   let res ← NormNum.derive x

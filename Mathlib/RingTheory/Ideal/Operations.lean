@@ -395,17 +395,7 @@ protected theorem pow_succ : I ^ (n + 1) = I * I ^ n := by
 
 end IsTwoSided
 
-@[simp]
-theorem mul_eq_bot [NoZeroDivisors R] : I * J = ⊥ ↔ I = ⊥ ∨ J = ⊥ :=
-  ⟨fun hij =>
-    or_iff_not_imp_left.mpr fun I_ne_bot =>
-      J.eq_bot_iff.mpr fun j hj =>
-        let ⟨i, hi, ne0⟩ := I.ne_bot_iff.mp I_ne_bot
-        Or.resolve_left (mul_eq_zero.mp ((I * J).eq_bot_iff.mp hij _ (mul_mem_mul hi hj))) ne0,
-    fun h => by obtain rfl | rfl := h; exacts [bot_mul _, mul_bot _]⟩
-
-instance [NoZeroDivisors R] : NoZeroDivisors (Ideal R) where
-  eq_zero_or_eq_zero_of_mul_eq_zero := mul_eq_bot.1
+theorem mul_eq_bot [NoZeroDivisors R] : I * J = ⊥ ↔ I = ⊥ ∨ J = ⊥ := Submodule.mul_eq_bot
 
 instance {S A : Type*} [Semiring S] [SMul R S] [AddCommMonoid A] [Module R A] [Module S A]
     [IsScalarTower R S A] [IsTorsionFree R A] {I : Submodule S A} : IsTorsionFree R I :=
@@ -1229,11 +1219,11 @@ lemma subset_iUnion_iff_mem_of_isMaximal_of_finite
   rw [Ideal.subset_union_prime_finite hs a b hp]
   apply Iff.trans _ exists_eq_right'
   refine exists_congr fun I ↦ and_congr_right fun hI ↦ ⟨‹M.IsMaximal›.eq_of_le ?_, le_of_eq⟩
-  by_cases I = a
-  · aesop
-  · by_cases I = b
-    · aesop
-    · exact (hp _ hI ‹_› ‹_›).ne_top
+  by_cases hia : I = a
+  · exact hia.trans_ne ha
+  · by_cases hib : I = b
+    · exact hib.trans_ne hb
+    · exact (hp _ hI hia hib).ne_top
 
 /-- Generalize `Ideal.IsMaximal.exists_inv` to power of maximal ideals. -/
 theorem IsMaximal.exists_inv_pow (I : Ideal R) [I.IsMaximal]

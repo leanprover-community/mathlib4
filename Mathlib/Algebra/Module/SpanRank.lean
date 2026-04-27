@@ -189,6 +189,15 @@ theorem FG.exists_span_set_encard_eq_spanFinrank {p : Submodule R M} (h : p.FG) 
   rw [Set.encard, ENat.card, spanFinrank, hs₁, this]
   simp
 
+/-- Constructs a generating finset with cardinality equal to the `spanFinrank` of the submodule
+  when the submodule is finitely generated. -/
+theorem FG.exists_span_finset_card_eq_spanFinrank {p : Submodule R M} (h : p.FG) :
+    ∃ s : Finset M, s.card = p.spanFinrank ∧ span R s = p := by
+  obtain ⟨s, ⟨hs₁, hs₂⟩⟩ := exists_span_set_encard_eq_spanFinrank h
+  have s_f := Set.finite_of_encard_eq_coe hs₁
+  refine ⟨s_f.toFinset, ⟨?_, by simpa using hs₂⟩⟩
+  simpa [s_f.encard_eq_coe_toFinset_card, ENat.coe_inj] using hs₁
+
 lemma lift_spanRank_le_iff_exists_span_set_card_le (p : Submodule R M) {a : Cardinal.{max u v}} :
     Cardinal.lift.{v} p.spanRank ≤ a ↔ ∃ s : Set M, Cardinal.lift.{v} #s ≤ a ∧ span R s = p := by
   constructor
@@ -219,6 +228,15 @@ lemma spanRank_bot : (⊥ : Ideal R).spanRank = 0 := Submodule.spanRank_eq_zero_
 
 @[simp]
 lemma spanFinrank_bot : (⊥ : Submodule R M).spanFinrank = 0 := by simp [spanFinrank]
+
+@[nontriviality]
+lemma spanRank_subsingleton [Subsingleton R] (p : Submodule R M) : p.spanRank = 0 := by
+  simp [nontriviality]
+
+@[nontriviality]
+lemma spanFinrank_subsingleton [Subsingleton R] (p : Submodule R M) : p.spanFinrank = 0 := by
+  have := Module.subsingleton R M
+  simp [Submodule.eq_bot_of_subsingleton]
 
 /-- Generating elements for the submodule of minimum cardinality. -/
 noncomputable def generators (p : Submodule R M) : Set M :=
@@ -276,10 +294,12 @@ lemma spanFinrank_eq_one_iff (p : Submodule R M) : p.spanFinrank = 1 ↔ p.IsPri
       simp [Submodule.spanFinrank_of_not_fg h]
     obtain ⟨a, ha⟩ : ∃ a, p.generators = {a} := by simpa [← fg.generators_ncard] using h
     exact ⟨a, ha ▸ (p.span_generators).symm⟩
-  · aesop
+  · contrapose h
+    simp [h]
   · rcases prin with ⟨a, rfl⟩
     apply Submodule.spanFinrank_singleton
-    aesop
+    contrapose ne
+    simp [ne]
 
 end Defs
 

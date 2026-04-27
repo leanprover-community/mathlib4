@@ -141,7 +141,7 @@ lemma hasDerivAt_Gamma_one_half : HasDerivAt Gamma (-√π * (γ + 2 * log 2)) (
     apply HasDerivAt.deriv
     have := HasDerivAt.rpow (hasDerivAt_const (1 / 2 : ℝ) (2 : ℝ))
       (?_ : HasDerivAt (fun s : ℝ ↦ 1 - 2 * s) (-2) (1 / 2)) two_pos
-    · norm_num at this; exact this
+    · simpa
     simp_rw [mul_comm (2 : ℝ) _]
     apply HasDerivAt.const_sub
     exact hasDerivAt_mul_const (2 : ℝ)

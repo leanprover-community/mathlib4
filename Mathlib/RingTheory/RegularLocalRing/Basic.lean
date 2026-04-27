@@ -125,7 +125,7 @@ lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
     IsLocalHom.of_surjective _ (Ideal.Quotient.mk_surjective)
   tfae_have 1 → 2 := by
     rintro ⟨T, h, card, span⟩
-    have Tsub : (T : Set R) ⊆ maximalIdeal R := by simpa [← span] using Ideal.subset_span
+    have Tsub : (T : Set R) ⊆ maximalIdeal R := by simp [← span]
     have : LinearIndependent (ResidueField R)
       ((⇑(maximalIdeal R).toCotangent).comp (Set.inclusion Tsub)) := by
       apply linearIndependent_of_top_le_span_of_card_eq_finrank
@@ -255,8 +255,7 @@ theorem isRegular_of_span_eq_maximalIdeal [IsRegularLocalRing R] (rs : List R)
   refine ⟨⟨fun i hi ↦ ?_⟩, by simpa [span] using Ideal.IsPrime.ne_top'.symm⟩
   rw [smul_eq_mul, Ideal.mul_top]
   classical
-  have mem : (rs.toFinset : Set R) ⊆ maximalIdeal R := by
-    simpa [← span, Ideal.ofList] using Ideal.subset_span
+  have mem : (rs.toFinset : Set R) ⊆ maximalIdeal R := by simp [← span, Ideal.ofList]
   have sub : (List.take i rs).toFinset ⊆ rs.toFinset :=
     fun x ↦ by simpa using fun a ↦ List.mem_of_mem_take a
   have card : rs.toFinset.card = ringKrullDim R := by
