@@ -92,7 +92,6 @@ def toKleisli : C ⥤ Kleisli T where
     unfold_projs
     rw [comp]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The right adjoint of the adjunction which induces the monad `(T, η_ T, μ_ T)`. -/
 @[simps]
 def fromKleisli : Kleisli T ⥤ C where
@@ -100,7 +99,12 @@ def fromKleisli : Kleisli T ⥤ C where
   map {_} {Y} f := T.map f.of ≫ T.μ.app Y.of
   map_id _ := T.right_unit _
   map_comp {X} {Y} {Z} f g := by
-    simp [← T.μ.naturality_assoc g.of, T.assoc]
+    simp only [category_comp_of, Functor.map_comp, Category.assoc]
+    congrm T.map f.of ≫ ?_
+    apply Iff.mp <| Eq.congr
+      (Eq.symm <| CategoryTheory.whisker_eq _ (T.assoc Z.of))
+      (T.μ.naturality_assoc g.of _)
+    rfl
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The Kleisli adjunction which gives rise to the monad `(T, η_ T, μ_ T)`.
