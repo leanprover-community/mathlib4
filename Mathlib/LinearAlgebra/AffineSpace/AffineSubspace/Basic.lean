@@ -813,8 +813,7 @@ section Prod
 
 namespace AffineSubspace
 
-variable {k : Type*} {V₁ : Type*} {P₁ : Type*} {V₂ : Type*} {P₂ : Type*}
-  [Ring k] [AddCommGroup V₁] [Module k V₁] [AffineSpace V₁ P₁]
+variable {k V₁ V₂ P₁ P₂ : Type*} [Ring k] [AddCommGroup V₁] [Module k V₁] [AffineSpace V₁ P₁]
   [AddCommGroup V₂] [Module k V₂] [AffineSpace V₂ P₂]
 
 /-- The product of two affine subspaces is an affine subspace. -/
@@ -829,11 +828,11 @@ theorem prod_coe (s : AffineSubspace k P₁) (t : AffineSubspace k P₂) :
   rfl
 
 @[simp]
-theorem mem_prod {s : AffineSubspace k P₁} {t : AffineSubspace k P₂} {x : P₁ × P₂} :
+theorem mem_prod (s : AffineSubspace k P₁) (t : AffineSubspace k P₂) (x : P₁ × P₂) :
     x ∈ s.prod t ↔ x.1 ∈ s ∧ x.2 ∈ t :=
   Set.mem_prod
 
-theorem prod_mono {s₁ s₂ : AffineSubspace k P₁} {t₁ t₂ : AffineSubspace k P₂}
+theorem prod_mono (s₁ s₂ : AffineSubspace k P₁) (t₁ t₂ : AffineSubspace k P₂)
     (hs : s₁ ≤ s₂) (ht : t₁ ≤ t₂) : s₁.prod t₁ ≤ s₂.prod t₂ :=
   Set.prod_mono hs ht
 
@@ -873,7 +872,7 @@ theorem affineSpan_prod_eq (s : Set P₁) (t : Set P₂) :
   · rw [affineSpan_le]
     exact fun q hq => ⟨subset_affineSpan k s hq.1, subset_affineSpan k t hq.2⟩
   · intro p hp
-    obtain ⟨hp1, hp2⟩ := AffineSubspace.mem_prod.mp hp
+    obtain ⟨hp1, hp2⟩ := (AffineSubspace.mem_prod (affineSpan k s) (affineSpan k t) p).mp hp
     obtain ⟨x0, hx0⟩ := hs; obtain ⟨y0, hy0⟩ := ht
     have hdir : p -ᵥ (x0, y0) ∈ (affineSpan k (s ×ˢ t)).direction := by
       rw [direction_affineSpan, vectorSpan_prod s t ⟨x0, hx0⟩ ⟨y0, hy0⟩, Submodule.mem_prod]
