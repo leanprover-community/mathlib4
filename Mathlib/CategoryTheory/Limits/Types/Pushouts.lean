@@ -54,11 +54,11 @@ namespace Pushout
 
 /-- The left inclusion in the constructed pushout `Pushout f g`. -/
 @[simp]
-def inl : X₁ ⟶ Pushout f g := TypeCat.ofHom (fun x => Quot.mk _ (Sum.inl x))
+def inl : X₁ ⟶ Pushout f g := ↾ (fun x => Quot.mk _ (Sum.inl x))
 
 /-- The right inclusion in the constructed pushout `Pushout f g`. -/
 @[simp]
-def inr : X₂ ⟶ Pushout f g := TypeCat.ofHom (fun x => Quot.mk _ (Sum.inr x))
+def inr : X₂ ⟶ Pushout f g := ↾ (fun x => Quot.mk _ (Sum.inr x))
 
 lemma condition : f ≫ inl f g = g ≫ inr f g := by
   ext x
@@ -70,7 +70,7 @@ def cocone : PushoutCocone f g := PushoutCocone.mk _ _ (condition f g)
 
 /-- The cocone `cocone f g` is colimit. -/
 def isColimitCocone : IsColimit (cocone f g) :=
-  PushoutCocone.IsColimit.mk _ (fun s => TypeCat.ofHom (Quot.lift (fun x => match x with
+  PushoutCocone.IsColimit.mk _ (fun s => ↾ (Quot.lift (fun x => match x with
       | Sum.inl x₁ => s.inl x₁
       | Sum.inr x₂ => s.inr x₂) (by
     rintro _ _ ⟨t⟩

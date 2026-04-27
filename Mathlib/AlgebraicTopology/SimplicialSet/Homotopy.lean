@@ -67,7 +67,7 @@ set_option backward.isDefEq.respectTransparency false in
 morphisms of simplicial objects between `f` and `g`. -/
 noncomputable def toSimplicialObjectHomotopy (H : Homotopy f g) :
     SimplicialObject.Homotopy f g where
-  h i := TypeCat.ofHom fun x ↦
+  h i := ↾ fun x ↦
     (yonedaEquiv.symm x ▷ Δ[1] ≫ H.h).app _ (prodStdSimplex.nonDegenerateEquiv₁ i).1
   h_zero_comp_δ_zero n := by
     ext x

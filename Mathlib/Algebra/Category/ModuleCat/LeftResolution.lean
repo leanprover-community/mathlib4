@@ -34,7 +34,7 @@ instance (X : Type u) : Projective ((free R).obj X) where
   factors {M N} f p hp := by
     rw [epi_iff_surjective] at hp
     obtain ⟨s, hs⟩ := hp.hasRightInverse
-    exact ⟨freeDesc (TypeCat.ofHom (fun x ↦ s (f (freeMk x)))), by cat_disch⟩
+    exact ⟨freeDesc (↾ (fun x ↦ s (f (freeMk x)))), by cat_disch⟩
 
 set_option backward.isDefEq.respectTransparency false in
 /-- An `R`-module `M` can be functorially written as a quotient of a

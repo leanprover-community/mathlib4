@@ -207,7 +207,7 @@ elements in `X₁` and `X₂`. -/
 noncomputable def pullbackEquiv :
     ToType (pullback f₁ f₂) ≃ { p : ToType X₁ × ToType X₂ // f₁ p.1 = f₂ p.2 } :=
   (PreservesPullback.iso (forget C) f₁ f₂ ≪≫
-    Types.pullbackIsoPullback (TypeCat.ofHom f₁) (TypeCat.ofHom f₂)).toEquiv
+    Types.pullbackIsoPullback (↾ f₁) (↾ f₂)).toEquiv
 
 /-- Constructor for elements in a pullback in a concrete category. -/
 noncomputable def pullbackMk (x₁ : ToType X₁) (x₂ : ToType X₂) (h : f₁ x₁ = f₂ x₂) :
@@ -223,13 +223,13 @@ lemma pullbackMk_surjective (x : ToType (pullback f₁ f₂)) :
 lemma pullbackMk_fst (x₁ : ToType X₁) (x₂ : ToType X₂) (h : f₁ x₁ = f₂ x₂) :
     pullback.fst f₁ f₂ (pullbackMk f₁ f₂ x₁ x₂ h) = x₁ :=
   (congr_hom (PreservesPullback.iso_inv_fst (forget C) f₁ f₂) _).trans
-    (congr_hom (Types.pullbackIsoPullback_inv_fst (TypeCat.ofHom f₁) (TypeCat.ofHom f₂)) _)
+    (congr_hom (Types.pullbackIsoPullback_inv_fst (↾ f₁) (↾ f₂)) _)
 
 @[simp]
 lemma pullbackMk_snd (x₁ : ToType X₁) (x₂ : ToType X₂) (h : f₁ x₁ = f₂ x₂) :
     pullback.snd f₁ f₂ (pullbackMk f₁ f₂ x₁ x₂ h) = x₂ :=
   (congr_hom (PreservesPullback.iso_inv_snd (forget C) f₁ f₂) _).trans
-    (congr_hom (Types.pullbackIsoPullback_inv_snd (TypeCat.ofHom f₁) (TypeCat.ofHom f₂)) _)
+    (congr_hom (Types.pullbackIsoPullback_inv_snd (↾ f₁) (↾ f₂)) _)
 
 end Pullbacks
 

@@ -393,7 +393,7 @@ open CategoryTheory
 https://ncatlab.org/nlab/show/monodromy. -/
 @[simps] noncomputable def monodromyFunctor : FundamentalGroupoid X ⥤ Type _ where
   obj x := p ⁻¹' {x.as}
-  map f := TypeCat.ofHom (cov.monodromy f)
+  map f := ↾ (cov.monodromy f)
   map_id _ := by ext x : 3; simpa using congr_fun cov.monodromy_refl x
   map_comp _ _ := by ext : 3; simpa using cov.monodromy_trans_apply _ _ _
 

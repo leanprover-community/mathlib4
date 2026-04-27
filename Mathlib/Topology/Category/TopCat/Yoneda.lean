@@ -36,7 +36,7 @@ A universe polymorphic "Yoneda presheaf" on `C` given by continuous maps into a 
 @[simps]
 def yonedaPresheaf : Cᵒᵖ ⥤ Type (max w w') where
   obj X := C(F.obj (unop X), Y)
-  map f := TypeCat.ofHom (fun g ↦ ContinuousMap.comp g (F.map f.unop).hom)
+  map f := ↾ (fun g ↦ ContinuousMap.comp g (F.map f.unop).hom)
 
 /--
 A universe polymorphic Yoneda presheaf on `TopCat` given by continuous maps into a topological
@@ -45,7 +45,7 @@ space `Y`.
 @[simps]
 def yonedaPresheaf' : TopCat.{w}ᵒᵖ ⥤ Type (max w w') where
   obj X := C((unop X).1, Y)
-  map f := TypeCat.ofHom fun g ↦ ContinuousMap.comp g
+  map f := ↾ fun g ↦ ContinuousMap.comp g
     (ConcreteCategory.hom f.unop)
 
 theorem comp_yonedaPresheaf' : yonedaPresheaf F Y = F.op ⋙ yonedaPresheaf' Y := rfl

@@ -179,8 +179,8 @@ theorem imageBasicOpen_image_preimage :
     (coequalizer.π f.toShHom g.toShHom).hom.base ⁻¹'
       ((coequalizer.π f.toShHom g.toShHom).hom.base ''
         (imageBasicOpen f g U s).1) = (imageBasicOpen f g U s).1 := by
-  fapply Types.coequalizer_preimage_image_eq_of_preimage_eq (TypeCat.ofHom f.base)
-    (TypeCat.ofHom g.base) (TypeCat.ofHom (coequalizer.π f.toShHom g.toShHom).hom.base)
+  fapply Types.coequalizer_preimage_image_eq_of_preimage_eq (↾ f.base)
+    (↾ g.base) (↾ (coequalizer.π f.toShHom g.toShHom).hom.base)
   · ext
     simp only [TypeCat.Fun.toFun_apply, comp_apply, ConcreteCategory.hom_ofHom,
       TypeCat.Fun.coe_mk, ← TopCat.comp_app, ← PresheafedSpace.comp_base]

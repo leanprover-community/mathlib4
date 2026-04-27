@@ -39,7 +39,7 @@ with a point in `Type u` is the same as the data of a cocone (in a categorical s
 def coconeTypesEquiv : CoconeTypes.{u} F ≃ Cocone F where
   toFun c :=
     { pt := c.pt
-      ι := { app j := TypeCat.ofHom (c.ι j) } }
+      ι := { app j := ↾ (c.ι j) } }
   invFun c :=
     { pt := c.pt
       ι j := c.ι.app j
@@ -55,7 +55,7 @@ lemma CoconeTypes.isColimit_iff (c : CoconeTypes.{u} F) :
   constructor
   · intro hc
     exact
-     ⟨{ desc s := TypeCat.ofHom (fun x => hc.desc (F.coconeTypesEquiv.symm s) x)
+     ⟨{ desc s := ↾ (fun x => hc.desc (F.coconeTypesEquiv.symm s) x)
         fac s j := by
           ext x
           exact congr_fun (hc.fac (F.coconeTypesEquiv.symm s) j) x
@@ -73,9 +73,9 @@ lemma CoconeTypes.isColimit_iff (c : CoconeTypes.{u} F) :
       obtain ⟨j, z, rfl⟩ := F.ιColimitType_jointly_surjective z
       exact ConcreteCategory.congr_hom (hc.fac _ j) z
     · let f₁ : (F.coconeTypesEquiv c).pt ⟶ (ULift.{u} Bool) :=
-        TypeCat.ofHom (fun _ => ULift.up true)
+        ↾ (fun _ => ULift.up true)
       let f₂ : (F.coconeTypesEquiv c).pt ⟶ (ULift.{u} Bool) :=
-        TypeCat.ofHom (fun x => ULift.up (∃ a, F.descColimitType c a = x))
+        ↾ (fun x => ULift.up (∃ a, F.descColimitType c a = x))
       suffices f₁ = f₂ by
         have := ConcreteCategory.congr_hom this x
         simpa [f₁, f₂] using this
@@ -220,9 +220,9 @@ theorem jointly_surjective_of_isColimit {F : J ⥤ Type u} {t : Cocone F} (h : I
     (x : t.pt) : ∃ j y, t.ι.app j y = x := by
   by_contra hx
   simp_rw [not_exists] at hx
-  apply (_ : (TypeCat.ofHom (fun _ ↦ ULift.up True) :
+  apply (_ : (↾ (fun _ ↦ ULift.up True) :
       t.pt ⟶ (ULift.{u} Prop)) ≠
-    (TypeCat.ofHom (fun y ↦ ULift.up (y ≠ x))))
+    (↾ (fun y ↦ ULift.up (y ≠ x))))
   · refine h.hom_ext fun j ↦ ?_
     ext y
     simp only [Functor.const_obj_obj, TypeCat.Fun.toFun_apply, comp_apply, hom_ofHom,

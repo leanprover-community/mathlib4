@@ -56,7 +56,7 @@ noncomputable
 def isTerminal_of_isSheafFor_empty_presieve : IsTerminal (F.obj (op I)) := by
   refine @IsTerminal.ofUnique _ _ _ fun Y ↦ ?_
   choose t h using hF (by tauto) (by tauto)
-  exact ⟨⟨TypeCat.ofHom (fun _ ↦ t)⟩, fun a ↦ by ext; exact h.2 _ (by tauto)⟩
+  exact ⟨⟨↾ (fun _ ↦ t)⟩, fun a ↦ by ext; exact h.2 _ (by tauto)⟩
 
 include hF in
 /--

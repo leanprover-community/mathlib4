@@ -38,7 +38,7 @@ variable (M : Type*) [Monoid M] (X : Type u) [MulAction M X]
 @[simps obj map]
 def actionAsFunctor : SingleObj M ⥤ Type u where
   obj _ := X
-  map f := TypeCat.ofHom (f • ·)
+  map f := ↾ (f • ·)
   map_id _ := by ext; exact MulAction.one_smul _
   map_comp f g := by ext x; exact (smul_smul g f x).symm
 

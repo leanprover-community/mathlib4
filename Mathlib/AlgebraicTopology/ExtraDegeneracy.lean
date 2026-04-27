@@ -187,8 +187,8 @@ open SSet.stdSimplex in
 /-- The obvious extra degeneracy on the standard simplex. -/
 protected noncomputable def extraDegeneracy (Δ : SimplexCategory) :
     SimplicialObject.Augmented.ExtraDegeneracy (stdSimplex.obj Δ) where
-  s' := TypeCat.ofHom (fun _ ↦ objMk (OrderHom.const _ 0))
-  s _ := TypeCat.ofHom (fun f ↦ objEquiv.symm (shift (objEquiv f)))
+  s' := ↾ (fun _ ↦ objMk (OrderHom.const _ 0))
+  s _ := ↾ (fun f ↦ objEquiv.symm (shift (objEquiv f)))
   s'_comp_ε := by
     dsimp
     subsingleton
