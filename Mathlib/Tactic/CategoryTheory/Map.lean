@@ -32,6 +32,12 @@ namespace Mathlib.Tactic.CategoryTheory.Map
 def mapCompSimp (e : Expr) : MetaM Simp.Result :=
   simpOnlyNames [``Functor.map_comp, ``Functor.map_id] e (config := { decide := false })
 
+/--
+Given the type of an equality between morphisms, extract the source category `C` together with a
+synthesized `Category C` instance.
+
+Throws an error if the input is not an equality or not an equality in a hom type.
+-/
 def extractCatInstanceFromEq (eqTy : Expr) : MetaM (Expr × Expr) := do
   let some (α, _, _) := eqTy.cleanupAnnotations.eq? | throwError "`@[map]` expects an equality"
   let (``Quiver.Hom, #[C, _, _, _]) := α.getAppFnArgs |
@@ -120,7 +126,7 @@ syntax (name := mapStx) "map" optAttrArg : attr
 
 initialize registerBuiltinAttribute {
   name := `mapStx
-  descr := ""
+  descr := "Generate a companion `_map` lemma by applying a functor to an equality of morphisms."
   applicationTime := .afterCompilation
   add := fun src ref kind => match ref with
   | `(attr| map $optAttr) => MetaM.run' do
