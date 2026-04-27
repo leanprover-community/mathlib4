@@ -25,8 +25,11 @@ in the remainder of the type.
 Currently, these linters only handle theorems. (This also includes `lemma`s and `instance`s of
 `Prop` classes.)
 
-- `unusedDecidableInType` linter (currently off by default): suggests replacing type-unused
-  `Decidable*` instance hypotheses, and could therefore be replaced by `classical` in the proof.
+- `unusedDecidableInType` linter: suggests replacing
+  `Decidable*` instance hypotheses that are either (1) not used in the type (2) only used in proofs
+  in the type. These can be replaced by `classical` in the proof(s).
+- `unusedFintypeInType` linter: suggests replacing `Fintype` with `Finite` under the same
+  circumstances, and suggests importing `Finite` if necessary
 
 TODO: log on type signature instead of whole command
 TODO: add more linters!
