@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Ring.Rat
 public import Mathlib.Data.Set.Operations
 public import Mathlib.Order.Bounds.Defs
 public import Mathlib.Order.GaloisConnection.Defs
+public import Mathlib.Algebra.Module.RingHom
 
 /-!
 # Nonnegative rationals
@@ -412,6 +413,14 @@ theorem lt_def {p q : ℚ≥0} : p < q ↔ p.num * q.den < q.num * p.den := by
 
 theorem le_def {p q : ℚ≥0} : p ≤ q ↔ p.num * q.den ≤ q.num * p.den := by
   rw [← NNRat.coe_le_coe, Rat.le_iff]; norm_cast
+
+section Actions
+
+/-- A `Module` over `ℚ` restricts to a `Module` over `ℚ≥0`. -/
+instance {M : Type*} [AddCommMonoid M] [Module ℚ M] : Module ℚ≥0 M :=
+  fast_instance% Module.compHom M NNRat.coeHom
+
+end Actions
 
 end NNRat
 
