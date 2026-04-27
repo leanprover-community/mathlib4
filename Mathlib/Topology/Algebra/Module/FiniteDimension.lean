@@ -14,6 +14,7 @@ public import Mathlib.RingTheory.LocalRing.Basic
 public import Mathlib.Topology.Algebra.Module.Determinant
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
 public import Mathlib.Topology.Algebra.Module.Simple
+public import Mathlib.Topology.Algebra.Module.Complement
 public import Mathlib.Topology.Algebra.SeparationQuotient.FiniteDimensional
 
 /-!
@@ -525,7 +526,7 @@ end IsUniformAddGroup
 variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
   [AddCommGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E] [Module 𝕜 E]
   [ContinuousSMul 𝕜 E]
-  [AddCommGroup F] [TopologicalSpace F] [T2Space F] [IsTopologicalAddGroup F] [Module 𝕜 F]
+  [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F] [Module 𝕜 F]
   [ContinuousSMul 𝕜 F]
 
 /-- A finite-dimensional subspace is closed. -/
@@ -537,8 +538,8 @@ theorem Submodule.closed_of_finiteDimensional
   s.complete_of_finiteDimensional.isClosed
 
 /-- An injective linear map with finite-dimensional domain is a closed embedding. -/
-theorem LinearMap.isClosedEmbedding_of_injective [T2Space E] [FiniteDimensional 𝕜 E] {f : E →ₗ[𝕜] F}
-    (hf : LinearMap.ker f = ⊥) : IsClosedEmbedding f :=
+theorem LinearMap.isClosedEmbedding_of_injective [T2Space E] [FiniteDimensional 𝕜 E] [T2Space F]
+    {f : E →ₗ[𝕜] F} (hf : LinearMap.ker f = ⊥) : IsClosedEmbedding f :=
   let g := LinearEquiv.ofInjective f (LinearMap.ker_eq_bot.mp hf)
   { IsEmbedding.subtypeVal.comp g.toContinuousLinearEquiv.toHomeomorph.isEmbedding with
     isClosed_range := by
@@ -556,7 +557,7 @@ theorem isClosedMap_smul_left [T2Space E] (c : E) : IsClosedMap fun x : 𝕜 => 
     exact isClosedMap_const
   · exact (isClosedEmbedding_smul_left hc).isClosedMap
 
-theorem ContinuousLinearMap.exists_right_inverse_of_surjective [FiniteDimensional 𝕜 F]
+theorem ContinuousLinearMap.exists_right_inverse_of_surjective [T2Space F] [FiniteDimensional 𝕜 F]
     (f : E →L[𝕜] F) (hf : f.range = ⊤) :
     ∃ g : F →L[𝕜] E, f.comp g = ContinuousLinearMap.id 𝕜 F :=
   let ⟨g, hg⟩ := (f : E →ₗ[𝕜] F).exists_rightInverse_of_surjective hf
@@ -669,3 +670,42 @@ theorem HasCompactMulSupport.eq_one_or_finiteDimensional {X : Type*} [Topologica
   HasCompactSupport.eq_zero_or_finiteDimensional 𝕜 (X := Additive X) hf h'f
 
 end Riesz
+
+section Compl
+
+open Submodule
+
+/-- If `p` is a closed subspace with finite codimension, then any algebraic complement `q` to `p`
+is a topological complement. -/
+theorem IsCompl.isTopCompl_of_quotient_finiteDimensional {p q : Submodule 𝕜 E}
+    (h : IsCompl p q) (hp : IsClosed (p : Set E)) [FiniteDimensional 𝕜 (E ⧸ p)] :
+    IsTopCompl p q := by
+  let mkQ : E →L[𝕜] E ⧸ p := ⟨p.mkQ, continuous_quot_mk⟩ -- I can't believe we don't have this...
+  let φ : E ⧸ p →L[𝕜] q := (p.quotientEquivOfIsCompl q h).toLinearMap.toContinuousLinearMap
+  have := (φ ∘L mkQ).isTopCompl_of_proj fun x ↦ by simp [mkQ, φ]
+  simpa [φ, mkQ] using this.symm
+
+/-- Assume that `p q : Submodule 𝕜 E` are algebraic complements. If `p` is closed and `q`
+has finite dimension, then they are in fact topological complements.
+
+Note that this theorem is not useful at all if you start from the finite dimensional subspace `q`,
+because building a closed complement requires the Hahn-Banach theorem (and you don't get control
+over what the complement is). See `Submodule.ClosedComplemented.of_finiteDimensional`. -/
+theorem IsCompl.isTopCompl_of_isClosed_of_finiteDimensional {p q : Submodule 𝕜 E}
+    (h : IsCompl p q) (hp : IsClosed (p : Set E)) [hq : FiniteDimensional 𝕜 q] :
+    IsTopCompl p q := by
+  suffices FiniteDimensional 𝕜 (E ⧸ p) from h.isTopCompl_of_quotient_finiteDimensional hp
+  exact (p.quotientEquivOfIsCompl q h).symm.finiteDimensional
+
+theorem Submodule.ClosedComplemented.of_quotient_finiteDimensional {p : Submodule 𝕜 E}
+    (hp : IsClosed (p : Set E)) [hq : FiniteDimensional 𝕜 (E ⧸ p)] : p.ClosedComplemented := by
+  obtain ⟨q, hq⟩ : ∃ q, IsCompl p q := p.exists_isCompl
+  exact hq.isTopCompl_of_quotient_finiteDimensional hp |>.closedComplemented
+
+omit [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F] in
+theorem ContinuousLinearMap.ker_closedComplemented_of_finiteDimensional_range [T2Space F]
+    (f : E →L[𝕜] F) [FiniteDimensional 𝕜 f.range] : f.ker.ClosedComplemented := by
+  suffices FiniteDimensional 𝕜 (E ⧸ f.ker) from .of_quotient_finiteDimensional f.isClosed_ker
+  exact f.toLinearMap.quotKerEquivRange.symm.finiteDimensional
+
+end Compl
