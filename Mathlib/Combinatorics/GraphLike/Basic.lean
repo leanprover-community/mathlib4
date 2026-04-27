@@ -25,10 +25,6 @@ class HasSourceTarget (V D : Type*) where
   /-- The second vertex of a dart. -/
   tgt : D → V
 
-/-- Convert a dart to a pair of vertices. -/
-@[expose] def HasSourceTarget.toProd {V D : Type*} [HasSourceTarget V D] (d : D) : V × V :=
-  (HasSourceTarget.src d, HasSourceTarget.tgt d)
-
 /-- `HasEdge D E` is a typeclass with a function `edge : D → E` that gives the edge of a dart. -/
 class HasEdge (D E : Type*) where
   /-- The edge of a dart. -/
@@ -85,7 +81,7 @@ lemma Adj.right_mem (h : Adj G v w) : w ∈ V(G) := by
   exact tgt_mem_of_darts hd
 
 /-- Convert a dart to a pair of vertices. -/
-@[expose] def toProd (d : D(G)) : V × V := (fst G d.val, snd G d.val)
+@[expose] def toProd (d : D(G)) : V × V := (src d.val, tgt d.val)
 
 /-- The step from `u` to `v` is a dart from `u` to `v`. -/
 @[expose]
@@ -187,7 +183,7 @@ instance : HasSourceTarget V (V × V) where
 
 @[simp, grind =] lemma tgt_eq : tgt d = d.snd := rfl
 
-@[simp] lemma toProd_eq : toProd d = d := rfl
+@[simp] lemma toProd_eq (d : D(G)) : toProd d = (src d.val, tgt d.val) := rfl
 
 instance : HasEdge (V × V) (Sym2 V) where
   edge d := s(d.fst, d.snd)
@@ -199,7 +195,7 @@ instance : HasEdge (V × V) (V × V) where
 
 @[simp, grind =] lemma edge_eq' : edge d = d := rfl
 
-variable [GraphLike V (V × V) (Sym2 V) Gr]
+variable {E : Type*} [HasEdge (V × V) E] [GraphLike V (V × V) E Gr]
 
 @[simp]
 lemma mem_darts_iff_adj : d ∈ darts G ↔ Adj G d.fst d.snd := by
