@@ -22,7 +22,7 @@ Special cases are considered when any of `A = ∅`, `K = ∅`, or `Y = ⋆` are 
 * [Charles Rezk, *Introduction to Quasi-categories*, Proposition 21.5][Rezk2022]
 -/
 
-@[expose] public section
+public section
 
 universe v u
 
