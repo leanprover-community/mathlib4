@@ -263,7 +263,7 @@ theorem sum_basis (hvs : Set.InjOn v s) (hs : s.Nonempty) :
   · rw [degree_one, ← WithBot.coe_zero, Nat.cast_withBot, WithBot.coe_lt_coe]
     exact Nonempty.card_pos hs
   · intro i hi
-    rw [eval_finset_sum, eval_one, ← add_sum_erase _ _ hi, eval_basis_self hvs hi,
+    rw [eval_finsetSum, eval_one, ← add_sum_erase _ _ hi, eval_basis_self hvs hi,
       add_eq_left]
     refine sum_eq_zero fun j hj => ?_
     rcases mem_erase.mp hj with ⟨hij, _⟩
@@ -318,7 +318,7 @@ theorem interpolate_one (hvs : Set.InjOn v s) (hs : s.Nonempty) : interpolate s 
 
 theorem eval_interpolate_at_node (hvs : Set.InjOn v s) (hi : i ∈ s) :
     eval (v i) (interpolate s v r) = r i := by
-  rw [interpolate_apply, eval_finset_sum, ← add_sum_erase _ _ hi]
+  rw [interpolate_apply, eval_finsetSum, ← add_sum_erase _ _ hi]
   simp_rw [eval_mul, eval_C, eval_basis_self hvs hi, mul_one, add_eq_left]
   refine sum_eq_zero fun j H => ?_
   rw [eval_basis_of_ne (mem_erase.mp H).1 hi, mul_zero]
@@ -417,7 +417,7 @@ theorem interpolate_eq_sum_interpolate_insert_sdiff (hvt : Set.InjOn v t) (hs : 
     convert degree_interpolate_lt _
         (hvt.mono (coe_subset.mpr (insert_subset_iff.mpr ⟨hst hi, sdiff_subset⟩)))
     rw [card_insert_of_notMem (notMem_sdiff_of_mem_right hi), card_sdiff_of_subset hst, add_comm]
-  · simp_rw [eval_finset_sum, eval_mul]
+  · simp_rw [eval_finsetSum, eval_mul]
     by_cases hi' : i ∈ s
     · rw [← add_sum_erase _ _ hi', eval_basis_self (hvt.mono hst) hi',
         eval_interpolate_at_node _
@@ -428,7 +428,7 @@ theorem interpolate_eq_sum_interpolate_insert_sdiff (hvt : Set.InjOn v t) (hs : 
       rcases mem_erase.mp hj with ⟨hij, _⟩
       rw [eval_basis_of_ne hij hi', mul_zero]
     · have H : (∑ j ∈ s, eval (v i) (Lagrange.basis s v j)) = 1 := by
-        rw [← eval_finset_sum, sum_basis (hvt.mono hst) hs, eval_one]
+        rw [← eval_finsetSum, sum_basis (hvt.mono hst) hs, eval_one]
       rw [← mul_one (r i), ← H, mul_sum]
       refine sum_congr rfl fun j hj => ?_
       congr
@@ -484,7 +484,7 @@ theorem eval_iterate_derivative_eq_sum (hvs : Set.InjOn v s) {P : Polynomial F} 
       k.factorial * ∑ i ∈ s, (P.eval (v i) / ∏ j ∈ s.erase i, (v i - v j)) *
         ∑ t ∈ (s.erase i).powersetCard (#s - (k + 1)), ∏ a ∈ t, (x - v a) := by
   nth_rewrite 1 [eq_interpolate hvs hP, iterate_derivative_interpolate _ hvs hk]
-  simp [eval_finset_sum, eval_prod]
+  simp [eval_finsetSum, eval_prod]
 
 @[deprecated eq_interpolate (since := "2026-01-14")]
 theorem interpolate_poly_eq_self
@@ -494,7 +494,7 @@ theorem interpolate_poly_eq_self
 theorem coeff_eq_sum
     (hvs : Set.InjOn v s) {P : Polynomial F} (hP : P.degree < #s) :
     P.coeff (#s - 1) = ∑ i ∈ s, (P.eval (v i)) / ∏ j ∈ s.erase i, (v i - v j) := by
-  nth_rewrite 1 [eq_interpolate hvs hP, interpolate_apply, finset_sum_coeff]
+  nth_rewrite 1 [eq_interpolate hvs hP, interpolate_apply, finsetSum_coeff]
   congr! with i hi
   rw [coeff_C_mul, ← natDegree_basis hvs hi, ← leadingCoeff, leadingCoeff_basis hvs hi]
   field_simp
@@ -603,7 +603,7 @@ theorem derivative_nodal [DecidableEq ι] :
 
 theorem eval_nodal_derivative_eval_node_eq [DecidableEq ι] {i : ι} (hi : i ∈ s) :
     eval (v i) (derivative (nodal s v)) = eval (v i) (nodal (s.erase i) v) := by
-  rw [derivative_nodal, eval_finset_sum, ← add_sum_erase _ _ hi, add_eq_left]
+  rw [derivative_nodal, eval_finsetSum, ← add_sum_erase _ _ hi, add_eq_left]
   exact sum_eq_zero fun j hj => (eval_nodal_at_node (mem_erase.mpr ⟨(mem_erase.mp hj).1.symm, hi⟩))
 
 /-- The vanishing polynomial on a multiplicative subgroup is of the form X ^ n - 1. -/
@@ -684,7 +684,7 @@ theorem interpolate_eq_nodalWeight_mul_nodal_div_X_sub_C :
 theorem eval_interpolate_not_at_node (hx : ∀ i ∈ s, x ≠ v i) :
     eval x (interpolate s v r) =
       eval x (nodal s v) * ∑ i ∈ s, nodalWeight s v i * (x - v i)⁻¹ * r i := by
-  simp_rw [interpolate_apply, mul_sum, eval_finset_sum, eval_mul, eval_C]
+  simp_rw [interpolate_apply, mul_sum, eval_finsetSum, eval_mul, eval_C]
   refine sum_congr rfl fun i hi => ?_
   rw [← mul_assoc, mul_comm, eval_basis_not_at_node hi (hx _ hi)]
 
