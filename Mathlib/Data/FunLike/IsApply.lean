@@ -30,6 +30,13 @@ class IsOneApply (F : Type*) (α β : outParam Type*) [FunLike F α β] [One β]
 
 @[to_additive (attr := simp, grind =)] alias one_apply := IsOneApply.one_apply
 
+/-- `IsOneApplyEqId F α α` states for all `x : α`, `(1 : F) x = x`. -/
+class IsOneApplyEqId (F : Type*) (α : outParam Type*) [FunLike F α α] [One F] where
+  one_apply_eq_id (x : α) : (1 : F) x = x
+
+@[simp, grind =]
+alias one_apply_eq_id := IsOneApplyEqId.one_apply_eq_id
+
 end Zero
 
 section Add
@@ -44,6 +51,13 @@ class IsMulApply (F : Type*) (α β : outParam Type*) [FunLike F α β] [Mul β]
   mul_apply (f g : F) (x : α) : (f * g) x = f x * g x
 
 @[to_additive (attr := simp, grind =)] alias mul_apply := IsMulApply.mul_apply
+
+/-- `IsMulApplyEqComp F α α` states for all `x : α`, `(f * g) x = f (g x)`. -/
+class IsMulApplyEqComp (F : Type*) (α : outParam Type*) [FunLike F α α] [Mul F] where
+  mul_apply_eq_comp (f g : F) (x : α) : (f * g) x = f (g x)
+
+@[simp, grind =]
+alias mul_apply_eq_comp := IsMulApplyEqComp.mul_apply_eq_comp
 
 end Add
 

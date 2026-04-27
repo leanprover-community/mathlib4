@@ -16,106 +16,93 @@ In this file we define various instances related to ring for `FunLike` types.
 
 @[expose] public section
 
-variable {F α β : Type*} [FunLike F α β]
+variable {F α : Type*}
 
-section Cast
+section NatCast
 
-/-- `IsNatCastApply F α β` states for all `n : ℕ` and `x : α`, `(n : F) x = n`. -/
-class IsNatCastApply (F : Type*) (α β : outParam Type*) [FunLike F α β] [NatCast β]
-    [NatCast F] where
-  natCast_apply (n : ℕ) (x : α) : (n : F) x = n
+variable [FunLike F α α] [One F] [IsOneApplyEqId F α] [SMul ℕ F]
 
-@[simp]
-alias _root_.natCast_apply := IsNatCastApply.natCast_apply
+instance instNatCast : NatCast F where
+  natCast n := n • (1 : F)
 
-theorem coe_natCast [AddMonoidWithOne β] [NatCast F] [IsNatCastApply F α β] (n : ℕ) :
-  ↑(n : F) = (n : α → β) := by ext; simp only [natCast_apply]; rfl
+@[norm_cast]
+theorem coe_natCast (n : ℕ) : (n : F) = n • (1 : F) := rfl
 
-/-- `IsIntCastApply F α β` states for all `n : ℤ` and `x : α`, `(n : F) x = n`. -/
-class IsIntCastApply (F : Type*) (α β : outParam Type*) [FunLike F α β] [IntCast β]
-    [IntCast F] where
-  intCast_apply (n : ℤ) (x : α) : (n : F) x = n
+@[simp, grind =]
+theorem natCast_apply [SMul ℕ α] [IsSMulApply ℕ F α α] (n : ℕ) (x : α) :
+    (↑n : F) x = n • x := by
+  norm_cast
+  simp
 
-@[simp]
-alias _root_.intCast_apply := IsIntCastApply.intCast_apply
+end NatCast
 
-theorem coe_intCast [AddGroupWithOne β] [IntCast F] [IsIntCastApply F α β] (n : ℤ) :
-  ↑(n : F) = (n : α → β) := by ext; simp only [intCast_apply]; rfl
+section IntCast
 
-end Cast
+variable [FunLike F α α] [One F] [IsOneApplyEqId F α] [SMul ℤ F]
 
-namespace FunLike
+instance instIntCast : IntCast F where
+  intCast n := n • (1 : F)
 
-variable [Mul F]
+@[norm_cast]
+theorem coe_intCast (n : ℤ) : (n : F) = n • (1 : F) := rfl
 
-instance instDistrib [Add F] [Distrib β] [IsMulApply F α β] [IsAddApply F α β] : Distrib F :=
-  fast_instance% DFunLike.coe_injective.distrib (fun (f : F) ↦ (f : α → β)) coe_add coe_mul
+@[simp, grind =]
+theorem intCast_apply [SMul ℤ α] [IsSMulApply ℤ F α α] (n : ℤ) (x : α) :
+    (↑n : F) x = n • x := by
+  norm_cast
+  simp
 
-instance instHasDistribNeg [Neg F] [Mul β] [HasDistribNeg β] [IsNegApply F α β]
-    [IsMulApply F α β] : HasDistribNeg F :=
-  fast_instance% DFunLike.coe_injective.hasDistribNeg (fun (f : F) ↦ (f : α → β)) coe_neg coe_mul
+end IntCast
 
-variable [Add F] [Zero F] [One F] [SMul ℕ F]
+section MonoidWithZero
 
-instance [NonUnitalNonAssocSemiring β] [IsZeroApply F α β] [IsAddApply F α β] [IsMulApply F α β]
-    [IsSMulApply ℕ F α β] : NonUnitalNonAssocSemiring F :=
-  fast_instance% DFunLike.coe_injective.nonUnitalNonAssocSemiring _ coe_zero coe_add coe_mul
-    coe_smul
+variable [FunLike F α α] [Zero F] [One F] [Mul F] [Zero α]
+  [IsZeroApply F α α] [IsOneApplyEqId F α] [IsMulApplyEqComp F α]
+  [ZeroHomClass F α α]
 
-instance [NonUnitalSemiring β] [IsZeroApply F α β] [IsAddApply F α β] [IsMulApply F α β]
-    [IsSMulApply ℕ F α β] : NonUnitalSemiring F :=
-  fast_instance% DFunLike.coe_injective.nonUnitalSemiring _ coe_zero coe_add coe_mul coe_smul
+instance FunLike.instMonoidWithZero : MonoidWithZero F where
+  mul_zero f := by apply DFunLike.ext; simp
+  zero_mul _ := by apply DFunLike.ext; simp
+  mul_one _ := by apply DFunLike.ext; simp
+  one_mul _ := by apply DFunLike.ext; simp
+  mul_assoc _ _ _ := by apply DFunLike.ext; simp
 
-instance [NonUnitalCommSemiring β] [IsZeroApply F α β] [IsAddApply F α β] [IsMulApply F α β]
-    [IsSMulApply ℕ F α β] : NonUnitalCommSemiring F :=
-  fast_instance% DFunLike.coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul coe_smul
+end MonoidWithZero
 
-section NegSub
+section Semiring
 
-variable [Neg F] [Sub F] [SMul ℤ F]
+variable [FunLike F α α] [Zero F] [One F] [Mul F] [Add F] [AddCommMonoid α]
+  [IsZeroApply F α α] [IsAddApply F α α] [IsOneApplyEqId F α] [IsMulApplyEqComp F α]
+  [SMul ℕ F] [IsSMulApply ℕ F α α] [AddMonoidHomClass F α α]
 
-instance [NonUnitalNonAssocRing β] [IsZeroApply F α β] [IsAddApply F α β] [IsMulApply F α β]
-    [IsSMulApply ℕ F α β] [IsSMulApply ℤ F α β] [IsNegApply F α β] [IsSubApply F α β] :
-    NonUnitalNonAssocRing F :=
-  fast_instance% DFunLike.coe_injective.nonUnitalNonAssocRing _ coe_zero coe_add coe_mul coe_neg
-    coe_sub coe_smul coe_smul
+instance FunLike.instSemiring : Semiring F where
+  __ := FunLike.instMonoidWithZero
+  __ := FunLike.instAddCommMonoid
+  left_distrib f g h := by apply DFunLike.ext; simp
+  right_distrib _ _ _ := by apply DFunLike.ext; simp
+  natCast_zero := by apply DFunLike.ext; simp
+  natCast_succ n := by apply DFunLike.ext; simpa using (succ_nsmul · n)
 
-instance [NonUnitalRing β] [IsZeroApply F α β] [IsAddApply F α β] [IsMulApply F α β]
-    [IsSMulApply ℕ F α β] [IsSMulApply ℤ F α β] [IsNegApply F α β] [IsSubApply F α β] :
-    NonUnitalRing F :=
-  fast_instance% DFunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub
-    coe_smul coe_smul
+end Semiring
 
-instance [NonUnitalCommRing β] [IsZeroApply F α β] [IsAddApply F α β] [IsMulApply F α β]
-    [IsSMulApply ℕ F α β] [IsSMulApply ℤ F α β] [IsNegApply F α β] [IsSubApply F α β] :
-    NonUnitalCommRing F :=
-  fast_instance% DFunLike.coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub
-    coe_smul coe_smul
+section Ring
 
-end NegSub
+variable [FunLike F α α] [Zero F] [One F] [Mul F] [Add F] [Neg F] [Sub F]
+  [AddCommGroup α]
+  [IsZeroApply F α α] [IsAddApply F α α] [IsOneApplyEqId F α] [IsMulApplyEqComp F α]
+  [IsNegApply F α α] [IsSubApply F α α]
+  [SMul ℕ F] [IsSMulApply ℕ F α α]
+  [SMul ℤ F] [IsSMulApply ℤ F α α] [AddMonoidHomClass F α α]
 
-variable [Pow F ℕ] [NatCast F]
+instance FunLike.instRing : Ring F where
+  __ := FunLike.instSemiring
+  __ := FunLike.instAddCommGroup
+  intCast_ofNat _ := by apply DFunLike.ext; simp
+  intCast_negSucc n := by
+    apply DFunLike.ext
+    intro x
+    simp only [intCast_apply, negSucc_zsmul, Nat.cast_add, Nat.cast_one, neg_add_rev, add_apply,
+      neg_apply, one_apply_eq_id, natCast_apply]
+    rw [succ_nsmul, neg_add, add_comm]
 
-instance [Semiring β] [IsZeroApply F α β] [IsOneApply F α β] [IsAddApply F α β] [IsMulApply F α β]
-    [IsSMulApply ℕ F α β] [IsPowApply ℕ F α β] [IsNatCastApply F α β] :
-    Semiring F :=
-  fast_instance% DFunLike.coe_injective.semiring _ coe_zero coe_one coe_add coe_mul
-    coe_smul coe_pow coe_natCast
-
-variable [IntCast F] [Neg F] [Sub F] [SMul ℤ F]
-
-instance [Ring β] [IsZeroApply F α β] [IsOneApply F α β] [IsAddApply F α β] [IsMulApply F α β]
-    [IsNegApply F α β] [IsSubApply F α β] [IsSMulApply ℕ F α β] [IsSMulApply ℤ F α β]
-    [IsPowApply ℕ F α β] [IsNatCastApply F α β] [IsIntCastApply F α β] :
-    Ring F :=
-  fast_instance% DFunLike.coe_injective.ring _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub
-    coe_smul coe_smul coe_pow coe_natCast coe_intCast
-
-instance [CommRing β] [IsZeroApply F α β] [IsOneApply F α β] [IsAddApply F α β] [IsMulApply F α β]
-    [IsNegApply F α β] [IsSubApply F α β] [IsSMulApply ℕ F α β] [IsSMulApply ℤ F α β]
-    [IsPowApply ℕ F α β] [IsNatCastApply F α β] [IsIntCastApply F α β] :
-    CommRing F :=
-  fast_instance% DFunLike.coe_injective.commRing _ coe_zero coe_one coe_add coe_mul coe_neg coe_sub
-    coe_smul coe_smul coe_pow coe_natCast coe_intCast
-
-end FunLike
+end Ring
