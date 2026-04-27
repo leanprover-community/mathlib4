@@ -101,7 +101,7 @@ open IntermediateField
 theorem trace_gen_eq_zero {x : L} (hx : ¬IsIntegral K x) :
     Algebra.trace K K⟮x⟯ (AdjoinSimple.gen K x) = 0 := by
   rw [trace_eq_zero_of_not_exists_basis, LinearMap.zero_apply]
-  contrapose! hx
+  contrapose hx
   obtain ⟨s, ⟨b⟩⟩ := hx
   refine .of_mem_of_fg K⟮x⟯.toSubalgebra ?_ x ?_
   · exact (Submodule.fg_iff_finiteDimensional _).mpr (b.finiteDimensional_of_finite)
@@ -619,7 +619,7 @@ lemma Module.Basis.traceDual_powerBasis_eq (pb : PowerBasis K L) (i) :
   apply (algebraMap K (AlgebraicClosure K)).injective
   have := congr_arg (coeff · i) (sum_smul_minpolyDiv_eq_X_pow (AlgebraicClosure K)
     pb.adjoin_gen_eq_top (r := j) (pb.finrank.symm ▸ j.prop))
-  simp only [Polynomial.map_smul, map_div₀, map_pow, RingHom.coe_coe, finset_sum_coeff, coeff_smul,
+  simp only [Polynomial.map_smul, map_div₀, map_pow, RingHom.coe_coe, finsetSum_coeff, coeff_smul,
     coeff_map, smul_eq_mul, coeff_X_pow, ← Fin.ext_iff, @eq_comm _ i] at this
   rw [PowerBasis.coe_basis]
   simp only [traceForm_apply, MonoidWithZeroHom.map_ite_one_zero]
