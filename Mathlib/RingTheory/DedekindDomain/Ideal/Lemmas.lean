@@ -1216,10 +1216,11 @@ theorem equivPrimesOver_apply (hp : p ≠ 0)
     (v : {v : HeightOneSpectrum B // v.asIdeal ∣ map (algebraMap A B) p}) :
     equivPrimesOver B hp v = v.1.asIdeal := rfl
 
-variable (A) {B} in
+variable (A) in
 /-- The pullback of a height one prime in `B` to `A`. -/
 @[simps]
-def under [Algebra.IsIntegral A B] (w : HeightOneSpectrum B) : HeightOneSpectrum A where
+def under {B : Type*} [CommRing B] [IsDomain B] [Algebra A B] [Algebra.IsIntegral A B]
+    (w : HeightOneSpectrum B) : HeightOneSpectrum A where
   asIdeal := w.asIdeal.under A
   isPrime := .under A w.asIdeal
   ne_bot := mt Ideal.eq_bot_of_comap_eq_bot w.ne_bot
@@ -1265,8 +1266,7 @@ lemma Algebra.IsIntegral.nontrivial_heightOneSpectrum [IsDomain A] [Algebra R A]
     [FaithfulSMul R A] [Algebra.IsIntegral R A] [Nontrivial (HeightOneSpectrum R)] :
     Nontrivial (HeightOneSpectrum A) := by
   have := (FaithfulSMul.algebraMap_injective R A).isDomain
-  let f (p : HeightOneSpectrum A) : HeightOneSpectrum R :=
-    ⟨p.asIdeal.under R, inferInstance, mt Ideal.eq_bot_of_comap_eq_bot p.ne_bot⟩
+  let f (p : HeightOneSpectrum A) : HeightOneSpectrum R := p.under R
   have : Function.Surjective f := fun ⟨p, _, hp⟩ ↦ by
     obtain ⟨P, hP, rfl⟩ := p.exists_ideal_over_prime_of_isIntegral_of_isDomain (S := A) (by simp)
     exact ⟨⟨P, hP, by aesop⟩, rfl⟩
