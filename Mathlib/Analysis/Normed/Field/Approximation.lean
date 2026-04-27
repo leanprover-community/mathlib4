@@ -34,7 +34,7 @@ current theorem `IsAlgClosed.of_denseRange`.
 Approximation, polynomial, normed field, continuity of roots
 -/
 
-@[expose] public section
+public section
 
 variable {K L : Type*}
 

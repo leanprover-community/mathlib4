@@ -36,7 +36,7 @@ In lemma names,
 * `⨅ i, f i` : `iInf f`, the infimum of the range of `f`.
 -/
 
-@[expose] public section
+public section
 
 open Function OrderDual Set
 
