@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Operator.Banach
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
+public import Mathlib.Topology.Algebra.Module.Complement
 
 /-! # Continuous linear maps with a continuous left/right inverse
 
@@ -232,6 +233,7 @@ def complement (h : f.HasLeftInverse) : Submodule R F :=
 lemma isClosed_complement (h : f.HasLeftInverse) : IsClosed (X := F) h.complement :=
   h.closedComplemented_range.isClosed_complement
 
+omit [T1Space F] in
 lemma isCompl_complement (h : f.HasLeftInverse) : IsCompl f.range h.complement :=
   h.closedComplemented_range.isCompl_complement
 

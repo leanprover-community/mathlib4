@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Convex.Cone.Extension
 public import Mathlib.Analysis.Normed.Module.RCLike.Extend
 public import Mathlib.Analysis.RCLike.Lemmas
+public import Mathlib.Topology.Algebra.Module.Complement
 
 /-!
 # Extension Hahn-Banach theorem
