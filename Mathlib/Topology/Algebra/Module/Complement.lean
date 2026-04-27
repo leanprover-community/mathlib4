@@ -160,7 +160,6 @@ theorem IsTopCompl.projectionOnto_apply_left (h : IsTopCompl p q) (x : p) :
     h.projectionOnto x = x :=
   linearProjOfIsCompl_apply_left h.isCompl x
 
-@[simp]
 theorem IsTopCompl.range_projectionOnto (h : IsTopCompl p q) : h.projectionOnto.range = ⊤ :=
   linearProjOfIsCompl_range h.isCompl
 
@@ -224,7 +223,6 @@ theorem IsTopCompl.projection_apply_left (h : IsTopCompl p q) (x : p) :
     h.projection x = x :=
   IsCompl.projection_apply_left h.isCompl x
 
-@[simp]
 theorem IsTopCompl.range_projection (h : IsTopCompl p q) :
     h.projection.range = p :=
   IsCompl.projection_range h.isCompl
@@ -241,6 +239,10 @@ alias ⟨_, IsTopCompl.projection_apply_eq_zero_of_mem_right⟩ :=
 theorem IsTopCompl.projection_apply_right (h : IsTopCompl p q) (x : q) :
     h.projection x = 0 :=
   h.projection_apply_eq_zero_of_mem_right x.2
+
+theorem IsTopCompl.ker_projection (h : IsTopCompl p q) :
+    ker (h.projection : M →ₗ[R] M) = q :=
+  IsCompl.projection_ker h.isCompl
 
 @[simp]
 theorem IsTopCompl.projection_isIdempotentElem (h : IsTopCompl p q) :
