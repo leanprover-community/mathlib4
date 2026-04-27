@@ -616,7 +616,7 @@ theorem denseRange_algebraMap_pi [NumberField K] :
     -- At a fixed place `u`, the limit of `y` with respect to `u`'s topology is `zᵤ`.
     refine tendsto_pi_nhds.mpr fun u ↦ ?_
     simp_rw [← Fintype.sum_pi_single u z, y, map_sum, map_mul]
-    refine tendsto_finset_sum _ fun w _ ↦ ?_
+    refine tendsto_finsetSum _ fun w _ ↦ ?_
     by_cases hw : u = w
     · -- Because `1 / (1 + aᵤ⁻ⁿ) → 1` in `WithAbs u.1`.
       rw [← hw, Pi.single_eq_same]

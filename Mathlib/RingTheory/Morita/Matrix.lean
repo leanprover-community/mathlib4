@@ -150,7 +150,7 @@ def toModuleCatFromModuleCatLinearEquiv (M : ModuleCat (Matrix ι ι R)) (j : ι
     letI := Module.compHom M (Matrix.scalar (α := R) ι)
     haveI := MatrixModCat.isScalarTower_toModuleCat R M
     simp only [← SemigroupAction.mul_smul, RingHom.id_apply, Module.smul_apply,
-      AddSubmonoidClass.coe_finset_sum, SetLike.val_smul, ← smul_assoc, ← Finset.sum_smul]
+      AddSubmonoidClass.coe_finsetSum, SetLike.val_smul, ← smul_assoc, ← Finset.sum_smul]
     congr
     ext i1 j1
     simp only [mul_apply, smul_single, smul_eq_mul, mul_one, sum_apply]

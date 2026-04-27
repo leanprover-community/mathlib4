@@ -23,7 +23,7 @@ has finite products.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.ObjectProperty
 

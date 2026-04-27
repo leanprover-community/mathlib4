@@ -21,7 +21,7 @@ and the induced ring map is integral.
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 
