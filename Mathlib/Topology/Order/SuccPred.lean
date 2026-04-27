@@ -15,7 +15,7 @@ This file proves miscellaneous results under the assumption of `OrderTopology` p
 `SuccOrder` or `PredOrder`.
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
   {a : α} {s : Set α}
@@ -83,7 +83,7 @@ theorem isOpen_iff {s : Set α} : IsOpen s ↔
     ∀ o ∈ s, IsPredLimit o → ∃ a, o < a ∧ Set.Ioo o a ⊆ s := by
   refine isOpen_iff_mem_nhds.trans <| forall₂_congr fun o ho ↦ ?_
   by_cases ho' : IsPredLimit o
-  · rw [(PredOrder.hasBasis_nhds_Ioc_of_exists_gt (not_isMax_iff.1 ho'.not_isMax)).mem_iff]
+  · rw [(PredOrder.hasBasis_nhds_Ico_of_exists_gt (not_isMax_iff.1 ho'.not_isMax)).mem_iff]
     grind
   · simp [nhds_eq_pure.2 ho', ho, ho']
 

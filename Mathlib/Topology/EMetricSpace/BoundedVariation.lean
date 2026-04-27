@@ -109,7 +109,7 @@ theorem sum_le_of_monotoneOn_Icc {f : α → E} {s : Set α} {m n : ℕ} {u : �
         simp only [v, π, projIcc_of_mem hmn ⟨hi.1, hi.2.le⟩,
           projIcc_of_mem hmn ⟨hi.1.trans i.le_succ, hi.2⟩]
     _ ≤ ∑ i ∈ Finset.range n, edist (f (v (i + 1))) (f (v i)) :=
-      Finset.sum_mono_set _ (Nat.Iio_eq_range ▸ Finset.Ico_subset_Iio_self)
+      Finset.sum_mono_set _ (Nat.Iio_eq_range n ▸ Finset.Ico_subset_Iio_self)
     _ ≤ eVariationOn f s :=
       sum_le (fun i j h ↦ hu (π i).2 (π j).2 (monotone_projIcc hmn h)) fun i ↦ us _ (π i).2
 
@@ -216,7 +216,7 @@ theorem lowerSemicontinuous_aux {ι : Type*} {F : ι → α → E} {p : Filter �
     lt_iSup_iff.mp hv
   have : Tendsto (fun j => ∑ i ∈ Finset.range n, edist (F j (u (i + 1))) (F j (u i))) p
       (𝓝 (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i)))) := by
-    apply tendsto_finset_sum
+    apply tendsto_finsetSum
     exact fun i _ => Tendsto.edist (Ffs (u i.succ) (us i.succ)) (Ffs (u i) (us i))
   exact (this.eventually_const_lt hlt).mono fun i h => h.trans_le (sum_le um us)
 
