@@ -150,7 +150,6 @@ instance [IsCommMonObj M.X] : IsCommMonObj M where
 
 end Mon
 
-set_option backward.isDefEq.respectTransparency false in
 variable (X) in
 /-- If `X` represents a presheaf of monoids, then `X` is a monoid object. -/
 @[to_additive (attr := simps, implicit_reducible)
@@ -208,6 +207,7 @@ abbrev Hom.monoid : Monoid (X ⟶ M) where
     exact lift_fst _ _
 
 scoped[CategoryTheory.MonObj] attribute [instance] Hom.monoid
+scoped[CategoryTheory.AddMonObj] attribute [instance] Hom.addMonoid
 
 @[to_additive]
 lemma Hom.one_def : (1 : X ⟶ M) = toUnit X ≫ η := rfl
@@ -287,7 +287,6 @@ def yonedaMonObj : Cᵒᵖ ⥤ MonCat.{v} where
   map_id _ := MonCat.hom_ext (MonoidHom.ext Category.id_comp)
   map_comp _ _ := MonCat.hom_ext (MonoidHom.ext (Category.assoc _ _))
 
-set_option backward.isDefEq.respectTransparency false in
 variable (X) in
 /-- If `X` represents a presheaf of monoids `F`, then `Hom(-, X)` is isomorphic to `F` as
 a presheaf of monoids. -/

@@ -20,7 +20,7 @@ of light profinite sets.
 Further, we prove that the functor `lim : Discrete ℕ ⥤ LightCondMod R` preserves epimorphisms.
 -/
 
-@[expose] public section
+public section
 
 universe v u w u' v'
 
