@@ -522,7 +522,7 @@ theorem inj_on_of_surj_on_of_card_le (f : ∀ a ∈ s, β) (hf : ∀ a ha, f a h
   have hinj' := injOn_of_surjOn_of_card_le f' (fun x hx ↦ hf _ _) hsurj' (by simpa)
   exact congrArg Subtype.val (@hinj' ⟨a₁, ha₁⟩ (by simp) ⟨a₂, ha₂⟩ (by simp) ha₁a₂)
 
-lemma image_eq_iff_bijOn_of_card [DecidableEq β] (h : #s = #t) :
+lemma image_eq_iff_bijOn_of_card [DecidableEq β] (h : #s ≤ #t) :
     s.image f = t ↔ Set.BijOn f s t := by
   grind [injOn_of_surjOn_of_card_le, Set.BijOn, image_eq_iff_surjOn_mapsTo]
 
