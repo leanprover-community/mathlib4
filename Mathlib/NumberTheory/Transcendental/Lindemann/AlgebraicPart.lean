@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.Torsion.Field
 public import Mathlib.Algebra.Group.UniqueProds.VectorSpace
+public import Mathlib.Data.Finsupp.Quotient
 public import Mathlib.FieldTheory.Galois.Basic
 public import Mathlib.FieldTheory.Minpoly.ConjRootClass
 

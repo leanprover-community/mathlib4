@@ -114,14 +114,16 @@ lemma range_map (f : R →+ S) : Set.range (map (M := M) f) = {x | ∀ i, x.coef
 /-- `MonoidAlgebra.map` of an injective function is injective. -/
 @[to_additive /-- `AddMonoidAlgebra.map` of an injective function is injective. -/]
 lemma map_injective (f : R →+ S) (he : Injective f) : Injective (map (M := M) f) := by
-  change Injective (coeffEquiv.symm ∘ Finsupp.mapRange f (map_zero f) ∘ coeffEquiv)
-  simpa using mapRange_injective _ (map_zero f) he
+  have : map (M := M) f = coeffEquiv.symm ∘ Finsupp.mapRange f (map_zero f) ∘ coeffEquiv := by
+    ext; simp [ofCoeff_mapRange]
+  simpa [this] using mapRange_injective _ (map_zero f) he
 
 /-- `MonoidAlgebra.map` of a surjective function is surjective. -/
 @[to_additive /-- `AddMonoidAlgebra.map` of an surjective function is surjective. -/]
 lemma map_surjective (f : R →+ S) (he : Surjective f) : Surjective (map (M := M) f) := by
-  change Surjective (coeffEquiv.symm ∘ Finsupp.mapRange f (map_zero f) ∘ coeffEquiv)
-  simpa [comp_def] using mapRange_surjective _ (map_zero f) he
+  have : map (M := M) f = coeffEquiv.symm ∘ Finsupp.mapRange f (map_zero f) ∘ coeffEquiv := by
+    ext; simp [ofCoeff_mapRange]
+  simpa [this] using mapRange_surjective _ (map_zero f) he
 
 /-- Pullback the coefficients of an element of `R[N]` under an injective `f : M → N`.
 
