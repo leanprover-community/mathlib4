@@ -98,8 +98,7 @@ lemma traceForm_lieInvariant : (traceForm R L M).lieInvariant L := by
   rw [LieHom.lie_apply, LinearMap.sub_apply, Module.Dual.lie_apply, LinearMap.zero_apply,
     LinearMap.zero_apply, traceForm_apply_lie_apply', sub_self]
 
-@[simp]
-lemma traceForm_eq_zero_of_isNilpotent [IsReduced R] [IsNilpotent L M] :
+@[simp] lemma traceForm_eq_zero_of_isNilpotent [IsReduced R] [IsNilpotent L M] :
     traceForm R L M = 0 := by
   ext x y
   simp only [traceForm_apply_apply, LinearMap.zero_apply, ← isNilpotent_iff_eq_zero]

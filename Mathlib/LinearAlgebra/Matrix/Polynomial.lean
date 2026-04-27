@@ -56,7 +56,7 @@ theorem natDegree_det_X_add_C_le (A B : Matrix n n α) :
         (X • A.map C + B.map C : Matrix n n α[X]) (g i) i)
     _ ≤ Finset.univ.card • 1 := (Finset.sum_le_card_nsmul _ _ 1 fun (i : n) _ => ?_)
     _ ≤ Fintype.card n := by simp [mul_one, Finset.card_univ]
-  dsimp only [add_apply, smul_apply, map_apply, smul_eq_mul]
+  dsimp only [Matrix.add_apply, Matrix.smul_apply, map_apply, smul_eq_mul]
   compute_degree
 
 theorem coeff_det_X_add_C_zero (A B : Matrix n n α) :
@@ -80,7 +80,7 @@ theorem coeff_det_X_add_C_card (A B : Matrix n n α) :
   convert (coeff_prod_of_natDegree_le (R := α) _ _ _ _).symm
   · simp [coeff_C]
   · rintro p -
-    dsimp only [add_apply, smul_apply, map_apply, smul_eq_mul]
+    dsimp only [Matrix.add_apply, Matrix.smul_apply, map_apply, smul_eq_mul]
     compute_degree
 
 theorem leadingCoeff_det_X_one_add_C (A : Matrix n n α) :
