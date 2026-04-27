@@ -19,10 +19,9 @@ public import Mathlib.RingTheory.Regular.RegularSequence
 
 For `M` a finitely generated module over Noetherian local ring `R` and an `M`-regular element `x`
 contained in the unique maximal ideal of `R`, `projdim(M/xM) = projdim(M) + 1`.
-The analogus version for quotient regular sequence is also provided.
+The analogous version for quotient regular sequence is also provided.
 
-
-# Main Results
+## Main Results
 
 * `ModuleCat.projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular` : For `M` a finitely
   generated module over Noetherian local ring `R` and an `M`-regular element `x` contained in
