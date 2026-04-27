@@ -197,14 +197,26 @@ theorem IsCompl.projection_apply_eq_zero_iff (hpq : IsCompl p q) {x : E} :
     hpq.projection x = 0 ↔ x ∈ q := by
   simp [projection, -coe_linearProjOfIsCompl_apply]
 
+alias ⟨_, linearProjOfIsCompl_apply_of_mem_right⟩ :=
+  linearProjOfIsCompl_apply_eq_zero_iff
+
+@[deprecated linearProjOfIsCompl_apply_of_mem_right (since := "2026-04-27")]
 theorem linearProjOfIsCompl_apply_right' (h : IsCompl p q) (x : E) (hx : x ∈ q) :
     linearProjOfIsCompl p q h x = 0 :=
-  (linearProjOfIsCompl_apply_eq_zero_iff h).2 hx
+  linearProjOfIsCompl_apply_of_mem_right h hx
+
+alias ⟨_, IsCompl.projection_apply_of_mem_right⟩ :=
+  IsCompl.projection_apply_eq_zero_iff
 
 @[simp]
 theorem linearProjOfIsCompl_apply_right (h : IsCompl p q) (x : q) :
     linearProjOfIsCompl p q h x = 0 :=
-  linearProjOfIsCompl_apply_right' h x x.2
+  linearProjOfIsCompl_apply_of_mem_right h x.2
+
+@[simp]
+theorem IsCompl.projection_apply_right (h : IsCompl p q) (x : q) :
+    h.projection x = 0 :=
+  h.projection_apply_of_mem_right x.2
 
 @[simp]
 theorem linearProjOfIsCompl_ker (h : IsCompl p q) : ker (linearProjOfIsCompl p q h) = q :=
