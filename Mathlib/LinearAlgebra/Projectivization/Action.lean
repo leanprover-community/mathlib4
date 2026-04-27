@@ -102,6 +102,8 @@ end DivisionRing
 
 section Field
 
+open MulAction LinearEquiv SpecialLinearGroup
+
 variable {K V : Type*} [AddCommGroup V] [Field K] [Module K V]
 
 /-- The fixed points of an invertible linear map acting on the projectivization of a vector
