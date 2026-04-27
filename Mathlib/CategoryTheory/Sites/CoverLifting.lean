@@ -365,7 +365,7 @@ alias sheafAdjunctionCocontinuous_homEquiv_apply_val :=
 variable [HasWeakSheafify J A] [HasWeakSheafify K A]
 
 /-- The natural isomorphism exhibiting compatibility between pushforward and sheafification. -/
-def pushforwardContinuousSheafificationCompatibility [G.IsContinuous J K] :
+def pushforwardContinuousSheafificationCompatibility :
     (whiskeringLeft _ _ A).obj G.op ⋙ presheafToSheaf J A ≅
     presheafToSheaf K A ⋙ G.sheafPushforwardContinuous A J K :=
   ((G.op.ranAdjunction A).comp (sheafificationAdjunction J A)).leftAdjointUniq

@@ -21,13 +21,13 @@ Moreover, this equivalence is compatible with the forgetful functors to `Type`.
 
 universe v u
 
-open CategoryTheory MonObj
+open CategoryTheory MonObj ConcreteCategory
 
 namespace CommGrpTypeEquivalenceCommGrp
 
 instance commGrpCommGroup (A : Type u) [GrpObj A] [IsCommMonObj A] : CommGroup A :=
   { GrpTypeEquivalenceGrp.grpGroup A with
-    mul_comm := fun x y => by convert congr_fun (IsCommMonObj.mul_comm A) (y, x) }
+    mul_comm := fun x y => by convert congr_hom (CC := fun X ↦ X) (IsCommMonObj.mul_comm A) (y, x) }
 
 /-- Converting a commutative group object in `Type u` into a group. -/
 noncomputable def functor : CommGrp (Type u) ⥤ CommGrpCat.{u} where
@@ -47,12 +47,17 @@ noncomputable def inverse : CommGrpCat.{u} ⥤ CommGrp (Type u) where
 
 @[simp]
 theorem inverse_obj_X {A : CommGrpCat.{u}} : (inverse.obj A).X = A := rfl
+
 @[simp]
-theorem inverse_obj_one {A : CommGrpCat.{u}} {x} : η[(inverse.obj A).X] x = (1 : A) := rfl
+theorem inverse_obj_one {A : CommGrpCat.{u}} {x} : dsimp% η[(inverse.obj A).X] x = (1 : A) := rfl
+
 @[simp]
-theorem inverse_obj_mul {A : CommGrpCat.{u}} {p} : μ[(inverse.obj A).X] p = (p.1 : A) * p.2 := rfl
+theorem inverse_obj_mul {A : CommGrpCat.{u}} {p} :
+    dsimp% μ[(inverse.obj A).X] p = (p.1 : A) * p.2 :=
+  rfl
+
 @[simp]
-theorem inverse_obj_inv {A : CommGrpCat.{u}} {x} : ι[(inverse.obj A).X] x = (x : A)⁻¹ := rfl
+theorem inverse_obj_inv {A : CommGrpCat.{u}} {x} : dsimp% ι[(inverse.obj A).X] x = (x : A)⁻¹ := rfl
 
 end CommGrpTypeEquivalenceCommGrp
 

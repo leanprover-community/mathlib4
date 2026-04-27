@@ -62,9 +62,6 @@ lemma Quotient.functor_obj_shift [r.IsCompatibleWithShift A] (X : C) (n : A) :
     ((Quotient.functor r).obj X)⟦n⟧ = (Quotient.functor r).obj (X⟦n⟧) := rfl
 
 -- the construction is made irreducible in order to prevent timeouts and abuse of defeq
-#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12247
-doing so requires `allowUnsafeReducibility`. -/
-set_option allowUnsafeReducibility true in
 attribute [irreducible] HasShift.quotient Quotient.functor_commShift
 
 namespace Quotient

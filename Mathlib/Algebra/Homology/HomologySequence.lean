@@ -45,8 +45,7 @@ variable {C ι : Type*} [Category* C] [HasZeroMorphisms C] {c : ComplexShape ι}
   [K.HasHomology i] [K.HasHomology j] [L.HasHomology i] [L.HasHomology j]
 
 /-- The morphism `K.opcycles i ⟶ K.cycles j` that is induced by `K.d i j`. -/
-noncomputable def opcyclesToCycles [K.HasHomology i] [K.HasHomology j] :
-    K.opcycles i ⟶ K.cycles j :=
+noncomputable def opcyclesToCycles : K.opcycles i ⟶ K.cycles j :=
   K.liftCycles (K.fromOpcycles i j) _ rfl (by simp)
 
 @[reassoc (attr := simp)]

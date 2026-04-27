@@ -91,6 +91,8 @@ instance llp_isStableUnderCoproductsOfShape (J : Type*) :
   have := fun j ↦ hf j _ hp
   infer_instance
 
+instance : IsStableUnderCoproducts.{w} T.llp where
+
 instance rlp_isStableUnderProductsOfShape (J : Type*) :
     T.rlp.IsStableUnderProductsOfShape J := by
   apply IsStableUnderProductsOfShape.mk

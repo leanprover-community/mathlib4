@@ -21,7 +21,7 @@ a well-ordered type `J` in a category `C` (see `CategoryTheory.SmallObject`).
 
 -/
 
-@[expose] public section
+public section
 
 universe w v v' u u'
 

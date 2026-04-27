@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Algebra.Bilinear
 public import Mathlib.Algebra.Algebra.Opposite
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.BigOperators
-public import Mathlib.Algebra.Module.Submodule.Pointwise
+public import Mathlib.Algebra.Module.Submodule.Finsupp
 public import Mathlib.Algebra.Ring.NonZeroDivisors
 public import Mathlib.Algebra.Ring.Submonoid.Pointwise
 public import Mathlib.Data.Set.Semiring
@@ -247,6 +247,19 @@ theorem mul_bot : M * ⊥ = ⊥ :=
 @[simp]
 theorem bot_mul : ⊥ * M = ⊥ :=
   bot_smul _
+
+@[simp]
+theorem mul_eq_bot [NoZeroDivisors A] {M N : Submodule R A} :
+    M * N = ⊥ ↔ M = ⊥ ∨ N = ⊥ :=
+  ⟨fun hmn =>
+    or_iff_not_imp_left.mpr fun M_ne_bot =>
+      N.eq_bot_iff.mpr fun n hn =>
+        let ⟨m, hm, ne0⟩ := M.ne_bot_iff.mp M_ne_bot
+        Or.resolve_left (mul_eq_zero.mp ((M * N).eq_bot_iff.mp hmn _ (mul_mem_mul hm hn))) ne0,
+    fun h => by obtain rfl | rfl := h; exacts [bot_mul _, mul_bot _]⟩
+
+instance [NoZeroDivisors A] : NoZeroDivisors (Submodule R A) where
+  eq_zero_or_eq_zero_of_mul_eq_zero := mul_eq_bot.1
 
 protected theorem one_mul : (1 : Submodule R A) * M = M :=
   Submodule.one_smul _
@@ -791,7 +804,7 @@ theorem prod_span {ι : Type*} (s : Finset ι) (M : ι → Set A) :
 
 theorem prod_span_singleton {ι : Type*} (s : Finset ι) (x : ι → A) :
     (∏ i ∈ s, span R ({x i} : Set A)) = span R {∏ i ∈ s, x i} := by
-  rw [prod_span, Set.finset_prod_singleton]
+  rw [prod_span, Set.finsetProd_singleton]
 
 variable (R A)
 
@@ -910,7 +923,7 @@ theorem restrictScalars_image_smul_eq {S M : Type*}
       exact mem_set_smul_of_mem_mem r_in x_in
     · intro r y h h'
       obtain ⟨c, c_supp, hc⟩ := (mem_set_smul ..).mp <| smul_mem _ r h
-      simp only [hc, Finsupp.sum, AddSubmonoidClass.coe_finset_sum, SetLike.val_smul]
+      simp only [hc, Finsupp.sum, AddSubmonoidClass.coe_finsetSum, SetLike.val_smul]
       refine sum_mem fun u u_in ↦ ?_
       obtain ⟨u, u_in', rfl⟩ := c_supp (Finset.mem_coe.mpr u_in)
       rw [algebraMap_smul]

@@ -99,7 +99,9 @@ lemma homologySequenceδ_triangleh (n₀ : ℤ) (n₁ : ℤ) (h : n₀ + 1 = n�
     (mappingCone S.f).eq_liftCycles_homologyπ_up_to_refinements x n₁ (by simpa using h)
   erw [homologySequenceδ_quotient_mapTriangle_obj_assoc _ _ _ h]
   dsimp
-  rw [comp_id, Iso.inv_hom_id_app_assoc, Iso.inv_hom_id_app]
+  -- simp? says
+  simp only [Iso.inv_hom_id_app, HomologicalComplex.homologyFunctor_obj, Iso.inv_hom_id_app_assoc,
+    comp_id]
   erw [comp_id]
   rw [← cancel_epi π, reassoc_of% hx', reassoc_of% hx',
     HomologicalComplex.homologyπ_naturality_assoc,

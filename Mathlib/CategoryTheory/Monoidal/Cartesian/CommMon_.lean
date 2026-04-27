@@ -19,18 +19,16 @@ namespace CategoryTheory
 universe w v u
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C] [BraidedCategory C] {X : C}
 
-set_option backward.isDefEq.respectTransparency false in
 variable (X) in
 /-- If `X` represents a presheaf of commutative monoids, then `X` is a commutative monoid object. -/
 lemma IsCommMonObj.ofRepresentableBy (F : Cᵒᵖ ⥤ CommMonCat) (α : (F ⋙ forget _).RepresentableBy X) :
     letI : MonObj X := .ofRepresentableBy X (F ⋙ forget₂ CommMonCat MonCat) α
     IsCommMonObj X := by
   letI : MonObj X := .ofRepresentableBy X (F ⋙ forget₂ CommMonCat MonCat) α
-  have : μ = α.homEquiv.symm (α.homEquiv (fst X X) * α.homEquiv (snd X X)) := rfl
+  have : μ = α.homEquiv'.symm (α.homEquiv' (fst X X) * α.homEquiv' (snd X X)) := rfl
   constructor
-  simp_rw [this, ← α.homEquiv.apply_eq_iff_eq, α.homEquiv_comp, Functor.comp_map,
-    ConcreteCategory.forget_map_eq_coe, Equiv.apply_symm_apply, map_mul,
-    ← ConcreteCategory.forget_map_eq_coe, ← Functor.comp_map, ← α.homEquiv_comp, op_tensorObj,
-    Functor.comp_obj, braiding_hom_fst, braiding_hom_snd, _root_.mul_comm]
+  simp_rw [this, ← α.homEquiv'.apply_eq_iff_eq, α.homEquiv'_comp,
+    Equiv.apply_symm_apply, map_mul, ← α.homEquiv'_comp, op_tensorObj,
+    braiding_hom_fst, braiding_hom_snd, _root_.mul_comm]
 
 end CategoryTheory

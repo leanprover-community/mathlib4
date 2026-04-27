@@ -17,7 +17,7 @@ This file contains miscellaneous lemmas about `Equiv.Perm` and `Equiv.swap`, bui
 of those in `Mathlib/Logic/Equiv/Basic.lean` and other files in `Mathlib/GroupTheory/Perm/*`.
 -/
 
-@[expose] public section
+public section
 
 universe u v
 

@@ -66,6 +66,8 @@ class EnoughInjectives : Prop where
 
 attribute [inherit_doc EnoughInjectives] EnoughInjectives.presentation
 
+attribute [instance low] EnoughInjectives.presentation
+
 end
 
 namespace Injective
@@ -106,7 +108,7 @@ theorem iso_iff {P Q : C} (i : P ≅ Q) : Injective P ↔ Injective Q :=
 /-- The axiom of choice says that every nonempty type is an injective object in `Type`. -/
 instance (X : Type u₁) [Nonempty X] : Injective X where
   factors g f mono :=
-    ⟨fun z => by
+    ⟨TypeCat.ofHom fun z => by
       classical
       exact
           if h : z ∈ Set.range f then g (Classical.choose h) else Nonempty.some inferInstance, by
@@ -115,7 +117,7 @@ instance (X : Type u₁) [Nonempty X] : Injective X where
       change dite (f y ∈ Set.range f) (fun h => g (Classical.choose h)) _ = _
       split_ifs <;> rename_i h
       · rw [mono_iff_injective] at mono
-        rw [mono (Classical.choose_spec h)]
+        simp [mono (Classical.choose_spec h)]
       · exact False.elim (h ⟨y, rfl⟩)⟩
 
 instance Type.enoughInjectives : EnoughInjectives (Type u₁) where
@@ -123,7 +125,7 @@ instance Type.enoughInjectives : EnoughInjectives (Type u₁) where
     Nonempty.intro
       { J := WithBot X
         injective := inferInstance
-        f := WithBot.some
+        f := TypeCat.ofHom WithBot.some
         mono := by
           rw [mono_iff_injective]
           exact WithBot.coe_injective }
@@ -192,7 +194,6 @@ open CategoryTheory.Functor
 variable {D : Type u₂} [Category.{v₂} D]
 variable {L : C ⥤ D} {R : D ⥤ C} [PreservesMonomorphisms L]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem injective_of_adjoint (adj : L ⊣ R) (J : D) [Injective J] : Injective <| R.obj J :=
   ⟨fun {A} {_} g f im =>
     ⟨adj.homEquiv _ _ (factorThru ((adj.homEquiv A J).symm g) (L.map f)),

@@ -248,12 +248,12 @@ theorem coeff_subst_X_pow {k : ℕ} (hk : k ≠ 0) (f : PowerSeries R) (n : ℕ)
       coeff_X_pow_self, Algebra.algebraMap_eq_smul_one]
     intro j hj
     rw [← pow_mul, coeff_X_pow, if_neg, smul_zero]
-    contrapose! hj
+    contrapose hj
     rw [hj, Nat.mul_div_cancel_left j hk.pos]
   · rw [coeff_subst' (.X_pow hk), finsum_eq_zero_of_forall_eq_zero]
     intro j
     rw [← pow_mul, coeff_X_pow, if_neg, smul_zero]
-    contrapose! h
+    contrapose h
     use j
 
 @[simp]
@@ -264,11 +264,9 @@ theorem constantCoeff_subst_X_pow {k : ℕ} (hk : k ≠ 0) (f : PowerSeries R) :
 
 theorem constantCoeff_subst_eq_zero (ha : a.constantCoeff = 0) (f : PowerSeries R)
     (hf : f.constantCoeff = 0) : MvPowerSeries.constantCoeff (subst a f) = 0 := by
-  rw [constantCoeff_subst (HasSubst.of_constantCoeff_zero ha), finsum_eq_zero_of_forall_eq_zero]
-  intro d
-  by_cases hd : d = 0
-  · simp [hd, hf]
-  · simp [ha, zero_pow hd]
+  have := MvPowerSeries.constantCoeff_subst_eq_zero
+    (hasSubst_iff.mp <| HasSubst.of_constantCoeff_zero ha) (fun _ ↦ ha) hf
+  simpa [hasSubst_iff]
 
 theorem map_algebraMap_eq_subst_X (f : R⟦X⟧) :
     map (algebraMap R S) f = subst X f :=
@@ -279,16 +277,9 @@ theorem X_subst (f : R⟦X⟧) : f.subst (X : R⟦X⟧) = f := by
   rw [← map_algebraMap_eq_subst_X (S := R), Algebra.algebraMap_self]
   exact congr_fun map_id f
 
-theorem _root_.Polynomial.toPowerSeries_toMvPowerSeries (p : Polynomial R) :
-    (p : PowerSeries R) =
-      ((Polynomial.aeval (MvPolynomial.X ()) p : MvPolynomial Unit R) : MvPowerSeries Unit R) := by
-  suffices (Polynomial.coeToPowerSeries.algHom R) p =
-    (MvPolynomial.coeToMvPowerSeries.algHom R)
-      (Polynomial.aeval (MvPolynomial.X () : MvPolynomial Unit R) p) by simpa
-  rw [← AlgHom.comp_apply]
-  apply AlgHom.congr_fun
-  apply Polynomial.algHom_ext
-  simp [X]
+theorem _root_.Polynomial.toPowerSeries_toMvPowerSeries (p : Polynomial R) : (p : PowerSeries R) =
+    ((Polynomial.aeval (MvPolynomial.X ()) p : MvPolynomial Unit R) : MvPowerSeries Unit R) :=
+  Polynomial.pUnitAlgEquiv_symm_toPowerSeries
 
 theorem substAlgHom_coe (ha : HasSubst a) (p : Polynomial R) :
     substAlgHom ha (p : PowerSeries R) = ↑(Polynomial.aeval a p) := by
@@ -315,13 +306,8 @@ theorem subst_X (ha : HasSubst a) :
 
 omit [Algebra R S] in
 theorem map_subst {a : MvPowerSeries τ R} (ha : HasSubst a) {h : R →+* S} (f : PowerSeries R) :
-    (f.subst a).map h = (f.map h).subst (a.map h) := by
-  ext n
-  have {r : R} : h r = h.toAddMonoidHom r := rfl
-  rw [MvPowerSeries.coeff_map, coeff_subst ha, coeff_subst (IsNilpotent.map ha h), this,
-    AddMonoidHom.map_finsum _ (coeff_subst_finite ha _ _), finsum_congr]
-  intro d
-  simp [← map_pow]
+    (f.subst a).map h = (f.map h).subst (a.map h) :=
+  MvPowerSeries.map_subst (HasSubst.const ha) f
 
 section
 
@@ -370,8 +356,7 @@ variable {a : PowerSeries S} {b : MvPowerSeries υ T} {a' : MvPowerSeries τ S}
   {b' : τ → MvPowerSeries υ T} [IsScalarTower R S T]
 
 theorem substAlgHom_comp_substAlgHom (ha : HasSubst a) (hb : HasSubst b) :
-    ((substAlgHom hb).restrictScalars R).comp (substAlgHom ha)
-      = substAlgHom (ha.comp hb) :=
+    ((substAlgHom hb).restrictScalars R).comp (substAlgHom ha) = substAlgHom (ha.comp hb) :=
   MvPowerSeries.substAlgHom_comp_substAlgHom _ _
 
 theorem substAlgHom_comp_substAlgHom_apply (ha : HasSubst a) (hb : HasSubst b) (f : PowerSeries R) :

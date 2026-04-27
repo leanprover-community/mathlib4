@@ -35,7 +35,7 @@ Then, a cover-preserving and compatible-preserving functor is continuous.
 
 -/
 
-@[expose] public section
+public section
 
 
 universe w v₁ v₂ v₃ u₁ u₂ u₃
@@ -102,15 +102,15 @@ lemma CompatiblePreserving.of_iso {G : C ⥤ D} (hG : CompatiblePreserving.{w} K
       ℱ.obj.map (e.hom.app Y).op (x f hf)
     have hx' : x'.Compatible := fun Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ fac => by
       dsimp
-      refine (congr_fun (ℱ.obj.map_comp _ _) (x f₁ h₁)).symm.trans
-        (Eq.trans ?_ (congr_fun (ℱ.obj.map_comp _ _) (x f₂ h₂)))
+      refine (ConcreteCategory.congr_hom (ℱ.obj.map_comp _ _) (x f₁ h₁)).symm.trans
+        (Eq.trans ?_ (ConcreteCategory.congr_hom (ℱ.obj.map_comp _ _) (x f₂ h₂)))
       rw [← op_comp, ← op_comp, NatTrans.naturality, NatTrans.naturality,
         op_comp, op_comp, Functor.map_comp, Functor.map_comp]
       dsimp
       have H := hx g₁ g₂ h₁ h₂ fac
       dsimp at H
       rw [H]
-    simpa only [x', ← FunctorToTypes.map_comp_apply, ← op_comp, Category.assoc,
+    simpa only [x', ← Functor.map_comp_apply, ← op_comp, Category.assoc,
       e.inv_hom_id_app, Category.comp_id] using hG.compatible ℱ hx'
       (f₁ ≫ e.inv.app Y₁) (f₂ ≫ e.inv.app Y₂) hg₁ hg₂
       (by simp only [Category.assoc, ← e.inv.naturality, reassoc_of% fac])
@@ -179,7 +179,7 @@ theorem compatiblePreservingOfDownwardsClosed (F : C ⥤ D) [F.Full] [F.Faithful
   introv hx he
   obtain ⟨X', e⟩ := hF f₁
   apply (ℱ.1.mapIso e.op).toEquiv.injective
-  simp only [Iso.op_hom, Iso.toEquiv_fun, ℱ.1.mapIso_hom, ← FunctorToTypes.map_comp_apply]
+  simp only [Iso.op_hom, Iso.toEquiv_fun, ℱ.1.mapIso_hom, ← Functor.map_comp_apply]
   simpa using
     hx (F.preimage <| e.hom ≫ f₁) (F.preimage <| e.hom ≫ f₂) hg₁ hg₂
       (F.map_injective <| by simpa using he)
@@ -199,10 +199,6 @@ lemma Functor.isContinuous_of_coverPreserving (hF₁ : CompatiblePreserving.{max
     · intro y₁ y₂ hy₁ hy₂
       apply (((isSheaf_iff_isSheaf_of_type _ _).1 G.2).isSeparated _ (hF₂.cover_preserve hS)).ext
       rintro Y _ ⟨Z, g, h, hg, rfl⟩
-      dsimp
-      simp only [Functor.map_comp, types_comp_apply]
-      have H := (hy₁ g hg).trans (hy₂ g hg).symm
-      dsimp at H
-      rw [H]
+      simpa using congrArg _ ((hy₁ g hg).trans (hy₂ g hg).symm)
 
 end CategoryTheory

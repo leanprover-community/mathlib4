@@ -184,7 +184,7 @@ def copy (F : MonoFactorisation f) (m : F.I ⟶ Y) (e : X ⟶ F.I)
 @[simp]
 lemma fac_apply {F G : C ⥤ Type w} {f : F ⟶ G} {X : C}
     (H : MonoFactorisation f) (x : F.obj X) : H.m.app X (H.e.app X x) = f.app X x := by
-  simp [← types_comp_apply, ← NatTrans.comp_app]
+  simp [← comp_apply, ← NatTrans.comp_app]
 
 end MonoFactorisation
 
