@@ -12,7 +12,6 @@ public import Mathlib.LinearAlgebra.Projectivization.Basic
 public import Mathlib.LinearAlgebra.SpecialLinearGroup
 public import Mathlib.LinearAlgebra.Transvection.Basic
 
-
 /-!
 # Group actions on projectivization
 
@@ -29,7 +28,7 @@ Generalize to the special linear group over a division ring.
 
 @[expose] public section
 
-open LinearAlgebra.Projectivization Matrix
+open scoped LinearAlgebra.Projectivization Matrix
 
 namespace Projectivization
 
