@@ -58,9 +58,7 @@ rather than more literally with `affineSegment`.
 
 
 open Affine Affine.Simplex EuclideanGeometry Module
-
-open scoped Affine EuclideanGeometry Real
-
+open scoped Real
 
 attribute [local instance] FiniteDimensional.of_fact_finrank_eq_two
 

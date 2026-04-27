@@ -6,8 +6,6 @@ Authors: Jeremy Avigad, Leonardo de Moura
 module
 
 public import Mathlib.Tactic.AdaptationNote
-public import Mathlib.Tactic.TypeStar
-public import Mathlib.Tactic.Lemma
 public import Batteries.Logic
 public import Batteries.Util.LibraryNote
 
@@ -223,38 +221,37 @@ lemma Iff.ne_left {α β : Sort*} {a b : α} {c d : β} : (a = b ↔ c ≠ d) �
 lemma Iff.ne_right {α β : Sort*} {a b : α} {c d : β} : (a ≠ b ↔ c = d) → (a = b ↔ c ≠ d) :=
   Iff.not_right
 
-/-! ### Declarations about `Xor'` -/
+/-! ### Declarations about `Xor` -/
 
-#adaptation_note
-/--
-2025-07-31. Upstream `Xor` has been renamed to `XorOp`.
-2025-09-16. The deprecation for `Xor` has been removed.
-Anytime after v4.25.0-rc1 lands we rename this back to `Xor`.
--/
-/-- `Xor' a b` is the exclusive-or of propositions. -/
-def Xor' (a b : Prop) := (a ∧ ¬b) ∨ (b ∧ ¬a)
+/-- `Xor a b` is the exclusive-or of propositions. -/
+def Xor (a b : Prop) := (a ∧ ¬b) ∨ (b ∧ ¬a)
 
-@[grind =] theorem xor_def {a b : Prop} : Xor' a b ↔ (a ∧ ¬b) ∨ (b ∧ ¬a) := Iff.rfl
+@[deprecated (since := "2026-04-27")] alias Xor' := Xor
 
-instance [Decidable a] [Decidable b] : Decidable (Xor' a b) := inferInstanceAs (Decidable (Or ..))
+@[grind =] theorem xor_def {a b : Prop} : Xor a b ↔ (a ∧ ¬b) ∨ (b ∧ ¬a) := Iff.rfl
 
-@[simp] theorem xor_true : Xor' True = Not := by grind
+instance [Decidable a] [Decidable b] : Decidable (Xor a b) := inferInstanceAs (Decidable (Or ..))
 
-@[simp] theorem xor_false : Xor' False = id := by grind
+@[simp] theorem xor_true : Xor True = Not := by grind
 
-theorem xor_comm (a b : Prop) : Xor' a b = Xor' b a := by grind
+@[simp] theorem xor_false : Xor False = id := by grind
 
-instance : Std.Commutative Xor' := ⟨xor_comm⟩
+theorem xor_comm (a b : Prop) : Xor a b = Xor b a := by grind
 
-@[simp] theorem xor_self (a : Prop) : Xor' a a = False := by grind
+instance : Std.Commutative Xor := ⟨xor_comm⟩
 
-@[simp] theorem xor_not_left : Xor' (¬a) b ↔ (a ↔ b) := by grind
+@[simp] theorem xor_self (a : Prop) : Xor a a = False := by grind
 
-@[simp] theorem xor_not_right : Xor' a (¬b) ↔ (a ↔ b) := by grind
+@[simp] theorem xor_not_left : Xor (¬a) b ↔ (a ↔ b) := by grind
 
-theorem xor_not_not : Xor' (¬a) (¬b) ↔ Xor' a b := by grind
+@[simp] theorem xor_not_right : Xor a (¬b) ↔ (a ↔ b) := by grind
 
-protected theorem Xor'.or (h : Xor' a b) : a ∨ b := by grind
+theorem xor_not_not : Xor (¬a) (¬b) ↔ Xor a b := by grind
+
+protected theorem Xor.or (h : Xor a b) : a ∨ b := by grind
+
+@[deprecated (since := "2026-04-27")]
+protected alias Xor'.or := Xor.or
 
 /-! ### Declarations about `and` -/
 
@@ -354,17 +351,17 @@ theorem or_iff_not_and_not : a ∨ b ↔ ¬(¬a ∧ ¬b) :=
 theorem and_iff_not_or_not : a ∧ b ↔ ¬(¬a ∨ ¬b) :=
   open scoped Classical in Decidable.and_iff_not_not_or_not
 
-@[simp] theorem not_xor (P Q : Prop) : ¬Xor' P Q ↔ (P ↔ Q) := by
-  simp only [not_and, Xor', not_or, not_not, ← iff_iff_implies_and_implies]
+@[simp] theorem not_xor (P Q : Prop) : ¬Xor P Q ↔ (P ↔ Q) := by
+  simp only [not_and, Xor, not_or, not_not, ← iff_iff_implies_and_implies]
 
-theorem xor_iff_not_iff (P Q : Prop) : Xor' P Q ↔ ¬(P ↔ Q) := (not_xor P Q).not_right
+theorem xor_iff_not_iff (P Q : Prop) : Xor P Q ↔ ¬(P ↔ Q) := (not_xor P Q).not_right
 
-theorem xor_iff_iff_not : Xor' a b ↔ (a ↔ ¬b) := by simp only [← @xor_not_right a, not_not]
+theorem xor_iff_iff_not : Xor a b ↔ (a ↔ ¬b) := by simp only [← @xor_not_right a, not_not]
 
-theorem xor_iff_not_iff' : Xor' a b ↔ (¬a ↔ b) := by simp only [← @xor_not_left _ b, not_not]
+theorem xor_iff_not_iff' : Xor a b ↔ (¬a ↔ b) := by simp only [← @xor_not_left _ b, not_not]
 
-theorem xor_iff_or_and_not_and (a b : Prop) : Xor' a b ↔ (a ∨ b) ∧ (¬(a ∧ b)) := by
-  rw [Xor', or_and_right, not_and_or, and_or_left, and_not_self_iff, false_or,
+theorem xor_iff_or_and_not_and (a b : Prop) : Xor a b ↔ (a ∨ b) ∧ (¬(a ∧ b)) := by
+  rw [Xor, or_and_right, not_and_or, and_or_left, and_not_self_iff, false_or,
     and_or_left, and_not_self_iff, or_false]
 
 end Propositional
@@ -413,17 +410,9 @@ theorem congr_fun_rfl {α β : Sort*} (f : α → β) (a : α) : congr_fun (Eq.r
 theorem congr_fun_congr_arg {α β γ : Sort*} (f : α → β → γ) {a a' : α} (p : a = a') (b : β) :
     congr_fun (congr_arg f p) b = congr_arg (fun a ↦ f a b) p := rfl
 
-@[deprecated (since := "2025-09-16")] alias Eq.rec_eq_cast := eqRec_eq_cast
-
-@[deprecated (since := "2025-09-16")] alias eqRec_heq' := eqRec_heq_self
-
 theorem rec_heq_of_heq {α β : Sort _} {a b : α} {C : α → Sort*} {x : C a} {y : β}
     (e : a = b) (h : x ≍ y) : e ▸ x ≍ y :=
   eqRec_heq_iff_heq.mpr h
-
-@[deprecated (since := "2025-09-16")] alias rec_heq_iff_heq := eqRec_heq_iff_heq
-
-@[deprecated (since := "2025-09-16")] alias heq_rec_iff_heq := heq_eqRec_iff_heq
 
 @[simp]
 theorem cast_heq_iff_heq {α β γ : Sort _} (e : α = β) (a : α) (c : γ) :
@@ -477,23 +466,23 @@ end Dependent
 
 variable {α β : Sort*} {p : α → Prop}
 
-theorem forall_swap {p : α → β → Prop} : (∀ x y, p x y) ↔ ∀ y x, p x y :=
-  ⟨fun f x y ↦ f y x, fun f x y ↦ f y x⟩
+@[deprecated (since := "2026-03-25")] alias forall_swap := forall_comm
 
-theorem forall₂_swap
+theorem forall₂_comm
     {ι₁ ι₂ : Sort*} {κ₁ : ι₁ → Sort*} {κ₂ : ι₂ → Sort*} {p : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → Prop} :
     (∀ i₁ j₁ i₂ j₂, p i₁ j₁ i₂ j₂) ↔ ∀ i₂ j₂ i₁ j₁, p i₁ j₁ i₂ j₂ := ⟨swap₂, swap₂⟩
 
+@[deprecated (since := "2026-03-25")] alias forall₂_swap := forall₂_comm
+
 /-- We intentionally restrict the type of `α` in this lemma so that this is a safer to use in simp
-than `forall_swap`. -/
+than `forall_comm`. -/
 theorem imp_forall_iff {α : Type*} {p : Prop} {q : α → Prop} : (p → ∀ x, q x) ↔ ∀ x, p → q x :=
-  forall_swap
+  forall_comm
 
 lemma imp_forall_iff_forall (A : Prop) (B : A → Prop) : (A → ∀ h : A, B h) ↔ ∀ h : A, B h := by
   by_cases h : A <;> simp [h]
 
-theorem exists_swap {p : α → β → Prop} : (∃ x y, p x y) ↔ ∃ y x, p x y :=
-  ⟨fun ⟨x, y, h⟩ ↦ ⟨y, x, h⟩, fun ⟨y, x, h⟩ ↦ ⟨x, y, h⟩⟩
+@[deprecated (since := "2026-03-25")] alias exists_swap := exists_comm
 
 theorem exists_and_exists_comm {P : α → Prop} {Q : β → Prop} :
     (∃ a, P a) ∧ (∃ b, Q b) ↔ ∃ a b, P a ∧ Q b :=
@@ -685,6 +674,13 @@ lemma iff_eq_eq {a b : Prop} : (a ↔ b) = (a = b) := propext ⟨propext, Eq.to_
 /-- See `IsEmpty.forall_iff` for the `False` version. -/
 @[simp] theorem forall_true_left (p : True → Prop) : (∀ x, p x) ↔ p True.intro :=
   forall_prop_of_true _
+
+@[simp]
+lemma Subsingleton.forall₂_iff {ι : Sort*} [Subsingleton ι] (P : ι → ι → Prop) :
+    (∀ i j, P i j) ↔ (∀ i, P i i) := by
+  refine forall_congr' fun i ↦ ?_
+  have : Nonempty ι := ⟨i⟩
+  simp [Subsingleton.elim _ i]
 
 end Quantifiers
 

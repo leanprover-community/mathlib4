@@ -290,7 +290,7 @@ instance [Small.{w} C] [LocallySmall.{w} C] :
   refine small_of_injective (f := φ) ?_
   rintro ⟨s, t, f⟩ ⟨s', t', f'⟩ h
   obtain rfl : s = s' := congr_arg Sigma.fst h
-  simp only [Functor.id_obj, Sigma.mk.injEq, heq_eq_eq, true_and, φ] at h
+  simp only [Sigma.mk.injEq, heq_eq_eq, true_and, φ] at h
   obtain rfl : t = t' := h.1
   obtain rfl : f = f' := by simpa using h
   rfl

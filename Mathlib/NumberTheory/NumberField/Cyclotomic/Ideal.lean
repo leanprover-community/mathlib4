@@ -40,7 +40,7 @@ In this file, we prove results about ideals in cyclotomic extensions of `ℚ`.
 
 -/
 
-@[expose] public section
+public section
 
 namespace IsCyclotomicExtension.Rat
 
@@ -115,7 +115,7 @@ theorem map_eq_span_zeta_sub_one_pow :
     ← Nat.card_eq_fintype_card, IsGalois.card_aut_eq_finrank]
 
 theorem ramificationIdx_span_zeta_sub_one :
-    ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 (span {hζ.toInteger - 1}) = p ^ k * (p - 1) := by
+    ramificationIdx 𝒑 (span {hζ.toInteger - 1}) = p ^ k * (p - 1) := by
   have h := isPrime_span_zeta_sub_one p k hζ
   rw [← Nat.totient_prime_pow_succ hp.out, ← finrank _ K,
     IsDedekindDomain.ramificationIdx_eq_multiplicity _ h, map_eq_span_zeta_sub_one_pow p k hζ,
@@ -154,7 +154,7 @@ theorem inertiaDeg_eq_of_prime_pow (P : Ideal (𝓞 K)) [hP₁ : P.IsPrime] [hP�
 
 include hK in
 theorem ramificationIdx_eq_of_prime_pow (P : Ideal (𝓞 K)) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver 𝒑] :
-    ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 P = p ^ k * (p - 1) := by
+    ramificationIdx 𝒑 P = p ^ k * (p - 1) := by
   rw [eq_span_zeta_sub_one_of_liesOver p k K hK.zeta_spec P, ramificationIdx_span_zeta_sub_one]
 
 include hK in
@@ -186,7 +186,7 @@ theorem inertiaDeg_span_zeta_sub_one' : inertiaDeg 𝒑 (span {hζ.toInteger - 1
   exact inertiaDeg_span_zeta_sub_one p 0 hζ
 
 theorem ramificationIdx_span_zeta_sub_one' :
-    ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 (span {hζ.toInteger - 1}) = p - 1 := by
+    ramificationIdx 𝒑 (span {hζ.toInteger - 1}) = p - 1 := by
   rw [← pow_one p] at hK hζ
   rw [ramificationIdx_span_zeta_sub_one p 0 hζ, pow_zero, one_mul]
 
@@ -210,7 +210,7 @@ theorem inertiaDeg_eq_of_prime (P : Ideal (𝓞 K)) [hP₁ : P.IsPrime] [hP₂ :
 
 include hK in
 theorem ramificationIdx_eq_of_prime (P : Ideal (𝓞 K)) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver 𝒑] :
-    ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 P = p - 1 := by
+    ramificationIdx 𝒑 P = p - 1 := by
   rw [eq_span_zeta_sub_one_of_liesOver' p K hK.zeta_spec P, ramificationIdx_span_zeta_sub_one']
 
 include hK in
@@ -259,7 +259,7 @@ theorem inertiaDeg_eq_of_not_dvd (hm : ¬ p ∣ m) :
 alias inertiaDeg_of_not_dvd := inertiaDeg_eq_of_not_dvd
 
 theorem ramificationIdx_eq_of_not_dvd (hm : ¬ p ∣ m) :
-    ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 P = 1 := by
+    ramificationIdx 𝒑 P = 1 := by
   let ζ := (zeta_spec m ℚ K).toInteger
   have h₁ : ¬ p ∣ exponent ζ := by
     rw [exponent_eq_one_iff.mpr <| adjoin_singleton_eq_top (zeta_spec m ℚ K)]
@@ -348,7 +348,8 @@ private theorem inertiaDegIn_ramificationIdxIn_aux (hn : n = p ^ (k + 1) * m) (h
     ← ncard_primesOver_mul_ncard_primesOver Pₘ Gal(Fₘ/ℚ) (𝓞 K) Gal(K/ℚ) Gal(K/Fₘ) hp',
     ramificationIdxIn_eq_of_not_dvd p Fₘ hm, inertiaDegIn_eq_of_prime_pow p k Fₚ,
     ncard_primesOver_of_prime_pow p k Fₚ, one_mul, one_mul, mul_one, mul_assoc, mul_assoc,
-    mul_right_inj' (primesOver_ncard_ne_zero 𝒑 _), ← mul_assoc, ← mul_rotate (𝒑.inertiaDegIn (𝓞 K)),
+    mul_right_inj' (IsDedekindDomain.primesOver_ncard_ne_zero 𝒑 _), ← mul_assoc,
+    ← mul_rotate (𝒑.inertiaDegIn (𝓞 K)),
     ← inertiaDegIn_mul_inertiaDegIn 𝒑 Pₘ Gal(Fₘ/ℚ) (𝓞 K) Gal(K/ℚ) Gal(K/Fₘ), mul_assoc, mul_assoc,
     mul_right_inj' (inertiaDegIn_ne_zero Gal(Fₘ/ℚ)), ← mul_rotate',
     ← ramificationIdxIn_mul_ramificationIdxIn' (p := 𝒑) Pₚ Gal(Fₚ/ℚ) (𝓞 K) Gal(K/ℚ) Gal(K/Fₚ),
@@ -377,7 +378,7 @@ theorem inertiaDeg_eq (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣ m) :
   rw [← inertiaDegIn_eq_inertiaDeg 𝒑 P Gal(K/ℚ), inertiaDegIn_eq n K hn hm]
 
 theorem ramificationIdx_eq (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣ m) :
-    ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 P = p ^ k * (p - 1) := by
+    ramificationIdx 𝒑 P = p ^ k * (p - 1) := by
   have : IsGalois ℚ K := isGalois {n} ℚ K
   rw [← ramificationIdxIn_eq_ramificationIdx 𝒑 P Gal(K/ℚ), ramificationIdxIn_eq n K hn hm]
 

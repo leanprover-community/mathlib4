@@ -401,15 +401,16 @@ instance [P.IsClosedUnderColimitsOfShape WalkingParallelPair] :
         (fun s m hm ↦ by dsimp [c] at hm; simp [← hm])
     exact P.prop_of_isColimit hc (by rintro (_ | _) <;> exact hY)
 
+lemma limitsOfShape_isEmpty_iff [IsEmpty J] (X : C) :
+    P.limitsOfShape J X ↔ Nonempty (IsTerminal X) :=
+  ⟨fun ⟨⟨f, p, q⟩, d⟩ ↦ .intro <| isLimitEquivIsTerminalOfIsEmpty _ _ q, fun ⟨h⟩ ↦
+    ⟨⟨(Functor.const _).obj X, 𝟙 _, (isLimitEquivIsTerminalOfIsEmpty _ _).symm h⟩, by simp⟩⟩
+
+lemma colimitsOfShape_isEmpty_iff [IsEmpty J] (X : C) :
+    P.colimitsOfShape J X ↔ Nonempty (IsInitial X) :=
+  ⟨fun ⟨⟨f, p, q⟩, d⟩ ↦ .intro <| isColimitEquivIsInitialOfIsEmpty _ _ q, fun ⟨h⟩ ↦
+    ⟨⟨(Functor.const _).obj X, 𝟙 _, (isColimitEquivIsInitialOfIsEmpty _ _).symm h⟩, by simp⟩⟩
+
 end ObjectProperty
 
-namespace Limits
-
-@[deprecated (since := "2025-09-22")] alias ClosedUnderColimitsOfShape :=
-  ObjectProperty.IsClosedUnderColimitsOfShape
-@[deprecated (since := "2025-09-22")] alias closedUnderColimitsOfShape_of_colimit :=
-  ObjectProperty.IsClosedUnderColimitsOfShape.mk'
-@[deprecated (since := "2025-09-22")] alias ClosedUnderColimitsOfShape.colimit :=
-  ObjectProperty.prop_colimit
-
-end CategoryTheory.Limits
+end CategoryTheory

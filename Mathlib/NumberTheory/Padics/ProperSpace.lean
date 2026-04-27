@@ -30,7 +30,7 @@ Gouvêa, F. Q. (2020) p-adic Numbers An Introduction. 3rd edition.
   Cham, Springer International Publishing
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists FiniteDimensional
 

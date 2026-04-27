@@ -24,7 +24,7 @@ results that the order of `G` is invertible in `k` (e. g. `k` has characteristic
 
 suppress_compilation
 
-universe u
+universe w u v
 
 open MonoidAlgebra
 
@@ -115,7 +115,7 @@ def invariantsEquivIntertwiningMap : (linHom ρ σ).invariants ≃ₗ[k] Intertw
   invFun g :=
     { val := g.toLinearMap
       property := (mem_linHom_invariants_iff_isIntertwining g.toLinearMap).mpr
-        {isIntertwining := g.isIntertwining} }
+        { isIntertwining := g.isIntertwining } }
 
 section
 
@@ -183,9 +183,9 @@ open CategoryTheory Action
 
 section Rep
 
-variable {k : Type u} [CommRing k] {G : Type u} [Group G]
+variable {k : Type u} [CommRing k] {G : Type v} [Group G] {X Y : Rep.{w} k G}
 
-theorem mem_invariants_iff_comm {X Y : Rep k G} (f : X.V →ₗ[k] Y.V) (g : G) :
+theorem mem_invariants_iff_comm (f : X.V →ₗ[k] Y.V) (g : G) :
     (linHom X.ρ Y.ρ) g f = f ↔ f.comp (X.ρ g) = (Y.ρ g).comp f := by
   dsimp
   constructor
@@ -197,10 +197,11 @@ theorem mem_invariants_iff_comm {X Y : Rep k G} (f : X.V →ₗ[k] Y.V) (g : G) 
     rw [← LinearMap.comp_assoc, ← h, LinearMap.comp_assoc, ← Rep.ρ_mul, mul_inv_cancel, map_one,
       Module.End.one_eq_id, LinearMap.comp_id]
 
+variable (X Y) in
 /-- The invariants of the representation `linHom X.ρ Y.ρ` correspond to the representation
 homomorphisms from `X` to `Y`. -/
 @[simps]
-def invariantsEquivRepHom (X Y : Rep k G) : (linHom X.ρ Y.ρ).invariants ≃ₗ[k] X ⟶ Y where
+def invariantsEquivRepHom : (linHom X.ρ Y.ρ).invariants ≃ₗ[k] X ⟶ Y where
   toFun f := Rep.ofHom ⟨f.val, fun g ↦ (mem_invariants_iff_comm _ g).1 <| f.2 g⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
@@ -231,7 +232,8 @@ namespace Rep
 
 open CategoryTheory
 
-variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G) (S : Subgroup G) [S.Normal]
+variable {k : Type u} {G : Type v} [CommRing k] [Group G] (A : Rep.{w} k G)
+  (S : Subgroup G) [S.Normal]
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` restricts to a `G`-representation on
 the invariants of `ρ|_S`. -/
@@ -243,10 +245,9 @@ abbrev quotientToInvariants : Rep k (G ⧸ S) := Rep.of (A.ρ.quotientToInvarian
 
 variable (k G)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor sending a representation to its submodule of invariants. -/
 @[simps! obj_carrier map_hom]
-noncomputable def invariantsFunctor : Rep k G ⥤ ModuleCat k where
+noncomputable def invariantsFunctor : Rep.{w} k G ⥤ ModuleCat k where
   obj A := ModuleCat.of k A.ρ.invariants
   map {A B} f := ModuleCat.ofHom <| (f.hom ∘ₗ A.ρ.invariants.subtype).codRestrict
     B.ρ.invariants fun ⟨c, hc⟩ g => by
@@ -262,19 +263,10 @@ variable {G} in
 /-- Given a normal subgroup S ≤ G, this is the functor sending a `G`-representation `A` to the
 `G ⧸ S`-representation it induces on `A^S`. -/
 noncomputable def quotientToInvariantsFunctor (S : Subgroup G) [S.Normal] :
-    Rep k G ⥤ Rep k (G ⧸ S) where
+    Rep.{w} k G ⥤ Rep k (G ⧸ S) where
   obj X := X.quotientToInvariants S
   map {X Y} f := Rep.ofHom ⟨((invariantsFunctor k S).map ((Rep.resFunctor S.subtype).map f)).hom,
-    fun g ↦ by
-      ext x
-      simp only [invariantsFunctor_map_hom, hom_ofHom, Representation.quotientToInvariants,
-        LinearMap.comp_codRestrict, LinearMap.codRestrict_apply, LinearMap.coe_comp,
-        LinearMap.coe_coe, IntertwiningMap.coe_mk, Submodule.coe_subtype, Function.comp_apply]
-      -- this change is unnecessary but just for clearness
-      change _ = ((((Y.ρ.toInvariants S).ofQuotient S) g) ((LinearMap.codRestrict _
-          (f.hom.toLinearMap ∘ₗ (invariants (MonoidHom.comp X.ρ S.subtype)).subtype) _) x)).1
-      induction g using QuotientGroup.induction_on with
-      | H g => simp [hom_comm_apply]⟩
+    fun g ↦ QuotientGroup.induction_on g fun g ↦ by ext x; simp [hom_comm_apply]⟩
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction between the functor equipping a module with the trivial representation, and
