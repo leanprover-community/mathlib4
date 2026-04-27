@@ -199,13 +199,6 @@ noncomputable def mapFreeIso (η : unit S ≅ F.obj (unit R)) : free (R := S) I 
   (isColimitFreeCofan I).coconePointsIsoOfNatIso (isColimitOfPreserves F (isColimitFreeCofan I))
     (Discrete.natIso fun _ ↦ η)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
-@[reassoc (attr := simp)]
-lemma ιFree_mapFree_inv :
-    ιFree i ≫ (mapFree F η I).inv = η.inv ≫ F.map (ιFree i) := by
-  simp [mapFree, ← freeCofan_inj, Cofan.inj]
-
 @[reassoc (attr := simp)]
 lemma ιFree_mapFreeIso_hom (η : unit S ≅ F.obj (unit R)) (i : I) :
     ιFree i ≫ (mapFreeIso F I η).hom = η.hom ≫ F.map (ιFree i) :=
