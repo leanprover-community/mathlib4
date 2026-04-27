@@ -75,8 +75,8 @@ lemma free_map_apply {X Y : Type u} (f : X ⟶ Y) (x : X) :
 @[simps]
 def freeHomEquiv {X : Type u} {M : ModuleCat.{u} R} :
     ((free R).obj X ⟶ M) ≃ (X ⟶ M) where
-  toFun φ := TypeCat.ofHom (fun x ↦ φ (freeMk x))
-  invFun ψ := freeDesc (TypeCat.ofHom ψ)
+  toFun φ := ↾ (fun x ↦ φ (freeMk x))
+  invFun ψ := freeDesc (↾ ψ)
   left_inv _ := by ext; simp
   right_inv _ := by ext; simp
 

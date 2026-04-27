@@ -114,7 +114,7 @@ lemma topCatAdjunctionCounit_bijective (X : TopCat.{u + 1}) :
 @[simps hom_app]
 noncomputable def topCatAdjunctionUnit (X : CondensedSet.{u}) : X ⟶ X.toTopCat.toCondensedSet where
   hom := {
-    app S := TypeCat.ofHom fun x ↦ {
+    app S := ↾ fun x ↦ {
       toFun := fun s ↦ X.obj.map ((of PUnit.{u + 1}).const s).op x
       continuous_toFun := by
         suffices ∀ (i : (T : CompHaus.{u}) × X.obj.obj ⟨T⟩),

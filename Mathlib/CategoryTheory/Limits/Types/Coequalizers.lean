@@ -33,11 +33,11 @@ is a coequalizer for the pair `(f, g)`.
 -/
 def coequalizerColimit : Limits.ColimitCocone (parallelPair f g) where
   cocone :=
-    Cofork.ofπ (TypeCat.ofHom (Function.Coequalizer.mk f g))
+    Cofork.ofπ (↾ (Function.Coequalizer.mk f g))
       (by ext x; exact Function.Coequalizer.condition f g x)
   isColimit :=
     Cofork.IsColimit.mk _
-      (fun s ↦ TypeCat.ofHom (Function.Coequalizer.desc f g s.π
+      (fun s ↦ ↾ (Function.Coequalizer.desc f g s.π
         (by ext x; exact ConcreteCategory.congr_hom s.condition x)))
       (fun _ ↦ rfl)
       (fun _ _ hm ↦ by ext x; exact Quot.inductionOn x (congr_hom hm))
@@ -76,12 +76,12 @@ noncomputable def coequalizerIso : coequalizer f g ≅ (Function.Coequalizer f g
 
 @[elementwise (attr := simp)]
 theorem coequalizerIso_π_comp_hom :
-    coequalizer.π f g ≫ (coequalizerIso f g).hom = TypeCat.ofHom (Function.Coequalizer.mk f g) :=
+    coequalizer.π f g ≫ (coequalizerIso f g).hom = ↾ (Function.Coequalizer.mk f g) :=
   colimit.isoColimitCocone_ι_hom (coequalizerColimit f g) WalkingParallelPair.one
 
 @[elementwise (attr := simp)]
 theorem coequalizerIso_quot_comp_inv :
-    TypeCat.ofHom (Function.Coequalizer.mk f g) ≫ (coequalizerIso f g).inv = coequalizer.π f g :=
+    ↾ (Function.Coequalizer.mk f g) ≫ (coequalizerIso f g).inv = coequalizer.π f g :=
   rfl
 
 end CategoryTheory.Limits.Types

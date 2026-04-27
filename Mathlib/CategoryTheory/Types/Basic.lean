@@ -28,7 +28,7 @@ a `FunLike` instance on the latter (which would give two non-reducibly defeq coe
 morphisms in `Type` to functions), and the outer nesting `TypeCat.Hom` gives a layer of separation
 between morphisms and `FC`, as is done for all concrete categories in mathlib.
 
-To promote a function to a morphism in this category, we provide the abbreviation `TypeCat.ofHom f`,
+To promote a function to a morphism in this category, we provide the abbreviation `↾ f`,
 as well as a corresponding notation `↾ f`. (Entered as `\upr `.)
 
 ## Main definitions
@@ -136,7 +136,7 @@ abbrev ofHom {X Y : Type u} (f : X → Y) : X ⟶ Y :=
   ConcreteCategory.ofHom (Fun.mk f)
 
 @[inherit_doc]
-scoped notation "↾" f:200 => TypeCat.ofHom f
+notation "↾" f:200 => TypeCat.ofHom f
 
 /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
 def Hom.Simps.hom (X Y : Type u) (f : X ⟶ Y) :=
@@ -162,7 +162,7 @@ lemma ofHom_hom {X Y : Type u} (f : X ⟶ Y) : ofHom (Hom.hom f) = f := rfl
 
 @[simp]
 lemma ofHom_apply {X Y : Type u} (f : X → Y) (x : X) :
-    TypeCat.ofHom f x = f x :=
+    (↾ f) x = f x :=
   rfl
 
 /-- `TypeCat.Hom.hom` bundled as an `Equiv`. -/
@@ -208,7 +208,7 @@ lemma types_congr_hom {X Y : Type u} {f g : X ⟶ Y} (h : f = g) (x : X) : f x =
 
 @[deprecated (since := "2026-02-09")] alias hom_inv_id_apply := Iso.hom_inv_id_apply
 @[deprecated (since := "2026-02-09")] alias inv_hom_id_apply := Iso.inv_hom_id_apply
-@[deprecated (since := "2026-02-09")] alias asHom := TypeCat.ofHom
+@[deprecated (since := "2026-02-09")] alias asHom := ofHom
 
 namespace Functor
 
@@ -237,7 +237,7 @@ variable (J)
 @[simps]
 def sectionsFunctor : (J ⥤ Type w) ⥤ Type max u w where
   obj F := F.sections
-  map {F G} φ := TypeCat.ofHom fun x ↦ ⟨fun j => φ.app j (x.1 j), fun {j j'} f =>
+  map {F G} φ := ↾ fun x ↦ ⟨fun j => φ.app j (x.1 j), fun {j j'} f =>
     by simp [← NatTrans.naturality_apply, x.2 f]⟩
 
 end Functor

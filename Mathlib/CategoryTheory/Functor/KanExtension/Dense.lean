@@ -125,7 +125,7 @@ lemma IsDense.of_fullyFaithful_restrictedULiftYoneda [F.Full]
   isDenseAt Y := by
     let φ (s : Cocone (CostructuredArrow.proj F Y ⋙ F)) :
         (restrictedULiftYoneda.{w} F).obj Y ⟶ (restrictedULiftYoneda F).obj s.pt :=
-      { app := fun ⟨X⟩ ↦ TypeCat.ofHom fun ⟨x⟩ ↦ ULift.up (s.ι.app (.mk x))
+      { app := fun ⟨X⟩ ↦ ↾ fun ⟨x⟩ ↦ ULift.up (s.ι.app (.mk x))
         naturality := by
           rintro ⟨X₁⟩ ⟨X₂⟩ ⟨f⟩
           ext ⟨x⟩

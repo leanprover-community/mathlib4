@@ -96,11 +96,11 @@ theorem rel_iso_iff {X Y : RelCat} (r : X ⟶ Y) :
     simp only [RelCat.Hom.rel_comp_apply₂, RelCat.Hom.rel_id_apply₂, eq_iff_iff] at h1 h2
     obtain ⟨f, hf⟩ := Classical.axiomOfChoice (fun a => (h1 a a).mpr rfl)
     obtain ⟨g, hg⟩ := Classical.axiomOfChoice (fun a => (h2 a a).mpr rfl)
-    suffices hif : IsIso (C := Type u) (TypeCat.ofHom f) by
-      use asIso (TypeCat.ofHom f)
+    suffices hif : IsIso (C := Type u) (↾ f) by
+      use asIso (↾ f)
       ext ⟨x, y⟩
       exact ⟨by aesop, fun hxy ↦ (h2 (f x) y).1 ⟨x, (hf x).2, hxy⟩⟩
-    use TypeCat.ofHom g
+    use ↾ g
     constructor
     · ext x
       apply (h1 _ _).mp

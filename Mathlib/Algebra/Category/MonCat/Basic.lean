@@ -469,8 +469,8 @@ in `MonCat` -/
 @[to_additive addEquivIsoAddMonCatIso]
 def mulEquivIsoMonCatIso {X Y : Type u} [Monoid X] [Monoid Y] :
     (X ≃* Y) ≅ (MonCat.of X ≅ MonCat.of Y) where
-  hom := TypeCat.ofHom (fun e ↦ e.toMonCatIso)
-  inv := TypeCat.ofHom (fun i ↦ i.monCatIsoToMulEquiv)
+  hom := ↾ (fun e ↦ e.toMonCatIso)
+  inv := ↾ (fun i ↦ i.monCatIsoToMulEquiv)
 
 /-- additive equivalences between `AddMonoid`s are the same
 as (isomorphic to) isomorphisms in `AddMonCat` -/
@@ -481,8 +481,8 @@ in `CommMonCat` -/
 @[to_additive addEquivIsoAddCommMonCatIso]
 def mulEquivIsoCommMonCatIso {X Y : Type u} [CommMonoid X] [CommMonoid Y] :
     (X ≃* Y) ≅ (CommMonCat.of X ≅ CommMonCat.of Y) where
-  hom := TypeCat.ofHom (fun e ↦ e.toCommMonCatIso)
-  inv := TypeCat.ofHom (fun i ↦ i.commMonCatIsoToMulEquiv)
+  hom := ↾ (fun e ↦ e.toCommMonCatIso)
+  inv := ↾ (fun i ↦ i.commMonCatIsoToMulEquiv)
 
 /-- additive equivalences between `AddCommMonoid`s are
 the same as (isomorphic to) isomorphisms in `AddCommMonCat` -/

@@ -147,7 +147,7 @@ def FintypeCat.toProfinite : FintypeCat ⥤ Profinite where
 
 /-- `FintypeCat.toLightProfinite` is fully faithful. -/
 def FintypeCat.toProfiniteFullyFaithful : toProfinite.FullyFaithful where
-  preimage f := InducedCategory.homMk <| TypeCat.ofHom (f : _ → _)
+  preimage f := InducedCategory.homMk <| ↾ (f : _ → _)
   map_preimage _ := rfl
   preimage_map _ := rfl
 
