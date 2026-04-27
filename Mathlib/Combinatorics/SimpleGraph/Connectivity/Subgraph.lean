@@ -374,12 +374,9 @@ theorem map_mapToSubgraph_eq_induce_id {u v : V} (w : G.Walk u v) :
   w.map_mapToSubgraph_eq_induce ..
 
 theorem isInduced_toSubgraph {w : G.Walk u v} : w.toSubgraph.IsInduced ↔ w.IsChordless := by
-  refine ⟨?_, fun hchord u' hu' v' hv' hadj ↦ ?_⟩
-  · rintro hind ⟨u', v'⟩ ⟨hadj, hedges, hu', hv'⟩
-    refine hedges <| adj_toSubgraph_iff_mem_edges.mp ?_
-    exact hind (w.mem_verts_toSubgraph.mpr hu') (w.mem_verts_toSubgraph.mpr hv') hadj
-  · rw [adj_toSubgraph_iff_mem_edges]
-    exact hchord.mem_edges (w.mem_verts_toSubgraph.mp hu') (w.mem_verts_toSubgraph.mp hv') hadj
+  simp_rw [Subgraph.IsInduced, IsChordless, IsChord, Sym2.forall, Sym2.lift_mk, G.mem_edgeSet,
+    mem_verts_toSubgraph, adj_toSubgraph_iff_mem_edges]
+  grind only
 
 namespace IsPath
 
