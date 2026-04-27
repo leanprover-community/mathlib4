@@ -5,11 +5,12 @@ Authors: Yuyang Zhao
 -/
 module
 
-public import Mathlib.Algebra.Module.Torsion.Field
-public import Mathlib.Algebra.Group.UniqueProds.VectorSpace
-public import Mathlib.Data.Finsupp.Quotient
-public import Mathlib.FieldTheory.Galois.Basic
-public import Mathlib.FieldTheory.Minpoly.ConjRootClass
+public import Mathlib.FieldTheory.IsAlgClosed.Basic
+
+import Mathlib.Algebra.Group.UniqueProds.VectorSpace
+import Mathlib.Data.Finsupp.Quotient
+import Mathlib.FieldTheory.Galois.Basic
+import Mathlib.FieldTheory.Minpoly.ConjRootClass
 
 /-!
 # The Lindemann-Weierstrass theorem
@@ -18,8 +19,6 @@ public import Mathlib.FieldTheory.Minpoly.ConjRootClass
 
 * [Jacobson, *Basic Algebra I, 4.12*][jacobson1974]
 -/
-
-@[expose] public section
 
 noncomputable section
 
@@ -399,7 +398,7 @@ theorem linearIndependent_exp_aux_aroots_int (R : Type*) {F S : Type*}
       map_ne_zero_iff _ (IsFractionRing.injective R F)]
     exact nonZeroDivisors.ne_zero (hb _)
 
-theorem linearIndependent_exp_aux {S : Type*}
+public theorem linearIndependent_exp_aux {S : Type*}
     [Field S] [Algebra ℚ S] [IsAlgClosed S]
     (φ : Multiplicative S →* S)
     (u : ι → S) (hu : ∀ i, IsIntegral ℚ (u i))

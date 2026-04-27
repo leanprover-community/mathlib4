@@ -5,20 +5,21 @@ Authors: Yuyang Zhao
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.SumIteratedDerivative
-public import Mathlib.Analysis.Calculus.Deriv.Polynomial
-public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
-public import Mathlib.RingTheory.Int.Basic
-public import Mathlib.Topology.Algebra.Polynomial
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.Analysis.Complex.Exponential
+
+import Mathlib.Algebra.Polynomial.SumIteratedDerivative
+import Mathlib.Analysis.Calculus.Deriv.Polynomial
+import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
+import Mathlib.RingTheory.Int.Basic
+import Mathlib.Topology.Algebra.Polynomial
 
 /-!
 # Analytic part of the Lindemann-Weierstrass theorem
 
 The proof is partially based on [Jacobson, *Basic Algebra I, 4.12*][jacobson1974].
 -/
-
-public section
 
 namespace LindemannWeierstrass
 
@@ -60,15 +61,15 @@ This approach is based on
 [the wikipedia proof](https://en.wikipedia.org/wiki/Lindemann%E2%80%93Weierstrass_theorem):
 `Iᵢ(s) = P(fᵢ, s)`. Jacobson finds a slightly different bound using the power series of `eˣ`.
 -/
-private def P (f : ℂ[X]) (s : ℂ) :=
+def P (f : ℂ[X]) (s : ℂ) :=
   exp s * f.sumIDeriv.eval 0 - f.sumIDeriv.eval s
 
-private theorem P_eq_integral_exp_mul_eval (f : ℂ[X]) (s : ℂ) :
+theorem P_eq_integral_exp_mul_eval (f : ℂ[X]) (s : ℂ) :
     P f s = exp s * (s * ∫ x in 0..1, exp (-(x • s)) * f.eval (x • s)) := by
   rw [integral_exp_mul_eval, mul_add, mul_neg, exp_neg, mul_inv_cancel_left₀ (exp_ne_zero s),
     neg_add_eq_sub, P]
 
-private theorem P_algebraMap (f : ℤ[X]) (s : ℂ) :
+theorem P_algebraMap (f : ℤ[X]) (s : ℂ) :
     P (f.map <| algebraMap ℤ ℂ) s = exp s * f.sumIDeriv.eval 0 - f.sumIDeriv.aeval s := by
   simp [P, aeval_sumIDeriv_eq_eval]
 
@@ -78,7 +79,7 @@ Given a sequence of complex polynomials `fₚ`, a complex constant `s`, and a re
 that `|fₚ(xs)| ≤ c ^ p` for all `p ∈ ℕ` and `x ∈ Ioc 0 1`, then there is also a nonnegative
 constant `c'` such that for all nonzero `p ∈ ℕ`, `|P(fₚ, s)| ≤ c' ^ p`.
 -/
-private theorem P_le_aux (f : ℕ → ℂ[X]) (s : ℂ) (c : ℝ)
+theorem P_le_aux (f : ℕ → ℂ[X]) (s : ℂ) (c : ℝ)
     (hc : ∀ p : ℕ, ∀ x ∈ Set.Ioc (0 : ℝ) 1, ‖(f p).eval (x • s)‖ ≤ c ^ p) :
     ∃ c' ≥ 0, ∀ p : ℕ,
       ‖P (f p) s‖ ≤
@@ -105,7 +106,7 @@ Given a sequence of complex polynomials `fₚ`, a complex constant `s`, and a re
 that `|fₚ(xs)| ≤ c ^ p` for all `p ∈ ℕ` and `x ∈ Ioc 0 1`, then there is also a nonnegative
 constant `c'` such that for all nonzero `p ∈ ℕ`, `|P(fₚ, s)| ≤ c' ^ p`.
 -/
-private theorem P_le (f : ℕ → ℂ[X]) (s : ℂ) (c : ℝ)
+theorem P_le (f : ℕ → ℂ[X]) (s : ℂ) (c : ℝ)
     (hc : ∀ p : ℕ, ∀ x ∈ Set.Ioc (0 : ℝ) 1, ‖(f p).eval (x • s)‖ ≤ c ^ p) :
     ∃ c' ≥ 0, ∀ p ≠ 0, ‖P (f p) s‖ ≤ c' ^ p := by
   obtain ⟨c', hc', h'⟩ := P_le_aux f s c hc; clear c hc
@@ -127,7 +128,7 @@ Given a polynomial with integer coefficients `p` and a complex constant `s`, the
 
 Note: Jacobson writes `h(x)` for `x ^ (q - 1) * p(x) ^ q` and `bⱼ` for its coefficients.
 -/
-private theorem exp_polynomial_approx_aux (f : ℤ[X]) (s : ℂ) :
+theorem exp_polynomial_approx_aux (f : ℤ[X]) (s : ℂ) :
     ∃ c ≥ 0, ∀ p ≠ 0, ‖P (map (algebraMap ℤ ℂ) (X ^ (p - 1) * f ^ p)) s‖ ≤ c ^ p := by
   have : Bornology.IsBounded
       ((fun x : ℝ ↦ max (x * ‖s‖) 1 * ‖aeval (x * s) f‖) '' Set.Ioc 0 1) := by
@@ -168,7 +169,7 @@ are the algebraic numbers whose exponentials we want to prove to be linearly ind
 Note: Jacobson (equation (68) / lemma 3, page 285) writes `Nₚ` for our `nₚ` and `M` for our `c`
 (modulo a constant factor).
 -/
-theorem exp_polynomial_approx (f : ℤ[X]) (hf : f.eval 0 ≠ 0) :
+public theorem exp_polynomial_approx (f : ℤ[X]) (hf : f.eval 0 ≠ 0) :
     ∃ c,
       ∀ p > (eval 0 f).natAbs, p.Prime →
         ∃ nₚ : ℤ, ¬ ↑p ∣ nₚ ∧ ∃ gₚ : ℤ[X], gₚ.natDegree ≤ p * f.natDegree - 1 ∧
