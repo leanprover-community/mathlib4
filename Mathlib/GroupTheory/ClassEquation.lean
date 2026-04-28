@@ -42,8 +42,7 @@ theorem Group.sum_card_conj_classes_eq_card [Finite G] :
     ∑ᶠ x : ConjClasses G, x.carrier.ncard = Nat.card G := by
   classical
   cases nonempty_fintype G
-  rw [Nat.card_eq_fintype_card, ← sum_conjClasses_card_eq_card, finsum_eq_sum_of_fintype]
-  simp [Set.ncard_eq_toFinset_card']
+  simp [← sum_conjClasses_card_eq_card, finsum_eq_sum_of_fintype]
 
 /-- The **class equation** for finite groups. The cardinality of a group is equal to the size
 of its center plus the sum of the size of all its nontrivial conjugacy classes. -/
