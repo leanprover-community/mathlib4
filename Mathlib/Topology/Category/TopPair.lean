@@ -54,6 +54,9 @@ abbrev of {A X : TopCat.{u}} (f : A ⟶ X) (h : Topology.IsEmbedding f) : TopPai
 abbrev ofSubset {X : TopCat.{u}} (A : Set X) : TopPair.{u} := TopPair.of (A := (TopCat.of A))
   (X := X) ⟨{ toFun := Subtype.val }⟩ Topology.IsEmbedding.subtypeVal
 
+abbrev ofTopCat (X : TopCat.{u}) : TopPair.{u} :=
+  TopPair.of (TopCat.isInitialPEmpty.to X) (Topology.IsOpenEmbedding.of_isEmpty _).1
+
 /-- Construct a morphism in `TopPair` from its components. -/
 abbrev ofHom (f : X.fst ⟶ Y.fst) (g : X.snd ⟶ Y.snd) (w : g ≫ Y.map = X.map ≫ f := by cat_disch) :=
   MorphismProperty.Arrow.homMk g f w
@@ -87,7 +90,7 @@ abbrev proj₂ : TopPair.{u} ⥤ TopCat.{u} :=
 (X, ∅). -/
 @[simps]
 def incl : TopCat.{u} ⥤ TopPair.{u} where
-  obj X := TopPair.of (TopCat.isInitialPEmpty.to X) (Topology.IsOpenEmbedding.of_isEmpty _).1
+  obj X := ofTopCat X
   map f := TopPair.ofHom f (𝟙 _) <| by ext x; induction x
 
 /-- The functor from topological spaces to topological pairs that sends a space X to the identity
