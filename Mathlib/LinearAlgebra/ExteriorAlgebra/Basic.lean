@@ -446,8 +446,8 @@ theorem toTrivSqZeroExt_comp_map [Module Rᵐᵒᵖ M] [IsCentralScalar R M] [Mo
     toTrivSqZeroExt.comp (map f) = (TrivSqZeroExt.map f).comp toTrivSqZeroExt := by
   apply hom_ext
   apply LinearMap.ext
-  simp [LinearMap.coe_comp, Function.comp_apply, map_apply_ι, toTrivSqZeroExt_ι,
-    TrivSqZeroExt.map_inr]
+  simp only [AlgHom.comp_toLinearMap, LinearMap.coe_comp, Function.comp_apply,
+    AlgHom.toLinearMap_apply, map_apply_ι, toTrivSqZeroExt_ι, TrivSqZeroExt.map_inr, forall_const]
 
 theorem ιInv_comp_map (f : M →ₗ[R] N) :
     ιInv.comp (map f).toLinearMap = f.comp ιInv := by

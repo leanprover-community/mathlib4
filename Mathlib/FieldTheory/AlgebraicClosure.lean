@@ -93,7 +93,7 @@ under the map `i` is equal to `algebraicClosure F K`. -/
 theorem map_eq_of_algEquiv (i : E ≃ₐ[F] K) :
     (algebraicClosure F E).map i = algebraicClosure F K :=
   (map_le_of_algHom i.toAlgHom).antisymm
-    (fun x h ↦ ⟨_, (map_mem_algebraicClosure_iff i.symm.toAlgHom).2 h, by simp⟩)
+    (fun x h ↦ ⟨_, (map_mem_algebraicClosure_iff i.symm).2 h, by simp⟩)
 
 /-- If `E` and `K` are isomorphic as `F`-algebras, then `algebraicClosure F E` and
 `algebraicClosure F K` are also isomorphic as `F`-algebras. -/
