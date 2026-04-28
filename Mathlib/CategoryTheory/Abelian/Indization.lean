@@ -18,7 +18,7 @@ In the file `Mathlib/CategoryTheory/Abelian/GrothendieckAxioms/Indization.lean`,
 this situation `Ind C` is in fact Grothendieck abelian.
 -/
 
-@[expose] public section
+public section
 
 universe v
 
