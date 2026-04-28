@@ -322,7 +322,7 @@ def flexible : Std.HashSet Name :=
     `Mathlib.Tactic.Abel.tacticAbel!,
     `Mathlib.Tactic.Algebra.algebra,
     `Mathlib.Tactic.Algebra.algebraWith,
-    `Mathlib.Tactic.Algebra.fakeRing,
+    `fakeRing,
     `Mathlib.Tactic.Group.group,
     `Mathlib.Tactic.RingNF.ring,
     `Mathlib.Tactic.RingNF.tacticRing!,
