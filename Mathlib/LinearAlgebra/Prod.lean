@@ -644,13 +644,11 @@ theorem span_prod_eq {R M M'} [Semiring R] [AddCommMonoid M] [Module R M]
     [AddCommMonoid M'] [Module R M'] {s : Set M} {t : Set M'} (hs : 0 ∈ s) (ht : 0 ∈ t) :
     span R (s ×ˢ t) = (span R s).prod (span R t) := by
   apply le_antisymm
-  · exact span_prod_le s t;
-  · rw [Submodule.prod_le_iff];
-    constructor <;> rw [map_span];
-    · rw [span_le];
-      rintro _ ⟨x, hx, rfl⟩;
-      exact Submodule.subset_span (Set.mk_mem_prod hx ht);
-    · exact Submodule.span_mono (Set.image_subset_iff.mpr fun x hx => ⟨hs, hx⟩)
+  · exact span_prod_le s t
+  · rw [Submodule.prod_le_iff]
+    constructor <;> rw [map_span] <;> refine Submodule.span_mono (Set.image_subset_iff.mpr ?_)
+    · exact fun x hx ↦ ⟨hx, ht⟩
+    · exact fun x hx ↦ ⟨hs, hx⟩
 
 end Submodule
 
