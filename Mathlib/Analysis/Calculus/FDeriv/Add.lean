@@ -192,7 +192,7 @@ section Add
 theorem HasFDerivAtFilter.add (hf : HasFDerivAtFilter f f' L)
     (hg : HasFDerivAtFilter g g' L) : HasFDerivAtFilter (f + g) (f' + g') L :=
   .of_isLittleO <| (hf.isLittleO.add hg.isLittleO).congr_left fun _ => by
-    grind [Pi.add_apply, add_apply]
+    grind [Pi.add_apply]
 
 @[to_fun (attr := fun_prop)]
 theorem HasStrictFDerivAt.add (hf : HasStrictFDerivAt f f' x) (hg : HasStrictFDerivAt g g' x) :
@@ -403,7 +403,7 @@ theorem HasStrictFDerivAt.fun_sum (h : ∀ i ∈ u, HasStrictFDerivAt (A i) (A' 
     HasStrictFDerivAt (fun y => ∑ i ∈ u, A i y) (∑ i ∈ u, A' i) x := by
   simp only [hasStrictFDerivAt_iff_isLittleO] at *
   convert IsLittleO.sum h
-  simp [Finset.sum_sub_distrib, ContinuousLinearMap.sum_apply]
+  simp [Finset.sum_sub_distrib, _root_.sum_apply]
 
 @[fun_prop]
 theorem HasStrictFDerivAt.sum (h : ∀ i ∈ u, HasStrictFDerivAt (A i) (A' i) x) :
@@ -414,7 +414,7 @@ theorem HasFDerivAtFilter.fun_sum (h : ∀ i ∈ u, HasFDerivAtFilter (A i) (A' 
     HasFDerivAtFilter (fun y => ∑ i ∈ u, A i y) (∑ i ∈ u, A' i) L := by
   simp only [hasFDerivAtFilter_iff_isLittleO] at *
   convert IsLittleO.sum h
-  simp [ContinuousLinearMap.sum_apply]
+  simp [_root_.sum_apply]
 
 theorem HasFDerivAtFilter.sum (h : ∀ i ∈ u, HasFDerivAtFilter (A i) (A' i) L) :
     HasFDerivAtFilter (∑ i ∈ u, A i) (∑ i ∈ u, A' i) L := by
