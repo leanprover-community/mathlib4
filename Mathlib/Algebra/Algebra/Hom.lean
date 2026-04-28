@@ -14,17 +14,17 @@ This file defines bundled homomorphisms of `R`-algebras.
 
 ## Main definitions
 
-* `AlgHom R A B`: the type of `R`-algebra morphisms from `A` to `B`.
+* `AlgHom φ A B`: the type of `φ`-semialgebra morphisms from `A` to `B`.
 * `Algebra.ofId R A : R →ₐ[R] A`: the canonical map from `R` to `A`, as an `AlgHom`.
 
 ## Notation
 
+* `A →ₛₐ[φ] B` : `φ`-semialgebra homomorphism from `A` to `B`.
 * `A →ₐ[R] B` : `R`-algebra homomorphism from `A` to `B`.
 -/
 
 @[expose] public section
 
-universe u v w x y z
 universe uR uS uA uB
 
 /-- Let `φ : R →+* S` be a ring homomorphism, let `A` be an `R`-algebra and let `B` be
@@ -163,12 +163,11 @@ end AlgHomClass
 
 namespace AlgHom
 
-variable {R : Type uR} {S : Type uS} {A : Type uA} {B : Type uB}
-
 section Semiring
 
-variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
+variable {R : Type uR} {S : Type uS} [CommSemiring R] [CommSemiring S]
 variable {φ : R →+* S}
+variable {A : Type uA} {B : Type uB} [Semiring A] [Semiring B]
 variable [Algebra R A] [Algebra S B]
 
 lemma _root_.Algebra.algHom_apply (R A B : Type*) [CommSemiring R] [CommSemiring A] [Semiring B]
@@ -180,9 +179,7 @@ lemma _root_.Algebra.algHom_apply (R A B : Type*) [CommSemiring R] [CommSemiring
     (f : F) : (SemialgHomClass.toAlgHom f : A →ₗ[R] B) = f := rfl
 
 /-- See Note [custom simps projection] -/
-def Simps.apply {R : Type u} {S : Type v} [CommSemiring R] [CommSemiring S]
-    {φ : R →+* S} {α : Type w} {β : Type x}
-    [Semiring α] [Semiring β] [Algebra R α] [Algebra S β] (f : α →ₛₐ[φ] β) : α → β := f
+def Simps.apply (f : A →ₛₐ[φ] B) : A → B := f
 
 initialize_simps_projections AlgHom (toFun → apply)
 
@@ -400,15 +397,6 @@ variable {φ₁₄ : R₁ →+* R₄} {φ₂₄ : R₂ →+* R₄} {φ₃₄ : R
 variable [RingHomCompTriple φ₁₂ φ₂₃ φ₁₃] [RingHomCompTriple φ₁₂ φ₂₄ φ₁₄]
 variable [RingHomCompTriple φ₂₃ φ₃₄ φ₂₄] [RingHomCompTriple φ₁₃ φ₃₄ φ₁₄]
 variable (f : A₂ →ₛₐ[φ₂₃] A₃) (g : A₁ →ₛₐ[φ₁₂] A₂) (h : A₃ →ₛₐ[φ₃₄] A₄)
--- universe u₁ u₂ u₃
--- variable {R₁ : Type u₁} {R₂ : Type u₂} {R₃ : Type u₃}
--- variable [CommSemiring R₁] [CommSemiring R₂] [CommSemiring R₃]
---     {A : Type*} {B : Type*} {C : Type*} [Semiring A] [Semiring B] [Semiring C]
---     [Algebra R₁ A] [Algebra R₂ B] [Algebra R₃ C]
---     {φ : R₁ →+* R₂} {ψ : R₂ →+* R₃} {ρ : R₁ →+* R₃}
---     [RingHomCompTriple φ ψ ρ]
--- variable {T : Type*} [CommSemiring T] [Algebra T C] {ψ : S →+* T} {ρ : R →+* T}
---     [RingHomCompTriple φ ψ ρ]
 
 /-- If `φ₁` and `φ₂` are `R`-algebra homomorphisms with the
 domain of `φ₁` equal to the codomain of `φ₂`, then
@@ -516,7 +504,7 @@ end RingHom
 
 namespace Algebra
 
-variable (R : Type u) (A : Type v) (B : Type w)
+variable (R : Type uR) (A : Type uA) (B : Type uB)
 variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 /-- `AlgebraMap` as an `AlgHom`. -/
@@ -559,7 +547,7 @@ theorem smul_units_def (f : A →ₐ[R] A) (x : Aˣ) :
 
 end MulDistribMulAction
 
-variable (M : Submonoid R) {B : Type w} [Semiring B] [Algebra R B] {A}
+variable (M : Submonoid R) {B : Type uB} [Semiring B] [Algebra R B] {A}
 
 lemma algebraMapSubmonoid_map_eq (f : A →ₐ[R] B) :
     (algebraMapSubmonoid A M).map f = algebraMapSubmonoid B M := by
