@@ -212,7 +212,7 @@ def twoCochainOfBilinear [CommRing A] [IsAddTorsionFree R] [Algebra A R]
     set s := (F f).support ∪ (F f).support.image (Equiv.neg A) with hs
     have hs' : (F f).support ⊆ s := Finset.subset_union_left
     rw [Finsupp.sum_of_support_subset _ hs' _ (by simp)]
-    refine Function.Odd.finset_sum_eq_zero (fun n ↦ by simp [hΦ.eq]) (Finset.map_eq_of_subset ?_)
+    refine Function.Odd.finsetSum_eq_zero (fun n ↦ by simp [hΦ.eq]) (Finset.map_eq_of_subset ?_)
     intro x hx
     rw [Finset.mem_union]
     replace hx : -x ∈ (F f).support ∨ -x ∈ (F f).support.image Neg.neg := by simpa [hs] using hx
