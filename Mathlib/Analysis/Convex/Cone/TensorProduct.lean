@@ -48,7 +48,7 @@ This requires:
 * [Aubrun et al. *Entangleability of cones*][aubrunEntangleabilityCones2021]
 -/
 
-@[expose] public section
+public section
 
 /-! ### Equality of minimal and maximal tensor products -/
 
