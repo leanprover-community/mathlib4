@@ -14,7 +14,7 @@ public import Mathlib.Tactic.Monotonicity.Attr
 # Lemmas about the interaction of power operations with order in terms of `CovariantClass`
 -/
 
-@[expose] public section
+public section
 
 open Function
 

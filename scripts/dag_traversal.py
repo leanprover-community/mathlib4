@@ -539,7 +539,7 @@ class DAG:
         Uses ``lean --deps-json`` to parse imports correctly.
         """
         if directories is None:
-            directories = ["Mathlib", "MathlibTest", "Archive", "Counterexamples"]
+            directories = ["."]
 
         # Collect all .lean file paths (relative to project_root).
         rel_paths: list[Path] = []
@@ -858,7 +858,7 @@ def _cli_main():
         "--directories",
         nargs="+",
         default=None,
-        help="Directories to scan (default: Mathlib MathlibTest Archive Counterexamples)",
+        help="Directories to scan (default: '.', relative to project root specified by --dir)",
     )
 
     args = parser.parse_args()

@@ -24,7 +24,7 @@ by a fully faithful exact functor `F : C ⥤ D` are bijective when either
 
 -/
 
-@[expose] public section
+public section
 
 universe w w' v v' u u'
 

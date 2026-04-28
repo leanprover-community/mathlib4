@@ -66,6 +66,31 @@ theorem Injective.beq_eq {α β : Type*} [BEq α] [LawfulBEq α] [BEq β] [Lawfu
     (I : Injective f) {a b : α} : (f a == f b) = (a == b) := by
   by_cases h : a == b <;> simp [h] <;> simpa [I.eq_iff] using h
 
+section Bicomp
+
+variable {α β γ δ ε : Type*}
+
+/-- Compose a binary function `f` with a pair of unary functions `g` and `h`.
+If both arguments of `f` have the same type and `g = h`, then `bicompl f g g = f on g`. -/
+def bicompl (f : γ → δ → ε) (g : α → γ) (h : β → δ) (a b) :=
+  f (g a) (h b)
+
+/-- Compose a unary function `f` with a binary function `g`. -/
+def bicompr (f : γ → δ) (g : α → β → γ) (a b) :=
+  f (g a b)
+
+-- Suggested local notation:
+local notation f " ∘₂ " g => bicompr f g
+
+theorem uncurry_bicompr (f : α → β → γ) (g : γ → δ) : uncurry (g ∘₂ f) = g ∘ uncurry f :=
+  rfl
+
+theorem uncurry_bicompl (f : γ → δ → ε) (g : α → γ) (h : β → δ) :
+    uncurry (bicompl f g h) = uncurry f ∘ Prod.map g h :=
+  rfl
+
+end Bicomp
+
 end Function
 
 namespace Function
