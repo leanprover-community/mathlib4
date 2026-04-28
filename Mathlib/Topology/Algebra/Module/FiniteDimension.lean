@@ -15,6 +15,7 @@ public import Mathlib.Topology.Algebra.Module.Determinant
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
 public import Mathlib.Topology.Algebra.Module.Simple
 public import Mathlib.Topology.Algebra.SeparationQuotient.FiniteDimensional
+public import Mathlib.Topology.Maps.Strict.Basic
 
 /-!
 # Finite-dimensional topological vector spaces over complete fields
@@ -525,7 +526,7 @@ end IsUniformAddGroup
 variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
   [AddCommGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E] [Module 𝕜 E]
   [ContinuousSMul 𝕜 E]
-  [AddCommGroup F] [TopologicalSpace F] [T2Space F] [IsTopologicalAddGroup F] [Module 𝕜 F]
+  [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F] [Module 𝕜 F]
   [ContinuousSMul 𝕜 F]
 
 /-- A finite-dimensional subspace is closed. -/
@@ -552,12 +553,11 @@ theorem Submodule.isClosed_sup_finiteDimensional
   exact (map s.mkQ t).closed_of_finiteDimensional.preimage continuous_quot_mk
 
 /-- An injective linear map with finite-dimensional domain is a closed embedding. -/
-theorem LinearMap.isClosedEmbedding_of_injective [T2Space E] [FiniteDimensional 𝕜 E] {f : E →ₗ[𝕜] F}
-    (hf : LinearMap.ker f = ⊥) : IsClosedEmbedding f :=
+theorem LinearMap.isClosedEmbedding_of_injective [T2Space E] [FiniteDimensional 𝕜 E] [T2Space F]
+    {f : E →ₗ[𝕜] F} (hf : LinearMap.ker f = ⊥) : IsClosedEmbedding f :=
   let g := LinearEquiv.ofInjective f (LinearMap.ker_eq_bot.mp hf)
   { IsEmbedding.subtypeVal.comp g.toContinuousLinearEquiv.toHomeomorph.isEmbedding with
     isClosed_range := by
-      haveI := f.finiteDimensional_range
       simpa [LinearMap.coe_range f] using (LinearMap.range f).closed_of_finiteDimensional }
 
 theorem isClosedEmbedding_smul_left [T2Space E] {c : E} (hc : c ≠ 0) :
@@ -571,11 +571,26 @@ theorem isClosedMap_smul_left [T2Space E] (c : E) : IsClosedMap fun x : 𝕜 => 
     exact isClosedMap_const
   · exact (isClosedEmbedding_smul_left hc).isClosedMap
 
-theorem ContinuousLinearMap.exists_right_inverse_of_surjective [FiniteDimensional 𝕜 F]
-    (f : E →L[𝕜] F) (hf : f.range = ⊤) :
-    ∃ g : F →L[𝕜] E, f.comp g = ContinuousLinearMap.id 𝕜 F :=
+theorem ContinuousLinearMap.exists_rightInverse_of_surjective [T2Space F] [FiniteDimensional 𝕜 F]
+    (f : E →L[𝕜] F) (hf : f.range = ⊤) : ∃ g : F →L[𝕜] E, f.comp g = ContinuousLinearMap.id 𝕜 F :=
   let ⟨g, hg⟩ := (f : E →ₗ[𝕜] F).exists_rightInverse_of_surjective hf
   ⟨LinearMap.toContinuousLinearMap g, ContinuousLinearMap.coe_inj.1 hg⟩
+
+@[deprecated (since := "2026-04-24")]
+alias ContinuousLinearMap.exists_right_inverse_of_surjective :=
+  ContinuousLinearMap.exists_rightInverse_of_surjective
+
+theorem ContinuousLinearMap.isQuotientMap_of_finiteDimensional [T2Space F] [FiniteDimensional 𝕜 F]
+    (f : E →L[𝕜] F) (hf : f.range = ⊤) :
+    IsQuotientMap f :=
+  let ⟨g, hg⟩ := f.exists_rightInverse_of_surjective hf
+  .of_inverse g.continuous f.continuous (fun _ ↦ congr($hg _))
+
+theorem ContinuousLinearMap.isStrictMap_of_finiteDimensional [T2Space F] [FiniteDimensional 𝕜 F]
+    (f : E →L[𝕜] F) :
+    IsStrictMap f := by
+  rw [isStrictMap_iff_isQuotientMap_rangeFactorization]
+  exact f.rangeRestrict.isQuotientMap_of_finiteDimensional (by simp)
 
 /-- If `K` is a complete field and `V` is a finite-dimensional vector space over `K` (equipped with
 any topology so that `V` is a topological `K`-module, meaning `[IsTopologicalAddGroup V]`
