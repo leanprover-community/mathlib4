@@ -34,15 +34,6 @@ namespace CategoryTheory
 
 open Category
 
-instance {C D E : Type*} [Category C] [Category D] [Category E] (G : D ⥤ E)
-    [G.Full] [G.Faithful] : ((Functor.whiskeringRight C D E).obj G).Full where
-  map_surjective τ := ⟨
-    { app := fun X => G.preimage (τ.app X)
-      naturality := fun X Y f => by
-        apply G.map_injective
-        simpa only [Functor.whiskeringRight_obj_obj, Functor.map_comp, Functor.map_preimage]
-          using τ.naturality f }, by aesop_cat⟩
-
 namespace Functor
 
 variable {C D E : Type*} [Category* C] [Category* D] [Category* E]
