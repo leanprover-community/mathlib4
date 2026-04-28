@@ -518,20 +518,18 @@ elab (name := defeqAbuse) "#defeq_abuse " "in " tac:tactic : tactic => withMainC
     let runAndCapture (strict : Bool) :
         TacticM (Except MessageData Unit × PersistentArray TraceElem) := do
       modifyTraces (fun _ => {})
-      let result ← try
-        withOptions (fun o =>
-            (o.setBool `backward.isDefEq.respectTransparency strict)
-              |>.setBool `trace.Meta.isDefEq true) do
-          evalTactic tac
-          pure (Except.ok ())
-      catch
-        | .internal id ref =>
-          modifyTraces (fun _ => oldTraces)
-          throw (.internal id ref)
-        | e => pure (Except.error e.toMessageData)
-      let traces ← getTraces
-      modifyTraces (fun _ => oldTraces)
-      return (result, traces)
+      try
+        let result ← try
+          withOptions (fun o =>
+              (o.setBool `backward.isDefEq.respectTransparency strict)
+                |>.setBool `trace.Meta.isDefEq true) do
+            evalTactic tac
+            pure (Except.ok ())
+        catch e => pure (Except.error e.toMessageData)
+        let traces ← getTraces
+        return (result, traces)
+      finally
+        modifyTraces (fun _ => oldTraces)
     -- Pass 1: strict + tracing.
     -- If it succeeds, no abuse; if it fails, we already have the traces.
     let (strictResult, strictTraces) ← runAndCapture true
@@ -601,9 +599,7 @@ elab_rules : command
             pure (Except.error m!"command produced errors")
           else
             pure (Except.ok ())
-      catch
-        | .internal id ref => throw (.internal id ref)
-        | e => pure (Except.error e.toMessageData)
+      catch e => pure (Except.error e.toMessageData)
       let newMsgs := ((← get).messages.toList).drop savedMsgCount
       return (result, newMsgs)
     -- We set `Elab.async false` to force synchronous proof checking,
