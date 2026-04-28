@@ -37,6 +37,7 @@ theorem isOpen_singleton_of_not_isSuccPrelimit (ha : ¬ IsSuccPrelimit a) : IsOp
 
 variable [NoMaxOrder α]
 
+@[to_dual]
 theorem isOpen_singleton_iff : IsOpen {a} ↔ ¬ IsSuccLimit a := by
   nontriviality α
   refine ⟨fun h ha ↦ ?_, fun ha ↦ ?_⟩
@@ -50,13 +51,6 @@ theorem isOpen_singleton_iff : IsOpen {a} ↔ ¬ IsSuccLimit a := by
     · convert isOpen_Iio (a := Order.succ a) using 1
       simp [ha.Iic_eq]
     · exact isOpen_singleton_of_not_isSuccPrelimit ha
-
--- TODO: generate this automatically
-@[to_dual existing]
-theorem _root_.PredOrder.isOpen_singleton_iff {α}
-    [LinearOrder α] [TopologicalSpace α] [OrderTopology α] {a : α} [PredOrder α] [NoMinOrder α] :
-    IsOpen {a} ↔ ¬ IsPredLimit a :=
-  (SuccOrder.isOpen_singleton_iff (α := αᵒᵈ)).trans isSuccLimit_toDual_iff.not
 
 @[to_dual]
 theorem nhds_eq_pure {a : α} : 𝓝 a = pure a ↔ ¬ IsSuccLimit a :=
