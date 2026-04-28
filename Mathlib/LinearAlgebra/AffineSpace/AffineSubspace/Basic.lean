@@ -842,8 +842,12 @@ theorem prod_top : (⊤ : AffineSubspace k P₁).prod (⊤ : AffineSubspace k P�
   ext; simp
 
 @[simp]
-theorem prod_bot : (⊥ : AffineSubspace k P₁).prod (⊥ : AffineSubspace k P₂) = ⊥ := by
-  rw [AffineSubspace.ext_iff, prod_coe, bot_coe, bot_coe, bot_coe, Set.empty_prod]
+theorem bot_prod (s : AffineSubspace k P₁) : s.prod (⊥ : AffineSubspace k P₂) = ⊥ := by
+  rw [AffineSubspace.ext_iff, prod_coe, bot_coe, bot_coe, Set.prod_empty]
+
+@[simp]
+theorem prod_bot (t : AffineSubspace k P₂) : (⊥ : AffineSubspace k P₁).prod t = ⊥ := by
+  rw [AffineSubspace.ext_iff, prod_coe, bot_coe, bot_coe, Set.empty_prod]
 
 @[simp]
 theorem prod_inf_prod (s₁ s₂ : AffineSubspace k P₁) (t₁ t₂ : AffineSubspace k P₂) :
@@ -859,9 +863,9 @@ theorem vectorSpan_prod {s : Set P₁} {t : Set P₂} (hs : s.Nonempty) (ht : t.
 theorem affineSpan_prod_eq (s : Set P₁) (t : Set P₂) :
     affineSpan k (s ×ˢ t) = (affineSpan k s).prod (affineSpan k t) := by
   rcases s.eq_empty_or_nonempty with rfl | hs
-  · simp [Set.empty_prod, AffineSubspace.ext_iff, AffineSubspace.prod_coe]
+  · simp [Set.empty_prod]
   rcases t.eq_empty_or_nonempty with rfl | ht
-  · simp [Set.prod_empty, AffineSubspace.ext_iff, AffineSubspace.prod_coe]
+  · simp [Set.prod_empty]
   apply le_antisymm
   · rw [affineSpan_le]
     exact fun q hq => ⟨subset_affineSpan k s hq.1, subset_affineSpan k t hq.2⟩
