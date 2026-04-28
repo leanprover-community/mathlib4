@@ -514,6 +514,14 @@ lemma isHomeomorph_iff_exists_inverse : IsHomeomorph f ↔ Continuous f ∧ ∃ 
     exact ⟨h.symm, h.left_inv, h.right_inv, h.continuous_invFun⟩
   · exact (Homeomorph.mk ⟨f, g, hg.1, hg.2.1⟩ hf hg.2.2).isHomeomorph
 
+/-- An equivalence between topological spaces is a homeomorphism iff it is continuous in both
+directions. -/
+theorem Equiv.isHomeomorph_iff (e : X ≃ Y) :
+    IsHomeomorph e ↔ Continuous e ∧ Continuous e.symm := by
+  rw [e.continuous_symm_iff]
+  exact ⟨fun h ↦ ⟨h.continuous, h.isOpenMap⟩,
+         fun ⟨hc, ho⟩ ↦ ⟨hc, ho, e.bijective⟩⟩
+
 /-- A map is a homeomorphism iff it is a surjective embedding. -/
 lemma isHomeomorph_iff_isEmbedding_surjective : IsHomeomorph f ↔ IsEmbedding f ∧ Surjective f where
   mp hf := ⟨hf.isEmbedding, hf.surjective⟩
