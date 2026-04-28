@@ -853,7 +853,7 @@ open ContinuousLinearMap
 theorem _root_.ContinuousLinearMap.intervalIntegral_apply {a b : ℝ} {φ : ℝ → F →L[𝕜] E}
     (hφ : IntervalIntegrable φ μ a b) (v : F) :
     (∫ x in a..b, φ x ∂μ) v = ∫ x in a..b, φ x v ∂μ := by
-  simp_rw [intervalIntegral_eq_integral_uIoc, ← integral_apply hφ.def' v, coe_smul', Pi.smul_apply]
+  simp_rw [intervalIntegral_eq_integral_uIoc, ← integral_apply hφ.def' v, _root_.smul_apply]
 
 variable [NormedSpace ℝ F] [CompleteSpace F]
 

@@ -269,7 +269,7 @@ theorem hasFDerivAt_exp_smul_const_of_mem_ball (x : 𝔸) (t : 𝕊)
     rw [← hasFDerivAt_iff_isLittleO_nhds_zero (f := fun u => exp (u • x))
       (f' := (1 : 𝕊 →L[𝕂] 𝕊).smulRight x) (x := 0)]
     have : HasFDerivAt exp (1 : 𝔸 →L[𝕂] 𝔸) ((1 : 𝕊 →L[𝕂] 𝕊).smulRight x 0) := by
-      rw [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply, zero_smul]
+      rw [ContinuousLinearMap.smulRight_apply, one_apply_eq_id, zero_smul]
       exact hasFDerivAt_exp_zero_of_radius_pos hpos
     exact this.comp 0 ((1 : 𝕊 →L[𝕂] 𝕊).smulRight x).hasFDerivAt
   have : Tendsto (fun h : 𝕊 => h • x) (𝓝 0) (𝓝 0) := by
@@ -280,9 +280,9 @@ theorem hasFDerivAt_exp_smul_const_of_mem_ball (x : 𝔸) (t : 𝕊)
   filter_upwards [this] with h hh
   have : Commute (t • x) (h • x) := ((Commute.refl x).smul_left t).smul_right h
   rw [add_smul t h, exp_add_of_commute_of_mem_ball this htx hh, zero_add, zero_smul, exp_zero,
-    ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply,
-    ContinuousLinearMap.smul_apply, ContinuousLinearMap.smulRight_apply,
-    ContinuousLinearMap.one_apply, smul_eq_mul, mul_sub_left_distrib, mul_sub_left_distrib, mul_one]
+    ContinuousLinearMap.smulRight_apply, one_apply_eq_id,
+    _root_.smul_apply, ContinuousLinearMap.smulRight_apply,
+    one_apply_eq_id, smul_eq_mul, mul_sub_left_distrib, mul_sub_left_distrib, mul_one]
 
 theorem hasFDerivAt_exp_smul_const_of_mem_ball' (x : 𝔸) (t : 𝕊)
     (htx : t • x ∈ Metric.eball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
