@@ -407,7 +407,6 @@ noncomputable abbrev barComplex : ChainComplex (Rep k G) ℕ :=
 
 namespace barComplex
 
-@[simp]
 theorem d_def : (barComplex k G).d (n + 1) n = d k G n := ChainComplex.of_d _ _ _ _
 
 set_option backward.isDefEq.respectTransparency false in
