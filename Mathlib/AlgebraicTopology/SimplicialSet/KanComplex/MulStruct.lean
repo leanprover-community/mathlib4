@@ -53,6 +53,8 @@ lemma δ_map (f : X.PtSimplex (n + 1) x) (i : Fin (n + 2)) :
     stdSimplex.δ i ≫ f.map = const x :=
   comp_map_eq_const _ _
 
+/-- The bijection between `n`-simplices of `X.op` and of `X`
+that are constant on the boundary. -/
 @[simps]
 def opEquiv : X.op.PtSimplex n (opObjEquiv.symm x) ≃ X.PtSimplex n x where
   toFun f :=
@@ -76,9 +78,13 @@ def opEquiv : X.op.PtSimplex n (opObjEquiv.symm x) ≃ X.PtSimplex n x where
   left_inv _ := by simp
   right_inv _ := by simp
 
+/-- Given a `n`-simplex of `X` that is constant on the boundary, this
+is the corresponding `n`-simplex of `X.op`. -/
 abbrev op (f : X.PtSimplex n x) : X.op.PtSimplex n (opObjEquiv.symm x) :=
   opEquiv.symm f
 
+/-- Given a `n`-simplex of `X.op` that is constant on the boundary, this
+is the corresponding `n`-simplex of `X`. -/
 abbrev unop (f : X.op.PtSimplex n (opObjEquiv.symm x)) : X.PtSimplex n x :=
   opEquiv f
 
@@ -162,6 +168,54 @@ namespace MulStruct
 
 attribute [reassoc (attr := simp)] δ_castSucc_castSucc_map δ_succ_castSucc_map δ_succ_succ_map
   δ_map_of_lt δ_map_of_gt
+
+/-- The `Mulstruct` for `X.op` that is deduced from a `Mulstruct` for the simplicial
+set `X`. -/
+def op {f g fg : X.PtSimplex n x} {i : Fin n} (h : MulStruct f g fg i) {j : Fin n}
+    (hij : i.rev = j := by grind) :
+    MulStruct g.op f.op fg.op j where
+  map := yonedaEquiv.symm (opObjEquiv.symm (yonedaEquiv h.map))
+  δ_castSucc_castSucc_map := by
+    rw [stdSimplex.δ_comp_yonedaEquiv_symm, op_δ, Equiv.apply_symm_apply,
+      ← stdSimplex.yonedaEquiv_δ_comp, opEquiv_symm_apply_map, ← h.δ_succ_succ_map,
+      Fin.rev_castSucc, Fin.rev_castSucc, ← hij, Fin.rev_rev]
+  δ_succ_castSucc_map := by
+    rw [stdSimplex.δ_comp_yonedaEquiv_symm, op_δ, Equiv.apply_symm_apply,
+      ← stdSimplex.yonedaEquiv_δ_comp, opEquiv_symm_apply_map, ← h.δ_succ_castSucc_map,
+      Fin.rev_succ, Fin.rev_castSucc, Fin.castSucc_succ, ← hij, Fin.rev_rev]
+  δ_succ_succ_map := by
+    rw [stdSimplex.δ_comp_yonedaEquiv_symm, op_δ, Equiv.apply_symm_apply,
+      ← stdSimplex.yonedaEquiv_δ_comp, opEquiv_symm_apply_map, ← h.δ_castSucc_castSucc_map,
+      Fin.rev_succ, Fin.rev_succ, ← hij, Fin.rev_rev]
+  δ_map_of_lt k hk := by
+    simp [stdSimplex.δ_comp_yonedaEquiv_symm, ← stdSimplex.yonedaEquiv_δ_comp,
+      opObjEquiv_symm_yonedaEquiv_const, h.δ_map_of_gt k.rev (by grind)]
+  δ_map_of_gt k hk := by
+    simp [stdSimplex.δ_comp_yonedaEquiv_symm, ← stdSimplex.yonedaEquiv_δ_comp,
+      opObjEquiv_symm_yonedaEquiv_const, h.δ_map_of_lt k.rev (by grind)]
+
+/-- The `Mulstruct` for a simplicial set `X` that is deduced from a `Mulstruct` for `X.op`. -/
+def unop {f g fg : X.PtSimplex n x} {i : Fin n} (h : MulStruct g.op f.op fg.op i) {j : Fin n}
+    (hij : i.rev = j := by grind) :
+    MulStruct f g fg j where
+  map := yonedaEquiv.symm (opObjEquiv (yonedaEquiv h.map))
+  δ_castSucc_castSucc_map := by
+    simp [stdSimplex.δ_comp_yonedaEquiv_symm, δ_opObjEquiv,
+      ← stdSimplex.yonedaEquiv_δ_comp, ← hij, Fin.rev_castSucc]
+  δ_succ_castSucc_map := by
+    simp [stdSimplex.δ_comp_yonedaEquiv_symm, δ_opObjEquiv,
+      ← stdSimplex.yonedaEquiv_δ_comp, ← hij, Fin.rev_castSucc, Fin.rev_succ]
+  δ_succ_succ_map := by
+    simp [stdSimplex.δ_comp_yonedaEquiv_symm, δ_opObjEquiv,
+      ← stdSimplex.yonedaEquiv_δ_comp, ← hij, Fin.rev_succ]
+  δ_map_of_lt k hk := by
+    rw [stdSimplex.δ_comp_yonedaEquiv_symm, δ_opObjEquiv,
+      ← stdSimplex.yonedaEquiv_δ_comp, h.δ_map_of_gt _ (by grind)]
+    simp [opObjEquiv_yonedaEquiv_const]
+  δ_map_of_gt k hk := by
+    rw [stdSimplex.δ_comp_yonedaEquiv_symm, δ_opObjEquiv,
+      ← stdSimplex.yonedaEquiv_δ_comp, h.δ_map_of_lt _ (by grind)]
+    simp [opObjEquiv_yonedaEquiv_const]
 
 end MulStruct
 
