@@ -45,7 +45,7 @@ def boddDiv2 : ℕ → Bool × ℕ
 /-- `div2 n = ⌊n/2⌋` the greatest integer smaller than `n/2` -/
 @[inline, grind =] def div2 (n : ℕ) : ℕ := n / 2
 
-theorem div2_val (n) : div2 n = n / 2 := rfl
+theorem div2_val (n : ℕ) : div2 n = n / 2 := rfl
 
 /-- `bodd n` returns `true` if `n` is odd -/
 @[inline] def bodd (n : ℕ) : Bool := n.testBit 0
