@@ -838,7 +838,7 @@ def yonedaLemma : yonedaPairing C ≅ yonedaEvaluation C :=
     (by intro (X, F) (Y, G) f
         ext (a : yoneda.obj X.unop ⟶ F)
         apply ULift.ext
-        dsimp [yonedaEvaluation, yonedaEquiv]
+        dsimp [yonedaEvaluation, yonedaEquiv, -TypeCat.hom_comp]
         simp [← NatTrans.naturality_apply])
 
 variable {C}
@@ -1254,7 +1254,7 @@ def Functor.sectionsEquivHom (F : C ⥤ Type u₂) (X : Type u₂) [Unique X] :
       naturality _ _ _ := by ext x; simp }
   invFun τ := by
     refine ⟨fun j ↦ τ.app _ (default : X), fun φ ↦ ?_⟩
-    simp [-const_obj_obj, ← comp_apply, -types_comp_apply, ← NatTrans.naturality]
+    simp [-const_obj_obj, ← comp_apply, ← NatTrans.naturality, -TypeCat.hom_comp]
     rfl
   right_inv τ := by
     ext _ (x : X)

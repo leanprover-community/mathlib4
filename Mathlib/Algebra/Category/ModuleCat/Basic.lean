@@ -84,61 +84,27 @@ lemma coe_of (X : Type v) [Ring X] [Module R X] : (of R X : Type v) = X :=
 example (X : Type v) [Ring X] [Module R X] : (of R X : Type v) = X := by with_reducible rfl
 example (M : ModuleCat.{v} R) : of R M = M := by with_reducible rfl
 
-set_option backward.privateInPublic true in
 variable {R} in
-/-- The type of morphisms in `ModuleCat R`. -/
-@[ext]
-structure Hom (M N : ModuleCat.{v} R) where
-  private mk ::
-  /-- The underlying linear map. -/
-  hom' : M →ₗ[R] N
+mk_concrete_category (ModuleCat.{v} R) (· →ₗ[R] ·) (fun M ↦ .id (M := M)) (.comp · ·)
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance moduleCategory : Category.{v, max (v + 1) u} (ModuleCat.{v} R) where
-  Hom M N := Hom M N
-  id _ := ⟨LinearMap.id⟩
-  comp f g := ⟨g.hom'.comp f.hom'⟩
+/--
+info: ModuleCat.Hom.hom.{v, u} {R : Type u} [Ring R] {X Y : ModuleCat R} (f : X.Hom Y) : ↑X →ₗ[R] ↑Y
+-/
+#guard_msgs in
+#check ModuleCat.Hom.hom
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance : ConcreteCategory (ModuleCat.{v} R) (· →ₗ[R] ·) where
-  hom := Hom.hom'
-  ofHom := Hom.mk
+#check ModuleCat.hom_comp
+#check ModuleCat.ofHom
+#check ModuleCat.ofHom_hom
+#check ModuleCat.hom_ofHom
 
 section
 
 variable {R}
 
-/-- Turn a morphism in `ModuleCat` back into a `LinearMap`. -/
-abbrev Hom.hom {A B : ModuleCat.{v} R} (f : Hom A B) :=
-  ConcreteCategory.hom (C := ModuleCat R) f
-
-/-- Typecheck a `LinearMap` as a morphism in `ModuleCat`. -/
-abbrev ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y]
-    (f : X →ₗ[R] Y) : of R X ⟶ of R Y :=
-  ConcreteCategory.ofHom (C := ModuleCat R) f
-
-/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
-def Hom.Simps.hom (A B : ModuleCat.{v} R) (f : Hom A B) :=
-  f.hom
-
-initialize_simps_projections Hom (hom' → hom)
-
-/-!
-The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
--/
-
-@[simp]
-lemma hom_id {M : ModuleCat.{v} R} : (𝟙 M : M ⟶ M).hom = LinearMap.id := rfl
-
 /- Provided for rewriting. -/
 lemma id_apply (M : ModuleCat.{v} R) (x : M) :
     (𝟙 M : M ⟶ M) x = x := by simp
-
-@[simp]
-lemma hom_comp {M N O : ModuleCat.{v} R} (f : M ⟶ N) (g : N ⟶ O) :
-    (f ≫ g).hom = g.hom.comp f.hom := rfl
 
 /- Provided for rewriting. -/
 lemma comp_apply {M N O : ModuleCat.{v} R} (f : M ⟶ N) (g : N ⟶ O) (x : M) :
@@ -148,52 +114,11 @@ lemma comp_apply {M N O : ModuleCat.{v} R} (f : M ⟶ N) (g : N ⟶ O) (x : M) :
 lemma hom_ext {M N : ModuleCat.{v} R} {f g : M ⟶ N} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
-lemma hom_bijective {M N : ModuleCat.{v} R} :
-    Function.Bijective (Hom.hom : (M ⟶ N) → (M →ₗ[R] N)) where
-  left f g h := by cases f; cases g; simpa using h
-  right f := ⟨⟨f⟩, rfl⟩
-
-/-- Convenience shortcut for `ModuleCat.hom_bijective.injective`. -/
-lemma hom_injective {M N : ModuleCat.{v} R} :
-    Function.Injective (Hom.hom : (M ⟶ N) → (M →ₗ[R] N)) :=
-  hom_bijective.injective
-
-/-- Convenience shortcut for `ModuleCat.hom_bijective.surjective`. -/
-lemma hom_surjective {M N : ModuleCat.{v} R} :
-    Function.Surjective (Hom.hom : (M ⟶ N) → (M →ₗ[R] N)) :=
-  hom_bijective.surjective
-
-@[simp]
-lemma hom_ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y]
-    [Module R Y] (f : X →ₗ[R] Y) : (ofHom f).hom = f := rfl
-
-@[simp]
-lemma ofHom_hom {M N : ModuleCat.{v} R} (f : M ⟶ N) :
-    ofHom (Hom.hom f) = f := rfl
-
-@[simp]
-lemma ofHom_id {M : Type v} [AddCommGroup M] [Module R M] : ofHom LinearMap.id = 𝟙 (of R M) := rfl
-
-@[simp]
-lemma ofHom_comp {M N O : Type v} [AddCommGroup M] [AddCommGroup N] [AddCommGroup O] [Module R M]
-    [Module R N] [Module R O] (f : M →ₗ[R] N) (g : N →ₗ[R] O) :
-    ofHom (g.comp f) = ofHom f ≫ ofHom g :=
-  rfl
-
-/- Doesn't need to be `@[simp]` since `simp only` can solve this. -/
-lemma ofHom_apply {M N : Type v} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
-    (f : M →ₗ[R] N) (x : M) : ofHom f x = f x := rfl
-
 lemma inv_hom_apply {M N : ModuleCat.{v} R} (e : M ≅ N) (x : M) : e.inv (e.hom x) = x := by
   simp
 
 lemma hom_inv_apply {M N : ModuleCat.{v} R} (e : M ≅ N) (x : N) : e.hom (e.inv x) = x := by
   simp
-
-/-- `ModuleCat.Hom.hom` bundled as an `Equiv`. -/
-def homEquiv {M N : ModuleCat.{v} R} : (M ⟶ N) ≃ (M →ₗ[R] N) where
-  toFun := Hom.hom
-  invFun := ofHom
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -374,7 +299,9 @@ def homAddEquiv : (M ⟶ N) ≃+ (M →ₗ[R] N) :=
 
 theorem subsingleton_of_isZero (h : IsZero M) : Subsingleton M := by
   refine subsingleton_of_forall_eq 0 (fun x ↦ ?_)
-  rw [← LinearMap.id_apply (R := R) x, ← ModuleCat.hom_id]
+  have := ModuleCat.hom_id (R := R) (X := M)
+  dsimp only at this
+  rw [← LinearMap.id_apply (R := R) x, ← this]
   simp only [(CategoryTheory.Limits.IsZero.iff_id_eq_zero M).mp h, hom_zero, LinearMap.zero_apply]
 
 lemma isZero_iff_subsingleton : IsZero M ↔ Subsingleton M where
@@ -603,7 +530,8 @@ def ofHom₂ {M N P : ModuleCat.{u} R} (f : M →ₗ[R] N →ₗ[R] P) :
 /-- Turn a homomorphism into a bilinear map. -/
 @[simps!]
 def Hom.hom₂ {M N P : ModuleCat.{u} R} (f : M ⟶ (of R (N ⟶ P))) : M →ₗ[R] N →ₗ[R] P :=
-  (f ≫ ofHom homLinearEquiv.toLinearMap).hom
+  -- (f ≫ ofHom ((homLinearEquiv (M := N) (N := P)).toLinearMap)).hom
+  (f ≫ ofHom (X := of R (N ⟶ P)) (Y := of R (N →ₗ[R] P)) homLinearEquiv.toLinearMap).hom
 
 @[simp] lemma Hom.hom₂_ofHom₂ {M N P : ModuleCat.{u} R} (f : M →ₗ[R] N →ₗ[R] P) :
     (ofHom₂ f).hom₂ = f := rfl

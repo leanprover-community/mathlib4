@@ -76,7 +76,7 @@ def Fun.id (X : Type*) : Fun X X := Fun.mk _root_.id
 
 /-- Composition of `Fun`s. -/
 @[simps! +dsimpLhs]
-def Fun.comp {X Y Z : Type*} (g : Fun X Y) (f : Fun Y Z) : Fun X Z := mk (f.toFun ∘ g.toFun)
+def Fun.comp {X Y Z : Type*} (f : Fun Y Z) (g : Fun X Y) : Fun X Z := mk (f.toFun ∘ g.toFun)
 
 /-- The equivalence between `Fun`s and functions between types. -/
 def Fun.homEquiv (X Y : Type u) : (Fun X Y) ≃ (X → Y) where
@@ -87,7 +87,7 @@ def Fun.homEquiv (X Y : Type u) : (Fun X Y) ≃ (X → Y) where
 
 open CategoryTheory
 
-mk_concrete_category (Type u) Fun (Fun.id) (Fun.comp)
+mk_concrete_category (Type u) Fun (Fun.id) (Fun.comp) without_hom_equiv
 
 end TypeCat
 

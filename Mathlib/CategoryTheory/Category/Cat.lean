@@ -41,7 +41,7 @@ def Cat :=
 namespace Cat
 
 instance : Inhabited Cat :=
-  ⟨⟨Type u, CategoryTheory.types⟩⟩
+  ⟨⟨Type u, inferInstance⟩⟩
 
 -- TODO: maybe this coercion should be defined to be `objects.obj`?
 instance : CoeSort Cat (Type u) :=

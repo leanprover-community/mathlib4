@@ -29,7 +29,7 @@ instance (X Y : TestCat.{u}) : FunLike (Fun X Y) X.α Y.α where
 protected def Fun.id (X : TestCat.{u}) : Fun X X where
   toFun := id
 
-protected def Fun.comp {X Y Z : TestCat.{u}} (f : Fun X Y) (g : Fun Y Z) : Fun X Z where
+protected def Fun.comp {X Y Z : TestCat.{u}} (g : Fun Y Z) (f : Fun X Y) : Fun X Z where
   toFun := g.toFun ∘ f.toFun
 
 mk_concrete_category TestCat Fun (Fun.id) (Fun.comp)
@@ -62,7 +62,7 @@ mk_concrete_category TestCat Fun (Fun.id) (Fun.comp)
 #guard_msgs in
 #check Hom.hom
 
-/-- info: TestCat.ofHom.{u_1} {X Y : TestCat} (f : ToHom X Y) : X ⟶ Y -/
+/-- info: TestCat.ofHom.{u_1} {X Y : TestCat} (f : X.Fun Y) : X ⟶ Y -/
 #guard_msgs in
 #check ofHom
 
@@ -74,11 +74,12 @@ mk_concrete_category TestCat Fun (Fun.id) (Fun.comp)
 #guard_msgs in
 #check hom_id
 
-/-- info: TestCat.hom_comp.{u_1} {X Y Z : TestCat} (f : X ⟶ Y) (g : Y ⟶ Z) : Hom.hom (f ≫ g) = (Hom.hom f).comp (Hom.hom g) -/
+/-- info: TestCat.hom_comp.{u_1} {X Y Z : TestCat} (f : X ⟶ Y) (g : Y ⟶ Z) :
+  Hom.hom (f ≫ g) = (fun {X Y Z} => Fun.comp) (Hom.hom g) (Hom.hom f) -/
 #guard_msgs in
 #check hom_comp
 
-/-- info: TestCat.hom_ofHom.{u_1} {X Y : TestCat} (f : ToHom X Y) : Hom.hom (ofHom f) = f -/
+/-- info: TestCat.hom_ofHom.{u_1} {X Y : TestCat} (f : X.Fun Y) : Hom.hom (ofHom f) = f -/
 #guard_msgs in
 #check hom_ofHom
 
@@ -102,7 +103,7 @@ example {X : TestCat} : (𝟙 X : X ⟶ X).hom = Fun.id X := by
   dsimp
 
 example {X Y Z : TestCat} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g).hom = Fun.comp f.hom g.hom := by
+    (f ≫ g).hom = Fun.comp g.hom f.hom := by
   dsimp
 
 example {X Y : TestCat} (f g : X ⟶ Y) (h : f.hom = g.hom) : f = g :=

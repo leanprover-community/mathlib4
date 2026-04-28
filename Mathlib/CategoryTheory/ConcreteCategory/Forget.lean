@@ -40,6 +40,8 @@ related work.
 
 namespace CategoryTheory
 
+open TypeCat
+
 universe w u
 
 variable (C : Type*) [Category* C] {FC : outParam <| C → C → Type*} {CC : outParam <| C → Type w}
