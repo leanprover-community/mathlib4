@@ -52,6 +52,19 @@ theorem toBaseChange_injective (i : ι) : Function.Injective ((ℳ i).toBaseChan
 theorem toBaseChange_bijective (i : ι) : Function.Bijective ((ℳ i).toBaseChange S) :=
   ⟨toBaseChange_injective ℳ i, (ℳ i).toBaseChange_surjective S⟩
 
+/-- The submodule of a tensor product corresponding to a decomposition on the left. -/
+def decomposeTensor (N : Type*) [AddCommGroup N] [Module R N] :
+    ι → Submodule R (M ⊗[R] N) :=
+  fun i ↦ LinearMap.range ((ℳ i).subtype.rTensor N)
+
+/-- The linear map to the submodule from the tensor product with a summand. Make this an equiv? -/
+@[simps]
+def toDecomposeTensor (N : Type*) [AddCommGroup N] [Module R N]
+    (i : ι) : (ℳ i) ⊗[R] N →ₗ[R] decomposeTensor ℳ N i where
+  toFun x := ⟨(LinearMap.rTensor N (ℳ i).subtype) x, by solve_by_elim⟩
+  map_add' _ _ := by simp
+  map_smul' _ _ := by simp
+
 end Decomposition
 
 namespace IsInternal

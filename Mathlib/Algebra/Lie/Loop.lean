@@ -8,7 +8,9 @@ module
 public import Mathlib.Algebra.Group.EvenFunction
 public import Mathlib.Algebra.Lie.Cochain
 public import Mathlib.Algebra.Lie.InvariantForm
+public import Mathlib.Algebra.MonoidAlgebra.Grading
 public import Mathlib.Algebra.Polynomial.Laurent
+public import Mathlib.LinearAlgebra.TensorProduct.Decomposition
 
 /-!
 # Loop Lie algebras and their central extensions
@@ -68,6 +70,90 @@ def loopAlgebraEquivLaurent :
   LieEquiv.refl
 
 namespace LoopAlgebra
+
+lemma lsingle_range (a : A) :
+    LinearMap.range (AddMonoidAlgebra.lsingle a) =
+      Submodule.span R {AddMonoidAlgebra.single a (1 : R)} := by
+  ext f
+  constructor
+  · intro h
+    obtain ⟨y, hy⟩ := LinearMap.mem_range.mp h
+    simp [← hy, Submodule.mem_span_singleton]
+  · intro h
+    obtain ⟨y, hy⟩ := Submodule.mem_span_singleton.mp h
+    simp [← hy]
+--#find_home! lsingle_range --[Mathlib.Algebra.Lie.OfAssociative]
+
+/-- The line map that takes a Lie algebra to a graded part of the loop algebra. -/
+def monomialMap (a : A) : L →ₗ[R] loopAlgebra R A L :=
+  (LinearMap.rTensor L (AddMonoidAlgebra.lsingle a)) ∘ₗ (TensorProduct.lid R L).symm
+
+/-- A graded part of the loop algebra. -/
+def grade (a : A) : Submodule R (loopAlgebra R A L) := LinearMap.range (monomialMap R A L a)
+
+/-
+open DirectSum in
+instance [DecidableEq A] {M N : Type*} [AddCommGroup M] [Module R M]
+    (ℳ : A → Submodule R M) [DirectSum.Decomposition ℳ] [AddCommGroup N] [Module R N] :
+    DirectSum.Decomposition (decomposeTensor ℳ N) where
+  decompose' x := (DirectSum.lmap fun a ↦ toDecomposeTensor ℳ N a)
+    (TensorProduct.directSumLeft R R (fun a ↦ ℳ a) N
+      ((DirectSum.decomposeLinearEquiv ℳ).rTensor N x))
+  left_inv x := by
+    induction x using TensorProduct.induction_on with
+    | zero => simp
+    | tmul x y =>
+      simp only [LinearEquiv.rTensor_tmul]
+      set x' := (DirectSum.decomposeLinearEquiv ℳ) x with hx'
+      rw [← LinearEquiv.symm_apply_apply (DirectSum.decomposeLinearEquiv ℳ) x, ← hx']
+      induction x' using DirectSum.induction_on with
+      | zero => simp
+      | of i x =>
+        rw [DirectSum.decomposeLinearEquiv_symm_apply, DirectSum.decompose_symm_of]
+        have : (DirectSum.lmap fun a ↦ toDecomposeTensor ℳ N a)
+            ((TensorProduct.directSumLeft R R (fun a ↦ (ℳ a)) N)
+              ((DirectSum.of (fun i ↦ ↥(ℳ i)) i) x ⊗ₜ[R] y)) =
+            DirectSum.of (fun i ↦ decomposeTensor ℳ N i) i
+              (toDecomposeTensor ℳ N i (x ⊗ₜ[R] y)) := by
+          ext j
+          by_cases hij : i = j
+          · rw [← hij]
+            simp
+          · simp only [DirectSum.lmap_apply, TensorProduct.directSumLeft_tmul]
+            rw [DirectSum.of_eq_of_ne i j _ (Ne.symm hij),
+              DirectSum.of_eq_of_ne i j _ (Ne.symm hij)]
+            simp
+        simp [this]
+      | add x y hx hy => simp only [map_add, TensorProduct.add_tmul, ← hx, ← hy]
+    | add x y hx hy => simp [hx, hy]
+  right_inv x := by
+    induction x using DirectSum.induction_on with
+    | zero => simp
+    | of i x =>
+      simp
+      sorry
+    | add x y _ _ => sorry
+
+open DirectSum in
+def decompose [DecidableEq A] [AddCommMonoid A] : loopAlgebra R A L →ₗ[R] ⨁ a, (grade R A L a) :=
+  (DirectSum.decompose (AddMonoidAlgebra.grade R (M := A))) ∘ₗ
+    (TensorProduct.directSumLeft R R (ι₁ := A) (grade R A L) L).toLinearMap
+
+--lemma monomialSpace_eq_span (a : A) : monomialSpace = Submodule.span
+
+instance [DecidableEq A] [AddCommMonoid A] :
+    GradedLieAlgebra (grade R A L) where
+  bracket_mem _ _ _ _ hi hj := by
+    obtain ⟨x, hx⟩ := LinearMap.mem_range.mp hi
+    obtain ⟨y, hy⟩ := LinearMap.mem_range.mp hj
+    rw [← hx, ← hy]
+    simp only [grade, LinearMap.mem_range]
+    use ⁅x, y⁆
+    simp [monomialMap]
+  decompose' := decompose R A L
+  left_inv := sorry
+  right_inv := sorry
+-/
 
 open Classical in
 /-- A linear isomorphism to finitely supported functions. -/
