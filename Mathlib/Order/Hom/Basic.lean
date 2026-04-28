@@ -879,6 +879,12 @@ def arrowCongr {α β γ δ} [Preorder α] [Preorder β] [Preorder γ] [Preorder
                OrderHomClass.coe_coe, Function.comp_apply, map_le_map_iff]
     exact Iff.symm f.forall_congr_left
 
+/-- If `α` and `β` are order-isomorphic then the two orders of order-homomorphisms
+from `α` and `β` to themselves are order-isomorphic. -/
+@[simps! apply symm_apply]
+def conj {α β} [Preorder α] [Preorder β] (f : α ≃o β) : (α →o α) ≃ (β →o β) :=
+  arrowCongr f f
+
 def orderEmbeddingCongr (f : α ≃o γ) (g : β ≃o δ) : (α ↪o β) ≃ (γ ↪o δ) :=
   RelIso.relEmbeddingCongr f g
 
@@ -904,12 +910,6 @@ theorem orderIsoCongr_apply (f : α ≃o γ) (g : β ≃o δ) (h : α ≃o β) :
 theorem orderIsoCongr_symm_apply (f : α ≃o γ) (g : β ≃o δ) (h : γ ≃o δ) :
     (orderIsoCongr f g).symm h = .trans (.trans f h) g.symm :=
   rfl
-
-/-- If `α` and `β` are order-isomorphic then the two orders of order-homomorphisms
-from `α` and `β` to themselves are order-isomorphic. -/
-@[simps! apply symm_apply]
-def conj {α β} [Preorder α] [Preorder β] (f : α ≃o β) : (α →o α) ≃ (β →o β) :=
-  arrowCongr f f
 
 /-- `Prod.swap` as an `OrderIso`. -/
 def prodComm : α × β ≃o β × α where
