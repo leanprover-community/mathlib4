@@ -337,30 +337,24 @@ theorem IsHamiltonian.ofPerm {σ : Perm α}
     change (↑σ)^[n - 1 + 1] x = x
     rw [Nat.sub_add_cancel (by lia), Equiv.Perm.iterate_eq_pow,
       hn_def, ← Finset.card_univ, hcycOn.pow_card_apply (Finset.mem_univ x)])
-  set w := Walk.cons (hadj x) p
-  refine ⟨x, w, ?_⟩
-  rw [Walk.isHamiltonianCycle_iff_isCycle_and_length_eq]
-  constructor
-  · rw [Walk.cons_isCycle_iff]
-    constructor
-    · -- `p` is a path
-      rw [Walk.isPath_def]
-      simp only [p, Walk.support_copy, Walk.support_iterate,
-        show n - 1 + 1 = n by lia]
-      have hsx : σ (σ x) ≠ σ x := fun h => hx (σ.injective h)
-      have hcard : n = (σ.toList (σ x)).length := by
-        rw [Equiv.Perm.length_toList, hcycle.cycleOf_eq hsx, hsupport, Finset.card_univ]
-      rw [hcard, ← List.range_map_iterate]
-      simp only [Equiv.Perm.iterate_eq_pow, ← σ.toList_eq_range_map_pow]
-      exact σ.nodup_toList (σ x)
-    · -- `s(x, σ x) ∉ p.edges`
-      simp only [p, Walk.edges_copy, Walk.edges_iterate]
-      rw [List.mem_map]
-      rintro ⟨i, hi, heq⟩
-      rw [List.mem_range] at hi
-      simp only [Equiv.Perm.iterate_eq_pow, ← mul_apply, ← pow_succ] at heq
-      exact edge_ne_of_isCycleOn hcycOn (by lia) (by lia) hcard3 heq
-  · simp only [w, Walk.length_cons, p, Walk.length_copy, Walk.length_iterate]
+  refine ⟨x, .cons (hadj x) p, ?_⟩
+  rw [Walk.isHamiltonianCycle_iff_isCycle_and_length_eq, Walk.cons_isCycle_iff]
+  refine ⟨⟨?_, ?_⟩, ?_⟩
+  · rw [Walk.isPath_def]
+    simp only [p, Walk.support_copy, Walk.support_iterate, show n - 1 + 1 = n by lia]
+    have hsx : σ (σ x) ≠ σ x := σ.injective.ne hx
+    have hcard : n = (σ.toList (σ x)).length := by
+      rw [Equiv.Perm.length_toList, hcycle.cycleOf_eq hsx, hsupport, Finset.card_univ]
+    rw [hcard, ← List.range_map_iterate]
+    simp only [Equiv.Perm.iterate_eq_pow, ← σ.toList_eq_range_map_pow]
+    exact σ.nodup_toList (σ x)
+  · simp only [p, Walk.edges_copy, Walk.edges_iterate]
+    rw [List.mem_map]
+    rintro ⟨i, hi, heq⟩
+    rw [List.mem_range] at hi
+    simp only [Equiv.Perm.iterate_eq_pow, ← mul_apply, ← pow_succ] at heq
+    exact edge_ne_of_isCycleOn hcycOn (by lia) (by lia) hcard3 heq
+  · simp only [Walk.length_cons, p, Walk.length_copy, Walk.length_iterate]
     lia
 
 end Perm
