@@ -874,7 +874,6 @@ lemma count_normalizedFactors_eq_multiplicity :
 
 /-- Normalize the multiplicity of a prime ideal `p` in the factorization of `I`
 as `multiplicity p.asIdeal I`. -/
-@[simp]
 lemma maxPowDividing_eq_pow_multiplicity :
     p.maxPowDividing I = p.asIdeal ^ multiplicity p.asIdeal I := by
   classical
