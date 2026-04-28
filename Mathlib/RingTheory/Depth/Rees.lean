@@ -57,14 +57,13 @@ lemma ModuleCat.exists_isRegular_of_exists_subsingleton_ext [IsNoetherianRing R]
     use []
     simp [isRegular_iff]
   | succ n ih =>
-    have h_supp' := h_supp
-    rw [Module.support_eq_zeroLocus, PrimeSpectrum.zeroLocus_eq_iff] at h_supp'
+    rw [Module.support_eq_zeroLocus, PrimeSpectrum.zeroLocus_eq_iff] at h_supp
     -- use `Ext N M 0` vanish to obtain an `M`-regular element `x` in `Ann(N)`
     have : Subsingleton (N ⟶ M) := Ext.addEquiv₀.subsingleton_congr.mp (h_ext 0 n.zero_lt_succ)
     have : Subsingleton (N →ₗ[R] M) := ModuleCat.homAddEquiv.symm.subsingleton
     rcases subsingleton_linearMap_iff.mp this with ⟨x, mem_ann, hx⟩
     -- take a power of it to make `xᵏ` fall into `I`
-    rcases le_of_le_of_eq Ideal.le_radical h_supp' mem_ann with ⟨k, hk⟩
+    rcases le_of_le_of_eq Ideal.le_radical h_supp mem_ann with ⟨k, hk⟩
     -- prepare to apply induction hypothesis to `M ⧸ xᵏM`
     have ne : I • (⊤ : Submodule R (QuotSMulTop (x ^ k) M)) ≠ ⊤ := by
       by_contra eq
@@ -77,13 +76,8 @@ lemma ModuleCat.exists_isRegular_of_exists_subsingleton_ext [IsNoetherianRing R]
       intro i hi
       -- the vanishing of `Ext` is obtained from the (covariant) long exact sequence given by
       -- `M.smulShortComplex (x ^ k)`
-      have := h_ext i (Nat.lt_add_right 1 hi)
-      have zero1 : IsZero (AddCommGrpCat.of (Ext N M i)) :=
-        AddCommGrpCat.isZero_of_subsingleton _
-      have := (h_ext (i + 1) (Nat.add_lt_add_right hi 1))
-      --add iszero for `AddCommGrpCat.of`
-      have zero2 : IsZero (AddCommGrpCat.of (Ext N M (i + 1))) :=
-        AddCommGrpCat.isZero_of_subsingleton _
+      have zero1 := AddCommGrpCat.isZero_iff_subsingleton'.mpr (h_ext i (by omega))
+      have zero2 := AddCommGrpCat.isZero_iff_subsingleton'.mpr (h_ext (i + 1) (by omega))
       exact AddCommGrpCat.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
         ((Ext.covariant_sequence_exact₃' N (hx.pow k).smulShortComplex_shortExact) i (i + 1) rfl)
         (zero1.eq_zero_of_src _) (zero2.eq_zero_of_tgt _)
