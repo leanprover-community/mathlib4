@@ -178,6 +178,77 @@ theorem Filtration.stronglyAdapted_natural [∀ i, MetrizableSpace (β i)]
 
 end StronglyAdapted
 
+section Progressive
+
+variable {β : Type*} [MeasurableSpace β] {u v : ι → Ω → β}
+
+/-- Progressive process. A sequence of functions `u` is said to be progressive with respect
+to a filtration `f` if at each point in time `i`, `u` restricted to `Set.Iic i × Ω` is measurable
+with respect to the product `MeasurableSpace` structure where the σ-algebra used for `Ω` is `f i`.
+The usual definition uses the interval `[0,i]`, which we replace by `Set.Iic i`. We recover the
+usual definition for index types `ℝ≥0` or `ℕ`. -/
+def IsProgressive [MeasurableSpace ι] (f : Filtration ι m) (u : ι → Ω → β) : Prop :=
+  ∀ i, Measurable[Subtype.instMeasurableSpace.prod (f i)] fun p : Set.Iic i × Ω => u p.1 p.2
+
+theorem isProgressive_const [MeasurableSpace ι] (f : Filtration ι m) (b : β) :
+    IsProgressive f (fun _ _ => b : ι → Ω → β) :=
+  fun _ ↦ by exact measurable_const
+
+namespace IsProgressive
+
+variable [MeasurableSpace ι]
+
+protected theorem adapted (h : IsProgressive f u) : Adapted f u := by
+  intro i
+  have : u i = (fun p : Set.Iic i × Ω => u p.1 p.2) ∘ fun x => (⟨i, Set.mem_Iic.mpr le_rfl⟩, x) :=
+    rfl
+  rw [this]
+  exact (h i).comp measurable_prodMk_left
+
+protected theorem comp {t : ι → Ω → ι} (h : IsProgressive f u) (ht : IsProgressive f t)
+    (ht_le : ∀ i ω, t i ω ≤ i) :
+    IsProgressive f fun i ω => u (t i ω) ω := by
+  intro i
+  have : (fun p : ↥(Set.Iic i) × Ω => u (t (p.fst : ι) p.snd) p.snd) =
+    (fun p : ↥(Set.Iic i) × Ω => u (p.fst : ι) p.snd) ∘ fun p : ↥(Set.Iic i) × Ω =>
+      (⟨t (p.fst : ι) p.snd, Set.mem_Iic.mpr ((ht_le _ _).trans p.fst.prop)⟩, p.snd) := rfl
+  rw [this]
+  exact (h i).comp ((ht i).subtype_mk.prodMk measurable_snd)
+
+section Arithmetic
+
+@[to_additive]
+protected theorem mul [Mul β] [MeasurableMul₂ β] (hu : IsProgressive f u)
+    (hv : IsProgressive f v) : IsProgressive f (u * v) :=
+  fun i ↦ Measurable.mul (hu i) (hv i)
+
+@[to_additive]
+protected theorem finsetProd {γ} [CommMonoid β] [MeasurableMul₂ β] {U : γ → ι → Ω → β}
+    {s : Finset γ} (h : ∀ c ∈ s, IsProgressive f (U c)) :
+    IsProgressive f (∏ c ∈ s, U c) := by
+  sorry
+
+@[to_additive]
+protected theorem inv [Group β] [MeasurableInv β] (hu : IsProgressive f u) :
+    IsProgressive f fun i ω => (u i ω)⁻¹ := fun i => (hu i).inv
+
+@[to_additive]
+protected theorem div [Group β] [MeasurableDiv₂ β] (hu : IsProgressive f u)
+    (hv : IsProgressive f v) : IsProgressive f (u / v) :=
+  fun i ↦ Measurable.div (hu i) (hv i)
+
+/-- The norm of a strongly progressive process is strongly progressive. -/
+protected lemma norm {β : Type*} {u : ι → Ω → β} [MeasurableSpace β] [NormedAddCommGroup β]
+    [OpensMeasurableSpace β] (hu : IsProgressive f u) :
+    IsProgressive f fun t ω ↦ ‖u t ω‖ :=
+  fun s ↦ by apply @(hu s).norm; infer_instance
+
+end Arithmetic
+
+end IsProgressive
+
+end Progressive
+
 variable {β : Type*} [TopologicalSpace β] {u v : ι → Ω → β}
 
 /-- Strongly progressive process. A sequence of functions `u` is said to be strongly
@@ -252,6 +323,17 @@ end Arithmetic
 
 end IsStronglyProgressive
 
+theorem isProgressive_of_tendsto' {γ} [MeasurableSpace ι] [MeasurableSpace β]
+    [PseudoMetrizableSpace β] [BorelSpace β]
+    (fltr : Filter γ) [fltr.NeBot] [fltr.IsCountablyGenerated] {U : γ → ι → Ω → β}
+    (h : ∀ l, IsProgressive f (U l)) (h_tendsto : Tendsto U fltr (𝓝 u)) :
+    IsProgressive f u := by
+  intro i
+  letI : MeasurableSpace (Set.Iic i × Ω) := .prod inferInstance (f i)
+  apply measurable_of_tendsto_metrizable' fltr _ (hf := fun l ↦ h l i)
+  rw [tendsto_pi_nhds] at h_tendsto ⊢
+  exact fun _ ↦ Tendsto.apply_nhds (h_tendsto _) _
+
 theorem isStronglyProgressive_of_tendsto' {γ} [MeasurableSpace ι] [PseudoMetrizableSpace β]
     (fltr : Filter γ) [fltr.NeBot] [fltr.IsCountablyGenerated] {U : γ → ι → Ω → β}
     (h : ∀ l, IsStronglyProgressive f (U l)) (h_tendsto : Tendsto U fltr (𝓝 u)) :
@@ -261,6 +343,11 @@ theorem isStronglyProgressive_of_tendsto' {γ} [MeasurableSpace ι] [PseudoMetri
     (MeasurableSpace.prod _ (f i)) _ _ fltr _ _ _ _ fun l => h l i
   rw [tendsto_pi_nhds] at h_tendsto ⊢
   exact fun _ ↦ Tendsto.apply_nhds (h_tendsto _) _
+
+theorem isProgressive_of_tendsto [MeasurableSpace ι] [MeasurableSpace β] [PseudoMetrizableSpace β]
+    [BorelSpace β] {U : ℕ → ι → Ω → β} (h : ∀ l, IsProgressive f (U l))
+    (h_tendsto : Tendsto U atTop (𝓝 u)) : IsProgressive f u :=
+  isProgressive_of_tendsto' atTop h h_tendsto
 
 theorem isStronglyProgressive_of_tendsto [MeasurableSpace ι] [PseudoMetrizableSpace β]
     {U : ℕ → ι → Ω → β} (h : ∀ l, IsStronglyProgressive f (U l))
