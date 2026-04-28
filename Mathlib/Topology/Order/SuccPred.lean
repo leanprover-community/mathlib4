@@ -15,7 +15,7 @@ This file proves miscellaneous results under the assumption of `OrderTopology` p
 `SuccOrder` or `PredOrder`.
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
   {a : α} {s : Set α}

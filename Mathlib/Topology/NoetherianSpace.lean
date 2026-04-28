@@ -40,7 +40,7 @@ of a Noetherian scheme (e.g., the spectrum of a Noetherian ring) is Noetherian.
 
 -/
 
-@[expose] public section
+public section
 
 open Topology
 
