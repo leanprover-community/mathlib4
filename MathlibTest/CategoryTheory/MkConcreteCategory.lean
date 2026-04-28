@@ -13,7 +13,7 @@ open CategoryTheory
 
 universe v u
 
-/-- A tiny test category whose morphisms are wrappers around functions. -/
+/-- A test category whose morphisms are wrappers around functions. -/
 structure TestCat where
   /-- The underlying type. -/
   α : Type u
