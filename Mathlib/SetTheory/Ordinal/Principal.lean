@@ -29,7 +29,7 @@ equivalent to the epsilon numbers given by `Ordinal.epsilon`.
 * `principal_mul_iff_le_two_or_omega0_opow_opow`: The multiplicative principal ordinals are
   `0`, `1`, `2`, and the ordinals `ω ^ ω ^ x`.
 
-## Todo
+## TODO
 
 * Prove that the exponential principal ordinals are `0`, `1`, `2`, `ω`, or `ε_ x`.
 

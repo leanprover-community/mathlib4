@@ -28,7 +28,7 @@ The following notation is scoped to the `Ordinal` namespace.
 - `ε_ o` is notation for `veblen 1 o`. `ε₀` is notation for `ε_ 0`.
 - `Γ_ o` is notation for `gamma o`. `Γ₀` is notation for `Γ_ 0`.
 
-## Todo
+## TODO
 
 - Prove that `ε₀` and `Γ₀` are countable.
 - Prove that the ordinals principal under `veblen` are the gamma ordinals (and 0).
