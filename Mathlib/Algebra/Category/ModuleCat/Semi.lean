@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.Algebra.Module.PUnit
 public import Mathlib.CategoryTheory.Conj
 public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
+public import Mathlib.Tactic.CategoryTheory.MkConcreteCategory
 
 /-!
 # The category of `R`-modules
@@ -83,55 +84,21 @@ example (X : Type v) [Semiring X] [Module R X] : (of R X : Type v) = X := by wit
 example (M : SemimoduleCat.{v} R) : of R M = M := by with_reducible rfl
 
 variable {R} in
-/-- The type of morphisms in `SemimoduleCat R`. -/
-@[ext]
-structure Hom (M N : SemimoduleCat.{v} R) where
-  mk ::
-  /-- The underlying linear map. -/
-  hom' : M →ₗ[R] N
-
-instance moduleCategory : Category.{v, max (v + 1) u} (SemimoduleCat.{v} R) where
-  Hom M N := Hom M N
-  id _ := ⟨LinearMap.id⟩
-  comp f g := ⟨g.hom'.comp f.hom'⟩
-
-instance : ConcreteCategory (SemimoduleCat.{v} R) (· →ₗ[R] ·) where
-  hom := Hom.hom'
-  ofHom := Hom.mk
+mk_concrete_category (SemimoduleCat R) (· →ₗ[R] ·) (LinearMap.id ·) (LinearMap.comp · ·)
+  with_of_hom {X Y : Type v} [AddCommMonoid X] [Module R X] [AddCommMonoid Y] [Module R Y]
+  hom_type (X →ₗ[R] Y) from (of R X) to (of R Y)
 
 section
 
 variable {R}
 
-/-- Turn a morphism in `SemimoduleCat` back into a `LinearMap`. -/
-abbrev Hom.hom {A B : SemimoduleCat.{v} R} (f : Hom A B) :=
-  ConcreteCategory.hom (C := SemimoduleCat R) f
-
-/-- Typecheck a `LinearMap` as a morphism in `SemimoduleCat`. -/
-abbrev ofHom {X Y : Type v} [AddCommMonoid X] [Module R X] [AddCommMonoid Y] [Module R Y]
-    (f : X →ₗ[R] Y) : of R X ⟶ of R Y :=
-  ConcreteCategory.ofHom (C := SemimoduleCat R) f
-
-/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
-def Hom.Simps.hom (A B : SemimoduleCat.{v} R) (f : Hom A B) :=
-  f.hom
-
-initialize_simps_projections Hom (hom' → hom)
-
 /-!
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
 -/
 
-@[simp]
-lemma hom_id {M : SemimoduleCat.{v} R} : (𝟙 M : M ⟶ M).hom = LinearMap.id := rfl
-
 /- Provided for rewriting. -/
 lemma id_apply (M : SemimoduleCat.{v} R) (x : M) :
     (𝟙 M : M ⟶ M) x = x := by simp
-
-@[simp]
-lemma hom_comp {M N O : SemimoduleCat.{v} R} (f : M ⟶ N) (g : N ⟶ O) :
-    (f ≫ g).hom = g.hom.comp f.hom := rfl
 
 /- Provided for rewriting. -/
 lemma comp_apply {M N O : SemimoduleCat.{v} R} (f : M ⟶ N) (g : N ⟶ O) (x : M) :
@@ -139,12 +106,12 @@ lemma comp_apply {M N O : SemimoduleCat.{v} R} (f : M ⟶ N) (g : N ⟶ O) (x : 
 
 @[ext]
 lemma hom_ext {M N : SemimoduleCat.{v} R} {f g : M ⟶ N} (hf : f.hom = g.hom) : f = g :=
-  Hom.ext hf
+  ConcreteCategory.hom_ext f g <| LinearMap.congr_fun hf
 
 lemma hom_bijective {M N : SemimoduleCat.{v} R} :
     Function.Bijective (Hom.hom : (M ⟶ N) → (M →ₗ[R] N)) where
-  left f g h := by cases f; cases g; simpa using h
-  right f := ⟨⟨f⟩, rfl⟩
+  left _ _ h := hom_ext h
+  right f := ⟨ofHom f, by simp [Hom.hom]⟩
 
 /-- Convenience shortcut for `SemimoduleCat.hom_bijective.injective`. -/
 lemma hom_injective {M N : SemimoduleCat.{v} R} :
@@ -155,14 +122,6 @@ lemma hom_injective {M N : SemimoduleCat.{v} R} :
 lemma hom_surjective {M N : SemimoduleCat.{v} R} :
     Function.Surjective (Hom.hom : (M ⟶ N) → (M →ₗ[R] N)) :=
   hom_bijective.surjective
-
-@[simp]
-lemma hom_ofHom {X Y : Type v} [AddCommMonoid X] [Module R X] [AddCommMonoid Y]
-    [Module R Y] (f : X →ₗ[R] Y) : (ofHom f).hom = f := rfl
-
-@[simp]
-lemma ofHom_hom {M N : SemimoduleCat.{v} R} (f : M ⟶ N) :
-    ofHom (Hom.hom f) = f := rfl
 
 @[simp]
 lemma ofHom_id {M : Type v} [AddCommMonoid M] [Module R M] : ofHom LinearMap.id = 𝟙 (of R M) := rfl
@@ -285,26 +244,32 @@ section AddCommMonoid
 variable {M N : SemimoduleCat.{v} R}
 
 instance : Add (M ⟶ N) where
-  add f g := ⟨f.hom + g.hom⟩
+  add f g := ofHom (f.hom + g.hom)
 
-@[simp] lemma hom_add (f g : M ⟶ N) : (f + g).hom = f.hom + g.hom := rfl
+@[simp] lemma hom_add (f g : M ⟶ N) : (f + g).hom = f.hom + g.hom := by
+  change (ofHom (f.hom + g.hom)).hom = f.hom + g.hom
+  simp
 
 instance : Zero (M ⟶ N) where
-  zero := ⟨0⟩
+  zero := ofHom 0
 
-@[simp] lemma hom_zero : (0 : M ⟶ N).hom = 0 := rfl
+@[simp] lemma hom_zero : (0 : M ⟶ N).hom = 0 := by
+  change (ofHom (0 : M →ₗ[R] N)).hom = 0
+  simp
 
 instance : SMul ℕ (M ⟶ N) where
-  smul n f := ⟨n • f.hom⟩
+  smul n f := ofHom (n • f.hom)
 
-@[simp] lemma hom_nsmul (n : ℕ) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
+@[simp] lemma hom_nsmul (n : ℕ) (f : M ⟶ N) : (n • f).hom = n • f.hom := by
+  change (ofHom (n • f.hom)).hom = n • f.hom
+  simp
 
 -- There is no `ℤ`-smul operation on a general semimodule!
 @[deprecated (since := "2026-01-06")]
 alias hom_zsmul := hom_nsmul
 
 instance : AddCommMonoid (M ⟶ N) :=
-  Function.Injective.addCommMonoid Hom.hom hom_injective rfl (fun _ _ => rfl) (fun _ _ => rfl)
+  Function.Injective.addCommMonoid Hom.hom hom_injective hom_zero hom_add (fun f n => hom_nsmul n f)
 
 @[simp] lemma hom_sum {ι : Type*} (f : ι → (M ⟶ N)) (s : Finset ι) :
     (∑ i ∈ s, f i).hom = ∑ i ∈ s, (f i).hom :=
@@ -321,7 +286,7 @@ instance : HasZeroMorphisms (SemimoduleCat.{v} R) where
 @[simps!]
 def homAddEquiv : (M ⟶ N) ≃+ (M →ₗ[R] N) :=
   { homEquiv with
-    map_add' := fun _ _ => rfl }
+    map_add' := hom_add }
 
 theorem subsingleton_of_isZero (h : IsZero M) : Subsingleton M := by
   refine subsingleton_of_forall_eq 0 (fun x ↦ ?_)
@@ -344,9 +309,11 @@ variable {M N : SemimoduleCat.{v} R}
 variable {S : Type*} [Monoid S] [DistribMulAction S N] [SMulCommClass R S N]
 
 instance : SMul S (M ⟶ N) where
-  smul c f := ⟨c • f.hom⟩
+  smul c f := ofHom (c • f.hom)
 
-@[simp] lemma hom_smul (s : S) (f : M ⟶ N) : (s • f).hom = s • f.hom := rfl
+@[simp] lemma hom_smul (s : S) (f : M ⟶ N) : (s • f).hom = s • f.hom := by
+  change (ofHom (s • f.hom)).hom = s • f.hom
+  simp
 
 end SMul
 
@@ -358,13 +325,13 @@ instance Hom.instModule : Module S (M ⟶ N) :=
   Function.Injective.module S
     { toFun := Hom.hom, map_zero' := hom_zero, map_add' := hom_add }
     hom_injective
-    (fun _ _ => rfl)
+    hom_smul
 
 /-- `SemimoduleCat.Hom.hom` bundled as a linear equivalence. -/
 @[simps]
 def homLinearEquiv : (M ⟶ N) ≃ₗ[S] (M →ₗ[R] N) :=
   { homAddEquiv with
-    map_smul' := fun _ _ => rfl }
+    map_smul' := hom_smul }
 
 end Module
 
@@ -408,11 +375,11 @@ instance : Linear S (SemimoduleCat.{v} S) := SemimoduleCat.Algebra.instLinear -/
 variable {X Y X' Y' : SemimoduleCat.{v} S}
 
 theorem Iso.homCongr_eq_arrowCongr (i : X ≅ X') (j : Y ≅ Y') (f : X ⟶ Y) :
-    Iso.homCongr i j f = ⟨LinearEquiv.arrowCongr i.toLinearEquivₛ j.toLinearEquivₛ f.hom⟩ :=
+    Iso.homCongr i j f = ofHom (LinearEquiv.arrowCongr i.toLinearEquivₛ j.toLinearEquivₛ f.hom) :=
   rfl
 
 theorem Iso.conj_eq_conj (i : X ≅ X') (f : End X) :
-    Iso.conj i f = ⟨LinearEquiv.conj i.toLinearEquivₛ f.hom⟩ :=
+    Iso.conj i f = ofHom (LinearEquiv.conj i.toLinearEquivₛ f.hom) :=
   rfl
 
 end
@@ -455,10 +422,14 @@ def Hom.hom₂ {M N P : SemimoduleCat.{u} R} (f : M ⟶ (of R (N ⟶ P))) : M �
   (f ≫ ofHom homLinearEquiv.toLinearMap).hom
 
 @[simp] lemma Hom.hom₂_ofHom₂ {M N P : SemimoduleCat.{u} R} (f : M →ₗ[R] N →ₗ[R] P) :
-    (ofHom₂ f).hom₂ = f := rfl
+    (ofHom₂ f).hom₂ = f := by
+  ext x y
+  simp [ofHom₂, Hom.hom₂]
 
 @[simp] lemma ofHom₂_hom₂ {M N P : SemimoduleCat.{u} R} (f : M ⟶ of R (N ⟶ P)) :
-    ofHom₂ f.hom₂ = f := rfl
+    ofHom₂ f.hom₂ = f := by
+  ext x y
+  simp [ofHom₂, Hom.hom₂]
 
 end SemimoduleCat
 

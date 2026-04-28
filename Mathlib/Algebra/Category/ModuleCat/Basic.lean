@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Semi
 public import Mathlib.Algebra.Category.Grp.Preadditive
 public import Mathlib.CategoryTheory.Linear.Basic
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+public import Mathlib.Tactic.CategoryTheory.MkConcreteCategory
 
 /-!
 # The category of `R`-modules
@@ -84,61 +85,22 @@ lemma coe_of (X : Type v) [Ring X] [Module R X] : (of R X : Type v) = X :=
 example (X : Type v) [Ring X] [Module R X] : (of R X : Type v) = X := by with_reducible rfl
 example (M : ModuleCat.{v} R) : of R M = M := by with_reducible rfl
 
-set_option backward.privateInPublic true in
 variable {R} in
-/-- The type of morphisms in `ModuleCat R`. -/
-@[ext]
-structure Hom (M N : ModuleCat.{v} R) where
-  private mk ::
-  /-- The underlying linear map. -/
-  hom' : M →ₗ[R] N
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance moduleCategory : Category.{v, max (v + 1) u} (ModuleCat.{v} R) where
-  Hom M N := Hom M N
-  id _ := ⟨LinearMap.id⟩
-  comp f g := ⟨g.hom'.comp f.hom'⟩
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance : ConcreteCategory (ModuleCat.{v} R) (· →ₗ[R] ·) where
-  hom := Hom.hom'
-  ofHom := Hom.mk
+mk_concrete_category (ModuleCat R) (· →ₗ[R] ·) (LinearMap.id ·) (LinearMap.comp · ·)
+  with_of_hom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y]
+  hom_type (X →ₗ[R] Y) from (of R X) to (of R Y)
 
 section
 
 variable {R}
 
-/-- Turn a morphism in `ModuleCat` back into a `LinearMap`. -/
-abbrev Hom.hom {A B : ModuleCat.{v} R} (f : Hom A B) :=
-  ConcreteCategory.hom (C := ModuleCat R) f
-
-/-- Typecheck a `LinearMap` as a morphism in `ModuleCat`. -/
-abbrev ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y]
-    (f : X →ₗ[R] Y) : of R X ⟶ of R Y :=
-  ConcreteCategory.ofHom (C := ModuleCat R) f
-
-/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
-def Hom.Simps.hom (A B : ModuleCat.{v} R) (f : Hom A B) :=
-  f.hom
-
-initialize_simps_projections Hom (hom' → hom)
-
 /-!
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
 -/
 
-@[simp]
-lemma hom_id {M : ModuleCat.{v} R} : (𝟙 M : M ⟶ M).hom = LinearMap.id := rfl
-
 /- Provided for rewriting. -/
 lemma id_apply (M : ModuleCat.{v} R) (x : M) :
     (𝟙 M : M ⟶ M) x = x := by simp
-
-@[simp]
-lemma hom_comp {M N O : ModuleCat.{v} R} (f : M ⟶ N) (g : N ⟶ O) :
-    (f ≫ g).hom = g.hom.comp f.hom := rfl
 
 /- Provided for rewriting. -/
 lemma comp_apply {M N O : ModuleCat.{v} R} (f : M ⟶ N) (g : N ⟶ O) (x : M) :
@@ -146,12 +108,12 @@ lemma comp_apply {M N O : ModuleCat.{v} R} (f : M ⟶ N) (g : N ⟶ O) (x : M) :
 
 @[ext]
 lemma hom_ext {M N : ModuleCat.{v} R} {f g : M ⟶ N} (hf : f.hom = g.hom) : f = g :=
-  Hom.ext hf
+  ConcreteCategory.hom_ext f g <| LinearMap.congr_fun hf
 
 lemma hom_bijective {M N : ModuleCat.{v} R} :
     Function.Bijective (Hom.hom : (M ⟶ N) → (M →ₗ[R] N)) where
-  left f g h := by cases f; cases g; simpa using h
-  right f := ⟨⟨f⟩, rfl⟩
+  left _ _ h := hom_ext h
+  right f := ⟨ofHom f, by simp [Hom.hom]⟩
 
 /-- Convenience shortcut for `ModuleCat.hom_bijective.injective`. -/
 lemma hom_injective {M N : ModuleCat.{v} R} :
@@ -162,14 +124,6 @@ lemma hom_injective {M N : ModuleCat.{v} R} :
 lemma hom_surjective {M N : ModuleCat.{v} R} :
     Function.Surjective (Hom.hom : (M ⟶ N) → (M →ₗ[R] N)) :=
   hom_bijective.surjective
-
-@[simp]
-lemma hom_ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y]
-    [Module R Y] (f : X →ₗ[R] Y) : (ofHom f).hom = f := rfl
-
-@[simp]
-lemma ofHom_hom {M N : ModuleCat.{v} R} (f : M ⟶ N) :
-    ofHom (Hom.hom f) = f := rfl
 
 @[simp]
 lemma ofHom_id {M : Type v} [AddCommGroup M] [Module R M] : ofHom LinearMap.id = 𝟙 (of R M) := rfl
@@ -208,8 +162,12 @@ def equivalenceSemimoduleCat : ModuleCat.{v} R ≌ SemimoduleCat.{v} R where
   inverse := letI := Module.addCommMonoidToAddCommGroup
   { obj M := of R M
     map {M N} f := ofHom f.hom }
-  unitIso := NatIso.ofComponents fun _ ↦ { hom := ⟨.id⟩, inv := ⟨.id⟩ }
-  counitIso := NatIso.ofComponents fun _ ↦ { hom := ⟨.id⟩, inv := ⟨.id⟩ }
+  unitIso := NatIso.ofComponents fun _ ↦
+    { hom := by refine ConcreteCategory.ofHom (C := ModuleCat R) ?_; exact LinearMap.id
+      inv := by refine ConcreteCategory.ofHom (C := ModuleCat R) ?_; exact LinearMap.id }
+  counitIso := NatIso.ofComponents fun _ ↦
+    { hom := by refine ConcreteCategory.ofHom (C := SemimoduleCat R) ?_; exact LinearMap.id
+      inv := by refine ConcreteCategory.ofHom (C := SemimoduleCat R) ?_; exact LinearMap.id }
 
 end
 

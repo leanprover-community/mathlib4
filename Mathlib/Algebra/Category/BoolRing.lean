@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.Algebra.Ring.BooleanRing
 public import Mathlib.Order.Category.BoolAlg
+public import Mathlib.Tactic.CategoryTheory.MkConcreteCategory
 
 /-!
 # The category of Boolean rings
@@ -51,39 +52,13 @@ theorem coe_of (α : Type*) [BooleanRing α] : ↥(of α) = α :=
 instance : Inhabited BoolRing :=
   ⟨of PUnit⟩
 
-variable {R} in
-set_option backward.privateInPublic true in
-/-- The type of morphisms in `BoolRing`. -/
-@[ext]
-structure Hom (R S : BoolRing) where
-  private mk ::
-  /-- The underlying ring hom. -/
-  hom' : R →+* S
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance : Category BoolRing where
-  Hom R S := Hom R S
-  id R := ⟨RingHom.id R⟩
-  comp f g := ⟨g.hom'.comp f.hom'⟩
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance : ConcreteCategory BoolRing (· →+* ·) where
-  hom f := f.hom'
-  ofHom f := ⟨f⟩
-
-/-- Turn a morphism in `BoolRing` back into a `RingHom`. -/
-abbrev Hom.hom {X Y : BoolRing} (f : Hom X Y) :=
-  ConcreteCategory.hom (C := BoolRing) f
-
-/-- Typecheck a `RingHom` as a morphism in `BoolRing`. -/
-abbrev ofHom {R S : Type u} [BooleanRing R] [BooleanRing S] (f : R →+* S) : of R ⟶ of S :=
-  ConcreteCategory.ofHom f
+mk_concrete_category BoolRing (· →+* ·) (RingHom.id ·) (RingHom.comp · ·)
+  with_of_hom {R S : Type u} [BooleanRing R] [BooleanRing S]
+  hom_type (R →+* S) from (of R) to (of S)
 
 @[ext]
 lemma hom_ext {R S : BoolRing} {f g : R ⟶ S} (hf : f.hom = g.hom) : f = g :=
-  Hom.ext hf
+  ConcreteCategory.hom_ext f g <| RingHom.congr_fun hf
 
 instance hasForgetToCommRing : HasForget₂ BoolRing CommRingCat where
   forget₂ :=
@@ -95,8 +70,8 @@ set_option backward.privateInPublic.warn false in
 /-- Constructs an isomorphism of Boolean rings from a ring isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : BoolRing.{u}} (e : α ≃+* β) : α ≅ β where
-  hom := ⟨e⟩
-  inv := ⟨e.symm⟩
+  hom := ofHom e
+  inv := ofHom e.symm
   hom_inv_id := by ext; exact e.symm_apply_apply _
   inv_hom_id := by ext; exact e.apply_symm_apply _
 

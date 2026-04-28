@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Elementwise
 public import Mathlib.Topology.ContinuousMap.Basic
+public import Mathlib.Tactic.CategoryTheory.MkConcreteCategory
 
 /-!
 # Category instance for topological spaces
@@ -63,52 +64,18 @@ lemma coe_of (X : Type u) [TopologicalSpace X] : (of X : Type u) = X :=
 
 lemma of_carrier (X : TopCat.{u}) : of X = X := rfl
 
-variable {X} in
-/-- The type of morphisms in `TopCat`. -/
-@[ext]
-structure Hom (X Y : TopCat.{u}) where
-  --private mk ::
-  /-- The underlying `ContinuousMap`. -/
-  hom' : C(X, Y)
-
-instance : Category TopCat where
-  Hom X Y := Hom X Y
-  id X := ⟨ContinuousMap.id X⟩
-  comp f g := ⟨g.hom'.comp f.hom'⟩
-
-instance : ConcreteCategory.{u} TopCat (fun X Y => C(X, Y)) where
-  hom := Hom.hom'
-  ofHom f := ⟨f⟩
-
-/-- Turn a morphism in `TopCat` back into a `ContinuousMap`. -/
-abbrev Hom.hom {X Y : TopCat.{u}} (f : Hom X Y) :=
-  ConcreteCategory.hom (C := TopCat) f
-
-/-- Typecheck a `ContinuousMap` as a morphism in `TopCat`. -/
-abbrev ofHom {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y] (f : C(X, Y)) : of X ⟶ of Y :=
-  ConcreteCategory.ofHom (C := TopCat) f
-
-/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
-def Hom.Simps.hom (X Y : TopCat) (f : Hom X Y) :=
-  f.hom
-
-initialize_simps_projections Hom (hom' → hom)
+mk_concrete_category TopCat (fun X Y => C(X, Y)) (ContinuousMap.id ·) (ContinuousMap.comp · ·)
+  with_of_hom {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y]
+  hom_type C(X, Y) from (TopCat.of X) to (TopCat.of Y)
 
 /-!
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
 -/
 
 @[simp]
-lemma hom_id {X : TopCat.{u}} : (𝟙 X : X ⟶ X).hom = ContinuousMap.id X := rfl
-
-@[simp]
 theorem id_app (X : TopCat.{u}) (x : ↑X) : (𝟙 X : X ⟶ X) x = x := rfl
 
 @[simp] theorem coe_id (X : TopCat.{u}) : (𝟙 X : X → X) = id := rfl
-
-@[simp]
-lemma hom_comp {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g).hom = g.hom.comp f.hom := rfl
 
 @[simp]
 theorem comp_app {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
@@ -124,14 +91,6 @@ lemma hom_ext {X Y : TopCat} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
 @[ext]
 lemma ext {X Y : TopCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
   ConcreteCategory.hom_ext _ _ w
-
-@[simp]
-lemma hom_ofHom {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y] (f : C(X, Y)) :
-    (ofHom f).hom = f := rfl
-
-@[simp]
-lemma ofHom_hom {X Y : TopCat} (f : X ⟶ Y) :
-    ofHom (Hom.hom f) = f := rfl
 
 @[simp]
 lemma ofHom_id {X : Type u} [TopologicalSpace X] : ofHom (ContinuousMap.id X) = 𝟙 (of X) := rfl

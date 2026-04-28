@@ -9,6 +9,7 @@ public import Mathlib.Algebra.PEmptyInstances
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+public import Mathlib.Tactic.CategoryTheory.MkConcreteCategory
 
 /-!
 # Category instances for `Mul`, `Add`, `Semigroup` and `AddSemigroup`
@@ -68,55 +69,14 @@ abbrev of (M : Type u) [Mul M] : MagmaCat := ⟨M⟩
 
 end MagmaCat
 
-/-- The type of morphisms in `AddMagmaCat R`. -/
-@[ext]
-structure AddMagmaCat.Hom (A B : AddMagmaCat.{u}) where
-  private mk ::
-  /-- The underlying `AddHom`. -/
-  hom' : A →ₙ+ B
-
-set_option backward.privateInPublic true in
-/-- The type of morphisms in `MagmaCat R`. -/
-@[to_additive, ext]
-structure MagmaCat.Hom (A B : MagmaCat.{u}) where
-  private mk ::
-  /-- The underlying `MulHom`. -/
-  hom' : A →ₙ* B
+mk_concrete_category MagmaCat (· →ₙ* ·) (MulHom.id ·) (MulHom.comp · ·)
+  with_of_hom {X Y : Type u} [Mul X] [Mul Y]
+  hom_type (X →ₙ* Y) from (MagmaCat.of X) to (MagmaCat.of Y)
+  to_additive AddMagmaCat (· →ₙ+ ·) (AddHom.id ·) (AddHom.comp · ·)
+  with_of_hom {X Y : Type u} [Add X] [Add Y]
+  hom_type (X →ₙ+ Y) from (AddMagmaCat.of X) to (AddMagmaCat.of Y)
 
 namespace MagmaCat
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-@[to_additive]
-instance : Category MagmaCat.{u} where
-  Hom X Y := Hom X Y
-  id X := ⟨MulHom.id X⟩
-  comp f g := ⟨g.hom'.comp f.hom'⟩
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-@[to_additive]
-instance : ConcreteCategory MagmaCat (· →ₙ* ·) where
-  hom := Hom.hom'
-  ofHom := Hom.mk
-
-/-- Turn a morphism in `MagmaCat` back into a `MulHom`. -/
-@[to_additive /-- Turn a morphism in `AddMagmaCat` back into an `AddHom`. -/]
-abbrev Hom.hom {X Y : MagmaCat.{u}} (f : Hom X Y) :=
-  ConcreteCategory.hom (C := MagmaCat) f
-
-/-- Typecheck a `MulHom` as a morphism in `MagmaCat`. -/
-@[to_additive /-- Typecheck an `AddHom` as a morphism in `AddMagmaCat`. -/]
-abbrev ofHom {X Y : Type u} [Mul X] [Mul Y] (f : X →ₙ* Y) : of X ⟶ of Y :=
-  ConcreteCategory.ofHom (C := MagmaCat) f
-
-variable {R} in
-/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
-def Hom.Simps.hom (X Y : MagmaCat.{u}) (f : Hom X Y) :=
-  f.hom
-
-initialize_simps_projections Hom (hom' → hom)
-initialize_simps_projections AddMagmaCat.Hom (hom' → hom)
 
 /-!
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
@@ -138,17 +98,10 @@ lemma ext {X Y : MagmaCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
 -- This is not `simp` to avoid rewriting in types of terms.
 theorem coe_of (M : Type u) [Mul M] : (MagmaCat.of M : Type u) = M := rfl
 
-@[to_additive (attr := simp)]
-lemma hom_id {M : MagmaCat} : (𝟙 M : M ⟶ M).hom = MulHom.id M := rfl
-
 /- Provided for rewriting. -/
 @[to_additive]
 lemma id_apply (M : MagmaCat) (x : M) :
     (𝟙 M : M ⟶ M) x = x := by simp
-
-@[to_additive (attr := simp)]
-lemma hom_comp {M N T : MagmaCat} (f : M ⟶ N) (g : N ⟶ T) :
-    (f ≫ g).hom = g.hom.comp f.hom := rfl
 
 /- Provided for rewriting. -/
 @[to_additive]
@@ -158,13 +111,6 @@ lemma comp_apply {M N T : MagmaCat} (f : M ⟶ N) (g : N ⟶ T) (x : M) :
 @[to_additive (attr := ext)]
 lemma hom_ext {M N : MagmaCat} {f g : M ⟶ N} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
-
-@[to_additive (attr := simp)]
-lemma hom_ofHom {M N : Type u} [Mul M] [Mul N] (f : M →ₙ* N) : (ofHom f).hom = f := rfl
-
-@[to_additive (attr := simp)]
-lemma ofHom_hom {M N : MagmaCat} (f : M ⟶ N) :
-    ofHom (Hom.hom f) = f := rfl
 
 @[to_additive (attr := simp)]
 lemma ofHom_id {M : Type u} [Mul M] : ofHom (MulHom.id M) = 𝟙 (of M) := rfl
@@ -230,55 +176,14 @@ abbrev of (M : Type u) [Semigroup M] : Semigrp := ⟨M⟩
 
 end Semigrp
 
-/-- The type of morphisms in `AddSemigrp R`. -/
-@[ext]
-structure AddSemigrp.Hom (A B : AddSemigrp.{u}) where
-  private mk ::
-  /-- The underlying `AddHom`. -/
-  hom' : A →ₙ+ B
-
-set_option backward.privateInPublic true in
-/-- The type of morphisms in `Semigrp R`. -/
-@[to_additive, ext]
-structure Semigrp.Hom (A B : Semigrp.{u}) where
-  private mk ::
-  /-- The underlying `MulHom`. -/
-  hom' : A →ₙ* B
+mk_concrete_category Semigrp (· →ₙ* ·) (MulHom.id ·) (MulHom.comp · ·)
+  with_of_hom {X Y : Type u} [Semigroup X] [Semigroup Y]
+  hom_type (X →ₙ* Y) from (Semigrp.of X) to (Semigrp.of Y)
+  to_additive AddSemigrp (· →ₙ+ ·) (AddHom.id ·) (AddHom.comp · ·)
+  with_of_hom {X Y : Type u} [AddSemigroup X] [AddSemigroup Y]
+  hom_type (X →ₙ+ Y) from (AddSemigrp.of X) to (AddSemigrp.of Y)
 
 namespace Semigrp
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-@[to_additive]
-instance : Category Semigrp.{u} where
-  Hom X Y := Hom X Y
-  id X := ⟨MulHom.id X⟩
-  comp f g := ⟨g.hom'.comp f.hom'⟩
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-@[to_additive]
-instance : ConcreteCategory Semigrp (· →ₙ* ·) where
-  hom := Hom.hom'
-  ofHom := Hom.mk
-
-/-- Turn a morphism in `Semigrp` back into a `MulHom`. -/
-@[to_additive /-- Turn a morphism in `AddSemigrp` back into an `AddHom`. -/]
-abbrev Hom.hom {X Y : Semigrp.{u}} (f : Hom X Y) :=
-  ConcreteCategory.hom (C := Semigrp) f
-
-/-- Typecheck a `MulHom` as a morphism in `Semigrp`. -/
-@[to_additive /-- Typecheck an `AddHom` as a morphism in `AddSemigrp`. -/]
-abbrev ofHom {X Y : Type u} [Semigroup X] [Semigroup Y] (f : X →ₙ* Y) : of X ⟶ of Y :=
-  ConcreteCategory.ofHom (C := Semigrp) f
-
-variable {R} in
-/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
-def Hom.Simps.hom (X Y : Semigrp.{u}) (f : Hom X Y) :=
-  f.hom
-
-initialize_simps_projections Hom (hom' → hom)
-initialize_simps_projections AddSemigrp.Hom (hom' → hom)
 
 /-!
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
@@ -301,17 +206,10 @@ lemma ext {X Y : Semigrp} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
 theorem coe_of (R : Type u) [Semigroup R] : ↑(Semigrp.of R) = R :=
   rfl
 
-@[to_additive (attr := simp)]
-lemma hom_id {X : Semigrp} : (𝟙 X : X ⟶ X).hom = MulHom.id X := rfl
-
 /- Provided for rewriting. -/
 @[to_additive]
 lemma id_apply (X : Semigrp) (x : X) :
     (𝟙 X : X ⟶ X) x = x := by simp
-
-@[to_additive (attr := simp)]
-lemma hom_comp {X Y T : Semigrp} (f : X ⟶ Y) (g : Y ⟶ T) :
-    (f ≫ g).hom = g.hom.comp f.hom := rfl
 
 /- Provided for rewriting. -/
 @[to_additive]
@@ -321,13 +219,6 @@ lemma comp_apply {X Y T : Semigrp} (f : X ⟶ Y) (g : Y ⟶ T) (x : X) :
 @[to_additive (attr := ext)]
 lemma hom_ext {X Y : Semigrp} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
-
-@[to_additive (attr := simp)]
-lemma hom_ofHom {X Y : Type u} [Semigroup X] [Semigroup Y] (f : X →ₙ* Y) : (ofHom f).hom = f := rfl
-
-@[to_additive (attr := simp)]
-lemma ofHom_hom {X Y : Semigrp} (f : X ⟶ Y) :
-    ofHom (Hom.hom f) = f := rfl
 
 @[to_additive (attr := simp)]
 lemma ofHom_id {X : Type u} [Semigroup X] : ofHom (MulHom.id X) = 𝟙 (of X) := rfl
