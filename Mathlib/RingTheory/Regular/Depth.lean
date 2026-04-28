@@ -8,4 +8,4 @@ module
 public import Mathlib.RingTheory.Regular.LinearMap
 public import Mathlib.Tactic.Linter.DeprecatedModule
 
-deprecated_module (since := "2026-04-14")
+deprecated_module (since := "2026-04-28")

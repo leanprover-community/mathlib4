@@ -21,7 +21,7 @@ public import Mathlib.RingTheory.OreLocalization.OreSet
 - `rank_quotient_add_rank_of_isDomain`: The **rank-nullity theorem** for commutative domains.
 -/
 
-@[expose] public section
+public section
 
 open Cardinal Module nonZeroDivisors
 
