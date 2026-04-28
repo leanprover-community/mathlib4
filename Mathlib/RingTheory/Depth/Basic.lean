@@ -368,25 +368,40 @@ lemma moduleDepth_shrink_eq [IsNoetherianRing R] (I : Ideal R) [Small.{w, u} R]
     exact LinearEquiv.isRegular_congr (Shrink.linearEquiv.{w} R M).symm rs
   congr!
 
-lemma ring_depth_invariant [IsNoetherianRing R] (I : Ideal R) (lt_top : I < ⊤) :
+lemma Ideal.depth_shrink_eq [IsNoetherianRing R] (I : Ideal R) [Small.{w, u} R]
+    (M : Type v) [AddCommGroup M] [Module R M] [Module.Finite R M]
+    (smul_lt : I • (⊤ : Submodule R M) < ⊤) [Small.{w} M] :
+    I.depth (ModuleCat.of R M) = I.depth (ModuleCat.of R (Shrink.{w} M)) := by
+  simp only [Ideal.depth]
+  have : Nontrivial (R ⧸ I) := by
+    apply Submodule.Quotient.nontrivial_iff.mpr
+    by_contra eq
+    simp [eq] at smul_lt
+  have := small_of_injective (Shrink.linearEquiv.{v} R (R ⧸ I)).injective
+  let e : (ModuleCat.of R (Shrink.{w} (Shrink.{v} (R ⧸ I)))) ≅
+    (ModuleCat.of R (Shrink.{w} (R ⧸ I))) :=
+    (((Shrink.linearEquiv R _).trans (Shrink.linearEquiv R _)).trans
+      (Shrink.linearEquiv R _).symm).toModuleIso
+  rw [← moduleDepth_eq_of_iso_fst _ e]
+  apply moduleDepth_shrink_eq I (Shrink.{v} (R ⧸ I)) M smul_lt
+  rw [(Shrink.linearEquiv R _).support_eq, Module.support_eq_zeroLocus, annihilator_quotient]
+
+lemma IsLocalRing.depth_shrink_eq [IsNoetherianRing R] [IsLocalRing R] [Small.{w, u} R]
+    (M : Type v) [AddCommGroup M] [Module R M] [Module.Finite R M] [Nontrivial M] [Small.{w} M] :
+    IsLocalRing.depth (ModuleCat.of R M) = IsLocalRing.depth (ModuleCat.of R (Shrink.{w} M)) :=
+  Ideal.depth_shrink_eq _ M (Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
+    (IsLocalRing.maximalIdeal_le_jacobson _)).lt_top'
+
+lemma ring_depth_shrink_eq [IsNoetherianRing R] (I : Ideal R) (lt_top : I < ⊤) :
     I.depth (ModuleCat.of R (Shrink.{v} R)) = I.depth (ModuleCat.of R R) := by
   simp only [Ideal.depth]
-  let _ : Nontrivial (R ⧸ I) := Ideal.Quotient.nontrivial_iff.mpr lt_top.ne
-  let _ : Nontrivial R := (Submodule.nontrivial_iff R).mp (nontrivial_of_lt I ⊤ lt_top)
-  let e : (of R (Shrink.{u, u} (R ⧸ I))) ≅ (of R (R ⧸ I)) :=
-    (Shrink.linearEquiv.{u, u} R (R ⧸ I)).toModuleIso
+  have : Nontrivial (R ⧸ I) := Ideal.Quotient.nontrivial_iff.mpr lt_top.ne
+  have : Nontrivial R := (Submodule.nontrivial_iff R).mp (nontrivial_of_lt I ⊤ lt_top)
+  let e := (Shrink.linearEquiv.{u} R (R ⧸ I)).toModuleIso
   rw [moduleDepth_eq_of_iso_fst _ e, eq_comm]
   have smul_lt : I • (⊤ : Submodule R R) < ⊤ := by simpa using lt_top
-  apply moduleDepth_eq_moduleDepth_shrink I (R ⧸ I) R smul_lt
+  apply moduleDepth_shrink_eq I (R ⧸ I) R smul_lt
   simp [Module.support_eq_zeroLocus, Ideal.annihilator_quotient]
-
-omit [Small.{v, u} R] in
-lemma ring_depth_uLift [IsNoetherianRing R] (I : Ideal R) (lt_top : I < ⊤) :
-    I.depth (ModuleCat.of R (ULift.{w} R)) = I.depth (ModuleCat.of R R) := by
-  let e : (of R (Shrink.{max u w} R)) ≅ (of R (ULift.{w} R)) :=
-    ((Shrink.linearEquiv.{max u w} R R).trans ULift.moduleEquiv.symm).toModuleIso
-  rw [← I.depth_eq_of_iso e]
-  exact ring_depth_invariant.{max u w} I lt_top
 
 end
 
