@@ -51,11 +51,11 @@ A term preceded by `←` gets moved to the left, while a term without `←` gets
   right, *after* `a`.
   However, if the terms matched by `a` and `b` do not overlap, then `move_add [← a, ← b]`
   has the same effect as `move_add [b]; move_add [a]`:
-  first, we move `b` to the left, then we move `a` also to the left, *before* `a`.
+  first, we move `b` to the left, then we move `a` also to the left, *before* `b`.
   The behaviour in the situation where `a` and `b` overlap is unspecified: `move_add`
   will descend into subexpressions, but the order in which they are visited depends
   on which rearrangements have already happened.
-  Also note, though, that `move_add [a, b]` may differ `move_add [a]; move_add [b]`,
+  Also note, though, that `move_add [a, b]` may differ from `move_add [a]; move_add [b]`,
   for instance when `a` and `b` are `DefEq`.
 
 * Unification of inputs and repetitions: `move_add [_, ← _, a * _]`
@@ -118,10 +118,6 @@ def Lean.Expr.getExprInputs : Expr → Array Expr
   | mdata _ e         => #[e]
   | proj _ _ e        => #[e]
   | _ => #[]
-
-/-- `size e` returns the number of subexpressions of `e`. -/
-@[deprecated Lean.Expr.sizeWithoutSharing (since := "2025-09-04")]
-partial def Lean.Expr.size (e : Expr) : ℕ := (e.getExprInputs.map size).foldl (· + ·) 1
 
 namespace Mathlib.MoveAdd
 
@@ -260,7 +256,7 @@ partial def getAddends (sum : Expr) : MetaM (Array Expr) := do
   else return #[sum]
 
 /-- Recursively compute the Array of `getAddends` Arrays by recursing into the expression `sum`
-looking for instance of the operation `op`.
+looking for instances of the operation `op`.
 
 Possibly returns duplicates!
 -/
@@ -307,12 +303,12 @@ def permuteExpr (tgt : Expr) (instructions : List (Expr × Bool)) : MetaM Expr :
     permTgt := permTgt.replace (if · == old then new else none)
   return permTgt
 
-/-- `pairUp L R` takes to lists `L R : List Expr` as inputs.
+/-- `pairUp L R` takes two lists `L R : List Expr` as inputs.
 It scans the elements of `L`, looking for a corresponding `DefEq` `Expr`ession in `R`.
 If it finds one such element `d`, then it sets the element `d : R` aside, removing it from `R`, and
 it continues with the matching on the remainder of `L` and on `R.erase d`.
 
-At the end, it returns the sublist of `R` of the elements that were matched to some element of `R`,
+At the end, it returns the sublist of `R` of the elements that were matched to some element of `L`,
 in the order in which they appeared in `L`,
 as well as the sublist of `L` of elements that were not matched, also in the order in which they
 appeared in `L`.

@@ -9,7 +9,7 @@ public import Mathlib.Init
 public import Aesop
 
 /-!
-# arith_mult Rule Set
+# `arith_mult` Rule Set
 
 This module defines the `IsMultiplicative` Aesop rule set which is used by the
 `arith_mult` tactic. Aesop rule sets only become visible once the file in which

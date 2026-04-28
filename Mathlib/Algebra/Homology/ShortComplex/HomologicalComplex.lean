@@ -655,6 +655,10 @@ lemma ExactAt.of_iso (hK : K.ExactAt i) {L : HomologicalComplex C c} (e : K ≅ 
   rw [exactAt_iff] at hK ⊢
   exact ShortComplex.exact_of_iso ((shortComplexFunctor C c i).mapIso e) hK
 
+variable {K i} in
+lemma ExactAt.of_isZero (h : IsZero (K.X i)) : K.ExactAt i :=
+  ShortComplex.exact_of_isZero_X₂ _ h
+
 lemma exactAt_iff' (hi : c.prev j = i) (hk : c.next j = k) :
     K.ExactAt j ↔ (K.sc' i j k).Exact :=
   ShortComplex.exact_iff_of_iso (K.isoSc' i j k hi hk)
@@ -689,6 +693,14 @@ namespace ChainComplex
 variable {C : Type*} [Category* C] [HasZeroMorphisms C]
   (K L : ChainComplex C ℕ) (φ : K ⟶ L) [K.HasHomology 0]
 
+instance isIso_iCycles₀ : IsIso (K.iCycles 0) :=
+  K.isIso_iCycles 0 0 (by simp) (by simp)
+
+/-- The canonical isomorphism `K.cycles 0 ≅ K.X 0` for a chain complex `K`
+indexed by `ℕ`. -/
+noncomputable abbrev cycles₀Iso : K.cycles 0 ≅ K.X 0 :=
+  K.iCyclesIso 0 0 (by simp) (by simp)
+
 instance isIso_homologyι₀ :
     IsIso (K.homologyι 0) :=
   K.isIso_homologyι 0 _ rfl (by simp)
@@ -714,6 +726,14 @@ namespace CochainComplex
 
 variable {C : Type*} [Category* C] [HasZeroMorphisms C]
   (K L : CochainComplex C ℕ) (φ : K ⟶ L) [K.HasHomology 0]
+
+instance isIso_pOpcycles₀ : IsIso (K.pOpcycles 0) :=
+  K.isIso_pOpcycles 0 0 (by simp) (by simp)
+
+/-- The canonical isomorphism `K.X 0 ≅ K.opcycles 0` for a cochain complex `K`
+indexed by `ℕ`. -/
+noncomputable abbrev opcycles₀Iso : K.X 0 ≅ K.opcycles 0 :=
+  K.pOpcyclesIso 0 0 (by simp) (by simp)
 
 instance isIso_homologyπ₀ :
     IsIso (K.homologyπ 0) :=
@@ -878,6 +898,17 @@ lemma opcyclesIsoSc'_inv_fromOpcycles :
 by specifying a choice of `c.prev j` and `c.next j`. -/
 noncomputable def homologyIsoSc' : K.homology j ≅ (K.sc' i j k).homology :=
   ShortComplex.homologyMapIso (K.isoSc' i j k hi hk)
+
+@[simp]
+lemma homology_sc'_eq_homology [(K.sc' (c.prev j) j (c.next j)).HasHomology] :
+    (K.sc' (c.prev j) j (c.next j)).homology = K.homology j := rfl
+
+@[simp]
+lemma homologyIsoSc'_eq_refl
+    [(K.sc' (c.prev j) j (c.next j)).HasHomology] :
+    dsimp% K.homologyIsoSc' _ j _ rfl rfl = Iso.refl _ := by
+  ext : 1
+  apply ShortComplex.homologyMap_id
 
 @[reassoc (attr := simp)]
 lemma π_homologyIsoSc'_hom :

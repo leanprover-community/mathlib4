@@ -152,13 +152,21 @@ lemma ofCoeff_inj {x y : M →₀ R} : ofCoeff x = ofCoeff y ↔ x = y := ofCoef
 @[to_additive] instance unique [Subsingleton R] : Unique R[M] :=
   inferInstanceAs <| Unique <| M →₀ R
 
+@[to_additive] instance instDecidableEq [DecidableEq R] [DecidableEq M] : DecidableEq R[M] :=
+  inferInstanceAs <| DecidableEq <| M →₀ R
+
+-- TODO: this instance abuses definitional equality with `Finsupp.mapRange`
 @[to_additive] instance addCommMonoid : AddCommMonoid R[M] :=
-  inferInstanceAs <| AddCommMonoid <| M →₀ R
+  fast_instance% { (inferInstance : AddCommMonoid <| M →₀ R) with
+    nsmul n x := x.mapRange (n • ·) (smul_zero _) }
 
 @[to_additive] instance instIsCancelAdd [IsCancelAdd R] : IsCancelAdd R[M] :=
   inferInstanceAs <| IsCancelAdd <| M →₀ R
 
 -- TODO: Replace this with `coeff`. See https://github.com/leanprover-community/mathlib4/pull/36746
+#adaptation_note /-- Since nightly-2026-03-22,
+this is needed or we get errors in UniversalFactorizationRing.lean -/
+set_option backward.inferInstanceAs.wrap false in
 @[to_additive] instance instCoeFun : CoeFun R[M] fun _ ↦ M → R :=
   inferInstanceAs <| CoeFun (M →₀ R) fun _ ↦ M → R
 
@@ -207,6 +215,39 @@ lemma ofCoeff_finsuppSum [AddCommMonoid N] (f : ι →₀ N) (g : ι → N → M
 /-- `AddMonoidAlgebra.single m r` for `m : M`, `r : R` is the element `rm : R[M]`. -/]
 abbrev single (m : M) (r : R) : R[M] := Finsupp.single m r
 
+/-- Remove a term from an element of the monoid algebra. -/
+@[to_additive /-- Remove a term from an element of the additive monoid algebra. -/]
+def erase (m : M) (x : R[M]) : R[M] := .ofCoeff <| .erase m x.coeff
+
+@[to_additive (attr := simp)]
+lemma coeff_erase (m : M) (x : R[M]) : (x.erase m).coeff = x.coeff.erase m := rfl
+
+@[to_additive (attr := simp)]
+lemma ofCoeff_erase (m : M) (x : M →₀ R) : ofCoeff (x.erase m) = (ofCoeff x).erase m := rfl
+
+@[to_additive (attr := simp)]
+lemma erase_zero (m : M) : erase m (0 : R[M]) = 0 := by simp [erase]
+
+@[to_additive (attr := simp)]
+lemma erase_single (m : M) (r : R) : erase m (single m r) = 0 := by
+  simp [erase, ofCoeff, coeff]; rfl
+
+/-- Replace the `m`-th coefficient of an element `x` of the monoid algebra by a given value `r : R`.
+If `r = 0`, this is equal to `x.erase m`. -/
+@[to_additive
+/-- Replace the `m`-th coefficient of an element `x` of the monoid algebra by a given value `r : R`.
+If `r = 0`, this is equal to `x.erase m`. -/]
+def update (m : M) (r : R) (x : R[M]) : R[M] :=
+  ofCoeff (x.coeff.update m r)
+
+@[to_additive (attr := simp)]
+lemma coeff_update (m : M) (r : R) (x : R[M]) :
+    (x.update m r).coeff = x.coeff.update m r := rfl
+
+@[to_additive (attr := simp)]
+lemma ofCoeff_update (m : M) (r : R) (x : M →₀ R) :
+    ofCoeff (x.update m r) = (ofCoeff x).update m r := rfl
+
 section SMul
 
 /-! ### Basic scalar multiplication instances
@@ -219,9 +260,23 @@ Further results on scalar multiplication can be found in
 
 variable {A : Type*} [SMulZeroClass A R]
 
+-- TODO: this instance abuses definitional equality with `Finsupp.mapRange`
 @[to_additive (dont_translate := A) smulZeroClass]
 instance smulZeroClass : SMulZeroClass A R[M] :=
-  Finsupp.smulZeroClass
+  fast_instance% { (inferInstance : SMulZeroClass A (M →₀ R)) with
+    smul a x := x.mapRange (a • ·) (smul_zero _) }
+
+section
+-- Ensure that the different smul instances do not create a diamond.
+example : (smulZeroClass (A := ℕ) (R := R) (M := M)).toSMul = addCommMonoid.toNSMul := by
+  with_reducible_and_instances rfl
+
+-- Ensure that smul has good defeq properties
+private local instance {α} [Monoid M] [SMul M α] : SMul Mˣ α where smul m a := (m : M) • a
+example [Monoid A] (a : Units A) (x : R[M]) :
+    a • x = (a : A) • x := by
+  with_reducible_and_instances rfl
+end
 
 @[to_additive (dont_translate := A) (attr := simp) coeff_smul]
 lemma coeff_smul (a : A) (x : R[M]) : coeff (a • x) = a • coeff x := rfl
@@ -234,43 +289,42 @@ lemma smul_apply (a : A) (x : R[M]) (m : M) : (a • x) m = a • x m := rfl
 
 @[to_additive (attr := simp) (dont_translate := A) smul_single]
 lemma smul_single (a : A) (m : M) (r : R) : a • single m r = single m (a • r) := by
-  ext; simp [single, ← Finsupp.smul_single]
+  ext
+  simp [single, ← Finsupp.smul_single]
 
 @[to_additive (dont_translate := R) smul_single']
 lemma smul_single' (r' : R) (m : M) (r : R) : r' • single m r = single m (r' * r) := smul_single ..
 
 @[to_additive (dont_translate := N) distribSMul]
 instance distribSMul [DistribSMul N R] : DistribSMul N R[M] :=
-  Finsupp.distribSMul _ _
+  inferInstanceAs <| DistribSMul N (M →₀ R)
 
 @[to_additive (dont_translate := N) isScalarTower]
 instance isScalarTower [SMulZeroClass N R] [SMulZeroClass O R] [SMul N O] [IsScalarTower N O R] :
     IsScalarTower N O R[M] :=
-  Finsupp.isScalarTower ..
+  inferInstanceAs <| IsScalarTower N O (M →₀ R)
 
 @[to_additive (dont_translate := N) smulCommClass]
 instance smulCommClass [SMulZeroClass N R] [SMulZeroClass O R] [SMulCommClass N O R] :
     SMulCommClass N O R[M] :=
-  Finsupp.smulCommClass ..
+  inferInstanceAs <| SMulCommClass N O (M →₀ R)
 
 @[to_additive (dont_translate := N) isCentralScalar]
 instance isCentralScalar [SMulZeroClass N R] [SMulZeroClass Nᵐᵒᵖ R] [IsCentralScalar N R] :
     IsCentralScalar N R[M] :=
-  Finsupp.isCentralScalar ..
+  inferInstanceAs <| IsCentralScalar N (M →₀ R)
 
 end SMul
 
 @[to_additive (attr := simp, norm_cast)]
 lemma coe_add (f g : R[G]) : ⇑(f + g) = f + g := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
-lemma single_zero (m : M) : (single m 0 : R[M]) = 0 := by simp [single]
+lemma single_zero (m : M) : (single m 0 : R[M]) = 0 := Finsupp.single_zero m
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
-lemma single_add (m : M) (r₁ r₂ : R) : single m (r₁ + r₂) = single m r₁ + single m r₂ := by
-  simp [single]
+lemma single_add (m : M) (r₁ r₂ : R) : single m (r₁ + r₂) = single m r₁ + single m r₂ :=
+  Finsupp.single_add m r₁ r₂
 
 /-- `MonoidAlgebra.single` as an `AddMonoidHom`.
 
@@ -465,6 +519,7 @@ end Mul
 section Semigroup
 variable [Semigroup M]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R)]
 instance nonUnitalSemiring : NonUnitalSemiring R[M] where
   mul_assoc := by simp [mul_def]; simp [MonoidAlgebra, sum_sum_index, mul_add, add_mul, mul_assoc]
@@ -576,6 +631,7 @@ instance isLocalHom_singleOneRingHom : IsLocalHom (singleOneRingHom (R := R) (M 
     · simpa [single_one_mul_apply, one_def] using congr($hax 1)
     · simpa [mul_single_one_apply, one_def] using congr($hxa 1)
 
+set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 /-- The trivial monoid algebra is the base ring. -/
 @[to_additive (dont_translate := R) (attr := simps! apply symm_apply)
@@ -689,9 +745,8 @@ lemma ofCoeff_sub (x y : M →₀ R) : ofCoeff (x - y) = ofCoeff x - ofCoeff y :
 @[to_additive (attr := simp) (dont_translate := R)]
 lemma neg_apply (m : M) (x : R[M]) : (-x) m = -x m := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R)]
-lemma single_neg (m : M) (r : R) : single m (-r) = -single m r := by simp [single]
+lemma single_neg (m : M) (r : R) : single m (-r) = -single m r := Finsupp.single_neg m r
 
 @[to_additive (dont_translate := R)]
 instance nonUnitalNonAssocRing [Mul M] : NonUnitalNonAssocRing R[M] where

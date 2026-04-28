@@ -286,12 +286,10 @@ theorem ofDual_min' {s : Finset αᵒᵈ} (hs : s.Nonempty) :
     ofDual (min' s hs) = max' (s.image ofDual) (hs.image _) := by
   simp [min'_eq_inf', max'_eq_sup']
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ofDual_max' {s : Finset αᵒᵈ} (hs : s.Nonempty) :
     ofDual (max' s hs) = min' (s.image ofDual) (hs.image _) := by
   simp [min'_eq_inf', max'_eq_sup']
 
-set_option backward.isDefEq.respectTransparency false in
 theorem toDual_min' {s : Finset α} (hs : s.Nonempty) :
     toDual (min' s hs) = max' (s.image toDual) (hs.image _) := by
   simp [min'_eq_inf', max'_eq_sup']

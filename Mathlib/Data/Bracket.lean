@@ -5,7 +5,7 @@ Authors: Patrick Lutz, Oliver Nash
 -/
 module
 
-public import Mathlib.Tactic.TypeStar
+public import Mathlib.Init
 
 /-!
 # Bracket Notation
@@ -24,7 +24,7 @@ We introduce the notation `⁅x, y⁆` for the `bracket` of any `Bracket` struct
 these are the Unicode "square with quill" brackets rather than the usual square brackets.
 -/
 
-@[expose] public section
+public section
 
 /-- The `Bracket` class has three intended uses:
   1. for certain binary operations on structures, like the product `⁅x, y⁆` of two elements

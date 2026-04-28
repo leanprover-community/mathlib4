@@ -393,6 +393,35 @@ theorem list_dropWhile {p : α → Bool} (hp : Primrec p) : Primrec (List.dropWh
   (list_drop.comp (list_findIdx Primrec.id (Primrec.not.comp (hp.comp snd)).to₂)
     Primrec.id).of_eq fun _ => List.dropWhile_eq_drop_findIdx_not.symm
 
+/-- `List.modifyHead` with a function depending on external data is primitive recursive. -/
+theorem list_modifyHead' {g : β → α → α} (hg : Primrec₂ g) :
+    Primrec₂ fun (l : List α) (b : β) => l.modifyHead (g b) :=
+  (list_casesOn fst (const [])
+    (list_cons.comp (hg.comp (snd.comp fst) (fst.comp snd)) (snd.comp snd)).to₂).to₂.of_eq
+    fun l b => by cases l <;> rfl
+
+/-- `List.modifyHead` by a primitive recursive function is primitive recursive. -/
+theorem list_modifyHead {f : α → α} (hf : Primrec f) : Primrec (List.modifyHead f) :=
+  (list_modifyHead' (hf.comp snd).to₂).comp Primrec.id (const ())
+
+/-- `List.modify` with a function depending on external data is primitive recursive. -/
+theorem list_modify' {g : β → α → α} (hg : Primrec₂ g) :
+    Primrec₂ fun (l : List α) (p : ℕ × β) => l.modify p.1 (g p.2) :=
+  -- l.modify n (g b) = l.take n ++ (l.drop n).modifyHead (g b)
+  (list_append.comp
+    (list_take.comp (fst.comp snd) fst)
+    ((list_modifyHead' hg).comp (list_drop.comp (fst.comp snd) fst) (snd.comp snd))).to₂.of_eq
+  fun l ⟨n, b⟩ => (List.modify_eq_take_drop (g b) l n).symm
+
+/-- `List.modify` by a primitive recursive function is primitive recursive. -/
+theorem list_modify {f : α → α} (hf : Primrec f) :
+    Primrec₂ fun (l : List α) (n : ℕ) => l.modify n f :=
+  ((list_modify' (hf.comp snd).to₂).comp fst (pair snd (const ()))).to₂
+
+/-- `List.set` is primitive recursive. -/
+theorem list_set : Primrec₂ fun (l : List α) (p : ℕ × α) => l.set p.1 p.2 :=
+  (list_modify' fst.to₂).of_eq fun l ⟨n, v⟩ => (List.set_eq_modify v n l).symm
+
 end Primrec
 
 namespace PrimrecPred
@@ -487,7 +516,7 @@ variable {α : Type*} [Primcodable α]
 open Primrec
 
 instance vector {n} : Primcodable (List.Vector α n) :=
-  subtype ((@Primrec.eq ℕ _).comp list_length (const _))
+  fast_instance% subtype ((@Primrec.eq ℕ _).comp list_length (const _))
 
 instance finArrow {n} : Primcodable (Fin n → α) :=
   ofEquiv _ (Equiv.vectorEquivFin _ _).symm
@@ -500,11 +529,11 @@ variable {α : Type*} {β : Type*} {σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
 theorem vector_toList {n} : Primrec (@List.Vector.toList α n) :=
-  subtype_val
+  subtype_val (hp := (@Primrec.eq ℕ _).comp list_length (const _))
 
 theorem vector_toList_iff {n} {f : α → List.Vector β n} :
     (Primrec fun a => (f a).toList) ↔ Primrec f :=
-  subtype_val_iff
+  subtype_val_iff (hp := (@Primrec.eq ℕ _).comp list_length (const _))
 
 theorem vector_cons {n} : Primrec₂ (@List.Vector.cons α n) :=
   vector_toList_iff.1 <| by simpa using list_cons.comp fst (vector_toList_iff.2 snd)

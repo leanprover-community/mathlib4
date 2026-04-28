@@ -188,7 +188,7 @@ lemma universal_property {R' : 𝒮} {a' : 𝒳} (g : R' ⟶ R) (f' : R' ⟶ S) 
   have : p.IsHomLift (g ≫ f) φ' := (hf' ▸ inferInstance)
   apply IsStronglyCartesian.universal_property' f
 
-instance isCartesian_of_isStronglyCartesian [p.IsStronglyCartesian f φ] : p.IsCartesian f φ where
+instance isCartesian_of_isStronglyCartesian : p.IsCartesian f φ where
   universal_property := fun φ' => universal_property p f φ (𝟙 R) f (by simp) φ'
 
 section

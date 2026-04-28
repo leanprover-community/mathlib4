@@ -264,9 +264,8 @@ theorem Fintype.univ_Prop : (Finset.univ : Finset Prop) = {True, False} :=
 instance Subtype.fintype (p : α → Prop) [DecidablePred p] [Fintype α] : Fintype { x // p x } :=
   Fintype.subtype (univ.filter p) (by simp)
 
--- adding `@[implicit_reducible]` causes downstream breakage
-set_option warn.classDefReducibility false in
 /-- A set on a fintype, when coerced to a type, is a fintype. -/
+@[implicit_reducible]
 def setFintype [Fintype α] (s : Set α) [DecidablePred (· ∈ s)] : Fintype s :=
   Subtype.fintype fun x => x ∈ s
 
