@@ -264,8 +264,9 @@ theorem toLinearMap_injective {F : Type*} [FunLike F M M₃] [SemilinearMapClass
   exact DFunLike.congr_fun h m
 
 /-- Identity map as a `LinearMap` -/
+@[implicit_reducible]
 def id : M →ₗ[R] M :=
-  { DistribMulActionHom.id R with toFun := _root_.id }
+  { DistribMulActionHom.id R with toFun x := x }
 
 theorem id_apply (x : M) : @id R M _ _ _ x = x :=
   rfl
@@ -481,9 +482,10 @@ variable {module_M₁ : Module R₁ M₁} {module_M₂ : Module R₂ M₂} {modu
 variable {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R₁ →+* R₃}
 
 /-- Composition of two linear maps is a linear map -/
+@[implicit_reducible]
 def comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] (f : M₂ →ₛₗ[σ₂₃] M₃) (g : M₁ →ₛₗ[σ₁₂] M₂) :
     M₁ →ₛₗ[σ₁₃] M₃ where
-  toFun := f ∘ g
+  toFun x := f (g x)
   map_add' := by simp only [map_add, forall_const, Function.comp_apply]
   -- Note that https://github.com/leanprover-community/mathlib4/pull/8386 changed `map_smulₛₗ` to `map_smulₛₗ _`
   map_smul' r x := by simp only [Function.comp_apply, map_smulₛₗ _, RingHomCompTriple.comp_apply]
