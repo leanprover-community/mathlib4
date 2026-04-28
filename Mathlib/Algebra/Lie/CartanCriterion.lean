@@ -40,14 +40,17 @@ criterion.
 
 namespace LieModule
 
-variable {K L M : Type*}
+variable {R K L M : Type*}
   [Field K] [CharZero K]
   [LieRing L] [LieAlgebra K L]
   [AddCommGroup M] [Module K M] [LieRingModule L M] [LieModule K L M] [FiniteDimensional K M]
+  [CommRing R] [CharZero R] [IsDomain R]
+  [LieAlgebra R L] [Module R M] [LieModule R L M] [IsNoetherian R M] [Module.Free R M]
 
 local notation "φ" => toEnd K L M
 
-open Algebra LieAlgebra LinearMap Module Module.End Polynomial
+open Algebra Function LieAlgebra LinearMap Module Module.End Polynomial
+open scoped TensorProduct
 
 lemma exists_polynomial_eval_sub_aux
     {ι R K : Type*} [Finite ι] [CommRing R] [Field K] [Algebra R K]
@@ -162,11 +165,6 @@ theorem isNilpotent_derivedSeries_of_traceForm_eq_zero_aux [IsAlgClosed K]
     exact Finset.sum_congr rfl <| by simp [toMatrix_apply, hyv, hsv]
   rw [hX_ns, add_mul, map_add, htr_n, htr_s, zero_add]
 
-open TensorProduct
-
-variable {R : Type*} [CommRing R] [CharZero R] [IsDomain R]
-  [LieAlgebra R L] [Module R M] [LieModule R L M] [IsNoetherian R M] [Module.Free R M]
-
 /-- If the trace form of `M` is zero, then the `⁅L, L⁆`-module `M` is nilpotent. -/
 public theorem isNilpotent_derivedSeries_of_traceForm_eq_zero (h : traceForm R L M = 0) :
     IsNilpotent (derivedSeries R L 1) M := by
@@ -180,10 +178,7 @@ public theorem isNilpotent_derivedSeries_of_traceForm_eq_zero (h : traceForm R L
   have hx_ext : 1 ⊗ₜ[R] x ∈ derivedSeries A (A ⊗[R] L) 1 := by
     rw [derivedSeries_baseChange]
     exact Submodule.tmul_mem_baseChange_of_mem 1 hx
-  have hbc_inj : Function.Injective (End.baseChangeHom R A M) := by
-    intro f g hfg
-    ext m
-    simpa using Flat.tensorProduct_mk_injective R M A <| LinearMap.congr_fun hfg (1 ⊗ₜ[R] m)
+  have hbc_inj : Injective (End.baseChangeHom R A M) := LinearMap.baseChangeHom_injective R M A
   have aux : (toEnd R (derivedSeries R L 1) M ⟨x, hx⟩).baseChangeHom R A M =
       (toEnd R L M x).baseChange A := rfl
   rw [← IsNilpotent.map_iff hbc_inj, aux, ← toEnd_baseChange]
