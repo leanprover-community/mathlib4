@@ -37,9 +37,11 @@ def Arrow := Comma (𝟭 T) (𝟭 T)
 /-- The type of morphisms in the category `Arrow T`. -/
 protected def Arrow.Hom (f g : Arrow T) := CommaMorphism f g
 
-instance : Category (Arrow T) where
+instance : Quiver (Arrow T) where
   Hom := Arrow.Hom
-  __ := (inferInstance : Category (Comma (𝟭 T) (𝟭 T)))
+
+instance : Category (Arrow T) :=
+  inferInstanceAs <| Category (Comma (𝟭 T) (𝟭 T))
 
 namespace Arrow
 
