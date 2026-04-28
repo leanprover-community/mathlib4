@@ -53,6 +53,35 @@ lemma δ_map (f : X.PtSimplex (n + 1) x) (i : Fin (n + 2)) :
     stdSimplex.δ i ≫ f.map = const x :=
   comp_map_eq_const _ _
 
+@[simps]
+def opEquiv : X.op.PtSimplex n (opObjEquiv.symm x) ≃ X.PtSimplex n x where
+  toFun f :=
+    { map := yonedaEquiv.symm (opObjEquiv (yonedaEquiv f.map))
+      comm := by
+        obtain _ | n := n
+        · ext
+        · refine boundary.hom_ext (fun i ↦ ?_)
+          simp [stdSimplex.δ_comp_yonedaEquiv_symm,
+            δ_opObjEquiv, ← stdSimplex.yonedaEquiv_δ_comp,
+            opObjEquiv_yonedaEquiv_const]}
+  invFun g :=
+    { map := yonedaEquiv.symm (opObjEquiv.symm (yonedaEquiv g.map))
+      comm := by
+        obtain _ | n := n
+        · ext
+        · refine boundary.hom_ext (fun i ↦ ?_)
+          simp [stdSimplex.δ_comp_yonedaEquiv_symm, op_δ,
+            ← stdSimplex.yonedaEquiv_δ_comp,
+            opObjEquiv_symm_yonedaEquiv_const] }
+  left_inv _ := by simp
+  right_inv _ := by simp
+
+abbrev op (f : X.PtSimplex n x) : X.op.PtSimplex n (opObjEquiv.symm x) :=
+  opEquiv.symm f
+
+abbrev unop (f : X.op.PtSimplex n (opObjEquiv.symm x)) : X.PtSimplex n x :=
+  opEquiv f
+
 /-- For each `i : Fin (n + 1)`, this is a variant of the homotopy relation on
 `n`-simplices that are constant on the boundary. Simplices `f` and `g` are related
 if they appear respectively as the `i.castSucc` and `i.succ` faces of a
