@@ -179,8 +179,8 @@ theorem existsUnique_continuousMap_lifts [PathConnectedSpace A] [LocPathConnecte
     DFunLike.ext _ _ fun a ↦ ?_⟩
   · obtain ⟨p, hep, rfl⟩ := homeo (F a)
     have hfap : f a ∈ p.target := by rw [← this]; exact p.map_source hep
-    refine ContinuousAt.congr (f := p.symm ∘ f) ((p.continuousOn_symm.continuousAt <|
-      p.open_target.mem_nhds hfap).comp f.2.continuousAt) ?_
+    refine ContinuousAt.congr (f := p.symm ∘ f)
+      ((p.continuousAt_symm hfap).comp f.2.continuousAt) ?_
     have ⟨U, ⟨haU, U_conn⟩, hUp⟩ := (path_connected_basis a).mem_iff.mp
       ((p.open_target.preimage f.continuous).mem_nhds hfap)
     refine Filter.mem_of_superset haU fun x hxU ↦ ?_
@@ -354,7 +354,7 @@ theorem homotopicRel_iff_comp [PreconnectedSpace A] {f₀ f₁ : C(A, E)} {S : S
       (ContinuousMap.comp ⟨p, cov.continuous⟩ f₀).HomotopicRel (.comp ⟨p, cov.continuous⟩ f₁) S :=
   ⟨fun ⟨F⟩ ↦ ⟨F.compContinuousMap _⟩, fun ⟨F⟩ ↦ ⟨cov.liftHomotopyRel F he rfl rfl⟩⟩
 
-/-- Lifting two paths that are homotopic relative to {0,1}
+/-- Lifting two paths that are homotopic relative to `{0,1}`
   starting from the same point also ends up in the same point. -/
 theorem liftPath_apply_one_eq_of_homotopicRel {γ₀ γ₁ : C(I, X)}
     (h : γ₀.HomotopicRel γ₁ {0,1}) (e : E) (h₀ : γ₀ 0 = p e) (h₁ : γ₁ 0 = p e) :

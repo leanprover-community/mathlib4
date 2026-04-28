@@ -101,14 +101,11 @@ abbrev FunctionField : Type r :=
 
 namespace CoordinateRing
 
-noncomputable instance : Algebra R W'.CoordinateRing :=
-  Quotient.algebra R
+noncomputable instance : Algebra R W'.CoordinateRing := inferInstance
 
-noncomputable instance : Algebra R[X] W'.CoordinateRing :=
-  Quotient.algebra R[X]
+noncomputable instance : Algebra R[X] W'.CoordinateRing := inferInstance
 
-instance : IsScalarTower R R[X] W'.CoordinateRing :=
-  Quotient.isScalarTower R R[X] _
+instance : IsScalarTower R R[X] W'.CoordinateRing := inferInstance
 
 instance [Subsingleton R] : Subsingleton W'.CoordinateRing :=
   Module.subsingleton R[X] _
@@ -125,7 +122,6 @@ protected noncomputable def basis : Basis (Fin 2) R[X] W'.CoordinateRing :=
   (subsingleton_or_nontrivial R).by_cases (fun _ => default) fun _ =>
     (AdjoinRoot.powerBasis' monic_polynomial).basis.reindex <| finCongr natDegree_polynomial
 
-set_option backward.isDefEq.respectTransparency false in
 lemma basis_apply (n : Fin 2) :
     CoordinateRing.basis W' n = (AdjoinRoot.powerBasis' monic_polynomial).gen ^ (n : ℕ) := by
   classical
@@ -192,7 +188,6 @@ protected lemma map_smul (f : R →+* S) (x : R[X]) (y : W'.CoordinateRing) :
   rw [smul, map_mul, map_mk, map_C, smul]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma map_injective {f : R →+* S} (hf : Function.Injective f) : Function.Injective <| map W' f :=
   (injective_iff_map_eq_zero _).mpr fun y hy => by
     obtain ⟨p, q, rfl⟩ := exists_smul_basis_eq y
@@ -655,7 +650,7 @@ variable [DecidableEq F] [DecidableEq K] [DecidableEq L]
 /-- The addition of two nonsingular points on a Weierstrass curve in affine coordinates.
 
 Given two nonsingular points `P` and `Q` in affine coordinates, use `P + Q` instead of `add P Q`. -/
-def add [DecidableEq F] : W.Point → W.Point → W.Point
+def add : W.Point → W.Point → W.Point
   | 0, P => P
   | P, 0 => P
   | some x₁ y₁ h₁, some x₂ y₂ h₂ =>
@@ -751,7 +746,6 @@ private lemma add_eq_zero (P Q : W.Point) : P + Q = 0 ↔ P = -Q := by
       exact fun hxy => by simpa only [add_some hxy] using some_ne_zero _
     · exact fun ⟨hx, hy⟩ => add_of_Y_eq hx hy
 
-set_option backward.isDefEq.respectTransparency false in
 lemma toClass_eq_zero (P : W.Point) : toClass P = 0 ↔ P = 0 := by
   constructor
   · intro hP
