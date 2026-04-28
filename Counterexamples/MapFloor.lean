@@ -42,9 +42,11 @@ noncomputable section
 
 open Function Int Polynomial
 
-/-- The integers with infinitesimals adjoined. -/
-def IntWithEpsilon :=
-  ℤ[X] deriving Nontrivial, CommRing, Inhabited
+open scoped Polynomial
+
+/-- The integers with infinitesimals adjoined. Higher powers of `ε` are smaller than lower
+powers. -/
+abbrev IntWithEpsilon := ℤ[X]
 
 local notation "ℤ[ε]" => IntWithEpsilon
 
@@ -69,16 +71,12 @@ theorem pos_iff {p : ℤ[ε]} : 0 < p ↔ 0 < p.trailingCoeff := by
   exact (natTrailingDegree_le_of_ne_zero hn.2.ne').antisymm
     (le_natTrailingDegree (by rintro rfl; cases hn.2.false) fun m hm => (hn.1 _ hm).symm)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : ZeroLEOneClass ℤ[ε] :=
-  { zero_le_one := Or.inr ⟨0, by simp⟩ }
+  { zero_le_one := by right; exact ⟨0, by simp⟩ }
 
-set_option backward.isDefEq.respectTransparency false in
-instance : IsStrictOrderedRing ℤ[ε] :=
+instance : IsStrictOrderedRing ℤ[X] :=
   .of_mul_pos fun p q => by simp_rw [pos_iff]; rw [trailingCoeff_mul]; exact mul_pos
 
-set_option backward.isDefEq.respectTransparency false in
-set_option linter.flexible false in
 instance : FloorRing ℤ[ε] :=
   FloorRing.ofFloor _ (fun p => if (p.coeff 0 : ℤ[ε]) ≤ p then p.coeff 0 else p.coeff 0 - 1)
     fun p q => by
@@ -87,15 +85,16 @@ instance : FloorRing ℤ[ε] :=
     · split_ifs with h
       · rintro ⟨_ | n, hn⟩
         · apply (sub_one_lt _).trans _
-          simp at hn
+          simp only [not_lt_zero, comp_apply, Pi.toLex_apply, IsEmpty.forall_iff, implies_true,
+            true_and] at hn
           rwa [intCast_coeff_zero] at hn
         · dsimp at hn
-          simp [hn.1 _ n.zero_lt_succ]
+          simp only [hn.1 _ n.zero_lt_succ]
           rw [intCast_coeff_zero]; simp
       · exact fun h' => cast_lt.1 ((not_lt.1 h).trans_lt h')
     · split_ifs with h
       · exact fun h' => h.trans_le (cast_le.2 <| sub_one_lt_iff.1 h')
-      · exact fun h' => ⟨0, by simp; rwa [intCast_coeff_zero]⟩
+      · exact fun h' => ⟨0, by simp_all⟩
 
 /-- The ordered ring homomorphisms from `ℤ[ε]` to `ℤ` that "forgets" the `ε`s. -/
 def forgetEpsilons : ℤ[ε] →+*o ℤ where
@@ -114,7 +113,6 @@ def forgetEpsilons : ℤ[ε] →+*o ℤ where
 theorem forgetEpsilons_apply (p : ℤ[ε]) : forgetEpsilons p = coeff p 0 :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The floor of `n - ε` is `n - 1` but its image under `forgetEpsilons` is `n`, whose floor is
 itself. -/
 theorem forgetEpsilons_floor_lt (n : ℤ) :
