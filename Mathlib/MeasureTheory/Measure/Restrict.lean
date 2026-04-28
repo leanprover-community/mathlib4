@@ -144,6 +144,18 @@ theorem restrict_le_self : μ.restrict s ≤ μ :=
 theorem absolutelyContinuous_restrict : μ.restrict s ≪ μ :=
   Measure.absolutelyContinuous_of_le Measure.restrict_le_self
 
+theorem absolutelyContinuous_restrict_subset' {_m0 : MeasurableSpace α} ⦃s s' : Set α⦄
+  ⦃μ ν : Measure α⦄ (hs : s ≤ᵐ[μ] s') (hμν : μ ≪ ν) : μ.restrict s ≪ ν.restrict s' := by
+  refine Measure.AbsolutelyContinuous.mk fun t ht h ↦ ?_
+  rw [restrict_apply ht] at ⊢ h
+  have hv : μ (t ∩ s) ≤ μ (t ∩ s') :=
+    measure_mono_ae <| hs.mono fun _x hx ⟨hxt, hxs⟩ => ⟨hxt, hx hxs⟩
+  simpa [nonpos_iff_eq_zero, hμν.null_mono, h] using hv
+
+theorem absolutelyContinuous_restrict_subset {_m0 : MeasurableSpace α} ⦃s s' : Set α⦄
+  ⦃μ ν : Measure α⦄ (hs : s ≤ s') (hμν : μ ≪ ν) : μ.restrict s ≪ ν.restrict s' := by
+  exact absolutelyContinuous_restrict_subset' (ae_of_all _ hs) hμν
+
 variable (μ)
 
 theorem restrict_eq_self (h : s ⊆ t) : μ.restrict t s = μ s :=
