@@ -272,6 +272,9 @@ theorem exists_norm_finsetProd_le_of_nonempty {t : Finset ι} (ht : t.Nonempty) 
 @[deprecated (since := "2026-04-08")]
 alias exists_norm_finset_prod_le_of_nonempty := exists_norm_finsetProd_le_of_nonempty
 
+@[deprecated (since := "2026-04-08")]
+alias exists_norm_finset_sum_le_of_nonempty := exists_norm_finsetSum_le_of_nonempty
+
 /--
 Given a function `f : ι → M` and a finite set `t ⊆ ι`, we can always find `i : ι`, belonging to `t`
 if `t` is nonempty, such that `‖∏ j ∈ t, f j‖ ≤ ‖f i‖`.
@@ -285,6 +288,8 @@ theorem exists_norm_finsetProd_le (t : Finset ι) [Nonempty ι] (f : ι → M) :
   exact (fun ⟨i, h, h'⟩ => ⟨i, fun _ ↦ h, h'⟩) <| exists_norm_finsetProd_le_of_nonempty ht f
 
 @[deprecated (since := "2026-04-08")] alias exists_norm_finset_prod_le := exists_norm_finsetProd_le
+
+@[deprecated (since := "2026-04-08")] alias exists_norm_finset_sum_le := exists_norm_finsetSum_le
 
 /--
 Given a function `f : ι → M` and a multiset `t : Multiset ι`, we can always find `i : ι`, belonging

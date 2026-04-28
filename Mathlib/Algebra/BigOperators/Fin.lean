@@ -771,4 +771,7 @@ theorem alternatingProd_eq_finsetProd {G : Type*} [DivisionCommMonoid G] :
 @[deprecated (since := "2026-04-08")]
 alias alternatingProd_eq_finset_prod := alternatingProd_eq_finsetProd
 
+@[deprecated (since := "2026-04-08")]
+alias alternatingSum_eq_finset_sum := alternatingSum_eq_finsetSum
+
 end List

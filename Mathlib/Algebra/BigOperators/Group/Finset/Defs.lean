@@ -707,6 +707,9 @@ lemma prod_bijective (e : ι → κ) (he : e.Bijective) (f : ι → M) (g : κ �
 @[deprecated (since := "2026-04-08")]
 alias _root_.Function.Bijective.finset_prod := _root_.Function.Bijective.finsetProd
 
+@[deprecated (since := "2026-04-08")]
+alias _root_.Function.Bijective.finset_sum := _root_.Function.Bijective.finsetSum
+
 /-- `Fintype.prod_equiv` is a specialization of `Finset.prod_bij` that
 automatically fills in most arguments.
 

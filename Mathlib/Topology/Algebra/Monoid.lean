@@ -921,6 +921,8 @@ theorem tendsto_finsetProd {f : ι → α → M} {x : Filter α} {a : ι → M} 
 
 @[deprecated (since := "2026-04-08")] alias tendsto_finset_prod := tendsto_finsetProd
 
+@[deprecated (since := "2026-04-08")] alias tendsto_finset_sum := tendsto_finsetSum
+
 @[to_additive (attr := continuity, fun_prop)]
 theorem continuous_multiset_prod {f : ι → X → M} (s : Multiset ι) :
     (∀ i ∈ s, Continuous (f i)) → Continuous fun a => (s.map fun i => f i a).prod := by
@@ -940,12 +942,16 @@ theorem continuous_finsetProd {f : ι → X → M} (s : Finset ι) :
 
 @[deprecated (since := "2026-04-08")] alias continuous_finset_prod := continuous_finsetProd
 
+@[deprecated (since := "2026-04-08")] alias continuous_finset_sum := continuous_finsetSum
+
 @[to_additive]
 theorem continuousOn_finsetProd {f : ι → X → M} (s : Finset ι) {t : Set X} :
     (∀ i ∈ s, ContinuousOn (f i) t) → ContinuousOn (fun a => ∏ i ∈ s, f i a) t :=
   continuousOn_multiset_prod _
 
 @[deprecated (since := "2026-04-08")] alias continuousOn_finset_prod := continuousOn_finsetProd
+
+@[deprecated (since := "2026-04-08")] alias continuousOn_finset_sum := continuousOn_finsetSum
 
 @[to_additive]
 theorem eventuallyEq_prod {X M : Type*} [CommMonoid M] {s : Finset ι} {l : Filter X}

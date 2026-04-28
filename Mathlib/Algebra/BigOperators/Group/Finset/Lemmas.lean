@@ -28,6 +28,9 @@ theorem MonoidHom.coe_finsetProd [MulOneClass M] [CommMonoid N] (f : ι → M �
 
 @[deprecated (since := "2026-04-08")] alias MonoidHom.coe_finset_prod := MonoidHom.coe_finsetProd
 
+@[deprecated (since := "2026-04-08")]
+alias AddMonoidHom.coe_finset_sum := AddMonoidHom.coe_finsetSum
+
 /-- See also `Finset.prod_apply`, with the same conclusion but with the weaker hypothesis
 `f : α → M → N` -/
 @[to_additive (attr := simp)
@@ -39,6 +42,9 @@ theorem MonoidHom.finsetProd_apply [MulOneClass M] [CommMonoid N] (f : ι → M 
 
 @[deprecated (since := "2026-04-08")]
 alias MonoidHom.finset_prod_apply := MonoidHom.finsetProd_apply
+
+@[deprecated (since := "2026-04-08")]
+alias AddMonoidHom.finset_sum_apply := AddMonoidHom.finsetSum_apply
 
 namespace Finset
 

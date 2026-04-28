@@ -48,3 +48,9 @@ protected theorem finsetProd {ι M : Type*} [CommMonoid M] (c : Con M) (s : Fins
 @[deprecated (since := "2026-04-08")] protected alias finset_prod := Con.finsetProd
 
 end Con
+
+namespace AddCon
+
+@[deprecated (since := "2026-04-08")] protected alias finset_sum := AddCon.finsetSum
+
+end AddCon

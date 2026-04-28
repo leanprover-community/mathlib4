@@ -44,6 +44,9 @@ theorem Filter.map_atTop_finsetProd_le_of_prod_eq {f : α → M} {g : β → M}
 @[deprecated (since := "2026-04-08")]
 alias Filter.map_atTop_finset_prod_le_of_prod_eq := Filter.map_atTop_finsetProd_le_of_prod_eq
 
+@[deprecated (since := "2026-04-08")]
+alias Filter.map_atTop_finset_sum_le_of_sum_eq := Filter.map_atTop_finsetSum_le_of_sum_eq
+
 /-- Let `g : γ → β` be an injective function and `f : β → α` be a function from the codomain of `g`
 to a commutative monoid. Suppose that `f x = 1` outside of the range of `g`. Then the filters
 `atTop.map (fun s ↦ ∏ i ∈ s, f (g i))` and `atTop.map (fun s ↦ ∏ i ∈ s, f i)` coincide.
@@ -70,6 +73,9 @@ theorem Function.Injective.map_atTop_finsetProd_eq {g : α → β}
 
 @[deprecated (since := "2026-04-08")]
 alias Function.Injective.map_atTop_finset_prod_eq := Function.Injective.map_atTop_finsetProd_eq
+
+@[deprecated (since := "2026-04-08")]
+alias Function.Injective.map_atTop_finset_sum_eq := Function.Injective.map_atTop_finsetSum_eq
 
 /-- Let `g : γ → β` be an injective function and `f : β → α` be a function from the codomain of `g`
 to an additive commutative monoid. Suppose that `f x = 0` outside of the range of `g`. Then the

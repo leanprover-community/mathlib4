@@ -52,6 +52,9 @@ theorem coe_finsetProd {ι M} [CommMonoid M] [SetLike B M] [SubmonoidClass B M] 
 
 @[deprecated (since := "2026-04-08")] alias coe_finset_prod := coe_finsetProd
 
+@[deprecated (since := "2026-04-08")]
+alias _root_.AddSubmonoidClass.coe_finset_sum := _root_.AddSubmonoidClass.coe_finsetSum
+
 end SubmonoidClass
 
 open SubmonoidClass
@@ -105,6 +108,9 @@ theorem coe_finsetProd {ι M} [CommMonoid M] (S : Submonoid M) (f : ι → S) (s
   map_prod S.subtype f s
 
 @[deprecated (since := "2026-04-08")] alias coe_finset_prod := coe_finsetProd
+
+@[deprecated (since := "2026-04-08")]
+alias _root_.AddSubmonoid.coe_finset_sum := _root_.AddSubmonoid.coe_finsetSum
 
 /-- Product of a list of elements in a submonoid is in the submonoid. -/
 @[to_additive /-- Sum of a list of elements in an `AddSubmonoid` is in the `AddSubmonoid`. -/]

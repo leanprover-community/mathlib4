@@ -94,6 +94,9 @@ theorem val_finsetProd {ι G} [CommGroup G] (H : Subgroup G) (f : ι → H) (s :
 
 @[deprecated (since := "2026-04-08")] alias val_finset_prod := val_finsetProd
 
+@[deprecated (since := "2026-04-08")]
+alias _root_.AddSubgroup.val_finset_sum := _root_.AddSubgroup.val_finsetSum
+
 @[to_additive]
 instance fintypeBot : Fintype (⊥ : Subgroup G) :=
   ⟨{1}, by
