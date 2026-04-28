@@ -70,7 +70,7 @@ theorem pos_iff {p : ℤ[ε]} : 0 < p ↔ 0 < p.trailingCoeff := by
     (le_natTrailingDegree (by rintro rfl; cases hn.2.false) fun m hm => (hn.1 _ hm).symm)
 
 instance : ZeroLEOneClass ℤ[ε] :=
-  { zero_le_one := by right; exact ⟨0, by simp⟩ }
+  { zero_le_one := Or.inr ⟨0, by simp⟩ }
 
 instance : IsStrictOrderedRing ℤ[X] :=
   .of_mul_pos fun p q => by simp_rw [pos_iff]; rw [trailingCoeff_mul]; exact mul_pos
@@ -83,9 +83,7 @@ instance : FloorRing ℤ[ε] :=
     · split_ifs with h
       · rintro ⟨_ | n, hn⟩
         · apply (sub_one_lt _).trans _
-          simp only [not_lt_zero, comp_apply, Pi.toLex_apply, IsEmpty.forall_iff, implies_true,
-            true_and] at hn
-          rwa [intCast_coeff_zero] at hn
+          simp_all
         · dsimp at hn
           simp only [hn.1 _ n.zero_lt_succ]
           rw [intCast_coeff_zero]; simp
