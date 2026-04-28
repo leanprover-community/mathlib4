@@ -436,6 +436,7 @@ theorem succ_le_succ_iff_of_not_isMax (ha : ¬IsMax a) (hb : ¬IsMax b) :
     succ a ≤ succ b ↔ a ≤ b := by
   rw [succ_le_iff_of_not_isMax ha, lt_succ_iff_of_not_isMax hb]
 
+@[to_dual]
 theorem Iio_succ_of_not_isMax (ha : ¬IsMax a) : Iio (succ a) = Iic a :=
   Set.ext fun _ => lt_succ_iff_of_not_isMax ha
 
@@ -501,7 +502,7 @@ theorem lt_succ_iff : a < succ b ↔ a ≤ b :=
 @[to_dual] alias ⟨lt_of_succ_lt_succ, _⟩ := succ_lt_succ_iff
 
 -- TODO: prove for a succ-archimedean non-linear order with bottom
-@[simp]
+@[to_dual (attr := simp)]
 theorem Iio_succ (a : α) : Iio (succ a) = Iic a :=
   Iio_succ_of_not_isMax <| not_isMax _
 
@@ -633,9 +634,6 @@ section LinearOrder
 
 variable [LinearOrder α] [PredOrder α] {a b : α}
 
-theorem Ioi_pred_of_not_isMin (ha : ¬IsMin a) : Ioi (pred a) = Ici a :=
-  Set.ext fun _ => pred_lt_iff_of_not_isMin ha
-
 theorem Ioc_pred_left_of_not_isMin (ha : ¬IsMin a) : Ioc (pred a) b = Icc a b := by
   rw [← Ioi_inter_Iic, Ioi_pred_of_not_isMin ha, Ici_inter_Iic]
 
@@ -660,11 +658,6 @@ theorem Ico_pred_left (h : pred a < b) : Ico (pred a) b = insert (pred a) (Ico a
 section NoMinOrder
 
 variable [NoMinOrder α]
-
--- TODO: prove for a pred-archimedean non-linear order with top
-@[simp]
-theorem Ioi_pred (a : α) : Ioi (pred a) = Ici a :=
-  Ioi_pred_of_not_isMin <| not_isMin a
 
 @[simp]
 theorem Ioc_pred_left (a b : α) : Ioc (pred a) b = Icc a b :=
