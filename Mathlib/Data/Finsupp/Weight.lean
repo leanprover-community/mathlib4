@@ -266,13 +266,14 @@ lemma range_single_one :
     obtain ⟨a, rfl⟩ := (Finsupp.sum_eq_one_iff _).mp hp
     use a
 
-theorem degree_mapDomain_eq_of_subsingletonAddUnits {τ : Type*} (f : σ → τ) [AddCommMonoid M]
-    [Subsingleton (AddUnits M)] (x : σ →₀ M) : degree (x.mapDomain f) = degree x := by
-  classical
-  trans (x.mapDomain f).sum (fun _ ↦ id)
-  · simp [degree, sum]
-  · simpa [sum, mapDomain_support_of_subsingletonAddUnits, degree] using Finset.sum_image' _
-      (fun _ _ ↦ mapDomain_apply_eq_sum ..)
+@[simp]
+theorem degree_mapDomain {τ : Type*} (f : σ → τ) [AddCommMonoid M] (x : σ →₀ M) :
+    degree (x.mapDomain f) = degree x := by
+  simp [mapDomain, sum]
+  rfl
+
+@[deprecated (since := "2026-04-27")]
+alias degree_mapDomain_eq_of_subsingletonAddUnits := degree_mapDomain
 
 theorem degree_comapDomain_le_of_canonicallyOrderedAdd {τ : Type*} {f : σ → τ} [AddCommMonoid M]
     [PartialOrder M] [CanonicallyOrderedAdd M] {x : τ →₀ M} (hf : Set.InjOn f (f ⁻¹' x.support)) :
