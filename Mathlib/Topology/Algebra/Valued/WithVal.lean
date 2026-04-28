@@ -484,8 +484,7 @@ theorem IsEquiv.uniformContinuous_equiv [hval : Valued R Γ₀'] (hv : Valued.v 
     ← hy, ← toVal_mul, ← h'.orderRingIso_apply, ← h'.orderRingIso.lt_symm_apply]
   simp only [toVal_mul, orderRingIso_symm_apply, lt_def, ofVal_mul, restrict_lt_iff]
   simp only [equiv_symm_apply, Units.val_mk0, Set.mem_setOf_eq, lt_div_iff₀ hs0'] at hx
-  erw [← map_mul] at hx -- Why erw?
-  rw [restrict_lt_iff] at hx
+  rw [← map_mul, restrict_lt_iff] at hx
   exact hx
 
 set_option backward.isDefEq.respectTransparency false in
@@ -505,7 +504,7 @@ theorem IsEquiv.uniformContinuous_equiv_symm [hval : Valued R Γ₀'] (hv : Valu
   intro x hx
   simp only [equiv_symm_apply, Set.mem_setOf_eq]
   simp only [equiv_apply, Units.val_mk0, Set.mem_setOf_eq] at hx
-  erw [lt_div_iff₀, ← map_mul, restrict_lt_iff, hv, h.lt_iff_lt, map_mul] at hx
+  rw [lt_div_iff₀, ← map_mul, restrict_lt_iff, hv, h.lt_iff_lt, map_mul] at hx
   · rw [← hr, lt_div_iff₀ ((restrict_pos_iff Valued.v s).mpr hs₀), ← map_mul, ← lt_def,
       ← h.orderRingIso_apply]
     simp only [orderRingIso_apply, toVal_mul, lt_def, ofVal_mul, restrict_lt_iff]
