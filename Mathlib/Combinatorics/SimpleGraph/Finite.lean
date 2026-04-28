@@ -350,7 +350,7 @@ section Finite
 variable [Fintype V]
 
 instance neighborSetFintype [DecidableRel G.Adj] (v : V) : Fintype (G.neighborSet v) :=
-  inferInstance
+  Subtype.fintype (· ∈ G.neighborSet v)
 
 theorem neighborFinset_eq_filter {v : V} [DecidableRel G.Adj] :
     G.neighborFinset v = ({w | G.Adj v w} : Finset _) := by ext; simp
