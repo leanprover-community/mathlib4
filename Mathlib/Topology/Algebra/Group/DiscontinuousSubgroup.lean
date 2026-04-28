@@ -26,15 +26,9 @@ protected lemma Subgroup.properlyDiscontinuousSMul_iff
       IsCompact K → IsCompact L →  {g : Γ | g ∈ S ∧ (g • K ∩ L).Nonempty}.Finite := by
   rw [properlyDiscontinuousSMul_iff]
   congr! with K L hK hL
-  constructor -- need something like `Set.Finite.iff_finite_image`?
-  · intro h
-    convert h.map Subtype.val
-    ext g
-    simp [show ∀ (h : g ∈ S), (⟨g, h⟩ : S) • K = g • K by intro; rfl]
-  · refine fun h ↦ .of_finite_image ?_ injOn_subtype_val
-    convert h
-    ext g
-    simp [show ∀ (h : g ∈ S), (⟨g, h⟩ : S) • K = g • K by intro; rfl]
+  convert injOn_subtype_val (s := {m : S | (m • K ∩ L).Nonempty}) |>.bijOn_image.finite_iff_finite
+  ext g
+  simp [and_comm]
 
 @[to_additive]
 lemma Subgroup.properlyDiscontinuousSMul_of_le
