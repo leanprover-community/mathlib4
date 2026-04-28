@@ -1,5 +1,6 @@
 import Mathlib
-import Mathlib.RingTheory.GradedAlgebra.Map.DecompositionMap_SetLike3
+import Mathlib.RingTheory.GradedAlgebra.Map.DecompositionMap_SetLike
+import Mathlib.RingTheory.GradedAlgebra.Map.AddSubmonoidSSup
 
 universe u
 variable {ι₁ ι₂ : Type u} [DecidableEq ι₁] [DecidableEq ι₂]
@@ -9,7 +10,7 @@ variable (f : ι₁ → ι₂)
 variable {M : Type*}
 variable [AddCommMonoid M] (ℳ : ι₁ → AddSubmonoid M)
 variable [DirectSum.Decomposition ℳ]
-#check (inferInstance : IsAddSubmonoidSSup (AddSubmonoid M) M)
+#check (inferInstance : AddSubmonoidSSup (AddSubmonoid M) M)
 #check (inferInstance : (DirectSum.Decomposition (DirectSum.Decomposition.map f ℳ)))
 end AddCommMonoids
 
@@ -18,7 +19,7 @@ variable (f : ι₁ → ι₂)
 variable {M : Type*}
 variable [AddCommGroup M] (ℳ : ι₁ → AddSubgroup M)
 variable [DirectSum.Decomposition ℳ]
-#check (inferInstance : IsAddSubmonoidSSup (AddSubgroup M) M)
+#check (inferInstance : AddSubmonoidSSup (AddSubgroup M) M)
 #check (inferInstance : (DirectSum.Decomposition (DirectSum.Decomposition.map f ℳ)))
 end AddCommGroups
 
@@ -27,7 +28,7 @@ variable (f : ι₁ → ι₂)
 variable {R M : Type*}
 variable [Semiring R] [AddCommMonoid M] [Module R M] (ℳ : ι₁ → Submodule R M)
 variable [DirectSum.Decomposition ℳ]
-#check (inferInstance : IsAddSubmonoidSSup (Submodule R M) M)
+#check (inferInstance : AddSubmonoidSSup (Submodule R M) M)
 #check (inferInstance : (DirectSum.Decomposition (DirectSum.Decomposition.map f ℳ)))
 end Modules
 

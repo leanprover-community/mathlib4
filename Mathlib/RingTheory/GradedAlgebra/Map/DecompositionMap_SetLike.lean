@@ -1,5 +1,6 @@
 import Mathlib
 import Mathlib.RingTheory.GradedAlgebra.Map.auxiliary
+import Mathlib.RingTheory.GradedAlgebra.Map.AddSubmonoidSSup
 open DirectSum
 
 section DirectSum.sigmaFiberAddEquiv
@@ -64,73 +65,13 @@ lemma DirectSum.sigmaFiberAddEquiv_of'
   rw [sigmaFiberAddEquiv_of' f β (k := ⟨f i, ⟨i, rfl⟩⟩)]
 end DirectSum.sigmaFiberAddEquiv
 
-section TypeClassAssumption
-
-class IsAddSubmonoidSSup (σ : Type*) [CompleteLattice σ]
-    (M : outParam Type*) [AddCommMonoid M]
-    [SetLike σ M] [AddSubmonoidClass σ M]
-    where
-    sSup_toAddSubmonoid (S : Set σ) :
-    AddSubmonoid.ofClass (sSup S) = sSup (AddSubmonoid.ofClass '' S)
-
-lemma SetLike.iSup_toAddSubmonoid {σ : Type*} [CompleteLattice σ]
-    {M : Type*} [AddCommMonoid M] [SetLike σ M] [AddSubmonoidClass σ M]
-    [IsAddSubmonoidSSup σ M] {ι : Sort*} (ℳ : ι → σ) :
-    AddSubmonoid.ofClass (⨆ i, ℳ i) = ⨆ i, AddSubmonoid.ofClass (ℳ i) := by
-  rw [iSup,IsAddSubmonoidSSup.sSup_toAddSubmonoid,← Set.range_comp]
-  rfl
-
-instance (M : Type*) [AddCommMonoid M] :
-  IsAddSubmonoidSSup (AddSubmonoid M) M where
-  sSup_toAddSubmonoid S := by
-    -- This is essentially `rfl`, but still 3 lines:
-    have h₁ (N : AddSubmonoid M) : AddSubmonoid.ofClass N = N := rfl
-    have h₂ (S : Set (AddSubmonoid M)) : AddSubmonoid.ofClass '' S = S :=
-      Set.EqOn.image_eq_self fun ⦃x⦄ ↦ congrFun rfl
-    rw [h₁,h₂]
-
-instance (M : Type*) [AddCommGroup M] :
-  IsAddSubmonoidSSup (AddSubgroup M) M where
-  sSup_toAddSubmonoid S := by
-    have (N : AddSubgroup M) : AddSubmonoid.ofClass N = N.toAddSubmonoid := by rfl
-    simp [this, Subgroup.toAddSubmonoid_sSup]
-
-instance (R : Type*) [Semiring R] (M : Type*) [AddCommMonoid M] [Module R M] :
-  IsAddSubmonoidSSup (Submodule R M) M where
-  sSup_toAddSubmonoid S := by
-    have (N : Submodule R M) : AddSubmonoid.ofClass N = N.toAddSubmonoid := by rfl
-    simp only [this, Submodule.toAddSubmonoid_sSup]
-
-end TypeClassAssumption
-
-
 section toIsup
 open DirectSum
 variable {M : Type*} [AddCommMonoid M]
 variable {ι : Type*} [DecidableEq ι]
-variable {σ : Type*} [SetLike σ M] [AddSubmonoidClass σ M] [CompleteLattice σ]
-  [h : IsAddSubmonoidSSup σ M]
+variable {σ : Type*} [SetLike σ M] [AddSubmonoidClass σ M]
+                     [CompleteLattice σ] [AddSubmonoidSSup σ M]
 variable (ℳ : ι → σ)
-
---@[irreducible]
---def GoodClosure : σ := (⨆ i, ℳ i : σ)
-
-/- To verify that the map `toIsup` is surjective, I introduce the *assumption
-   that the iSup in σ is just the usual iSup of additive submonoids.
-   For now, I formulate this assumption as a sorried lemma
-   that's modelled on the corresponding lemma for modules:
-
-   theorem iSup_toAddSubmonoid {ι : Sort*} (p : ι → Submodule R M) :
-     (⨆ i, p i).toAddSubmonoid = ⨆ i, (p i).toAddSubmonoid
--/
-
-omit [DecidableEq ι] in
-@[simp] lemma SetLike.mem_iSup_iff_mem_iSup_AddSubmonoid
-  (m : M) :
-  m ∈ (⨆ i, ℳ i : σ) ↔ m ∈ (⨆ i, AddSubmonoid.ofClass (ℳ i))
-  := by
-  rw [← SetLike.iSup_toAddSubmonoid ℳ]
-  rfl
 
 private def codomain_equal :
    ↥(⨆ i, AddSubmonoid.ofClass (ℳ i)) ≃+ ↥(⨆ i, ℳ i : σ)  :=
@@ -152,8 +93,6 @@ lemma SetLike.toIsup_of
   unfold SetLike.toIsup toIsup_ codomain_equal
   simp only [AddEquiv.toAddMonoidHom_eq_coe, AddMonoidHom.coe_comp, AddMonoidHom.coe_coe,
   Function.comp_apply, toAddMonoid_of]
-  obtain ⟨val, property⟩ := m
-  simp_all only
   rfl
 
 lemma SetLike.toIsup_surjective : Function.Surjective (toIsup ℳ) := by
@@ -173,12 +112,6 @@ lemma SetLike.toIsup_surjective : Function.Surjective (toIsup ℳ) := by
       exact ⟨a + b, by simp [ha, hb]⟩
   subst ha
   simp_all only [Subtype.coe_eta, exists_apply_eq_apply]
-/-
-  TODO:
-    Figure out a better proof of toIsup_surjective.
-    toIsup seems to work better than DirectSum.coeAddMonoidHom.codRestrict:
-       in the construction of the decomposition instance below, the first proof now works with simp
--/
 end toIsup
 
 
@@ -195,11 +128,7 @@ variable (ℳ : ι₁ → σ)
 def DirectSum.Decomposition.map : ι₂ → σ
   := fun j ↦ iSup (fun i : { i : ι₁ // f i = j} ↦ ℳ i)
 
-variable [AddSubmonoidClass σ M] [h : IsAddSubmonoidSSup σ M]
-
-#check DirectSum.sigmaFiberAddEquiv f (fun i ↦ ↥(ℳ i))
---#check h
-
+variable [AddSubmonoidClass σ M] [AddSubmonoidSSup σ M]
 variable [DirectSum.Decomposition ℳ]
 
 abbrev Dec' := ⨁ j, (Decomposition.map f ℳ) j
@@ -209,12 +138,6 @@ abbrev decomp' : M →+ (⨁ j, (Decomposition.map f ℳ) j) :=
     (map (fun (j : ι₂)
     ↦ SetLike.toIsup (ℳ := (fun (i : { i : ι₁ // f i = j}) ↦ (ℳ ↑i))))).comp
     ((sigma f ℳ).comp (decomp ℳ))
-
-#check (DirectSum.coeAddMonoidHom (DirectSum.Decomposition.map f ℳ) (M := M)).toFun
-#check decomp' f ℳ (M:=M)
-#check (decomp' f ℳ) ∘ (DirectSum.coeAddMonoidHom (DirectSum.Decomposition.map f ℳ))
-#check (DirectSum.coeAddMonoidHom (DirectSum.Decomposition.map f ℳ)) ∘ (decomp' f ℳ)
-
 
 instance DirectSum.Decomposition.map.decomposition :
   (DirectSum.Decomposition (Decomposition.map f ℳ) )
@@ -252,7 +175,6 @@ instance DirectSum.Decomposition.map.decomposition :
       )
 end Decomposition
 
-
 section gradedAlgebra.map
 universe u
 variable {ι₁ ι₂ : Type u}
@@ -261,7 +183,7 @@ variable (f : ι₁ →+ ι₂)
 variable {R : Type*} [CommSemiring R]
 variable {A : Type*} [Semiring A] [Algebra R A]
 variable {σ : Type*} [SetLike σ A] [AddSubmonoidClass σ A] [CompleteLattice σ]
-  [IsAddSubmonoidSSup σ A]
+  [AddSubmonoidSSup σ A]
 variable (𝒜 : ι₁ → σ) [GradedRing 𝒜]
 
 open Pointwise in
