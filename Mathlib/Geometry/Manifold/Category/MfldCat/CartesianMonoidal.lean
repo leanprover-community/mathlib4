@@ -30,8 +30,7 @@ variable {𝕜 : Type v} [NontriviallyNormedField 𝕜] {n : ℕ∞ω}
 /-- Limit data for a binary product in `MfldCat`, using the product manifold `M × N`. -/
 def binaryProductLimitCone (M N : MfldCat.{u} 𝕜 n) : LimitCone (pair M N) where
   cone := BinaryFan.mk (ofHom ⟨Prod.fst, contMDiff_fst⟩) (ofHom ⟨Prod.snd, contMDiff_snd⟩)
-  isLimit := BinaryFan.IsLimit.mk _
-    (fun l r => ofHom ⟨fun s => (l s, r s), l.hom.contMDiff.prodMk r.hom.contMDiff⟩)
+  isLimit := BinaryFan.IsLimit.mk _ (fun l r => ofHom (l.hom.prodMk r.hom))
     (fun _ _ => rfl) (fun _ _ => rfl) (by cat_disch)
 
 /-- We choose the product manifold `M × N` as the product of `M` and `N`, and `PUnit` as the
@@ -40,7 +39,7 @@ noncomputable instance cartesianMonoidalCategory :
     CartesianMonoidalCategory (MfldCat.{u} 𝕜 n) :=
   .ofChosenFiniteProducts
     ⟨_, IsTerminal.ofUniqueHom (Y := ofNormedSpace n PUnit.{u + 1})
-      (fun _ => ofHom ⟨fun _ => PUnit.unit, contMDiff_const⟩) (fun _ _ => by ext)⟩
+      (fun _ => const PUnit.unit) (fun _ _ => by ext)⟩
     binaryProductLimitCone
 
 noncomputable instance : BraidedCategory (MfldCat.{u} 𝕜 n) := .ofCartesianMonoidalCategory
