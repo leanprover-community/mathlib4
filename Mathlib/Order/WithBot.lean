@@ -809,12 +809,12 @@ instance _root_.WithTop.IsWellOrder.lt [Preorder α] [IsWellOrder α (· < ·)] 
 
 instance trichotomous.gt [Preorder α] [@Std.Trichotomous α (· > ·)] :
     @Std.Trichotomous (WithBot α) (· > ·) :=
-  have := inferInstanceAs <| @Std.Trichotomous α <| Function.swap (· > ·)
+  have : @Std.Trichotomous α (· < ·) := inferInstanceAs <| Std.Trichotomous <| Function.swap _
   inferInstance
 
 instance _root_.WithTop.trichotomous.gt [Preorder α] [@Std.Trichotomous α (· > ·)] :
     @Std.Trichotomous (WithTop α) (· > ·) :=
-  have := inferInstanceAs <| @Std.Trichotomous α <| Function.swap (· > ·)
+  have : @Std.Trichotomous α (· < ·) := inferInstanceAs <| Std.Trichotomous <| Function.swap _
   inferInstance
 
 -- TODO: the hypotheses are equivalent to `LinearOrder` + `WellFoundedGT`, remove this.
