@@ -36,7 +36,7 @@ localization at an element.
 
 -/
 
-@[expose] public section
+public section
 
 open scoped TensorProduct
 
