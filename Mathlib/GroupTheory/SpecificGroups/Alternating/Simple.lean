@@ -14,7 +14,7 @@ public import Mathlib.GroupTheory.SpecificGroups.Alternating.KleinFour
 
 ## Main results
 
-* `alternatingGroup_of_le_of_normal`:
+* `Equiv.Perm.alternatingGroup_le_of_normal`:
   If `α` has at least 5 elements, then a nontrivial normal subgroup
   of `Equiv.Perm α` contains the alternating group.
 
@@ -27,7 +27,11 @@ public import Mathlib.GroupTheory.SpecificGroups.Alternating.KleinFour
 ## Main definitions
 
 The proofs of the above results follow from the Iwasawa criterion
-applied to the following `IwasawaStructure`s:
+applied to the following Iwasawa structures. Their definitions are similar:
+the groups `Equiv.Perm α` and `alternatingGroup α` act on `α` hence
+they act on `Set.powersetCard α n`, for any natural number `n`.
+For `n = 2`, this gives an Iwaswa structure of `Equiv.Perm α`,
+for `n = 3` or `n = 4`, this gives an Iwasawa structure of `alternatingGroup α`.
 
 * `Equiv.Perm.iwasawaStructure_two`:
   the natural `IwasawaStructure` of `Equiv.Perm α` acting on `Set.powersetCard α 2`.
@@ -50,9 +54,9 @@ applied to the following `IwasawaStructure`s:
 
 This file contains two uncomfortable uses of `convert`:
 
-* on line 77, to identify `MulAut.conj` and `ConjAct.toConjAct`.
+* on line 81, to identify `MulAut.conj` and `ConjAct.toConjAct`.
 
-* on line 144, to match the subtype coercions for `Finset` and `Set`.
+* on line 148, to match the subtype coercions for `Finset` and `Set`.
 
 -/
 
@@ -81,9 +85,9 @@ def iwasawaStructure_two [∀ s : Set α, DecidablePred fun x ↦ x ∈ s] :
     apply Subgroup.mem_iSup_of_mem ⟨{a, b}, Finset.card_pair hab⟩
     exact ⟨swap ⟨a, by simp⟩ ⟨b, by simp⟩, Equiv.Perm.ofSubtype_swap_eq _ _⟩
 
-/-- If `α` has at least 5 elements, then the only nontrivial
-normal subgroup of `Equiv.Perm α` is `alternatingGroup α`. -/
-theorem alternatingGroup_of_le_of_normal
+/-- If `α` has at least 5 elements, then any nontrivial
+normal subgroup of `Equiv.Perm α` contains `alternatingGroup α`. -/
+theorem alternatingGroup_le_of_normal
     {α : Type*} [DecidableEq α] [Fintype α] (hα : 5 ≤ Nat.card α)
     {N : Subgroup (Perm α)} [N.Normal] (ntN : Nontrivial N) :
     alternatingGroup α ≤ N := by
