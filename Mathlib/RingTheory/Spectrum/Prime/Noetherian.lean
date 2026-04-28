@@ -76,7 +76,7 @@ lemma exists_not_mem_forall_mem_of_ne (p : Ideal R) [p.IsPrime] :
 variable (F : Type*) [Field F] [Algebra F R] [Module.Finite F R]
 
 theorem finrank_eq_sum_primeSpectrum [Fintype (PrimeSpectrum R)] :
-    Module.finrank F R = ∑ p : PrimeSpectrum R, Module.finrank F (Localization.AtPrime p.1) :=
+    Module.finrank F R = ∑ p : PrimeSpectrum R, Module.finrank F (Localization.AtPrime p.asIdeal) :=
   have (p : Ideal R) [p.IsPrime] : Module.Finite F (Localization.AtPrime p) :=
     Module.Finite.of_surjective (Algebra.algHom F R (Localization.AtPrime p)).toLinearMap
       (localization_surjective p.primeCompl (Localization.AtPrime p))
