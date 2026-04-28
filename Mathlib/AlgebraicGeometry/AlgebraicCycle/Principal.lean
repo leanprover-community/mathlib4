@@ -24,10 +24,8 @@ universe u
 variable {X : Scheme.{u}}
 
 namespace AlgebraicGeometry
-namespace Scheme
-namespace functionField
 
-open Multiplicative WithZero
+open Multiplicative WithZero Scheme
 
 /--
 A principal divisor on a locally noetherian integral scheme is locally finite (and hence a divisor).
@@ -132,6 +130,4 @@ theorem div_neg [IsIntegral X] [IsLocallyNoetherian X] (f : X.functionField) (hf
   have : IsUnit (-1 : Γ(X, ⊤)) := by simp
   simp [← div_eq_zero_of_isUnit_top this]
 
-end functionField
-end Scheme
 end AlgebraicGeometry
