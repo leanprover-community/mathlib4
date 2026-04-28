@@ -52,9 +52,6 @@ open CategoryTheory groupCohomology groupHomology
 def Rep.tateNorm (M : Rep R G) : (inhomogeneousChains M).X 0 ⟶ (inhomogeneousCochains M).X 0 :=
   (chainsIso₀ M).hom ≫ M.norm.toModuleCatHom ≫ (cochainsIso₀ M).inv
 
-lemma tateNorm_hom_apply (M : Rep R G) (x : (Fin 0 → G) →₀ ↑M.V) (y : Fin 0 → G) :
-    M.tateNorm.hom x y = (cochainsIso₀ M).inv.hom (M.ρ.norm <| (chainsIso₀ M).hom.hom x) y := rfl
-
 set_option backward.isDefEq.respectTransparency false in
 lemma Rep.tateNorm_eq (M : Rep R G) :
     M.tateNorm = ModuleCat.ofHom (Finsupp.lsum R fun _ ↦ LinearMap.pi fun _ ↦ M.ρ.norm) := by
@@ -73,9 +70,11 @@ lemma Rep.tateNorm_eq (M : Rep R G) :
 lemma Rep.norm_comp_d_eq_zero (M : Rep R G) : M.norm.toModuleCatHom ≫ d₀₁ M = 0 := by
   ext; simp [Pi.zero_apply _]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Rep.tateNorm_comp_d (M : Rep R G) : tateNorm M ≫ (inhomogeneousCochains M).d 0 1 = 0 := by
-  simp [tateNorm]
+  unfold tateNorm
+  rw [Category.assoc, Category.assoc, eq_d₀₁_comp_inv M,
+    ← Category.assoc M.norm.toModuleCatHom, M.norm_comp_d_eq_zero, Limits.zero_comp,
+    Limits.comp_zero]
 
 @[simp]
 lemma Rep.comp_eq_zero (M : Rep R G) : d₁₀ M ≫ M.norm.toModuleCatHom = 0 := by
