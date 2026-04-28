@@ -6,7 +6,7 @@ Authors: Paul Lezeau
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
-public import Mathlib.CategoryTheory.Monoidal.Mod_
+public import Mathlib.CategoryTheory.Monoidal.Mod
 
 /-!
 # Additional results about module objects in Cartesian monoidal categories
