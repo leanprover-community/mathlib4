@@ -7,6 +7,7 @@ module
 
 public import Mathlib.ModelTheory.Complexity
 public import Mathlib.ModelTheory.Satisfiability
+public import Mathlib.ModelTheory.PartialEquiv
 
 /-!
 # Quantifier Elimination
@@ -28,6 +29,30 @@ namespace FirstOrder
 
 namespace Language
 
+abbrev Sub (L : Language) (M N : Type*) [L.Structure M] [L.Structure N] :=
+  M ≃ₚ[L] N
+
+abbrev Sub₀ (L : Language) (M N : Type*) [L.Structure M] [L.Structure N] :=
+  L.FGEquiv M N
+
+namespace PartialEquiv
+
+noncomputable def codMap
+    {L : Language} {M N N' : Type*}
+    [L.Structure M] [L.Structure N] [L.Structure N']
+    (f : M ≃ₚ[L] N) (e : N ↪[L] N') : M ≃ₚ[L] N' where
+  dom := f.dom
+  cod := f.cod.map e.toHom
+  toEquiv := (e.substructureEquivMap f.cod).comp f.toEquiv
+
+def ExtendsAlong
+    {L : Language} {M N N' : Type*}
+    [L.Structure M] [L.Structure N] [L.Structure N']
+    (e : N ↪ₑ[L] N') (f : M ≃ₚ[L] N) (g : M ≃ₚ[L] N') : Prop :=
+  codMap f e.toEmbedding ≤ g
+
+end PartialEquiv
+
 namespace Theory
 
 open Structure
@@ -40,6 +65,9 @@ a quantifier-free bounded formula. -/
 def HasQuantifierElimination (T : L.Theory) : Prop :=
   ∀ {m : ℕ} (φ : L.Formula (Fin m)),
     ∃ ψ : L.Formula (Fin m), ψ.IsQF ∧ φ ⇔[T] ψ
+
+
+-----------------------------------------------------------------------------------------
 
 private theorem exists_substructure_embedding_of_agree_qf
     {m : ℕ} {M N : Type*} [L.Structure M] [L.Structure N]
@@ -189,6 +217,9 @@ private theorem exists_substructure_embedding_of_agree_qf
     have hwx : w (idx xi) = w i := hvar (hidx xi)
     simpa [g, a, xi] using hEq.trans hwx
   exact ⟨S, g, a, ha, hg⟩
+
+
+
 
 theorem marker_314
     {T : L.Theory} {m : ℕ} (φ : L.Formula (Fin m)) :
@@ -452,6 +483,9 @@ theorem marker_314
       have hφga : φ.Realize (g ∘ a) := by simpa [hg] using hφw
       exact False.elim (hnotφv0 (by simpa [M0, N0, A0, f0, g0, a0, ha] using hsame.mpr hφga))
 
+
+-----------------------------------------------------------------------------------------
+
 private theorem isQF_toFormula
     {α : Type*} {n : ℕ} {φ : L.BoundedFormula α n} (hφ : φ.IsQF) :
     φ.toFormula.IsQF := by
@@ -571,6 +605,8 @@ theorem marker_315
   exact hP
 
 
+-----------------------------------------------------------------------------------------
+
 theorem marker_316 {L : Language} {T : L.Theory} :
   (∀ {m : ℕ} (φ : L.Formula (Fin m.succ)) (hQF : φ.IsQF)
     {M N A : Type*} [L.Structure M] [L.Structure N] [L.Structure A]
@@ -581,7 +617,24 @@ theorem marker_316 {L : Language} {T : L.Theory} :
   T.HasQuantifierElimination := by
   sorry
 
+/-- Henson, Theorem 7.11, direction `(2) → (1)`: if every partial isomorphism between
+substructures of models of `T` can be extended, after passing to an elementary extension of the
+codomain model, to include any prescribed element of the domain model, then `T` has quantifier
+elimination. -/
+theorem henson_711
+    {T : L.Theory}
+    (h :
+      ∀ {M N : Type (max u v)} [L.Structure M] [L.Structure N]
+        [T.Model M] [T.Model N] [Nonempty M] [Nonempty N]
+        (f : L.Sub M N) (a : M),
+        ∃ (N' : Type (max u v)) (_ : L.Structure N') (_ : Nonempty N')
+          (e : N ↪ₑ[L] N') (g : L.Sub M N'),
+          a ∈ g.dom ∧ f.ExtendsAlong e g) :
+    T.HasQuantifierElimination := by
+  sorry
 
+
+-----------------------------------------------------------------------------------------
 
 
 end Theory
