@@ -187,7 +187,6 @@ lemma degeneraciesVanish_iff_QInfty_f_comp (f : X _⦋n⦌ ⟶ T) :
   · refine ⟨fun hf ↦ ?_, fun hf ↦ ?_⟩
     · simp [QInfty_f, decomposition_Q, Preadditive.sum_comp, hf.σ_comp]
     · have := PInfty_f_add_QInfty_f (n + 1) =≫ f
-      dsimp at this
       rw [Category.id_comp] at this
       rw [degeneraciesVanish_succ_iff, ← this]
       simp [hf]
