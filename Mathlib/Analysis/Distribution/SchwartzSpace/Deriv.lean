@@ -346,8 +346,7 @@ Version for a general bilinear map. -/
 theorem integral_bilinear_laplacian_right_eq_left (f : 𝓢(E, F₁)) (g : 𝓢(E, F₂))
     (L : F₁ →L[ℝ] F₂ →L[ℝ] F₃) :
     ∫ x, L (f x) (Δ g x) ∂μ = ∫ x, L (Δ f x) (g x) ∂μ := by
-  simp_rw [laplacian_eq_sum (stdOrthonormalBasis ℝ E), sum_apply, map_sum,
-    ContinuousLinearMap.coe_sum', Finset.sum_apply]
+  simp_rw [laplacian_eq_sum (stdOrthonormalBasis ℝ E), sum_apply, map_sum, _root_.sum_apply]
   rw [MeasureTheory.integral_finsetSum, MeasureTheory.integral_finsetSum]
   · simp [integral_bilinear_lineDerivOp_right_eq_neg_left]
   · exact fun _ _ ↦ (pairing L (∂_{_} <| ∂_{_} f) g).integrable

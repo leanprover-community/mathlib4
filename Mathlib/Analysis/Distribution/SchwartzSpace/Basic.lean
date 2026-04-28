@@ -813,7 +813,6 @@ theorem smulLeftCLM_ofReal {g : E → ℝ} (hg : g.HasTemperateGrowth) (f : 𝓢
 
 theorem smulLeftCLM_real_smul {g : E → 𝕜'} (hg : g.HasTemperateGrowth) (c : ℝ) :
     smulLeftCLM F (c • g) = c • smulLeftCLM F g := by
-  haveI : IsScalarTower ℝ 𝕜' (𝓢(E, F) →L[𝕜'] 𝓢(E, F)) := FunLike.instIsScalarTower
   rw [RCLike.real_smul_eq_coe_smul (K := 𝕜') c, smulLeftCLM_smul hg,
     ← RCLike.real_smul_eq_coe_smul c]
 
@@ -856,6 +855,8 @@ end pairing
 
 open ContinuousLinearMap
 
+set_option synthInstance.maxHeartbeats 25000 in
+-- the typeclass system spends a lot of time to verify `NormedSpace 𝕜 (G →L[ℝ] F)`
 variable (𝕜 F) in
 /-- Scalar multiplication with a continuous linear map as a continuous linear map on Schwartz
 functions. -/
@@ -901,8 +902,6 @@ def smulRightCLM (L : E →L[ℝ] G →L[ℝ] ℝ) : 𝓢(E, F) →L[𝕜] 𝓢(
           simp only [Finset.sup_insert, schwartzSeminormFamily_apply, Finset.sup_singleton,
             Seminorm.coe_sup, Pi.sup_apply]
           ring
-
-#exit
 
 @[simp]
 theorem smulRightCLM_apply_apply (L : E →L[ℝ] G →L[ℝ] ℝ) (f : 𝓢(E, F)) (x : E) :

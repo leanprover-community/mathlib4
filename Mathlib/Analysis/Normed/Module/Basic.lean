@@ -60,6 +60,8 @@ https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Normed.20
 It is implied via `NormedSpace.toNormSMulClass`. -/
 instance NormedSpace.toIsBoundedSMul : IsBoundedSMul 𝕜 E := inferInstance
 
+instance NormedSpace.toContinuousSMul : ContinuousSMul 𝕜 E := inferInstance
+
 instance NormedField.toNormedSpace : NormedSpace 𝕜 𝕜 where norm_smul_le a b := norm_mul_le a b
 
 variable (𝕜) in
