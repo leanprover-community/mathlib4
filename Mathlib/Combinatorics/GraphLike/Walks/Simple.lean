@@ -19,9 +19,9 @@ we can prove some useful lemmas that characterize `p.darts` in terms of `p.suppo
 
 public section
 
-open GraphLike
+open HasSourceTarget HasEdge HasInvol SymmDartLike SymmGraphLike GraphLike
 
-variable {V : Type*} {Gr : Type _ → Type*} {G : Gr V} [SimpleGraphLike G] {u v w : V}
+variable {V : Type*} {Gr : Type*} {G : Gr} [SymmGraphLike V (V × V) (Sym2 V) Gr] {u v w : V}
   {p : Walk G u v}
 
 namespace GraphLike.Walk
@@ -30,12 +30,12 @@ theorem mem_darts_iff_infix_support {u' v'} (s : step G u' v') :
     ⟨s.val, s.prop.1⟩ ∈ p.darts ↔ [u', v'] <:+: p.support := by
   refine .trans ⟨fun h ↦ ?_, fun ⟨i, hi, h⟩ ↦ ?_⟩ List.infix_iff_getElem?.symm
   · have ⟨i, hi, h⟩ := List.getElem_of_mem h
-    exact ⟨i, by grind, fun j hj ↦ by grind [fst_darts_getElem, snd_darts_getElem]⟩
+    exact ⟨i, by grind, fun j hj ↦ by grind [src_darts_getElem, tgt_darts_getElem]⟩
   · have := h 0
     have := h 1
     obtain rfl := by
       refine Subsingleton.allEq s ⟨p.darts[i]'(by grind), Subtype.coe_prop _, ?_, ?_⟩
-      <;> grind [fst_darts_getElem, snd_darts_getElem]
+      <;> grind [src_darts_getElem, tgt_darts_getElem]
     exact p.darts.getElem_mem (n := i) (by grind)
 
 theorem mem_darts_iff_fst_snd_infix_support (d : GraphLike.darts G) :
@@ -47,7 +47,7 @@ theorem darts_getElem_eq_fst_snd {u v} {p : Walk G u v} {i : ℕ} (hi : i < p.da
   match i, p with
   | 0, .cons s_2 p_2 => simp
   | n_1 + 1, .cons s_2 p_2 =>
-    simp only [darts_cons, fst_eq, snd_eq, val_step_eq, List.getElem_cons_succ, support_cons]
+    simp only [darts_cons, src_eq, tgt_eq, val_step_eq, List.getElem_cons_succ, support_cons]
     exact p_2.darts_getElem_eq_fst_snd _
 
 end GraphLike.Walk

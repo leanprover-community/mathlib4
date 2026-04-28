@@ -6,7 +6,6 @@ Authors: Jun Kwon
 module
 
 public import Mathlib.Combinatorics.GraphLike.Basic
-public import Mathlib.Data.Sym.Sym2
 
 /-!
 # Typeclass for different kinds of graphs
@@ -35,38 +34,51 @@ of graph structures including `SimpleGraph`, `Graph`, and `Digraph`.
 
 public section
 
-/-- `SymmGraphLike` extends `GraphLike` for graph-like structures where darts are symmetric. -/
-class SymmGraphLike (V D : outParam Type*) {Gr : Type*} (G : Gr) extends GraphLike V D G where
+/-- `HasInvol D` is a typeclass with a function `symm : D → D` that gives the inverse of a dart. -/
+class HasInvol (D : Type*) where
   /-- The inverse of a dart. -/
   symm : D → D
   symm_invol : ∀ ⦃d⦄, symm (symm d) = d
-  symm_ne : ∀ ⦃d⦄, d ∈ darts → symm d ≠ d
-  symm_fst (d) : fst (symm d) = snd d
-  symm_snd (d) : snd (symm d) = fst d
-  symm_mem_darts_iff : ∀ ⦃d⦄, symm d ∈ darts ↔ d ∈ darts
 
-attribute [simp] SymmGraphLike.symm_invol SymmGraphLike.symm_ne SymmGraphLike.symm_fst
-  SymmGraphLike.symm_snd SymmGraphLike.symm_mem_darts_iff
+/-- `SymmDartLike` extends `HasSourceTarget` and `HasInvol` for darts that are symmetric. -/
+class SymmDartLike (V D : Type*) extends HasSourceTarget V D, HasInvol D where
+  symm_fst (d : D) : src (symm d) = (tgt d : V)
+  symm_snd (d : D) : tgt (symm d) = (src d : V)
+
+open HasSourceTarget HasEdge HasInvol SymmDartLike
+
+/-- `SymmGraphLike` extends `GraphLike` for graph-like structures where darts are symmetric. -/
+class SymmGraphLike (V D E : outParam Type*) [HasEdge D E] [SymmDartLike V D]
+    (Gr : Type*) extends GraphLike V D E Gr where
+  /-- The inverse of a dart. -/
+  symm_ne : ∀ ⦃G d⦄, d ∈ darts G → symm d ≠ d
+  symm_mem_darts_iff : ∀ ⦃G d⦄, symm d ∈ darts G ↔ d ∈ darts G
+  edge_eq_edge_iff : ∀ ⦃G d d'⦄, d ∈ darts G → d' ∈ darts G →
+    ((edge d : E) = edge d' ↔ d = d' ∨ symm d = d')
 
 open SymmGraphLike
-variable {V D Gr : Type*} {G : Gr} {u v w : V} {d : D}
+
+attribute [simp, grind =] symm_invol symm_fst symm_snd symm_mem_darts_iff
+attribute [grind →] symm_ne
+
+variable {V D E Gr : Type*} {G : Gr} {u v w : V} {d : D}
 
 namespace GraphLike
 
-variable [SymmGraphLike V D G]
+variable [HasEdge D E] [SymmDartLike V D] [SymmGraphLike V D E Gr]
 
-lemma symm_mem_darts (hd : d ∈ darts G) : symm G d ∈ darts G :=
+lemma symm_mem_darts (hd : d ∈ darts G) : symm d ∈ darts G :=
   symm_mem_darts_iff.mpr hd
 
 /-- The inverse of a step. -/
 @[symm] def step.symm (h : step G u v) : step G v u := by
   obtain ⟨d, hd, hu, hv⟩ := h
-  use SymmGraphLike.symm G d, symm_mem_darts hd, hv ▸ symm_fst d, hu ▸ symm_snd d
+  use HasInvol.symm d, symm_mem_darts hd, hv ▸ symm_fst d, hu ▸ symm_snd d
 
 @[simp]
 lemma step.symm_symm (h : step G u v) : h.symm.symm = h := by
   obtain ⟨d, hd, hu, hv⟩ := h
-  change step.symm (⟨SymmGraphLike.symm G d, symm_mem_darts hd, hv ▸ symm_fst d, hu ▸ symm_snd d⟩ :
+  change step.symm (⟨HasInvol.symm d, symm_mem_darts hd, hv ▸ symm_fst d, hu ▸ symm_snd d⟩ :
     step G v u) = _
   simp [symm]
 
@@ -74,23 +86,23 @@ instance : Std.Symm (Adj G) where
   symm _ _ h := by
     rw [← exists_darts_iff_adj] at h ⊢
     obtain ⟨d, hd, rfl, rfl⟩ := h
-    exact ⟨SymmGraphLike.symm G d, symm_mem_darts hd, symm_fst d, symm_snd d⟩
+    exact ⟨HasInvol.symm d, symm_mem_darts hd, symm_fst d, symm_snd d⟩
 
 @[symm] lemma Adj.symm (h : Adj G v w) : Adj G w v := symm_of (Adj G) h
 
 lemma adj_comm : Adj G v w ↔ Adj G w v := ⟨symm_of (Adj G), symm_of (Adj G)⟩
 
 /-- The two vertices of the dart as an unordered pair. -/
-@[expose] def dartSym2 (d : darts G) : Sym2 V := s(fst G d.val, snd G d.val)
+@[expose] def dartSym2 (d : darts G) : Sym2 V := s(src d.val, tgt d.val)
 
 @[simp]
-theorem dartSym2_mk (h : d ∈ darts G) : dartSym2 (⟨d, h⟩ : darts G) = s(fst G d, snd G d) := rfl
+theorem dartSym2_mk (h : d ∈ darts G) : dartSym2 (⟨d, h⟩ : darts G) = s(src d, tgt d) := rfl
 
 /-- The dart with reversed orientation from a given dart. -/
-@[expose] def dartSymm (d : darts G) : darts G := ⟨symm G d.val, symm_mem_darts_iff.mpr d.prop⟩
+@[expose] def dartSymm (d : darts G) : darts G := ⟨symm d.val, symm_mem_darts_iff.mpr d.prop⟩
 
 @[simp]
-theorem dartSymm_mk (h : d ∈ darts G) : dartSymm (⟨d, h⟩) = ⟨symm G d, symm_mem_darts_iff.mpr h⟩ :=
+theorem dartSymm_mk (h : d ∈ darts G) : dartSymm (⟨d, h⟩) = ⟨symm d, symm_mem_darts_iff.mpr h⟩ :=
   rfl
 
 @[simp]
@@ -115,44 +127,34 @@ theorem dartSym2_eq_mk'_iff {d : darts G} :
   simp [toProd]
 
 theorem dartSym2_eq_mk'_iff' {d : darts G} : dartSym2 d = s(u, v) ↔
-    fst G d.val = u ∧ snd G d.val = v ∨ fst G d.val = v ∧ snd G d.val = u := by
+    src d.val = u ∧ tgt d.val = v ∨ src d.val = v ∧ tgt d.val = u := by
   obtain ⟨p, hp⟩ := d
   simp
-
-end GraphLike
 
 section GraphLikeProd
 
 /-
-### For `SimpleGraphLike G`
-
-This section defines `SimpleSymmGraphLike` to give a simplified constructor for `SimpleGraphLike G`
-that is symmetric in the sense that `d` and `d.swap` are both in the set of darts.
+### For `SymmGraphLike V (V × V) (Sym2 V) Gr`
 -/
 
-open GraphLike
-variable {d : V × V} {Gr : Type _ → Type*} {G : Gr V}
+variable {d : V × V} {Gr : Type*} {G : Gr}
 
-/-- `SimpleSymmGraphLike` extends `SimpleGraphLike` for graph-like structures where darts are
-  paired with their inverses. -/
-class SimpleSymmGraphLike (G : Gr V) extends SimpleGraphLike G where
-  loopless : ∀ ⦃d⦄, d ∈ darts → d.fst ≠ d.snd
-  symm_mem_darts_iff : ∀ ⦃d⦄, d.swap ∈ darts ↔ d ∈ darts
-
-lemma GraphLike.Adj.ne [SimpleSymmGraphLike G] {u v : V} (h : Adj G u v) : u ≠ v := by
-  rw [← exists_darts_iff_adj (G := G)] at h
-  obtain ⟨d, hd, rfl, rfl⟩ := h
-  exact SimpleSymmGraphLike.loopless hd
-
-instance GraphLike.Std.Irrefl [SimpleSymmGraphLike G] : Std.Irrefl (Adj G) where
-  irrefl _ h := h.ne rfl
-
-instance [SimpleSymmGraphLike G] : SymmGraphLike V (V × V) G where
+instance : SymmDartLike V (V × V) where
   symm := Prod.swap
   symm_invol := Prod.swap_swap
-  symm_ne d hd heq := by grind [(mem_darts_iff_adj.mp hd).ne]
-  symm_fst d := Prod.fst_swap
-  symm_snd d := Prod.snd_swap
-  symm_mem_darts_iff := SimpleSymmGraphLike.symm_mem_darts_iff
+  symm_fst d := by simp
+  symm_snd d := by simp
 
-end GraphLikeProd
+variable [SymmGraphLike V (V × V) (Sym2 V) Gr]
+
+@[simp, grind =] lemma symm_apply (d : V × V) : HasInvol.symm d = Prod.swap d := rfl
+
+lemma Adj.ne (h : Adj G u v) : u ≠ v := by
+  rw [← exists_darts_iff_adj] at h
+  obtain ⟨⟨u, v⟩, hd, rfl, rfl⟩ := h
+  grind [symm_ne hd]
+
+instance : Std.Irrefl (Adj G) where
+  irrefl _ h := h.ne rfl
+
+end GraphLike.GraphLikeProd

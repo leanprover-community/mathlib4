@@ -6,7 +6,6 @@ Authors: Kyle Miller, Peter Nelson, Iván Renison, Jun Kwon
 module
 
 public import Mathlib.Combinatorics.GraphLike.Basic
-public import Mathlib.Data.Multiset.Basic
 
 /-!
 # Walks
@@ -38,9 +37,11 @@ public section
 
 namespace GraphLike
 
-variable {α β Gr : Type*} {u v w : α} {G : Gr} {d : β}
+open HasSourceTarget HasEdge GraphLike
 
-/-- A walk is a sequence of adjacent vertices.  For vertices `u v : α`, the type `Walk u v` consists
+variable {V D E Gr : Type*} {u v w : V} {G : Gr} {d : D} {e : E} [HasSourceTarget V D] [HasEdge D E]
+
+/-- A walk is a sequence of adjacent vertices.  For vertices `u v : V`, the type `Walk u v` consists
 of all walks starting at `u` and ending at `v`.
 
 We say that a walk *visits* the vertices it contains.  The set of vertices a
@@ -48,20 +49,20 @@ walk visits is `GraphLike.Walk.support`.
 
 See `GraphLike.Walk.nil'` and `GraphLike.Walk.cons'` for patterns that
 can be useful in definitions since they make the vertices explicit. -/
-inductive Walk (G : Gr) [GraphLike α β G] : α → α → Type (max u_1 u_2)
-  | nil {u : α} : Walk G u u
-  | cons {u v w : α} (s : step G u v) (p : Walk G v w) : Walk G u w
+inductive Walk (G : Gr) [GraphLike V D E Gr] : V → V → Type (max u_1 u_2)
+  | nil {u : V} : Walk G u u
+  | cons {u v w : V} (s : step G u v) (p : Walk G v w) : Walk G u w
 
 namespace Walk
 
 section GraphLike
 
-variable [GraphLike α β G] {p : Walk G u v}
+variable [GraphLike V D E Gr] {p : Walk G u v}
 
 /- Manual instances for `DecidableEq` because deriving gives an instance that requires
   `DecidableEq Gr` -/
 @[reducible]
-instance instDecidable [DecidableEq α] [DecidableEq β] {u v : α} (p q : Walk G u v) :
+instance instDecidable [DecidableEq V] [DecidableEq D] {u v : V} (p q : Walk G u v) :
     Decidable (p = q) := by
   rcases p with (nil | @⟨u, v₁, w, d₁, p₁⟩) <;> rcases q with (nil | @⟨u, v₂, w, d₂, p₂⟩)
   · exact isTrue rfl
@@ -74,13 +75,13 @@ instance instDecidable [DecidableEq α] [DecidableEq β] {u v : α} (p q : Walk 
       infer_instance
     · apply isFalse (by simp [hv])
 
-instance instDecidableEq [DecidableEq α] [DecidableEq β] : DecidableEq (Walk G u v) :=
+instance instDecidableEq [DecidableEq V] [DecidableEq D] : DecidableEq (Walk G u v) :=
   Walk.instDecidable
 
 attribute [refl] Walk.nil
 
 @[simps]
-instance instInhabited (G : Gr) [GraphLike α β G] (v : α) : Inhabited (Walk G v v) := ⟨Walk.nil⟩
+instance instInhabited (G : Gr) [GraphLike V D E Gr] (v : V) : Inhabited (Walk G v v) := ⟨Walk.nil⟩
 
 /-- The one-edge walk associated to a single step, which is a dart from `u` to `v`. -/
 @[expose, match_pattern, reducible]
@@ -89,20 +90,20 @@ def _root_.GraphLike.step.toWalk (s : step G u v) : Walk G u v :=
 
 /-- Pattern to get `Walk.nil` with the vertex as an explicit argument. -/
 @[match_pattern]
-abbrev nil' (u : α) : Walk G u u := Walk.nil
+abbrev nil' (u : V) : Walk G u u := Walk.nil
 
 /-- Pattern to get `Walk.cons` with the vertices as explicit arguments. -/
 @[match_pattern]
-abbrev cons' (u v w : α) (s : step G u v) (p : Walk G v w) : Walk G u w := Walk.cons s p
+abbrev cons' (u v w : V) (s : step G u v) (p : Walk G v w) : Walk G u w := Walk.cons s p
 
 theorem exists_eq_cons_of_ne (hne : u ≠ v) :
-    ∀ (p : Walk G u v), ∃ (w : α) (s : step G u w) (p' : Walk G w v), p = cons s p'
+    ∀ (p : Walk G u v), ∃ (w : V) (s : step G u w) (p' : Walk G w v), p = cons s p'
   | nil => (hne rfl).elim
   | cons s p' => ⟨_, s, p', rfl⟩
 
 /-- The length of a walk is the number of edges/darts along it. -/
 @[expose]
-def length {u v : α} : Walk G u v → ℕ
+def length {u v : V} : Walk G u v → ℕ
   | nil => 0
   | cons _ q => q.length.succ
 
@@ -117,7 +118,7 @@ theorem eq_of_length_eq_zero : ∀ {p : Walk G u v}, p.length = 0 → u = v
   | nil, _ => rfl
 
 /-- If `u` and `v` connected by one-edge walk, then there exists a step between them. -/
-def step_of_length_eq_one : ∀ {p : Walk G u v}, p.length = 1 → step G u v
+@[expose] def step_of_length_eq_one : ∀ {p : Walk G u v}, p.length = 1 → step G u v
   | cons s nil, _ => s
 
 @[simp]
@@ -141,13 +142,13 @@ theorem length_eq_zero_iff {p : Walk G u u} : p.length = 0 ↔ p = nil := by cas
 
 /-- The `support` of a walk is the list of vertices it visits in order. -/
 @[expose]
-def support {u v : α} : Walk G u v → List α
+def support {u v : V} : Walk G u v → List V
   | nil => [u]
   | cons _ p => u :: p.support
 
 /-- The `darts` of a walk is the list of `dart`s it visits in order. -/
 @[expose]
-def darts {u v : α} : Walk G u v → List (darts G)
+def darts {u v : V} : Walk G u v → List (darts G)
   | nil => []
   | cons s p => ⟨s.val, s.prop.1⟩ :: p.darts
 
@@ -195,10 +196,10 @@ theorem support_subset_support_cons (p : Walk G v w) (s : step G u v) :
     p.support ⊆ (p.cons s).support := by
   simp
 
-theorem coe_support (p : Walk G u v) : (p.support : Multiset α) = {u} + p.support.tail := by
+theorem coe_support (p : Walk G u v) : (p.support : Multiset V) = {u} + p.support.tail := by
   cases p <;> rfl
 
-theorem isChain_adj_cons_support {u v w : α} (s : step G u v) :
+theorem isChain_adj_cons_support {u v w : V} (s : step G u v) :
     ∀ (p : Walk G v w), List.IsChain (Adj G) (u :: p.support)
   | nil => .cons_cons s.adj (.singleton v)
   | cons h' p => .cons_cons s.adj (isChain_adj_cons_support h' p)
@@ -207,15 +208,15 @@ theorem isChain_adj_support : ∀ (p : Walk G u v), List.IsChain (Adj G) p.suppo
   | nil => .singleton _
   | cons h p => isChain_adj_cons_support h p
 
-theorem isChain_dartAdj_cons_darts {d : GraphLike.darts G} (h : snd G d.val = v) (p : Walk G v w) :
+theorem isChain_dartAdj_cons_darts {d : GraphLike.darts G} (h : tgt d.val = v) (p : Walk G v w) :
     List.IsChain DartAdj (d :: p.darts) := by
   induction p generalizing d with
   | nil => exact .singleton _
-  | cons h' p ih => exact .cons_cons (h.trans h'.fst.symm) (ih h'.snd)
+  | cons h' p ih => exact .cons_cons (h.trans h'.src.symm) (ih h'.tgt)
 
 theorem isChain_dartAdj_darts : ∀ (p : Walk G u v), List.IsChain DartAdj p.darts
   | nil => .nil
-  | cons h p => isChain_dartAdj_cons_darts h.snd p
+  | cons h p => isChain_dartAdj_cons_darts h.tgt p
 
 @[simp]
 theorem darts_nil : (nil : Walk G u u).darts = [] := rfl
@@ -224,17 +225,17 @@ theorem darts_nil : (nil : Walk G u u).darts = [] := rfl
 theorem darts_cons (s : step G u v) (p : Walk G v w) :
     (cons s p).darts = ⟨s.val, s.prop.1⟩ :: p.darts := rfl
 
-theorem cons_map_snd_darts (p : Walk G u v) : (u :: p.darts.map (snd G ·.val)) = p.support := by
+theorem cons_map_tgt_darts (p : Walk G u v) : (u :: p.darts.map (tgt ·.val)) = p.support := by
   induction p <;> simp [-List.map_subtype, *]
 
-theorem map_snd_darts (p : Walk G u v) : p.darts.map (snd G ·.val) = p.support.tail := by
-  simpa using congr_arg List.tail (cons_map_snd_darts p)
+theorem map_tgt_darts (p : Walk G u v) : p.darts.map (tgt ·.val) = p.support.tail := by
+  simpa using congr_arg List.tail (cons_map_tgt_darts p)
 
-theorem map_fst_darts_append (p : Walk G u v) : p.darts.map (fst G ·.val) ++ [v] = p.support := by
+theorem map_src_darts_append (p : Walk G u v) : p.darts.map (src ·.val) ++ [v] = p.support := by
   induction p <;> simp [-List.map_subtype, *]
 
-theorem map_fst_darts (p : Walk G u v) : p.darts.map (fst G ·.val) = p.support.dropLast := by
-  simpa! using congr_arg List.dropLast (map_fst_darts_append p)
+theorem map_src_darts (p : Walk G u v) : p.darts.map (src ·.val) = p.support.dropLast := by
+  simpa! using congr_arg List.dropLast (map_src_darts_append p)
 
 @[simp, grind =]
 theorem length_support (p : Walk G u v) : p.support.length = p.length + 1 := by
@@ -245,14 +246,14 @@ theorem length_darts (p : Walk G u v) : p.darts.length = p.length := by
   induction p <;> simp [*]
 
 @[simp]
-theorem fst_darts_getElem {i : ℕ} (hi : i < p.darts.length) :
-    fst G p.darts[i].val = p.support.dropLast[i]'(by grind) := by
-  grind [map_fst_darts]
+theorem src_darts_getElem {i : ℕ} (hi : i < p.darts.length) :
+    src p.darts[i].val = p.support.dropLast[i]'(by grind) := by
+  grind [map_src_darts]
 
 @[simp]
-theorem snd_darts_getElem {i : ℕ} (hi : i < p.darts.length) :
-    snd G p.darts[i].val = p.support.tail[i]'(by grind) := by
-  grind [map_snd_darts]
+theorem tgt_darts_getElem {i : ℕ} (hi : i < p.darts.length) :
+    tgt p.darts[i].val = p.support.tail[i]'(by grind) := by
+  grind [map_tgt_darts]
 
 @[simp]
 lemma support_getElem_zero (p : Walk G u v) : p.support[0] = u := by cases p <;> simp
@@ -261,22 +262,22 @@ lemma support_getElem_zero (p : Walk G u v) : p.support[0] = u := by cases p <;>
 lemma support_getElem_length (p : Walk G u v) : p.support[p.length] = v := by
   induction p <;> simp_all
 
-theorem dart_fst_mem_support_of_mem_darts {u v : α} :
-    ∀ (p : Walk G u v) {d : GraphLike.darts G}, d ∈ p.darts → fst G d.val ∈ p.support
+theorem dart_src_mem_support_of_mem_darts {u v : V} :
+    ∀ (p : Walk G u v) {d : GraphLike.darts G}, d ∈ p.darts → src d.val ∈ p.support
   | cons h p', d, hd => by
     simp only [support_cons, darts_cons, List.mem_cons] at hd ⊢
     rcases hd with rfl | hd
-    · exact .inl h.fst
-    · exact .inr (dart_fst_mem_support_of_mem_darts _ hd)
+    · exact .inl h.src
+    · exact .inr (dart_src_mem_support_of_mem_darts _ hd)
 
 theorem darts_nodup_of_support_nodup (h : p.support.Nodup) : p.darts.Nodup := by
   induction p with
   | nil => simp
   | cons s p' ih =>
     simp only [darts_cons, support_cons, List.nodup_cons] at h ⊢
-    exact ⟨(h.1 <| s.fst ▸ dart_fst_mem_support_of_mem_darts p' ·), ih h.2⟩
+    exact ⟨(h.1 <| s.src ▸ dart_src_mem_support_of_mem_darts p' ·), ih h.2⟩
 
-theorem darts_injective {u v : α} : Function.Injective (Walk.darts : Walk G u v → _)
+theorem darts_injective {u v : V} : Function.Injective (Walk.darts : Walk G u v → _)
   | .nil, .nil, _ => rfl
   | .nil, .cons _ _, h => by simp at h
   | .cons _ _, .nil, h => by simp at h
@@ -291,8 +292,8 @@ theorem darts_injective {u v : α} : Function.Injective (Walk.darts : Walk G u v
 
 Solves the dependent type problem where `p = Walk.nil` typechecks
 only if `p` has defeq endpoints. -/
-inductive Nil : {u v : α} → Walk G u v → Prop
-  | nil {w : α} : Nil (nil : Walk G w w)
+inductive Nil : {u v : V} → Walk G u v → Prop
+  | nil {w : V} : Nil (nil : Walk G w w)
 
 @[simp, grind .] lemma nil_nil : (nil : Walk G u u).Nil := Nil.nil
 
@@ -320,7 +321,7 @@ lemma nil_iff_length_eq : p.Nil ↔ p.length = 0 := by
 lemma not_nil_iff_lt_length : ¬ p.Nil ↔ 0 < p.length := by
   cases p <;> simp
 
-lemma not_nil_iff : ¬ p.Nil ↔ ∃ (w : α) (h : step G u w) (q : Walk G w v), p = cons h q := by
+lemma not_nil_iff : ¬ p.Nil ↔ ∃ (w : V) (h : step G u w) (q : Walk G w v), p = cons h q := by
   cases p <;> simp [*]
 
 /-- A walk with its endpoints defeq is `Nil` if and only if it is equal to `nil`. -/
@@ -331,26 +332,26 @@ alias ⟨Nil.eq_nil, _⟩ := nil_iff_eq_nil
 
 /-- The recursion principle for nonempty walks -/
 @[elab_as_elim]
-def notNilRec {motive : {u w : α} → (p : Walk G u w) → (h : ¬ p.Nil) → Sort*}
-    (cons : {u v w : α} → (h : step G u v) → (q : Walk G v w) → motive (cons h q) not_nil_cons)
+def notNilRec {motive : {u w : V} → (p : Walk G u w) → (h : ¬ p.Nil) → Sort*}
+    (cons : {u v w : V} → (h : step G u v) → (q : Walk G v w) → motive (cons h q) not_nil_cons)
     (p : Walk G u w) : (hp : ¬ p.Nil) → motive p hp :=
   match p with
   | nil => fun hp => absurd .nil hp
   | .cons h q => fun _ => cons h q
 
 @[simp]
-lemma notNilRec_cons {motive : {u w : α} → (p : Walk G u w) → ¬ p.Nil → Sort*}
-    (cons : {u v w : α} → (h : step G u v) → (q : Walk G v w) →
+lemma notNilRec_cons {motive : {u w : V} → (p : Walk G u w) → ¬ p.Nil → Sort*}
+    (cons : {u v w : V} → (h : step G u v) → (q : Walk G v w) →
     motive (q.cons h) Walk.not_nil_cons) (h' : step G u v) (q' : Walk G v w) :
-    @notNilRec _ _ _ _ _ _ _ _ cons _ _ = cons h' q' := by rfl
+    @notNilRec _ _ _ _ _ _ _ _ _ _ _ cons _ _ = cons h' q' := by rfl
 
 theorem end_mem_tail_support (h : ¬ p.Nil) : v ∈ p.support.tail :=
   p.notNilRec (by simp) h
 
 /-- Given a set `S` and a walk `w` from `u` to `v` such that `u ∈ S` but `v ∉ S`,
 there exists a step in the walk whose start is in `S` but whose end is not. -/
-theorem exists_boundary_dart (p : Walk G u v) (S : Set α) (uS : u ∈ S) (vS : v ∉ S) :
-    ∃ d : GraphLike.darts G, d ∈ p.darts ∧ fst G d.val ∈ S ∧ snd G d.val ∉ S := by
+theorem exists_boundary_dart (p : Walk G u v) (S : Set V) (uS : u ∈ S) (vS : v ∉ S) :
+    ∃ d : GraphLike.darts G, d ∈ p.darts ∧ src d.val ∈ S ∧ tgt d.val ∉ S := by
   induction p with
   | nil => cases vS uS
   | cons a p' ih =>
@@ -358,7 +359,7 @@ theorem exists_boundary_dart (p : Walk G u v) (S : Set α) (uS : u ∈ S) (vS : 
     by_cases h : y ∈ S
     · obtain ⟨d, hd, hcd⟩ := ih h vS
       exact ⟨d, List.Mem.tail _ hd, hcd⟩
-    · exact ⟨⟨a.val, a.prop.1⟩, List.Mem.head _, a.fst.symm ▸ uS, a.snd.symm ▸ h⟩
+    · exact ⟨⟨a.val, a.prop.1⟩, List.Mem.head _, a.src.symm ▸ uS, a.tgt.symm ▸ h⟩
 
 end GraphLike
 end GraphLike.Walk
