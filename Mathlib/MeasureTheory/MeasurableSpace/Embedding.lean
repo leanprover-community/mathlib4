@@ -696,7 +696,7 @@ theorem of_measurable_inverse (hf₁ : Measurable f) (hf₂ : MeasurableSet (ran
 `α → β` and `β → α`, we can find a measurable equivalence `α ≃ᵐ β`. -/
 noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : MeasurableEmbedding f)
     (hg : MeasurableEmbedding g) : α ≃ᵐ β := by
-  let F : Set α → Set α := fun A => (g '' f '' Aᶜ)ᶜ
+  let F : Set α → Set α := fun A => (g '' (f '' A)ᶜ)ᶜ
   -- We follow the proof of the usual SB theorem in mathlib,
   -- the crux of which is finding a fixed point of this F.
   -- However, we must find this fixed point manually instead of invoking Knaster-Tarski
