@@ -6,8 +6,7 @@ Authors: Raphael Douglas Giles
 module
 
 public import Mathlib.Topology.LocallyFinsupp
-public import Mathlib.Data.Finite.Defs
-public import Mathlib.Topology.Spectral.Prespectral
+public import Mathlib.Topology.Spectral.Basic
 
 /-!
 # Pushforward of functions with locally finite support
@@ -17,6 +16,14 @@ between prespectral spaces. This is a nonstandard notion that arises because of 
 mathlib to model algebraic cycles as functions with locally finite support.
 This makes it so that standard notions in the theory of cycles can be defined in more generality
 than usual.
+
+In the usual definition of the proper pushforward of algebraic cycles, one needs to adjust the
+coefficients by scaling by the degree of the corresponding extension of residue fields (assuming
+the dimensions are the same and hence that this is a finite extension), or in the case where the
+dimensions of the points differ scaling by zero. This is described in more detail in stacks 02R4.
+The exact values of this scaling function are not relevant for the mere construction of the
+pushforward, so our definition of the pushforward of a cycle `c` on a scheme `X` with coefficients
+in `R` is done with respect to some `w : X → R`, about which we do not assume anything.
 -/
 
 @[expose] public section
@@ -105,9 +112,10 @@ variable (f) in
 /--
 The pushforward of a function `c` of locally finite support
 by a spectral map whose fibers intersect `c` in finitely many places
-with respect to a weight function `w`. This is mainly used when interpreting locally finsupp
-functions as algebraic cycles (in this case the weight function corresponds to a dimension or
-codimension function).
+with respect to a weight function `w`. This is mainly used when interpretting locally fin supp
+functions as algebraic cycles (in this case the weight function would be as described in stacks
+02R4, where the weight function is the degree of the corresponding extension of residue fields
+if the dimensions of the points correspond, and is zero otherwise).
 -/
 @[simps]
 noncomputable
