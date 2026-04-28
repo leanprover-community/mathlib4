@@ -852,14 +852,7 @@ theorem prod_inf_prod (s₁ s₂ : AffineSubspace k P₁) (t₁ t₂ : AffineSub
 
 theorem vectorSpan_prod {s : Set P₁} {t : Set P₂} (hs : s.Nonempty) (ht : t.Nonempty) :
     vectorSpan k (s ×ˢ t) = (vectorSpan k s).prod (vectorSpan k t) := by
-  have h : (s ×ˢ t) -ᵥ (s ×ˢ t) = (s -ᵥ s) ×ˢ (t -ᵥ t) := by
-    ext ⟨v₁, v₂⟩; simp only [Set.mem_vsub, Set.mem_prod]; constructor
-    · rintro ⟨⟨a₁, b₁⟩, ⟨ha₁, hb₁⟩, ⟨a₂, b₂⟩, ⟨ha₂, hb₂⟩, h⟩
-      obtain ⟨rfl, rfl⟩ := Prod.mk.inj h
-      exact ⟨⟨a₁, ha₁, a₂, ha₂, rfl⟩, ⟨b₁, hb₁, b₂, hb₂, rfl⟩⟩
-    · rintro ⟨⟨a₁, ha₁, a₂, ha₂, rfl⟩, ⟨b₁, hb₁, b₂, hb₂, rfl⟩⟩
-      exact ⟨(a₁, b₁), ⟨ha₁, hb₁⟩, (a₂, b₂), ⟨ha₂, hb₂⟩, rfl⟩
-  rw [vectorSpan_def, h]; exact Submodule.span_prod_eq _ _
+  rw [vectorSpan_def, Set.prod_vsub_prod]; apply Submodule.span_prod_eq
     (by obtain ⟨p, hp⟩ := hs; exact ⟨p, hp, p, hp, by simp⟩)
     (by obtain ⟨q, hq⟩ := ht; exact ⟨q, hq, q, hq, by simp⟩)
 
