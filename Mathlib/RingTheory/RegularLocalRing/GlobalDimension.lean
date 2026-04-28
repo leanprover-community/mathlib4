@@ -71,7 +71,7 @@ theorem IsRegularLocalRing.globalDimension_eq_ringKrullDim [Small.{v} R] [IsRegu
   rw [globalDimension_eq_sup_projectiveDimension_finite]
   have depth_eq : depth (ModuleCat.of R (Shrink.{v, u} R)) = ringKrullDim R := by
     rw [(isCohenMacaulayLocalRing_def R).mp isCohenMacaulayLocalRing_of_isRegularLocalRing]
-    exact WithBot.coe_inj.mpr (ring_depth_invariant (maximalIdeal R) Ideal.IsPrime.ne_top'.lt_top)
+    exact WithBot.coe_inj.mpr (ring_depth_shrink_eq (maximalIdeal R) Ideal.IsPrime.ne_top'.lt_top)
   apply le_antisymm
   · simp only [iSup_le_iff]
     intro M hM
