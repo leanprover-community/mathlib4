@@ -103,6 +103,10 @@ lemma additive_of_iso {G : C ⥤ D} (e : F ≅ G) : G.Additive := by
   simp only [← NatIso.naturality_1 e (f + g), map_add, Preadditive.add_comp,
     NatTrans.naturality, Preadditive.comp_add, Iso.inv_hom_id_app_assoc]
 
+omit [F.Additive] in
+lemma additive_iff_of_iso {G : C ⥤ D} (e : F ≅ G) : F.Additive ↔ G.Additive :=
+  ⟨fun _ => additive_of_iso e, fun _ => additive_of_iso e.symm⟩
+
 variable (F)
 
 lemma additive_of_full_essSurj_comp [Full F] [EssSurj F] (G : D ⥤ E)
