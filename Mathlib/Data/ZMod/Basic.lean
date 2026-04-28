@@ -824,6 +824,18 @@ lemma isUnit_prime_iff_not_dvd {n p : ℕ} (hp : p.Prime) : IsUnit (p : ZMod n) 
 lemma isUnit_prime_of_not_dvd {n p : ℕ} (hp : p.Prime) (h : ¬ p ∣ n) : IsUnit (p : ZMod n) :=
   (isUnit_prime_iff_not_dvd hp).mpr h
 
+/-- In `ZMod (p ^ d)`, a natural number not divisible by the prime `p` is a unit. -/
+theorem isUnit_natCast_of_not_dvd_pow {p d a : ℕ} (hp : p.Prime) (ha : ¬ p ∣ a) :
+    IsUnit (a : ZMod (p ^ d)) := by
+  rw [isUnit_iff_coprime]
+  exact (hp.coprime_iff_not_dvd.mpr ha).symm.pow_right d
+
+/-- In `ZMod (p ^ d)` with `d ≥ 1`, the prime `p` is not a unit. -/
+theorem prime_natCast_not_isUnit_pow {p d : ℕ} (hp : p.Prime) (hd : 0 < d) :
+    ¬ IsUnit ((p : ℕ) : ZMod (p ^ d)) := by
+  rw [isUnit_prime_iff_not_dvd hp]
+  exact not_not.mpr (dvd_pow_self p (Nat.ne_zero_of_lt hd))
+
 @[simp]
 theorem inv_coe_unit {n : ℕ} (u : (ZMod n)ˣ) : (u : ZMod n)⁻¹ = (u⁻¹ : (ZMod n)ˣ) := by
   have := congr_arg ((↑) : ℕ → ZMod n) (val_coe_unit_coprime u)
