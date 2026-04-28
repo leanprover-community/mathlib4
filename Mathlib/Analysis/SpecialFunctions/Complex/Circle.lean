@@ -34,6 +34,10 @@ theorem injective_arg : Injective fun z : Circle => arg z := fun z w h =>
 theorem arg_eq_arg {z w : Circle} : arg z = arg w ↔ z = w :=
   injective_arg.eq_iff
 
+@[simp]
+theorem arg_eq_zero {z : Circle} : arg z = 0 ↔ z = 1 := by
+  simpa using arg_eq_arg (w := 1)
+
 theorem arg_exp {x : ℝ} (h₁ : -π < x) (h₂ : x ≤ π) : arg (exp x) = x := by
   rw [coe_exp, exp_mul_I, arg_cos_add_sin_mul_I ⟨h₁, h₂⟩]
 

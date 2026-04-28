@@ -120,6 +120,12 @@ def exp : C(ℝ, Circle) where
 @[simp, norm_cast]
 theorem coe_exp (t : ℝ) : exp t = Complex.exp (t * Complex.I) := rfl
 
+theorem cos_eq_cos_of_exp_eq_exp {x y : ℝ} (h : exp x = exp y) : Real.cos x = Real.cos y := by
+  simpa using congr(($h : ℂ).re)
+
+theorem sin_eq_sin_of_exp_eq_exp {x y : ℝ} (h : exp x = exp y) : Real.sin x = Real.sin y := by
+  simpa using congr(($h : ℂ).im)
+
 @[simp]
 theorem exp_zero : exp 0 = 1 :=
   Subtype.ext <| by rw [coe_exp, ofReal_zero, zero_mul, Complex.exp_zero, coe_one]
