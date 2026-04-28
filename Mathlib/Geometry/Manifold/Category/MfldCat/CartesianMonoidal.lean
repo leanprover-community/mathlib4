@@ -39,8 +39,8 @@ def binaryProductLimitCone (M N : MfldCat.{u} 𝕜 n) : LimitCone (pair M N) whe
   isLimit := BinaryFan.IsLimit.mk _ (fun l r => ofHom (l.hom.prodMk r.hom))
     (fun _ _ => rfl) (fun _ _ => rfl) (by cat_disch)
 
-/-- We choose the product manifold of `M` and `N` (with carrier `M × N`) as the binary product,
-and `PUnit` as the terminal object. -/
+/-- We choose `MfldCat.of (M ⨯ N) (M.E × N.E) (ModelProd M.H N.H) (M.I.prod N.I)` as product  of `M`
+and `N`, and `ofNormedSpace n PUnit` as the terminal object. -/
 noncomputable instance cartesianMonoidalCategory :
     CartesianMonoidalCategory (MfldCat.{u} 𝕜 n) :=
   .ofChosenFiniteProducts
