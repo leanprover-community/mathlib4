@@ -1,5 +1,8 @@
-import Mathlib.Algebra.DirectSum.Basic
 import Mathlib.Algebra.Ring.Submonoid.Pointwise
+import Mathlib.Algebra.DirectSum.Basic
+import Mathlib.Algebra.Group.Subgroup.Pointwise
+import Mathlib.Algebra.Ring.Submonoid.Pointwise
+import Mathlib.Order.CompletePartialOrder
 
 open Pointwise in
 /-- A lemma that exists for `Submodule`s in Mathlib but not for `AddSubmonoid`s: -/
@@ -29,3 +32,29 @@ lemma DirectSum.equivCongrLeft_of
     (equivCongrLeft h) ((of M (h.symm k)) m) = (of (fun k ↦ M (h.symm k)) k) m
   := by
   exact DFinsupp.comapDomain'_single (⇑h.symm) h.right_inv k m
+
+/- An analogue of Mathlib's `Submodule.iSup_toAddSubmonoid` --/
+theorem Subgroup.iSup_toAddSubmonoid {ι M : Type*} [AddCommGroup M]
+  (p : ι → AddSubgroup M) :
+  (⨆ i, p i).toAddSubmonoid = ⨆ i, (p i).toAddSubmonoid
+  := by
+  refine le_antisymm
+    (fun x hx ↦ ?_)
+    (iSup_le fun i x hx ↦ (le_iSup p i) hx)
+  -- Now induct on x ∈ ⨆ i, f i.
+  induction hx using AddSubgroup.iSup_induction' with
+  | hp i y hy           => exact AddSubmonoid.mem_iSup_of_mem i hy
+  | h1                  => exact zero_mem _
+  | hadd y z _ _ hy hz  => exact add_mem hy hz
+
+@[simp]
+/- An analogue of Mathlib's `Submodule.toAddSubmonoid_sSup` --/
+theorem Subgroup.toAddSubmonoid_sSup {M : Type*} [AddCommGroup M]
+  (s : Set (AddSubgroup M)) :
+  (sSup s).toAddSubmonoid = sSup (AddSubgroup.toAddSubmonoid '' s)
+  := by
+    rw [sSup_image',sSup_eq_iSup']
+    exact (Subgroup.iSup_toAddSubmonoid _)
+
+-- #check Submodule.toAddSubmonoid_sSup -- simp lemma
+-- #check Submodule.iSup_toAddSubmonoid -- not a simp lemma

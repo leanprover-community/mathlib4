@@ -4,7 +4,7 @@ open DirectSum
 
 section DirectSum.sigmaFiberAddEquiv
 /-
-1. Definition of `sigmaFiberAddEquiv`
+1. Definition of `sigmaFiberAddEquiv`< :
    as composition of two isos:
      iso₁ :=  lequivCongrLeft
      iso₂ := sigmaLcurryEquiv
@@ -64,20 +64,56 @@ lemma DirectSum.sigmaFiberAddEquiv_of'
   rw [sigmaFiberAddEquiv_of' f β (k := ⟨f i, ⟨i, rfl⟩⟩)]
 end DirectSum.sigmaFiberAddEquiv
 
+section TypeClassAssumption
+
+class IsAddSubmonoidSSup (σ : Type*) [CompleteLattice σ]
+    (M : outParam Type*) [AddCommMonoid M]
+    [SetLike σ M] [AddSubmonoidClass σ M]
+    where
+    sSup_toAddSubmonoid (S : Set σ) :
+    AddSubmonoid.ofClass (sSup S) = sSup (AddSubmonoid.ofClass '' S)
+
+lemma SetLike.iSup_toAddSubmonoid {σ : Type*} [CompleteLattice σ]
+    {M : Type*} [AddCommMonoid M] [SetLike σ M] [AddSubmonoidClass σ M]
+    [IsAddSubmonoidSSup σ M] {ι : Sort*} (ℳ : ι → σ) :
+    AddSubmonoid.ofClass (⨆ i, ℳ i) = ⨆ i, AddSubmonoid.ofClass (ℳ i) := by
+  rw [iSup,IsAddSubmonoidSSup.sSup_toAddSubmonoid,← Set.range_comp]
+  rfl
+
+instance (M : Type*) [AddCommMonoid M] :
+  IsAddSubmonoidSSup (AddSubmonoid M) M where
+  sSup_toAddSubmonoid S := by
+    -- This is essentially `rfl`, but still 3 lines:
+    have h₁ (N : AddSubmonoid M) : AddSubmonoid.ofClass N = N := rfl
+    have h₂ (S : Set (AddSubmonoid M)) : AddSubmonoid.ofClass '' S = S :=
+      Set.EqOn.image_eq_self fun ⦃x⦄ ↦ congrFun rfl
+    rw [h₁,h₂]
+
+instance (M : Type*) [AddCommGroup M] :
+  IsAddSubmonoidSSup (AddSubgroup M) M where
+  sSup_toAddSubmonoid S := by
+    have (N : AddSubgroup M) : AddSubmonoid.ofClass N = N.toAddSubmonoid := by rfl
+    simp [this, Subgroup.toAddSubmonoid_sSup]
+
+instance (R : Type*) [Semiring R] (M : Type*) [AddCommMonoid M] [Module R M] :
+  IsAddSubmonoidSSup (Submodule R M) M where
+  sSup_toAddSubmonoid S := by
+    have (N : Submodule R M) : AddSubmonoid.ofClass N = N.toAddSubmonoid := by rfl
+    simp only [this, Submodule.toAddSubmonoid_sSup]
+
+end TypeClassAssumption
+
 
 section toIsup
 open DirectSum
 variable {M : Type*} [AddCommMonoid M]
 variable {ι : Type*} [DecidableEq ι]
-variable {σ : Type*} [SetLike σ M] [AddSubmonoidClass σ M] [CompleteLattice σ] [IsConcreteLE σ M]
+variable {σ : Type*} [SetLike σ M] [AddSubmonoidClass σ M] [CompleteLattice σ]
+  [h : IsAddSubmonoidSSup σ M]
 variable (ℳ : ι → σ)
 
-def SetLike.inclusion {p q : σ} (h : p ≤ q) : ↥p →+ ↥q :=
-    (AddSubmonoidClass.subtype p).codRestrict q
-      (fun x ↦ IsConcreteLE.coe_subset_coe'.mpr h x.2)
-
-def SetLike.toIsup : (⨁ i, ℳ i) →+ (⨆ i, ℳ i : σ) :=
-    DirectSum.toAddMonoid fun i ↦ SetLike.inclusion (le_iSup ℳ i)
+--@[irreducible]
+--def GoodClosure : σ := (⨆ i, ℳ i : σ)
 
 /- To verify that the map `toIsup` is surjective, I introduce the *assumption
    that the iSup in σ is just the usual iSup of additive submonoids.
@@ -87,33 +123,56 @@ def SetLike.toIsup : (⨁ i, ℳ i) →+ (⨆ i, ℳ i : σ) :=
    theorem iSup_toAddSubmonoid {ι : Sort*} (p : ι → Submodule R M) :
      (⨆ i, p i).toAddSubmonoid = ⨆ i, (p i).toAddSubmonoid
 -/
-omit [DecidableEq ι] in
-lemma SetLike.iSup_toAddSubmonoid :
-  AddSubmonoid.ofClass (⨆ i, ℳ i : σ) = ⨆ i, AddSubmonoid.ofClass (ℳ i) := by
-  sorry  -- this is really just an assumption I want to make
 
 omit [DecidableEq ι] in
-@[simp] lemma SetLike.mem_iSup_iff_mem_iSup_AddSubmonoid (m : M) :
-  m ∈ (⨆ i, ℳ i : σ) ↔ m ∈ (⨆ i, AddSubmonoid.ofClass (ℳ i)) := by
-  rw [← SetLike.iSup_toAddSubmonoid]
+@[simp] lemma SetLike.mem_iSup_iff_mem_iSup_AddSubmonoid
+  (m : M) :
+  m ∈ (⨆ i, ℳ i : σ) ↔ m ∈ (⨆ i, AddSubmonoid.ofClass (ℳ i))
+  := by
+  rw [← SetLike.iSup_toAddSubmonoid ℳ]
   rfl
 
-lemma SetLike.toIsup_surjective : Function.Surjective (toIsup ℳ):= by
+private def codomain_equal :
+   ↥(⨆ i, AddSubmonoid.ofClass (ℳ i)) ≃+ ↥(⨆ i, ℳ i : σ)  :=
+   (AddEquiv.addSubmonoidCongr (SetLike.iSup_toAddSubmonoid ℳ).symm)
+
+private def toIsup_ : (⨁ i, ℳ i) →+ ↥(⨆ i, AddSubmonoid.ofClass (ℳ i)) :=
+  DirectSum.toAddMonoid
+  (fun i ↦ AddSubmonoid.inclusion (le_iSup (fun i ↦ AddSubmonoid.ofClass (ℳ i)) i))
+
+@[irreducible]
+def SetLike.toIsup
+  : (⨁ i, ℳ i) →+ ↥(⨆ i, ℳ i : σ)
+  := (codomain_equal ℳ).toAddMonoidHom.comp (toIsup_ ℳ)
+
+@[simp]
+lemma SetLike.toIsup_of
+  (i : ι) (m : ℳ i) :
+  (SetLike.toIsup ℳ) (of (fun i ↦ ↥(ℳ i)) i m) = m.val := by
+  unfold SetLike.toIsup toIsup_ codomain_equal
+  simp only [AddEquiv.toAddMonoidHom_eq_coe, AddMonoidHom.coe_comp, AddMonoidHom.coe_coe,
+  Function.comp_apply, toAddMonoid_of]
+  obtain ⟨val, property⟩ := m
+  simp_all only
+  rfl
+
+lemma SetLike.toIsup_surjective : Function.Surjective (toIsup ℳ) := by
+  unfold SetLike.toIsup
+  apply (codomain_equal ℳ).surjective.comp
   intro ⟨y, hy'⟩
-  change y ∈ AddSubmonoid.ofClass (⨆ i, ℳ i) at hy'
-  rw [SetLike.iSup_toAddSubmonoid] at hy'
-  have ⟨a, ha⟩ : ∃ a, ((toIsup ℳ) a : M) = y := by
+  have ⟨a, ha⟩ : ∃ a, ((toIsup_ ℳ) a : M) = y := by
+    unfold toIsup_
     induction hy' using AddSubmonoid.iSup_induction' with
-    | mem i x hxS => exact ⟨DirectSum.of _ i ⟨x, hxS⟩, by simp [toIsup,SetLike.inclusion]⟩
+    | mem i x hxS => exact ⟨DirectSum.of _ i ⟨x, hxS⟩,
+        by rw [toAddMonoid_of]; rfl⟩
     | zero => exact ⟨0, by simp⟩
     | add x y u v hx hy =>
       rw [←SetLike.iSup_toAddSubmonoid] at u v
-      obtain ⟨a, ha⟩ := (hx u)
-      obtain ⟨b, hb⟩ := (hy v)
+      obtain ⟨a, ha⟩ := hx
+      obtain ⟨b, hb⟩ := hy
       exact ⟨a + b, by simp [ha, hb]⟩
   subst ha
   simp_all only [Subtype.coe_eta, exists_apply_eq_apply]
-
 /-
   TODO:
     Figure out a better proof of toIsup_surjective.
@@ -134,14 +193,14 @@ variable {σ : Type*} [SetLike σ M] [CompleteLattice σ]
 variable (ℳ : ι₁ → σ)
 
 def DirectSum.Decomposition.map : ι₂ → σ
-  := fun j ↦ (⨆ (i : { i : ι₁ // f i = j}), ℳ i)
+  := fun j ↦ iSup (fun i : { i : ι₁ // f i = j} ↦ ℳ i)
 
+variable [AddSubmonoidClass σ M] [h : IsAddSubmonoidSSup σ M]
 
-variable [AddSubmonoidClass σ M]
 #check DirectSum.sigmaFiberAddEquiv f (fun i ↦ ↥(ℳ i))
+--#check h
 
-
-variable [IsConcreteLE σ M] [DirectSum.Decomposition ℳ]
+variable [DirectSum.Decomposition ℳ]
 
 abbrev Dec' := ⨁ j, (Decomposition.map f ℳ) j
 abbrev sigma := (DirectSum.sigmaFiberAddEquiv f (fun i ↦ ↥(ℳ i))).toAddMonoidHom
@@ -168,31 +227,28 @@ instance DirectSum.Decomposition.map.decomposition :
       rw [← AddMonoidHom.cancel_right (decomposeAddEquiv ℳ).symm.surjective]
       apply addHom_ext'
     -- now simplify everything:
-      unfold decomp'
-      unfold Decomposition.map SetLike.toIsup SetLike.inclusion
+      unfold decomp' Decomposition.map
       intro i
       ext m
       simp only [AddEquiv.toAddMonoidHom_eq_coe, AddMonoidHom.coe_comp, AddMonoidHom.coe_coe,
         Function.comp_apply, coeAddMonoidHom_of, decomposeAddEquiv_apply, decompose_coe,
-        sigmaFiberAddEquiv_of, map_of, toAddMonoid_of, AddMonoidHom.codRestrict_apply,
-        AddSubmonoidClass.subtype_apply, AddMonoidHom.id_comp]
+        sigmaFiberAddEquiv_of, map_of, SetLike.toIsup_of, AddMonoidHom.id_comp]
       ) (by
     -- 3 reduction steps:
       apply addHom_ext'
       intro j
       unfold Decomposition.map -- needed in v4.29r8, but not in v4.28.0
       rw [← AddMonoidHom.cancel_right
-        (SetLike.toIsup_surjective (fun (i : { i : ι₁ // f i = j}) ↦ ((ℳ ↑i))))]
+        (SetLike.toIsup_surjective (fun (i : { i : ι₁ // f i = j}) ↦ ((ℳ ↑i)))) ]
       apply addHom_ext'
     -- now simplify everything:
-      unfold decomp' SetLike.toIsup SetLike.inclusion
+      unfold decomp' --SetLike.toIsup SetLike.inclusion
       intro ⟨i, hi⟩
       subst hi
       ext m : 1
       simp only [AddEquiv.toAddMonoidHom_eq_coe, AddMonoidHom.coe_comp, AddMonoidHom.coe_coe,
-        Function.comp_apply, toAddMonoid_of, AddMonoidHom.codRestrict_apply,
-        AddSubmonoidClass.subtype_apply, coeAddMonoidHom_of, decomposeAddEquiv_apply, decompose_coe,
-        sigmaFiberAddEquiv_of, map_of, AddMonoidHom.id_comp]
+        Function.comp_apply, coeAddMonoidHom_of, SetLike.toIsup_of, decomposeAddEquiv_apply,
+        decompose_coe, sigmaFiberAddEquiv_of, map_of, AddMonoidHom.id_comp]
       )
 end Decomposition
 
@@ -204,13 +260,14 @@ variable [DecidableEq ι₁] [AddMonoid ι₁] [AddMonoid ι₂]
 variable (f : ι₁ →+ ι₂)
 variable {R : Type*} [CommSemiring R]
 variable {A : Type*} [Semiring A] [Algebra R A]
-variable {σ : Type*} [SetLike σ A] [AddSubmonoidClass σ A] [CompleteLattice σ] [IsConcreteLE σ A]
+variable {σ : Type*} [SetLike σ A] [AddSubmonoidClass σ A] [CompleteLattice σ]
+  [IsAddSubmonoidSSup σ A]
 variable (𝒜 : ι₁ → σ) [GradedRing 𝒜]
 
 open Pointwise in
 lemma one_le_induced_grad_zero : 1 ≤ AddSubmonoid.ofClass (Decomposition.map f 𝒜 0) := by
   unfold Decomposition.map
-  rw [AddSubmonoid.one_le,SetLike.iSup_toAddSubmonoid]
+  rw [AddSubmonoid.one_le, SetLike.iSup_toAddSubmonoid]
   have h : 1 ∈ AddSubmonoid.ofClass (𝒜 0) := SetLike.GradedOne.one_mem
   exact AddSubmonoid.mem_iSup_of_mem ⟨0, map_zero f⟩ h
 
