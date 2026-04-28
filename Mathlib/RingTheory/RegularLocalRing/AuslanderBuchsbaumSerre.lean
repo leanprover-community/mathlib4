@@ -24,12 +24,9 @@ variable (R : Type u) [CommRing R]
 
 open IsLocalRing CategoryTheory RingTheory.Sequence
 
-local instance finite_QuotSMulTop (M : Type*) [AddCommGroup M] [Module R M] [Module.Finite R M]
-    (x : R) : Module.Finite (R ⧸ Ideal.span {x}) (QuotSMulTop x M) := by
-  let f : M →ₛₗ[Ideal.Quotient.mk (Ideal.span {x})] (QuotSMulTop x M) := {
-    __ := Submodule.mkQ _
-    map_smul' r m := rfl }
-  exact Module.Finite.of_surjective f (Submodule.mkQ_surjective _)
+private instance finite_QuotSMulTop (M : Type*) [AddCommGroup M] [Module R M] [Module.Finite R M]
+    (x : R) : Module.Finite (R ⧸ Ideal.span {x}) (QuotSMulTop x M) :=
+  Module.Finite.of_restrictScalars_finite R _ _
 
 open Pointwise in
 lemma ker_mapRange_eq_smul_top (I : Type*) [Finite I] (x : R) :
@@ -38,7 +35,7 @@ lemma ker_mapRange_eq_smul_top (I : Type*) [Finite I] (x : R) :
   ext y
   simp only [Finsupp.ker_mapRange, Submodule.ker_mkQ, Finsupp.mem_submodule_iff]
   refine ⟨fun h ↦ ?_, fun h i ↦ ?_⟩
-  · let _ : Fintype I := Fintype.ofFinite I
+  · let : Fintype I := Fintype.ofFinite I
     simp only [Ideal.mem_span_singleton', mul_comm] at h
     rw [← Finsupp.univ_sum_single y]
     refine Submodule.sum_mem _ (fun i _ ↦ ?_)
@@ -49,7 +46,6 @@ lemma ker_mapRange_eq_smul_top (I : Type*) [Finite I] (x : R) :
     simpa [← eq] using
       Ideal.IsTwoSided.mul_mem_of_left (z i) (Ideal.mem_span_singleton_self x)
 
-set_option backward.isDefEq.respectTransparency false in
 open Pointwise in
 lemma free_iff_quotSMulTop_free [IsLocalRing R] [IsNoetherianRing R] (M : Type*) [AddCommGroup M]
     [Module R M] [Module.Finite R M] {x : R} (mem : x ∈ maximalIdeal R) (reg : IsSMulRegular M x) :
@@ -159,7 +155,6 @@ lemma IsSMulRegular.of_free {x : R} (reg : IsSMulRegular R x) (M : Type*) [AddCo
   apply reg.right_eq_zero_of_smul
   rw [← Finsupp.smul_apply, hy, Finsupp.zero_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 open Ideal in
 lemma projectiveDimension_eq_quotient [Small.{v} R] [IsLocalRing R] [IsNoetherianRing R]
     (M : ModuleCat.{v} R) [Module.Finite R M] (x : R)
@@ -176,12 +171,10 @@ lemma projectiveDimension_eq_quotient [Small.{v} R] [IsLocalRing R] [IsNoetheria
       refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
       · have := (free_iff_quotSMulTop_free R M mem reg2).mpr Module.free_of_flat_of_isLocalRing
         exact Module.Projective.of_free
-      · let _ : IsLocalRing (R ⧸ Ideal.span {x}) :=
+      · have : IsLocalRing (R ⧸ Ideal.span {x}) :=
           have : Nontrivial (R ⧸ Ideal.span {x}) :=
             Quotient.nontrivial_iff.mpr (by simpa [← Submodule.ideal_span_singleton_smul])
-          have : IsLocalHom (Ideal.Quotient.mk (Ideal.span {x})) :=
-            IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
-          IsLocalRing.of_surjective _ Ideal.Quotient.mk_surjective
+          IsLocalRing.of_surjective' _ Ideal.Quotient.mk_surjective
         have := (free_iff_quotSMulTop_free R M mem reg2).mp Module.free_of_flat_of_isLocalRing
         exact Module.Projective.of_free
     | succ n ih =>
@@ -300,20 +293,21 @@ lemma exist_isSMulRegular_of_exist_hasProjectiveDimensionLE [IsLocalRing R] [IsN
         exact le_antisymm Ideal.mul_le_right (le_of_le_of_eq sub (eq.trans (pow_two _)))
       absurd nebot
       exact isField_iff_maximalIdeal_eq.mp this
-    · let _ : I.IsPrime := IsAssociatedPrime.isPrime ass
+    · have : I.IsPrime := IsAssociatedPrime.isPrime ass
       rw [le_antisymm (le_maximalIdeal_of_isPrime I) sub] at ass
       absurd exist_isSMulRegular_of_exist_hasProjectiveDimensionLE_aux nebot h
       simp only [not_exists, not_and]
       intro x hx
-      change x ∈ {r : R | IsSMulRegular R r}ᶜ
-      rw [← biUnion_associatedPrimes_eq_compl_regular]
-      exact Set.mem_biUnion ass hx
-  simp at xnmem
+      have : x ∈ {r : R | IsSMulRegular R r}ᶜ := by
+        simpa [← biUnion_associatedPrimes_eq_compl_regular] using Set.mem_biUnion ass hx
+      exact this
+  simp only [Set.singleton_union, Set.mem_insert_iff, Set.iUnion_iUnion_eq_or_left, Set.mem_union,
+    SetLike.mem_coe, Set.mem_iUnion, exists_prop, not_or, not_exists, not_and] at xnmem
   use x
-  simp only [xmem, xnmem.1, not_false_eq_true, true_and]
-  change x ∈ {r : R | IsSMulRegular R r}
-  rw [← Set.not_notMem, ← Set.mem_compl_iff, ← biUnion_associatedPrimes_eq_compl_regular]
-  simpa using xnmem.2
+  have : x ∈ {r : R | IsSMulRegular R r} := by
+    rw [← Set.not_notMem, ← Set.mem_compl_iff, ← biUnion_associatedPrimes_eq_compl_regular]
+    simpa using xnmem.2
+  simpa [xmem, xnmem.1]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma spanFinrank_maximalIdeal_quotient [IsLocalRing R] [IsNoetherianRing R] (x : R)
@@ -341,20 +335,20 @@ lemma spanFinrank_maximalIdeal_quotient [IsLocalRing R] [IsNoetherianRing R] (x 
   have := e.isLocalRing
   rw [← map_ringEquiv_maximalIdeal e, Ideal.spanFinrank_map_eq_of_ringEquiv]
 
-set_option backward.isDefEq.respectTransparency false in
 open Pointwise in
 theorem generate_by_regular_aux [IsLocalRing R] [IsNoetherianRing R] [Small.{v} R]
     (h : ∃ n, HasProjectiveDimensionLE (ModuleCat.of R (Shrink.{v} (maximalIdeal R))) n)
     (n : ℕ) : Submodule.spanFinrank (maximalIdeal R) = n →
     ∃ rs : List R, IsRegular R rs ∧ Ideal.ofList rs = maximalIdeal R := by
-  induction n generalizing R
-  · intro hrank
+  induction n generalizing R with
+  | zero =>
+    intro hrank
     have : (maximalIdeal R) = ⊥ := by
       simp [← Submodule.spanRank_eq_zero_iff_eq_bot, hrank,
         Submodule.fg_iff_spanRank_eq_spanFinrank.mpr (maximalIdeal R).fg_of_isNoetherianRing]
     use []
     simpa [this] using RingTheory.Sequence.IsRegular.nil R R
-  · rename_i n ih _ _ _ _
+  | succ n ih =>
     have fg : (maximalIdeal R).FG := (maximalIdeal R).fg_of_isNoetherianRing
     intro hrank
     have nebot : maximalIdeal R ≠ ⊥ := by
@@ -457,17 +451,15 @@ theorem generate_by_regular_aux [IsLocalRing R] [IsNoetherianRing R] [Small.{v} 
         LinearEquiv.coe_coe, Function.comp_apply, r', e2,
         LinearMap.quotientInfEquivSupQuotient_apply_mk]
       simp [e1, e1']
-    let _ : IsScalarTower R (R ⧸ Ideal.span {x}) (Shrink.{v} (maximalIdeal R')) :=
+    have : IsScalarTower R (R ⧸ Ideal.span {x}) (Shrink.{v} (maximalIdeal R')) :=
       (equivShrink (maximalIdeal R')).symm.isScalarTower R _
     let r := (LinearMap.extendScalarsOfSurjective (Ideal.Quotient.mk_surjective
       (I := Ideal.span {x})) r')
     let i := (LinearMap.extendScalarsOfSurjective
       (Ideal.Quotient.mk_surjective (I := Ideal.span {x})) i')
     have compid' : r.comp i = LinearMap.id := by
-      ext y
-      simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.extendScalarsOfSurjective_apply,
-        LinearMap.id_coe, id_eq, SetLike.coe_eq_coe, EmbeddingLike.apply_eq_iff_eq, r, i]
-      rw [← LinearMap.comp_apply, compid, LinearMap.id_apply]
+      apply LinearMap.ext (fun y ↦ ?_)
+      simpa using LinearMap.ext_iff.mp compid y
     have retr  : Retract (ModuleCat.of (R ⧸ Ideal.span {x}) (Shrink.{v} (maximalIdeal R')))
       (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x (Shrink.{v} (maximalIdeal R)))) := {
       i := ModuleCat.ofHom i
