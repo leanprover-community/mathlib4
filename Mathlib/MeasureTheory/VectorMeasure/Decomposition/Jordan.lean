@@ -156,7 +156,7 @@ theorem toSignedMeasure_zero : (0 : JordanDecomposition α).toSignedMeasure = 0 
 
 theorem toSignedMeasure_neg : (-j).toSignedMeasure = -j.toSignedMeasure := by
   ext1 i hi
-  rw [neg_apply, toSignedMeasure, toSignedMeasure, toSignedMeasure_sub_apply hi,
+  rw [VectorMeasure.neg_apply, toSignedMeasure, toSignedMeasure, toSignedMeasure_sub_apply hi,
     toSignedMeasure_sub_apply hi, neg_sub, neg_posPart, neg_negPart]
 
 theorem toSignedMeasure_smul (r : ℝ≥0) : (r • j).toSignedMeasure = r • j.toSignedMeasure := by
@@ -177,7 +177,7 @@ theorem exists_compl_positive_negative :
   · refine restrict_le_restrict_of_subset_le _ _ fun A hA hA₁ => ?_
     rw [toSignedMeasure, toSignedMeasure_sub_apply hA, measureReal_def,
       show j.posPart A = 0 from nonpos_iff_eq_zero.1 (hS₂ ▸ measure_mono hA₁), ENNReal.toReal_zero,
-      zero_sub, neg_le, zero_apply, neg_zero]
+      zero_sub, neg_le, VectorMeasure.zero_apply, neg_zero]
     exact ENNReal.toReal_nonneg
   · refine restrict_le_restrict_of_subset_le _ _ fun A hA hA₁ => ?_
     rw [toSignedMeasure, toSignedMeasure_sub_apply hA, measureReal_def (μ := j.negPart),
@@ -277,7 +277,7 @@ theorem of_diff_eq_zero_of_symmDiff_eq_zero_positive (hu : MeasurableSet u) (hv 
     rw [Set.symmDiff_def,
       of_union (v := s) (Set.disjoint_of_subset_left diff_subset disjoint_sdiff_self_right)
         (hu.diff hv) (hv.diff hu)] at hs
-    rw [zero_apply] at a b
+    rw [VectorMeasure.zero_apply] at a b
     constructor
   · linarith
   · linarith

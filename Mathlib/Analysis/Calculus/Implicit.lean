@@ -433,7 +433,7 @@ theorem to_implicitFunctionOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' :
   swap
   · ext
     simp only [ContinuousLinearMap.comp_apply, Submodule.coe_subtypeL', Submodule.coe_subtype,
-      ContinuousLinearMap.apply_val_ker, ContinuousLinearMap.zero_apply]
+      ContinuousLinearMap.apply_val_ker, zero_apply]
   simp only [implicitFunctionDataOfComplemented, map_sub, sub_self]
 
 end Complemented

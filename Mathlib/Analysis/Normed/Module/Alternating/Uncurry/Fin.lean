@@ -79,14 +79,14 @@ theorem neg_one_pow_smul_map_removeNth_add_eq_zero_of_eq (f : E [⋀^Fin n]→L[
   f.toAlternatingMap.neg_one_pow_smul_map_removeNth_add_eq_zero_of_eq hvij hij
 
 set_option backward.privateInPublic true in
-private def alternatizeUncurryFinCLM.aux :
+private noncomputable def alternatizeUncurryFinCLM.aux :
     (E →L[𝕜] E [⋀^Fin n]→L[𝕜] F) →ₗ[𝕜] E [⋀^Fin (n + 1)]→ₗ[𝕜] F :=
   AlternatingMap.alternatizeUncurryFinLM ∘ₗ (toAlternatingMapLinear (R := 𝕜)).compRight (S := 𝕜) ∘ₗ
     ContinuousLinearMap.coeLM 𝕜
 
 private lemma alternatizeUncurryFinCLM.aux_apply (f : E →L[𝕜] E [⋀^Fin n]→L[𝕜] F)
     (v : Fin (n + 1) → E) :
-    aux f v = ∑ i : Fin (n + 1), (-1) ^ (i : ℕ) • f (v i) (i.removeNth v) := by
+    aux.toFun f v = ∑ i : Fin (n + 1), (-1) ^ (i : ℕ) • f (v i) (i.removeNth v) := by
   simp [aux, AlternatingMap.alternatizeUncurryFin_apply]
 
 set_option backward.privateInPublic true in
@@ -97,7 +97,7 @@ variable (𝕜 E F) in
 noncomputable def alternatizeUncurryFinCLM :
     (E →L[𝕜] E [⋀^Fin n]→L[𝕜] F) →L[𝕜] E [⋀^Fin (n + 1)]→L[𝕜] F :=
   AlternatingMap.mkContinuousLinear alternatizeUncurryFinCLM.aux (n + 1) fun f v ↦ calc
-    ‖alternatizeUncurryFinCLM.aux f v‖ ≤ ∑ i : Fin (n + 1), ‖f‖ * ∏ i, ‖v i‖ := by
+    ‖alternatizeUncurryFinCLM.aux.toFun f v‖ ≤ ∑ i : Fin (n + 1), ‖f‖ * ∏ i, ‖v i‖ := by
       rw [alternatizeUncurryFinCLM.aux_apply]
       refine norm_sum_le_of_le _ fun i hi ↦ ?_
       rw [norm_isUnit_zsmul _ (.pow _ isUnit_one.neg), i.prod_univ_succAbove, ← mul_assoc]

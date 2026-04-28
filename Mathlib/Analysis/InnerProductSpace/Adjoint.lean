@@ -381,11 +381,11 @@ variable {T : E →L[𝕜] E} [CompleteSpace E]
 theorem isStarNormal_iff_norm_eq_adjoint :
     IsStarNormal T ↔ ∀ v : E, ‖T v‖ = ‖adjoint T v‖ := by
   rw [isStarNormal_iff, Commute, SemiconjBy, ← sub_eq_zero]
-  simp_rw [ContinuousLinearMap.ext_iff, ← coe_coe, coe_sub, ← LinearMap.ext_iff, coe_zero]
-  have := star_eq_adjoint T ▸ coe_sub (star _ * T) _ ▸
+  simp_rw [ContinuousLinearMap.ext_iff, ← coe_coe, coe_sub', ← LinearMap.ext_iff, coe_zero']
+  have := star_eq_adjoint T ▸ coe_sub' (star _ * T) _ ▸
     ((IsSelfAdjoint.star_mul_self T).sub (IsSelfAdjoint.mul_star_self T)).isSymmetric
   simp_rw [star_eq_adjoint, ← LinearMap.IsSymmetric.inner_map_self_eq_zero this,
-    LinearMap.sub_apply, inner_sub_left, coe_coe, mul_apply, adjoint_inner_left,
+    LinearMap.sub_apply, inner_sub_left, coe_coe, mul_apply_eq_comp, adjoint_inner_left,
     inner_self_eq_norm_sq_to_K, ← adjoint_inner_right T, inner_self_eq_norm_sq_to_K,
     sub_eq_zero, ← sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _)]
   norm_cast
@@ -416,14 +416,15 @@ theorem IsIdempotentElem.isSelfAdjoint_iff_isStarNormal (hT : IsIdempotentElem T
   refine ⟨fun h => by rw [isStarNormal_iff, h], fun h => ?_⟩
   suffices T = star T * T from this ▸ IsSelfAdjoint.star_mul_self _
   rw [← sub_eq_zero, ContinuousLinearMap.ext_iff]
-  simp_rw [zero_apply, ← norm_eq_zero (E := E)]
+  simp_rw [_root_.zero_apply, ← norm_eq_zero (E := E)]
   have :=
     calc (∀ x : E, ‖(T - star T * T) x‖ = 0) ↔ ∀ x, ‖(adjoint (1 - T)) (T x)‖ = 0 := by
           simp [star_eq_adjoint, one_def]
       _ ↔ ∀ x, ‖(1 - T) (T x)‖ = 0 := by
           simp only [isStarNormal_iff_norm_eq_adjoint.mp h.one_sub]
       _ ↔ ∀ x, ‖(T - T * T) x‖ = 0 := by simp
-      _ ↔ T - T * T = 0 := by simp only [norm_eq_zero, ContinuousLinearMap.ext_iff, zero_apply]
+      _ ↔ T - T * T = 0 := by simp only [norm_eq_zero, ContinuousLinearMap.ext_iff,
+          _root_.zero_apply]
       _ ↔ IsIdempotentElem T := by simp only [sub_eq_zero, IsIdempotentElem, eq_comm]
   exact this.mpr hT
 

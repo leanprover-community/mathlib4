@@ -150,7 +150,7 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
     symm
     ext x
     have := LinearMap.congr_fun (LinearMap.ker_eq_top.mp this) x
-    simpa only [sub_eq_zero, ContinuousLinearMap.coe_sub, LinearMap.sub_apply,
+    simpa only [sub_eq_zero, ContinuousLinearMap.coe_sub', LinearMap.sub_apply,
       LinearMap.zero_apply] using this
   | succ n IH =>
     -- Inductive step.  Let `W` be the fixed subspace of `φ`.  We suppose its complement to have

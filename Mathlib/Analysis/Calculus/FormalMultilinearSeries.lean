@@ -406,7 +406,7 @@ lemma compContinuousLinearMap_zero [NontriviallyNormedField 𝕜]
     congr
     apply Subsingleton.allEq
   | succ =>
-    simp [ContinuousLinearMap.coe_zero']
+    simp [FunLike.coe_zero]
 
 end Const
 

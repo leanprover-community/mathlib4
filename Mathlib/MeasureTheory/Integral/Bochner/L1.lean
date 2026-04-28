@@ -112,7 +112,7 @@ theorem weightedSMul_union' (s t : Set α) (ht : MeasurableSet t) (hs_finite : �
     (ht_finite : μ t ≠ ∞) (hdisj : Disjoint s t) :
     (weightedSMul μ (s ∪ t) : F →L[ℝ] F) = weightedSMul μ s + weightedSMul μ t := by
   ext1 x
-  simp_rw [add_apply, weightedSMul_apply, measureReal_union hdisj ht, add_smul]
+  simp_rw [_root_.add_apply, weightedSMul_apply, measureReal_union hdisj ht, add_smul]
 
 @[nolint unusedArguments]
 theorem weightedSMul_union (s t : Set α) (_hs : MeasurableSet s) (ht : MeasurableSet t)
@@ -139,7 +139,7 @@ theorem dominatedFinMeasAdditive_weightedSMul {_ : MeasurableSpace α} (μ : Mea
 
 theorem weightedSMul_nonneg [PartialOrder F] [IsOrderedModule ℝ F]
     (s : Set α) (x : F) (hx : 0 ≤ x) : 0 ≤ weightedSMul μ s x := by
-  simp only [weightedSMul, coe_smul', _root_.id, coe_id', Pi.smul_apply]
+  simp only [weightedSMul, _root_.smul_apply]
   exact smul_nonneg toReal_nonneg hx
 
 end WeightedSMul

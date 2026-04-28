@@ -216,7 +216,8 @@ theorem opNorm_eq_of_bounds {φ : E →SL[σ₁₂] F} {M : ℝ} (M_nonneg : 0 �
     ((le_csInf_iff ContinuousLinearMap.bounds_bddBelow ⟨M, M_nonneg, h_above⟩).mpr
       fun N ⟨N_nonneg, hN⟩ => h_below N N_nonneg hN)
 
-theorem opNorm_neg (f : E →SL[σ₁₂] F) : ‖-f‖ = ‖f‖ := by simp only [norm_def, neg_apply, norm_neg]
+theorem opNorm_neg (f : E →SL[σ₁₂] F) : ‖-f‖ = ‖f‖ := by simp only [norm_def, _root_.neg_apply,
+  norm_neg]
 
 theorem opNorm_nonneg (f : E →SL[σ₁₂] F) : 0 ≤ ‖f‖ :=
   Real.sInf_nonneg fun _ ↦ And.left
@@ -335,7 +336,7 @@ theorem opNorm_smul_le {𝕜' : Type*} [DistribSMul 𝕜' F] [SMulCommClass 𝕜
     [SeminormedAddCommGroup 𝕜'] [IsBoundedSMul 𝕜' F]
     (c : 𝕜') (f : E →SL[σ₁₂] F) : ‖c • f‖ ≤ ‖c‖ * ‖f‖ :=
   (c • f).opNorm_le_bound (mul_nonneg (norm_nonneg _) (opNorm_nonneg _)) fun _ => by
-    grw [smul_apply, norm_smul_le, mul_assoc, le_opNorm]
+    grw [_root_.smul_apply, norm_smul_le, mul_assoc, le_opNorm]
 
 theorem opNorm_le_iff_lipschitz {f : E →SL[σ₁₂] F} {K : ℝ≥0} :
     ‖f‖ ≤ K ↔ LipschitzWith K f :=
@@ -401,7 +402,7 @@ theorem opNorm_comp_le (f : E →SL[σ₁₂] F) : ‖h.comp f‖ ≤ ‖h‖ * 
 
 /-- Continuous linear maps form a seminormed ring with respect to the operator norm. -/
 instance toSeminormedRing : SeminormedRing (E →L[𝕜] E) :=
-  { toSeminormedAddCommGroup, ring with norm_mul_le := opNorm_comp_le }
+  { toSeminormedAddCommGroup, FunLike.instRing with norm_mul_le := opNorm_comp_le }
 
 /-- For a normed space `E`, continuous linear endomorphisms form a normed algebra with
 respect to the operator norm. -/

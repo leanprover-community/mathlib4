@@ -290,8 +290,8 @@ theorem exists_Gamma_le_conj (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
   rw [SetLike.mem_coe, CongruenceSubgroup.Gamma_mem', Subtype.ext_iff]
   ext i j
   simp_rw [map_apply_coe, z, map_add, map_one, RingHom.mapMatrix_apply, Int.coe_castRingHom,
-    add_apply, map_apply, coe_one, add_eq_left, Matrix.smul_apply, nsmul_eq_mul, Int.cast_mul,
-    Int.cast_natCast, ZMod.natCast_self M, zero_mul]
+    Matrix.add_apply, map_apply, coe_one, add_eq_left, Matrix.smul_apply, nsmul_eq_mul,
+    Int.cast_mul, Int.cast_natCast, ZMod.natCast_self M, zero_mul]
 
 /-- For any `g ∈ GL(2, ℚ)` and `M ≠ 0`, there exists `N` such that `g Γ(N) g⁻¹ ≤ Γ(M)`. -/
 theorem exists_Gamma_le_conj' (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :

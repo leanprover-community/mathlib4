@@ -133,7 +133,7 @@ theorem normedMk_eq_zero_iff : normedMk (M := M) = 0 ↔ ∀ (x : M), ‖x‖ = 
     rw [SeparationQuotient.mk_eq_zero_iff.mp]
     have : normedMk x = 0 := by
       rw [h]
-      simp only [zero_apply]
+      simp
     rw [← this]
     simp
   · intro h

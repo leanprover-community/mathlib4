@@ -460,7 +460,7 @@ theorem hasStrictFDerivAt_list_prod [DecidableEq ι] [Finite ι] {l : List ι} {
     Function.comp_def, ((List.erase_getElem _).map _).prod_eq, List.eraseIdx_eq_take_drop_succ,
     List.map_append, List.prod_append, List.get_eq_getElem, Fin.getElem_fin, Nat.succ_eq_add_one]
   exact Finset.sum_congr rfl fun i _ ↦ by
-    ext; simp only [smul_apply, op_smul_eq_smul, smul_eq_mul]; ring
+    ext; simp only [_root_.smul_apply, op_smul_eq_smul, smul_eq_mul]; ring
 
 @[fun_prop]
 theorem hasStrictFDerivAt_multiset_prod [DecidableEq ι] [Finite ι] {u : Multiset ι} {x : ι → 𝔸'} :
@@ -505,8 +505,8 @@ theorem HasStrictFDerivAt.list_prod' {l : List ι} {x : E}
   refine .congr_fderiv (hasStrictFDerivAt_list_prod_finRange'.comp x
     (hasStrictFDerivAt_pi.mpr fun i ↦ h (l.get i) (List.getElem_mem ..)) :) ?_
   ext m
-  simp_rw [List.map_take, List.map_drop, List.map_map, comp_apply, sum_apply, smul_apply,
-    proj_apply, pi_apply, Function.comp_def]
+  simp_rw [List.map_take, List.map_drop, List.map_map, comp_apply, _root_.sum_apply,
+    _root_.smul_apply, proj_apply, pi_apply, Function.comp_def]
 
 /--
 Unlike `HasFDerivAt.finsetProd`, supports non-commutative multiply and duplicate elements.
@@ -521,8 +521,8 @@ theorem HasFDerivAt.list_prod' {l : List ι} {x : E}
   refine .congr_fderiv (hasFDerivAt_list_prod_finRange'.comp x
     (hasFDerivAt_pi.mpr fun i ↦ h (l.get i) (l.get_mem i)) :) ?_
   ext m
-  simp_rw [List.map_take, List.map_drop, List.map_map, comp_apply, sum_apply, smul_apply,
-    proj_apply, pi_apply, Function.comp_def]
+  simp_rw [List.map_take, List.map_drop, List.map_map, comp_apply, _root_.sum_apply,
+    _root_.smul_apply, proj_apply, pi_apply, Function.comp_def]
 
 @[fun_prop]
 theorem HasFDerivWithinAt.list_prod' {l : List ι} {x : E}
@@ -534,8 +534,8 @@ theorem HasFDerivWithinAt.list_prod' {l : List ι} {x : E}
   refine .congr_fderiv (hasFDerivAt_list_prod_finRange'.comp_hasFDerivWithinAt x
     (hasFDerivWithinAt_pi.mpr fun i ↦ h (l.get i) (l.get_mem i)) :) ?_
   ext m
-  simp_rw [List.map_take, List.map_drop, List.map_map, comp_apply, sum_apply, smul_apply,
-    proj_apply, pi_apply, Function.comp_def]
+  simp_rw [List.map_take, List.map_drop, List.map_map, comp_apply, _root_.sum_apply,
+    _root_.smul_apply, proj_apply, pi_apply, Function.comp_def]
 
 theorem fderiv_list_prod' {l : List ι} {x : E}
     (h : ∀ i ∈ l, DifferentiableAt 𝕜 (f i ·) x) :

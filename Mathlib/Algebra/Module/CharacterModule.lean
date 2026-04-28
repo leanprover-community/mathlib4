@@ -145,7 +145,8 @@ Linear maps into a character module are exactly characters of the tensor product
   .ofLinear uncurry curry (by ext _ z; refine z.induction_on ?_ ?_ ?_ <;> aesop) (by aesop)
 
 theorem dual_rTensor_conj_homEquiv (f : A →ₗ[R] A') :
-    homEquiv.symm.toLinearMap ∘ₗ dual (f.rTensor B) ∘ₗ homEquiv.toLinearMap = f.lcomp R _ := rfl
+    (homEquiv (R := R) (A := A) (B := B)).symm.toLinearMap ∘ₗ dual (f.rTensor B) ∘ₗ
+      homEquiv.toLinearMap = f.lcomp R _ := rfl
 
 end module
 
