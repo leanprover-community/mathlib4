@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 
 We endow `MfldCat 𝕜 n` with its cartesian monoidal structure: the monoidal product is the
 product manifold `prodObj M N`, and the unit is the singleton `PUnit`, viewed as a
-zero-dimensional `𝕜`-manifold (`point`). We also derive the induced braided category structure.
+zero-dimensional `𝕜`-manifold. We also derive the induced braided category structure.
 -/
 
 @[expose] public section
@@ -35,8 +35,7 @@ def prodObj (M N : MfldCat.{u} 𝕜 n) : MfldCat.{u} 𝕜 n :=
 
 /-- Limit data for the binary product of `M` and `N` in `MfldCat`, using `prodObj M N`. -/
 def binaryProductLimitCone (M N : MfldCat.{u} 𝕜 n) : LimitCone (pair M N) where
-  cone := BinaryFan.mk (P := prodObj M N)
-    (ofHom ⟨Prod.fst, contMDiff_fst⟩) (ofHom ⟨Prod.snd, contMDiff_snd⟩)
+  cone := BinaryFan.mk (ofHom ⟨Prod.fst, contMDiff_fst⟩) (ofHom ⟨Prod.snd, contMDiff_snd⟩)
   isLimit := BinaryFan.IsLimit.mk _
     (fun l r => ofHom ⟨fun s => (l s, r s), l.hom.contMDiff.prodMk r.hom.contMDiff⟩)
     (fun _ _ => rfl) (fun _ _ => rfl)
@@ -44,20 +43,16 @@ def binaryProductLimitCone (M N : MfldCat.{u} 𝕜 n) : LimitCone (pair M N) whe
       ext x
       exact Prod.ext (ConcreteCategory.congr_hom h₁ x) (ConcreteCategory.congr_hom h₂ x))
 
-/-- The singleton `PUnit`, viewed as a zero-dimensional `𝕜`-manifold. We use `PUnit.{u + 1}`
-(rather than `Fin 0 → 𝕜`, which lives in `𝕜`'s universe) so that `point` exists in
-`MfldCat.{u} 𝕜 n` for any universe `v` of `𝕜`. -/
-def point : MfldCat.{u} 𝕜 n := ofNormedSpace n PUnit.{u + 1}
-
-/-- The point manifold is terminal in `MfldCat 𝕜 n`. -/
-def isTerminalPoint : IsTerminal (point (𝕜 := 𝕜) (n := n)) :=
-  IsTerminal.ofUniqueHom (fun _ => ofHom ⟨fun _ => PUnit.unit, contMDiff_const⟩)
-    (fun _ _ => by ext; rfl)
-
-/-- We choose `prodObj M N` as the product of `M` and `N` and `point` as the terminal object. -/
+/-- We choose `prodObj M N` as the product of `M` and `N`, and the singleton `PUnit.{u + 1}`
+(viewed as a zero-dimensional `𝕜`-manifold via `ofNormedSpace`) as the terminal object. We use
+`PUnit.{u + 1}` rather than `Fin 0 → 𝕜` so that the unit object exists in `MfldCat.{u} 𝕜 n` for
+any universe `v` of `𝕜`. -/
 noncomputable instance cartesianMonoidalCategory :
     CartesianMonoidalCategory (MfldCat.{u} 𝕜 n) :=
-  .ofChosenFiniteProducts ⟨_, isTerminalPoint⟩ binaryProductLimitCone
+  .ofChosenFiniteProducts
+    ⟨_, IsTerminal.ofUniqueHom (Y := ofNormedSpace n PUnit.{u + 1})
+      (fun _ => ofHom ⟨fun _ => PUnit.unit, contMDiff_const⟩) (fun _ _ => by ext)⟩
+    binaryProductLimitCone
 
 noncomputable instance : BraidedCategory (MfldCat.{u} 𝕜 n) := .ofCartesianMonoidalCategory
 
