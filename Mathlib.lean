@@ -5609,6 +5609,8 @@ public import Mathlib.NumberTheory.Cyclotomic.Basic
 public import Mathlib.NumberTheory.Cyclotomic.CyclotomicCharacter
 public import Mathlib.NumberTheory.Cyclotomic.Discriminant
 public import Mathlib.NumberTheory.Cyclotomic.Gal
+public import Mathlib.NumberTheory.Cyclotomic.LinearDisjoint
+public import Mathlib.NumberTheory.Cyclotomic.LinearRelations
 public import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
 public import Mathlib.NumberTheory.Dioph
 public import Mathlib.NumberTheory.DiophantineApproximation.Basic
@@ -6796,6 +6798,7 @@ public import Mathlib.RingTheory.QuotSMulTop
 public import Mathlib.RingTheory.Radical
 public import Mathlib.RingTheory.Radical.Basic
 public import Mathlib.RingTheory.Radical.NatInt
+public import Mathlib.RingTheory.Radical.Totient
 public import Mathlib.RingTheory.RamificationInertia.Inertia
 public import Mathlib.RingTheory.RamificationInertia.Ramification
 public import Mathlib.RingTheory.ReesAlgebra
