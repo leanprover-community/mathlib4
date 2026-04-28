@@ -125,7 +125,7 @@ lemma exists_lift :
 /-- If `f : ∀ (j : Fin (n + 2)) (_ : j ≠ i), Δ[n] ⟶ X` is a compatible family
 of morphisms (which defines a morphism `Λ[n + 1, i] ⟶ X`), `p : X ⟶ Y` a Kan fibration
 and `b : Δ[n + 1] ⟶ Y` such that for all `j ≠ i`, `f j _ ≫ p = stdSimplex.δ j ≫ b`,
-then this is lifting `Δ[n + 1] ⟶ X`. -/
+then this is a lifting `Δ[n + 1] ⟶ X`. -/
 @[no_expose]
 noncomputable def lift : Δ[n + 1] ⟶ X := (hf.exists_lift p b comm).choose
 
