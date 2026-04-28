@@ -341,7 +341,7 @@ theorem abs_iterate_derivative_T_real_le (n : ℤ) (k : ℕ) {x : ℝ} (hx : |x|
   replace hfderiv : ∑ p ∈ f.support, f p • p = derivative^[k] (T ℝ n) := by rw [← hfderiv]; rfl
   have hf (y : ℝ) :
       ∑ p ∈ f.support, f p • p.eval y = (derivative^[k] (T ℝ n)).eval y := by
-    rw [← hfderiv, Polynomial.eval_finset_sum]
+    rw [← hfderiv, Polynomial.eval_finsetSum]
     simp_rw [Polynomial.eval_smul]
   rw [← hf x, ← hf 1]
   grw [Finset.abs_sum_le_sum_abs]
