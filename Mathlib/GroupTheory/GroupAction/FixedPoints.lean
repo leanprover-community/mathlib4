@@ -50,7 +50,7 @@ all points in `s` are fixed by `g`, whereas the former only requires that `g •
 public section
 
 namespace MulAction
-open Pointwise
+open scoped Pointwise
 
 variable {α : Type*}
 variable {G : Type*} [Group G] [MulAction G α]
@@ -118,6 +118,14 @@ theorem smul_fixedBy (g h : G) :
     h • fixedBy α g = fixedBy α (h * g * h⁻¹) := by
   ext a
   simp_rw [Set.mem_smul_set_iff_inv_smul_mem, mem_fixedBy, mul_smul, smul_eq_iff_eq_inv_smul h]
+
+lemma fixedBy_mul_eq_empty_iff [IsRightCancelMul M] {m : M} :
+    fixedBy M m = ∅ ↔ m ≠ 1 := by
+  simp [MulAction.fixedBy, Set.eq_empty_iff_forall_notMem]
+
+lemma fixedBy_mul_op_eq_empty_iff [IsLeftCancelMul M] {m : M} :
+    fixedBy M (MulOpposite.op m) = ∅ ↔ m ≠ 1 := by
+  simp [MulAction.fixedBy, Set.eq_empty_iff_forall_notMem]
 
 end FixedPoints
 
