@@ -908,7 +908,6 @@ namespace IsDedekindDomain.HeightOneSpectrum
 lemma multiplicity_le_of_ideal_ge (p : HeightOneSpectrum R) {I J : Ideal R} (h : J ≤ I)
     (hJ : J ≠ ⊥) :
     multiplicity p.asIdeal I ≤ multiplicity p.asIdeal J := by
-  classical
   rw [← count_normalizedFactors_eq_multiplicity hJ,
     ← count_normalizedFactors_eq_multiplicity <| ne_bot_of_le_ne_bot hJ h]
   exact Ideal.count_le_of_ideal_ge h hJ _
@@ -916,20 +915,10 @@ lemma multiplicity_le_of_ideal_ge (p : HeightOneSpectrum R) {I J : Ideal R} (h :
 open UniqueFactorizationMonoid Multiset in
 lemma multiplicity_sup (p : HeightOneSpectrum R) {I J : Ideal R} (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
     multiplicity p.asIdeal (I ⊔ J) = multiplicity p.asIdeal I ⊓ multiplicity p.asIdeal J := by
-  classical
   rw [Ideal.sup_eq_prod_inf_factors hI hJ, ← count_normalizedFactors_eq_multiplicity ?h,
     ← count_normalizedFactors_eq_multiplicity hI, ← count_normalizedFactors_eq_multiplicity hJ]
-  -- extracted from the proof of `sup_eq_prod_inf_factors`
-  --   ==> refactor that (Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas)
-  case h =>
-    exact prod_ne_zero_of_prime _
-      fun _ h ↦ prime_of_normalized_factor _ (mem_inter.mp h).1
-  have H : normalizedFactors (normalizedFactors I ∩ normalizedFactors J).prod =
-      normalizedFactors I ∩ normalizedFactors J := by
-    refine normalizedFactors_prod_of_prime fun p hp ↦ ?_
-    rw [Multiset.mem_inter] at hp
-    exact prime_of_normalized_factor p hp.left
-  rw [H]
+  case h => exact Ideal.prod_inter_normalizedFactors_ne_zero I J
+  rw [Ideal.normalizedFactors_prod_inter_eq_inter]
   exact count_inter ..
 
 lemma emultiplicity_sup (p : HeightOneSpectrum R) (I J : Ideal R) :
