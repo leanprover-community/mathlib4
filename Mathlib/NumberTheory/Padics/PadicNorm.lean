@@ -267,23 +267,14 @@ theorem not_int_of_not_padic_int (p : ℕ) {a : ℚ} [hp : Fact (Nat.Prime p)]
   apply padicNorm.of_int
 
 theorem sum_lt {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α} :
-    s.Nonempty → (∀ i ∈ s, padicNorm p (F i) < t) → padicNorm p (∑ i ∈ s, F i) < t := by
-  classical
-  intro hs hF
-  exact lt_of_le_of_lt
-    (IsNonarchimedean.apply_sum_le_sup_of_isNonarchimedean
-      (f := padicNorm p) (nonarch := fun q r => padicNorm.nonarchimedean (p := p) (q := q) (r := r))
-      (s := s) hs (l := F))
-    ((Finset.sup'_lt_iff (s := s) (H := hs) (f := fun i => padicNorm p (F i))).2 hF)
+    s.Nonempty → (∀ i ∈ s, padicNorm p (F i) < t) → padicNorm p (∑ i ∈ s, F i) < t := fun hs hF ↦
+  lt_of_le_of_lt (IsNonarchimedean.apply_sum_le_sup (fun _ _ ↦ padicNorm.nonarchimedean) hs) <|
+    (Finset.sup'_lt_iff hs).2 hF
 
 theorem sum_le {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α} :
-    s.Nonempty → (∀ i ∈ s, padicNorm p (F i) ≤ t) → padicNorm p (∑ i ∈ s, F i) ≤ t := by
-  classical
-  intro hs hF
-  refine (IsNonarchimedean.apply_sum_le_sup_of_isNonarchimedean
-      (f := padicNorm p) (nonarch := fun q r => padicNorm.nonarchimedean (p := p) (q := q) (r := r))
-      (s := s) hs (l := F)).trans ?_
-  exact (Finset.sup'_le_iff (s := s) (H := hs) (f := fun i => padicNorm p (F i))).2 hF
+    s.Nonempty → (∀ i ∈ s, padicNorm p (F i) ≤ t) → padicNorm p (∑ i ∈ s, F i) ≤ t := fun hs hF ↦
+  (IsNonarchimedean.apply_sum_le_sup (fun _ _ ↦ padicNorm.nonarchimedean) hs).trans <|
+    (Finset.sup'_le_iff hs (f := fun i ↦ padicNorm p (F i))).2 hF
 
 theorem sum_lt' {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α}
     (hF : ∀ i ∈ s, padicNorm p (F i) < t) (ht : 0 < t) : padicNorm p (∑ i ∈ s, F i) < t := by
