@@ -216,6 +216,11 @@ lemma δ_comp_yonedaEquiv_symm
     stdSimplex.δ i ≫ yonedaEquiv.symm x = yonedaEquiv.symm (X.δ i x) :=
   map_comp_yonedaEquiv_symm ..
 
+lemma σ_comp_yonedaEquiv_symm
+    {X : SSet.{u}} {n : ℕ} (x : X _⦋n⦌) (i : Fin (n + 1)) :
+    stdSimplex.σ i ≫ yonedaEquiv.symm x = yonedaEquiv.symm (X.σ i x) :=
+  map_comp_yonedaEquiv_symm ..
+
 lemma yonedaEquiv_map_comp
     {X : SSet.{u}} {n m : SimplexCategory} (f : n ⟶ m) (g : stdSimplex.obj m ⟶ X) :
     yonedaEquiv (stdSimplex.map f ≫ g) = X.map f.op (yonedaEquiv g) :=
@@ -224,6 +229,11 @@ lemma yonedaEquiv_map_comp
 lemma yonedaEquiv_δ_comp
     {X : SSet.{u}} {n : ℕ} (g : Δ[n + 1] ⟶ X) (i : Fin (n + 2)) :
     yonedaEquiv (stdSimplex.δ i ≫ g) = X.δ i (yonedaEquiv g) :=
+  yonedaEquiv_map_comp ..
+
+lemma yonedaEquiv_σ_comp
+    {X : SSet.{u}} {n : ℕ} (g : Δ[n] ⟶ X) (i : Fin (n + 1)) :
+    yonedaEquiv (stdSimplex.σ i ≫ g) = X.σ i (yonedaEquiv g) :=
   yonedaEquiv_map_comp ..
 
 @[simp]
