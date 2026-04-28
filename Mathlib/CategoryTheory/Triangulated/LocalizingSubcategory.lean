@@ -154,7 +154,8 @@ def triangulatedLocalizedMorphism [A.IsTriangulated] :
     obtain ⟨Z, a, b, hT, hZ⟩ := hf
     exact ⟨_, _, _, A.ι.map_distinguished _ hT, hZ⟩
 
-instance [A.IsTriangulated] [B.IsTriangulated] [B.IsClosedUnderIsomorphisms] :
+instance [A.IsTriangulated] [B.IsTriangulated] [B.IsClosedUnderIsomorphisms]
+    [A.IsTriangulatedRightLocalizing B] :
     (A.triangulatedLocalizedMorphism B).IsLocalizedFullyFaithful where
   nonempty_fullyFaithful := by
     let L₁ := (B.inverseImage A.ι).trW.Q
@@ -166,6 +167,11 @@ instance [A.IsTriangulated] [B.IsTriangulated] [B.IsClosedUnderIsomorphisms] :
     have : F.Full := sorry
     have : F.Faithful := sorry
     exact ⟨.ofFullyFaithful F⟩
+
+instance [A.IsTriangulated] [B.IsTriangulated] [B.IsClosedUnderIsomorphisms]
+    [A.IsTriangulatedLeftLocalizing B] :
+    (A.triangulatedLocalizedMorphism B).IsLocalizedFullyFaithful := by
+  sorry
 
 end ObjectProperty
 
