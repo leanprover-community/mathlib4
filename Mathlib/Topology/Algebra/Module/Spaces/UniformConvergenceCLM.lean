@@ -159,31 +159,29 @@ instance instAddCommGroup [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 :
     AddCommGroup (E →SLᵤ[σ, 𝔖] F) :=
   inferInstanceAs <| AddCommGroup (E →SL[σ] F)
 
-@[simp]
-theorem neg_apply [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E))
-    (f : E →SLᵤ[σ, 𝔖] F) (x : E) : (-f) x = -f x :=
-  rfl
+instance instIsZeroApply [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
+    IsZeroApply (E →SLᵤ[σ, 𝔖] F) E F where
+  zero_apply _ := rfl
 
-@[simp]
-theorem add_apply [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E))
-    (f g : E →SLᵤ[σ, 𝔖] F) (x : E) : (f + g) x = f x + g x :=
-  rfl
+instance instIsAddApply [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
+    IsAddApply (E →SLᵤ[σ, 𝔖] F) E F where
+  add_apply _ _ _ := rfl
 
-@[simp]
-theorem sum_apply {ι : Type*} [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E))
-    (t : Finset ι) (f : ι → E →SLᵤ[σ, 𝔖] F) (x : E) :
-    (∑ d ∈ t, f d) x = ∑ d ∈ t, (f d) x :=
-  ContinuousLinearMap.sum_apply t f x
+instance instIsSubApply [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
+    IsSubApply (E →SLᵤ[σ, 𝔖] F) E F where
+  sub_apply _ _ _ := rfl
 
-@[simp]
-theorem sub_apply [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E))
-    (f g : E →SLᵤ[σ, 𝔖] F) (x : E) : (f - g) x = f x - g x :=
-  rfl
+instance instIsNegApply [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
+    IsNegApply (E →SLᵤ[σ, 𝔖] F) E F where
+  neg_apply _ _ := rfl
 
-@[simp]
-theorem coe_zero [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
-    ⇑(0 : E →SLᵤ[σ, 𝔖] F) = 0 :=
-  rfl
+@[deprecated (since := "2026-04-28")] alias neg_apply := _root_.neg_apply
+
+@[deprecated (since := "2026-04-28")] alias add_apply := _root_.add_apply
+
+@[deprecated (since := "2026-04-28")] alias sub_apply := _root_.sub_apply
+
+@[deprecated (since := "2026-04-28")] alias coe_zero := FunLike.coe_zero
 
 instance instIsUniformAddGroup [UniformSpace F] [IsUniformAddGroup F] (𝔖 : Set (Set E)) :
     IsUniformAddGroup (E →SLᵤ[σ, 𝔖] F) := by
@@ -218,12 +216,14 @@ instance instDistribMulAction (M : Type*) [Monoid M] [DistribMulAction M F] [SMu
     DistribMulAction M (E →SLᵤ[σ, 𝔖] F) :=
   inferInstanceAs <| DistribMulAction M (E →SL[σ] F)
 
-@[simp]
-theorem smul_apply {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
-    [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul M F] (𝔖 : Set (Set E))
-    (c : M) (f : E →SLᵤ[σ, 𝔖] F) (x : E) :
-    (c • f) x = c • f x :=
-  rfl
+instance instIsSMulApply (M : Type*) [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
+    [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul M F] (𝔖 : Set (Set E)) :
+    IsSMulApply M (E →SLᵤ[σ, 𝔖] F) E F where
+  smul_apply _ _ _ := rfl
+
+@[deprecated (since := "2026-04-28")] protected alias smul_apply := _root_.smul_apply
+
+@[deprecated (since := "2026-04-28")] alias sum_apply := _root_.sum_apply
 
 instance instModule (R : Type*) [Semiring R] [Module R F] [SMulCommClass 𝕜₂ R F]
     [TopologicalSpace F] [ContinuousConstSMul R F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
@@ -415,7 +415,7 @@ protected theorem continuous_of_continuous_uncurry [AddCommGroup G]
   have d_ne : d ≠ 0 := by rwa [← map_ne_zero τ, hd, map_ne_zero σ]
   filter_upwards [(set_smul_mem_nhds_zero_iff d_ne).mpr hV]
   rintro _ ⟨a, ha, rfl⟩ x hx
-  rw [map_smulₛₗ, hd, UniformConvergenceCLM.smul_apply, ← map_smulₛₗ]
+  rw [map_smulₛₗ, hd, smul_apply, ← map_smulₛₗ]
   exact @hVW ⟨_, _⟩ ⟨ha, hc hx⟩
 
 section Equiv

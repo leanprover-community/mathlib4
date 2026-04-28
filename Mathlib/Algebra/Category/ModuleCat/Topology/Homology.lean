@@ -83,7 +83,7 @@ def isColimitCoker : IsColimit (CokernelCofork.ofπ (cokerπ φ) (comp_cokerπ �
   (fun s ↦ ofHom <|
     { toLinearMap := φ.hom.range.liftQ s.π.hom.toLinearMap
         (LinearMap.range_le_ker_iff.mpr <| show (φ ≫ s.π).hom.toLinearMap = 0 by
-          rw [s.condition, hom_zero, ContinuousLinearMap.coe_zero])
+          rw [s.condition, hom_zero, ContinuousLinearMap.coe_zero'])
       cont := Continuous.quotient_lift s.π.hom.2 _ })
   (fun s ↦ rfl)
   (fun s m h ↦ by dsimp at h ⊢; rw [← cancel_epi (cokerπ φ), h]; rfl)
