@@ -320,6 +320,8 @@ def flexible : Std.HashSet Name :=
     ``Lean.Parser.Tactic.omega,
     `Mathlib.Tactic.Abel.abel,
     `Mathlib.Tactic.Abel.tacticAbel!,
+    `Mathlib.Tactic.Algebra.algebra,
+    `Mathlib.Tactic.Algebra.algebraWith,
     `Mathlib.Tactic.Group.group,
     `Mathlib.Tactic.RingNF.ring,
     `Mathlib.Tactic.RingNF.tacticRing!,

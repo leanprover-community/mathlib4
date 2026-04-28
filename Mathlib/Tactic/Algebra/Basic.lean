@@ -377,7 +377,7 @@ partial def collectScalarRings (e : Expr) : MetaM (List Expr) := do
   return l
 
 /-- Given two rings, determine which is 'larger' in the sense that the larger is an algebra
-over the smaller. Returns the first ring if they're the same or incompatible. -/
+over the smaller. Returns the second ring if they're the same or incompatible. -/
 def pickLargerRing (r1 r2 : Σ u : Lean.Level, Q(Type u)) :
     MetaM (Σ u : Lean.Level, Q(Type u)) := do
   let ⟨u1, R1⟩ := r1
@@ -395,7 +395,7 @@ def pickLargerRing (r1 r2 : Σ u : Lean.Level, Q(Type u)) :
     let _i3 ← synthInstanceQ q(Algebra $R2 $R1)
     return r1
   catch _ =>
-    return r1
+    return r2
 
 variable {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
   {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A)) (a : Q($A)) (b : Q($A))
@@ -404,20 +404,17 @@ variable {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring
  Finds all scalar rings in the expression and picks the 'larger' one in the sense that
  it is an algebra over the smaller rings. -/
 def inferBase (ca : Cache q($sA)) (e : Expr) : MetaM <| Σ u : Lean.Level, Q(Type u) := do
-  let rings ← (← collectScalarRings e).mapM getLevelQ'
-  let res ← match rings with
-  | [] =>
+  let mut rings ← (← collectScalarRings e).mapM getLevelQ'
+  rings.foldlM pickLargerRing <| ← do
     match ca.field, ca.czα, ca.rα with
     | some _, some _, _ =>
       -- A is a Field
-      return ⟨0, q(ℚ)⟩
+      pure ⟨0, q(ℚ)⟩
     | _, _, some _ =>
       -- A is a CommRing
-      return ⟨0, q(ℤ)⟩
+      pure ⟨0, q(ℤ)⟩
     | _, _, _ =>
-      return ⟨0, q(ℕ)⟩
-  | r :: rs => rs.foldlM pickLargerRing r
-  return res
+      pure ⟨0, q(ℕ)⟩
 
 /-- Frontend of `algebra`: attempt to close a goal `g`, assuming it is an equation of semirings. -/
 def proveEq (base : Option (Σ u : Lean.Level, Q(Type u))) (g : MVarId) : AtomM Unit := do
@@ -484,4 +481,4 @@ elab (name := algebraWith) "algebra" " with " R:term : tactic =>
 
 end Mathlib.Tactic.Algebra
 
-macro "ring":tactic => `(tactic|algebra)
+macro "ring":tactic => `(tactic| algebra)
