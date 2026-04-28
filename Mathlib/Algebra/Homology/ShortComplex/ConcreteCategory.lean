@@ -165,7 +165,6 @@ lemma δ_apply (x₃ : ToType (D.L₀.X₃)) (x₂ : ToType (D.L₁.X₂)) (x₁
   rw [ConcreteCategory.comp_apply, eq₁]
   exact h₁.symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This lemma allows the computation of the connecting homomorphism
 `D.δ` when `D : SnakeInput C` and `C` is a concrete category. -/
 lemma δ_apply' (x₃ : (forget₂ C Ab).obj D.L₀.X₃)

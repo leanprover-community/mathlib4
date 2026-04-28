@@ -49,7 +49,6 @@ lemma descShortComplex_triangleOfSESδ :
       (Functor.commShiftIso Q 1).hom.app S.X₁ := by
   simp [triangleOfSESδ]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma triangleOfSESδ_naturality {S₁ S₂ : ShortComplex (CochainComplex C ℤ)}
     (hS₁ : S₁.ShortExact) (hS₂ : S₂.ShortExact) (f : S₁ ⟶ S₂) :
@@ -98,7 +97,6 @@ section map
 variable {S₁ S₂ : ShortComplex (CochainComplex C ℤ)} (h₁ : S₁.ShortExact) (h₂ : S₂.ShortExact)
   (f : S₁ ⟶ S₂)
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The morphism `triangleOfSES h₁ ⟶ triangleOfSES h₂` that is induced by a morphism of short
 exact sequences of cochain complexes.

@@ -166,7 +166,6 @@ open Limits
 variable {C : Type u} [Category* C] [HasZeroObject C] [Preadditive C]
   {D : Type u'} [Category.{v'} D] [HasZeroObject D] [Preadditive D] [CategoryWithHomology D]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An additive functor `F` which preserves homology and sends projective objects to projective
 objects sends a projective resolution of `Z` to a projective resolution of `F.obj Z`. -/
 @[simps complex π]

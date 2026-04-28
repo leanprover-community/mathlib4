@@ -231,7 +231,6 @@ section LocallySmall
 
 variable {C : Type v₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₁} D] (F : C ⥤ D)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Implementation; use `Functor.Final.exists_coeq instead`. -/
 theorem Functor.Final.exists_coeq_of_locally_small [IsFilteredOrEmpty C] [Final F] {d : D} {c : C}
     (s s' : d ⟶ F.obj c) : ∃ (c' : C) (t : c ⟶ c'), s ≫ F.map t = s' ≫ F.map t := by

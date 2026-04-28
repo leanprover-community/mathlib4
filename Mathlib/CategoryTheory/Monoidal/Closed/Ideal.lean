@@ -286,7 +286,6 @@ theorem bijection_symm_apply_id (A B : C) :
     prodComparison_snd]
     apply (reflectorAdjunction i).unit.naturality
 
-set_option backward.isDefEq.respectTransparency false in
 theorem bijection_natural (A B : C) (X X' : D) (f : (reflector i).obj (A ⊗ B) ⟶ X) (g : X ⟶ X') :
     bijection i _ _ _ (f ≫ g) = bijection i _ _ _ f ≫ g := by
   dsimp [bijection]

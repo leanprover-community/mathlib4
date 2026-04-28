@@ -182,7 +182,6 @@ end Derivation'
 
 namespace DifferentialsConstruction
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The presheaf of relative differentials of a morphism of presheaves of
 commutative rings. -/
 @[simps -isSimp]
@@ -211,7 +210,6 @@ noncomputable def derivation' : (relativeDifferentials' φ').Derivation' φ' :=
   Derivation'.mk (fun X ↦ CommRingCat.KaehlerDifferential.D (φ'.app X))
     (fun _ _ f x ↦ (relativeDifferentials'_map_d φ' f x).symm)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The derivation `Derivation' φ'` is universal. -/
 noncomputable def isUniversal' : (derivation' φ').Universal :=
   Derivation'.Universal.mk

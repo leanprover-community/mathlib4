@@ -88,7 +88,6 @@ def toKleisli : C ⥤ Kleisli T where
     unfold_projs
     simp [← T.η.naturality g]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The right adjoint of the adjunction which induces the monad `(T, η_ T, μ_ T)`. -/
 @[simps]
 def fromKleisli : Kleisli T ⥤ C where
@@ -163,7 +162,6 @@ def toCokleisli : C ⥤ Cokleisli U where
   obj X := .mk U X
   map {X} {_} f := .mk (U.ε.app X ≫ f)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The left adjoint of the adjunction which induces the comonad `(U, ε_ U, δ_ U)`. -/
 @[simps]
 def fromCokleisli : Cokleisli U ⥤ C where

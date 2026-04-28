@@ -41,7 +41,6 @@ attribute [local simp] Triangle.eqToHom_hom₁ Triangle.eqToHom_hom₂ Triangle.
   shiftFunctorAdd_zero_add_hom_app shiftFunctorAdd_add_zero_hom_app
   shiftFunctorAdd'_eq_shiftFunctorAdd shift_shiftFunctorCompIsoId_inv_app
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The shift functor `Triangle C ⥤ Triangle C` by `n : ℤ` sends a triangle
 to the triangle obtained by shifting the objects by `n` in `C` and by
 multiplying the three morphisms by `(-1)^n`. -/
@@ -156,7 +155,6 @@ noncomputable def invRotateIsoRotateRotateShiftFunctorNegOne :
 
 namespace Triangle
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : HasShift (Triangle C) ℤ :=
   hasShiftMk (Triangle C) ℤ
     { F := Triangle.shiftFunctor C

@@ -675,7 +675,6 @@ theorem liftStar_lift_map {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : �
       M x ≫ (inclLift F M hM).hom.app x := by
   simp [incl]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The uniqueness of `lift`. -/
 @[simp]
 def liftUnique {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F.obj x)

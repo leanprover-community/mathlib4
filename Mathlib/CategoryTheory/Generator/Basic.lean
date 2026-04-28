@@ -105,7 +105,6 @@ section Equivalence
 
 variable {P}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsSeparating.of_equivalence
     (h : IsSeparating P) {D : Type*} [Category* D] (α : C ≌ D) :
     IsSeparating (P.strictMap α.functor) := fun X Y f g H =>

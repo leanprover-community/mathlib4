@@ -461,7 +461,6 @@ instance FiberFunctor.isPretransitive_of_isConnected (X : C) [IsConnected X] :
       erw [FintypeCat.uSwitchEquiv_naturality (F.map f)]
       rw [← Functor.comp_map]
       erw [← NatTrans.naturality_apply, FintypeCat.uSwitchEquiv_symm_naturality (F.map f)]
-      rfl
     refine ⟨g, show (gapp X).hom x = y from ?_⟩
     simp [gapp, ← hx', hg', hy', Equiv.apply_symm_apply]
 

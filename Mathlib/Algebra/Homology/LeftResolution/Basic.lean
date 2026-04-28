@@ -97,7 +97,6 @@ lemma map_chainComplex_d (n : ℕ) :
 
 attribute [irreducible] chainComplex
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exactAt_map_chainComplex_succ (n : ℕ) :
     ((ι.mapHomologicalComplex _).obj (Λ.chainComplex X)).ExactAt (n + 1) := by
   rw [HomologicalComplex.exactAt_iff' _ (n + 2) (n + 1) n

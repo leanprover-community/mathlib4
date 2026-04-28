@@ -93,7 +93,6 @@ variable {C A}
 
 attribute [reassoc] assoc_hom_app
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma assoc_inv_app (h : ShiftMkCore C A) (m₁ m₂ m₃ : A) (X : C) :
     (h.F m₃).map ((h.add m₁ m₂).inv.app X) ≫ (h.add (m₁ + m₂) m₃).inv.app X =
@@ -105,7 +104,6 @@ lemma assoc_inv_app (h : ShiftMkCore C A) (m₁ m₂ m₃ : A) (X : C) :
     Category.id_comp, Iso.inv_hom_id_app_assoc, Iso.inv_hom_id_app]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma zero_add_inv_app (h : ShiftMkCore C A) (n : A) (X : C) :
     (h.add 0 n).inv.app X = (h.F n).map (h.zero.hom.app X) ≫
       eqToHom (by dsimp; rw [zero_add]) := by
@@ -113,7 +111,6 @@ lemma zero_add_inv_app (h : ShiftMkCore C A) (n : A) (X : C) :
     Category.assoc, ← Functor.map_comp_assoc, Iso.inv_hom_id_app, Functor.map_id,
     Category.id_comp, eqToHom_trans, eqToHom_refl]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma add_zero_inv_app (h : ShiftMkCore C A) (n : A) (X : C) :
     (h.add n 0).inv.app X = h.zero.hom.app ((h.F n).obj X) ≫
       eqToHom (by dsimp; rw [add_zero]) := by
@@ -246,7 +243,6 @@ lemma shiftFunctorAdd'_add_zero (a : A) :
     eqToHom_map, Category.id_comp]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma shiftFunctorAdd'_assoc (a₁ a₂ a₃ a₁₂ a₂₃ a₁₂₃ : A)
     (h₁₂ : a₁ + a₂ = a₁₂) (h₂₃ : a₂ + a₃ = a₂₃) (h₁₂₃ : a₁ + a₂ + a₃ = a₁₂₃) :
     shiftFunctorAdd' C a₁₂ a₃ a₁₂₃ (by rw [← h₁₂, h₁₂₃]) ≪≫
@@ -366,7 +362,6 @@ variable [AddMonoid A] [HasShift C A] (X Y : C) (f : X ⟶ Y)
 abbrev shiftAdd (i j : A) : X⟦i + j⟧ ≅ X⟦i⟧⟦j⟧ :=
   (shiftFunctorAdd C i j).app _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem shift_shift' (i j : A) :
     f⟦i⟧'⟦j⟧' = (shiftAdd X i j).inv ≫ f⟦i + j⟧' ≫ (shiftAdd Y i j).hom := by
   simp
@@ -524,7 +519,6 @@ section
 variable (m n p m' n' p' : A) (hm : m' + m = 0) (hn : n' + n = 0) (hp : p' + p = 0)
   (h : m + n = p)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma shiftFunctorCompIsoId_add'_inv_app :
     (shiftFunctorCompIsoId C p' p hp).inv.app X =
       (shiftFunctorCompIsoId C n' n hn).inv.app X ≫
@@ -621,7 +615,6 @@ theorem shiftComm_symm (i j : A) : (shiftComm X i j).symm = shiftComm X j i := b
 
 variable {X Y}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- When shifts are indexed by an additive commutative monoid, then shifts commute. -/
 theorem shiftComm' (i j : A) :
     f⟦i⟧'⟦j⟧' = (shiftComm _ _ _).hom ≫ f⟦j⟧'⟦i⟧' ≫ (shiftComm _ _ _).hom := by
@@ -634,7 +627,6 @@ theorem shiftComm_hom_comp (i j : A) :
     (shiftComm X i j).hom ≫ f⟦j⟧'⟦i⟧' = f⟦i⟧'⟦j⟧' ≫ (shiftComm Y i j).hom := by
   rw [shiftComm', ← shiftComm_symm, Iso.symm_hom, Iso.inv_hom_id_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma shiftFunctorZero_hom_app_shift (n : A) :
     (shiftFunctorZero C A).hom.app (X⟦n⟧) =
     (shiftFunctorComm C n 0).hom.app X ≫ ((shiftFunctorZero C A).hom.app X)⟦n⟧' := by
@@ -659,7 +651,6 @@ lemma shiftFunctorComm_zero_hom_app (a : A) :
   simp only [shiftFunctorZero_hom_app_shift, Category.assoc, ← Functor.map_comp,
     Iso.hom_inv_id_app, Functor.map_id, Functor.comp_obj, Category.comp_id]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd_hom_app (m₁ m₂ m₃ : A) (X : C) :
     (shiftFunctorComm C m₁ (m₂ + m₃)).hom.app X ≫

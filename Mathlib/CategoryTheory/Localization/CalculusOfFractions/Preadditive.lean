@@ -320,7 +320,6 @@ lemma functor_additive :
 
 attribute [irreducible] preadditive
 
-set_option backward.isDefEq.respectTransparency false in
 include W in
 lemma functor_additive_iff {E : Type*} [Category* E] [Preadditive E] [Preadditive D] [L.Additive]
     (G : D ⥤ E) :

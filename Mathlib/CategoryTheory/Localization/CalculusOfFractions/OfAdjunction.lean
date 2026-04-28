@@ -36,7 +36,6 @@ namespace Adjunction
 variable {C₁ C₂ : Type*} [Category* C₁] [Category* C₂]
   {G : C₁ ⥤ C₂} {F : C₂ ⥤ C₁}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasLeftCalculusOfFractions (adj : G ⊣ F) (W : MorphismProperty C₁)
     [W.IsMultiplicative] (hW : W.IsInvertedBy G) (hW' : (W.functorCategory C₁) adj.unit) :
     W.HasLeftCalculusOfFractions where

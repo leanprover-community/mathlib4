@@ -220,7 +220,6 @@ namespace NatTrans
 
 variable {F} {G : C ⥤ D} [F.CommShift A] [G.CommShift A]
 
-set_option backward.isDefEq.respectTransparency false in
 open Opposite in
 instance commShift_op (τ : F ⟶ G) [NatTrans.CommShift τ A] :
     NatTrans.CommShift (OppositeShift.natTrans A τ) A where

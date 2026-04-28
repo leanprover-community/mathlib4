@@ -472,7 +472,6 @@ open Functor
 
 variable {J : Type*} [Category* J]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Constructor for functors to the category of triangles. -/
 @[simps]
 def functorMk {obj₁ obj₂ obj₃ : J ⥤ C}

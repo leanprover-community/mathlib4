@@ -244,6 +244,7 @@ unif_hint {J J' C : Type*} [Category* J] [Category* J'] [Category* C]
   G ≟ G'
   F ≟ F'
   j ≟ j' ⊢ (G.op ⋙ F).obj (op j) ≟ F'.obj (op (G'.obj j')) in
+set_option backward.isDefEq.respectTransparency false in
 /--
 (Implementation). The maps given in `appIso` is inverse to each other and gives a `ℱ(X) ≅ ℱ'(X)`.
 -/

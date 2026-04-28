@@ -250,7 +250,6 @@ section
 
 variable (G : K ⥤ J) [HasEnrichedHom V F₁ F₂]
 
-set_option backward.isDefEq.respectTransparency false in
 variable {F₁ F₂} in
 /-- If `F₁` and `F₂` are functors `J ⥤ C`, `G : K ⥤ J`, and
 `F₁'` and `F₂'` are functors `K ⥤ C` that are respectively

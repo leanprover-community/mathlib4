@@ -282,7 +282,6 @@ lemma shift_unit_app [adj.CommShift A] (a : A) (X : C) :
           (G.commShiftIso a).hom.app (F.obj X) := by
   simpa [Functor.commShiftIso_comp_hom_app] using NatTrans.shift_app_comm adj.unit a X
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma shift_counit_app [adj.CommShift A] (a : A) (Y : D) :
     (adj.counit.app Y)⟦a⟧' =

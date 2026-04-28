@@ -1159,6 +1159,7 @@ def prodComparisonNatIso [HasBinaryProducts C] [HasBinaryProducts D] (A : C)
   refine { @asIso _ _ _ _ _ (?_) with hom := prodComparisonNatTrans F A }
   apply NatIso.isIso_of_isIso_app
 
+set_option linter.unusedSectionVars false in
 set_option backward.isDefEq.respectTransparency false in
 theorem prodComparison_comp :
     prodComparison (F ⋙ G) A B =

@@ -119,7 +119,6 @@ instance : IsIso (Φ.rightDerivedFunctorComparison L₁ L₂ F F₁ α₁ F₂ �
   exact ((F₂.isPointwiseLeftKanExtensionOfHasPointwiseRightDerivedFunctor α₂ W₂).compTwoSquare
     ((Φ.catCommSq L₁ L₂).iso).hom).isLeftKanExtension
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isIso_iff_of_isRightDerivabilityStructure (X : C₁) :
     IsIso (α₁.app X) ↔ IsIso (α₂.app (Φ.functor.obj X)) := by
   rw [← isIso_comp_right_iff (α₁.app X)

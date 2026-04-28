@@ -176,7 +176,6 @@ theorem comp_toNatTrans {T₁ T₂ T₃ : Comonad C} (f : T₁ ⟶ T₂) (g : T�
     (f ≫ g).toNatTrans = ((f.toNatTrans : _ ⟶ (T₂ : C ⥤ C)) ≫ g.toNatTrans : (T₁ : C ⥤ C) ⟶ T₃) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Construct a monad isomorphism from a natural isomorphism of functors where the forward
 direction is a monad morphism. -/
 @[simps]
@@ -197,7 +196,6 @@ def MonadIso.mk {M N : Monad C} (f : (M : C ⥤ C) ≅ N)
           NatTrans.naturality_assoc, Iso.inv_hom_id_app_assoc, ← Functor.map_comp_assoc]
         simp }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Construct a comonad isomorphism from a natural isomorphism of functors where the forward
 direction is a comonad morphism. -/
 @[simps]

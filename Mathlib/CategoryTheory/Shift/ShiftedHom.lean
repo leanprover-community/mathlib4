@@ -41,7 +41,6 @@ noncomputable def comp {a b c : M} (f : ShiftedHom X Y a) (g : ShiftedHom Y Z b)
     ShiftedHom X Z c :=
   f ≫ g⟦a⟧' ≫ (shiftFunctorAdd' C b a c h).inv.app _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma comp_assoc {a₁ a₂ a₃ a₁₂ a₂₃ a : M}
     (α : ShiftedHom X Y a₁) (β : ShiftedHom Y Z a₂) (γ : ShiftedHom Z T a₃)
     (h₁₂ : a₂ + a₁ = a₁₂) (h₂₃ : a₃ + a₂ = a₂₃) (h : a₃ + a₂ + a₁ = a) :
@@ -185,7 +184,6 @@ lemma comp_map {a : M} (f : ShiftedHom X Y a) (F : C ⥤ D) [F.CommShift M]
     (G : D ⥤ E) [G.CommShift M] : f.map (F ⋙ G) = (f.map F).map G := by
   simp [map, Functor.commShiftIso_comp_hom_app]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma map_naturality {a : M} (f : ShiftedHom X Y a) {F G : C ⥤ D} (τ : F ⟶ G)
     [F.CommShift M] [G.CommShift M] [NatTrans.CommShift τ M] :
     (f.map F).comp (mk₀ 0 rfl (τ.app Y)) (zero_add _) =
@@ -209,7 +207,6 @@ lemma map_naturality_2
       (mk₀ 0 rfl (e.inv.app Y)) (zero_add _)) (add_zero _) = f.map F :=
   map_naturality_1 f e.symm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma map_comp {a b c : M} (f : ShiftedHom X Y a) (g : ShiftedHom Y Z b)
     (h : b + a = c) (F : C ⥤ D) [F.CommShift M] :
     (f.comp g h).map F = (f.map F).comp (g.map F) h := by

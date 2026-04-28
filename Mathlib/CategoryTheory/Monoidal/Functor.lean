@@ -1003,7 +1003,6 @@ end LaxMonoidal
 section OplaxMonoidal
 variable [G.LaxMonoidal]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The left adjoint of a lax monoidal functor is oplax monoidal. -/
 @[simps -isSimp, implicit_reducible]
 def leftAdjointOplaxMonoidal : F.OplaxMonoidal where

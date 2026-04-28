@@ -137,7 +137,6 @@ lemma jointly_reflect_isLocallySurjective
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 lemma jointly_reflect_ofArrows_mem
     [HasSheafify J (Type w)] [J.WEqualsLocallyBijective (Type w)]
     (hP : P.IsConservativeFamilyOfPoints)
@@ -178,7 +177,6 @@ lemma jointly_reflect_ofArrows_mem_of_small
     · rw [hP.jointly_reflect_ofArrows_mem]
       exact fun Φ x ↦ ⟨_, _, hy ⟨Φ, x⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma mk'.isLocallySurjective
     (hP : ∀ ⦃X : C⦄ (S : Sieve X) (_ : ∀ (Φ : P.FullSubcategory) (x : Φ.obj.fiber.obj X),
       ∃ (Y : C) (g : Y ⟶ X) (_ : S g) (y : Φ.obj.fiber.obj Y), Φ.obj.fiber.map g y = x),

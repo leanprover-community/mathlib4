@@ -99,7 +99,6 @@ theorem coev_expComparison (A B : C) :
   apply IsIso.inv_eq_of_hom_inv_id -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): was `ext`
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem uncurry_expComparison (A B : C) :
     MonoidalClosed.uncurry ((expComparison F A).natTrans.app B) =
       inv (prodComparison F _ _) ≫ F.map ((ihom.ev _).app _) := by

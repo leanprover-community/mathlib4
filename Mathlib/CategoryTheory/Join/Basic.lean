@@ -345,7 +345,6 @@ lemma eq_mkNatTrans {F F' : C ⋆ D ⥤ E} (α : F ⟶ F') :
 
 section
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `mkNatTrans` respects vertical composition. -/
 lemma mkNatTransComp
     {F F' F'' : C ⋆ D ⥤ E}

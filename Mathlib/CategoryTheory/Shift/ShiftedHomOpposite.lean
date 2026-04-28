@@ -54,7 +54,6 @@ lemma opEquiv_symm_apply_comp {X Y : C} {a : ℤ}
   dsimp
   simp only [assoc, Functor.map_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma opEquiv_symm_comp {a b : ℤ}
     (f : ShiftedHom (Opposite.op Z) (Opposite.op Y) a)
     (g : ShiftedHom (Opposite.op Y) (Opposite.op X) b)

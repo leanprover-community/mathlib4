@@ -126,7 +126,6 @@ lemma pullbackShiftFunctorAdd'_inv_app :
   congr 2
   apply eqToHom_map
 
-set_option backward.isDefEq.respectTransparency false in
 lemma pullbackShiftFunctorAdd'_hom_app :
     (shiftFunctorAdd' _ a₁ a₂ a₃ h).hom.app X =
       (pullbackShiftIso C φ a₃ b₃ h₃).hom.app X ≫

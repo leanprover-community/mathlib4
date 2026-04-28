@@ -134,7 +134,6 @@ lemma localization_counit_app (X₂ : C₂) :
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 include adj in
 lemma isLocalization [F.Full] [F.Faithful] :
     G.IsLocalization ((MorphismProperty.isomorphisms C₂).inverseImage G) := by

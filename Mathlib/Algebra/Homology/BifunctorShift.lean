@@ -187,7 +187,6 @@ variable [Preadditive C₁] [Preadditive C₂] [Preadditive D]
   (F : C₁ ⥤ C₂ ⥤ D) [F.Additive] [∀ (X₁ : C₁), (F.obj X₁).Additive] (x y : ℤ)
   [HasMapBifunctor K₁ K₂ F]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mapBifunctorShift₁Iso_trans_mapBifunctorShift₂Iso :
     mapBifunctorShift₁Iso K₁ (K₂⟦y⟧) F x ≪≫
       (CategoryTheory.shiftFunctor _ x).mapIso (mapBifunctorShift₂Iso K₁ K₂ F y) =
@@ -310,7 +309,6 @@ instance {K₂ L₂ : CochainComplex C₂ ℤ} (g : K₂ ⟶ L₂) :
       CochainComplex.ι_mapBifunctorShift₁Iso_hom_f _ _ _ _ _ _ _ _ (p + n) (d + n) rfl rfl,
       CochainComplex.ι_mapBifunctorShift₁Iso_hom_f_assoc _ _ _ _ _ _ _ _ (p + n) (d + n) rfl rfl]
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance :
     F.map₂CochainComplex.CommShift₂Int where
   comm K₁ K₂ p q := by

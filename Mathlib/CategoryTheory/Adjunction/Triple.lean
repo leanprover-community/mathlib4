@@ -144,13 +144,11 @@ lemma rightToLeft_eq_counits :
     (Functor.associator _ _ _).inv ≫ whiskerRight t.adj₂.counit F ≫ F.leftUnitor.hom := by
   ext X; apply G.map_injective; simp [rightToLeft]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma adj₁_counit_app_rightToLeft_app (X : C) :
     t.adj₁.counit.app (H.obj X) ≫ t.rightToLeft.app X = F.map (t.adj₂.counit.app X) :=
   G.map_injective (by simp [← cancel_epi (t.adj₁.unit.app _)])
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma rightToLeft_app_adj₂_unit_app (X : C) :
     t.rightToLeft.app X ≫ t.adj₂.unit.app (F.obj X) = H.map (t.adj₁.unit.app X) :=
@@ -179,7 +177,6 @@ lemma epi_rightToLeft_app_iff_epi_map_adj₂_counit_app {X : C} :
     Epi (t.rightToLeft.app X) ↔ Epi (F.map (t.adj₂.counit.app X)) := by
   rw [← epi_comp_iff_of_epi (t.adj₁.counit.app (H.obj X)), adj₁_counit_app_rightToLeft_app]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For an adjoint triple `F ⊣ G ⊣ H` where `G` is fully faithful and `H` preserves epimorphisms
 (which is for example the case if `H` has a further right adjoint), the components of the natural
 transformation `H ⟶ F` are epic iff the respective components of the natural transformation
@@ -204,7 +201,6 @@ noncomputable def leftToRight : F ⟶ H :=
   F.rightUnitor.inv ≫ whiskerLeft F t.adj₂.unit ≫ (Functor.associator _ _ _).inv ≫
   inv (whiskerRight t.adj₁.unit H) ≫ H.leftUnitor.hom
 
-set_option backward.isDefEq.respectTransparency false in
 omit [H.Full] [H.Faithful] in
 lemma leftToRight_app {X : C} :
     t.leftToRight.app X = t.adj₂.unit.app (F.obj X) ≫ inv (H.map (t.adj₁.unit.app X)) := by

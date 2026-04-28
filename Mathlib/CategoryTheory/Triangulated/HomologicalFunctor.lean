@@ -211,7 +211,6 @@ lemma homologySequence_comp :
 
 attribute [local simp] smul_smul
 
-set_option backward.isDefEq.respectTransparency false in
 lemma homologySequence_exact₂ :
     (ShortComplex.mk _ _ (F.homologySequence_comp T hT n₀)).Exact := by
   refine ShortComplex.exact_of_iso ?_ (F.map_distinguished_exact _

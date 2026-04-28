@@ -297,7 +297,6 @@ theorem εToSingle₀_comp_eq :
   ext1
   simpa using (forget₂ToModuleCatHomotopyEquiv_f_0_eq k G).symm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem quasiIso_forget₂_εToSingle₀ :
     QuasiIso (((forget₂ _ (ModuleCat.{u} k)).mapHomologicalComplex _).map (εToSingle₀ k G)) := by
   have h : QuasiIso (forget₂ToModuleCatHomotopyEquiv k G).hom := inferInstance
