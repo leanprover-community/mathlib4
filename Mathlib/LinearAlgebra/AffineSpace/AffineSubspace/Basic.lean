@@ -832,6 +832,7 @@ theorem mem_prod (s : AffineSubspace k P₁) (t : AffineSubspace k P₂) (x : P�
     x ∈ s.prod t ↔ x.1 ∈ s ∧ x.2 ∈ t :=
   Set.mem_prod
 
+@[gcongr]
 theorem prod_mono (s₁ s₂ : AffineSubspace k P₁) (t₁ t₂ : AffineSubspace k P₂)
     (hs : s₁ ≤ s₂) (ht : t₁ ≤ t₂) : s₁.prod t₁ ≤ s₂.prod t₂ :=
   Set.prod_mono hs ht
