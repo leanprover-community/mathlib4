@@ -15,6 +15,17 @@ public import Mathlib.RingTheory.LocalRing.Length
 Given a prime ideal `q` of an `R`-algebra `S`, the ramification index of `q` over `R` is defined
 to be the length of the quotient `Sq/pSq` as an `Sq`-module where `Sq` is the localization of `S` at
 `q`, `p` is the preimage of `q` in `R`, and `pSq` is the image of `p` in `Sq`.
+
+## Main definitions=
+
+* `Ideal.ramificationIdx' q R`: The ramification index of `q` over `R`.
+
+## Main statements
+
+* `ramificationIdx_eq_ramificationIdx'`: The ramification index agrees with the usual definition in
+  the case of Dedekind domains.
+* `ramificationIdx'_tower`: Ramification index is multiplicative in towers.
+
 -/
 
 @[expose] public section

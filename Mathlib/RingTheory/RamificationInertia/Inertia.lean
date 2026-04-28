@@ -12,6 +12,16 @@ public import Mathlib.NumberTheory.RamificationInertia.Inertia
 
 Given a prime ideal `q` of an `R`-algebra `S`, the inertia degree of `q` over `R` is defined
 to be the degree of the residue field of `q` over the residue field of its preimage `p` in `R`.
+
+## Main definitions
+
+* `Ideal.inertiaDeg' q R`: The inertia degree of `q` over `R`.
+
+## Main statements
+
+* `inertiaDeg_eq_inertiaDeg'`: The inertia degree agrees with the usual definition in the case of
+  Dedekind domains.
+* `inertiaDeg'_tower`: Inertia degree is multiplicative in towers.
 -/
 
 @[expose] public section
