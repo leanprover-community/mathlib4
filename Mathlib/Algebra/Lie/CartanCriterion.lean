@@ -90,7 +90,7 @@ theorem isNilpotent_derivedSeries_of_traceForm_eq_zero_aux (h : traceForm K L M 
     s.eigenspaces_iSupIndep hs_ss.iSup_eigenspace_eq_top
   let I := (ν : K) × Fin (finrank K (s.eigenspace ν))
   let v : Basis I K M := eigenDecomp.collectedBasis fun μ ↦ finBasis K (s.eigenspace μ)
-  have : Fintype I := v.fintypeIndexOfRankLtAleph0 (rank_lt_aleph0 K M)
+  have : Fintype I := FiniteDimensional.fintypeBasisIndex v
   let μ : I → K := Sigma.fst
   have hsv (i : I) : s (v i) = μ i • v i :=
     mem_eigenspace_iff.mp (eigenDecomp.collectedBasis_mem _ i)
