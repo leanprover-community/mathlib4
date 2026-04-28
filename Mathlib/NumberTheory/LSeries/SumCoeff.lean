@@ -286,7 +286,6 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃
     refine setIntegral_mono_on ?_ h₂ measurableSet_Ioc fun t ht ↦ ?_
     · exact h₁.mono_set <| Set.Ioc_subset_Ioi_self.trans Set.Ioi_subset_Ici_self
     · gcongr
-      exact ht.1.le
   calc
     -- First, we replace `s * l` by `(s - 1) * s` times the integral of `l * t ^ (-s)` using `h₃`
     -- and replace `LSeries f s` by its integral representation.

@@ -701,7 +701,6 @@ theorem HasFPowerSeriesWithinOnBall.uniform_geometric_approx' {r' : ℝ≥0}
     refine this.trans ?_
     have : 0 < a := ha.1
     gcongr
-    apply_rules [sub_pos.2, ha.2]
   apply norm_sub_le_of_geometric_bound_of_hasSum (ya.trans_lt ha.2) _ (hf.hasSum ys this)
   intro n
   calc

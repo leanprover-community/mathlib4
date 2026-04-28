@@ -120,7 +120,6 @@ theorem sum_schlomilch_le {C : ℕ} (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f
     intro k _
     rw [smul_smul]
     gcongr
-    · exact h_nonneg (u (k + 1))
     exact mod_cast h_succ_diff k
   convert sum_le_sum this
   simp [smul_sum]

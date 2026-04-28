@@ -743,7 +743,7 @@ theorem card_mul_finset_lt_two {ε : ℝ} (hε₀ : 0 < ε) (hε₁ : ε ≤ 1) 
       _ = κ                               := hH.isFragment
       _ ≤ #(A * S) - K * #A :=
         connectivity_le_expansion hK.le hS <| card_pos.mp <| hS.card_pos.trans_le hA₁
-      _ ≤ (2 - ε) * #S - (1 - ε / 2) * #S := by gcongr; linarith
+      _ ≤ (2 - ε) * #S - (1 - ε / 2) * #S := by gcongr
       _ = (1 - ε / 2) * #S                := by linarith
   refine ⟨H, inferInstance, Z, ?cardH, ?cardZ, by
     simpa only [hHZS] using Set.subset_mul_right _ H.one_mem⟩
@@ -784,8 +784,7 @@ theorem card_mul_finset_lt_two {ε : ℝ} (hε₀ : 0 < ε) (hε₁ : ε ≤ 1) 
       _ ≤ K * #(H : Set G).toFinset + (1 - ε / 2) * #(Set.toFinset H * S) := by
         grw [calc₁]
         gcongr
-        · linarith
-        · simp only [Set.mem_toFinset, SetLike.mem_coe, H.one_mem, subset_mul_right]
+        simp [subset_mul_right]
 
 /-- Corollary of `card_mul_finset_lt_two` in the case `A = S`, giving characterisation of sets of
 doubling less than `2 - ε`. -/

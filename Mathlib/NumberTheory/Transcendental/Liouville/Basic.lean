@@ -118,10 +118,9 @@ theorem exists_one_le_pow_mul_dist {Z N R : Type*} [PseudoMetricSpace R] {d : N 
     refine (L this).trans ?_
     -- remove a common factor and use the Lipschitz assumption `B`
     gcongr
-    · exact zero_le_one.trans (d0 a)
-    · refine (B this).trans ?_
-      gcongr
-      apply le_max_right
+    refine (B this).trans ?_
+    gcongr
+    apply le_max_right
 
 theorem exists_pos_real_of_irrational_root {α : ℝ} (ha : Irrational α) {f : ℤ[X]} (f0 : f ≠ 0)
     (fa : eval α (map (algebraMap ℤ ℝ) f) = 0) :

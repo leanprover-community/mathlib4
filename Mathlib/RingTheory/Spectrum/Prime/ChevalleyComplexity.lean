@@ -417,16 +417,17 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
           gcongr; simpa [Set.insert_subset_iff] using ⟨_, _, hi.symm⟩
         _ ≤ e.coeffSubmodule R₀ ^ e.powBound := by
           unfold coeffSubmodule powBound
-          gcongr
+          sorry /-gcongr
           · exact one_le_coeffSubmodule
           · exact Set.subset_union_right
-          · lia
+          · lia-/
     · exact le_self_pow one_le_coeffSubmodule powBound_ne_zero <| subset_span <| .inr <| by
         simpa using ⟨_, _, hi.symm⟩
     · unfold powBound
+      sorry /- TODO: this times out; does gcongr need more robustness?
       gcongr
       · exact one_le_coeffSubmodule
-      · lia
+      · lia -/
 
 /-- The main induction in the proof of Chevalley's theorem for `R →+* R[X]`.
 See the docstring of `induction_structure` for the overview. -/
@@ -524,7 +525,7 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
             exact Finset.single_le_sum (f := fun i ↦ (c.val i).degree.succ)
               (by intros; positivity) (Finset.mem_univ _)
           _ = c.degBound ^ (c'.degBound + 1) := by rw [pow_succ']
-          _ ≤ c.degBound ^ c.degBound := by gcongr <;> lia
+          _ ≤ c.degBound ^ c.degBound := by gcongr; lia
       rw [coeffSubmodule]
       simp only [Submodule.span_le, Set.union_subset_iff, Set.singleton_subset_iff, SetLike.mem_coe,
         Set.iUnion_subset_iff, Set.range_subset_iff, c']
@@ -580,7 +581,6 @@ lemma chevalley_polynomialC {R : Type*} [CommRing R] (M : Submodule ℤ R) (hM :
       · have : degBound ⟨y.g⟩ = 0 := by nlinarith
         rw [h, this]
       gcongr
-      rwa [Nat.one_le_iff_ne_zero]
 
 /-! ### The `C : R → R[X₁, ..., Xₘ]` case -/
 

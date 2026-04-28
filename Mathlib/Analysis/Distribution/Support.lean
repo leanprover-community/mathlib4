@@ -215,16 +215,16 @@ section Support
 
 theorem dsupport_smulLeftCLM_subset {g : E → ℂ} (hg : g.HasTemperateGrowth) :
     dsupport (smulLeftCLM F g f) ⊆ dsupport f := by
-  gcongr; grind
+  gcongr
 
 open LineDeriv
 
 theorem dsupport_lineDerivOp_subset (m : E) : dsupport (∂_{m} f : 𝓢'(E, F)) ⊆ dsupport f := by
-  gcongr; grind
+  gcongr
 
 theorem dsupport_iteratedLineDerivOp_subset {n : ℕ} (m : Fin n → E) :
     dsupport (∂^{m} f : 𝓢'(E, F)) ⊆ dsupport f := by
-  gcongr; grind
+  gcongr
 
 theorem dsupport_delta [FiniteDimensional ℝ E] (x : E) :
     dsupport (TemperedDistribution.delta x) = {x} := by

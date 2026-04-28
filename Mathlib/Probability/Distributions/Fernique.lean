@@ -472,7 +472,6 @@ lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]
   · simp only [ENNReal.toReal_pos_iff, tsub_pos_iff_lt]
     exact ⟨ha_lt, by finiteness⟩
   · finiteness
-  · finiteness
 
 end Fernique
 

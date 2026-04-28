@@ -259,9 +259,7 @@ lemma continuousOn_term (n : ℕ) :
     have : 1 < x := lt_of_le_of_lt (by simp) hx.1
     rw [norm_of_nonneg (div_nonneg (sub_nonneg.mpr hx.1.le) (by positivity)), Nat.cast_add_one]
     gcongr
-    · exact_mod_cast sub_nonneg.mpr hx.1.le
-    · exact this.le
-    · linarith
+    linarith
   · rw [← IntegrableOn, ← intervalIntegrable_iff_integrableOn_Ioc_of_le (by linarith)]
     exact_mod_cast term_welldef (by lia : 0 < (n + 1)) zero_lt_one
   · rw [ae_restrict_iff' measurableSet_Ioc]
@@ -281,8 +279,7 @@ lemma continuousOn_term_tsum : ContinuousOn term_tsum (Ici 1) := by
     · exact (term_welldef n.succ_pos zero_lt_one).1
     · have : 1 ≤ x := le_trans (by simp) hx.1.le
       gcongr
-      · exact sub_nonneg.mpr hx.1.le
-      · exact hs
+      exact hs
   · rw [intervalIntegral.integral_of_le (by linarith)]
     refine setIntegral_nonneg measurableSet_Ioc (fun x hx ↦ div_nonneg ?_ (rpow_nonneg ?_ _))
     all_goals linarith [hx.1]

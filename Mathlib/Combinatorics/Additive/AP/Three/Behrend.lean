@@ -425,7 +425,7 @@ theorem roth_lower_bound_explicit (hN : 4096 ≤ N) :
   have : (2 * dValue N - 1) ^ n ≤ N := le_N (hN.trans' <| by norm_num1)
   calc
     _ ≤ (N ^ (nValue N : ℝ)⁻¹ / rexp 1 : ℝ) ^ (n - 2) / n := ?_
-    _ < _ := by gcongr; exacts [(tsub_pos_of_lt hn₂).ne', bound hN]
+    _ < _ := by gcongr; exact bound hN
     _ ≤ rothNumberNat ((2 * dValue N - 1) ^ n) := bound_aux hd.ne' hn₂.le
     _ ≤ rothNumberNat N := mod_cast rothNumberNat.mono this
   rw [← rpow_natCast, div_rpow (rpow_nonneg hN₀.le _) (exp_pos _).le, ← rpow_mul hN₀.le,
