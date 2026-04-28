@@ -857,12 +857,14 @@ variable {R : Type*} [CommRing R] [IsDedekindDomain R]
 
 namespace IsDedekindDomain.HeightOneSpectrum
 
+variable {I : Ideal R} (hI : I ≠ ⊥) (p : HeightOneSpectrum R)
+include hI
+
 open UniqueFactorizationMonoid in
 /-- Normalize the multiplicity of a prime ideal `p` in the factorization of `I`
 as `multiplicity p.asIdeal I`. -/
 @[simp]
-lemma count_normalizedFactors_eq_multiplicity [DecidableEq (Ideal R)] {I : Ideal R} (hI : I ≠ ⊥)
-    (p : HeightOneSpectrum R) :
+lemma count_normalizedFactors_eq_multiplicity :
     Multiset.count p.asIdeal (normalizedFactors I) = multiplicity p.asIdeal I := by
   have := emultiplicity_eq_count_normalizedFactors (irreducible p) hI
   rw [normalize_eq p.asIdeal] at this
@@ -873,7 +875,7 @@ lemma count_normalizedFactors_eq_multiplicity [DecidableEq (Ideal R)] {I : Ideal
 /-- Normalize the multiplicity of a prime ideal `p` in the factorization of `I`
 as `multiplicity p.asIdeal I`. -/
 @[simp]
-lemma maxPowDividing_eq_pow_multiplicity {I : Ideal R} (hI : I ≠ ⊥) (p : HeightOneSpectrum R) :
+lemma maxPowDividing_eq_pow_multiplicity :
     p.maxPowDividing I = p.asIdeal ^ multiplicity p.asIdeal I := by
   classical
   rw [maxPowDividing_eq_pow_multiset_count _ hI, count_normalizedFactors_eq_multiplicity hI]
@@ -881,7 +883,7 @@ lemma maxPowDividing_eq_pow_multiplicity {I : Ideal R} (hI : I ≠ ⊥) (p : Hei
 /-- Normalize the multiplicity of a prime ideal `p` in the factorization of `I`
 as `multiplicity p.asIdeal I`. -/
 @[simp]
-lemma factorization_eq_multiplicity {I : Ideal R} (hI : I ≠ ⊥) (p : HeightOneSpectrum R) :
+lemma factorization_eq_multiplicity :
     factorization I p.asIdeal = multiplicity p.asIdeal I := by
   rw [factorization_eq_count, count_normalizedFactors_eq_multiplicity hI]
 
