@@ -46,7 +46,7 @@ Note that a group `G` with Haar measure that is both left and right invariant is
 **unimodular**.
 -/
 
-@[expose] public section
+public section
 
 open Set MeasureTheory TopologicalSpace MeasureTheory.Measure
 

@@ -17,7 +17,7 @@ We prove that a functor between `FinitaryPreExtensive` categories preserves (res
 effective epi families if it preserves (resp. reflects) effective epis.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
