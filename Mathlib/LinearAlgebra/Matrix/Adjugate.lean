@@ -443,7 +443,7 @@ theorem adjugate_mul_distrib_aux (A B : Matrix n n α) (hA : IsLeftRegular A.det
   refine (isRegular_of_isLeftRegular_det hAB).left ?_
   simp only
   rw [mul_adjugate, Matrix.mul_assoc, ← Matrix.mul_assoc B, mul_adjugate,
-    smul_mul, Matrix.one_mul, mul_smul, mul_adjugate, smul_smul, mul_comm, ← det_mul]
+    smul_mul, Matrix.one_mul, Matrix.mul_smul, mul_adjugate, smul_smul, mul_comm, ← det_mul]
 
 /-- Proof follows from "The trace Cayley-Hamilton theorem" by Darij Grinberg, Section 5.3
 -/
