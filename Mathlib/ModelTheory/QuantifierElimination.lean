@@ -191,16 +191,15 @@ private theorem exists_substructure_embedding_of_agree_qf
   exact ⟨S, g, a, ha, hg⟩
 
 theorem marker_314
-    [Nonempty L.Constants] {T : L.Theory} {m : ℕ} (φ : L.Formula (Fin m)) :
+    {T : L.Theory} {m : ℕ} (φ : L.Formula (Fin m)) :
     (∃ ψ : L.Formula (Fin m), ψ.IsQF ∧ φ ⇔[T] ψ) ↔
       (∀ {M N A : Type (max u v)} [L.Structure M] [L.Structure N] [L.Structure A]
-        [T.Model M] [T.Model N] (f : A ↪[L] M) (g : A ↪[L] N)
+        [T.Model M] [T.Model N] [Nonempty M] [Nonempty N]
+        (f : A ↪[L] M) (g : A ↪[L] N)
         (a : Fin m → A), φ.Realize (f ∘ a) ↔ φ.Realize (g ∘ a)) := by
   constructor
-  · intro h M N A _ _ _ _ _ f g a
+  · intro h M N A _ _ _ _ _ _ _ f g a
     rcases h with ⟨ψ, hψ, hiff⟩
-    letI : Nonempty M := nonempty_of_nonempty_constants (L := L)
-    letI : Nonempty N := nonempty_of_nonempty_constants (L := L)
     have hM : φ.Realize (f ∘ a) ↔ ψ.Realize (f ∘ a) := hiff.realize_iff (M := M) (v := f ∘ a)
     have hN : ψ.Realize (g ∘ a) ↔ φ.Realize (g ∘ a) :=
       (hiff.realize_iff (M := N) (v := g ∘ a)).symm
