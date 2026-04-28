@@ -66,7 +66,7 @@ lemma _root_.MonoidHom.exists_nhds_isBounded (f : G →* H) (hf : Measurable f) 
     (isOpen_interior.measurableSet.inter <| hf measurableSet_ball) hn <|
       mt (measure_mono_top <| inter_subset_left.trans interior_subset) K.isCompact.measure_ne_top,
     ?_⟩
-  have : Bornology.IsBounded (f '' interior K ∩ f ⁻¹' ball 1 n) :=
+  have : Bornology.IsBounded (f '' (interior K ∩ f ⁻¹' ball 1 n)) :=
     isBounded_ball.subset <| (image_mono inter_subset_right).trans <| image_preimage_subset _ _
   rw [image_smul_distrib, image_div]
   exact (this.div this).smul _
