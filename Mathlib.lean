@@ -5701,6 +5701,7 @@ public import Mathlib.NumberTheory.NumberField.ProductFormula
 public import Mathlib.NumberTheory.NumberField.Units.Basic
 public import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
 public import Mathlib.NumberTheory.NumberField.Units.Regulator
+public import Mathlib.NumberTheory.OddPerfectNumbers
 public import Mathlib.NumberTheory.Ostrowski
 public import Mathlib.NumberTheory.Padics.AddChar
 public import Mathlib.NumberTheory.Padics.Complex
