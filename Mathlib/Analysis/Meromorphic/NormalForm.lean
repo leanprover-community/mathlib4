@@ -512,11 +512,11 @@ theorem MeromorphicNFOn.divisor_nonneg_iff_analyticOnNhd
   · intro hx
     rw [← (h₁f hx).meromorphicOrderAt_nonneg_iff_analyticAt]
     have := h x
-    simp only [Function.locallyFinsuppWithin.coe_zero, Pi.zero_apply, h₁f.meromorphicOn, hx,
+    simp only [Function.LocallyFinsuppWithin.coe_zero, Pi.zero_apply, h₁f.meromorphicOn, hx,
       MeromorphicOn.divisor_apply, untop₀_nonneg] at this
     assumption
   · by_cases hx : x ∈ U
-    · simp only [Function.locallyFinsuppWithin.coe_zero, Pi.zero_apply, h₁f.meromorphicOn, hx,
+    · simp only [Function.LocallyFinsuppWithin.coe_zero, Pi.zero_apply, h₁f.meromorphicOn, hx,
         MeromorphicOn.divisor_apply, untop₀_nonneg]
       exact (h₁f hx).meromorphicOrderAt_nonneg_iff_analyticAt.2 (h x hx)
     · simp [hx]

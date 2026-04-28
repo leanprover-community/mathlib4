@@ -173,7 +173,7 @@ theorem meromorphicOrderAt_ne_top {z : 𝕜} (d : 𝕜 → ℤ) :
 /--
 If `D` is a divisor, then the divisor of the factorized rational function equals `D`.
 -/
-theorem divisor {U : Set 𝕜} {D : locallyFinsuppWithin U ℤ} (hD : D.support.Finite) :
+theorem divisor {U : Set 𝕜} {D : LocallyFinsuppWithin U ℤ} (hD : D.support.Finite) :
     MeromorphicOn.divisor (∏ᶠ u, (· - u) ^ D u) U = D := by
   ext z
   by_cases hz : z ∈ U
@@ -330,7 +330,7 @@ theorem MeromorphicOn.extract_zeros_poles {f : 𝕜 → E} (h₁f : MeromorphicO
 In the setting of `MeromorphicOn.extract_zeros_poles`, the function `log ‖f‖` is equivalent, modulo
 equality on codiscrete subsets, to `∑ᶠ u, (divisor f U u * log ‖· - u‖) + log ‖g ·‖`.
 -/
-theorem MeromorphicOn.extract_zeros_poles_log {f g : 𝕜 → E} {D : Function.locallyFinsuppWithin U ℤ}
+theorem MeromorphicOn.extract_zeros_poles_log {f g : 𝕜 → E} {D : LocallyFinsuppWithin U ℤ}
     (hg : ∀ u : U, g u ≠ 0) (h : f =ᶠ[codiscreteWithin U] (∏ᶠ u, (· - u) ^ D u) • g) :
     (log ‖f ·‖) =ᶠ[codiscreteWithin U] ∑ᶠ u, (D u * log ‖· - u‖) + (log ‖g ·‖) := by
   -- Identify support of the sum in the goal

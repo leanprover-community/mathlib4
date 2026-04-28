@@ -29,9 +29,9 @@ functions whose logarithmic counting function is big-O of `log`.
 
 public section
 
-open Asymptotics Filter Function Real Set
+open Asymptotics Filter Function Real Set LocallyFinsupp
 
-namespace Function.locallyFinsuppWithin
+namespace Function.LocallyFinsuppWithin
 
 variable
   {E : Type*} [NormedAddCommGroup E]
@@ -74,7 +74,7 @@ A non-negative function with locally finite support is zero if and only if its l
 functions is asymptotically bounded.
 -/
 lemma zero_iff_logCounting_bounded [ProperSpace E]
-    {D : locallyFinsuppWithin (univ : Set E) ℤ} (h : 0 ≤ D) :
+    {D : LocallyFinsuppWithin (univ : Set E) ℤ} (h : 0 ≤ D) :
     D = 0 ↔ logCounting D =O[atTop] (1 : ℝ → ℝ) := by
   classical
   refine ⟨fun h₂ ↦ by simp [isBigO_of_le' (c := 0), h₂], ?_⟩
@@ -104,7 +104,7 @@ lemma zero_iff_logCounting_bounded [ProperSpace E]
         abs_of_nonneg (logCounting_nonneg h (by grind))]
       apply logCounting_strictMono he <;> grind
 
-end Function.locallyFinsuppWithin
+end Function.LocallyFinsuppWithin
 
 namespace ValueDistribution
 
@@ -123,14 +123,14 @@ function for its pole divisor is asymptotically bounded.
 theorem logCounting_isBigO_one_iff_analyticOnNhd {f : 𝕜 → E} (h : Meromorphic f) :
     logCounting f ⊤ =O[atTop] (1 : ℝ → ℝ) ↔ AnalyticOnNhd 𝕜 (toMeromorphicNFOn f univ) univ := by
   simp only [logCounting, reduceDIte]
-  rw [← Function.locallyFinsuppWithin.zero_iff_logCounting_bounded (negPart_nonneg _)]
+  rw [← LocallyFinsuppWithin.zero_iff_logCounting_bounded (negPart_nonneg _)]
   constructor
   · intro h₁f z hz
     apply (meromorphicNFOn_toMeromorphicNFOn f univ
       trivial).meromorphicOrderAt_nonneg_iff_analyticAt.1
     rw [meromorphicOrderAt_toMeromorphicNFOn h.meromorphicOn (by trivial), ← WithTop.untop₀_nonneg,
       ← h.meromorphicOn.divisor_apply (by trivial), ← negPart_eq_zero,
-      ← locallyFinsuppWithin.negPart_apply]
+      ← LocallyFinsuppWithin.negPart_apply]
     aesop
   · intro h₁f
     rwa [negPart_eq_zero, ← h.meromorphicOn.divisor_of_toMeromorphicNFOn,
