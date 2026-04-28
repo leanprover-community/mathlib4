@@ -86,7 +86,8 @@ theorem toENat_cardinalMk_subtype (P : α → Prop) :
     (Cardinal.mk {x // P x}).toENat = {x | P x}.encard :=
   rfl
 
-@[simp] theorem coe_fintypeCard (s : Set α) [Fintype s] : Fintype.card s = s.encard := by
+variable (s) in
+theorem coe_fintypeCard [Fintype s] : Fintype.card s = s.encard := by
   simp [encard_eq_coe_toFinset_card]
 
 @[simp, norm_cast] theorem encard_coe_eq_coe_finsetCard (s : Finset α) :
@@ -603,8 +604,14 @@ theorem ncard_eq_toFinset_card' (s : Set α) [Fintype s] :
   simp [← _root_.Nat.card_coe_set_eq, Nat.card_eq_fintype_card]
 
 variable (s) in
+@[simp]
 theorem fintypeCard_eq_ncard [Fintype s] : Fintype.card s = s.ncard := by
   rw [ncard_eq_toFinset_card', toFinset_card]
+
+variable (s) in
+@[simp]
+theorem coe_ncard_eq_encard [Finite s] : s.ncard = s.encard :=
+  s.toFinite.cast_ncard_eq
 
 lemma cast_ncard {s : Set α} (hs : s.Finite) :
     (s.ncard : Cardinal) = Cardinal.mk s := @Nat.cast_card _ hs
