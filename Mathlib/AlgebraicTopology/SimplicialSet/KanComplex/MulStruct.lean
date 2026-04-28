@@ -29,62 +29,7 @@ open HomotopicalAlgebra CategoryTheory Simplicial Limits
 
 namespace SSet
 
-namespace horn.IsCompatible
-
-variable {X : SSet.{u}} {n : ℕ}
-  {i : Fin (n + 2)} {f : ∀ (j : Fin (n + 2)) (_ : j ≠ i), (Δ[n] : SSet) ⟶ X}
-
-open modelCategoryQuillen in
-lemma exists_lift (hf : horn.IsCompatible f) {Y : SSet.{u}} (p : X ⟶ Y) [Fibration p]
-    (b : Δ[n + 1] ⟶ Y)
-    (comm : ∀ (j : Fin (n + 2)) (hj : j ≠ i), f j hj ≫ p = stdSimplex.δ j ≫ b) :
-    ∃ (φ : Δ[n + 1] ⟶ X),
-      (∀ (j : Fin (n + 2)) (hj : j ≠ i), stdSimplex.δ j ≫ φ = f j hj) ∧
-      φ ≫ p = b := by
-  have sq : CommSq hf.desc Λ[n + 1, i].ι p b :=
-    ⟨horn.hom_ext' (fun j hj ↦ by simpa using comm j hj)⟩
-  refine ⟨sq.lift, fun j hj ↦ by simp [← ι_ι_assoc i j hj], by simp⟩
-
-lemma exists_lift_of_kanComplex [KanComplex X]
-    (hf : horn.IsCompatible f) :
-    ∃ (φ : Δ[n + 1] ⟶ X),
-      ∀ (j : Fin (n + 2)) (hj : j ≠ i), stdSimplex.δ j ≫ φ = f j hj := by
-  obtain ⟨φ, hφ, _⟩ := hf.exists_lift (terminal.from _) (terminal.from _) (by simp)
-  exact ⟨φ, hφ⟩
-
-@[no_expose]
-noncomputable def lift [KanComplex X] (hf : horn.IsCompatible f) :
-    Δ[n + 1] ⟶ X :=
-  hf.exists_lift_of_kanComplex.choose
-
-@[reassoc]
-lemma δ_lift [KanComplex X] (hf : horn.IsCompatible f)
-    (j : Fin (n + 2)) (hj : j ≠ i := by grind) :
-    stdSimplex.δ j ≫ hf.lift = f j hj :=
-  hf.exists_lift_of_kanComplex.choose_spec j hj
-
-end horn.IsCompatible
-
-open modelCategoryQuillen in
-lemma KanComplex.iff {Z : SSet.{u}} :
-    KanComplex Z ↔
-      ∀ ⦃n : ℕ⦄ ⦃i : Fin (n + 2)⦄ (f : ∀ (j : Fin (n + 2)) (_ : j ≠ i), (Δ[n] : SSet) ⟶ Z)
-        (_ : horn.IsCompatible f),
-        ∃ (φ : Δ[n + 1] ⟶ Z),
-          ∀ (j : Fin (n + 2)) (hj : j ≠ i), stdSimplex.δ j ≫ φ = f j hj := by
-  refine ⟨fun _ n i f hf ↦ hf.exists_lift_of_kanComplex,
-    fun h ↦ (isFibrant_iff _).2 ⟨?_⟩⟩
-  rw [fibrations_eq]
-  intro _ _ _ hf
-  simp only [J, MorphismProperty.iSup_iff] at hf
-  obtain ⟨n, ⟨i⟩⟩ := hf
-  refine ⟨fun {t _} _ ↦ ?_⟩
-  obtain ⟨φ, hφ⟩ := h _ (horn.IsCompatible.of_hom t)
-  exact ⟨⟨{
-    l := φ
-    fac_left := horn.hom_ext' (fun j hj ↦ by simpa using hφ j hj)
-    fac_right := by subsingleton }⟩⟩
-
+-- to be moved
 instance {X : SSet.{u}} [KanComplex X] : KanComplex X.op := by
   rw [KanComplex.iff]
   intro n i f hf
@@ -99,9 +44,9 @@ instance {X : SSet.{u}} [KanComplex X] : KanComplex X.op := by
       congr 3
       convert (hf.δ_pred_comp k.rev j.rev (by grind) (by grind) (by grind)).symm <;>
         grind [Fin.castPred]
-  refine ⟨yonedaEquiv.symm (opObjEquiv.symm (yonedaEquiv hf.lift)), fun j hj ↦ ?_⟩
+  refine ⟨yonedaEquiv.symm (opObjEquiv.symm (yonedaEquiv hf.liftOfKanComplex)), fun j hj ↦ ?_⟩
   rw [stdSimplex.δ_comp_yonedaEquiv_symm, op_δ, Equiv.apply_symm_apply,
-    ← stdSimplex.yonedaEquiv_δ_comp, hf.δ_lift ..]
+    ← stdSimplex.yonedaEquiv_δ_comp, hf.δ_liftOfKanComplex ..]
   simp
 
 variable (X : SSet.{u})
@@ -468,8 +413,8 @@ def assocAux (φ : (Δ[n + 2] : SSet) ⟶ X)
 
 @[no_expose]
 noncomputable def assoc [KanComplex X] : MulStruct f₀₂ f₂₃ f₀₃ i :=
-  assocAux h₀₂ h₁₃ h (assocAux.isCompatible_α h₀₂ h₁₃ h).lift
-    (fun j hj ↦ (assocAux.isCompatible_α h₀₂ h₁₃ h).δ_lift j hj)
+  assocAux h₀₂ h₁₃ h (assocAux.isCompatible_α h₀₂ h₁₃ h).liftOfKanComplex
+    (fun j hj ↦ (assocAux.isCompatible_α h₀₂ h₁₃ h).δ_liftOfKanComplex j hj)
 
 end
 
