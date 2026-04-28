@@ -83,8 +83,7 @@ theorem intFloor_cast (x : ℚ≥0) : ⌊(x : K)⌋ = ⌊(x : ℚ)⌋ := by
 theorem intCeil_cast (x : ℚ≥0) : ⌈(x : K)⌉ = ⌈(x : ℚ)⌉ := by
   rw [Int.ceil_eq_iff, ← coe_ceil, sub_lt_iff_lt_add]
   constructor
-  · norm_cast
-    exact_mod_cast NNRat.cast_strictMono <| Nat.ceil_lt_add_one zero_le
+  · exact_mod_cast NNRat.cast_strictMono <| Nat.ceil_lt_add_one zero_le
   · rw [Int.cast_natCast, NNRat.cast_le_natCast]
     exact Nat.le_ceil _
 
