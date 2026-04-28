@@ -290,7 +290,32 @@ def Sublocale.Open : FrameHom X (Sublocale X) where
       exact sup_le h (by rw [inf_comm]; exact h)
   map_top' := by simpa [Nucleus.Open] using by rfl
   map_sSup' s := by
-    sorry
+    apply nucleusIsoSublocale.symm.injective
+    apply OrderDual.ofDual_inj.mp
+    simp
+    ext i
+    apply le_antisymm
+    · simp
+      sorry
+    · simp only [Nucleus.sInf_apply, mem_preimage, mem_image, exists_exists_and_eq_and,
+      OrderIso.symm_apply_apply, EmbeddingLike.apply_eq_iff_eq, iInf_exists, Nucleus.coe_mk,
+      InfHom.coe_mk, le_himp_iff]
+      simp [inf_sSup_eq]
+      intro a ha
+      simp [iInf_inf, iInf_le_iff]
+      intro x h
+      sorry
+
+
+
+
+
+
+
+
+
+
+
 
 
 
