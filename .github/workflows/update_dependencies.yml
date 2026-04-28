@@ -107,46 +107,79 @@ jobs:
             echo "toolchain_modified=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Check if lake-manifest.json was modified or if no mergeable PR exists
+      - name: Determine PR state
         # only run if check_toolchain ran and returned "false"
         if: ${{ steps.check_toolchain.outputs.toolchain_modified == 'false' }}
-        id: check_manifest
+        id: determine_state
         run: |
-          # Default to false
-          create_pr=false
-          # Log individual reasons for running the create-pull-request action
-          if [ -z "${{ steps.get-branch-sha.outputs.sha }}" ]; then
-            create_pr=true
-            echo "$BRANCH_NAME does not exist, need to run create-pull-request to create it"
+          # Tracked files: lake-manifest.json and .github/actions/get-mathlib-ci/action.yml
+          #
+          # Two-layer model
+          # ────────────────────────────────────────────────────────────────────
+          # create-pull-request (CPR) compares against master: it always
+          # force-pushes when called with any pending changes, even if the branch
+          # already has identical content.  This gate is therefore the ONLY
+          # mechanism preventing unnecessary force-pushes.
+          #
+          # needs_update : working tree differs from master   → PR should exist
+          # branch_stale : working tree differs from branch tip → CPR would push
+          #
+          # States (checked in priority order):
+          #   SUPERSEDED : open PR + !needs_update  → call CPR to close PR
+          #   CONFLICT   : merge-conflict label     → call CPR to rebase
+          #   STALE      : open PR + branch_stale   → call CPR to update branch
+          #   ABSENT     : no branch or no open PR  → call CPR to create/clean up
+          #   PENDING    : open PR + needs_update + !branch_stale → skip CPR
+
+          # ── inputs ──────────────────────────────────────────────────────────
+          needs_update=false
+          if ! git diff --quiet "origin/master" -- lake-manifest.json || \
+             [ "${{ steps.update-mathlib-ci-ref.outputs.modified }}" == "true" ]; then
+            needs_update=true
           fi
-          if [ "${{ steps.PR.outputs.pr_found }}" != "true" ]; then
-            create_pr=true
-            echo "PR does not exist, need to run create-pull-request to check whether one should be created"
+
+          branch_stale=false
+          if [ -n "${{ steps.get-branch-sha.outputs.sha }}" ]; then
+            if ! git diff --quiet "origin/$BRANCH_NAME" -- lake-manifest.json || \
+               ! git diff --quiet "origin/$BRANCH_NAME" -- .github/actions/get-mathlib-ci/action.yml; then
+              branch_stale=true
+            fi
           fi
-          if [ "${{ steps.PR.outputs.pr_found }}" == "true" ] && \
-             git diff --quiet "origin/master" -- lake-manifest.json; then
-            create_pr=true
-            echo "No differences found with lake-manifest.json on master, need to run create-pull-request to close the PR"
+
+          pr_open="${{ steps.PR.outputs.pr_found }}"
+          merge_conflict="${{ contains(steps.PR.outputs.pr_labels, 'merge-conflict') }}"
+
+          echo "needs_update=$needs_update"
+          echo "branch_stale=$branch_stale"
+          echo "pr_open=$pr_open"
+          echo "merge_conflict=$merge_conflict"
+
+          # ── state ───────────────────────────────────────────────────────────
+          if [ "$pr_open" == "true" ] && [ "$needs_update" == "false" ]; then
+            state="SUPERSEDED"
+          elif [ "$merge_conflict" == "true" ]; then
+            state="CONFLICT"
+          elif [ "$pr_open" == "true" ] && [ "$branch_stale" == "true" ]; then
+            state="STALE"
+          elif [ -z "${{ steps.get-branch-sha.outputs.sha }}" ] || [ "$pr_open" != "true" ]; then
+            state="ABSENT"
+          else
+            state="PENDING"
           fi
-          if [ "${{ contains(steps.PR.outputs.pr_labels, 'merge-conflict') }}" == "true" ]; then
+
+          echo "State: $state"
+          echo "state=$state" >> "$GITHUB_OUTPUT"
+
+          if [ "$state" == "PENDING" ]; then
+            create_pr=false
+          else
             create_pr=true
-            echo "merge-conflict on PR, need to run create-pull-request to update $BRANCH_NAME"
           fi
-          if [ -n "${{ steps.get-branch-sha.outputs.sha }}" ] && \
-             ! git diff --quiet "origin/$BRANCH_NAME" -- lake-manifest.json; then
-            create_pr=true
-            echo "Differences found with lake-manifest.json on $BRANCH_NAME, need to run create-pull-request to update $BRANCH_NAME"
-          fi
-          if [ "${{ steps.update-mathlib-ci-ref.outputs.modified }}" == "true" ]; then
-            create_pr=true
-            echo "mathlib-ci ref was updated, need to run create-pull-request"
-          fi
-          # Otherwise, there's no reason to run create-pull-request
-          echo "create_pr=$create_pr" >> "${GITHUB_OUTPUT}"
+          echo "create_pr=$create_pr" >> "$GITHUB_OUTPUT"
 
       - name: Generate PR title
         id: pr-title
-        if: ${{ steps.check_manifest.outputs.create_pr == 'true' }}
+        if: ${{ steps.determine_state.outputs.create_pr == 'true' }}
         run: |
           echo "timestamp=$(date -u +"%Y-%m-%d-%H-%M")" >> "$GITHUB_ENV"
           echo "pr_title=chore: update Mathlib dependencies $(date -u +"%Y-%m-%d")" >> "$GITHUB_ENV"

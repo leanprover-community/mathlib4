@@ -254,10 +254,12 @@ theorem circleIntegrable_zero_radius {f : ℂ → E} {c : ℂ} : CircleIntegrabl
 /--
 Circle integrability depends only on the restriction of the function to the sphere.
 -/
-theorem crcleIntegrable_congr {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → E}
+theorem circleIntegrable_congr {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → E}
     (hf : Set.EqOn f₁ f₂ (sphere c |R|)) :
     CircleIntegrable f₁ c R ↔ CircleIntegrable f₂ c R :=
   intervalIntegrable_congr fun x _ ↦ hf (circleMap_mem_sphere' c R x)
+
+@[deprecated (since := "2026-04-26")] alias crcleIntegrable_congr := circleIntegrable_congr
 
 /--
 Circle integrability is invariant when taking negative radius.
@@ -413,7 +415,7 @@ theorem integral_fun_sum {ι : Type*} {s : Finset ι} {f : ι → ℂ → E} {c 
     (h : ∀ i ∈ s, CircleIntegrable (f i) c R) :
     (∮ z in C(c, R), ∑ i ∈ s, f i z) = ∑ i ∈ s, ∮ z in C(c, R), f i z := by
   simp only [circleIntegral, Finset.smul_sum,
-    intervalIntegral.integral_finset_sum fun i hi ↦ (h i hi).out]
+    intervalIntegral.integral_finsetSum fun i hi ↦ (h i hi).out]
 
 theorem norm_integral_le_of_norm_le_const' {f : ℂ → E} {c : ℂ} {R C : ℝ}
     (hf : ∀ z ∈ sphere c |R|, ‖f z‖ ≤ C) : ‖∮ z in C(c, R), f z‖ ≤ 2 * π * |R| * C :=
