@@ -6,20 +6,24 @@ Authors: Ben Eltschig
 module
 
 public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
+public import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # Cⁿ monoid actions
+
 In this file we define Cⁿ actions on manifolds: we say `ContMDiffSMul I I' n G M` if `G` acts
 multiplicatively on `M` and the action map `fun p : G × M ↦ p.1 • p.2` is Cⁿ. We also provide API
 for additive actions using `@[to_additive]`.
 
 We also provide `ContMDiffSMul` instances for scalar multiplication in normed spaces and for
 the action of the monoid `E →L[𝕜] E` of continuous linear maps on any normed space `E`.
+
+Unlike for continuous actions, we do not have a class `ContMDiffConstSMul` yet.
 -/
 
 open scoped Manifold ContDiff
 
-@[expose] public section
+public section
 
 /-- Basic typeclass stating that the additive action of `G` on `M` has smoothness degree `n`.
 Unlike with `ContMDiffAdd`, we do not extend `IsManifold` because `ContMDiffVAdd` contains more
@@ -34,7 +38,7 @@ class ContMDiffVAdd {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [T
     (I' : ModelWithCorners 𝕜 E' H') (n : ℕ∞ω)
     (G : Type*) [TopologicalSpace G] [ChartedSpace H G]
     (M : Type*) [TopologicalSpace M] [ChartedSpace H' M] [VAdd G M] : Prop where
-  contMDiff_vadd : ContMDiff (I.prod I') I' n fun p : G × M ↦ p.1 +ᵥ p.2
+  contMDiff_vadd : CMDiff n fun p : G × M ↦ p.1 +ᵥ p.2
 
 /-- Basic typeclass stating that the action of `G` on `M` has smoothness degree `n`.
 Unlike with `ContMDiffMul`, we do not extend `IsManifold` because `ContMDiffSMul` contains more
@@ -50,7 +54,7 @@ class ContMDiffSMul {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [T
     (I' : ModelWithCorners 𝕜 E' H') (n : ℕ∞ω)
     (G : Type*) [TopologicalSpace G] [ChartedSpace H G]
     (M : Type*) [TopologicalSpace M] [ChartedSpace H' M] [SMul G M] : Prop where
-  contMDiff_smul : ContMDiff (I.prod I') I' n fun p : G × M ↦ p.1 • p.2
+  contMDiff_smul : CMDiff n fun p : G × M ↦ p.1 • p.2
 
 export ContMDiffVAdd (contMDiff_vadd)
 
@@ -87,7 +91,8 @@ instance [SMul G M] [ContMDiffSMul I I' 2 G M] : ContMDiffSMul I I' 1 G M :=
   .of_le one_le_two
 
 /-- If an action is Cⁿ for some `n`, it is also continuous. This has to be a theorem instead of an
-instance for technical reasons. -/
+instance because `ContMDiffSMul` depends on parameters `I`, `I'` and `n` that `ContinuousSMul`
+doesn't. -/
 @[to_additive]
 lemma ContMDiffSMul.continuousSMul [SMul G M] (n : ℕ∞ω) [ContMDiffSMul I I' n G M] :
     ContinuousSMul G M :=
@@ -99,22 +104,22 @@ variable [SMul G M] {n : ℕ∞ω} [ContMDiffSMul I I' n G M]
   {f : N → G} {g : N → M} {s : Set N} {x : N}
 
 @[to_additive]
-theorem ContMDiffWithinAt.smul (hf : ContMDiffWithinAt I'' I n f s x)
-    (hg : ContMDiffWithinAt I'' I' n g s x) : ContMDiffWithinAt I'' I' n (f • g) s x :=
+theorem ContMDiffWithinAt.smul (hf : CMDiffAt[s] n f x)
+    (hg : CMDiffAt[s] n g x) : CMDiffAt[s] n (f • g) x :=
   (contMDiff_smul (I := I) (I' := I')).contMDiffAt.comp_contMDiffWithinAt x (hf.prodMk hg)
 
 @[to_additive]
-nonrec theorem ContMDiffAt.smul (hf : ContMDiffAt I'' I n f x) (hg : ContMDiffAt I'' I' n g x) :
-    ContMDiffAt I'' I' n (f • g) x :=
+nonrec theorem ContMDiffAt.smul (hf : CMDiffAt n f x) (hg : CMDiffAt n g x) :
+    CMDiffAt n (f • g) x :=
   hf.smul hg
 
 @[to_additive]
-theorem ContMDiffOn.smul (hf : ContMDiffOn I'' I n f s) (hg : ContMDiffOn I'' I' n g s) :
-    ContMDiffOn I'' I' n (f • g) s := fun x hx => (hf x hx).smul (hg x hx)
+theorem ContMDiffOn.smul (hf : CMDiff[s] n f) (hg : CMDiff[s] n g) :
+    CMDiff[s] n (f • g) := fun x hx => (hf x hx).smul (hg x hx)
 
 @[to_additive]
-theorem ContMDiff.smul (hf : ContMDiff I'' I n f) (hg : ContMDiff I'' I' n g) :
-    ContMDiff I'' I' n (f • g) := fun x => (hf x).smul (hg x)
+theorem ContMDiff.smul (hf : CMDiff n f) (hg : CMDiff n g) :
+    CMDiff n (f • g) := fun x => (hf x).smul (hg x)
 
 end
 
@@ -130,7 +135,7 @@ lemma IsScalarTower.contMDiffSMul (G' : Type*) [TopologicalSpace G'] [ChartedSpa
     [Monoid G'] [SMul G G'] [MulAction G' M] [SMul G M] [IsScalarTower G G' M] {n : ℕ∞ω}
     [ContMDiffSMul I I'' n G G'] [ContMDiffSMul I'' I' n G' M] : ContMDiffSMul I I' n G M where
   contMDiff_smul := by
-    suffices ContMDiff (I.prod I') I' n (fun p : G × M ↦ (p.1 • (1 : G')) • p.2) by simpa
+    suffices CMDiff n (fun p : G × M ↦ (p.1 • (1 : G')) • p.2) by simpa
     exact (contMDiff_fst.smul contMDiff_const).smul (I := I'') contMDiff_snd
 
 /-- If an action is continuously differentiable, then composing this action with a continuously
@@ -138,7 +143,7 @@ differentiable homomorphism gives again a continuous action. -/
 @[to_additive]
 theorem MulAction.contMDiffSMul_compHom [Monoid G] [MulAction G M] {n : ℕ∞ω}
     [ContMDiffSMul I I' n G M] {G' : Type*} [TopologicalSpace G'] [ChartedSpace H'' G'] [Monoid G']
-    {f : G' →* G} (hf : ContMDiff I'' I n f) :
+    {f : G' →* G} (hf : CMDiff n f) :
     letI : MulAction G' M := MulAction.compHom _ f
     ContMDiffSMul I'' I' n G' M := by
   let _ : MulAction G' M := MulAction.compHom _ f

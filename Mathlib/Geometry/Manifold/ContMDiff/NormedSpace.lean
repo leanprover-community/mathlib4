@@ -14,7 +14,8 @@ public import Mathlib.Analysis.Normed.Operator.Prod
   manifold-smoothness is equivalent to usual smoothness.
 * `ContinuousLinearMap.contMDiff`: continuous linear maps between normed spaces are smooth
 
-Smoothness of addition and scalar multiplication in normed spaces is proven only in later files in
+Smoothness of addition and scalar multiplication in normed spaces is proven not here but in
+`Mathlib/Geometry/Manifold/Algebra/SMul.lean` and `Mathlib/Geometry/Manifold/Algebra/LieGroup.lean`
 the form of `AddLieGroup` and `ContMDiffSMul` instances.
 
 -/
