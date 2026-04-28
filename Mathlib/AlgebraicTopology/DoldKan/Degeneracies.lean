@@ -149,8 +149,7 @@ maps `X.σ i ≫ f` all vanish. -/
 def DegeneraciesVanish (f : X _⦋n⦌ ⟶ T) : Prop :=
   match n with
   | 0 => True
-  | n + 1 =>
-    ∀ (i : Fin (n + 1)), X.σ i ≫ f = 0
+  | n + 1 => ∀ (i : Fin (n + 1)), X.σ i ≫ f = 0
 
 @[simp]
 lemma degeneraciesVanish_zero_iff_true (f : X _⦋0⦌ ⟶ T) :
