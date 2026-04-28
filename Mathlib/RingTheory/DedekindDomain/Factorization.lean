@@ -845,9 +845,9 @@ alias Ideal.map_algebraMap_eq_finset_prod_pow := Ideal.map_algebraMap_eq_finsetP
 end primesOver
 
 /-!
-### Conversion between various multplicities
+### Conversion between various multiplicities
 
-We provide some `simp` lemmas that convert various ways of expressing the multiplicity of
+We provide some lemmas that convert various ways of expressing the multiplicity of
 a prime ideal `p` in the factorization of some ideal `I` into `multiplicity p.asIdeal I`.
 -/
 
@@ -872,6 +872,8 @@ lemma count_normalizedFactors_eq_multiplicity :
   rw [← this]
   exact (finiteMultiplicity_of_emultiplicity_eq_natCast this).emultiplicity_eq_multiplicity
 
+-- This is not `simp`; otherwise some `aesop` proofs break
+-- in `Mathlib.Algebra.Module.Torsion.PrimaryComponent`.
 /-- Normalize the multiplicity of a prime ideal `p` in the factorization of `I`
 as `multiplicity p.asIdeal I`. -/
 lemma maxPowDividing_eq_pow_multiplicity :
@@ -944,7 +946,7 @@ lemma emultiplicity_sup :
 
 variable {ι : Type*} [Finite ι]
 
-lemma emultiplicity_ciSup (I : ι → Ideal R) :
+lemma emultiplicity_iSup (I : ι → Ideal R) :
     emultiplicity p.asIdeal (⨆ i, I i) = ⨅ i, emultiplicity p.asIdeal (I i) := by
   induction ι using Finite.induction_empty_option with
   | h_empty =>
@@ -959,7 +961,7 @@ lemma emultiplicity_ciSup (I : ι → Ideal R) :
   | h_option ih =>
     rw [iSup_option, emultiplicity_sup p .., ih, iInf_option]
 
-lemma multiplicity_ciSup [Nonempty ι] {I : ι → Ideal R} (hI : ∀ i, I i ≠ ⊥) :
+lemma multiplicity_iSup [Nonempty ι] {I : ι → Ideal R} (hI : ∀ i, I i ≠ ⊥) :
     multiplicity p.asIdeal (⨆ i, I i) = ⨅ i, multiplicity p.asIdeal (I i) := by
   have H i : FiniteMultiplicity p.asIdeal (I i) :=
     FiniteMultiplicity.of_prime_left (prime p) <| hI i
@@ -968,7 +970,7 @@ lemma multiplicity_ciSup [Nonempty ι] {I : ι → Ideal R} (hI : ∀ i, I i ≠
     contrapose! hI
     rw [← bot_eq_zero, iSup_eq_bot] at hI
     exact ⟨Classical.ofNonempty, hI _⟩
-  have := emultiplicity_ciSup p I
+  have := emultiplicity_iSup p I
   simp only [H'.emultiplicity_eq_multiplicity, (H _).emultiplicity_eq_multiplicity] at this
   exact_mod_cast this
 
