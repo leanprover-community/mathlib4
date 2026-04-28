@@ -5,8 +5,7 @@ Authors: Sébastien Gouëzel, Felix Weilacher
 -/
 module
 
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
 public import Mathlib.Topology.MetricSpace.Perfect
 public import Mathlib.Topology.Separation.CountableSeparatingOn
 
@@ -1015,6 +1014,36 @@ theorem MeasureTheory.measurableSet_exists_tendsto
     MeasurableSet.biInter (to_countable (u N)) fun i _ =>
       MeasurableSet.biInter (to_countable (u N)) fun j _ =>
         measurableSet_lt (Measurable.dist (hf i) (hf j)) measurable_const
+
+section
+
+variable {α β ι : Type*} [MeasurableSpace α] [CommMonoid β] [TopologicalSpace β]
+  [PolishSpace β] [MeasurableSpace β] [BorelSpace β] [MeasurableMul₂ β]
+  [Countable ι] {L : SummationFilter ι} [L.NeBot] [L.filter.IsCountablyGenerated]
+
+/-- The product of measurable functions is measurable. -/
+@[to_additive (attr := fun_prop)
+/-- The sum of measurable functions is measurable. -/]
+theorem Measurable.tprod {f : ι → α → β} (h : ∀ i : ι, Measurable (f i)) :
+    Measurable (fun x => ∏'[L] i : ι, f i x) := by
+  let E := { x | Multipliable (f · x) L }
+  have hE : MeasurableSet E := measurableSet_exists_tendsto (by fun_prop)
+  have h0 : (Eᶜ.restrict fun x => ∏'[L] i, f i x) = fun _ => 1 :=
+    funext fun ⟨x, hx⟩ => tprod_eq_one_of_not_multipliable hx
+  refine measurable_of_restrict_of_restrict_compl hE ?_ (h0 ▸ measurable_const)
+  refine measurable_of_tendsto_metrizable' L.filter ?_ (tendsto_pi_nhds.mpr fun e => e.2.hasProd)
+  fun_prop
+
+/-- The product of almost everywhere measurable functions is measurable. -/
+@[to_additive (attr := fun_prop)
+/-- The sum of almost everywhere measurable functions is measurable. -/]
+theorem AEMeasurable.tprod {μ : MeasureTheory.Measure α} {f : ι → α → β}
+    (h : ∀ i : ι, AEMeasurable (f i) μ) : AEMeasurable (fun x => ∏'[L] i : ι, f i x) μ := by
+  choose g hg_meas hg_eq_f using h
+  existsi (fun x => ∏'[L] i, g i x), Measurable.tprod hg_meas
+  filter_upwards [MeasureTheory.ae_all_iff.mpr hg_eq_f] with x h_eq using tprod_congr h_eq
+
+end
 
 section StandardBorelSpace
 
