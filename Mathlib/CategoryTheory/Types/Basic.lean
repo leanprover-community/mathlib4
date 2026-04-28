@@ -135,8 +135,16 @@ abbrev Hom.hom {X Y : Type u} (f : Hom X Y) : Fun X Y :=
 abbrev ofHom {X Y : Type u} (f : X → Y) : X ⟶ Y :=
   ConcreteCategory.ofHom (Fun.mk f)
 
+end TypeCat
+
+namespace CategoryTheory
+
 @[inherit_doc]
-notation "↾" f:200 => TypeCat.ofHom f
+scoped notation "↾" f:200 => TypeCat.ofHom f
+
+end CategoryTheory
+
+namespace TypeCat
 
 /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
 def Hom.Simps.hom (X Y : Type u) (f : X ⟶ Y) :=
@@ -162,7 +170,7 @@ lemma ofHom_hom {X Y : Type u} (f : X ⟶ Y) : ofHom (Hom.hom f) = f := rfl
 
 @[simp]
 lemma ofHom_apply {X Y : Type u} (f : X → Y) (x : X) :
-    (↾ f) x = f x :=
+    (↾f) x = f x :=
   rfl
 
 /-- `TypeCat.Hom.hom` bundled as an `Equiv`. -/
