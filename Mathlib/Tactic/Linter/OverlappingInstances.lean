@@ -144,7 +144,7 @@ def runLinter (ctx : ContextInfo) (lctx : LocalContext) (expectedType? : Option 
   if overlaps.isEmpty then
     return none
   let sortedOverlaps : Std.HashMap (Array FVarId) (Array Expr) :=
-    overlaps.foldl (init := {}) fun s overlap fvars ↦ s.alter fvars (·.getD #[] |>.push overlap)
+    overlaps.fold (init := {}) fun s overlap fvars ↦ s.alter fvars (·.getD #[] |>.push overlap)
   -- Sort the suggestions in a (somewhat) deterministic way.
   let sortedOverlaps := sortedOverlaps.toArray.qsort (Array.lex ·.2 ·.2 Expr.lt)
   let mut msgs := #[]
