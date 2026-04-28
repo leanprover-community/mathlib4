@@ -307,4 +307,35 @@ lemma isParabolic_iff_of_upperTriangular_of_det [LinearOrder K] [IsStrictOrdered
 
 end GeneralLinearGroup
 
+section OrderedRing
+
+variable {R : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
+
+lemma IsParabolic.det_nonneg {m : Matrix (Fin 2) (Fin 2) R} (hm : m.IsParabolic) : 0 ≤ m.det := by
+  rw [IsParabolic, discr_fin_two] at hm
+  have : 0 < (4 : R) := by simp
+  rw [← mul_nonneg_iff_of_pos_left this]
+  exact sub_eq_zero.mp hm.2 ▸ sq_nonneg m.trace
+
+lemma IsElliptic.det_pos {m : Matrix (Fin 2) (Fin 2) R} (hm : m.IsElliptic) : 0 < m.det := by
+  rw [IsElliptic, discr_fin_two, sub_neg] at hm
+  have : 0 < (4 : R) := by simp
+  rw [← mul_pos_iff_of_pos_left this]
+  exact (sq_nonneg _).trans_lt hm
+
+lemma IsElliptic.c_ne_zero {m : Matrix (Fin 2) (Fin 2) R} (hm : m.IsElliptic) : m 1 0 ≠ 0 := by
+  intro hc
+  rw [IsElliptic, discr_fin_two, trace_fin_two, det_fin_two] at hm
+  have : (m 0 0 - m 1 1) ^ 2 < 0 := by convert hm; grind
+  exact ((sq_nonneg (m 0 0 - m 1 1))).not_gt this
+
+lemma GeneralLinearGroup.IsParabolic.val_det_pos
+    {g : GL (Fin 2) R} (hm : g.IsParabolic) : 0 < g.det.val := by
+  apply lt_of_le_of_ne'
+  · exact hm.det_nonneg
+  · exact NeZero.ne _
+
+
+end OrderedRing
+
 end Matrix
