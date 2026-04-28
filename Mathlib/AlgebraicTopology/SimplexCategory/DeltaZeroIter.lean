@@ -142,8 +142,8 @@ lemma σ₀Iter_coe_eq_of_le (i : ℕ) {n m : ℕ}
 @[simp]
 lemma σ₀Iter_zero (n : ℕ) :
     σ₀Iter 0 (add_zero n) = 𝟙 _ := by
-  dsimp [σ₀Iter]
-  aesop
+  ext
+  simp [σ₀Iter]
 
 @[simp]
 lemma σ₀Iter_one (n : ℕ) : σ₀Iter 1 (n := n) rfl = σ 0 := by
