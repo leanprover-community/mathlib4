@@ -117,10 +117,12 @@ public meta def elabMkConcreteCategoryWithAdditive : CommandElab := fun stx => d
     `(command| mk_concrete_category $cat $FC $idTerm $compTerm)
   elabCommand <| ← set_option hygiene false in `(command| end $catNs:ident)
 
-/-- Core implementation of `mk_concrete_category`. -/
+/-- Data for a custom generated `ofHom` declaration: binders, source hom type, source
+object, and target object. -/
 private abbrev CustomOfHomData :=
   TSyntaxArray `Lean.Parser.Term.bracketedBinder × TSyntax `term × TSyntax `term × TSyntax `term
 
+/-- Core implementation of `mk_concrete_category`. -/
 private meta def elabMkConcreteCategoryCore (mods : Syntax) (cat FC idTerm compTerm : TSyntax `term)
     (customOfHom? : Option CustomOfHomData) : CommandElabM Unit := do
   let useToAdditive := hasToAdditiveAttr mods
