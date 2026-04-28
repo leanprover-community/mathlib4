@@ -55,16 +55,6 @@ theorem algebraMapSubmonoid_primeCompl_of_liesOver_quotient
   contrapose! hy
   simpa [p.sub_mem_iff_left hy] using le_of_liesOver_quotient I p q hx
 
--- PRed
-theorem IsArtinianRing.finrank_eq_sum_primeSpectrum
-    {R S : Type*} [Field R] [CommRing S] [IsArtinianRing S] [Algebra R S] [Module.Finite R S] :
-    Module.finrank R S = ∑ p : PrimeSpectrum S, Module.finrank R (Localization.AtPrime p.1) :=
-  have (p : Ideal S) [p.IsPrime] : Module.Finite R (Localization.AtPrime p) :=
-    Module.Finite.of_surjective (Algebra.algHom R S (Localization.AtPrime p)).toLinearMap
-      (IsArtinianRing.localization_surjective p.primeCompl (Localization.AtPrime p))
-  ((PrimeSpectrum.toPiLocalizationEquiv S).restrictScalars R).toLinearEquiv.finrank_eq.trans
-    (Module.finrank_pi_fintype R)
-
 namespace Ideal
 
 section ramification_inertia
