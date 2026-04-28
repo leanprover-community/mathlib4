@@ -348,8 +348,8 @@ theorem IsHamiltonian.ofPerm {σ : Perm α}
       simp only [p, Walk.support_copy, Walk.support_iterate,
         show n - 1 + 1 = n by lia]
       have hsx : σ (σ x) ≠ σ x := fun h => hx (σ.injective h)
-      have hcard : n = (σ.cycleOf (σ x)).support.card := by
-        rw [hcycle.cycleOf_eq hsx, hsupport, Finset.card_univ]
+      have hcard : n = (σ.toList (σ x)).length := by
+        rw [Equiv.Perm.length_toList, hcycle.cycleOf_eq hsx, hsupport, Finset.card_univ]
       rw [hcard, ← List.range_map_iterate]
       simp only [Equiv.Perm.iterate_eq_pow, ← σ.toList_eq_range_map_pow]
       exact σ.nodup_toList (σ x)
