@@ -37,9 +37,10 @@ def PontryaginDual :=
   A →ₜ* Circle
 deriving TopologicalSpace
 
+private def centeredArc (r : ℝ) : Set Circle := Circle.exp '' {x | |x| < r}
+
 instance [LocallyCompactSpace H] : LocallyCompactSpace (PontryaginDual H) := by
-  let Vn : ℕ → Set Circle :=
-    fun n ↦ Circle.exp '' { x | |x| < Real.pi / 2 ^ (n + 1)}
+  let Vn : ℕ → Set Circle := fun n ↦ centeredArc (Real.pi / 2 ^ (n + 1))
   have hVn : ∀ n x, x ∈ Vn n ↔ |Complex.arg x| < Real.pi / 2 ^ (n + 1) := by
     refine fun n x ↦ ⟨?_, fun hx ↦ ⟨Complex.arg x, hx, Circle.exp_arg x⟩⟩
     rintro ⟨t, ht : |t| < _, rfl⟩
@@ -70,6 +71,7 @@ variable {A B C G}
 namespace PontryaginDual
 
 open ContinuousMonoidHom
+open Real
 
 #adaptation_note /-- nightly-2026-03-31
 Without this `set_option` we get a PANIC!
@@ -85,6 +87,70 @@ for PontryaginDual A
 
 /-- A discrete monoid has compact Pontryagin dual. -/
 add_decl_doc instLocallyCompactSpacePontryaginDual
+
+private def rightHalfArc : Set Circle := centeredArc (π / 2)
+
+private lemma isOpen_rightHalfArc : IsOpen rightHalfArc := by
+  simpa [rightHalfArc, centeredArc, abs_lt] using
+    isLocalHomeomorph_circleExp.isOpenMap _ isOpen_Ioo
+
+private lemma exists_pos_cos_mul_nonpos_of_pos {θ : ℝ} (hθ0 : 0 < θ) (hθπ : θ ≤ π) :
+    ∃ n > (0 : ℕ), cos ((n : ℝ) * θ) ≤ 0 := by
+  refine ⟨⌈π / 2 / θ⌉₊, by positivity, cos_nonpos_of_pi_div_two_le_of_le ?_ ?_⟩
+  · grw [← Nat.le_ceil]
+    simp [hθ0.ne']
+  · grw [Nat.ceil_lt_add_one (by positivity), add_one_mul]
+    simpa [hθ0.ne', add_comm]
+
+private lemma exists_pos_cos_mul_nonpos {θ : ℝ} (hθ₁ : -π < θ) (hθ₂ : θ ≤ π)
+    (hθ : θ ≠ 0) :
+    ∃ n > (0 : ℕ), cos ((n : ℝ) * θ) ≤ 0 := by
+  obtain (_hθ | hθ) := hθ.lt_or_gt
+  · simpa using exists_pos_cos_mul_nonpos_of_pos (θ := -θ) (by linarith) (by linarith)
+  · exact exists_pos_cos_mul_nonpos_of_pos hθ hθ₂
+
+private lemma eq_one_of_forall_pow_mem_rightHalfArc {z : Circle}
+    (hz : ∀ n > 0, z ^ n ∈ rightHalfArc) : z = 1 := by
+  rw [← Circle.arg_eq_zero]
+  by_contra hθ
+  obtain ⟨n, hn, hcos⟩ :=
+    exists_pos_cos_mul_nonpos (Complex.neg_pi_lt_arg _) (Complex.arg_le_pi _) hθ
+  obtain ⟨t, ht, hzt⟩ := hz n hn
+  have hpow : Circle.exp ((n : ℝ) * (z : ℂ).arg) = Circle.exp t := by
+    rw [Circle.exp_natCast_mul, Circle.exp_arg, ← hzt]
+  have : cos ((n : ℝ) * (z : ℂ).arg) = cos t :=
+    Circle.cos_eq_cos_of_exp_eq_exp hpow
+  have htIoo : t ∈ Set.Ioo (-(π / 2)) (π / 2) := by
+    simpa [Set.mem_Ioo] using (abs_lt.mp ht)
+  linarith [cos_pos_of_mem_Ioo htIoo]
+
+/-- A compact monoid has discrete Pontryagin dual. -/
+instance [CompactSpace A] : DiscreteTopology (PontryaginDual A) := by
+  let V : Set (PontryaginDual A) := {ψ | Set.MapsTo ψ Set.univ rightHalfArc}
+  have hVopen : IsOpen V := by
+    dsimp only [V]
+    exact isOpen_induced (ContinuousMap.isOpen_setOf_mapsTo isCompact_univ isOpen_rightHalfArc)
+  have hVeq : V = ({1} : Set (PontryaginDual A)) := by
+    ext ψ
+    refine ⟨fun hψ ↦ ?_, fun hψ ↦ ?_⟩
+    · rw [Set.mem_singleton_iff]
+      apply ContinuousMonoidHom.ext
+      intro a
+      refine eq_one_of_forall_pow_mem_rightHalfArc fun n hn ↦ ?_
+      simpa [map_pow] using hψ (Set.mem_univ (a ^ n))
+    · rw [Set.mem_singleton_iff] at hψ
+      subst ψ
+      intro _ _
+      refine ⟨0, by simp [pi_pos], ?_⟩
+      change Circle.exp 0 = ((1 : A →ₜ* Circle) _)
+      simp
+  exact discreteTopology_of_isOpen_singleton_one (by simpa [hVeq] using hVopen)
+
+instance [DiscreteTopology A] [CompactSpace A] : Finite (PontryaginDual A) :=
+  finite_of_compact_of_discrete
+
+noncomputable instance [DiscreteTopology A] [CompactSpace A] : Fintype (PontryaginDual A) :=
+  .ofFinite _
 
 /-- `PontryaginDual` is a contravariant functor. -/
 def map (f : A →ₜ* B) :
