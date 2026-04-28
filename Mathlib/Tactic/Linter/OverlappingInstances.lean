@@ -157,7 +157,6 @@ def runLinter (ctx : ContextInfo) (lctx : LocalContext) (expectedType? : Option 
       let fvarTypes := .andList <| fvarTypes.toList.map (m!"`{.sbracket ·}`")
       let overlaps := .andList <| overlaps.toList.map (m!"`{.sbracket ·}`")
       msgs := msgs.push <| m!"{fvarTypes} give conflicting instances of {overlaps}."
-  -- Create a bulleted list if there are multiple messages, otherwise just a single line
   let declDescr ←
     if let some decl := ctx.parentDecl? then
       -- Use `addMessageContextPartial` to clear the local context,
@@ -166,6 +165,7 @@ def runLinter (ctx : ContextInfo) (lctx : LocalContext) (expectedType? : Option 
     else
       pure "The current declaration"
   let mut msg := m!"{declDescr} has overlapping instances:"
+  -- Create a bulleted list if there are multiple messages, otherwise just a single line
   msg := if h : msgs.size = 1 then m!"{msg}\n\n{msgs[0]}" else
     msgs.foldl (init := msg ++ "\n") (m!"{·}\n• {·}")
   msg := msg ++ m!"\n\nConsider choosing different instance hypotheses."
