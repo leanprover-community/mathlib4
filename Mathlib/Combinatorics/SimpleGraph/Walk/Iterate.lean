@@ -31,18 +31,11 @@ theorem isChain_adj_iterate (f : α → α) (hadj : ∀ x, G.Adj x (f x)) (x : �
   simp only [List.isChain_iff_getElem, List.getElem_iterate, iterate_succ']
   exact fun _ _ => hadj _
 
-/-- The last element of `List.iterate f x (n + 1)` is `f^[n] x`. -/
-theorem getLast_iterate (f : α → α) (x : α) (n : ℕ)
-    (h : List.iterate f x (n + 1) ≠ []) :
-    (List.iterate f x (n + 1)).getLast h = f^[n] x := by
-  rw [List.getLast_eq_getElem, List.getElem_iterate]
-  simp [List.length_iterate]
-
 /-- Build a walk of length `n` from `x` to `f^[n] x` following `f`,
 given that each step is adjacent in `G`. -/
 def iterate (f : α → α) (hadj : ∀ x, G.Adj x (f x)) (x : α) (n : ℕ) : G.Walk x (f^[n] x) :=
   (Walk.ofSupport _ (by simp) (isChain_adj_iterate f hadj x n)).copy rfl
-    (getLast_iterate f x n (by simp))
+    (List.getLast_iterate f x n (by simp))
 
 /-- The walk built by `Walk.iterate` has length `n`. -/
 @[simp]
