@@ -12,14 +12,27 @@ public import Mathlib.GroupTheory.SpecificGroups.Alternating.KleinFour
 
 /-! # The alternating group is simple
 
-* `Equiv.Perm.iwasawaStructure_two`:
-  the natural `IwasawaStructure` of `Equiv.Perm α` acting on `Set.powersetCard α 2`.
-  Its commutative subgroups consist of the permutations with support in a given element
-  of `Set.powersetCard α 2`. They are cyclic of order 2.
+## Main results
 
 * `alternatingGroup_of_le_of_normal`:
   If `α` has at least 5 elements, then a nontrivial normal subgroup
   of `Equiv.Perm α` contains the alternating group.
+
+* `alternatingGroup.normal_subgroup_eq_bot_or_eq_top`:
+  If `α` has at least 5 elements, then a nontrivial normal subgroup of `alternatingGroup` is `⊤`.
+
+* `alternatingGroup.isSimpleGroup`:
+  If `α` has at least 5 elements, then `alternatingGroup α` is a simple group.
+
+## Main definitions
+
+The proofs of the above results follow from the Iwasawa criterion
+applied to the following `IwasawaStructure`s:
+
+* `Equiv.Perm.iwasawaStructure_two`:
+  the natural `IwasawaStructure` of `Equiv.Perm α` acting on `Set.powersetCard α 2`.
+  Its commutative subgroups consist of the permutations with support in a given element
+  of `Set.powersetCard α 2`. They are cyclic of order 2.
 
 * `alternatingGroup.iwasawaStructure_three`:
   the natural `IwasawaStructure` of `alternatingGroup α` acting on `Set.powersetCard α 3`.
@@ -32,12 +45,6 @@ public import Mathlib.GroupTheory.SpecificGroups.Alternating.KleinFour
 
   Its commutative subgroups consist of the permutations of cycleType (2, 2) with support
   in a given element of `Set.powersetCard α 2`. They have order 4 and exponent 2 (`IsKleinFour`).
-
-* `alternatingGroup.normal_subgroup_eq_bot_or_eq_top`:
-  If `α` has at least 5 elements, then a nontrivial normal subgroup of `alternatingGroup` is `⊤`.
-
-* `alternatingGroup.isSimpleGroup`:
-  If `α` has at least 5 elements, then `alternatingGroup α` is a simple group.
 
 -/
 
@@ -77,7 +84,7 @@ theorem alternatingGroup_of_le_of_normal
     apply Set.powersetCard.isPreprimitive_perm <;> grind
   classical
   apply iwasawaStructure_two.commutator_le
-  exact fixedPoints_ne_univ_of_faithfulSMul 2 (by norm_num) (by grind)
+  exact fixedPoints_ne_univ_of_faithfulSMul (by norm_num) (by grind)
 
 end Equiv.Perm
 
@@ -113,9 +120,9 @@ theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_six
     · simpa using hα'
   rw [eq_top_iff, ← commutator_alternatingGroup_eq_top (by simpa using hα)]
   apply iwasawaStructure_three.commutator_le
-  exact fixedPoints_ne_univ_of_faithfulSMul 3 (by norm_num) (by grind)
+  exact fixedPoints_ne_univ_of_faithfulSMul (by norm_num) (by grind)
 
-theorem mem_map_kleinFour_ofSubtype (s : Finset α) (hs : s.card = 4) (k : alternatingGroup α) :
+theorem mem_map_kleinFour_ofSubtype {s : Finset α} (hs : s.card = 4) (k : alternatingGroup α) :
     k ∈ (kleinFour s).map (ofSubtype s) ↔
       (k : Perm α).support ⊆ s ∧ ((k : Perm α) = 1 ∨ (k : Perm α).cycleType = {2, 2}) := by
   have hs : Nat.card s = 4 := by simpa
@@ -125,6 +132,7 @@ theorem mem_map_kleinFour_ofSubtype (s : Finset α) (hs : s.card = 4) (k : alter
       ← SetLike.mem_coe, coe_kleinFour_of_card_eq_four hs]
     simp only [Set.singleton_union, Set.mem_insert_iff, Set.mem_setOf_eq, OneMemClass.coe_eq_one,
       cycleType_ofSubtype, coe_ofSubtype, map_eq_one_iff _ Perm.ofSubtype_injective]
+    apply or_congr_right
     convert Iff.rfl
   · simp_rw [hk, false_and, iff_false]
     contrapose! hk
@@ -134,10 +142,10 @@ theorem map_kleinFour_conj (s : Finset α) (hs : s.card = 4) (g : alternatingGro
     (kleinFour _).map (ofSubtype (g • s)) = MulAut.conj g • ((kleinFour s).map (ofSubtype s)) := by
   rcases g with ⟨g, hg⟩
   ext ⟨k, hk⟩
-  simp_rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem, mem_map_kleinFour_ofSubtype s hs,
+  simp_rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem, mem_map_kleinFour_ofSubtype hs,
     Subgroup.mk_smul, MulAut.smul_def, MulAut.inv_apply, MulAut.conj_symm_apply, Subgroup.coe_mul,
     Subgroup.coe_inv, ← ConjAct.toConjAct_inv_smul, Equiv.Perm.support_toConjAct_eq_smul_support,
-    mem_map_kleinFour_ofSubtype (g • s) (by simpa), Finset.subset_smul_finset_iff,
+    mem_map_kleinFour_ofSubtype (s := g • s) (by simpa), Finset.subset_smul_finset_iff,
     ConjAct.toConjAct_smul, cycleType_conj, mul_inv_eq_one, mul_eq_left]
 
 /-- The Iwasawa structure of `alternatingGroup α` acting on `Set.powersetCard α 4`,
@@ -170,7 +178,7 @@ theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_eight
     apply Set.powersetCard.isPreprimitive_alternatingGroup (by norm_num) <;> grind
   rw [eq_top_iff, ← commutator_alternatingGroup_eq_top hα]
   apply (iwasawaStructure_four hα).commutator_le
-  exact fixedPoints_ne_univ_of_faithfulSMul 4 (by norm_num) (by grind)
+  exact fixedPoints_ne_univ_of_faithfulSMul (by norm_num) (by grind)
 
 /- If `α` has at least 5 elements,
 then the only nontrivial normal subgroup of `alternatingGroup α`

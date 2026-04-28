@@ -211,9 +211,8 @@ end compl
 variable {G} in
 theorem fixedPoints_ne_univ_of_faithfulSMul
     [Nontrivial G] [FaithfulSMul G α]
-    (n : ℕ) (hn : 0 < n) (hn' : n < Nat.card α) :
+    {n : ℕ} (hn : 0 < n) (hn' : n < Nat.card α) :
     fixedPoints G (powersetCard α n) ≠ univ := by
-  have : Finite α := Nat.finite_of_card_ne_zero (Nat.ne_zero_of_lt hn')
   obtain ⟨g, h⟩ := exists_ne (1 : G)
   contrapose! h
   replace h : (toPerm g : Perm (powersetCard α n)) = 1 := by
@@ -222,7 +221,7 @@ theorem fixedPoints_ne_univ_of_faithfulSMul
   rwa [← toPermHom_apply, map_eq_one_iff] at h
   have := powersetCard.faithfulSMul (G := G) (α := α) hn ?_
   · exact MulAction.toPerm_injective
-  · rwa [ENat.card_eq_coe_natCard, Nat.cast_lt]
+  ·   simpa [ENat.card_eq_coe_natCard, Nat.cast_lt, Nat.finite_of_card_ne_zero (ne_zero_of_lt hn')]
 
 variable (α)
 
@@ -315,8 +314,7 @@ theorem isPreprimitive_alternatingGroup [Fintype α] {n : ℕ}
   apply alternatingGroup.isCoatom_stabilizer
   · rw [powersetCard.coe_nonempty_iff]
     exact le_trans (by norm_num) h_three_le
-  · simp only [nonempty_compl, ne_eq, eq_univ_iff_ncard, ncard_eq]
-    exact ne_of_lt hn
+  · simpa [nonempty_compl, ne_eq, eq_univ_iff_ncard, ncard_eq] using ne_of_lt hn
   · simpa only [ncard_eq]
 
 end Set.powersetCard

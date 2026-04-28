@@ -44,7 +44,7 @@ theorem support_conj_eq_smul_support (k : ConjAct (Perm α)) (g : Equiv.Perm α)
   ext
   rw [mem_conj_support, ← Perm.smul_def, ConjAct.ofConjAct_inv, Finset.inv_smul_mem_iff]
 
-theorem support_toConjAct_eq_smul_support (k : Perm α) (g : Perm α) :
+theorem support_toConjAct_eq_smul_support (k g : Perm α) :
     (ConjAct.toConjAct k • g).support = k • g.support := by
   rw [Equiv.Perm.support_conj_eq_smul_support, ConjAct.ofConjAct_toConjAct]
 
