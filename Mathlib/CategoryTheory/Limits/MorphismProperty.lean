@@ -200,7 +200,6 @@ instance Under.closedUnderColimitsOfShape_discrete_empty [P.ContainsIdentities] 
     (P.underObj (X := X)).IsClosedUnderColimitsOfShape (Discrete PEmpty.{1}) :=
   StructuredArrow.closedUnderColimitsOfShape_discrete_empty (L := 𝟭 _) P
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `P` be stable under composition and cobase change. If `P` satisfies cancellation on the
 left, the subcategory of `Under X` defined by `P` is closed under pushouts. -/
 instance Under.closedUnderColimitsOfShape_pushout [HasPushouts T]

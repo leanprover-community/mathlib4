@@ -19,7 +19,7 @@ operations on the codomain of `X`.
 See for instance `HasLaw.comp`, `IndepFun.hasLaw_mul` and `IndepFun.hasLaw_add`.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Measure
 
