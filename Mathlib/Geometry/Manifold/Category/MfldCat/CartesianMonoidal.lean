@@ -14,6 +14,11 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 We endow `MfldCat 𝕜 n` with its cartesian monoidal structure: the monoidal product is the
 product manifold, and the unit is `PUnit`, viewed as a zero-dimensional `𝕜`-manifold.
 We also derive the induced braided category structure.
+
+## Implementation notes
+
+We use `PUnit.{u + 1}` (rather than `Fin 0 → 𝕜`, which lives in `𝕜`'s universe) for the unit
+object so that it exists in `MfldCat.{u} 𝕜 n` for any universe of `𝕜`.
 -/
 
 @[expose] public section
