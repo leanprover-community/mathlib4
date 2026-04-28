@@ -129,7 +129,7 @@ lemma σ₀Iter_coe_eq_of_lt (i : ℕ) {n m : ℕ}
 lemma σ₀Iter_coe_eq_of_ge (i : ℕ) {n m : ℕ}
     (j : Fin (m + 1)) (hi : n + i = m := by lia) (hj : i ≤ j.val := by grind) :
     dsimp% (σ₀Iter i hi j).val = j.val - i := by
-  dsimp [σ₀Iter, Hom.mk, ConcreteCategory.hom, Hom.toOrderHom, DFunLike.coe]
+  dsimp [σ₀Iter, Hom.mk, ConcreteCategory.hom, Hom.toOrderHom]
   rw [if_neg (by lia)]
 
 lemma σ₀Iter_coe_eq_of_le (i : ℕ) {n m : ℕ}
