@@ -42,7 +42,7 @@ variable {M : Type*} [TopologicalSpace M]
 ## Charted space structure on quotient by a group
 -/
 
-/-- A choice of charted space structure on the quotient of a charted space by a free, properly
+/-- The induced charted space structure on the quotient of a charted space by a free, properly
 discontinuous group action. -/
 @[expose, to_additive]
 instance instChartedSpaceQuotient : ChartedSpace H (orbitRel.Quotient G M) :=

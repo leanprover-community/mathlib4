@@ -287,7 +287,7 @@ variable (x) in
 noncomputable def localInverseAt : OpenPartialHomeomorph Y X := (hf x).choose.symm
 
 /-- The point `x` lies in the target of `localInverseAt x`. -/
-@[simp] lemma self_mem_localInverseAt_target : x ∈ (hf.localInverseAt x).target :=
+@[grind =>, simp] lemma self_mem_localInverseAt_target : x ∈ (hf.localInverseAt x).target :=
   (hf x).choose_spec.1
 
 variable (x) in
@@ -296,7 +296,8 @@ variable (x) in
   (hf x).choose_spec.2.symm
 
 /-- The point `f x` lies in the source of `localInverseAt x`. -/
-@[simp] lemma apply_self_mem_localInverseAt_source : f x ∈ (hf.localInverseAt x).source := by
+@[grind =>, simp] lemma apply_self_mem_localInverseAt_source :
+    f x ∈ (hf.localInverseAt x).source := by
   rw [← congrFun (hf.localInverseAt_symm x)]
   exact (hf.localInverseAt x).map_target hf.self_mem_localInverseAt_target
 
@@ -306,7 +307,7 @@ lemma injOn_localInverseAt_target : (hf.localInverseAt x).target.InjOn f := by
   exact (hf.localInverseAt x).symm.injOn
 
 /-- If `y` lies in the source of `localInverseAt x`, then `f (localInverseAt x y) = y`. -/
-lemma apply_localInverseAt_of_mem {y : Y} (hx : y ∈ (hf.localInverseAt x).source) :
+@[grind .] lemma apply_localInverseAt_of_mem {y : Y} (hx : y ∈ (hf.localInverseAt x).source) :
     f (hf.localInverseAt x y) = y := by
   rw [← congrFun (hf.localInverseAt_symm x)]
   exact (hf.localInverseAt x).left_inv hx
