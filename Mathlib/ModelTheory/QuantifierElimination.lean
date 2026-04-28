@@ -452,9 +452,123 @@ theorem marker_314
       have hφga : φ.Realize (g ∘ a) := by simpa [hg] using hφw
       exact False.elim (hnotφv0 (by simpa [M0, N0, A0, f0, g0, a0, ha] using hsame.mpr hφga))
 
+private theorem isQF_toFormula
+    {α : Type*} {n : ℕ} {φ : L.BoundedFormula α n} (hφ : φ.IsQF) :
+    φ.toFormula.IsQF := by
+  induction hφ with
+  | falsum => exact BoundedFormula.IsQF.falsum
+  | of_isAtomic hφ =>
+      cases hφ with
+      | equal t₁ t₂ =>
+          simpa [BoundedFormula.toFormula, Term.equal] using
+            (BoundedFormula.IsAtomic.equal
+              ((t₁).relabel Sum.inl) ((t₂).relabel Sum.inl)).isQF
+      | rel R ts =>
+          simpa [BoundedFormula.toFormula, Relations.formula] using
+            (BoundedFormula.IsAtomic.rel R
+              (fun i => (ts i).relabel Sum.inl)).isQF
+  | imp _ _ ih₁ ih₂ =>
+      simpa [BoundedFormula.toFormula] using ih₁.imp ih₂
 
+private theorem exists_qf_equiv_ex_of_qf
+    {T : L.Theory}
+    (h :
+      ∀ {m : ℕ} (θ : L.BoundedFormula (Fin m) 1), θ.IsQF →
+        ∃ ψ : L.Formula (Fin m), ψ.IsQF ∧ θ.ex ⇔[T] ψ)
+    {m n : ℕ} {θ : L.BoundedFormula (Fin m) (n + 1)} (hθ : θ.IsQF) :
+    ∃ ψ : L.BoundedFormula (Fin m) n, ψ.IsQF ∧ θ.ex ⇔[T] ψ := by
+  classical
+  let toOne : Fin m ⊕ Fin (n + 1) → Fin (m + n) ⊕ Fin 1 :=
+    Sum.elim
+      (fun i : Fin m => Sum.inl (Fin.castAdd n i))
+      (fun j : Fin (n + 1) =>
+        Fin.lastCases (Sum.inr 0) (fun i : Fin n => Sum.inl (Fin.natAdd m i)) j)
+  let θ' : L.BoundedFormula (Fin (m + n)) 1 :=
+    BoundedFormula.relabel (L := L) (β := Fin (m + n)) (n := 1) toOne θ.toFormula
+  have hθ' : θ'.IsQF := by
+    exact (isQF_toFormula hθ).relabel _
+  obtain ⟨ψ', hψ', hθψ'⟩ := h θ' hθ'
+  let ψ : L.BoundedFormula (Fin m) n :=
+    BoundedFormula.relabel (L := L) (β := Fin m) (n := n)
+      (fun i : Fin (m + n) => finSumFinEquiv.symm i) ψ'
+  refine ⟨ψ, ?_, ?_⟩
+  · exact hψ'.relabel _
+  · intro M v xs
+    let v' : Fin (m + n) → M := fun i => Sum.elim v xs (finSumFinEquiv.symm i)
+    have hmain := hθψ' M v' default
+    rw [BoundedFormula.realize_iff] at hmain
+    rw [BoundedFormula.realize_iff]
+    calc
+      θ.ex.Realize v xs ↔ θ'.ex.Realize v' default := by
+        rw [BoundedFormula.realize_ex, BoundedFormula.realize_ex]
+        refine exists_congr fun a => ?_
+        change θ.Realize v (Fin.snoc xs a) ↔
+          (BoundedFormula.relabel toOne θ.toFormula).Realize v' (Fin.snoc default a)
+        rw [BoundedFormula.realize_relabel]
+        have hxs0 :
+            (Fin.snoc default a ∘ Fin.natAdd 1 : Fin 0 → M) = default := by
+          funext i
+          exact i.elim0
+        rw [hxs0]
+        let val : Fin m ⊕ Fin (n + 1) → M :=
+          Sum.elim v' (Fin.snoc default a ∘ Fin.castAdd 0) ∘ toOne
+        change θ.Realize v (Fin.snoc xs a) ↔ θ.toFormula.Realize val
+        rw [BoundedFormula.realize_toFormula]
+        have hfree :
+            val ∘ Sum.inl = v := by
+          funext i
+          simp [val, toOne, v']
+        have hbound :
+            val ∘ Sum.inr = Fin.snoc xs a := by
+          funext j
+          refine Fin.lastCases ?_ ?_ j
+          · simp [val, toOne, v', Fin.snoc]
+          · intro i
+            simp [val, toOne, v']
+        simp [hfree, hbound]
+      _ ↔ ψ'.Realize v' := hmain
+      _ ↔ ψ.Realize v xs := by
+        have hxs0 : (xs ∘ Fin.natAdd n : Fin 0 → M) = default := by
+          funext i
+          exact i.elim0
+        change ψ'.Realize v' ↔
+          (BoundedFormula.relabel (fun i : Fin (m + n) => finSumFinEquiv.symm i) ψ').Realize v xs
+        rw [BoundedFormula.realize_relabel]
+        change ψ'.Realize v' ↔
+          BoundedFormula.Realize ψ' v' (xs ∘ Fin.natAdd n)
+        rw [hxs0]
+        change ψ'.Realize v' ↔ ψ'.Realize v'
+        rfl
 
-
+theorem marker_315
+  {T : L.Theory} :
+  ((∀ {m : ℕ} (θ : L.BoundedFormula (Fin m) 1), θ.IsQF →
+  ∃ (ψ : L.Formula (Fin m)), ψ.IsQF ∧ θ.ex ⇔[T] ψ))
+  → HasQuantifierElimination T := by
+  intro h m φ
+  let P : ∀ {n : ℕ}, L.BoundedFormula (Fin m) n → Prop :=
+    fun {n} φ => ∃ ψ : L.BoundedFormula (Fin m) n, ψ.IsQF ∧ φ ⇔[T] ψ
+  have hP : P φ := by
+    refine φ.induction_on_exists_not (P := P) ?hqf ?hnot ?hex ?hse
+    · intro n ψ hψ
+      exact ⟨ψ, hψ, Theory.Iff.refl ψ⟩
+    · intro n φ hφ
+      rcases hφ with ⟨ψ, hψ, hφψ⟩
+      exact ⟨ψ.not, hψ.not, hφψ.not⟩
+    · intro n φ hφ
+      rcases hφ with ⟨ψ, hψ, hφψ⟩
+      rcases exists_qf_equiv_ex_of_qf h hψ with ⟨χ, hχ, hψχ⟩
+      exact ⟨χ, hχ, hφψ.ex.trans hψχ⟩
+    · intro n φ₁ φ₂ hφ₁φ₂
+      have hφ₁φ₂T : φ₁ ⇔[T] φ₂ := by
+        intro M v xs
+        exact hφ₁φ₂ (Theory.ModelType.of (∅ : L.Theory) M) v xs
+      constructor
+      · rintro ⟨ψ, hψ, hφ₁ψ⟩
+        exact ⟨ψ, hψ, hφ₁φ₂T.symm.trans hφ₁ψ⟩
+      · rintro ⟨ψ, hψ, hφ₂ψ⟩
+        exact ⟨ψ, hψ, hφ₁φ₂T.trans hφ₂ψ⟩
+  exact hP
 
 end Theory
 
