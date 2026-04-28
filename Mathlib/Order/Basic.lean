@@ -171,12 +171,12 @@ theorem forall_le_iff_le : (∀ ⦃c⦄, c ≤ a → c ≤ b) ↔ a ≤ b :=
 theorem le_imp_le_of_le_of_le (h₁ : c ≤ a) (h₂ : b ≤ d) : a ≤ b → c ≤ d :=
   fun hab ↦ (h₁.trans hab).trans h₂
 
-/-- monotonicity of `<` with respect to `→` -/
+/-- monotonicity of `>` with respect to `→` -/
 @[gcongr, to_dual self (reorder := a b, c d, h₁ h₂)]
 theorem lt_imp_lt_of_le_of_le (h₁ : c ≤ a) (h₂ : b ≤ d) : a < b → c < d :=
   fun hab ↦ (h₁.trans_lt hab).trans_le h₂
 
-/-- monotonicity of `≤` with respect to `→` -/
+/-- monotonicity of `≥` with respect to `→` -/
 @[gcongr, to_dual self (reorder := a b, c d, h₁ h₂)]
 theorem ge_imp_ge_of_le_of_le (h₁ : a ≤ c) (h₂ : d ≤ b) : a ≥ b → c ≥ d :=
   fun hab ↦ (h₂.trans hab).trans h₁
