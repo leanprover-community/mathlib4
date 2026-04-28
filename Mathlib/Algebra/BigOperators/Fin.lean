@@ -752,7 +752,7 @@ theorem prod_ofFn {n : ℕ} {f : Fin n → M} : (ofFn f).prod = ∏ i, f i :=
 end CommMonoid
 
 @[to_additive]
-theorem alternatingProd_eq_finset_prod {G : Type*} [DivisionCommMonoid G] :
+theorem alternatingProd_eq_finsetProd {G : Type*} [DivisionCommMonoid G] :
     ∀ (L : List G), alternatingProd L = ∏ i : Fin L.length, L[i] ^ (-1 : ℤ) ^ (i : ℕ)
   | [] => by
     rw [alternatingProd, Finset.prod_eq_one]
@@ -763,9 +763,12 @@ theorem alternatingProd_eq_finset_prod {G : Type*} [DivisionCommMonoid G] :
   | g::h::L =>
     calc g * h⁻¹ * L.alternatingProd
       = g * h⁻¹ * ∏ i : Fin L.length, L[i] ^ (-1 : ℤ) ^ (i : ℕ) :=
-        congr_arg _ (alternatingProd_eq_finset_prod _)
+        congr_arg _ (alternatingProd_eq_finsetProd _)
     _ = ∏ i : Fin (L.length + 2), (g::h::L)[i] ^ (-1 : ℤ) ^ (i : ℕ) := by
         { rw [Fin.prod_univ_succ, Fin.prod_univ_succ, mul_assoc]
           simp [pow_add]}
+
+@[deprecated (since := "2026-04-08")]
+alias alternatingProd_eq_finset_prod := alternatingProd_eq_finsetProd
 
 end List

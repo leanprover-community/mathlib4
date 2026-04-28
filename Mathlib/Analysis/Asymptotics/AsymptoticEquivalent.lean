@@ -55,7 +55,7 @@ This is to enable `calc` support, as `calc` requires that the last two explicit 
 
 -/
 
-@[expose] public section
+public section
 
 
 namespace Asymptotics
