@@ -30,10 +30,9 @@ open Multiplicative WithZero Scheme
 /--
 A principal divisor on a locally noetherian integral scheme is locally finite (and hence a divisor).
 -/
-lemma div_locally_finite [IsIntegral X] [IsLocallyNoetherian X]
-    (f : X.functionField) (hf : f ≠ 0) (z : X) : ∃ t ∈ 𝓝 z,
-    (t ∩ Function.support fun Z : X ↦ if h : coheight Z = 1
-      then toAdd <| WithZero.unzero (Scheme.ord_ne_zero h hf) else 0).Finite := by
+lemma div_locally_finite [IsIntegral X] [IsLocallyNoetherian X] (f : X.functionField) (hf : f ≠ 0)
+    (z : X) : ∃ t ∈ 𝓝 z, (t ∩ Function.support fun Z : X ↦ if h : coheight Z = 1
+    then toAdd <| WithZero.unzero (Scheme.ord_ne_zero h hf) else 0).Finite := by
   obtain ⟨U, f', (hUne : Nonempty U), hgf, hu⟩ := Scheme.exists_isUnit_germ_eq f hf
   obtain ⟨W, hWa, hzW, -⟩ := exists_isAffineOpen_mem_and_subset (x := z) (U := ⊤) (by simp)
   have : IsNoetherianRing Γ(X, W) := IsLocallyNoetherian.component_noetherian ⟨W, hWa⟩
@@ -100,7 +99,7 @@ theorem div_support [IsIntegral X] [IsLocallyNoetherian X] {f : X.functionField}
   exact div_eq_zero_of_coheight_ne_one f hf z hz
 
 theorem div_eq_zero_of_isUnit [IsIntegral X] [IsLocallyNoetherian X] {U : X.Opens} [Nonempty U]
-    [DecidablePred (· ∈ U)] {g : Γ(X, U)} (hg : IsUnit g) : (div (X.germToFunctionField U g)
+    {g : Γ(X, U)} (hg : IsUnit g) : (div (X.germToFunctionField U g)
     ((map_ne_zero_iff _ (germToFunctionField_injective X U)).mpr hg.ne_zero)).restrict U = 0 := by
   apply AlgebraicCycle.homgeneous_ext (AlgebraicCycle.restrict_support_subset_inter div_support)
     (by simp)
