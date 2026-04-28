@@ -63,14 +63,16 @@ def _root_.AlgebraicGeometry.Scheme.Hom.degree (x : X) : ℕ := @Module.finrank
 namespace AlgebraicCycle
 section restrict
 
-variable [Zero R]
-    (D : AlgebraicCycle X R) (t : Set X) [DecidablePred (· ∈ t)]
+variable [Zero R] (D : AlgebraicCycle X R) (t : Set X)
 /--
 Restriction of an algebraic cycle to some set. This is distinct from `Function.locallyFinsuppWithin`
 because here we get something which is still just a locally finsupp function on the whole space.
 -/
+noncomputable
 def restrict : AlgebraicCycle X R where
-  toFun z := if z ∈ t then D z else 0
+  toFun z := by
+    classical
+    exact if z ∈ t then D z else 0
   supportWithinDomain' := by simp
   supportLocallyFiniteWithinDomain' := by
     intro z hz
@@ -80,6 +82,7 @@ def restrict : AlgebraicCycle X R where
     apply inter_subset_inter (Subset.refl U)
     simp
 
+open Classical in
 lemma restrict_apply (z : X) : D.restrict t z = if z ∈ t then D z else 0 := rfl
 
 @[simp]
@@ -114,16 +117,16 @@ lemma restrict_support_subset : (D.restrict t).support ⊆ t := by
   by_cases o : z ∈ t <;> simp_all
 
 lemma restrict_support_of_subset {X : Scheme.{u}} {R : Type*} [Zero R] {D : AlgebraicCycle X R}
-    {t s : Set X} [DecidablePred (· ∈ t)] (h : D.support ⊆ s) : (D.restrict t).support ⊆ s :=
+    {t s : Set X} (h : D.support ⊆ s) : (D.restrict t).support ⊆ s :=
   Subset.trans restrict_support_subset_support h
 
 lemma restrict_support_subset_inter {X : Scheme.{u}} {R : Type*} [Zero R] {D : AlgebraicCycle X R}
-    {t s : Set X} [DecidablePred (· ∈ t)] (h : D.support ⊆ s) : (D.restrict t).support ⊆ s ∩ t :=
+    {t s : Set X} (h : D.support ⊆ s) : (D.restrict t).support ⊆ s ∩ t :=
   subset_inter_iff.mpr ⟨Subset.trans restrict_support_subset_support h, restrict_support_subset⟩
 
 @[simp]
-lemma restrict_univ {X : Scheme.{u}} {R : Type*} [Zero R] {D : AlgebraicCycle X R}
-    [DecidablePred (· ∈ (univ : Set X))] : D.restrict univ = D := by
+lemma restrict_univ {X : Scheme.{u}} {R : Type*} [Zero R] {D : AlgebraicCycle X R} :
+    D.restrict univ = D := by
   ext z
   simp
 
