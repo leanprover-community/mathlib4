@@ -370,7 +370,7 @@ instance [L.Full] : (Quotient.lift L.homRel L (by simp)).Full where
 
 instance : (Quotient.lift L.homRel L (by simp)).Faithful where
   map_injective := by
-    rintro ⟨X⟩ ⟨Y⟩ ⟨f⟩ ⟨g⟩ h
+    rintro ⟨_⟩ ⟨_⟩ ⟨_⟩ ⟨_⟩ h
     exact Quotient.sound _ h
 
 instance [L.EssSurj] : (Quotient.lift L.homRel L (by simp)).EssSurj where
