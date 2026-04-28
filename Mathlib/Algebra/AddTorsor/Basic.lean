@@ -32,6 +32,13 @@ namespace Set
 theorem singleton_vsub_self (p : P) : ({p} : Set P) -ᵥ {p} = {(0 : G)} := by
   rw [Set.singleton_vsub_singleton, vsub_self]
 
+@[simp]
+theorem zero_mem_vsub_iff {s t : Set P} : (0 : G) ∈ s -ᵥ t ↔ ¬Disjoint s t := by
+  simp [not_disjoint_iff_nonempty_inter, mem_vsub, Set.Nonempty]
+
+theorem Nonempty.zero_mem_vsub {s : Set P} (h : s.Nonempty) : (0 : G) ∈ s -ᵥ s :=
+  let ⟨p, hp⟩ := h; ⟨p, hp, p, hp, vsub_self _⟩
+
 end Set
 
 /-- If the same point subtracted from two points produces equal
