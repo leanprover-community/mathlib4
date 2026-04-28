@@ -183,10 +183,6 @@ variable [AddCommMonoid α] [Mul α]
 theorem dotProduct_of_isEmpty [Fintype n'] [IsEmpty n'] (v w : n' → α) : v ⬝ᵥ w = 0 :=
   Finset.sum_of_isEmpty _
 
-@[deprecated "Use Matrix.dotProduct_of_isEmpty instead." (since := "2025-09-07")]
-theorem dotProduct_empty (v w : Fin 0 → α) : v ⬝ᵥ w = 0 :=
-  Finset.sum_empty
-
 @[simp]
 theorem cons_dotProduct (x : α) (v : Fin n → α) (w : Fin n.succ → α) :
     vecCons x v ⬝ᵥ w = x * vecHead w + v ⬝ᵥ vecTail w := by
@@ -478,7 +474,6 @@ theorem eta_fin_three (A : Matrix (Fin 3) (Fin 3) α) :
   ext i j
   fin_cases i <;> fin_cases j <;> rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mul_fin_two [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b₁₂ b₂₁ b₂₂ : α) :
     !![a₁₁, a₁₂;
        a₂₁, a₂₂] * !![b₁₁, b₁₂;
@@ -487,7 +482,6 @@ theorem mul_fin_two [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂
   ext i j
   fin_cases i <;> fin_cases j <;> simp [Matrix.mul_apply, Fin.sum_univ_succ]
 
-set_option backward.isDefEq.respectTransparency false in
 set_option linter.style.whitespace false in -- Preserve the formatting of the matrices.
 theorem mul_fin_three [AddCommMonoid α] [Mul α]
     (a₁₁ a₁₂ a₁₃ a₂₁ a₂₂ a₂₃ a₃₁ a₃₂ a₃₃ b₁₁ b₁₂ b₁₃ b₂₁ b₂₂ b₂₃ b₃₁ b₃₂ b₃₃ : α) :

@@ -38,11 +38,10 @@ section
 
 variable [CompleteSpace 𝕜]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ker_closedComplemented_of_finiteDimensional_range (f : E →L[𝕜] F)
     [FiniteDimensional 𝕜 f.range] : f.ker.ClosedComplemented := by
   set f' : E →L[𝕜] f.range := f.codRestrict _ (LinearMap.mem_range_self (f : E →ₗ[𝕜] F))
-  rcases f'.exists_right_inverse_of_surjective (f : E →ₗ[𝕜] F).range_rangeRestrict with ⟨g, hg⟩
+  rcases f'.exists_rightInverse_of_surjective (f : E →ₗ[𝕜] F).range_rangeRestrict with ⟨g, hg⟩
   simpa only [f', ker_codRestrict]
     using f'.closedComplemented_ker_of_rightInverse g (ContinuousLinearMap.ext_iff.1 hg)
 
@@ -80,7 +79,6 @@ namespace Submodule
 
 variable [CompleteSpace E] (p q : Subspace 𝕜 E)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `q` is a closed complement of a closed subspace `p`, then `p × q` is continuously
 isomorphic to `E`. -/
 def prodEquivOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))

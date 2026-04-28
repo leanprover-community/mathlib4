@@ -28,7 +28,7 @@ When `R` has `UniformSpace R`, we define the corresponding uniform structure.
 This topology can be included by writing `open scoped MvPowerSeries.WithPiTopology`.
 
 When the type of coefficients has the discrete topology, it corresponds to the topology defined by
-[N. Bourbaki, *Algebra {II}*, Chapter 4, §4, n°2][bourbaki1981].
+[N. Bourbaki, *Algebra II*, Chapter 4, §4, n°2][bourbaki1981].
 
 It is *not* the adic topology in general.
 
@@ -78,7 +78,7 @@ But future contributors wishing to clean this up should feel free to give it a t
 
 -/
 
-@[expose] public section
+public section
 
 namespace MvPowerSeries
 
@@ -97,14 +97,13 @@ variable [TopologicalSpace R]
 variable (R) in
 /-- The pointwise topology on `MvPowerSeries` -/
 scoped instance : TopologicalSpace (MvPowerSeries σ R) :=
-  Pi.topologicalSpace
+  inferInstanceAs <| TopologicalSpace ((σ →₀ ℕ) → R)
 
 set_option backward.isDefEq.respectTransparency false in
 theorem instTopologicalSpace_mono (σ : Type*) {R : Type*} {t u : TopologicalSpace R} (htu : t ≤ u) :
     @instTopologicalSpace σ R t ≤ @instTopologicalSpace σ R u := by
-  simp only [instTopologicalSpace, Pi.topologicalSpace, le_iInf_iff]
-  grw [htu]
-  exact iInf_le _
+  change ⨅ i, _ ≤ ⨅ i, _
+  gcongr
 
 /-- `MvPowerSeries` on a `T0Space` form a `T0Space` -/
 @[scoped instance]
@@ -168,7 +167,7 @@ theorem instIsTopologicalSemiring [Semiring R] [IsTopologicalSemiring R] :
   continuous_add := continuous_pi fun d => continuous_add.comp
     (((continuous_coeff R d).fst').prodMk (continuous_coeff R d).snd')
   continuous_mul := continuous_pi fun _ =>
-    continuous_finset_sum _ fun i _ => continuous_mul.comp
+    continuous_finsetSum _ fun i _ => continuous_mul.comp
       ((continuous_coeff R i.fst).fst'.prodMk (continuous_coeff R i.snd).snd')
 
 /-- The ring topology on `MvPowerSeries` of a topological ring -/
@@ -228,7 +227,7 @@ theorem isTopologicallyNilpotent_of_constantCoeff_zero [CommSemiring R]
 
 /-- Assuming the base ring has a discrete topology, the powers of a `MvPowerSeries` converge to 0
 iff its constant coefficient is nilpotent.
-[N. Bourbaki, *Algebra {II}*, Chapter 4, §4, n°2, corollary of prop. 3][bourbaki1981]
+[N. Bourbaki, *Algebra II*, Chapter 4, §4, n°2, corollary of prop. 3][bourbaki1981]
 
 See also `MvPowerSeries.LinearTopology.isTopologicallyNilpotent_iff_constantCoeff`. -/
 theorem isTopologicallyNilpotent_iff_constantCoeff_isNilpotent
@@ -283,7 +282,7 @@ theorem summable_of_tendsto_weightedOrder_atTop_nhds_top {w : σ → ℕ}
   simp_rw [ENat.tendsto_nhds_top_iff_natCast_lt, Filter.eventually_atTop] at h
   intro d
   obtain ⟨i, hi⟩ := h (Finsupp.weight w d)
-  refine summable_of_finite_support <| (Set.finite_Iic i).subset ?_
+  refine summable_of_hasFiniteSupport <| (Set.finite_Iic i).subset ?_
   simp_rw [Function.support_subset_iff, Set.mem_Iic]
   intro k hk
   contrapose! hk
@@ -331,13 +330,13 @@ theorem summable_prod_of_tendsto_weightedOrder_atTop_nhds_top {w : σ → ℕ}
     (h : Tendsto (fun i ↦ weightedOrder w (f i)) atTop (𝓝 ⊤)) : Summable (∏ i ∈ ·, f i) := by
   rcases isEmpty_or_nonempty ι with hempty | hempty
   · apply Summable.of_finite
-  refine summable_iff_summable_coeff.mpr fun d ↦ summable_of_finite_support ?_
+  refine summable_iff_summable_coeff.mpr fun d ↦ summable_of_hasFiniteSupport ?_
   simp_rw [ENat.tendsto_nhds_top_iff_natCast_lt, eventually_atTop] at h
   obtain ⟨i, hi⟩ := h (Finsupp.weight w d)
   apply (Finset.Iio i).powerset.finite_toSet.subset
   suffices ∀ s : Finset ι, coeff d (∏ i ∈ s, f i) ≠ 0 → ↑s ⊆ Set.Iio i by simpa
   intro s hs
-  contrapose! hs
+  contrapose hs
   obtain ⟨x, hxs, hxi⟩ := Set.not_subset.mp hs
   rw [Set.mem_Iio, not_lt] at hxi
   refine coeff_eq_zero_of_lt_weightedOrder w <| (hi x hxi).trans_le <| ?_
@@ -371,7 +370,7 @@ variable [UniformSpace R]
 
 /-- The componentwise uniformity on `MvPowerSeries` -/
 scoped instance : UniformSpace (MvPowerSeries σ R) :=
-  Pi.uniformSpace fun _ : σ →₀ ℕ => R
+  inferInstanceAs <| UniformSpace ((σ →₀ ℕ) → R)
 
 variable (R) in
 /-- Coefficients of a multivariate power series are uniformly continuous -/

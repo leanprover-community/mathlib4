@@ -103,20 +103,17 @@ lemma HasTemperateGrowth.of_fderiv {f : E → F}
     refine ⟨k', C', ?_⟩
     simpa [iteratedFDeriv_succ_eq_comp_right] using h'
 
-set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 lemma HasTemperateGrowth.zero :
     Function.HasTemperateGrowth (fun _ : E ↦ (0 : F)) := by
   refine ⟨contDiff_const, fun n ↦ ⟨0, 0, fun x ↦ ?_⟩⟩
-  simp only [iteratedFDeriv_zero_fun, Pi.zero_apply, norm_zero]
-  positivity
+  simp
 
 @[fun_prop, simp]
 lemma HasTemperateGrowth.const (c : F) :
     Function.HasTemperateGrowth (fun _ : E ↦ c) :=
   .of_fderiv (by simpa using .zero) (differentiable_const c) (k := 0) (C := ‖c‖) (fun x ↦ by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 lemma _root_.HasCompactSupport.hasTemperateGrowth {f : E → F} (h₁ : HasCompactSupport f)
     (h₂ : ContDiff ℝ ∞ f) : f.HasTemperateGrowth := by
@@ -127,7 +124,6 @@ lemma _root_.HasCompactSupport.hasTemperateGrowth {f : E → F} (h₁ : HasCompa
   refine ⟨0, g x₀, fun x ↦ ?_⟩
   simpa using hx₀ x
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Composition of two temperate growth functions is of temperate growth.
 
 Version where the outer function `g` is only of temperate growth on the image of inner function
@@ -192,7 +188,6 @@ theorem HasTemperateGrowth.neg (hf : f.HasTemperateGrowth) : (-f).HasTemperateGr
   obtain ⟨k, C, h⟩ := hf.2 n
   exact ⟨k, C, fun x ↦ by simpa [iteratedFDeriv_neg_apply] using h x⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_fun (attr := fun_prop)]
 theorem HasTemperateGrowth.add (hf : f.HasTemperateGrowth) (hg : g.HasTemperateGrowth) :
     (f + g).HasTemperateGrowth := by
@@ -232,7 +227,6 @@ variable [NontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜]
   [NormedAddCommGroup G] [NormedSpace ℝ G]
   [NormedSpace 𝕜 F] [NormedSpace 𝕜 G]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The product of two functions of temperate growth is again of temperate growth.
 
 Version for bilinear maps. -/

@@ -52,35 +52,22 @@ open TensorProduct
 
 namespace AdicCompletion
 
-set_option backward.privateInPublic true in
-private
-def ofTensorProductBil : AdicCompletion I R →ₗ[AdicCompletion I R] M →ₗ[R] AdicCompletion I M where
-  toFun r := LinearMap.lsmul (AdicCompletion I R) (AdicCompletion I M) r ∘ₗ of I M
-  map_add' x y := by
-    apply LinearMap.ext
-    simp
-  map_smul' r x := by
-    apply LinearMap.ext
-    intro y
-    ext n
-    simp [mul_smul (r.val n)]
-
-@[simp]
-private lemma ofTensorProductBil_apply_apply (r : AdicCompletion I R) (x : M) :
-    ((AdicCompletion.ofTensorProductBil I M) r) x = r • (of I M) x :=
-  rfl
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The natural `AdicCompletion I R`-linear map from `AdicCompletion I R ⊗[R] M` to
 the adic completion of `M`. -/
 def ofTensorProduct : AdicCompletion I R ⊗[R] M →ₗ[AdicCompletion I R] AdicCompletion I M :=
-  TensorProduct.AlgebraTensorModule.lift (ofTensorProductBil I M)
+  TensorProduct.AlgebraTensorModule.lift
+    { toFun r := LinearMap.lsmul (AdicCompletion I R) (AdicCompletion I M) r ∘ₗ of I M
+      map_add' x y := by
+        apply LinearMap.ext
+        simp
+      map_smul' r x := by
+        apply LinearMap.ext
+        simp }
 
 @[simp]
 lemma ofTensorProduct_tmul (r : AdicCompletion I R) (x : M) :
     ofTensorProduct I M (r ⊗ₜ x) = r • of I M x := by
-  simp [ofTensorProduct]
+  rfl
 
 set_option backward.isDefEq.respectTransparency false in
 variable {M} in
@@ -112,40 +99,33 @@ private lemma piEquivOfFintype_comp_ofTensorProduct_eq :
     simpa [Pi.single_apply, -smul_eq_mul]
   split <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma ofTensorProduct_eq :
     ofTensorProduct I (ι → R) = (piEquivOfFintype I (ι := ι) (fun _ : ι ↦ R)).symm.toLinearMap ∘ₗ
       (TensorProduct.piScalarRight R (AdicCompletion I R) (AdicCompletion I R) ι).toLinearMap := by
   rw [← piEquivOfFintype_comp_ofTensorProduct_eq I ι, ← LinearMap.comp_assoc]
   simp
 
-set_option backward.privateInPublic true in
-/- If `M = R^ι` and `ι` is finite, we may construct an inverse to `ofTensorProduct I (ι → R)`. -/
-private def ofTensorProductInvOfPiFintype :
+/-- (Implementation): If `M = R^ι` and `ι` is finite, we may construct an inverse to
+`ofTensorProduct I (ι → R)`. -/
+def ofTensorProductInvOfPiFintype :
     AdicCompletion I (ι → R) ≃ₗ[AdicCompletion I R] AdicCompletion I R ⊗[R] (ι → R) :=
   letI f := piEquivOfFintype I (fun _ : ι ↦ R)
   letI g := (TensorProduct.piScalarRight R (AdicCompletion I R) (AdicCompletion I R) ι).symm
   f.trans g
 
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.privateInPublic true in
-private lemma ofTensorProductInvOfPiFintype_comp_ofTensorProduct :
+lemma ofTensorProductInvOfPiFintype_comp_ofTensorProduct :
     ofTensorProductInvOfPiFintype I ι ∘ₗ ofTensorProduct I (ι → R) = LinearMap.id := by
   dsimp only [ofTensorProductInvOfPiFintype]
   rw [LinearEquiv.coe_trans, LinearMap.comp_assoc, piEquivOfFintype_comp_ofTensorProduct_eq]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.privateInPublic true in
-private lemma ofTensorProduct_comp_ofTensorProductInvOfPiFintype :
+lemma ofTensorProduct_comp_ofTensorProductInvOfPiFintype :
     ofTensorProduct I (ι → R) ∘ₗ ofTensorProductInvOfPiFintype I ι = LinearMap.id := by
   dsimp only [ofTensorProductInvOfPiFintype]
   rw [LinearEquiv.coe_trans, ofTensorProduct_eq, LinearMap.comp_assoc]
   nth_rw 2 [← LinearMap.comp_assoc]
   simp
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- `ofTensorProduct` as an equiv in the case of `M = R^ι` where `ι` is finite. -/
 def ofTensorProductEquivOfPiFintype :
     AdicCompletion I R ⊗[R] (ι → R) ≃ₗ[AdicCompletion I R] AdicCompletion I (ι → R) :=
@@ -237,14 +217,12 @@ variable (hf : Function.Surjective f)
 
 include hf
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma tens_exact : Function.Exact (lTensorKerIncl I M f) (lTensorf I M f) :=
   lTensor_exact (AdicCompletion I R) (f.exact_subtype_ker_map) hf
 
 private lemma tens_surj : Function.Surjective (lTensorf I M f) :=
   LinearMap.lTensor_surjective (AdicCompletion I R) hf
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma adic_exact [IsNoetherianRing R] [Finite ι] :
     Function.Exact (map I (LinearMap.ker f).subtype) (map I f) :=
   map_exact (Submodule.injective_subtype _) (f.exact_subtype_ker_map) hf
@@ -252,7 +230,6 @@ private lemma adic_exact [IsNoetherianRing R] [Finite ι] :
 private lemma adic_surj : Function.Surjective (map I f) :=
   map_surjective I hf
 
-set_option backward.isDefEq.respectTransparency false in
 private
 lemma ofTensorProduct_bijective_of_map_from_fin [Finite ι] [IsNoetherianRing R] :
     Function.Bijective (ofTensorProduct I M) :=
@@ -350,9 +327,8 @@ lemma tensor_map_id_left_injective_of_injective (hf : Function.Injective f) :
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Adic completion of a Noetherian ring `R` is flat over `R`. -/
-instance flat_of_isNoetherian [IsNoetherianRing R] : Module.Flat R (AdicCompletion I R) :=
+instance flat_of_isNoetherian : Module.Flat R (AdicCompletion I R) :=
   Module.Flat.iff_lTensor_injective'.mpr fun J ↦
     tensor_map_id_left_injective_of_injective I (Submodule.injective_subtype J)
 

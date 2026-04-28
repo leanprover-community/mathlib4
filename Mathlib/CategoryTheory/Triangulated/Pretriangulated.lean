@@ -281,11 +281,7 @@ lemma mor₁_eq_zero_iff_epi₃ : T.mor₁ = 0 ↔ Epi T.mor₃ := by
   have h := mor₃_eq_zero_iff_epi₂ _ (rot_of_distTriang _ hT)
   dsimp at h
   rw [← h, neg_eq_zero]
-  constructor
-  · intro h
-    simp only [h, Functor.map_zero]
-  · intro h
-    rw [← (CategoryTheory.shiftFunctor C (1 : ℤ)).map_eq_zero_iff, h]
+  exact (Functor.map_eq_zero_iff (CategoryTheory.shiftFunctor C 1)).symm
 
 lemma mor₃_eq_zero_of_epi₂ (h : Epi T.mor₂) : T.mor₃ = 0 := (T.mor₃_eq_zero_iff_epi₂ hT).2 h
 lemma mor₂_eq_zero_of_epi₁ (h : Epi T.mor₁) : T.mor₂ = 0 := (T.mor₂_eq_zero_iff_epi₁ hT).2 h
@@ -313,11 +309,7 @@ lemma mor₃_eq_zero_iff_mono₁ : T.mor₃ = 0 ↔ Mono T.mor₁ := by
   have h := mor₁_eq_zero_iff_mono₂ _ (inv_rot_of_distTriang _ hT)
   dsimp at h
   rw [← h, neg_eq_zero, IsIso.comp_right_eq_zero]
-  constructor
-  · intro h
-    simp only [h, Functor.map_zero]
-  · intro h
-    rw [← (CategoryTheory.shiftFunctor C (-1 : ℤ)).map_eq_zero_iff, h]
+  exact (Functor.map_eq_zero_iff (CategoryTheory.shiftFunctor C (-1))).symm
 
 lemma mor₁_eq_zero_of_mono₂ (h : Mono T.mor₂) : T.mor₁ = 0 := (T.mor₁_eq_zero_iff_mono₂ hT).2 h
 lemma mor₂_eq_zero_of_mono₃ (h : Mono T.mor₃) : T.mor₂ = 0 := (T.mor₂_eq_zero_iff_mono₃ hT).2 h
@@ -462,6 +454,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- If the first and third components of a morphism of distinguished triangles are
 isomorphisms, the second component is as well. This can be thought of as a
 pretriangulated category theoretical version of the five lemma. -/
+@[stacks 014A]
 lemma isIso₂_of_isIso₁₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ distTriang C)
     (hT' : T' ∈ distTriang C) (h₁ : IsIso φ.hom₁) (h₃ : IsIso φ.hom₃) : IsIso φ.hom₂ := by
   have : Mono φ.hom₂ := by
@@ -497,6 +490,7 @@ lemma isIso₂_of_isIso₁₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ di
 /-- If the first and second components of a morphism of distinguished triangles are
 isomorphisms, the third component is as well. This can be thought of as a
 pretriangulated category theoretical version of the five lemma. -/
+@[stacks 014A]
 lemma isIso₃_of_isIso₁₂ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ distTriang C)
     (hT' : T' ∈ distTriang C) (h₁ : IsIso φ.hom₁) (h₂ : IsIso φ.hom₂) : IsIso φ.hom₃ :=
   isIso₂_of_isIso₁₃ ((rotate C).map φ) (rot_of_distTriang _ hT)
@@ -505,6 +499,7 @@ lemma isIso₃_of_isIso₁₂ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ di
 /-- If the second and third components of a morphism of distinguished triangles are
 isomorphisms, the first component is as well. This can be thought of as a
 pretriangulated category theoretical version of the five lemma. -/
+@[stacks 014A]
 lemma isIso₁_of_isIso₂₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ distTriang C)
     (hT' : T' ∈ distTriang C) (h₂ : IsIso φ.hom₂) (h₃ : IsIso φ.hom₃) : IsIso φ.hom₁ :=
   isIso₂_of_isIso₁₃ ((invRotate C).map φ) (inv_rot_of_distTriang _ hT)

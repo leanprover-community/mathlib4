@@ -129,12 +129,13 @@ theorem fermatPsp_base_one {n : ℕ} (h₁ : 1 < n) (h₂ : ¬n.Prime) : FermatP
 -- pseudoprimes
 section HelperLemmas
 
-set_option backward.isDefEq.respectTransparency false in
-private theorem a_id_helper {a b : ℕ} (ha : 2 ≤ a) (hb : 2 ≤ b) : 2 ≤ (a ^ b - 1) / (a - 1) := by
-  change 1 < _
-  have h₁ : a - 1 ∣ a ^ b - 1 := by simpa only [one_pow] using Nat.sub_dvd_pow_sub_pow a 1 b
-  rw [Nat.lt_div_iff_mul_lt' h₁, mul_one, tsub_lt_tsub_iff_right (Nat.le_of_succ_le ha)]
-  exact lt_self_pow₀ (Nat.lt_of_succ_le ha) hb
+private theorem a_id_helper {a b : ℕ} (ha : 2 ≤ a) (hb : 2 < b) : b < (a ^ b - 1) / (a - 1) := by
+  rw [← Nat.geomSum_eq ha]
+  calc
+    b = ∑ _ ∈ Finset.range b, (1 : ℕ) := by simp
+    _ < _ := by
+      refine Finset.sum_lt_sum (fun i hi => Nat.one_le_pow _ _ (by lia)) ?_
+      exact ⟨1, Finset.mem_range.mpr (by lia), by simpa using ha⟩
 
 private theorem b_id_helper {a b : ℕ} (ha : 2 ≤ a) (hb : 2 < b) : 2 ≤ (a ^ b + 1) / (a + 1) := by
   rw [Nat.le_div_iff_mul_le (Nat.zero_lt_succ _)]
@@ -144,7 +145,6 @@ private theorem b_id_helper {a b : ℕ} (ha : 2 ≤ a) (hb : 2 < b) : 2 ≤ (a ^
     _ = a ^ 3 := by rw [Nat.pow_succ a 2]
     _ ≤ a ^ b := pow_right_mono₀ (Nat.le_of_succ_le ha) hb
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem AB_id_helper (b p : ℕ) (_ : 2 ≤ b) (hp : Odd p) :
     (b ^ p - 1) / (b - 1) * ((b ^ p + 1) / (b + 1)) = (b ^ (2 * p) - 1) / (b ^ 2 - 1) := by
   have q₁ : b - 1 ∣ b ^ p - 1 := by simpa only [one_pow] using Nat.sub_dvd_pow_sub_pow b 1 p
@@ -186,7 +186,6 @@ because those are the hypotheses for `psp_from_prime_psp`.
 private def psp_from_prime (b : ℕ) (p : ℕ) : ℕ :=
   (b ^ p - 1) / (b - 1) * ((b ^ p + 1) / (b + 1))
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 This is a proof that the number produced using `psp_from_prime` is actually pseudoprime to base `b`.
 The primary purpose of this lemma is to help prove `exists_infinite_pseudoprimes`.
@@ -199,11 +198,10 @@ private theorem psp_from_prime_psp {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_p
   set A := (b ^ p - 1) / (b - 1)
   set B := (b ^ p + 1) / (b + 1)
   -- Inequalities
-  have hi_A : 1 < A := a_id_helper (Nat.succ_le_iff.mp b_ge_two) (Nat.Prime.one_lt p_prime)
-  have hi_B : 1 < B := b_id_helper (Nat.succ_le_iff.mp b_ge_two) p_gt_two
-  have hi_AB : 1 < A * B := one_lt_mul'' hi_A hi_B
+  have hA : p < A := a_id_helper b_ge_two p_gt_two
+  have hi_A : 1 < A := by lia
+  have hi_B : 1 < B := b_id_helper b_ge_two p_gt_two
   have hi_b : 0 < b := by lia
-  have hi_p : 1 ≤ p := Nat.one_le_of_lt p_gt_two
   have hi_bsquared : 0 < b ^ 2 - 1 := by
     have := Nat.pow_le_pow_left b_ge_two 2
     lia
@@ -217,7 +215,7 @@ private theorem psp_from_prime_psp {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_p
     simpa only [one_pow, pow_mul] using Nat.sub_dvd_pow_sub_pow _ 1 p
   -- We know that `A * B` is not prime, and that `1 < A * B`. Since two conditions of being
   -- pseudoprime are satisfied, we only need to show that `A * B` is probable prime to base `b`
-  refine ⟨?_, AB_not_prime, hi_AB⟩
+  refine ⟨?_, AB_not_prime, one_lt_mul'' hi_A hi_B⟩
   -- Used to prove that `2 * p * (b ^ 2 - 1) ∣ (b ^ 2 - 1) * (A * B - 1)`.
   have ha₁ : (b ^ 2 - 1) * (A * B - 1) = b * (b ^ (p - 1) - 1) * (b ^ p + b) := by
     apply_fun fun x => x * (b ^ 2 - 1) at AB_id
@@ -226,7 +224,7 @@ private theorem psp_from_prime_psp {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_p
     nth_rw 2 [← one_mul (b ^ 2 - 1)] at AB_id
     rw [← Nat.mul_sub_right_distrib, mul_comm] at AB_id
     rw [AB_id]
-    exact bp_helper hi_b hi_p
+    exact bp_helper hi_b (by grind)
   -- If `b` is even, then `b^p` is also even, so `2 ∣ b^p + b`
   -- If `b` is odd, then `b^p` is also odd, so `2 ∣ b^p + b`
   have ha₂ : 2 ∣ b ^ p + b := by
@@ -286,42 +284,22 @@ private theorem psp_from_prime_psp {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_p
   -- Therefore, `A * B ∣ b ^ (A * B - 1) - 1`.
   exact dvd_trans ha₇ ha₈
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 This is a proof that the number produced using `psp_from_prime` is greater than the prime `p` used
 to create it. The primary purpose of this lemma is to help prove `exists_infinite_pseudoprimes`.
 -/
-private theorem psp_from_prime_gt_p {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_prime : p.Prime)
-    (p_gt_two : 2 < p) : p < psp_from_prime b p := by
+private theorem psp_from_prime_gt_p {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_gt_two : 2 < p) :
+    p < psp_from_prime b p := by
   unfold psp_from_prime
   set A := (b ^ p - 1) / (b - 1)
   set B := (b ^ p + 1) / (b + 1)
-  rw [show A * B = (b ^ (2 * p) - 1) / (b ^ 2 - 1) from
-      AB_id_helper _ _ b_ge_two (p_prime.odd_of_ne_two p_gt_two.ne.symm)]
-  have AB_dvd : b ^ 2 - 1 ∣ b ^ (2 * p) - 1 := by
-    simpa only [one_pow, pow_mul] using Nat.sub_dvd_pow_sub_pow _ 1 p
-  suffices h : p * (b ^ 2 - 1) < b ^ (2 * p) - 1 by
-    have h₁ : p * (b ^ 2 - 1) / (b ^ 2 - 1) < (b ^ (2 * p) - 1) / (b ^ 2 - 1) :=
-      Nat.div_lt_div_of_lt_of_dvd AB_dvd h
-    have h₂ : 0 < b ^ 2 - 1 := by
-      linarith [show 3 ≤ b ^ 2 - 1 from le_tsub_of_add_le_left (show 4 ≤ b ^ 2 by nlinarith)]
-    rwa [Nat.mul_div_cancel _ h₂] at h₁
-  rw [Nat.mul_sub_left_distrib, mul_one, pow_mul]
-  conv_rhs => rw [← Nat.sub_add_cancel (show 1 ≤ p by lia)]
-  rw [Nat.pow_succ (b ^ 2)]
-  suffices h : p * b ^ 2 < (b ^ 2) ^ (p - 1) * b ^ 2 by
-    apply lt_of_le_of_lt'
-    · exact tsub_le_tsub_left (one_le_of_lt p_gt_two) ((b ^ 2) ^ (p - 1) * b ^ 2)
-    · have : p ≤ p * b ^ 2 := Nat.le_mul_of_pos_right _ (show 0 < b ^ 2 by positivity)
-      exact tsub_lt_tsub_right_of_le this h
-  suffices h : p < (b ^ 2) ^ (p - 1) by gcongr
-  rw [← pow_mul, Nat.mul_sub_left_distrib, mul_one]
-  have : 2 ≤ 2 * p - 2 := le_tsub_of_add_le_left (show 4 ≤ 2 * p by lia)
-  have : 2 + p ≤ 2 * p := by lia
-  have : p ≤ 2 * p - 2 := le_tsub_of_add_le_left this
-  exact this.trans_lt (Nat.lt_pow_self b_ge_two)
+  have hA : p < A := a_id_helper b_ge_two p_gt_two
+  have hB : 0 < B := by
+    have : 1 < B := b_id_helper b_ge_two p_gt_two
+    lia
+  exact hA.trans_le (Nat.le_mul_of_pos_right _ hB)
 
-/-- For all positive bases, there exist infinite **Fermat pseudoprimes** to that base.
+/-- For all positive bases, there exist infinitely many **Fermat pseudoprimes** to that base.
 Given in this form: for all numbers `b ≥ 1` and `m`, there exists a pseudoprime `n` to base `b` such
 that `m ≤ n`. This form is similar to `Nat.exists_infinite_primes`.
 -/
@@ -345,7 +323,7 @@ theorem exists_infinite_pseudoprimes {b : ℕ} (h : 1 ≤ b) (m : ℕ) :
     have h₇ : b ≤ b * (b ^ 2 - 1) := Nat.le_mul_of_pos_right _ h₃
     have h₈ : 2 ≤ b * (b ^ 2 - 1) := le_trans b_ge_two h₇
     have h₉ : 2 < p := lt_of_le_of_lt h₈ h₅
-    have h₁₀ := psp_from_prime_gt_p b_ge_two hp₂ h₉
+    have h₁₀ := psp_from_prime_gt_p b_ge_two h₉
     use psp_from_prime b p
     constructor
     · exact psp_from_prime_psp b_ge_two hp₂ h₉ h₆

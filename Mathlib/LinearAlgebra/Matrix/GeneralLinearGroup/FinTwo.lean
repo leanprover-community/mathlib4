@@ -10,7 +10,20 @@ public import Mathlib.LinearAlgebra.Matrix.Charpoly.Disc
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 
 /-!
-# The group `GL (Fin 2) R`
+# Classification of elements of `GL (Fin 2) R`
+
+Here we classify `2 × 2` matrices over the reals (or more generally over `R` where `R` is a
+suitable ring, but `ℝ` is the motivating case), into the following classes:
+
+* scalars
+* parabolic elements (`Matrix.IsParabolic`) - one eigenvalue with non-semisimple generalized
+  eigenspace
+* hyperbolic elements (`Matrix.IsHyperbolic`) - two distinct real eigenvalues
+* elliptic elements (`Matrix.IsElliptic`) - two distinct non-real complex eigenvalues
+
+This classification is used (among other places) in classifying the fixed points of elements of
+`GL(2, ℝ)⁺` acting on the upper half-plane. See [Wikipedia:SL2(R)#Classification_of_elements]
+(https://en.wikipedia.org/wiki/SL2(R)#Classification_of_elements).
 -/
 
 @[expose] public section
@@ -209,7 +222,6 @@ lemma parabolicEigenvalue_ne_zero {g : GL (Fin 2) K} [NeZero (2 : K)] (hg : IsPa
     sq_eq_zero_iff, not_or]
   exact ⟨NeZero.ne _, g.det_ne_zero⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A non-zero power of a parabolic element is parabolic. -/
 lemma IsParabolic.pow {g : GL (Fin 2) K} (hg : IsParabolic g) [CharZero K]
     {n : ℕ} (hn : n ≠ 0) : IsParabolic (g ^ n) := by
@@ -222,7 +234,7 @@ lemma IsParabolic.pow {g : GL (Fin 2) K} (hg : IsParabolic g) [CharZero K]
     | base => simp
     | succ n hn IH =>
       simp only [pow_succ, IH, add_mul, Nat.add_sub_cancel, mul_add, ← map_mul, add_assoc]
-      simp only [scalar_apply, ← smul_eq_mul_diagonal, ← SemigroupAction.mul_smul,
+      simp only [scalar_apply, ← smul_eq_mul_diagonal, ← mul_smul,
         ← smul_eq_diagonal_mul, smul_mul, ← sq, hmsq, smul_zero, add_zero, ← add_smul,
         Nat.cast_add_one, add_mul, one_mul]
       rw [(by lia : n = n - 1 + 1), pow_succ, (by lia : n - 1 + 1 = n)]
@@ -237,12 +249,11 @@ lemma isParabolic_iff_of_upperTriangular {g : GL (Fin 2) K} (hg : g 1 0 = 0) :
     g.IsParabolic ↔ g 0 0 = g 1 1 ∧ g 0 1 ≠ 0 :=
   Matrix.isParabolic_iff_of_upperTriangular hg
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Specialized version of `isParabolic_iff_of_upperTriangular` intended for use with
 discrete subgroups of `GL(2, ℝ)`. -/
 lemma isParabolic_iff_of_upperTriangular_of_det [LinearOrder K] [IsStrictOrderedRing K]
     {g : GL (Fin 2) K} (h_det : g.det = 1 ∨ g.det = -1) (hg10 : g 1 0 = 0) :
-    g.IsParabolic ↔ (∃ x ≠ 0, g = upperRightHom x) ∨ (∃ x ≠ 0, g = -upperRightHom x) := by
+    g.IsParabolic ↔ (∃ x ≠ 0, g = upperRightHom x) ∨ (∃ x ≠ (0 : K), g = -upperRightHom x) := by
   rw [isParabolic_iff_of_upperTriangular hg10]
   constructor
   · rintro ⟨hg00, hg01⟩

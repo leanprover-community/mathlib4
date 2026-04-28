@@ -29,7 +29,7 @@ inequality.
 ## References
 
 * [Giorgis Petridis, *The Plünnecke-Ruzsa inequality: an overview*][petridis2014]
-* [Terrence Tao, Van Vu, *Additive Combinatorics][tao-vu]
+* [Terence Tao, Van Vu, *Additive Combinatorics*][tao-vu]
 
 ## See also
 
@@ -173,7 +173,6 @@ private theorem mul_aux (hA : A.Nonempty) (hAB : A ⊆ B)
     (div_le_div_iff₀ hA₀ hA₀').1
       (h _ <| mem_erase_of_ne_of_mem hA'.ne_empty <| mem_powerset.2 <| hAA'.trans hAB)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Ruzsa's triangle inequality**. Multiplication version. -/
 @[to_additive /-- **Ruzsa's triangle inequality**. Addition version. -/]
 theorem ruzsa_triangle_inequality_mul_mul_mul (A B C : Finset G) :

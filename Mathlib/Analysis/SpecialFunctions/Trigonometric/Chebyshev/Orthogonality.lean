@@ -22,13 +22,13 @@ Chebyshev T polynomials are orthogonal with respect to `√(1 - x ^ 2)⁻¹`.
 
 ## Main statements
 
-* integrable_measureT: continuous functions are integrable with respect to Lebesgue measure
+* `integrable_measureT`: continuous functions are integrable with respect to Lebesgue measure
   scaled by `√(1 - x ^ 2)⁻¹` and restricted to `(-1, 1]`.
-* integral_eval_T_real_mul_evalT_real_measureT_of_ne:
+* `integral_eval_T_real_mul_evalT_real_measureT_of_ne`:
   if `n ≠ m` then the integral of `T_n * T_m` equals `0`.
-* integral_eval_T_real_mul_self_measureT_zero:
+* `integral_eval_T_real_mul_self_measureT_zero`:
   if `n = m = 0` then the integral equals `π`.
-* integral_eval_T_real_mul_self_measureT_of_ne_zero:
+* `integral_eval_T_real_mul_self_measureT_of_ne_zero`:
   if `n = m ≠ 0` then the integral equals `π / 2`.
 
 ## TODO
@@ -43,17 +43,18 @@ namespace Polynomial.Chebyshev
 
 open Real intervalIntegral MeasureTheory
 
+open scoped NNReal
+
 /-- Lebesgue measure scaled by √(1 - x ^ 2)⁻¹. -/
 noncomputable def measureT : Measure ℝ :=
   (volume.withDensity
-    fun x ↦ ENNReal.ofNNReal ⟨√(1 - x ^ 2)⁻¹, by positivity⟩).restrict (Set.Ioc (-1) 1)
+    fun x ↦ ENNReal.ofNNReal (.mk (√(1 - x ^ 2)⁻¹) (by positivity))).restrict (Set.Ioc (-1) 1)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem integral_measureT (f : ℝ → ℝ) :
     ∫ x, f x ∂measureT = ∫ x in -1..1, f x * √(1 - x ^ 2)⁻¹ := by
   rw [integral_of_le (by norm_num), measureT,
     restrict_withDensity (by measurability),
-    integral_withDensity_eq_integral_smul (by measurability)]
+    integral_withDensity_eq_integral_smul (by fun_prop)]
   congr! 2 with x hx
   simp [NNReal.smul_def, mul_comm]
 
@@ -63,62 +64,44 @@ theorem intervalIntegrable_sqrt_one_sub_sq_inv :
   refine integrableOn_deriv_of_nonneg continuous_arccos.neg.continuousOn (fun x hx ↦ ?_) (by simp)
   simpa using (hasDerivAt_arccos (by aesop) (by aesop)).neg
 
-set_option backward.isDefEq.respectTransparency false in
 theorem integrable_measureT {f : ℝ → ℝ} (hf : ContinuousOn f (Set.Icc (-1) 1)) :
     Integrable f measureT := by
   replace hf : ContinuousOn f (Set.uIcc (-1) 1) := by rwa [Set.uIcc_of_lt (by norm_num)]
   have := intervalIntegrable_sqrt_one_sub_sq_inv.continuousOn_mul hf
   rw [intervalIntegrable_iff, Set.uIoc_of_le (by norm_num)] at this
   rw [measureT, restrict_withDensity (by measurability),
-    integrable_withDensity_iff (by measurability) (by simp)]
+    integrable_withDensity_iff (by fun_prop) (by simp)]
   unfold IntegrableOn at this
   convert this
 
 open Set in
-theorem integral_measureT_eq_integral_cos {f : ℝ → ℝ}
-    (hf₁ : ContinuousOn (fun θ ↦ f (cos θ)) (Ioo 0 π))
-    (hf₂ : IntegrableOn (fun x ↦ f (cos x)) (Icc 0 π))
-    (hf₃ : IntegrableOn (fun x ↦ f x * √(1 - x ^ 2)⁻¹) (Icc (-1) 1)) :
+theorem integral_measureT_eq_integral_cos {f : ℝ → ℝ} :
     ∫ x, f x ∂measureT = ∫ θ in 0..π, f (cos θ) := calc
   ∫ x, f x ∂measureT = ∫ x in -1..1, f x * √(1 - x ^ 2)⁻¹ := integral_measureT f
   _ = ∫ x in 1..-1, f x * -(√(1 - x ^ 2)⁻¹) := by
     rw [integral_symm, ← intervalIntegral.integral_neg]
     simp
   _ = ∫ θ in (arccos 1)..(arccos (-1)), f (cos θ) := by
-    rw [← integral_comp_mul_deriv''' (f' := fun x => -(1 / √(1 - x ^ 2))) (by fun_prop)
-      (fun x hx ↦ (hasDerivAt_arccos (by aesop) (by aesop)).hasDerivWithinAt)]
+    rw [← integral_comp_mul_deriv_of_deriv_nonpos (f' := fun x => -(1 / √(1 - x ^ 2)))]
     · simp_rw [Function.comp_apply]
       exact integral_congr <| fun x hx => by simp [cos_arccos (x := x) (by aesop) (by aesop)]
-    · simpa using hf₁.mono <| by simpa using Real.strictAntiOn_arccos.image_Ioo_subset
-    · simpa
-    · refine IntegrableOn.congr_fun
-        (by simpa only [neg_le_self_iff, zero_le_one, uIcc_of_ge] using hf₃.neg)
-        (fun x hx ↦ ?_) (by simp)
-      simp only [sqrt_inv, Pi.neg_apply, Function.comp_apply, one_div, mul_neg,
-        cos_arccos (x := x) (by aesop) (by aesop)]
+    · fun_prop
+    · exact fun x hx ↦ (hasDerivAt_arccos (by aesop) (by aesop))
+    · simp
   _ = ∫ θ in 0..π, f (cos θ) := by simp
 
--- we provide this version for convenience.
-open Set in
-theorem integral_measureT_eq_integral_cos_of_continuous {f : ℝ → ℝ}
-    (hf : ContinuousOn f (Icc (-1) 1)) :
-    ∫ x, f x ∂measureT = ∫ θ in 0..π, f (cos θ) := by
-  have : ContinuousOn (fun θ ↦ f (cos θ)) (Icc 0 π) := by
-    refine hf.comp_continuous (by fun_prop) ?_ |>.continuousOn
-    simpa [← abs_le] using abs_cos_le_one
-  refine integral_measureT_eq_integral_cos (this.mono Ioo_subset_Icc_self) this.integrableOn_Icc ?_
-  simpa using Iff.mp intervalIntegrable_iff' <|
-    intervalIntegrable_sqrt_one_sub_sq_inv.continuousOn_mul <| by simpa
+@[deprecated (since := "2026-03-19")]
+alias integral_measureT_eq_integral_cos_of_continuous := integral_measureT_eq_integral_cos
 
 theorem integral_eval_T_real_measureT_zero :
     ∫ x, (T ℝ 0).eval x ∂measureT = π := by
-  rw [integral_measureT_eq_integral_cos_of_continuous (by fun_prop)]; simp
+  rw [integral_measureT_eq_integral_cos]; simp
 
 theorem integral_eval_T_real_measureT_of_ne_zero {n : ℤ} (hn : n ≠ 0) :
     ∫ x, (T ℝ n).eval x ∂measureT = 0 := by
   have hn' : (n : ℝ) ≠ 0 := Int.cast_ne_zero.mpr hn
   suffices ∫ θ in 0..n * π, cos θ = 0 by
-    rw [integral_measureT_eq_integral_cos_of_continuous (by fun_prop)]
+    rw [integral_measureT_eq_integral_cos]
     simp_rw [T_real_cos]
     rwa [integral_comp_mul_left _ (Int.cast_ne_zero.mpr hn), smul_eq_zero_iff_right (by aesop),
       mul_zero]

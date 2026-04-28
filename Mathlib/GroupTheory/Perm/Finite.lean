@@ -17,7 +17,7 @@ This file contains miscellaneous lemmas about `Equiv.Perm` and `Equiv.swap`, bui
 of those in `Mathlib/Logic/Equiv/Basic.lean` and other files in `Mathlib/GroupTheory/Perm/*`.
 -/
 
-@[expose] public section
+public section
 
 universe u v
 
@@ -254,7 +254,6 @@ lemma ofSubtype_support_disjoint {σ : Perm α} (x : Perm (Function.fixedPoints 
 
 open Subgroup
 
-set_option backward.isDefEq.respectTransparency false in
 lemma disjoint_of_disjoint_support {H K : Subgroup (Perm α)}
     (h : ∀ a ∈ H, ∀ b ∈ K, _root_.Disjoint a.support b.support) :
     _root_.Disjoint H K := by
@@ -274,7 +273,6 @@ lemma support_closure_subset_union (S : Set (Perm α)) :
     exact ⟨hc, hd⟩
   · simp only [support_inv, imp_self, implies_true]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma disjoint_support_closure_of_disjoint_support {S T : Set (Perm α)}
     (h : ∀ a ∈ S, ∀ b ∈ T, _root_.Disjoint a.support b.support) :
     ∀ a ∈ closure S, ∀ b ∈ closure T, _root_.Disjoint a.support b.support := by
@@ -285,13 +283,24 @@ lemma disjoint_support_closure_of_disjoint_support {S T : Set (Perm α)}
   simp_rw [Set.disjoint_iUnion_left, Set.disjoint_iUnion_right, Finset.disjoint_coe] at key
   exact key h
 
-set_option backward.isDefEq.respectTransparency false in
 lemma disjoint_closure_of_disjoint_support {S T : Set (Perm α)}
     (h : ∀ a ∈ S, ∀ b ∈ T, _root_.Disjoint a.support b.support) :
     _root_.Disjoint (closure S) (closure T) := by
   apply disjoint_of_disjoint_support
   apply disjoint_support_closure_of_disjoint_support
   exact h
+
+theorem mem_range_ofSubtype_iff {p : α → Prop} [DecidablePred p] {g : Perm α} :
+    g ∈ (ofSubtype : Perm (Subtype p) →* Perm α).range ↔ (g.support : Set α) ⊆ setOf p := by
+  constructor
+  · rintro ⟨k, rfl⟩ x
+    simp only [Finset.mem_coe, mem_support_ofSubtype, Set.mem_setOf_eq]
+    exact fun ⟨hx, _⟩ ↦ hx
+  · intro hg
+    refine ⟨g.subtypePerm fun x ↦ ?_, ofSubtype_subtypePerm _ fun x hx ↦ hg (mem_support.mpr hx)⟩
+    by_cases hx : g x = x
+    · rw [hx]
+    · refine iff_of_true (hg ?_) (hg ?_) <;> simpa
 
 end Fintype
 

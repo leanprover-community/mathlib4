@@ -37,9 +37,8 @@ def range (p : F' ⟶ F) : Subfunctor F where
   obj U := Set.range (p.app U)
   map := by
     rintro U V i _ ⟨x, rfl⟩
-    exact ⟨_, FunctorToTypes.naturality  _ _ p i x⟩
+    exact ⟨_, NatTrans.naturality_apply p i x⟩
 
-set_option backward.isDefEq.respectTransparency false in
 variable (F) in
 lemma range_id : range (𝟙 F) = ⊤ := by aesop
 
@@ -53,12 +52,12 @@ section lift
 variable (f : F' ⟶ F) {G : Subfunctor F} (hf : range f ≤ G)
 
 /-- If the image of a morphism falls in a subfunctor, then the morphism factors through it. -/
-@[simps!]
+@[simps! app]
 def lift : F' ⟶ G.toFunctor where
-  app U x := ⟨f.app U x, hf U (by simp)⟩
+  app U := TypeCat.ofHom fun x => ⟨f.app U x, hf U (by simp)⟩
   naturality _ _ g := by
     ext x
-    simpa [Subtype.ext_iff] using FunctorToTypes.naturality _ _ f g x
+    simpa [Subtype.ext_iff, -NatTrans.naturality_apply] using NatTrans.naturality_apply f g x
 
 @[reassoc (attr := simp)]
 theorem lift_ι : lift f hf ≫ G.ι = f := rfl
@@ -78,6 +77,7 @@ def toRange :
 @[reassoc (attr := simp)]
 lemma toRange_ι : toRange p ≫ (range p).ι = p := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma toRange_app_val {i : C} (x : F'.obj i) :
     ((toRange p).app i x).val = p.app i x := by
   simp [toRange]
@@ -88,11 +88,10 @@ lemma range_toRange : range (toRange p) = ⊤ := by
   ext i ⟨x, hx⟩
   dsimp at hx ⊢
   simp only [Set.mem_range, Set.mem_univ, iff_true]
-  simp only [Set.mem_range] at hx
+  simp only [Set.range] at hx
   obtain ⟨y, rfl⟩ := hx
   exact ⟨y, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma epi_iff_range_eq_top :
     Epi p ↔ range p = ⊤ := by
   simp [NatTrans.epi_iff_epi_app, epi_iff_surjective, Subfunctor.ext_iff, funext_iff,
@@ -128,9 +127,8 @@ def image : Subfunctor F' where
   obj i := (f.app i) '' (G.obj i)
   map := by
     rintro Δ Δ' φ _ ⟨x, hx, rfl⟩
-    exact ⟨F.map φ x, G.map φ hx, by apply FunctorToTypes.naturality⟩
+    exact ⟨F.map φ x, G.map φ hx, by apply NatTrans.naturality_apply⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma image_top : (⊤ : Subfunctor F).image f = range f := by aesop
 
 @[simp]
@@ -152,7 +150,7 @@ section preimage
 def preimage (G : Subfunctor F) (p : F' ⟶ F) : Subfunctor F' where
   obj n := p.app n ⁻¹' (G.obj n)
   map f := (Set.preimage_mono (G.map f)).trans (by
-    simp only [Set.preimage_preimage, FunctorToTypes.naturality _ _ p f]
+    simp only [Set.preimage_preimage, NatTrans.naturality_apply]
     rfl)
 
 @[simp]

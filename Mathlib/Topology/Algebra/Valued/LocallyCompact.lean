@@ -42,7 +42,6 @@ namespace Valued.integer
 
 -- should we do this all in the Valuation namespace instead?
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An element is in the valuation ring if the norm is bounded by 1. This is a variant of
 `Valuation.mem_integer_iff`, phrased using norms instead of the valuation. -/
 lemma mem_iff {x : K} : x ∈ 𝒪[K] ↔ ‖x‖ ≤ 1 := by
@@ -55,7 +54,6 @@ lemma norm_coe_unit (u : 𝒪[K]ˣ) : ‖((u : 𝒪[K]) : K)‖ = 1 := by
   simpa [← NNReal.coe_inj] using
     (Valuation.integer.integers (NormedField.valuation (K := K))).valuation_unit u
 
-set_option backward.isDefEq.respectTransparency false in
 lemma norm_unit (u : 𝒪[K]ˣ) : ‖(u : 𝒪[K])‖ = 1 := by
   simp
 
@@ -69,18 +67,15 @@ lemma norm_irreducible_lt_one {ϖ : 𝒪[K]} (h : Irreducible ϖ) : ‖ϖ‖ < 1
 lemma norm_irreducible_pos {ϖ : 𝒪[K]} (h : Irreducible ϖ) : 0 < ‖ϖ‖ :=
   Valuation.integer.v_irreducible_pos h
 
-set_option backward.isDefEq.respectTransparency false in
 lemma coe_span_singleton_eq_closedBall (x : 𝒪[K]) :
     (Ideal.span {x} : Set 𝒪[K]) = Metric.closedBall 0 ‖x‖ := by
   simp [Valuation.integer.coe_span_singleton_eq_setOf_le_v_coe, Set.ext_iff, ← NNReal.coe_le_coe]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma _root_.Irreducible.maximalIdeal_eq_closedBall [IsDiscreteValuationRing 𝒪[K]]
     {ϖ : 𝒪[K]} (h : Irreducible ϖ) :
     (𝓂[K] : Set 𝒪[K]) = Metric.closedBall 0 ‖ϖ‖ := by
   simp [h.maximalIdeal_eq_setOf_le_v_coe, Set.ext_iff, ← NNReal.coe_le_coe]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma _root_.Irreducible.maximalIdeal_pow_eq_closedBall_pow [IsDiscreteValuationRing 𝒪[K]]
     {ϖ : 𝒪[K]} (h : Irreducible ϖ) (n : ℕ) :
     ((𝓂[K] ^ n : Ideal 𝒪[K]) : Set 𝒪[K]) = Metric.closedBall 0 (‖ϖ‖ ^ n) := by
@@ -131,7 +126,6 @@ lemma finite_quotient_maximalIdeal_pow_of_finite_residueField [IsDiscreteValuati
 
 open scoped Valued
 
-set_option backward.isDefEq.respectTransparency false in
 lemma totallyBounded_iff_finite_residueField [(Valued.v : Valuation K Γ₀).RankOne]
     [IsDiscreteValuationRing 𝒪[K]] :
     TotallyBounded (Set.univ (α := 𝒪[K])) ↔ Finite 𝓀[K] := by
@@ -234,9 +228,16 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
   · intro w
     simp only [U]
     split_ifs with hw
-    · exact Valued.isOpen_closedBall _ z0.ne'
-    · refine Valued.isOpen_sphere _ ?_
-      push_neg at hw
+    · obtain ⟨b, hb⟩ := MonoidHom.mem_mrange.mp z.1.2
+      rw [← hb] at z0 ⊢
+      simp_rw [← v.restrict_le_iff]
+      refine Valued.isOpen_closedBall _ ?_
+      rw [ne_eq, ← map_zero v.restrict, v.restrict_inj, map_zero]
+      exact z0.ne'
+    · simp_rw [← v.restrict_inj]
+      refine Valued.isOpen_sphere _ ?_
+      push Not at hw
+      rw [← map_zero v.restrict, ne_eq, v.restrict_inj]
       refine (hw.trans' ?_).ne'
       simp [z0]
   · intro w
@@ -252,7 +253,7 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
   classical
   refine (t.finite_toSet.dependent_image ?_).subset ?_
   · refine fun i hi ↦ if hi' : v i ≤ z then z else Units.mk0 ⟨(v i), by simp⟩ ?_
-    push_neg at hi'
+    push Not at hi'
     exact Subtype.coe_injective.ne_iff.mp (hi'.trans' z0).ne'
   · intro i
     simp only [Set.mem_Icc, Finset.mem_coe, exists_prop, Set.mem_setOf_eq, and_imp]
@@ -271,14 +272,12 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
       rw [dif_neg hcj]
       simp [← hj', hc]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mulArchimedean_mrange_of_isCompact_integer (hc : IsCompact (X := K) 𝒪[K]) :
     MulArchimedean (MonoidHom.mrange (Valued.v : Valuation K Γ₀)) := by
   rw [← Units.mulArchimedean_iff]
   obtain ⟨_⟩ := locallyFiniteOrder_units_mrange_of_isCompact_integer hc
   exact MulArchimedean.of_locallyFiniteOrder
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isPrincipalIdealRing_of_compactSpace [hc : CompactSpace 𝒪[K]] :
     IsPrincipalIdealRing 𝒪[K] := by
   -- The strategy to show that we have a PIR is by contradiction,
@@ -327,7 +326,6 @@ lemma compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_resi
     rw [isCompact_iff_totallyBounded_isComplete]
     exact ⟨h, completeSpace_iff_isComplete_univ.mp ‹_›⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma properSpace_iff_compactSpace_integer [(Valued.v : Valuation K Γ₀).RankOne] :
     ProperSpace K ↔ CompactSpace 𝒪[K] := by
   simp only [← isCompact_univ_iff, Subtype.isCompact_iff, Set.image_univ, Subtype.range_coe_subtype,
@@ -338,7 +336,6 @@ lemma properSpace_iff_compactSpace_integer [(Valued.v : Valuation K Γ₀).RankO
     exact IsCompact.locallyCompactSpace_of_mem_nhds_of_addGroup h <|
       Metric.closedBall_mem_nhds 0 zero_lt_one
 
-set_option backward.isDefEq.respectTransparency false in
 lemma properSpace_iff_completeSpace_and_isDiscreteValuationRing_integer_and_finite_residueField
     [(Valued.v : Valuation K Γ₀).RankOne] :
     ProperSpace K ↔ CompleteSpace K ∧ IsDiscreteValuationRing 𝒪[K] ∧ Finite 𝓀[K] := by

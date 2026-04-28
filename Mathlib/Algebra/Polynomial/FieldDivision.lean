@@ -68,14 +68,13 @@ theorem isRoot_iterate_derivative_of_lt_rootMultiplicity {p : R[X]} {t : R} {n :
   dvd_iff_isRoot.mp <| (dvd_pow_self _ <| Nat.sub_ne_zero_of_lt hn).trans
     (pow_sub_dvd_iterate_derivative_of_pow_dvd _ <| p.pow_rootMultiplicity_dvd t)
 
-set_option backward.isDefEq.respectTransparency false in
 open Finset in
 theorem eval_iterate_derivative_rootMultiplicity {p : R[X]} {t : R} :
     (derivative^[p.rootMultiplicity t] p).eval t =
       (p.rootMultiplicity t).factorial • (p /ₘ (X - C t) ^ p.rootMultiplicity t).eval t := by
   set m := p.rootMultiplicity t with hm
   conv_lhs => rw [← p.pow_mul_divByMonic_rootMultiplicity_eq t, ← hm]
-  rw [iterate_derivative_mul, eval_finset_sum, sum_eq_single_of_mem _ (mem_range.mpr m.succ_pos)]
+  rw [iterate_derivative_mul, eval_finsetSum, sum_eq_single_of_mem _ (mem_range.mpr m.succ_pos)]
   · rw [m.choose_zero_right, one_smul, eval_mul, m.sub_zero, iterate_derivative_X_sub_pow_self,
       eval_natCast, nsmul_eq_mul]; rfl
   · intro b hb hb0
@@ -159,7 +158,6 @@ theorem derivative_rootMultiplicity_of_root [CharZero R] {p : R[X]} {t : R} (hpt
   exact derivative_rootMultiplicity_of_root_of_mem_nonZeroDivisors hpt <|
     mem_nonZeroDivisors_of_ne_zero <| Nat.cast_ne_zero.2 ((rootMultiplicity_pos h).2 hpt).ne'
 
-set_option backward.isDefEq.respectTransparency false in
 theorem rootMultiplicity_sub_one_le_derivative_rootMultiplicity [CharZero R] (p : R[X]) (t : R) :
     p.rootMultiplicity t - 1 ≤ p.derivative.rootMultiplicity t := by
   by_cases h : p.IsRoot t
@@ -188,7 +186,7 @@ theorem isRoot_of_isRoot_of_dvd_derivative_mul [CharZero R] {f g : R[X]} (hf0 : 
     (hfd : f ∣ f.derivative * g) {a : R} (haf : f.IsRoot a) : g.IsRoot a := by
   rcases hfd with ⟨r, hr⟩
   have hdf0 : derivative f ≠ 0 := by
-    contrapose! haf
+    contrapose haf
     rw [eq_C_of_derivative_eq_zero haf] at hf0 ⊢
     exact not_isRoot_C _ _ <| C_ne_zero.mp hf0
   by_contra hg
@@ -320,7 +318,7 @@ private theorem quotient_mul_add_remainder_eq_aux (p q : R[X]) : q * div p q + m
   · simp only [h, zero_mul, mod, modByMonic_zero, zero_add]
   · conv =>
       rhs
-      rw [← modByMonic_add_div p (monic_mul_leadingCoeff_inv h)]
+      rw [← modByMonic_add_div p (q * C q.leadingCoeff⁻¹)]
     rw [div, mod, add_comm, mul_assoc]
 
 private theorem remainder_lt_aux (p : R[X]) (hq : q ≠ 0) : degree (mod p q) < degree q := by
@@ -395,7 +393,6 @@ theorem degree_add_div (hq0 : q ≠ 0) (hpq : degree q ≤ degree p) :
   conv_rhs =>
     rw [← EuclideanDomain.div_add_mod p q, degree_add_eq_left_of_degree_lt this, degree_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem degree_div_le (p q : R[X]) : degree (p / q) ≤ degree p := by
   by_cases hq : q = 0
   · simp [hq]
@@ -404,20 +401,18 @@ theorem degree_div_le (p q : R[X]) : degree (p / q) ≤ degree p := by
 theorem degree_div_lt (hp : p ≠ 0) (hq : 0 < degree q) : degree (p / q) < degree p := by
   have hq0 : q ≠ 0 := fun hq0 => by simp [hq0] at hq
   rw [div_def, mul_comm, degree_mul_leadingCoeff_inv _ hq0]
-  exact degree_divByMonic_lt _ (monic_mul_leadingCoeff_inv hq0) hp
+  exact degree_divByMonic_lt _ (q * C q.leadingCoeff⁻¹) hp
     (by rw [degree_mul_leadingCoeff_inv _ hq0]; exact hq)
 
 theorem isUnit_map [Field k] (f : R →+* k) : IsUnit (p.map f) ↔ IsUnit p := by
   simp_rw [isUnit_iff_degree_eq_zero, degree_map]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem map_div [Field k] (f : R →+* k) : (p / q).map f = p.map f / q.map f := by
   if hq0 : q = 0 then simp [hq0]
   else
     rw [div_def, div_def, Polynomial.map_mul, map_divByMonic f (monic_mul_leadingCoeff_inv hq0),
       Polynomial.map_mul, map_C, leadingCoeff_map, map_inv₀]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem map_mod [Field k] (f : R →+* k) : (p % q).map f = p.map f % q.map f := by
   by_cases hq0 : q = 0
   · simp [hq0]
@@ -428,13 +423,13 @@ lemma natDegree_mod_lt [Field k] (p : k[X]) {q : k[X]} (hq : q.natDegree ≠ 0) 
     (p % q).natDegree < q.natDegree := by
   have hq' : q.leadingCoeff ≠ 0 := by
     rw [leadingCoeff_ne_zero]
-    contrapose! hq
+    contrapose hq
     simp [hq]
   rw [mod_def]
   refine (natDegree_modByMonic_lt p ?_ ?_).trans_le ?_
   · refine monic_mul_C_of_leadingCoeff_mul_eq_one ?_
     rw [mul_inv_eq_one₀ hq']
-  · contrapose! hq
+  · contrapose hq
     rw [← natDegree_mul_C_eq_of_mul_eq_one ((inv_mul_eq_one₀ hq').mpr rfl)]
     simp [hq]
   · exact natDegree_mul_C_le q q.leadingCoeff⁻¹
@@ -558,7 +553,6 @@ theorem normalize_eq_self_iff_monic [DecidableEq R] {p : Polynomial R} (hp : p �
     normalize p = p ↔ p.Monic :=
   ⟨fun h ↦ h ▸ monic_normalize hp, fun h ↦ Monic.normalize_eq_self h⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem leadingCoeff_div (hpq : q.degree ≤ p.degree) :
     (p / q).leadingCoeff = p.leadingCoeff / q.leadingCoeff := by
   by_cases hq : q = 0
@@ -594,7 +588,6 @@ theorem dvd_C_mul (ha : a ≠ 0) : p ∣ Polynomial.C a * q ↔ p ∣ q :=
         one_mul]⟩,
     fun h => dvd_trans h (dvd_mul_left _ _)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coe_normUnit_of_ne_zero [DecidableEq R] (hp : p ≠ 0) :
     (normUnit p : R[X]) = C p.leadingCoeff⁻¹ := by
   have : p.leadingCoeff ≠ 0 := mt leadingCoeff_eq_zero.mp hp
@@ -637,7 +630,6 @@ theorem degree_pos_of_irreducible (hp : Irreducible p) : 0 < p.degree :=
 theorem X_sub_C_mul_divByMonic_eq_sub_modByMonic {K : Type*} [Ring K] (f : K[X]) (a : K) :
     (X - C a) * (f /ₘ (X - C a)) = f - f %ₘ (X - C a) := by
   rw [eq_sub_iff_add_eq, ← eq_sub_iff_add_eq', modByMonic_eq_sub_mul_div]
-  exact monic_X_sub_C a
 
 theorem divByMonic_add_X_sub_C_mul_derivative_divByMonic_eq_derivative
     {K : Type*} [CommRing K] (f : K[X]) (a : K) :
@@ -662,7 +654,7 @@ theorem isCoprime_of_is_root_of_eval_derivative_ne_zero {K : Type*} [Field K] (f
   refine Or.resolve_left
       (EuclideanDomain.dvd_or_coprime (X - C a) (f /ₘ (X - C a))
         (irreducible_of_degree_eq_one (Polynomial.degree_X_sub_C a))) ?_
-  contrapose! hf' with h
+  contrapose hf' with h
   have : X - C a ∣ derivative f := X_sub_C_dvd_derivative_of_X_sub_C_dvd_divByMonic f h
   rw [← modByMonic_eq_zero_iff_dvd (monic_X_sub_C _), modByMonic_X_sub_C_eq_C_eval] at this
   rwa [← C_inj, C_0]
@@ -677,7 +669,7 @@ theorem irreducible_iff_degree_lt (p : R[X]) (hp0 : p ≠ 0) (hpu : ¬ IsUnit p)
   rw [← irreducible_mul_leadingCoeff_inv,
       (monic_mul_leadingCoeff_inv hp0).irreducible_iff_degree_lt]
   · simp [hp0, natDegree_mul_leadingCoeff_inv]
-  · contrapose! hpu
+  · contrapose hpu
     exact .of_mul_eq_one _ hpu
 
 /-- To check a polynomial `p` over a field is irreducible, it suffices to check there are no
@@ -688,7 +680,7 @@ See also: `Polynomial.Monic.irreducible_iff_natDegree'`.
 theorem irreducible_iff_lt_natDegree_lt {p : R[X]} (hp0 : p ≠ 0) (hpu : ¬ IsUnit p) :
     Irreducible p ↔ ∀ q, Monic q → natDegree q ∈ Finset.Ioc 0 (natDegree p / 2) → ¬ q ∣ p := by
   have : p * C (leadingCoeff p)⁻¹ ≠ 1 := by
-    contrapose! hpu
+    contrapose hpu
     exact .of_mul_eq_one _ hpu
   rw [← irreducible_mul_leadingCoeff_inv,
       (monic_mul_leadingCoeff_inv hp0).irreducible_iff_lt_natDegree_lt this,
@@ -696,7 +688,6 @@ theorem irreducible_iff_lt_natDegree_lt {p : R[X]} (hp0 : p ≠ 0) (hpu : ¬ IsU
   simp only [IsUnit.dvd_mul_right
     (isUnit_C.mpr (IsUnit.mk0 (leadingCoeff p)⁻¹ (inv_ne_zero (leadingCoeff_ne_zero.mpr hp0))))]
 
-set_option backward.isDefEq.respectTransparency false in
 open UniqueFactorizationMonoid in
 /--
 The normalized factors of a polynomial over a field times its leading coefficient give
@@ -729,7 +720,6 @@ theorem monic_mapAlg_iff [Semiring S] [Nontrivial S] [Algebra R S] {p : R[X]} :
     (mapAlg R S p).Monic ↔ p.Monic := by
   simp [mapAlg_eq_map, monic_map_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mod_eq_of_dvd_sub {p₁ p₂ q : R[X]} (h : q ∣ p₁ - p₂) : p₁ % q = p₂ % q := by
   obtain rfl | hq := eq_or_ne q 0
   · simpa [sub_eq_zero] using h

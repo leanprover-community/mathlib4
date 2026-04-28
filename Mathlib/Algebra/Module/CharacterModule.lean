@@ -21,7 +21,7 @@ For commutative ring `R` and an `R`-module `M` and an injective module `D`, its 
 ## Main results
 
 - `CharacterModuleFunctor` : the contravariant functor of `R`-modules where `M ↦ M⋆` and
-an `R`-linear map `l : M ⟶ N` induces an `R`-linear map `l⋆ : f ↦ f ∘ l` where `f : N⋆`.
+  an `R`-linear map `l : M ⟶ N` induces an `R`-linear map `l⋆ : f ↦ f ∘ l` where `f : N⋆`.
 - `LinearMap.dual_surjective_of_injective` : If `l` is injective then `l⋆` is surjective,
   in another word taking character module as a functor sends monos to epis.
 - `CharacterModule.homEquiv` : there is a bijection between linear map `Hom(N, M⋆)` and
@@ -67,7 +67,7 @@ variable [Module R A] [Module R A'] [Module R B]
 
 set_option backward.isDefEq.respectTransparency false in
 instance : Module R (CharacterModule A) :=
-  Module.compHom (A →+ _) (RingEquiv.toOpposite _ |>.toRingHom : R →+* Rᵈᵐᵃ)
+  fast_instance% Module.compHom (A →+ _) (RingEquiv.toOpposite _ |>.toRingHom : R →+* Rᵈᵐᵃ)
 
 variable {R A B}
 
@@ -100,7 +100,6 @@ lemma dual_injective_of_surjective (f : A →ₗ[R] B) (hf : Function.Surjective
   change (dual f) φ _ = (dual f) ψ _
   rw [eq]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma dual_surjective_of_injective (f : A →ₗ[R] B) (hf : Function.Injective f) :
     Function.Surjective (dual f) :=
   (Module.Baer.of_divisible _).extension_property_addMonoidHom _ hf

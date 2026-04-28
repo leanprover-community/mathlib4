@@ -132,11 +132,9 @@ can be expressed in matrix form.
 noncomputable def jacobiMatrix : Matrix σ σ P.Ring :=
   LinearMap.toMatrix P.basis P.basis P.differential
 
-set_option backward.isDefEq.respectTransparency false in
 lemma jacobian_eq_jacobiMatrix_det : P.jacobian = algebraMap P.Ring S P.jacobiMatrix.det := by
   simp [jacobiMatrix, jacobian]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma jacobiMatrix_apply (i j : σ) :
     P.jacobiMatrix i j = MvPolynomial.pderiv (P.map i) (P.relation j) := by
   simp [jacobiMatrix, LinearMap.toMatrix, differential, basis]
@@ -181,8 +179,8 @@ section Constructions
 
 /-- Transport a pre-submersive presentation along an algebra isomorphism. -/
 @[simps toPresentation map]
-def ofAlgEquiv (P : PreSubmersivePresentation R S ι σ) {T : Type*} [CommRing T] [Algebra R T]
-    (e : S ≃ₐ[R] T) :
+noncomputable def ofAlgEquiv
+    (P : PreSubmersivePresentation R S ι σ) {T : Type*} [CommRing T] [Algebra R T] (e : S ≃ₐ[R] T) :
     PreSubmersivePresentation R T ι σ where
   __ := P.toPresentation.ofAlgEquiv e
   map := P.map
@@ -461,9 +459,8 @@ lemma jacobian_reindex (P : PreSubmersivePresentation R S ι σ)
 section
 
 variable {v : ι → MvPolynomial σ R} (a : ι → σ) (ha : Function.Injective a)
-  (s : MvPolynomial σ R ⧸ (Ideal.span <| Set.range v) → MvPolynomial σ R :=
-    Function.surjInv Ideal.Quotient.mk_surjective)
-  (hs : ∀ x, Ideal.Quotient.mk _ (s x) = x := by apply Function.surjInv_eq)
+  (s : MvPolynomial σ R ⧸ (Ideal.span <| Set.range v) → MvPolynomial σ R)
+  (hs : ∀ x, Ideal.Quotient.mk _ (s x) = x)
 
 /--
 The naive pre-submersive presentation of a quotient `R[Xᵢ] ⧸ (vⱼ)`.
@@ -483,7 +480,6 @@ def naive {v : ι → MvPolynomial σ R} (a : ι → σ) (ha : Function.Injectiv
   map := a
   map_inj := ha
 
-set_option backward.privateInPublic true in
 @[simp] lemma jacobiMatrix_naive [Fintype ι] [DecidableEq ι] (i j : ι) :
     (naive a ha s hs).jacobiMatrix i j = (v j).pderiv (a i) :=
   jacobiMatrix_apply _ _ _
@@ -513,8 +509,8 @@ section Constructions
 variable {R S ι σ} in
 /-- Transport a submersive presentation along an algebra isomorphism. -/
 @[simps toPreSubmersivePresentation]
-def ofAlgEquiv (P : SubmersivePresentation R S ι σ) {T : Type*} [CommRing T] [Algebra R T]
-    (e : S ≃ₐ[R] T) :
+noncomputable def ofAlgEquiv
+    (P : SubmersivePresentation R S ι σ) {T : Type*} [CommRing T] [Algebra R T] (e : S ≃ₐ[R] T) :
     SubmersivePresentation R T ι σ where
   __ := P.toPreSubmersivePresentation.ofAlgEquiv e
   jacobian_isUnit := by simp [P.jacobian_isUnit]
@@ -620,7 +616,7 @@ noncomputable def aevalDifferentialEquiv (P : SubmersivePresentation R S ι σ) 
 variable (P : SubmersivePresentation R S ι σ)
 
 @[simp]
-lemma aevalDifferentialEquiv_apply [Finite σ] (x : σ → S) :
+lemma aevalDifferentialEquiv_apply (x : σ → S) :
     P.aevalDifferentialEquiv x = P.aevalDifferential x :=
   rfl
 

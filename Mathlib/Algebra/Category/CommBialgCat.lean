@@ -6,7 +6,7 @@ Authors: Yaël Dillies, Michał Mrugała, Andrew Yang
 module
 
 public import Mathlib.Algebra.Category.CommAlgCat.Monoidal
-public import Mathlib.CategoryTheory.Monoidal.Mon_
+public import Mathlib.CategoryTheory.Monoidal.Mon
 public import Mathlib.RingTheory.Bialgebra.Equiv
 
 /-!
@@ -120,8 +120,10 @@ lemma hom_inv_apply (e : A ≅ B) (x : B) : e.hom (e.inv x) = x := by simp
 
 instance : Inhabited (CommBialgCat R) := ⟨of R R⟩
 
-lemma forget_obj (A : CommBialgCat.{v} R) : (forget (CommBialgCat.{v} R)).obj A = A := rfl
+lemma forget_obj (A : CommBialgCat.{v} R) : (forget (CommBialgCat.{v} R)).obj A = A :=
+  rfl
 
+@[deprecated ConcreteCategory.forget_map_eq_ofHom (since := "2026-03-06")]
 lemma forget_map (f : A ⟶ B) : (forget (CommBialgCat.{v} R)).map f = (f : _ → _) := rfl
 
 instance : CommRing ((forget (CommBialgCat R)).obj A) := inferInstanceAs <| CommRing A
@@ -200,7 +202,6 @@ instance {A : Type u} [CommRing A] [Bialgebra R A] [IsCocomm R A] :
     IsCommMonObj (Opposite.op <| CommAlgCat.of R A) where
   mul_comm := by ext; exact comm_comul R _
 
-set_option backward.isDefEq.respectTransparency false in
 instance {A B : Type u} [CommRing A] [Bialgebra R A] [CommRing B] [Bialgebra R B]
     (f : A →ₐc[R] B) : IsMonHom (CommAlgCat.ofHom (f : A →ₐ[R] B)).op where
 

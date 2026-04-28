@@ -35,7 +35,7 @@ This definition is equivalent to left exact functors (functors that preserves fi
   limits, then `F` is flat.
 * `preservesFiniteLimits_of_flat`: If `F : C ⥤ D` is flat, then it preserves all finite limits.
 * `preservesFiniteLimits_iff_flat`: If `C` has all finite limits,
-  then `F` is flat iff `F` is left_exact.
+  then `F` is flat iff `F` is left exact.
 * `lan_preservesFiniteLimits_of_flat`: If `F : C ⥤ D` is a flat functor between small categories,
   then the functor `Lan F.op` between presheaves of sets preserves all finite limits.
 * `flat_iff_lan_flat`: If `C`, `D` are small and `C` has all finite limits, then `F` is flat iff
@@ -188,7 +188,7 @@ noncomputable def lift : s.pt ⟶ F.obj c.pt :=
   s'.pt.hom ≫
     (F.map <|
       hc.lift <|
-        (Cones.postcompose
+        (Cone.postcompose
               ({ app := fun _ => 𝟙 _ } :
                 (s.toStructuredArrow ⋙ pre s.pt K F) ⋙ proj s.pt F ⟶ K)).obj <|
           (StructuredArrow.proj s.pt F).mapCone s')
@@ -207,10 +207,10 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
   let α₂ : (F.mapCone c).toStructuredArrow ⋙ map f₂ ⟶ s.toStructuredArrow :=
     { app := fun X => eqToHom (by simp [← h₂]) }
   let c₁ : Cone (s.toStructuredArrow ⋙ pre s.pt K F) :=
-    (Cones.postcompose (Functor.whiskerRight α₁ (pre s.pt K F) :)).obj
+    (Cone.postcompose (Functor.whiskerRight α₁ (pre s.pt K F) :)).obj
       (c.toStructuredArrowCone F f₁)
   let c₂ : Cone (s.toStructuredArrow ⋙ pre s.pt K F) :=
-    (Cones.postcompose (Functor.whiskerRight α₂ (pre s.pt K F) :)).obj
+    (Cone.postcompose (Functor.whiskerRight α₂ (pre s.pt K F) :)).obj
       (c.toStructuredArrowCone F f₂)
   -- The two cones can then be combined and we may obtain a cone over the two cones since
   -- `StructuredArrow s.pt F` is cofiltered.
@@ -232,20 +232,18 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
   have : g₁.right = g₂.right := calc
     g₁.right = hc.lift (c.extend g₁.right) := by
       apply hc.uniq (c.extend _)
-      aesop
+      simp
     _ = hc.lift (c.extend g₂.right) := by
       congr
     _ = g₂.right := by
       symm
       apply hc.uniq (c.extend _)
-      aesop
+      simp
   -- Finally, since `fᵢ` factors through `F(gᵢ)`, the result follows.
   calc
-    f₁ = 𝟙 _ ≫ f₁ := by simp
-    _ = c₀.pt.hom ≫ F.map g₁.right := g₁.w
+    f₁ = c₀.pt.hom ≫ F.map g₁.right := g₁.w.symm
     _ = c₀.pt.hom ≫ F.map g₂.right := by rw [this]
-    _ = 𝟙 _ ≫ f₂ := g₂.w.symm
-    _ = f₂ := by simp
+    _ = f₂ := g₂.w
 
 end PreservesFiniteLimitsOfFlat
 
@@ -388,20 +386,20 @@ instance (X : E) [RepresentablyFlat F] [IsCofiltered (StructuredArrow X G)] :
   · let U := IsCofiltered.min (T.obj A) (T.obj B)
     let A' : StructuredArrow U.right F := .mk (IsCofiltered.minToLeft (T.obj A) (T.obj B)).right
     let B' : StructuredArrow U.right F := .mk (IsCofiltered.minToRight (T.obj A) (T.obj B)).right
-    refine ⟨.mk <| U.hom ≫ G.map (IsCofiltered.min A' B').hom, ?_, ?_, trivial⟩
-    · refine StructuredArrow.homMk (IsCofiltered.minToLeft A' B').right ?_
-      simpa [← Functor.map_comp] using StructuredArrow.w _
-    · refine StructuredArrow.homMk (IsCofiltered.minToRight A' B').right ?_
-      simpa [← Functor.map_comp] using StructuredArrow.w _
+    refine ⟨.mk <| U.hom ≫ G.map (IsCofiltered.min A' B').hom,
+      StructuredArrow.homMk (IsCofiltered.minToLeft A' B').right ?_,
+      StructuredArrow.homMk (IsCofiltered.minToRight A' B').right ?_, trivial⟩
+    · simp [← Functor.map_comp, A', T]
+    · simp [← Functor.map_comp, B', T]
   · let U := IsCofiltered.eq (T.map f) (T.map g)
     let A' : StructuredArrow _ F := .mk (IsCofiltered.eqHom (T.map f) (T.map g)).right
     let B' : StructuredArrow _ F := .mk (IsCofiltered.eqHom (T.map f) (T.map g) ≫ T.map f).right
     let f' : A' ⟶ B' := StructuredArrow.homMk f.right rfl
     let g' : A' ⟶ B' := StructuredArrow.homMk g.right
       congr($(IsCofiltered.eq_condition (T.map f) (T.map g)).right).symm
-    refine ⟨.mk <| U.hom ≫ G.map (IsCofiltered.eq f' g').hom, ?_, ?_⟩
-    · refine StructuredArrow.homMk (IsCofiltered.eqHom f' g').right ?_
-      simpa [← Functor.map_comp] using StructuredArrow.w _
+    refine ⟨.mk <| U.hom ≫ G.map (IsCofiltered.eq f' g').hom,
+      StructuredArrow.homMk (IsCofiltered.eqHom f' g').right ?_, ?_⟩
+    · simp [← Functor.map_comp, A', T]
     · ext
       exact congr($(IsCofiltered.eq_condition f' g').right)
 

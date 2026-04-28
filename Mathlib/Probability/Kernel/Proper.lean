@@ -27,7 +27,7 @@ event.
 Prove the `integral` versions of the `lintegral` lemmas below
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory ENNReal NNReal Set
 open scoped ProbabilityTheory

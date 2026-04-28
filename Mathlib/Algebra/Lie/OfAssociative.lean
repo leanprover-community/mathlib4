@@ -123,6 +123,14 @@ instance Module.End.instLieModule : LieModule R (Module.End R M) M :=
 
 @[simp] lemma Module.End.lie_apply (f : Module.End R M) (m : M) : ⁅f, m⁆ = f m := rfl
 
+-- TODO: fix this
+/-- Unfortunately we now have two brackets which are not equal at reducible transparency, even
+though they are equal at default transparency. We can use this lemma on rare occasions when this
+matters. -/
+theorem Module.End.instLieRingModule_eq :
+    LinearMap.instLieRingModule (L := Module.End R M) (M := M) (N := M) = lieRingSelfModule :=
+  rfl
+
 end AssociativeRepresentation
 
 namespace AlgHom
@@ -283,7 +291,6 @@ lemma LieAlgebra.ad_lie (x y z : L) :
     (ad R L x) ⁅y, z⁆ = ⁅ad R L x y, z⁆ + ⁅y, ad R L x z⁆ :=
   toEnd_lie _ x y z
 
-set_option backward.isDefEq.respectTransparency false in
 open Finset in
 lemma LieModule.toEnd_pow_lie (x y : L) (z : M) (n : ℕ) :
     ((φ x) ^ n) ⁅y, z⁆ =

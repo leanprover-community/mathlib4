@@ -158,6 +158,13 @@ theorem toSubMulAction_inj : p.toSubMulAction = q.toSubMulAction ↔ p = q :=
 theorem coe_toSubMulAction (p : Submodule R M) : (p.toSubMulAction : Set M) = p :=
   rfl
 
+/-- `Submodule R M` almost never has decidable equality.
+Given an element `m ≠ 0` in `M`, `Submodule R M` has decidable equality iff
+all propositions are decidable. We add a global instance that `Submodule R M` has decidable
+equality, coming from the choice axiom, so that we don't have to provide
+`[DecidableEq (Submodule R M)]` arguments in lemma statements. -/
+noncomputable instance decidableEq : DecidableEq (Submodule R M) := Classical.typeDecidableEq _
+
 end Submodule
 
 namespace SMulMemClass
@@ -172,6 +179,7 @@ instance (priority := 75) toModule : Module R S' := fast_instance%
 
 /-- This can't be an instance because Lean wouldn't know how to find `R`, but we can still use
 this to manually derive `Module` on specific types. -/
+@[implicit_reducible]
 def toModule' (S R' R A : Type*) [Semiring R] [NonUnitalNonAssocSemiring A]
     [Module R A] [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A]
     [SetLike S A] [AddSubmonoidClass S A] [SMulMemClass S R A] (s : S) :
@@ -285,8 +293,7 @@ theorem coe_mem (x : p) : (x : M) ∈ p :=
 
 variable (p)
 
-instance addCommMonoid : AddCommMonoid p := fast_instance%
-  { p.toAddSubmonoid.toAddCommMonoid with }
+instance addCommMonoid : AddCommMonoid p := AddSubmonoidClass.toAddCommMonoid p
 
 instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
     Module S p := fast_instance%
@@ -315,6 +322,7 @@ protected theorem neg_mem (hx : x ∈ p) : -x ∈ p :=
   neg_mem hx
 
 /-- Reinterpret a submodule as an additive subgroup. -/
+@[reducible]
 def toAddSubgroup : AddSubgroup M :=
   { p.toAddSubmonoid with neg_mem' := fun {_} => p.neg_mem }
 
@@ -322,14 +330,12 @@ def toAddSubgroup : AddSubgroup M :=
 theorem coe_toAddSubgroup : (p.toAddSubgroup : Set M) = p :=
   rfl
 
-@[simp]
 theorem mem_toAddSubgroup : x ∈ p.toAddSubgroup ↔ x ∈ p :=
   Iff.rfl
 
 theorem toAddSubgroup_injective : Injective (toAddSubgroup : Submodule R M → AddSubgroup M)
   | _, _, h => SetLike.ext (SetLike.ext_iff.1 h :)
 
-@[simp]
 theorem toAddSubgroup_inj : p.toAddSubgroup = p'.toAddSubgroup ↔ p = p' :=
   toAddSubgroup_injective.eq_iff
 
@@ -357,8 +363,7 @@ theorem sub_mem_iff_left (hy : y ∈ p) : x - y ∈ p ↔ x ∈ p := by
 theorem sub_mem_iff_right (hx : x ∈ p) : x - y ∈ p ↔ y ∈ p := by
   rw [sub_eq_add_neg, p.add_mem_iff_right hx, p.neg_mem_iff]
 
-instance addCommGroup : AddCommGroup p := fast_instance%
-  { p.toAddSubgroup.toAddCommGroup with }
+instance addCommGroup : AddCommGroup p := AddSubgroupClass.toAddCommGroup p
 
 end AddCommGroup
 

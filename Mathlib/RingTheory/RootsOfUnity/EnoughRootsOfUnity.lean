@@ -17,7 +17,7 @@ targets for homomorphisms from groups of exponent (dividing) `n`; for example,
 the homomorphisms can then be used to separate elements of the source group.
 -/
 
-@[expose] public section
+public section
 
 /-- This is a type class recording that a commutative monoid `M` contains primitive `n`th
 roots of unity and such that the group of `n`th roots of unity is cyclic.
@@ -114,3 +114,13 @@ end cyclic
 instance {M : Type*} [CommMonoid M] : HasEnoughRootsOfUnity M 1 where
   prim := ⟨1, by simp⟩
   cyc := isCyclic_of_subsingleton
+
+instance {G M : Type*} [Group G] [Finite G] [CommMonoid M]
+    [HasEnoughRootsOfUnity M (Monoid.exponent G)] :
+    Finite (G →* Mˣ) := by
+  let S := rootsOfUnity (Monoid.exponent G) M
+  have : Finite (G →* S) := .of_injective _ DFunLike.coe_injective
+  refine .of_surjective S.subtype.comp fun f ↦ ?_
+  have H a : f a ∈ S := by
+    rw [mem_rootsOfUnity, ← map_pow, Monoid.pow_exponent_eq_one, map_one]
+  exact ⟨.codRestrict f S H, MonoidHom.ext fun _ ↦ by simp⟩

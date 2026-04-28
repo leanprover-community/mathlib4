@@ -47,7 +47,7 @@ def gammaSet := {v : Fin 2 → ℤ | (↑) ∘ v = a ∧ (v 0).gcd (v 1) = r}
 open scoped Function in -- required for scoped `on` notation
 lemma pairwise_disjoint_gammaSet : Pairwise (Disjoint on gammaSet N r) := by
   refine fun u v huv ↦ ?_
-  contrapose! huv
+  contrapose huv
   obtain ⟨f, hf⟩ := Set.not_disjoint_iff.mp huv
   exact hf.1.1.symm.trans hf.2.1
 
@@ -132,9 +132,8 @@ lemma gammaSetDivGcdEquiv_eq (r : ℕ) [NeZero r] (v : gammaSet 1 r 0) :
 def gammaSetDivGcdSigmaEquiv : (Fin 2 → ℤ) ≃ (Σ r : ℕ, gammaSet 1 r 0) := by
   apply (Equiv.sigmaFiberEquiv finGcdMap).symm.trans
   refine Equiv.sigmaCongrRight fun b => ?_
-  apply Equiv.setCongr
-  rw [gammaSet_one_eq]
-  rfl
+  apply Equiv.subtypeEquivProp
+  simp [gammaSet_one_eq]
 
 @[simp]
 lemma gammaSetDivGcdSigmaEquiv_symm_eq (v : Σ r : ℕ, gammaSet 1 r 0) :
@@ -205,7 +204,6 @@ variable (a)
 /-- An Eisenstein series of weight `k` and level `Γ(N)`, with congruence condition `a`. -/
 def _root_.eisensteinSeries (k : ℤ) (z : ℍ) : ℂ := ∑' x : gammaSet N 1 a, eisSummand k x z
 
-set_option backward.isDefEq.respectTransparency false in
 lemma eisensteinSeries_slash_apply (k : ℤ) (γ : SL(2, ℤ)) :
     eisensteinSeries a k ∣[k] γ = eisensteinSeries (a ᵥ* γ) k := by
   ext1 z

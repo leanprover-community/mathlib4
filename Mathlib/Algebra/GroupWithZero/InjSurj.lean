@@ -201,6 +201,7 @@ protected abbrev Function.Injective.commGroupWithZero [Zero G₀'] [Mul G₀'] [
 
 /-- Push forward a `CommGroupWithZero` along a surjective function.
 See note [reducible non-instances]. -/
+@[implicit_reducible]
 protected def Function.Surjective.commGroupWithZero [Zero G₀'] [Mul G₀'] [One G₀'] [Inv G₀']
     [Div G₀'] [Pow G₀' ℕ] [Pow G₀' ℤ] (h01 : (0 : G₀') ≠ 1) (f : G₀ → G₀') (hf : Surjective f)
     (zero : f 0 = 0) (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)

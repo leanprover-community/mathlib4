@@ -76,7 +76,6 @@ theorem continuousOn_tan : ContinuousOn tan {x | cos x ≠ 0} := by
 theorem continuous_tan : Continuous fun x : {x | cos x ≠ 0} => tan x :=
   continuousOn_iff_continuous_restrict.1 continuousOn_tan
 
-set_option backward.isDefEq.respectTransparency false in
 theorem continuousOn_tan_Ioo : ContinuousOn tan (Ioo (-(π / 2)) (π / 2)) := by
   refine ContinuousOn.mono continuousOn_tan fun x => ?_
   simp only [and_imp, mem_Ioo, mem_setOf_eq, Ne]
@@ -264,8 +263,7 @@ theorem arccos_eq_arctan (h : 0 < x) : arccos x = arctan (√(1 - x ^ 2) / x) :=
 
 theorem arctan_inv_of_pos (h : 0 < x) : arctan x⁻¹ = π / 2 - arctan x := by
   rw [← arctan_tan (x := _ - _), tan_pi_div_two_sub, tan_arctan]
-  · norm_num
-    exact (arctan_lt_pi_div_two x).trans (half_lt_self_iff.mpr pi_pos)
+  · simpa using (arctan_lt_pi_div_two x).trans (half_lt_self_iff.mpr pi_pos)
   · rw [sub_lt_self_iff, ← arctan_zero]
     exact tanOrderIso.symm.strictMono h
 
@@ -331,14 +329,12 @@ theorem two_mul_arctan_sub_pi (h : x < -1) :
     2 * arctan x = arctan (2 * x / (1 - x ^ 2)) - π := by
   rw [two_mul, arctan_add_eq_sub_pi (by nlinarith) (by linarith)]; congr 2; ring
 
-set_option backward.isDefEq.respectTransparency false in
 theorem arctan_inv_2_add_arctan_inv_3 : arctan 2⁻¹ + arctan 3⁻¹ = π / 4 := by
   rw [arctan_add] <;> norm_num
 
 theorem two_mul_arctan_inv_2_sub_arctan_inv_7 : 2 * arctan 2⁻¹ - arctan 7⁻¹ = π / 4 := by
   rw [two_mul_arctan, ← arctan_one, sub_eq_iff_eq_add, arctan_add] <;> norm_num
 
-set_option backward.isDefEq.respectTransparency false in
 theorem two_mul_arctan_inv_3_add_arctan_inv_7 : 2 * arctan 3⁻¹ + arctan 7⁻¹ = π / 4 := by
   rw [two_mul_arctan, arctan_add] <;> norm_num
 

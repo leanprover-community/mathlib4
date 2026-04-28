@@ -193,7 +193,6 @@ theorem isFiniteKernel_withDensity_of_bounded (κ : Kernel α β) [IsFiniteKerne
   · rw [withDensity_of_not_measurable _ hf]
     infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary lemma for `IsSFiniteKernel.withDensity`.
 If a kernel `κ` is finite, then `withDensity κ f` is s-finite. -/
 theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : Kernel α β) [IsFiniteKernel κ]
@@ -220,23 +219,18 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : Kernel α β) [IsFin
     exact ⟨min_eq_left ((h_le a b n hn).trans (le_add_of_nonneg_right zero_le_one)),
       min_eq_left (h_le a b n hn)⟩
   have hf_eq_tsum : f = ∑' n, fs n := by
-    have h_sum_a : ∀ a, Summable fun n => fs n a := by
-      refine fun a => Pi.summable.mpr fun b => ?_
-      suffices ∀ n, n ∉ Finset.range ⌈(f a b).toReal⌉₊ → fs n a b = 0 from
-        summable_of_ne_finset_zero this
-      intro n hn_notMem
-      rw [Finset.mem_range, not_lt] at hn_notMem
-      exact h_zero a b n hn_notMem
+    have h_sum_a : ∀ a, Summable fun n => fs n a :=
+      fun _ => Pi.summable.mpr fun _ => ENNReal.summable
     ext a b : 2
     rw [tsum_apply (Pi.summable.mpr h_sum_a), tsum_apply (h_sum_a a),
       ENNReal.tsum_eq_liminf_sum_nat]
-    have h_finset_sum : ∀ n, ∑ i ∈ Finset.range n, fs i a b = min (f a b) n := fun n ↦ by
+    have h_finsetSum : ∀ n, ∑ i ∈ Finset.range n, fs i a b = min (f a b) n := fun n ↦ by
       induction n with
       | zero => simp
       | succ n hn =>
         rw [Finset.sum_range_succ, hn]
         simp [fs]
-    simp_rw [h_finset_sum]
+    simp_rw [h_finsetSum]
     refine (Filter.Tendsto.liminf_eq ?_).symm
     refine Filter.Tendsto.congr' ?_ tendsto_const_nhds
     rw [Filter.EventuallyEq, Filter.eventually_atTop]

@@ -68,10 +68,7 @@ theorem ae_differentiableWithinAt_of_mem {f : ℝ → V} {s : Set ℝ}
   let A := (Module.Basis.ofVectorSpace ℝ V).equivFun.toContinuousLinearEquiv
   suffices H : ∀ᵐ x, x ∈ s → DifferentiableWithinAt ℝ (A ∘ f) s x by
     filter_upwards [H] with x hx xs
-    have : f = (A.symm ∘ A) ∘ f := by
-      simp only [ContinuousLinearEquiv.symm_comp_self, Function.id_comp]
-    rw [this]
-    exact A.symm.differentiableAt.comp_differentiableWithinAt x (hx xs)
+    exact (ContinuousLinearEquiv.comp_differentiableWithinAt_iff _).mp (hx xs)
   apply ae_differentiableWithinAt_of_mem_pi
   exact A.lipschitz.comp_locallyBoundedVariationOn h
 
@@ -89,7 +86,6 @@ theorem _root_.BoundedVariationOn.ae_differentiableAt_of_mem_uIcc {f : ℝ → V
   exact (hx₁ hx₄).differentiableAt
     (Icc_mem_nhds (lt_of_le_of_ne hx₄.left hx₂.symm) (lt_of_le_of_ne hx₄.right hx₃))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A real function into a finite-dimensional real vector space with bounded variation on a set
 is differentiable almost everywhere in this set. -/
 theorem ae_differentiableWithinAt {f : ℝ → V} {s : Set ℝ} (h : LocallyBoundedVariationOn f s)

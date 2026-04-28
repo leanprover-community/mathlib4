@@ -17,9 +17,9 @@ In this file, we define the Karoubi envelope `Karoubi C` of a category `C`.
 ## Main constructions and definitions
 
 - `Karoubi C` is the Karoubi envelope of a category `C`: it is an idempotent
-complete category. It is also preadditive when `C` is preadditive.
+  complete category. It is also preadditive when `C` is preadditive.
 - `toKaroubi C : C ⥤ Karoubi C` is a fully faithful functor, which is an equivalence
-(`toKaroubiIsEquivalence`) when `C` is idempotent complete.
+  (`toKaroubiIsEquivalence`) when `C` is idempotent complete.
 
 -/
 
@@ -140,10 +140,13 @@ def toKaroubi : C ⥤ Karoubi C where
   obj X := ⟨X, 𝟙 X, by rw [comp_id]⟩
   map f := ⟨f, by simp only [comp_id, id_comp]⟩
 
-instance : (toKaroubi C).Full where map_surjective f := ⟨f.f, rfl⟩
+/-- The functor `toKaroubi C : C ⥤ Karoubi C` is fully faithful. -/
+def fullyFaithfulToKaroubi : (toKaroubi C).FullyFaithful where
+  preimage f := f.f
 
-instance : (toKaroubi C).Faithful where
-  map_injective := fun h => congr_arg Karoubi.Hom.f h
+instance : (toKaroubi C).Full := (fullyFaithfulToKaroubi C).full
+
+instance : (toKaroubi C).Faithful := (fullyFaithfulToKaroubi C).faithful
 
 variable {C}
 
@@ -234,7 +237,7 @@ def toKaroubiEquivalence [IsIdempotentComplete C] : C ≌ Karoubi C :=
 
 instance toKaroubiEquivalence_functor_additive [Preadditive C] [IsIdempotentComplete C] :
     (toKaroubiEquivalence C).functor.Additive :=
-  (inferInstance : (toKaroubi C).Additive)
+  inferInstanceAs <| (toKaroubi C).Additive
 
 namespace Karoubi
 

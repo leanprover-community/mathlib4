@@ -129,9 +129,11 @@ theorem eval₂_multiset_sum (s : Multiset R[X]) (x : S) :
     eval₂ f x s.sum = (s.map (eval₂ f x)).sum :=
   map_multiset_sum (eval₂AddMonoidHom f x) s
 
-theorem eval₂_finset_sum (s : Finset ι) (g : ι → R[X]) (x : S) :
+theorem eval₂_finsetSum (s : Finset ι) (g : ι → R[X]) (x : S) :
     (∑ i ∈ s, g i).eval₂ f x = ∑ i ∈ s, (g i).eval₂ f x :=
   map_sum (eval₂AddMonoidHom f x) _ _
+
+@[deprecated (since := "2026-04-08")] alias eval₂_finset_sum := eval₂_finsetSum
 
 theorem eval₂_ofFinsupp {f : R →+* S} {x : S} {p : R[ℕ]} :
     eval₂ f x (⟨p⟩ : R[X]) = liftNC (↑f) (powersHom S x) p := by
@@ -335,16 +337,18 @@ theorem eval_sum (p : R[X]) (f : ℕ → R → R[X]) (x : R) :
     (p.sum f).eval x = p.sum fun n a => (f n a).eval x :=
   eval₂_sum _ _ _ _
 
-theorem eval_finset_sum (s : Finset ι) (g : ι → R[X]) (x : R) :
+theorem eval_finsetSum (s : Finset ι) (g : ι → R[X]) (x : R) :
     (∑ i ∈ s, g i).eval x = ∑ i ∈ s, (g i).eval x :=
-  eval₂_finset_sum _ _ _ _
+  eval₂_finsetSum _ _ _ _
+
+@[deprecated (since := "2026-04-08")] alias eval_finset_sum := eval_finsetSum
 
 /-- `IsRoot p x` implies `x` is a root of `p`. The evaluation of `p` at `x` is zero -/
 def IsRoot (p : R[X]) (a : R) : Prop :=
   p.eval a = 0
 
-instance IsRoot.decidable [DecidableEq R] : Decidable (IsRoot p a) := by
-  unfold IsRoot; infer_instance
+instance IsRoot.decidable [DecidableEq R] : Decidable (IsRoot p a) :=
+  inferInstanceAs <| Decidable (eval a p = 0)
 
 @[simp]
 theorem IsRoot.def : IsRoot p a ↔ p.eval a = 0 :=
@@ -469,7 +473,7 @@ theorem comp_assoc {R : Type*} [CommSemiring R] (φ ψ χ : R[X]) :
       simp_all only [add_comp, mul_comp, C_comp, X_comp, pow_succ, ← mul_assoc]
 
 @[simp] lemma sum_comp (s : Finset ι) (p : ι → R[X]) (q : R[X]) :
-    (∑ i ∈ s, p i).comp q = ∑ i ∈ s, (p i).comp q := Polynomial.eval₂_finset_sum _ _ _ _
+    (∑ i ∈ s, p i).comp q = ∑ i ∈ s, (p i).comp q := Polynomial.eval₂_finsetSum _ _ _ _
 
 end Comp
 
@@ -642,9 +646,11 @@ theorem eval₂_multiset_prod (s : Multiset R[X]) (x : S) :
     eval₂ f x s.prod = (s.map (eval₂ f x)).prod :=
   map_multiset_prod (eval₂RingHom f x) s
 
-theorem eval₂_finset_prod (s : Finset ι) (g : ι → R[X]) (x : S) :
+theorem eval₂_finsetProd (s : Finset ι) (g : ι → R[X]) (x : S) :
     (∏ i ∈ s, g i).eval₂ f x = ∏ i ∈ s, (g i).eval₂ f x :=
   map_prod (eval₂RingHom f x) _ _
+
+@[deprecated (since := "2026-04-08")] alias eval₂_finset_prod := eval₂_finsetProd
 
 /-- Polynomial evaluation commutes with `List.prod`
 -/
@@ -687,7 +693,7 @@ theorem eval_eq_zero_of_dvd_of_eval_eq_zero : p ∣ q → eval x p = 0 → eval 
 
 @[simp]
 theorem eval_geom_sum {R} [CommSemiring R] {n : ℕ} {x : R} :
-    eval x (∑ i ∈ range n, X ^ i) = ∑ i ∈ range n, x ^ i := by simp [eval_finset_sum]
+    eval x (∑ i ∈ range n, X ^ i) = ∑ i ∈ range n, x ^ i := by simp [eval_finsetSum]
 
 variable [NoZeroDivisors R]
 

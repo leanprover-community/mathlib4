@@ -74,7 +74,6 @@ lemma add {f g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) 
        _ < ε / 2 + ε / 2 := by gcongr <;> grind
        _ = ε := by ring
 
-set_option backward.isDefEq.respectTransparency false in
 lemma neg {f : PowerSeries R} (hf : IsRestricted c f) : IsRestricted c (-f) := by
   simpa [isRestricted_iff] using hf
 
@@ -116,7 +115,6 @@ variable [IsUltrametricDist R]
 
 open IsUltrametricDist
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mul {f g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) :
     IsRestricted c (f * g) := by
   obtain ⟨a, ha, fBound1⟩ := (bddAbove_iff_exists_ge 1).mp (convergenceSet_BddAbove _
@@ -131,7 +129,7 @@ lemma mul {f g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) 
   obtain ⟨Nf, fBound2⟩ := (hf (ε / (max a b))) (by positivity)
   obtain ⟨Ng, gBound2⟩ := (hg (ε / (max a b))) (by positivity)
   refine ⟨2 * max Nf Ng, fun n hn ↦ ?_⟩
-  obtain ⟨⟨fst, snd⟩, hi, ultrametric⟩ := exists_norm_finset_sum_le (Finset.antidiagonal n)
+  obtain ⟨⟨fst, snd⟩, hi, ultrametric⟩ := exists_norm_finsetSum_le (Finset.antidiagonal n)
     (fun a ↦ (coeff a.1) f * (coeff a.2) g)
   obtain ⟨rfl⟩ := by simpa using hi (⟨(0, n), by simp⟩)
   calc _ ≤ ‖(coeff fst) f * (coeff snd) g‖ * |c| ^ (fst + snd) := by bound

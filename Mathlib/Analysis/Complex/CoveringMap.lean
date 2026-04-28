@@ -20,13 +20,12 @@ In this file, we show that `Complex.exp` and `(· ^ n)` (for `n ≠ 0`) are a co
 We also show that any complex polynomial is a covering map on the set of regular values.
 -/
 
-@[expose] public section
+public section
 
 open Topology
 
 namespace Complex
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isAddQuotientCoveringMap_exp :
     IsAddQuotientCoveringMap (fun z : ℂ ↦ (⟨_, z.exp_ne_zero⟩ : {z : ℂ // z ≠ 0}))
       (AddSubgroup.zmultiples (2 * Real.pi * I)) := by
@@ -71,9 +70,9 @@ theorem isCoveringMapOn_npow (n : ℕ) (hn : (n : 𝕜) ≠ 0) :
 /-- `(· ^ n) : 𝕜 \ {0} → 𝕜 \ {0}` is a covering map (if `n ≠ 0` in `𝕜`). -/
 theorem isCoveringMap_npow (n : ℕ) (hn : (n : 𝕜) ≠ 0) :
     IsCoveringMap fun x : {x : 𝕜 // x ≠ 0} ↦ (⟨x ^ n, pow_ne_zero n x.2⟩ : {x : 𝕜 // x ≠ 0}) := by
-  convert (isCoveringMapOn_npow n hn).isCoveringMap_restrictPreimage.comp_homeomorph (.setCongr _)
-    using 1
-  ext; simp [show n ≠ 0 by aesop]; rfl
+  convert (isCoveringMapOn_npow n hn).isCoveringMap_restrictPreimage.comp_homeomorph
+    (.setCongr (s := {x | x ≠ 0}) _) using 1
+  ext; simp [show n ≠ 0 by aesop]
 
 /-- `(· ^ n) : 𝕜 \ {0} → 𝕜 \ {0}` is a covering map (if `n ≠ 0` in `𝕜`). -/
 theorem isCoveringMap_zpow (n : ℤ) (hn : (n : 𝕜) ≠ 0) :

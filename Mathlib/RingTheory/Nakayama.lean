@@ -74,7 +74,7 @@ lemma eq_bot_of_eq_ideal_smul_of_le_jacobson_annihilator {I : Ideal R}
     (hIjac : I ≤ N.annihilator.jacobson) : N = ⊥ :=
   (eq_smul_of_le_smul_of_le_jacobson hN hIN.le hIjac).trans N.annihilator_smul
 
-open Pointwise in
+open scoped Pointwise in
 lemma eq_bot_of_eq_pointwise_smul_of_mem_jacobson_annihilator {r : R}
     {N : Submodule R M} (hN : FG N) (hrN : N = r • N)
     (hrJac : r ∈ N.annihilator.jacobson) : N = ⊥ :=
@@ -82,7 +82,7 @@ lemma eq_bot_of_eq_pointwise_smul_of_mem_jacobson_annihilator {r : R}
     (Eq.trans hrN (ideal_span_singleton_smul r N).symm)
     ((span_singleton_le_iff_mem r _).mpr hrJac)
 
-open Pointwise in
+open scoped Pointwise in
 lemma eq_bot_of_set_smul_eq_of_subset_jacobson_annihilator {s : Set R}
     {N : Submodule R M} (hN : FG N) (hsN : N = s • N)
     (hsJac : s ⊆ N.annihilator.jacobson) : N = ⊥ :=
@@ -95,7 +95,7 @@ lemma top_ne_ideal_smul_of_le_jacobson_annihilator [Nontrivial M]
   eq_bot_of_eq_ideal_smul_of_le_jacobson_annihilator Module.Finite.fg_top H <|
     (congrArg (I ≤ Ideal.jacobson ·) annihilator_top).mpr h
 
-open Pointwise in
+open scoped Pointwise in
 lemma top_ne_set_smul_of_subset_jacobson_annihilator [Nontrivial M]
     [Module.Finite R M] {s : Set R}
     (h : s ⊆ (Module.annihilator R M).jacobson) :
@@ -103,7 +103,7 @@ lemma top_ne_set_smul_of_subset_jacobson_annihilator [Nontrivial M]
   ne_of_ne_of_eq (top_ne_ideal_smul_of_le_jacobson_annihilator (span_le.mpr h))
     (span_smul_eq _ _)
 
-open Pointwise in
+open scoped Pointwise in
 lemma top_ne_pointwise_smul_of_mem_jacobson_annihilator [Nontrivial M]
     [Module.Finite R M] {r} (h : r ∈ (Module.annihilator R M).jacobson) :
     (⊤ : Submodule R M) ≠ r • ⊤ :=
@@ -157,7 +157,7 @@ theorem smul_le_of_le_smul_of_le_jacobson_bot {I : Ideal R} {N N' : Submodule R 
     (hIJ : I ≤ jacobson ⊥) (hNN : N' ≤ N ⊔ I • N') : I • N' ≤ N :=
   smul_le_right.trans (le_of_le_smul_of_le_jacobson_bot hN' hIJ hNN)
 
-open Pointwise in
+open scoped Pointwise in
 @[stacks 00DV "(3) see `Submodule.localized₀_le_localized₀_of_smul_le` for the second conclusion."]
 lemma exists_sub_one_mem_and_smul_le_of_fg_of_le_sup {I : Ideal R}
     {N N' P : Submodule R M} (hN' : N'.FG) (hN'le : N' ≤ P) (hNN' : P ≤ N ⊔ I • N') :
@@ -207,7 +207,6 @@ lemma eq_of_map_mkQ_eq_map_mkQ_of_le_jacobson_bot
     simp only [comap_map_mkQ, smul_le_right, sup_of_le_right] at hmaple
     rw [hmaple]; apply le_sup_right
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 **Nakayama's Lemma** - Statement (8) in
 [Stacks 00DV](https://stacks.math.columbia.edu/tag/00DV).

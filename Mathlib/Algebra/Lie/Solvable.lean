@@ -74,6 +74,13 @@ abbrev derivedSeries (k : ℕ) : LieIdeal R L :=
 theorem derivedSeries_def (k : ℕ) : derivedSeries R L k = derivedSeriesOfIdeal R L k ⊤ :=
   rfl
 
+lemma coe_derivedSeries_one_eq :
+    derivedSeries R L 1 = Submodule.span R {⁅x, y⁆ | (x : L) (y : L)} := by
+  ext z
+  simp only [derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_zero,
+    LieIdeal.toLieSubalgebra_toSubmodule, LieSubmodule.lieIdeal_oper_eq_linear_span']
+  aesop
+
 variable {R L}
 
 local notation "D" => derivedSeriesOfIdeal R L
@@ -83,7 +90,6 @@ theorem derivedSeriesOfIdeal_add (k l : ℕ) : D (k + l) I = D k (D l I) := by
   | zero => rw [Nat.zero_add, derivedSeriesOfIdeal_zero]
   | succ k ih => rw [Nat.succ_add k l, derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_succ, ih]
 
-set_option backward.isDefEq.respectTransparency false in
 @[gcongr, mono]
 theorem derivedSeriesOfIdeal_le {I J : LieIdeal R L} {k l : ℕ} (h₁ : I ≤ J) (h₂ : l ≤ k) :
     D k I ≤ D l J := by

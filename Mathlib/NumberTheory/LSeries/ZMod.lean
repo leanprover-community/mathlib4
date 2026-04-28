@@ -89,7 +89,6 @@ lemma LFunction_modOne_eq (Φ : ZMod 1 → ℂ) (s : ℂ) :
   simp only [LFunction, Nat.cast_one, one_cpow, ← singleton_eq_univ (0 : ZMod 1), sum_singleton,
     map_zero, hurwitzZeta_zero, one_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For `1 < re s` the congruence L-function agrees with the sum of the Dirichlet series. -/
 lemma LFunction_eq_LSeries (Φ : ZMod N → ℂ) {s : ℂ} (hs : 1 < re s) :
     LFunction Φ s = LSeries (Φ ·) s := by
@@ -137,7 +136,7 @@ lemma differentiable_LFunction_of_sum_zero {Φ : ZMod N → ℂ} (hΦ : ∑ j, �
 lemma LFunction_residue_one (Φ : ZMod N → ℂ) :
     Tendsto (fun s ↦ (s - 1) * LFunction Φ s) (𝓝[≠] 1) (𝓝 (∑ j, Φ j / N)) := by
   simp only [LFunction, mul_sum]
-  refine tendsto_finset_sum _ fun j _ ↦ ?_
+  refine tendsto_finsetSum _ fun j _ ↦ ?_
   rw [(by ring : Φ j / N = Φ j * (1 / N * 1)), one_div, ← cpow_neg_one]
   simp only [show ∀ a b c d : ℂ, a * (b * (c * d)) = c * (b * (a * d)) by intros; ring]
   refine tendsto_const_nhds.mul (.mul ?_ <| hurwitzZeta_residue_one _)
@@ -162,7 +161,6 @@ private lemma LFunction_stdAddChar_eq_expZeta_of_one_lt_re (j : ZMod N) {s : ℂ
   conv_rhs at this => rw [Int.cast_mul, Int.cast_natCast, Int.cast_natCast, mul_div_assoc]
   rw [← this, Int.cast_mul, Int.cast_natCast, Int.cast_natCast, natCast_zmod_val]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The `LFunction` of the function `x ↦ e (j * x)`, where `e : ZMod N → ℂ` is the standard additive
 character, is `expZeta (j / N)`.
@@ -455,7 +453,6 @@ private lemma completedLFunction_one_sub_of_one_lt_odd (hΦ : Φ.Odd) {s : ℂ} 
     ring
   _ = I * LFunction (𝓕 Φ) s := by rw [inv_I, neg_neg]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Functional equation for completed L-functions (even case), valid at all points of differentiability.
 -/

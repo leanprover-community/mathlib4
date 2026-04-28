@@ -65,25 +65,18 @@ lemma bitwise_zero_right (n : Nat) : bitwise f n 0 = if f true false then n else
 lemma bitwise_zero : bitwise f 0 0 = 0 := by
   simp only [bitwise_zero_right, ite_self]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma bitwise_of_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
     bitwise f n m = bit (f (bodd n) (bodd m)) (bitwise f (n / 2) (m / 2)) := by
   conv_lhs => unfold bitwise
   have mod_two_iff_bod x : (x % 2 = 1 : Bool) = bodd x := by
     simp only [mod_two_of_bodd]; cases bodd x <;> rfl
-  simp only [hn, hm, mod_two_iff_bod, ite_false, bit, two_mul, Bool.cond_eq_ite]
+  simp [hn, hm, mod_two_iff_bod, bit, two_mul]
 
 theorem binaryRec_of_ne_zero {C : Nat → Sort*} (z : C 0) (f : ∀ b n, C n → C (bit b n)) {n}
     (h : n ≠ 0) :
-    binaryRec z f n = bit_bodd_div2 n ▸ f (bodd n) (div2 n) (binaryRec z f (div2 n)) := by
-  cases n using bitCasesOn with
-  | bit b n =>
-    rw [binaryRec_eq _ _ (by right; simpa [bit_eq_zero_iff] using h)]
-    generalize_proofs h; revert h
-    rw [bodd_bit, div2_bit]
-    simp
+    binaryRec z f n = n.bit_bodd_div2 ▸ f n.bodd n.div2 (binaryRec z f n.div2) := by
+  rw [binaryRec, dif_neg h, eqRec_eq_cast, eqRec_eq_cast]; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by rfl) (a m b n) :
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
@@ -131,7 +124,6 @@ theorem testBit_ldiff : ∀ m n k, testBit (ldiff m n) k = (testBit m k && not (
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An alternative for `bitwise_bit` which replaces the `f false false = false` assumption
 with assumptions that neither `bit a m` nor `bit b n` are `0`
 (albeit, phrased as the implications `m = 0 → a = true` and `n = 0 → b = true`) -/
@@ -158,8 +150,8 @@ lemma bitwise_eq_binaryRec (f : Bool → Bool → Bool) :
     | zero => simp only [bitwise_zero_right, binaryRec_zero, Bool.cond_eq_ite]
     | bit yb y hyb =>
       rw [← bit_ne_zero_iff] at hyb
-      simp_rw [binaryRec_of_ne_zero _ _ hyb, bitwise_of_ne_zero hxb hyb, bodd_bit, ← div2_val,
-        div2_bit, eq_rec_constant, ih]
+      simp_rw [binaryRec_of_ne_zero _ _ hyb, bitwise_of_ne_zero hxb hyb, bodd_bit, div2_bit,
+        bit_div_two, eq_rec_constant, ih]
 
 theorem zero_of_testBit_eq_false {n : ℕ} (h : ∀ i, testBit n i = false) : n = 0 := by
   induction n using Nat.binaryRec with | zero => rfl | bit b n hn => ?_
@@ -226,12 +218,12 @@ theorem bitwise_swap {f : Bool → Bool → Bool} :
     bitwise (Function.swap f) = Function.swap (bitwise f) := by
   funext m n
   simp only [Function.swap]
-  induction m using Nat.strongRecOn generalizing n with | ind m ih => ?_
-  rcases m with - | m
-  <;> rcases n with - | n
-  <;> try rw [bitwise_zero_left, bitwise_zero_right]
-  · specialize ih ((m + 1) / 2) (div_lt_self' ..)
-    simp [bitwise_of_ne_zero, ih]
+  induction m using Nat.binaryRec' generalizing n with
+  | zero => simp
+  | bit bm m hm ihm =>
+    induction n using Nat.binaryRec' with
+    | zero => simp
+    | bit bn n hn => rw [bitwise_bit' _ _ _ _ hm hn, bitwise_bit' _ _ _ _ hn hm, ihm]
 
 /-- If `f` is a commutative operation on bools such that `f false false = false`, then `bitwise f`
 is also commutative. -/
@@ -270,18 +262,6 @@ macro "bitwise_assoc_tac" : tactic => set_option hygiene false in `(tactic| (
 theorem land_assoc (n m k : ℕ) : (n &&& m) &&& k = n &&& (m &&& k) := by bitwise_assoc_tac
 
 theorem lor_assoc (n m k : ℕ) : (n ||| m) ||| k = n ||| (m ||| k) := by bitwise_assoc_tac
-
-@[deprecated Nat.xor_xor_cancel_right (since := "2025-10-02")]
-theorem xor_cancel_right (n m : ℕ) : (m ^^^ n) ^^^ n = m := Nat.xor_xor_cancel_right ..
-
-@[deprecated Nat.xor_xor_cancel_left (since := "2025-10-02")]
-theorem xor_cancel_left (n m : ℕ) : n ^^^ (n ^^^ m) = m := Nat.xor_xor_cancel_left ..
-
-@[deprecated Nat.xor_eq_zero_iff (since := "2025-10-02")]
-theorem xor_eq_zero {n m : ℕ} : n ^^^ m = 0 ↔ n = m := Nat.xor_eq_zero_iff
-
-@[deprecated Nat.xor_ne_zero_iff (since := "2025-10-02")]
-theorem xor_ne_zero {n m : ℕ} : n ^^^ m ≠ 0 ↔ n ≠ m := Nat.xor_ne_zero_iff
 
 theorem xor_trichotomy {a b c : ℕ} (h : a ^^^ b ^^^ c ≠ 0) :
     b ^^^ c < a ∨ c ^^^ a < b ∨ a ^^^ b < c := by

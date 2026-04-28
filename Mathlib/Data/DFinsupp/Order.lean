@@ -116,7 +116,6 @@ instance lattice : Lattice (Π₀ i, α i) :=
 
 variable [DecidableEq ι] [∀ (i) (x : α i), Decidable (x ≠ 0)]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem support_inf_union_support_sup : (f ⊓ g).support ∪ (f ⊔ g).support = f.support ∪ g.support :=
   coe_injective <| compl_injective <| by ext; simp [inf_eq_and_sup_eq_iff]
 
@@ -138,8 +137,8 @@ instance (α : ι → Type*) [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder 
   { le_of_add_le_add_left := fun _ _ _ H i ↦ le_of_add_le_add_left (H i) }
 
 instance [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, AddLeftReflectLE (α i)] :
-    AddLeftReflectLE (Π₀ i, α i) :=
-  ⟨fun _ _ _ H i ↦ le_of_add_le_add_left (H i)⟩
+    AddLeftReflectLE (Π₀ i, α i) where
+  le_of_add_le_add_left H i := le_of_add_le_add_left <| H i
 
 section Module
 variable {α : Type*} {β : ι → Type*} [Semiring α] [Preorder α] [∀ i, AddCommMonoid (β i)]
@@ -209,7 +208,6 @@ theorem le_iff' (hf : f.support ⊆ s) : f ≤ g ↔ ∀ i ∈ s, f i ≤ g i :=
 theorem le_iff : f ≤ g ↔ ∀ i ∈ f.support, f i ≤ g i :=
   le_iff' <| Subset.refl _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma support_monotone : Monotone (support (ι := ι) (β := α)) :=
   fun f g h a ha ↦ by rw [mem_support_iff, ← pos_iff_ne_zero] at ha ⊢; exact ha.trans_le (h _)
 

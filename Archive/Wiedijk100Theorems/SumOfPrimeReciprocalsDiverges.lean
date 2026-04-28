@@ -25,8 +25,8 @@ The formalization follows Erdős's proof by upper and lower estimates.
     * `U x k`, the subset of those `e` for which there is a prime `p > k` that divides `e + 1`.
 4. Then `|U x k|` is bounded by the sum over the primes `p > k` of the number of multiples of `p`
    in `(k, x]`, which is at most `x / p`. It follows that `|U x k|` is at most `x` times the sum of
-  the reciprocals of the primes between `k` and `x + 1`, which is less than 1/2 as noted in (2), so
-  `|U x k| < x / 2` (`card_le_mul_sum`).
+   the reciprocals of the primes between `k` and `x + 1`, which is less than 1/2 as noted in (2), so
+   `|U x k| < x / 2` (`card_le_mul_sum`).
 5. By factoring `e + 1 = (m + 1)² * (r + 1)`, `r + 1` squarefree and `m + 1 ≤ √x`, and noting that
    squarefree numbers correspond to subsets of `[1, k]`, we find that `|M x k| ≤ 2 ^ k * √x`
    (`card_le_two_pow_mul_sqrt`).
@@ -97,7 +97,7 @@ of `p`.
 theorem range_sdiff_eq_biUnion {x k : ℕ} : range x \ M x k = U x k := by
   ext e
   simp only [mem_biUnion, not_and, Finset.mem_sdiff, mem_filter, mem_range, U, M, P]
-  push_neg
+  push Not
   constructor
   · rintro ⟨hex, hexh⟩
     obtain ⟨p, ⟨hpp, hpe1⟩, hpk⟩ := hexh hex
@@ -107,7 +107,6 @@ theorem range_sdiff_eq_biUnion {x k : ℕ} : range x \ M x k = U x k := by
     rw [imp_iff_right hex]
     exact ⟨hex, ⟨p, ⟨hpfilter.2.2, hpe1⟩, hpfilter.2.1⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The number of `e < x` for which `e + 1` has a prime factor `p > k` is bounded by `x` times the sum
 of reciprocals of primes in `(k, x]`.
@@ -118,9 +117,10 @@ theorem card_le_mul_sum {x k : ℕ} : #(U x k) ≤ x * ∑ p ∈ P x k, 1 / (p :
   have h : #(P.biUnion N) ≤ ∑ p ∈ P, #(N p) := card_biUnion_le
   calc
     (#(P.biUnion N) : ℝ) ≤ ∑ p ∈ P, (#(N p) : ℝ) := by assumption_mod_cast
-    _ ≤ ∑ p ∈ P, x * (1 / (p : ℝ)) := sum_le_sum fun p _ => ?_
+    _ ≤ ∑ p ∈ P, x * (1 / (p : ℝ)) := by
+      gcongr with p _
+      simp only [N, mul_one_div, Nat.card_multiples, Nat.cast_div_le]
     _ = x * ∑ p ∈ P, 1 / (p : ℝ) := by rw [mul_sum]
-  simp only [N, mul_one_div, Nat.card_multiples, Nat.cast_div_le]
 
 /--
 The number of `e < x` for which `e + 1` is a squarefree product of primes smaller than or equal to
@@ -191,7 +191,6 @@ theorem card_le_two_pow_mul_sqrt {x k : ℕ} : #(M x k) ≤ 2 ^ k * Nat.sqrt x :
     _ = #M₁ * #M₂ := card_product M₁ M₂
     _ ≤ 2 ^ k * x.sqrt := mul_le_mul' card_le_two_pow h2
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Real.tendsto_sum_one_div_prime_atTop :
     Tendsto (fun n => ∑ p ∈ range n with p.Prime, 1 / (p : ℝ))
       atTop atTop := by

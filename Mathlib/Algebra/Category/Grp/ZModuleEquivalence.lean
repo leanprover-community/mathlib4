@@ -16,18 +16,14 @@ either use this equivalence to transport the monoidal structure from `Module ℤ
 or, having constructed that monoidal structure directly, show this functor is monoidal.
 -/
 
-@[expose] public section
-
+public section
 
 open CategoryTheory
-
-open CategoryTheory.Equivalence
 
 universe u
 
 namespace ModuleCat
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The forgetful functor from `ℤ` modules to `AddCommGrpCat` is full. -/
 instance forget₂_addCommGroup_full : (forget₂ (ModuleCat ℤ) AddCommGrpCat.{u}).Full where
   map_surjective {A B}

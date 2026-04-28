@@ -61,7 +61,7 @@ theorem bernoulli_def (n : ℕ) : bernoulli n =
 
 theorem coeff_bernoulli (n i : ℕ) :
     (bernoulli n).coeff i = if i ≤ n then (_root_.bernoulli (n - i) * choose n i) else 0 := by
-  simp only [bernoulli, finset_sum_coeff, coeff_monomial]
+  simp only [bernoulli, finsetSum_coeff, coeff_monomial]
   split_ifs with h
   · convert sum_ite_eq_of_mem (range (n + 1)) (n - i) _ (by grind) using 3 <;> grind [choose_symm]
   · exact Finset.sum_eq_zero <| by grind
@@ -74,25 +74,22 @@ section Examples
 @[simp]
 theorem bernoulli_zero : bernoulli 0 = 1 := by simp [bernoulli]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem bernoulli_one : bernoulli 1 = X - C 2⁻¹ := by
   simp [bernoulli, ← smul_X_eq_monomial, sum_range_succ, ← C_1, -map_one, neg_div, sub_eq_add_neg]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = _root_.bernoulli n := by
-  rw [bernoulli, eval_finset_sum, sum_range_succ]
+  rw [bernoulli, eval_finsetSum, sum_range_succ]
   have : ∑ x ∈ range n, _root_.bernoulli x * n.choose x * 0 ^ (n - x) = 0 := by
     apply sum_eq_zero fun x hx => _
     intro x hx
     simp [tsub_eq_zero_iff_le, mem_range.1 hx]
   simp [this]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem bernoulli_eval_one (n : ℕ) : (bernoulli n).eval 1 = bernoulli' n := by
-  simp only [bernoulli, eval_finset_sum]
+  simp only [bernoulli, eval_finsetSum]
   simp only [← succ_eq_add_one, sum_range_succ, mul_one, cast_one, choose_self,
     (_root_.bernoulli _).mul_comm, sum_bernoulli, one_pow, mul_one, eval_monomial, one_mul]
   by_cases h : n = 1
@@ -145,7 +142,7 @@ nonrec theorem sum_bernoulli (n : ℕ) :
       · skip
       · rw [← Nat.cast_mul, choose_mul (le_add_right _ _), Nat.cast_mul, add_tsub_cancel_left,
           mul_assoc, mul_comm, ← smul_eq_mul, ← smul_monomial]
-  simp_rw [← sum_smul]
+  simp_rw [← sum_smul, Nat.sub_zero]
   rw [sum_range_succ_comm]
   simp only [add_eq_left, mul_one, cast_one, cast_add, add_tsub_cancel_left,
     choose_succ_self_right, one_smul, _root_.bernoulli_zero, sum_singleton, zero_add,
@@ -172,7 +169,7 @@ theorem bernoulli_eq_sub_sum (n : ℕ) :
 theorem sum_range_pow_eq_bernoulli_sub (n p : ℕ) :
     ((p + 1 : ℚ) * ∑ k ∈ range n, (k : ℚ) ^ p) = (bernoulli p.succ).eval (n : ℚ) -
     _root_.bernoulli p.succ := by
-  rw [sum_range_pow, bernoulli_def, eval_finset_sum, ← sum_div, mul_div_cancel₀ _ _]
+  rw [sum_range_pow, bernoulli_def, eval_finsetSum, ← sum_div, mul_div_cancel₀ _ _]
   · simp_rw [eval_monomial]
     symm
     rw [← sum_flip _, sum_range_succ]
@@ -191,7 +188,6 @@ theorem bernoulli_succ_eval (n p : ℕ) : (bernoulli p.succ).eval (n : ℚ) =
   apply eq_add_of_sub_eq'
   rw [sum_range_pow_eq_bernoulli_sub]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem bernoulli_comp_one_add_X (n : ℕ) :
     (bernoulli n).comp (1 + X) = bernoulli n + n • X ^ (n - 1) := by
   refine Nat.strong_induction_on n fun d hd => ?_
@@ -226,6 +222,7 @@ theorem bernoulli_eval_one_add (n : ℕ) (x : ℚ) :
   have := bernoulli_comp_one_add_X n
   simpa using congr(Polynomial.eval x $this)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem bernoulli_comp_neg_X (n : ℕ) :
     (bernoulli n).comp (-X) = (-1) ^ n • (bernoulli n + n • X ^ (n - 1)) := by
   cases n with
@@ -244,7 +241,6 @@ theorem bernoulli_comp_neg_X (n : ℕ) :
   · grind
   · simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem bernoulli_eval_neg (n : ℕ) (x : ℚ) :
     (bernoulli n).eval (-x) = (-1) ^ n * ((bernoulli n).eval x + n * x ^ (n - 1)) := by
   simpa [mul_add] using congr_arg (Polynomial.eval x) (bernoulli_comp_neg_X n)
@@ -256,7 +252,7 @@ theorem bernoulli_comp_one_sub_X (n : ℕ) :
   | succ n =>
     trans ((bernoulli (n + 1)).comp (1 + X)).comp (-X)
     · simp [comp_assoc, sub_eq_add_neg]
-    simp [bernoulli_comp_one_add_X, bernoulli_comp_neg_X, neg_pow (X : Polynomial ℚ), add_assoc]
+    simp [bernoulli_comp_one_add_X, bernoulli_comp_neg_X, neg_pow (X : Polynomial ℚ)]
     ring
 
 theorem bernoulli_eval_one_sub (n : ℕ) (x : ℚ) :

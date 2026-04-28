@@ -7,7 +7,6 @@ module
 
 public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 public import Mathlib.LinearAlgebra.ExteriorPower.Pairing
-public import Mathlib.Order.Extension.Well
 public import Mathlib.RingTheory.Finiteness.Subalgebra
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
@@ -19,8 +18,6 @@ public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 variable {R K M E : Type*} {n : ℕ}
   [CommRing R] [Field K] [AddCommGroup M] [Module R M] [AddCommGroup E] [Module K E]
-
-open BigOperators
 
 namespace exteriorPower
 
@@ -85,7 +82,6 @@ lemma ιMultiDual_apply_nondiag {I : Type*} [LinearOrder I] (b : Basis I R M)
   rw [h, powersetCard.ofFinEmbEquiv_symm_apply, ← powersetCard.mem_coe_iff]
   exact Finset.orderEmbOfFin_mem t.val t.prop j
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `b` is a basis of `M` (indexed by a linearly ordered type), then the family
 `exteriorPower.ιMulti R n b` of the `n`-fold exterior products of its elements is linearly
 independent in the `n`th exterior power of `M`. -/
@@ -147,13 +143,14 @@ lemma basis_repr {I : Type*} [LinearOrder I] (b : Basis I R M) (s : powersetCard
   ext t
   by_cases hst : s = t <;> simp [hst]
 
-/-! ### Freeness and dimension of `⋀[R]^n M. -/
+/-! ### Freeness and dimension of `⋀[R]^n M`. -/
 
 /-- If `M` is a free module, then so is its `n`th exterior power. -/
-instance instFree [Module.Free R M] : Module.Free R (⋀[R]^n M) :=
+instance instFree [Module.Free R M] : Module.Free R (⋀[R]^n M) := by
+  classical
   have ⟨I, b⟩ := Module.Free.exists_basis R M
-  letI : LinearOrder I := IsWellFounded.wellOrderExtension emptyWf.rel
-  Module.Free.of_basis (b.exteriorPower n)
+  letI : LinearOrder I := linearOrderOfSTO WellOrderingRel
+  exact Module.Free.of_basis (b.exteriorPower n)
 
 variable [Nontrivial R]
 
@@ -161,15 +158,14 @@ variable [Nontrivial R]
 the `n`th exterior power of `M` is of finrank `Nat.choose r n`. -/
 lemma finrank_eq [Module.Free R M] [Module.Finite R M] :
     Module.finrank R (⋀[R]^n M) = Nat.choose (Module.finrank R M) n := by
-  letI : LinearOrder (Module.Free.ChooseBasisIndex R M) :=
-    IsWellFounded.wellOrderExtension emptyWf.rel
+  classical
+  let : LinearOrder (Module.Free.ChooseBasisIndex R M) := linearOrderOfSTO WellOrderingRel
   let B := (Module.Free.chooseBasis R M).exteriorPower n
   rw [Module.finrank_eq_card_basis (Module.Free.chooseBasis R M), Module.finrank_eq_card_basis B,
     Fintype.card_eq_nat_card, powersetCard.card, Fintype.card_eq_nat_card]
 
 /-! Results that only hold over a field. -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `v` is a linearly independent family of vectors (indexed by a linearly ordered type),
 then the family of its `n`-fold exterior products is also linearly independent. -/
 lemma ιMulti_family_linearIndependent_field {I : Type*} [LinearOrder I] {v : I → E}

@@ -59,7 +59,6 @@ nonrec theorem MellinConvergent.div_const {f : ℝ → ℂ} {s : ℂ} (hf : Mell
     MellinConvergent (fun t => f t / a) s := by
   simpa only [MellinConvergent, smul_eq_mul, ← mul_div_assoc] using hf.div_const a
 
-set_option backward.isDefEq.respectTransparency false in
 theorem MellinConvergent.comp_mul_left {f : ℝ → E} {s : ℂ} {a : ℝ} (ha : 0 < a) :
     MellinConvergent (fun t => f (a * t)) s ↔ MellinConvergent f s := by
   have := integrableOn_Ioi_comp_mul_left_iff (fun t : ℝ => (t : ℂ) ^ (s - 1) • f t) 0 ha
@@ -135,7 +134,6 @@ theorem mellin_comp_rpow (f : ℝ → E) (s : ℂ) (a : ℝ) :
     cpow_add _ _ (ofReal_ne_zero.mpr <| ne_of_gt ht), ofReal_sub, ofReal_one, mul_sub,
     mul_div_cancel₀ _ (ofReal_ne_zero.mpr ha), add_comm, ← add_sub_assoc, mul_one, sub_add_cancel]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mellin_comp_mul_left (f : ℝ → E) (s : ℂ) {a : ℝ} (ha : 0 < a) :
     mellin (fun t => f (a * t)) s = (a : ℂ) ^ (-s) • mellin f s := by
   simp_rw [mellin]
@@ -189,7 +187,6 @@ section MellinConvergent
 
 /-! ## Convergence of Mellin transform integrals -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary lemma to reduce convergence statements from vector-valued functions to real
 scalar-valued functions. -/
 theorem mellin_convergent_iff_norm [NormedSpace ℂ E] {f : ℝ → E} {T : Set ℝ} (hT : T ⊆ Ioi 0)
@@ -253,11 +250,11 @@ theorem mellin_convergent_zero_of_isBigO {b : ℝ} {f : ℝ → ℝ}
     · refine (ae_restrict_iff' measurableSet_Ioo).mpr (Eventually.of_forall fun t ht => ?_)
       rw [mul_comm, norm_mul]
       specialize hε' _ ht.1
-      · rw [dist_eq_norm, sub_zero, norm_of_nonneg (le_of_lt ht.1)]
+      · rw [dist_eq_norm, sub_zero, norm_of_nonneg ht.1.le]
         exact ht.2
       · calc _ ≤ d * ‖t ^ (-b)‖ * ‖t ^ (s - 1)‖ := by gcongr
           _ = d * t ^ (s - b - 1) := ?_
-        simp_rw [norm_of_nonneg (rpow_nonneg (le_of_lt ht.1) _), mul_assoc]
+        simp_rw [norm_of_nonneg (rpow_nonneg ht.1.le _), mul_assoc]
         rw [← rpow_add ht.1]
         congr 2
         abel
@@ -361,7 +358,7 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [NormedSpace ℂ E] {a b : ℝ}
     rw [norm_cpow_eq_rpow_re_of_pos ht]
     rcases le_or_gt 1 t with h | h
     · refine le_add_of_le_of_nonneg (rpow_le_rpow_of_exponent_le h ?_)
-        (rpow_nonneg (zero_le_one.trans h) _)
+        (by positivity)
       rw [sub_re, one_re, sub_le_sub_iff_right]
       rw [mem_ball_iff_norm] at hz
       have hz' := (re_le_norm _).trans hz.le
@@ -442,7 +439,6 @@ section MellinIoc
 ## Mellin transforms of functions on `Ioc 0 1`
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Mellin transform of the indicator function of `Ioc 0 1`. -/
 theorem hasMellin_one_Ioc {s : ℂ} (hs : 0 < re s) :
     HasMellin (indicator (Ioc 0 1) (fun _ => 1 : ℝ → ℂ)) s (1 / s) := by

@@ -113,21 +113,19 @@ section MapsTo
 theorem mapsTo_iff_image_subset : MapsTo f s t ↔ f '' s ⊆ t :=
   image_subset_iff.symm
 
-@[deprecated (since := "2025-08-30")] alias mapsTo' := mapsTo_iff_image_subset
-
-theorem mapsTo_prodMap_diagonal : MapsTo (Prod.map f f) (diagonal α) (diagonal β) :=
-  diagonal_subset_iff.2 fun _ => rfl
-
 theorem MapsTo.subset_preimage (hf : MapsTo f s t) : s ⊆ f ⁻¹' t := hf
 
 theorem mapsTo_iff_subset_preimage : MapsTo f s t ↔ s ⊆ f ⁻¹' t := Iff.rfl
 
+theorem mapsTo_prodMap_diagonal : MapsTo (Prod.map f f) (diagonal α) (diagonal β) :=
+  mapsTo_iff_subset_preimage.mpr <| diagonal_subset_iff.2 fun _ => rfl
+
 @[simp]
 theorem mapsTo_singleton {x : α} : MapsTo f {x} t ↔ f x ∈ t :=
-  singleton_subset_iff
+  mapsTo_iff_subset_preimage.trans singleton_subset_iff
 
 theorem mapsTo_empty (f : α → β) (t : Set β) : MapsTo f ∅ t :=
-  empty_subset _
+  fun _ ↦ False.elim
 
 @[simp] theorem mapsTo_empty_iff : MapsTo f s ∅ ↔ s = ∅ := by
   simp [mapsTo_iff_image_subset, subset_empty_iff]
@@ -208,7 +206,7 @@ theorem mapsTo_inter : MapsTo f s (t₁ ∩ t₂) ↔ MapsTo f s t₁ ∧ MapsTo
       h.mono (Subset.refl s) inter_subset_right⟩,
     fun h => h.1.inter h.2⟩
 
-theorem mapsTo_univ (f : α → β) (s : Set α) : MapsTo f s univ := fun _ _ => trivial
+@[simp] theorem mapsTo_univ (f : α → β) (s : Set α) : MapsTo f s univ := fun _ _ => trivial
 
 theorem mapsTo_range (f : α → β) (s : Set α) : MapsTo f s (range f) :=
   (mapsTo_image f s).mono (Subset.refl s) (image_subset_range _ _)
@@ -300,7 +298,7 @@ theorem injOn_of_injective (h : Injective f) {s : Set α} : InjOn f s := fun _ _
 alias _root_.Function.Injective.injOn := injOn_of_injective
 
 -- A specialization of `injOn_of_injective` for `Subtype.val`.
-theorem injOn_subtype_val {s : Set { x // p x }} : Set.InjOn Subtype.val s :=
+theorem injOn_subtype_val {p : α → Prop} {s : Set {x // p x}} : Set.InjOn Subtype.val s :=
   Subtype.coe_injective.injOn
 
 lemma injOn_id (s : Set α) : InjOn id s := injective_id.injOn
@@ -389,7 +387,6 @@ lemma InjOn.image_ssubset_image_iff (h : s.InjOn f) (h₁ : s₁ ⊆ s) (h₂ : 
     f '' s₁ ⊂ f '' s₂ ↔ s₁ ⊂ s₂ := by
   simp_rw [ssubset_def, h.image_subset_image_iff h₁ h₂, h.image_subset_image_iff h₂ h₁]
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: can this move to a better place?
 theorem _root_.Disjoint.image {s t u : Set α} {f : α → β} (h : Disjoint s t) (hf : u.InjOn f)
     (hs : s ⊆ u) (ht : t ⊆ u) : Disjoint (f '' s) (f '' t) := by
@@ -476,6 +473,11 @@ theorem surjOn_image (f : α → β) (s : Set α) : SurjOn f s (f '' s) :=
 
 theorem SurjOn.comap_nonempty (h : SurjOn f s t) (ht : t.Nonempty) : s.Nonempty :=
   (ht.mono h).of_image
+
+lemma SurjOn.nonempty_or_eq_empty (h : SurjOn f s t) :
+    s.Nonempty ∨ t = ∅ := by
+  by_contra!
+  exact (h.comap_nonempty this.2).ne_empty this.1
 
 theorem SurjOn.congr (h : SurjOn f₁ s t) (H : EqOn f₁ f₂ s) : SurjOn f₂ s t := by
   rwa [SurjOn, ← H.image_eq]
@@ -884,6 +886,20 @@ theorem SurjOn.leftInvOn_of_rightInvOn (hf : SurjOn f s t) (hf' : RightInvOn f f
   let ⟨x, hx, heq⟩ := hf hy
   rw [← heq, hf' hx]
 
+theorem image_eq_preimage_of_leftInvOn_injOn {f : α → β} {g : β → α} {s : Set α}
+    (hgf : LeftInvOn g f s) (ginj : Set.InjOn g (g ⁻¹' s)) : f '' s = g ⁻¹' s := by
+  ext x
+  constructor
+  · rintro ⟨y, hy, rfl⟩
+    rw [mem_preimage, hgf hy]; exact hy
+  · intro hx
+    refine ⟨g x, hx, Set.InjOn.rightInvOn_of_leftInvOn ginj hgf (Set.mapsTo_preimage g s) ?_ hx⟩
+    intro y hy
+    simpa [hgf hy] using hy
+
+@[deprecated (since := "2026-03-27")]
+alias image_eq_preimage_of_leftInvOn_injOn_mapsTo := image_eq_preimage_of_leftInvOn_injOn
+
 end RightInvOn
 
 /-! ### Two-side inverses -/
@@ -1229,6 +1245,43 @@ protected lemma InvOn.extendDomain (h : InvOn g₁ g₂ s t) :
 end Set
 
 namespace Set
+
+section Prod
+
+variable {α β₁ β₂ : Type*} {s : Set α} {t₁ : Set β₁} {t₂ : Set β₂}
+  {f₁ : α → β₁} {f₂ : α → β₂} {g₁ : β₁ → α} {g₂ : β₂ → α}
+
+lemma InjOn.left_prodMk (h₁ : s.InjOn f₁) : s.InjOn fun x ↦ (f₁ x, f₂ x) :=
+  fun _ hx _ hy h => h₁ hx hy (Prod.ext_iff.1 h).1
+
+lemma InjOn.right_prodMk (h₂ : s.InjOn f₂) : s.InjOn fun x ↦ (f₁ x, f₂ x) :=
+  fun _ hx _ hy h => h₂ hx hy (Prod.ext_iff.1 h).2
+
+lemma prod_surjOn_fst (h : t₂.Nonempty) : (t₁ ×ˢ t₂).SurjOn Prod.fst t₁ :=
+  fun _ h => by simpa [h]
+lemma prod_surjOn_snd (h : t₁.Nonempty) : (t₁ ×ˢ t₂).SurjOn Prod.snd t₂ :=
+  fun _ h => by simpa [h]
+
+lemma prod_surjOn_fst_iff : (t₁ ×ˢ t₂).SurjOn Prod.fst t₁ ↔ t₁ = ∅ ∨ t₂.Nonempty :=
+  ⟨by by_contra!; aesop, by simp +contextual [or_imp, prod_surjOn_fst]⟩
+
+lemma prod_surjOn_snd_iff : (t₁ ×ˢ t₂).SurjOn Prod.snd t₂ ↔ t₁.Nonempty ∨ t₂ = ∅ :=
+  ⟨by by_contra!; aesop, by simp +contextual [or_imp, prod_surjOn_snd]⟩
+
+lemma MapsTo.prodMk (h₁ : MapsTo f₁ s t₁) (h₂ : MapsTo f₂ s t₂) :
+    MapsTo (fun x => (f₁ x, f₂ x)) s (t₁ ×ˢ t₂) :=
+  fun _ hx => ⟨h₁ hx, h₂ hx⟩
+
+lemma LeftInvOn.left_prodMk (h₁ : LeftInvOn g₁ f₁ s) :
+    LeftInvOn (fun x ↦ g₁ x.1) (fun x ↦ (f₁ x, f₂ x)) s := h₁
+
+lemma LeftInvOn.right_prodMk (h₂ : LeftInvOn g₂ f₂ s) :
+    LeftInvOn (fun x ↦ g₂ x.2) (fun x ↦ (f₁ x, f₂ x)) s := h₂
+
+end Prod
+
+section ProdMap
+
 variable {α₁ α₂ β₁ β₂ : Type*} {s₁ : Set α₁} {s₂ : Set α₂} {t₁ : Set β₁} {t₂ : Set β₂}
   {f₁ : α₁ → β₁} {f₂ : α₂ → β₂} {g₁ : β₁ → α₁} {g₂ : β₂ → α₂}
 
@@ -1262,6 +1315,8 @@ lemma RightInvOn.prodMap (h₁ : RightInvOn g₁ f₁ t₁) (h₂ : RightInvOn g
 lemma InvOn.prodMap (h₁ : InvOn g₁ f₁ s₁ t₁) (h₂ : InvOn g₂ f₂ s₂ t₂) :
     InvOn (fun x ↦ (g₁ x.1, g₂ x.2)) (fun x ↦ (f₁ x.1, f₂ x.2)) (s₁ ×ˢ s₂) (t₁ ×ˢ t₂) :=
   ⟨h₁.1.prodMap h₂.1, h₁.2.prodMap h₂.2⟩
+
+end ProdMap
 
 end Set
 

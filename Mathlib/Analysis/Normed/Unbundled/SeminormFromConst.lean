@@ -99,7 +99,7 @@ theorem seminormFromConst_seq_antitone (x : R) : Antitone (seminormFromConst_seq
     have hnm : n - m = 0 := by rw [heq, Nat.sub_self n]
     rw [hnm, heq, div_le_div_iff_of_pos_right (pow_pos hc_pos _), pow_zero]
     conv_rhs => rw [← mul_one (f (x * c ^ n))]
-    exact mul_le_mul_of_nonneg_left hf1 (apply_nonneg f _)
+    gcongr
   | inr hlt =>
     have h1 : 1 ≤ n - m := by
       rw [Nat.one_le_iff_ne_zero]
@@ -127,7 +127,6 @@ theorem seminormFromConst_one : seminormFromConst' c f 1 = 1 := by
   simp only [EventuallyEq, eventually_atTop, ge_iff_le]
   exact ⟨1, seminormFromConst_seq_one hc hpm⟩
 
-set_option backward.isDefEq.respectTransparency false in
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The function `seminormFromConst` is a `RingSeminorm` on `R`. -/
 def seminormFromConst : RingSeminorm R where

@@ -134,10 +134,10 @@ theorem nonempty_of_nonempty_iUnion_eq_univ
   nonempty_of_nonempty_iUnion (s := s) (by simpa only [h_Union] using univ_nonempty)
 
 theorem setOf_exists (p : ι → β → Prop) : { x | ∃ i, p i x } = ⋃ i, { x | p i x } :=
-  ext fun _ => mem_iUnion.symm
+  ext fun _ => .symm <| mem_iUnion
 
 theorem setOf_forall (p : ι → β → Prop) : { x | ∀ i, p i x } = ⋂ i, { x | p i x } :=
-  ext fun _ => mem_iInter.symm
+  ext fun _ => .symm <| mem_iInter
 
 theorem iUnion_subset {s : ι → Set α} {t : Set α} (h : ∀ i, s i ⊆ t) : ⋃ i, s i ⊆ t :=
   iSup_le h
@@ -371,14 +371,14 @@ theorem iInter_union (s : ι → Set β) (t : Set β) : (⋂ i, s i) ∪ t = ⋂
 theorem insert_iInter (x : β) (t : ι → Set β) : insert x (⋂ i, t i) = ⋂ i, insert x (t i) := by
   simp_rw [← union_singleton, iInter_union]
 
-theorem iUnion_diff (s : Set β) (t : ι → Set β) : (⋃ i, t i) \ s = ⋃ i, t i \ s :=
-  iUnion_inter _ _
+theorem iUnion_diff (s : Set β) (t : ι → Set β) : (⋃ i, t i) \ s = ⋃ i, t i \ s := by
+  simp only [diff_eq, iUnion_inter]
 
 theorem diff_iUnion [Nonempty ι] (s : Set β) (t : ι → Set β) : (s \ ⋃ i, t i) = ⋂ i, s \ t i := by
-  rw [diff_eq, compl_iUnion, inter_iInter]; rfl
+  simp only [diff_eq, compl_iUnion, inter_iInter]
 
 theorem diff_iInter (s : Set β) (t : ι → Set β) : (s \ ⋂ i, t i) = ⋃ i, s \ t i := by
-  rw [diff_eq, compl_iInter, inter_iUnion]; rfl
+  simp only [diff_eq, compl_iInter, inter_iUnion]
 
 theorem iUnion_inter_subset {ι α} {s t : ι → Set α} : ⋃ i, s i ∩ t i ⊆ (⋃ i, s i) ∩ ⋃ i, t i :=
   le_iSup_inf_iSup s t
@@ -919,6 +919,10 @@ theorem iUnion₂_eq_univ_iff {s : ∀ i, κ i → Set α} :
 theorem sUnion_eq_univ_iff {c : Set (Set α)} : ⋃₀ c = univ ↔ ∀ a, ∃ b ∈ c, a ∈ b := by
   simp only [eq_univ_iff_forall, mem_sUnion]
 
+theorem iInter_eq_empty_of_eq_empty {i : ι} {f : ι → Set α} (h : f i = ∅) :
+    ⋂ j, f j = ∅ :=
+  subset_eq_empty (iInter_subset _ i) h
+
 -- classical
 theorem iInter_eq_empty_iff {f : ι → Set α} : ⋂ i, f i = ∅ ↔ ∀ x, ∃ i, x ∉ f i := by
   simp [Set.eq_empty_iff_forall_notMem]
@@ -1073,6 +1077,11 @@ theorem iUnion_range_eq_iUnion (C : ι → Set α) {f : ∀ x : ι, β → C x}
   · rintro ⟨i, hx⟩
     obtain ⟨y, hy⟩ := hf i ⟨x, hx⟩
     exact ⟨y, i, congr_arg Subtype.val hy⟩
+
+lemma iUnion_sumElim {ι σ : Type*} (s : ι → Set α) (t : σ → Set α) :
+    ⋃ x, Sum.elim s t x = (⋃ x, s x) ∪ ⋃ x, t x := by
+  ext
+  simp
 
 theorem union_distrib_iInter_left (s : ι → Set α) (t : Set α) : (t ∪ ⋂ i, s i) = ⋂ i, t ∪ s i :=
   sup_iInf_eq _ _
