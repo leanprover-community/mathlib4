@@ -64,7 +64,7 @@ This file contains two uncomfortable uses of `convert`:
 
 open scoped Pointwise
 
-open MulAction Equiv.Perm Equiv Set.powersetCard
+open MulAction Equiv.Perm Equiv Set.powersetCard Subgroup
 
 namespace Equiv.Perm
 
@@ -211,5 +211,31 @@ public theorem isSimpleGroup (hα : 5 ≤ Nat.card α) :
     refine nontrivial_of_three_le_card ?_
     simpa using le_trans (by norm_num) hα
   eq_bot_or_eq_top_of_normal H _ := normal_subgroup_eq_bot_or_eq_top hα
+
+@[deprecated "Use `alternatingGroup.isSimpleGroup` instead." (since := "2026-04-28")]
+theorem IsThreeCycle.alternating_normalClosure (h5 : 5 ≤ Nat.card α) {f : Perm α}
+    (hf : IsThreeCycle f) :
+    normalClosure ({⟨f, hf.mem_alternatingGroup⟩} : Set (alternatingGroup α)) = ⊤ := by
+  have : IsSimpleGroup (alternatingGroup α) := isSimpleGroup h5
+  apply normalClosure_normal.eq_bot_or_eq_top.resolve_left
+  simp [hf.ne_one]
+
+@[deprecated "Use `alternatingGroup.isSimpleGroup` instead." (since := "2026-04-28")]
+theorem normalClosure_finRotate_five : normalClosure ({⟨finRotate 5,
+    finRotate_bit1_mem_alternatingGroup (n := 2)⟩} : Set (alternatingGroup (Fin 5))) = ⊤ := by
+  have : IsSimpleGroup (alternatingGroup (Fin 5)) := isSimpleGroup (by simp)
+  apply normalClosure_normal.eq_bot_or_eq_top.resolve_left
+  simp +decide
+
+@[deprecated "Use `alternatingGroup.isSimpleGroup` instead." (since := "2026-04-28")]
+theorem normalClosure_swap_mul_swap_five : normalClosure ({⟨swap 0 4 * swap 1 3,
+    mem_alternatingGroup.2 (by decide)⟩} : Set (alternatingGroup (Fin 5))) = ⊤ := by
+  have : IsSimpleGroup (alternatingGroup (Fin 5)) := isSimpleGroup (by simp)
+  apply normalClosure_normal.eq_bot_or_eq_top.resolve_left
+  simp +decide
+
+@[deprecated "Use `alternatingGroup.isSimpleGroup` instead." (since := "2026-04-28")]
+instance isSimpleGroup_five : IsSimpleGroup (alternatingGroup (Fin 5)) :=
+  isSimpleGroup (by simp)
 
 end alternatingGroup
