@@ -466,10 +466,9 @@ theorem dvd_of_ysq_dvd {n t} (h : yn a1 n * yn a1 n ∣ yn a1 t) : yn a1 n ∣ t
     rw [ke]
     exact dvd_mul_of_dvd_right (((xy_coprime _ _).pow_left _).symm.dvd_of_dvd_mul_right this) _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem pellZd_succ_succ (n) :
     pellZd a1 (n + 2) + pellZd a1 n = (2 * a : ℕ) * pellZd a1 (n + 1) := by
-  ext <;> simp [pellZd, xn_succ, yn_succ, dz_val, az] <;> ring_nf
+  ext <;> simp [dz_val, az] <;> ring_nf
 
 theorem xy_succ_succ (n) :
     xn a1 (n + 2) + xn a1 n =
