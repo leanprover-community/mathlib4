@@ -42,8 +42,6 @@ noncomputable section
 
 open Function Int Polynomial
 
-open scoped Polynomial
-
 /-- The integers with infinitesimals adjoined. Higher powers of `ε` are smaller than lower
 powers. -/
 abbrev IntWithEpsilon := ℤ[X]
