@@ -35,15 +35,18 @@ The command is intended to be used in the namespace of `C`. It creates declarati
 syntax (name := mkConcreteCategory) declModifiers "mk_concrete_category " term:max ppSpace
   term:max ppSpace term:max ppSpace term:max : command
 
+/-- Variant of `mk_concrete_category` with a custom generated `ofHom` signature. -/
 syntax (name := mkConcreteCategoryWithOfHom) declModifiers "mk_concrete_category " term:max ppSpace
   term:max ppSpace term:max ppSpace term:max ppSpace "with_of_hom"
   (ppSpace bracketedBinder)* ppSpace "hom_type " term:max ppSpace "from " term:max ppSpace
   "to " term:max : command
 
+/-- Variant of `mk_concrete_category` generating multiplicative and additive categories together. -/
 syntax (name := mkConcreteCategoryWithAdditive) declModifiers
   "mk_concrete_category " term:max ppSpace term:max ppSpace term:max ppSpace term:max ppSpace
   "to_additive " term:max ppSpace term:max ppSpace term:max ppSpace term:max : command
 
+/-- Variant of `mk_concrete_category` combining the custom `ofHom` and additive forms. -/
 syntax (name := mkConcreteCategoryWithOfHomAndAdditive) (priority := high) declModifiers
   "mk_concrete_category " term:max ppSpace term:max ppSpace term:max ppSpace term:max ppSpace
   "with_of_hom" (ppSpace bracketedBinder)* ppSpace "hom_type " term:max ppSpace
