@@ -13,7 +13,7 @@ public import Mathlib.Topology.Connected.TotallyDisconnected
 # Separation properties: profinite spaces
 -/
 
-@[expose] public section
+public section
 
 open Function Set Filter Topology TopologicalSpace
 
@@ -28,7 +28,7 @@ theorem totallySeparatedSpace_of_t0_of_basis_clopen [T0Space X]
     (h : IsTopologicalBasis { s : Set X | IsClopen s }) : TotallySeparatedSpace X := by
   constructor
   rintro x - y - hxy
-  choose U hU using exists_isOpen_xor'_mem hxy
+  choose U hU using exists_isOpen_xor_mem hxy
   obtain ⟨hU₀, hU₁⟩ := hU
   rcases hU₁ with hx | hy
   · choose V hV using h.isOpen_iff.mp hU₀ x hx.1
@@ -37,9 +37,6 @@ theorem totallySeparatedSpace_of_t0_of_basis_clopen [T0Space X]
   · choose V hV using h.isOpen_iff.mp hU₀ y hy.1
     exact ⟨Vᶜ, V, hV.1.compl.isOpen, hV.1.isOpen, notMem_subset hV.2.2 hy.2, hV.2.1,
       (union_comm _ _ ▸ union_compl_self V).superset, disjoint_compl_left⟩
-
-@[deprecated (since := "2025-09-11")]
-alias totallySeparatedSpace_of_t1_of_basis_clopen := totallySeparatedSpace_of_t0_of_basis_clopen
 
 variable [T2Space X] [CompactSpace X] [TotallyDisconnectedSpace X]
 

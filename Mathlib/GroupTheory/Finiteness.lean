@@ -36,7 +36,7 @@ assert_not_exists MonoidWithZero
 /-! ### Monoids and submonoids -/
 
 
-open Pointwise
+open scoped Pointwise
 
 variable {M N : Type*} [Monoid M]
 
@@ -118,8 +118,6 @@ theorem Submonoid.FG.prod (hP : P.FG) (hQ : Q.FG) : (P.prod Q).FG := by
   refine ⟨bM ×ˢ singleton 1 ∪ singleton 1 ×ˢ bN, ?_⟩
   push_cast
   simp [closure_union, hbM, hbN]
-
-@[deprecated (since := "2025-08-28")] alias AddSubmonoid.FG.sum := AddSubmonoid.FG.prod
 
 section Pi
 

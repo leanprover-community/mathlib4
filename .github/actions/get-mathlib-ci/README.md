@@ -9,7 +9,8 @@ Any workflow that needs `mathlib-ci` should use this action instead of writing i
 own `actions/checkout` block for `leanprover-community/mathlib-ci`.
 
 The default `ref` in [`action.yml`](./action.yml) is the single canonical pinned
-`mathlib-ci` commit for this repository.
+`mathlib-ci` commit for this repository. This is auto-updated regularly by the
+[`update_dependencies.yml` workflow](../../workflows/update_dependencies.yml).
 
 ## Why
 

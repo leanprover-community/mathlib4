@@ -231,7 +231,7 @@ theorem fourierSubalgebra_separatesPoints : (@fourierSubalgebra T).SeparatesPoin
   intro x y hxy
   refine ⟨_, ⟨fourier 1, subset_adjoin ⟨1, rfl⟩, rfl⟩, ?_⟩
   dsimp only; rw [fourier_one, fourier_one]
-  contrapose! hxy
+  contrapose hxy
   rw [Subtype.coe_inj] at hxy
   exact injective_toCircle hT.elim.ne' hxy
 
@@ -330,7 +330,7 @@ theorem fourierCoeff.sum {ι : Type*} (s : Finset ι) (f : ι → AddCircle T �
   | insert a s ha iha =>
       obtain ⟨hf₁, hf₂⟩ := by simpa using hf
       rw [s.sum_insert ha, s.sum_insert ha,
-        fourierCoeff.add hf₁ (integrable_finset_sum' s hf₂), iha hf₂]
+        fourierCoeff.add hf₁ (integrable_finsetSum' s hf₂), iha hf₂]
 
 
 theorem fourierCoeff.const_smul (f : AddCircle T → E) (c : ℂ) (n : ℤ) :
@@ -455,7 +455,7 @@ theorem tsum_sq_fourierCoeff (f : Lp ℂ 2 <| @haarAddCircle T hT) :
     ∑' i : ℤ, ‖fourierCoeff f i‖ ^ 2 = ∫ t : AddCircle T, ‖f t‖ ^ 2 ∂haarAddCircle :=
   (hasSum_sq_fourierCoeff _).tsum_eq
 
-/-- **Parseval's identity**: for a function `f` which is square integrable on (a,b],
+/-- **Parseval's identity**: for a function `f` which is square integrable on `(a,b]`,
 the sum of the squared norms of the Fourier coefficients equals the `L²` norm of `f`. -/
 theorem hasSum_sq_fourierCoeffOn
     {a b : ℝ} {f : ℝ → ℂ} (hab : a < b) (hL2 : MemLp f 2 (volume.restrict (Ioc a b))) :

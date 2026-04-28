@@ -84,7 +84,6 @@ def toDirectSum : TensorAlgebra R M →ₐ[R] ⨁ n, ⨂[R]^n M :=
     DirectSum.lof R ℕ (fun n => ⨂[R]^n M) _ ∘ₗ
       (LinearEquiv.symm <| PiTensorProduct.subsingletonEquiv (0 : Fin 1) : M ≃ₗ[R] _).toLinearMap
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toDirectSum_ι (x : M) :
     toDirectSum (ι R x) =
@@ -144,7 +143,6 @@ theorem toDirectSum_tensorPower_tprod {n} (x : Fin n → M) :
   rw [GradedMonoid.mk_list_dProd]
   rw [TensorPower.list_prod_gradedMonoid_mk_single]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem toDirectSum_comp_ofDirectSum :
     toDirectSum.comp ofDirectSum = AlgHom.id R (⨁ n, ⨂[R]^n M) := by
   ext

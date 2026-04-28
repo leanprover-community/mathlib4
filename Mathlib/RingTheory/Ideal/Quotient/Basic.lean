@@ -90,12 +90,10 @@ instance noZeroDivisors [hI : I.IsPrime] : NoZeroDivisors (R ⧸ I) where
       (hI.mem_or_mem (eq_zero_iff_mem.1 hab)).elim (Or.inl ∘ eq_zero_iff_mem.2)
         (Or.inr ∘ eq_zero_iff_mem.2)
 
-set_option backward.isDefEq.respectTransparency false in
 instance isDomain [hI : I.IsPrime] : IsDomain (R ⧸ I) :=
   let _ := Quotient.nontrivial_iff.mpr hI.1
   NoZeroDivisors.to_isDomain _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isDomain_iff_prime : IsDomain (R ⧸ I) ↔ I.IsPrime := by
   refine ⟨fun H => ⟨zero_ne_one_iff.1 ?_, fun {x y} h => ?_⟩, fun h => inferInstance⟩
   · haveI : Nontrivial (R ⧸ I) := ⟨H.2.1⟩

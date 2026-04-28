@@ -209,6 +209,12 @@ theorem sigma_eq_prod_primeFactors_sum_range_factorization_pow_mul {k n : ℕ} (
   exact prod_congr n.support_factorization fun _ h ↦
     sigma_apply_prime_pow <| prime_of_mem_primeFactors h
 
+/-- A crude upper bound: `σ_k(n) ≤ n ^ (k + 1)`. -/
+theorem sigma_le_pow_succ (k n : ℕ) : σ k n ≤ n ^ (k + 1) := by
+  simp only [sigma_apply, pow_succ']
+  refine (Finset.sum_le_sum fun d hd ↦ Nat.pow_le_pow_left (Nat.divisor_le hd) k).trans ?_
+  simpa [Finset.sum_const] using Nat.mul_le_mul_right (n ^ k) (Nat.card_divisors_le_self n)
+
 end Sigma
 
 open scoped sigma
