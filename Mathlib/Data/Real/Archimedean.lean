@@ -22,7 +22,8 @@ import Mathlib.Data.Int.LeastGreatest
 
 assert_not_exists Finset
 
-open Pointwise CauSeq
+open scoped Pointwise
+open CauSeq
 
 namespace Real
 variable {ι : Sort*} {f : ι → ℝ} {s : Set ℝ} {a : ℝ}
@@ -148,7 +149,7 @@ theorem lt_sInf_add_pos (h : s.Nonempty) {ε : ℝ} (hε : 0 < ε) : ∃ a ∈ s
   exists_lt_of_csInf_lt h <| lt_add_of_pos_right _ hε
 
 theorem add_neg_lt_sSup (h : s.Nonempty) {ε : ℝ} (hε : ε < 0) : ∃ a ∈ s, sSup s + ε < a :=
-  exists_lt_of_lt_csSup h <| add_lt_iff_neg_left.2 hε
+  exists_lt_of_lt_csSup h <| lt_add_of_pos_left _ hε
 
 theorem sInf_le_iff (h : BddBelow s) (h' : s.Nonempty) :
     sInf s ≤ a ↔ ∀ ε, 0 < ε → ∃ x ∈ s, x < a + ε := by

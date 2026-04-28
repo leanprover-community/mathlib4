@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Group.Even
 # Lemmas about subtraction in unbundled canonically ordered monoids
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*}
 

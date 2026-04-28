@@ -45,7 +45,7 @@ giving definitions, equivalent conditions, and basic properties.
 
 -/
 
-@[expose] public section
+public section
 
 universe u v
 
