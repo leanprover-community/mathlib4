@@ -633,7 +633,8 @@ variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 
 /-- Construct an `α`-indexed chain complex from a dependently-typed differential.
 -/
-def of (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ d n = 0) : ChainComplex V α :=
+abbrev of (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ d n = 0) :
+    ChainComplex V α :=
   { X := X
     d := fun i j => if h : i = j + 1 then eqToHom (by rw [h]) ≫ d j else 0
     shape := fun i j w => by
@@ -645,11 +646,11 @@ def of (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ 
 
 variable (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ d n = 0)
 
-@[simp]
+-- @[simp]
 theorem of_X : (of X d sq).X = X :=
   rfl
 
-@[simp]
+-- @[simp]
 theorem of_d (j : α) : (of X d sq).d (j + 1) j = d j := by
   dsimp [of]
   rw [if_pos rfl, Category.id_comp]
@@ -739,7 +740,7 @@ lemma mkAux_eq_shortComplex_mk_d_comp_d (n : ℕ) :
     mkAux X₀ X₁ X₂ d₀ d₁ s succ n =
       ShortComplex.mk _ _ ((mk X₀ X₁ X₂ d₀ d₁ s succ).d_comp_d (n + 2) (n + 1) n) := by
   rw [show n + 2 = n + 1 + 1 from rfl]
-  simp only [mk, of_X, of_d, mkAux]
+  simp [mk, mkAux]
 
 /-- The isomorphism from `(mk X₀ X₁ X₂ d₀ d₁ s succ).X (n + 3)` that is given by
 the inductive construction. -/
@@ -888,7 +889,7 @@ variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 
 /-- Construct an `α`-indexed cochain complex from a dependently-typed differential.
 -/
-def of (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (n + 1) = 0) :
+abbrev of (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (n + 1) = 0) :
     CochainComplex V α :=
   { X := X
     d := fun i j => if h : i + 1 = j then d _ ≫ eqToHom (by rw [h]) else 0
@@ -904,11 +905,11 @@ def of (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (n +
 
 variable (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (n + 1) = 0)
 
-@[simp]
+-- @[simp]
 theorem of_X : (of X d sq).X = X :=
   rfl
 
-@[simp]
+-- @[simp]
 theorem of_d (j : α) : (of X d sq).d j (j + 1) = d j := by
   dsimp [of]
   rw [if_pos rfl, Category.comp_id]
