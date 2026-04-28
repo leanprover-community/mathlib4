@@ -19,22 +19,17 @@ induced topology on `Over (X i)`, then the combined family covers the top for `J
 
 @[expose] public section
 
-universe u v w
+universe u
 
-namespace CategoryTheory
+namespace CategoryTheory.GrothendieckTopology
 
-variable {C : Type u} [Category.{v} C]
+variable {C : Type*} [Category* C] {J : GrothendieckTopology C}
 
-namespace GrothendieckTopology
-
-variable {J : GrothendieckTopology C}
-
-lemma CoversTop.over {I : Type*} {X : I → C} (hX : J.CoversTop X) {I' : I → Type w}
+lemma CoversTop.over {I : Type*} {X : I → C} (hX : J.CoversTop X) {I' : I → Type u}
     {Y : (i : I) → I' i → Over (X i)} (hY : ∀ i, (J.over (X i)).CoversTop (Y i)) :
     J.CoversTop (fun (j : (i : I) × I' i) ↦ (Y j.1 j.2).left) := fun j ↦
   J.transitive (hX j) _ fun Z f ⟨i, ⟨g⟩⟩ ↦
     J.superset_covering ((Sieve.functorPushforward_ofObjects_le _ _ _).trans
     (Sieve.ofObjects_mono fun i' ↦ by aesop)) (hY _ (.mk g))
 
-end GrothendieckTopology
-
+end CategoryTheory.GrothendieckTopology
