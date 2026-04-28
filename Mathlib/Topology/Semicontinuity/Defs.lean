@@ -1074,16 +1074,22 @@ variable [TopologicalSpace β]
 
 /-- A function `f : α → Set β` has an open cgraph within `s` at `x` if, whenever `x.2 ∈ f x.1`,
 then `x'.2 ∈ f x'.1` for all `x'` sufficiently close to `x` within `s`. -/
-def HasOpenCGraphWithinAt (f : α → Set β) (s : Set (α × β)) (x : α × β) :=
+abbrev HasOpenCGraphWithinAt (f : α → Set β) (s : Set (α × β)) (x : α × β) :=
   ContinuousWithinAt (fun x : α × β ↦ x.2 ∈ f x.1) s x
 
-def HasOpenCGraphOn (f : α → Set β) (s : Set (α × β)) :=
+/-- A function `f : α → Set β` has an open cgraph on `s` if it has an open cgraph within `s` for
+every `x ∈ s`. -/
+abbrev HasOpenCGraphOn (f : α → Set β) (s : Set (α × β)) :=
   ContinuousOn (fun x : α × β ↦ x.2 ∈ f x.1) s
 
-def HasOpenCGraphAt (f : α → Set β) (x : α × β) :=
+/-- A function `f : α → Set β` has an open cgraph at `x` if, whenever `x.2 ∈ f x.1`, then
+`x'.2 ∈ f x'.1` for all `x'` sufficiently close to `x`. -/
+abbrev HasOpenCGraphAt (f : α → Set β) (x : α × β) :=
   ContinuousAt (fun x : α × β ↦ x.2 ∈ f x.1) x
 
-def HasOpenCGraph (f : α → Set β) :=
+/-- A function `f : α → Set β` has an open cgraph if the set of all `x` such that `x.2 ∈ f x.1`
+is open in `α × β`. -/
+abbrev HasOpenCGraph (f : α → Set β) :=
   Continuous fun x : α × β ↦ x.2 ∈ f x.1
 
 /-! ### Iff lemmas -/
