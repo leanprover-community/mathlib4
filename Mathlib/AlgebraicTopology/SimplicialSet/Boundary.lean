@@ -144,17 +144,23 @@ end stdSimplex
 
 namespace boundary
 
+/-- The inclusion of a face of `∂Δ[n]`. -/
 def faceι {n : ℕ} (i : Fin (n + 1)) :
-    (stdSimplex.face {i}ᶜ : SSet.{u}) ⟶ (boundary n : SSet.{u}) :=
+    (stdSimplex.face {i}ᶜ : SSet.{u}) ⟶ ∂Δ[n] :=
   Subcomplex.homOfLE (face_singleton_compl_le_boundary i)
+
+instance {n : ℕ} (i : Fin (n + 1)) : Mono (faceι.{u} i) := by
+  dsimp [faceι]; infer_instance
 
 @[reassoc (attr := simp)]
 lemma faceι_ι {n : ℕ} (i : Fin (n + 2)) :
     faceι i ≫ (boundary.{u} (n + 1)).ι = (stdSimplex.face {i}ᶜ).ι := by
   simp [faceι]
 
+/-- The morphism `Δ[n] ⟶ ∂Δ[n + 1]` corresponding to face
+the face `i : Fin (n + 2)`. -/
 def ι {n : ℕ} (i : Fin (n + 2)) :
-    Δ[n] ⟶ boundary.{u} (n + 1) :=
+    Δ[n] ⟶ (∂Δ[n + 1] : SSet.{u}) :=
   Subcomplex.lift ((stdSimplex.{u}.map (SimplexCategory.δ i))) (by
     simp only [Subcomplex.range_eq_ofSimplex]
     refine le_trans ?_ (face_singleton_compl_le_boundary i)
@@ -162,7 +168,7 @@ def ι {n : ℕ} (i : Fin (n + 2)) :
 
 @[reassoc (attr := simp)]
 lemma ι_ι {n : ℕ} (i : Fin (n + 2)) :
-    ι.{u} i ≫ (boundary.{u} (n + 1)).ι = stdSimplex.{u}.δ i := rfl
+    ι.{u} i ≫ ∂Δ[n + 1].ι = stdSimplex.δ i := rfl
 
 @[reassoc (attr := simp)]
 lemma faceSingletonComplIso_inv_ι {n : ℕ} (i : Fin (n + 2)) :
@@ -170,7 +176,16 @@ lemma faceSingletonComplIso_inv_ι {n : ℕ} (i : Fin (n + 2)) :
   rw [← cancel_epi (stdSimplex.faceSingletonComplIso i).hom, Iso.hom_inv_id_assoc]
   rfl
 
-lemma hom_ext {n : ℕ} {X : SSet.{u}} {f g : (boundary (n + 1) : SSet) ⟶ X}
+instance {n : ℕ} (i : Fin (n + 2)) : Mono (ι.{u} i) := by
+  rw [← mono_comp_iff_of_isIso (stdSimplex.faceSingletonComplIso i).inv,
+    faceSingletonComplIso_inv_ι]
+  infer_instance
+
+instance {n : ℕ} (i : Fin (n + 2)) : Mono (stdSimplex.{u}.δ i) := by
+  rw [← ι_ι]
+  infer_instance
+
+lemma hom_ext {n : ℕ} {X : SSet.{u}} {f g : (∂Δ[n + 1] : SSet) ⟶ X}
     (h : ∀ (i : Fin (n + 2)), ι i ≫ f = ι i ≫ g) :
     f = g := by
   ext m ⟨x, hx⟩
@@ -180,7 +195,7 @@ lemma hom_ext {n : ℕ} {X : SSet.{u}} {f g : (boundary (n + 1) : SSet) ⟶ X}
   exact ConcreteCategory.congr_hom (congr_app (h i) _) _
 
 @[ext]
-lemma hom_ext₀ {X : SSet.{u}} {f g : (boundary 0 : SSet) ⟶ X} : f = g := by
+lemma hom_ext₀ {X : SSet.{u}} {f g : (∂Δ[0] : SSet) ⟶ X} : f = g := by
   ext _ ⟨x, hx⟩
   simp at hx
 
