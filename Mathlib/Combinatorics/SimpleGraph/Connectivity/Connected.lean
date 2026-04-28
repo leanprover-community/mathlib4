@@ -383,7 +383,7 @@ lemma Connected.of_isUniversal (v : V) (h : G.IsUniversal v) : G.Connected := by
   have (u : V) : G.Reachable v u := by
     by_cases! h' : u = v
     · exact h' ▸ Reachable.rfl
-    · exact Adj.reachable (h u h'.symm)
+    · exact Adj.reachable (h h'.symm)
   exact connected_iff _ |>.mpr ⟨fun u w ↦ (this u).symm.trans (this w), ⟨v⟩⟩
 
 /-- The quotient of `V` by the `SimpleGraph.Reachable` relation gives the connected
