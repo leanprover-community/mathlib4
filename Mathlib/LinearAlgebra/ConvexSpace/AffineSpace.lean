@@ -35,6 +35,7 @@ open Convexity
 namespace AddTorsor
 
 /-- The convex combination of points in an affine space, given a probability distribution. -/
+@[expose]
 def convexCombination (s : StdSimplex R P) : P :=
   s.weights.support.affineCombination R id s.weights
 
@@ -97,7 +98,7 @@ theorem convexCombination_assoc (f : StdSimplex R (StdSimplex R P)) :
       simp only [Finsupp.coe_smul, Pi.smul_apply, smul_eq_mul, hp', mul_zero,
         not_true_eq_false] at hp
 
-instance instConvexSpace : ConvexSpace R P where
+instance rtinstConvexSpace : ConvexSpace R P where
   sConvexCombo := convexCombination
   sConvexCombo_single := convexCombination_single
   assoc := convexCombination_assoc

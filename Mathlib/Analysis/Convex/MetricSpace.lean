@@ -46,7 +46,7 @@ open ConvexSpace
 variable {I X : Type*} [ConvexSpace ℝ X] [MetricSpace X]
 
 variable (X) in
-/-- A convex metric space is a real convex space with a compatible metric structure.
+/-- Typeclass for a A convex metric space is a real convex space with a compatible metric structure.
 Concretely, we ask for `dist(∑ tᵢ xᵢ, ∑ tᵢ yᵢ) ≤ ∑ tᵢ dist(xᵢ, yᵢ)`,
 which is what one would expect from the triangle inequality.
 
@@ -55,16 +55,19 @@ In particular, convex subsets of normed affine spaces are convex metric spaces.
 Note that there is a separate notion of
 [convex metric spaces](https://en.wikipedia.org/wiki/Convex_metric_space) in the literature
 that has little to do with this definition. -/
-class ConvexSpace.IsMetricCompatible : Prop where
-  /-- Use `dist_convexCombination_map_le` instead. -/
-  dist_iConvexCombo_le' (f : StdSimplex ℝ ℕ) (x y : ℕ → X) :
-    dist (f.iConvexCombo x) (f.iConvexCombo y) ≤ f.weights.sum fun i r ↦ r * dist (x i) (y i)
+class IsConvexDist : Prop where
+  /-- Use `dist_iConvexCombo_le` instead. -/
+  dist_iConvexCombo_fst_snd_le (f : StdSimplex ℝ (X × X)) :
+    dist (f.iConvexCombo Prod.fst) (f.iConvexCombo Prod.snd) ≤ f.iConvexCombo fun (x, y) ↦ dist x y
 
-variable [ConvexSpace.IsMetricCompatible X]
+variable [IsConvexDist X]
 
 /-- `dist(∑ tᵢ xᵢ, ∑ tᵢ yᵢ) ≤ ∑ tᵢ dist(xᵢ, yᵢ)` -/
 lemma dist_iConvexCombo_le {ι : Type*} (f : StdSimplex ℝ ι) (x y : ι → X) :
     dist (f.iConvexCombo x) (f.iConvexCombo y) ≤ f.weights.sum fun i r ↦ r * dist (x i) (y i) := by
+  simpa [iConvexCombo_map, Function.comp_def]
+
+    using IsConvexDist.dist_iConvexCombo_fst_snd_le (f.map fun i ↦ (x i, y i))
   classical
   let e : ι → ℕ := Function.extend (↑) (f.weights.support.equivFin ·) 0
   have he (x : _) (hx : x ∈ f.weights.support) : e x = ↑(f.weights.support.equivFin ⟨x, hx⟩) :=
@@ -308,7 +311,7 @@ lemma ConvexSpace.ofConvex.coe_iConvexCombo
 
 instance (priority := low) {V P : Type*}
     [NormedAddCommGroup V] [NormedSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P] :
-    ConvexSpace.IsMetricCompatible P where
+    IsConvexDist P where
   dist_iConvexCombo_le' f σ₁ σ₂ := by
     let p : P := Nonempty.some inferInstance
     simp only [AddTorsor.iConvexCombo_eq_affineCombination, ge_iff_le]
@@ -322,7 +325,7 @@ instance (priority := low) {V P : Type*}
 instance ConvexSpace.IsMetricCompatible.of_convex {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] {S : Set E} (H : Convex ℝ S) :
     letI : ConvexSpace ℝ S := .ofConvex H
-    ConvexSpace.IsMetricCompatible S := by
+    IsConvexDist S := by
   letI : ConvexSpace ℝ S := .ofConvex H
   refine ⟨fun f σ₁ σ₂ ↦ .trans ?_ (dist_iConvexCombo_le (X := E) f (σ₁ ·) (σ₂ ·))⟩
   simp [Subtype.dist_eq]

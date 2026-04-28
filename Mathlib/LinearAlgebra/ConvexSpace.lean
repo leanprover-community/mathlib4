@@ -263,11 +263,11 @@ end StdSimplex
     s.iConvexCombo (fun x ↦ x) = s.sConvexCombo := iConvexCombo_id s
 
 lemma iConvexCombo_map (s : StdSimplex R I) (f : I → J) (g : J → M) :
-  (s.map f).iConvexCombo g = s.iConvexCombo (g ∘ f) := by
+    (s.map f).iConvexCombo g = s.iConvexCombo (g ∘ f) := by
   simp only [iConvexCombo, map_comp]
 
 lemma iConvexCombo_congr (s : StdSimplex R I) (f : I ≃ J) (g : I → M) :
-  s.iConvexCombo g = (s.map f).iConvexCombo (g ∘ f.symm) := by
+    s.iConvexCombo g = (s.map f).iConvexCombo (g ∘ f.symm) := by
   simp [iConvexCombo_map, Function.comp_def]
 
 /-- Flattening nested `iConvexCombo`s. -/
