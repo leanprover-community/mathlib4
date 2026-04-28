@@ -44,6 +44,10 @@ lemma herglotzRieszKernel_fun_def (c w : ℂ) :
   ext z
   exact herglotzRieszKernel_def c w z
 
+lemma herglotzRieszKernel_add_const (c w z : ℂ) :
+    herglotzRieszKernel c w (z + c) = herglotzRieszKernel 0 (w - c) z := by
+  simp [herglotzRieszKernel_fun_def]
+
 /--
 The Poisson kernel of integration.
 -/
