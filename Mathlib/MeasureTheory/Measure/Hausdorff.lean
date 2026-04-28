@@ -952,7 +952,7 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
     _ = ∏ i : ι, volume (Ioo (a i : ℝ) (b i)) := by
       simp only [Real.volume_Ioo]
       apply Tendsto.liminf_eq
-      refine ENNReal.tendsto_finset_prod_of_ne_top _ (fun i _ => ?_) fun i _ => ?_
+      refine ENNReal.tendsto_finsetProd_of_ne_top _ (fun i _ => ?_) fun i _ => ?_
       · apply
           Tendsto.congr' _
             ((ENNReal.continuous_ofReal.tendsto _).comp

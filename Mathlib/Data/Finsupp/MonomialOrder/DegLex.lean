@@ -196,7 +196,6 @@ open Finsupp
 
 variable {σ : Type*} [LinearOrder σ] [WellFoundedGT σ]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The deg-lexicographic order on `σ →₀ ℕ`, as a `MonomialOrder` -/
 noncomputable def degLex :
     MonomialOrder σ where

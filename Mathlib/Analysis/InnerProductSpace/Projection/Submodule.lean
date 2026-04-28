@@ -19,7 +19,7 @@ stating that for a subspace `K` of `E` such that `K` admits an orthogonal projec
 `K ⊔ Kᗮ = ⊤`, is a typical example.
 -/
 
-@[expose] public section
+public section
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]

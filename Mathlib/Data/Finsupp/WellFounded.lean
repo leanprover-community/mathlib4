@@ -24,7 +24,7 @@ order `(· < ·)`, but without the ordering conditions on `α`.
 All results are transferred from `DFinsupp` via `Finsupp.toDFinsupp`.
 -/
 
-@[expose] public section
+public section
 
 
 variable {α N : Type*}

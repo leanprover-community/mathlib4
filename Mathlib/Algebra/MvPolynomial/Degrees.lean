@@ -538,11 +538,13 @@ theorem totalDegree_multiset_prod (s : Multiset (MvPolynomial σ R)) :
     s.prod.totalDegree ≤ (s.map MvPolynomial.totalDegree).sum :=
   s.apply_prod_le_sum_map _ totalDegree_one.le totalDegree_mul
 
-theorem totalDegree_finset_prod {ι : Type*} (s : Finset ι) (f : ι → MvPolynomial σ R) :
+theorem totalDegree_finsetProd {ι : Type*} (s : Finset ι) (f : ι → MvPolynomial σ R) :
     (s.prod f).totalDegree ≤ ∑ i ∈ s, (f i).totalDegree :=
   s.apply_prod_le_sum_apply _ totalDegree_one.le totalDegree_mul
 
-theorem totalDegree_finset_sum {ι : Type*} (s : Finset ι) (f : ι → MvPolynomial σ R) :
+@[deprecated (since := "2026-04-08")] alias totalDegree_finset_prod := totalDegree_finsetProd
+
+theorem totalDegree_finsetSum {ι : Type*} (s : Finset ι) (f : ι → MvPolynomial σ R) :
     (s.sum f).totalDegree ≤ Finset.sup s fun i => (f i).totalDegree := by
   induction s using Finset.cons_induction with
   | empty => exact zero_le
@@ -550,9 +552,11 @@ theorem totalDegree_finset_sum {ι : Type*} (s : Finset ι) (f : ι → MvPolyno
     rw [Finset.sum_cons, Finset.sup_cons]
     exact (MvPolynomial.totalDegree_add _ _).trans (max_le_max le_rfl hind)
 
+@[deprecated (since := "2026-04-08")] alias totalDegree_finset_sum := totalDegree_finsetSum
+
 lemma totalDegree_finsetSum_le {ι : Type*} {s : Finset ι} {f : ι → MvPolynomial σ R} {d : ℕ}
     (hf : ∀ i ∈ s, (f i).totalDegree ≤ d) : (s.sum f).totalDegree ≤ d :=
-  (totalDegree_finset_sum ..).trans <| Finset.sup_le hf
+  (totalDegree_finsetSum ..).trans <| Finset.sup_le hf
 
 lemma degreeOf_le_totalDegree (f : MvPolynomial σ R) (i : σ) : f.degreeOf i ≤ f.totalDegree :=
   degreeOf_le_iff.mpr fun d hd ↦ (eq_or_ne (d i) 0).elim (by lia) fun h ↦

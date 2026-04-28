@@ -274,7 +274,7 @@ theorem add {f g : ∀ i, E i} (hf : Memℓp f p) (hg : Memℓp g p) : Memℓp (
 theorem sub {f g : ∀ i, E i} (hf : Memℓp f p) (hg : Memℓp g p) : Memℓp (f - g) p := by
   rw [sub_eq_add_neg]; exact hf.add hg.neg
 
-theorem finset_sum {ι} (s : Finset ι) {f : ι → ∀ i, E i} (hf : ∀ i ∈ s, Memℓp (f i) p) :
+theorem finsetSum {ι} (s : Finset ι) {f : ι → ∀ i, E i} (hf : ∀ i ∈ s, Memℓp (f i) p) :
     Memℓp (fun a => ∑ i ∈ s, f i a) p := by
   haveI : DecidableEq ι := Classical.decEq _
   revert hf
@@ -283,6 +283,8 @@ theorem finset_sum {ι} (s : Finset ι) {f : ι → ∀ i, E i} (hf : ∀ i ∈ 
   · intro i s his ih hf
     simp only [his, Finset.sum_insert, not_false_iff]
     exact (hf i (s.mem_insert_self i)).add (ih fun j hj => hf j (Finset.mem_insert_of_mem hj))
+
+@[deprecated (since := "2026-04-08")] alias finset_sum := finsetSum
 
 section IsBoundedSMul
 
@@ -410,7 +412,7 @@ theorem coeFnAddMonoidHom_apply (x : lp E p) : coeFnAddMonoidHom E p x = ⇑x :=
 
 theorem coeFn_sum {ι : Type*} (f : ι → lp E p) (s : Finset ι) :
     ⇑(∑ i ∈ s, f i) = ∑ i ∈ s, ⇑(f i) :=
-  (lp E p).val_finset_sum f s
+  (lp E p).val_finsetSum f s
 
 @[simp]
 theorem coeFn_sub (f g : lp E p) : ⇑(f - g) = f - g :=
@@ -1259,17 +1261,8 @@ open scoped Topology uniformity
 
 /-- The coercion from `lp E p` to `∀ i, E i` is uniformly continuous. -/
 theorem uniformContinuous_coe [_i : Fact (1 ≤ p)] :
-    UniformContinuous (α := lp E p) ((↑) : lp E p → ∀ i, E i) := by
-  have hp : p ≠ 0 := (zero_lt_one.trans_le _i.elim).ne'
-  rw [uniformContinuous_pi]
-  intro i
-  rw [NormedAddCommGroup.uniformity_basis_dist.uniformContinuous_iff
-    NormedAddCommGroup.uniformity_basis_dist]
-  intro ε hε
-  refine ⟨ε, hε, ?_⟩
-  rintro f g (hfg : ‖f - g‖ < ε)
-  have : ‖f i - g i‖ ≤ ‖f - g‖ := norm_apply_le_norm hp (f - g) i
-  exact this.trans_lt hfg
+    UniformContinuous (α := lp E p) ((↑) : lp E p → ∀ i, E i) :=
+  uniformContinuous_pi.2 fun i ↦ (lipschitzWith_one_eval p i).uniformContinuous
 
 variable {ι : Type*} {l : Filter ι} [Filter.NeBot l]
 
@@ -1290,7 +1283,7 @@ theorem sum_rpow_le_of_tendsto (hp : p ≠ ∞) {C : ℝ} {F : ι → lp E p} (h
   have hp'' : 0 < p.toReal := ENNReal.toReal_pos hp' hp
   let G : (∀ a, E a) → ℝ := fun f => ∑ a ∈ s, ‖f a‖ ^ p.toReal
   have hG : Continuous G := by
-    refine continuous_finset_sum s ?_
+    refine continuous_finsetSum s ?_
     intro a _
     have : Continuous fun f : ∀ a, E a => f a := continuous_apply a
     exact this.norm.rpow_const fun _ => Or.inr hp''.le

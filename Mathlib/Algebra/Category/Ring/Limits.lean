@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Category.Grp.Limits
 public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.Algebra.Ring.Pi
-public import Mathlib.Algebra.Ring.Shrink
+public import Mathlib.Algebra.Ring.Shrink  -- shake: keep (Semiring (Shrink ...)), cf. lean#13417
 public import Mathlib.Algebra.Ring.Subring.Defs
 
 /-!
@@ -29,10 +29,7 @@ not obviously match the target type. In this case, instead of just giving the te
 with `by apply` may speed up things considerably as the types are not elaborated in the same order.
 -/
 
-
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 universe v u w
 

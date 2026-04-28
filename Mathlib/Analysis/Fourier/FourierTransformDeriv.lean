@@ -587,7 +587,7 @@ theorem fourierPowSMulRight_iteratedFDeriv_fourierIntegral [FiniteDimensional �
   · intro m hm
     have I : Integrable (fun v ↦ ∑ p ∈ Finset.range (k + 1) ×ˢ Finset.range (m + 1),
         ‖v‖ ^ p.1 * ‖iteratedFDeriv ℝ p.2 f v‖) μ := by
-      apply integrable_finset_sum _ (fun p hp ↦ ?_)
+      apply integrable_finsetSum _ (fun p hp ↦ ?_)
       simp only [Finset.mem_product, Finset.mem_range_succ_iff] at hp
       exact h'f _ _ ((Nat.cast_le.2 hp.1).trans hk) ((Nat.cast_le.2 hp.2).trans hm)
     apply (I.const_mul ((2 * π) ^ k * (2 * k + 2) ^ m * ‖L‖ ^ k)).mono'
@@ -619,10 +619,10 @@ theorem norm_fourierPowSMulRight_iteratedFDeriv_fourierIntegral_le [FiniteDimens
       Integrable (fun v ↦ ‖v‖ ^ p.1 * ‖iteratedFDeriv ℝ p.2 f v‖) μ := by
     simp only [Finset.mem_product, Finset.mem_range_succ_iff] at hp
     exact h'f _ _ (le_trans (by simpa using hp.1) hk) (le_trans (by simpa using hp.2) hn)
-  rw [← integral_finset_sum _ I, ← integral_const_mul]
+  rw [← integral_finsetSum _ I, ← integral_const_mul]
   apply integral_mono_of_nonneg
   · filter_upwards with v using norm_nonneg _
-  · exact (integrable_finset_sum _ I).const_mul _
+  · exact (integrable_finsetSum _ I).const_mul _
   · filter_upwards with v
     apply norm_iteratedFDeriv_fourierPowSMulRight _ hf (mod_cast hn) _
     intro i hi j hj

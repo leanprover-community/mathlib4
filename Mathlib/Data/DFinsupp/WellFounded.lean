@@ -47,7 +47,7 @@ of a linear order), `¬ r j i ∧ j ≠ i` implies `r i j`, so it suffices to re
 to be well-founded.
 -/
 
-@[expose] public section
+public section
 
 
 variable {ι : Type*} {α : ι → Type*}

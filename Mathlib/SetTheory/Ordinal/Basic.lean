@@ -1184,6 +1184,10 @@ theorem mk_Iio_lt [LinearOrder α] [WellFoundedLT α] (i : α) (h : ord #α = ty
     #(Iio i) < #α :=
   card_typein_lt (r := LT.lt) i h
 
+theorem mk_Ioi_lt {α : Type*} [LinearOrder α] [WellFoundedGT α] (i : α) (h : ord #α = typeLT αᵒᵈ) :
+    #(Ioi i) < #α :=
+  mk_Iio_lt (OrderDual.toDual i) h
+
 @[deprecated mk_Iio_lt (since := "2026-04-12")]
 theorem mk_Iio_toType_ord_lt {c : Cardinal} (i : c.ord.ToType) : #(Iio i) < c := by
   simpa using mk_Iio_lt i
