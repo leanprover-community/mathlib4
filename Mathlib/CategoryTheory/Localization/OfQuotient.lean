@@ -49,7 +49,7 @@ private def strictUniversalPropertyFixedTarget (E : Type*) [Category* E] :
     Localization.StrictUniversalPropertyFixedTarget (functor r) W E where
   inverts := hW
   lift F hF := Quotient.lift r F (fun X Y f₀ f₁ hf ↦ by
-    obtain ⟨Cyl, i₀, i₁, π, hπ, hi₀, hi₁, φ, hφ₀, hφ₁⟩  := hr f₀ f₁ hf
+    obtain ⟨Cyl, i₀, i₁, π, hπ, hi₀, hi₁, φ, hφ₀, hφ₁⟩ := hr f₀ f₁ hf
     rw [← hφ₀, ← hφ₁, Functor.map_comp, Functor.map_comp]
     congr 1
     have := hF _ hπ
