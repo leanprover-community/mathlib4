@@ -23,7 +23,7 @@ Let `f : X → Y` be an open and closed map.
   with finite fibers and `Y` has finitely many connected components, so does `X`.
 -/
 
-@[expose] public section
+public section
 
 open scoped Function
 

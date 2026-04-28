@@ -495,7 +495,7 @@ theorem mem_range_ofSubtype_iff (s : Finset α) (k : alternatingGroup α) :
   rw [range_ofSubtype, mem_subgroupOf, Perm.mem_range_ofSubtype_iff]
   simp
 
-open Pointwise in
+open scoped Pointwise in
 theorem conj_smul_range_ofSubtype (s : Finset α) (g : alternatingGroup α) :
     MulAut.conj g • (ofSubtype s).range = (ofSubtype (g • s)).range := by
   ext k

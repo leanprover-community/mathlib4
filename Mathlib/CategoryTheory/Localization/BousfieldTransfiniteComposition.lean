@@ -17,7 +17,7 @@ is stable under transfinite compositions.
 
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 

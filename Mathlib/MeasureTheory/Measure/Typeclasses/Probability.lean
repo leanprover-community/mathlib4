@@ -17,7 +17,7 @@ We introduce the following typeclasses for measures:
 * `IsProbabilityMeasure μ`: `μ univ = 1`.
 -/
 
-@[expose] public section
+public section
 
 namespace MeasureTheory
 
