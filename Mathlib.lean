@@ -850,6 +850,7 @@ public import Mathlib.Algebra.MonoidAlgebra.MapDomain
 public import Mathlib.Algebra.MonoidAlgebra.Module
 public import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
 public import Mathlib.Algebra.MonoidAlgebra.Opposite
+public import Mathlib.Algebra.MonoidAlgebra.PointwiseSMul
 public import Mathlib.Algebra.MonoidAlgebra.Support
 public import Mathlib.Algebra.MonoidAlgebra.ToDirectSum
 public import Mathlib.Algebra.MvPolynomial.Basic
@@ -1558,6 +1559,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.PiZero
 public import Mathlib.AlgebraicTopology.SimplicialSet.Presentable
 public import Mathlib.AlgebraicTopology.SimplicialSet.ProdStdSimplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.ProdStdSimplexOne
+public import Mathlib.AlgebraicTopology.SimplicialSet.PushoutProduct
 public import Mathlib.AlgebraicTopology.SimplicialSet.RegularEpi
 public import Mathlib.AlgebraicTopology.SimplicialSet.RelativeMorphism
 public import Mathlib.AlgebraicTopology.SimplicialSet.Simplices
@@ -2730,6 +2732,7 @@ public import Mathlib.CategoryTheory.LiftingProperties.Basic
 public import Mathlib.CategoryTheory.LiftingProperties.Limits
 public import Mathlib.CategoryTheory.LiftingProperties.Over
 public import Mathlib.CategoryTheory.LiftingProperties.ParametrizedAdjunction
+public import Mathlib.CategoryTheory.LiftingProperties.PushoutProduct
 public import Mathlib.CategoryTheory.Limits.Bicones
 public import Mathlib.CategoryTheory.Limits.ColimitLimit
 public import Mathlib.CategoryTheory.Limits.Comma
