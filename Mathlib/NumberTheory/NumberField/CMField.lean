@@ -437,6 +437,7 @@ theorem regOfFamily_realFunSystem :
     show f.symm w = (equivInfinitePlace K).symm w.1 by rfl,
     show algebraMap (𝓞 K) K _ = algebraMap K⁺ K _ by rfl, equivInfinitePlace_symm_apply]
   simp [f, g]
+  congr
 
 theorem regulator_div_regulator_eq_two_pow_mul_indexRealUnits_inv :
     regulator K / regulator K⁺ = 2 ^ rank K * (indexRealUnits K : ℝ)⁻¹ := by
