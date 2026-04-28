@@ -33,8 +33,8 @@ variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ]
 
 section Ring
 
-variable (A : Type*) [CommSemiring A]
-variable (B : Type*) [Ring B] [Algebra A B] {v : Valuation B Γ} [hv : v.IsTrivialOn A]
+variable {A : Type*} [CommSemiring A]
+variable {B : Type*} [Ring B] [Algebra A B] {v : Valuation B Γ} [hv : v.IsTrivialOn A]
 
 namespace Polynomial
 
@@ -44,7 +44,7 @@ lemma valuation_aeval_monomial_eq_valuation_pow (w : B) (n : ℕ) {a : A} (ha : 
 
 theorem valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X (w : B) (hpos : 1 < v w)
     {p : Polynomial A} (hp : p ≠ 0) : v (p.aeval w) = v w ^ p.natDegree := by
-  rw [← valuation_aeval_monomial_eq_valuation_pow _ _ _ _ (leadingCoeff_ne_zero.mpr hp)]
+  rw [← valuation_aeval_monomial_eq_valuation_pow _ _ (leadingCoeff_ne_zero.mpr hp)]
   nth_rw 1 [as_sum_range p, map_sum]
   apply Valuation.map_sum_eq_of_lt _ (by simp)
   intro i hi
@@ -64,7 +64,7 @@ end Ring
 section Field
 
 variable (A : Type*) [CommRing A]
-variable (K : Type*) [Field K] [Algebra A K] {v : Valuation K Γ} [hv : v.IsTrivialOn A]
+variable {K : Type*} [Field K] [Algebra A K] {v : Valuation K Γ} [hv : v.IsTrivialOn A]
 
 open Polynomial
 
@@ -82,6 +82,6 @@ theorem Valuation.transcendental_of_ne_one (y : K) (h0 : y ≠ 0) (hy : v y ≠ 
   by_contra!
   replace ⟨p, hpnt, hp⟩ : IsAlgebraic A y := .algebraMap this
   suffices v y ^ p.natDegree = 0 by simp_all
-  rw [← valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X _ _ _ hlt] <;> simp_all
+  rw [← valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X _ hlt] <;> simp_all
 
 end Field
