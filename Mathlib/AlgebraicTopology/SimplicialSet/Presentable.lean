@@ -19,7 +19,7 @@ which will allow the use of the small object argument in `SSet`.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 
