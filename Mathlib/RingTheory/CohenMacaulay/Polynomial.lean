@@ -125,7 +125,6 @@ lemma Polynomial.localization_at_comap_maximal_isCM_isCM [IsNoetherianRing R]
     use ((rs.map (algebraMap R R[X])) ++ [f]).map (algebraMap R[X] (Localization.AtPrime p)), reg
     simpa [cm] using mem''
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Polynomial.isCM_of_isCM [IsNoetherianRing R] [IsCohenMacaulayRing R] :
     IsCohenMacaulayRing R[X] := by
   apply (isCohenMacaulayRing_def _).mpr (fun p hp ↦ ?_)
@@ -160,9 +159,9 @@ theorem Polynomial.isCM_of_isCM [IsNoetherianRing R] [IsCohenMacaulayRing R] :
 
 lemma MvPolynomial.fin_isCM_of_isCM [IsNoetherianRing R] [IsCohenMacaulayRing R] (n : ℕ) :
     IsCohenMacaulayRing (MvPolynomial (Fin n) R) := by
-  induction n
-  · exact isCohenMacaulayRing_of_ringEquiv (isEmptyRingEquiv R (Fin 0)).symm
-  · rename_i n ih
+  induction n with
+  | zero => exact isCohenMacaulayRing_of_ringEquiv (isEmptyRingEquiv R (Fin 0)).symm
+  | succ n ih =>
     have := Polynomial.isCM_of_isCM (MvPolynomial (Fin n) R)
     exact isCohenMacaulayRing_of_ringEquiv (MvPolynomial.finSuccEquiv R n).toRingEquiv.symm
 
