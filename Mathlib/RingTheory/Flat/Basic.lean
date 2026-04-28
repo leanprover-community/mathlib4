@@ -71,7 +71,7 @@ open TensorProduct
 
 namespace Module
 
-open Function (Surjective)
+open Function (Injective Surjective)
 
 open LinearMap Submodule DirectSum
 
@@ -247,6 +247,17 @@ theorem linearIndependent_one_tmul {S} [Semiring S] [Algebra R S] [Flat R S] {ι
   classical rw [LinearIndependent, ← LinearMap.coe_restrictScalars R,
     Finsupp.linearCombination_one_tmul]
   simpa using lTensor_preserves_injective_linearMap _ hv
+
+variable (R M) in
+/-- See also `Module.FaithfullyFlat.tensorProduct_mk_injective`. -/
+lemma tensorProduct_mk_injective
+    (A : Type*) [CommSemiring A] [Algebra R A] [FaithfulSMul R A] [Flat R M] :
+    Injective (TensorProduct.mk R A M 1) := by
+  have : TensorProduct.mk R A M 1 =
+      (Algebra.linearMap R A).rTensor M ∘ (TensorProduct.lid R M).symm := by ext; simp
+  rw [this]
+  refine Injective.comp ?_ (LinearEquiv.injective _)
+  exact Flat.rTensor_preserves_injective_linearMap _ <| FaithfulSMul.algebraMap_injective R A
 
 end Flat
 
