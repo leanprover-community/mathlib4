@@ -45,7 +45,7 @@ namespace isLocalization_functor
 
 variable {r W} in
 /-- Auxiliary definition for `Quotient.isLocalization_functor`. -/
-private def strictUniversalPropertyFixedTarget (E : Type*) [Category E] :
+private def strictUniversalPropertyFixedTarget (E : Type*) [Category* E] :
     Localization.StrictUniversalPropertyFixedTarget (functor r) W E where
   inverts := hW
   lift F hF := Quotient.lift r F (fun X Y f₀ f₁ hf ↦ by
