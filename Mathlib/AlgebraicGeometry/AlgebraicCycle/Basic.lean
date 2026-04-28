@@ -130,6 +130,9 @@ lemma restrict_univ {X : Scheme.{u}} {R : Type*} [Zero R] {D : AlgebraicCycle X 
   ext z
   simp
 
+lemma restrict_subset {X : Scheme.{u}} {R : Type*} [Zero R] {D : AlgebraicCycle X R} {t s : Set X}
+    (h : t ⊆ s) {z : X} (hz : z ∈ t) : D.restrict t z = D.restrict s z := by simp [hz, h hz]
+
 end restrict
 
 variable [Semiring R] (c : AlgebraicCycle X R)

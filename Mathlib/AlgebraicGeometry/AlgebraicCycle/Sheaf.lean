@@ -6,8 +6,8 @@ Authors: Raphael Douglas Giles
 module
 
 public import Mathlib.AlgebraicGeometry.AlgebraicCycle.Principal
-
-set_option backward.isDefEq.respectTransparency false
+public import Mathlib.AlgebraicGeometry.Modules.Presheaf
+public import Mathlib.AlgebraicGeometry.Modules.Sheaf
 
 /-!
 # The sheaf 𝒪ₓ(D) associated to a Weil divisor D
@@ -23,13 +23,7 @@ codimension 1. In particular this is useful for working with normal varieties, w
 Cartier divisors to Weil divisors is injective.
 -/
 
-open AlgebraicGeometry
-open Scheme
-open CategoryTheory
-open Opposite.op
-open Order
-open AlgebraicCycle
-open Opposite
+open AlgebraicGeometry Scheme CategoryTheory Order AlgebraicCycle Opposite
 
 universe u v
 variable {X : Scheme.{u}}
@@ -37,16 +31,6 @@ variable {X : Scheme.{u}}
          [IsLocallyNoetherian X]
 
 open Function locallyFinsuppWithin Ring
-
-lemma locallyFinsuppWithin.restrict_eq_within {Y : Type*} [TopologicalSpace Y] {U : Set Y}
-    {Z : Type*} [Zero Z] {V : Set Y} (D : locallyFinsuppWithin U Z)
-    (h : V ⊆ U) (z : Y) (hz : z ∈ V) :
-  D.restrict h z = D z := dif_pos hz
-
-lemma locallyFinsuppWithin.restrict_eq_zero {Y : Type*} [TopologicalSpace Y] {U : Set Y}
-    {Z : Type*} [Zero Z] {V : Set Y} (D : locallyFinsuppWithin U Z)
-    (h : V ⊆ U) (z : Y) (hz : z ∉ V) :
-  D.restrict h z = 0 := dif_neg hz
 
 class IsIntegralInCodimensionOne (X : Scheme.{u}) where
   domain : ∀ x : X, coheight x = 1 → IsDomain (X.presheaf.stalk x)
@@ -66,7 +50,8 @@ class IsRegularInCodimensionOne (X : Scheme.{u}) extends IsIntegralInCodimension
       have := IsIntegralInCodimensionOne.stalk_domain x hx
       IsDiscreteValuationRing (X.presheaf.stalk x)
 
-lemma IsRegularInCodimensionOne.stalk_dvr {X : Scheme.{u}} [h : IsRegularInCodimensionOne X] (x : X) (hx : coheight x = 1) :
+lemma IsRegularInCodimensionOne.stalk_dvr {X : Scheme.{u}} [h : IsRegularInCodimensionOne X] (x : X)
+    (hx : coheight x = 1) :
   have := IsIntegralInCodimensionOne.stalk_domain x hx
   IsDiscreteValuationRing (X.presheaf.stalk x) := h.dvr x hx
 
@@ -82,7 +67,7 @@ The underlying set of `Γ(𝒪ₓ(D), U)`, defined to be:
 def carrier (D : AlgebraicCycle X ℤ) (U : X.Opens) : Set X.functionField :=
     {s : (X.functionField) | (h : s ≠ 0) → Nonempty U ∧ (div s h).restrict U + D.restrict U ≥ 0}
 
-def add_mem [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (U : X.Opens)
+def add_mem' [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (U : X.Opens)
     {a b : ↑X.functionField}
     (ha : a ∈ carrier D U) (hb : b ∈ carrier D U) : a + b ∈ carrier D U := by
     by_cases hU : Nonempty U
@@ -104,7 +89,8 @@ def add_mem [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (U : X.Open
         by_cases o : Z ∈ U
         · simp [restrict_eq_of_mem _ _ _ o,
                 div_eq_ord_of_coheight_eq_one _ _ _ hZ, Scheme.ord]
-          have : IsDiscreteValuationRing ↑(X.presheaf.stalk Z) := IsRegularInCodimensionOne.stalk_dvr Z hZ
+          have : IsDiscreteValuationRing ↑(X.presheaf.stalk Z) :=
+              IsRegularInCodimensionOne.stalk_dvr Z hZ
           have := @ordFrac_add (X.presheaf.stalk Z)
             _ _ _ (X.functionField) _ (stalkFunctionFieldAlgebra X Z) _ a b h
           simp_all
@@ -117,30 +103,25 @@ def add_mem [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (U : X.Open
         · simp [restrict_eq_zero_of_not_mem _ _ _ o]
     · simp_all [carrier]
 
-def zero_mem (D : AlgebraicCycle X ℤ) (U : X.Opens) : 0 ∈ carrier D U := by
+def zero_mem' (D : AlgebraicCycle X ℤ) (U : X.Opens) : 0 ∈ carrier D U := by
   simp [carrier]
 
-
-def neg_mem (D : AlgebraicCycle X ℤ) (U : X.Opens) (f : X.functionField) (hf : f ∈ carrier D U) :
+def neg_mem' (D : AlgebraicCycle X ℤ) (U : X.Opens) (f : X.functionField) (hf : f ∈ carrier D U) :
     (- f) ∈ carrier D U := by
   simp_all [carrier]
 
-def smul_mem (D : AlgebraicCycle X ℤ) (U : X.Opens) [Nonempty U] (a : Γ(X, U)) {f : X.functionField}
+def smul_mem' (D : AlgebraicCycle X ℤ) (U : X.Opens) [Nonempty U] (a : Γ(X, U)) {f : X.functionField}
   (hf : f ∈ carrier D U) : a • f ∈ carrier D U := by
     simp_all only [carrier, true_and]
     intro nez z
     have h : ¬ f = 0 := by
-      simp_all only [ne_eq, Set.top_eq_univ, ge_iff_le, Set.mem_setOf_eq]
-      apply Aesop.BuiltinRules.not_intro
-      intro a_1
-      subst a_1
-      simp_all only [not_true_eq_false, IsEmpty.forall_iff, smul_zero]
+      intro _
+      simp_all
     specialize hf h z
-    simp only [coe_zero, Pi.zero_apply, Set.top_eq_univ,
-      coe_add, Pi.add_apply] at hf
+    simp only [coe_zero, Pi.zero_apply, coe_add, Pi.add_apply] at hf
     have hU : U.1 ⊆ ⊤ := by simp_all
-    suffices (div f h).restrict hU z ≤ (div (a • f) nez).restrict hU z by
-      trans (div f h).restrict hU z + D.restrict hU z
+    suffices (div f h).restrict U z ≤ (div (a • f) nez).restrict U z by
+      trans (div f h).restrict U z + D.restrict U z
       · exact hf
       · exact
         (Int.add_le_add_iff_right
@@ -148,32 +129,27 @@ def smul_mem (D : AlgebraicCycle X ℤ) (U : X.Opens) [Nonempty U] (a : Γ(X, U)
           this
     by_cases hz : coheight z = 1
     · by_cases o : z ∈ U
-      · simp [locallyFinsuppWithin.restrict_eq_within _ _ _ o,
+      · simp [restrict_eq_of_mem _ _ _ o,
           div_eq_ord_of_coheight_eq_one _ _ _ hz, Scheme.ord]
-
         let i := TopCat.Presheaf.algebra_section_stalk X.presheaf ⟨z, o⟩
-
         have : Ring.KrullDimLE 1 ↑(X.presheaf.stalk z) := krullDimLE_of_coheight hz
-
         let test : IsScalarTower ↑Γ(X, U) ↑(X.presheaf.stalk z) ↑X.functionField :=
             AlgebraicGeometry.functionField_isScalarTower X U ⟨z, o⟩
-        --apply @ordFrac_le_smul _ _ _ _ _ _ _ (stalkFunctionFieldAlgebra X z) _ _ _ i
-        --  (instAlgebraCarrierObjOppositeOpensCarrierCarrierCommRingCatPresheafOpOpensFunctionFieldOfNonemptyToScheme X U) test a ?_ f
         apply @ordFrac_le_smul _ _ _ _ _ _ _ _ _ _ _ _ _ test a ?_ f
         · suffices ((algebraMap ↑Γ(X, U) ↑(X.presheaf.stalk z)) a) • f ≠ 0 by
             exact left_ne_zero_of_smul this
           simpa [algebraMap_smul]
-      · simp [locallyFinsuppWithin.restrict_eq_zero _ _ _ o]
+      · simp [restrict_eq_zero_of_not_mem _ _ _ o]
     · by_cases o : z ∈ U
-      · simp [locallyFinsuppWithin.restrict_eq_within _ _ _ o,
+      · simp [restrict_eq_of_mem _ _ _ o,
               div_eq_zero_of_coheight_ne_one _ _ _ hz]
-      · simp [locallyFinsuppWithin.restrict_eq_zero _ _ _ o]
+      · simp [restrict_eq_zero_of_not_mem _ _ _ o]
 
 variable [IsRegularInCodimensionOne X]
 def addSubgroup (D : AlgebraicCycle X ℤ) (U : X.Opens) : AddSubgroup X.functionField where
   carrier := carrier D U
-  add_mem' := add_mem D U
-  zero_mem' := zero_mem D U
+  add_mem' := add_mem' D U
+  zero_mem' := zero_mem' D U
   neg_mem' := by simp_all [carrier];
 
 lemma memAddSubgroup {D : AlgebraicCycle X ℤ} {U : X.Opens} (f : carrier D U) :
@@ -190,7 +166,8 @@ instance : Zero (carrier D U) where
   zero := mk_of_mem_subgroup 0 <| zero_mem _
 
 instance : Add (carrier D U) where
-  add f g := mk_of_mem_subgroup (f + g) <| add_mem (AlgebraicCycle.Sheaf.memAddSubgroup f) (AlgebraicCycle.Sheaf.memAddSubgroup g)
+  add f g := mk_of_mem_subgroup (f + g) <| add_mem (AlgebraicCycle.Sheaf.memAddSubgroup f)
+      (AlgebraicCycle.Sheaf.memAddSubgroup g)
 
 instance : Neg (carrier D U) where
   neg f := mk_of_mem_subgroup (-f) <| neg_mem (Sheaf.memAddSubgroup f)
@@ -229,7 +206,7 @@ def moduleNonempty
     (D : AlgebraicCycle X ℤ) (U : X.Opens) [Nonempty U] :
     Submodule Γ(X, U) X.functionField where
   __ := addSubgroup D U
-  smul_mem' := smul_mem D U
+  smul_mem' := smul_mem' D U
 
 lemma memModuleNonempty {D : AlgebraicCycle X ℤ} {U : X.Opens} [Nonempty U] (f : carrier D U) :
     (f : X.functionField) ∈ moduleNonempty D U := by simp
@@ -251,7 +228,7 @@ private lemma smulVal_mem_carrier (a : Γ(X, U)) (f : carrier D U) :
     smulVal a f.val ∈ carrier D U := by
   simp only [smulVal]
   split_ifs with hU
-  · exact smul_mem D U a f.prop
+  · exact smul_mem' D U a f.prop
   · exact f.prop
 
 noncomputable instance : SMul Γ(X, U) (carrier D U) where
@@ -317,7 +294,8 @@ noncomputable instance instModuleCarrier : Module Γ(X, U) (carrier D U) where
       exact congr_arg Subtype.val (Subsingleton.elim x 0)
 
 end insts
-open Pseudofunctor
+
+--open Pseudofunctor
 
 noncomputable
 def obj (D : AlgebraicCycle X ℤ) (U : (TopologicalSpace.Opens ↥X)ᵒᵖ) :
@@ -334,11 +312,13 @@ lemma mapFunProof (D : AlgebraicCycle X ℤ) {U V : X.Opens}
   intro h
   specialize hf h
   refine ⟨hV, ?_⟩
-  simp
-  rw [Function.locallyFinsuppWithin_le_iff]
-  intro z hz
-  have := hf.2 z
-  simpa [restrict_apply, hz, r hz] using this
+  simp only [ge_iff_le]
+  rw [homogeneous_le_iff (t := V)]
+  on_goal 1 =>
+    intro z hz
+    have := hf.2 z
+    simpa [hz, r hz] using this
+  all_goals simp_all
 
 open Classical in
 noncomputable
@@ -380,7 +360,7 @@ instance [IrreducibleSpace X] {U V : X.Opens} (k : V ≤ U)
   change _ = (X.presheaf.map (homOfLE k).op ≫ _).hom
   simp
 
-
+set_option backward.isDefEq.respectTransparency false in
 noncomputable
 def map (D : AlgebraicCycle X ℤ) {U V : (TopologicalSpace.Opens ↥X)ᵒᵖ} (r : U ⟶ V) :
     obj D U ⟶ (ModuleCat.restrictScalars (X.ringCatSheaf.obj.map r).hom).obj (obj D V) := by
@@ -429,6 +409,7 @@ def map (D : AlgebraicCycle X ℤ) {U V : (TopologicalSpace.Opens ↥X)ᵒᵖ} (
       · exact Subsingleton.elim (h := instSubsingleTonOfEmpty hV) _ _
   }
 
+set_option backward.isDefEq.respectTransparency false in
 def map_id (D : AlgebraicCycle X ℤ) (U : (TopologicalSpace.Opens ↥X)ᵒᵖ) :
     map D (𝟙 U) = (ModuleCat.restrictScalarsId' (RingCat.Hom.hom (X.ringCatSheaf.obj.map (𝟙 U)))
     (congrArg RingCat.Hom.hom (X.ringCatSheaf.obj.map_id U))).inv.app (obj D U) := by
@@ -445,6 +426,7 @@ def map_id (D : AlgebraicCycle X ℤ) (U : (TopologicalSpace.Opens ↥X)ᵒᵖ) 
     intro x
     exact Subsingleton.elim (h := instSubsingleTonOfEmpty h) _ _
 
+set_option backward.isDefEq.respectTransparency false in
 def map_comp (D : AlgebraicCycle X ℤ)
   {U V W : (TopologicalSpace.Opens ↥X)ᵒᵖ} (f : U ⟶ V) (g : V ⟶ W) :
   map D (f ≫ g) = map D f ≫
@@ -487,10 +469,13 @@ lemma presheaf.map_eq (D : AlgebraicCycle X ℤ) {U V : (TopologicalSpace.Opens 
 /--
 Something strange is going on with this as well, note that just by simp should work in the sorried
 statement below
+
+Now the grind statement is not working...
 -/
+
 lemma presheaf.map_eq' (D : AlgebraicCycle X ℤ) {U V : (TopologicalSpace.Opens ↥X)ᵒᵖ}
     (r : U ⟶ V) : (presheaf D).presheaf.map r =
-    AddCommGrpCat.ofHom (AddMonoidHom.mk' (map D r) (by grind)) := rfl
+    AddCommGrpCat.ofHom (AddMonoidHom.mk' (map D r) sorry) := rfl
 
 def connectedByCover {I : Type*} (𝒰 : I → X.Opens) :
   Rel I I := Relation.TransGen <| fun a b ↦ Nonempty (𝒰 a ⊓ 𝒰 b : X.Opens)
@@ -698,7 +683,7 @@ lemma isSheaf (D : AlgebraicCycle X ℤ) :
   simp
   constructor
   · intro j
-    unfold mapFun
+   --unfold mapFun
     simp [sec, h j]
     change ⟨_, _⟩ = s j
     apply Subtype.ext
