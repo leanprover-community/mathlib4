@@ -32,7 +32,7 @@ inst✝¹ inst✝ : Add Nat
 ---
 warning: Declaration `foo` has overlapping instances:
 
-There are 4 `[Add Nat]` instances
+There are 4 `[Add Nat]` instances.
 
 Consider choosing different instance hypotheses.
 
@@ -44,10 +44,10 @@ def foo [Add Nat] [Add Nat] : [Add Nat] → [Add Nat] → Bool := by
 
 
 /--
-@ +3:68...+4:12
+@ +3:21...+4:12
 warning: Declaration `foo₁` has overlapping instances:
 
-`[FooBarBaz Nat]` and `[FooBarBaq Nat]` give conflicting instances of `SubBar Nat`.
+`[FooBarBaz Nat]` and `[FooBarBaq Nat]` give conflicting instances of `[SubBar Nat]`.
 
 Consider choosing different instance hypotheses.
 
@@ -62,8 +62,8 @@ set_option linter.overlappingInstances true in
 /--
 warning: Declaration `foo₂` has overlapping instances:
 
-• There are 2 `[FooBarBaz Nat]` instances
-• `[FooBarBaz Nat]`, `[FooBarBaz Nat]`, and `[FooBarBaq Nat]` give conflicting instances of `SubBar Nat`.
+• There are 2 `[FooBarBaz Nat]` instances.
+• `[FooBarBaz Nat]`, `[FooBarBaz Nat]`, and `[FooBarBaq Nat]` give conflicting instances of `[SubBar Nat]`.
 
 Consider choosing different instance hypotheses.
 
@@ -75,7 +75,7 @@ def foo₂ [FooBarBaz Nat] [FooBarBaz Nat] [FooBarBaq Nat] : Bool := true
 /--
 warning: Declaration `foo₃` has overlapping instances:
 
-There are 2 `[FooBarBaz Nat]` instances
+There are 2 `[FooBarBaz Nat]` instances.
 
 Consider choosing different instance hypotheses.
 
@@ -87,8 +87,8 @@ def foo₃ [FooBarBaz Nat] [FooBarBaz Nat] : Bool := true
 /--
 warning: Declaration `foo₄` has overlapping instances:
 
-• There are 2 `[FooBarBaz Nat]` instances
-• `[FooBarBaz Nat]`, `[FooBarBaz Nat]`, and `[Bar Nat]` give conflicting instances of `SubBar Nat`.
+• There are 2 `[FooBarBaz Nat]` instances.
+• `[FooBarBaz Nat]`, `[FooBarBaz Nat]`, and `[Bar Nat]` give conflicting instances of `[SubBar Nat]`.
 
 Consider choosing different instance hypotheses.
 
@@ -100,7 +100,7 @@ theorem foo₄ [FooBarBaz Nat] [FooBarBaz Nat] [Bar Nat] : True := trivial
 /--
 warning: Declaration `foo₅` has overlapping instances:
 
-`[FooBarBaz Nat]` and `[FooBarBaz' Nat]` give conflicting instances of `Baz Nat` and `SubBar Nat`.
+`[FooBarBaz Nat]` and `[FooBarBaz' Nat]` give conflicting instances of `[Baz Nat]` and `[SubBar Nat]`.
 
 Consider choosing different instance hypotheses.
 
@@ -109,6 +109,19 @@ Note: This linter can be disabled with `set_option linter.overlappingInstances f
 #guard_msgs in
 lemma foo₅ [FooBarBaz Nat] [FooBarBaz' Nat] : True := trivial
 
+/--
+warning: Declaration `foo₆` has overlapping instances:
+
+• `[FooBarBaz Nat]` and `[FooBarBaz' Nat]` give conflicting instances of `[Baz Nat]`.
+• `[FooBarBaz Nat]`, `[FooBarBaz' Nat]`, and `[FooBarBaq Nat]` give conflicting instances of `[SubBar Nat]`.
+
+Consider choosing different instance hypotheses.
+
+Note: This linter can be disabled with `set_option linter.overlappingInstances false`
+-/
+#guard_msgs in
+lemma foo₆ [FooBarBaz Nat] [FooBarBaz' Nat] [FooBarBaq Nat] : True := trivial
+
 namespace Foo
 
 /-! Test unresolving name (`foo`, not `Foo.foo` or `_private...foo`) -/
@@ -116,7 +129,7 @@ namespace Foo
 /--
 warning: Declaration `foo` has overlapping instances:
 
-There are 2 `[Add Nat]` instances
+There are 2 `[Add Nat]` instances.
 
 Consider choosing different instance hypotheses.
 
@@ -137,7 +150,7 @@ class inductive IndFoo where
 /--
 warning: Declaration `indFoo` has overlapping instances:
 
-There are 2 `[IndFoo]` instances
+There are 2 `[IndFoo]` instances.
 
 Consider choosing different instance hypotheses.
 
@@ -152,7 +165,7 @@ class inductive IndFooProp : Prop where
 /--
 warning: Declaration `indFooProp` has overlapping instances:
 
-There are 2 `[IndFooProp]` instances
+There are 2 `[IndFooProp]` instances.
 
 Consider choosing different instance hypotheses.
 
@@ -170,7 +183,7 @@ variable {α : Type*} [Repr α]
 /--
 warning: Declaration `needsInstantiateMVars` has overlapping instances:
 
-There are 2 `[Repr α]` instances
+There are 2 `[Repr α]` instances.
 
 Consider choosing different instance hypotheses.
 
@@ -191,7 +204,7 @@ set_option linter.overlappingInstances false
 /--
 warning: Declaration `fooSomething` has overlapping instances:
 
-There are 4 `[Add Nat]` instances
+There are 4 `[Add Nat]` instances.
 
 Consider choosing different instance hypotheses.
 
@@ -214,7 +227,7 @@ class B (α : Type u) extends A α
 /--
 warning: Declaration `_example` has overlapping instances:
 
-`[B α]` and `[A α]` give conflicting instances of `A α`.
+`[B α]` and `[A α]` give conflicting instances of `[A α]`.
 
 Consider choosing different instance hypotheses.
 
@@ -240,7 +253,7 @@ class B' (α β : Type*) [A' α] extends B α β where
 /--
 warning: Declaration `_example` has overlapping instances:
 
-`[B α β]` and `[B' α β]` give conflicting instances of `B α β`.
+`[B α β]` and `[B' α β]` give conflicting instances of `[B α β]`.
 
 Consider choosing different instance hypotheses.
 
@@ -254,9 +267,9 @@ end parameters
 /-! Test a `where` clause. -/
 
 /--
-warning: Declaration `lt'.go` has overlapping instances:
+warning: Declaration `List.lt'.go` has overlapping instances:
 
-There are 2 `[DecidableEq α]` instances
+There are 2 `[DecidableEq α]` instances.
 
 Consider choosing different instance hypotheses.
 

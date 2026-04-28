@@ -7,7 +7,7 @@ module
 
 public meta import Lean.Elab.Command
 public meta import Mathlib.Lean.ContextInfo
-public meta import Mathlib.Lean.Elab.InfoTree
+public meta import Batteries.Lean.Position
 
 public meta import Mathlib.Tactic.Linter.UnusedInstancesInType
 
@@ -42,7 +42,9 @@ meta section
 namespace Mathlib.Linter.OverlappingInstances
 
 /-- Clear the instances from the given application.
-This is used to deal with classes that have instance parameters. -/
+This is used to deal with classes that have instance parameters.
+For example, if you have a local instance of `ContinuousAdd α` and `IsTopologicalAddGroup α`,
+then the two `ContinuousAdd α` instances may have slightly different `[Add α]` arguments. -/
 def eraseInstances (e : Expr) : MetaM Expr := do
   e.withApp fun f args ↦ do
   let finfo ← getFunInfo f
@@ -59,8 +61,7 @@ then there will necessarily also be a duplication in all of its parents.
 If `cls` is a `Prop` or a non-structure class, this simply returns `#[cls]`.
 
 The resulting expressions contain bound variables that correspond to the parameters of `cls`.
-The universe levels and bound variables need to be instantiated to get concrete data projections.
--/
+The universe levels and bound variables need to be instantiated to get concrete data projections. -/
 partial def getAbstractDataProjections (cls : Name) : CoreM (Array Expr) := do
   let cinfo ← getConstInfo cls
   MetaM.run' <| forallTelescope cinfo.type fun xs _ ↦ do
@@ -95,17 +96,17 @@ def getAbstractDataProjectionsCached (cls : Name) : CoreM (Array Expr) := do
   if (← getEnv).isImportedConst cls then
     if let some result := (← dataProjectionCache.get).find? cls then
       return result
-    else
     let result ← getAbstractDataProjections cls
     dataProjectionCache.modify (·.insert cls result)
     return result
   else
     getAbstractDataProjections cls
 
-/-- Find classes for which multiple different instances can be synthesized in the local context. -/
-partial def findOverlappingDataInstances : MetaM (Std.HashMap Expr (Array FVarId)) := do
-  let mut overlaps : Std.HashMap Expr (Array FVarId) := {}
-  let mut encountered : Std.HashMap Expr FVarId := {}
+/-- Find classes for which multiple different instances can be synthesized in the local context.
+The result maps classes to the (at least 2) local instances that generate them. -/
+partial def findOverlappingDataInstances : MetaM (ExprMap (Array FVarId)) := do
+  let mut overlaps : ExprMap (Array FVarId) := {}
+  let mut encountered : ExprMap FVarId := {}
   for decl in ← getLCtx do
     if decl.binderInfo.isInstImplicit then
       let type ← instantiateMVars decl.type
@@ -113,11 +114,10 @@ partial def findOverlappingDataInstances : MetaM (Std.HashMap Expr (Array FVarId
         type.withApp fun f args ↦ do
         let .const cls us := f |
           return #[] -- This can happen when using `set_option checkBinderAnnotations false`
-        let info ← getConstInfo cls
+        let levelParams := (← getConstInfo cls).levelParams
         let projs ← getAbstractDataProjectionsCached cls
         projs.mapM fun proj ↦
-          mkForallFVars xs <|
-            (proj.instantiateLevelParams info.levelParams us).instantiateRev args
+          mkForallFVars xs <| (proj.instantiateLevelParams levelParams us).instantiateRev args
       for projCls in projClasses do
         if let some fvarId' := encountered[projCls]? then
           overlaps := overlaps.alter projCls (·.getD #[fvarId'] |>.push decl.fvarId)
@@ -146,27 +146,26 @@ def runLinter (ctx : ContextInfo) (lctx : LocalContext) (expectedType? : Option 
   let sortedOverlaps := sortedOverlaps.toArray.qsort (Array.lex ·.2 ·.2 Expr.lt)
   let mut msgs := #[]
   for (fvars, overlaps) in sortedOverlaps do
-    let parents ← fvars.mapM (do instantiateMVars <| ← ·.getType)
-    if parents.all (· == parents[0]!) then
-      msgs := msgs.push <| m!"There are {parents.size} `{.sbracket parents[0]!}` instances"
+    let fvarTypes ← fvars.mapM (do instantiateMVars <| ← ·.getType)
+    if fvarTypes.all (· == fvarTypes[0]!) then
+      msgs := msgs.push <| m!"There are {fvarTypes.size} `{.sbracket fvarTypes[0]!}` instances."
     else
-      let parents := parents.map (m!"`{.sbracket ·}`")
-      let children := overlaps.map fun overlap => m!"`{overlap}`"
-      msgs := msgs.push <|
-        m!"{.andList parents.toList} give conflicting instances of {.andList children.toList}."
+      let fvarTypes := .andList <| fvarTypes.toList.map (m!"`{.sbracket ·}`")
+      let overlaps := .andList <| overlaps.toList.map (m!"`{.sbracket ·}`")
+      msgs := msgs.push <| m!"{fvarTypes} give conflicting instances of {overlaps}."
   -- Create a bulleted list if there are multiple messages, otherwise just a single line
   let declDescr ←
     if let some decl := ctx.parentDecl? then
-      -- It is slightly awkward to print `decl` because it is not in the current environment.
-      pure m!"Declaration `{← unresolveNameGlobal decl}`"
+      -- Use `addMessageContextPartial` to clear the local context,
+      -- so as to avoid a name clash with the recursive auxiliary hypothesis of the same name.
+      pure m!"Declaration `{← addMessageContextPartial (.ofConstName decl)}`"
     else
       pure "The current declaration"
   let mut msg := m!"{declDescr} has overlapping instances:"
   msg := if h : msgs.size = 1 then m!"{msg}\n\n{msgs[0]}" else
     msgs.foldl (init := msg ++ "\n") (m!"{·}\n• {·}")
   msg := msg ++ m!"\n\nConsider choosing different instance hypotheses."
-  msg ← addMessageContextFull msg
-  return some msg
+  addMessageContextFull msg
 
 initialize registerTraceClass `overlappingInstances
 
@@ -185,6 +184,11 @@ def overlappingInstances : Linter where
         let some (lctx, expectedType?) := info.getLCtx? | pure ()
         withTraceNode `overlappingInstances (fun _ ↦ return m!"linting `{ctx.parentDecl?}`") do
         let some msg ← runLinter ctx lctx expectedType? | pure ()
+        /- Log the warning from the declaration's selection range (usually the declaration name,
+        or `instance`) to the body if possible. This underlines the hypotheses and type,
+        and makes the warning visible in the infoview when the cursor is within the body. -/
+        let declRange? ← ctx.parentDecl?.bindM findDeclarationSyntaxRange?
+        let ref := declRange?.elim ref (mkNullNode #[.ofRange ·, ref])
         logLint linter.overlappingInstances ref msg
 
 initialize addLinter overlappingInstances
