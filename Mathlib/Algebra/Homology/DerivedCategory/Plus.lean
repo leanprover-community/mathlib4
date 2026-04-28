@@ -142,8 +142,8 @@ noncomputable def singleFunctors : SingleFunctors C (Plus C) ℤ :=
 noncomputable abbrev singleFunctor (n : ℤ) : C ⥤ Plus C := (singleFunctors C).functor n
 
 noncomputable def singleFunctorιIso (n : ℤ) :
-    singleFunctor C n ⋙ Plus.ι ≅ DerivedCategory.singleFunctor C n := by
-  apply SingleFunctors.liftFunctorCompIso
+    singleFunctor C n ⋙ Plus.ι ≅ DerivedCategory.singleFunctor C n :=
+  Iso.refl _
 
 instance (n : ℤ) : (singleFunctor C n).Additive := by
   dsimp [singleFunctor, singleFunctors]
