@@ -5,6 +5,7 @@ General algebra:
     functor: 'CategoryTheory.Functor'
     natural transformation: 'CategoryTheory.NatTrans'
     Yoneda embedding: 'CategoryTheory.yoneda'
+    isomorphism: 'CategoryTheory.Iso'
     adjunction: 'CategoryTheory.Adjunction'
     monad: 'CategoryTheory.Monad'
     comma category: 'CategoryTheory.Comma'
@@ -12,8 +13,9 @@ General algebra:
     presheafed space: 'AlgebraicGeometry.PresheafedSpace'
     sheafed space: 'AlgebraicGeometry.SheafedSpace'
     monoidal category: 'CategoryTheory.MonoidalCategory'
-    Cartesian closed: 'CategoryTheory.CartesianClosed'
+    Cartesian closed: 'CategoryTheory.MonoidalClosed'
     abelian category: 'CategoryTheory.Abelian'
+    Grothendieck topology: 'CategoryTheory.GrothendieckTopology'
 
   Numbers:
     natural number: 'Nat'
@@ -116,6 +118,7 @@ General algebra:
 
   Field theory:
     field: 'Field'
+    subfield: 'Subfield'
     characteristic of a ring: 'ringChar'
     characteristic zero: 'CharZero'
     characteristic p: 'CharP'
@@ -129,7 +132,7 @@ General algebra:
     splitting field: 'Polynomial.SplittingField'
     perfect closure: 'PerfectClosure'
     Galois correspondence: 'IsGalois.intermediateFieldEquivSubgroup'
-    Abel-Ruffini theorem (one direction): 'solvableByRad.isSolvable'
+    Abel-Ruffini theorem (one direction): 'isSolvable_gal_minpoly'
 
   Homological algebra:
     chain complex: 'ChainComplex'
@@ -146,7 +149,7 @@ General algebra:
     Chevalley-Warning theorem: 'char_dvd_card_solutions'
     "Hensel's lemma (for $\\mathbb{Z}_p$)": 'hensels_lemma'
     ring of Witt vectors: 'WittVector'
-    perfection of a ring: 'Ring.Perfection'
+    perfection of a ring: 'Perfection'
   Transcendental numbers:
     Liouville's theorem on existence of transcendental numbers: 'transcendental_liouvilleNumber'
 
@@ -200,7 +203,7 @@ Linear algebra:
     bilinear form: 'LinearMap.BilinForm'
     alternating bilinear form: 'LinearMap.BilinForm.IsAlt'
     symmetric bilinear form: 'LinearMap.BilinForm.IsSymm'
-    matrix representation: 'BilinForm.toMatrix'
+    matrix representation: 'LinearMap.BilinForm.toMatrix'
     quadratic form: 'QuadraticForm'
     polar form of a quadratic: 'QuadraticMap.polar'
   Finite-dimensional inner product spaces (see also Hilbert spaces, below):
@@ -366,7 +369,7 @@ Analysis:
     principle of isolated zeros: 'AnalyticAt.eventually_eq_zero_or_eventually_ne_zero'
     principle of analytic continuation: 'AnalyticOnNhd.eqOn_of_preconnected_of_frequently_eq'
     analyticity of holomorphic functions: 'DifferentiableOn.analyticAt'
-    Schwarz lemma: 'Complex.norm_le_norm_of_mapsTo_ball_self'
+    Schwarz lemma: 'Complex.norm_le_norm_of_mapsTo_ball'
     removable singularity: 'Complex.differentiableOn_update_limUnder_insert_of_isLittleO'
     Phragmen-Lindelöf principle: 'PhragmenLindelof.horizontal_strip'
     fundamental theorem of algebra: 'Complex.isAlgClosed'
@@ -420,7 +423,7 @@ Probability Theory:
     martingale: 'MeasureTheory.Martingale'
     optional stopping theorem: 'MeasureTheory.submartingale_iff_expected_stoppedValue_mono'
     stopping time: 'MeasureTheory.IsStoppingTime'
-    hitting time: 'MeasureTheory.hitting'
+    hitting time: 'MeasureTheory.hittingBtwn'
     Gaussian processes: 'ProbabilityTheory.IsGaussianProcess'
 
 Geometry:

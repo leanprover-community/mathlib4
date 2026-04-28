@@ -643,7 +643,7 @@ theorem isSheafFor_iff_generate (R : Presieve X) :
     intro t ht
     simpa [hx] using isAmalgamation_restrict (le_generate R) _ _ ht
 
-/-- Every presheaf is a sheaf for the family {𝟙 X}.
+/-- Every presheaf is a sheaf for the family `{𝟙 X}`.
 
 [Elephant] C2.1.5(i)
 -/
