@@ -712,7 +712,7 @@ section compactSet
 
 variable [NumberField K]
 
-open Pointwise
+open scoped Pointwise
 
 open scoped Classical in
 /--
