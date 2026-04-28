@@ -289,13 +289,13 @@ variable
   {σ₁₃ : R →+* 𝕜₃} {σ₂₃ : 𝕜₂ →+* 𝕜₃}
 
 theorem map_add₂ (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (x x' : E) (y : F) :
-    f (x + x') y = f x y + f x' y := by rw [f.map_add, add_apply]
+    f (x + x') y = f x y + f x' y := by rw [f.map_add, _root_.add_apply]
 
 theorem map_zero₂ (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (y : F) : f 0 y = 0 := by
-  rw [f.map_zero, zero_apply]
+  rw [f.map_zero, _root_.zero_apply]
 
 theorem map_smulₛₗ₂ (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (c : R) (x : E) (y : F) :
-    f (c • x) y = σ₁₃ c • f x y := by rw [f.map_smulₛₗ, smul_apply]
+    f (c • x) y = σ₁₃ c • f x y := by rw [f.map_smulₛₗ, _root_.smul_apply]
 
 /-- Send a continuous sesquilinear map to an abstract sesquilinear map (forgetting continuity). -/
 def toLinearMap₁₂ (L : E →SL[σ₁₃] F →SL[σ₂₃] G) : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G :=
@@ -325,7 +325,7 @@ variable
 
 theorem map_smul₂ (f : E →L[𝕜₃] F →SL[σ₂₃] G) (c : 𝕜₃) (x : E) (y : F) :
     f (c • x) y = c • f x y := by
-  rw [f.map_smul, smul_apply]
+  rw [f.map_smul, _root_.smul_apply]
 
 end Nonsemilinear
 
@@ -339,10 +339,10 @@ variable
   {σ₁₃ : R →+* 𝕜₃} {σ₂₃ : 𝕜₂ →+* 𝕜₃}
 
 theorem map_sub₂ (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (x x' : E) (y : F) :
-    f (x - x') y = f x y - f x' y := by rw [map_sub, sub_apply]
+    f (x - x') y = f x y - f x' y := by rw [map_sub, _root_.sub_apply]
 
 theorem map_neg₂ (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (x : E) (y : F) : f (-x) y = -f x y := by
-  rw [map_neg, neg_apply]
+  rw [map_neg, _root_.neg_apply]
 
 end AddCommGroup
 
@@ -443,7 +443,7 @@ variable {𝕜 E F G : Type*} (S : Type*) [NormedField 𝕜] [Semiring S]
 def coprodEquivL : ((E →L[𝕜] G) × (F →L[𝕜] G)) ≃L[S] (E × F →L[𝕜] G) where
   __ := coprodEquiv
   continuous_toFun :=
-    (((fst 𝕜 E F).precomp G).coprod ((snd 𝕜 E F).precomp G)).continuous
+    (((fst 𝕜 E F).precomp G).coprod (R := 𝕜) ((snd 𝕜 E F).precomp G)).continuous
   continuous_invFun :=
     (((inl 𝕜 E F).precomp G).prod ((inr 𝕜 E F).precomp G)).continuous
 
