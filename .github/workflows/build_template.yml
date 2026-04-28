@@ -768,12 +768,6 @@ jobs:
     name: Lint style
     runs-on: ubuntu-latest
     steps:
-      - name: Configure Lean
-        uses: leanprover/lean-action@c544e89643240c6b398f14a431bcdc6309e36b3e # v1.4.0
-        with:
-          auto-config: false
-          use-github-cache: false
-          use-mathlib-cache: false
       - uses: leanprover-community/lint-style-action@a7e7428fa44f9635d6eb8e01919d16fd498d387a # 2025-08-18
         with:
           mode: check
