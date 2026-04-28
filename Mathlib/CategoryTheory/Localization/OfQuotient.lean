@@ -5,6 +5,8 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.AlgebraicTopology.ModelCategory.LeftHomotopy
+public import Mathlib.AlgebraicTopology.ModelCategory.RightHomotopy
 public import Mathlib.CategoryTheory.Localization.Opposite
 public import Mathlib.CategoryTheory.Quotient
 
@@ -30,6 +32,8 @@ public section
 
 namespace CategoryTheory
 
+open HomotopicalAlgebra
+
 variable {C D : Type*} [Category* C] [Category* D]
 
 namespace Quotient
@@ -37,9 +41,7 @@ namespace Quotient
 variable (r : HomRel C) (W : MorphismProperty C)
   (hW : W.IsInvertedBy (functor r))
   (hr : ∀ ⦃X Y : C⦄ (f₀ f₁ : X ⟶ Y) (_ : r f₀ f₁),
-    ∃ (cylinder : C) (i₀ i₁ : X ⟶ cylinder) (π : cylinder ⟶ X) (_hπ : W π)
-      (_hi₀ : i₀ ≫ π = 𝟙 X) (_hi₁ : i₁ ≫ π = 𝟙 X) (φ : cylinder ⟶ Y),
-      i₀ ≫ φ = f₀ ∧ i₁ ≫ φ = f₁)
+    ∃ (P : Precylinder X) (_ : P.LeftHomotopy f₀ f₁), W P.π)
 
 namespace isLocalization_functor
 
@@ -49,11 +51,11 @@ private def strictUniversalPropertyFixedTarget (E : Type*) [Category* E] :
     Localization.StrictUniversalPropertyFixedTarget (functor r) W E where
   inverts := hW
   lift F hF := Quotient.lift r F (fun X Y f₀ f₁ hf ↦ by
-    obtain ⟨Cyl, i₀, i₁, π, hπ, hi₀, hi₁, φ, hφ₀, hφ₁⟩ := hr f₀ f₁ hf
-    rw [← hφ₀, ← hφ₁, Functor.map_comp, Functor.map_comp]
+    obtain ⟨P, h, hπ⟩ := hr f₀ f₁ hf
+    simp only [← h.h₀, ← h.h₁, Functor.map_comp]
     congr 1
     have := hF _ hπ
-    rw [← cancel_mono (F.map π), ← Functor.map_comp, ← Functor.map_comp, hi₀, hi₁])
+    simp [← cancel_mono (F.map P.π), ← Functor.map_comp])
   fac F hF := rfl
   uniq F₁ F₂ h := by
     fapply Functor.ext
@@ -76,9 +78,7 @@ namespace Functor
 lemma isLocalization_of_essSurj_of_full_of_exists_cylinders
     (L : C ⥤ D) [L.EssSurj] [L.Full] (W : MorphismProperty C) (hW : W.IsInvertedBy L)
     (hr : ∀ ⦃X Y : C⦄ (f₀ f₁ : X ⟶ Y) (_ : L.map f₀ = L.map f₁),
-      ∃ (cylinder : C) (i₀ i₁ : X ⟶ cylinder) (π : cylinder ⟶ X) (_hπ : W π)
-        (_hi₀ : i₀ ≫ π = 𝟙 X) (_hi₁ : i₁ ≫ π = 𝟙 X) (φ : cylinder ⟶ Y),
-        i₀ ≫ φ = f₀ ∧ i₁ ≫ φ = f₁) :
+      ∃ (P : Precylinder X) (_ : P.LeftHomotopy f₀ f₁), W P.π) :
     L.IsLocalization W := by
   let F := Quotient.lift L.homRel L (by simp)
   have hW' : W.IsInvertedBy (Quotient.functor L.homRel) := fun _ _ f hf ↦ by
@@ -91,26 +91,20 @@ lemma isLocalization_of_essSurj_of_full_of_exists_cylinders
 lemma isLocalization_of_essSurj_of_full_of_exists_pathObjects
     (L : C ⥤ D) [L.EssSurj] [L.Full] (W : MorphismProperty C) (hW : W.IsInvertedBy L)
     (hr : ∀ ⦃X Y : C⦄ (f₀ f₁ : X ⟶ Y) (_ : L.map f₀ = L.map f₁),
-      ∃ (path : C) (p₀ p₁ : path ⟶ Y) (ι : Y ⟶ path) (_hι : W ι)
-        (_hp₀ : ι ≫ p₀ = 𝟙 Y) (_hp₁ : ι ≫ p₁ = 𝟙 Y) (φ : X ⟶ path),
-        φ ≫ p₀ = f₀ ∧ φ ≫ p₁ = f₁) :
+      ∃ (P : PrepathObject Y) (_ : P.RightHomotopy f₀ f₁), W P.ι) :
     L.IsLocalization W := by
   rw [← Functor.IsLocalization.op_iff]
   refine isLocalization_of_essSurj_of_full_of_exists_cylinders L.op W.op hW.op
     (fun X Y f₀ f₁ hf ↦ ?_)
-  obtain ⟨path, p₀, p₁, ι, hι, hp₀, hp₁, φ, hφ₀, hφ₁⟩ :=
-    hr f₀.unop f₁.unop (Quiver.Hom.op_inj hf)
-  exact ⟨_, p₀.op, p₁.op, ι.op, hι, Quiver.Hom.unop_inj hp₀, Quiver.Hom.unop_inj hp₁,
-    φ.op, Quiver.Hom.unop_inj hφ₀, Quiver.Hom.unop_inj hφ₁⟩
+  obtain ⟨P, h, hι⟩ := hr f₀.unop f₁.unop (Quiver.Hom.op_inj hf)
+  exact ⟨P.op, h.op, hι⟩
 
 end Functor
 
 lemma Quotient.isLocalization_functor' (r : HomRel C) [Congruence r] (W : MorphismProperty C)
     (hW : W.IsInvertedBy (functor r))
     (hr : ∀ ⦃X Y : C⦄ (f₀ f₁ : X ⟶ Y) (_ : r f₀ f₁),
-      ∃ (path : C) (p₀ p₁ : path ⟶ Y) (ι : Y ⟶ path) (_hι : W ι)
-        (_hp₀ : ι ≫ p₀ = 𝟙 Y) (_hp₁ : ι ≫ p₁ = 𝟙 Y) (φ : X ⟶ path),
-        φ ≫ p₀ = f₀ ∧ φ ≫ p₁ = f₁) :
+      ∃ (P : PrepathObject Y) (_ : P.RightHomotopy f₀ f₁), W P.ι) :
     (functor r).IsLocalization W :=
   (functor r).isLocalization_of_essSurj_of_full_of_exists_pathObjects W hW
     (fun X Y f₀ f₁ hf ↦ by

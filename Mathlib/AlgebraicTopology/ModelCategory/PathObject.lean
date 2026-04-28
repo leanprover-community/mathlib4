@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.Basic
 public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
+public import Mathlib.AlgebraicTopology.ModelCategory.Cylinder
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!
@@ -43,7 +44,7 @@ in the lemma `PathObject.exists_very_good`.
 
 universe v u
 
-open CategoryTheory Category Limits
+open CategoryTheory Category Limits Opposite
 
 namespace HomotopicalAlgebra
 
@@ -278,5 +279,49 @@ instance [IsFibrant A] (P P' : PathObject A) [P.IsGood] [P'.IsGood] :
     infer_instance
 
 end PathObject
+
+/-- The opposite of a pre-path object is a precylinder object. -/
+@[simps]
+def PrepathObject.op {A : C} (P : PrepathObject A) :
+    Precylinder (op A) where
+  I := Opposite.op P.P
+  i₀ := P.p₀.op
+  i₁ := P.p₁.op
+  π := P.ι.op
+  i₀_π := Quiver.Hom.unop_inj (by simp)
+  i₁_π := Quiver.Hom.unop_inj (by simp)
+
+/-- The precylinder object obtained from a pre-path object in the opposite category. -/
+@[simps]
+def PrepathObject.unop {A : Cᵒᵖ} (P : PrepathObject A) :
+    Precylinder A.unop where
+  I := Opposite.unop P.P
+  i₀ := P.p₀.unop
+  i₁ := P.p₁.unop
+  π := P.ι.unop
+  i₀_π := Quiver.Hom.op_inj (by simp)
+  i₁_π := Quiver.Hom.op_inj (by simp)
+
+/-- The opposite of a pre-path object is a precylinder object. -/
+@[simps]
+def Precylinder.op {A : C} (P : Precylinder A) :
+    PrepathObject (op A) where
+  P := Opposite.op P.I
+  p₀ := P.i₀.op
+  p₁ := P.i₁.op
+  ι := P.π.op
+  ι_p₀ := Quiver.Hom.unop_inj (by simp)
+  ι_p₁ := Quiver.Hom.unop_inj (by simp)
+
+/-- The pre-path object object obtained from a cylinder in the opposite category. -/
+@[simps]
+def Precylinder.unop {A : Cᵒᵖ} (P : Precylinder A) :
+    PrepathObject A.unop where
+  P := Opposite.unop P.I
+  p₀ := P.i₀.unop
+  p₁ := P.i₁.unop
+  ι := P.π.unop
+  ι_p₀ := Quiver.Hom.op_inj (by simp)
+  ι_p₁ := Quiver.Hom.op_inj (by simp)
 
 end HomotopicalAlgebra
