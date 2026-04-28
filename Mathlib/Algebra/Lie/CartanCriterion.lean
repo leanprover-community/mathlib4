@@ -47,15 +47,9 @@ variable {K L M : Type*}
   [LieRing L] [LieAlgebra K L]
   [AddCommGroup M] [Module K M] [LieRingModule L M] [LieModule K L M] [FiniteDimensional K M]
 
-open Algebra LieAlgebra LinearMap Module Module.End
-
-section AlgClosed
-
-variable [IsAlgClosed K]
+open Algebra LieAlgebra LinearMap Module Module.End Polynomial
 
 local notation "φ" => toEnd K L M
-
-open Polynomial
 
 lemma exists_polynomial_eval_sub_aux
     {ι R K : Type*} [Finite ι] [CommRing R] [Field K] [Algebra R K]
@@ -170,22 +164,11 @@ theorem isNilpotent_derivedSeries_of_traceForm_eq_zero_aux [IsAlgClosed K]
     exact Finset.sum_congr rfl <| by simp [toMatrix_apply, hyv, hsv]
   rw [hX_ns, add_mul, map_add, htr_n, htr_s, zero_add]
 
-end AlgClosed
-
 open TensorProduct
 
 local notation "Kbar" => AlgebraicClosure K
 local notation "Lbar" => Kbar ⊗[K] L
 local notation "Mbar" => Kbar ⊗[K] M
-
-omit [CharZero K] in
-lemma traceForm_baseChange_eq_zero (h : traceForm K L M = 0) : traceForm Kbar Lbar Mbar = 0 := by
-  rw [← LieModule.traceForm_baseChange, h]
-  refine LinearMap.ext fun u ↦ TensorProduct.induction_on u
-    (by simp) ?_ (fun u₁ u₂ hu₁ hu₂ ↦ by simp [hu₁, hu₂])
-  intro a x
-  refine LinearMap.ext fun v ↦ TensorProduct.induction_on v
-    (by simp) (fun b y ↦ by simp) (fun v₁ v₂ hv₁ hv₂ ↦ by simp [hv₁, hv₂])
 
 /-- If the trace form of `M` is zero, then the `⁅L, L⁆`-module `M` is nilpotent. The proof reduces
 by scalar extension to the algebraically closed case, then closes by
@@ -209,7 +192,7 @@ public theorem isNilpotent_derivedSeries_of_traceForm_eq_zero (h : traceForm K L
     change _root_.IsNilpotent ((toEnd K L M x).baseChange Kbar)
     rw [← toEnd_baseChange]
     exact nilp_ext ⟨_, hx_ext⟩
-  exact isNilpotent_derivedSeries_of_traceForm_eq_zero_aux (traceForm_baseChange_eq_zero h)
+  exact isNilpotent_derivedSeries_of_traceForm_eq_zero_aux (by simpa)
 
 @[deprecated (since := "2026-04-26")]
 alias isNilpotent_derivedSeries_of_traceForm_eq_zero_algClosed :=
