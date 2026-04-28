@@ -20,7 +20,7 @@ to be the degree of the residue field of `q` over the residue field of its preim
 ## Main statements
 
 * `inertiaDeg_eq_inertiaDeg'`: The inertia degree agrees with the usual definition in the case of
-  Dedekind domains.
+  maximal ideals.
 * `inertiaDeg'_tower`: Inertia degree is multiplicative in towers.
 -/
 
