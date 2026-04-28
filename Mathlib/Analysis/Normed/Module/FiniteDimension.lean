@@ -265,7 +265,7 @@ protected theorem LinearIndependent.eventually {ι} [Finite ι] {f : ι → E}
   simp only [Fintype.linearIndependent_iff'] at hf ⊢
   rcases LinearMap.exists_antilipschitzWith _ hf with ⟨K, K0, hK⟩
   have : Tendsto (fun g : ι → E => ∑ i, ‖g i - f i‖) (𝓝 f) (𝓝 <| ∑ i, ‖f i - f i‖) :=
-    tendsto_finset_sum _ fun i _ =>
+    tendsto_finsetSum _ fun i _ =>
       Tendsto.norm <| ((continuous_apply i).tendsto _).sub tendsto_const_nhds
   simp only [sub_self, norm_zero, Finset.sum_const_zero] at this
   refine (this.eventually (gt_mem_nhds <| inv_pos.2 K0)).mono fun g hg => ?_
