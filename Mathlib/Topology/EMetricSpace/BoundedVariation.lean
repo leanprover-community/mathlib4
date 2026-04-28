@@ -370,41 +370,15 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
 the variation of `f` along `s ∪ t` is the sum of the variations. -/
 theorem union (f : α → E) {s t : Set α} {x : α} (hs : IsGreatest s x) (ht : IsLeast t x) :
     eVariationOn f (s ∪ t) = eVariationOn f s + eVariationOn f t := by
-  classical
-  apply le_antisymm _ (eVariationOn.add_le_union f fun a ha b hb => le_trans (hs.2 ha) (ht.2 hb))
-  apply iSup_le _
-  rintro ⟨n, ⟨u, hu, ust⟩⟩
-  obtain ⟨v, m, hv, vst, xv, huv⟩ : ∃ (v : ℕ → α) (m : ℕ),
-    Monotone v ∧ (∀ i, v i ∈ s ∪ t) ∧ x ∈ v '' Iio m ∧
-      (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))) ≤
-        ∑ j ∈ Finset.range m, edist (f (v (j + 1))) (f (v j)) :=
+  apply (eVariationOn.add_le_union f fun a ha b hb ↦ (hs.2 ha).trans (ht.2 hb)).antisymm'
+  refine iSup_le fun ⟨n, ⟨u, hu, ust⟩⟩ ↦ ?_
+  obtain ⟨v, m, hv, vst, ⟨N, hN, rfl⟩, huv⟩ :=
     eVariationOn.add_point f (mem_union_left t hs.1) u hu ust n
-  obtain ⟨N, hN, Nx⟩ : ∃ N, N < m ∧ v N = x := xv
-  calc
-    (∑ j ∈ Finset.range n, edist (f (u (j + 1))) (f (u j))) ≤
-        ∑ j ∈ Finset.range m, edist (f (v (j + 1))) (f (v j)) :=
-      huv
-    _ = (∑ j ∈ Finset.Ico 0 N, edist (f (v (j + 1))) (f (v j))) +
-          ∑ j ∈ Finset.Ico N m, edist (f (v (j + 1))) (f (v j)) := by
-      rw [Finset.range_eq_Ico, Finset.sum_Ico_consecutive _ (zero_le _) hN.le]
-    _ ≤ eVariationOn f s + eVariationOn f t := by
-      refine add_le_add ?_ ?_
-      · apply sum_le_of_monotoneOn_Icc (hv.monotoneOn _) fun i hi => ?_
-        rcases vst i with (h | h); · exact h
-        have : v i = x := by
-          apply le_antisymm
-          · rw [← Nx]; exact hv hi.2
-          · exact ht.2 h
-        rw [this]
-        exact hs.1
-      · apply sum_le_of_monotoneOn_Icc (hv.monotoneOn _) fun i hi => ?_
-        rcases vst i with (h | h); swap; · exact h
-        have : v i = x := by
-          apply le_antisymm
-          · exact hs.2 h
-          · rw [← Nx]; exact hv hi.1
-        rw [this]
-        exact ht.1
+  apply huv.trans
+  rw [Finset.range_eq_Ico, ← Finset.sum_Ico_consecutive _ (zero_le _) hN.le]
+  apply add_le_add <;> refine sum_le_of_monotoneOn_Icc (hv.monotoneOn _) fun i hi ↦ ?_
+  · exact (vst i).elim id (fun h ↦ (hv hi.2).antisymm (ht.2 h) ▸ hs.1)
+  · exact (vst i).elim (fun h ↦ (hs.2 h).antisymm (hv hi.1) ▸ ht.1) id
 
 theorem Icc_add_Icc (f : α → E) {s : Set α} {a b c : α} (hab : a ≤ b) (hbc : b ≤ c) (hb : b ∈ s) :
     eVariationOn f (s ∩ Icc a b) + eVariationOn f (s ∩ Icc b c) = eVariationOn f (s ∩ Icc a c) := by
