@@ -352,6 +352,7 @@ theorem normalClosure_swap_mul_swap_five :
     SetLike.mem_coe.1 (subset_normalClosure (Set.mem_singleton _))
   exact mul_mem (Subgroup.normalClosure_normal.conj_mem _ h g1) (inv_mem h)
 
+set_option linter.flexible false in -- TODO: fix non-terminal simp
 /-- Shows that any non-identity element of $A_5$ whose cycle decomposition consists only of swaps
   is conjugate to $(04)(13)$. This is used to show that the normal closure of such a permutation
   in $A_5$ is $A_5$. -/
@@ -364,7 +365,7 @@ theorem isConj_swap_mul_swap_of_cycleType_two {g : Perm (Fin 5)} (ha : g ∈ alt
   have h : Multiset.card g.cycleType ≤ 3 :=
     le_of_mul_le_mul_right (le_trans h (by norm_num only [card_fin])) (by simp)
   rw [mem_alternatingGroup, sign_of_cycleType, h2] at ha
-  norm_num at ha
+  simp at ha
   rw [pow_add, pow_mul, Int.units_pow_two, one_mul, neg_one_pow_eq_one_iff_even] at ha
   swap; · decide
   rw [isConj_iff_cycleType_eq, h2]
@@ -494,7 +495,7 @@ theorem mem_range_ofSubtype_iff (s : Finset α) (k : alternatingGroup α) :
   rw [range_ofSubtype, mem_subgroupOf, Perm.mem_range_ofSubtype_iff]
   simp
 
-open Pointwise in
+open scoped Pointwise in
 theorem conj_smul_range_ofSubtype (s : Finset α) (g : alternatingGroup α) :
     MulAut.conj g • (ofSubtype s).range = (ofSubtype (g • s)).range := by
   ext k
@@ -520,7 +521,7 @@ theorem eq_alternatingGroup_of_index_eq_two {G : Subgroup (Equiv.Perm α)} (hG :
   refine swap_induction_on g (iff_of_true G.one_mem <| map_one _) fun g x y hxy ih ↦ ?_
   rw [mul_mem_iff_of_index_two hG, mul_mem_iff_of_index_two alternatingGroup.index_eq_two, ih]
   refine iff_congr (iff_of_false ?_ (by cases (sign_swap hxy).symm.trans ·)) Iff.rfl
-  contrapose! habG
+  contrapose habG
   rw [← (isConj_iff.mp <| isConj_swap hxy hab).choose_spec]
   exact (normal_of_index_eq_two hG).conj_mem _ habG _
 
