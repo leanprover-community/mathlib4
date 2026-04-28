@@ -48,7 +48,7 @@ variable [Monoid M] [AddMonoid A]
 lemma coe_mul_coe [SetLike S M] [SubmonoidClass S M] (H : S) : H * H = (H : Set M) := by
   aesop (add simp mem_mul)
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma Set.subtype_smul_set {S α β : Type*} [SMul α β] [SetLike S α] {s : S} (x : s) (t : Set β) :
     (x • t : Set β) = (x : α) • t :=
   rfl
