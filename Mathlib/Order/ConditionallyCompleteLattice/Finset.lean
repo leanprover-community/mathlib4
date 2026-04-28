@@ -144,28 +144,11 @@ theorem Set.Finite.lt_ciInf_iff {s : Set ι} {f : ι → α} (hs : s.Finite)
     exact H _ hmem
 
 -- #38356
-theorem sSup_ne_top {α : Type*} [Nontrivial α] [CompleteLinearOrder α] {s : Set α} (hfin : s.Finite)
-    (htop : ⊤ ∉ s) : sSup s ≠ ⊤ := by
-  rcases s.eq_empty_or_nonempty with rfl | hnonempty
-  · simp
-  exact (htop <| · ▸ hnonempty.csSup_mem hfin)
-
--- #38356
-theorem sInf_ne_bot {α : Type*} [Nontrivial α] [CompleteLinearOrder α] {s : Set α} (hfin : s.Finite)
-    (hbot : ⊥ ∉ s) : sInf s ≠ ⊥ := by
-  rcases s.eq_empty_or_nonempty with rfl | hnonempty
-  · simp
-  exact (hbot <| · ▸ hnonempty.csInf_mem hfin)
-
--- #38356
 theorem iSup_ne_top {ι α : Type*} {f : ι → α} [Finite ι] [Nontrivial α] [CompleteLinearOrder α]
-    (h : ∀ x, f x ≠ ⊤) : iSup f ≠ ⊤ :=
-  sSup_ne_top (Set.finite_range f) (by grind)
-
--- #38356
-theorem iInf_ne_bot {ι α : Type*} {f : ι → α} [Finite ι] [Nontrivial α] [CompleteLinearOrder α]
-    (h : ∀ x, f x ≠ ⊥) : iInf f ≠ ⊥ :=
-  sInf_ne_bot (Set.finite_range f) (by grind)
+    (h : ∀ x, f x ≠ ⊤) : iSup f ≠ ⊤ := by
+  rcases Set.range f |>.eq_empty_or_nonempty with hempty | hnonempty
+  · simp [iSup, hempty]
+  grind [iSup, hnonempty.csSup_mem <| Set.finite_range f]
 
 section ListMultiset
 
