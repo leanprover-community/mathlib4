@@ -54,6 +54,7 @@ abbrev of {A X : TopCat.{u}} (f : A ⟶ X) (h : Topology.IsEmbedding f) : TopPai
 abbrev ofSubset {X : TopCat.{u}} (A : Set X) : TopPair.{u} := TopPair.of (A := (TopCat.of A))
   (X := X) ⟨{ toFun := Subtype.val }⟩ Topology.IsEmbedding.subtypeVal
 
+/-- Constructs the topological pair `(X, ∅)` from `X : TopCat`. -/
 abbrev ofTopCat (X : TopCat.{u}) : TopPair.{u} :=
   TopPair.of (TopCat.isInitialPEmpty.to X) (Topology.IsOpenEmbedding.of_isEmpty _).1
 
