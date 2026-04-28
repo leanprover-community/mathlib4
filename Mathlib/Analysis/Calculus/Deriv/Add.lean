@@ -264,12 +264,12 @@ theorem HasStrictDerivAt.neg (h : HasStrictDerivAt f f' x) : HasStrictDerivAt (-
 @[to_fun]
 theorem derivWithin.neg : derivWithin (-f) s x = -derivWithin f s x := by
   by_cases hsx : UniqueDiffWithinAt 𝕜 s x
-  · simp only [derivWithin, fderivWithin_neg hsx, ContinuousLinearMap.neg_apply]
+  · simp only [derivWithin, fderivWithin_neg hsx, neg_apply]
   · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
 @[to_fun]
 theorem deriv.neg : deriv (-f) x = -deriv f x := by
-  simp only [deriv, fderiv_neg, ContinuousLinearMap.neg_apply]
+  simp only [deriv, fderiv_neg, neg_apply]
 
 @[to_fun (attr := simp)]
 theorem deriv.neg' : (deriv (-f)) = fun x ↦ -deriv f x :=
