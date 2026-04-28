@@ -24,44 +24,114 @@ open Category Limits Pretriangulated Triangulated Pretriangulated.Opposite
 
 namespace ObjectProperty
 
-variable {A C D D' : Type*} [Category* A] [Category* C] [Category* D] [Category* D']
-  [HasZeroObject C] [HasShift C ℤ] [Preadditive C]
+variable {C : Type*} [Category* C]
+
+class IsRightLocalizing (A B : ObjectProperty C) : Prop where
+  fac {X Y : C} (f : X ⟶ Y) (hX : B X) (hY : A Y) :
+    ∃ (Z : C) (a : X ⟶ Z) (b : Z ⟶ Y), A Z ∧ B Z ∧ a ≫ b = f
+
+class IsLeftLocalizing (A B : ObjectProperty C) : Prop where
+  fac {X Y : C} (f : X ⟶ Y) (hX : A X) (hY : B Y) :
+    ∃ (Z : C) (a : X ⟶ Z) (b : Z ⟶ Y), A Z ∧ B Z ∧ a ≫ b = f
+
+instance (A B : ObjectProperty C) [A.IsLeftLocalizing B] :
+    A.op.IsRightLocalizing B.op where
+  fac f hX hY := by
+    obtain ⟨Z, a, b, h₁, h₂, fac⟩ := IsLeftLocalizing.fac f.unop hY hX
+    exact ⟨_, b.op, a.op, h₁, h₂, Quiver.Hom.unop_inj fac⟩
+
+instance (A B : ObjectProperty Cᵒᵖ) [A.IsLeftLocalizing B] :
+    A.unop.IsRightLocalizing B.unop where
+  fac f hX hY := by
+    obtain ⟨Z, a, b, h₁, h₂, fac⟩ := IsLeftLocalizing.fac f.op hY hX
+    exact ⟨_, b.unop, a.unop, h₁, h₂, Quiver.Hom.op_inj fac⟩
+
+instance (A B : ObjectProperty C) [A.IsRightLocalizing B] :
+    A.op.IsLeftLocalizing B.op where
+  fac f hX hY := by
+    obtain ⟨Z, a, b, h₁, h₂, fac⟩ := IsRightLocalizing.fac f.unop hY hX
+    exact ⟨_, b.op, a.op, h₁, h₂, Quiver.Hom.unop_inj fac⟩
+
+instance (A B : ObjectProperty Cᵒᵖ) [A.IsRightLocalizing B] :
+    A.unop.IsLeftLocalizing B.unop where
+  fac f hX hY := by
+    obtain ⟨Z, a, b, h₁, h₂, fac⟩ := IsRightLocalizing.fac f.op hY hX
+    exact ⟨_, b.unop, a.unop, h₁, h₂, Quiver.Hom.op_inj fac⟩
+
+variable (A B : ObjectProperty C)
+
+lemma isLeftLocalizing_op_iff :
+    A.op.IsLeftLocalizing B.op ↔ A.IsRightLocalizing B :=
+  ⟨fun _ ↦ inferInstanceAs (A.op.unop.IsRightLocalizing B.op.unop),
+    fun _ ↦ inferInstance⟩
+
+lemma isRightLocalizing_op_iff :
+    A.op.IsRightLocalizing B.op ↔ A.IsLeftLocalizing B :=
+  ⟨fun _ ↦ inferInstanceAs (A.op.unop.IsLeftLocalizing B.op.unop),
+    fun _ ↦ inferInstance⟩
+
+variable [HasZeroObject C] [HasShift C ℤ] [Preadditive C]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
-  (B : ObjectProperty C) (F : A ⥤ C)
 
-/-- Let `F : A ⥤ C` be a fully faithful triangulated functor and
-`B` a triangulated subcategory of `C`, we say that `F` is
-right `B`-localizing if any morphism `Y ⟶ F.obj X` with `hY : B Y`
-factors as `a ≫ F.map b` with `a : Y ⟶ F.obj Y'` (such that
-`B (F.obj Y')` holds) and `b : Y' ⟶ X`. -/
-class IsRightLocalizing [B.IsTriangulated] : Prop where
-  fac {Y : C} {X : A} (φ : Y ⟶ F.obj X) (hY : B Y) :
-    ∃ (Y' : A) (_ : B (F.obj Y')) (a : Y ⟶ F.obj Y') (b : Y' ⟶ X),
-      a ≫ F.map b = φ
+lemma isRightLocalizing_iff [A.IsTriangulated] [B.IsTriangulated]
+    [B.IsClosedUnderIsomorphisms] :
+    A.IsRightLocalizing B ↔
+      ∀ ⦃X Y : C⦄ (s : X ⟶ Y) (_ : A X) (_ : B.trW s),
+        ∃ (Z : C) (s' : X ⟶ Z) (b : Y ⟶ Z), A Z ∧ (A ⊓ B).trW s' ∧ s ≫ b = s' := by
+  refine ⟨fun _ X Y s hX hs ↦ ?_, fun hA ↦ ⟨fun {X Y} f hX hY ↦ ?_⟩⟩
+  · rw [ObjectProperty.trW_iff'] at hs
+    obtain ⟨W, a, b, hT, hW⟩ := hs
+    obtain ⟨W', c, d, h₁, h₂, fac⟩ := IsRightLocalizing.fac a hW hX
+    obtain ⟨U, hU, e, f, hT'⟩ := A.distinguished_cocone_triangle d h₁ hX
+    obtain ⟨g, hg, _⟩ := complete_distinguished_triangle_morphism _ _ hT hT'
+      c (𝟙 _) (by cat_disch)
+    refine ⟨U, e, g, hU, ?_, by cat_disch⟩
+    rw [ObjectProperty.trW_iff']
+    exact ⟨_, _, _, hT', h₁, h₂⟩
+  · obtain ⟨Z, s, b, hT⟩ := Pretriangulated.distinguished_cocone_triangle f
+    have hs : B.trW s := by
+      rw [trW_iff']
+      exact ⟨_, _, _, hT, hX⟩
+    obtain ⟨W, s', g, hW, hs', fac⟩ := hA s hY hs
+    obtain ⟨U, hU, a, c, hT'⟩ := A.distinguished_cocone_triangle₁ s' hY hW
+    obtain ⟨t, ht, ht'⟩ :=
+      complete_distinguished_triangle_morphism₁ _ _ hT hT' (𝟙 Y) g (by cat_disch)
+    exact ⟨U, t, a, hU, (B.trW_iff_of_distinguished' _ hT').1 (trW_monotone (by simp) _ hs'),
+      by cat_disch⟩
 
-/-- Let `F : A ⥤ C` be a fully faithful triangulated functor and
-`B` a triangulated subcategory of `C`, we say that `F` is
-left `B`-localizing if any morphism `F.obj X ⟶ Y` with `hY : B Y`
-factors as `F.map b ≫ a` with `b : X ⟶ Y'` and `a : F.obj Y' ⟶ Y`
-such that `B (F.obj Y')` holds. -/
-class IsLeftLocalizing [B.IsTriangulated] : Prop where
-  fac {X : A} {Y : C} (φ : F.obj X ⟶ Y) (hY : B Y) :
-    ∃ (Y' : A) (_ : B (F.obj Y')) (a : F.obj Y' ⟶ Y) (b : X ⟶ Y'),
-      F.map b ≫ a = φ
+-- to be moved
+instance [A.ContainsZero] [B.ContainsZero] [B.IsClosedUnderIsomorphisms] :
+    (A ⊓ B).ContainsZero where
+  exists_zero := by
+    obtain ⟨Z, hZ, hA⟩ := A.exists_prop_of_containsZero
+    exact ⟨Z, hZ, hA, B.prop_of_isZero hZ⟩
 
-variable [B.IsTriangulated]
+-- to be moved
+instance [A.IsTriangulated] [B.IsTriangulated] [B.IsClosedUnderIsomorphisms] :
+    (A ⊓ B).IsTriangulated where
+  ext₂' T hT h₁ h₃ := by
+    obtain ⟨Y, hY, ⟨e⟩⟩ := A.ext_of_isTriangulatedClosed₂' T hT h₁.1 h₃.1
+    exact ⟨Y, ⟨hY, B.prop_of_iso e (B.ext_of_isTriangulatedClosed₂ T hT h₁.2 h₃.2)⟩, ⟨e⟩⟩
 
-lemma fac_of_isRightLocalizing [B.IsRightLocalizing F]
-    {Y : C} {X : A} (φ : Y ⟶ F.obj X) (hY : B Y) :
-    ∃ (Y' : A) (_ : B (F.obj Y')) (a : Y ⟶ F.obj Y') (b : Y' ⟶ X),
-      a ≫ F.map b = φ :=
-  IsRightLocalizing.fac φ hY
+lemma isLeftLocalizing_iff [A.IsTriangulated] [B.IsTriangulated]
+    [B.IsClosedUnderIsomorphisms] :
+    A.IsLeftLocalizing B ↔
+      ∀ ⦃X Y : C⦄ (s : X ⟶ Y) (_ : A Y) (_ : B.trW s),
+        ∃ (Z : C) (s' : Z ⟶ Y) (a : Z ⟶ X), A Z ∧ (A ⊓ B).trW s' ∧ a ≫ s = s' := by
+  rw [← isRightLocalizing_op_iff, isRightLocalizing_iff]
+  refine ⟨fun hA X Y s hY hs ↦ ?_, fun hA X Y s hX hs ↦ ?_⟩
+  · obtain ⟨Z', s', b, hZ', hs', fac⟩ := hA s.op hY (by simpa [trW_op_iff])
+    exact ⟨Z'.unop, s'.unop, b.unop, hZ', trW_of_op _ hs', by cat_disch⟩
+  · obtain ⟨Z', s', b, hZ', hs', fac⟩ := hA s.unop hX (trW_of_op _ hs)
+    exact ⟨_, s'.op, b.op, hZ', trW_of_unop _ hs', by cat_disch⟩
 
-lemma fac_of_isLeftLocalizing [B.IsLeftLocalizing F]
-    {X : A} {Y : C} (φ : F.obj X ⟶ Y) (hY : B Y) :
-    ∃ (Y' : A) (_ : B (F.obj Y')) (a : F.obj Y' ⟶ Y) (b : X ⟶ Y'),
-      F.map b ≫ a = φ :=
-  IsLeftLocalizing.fac φ hY
+--lemma fac_of_isRightLocalizing' [B.IsRightLocalizing F]
+--    {X : A} {Y : C} (s : F.obj X ⟶ Y) (hs : B.trW s) :
+--    ∃ (X' : A) (s' : X ⟶ X') (_ : (B.inverseImage F).trW s') (b : Y ⟶ F.obj X'),
+--      s ≫ b = F.map s' := by
+--  rw [ObjectProperty.trW_iff'] at hs
+
+/-
 
 open CategoryTheory.Pretriangulated.Opposite
 
@@ -265,6 +335,7 @@ lemma isLocalization_of_isLeftLocalizing [B.IsLeftLocalizing F] [F.Full] [F.Fait
   let e' : L'.op ⋙ H.op ≅ F.op ⋙ L.op := NatIso.op e.symm
   exact B.op.isLocalization_of_isRightLocalizing F.op e'
 
-end ObjectProperty
+-/
 
+end ObjectProperty
 end CategoryTheory

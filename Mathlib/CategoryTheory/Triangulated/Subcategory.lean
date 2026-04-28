@@ -90,6 +90,30 @@ lemma ext_of_isTriangulatedClosed₃'
     (h₁ : P T.obj₁) (h₂ : P T.obj₂) : P.isoClosure T.obj₃ :=
   IsTriangulatedClosed₃.ext₃' T hT h₁ h₂
 
+protected lemma distinguished_cocone_triangle [P.IsTriangulatedClosed₃]
+    {X Y : C} (a : X ⟶ Y) (hX : P X) (hY : P Y) :
+    ∃ (Z : C) (_ : P Z) (b : Y ⟶ Z) (c : Z ⟶ X⟦(1 : ℤ)⟧), Triangle.mk a b c ∈ distTriang _ := by
+  obtain ⟨Z, b, c, h⟩ := distinguished_cocone_triangle a
+  obtain ⟨Z', hZ', ⟨e⟩⟩ := P.ext_of_isTriangulatedClosed₃' _ h hX hY
+  exact ⟨Z', hZ', b ≫ e.hom, e.inv ≫ c, isomorphic_distinguished _ h _
+    (Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) e.symm )⟩
+
+protected lemma distinguished_cocone_triangle₁ [P.IsTriangulatedClosed₁]
+    {Y Z : C} (b : Y ⟶ Z) (hY : P Y) (hZ : P Z) :
+    ∃ (X : C) (_ : P X) (a : X ⟶ Y) (c : Z ⟶ X⟦(1 : ℤ)⟧), Triangle.mk a b c ∈ distTriang _ := by
+  obtain ⟨X, a, c, h⟩ := distinguished_cocone_triangle₁ b
+  obtain ⟨X', hX', ⟨e⟩⟩ := P.ext_of_isTriangulatedClosed₁' _ h hY hZ
+  exact ⟨X', hX', e.inv ≫ a, c ≫ e.hom⟦1⟧', isomorphic_distinguished _ h _
+    (Triangle.isoMk _ _ e.symm (Iso.refl _) (Iso.refl _))⟩
+
+protected lemma distinguished_cocone_triangle₂ [P.IsTriangulatedClosed₂]
+    {X Z : C} (c : Z ⟶ X⟦(1 : ℤ)⟧) (hX : P X) (hZ : P Z) :
+    ∃ (Y : C) (_ : P Y) (a : X ⟶ Y) (b : Y ⟶ Z), Triangle.mk a b c ∈ distTriang _ := by
+  obtain ⟨Y, a, b, h⟩ := distinguished_cocone_triangle₂ c
+  obtain ⟨Y', hY', ⟨e⟩⟩ := P.ext_of_isTriangulatedClosed₂' _ h hX hZ
+  exact ⟨Y', hY', a ≫ e.hom, e.inv ≫ b, isomorphic_distinguished _ h _
+    (Triangle.isoMk _ _ (Iso.refl _) e.symm (Iso.refl _))⟩
+
 lemma ext_of_isTriangulatedClosed₁
     [P.IsTriangulatedClosed₁] [P.IsClosedUnderIsomorphisms]
     (T : Triangle C) (hT : T ∈ distTriang C)
@@ -446,6 +470,13 @@ lemma trW_isoClosure : P.isoClosure.trW = P.trW := by
     exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) e.symm
   · rintro ⟨Z, g, h, mem, hZ⟩
     exact ⟨Z, g, h, mem, ObjectProperty.le_isoClosure _ _ hZ⟩
+
+variable {P} in
+lemma trW_monotone {Q : ObjectProperty C} (h : P ≤ Q) : P.trW ≤ Q.trW := by
+  intro X Y f hf
+  rw [trW_iff] at hf ⊢
+  obtain ⟨Z, a, b, hT, hZ⟩ := hf
+  exact ⟨Z, a, b, hT, h _ hZ⟩
 
 set_option backward.isDefEq.respectTransparency false in
 instance : P.trW.RespectsIso where
