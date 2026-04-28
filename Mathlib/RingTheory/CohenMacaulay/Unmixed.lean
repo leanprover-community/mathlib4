@@ -72,7 +72,7 @@ lemma isCohenMacaulayRing_of_unmixed
       rcases hi (le_of_lt lt) with ⟨rs, mem, reg, len⟩
       have netop : Ideal.ofList rs ≠ ⊤ := ne_top_of_le_ne_top hp.ne_top (Ideal.span_le.mpr mem)
       have ht := (Ideal.ofList_height_eq_length_of_isWeaklyRegular rs reg netop)
-      let _ := Ideal.Quotient.nontrivial_iff.mpr netop
+      have := Ideal.Quotient.nontrivial_iff.mpr netop
       obtain ⟨r, rmem, hr⟩ : ∃ r ∈ p, IsSMulRegular (R ⧸ Ideal.ofList rs) r := by
         by_contra! h
         obtain ⟨q, qass, le⟩ : ∃ q ∈ associatedPrimes R (R ⧸ Ideal.ofList rs), p ≤ q := by
@@ -111,8 +111,9 @@ lemma isCohenMacaulayRing_of_unmixed
   refine ⟨⟨IsWeaklyRegular.of_flat reg, ?_⟩, this⟩
   rw [Ideal.smul_eq_mul, Ideal.mul_top, ne_comm]
   apply ne_top_of_le_ne_top (b := maximalIdeal (Localization.AtPrime p)) Ideal.IsPrime.ne_top'
-  simpa only [Ideal.ofList, List.mem_map, Ideal.span_le] using fun b ⟨a, mem, eq⟩ ↦
-   (by simpa [← eq] using this a mem)
+  simp only [Ideal.ofList, List.mem_map, Ideal.span_le]
+  intro b ⟨a, mem, eq⟩
+  simpa [← eq] using this a mem
 
 omit [IsNoetherianRing R] in
 lemma IsLocalization.height_le_height_map (S : Submonoid R) {A : Type*} [CommRing A] [Algebra R A]
