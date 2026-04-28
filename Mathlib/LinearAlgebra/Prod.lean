@@ -641,8 +641,8 @@ theorem prod_eq_top_iff {p₁ : Submodule R M} {p₂ : Submodule R M₂} :
   simp only [eq_top_iff, le_prod_iff, map_top, range_fst, range_snd]
 
 theorem span_prod_eq {R M M'} [Semiring R] [AddCommMonoid M] [Module R M]
-  [AddCommMonoid M'] [Module R M'] (s : Set M) (t : Set M') (hs : 0 ∈ s) (ht : 0 ∈ t) :
-  span R (s ×ˢ t) = (span R s).prod (span R t) := by
+    [AddCommMonoid M'] [Module R M'] {s : Set M} {t : Set M'} (hs : 0 ∈ s) (ht : 0 ∈ t) :
+    span R (s ×ˢ t) = (span R s).prod (span R t) := by
   apply le_antisymm
   · exact span_prod_le s t;
   · rw [Submodule.prod_le_iff];
