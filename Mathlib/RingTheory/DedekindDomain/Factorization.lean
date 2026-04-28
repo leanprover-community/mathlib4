@@ -905,15 +905,16 @@ lemma Ideal.finprod_heightOneSpectrum_pow_multiplicity {I : Ideal R} (hI : I ≠
 
 namespace IsDedekindDomain.HeightOneSpectrum
 
-lemma multiplicity_le_of_ideal_ge (p : HeightOneSpectrum R) {I J : Ideal R} (h : J ≤ I)
-    (hJ : J ≠ ⊥) :
+variable (p : HeightOneSpectrum R) {I J : Ideal R}
+
+lemma multiplicity_le_of_ideal_ge (h : J ≤ I) (hJ : J ≠ ⊥) :
     multiplicity p.asIdeal I ≤ multiplicity p.asIdeal J := by
   rw [← count_normalizedFactors_eq_multiplicity hJ,
     ← count_normalizedFactors_eq_multiplicity <| ne_bot_of_le_ne_bot hJ h]
   exact Ideal.count_le_of_ideal_ge h hJ _
 
 open UniqueFactorizationMonoid Multiset in
-lemma multiplicity_sup (p : HeightOneSpectrum R) {I J : Ideal R} (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
+lemma multiplicity_sup (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
     multiplicity p.asIdeal (I ⊔ J) = multiplicity p.asIdeal I ⊓ multiplicity p.asIdeal J := by
   rw [Ideal.sup_eq_prod_inf_factors hI hJ, ← count_normalizedFactors_eq_multiplicity ?h,
     ← count_normalizedFactors_eq_multiplicity hI, ← count_normalizedFactors_eq_multiplicity hJ]
@@ -921,7 +922,8 @@ lemma multiplicity_sup (p : HeightOneSpectrum R) {I J : Ideal R} (hI : I ≠ ⊥
   rw [Ideal.normalizedFactors_prod_inter_eq_inter]
   exact count_inter ..
 
-lemma emultiplicity_sup (p : HeightOneSpectrum R) (I J : Ideal R) :
+variable (I J) in
+lemma emultiplicity_sup :
     emultiplicity p.asIdeal (I ⊔ J) = emultiplicity p.asIdeal I ⊓ emultiplicity p.asIdeal J := by
   rcases eq_or_ne I ⊥ with rfl | hI
   · rw [bot_eq_zero, emultiplicity_zero]
@@ -936,23 +938,24 @@ lemma emultiplicity_sup (p : HeightOneSpectrum R) (I J : Ideal R) :
     (H hJ).emultiplicity_eq_multiplicity, multiplicity_sup _ hI hJ]
   norm_cast
 
-lemma emultiplicity_ciSup {ι : Type*} [Finite ι] (p : HeightOneSpectrum R) (I : ι → Ideal R) :
+variable {ι : Type*} [Finite ι]
+
+lemma emultiplicity_ciSup (I : ι → Ideal R) :
     emultiplicity p.asIdeal (⨆ i, I i) = ⨅ i, emultiplicity p.asIdeal (I i) := by
   induction ι using Finite.induction_empty_option with
   | h_empty =>
     rw [iSup_of_empty, iInf_of_empty]
     exact emultiplicity_zero _
   | of_equiv e ih =>
-    specialize @ih (I ∘ e)
+    specialize ih (I ∘ e)
     rw [← sSup_range, ← sInf_range] at ih ⊢
     rw [EquivLike.range_comp I e] at ih
-    rw [ih, ← EquivLike.range_comp (fun i ↦ emultiplicity p.asIdeal (I i)) e]
-    rfl
+    rw [ih]
+    exact congrArg _ <| EquivLike.range_comp (emultiplicity p.asIdeal <| I ·) e
   | h_option ih =>
     rw [iSup_option, emultiplicity_sup p .., ih, iInf_option]
 
-lemma multiplicity_ciSup {ι : Type*} [Finite ι] [Nonempty ι] (p : HeightOneSpectrum R)
-    {I : ι → Ideal R} (hI : ∀ i, I i ≠ ⊥) :
+lemma multiplicity_ciSup [Nonempty ι] {I : ι → Ideal R} (hI : ∀ i, I i ≠ ⊥) :
     multiplicity p.asIdeal (⨆ i, I i) = ⨅ i, multiplicity p.asIdeal (I i) := by
   have H i : FiniteMultiplicity p.asIdeal (I i) :=
     FiniteMultiplicity.of_prime_left (prime p) <| hI i
