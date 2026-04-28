@@ -15,6 +15,7 @@ General algebra:
     monoidal category: 'CategoryTheory.MonoidalCategory'
     Cartesian closed: 'CategoryTheory.CartesianClosed'
     abelian category: 'CategoryTheory.Abelian'
+    Grothendieck topology: 'CategoryTheory.GrothendieckTopology'
 
   Numbers:
     natural number: 'Nat'
@@ -482,7 +483,6 @@ Geometry:
     locally ringed space: 'AlgebraicGeometry.LocallyRingedSpace'
     scheme: 'AlgebraicGeometry.Scheme'
     Nullstellensatz : 'MvPolynomial.vanishingIdeal_zeroLocus_eq_radical'
-    Grothendieck topology: 'CategoryTheory.GrothendieckTopology'
 
   Convex geometry:
     convex cone: 'ConvexCone'
