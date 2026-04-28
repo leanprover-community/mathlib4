@@ -151,51 +151,30 @@ nonempty.
 lemma isSheafUniqueGluing_iff_isSheafUniqueGluingNontrivial_types
     (k : Unique (ToType (F.obj (op ⊥)))) :
     IsSheafUniqueGluing F ↔ IsSheafUniqueGluingNontrivial F := by
-  refine ⟨fun h ι _ U _ sf ↦ h U sf, fun h ι U sf com ↦ ?_⟩
+  refine ⟨fun h _ _ U _ sf ↦ h U sf, fun h ι U sf com ↦ ?_⟩
+  have empty {V : Opens X} (hV : V = ⊥) : Unique (ToType (F.obj (op V))) := by
+    rw [hV]; exact k
   by_cases h1 : ∃ i : ι, Nonempty (U i)
   · let ι' := {i : ι | Nonempty (U i)}
     let U' : ι' → Opens X := fun i ↦ U i
-    let sf' : (i : ↑ι') → ToType (F.obj (op (U' i))) := fun i ↦ sf i
-    have com' : F.IsCompatible U' sf' := fun a b ↦ com a b
-    have hU' (i : ι') : Nonempty ↥(U' i) := i.2
-    obtain ⟨i, hi⟩ := h1
-    have : Nonempty ι' := ⟨i, hi⟩
-    have : iSup U' = iSup U := by aesop
-    have eq : op (iSup U') = op (iSup U) := (op_inj_iff (iSup U') (iSup U)).mpr this
-    obtain ⟨s, hs1, hs2⟩ := h U' hU' sf' com'
-    have (j : ι) (hj : Nonempty (U j)) :
-      eqToHom eq ≫ (leSupr U j).op  = (leSupr (fun (i : ι') ↦ U i) (⟨j, hj⟩ : ι')).op := rfl
-    use F.map (eqToHom eq) s
-    refine ⟨fun j ↦ ?_, fun y hy ↦ ?_⟩
+    have : Nonempty ι' := nonempty_subtype.mpr h1
+    have eq : op (iSup U') = op (iSup U) := congrArg op (by aesop)
+    obtain ⟨s, hs1, hs2⟩ := h U' (fun i ↦ i.2) (fun i ↦ sf i) (fun a b ↦ com a b)
+    refine ⟨F.map (eqToHom eq) s, fun j ↦ ?_, fun y hy ↦ ?_⟩
     · by_cases hj : Nonempty (U j)
-      · have a := hs1 ⟨j, hj⟩
-        simp only [U', sf'] at a
-        rw [← a]
-        suffices F.map (eqToHom eq ≫ (leSupr U j).op) =
-            F.map (leSupr (fun (i : ι') ↦ U i) (⟨j, hj⟩ : ι')).op by
-          simp only [Functor.map_comp] at this
-          exact ConcreteCategory.congr_hom this s
-        rw [this j hj]
-      · have : U j = ⊥ := by aesop
-        have : Unique (ToType (F.obj (op (U j)))) := by rwa [this]
-        apply Subsingleton.elim
-    · have : F.IsGluing U' sf' (F.map (eqToHom eq.symm) y) := by
-        intro b
-        dsimp [sf']
-        rw [← hy]
-        suffices F.map (eqToHom eq.symm ≫ (leSupr U' b).op) = F.map (leSupr U b).op by
-          simp only [Functor.map_comp] at this
-          exact ConcreteCategory.congr_hom this y
-        rfl
-      simp [← hs2 (F.map (eqToHom eq.symm) y) this]
-  · have : iSup U = ⊥ := by aesop
-    have : Unique (ToType (F.obj (op (iSup U)))) := by rwa [this]
-    use default
-    refine ⟨fun j ↦ ?_, fun _ _ ↦ Subsingleton.elim ..⟩
-    have : U j = ⊥ := by aesop
-    have : Unique (ToType (F.obj (op (U j)))) := by rwa [this]
-    apply Subsingleton.elim
-
+      · rw [← ConcreteCategory.comp_apply, ← F.map_comp]
+        exact hs1 ⟨j, hj⟩
+      · letI := empty (show U j = ⊥ by aesop)
+        exact Subsingleton.elim _ _
+    · have hy' : F.IsGluing U' (fun i ↦ sf i) (F.map (eqToHom eq.symm) y) := fun b ↦ by
+        rw [← ConcreteCategory.comp_apply, ← F.map_comp]
+        exact hy b.1
+      rw [← hs2 _ hy', ← ConcreteCategory.comp_apply, ← F.map_comp]
+      simp
+  · letI := empty (show iSup U = ⊥ by aesop)
+    refine ⟨default, fun j ↦ ?_, fun _ _ ↦ Subsingleton.elim _ _⟩
+    letI := empty (show U j = ⊥ by aesop)
+    exact Subsingleton.elim _ _
 
 /-- The usual sheaf condition can be obtained from the sheaf condition
 in terms of unique gluings.
