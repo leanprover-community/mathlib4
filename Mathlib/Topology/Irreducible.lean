@@ -454,7 +454,7 @@ lemma preimage_mem_irreducibleComponents (ht : t ∈ irreducibleComponents X) {f
   refine preimage_mem_irreducibleComponents_of_isPreirreducible_fiber ht hf.continuous hf.isOpenMap
     (fun _ ↦ (subsingleton_singleton.preimage hf.injective).isPreirreducible) h
 
-lemma closure_image_preimage_of_preIrreducible (f : Y → X) (h : IsOpenMap f) (s : Set X)
+lemma closure_image_preimage_of_isPreirreducible (f : Y → X) (h : IsOpenMap f) (s : Set X)
     (hne : (f ⁻¹' s).Nonempty) (hs : IsPreirreducible s) (hs' : IsClosed s) :
     closure (f '' (f ⁻¹' s)) = s := by
   refine subset_antisymm (closure_minimal (by simp) hs') ?_

@@ -15,7 +15,7 @@ In this file we prove several versions of the triangle inequality for the `Lp` s
 as well as simple corollaries.
 -/
 
-@[expose] public section
+public section
 
 open Filter ENNReal
 open scoped Topology
@@ -141,7 +141,7 @@ theorem MemLp.sub {f g : α → E} (hf : MemLp f p μ) (hg : MemLp g p μ) : Mem
   rw [sub_eq_add_neg]
   exact hf.add hg.neg
 
-theorem memLp_finset_sum [ContinuousAdd ε']
+theorem memLp_finsetSum [ContinuousAdd ε']
     {ι} (s : Finset ι) {f : ι → α → ε'} (hf : ∀ i ∈ s, MemLp (f i) p μ) :
     MemLp (fun a => ∑ i ∈ s, f i a) p μ := by
   haveI : DecidableEq ι := Classical.decEq _
@@ -152,11 +152,15 @@ theorem memLp_finset_sum [ContinuousAdd ε']
     simp only [his, Finset.sum_insert, not_false_iff]
     exact (hf i (s.mem_insert_self i)).add (ih fun j hj => hf j (Finset.mem_insert_of_mem hj))
 
-theorem memLp_finset_sum' [ContinuousAdd ε']
+@[deprecated (since := "2026-04-08")] alias memLp_finset_sum := memLp_finsetSum
+
+theorem memLp_finsetSum' [ContinuousAdd ε']
     {ι} (s : Finset ι) {f : ι → α → ε'} (hf : ∀ i ∈ s, MemLp (f i) p μ) :
     MemLp (∑ i ∈ s, f i) p μ := by
-  convert memLp_finset_sum s hf using 1
+  convert memLp_finsetSum s hf using 1
   ext x
   simp
+
+@[deprecated (since := "2026-04-08")] alias memLp_finset_sum' := memLp_finsetSum'
 
 end MeasureTheory

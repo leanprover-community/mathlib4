@@ -1117,7 +1117,7 @@ open TopologicalSpace (Clopens)
 bijection with pairs of elements with product 0 and sum 1. (By definition, `(e₁, f₁) ≤ (e₂, f₂)`
 iff `e₁ * e₂ = e₁`.) Both elements in such pairs must be idempotents, but there may exists
 idempotents that do not form such pairs (does not have a "complement"). For example, in the
-semiring {0, 0.5, 1} with ⊔ as + and ⊓ as *, 0.5 has no complement. -/
+semiring `{0, 0.5, 1}` with `⊔` as `+` and `⊓` as `*`, `0.5` has no complement. -/
 def mulZeroAddOneEquivClopens :
     {e : R × R // e.1 * e.2 = 0 ∧ e.1 + e.2 = 1} ≃o Clopens (PrimeSpectrum R) where
   toEquiv := .ofBijective

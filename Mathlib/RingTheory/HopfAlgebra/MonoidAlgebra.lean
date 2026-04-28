@@ -24,7 +24,7 @@ results about the `R`-Hopf algebra instance on `A[G]`, building upon results in
   is a group scheme.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

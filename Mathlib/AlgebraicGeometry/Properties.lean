@@ -23,7 +23,7 @@ We provide some basic properties of schemes
   are reduced.
 -/
 
-@[expose] public section
+public section
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
@@ -354,17 +354,17 @@ lemma coheight_eq_of_isOpenImmersion {U X : Scheme} {x : U} (f : U ⟶ X) [IsOpe
 open Order in
 lemma idealHeight_eq_coheight (R : CommRingCat) (x : Spec R) :
     x.asIdeal.height = coheight x := by
-  rw [Ideal.height_eq_primeHeight x.asIdeal, Ideal.primeHeight]
-  congr
-  ext a b
-  exact le_primeSpectrum_iff_le_spec R a b
+  rw [Ideal.height_eq_primeHeight x.asIdeal, Ideal.primeHeight,
+    ← Order.coheight_orderIso (specOrderIsoPrimeSpectrum R), ← height_ofDual,
+    specOrderIsoPrimeSpectrum_apply, OrderDual.ofDual_toDual]
+  rfl
 
 open Order in
 @[stacks 02IZ]
 lemma ringKrullDim_stalk_eq_coheight {X : Scheme} (x : X) :
-    ringKrullDim (X.presheaf.stalk x) = Order.coheight x := by
+    ringKrullDim (X.presheaf.stalk x) = coheight x := by
   wlog h : ∃ R, X = Spec R
-  · obtain ⟨R, f, hf, hsub⟩ := AlgebraicGeometry.Scheme.exists_affine_mem_range_and_range_subset
+  · obtain ⟨R, f, hf, hsub⟩ := Scheme.exists_affine_mem_range_and_range_subset
       (show x ∈ ⊤ from trivial)
     obtain ⟨y, rfl⟩ := Set.mem_range.mp hsub.1
     rw [coheight_eq_of_isOpenImmersion, ← this _ ⟨R, rfl⟩]
