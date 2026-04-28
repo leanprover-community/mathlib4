@@ -148,6 +148,7 @@ noncomputable instance : ConditionallyCompleteLinearOrder ℝ where
 theorem lt_sInf_add_pos (h : s.Nonempty) {ε : ℝ} (hε : 0 < ε) : ∃ a ∈ s, a < sInf s + ε :=
   exists_lt_of_csInf_lt h <| lt_add_of_pos_right _ hε
 
+-- TODO: shouldn't this be named `sSup_add_neg_lt`?
 theorem add_neg_lt_sSup (h : s.Nonempty) {ε : ℝ} (hε : ε < 0) : ∃ a ∈ s, sSup s + ε < a :=
   exists_lt_of_lt_csSup h <| add_lt_of_neg_right _ hε
 
