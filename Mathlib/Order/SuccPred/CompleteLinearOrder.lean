@@ -169,7 +169,7 @@ theorem iSup_lt_iff_of_not_isSuccPrelimit (h : ¬IsSuccPrelimit l) :
 @[to_dual sInf_le_iff_of_not_isPredPrelimit]
 theorem le_sSup_iff_of_not_isSuccPrelimit (h : ¬IsSuccPrelimit l) :
     l ≤ sSup s ↔ ∃ a ∈ s, l ≤ a := by
-  grind [sSup_lt_iff_of_not_isSuccPrelimit, not_le]
+  simpa using sSup_lt_iff_of_not_isSuccPrelimit h |>.not
 
 @[to_dual iInf_le_iff_of_not_isPredPrelimit]
 theorem le_iSup_iff_of_not_isSuccPrelimit (h : ¬IsSuccPrelimit l) :
@@ -190,8 +190,7 @@ theorem Order.IsSuccPrelimit.iSup_lt_iff (h : IsSuccPrelimit l) :
 @[to_dual sInf_le_iff]
 theorem Order.IsSuccPrelimit.le_sSup_iff (h : IsSuccPrelimit l) :
     l ≤ sSup s ↔ IsCofinalFor (Iio l) s := by
-  simp_rw [IsCofinalFor, mem_Iio]
-  grind [h.sSup_lt_iff, not_le]
+  simpa using h.sSup_lt_iff.not
 
 @[to_dual iInf_le_iff]
 theorem Order.IsSuccPrelimit.le_iSup_iff (h : IsSuccPrelimit l) :
