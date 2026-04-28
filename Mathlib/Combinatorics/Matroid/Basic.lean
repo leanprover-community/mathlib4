@@ -105,15 +105,15 @@ There are a few design decisions worth discussing.
   This is because of how common it is to simultaneously consider
   a number of matroids on different but related ground sets.
   For example, a matroid `M` on ground set `E` can have its structure
-  'restricted' to some subset `R ⊆ E` to give a smaller matroid `M ↾R` with ground set `R`.
-  A statement like `(M ↾R₁) ↾R₂ = M ↾R₂` is mathematically obvious.
+  'restricted' to some subset `R ⊆ E` to give a smaller matroid `M ↾ R` with ground set `R`.
+  A statement like `(M ↾ R₁) ↾ R₂ = M ↾ R₂` is mathematically obvious.
   But if the ground set of a matroid is a type, this doesn't typecheck,
   and is only true up to canonical isomorphism.
   Restriction is just the tip of the iceberg here;
   one can also 'contract' and 'delete' elements and sets of elements
   in a matroid to give a smaller matroid,
   and in practice it is common to make statements like `M₁.E = M₂.E ∩ M₃.E` and
-  `((M ⟋ e) ↾R) ⟋ C = M ⟋ (C ∪ {e}) ↾R`.
+  `((M ⟋ e) ↾ R) ⟋ C = M ⟋ (C ∪ {e}) ↾ R`.
   Such things are a nightmare to work with unless `=` is actually propositional equality
   (especially because the relevant coercions are usually between sets and not just elements).
 

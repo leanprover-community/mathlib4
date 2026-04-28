@@ -147,7 +147,7 @@ def FinsubgraphHom.restrict {G' G'' : G.Finsubgraph} (h : G'' ≤ G') (f : G' �
 def finsubgraphHomFunctor (G : SimpleGraph V) (F : SimpleGraph W) :
     G.Finsubgraphᵒᵖ ⥤ Type (max u v) where
   obj G' := G'.unop →fg F
-  map g := ↾fun f ↦ f.restrict (CategoryTheory.leOfHom g.unop)
+  map g := ↾ (fun f ↦ f.restrict (CategoryTheory.leOfHom g.unop))
 
 /-- If every finite subgraph of a graph `G` has a homomorphism to a finite graph `F`, then there is
 a homomorphism from the whole of `G` to `F`. -/

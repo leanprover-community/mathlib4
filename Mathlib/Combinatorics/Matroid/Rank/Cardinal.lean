@@ -81,7 +81,7 @@ noncomputable def cRank (M : Matroid α) := ⨆ B : {B // M.IsBase B}, #B
 
 /-- The rank (supremum of the cardinalities of bases) of a set `X` in a matroid `M`,
 as a `Cardinal`. See `Matroid.eRk` for a better-behaved `ℕ∞`-valued version. -/
-noncomputable def cRk (M : Matroid α) (X : Set α) := (M ↾X).cRank
+noncomputable def cRk (M : Matroid α) (X : Set α) := (M ↾ X).cRank
 
 theorem IsBase.cardinalMk_le_cRank (hB : M.IsBase B) : #B ≤ M.cRank :=
   le_ciSup (f := fun B : {B // M.IsBase B} ↦ #B.1) bddAbove_of_small ⟨B, hB⟩
@@ -118,7 +118,7 @@ theorem cRk_le_cardinalMk (M : Matroid α) (X : Set α) : M.cRk X ≤ #X :=
 @[simp] theorem cRk_ground (M : Matroid α) : M.cRk M.E = M.cRank := by
   rw [cRk, restrict_ground_eq_self]
 
-@[simp] theorem cRank_restrict (M : Matroid α) (X : Set α) : (M ↾X).cRank = M.cRk X := rfl
+@[simp] theorem cRank_restrict (M : Matroid α) (X : Set α) : (M ↾ X).cRank = M.cRk X := rfl
 
 theorem cRk_mono (M : Matroid α) : Monotone M.cRk := by
   simp only [Monotone, le_eq_subset, cRk_le_iff]
@@ -133,14 +133,14 @@ theorem cRk_le_of_subset (M : Matroid α) (hXY : X ⊆ Y) : M.cRk X ≤ M.cRk Y 
   (M.cRk_le_of_subset inter_subset_left).antisymm <| cRk_le_iff.2
     fun _ h ↦ h.isBasis_inter_ground.cardinalMk_le_cRk
 
-theorem cRk_restrict_subset (M : Matroid α) (hYX : Y ⊆ X) : (M ↾X).cRk Y = M.cRk Y := by
-  have aux : ∀ ⦃I⦄, M.IsBasis' I Y ↔ (M ↾X).IsBasis' I Y := by
+theorem cRk_restrict_subset (M : Matroid α) (hYX : Y ⊆ X) : (M ↾ X).cRk Y = M.cRk Y := by
+  have aux : ∀ ⦃I⦄, M.IsBasis' I Y ↔ (M ↾ X).IsBasis' I Y := by
     simp_rw [isBasis'_restrict_iff, inter_eq_self_of_subset_left hYX, iff_self_and]
     exact fun I h ↦ h.subset.trans hYX
   simp_rw [le_antisymm_iff, cRk_le_iff]
   exact ⟨fun I hI ↦ (aux.2 hI).cardinalMk_le_cRk, fun I hI ↦ (aux.1 hI).cardinalMk_le_cRk⟩
 
-theorem cRk_restrict (M : Matroid α) (X Y : Set α) : (M ↾X).cRk Y = M.cRk (X ∩ Y) := by
+theorem cRk_restrict (M : Matroid α) (X Y : Set α) : (M ↾ X).cRk Y = M.cRk (X ∩ Y) := by
   rw [← cRk_inter_ground, restrict_ground_eq, cRk_restrict_subset _ inter_subset_right,
     inter_comm]
 
@@ -247,7 +247,7 @@ theorem IsBase.cardinalMk_eq_cRank (hB : M.IsBase B) : #B = M.cRank := by
   simp [cRank, hrw]
 
 /-- Restrictions of matroids with cardinal rank functions have cardinal rank functions. -/
-instance invariantCardinalRank_restrict : InvariantCardinalRank (M ↾X) := by
+instance invariantCardinalRank_restrict : InvariantCardinalRank (M ↾ X) := by
   refine ⟨fun I J Y hI hJ ↦ ?_⟩
   rw [isBasis_restrict_iff'] at hI hJ
   exact hI.1.cardinalMk_diff_comm hJ.1

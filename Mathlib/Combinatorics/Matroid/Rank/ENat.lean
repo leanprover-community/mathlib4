@@ -75,7 +75,7 @@ noncomputable def eRank (M : Matroid α) : ℕ∞ := ⨆ B : {B // M.IsBase B}, 
 
 /-- The rank `Matroid.eRk M X` of a set `X` is the `ℕ∞`-valued cardinality of each basis of `X`.
 (See `Matroid.cRk` for a worse-behaved cardinal-valued version) -/
-noncomputable def eRk (M : Matroid α) (X : Set α) : ℕ∞ := (M ↾X).eRank
+noncomputable def eRk (M : Matroid α) (X : Set α) : ℕ∞ := (M ↾ X).eRank
 
 lemma eRank_def (M : Matroid α) : M.eRank = M.eRk M.E := by
   rw [eRk, restrict_ground_eq_self]
@@ -85,7 +85,7 @@ lemma eRk_ground (M : Matroid α) : M.eRk M.E = M.eRank :=
   M.eRank_def.symm
 
 @[simp]
-lemma eRank_restrict (M : Matroid α) (X : Set α) : (M ↾X).eRank = M.eRk X := rfl
+lemma eRank_restrict (M : Matroid α) (X : Set α) : (M ↾ X).eRank = M.eRk X := rfl
 
 lemma IsBase.encard_eq_eRank (hB : M.IsBase B) : B.encard = M.eRank := by
   simp [eRank, show ∀ B' : {B // M.IsBase B}, B'.1.encard = B.encard from
@@ -184,13 +184,13 @@ lemma eRk_insert_closure_eq (M : Matroid α) (e : α) (X : Set α) :
 
 /-- A version of `Matroid.restrict_eRk_eq` with no `X ⊆ R` hypothesis and thus a less simple RHS. -/
 @[simp]
-lemma restrict_eRk_eq' (M : Matroid α) (R X : Set α) : (M ↾R).eRk X = M.eRk (X ∩ R) := by
-  obtain ⟨I, hI⟩ := (M ↾R).exists_isBasis' X
+lemma restrict_eRk_eq' (M : Matroid α) (R X : Set α) : (M ↾ R).eRk X = M.eRk (X ∩ R) := by
+  obtain ⟨I, hI⟩ := (M ↾ R).exists_isBasis' X
   rw [hI.eRk_eq_encard]
   rw [isBasis'_iff_isBasis_inter_ground, isBasis_restrict_iff', restrict_ground_eq] at hI
   rw [← eRk_inter_ground, ← hI.1.eRk_eq_encard]
 
-lemma restrict_eRk_eq (M : Matroid α) {R : Set α} (h : X ⊆ R) : (M ↾R).eRk X = M.eRk X := by
+lemma restrict_eRk_eq (M : Matroid α) {R : Set α} (h : X ⊆ R) : (M ↾ R).eRk X = M.eRk X := by
   rw [restrict_eRk_eq', inter_eq_self_of_subset_left h]
 
 lemma IsBasis'.eRk_eq_eRk_union (hIX : M.IsBasis' I X) (Y : Set α) :
@@ -565,7 +565,7 @@ lemma spanning_iff_eRk_le [RankFinite M] (hX : X ⊆ M.E := by aesop_mat) :
     M.Spanning X ↔ M.eRank ≤ M.eRk X := by
   rw [spanning_iff_eRk_le', and_iff_left hX]
 
-lemma Spanning.eRank_restrict (hX : M.Spanning X) : (M ↾X).eRank = M.eRank := by
+lemma Spanning.eRank_restrict (hX : M.Spanning X) : (M ↾ X).eRank = M.eRank := by
   rw [eRank_def, restrict_ground_eq, restrict_eRk_eq _ rfl.subset, hX.eRk_eq]
 
 /-! ### Constructions -/

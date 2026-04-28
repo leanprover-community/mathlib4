@@ -257,7 +257,7 @@ The functor assigning, to a finite set in `V`, the set of connected components i
 @[simps]
 def componentComplFunctor : (Finset V)ᵒᵖ ⥤ Type u where
   obj K := G.ComponentCompl K.unop
-  map f := ↾(ComponentCompl.hom (le_of_op_hom f))
+  map f := ↾ (ComponentCompl.hom (le_of_op_hom f))
   map_id _ := by
     ext
     simp [ComponentCompl.hom_refl]

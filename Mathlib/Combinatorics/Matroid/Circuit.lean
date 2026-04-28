@@ -178,12 +178,12 @@ lemma IsCircuit.isBasis_iff_insert_eq (hC : M.IsCircuit C) :
 /-! ### Restriction -/
 
 lemma IsCircuit.isCircuit_restrict_of_subset (hC : M.IsCircuit C) (hCR : C ⊆ R) :
-    (M ↾R).IsCircuit C := by
+    (M ↾ R).IsCircuit C := by
   simp_rw [isCircuit_iff, restrict_dep_iff, dep_iff, and_imp] at *
   exact ⟨⟨hC.1.1, hCR⟩, fun I hI _ hIC ↦ hC.2 hI (hIC.trans hC.1.2) hIC⟩
 
 lemma restrict_isCircuit_iff (hR : R ⊆ M.E := by aesop_mat) :
-    (M ↾R).IsCircuit C ↔ M.IsCircuit C ∧ C ⊆ R := by
+    (M ↾ R).IsCircuit C ↔ M.IsCircuit C ∧ C ⊆ R := by
   refine ⟨?_, fun h ↦ h.1.isCircuit_restrict_of_subset h.2⟩
   simp_rw [isCircuit_iff, restrict_dep_iff, and_imp, dep_iff]
   exact fun hC hCR h ↦ ⟨⟨⟨hC,hCR.trans hR⟩,fun I hI hIC ↦ h hI.1 (hIC.trans hCR) hIC⟩,hCR⟩
@@ -275,7 +275,7 @@ lemma IsCircuit.eq_fundCircuit_of_subset (hC : M.IsCircuit C) (hI : M.Indep I)
   exact ⟨hCeI, heCcl⟩
 
 lemma fundCircuit_restrict {R : Set α} (hIR : I ⊆ R) (heR : e ∈ R) (hR : R ⊆ M.E) :
-    (M ↾R).fundCircuit e I = M.fundCircuit e I := by
+    (M ↾ R).fundCircuit e I = M.fundCircuit e I := by
   simp_rw [fundCircuit, M.restrict_closure_eq (R := R) (X := {e}) (by simpa)]
   apply subset_antisymm
   · gcongr 5 with J hJI; intro heJ
@@ -289,7 +289,7 @@ lemma fundCircuit_restrict {R : Set α} (hIR : I ⊆ R) (heR : e ∈ R) (hR : R 
   exact subset_trans (by simpa [M.mem_closure_of_mem' (mem_singleton e) (hR heR)]) heJ
 
 @[simp] lemma fundCircuit_restrict_univ (M : Matroid α) :
-    (M ↾univ).fundCircuit e I = M.fundCircuit e I := by
+    (M ↾ univ).fundCircuit e I = M.fundCircuit e I := by
   have aux (A B) : M.closure A ⊆ B ∪ univ \ M.E ↔ M.closure A ⊆ B := by
     refine ⟨fun h ↦ ?_, fun h ↦ h.trans subset_union_left⟩
     refine (subset_inter h (M.closure_subset_ground A)).trans ?_
