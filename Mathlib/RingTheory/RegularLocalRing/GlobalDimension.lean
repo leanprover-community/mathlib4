@@ -23,7 +23,6 @@ variable {R : Type u} [CommRing R]
 
 open IsLocalRing CategoryTheory
 
-set_option backward.isDefEq.respectTransparency false in
 lemma finite_projectiveDimension_of_isRegularLocalRing_aux [IsRegularLocalRing R] [Small.{v, u} R]
     (M : ModuleCat.{v} R) [Module.Finite R M] (i : ℕ) : IsLocalRing.depth M + i ≥ ringKrullDim R →
     ∃ n, HasProjectiveDimensionLE M n := by
@@ -41,7 +40,7 @@ lemma finite_projectiveDimension_of_isRegularLocalRing_aux [IsRegularLocalRing R
     intro le
     rcases subsingleton_or_nontrivial M with sub|ntr
     · exact ⟨0, inferInstance⟩
-    · rcases Module.exists_finite_presentation R  M with ⟨P, _, _, _, _, f, surjf⟩
+    · rcases Module.exists_finite_presentation R M with ⟨P, _, _, _, _, f, surjf⟩
       let S : ShortComplex (ModuleCat.{v} R) := f.shortComplexKer
       have S_exact : S.ShortExact := LinearMap.shortExact_shortComplexKer surjf
       have ge : IsLocalRing.depth S.X₁ ≥ IsLocalRing.depth S.X₂ ⊓ (IsLocalRing.depth M + 1) :=
@@ -51,7 +50,7 @@ lemma finite_projectiveDimension_of_isRegularLocalRing_aux [IsRegularLocalRing R
         have : IsLocalRing.depth S.X₂ = IsLocalRing.depth (ModuleCat.of R R) := by
           have : Nontrivial S.X₂ := surjf.nontrivial
           exact (free_depth_eq_ring_depth S.X₂ _).trans
-            (ring_depth_invariant (maximalIdeal R) Ideal.IsPrime.ne_top'.lt_top)
+            (ring_depth_shrink_eq (maximalIdeal R) Ideal.IsPrime.ne_top'.lt_top)
         simpa [← (isCohenMacaulayLocalRing_def R).mp isCohenMacaulayLocalRing_of_isRegularLocalRing,
           this, min_add] using ⟨WithBot.le_self_add (WithBot.natCast_ne_bot i) (ringKrullDim R), le⟩
       rcases ih S.X₁ ge' with ⟨m, hm⟩
@@ -71,7 +70,7 @@ theorem IsRegularLocalRing.globalDimension_eq_ringKrullDim [Small.{v} R] [IsRegu
   rw [globalDimension_eq_sup_projectiveDimension_finite]
   have depth_eq : depth (ModuleCat.of R (Shrink.{v, u} R)) = ringKrullDim R := by
     rw [(isCohenMacaulayLocalRing_def R).mp isCohenMacaulayLocalRing_of_isRegularLocalRing]
-    exact WithBot.coe_inj.mpr (ring_depth_invariant (maximalIdeal R) Ideal.IsPrime.ne_top'.lt_top)
+    exact WithBot.coe_inj.mpr (ring_depth_shrink_eq (maximalIdeal R) Ideal.IsPrime.ne_top'.lt_top)
   apply le_antisymm
   · simp only [iSup_le_iff]
     intro M hM
@@ -99,21 +98,15 @@ theorem IsRegularRing.globalDimension_eq_ringKrullDim [Small.{v} R] [IsRegularRi
   rcases subsingleton_or_nontrivial R with sub|ntr
   · rw [(globalDimension_eq_bot_iff R).mpr sub, ringKrullDim_eq_bot_of_subsingleton]
   · rw [globalDimension_eq_iSup_loclization_maximal]
-    let _ : Nonempty ((Subtype (Ideal.IsMaximal (α := R)))) :=
-      nonempty_subtype.mpr (Ideal.exists_maximal R)
+    have := nonempty_subtype.mpr (Ideal.exists_maximal R)
     let f := fun (x : Subtype (Ideal.IsMaximal (α := R))) ↦ x.1.height
     have bdd : BddAbove (Set.range f) := by
-      have : ringKrullDim R ≠ ⊥ :=
-        ne_bot_of_le_ne_bot WithBot.zero_ne_bot ringKrullDim_nonneg_of_nontrivial
-      use (ringKrullDim R).unbot this
-      refine mem_upperBounds.mpr (fun x ⟨y, hy⟩ ↦ ?_)
-      simpa [← hy, WithBot.le_unbot_iff] using
-        Ideal.height_le_ringKrullDim_of_ne_top y.2.isPrime.ne_top
+      use ⊤
+      simp [mem_upperBounds]
     rw [← Ideal.sup_height_of_maximal_eq_ringKrullDim, iSup_subtype', WithBot.coe_iSup bdd]
     apply le_antisymm
     · simp only [iSup_le_iff]
       intro p
-      have := isRegularRing_iff.mp ‹_› p.1
       have : Small.{v} (Localization.AtPrime p.1) :=
         small_of_surjective Localization.mkHom_surjective
       rw [IsRegularLocalRing.globalDimension_eq_ringKrullDim.{u, v} (Localization.AtPrime p.1),
@@ -121,7 +114,6 @@ theorem IsRegularRing.globalDimension_eq_ringKrullDim [Small.{v} R] [IsRegularRi
       exact le_iSup (fun i ↦ (f i : WithBot ℕ∞)) ⟨p.1, p.2⟩
     · simp only [iSup_le_iff]
       intro ⟨p, hp⟩
-      have := isRegularRing_iff.mp ‹_› p
       have : Small.{v} (Localization.AtPrime p) :=
         small_of_surjective Localization.mkHom_surjective
       simp only [f, ← IsLocalization.AtPrime.ringKrullDim_eq_height p (Localization.AtPrime p),
