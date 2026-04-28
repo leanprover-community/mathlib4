@@ -8,7 +8,7 @@ module
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.Module.PerfectPairing
-public import Mathlib.Topology.Algebra.Module.StrongTopology
+public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 
 /-!
 # Continuous Perfect Pairing for `topDualPairing`
@@ -22,7 +22,7 @@ finite-dimensional Hausdorff space over a complete nontrivially normed field.
   finite-dimensional Hausdorff spaces over complete nontrivially normed fields.
 -/
 
-@[expose] public section
+public section
 
 open Module
 

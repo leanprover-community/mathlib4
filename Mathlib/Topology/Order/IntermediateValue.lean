@@ -44,7 +44,7 @@ on intervals.
 intermediate value theorem, connected space, connected set
 -/
 
-@[expose] public section
+public section
 
 
 open Filter OrderDual TopologicalSpace Function Set
@@ -220,7 +220,16 @@ theorem IsPreconnected.eq_univ_of_unbounded {s : Set α} (hs : IsPreconnected s)
 
 end
 
-variable {α : Type u} [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α]
+variable {α : Type u} [TopologicalSpace α]
+
+theorem denselyOrdered_of_preconnectedSpace [LinearOrder α] [OrderTopology α]
+    [PreconnectedSpace α] : DenselyOrdered α where
+  dense x y hxy := by
+    suffices (Iio y ∩ Ioi x).Nonempty by grind [Set.inter_nonempty_iff_exists_left]
+    exact nonempty_inter (isOpen_Iio' y) (isOpen_Ioi' x) (Set.Iio_union_Ioi_of_lt hxy)
+      ⟨x, Set.mem_Iio.mpr hxy⟩ ⟨y, Set.mem_Ioi.mpr hxy⟩
+
+variable [ConditionallyCompleteLinearOrder α] [OrderTopology α]
 
 /-- A bounded connected subset of a conditionally complete linear order includes the open interval
 `(Inf s, Sup s)`. -/

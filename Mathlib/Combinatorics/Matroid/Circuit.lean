@@ -309,13 +309,13 @@ lemma dep_iff_superset_isCircuit (hX : X ⊆ M.E := by aesop_mat) :
     M.Dep X ↔ ∃ C, C ⊆ X ∧ M.IsCircuit C :=
   ⟨Dep.exists_isCircuit_subset, fun ⟨C, hCX, hC⟩ ↦ hC.dep.superset hCX⟩
 
-/-- A version of `Matroid.dep_iff_superset_isCircuit` that has the supportedness hypothesis
+/-- A version of `Matroid.dep_iff_superset_isCircuit` that has the ground-set hypothesis
 as part of the equivalence, rather than a hypothesis. -/
 lemma dep_iff_superset_isCircuit' : M.Dep X ↔ (∃ C, C ⊆ X ∧ M.IsCircuit C) ∧ X ⊆ M.E :=
   ⟨fun h ↦ ⟨h.exists_isCircuit_subset, h.subset_ground⟩,
     fun ⟨⟨C, hCX, hC⟩, h⟩ ↦ hC.dep.superset hCX⟩
 
-/-- A version of `Matroid.indep_iff_forall_subset_not_isCircuit` that has the supportedness
+/-- A version of `Matroid.indep_iff_forall_subset_not_isCircuit` that has the ground-set
 hypothesis as part of the equivalence, rather than a hypothesis. -/
 lemma indep_iff_forall_subset_not_isCircuit' :
     M.Indep I ↔ (∀ C, C ⊆ I → ¬M.IsCircuit C) ∧ I ⊆ M.E := by

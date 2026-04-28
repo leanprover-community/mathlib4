@@ -74,7 +74,7 @@ theorem eval_iterate_derivative_rootMultiplicity {p : R[X]} {t : R} :
       (p.rootMultiplicity t).factorial • (p /ₘ (X - C t) ^ p.rootMultiplicity t).eval t := by
   set m := p.rootMultiplicity t with hm
   conv_lhs => rw [← p.pow_mul_divByMonic_rootMultiplicity_eq t, ← hm]
-  rw [iterate_derivative_mul, eval_finset_sum, sum_eq_single_of_mem _ (mem_range.mpr m.succ_pos)]
+  rw [iterate_derivative_mul, eval_finsetSum, sum_eq_single_of_mem _ (mem_range.mpr m.succ_pos)]
   · rw [m.choose_zero_right, one_smul, eval_mul, m.sub_zero, iterate_derivative_X_sub_pow_self,
       eval_natCast, nsmul_eq_mul]; rfl
   · intro b hb hb0
@@ -186,7 +186,7 @@ theorem isRoot_of_isRoot_of_dvd_derivative_mul [CharZero R] {f g : R[X]} (hf0 : 
     (hfd : f ∣ f.derivative * g) {a : R} (haf : f.IsRoot a) : g.IsRoot a := by
   rcases hfd with ⟨r, hr⟩
   have hdf0 : derivative f ≠ 0 := by
-    contrapose! haf
+    contrapose haf
     rw [eq_C_of_derivative_eq_zero haf] at hf0 ⊢
     exact not_isRoot_C _ _ <| C_ne_zero.mp hf0
   by_contra hg
@@ -423,13 +423,13 @@ lemma natDegree_mod_lt [Field k] (p : k[X]) {q : k[X]} (hq : q.natDegree ≠ 0) 
     (p % q).natDegree < q.natDegree := by
   have hq' : q.leadingCoeff ≠ 0 := by
     rw [leadingCoeff_ne_zero]
-    contrapose! hq
+    contrapose hq
     simp [hq]
   rw [mod_def]
   refine (natDegree_modByMonic_lt p ?_ ?_).trans_le ?_
   · refine monic_mul_C_of_leadingCoeff_mul_eq_one ?_
     rw [mul_inv_eq_one₀ hq']
-  · contrapose! hq
+  · contrapose hq
     rw [← natDegree_mul_C_eq_of_mul_eq_one ((inv_mul_eq_one₀ hq').mpr rfl)]
     simp [hq]
   · exact natDegree_mul_C_le q q.leadingCoeff⁻¹
@@ -654,7 +654,7 @@ theorem isCoprime_of_is_root_of_eval_derivative_ne_zero {K : Type*} [Field K] (f
   refine Or.resolve_left
       (EuclideanDomain.dvd_or_coprime (X - C a) (f /ₘ (X - C a))
         (irreducible_of_degree_eq_one (Polynomial.degree_X_sub_C a))) ?_
-  contrapose! hf' with h
+  contrapose hf' with h
   have : X - C a ∣ derivative f := X_sub_C_dvd_derivative_of_X_sub_C_dvd_divByMonic f h
   rw [← modByMonic_eq_zero_iff_dvd (monic_X_sub_C _), modByMonic_X_sub_C_eq_C_eval] at this
   rwa [← C_inj, C_0]
@@ -669,7 +669,7 @@ theorem irreducible_iff_degree_lt (p : R[X]) (hp0 : p ≠ 0) (hpu : ¬ IsUnit p)
   rw [← irreducible_mul_leadingCoeff_inv,
       (monic_mul_leadingCoeff_inv hp0).irreducible_iff_degree_lt]
   · simp [hp0, natDegree_mul_leadingCoeff_inv]
-  · contrapose! hpu
+  · contrapose hpu
     exact .of_mul_eq_one _ hpu
 
 /-- To check a polynomial `p` over a field is irreducible, it suffices to check there are no
@@ -680,7 +680,7 @@ See also: `Polynomial.Monic.irreducible_iff_natDegree'`.
 theorem irreducible_iff_lt_natDegree_lt {p : R[X]} (hp0 : p ≠ 0) (hpu : ¬ IsUnit p) :
     Irreducible p ↔ ∀ q, Monic q → natDegree q ∈ Finset.Ioc 0 (natDegree p / 2) → ¬ q ∣ p := by
   have : p * C (leadingCoeff p)⁻¹ ≠ 1 := by
-    contrapose! hpu
+    contrapose hpu
     exact .of_mul_eq_one _ hpu
   rw [← irreducible_mul_leadingCoeff_inv,
       (monic_mul_leadingCoeff_inv hp0).irreducible_iff_lt_natDegree_lt this,

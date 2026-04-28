@@ -8,6 +8,7 @@ module
 public meta import Mathlib.Tactic.TacticAnalysis
 public meta import Lean.Elab.Command
 public meta import Mathlib.Lean.Elab.InfoTree
+public meta import Lean.Meta.Tactic.TryThis
 public import Mathlib.Tactic.ExtractGoal
 public import Mathlib.Tactic.TacticAnalysis
 public import Mathlib.Util.ParseCommand
@@ -272,7 +273,13 @@ def Mathlib.TacticAnalysis.mergeWithGrind : TacticAnalysis.Config where
           catch _e =>
             pure [goal]
           if goals.isEmpty then
-            logWarningAt preI.tacI.stx m!"'{preI.tacI.stx}; grind' can be replaced with 'grind'"
+            let msg ← addMessageContext m!"'{preI.tacI.stx}; grind' can be replaced with 'grind'"
+            let header := (← msg.toString) ++ "\n\nTry this:"
+            if let some start := preI.tacI.stx.getPos? then
+            if let some stop := postI.tacI.stx.getTailPos? then
+            let synth := Lean.Syntax.setInfo (Lean.SourceInfo.synthetic start stop) preI.tacI.stx
+            Elab.Command.liftCoreM <|
+              Tactic.TryThis.addSuggestion (header := header) synth (← `(tactic | grind))
 
 /-- Suggest replacing a sequence of tactics with `grind` if that also solves the goal. -/
 register_option linter.tacticAnalysis.terminalToGrind : Bool := {
@@ -589,7 +596,7 @@ Runs the given tactic at each proof step, captures any "Try this:" suggestions,
 then re-runs the suggested tactic to verify it succeeds.
 Only reports failures (where the suggestion doesn't close the goal). -/
 def Mathlib.TacticAnalysis.verifyTryThisSuggestions
-    (tac : Syntax → MVarId → CommandElabM (TSyntax `tactic))
+    (tac : Syntax → MVarId → CommandElabM (Option (TSyntax `tactic)))
     (label : String) : TacticAnalysis.Config where
   run seq := do
     let opts ← getOptions
@@ -601,7 +608,7 @@ def Mathlib.TacticAnalysis.verifyTryThisSuggestions
           withOptions (·.setBool `pp.mvars.anonymous false) do
             return toString (← Meta.ppGoal goal)
         if (hash goalPP) % fraction = 0 then
-          let tac ← tac i.tacI.stx goal
+          if let some tac ← tac i.tacI.stx goal then
           -- Save message state to suppress "Try this:" info messages from grind?
           let savedMessages := (← get).messages
           -- Run tactic and capture InfoTree
@@ -636,21 +643,15 @@ def Mathlib.TacticAnalysis.verifyTryThisSuggestions
                 if suggestedTac.raw[4]![1]![0]![1]!.getNumArgs == 0 then
                   continue
 
-            -- Get suggestion as string for analysis
-            let suggPP ← try
-              liftCoreM <| PrettyPrinter.ppTactic suggestedTac
-            catch _ => pure s!"{suggestedTac}"
-            let suggStr := suggPP.pretty
-
             -- Skip suggestions containing hexcode anchors (e.g., #962a, #8ef1)
             -- These are proof-context-specific references that aren't valid in a fresh goal
-            let containsHexcode := suggStr.splitOn "#" |>.drop 1 |>.any fun part =>
-              part.length >= 4 && (part.take 4).all fun c => c.isDigit || c ∈ ['a', 'b', 'c', 'd', 'e', 'f']
-            if containsHexcode then
+            if suggestedTac.raw.find? (·.isOfKind ``Lean.Parser.Tactic.anchor) |>.isSome then
               continue
 
             -- Skip suggestions containing `approx` - these are incomplete approximations
-            if suggStr.contains "approx" then
+            if suggestedTac.raw.find? (fun stx => stx.isOfKind ``Lean.Parser.Tactic.Grind.instantiate &&
+              (stx.find? (·.getAtomVal == "approx")).isSome) |>.isSome
+            then
               continue
 
             -- Verify suggestion works (suppress any messages from verification)
@@ -663,7 +664,7 @@ def Mathlib.TacticAnalysis.verifyTryThisSuggestions
 
             if !verifyGoals.isEmpty then
               logWarningAt i.tacI.stx
-                m!"`{label}` suggestion failed: `{suggPP}` did not close the goal"
+                m!"`{label}` suggestion failed: `{suggestedTac}` did not close the goal"
 
 /-- Verify that `grind?` suggestions actually work. -/
 register_option linter.tacticAnalysis.verifyGrind : Bool := {
@@ -686,3 +687,18 @@ register_option linter.tacticAnalysis.verifyGrindSuggestions : Bool := {
 def verifyGrindSuggestions := verifyTryThisSuggestions
   (fun _ _ => `(tactic| grind? +suggestions))
   "grind? +suggestions"
+
+/-- Verify that replacing `grind` with `grind?` produces a valid `grind only` suggestion. -/
+register_option linter.tacticAnalysis.verifyGrindOnly : Bool := {
+  defValue := false
+}
+
+@[tacticAnalysis linter.tacticAnalysis.verifyGrindOnly,
+   inherit_doc linter.tacticAnalysis.verifyGrindOnly]
+def verifyGrindOnly := verifyTryThisSuggestions
+  (fun stx _ =>
+    return match stx with
+    | .node info ``Lean.Parser.Tactic.grind args => some ⟨.node info ``Lean.Parser.Tactic.grindTrace args⟩
+    | _ => none
+  )
+  "grind?"
