@@ -37,4 +37,3 @@ lemma CoversTop.over {I : Type*} {X : I → C} (hX : J.CoversTop X) {I' : I → 
     (Sieve.ofObjects_mono fun i' ↦ by aesop)) (hY _ (.mk g))
 
 end GrothendieckTopology
-
