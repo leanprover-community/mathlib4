@@ -561,11 +561,11 @@ public lemma algebraMap_germ
 
 @[deprecated (since := "2026-02-10")] public alias toOpen_germ := algebraMap_germ
 
-@[expose] public
+public
 instance (x : PrimeSpectrum.Top R) : Algebra R ((structurePresheafInCommRingCat R).stalk x) :=
   (toStalk R x).hom.toAlgebra
 
-@[expose] public
+public
 instance (x : PrimeSpectrum.Top R) :
     Module R ↑(TopCat.Presheaf.stalk (moduleStructurePresheaf R M).presheaf x) :=
   .compHom _ (toStalk R x).hom
