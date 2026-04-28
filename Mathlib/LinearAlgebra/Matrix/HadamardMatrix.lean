@@ -51,33 +51,36 @@ theorem IsHadamard.det_sq [Fintype n] [DecidableEq n] [CommRing R] {A : Matrix n
   have := congr_arg det hA.2
   rwa [det_mul, det_transpose, ← sq, det_smul, det_one, mul_one] at this
 
-/-- A Hadamard matrix over an integral domain has nonzero determinant. -/
-theorem IsHadamard.det_ne_zero [Fintype n] [DecidableEq n] [Nonempty n] [CommRing R] [IsDomain R]
-    [CharZero R] {A : Matrix n n R} (hA : A.IsHadamard) : A.det ≠ 0 := fun h =>
-  pow_ne_zero _ (Nat.cast_ne_zero.mpr Fintype.card_ne_zero) <| by
-    rw [← hA.det_sq, h]; simp
+/-- A Hadamard matrix over an integral domain has nonzero determinant, provided the order is
+nonzero in `R`. -/
+theorem IsHadamard.det_ne_zero [Fintype n] [DecidableEq n] [CommRing R] [IsDomain R]
+    {A : Matrix n n R} (hA : A.IsHadamard) (hcard : (Fintype.card n : R) ≠ 0) :
+    A.det ≠ 0 := fun h =>
+  pow_ne_zero _ hcard <| by rw [← hA.det_sq, h]; simp
 
-/-- A Hadamard matrix over an integral domain has Hadamard transpose.
+/-- A Hadamard matrix over an integral domain has Hadamard transpose, provided the order is
+nonzero in `R`.
 
 This is the matrix form of [deLauneyFlannery2011, Theorem 2.3.6]. -/
-theorem IsHadamard.transpose [Fintype n] [DecidableEq n] [Nonempty n] [CommRing R]
-    [IsDomain R] [CharZero R] {A : Matrix n n R} (hA : A.IsHadamard) :
+theorem IsHadamard.transpose [Fintype n] [DecidableEq n] [CommRing R] [IsDomain R]
+    {A : Matrix n n R} (hA : A.IsHadamard) (hcard : (Fintype.card n : R) ≠ 0) :
     Aᵀ.IsHadamard := by
   refine ⟨fun i j => by simpa using hA.1 j i, ?_⟩
-  simpa [transpose_transpose] using mul_eq_smul_one_symm hA.2 hA.det_ne_zero
+  simpa [transpose_transpose] using mul_eq_smul_one_symm hA.2 (hA.det_ne_zero hcard)
 
-/-- A Hadamard matrix with constant row sum `s` has order `s ^ 2`.
+/-- A Hadamard matrix with constant row sum `s` has order `s ^ 2`, provided the order is
+nonzero in `R`.
 
 This is a slightly stronger form of [deLauneyFlannery2011, Theorem 2.3.7]:
 the constant column sum hypothesis follows from orthogonality over a field. -/
-theorem IsHadamard.card_eq_sq_of_const_row_sum [Fintype n] [DecidableEq n] [Nonempty n]
-    [CommRing R] [IsDomain R] [CharZero R] {A : Matrix n n R} {s : R}
-    (hA : A.IsHadamard) (hrow : ∀ i, ∑ j, A i j = s) : (Fintype.card n : R) = s ^ 2 := by
-  have hcard : (Fintype.card n : R) ≠ 0 := Nat.cast_ne_zero.mpr Fintype.card_ne_zero
+theorem IsHadamard.card_eq_sq_of_const_row_sum [Fintype n] [DecidableEq n]
+    [CommRing R] [IsDomain R] {A : Matrix n n R} {s : R}
+    (hA : A.IsHadamard) (hcard : (Fintype.card n : R) ≠ 0)
+    (hrow : ∀ i, ∑ j, A i j = s) : (Fintype.card n : R) = s ^ 2 := by
   have hv : A *ᵥ (1 : n → R) = s • 1 :=
     funext fun i => by simpa [Matrix.mulVec, dotProduct] using hrow i
   have hAtA : Aᵀ * A = (Fintype.card n : R) • (1 : Matrix n n R) := by
-    simpa using hA.transpose.2
+    simpa using (hA.transpose hcard).2
   have hL : (A *ᵥ (1 : n → R)) ⬝ᵥ (A *ᵥ (1 : n → R)) = (Fintype.card n : R) ^ 2 := by
     rw [dotProduct_mulVec, vecMul_mulVec, hAtA, vecMul_smul]
     simp [dotProduct, pow_two]
