@@ -50,7 +50,8 @@ variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
 theorem inertiaDeg'_eq [h : q.LiesOver p] [q.IsPrime] :
     letI := isPrime_of_liesOver q p
     q.inertiaDeg' R = Module.finrank p.ResidueField q.ResidueField := by
-  convert inertiaDeg'_def q R <;> exact LiesOver.over
+  have := Ideal.over_def q p
+  convert inertiaDeg'_def q R
 
 theorem inertiaDeg_eq_inertiaDeg' [q.LiesOver p] [p.IsMaximal] [q.IsMaximal] :
     p.inertiaDeg q = q.inertiaDeg' R := by

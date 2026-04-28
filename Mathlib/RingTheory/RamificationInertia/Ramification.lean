@@ -60,13 +60,9 @@ theorem ramificationIdx'_eq [q.LiesOver p] [q.IsPrime] :
     q.ramificationIdx' R = (Module.length Sq (Sq ⧸ p.map (algebraMap R Sq))).toNat := by
   rw [ramificationIdx'_def, over_def q p]
 
-theorem foo {R : Type*} [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] (n : ℕ) :
-    Module.length R (R ⧸ IsLocalRing.maximalIdeal R ^ n) = n := by
-  exact IsDiscreteValuationRing.length_quotient_pow_maximalIdeal R n
-
 open Localization IsLocalization.AtPrime in
-theorem ramificationIdx_eq_ramificationIdx' [IsDedekindDomain R] [IsDedekindDomain S]
-    [Module.IsTorsionFree R S]
+theorem ramificationIdx_eq_ramificationIdx'
+    [IsDomain R] [IsDedekindDomain S] [Module.IsTorsionFree R S]
     [q.LiesOver p] [hq : q.IsPrime] (hp : p ≠ ⊥) :
     p.ramificationIdx q = q.ramificationIdx' R := by
   have : p.IsPrime := isPrime_of_liesOver q p
@@ -79,11 +75,11 @@ theorem ramificationIdx_eq_ramificationIdx' [IsDedekindDomain R] [IsDedekindDoma
     rw [sup_of_le_left hqI]
     exact hq.ne_top
   rw [← IsDedekindDomain.ramificationIdx_eq_normalizedFactors_count hpS hq hq'] at h
-  replace h := congrArg (map (algebraMap S (Localization.AtPrime q))) h
+  apply_fun (map (algebraMap S (Localization.AtPrime q))) at h
   rw [map_map, ← IsScalarTower.algebraMap_eq, Ideal.map_mul, Ideal.map_pow,
     map_eq_top_of_not_le (Localization.AtPrime q) hqI, mul_top, AtPrime.map_eq_maximalIdeal] at h
-  have hq := isDiscreteValuationRing_of_dedekind_domain S hq' (Localization.AtPrime q)
-  rw [ramificationIdx'_eq p q, h, hq.length_quotient_pow_maximalIdeal, ENat.toNat_coe]
+  have hSq := isDiscreteValuationRing_of_dedekind_domain S hq' (Localization.AtPrime q)
+  rw [ramificationIdx'_eq p q, h, hSq.length_quotient_pow_maximalIdeal, ENat.toNat_coe]
 
 /-- See `ramificationIdx'_tower` for a version that does not assume primality. -/
 theorem ramificationIdx'_tower' [q.IsPrime] [r.IsPrime] [r.LiesOver q]
@@ -91,9 +87,9 @@ theorem ramificationIdx'_tower' [q.IsPrime] [r.IsPrime] [r.LiesOver q]
     r.ramificationIdx' R = q.ramificationIdx' R * r.ramificationIdx' S := by
   have : q.LiesOver (r.under R) := LiesOver.tower_bot r q (r.under R)
   let f := (Ideal.quotientEquivAlgOfEq (Localization.AtPrime r)
-      (by rw [map_map, ← IsScalarTower.algebraMap_eq])).trans
-        (Algebra.TensorProduct.quotIdealMapEquivTensorQuot (Localization.AtPrime r)
-          ((r.under R).map (algebraMap R (Localization.AtPrime q))))
+    (by rw [map_map, ← IsScalarTower.algebraMap_eq])).trans
+      (Algebra.TensorProduct.quotIdealMapEquivTensorQuot (Localization.AtPrime r)
+        ((r.under R).map (algebraMap R (Localization.AtPrime q))))
   rw [ramificationIdx'_def, ramificationIdx'_eq (r.under R), ramificationIdx'_eq q,
     f.toLinearEquiv.length_eq, IsLocalRing.length_baseChange, ENat.toNat_mul,
     ← Localization.AtPrime.map_eq_maximalIdeal, map_map, ← IsScalarTower.algebraMap_eq]
