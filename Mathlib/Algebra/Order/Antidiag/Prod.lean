@@ -5,6 +5,7 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Bhavik Mehta,
 -/
 module
 
+public import Mathlib.Algebra.Group.TypeTags.Basic
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Algebra.Order.Sub.Defs
 public import Mathlib.Data.Finset.Basic
@@ -66,10 +67,24 @@ export HasAntidiagonal (antidiagonal mem_antidiagonal)
 
 attribute [simp] mem_antidiagonal
 
+/-- The class of additive monoids with an antidiagonal -/
+class HasMulAntidiagonal (A : Type*) [Monoid A] where
+  /-- The antidiagonal of an element `n` is the finset of pairs `(i, j)` such that `i * j = n`. -/
+  antidiagonal : A → Finset (A × A)
+  /-- A pair belongs to `antidiagonal n` iff the product of its components is equal to `n`. -/
+  mem_antidiagonal {n} {a} : a ∈ antidiagonal n ↔ a.fst * a.snd = n
+
+attribute [to_additive HasAntidiagonal] HasMulAntidiagonal
+
+export HasMulAntidiagonal (antidiagonal mem_antidiagonal)
+
+attribute [simp] HasMulAntidiagonal.mem_antidiagonal
+
 variable {A : Type*}
 
-/-- All `HasAntidiagonal` instances are equal -/
-instance [AddMonoid A] : Subsingleton (HasAntidiagonal A) where
+/-- All `HasMulAntidiagonal` instances are equal -/
+@[to_additive Finset.instSubsingletonHasAntidiagonal]
+instance [Monoid A] : Subsingleton (HasMulAntidiagonal A) where
   allEq := by
     rintro ⟨a, ha⟩ ⟨b, hb⟩
     congr with n xy
@@ -186,6 +201,8 @@ def sigmaAntidiagonalEquivProd [AddMonoid A] [HasAntidiagonal A] :
     rw [mem_antidiagonal] at h
     exact Sigma.subtype_ext h rfl
 
+section
+
 variable {A : Type*}
   [AddCommMonoid A] [PartialOrder A] [CanonicallyOrderedAdd A]
   [LocallyFiniteOrderBot A] [DecidableEq A]
@@ -199,5 +216,30 @@ abbrev antidiagonalOfLocallyFinite : HasAntidiagonal A where
     simp only [mem_filter, and_iff_right_iff_imp]
     intro h
     simp [← h]
+
+end
+
+section Multiplicative
+
+open Multiplicative
+
+variable {A : Type*} [AddMonoid A] [HasAntidiagonal A]
+
+instance : HasMulAntidiagonal (Multiplicative A) where
+  antidiagonal a := Finset.map ⟨fun p ↦ (ofAdd p.1 , ofAdd p.2), fun _ _ a ↦ a⟩
+    (antidiagonal a : Finset (A × A))
+  mem_antidiagonal {a p} := by
+    rw [mem_map, ← ofAdd_toAdd (p.1 * p.2)]
+    refine ⟨fun h ↦ ?_, fun h ↦ ⟨(toAdd p.1, toAdd p.2), ⟨by simpa using h, by simp⟩⟩⟩
+    obtain ⟨a, ha, h⟩ := h
+    simpa [← h] using ha
+
+lemma mem_antidiagonal_ofAdd_iff_toAdd_mem_antidiagonal {a : A}
+    {p : Multiplicative A × Multiplicative A} :
+    p ∈ antidiagonal (ofAdd a) ↔ (toAdd p.1, toAdd p.2) ∈ antidiagonal a := by
+  simp only [HasMulAntidiagonal.mem_antidiagonal, HasAntidiagonal.mem_antidiagonal]
+  rw [Multiplicative.ext_iff, toAdd_mul, toAdd_ofAdd]
+
+end Multiplicative
 
 end Finset
