@@ -6,10 +6,8 @@ Authors: Dagur Asgeirsson
 module
 
 import Mathlib.Tactic.CategoryTheory.MkConcreteCategory
-public import Mathlib.Algebra.Category.ModuleCat.Semi
-public import Mathlib.Algebra.Category.Grp.Preadditive
-public import Mathlib.CategoryTheory.Linear.Basic
-public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+public import Mathlib.Algebra.Module.LinearMap.Defs
+public import Mathlib.CategoryTheory.ConcreteCategory.Basic
 
 open CategoryTheory
 
