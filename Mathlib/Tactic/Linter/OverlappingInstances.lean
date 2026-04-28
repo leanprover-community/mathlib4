@@ -104,12 +104,13 @@ def getAbstractDataProjectionsCached (cls : Name) : CoreM (Array Expr) := do
 
 /-- Find classes for which multiple different instances can be synthesized in the local context.
 The result maps classes to the (at least 2) local instances that generate them. -/
-partial def findOverlappingDataInstances : MetaM (ExprMap (Array FVarId)) := do
+partial def findOverlappingDataInstances :
+    MetaM (Std.TreeMap Expr (Array FVarId) Expr.quickComp) := do
   -- Maps a class to the collection of local instances that overlap on it.
   -- This only includes overlaps of at least 2 local instances.
-  let mut overlaps : ExprMap (Array FVarId) := {}
+  let mut overlaps : Std.TreeMap Expr (Array FVarId) Expr.quickComp := {}
   -- Maps a class to the first local instance that produces an instance of it.
-  let mut encountered : ExprMap FVarId := {}
+  let mut encountered : Std.TreeMap Expr FVarId Expr.quickComp := {}
   for decl in ← getLCtx do
     if decl.binderInfo.isInstImplicit then
       let type ← instantiateMVars decl.type
@@ -144,7 +145,7 @@ def runLinter (ctx : ContextInfo) (lctx : LocalContext) (expectedType? : Option 
   if overlaps.isEmpty then
     return none
   let sortedOverlaps : Std.HashMap (Array FVarId) (Array Expr) :=
-    overlaps.fold (init := {}) fun s overlap fvars ↦ s.alter fvars (·.getD #[] |>.push overlap)
+    overlaps.foldl (init := {}) fun s overlap fvars ↦ s.alter fvars (·.getD #[] |>.push overlap)
   -- Sort the suggestions in a (somewhat) deterministic way.
   let sortedOverlaps := sortedOverlaps.toArray.qsort (Array.lex ·.2 ·.2 Expr.lt)
   let mut msgs := #[]
