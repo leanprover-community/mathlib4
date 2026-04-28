@@ -421,7 +421,7 @@ open TopologicalSpace
 /-- A sheaf `𝓕` of `R-modules` is localizing if for all `f` in `R`, the restriction map
 from `𝓕(⊤)` to `𝓕(D(f))` is localization with respect to `f`. -/
 abbrev IsLocalizing (M : TopCat.Sheaf (ModuleCat R) (Spec R)) : Prop :=
-    ∀ f : R, IsLocalizedModule (.powers f) (M.obj.map (basicOpen f).leTop.op).hom
+  ∀ f : R, IsLocalizedModule (.powers f) (M.obj.map (basicOpen f).leTop.op).hom
 
 theorem isLocalizing_of_iso {M N : TopCat.Sheaf (ModuleCat R) (Spec R)} (φ : M ≅ N)
     (_ : IsLocalizing M) :
@@ -442,20 +442,12 @@ theorem isLocalizing_iso_iff {M N : TopCat.Sheaf (ModuleCat R) (Spec R)} (φ : M
     IsLocalizing M ↔ IsLocalizing N :=
   ⟨fun h => isLocalizing_of_iso φ h, fun h => isLocalizing_of_iso φ.symm h⟩
 
-lemma isIso_of_isLocalizedModule_comp {S : Submonoid R} {M₁ M₂ M₃ : ModuleCat R} {f₁ : M₁ ⟶ M₂}
-    {f₂ : M₂ ⟶ M₃} (h₁ : IsLocalizedModule S f₁.hom) (h₂ : IsLocalizedModule S (f₁ ≫ f₂).hom) :
-    IsIso f₂ := by
-  have : Function.Bijective f₂.hom := by
-    rw [← IsLocalizedModule.linearEquiv_of_isLocalizedModule_comp S f₁.hom f₂.hom]
-    exact (IsLocalizedModule.linearEquiv ..).bijective
-  simpa [ConcreteCategory.isIso_iff_bijective]
-
 theorem isLocalizing_of_isIso_app_top {M N : TopCat.Sheaf (ModuleCat.{u} R) (Spec R)} {φ : M ⟶ N}
     (h : IsIso (φ.hom.app (op ⊤))) (hM : IsLocalizing M) (hN : IsLocalizing N) :
     IsIso φ := by
   apply TopCat.Sheaf.isIso_iff_isIso_basis (φ := φ) isBasis_basic_opens
   rintro f
-  refine isIso_of_isLocalizedModule_comp (hM f) ?_
+  refine ModuleCat.isIso_of_isLocalizedModule_comp (hM f) ?_
   rw [φ.hom.naturality]
   exact IsLocalizedModule.of_linearEquiv_right _ _ (asIso (φ.hom.app (op ⊤))).toLinearEquiv
 
@@ -468,9 +460,9 @@ theorem isLocalizing_tilde (M : ModuleCat R) :
   simpa [show tilde.toOpen M (basicOpen f) = tilde.toOpen M ⊤ ≫
     ((modulesSpecToSheaf.obj (tilde M)).obj.map (basicOpen f).leTop.op) by rfl] using this
 
-/-- An `𝓞_Spec R` module is isomoprhic to `M^~` for some `M` if and only if it is localizing
+/-- An `𝓞_Spec R` module `M` is isomorphic to `Γ(M)^~` if and only if it is localizing
 as a sheaf of `R` modules -/
-theorem isIso_fromTildeΓ_iff' (M : (Spec R).Modules) :
+theorem isIso_fromTildeΓ_iff_isLocalizing (M : (Spec R).Modules) :
     IsIso M.fromTildeΓ ↔ IsLocalizing (modulesSpecToSheaf.obj M) := by
   constructor
   · intro _
@@ -505,12 +497,12 @@ def pushforward_modulesSpecToSheaf_iso :
   rfl)
 
 open scoped ModuleCat.Algebra in
-theorem isLocalizing_pushforward_of_isLocalaizing {M : (Spec S).Modules}
+theorem isLocalizing_pushforward_of_isLocalizing {M : (Spec S).Modules}
     (h : IsLocalizing (modulesSpecToSheaf.obj M)) :
   IsLocalizing (modulesSpecToSheaf.obj ((Scheme.Modules.pushforward (Spec.map φ)).obj M)) := by
   rw [← Functor.comp_obj,
   isLocalizing_iso_iff ((pushforward_modulesSpecToSheaf_iso φ).app M)]
-  haveI : CommRing ((Spec S).ringCatSheaf.obj.obj ((Opens.map (Spec.map φ).base).op.obj (op ⊤))) :=
+  have : CommRing ((Spec S).ringCatSheaf.obj.obj ((Opens.map (Spec.map φ).base).op.obj (op ⊤))) :=
     inferInstanceAs (CommRing Γ(Spec S, ⊤))
   algebraize [φ.hom]
   exact fun f => IsLocalizedModule.restrictScalars_powers f _ (h := h (φ f))
@@ -519,8 +511,8 @@ theorem isLocalizing_pushforward_of_isLocalaizing {M : (Spec S).Modules}
 this to show that quasicoherent sheaves pushforward to quasicoherent sheaves for affine morphisms -/
 theorem pushforward_isIso_fromTildeΓ (M : (Spec S).Modules) [h : IsIso M.fromTildeΓ] :
     IsIso ((Scheme.Modules.pushforward (Spec.map φ)).obj M).fromTildeΓ := by
-  simp_all only [isIso_fromTildeΓ_iff']
-  exact isLocalizing_pushforward_of_isLocalaizing φ h
+  simp_all only [isIso_fromTildeΓ_iff_isLocalizing]
+  exact isLocalizing_pushforward_of_isLocalizing φ h
 
 end IsLocalizing
 
