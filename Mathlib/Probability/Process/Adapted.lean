@@ -228,10 +228,10 @@ protected theorem finsetProd' {γ} [CommMonoid β] [ContinuousMul β] {U : γ �
     (progMeasurable_const _ 1) h
 
 @[deprecated (since := "2026-04-08")]
-protected alias finset_prod' := ProgMeasurable.finsetProd'
-
-@[deprecated (since := "2026-04-08")]
 protected alias finset_sum' := ProgMeasurable.finsetSum'
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+protected alias finset_prod' := ProgMeasurable.finsetProd'
 
 @[to_additive]
 protected theorem finsetProd {γ} [CommMonoid β] [ContinuousMul β] {U : γ → ι → Ω → β}
@@ -240,10 +240,10 @@ protected theorem finsetProd {γ} [CommMonoid β] [ContinuousMul β] {U : γ →
   convert ProgMeasurable.finsetProd' h using 1; ext (i a); simp only [Finset.prod_apply]
 
 @[deprecated (since := "2026-04-08")]
-protected alias finset_prod := ProgMeasurable.finsetProd
-
-@[deprecated (since := "2026-04-08")]
 protected alias finset_sum := ProgMeasurable.finsetSum
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+protected alias finset_prod := ProgMeasurable.finsetProd
 
 @[to_additive]
 protected theorem inv [Group β] [ContinuousInv β] (hu : ProgMeasurable f u) :
