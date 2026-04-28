@@ -15,7 +15,7 @@ Interactions between monoidal closed and braided category structures.
 
 -/
 
-@[expose] public section
+public section
 
 universe v u u₂ v₂
 
