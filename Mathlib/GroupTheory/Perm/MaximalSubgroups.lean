@@ -6,9 +6,9 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.GroupTheory.GroupAction.Jordan
-public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 public import Mathlib.GroupTheory.Subgroup.Simple
 public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
+public import Mathlib.Data.Nat.Totient
 
 /-! # Maximal subgroups of the symmetric groups
 

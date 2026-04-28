@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Tactic.NormNum.Inv
 public import Mathlib.Tactic.NormNum.Pow
-public meta import Mathlib.Tactic.NormNum.Result
 
-meta import Mathlib.Algebra.Order.Ring.Unbundled.Rat
+public meta import Aesop
+public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 # `ring`-like tactics

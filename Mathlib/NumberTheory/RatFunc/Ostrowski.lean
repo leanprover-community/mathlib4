@@ -5,9 +5,8 @@ Authors: María Inés de Frutos-Fernández, Xavier Généreux
 -/
 module
 
-public import Mathlib.FieldTheory.Finite.Valuation
-public import Mathlib.NumberTheory.FunctionField
 public import Mathlib.RingTheory.Valuation.Discrete.Basic
+public import Mathlib.FieldTheory.RatFunc.Valuation
 
 /-!
 # Ostrowski's theorem for `K(X)`

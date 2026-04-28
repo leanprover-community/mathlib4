@@ -8,7 +8,7 @@ module
 public import Mathlib.Init
 public import Batteries.Util.ExtendedBinder
 
-import Mathlib.Tactic.ToDual
+public import Mathlib.Tactic.ToDual
 
 /-!
 # Sets

@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 module
 
 public import Mathlib.SetTheory.Cardinal.Aleph
+public import Mathlib.Algebra.Group.End
 
 /-!
 # Cardinal arithmetic

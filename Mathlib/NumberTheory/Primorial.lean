@@ -8,12 +8,11 @@ module
 public import Mathlib.Algebra.BigOperators.Associated
 public import Mathlib.Algebra.Squarefree.Basic
 public import Mathlib.Data.Nat.Choose.Sum
-public import Mathlib.Data.Nat.Prime.Basic
 
 import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
-import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.Nat.Choose.Dvd
 import Mathlib.Data.Nat.Squarefree
+public import Mathlib.Data.Nat.Prime.Defs
 
 /-!
 # Primorial

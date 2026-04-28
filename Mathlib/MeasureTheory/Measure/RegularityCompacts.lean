@@ -8,8 +8,9 @@ module
 public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.MeasureTheory.Measure.Regular
 public import Mathlib.Topology.GDelta.MetrizableSpace
-public import Mathlib.Topology.MetricSpace.Polish
 public import Mathlib.Topology.UniformSpace.Cauchy
+public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Topology.Metrizable.CompletelyMetrizable
 
 /-!
 # Inner regularity of finite measures
