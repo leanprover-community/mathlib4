@@ -250,7 +250,6 @@ lemma ι_functorMapTgt (i : I) (t : A i ⟶ X) (b : B i ⟶ S) (w : t ≫ πX = 
   subst hb' ht'
   simp [functorMapTgt]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma functorMap_comm :
     functorObjLeft f πX ≫ functorMapTgt f τ =
       functorMapSrc f τ ≫ functorObjLeft f πY := by

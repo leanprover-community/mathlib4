@@ -71,7 +71,7 @@ instance HasOrthogonalProjection.map_linearIsometryEquiv [K.HasOrthogonalProject
   exists_orthogonal v := by
     rcases HasOrthogonalProjection.exists_orthogonal (K := K) (f.symm v) with ⟨w, hwK, hw⟩
     refine ⟨f w, Submodule.mem_map_of_mem hwK, Set.forall_mem_image.2 fun u hu ↦ ?_⟩
-    simp [← f.symm.inner_map_map, map_sub, hw u hu]
+    simp [← f.symm.inner_map_map, hw u hu]
 
 instance HasOrthogonalProjection.map_linearIsometryEquiv' [K.HasOrthogonalProjection]
     {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E'] (f : E ≃ₗᵢ[𝕜] E') :
