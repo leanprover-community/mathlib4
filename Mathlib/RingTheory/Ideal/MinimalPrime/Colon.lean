@@ -19,7 +19,7 @@ itself an ideal of the form `N.colon {x'}`.
 
 -/
 
-@[expose] public section
+public section
 
 namespace Submodule
 

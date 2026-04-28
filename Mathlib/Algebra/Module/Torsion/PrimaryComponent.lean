@@ -173,7 +173,7 @@ theorem iSup_primaryComponent_eq_top (h : IsTorsion A M) :
 variable (A M) in
 theorem iSupIndep_primaryComponent :
     iSupIndep fun P : HeightOneSpectrum A => primaryComponent M (P : Ideal A) := by
-  rw [iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero]
+  rw [iSupIndep_iff_finsetSum_eq_zero_imp_eq_zero]
   intro s p hmem hsum
   simp only [primaryComponent_mem] at hmem
   choose! f hmem using hmem
@@ -182,7 +182,7 @@ theorem iSupIndep_primaryComponent :
     rw [iSupIndep_iff_supIndep]
     exact fun _ ↦ supIndep_torsionBySet_ideal
       fun _ _ _ _ hPQ ↦ (isCoprime_pow_of_ne _ _ hPQ _ _).sup_eq
-  rw [iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero] at hSupIndep
+  rw [iSupIndep_iff_finsetSum_eq_zero_imp_eq_zero] at hSupIndep
   apply hSupIndep _ _ ?_ hsum
   exact fun P hP ↦ torsionBySet_le_torsionBySet_pow _ _ (Finset.le_sup hP) _ (hmem P hP)
 
