@@ -57,6 +57,16 @@ theorem adjoin_singleton_eq_range_aeval (x : A) :
 theorem _root_.Polynomial.aeval_mem_adjoin_singleton : aeval x p ∈ adjoin R {x} := by
   simp [adjoin_singleton_eq_range_aeval]
 
+instance {A B : Type*} [CommSemiring A] [Semiring B] [Algebra A B] (x : B) (p : Polynomial A) :
+    CoeT B (p.aeval x) (Algebra.adjoin A {x}) where
+  coe := ⟨p.aeval x, aeval_mem_adjoin_singleton A x⟩
+
+@[simp]
+theorem adjoin_aeval_self (R : Type*) {A : Type*} [CommSemiring R] [Semiring A]
+    [Algebra R A] {p : Polynomial R} (x : A) :
+    (aeval x p : Algebra.adjoin R {x}) = aeval (x : Algebra.adjoin R {x}) p := by
+  ext; simp
+
 theorem adjoin_mem_exists_aeval {a : A} (h : a ∈ R[x]) :
     ∃ p : R[X], aeval x p = a := by
   rw [Algebra.adjoin_singleton_eq_range_aeval] at h
@@ -74,9 +84,7 @@ Proving a fact about `a : adjoin R {x}` is the same as proving it for
 `aeval x p` where `p`is an arbitrary polynomial. -/
 @[elab_as_elim]
 theorem adjoin_singleton_induction {M : (adjoin R {x}) → Prop}
-    (a : adjoin R {x}) (f : ∀ (p : Polynomial R),
-    M (⟨aeval x p, aeval_mem_adjoin_singleton R x⟩ : adjoin R {x})) :
-    M a := by
+    (a : adjoin R {x}) (f : ∀ (p : Polynomial R), M (aeval x p : adjoin R {x})) : M a := by
   obtain ⟨p, hp⟩ := Algebra.adjoin_eq_exists_aeval _ x a
   grind
 

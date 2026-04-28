@@ -6,11 +6,8 @@ Authors: Anne Baanen, María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 module
 
 public import Mathlib.FieldTheory.RatFunc.Basic
-public import Mathlib.RingTheory.EuclideanDomain
+public import Mathlib.RingTheory.Adjoin.Polynomial.Transcendental
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation
-public import Mathlib.RingTheory.Localization.FractionRing
-public import Mathlib.RingTheory.Polynomial.Content
-
 
 /-!
 # Generalities on the polynomial structure of rational functions

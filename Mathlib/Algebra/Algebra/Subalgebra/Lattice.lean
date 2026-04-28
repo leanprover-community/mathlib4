@@ -783,6 +783,10 @@ variable (R)
 theorem self_mem_adjoin_singleton (x : A) : x ∈ R[x] :=
   Algebra.subset_adjoin (Set.mem_singleton_iff.mpr rfl)
 
+instance {A B : Type*} [CommSemiring A] [Semiring B] [Algebra A B] (x : B) :
+    CoeT B x (Algebra.adjoin A {x}) where
+  coe := ⟨x, Algebra.self_mem_adjoin_singleton A x⟩
+
 end Semiring
 
 section CommSemiring
