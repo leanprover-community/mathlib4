@@ -92,7 +92,7 @@ section Pullback
 open ContinuousLinearMap
 
 variable {V W V₁ W₁ : Π (x : M'), TangentSpace I' x}
-variable {c : 𝕜} {m n : WithTop ℕ∞} {t : Set M'} {y₀ : M'}
+variable {c : 𝕜} {m n : ℕ∞ω} {t : Set M'} {y₀ : M'}
 
 variable (I I') in
 /-- The pullback of a vector field under a map between manifolds, within a set `s`. If the
@@ -111,14 +111,22 @@ def mpullback (f : M → M') (V : Π (x : M'), TangentSpace I' x) (x : M) :
 lemma mpullbackWithin_apply :
     mpullbackWithin I I' f V s x = (mfderiv[s] f x).inverse (V (f x)) := rfl
 
-lemma mpullbackWithin_smul_apply :
+lemma mpullbackWithin_const_smul_apply :
     mpullbackWithin I I' f (c • V) s x = c • mpullbackWithin I I' f V s x := by
   simp [mpullbackWithin_apply]
 
-lemma mpullbackWithin_smul :
+lemma mpullbackWithin_smul_apply {g : M' → 𝕜} :
+    mpullbackWithin I I' f (g • V) s x = g (f x) • mpullbackWithin I I' f V s x := by
+  simp [mpullbackWithin_apply]
+
+lemma mpullbackWithin_const_smul :
     mpullbackWithin I I' f (c • V) s = c • mpullbackWithin I I' f V s := by
   ext x
   simp [mpullbackWithin_apply]
+
+lemma mpullbackWithin_smul {g : M' → 𝕜} :
+    mpullbackWithin I I' f (g • V) s = (g ∘ f) • mpullbackWithin I I' f V s := by
+  ext; simp [mpullbackWithin_apply]
 
 lemma mpullbackWithin_add_apply :
     mpullbackWithin I I' f (V + V₁) s x =
@@ -153,12 +161,21 @@ lemma mpullbackWithin_id {V : Π (x : M), TangentSpace I x} (h : UniqueMDiffWith
 lemma mpullback_apply :
     mpullback I I' f V x = (mfderiv% f x).inverse (V (f x)) := rfl
 
-lemma mpullback_smul_apply :
+lemma mpullback_const_smul_apply :
     mpullback I I' f (c • V) x = c • mpullback I I' f V x := by
   simp [mpullback]
 
-lemma mpullback_smul :
+lemma mpullback_const_smul :
     mpullback I I' f (c • V) = c • mpullback I I' f V := by
+  ext x
+  simp [mpullback_apply]
+
+lemma mpullback_smul_apply {g : M' → 𝕜} :
+    mpullback I I' f (g • V) x = g (f x) • mpullback I I' f V x := by
+  simp [mpullback]
+
+lemma mpullback_smul {g : M' → 𝕜} :
+    mpullback I I' f (g • V) = (g ∘ f) • mpullback I I' f V := by
   ext x
   simp [mpullback_apply]
 
@@ -308,7 +325,7 @@ lemma _root_.MDifferentiableWithinAt.mpullbackWithin_vectorField_inter_of_eq
     (hV : MDiffAt[t] (T% V) y₀) (hf : CMDiffAt[s] n f x₀)
     (hf' : (mfderiv[s] f x₀).IsInvertible)
     (hx₀ : x₀ ∈ s) (hs : UniqueMDiffOn I s) (hmn : 2 ≤ n) (h : y₀ = f x₀) :
-    MDiffAt[s ∩ f⁻¹' t] (T% (mpullbackWithin I I' f V s)) x₀ := by
+    MDiffAt[s ∩ f ⁻¹' t] (T% (mpullbackWithin I I' f V s)) x₀ := by
   subst h
   exact hV.mpullbackWithin_vectorField_inter hf hf' hx₀ hs hmn
 
@@ -318,7 +335,7 @@ protected lemma _root_.MDifferentiableOn.mpullbackWithin_vectorField_inter
     (hV : MDiff[t] (T% V)) (hf : CMDiff[s] n f)
     (hf' : ∀ x ∈ s ∩ f ⁻¹' t, (mfderiv[s] f x).IsInvertible)
     (hs : UniqueMDiffOn I s) (hmn : 2 ≤ n) :
-    MDiff[(s ∩ f ⁻¹' t)] (T% (mpullbackWithin I I' f V s))  :=
+    MDiff[(s ∩ f ⁻¹' t)] (T% (mpullbackWithin I I' f V s)) :=
   fun _ hx₀ ↦ MDifferentiableWithinAt.mpullbackWithin_vectorField_inter
     (hV _ hx₀.2) (hf _ hx₀.1) (hf' _ hx₀) hx₀.1 hs hmn
 
@@ -411,7 +428,7 @@ protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField_inter
   have : CMDiffAt[s] m
       (ContinuousLinearMap.inverse ∘ (fun (x : M) ↦ ContinuousLinearMap.inCoordinates
         E (TangentSpace I (M := M)) E' (TangentSpace I' (M := M'))
-        x₀ x (f x₀) (f x) (mfderiv[s]f x))) x₀ := by
+        x₀ x (f x₀) (f x) (mfderiv[s] f x))) x₀ := by
     apply ContMDiffAt.comp_contMDiffWithinAt _ _ this
     apply ContDiffAt.contMDiffAt
     apply IsInvertible.contDiffAt_map_inverse
@@ -438,7 +455,7 @@ protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField_inter
 lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField_inter_of_eq
     (hV : CMDiffAt[t] m (T% V) y₀) (hf : CMDiffAt[s] n f x₀) (hf' : (mfderiv[s] f x₀).IsInvertible)
     (hx₀ : x₀ ∈ s) (hs : UniqueMDiffOn I s) (hmn : m + 1 ≤ n) (h : f x₀ = y₀) :
-    CMDiffAt[s ∩ f⁻¹' t] m (T% (mpullbackWithin I I' f V s)) x₀ := by
+    CMDiffAt[s ∩ f ⁻¹' t] m (T% (mpullbackWithin I I' f V s)) x₀ := by
   subst h
   exact ContMDiffWithinAt.mpullbackWithin_vectorField_inter hV hf hf' hx₀ hs hmn
 
@@ -526,7 +543,7 @@ protected lemma _root_.ContMDiffOn.mpullbackWithin_vectorField_inter
     (hV : CMDiff[t] m (T% V)) (hf : CMDiff[s] n f)
     (hf' : ∀ x ∈ s ∩ f ⁻¹' t, (mfderiv[s] f x).IsInvertible)
     (hs : UniqueMDiffOn I s) (hmn : m + 1 ≤ n) :
-    CMDiff[s ∩ f ⁻¹' t] m (T% (mpullbackWithin I I' f V s))  :=
+    CMDiff[s ∩ f ⁻¹' t] m (T% (mpullbackWithin I I' f V s)) :=
   fun _ hx₀ ↦ ContMDiffWithinAt.mpullbackWithin_vectorField_inter
     (hV _ hx₀.2) (hf _ hx₀.1) (hf' _ hx₀) hx₀.1 hs hmn
 

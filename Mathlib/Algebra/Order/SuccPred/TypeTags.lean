@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.TypeTags
 /-!
 # Successor and predecessor on type tags
 
-This file declates successor and predecessor orders on type tags.
+This file declares successor and predecessor orders on type tags.
 
 -/
 

@@ -131,6 +131,10 @@ lemma IsOfFinOrder.eq_one' [IsMulTorsionFree G] {a : G} (ha : IsOfFinOrder a) :
   contrapose! ha
   apply not_isOfFinOrder_of_isMulTorsionFree ha
 
+@[to_additive]
+lemma isOfFinOrder_iff_eq_one [IsMulTorsionFree G] (a : G) : IsOfFinOrder a ↔ a = 1 :=
+  ⟨IsOfFinOrder.eq_one', fun h => h.symm ▸ IsOfFinOrder.one⟩
+
 /-- Elements of finite order are of finite order in submonoids. -/
 @[to_additive /-- Elements of finite order are of finite order in submonoids. -/]
 theorem Submonoid.isOfFinOrder_coe {H : Submonoid G} {x : H} :
@@ -622,7 +626,7 @@ theorem infinite_not_isOfFinOrder {x : G} (h : ¬IsOfFinOrder x) :
   contrapose! h
   have : ¬Injective fun n : ℕ => x ^ n := by
     have := Set.not_injOn_infinite_finite_image (Set.Ioi_infinite 0) h
-    contrapose! this
+    contrapose this
     exact Set.injOn_of_injective this
   rwa [injective_pow_iff_not_isOfFinOrder, Classical.not_not] at this
 
@@ -667,10 +671,10 @@ theorem pow_eq_pow_iff_modEq : x ^ n = x ^ m ↔ n ≡ m [MOD orderOf x] := by
         _ = x ^ (m + k) := by simp [Nat.add_comm]
         _ = x ^ m := h
         _ = 1 * x ^ m := by simp
-    exact by simpa using Nat.ModEq.add_left m ((pow_eq_one_iff_modEq).1 hk)
+    exact by simpa using Nat.ModEq.add_left m (pow_eq_one_iff_modEq.1 hk)
   · intro h
     have hk : x ^ k = 1 := by
-      apply (pow_eq_one_iff_modEq).2
+      apply pow_eq_one_iff_modEq.2
       exact Nat.ModEq.add_left_cancel' m (by simpa using h)
     calc
       x ^ (m + k) = x ^ m * x ^ k := by rw [pow_add]
@@ -704,7 +708,7 @@ theorem infinite_not_isOfFinOrder {x : G} (h : ¬IsOfFinOrder x) :
   contrapose! h
   have : ¬Function.Injective fun n : ℕ => x ^ n := by
     have := Set.not_injOn_infinite_finite_image (Set.Ioi_infinite 0) h
-    contrapose! this
+    contrapose this
     exact Set.injOn_of_injective this
   rwa [injective_pow_iff_not_isOfFinOrder, Classical.not_not] at this
 
@@ -907,6 +911,14 @@ lemma not_isMulTorsionFree_iff_isOfFinOrder :
 lemma zpowers_mabs [LinearOrder G] [IsOrderedMonoid G] (g : G) : zpowers |g|ₘ = zpowers g := by
   rcases mabs_cases g with h | h <;> simp only [h, zpowers_inv]
 
+@[to_additive]
+lemma IsMulTorsionFree.orderOf_le_one [IsMulTorsionFree G] (g : G) :
+    orderOf g ≤ 1 := by
+  obtain rfl | ha := eq_or_ne g 1
+  · simp
+  · rw [ne_eq, ← isOfFinOrder_iff_eq_one, ← orderOf_eq_zero_iff] at ha
+    simp [ha]
+
 end CommGroup
 
 section FiniteMonoid
@@ -942,7 +954,8 @@ lemma isOfFinOrder_of_finite (x : G) : IsOfFinOrder x := by
   by_contra h; exact infinite_not_isOfFinOrder h <| Set.toFinite _
 
 /-- Every finite left cancellative monoid is a group. -/
-@[to_additive /-- Every finite left cancellative additive monoid is an additive group. -/]
+@[to_additive (attr := implicit_reducible)
+  /-- Every finite left cancellative additive monoid is an additive group. -/]
 noncomputable def LeftCancelMonoid.groupOfFinite : Group G where
   inv x := x ^ (orderOf x - 1)
   inv_mul_cancel x := by
@@ -950,7 +963,8 @@ noncomputable def LeftCancelMonoid.groupOfFinite : Group G where
     exact (isOfFinOrder_of_finite x).orderOf_pos
 
 /-- Every finite right cancellative monoid is a group. -/
-@[to_additive /-- Every finite right cancellative additive monoid is an additive group. -/]
+@[to_additive (attr := implicit_reducible)
+  /-- Every finite right cancellative additive monoid is an additive group. -/]
 noncomputable def RightCancelMonoid.groupOfFinite {H : Type*} [RightCancelMonoid H] [Finite H] :
     Group H := by
   letI : Finite Hᵐᵒᵖ := Finite.of_equiv H MulOpposite.opEquiv
@@ -1173,6 +1187,10 @@ theorem pow_gcd_card_eq_one_iff : x ^ n.gcd (Fintype.card G) = 1 ↔ x ^ n = 1 :
 theorem Subgroup.pow_index_mem {G : Type*} [Group G] (H : Subgroup G) [Normal H] (g : G) :
     g ^ index H ∈ H := by rw [← eq_one_iff, QuotientGroup.mk_pow H, index, pow_card_eq_one']
 
+@[to_additive]
+lemma Subgroup.pow_relIndex_mem {G : Type*} [Group G] (H : Subgroup G) [H.Normal] {K : Subgroup G}
+    {g : G} (hg : g ∈ K) : g ^ H.relIndex K ∈ H :=
+  pow_index_mem (H.subgroupOf K) ⟨g, hg⟩
 
 @[to_additive (attr := simp) mod_card_nsmul]
 lemma pow_mod_card (a : G) (n : ℕ) : a ^ (n % card G) = a ^ n := by

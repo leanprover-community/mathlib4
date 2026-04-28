@@ -96,17 +96,17 @@ variable [PartialOrder α] [CommGroup β] [PartialOrder β] [IsOrderedMonoid β]
 
 @[to_additive (attr := simp)]
 lemma monovaryOn_inv_right : MonovaryOn f g⁻¹ s ↔ AntivaryOn f g s := by
-  simpa [MonovaryOn, AntivaryOn] using forall₂_swap
+  simpa [MonovaryOn, AntivaryOn] using forall₂_comm
 
 @[to_additive (attr := simp)]
 lemma antivaryOn_inv_right : AntivaryOn f g⁻¹ s ↔ MonovaryOn f g s := by
-  simpa [MonovaryOn, AntivaryOn] using forall₂_swap
+  simpa [MonovaryOn, AntivaryOn] using forall₂_comm
 
 @[to_additive (attr := simp)] lemma monovary_inv_right : Monovary f g⁻¹ ↔ Antivary f g := by
-  simpa [Monovary, Antivary] using forall_swap
+  simpa [Monovary, Antivary] using forall_comm
 
 @[to_additive (attr := simp)] lemma antivary_inv_right : Antivary f g⁻¹ ↔ Monovary f g := by
-  simpa [Monovary, Antivary] using forall_swap
+  simpa [Monovary, Antivary] using forall_comm
 end
 
 section
@@ -297,17 +297,17 @@ variable [LinearOrder α] [Semifield β] [LinearOrder β] [IsStrictOrderedRing �
 
 @[simp]
 lemma monovaryOn_inv_right₀ (hg : ∀ i ∈ s, 0 < g i) : MonovaryOn f g⁻¹ s ↔ AntivaryOn f g s :=
-  forall₂_swap.trans <| forall₄_congr fun i hi j hj ↦ by simp [inv_lt_inv₀ (hg _ hj) (hg _ hi)]
+  forall₂_comm.trans <| forall₄_congr fun i hi j hj ↦ by simp [inv_lt_inv₀ (hg _ hj) (hg _ hi)]
 
 @[simp]
 lemma antivaryOn_inv_right₀ (hg : ∀ i ∈ s, 0 < g i) : AntivaryOn f g⁻¹ s ↔ MonovaryOn f g s :=
-  forall₂_swap.trans <| forall₄_congr fun i hi j hj ↦ by simp [inv_lt_inv₀ (hg _ hj) (hg _ hi)]
+  forall₂_comm.trans <| forall₄_congr fun i hi j hj ↦ by simp [inv_lt_inv₀ (hg _ hj) (hg _ hi)]
 
 @[simp] lemma monovary_inv_right₀ (hg : StrongLT 0 g) : Monovary f g⁻¹ ↔ Antivary f g :=
-  forall_swap.trans <| forall₂_congr fun i j ↦ by simp [inv_lt_inv₀ (hg _) (hg _)]
+  forall_comm.trans <| forall₂_congr fun i j ↦ by simp [inv_lt_inv₀ (hg _) (hg _)]
 
 @[simp] lemma antivary_inv_right₀ (hg : StrongLT 0 g) : Antivary f g⁻¹ ↔ Monovary f g :=
-  forall_swap.trans <| forall₂_congr fun i j ↦ by simp [inv_lt_inv₀ (hg _) (hg _)]
+  forall_comm.trans <| forall₂_congr fun i j ↦ by simp [inv_lt_inv₀ (hg _) (hg _)]
 
 lemma MonovaryOn.div_right₀ (hg₁ : ∀ i ∈ s, 0 ≤ g₁ i) (hg₂ : ∀ i ∈ s, 0 < g₂ i)
     (h₁ : MonovaryOn f g₁ s) (h₂ : AntivaryOn f g₂ s) : MonovaryOn f (g₁ / g₂) s :=
@@ -371,7 +371,6 @@ lemma monovaryOn_iff_forall_smul_nonneg :
   simp_rw [smul_nonneg_iff_pos_imp_nonneg, sub_pos, sub_nonneg, forall_and]
   exact (and_iff_right_of_imp MonovaryOn.symm).symm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma antivaryOn_iff_forall_smul_nonpos :
     AntivaryOn f g s ↔ ∀ ⦃i⦄, i ∈ s → ∀ ⦃j⦄, j ∈ s → (f j - f i) • (g j - g i) ≤ 0 :=
   monovaryOn_toDual_right.symm.trans <| by rw [monovaryOn_iff_forall_smul_nonneg]; rfl
@@ -380,7 +379,6 @@ lemma monovary_iff_forall_smul_nonneg : Monovary f g ↔ ∀ i j, 0 ≤ (f j - f
   monovaryOn_univ.symm.trans <| monovaryOn_iff_forall_smul_nonneg.trans <| by
     simp only [Set.mem_univ, forall_true_left]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma antivary_iff_forall_smul_nonpos : Antivary f g ↔ ∀ i j, (f j - f i) • (g j - g i) ≤ 0 :=
 monovary_toDual_right.symm.trans <| by rw [monovary_iff_forall_smul_nonneg]; rfl
 
@@ -392,7 +390,6 @@ lemma monovaryOn_iff_smul_rearrangement :
     simp [smul_sub, sub_smul, ← add_sub_right_comm, le_sub_iff_add_le, add_comm (f i • g i),
       add_comm (f i • g j)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Two functions antivary iff the rearrangement inequality holds. -/
 lemma antivaryOn_iff_smul_rearrangement :
     AntivaryOn f g s ↔
@@ -405,7 +402,6 @@ lemma monovary_iff_smul_rearrangement :
   monovaryOn_univ.symm.trans <| monovaryOn_iff_smul_rearrangement.trans <| by
     simp only [Set.mem_univ, forall_true_left]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Two functions antivary iff the rearrangement inequality holds. -/
 lemma antivary_iff_smul_rearrangement :
     Antivary f g ↔ ∀ i j, f i • g i + f j • g j ≤ f i • g j + f j • g i :=

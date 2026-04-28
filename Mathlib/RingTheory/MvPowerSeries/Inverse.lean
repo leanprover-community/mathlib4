@@ -266,8 +266,8 @@ protected theorem mul_inv_rev (φ ψ : MvPowerSeries σ k) :
       MvPowerSeries.inv_mul_cancel _ h.right]
 
 instance : InvOneClass (MvPowerSeries σ k) :=
-  { inferInstanceAs (One (MvPowerSeries σ k)),
-    inferInstanceAs (Inv (MvPowerSeries σ k)) with
+  { (inferInstance : One (MvPowerSeries σ k)),
+    (inferInstance : Inv (MvPowerSeries σ k)) with
     inv_one := by
       rw [MvPowerSeries.inv_eq_iff_mul_eq_one, mul_one]
       simp }

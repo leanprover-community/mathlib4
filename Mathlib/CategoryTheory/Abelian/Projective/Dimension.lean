@@ -5,6 +5,7 @@ Authors: Joël Riou, Nailin Guan
 -/
 module
 
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
 public import Mathlib.CategoryTheory.Abelian.Exact
 public import Mathlib.Data.ENat.Lattice
@@ -135,7 +136,8 @@ instance [Projective X] : HasProjectiveDimensionLT X 1 := by
   · simp at hi
   · exact e.eq_zero_of_projective
 
-lemma projective_iff_subsingleton_ext_one [HasExt.{w} C] {X : C} :
+variable {X} in
+lemma projective_iff_subsingleton_ext_one [HasExt.{w} C] :
     Projective X ↔ ∀ ⦃Y : C⦄, Subsingleton (Ext X Y 1) := by
   refine ⟨fun h ↦ HasProjectiveDimensionLT.subsingleton X 1 1 (by rfl),
     fun h ↦ ⟨fun f g _ ↦ ?_⟩⟩
@@ -145,11 +147,18 @@ lemma projective_iff_subsingleton_ext_one [HasExt.{w} C] {X : C} :
   obtain ⟨φ, rfl⟩ := Ext.homEquiv₀.symm.surjective φ
   exact ⟨φ, Ext.homEquiv₀.symm.injective (by simpa using hφ)⟩
 
-lemma projective_iff_hasProjectiveDimensionLT_one (X : C) :
+variable {X} in
+lemma projective_iff_hasProjectiveDimensionLT_one :
     Projective X ↔ HasProjectiveDimensionLT X 1 := by
   letI := HasExt.standard C
   exact ⟨fun _ ↦ inferInstance, fun _ ↦ projective_iff_subsingleton_ext_one.2
     (HasProjectiveDimensionLT.subsingleton X 1 1 (by rfl))⟩
+
+lemma projective_iff_hasProjectiveDimensionLE_zero : Projective X ↔ HasProjectiveDimensionLE X 0 :=
+  projective_iff_hasProjectiveDimensionLT_one
+
+instance (priority := low) [HasProjectiveDimensionLT X 1] : Projective X :=
+  projective_iff_hasProjectiveDimensionLT_one.mpr ‹_›
 
 end
 
@@ -220,11 +229,29 @@ end ShortExact
 
 end ShortComplex
 
-instance (X Y : C) (n : ℕ) [HasProjectiveDimensionLT X n]
-    [HasProjectiveDimensionLT Y n] :
+instance (X Y : C) (n : ℕ) [HasProjectiveDimensionLT X n] [HasProjectiveDimensionLT Y n] :
     HasProjectiveDimensionLT (X ⊞ Y) n :=
-  (ShortComplex.Splitting.ofHasBinaryBiproduct X Y).shortExact.hasProjectiveDimensionLT_X₂ n
-    (by assumption) (by assumption)
+  (ShortComplex.Splitting.ofHasBinaryBiproduct X Y).shortExact.hasProjectiveDimensionLT_X₂ n ‹_› ‹_›
+
+lemma hasProjectiveDimensionLT_of_enoughInjectives [HasExt.{w} C] [EnoughInjectives C] (X : C)
+    (n : ℕ) (hX : ∀ Y : C, Subsingleton (Ext X Y n)) : HasProjectiveDimensionLT X n := by
+  suffices ∀ ⦃d : ℕ⦄ ⦃Y : C⦄ (e : Ext X Y d) (k : ℕ), d = n + k → e = 0 from
+    HasProjectiveDimensionLT.mk (fun i hi Y e ↦ by
+      obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hi
+      exact this e k rfl)
+  intro d Y e k hd
+  induction k generalizing d Y with
+  | zero =>
+    obtain rfl : d = n := by simpa using hd
+    subsingleton
+  | succ k hk =>
+    let ⟨p⟩ := EnoughInjectives.presentation Y
+    have h : (ShortComplex.mk _ _ (cokernel.condition p.f)).ShortExact :=
+      { exact := ShortComplex.exact_cokernel p.f }
+    have hd : n + k + 1 = d := by lia
+    obtain ⟨x, rfl⟩ := Ext.covariant_sequence_exact₁ X h e
+      (by subst hd; apply Ext.eq_zero_of_injective) hd
+    simp [hk x rfl]
 
 end CategoryTheory
 
@@ -254,7 +281,6 @@ lemma Retract.projectiveDimension_le {X Y : C} (h : Retract X Y) :
     have := hn i hi
     exact h.hasProjectiveDimensionLT i)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma projectiveDimension_lt_iff {X : C} {n : ℕ} :
     projectiveDimension X < n ↔ HasProjectiveDimensionLT X n := by
   refine ⟨fun h ↦ ?_, fun h ↦ sInf_lt_iff.2 ?_⟩
@@ -264,11 +290,11 @@ lemma projectiveDimension_lt_iff {X : C} {n : ℕ} :
   · obtain _ | n := n
     · exact ⟨⊥, fun _ _ ↦ hasProjectiveDimensionLT_of_ge _ 0 _ (by simp), by decide⟩
     · exact ⟨n, fun i hi ↦ hasProjectiveDimensionLT_of_ge _ (n + 1) _ (by simpa using hi),
-        by simp [WithBot.lt_add_one_iff]⟩
+        by simp [ENat.WithBot.lt_add_one_iff]⟩
 
 lemma projectiveDimension_le_iff (X : C) (n : ℕ) :
     projectiveDimension X ≤ n ↔ HasProjectiveDimensionLE X n := by
-  simp [← projectiveDimension_lt_iff, ← WithBot.lt_add_one_iff]
+  simp [← projectiveDimension_lt_iff, ← ENat.WithBot.lt_add_one_iff]
 
 lemma projectiveDimension_ge_iff (X : C) (n : ℕ) :
     n ≤ projectiveDimension X ↔ ¬ HasProjectiveDimensionLT X n := by
@@ -297,6 +323,12 @@ lemma projectiveDimension_ne_top_iff (X : C) :
     | coe d =>
       simp only [ne_eq, WithBot.coe_eq_top, ENat.coe_ne_top, not_false_eq_true, true_iff]
       exact ⟨d, by simpa only [← projectiveDimension_le_iff] using hd.le⟩
+
+lemma projectiveDimension_eq_zero_iff (X : C) :
+    projectiveDimension X = 0 ↔ Projective X ∧ ¬ Limits.IsZero X := by
+  rw [← projectiveDimension_eq_bot_iff, projective_iff_hasProjectiveDimensionLE_zero,
+    ← projectiveDimension_le_iff, ← WithBot.lt_zero_iff_eq_bot, not_lt, Nat.cast_zero,
+    le_antisymm_iff]
 
 end CategoryTheory
 

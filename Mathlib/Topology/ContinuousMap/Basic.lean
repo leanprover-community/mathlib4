@@ -219,6 +219,7 @@ each term. This is `Sigma.uncurry` for continuous maps.
 @[simps]
 def sigma (f : ∀ i, C(X i, A)) : C((Σ i, X i), A) where
   toFun ig := f ig.fst ig.snd
+  continuous_toFun := by continuity
 
 variable (A X) in
 /--

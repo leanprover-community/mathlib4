@@ -24,9 +24,9 @@ other categories like `ModuleCat`.
 
 ## Main definitions
 - `ShortComplex.abHomologyIso` identifies the homology of a short complex of abelian
-groups to an explicit quotient.
+  groups to an explicit quotient.
 - `ShortComplex.ab_exact_iff` expresses that a short complex of abelian groups `S`
-is exact iff any element in the kernel of `S.g` belongs to the image of `S.f`.
+  is exact iff any element in the kernel of `S.g` belongs to the image of `S.f`.
 
 -/
 

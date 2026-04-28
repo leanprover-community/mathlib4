@@ -75,7 +75,8 @@ def toContinuousAlgHom (e : A ≃A[R] B) : A →A[R] B where
   __ := e.toAlgHom
   cont := e.continuous_toFun
 
-instance coe : Coe (A ≃A[R] B) (A →A[R] B) := ⟨toContinuousAlgHom⟩
+instance : CoeOut (A ≃A[R] B) (A →A[R] B) where coe := toContinuousAlgHom
+instance : CoeOut (A ≃A[R] B) (A ≃ₐ[R] B) where coe := toAlgEquiv
 
 instance equivLike : EquivLike (A ≃A[R] B) A B where
   coe f := f.toFun
@@ -128,6 +129,10 @@ def toContinuousLinearEquiv (e : A ≃A[R] B) : A ≃L[R] B :=
   { e with __ := e.toLinearEquiv }
 
 instance : Coe (A ≃A[R] B) (A ≃L[R] B) := ⟨toContinuousLinearEquiv⟩
+
+@[simp] theorem coeCLE_apply (e : A ≃A[R] B) (a : A) : (e : A ≃L[R] B) a = e a := rfl
+
+@[simp] theorem coe_coeCLE (e : A ≃A[R] B) : ⇑(e : A ≃L[R] B) = e := rfl
 
 @[simp]
 theorem toContinuousLinearEquiv_apply (e : A ≃A[R] B) (a : A) :
@@ -198,6 +203,9 @@ theorem refl_apply (a : A) : refl R A a = a := rfl
 
 @[simp]
 theorem coe_refl : refl R A = ContinuousAlgHom.id R A := rfl
+
+@[simp]
+theorem coeCLE_refl : (refl R A).toContinuousLinearEquiv = ContinuousLinearEquiv.refl R A := rfl
 
 @[simp]
 theorem coe_refl' : ⇑(refl R A) = id := rfl

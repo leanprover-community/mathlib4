@@ -44,9 +44,8 @@ section AffineIndependent
 variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
 variable [AffineSpace V P] {ι : Type*}
 
-/-- An indexed family is said to be affinely independent if no
-nontrivial weighted subtractions (where the sum of weights is 0) are
-0. -/
+/-- An indexed family is said to be affinely independent if no nontrivial weighted subtractions
+(where the sum of weights is 0) are 0. -/
 def AffineIndependent (p : ι → P) : Prop :=
   ∀ (s : Finset ι) (w : ι → k),
     ∑ i ∈ s, w i = 0 → s.weightedVSub p w = (0 : V) → ∀ i ∈ s, w i = 0
@@ -236,6 +235,15 @@ theorem affineIndependent_iff_eq_of_fintype_affineCombination_eq [Fintype ι] (p
     rw [Finset.affineCombination_indicator_subset w1 p (Finset.subset_univ s1),
       Finset.affineCombination_indicator_subset w2 p (Finset.subset_univ s2)] at hweq
     exact h _ _ hw1' hw2' hweq
+
+/-- A linearly independent family of vectors is also affinely independent. -/
+theorem LinearIndependent.affineIndependent
+    {v : ι → V} (hv : LinearIndependent k v) : AffineIndependent k v := by
+  intro s w hw0 hwv i hi
+  rw [Finset.weightedVSub_eq_weightedVSubOfPoint_of_sum_eq_zero _ _ _ hw0 0,
+    Finset.weightedVSubOfPoint_apply] at hwv
+  simp only [vsub_eq_sub, sub_zero] at hwv
+  exact linearIndependent_iff'.mp hv s w hwv i hi
 
 variable {k}
 
