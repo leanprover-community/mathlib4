@@ -153,7 +153,7 @@ lemma isSheafUniqueGluing_iff_isSheafUniqueGluingNontrivial_types
     IsSheafUniqueGluing F ↔ IsSheafUniqueGluingNontrivial F := by
   refine ⟨fun h _ _ U _ sf ↦ h U sf, fun h ι U sf com ↦ ?_⟩
   have empty {V : Opens X} (hV : V = ⊥) : Unique (ToType (F.obj (op V))) := by
-    rw [hV]; exact k
+    rwa [hV]
   by_cases h1 : ∃ i : ι, Nonempty (U i)
   · let ι' := {i : ι | Nonempty (U i)}
     let U' : ι' → Opens X := fun i ↦ U i
@@ -164,16 +164,15 @@ lemma isSheafUniqueGluing_iff_isSheafUniqueGluingNontrivial_types
     · by_cases hj : Nonempty (U j)
       · rw [← ConcreteCategory.comp_apply, ← F.map_comp]
         exact hs1 ⟨j, hj⟩
-      · letI := empty (show U j = ⊥ by aesop)
+      · have := empty (show U j = ⊥ by aesop)
         exact Subsingleton.elim _ _
     · have hy' : F.IsGluing U' (fun i ↦ sf i) (F.map (eqToHom eq.symm) y) := fun b ↦ by
         rw [← ConcreteCategory.comp_apply, ← F.map_comp]
         exact hy b.1
-      rw [← hs2 _ hy', ← ConcreteCategory.comp_apply, ← F.map_comp]
-      simp
-  · letI := empty (show iSup U = ⊥ by aesop)
+      simp [← hs2 _ hy', ← ConcreteCategory.comp_apply, ← F.map_comp]
+  · have := empty (show iSup U = ⊥ by aesop)
     refine ⟨default, fun j ↦ ?_, fun _ _ ↦ Subsingleton.elim _ _⟩
-    letI := empty (show U j = ⊥ by aesop)
+    have := empty (show U j = ⊥ by aesop)
     exact Subsingleton.elim _ _
 
 /-- The usual sheaf condition can be obtained from the sheaf condition
@@ -209,10 +208,10 @@ whose forgetful functor reflects isomorphisms and preserves limits, the sheaf co
 unique gluings with covers that are nowhere empty is equivalent to the usual one.
 -/
 theorem isSheaf_iff_isSheafUniqueGluingNontrivial (k : Unique (ToType (F.obj (op ⊥)))) :
-    F.IsSheaf ↔ F.IsSheafUniqueGluingNontrivial := by
-  rw [isSheaf_iff_isSheaf_comp' (forget C) F, isSheaf_iff_isSheafUniqueGluing_types,
-    isSheafUniqueGluing_iff_isSheafUniqueGluingNontrivial_types _ k]
-  rfl
+    F.IsSheaf ↔ F.IsSheafUniqueGluingNontrivial :=
+  (isSheaf_iff_isSheaf_comp' (forget C) F).trans
+    ((isSheaf_iff_isSheafUniqueGluing_types (F ⋙ forget C)).trans
+      (isSheafUniqueGluing_iff_isSheafUniqueGluingNontrivial_types (F ⋙ forget C) k))
 
 end
 
