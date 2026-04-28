@@ -92,8 +92,7 @@ lemma ofScalars_sub (c' : ℕ → 𝕜) : ofScalars E (c - c') = ofScalars E c -
   ext; simp [ofScalars, sub_smul]
 
 theorem ofScalars_smul (x : 𝕜) : ofScalars E (x • c) = x • ofScalars E c := by
-  ext n y
-  simp [ofScalars, smul_smul]
+  ext; simp [ofScalars, smul_smul]
 
 theorem ofScalars_comp_neg_id :
     (ofScalars E c).compContinuousLinearMap (-ContinuousLinearMap.id _ _) =
