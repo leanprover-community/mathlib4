@@ -846,6 +846,9 @@ end primesOver
 
 /-!
 ### Conversion between various multplicities
+
+We provide some `simp` lemmas that convert various ways of expressing the multiplicity of
+a prime ideal `p` in the factorization of some ideal `I` into `multiplicity p.asIdeal I`.
 -/
 
 section conversion
