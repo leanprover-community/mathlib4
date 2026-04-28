@@ -88,6 +88,15 @@ lemma boundary_obj_eq_univ (m n : ℕ) (h : m < n := by lia) :
       ← Subcomplex.ofSimplex_le_iff]
     apply Subcomplex.ofSimplex_map_le
 
+@[simp]
+lemma boundary_zero : boundary.{u} 0 = ⊥ := by
+  ext m x
+  simp only [boundary, Nat.reduceAdd, Set.mem_setOf_eq, Subfunctor.bot_obj, Set.bot_eq_empty,
+    Set.mem_empty_iff_false, iff_false, Decidable.not_not]
+  intro x
+  fin_cases x
+  exact ⟨0, by subsingleton⟩
+
 lemma op_boundary (n : ℕ) :
     ∂Δ[n].op.preimage (stdSimplex.opIso.{u} ⦋n⦌).inv = ∂Δ[n] := by
   ext ⟨⟨d⟩⟩ j
@@ -132,5 +141,64 @@ lemma le_boundary_iff :
         nonDegenerate_eq_empty_of_hasDimensionLT _ _ _ h₃] at h₁
 
 end stdSimplex
+
+namespace boundary
+
+/-- The inclusion of a face of `∂Δ[n]`. -/
+def faceι {n : ℕ} (i : Fin (n + 1)) :
+    (stdSimplex.face {i}ᶜ : SSet.{u}) ⟶ ∂Δ[n] :=
+  Subcomplex.homOfLE (face_singleton_compl_le_boundary i)
+
+instance {n : ℕ} (i : Fin (n + 1)) : Mono (faceι.{u} i) := by
+  dsimp [faceι]; infer_instance
+
+@[reassoc (attr := simp)]
+lemma faceι_ι {n : ℕ} (i : Fin (n + 2)) :
+    faceι i ≫ (boundary.{u} (n + 1)).ι = (stdSimplex.face {i}ᶜ).ι := by
+  simp [faceι]
+
+/-- The morphism `Δ[n] ⟶ ∂Δ[n + 1]` corresponding to face
+the face `i : Fin (n + 2)`. -/
+def ι {n : ℕ} (i : Fin (n + 2)) :
+    Δ[n] ⟶ (∂Δ[n + 1] : SSet.{u}) :=
+  Subcomplex.lift ((stdSimplex.{u}.map (SimplexCategory.δ i))) (by
+    simp only [Subcomplex.range_eq_ofSimplex]
+    refine le_trans ?_ (face_singleton_compl_le_boundary i)
+    rw [stdSimplex.face_singleton_compl, yonedaEquiv_map])
+
+@[reassoc (attr := simp)]
+lemma ι_ι {n : ℕ} (i : Fin (n + 2)) :
+    ι.{u} i ≫ ∂Δ[n + 1].ι = stdSimplex.δ i := rfl
+
+@[reassoc (attr := simp)]
+lemma faceSingletonComplIso_inv_ι {n : ℕ} (i : Fin (n + 2)) :
+    (stdSimplex.faceSingletonComplIso i).inv ≫ ι i = boundary.faceι i := by
+  rw [← cancel_epi (stdSimplex.faceSingletonComplIso i).hom, Iso.hom_inv_id_assoc]
+  rfl
+
+instance {n : ℕ} (i : Fin (n + 2)) : Mono (ι.{u} i) := by
+  rw [← mono_comp_iff_of_isIso (stdSimplex.faceSingletonComplIso i).inv,
+    faceSingletonComplIso_inv_ι]
+  infer_instance
+
+instance {n : ℕ} (i : Fin (n + 2)) : Mono (stdSimplex.{u}.δ i) := by
+  rw [← ι_ι]
+  infer_instance
+
+lemma hom_ext {n : ℕ} {X : SSet.{u}} {f g : (∂Δ[n + 1] : SSet) ⟶ X}
+    (h : ∀ (i : Fin (n + 2)), ι i ≫ f = ι i ≫ g) :
+    f = g := by
+  ext m ⟨x, hx⟩
+  simp only [boundary_eq_iSup, stdSimplex.face_singleton_compl, Subfunctor.iSup_obj,
+    Set.mem_iUnion, Subcomplex.mem_ofSimplex_obj_iff, op_unop] at hx
+  obtain ⟨i, ⟨y, rfl⟩⟩ := hx
+  exact ConcreteCategory.congr_hom (congr_app (h i) _) _
+
+@[ext]
+lemma hom_ext₀ {X : SSet.{u}} {f g : (∂Δ[0] : SSet) ⟶ X} : f = g := by
+  ext _ ⟨x, hx⟩
+  simp at hx
+
+end boundary
 
 end SSet
