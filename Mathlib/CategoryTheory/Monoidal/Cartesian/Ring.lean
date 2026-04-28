@@ -79,7 +79,7 @@ def yonedaCommRing : CommRingObjCat C ⥤ Cᵒᵖ ⥤ CommRingCat.{v} where
   map_comp _ _ := by ext; exact (Category.assoc ..).symm
 
 @[simp]
-lemma yonedaCommRing_map_app_hom_apply' {R₁ R₂ : CommRingObjCat C} (f : R₁ ⟶ R₂)
+lemma yonedaCommRing_map_app_apply {R₁ R₂ : CommRingObjCat C} (f : R₁ ⟶ R₂)
     {X : C} (x : X ⟶ R₁.X) :
     dsimp% (yonedaCommRing.map f).app _ x = x ≫ f.hom := rfl
 
