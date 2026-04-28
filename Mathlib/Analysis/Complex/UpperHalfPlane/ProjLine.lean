@@ -139,4 +139,99 @@ lemma Matrix.GeneralLinearGroup.IsElliptic.smul_eq_self_iff
     ← fixpointPolynomial_aeval_eq_zero_iff, ← hg.fixpointPolynomial_aeval_eq_zero_iff']
   simp [fixpointPolynomial]
 
+namespace UpperHalfPlane
+/-!
+## Stabilizers and fixed points
+-/
+
+/-- The pointwise stabilizer of the vertical line `ℝ₊ • I` in `GL(2, ℝ)₊` is the scalar multiples
+of the identity. -/
+lemma forall_smul_pos_mul_I_eq_iff_of_det_pos {g : GL (Fin 2) ℝ} (hdet : 0 < g.det.val) :
+    (∀ (t : ℝ) (ht : 0 < t), g • (⟨t * I, by simpa⟩ : ℍ) = ⟨t * I, by simpa⟩)
+      ↔ ∃ r : ℝˣ, g = r • 1 where
+  mp hg := by
+    have hg1 : g • I = I := by simpa using hg 1 (by norm_num)
+    have hp : ¬g.IsParabolic := fun h ↦ I.smul_ne_self_of_isParabolic h hg1
+    have hh : ¬g.IsHyperbolic := fun h ↦ I.smul_ne_self_of_isHyperbolic hdet h hg1
+    have he : ¬g.IsElliptic := fun he ↦ by
+      have hI := (he.smul_eq_self_iff _).1 hg1
+      have h2I := (he.smul_eq_self_iff _).1 <| hg 2 (by norm_num)
+      simpa [UpperHalfPlane.ext_iff] using hI.trans h2I.symm
+    obtain ⟨r, hr⟩ : g.val ∈ Set.range (Matrix.scalar (Fin 2)) := by
+      simp only [Matrix.IsParabolic] at hp
+      grind [eq_of_ge_of_le (not_lt.mp he) (not_lt.mp hh)]
+    have := Units.mul_inv g
+    rw [← hr] at this
+    use .mkOfMulEqOne r _ (by simpa using congr_arg (· 0 0) this)
+    simp [Units.ext_iff, Units.smul_def, ← hr, Matrix.smul_one_eq_diagonal]
+  mpr := by
+    rintro ⟨r, rfl⟩ t ht
+    ext
+    simp [coe_smul_of_det_pos hdet, num, denom, Units.smul_def]
+
+/-- The pointwise stabilizer of the vertical line `ℝ₊ • I` in `GL(2, ℝ)` consists of the scalar
+multiples of the identity and of `J = [-1, 0; 0, 1]`. -/
+lemma forall_smul_pos_mul_I_eq_iff {g : GL (Fin 2) ℝ} :
+    (∀ (t : ℝ) (ht : 0 < t), g • (⟨t * I, by simpa⟩ : ℍ) = ⟨t * I, by simpa⟩) ↔
+      (∃ r : ℝˣ, g = r • 1) ∨ (∃ r : ℝˣ, g = r • J) := by
+  by_cases h : 0 < g.det.val
+  · rw [forall_smul_pos_mul_I_eq_iff_of_det_pos h]
+    suffices ¬∃ r, g = r • J by tauto
+    contrapose! h
+    obtain ⟨r, rfl⟩ := h
+    simp [Units.smul_def, mul_self_nonneg r.val]
+  · -- If `det g < 0`, we show that `g * J⁻¹` also fixes the vertical line
+    have : ¬∃ r : ℝˣ, g = r • 1 := by
+      contrapose! h
+      rcases h with ⟨r, rfl⟩
+      refine lt_of_le_of_ne' ?_ (Units.ne_zero _)
+      simp [Units.smul_def, sq_nonneg]
+    rw [eq_false_intro this, false_or]
+    conv => enter [1, t, ht, 1]; rw [← J_smul_pos_mul_I ht, ← SemigroupAction.mul_smul, ← inv_J]
+    rw [forall_smul_pos_mul_I_eq_iff_of_det_pos]
+    · simp only [mul_inv_eq_iff_eq_mul (a := g), smul_one_mul]
+    · rw [map_mul, map_inv, det_J, inv_neg_one, mul_neg_one, Units.val_neg]
+      grind [g.det_ne_zero.lt_or_gt, Matrix.GeneralLinearGroup.val_det_apply]
+
+/-- The only elements of `GL(2, ℝ)` that act trivially on the whole upper half-plane are the
+scalar matrices. -/
+lemma forall_smul_eq_iff {g : GL (Fin 2) ℝ} : (∀ τ : ℍ, g • τ = τ) ↔ (∃ r : ℝˣ, g = r • 1) where
+  mp h := by
+    refine (forall_smul_pos_mul_I_eq_iff.mp (fun t ht ↦ h _)).resolve_right fun ⟨r, hr⟩ ↦ ?_
+    simpa [hr, UpperHalfPlane.ext_iff, coe_smul, σ, Units.smul_def, (mul_self_nonneg r.val).not_gt,
+      num, denom, div_eq_iff (Complex.ofReal_ne_zero.mpr r.ne_zero), Complex.ext_iff, neg_eq_self]
+      using h ((1 : ℝ) +ᵥ I)
+  mpr := fun ⟨r, hr⟩ τ ↦ UpperHalfPlane.ext <| by
+    simp [hr, coe_smul, σ, Units.smul_def, sq_pos_of_ne_zero r.ne_zero, num, denom]
+
+lemma forall_smul_eq_iff_of_det_eq_one {g : GL (Fin 2) ℝ} (hg : g.det = 1) :
+    (∀ τ : ℍ, g • τ = τ) ↔ g = 1 ∨ g = -1 := by
+  rw [UpperHalfPlane.forall_smul_eq_iff]
+  constructor
+  · rintro ⟨r, rfl⟩
+    have : r ^ 2 • (1 : ℝ) = 1 := by simpa [Units.ext_iff] using hg
+    have : r = 1 ∨ r = -1 := by simpa [Units.smul_def]
+    aesop
+  · rintro (rfl | rfl)
+    · exact ⟨1, by ext; simp⟩
+    · exact ⟨-1, by ext; simp⟩
+
+end UpperHalfPlane
+
+namespace ModularGroup
+
+open scoped MatrixGroups
+
+variable {g : SL(2, ℤ)}
+
+/-- No element of `SL(2, ℤ)` except `±1` acts trivially on `ℍ`. -/
+lemma forall_smul_eq_iff : (∀ τ : ℍ, g • τ = τ) ↔ g = 1 ∨ g = -1 := by
+  simp only [sl_moeb, forall_smul_eq_iff_of_det_eq_one <| SpecialLinearGroup.coeToGL_det _,
+    ← SpecialLinearGroup.mapGL_inj (S := ℝ), map_one]
+  congr!
+  ext
+  simp
+
+end ModularGroup
+
 end
