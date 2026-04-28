@@ -529,6 +529,21 @@ lemma Spec.map_inv {R S : CommRingCat} (f : R ⟶ S) [IsIso f] :
   change Scheme.Spec.map (inv f).op = inv (Scheme.Spec.map f.op)
   rw [op_inv, ← Scheme.Spec.map_inv]
 
+/-- `Spec R` with the specialization order is order isomorphic to the dual of the prime
+spectrum of `R`. -/
+@[simps]
+def specOrderIsoPrimeSpectrum (R : CommRingCat) : Spec R ≃o (PrimeSpectrum R)ᵒᵈ where
+  toFun x := .toDual x
+  invFun x := OrderDual.ofDual x
+  map_rel_iff' {a b} := PrimeSpectrum.le_iff_specializes b a
+
+/-- `PrimeSpectrum R` with the inclusion order is order isomorphic to the dual of `Spec R`. -/
+@[simps]
+def primeSpectrumOrderIsoSpec (R : Type u) [CommRing R] : PrimeSpectrum R ≃o (Spec (.of R))ᵒᵈ where
+  toFun x := .toDual x
+  invFun x := OrderDual.ofDual x
+  map_rel_iff' {a b} := (PrimeSpectrum.le_iff_specializes a b).symm
+
 section
 
 variable {R S : CommRingCat.{u}} (f : R ⟶ S)
