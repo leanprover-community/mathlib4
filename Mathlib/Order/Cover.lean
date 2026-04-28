@@ -25,7 +25,7 @@ in a preorder this is equivalent to `a ⋖ b ∨ (a ≤ b ∧ b ≤ a)`
 * `a ⩿ b` means that `b` weakly covers `a`.
 -/
 
-@[expose] public section
+public section
 
 
 open Set OrderDual
