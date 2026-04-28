@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Order.Nucleus
 public import Mathlib.Order.SupClosed
-public import Mathlib.Tactic
 
 /-!
 # Sublocale
@@ -202,8 +201,6 @@ def nucleusIsoSublocale : (Nucleus X)ᵒᵈ ≃o Sublocale X where
 
 @[simp] lemma nucleusIsoSublocale.apply_carrier {n : Nucleus X} :
   ((nucleusIsoSublocale n) : Set X) = range n := by rfl
-@[simp] lemma nucleusIsoSublocale.symm_apply_apply {s : Sublocale X} {i : X} :
-  (nucleusIsoSublocale.symm s).toFun i = s.restrict i := by rfl
 
 namespace Sublocale
 
