@@ -21,9 +21,6 @@ not require this anywhere.
 This definition gives good results on Noetherian, integral separated schemes which are regular in
 codimension 1. In particular this is useful for working with normal varieties, where the map from
 Cartier divisors to Weil divisors is injective.
-
-Note that this file compiled perfectly well on an older version of Mathlib, and all of the sorries
-here are a result of some more recent changes (presumably coming from the )
 -/
 
 open AlgebraicGeometry
@@ -39,7 +36,7 @@ variable {X : Scheme.{u}}
          [IsIntegral X]
          [IsLocallyNoetherian X]
 
-open Function locallyFinsuppWithin
+open Function locallyFinsuppWithin Ring
 
 lemma locallyFinsuppWithin.restrict_eq_within {Y : Type*} [TopologicalSpace Y] {U : Set Y}
     {Z : Type*} [Zero Z] {V : Set Y} (D : locallyFinsuppWithin U Z)
@@ -79,18 +76,17 @@ namespace AlgebraicCycle
 namespace Sheaf
 
 /--
-We define `Γ(𝒪ₓ(D), U) := {s : k(X) | s ≠ 0 → Nonempty U ∧ s|_U + D|_U ≥ 0}`.
+The underlying set of `Γ(𝒪ₓ(D), U)`, defined to be:
+`Γ(𝒪ₓ(D), U) := {s : k(X) | s ≠ 0 → Nonempty U ∧ s|_U + D|_U ≥ 0}`.
 -/
 def carrier (D : AlgebraicCycle X ℤ) (U : X.Opens) : Set X.functionField :=
-    {s : (X.functionField) |
-    (h : s ≠ 0) → Nonempty U ∧ (div s h).restrict
-    (leOfHom U.leTop) + D.restrict (leOfHom U.leTop) ≥ 0}
+    {s : (X.functionField) | (h : s ≠ 0) → Nonempty U ∧ (div s h).restrict U + D.restrict U ≥ 0}
 
-def add_mema [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (U : X.Opens)
+def add_mem [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (U : X.Opens)
     {a b : ↑X.functionField}
     (ha : a ∈ carrier D U) (hb : b ∈ carrier D U) : a + b ∈ carrier D U := by
     by_cases hU : Nonempty U
-    · simp_all [carrier]
+    · simp_all only [carrier, ne_eq, ge_iff_le, true_and, Set.mem_setOf_eq, Opens.nonempty_iff]
       intro h
       by_cases ha0 : a = 0
       · simp_all
@@ -99,40 +95,37 @@ def add_mema [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (U : X.Ope
       intro Z
       specialize ha ha0 Z
       specialize hb hb0 Z
-      simp_all
+      simp_all only [coe_zero, Pi.zero_apply, coe_add, Pi.add_apply]
       have hU : U.1 ⊆ ⊤ := by aesop
-      suffices min ((div a ha0).restrict hU Z) ((div b hb0).restrict hU Z) ≤
-              (div (a + b) h).restrict hU Z by omega
-
+      suffices min ((div a ha0).restrict U Z) ((div b hb0).restrict U Z) ≤
+              (div (a + b) h).restrict U Z by omega
       by_cases hZ : coheight Z = 1
       · have := krullDimLE_of_coheight hZ
         by_cases o : Z ∈ U
-        · simp [locallyFinsuppWithin.restrict_eq_within _ _ _ o,
+        · simp [restrict_eq_of_mem _ _ _ o,
                 div_eq_ord_of_coheight_eq_one _ _ _ hZ, Scheme.ord]
           have : IsDiscreteValuationRing ↑(X.presheaf.stalk Z) := IsRegularInCodimensionOne.stalk_dvr Z hZ
           have := @ordFrac_add (X.presheaf.stalk Z)
-            _ _ _ _ (X.functionField) _ (stalkFunctionFieldAlgebra X Z) _ _ a b h
+            _ _ _ (X.functionField) _ (stalkFunctionFieldAlgebra X Z) _ a b h
           simp_all
-
-        · simp [locallyFinsuppWithin.restrict_eq_zero _ _ _ o]
+        · simp [restrict_eq_zero_of_not_mem _ _ _ o]
       · by_cases o : Z ∈ U
-        · simp only [TopologicalSpace.Opens.carrier_eq_coe, Set.top_eq_univ,
-          locallyFinsuppWithin.restrict_eq_within _ _ _ o, inf_le_iff]
+        · simp only [restrict_eq_of_mem _ _ _ o, inf_le_iff]
           rw[div_eq_zero_of_coheight_ne_one _ _ _ hZ, div_eq_zero_of_coheight_ne_one _ _ _ hZ,
             div_eq_zero_of_coheight_ne_one _ _ _ hZ]
           simp
-        · simp [locallyFinsuppWithin.restrict_eq_zero _ _ _ o]
+        · simp [restrict_eq_zero_of_not_mem _ _ _ o]
     · simp_all [carrier]
 
-def zero_mema (D : AlgebraicCycle X ℤ) (U : X.Opens) : 0 ∈ carrier D U := by
+def zero_mem (D : AlgebraicCycle X ℤ) (U : X.Opens) : 0 ∈ carrier D U := by
   simp [carrier]
 
 
-def neg_mema (D : AlgebraicCycle X ℤ) (U : X.Opens) (f : X.functionField) (hf : f ∈ carrier D U) :
+def neg_mem (D : AlgebraicCycle X ℤ) (U : X.Opens) (f : X.functionField) (hf : f ∈ carrier D U) :
     (- f) ∈ carrier D U := by
   simp_all [carrier]
 
-def smul_mema (D : AlgebraicCycle X ℤ) (U : X.Opens) [Nonempty U] (a : Γ(X, U)) {f : X.functionField}
+def smul_mem (D : AlgebraicCycle X ℤ) (U : X.Opens) [Nonempty U] (a : Γ(X, U)) {f : X.functionField}
   (hf : f ∈ carrier D U) : a • f ∈ carrier D U := by
     simp_all only [carrier, true_and]
     intro nez z
@@ -179,16 +172,16 @@ def smul_mema (D : AlgebraicCycle X ℤ) (U : X.Opens) [Nonempty U] (a : Γ(X, U
 variable [IsRegularInCodimensionOne X]
 def addSubgroup (D : AlgebraicCycle X ℤ) (U : X.Opens) : AddSubgroup X.functionField where
   carrier := carrier D U
-  add_mem' := add_mema D U
-  zero_mem' := zero_mema D U
+  add_mem' := add_mem D U
+  zero_mem' := zero_mem D U
   neg_mem' := by simp_all [carrier];
 
 lemma memAddSubgroup {D : AlgebraicCycle X ℤ} {U : X.Opens} (f : carrier D U) :
     (f : X.functionField) ∈ addSubgroup D U := by simp
 
 @[simps]
-def mk_of_mem_subgroup {D : AlgebraicCycle X ℤ} {U : X.Opens} (f : X.functionField) (hf : f ∈ addSubgroup D U) :
-    carrier D U := ⟨f, hf⟩
+def mk_of_mem_subgroup {D : AlgebraicCycle X ℤ} {U : X.Opens} (f : X.functionField)
+    (hf : f ∈ addSubgroup D U) : carrier D U := ⟨f, hf⟩
 
 noncomputable section insts
 
@@ -236,7 +229,7 @@ def moduleNonempty
     (D : AlgebraicCycle X ℤ) (U : X.Opens) [Nonempty U] :
     Submodule Γ(X, U) X.functionField where
   __ := addSubgroup D U
-  smul_mem' := smul_mema D U
+  smul_mem' := smul_mem D U
 
 lemma memModuleNonempty {D : AlgebraicCycle X ℤ} {U : X.Opens} [Nonempty U] (f : carrier D U) :
     (f : X.functionField) ∈ moduleNonempty D U := by simp
@@ -258,7 +251,7 @@ private lemma smulVal_mem_carrier (a : Γ(X, U)) (f : carrier D U) :
     smulVal a f.val ∈ carrier D U := by
   simp only [smulVal]
   split_ifs with hU
-  · exact smul_mema D U a f.prop
+  · exact smul_mem D U a f.prop
   · exact f.prop
 
 noncomputable instance : SMul Γ(X, U) (carrier D U) where
