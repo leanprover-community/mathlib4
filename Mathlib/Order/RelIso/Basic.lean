@@ -757,7 +757,16 @@ instance IsWellOrder.ulift {α : Type u} (r : α → α → Prop) [IsWellOrder �
 /-- A surjective relation embedding is a relation isomorphism. -/
 @[simps! apply]
 noncomputable def ofSurjective (f : r ↪r s) (H : Surjective f) : r ≃r s :=
-  ⟨Equiv.ofBijective f ⟨f.injective, H⟩, f.map_rel_iff⟩
+  ⟨f.toEmbedding.equivOfSurjective H, f.map_rel_iff⟩
+
+/-- Surjective relation embeddings are equivalent to relation isomorphisms. -/
+@[simps]
+noncomputable def embeddingSurjectiveEquivIso :
+    { f : r ↪r s // Function.Surjective f } ≃ (r ≃r s) where
+  toFun f := ofSurjective f f.prop
+  invFun f := ⟨f, f.surjective⟩
+  left_inv _ := rfl
+  right_inv _ := by ext; rfl
 
 /-- Transport a `RelHom` across a pair of `RelIso`s, by pre- and post-composition.
 

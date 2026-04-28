@@ -64,9 +64,9 @@ theorem ofScalars_series_of_subsingleton [Subsingleton E] : ofScalars E c = 0 :=
 
 variable (𝕜) in
 theorem ofScalars_series_injective [Nontrivial E] : Function.Injective (ofScalars E (𝕜 := 𝕜)) := by
-  intro c c' h
-  funext n
-  simpa [ofScalars] using congrArg (fun p => p n fun _ ↦ (1 : E)) h
+  intro _ _ h
+  ext n
+  simpa [ofScalars] using congrArg (fun p ↦ p n fun _ ↦ (1 : E)) h
 
 variable (c)
 
@@ -86,15 +86,13 @@ lemma coeff_ofScalars {𝕜 : Type*} [NontriviallyNormedField 𝕜] {p : ℕ →
   simp [FormalMultilinearSeries.coeff, FormalMultilinearSeries.ofScalars, List.prod_ofFn]
 
 theorem ofScalars_add (c' : ℕ → 𝕜) : ofScalars E (c + c') = ofScalars E c + ofScalars E c' := by
-  ext n x
-  simp [ofScalars, add_smul]
+  ext; simp [ofScalars, add_smul]
 
 lemma ofScalars_sub (c' : ℕ → 𝕜) : ofScalars E (c - c') = ofScalars E c - ofScalars E c' := by
   ext; simp [ofScalars, sub_smul]
 
 theorem ofScalars_smul (x : 𝕜) : ofScalars E (x • c) = x • ofScalars E c := by
-  ext n y
-  simp [ofScalars, smul_smul]
+  ext; simp [ofScalars, smul_smul]
 
 theorem ofScalars_comp_neg_id :
     (ofScalars E c).compContinuousLinearMap (-ContinuousLinearMap.id _ _) =
