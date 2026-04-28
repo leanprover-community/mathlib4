@@ -217,12 +217,8 @@ theorem indicatorConstLp_disjoint_union {s t : Set α} (hs : MeasurableSet s) (h
     indicatorConstLp p (hs.union ht) (by finiteness) c =
       indicatorConstLp p hs hμs c + indicatorConstLp p ht hμt c := by
   ext1
-  grw [Lp.coeFn_add, indicatorConstLp_coeFn]
-  refine
-    EventuallyEq.trans ?_
-      (EventuallyEq.fun_add indicatorConstLp_coeFn.symm indicatorConstLp_coeFn.symm)
-  rw [Set.indicator_union_of_disjoint hst]
-
+  grw [Lp.coeFn_add, indicatorConstLp_coeFn, indicatorConstLp_coeFn, indicatorConstLp_coeFn]
+  rw [Set.indicator_union_of_disjoint hst, Pi.add_def]
 end IndicatorConstLp
 
 section const
