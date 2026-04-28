@@ -13,7 +13,7 @@ public import Mathlib.Topology.Maps.Proper.Basic
 
 -/
 
-public section
+@[expose] public section
 
 open Set Filter TopologicalSpace Function Topology Pointwise MulOpposite
 
@@ -29,7 +29,6 @@ A few results about interior and closure of the pointwise addition/multiplicatio
 with continuous addition/multiplication. See also `Submonoid.top_closure_mul_self_eq` in
 `Topology.Algebra.Monoid`.
 -/
-
 
 section ContinuousConstSMul
 
@@ -252,6 +251,16 @@ lemma compl_mul_closure_one_eq_iff {t : Set G} :
 lemma IsOpen.mul_closure_one_eq {U : Set G} (hU : IsOpen U) :
     U * (closure {1} : Set G) = U :=
   compl_mul_closure_one_eq_iff.1 (hU.isClosed_compl.mul_closure_one_eq)
+
+@[to_additive]
+theorem IsOpen.closure_subset_mul_self_of_one_mem {U : Set G} (hopen : IsOpen U)
+    (h : 1 ∈ U) : closure U ⊆ U * U := by
+  intro x hx
+  rw [mem_closure_iff_nhds] at hx
+  have hkey : (fun y => x / y) ⁻¹' U ∈ 𝓝 x :=
+    (hopen.preimage (continuous_const.div' continuous_id)).mem_nhds (by simpa)
+  obtain ⟨a, ha_mem, ha_s⟩ := hx _ hkey
+  exact Set.mem_mul.mpr ⟨x / a, ha_mem, a, ha_s, div_mul_cancel x a⟩
 
 end IsTopologicalGroup
 
