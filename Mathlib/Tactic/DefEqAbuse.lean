@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Init
 public meta import Mathlib.Lean.MessageData.Trace
+public meta import Mathlib.Tactic.FastInstance
 
 /-!
 # The `#defeq_abuse` tactic and command combinators
@@ -267,11 +268,23 @@ partial def findSynthSuccessApps (msg : MessageData) : BaseIO (Std.HashSet Strin
         return .descend (butFirst := some {extractInstName headerStr})
     return .descend
 
+/-- Result of analyzing strict/permissive trace messages. -/
+structure AnalyzeTracesResult where
+  /-- isDefEq checks that fail with strict transparency but succeed with permissive. -/
+  flatFailures : Array MessageData
+  /-- Synthesis-grouped failures: each entry is `(synthApp, failures)`. Empty when
+  `includeSynth` is `false`. -/
+  synthGroupedFailures : Array (MessageData × Array MessageData)
+  /-- Instance name strings from successful `apply` trace nodes in the permissive run.
+  These are string-formatted because we parse trace `MessageData` text.
+  TODO: extract `Name`s directly from the `FormatWithInfos` data embedded in `MessageData.ofLazy`
+  expression nodes, rather than parsing rendered strings. -/
+  permissiveSuccessApps : Std.HashSet String
+
 /-- Analyze strict and permissive trace messages to find isDefEq transition failures
-and (optionally) synthesis-grouped failures.
-Returns `(flatFailures, synthGroupedFailures)`. -/
+and (optionally) synthesis-grouped failures. -/
 def analyzeTraces (strictMsgs permMsgs : Array MessageData) (includeSynth : Bool := false) :
-    BaseIO (Array MessageData × Array (MessageData × Array MessageData)) := do
+    BaseIO AnalyzeTracesResult := do
   -- Build sets of permissive successes and failures for transition-point detection.
   let mut permSuccesses : Std.HashSet String := {}
   let mut permFailures : Std.HashSet String := {}
@@ -284,12 +297,13 @@ def analyzeTraces (strictMsgs permMsgs : Array MessageData) (includeSynth : Bool
     transitionFailures := transitionFailures ++
       (← findTransitionFailures permSuccesses permFailures msg)
   let uniqueFailures ← dedupByString transitionFailures
-  -- Optionally find synthesis-grouped failures.
-  if !includeSynth then
-    return (uniqueFailures, #[])
+  -- Always collect permissive success apps (used downstream for leaky instance detection).
   let mut permissiveSuccessApps : Std.HashSet String := {}
   for msg in permMsgs do
     permissiveSuccessApps := permissiveSuccessApps.union (← findSynthSuccessApps msg)
+  -- Optionally find synthesis-grouped failures.
+  if !includeSynth then
+    return ⟨uniqueFailures, #[], permissiveSuccessApps⟩
   let mut synthResults : Array (MessageData × Array MessageData) := #[]
   for msg in strictMsgs do
     synthResults := synthResults.append
@@ -300,7 +314,36 @@ def analyzeTraces (strictMsgs permMsgs : Array MessageData) (includeSynth : Bool
   -- Dedup failures within each synth result.
   let dedupedResults ← filteredResults.mapM fun (app, failures) => do
     return (app, ← dedupByString failures)
-  return (uniqueFailures, dedupedResults)
+  return ⟨uniqueFailures, dedupedResults, permissiveSuccessApps⟩
+
+/-- Parse a trace-format instance name string (e.g. `"@RestrictScalars.module.{?_uniq.42}"`)
+into a `Name`, stripping leading `@` and universe suffixes.
+TODO: extract `Name`s directly from the `FormatWithInfos` data embedded in `MessageData.ofLazy`
+expression nodes, rather than parsing rendered strings. -/
+def parseTraceInstName (s : String) : Name :=
+  let s := (if s.startsWith "@" then s.drop 1 else s).trimAscii.toString
+  let s := match s.splitOn ".{" with | base :: _ => base | _ => s
+  s.toName
+
+/-- Check a collection of instance `Name`s for leaky data-field binder types using
+`checkInstance`. Returns the names and diagnostic messages for instances detected as leaky. -/
+def findLeakyInstances (instNames : Array Name) : MetaM (Array (Name × MessageData)) := do
+  let env ← getEnv
+  let mut leaky : Array (Name × MessageData) := #[]
+  for name in instNames do
+    -- Skip if not a known constant or not a registered typeclass instance
+    let some info := env.find? name | continue
+    unless isInstanceCore env name do continue
+    -- Skip prop-valued instances (proofs don't need normalization and generate spurious warnings)
+    let isPropInst ← forallTelescopeReducing info.type fun _ t => isProp t
+    if isPropInst then continue
+    -- Run checkInstance. Re-throw internal exceptions (panics, OOM, etc.); skip all others.
+    let result ← try Mathlib.Elab.FastInstance.checkInstance name
+      catch | .internal id ref => throw (.internal id ref) | _ => continue
+    -- Only report instances confirmed to have leaky binder types, not "cannot be verified" ones.
+    if let .leaky _ := result then
+      leaky := leaky.push (name, result.toMessageData name)
+  return leaky
 
 /-- Check whether a rendered isDefEq check string has syntactically identical LHS and RHS
 (e.g. `"❌️ ⊤ =?= ⊤"` or `"Quiver C =?= Quiver C"`).
@@ -393,7 +436,8 @@ elab (name := defeqAbuse) "#defeq_abuse " "in " tac:tactic : tactic => withMainC
       let result ← try
         withOptions (fun o =>
             (o.setBool `backward.isDefEq.respectTransparency strict)
-              |>.setBool `trace.Meta.isDefEq true) do
+              |>.setBool `trace.Meta.isDefEq true
+              |>.setBool `trace.Meta.synthInstance true) do
           evalTactic tac
           pure (Except.ok ())
       catch
@@ -432,9 +476,22 @@ elab (name := defeqAbuse) "#defeq_abuse " "in " tac:tactic : tactic => withMainC
       | .ok () =>
         let strictMsgs := strictTraces.toArray.map (·.msg)
         let permMsgs := permTraces.toArray.map (·.msg)
-        let (uniqueFailures, _) ← analyzeTraces strictMsgs permMsgs
-        let disambiguated ← disambiguateFailures uniqueFailures
+        let result ← analyzeTraces strictMsgs permMsgs
+        let disambiguated ← disambiguateFailures result.flatFailures
         reportDefEqAbuse "tactic" disambiguated #[]
+        -- Check instances used in the goal type for leakiness.
+        -- The tactic fails due to an isDefEq mismatch caused by instances that were
+        -- synthesized during GOAL TYPE ELABORATION (before the tactic runs), so synthesis
+        -- traces won't contain them. Instead, inspect the elaborated goal type directly.
+        let leaky ← try
+          let goalType ← getMainTarget
+          let env ← getEnv
+          let instNames := goalType.getUsedConstants.filter (isInstanceCore env ·)
+          findLeakyInstances instNames
+        catch _ => pure #[]
+        unless leaky.isEmpty do
+          let lines := joinSep (leaky.toList.map fun (_, msg) => m!"  {msg}") "\n"
+          logInfo m!"The following instances may have leaky binder types:\n{lines}"
         -- Pass 3: run the tactic with permissive setting so it actually succeeds
         withOptions (fun o => o.setBool `backward.isDefEq.respectTransparency false) do
           evalTactic tac
@@ -507,12 +564,32 @@ elab_rules : command
       | .ok () =>
         let strictMsgData := strictMsgs.map (·.data) |>.toArray
         let permMsgData := permissiveMsgs.map (·.data) |>.toArray
-        let (uniqueFailures, synthResults) ←
-          analyzeTraces strictMsgData permMsgData (includeSynth := true)
-        let disambiguatedFailures ← disambiguateFailures uniqueFailures
-        let disambiguatedSynth ← synthResults.mapM fun (app, failures) => do
+        let result ← analyzeTraces strictMsgData permMsgData (includeSynth := true)
+        let disambiguatedFailures ← disambiguateFailures result.flatFailures
+        let disambiguatedSynth ← result.synthGroupedFailures.mapM fun (app, failures) => do
           return (app, ← disambiguateFailures failures)
         reportDefEqAbuse "command" disambiguatedFailures disambiguatedSynth
+        -- Check for leaky instances.
+        -- We check two sources:
+        -- (1) Instances named in failing synthesis apps (from extractInstName).
+        -- (2) ALL registered instances that succeeded in the permissive run.
+        --     Failing apps name projections (e.g. HeytingAlgebra.toOrderBot), not the underlying
+        --     registered instance (e.g. instFrame). Permissive success apps include the latter.
+        -- Both sources are string-based because we parse trace `MessageData` text.
+        -- TODO: extract `Name`s directly from the `FormatWithInfos` data embedded in
+        -- `MessageData.ofLazy` expression nodes, rather than parsing rendered strings.
+        let leaky ← try
+          let mut instStrings : Std.HashSet String ←
+            result.synthGroupedFailures.foldlM (init := {}) fun acc (app, _) => do
+              return acc.insert (extractInstName (← app.toString))
+          instStrings := instStrings.union result.permissiveSuccessApps
+          let instNames :=
+            (Std.HashSet.ofArray (instStrings.toArray.map parseTraceInstName)).toArray
+          runTermElabM fun _ => findLeakyInstances instNames
+        catch _ => pure #[]
+        unless leaky.isEmpty do
+          let lines := joinSep (leaky.toList.map fun (_, msg) => m!"  {msg}") "\n"
+          logInfo m!"The following instances may have leaky binder types:\n{lines}"
         -- Pass 3: run the command with permissive setting so it actually takes effect
         withScope (fun scope =>
           { scope with opts := scope.opts.setBool `backward.isDefEq.respectTransparency false }) do
