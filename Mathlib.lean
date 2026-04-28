@@ -3389,6 +3389,7 @@ public import Mathlib.CategoryTheory.Triangulated.Opposite.Basic
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Functor
 public import Mathlib.CategoryTheory.Triangulated.Opposite.OpOp
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
+public import Mathlib.CategoryTheory.Triangulated.Opposite.Subcategory
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Triangle
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Triangulated
 public import Mathlib.CategoryTheory.Triangulated.Orthogonal
