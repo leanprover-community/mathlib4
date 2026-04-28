@@ -25,16 +25,10 @@ namespace Walk
 
 variable {α : Type*} {G : SimpleGraph α}
 
-/-- The list `List.iterate f x (n + 1)` is a chain under `G.Adj` when every step is adjacent. -/
-theorem isChain_adj_iterate (f : α → α) (hadj : ∀ x, G.Adj x (f x)) (x : α) (n : ℕ) :
-    (List.iterate f x (n + 1)).IsChain G.Adj := by
-  simp only [List.isChain_iff_getElem, List.getElem_iterate, iterate_succ']
-  exact fun _ _ => hadj _
-
 /-- Build a walk of length `n` from `x` to `f^[n] x` following `f`,
 given that each step is adjacent in `G`. -/
 def iterate (f : α → α) (hadj : ∀ x, G.Adj x (f x)) (x : α) (n : ℕ) : G.Walk x (f^[n] x) :=
-  (Walk.ofSupport _ (by simp) (isChain_adj_iterate f hadj x n)).copy rfl
+  (Walk.ofSupport _ (by simp) (List.isChain_iterate hadj x (n + 1))).copy rfl
     (List.getLast_iterate f x n (by simp))
 
 /-- The walk built by `Walk.iterate` has length `n`. -/
