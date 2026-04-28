@@ -71,8 +71,10 @@ lemma exists_polynomial_eval_sub_aux
   have heq : (⟨a i, ha i⟩ - ⟨a j, ha j⟩ : E) = ⟨a k, ha k⟩ - ⟨a l, ha l⟩ := Subtype.ext hij
   rw [← (algebraMap R K).map_sub, ← (algebraMap R K).map_sub, ← map_sub, ← map_sub, heq]
 
-/-- The algebraically closed case of `isNilpotent_derivedSeries_of_traceForm_eq_zero`. -/
-theorem isNilpotent_derivedSeries_of_traceForm_eq_zero_aux (h : traceForm K L M = 0) :
+/-- An auxiliary lemma used to prove `LieModule.isNilpotent_derivedSeries_of_traceForm_eq_zero`
+which proves the same result except without the algebraically closed assumption. -/
+theorem isNilpotent_derivedSeries_of_traceForm_eq_zero_aux [IsAlgClosed K]
+    (h : traceForm K L M = 0) :
     IsNilpotent (derivedSeries K L 1) M := by
   /- By Engel's theorem it suffices to prove that `⁅L, L⁆` acts nilpotently on `M`. -/
   suffices ∀ x ∈ derivedSeries K L 1, _root_.IsNilpotent (φ x) from
