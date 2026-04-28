@@ -186,8 +186,8 @@ instance (L : Type*) [Field L] [NumberField L]
 
 end Field
 
-variable (G H K L : Type*) [Group G] [Group H] [Field K] [Field L] [Algebra K L]
-  [MulSemiringAction G L] [MulSemiringAction H L]
+variable (G G' K L : Type*) [Group G] [Group G'] [Field K] [Field L] [Algebra K L]
+  [MulSemiringAction G L] [MulSemiringAction G' L]
 
 namespace IsGaloisGroup
 
@@ -235,15 +235,15 @@ protected theorem finite [FiniteDimensional K L] [IsGaloisGroup G K L] : Finite 
       IsGalois.card_aut_eq_finrank K L]
     exact ⟨fun _ _ ↦ (faithful K).eq_of_smul_eq_smul ∘ DFunLike.ext_iff.mp, rfl⟩)
 
-/-- If `G` and `H` are finite Galois groups for `L/K`, then `G` is isomorphic to `H`. -/
+/-- If `G` and `G'` are finite Galois groups for `L/K`, then `G` is isomorphic to `G'`. -/
 noncomputable def mulEquivCongr [IsGaloisGroup G K L] [Finite G]
-    [IsGaloisGroup H K L] [Finite H] : G ≃* H :=
-  (mulEquivAlgEquiv G K L).trans (mulEquivAlgEquiv H K L).symm
+    [IsGaloisGroup G' K L] [Finite G'] : G ≃* G' :=
+  (mulEquivAlgEquiv G K L).trans (mulEquivAlgEquiv G' K L).symm
 
 @[simp]
-theorem mulEquivCongr_apply_smul [IsGaloisGroup G K L] [Finite G] [IsGaloisGroup H K L] [Finite H]
-    (g : G) (x : L) : mulEquivCongr G H K L g • x = g • x :=
-  AlgEquiv.ext_iff.mp ((mulEquivAlgEquiv H K L).apply_symm_apply (mulEquivAlgEquiv G K L g)) x
+theorem mulEquivCongr_apply_smul [IsGaloisGroup G K L] [Finite G] [IsGaloisGroup G' K L] [Finite G']
+    (g : G) (x : L) : mulEquivCongr G G' K L g • x = g • x :=
+  AlgEquiv.ext_iff.mp ((mulEquivAlgEquiv G' K L).apply_symm_apply (mulEquivAlgEquiv G K L g)) x
 
 @[simp]
 theorem map_mulEquivAlgEquiv_fixingSubgroup
@@ -500,7 +500,7 @@ instance quotient : IsGaloisGroup (G ⧸ N) K F where
     refine ⟨a, FaithfulSMul.algebraMap_injective F L ?_⟩
     rw [← IsScalarTower.algebraMap_apply, ha, IntermediateField.algebraMap_apply]
 
-variable (E : IntermediateField K L) (H : Subgroup G) [hE : IsGaloisGroup H E L]
+variable (E : IntermediateField K L) [hE : IsGaloisGroup H E L]
 
 theorem quotientMap (h : E ≤ F) :
     letI : Algebra E F := (IntermediateField.inclusion h).toAlgebra
