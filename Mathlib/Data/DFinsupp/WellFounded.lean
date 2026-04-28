@@ -47,7 +47,7 @@ of a linear order), `¬ r j i ∧ j ≠ i` implies `r i j`, so it suffices to re
 to be well-founded.
 -/
 
-@[expose] public section
+public section
 
 
 variable {ι : Type*} {α : ι → Type*}
@@ -191,7 +191,7 @@ theorem Pi.Lex.wellFounded [IsStrictTotalOrder ι r] [Finite ι] (hs : ∀ i, We
   letI : ∀ i, Zero (α i) := fun i => ⟨(hs i).min ⊤ ⟨x i, trivial⟩⟩
   haveI := Fintype.ofFinite ι
   refine InvImage.wf equivFunOnFintype.symm (Lex.wellFounded' (fun i a => ?_) hs ?_)
-  exacts [(hs i).not_lt_min ⊤ _ trivial, Finite.wellFounded_of_trans_of_irrefl (Function.swap r)]
+  exacts [(hs i).not_lt_min ⊤ trivial, Finite.wellFounded_of_trans_of_irrefl (Function.swap r)]
 
 instance Pi.Lex.wellFoundedLT [LinearOrder ι] [Finite ι] [∀ i, LT (α i)]
     [hwf : ∀ i, WellFoundedLT (α i)] : WellFoundedLT (Lex (∀ i, α i)) :=
@@ -248,7 +248,7 @@ instance Pi.wellFoundedLT [Finite ι] [∀ i, Preorder (α i)] [hw : ∀ i, Well
     letI : ∀ i, Zero (α i) := fun i => ⟨(hw i).wf.min ⊤ ⟨x i, trivial⟩⟩
     haveI := Fintype.ofFinite ι
     refine InvImage.wf equivFunOnFintype.symm (DFinsupp.wellFoundedLT fun i a => ?_).wf
-    exact (hw i).wf.not_lt_min ⊤ _ trivial⟩
+    exact (hw i).wf.not_lt_min ⊤ trivial⟩
 
 instance Function.wellFoundedLT {α} [Finite ι] [Preorder α] [WellFoundedLT α] :
     WellFoundedLT (ι → α) :=

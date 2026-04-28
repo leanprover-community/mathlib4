@@ -221,6 +221,15 @@ theorem WellFoundedGT.monotone_chain_condition [PartialOrder α] [h : WellFounde
     ∃ n, ∀ m, n ≤ m → a n = a m :=
   wellFoundedGT_iff_monotone_chain_condition.1 h a
 
+/-- The **antitone chain** condition: an antitone sequence in a partially-ordered type with
+well-founded `<` is eventually constant.
+
+This is the dual of `WellFoundedGT.monotone_chain_condition`. It is provided for convenience,
+since it unbundles the antitone property from the order homomorphism. -/
+theorem WellFoundedLT.antitone_chain_condition [PartialOrder α] [WellFoundedLT α]
+    {f : ℕ → α} (hf : Antitone f) : ∃ n, ∀ m, n ≤ m → f n = f m :=
+  WellFoundedGT.monotone_chain_condition ⟨OrderDual.toDual ∘ f, hf⟩
+
 /-- Given an eventually-constant monotone sequence `a₀ ≤ a₁ ≤ a₂ ≤ ...` in a partially-ordered
 type, `monotonicSequenceLimitIndex a` is the least natural number `n` for which `aₙ` reaches the
 constant value. For sequences that are not eventually constant, `monotonicSequenceLimitIndex a`
@@ -256,7 +265,7 @@ theorem exists_covBy_seq_of_wellFoundedLT_wellFoundedGT (α) [Preorder α]
   have hα := Set.nonempty_iff_univ_nonempty.mp ‹_›
   classical
   let a : ℕ → α := Nat.rec (wfl.wf.min _ hα) fun _n a ↦ if ha : IsMax a then a else next ha
-  refine ⟨a, isMin_iff_forall_not_lt.mpr fun _ ↦ wfl.wf.not_lt_min _ hα trivial, ?_⟩
+  refine ⟨a, isMin_iff_forall_not_lt.mpr fun _ ↦ wfl.wf.not_lt_min _ (Set.mem_univ _), ?_⟩
   have cov n (hn : ¬ IsMax (a n)) : a n ⋖ a (n + 1) := by
     change a n ⋖ if ha : IsMax (a n) then a n else _
     rw [dif_neg hn]
@@ -264,7 +273,7 @@ theorem exists_covBy_seq_of_wellFoundedLT_wellFoundedGT (α) [Preorder α]
   have H : ∃ n, IsMax (a n) := by
     by_contra!
     exact (RelEmbedding.natGT a fun n ↦ (cov n (this n)).1).not_wellFounded wfg.wf
-  exact ⟨_, wellFounded_lt.min_mem _ H, fun i h ↦ cov _ fun h' ↦ wellFounded_lt.not_lt_min _ H h' h⟩
+  exact ⟨_, wellFounded_lt.min_mem _ H, fun i h ↦ cov _ (wellFounded_lt.not_lt_min _ · h)⟩
 
 theorem exists_covBy_seq_of_wellFoundedLT_wellFoundedGT_of_le {α : Type*} [PartialOrder α]
     [wfl : WellFoundedLT α] [wfg : WellFoundedGT α] {x y : α} (h : x ≤ y) :

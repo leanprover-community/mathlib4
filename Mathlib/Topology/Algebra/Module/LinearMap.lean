@@ -37,7 +37,7 @@ ring `R`. -/
 structure ContinuousLinearMap {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
     (M : Type*) [TopologicalSpace M] [AddCommMonoid M] (M₂ : Type*) [TopologicalSpace M₂]
     [AddCommMonoid M₂] [Module R M] [Module S M₂] extends M →ₛₗ[σ] M₂ where
-  cont : Continuous toFun := by continuity
+  cont : Continuous toFun := by fun_prop
 
 attribute [inherit_doc ContinuousLinearMap] ContinuousLinearMap.cont
 
@@ -116,6 +116,10 @@ theorem coe_mk' (f : M₁ →ₛₗ[σ₁₂] M₂) (h) : (mk f h : M₁ → M�
 
 @[continuity, fun_prop]
 protected theorem continuous (f : M₁ →SL[σ₁₂] M₂) : Continuous f :=
+  f.2
+
+@[continuity, fun_prop]
+protected theorem continuous_toLinearMap (f : M₁ →SL[σ₁₂] M₂) : Continuous f.toLinearMap :=
   f.2
 
 @[simp]
@@ -401,16 +405,13 @@ theorem coe_add' (f g : M₁ →SL[σ₁₂] M₂) : ⇑(f + g) = f + g :=
 theorem toContinuousAddMonoidHom_add (f g : M₁ →SL[σ₁₂] M₂) :
     ↑(f + g) = (f + g : ContinuousAddMonoidHom M₁ M₂) := rfl
 
-instance addCommMonoid : AddCommMonoid (M₁ →SL[σ₁₂] M₂) where
+-- The `AddMonoid` instance exists to help speedup unification
+instance : AddMonoid (M₁ →SL[σ₁₂] M₂) where
   zero_add := by
     intros
     ext
     apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
   add_zero := by
-    intros
-    ext
-    apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
-  add_comm := by
     intros
     ext
     apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
@@ -425,6 +426,12 @@ instance addCommMonoid : AddCommMonoid (M₁ →SL[σ₁₂] M₂) where
   nsmul_succ n f := by
     ext
     simp [add_smul]
+
+instance addCommMonoid : AddCommMonoid (M₁ →SL[σ₁₂] M₂) where
+  add_comm := by
+    intros
+    ext
+    apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
 
 @[simp, norm_cast]
 theorem coe_sum {ι : Type*} (t : Finset ι) (f : ι → M₁ →SL[σ₁₂] M₂) :
@@ -515,17 +522,21 @@ theorem add_comp [ContinuousAdd M₃] (g₁ g₂ : M₂ →SL[σ₂₃] M₃) (f
   ext
   simp
 
-theorem comp_finset_sum {ι : Type*} {s : Finset ι}
+theorem comp_finsetSum {ι : Type*} {s : Finset ι}
     [ContinuousAdd M₂] [ContinuousAdd M₃] (g : M₂ →SL[σ₂₃] M₃)
     (f : ι → M₁ →SL[σ₁₂] M₂) : g.comp (∑ i ∈ s, f i) = ∑ i ∈ s, g.comp (f i) := by
   ext
   simp
 
-theorem finset_sum_comp {ι : Type*} {s : Finset ι}
+@[deprecated (since := "2026-04-08")] alias comp_finset_sum := comp_finsetSum
+
+theorem finsetSum_comp {ι : Type*} {s : Finset ι}
     [ContinuousAdd M₃] (g : ι → M₂ →SL[σ₂₃] M₃)
     (f : M₁ →SL[σ₁₂] M₂) : (∑ i ∈ s, g i).comp f = ∑ i ∈ s, (g i).comp f := by
   ext
   simp only [coe_comp', coe_sum', Function.comp_apply, Finset.sum_apply]
+
+@[deprecated (since := "2026-04-08")] alias finset_sum_comp := finsetSum_comp
 
 theorem comp_assoc {R₄ : Type*} [Semiring R₄] [Module R₄ M₄] {σ₁₄ : R₁ →+* R₄} {σ₂₄ : R₂ →+* R₄}
     {σ₃₄ : R₃ →+* R₄} [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄] [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄]
@@ -733,6 +744,12 @@ theorem smulRight_apply {c : M₁ →L[R] S} {f : M₂} {x : M₁} :
     (smulRight c f : M₁ → M₂) x = c x • f :=
   rfl
 
+@[simp]
+lemma smulRight_zero (f : M₁ →L[R] S) : f.smulRight (0 : M₂) = 0 := by ext; simp
+
+@[simp]
+theorem zero_smulRight {x : M₂} : (0 : M₁ →L[R] S).smulRight x = 0 := by ext; simp
+
 end
 
 variable [Module R₁ M₂] [TopologicalSpace R₁] [ContinuousSMul R₁ M₂]
@@ -788,8 +805,6 @@ theorem toSpanSingleton_smul {α} [Monoid α] [DistribMulAction α M₁] [Contin
     [SMulCommClass R₁ α M₁] (c : α) (x : M₁) :
     toSpanSingleton R₁ (c • x) = c • toSpanSingleton R₁ x :=
   coe_inj.mp <| LinearMap.toSpanSingleton_smul _ _
-
-@[deprecated (since := "2025-08-28")] alias toSpanSingleton_smul' := toSpanSingleton_smul
 
 theorem smulRight_id : smulRight (.id R₁ R₁) = toSpanSingleton R₁ (M₁ := M₁) := rfl
 
@@ -1348,13 +1363,9 @@ variable (𝕜 E) in
 def topDualPairing : (E →L[𝕜] 𝕜) →ₗ[𝕜] E →ₗ[𝕜] 𝕜 :=
   ContinuousLinearMap.coeLM 𝕜
 
-@[deprecated (since := "2025-09-03")] alias strongDualPairing := topDualPairing
-
 @[simp]
 theorem topDualPairing_apply (v : E →L[𝕜] 𝕜)
     (x : E) : topDualPairing 𝕜 E v x = v x :=
   rfl
-
-@[deprecated (since := "2025-09-03")] alias StrongDual.dualPairing_apply := topDualPairing_apply
 
 end topDualPairing

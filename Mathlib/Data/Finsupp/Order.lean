@@ -24,7 +24,7 @@ This file lifts order structures on `α` to `ι →₀ α`.
   functions.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -88,10 +88,48 @@ lemma sum_le_sum_index [DecidableEq ι] {f₁ f₂ : ι →₀ α} {h : ι → �
   classical
   rw [sum_of_support_subset _ Finset.subset_union_left _ hh₀,
     sum_of_support_subset _ Finset.subset_union_right _ hh₀]
-  exact Finset.sum_le_sum fun i hi ↦ hh _ hi <| hf _
+  gcongr with i hi
+  exact hh _ hi <| hf _
 
 end Preorder
+
+section EmbDomain
+
+@[gcongr]
+lemma embDomain_le_embDomain_iff_le [LE α] [@Std.Refl α (· ≤ ·)]
+    (f : ι ↪ κ) (g₁ g₂ : ι →₀ α) : g₁.embDomain f ≤ g₂.embDomain f ↔ g₁ ≤ g₂ := by
+  constructor
+  · rw [Finsupp.le_def]
+    intro h' x
+    simpa [Finsupp.embDomain_apply] using h' (f x)
+  intro h
+  simp [Finsupp.le_def, embDomain_apply, apply_dite₂, Finsupp.le_def.mp h]
+
+lemma embDomain_mono [Preorder α] (f : ι ↪ κ) : Monotone (embDomain f : (ι →₀ α) → (κ →₀ α)) :=
+  fun _ _ ↦ (embDomain_le_embDomain_iff_le f _ _).mpr
+
+@[gcongr]
+lemma embDomain_lt_embDomain_iff_lt [Preorder α] (f : ι ↪ κ) (g₁ g₂ : ι →₀ α) :
+    g₁.embDomain f < g₂.embDomain f ↔ g₁ < g₂ := by
+  simp [lt_iff_le_not_ge, embDomain_le_embDomain_iff_le]
+
+end EmbDomain
+
 end Zero
+
+section MapDomain
+
+variable [AddCommMonoid α]
+
+lemma mapDomain_le_mapDomain_iff_le [LE α] [@Std.Refl α (· ≤ ·)] {f : ι → κ} (h : f.Injective)
+    (g₁ g₂ : ι →₀ α) : g₁.mapDomain f ≤ g₂.mapDomain f ↔ g₁ ≤ g₂ := by
+  simpa [Finsupp.embDomain_eq_mapDomain] using Finsupp.embDomain_le_embDomain_iff_le ⟨f, h⟩ g₁ g₂
+
+lemma mapDomain_lt_mapDomain_iff_lt [Preorder α] {f : ι → κ} (h : f.Injective)
+    (g₁ g₂ : ι →₀ α) : g₁.mapDomain f < g₂.mapDomain f ↔ g₁ < g₂ := by
+  simpa [Finsupp.embDomain_eq_mapDomain] using Finsupp.embDomain_lt_embDomain_iff_lt ⟨f, h⟩ g₁ g₂
+
+end MapDomain
 
 /-! ### Algebraic order structures -/
 
@@ -133,8 +171,8 @@ instance isOrderedCancelAddMonoid [AddCommMonoid α] [Preorder α] [IsOrderedCan
   { le_of_add_le_add_left := fun _f _g _i h s => le_of_add_le_add_left (h s) }
 
 instance addLeftReflectLE [AddCommMonoid α] [Preorder α] [AddLeftReflectLE α] :
-    AddLeftReflectLE (ι →₀ α) :=
-  ⟨fun _f _g _h H x => le_of_add_le_add_left <| H x⟩
+    AddLeftReflectLE (ι →₀ α) where
+  le_of_add_le_add_left H x := le_of_add_le_add_left <| H x
 
 section SMulZeroClass
 variable [Zero α] [Preorder α] [Zero β] [Preorder β] [SMulZeroClass α β]
@@ -242,6 +280,18 @@ theorem subset_support_tsub [DecidableEq ι] {f1 f2 : ι →₀ α} :
     f1.support \ f2.support ⊆ (f1 - f2).support := by
   simp +contextual [subset_iff]
 
+lemma mapDomain_tsub {f : ι → κ} (h : f.Injective) (f1 f2 : ι →₀ α) :
+    (f1 - f2).mapDomain f = f1.mapDomain f - f2.mapDomain f := by
+  ext y
+  by_cases! hy : y ∉ Set.range f
+  · simp [mapDomain_notin_range _ _ hy]
+  · obtain ⟨x, rfl⟩ := hy
+    simp [mapDomain_apply h]
+
+lemma embDomain_tsub (f : ι ↪ κ) (f1 f2 : ι →₀ α) :
+    (f1 - f2).embDomain f = f1.embDomain f - f2.embDomain f := by
+  simp_rw [embDomain_eq_mapDomain, mapDomain_tsub f.injective]
+
 end PartialOrder
 
 section LinearOrder
@@ -285,6 +335,15 @@ theorem add_sub_single_one {a : ι} {u u' : ι →₀ ℕ} (h : u' a ≠ 0) :
 lemma sub_add_single_one_cancel {u : ι →₀ ℕ} {i : ι} (h : u i ≠ 0) :
     u - single i 1 + single i 1 = u := by
   rw [sub_single_one_add h, add_tsub_cancel_right]
+
+theorem isLowerSet_range_embDomain (f : α ↪ β) :
+    IsLowerSet ((Set.range (embDomain f)) : Set (β →₀ ℕ)) := by
+  rintro _ y h ⟨z, rfl⟩
+  obtain ⟨w, hw⟩ := exists_add_of_le h
+  rw [mem_range_embDomain_iff]
+  trans ↑(y + w).support
+  · exact fun _ ↦ by simp; grind
+  · simp [← hw]
 
 end Nat
 

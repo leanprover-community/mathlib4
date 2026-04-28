@@ -193,7 +193,6 @@ theorem isFiniteKernel_withDensity_of_bounded (κ : Kernel α β) [IsFiniteKerne
   · rw [withDensity_of_not_measurable _ hf]
     infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary lemma for `IsSFiniteKernel.withDensity`.
 If a kernel `κ` is finite, then `withDensity κ f` is s-finite. -/
 theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : Kernel α β) [IsFiniteKernel κ]
@@ -225,13 +224,13 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : Kernel α β) [IsFin
     ext a b : 2
     rw [tsum_apply (Pi.summable.mpr h_sum_a), tsum_apply (h_sum_a a),
       ENNReal.tsum_eq_liminf_sum_nat]
-    have h_finset_sum : ∀ n, ∑ i ∈ Finset.range n, fs i a b = min (f a b) n := fun n ↦ by
+    have h_finsetSum : ∀ n, ∑ i ∈ Finset.range n, fs i a b = min (f a b) n := fun n ↦ by
       induction n with
       | zero => simp
       | succ n hn =>
         rw [Finset.sum_range_succ, hn]
         simp [fs]
-    simp_rw [h_finset_sum]
+    simp_rw [h_finsetSum]
     refine (Filter.Tendsto.liminf_eq ?_).symm
     refine Filter.Tendsto.congr' ?_ tendsto_const_nhds
     rw [Filter.EventuallyEq, Filter.eventually_atTop]

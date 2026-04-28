@@ -27,7 +27,7 @@ We show that flatness is stable under composition and base change.
                                           for the localization of `R` at `S`.
 -/
 
-@[expose] public section
+public section
 
 universe u v w t
 
@@ -111,6 +111,10 @@ theorem of_isLocalizedModule [Flat R M] (S : Submonoid R) [IsLocalization S Rp]
     (f : M →ₗ[R] Mp) [h : IsLocalizedModule S f] : Flat Rp Mp := by
   fapply Flat.isBaseChange (R := R) (M := M) (S := Rp) (N := Mp)
   exact (isLocalizedModule_iff_isBaseChange S Rp f).mp h
+
+instance {A : Type*} [CommSemiring A] [Algebra R A] [Flat R A] (S : Submonoid R) :
+    Flat (Localization S) (Localization (Algebra.algebraMapSubmonoid A S)) :=
+  of_isLocalizedModule _ S (IsScalarTower.toAlgHom R A _).toLinearMap
 
 end Localization
 

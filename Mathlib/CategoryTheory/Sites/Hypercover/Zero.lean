@@ -77,6 +77,20 @@ lemma presieve₀_singleton (f : S ⟶ T) : (singleton f).presieve₀ = .singlet
 instance (f : S ⟶ T) : Unique (PreZeroHypercover.singleton f).I₀ :=
   inferInstanceAs <| Unique PUnit
 
+variable (S) in
+/-- The empty pre-`0`-hypercover. -/
+@[simps]
+def empty : PreZeroHypercover.{w} S where
+  I₀ := PEmpty
+  X := PEmpty.elim
+  f i := i.elim
+
+instance : IsEmpty (empty S).I₀ := inferInstanceAs <| IsEmpty PEmpty
+
+@[simp]
+lemma presieve₀_empty : (empty.{w} S).presieve₀ = ⊥ := by
+  grind
+
 /-- Pullback of a pre-`0`-hypercover along a morphism. The components are `pullback f (E.f i)`. -/
 @[simps]
 noncomputable
@@ -374,6 +388,9 @@ def map (F : C ⥤ D) (E : PreZeroHypercover.{w} S) : PreZeroHypercover.{w} (F.o
 
 lemma presieve₀_map : (E.map F).presieve₀ = E.presieve₀.map F :=
   (Presieve.map_ofArrows _).symm
+
+lemma sieve₀_map : (E.map F).sieve₀ = E.sieve₀.functorPushforward F := by
+  simp [← Sieve.generate_map_eq_functorPushforward, Presieve.map_ofArrows, map]
 
 end Functoriality
 

@@ -8,8 +8,9 @@ module
 public import Mathlib.Algebra.Homology.Additive
 public import Mathlib.AlgebraicTopology.MooreComplex
 public import Mathlib.Algebra.BigOperators.Fin
-public import Mathlib.CategoryTheory.Preadditive.Opposite
 public import Mathlib.CategoryTheory.Idempotents.FunctorCategories
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+public import Mathlib.CategoryTheory.Preadditive.Opposite
 
 /-!
 
@@ -198,6 +199,11 @@ theorem map_alternatingFaceMapComplex {D : Type*} [Category* D] [Preadditive D] 
     · ext n
       rfl
 
+instance : (alternatingFaceMapComplex C).Additive where
+
+instance [Limits.HasPullbacks C] : (alternatingFaceMapComplex C).PreservesMonomorphisms where
+  preserves _ _ := HomologicalComplex.mono_of_mono_f _ fun _ ↦ by dsimp; infer_instance
+
 theorem karoubi_alternatingFaceMapComplex_d (P : Karoubi (SimplicialObject C)) (n : ℕ) :
     ((AlternatingFaceMapComplex.obj (KaroubiFunctorCategoryEmbedding.obj P)).d (n + 1) n).f =
       P.p.app (op ⦋n + 1⦌) ≫ (AlternatingFaceMapComplex.obj P.X).d (n + 1) n := by
@@ -225,10 +231,7 @@ def ε [Limits.HasZeroObject C] :
   naturality X Y f := by
     apply HomologicalComplex.to_single_hom_ext
     dsimp
-    erw [ChainComplex.toSingle₀Equiv_symm_apply_f_zero,
-      ChainComplex.toSingle₀Equiv_symm_apply_f_zero]
-    simp only [ChainComplex.single₀_map_f_zero]
-    exact congr_app f.w _
+    simp [ChainComplex.toSingle₀Equiv, SimplicialObject.Augmented.w₀]
 
 @[simp]
 lemma ε_app_f_zero [Limits.HasZeroObject C] (X : SimplicialObject.Augmented C) :

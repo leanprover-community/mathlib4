@@ -19,7 +19,7 @@ limits exist in the category `SheafOfModules R`.
 
 -/
 
-@[expose] public section
+public section
 
 universe v v₁ v₂ u₁ u₂ u
 
@@ -113,7 +113,7 @@ noncomputable instance forgetPreservesLimitsOfSize :
 
 noncomputable instance :
      PreservesFiniteLimits (SheafOfModules.toSheaf.{v} R ⋙ sheafToPresheaf _ _) :=
-  comp_preservesFiniteLimits (SheafOfModules.forget.{v} R) (PresheafOfModules.toPresheaf R.val)
+  comp_preservesFiniteLimits (SheafOfModules.forget.{v} R) (PresheafOfModules.toPresheaf R.obj)
 
 noncomputable instance : PreservesFiniteLimits (SheafOfModules.toSheaf.{v} R) :=
   preservesFiniteLimits_of_reflects_of_preserves _ (sheafToPresheaf _ _)

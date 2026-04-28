@@ -10,12 +10,13 @@ public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 public import Mathlib.Algebra.NeZero
 public import Mathlib.Order.BoundedOrder.Basic
+public import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Canonically ordered monoids
 -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -137,9 +138,13 @@ end LE
 section Preorder
 variable [Preorder α] [CanonicallyOrderedMul α] {a b : α}
 
+@[to_additive]
+instance isEmpty_Iio_one : IsEmpty (Set.Iio (1 : α)) :=
+  ⟨fun ⟨a, ha⟩ ↦ not_le_of_gt ha (isBot_one a)⟩
+
 @[to_additive (attr := simp) not_lt_zero] lemma not_lt_one : ¬ a < 1 := (one_le a).not_gt
 
-@[deprecated (since := "2025-12-03")] alias not_neg := not_lt_one
+@[deprecated (since := "2025-12-03")] alias not_neg := not_lt_zero
 
 @[to_additive] -- `(attr := simp)` cannot be used here because `a` cannot be inferred by `simp`.
 theorem one_lt_of_gt (h : a < b) : 1 < b :=
@@ -147,6 +152,25 @@ theorem one_lt_of_gt (h : a < b) : 1 < b :=
 
 alias LT.lt.pos := pos_of_gt
 @[to_additive existing] alias LT.lt.one_lt := one_lt_of_gt
+
+@[to_additive]
+theorem Left.one_lt_mul_of_left [MulLeftMono α] (ha : 1 < a) (b : α) : 1 < a * b :=
+  Left.one_lt_mul_of_lt_of_le ha (one_le b)
+
+@[to_additive]
+theorem Left.one_lt_mul_of_right [MulLeftStrictMono α] (hb : 1 < b) (a : α) : 1 < a * b :=
+  Left.one_lt_mul_of_le_of_lt (one_le a) hb
+
+@[to_additive]
+theorem Right.one_lt_mul_of_left [MulRightStrictMono α] (ha : 1 < a) (b : α) : 1 < a * b :=
+  Right.one_lt_mul_of_lt_of_le ha (one_le b)
+
+@[to_additive]
+theorem Right.one_lt_mul_of_right [MulRightMono α] (hb : 1 < b) (a : α) : 1 < a * b :=
+  Right.one_lt_mul_of_le_of_lt (one_le a) hb
+
+@[to_additive add_pos_of_left] alias one_lt_mul_of_left := Left.one_lt_mul_of_left
+@[to_additive add_pos_of_right] alias one_lt_mul_of_right := Right.one_lt_mul_of_right
 
 end Preorder
 

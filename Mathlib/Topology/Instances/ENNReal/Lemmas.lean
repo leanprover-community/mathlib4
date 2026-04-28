@@ -189,7 +189,6 @@ theorem nhdsGT_ofNat_neBot (n : ℕ) [n.AtLeastTwo] : (𝓝[>] (OfNat.ofNat n : 
 theorem nhdsLT_neBot [NeZero x] : (𝓝[<] x).NeBot :=
   nhdsLT_neBot_of_exists_lt ⟨0, NeZero.pos x⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Closed intervals `Set.Icc (x - ε) (x + ε)`, `ε ≠ 0`, form a basis of neighborhoods of an
 extended nonnegative real number `x ≠ ∞`. We use `Set.Icc` instead of `Set.Ioo` because this way the
 statement works for `x = 0`.
@@ -278,15 +277,14 @@ theorem tendsto_atTop_zero_iff_lt_of_antitone {β : Type*} [Nonempty β] [Semila
   rw [ENNReal.tendsto_atTop_zero_iff_le_of_antitone hf]
   constructor <;> intro h ε hε
   · obtain ⟨n, hn⟩ := h (min 1 (ε / 2))
-      (lt_min_iff.mpr ⟨zero_lt_one, (ENNReal.div_pos_iff.mpr ⟨ne_of_gt hε, ENNReal.ofNat_ne_top⟩)⟩)
+      (lt_min_iff.mpr ⟨zero_lt_one, (ENNReal.div_pos_iff.mpr ⟨hε.ne', by finiteness⟩)⟩)
     · refine ⟨n, hn.trans_lt ?_⟩
       by_cases hε_top : ε = ∞
-      · rw [hε_top]
-        exact (min_le_left _ _).trans_lt ENNReal.one_lt_top
+      · simp [hε_top]
       refine (min_le_right _ _).trans_lt ?_
       rw [ENNReal.div_lt_iff (Or.inr hε.ne') (Or.inr hε_top)]
       conv_lhs => rw [← mul_one ε]
-      gcongr <;> simp [*]
+      gcongr; simp
   · obtain ⟨n, hn⟩ := h ε hε
     exact ⟨n, hn.le⟩
 
@@ -363,7 +361,7 @@ protected theorem Tendsto.mul_const {f : Filter α} {m : α → ℝ≥0∞} {a b
     (hm : Tendsto m f (𝓝 a)) (ha : a ≠ 0 ∨ b ≠ ∞) : Tendsto (fun x => m x * b) f (𝓝 (a * b)) := by
   simpa only [mul_comm] using ENNReal.Tendsto.const_mul hm ha
 
-theorem tendsto_finset_prod_of_ne_top {ι : Type*} {f : ι → α → ℝ≥0∞} {x : Filter α} {a : ι → ℝ≥0∞}
+theorem tendsto_finsetProd_of_ne_top {ι : Type*} {f : ι → α → ℝ≥0∞} {x : Filter α} {a : ι → ℝ≥0∞}
     (s : Finset ι) (h : ∀ i ∈ s, Tendsto (f i) x (𝓝 (a i))) (h' : ∀ i ∈ s, a i ≠ ∞) :
     Tendsto (fun b => ∏ c ∈ s, f c b) x (𝓝 (∏ c ∈ s, a c)) := by
   classical
@@ -377,6 +375,9 @@ theorem tendsto_finset_prod_of_ne_top {ι : Type*} {f : ι → α → ℝ≥0∞
     · exact IH (fun i hi => h _ (Finset.mem_insert_of_mem hi)) fun i hi =>
         h' _ (Finset.mem_insert_of_mem hi)
     · exact Or.inr (h' _ (Finset.mem_insert_self _ _))
+
+@[deprecated (since := "2026-04-08")]
+alias tendsto_finset_prod_of_ne_top := tendsto_finsetProd_of_ne_top
 
 protected theorem continuousAt_const_mul {a b : ℝ≥0∞} (h : a ≠ ∞ ∨ b ≠ 0) :
     ContinuousAt (a * ·) b :=
@@ -568,6 +569,7 @@ theorem edist_ne_top_of_mem_ball {a : β} {r : ℝ≥0∞} (x y : eball a r) : e
 
 /-- Each ball in an extended metric space gives us a metric space, as the edist
 is everywhere finite. -/
+@[implicit_reducible]
 def metricSpaceEMetricBall (a : β) (r : ℝ≥0∞) : MetricSpace (eball a r) :=
   EMetricSpace.toMetricSpace edist_ne_top_of_mem_ball
 
@@ -748,7 +750,6 @@ section truncateToReal
 Unlike `ENNReal.toReal`, this cast is continuous and monotone when `t ≠ ∞`. -/
 noncomputable def truncateToReal (t x : ℝ≥0∞) : ℝ := (min t x).toReal
 
-set_option backward.isDefEq.respectTransparency false in
 lemma truncateToReal_eq_toReal {t x : ℝ≥0∞} (t_ne_top : t ≠ ∞) (x_le : x ≤ t) :
     truncateToReal t x = x.toReal := by
   have x_lt_top : x < ∞ := lt_of_le_of_lt x_le t_ne_top.lt_top
@@ -760,7 +761,7 @@ lemma truncateToReal_le {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) {x : ℝ≥0∞}
     truncateToReal t x ≤ t.toReal := by
   rw [truncateToReal]
   gcongr
-  exacts [t_ne_top, min_le_left t x]
+  exact min_le_left t x
 
 lemma truncateToReal_nonneg {t x : ℝ≥0∞} : 0 ≤ truncateToReal t x := toReal_nonneg
 
@@ -786,7 +787,7 @@ variable {ι : Type*} {f : Filter ι} {u v : ι → ℝ≥0∞}
 lemma limsup_sub_const (F : Filter ι) (f : ι → ℝ≥0∞) (c : ℝ≥0∞) :
     Filter.limsup (fun i ↦ f i - c) F = Filter.limsup f F - c := by
   rcases F.eq_or_neBot with rfl | _
-  · simp only [limsup_bot, bot_eq_zero', zero_le, tsub_eq_zero_of_le]
+  · simp
   · exact (Monotone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : ℝ≥0∞) ↦ x - c)
     (fun _ _ h ↦ tsub_le_tsub_right h c) (continuous_sub_right c).continuousAt).symm
 
@@ -798,7 +799,7 @@ lemma liminf_sub_const (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞) (c : �
 lemma limsup_const_sub (F : Filter ι) (f : ι → ℝ≥0∞) {c : ℝ≥0∞} (c_ne_top : c ≠ ∞) :
     Filter.limsup (fun i ↦ c - f i) F = c - Filter.liminf f F := by
   rcases F.eq_or_neBot with rfl | _
-  · simp only [limsup_bot, bot_eq_zero', liminf_bot, le_top, tsub_eq_zero_of_le]
+  · simp
   · exact (Antitone.map_limsInf_of_continuousAt (F := F.map f) (f := fun (x : ℝ≥0∞) ↦ c - x)
     (fun _ _ h ↦ tsub_le_tsub_left h c) (continuous_sub_left c_ne_top).continuousAt).symm
 
@@ -867,7 +868,6 @@ lemma limsup_toReal_eq [NeBot f] {b : ℝ≥0∞} (b_ne_top : b ≠ ∞) (le_b :
   rw [key]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma ofNNReal_limsup {u : ι → ℝ≥0} (hf : f.IsBoundedUnder (· ≤ ·) u) :
     limsup u f = limsup (fun i ↦ (u i : ℝ≥0∞)) f := by
@@ -875,7 +875,6 @@ lemma ofNNReal_limsup {u : ι → ℝ≥0} (hf : f.IsBoundedUnder (· ≤ ·) u)
   rw [coe_le_coe, le_limsup_iff, le_limsup_iff]
   simp [forall_ennreal]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma ofNNReal_liminf {u : ι → ℝ≥0} (hf : f.IsCoboundedUnder (· ≥ ·) u) :
     liminf u f = liminf (fun i ↦ (u i : ℝ≥0∞)) f := by
@@ -883,7 +882,6 @@ lemma ofNNReal_liminf {u : ι → ℝ≥0} (hf : f.IsCoboundedUnder (· ≥ ·) 
   rw [coe_le_coe, le_liminf_iff, le_liminf_iff]
   simp [forall_ennreal]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem liminf_add_of_right_tendsto_zero {u : Filter ι} {g : ι → ℝ≥0∞} (hg : u.Tendsto g (𝓝 0))
     (f : ι → ℝ≥0∞) : u.liminf (f + g) = u.liminf f := by
   refine le_antisymm ?_ <| liminf_le_liminf <| .of_forall <| by simp

@@ -33,17 +33,6 @@ namespace Equiv
 
 variable {α : Type u} {β : Type v}
 
-namespace Perm
-
-@[deprecated Equiv.image_symm_eq_preimage (since := "2025-08-16")]
-lemma image_inv (f : Perm α) (s : Set α) : ↑f⁻¹ '' s = f ⁻¹' s := f.image_symm_eq_preimage _
-
-@[deprecated Equiv.image_eq_preimage_symm (since := "2025-08-16")]
-lemma preimage_inv (f : Perm α) (s : Set α) : ↑f⁻¹ ⁻¹' s = f '' s :=
-  (f.image_eq_preimage_symm _).symm
-
-end Perm
-
 section Swap
 
 variable [DecidableEq α]

@@ -168,6 +168,13 @@ end Units
 
 variable [Group G]
 
+theorem coe_smul {G : Type*} [Group G] {H : Subgroup G} (g h : H) :
+    (ConjAct.toConjAct g • h).1 = ConjAct.toConjAct g.1 • h.1 := by
+  rfl
+
+theorem toConjAct_inv_smul (g h : G) : toConjAct g⁻¹ • h = g⁻¹ * h * g := by
+  rw [toConjAct_smul, inv_inv]
+
 -- todo: this file is not in good order; I will refactor this after the PR
 
 instance : MulDistribMulAction (ConjAct G) G where
@@ -186,6 +193,9 @@ instance smulCommClass' [SMul α G] [SMulCommClass G α G] [IsScalarTower α G G
   SMulCommClass.symm _ _ _
 
 theorem smul_eq_mulAut_conj (g : ConjAct G) (h : G) : g • h = MulAut.conj (ofConjAct g) h :=
+  rfl
+
+theorem toConjAct_smul_eq_mulAut_conj (g h : G) : ConjAct.toConjAct g • h = MulAut.conj g h :=
   rfl
 
 /-- The set of fixed points of the conjugation action of `G` on itself is the center of `G`. -/
