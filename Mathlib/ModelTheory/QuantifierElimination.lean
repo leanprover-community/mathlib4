@@ -33,7 +33,7 @@ namespace Theory
 open Structure
 
 variable {L : Language.{u, v}}
-variable {M : Type w} {N A: Type*} [L.Structure M] [L.Structure N] [L.Structure A]
+variable {M : Type w} {N A : Type*} [L.Structure M] [L.Structure N] [L.Structure A]
 
 /-- A theory has quantifier elimination if every bounded formula is equivalent, over the theory, to
 a quantifier-free bounded formula. -/
@@ -569,6 +569,20 @@ theorem marker_315
       · rintro ⟨ψ, hψ, hφ₂ψ⟩
         exact ⟨ψ, hψ, hφ₁φ₂T.trans hφ₂ψ⟩
   exact hP
+
+
+theorem marker_316 {L : Language} {T : L.Theory} :
+  (∀ {m : ℕ} (φ : L.Formula (Fin m.succ)) (hQF : φ.IsQF)
+    {M N A : Type*} [L.Structure M] [L.Structure N] [L.Structure A]
+    [T.Model M] [T.Model N]
+    (f : A ↪[L] M) (g : A ↪[L] N) (a : Fin m → A),
+    (∃ (b : M), φ.Realize (Fin.snoc (f ∘ a) b)) →
+    (∃ (c : N), φ.Realize (Fin.snoc (g ∘ a) c))) →
+  T.HasQuantifierElimination := by
+  sorry
+
+
+
 
 end Theory
 
