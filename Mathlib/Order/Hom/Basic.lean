@@ -917,6 +917,20 @@ theorem orderIsoCongr_symm_apply (f : α ≃o γ) (g : β ≃o δ) (h : γ ≃o 
     (orderIsoCongr f g).symm h = .trans (.trans f h) g.symm :=
   rfl
 
+/-- A surjective order embedding is an order isomorphism. -/
+@[simps!]
+noncomputable def ofSurjective (f : α ↪o β) (hf : Function.Surjective f) : α ≃o β :=
+  RelIso.ofSurjective f hf
+
+/-- Surjective order embeddings are equivalent to order isomorphisms. -/
+@[simps apply symm_apply]
+noncomputable def embeddingSurjectiveEquivIso :
+    { f : α ↪o β // Function.Surjective f } ≃ (α ≃o β) where
+  toFun f := ofSurjective f f.prop
+  invFun f := ⟨f, f.surjective⟩
+  left_inv _ := rfl
+  right_inv _ := by ext; rfl
+
 /-- `Prod.swap` as an `OrderIso`. -/
 def prodComm : α × β ≃o β × α where
   toEquiv := Equiv.prodComm α β
