@@ -53,7 +53,7 @@ lemma Set.subtype_smul_set {S α β : Type*} [SMul α β] [SetLike S α] {s : S}
     (x • t : Set β) = (x : α) • t :=
   rfl
 
-@[to_additive]
+@[to_additive (attr := simp)]
 lemma coe_set_pow [SetLike S M] [SubmonoidClass S M] :
     ∀ {n} (_ : n ≠ 0) (H : S), (H ^ n : Set M) = H
   | 1, _, H => by simp
