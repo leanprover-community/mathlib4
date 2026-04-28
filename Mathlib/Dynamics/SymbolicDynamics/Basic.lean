@@ -39,8 +39,7 @@ Some constructions, such as translating a finite pattern to occur at a point `v`
 require solving equations of the form `w + v = h`. For this to have a unique
 solution `w` given `h` and `v`, we assume **left-cancellation**:
 if `v + a = v + b` then `a = b`. This allows us to define
-`Pattern.shiftExtend` (which extends a pattern into a configuration
-using the default value of `A`) without using inverses,
+`Pattern.shift` (which shifts a pattern) without using inverses,
 so that the theory works not only for groups but also for cancellative monoids.
 
 ## Main definitions
@@ -355,7 +354,7 @@ On input `h : G`, we proceed as follows:
 * otherwise return `default`.
 
 This definition does not assume left-cancellation; it only *chooses* a preimage.
-Uniqueness (and the usual equations such as `Pattern.mulPseudoShift p v (v * w) = p.config w`)
+Uniqueness (and the usual equations such as `Pattern.mulShift p v (v * w) = p.config w`)
 require a left-cancellation hypothesis and are proved in separate lemmas.
 -/
 @[to_additive
@@ -368,10 +367,10 @@ On input `h : G`, we proceed as follows:
 * otherwise return `default`.
 
 This definition does not assume left-cancellation; it only *chooses* a preimage.
-Uniqueness (and the usual equations such as `Pattern.shiftExtend p v (v + w) = p.config w`)
+Uniqueness (and the usual equations such as `Pattern.shift p v (v + w) = p.config w`)
 require a left-cancellation hypothesis and are proved in separate lemmas.
 -/]
-noncomputable def Pattern.mulPseudoShift (p : Pattern A G) (v : G) : G → A := by
+protected noncomputable def Pattern.mulShift (p : Pattern A G) (v : G) : G → A := by
   classical
   intro h
   if hmem : h ∈ p.domain.image (v * ·) then
@@ -395,24 +394,24 @@ noncomputable def fromConfig (x : G → A) (U : Finset G) : Pattern A G := by
           domain := U,
           condition := fun g hg => if_neg hg }
 
-/-- On the translated domain, `p.mulPseudoShift v` agrees with `p.config` at the preimage.
+/-- On the translated domain, `p.mulShift v` agrees with `p.config` at the preimage.
 
 More precisely, if `w ∈ p.domain`, then at the translated site `v * w`,
-the configuration `p.mulPseudoShift v` takes the value `p.config w`.
+the configuration `p.mulShift v` takes the value `p.config w`.
 
 This uses `[IsLeftCancelMul G]` to identify the unique preimage of `v * w`
 under left-multiplication by `v`. -/
-@[to_additive extend_apply_add_left_of_mem
-  /-- On the translated domain, `p.shiftExtend v` agrees with `p.config` at the preimage.
+@[to_additive
+  /-- On the translated domain, `p.shift v` agrees with `p.config` at the preimage.
 
   More precisely, if `w ∈ p.domain`, then at the translated site `v + w`,
-  the configuration `p.shiftExtend v` takes the value `p.config w`.
+  the configuration `p.shift v` takes the value `p.config w`.
 
   This uses `[IsLeftCancelAdd G]` to identify the unique preimage of `v + w`
   under left-translation by `v`. -/]
-lemma mulShiftExtend_apply_mul_left_of_mem
+lemma mulShift_apply_mul_left_of_mem
     (p : Pattern A G) (v w : G) (hw : w ∈ p.domain) :
-    p.mulPseudoShift v (v * w) = p.config w := by
+    p.mulShift v (v * w) = p.config w := by
   classical
   -- (v * w) is in the translated domain
   have hmem : (v * w) ∈ p.domain.image (v * ·) :=
@@ -421,8 +420,8 @@ lemma mulShiftExtend_apply_mul_left_of_mem
   have ex : ∃ w', w' ∈ p.domain ∧ v * w' = v * w := by
     simpa [Finset.mem_image] using hmem
   -- open the `if` branch as returned by the definition
-  have h1 : p.mulPseudoShift v (v * w) = p.config (Classical.choose ex) := by
-    simp [Pattern.mulPseudoShift, hmem]
+  have h1 : p.mulShift v (v * w) = p.config (Classical.choose ex) := by
+    simp [Pattern.mulShift, hmem]
   -- the chosen witness equals w by left-cancellation
   have hwv' : v * Classical.choose ex = v * w := (Classical.choose_spec ex).2
   have h_eq : Classical.choose ex = w := mul_left_cancel hwv'
@@ -473,7 +472,7 @@ pattern obtained by translating `p` by `g`.
 
 Equivalently, `p.mulOccursInAt x g` iff on every translated site
 `g * w` (with `w ∈ p.support`)
-the configuration `x` agrees with the translated pattern `Pattern.mulPseudoShift p g`.
+the configuration `x` agrees with the translated pattern `Pattern.mulShift p g`.
 
 (This uses `[IsLeftCancelMul G]` to identify the preimage along left-multiplication by `g`.) -/
 @[to_additive occursInAt_eq_cylinder
@@ -484,26 +483,26 @@ This proves that it is exactly the cylinder corresponding to the
 pattern obtained by translating `p` by `g`.
 
 Equivalently, `p.occursInAt x g` iff on every translated site `g + w` (with `w ∈ p.support`)
-the configuration `x` agrees with the translated pattern `Pattern.shiftExtend p g`.
+the configuration `x` agrees with the translated pattern `Pattern.shift p g`.
 
 (This uses `[IsLeftCancelMul G]` to identify the preimage along left-multiplication by `g`.) -/]
 lemma mulOccursInAt_eq_cylinder
     (p : Pattern A G) (g : G) :
-    { x | p.mulOccursInAt x g } = cylinder (p.domain.image (g * ·)) (p.mulPseudoShift g) := by
+    { x | p.mulOccursInAt x g } = cylinder (p.domain.image (g * ·)) (p.mulShift g) := by
   ext x; constructor
   · -- ⇒: from an occurrence, get membership in the cylinder
     intro H u hu
     rcases Finset.mem_image.mp hu with ⟨w, hw, rfl⟩
-    -- want: x ( w * g) = Pattern.mulPseudoShift p g ( w * g)
+    -- want: x ( w * g) = Pattern.mulShift p g ( w * g)
     have hx : x (g * w) = p.config w := H w hw
-    simpa [Pattern.mulShiftExtend_apply_mul_left_of_mem (p := p) (v := g) (w := w) hw] using hx
+    simpa [Pattern.mulShift_apply_mul_left_of_mem (p := p) (v := g) (w := w) hw] using hx
   · -- ⇐: from the cylinder, recover an occurrence
     intro H u hu
     -- H gives equality with the translated pattern on the image
-    have hx : x (g * u) = p.mulPseudoShift g (g * u) :=
+    have hx : x (g * u) = p.mulShift g (g * u) :=
       H (g * u) (Finset.mem_image_of_mem (g * ·) hu)
     -- rewrite the RHS by the “apply_of_mem” lemma
-    simpa [Pattern.mulShiftExtend_apply_mul_left_of_mem (p := p) (v := g) (w := u) hu] using hx
+    simpa [Pattern.mulShift_apply_mul_left_of_mem (p := p) (v := g) (w := u) hu] using hx
 end OccursInAt
 
 /-! ## Forbidden sets and subshifts -/
