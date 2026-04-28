@@ -519,8 +519,7 @@ directions. -/
 theorem Equiv.isHomeomorph_iff (e : X ≃ Y) :
     IsHomeomorph e ↔ Continuous e ∧ Continuous e.symm := by
   rw [e.continuous_symm_iff]
-  exact ⟨fun h ↦ ⟨h.continuous, h.isOpenMap⟩,
-         fun ⟨hc, ho⟩ ↦ ⟨hc, ho, e.bijective⟩⟩
+  exact ⟨fun h ↦ ⟨h.continuous, h.isOpenMap⟩, fun ⟨hc, ho⟩ ↦ ⟨hc, ho, e.bijective⟩⟩
 
 /-- A map is a homeomorphism iff it is a surjective embedding. -/
 lemma isHomeomorph_iff_isEmbedding_surjective : IsHomeomorph f ↔ IsEmbedding f ∧ Surjective f where
