@@ -485,12 +485,12 @@ theorem Ioc_succ_right (h : a < succ b) : Ioc a (succ b) = insert (succ b) (Ioc 
 theorem Iio_succ_eq_insert_of_not_isMax (h : ¬IsMax a) : Iio (succ a) = insert a (Iio a) :=
   ext fun _ => lt_succ_iff_eq_or_lt_of_not_isMax h
 
-@[to_dual Ioc_pred_left_eq_insert_of_not_isMax]
+@[to_dual Ioc_pred_left_eq_insert_of_not_isMin]
 theorem Ico_succ_right_eq_insert_of_not_isMax (h₁ : a ≤ b) (h₂ : ¬IsMax b) :
     Ico a (succ b) = insert b (Ico a b) := by
   simp_rw [← Iio_inter_Ici, Iio_succ_eq_insert_of_not_isMax h₂, insert_inter_of_mem (mem_Ici.2 h₁)]
 
-@[to_dual Ioo_pred_left_eq_insert_of_not_isMax]
+@[to_dual Ioo_pred_left_eq_insert_of_not_isMin]
 theorem Ioo_succ_right_eq_insert_of_not_isMax (h₁ : a < b) (h₂ : ¬IsMax b) :
     Ioo a (succ b) = insert b (Ioo a b) := by
   simp_rw [← Iio_inter_Ioi, Iio_succ_eq_insert_of_not_isMax h₂, insert_inter_of_mem (mem_Ioi.2 h₁)]
