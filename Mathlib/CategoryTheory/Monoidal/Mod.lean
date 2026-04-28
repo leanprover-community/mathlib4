@@ -5,7 +5,7 @@ Authors: Kim Morrison, Paul Lezeau, Robin Carlier
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Mon_
+public import Mathlib.CategoryTheory.Monoidal.Mon
 public import Mathlib.CategoryTheory.Monoidal.Action.Basic
 
 /-!
