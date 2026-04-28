@@ -510,17 +510,13 @@ noncomputable def finOrderIsoPairCompl {n : ℕ} (i j : Fin (n + 2)) (h : i < j)
     refine Equiv.ofBijective
       (fun k ↦ ⟨j.succAbove ((i.castPred (Fin.ne_last_of_lt h)).succAbove k), ?_⟩)
         ⟨fun _ _ hk ↦ ?_, fun ⟨l, hl⟩ ↦ ?_⟩
-    · simp
-      grind [Fin.succAbove, Fin.castPred]
+    · grind [compl_insert, mem_compl, Fin.succAbove, Fin.castPred]
     · exact ((Fin.succAboveOrderEmb (i.castPred (Fin.ne_last_of_lt h))).trans
         (Fin.succAboveOrderEmb j)).injective (by rwa [Subtype.ext_iff] at hk)
     · obtain ⟨m, rfl⟩ : l ∈ Set.range j.succAbove := by
-        simp [Fin.range_succAbove] at hl ⊢
-        tauto
+        grind [Fin.range_succAbove, mem_compl, Fin.succAbove]
       obtain ⟨k, hk⟩ : m ∈ Set.range (i.castPred (Fin.ne_last_of_lt h)).succAbove := by
-        simp only [Fin.range_succAbove, Set.mem_compl_iff, Set.mem_singleton_iff]
-        rintro rfl
-        simp [j.succAbove_of_castSucc_lt (i.castPred (Fin.ne_last_of_lt h)) (by simpa)] at hl
+        grind [Fin.range_succAbove, compl_insert, Fin.succAbove, Fin.castPred]
       exact ⟨k, by simp [hk]⟩
   map_rel_iff' :=
     ((Fin.succAboveOrderEmb (i.castPred (Fin.ne_last_of_lt h))).trans
@@ -557,7 +553,7 @@ lemma homOfLE_faceSingletonComplIso_inv_eq_facePairComplIso_inv_δ_pred {n : ℕ
     (i j : Fin (n + 3)) (h : i < j) :
     Subcomplex.homOfLE (by simp [face_le_face_iff]) ≫
       (faceSingletonComplIso.{u} i).inv =
-        (facePairComplIso i j h).inv ≫ stdSimplex.δ (j.pred (Fin.ne_zero_of_lt h)) := by
+    (facePairComplIso i j h).inv ≫ stdSimplex.δ (j.pred (Fin.ne_zero_of_lt h)) := by
   simp [← cancel_mono (faceSingletonComplIso i).hom,
     ← cancel_mono (Subcomplex.ι _), ← cancel_epi (facePairComplIso i j h).hom,
     facePairComplIso_hom_ι']
@@ -567,8 +563,7 @@ lemma homOfLE_faceSingletonComplIso_inv_eq_facePairComplIso_inv_δ_castPred
     {n : ℕ} (i j : Fin (n + 3)) (h : i < j) :
     Subcomplex.homOfLE (by simp [face_le_face_iff]) ≫
       (faceSingletonComplIso.{u} j).inv =
-        (facePairComplIso i j h).inv ≫
-          stdSimplex.δ (i.castPred (Fin.ne_last_of_lt h)) := by
+    (facePairComplIso i j h).inv ≫ stdSimplex.δ (i.castPred (Fin.ne_last_of_lt h)) := by
   simp [← cancel_mono (faceSingletonComplIso j).hom,
     ← cancel_mono (Subcomplex.ι _), ← cancel_epi (facePairComplIso i j h).hom,
     facePairComplIso_hom_ι]

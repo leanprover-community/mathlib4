@@ -313,8 +313,7 @@ def relStructCastSuccEquivMulStruct {f g : X.PtSimplex n x} {i : Fin n} :
       δ_map_of_gt j hj := by
         rw [Fin.succ_castSucc, Fin.castSucc_lt_iff_succ_le] at hj
         obtain rfl | hj := hj.eq_or_lt
-        · exact h.δ_succ_succ_map
-        · exact h.δ_map_of_gt j hj }
+        exacts [h.δ_succ_succ_map, h.δ_map_of_gt j hj] }
 
 /-- If `f` and `g` are in `X.PtSimplex n x`, then `RelStruct f g i.succ`
 identifies to `MulStruct g .const f i`. -/
@@ -329,9 +328,8 @@ def relStructSuccEquivMulStruct {f g : X.PtSimplex n x} {i : Fin n} :
     { map := h.map
       δ_map_of_lt j hj := by
         rw [← Fin.succ_castSucc] at hj
-        obtain rfl | hj := (Fin.le_castSucc_iff.2 hj).eq_or_lt
-        · exact h.δ_castSucc_castSucc_map
-        · exact h.δ_map_of_lt j hj }
+        obtain rfl | hj := (Fin.le_castSucc_iff.mpr hj).eq_or_lt
+        exacts [h.δ_castSucc_castSucc_map, h.δ_map_of_lt j hj] }
 
 namespace MulStruct
 

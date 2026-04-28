@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Category.MonCat.Limits
 public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
-public import Mathlib.CategoryTheory.Monoidal.Mon_
+public import Mathlib.CategoryTheory.Monoidal.Mon
 public import Mathlib.CategoryTheory.ConcreteCategory.Representable
 
 /-!
@@ -207,6 +207,7 @@ abbrev Hom.monoid : Monoid (X ⟶ M) where
     exact lift_fst _ _
 
 scoped[CategoryTheory.MonObj] attribute [instance] Hom.monoid
+scoped[CategoryTheory.AddMonObj] attribute [instance] Hom.addMonoid
 
 @[to_additive]
 lemma Hom.one_def : (1 : X ⟶ M) = toUnit X ≫ η := rfl
