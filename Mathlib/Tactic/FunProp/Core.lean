@@ -107,7 +107,7 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr)
 def tryTheoremCore (xs : Array Expr) (val : Expr) (type : Expr) (e : Expr)
     (thmId : Origin) (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
   withTraceNode `Meta.Tactic.fun_prop
-    (fun r => return s!"[{ExceptToEmoji.toEmoji r}] applying: {← ppOrigin' thmId}") do
+    (fun _ => return s!"applying: {← ppOrigin' thmId}") do
 
   if (← isDefEq type e) then
 
@@ -128,7 +128,8 @@ def tryTheoremWithHint? (e : Expr) (thmOrigin : Origin)
     FunPropM (Option Result) := do
   let go : FunPropM (Option Result) := do
     let thmProof ← thmOrigin.getValue
-    let type ← inferType thmProof
+    -- for `fvar`s we need to instantiate the metavariables of its type.
+    let type ← instantiateMVars <| ← inferType thmProof
     let (xs, _, type) ← forallMetaTelescope type
 
     for (i,x) in hint do
@@ -627,7 +628,7 @@ mutual
     let e ← instantiateMVars e
 
     withTraceNode `Meta.Tactic.fun_prop
-      (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] {← ppExpr e}") do
+      (fun _ => do pure s!"{← ppExpr e}") do
 
     -- check cache for successful goals
     if let some { expr := _, proof? := some proof } := (← get).cache.find? e then

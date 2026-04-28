@@ -6,6 +6,7 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Analysis.Distribution.TestFunction
+public import Mathlib.Topology.Algebra.Module.Spaces.CompactConvergenceCLM
 
 /-!
 # Distributions
@@ -127,7 +128,7 @@ which we follow here.
 
 Finally, note that a **sequence** of distributions converges in `𝓓'(Ω, F)` if and only if it
 converges pointwise
-(see [L. Schwartz, *Théorie des distributions*, Chapitre III, §3, Theorème XIII][schwartz1950]).
+(see [L. Schwartz, *Théorie des distributions*, Chapitre III, §3, Théorème XIII][schwartz1950]).
 Due to this fact, some texts endow `𝓓'(Ω, F)` with the pointwise convergence topology. While this
 gives the same converging sequences as the topology of bounded/compact convergence, this is no
 longer true for general filters.
@@ -174,18 +175,106 @@ namespace Distribution
 
 section mapCLM
 -- TODO: generalize this section to `𝕜` linear maps (or even semilinear maps)
--- by generalizing `ContinuousLinearMap.postcomp`
+-- by generalizing `ContinuousLinearMap.postcompCompactConvergenceCLM`
 
 /-- Any continuous linear map `A : F →L[ℝ] G` induces a continuous linear map
 `𝓓'(Ω, F) →L[ℝ] 𝓓'(Ω, G)`. On locally integrable functions, this corresponds to applying `A`
 pointwise. -/
 noncomputable def mapCLM (A : F →L[ℝ] F') : 𝓓'^{n}(Ω, F) →L[ℝ] 𝓓'^{n}(Ω, F') :=
-  A.postcompUniformConvergenceCLM _
+  A.postcompCompactConvergenceCLM _
 
 @[simp]
 lemma mapCLM_apply {A : F →L[ℝ] F'} {T : 𝓓'^{n}(Ω, F)} {f : 𝓓^{n}(Ω, ℝ)} :
     mapCLM A T f = A (T f) := rfl
 
 end mapCLM
+
+section DiracDelta
+
+/-- The Dirac delta distribution. This is zero if `x` does not belong to `Ω`. -/
+def delta (x : E) : 𝓓'^{n}(Ω, ℝ) where
+  toFun f := f x
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+  cont := continuous_eval_const _
+
+@[simp]
+theorem delta_apply (x : E) (f : 𝓓^{n}(Ω, ℝ)) : delta x f = f x := by
+  rfl
+
+@[simp]
+theorem delta_eq_zero_of_notMem (x : E) (hx : x ∉ Ω) : (delta x : 𝓓'^{n}(Ω, ℝ)) = 0 := by
+  ext f
+  change f x = 0
+  have hx_support : x ∉ tsupport f := by
+    intro hx_mem
+    exact hx (f.tsupport_subset hx_mem)
+  exact image_eq_zero_of_notMem_tsupport hx_support
+
+end DiracDelta
+
+section LineDerivCLM
+-- TODO: generalize this section to `𝕜` linearity
+-- by generalizing `ContinuousLinearMap.precompCompactConvergenceCLM`
+
+/-- `lineDerivCLM 𝕜 v` is the continuous `𝕜`-linear-map sending a distribution
+`T : 𝓓'^{k}_{K}(E, F)` to its derivative along the vector `v`, which is a
+distribution in `𝓓^{n}_{K}(E, F)`. Because differentiating increases the order, this only makes
+sense if `k + 1 ≤ n`, otherwise we define it as the zero map.
+
+The parameters `n` and `k` are implicit as they can often be inferred from context, or
+specified by a type ascription. For `n = k = ⊤`, we also provide instances of the `LineDeriv`
+notation typeclass. -/
+noncomputable def lineDerivCLM (v : E) :
+    𝓓'^{k}(Ω, F) →L[ℝ] 𝓓'^{n}(Ω, F) :=
+  - (TestFunction.lineDerivCLM ℝ v).precompCompactConvergenceCLM _
+
+lemma lineDerivCLM_apply {v : E} {T : 𝓓'^{k}(Ω, F)} {f : 𝓓^{n}(Ω, ℝ)} :
+    lineDerivCLM v T f = - T (TestFunction.lineDerivCLM ℝ v f) :=
+  rfl
+
+lemma lineDerivCLM_add {v₁ v₂ : E} :
+    (lineDerivCLM (v₁ + v₂) : 𝓓'^{k}(Ω, F) →L[ℝ] 𝓓'^{n}(Ω, F)) =
+      lineDerivCLM v₁ + lineDerivCLM v₂ := by
+  ext T f
+  simp [lineDerivCLM_apply, TestFunction.lineDerivCLM_add, neg_add, -neg_add_rev]
+
+lemma lineDerivCLM_smul {c : ℝ} {v : E} :
+    (lineDerivCLM (c • v) : 𝓓'^{k}(Ω, F) →L[ℝ] 𝓓'^{n}(Ω, F)) =
+      c • lineDerivCLM v := by
+  ext T f
+  simp [lineDerivCLM_apply, TestFunction.lineDerivCLM_smul]
+
+open LineDeriv
+
+/-- Note: we cannot express the full generality of `lineDerivCLM` purely in terms of this typeclass,
+because (by design) the target type `𝓓^{k}_{K}(E, F)` is not determined by the input type
+`𝓓^{n}_{K}(E, F)`. -/
+noncomputable instance : LineDeriv E 𝓓'(Ω, F) 𝓓'(Ω, F) where
+  lineDerivOp v := lineDerivCLM v
+
+variable (𝕜) in
+lemma lineDerivOp_eq_lineDerivCLM {v : E} {T : 𝓓'(Ω, F)} :
+    ∂_{v} T = lineDerivCLM v T :=
+  rfl
+
+noncomputable instance : LineDerivAdd E 𝓓'(Ω, F) 𝓓'(Ω, F) where
+  lineDerivOp_add v := map_add (lineDerivCLM v)
+  lineDerivOp_left_add _ _ T := congr($lineDerivCLM_add T)
+
+noncomputable instance : LineDerivSMul ℝ E 𝓓'(Ω, F) 𝓓'(Ω, F) where
+  lineDerivOp_smul v := map_smul (lineDerivCLM v)
+
+noncomputable instance : LineDerivLeftSMul ℝ E 𝓓'(Ω, F) 𝓓'(Ω, F) where
+  lineDerivOp_left_smul _ _ T := congr($lineDerivCLM_smul T)
+
+noncomputable instance : ContinuousLineDeriv E 𝓓'(Ω, F) 𝓓'(Ω, F) where
+  continuous_lineDerivOp v := (lineDerivCLM v).continuous
+
+lemma lineDerivOpCLM_eq_lineDerivCLM {v : E} :
+    lineDerivOpCLM ℝ 𝓓'(Ω, F) v = lineDerivCLM v :=
+  rfl
+
+end LineDerivCLM
 
 end Distribution

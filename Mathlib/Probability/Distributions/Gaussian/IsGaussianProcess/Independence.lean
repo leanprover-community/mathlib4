@@ -10,7 +10,7 @@ public import Mathlib.Probability.Distributions.Gaussian.IsGaussianProcess.Def
 import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Basic
 import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Independence
 import Mathlib.Probability.Distributions.Gaussian.IsGaussianProcess.Basic
-import Mathlib.Probability.Independence.Process
+import Mathlib.Probability.Independence.Process.Basic
 
 /-!
 # Independence of Gaussian processes

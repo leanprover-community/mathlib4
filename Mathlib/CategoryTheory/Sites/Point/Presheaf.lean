@@ -30,6 +30,7 @@ variable {C : Type u} [Category.{v} C] [LocallySmall.{w} C]
 
 namespace GrothendieckTopology
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `X` is an object of `C`, this is the point of the site `(C, ⊥)` (whose
 sheaves are presheaves, see `sheafBotEquivalence`) corresponding to `X`. -/
 @[simps]
@@ -82,6 +83,7 @@ instance [Small.{w} C] : ObjectProperty.Small.{w} (pointsBot C) := by
   dsimp [pointsBot]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 variable (C) in
 lemma isConservative_pointsBot :
     (pointsBot.{w} C).IsConservativeFamilyOfPoints :=

@@ -324,12 +324,7 @@ a `Fintype` instance, then `s` has a `Fintype` structure as well. -/
 def fintypeOfFintypeImage (s : Set α) {f : α → β} {g} (I : IsPartialInv f g) [Fintype (f '' s)] :
     Fintype s :=
   Fintype.ofFinset ⟨_, (f '' s).toFinset.2.filterMap g <| injective_of_isPartialInv_right I⟩
-    fun a => by
-    suffices (∃ b x, f x = b ∧ g b = some a ∧ x ∈ s) ↔ a ∈ s by
-      simpa [exists_and_left.symm, and_comm, and_left_comm, and_assoc]
-    rw [exists_swap]
-    suffices (∃ x, x ∈ s ∧ g (f x) = some a) ↔ a ∈ s by simpa [and_comm, and_left_comm, and_assoc]
-    simp [I _, (injective_of_isPartialInv I).eq_iff]
+    (by simp [I.eq])
 
 instance fintypeMap {α β} [DecidableEq β] :
     ∀ (s : Set α) (f : α → β) [Fintype s], Fintype (f <$> s) :=
@@ -857,6 +852,10 @@ theorem Finite.infinite_compl [Infinite α] {s : Set α} (hs : s.Finite) : sᶜ.
 theorem Infinite.diff {s t : Set α} (hs : s.Infinite) (ht : t.Finite) : (s \ t).Infinite := fun h =>
   hs <| h.of_diff ht
 
+lemma Infinite.inter_of_finite_diff {α : Type*} {s t : Set α} (hs : s.Infinite)
+    (ht : (s \ t).Finite) : (s ∩ t).Infinite := by
+  simpa using hs.diff ht
+
 @[simp]
 theorem infinite_union {s t : Set α} : (s ∪ t).Infinite ↔ s.Infinite ∨ t.Infinite := by
   simp only [Set.Infinite, finite_union, not_and_or]
@@ -898,7 +897,7 @@ theorem not_injOn_infinite_finite_image {f : α → β} {s : Set α} (h_inf : s.
   have : Infinite s := infinite_coe_iff.mpr h_inf
   have h := not_injective_infinite_finite
             ((f '' s).codRestrict (s.restrict f) fun x => ⟨x, x.property, rfl⟩)
-  contrapose! h
+  contrapose h
   rwa [injective_codRestrict, ← injOn_iff_injective]
 
 theorem finite_range_findGreatest {P : α → ℕ → Prop} [∀ x, DecidablePred (P x)] {b : ℕ} :
