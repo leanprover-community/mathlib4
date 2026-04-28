@@ -41,7 +41,7 @@ It is important to note that while a `StarOrderedRing` is an `OrderedAddCommMono
   the advantage of not requiring a topology.
 -/
 
-@[expose] public section
+public section
 
 open Set
 open scoped NNRat

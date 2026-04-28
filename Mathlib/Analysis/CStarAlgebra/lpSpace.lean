@@ -14,7 +14,7 @@ We place these here because, for reasons related to the import hierarchy, they s
 in earlier files.
 -/
 
-@[expose] public section
+public section
 open scoped ENNReal
 
 noncomputable section

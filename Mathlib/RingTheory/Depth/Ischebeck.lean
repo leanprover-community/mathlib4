@@ -31,8 +31,7 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
     [Module.Finite R M] [Nfin : Module.Finite R N] [Nontrivial M] [Nntr : Nontrivial N]
     [Small.{v} R] : moduleDepth N M ≥ IsLocalRing.depth M -
     (Module.supportDim R N).unbot (Module.supportDim_ne_bot_of_nontrivial R N) := by
-  generalize dim :
-    ((Module.supportDim R N).unbot (Module.supportDim_ne_bot_of_nontrivial R N)) = r
+  generalize dim : ((Module.supportDim R N).unbot (Module.supportDim_ne_bot_of_nontrivial R N)) = r
   induction r with
   | top => simp
   | coe r =>
@@ -54,10 +53,10 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
       · obtain ⟨x, hx1, hx2⟩ : ((maximalIdeal R : Set R) \ (p.asIdeal: Set R)).Nonempty  := by
           rw [Set.diff_nonempty]
           by_contra sub
-          have := (maximalIdeal.isMaximal R).eq_of_le IsPrime.ne_top' sub
+          have peq := (maximalIdeal.isMaximal R).eq_of_le IsPrime.ne_top' sub
           have : Module.supportDim R (R ⧸ p.asIdeal) = 0 := by
-            let _ : Field (R ⧸ maximalIdeal R) := Quotient.field (maximalIdeal R)
-            rw [Module.supportDim_eq_ringKrullDim_quotient_annihilator, ← this,
+            let : Field (R ⧸ maximalIdeal R) := Quotient.field (maximalIdeal R)
+            rw [Module.supportDim_eq_ringKrullDim_quotient_annihilator, ← peq,
               Ideal.annihilator_quotient, ringKrullDim_eq_zero_of_field]
           absurd dim_eq
           simpa only [Module.supportDim_eq_of_equiv e, this, WithBot.unbot_zero,
@@ -113,16 +112,14 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
             Ext.bilinearComp_apply_apply]
           nth_rw 1 [← Ext.mk₀_id_comp a, ← Ext.smul_comp, ← Ext.mk₀_smul]
           congr
-        have range : LinearMap.range (x • LinearMap.id) =
-          x • (⊤ : Submodule R (Ext (of R L) M i)) := by
-          ext y
-          simp only [mem_range, smul_apply, id_coe, id_eq, Submodule.mem_smul_pointwise_iff_exists,
-            Submodule.mem_top, true_and]
         by_contra! ntr
         have mem : x ∈ (Module.annihilator R (Ext (of R L) M i)).jacobson :=
           maximalIdeal_le_jacobson _ hx1
         absurd Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator mem
-        nth_rw 1 [← LinearMap.range_eq_top_of_surjective _ epi', ← range]
+        nth_rw 1 [← LinearMap.range_eq_top_of_surjective _ epi']
+        ext y
+        simp only [mem_range, smul_apply, id_coe, id_eq, Submodule.mem_smul_pointwise_iff_exists,
+          Submodule.mem_top, true_and]
       · intro L1 _ _ _ L2 _ _ _ L3 _ _ _ f g inj surj exac ih1' ih3' L2ntr dim_eq
         rcases subsingleton_or_nontrivial L1 with sub1|ntr1
         · have : Function.Injective g := by
@@ -174,7 +171,7 @@ theorem depth_le_ringKrullDim_associatedPrime [IsNoetherianRing R] [IsLocalRing 
     [Small.{v} R] (M : ModuleCat.{v} R) [Module.Finite R M] [Nontrivial M] (P : Ideal R)
     (ass : P ∈ associatedPrimes R M) : IsLocalRing.depth M ≤ (ringKrullDim (R ⧸ P)).unbot
       (quotient_prime_ringKrullDim_ne_bot ass.1) := by
-  let _ := Quotient.nontrivial_iff.mpr ass.1.ne_top'
+  have := Quotient.nontrivial_iff.mpr ass.1.ne_top'
   have dep0 : moduleDepth (of R (Shrink.{v} (R ⧸ P))) M = 0 := by
     rw [moduleDepth_eq_zero_of_hom_nontrivial,
       (LinearEquiv.congrLeft M R (Shrink.linearEquiv R (R ⧸ P))).nontrivial_congr]
