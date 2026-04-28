@@ -472,7 +472,7 @@ theorem weightedHomogeneousComponent_of_mem [DecidableEq M] {m n : M}
     · rfl
     · simp only [coeff_zero]
 
-lemma support_weightedHomogeneousComponent [DecidableEq M] {n : M} {p : MvPolynomial σ R} :
+lemma support_weightedHomogeneousComponent [DecidableEq M] (n : M) (p : MvPolynomial σ R) :
     (weightedHomogeneousComponent w n p).support = {c ∈ p.support | (weight w) c = n} := by
   ext c
   simp [coeff_weightedHomogeneousComponent, And.comm]

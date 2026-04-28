@@ -576,10 +576,10 @@ theorem homogeneousComponent_of_mem {m n : ℕ} {p : MvPolynomial σ R}
     homogeneousComponent m p = if m = n then p else 0 :=
   weightedHomogeneousComponent_of_mem h
 
-lemma support_homogeneousComponent {n : ℕ} {p : MvPolynomial σ R} :
+lemma support_homogeneousComponent (n : ℕ) (p : MvPolynomial σ R) :
     (homogeneousComponent n p).support = {c ∈ p.support | c.degree = n} := by
   rw [degree_eq_weight_one]
-  exact support_weightedHomogeneousComponent
+  exact support_weightedHomogeneousComponent n p
 
 end HomogeneousComponent
 
