@@ -255,7 +255,6 @@ theorem const_isBounded (ι : Type*) [Nonempty ι] {p : Seminorm 𝕜 E} {q : ι
   use {Classical.arbitrary ι}
   simp only [h, Finset.sup_singleton]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isBounded_sup {p : ι → Seminorm 𝕜 E} {q : ι' → Seminorm 𝕜₂ F} {f : E →ₛₗ[σ₁₂] F}
     (hf : IsBounded p q f) (s' : Finset ι') :
     ∃ (C : ℝ≥0) (s : Finset ι), (s'.sup q).comp f ≤ C • s.sup p := by
@@ -367,7 +366,7 @@ theorem WithSeminorms.T1_of_separating (hp : WithSeminorms p)
 /-- A family of seminorms inducing a T₁ topology is separating. -/
 theorem WithSeminorms.separating_of_T1 [T1Space E] (hp : WithSeminorms p) (x : E) (hx : x ≠ 0) :
     ∃ i, p i x ≠ 0 := by
-  have := ((t1Space_TFAE E).out 0 9).mp (inferInstanceAs <| T1Space E)
+  have := ((t1Space_TFAE E).out 0 9).mp (inferInstance : T1Space E)
   by_contra! h
   refine hx (this ?_)
   rw [hp.hasBasis_zero_ball.specializes_iff]
@@ -682,7 +681,7 @@ theorem continuous_of_isBounded {p : SeminormFamily 𝕝 E ι} {q : SeminormFami
   refine Seminorm.continuous_of_le ?_ (hC.trans <| Seminorm.finset_sup_le_sum _ _)
   change Continuous (fun x ↦ Seminorm.coeFnAddMonoidHom _ _ (∑ i ∈ s, C • p i) x)
   simp_rw [map_sum, Finset.sum_apply]
-  exact (continuous_finset_sum _ fun i _ ↦ (hp.continuous_seminorm i).const_smul (C : ℝ))
+  exact (continuous_finsetSum _ fun i _ ↦ (hp.continuous_seminorm i).const_smul (C : ℝ))
 
 @[deprecated (since := "2026-03-09")]
 alias _root_.Seminorm.continuous_from_bounded := continuous_of_isBounded

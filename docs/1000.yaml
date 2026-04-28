@@ -135,7 +135,9 @@ Q190391X:
 
 Q190391:
   title: Central limit theorem
-  # in 100.yaml also
+  decl: ProbabilityTheory.tendstoInDistribution_inv_sqrt_mul_sum_sub
+  authors: Thomas Zhu, Rémy Degenne, Etienne Marion
+  date: 2026
 
 Q190556:
   title: De Moivre's theorem
@@ -575,8 +577,10 @@ Q579515:
 
 Q583147:
   title: Sard's theorem
-  # exists a statement in Lean, WIP formalisations in https://github.com/urkud/SardMoreira
-  # and https://github.com/fpvandoorn/sard (manifold version)
+  url: https://github.com/urkud/SardMoreira
+  authors: Yury Kudryashov
+  date: 2025-12-16
+  comment: the manifold version is in progress by Michael Rothgang at https://github.com/fpvandoorn/sard
 
 Q586051:
   title: Haag–Łopuszański–Sohnius theorem
@@ -586,6 +590,9 @@ Q587081:
 
 Q588218:
   title: Koebe 1/4 theorem
+  url: https://github.com/girving/ray/blob/main/Ray/Koebe/Koebe.lean
+  authors: Geoffrey Irving
+  date: 2025-09-02
 
 Q594571:
   title: Van Aubel's theorem
@@ -1566,6 +1573,9 @@ Q1307676:
 
 Q1308502:
   title: Church–Rosser theorem
+  authors: Chris Henson, Maximiliano Onofre Martínez
+  url: https://github.com/leanprover/cslib/
+  comment: "CSLib has a few variants for untyped terms, including β-, η-, and βη-reduction."
 
 Q1315949:
   title: Mittag-Leffler's theorem
@@ -1670,8 +1680,8 @@ Q1455794:
 
 Q1457052:
   title: Well-ordering theorem
-  decl: exists_wellOrder
-  authors: Mario Carneiro, Chris Hughes, Violeta Hernández
+  decl: exists_wellFoundedLT
+  authors: Mario Carneiro, Chris Hughes, Violeta Hernández Palacios
   date: 2017
 
 Q1471282:
@@ -1714,7 +1724,7 @@ Q1542114:
   title: Bézout's theorem
 
 Q1543149:
-  title: Sokhatsky–Weierstrass theorem
+  title: Sokhotski–Plemelj theorem
 
 Q1547975:
   title: Mermin–Wagner theorem
@@ -1797,7 +1807,7 @@ Q1683356:
 Q1687147:
   title: Sprague–Grundy theorem
   url: https://github.com/vihdzp/combinatorial-games/blob/master/CombinatorialGames/Game/Impartial/Grundy.lean
-  authors: Fox Thomson
+  authors: Fox Thomson, Julia Markus Himmel, Violeta Hernández Palacios
   date: 2020
 
 Q1694565:
@@ -2070,7 +2080,7 @@ Q2226803:
   title: Tennenbaum's theorem
 
 Q2226807:
-  title: Vantieghems theorem
+  title: Vantieghem's theorem
 
 Q2226855:
   title: Sharkovskii's theorem
@@ -2266,8 +2276,10 @@ Q2916568:
 
 Q2919401:
   title: Ostrowski's theorem
-  decl: Rat.AbsoluteValue.equiv_real_or_padic
-  authors: David Kurniadi Angdinata, Fabrizio Barroero, Laura Capuano, Nirvana Coppola, María Inés de Frutos-Fernández, Sam van Gool, Silvain Rideau-Kikuchi, Amos Turchet, Francesco Veneziano
+  decls:
+    - Rat.AbsoluteValue.equiv_real_or_padic
+    - RatFunc.valuation_isEquiv_infty_or_adic
+  authors: David Kurniadi Angdinata, Fabrizio Barroero, Laura Capuano, Nirvana Coppola, María Inés de Frutos-Fernández, Sam van Gool, Silvain Rideau-Kikuchi, Amos Turchet, Francesco Veneziano, Xavier Généreux
   date: 2024
 
 Q2981012:
@@ -3499,7 +3511,7 @@ Q6799039:
 
 Q6813106:
   title: Mellin inversion theorem
-  decl: mellin_inversion
+  decl: mellinInv_mellin_eq
 
 Q6859627:
   title: Milliken's tree theorem
@@ -3616,7 +3628,6 @@ Q7208500:
   title: Poisson limit theorem
   decls:
     - ProbabilityTheory.tendsto_choose_mul_pow_of_tendsto_mul_atTop
-    - ProbabilityTheory.binomial_tendsto_poissonPMFReal_atTop
   authors: Yi Yuan
   date: 2026
 

@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Data.Finset.Order
-public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Data.Set.Finite.Basic  -- shake: keep (IsAtomic α), cf. lean#13417
 public import Mathlib.Data.Set.Finite.Range
 public import Mathlib.Order.Atoms
 
@@ -49,7 +49,7 @@ We provide a few instances for concrete types:
 * `Bool.completeBooleanAlgebra`
 -/
 
-@[expose] public section
+public section
 
 
 open Finset
@@ -283,7 +283,7 @@ end CCL
 
 section CCLO
 
-variable {α β ι : Type*} [ConditionallyCompleteLinearOrder α] [ConditionallyCompleteLinearOrder β]
+variable {α β ι : Type*} [ConditionallyCompleteLinearOrder α] [ConditionallyCompleteLattice β]
   [Finite ι] [Nonempty ι]
 
 lemma map_iSup_of_monotoneOn {s : Set α} {f : ι → α} {g : α → β} (hg : MonotoneOn g s)

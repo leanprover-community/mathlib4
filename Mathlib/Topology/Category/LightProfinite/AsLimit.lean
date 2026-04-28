@@ -60,7 +60,6 @@ def asLimitAux : IsLimit S.asLimitConeAux :=
     S.toLightDiagram.isLimit.ofIsoLimit S.isoMapCone.symm
   isLimitOfReflects lightToProfinite hc
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A cone over `S.diagram` whose cone point is `S`. -/
 def asLimitCone : Cone S.diagram where
   pt := S

@@ -6,6 +6,7 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Measure.Portmanteau
+public import Mathlib.Probability.IdentDistrib
 
 /-!
 # Convergence in distribution
@@ -40,9 +41,9 @@ and convergence in distribution.
 
 -/
 
-@[expose] public section
+public section
 
-open Filter
+open Filter ProbabilityTheory
 open scoped Topology
 
 namespace MeasureTheory
@@ -73,6 +74,26 @@ lemma tendstoInDistribution_const [OpensMeasurableSpace E] (hZ : AEMeasurable Z 
     TendstoInDistribution (fun _ ↦ Z) l Z (fun _ ↦ μ') μ' where
   forall_aemeasurable := fun _ ↦ by fun_prop
   tendsto := tendsto_const_nhds
+
+lemma tendstoInDistribution_of_identDistrib [OpensMeasurableSpace E] (i : ι)
+    (hX : ∀ j, IdentDistrib (X i) (X j) (μ i) (μ j)) (hZ : IdentDistrib (X i) Z (μ i) μ') :
+    TendstoInDistribution X l Z μ μ' where
+  forall_aemeasurable j := (hX j).aemeasurable_snd
+  aemeasurable_limit := hZ.aemeasurable_snd
+  tendsto := by
+    convert tendsto_const_nhds with j
+    exact (hX j).map_eq.symm.trans hZ.map_eq
+
+protected lemma TendstoInDistribution.congr [OpensMeasurableSpace E] {T : Ω' → E}
+    (hXY : ∀ i, X i =ᵐ[μ i] Y i) (hZT : Z =ᵐ[μ'] T) (h : TendstoInDistribution X l Z μ μ') :
+    TendstoInDistribution Y l T μ μ' where
+  forall_aemeasurable i := (h.forall_aemeasurable i).congr (hXY i)
+  aemeasurable_limit := h.aemeasurable_limit.congr hZT
+  tendsto := by
+    convert h.tendsto using 2 with n
+    · simpa using Measure.map_congr (hXY n).symm
+    · rw! [Measure.map_congr hZT]
+      rfl
 
 @[simp]
 lemma tendstoInDistribution_of_isEmpty [IsEmpty E] :

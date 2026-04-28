@@ -17,13 +17,12 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 * `Nat.instUniqueFactorizationMonoid`: the natural numbers have unique factorization
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 
 namespace Nat
 
-set_option backward.isDefEq.respectTransparency false in
 instance instWfDvdMonoid : WfDvdMonoid ℕ where
   wf := by
     refine RelHomClass.wellFounded

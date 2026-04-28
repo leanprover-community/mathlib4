@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 module
 
+public import Mathlib.Order.Antisymmetrization
 public import Mathlib.Order.Bounds.Defs
 public import Mathlib.Order.Directed
 public import Mathlib.Order.BoundedOrder.Monotone
@@ -665,14 +666,23 @@ theorem maximal_iff_isGreatest [LinearOrder α] {s : Set α} {a : α} :
 
 section Preorder
 
-variable [Preorder α] [Preorder β] {s : Set α} {t : Set β} {a b : α}
+variable [Preorder α] [Preorder β] {s s' : Set α} {t : Set β} {a b : α}
 
 theorem lowerBounds_le_upperBounds (ha : a ∈ lowerBounds s) (hb : b ∈ upperBounds s) :
     s.Nonempty → a ≤ b
   | ⟨_, hc⟩ => le_trans (ha hc) (hb hc)
 
+theorem lowerBounds_le_upperBounds_of_nonempty_inter (h : (s ∩ s').Nonempty)
+    (ha : a ∈ lowerBounds s) (hb : b ∈ upperBounds s') : a ≤ b := by
+  have ⟨x, hx, hx'⟩ := h
+  exact le_trans (ha hx) (hb hx')
+
 theorem isGLB_le_isLUB (ha : IsGLB s a) (hb : IsLUB s b) (hs : s.Nonempty) : a ≤ b :=
   lowerBounds_le_upperBounds ha.1 hb.1 hs
+
+theorem isGLB_le_isLUB_of_nonempty_inter (h : (s ∩ s').Nonempty) (ha : IsGLB s a)
+    (hb : IsLUB s' b) : a ≤ b :=
+  lowerBounds_le_upperBounds_of_nonempty_inter h ha.left hb.left
 
 @[to_dual lt_isGLB_iff]
 theorem isLUB_lt_iff (ha : IsLUB s a) : a < b ↔ ∃ c ∈ upperBounds s, c < b :=
@@ -692,6 +702,15 @@ theorem le_of_isLUB_le_isGLB {x y} (ha : IsGLB s a) (hb : IsLUB s b) (hab : b �
 @[to_dual]
 lemma IsLUB.prod {b : β} (hs : s.Nonempty) (ht : t.Nonempty) (ha : IsLUB s a) (hb : IsLUB t b) :
     IsLUB (s ×ˢ t) (a, b) := by simp_all +contextual [IsLUB, IsLeast, lowerBounds]
+
+theorem isLUB_congr_of_antisymmRel {a b : α} (h : AntisymmRel (· ≤ ·) a b) :
+    IsLUB s a ↔ IsLUB s b := by
+  simp [isLUB_iff_le_iff, h.le_congr_left]
+
+-- TODO: `to_dual` doesn't work with `AntisymmRel`.
+theorem isGLB_congr_of_antisymmRel {a b : α} (h : AntisymmRel (· ≤ ·) a b) :
+    IsGLB s a ↔ IsGLB s b := by
+  simp [isGLB_iff_le_iff, h.le_congr_right]
 
 end Preorder
 
@@ -773,3 +792,22 @@ instance Nat.instDecidableIsLeast (p : ℕ → Prop) (n : ℕ) [DecidablePred p]
     Decidable (IsLeast { n : ℕ | p n } n) :=
   decidable_of_iff (p n ∧ ∀ k < n, ¬p k) <| .and .rfl <| by
     simp [mem_lowerBounds, @imp_not_comm _ (p _)]
+
+/-- An alternative constructor for `SemilatticeSup` using `IsLUB`. -/
+@[to_dual (attr := implicit_reducible)
+/-- An alternative constructor for `SemilatticeInf` using `IsGLB`. -/]
+def SemilatticeSup.ofIsLUB [PartialOrder α] (sup : α → α → α)
+    (isLUB_pair : ∀ a b, IsLUB {a, b} (sup a b)) :
+    SemilatticeSup α where
+  sup := sup
+  le_sup_left a b := (isLUB_pair a b).1 (mem_insert _ _)
+  le_sup_right a b := (isLUB_pair a b).1 (mem_insert_of_mem _ (mem_singleton _))
+  sup_le a b _ hac hbc := (isLUB_pair a b).2 (forall_insert_of_forall (forall_eq.mpr hbc) hac)
+
+/-- An alternative constructor for `Lattice` using `IsLUB` and `IsGLB`. -/
+@[implicit_reducible, to_dual self (reorder := 3 4, 5 6)]
+def Lattice.ofIsLUBofIsGLB [PartialOrder α] (sup inf : α → α → α)
+    (isLUB_pair : ∀ a b, IsLUB {a, b} (sup a b)) (isGLB_pair : ∀ a b, IsGLB {a, b} (inf a b)) :
+    Lattice α where
+  __ := SemilatticeSup.ofIsLUB sup isLUB_pair
+  __ := SemilatticeInf.ofIsGLB inf isGLB_pair

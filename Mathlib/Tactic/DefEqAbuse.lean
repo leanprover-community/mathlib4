@@ -164,13 +164,24 @@ namespace Mathlib.Tactic.DefEqAbuse
     unless (`Meta.isDefEq).isPrefixOf td.cls do return .descend
     f td header children
 
+/-- Strip the leading status emoji that `withTraceNodeBefore` prepends to trace headers.
+`withTraceNodeBefore` stores `m!"{result.toEmoji} {content}"` as the header; this strips the
+emoji prefix using the structured `TraceData.result?` to know exactly what was prepended.
+Needed because the same isDefEq check has different emoji prefixes across trace runs
+(✅️ when it succeeds, ❌️ when it fails), but we need to compare the content.
+See https://github.com/leanprover/lean4/pull/13070 for the upstream fix. -/
+private def stripHeaderEmoji (s : String) (result? : Option Lean.TraceResult) : String :=
+  match result? with
+  | some result =>
+    let emojiPrefix := s!"{result.toEmoji} "
+    if s.startsWith emojiPrefix then (s.drop emojiPrefix.length).toString else s
+  | none => s
+
 /-- Find the deepest failing `Meta.isDefEq` trace nodes (leaf failures).
-Skips `onFailure` retry nodes and ignores ✅️ branches (recovered failures aren't root causes).
-Note: status is currently determined by parsing emoji from the rendered header string.
-Once https://github.com/leanprover/lean4/pull/12698 is available, use `td.result?` instead. -/
+Skips `onFailure` retry nodes and ignores ✅️ branches (recovered failures aren't root causes). -/
 partial def findLeafFailures (msg : MessageData) : BaseIO (Array MessageData) :=
   msg.visitTraceNodesM <| onlyOnDefEqNodes fun td header children => do
-    unless traceResultOf (← header.toString) matches some .failure do
+    unless td.result? matches some .failure do
       return .ascend
     let childFailures ← visitWithM children findLeafFailures
     -- Leaf failure: deepest `❌️` node with no deeper `❌️` children
@@ -178,13 +189,13 @@ partial def findLeafFailures (msg : MessageData) : BaseIO (Array MessageData) :=
 
 /-- Collect rendered check strings from `Meta.isDefEq` trace nodes matching a status predicate.
 Returns a `HashSet` of emoji-stripped header strings. -/
-partial def collectIsDefEqChecks (pred : TraceResult → Bool)
+partial def collectIsDefEqChecks (pred : Lean.TraceResult → Bool)
     (msg : MessageData) : BaseIO (Std.HashSet String) :=
   msg.visitTraceNodesM <| onlyOnDefEqNodes fun td header children => do
-    let headerStr ← header.toString
-    if let some status := traceResultOf headerStr then
+    if let some status := td.result? then
       if pred status then
-        return .descend (butFirst := some {stripTraceResultPrefix headerStr})
+        let headerStr := stripHeaderEmoji (← header.toString) td.result?
+        return .descend (butFirst := some {headerStr})
     return .descend
 
 /-- Find the deepest `Meta.isDefEq` transition points: nodes that fail in the strict trace
@@ -198,10 +209,9 @@ partial def findTransitionFailures (permSuccesses : Std.HashSet String)
     (msg : MessageData) : BaseIO (Array MessageData) :=
   if permSuccesses.isEmpty then findLeafFailures msg
   else msg.visitTraceNodesM <| onlyOnDefEqNodes fun td header children => do
-    let headerStr ← header.toString
-    unless traceResultOf headerStr matches some .failure do return .descend
-    let checkStr := stripTraceResultPrefix headerStr
-    if permSuccesses.contains checkStr && !permFailures.contains checkStr then
+    unless td.result? matches some .failure do return .descend
+    let headerStr := stripHeaderEmoji (← header.toString) td.result?
+    if permSuccesses.contains headerStr && !permFailures.contains headerStr then
       -- Transition point: fails strict, succeeds permissive, doesn't also fail permissive.
       -- Look for deeper transition points among children.
       let childTransitions ← visitWithM children <|
@@ -224,7 +234,7 @@ partial def findSynthAppFailures (permSuccesses permFailures : Std.HashSet Strin
     if td.cls == `Meta.isDefEq.onFailure then return .ascend
     if td.cls == `Meta.synthInstance then
       let headerStr ← header.toString
-      if traceResultOf headerStr matches some .failure && headerStr.contains "apply " then
+      if td.result? matches some .failure && headerStr.contains "apply " then
         let failures ← visitWithM children <|
           findTransitionFailures permSuccesses permFailures
         if !failures.isEmpty then
@@ -238,8 +248,7 @@ partial def findSynthFailures (permSuccesses permFailures : Std.HashSet String)
   msg.visitTraceNodesM fun td header children => do
     if td.cls == `Meta.isDefEq.onFailure then return .ascend
     if td.cls == `Meta.synthInstance then
-      let headerStr ← header.toString
-      if traceResultOf headerStr matches some .failure then
+      if td.result? matches some .failure then
         visitWithAndAscendM children <| findSynthAppFailures permSuccesses permFailures
       else return .ascend
     -- Skip isDefEq/synthInstance subtrees that aren't top-level synthesis
@@ -254,7 +263,7 @@ partial def findSynthSuccessApps (msg : MessageData) : BaseIO (Std.HashSet Strin
   msg.visitTraceNodesM fun td header children => do
     if td.cls == `Meta.synthInstance then
       let headerStr ← header.toString
-      if headerStr.contains "apply" && traceResultOf headerStr == some .success then
+      if headerStr.contains "apply" && td.result? == some .success then
         return .descend (butFirst := some {extractInstName headerStr})
     return .descend
 

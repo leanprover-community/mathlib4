@@ -272,7 +272,7 @@ theorem linearCombination_onFinset {s : Finset α} {f : α → R} (g : α → M)
   simp only [linearCombination_apply, Finsupp.sum, Finsupp.onFinset_apply, Finsupp.support_onFinset]
   rw [Finset.sum_filter_of_ne]
   intro x _ h
-  contrapose! h
+  contrapose h
   simp [h]
 
 variable [Module S M] [SMulCommClass R S M]
@@ -404,6 +404,22 @@ theorem Submodule.mem_span_image_iff_exists_fun {s : Set α} :
   · rw [← hx]
     exact sum_smul_mem (span R (v '' s)) c fun a _ ↦ subset_span <| by aesop
 
+theorem Submodule.mem_span_image_finset_iff_exists_fun {s : Finset α} :
+    x ∈ span R (v '' s) ↔ ∃ c : s → R, ∑ i, c i • v i = x := by
+  rw [← mem_span_range_iff_exists_fun, image_eq_range]
+  rfl
+
+theorem Submodule.mem_span_image_finset_iff_exists_fun' {s : Finset α} :
+    x ∈ span R (v '' s) ↔ ∃ c : α → R, ∑ i ∈ s, c i • v i = x := by
+  classical
+  rw [Submodule.mem_span_image_finset_iff_exists_fun]
+  refine ⟨fun ⟨c, hc⟩ ↦ ?_, fun ⟨c, hc⟩ ↦ ?_⟩
+  · refine ⟨fun i ↦ if h : i ∈ s then c ⟨i, h⟩ else 0, ?_⟩
+    rw [← hc, ← Finset.sum_coe_sort (s := s)]
+    simp
+  · refine ⟨fun i ↦ c i, ?_⟩
+    rw [← hc, ← Finset.sum_coe_sort (s := s)]
+
 theorem Fintype.mem_span_image_iff_exists_fun {s : Set α} [Fintype s] :
     x ∈ span R (v '' s) ↔ ∃ c : s → R, ∑ i, c i • v i = x := by
   rw [← mem_span_range_iff_exists_fun, image_eq_range]
@@ -422,7 +438,7 @@ section
 variable (R)
 
 /-- Pick some representation of `x : span R w` as a linear combination in `w`,
-  ((Finsupp.mem_span_iff_linearCombination _ _ _).mp x.2).choose
+`((Finsupp.mem_span_iff_linearCombination _ _ _).mp x.2).choose`
 -/
 irreducible_def Span.repr (w : Set M) (x : span R w) : w →₀ R :=
   ((Finsupp.mem_span_iff_linearCombination _ _ _).mp x.2).choose

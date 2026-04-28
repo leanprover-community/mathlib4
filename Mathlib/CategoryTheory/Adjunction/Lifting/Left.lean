@@ -86,10 +86,9 @@ def counitCoequalises (h : ∀ X : B, RegularEpi (adj₁.counit.app X)) (X : B) 
     refine ⟨((h X).desc' s.π ?_).1, ?_, ?_⟩
     · rw [← cancel_epi (adj₁.counit.app (h X).W)]
       rw [← adj₁.counit_naturality_assoc (h X).left]
-      dsimp only [Functor.comp_obj]
-      rw [← s.condition, ← F.map_comp_assoc, ← U.map_comp, RegularEpi.w, U.map_comp,
+      dsimp
+      rw [← dsimp% s.condition, ← F.map_comp_assoc, ← U.map_comp, RegularEpi.w, U.map_comp,
         F.map_comp_assoc, s.condition, ← adj₁.counit_naturality_assoc (h X).right]
-      simp
     · apply ((h X).desc' s.π _).2
     · intro m hm
       rw [← cancel_epi (adj₁.counit.app X)]
@@ -147,9 +146,10 @@ noncomputable def constructLeftAdjointEquiv (h : ∀ X : B, RegularEpi (adj₁.c
       rw [← (adj₂.homEquiv _ _).injective.eq_iff, eq_comm, adj₂.homEquiv_naturality_left,
         otherMap, assoc, adj₂.homEquiv_naturality_left, ← adj₂.counit_naturality,
         adj₂.homEquiv_naturality_left, adj₂.homEquiv_unit, adj₂.right_triangle_components,
-        comp_id, Functor.comp_map, ← U.map_comp, assoc, ← adj₁.counit_naturality,
-        adj₂.homEquiv_unit, adj₂.homEquiv_unit, F.map_comp, assoc]
-      rfl
+        comp_id, Functor.comp_map, ← U.map_comp, assoc]
+      dsimp
+      rw [← adj₁.counit_naturality]
+      simp [dsimp% adj₂.homEquiv_unit _ _ f ]
     _ ≃ { z : F.obj (U.obj X) ⟶ R.obj Y // _ } := by
       apply (adj₁.homEquiv _ _).symm.subtypeEquiv
       intro g

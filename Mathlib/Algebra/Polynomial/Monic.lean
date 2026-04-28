@@ -105,12 +105,12 @@ theorem Monic.add_of_right (hq : Monic q) (hpq : degree p < degree q) : Monic (p
   rwa [Monic, leadingCoeff_add_of_degree_lt hpq]
 
 theorem Monic.of_mul_monic_left (hp : p.Monic) (hpq : (p * q).Monic) : q.Monic := by
-  contrapose! hpq
+  contrapose hpq
   rw [Monic.def] at hpq ⊢
   rwa [leadingCoeff_monic_mul hp]
 
 theorem Monic.of_mul_monic_right (hq : q.Monic) (hpq : (p * q).Monic) : p.Monic := by
-  contrapose! hpq
+  contrapose hpq
   rw [Monic.def] at hpq ⊢
   rwa [leadingCoeff_mul_monic hq]
 
@@ -365,7 +365,7 @@ lemma Monic.not_irreducible_iff_exists_add_mul_eq_coeff (hm : p.Monic) (hnd : p.
   cases subsingleton_or_nontrivial R
   · simp [natDegree_of_subsingleton] at hnd
   rw [hm.irreducible_iff_natDegree', and_iff_right, hnd]
-  · push_neg
+  · push Not
     constructor
     · rintro ⟨a, b, ha, hb, rfl, hdb⟩
       simp only [Nat.Ioc_succ_singleton, zero_add, mem_singleton] at hdb
@@ -541,7 +541,7 @@ theorem natDegree_smul_of_smul_regular {S : Type*} [SMulZeroClass S R] {k : S}
   · simp [hp]
   rw [← Nat.cast_inj (R := WithBot ℕ), ← degree_eq_natDegree hp, ← degree_eq_natDegree,
     degree_smul_of_smul_regular p h]
-  contrapose! hp
+  contrapose hp
   rw [← smul_zero k] at hp
   exact h.polynomial hp
 
