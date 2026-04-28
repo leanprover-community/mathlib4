@@ -6,6 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.Valuation.DiscreteValuativeRel
+public import Mathlib.Topology.Algebra.Module.Compact
 public import Mathlib.Topology.Algebra.Valued.LocallyCompact
 public import Mathlib.Topology.Algebra.Valued.ValuativeRel
 
@@ -125,6 +126,9 @@ def valueGroupWithZeroIsoInt : ValueGroupWithZero K ≃*o ℤᵐ⁰ := by
     (Units.map_injective (f := e.symm.toMonoidHom) e.symm.injective).nontrivial
   exact ⟨e.symm.trans (LocallyFiniteOrder.orderMonoidWithZeroEquiv _)⟩
 
+instance : IsCyclic (ValueGroupWithZero K)ˣ :=
+  (Units.mapEquiv (valueGroupWithZeroIsoInt K).toMulEquiv).isCyclic.mpr inferInstance
+
 instance : ValuativeRel.IsDiscrete K :=
   (ValuativeRel.nonempty_orderIso_withZeroMul_int_iff.mp ⟨valueGroupWithZeroIsoInt K⟩).1
 
@@ -141,8 +145,6 @@ instance : Finite 𝓀[K] :=
         MonoidWithZeroHom.ValueGroup₀.embedding_strictMono }
   (compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField.mp
     (inferInstanceAs (CompactSpace 𝒪[K]))).2.2
-
-proof_wanted isAdicComplete : IsAdicComplete 𝓂[K] 𝒪[K]
 
 end TopologicalSpace
 
@@ -168,6 +170,20 @@ instance : CompleteSpace 𝒪[K] :=
         MonoidWithZeroHom.ValueGroup₀.embedding_strictMono }
   (compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField.mp
     (inferInstanceAs (CompactSpace 𝒪[K]))).1
+
+open scoped Pointwise in
+instance : IsAdicComplete 𝓂[K] 𝒪[K] where
+  prec' f hf := by
+    let S n : Set 𝒪[K] := f n +ᵥ ((𝓂[K] ^ n : Ideal 𝒪[K]) : Set 𝒪[K])
+    have hS n : S (n + 1) ⊆ S n := by
+      apply (Set.vadd_set_subset_vadd_set_iff.mpr (Ideal.pow_le_pow_right n.le_succ)).trans
+      simpa [S] using (hf n.le_succ).symm
+    have h n : IsClosed (S n) := (IsNoetherianRing.isClosed_ideal (𝓂[K] ^ n)).vadd (f n)
+    obtain ⟨L, hL⟩ := (h 0).isCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed S hS
+      (by simp [S]) h
+    refine ⟨L, fun n ↦ ?_⟩
+    obtain ⟨y, hy, rfl⟩ := Set.mem_iInter.mp hL n
+    simpa [SModEq.sub_mem] using hy
 
 end UniformSpace
 

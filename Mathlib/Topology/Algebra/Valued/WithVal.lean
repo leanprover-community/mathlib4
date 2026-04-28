@@ -217,7 +217,7 @@ instance [SMul S R] [FaithfulSMul S R] : FaithfulSMul S (WithVal v) where
     simp only [smul_right_def, toVal.injEq] at h
     exact FaithfulSMul.eq_of_smul_eq_smul fun r ↦ h (toVal v r)
 
-instance {P : Type*} [Ring R] [SMul S P] [SMul R S] [SMul R P]
+instance {P : Type*} [SMul S P] [SMul R S] [SMul R P]
     [IsScalarTower R S P] (v : Valuation R Γ₀) : IsScalarTower (WithVal v) S P where
   smul_assoc := by simp [smul_left_def]
 
@@ -253,7 +253,7 @@ def linearEquiv : WithVal v ≃ₗ[R] S := (equiv v).linearEquiv R
 
 @[simp] theorem linearEquiv_symm_apply (x : S) : (linearEquiv R v).symm x = toVal v x := rfl
 
-instance [Module R S] [Module.Finite R S] :
+instance [Module.Finite R S] :
     Module.Finite R (WithVal v) := .equiv (linearEquiv R v).symm
 
 end Module

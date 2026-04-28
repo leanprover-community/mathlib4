@@ -313,9 +313,6 @@ theorem isIso_SpecMap_stakMap_localization (R : CommRingCat.{u}) (M : Submonoid 
     rwa [ConcreteCategory.isIso_iff_bijective] at this
   infer_instance
 
-@[deprecated (since := "2025-10-11")]
-alias Spec_map_localization_isIso := isIso_SpecMap_stakMap_localization
-
 namespace StructureSheaf
 
 variable {R S : CommRingCat.{u}} (f : R ⟶ S) (p : PrimeSpectrum R)
