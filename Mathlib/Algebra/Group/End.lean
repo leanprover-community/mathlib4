@@ -106,15 +106,15 @@ theorem mul_apply (f g : Perm α) (x) : (f * g) x = f (g x) :=
 theorem one_apply (x) : (1 : Perm α) x = x :=
   rfl
 
-@[pull_end, unequiv_simps← ]
+@[pull_end, push_end← ]
 theorem one_def : (1 : Perm α) = Equiv.refl α :=
   rfl
 
-@[pull_end, unequiv_simps← ]
+@[pull_end, push_end← ]
 theorem mul_def (f g : Perm α) : f * g = g.trans f :=
   rfl
 
-@[pull_end, unequiv_simps← ]
+@[pull_end, push_end← ]
 theorem inv_def (f : Perm α) : f⁻¹ = f.symm :=
   rfl
 
