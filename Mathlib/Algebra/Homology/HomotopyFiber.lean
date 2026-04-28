@@ -95,53 +95,36 @@ variable [∀ i, HasBinaryBiproduct (K.X i) (K.X i)]
 instance (i : α) : HasBinaryBiproduct (K.op.X i) (K.op.X i) := by
   dsimp; infer_instance
 
--- why??
-@[reducible]
-instance : Preadditive (HomologicalComplex Cᵒᵖ c.symm) :=
-  instPreadditive
-
-set_option backward.isDefEq.respectTransparency false in
-instance : HasBinaryBiproduct K.op K.op :=
-  instHasBinaryBiproduct K.op K.op
-
 noncomputable abbrev biprodLiftIdNeg := biprod.lift (𝟙 K.op) (-𝟙 K.op)
 
 abbrev HasPathObject := HasHomotopyCofiber (biprodLiftIdNeg K)
 
 variable [K.HasPathObject]
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable def pathObject := (unopFunctor C c.symm).obj (op K.op.cylinder)
 
 namespace pathObject
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable def π₀ : K.pathObject ⟶ K :=
   (unopFunctor C c.symm).map (cylinder.ι₀ K.op).op
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable def π₁ : K.pathObject ⟶ K :=
   (unopFunctor C c.symm).map (cylinder.ι₁ K.op).op
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable def ι : K ⟶ K.pathObject :=
   (unopFunctor C c.symm).map (cylinder.π K.op).op
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma π₀_ι : ι K ≫ π₀ K = 𝟙 K :=
   Quiver.Hom.op_inj ((opFunctor C c).map_injective (cylinder.ι₀_π K.op))
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma π₁_ι : ι K ≫ π₁ K = 𝟙 K :=
   Quiver.Hom.op_inj ((opFunctor C c).map_injective (cylinder.ι₁_π K.op))
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable def homotopy₀₁ (hc : ∀ (i : α), ∃ j, c.Rel i j) : Homotopy (π₀ K) (π₁ K) :=
   (cylinder.homotopy₀₁ K.op hc).unop
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The homotopy equivalence between `K` and `K.pathObject`. -/
 noncomputable def homotopyEquiv (hc : ∀ (i : α), ∃ j, c.Rel i j) :
     HomotopyEquiv K K.pathObject where
@@ -154,19 +137,16 @@ section
 
 variable {K} (φ₀ φ₁ : F ⟶ K) (h : Homotopy φ₀ φ₁)
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable def lift : F ⟶ K.pathObject := by
   letI φ : K.op.cylinder ⟶ (opFunctor C c).obj (op F) :=
     cylinder.desc ((opFunctor C c).map φ₀.op)
       ((opFunctor C c).map φ₁.op) h.op
   exact (unopFunctor C c.symm).map φ.op
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma lift_π₀ : lift φ₀ φ₁ h ≫ π₀ K = φ₀ :=
   Quiver.Hom.op_inj ((opFunctor C c).map_injective (cylinder.ι₀_desc _ _ _))
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma lift_π₁ : lift φ₀ φ₁ h ≫ π₁ K = φ₁ :=
   Quiver.Hom.op_inj ((opFunctor C c).map_injective (cylinder.ι₁_desc _ _ _))
@@ -200,13 +180,11 @@ variable
 
 variable (hc : ∀ (i : α), ∃ j, c.Rel i j)
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable def mapHomologicalComplexObjIso :
     (H.mapHomologicalComplex c).obj (K.pathObject) ≅
       pathObject ((H.mapHomologicalComplex c).obj K) :=
   (unopFunctor _ _).mapIso (cylinder.mapHomologicalComplexObjIso K.op H.op hc).op.symm
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma mapHomologicalComplexObjIso_hom_map_π₀ :
     (mapHomologicalComplexObjIso K H hc).inv ≫ (H.mapHomologicalComplex c).map (π₀ K) =
@@ -214,7 +192,6 @@ lemma mapHomologicalComplexObjIso_hom_map_π₀ :
   Quiver.Hom.op_inj ((opFunctor _ _).map_injective
     (cylinder.map_ι₀_mapHomologicalComplexObjIso_hom K.op H.op hc))
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma mapHomologicalComplexObjIso_hom_map_π₁ :
     (mapHomologicalComplexObjIso K H hc).inv ≫ (H.mapHomologicalComplex c).map (π₁ K) =
