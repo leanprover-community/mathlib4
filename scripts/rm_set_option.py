@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Remove unnecessary `set_option ... false in` from Mathlib.
+Remove unnecessary `set_option ... false in` from a Lean project.
 
 Tries removing each occurrence (that isn't followed by a comment), testing
 whether the file still builds. Processes files in reverse import-DAG order
@@ -11,7 +11,6 @@ import argparse
 import hashlib
 import json
 import os
-import subprocess
 import threading
 import time
 from dataclasses import dataclass
@@ -321,7 +320,11 @@ def write_github_outputs(summary: Summary):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Remove unnecessary set_option ... false in lines"
+        description="Remove unnecessary `set_option ... false in` lines in a Lean project.\n\n"
+                    "To use outside mathlib, copy `rm_set_option.py`, `dag_traversal.py` and "
+                    "`set_option_utils.py` to a subdirectory of your project named `scripts/` "
+                    "and then run from the project root with `scripts/rm_set_option.py`.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
         "--option",
@@ -350,14 +353,20 @@ def main():
         help="Only process these files (paths relative to project root)",
     )
     parser.add_argument(
+        "--directories",
+        nargs="+",
+        default=None,
+        help="Directories to scan when building the import DAG (default: '.')",
+    )
+    parser.add_argument(
         "--no-initial",
         action="store_true",
         help="Skip the initial lake build (assumes .oleans are already fresh)",
     )
     parser.add_argument(
-        "--no-resume",
+        "--resume",
         action="store_true",
-        help="Ignore progress from a previous interrupted run",
+        help="Resume a previous interrupted run, skipping already-processed modules",
     )
     parser.add_argument(
         "--global-timeout",
@@ -373,13 +382,13 @@ def main():
 
     start_time = time.time()
 
-    # Step 1: lakefile
-    if not args.dry_run:
+    # Step 1: lakefile.lean
+    if not args.dry_run and (PROJECT_DIR / "lakefile.lean").exists():
         handle_lakefile(options)
 
     # Step 2: build DAG
     print("Building import DAG...", flush=True)
-    full_dag = DAG.from_directories(PROJECT_DIR)
+    full_dag = DAG.from_directories(PROJECT_DIR, args.directories)
     print(f"  {len(full_dag.modules)} modules parsed")
 
     # Step 3: scan for removable lines
@@ -399,7 +408,7 @@ def main():
 
     # Step 3b: filter out modules completed in a previous run
     resumed = 0
-    if not args.no_resume:
+    if args.resume:
         progress = load_progress()
         if progress:
             to_skip = []

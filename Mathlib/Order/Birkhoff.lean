@@ -29,7 +29,7 @@ If `α` is moreover a distributive lattice:
   elements.
 * `OrderEmbedding.birkhoffSet`, `OrderEmbedding.birkhoffFinset`: Order embedding of `α` into the
   powerset lattice of its irreducible elements.
-* `LatticeHom.birkhoffSet`, `LatticeHom.birkhoffFinet`: Same as the previous two, but bundled as
+* `LatticeHom.birkhoffSet`, `LatticeHom.birkhoffFinset`: Same as the previous two, but bundled as
   an injective lattice homomorphism.
 * `exists_birkhoff_representation`: `α` embeds into some powerset algebra. You should prefer using
   this over the explicit Birkhoff embedding because the Birkhoff embedding is littered with
