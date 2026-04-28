@@ -114,7 +114,7 @@ theorem isPositive_natCast {n : ℕ} : IsPositive (n : E →ₗ[𝕜] E) := by
   refine ⟨IsSymmetric.natCast n, fun x => ?_⟩
   simp only [Module.End.natCast_apply, ← Nat.cast_smul_eq_nsmul 𝕜, inner_smul_left, map_natCast,
     mul_re, natCast_re, inner_self_im, mul_zero, sub_zero]
-  exact mul_nonneg n.cast_nonneg' inner_self_nonneg
+  positivity [inner_self_nonneg (x := x) (𝕜 := 𝕜)]
 
 @[simp]
 theorem isPositive_ofNat {n : ℕ} [n.AtLeastTwo] : IsPositive (ofNat(n) : E →ₗ[𝕜] E) :=
