@@ -143,8 +143,8 @@ For a version bundled as `LinearIsometryEquiv`, see
 def flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : F →SL[σ₂₃] E →SL[σ₁₃] G :=
   LinearMap.mkContinuous₂
     (LinearMap.mk₂'ₛₗ σ₂₃ σ₁₃ (fun y x => f x y) (fun x y z => (f z).map_add x y)
-      (fun c y x => (f x).map_smulₛₗ c y) (fun z x y => by simp only [f.map_add, add_apply])
-        (fun c y x => by simp only [f.map_smulₛₗ, smul_apply]))
+      (fun c y x => (f x).map_smulₛₗ c y) (fun z x y => by simp only [f.map_add, _root_.add_apply])
+        (fun c y x => by simp only [f.map_smulₛₗ, _root_.smul_apply]))
     ‖f‖ fun y x => (f.le_opNorm₂ x y).trans_eq <| by simp only [mul_right_comm]
 
 private theorem le_norm_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : ‖f‖ ≤ ‖flip f‖ :=
@@ -262,8 +262,7 @@ variable (σ₁₂ σ₂₃ E F G)
 def compSL : (F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G :=
   LinearMap.mkContinuous₂
     (LinearMap.mk₂'ₛₗ (RingHom.id 𝕜₃) σ₂₃ comp add_comp smul_comp comp_add fun c f g => by
-      ext
-      simp only [map_smulₛₗ, coe_smul', coe_comp', Function.comp_apply, Pi.smul_apply])
+      ext; simp)
     1 fun f g => by simpa only [one_mul] using opNorm_comp_le f g
 
 theorem norm_compSL_le : ‖compSL E F G σ₁₂ σ₂₃‖ ≤ 1 :=
@@ -373,7 +372,7 @@ theorem coe_deriv₂ (f : E →L[𝕜] Fₗ →L[𝕜] Gₗ) (p : E × Fₗ) :
 
 theorem map_add_add (f : E →L[𝕜] Fₗ →L[𝕜] Gₗ) (x x' : E) (y y' : Fₗ) :
     f (x + x') (y + y') = f x y + f.deriv₂ (x, y) (x', y') + f x' y' := by
-  simp only [map_add, add_apply, coe_deriv₂, add_assoc]
+  simp only [map_add, _root_.add_apply, coe_deriv₂, add_assoc]
   abel
 
 /-- The norm of the tensor product of a scalar linear map and of an element of a normed space
@@ -420,11 +419,10 @@ def smulRightL : StrongDual 𝕜 E →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] Fₗ 
     { toFun := smulRightₗ
       map_add' := fun c₁ c₂ => by
         ext x
-        simp only [add_smul, coe_smulRightₗ, add_apply, smulRight_apply, LinearMap.add_apply]
+        simp [add_smul]
       map_smul' := fun m c => by
         ext x
-        dsimp
-        rw [smul_smul] }
+        simp [smul_smul] }
     1 fun c x => by
       simp only [coe_smulRightₗ, one_mul, norm_smulRight_apply, LinearMap.coe_mk, AddHom.coe_mk,
         le_refl]
