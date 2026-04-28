@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Order.Nucleus
 public import Mathlib.Order.SupClosed
+public import Mathlib.Tactic
 
 /-!
 # Sublocale
@@ -170,7 +171,7 @@ end Sublocale
 
 /-- The nuclei on a frame corresponds exactly to the sublocales on this frame.
 The sublocales are ordered dually to the nuclei. -/
-@[simps] def nucleusIsoSublocale : (Nucleus X)ᵒᵈ ≃o Sublocale X where
+def nucleusIsoSublocale : (Nucleus X)ᵒᵈ ≃o Sublocale X where
   --- The range of a nucleus is a sublocale.
   toFun n := {
     carrier := range n.ofDual,
@@ -199,6 +200,10 @@ The sublocales are ordered dually to the nuclei. -/
   right_inv S := by ext x; simpa using ⟨by simp +contextual [eq_comm], fun hx ↦ ⟨x, by simp [hx]⟩⟩
   map_rel_iff' := by simp
 
+@[simp] lemma nucleusIsoSublocale.apply_carrier {n : Nucleus X} :
+  ((nucleusIsoSublocale n) : Set X) = range n := by rfl
+@[simp] lemma nucleusIsoSublocale.symm_apply_apply {s : Sublocale X} {i : X} :
+  (nucleusIsoSublocale.symm s).toFun i = s.restrict i := by rfl
 
 namespace Sublocale
 
@@ -231,7 +236,7 @@ abbrev toSublocale (n : Nucleus X) : Sublocale X := nucleusIsoSublocale (OrderDu
 lemma mem_toSublocale {n : Nucleus X} {x : X} : x ∈ n.toSublocale ↔ ∃ y, n y = x := .rfl
 
 @[simp, gcongr] lemma toSublocale_le_toSublocale {m n : Nucleus X} :
-    m.toSublocale ≤ n.toSublocale ↔ n ≤ m := by simp [← SetLike.coe_subset_coe]
+    m.toSublocale ≤ n.toSublocale ↔ n ≤ m := by simp
 
 @[simp] lemma restrict_toSublocale (n : Nucleus X) (x : X) :
     n.toSublocale.restrict x = ⟨n x, x, rfl⟩ := by
@@ -245,8 +250,9 @@ instance Sublocale.instCompleteLattice : CompleteLattice (Sublocale X) :=
   nucleusIsoSublocale.toGaloisInsertion.liftCompleteLattice
 
 instance Sublocale.instCoframeMinimalAxioms : Order.Coframe.MinimalAxioms (Sublocale X) where
-  iInf_sup_le_sup_sInf a s := by simp [← toNucleus_le_toNucleus, nucleusIsoSublocale.symm.map_sup,
-    nucleusIsoSublocale.symm.map_sInf, sup_iInf_eq, nucleusIsoSublocale.symm.map_iInf]
+  iInf_sup_le_sup_sInf a s := by
+    rw [← toNucleus_le_toNucleus]
+    simp [-toNucleus_le_toNucleus, sup_sInf_eq, ↓iInf_image]
 
 instance Sublocale.instCoframe : Order.Coframe (Sublocale X) :=
   .ofMinimalAxioms instCoframeMinimalAxioms
