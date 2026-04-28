@@ -189,7 +189,7 @@ theorem nonempty_Ioo_subtype [DenselyOrdered α] (h : a < b) : Nonempty (Ioo a b
   Nonempty.to_subtype (nonempty_Ioo.mpr h)
 
 @[to_additive]
-instance isEmpty_Iio_one : IsEmpty (Set.Iio (1 : α)) :=
+instance isEmpty_Iio_one [One α] [IsBotOneClass α] : IsEmpty (Set.Iio (1 : α)) :=
   ⟨fun a ↦ not_lt_one a.2⟩
 
 @[to_dual]
