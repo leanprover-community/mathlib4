@@ -135,7 +135,7 @@ lemma δ_lift (j : Fin (n + 2)) (hj : j ≠ i := by grind) :
   ((hf.exists_lift p b comm).choose_spec).1 j hj
 
 @[reassoc (attr := simp)]
-lemma lift_fac : hf.lift p b comm ≫ p = b :=
+lemma lift_comp : hf.lift p b comm ≫ p = b :=
   ((hf.exists_lift p b comm).choose_spec).2
 
 end horn.IsCompatible
