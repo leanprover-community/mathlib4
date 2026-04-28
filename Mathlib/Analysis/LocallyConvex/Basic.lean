@@ -45,10 +45,8 @@ absorbent, balanced, locally convex, LCTVS
 
 @[expose] public section
 
-
 open Set
-
-open Pointwise Topology
+open scoped Pointwise Topology
 
 variable {𝕜 𝕝 E F : Type*} {ι : Sort*} {κ : ι → Sort*}
 

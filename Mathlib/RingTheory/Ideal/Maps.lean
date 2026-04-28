@@ -22,7 +22,7 @@ assert_not_exists Module.Basis -- See `RingTheory.Ideal.Basis`
 
 universe u v w x
 
-open Pointwise
+open scoped Pointwise
 
 namespace Ideal
 
@@ -502,6 +502,10 @@ theorem mem_map_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e
     exact ⟨(EquivLike.toEquiv e).symm y, h, (EquivLike.toEquiv e).apply_symm_apply y⟩
   · rintro ⟨x, hx, rfl⟩
     exact mem_map_of_mem e hx
+
+lemma _root_.RingEquiv.map_primeCompl_comap_eq (e : R ≃+* S) (p : Ideal S) [p.IsPrime] :
+    (p.comap e).primeCompl.map e = p.primeCompl := by
+  simp [SetLike.ext_iff, e.surjective.forall]
 
 section Bijective
 
@@ -1028,7 +1032,7 @@ theorem map_eq_bot_iff_of_injective {I : Ideal R} {f : F} (hf : Function.Injecti
 
 end Semiring
 
-open Pointwise in
+open scoped Pointwise in
 lemma map_pointwise_smul {R S : Type*} [CommSemiring R] [CommSemiring S]
     (r : R) (I : Ideal R) (f : R →+* S) :
     Ideal.map f (r • I) = f r • I.map f := by
