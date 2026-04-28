@@ -326,13 +326,13 @@ theorem IsHamiltonian.ofPerm {σ : Perm α}
     hsupport ▸ σ.coe_support_eq_set_support ▸ hcycle.isCycleOn
   set p := (Walk.iterate (↑σ) hadj (σ x) (n - 1)).copy rfl (by
     change (↑σ)^[n - 1 + 1] x = x
-    rw [Nat.sub_add_cancel (by lia), Equiv.Perm.iterate_eq_pow,
+    rw [Nat.sub_add_cancel (by omega), Equiv.Perm.iterate_eq_pow,
       hn_def, ← Finset.card_univ, hcycOn.pow_card_apply (Finset.mem_univ x)])
   refine ⟨x, .cons (hadj x) p, ?_⟩
   rw [Walk.isHamiltonianCycle_iff_isCycle_and_length_eq, Walk.cons_isCycle_iff]
   refine ⟨⟨?_, ?_⟩, ?_⟩
   · rw [Walk.isPath_def]
-    simp only [p, Walk.support_copy, Walk.support_iterate, show n - 1 + 1 = n by lia]
+    simp only [p, Walk.support_copy, Walk.support_iterate, show n - 1 + 1 = n by omega]
     have hsx : σ (σ x) ≠ σ x := σ.injective.ne hx
     have hcard : n = (σ.toList (σ x)).length := by
       rw [Equiv.Perm.length_toList, hcycle.cycleOf_eq hsx, hsupport, Finset.card_univ]
@@ -344,9 +344,9 @@ theorem IsHamiltonian.ofPerm {σ : Perm α}
     rintro ⟨i, hi, heq⟩
     rw [List.mem_range] at hi
     simp only [Equiv.Perm.iterate_eq_pow, ← mul_apply, ← pow_succ] at heq
-    exact edge_ne_of_isCycleOn hcycOn (by lia) (by lia) hcard3 heq
+    exact edge_ne_of_isCycleOn hcycOn (by omega) (by omega) hcard3 heq
   · simp only [Walk.length_cons, p, Walk.length_copy, Walk.length_iterate]
-    lia
+    omega
 
 end Perm
 
