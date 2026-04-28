@@ -546,7 +546,7 @@ theorem ContinuousLinearMap.isPositive_iff_eq_sum_rankOne [FiniteDimensional �
   let a (i : Fin (Module.finrank 𝕜 E)) : E :=
     ((hT.isSymmetric.eigenvalues rfl i).sqrt : 𝕜) • hT.isSymmetric.eigenvectorBasis rfl i
   refine ⟨Module.finrank 𝕜 E, a, ext fun _ ↦ ?_⟩
-  simp_rw [sum_apply, rankOne_apply, a, inner_smul_left, smul_smul, mul_assoc, conj_ofReal,
+  simp_rw [_root_.sum_apply, rankOne_apply, a, inner_smul_left, smul_smul, mul_assoc, conj_ofReal,
     mul_comm (⟪_, _⟫_𝕜), ← mul_assoc, ← ofReal_mul,
     ← Real.sqrt_mul (hT.toLinearMap.nonneg_eigenvalues rfl _),
     Real.sqrt_mul_self (hT.toLinearMap.nonneg_eigenvalues rfl _), mul_comm _ (⟪_, _⟫_𝕜),
@@ -560,6 +560,6 @@ theorem Matrix.posSemidef_iff_eq_sum_vecMulVec {n : Type*} [Finite n] {M : Matri
   rw [← isPositive_toEuclideanLin_iff, ← isPositive_toContinuousLinearMap_iff,
     isPositive_iff_eq_sum_rankOne]
   simp_rw [eq_comm, ← LinearEquiv.symm_apply_eq, coe_toContinuousLinearMap_symm,
-    ContinuousLinearMap.coe_sum, map_sum, symm_toEuclideanLin_rankOne, eq_comm]
+    ContinuousLinearMap.coe_sum', map_sum, symm_toEuclideanLin_rankOne, eq_comm]
   exact ⟨fun ⟨m, u, hu⟩ ↦ ⟨m, fun i ↦ (u i).ofLp, hu⟩,
     fun ⟨m, u, hu⟩ ↦ ⟨m, fun i ↦ WithLp.toLp 2 (u i), hu⟩⟩

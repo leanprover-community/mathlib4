@@ -210,7 +210,7 @@ theorem lintegral_image_eq_lintegral_deriv_mul_of_monotoneOn (hs : MeasurableSet
       = ∫⁻ x in c, ENNReal.ofReal (|(F' x).det|) * u (f x) := by
     apply setLIntegral_congr_fun hc (fun x hx ↦ ?_)
     simp only [LinearMap.det_ring, ContinuousLinearMap.coe_coe, ContinuousLinearMap.smulRight_apply,
-      ContinuousLinearMap.one_apply, smul_eq_mul, one_mul, F']
+      one_apply_eq_id, smul_eq_mul, one_mul, F']
     rw [abs_of_nonneg (deriv_c x hx)]
   rw [this]
   exact lintegral_image_eq_lintegral_abs_det_fderiv_mul _ hc hf' inj_c _
@@ -257,7 +257,7 @@ theorem integrableOn_image_iff_integrableOn_deriv_smul_of_monotoneOn (hs : Measu
   rw [integrableOn_image_iff_integrableOn_abs_det_fderiv_smul _ hc hF' inj_c]
   apply integrableOn_congr_fun (fun x hx ↦ ?_) hc
   simp only [LinearMap.det_ring, ContinuousLinearMap.coe_coe, ContinuousLinearMap.smulRight_apply,
-    ContinuousLinearMap.one_apply, smul_eq_mul, one_mul, F']
+    one_apply_eq_id, smul_eq_mul, one_mul, F']
   rw [abs_of_nonneg (deriv_c x hx)]
 
 /-- Change of variable formula for differentiable functions: if a real function `f` is
@@ -301,7 +301,7 @@ theorem integral_image_eq_integral_deriv_smul_of_monotoneOn (hs : MeasurableSet 
   have : ∫ x in c, f' x • g (f x) = ∫ x in c, |(F' x).det| • g (f x) := by
     apply setIntegral_congr_fun hc (fun x hx ↦ ?_)
     simp only [LinearMap.det_ring, ContinuousLinearMap.coe_coe, ContinuousLinearMap.smulRight_apply,
-      ContinuousLinearMap.one_apply, smul_eq_mul, one_mul, F']
+      one_apply_eq_id, smul_eq_mul, one_mul, F']
     rw [abs_of_nonneg (deriv_c x hx)]
   rw [this]
   exact integral_image_eq_integral_abs_det_fderiv_smul _ hc hF' inj_c _

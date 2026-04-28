@@ -231,7 +231,7 @@ theorem integral_bilin_fourierIntegral_eq_flip
     integral_fourierIntegral_swap M.flip he hL hf hg
   _ = ∫ x, (∫ ξ, M (f x) (e (-L.flip ξ x) • g ξ) ∂ν) ∂μ := by
     simp only [ContinuousLinearMap.flip_apply, ContinuousLinearMap.map_smul_of_tower,
-      ContinuousLinearMap.coe_smul', Pi.smul_apply, LinearMap.flip_apply]
+      _root_.smul_apply, LinearMap.flip_apply]
   _ = ∫ x, M (f x) (∫ ξ, e (-L.flip ξ x) • g ξ ∂ν) ∂μ := by
     congr with x
     apply ContinuousLinearMap.integral_comp_comm

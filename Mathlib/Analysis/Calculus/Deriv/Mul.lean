@@ -410,7 +410,7 @@ variable {ι : Type*} [DecidableEq ι] {𝔸' : Type*} [NormedCommRing 𝔸'] [N
 
 theorem HasDerivAt.fun_finsetProd (hf : ∀ i ∈ u, HasDerivAt (f i) (f' i) x) :
     HasDerivAt (∏ i ∈ u, f i ·) (∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • f' i) x := by
-  simpa [ContinuousLinearMap.sum_apply, ContinuousLinearMap.smul_apply] using
+  simpa [sum_apply, smul_apply] using
     (HasFDerivAt.finsetProd (fun i hi ↦ (hf i hi).hasFDerivAt)).hasDerivAt
 
 @[deprecated (since := "2026-04-08")] alias HasDerivAt.fun_finset_prod := HasDerivAt.fun_finsetProd
@@ -423,7 +423,7 @@ theorem HasDerivAt.finsetProd (hf : ∀ i ∈ u, HasDerivAt (f i) (f' i) x) :
 
 theorem HasDerivWithinAt.fun_finsetProd (hf : ∀ i ∈ u, HasDerivWithinAt (f i) (f' i) s x) :
     HasDerivWithinAt (∏ i ∈ u, f i ·) (∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • f' i) s x := by
-  simpa [ContinuousLinearMap.sum_apply, ContinuousLinearMap.smul_apply] using
+  simpa [sum_apply, smul_apply] using
     (HasFDerivWithinAt.finsetProd (fun i hi ↦ (hf i hi).hasFDerivWithinAt)).hasDerivWithinAt
 
 @[deprecated (since := "2026-04-08")]
@@ -438,7 +438,7 @@ alias HasDerivWithinAt.finset_prod := HasDerivWithinAt.finsetProd
 
 theorem HasStrictDerivAt.fun_finsetProd (hf : ∀ i ∈ u, HasStrictDerivAt (f i) (f' i) x) :
     HasStrictDerivAt (∏ i ∈ u, f i ·) (∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • f' i) x := by
-  simpa [ContinuousLinearMap.sum_apply, ContinuousLinearMap.smul_apply] using
+  simpa [sum_apply, smul_apply] using
     (HasStrictFDerivAt.finsetProd (fun i hi ↦ (hf i hi).hasStrictFDerivAt)).hasStrictDerivAt
 
 @[deprecated (since := "2026-04-08")]

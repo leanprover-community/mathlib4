@@ -959,7 +959,7 @@ theorem posConvolution_eq_convolution_indicator (f : ℝ → E) (g : ℝ → E')
         exacts [Or.inr (Or.inl ⟨h, h'⟩), Or.inr (Or.inr h')]
     rcases this with (ht | ht | ht)
     · rw [indicator_of_notMem (notMem_Ioo_of_le ht), indicator_of_notMem (notMem_Ioi.mpr ht),
-        map_zero, ContinuousLinearMap.zero_apply]
+        map_zero, _root_.zero_apply]
     · rw [indicator_of_mem ht, indicator_of_mem (mem_Ioi.mpr ht.1),
           indicator_of_mem (mem_Ioi.mpr <| sub_pos.mpr ht.2)]
     · rw [indicator_of_notMem (notMem_Ioo_of_ge ht),
@@ -969,7 +969,7 @@ theorem posConvolution_eq_convolution_indicator (f : ℝ → E) (g : ℝ → E')
     · rw [indicator_of_notMem (_ : x - t ∉ Ioi 0), map_zero]
       rw [notMem_Ioi] at h ⊢
       exact sub_nonpos.mpr (h.trans ht.le)
-    · rw [indicator_of_notMem (mem_Ioi.not.mpr ht), map_zero, ContinuousLinearMap.zero_apply]
+    · rw [indicator_of_notMem (mem_Ioi.not.mpr ht), map_zero, _root_.zero_apply]
 
 theorem integrable_posConvolution {f : ℝ → E} {g : ℝ → E'} {μ ν : Measure ℝ} [SFinite μ]
     [SFinite ν] [IsAddRightInvariant μ] [NoAtoms ν] (hf : IntegrableOn f (Ioi 0) ν)

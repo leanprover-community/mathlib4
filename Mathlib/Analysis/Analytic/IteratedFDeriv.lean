@@ -100,7 +100,7 @@ lemma FormalMultilinearSeries.iteratedFDerivSeries_eq_zero {k n : ℕ}
       ContinuousLinearMap.compContinuousMultilinearMap_coe, ContinuousLinearEquiv.coe_coe,
       LinearIsometryEquiv.coe_toContinuousLinearEquiv, Function.comp_apply,
       continuousMultilinearCurryLeftEquiv_symm_apply, ContinuousMultilinearMap.zero_apply,
-      ContinuousLinearMap.zero_apply,
+      _root_.zero_apply,
       derivSeries_eq_zero _ (ih (p.congr_zero (Nat.succ_add_eq_add_succ _ _).symm h))]
 
 /-- If the `n`-th term in a power series is zero, then the `n`-th derivative of the corresponding

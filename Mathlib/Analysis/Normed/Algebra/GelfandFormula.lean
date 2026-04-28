@@ -67,7 +67,7 @@ theorem hasFDerivAt_resolvent {a : A} {k : 𝕜} (hk : k ∈ resolventSet 𝕜 a
   have H₁ : HasFDerivAt Ring.inverse _ (algebraMap 𝕜 A k - a) :=
     hasFDerivAt_ringInverse (𝕜 := 𝕜) hk.unit
   have H₂ : HasFDerivAt (fun a => algebraMap 𝕜 A k - a) (- .id 𝕜 A) a := by
-    simpa using (hasFDerivAt_const _ a).sub (hasFDerivAt_id a)
+    simpa using (hasFDerivAt_const _ a).sub (hasFDerivAt_id (𝕜 := 𝕜) a)
   simpa [resolvent_eq hk] using H₁.comp a H₂
 
 end NonTriviallyNormedField

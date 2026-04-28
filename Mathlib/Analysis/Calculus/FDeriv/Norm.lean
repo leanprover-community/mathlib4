@@ -98,8 +98,7 @@ theorem HasStrictFDerivAt.hasStrictFDerivAt_norm_smul
   convert h2.comp (t • x) h1 with y
   · rw [norm_smul, ← mul_assoc, norm_eq_abs, ← abs_mul, mul_inv_cancel₀ ht, abs_one, one_mul]
   ext y
-  simp only [coe_smul', Pi.smul_apply, smul_eq_mul, comp_smulₛₗ, map_inv₀, RingHom.id_apply,
-    comp_id]
+  simp only [_root_.smul_apply, smul_eq_mul, comp_smulₛₗ, map_inv₀, RingHom.id_apply, comp_id]
   rw [eq_inv_mul_iff_mul_eq₀ ht, ← mul_assoc, self_mul_sign]
 
 theorem HasStrictFDerivAt.hasStrictDerivAt_norm_smul_neg
@@ -123,8 +122,7 @@ theorem HasFDerivAt.hasFDerivAt_norm_smul
   · simp only [Function.comp_apply]
     rw [norm_smul, ← mul_assoc, norm_eq_abs, ← abs_mul, mul_inv_cancel₀ ht, abs_one, one_mul]
   · ext y
-    simp only [coe_smul', Pi.smul_apply, smul_eq_mul, comp_smulₛₗ, map_inv₀, RingHom.id_apply,
-      comp_id]
+    simp only [_root_.smul_apply, smul_eq_mul, comp_smulₛₗ, map_inv₀, RingHom.id_apply, comp_id]
     rw [eq_inv_mul_iff_mul_eq₀ ht, ← mul_assoc, self_mul_sign]
 
 theorem HasFDerivAt.hasFDerivAt_norm_smul_neg

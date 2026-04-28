@@ -384,7 +384,7 @@ noncomputable def fderivLM :
     · have hk' : 0 < (n : ℕ∞ω) := mod_cast (ENat.add_one_pos.trans_le hk)
       ext
       simp [fderiv_const_smul (f.contDiff.differentiable hk'.ne').differentiableAt]
-    · simp
+    · exact (MulActionWithZero.smul_zero (RingHom.id 𝕜 c)).symm
 
 @[simp]
 lemma fderivLM_apply (f : 𝓓^{n}_{K}(E, F)) :

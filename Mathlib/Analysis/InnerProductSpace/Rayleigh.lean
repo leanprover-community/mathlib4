@@ -149,7 +149,7 @@ private theorem rayleighQuotient_le_of_mem_resolventSet
     grw [this, min_le_left]
   rw [rayleighQuotient, reApplyInnerSelf_apply]
   specialize hc x
-  rw [← sq_le_sq₀ (by positivity) (by positivity), sub_apply, algebraMap_apply,
+  rw [← sq_le_sq₀ (by positivity) (by positivity), _root_.sub_apply, algebraMap_apply,
     norm_sub_sq (𝕜 := 𝕜), inner_re_symm] at hc
   grw [le_opNorm] at hc
   simp [inner_smul_right, norm_smul, abs_of_pos ht] at hc
@@ -203,7 +203,7 @@ theorem _root_.LinearMap.IsSymmetric.hasStrictFDerivAt_reApplyInnerSelf {T : F �
     HasStrictFDerivAt T.reApplyInnerSelf (2 • (innerSL ℝ (T x₀))) x₀ := by
   convert T.hasStrictFDerivAt.inner ℝ (hasStrictFDerivAt_id x₀) using 1
   ext y
-  rw [ContinuousLinearMap.smul_apply, ContinuousLinearMap.comp_apply, fderivInnerCLM_apply,
+  rw [smul_apply, ContinuousLinearMap.comp_apply, fderivInnerCLM_apply,
     ContinuousLinearMap.prod_apply, innerSL_apply_apply, id, ContinuousLinearMap.id_apply,
     hT.apply_clm x₀ y, real_inner_comm _ x₀, two_smul]
 
