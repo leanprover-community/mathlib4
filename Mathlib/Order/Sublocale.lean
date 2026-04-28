@@ -263,56 +263,36 @@ instance Sublocale.instCoframeMinimalAxioms : Order.Coframe.MinimalAxioms (Sublo
 instance Sublocale.instCoframe : Order.Coframe (Sublocale X) :=
   .ofMinimalAxioms Sublocale.instCoframeMinimalAxioms
 
-/--
-An open sublocale is defined by an element of the locale.
--/
-@[ext]
-structure Open (X : Type*) [Order.Frame X] where
-  /-- The element of an open sublocale. Do not use this directly, use `Open.getElement` instead. -/
-  element : X
 
-namespace Open
+section Open
 
-instance : PartialOrder (Open X) where
-  le x y := x.element ≤ y.element
-  le_refl _ := le_refl _
-  le_trans _ _ _ h1 h2 := le_trans h1 h2
-  le_antisymm _ _ h1 h2 := by ext; exact le_antisymm h1 h2
-
-variable {U V : Open X}
-
-/--
-The order of open sublocales is determined by their element.
--/
-def getElement : Open X ≃o X where
-  toFun x := x.element
-  invFun x := ⟨x⟩
-  left_inv x := rfl
-  right_inv x := rfl
-  map_rel_iff' := by aesop
-
-instance : CoeOut (Open X) X where
-  coe U := U.getElement
-
-lemma le_def : U ≤ V ↔ U.getElement ≤ V.getElement := ge_iff_le
-
-/--
-The nucleus corresponding to an open Sublocale with the Element `U` has the function
-`fun x ↦ U ⇨ x`.
--/
-def toNucleus (U : Open X) : Nucleus X where
+abbrev Nucleus.Open (U : X) : Nucleus X where
   toFun x := U ⇨ x
   map_inf' _ _ := himp_inf_distrib _ _ _
   idempotent' _ := le_of_eq himp_idem
   le_apply' _ := le_himp
 
-instance : Coe (Open X) (Nucleus X) where
-  coe U := U.toNucleus
+def Sublocale.Open : FrameHom X (Sublocale X) where
+  toFun U := Nucleus.Open U |>.toSublocale
+  map_inf' a b := by
+    apply nucleusIsoSublocale.symm.injective
+    simp only [OrderIso.symm_apply_apply, map_inf, ← toDual_sup]
+    congr
+    refine le_antisymm (fun i ↦ ?_) ?_
+    · rw [← sSup_pair, ← sInf_upperBounds_eq_sSup, Nucleus.sInf_apply]
+      simp only [Nucleus.coe_mk, InfHom.coe_mk, upperBounds_insert, upperBounds_singleton,
+        Ici_inter_Ici, mem_Ici, sup_le_iff, le_iInf_iff, and_imp]
+      intro n h1 h2
+      rw [← himp_himp, ← @n.idempotent _ _ i]
+      exact le_trans (h1 _) (le_trans Nucleus.map_himp_le (h2 (n i)))
+    · have h {x y : X} : Nucleus.Open x ≤ Nucleus.Open (x ⊓ y) := fun i ↦ by
+        simpa using le_trans (inf_le_inf (by rfl) inf_le_left) himp_inf_le
+      exact sup_le h (by rw [inf_comm]; exact h)
+  map_top' := by simpa [Nucleus.Open] using by rfl
+  map_sSup' s := by
+    sorry
 
-instance : CompleteLattice (Open X) := getElement.symm.toGaloisInsertion.liftCompleteLattice
 
-instance : Order.Frame (Open X) := .ofMinimalAxioms ⟨fun a s  ↦ by
-  simp [Open.le_def, OrderIso.map_inf, OrderIso.map_sSup, OrderIso.map_iSup, inf_iSup_eq]⟩
 
 set_option backward.isDefEq.respectTransparency false in
 /--
