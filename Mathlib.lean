@@ -7514,6 +7514,7 @@ public import Mathlib.Topology.Category.Stonean.EffectiveEpi
 public import Mathlib.Topology.Category.Stonean.Limits
 public import Mathlib.Topology.Category.TopCat.Adjunctions
 public import Mathlib.Topology.Category.TopCat.Basic
+public import Mathlib.Topology.Category.TopCat.Closeds
 public import Mathlib.Topology.Category.TopCat.EffectiveEpi
 public import Mathlib.Topology.Category.TopCat.EpiMono
 public import Mathlib.Topology.Category.TopCat.GrothendieckTopology
