@@ -556,7 +556,7 @@ open Finset Finsupp Nat
 name_power_vars X₀, X₁ over R
 
 lemma coeff_subst_X_zero_add_X_one (f : R⟦X⟧) (e : Fin 2 →₀ ℕ) :
-    (MvPowerSeries.coeff e) (subst (X₀ + X₁) f) =
+    MvPowerSeries.coeff e (subst (X₀ + X₁) f) =
       (e 0 + e 1).choose (e 0) * coeff (e 0 + e 1) f := by
   rw [PowerSeries.subst, MvPowerSeries.coeff_subst
     (MvPowerSeries.hasSubst_of_constantCoeff_zero (fun _ ↦ by simp))]
@@ -568,7 +568,7 @@ lemma coeff_subst_X_zero_add_X_one (f : R⟦X⟧) (e : Fin 2 →₀ ℕ) :
   · simp only [MvPolynomial.coeff_add_pow, mem_antidiagonal, cast_ite]
     grind
 
-lemma coeff_subst_X_zero_mul_X_one (f : R⟦X⟧) (e : Fin 2 →₀ ℕ) :
+lemma coeff_subst_X_zero_subst_mul_X_one (f : R⟦X⟧) (e : Fin 2 →₀ ℕ) :
     MvPowerSeries.coeff e (subst X₀ f * subst X₁ f) = coeff (e 0) f * coeff (e 1) f := by
   rw [MvPowerSeries.coeff_mul, Finset.sum_eq_single (single 0 (e 0), single 1 (e 1)) ?_ ?_]
   · grind [coeff_subst_single]
