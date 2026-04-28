@@ -1005,6 +1005,7 @@ public import Mathlib.Algebra.Order.Interval.Set.Instances
 public import Mathlib.Algebra.Order.Interval.Set.Monoid
 public import Mathlib.Algebra.Order.Interval.Set.SuccPred
 public import Mathlib.Algebra.Order.Invertible
+public import Mathlib.Algebra.Order.IsBotOne
 public import Mathlib.Algebra.Order.Kleene
 public import Mathlib.Algebra.Order.Module.Algebra
 public import Mathlib.Algebra.Order.Module.Archimedean

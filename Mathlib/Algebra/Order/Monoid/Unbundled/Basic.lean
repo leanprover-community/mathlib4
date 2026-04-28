@@ -7,6 +7,7 @@ Yuyang Zhao
 module
 
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
+public import Mathlib.Algebra.Order.IsBotOne
 public import Mathlib.Data.Ordering.Basic
 public import Mathlib.Order.MinMax
 public import Mathlib.Tactic.Contrapose
@@ -728,6 +729,11 @@ theorem Left.one_lt_mul_of_le_of_lt [MulLeftStrictMono α] {a b : α} (ha : 1 �
     1 < a * b :=
   lt_mul_of_le_of_one_lt ha hb
 
+@[to_additive]
+theorem Left.one_lt_mul_of_right [IsBotOneClass α] [MulLeftStrictMono α] {b : α}
+    (hb : 1 < b) (a : α) : 1 < a * b :=
+  Left.one_lt_mul_of_le_of_lt one_le hb
+
 /-- Assumes left covariance.
 The lemma assuming right covariance is `Right.one_lt_mul_of_lt_of_le`. -/
 @[to_additive Left.add_pos_of_pos_of_nonneg
@@ -737,6 +743,13 @@ theorem Left.one_lt_mul_of_lt_of_le [MulLeftMono α] {a b : α} (ha : 1 < a)
     (hb : 1 ≤ b) :
     1 < a * b :=
   lt_mul_of_lt_of_one_le ha hb
+
+@[to_additive]
+theorem Left.one_lt_mul_of_left [IsBotOneClass α] [MulLeftMono α] {a : α}
+    (ha : 1 < a) (b : α) : 1 < a * b :=
+  Left.one_lt_mul_of_lt_of_le ha one_le
+
+@[to_additive add_pos_of_left] alias one_lt_mul_of_left := Left.one_lt_mul_of_left
 
 /-- Assumes left covariance.
 The lemma assuming right covariance is `Right.one_lt_mul`. -/
@@ -753,6 +766,7 @@ The lemma assuming right covariance is `Right.add_pos'`. -/]
 theorem Left.one_lt_mul' [MulLeftMono α] {a b : α} (ha : 1 < a) (hb : 1 < b) :
     1 < a * b :=
   lt_mul_of_lt_of_one_lt' ha hb
+
 
 /-! Lemmas of the form `a ≤ 1 → b ≤ c → a * b ≤ c`,
 which assume right covariance. -/
@@ -912,6 +926,11 @@ theorem Right.one_lt_mul_of_lt_of_le [MulRightStrictMono α] {a b : α}
     1 < a * b :=
   lt_mul_of_one_lt_of_le ha hb
 
+@[to_additive]
+theorem Right.one_lt_mul_of_left [IsBotOneClass α] [MulRightStrictMono α] {a : α}
+    (ha : 1 < a) (b : α) : 1 < a * b :=
+  Right.one_lt_mul_of_lt_of_le ha one_le
+
 /-- Assumes right covariance.
 The lemma assuming left covariance is `Left.one_lt_mul_of_le_of_lt`. -/
 @[to_additive Right.add_pos_of_nonneg_of_pos
@@ -921,6 +940,13 @@ theorem Right.one_lt_mul_of_le_of_lt [MulRightMono α] {a b : α}
     (ha : 1 ≤ a) (hb : 1 < b) :
     1 < a * b :=
   lt_mul_of_one_le_of_lt ha hb
+
+@[to_additive]
+theorem Right.one_lt_mul_of_right [IsBotOneClass α] [MulRightMono α] {b : α}
+    (hb : 1 < b) (a : α) : 1 < a * b :=
+  Right.one_lt_mul_of_le_of_lt one_le hb
+
+@[to_additive add_pos_of_right] alias one_lt_mul_of_right := Right.one_lt_mul_of_right
 
 /-- Assumes right covariance.
 The lemma assuming left covariance is `Left.one_lt_mul`. -/
