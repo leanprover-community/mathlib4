@@ -433,19 +433,14 @@ lemma forall_smul_eq_iff {g : GL (Fin 2) ℝ} : (∀ τ : ℍ, g • τ = τ) �
   mpr := fun ⟨r, hr⟩ τ ↦ UpperHalfPlane.ext <| by
     simp [hr, coe_smul, σ, Units.smul_def, sq_pos_of_ne_zero r.ne_zero, num, denom]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma forall_smul_eq_iff_of_det_eq_one {g : GL (Fin 2) ℝ} (hg : g.det = 1) :
     (∀ τ : ℍ, g • τ = τ) ↔ g = 1 ∨ g = -1 := by
   rw [UpperHalfPlane.forall_smul_eq_iff]
   constructor
   · rintro ⟨r, rfl⟩
-    simp_rw [Units.ext_iff, GeneralLinearGroup.val_det_apply, Units.val_smul, Units.val_one,
-      det_smul_of_tower, Fintype.card_fin, det_one, Units.smul_def _ (1 : ℝ), smul_eq_mul,
-      mul_one, Units.val_pow_eq_pow_val, sq_eq_one_iff, Units.val_eq_one,
-      ← Units.val_one (α := ℝ), ← Units.val_neg, ← Units.ext_iff] at hg
-    rcases hg with rfl | rfl
-    · left; ext; simp
-    · right; ext; simp
+    have : r ^ 2 • (1 : ℝ) = 1 := by simpa [Units.ext_iff] using hg
+    have : r = 1 ∨ r = -1 := by simpa [Units.smul_def]
+    aesop
   · rintro (rfl | rfl)
     · exact ⟨1, by ext; simp⟩
     · exact ⟨-1, by ext; simp⟩
