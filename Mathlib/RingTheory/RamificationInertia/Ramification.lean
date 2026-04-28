@@ -60,40 +60,9 @@ theorem ramificationIdx'_eq [q.LiesOver p] [q.IsPrime] :
     q.ramificationIdx' R = (Module.length Sq (Sq ⧸ p.map (algebraMap R Sq))).toNat := by
   rw [ramificationIdx'_def, over_def q p]
 
-open IsDiscreteValuationRing IsLocalRing Submodule.IsPrincipal in
-noncomputable def foo''' (R : Type*) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] :
-    Ideal R ≃o ENatᵒᵈ where
-  toFun I := .toDual (addVal R (generator I))
-  invFun n := n.ofDual.recTopCoe ⊥ (fun n ↦ maximalIdeal R ^ n)
-  left_inv I := by
-    let x := generator I
-    suffices (addVal R x).recTopCoe ⊥ (fun n ↦ maximalIdeal R ^ n) = span {x} by
-      rwa [span_singleton_generator] at this
-    by_cases hx0 : x = 0
-    · simp [hx0]
-    · obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible R
-      obtain ⟨n, u, hu⟩ := IsDiscreteValuationRing.eq_unit_mul_pow_irreducible hx0 hϖ
-      rw [hu, IsDiscreteValuationRing.addVal_def' u hϖ, span_singleton_mul_left_unit u.isUnit,
-        ENat.recTopCoe_coe, Irreducible.maximalIdeal_eq hϖ, span_singleton_pow]
-  right_inv n := by
-    let k := n.ofDual
-    change addVal R (generator (k.recTopCoe ⊥ fun n ↦ maximalIdeal R ^ n)) = k
-    induction k
-    case top =>
-      simp [(eq_bot_iff_generator_eq_zero _).mp rfl] -- `generator_bot` simp lemma
-    case coe k =>
-      obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible R
-      rw [ENat.recTopCoe_coe, Irreducible.maximalIdeal_eq hϖ, span_singleton_pow,
-        ← hϖ.addVal_pow k, IsDiscreteValuationRing.addVal_eq_iff_associated]
-      exact associated_generator_span_self (ϖ ^ k)
-  map_rel_iff' {I J} := by
-    simp [IsDiscreteValuationRing.addVal_le_iff_dvd, ← span_singleton_le_span_singleton]
-
 theorem foo {R : Type*} [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] (n : ℕ) :
     Module.length R (R ⧸ IsLocalRing.maximalIdeal R ^ n) = n := by
-  rw [Module.length_quotient]
-  refine (Order.coheight_orderIso (foo''' R).symm (.toDual n)).trans ?_
-  rw [Order.coheight_toDual, Order.height_enat]
+  exact IsDiscreteValuationRing.length_quotient_pow_maximalIdeal R n
 
 open Localization IsLocalization.AtPrime in
 theorem ramificationIdx_eq_ramificationIdx' [IsDedekindDomain R] [IsDedekindDomain S]
@@ -113,8 +82,8 @@ theorem ramificationIdx_eq_ramificationIdx' [IsDedekindDomain R] [IsDedekindDoma
   replace h := congrArg (map (algebraMap S (Localization.AtPrime q))) h
   rw [map_map, ← IsScalarTower.algebraMap_eq, Ideal.map_mul, Ideal.map_pow,
     map_eq_top_of_not_le (Localization.AtPrime q) hqI, mul_top, AtPrime.map_eq_maximalIdeal] at h
-  have := isDiscreteValuationRing_of_dedekind_domain S hq' (Localization.AtPrime q)
-  rw [ramificationIdx'_eq p q, h, foo, ENat.toNat_coe]
+  have hq := isDiscreteValuationRing_of_dedekind_domain S hq' (Localization.AtPrime q)
+  rw [ramificationIdx'_eq p q, h, hq.length_quotient_pow_maximalIdeal, ENat.toNat_coe]
 
 /-- See `ramificationIdx'_tower` for a version that does not assume primality. -/
 theorem ramificationIdx'_tower' [q.IsPrime] [r.IsPrime] [r.LiesOver q]
