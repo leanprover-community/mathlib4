@@ -70,7 +70,7 @@ def iwasawaStructure_two [∀ s : Set α, DecidablePred fun x ↦ x ∈ s] :
 normal subgroup of `Equiv.Perm α` is `alternatingGroup α`. -/
 theorem alternatingGroup_of_le_of_normal
     {α : Type*} [DecidableEq α] [Fintype α] (hα : 5 ≤ Nat.card α)
-    {N : Subgroup (Perm α)} (hnN : N.Normal) (ntN : Nontrivial N) :
+    {N : Subgroup (Perm α)} [N.Normal] (ntN : Nontrivial N) :
     alternatingGroup α ≤ N := by
   rw [← alternatingGroup.commutator_perm_eq hα]
   have : IsPreprimitive (Perm α) (Set.powersetCard α 2) := by
@@ -103,7 +103,7 @@ then the only nontrivial normal subgroup of `alternatingGroup α`
 is `⊤`. -/
 theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_six
     (hα : 5 ≤ Nat.card α) (hα' : Nat.card α ≠ 6)
-    {N : Subgroup (alternatingGroup α)} (hnN : N.Normal) :
+    {N : Subgroup (alternatingGroup α)} [N.Normal] :
     N = ⊥ ∨ N = ⊤ := by
   rw [or_iff_not_imp_left, ← ne_eq, ← Subgroup.nontrivial_iff_ne_bot]
   intro hN
@@ -162,7 +162,7 @@ then the only nontrivial normal subgroup of `alternatingGroup α`
 is `⊤`. -/
 theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_eight
     (hα : 5 ≤ Nat.card α) (hα' : Nat.card α ≠ 8)
-    {N : Subgroup (alternatingGroup α)} (hnN : N.Normal) :
+    {N : Subgroup (alternatingGroup α)} [N.Normal] :
     N = ⊥ ∨ N = ⊤ := by
   rw [or_iff_not_imp_left, ← ne_eq, ← Subgroup.nontrivial_iff_ne_bot]
   intro hN
@@ -177,19 +177,19 @@ then the only nontrivial normal subgroup of `alternatingGroup α`
 is `⊤`. -/
 theorem normal_subgroup_eq_bot_or_eq_top
     (hα : 5 ≤ Nat.card α)
-    {N : Subgroup (alternatingGroup α)} (hnN : N.Normal) :
+    {N : Subgroup (alternatingGroup α)} [N.Normal] :
     N = ⊥ ∨ N = ⊤ := by
   by_cases hα' : Nat.card α = 6
-  · apply normal_subgroup_eq_bot_or_eq_top_of_card_ne_eight hα (by grind) hnN
-  · apply normal_subgroup_eq_bot_or_eq_top_of_card_ne_six hα hα' hnN
+  · apply normal_subgroup_eq_bot_or_eq_top_of_card_ne_eight hα (by grind)
+  · apply normal_subgroup_eq_bot_or_eq_top_of_card_ne_six hα hα'
 
 /-- When `α` has at least 5 elements, then `alternatingGroup α` is a simple group. -/
 public theorem isSimpleGroup (hα : 5 ≤ Nat.card α) :
     IsSimpleGroup (alternatingGroup α) where
   exists_pair_ne := by
-    rw [← nontrivial_iff]
+    rw [← _root_.nontrivial_iff]
     refine nontrivial_of_three_le_card ?_
     simpa using le_trans (by norm_num) hα
-  eq_bot_or_eq_top_of_normal H := normal_subgroup_eq_bot_or_eq_top hα
+  eq_bot_or_eq_top_of_normal H _ := normal_subgroup_eq_bot_or_eq_top hα
 
 end alternatingGroup
