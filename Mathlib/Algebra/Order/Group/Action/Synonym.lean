@@ -19,7 +19,7 @@ This PR transfers group action instances from a type `α` to `αᵒᵈ` and `Lex
 * `Mathlib/Algebra/Order/Module/Synonym.lean`
 -/
 
-@[expose] public section
+public section
 
 variable {M N α : Type*}
 

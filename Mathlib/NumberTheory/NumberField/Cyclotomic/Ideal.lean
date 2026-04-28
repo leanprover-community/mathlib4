@@ -40,7 +40,7 @@ In this file, we prove results about ideals in cyclotomic extensions of `ℚ`.
 
 -/
 
-@[expose] public section
+public section
 
 namespace IsCyclotomicExtension.Rat
 
