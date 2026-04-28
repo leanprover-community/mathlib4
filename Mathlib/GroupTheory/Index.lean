@@ -811,7 +811,7 @@ end Subgroup
 
 section Pointwise
 
-open Pointwise
+open scoped Pointwise
 
 variable {G H : Type*} [Group H] (h : H)
 

@@ -25,7 +25,7 @@ An important definition is `toAlgHom R S A`, the canonical `R`-algebra homomorph
 @[expose] public section
 
 
-open Pointwise
+open scoped Pointwise
 
 universe u v w u₁ v₁
 
