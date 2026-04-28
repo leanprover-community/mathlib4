@@ -72,6 +72,8 @@ variable [SemialgEquivClass F φ A B]
 
 instance (priority := 100) : SemialgHomClass F φ A B where __ := ‹SemialgEquivClass F φ A B›
 
+/-- Turn an element of a type `F` satisfying `SemialgEquivClass F φ A B` into an actual `AlgEquiv`.
+This is declared as the default coercion from `F` to `A ≃ₛₐ[φ] B`. -/
 @[coe]
 def toAlgEquiv (f : F) : A ≃ₛₐ[φ] B where
   __ := RingEquivClass.toRingEquiv f
