@@ -1,8 +1,14 @@
+module
+
 import Mathlib.Tactic.Algebra.Basic
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Data.Real.Basic
 
 axiom sorryAlgebraTest {P : Prop} : P
 
-example (x : ℚ) (n : ℕ) : n • x + x = (n: ℤ) • x + x := by
+variable {R : Type*}
+
+example [CommRing R] (x : R) (n : ℕ) : n • x + x = (n: ℤ) • x + x := by
   algebra
 
 example (x : ℚ) (a : ℤ) : algebraMap ℤ ℚ a * x = a • x := by
@@ -120,9 +126,10 @@ example {A : Type*} [CommRing A] [Algebra ℚ A] (x : A) :
 if there are multiple incomparable rings. -/
 /--
 error: algebra failed, algebra expressions not equal
-A : Type u_1
-R : Type u_2
-R' : Type u_3
+R✝ : Type u_1
+A : Type u_2
+R : Type u_3
+R' : Type u_4
 inst✝⁴ : CommRing A
 inst✝³ : CommRing R
 inst✝² : CommRing R'
@@ -131,12 +138,12 @@ inst✝ : Algebra R' A
 r : R
 r' : R'
 x : A
-⊢ x * (algebraMap R' A) r' + r • x * (algebraMap R' A) 1 + 1 • x * (algebraMap R' A) 1 =
+⊢ x * (algebraMap R' A) r' + 1 • x * (algebraMap R' A) 1 + r • x * (algebraMap R' A) 1 =
     x * (algebraMap R' A) r' + (r + 1) • x * (algebraMap R' A) 1
 -/
 #guard_msgs in
 example {A R R' : Type*} [CommRing A] [CommRing R] [CommRing R'] [Algebra R A] [Algebra R' A] (r : R) (r' : R') (x : A) :
-(r : R) • x + (1 : R) • x + (r' : R') • x = (r + 1 : R) • x + (r' : R') • x := by
+(r' : R') • x + (1 : R) • x + (r : R) • x = (r + 1 : R) • x + (r' : R') • x := by
   algebra
 
 example {A R R' : Type*} [CommRing A] [CommRing R] [CommRing R'] [Algebra R A] [Algebra R' A] (r : R) (r' : R') (x : A) :
@@ -146,3 +153,9 @@ example {A R R' : Type*} [CommRing A] [CommRing R] [CommRing R'] [Algebra R A] [
 example {A R R' : Type*} [CommRing A] [CommRing R] [CommRing R'] [Algebra R A] [Algebra R' A] (r : R) (r' : R') (x : A) :
 (r : R) • x + (1 : ℕ) • x + (r' : R') • x = (r' : R') • x + (1 : ℕ) • x + (r : R) • x:= by
   algebra
+
+-- This test documents a previous kernel in `algebra`: mkNNRat was given a proof that `(d : ℝ) ≠ 0`
+-- when it needed a proof that `(d : ℚ) ≠ 0`. The use of ofScientific forces the tactic down the
+-- right code path
+example : (0.5 : ℝ) + 0.5 = 1 := by
+  algebra with ℚ

@@ -231,7 +231,7 @@ lemma eval_homogenize {p : K[X]} {n : ℕ} (hn : p.natDegree ≤ n) (x : Fin 2 �
   refine Finset.sum_congr rfl fun k hk ↦ ?_
   rw [MvPolynomial.eval_monomial, Finsupp.update_eq_add_single, Finsupp.prod_add_index',
     Finsupp.prod_single_index, Finsupp.prod_single_index, pow_sub₀]
-  · ring
+  · ring1
   all_goals simp_all [pow_add]
 
 end Semifield

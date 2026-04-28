@@ -6,7 +6,7 @@ Authors: Arend Mellendijk
 module
 
 public import Mathlib.Algebra.Algebra.Basic
-public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Tactic.Ring.RingNF
 
 public import Mathlib.Tactic.Algebra.Lemmas
@@ -86,6 +86,11 @@ def ExProd := Common.ExProd (BaseType sAlg) sA
 @[expose, inherit_doc Common.ExSum]
 def ExSum := Common.ExSum (BaseType sAlg) sA
 
+lemma lift_nz {n : ℕ} {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
+    (h : (n : A) ≠ 0) : (n : R) ≠ 0 := by
+  apply_fun algebraMap R A
+  simp [h]
+
 set_option linter.unusedVariables false in
 variable {a} in
 /-- Evaluates a numeric literal in the algebra `A` by lifting it through the base ring `R`. -/
@@ -112,14 +117,16 @@ def evalCast (cR : Algebra.Cache q($sR)) (cA : Algebra.Cache q($sA)):
     let some dsR := cR.dsα | none
     let some dsA := cA.dsα | none
     assumeInstancesCommute
-    let ⟨r, vr⟩ := Ring.ExProd.mkNNRat q($sR) q(inferInstance) q n d q(IsNNRat.den_nz (α := $A) $p)
+    let ⟨r, vr⟩ := Ring.ExProd.mkNNRat q($sR) q(inferInstance) q n d
+      q(lift_nz (R := $R) <| IsNNRat.den_nz $p)
     have : $r =Q (NNRat.rawCast $n $d : $R) := ⟨⟩
     pure ⟨_, (Common.ExProd.const ⟨_, vr.toSum⟩).toSum, q(isNNRat_eq_rawCast (a := $a) $p)⟩
   | .isNegNNRat dA q n d p => do
     let some fR := cR.field | none
     let some fA := cA.field | none
     assumeInstancesCommute
-    let ⟨r, vr⟩ := Ring.ExProd.mkNegNNRat q($sR) q(inferInstance) q n d q(IsRat.den_nz $p)
+    let ⟨r, vr⟩ := Ring.ExProd.mkNegNNRat q($sR) q(inferInstance) q n d
+      q(lift_nz (R := $R) <| IsRat.den_nz $p)
     have : $r =Q (Rat.rawCast (.negOfNat $n) $d : $R) := ⟨⟩
     pure ⟨_, (Common.ExProd.const ⟨_, vr.toSum⟩).toSum, (q(isRat_eq_rawCast (a := $a) $p))⟩
   | _ => none
@@ -231,6 +238,7 @@ def inv (cR : Algebra.Cache sR) {a : Q($A)} (_ : Option Q(CharZero $A)) (fA : Q(
     assumeInstancesCommute
     return some ⟨_, ⟨_, vs⟩, q(inv_algebraMap $ps)⟩
   | none =>
+    -- TODO: There are some situations we might still be able to make sense of.
     return none
 
 /-- Evaluate constants in `A` using `norm_num`. -/
@@ -406,14 +414,17 @@ variable {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring
 def inferBase (ca : Cache q($sA)) (e : Expr) : MetaM <| Σ u : Lean.Level, Q(Type u) := do
   let mut rings ← (← collectScalarRings e).mapM getLevelQ'
   rings.foldlM pickLargerRing <| ← do
-    match ca.field, ca.czα, ca.rα with
-    | some _, some _, _ =>
+    match ca.field, ca.czα, ca.dsα, ca.rα with
+    | some _, some _, _, _ =>
       -- A is a Field
       pure ⟨0, q(ℚ)⟩
-    | _, _, some _ =>
+    | _, some _, some _, _ =>
+      -- A is a Semifield
+      pure ⟨0, q(ℚ≥0)⟩
+    | _, _, _, some _ =>
       -- A is a CommRing
       pure ⟨0, q(ℤ)⟩
-    | _, _, _ =>
+    | _, _, _, _ =>
       pure ⟨0, q(ℕ)⟩
 
 /-- Frontend of `algebra`: attempt to close a goal `g`, assuming it is an equation of semirings. -/
@@ -428,6 +439,14 @@ def proveEq (base : Option (Σ u : Lean.Level, Q(Type u))) (g : MVarId) : AtomM 
       | .some p => do pure p
       | none => do
         pure (← inferBase cA (← g.getType))
+  -- This algorithm does not work well if R = A, and we should probably just call `ring`?
+  /- This can happen for two reasons: either there is a scalar product with base ring `A`, or
+  we inferred the base ring from the typeclass assumptions and `A` is one of `ℕ`, `ℤ` or `ℚ` -/
+  /- TODO: Decide if we want to warn the user if this case fires and tell them to either pass the
+  base ring explicitly or use ring directly. -/
+  if ← isDefEq R A then
+    Ring.proveEq g
+    return
   let sR ← synthInstanceQ q(CommSemiring $R)
   let sAlg ← synthInstanceQ q(Algebra $R $A)
   let cR ← Algebra.mkCache sR
