@@ -201,14 +201,14 @@ noncomputable def isLimit : IsLimit (cone f) where
       rw [cone_π_app_comp_Pi_π_neg f _ _ h]
       simp only [dite_eq_ite, Functor.ofOpSequence_obj, limit.lift_π_assoc, Fan.mk_pt,
         Discrete.functor_obj_eq_as, Fan.mk_π_app, Category.assoc]
-      slice_lhs 2 4 => erw [← functorMap_commSq f h]
+      slice_lhs 2 4 => simp only [← dite_eq_ite, ← functorMap_commSq f h]
       simp
   uniq s m h := by
     apply Pi.hom_ext
     intro n
     simp only [Functor.ofOpSequence_obj, dite_eq_ite, limit.lift_π, Fan.mk_pt,
       Fan.mk_π_app, ← h ⟨n + 1⟩, Category.assoc]
-    slice_rhs 2 3 => erw [cone_π_app_comp_Pi_π_pos f (n + 1) _ (by lia)]
+    slice_rhs 2 3 => simp only [← dite_eq_ite, cone_π_app_comp_Pi_π_pos f (n + 1) n (by lia)]
     simp
 
 section

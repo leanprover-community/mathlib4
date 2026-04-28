@@ -30,7 +30,7 @@ open Finset Nat
 @[simp]
 theorem eval_one_cyclotomic_prime {R : Type*} [CommRing R] {p : ℕ} [hn : Fact p.Prime] :
     eval 1 (cyclotomic p R) = p := by
-  simp only [cyclotomic_prime, eval_X, one_pow, Finset.sum_const, eval_pow, eval_finset_sum,
+  simp only [cyclotomic_prime, eval_X, one_pow, Finset.sum_const, eval_pow, eval_finsetSum,
     Finset.card_range, smul_one_eq_cast]
 
 theorem eval₂_one_cyclotomic_prime {R S : Type*} [CommRing R] [Semiring S] (f : R →+* S) {p : ℕ}
@@ -40,7 +40,7 @@ theorem eval₂_one_cyclotomic_prime {R S : Type*} [CommRing R] [Semiring S] (f 
 theorem eval_one_cyclotomic_prime_pow {R : Type*} [CommRing R] {p : ℕ} (k : ℕ)
     [hn : Fact p.Prime] : eval 1 (cyclotomic (p ^ (k + 1)) R) = p := by
   simp only [cyclotomic_prime_pow_eq_geom_sum hn.out, eval_X, one_pow, Finset.sum_const, eval_pow,
-    eval_finset_sum, Finset.card_range, smul_one_eq_cast]
+    eval_finsetSum, Finset.card_range, smul_one_eq_cast]
 
 theorem eval₂_one_cyclotomic_prime_pow {R S : Type*} [CommRing R] [Semiring S] (f : R →+* S)
     {p : ℕ} (k : ℕ) [Fact p.Prime] : eval₂ f 1 (cyclotomic (p ^ (k + 1)) R) = p := by simp

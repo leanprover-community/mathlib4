@@ -15,7 +15,7 @@ untruncated simplex category, and the inclusion functor from the `n`-truncated t
 simplex category, for `n ≤ m` are initial.
 -/
 
-@[expose] public section
+public section
 
 open Simplicial CategoryTheory
 
