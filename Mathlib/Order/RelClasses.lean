@@ -26,49 +26,49 @@ variable {α : Type u} {β : Type v} {r : α → α → Prop} {s : β → β →
 
 open Function
 
-@[deprecated inferInstance (since := "2026-03-05")]
+@[deprecated inferInstance (since := "2026-04-28")]
 theorem Std.Refl.swap (r : α → α → Prop) [Std.Refl r] : Std.Refl (swap r) :=
   inferInstance
 
 @[deprecated (since := "2026-01-09")] alias IsRefl.swap := Std.Refl.swap
 
-@[deprecated inferInstance (since := "2026-03-05")]
+@[deprecated inferInstance (since := "2026-04-28")]
 theorem Std.Irrefl.swap (r : α → α → Prop) [Std.Irrefl r] : Std.Irrefl (swap r) :=
   inferInstance
 
-@[deprecated inferInstance (since := "2026-03-05")]
+@[deprecated inferInstance (since := "2026-04-28")]
 theorem IsTrans.swap (r) [IsTrans α r] : IsTrans α (swap r) :=
   inferInstance
 
-@[deprecated inferInstance (since := "2026-03-05")]
+@[deprecated inferInstance (since := "2026-04-28")]
 theorem Std.Antisymm.swap (r : α → α → Prop) [Std.Antisymm r] : Std.Antisymm (swap r) :=
   inferInstance
 
-@[deprecated inferInstance (since := "2026-03-05")]
+@[deprecated inferInstance (since := "2026-04-28")]
 theorem Std.Asymm.swap (r : α → α → Prop) [Std.Asymm r] : Std.Asymm (swap r) :=
   inferInstance
 
 @[deprecated (since := "2026-01-05")] alias IsAsymm.swap := Std.Asymm.swap
 
-@[deprecated inferInstance (since := "2026-03-05")]
+@[deprecated inferInstance (since := "2026-04-28")]
 theorem Std.Total.swap (r : α → α → Prop) [Std.Total r] : Std.Total (swap r) :=
   inferInstance
 
-@[deprecated inferInstance (since := "2026-03-05")]
+@[deprecated inferInstance (since := "2026-04-28")]
 theorem Std.Trichotomous.swap (r : α → α → Prop) [Std.Trichotomous r] : Std.Trichotomous (swap r) :=
   inferInstance
 
 @[deprecated (since := "2026-01-24")] alias IsTrichotomous.swap := Std.Trichotomous.swap
 
-@[deprecated inferInstance (since := "2026-03-05")]
+@[deprecated inferInstance (since := "2026-04-28")]
 theorem IsPreorder.swap (r) [IsPreorder α r] : IsPreorder α (swap r) :=
   inferInstance
 
-@[deprecated inferInstance (since := "2026-03-05")]
+@[deprecated inferInstance (since := "2026-04-28")]
 theorem IsStrictOrder.swap (r) [IsStrictOrder α r] : IsStrictOrder α (swap r) :=
   inferInstance
 
-@[deprecated inferInstance (since := "2026-03-05")]
+@[deprecated inferInstance (since := "2026-04-28")]
 theorem IsPartialOrder.swap (r) [IsPartialOrder α r] : IsPartialOrder α (swap r) :=
   inferInstance
 
@@ -113,7 +113,7 @@ abbrev linearOrderOfSTO (r) [IsStrictTotalOrder α r] [DecidableRel r] : LinearO
     toMax := maxOfLe,
     toDecidableLE := hD }
 
-@[deprecated inferInstance (since := "2026-03-05")]
+@[deprecated inferInstance (since := "2026-04-28")]
 theorem IsStrictTotalOrder.swap (r) [IsStrictTotalOrder α r] : IsStrictTotalOrder α (swap r) :=
   inferInstance
 
