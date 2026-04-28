@@ -24,9 +24,8 @@ variable (R : Type u) [CommRing R]
 
 open IsLocalRing
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Hilberts_Syzygy (k : Type u) [Field k] [Small.{v, u} k] {ι : Type*} [Finite ι] :
     globalDimension.{v} (MvPolynomial ι k) = Nat.card ι := by
-  let _ : IsRegularRing (MvPolynomial ι k) := MvPolynomial.isRegularRing_of_isRegularRing k
+  have : IsRegularRing (MvPolynomial ι k) := MvPolynomial.isRegularRing_of_isRegularRing k
   simp [IsRegularRing.globalDimension_eq_ringKrullDim,
     MvPolynomial.ringKrullDim_of_isNoetherianRing]
