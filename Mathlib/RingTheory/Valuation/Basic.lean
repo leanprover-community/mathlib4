@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Order.Ring.Basic
 public import Mathlib.Algebra.Ring.Torsion
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.Tactic.TFAE
-public import Mathlib.RingTheory.Algebraic.Basic
 
 /-!
 
@@ -690,7 +689,7 @@ class IsTrivialOn {B : Type*} (A : Type*) [CommSemiring A] [Ring B] [Algebra A B
 attribute [grind =>] Valuation.IsTrivialOn.eq_one
 
 variable {B : Type*} {A : Type*} [CommSemiring A] [Ring B] [Algebra A B] (v : Valuation B Γ₀)
-  [hv : v.IsTrivialOn A]
+  [v.IsTrivialOn A]
 
 @[simp]
 theorem IsTrivialOn.valuation_algebraMap_le_one (a : A) : v (algebraMap A B a) ≤ 1 := by
