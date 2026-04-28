@@ -213,8 +213,8 @@ public theorem isSimpleGroup (hα : 5 ≤ Nat.card α) :
   eq_bot_or_eq_top_of_normal H _ := normal_subgroup_eq_bot_or_eq_top hα
 
 @[deprecated "Use `alternatingGroup.isSimpleGroup` instead." (since := "2026-04-28")]
-theorem IsThreeCycle.alternating_normalClosure (h5 : 5 ≤ Nat.card α) {f : Perm α}
-    (hf : IsThreeCycle f) :
+theorem _root_.Equiv.Perm.IsThreeCycle.alternating_normalClosure
+    (h5 : 5 ≤ Nat.card α) {f : Perm α} (hf : IsThreeCycle f) :
     normalClosure ({⟨f, hf.mem_alternatingGroup⟩} : Set (alternatingGroup α)) = ⊤ := by
   have : IsSimpleGroup (alternatingGroup α) := isSimpleGroup h5
   apply normalClosure_normal.eq_bot_or_eq_top.resolve_left
