@@ -225,7 +225,7 @@ lemma ProperSMul.isProperMap_smul_pair_set [ProperSMul G X] {t : Set X} :
       ((Homeomorph.Set.prod _ t).symm) |>.trans (Homeomorph.setCongr univ_prod)
   exact β.symm.isProperMap.comp (Φ_proper.restrictPreimage (snd ⁻¹' t)) |>.comp α.isProperMap
 
-open Pointwise in
+open scoped Pointwise in
 /-- If `G` acts on `X` properly, the set `s • t` is closed when `s : Set G` is *closed* and
 `t : Set X` is *compact*.
 
@@ -256,7 +256,7 @@ but such a lemma can't be true in this level of generality. For a counterexample
 closed and `t` is compact, but `s +ᵥ t` is the set of all rationals, which is definitely not
 closed in `ℝ`. -/
 
-open Pointwise in
+open scoped Pointwise in
 /-- If `G` acts properly on `X`, then for each pair of compacts `U, V ⊆ X`,
 the set of `g` such that `g • U` intersects `V` is compact.
 

@@ -1,0 +1,290 @@
+# olean report
+# On-demand olean diff for a PR, triggered by commenting `!olean_report`.
+# Compares oleans of the PR head against the merge base.
+#
+# This workflow runs with minimal permissions (contents: read only) so it is
+# safe to run code from fork PRs. The actual PR comment is posted by the
+# companion workflow olean_report_wf_run.yaml via the privilege-escalation
+# bridge.
+name: olean report
+
+on:
+  issue_comment:
+    types: [created]
+
+# cancel any in-progress run when a new comment arrives.
+concurrency:
+  group: olean-report-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  report:
+    name: Prepare olean report
+    runs-on: ubuntu-latest
+    # Skip if comment does not contain the trigger word.
+    if: >-
+      ${{
+        github.repository == 'leanprover-community/mathlib4' &&
+        github.event.issue.pull_request != null &&
+        github.event.issue.state == 'open' &&
+        contains(github.event.comment.body, '!olean_report')
+      }}
+    steps:
+      - name: Check trigger pattern
+        id: check_trigger
+        env:
+          COMMENT_BODY: ${{ github.event.comment.body }}
+        run: |
+          # Require !olean_report to appear at the beginning of a line.
+          if printf '%s' "$COMMENT_BODY" | grep -qE '^!olean_report'; then
+            echo "triggered=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "triggered=false" >> "$GITHUB_OUTPUT"
+            echo "'!olean_report' was not found at the beginning of a line; skipping."
+          fi
+
+      - name: Checkout local actions
+        if: steps.check_trigger.outputs.triggered == 'true'
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: .github/actions
+          path: workflow-actions
+
+      - name: Get mathlib-ci
+        if: steps.check_trigger.outputs.triggered == 'true'
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+
+      # We use the GH CLI here because issue_comment events do not carry the
+      # full pull_request payload.
+      - name: Get PR info
+        id: pr_info
+        if: steps.check_trigger.outputs.triggered == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          pr_json=$(gh pr view "${{ github.event.issue.number }}" \
+            --repo "${{ github.repository }}" \
+            --json headRefOid,baseRefOid,baseRefName)
+          {
+            echo "head_sha=$(echo "$pr_json" | jq -r '.headRefOid')"
+            echo "base_sha=$(echo "$pr_json" | jq -r '.baseRefOid')"
+            echo "base_ref=$(echo "$pr_json" | jq -r '.baseRefName')"
+          } >> "$GITHUB_OUTPUT"
+
+      # Using refs/pull/N/head works for both same-repo and fork PRs, since
+      # GitHub mirrors fork commits under this ref.
+      # We fetch full depth so that we can compute the merge base.
+      - name: Checkout PR head
+        if: steps.check_trigger.outputs.triggered == 'true'
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: ${{ github.repository }}
+          ref: refs/pull/${{ github.event.issue.number }}/head
+          fetch-depth: 0
+          path: pr-branch
+
+      # Check out master into tools-branch.  We build the `cache` binary from
+      # here so that a single binary can fetch oleans for both checkouts.
+      - name: Checkout tools branch (master)
+        if: steps.check_trigger.outputs.triggered == 'true'
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: ${{ github.repository }}
+          ref: master
+          fetch-depth: 1
+          path: tools-branch
+
+      # Using the merge base rather than the base-branch tip avoids spurious
+      # differences caused by commits that landed on master after this PR
+      # branched off.
+      - name: Compute merge base
+        id: merge_base
+        if: steps.check_trigger.outputs.triggered == 'true'
+        working-directory: pr-branch
+        run: |
+          BASE_SHA="${{ steps.pr_info.outputs.base_sha }}"
+          git fetch --depth=1 origin "$BASE_SHA"
+          MERGE_BASE=$(git merge-base HEAD FETCH_HEAD)
+          echo "sha=$MERGE_BASE" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout merge base
+        if: steps.check_trigger.outputs.triggered == 'true'
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: ${{ github.repository }}
+          ref: ${{ steps.merge_base.outputs.sha }}
+          fetch-depth: 1
+          path: base
+
+      - name: Check toolchain compatibility
+        id: toolchain_check
+        if: steps.check_trigger.outputs.triggered == 'true'
+        env:
+          BASE_REF: ${{ steps.pr_info.outputs.base_ref }}
+        run: |
+          PR_TC=$(cat pr-branch/lean-toolchain)
+          BASE_TC=$(cat base/lean-toolchain)
+          TOOLS_TC=$(cat tools-branch/lean-toolchain)
+          MATCH=true
+          MISMATCH_REASON=
+          if [ "$PR_TC" != "$BASE_TC" ]; then
+            MATCH=false
+            MISMATCH_REASON=pr_vs_base
+          elif [ "$BASE_REF" = "master" ] && [ "$TOOLS_TC" != "$PR_TC" ]; then
+            # it's unlikely we'll be in a situation where we run this against a PR not into master
+            # but just in case, we will allow them to have a different toolchain from the tools branch (master)
+            MATCH=false
+            MISMATCH_REASON=tools_vs_pr
+          fi
+          {
+            echo "pr_toolchain=$PR_TC"
+            echo "base_toolchain=$BASE_TC"
+            echo "tools_toolchain=$TOOLS_TC"
+            echo "match=$MATCH"
+            if [ -n "$MISMATCH_REASON" ]; then echo "mismatch_reason=$MISMATCH_REASON"; fi
+          } >> "$GITHUB_OUTPUT"
+
+      # We use --default-toolchain none so elan itself does not download a
+      # toolchain at install time; the toolchain is resolved lazily when
+      # `lake` runs inside tools-branch.
+      - name: Install elan
+        if: steps.toolchain_check.outputs.match == 'true'
+        shell: bash
+        run: |
+          curl -o elan-init.sh -sSfL https://elan.lean-lang.org/elan-init.sh
+          chmod +x elan-init.sh
+          ./elan-init.sh -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Build cache binary
+        if: steps.toolchain_check.outputs.match == 'true'
+        run: |
+          cd tools-branch
+          lake build cache
+          echo "CACHE_BIN=$(pwd)/.lake/build/bin/cache" >> "$GITHUB_ENV"
+
+      - name: Fetch PR head oleans
+        id: pr_oleans
+        if: steps.toolchain_check.outputs.match == 'true'
+        continue-on-error: true
+        run: |
+          cd pr-branch
+          "$CACHE_BIN" get
+
+      - name: Check PR head oleans
+        id: pr_oleans_check
+        if: steps.toolchain_check.outputs.match == 'true'
+        run: |
+          if find pr-branch/.lake/build/lib/lean/Mathlib \
+               -name '*.olean' -print -quit 2>/dev/null | grep -q .; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Fetch oleans for the merge base (only if the PR head oleans are present,
+      # to avoid wasting time when the PR hasn't been built yet).
+      - name: Fetch merge base oleans
+        id: base_oleans
+        if: steps.pr_oleans_check.outputs.available == 'true'
+        continue-on-error: true
+        run: |
+          cd base
+          "$CACHE_BIN" get
+
+      - name: Generate olean report
+        if: steps.check_trigger.outputs.triggered == 'true'
+        env:
+          TOOLCHAINS_MATCH: ${{ steps.toolchain_check.outputs.match }}
+          MISMATCH_REASON: ${{ steps.toolchain_check.outputs.mismatch_reason }}
+          PR_TOOLCHAIN: ${{ steps.toolchain_check.outputs.pr_toolchain }}
+          BASE_TOOLCHAIN: ${{ steps.toolchain_check.outputs.base_toolchain }}
+          TOOLS_TOOLCHAIN: ${{ steps.toolchain_check.outputs.tools_toolchain }}
+          PR_OLEANS_OK: ${{ steps.pr_oleans_check.outputs.available }}
+          MERGE_BASE_SHA: ${{ steps.merge_base.outputs.sha }}
+          BASE_REF: ${{ steps.pr_info.outputs.base_ref }}
+          ACTIONS_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if [ "$TOOLCHAINS_MATCH" != "true" ]; then
+            if [ "$MISMATCH_REASON" = "tools_vs_pr" ]; then
+              cat > comment_body.md << MDEOF
+          ## Olean diff
+
+          **Lean toolchain mismatch — \`master\` has bumped the toolchain.**
+
+          The PR and its merge base use \`${PR_TOOLCHAIN}\` but \`master\` uses \`${TOOLS_TOOLCHAIN}\`.
+          Please merge \`master\` into your PR branch before requesting an olean report.
+
+          [CI run](${ACTIONS_URL})
+          MDEOF
+            else
+              cat > comment_body.md << MDEOF
+          ## Olean diff
+
+          **Lean toolchain mismatch — oleans are not comparable.**
+
+          The merge base uses \`${BASE_TOOLCHAIN}\` but the PR head uses \`${PR_TOOLCHAIN}\`.
+          Oleans compiled by different Lean versions are binary-incompatible; the diff would show every file as changed.
+
+          [CI run](${ACTIONS_URL})
+          MDEOF
+            fi
+          elif [ "$PR_OLEANS_OK" != "true" ]; then
+            cat > comment_body.md << 'MDEOF'
+          ## Olean diff
+
+          **Oleans for this PR are not yet available in the cache.**
+
+          Possible reasons:
+          - The CI build for this commit has not finished yet.
+            Wait for the build to complete, then post `!olean_report` again.
+          - The CI build failed or was cancelled.
+            Fix any errors and push a new commit.
+          - The cache upload step was skipped.
+
+          Check the [CI run]($ACTIONS_URL) and the Actions tab for this PR's build status.
+          MDEOF
+            # expand $ACTIONS_URL in the heredoc output
+            sed -i "s|\$ACTIONS_URL|${ACTIONS_URL}|g" comment_body.md
+          else
+            python3 "${CI_SCRIPTS_DIR}/pr_summary/olean_diff.py" \
+              base/.lake/build/lib/lean \
+              pr-branch/.lake/build/lib/lean \
+              comment_body.md \
+              olean_diff_full.txt \
+              --merge-base-sha "${MERGE_BASE_SHA}" \
+              --base-ref "${BASE_REF}" \
+              --actions-url "${ACTIONS_URL}"
+          fi
+
+      - name: Upload full olean diff
+        if: steps.check_trigger.outputs.triggered == 'true'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: olean-diff-full
+          path: olean_diff_full.txt
+          if-no-files-found: ignore
+          retention-days: 5
+
+      - name: Prepare bridge outputs
+        if: steps.check_trigger.outputs.triggered == 'true'
+        run: |
+          jq -n \
+            --arg pr_number "${{ github.event.issue.number }}" \
+            '{ pr_number: $pr_number }' > bridge-outputs.json
+
+      - name: Emit bridge artifact
+        if: steps.check_trigger.outputs.triggered == 'true'
+        uses: leanprover-community/privilege-escalation-bridge/emit@f5dfe313a79647c07315b451b2dc2a81a161a50d # v1.2.0
+        with:
+          artifact: workflow-data
+          outputs_file: bridge-outputs.json
+          include_event: minimal
+          files: |
+            comment_body.md
+          retention_days: 5

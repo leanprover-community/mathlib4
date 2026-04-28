@@ -15,7 +15,7 @@ This file proves miscellaneous results under the assumption of `OrderTopology` p
 `SuccOrder` or `PredOrder`.
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
   {a : α} {s : Set α}
@@ -37,6 +37,7 @@ theorem isOpen_singleton_of_not_isSuccPrelimit (ha : ¬ IsSuccPrelimit a) : IsOp
 
 variable [NoMaxOrder α]
 
+@[to_dual]
 theorem isOpen_singleton_iff : IsOpen {a} ↔ ¬ IsSuccLimit a := by
   nontriviality α
   refine ⟨fun h ha ↦ ?_, fun ha ↦ ?_⟩
@@ -51,9 +52,11 @@ theorem isOpen_singleton_iff : IsOpen {a} ↔ ¬ IsSuccLimit a := by
       simp [ha.Iic_eq]
     · exact isOpen_singleton_of_not_isSuccPrelimit ha
 
+@[to_dual]
 theorem nhds_eq_pure {a : α} : 𝓝 a = pure a ↔ ¬ IsSuccLimit a :=
   (isOpen_singleton_iff_nhds_eq_pure _).symm.trans isOpen_singleton_iff
 
+@[to_dual]
 theorem isOpen_iff {s : Set α} : IsOpen s ↔
     ∀ o ∈ s, IsSuccLimit o → ∃ a < o, Set.Ioo a o ⊆ s := by
   refine isOpen_iff_mem_nhds.trans <| forall₂_congr fun o ho ↦ ?_
@@ -62,33 +65,10 @@ theorem isOpen_iff {s : Set α} : IsOpen s ↔
     grind
   · simp [nhds_eq_pure.2 ho', ho, ho']
 
+@[to_dual]
 theorem isSuccLimit_of_mem_frontier {a : α} {s : Set α} (ha : a ∈ frontier s) : IsSuccLimit a := by
   rw [← isOpen_singleton_iff.not_left]
   rw [frontier_eq_closure_inter_closure] at ha
   grind [mem_closure_iff, Set.Nonempty]
 
 end SuccOrder
-
--- TODO: use `to_dual`
-namespace PredOrder
-variable [PredOrder α] [NoMinOrder α]
-
-theorem isOpen_singleton_iff : IsOpen {a} ↔ ¬ IsPredLimit a :=
-  (SuccOrder.isOpen_singleton_iff (α := αᵒᵈ)).trans isSuccLimit_toDual_iff.not
-
-theorem nhds_eq_pure {a : α} : 𝓝 a = pure a ↔ ¬ IsPredLimit a :=
-  (isOpen_singleton_iff_nhds_eq_pure _).symm.trans isOpen_singleton_iff
-
-theorem isOpen_iff {s : Set α} : IsOpen s ↔
-    ∀ o ∈ s, IsPredLimit o → ∃ a, o < a ∧ Set.Ioo o a ⊆ s := by
-  refine isOpen_iff_mem_nhds.trans <| forall₂_congr fun o ho ↦ ?_
-  by_cases ho' : IsPredLimit o
-  · rw [(PredOrder.hasBasis_nhds_Ioc_of_exists_gt (not_isMax_iff.1 ho'.not_isMax)).mem_iff]
-    grind
-  · simp [nhds_eq_pure.2 ho', ho, ho']
-
-theorem isPredLimit_of_mem_frontier {a : α} {s : Set α} (ha : a ∈ frontier s) : IsPredLimit a := by
-  rw [← isSuccLimit_toDual_iff]
-  exact SuccOrder.isSuccLimit_of_mem_frontier (α := αᵒᵈ) ha
-
-end PredOrder

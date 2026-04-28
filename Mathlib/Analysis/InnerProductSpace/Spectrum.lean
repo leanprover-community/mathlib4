@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Rayleigh
 public import Mathlib.Analysis.Normed.Group.Submodule
-public import Mathlib.Analysis.Normed.Operator.FredholmAlternative
+public import Mathlib.Analysis.Normed.Operator.Compact.FredholmAlternative
 public import Mathlib.LinearAlgebra.Eigenspace.Charpoly
 public import Mathlib.LinearAlgebra.Eigenspace.ContinuousLinearMap
 public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
@@ -436,7 +436,6 @@ theorem eq_zero_of_forall_hasEigenvalue_eq_zero (hT : IsCompactOperator T) (hT' 
   apply exists_congr
   simp +contextual [hT.hasEigenvalue_iff_mem_spectrum]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **Spectral Theorem** for compact self-adjoint operators: the eigenspaces of a compact
 self-adjoint operator have trivial orthogonal complement. -/
 theorem orthogonalComplement_iSup_eigenspaces_eq_bot

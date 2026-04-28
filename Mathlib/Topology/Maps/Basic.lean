@@ -226,6 +226,7 @@ lemma tendsto_nhds_iff {f : ι → Y} {l : Filter ι} {y : Y} (hg : IsEmbedding 
 lemma continuous_iff (hg : IsEmbedding g) : Continuous f ↔ Continuous (g ∘ f) :=
   hg.isInducing.continuous_iff
 
+@[fun_prop]
 lemma continuous (hf : IsEmbedding f) : Continuous f := hf.isInducing.continuous
 
 lemma closure_eq_preimage_closure_image (hf : IsEmbedding f) (s : Set X) :
@@ -426,6 +427,10 @@ theorem preimage_closure_subset_closure_preimage (hf : IsOpenMap f) {s : Set Y} 
 theorem preimage_closure_eq_closure_preimage (hf : IsOpenMap f) (hfc : Continuous f) (s : Set Y) :
     f ⁻¹' closure s = closure (f ⁻¹' s) :=
   hf.preimage_closure_subset_closure_preimage.antisymm (hfc.closure_preimage_subset s)
+
+lemma preimage_closure_image (h₁ : IsOpenMap f) (h₂ : Function.Injective f)
+    (h₃ : Continuous f) (s : Set X) (hs' : IsClosed s) : f ⁻¹' closure (f '' s) = s := by
+  rw [h₁.preimage_closure_eq_closure_preimage h₃, Set.preimage_image_eq _ h₂, hs'.closure_eq]
 
 theorem preimage_frontier_subset_frontier_preimage (hf : IsOpenMap f) {s : Set Y} :
     f ⁻¹' frontier s ⊆ frontier (f ⁻¹' s) := by

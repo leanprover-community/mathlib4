@@ -160,6 +160,7 @@ theorem isClosed_irreducibleComponent {x : X} : IsClosed (irreducibleComponent x
   isClosed_of_mem_irreducibleComponents _ (irreducibleComponent_mem_irreducibleComponents x)
 
 /-- A preirreducible space is one where there is no non-trivial pair of disjoint opens. -/
+@[mk_iff]
 class PreirreducibleSpace (X : Type*) [TopologicalSpace X] : Prop where
   /-- In a preirreducible space, `Set.univ` is a preirreducible set. -/
   isPreirreducible_univ : IsPreirreducible (univ : Set X)
@@ -327,6 +328,27 @@ theorem subset_closure_inter_of_isPreirreducible_of_isOpen {S U : Set X} (hS : I
     hS _ (closure (S ∩ U))ᶜ hU isClosed_closure.isOpen_compl h (inter_compl_nonempty_iff.mpr h')
   exact h₃ (subset_closure ⟨h₁, h₂⟩)
 
+/-- A set is preirreducible iff every nonempty open subset of a
+preirreducible subspace is dense in the subspace. -/
+theorem isPreirreducible_iff_subset_closure_inter_open (S : Set X) :
+    IsPreirreducible S ↔
+      (∀ U : Set X, IsOpen U → (S ∩ U).Nonempty → S ⊆ closure (S ∩ U)) := by
+  refine ⟨fun h _ ↦ ?_, fun h ↦ ?_⟩
+  · exact subset_closure_inter_of_isPreirreducible_of_isOpen h
+  · intro a b ha hb ⟨p, pS, pa⟩ bS
+    by_contra! h0
+    suffices p ∉ closure (S ∩ b) from this <| (h b hb bS) pS
+    simp only [closure, mem_sInter, mem_setOf_eq, and_imp, not_forall, exists_prop]
+    use aᶜ
+    grind [isClosed_compl_iff, subset_compl_iff_disjoint_left, disjoint_iff_inter_eq_empty]
+
+/-- A space is preirreducible iff all nonempty open sets are dense. -/
+theorem preirreducibleSpace_iff_open_dense (X : Type*) [TopologicalSpace X] :
+    PreirreducibleSpace X ↔ ∀ ⦃U : Set X⦄, IsOpen U → U.Nonempty → Dense U := by
+  rw [preirreducibleSpace_iff, isPreirreducible_iff_subset_closure_inter_open]
+  simp only [univ_inter, univ_subset_iff, Dense]
+  grind
+
 theorem sUnion_irreducibleComponents : ⋃₀ irreducibleComponents X = Set.univ :=
   Set.eq_univ_of_forall fun x ↦ Set.mem_sUnion_of_mem mem_irreducibleComponent
     (irreducibleComponent_mem_irreducibleComponents x)
@@ -453,6 +475,15 @@ lemma preimage_mem_irreducibleComponents (ht : t ∈ irreducibleComponents X) {f
     f ⁻¹' t ∈ irreducibleComponents Y := by
   refine preimage_mem_irreducibleComponents_of_isPreirreducible_fiber ht hf.continuous hf.isOpenMap
     (fun _ ↦ (subsingleton_singleton.preimage hf.injective).isPreirreducible) h
+
+lemma closure_image_preimage_of_isPreirreducible (f : Y → X) (h : IsOpenMap f) (s : Set X)
+    (hne : (f ⁻¹' s).Nonempty) (hs : IsPreirreducible s) (hs' : IsClosed s) :
+    closure (f '' (f ⁻¹' s)) = s := by
+  refine subset_antisymm (closure_minimal (by simp) hs') ?_
+  refine subset_trans (subset_closure_inter_of_isPreirreducible_of_isOpen hs h.isOpen_range ?_) ?_
+  · exact Set.nonempty_of_nonempty_preimage (f := f) (by simpa)
+  · gcongr
+    grind
 
 variable (f : X → Y) (hf₁ : Continuous f) (hf₂ : IsOpenMap f)
 variable (hf₃ : ∀ x, IsPreirreducible (f ⁻¹' {x})) (hf₄ : Function.Surjective f)
