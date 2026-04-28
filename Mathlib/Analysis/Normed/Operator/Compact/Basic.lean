@@ -6,7 +6,6 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Analysis.LocallyConvex.Bounded
-public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 
 /-!
@@ -105,29 +104,6 @@ theorem isCompactOperator_iff_exists_mem_nhds_isCompact_closure_image [T2Space M
       fun ⟨V, hV, hVc⟩ => ⟨V, hV, closure (f '' V), hVc, subset_closure⟩⟩
 
 end
-
-section FiniteDimensional
-
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-  {E : Type*} [AddCommGroup E] [Module 𝕜 E]
-  [TopologicalSpace E] [T2Space E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
-
-theorem isCompactOperator_id_iff_finiteDimensional [LocallyCompactSpace 𝕜] :
-    IsCompactOperator (_root_.id : E → E) ↔ FiniteDimensional 𝕜 E :=
-  isCompactOperator_id_iff_locallyCompactSpace.trans
-    ⟨fun _ ↦ .of_locallyCompactSpace 𝕜, fun _ ↦ .of_finiteDimensional_of_complete 𝕜 E⟩
-
-/-- If the identity operator of a Banach space over a nontrivially normed field is compact,
-then the space is finite dimensional. -/
-lemma FiniteDimensional.of_isCompactOperator_id (h : IsCompactOperator (id : E → E)) :
-    FiniteDimensional 𝕜 E := by
-  have := LocallyCompactSpace.of_isCompactOperator_id h
-  exact FiniteDimensional.of_locallyCompactSpace 𝕜
-
-@[deprecated (since := "2026-03-05")] alias IsCompactOperator.finiteDimensional :=
-  FiniteDimensional.of_isCompactOperator_id
-
-end FiniteDimensional
 
 section Bounded
 
