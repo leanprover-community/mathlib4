@@ -474,6 +474,21 @@ deriving DecidableEq
 Weierstrass curve `W` over `R` in affine coordinates. -/
 scoped notation3:max W' "⟮" S "⟯" => Point <| baseChange W' S
 
+set_option quotPrecheck false in
+/-- The notation for a nonsingular affine point `(x, y)` on a Weierstrass curve `W` over a ring
+whose numerical expressions can be normalised with `norm_num`. -/
+scoped notation:max W "⟮" x "," y "⟯" =>
+  Point.some (W' := W) x y <| by norm_num [nonsingular_iff, equation_iff]
+
+open Lean.PrettyPrinter.Delaborator in
+/-- The pretty printer for a nonsingular affine point on a Weierstrass curve. -/
+@[app_delab Point.some]
+meta def Point.someDelab : Delab := do
+  let W ← SubExpr.withNaryArg 2 delab
+  let x ← SubExpr.withNaryArg 3 delab
+  let y ← SubExpr.withNaryArg 4 delab
+  `($W ⟮$x, $y⟯)
+
 /-- The equivalence between the nonsingular points on a Weierstrass curve `W` in affine coordinates
 satisfying a predicate and the set of pairs `⟨x, y⟩` satisfying `W.Nonsingular x y` with zero. -/
 def nonsingularPointEquivSubtype {p : W'.Point → Prop} (p0 : p .zero) : {P : W'.Point // p P} ≃
