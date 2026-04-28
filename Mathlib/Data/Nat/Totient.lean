@@ -288,8 +288,7 @@ theorem totient_eq_prod_factorization {n : ℕ} (hn : n ≠ 0) :
   rw [multiplicative_factorization φ (@totient_mul) totient_one hn]
   apply Finsupp.prod_congr _
   intro p hp
-  have h := zero_lt_iff.mpr (Finsupp.mem_support_iff.mp hp)
-  rw [totient_prime_pow (prime_of_mem_primeFactors hp) h]
+  rw [totient_prime_pow (prime_of_mem_primeFactors hp) (Finsupp.mem_support_iff.mp hp).pos]
 
 /-- Euler's product formula for the totient function. -/
 theorem totient_mul_prod_primeFactors (n : ℕ) :
@@ -299,7 +298,7 @@ theorem totient_mul_prod_primeFactors (n : ℕ) :
   nth_rw 3 [← prod_factorization_pow_eq_self hn]
   simp only [prod_primeFactors_prod_factorization, ← Finsupp.prod_mul]
   refine Finsupp.prod_congr (M := ℕ) (N := ℕ) fun p hp => ?_
-  rw [Finsupp.mem_support_iff, ← zero_lt_iff] at hp
+  rw [Finsupp.mem_support_iff, ← pos_iff_ne_zero] at hp
   rw [mul_comm, ← mul_assoc, ← pow_succ', Nat.sub_one, Nat.succ_pred_eq_of_pos hp]
 
 /-- Euler's product formula for the totient function. -/
@@ -316,7 +315,7 @@ theorem totient_eq_mul_prod_factors (n : ℕ) :
   · simp [hn]
   have hn' : (n : ℚ) ≠ 0 := by simp [hn]
   have hpQ : (∏ p ∈ n.primeFactors, (p : ℚ)) ≠ 0 := by
-    rw [← cast_prod, cast_ne_zero, ← zero_lt_iff, prod_primeFactors_prod_factorization]
+    rw [← cast_prod, cast_ne_zero, ← pos_iff_ne_zero, prod_primeFactors_prod_factorization]
     exact prod_pos fun p hp => pos_of_mem_primeFactors hp
   simp only [totient_eq_div_primeFactors_mul n, prod_primeFactors_dvd n, cast_mul, cast_prod,
     cast_div_charZero, mul_comm_div, mul_right_inj' hn', div_eq_iff hpQ, ← prod_mul_distrib]
