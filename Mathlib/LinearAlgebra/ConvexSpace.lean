@@ -346,7 +346,7 @@ lemma IsAffineMap.map_convexComboPair {f : M → N} (hf : IsAffineMap R f)
     f (convexComboPair s t hs ht h x y) = convexComboPair s t hs ht h (f x) (f y) := by
   simp [hf.map_sConvexCombo, convexComboPair]
 
-/-- Flattening with the outer combination specilaized to `convexComboPair`. -/
+/-- Flattening with the outer combination specialized to `convexComboPair`. -/
 lemma convexComboPair_iConvexCombo_iConvexCombo {J₁ : Type u₁} {J₂ : Type u₂}
     (g₁ : StdSimplex R J₁) (g₂ : StdSimplex R J₂)
     (m₁ : J₁ → M) (m₂ : J₂ → M) :
@@ -359,7 +359,7 @@ lemma convexComboPair_iConvexCombo_iConvexCombo {J₁ : Type u₁} {J₂ : Type 
   simp [iConvexCombo, map_sConvexCombo, map_map, Sigma.uncurry] at this
   simpa [convexComboPair, ← convexComboPair_def]
 
-/-- Flattening with the inner combination specilaized to `convexComboPair`. -/
+/-- Flattening with the inner combination specialized to `convexComboPair`. -/
 lemma iConvexCombo_convexComboPair
     (s t : I → R) (hs : ∀ i, 0 ≤ s i) (ht : ∀ i, 0 ≤ t i) (h : ∀ i, s i + t i = 1)
     (f : StdSimplex R I) (m₁ m₂ : I → M) :
