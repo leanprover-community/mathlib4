@@ -235,6 +235,7 @@ public import Mathlib.Algebra.Category.Ring.LinearAlgebra
 public import Mathlib.Algebra.Category.Ring.Topology
 public import Mathlib.Algebra.Category.Ring.Under.Basic
 public import Mathlib.Algebra.Category.Ring.Under.Limits
+public import Mathlib.Algebra.Category.Ring.Under.Property
 public import Mathlib.Algebra.Category.Semigrp.Basic
 public import Mathlib.Algebra.Central.Basic
 public import Mathlib.Algebra.Central.Defs
@@ -849,6 +850,7 @@ public import Mathlib.Algebra.MonoidAlgebra.MapDomain
 public import Mathlib.Algebra.MonoidAlgebra.Module
 public import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
 public import Mathlib.Algebra.MonoidAlgebra.Opposite
+public import Mathlib.Algebra.MonoidAlgebra.PointwiseSMul
 public import Mathlib.Algebra.MonoidAlgebra.Support
 public import Mathlib.Algebra.MonoidAlgebra.ToDirectSum
 public import Mathlib.Algebra.MvPolynomial.Basic
@@ -1557,6 +1559,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.PiZero
 public import Mathlib.AlgebraicTopology.SimplicialSet.Presentable
 public import Mathlib.AlgebraicTopology.SimplicialSet.ProdStdSimplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.ProdStdSimplexOne
+public import Mathlib.AlgebraicTopology.SimplicialSet.PushoutProduct
 public import Mathlib.AlgebraicTopology.SimplicialSet.RegularEpi
 public import Mathlib.AlgebraicTopology.SimplicialSet.RelativeMorphism
 public import Mathlib.AlgebraicTopology.SimplicialSet.Simplices
@@ -2729,6 +2732,7 @@ public import Mathlib.CategoryTheory.LiftingProperties.Basic
 public import Mathlib.CategoryTheory.LiftingProperties.Limits
 public import Mathlib.CategoryTheory.LiftingProperties.Over
 public import Mathlib.CategoryTheory.LiftingProperties.ParametrizedAdjunction
+public import Mathlib.CategoryTheory.LiftingProperties.PushoutProduct
 public import Mathlib.CategoryTheory.Limits.Bicones
 public import Mathlib.CategoryTheory.Limits.ColimitLimit
 public import Mathlib.CategoryTheory.Limits.Comma
@@ -6730,6 +6734,7 @@ public import Mathlib.RingTheory.Regular.Category
 public import Mathlib.RingTheory.Regular.Depth
 public import Mathlib.RingTheory.Regular.Flat
 public import Mathlib.RingTheory.Regular.IsSMulRegular
+public import Mathlib.RingTheory.Regular.ProjectiveDimension
 public import Mathlib.RingTheory.Regular.RegularSequence
 public import Mathlib.RingTheory.RegularLocalRing.Defs
 public import Mathlib.RingTheory.RingHom.Bijective
@@ -6929,6 +6934,7 @@ public import Mathlib.SetTheory.Lists
 public import Mathlib.SetTheory.Ordinal.Arithmetic
 public import Mathlib.SetTheory.Ordinal.Basic
 public import Mathlib.SetTheory.Ordinal.CantorNormalForm
+public import Mathlib.SetTheory.Ordinal.Commute
 public import Mathlib.SetTheory.Ordinal.Enum
 public import Mathlib.SetTheory.Ordinal.Exponential
 public import Mathlib.SetTheory.Ordinal.Family
