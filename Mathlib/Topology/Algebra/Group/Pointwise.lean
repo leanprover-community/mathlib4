@@ -13,7 +13,7 @@ public import Mathlib.Topology.Maps.Proper.Basic
 
 -/
 
-@[expose] public section
+public section
 
 open Set Filter TopologicalSpace Function Topology Pointwise MulOpposite
 
