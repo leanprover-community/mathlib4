@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Algebra.Basic
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Tactic.Ring.RingNF
 
-import Mathlib.Tactic.Algebra.Lemmas
+public import Mathlib.Tactic.Algebra.Lemmas
 
 /-!
 # The `algebra` tactic
@@ -483,3 +483,5 @@ elab (name := algebraWith) "algebra" " with " R:term : tactic =>
     AtomM.run .default (proveEq (some ⟨u, R⟩) g)
 
 end Mathlib.Tactic.Algebra
+
+macro "ring":tactic => `(tactic|algebra)

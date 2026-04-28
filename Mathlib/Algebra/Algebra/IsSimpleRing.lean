@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Algebra.Basic
 public import Mathlib.RingTheory.SimpleRing.Basic
+public import Mathlib.Tactic.Algebra.Basic
 
 /-!
 # Facts about algebras when the coefficient ring is a simple ring

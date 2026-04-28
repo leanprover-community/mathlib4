@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Algebra.Basic
 public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.Tactic.Algebra.Basic
 
 /-!
 # Bases of submodules

@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Basic
 public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.Algebra.Polynomial.EraseLead
+public import Mathlib.Tactic.Algebra.Basic
 
 /-!
 # Denominators of evaluation of polynomials at ratios

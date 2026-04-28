@@ -10,6 +10,7 @@ public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.Polynomial.Degree.Lemmas
 public import Mathlib.Algebra.Polynomial.Eval.Algebra
 
+public import Mathlib.Tactic.Algebra.Basic
 /-!
 # The Pochhammer polynomials
 
