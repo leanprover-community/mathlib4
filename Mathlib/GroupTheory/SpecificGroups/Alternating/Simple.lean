@@ -46,6 +46,14 @@ applied to the following `IwasawaStructure`s:
   Its commutative subgroups consist of the permutations of cycleType (2, 2) with support
   in a given element of `Set.powersetCard α 2`. They have order 4 and exponent 2 (`IsKleinFour`).
 
+## TODO
+
+This file contains two uncomfortable uses of `convert`:
+
+* on line 77, to identify `MulAut.conj` and `ConjAct.toConjAct`.
+
+* on line 144, to match the subtype coercions for `Finset` and `Set`.
+
 -/
 
 @[expose] public section
