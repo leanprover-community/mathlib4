@@ -97,6 +97,11 @@ public def delabGt : Delab := whenNotPPOption getPPExplicit <| whenPPOption getP
 
 /-! ## Elaboration -/
 
+/-- Linter for ambiguous use of subset notation notation. -/
+register_option linter.setNotationForOrder : Bool := {
+  defValue := true
+  descr := "Linter for ambiguous use of subset notation notation" }
+
 /-- This relation is an implementation detail of the `⊆` elaborator. -/
 public opaque SubsetElabAux.{u} {α : Type u} : α → α → Prop
 
@@ -118,6 +123,12 @@ def elabSubsetLike (x y : Term) (le leCls sub subCls : Name) (expectedType? : Op
   tryPostponeIfMVar α
   if ← isMVarApp α then
     synthesizeSyntheticMVarsUsingDefault
+    if ← isMVarApp α then
+      Linter.logLintIf linter.setNotationForOrder (← getRef)
+        m!"Ambiguous use of subset notation: the type is a metavariable.\n\
+        Consider adding a type annotation, e.g. `(_ : Set _) ⊆ _`.\n\
+        The term will elaborate to a different constant depending on \
+        whether the type is tagged with `@[use_set_notation_for_order]`."
   let (rel, cls) := if ← useSetNotationFor α then (le, leCls) else (sub, subCls)
   let inst ← mkInstMVar <| .app (.const cls f.constLevels!) α
   let rel := mkApp2 (.const rel f.constLevels!) α inst
