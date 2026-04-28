@@ -45,20 +45,62 @@ jobs:
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Parse shake stats
+        id: stats
+        if: steps.shake.outputs.changed == 'true'
+        run: |
+          python3 - <<'EOF'
+          import re, os
+          suggestions = added = removed = 0
+          with open("explain.txt") as f:
+              for line in f:
+                  m = re.search(r'Successfully applied (\d+) suggestions', line)
+                  if m:
+                      suggestions = int(m.group(1))
+                  m = re.match(r'^  (add|remove) #\[(.+)\]', line)
+                  if m:
+                      action, items = m.group(1), m.group(2)
+                      count = len([x for x in items.split(',') if x.strip()])
+                      if action == 'add':
+                          added += count
+                      else:
+                          removed += count
+          print(f'{suggestions} files changed · +{added} imports added · -{removed} imports removed')
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as out:
+              out.write(f'suggestions={suggestions}\n')
+              out.write(f'added={added}\n')
+              out.write(f'removed={removed}\n')
+          EOF
+
+      - name: Upload explain.txt
+        id: upload-artifact
+        if: steps.shake.outputs.changed == 'true'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: shake-explain
+          path: explain.txt
+
       - name: Build PR body
         id: pr_body
         if: steps.shake.outputs.changed == 'true' && toJson(inputs.dry_run) != 'true'
         shell: bash
         env:
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          ARTIFACT_ID: ${{ steps.upload-artifact.outputs.artifact-id }}
+          SUGGESTIONS: ${{ steps.stats.outputs.suggestions }}
+          ADDED: ${{ steps.stats.outputs.added }}
+          REMOVED: ${{ steps.stats.outputs.removed }}
         run: |
           {
             echo "body<<EOF"
             echo "I am happy to shake some imports for you!"
             echo ""
+            echo "**${SUGGESTIONS} files changed** · +${ADDED} imports added · -${REMOVED} imports removed"
+            echo ""
             echo "---"
             echo ""
             echo "[workflow run for this PR](${RUN_URL})"
+            echo "[explain.txt](${RUN_URL}/artifacts/${ARTIFACT_ID})"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
@@ -80,7 +122,10 @@ jobs:
         with:
           author: "mathlib-nolints[bot] <258989889+mathlib-nolints[bot]@users.noreply.github.com>"
           token: "${{ steps.app-token.outputs.token }}"
-          commit-message: "chore: lake shake --add-public --keep-implied --keep-prefix --fix"
+          commit-message: |
+            chore: lake shake --add-public --keep-implied --keep-prefix --fix
+
+            ${{ steps.stats.outputs.suggestions }} files changed · +${{ steps.stats.outputs.added }} imports added · -${{ steps.stats.outputs.removed }} imports removed
           branch: "shake"
           base: master
           title: "chore: lake shake --add-public --keep-implied --keep-prefix --fix"
@@ -98,7 +143,10 @@ jobs:
           type: 'stream'
           topic: 'Mathlib `shake --fix`'
           content: |
-            Please review #${{ steps.pr.outputs.pull-request-number }}.
+            Please review #${{ steps.pr.outputs.pull-request-number }} which applies
+            ${{ steps.stats.outputs.suggestions }} suggestions:
+            - +${{ steps.stats.outputs.added }} imports added
+            - -${{ steps.stats.outputs.removed }} imports removed
 
       - name: Send Zulip message (failure)
         if: ${{ toJson(inputs.dry_run) != 'true' && failure() }}
