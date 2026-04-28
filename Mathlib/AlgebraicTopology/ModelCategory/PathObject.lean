@@ -282,9 +282,9 @@ end PathObject
 
 /-- The opposite of a pre-path object is a precylinder object. -/
 @[simps]
-def PrepathObject.op {A : C} (P : PrepathObject A) :
+protected def PrepathObject.op {A : C} (P : PrepathObject A) :
     Precylinder (op A) where
-  I := Opposite.op P.P
+  I := op P.P
   i₀ := P.p₀.op
   i₁ := P.p₁.op
   π := P.ι.op
@@ -293,9 +293,9 @@ def PrepathObject.op {A : C} (P : PrepathObject A) :
 
 /-- The precylinder object obtained from a pre-path object in the opposite category. -/
 @[simps]
-def PrepathObject.unop {A : Cᵒᵖ} (P : PrepathObject A) :
+protected def PrepathObject.unop {A : Cᵒᵖ} (P : PrepathObject A) :
     Precylinder A.unop where
-  I := Opposite.unop P.P
+  I := P.P.unop
   i₀ := P.p₀.unop
   i₁ := P.p₁.unop
   π := P.ι.unop
@@ -304,9 +304,9 @@ def PrepathObject.unop {A : Cᵒᵖ} (P : PrepathObject A) :
 
 /-- The opposite of a pre-path object is a precylinder object. -/
 @[simps]
-def Precylinder.op {A : C} (P : Precylinder A) :
+protected def Precylinder.op {A : C} (P : Precylinder A) :
     PrepathObject (op A) where
-  P := Opposite.op P.I
+  P := op P.I
   p₀ := P.i₀.op
   p₁ := P.i₁.op
   ι := P.π.op
@@ -315,9 +315,9 @@ def Precylinder.op {A : C} (P : Precylinder A) :
 
 /-- The pre-path object object obtained from a cylinder in the opposite category. -/
 @[simps]
-def Precylinder.unop {A : Cᵒᵖ} (P : Precylinder A) :
+protected def Precylinder.unop {A : Cᵒᵖ} (P : Precylinder A) :
     PrepathObject A.unop where
-  P := Opposite.unop P.I
+  P := P.I.unop
   p₀ := P.i₀.unop
   p₁ := P.i₁.unop
   ι := P.π.unop

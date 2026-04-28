@@ -310,7 +310,7 @@ end RightHomotopyClass
 
 /-- The left homotopy in the opposite category that is deduced from a right homotopy. -/
 @[simps]
-def PrepathObject.RightHomotopy.op
+protected def PrepathObject.RightHomotopy.op
     {X Y : C} {P : PrepathObject Y} {f g : X ⟶ Y} (h : P.RightHomotopy f g) :
     P.op.LeftHomotopy f.op g.op where
   h := h.h.op
@@ -319,7 +319,7 @@ def PrepathObject.RightHomotopy.op
 
 /-- The left homotopy that is deduced from a right homotopy in the opposite category. -/
 @[simps]
-def PrepathObject.RightHomotopy.unop
+protected def PrepathObject.RightHomotopy.unop
     {X Y : Cᵒᵖ} {P : PrepathObject Y} {f g : X ⟶ Y} (h : P.RightHomotopy f g) :
     P.unop.LeftHomotopy f.unop g.unop where
   h := h.h.unop
@@ -328,7 +328,7 @@ def PrepathObject.RightHomotopy.unop
 
 /-- The right homotopy in the opposite category that is deduced from a left homotopy. -/
 @[simps]
-def Precylinder.LeftHomotopy.op
+protected def Precylinder.LeftHomotopy.op
     {X Y : C} {P : Precylinder X} {f g : X ⟶ Y} (h : P.LeftHomotopy f g) :
     P.op.RightHomotopy f.op g.op where
   h := h.h.op
@@ -337,7 +337,7 @@ def Precylinder.LeftHomotopy.op
 
 /-- The right homotopy that is deduced from a left homotopy in the opposite category. -/
 @[simps]
-def Precylinder.LeftHomotopy.unop
+protected def Precylinder.LeftHomotopy.unop
     {X Y : Cᵒᵖ} {P : Precylinder X} {f g : X ⟶ Y} (h : P.LeftHomotopy f g) :
     P.unop.RightHomotopy f.unop g.unop where
   h := h.h.unop
