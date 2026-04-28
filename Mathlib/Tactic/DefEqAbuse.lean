@@ -362,12 +362,13 @@ def reportDefEqAbuse {m : Type → Type} [Monad m] [MonadLog m] [AddMessageConte
         `backward.isDefEq.respectTransparency true` but succeeds with `false`.\n\
         The following isDefEq checks are the root causes of the failure:\n{failureList}"
 
-/-- Collect candidate semireducible definition names by transitively following definition values
+/-- Collect candidate semireducible definition names by transitively following declaration values
 reachable from `roots`, up to a bounded depth. -/
 def collectCandidates (env : Environment) (roots : Array Name) : Array Name := Id.run do
-  let mut visited : Std.HashSet Name := {}
+  let mut visited : NameSet := {}
   let mut queue := roots
-  for _ in List.range 6 do -- depth limit
+  let mut candidates : Array Name := #[]
+  for _ in (0 : Nat)...6 do -- depth limit
     if queue.isEmpty then break
     let current := queue
     queue := #[]
@@ -375,35 +376,26 @@ def collectCandidates (env : Environment) (roots : Array Name) : Array Name := I
       if visited.contains name then continue
       visited := visited.insert name
       if let some info := env.find? name then
-        if let some val := info.value? then
-          for c in val.getUsedConstants do
+        if wasOriginallyDefn env name && getReducibilityStatusCore env name == .semireducible then
+          candidates := candidates.push name
+        -- Only `defs`, `theorem`s and `opaque`s can have values, and we only care about the first.
+        if let .defnInfo { value .. } := info then
+          for c in value.getUsedConstants do
             if !visited.contains c then
               queue := queue.push c
-  let mut candidates : Array Name := #[]
-  for name in visited.toArray do
-    if getReducibilityStatusCore env name == .semireducible then
-      if let some (.defnInfo _) := env.find? name then
-        candidates := candidates.push name
   return candidates
-
-/-- Apply `@[implicit_reducible]` marks to the given constants. -/
-private def markImplicitReducible {m : Type → Type} [Monad m] [MonadEnv m]
-    (names : Array Name) : m Unit := do
-  for name in names do setReducibilityStatus name .implicitReducible
 
 /-- Temporarily mark constants as `@[implicit_reducible]`, run an action, then restore all state.
 
-Both the environment (which carries the reducibility marks) and the full tactic state (metavar
-context, goals) are saved before the marks are applied and restored via `finally`, so this
-helper is self-contained: callers do not need additional save/restore wrappers. -/
+The full tactic state (which includes the environment carrying recuibility marks) are saved before
+the marks are applied and restored via `finally`, so this helper is self-contained: callers do not
+need additional save/restore wrappers. -/
 def withTempImplicitReducible {α : Type} (names : Array Name) (k : TacticM α) : TacticM α := do
   let s ← saveState
-  let savedEnv ← getEnv
   try
-    markImplicitReducible names
+    for name in names do setReducibilityStatus name .implicitReducible
     k
   finally
-    setEnv savedEnv
     s.restore (restoreInfo := true)
 
 /-- Temporarily mark constants as `@[implicit_reducible]`, run an action, then restore all state.
@@ -414,10 +406,26 @@ def withTempImplicitReducibleCmd {α : Type} (names : Array Name)
     (k : CommandElabM α) : CommandElabM α := do
   let saved ← get
   try
-    markImplicitReducible names
+    for name in names do setReducibilityStatus name .implicitReducible
     k
   finally
     set saved
+
+/-- Given a function `succeeds : Array Name → m Bool` and an initial array of `candidates` such
+that `succeeds candidates` is `true` (returning `none` if this is not the case), tries removing
+elements from `candidates` in order such that the resulting array still `succeeds`. Sorts the
+result.
+
+This minimization may not be unique. It also is only minimal under the assumption that removing a
+later element from the array cannot cause an earlier element to become removable. -/
+def minimizeCandidates {m} [Monad m] (succeeds : Array Name → m Bool) (candidates : Array Name) :
+    m (Option (Array Name)) := do
+  unless ← succeeds candidates do return none
+  let mut minimal := candidates
+  for name in minimal do
+    let without := minimal.filter (· != name)
+    if ← succeeds without then minimal := without
+  return minimal.qsort Name.lt
 
 /-- Try to find a (possibly non-unique) minimal set of semireducible constants that, when marked
 `@[implicit_reducible]`, make the tactic succeed with `backward.isDefEq.respectTransparency true`.
@@ -429,20 +437,15 @@ def suggestAnnotationsTac (tac : Syntax) : TacticM (Option (Array Name)) := do
   let goalType ← getMainTarget
   let candidates := collectCandidates (← getEnv) goalType.getUsedConstants
   if candidates.isEmpty then return none
-  let tryWith (names : Array Name) : TacticM Bool :=
-    withTempImplicitReducible names do
-      withTheReader Core.Context (fun c => { c with maxHeartbeats := 0 }) do
-        withOptions (fun o => o.setBool `backward.isDefEq.respectTransparency true) do
-          try evalTactic tac; pure true
-          catch | .internal id ref => throw (.internal id ref) | _ => pure false
-  -- Verify that marking ALL candidates fixes the issue.
-  unless ← tryWith candidates do return none
-  -- Minimize by greedy removal.
-  let mut minimal := candidates
-  for name in candidates do
-    let without := minimal.filter (· != name)
-    if ← tryWith without then minimal := without
-  return some (minimal.qsort Name.quickLt)
+  let succeedsWith (names : Array Name) : TacticM Bool :=
+    withTempImplicitReducible names do withCurrHeartbeats do
+      withOptions (·.setBool `backward.isDefEq.respectTransparency true) do
+        try
+          Core.resetMessageLog
+          Term.withoutErrToSorry <| evalTactic tac
+          notM MonadLog.hasErrors
+        catch _ => pure false
+  minimizeCandidates succeedsWith candidates
 
 /-- Try to find a (possibly non-unique) minimal set of semireducible constants that, when marked
 `@[implicit_reducible]`, make the command succeed with `backward.isDefEq.respectTransparency true`.
@@ -456,44 +459,34 @@ def suggestAnnotationsCmd (cmd : Syntax) : CommandElabM (Option (Array Name)) :=
   let saved ← get
   let roots ← try
     withScope (fun scope =>
-      { scope with opts := (scope.opts.setBool `Elab.async false)
+      { scope with opts := scope.opts.setBool `Elab.async false
           |>.setBool `backward.isDefEq.respectTransparency false }) do
       elabCommand cmd
       let newEnv ← getEnv
-      let mut names : Array Name := #[]
+      let mut names : NameSet := {}
       -- Collect constants from any new declarations added by this command
-      for (name, _) in newEnv.constants.map₂.toList do
-        if env.constants.map₂.find? name |>.isNone then
-          if let some info := newEnv.find? name then
-            names := names ++ info.type.getUsedConstants
-            if let some val := info.value? then
-              names := names ++ val.getUsedConstants
+      for (name, info) in newEnv.constants.map₂ do
+        if !env.constants.map₂.contains name then
+          names := names ∪ info.getUsedConstantsAsSet
       return names
-  catch _ => pure #[]
+  catch _ => pure {}
   set saved
-  let candidates := collectCandidates (← getEnv) roots
+  let candidates := collectCandidates (← getEnv) roots.toArray
   if candidates.isEmpty then return none
-  let tryWith (names : Array Name) : CommandElabM Bool :=
+  let succeedsWith (names : Array Name) : CommandElabM Bool :=
     withTempImplicitReducibleCmd names do
       withScope (fun scope =>
-        { scope with opts := ((scope.opts.setBool `Elab.async false)
-            |>.setBool `backward.isDefEq.respectTransparency true)
-            |>.insert `maxHeartbeats (.ofNat 0) }) do
+        { scope with opts := scope.opts.setBool `Elab.async false
+            |>.setBool `backward.isDefEq.respectTransparency true }) do
         try
           elabCommand cmd
-          let hasErrors := (← get).messages.hasErrors
-          return !hasErrors
-        catch | .internal id ref => throw (.internal id ref) | _ => return false
-  unless ← tryWith candidates do return none
-  let mut minimal := candidates
-  for name in candidates do
-    let without := minimal.filter (· != name)
-    if ← tryWith without then minimal := without
-  return some (minimal.qsort Name.quickLt)
+          notM MonadLog.hasErrors
+        catch _ => return false
+  minimizeCandidates succeedsWith candidates
 
 /-- Format the annotation workaround as a Lean code snippet. -/
 def formatAnnotations (names : Array Name) : MessageData :=
-  let namesList := joinSep (names.toList.map fun n => m!"  {n}") "\n"
+  let namesList := joinSep (names.toList.map (m!"  {.ofConstName · (fullNames := true)}")) "\n"
   m!"set_option allowUnsafeReducibility true\nattribute [implicit_reducible]\n{namesList}"
 
 /-- Log annotation suggestions as info. -/
@@ -502,8 +495,8 @@ def logAnnotationSuggestions {m : Type → Type} [Monad m] [MonadLog m] [AddMess
   let some names := names | return
   if names.isEmpty then return
   logInfo m!"Workaround: the following `@[implicit_reducible]` annotations (a possibly \
-    non-unique minimal set) would paper over this problem,\n\
-    but the real issue is likely a leaky instance somewhere.\n\
+    non-unique minimal set) would paper over this problem, but the real issue is likely a leaky \
+    instance somewhere.\n\n\
     {formatAnnotations names}"
 
 /--

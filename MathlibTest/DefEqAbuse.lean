@@ -68,8 +68,8 @@ warning: #defeq_abuse: tactic fails with `backward.isDefEq.respectTransparency t
 The following isDefEq checks are the root causes of the failure:
   ❌️ (i : ℕ) → (fun a => Prop) i =?= MyPred ℕ
 ---
-info: Workaround: the following `@[implicit_reducible]` annotations (a possibly non-unique minimal set) would paper over this problem,
-but the real issue is likely a leaky instance somewhere.
+info: Workaround: the following `@[implicit_reducible]` annotations (a possibly non-unique minimal set) would paper over this problem, but the real issue is likely a leaky instance somewhere.
+
 set_option allowUnsafeReducibility true
 attribute [implicit_reducible]
   MyPred
@@ -77,6 +77,24 @@ attribute [implicit_reducible]
 #guard_msgs in
 noncomputable example (s : MyPred ℕ) (a : ℕ) (ha : a ∉ s) : Disjoint s {a} := by
   #defeq_abuse in rw [myPred_disjoint_singleton_right]
+  exact ha
+
+/--
+warning: #defeq_abuse: command fails with `backward.isDefEq.respectTransparency true` but succeeds with `false`.
+The following isDefEq checks are the root causes of the failure:
+  ❌️ MyPred ℕ =?= (i : ℕ) → (fun a => Prop) i
+  ❌️ (i : ℕ) → (fun a => Prop) i =?= MyPred ℕ
+---
+info: Workaround: the following `@[implicit_reducible]` annotations (a possibly non-unique minimal set) would paper over this problem, but the real issue is likely a leaky instance somewhere.
+
+set_option allowUnsafeReducibility true
+attribute [implicit_reducible]
+  MyPred
+-/
+#guard_msgs in
+#defeq_abuse in
+noncomputable def fooDependingOnMyPred (s : MyPred ℕ) (a : ℕ) (ha : a ∉ s) : Disjoint s {a} := by
+  rw [myPred_disjoint_singleton_right]
   exact ha
 
 end SetAliasAbuse
@@ -196,8 +214,8 @@ warning: #defeq_abuse: tactic fails with `backward.isDefEq.respectTransparency t
 The following isDefEq checks are the root causes of the failure:
   ❌️ @ZoC.zo Int instZoCInt =?= @ZoC.zo Int (@GrC.toZoC Int ?m.11)
 ---
-info: Workaround: the following `@[implicit_reducible]` annotations (a possibly non-unique minimal set) would paper over this problem,
-but the real issue is likely a leaky instance somewhere.
+info: Workaround: the following `@[implicit_reducible]` annotations (a possibly non-unique minimal set) would paper over this problem, but the real issue is likely a leaky instance somewhere.
+
 set_option allowUnsafeReducibility true
 attribute [implicit_reducible]
   zoDirectC
