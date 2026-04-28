@@ -733,7 +733,7 @@ protected theorem map_smulₑ (f : A →ₑ*[φ] B) (m : M) (x : A) : f (m • x
 variable (M)
 
 /-- The identity map as an equivariant monoid homomorphism. -/
-@[to_additive (dont_translate := M, attr := implicit_reducible)
+@[to_additive (dont_translate := M) (attr := implicit_reducible)
 /-- The identity map as an equivariant additive monoid homomorphism. -/]
 protected def id : A →*[M] A :=
   ⟨MulActionHom.id _, rfl, fun _ _ => rfl⟩
@@ -775,7 +775,7 @@ instance {A : Type*} [AddMonoid A] [DistribMulAction M A]
   ⟨0⟩
 
 /-- Composition of two equivariant monoid homomorphisms. -/
-@[to_additive (dont_translate := M N P, attr := implicit_reducible)
+@[to_additive (dont_translate := M N P) (attr := implicit_reducible)
 /-- Composition of two equivariant additive monoid homomorphisms. -/]
 def comp [κ : MonoidHom.CompTriple φ ψ χ]
     (g : B →ₑ*[ψ] C) (f : A →ₑ*[φ] B) : A →ₑ*[χ] C :=
