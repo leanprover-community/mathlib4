@@ -81,13 +81,13 @@ instance AddCommGrpCat.forget_isCorepresentable :
     (forget AddCommGrpCat.{u}).IsCorepresentable :=
   Functor.IsCorepresentable.mk' AddCommGrpCat.coyonedaObjIsoForget
 
-theorem uliftZMultiplesHom.map_add (G : Type u) [AddCommGroup G] (x y : G) :
-    (uliftZMultiplesHom G) (x + y) = ((uliftZMultiplesHom G) x) + ((uliftZMultiplesHom G) y) := by
+theorem uliftZMultiplesHom_apply_add (G : Type u) [AddCommGroup G] (x y : G) :
+    uliftZMultiplesHom G (x + y) = uliftZMultiplesHom G x + uliftZMultiplesHom G y := by
   ext
   simp_all only [uliftZMultiplesHom_apply_apply, smul_add, AddMonoidHom.add_apply]
 
 /-- The additive equivalence `(ℤ ⟶ G) ≃+ G` -/
 @[simps!]
 def AddCommGrpCat.uliftZMultiplesAddEquiv (G : AddCommGrpCat) : (of (ULift ℤ) ⟶ G) ≃+ G :=
-  AddEquiv.trans (@AddCommGrpCat.homAddEquiv (AddCommGrpCat.of (ULift ℤ)) G)
-    (AddEquiv.mk' (uliftZMultiplesHom G) (uliftZMultiplesHom.map_add G)).symm
+  AddCommGrpCat.homAddEquiv.trans
+    (AddEquiv.mk' (uliftZMultiplesHom G) (uliftZMultiplesHom_apply_add G)).symm
