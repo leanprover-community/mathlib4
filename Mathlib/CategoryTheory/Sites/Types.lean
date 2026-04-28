@@ -192,7 +192,7 @@ theorem typesGrothendieckTopology_eq_canonical :
   ext S
   refine ⟨fun hs x => ?_, fun hs β f => Presieve.isSheaf_yoneda' _ fun y => hs (f y)⟩
   by_contra hsx
-  have : ↾fun _ => ULift.up true = ↾fun _ => ULift.up false :=
+  have : (↾fun _ => ULift.up true) = ↾fun _ => ULift.up false :=
     (hs PUnit (↾fun _ => x)).isSeparatedFor.ext
       fun β f hf => by
         dsimp
