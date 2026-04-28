@@ -564,7 +564,7 @@ theorem Submartingale.sum_smul_sub [IsFiniteMeasure μ] {R : ℝ} {f : ℕ → �
     ⟨R, fun ω => (abs_of_nonneg (hnonneg i ω)).trans_le (hbdd i ω)⟩
   choose C hC using hξbdd
   have hint : ∀ m, Integrable (∑ k ∈ Finset.range m, ξ k • (f (k + 1) - f k)) μ := fun m =>
-      integrable_finset_sum' _ fun i _ => Integrable.bdd_smul
+      integrable_finsetSum' _ fun i _ => Integrable.bdd_smul
         ((hf.integrable _).sub (hf.integrable _)) (C i)
         hξ.stronglyMeasurable.aestronglyMeasurable (ae_of_all _ (hC i))
   have hadp : StronglyAdapted 𝒢 fun n => ∑ k ∈ Finset.range n, ξ k • (f (k + 1) - f k) := by
