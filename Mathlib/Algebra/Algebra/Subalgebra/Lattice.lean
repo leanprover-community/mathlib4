@@ -517,6 +517,34 @@ theorem subset_adjoin : s ⊆ adjoin R s :=
 @[aesop 80% (rule_sets := [SetLike])]
 theorem mem_adjoin_of_mem {s : Set A} {x : A} (hx : x ∈ s) : x ∈ adjoin R s := subset_adjoin hx
 
+/-
+The following set-up allows one to write `xₖ : R[x₁, ..., xₙ]` instead of
+`(⟨xₖ, "membership proof"⟩ : R[x₁, ..., xₙ])`.
+
+The idea is to recurse through the list of `x₁, ..., xₙ` until we find the appropriate `xₖ`.
+By design, it only triggers if the set is of the form `insert x₁ (insert x₂ (...(s)))` or
+`{x₁, ..., xₙ}`.
+-/
+
+variable {α : Type*}
+
+/-- Supporting class for coercions `xₖ : R[x₁, ..., xₙ]`. -/
+class CoeAdjoinAux (x : α) (s : Set α) : Prop where mem : x ∈ s
+
+scoped instance (x : α) : CoeAdjoinAux x {x} := ⟨Set.mem_singleton x⟩
+
+scoped instance (x : α) (s : Set α) : CoeAdjoinAux x (insert x s) := ⟨Set.mem_insert x s⟩
+
+scoped instance (x y : α) (s : Set α) [CoeAdjoinAux x s] : CoeAdjoinAux x (insert y s) :=
+  ⟨Set.mem_insert_of_mem y CoeAdjoinAux.mem⟩
+
+/-- Enables notation `xₖ : R[x₁, ..., xₙ]` instead of
+`(⟨xₖ, "membership proof"⟩ : R[x₁, ..., xₙ])`. -/
+scoped instance {A B : Type*} [CommSemiring A] [Semiring B] [Algebra A B]
+    (s : Set B) (x : B) [CoeAdjoinAux x s] :
+    CoeDep B x (adjoin A s) where
+  coe := ⟨x, mem_adjoin_of_mem CoeAdjoinAux.mem⟩
+
 theorem adjoin_le {S : Subalgebra R A} (H : s ⊆ S) : adjoin R s ≤ S :=
   Algebra.gc.l_le H
 
@@ -782,10 +810,6 @@ variable (R)
 @[simp]
 theorem self_mem_adjoin_singleton (x : A) : x ∈ R[x] :=
   Algebra.subset_adjoin (Set.mem_singleton_iff.mpr rfl)
-
-instance {A B : Type*} [CommSemiring A] [Semiring B] [Algebra A B] (x : B) :
-    CoeDep B x (Algebra.adjoin A {x}) where
-  coe := ⟨x, Algebra.self_mem_adjoin_singleton A x⟩
 
 end Semiring
 
