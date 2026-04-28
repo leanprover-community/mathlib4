@@ -96,27 +96,21 @@ lemma map_lift_shiftIso_hom_app (n a a' : A) (h : n + a = a') (X : C) :
         (F.shiftIso n a a' h).hom.app X ≫ (hΦ a).inv.app X :=
   lift.map_shiftIso_hom_app ..
 
-/-- The isomorphism `(lift F G Φ hΦ).functor a ⋙ G ≅ F.functor a` when
-`F : SingleFunctors C E A`, `G` is a fully faithful functor, and the functors `F.functor a`
-are equipped with isomorphisms `Φ a ⋙ G ≅ F.functor a` for all `a`. -/
-def liftFunctorCompIso (a : A) :
-    (lift F G Φ hΦ).functor a ⋙ G ≅ F.functor a :=
-  hΦ a
-
 /-- After postcomposition with the fully faithful functor `G`,
 `lift F G Φ hΦ` becomes isomorphic to `F`. -/
+@[simps!]
 noncomputable def liftPostcompIso : (lift F G Φ hΦ).postcomp G ≅ F :=
-  isoMk (liftFunctorCompIso F G Φ hΦ) (fun n a a' ha' ↦ by
+  isoMk (hΦ) (fun n a a' ha' ↦ by
     ext X
     have := (hΦ a).inv_hom_id_app X
     dsimp at this
-    simp [liftFunctorCompIso, map_lift_shiftIso_hom_app, this])
+    simp [map_lift_shiftIso_hom_app, this])
 
 instance [Preadditive C] [Preadditive D] [Preadditive E] [G.Additive] (a : A)
     [(F.functor a).Additive] : ((lift F G Φ hΦ).functor a).Additive := by
   have : ((lift F G Φ hΦ).functor a ⋙ G).Additive := by
-    rw [Functor.additive_iff_of_iso (liftFunctorCompIso F G Φ hΦ a)]
-    infer_instance
+    dsimp
+    rwa [Functor.additive_iff_of_iso (hΦ a)]
   exact Functor.additive_of_comp_faithful _ G
 
 end SingleFunctors
