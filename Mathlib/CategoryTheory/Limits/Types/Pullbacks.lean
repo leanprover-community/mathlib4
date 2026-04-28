@@ -51,8 +51,7 @@ for given `f` and `g`.
 def pullbackLimitCone (f : X ⟶ Z) (g : Y ⟶ Z) : Limits.LimitCone (cospan f g) where
   cone := pullbackCone f g
   isLimit :=
-    PullbackCone.isLimitAux _ (fun s => ↾
-      fun x => ⟨⟨s.fst x, s.snd x⟩, congr_hom s.condition x⟩)
+    PullbackCone.isLimitAux _ (fun s => ↾fun x => ⟨⟨s.fst x, s.snd x⟩, congr_hom s.condition x⟩)
       (by aesop) (by aesop) fun _ _ w =>
       ConcreteCategory.ext <| TypeCat.Fun.ext <| funext fun x => Subtype.ext <|
         Prod.ext (congr_hom (w WalkingCospan.left) x) (congr_hom (w WalkingCospan.right) x)
