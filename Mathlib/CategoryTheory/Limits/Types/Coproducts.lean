@@ -357,7 +357,7 @@ theorem coproductIso_ι_comp_hom {J : Type v} (F : J → Type (max v u)) (j : J)
 
 @[elementwise (attr := simp)]
 theorem coproductIso_mk_comp_inv {J : Type v} (F : J → Type (max v u)) (j : J) :
-    ↾fun x => ⟨j, x⟩ ≫ (coproductIso F).inv = Sigma.ι F j :=
+    (↾fun x => ⟨j, x⟩) ≫ (coproductIso F).inv = Sigma.ι F j :=
   rfl
 
 end CategoryTheory.Limits.Types
