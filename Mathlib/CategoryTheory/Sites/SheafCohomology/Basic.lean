@@ -120,7 +120,7 @@ variable (F : Sheaf J AddCommGrpCat.{w}) {T : C} (hT : Limits.IsTerminal T)
 
 open AddCommGrpCat Opposite
 
-/-- The additive equivalence between `H F 0` and the evaluation of `F` at the terminal object -/
+/-- The additive equivalence between `H F 0` and the evaluation of `F` at a terminal object -/
 noncomputable def H.equiv₀ : H F 0 ≃+ F.obj.obj (op T) :=
     AddEquiv.trans Ext.addEquiv₀ <|
       AddEquiv.trans ((constantSheafAdj J AddCommGrpCat hT).homAddEquiv _ F)
@@ -129,9 +129,9 @@ noncomputable def H.equiv₀ : H F 0 ≃+ F.obj.obj (op T) :=
 variable {F G : Sheaf J AddCommGrpCat.{w}} (f : F ⟶ G)
 
 /-- Given a morphism of sheaves `f : F ⟶ G`, `H.map f n` is the induced additive map on cohomology
-    groups `H F n →+ H G n` -/
+groups `H F n →+ H G n` -/
 noncomputable def H.map (n : ℕ) : H F n →+ H G n :=
-  ((Ext.mk₀ f).postcomp ((constantSheaf J AddCommGrpCat).obj (of (ULift ℤ))) (add_zero n))
+  (Ext.mk₀ f).postcomp ((constantSheaf J AddCommGrpCat).obj (of (ULift ℤ))) (add_zero n)
 
 @[reassoc]
 lemma H.addEquiv₀_map (x : H F 0) : Ext.addEquiv₀ (H.map f 0 x) = Ext.addEquiv₀ x ≫ f := by
