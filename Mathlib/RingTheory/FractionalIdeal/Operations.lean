@@ -916,7 +916,7 @@ variable {R S : Type*} (K L : Type*) [CommRing R] [IsDomain R] [CommRing S] [IsD
 local instance (f : R ≃+* S) : RingHomInvPair (f : R →+* S) f.symm :=
   RingHomInvPair.of_ringEquiv f
 
-/-- If `f : R →+* S` is a ring isomorphism and `I : Submodule R K` is fractional with respect to
+/-- If `f : R ≃+* S` is a ring isomorphism and `I : Submodule R K` is fractional with respect to
 `R⁰`, then `I.map (IsFractionRing.semilinearEquivOfRingEquiv K L f).toLinearMap`
 is fractional with respect to `S⁰`.
 
