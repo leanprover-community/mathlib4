@@ -104,13 +104,12 @@ def getAbstractDataProjectionsCached (cls : Name) : CoreM (Array Expr) := do
 
 /-- Find classes for which multiple different instances can be synthesized in the local context.
 The result maps classes to the (at least 2) local instances that generate them. -/
-partial def findOverlappingDataInstances :
-    MetaM (Std.TreeMap Expr (Array FVarId) Expr.quickComp) := do
+partial def findOverlappingDataInstances : MetaM (ExprMap (Array FVarId)) := do
   -- Maps a class to the collection of local instances that overlap on it.
   -- This only includes overlaps of at least 2 local instances.
-  let mut overlaps : Std.TreeMap Expr (Array FVarId) Expr.quickComp := {}
+  let mut overlaps : ExprMap (Array FVarId) := {}
   -- Maps a class to the first local instance that produces an instance of it.
-  let mut encountered : Std.TreeMap Expr FVarId Expr.quickComp := {}
+  let mut encountered : ExprMap FVarId := {}
   for decl in ← getLCtx do
     if decl.binderInfo.isInstImplicit then
       let type ← instantiateMVars decl.type
