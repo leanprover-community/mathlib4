@@ -5,7 +5,7 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon
 public import Mathlib.CategoryTheory.Limits.ExactFunctor
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 public import Mathlib.Algebra.Group.Invertible.Defs
@@ -83,8 +83,6 @@ structure Grp where
   /-- The underlying object in the ambient monoidal category -/
   X : C
   [grp : GrpObj X]
-
-@[deprecated (since := "2025-10-13")] alias Grp_ := Grp
 
 attribute [instance] Grp.grp AddGrp.addGrp
 
@@ -348,11 +346,9 @@ lemma ext {X : C} (h₁ h₂ : GrpObj X) (H : h₁.toMonObj = h₂.toMonObj) : h
   GrpObj.toMonObj_injective H
 
 -- Note: `Invertible` has no additive variant
-set_option backward.isDefEq.respectTransparency false in
 /-- A monoid object with invertible homs is a group object. -/
 @[implicit_reducible]
-def ofInvertible (G : C) [CartesianMonoidalCategory C] [MonObj G]
-    (h : ∀ X (f : X ⟶ G), Invertible f) : GrpObj G where
+def ofInvertible (G : C) [MonObj G] (h : ∀ X (f : X ⟶ G), Invertible f) : GrpObj G where
   inv := Yoneda.fullyFaithful.preimage
     ⟨fun X ↦ TypeCat.ofHom (fun f ↦ (h X.unop f).invOf), fun X Y f ↦ by
       ext g

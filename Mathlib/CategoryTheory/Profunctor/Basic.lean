@@ -111,11 +111,11 @@ def ofHom {P Q : ProfunctorCore.{w} C D} (f : P.Hom Q) : ofCore P ⟶ ofCore Q w
 
 /-- The identity profunctor from `C` to `C`. This is defined as the Yoneda bifunctor. -/
 @[simps! obj_obj obj_map map_app]
-protected abbrev id : Profunctor C C := yoneda
+protected def id : Profunctor.{v₁} C C := yoneda
 
 /-- The opposite of a profunctor. -/
 @[simps! obj_obj obj_map map_app]
-def op (P : Profunctor.{w} C D) : Profunctor.{w} Dᵒᵖ Cᵒᵖ :=
+protected def op (P : Profunctor.{w} C D) : Profunctor.{w} Dᵒᵖ Cᵒᵖ :=
   .ofCore {
     obj X Y := (P.obj (unop Y)).obj X
     map f g := (P.map g.unop).app _ ≫ (P.obj _).map f }

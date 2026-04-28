@@ -113,8 +113,6 @@ end Functoriality
 
 namespace MulAction
 
-open scoped Pointwise Cardinal
-
 variable {G α : Type*} [Group G] [MulAction G α]
 
 variable (G α) in
@@ -320,8 +318,6 @@ namespace SubMulAction.ofStabilizer
 
 variable {G α : Type*} [Group G] [MulAction G α]
 
-open scoped BigOperators Pointwise Cardinal
-
 @[to_additive]
 theorem isPretransitive_iff_of_conj {a b : α} {g : G} (hg : b = g • a) :
     IsPretransitive (stabilizer G a) (ofStabilizer G a) ↔
@@ -389,8 +385,6 @@ end ofStabilizer
 namespace ofFixingSubgroup
 
 variable {G α : Type*} [Group G] [MulAction G α]
-
-open SubMulAction Fin.Embedding
 
 variable (G) in
 /-- The `fixingSubgroup` of a finite subset of cardinal `d`
@@ -516,8 +510,6 @@ end MulAction
 
 namespace Equiv.Perm
 
-open Equiv MulAction
-
 variable {α : Type*}
 
 /-- For any two embeddings from a finite type into `β`, some permutation of `β` maps one to the
@@ -577,9 +569,6 @@ theorem eq_top_of_isMultiplyPretransitive [Finite α] {G : Subgroup (Equiv.Perm 
   specialize hgk i
   simp only [Function.Embedding.smul_apply, Equiv.Perm.smul_def] at hgk
   simp [← hgk, Subgroup.smul_def, Perm.smul_def]
-
-@[deprecated (since := "2025-10-03")]
-alias eq_top_if_isMultiplyPretransitive := eq_top_of_isMultiplyPretransitive
 
 end Equiv.Perm
 
@@ -646,8 +635,6 @@ theorem isPretransitive_of_three_le_card (h : 3 ≤ Nat.card α) :
   letI := isMultiplyPretransitive α
   apply isMultiplyPretransitive_of_le (n := Nat.card α - 2) _ (sub_le _ _)
   rwa [← add_le_add_iff_right 2, Nat.sub_add_cancel (le_trans (by norm_num) h)]
-
-open scoped Pointwise
 
 /-- The action of the alternating group has trivial blocks.
 
