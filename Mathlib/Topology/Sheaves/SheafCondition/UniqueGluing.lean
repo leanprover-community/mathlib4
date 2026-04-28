@@ -78,6 +78,16 @@ def IsSheafUniqueGluing : Prop :=
   ∀ ⦃ι : Type x⦄ (U : ι → Opens X) (sf : ∀ i : ι, ToType (F.obj (op (U i)))),
     IsCompatible F U sf → ∃! s : ToType (F.obj (op (iSup U))), IsGluing F U sf s
 
+/--
+A variant of the sheaf condition in terms of unique gluings which assumes that the
+cover `U` of the given open set is nontrivial, in the sense that the indexing type is nonempty
+and that for every `i` in the indexing type `ι`, `U i` is nonempty.
+-/
+def IsSheafUniqueGluingNontrivial : Prop :=
+  ∀ ⦃ι : Type x⦄ [Nonempty ι] (U : ι → Opens X) (_ : ∀ i : ι, Nonempty (U i))
+    (sf : ∀ i : ι, ToType (F.obj (op (U i)))),
+    IsCompatible F U sf → ∃! s : ToType (F.obj (op (iSup U))), IsGluing F U sf s
+
 end
 
 section TypeValued
@@ -133,6 +143,60 @@ theorem isSheaf_iff_isSheafUniqueGluing_types : F.IsSheaf ↔ F.IsSheafUniqueGlu
     · rfl
     · exact (hs <| op <| Pairwise.Hom.left i j).symm
 
+/--
+For type-valued presheaves, it suffices to check the sheaf condition in terms of unique gluings on
+covers where no element of the cover is empty, and for which the indexing type for the cover is
+nonempty.
+-/
+lemma isSheafUniqueGluing_iff_isSheafUniqueGluingNontrivial_types
+    (k : Unique (ToType (F.obj (op ⊥)))) :
+    IsSheafUniqueGluing F ↔ IsSheafUniqueGluingNontrivial F := by
+  refine ⟨fun h ι _ U _ sf ↦ h U sf, fun h ι U sf com ↦ ?_⟩
+  by_cases h1 : ∃ i : ι, Nonempty (U i)
+  · let ι' := {i : ι | Nonempty (U i)}
+    let U' : ι' → Opens X := fun i ↦ U i
+    let sf' : (i : ↑ι') → ToType (F.obj (op (U' i))) := fun i ↦ sf i
+    have com' : F.IsCompatible U' sf' := fun a b ↦ com a b
+    have hU' (i : ι') : Nonempty ↥(U' i) := i.2
+    obtain ⟨i, hi⟩ := h1
+    have : Nonempty ι' := ⟨i, hi⟩
+    have : iSup U' = iSup U := by aesop
+    have eq : op (iSup U') = op (iSup U) := (op_inj_iff (iSup U') (iSup U)).mpr this
+    obtain ⟨s, hs1, hs2⟩ := h U' hU' sf' com'
+    have (j : ι) (hj : Nonempty (U j)) :
+      eqToHom eq ≫ (leSupr U j).op  = (leSupr (fun (i : ι') ↦ U i) (⟨j, hj⟩ : ι')).op := rfl
+    use F.map (eqToHom eq) s
+    refine ⟨fun j ↦ ?_, fun y hy ↦ ?_⟩
+    · by_cases hj : Nonempty (U j)
+      · have a := hs1 ⟨j, hj⟩
+        simp only [U', sf'] at a
+        rw [← a]
+        suffices F.map (eqToHom eq ≫ (leSupr U j).op) =
+            F.map (leSupr (fun (i : ι') ↦ U i) (⟨j, hj⟩ : ι')).op by
+          simp only [Functor.map_comp] at this
+          exact DFunLike.congr_fun this s
+        rw [this j hj]
+      · have : U j = ⊥ := by aesop
+        have : Unique (ToType (F.obj (op (U j)))) := by rwa [this]
+        apply Subsingleton.elim
+    · have : F.IsGluing U' sf' (F.map (eqToHom eq.symm) y) := by
+        intro b
+        dsimp [sf']
+        rw [← hy]
+        suffices F.map (eqToHom eq.symm ≫ (leSupr U' b).op) = F.map (leSupr U b).op by
+          simp only [Functor.map_comp] at this
+          exact DFunLike.congr_fun this y
+        rfl
+      simp [← hs2 (F.map (eqToHom eq.symm) y) this]
+  · have : iSup U = ⊥ := by aesop
+    have : Unique (ToType (F.obj (op (iSup U)))) := by rwa [this]
+    use default
+    refine ⟨fun j ↦ ?_, fun _ _ ↦ Subsingleton.elim ..⟩
+    have : U j = ⊥ := by aesop
+    have : Unique (ToType (F.obj (op (U j)))) := by rwa [this]
+    apply Subsingleton.elim
+
+
 /-- The usual sheaf condition can be obtained from the sheaf condition
 in terms of unique gluings.
 -/
@@ -160,6 +224,16 @@ preserves limits, the sheaf condition in terms of unique gluings is equivalent t
 theorem isSheaf_iff_isSheafUniqueGluing : F.IsSheaf ↔ F.IsSheafUniqueGluing :=
   Iff.trans (isSheaf_iff_isSheaf_comp' (forget C) F)
     (isSheaf_iff_isSheafUniqueGluing_types (F ⋙ forget C))
+
+/-- For presheaves valued in a concrete category which take `⊥` to a type with a unique term,
+whose forgetful functor reflects isomorphisms and preserves limits, the sheaf condition in terms of
+unique gluings with covers that are nowhere empty is equivalent to the usual one.
+-/
+theorem isSheaf_iff_isSheafUniqueGluingNontrivial (k : Unique (ToType (F.obj (op ⊥)))) :
+    F.IsSheaf ↔ F.IsSheafUniqueGluingNontrivial := by
+  rw [isSheaf_iff_isSheaf_comp' (forget C) F, isSheaf_iff_isSheafUniqueGluing_types,
+    isSheafUniqueGluing_iff_isSheafUniqueGluingNontrivial_types _ k]
+  rfl
 
 end
 
