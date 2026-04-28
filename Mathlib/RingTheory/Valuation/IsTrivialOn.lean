@@ -19,11 +19,12 @@ In what follows, we consider a `A`-algebra `B` and a valuation `v` over `B` whic
 
 ## Main results
 * `valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X`: Let `p` be a polynomial
-over `A` evaluated at an element of `B`. We have the equality `v (p.aeval w) = v w ^ p.natDegree`.
-* `Valuation.transcendental_of_lt_one`: If `y : B` is such that `y ≠ 0` and `v y < 1`,
+over `A` evaluated at an element `w` of `B` for which `1 < v w`.
+We have the equality `v (p.aeval w) = v w ^ p.natDegree`.
+* `Valuation.transcendental_of_ne_one`: If `y : B` is such that `y ≠ 0` and `v y ≠ 1`,
 then it is transcendental over `A`.
-Note that this means that any non zero element of the maximal ideal of `v.valuationSubring` is
-transcendental over `A`.
+Note that, in particular, this means that any non zero element of the
+maximal ideal of `v.valuationSubring` is transcendental over `A`.
 -/
 
 @[expose] public section
@@ -68,19 +69,18 @@ variable (K : Type*) [Field K] [Algebra A K] {v : Valuation K Γ} [hv : v.IsTriv
 open Polynomial
 
 /--
-For a `A`-algebra `K` and a valuation `v` over `K` which is trivial on `A`.
-If `y : K` is such that `y ≠ 0` and `v y < 1`, then it is transcendental over `A`. -/
+For an `A`-algebra `K` and a valuation `v` over `K` which is trivial on `A`.
+If `y : K` is such that `y ≠ 0` and `v y ≠ 1`, then it is transcendental over `A`. -/
 theorem Valuation.transcendental_of_ne_one (y : K) (h0 : y ≠ 0) (hy : v y ≠ 1) :
     Transcendental A y := by
-  wlog! hlt : 1 < v y generalizing v y
+  wlog! hlt : 1 < v y generalizing y
   · rw [Transcendental, ← IsAlgebraic.inv_iff]
-    apply this (v := v) _ (by simpa) (by simpa)
+    apply this _ (by simpa) (by simpa)
     rw [← val_lt_one_iff _ h0]
     exact lt_of_le_of_ne hlt hy
   simp_all only [ne_eq, Transcendental]
   by_contra!
-  replace ha : IsAlgebraic A y := .algebraMap this
-  obtain ⟨p, hpnt, hp⟩ := ha
+  replace ⟨p, hpnt, hp⟩ : IsAlgebraic A y := .algebraMap this
   suffices v y ^ p.natDegree = 0 by simp_all
   rw [← valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X _ _ _ hlt] <;> simp_all
 
