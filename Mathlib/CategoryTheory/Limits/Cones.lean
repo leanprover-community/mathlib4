@@ -168,8 +168,8 @@ namespace Cone
 /-- The isomorphism between a cone on `F` and an element of the functor `F.cones`. -/
 @[simps!]
 def equiv (F : J ⥤ C) : dsimp% Cone F ≅ Σ X, F.cones.obj X where
-  hom := ↾ fun c ↦ ⟨op c.pt, c.π⟩
-  inv := ↾ fun c ↦
+  hom := ↾fun c ↦ ⟨op c.pt, c.π⟩
+  inv := ↾fun c ↦
     { pt := c.1.unop
       π := c.2 }
   hom_inv_id := by
@@ -184,7 +184,7 @@ def equiv (F : J ⥤ C) : dsimp% Cone F ≅ Σ X, F.cones.obj X where
 /-- A map to the vertex of a cone naturally induces a cone by composition. -/
 @[simps]
 def extensions (c : Cone F) : uliftYoneda.obj c.pt ⟶ F.cones where
-  app _ := ↾ (fun f ↦ (const J).map f.down ≫ c.π)
+  app _ := ↾fun f ↦ (const J).map f.down ≫ c.π
 
 /-- A map to the vertex of a cone induces a cone by composition. -/
 @[to_dual (attr := simps)
@@ -208,8 +208,8 @@ namespace Cocone
 
 /-- The isomorphism between a cocone on `F` and an element of the functor `F.cocones`. -/
 def equiv (F : J ⥤ C) : Cocone F ≅ Σ X, F.cocones.obj X where
-  hom := ↾ fun c ↦ ⟨c.pt, c.ι⟩
-  inv := ↾ fun c ↦
+  hom := ↾fun c ↦ ⟨c.pt, c.ι⟩
+  inv := ↾fun c ↦
     { pt := c.1
       ι := c.2 }
   hom_inv_id := by
@@ -224,7 +224,7 @@ def equiv (F : J ⥤ C) : Cocone F ≅ Σ X, F.cocones.obj X where
 /-- A map from the vertex of a cocone naturally induces a cocone by composition. -/
 @[simps]
 def extensions (c : Cocone F) : coyoneda.obj (op c.pt) ⋙ uliftFunctor.{u₁} ⟶ F.cocones where
-  app _ := ↾ (fun f ↦ c.ι ≫ (const J).map f.down)
+  app _ := ↾fun f ↦ c.ι ≫ (const J).map f.down
 
 end Cocone
 

@@ -171,8 +171,8 @@ attribute [local simp] types_tensorObj_def in
 def enrichedCategoryTypeOfCategory (C : Type u₁) [𝒞 : Category.{v} C] :
     EnrichedCategory (Type v) C where
   Hom X Y := 𝒞.Hom X Y
-  id X := ↾ (fun _ ↦ 𝟙 _)
-  comp _ _ _ := ↾ (fun p ↦ p.1 ≫ p.2)
+  id X := ↾fun _ ↦ 𝟙 _
+  comp _ _ _ := ↾fun p ↦ p.1 ≫ p.2
 
 /-- We verify that an enriched category in `Type u` is just the same thing as an honest category.
 -/
@@ -482,7 +482,7 @@ the `V`-object of natural transformations from `F` to `G`.
 @[simps]
 def enrichedNatTransYoneda (F G : EnrichedFunctor V C D) : Vᵒᵖ ⥤ Type (max u₁ w) where
   obj A := GradedNatTrans ((Center.ofBraided V).obj (unop A)) F G
-  map f := ↾ fun σ ↦
+  map f := ↾fun σ ↦
     { app X := f.unop ≫ σ.app X
       naturality X Y := by
         have p := σ.naturality X Y
@@ -513,7 +513,7 @@ def enrichedFunctorTypeEquivFunctor {C : Type u₁} [𝒞 : EnrichedCategory (Ty
       map_comp := fun f g => ConcreteCategory.congr_hom (F.map_comp _ _ _) ⟨f, g⟩ }
   invFun F :=
     { obj := fun X => F.obj X
-      map := fun _ _ => ↾ (fun f => F.map f)
+      map := fun _ _ => ↾fun f => F.map f
       map_id := fun X => by ext ⟨⟩; exact F.map_id X
       map_comp := fun X Y Z => by ext ⟨f, g⟩; exact F.map_comp f g }
 
@@ -528,11 +528,11 @@ def enrichedNatTransYonedaTypeIsoYonedaNatTrans {C : Type v} [EnrichedCategory (
         enrichedFunctorTypeEquivFunctor G) :=
   NatIso.ofComponents
     (fun α =>
-      { hom := ↾ fun σ ↦ ↾ fun x =>
+      { hom := ↾fun σ ↦ ↾fun x =>
           { app X := σ.app X x
             naturality X Y f := ConcreteCategory.congr_hom (σ.naturality X Y) ⟨x, f⟩ }
-        inv := ↾ fun σ ↦
-          { app X := ↾ (fun x => (σ.hom x).app X)
+        inv := ↾fun σ ↦
+          { app X := ↾fun x => (σ.hom x).app X
             naturality X Y := by ext ⟨x, f⟩; exact (σ.hom x).naturality f } })
     (by cat_disch)
 

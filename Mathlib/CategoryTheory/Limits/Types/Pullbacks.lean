@@ -41,8 +41,8 @@ example (p : PullbackObj f g) : X × Y :=
 This is bundled with the `IsLimit` data as `pullbackLimitCone f g`.
 -/
 abbrev pullbackCone : Limits.PullbackCone f g :=
-  PullbackCone.mk (↾ (fun p : PullbackObj f g => p.1.1))
-    (↾ (fun p => p.1.2)) (by ext p; exact p.2)
+  PullbackCone.mk (↾fun p : PullbackObj f g => p.1.1)
+    (↾fun p => p.1.2) (by ext p; exact p.2)
 
 /-- The explicit pullback in the category of types, bundled up as a `LimitCone`
 for given `f` and `g`.
@@ -145,14 +145,14 @@ theorem pullbackIsoPullback_hom_snd (p : pullback f g) :
 @[elementwise (attr := simp)]
 theorem pullbackIsoPullback_inv_fst :
     (pullbackIsoPullback f g).inv ≫ pullback.fst _ _ =
-      ↾ (fun p => (p.1 : X × Y).fst) := by
+      ↾fun p => (p.1 : X × Y).fst := by
   ext
   exact PullbackCone.IsLimit.equivPullbackObj_symm_apply_fst (pullbackIsPullback f g) _
 
 @[elementwise (attr := simp)]
 theorem pullbackIsoPullback_inv_snd :
     (pullbackIsoPullback f g).inv ≫ pullback.snd _ _ =
-      ↾ (fun p => (p.1 : X × Y).snd) := by
+      ↾fun p => (p.1 : X × Y).snd := by
   ext
   exact PullbackCone.IsLimit.equivPullbackObj_symm_apply_snd (pullbackIsPullback f g) _
 
@@ -221,7 +221,7 @@ lemma isPullback_iff :
   · intro h
     exact ⟨h.w, fun x₁ y₁ ⟨h₁, h₂⟩ ↦ ext_of_isPullback h h₁ h₂, exists_of_isPullback h⟩
   · rintro ⟨w, h₁, h₂⟩
-    let φ : X₁ ⟶ PullbackObj r b := ↾ fun x₁ ↦ ⟨⟨t x₁, l x₁⟩, congr_hom w x₁⟩
+    let φ : X₁ ⟶ PullbackObj r b := ↾fun x₁ ↦ ⟨⟨t x₁, l x₁⟩, congr_hom w x₁⟩
     have hφ : IsIso φ := by
       rw [isIso_iff_bijective]
       constructor

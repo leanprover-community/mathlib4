@@ -28,8 +28,8 @@ a `FunLike` instance on the latter (which would give two non-reducibly defeq coe
 morphisms in `Type` to functions), and the outer nesting `TypeCat.Hom` gives a layer of separation
 between morphisms and `FC`, as is done for all concrete categories in mathlib.
 
-To promote a function to a morphism in this category, we provide the abbreviation `↾ f`,
-as well as a corresponding notation `↾ f`. (Entered as `\upr `.)
+To promote a function to a morphism in this category, we provide the abbreviation `↾f`,
+as well as a corresponding notation `↾f`. (Entered as `\upr `.)
 
 ## Main definitions
 
@@ -245,7 +245,7 @@ variable (J)
 @[simps]
 def sectionsFunctor : (J ⥤ Type w) ⥤ Type max u w where
   obj F := F.sections
-  map {F G} φ := ↾ fun x ↦ ⟨fun j => φ.app j (x.1 j), fun {j j'} f =>
+  map {F G} φ := ↾fun x ↦ ⟨fun j => φ.app j (x.1 j), fun {j j'} f =>
     by simp [← NatTrans.naturality_apply, x.2 f]⟩
 
 end Functor

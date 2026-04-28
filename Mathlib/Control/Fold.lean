@@ -111,14 +111,14 @@ abbrev Foldl (α : Type u) : Type u :=
   (End α)ᵐᵒᵖ
 
 def Foldl.mk (f : α → α) : Foldl α :=
-  op (↾ f)
+  op (↾f)
 
 def Foldl.get (x : Foldl α) : α → α :=
   ConcreteCategory.hom (unop x)
 
 @[simps]
 def Foldl.ofFreeMonoid (f : β → α → β) : FreeMonoid α →* Monoid.Foldl β where
-  toFun xs := op <| ↾ (flip (List.foldl f) (FreeMonoid.toList xs))
+  toFun xs := op <| ↾(flip (List.foldl f) (FreeMonoid.toList xs))
   map_one' := rfl
   map_mul' := by
     intros
@@ -129,14 +129,14 @@ abbrev Foldr (α : Type u) : Type u :=
   End α
 
 def Foldr.mk (f : α → α) : Foldr α :=
-  ↾ f
+  ↾f
 
 def Foldr.get (x : Foldr α) : α → α :=
   ConcreteCategory.hom x
 
 @[simps]
 def Foldr.ofFreeMonoid (f : α → β → β) : FreeMonoid α →* Monoid.Foldr β where
-  toFun xs := ↾ (flip (List.foldr f) (FreeMonoid.toList xs))
+  toFun xs := ↾(flip (List.foldr f) (FreeMonoid.toList xs))
   map_one' := rfl
   map_mul' _ _ := by
     apply ConcreteCategory.ext

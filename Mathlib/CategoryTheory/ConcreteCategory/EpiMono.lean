@@ -39,10 +39,10 @@ namespace ConcreteCategory
 section
 
 instance [(forget C).PreservesMonomorphisms] {X Y : C} (f : X ⟶ Y) [Mono f] :
-    Mono (↾ f) := Functor.map_mono (forget C) f
+    Mono (↾f) := Functor.map_mono (forget C) f
 
 instance [(forget C).PreservesEpimorphisms] {X Y : C} (f : X ⟶ Y) [Epi f] :
-    Epi (↾ f) := Functor.map_epi (forget C) f
+    Epi (↾f) := Functor.map_epi (forget C) f
 
 /-- In any concrete category, injective morphisms are monomorphisms. -/
 theorem mono_of_injective {X Y : C} (f : X ⟶ Y) (i : Function.Injective f) :

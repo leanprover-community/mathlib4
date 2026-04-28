@@ -142,14 +142,14 @@ instance : Nonempty (Subfunctor F) :=
 @[simps obj map]
 def toFunctor : C ⥤ Type w where
   obj U := G.obj U
-  map i := ↾ fun x => ⟨F.map i x, G.map i x.prop⟩
+  map i := ↾fun x => ⟨F.map i x, G.map i x.prop⟩
 
 instance {U} : CoeHead (G.toFunctor.obj U) (F.obj U) where
   coe := Subtype.val
 
 /-- The inclusion of a subfunctor to the original functor. -/
 @[simps]
-def ι : G.toFunctor ⟶ F where app _ := ↾ (fun x ↦ x)
+def ι : G.toFunctor ⟶ F where app _ := ↾fun x ↦ x
 
 instance : Mono G.ι :=
   ⟨@fun _ _ _ e =>
@@ -158,7 +158,7 @@ instance : Mono G.ι :=
 /-- The inclusion of a subfunctor to a larger subfunctor -/
 @[simps]
 def homOfLe {G G' : Subfunctor F} (h : G ≤ G') : G.toFunctor ⟶ G'.toFunctor where
-  app U := ↾ fun x ↦ ⟨x, h U x.prop⟩
+  app U := ↾fun x ↦ ⟨x, h U x.prop⟩
 
 instance {G G' : Subfunctor F} (h : G ≤ G') : Mono (Subfunctor.homOfLe h) :=
   ⟨fun _ _ e => NatTrans.ext <| funext fun U => hom_ext _ _ fun x => by

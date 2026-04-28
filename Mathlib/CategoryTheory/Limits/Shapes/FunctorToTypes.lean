@@ -36,26 +36,26 @@ section prod
 @[simps obj map]
 def prod : C ⥤ Type w where
   obj a := F.obj a × G.obj a
-  map f := ↾ (fun a ↦ (F.map f a.1, G.map f a.2))
+  map f := ↾fun a ↦ (F.map f a.1, G.map f a.2)
 
 variable {F G}
 
 /-- The first projection of `prod F G`, onto `F`. -/
 @[simps app]
 def prod.fst : prod F G ⟶ F where
-  app _ := ↾ (fun a ↦ a.1)
+  app _ := ↾fun a ↦ a.1
 
 /-- The second projection of `prod F G`, onto `G`. -/
 @[simps app]
 def prod.snd : prod F G ⟶ G where
-  app _ := ↾ (fun a ↦ a.2)
+  app _ := ↾fun a ↦ a.2
 
 /-- Given natural transformations `F ⟶ F₁` and `F ⟶ F₂`, construct
 a natural transformation `F ⟶ prod F₁ F₂`. -/
 @[simps]
 def prod.lift {F₁ F₂ : C ⥤ Type w} (τ₁ : F ⟶ F₁) (τ₂ : F ⟶ F₂) :
     F ⟶ prod F₁ F₂ where
-  app x := ↾ fun y ↦ ⟨τ₁.app x y, τ₂.app x y⟩
+  app x := ↾fun y ↦ ⟨τ₁.app x y, τ₂.app x y⟩
 
 @[simp]
 lemma prod.lift_fst {F₁ F₂ : C ⥤ Type w} (τ₁ : F ⟶ F₁) (τ₂ : F ⟶ F₂) :
@@ -168,7 +168,7 @@ section coprod
 @[simps obj map]
 def coprod : C ⥤ Type w where
   obj a := F.obj a ⊕ G.obj a
-  map f := ↾ (Sum.map (F.map f) (G.map f))
+  map f := ↾(Sum.map (F.map f) (G.map f))
   map_id _ := by ext ⟨⟩ <;> simp
   map_comp _ _ := by ext ⟨⟩ <;> simp
 
@@ -177,19 +177,19 @@ variable {F G}
 /-- The left inclusion of `F` into `coprod F G`. -/
 @[simps]
 def coprod.inl : F ⟶ coprod F G where
-  app _ := ↾ (fun x ↦ .inl x)
+  app _ := ↾fun x ↦ .inl x
 
 /-- The right inclusion of `G` into `coprod F G`. -/
 @[simps]
 def coprod.inr : G ⟶ coprod F G where
-  app _ := ↾ (fun x ↦ .inr x)
+  app _ := ↾fun x ↦ .inr x
 
 /-- Given natural transformations `F₁ ⟶ F` and `F₂ ⟶ F`, construct
 a natural transformation `coprod F₁ F₂ ⟶ F`. -/
 @[simps]
 def coprod.desc {F₁ F₂ : C ⥤ Type w} (τ₁ : F₁ ⟶ F) (τ₂ : F₂ ⟶ F) :
     coprod F₁ F₂ ⟶ F where
-  app a := ↾ (Sum.elim (τ₁.app a) (τ₂.app a))
+  app a := ↾(Sum.elim (τ₁.app a) (τ₂.app a))
   naturality _ _ _ := by ext ⟨⟩ <;> simp
 
 @[simp]

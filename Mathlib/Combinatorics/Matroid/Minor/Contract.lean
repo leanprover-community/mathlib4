@@ -503,9 +503,9 @@ lemma contract_delete_diff (M : Matroid α) (C D : Set α) : M ／ C ＼ D = M �
     inter_assoc]
 
 lemma contract_restrict_eq_restrict_contract (M : Matroid α) (h : Disjoint C R) :
-    (M ／ C) ↾ R = (M ↾ (R ∪ C)) ／ C := by
+    (M ／ C) ↾R = (M ↾(R ∪ C)) ／ C := by
   refine ext_indep (by simp [h.sdiff_eq_right]) fun I (hI : I ⊆ R) ↦ ?_
-  obtain ⟨J, hJ⟩ := (M ↾ (R ∪ C)).exists_isBasis' C
+  obtain ⟨J, hJ⟩ := (M ↾(R ∪ C)).exists_isBasis' C
   have hJ' : M.IsBasis' J C := by
     simpa [inter_eq_self_of_subset_left subset_union_right] using (isBasis'_restrict_iff.1 hJ).1
   rw [restrict_indep_iff, hJ.contract_indep_iff, hJ'.contract_indep_iff, restrict_indep_iff]
@@ -513,7 +513,7 @@ lemma contract_restrict_eq_restrict_contract (M : Matroid α) (h : Disjoint C R)
   tauto_set
 
 lemma restrict_contract_eq_contract_restrict (M : Matroid α) (hCR : C ⊆ R) :
-    (M ↾ R) ／ C = (M ／ C) ↾ (R \ C) := by
+    (M ↾R) ／ C = (M ／ C) ↾(R \ C) := by
   rw [contract_restrict_eq_restrict_contract _ disjoint_sdiff_right]
   simp [union_eq_self_of_subset_right hCR]
 

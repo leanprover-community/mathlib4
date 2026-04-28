@@ -122,8 +122,8 @@ attribute [local simp] types_tensorObj_def in
 instance (J : Type*) [LinearOrder J] :
     SimplicialCategory (SimplicialThickening J) where
   Hom i j := nerve (i ⟶ j)
-  id _ := ⟨fun _ ↦ ↾ (fun _ ↦ (Functor.const _).obj (𝟙 _)), fun _ _ _ ↦ by simp; rfl⟩
-  comp i j k := ⟨fun _ ↦ ↾ (fun x ↦ x.1.prod' x.2 ⋙ compFunctor i j k),
+  id _ := ⟨fun _ ↦ ↾fun _ ↦ (Functor.const _).obj (𝟙 _), fun _ _ _ ↦ by simp; rfl⟩
+  comp i j k := ⟨fun _ ↦ ↾fun x ↦ x.1.prod' x.2 ⋙ compFunctor i j k,
     fun _ _ _ ↦ by simp; rfl⟩
   homEquiv {i j} := nerveEquiv.symm.trans (SSet.unitHomEquiv (nerve (i ⟶ j))).symm
 
@@ -188,7 +188,7 @@ the linear order `Fin (n + 1)` to `C`
 def SimplicialNerve (C : Type u) [Category.{v} C] [SimplicialCategory C] :
     SSet.{max u v} where
   obj n := EnrichedFunctor SSet (SimplicialThickening (ULift (Fin (n.unop.len + 1)))) C
-  map f := ↾ ((SimplicialThickening.functor f.unop.toOrderHom.uliftMap).comp
+  map f := ↾((SimplicialThickening.functor f.unop.toOrderHom.uliftMap).comp
     (E := C) SSet)
   map_id i := by
     ext

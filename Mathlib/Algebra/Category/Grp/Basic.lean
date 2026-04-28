@@ -544,8 +544,8 @@ end CategoryTheory.Iso
 in `GrpCat` -/
 @[to_additive]
 def mulEquivIsoGroupIso {X Y : GrpCat.{u}} : (X ≃* Y) ≅ (X ≅ Y) where
-  hom := ↾ (fun e ↦ e.toGrpIso)
-  inv := ↾ (fun i ↦ i.groupIsoToMulEquiv)
+  hom := ↾fun e ↦ e.toGrpIso
+  inv := ↾fun i ↦ i.groupIsoToMulEquiv
 
 /-- Additive equivalences between `AddGroup`s are the same
 as (isomorphic to) isomorphisms in `AddGrpCat`. -/
@@ -555,8 +555,8 @@ add_decl_doc addEquivIsoAddGroupIso
 in `CommGrpCat`. -/
 @[to_additive]
 def mulEquivIsoCommGroupIso {X Y : CommGrpCat.{u}} : (X ≃* Y) ≅ (X ≅ Y) where
-  hom := ↾ (fun e ↦ e.toCommGrpIso)
-  inv := ↾ (fun i ↦ i.commGroupIsoToMulEquiv)
+  hom := ↾fun e ↦ e.toCommGrpIso
+  inv := ↾fun i ↦ i.commGroupIsoToMulEquiv
 
 /-- Additive equivalences between `AddCommGroup`s are
 the same as (isomorphic to) isomorphisms in `AddCommGrpCat`. -/

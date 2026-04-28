@@ -60,7 +60,7 @@ In the definitions below, `M` and `N` are matroids on `α` and `β` respectively
   subtypes. It gives a matroid on `β` with ground set `E`.
 
 * For `X : Set α`, `Matroid.restrictSubtype M X` is the `Matroid ↥X` with ground set
-  `univ : Set ↥X`. This matroid is isomorphic to `M ↾ X`.
+  `univ : Set ↥X`. This matroid is isomorphic to `M ↾X`.
 
 ## Implementation details
 
@@ -115,8 +115,8 @@ section comap
 
 /-- The pullback of a matroid on `β` by a function `f : α → β` to a matroid on `α`.
 Elements with the same (nonloop) image are parallel and the ground set is `f ⁻¹' M.E`.
-The matroids `M.comap f` and `M ↾ range f` have isomorphic simplifications;
-the preimage of each nonloop of `M ↾ range f` is a parallel class. -/
+The matroids `M.comap f` and `M ↾range f` have isomorphic simplifications;
+the preimage of each nonloop of `M ↾range f` is a parallel class. -/
 def comap (N : Matroid β) (f : α → β) : Matroid α :=
   IndepMatroid.matroid <|
   { E := f ⁻¹' N.E
@@ -126,11 +126,11 @@ def comap (N : Matroid β) (f : α → β) : Matroid α :=
     indep_aug := by
       rintro I B ⟨hI, hIinj⟩ hImax hBmax
       obtain ⟨I', hII', hI', hI'inj⟩ := (not_maximal_subset_iff ⟨hI, hIinj⟩).1 hImax
-      have h₁ : ¬(N ↾ range f).IsBase (f '' I) := by
+      have h₁ : ¬(N ↾range f).IsBase (f '' I) := by
         refine fun hB ↦ hII'.ne ?_
         have h_im := hB.eq_of_subset_indep (by simpa) (image_mono hII'.subset)
         rwa [hI'inj.image_eq_image_iff hII'.subset Subset.rfl] at h_im
-      have h₂ : (N ↾ range f).IsBase (f '' B) := by
+      have h₂ : (N ↾range f).IsBase (f '' B) := by
         refine Indep.isBase_of_forall_insert (by simpa using hBmax.1.1) ?_
         rintro _ ⟨⟨e, heB, rfl⟩, hfe⟩ hi
         rw [restrict_indep_iff, ← image_insert_eq] at hi
@@ -146,7 +146,7 @@ def comap (N : Matroid β) (f : α → β) : Matroid α :=
 
     indep_maximal := by
       rintro X - I ⟨hI, hIinj⟩ hIX
-      obtain ⟨J, hJ⟩ := (N ↾ range f).existsMaximalSubsetProperty_indep (f '' X) (by simp)
+      obtain ⟨J, hJ⟩ := (N ↾range f).existsMaximalSubsetProperty_indep (f '' X) (by simp)
         (f '' I) (by simpa) (image_mono hIX)
       simp only [restrict_indep_iff, image_subset_iff, maximal_subset_iff, and_imp,
         and_assoc] at hJ ⊢
@@ -243,9 +243,9 @@ variable {E B I : Set α}
 
 /-- The pullback of a matroid on `β` by a function `f : α → β` to a matroid on `α`,
 restricted to a ground set `E`.
-The matroids `M.comapOn f E` and `M ↾ (f '' E)` have isomorphic simplifications;
+The matroids `M.comapOn f E` and `M ↾(f '' E)` have isomorphic simplifications;
 elements with the same nonloop image are parallel. -/
-def comapOn (N : Matroid β) (E : Set α) (f : α → β) : Matroid α := (N.comap f) ↾ E
+def comapOn (N : Matroid β) (E : Set α) (f : α → β) : Matroid α := (N.comap f) ↾E
 
 lemma comapOn_preimage_eq (N : Matroid β) (f : α → β) : N.comapOn (f ⁻¹' N.E) f = N.comap f := by
   rw [comapOn, restrict_eq_self_iff]; rfl
@@ -631,8 +631,8 @@ variable {E X I : Set α} {M : Matroid α}
 
 /-- Given `M : Matroid α` and `X : Set α`, the restriction of `M` to `X`,
 viewed as a matroid on type `X` with ground set `univ`.
-Always isomorphic to `M ↾ X`. If `X = M.E`, then isomorphic to `M`. -/
-def restrictSubtype (M : Matroid α) (X : Set α) : Matroid X := (M ↾ X).comap (↑)
+Always isomorphic to `M ↾X`. If `X = M.E`, then isomorphic to `M`. -/
+def restrictSubtype (M : Matroid α) (X : Set α) : Matroid X := (M ↾X).comap (↑)
 
 @[simp] lemma restrictSubtype_ground : (M.restrictSubtype X).E = univ := by
   simp [restrictSubtype]
@@ -683,9 +683,9 @@ lemma eq_of_restrictSubtype_eq {N : Matroid α} (hM : M.E = E) (hN : N.E = E)
 lemma restrictSubtype_dual' (hM : M.E = E) : (M.restrictSubtype E)✶ = M✶.restrictSubtype E := by
   rw [← hM, restrictSubtype_dual]
 
-/-- `M.restrictSubtype X` is isomorphic to `M ↾ X`. -/
+/-- `M.restrictSubtype X` is isomorphic to `M ↾X`. -/
 @[simp] lemma map_val_restrictSubtype_eq (M : Matroid α) (X : Set α) :
-    (M.restrictSubtype X).map (↑) Subtype.val_injective.injOn = M ↾ X := by
+    (M.restrictSubtype X).map (↑) Subtype.val_injective.injOn = M ↾X := by
   simp [restrictSubtype, map_comap]
 
 /-- `M.restrictSubtype M.E` is isomorphic to `M`. -/

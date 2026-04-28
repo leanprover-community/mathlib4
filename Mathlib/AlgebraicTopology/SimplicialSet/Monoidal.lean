@@ -78,7 +78,7 @@ set_option backward.isDefEq.respectTransparency false in
 def unitHomEquiv (K : SSet.{u}) : (𝟙_ _ ⟶ K) ≃ K _⦋0⦌ where
   toFun φ := φ.app _ PUnit.unit
   invFun x :=
-    { app := fun Δ => ↾ (fun _ => K.map (SimplexCategory.const Δ.unop ⦋0⦌ 0).op x)
+    { app := fun Δ => ↾fun _ => K.map (SimplexCategory.const Δ.unop ⦋0⦌ 0).op x
       naturality := fun Δ Δ' f => by
         ext ⟨⟩
         dsimp

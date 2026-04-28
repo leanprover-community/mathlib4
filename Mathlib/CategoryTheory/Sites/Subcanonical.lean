@@ -295,7 +295,7 @@ noncomputable def isColimitCofanMkYoneda {ι : Type*} (X : ι → C) {c : Cofan 
       exact Subsingleton.elim _ _
   refine mkCofanColimit _ (fun s ↦ ⟨?_⟩) (fun s j ↦ ?_) fun s m hm ↦ ?_
   · refine (s.pt.2.isSheafFor _ H).extend ?_
-    refine ⟨fun Y ↦ ↾ fun g ↦ ((s.inj (Sieve.ofArrows.i g.2)).hom.app Y)
+    refine ⟨fun Y ↦ ↾fun g ↦ ((s.inj (Sieve.ofArrows.i g.2)).hom.app Y)
       (Sieve.ofArrows.h g.2), ?_⟩
     intro ⟨Y⟩ ⟨Z⟩ ⟨(g : Z ⟶ Y)⟩
     ext u

@@ -221,7 +221,7 @@ theorem pushforwardFamily_compatible {X} (x : ℱ.obj (op X)) :
     Category.assoc, e]
 
 /-- (Implementation). The morphism `ℱ(X) ⟶ ℱ'(X)` given by gluing the `pushforwardFamily`. -/
-noncomputable def appHom (X : D) : ℱ.obj (op X) ⟶ ℱ'.obj.obj (op X) := ↾ fun x =>
+noncomputable def appHom (X : D) : ℱ.obj (op X) ⟶ ℱ'.obj.obj (op X) := ↾fun x =>
   ((isSheaf_iff_isSheaf_of_type _ _).1 ℱ'.property _
     (G.is_cover_of_isCoverDense _ X)).amalgamate (pushforwardFamily α x)
       (pushforwardFamily_compatible α x)

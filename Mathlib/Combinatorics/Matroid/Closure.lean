@@ -868,7 +868,7 @@ lemma Indep.eq_of_spanning_subset (hI : M.Indep I) (hS : M.Spanning S) (hSI : S 
 lemma IsBasis.spanning_iff_spanning (hIX : M.IsBasis I X) : M.Spanning I ↔ M.Spanning X := by
   rw [spanning_iff_closure_eq, spanning_iff_closure_eq, hIX.closure_eq_closure]
 
-lemma Spanning.isBase_restrict_iff (hS : M.Spanning S) : (M ↾ S).IsBase B ↔ M.IsBase B ∧ B ⊆ S := by
+lemma Spanning.isBase_restrict_iff (hS : M.Spanning S) : (M ↾S).IsBase B ↔ M.IsBase B ∧ B ⊆ S := by
   rw [isBase_restrict_iff', isBasis'_iff_isBasis]
   refine ⟨fun h ↦ ⟨?_, h.subset⟩, fun h ↦ h.1.indep.isBasis_of_subset_of_subset_closure h.2 ?_⟩
   · exact h.indep.isBase_of_spanning <| by rwa [h.spanning_iff_spanning]
@@ -923,8 +923,8 @@ section Constructions
 variable {R S : Set α}
 
 @[simp] lemma restrict_closure_eq' (M : Matroid α) (X R : Set α) :
-    (M ↾ R).closure X = (M.closure (X ∩ R) ∩ R) ∪ (R \ M.E) := by
-  obtain ⟨I, hI⟩ := (M ↾ R).exists_isBasis' X
+    (M ↾R).closure X = (M.closure (X ∩ R) ∩ R) ∪ (R \ M.E) := by
+  obtain ⟨I, hI⟩ := (M ↾R).exists_isBasis' X
   obtain ⟨hI', hIR⟩ := isBasis'_restrict_iff.1 hI
   ext e
   rw [← hI.closure_eq_closure, ← hI'.closure_eq_closure, hI.indep.mem_closure_iff', mem_union,
@@ -935,7 +935,7 @@ variable {R S : Set α}
   tauto
 
 lemma restrict_closure_eq (M : Matroid α) (hXR : X ⊆ R) (hR : R ⊆ M.E := by aesop_mat) :
-    (M ↾ R).closure X = M.closure X ∩ R := by
+    (M ↾R).closure X = M.closure X ∩ R := by
   rw [restrict_closure_eq', diff_eq_empty.mpr hR, union_empty, inter_eq_self_of_subset_left hXR]
 
 @[simp] lemma emptyOn_closure_eq (X : Set α) : (emptyOn α).closure X = ∅ :=
@@ -1001,10 +1001,10 @@ lemma closure_empty_eq_ground_iff : M.closure ∅ = M.E ↔ M = loopyOn M.E := b
   rwa [← hrw, map_image_indep_iff (insert_subset hxE hI.subset_ground)] at hJ
 
 lemma restrict_spanning_iff (hSR : S ⊆ R) (hR : R ⊆ M.E := by aesop_mat) :
-    (M ↾ R).Spanning S ↔ R ⊆ M.closure S := by
+    (M ↾R).Spanning S ↔ R ⊆ M.closure S := by
   rw [spanning_iff, restrict_ground_eq, and_iff_left hSR, restrict_closure_eq _ hSR, inter_eq_right]
 
-lemma restrict_spanning_iff' : (M ↾ R).Spanning S ↔ R ∩ M.E ⊆ M.closure S ∧ S ⊆ R := by
+lemma restrict_spanning_iff' : (M ↾R).Spanning S ↔ R ∩ M.E ⊆ M.closure S ∧ S ⊆ R := by
   rw [spanning_iff, restrict_closure_eq', restrict_ground_eq, and_congr_left_iff,
     diff_eq_compl_inter, ← union_inter_distrib_right, inter_eq_right, union_comm,
     ← diff_subset_iff, diff_compl]

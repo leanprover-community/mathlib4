@@ -30,6 +30,6 @@ to its underlying type. -/
 @[simps obj map]
 def functorToTypes {X : Type u} : Set X ⥤ Type u where
   obj S := S
-  map {S T} f := ↾ fun ⟨x, hx⟩ ↦ ⟨x, leOfHom f hx⟩
+  map {S T} f := ↾fun ⟨x, hx⟩ ↦ ⟨x, leOfHom f hx⟩
 
 end Set

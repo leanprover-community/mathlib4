@@ -51,7 +51,7 @@ set_option backward.isDefEq.respectTransparency false in
 def adj : free ⊣ forget CommRingCat.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun _ _ ↦
-        { toFun := fun f ↦ ↾ (homEquiv f.hom)
+        { toFun := fun f ↦ ↾(homEquiv f.hom)
           invFun := fun f ↦ ofHom <| homEquiv.symm f
           left_inv := fun f ↦ congrArg ofHom (homEquiv.left_inv f.hom)
           right_inv := by cat_disch }
@@ -73,7 +73,7 @@ def coyoneda : Type vᵒᵖ ⥤ CommRingCat.{u} ⥤ CommRingCat.{max u v} where
 /-- The adjunction `Hom_{CRing}(Fun(n, R), S) ≃ Fun(n, Hom_{CRing}(R, S))`. -/
 def coyonedaAdj (R : CommRingCat.{u}) :
     (coyoneda.flip.obj R).rightOp ⊣ yoneda.obj R where
-  unit := { app n := ↾ (fun i ↦ CommRingCat.ofHom (Pi.evalRingHom _ i)) }
+  unit := { app n := ↾fun i ↦ CommRingCat.ofHom (Pi.evalRingHom _ i) }
   counit := { app S := (CommRingCat.ofHom (Pi.ringHom fun f ↦ f.hom)).op }
 
 instance (R : CommRingCat.{u}) : (yoneda.obj R).IsRightAdjoint := ⟨_, ⟨coyonedaAdj R⟩⟩

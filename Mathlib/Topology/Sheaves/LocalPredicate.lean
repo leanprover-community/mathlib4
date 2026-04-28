@@ -226,7 +226,7 @@ end PrelocalPredicate
 @[simps]
 def subpresheafToTypes (P : PrelocalPredicate T) : Presheaf (Type _) X where
   obj U := { f : ∀ x : U.unop, T x // P.pred f }
-  map i := ↾ fun f ↦ ⟨fun x ↦ f.1 (i.unop x), P.res i.unop f.1 f.2⟩
+  map i := ↾fun f ↦ ⟨fun x ↦ f.1 (i.unop x), P.res i.unop f.1 f.2⟩
 
 namespace subpresheafToTypes
 
@@ -235,7 +235,7 @@ variable (P : PrelocalPredicate T)
 /-- The natural transformation including the subpresheaf of functions satisfying a local predicate
 into the presheaf of all functions.
 -/
-def subtype : subpresheafToTypes P ⟶ presheafToTypes X T where app _ := ↾ (fun f ↦ f.1)
+def subtype : subpresheafToTypes P ⟶ presheafToTypes X T where app _ := ↾fun f ↦ f.1
 
 open TopCat.Presheaf
 
@@ -286,7 +286,7 @@ def subsheafToTypes (P : LocalPredicate T) : Sheaf (Type _) X :=
 def LocalPredicate.cocone (P : LocalPredicate T) (x : X) :
     Cocone ((OpenNhds.inclusion x).op ⋙ subpresheafToTypes P.toPrelocalPredicate) where
   pt := T x
-  ι := { app U := ↾ (fun f ↦ f.1 ⟨x, (unop U).2⟩) }
+  ι := { app U := ↾fun f ↦ f.1 ⟨x, (unop U).2⟩ }
 
 /-- There is a canonical map from the stalk to the original fiber, given by evaluating sections.
 -/

@@ -43,7 +43,7 @@ noncomputable def inverse : GrpCat.{u} ⥤ Grp (Type u) where
   obj A :=
     { MonTypeEquivalenceMon.inverse.obj ((forget₂ GrpCat MonCat).obj A) with
       grp :=
-        { inv := ↾ ((·⁻¹) : A → A)
+        { inv := ↾((·⁻¹) : A → A)
           left_inv := by
             ext x
             exact inv_mul_cancel (G := A) x

@@ -104,7 +104,7 @@ lemma topCatAdjunctionCounit_bijective (X : TopCat.{u}) :
 @[simps hom_app]
 noncomputable def topCatAdjunctionUnit (X : LightCondSet.{u}) : X ⟶ X.toTopCat.toLightCondSet where
   hom := {
-    app S := ↾ fun x ↦ {
+    app S := ↾fun x ↦ {
       toFun := fun s ↦ X.obj.map ((of PUnit.{u + 1}).const s).op x
       continuous_toFun := by
         suffices ∀ (i : (T : LightProfinite.{u}) × X.obj.obj ⟨T⟩),

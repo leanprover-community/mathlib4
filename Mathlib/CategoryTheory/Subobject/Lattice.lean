@@ -333,7 +333,7 @@ variable (C)
 @[simps]
 def functor [HasPullbacks C] : Cᵒᵖ ⥤ Type max u₁ v₁ where
   obj X := Subobject X.unop
-  map f := ↾ (pullback f.unop).obj
+  map f := ↾(pullback f.unop).obj
   map_id _ := by ext : 3; simp [pullback_id]
   map_comp _ _ := by ext : 3; simp [pullback_comp]
 

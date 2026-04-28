@@ -93,10 +93,10 @@ theorem mk' (h : ∀ A B : C, ∃ (c : BinaryCofan A B) (_ : IsColimit c), Mono 
 set_option backward.isDefEq.respectTransparency false in
 instance monoCoprodType : MonoCoprod (Type u) :=
   MonoCoprod.mk' fun A B => by
-    refine ⟨BinaryCofan.mk (↾ (Sum.inl : A → A ⊕ B))
-      (↾ Sum.inr), ?_, ?_⟩
+    refine ⟨BinaryCofan.mk (↾(Sum.inl : A → A ⊕ B))
+      (↾Sum.inr), ?_, ?_⟩
     · exact BinaryCofan.IsColimit.mk _
-        (fun f₁ f₂ => ↾ fun x => by
+        (fun f₁ f₂ => ↾fun x => by
           rcases x with x | x
           exacts [f₁ x, f₂ x])
         (fun f₁ f₂ => by rfl)

@@ -272,7 +272,7 @@ def limit.homIso (F : J ⥤ C) [HasLimit F] (W : C) :
 
 @[simp]
 theorem limit.homIso_hom (F : J ⥤ C) [HasLimit F] {W : C} :
-    (limit.homIso F W).hom = ↾ (fun f ↦ (const J).map f.down ≫ (limit.cone F).π) :=
+    (limit.homIso F W).hom = ↾fun f ↦ (const J).map f.down ≫ (limit.cone F).π :=
   (limit.isLimit F).homIso_hom
 
 /-- The isomorphism (in `Type`) between
@@ -833,7 +833,7 @@ def colimit.homIso (F : J ⥤ C) [HasColimit F] (W : C) :
 @[simp]
 theorem colimit.homIso_hom (F : J ⥤ C) [HasColimit F] {W : C} :
     (colimit.homIso F W).hom =
-      ↾ (fun f ↦ (colimit.cocone F).ι ≫ (const J).map f.down) :=
+      ↾fun f ↦ (colimit.cocone F).ι ≫ (const J).map f.down :=
   (colimit.isColimit F).homIso_hom
 
 /-- The isomorphism (in `Type`) between

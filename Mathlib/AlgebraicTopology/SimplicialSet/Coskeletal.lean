@@ -181,7 +181,7 @@ open isPointwiseRightKanExtensionAt in
 /-- A strict Segal simplicial set is 2-coskeletal. -/
 noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
     (rightExtensionInclusion X 2).IsPointwiseRightKanExtensionAt ⟨⦋n⦌⟩ where
-  lift s := ↾ (fun x ↦ lift sx s x)
+  lift s := ↾fun x ↦ lift sx s x
   fac s j := by
     ext x
     obtain ⟨⟨i, hi⟩, ⟨f : _ ⟶ _⟩, rfl⟩ := j.mk_surjective

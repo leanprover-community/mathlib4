@@ -54,7 +54,7 @@ variable (f : F' ⟶ F) {G : Subfunctor F} (hf : range f ≤ G)
 /-- If the image of a morphism falls in a subfunctor, then the morphism factors through it. -/
 @[simps! app]
 def lift : F' ⟶ G.toFunctor where
-  app U := ↾ fun x => ⟨f.app U x, hf U (by simp)⟩
+  app U := ↾fun x => ⟨f.app U x, hf U (by simp)⟩
   naturality _ _ g := by
     ext x
     simpa [Subtype.ext_iff, -NatTrans.naturality_apply] using NatTrans.naturality_apply f g x

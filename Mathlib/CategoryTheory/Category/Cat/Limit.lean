@@ -49,7 +49,7 @@ the diagram whose limit gives the morphism space between two objects of the limi
 def homDiagram {F : J ⥤ Cat.{v, v}} (X Y : limit (F ⋙ Cat.objects.{v, v})) :
     J ⥤ Type v where
   obj j := limit.π (F ⋙ Cat.objects) j X ⟶ limit.π (F ⋙ Cat.objects) j Y
-  map f := ↾ fun g ↦ by
+  map f := ↾fun g ↦ by
     refine eqToHom ?_ ≫ (F.map f).toFunctor.map g ≫ eqToHom ?_
     · exact (congr_hom (limit.w (F ⋙ Cat.objects) f) X).symm
     · exact congr_hom (limit.w (F ⋙ Cat.objects) f) Y
@@ -108,7 +108,7 @@ def limitConeLift (F : J ⥤ Cat.{v, v}) (s : Cone F) : s.pt ⟶ limitConeX F :=
       limit.lift (F ⋙ Cat.objects)
         { pt := s.pt
           π :=
-            { app := fun j => ↾ (s.π.app j).toFunctor.obj
+            { app := fun j => ↾(s.π.app j).toFunctor.obj
               naturality := fun _ _ f => objects.congr_map (s.π.naturality f) } }
     map f := by
       fapply Types.Limit.mk.{v, v}

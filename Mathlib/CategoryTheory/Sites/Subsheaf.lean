@@ -151,7 +151,7 @@ alias Subpresheaf.sheafify_sheafify := Subfunctor.sheafify_sheafify
 /-- The lift of a presheaf morphism onto the sheafification subpresheaf. -/
 noncomputable def Subfunctor.sheafifyLift (f : G.toFunctor ⟶ F') (h : Presieve.IsSheaf J F') :
     (G.sheafify J).toFunctor ⟶ F' where
-  app _ := ↾ fun s ↦ (h (G.sieveOfSection s.1) s.prop).amalgamate
+  app _ := ↾fun s ↦ (h (G.sieveOfSection s.1) s.prop).amalgamate
     (_) ((G.family_of_elements_compatible s.1).map f)
   naturality := by
     intro U V i

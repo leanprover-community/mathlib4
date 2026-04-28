@@ -41,7 +41,7 @@ of modules over `R` which sends `X : Cᵒᵖ` to the free `R.obj X`-module on `F
 @[simps]
 noncomputable def freeObj (F : Cᵒᵖ ⥤ Type u) : PresheafOfModules.{u} R where
   obj X := (ModuleCat.free (R.obj X)).obj (F.obj X)
-  map {X Y} f := ModuleCat.freeDesc (↾ (fun x ↦ ModuleCat.freeMk (F.map f x)))
+  map {X Y} f := ModuleCat.freeDesc (↾fun x ↦ ModuleCat.freeMk (F.map f x))
   map_id := by aesop
 
 /-- The free presheaf of modules functor `(Cᵒᵖ ⥤ Type u) ⥤ PresheafOfModules.{u} R`. -/
@@ -71,7 +71,7 @@ variable (F R) in
 /-- The unit of `PresheafOfModules.freeAdjunction`. -/
 @[simps]
 noncomputable def freeAdjunctionUnit : F ⟶ (freeObj (R := R) F).presheaf ⋙ forget _ where
-  app X := ↾ (fun x ↦ ModuleCat.freeMk x)
+  app X := ↾fun x ↦ ModuleCat.freeMk x
   naturality X Y f := by ext; simp [presheaf]
 
 set_option backward.isDefEq.respectTransparency false in

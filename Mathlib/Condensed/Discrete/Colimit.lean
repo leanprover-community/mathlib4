@@ -182,7 +182,7 @@ The functor which takes a finite set to the set of maps into `F(*)` for a preshe
 @[simps obj map]
 def finYoneda : FintypeCat.{u}ᵒᵖ ⥤ Type (u + 1) where
   obj X := X.unop → F.obj (toProfinite.op.obj ⟨of <| PUnit.{u + 1}⟩)
-  map f := ↾ (fun g ↦ g ∘ f.unop)
+  map f := ↾fun g ↦ g ∘ f.unop
 
 /-- `locallyConstantPresheaf` restricted to finite sets is isomorphic to `finYoneda F`. -/
 @[simps! hom_app]
@@ -191,8 +191,8 @@ def locallyConstantIsoFinYoneda :
       ⟨of <| PUnit.{u + 1}⟩))) ≅
     finYoneda F :=
   NatIso.ofComponents fun Y ↦ {
-    hom := ↾ (fun f ↦ f.1)
-    inv := ↾ fun f ↦ ⟨f, @IsLocallyConstant.of_discrete _ _ _ ⟨rfl⟩ _⟩ }
+    hom := ↾fun f ↦ f.1
+    inv := ↾fun f ↦ ⟨f, @IsLocallyConstant.of_discrete _ _ _ ⟨rfl⟩ _⟩ }
 
 /-- A finite set as a coproduct cocone in `Profinite` over itself. -/
 def fintypeCatAsCofan (X : Profinite) :
@@ -225,7 +225,7 @@ def isoFinYonedaComponents (X : Profinite.{u}) [Finite X] :
 @[simp]
 lemma isoFinYonedaComponents_hom (X : Profinite.{u}) [Finite X] :
     (isoFinYonedaComponents F X).hom =
-    ↾ (fun y x ↦ F.map ((Profinite.of PUnit.{u + 1}).const x).op y) :=
+    ↾fun y x ↦ F.map ((Profinite.of PUnit.{u + 1}).const x).op y :=
   rfl
 
 lemma isoFinYonedaComponents_hom_apply (X : Profinite.{u}) [Finite X] (y : F.obj ⟨X⟩) (x : X) :
@@ -474,14 +474,14 @@ The functor which takes a finite set to the set of maps into `F(*)` for a preshe
 @[simps]
 def finYoneda : FintypeCat.{u}ᵒᵖ ⥤ Type u where
   obj X := X.unop → F.obj (toLightProfinite.op.obj ⟨of PUnit.{u + 1}⟩)
-  map f := ↾ fun g ↦ g ∘ f.unop
+  map f := ↾fun g ↦ g ∘ f.unop
 
 /-- `locallyConstantPresheaf` restricted to finite sets is isomorphic to `finYoneda F`. -/
 def locallyConstantIsoFinYoneda : toLightProfinite.op ⋙
     (locallyConstantPresheaf (F.obj (toLightProfinite.op.obj ⟨of PUnit.{u + 1}⟩))) ≅ finYoneda F :=
   NatIso.ofComponents fun Y ↦ {
-    hom := ↾ fun f ↦ f.1
-    inv := ↾ fun f ↦ ⟨f, @IsLocallyConstant.of_discrete _ _ _ ⟨rfl⟩ _⟩ }
+    hom := ↾fun f ↦ f.1
+    inv := ↾fun f ↦ ⟨f, @IsLocallyConstant.of_discrete _ _ _ ⟨rfl⟩ _⟩ }
 
 /-- A finite set as a coproduct cocone in `LightProfinite` over itself. -/
 def fintypeCatAsCofan (X : LightProfinite) :
@@ -513,7 +513,7 @@ def isoFinYonedaComponents (X : LightProfinite.{u}) [Finite X] :
 @[simp]
 lemma isoFinYonedaComponents_hom (X : LightProfinite.{u}) [Finite X] :
     (isoFinYonedaComponents F X).hom =
-    ↾ (fun y x ↦ F.map ((LightProfinite.of PUnit.{u + 1}).const x).op y) :=
+    ↾fun y x ↦ F.map ((LightProfinite.of PUnit.{u + 1}).const x).op y :=
   rfl
 
 lemma isoFinYonedaComponents_hom_apply (X : LightProfinite.{u}) [Finite X] (y : F.obj ⟨X⟩)

@@ -154,7 +154,7 @@ subobject classifier for the category of presheaves. -/
 @[simps]
 def Functor.sieves : Cᵒᵖ ⥤ Type max v u where
   obj X := Sieve X.unop
-  map f := ↾ fun S ↦ S.pullback f.unop
+  map f := ↾fun S ↦ S.pullback f.unop
 
 /--
 The presheaf sending each object to the set of `J`-closed sieves on it. This presheaf is a `J`-sheaf

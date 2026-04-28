@@ -395,7 +395,7 @@ theorem isSheaf_iff_isSheaf_of_type (P : Cᵒᵖ ⥤ Type w) :
     refine Presieve.isSheaf_iso J ?_ (hP (PUnit))
     exact Functor.isoWhiskerLeft _ Coyoneda.punitIso ≪≫ P.rightUnitor
   · intro hP X Y S hS z hz
-    refine ⟨↾ fun x => (hP S hS).amalgamate (fun Z f hf ↦
+    refine ⟨↾fun x => (hP S hS).amalgamate (fun Z f hf ↦
       (ConcreteCategory.hom (z f hf)) x) ?_, ?_, ?_⟩
     · intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ hf₁ hf₂ h
       exact (ConcreteCategory.congr_hom (hz g₁ g₂ hf₁ hf₂ h)) x
