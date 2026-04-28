@@ -132,6 +132,23 @@ private meta def elabMkConcreteCategoryCore (mods : Syntax) (cat FC idTerm compT
   let addHom? := toAdditiveTarget? mods |>.map fun n => mkCIdent (n ++ `Hom)
   let idBase : TSyntax `term := stripPlaceholderApplication idTerm
   let compBase : TSyntax `term := stripPlaceholderApplication compTerm
+  let idWasStripped := idBase.raw != idTerm.raw
+  let compWasStripped := compBase.raw != compTerm.raw
+  let idDef : TSyntax `term ←
+    if idWasStripped then
+      `(term| by first | exact ($(idBase)) X | exact $(idBase))
+    else
+      `(term| ($(idBase)) X)
+  let compDef : TSyntax `term ←
+    if compWasStripped then
+      `(term| ($(compBase)) g.hom' f.hom')
+    else
+      `(term| ($(compBase)) f.hom' g.hom')
+  let homCompRhs : TSyntax `term ←
+    if compWasStripped then
+      `(term| ($(compBase)) g.hom f.hom)
+    else
+      `(term| ($(compBase)) f.hom g.hom)
 
   if useToAdditive then
     match addHom? with
@@ -163,80 +180,23 @@ private meta def elabMkConcreteCategoryCore (mods : Syntax) (cat FC idTerm compT
         /-- The underlying bundled morphism. -/
         hom' : (($FC : $cat → $cat → Type _)) X Y)
 
-  if idBase.raw == idTerm.raw then
-    if compBase.raw == compTerm.raw then
-      if useToAdditive then
-        elabCommand <| ← set_option hygiene false in `(command|
-          set_option backward.privateInPublic true in
-          set_option backward.privateInPublic.warn false in
-          @[to_additive]
-          instance instCategory : CategoryTheory.Category $cat where
-            Hom X Y := Hom (X := X) (Y := Y)
-            id X := Hom.mk (X := X) (Y := X) (($(idBase)) X)
-            comp {X Y Z} f g := Hom.mk (X := X) (Y := Z) (($(compBase)) f.hom' g.hom'))
-      else
-        elabCommand <| ← set_option hygiene false in `(command|
-          set_option backward.privateInPublic true in
-          set_option backward.privateInPublic.warn false in
-          instance instCategory : CategoryTheory.Category $cat where
-            Hom X Y := Hom (X := X) (Y := Y)
-            id X := Hom.mk (X := X) (Y := X) (($(idBase)) X)
-            comp {X Y Z} f g := Hom.mk (X := X) (Y := Z) (($(compBase)) f.hom' g.hom'))
-    else
-      if useToAdditive then
-        elabCommand <| ← set_option hygiene false in `(command|
-          set_option backward.privateInPublic true in
-          set_option backward.privateInPublic.warn false in
-          @[to_additive]
-          instance instCategory : CategoryTheory.Category $cat where
-            Hom X Y := Hom (X := X) (Y := Y)
-            id X := Hom.mk (X := X) (Y := X) (($(idBase)) X)
-            comp {X Y Z} f g := Hom.mk (X := X) (Y := Z) (($(compBase)) g.hom' f.hom'))
-      else
-        elabCommand <| ← set_option hygiene false in `(command|
-          set_option backward.privateInPublic true in
-          set_option backward.privateInPublic.warn false in
-          instance instCategory : CategoryTheory.Category $cat where
-            Hom X Y := Hom (X := X) (Y := Y)
-            id X := Hom.mk (X := X) (Y := X) (($(idBase)) X)
-            comp {X Y Z} f g := Hom.mk (X := X) (Y := Z) (($(compBase)) g.hom' f.hom'))
+  if useToAdditive then
+    elabCommand <| ← set_option hygiene false in `(command|
+      set_option backward.privateInPublic true in
+      set_option backward.privateInPublic.warn false in
+      @[to_additive]
+      instance instCategory : CategoryTheory.Category $cat where
+        Hom X Y := Hom (X := X) (Y := Y)
+        id X := Hom.mk (X := X) (Y := X) $idDef
+        comp {X Y Z} f g := Hom.mk (X := X) (Y := Z) $compDef)
   else
-    if compBase.raw == compTerm.raw then
-      if useToAdditive then
-        elabCommand <| ← set_option hygiene false in `(command|
-          set_option backward.privateInPublic true in
-          set_option backward.privateInPublic.warn false in
-          @[to_additive]
-          instance instCategory : CategoryTheory.Category $cat where
-            Hom X Y := Hom (X := X) (Y := Y)
-            id X := Hom.mk (X := X) (Y := X) (by first | exact ($(idBase)) X | exact $(idBase))
-            comp {X Y Z} f g := Hom.mk (X := X) (Y := Z) (($(compBase)) f.hom' g.hom'))
-      else
-        elabCommand <| ← set_option hygiene false in `(command|
-          set_option backward.privateInPublic true in
-          set_option backward.privateInPublic.warn false in
-          instance instCategory : CategoryTheory.Category $cat where
-            Hom X Y := Hom (X := X) (Y := Y)
-            id X := Hom.mk (X := X) (Y := X) (by first | exact ($(idBase)) X | exact $(idBase))
-            comp {X Y Z} f g := Hom.mk (X := X) (Y := Z) (($(compBase)) f.hom' g.hom'))
-    else
-      if useToAdditive then
-        elabCommand <| ← set_option hygiene false in `(command|
-          set_option backward.privateInPublic true in
-          set_option backward.privateInPublic.warn false in
-          @[to_additive]
-          instance instCategory : CategoryTheory.Category $cat where
-            Hom X Y := Hom (X := X) (Y := Y)
-            id X := Hom.mk (X := X) (Y := X) (by first | exact ($(idBase)) X | exact $(idBase))
-            comp {X Y Z} f g := Hom.mk (X := X) (Y := Z) (($(compBase)) g.hom' f.hom'))
-      else
-        elabCommand <| ← set_option hygiene false in `(command|
-          set_option backward.privateInPublic true in
-          set_option backward.privateInPublic.warn false in
-          instance instCategory : CategoryTheory.Category $cat where
-            Hom X Y := Hom (X := X) (Y := Y)
-            id X := Hom.mk (X := X) (Y := X) (by first | exact ($(idBase)) X | exact $(idBase))
-            comp {X Y Z} f g := Hom.mk (X := X) (Y := Z) (($(compBase)) g.hom' f.hom'))
+    elabCommand <| ← set_option hygiene false in `(command|
+      set_option backward.privateInPublic true in
+      set_option backward.privateInPublic.warn false in
+      instance instCategory : CategoryTheory.Category $cat where
+        Hom X Y := Hom (X := X) (Y := Y)
+        id X := Hom.mk (X := X) (Y := X) $idDef
+        comp {X Y Z} f g := Hom.mk (X := X) (Y := Z) $compDef)
 
   if useToAdditive then
     elabCommand <| ← set_option hygiene false in `(command|
@@ -322,57 +282,29 @@ private meta def elabMkConcreteCategoryCore (mods : Syntax) (cat FC idTerm compT
         initialize_simps_projections $addHom:ident (hom' → hom))
   | none => pure ()
 
-  if idBase.raw == idTerm.raw then
-    if useToAdditive then
-      elabCommand <| ← set_option hygiene false in `(command|
-        @[to_additive (attr := simp), simp]
-        lemma hom_id {X : $cat} : (𝟙 X : X ⟶ X).hom = (($(idBase)) X) :=
-          rfl)
-    else
-      elabCommand <| ← set_option hygiene false in `(command|
-        @[simp]
-        lemma hom_id {X : $cat} : (𝟙 X : X ⟶ X).hom = (($(idBase)) X) :=
-          rfl)
+  if useToAdditive then
+    elabCommand <| ← set_option hygiene false in `(command|
+      @[to_additive (attr := simp), simp]
+      lemma hom_id {X : $cat} : (𝟙 X : X ⟶ X).hom = $idDef :=
+        rfl)
   else
-    if useToAdditive then
-      elabCommand <| ← set_option hygiene false in `(command|
-        @[to_additive (attr := simp), simp]
-        lemma hom_id {X : $cat} : (𝟙 X : X ⟶ X).hom = (by
-            first | exact ($(idBase)) X | exact $(idBase)) :=
-          rfl)
-    else
-      elabCommand <| ← set_option hygiene false in `(command|
-        @[simp]
-        lemma hom_id {X : $cat} : (𝟙 X : X ⟶ X).hom = (by
-            first | exact ($(idBase)) X | exact $(idBase)) :=
-          rfl)
+    elabCommand <| ← set_option hygiene false in `(command|
+      @[simp]
+      lemma hom_id {X : $cat} : (𝟙 X : X ⟶ X).hom = $idDef :=
+        rfl)
 
-  if compBase.raw == compTerm.raw then
-    if useToAdditive then
-      elabCommand <| ← set_option hygiene false in `(command|
-        @[to_additive (attr := simp), simp]
-        lemma hom_comp {X Y Z : $cat} (f : X ⟶ Y) (g : Y ⟶ Z) :
-            (f ≫ g).hom = (($(compBase)) f.hom g.hom) :=
-          rfl)
-    else
-      elabCommand <| ← set_option hygiene false in `(command|
-        @[simp]
-        lemma hom_comp {X Y Z : $cat} (f : X ⟶ Y) (g : Y ⟶ Z) :
-            (f ≫ g).hom = (($(compBase)) f.hom g.hom) :=
-          rfl)
+  if useToAdditive then
+    elabCommand <| ← set_option hygiene false in `(command|
+      @[to_additive (attr := simp), simp]
+      lemma hom_comp {X Y Z : $cat} (f : X ⟶ Y) (g : Y ⟶ Z) :
+          (f ≫ g).hom = $homCompRhs :=
+        rfl)
   else
-    if useToAdditive then
-      elabCommand <| ← set_option hygiene false in `(command|
-        @[to_additive (attr := simp), simp]
-        lemma hom_comp {X Y Z : $cat} (f : X ⟶ Y) (g : Y ⟶ Z) :
-            (f ≫ g).hom = (($(compBase)) g.hom f.hom) :=
-          rfl)
-    else
-      elabCommand <| ← set_option hygiene false in `(command|
-        @[simp]
-        lemma hom_comp {X Y Z : $cat} (f : X ⟶ Y) (g : Y ⟶ Z) :
-            (f ≫ g).hom = (($(compBase)) g.hom f.hom) :=
-          rfl)
+    elabCommand <| ← set_option hygiene false in `(command|
+      @[simp]
+      lemma hom_comp {X Y Z : $cat} (f : X ⟶ Y) (g : Y ⟶ Z) :
+          (f ≫ g).hom = $homCompRhs :=
+        rfl)
 
   if useToAdditive then
     elabCommand <| ← set_option hygiene false in `(command|
