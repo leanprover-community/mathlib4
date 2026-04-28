@@ -66,7 +66,8 @@ def derivationToSquareZeroOfLift [IsScalarTower R A B] (hI : I ^ 2 = ⊥) (f : A
     simp only [map_mul, sub_mul, mul_sub, Algebra.smul_def] at this ⊢
     rw [sub_eq_iff_eq_add, sub_eq_iff_eq_add] at this
     simp only [this]
-    ring
+    -- `algebra` can't work here, unfortunately, since `R` is a semiring.
+    ring1
 
 variable (hI : I ^ 2 = ⊥)
 

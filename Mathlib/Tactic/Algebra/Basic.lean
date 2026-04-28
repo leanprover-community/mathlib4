@@ -508,4 +508,4 @@ elab (name := algebraWith) "algebra" " with " R:term : tactic =>
 
 end Mathlib.Tactic.Algebra
 
-macro "ring":tactic => `(tactic| algebra)
+macro (name := fakeRing) "ring":tactic => `(tactic| algebra)
