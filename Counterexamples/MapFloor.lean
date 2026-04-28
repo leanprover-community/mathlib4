@@ -42,8 +42,6 @@ noncomputable section
 
 open Function Int Polynomial
 
-open scoped Polynomial
-
 /-- The integers with infinitesimals adjoined. -/
 def IntWithEpsilon :=
   ℤ[X] deriving Nontrivial, CommRing, Inhabited
