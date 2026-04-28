@@ -130,6 +130,11 @@ attribute [instance 1100] ModuleTestCat.isModule
 
 namespace ModuleTestCat
 
+/-- Construct a bundled `ModuleTestCat` from the underlying type and typeclass. -/
+abbrev of (R : Type u) [Ring R] (M : Type v) [AddCommGroup M] [Module R M] :
+    ModuleTestCat R :=
+  ⟨M⟩
+
 instance : CoeSort (ModuleTestCat.{v} R) (Type v) :=
   ⟨ModuleTestCat.carrier⟩
 
@@ -137,6 +142,8 @@ attribute [coe] ModuleTestCat.carrier
 
 variable {R} in
 mk_concrete_category (ModuleTestCat R) (· →ₗ[R] ·) (LinearMap.id ·) (LinearMap.comp · ·)
+  with_of_hom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y]
+  hom_type (X →ₗ[R] Y) from (of R X) to (of R Y)
 
 /-- info: ModuleTestCat.Hom.{u, u_1, u_2} {R : Type u} [Ring R] (X : ModuleTestCat R) (Y : ModuleTestCat R) : Type (max u_1 u_2) -/
 #guard_msgs in
@@ -176,7 +183,8 @@ info: ModuleTestCat.Hom.ext.{u, u_1, u_2} {R : Type u} {inst✝ : Ring R} {X : M
 #guard_msgs in
 #check Hom.hom
 
-/-- info: ModuleTestCat.ofHom.{u, u_1} {R : Type u} [Ring R] {X Y : ModuleTestCat R} (f : ↑X →ₗ[R] ↑Y) : X ⟶ Y -/
+/-- info: ModuleTestCat.ofHom.{v, u} {R : Type u} [Ring R] {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y]
+  [Module R Y] (f : X →ₗ[R] Y) : of R X ⟶ of R Y -/
 #guard_msgs in
 #check ofHom
 
@@ -253,6 +261,11 @@ attribute [instance] AdditiveTestCat.str MultiplicativeTestCat.str
 
 namespace MultiplicativeTestCat
 
+/-- Construct a bundled `MultiplicativeTestCat` from the underlying type and typeclass. -/
+@[to_additive /-- Construct a bundled `AdditiveTestCat` from the underlying type and typeclass. -/]
+abbrev of (M : Type u) [Monoid M] : MultiplicativeTestCat :=
+  ⟨M⟩
+
 @[to_additive instCoeSortAdditiveTestCat]
 instance instCoeSort : CoeSort MultiplicativeTestCat (Type u) :=
   ⟨MultiplicativeTestCat.carrier⟩
@@ -263,7 +276,11 @@ attribute [coe] AdditiveTestCat.carrier MultiplicativeTestCat.carrier
 
 @[to_additive AdditiveTestCat]
 mk_concrete_category MultiplicativeTestCat (· →* ·) (MonoidHom.id ·) (MonoidHom.comp · ·)
+  with_of_hom {X Y : Type u} [Monoid X] [Monoid Y]
+  hom_type (X →* Y) from (MultiplicativeTestCat.of X) to (MultiplicativeTestCat.of Y)
   to_additive AdditiveTestCat (· →+ ·) (AddMonoidHom.id ·) (AddMonoidHom.comp · ·)
+  with_of_hom {X Y : Type u} [AddMonoid X] [AddMonoid Y]
+  hom_type (X →+ Y) from (AdditiveTestCat.of X) to (AdditiveTestCat.of Y)
 
 namespace MultiplicativeTestCat
 
@@ -283,7 +300,7 @@ namespace MultiplicativeTestCat
 #guard_msgs in
 #check Hom.hom
 
-/-- info: MultiplicativeTestCat.ofHom.{u_1} {X Y : MultiplicativeTestCat} (f : ↑X →* ↑Y) : X ⟶ Y -/
+/-- info: MultiplicativeTestCat.ofHom.{u} {X Y : Type u} [Monoid X] [Monoid Y] (f : X →* Y) : of X ⟶ of Y -/
 #guard_msgs in
 #check ofHom
 
@@ -291,7 +308,7 @@ example : Category MultiplicativeTestCat := inferInstance
 
 example : ConcreteCategory MultiplicativeTestCat (fun X Y => X →* Y) := inferInstance
 
-example {X Y : MultiplicativeTestCat} (f : X →* Y) : (ofHom f).hom = f := by
+example {X Y : Type u} [Monoid X] [Monoid Y] (f : X →* Y) : (ofHom f).hom = f := by
   dsimp
 
 example {X Y Z : MultiplicativeTestCat} (f : X ⟶ Y) (g : Y ⟶ Z) :
@@ -318,7 +335,7 @@ namespace AdditiveTestCat
 #guard_msgs in
 #check Hom.hom
 
-/-- info: AdditiveTestCat.ofHom.{u_1} {X Y : AdditiveTestCat} (f : ↑X →+ ↑Y) : X ⟶ Y -/
+/-- info: AdditiveTestCat.ofHom.{u} {X Y : Type u} [AddMonoid X] [AddMonoid Y] (f : X →+ Y) : of X ⟶ of Y -/
 #guard_msgs in
 #check ofHom
 
@@ -326,7 +343,7 @@ example : Category AdditiveTestCat := inferInstance
 
 example : ConcreteCategory AdditiveTestCat (fun X Y => X →+ Y) := inferInstance
 
-example {X Y : AdditiveTestCat} (f : X →+ Y) : (ofHom f).hom = f := by
+example {X Y : Type u} [AddMonoid X] [AddMonoid Y] (f : X →+ Y) : (ofHom f).hom = f := by
   dsimp
 
 example {X Y Z : AdditiveTestCat} (f : X ⟶ Y) (g : Y ⟶ Z) :

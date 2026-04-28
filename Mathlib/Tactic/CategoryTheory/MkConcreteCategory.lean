@@ -35,9 +35,22 @@ The command is intended to be used in the namespace of `C`. It creates declarati
 syntax (name := mkConcreteCategory) declModifiers "mk_concrete_category " term:max ppSpace
   term:max ppSpace term:max ppSpace term:max : command
 
+syntax (name := mkConcreteCategoryWithOfHom) declModifiers "mk_concrete_category " term:max ppSpace
+  term:max ppSpace term:max ppSpace term:max ppSpace "with_of_hom"
+  (ppSpace bracketedBinder)* ppSpace "hom_type " term:max ppSpace "from " term:max ppSpace
+  "to " term:max : command
+
 syntax (name := mkConcreteCategoryWithAdditive) declModifiers
   "mk_concrete_category " term:max ppSpace term:max ppSpace term:max ppSpace term:max ppSpace
   "to_additive " term:max ppSpace term:max ppSpace term:max ppSpace term:max : command
+
+syntax (name := mkConcreteCategoryWithOfHomAndAdditive) (priority := high) declModifiers
+  "mk_concrete_category " term:max ppSpace term:max ppSpace term:max ppSpace term:max ppSpace
+  "with_of_hom" (ppSpace bracketedBinder)* ppSpace "hom_type " term:max ppSpace
+  "from " term:max ppSpace "to " term:max ppSpace
+  "to_additive " term:max ppSpace term:max ppSpace term:max ppSpace term:max ppSpace
+  "with_of_hom" (ppSpace bracketedBinder)* ppSpace "hom_type " term:max ppSpace
+  "from " term:max ppSpace "to " term:max : command
 
 /-- Whether a syntax tree contains a `to_additive` attribute. -/
 private meta partial def hasToAdditiveAttr (stx : Syntax) : Bool :=
@@ -104,11 +117,12 @@ public meta def elabMkConcreteCategoryWithAdditive : CommandElab := fun stx => d
     `(command| mk_concrete_category $cat $FC $idTerm $compTerm)
   elabCommand <| ← set_option hygiene false in `(command| end $catNs:ident)
 
-/-- Elaborator for `mk_concrete_category`. -/
-@[command_elab mkConcreteCategory]
-public meta def elabMkConcreteCategory : CommandElab := fun stx => do
-  let `($mods:declModifiers mk_concrete_category $cat $FC $idTerm $compTerm) := stx
-    | throwUnsupportedSyntax
+/-- Core implementation of `mk_concrete_category`. -/
+private abbrev CustomOfHomData :=
+  TSyntaxArray `Lean.Parser.Term.bracketedBinder × TSyntax `term × TSyntax `term × TSyntax `term
+
+private meta def elabMkConcreteCategoryCore (mods : Syntax) (cat FC idTerm compTerm : TSyntax `term)
+    (customOfHom? : Option CustomOfHomData) : CommandElabM Unit := do
   let useToAdditive := hasToAdditiveAttr mods
   let addHom? := toAdditiveTarget? mods |>.map fun n => mkCIdent (n ++ `Hom)
   let idBase : TSyntax `term := stripPlaceholderApplication idTerm
@@ -253,17 +267,33 @@ public meta def elabMkConcreteCategory : CommandElab := fun stx => do
       abbrev Hom.hom {X Y : $cat} (f : Hom (X := X) (Y := Y)) :=
         CategoryTheory.ConcreteCategory.hom (C := $cat) f)
 
-  if useToAdditive then
-    elabCommand <| ← set_option hygiene false in `(command|
-      /-- Typecheck a bundled morphism as a morphism in this concrete category. -/
-      @[to_additive]
-      abbrev ofHom {X Y : $cat} (f : (($FC : $cat → $cat → Type _)) X Y) : X ⟶ Y :=
-        CategoryTheory.ConcreteCategory.ofHom (C := $cat) f)
-  else
-    elabCommand <| ← set_option hygiene false in `(command|
-      /-- Typecheck a bundled morphism as a morphism in this concrete category. -/
-      abbrev ofHom {X Y : $cat} (f : (($FC : $cat → $cat → Type _)) X Y) : X ⟶ Y :=
-        CategoryTheory.ConcreteCategory.ofHom (C := $cat) f)
+  match customOfHom? with
+  | some (binders, homTy, source, target) =>
+      if useToAdditive then
+        elabCommand <| ← set_option hygiene false in `(command|
+          /-- Typecheck a bundled morphism as a morphism in this concrete category. -/
+          @[to_additive]
+          abbrev ofHom $binders:bracketedBinder*
+              (f : ($homTy)) : $source ⟶ $target :=
+            CategoryTheory.ConcreteCategory.ofHom (C := $cat) f)
+      else
+        elabCommand <| ← set_option hygiene false in `(command|
+          /-- Typecheck a bundled morphism as a morphism in this concrete category. -/
+          abbrev ofHom $binders:bracketedBinder*
+              (f : ($homTy)) : $source ⟶ $target :=
+            CategoryTheory.ConcreteCategory.ofHom (C := $cat) f)
+  | none =>
+      if useToAdditive then
+        elabCommand <| ← set_option hygiene false in `(command|
+          /-- Typecheck a bundled morphism as a morphism in this concrete category. -/
+          @[to_additive]
+          abbrev ofHom {X Y : $cat} (f : (($FC : $cat → $cat → Type _)) X Y) : X ⟶ Y :=
+            CategoryTheory.ConcreteCategory.ofHom (C := $cat) f)
+      else
+        elabCommand <| ← set_option hygiene false in `(command|
+          /-- Typecheck a bundled morphism as a morphism in this concrete category. -/
+          abbrev ofHom {X Y : $cat} (f : (($FC : $cat → $cat → Type _)) X Y) : X ⟶ Y :=
+            CategoryTheory.ConcreteCategory.ofHom (C := $cat) f)
 
   if useToAdditive then
     elabCommand <| ← set_option hygiene false in `(command|
@@ -364,5 +394,43 @@ public meta def elabMkConcreteCategory : CommandElab := fun stx => do
       lemma ofHom_hom {X Y : $cat} (f : X ⟶ Y) :
           CategoryTheory.ConcreteCategory.ofHom (C := $cat) f.hom = f :=
         rfl)
+
+/-- Elaborator for `mk_concrete_category`. -/
+@[command_elab mkConcreteCategory]
+public meta def elabMkConcreteCategory : CommandElab := fun stx => do
+  let `($mods:declModifiers mk_concrete_category $cat $FC $idTerm $compTerm) := stx
+    | throwUnsupportedSyntax
+  elabMkConcreteCategoryCore mods cat FC idTerm compTerm none
+
+/-- Elaborator for the `mk_concrete_category ... with_of_hom ...` form. -/
+@[command_elab mkConcreteCategoryWithOfHom]
+public meta def elabMkConcreteCategoryWithOfHom : CommandElab := fun stx => do
+  let `($mods:declModifiers mk_concrete_category $cat $FC $idTerm $compTerm with_of_hom
+      $binders:bracketedBinder* hom_type $homTy from $source to $target) := stx
+    | throwUnsupportedSyntax
+  elabMkConcreteCategoryCore mods cat FC idTerm compTerm (some (binders, homTy, source, target))
+
+/-- Elaborator for the `mk_concrete_category ... with_of_hom ... to_additive ...` form. -/
+@[command_elab mkConcreteCategoryWithOfHomAndAdditive]
+public meta def elabMkConcreteCategoryWithOfHomAndAdditive : CommandElab := fun stx => do
+  let `($_mods:declModifiers mk_concrete_category $cat $FC $idTerm $compTerm with_of_hom
+      $binders:bracketedBinder* hom_type $homTy from $source to $target to_additive
+      $addCat $addFC $addIdTerm $addCompTerm with_of_hom $addBinders:bracketedBinder*
+      hom_type $addHomTy from $addSource to $addTarget) := stx
+    | throwUnsupportedSyntax
+  let catNs ←
+    if cat.raw.isIdent then pure <| mkIdent cat.raw.getId
+    else throwErrorAt cat "category must be an identifier in the `to_additive` form"
+  let addCatNs ←
+    if addCat.raw.isIdent then pure <| mkIdent addCat.raw.getId
+    else throwErrorAt addCat "additive category must be an identifier"
+  elabCommand <| ← set_option hygiene false in `(command| namespace $addCatNs:ident)
+  elabMkConcreteCategoryCore Syntax.missing addCat addFC addIdTerm addCompTerm
+    (some (addBinders, addHomTy, addSource, addTarget))
+  elabCommand <| ← set_option hygiene false in `(command| end $addCatNs:ident)
+  elabCommand <| ← set_option hygiene false in `(command| namespace $catNs:ident)
+  elabMkConcreteCategoryCore Syntax.missing cat FC idTerm compTerm
+    (some (binders, homTy, source, target))
+  elabCommand <| ← set_option hygiene false in `(command| end $catNs:ident)
 
 end Mathlib.Tactic.CategoryTheory
