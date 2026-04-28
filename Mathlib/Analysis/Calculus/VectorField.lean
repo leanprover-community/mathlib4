@@ -169,14 +169,14 @@ lemma lieBracketWithin_add_left (hV : DifferentiableWithinAt 𝕜 V s x)
     lieBracketWithin 𝕜 (V + V₁) W s x =
       lieBracketWithin 𝕜 V W s x + lieBracketWithin 𝕜 V₁ W s x := by
   simp only [lieBracketWithin, Pi.add_apply, map_add]
-  rw [fderivWithin_add hs hV hV₁, ContinuousLinearMap.add_apply]
+  rw [fderivWithin_add hs hV hV₁, _root_.add_apply]
   abel
 
 lemma lieBracket_add_left (hV : DifferentiableAt 𝕜 V x) (hV₁ : DifferentiableAt 𝕜 V₁ x) :
     lieBracket 𝕜 (V + V₁) W x =
       lieBracket 𝕜 V W x + lieBracket 𝕜 V₁ W x := by
   simp only [lieBracket, Pi.add_apply, map_add]
-  rw [fderiv_add hV hV₁, ContinuousLinearMap.add_apply]
+  rw [fderiv_add hV hV₁, _root_.add_apply]
   abel
 
 /-- We have `[0, W] = 0` for all vector fields `W`: this depends on the junk value 0
@@ -204,14 +204,14 @@ lemma lieBracketWithin_add_right (hW : DifferentiableWithinAt 𝕜 W s x)
     lieBracketWithin 𝕜 V (W + W₁) s x =
       lieBracketWithin 𝕜 V W s x + lieBracketWithin 𝕜 V W₁ s x := by
   simp only [lieBracketWithin, Pi.add_apply, map_add]
-  rw [fderivWithin_add hs hW hW₁, ContinuousLinearMap.add_apply]
+  rw [fderivWithin_add hs hW hW₁, _root_.add_apply]
   abel
 
 lemma lieBracket_add_right (hW : DifferentiableAt 𝕜 W x) (hW₁ : DifferentiableAt 𝕜 W₁ x) :
     lieBracket 𝕜 V (W + W₁) x =
       lieBracket 𝕜 V W x + lieBracket 𝕜 V W₁ x := by
   simp only [lieBracket, Pi.add_apply, map_add]
-  rw [fderiv_add hW hW₁, ContinuousLinearMap.add_apply]
+  rw [fderiv_add hW hW₁, _root_.add_apply]
   abel
 
 /-- The differentiation operator along `[W, V]`
@@ -434,9 +434,8 @@ lemma leibniz_identity_lieBracketWithin_of_isSymmSndFDerivWithinAt
   rw [fderivWithin_fun_sub (hs x hx) (aux₁ hU hV) (aux₁ hV hU)]
   rw [fderivWithin_fun_sub (hs x hx) (aux₁ hU hW) (aux₁ hW hU)]
   rw [aux₂ hW hV, aux₂ hV hW, aux₂ hV hU, aux₂ hU hV, aux₂ hW hU, aux₂ hU hW]
-  simp only [ContinuousLinearMap.coe_sub', Pi.sub_apply, ContinuousLinearMap.add_apply,
-    ContinuousLinearMap.coe_comp', Function.comp_apply, ContinuousLinearMap.flip_apply, h'V.eq,
-    h'U.eq, h'W.eq]
+  simp only [_root_.sub_apply, _root_.add_apply, ContinuousLinearMap.coe_comp', Function.comp_apply,
+    ContinuousLinearMap.flip_apply, h'V.eq, h'U.eq, h'W.eq]
   abel
 
 /-- The Lie bracket of vector fields in vector spaces satisfies the Leibniz identity

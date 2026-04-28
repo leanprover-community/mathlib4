@@ -62,13 +62,13 @@ public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
   obtain ⟨v, huv⟩ := SeparatingDual.exists_ne_zero (R := 𝕜) hu
   obtain ⟨z, hz⟩ : ∃ z : W, ¬ f (smulRight v u) z = (0 : W →L[𝕜] W) z := by
     simp_rw [← not_forall, ← ContinuousLinearMap.ext_iff, map_eq_zero_iff,
-      ContinuousLinearMap.ext_iff, not_forall, smulRight_apply, zero_apply,
+      ContinuousLinearMap.ext_iff, not_forall, smulRight_apply, _root_.zero_apply,
       smul_eq_zero_iff_left hu]
     exact ⟨u, huv⟩
   set T := apply' _ (.id 𝕜) z ∘L f.toContinuousAlgHom.toContinuousLinearMap ∘L smulRightL 𝕜 _ _ v
   have hT x : T x = f (smulRight v x) z := rfl
   have this A x : T (A x) = f A (T x) := by
-    simp only [hT, ← mul_apply, ← map_mul]
+    simp only [hT, ← mul_apply_eq_comp, ← map_mul]
     congr; ext; simp
   have ⟨d, hd⟩ := SeparatingDual.exists_eq_one (R := 𝕜) hz
   have surj : Function.Surjective T := fun w ↦ ⟨f.symm (smulRight d w) u, by simp [T, this, hd]⟩

@@ -188,7 +188,8 @@ theorem posSemidef_tfae : List.TFAE [K.PosSemidef, K.IsHermitian ∧ ∀ (f : X 
   refine this fun hHerm ↦ ?_
   simp only [nonneg_iff_isPositive, isPositive_def', isSelfAdjoint_finsuppSum hHerm,
     reApplyInnerSelf_apply, true_and]
-  simp only [star_eq_adjoint, zero_apply, add_apply, implies_true, Finsupp.sum_apply'', coe_mul',
+  simp only [star_eq_adjoint, _root_.zero_apply, _root_.add_apply, implies_true,
+    Finsupp.sum_apply'', FunLike.coe_mul,
     Function.comp_apply, Finsupp.sum_inner, adjoint_inner_left]
   -- FIXME: nontriviality should work here
   refine (subsingleton_or_nontrivial V).elim (fun h ↦ ?_) fun _ ↦ ?_
@@ -208,6 +209,8 @@ theorem posSemidef_tfae : List.TFAE [K.PosSemidef, K.IsHermitian ∧ ∀ (f : X 
     simpa [Finsupp.sum_sum_index, inner_add_right, inner_add_left] using
       h (ff.sum fun x T ↦ .single x (T v))
   tfae_finish
+
+#exit
 
 set_option linter.unusedVariables false in
 /-- Auxiliary construction for `OfKernel`. TODO: Privatize -/

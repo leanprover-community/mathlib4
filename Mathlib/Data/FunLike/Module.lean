@@ -56,8 +56,8 @@ instance instDistribMulAction [Monoid M] [AddMonoid β] [AddMonoid F] [DistribMu
   DFunLike.coe_injective.distribMulAction (coeAddHom F α β) FunLike.coe_smul
 
 variable [Semiring M] [AddCommMonoid β] [Module M β]
-  [Zero F] [Add F] [SMul ℕ F] [SMul M F]
-  [IsZeroApply F α β] [IsAddApply F α β] [IsSMulApply ℕ F α β] [IsSMulApply M F α β]
+  [AddCommMonoid F] [SMul M F]
+  [IsZeroApply F α β] [IsAddApply F α β] [IsSMulApply M F α β]
 
 instance instModule : Module M F :=
   coeAddHom_injective.module M (coeAddHom F α β) coe_smul
