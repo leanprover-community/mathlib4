@@ -51,7 +51,7 @@ identically distributed, and `h.norm` states that `‖f‖` and `‖g‖` are id
 so on.
 -/
 
-@[expose] public section
+public section
 
 
 open MeasureTheory Filter Finset

@@ -41,11 +41,13 @@ The first interesting cases of such structures are `W₁,₀` and `W₂,₁`: `W
 while `W₂,₁` is a 5-cycle with an extra central hub vertex adjacent to all other vertices
 (i.e. `W₂,₁` resembles a wheel with five spokes).
 
+```
                  `W₁,₀`       v                 `W₂,₁`      v
                            /     \                       /  |  \
                           s       t                     s ─ u ─ t
                            \     /                       \ / \ /
                            w₁ ─ w₂                       w₁ ─ w₂
+```
 
 ## Main definitions
 

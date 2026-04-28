@@ -18,7 +18,7 @@ Note. You need to import this file to get that the monoid of ideals of a Dedekin
 torsion-free.
 -/
 
-@[expose] public section
+public section
 
 variable {M : Type*} [CommMonoidWithZero M]
 

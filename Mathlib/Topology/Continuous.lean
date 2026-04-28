@@ -222,7 +222,7 @@ theorem closure_subset_preimage_closure_image (h : Continuous f) :
     closure s ⊆ f ⁻¹' closure (f '' s) :=
   (mapsTo_image _ _).closure h
 
-lemma preimage_closure_image_nonempty (h : Continuous f) (t : Set X) (ht : t.Nonempty) :
+lemma nonempty_preimage_closure_image (h : Continuous f) (t : Set X) (ht : t.Nonempty) :
     (f ⁻¹' (closure (f '' t))).Nonempty :=
   (Nonempty.mono (closure_subset_preimage_closure_image h (s := t)) (closure_nonempty_iff.mpr ht))
 
