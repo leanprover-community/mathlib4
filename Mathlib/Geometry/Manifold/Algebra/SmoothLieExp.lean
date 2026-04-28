@@ -4,12 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dominic Steinitz
 -/
 
-module
-
-public import Mathlib.Geometry.Manifold.GroupLieAlgebra
-public import Mathlib.Geometry.Manifold.IntegralCurve.UniformTime
-public import Mathlib.Geometry.Manifold.Sheaf.Basic
-public import Mathlib.Order.BourbakiWitt
+import Mathlib.Geometry.Manifold.GroupLieAlgebra
+import Mathlib.Geometry.Manifold.IntegralCurve.UniformTime
+import Mathlib.Geometry.Manifold.Sheaf.Basic
+import Mathlib.Order.BourbakiWitt
+import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # The Exponential Map of a Lie Group
@@ -40,7 +39,6 @@ The key steps, following Meinrenken §3–4, are:
 
 open Set Bundle ContDiff Manifold Trivialization
 
-noncomputable section
 
 variable
   {EG : Type*} [NormedAddCommGroup EG] [NormedSpace ℝ EG]
@@ -48,18 +46,23 @@ variable
   {IG : ModelWithCorners ℝ EG HG}
   {G : Type*} [TopologicalSpace G]
   [ChartedSpace HG G] [Group G]
-  [LieGroup IG ⊤ G]
+  [LieGroup IG (minSmoothness ℝ 3) G]
+  [IsManifold IG (minSmoothness ℝ 3) G]
+
+noncomputable section Foo
 
 /-- The vector field `mulInvariantVectorField v`, defined at each `g` by `d(L_g)_e(v)`, satisfies
 the left-invariance property: its value at `g * h` equals the pushforward of its value at `h`
 under `d(L_g)_h`. -/
-public lemma mulInvariantVectorField_left_invariant
+lemma mulInvariantVectorField_left_invariant
     (v : GroupLieAlgebra IG G) (g h : G) :
     mulInvariantVectorField v (g * h) =
       mfderiv IG IG (g * ·) h (mulInvariantVectorField v h) := by
-  have h1 : ∞ ≠ 0 := Ne.symm (not_eq_of_beq_eq_false rfl)
+  have h1 : (minSmoothness ℝ 3 : WithTop ℕ∞) ≠ 0 := by
+    simp [minSmoothness_of_isRCLikeNormedField]
   have h2 : ∀ a b : G, MDifferentiableAt IG IG (a * ·) b :=
-    fun a b => (contMDiff_mul_left (a := a) (n := ∞)).mdifferentiable h1 |>.mdifferentiableAt
+    fun a b => (contMDiff_mul_left (a := a)
+      (n := minSmoothness ℝ 3)).mdifferentiable h1 |>.mdifferentiableAt
   simp only [mulInvariantVectorField]
   have h3 : (fun x => (g * h) * x) = (fun x => g * x) ∘ (fun x => h * x) := by
     ext; simp [mul_assoc]
@@ -72,14 +75,16 @@ public lemma mulInvariantVectorField_left_invariant
   exact ContinuousLinearMap.comp_apply
     ((mfderiv% fun x ↦ g * x) h) ((mfderiv% fun x ↦ h * x) 1) v
 
-public lemma IsMIntegralCurve.left_translate
+lemma IsMIntegralCurve.left_translate
     (γ : ℝ → G) (v : GroupLieAlgebra IG G)
     (hγ : IsMIntegralCurve γ (mulInvariantVectorField v))
     (g : G) :
     IsMIntegralCurve (fun t ↦ g * γ t) (mulInvariantVectorField v) := by
-  have h1 : ∞ ≠ 0 := Ne.symm (not_eq_of_beq_eq_false rfl)
+  have h1 : (minSmoothness ℝ 3 : WithTop ℕ∞) ≠ 0 := by
+    simp [minSmoothness_of_isRCLikeNormedField]
   have hMDiff : ∀ a b : G, MDifferentiableAt IG IG (a * ·) b :=
-    fun a b => (contMDiff_mul_left (a := a) (n := ∞)).mdifferentiable h1 |>.mdifferentiableAt
+    fun a b => (contMDiff_mul_left (a := a)
+      (n := minSmoothness ℝ 3)).mdifferentiable h1 |>.mdifferentiableAt
   intro t
   rw [mulInvariantVectorField_left_invariant]
   convert ((hMDiff g (γ t)).hasMFDerivAt.comp t (hγ t)) using 1
@@ -91,14 +96,14 @@ public lemma IsMIntegralCurve.left_translate
       simp [ContinuousLinearMap.comp_apply, ContinuousLinearMap.smulRight_apply]
   exact h2.symm
 
-public lemma IsMIntegralCurveOn.left_translate
+lemma IsMIntegralCurveOn.left_translate
     (γ : ℝ → G) (v : GroupLieAlgebra IG G) (s : Set ℝ)
     (hγ : IsMIntegralCurveOn γ (mulInvariantVectorField v) s)
     (g : G) :
     IsMIntegralCurveOn (fun t ↦ g * γ t) (mulInvariantVectorField v) s := by
   have hMDiff : ∀ a b : G, MDifferentiableAt IG IG (a * ·) b :=
-    fun a b => (contMDiff_mul_left (a := a) (n := ∞)).mdifferentiable
-      (by exact Ne.symm (not_eq_of_beq_eq_false rfl)) |>.mdifferentiableAt
+    fun a b => (contMDiff_mul_left (a := a) (n := minSmoothness ℝ 3)).mdifferentiable
+      (by simp [minSmoothness_of_isRCLikeNormedField]) |>.mdifferentiableAt
   intro t ht
   rw [mulInvariantVectorField_left_invariant]
   convert ((hMDiff g (γ t)).hasMFDerivAt.comp_hasMFDerivWithinAt t (hγ t ht)) using 1
@@ -110,24 +115,22 @@ public lemma IsMIntegralCurveOn.left_translate
     simp [ContinuousLinearMap.comp_apply, ContinuousLinearMap.smulRight_apply]
   exact h2.symm
 
+end Foo
+
 section Whatever
 
 variable [T2Space G]
 
-public lemma IsMIntegralCurve.exists_global
+lemma IsMIntegralCurve.exists_global
     (v : GroupLieAlgebra IG G)
     [BoundarylessManifold IG G]
     [CompleteSpace EG] :
     ∃ γ : ℝ → G, γ 0 = 1 ∧ IsMIntegralCurve γ (mulInvariantVectorField v) := by
   let X : G → TangentBundle IG G :=
     fun x => ⟨x, mulInvariantVectorField v x⟩
-  have : minSmoothness ℝ 3 ≤ ∞ := by
-    simp only [minSmoothness_of_isRCLikeNormedField]
-    exact ENat.LEInfty.out
-  haveI : LieGroup IG (minSmoothness ℝ 3) G := LieGroup.of_le (n := ∞) this
-  have hv' : CMDiff 1 X :=
+  have hv' : ContMDiff IG IG.tangent 1 X :=
     (contMDiff_mulInvariantVectorField v).of_le (le_trans (by norm_num) le_minSmoothness)
-  have hv : CMDiffAt 1 X 1 := hv'.contMDiffAt
+  have hv : ContMDiffAt IG IG.tangent 1 X 1 := hv'.contMDiffAt
   obtain ⟨γ₀, hγ₀_start, hγ₀_local⟩ :=
     exists_isMIntegralCurveAt_of_contMDiffAt_boundaryless (t₀ := 0) hv
   rw [isMIntegralCurveAt_iff] at hγ₀_local
@@ -147,12 +150,21 @@ public lemma IsMIntegralCurve.exists_global
     exists_isMIntegralCurve_of_isMIntegralCurveOn hv' hε hunif (1 : G)
   exact ⟨γ, hγ_start, hγ⟩
 
-public noncomputable def expLie (v : GroupLieAlgebra IG G)
+section
+variable {EG : Type*} [NormedAddCommGroup EG] [NormedSpace ℝ EG]
+variable {HG : Type*} [TopologicalSpace HG]
+variable {IG : ModelWithCorners ℝ EG HG}
+variable {G : Type*} [TopologicalSpace G] [ChartedSpace HG G] [Group G]
+variable [T2Space G]
+
+
+noncomputable def expLie (v : GroupLieAlgebra IG G)
     [LieGroup IG (minSmoothness ℝ 3) G]
     [BoundarylessManifold IG G] [CompleteSpace EG] : G :=
   (IsMIntegralCurve.exists_global v).choose 1
 
-public lemma IsMIntegralCurve.unique_global
+end
+lemma IsMIntegralCurve.unique_global
     (v : GroupLieAlgebra IG G)
     [BoundarylessManifold IG G]
     (γ γ' : ℝ → G)
@@ -161,15 +173,13 @@ public lemma IsMIntegralCurve.unique_global
     (hγ0 : γ 0 = 1)
     (hγ'0 : γ' 0 = 1) :
     γ = γ' := by
-  have hv' : CMDiff 1 (fun x ↦ (⟨x, mulInvariantVectorField v x⟩ : TangentBundle IG G)) := by
-    have : minSmoothness ℝ 3 ≤ ∞ := by
-      simp only [minSmoothness_of_isRCLikeNormedField]; exact ENat.LEInfty.out
-    haveI : LieGroup IG (minSmoothness ℝ 3) G := LieGroup.of_le (n := ∞) this
-    exact (contMDiff_mulInvariantVectorField v).of_le (le_trans (by norm_num) le_minSmoothness)
+  have hv' : ContMDiff IG IG.tangent 1
+      (fun x ↦ (⟨x, mulInvariantVectorField v x⟩ : TangentBundle IG G)) :=
+    (contMDiff_mulInvariantVectorField v).of_le (le_trans (by norm_num) le_minSmoothness)
   exact isMIntegralCurve_eq_of_contMDiff
     (fun _ ↦ BoundarylessManifold.isInteriorPoint) hv' hγ hγ' (by rw [hγ0, hγ'0])
 
-public lemma expLie_smul
+lemma expLie_smul
     (γ : ℝ → G) (v : GroupLieAlgebra IG G)
     [BoundarylessManifold IG G]
     [CompleteSpace EG]
@@ -184,10 +194,6 @@ public lemma expLie_smul
   have hscaled : IsMIntegralCurve (fun s ↦ γ (s * t)) (mulInvariantVectorField (t • v)) := by
     have := hγ.comp_mul t
     rwa [← mulInvariantVectorField_smul] at this
-  have : minSmoothness ℝ 3 ≤ ∞ := by
-    simp only [minSmoothness_of_isRCLikeNormedField]
-    exact ENat.LEInfty.out
-  haveI : LieGroup IG (minSmoothness ℝ 3) G := LieGroup.of_le (n := ∞) this
   have hs : 1 ≤ (minSmoothness ℝ 2) := le_trans (by norm_num) le_minSmoothness
   have heq : (fun s ↦ γ (s * t)) = (IsMIntegralCurve.exists_global (t • v)).choose :=
     isMIntegralCurve_eq_of_contMDiff (t₀ := 0)
@@ -207,7 +213,7 @@ public lemma isMIntegralCurve_expLie_smul
     {HG : Type*} [TopologicalSpace HG]
     {IG : ModelWithCorners ℝ EG HG}
     {G : Type*} [TopologicalSpace G] [ChartedSpace HG G] [Group G]
-    [LieGroup IG ⊤ G] [BoundarylessManifold IG G] [CompleteSpace EG] [T2Space G]
+    [LieGroup IG (minSmoothness ℝ 3) G] [BoundarylessManifold IG G] [CompleteSpace EG] [T2Space G]
     (A : GroupLieAlgebra IG G) :
     IsMIntegralCurve
       (fun t => expLie (IG := IG) (t • A))
@@ -236,32 +242,34 @@ integral curves of `X`.
 TODO: Replace this axiom with a proper development of flows (Lee Theorem 9.12)
 once available in Mathlib. -/
 axiom contMDiff_flow_like
-    {M : Type*} [TopologicalSpace M] [ChartedSpace HG M] [IsManifold IG ∞ M]
+    {M : Type*} [TopologicalSpace M] [ChartedSpace HG M] [IsManifold IG (minSmoothness ℝ 3) M]
     (X : ∀ x : M, TangentSpace IG x)
-    (hX : ContMDiff IG IG.tangent ∞ (fun x => (⟨x, X x⟩ : TangentBundle IG M)))
+    (hX : ContMDiff IG IG.tangent (minSmoothness ℝ 2) (fun x => (⟨x, X x⟩ : TangentBundle IG M)))
     (Φ : ℝ → M → M)
     (hΦ : ∀ x, IsMIntegralCurve (fun t => Φ t x) (fun x => X x)) :
-    ContMDiff (𝓘(ℝ, ℝ).prod IG) IG ∞ (fun p : ℝ × M => Φ p.1 p.2)
+    ContMDiff (𝓘(ℝ, ℝ).prod IG) IG (minSmoothness ℝ 2) (fun p : ℝ × M => Φ p.1 p.2)
 
-def dMult : TangentBundle (IG.prod IG) (G × G) → TangentBundle IG G :=
+noncomputable def dMult : TangentBundle (IG.prod IG) (G × G) → TangentBundle IG G :=
   tangentMap (IG.prod IG) IG (fun p : G × G => p.1 * p.2)
 
-theorem contMDiff_dMult : ContMDiff (IG.prod IG).tangent IG.tangent ∞
-  (dMult (IG := IG) (G := G)) := by
-  apply ContMDiff.contMDiff_tangentMap
-  · exact contMDiff_mul (𝕜 := ℝ) (E := EG) (H := HG) IG ∞
-  · exact Std.IsPreorder.le_refl (∞ + 1)
 
-def dMultProd : TangentBundle IG G × TangentBundle IG G → TangentBundle IG G :=
+theorem contMDiff_dMult : ContMDiff (IG.prod IG).tangent IG.tangent (minSmoothness ℝ 2)
+    (dMult (IG := IG) (G := G)) := by
+  apply ContMDiff.contMDiff_tangentMap
+  · exact contMDiff_mul (𝕜 := ℝ) (E := EG) (H := HG) IG (minSmoothness ℝ 3)
+  · simp only [minSmoothness_of_isRCLikeNormedField]
+    exact Std.IsPreorder.le_refl (2 + 1)
+
+noncomputable def dMultProd : TangentBundle IG G × TangentBundle IG G → TangentBundle IG G :=
   dMult ∘ (equivTangentBundleProd IG G IG G).symm
 
-theorem contMDiff_dMultProd : ContMDiff (IG.tangent.prod IG.tangent) IG.tangent ∞
+theorem contMDiff_dMultProd : ContMDiff (IG.tangent.prod IG.tangent) IG.tangent (minSmoothness ℝ 2)
     (dMultProd (IG := IG) (G := G)) := by
   unfold dMultProd
   apply contMDiff_dMult.comp
   exact contMDiff_equivTangentBundleProd_symm (I := IG) (M := G) (I' := IG) (M' := G)
 
-def zeroSectionProdFiber : G × EG → TangentBundle IG G × TangentBundle IG G :=
+noncomputable def zeroSectionProdFiber : G × EG → TangentBundle IG G × TangentBundle IG G :=
   fun (g, ξ) => (zeroSection EG (TangentSpace IG) g, ⟨1, ξ⟩)
 
 theorem smooth_tangentBundle_mk (b : G) :
@@ -299,9 +307,10 @@ theorem mfderiv_mul_apply_zero_right
     mfderiv (IG.prod IG) IG (fun p : G × G => p.1 * p.2) (g, 1)
       ((0 : TangentSpace IG g), ξ) =
     mfderiv IG IG (fun x => g * x) 1 ξ := by
-  have fu :  ∞ ≠ 0 := Ne.symm (not_eq_of_beq_eq_false rfl)
+  have fu : (minSmoothness ℝ 3 : WithTop ℕ∞) ≠ 0 := by
+    simp [minSmoothness_of_isRCLikeNormedField]
   have hf : MDifferentiableAt (IG.prod IG) IG (fun p : G × G => p.1 * p.2) (g, 1) :=
-    (contMDiff_mul (𝕜 := ℝ) (I := IG) (n := ∞)).mdifferentiableAt fu
+    (contMDiff_mul (𝕜 := ℝ) (I := IG) (n := minSmoothness ℝ 3)).mdifferentiableAt fu
   rw [mfderiv_prod_eq_add_apply hf]
   simp [map_zero]
 
@@ -317,17 +326,22 @@ theorem dMultProd_zeroSectionProdFiber_eq (g : G) (ξ : EG) :
     exact heq_of_eq (mfderiv_mul_apply_zero_right (IG := IG) g ξ)
 
 theorem contMDiff_mulLeft_deriv :
-    ContMDiff (IG.prod 𝓘(ℝ, EG)) IG.tangent ∞
+    ContMDiff (IG.prod 𝓘(ℝ, EG)) IG.tangent (minSmoothness ℝ 2)
       (fun p : G × EG => (⟨p.1, mfderiv IG IG (p.1 * ·) 1 p.2⟩ : TangentBundle IG G)) := by
   have key : (fun p : G × EG => (⟨p.1, mfderiv IG IG (p.1 * ·) 1 p.2⟩ : TangentBundle IG G)) =
       dMultProd ∘ zeroSectionProdFiber := by
     funext ⟨g, ξ⟩
     exact (dMultProd_zeroSectionProdFiber_eq (IG := IG) g ξ).symm
   rw [key]
-  exact contMDiff_dMultProd.comp contMDiff_zeroSectionProdFiber
+  exact contMDiff_dMultProd.comp (contMDiff_zeroSectionProdFiber.of_le
+    (by simp only [minSmoothness_of_isRCLikeNormedField]; exact ENat.LEInfty.out))
 
-public theorem smooth_augmentedVF [T2Space G] [IsManifold (IG.prod 𝓘(ℝ, EG)) ∞ (G × EG)] :
-    ContMDiff (IG.prod 𝓘(ℝ, EG)) (IG.prod 𝓘(ℝ, EG)).tangent ∞
+#check @LieGroup
+#synth IsManifold IG ((minSmoothness ℝ 3)) G
+#synth IsManifold (IG.prod 𝓘(ℝ, EG)) ((minSmoothness ℝ 3)) (G × EG)
+
+public theorem smooth_augmentedVF [T2Space G] :
+    ContMDiff (IG.prod 𝓘(ℝ, EG)) (IG.prod 𝓘(ℝ, EG)).tangent (minSmoothness ℝ 2)
       (fun p : G × EG => (⟨p, (mfderiv IG IG (p.1 * ·) 1 p.2, 0)⟩ :
         TangentBundle (IG.prod 𝓘(ℝ, EG)) (G × EG))) := by
   have key : (fun p : G × EG => (⟨p, (mfderiv IG IG (p.1 * ·) 1 p.2, 0)⟩ :
@@ -337,7 +351,7 @@ public theorem smooth_augmentedVF [T2Space G] [IsManifold (IG.prod 𝓘(ℝ, EG)
           (⟨p.1, mfderiv IG IG (p.1 * ·) 1 p.2⟩ : TangentBundle IG G),
           (⟨p.2, 0⟩ : TangentBundle 𝓘(ℝ, EG) EG))) := by
     funext ⟨g, v⟩; simp only [equivTangentBundleProd]
-    simp only [Equiv.coe_fn_symm_mk, Function.comp_apply, TotalSpace.mk_inj]
+    simp only [Equiv.coe_fn_symm_mk, Function.comp_apply]
     exact rfl
   rw [key]
   exact (contMDiff_equivTangentBundleProd_symm).comp
@@ -345,7 +359,7 @@ public theorem smooth_augmentedVF [T2Space G] [IsManifold (IG.prod 𝓘(ℝ, EG)
       (contMDiff_mulLeft_deriv)
       ((Bundle.contMDiff_zeroSection ℝ (TangentSpace 𝓘(ℝ, EG))).comp contMDiff_snd))
 
-omit [Group G] [LieGroup IG ω G] in
+omit [Group G] [LieGroup IG (minSmoothness ℝ 3) G] [IsManifold IG (minSmoothness ℝ 3) G] in
 lemma isMIntegralCurve_prod_mk
     [T2Space G] [BoundarylessManifold IG G] [CompleteSpace EG]
     (γ₁ : ℝ → G) (γ₂ : ℝ → EG)
@@ -359,8 +373,8 @@ lemma isMIntegralCurve_prod_mk
   convert HasMFDerivAt.prodMk ( h₁ t ) ( h₂ t ) using 1
 
 public theorem contMDiff_expLie [T2Space G] [CompleteSpace EG] [BoundarylessManifold IG G] :
-    ContMDiff 𝓘(ℝ, EG) IG ∞ (fun v : EG => expLie (G := G) (IG := IG) v) := by
-  have hXi : ContMDiff (IG.prod 𝓘(ℝ, EG)) (IG.prod 𝓘(ℝ, EG)).tangent ∞
+    ContMDiff 𝓘(ℝ, EG) IG (minSmoothness ℝ 2) (fun v : EG => expLie (G := G) (IG := IG) v) := by
+  have hXi : ContMDiff (IG.prod 𝓘(ℝ, EG)) (IG.prod 𝓘(ℝ, EG)).tangent (minSmoothness ℝ 2)
       (fun p : G × EG => (⟨p, (mfderiv IG IG (p.1 * ·) 1 p.2, (0:EG))⟩ :
         TangentBundle (IG.prod 𝓘(ℝ, EG)) (G × EG))) :=
     smooth_augmentedVF
@@ -378,18 +392,17 @@ public theorem contMDiff_expLie [T2Space G] [CompleteSpace EG] [BoundarylessMani
     funext v
     simp
   rw [hexp]
-  have hkey : ContMDiff 𝓘(ℝ, EG) (𝓘(ℝ, ℝ).prod (IG.prod 𝓘(ℝ, EG))) ∞
+  have hkey : ContMDiff 𝓘(ℝ, EG) (𝓘(ℝ, ℝ).prod (IG.prod 𝓘(ℝ, EG))) (minSmoothness ℝ 2)
       (fun v : EG => ((1:ℝ), ((1:G), v))) :=
     contMDiff_const.prodMk (contMDiff_const.prodMk contMDiff_id)
   have hcomp := hflow.comp hkey
-  have hcomp2 : ContMDiff 𝓘(ℝ, EG) IG ∞
+  have hcomp2 : ContMDiff 𝓘(ℝ, EG) IG (minSmoothness ℝ 2)
       (fun v : EG => expLie (G := G) (IG := IG) v) := by
     have := contMDiff_fst (I := IG) (J := 𝓘(ℝ, EG)).comp hcomp
     convert this using 1
   simp only [one_smul]
   exact hcomp2
 
-omit [Group G] [LieGroup IG ⊤ G] in
 lemma IsMIntegralCurve.time_shift
     (γ : ℝ → G) (v : (x : G) → TangentSpace IG x)
     (hγ : IsMIntegralCurve γ v)
@@ -403,7 +416,7 @@ lemma IsMIntegralCurve.time_shift
     simpa using h
   exact (hγ (s + t)).comp t hshift
 
-public lemma IsMIntegralCurve.mul
+lemma IsMIntegralCurve.mul
     [T2Space G]
     (γ : ℝ → G) (v : GroupLieAlgebra IG G)
     [BoundarylessManifold IG G]
@@ -416,11 +429,8 @@ public lemma IsMIntegralCurve.mul
   have htranslate : IsMIntegralCurve (fun t ↦ γ s * γ t) (mulInvariantVectorField v) :=
     hγ.left_translate _ v (γ s)
   have h0 : γ (s + 0) = γ s * γ 0 := by rw [hγ0, add_zero, mul_one]
-  have heq : (fun t ↦ γ (s + t)) = (fun t ↦ γ s * γ t) := by
-    have : minSmoothness ℝ 3 ≤ ∞ := by
-      simp only [minSmoothness_of_isRCLikeNormedField]; exact ENat.LEInfty.out
-    haveI : LieGroup IG (minSmoothness ℝ 3) G := LieGroup.of_le (n := ∞) this
-    exact isMIntegralCurve_eq_of_contMDiff (t₀ := 0)
+  have heq : (fun t ↦ γ (s + t)) = (fun t ↦ γ s * γ t) :=
+    isMIntegralCurve_eq_of_contMDiff (t₀ := 0)
       (fun _ ↦ BoundarylessManifold.isInteriorPoint)
       ((contMDiff_mulInvariantVectorField v).of_le (le_trans (by norm_num) le_minSmoothness))
       hshift htranslate h0

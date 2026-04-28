@@ -3,11 +3,9 @@ Copyright (c) 2025 Dominic Steinitz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dominic Steinitz
 -/
-module
-
-public import Mathlib.Geometry.Manifold.Algebra.LieGroup
-public import Mathlib.LinearAlgebra.UnitaryGroup
-public import Mathlib.Topology.FiberBundle.Basic
+import Mathlib.Geometry.Manifold.Algebra.LieGroup
+import Mathlib.LinearAlgebra.UnitaryGroup
+import Mathlib.Topology.FiberBundle.Basic
 
 /-!
 # Principal G-Bundles

@@ -1,4 +1,5 @@
 import Mathlib
+import Mathlib.Geometry.Manifold.Algebra.SmoothLieExp
 import Mathlib.Geometry.Manifold.Algebra.PrincipalGBundle
 
 open Set Bundle ContDiff Manifold Trivialization
