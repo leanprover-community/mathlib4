@@ -59,6 +59,8 @@ attribute [simp] StdSimplex.total
 grind_pattern StdSimplex.nonneg => self.weights
 grind_pattern StdSimplex.total => self.weights
 
+initialize_simps_projections StdSimplex (as_prefix weights)
+
 namespace StdSimplex
 
 variable {R : Type u} [PartialOrder R] [Semiring R] {M N P : Type*}
@@ -164,7 +166,9 @@ class ConvexSpace (R : Type u) (M : Type v)
   unusable. Why is this so? Shouldn't typeclass arguments to a `structure` also be typeclass
   arguments to its fields? -/
   sConvexCombo [inst₁] [inst₂] [inst₃] (f : StdSimplex R M) : M
-  /-- Associativity of convex combination (monadic join law). -/
+  /-- Associativity of convex combination (monadic join law).
+
+  Use `sConvexCombo_sConvexCombo` instead. -/
   assoc (f : StdSimplex R (StdSimplex R M)) :
     sConvexCombo (f.map sConvexCombo) = sConvexCombo f.join
   /-- A convex combination of a single point is that point. -/
@@ -192,7 +196,7 @@ instance : ConvexSpace R (StdSimplex R I) where
 
 @[simp] lemma weights_sConvexCombo (f : StdSimplex R (StdSimplex R I)) :
     f.sConvexCombo.weights = f.weights.sum (fun d r => r • d.weights) :=
-  StdSimplex.join_weights _
+  StdSimplex.weights_join _
 
 lemma map_sConvexCombo (s : StdSimplex R (StdSimplex R I)) (f : I → J) :
     s.sConvexCombo.map f = (s.map (map f)).sConvexCombo :=
