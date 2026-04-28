@@ -155,7 +155,7 @@ theorem proj_empty : b.proj ∅ = 0 := by simp [proj]
 /-- The action of the projection on a vector `x`. -/
 @[simp]
 theorem proj_apply (A : Finset β) (x : X) : b.proj A x = ∑ i ∈ A, b.coord i x • b i := by
-  simp [proj, ContinuousLinearMap.sum_apply, ContinuousLinearMap.smulRight_apply]
+  simp [proj, _root_.sum_apply, ContinuousLinearMap.smulRight_apply]
 
 open scoped Classical in
 /-- The action of the projection on a basis element `e i`. -/
@@ -370,7 +370,7 @@ lemma sum_succSub (P : ℕ → X →L[𝕜] X) (h0 : P 0 = 0) (n : ℕ) :
 /-- The operators `succSub P i` satisfy a biorthogonality relation. -/
 lemma succSub_ortho {P : ℕ → X →L[𝕜] X} (hcomp : ∀ n m, ∀ x : X, P n (P m x) = P (min n m) x)
     (i j : ℕ) (x : X) : succSub P i (succSub P j x) = if i = j then succSub P j x else 0 := by
-  simp only [succSub, ContinuousLinearMap.sub_apply, map_sub, hcomp,
+  simp only [succSub, _root_.sub_apply, map_sub, hcomp,
     Nat.add_min_add_right]
   split_ifs with h
   · rw [h, min_self, min_eq_right (Nat.le_succ j), Nat.min_eq_left (Nat.le_succ j)]
@@ -503,14 +503,13 @@ def basis : SchauderBasis 𝕜 X :=
       exact (D.proj_tendsto x).congr fun n ↦ by
         simp only [Function.comp, LinearMap.coe_mk, AddHom.coe_mk,
                    LinearMap.mkContinuous_apply, ← hcoeff]
-        rw [← ContinuousLinearMap.sum_apply, sum_succSub D.P D.proj_zero] }
+        rw [← _root_.sum_apply, sum_succSub D.P D.proj_zero] }
 
 /-- The projections of the constructed basis correspond to the input data `D.P`. -/
 @[simp]
 theorem basis_proj : (basis D).proj = D.P := by
   ext n _
-  rw [SchauderBasis.proj_apply, ← sum_succSub D.P D.proj_zero n]
-  simp only [ContinuousLinearMap.coe_sum', Finset.sum_apply]
+  rw [SchauderBasis.proj_apply, ← sum_succSub D.P D.proj_zero n, _root_.sum_apply]
   refine Finset.sum_congr rfl fun i _ ↦ ?_
   dsimp [basis, mkContinuous_apply, IsLinearMap.mk'_apply]
   rw [basisCoeff_spec]
