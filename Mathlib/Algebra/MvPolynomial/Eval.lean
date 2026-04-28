@@ -455,7 +455,7 @@ theorem constantCoeff_comp_map (f : R →+* S₁) :
 theorem support_map_subset (p : MvPolynomial σ R) : (map f p).support ⊆ p.support := by
   simp only [Finset.subset_iff, mem_support_iff]
   intro x hx
-  contrapose! hx
+  contrapose hx
   rw [coeff_map, hx, map_zero]
 
 theorem support_map_of_injective (p : MvPolynomial σ R) {f : R →+* S₁} (hf : Injective f) :
@@ -464,7 +464,7 @@ theorem support_map_of_injective (p : MvPolynomial σ R) {f : R →+* S₁} (hf 
   · exact MvPolynomial.support_map_subset _ _
   simp only [Finset.subset_iff, mem_support_iff]
   intro x hx
-  contrapose! hx
+  contrapose hx
   rw [coeff_map, ← f.map_zero] at hx
   exact hf hx
 

@@ -354,11 +354,6 @@ theorem discreteTopology_iff_forall_isOpen [TopologicalSpace α] :
     DiscreteTopology α ↔ ∀ s : Set α, IsOpen s :=
   ⟨@isOpen_discrete _ _, fun h ↦ ⟨eq_bot_of_singletons_open fun _ ↦ h _⟩⟩
 
-@[deprecated discreteTopology_iff_forall_isOpen (since := "2025-10-10")]
-theorem forall_open_iff_discrete {X : Type*} [TopologicalSpace X] :
-    (∀ s : Set X, IsOpen s) ↔ DiscreteTopology X :=
-  discreteTopology_iff_forall_isOpen.symm
-
 theorem discreteTopology_iff_forall_isClosed [TopologicalSpace α] :
     DiscreteTopology α ↔ ∀ s : Set α, IsClosed s :=
   discreteTopology_iff_forall_isOpen.trans <| compl_surjective.forall.trans <| forall_congr' fun _ ↦
@@ -367,11 +362,6 @@ theorem discreteTopology_iff_forall_isClosed [TopologicalSpace α] :
 theorem discreteTopology_iff_isOpen_singleton [TopologicalSpace α] :
     DiscreteTopology α ↔ (∀ a : α, IsOpen ({a} : Set α)) :=
   ⟨fun _ _ ↦ isOpen_discrete _, fun h ↦ ⟨eq_bot_of_singletons_open h⟩⟩
-
-@[deprecated discreteTopology_iff_isOpen_singleton (since := "2025-10-10")]
-theorem singletons_open_iff_discrete {X : Type*} [TopologicalSpace X] :
-    (∀ a : X, IsOpen ({a} : Set X)) ↔ DiscreteTopology X :=
-  discreteTopology_iff_isOpen_singleton.symm
 
 theorem DiscreteTopology.of_finite_of_isClosed_singleton [TopologicalSpace α] [Finite α]
     (h : ∀ a : α, IsClosed {a}) : DiscreteTopology α :=

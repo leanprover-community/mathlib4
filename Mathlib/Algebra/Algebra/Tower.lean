@@ -25,7 +25,7 @@ An important definition is `toAlgHom R S A`, the canonical `R`-algebra homomorph
 @[expose] public section
 
 
-open Pointwise
+open scoped Pointwise
 
 universe u v w u₁ v₁
 
@@ -308,6 +308,22 @@ theorem restrictScalars_span (hsur : Function.Surjective (algebraMap R A)) (X : 
 theorem coe_span_eq_span_of_surjective (h : Function.Surjective (algebraMap R A)) (s : Set M) :
     (Submodule.span A s : Set M) = Submodule.span R s :=
   congr_arg ((↑) : Submodule R M → Set M) (Submodule.restrictScalars_span R A h s)
+
+/--
+Given a commutative ring `R`, an `R`-algebra `S` and an `R`-module `M` with a scalar tower
+`IsScalarTower R S M`, if the algebra map from `R` to `S` is surjective, then this induces an order
+isomorphism `Submodule S M ≃o Submodule R M`.
+-/
+@[simps apply symm_apply]
+def orderIsoOfAlgebraMapSurjective
+    {R S M : Type*} [CommRing R] [Ring S] [AddCommGroup M]
+    [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
+    (h : Function.Surjective (algebraMap R S)) : Submodule S M ≃o Submodule R M where
+  toFun N := N.restrictScalars R
+  invFun N := ⟨N.toAddSubmonoid, by simpa [h.forall] using N.2⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_rel_iff' := .rfl
 
 end Submodule
 
