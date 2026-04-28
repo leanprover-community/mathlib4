@@ -174,7 +174,7 @@ lemma isSheafUniqueGluing_iff_isSheafUniqueGluingNontrivial_types
         suffices F.map (eqToHom eq ≫ (leSupr U j).op) =
             F.map (leSupr (fun (i : ι') ↦ U i) (⟨j, hj⟩ : ι')).op by
           simp only [Functor.map_comp] at this
-          exact DFunLike.congr_fun this s
+          exact ConcreteCategory.congr_hom this s
         rw [this j hj]
       · have : U j = ⊥ := by aesop
         have : Unique (ToType (F.obj (op (U j)))) := by rwa [this]
@@ -185,7 +185,7 @@ lemma isSheafUniqueGluing_iff_isSheafUniqueGluingNontrivial_types
         rw [← hy]
         suffices F.map (eqToHom eq.symm ≫ (leSupr U' b).op) = F.map (leSupr U b).op by
           simp only [Functor.map_comp] at this
-          exact DFunLike.congr_fun this y
+          exact ConcreteCategory.congr_hom this y
         rfl
       simp [← hs2 (F.map (eqToHom eq.symm) y) this]
   · have : iSup U = ⊥ := by aesop
