@@ -909,6 +909,8 @@ end Adjoin
 
 section RingEquiv
 
+open IsFractionRing
+
 variable {R S : Type*} (K L : Type*) [CommRing R] [IsDomain R] [CommRing S] [IsDomain S]
   [CommRing K] [CommRing L] [Algebra R K] [Algebra S L] [IsFractionRing R K] [IsFractionRing S L]
   (f : R ≃+* S)
@@ -921,8 +923,8 @@ local instance (f : R ≃+* S) : RingHomInvPair (f : R →+* S) f.symm :=
 is fractional with respect to `S⁰`.
 
 Do not confuse with `IsFractional.map`. -/
-theorem _root_.IsFractional.map' {I : Submodule R K} (hI : IsFractional R⁰ I) :
-    IsFractional S⁰ (I.map (IsFractionRing.semilinearEquivOfRingEquiv K L f).toLinearMap) := by
+theorem _root_.IsFractional.mapEquiv {I : Submodule R K} (hI : IsFractional R⁰ I) :
+    IsFractional S⁰ (I.map (semilinearEquivOfRingEquiv K L f).toLinearMap) := by
   simp only [IsFractional, mem_nonZeroDivisors_iff_ne_zero, ne_eq, Submodule.mem_map,
     forall_exists_index, and_imp, forall_apply_eq_imp_iff₂] at hI ⊢
   obtain ⟨r, hr0, hr⟩ := hI
@@ -933,64 +935,57 @@ theorem _root_.IsFractional.map' {I : Submodule R K} (hI : IsFractional R⁰ I) 
   simp only [IsLocalization.IsInteger, RingHom.mem_rangeS] at hr ⊢
   obtain ⟨r', hr'⟩ := hr
   use f r'
-  simp only [IsFractionRing.semilinearEquivOfRingEquiv, RingEquiv.toEquiv_eq_coe,
-    Equiv.toFun_as_coe, EquivLike.coe_coe, Equiv.invFun_as_coe, LinearMap.coe_mk, AddHom.coe_mk]
-  rw [Algebra.smul_def, ← IsFractionRing.ringEquivOfRingEquiv_algebraMap f (K := K) (L := L) r,
-    ← map_mul, ← Algebra.smul_def, ← hr', IsFractionRing.ringEquivOfRingEquiv_algebraMap]
+  simp only [semilinearEquivOfRingEquiv, RingEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe,
+    EquivLike.coe_coe, Equiv.invFun_as_coe, LinearMap.coe_mk, AddHom.coe_mk]
+  rw [Algebra.smul_def, ← ringEquivOfRingEquiv_algebraMap f (K := K) (L := L) r,
+    ← map_mul, ← Algebra.smul_def, ← hr', ringEquivOfRingEquiv_algebraMap]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The equiv `FractionalIdeal R⁰ K ≃+* FractionalIdeal S⁰ L`
   induced by a ring isomorphism `f : R ≃+* S`. -/
 @[simps -isSimp]
 noncomputable def ringEquivOfRingEquiv :
     FractionalIdeal R⁰ K ≃+* FractionalIdeal S⁰ L :=
-  { toFun I := ⟨Submodule.map (IsFractionRing.semilinearEquivOfRingEquiv _ _ f).toLinearMap I.val,
-      IsFractional.map' K L f I.prop⟩
-    invFun J := ⟨J.val.map (IsFractionRing.semilinearEquivOfRingEquiv _ _ f.symm).toLinearMap,
-      IsFractional.map' L K f.symm J.prop⟩
-    map_add' I J := by
-      rw [Subtype.ext_iff]
-      simp
+  { toFun I := ⟨Submodule.map (semilinearEquivOfRingEquiv _ _ f).toLinearMap I.val,
+      IsFractional.mapEquiv K L f I.prop⟩
+    invFun J := ⟨J.val.map (semilinearEquivOfRingEquiv _ _ f.symm).toLinearMap,
+      IsFractional.mapEquiv L K f.symm J.prop⟩
+    map_add' I J := by ext x; simp [← mem_coe]
     map_mul' I J := by
       simp only [FractionalIdeal.coe_ext_iff, val_eq_coe, coe_mul, coe_mk]
       apply le_antisymm <;> simp only [map_le_iff_le_comap, Submodule.mul_le, mem_coe, mem_comap,
-          IsFractionRing.semilinearEquivOfRingEquiv_apply, map_mul, mem_map_equiv,
-          IsFractionRing.semilinearEquivOfRingEquiv_symm_apply, LinearEquiv.coe_coe]
+          semilinearEquivOfRingEquiv_apply, map_mul, mem_map_equiv,
+          semilinearEquivOfRingEquiv_symm_apply, LinearEquiv.coe_coe]
       · exact fun m hm n hn ↦ Submodule.mul_mem_mul (mem_map_of_mem hm) (mem_map_of_mem hn)
       · exact fun m hm n hn ↦ Submodule.mul_mem_mul hm hn
     left_inv I := by
       simp only [RingEquiv.symm_symm, val_eq_coe, ← Submodule.map_comp, LinearEquiv.comp_coe,
         coe_ext_iff, coe_mk]
       convert Submodule.map_id _
-      ext; simp [IsFractionRing.semilinearEquivOfRingEquiv_apply, IsLocalization.map_map]
+      ext; simp [semilinearEquivOfRingEquiv, IsLocalization.map_map]
     right_inv I := by
       simp only [RingEquiv.symm_symm, val_eq_coe, ← Submodule.map_comp, LinearEquiv.comp_coe,
         coe_ext_iff, coe_mk]
       convert Submodule.map_id _
-      ext; simp [IsFractionRing.semilinearEquivOfRingEquiv_apply, IsLocalization.map_map]}
+      ext; simp [semilinearEquivOfRingEquiv, IsLocalization.map_map]}
 
 lemma ringEquivOfRingEquiv_apply (f : R ≃+* S) (I : FractionalIdeal (nonZeroDivisors R) K) :
     ringEquivOfRingEquiv K L f I =
-      ⟨Submodule.map (IsFractionRing.semilinearEquivOfRingEquiv _ _ f).toLinearMap I.val,
-        IsFractional.map' K L f I.prop⟩ := rfl
+      ⟨Submodule.map (semilinearEquivOfRingEquiv _ _ f).toLinearMap I.val,
+        IsFractional.mapEquiv K L f I.prop⟩ := rfl
 
 lemma ringEquivOfRingEquiv_apply_val (f : R ≃+* S) (I : FractionalIdeal R⁰ K) :
     (ringEquivOfRingEquiv K L f I).val =
-      I.val.map (IsFractionRing.semilinearEquivOfRingEquiv _ _ f).toLinearMap  := rfl
+      I.val.map (semilinearEquivOfRingEquiv _ _ f).toLinearMap  := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ringEquivOfRingEquiv_trans {T : Type*} [CommRing T] [IsDomain T] (M : Type*) [CommRing M]
-    [Algebra T M] [IsFractionRing T M]
-    (f : R ≃+* S) (g : S ≃+* T) :
+    [Algebra T M] [IsFractionRing T M] (f : R ≃+* S) (g : S ≃+* T) :
     ringEquivOfRingEquiv K M (f.trans g) =
       (ringEquivOfRingEquiv K L f).trans (ringEquivOfRingEquiv L M g) := by
   have : RingHomCompTriple f (g : S →+* T) (f.trans g : R →+* T) := ⟨rfl⟩
   ext1 I
-  rw [Subtype.ext_iff]
-  simp only [ringEquivOfRingEquiv, RingEquiv.coe_ringHom_trans, val_eq_coe, RingEquiv.symm_symm,
-    RingEquiv.coe_mk, Equiv.coe_fn_mk, coe_mk, RingEquiv.coe_trans, Function.comp_apply]
-  rw [← Submodule.map_comp, IsFractionRing.semilinearEquivOfRingEquiv_comp K L f M]
-  rfl
+  simp only [ringEquivOfRingEquiv, RingEquiv.coe_ringHom_trans, Function.comp_apply,
+    semilinearEquivOfRingEquiv_comp K L f M, LinearEquiv.coe_trans,
+    Submodule.map_comp, RingEquiv.coe_mk, Equiv.coe_fn_mk, RingEquiv.coe_trans]
 
 lemma ringEquivOfRingEquiv_trans_apply {T : Type*} [CommRing T] [IsDomain T] (M : Type*)
     [CommRing M] [Algebra T M] [IsFractionRing T M]
@@ -999,40 +994,30 @@ lemma ringEquivOfRingEquiv_trans_apply {T : Type*} [CommRing T] [IsDomain T] (M 
       ringEquivOfRingEquiv L M g (ringEquivOfRingEquiv K L f I) := by
   simp [ringEquivOfRingEquiv_trans K L M]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ringEquivOfRingEquiv_refl :
-    ringEquivOfRingEquiv K K (RingEquiv.refl R) = RingHom.id (FractionalIdeal R⁰ K) := by
-  ext1 I
-  rw [Subtype.ext_iff]
-  simp only [RingHom.coe_coe, ringEquivOfRingEquiv_apply, RingEquiv.coe_ringHom_refl,
-    RingEquiv.symm_refl, val_eq_coe, coe_mk, RingHom.id_apply]
-  convert Submodule.map_id _
-  ext x
-  simp [IsFractionRing.semilinearEquivOfRingEquiv]
+    ringEquivOfRingEquiv K K (RingEquiv.refl R) = RingEquiv.refl (FractionalIdeal R⁰ K) := by
+  ext I x
+  simp only [ringEquivOfRingEquiv_apply, RingEquiv.coe_ringHom_refl, RingEquiv.symm_refl,
+    val_eq_coe, RingEquiv.refl_apply, ← mem_coe]
+  simp [semilinearEquivOfRingEquiv]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ringEquivOfRingEquiv_spanSingleton (x : K) :
     FractionalIdeal.ringEquivOfRingEquiv K L f (spanSingleton R⁰ x) =
       spanSingleton S⁰ (IsFractionRing.ringEquivOfRingEquiv (L := L) f x) := by
   simp only [ringEquivOfRingEquiv, val_eq_coe, RingEquiv.symm_symm, RingEquiv.coe_mk,
     Equiv.coe_fn_mk, coe_spanSingleton, IsFractionRing.ringEquivOfRingEquiv_apply]
-  rw [Subtype.ext_iff]
-  simp only [val_eq_coe, coe_spanSingleton]
-  ext I
-  simp only [Submodule.mem_map_equiv, Submodule.mem_span_singleton]
-  refine ⟨fun ⟨r, hr⟩ ↦ ?_, fun ⟨s, hs⟩ ↦ ?_⟩
-  · use f r
-    rw [← (IsFractionRing.semilinearEquivOfRingEquiv K L f).injective.eq_iff] at hr
-    simp only [LinearEquiv.apply_symm_apply] at hr
-    simp only [← hr]
-    exact Eq.symm (map_smulₛₗ _ r x)
-  · use f.symm s
-    simp only [Algebra.smul_def, ← hs, IsFractionRing.semilinearEquivOfRingEquiv_symm_apply,
-      map_mul]
-    simp only [IsFractionRing.ringEquivOfRingEquiv_symm, IsFractionRing.ringEquivOfRingEquiv_apply,
-      map_eq, RingHom.coe_coe]
-    rw [← RingHom.comp_apply, IsLocalization.map_comp_map]
-    simp only [RingHomCompTriple.comp_eq, IsLocalization.map_id]
+  rw [SetLike.ext_iff]
+  intro y
+  simp only [← FractionalIdeal.mem_coe, coe_mk, mem_map_equiv, coe_spanSingleton,
+    Submodule.mem_span_singleton, (semilinearEquivOfRingEquiv K L f).eq_symm_apply]
+  constructor
+  · rintro ⟨r, rfl⟩
+    use f r
+    exact .symm (map_smulₛₗ _ r x)
+  · rintro ⟨s, rfl⟩
+    use f.symm s
+    simp only [Algebra.smul_def, semilinearEquivOfRingEquiv_apply, map_mul, map_eq, RingHom.coe_coe,
+      IsFractionRing.ringEquivOfRingEquiv_apply, RingEquiv.apply_symm_apply]
 
 lemma ringEquivOfRingEquiv_symm_eq :
     (FractionalIdeal.ringEquivOfRingEquiv K L f).symm =
