@@ -54,22 +54,22 @@ which gives a well-behaved subtraction. -/
 register_simp_attr zify_simps
 
 /--
-The simpset `equiv_simps` translates algebraic formulations of equivalence relations into the
+The simpset `pull_end` translates algebraic formulations of equivalence relations into the
 standard equivalence definitions, so for example `1 : Equiv α α` becomes `Equiv.refl α` and
 `a * b` becomes `b.trans a`.
 
-The dual simpset is `unequiv_simps`.
+The dual simpset is `push_end`.
 -/
-register_simp_attr equiv_simps
+register_simp_attr pull_end
 
 /--
-The simpset `unequiv_simps` translates the standard formulations of equivalence relations to
+The simpset `push_end` translates the standard formulations of equivalence relations to
 algebraic, so for example `Equiv.refl α` becomes `1 : Equiv α α` and
 `b.trans a` becomes `a * b`.
 
-The dual simpset is `equiv_simps`.
+The dual simpset is `pull_end`.
 -/
-register_simp_attr unequiv_simps
+register_simp_attr push_end
 
 /--
 The simpset `mfld_simps` records several simp lemmas that are

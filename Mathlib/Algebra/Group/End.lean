@@ -106,15 +106,15 @@ theorem mul_apply (f g : Perm α) (x) : (f * g) x = f (g x) :=
 theorem one_apply (x) : (1 : Perm α) x = x :=
   rfl
 
-@[equiv_simps, unequiv_simps← ]
+@[pull_end, unequiv_simps← ]
 theorem one_def : (1 : Perm α) = Equiv.refl α :=
   rfl
 
-@[equiv_simps, unequiv_simps← ]
+@[pull_end, unequiv_simps← ]
 theorem mul_def (f g : Perm α) : f * g = g.trans f :=
   rfl
 
-@[equiv_simps, unequiv_simps← ]
+@[pull_end, unequiv_simps← ]
 theorem inv_def (f : Perm α) : f⁻¹ = f.symm :=
   rfl
 
@@ -126,7 +126,7 @@ theorem inv_def (f : Perm α) : f⁻¹ = f.symm :=
 
 @[norm_cast] lemma coe_pow (f : Perm α) (n : ℕ) : ⇑(f ^ n) = f^[n] := rfl
 
-@[equiv_simps← , unequiv_simps]
+@[pull_end← , push_end]
 lemma iterate_eq_pow (f : Perm α) (n : ℕ) : f^[n] = ⇑(f ^ n) := rfl
 
 theorem eq_inv_iff_eq {f : Perm α} {x y : α} : x = f⁻¹ y ↔ f x = y :=
@@ -144,43 +144,43 @@ theorem zpow_apply_comm {α : Type*} (σ : Perm α) (m n : ℤ) {x : α} :
 The assumption made here is that if you're using the group structure, you want to preserve it after
 simp. -/
 
-@[deprecated "use `equiv_simps` simpset instead" (since := "2026-04-27")]
+@[deprecated "use `pull_end` simpset instead" (since := "2026-04-27")]
 theorem trans_one {α : Sort*} {β : Type*} (e : α ≃ β) : e.trans (1 : Perm β) = e :=
   Equiv.trans_refl e
 
-@[deprecated "use `equiv_simps` simpset instead" (since := "2026-04-27")]
+@[deprecated "use `pull_end` simpset instead" (since := "2026-04-27")]
 theorem mul_refl (e : Perm α) : e * Equiv.refl α = e :=
   Equiv.trans_refl e
 
-@[deprecated "use `equiv_simps` simpset instead" (since := "2026-04-27")]
+@[deprecated "use `pull_end` simpset instead" (since := "2026-04-27")]
 theorem one_symm : (1 : Perm α).symm = 1 :=
   rfl
 
-@[deprecated "use `equiv_simps` simpset instead" (since := "2026-04-27")]
+@[deprecated "use `pull_end` simpset instead" (since := "2026-04-27")]
 theorem refl_inv : (Equiv.refl α : Perm α)⁻¹ = 1 :=
   rfl
 
-@[deprecated "use `equiv_simps` simpset instead" (since := "2026-04-27")]
+@[deprecated "use `pull_end` simpset instead" (since := "2026-04-27")]
 theorem one_trans {α : Type*} {β : Sort*} (e : α ≃ β) : (1 : Perm α).trans e = e :=
   rfl
 
-@[deprecated "use `equiv_simps` simpset instead" (since := "2026-04-27")]
+@[deprecated "use `pull_end` simpset instead" (since := "2026-04-27")]
 theorem refl_mul (e : Perm α) : Equiv.refl α * e = e :=
   rfl
 
-@[deprecated "use `equiv_simps` simpset instead" (since := "2026-04-27")]
+@[deprecated "use `pull_end` simpset instead" (since := "2026-04-27")]
 theorem inv_trans_self (e : Perm α) : e⁻¹.trans e = 1 :=
   Equiv.symm_trans_self e
 
-@[deprecated "use `equiv_simps` simpset instead" (since := "2026-04-27")]
+@[deprecated "use `pull_end` simpset instead" (since := "2026-04-27")]
 theorem mul_symm (e : Perm α) : e * e.symm = 1 :=
   Equiv.symm_trans_self e
 
-@[deprecated "use `equiv_simps` simpset instead" (since := "2026-04-27")]
+@[deprecated "use `pull_end` simpset instead" (since := "2026-04-27")]
 theorem self_trans_inv (e : Perm α) : e.trans e⁻¹ = 1 :=
   Equiv.self_trans_symm e
 
-@[deprecated "use `equiv_simps` simpset instead" (since := "2026-04-27")]
+@[deprecated "use `pull_end` simpset instead" (since := "2026-04-27")]
 theorem symm_mul (e : Perm α) : e.symm * e = 1 :=
   Equiv.self_trans_symm e
 

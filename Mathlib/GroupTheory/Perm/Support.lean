@@ -481,7 +481,7 @@ theorem support_swap_mul_ge_support_diff (f : Perm α) (x y : α) :
 theorem support_swap_mul_eq (f : Perm α) (x : α) (h : f (f x) ≠ x) :
     (swap x (f x) * f).support = f.support \ {x} := by
   by_cases hx : f x = x
-  · simp [hx, sdiff_singleton_eq_erase, notMem_support.mpr hx, erase_eq_of_notMem, equiv_simps]
+  · simp [hx, sdiff_singleton_eq_erase, notMem_support.mpr hx, erase_eq_of_notMem, pull_end]
   ext z
   by_cases hzx : z = x
   · simp [hzx]
