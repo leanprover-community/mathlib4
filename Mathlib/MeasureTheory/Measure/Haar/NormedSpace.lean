@@ -66,7 +66,7 @@ lemma _root_.MonoidHom.exists_nhds_isBounded (f : G →* H) (hf : Measurable f) 
     (isOpen_interior.measurableSet.inter <| hf measurableSet_ball) hn <|
       mt (measure_mono_top <| inter_subset_left.trans interior_subset) K.isCompact.measure_ne_top,
     ?_⟩
-  have : Bornology.IsBounded (f '' (interior K ∩ f ⁻¹' ball 1 n)) :=
+  have : Bornology.IsBounded (f '' interior K ∩ f ⁻¹' ball 1 n) :=
     isBounded_ball.subset <| (image_mono inter_subset_right).trans <| image_preimage_subset _ _
   rw [image_smul_distrib, image_div]
   exact (this.div this).smul _
@@ -134,7 +134,7 @@ theorem setIntegral_comp_smul (f : E → F) {R : ℝ} (s : Set E) (hR : R ≠ 0)
   let e : E ≃ᵐ E := (Homeomorph.smul (Units.mk0 R hR)).toMeasurableEquiv
   calc
   ∫ x in s, f (R • x) ∂μ
-    = ∫ x in e ⁻¹' (e.symm ⁻¹' s), f (e x) ∂μ := by simp [← preimage_comp]; rfl
+    = ∫ x in e ⁻¹' e.symm ⁻¹' s, f (e x) ∂μ := by simp [← preimage_comp]; rfl
   _ = ∫ y in e.symm ⁻¹' s, f y ∂map (fun x ↦ R • x) μ := (setIntegral_map_equiv _ _ _).symm
   _ = |(R ^ finrank ℝ E)⁻¹| • ∫ y in e.symm ⁻¹' s, f y ∂μ := by
     simp [map_addHaar_smul μ hR, integral_smul_measure, ENNReal.toReal_ofReal, abs_nonneg]

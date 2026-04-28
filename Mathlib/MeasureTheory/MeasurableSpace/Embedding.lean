@@ -302,7 +302,7 @@ protected theorem injective (e : α ≃ᵐ β) : Injective e :=
   e.toEquiv.injective
 
 @[simp]
-theorem symm_preimage_preimage (e : α ≃ᵐ β) (s : Set β) : e.symm ⁻¹' (e ⁻¹' s) = s :=
+theorem symm_preimage_preimage (e : α ≃ᵐ β) (s : Set β) : e.symm ⁻¹' e ⁻¹' s = s :=
   e.toEquiv.symm_preimage_preimage s
 
 theorem image_eq_preimage_symm (e : α ≃ᵐ β) (s : Set α) : e '' s = e.symm ⁻¹' s :=
@@ -318,11 +318,11 @@ lemma eq_image_iff_symm_image_eq (e : α ≃ᵐ β) (s : Set β) (t : Set α) :
   rw [← coe_toEquiv, Equiv.eq_image_iff_symm_image_eq, coe_toEquiv_symm]
 
 @[simp]
-lemma image_preimage (e : α ≃ᵐ β) (s : Set β) : e '' (e ⁻¹' s) = s := by
+lemma image_preimage (e : α ≃ᵐ β) (s : Set β) : e '' e ⁻¹' s = s := by
   rw [← coe_toEquiv, Equiv.image_preimage]
 
 @[simp]
-lemma preimage_image (e : α ≃ᵐ β) (s : Set α) : e ⁻¹' (e '' s) = s := by
+lemma preimage_image (e : α ≃ᵐ β) (s : Set α) : e ⁻¹' e '' s = s := by
   rw [← coe_toEquiv, Equiv.preimage_image]
 
 @[simp]
@@ -696,7 +696,7 @@ theorem of_measurable_inverse (hf₁ : Measurable f) (hf₂ : MeasurableSet (ran
 `α → β` and `β → α`, we can find a measurable equivalence `α ≃ᵐ β`. -/
 noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : MeasurableEmbedding f)
     (hg : MeasurableEmbedding g) : α ≃ᵐ β := by
-  let F : Set α → Set α := fun A => (g '' (f '' A)ᶜ)ᶜ
+  let F : Set α → Set α := fun A => (g '' f '' Aᶜ)ᶜ
   -- We follow the proof of the usual SB theorem in mathlib,
   -- the crux of which is finding a fixed point of this F.
   -- However, we must find this fixed point manually instead of invoking Knaster-Tarski

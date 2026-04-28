@@ -18,7 +18,7 @@ In this file we present a proof of Hadamard's three-lines Theorem.
 - `norm_le_interp_of_mem_verticalClosedStrip` :
   Hadamard three-line theorem: If `f` is a bounded function, continuous on
   `re ⁻¹' [l, u]` and differentiable on `re ⁻¹' (l, u)`, then for
-  `M(x) := sup ((norm ∘ f) '' (re ⁻¹' {x}))`, that is `M(x)` is the supremum of the absolute value
+  `M(x) := sup ((norm ∘ f) '' re ⁻¹' {x})`, that is `M(x)` is the supremum of the absolute value
   of `f` along the vertical lines `re z = x`, we have that `∀ z ∈ re ⁻¹' [l, u]` the inequality
   `‖f(z)‖ ≤ M(0) ^ (1 - ((z.re - l) / (u - l))) * M(1) ^ ((z.re - l) / (u - l))` holds.
   This can be seen to be equivalent to the statement
@@ -76,7 +76,7 @@ def verticalClosedStrip (a : ℝ) (b : ℝ) : Set ℂ := re ⁻¹' Icc a b
 This is also known as the function `M` -/
 noncomputable def sSupNormIm {E : Type*} [NormedAddCommGroup E]
     (f : ℂ → E) (x : ℝ) : ℝ :=
-  sSup ((norm ∘ f) '' (re ⁻¹' {x}))
+  sSup ((norm ∘ f) '' re ⁻¹' {x})
 
 section invInterpStrip
 
@@ -358,7 +358,7 @@ lemma scale_bound_right {f : ℂ → E} {l u b : ℝ} (hb : ∀ z ∈ re ⁻¹' 
 lemma sSupNormIm_scale_left (f : ℂ → E) {l u : ℝ} (hul : l < u) :
     sSupNormIm (scale f l u) 0 = sSupNormIm f l := by
   simp_rw [sSupNormIm, image_comp]
-  have : scale f l u '' (re ⁻¹' {0}) = f '' (re ⁻¹' {l}) := by
+  have : scale f l u '' re ⁻¹' {0} = f '' re ⁻¹' {l} := by
     ext e
     simp only [scale, smul_eq_mul, mem_image, mem_preimage, mem_singleton_iff]
     constructor
@@ -382,7 +382,7 @@ lemma sSupNormIm_scale_left (f : ℂ → E) {l u : ℝ} (hul : l < u) :
 lemma sSupNormIm_scale_right (f : ℂ → E) {l u : ℝ} (hul : l < u) :
     sSupNormIm (scale f l u) 1 = sSupNormIm f u := by
   simp_rw [sSupNormIm, image_comp]
-  have : scale f l u '' (re ⁻¹' {1}) = f '' (re ⁻¹' {u}) := by
+  have : scale f l u '' re ⁻¹' {1} = f '' re ⁻¹' {u} := by
     ext e
     simp only [scale, smul_eq_mul, mem_image, mem_preimage, mem_singleton_iff]
     constructor
@@ -473,7 +473,7 @@ lemma norm_le_interpStrip_of_mem_verticalStrip_zero (z : ℂ)
 /--
 **Hadamard three-line theorem** on `re ⁻¹' [0, 1]`: If `f` is a bounded function, continuous on the
 closed strip `re ⁻¹' [0, 1]` and differentiable on open strip `re ⁻¹' (0, 1)`, then for
-`M(x) := sup ((norm ∘ f) '' (re ⁻¹' {x}))` we have that for all `z` in the closed strip
+`M(x) := sup ((norm ∘ f) '' re ⁻¹' {x})` we have that for all `z` in the closed strip
 `re ⁻¹' [0, 1]` the inequality `‖f(z)‖ ≤ M(0) ^ (1 - z.re) * M(1) ^ z.re` holds. -/
 lemma norm_le_interpStrip_of_mem_verticalClosedStrip₀₁ (f : ℂ → E) {z : ℂ}
     (hz : z ∈ verticalClosedStrip 0 1) (hd : DiffContOnCl ℂ f (verticalStrip 0 1))
@@ -599,7 +599,7 @@ private lemma bound_exp_eq {l u : ℝ} (hul : l < u) (z : ℂ) :
 /--
 **Hadamard three-line theorem**: If `f` is a bounded function, continuous on the
 closed strip `re ⁻¹' [l, u]` and differentiable on open strip `re ⁻¹' (l, u)`, then for
-`M(x) := sup ((norm ∘ f) '' (re ⁻¹' {x}))` we have that for all `z` in the closed strip
+`M(x) := sup ((norm ∘ f) '' re ⁻¹' {x})` we have that for all `z` in the closed strip
 `re ⁻¹' [a,b]` the inequality
 `‖f(z)‖ ≤ M(0) ^ (1 - ((z.re - l) / (u - l))) * M(1) ^ ((z.re - l) / (u - l))`
 holds. -/
