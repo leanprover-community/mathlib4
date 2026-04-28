@@ -46,20 +46,11 @@ theorem edge_ne_of_isCycleOn {σ : Perm α} {x : α}
     s((σ ^ k) x, (σ ^ (k + 1)) x) ≠ s(x, σ x) := by
   have hinj := hcycOn.injOn_pow_apply (Finset.mem_univ x)
   rw [Finset.card_univ] at hinj
+  have h0 : (σ ^ (0 : ℕ)) x = x := by simp
+  have h1 : (σ ^ (1 : ℕ)) x = σ x := by simp
   intro heq
   rw [Sym2.eq_iff] at heq
-  rcases heq with ⟨h1, h2⟩ | ⟨h1, h2⟩
-  · -- Injectivity: `(σ^k) x = (σ^0) x` gives `k = 0`, contradicts `1 ≤ k`
-    have : k = 0 := hinj (Finset.mem_range.mpr hk2)
-      (Finset.mem_range.mpr (by lia)) (by simpa using h1)
-    lia
-  · -- Injectivity: `(σ^k) x = (σ^1) x` gives `k = 1`,
-    -- then `(σ^2) x = (σ^0) x` gives `2 = 0`
-    have hk1eq : k = 1 := hinj (Finset.mem_range.mpr hk2)
-      (Finset.mem_range.mpr (by lia)) (by simpa using h1)
-    have : 2 = 0 := hinj (Finset.mem_range.mpr (by lia))
-      (Finset.mem_range.mpr (by lia)) (by subst hk1eq; simpa using h2)
-    lia
+  grind [Set.InjOn]
 
 end Perm
 
