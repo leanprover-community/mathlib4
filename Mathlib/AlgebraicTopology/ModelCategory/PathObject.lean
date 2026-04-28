@@ -302,7 +302,7 @@ protected def PrepathObject.unop {A : Cᵒᵖ} (P : PrepathObject A) :
   i₀_π := Quiver.Hom.op_inj (by simp)
   i₁_π := Quiver.Hom.op_inj (by simp)
 
-/-- The opposite of a pre-path object is a precylinder object. -/
+/-- The opposite of a precylinder object is a pre-path object. -/
 @[simps]
 protected def Precylinder.op {A : C} (P : Precylinder A) :
     PrepathObject (op A) where
