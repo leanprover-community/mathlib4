@@ -6,10 +6,16 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Shift.SingleFunctors
-public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # Lift of a "single functor" to a full subcategory
+
+Let `C`, `D` and `E` be categories. Let `A` be an additive monoid.
+Assume that `D` and `E` have shifts by `A` and that we have
+a fully faithful functor `G : D ⥤ A` which commutes with shifts.
+Given `F : SingleFunctors C E A`, and a family of functors
+`Φ a : C ⥤ D` with isomorphisms `Φ a ⋙ G ≅ F.functor a` for all `a : A`,
+we lift `F` in `SingleFunctor C D A`.
 
 -/
 
@@ -22,58 +28,89 @@ open Category Functor
 variable {C D E : Type*} [Category C] [Category D] [Category E]
   {A : Type*} [AddMonoid A] [HasShift D A] [HasShift E A]
   (F : SingleFunctors C E A) (G : D ⥤ E) [G.CommShift A]
-  [G.Full] [G.Faithful]
-  (Φ : A → C ⥤ D)
-  (hΦ : ∀ a, Φ a ⋙ G ≅ F.functor a)
+  [G.Full] [G.Faithful] (Φ : A → C ⥤ D) (hΦ : ∀ a, Φ a ⋙ G ≅ F.functor a)
 
 namespace SingleFunctors
 
-namespace Lift
+namespace lift
 
 variable {F G Φ}
 
+/-- Auxiliary definition for `SingleFunctors.lift`. -/
+@[irreducible]
 noncomputable def shiftIso (n a a' : A) (h : n + a = a') :
     Φ a' ⋙ shiftFunctor D n ≅ Φ a :=
-  ((Functor.FullyFaithful.ofFullyFaithful G).whiskeringRight _).preimageIso
-    (Functor.associator _ _ _ ≪≫
+  ((FullyFaithful.ofFullyFaithful G).whiskeringRight _).preimageIso
+    (associator _ _ _ ≪≫
       isoWhiskerLeft _ (G.commShiftIso n) ≪≫ (Functor.associator _ _ _).symm ≪≫
       isoWhiskerRight (hΦ a') _ ≪≫ F.shiftIso n a a' h ≪≫ (hΦ a).symm)
 
-lemma map_shiftIso_hom_app (n a a' : A) (h : n + a = a') (X : C) :
-    G.map ((Lift.shiftIso hΦ n a a' h).hom.app X) =
+private lemma map_shiftIso_hom_app (n a a' : A) (h : n + a = a') (X : C) :
+    dsimp% G.map ((lift.shiftIso hΦ n a a' h).hom.app X) =
       (G.commShiftIso n).hom.app _ ≫ (shiftFunctor E n).map ((hΦ a').hom.app X) ≫
         (F.shiftIso n a a' h).hom.app X ≫ (hΦ a).inv.app X := by
   simp [shiftIso]
 
-end Lift
+end lift
 
-set_option backward.isDefEq.respectTransparency false in
+/-- Let `C`, `D` and `E` be categories. Let `A` be an additive monoid.
+Assume that `D` and `E` have shifts by `A` and that we have
+a fully faithful functor `G : D ⥤ A` which commutes with shifts.
+Given `F : SingleFunctors C E A`, and a family of functors
+`Φ a : C ⥤ D` with isomorphisms `Φ a ⋙ G ≅ F.functor a` for all `a : A`,
+this is a term in `SingleFunctors C D A` which is given by the functors `Φ a`
+for all `a`. -/
+@[simps functor]
 noncomputable def lift : SingleFunctors C D A where
   functor := Φ
-  shiftIso := Lift.shiftIso hΦ
+  shiftIso := lift.shiftIso hΦ
   shiftIso_zero a := by
     ext X
     apply G.map_injective
-    simp [Lift.map_shiftIso_hom_app, Functor.commShiftIso_zero]
+    dsimp
+    rw [lift.map_shiftIso_hom_app, Functor.commShiftIso_zero,
+      CommShift.isoZero_hom_app, shiftIso_zero_hom_app, assoc,
+      dsimp% NatIso.naturality_1_assoc (shiftFunctorZero E A) ((hΦ a).hom.app X),
+      dsimp% (hΦ a).hom_inv_id_app X, comp_id]
   shiftIso_add n m a a' a'' ha' ha'' := by
     ext X
     apply G.map_injective
     dsimp
-    rw [Lift.map_shiftIso_hom_app, Functor.commShiftIso_add,
+    rw [lift.map_shiftIso_hom_app, Functor.commShiftIso_add,
       Functor.CommShift.isoAdd_hom_app, assoc, assoc, assoc,
-      id_comp, Functor.map_comp, Functor.map_comp, Lift.map_shiftIso_hom_app,
+      id_comp, Functor.map_comp, Functor.map_comp, lift.map_shiftIso_hom_app,
       Functor.commShiftIso_hom_naturality_assoc,
-      Lift.map_shiftIso_hom_app, Functor.map_comp, Functor.map_comp,
+      lift.map_shiftIso_hom_app, Functor.map_comp, Functor.map_comp,
       Functor.map_comp, F.shiftIso_add n m a a' a'' ha' ha'', assoc, assoc, assoc]
     dsimp
-    rw [id_comp, assoc, assoc, NatTrans.naturality_assoc, Iso.inv_hom_id_app_assoc,
-      ← (shiftFunctor E n).map_comp_assoc ((hΦ a').inv.app X),
-      Iso.inv_hom_id_app, Functor.map_id, id_comp]
-    rfl
+    rw [id_comp, assoc, assoc,
+      dsimp% NatIso.naturality_1_assoc (shiftFunctorAdd E m n) ((hΦ a'').hom.app X)]
+    rw [← dsimp% (shiftFunctor E n).map_comp_assoc ((hΦ a').inv.app X),
+      dsimp% (hΦ a').inv_hom_id_app X]
+    simp
 
+@[reassoc]
+lemma map_lift_shiftIso_hom_app (n a a' : A) (h : n + a = a') (X : C) :
+    dsimp% G.map (((lift F G Φ hΦ).shiftIso n a a' h).hom.app X) =
+      (G.commShiftIso n).hom.app _ ≫ (shiftFunctor E n).map ((hΦ a').hom.app X) ≫
+        (F.shiftIso n a a' h).hom.app X ≫ (hΦ a).inv.app X :=
+  lift.map_shiftIso_hom_app ..
+
+/-- The isomorphism `(lift F G Φ hΦ).functor a ⋙ G ≅ F.functor a` when
+`F : SingleFunctors C E A`, `G` is a fully faithful functor, and the functors `F.functor a`
+are equipped with isomorphisms `Φ a ⋙ G ≅ F.functor a` for all `a`. -/
 def liftFunctorCompIso (a : A) :
     (lift F G Φ hΦ).functor a ⋙ G ≅ F.functor a :=
   hΦ a
+
+/-- After postcomposition with the fully faithful functor `G`,
+`lift F G Φ hΦ` becomes isomorphic to `F`. -/
+noncomputable def liftPostcompIso : (lift F G Φ hΦ).postcomp G ≅ F :=
+  isoMk (liftFunctorCompIso F G Φ hΦ) (fun n a a' ha' ↦ by
+    ext X
+    have := (hΦ a).inv_hom_id_app X
+    dsimp at this
+    simp [liftFunctorCompIso, map_lift_shiftIso_hom_app, this])
 
 instance [Preadditive C] [Preadditive D] [Preadditive E] [G.Additive] (a : A)
     [(F.functor a).Additive] : ((lift F G Φ hΦ).functor a).Additive := by
@@ -81,8 +118,6 @@ instance [Preadditive C] [Preadditive D] [Preadditive E] [G.Additive] (a : A)
     rw [Functor.additive_iff_of_iso (liftFunctorCompIso F G Φ hΦ a)]
     infer_instance
   exact Functor.additive_of_comp_faithful _ G
-
--- TODO after postcomposition with `G`, `lift` becomes isomorphic to `F`
 
 end SingleFunctors
 

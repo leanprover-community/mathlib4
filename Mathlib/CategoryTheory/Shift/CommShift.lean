@@ -182,15 +182,25 @@ variable [F.CommShift A]
 
 @[reassoc (attr := simp)]
 lemma commShiftIso_hom_naturality {X Y : C} (f : X ⟶ Y) (a : A) :
-    F.map (f⟦a⟧') ≫ (F.commShiftIso a).hom.app Y =
+    dsimp% F.map (f⟦a⟧') ≫ (F.commShiftIso a).hom.app Y =
       (F.commShiftIso a).hom.app X ≫ (F.map f)⟦a⟧' :=
   (F.commShiftIso a).hom.naturality f
 
 @[reassoc (attr := simp)]
 lemma commShiftIso_inv_naturality {X Y : C} (f : X ⟶ Y) (a : A) :
-    (F.map f)⟦a⟧' ≫ (F.commShiftIso a).inv.app Y =
+    dsimp% (F.map f)⟦a⟧' ≫ (F.commShiftIso a).inv.app Y =
       (F.commShiftIso a).inv.app X ≫ F.map (f⟦a⟧') :=
   (F.commShiftIso a).inv.naturality f
+
+@[reassoc (attr := simp)]
+lemma commShiftIso_hom_inv_id_apply (X : C) (a : A) :
+    dsimp% (F.commShiftIso a).hom.app X ≫ (F.commShiftIso a).inv.app X = 𝟙 _ :=
+  (F.commShiftIso a).hom_inv_id_app X
+
+@[reassoc (attr := simp)]
+lemma commShiftIso_inv_hom_id_apply (X : C) (a : A) :
+    dsimp% (F.commShiftIso a).inv.app X ≫ (F.commShiftIso a).hom.app X = 𝟙 _ :=
+  (F.commShiftIso a).inv_hom_id_app X
 
 variable (A) in
 set_option linter.docPrime false in
