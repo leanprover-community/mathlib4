@@ -263,12 +263,7 @@ theorem succ_natAdd (i : Fin m) : succ (natAdd n i) = natAdd n (succ i) := rfl
 
 theorem val_sub_castAdd_of_le {n : ℕ} {a b : Fin n} (h : b ≤ a) :
     (a.castAdd m - b.castAdd m).val = (a - b).val := by
-  simp only [val_sub, val_castAdd]
-  have eq1 : n - b.val + a.val = n + (a.val - b.val) := by omega
-  have eq2 : n + m - b.val + a.val = n + m + (a.val - b.val) := by omega
-  have hab : a.val - b.val < n := Nat.sub_lt_of_lt a.isLt
-  have hab' : a.val - b.val < n + m := Nat.lt_add_right m hab
-  simp [eq1, eq2, Nat.mod_eq_of_lt hab, Nat.mod_eq_of_lt hab']
+  grind [Fin.sub_val_of_le]
 
 theorem sub_castAdd_eq_castAdd_sub_of_le {n : ℕ} {a b : Fin n} (h : b ≤ a) :
     a.castAdd m - b.castAdd m = (a - b).castAdd m := by
@@ -485,7 +480,7 @@ theorem val_sub_castLT_of_le {a b : Fin m} (ha : a.val < n) (h : b ≤ a) :
 
 theorem sub_castLT_eq_castLT_sub_of_le {a b : Fin m} (ha : a.val < n) (h : b ≤ a) :
     a.castLT ha - b.castLT (lt_of_le_of_lt h ha) =
-      (a - b).castLT (val_sub_lt_of_le_of_lt ha h) := by
+      (a - b).castLT (val_sub_lt_of_lt_of_le ha h) := by
   rw [Fin.ext_iff]
   exact val_sub_castLT_of_le ha h
 
