@@ -794,7 +794,7 @@ theorem exists_countable_basis [SecondCountableTopology α] :
 
 theorem exists_seq_basis [SecondCountableTopology α] :
     ∃ b : ℕ → Set α, IsTopologicalBasis (range b) := by
-  obtain ⟨t, ht⟩ :=  TopologicalSpace.exists_countable_basis α
+  obtain ⟨t, ht⟩ := TopologicalSpace.exists_countable_basis α
   by_cases! hn : t.Nonempty
   · obtain ⟨b, rfl⟩ := ht.1.exists_eq_range hn
     exact ⟨b, ht.2.2⟩
