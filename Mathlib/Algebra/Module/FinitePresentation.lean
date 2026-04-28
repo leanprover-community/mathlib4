@@ -9,7 +9,7 @@ public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 public import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.RingTheory.Finiteness.Projective
-public import Mathlib.RingTheory.Localization.BaseChange
+public import Mathlib.RingTheory.Localization.Algebra
 public import Mathlib.RingTheory.Noetherian.Basic
 public import Mathlib.RingTheory.TensorProduct.Finite
 
@@ -421,6 +421,65 @@ lemma Module.Finite.exists_smul_of_comp_eq_of_isLocalizedModule
 
 variable {M' : Type*} [AddCommGroup M'] [Module R M'] (f : M →ₗ[R] M') [IsLocalizedModule S f]
 variable {N' : Type*} [AddCommGroup N'] [Module R N'] (g : N →ₗ[R] N') [IsLocalizedModule S g]
+
+lemma Module.Finite.exists_localizedModuleMap_powers_eq [Module.Finite R M] {u v : M →ₗ[R] N}
+    (hf : IsLocalizedModule.map S f g u = IsLocalizedModule.map S f g v) :
+    ∃ r ∈ S, ∀ (t : R),
+      r ∣ t → LocalizedModule.map (.powers t) u = LocalizedModule.map (.powers t) v := by
+  obtain ⟨s, hs⟩ : ∃ (s : S), s • u = s • v := by
+    refine Module.Finite.exists_smul_of_comp_eq_of_isLocalizedModule S
+      (N := N) (N' := N') (M := M) g u v ?_
+    ext x
+    simpa using DFunLike.congr_fun hf (f x)
+  refine ⟨s, s.property, fun t ht ↦ LinearMap.restrictScalars_injective R ?_⟩
+  refine IsLocalizedModule.linearMap_ext (.powers t) (LocalizedModule.mkLinearMap _ _)
+    (LocalizedModule.mkLinearMap _ _) ?_
+  ext x
+  dsimp
+  simp only [LocalizedModule.map_mk, LocalizedModule.mk_eq, one_smul, Subtype.exists,
+    Submonoid.mk_smul, exists_prop]
+  refine ⟨t, ⟨1, by simp⟩, ?_⟩
+  obtain ⟨a, rfl⟩ := exists_eq_mul_left_of_dvd ht
+  simp only [mul_smul, ← Submonoid.smul_def, ← LinearMap.smul_apply, hs]
+
+open Localization IsLocalizedModule in
+lemma Module.Finite.exists_lTensor_away_eq [Module.Finite R M] {u v : M →ₗ[R] N}
+    (hf : IsLocalizedModule.map S f g u = IsLocalizedModule.map S f g v) :
+    ∃ r ∈ S, ∀ (t : R), r ∣ t → u.lTensor (Away t) = v.lTensor (Away t) := by
+  obtain ⟨r, hr, h⟩ := exists_localizedModuleMap_powers_eq _ _ _ hf
+  refine ⟨r, hr, fun t ht ↦ ?_⟩
+  rw [← map_tensorProductMk_eq_lTensor (.powers t), ← map_tensorProductMk_eq_lTensor (.powers t),
+    map_eq_map_iff_localizedModule]
+  apply h t ht
+
+lemma Module.Finite.exists_algebraTensorProductMap_id_eq {A B : Type*} [CommRing A] [CommRing B]
+    [Algebra R A] [Algebra R B] [Module.Finite R A] (Rₚ : Type*) (Aₚ Bₚ : Type*) [CommRing Rₚ]
+    [CommRing Aₚ] [CommRing Bₚ] [Algebra R Rₚ] [Algebra R Aₚ] [Algebra R Bₚ] [Algebra Rₚ Aₚ]
+    [Algebra Rₚ Bₚ] [Algebra A Aₚ] [Algebra B Bₚ] [IsScalarTower R A Aₚ] [IsScalarTower R B Bₚ]
+    [IsScalarTower R Rₚ Aₚ] [IsScalarTower R Rₚ Bₚ] [IsLocalization S Rₚ]
+    [IsLocalization (Algebra.algebraMapSubmonoid A S) Aₚ]
+    [IsLocalization (Algebra.algebraMapSubmonoid B S) Bₚ] (f g : A →ₐ[R] B)
+    (hf : IsLocalization.mapₐ S Rₚ Aₚ Bₚ f = IsLocalization.mapₐ S Rₚ Aₚ Bₚ g) :
+    ∃ r ∈ S, ∀ (t : R), r ∣ t →
+      Algebra.TensorProduct.map (.id (Localization.Away t) (Localization.Away t)) f =
+        Algebra.TensorProduct.map (.id (Localization.Away t) (Localization.Away t)) g := by
+  have :
+      IsLocalizedModule.map S
+        (IsScalarTower.toAlgHom _ A Aₚ).toLinearMap (IsScalarTower.toAlgHom R B Bₚ).toLinearMap
+        f.toLinearMap =
+      IsLocalizedModule.map S
+        (IsScalarTower.toAlgHom R A Aₚ).toLinearMap (IsScalarTower.toAlgHom R B Bₚ).toLinearMap
+        g.toLinearMap := by
+    apply IsLocalizedModule.linearMap_ext S (IsScalarTower.toAlgHom R A Aₚ).toLinearMap
+        (IsScalarTower.toAlgHom R B Bₚ).toLinearMap
+    ext x
+    simp only [LinearMap.coe_comp, Function.comp_apply, IsLocalizedModule.map_apply]
+    simpa using congr($(hf) (algebraMap A Aₚ x))
+  obtain ⟨r, hr, h⟩ := Module.Finite.exists_lTensor_away_eq S
+    (IsScalarTower.toAlgHom R A Aₚ).toLinearMap (IsScalarTower.toAlgHom R B Bₚ).toLinearMap this
+  refine ⟨r, hr, fun t ht ↦ ?_⟩
+  ext x
+  simpa using congr($(h t ht) (1 ⊗ₜ x))
 
 /--
 Let `M` be a finite `R`-module, and `N` be a finitely presented `R`-module.
