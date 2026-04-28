@@ -101,7 +101,8 @@ theorem chromaticIndex_bot : (⊥ : SimpleGraph V).chromaticIndex = 0 :=
   have : IsEmpty (⊥ : SimpleGraph V).edgeSet := by simp
   chromaticNumber_eq_zero_of_isEmpty
 
-theorem eq_bot_of_chromaticIndex_eq_zero (h : G.chromaticIndex = 0) : G = ⊥ := by
+theorem chromaticIndex_eq_zero : G.chromaticIndex = 0 ↔ G = ⊥ := by
+  refine ⟨fun h ↦ ?_, (· ▸ chromaticIndex_bot V)⟩
   simpa using isEmpty_of_chromaticNumber_eq_zero h
 
 /-- Lift an embedding of colors to an embedding of edge colorings. -/
