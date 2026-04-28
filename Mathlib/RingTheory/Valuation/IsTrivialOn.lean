@@ -19,12 +19,12 @@ In what follows, we consider a `A`-algebra `B` and a valuation `v` over `B` whic
 
 ## Main results
 * `valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X`: Let `p` be a polynomial
-over `A` evaluated at an element `w` of `B` for which `1 < v w`.
-We have the equality `v (p.aeval w) = v w ^ p.natDegree`.
+  over `A` evaluated at an element `w` of `B` for which `1 < v w`.
+  We have the equality `v (p.aeval w) = v w ^ p.natDegree`.
 * `Valuation.transcendental_of_ne_one`: If `y : B` is such that `y ≠ 0` and `v y ≠ 1`,
-then it is transcendental over `A`.
-Note that, in particular, this means that any non zero element of the
-maximal ideal of `v.valuationSubring` is transcendental over `A`.
+  then it is transcendental over `A`.
+  Note that, in particular, this means that any non zero element of the
+  maximal ideal of `v.valuationSubring` is transcendental over `A`.
 -/
 
 @[expose] public section
