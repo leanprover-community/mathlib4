@@ -748,6 +748,7 @@ theorem mk_coordChange (e₁ e₂ : Trivialization F proj) {b : B} (h₁ : b ∈
   · rwa [e₁.proj_symm_apply' h₁]
   · rwa [e₁.proj_symm_apply' h₁]
 
+@[simp]
 theorem coordChange_apply_snd (e₁ e₂ : Trivialization F proj) {p : Z} (h : proj p ∈ e₁.baseSet) :
     e₁.coordChange e₂ (proj p) (e₁ p).snd = (e₂ p).snd := by
   rw [coordChange, e₁.symm_apply_mk_proj (e₁.mem_source.2 h)]
@@ -911,7 +912,7 @@ noncomputable def piecewiseLe [LinearOrder B] [OrderTopology B] (e e' : Triviali
     rintro p rfl
     ext1
     · simp [*]
-    · simp [coordChange_apply_snd, *]
+    · simp [*]
 
 open Classical in
 /-- Given two bundle trivializations `e`, `e'` over disjoint sets, `e.disjoint_union e' H` is the
