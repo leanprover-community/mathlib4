@@ -476,15 +476,20 @@ theorem hasFDerivAt_multiset_prod [DecidableEq ι] [Finite ι] {u : Multiset ι}
   have := Fintype.ofFinite ι
   hasStrictFDerivAt_multiset_prod.hasFDerivAt
 
-theorem hasStrictFDerivAt_finset_prod [DecidableEq ι] [Finite ι] {x : ι → 𝔸'} :
+theorem hasStrictFDerivAt_finsetProd [DecidableEq ι] [Finite ι] {x : ι → 𝔸'} :
     HasStrictFDerivAt (𝕜 := 𝕜) (∏ i ∈ u, · i) (∑ i ∈ u, (∏ j ∈ u.erase i, x j) • proj i) x := by
   simp only [Finset.sum_eq_multiset_sum, Finset.prod_eq_multiset_prod]
   exact hasStrictFDerivAt_multiset_prod
 
-theorem hasFDerivAt_finset_prod [DecidableEq ι] [Finite ι] {x : ι → 𝔸'} :
+@[deprecated (since := "2026-04-08")]
+alias hasStrictFDerivAt_finset_prod := hasStrictFDerivAt_finsetProd
+
+theorem hasFDerivAt_finsetProd [DecidableEq ι] [Finite ι] {x : ι → 𝔸'} :
     HasFDerivAt (𝕜 := 𝕜) (∏ i ∈ u, · i) (∑ i ∈ u, (∏ j ∈ u.erase i, x j) • proj i) x :=
   have := Fintype.ofFinite ι
-  hasStrictFDerivAt_finset_prod.hasFDerivAt
+  hasStrictFDerivAt_finsetProd.hasFDerivAt
+
+@[deprecated (since := "2026-04-08")] alias hasFDerivAt_finset_prod := hasFDerivAt_finsetProd
 
 section Comp
 
@@ -504,7 +509,7 @@ theorem HasStrictFDerivAt.list_prod' {l : List ι} {x : E}
     proj_apply, pi_apply, Function.comp_def]
 
 /--
-Unlike `HasFDerivAt.finset_prod`, supports non-commutative multiply and duplicate elements.
+Unlike `HasFDerivAt.finsetProd`, supports non-commutative multiply and duplicate elements.
 -/
 @[fun_prop]
 theorem HasFDerivAt.list_prod' {l : List ι} {x : E}
@@ -558,7 +563,7 @@ theorem HasStrictFDerivAt.multiset_prod [DecidableEq ι] {u : Multiset ι} {x : 
     (by ext; simp [Finset.sum_multiset_map_count, u.erase_attach_map (g · x)])
 
 /--
-Unlike `HasFDerivAt.finset_prod`, supports duplicate elements.
+Unlike `HasFDerivAt.finsetProd`, supports duplicate elements.
 -/
 @[fun_prop]
 theorem HasFDerivAt.multiset_prod [DecidableEq ι] {u : Multiset ι} {x : E}
@@ -593,37 +598,49 @@ theorem fderivWithin_multiset_prod [DecidableEq ι] {u : Multiset ι} {x : E}
       (u.map fun i ↦ ((u.erase i).map (g · x)).prod • fderivWithin 𝕜 (g i) s x).sum :=
   (HasFDerivWithinAt.multiset_prod fun i hi ↦ (h i hi).hasFDerivWithinAt).fderivWithin hxs
 
-theorem HasStrictFDerivAt.finset_prod [DecidableEq ι] {x : E}
+theorem HasStrictFDerivAt.finsetProd [DecidableEq ι] {x : E}
     (hg : ∀ i ∈ u, HasStrictFDerivAt (g i) (g' i) x) :
     HasStrictFDerivAt (∏ i ∈ u, g i ·) (∑ i ∈ u, (∏ j ∈ u.erase i, g j x) • g' i) x := by
   simpa [← Finset.prod_attach u] using .congr_fderiv
-    (hasStrictFDerivAt_finset_prod.comp x <| hasStrictFDerivAt_pi.mpr fun i ↦ hg i i.prop)
+    (hasStrictFDerivAt_finsetProd.comp x <| hasStrictFDerivAt_pi.mpr fun i ↦ hg i i.prop)
     (by ext; simp [Finset.prod_erase_attach (g · x), ← u.sum_attach])
 
-theorem HasFDerivAt.finset_prod [DecidableEq ι] {x : E}
+@[deprecated (since := "2026-04-08")]
+alias HasStrictFDerivAt.finset_prod := HasStrictFDerivAt.finsetProd
+
+theorem HasFDerivAt.finsetProd [DecidableEq ι] {x : E}
     (hg : ∀ i ∈ u, HasFDerivAt (g i) (g' i) x) :
     HasFDerivAt (∏ i ∈ u, g i ·) (∑ i ∈ u, (∏ j ∈ u.erase i, g j x) • g' i) x := by
   simpa [← Finset.prod_attach u] using .congr_fderiv
-    (hasFDerivAt_finset_prod.comp x <| hasFDerivAt_pi.mpr fun i ↦ hg (Subtype.val i) i.prop :)
+    (hasFDerivAt_finsetProd.comp x <| hasFDerivAt_pi.mpr fun i ↦ hg (Subtype.val i) i.prop :)
     (by ext; simp [Finset.prod_erase_attach (g · x), ← u.sum_attach])
 
-theorem HasFDerivWithinAt.finset_prod [DecidableEq ι] {x : E}
+@[deprecated (since := "2026-04-08")] alias HasFDerivAt.finset_prod := HasFDerivAt.finsetProd
+
+theorem HasFDerivWithinAt.finsetProd [DecidableEq ι] {x : E}
     (hg : ∀ i ∈ u, HasFDerivWithinAt (g i) (g' i) s x) :
     HasFDerivWithinAt (∏ i ∈ u, g i ·) (∑ i ∈ u, (∏ j ∈ u.erase i, g j x) • g' i) s x := by
   simpa [← Finset.prod_attach u] using .congr_fderiv
-    (hasFDerivAt_finset_prod.comp_hasFDerivWithinAt x <|
+    (hasFDerivAt_finsetProd.comp_hasFDerivWithinAt x <|
       hasFDerivWithinAt_pi.mpr fun i ↦ hg (Subtype.val i) i.prop :)
     (by ext; simp [Finset.prod_erase_attach (g · x), ← u.sum_attach])
 
-theorem fderiv_finset_prod [DecidableEq ι] {x : E} (hg : ∀ i ∈ u, DifferentiableAt 𝕜 (g i) x) :
-    fderiv 𝕜 (∏ i ∈ u, g i ·) x = ∑ i ∈ u, (∏ j ∈ u.erase i, (g j x)) • fderiv 𝕜 (g i) x :=
-  (HasFDerivAt.finset_prod fun i hi ↦ (hg i hi).hasFDerivAt).fderiv
+@[deprecated (since := "2026-04-08")]
+alias HasFDerivWithinAt.finset_prod := HasFDerivWithinAt.finsetProd
 
-theorem fderivWithin_finset_prod [DecidableEq ι] {x : E} (hxs : UniqueDiffWithinAt 𝕜 s x)
+theorem fderiv_finsetProd [DecidableEq ι] {x : E} (hg : ∀ i ∈ u, DifferentiableAt 𝕜 (g i) x) :
+    fderiv 𝕜 (∏ i ∈ u, g i ·) x = ∑ i ∈ u, (∏ j ∈ u.erase i, (g j x)) • fderiv 𝕜 (g i) x :=
+  (HasFDerivAt.finsetProd fun i hi ↦ (hg i hi).hasFDerivAt).fderiv
+
+@[deprecated (since := "2026-04-08")] alias fderiv_finset_prod := fderiv_finsetProd
+
+theorem fderivWithin_finsetProd [DecidableEq ι] {x : E} (hxs : UniqueDiffWithinAt 𝕜 s x)
     (hg : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (g i) s x) :
     fderivWithin 𝕜 (∏ i ∈ u, g i ·) s x =
       ∑ i ∈ u, (∏ j ∈ u.erase i, (g j x)) • fderivWithin 𝕜 (g i) s x :=
-  (HasFDerivWithinAt.finset_prod fun i hi ↦ (hg i hi).hasFDerivWithinAt).fderivWithin hxs
+  (HasFDerivWithinAt.finsetProd fun i hi ↦ (hg i hi).hasFDerivWithinAt).fderivWithin hxs
+
+@[deprecated (since := "2026-04-08")] alias fderivWithin_finset_prod := fderivWithin_finsetProd
 
 end Comp
 

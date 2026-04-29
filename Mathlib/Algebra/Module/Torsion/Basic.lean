@@ -645,7 +645,7 @@ namespace Module
 
 variable (M) [CommRing R] [AddCommGroup M] [Module R M] (s : Set R) (r : R)
 
-open Pointwise
+open scoped Pointwise
 
 lemma isTorsionBy_quotient_element_smul :
     IsTorsionBy R (M ⧸ r • (⊤ : Submodule R M)) r :=
@@ -791,7 +791,7 @@ theorem _root_.Submodule.annihilator_top_inter_nonZeroDivisors [Module.Finite R 
     (hM : Module.IsTorsion R M) : ((⊤ : Submodule R M).annihilator ∩ R⁰ : Set R).Nonempty := by
   obtain ⟨S, hS⟩ := ‹Module.Finite R M›.fg_top
   refine ⟨_, ?_, (∏ x ∈ S, (@hM x).choose : R⁰).prop⟩
-  rw [Submonoid.coe_finset_prod, SetLike.mem_coe, ← hS, mem_annihilator_span]
+  rw [Submonoid.coe_finsetProd, SetLike.mem_coe, ← hS, mem_annihilator_span]
   intro n
   letI := Classical.decEq M
   rw [← Finset.prod_erase_mul _ _ n.prop, mul_smul, ← Submonoid.smul_def, (@hM n).choose_spec,

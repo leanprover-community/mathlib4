@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Lie.InvariantForm
 public import Mathlib.Algebra.Lie.Weights.Cartan
 public import Mathlib.Algebra.Lie.Weights.Linear
 public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+public import Mathlib.LinearAlgebra.BilinearForm.TensorProduct
 public import Mathlib.LinearAlgebra.PID
 
 /-!
@@ -104,6 +105,12 @@ lemma traceForm_lieInvariant : (traceForm R L M).lieInvariant L := by
   simp only [traceForm_apply_apply, LinearMap.zero_apply, ← isNilpotent_iff_eq_zero]
   apply LinearMap.isNilpotent_trace_of_isNilpotent
   exact isNilpotent_toEnd_of_isNilpotent₂ R L M x y
+
+open scoped TensorProduct in
+@[simp] lemma traceForm_baseChange [Module.Free R M] [Module.Finite R M]
+    (A : Type*) [CommRing A] [Algebra R A] :
+    traceForm A (A ⊗[R] L) (A ⊗[R] M) = (traceForm R L M).baseChange A := by
+  ext; simp [traceForm_apply_apply, ← LinearMap.baseChange_comp, Algebra.algebraMap_eq_smul_one]
 
 variable {R L M} in
 lemma trace_toEnd_mul_eq_zero_of_traceForm_eq_zero (h : traceForm R L M = 0)
