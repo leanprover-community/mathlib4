@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Category.CommAlgCat.Basic
 public import Mathlib.Algebra.Algebra.Shrink
 public import Mathlib.Algebra.Polynomial.Lifts
 public import Mathlib.CategoryTheory.Limits.Filtered
+public import Mathlib.CategoryTheory.ObjectProperty.Ind
 public import Mathlib.CategoryTheory.SmallObject.Iteration.Nonempty
 public import Mathlib.FieldTheory.Minpoly.Basic
 public import Mathlib.RingTheory.AdjoinRoot
@@ -74,7 +75,67 @@ instance (J : Type w) [LinearOrder J] [Nonempty J] (C : Type u) [Category.{v} C]
     have : Nonempty (Set.Iio j) := Set.Nonempty.coe_sort (Set.Iio_nonempty.mpr hj.not_isMin)
     infer_instance
 
+/- from mathlib (to be generalized) -/
+instance : HasColimits (CommAlgCat.{v} R) := sorry
+
 end instances
+
+section from_proetale
+
+open CategoryTheory Limits IsLocalRing
+
+variable {J : Type u} [SmallCategory J] [IsFiltered J] (F : J ⥤ CommRingCat.{u}) {c : Cocone F}
+  [h_obj : ∀ (j : J), IsLocalRing (F.obj j)]
+  [h_hom : ∀ (j j' : J) (f : j ⟶ j'), IsLocalHom (F.map f).hom]
+
+namespace CommRingCat.FilteredColimit
+
+omit h_obj in
+lemma isLocalHom_ι (hc : IsColimit c) (j : J) : IsLocalHom (c.ι.app j).hom := by sorry
+
+theorem isLocalRing_of_isColimit (hc : IsColimit c) : IsLocalRing c.pt := by sorry
+
+/-- The functor of taking residue fields from a functor `F : J ⥤ CommRingCat`, when the `F.obj` are
+  local rings and `F.map` are local ring homomorphisms. -/
+noncomputable def residueFieldFunctor : J ⥤ CommRingCat.{u} where
+  obj j := CommRingCat.of <| ResidueField (F.obj j)
+  map f := CommRingCat.ofHom <| ResidueField.map (F.map f).hom
+
+/-- The cocone constructed from a filtered colimit cocone of local homomorphisms between local
+  rings. -/
+noncomputable def residueFieldCocone (hc : IsColimit c) : Cocone (residueFieldFunctor F) :=
+  letI := isLocalRing_of_isColimit F hc
+  let inst := isLocalHom_ι F hc
+  {
+    pt := CommRingCat.of <| ResidueField c.pt
+    ι := {
+      app j := CommRingCat.ofHom <| @ResidueField.map _ _ _ _ _ _ (c.ι.app j).hom (inst j)
+      naturality j j' f := by
+        simp [residueFieldFunctor, ← ofHom_comp, ← ResidueField.map_comp, ← hom_comp]
+    }
+  }
+
+noncomputable def isColimit_residueFieldCocone (hc : IsColimit c) :
+    IsColimit (residueFieldCocone F hc) := sorry
+
+end CommRingCat.FilteredColimit
+
+namespace CommAlgCat
+
+variable {R : Type u} [CommRing R]
+
+/-- The object property of flat `R`-algebras. -/
+def flat (R : Type u) [CommRing R] : ObjectProperty (CommAlgCat.{w} R) := sorry
+
+@[simp]
+lemma flat_iff {S : CommAlgCat R} : flat R S ↔ Module.Flat R S := sorry
+
+lemma ind_flat : ObjectProperty.ind.{u} (flat.{u} R) = flat.{u} R := by
+  sorry
+
+end CommAlgCat
+
+end from_proetale
 
 variable [IsLocalRing R] (K : Type v) [Field K] [Algebra (ResidueField R) K]
 
@@ -490,6 +551,10 @@ namespace FilteredColimit
 
 variable {R K} {J : Type w} [Category.{w} J] [IsFiltered J] {F : J ⥤ FlatExtension.{w} R K}
 
+#check PreservesColimit
+
+-- instance : PreservesFilteredLimits (forget₂ (CommAlgCat.{w} R) CommRingCat.{w}) := sorry
+
 lemma isLocalRing_of_isColimit (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat.{w} R))))
     (hc : IsColimit c) : IsLocalRing c.pt := by
   sorry
@@ -500,6 +565,7 @@ lemma isLocalHom_of_isColimit (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat.{w} R)
 
 lemma flat_of_isColimit (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat.{w} R))))
     (hc : IsColimit c) : Module.Flat R c.pt := by
+  rw [← CommAlgCat.flat_iff]
   sorry
 
 def residueFieldDescOfIsColimit (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat.{w} R))))
@@ -547,10 +613,10 @@ noncomputable def isColimit_coconeOfCoconeForget (c : Cocone (F ⋙ (forget₂ _
   · sorry
   · sorry
 
+set_option pp.universes true in
 instance : HasColimitsOfShape J (FlatExtension.{w} R K) where
   has_colimit F := by
-    obtain ⟨⟨c, hc⟩⟩ : HasColimit (F ⋙ (forget₂ _ (CommAlgCat.{w} R))) :=
-      sorry
+    obtain ⟨⟨c, hc⟩⟩ : HasColimit (F ⋙ (forget₂ _ (CommAlgCat.{w} R))) := inferInstance
     exact ⟨⟨⟨coconeOfCoconeForget c hc, isColimit_coconeOfCoconeForget c hc⟩⟩⟩
 
 instance : HasFilteredColimitsOfSize.{w, w} (FlatExtension.{w} R K) where
