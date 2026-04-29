@@ -493,7 +493,7 @@ lemma eq_of_forall_le_nnreal_iff {x y : ℝ≥0∞} : (∀ r : ℝ≥0, x ≤ r 
 
 theorem le_of_forall_pos_nnreal_lt {x y : ℝ≥0∞} (h : ∀ r : ℝ≥0, 0 < r → ↑r < x → ↑r ≤ y) : x ≤ y :=
   le_of_forall_nnreal_lt fun r hr =>
-    (zero_le r).eq_or_lt.elim (fun h => h ▸ zero_le _) fun h0 => h r h0 hr
+    (eq_zero_or_pos r).elim (fun h => h ▸ zero_le) fun h0 => h r h0 hr
 
 theorem eq_top_of_forall_nnreal_le {x : ℝ≥0∞} (h : ∀ r : ℝ≥0, ↑r ≤ x) : x = ∞ :=
   top_unique <| le_of_forall_nnreal_lt fun r _ => h r
@@ -646,7 +646,7 @@ theorem exists_inv_nat_lt {a : ℝ≥0∞} (h : a ≠ 0) : ∃ n : ℕ, (n : ℝ
 
 theorem exists_nat_pos_mul_gt (ha : a ≠ 0) (hb : b ≠ ∞) : ∃ n > 0, b < (n : ℕ) * a :=
   let ⟨n, hn⟩ := ENNReal.exists_nat_gt (div_lt_top hb ha).ne
-  ⟨n, Nat.cast_pos.1 ((zero_le _).trans_lt hn), by
+  ⟨n, Nat.cast_pos.1 hn.pos, by
     rwa [← ENNReal.div_lt_iff (Or.inl ha) (Or.inr hb)]⟩
 
 theorem exists_nat_mul_gt (ha : a ≠ 0) (hb : b ≠ ∞) : ∃ n : ℕ, b < n * a :=
