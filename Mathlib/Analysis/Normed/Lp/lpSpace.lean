@@ -1052,7 +1052,7 @@ def lsingle (p) (i : α) : E i →ₗ[𝕜] lp E p where
   map_smul' := lp.single_smul p i
 
 /-- The basis for `ℓ⁰(α, 𝕜)` given by `lp.single`. -/
-@[simps]
+@[simps repr_apply]
 noncomputable def zeroBasis : Module.Basis α 𝕜 ℓ⁰(α, 𝕜) where
   repr :=
     { toFun x := .ofSupportFinite ⇑x <| memℓp_zero_iff.mp x.2
@@ -1061,8 +1061,6 @@ noncomputable def zeroBasis : Module.Basis α 𝕜 ℓ⁰(α, 𝕜) where
       map_smul' _ _ := Finsupp.ext fun _ ↦ rfl
       left_inv _ := rfl
       right_inv _ := Finsupp.ext fun _ ↦ rfl }
-
-attribute [-simp] _root_.lp.zeroBasis_repr_symm_apply_coe
 
 lemma zeroBasis_apply (i : α) : zeroBasis i = lp.single 0 i (1 : 𝕜) := by
   ext; simp [zeroBasis, Finsupp.single_apply, Pi.single, Function.update, eq_comm]

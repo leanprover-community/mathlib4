@@ -512,8 +512,10 @@ as a multiplication-preserving function.
 def toMonoidHom (h : M ≃* N) : M →* N :=
   { h with map_one' := h.map_one }
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem coe_toMonoidHom (e : M ≃* N) : ⇑e.toMonoidHom = e := rfl
+
+attribute [simp] coe_toMonoidHom
 
 @[to_additive (attr := simp)]
 theorem toMonoidHom_eq_coe (f : M ≃* N) : f.toMonoidHom = (f : M →* N) :=

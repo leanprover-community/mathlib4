@@ -437,7 +437,7 @@ def mkIso' {G H : C} (e : G ≅ H) [GrpObj G] [GrpObj H] [IsMonHom e.hom] : mk G
 
 /-- Construct an isomorphism of group objects by giving an isomorphism between the underlying
 objects and checking compatibility with unit and multiplication only in the forward direction. -/
-@[to_additive (attr := simps!)
+@[to_additive (attr := simps! -isSimp)
 /-- Construct an isomorphism of additive group objects by giving an isomorphism between
 the underlying objects and checking compatibility with zero and addition only in the
 forward direction. -/]
@@ -445,11 +445,6 @@ abbrev mkIso {G H : Grp C} (e : G.X ≅ H.X) (one_f : η[G.X] ≫ e.hom = η[H.X
     (mul_f : μ[G.X] ≫ e.hom = (e.hom ⊗ₘ e.hom) ≫ μ[H.X] := by cat_disch) : G ≅ H :=
   have : IsMonHom e.hom := ⟨one_f, mul_f⟩
   mkIso' e
-
-attribute [-simp] _root_.CategoryTheory.Grp.mkIso_hom_hom_hom
-  _root_.CategoryTheory.Grp.mkIso_inv_hom_hom
-  _root_.CategoryTheory.AddGrp.mkIso_hom_hom_hom
-  _root_.CategoryTheory.AddGrp.mkIso_inv_hom_hom
 
 @[deprecated (since := "2025-12-18")] alias mkIso_hom_hom := mkIso_hom_hom_hom
 @[deprecated (since := "2025-12-18")] alias mkIso_inv_hom := mkIso_inv_hom_hom

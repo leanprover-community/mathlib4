@@ -56,6 +56,8 @@ variable (n) in
 def scalar [Semiring R] : Rˣ →* GL n R :=
   Units.map (Matrix.scalar n).toMonoidHom
 
+attribute [-simp] _root_.Matrix.GeneralLinearGroup.val_inv_scalar_apply
+
 section CoeFnInstance
 
 instance instCoeFun [Semiring R] : CoeFun (GL n R) fun _ => n → n → R where

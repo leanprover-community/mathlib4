@@ -324,7 +324,6 @@ section cast
 instance : Coe (SpecialLinearGroup n ℤ) (SpecialLinearGroup n R) :=
   ⟨fun x => map (Int.castRingHom R) x⟩
 
-@[simp]
 theorem coe_matrix_coe (g : SpecialLinearGroup n ℤ) :
     ↑(g : SpecialLinearGroup n R) = (↑g : Matrix n n ℤ).map (Int.castRingHom R) :=
   map_apply_coe (Int.castRingHom R) g

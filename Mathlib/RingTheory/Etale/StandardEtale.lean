@@ -285,7 +285,7 @@ lemma StandardEtalePresentation.equivRing_x : P.equivRing P.x = P.X :=
   (P.equivRing.symm_apply_eq.mp P.equivRing_symm_X).symm
 
 /-- The `Algebra.Presentation` associated to a standard etale presentation. -/
-@[simps!]
+@[simps! relation val]
 def StandardEtalePresentation.toPresentation : Algebra.Presentation R S (Fin 2) (Fin 2) where
   __ := Algebra.Generators.ofAlgHom ((P.lift _ P.hasMap).comp
       (P.equivMvPolynomialQuotient.symm.toAlgHom.comp (Ideal.Quotient.mkₐ _ _)))
@@ -300,7 +300,6 @@ def StandardEtalePresentation.toPresentation : Algebra.Presentation R S (Fin 2) 
       RingHom.ker_comp_of_injective _ (by exact P.equivMvPolynomialQuotient.symm.injective)]
     simp [Set.pair_comm]
 
-attribute [-simp] _root_.StandardEtalePresentation.toPresentation_algebra_algebraMap_apply
 
 @[simp] lemma StandardEtalePresentation.aeval_val_equivMvPolynomial (p : R[X]) :
     MvPolynomial.aeval P.toPresentation.val

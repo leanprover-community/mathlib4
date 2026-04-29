@@ -605,7 +605,7 @@ def _root_.LinearMap.compQuadraticMap' [CommSemiring S] [Algebra S R] [Module S 
 maps on `M` into `P`.
 
 See `LinearMap.BilinMap.congr₂` for the bilinear map version. -/
-@[simps]
+@[simps apply]
 def _root_.LinearEquiv.congrQuadraticMap (e : N ≃ₗ[R] P) :
     QuadraticMap R M N ≃ₗ[R] QuadraticMap R M P where
   toFun Q := e.compQuadraticMap Q

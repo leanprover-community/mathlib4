@@ -486,9 +486,11 @@ def freeMonoidCongr (e : α ≃ β) : FreeMonoid α ≃* FreeMonoid β where
 @[to_additive (attr := simp)]
 theorem freeMonoidCongr_of (e : α ≃ β) (a : α) : freeMonoidCongr e (of a) = of (e a) := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem freeMonoidCongr_symm_of (e : α ≃ β) (b : β) :
     freeMonoidCongr e.symm (of b) = of (e.symm b) := rfl
+
+attribute [simp] freeMonoidCongr_symm_of
 
 end IsomorphicTypes
 

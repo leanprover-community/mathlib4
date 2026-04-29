@@ -122,7 +122,6 @@ theorem map_id_obj' (x : X) (U) (p) (q) : (map (𝟙 X) x).obj ⟨⟨U, p⟩, q�
 theorem map_id_obj_unop (x : X) (U : (OpenNhds x)ᵒᵖ) : (map (𝟙 X) x).obj (unop U) = unop U := by
   simp
 
-@[simp]
 theorem op_map_id_obj (x : X) (U : (OpenNhds x)ᵒᵖ) : (map (𝟙 X) x).op.obj U = U := by simp
 
 /-- `Opens.map f` and `OpenNhds.map f` form a commuting square (up to natural isomorphism)

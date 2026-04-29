@@ -102,12 +102,12 @@ theorem coe_mulLeft (a : G) : ⇑(Equiv.mulLeft a) = (a * ·) :=
   rfl
 
 /-- Extra simp lemma that `dsimp` can use. `simp` will never use this. -/
-@[to_additive (attr := simp)
+@[to_additive
 /-- Extra simp lemma that `dsimp` can use. `simp` will never use this. -/]
 theorem mulLeft_symm_apply (a : G) : ((Equiv.mulLeft a).symm : G → G) = (a⁻¹ * ·) :=
   rfl
 
-attribute [-simp] _root_.Equiv.addLeft_symm_apply
+attribute [simp] mulLeft_symm_apply
 
 @[to_additive (attr := simp)]
 theorem mulLeft_symm (a : G) : (Equiv.mulLeft a).symm = Equiv.mulLeft a⁻¹ :=
@@ -131,12 +131,12 @@ theorem mulRight_symm (a : G) : (Equiv.mulRight a).symm = Equiv.mulRight a⁻¹ 
   ext fun _ => rfl
 
 /-- Extra simp lemma that `dsimp` can use. `simp` will never use this. -/
-@[to_additive (attr := simp)
+@[to_additive
 /-- Extra simp lemma that `dsimp` can use. `simp` will never use this. -/]
 theorem mulRight_symm_apply (a : G) : ((Equiv.mulRight a).symm : G → G) = fun x => x * a⁻¹ :=
   rfl
 
-attribute [-simp] _root_.Equiv.addRight_symm_apply
+attribute [simp] mulRight_symm_apply
 
 @[to_additive]
 theorem _root_.Group.mulRight_bijective (a : G) : Function.Bijective (· * a) :=

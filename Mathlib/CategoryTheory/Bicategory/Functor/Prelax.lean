@@ -164,12 +164,9 @@ variable {a b : B}
 
 /-- A prelax functor `F` sends 2-isomorphisms `η : f ≅ g` to 2-isomorphisms
 `F.map f ≅ F.map g`. -/
-@[simps!]
+@[simps! -isSimp]
 abbrev map₂Iso {f g : a ⟶ b} (η : f ≅ g) : F.map f ≅ F.map g :=
   (F.mapFunctor a b).mapIso η
-
-attribute [-simp] _root_.CategoryTheory.PrelaxFunctor.map₂Iso_hom
-  _root_.CategoryTheory.PrelaxFunctor.map₂Iso_inv
 
 instance map₂_isIso {f g : a ⟶ b} (η : f ⟶ g) [IsIso η] : IsIso (F.map₂ η) :=
   (F.map₂Iso (asIso η)).isIso_hom
