@@ -106,7 +106,7 @@ variable [NonAssocSemiring R] [DecidableEq α] [DecidableRel G.Adj] {a : α} {e 
 
 theorem sum_incMatrix_apply [Fintype (Sym2 α)] [Fintype (neighborSet G a)] :
     ∑ e, G.incMatrix R a e = G.degree a := by
-  simp [incMatrix_apply', sum_boole, Set.filter_mem_univ_eq_toFinset, card_incidenceSet_eq_degree]
+  simp [incMatrix_apply', sum_boole, Set.filter_mem_univ_eq_toFinset]
 
 theorem incMatrix_mul_transpose_diag [Fintype (Sym2 α)] [Fintype (neighborSet G a)] :
     (G.incMatrix R * (G.incMatrix R)ᵀ) a a = G.degree a := by
