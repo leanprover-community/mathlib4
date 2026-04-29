@@ -424,12 +424,8 @@ theorem sup_eq_prod_inf_factors (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
         normalizedFactors_prod_inter_eq_inter]
     exacts [inf_le_left, inf_le_right]
   · rw [← dvd_iff_le, dvd_iff_normalizedFactors_le_normalizedFactors ?H₁ this,
-      normalizedFactors_prod_of_prime ?H₂, le_iff_count]
+      normalizedFactors_prod_inter_eq_inter, le_iff_count]
     case H₁ => exact ne_bot_of_le_ne_bot hI le_sup_left
-    case H₂ =>
-      intro p hp
-      rw [mem_inter] at hp
-      exact prime_of_normalized_factor p hp.left
     intro a
     rw [Multiset.count_inter]
     exact le_min (count_le_of_ideal_ge le_sup_left hI a) (count_le_of_ideal_ge le_sup_right hJ a)
