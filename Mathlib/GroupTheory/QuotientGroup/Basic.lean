@@ -71,7 +71,9 @@ theorem strictMono_comap_prod_map :
     StrictMono fun H : Subgroup G ↦ (H.comap N.subtype, H.map (mk' N)) :=
   strictMono_comap_prod_image N
 
-@[to_additive (attr := simps)]
+/-- `(G × H) / (A × B)` is in bijection with `G / A × H / B`. -/
+@[to_additive (attr := simps) QuotientAddGroup.prodEquiv
+/-- `(G × H) / (A × B)` is in bijection with `G / A × H / B`. -/]
 def prodEquiv (A : Subgroup G) (B : Subgroup H) : (G × H) ⧸ (A.prod B) ≃ (G ⧸ A) × H ⧸ B where
   toFun q := q.liftOn' (fun (g, h) ↦ (g, h))
       (by simp [QuotientGroup.leftRel_apply, Subgroup.mem_prod, QuotientGroup.eq])
@@ -80,7 +82,9 @@ def prodEquiv (A : Subgroup G) (B : Subgroup H) : (G × H) ⧸ (A.prod B) ≃ (G
   left_inv q := q.inductionOn' (by simp)
   right_inv := fun (q₁, q₂) ↦ Quotient.inductionOn₂' q₁ q₂ (by simp)
 
-@[to_additive (attr := simps!)]
+/-- `(G × H) / (A × B)` is isomorphic to `G / A × H / B`. -/
+@[to_additive (attr := simps!) QuotientAddGroup.prodAddEquiv
+/-- `(G × H) / (A × B)` is isomorphic to `G / A × H / B`. -/]
 def prodMulEquiv (A : Subgroup G) (B : Subgroup H) [A.Normal] [B.Normal] :
     (G × H) ⧸ (A.prod B) ≃* (G ⧸ A) × H ⧸ B where
   __ := prodEquiv A B
