@@ -36,6 +36,7 @@ scoped notation "ℝ^" n => EuclideanSpace ℝ (Fin n)
 
 **Reference:** https://en.wikipedia.org/wiki/Frenet%E2%80%93Serret_formulas#Formulas_in_n_dimensions -/
 structure ParametrizedDifferentiableCurve where
+  /-- Ambient dimension of the Euclidean target space `ℝ^n`. -/
   n : ℕ
   /-- Left endpoint `a` of the open interval `(a, b)`. -/
   a : ℝ
