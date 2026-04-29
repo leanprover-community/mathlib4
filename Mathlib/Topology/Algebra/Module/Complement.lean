@@ -106,7 +106,8 @@ protected theorem IsTopCompl.symm [ContinuousSub M] (h : IsTopCompl p q) : IsTop
     rw [h.isCompl.projection_eq_id_sub_projection]
     exact continuous_id.sub h.continuous_projection
 
-theorem _root_.IsIdempotentElem.isTopCompl {f : M →L[R] M} (hf : IsIdempotentElem f) :
+theorem _root_.ContinuousLinearMap.IsIdempotentElem.isTopCompl {f : M →L[R] M}
+    (hf : IsIdempotentElem f) :
     IsTopCompl f.range f.ker := by
   rw [← isIdempotentElem_toLinearMap_iff] at hf
   refine ⟨LinearMap.IsIdempotentElem.isCompl hf, ?_⟩
@@ -291,7 +292,6 @@ protected theorem IsTopCompl.isClosed [T1Space q] [ContinuousSub M] (h : IsTopCo
     IsClosed (p : Set M) :=
   h.symm.isClosed'
 
-/-- If `p` and `q` are topological complements and `q` is closed, then `p` is Hausdorff. -/
 protected theorem IsTopCompl.t3Space [IsTopologicalAddGroup M] (h : IsTopCompl p q)
     (hq : IsClosed (q : Set M)) : T3Space p := by
   have : IsClosed ({0} : Set p) := by
@@ -301,6 +301,7 @@ protected theorem IsTopCompl.t3Space [IsTopologicalAddGroup M] (h : IsTopCompl p
   rw [RegularSpace.t3Space_iff_t0Space]
   infer_instance
 
+/-- If `p` and `q` are topological complements and `q` is closed, then `p` is Hausdorff. -/
 protected theorem IsTopCompl.t2Space [IsTopologicalAddGroup M] (h : IsTopCompl p q)
     (hq : IsClosed (q : Set M)) : T2Space p :=
   have := h.t3Space hq
