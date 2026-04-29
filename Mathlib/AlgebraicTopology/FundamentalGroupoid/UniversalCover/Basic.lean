@@ -363,36 +363,18 @@ theorem sheet_pairwise_disjoint [LocPathConnectedSpace X]
     | h p₂ =>
       obtain ⟨α₁, hα₁, rfl⟩ := he₁
       obtain ⟨α₂, hα₂, hαeq⟩ := he₂
-      -- `basedPathSheet U hxU ⟦pᵢ⟧` is definitionally `basedPathComponent U pᵢ`.
-      have hα₁_end : BasedPath.endpoint α₁ ∈ U := hα₁.target_mem
-      have h_same : pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) α₁ =
-          pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) α₂ :=
-        pathComponent_preimage_eq_of_ofBasedPath_eq hα₁_end hαeq.symm
       have hp₁_end : BasedPath.endpoint (BasedPath.ofPath p₁) ∈ U :=
         (BasedPath.endpoint_ofPath p₁).symm ▸ hxU
-      have h_joined_p : JoinedIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U)
-          (BasedPath.ofPath p₁) (BasedPath.ofPath p₂) := by
-        have h_α₁_eq_p₁ : pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) α₁ =
-            pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) (BasedPath.ofPath p₁) :=
-          pathComponentIn_congr hα₁
-        have h_α₂_eq_p₂ : pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) α₂ =
-            pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) (BasedPath.ofPath p₂) :=
-          pathComponentIn_congr hα₂
-        have hp₁_mem : BasedPath.ofPath p₁ ∈
-            pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U)
-              (BasedPath.ofPath p₂) := by
-          rw [← h_α₂_eq_p₂, ← h_same, h_α₁_eq_p₁]
-          exact mem_pathComponentIn_self hp₁_end
-        exact hp₁_mem.symm
       have h_end_eq : BasedPath.endpoint (BasedPath.ofPath p₁) =
           BasedPath.endpoint (BasedPath.ofPath p₂) := by
         rw [BasedPath.endpoint_ofPath, BasedPath.endpoint_ofPath]
-      have h_hom := BasedPath.toPath_homotopic_of_joinedIn_slsc
-        hU_slsc hp₁_end h_end_eq h_joined_p
+      have h_join : JoinedIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U)
+          (BasedPath.ofPath p₁) (BasedPath.ofPath p₂) :=
+        hα₁.trans (mem_basedPathComponent_of_ofBasedPath_eq hα₂ hαeq.symm).symm
       have h_uc_eq : ofBasedPath x₀ (BasedPath.ofPath p₁) =
           ofBasedPath x₀ (BasedPath.ofPath p₂) :=
-        ofBasedPath_eq_of_homotopic_toPath h_end_eq h_hom
-      -- Extract `⟦p₁⟧ = ⟦p₂⟧` from the `ofBasedPath` equality.
+        ofBasedPath_eq_of_homotopic_toPath h_end_eq
+          (BasedPath.toPath_homotopic_of_joinedIn_slsc hU_slsc hp₁_end h_end_eq h_join)
       rw [ofBasedPath_ofPath, ofBasedPath_ofPath] at h_uc_eq
       exact eq_of_heq ((Sigma.mk.injEq _ _ _ _).mp h_uc_eq).2
 

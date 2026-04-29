@@ -44,46 +44,28 @@ public theorem isCoveringMap [LocPathConnectedSpace X] [PathConnectedSpace X]
   intro x
   -- Get a good neighborhood of `x`.
   obtain ⟨U, hU_open, hxU, hU_pathConn, hU_slsc⟩ := exists_pathConnected_slsc_neighborhood x
-  let S : Path.Homotopic.Quotient x₀ x → Set (UniversalCover x₀) := fun q ↦ sheet U hxU q
+  let S := sheet (x₀ := x₀) U hxU
   -- Nonempty instances needed by `trivializationDiscrete`.
   have _ne_ι : Nonempty (Path.Homotopic.Quotient x₀ x) :=
     ⟨Path.Homotopic.Quotient.mk (PathConnectedSpace.somePath x₀ x)⟩
   have _ne_fun : Nonempty (X → UniversalCover x₀) :=
     ⟨fun _ ↦ ofBasedPath x₀ (BasedPath.ofPath (PathConnectedSpace.somePath x₀ x₀))⟩
+  have _disc : DiscreteTopology (Path.Homotopic.Quotient x₀ x) :=
+    Path.Homotopic.Quotient.discreteTopology x₀ x
   -- Build the trivialization.
   have h_open_iff : ∀ q : Path.Homotopic.Quotient x₀ x, ∀ {W : Set X}, W ⊆ U →
       (IsOpen W ↔ IsOpen (proj (x₀ := x₀) ⁻¹' W ∩ S q)) := by
     intro q W hWU
-    constructor
-    · intro hW_open
-      exact (hW_open.preimage (continuous_proj x₀)).inter (isOpen_sheet U hU_open hxU q)
-    · intro h_open_inter
-      -- Use surjectivity of sheet → U and `isOpenMap_proj`.
-      have h_image_eq : proj (x₀ := x₀) '' (proj (x₀ := x₀) ⁻¹' W ∩ S q) = W := by
-        ext v
-        constructor
-        · rintro ⟨e, ⟨hv1, _⟩, rfl⟩
-          exact hv1
-        · intro hvW
-          have hvU : v ∈ U := hWU hvW
-          obtain ⟨e, he_sheet, he_proj⟩ := sheet_surjOn hU_pathConn hxU q hvU
-          exact ⟨e, ⟨by rw [Set.mem_preimage, he_proj]; exact hvW, he_sheet⟩, he_proj⟩
-      rw [← h_image_eq]
-      exact isOpenMap_proj x₀ _ h_open_inter
-  have h_inj : ∀ q, (S q).InjOn (proj (x₀ := x₀)) :=
-    fun q ↦ sheet_proj_injOn hU_slsc hxU q
-  have h_surj : ∀ q, (S q).SurjOn (proj (x₀ := x₀)) U :=
-    fun q ↦ sheet_surjOn hU_pathConn hxU q
-  have h_disjoint : Pairwise (Function.onFun Disjoint S) := by
-    unfold Function.onFun
-    exact sheet_pairwise_disjoint hU_slsc hxU
-  have h_exhaustive : proj (x₀ := x₀) ⁻¹' U ⊆ ⋃ q, S q :=
-    sheet_exhaustive hU_pathConn hxU
-  have _disc : DiscreteTopology (Path.Homotopic.Quotient x₀ x) :=
-    Path.Homotopic.Quotient.discreteTopology x₀ x
-  refine (IsEvenlyCovered.of_trivialization (t :=
+    refine ⟨fun hW => (hW.preimage (continuous_proj x₀)).inter (isOpen_sheet U hU_open hxU q),
+      fun h_open_inter => ?_⟩
+    have h := isOpenMap_proj x₀ _ h_open_inter
+    rwa [Set.image_preimage_inter,
+      Set.inter_eq_left.mpr (hWU.trans (sheet_surjOn hU_pathConn hxU q))] at h
+  refine ((IsEvenlyCovered.of_trivialization (t :=
     IsOpen.trivializationDiscrete (f := proj (x₀ := x₀))
-      S U hU_open h_open_iff h_inj h_surj h_disjoint h_exhaustive) ?_).to_isEvenlyCovered_preimage
+      S U hU_open h_open_iff (sheet_proj_injOn hU_slsc hxU) (sheet_surjOn hU_pathConn hxU)
+      (sheet_pairwise_disjoint hU_slsc hxU) (sheet_exhaustive hU_pathConn hxU))
+    ?_).to_isEvenlyCovered_preimage)
   rw [IsOpen.trivializationDiscrete_baseSet]
   exact hxU
 
@@ -180,17 +162,15 @@ theorem liftPath_apply_one_eq_ofBasedPath_append
         (by simp)
     have h0_end : BasedPath.endpoint (BasedPath.append α (Path.initialSegmentFamily γ 0)) =
         BasedPath.endpoint α := by
-      trans γ 0
-      · exact BasedPath.endpoint_append α (Path.initialSegmentFamily γ 0)
-      · simpa [BasedPath.endpoint] using γ.source
+      rw [BasedPath.endpoint_append]; simpa [BasedPath.endpoint] using γ.source
     exact ofBasedPath_eq_of_homotopic_toPath (x₀ := x₀) h0_end h0_hom
   have hΓ_eq_lift :
       Γ = (isCoveringMap x₀).liftPath γ (ofBasedPath x₀ α)
-        (by simpa [BasedPath.endpoint] using γ.source) := by
-    refine ((isCoveringMap x₀).eq_liftPath_iff' (γ := γ)
+        (by simpa [BasedPath.endpoint] using γ.source) :=
+    ((isCoveringMap x₀).eq_liftPath_iff' (γ := γ)
       (e := ofBasedPath x₀ α)
-      (γ_0 := by simpa [BasedPath.endpoint] using γ.source) (Γ := Γ)).2 ?_
-    exact ⟨hΓ_lifts, hΓ_zero⟩
+      (γ_0 := by simpa [BasedPath.endpoint] using γ.source) (Γ := Γ)).2
+      ⟨hΓ_lifts, hΓ_zero⟩
   rw [← hΓ_eq_lift]
   simpa [Γ] using
     congrArg (fun δ ↦ ofBasedPath x₀ (BasedPath.append α δ)) (Path.initialSegmentFamily_one γ)
@@ -211,29 +191,21 @@ public theorem simplyConnectedSpace [LocPathConnectedSpace X] [PathConnectedSpac
     rw [p.source]
   have hp_eq_lift :
       (p : C(I, UniversalCover x₀)) =
-        (isCoveringMap x₀).liftPath γ (ofBasedPath x₀ α) hγ0 := by
-    refine ((isCoveringMap x₀).eq_liftPath_iff' (γ := γ)
-      (e := ofBasedPath x₀ α) (γ_0 := hγ0) (Γ := p)).2 ?_
-    exact ⟨by ext t; rfl, p.source⟩
+        (isCoveringMap x₀).liftPath γ (ofBasedPath x₀ α) hγ0 :=
+    ((isCoveringMap x₀).eq_liftPath_iff' (γ := γ)
+      (e := ofBasedPath x₀ α) (γ_0 := hγ0) (Γ := p)).2
+      ⟨by ext t; rfl, p.source⟩
   have h_end : ofBasedPath x₀ (BasedPath.append α γ) = ofBasedPath x₀ α := by
     rw [← liftPath_apply_one_eq_ofBasedPath_append, ← hp_eq_lift]; exact p.target
   have h_append_eq :
       Path.Homotopic.Quotient.mk (α.toPath.trans γ) = Path.Homotopic.Quotient.mk α.toPath := by
-    have h_end' :
-        ofBasedPath x₀ (BasedPath.ofPath (α.toPath.trans γ)) =
-          ofBasedPath x₀ (BasedPath.ofPath α.toPath) := by
-      have h1 : BasedPath.ofPath (α.toPath.trans γ) = BasedPath.append α γ := rfl
-      have h2 : BasedPath.ofPath α.toPath = α := by cases α; rfl
-      rw [h1, h2]; exact h_end
-    -- Repackage as an equality of `mk` values so the `mk_inj` simp lemma fires.
-    have h_end_mk :
-        UniversalCover.mk (x₀ := x₀) (BasedPath.endpoint α)
-            (Path.Homotopic.Quotient.mk (α.toPath.trans γ)) =
-          UniversalCover.mk (BasedPath.endpoint α)
-            (Path.Homotopic.Quotient.mk α.toPath) := by
-      rw [← ofBasedPath_ofPath, ← ofBasedPath_ofPath]
-      exact h_end'
-    simpa using h_end_mk
+    have h_end' : ofBasedPath x₀ (BasedPath.ofPath (α.toPath.trans γ)) =
+        ofBasedPath x₀ (BasedPath.ofPath α.toPath) := by
+      change ofBasedPath x₀ (BasedPath.append α γ) = _
+      rw [show BasedPath.ofPath α.toPath = α from by cases α; rfl]
+      exact h_end
+    rw [ofBasedPath_ofPath, ofBasedPath_ofPath] at h_end'
+    simpa using h_end'
   have hγ_null :
       (Path.Homotopic.Quotient.mk γ : Path.Homotopic.Quotient
           (BasedPath.endpoint α) (BasedPath.endpoint α)) =
