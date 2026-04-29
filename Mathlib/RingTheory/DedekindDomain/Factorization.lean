@@ -924,8 +924,8 @@ lemma multiplicity_sup (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
     multiplicity p.asIdeal (I ⊔ J) = multiplicity p.asIdeal I ⊓ multiplicity p.asIdeal J := by
   rw [Ideal.sup_eq_prod_inf_factors hI hJ, ← count_normalizedFactors_eq_multiplicity ?h,
     ← count_normalizedFactors_eq_multiplicity hI, ← count_normalizedFactors_eq_multiplicity hJ]
-  case h => exact Ideal.prod_inter_normalizedFactors_ne_zero I J
-  rw [Ideal.normalizedFactors_prod_inter_eq_inter]
+  case h => exact prod_inter_normalizedFactors_ne_zero I J
+  rw [normalizedFactors_prod_inter_eq_inter]
   exact count_inter ..
 
 variable (I J) in
