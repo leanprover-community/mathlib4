@@ -75,12 +75,12 @@ instance restrictScalars.isScalarTower (p : Submodule R M) :
   smul_assoc r s x := Subtype.ext <| smul_assoc r s (x : M)
 
 variable {R M} in
-lemma restrictScalars_le {s t : Submodule R M} :
+@[simp] lemma restrictScalars_le {s t : Submodule R M} :
     s.restrictScalars S ≤ t.restrictScalars S ↔ s ≤ t :=
   Iff.rfl
 
 variable {R M} in
-lemma restrictScalars_lt {s t : Submodule R M} :
+@[simp] lemma restrictScalars_lt {s t : Submodule R M} :
     s.restrictScalars S < t.restrictScalars S ↔ s < t :=
   Iff.rfl
 
