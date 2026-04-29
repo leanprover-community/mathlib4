@@ -66,7 +66,7 @@ def Add.toVAdd (α : Type*) [Add α] : VAdd α α := ⟨(· + ·)⟩
 
 /-- Like `Mul.toSMul`, but multiplies on the right.
 
-/- See also `Monoid.toOppositeMulAction` and `MonoidWithZero.toOppositeMulActionWithZero`. -/
+See also `Monoid.toOppositeMulAction` and `MonoidWithZero.toOppositeMulActionWithZero`. -/
 @[to_additive /-- Like `Add.toVAdd`, but adds on the right.
 
   See also `AddMonoid.toOppositeAddAction`. -/]
