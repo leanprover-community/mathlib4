@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.IsSimpleRing
 public import Mathlib.Algebra.BigOperators.Balance
 public import Mathlib.Algebra.Order.BigOperators.Expect
+public import Mathlib.Algebra.Order.CauSeq.Completion
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Analysis.CStarAlgebra.Basic
 public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap

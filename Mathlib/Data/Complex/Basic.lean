@@ -766,7 +766,7 @@ theorem im_eq_sub_conj (z : ℂ) : (z.im : ℂ) = (z - conj z) / (2 * I) := by
 Note that the Real numbers used for x and y will show as Cauchy sequences due to the way Real
 numbers are represented.
 -/
-unsafe instance instRepr : Repr ℂ where
+unsafe instance instRepr [Repr ℝ] : Repr ℂ where
   reprPrec f p :=
     (if p > 65 then (Std.Format.bracket "(" · ")") else (·)) <|
       reprPrec f.re 65 ++ " + " ++ reprPrec f.im 70 ++ "*I"

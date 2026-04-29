@@ -54,7 +54,7 @@ real numbers, completion, uniform spaces
 @[expose] public section
 
 
-open Set Function Filter CauSeq UniformSpace
+open Set Function Filter UniformSpace
 
 /-- The metric space uniform structure on ℚ (which presupposes the existence
 of real numbers) agrees with the one coming directly from (abs : ℚ → ℚ). -/

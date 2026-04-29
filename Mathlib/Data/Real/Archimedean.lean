@@ -13,12 +13,14 @@ public import Mathlib.Order.Interval.Set.Disjoint
 import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
 import Mathlib.Data.Int.LeastGreatest
 
+import all Mathlib.Data.Real.Basic
+
 /-!
 # The real numbers are an Archimedean floor ring, and a conditionally complete linear order.
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset
 
@@ -37,14 +39,15 @@ instance instArchimedean : Archimedean ℝ :=
 noncomputable instance : FloorRing ℝ :=
   Archimedean.floorRing _
 
-theorem isCauSeq_iff_lift {f : ℕ → ℚ} : IsCauSeq abs f ↔ IsCauSeq abs fun i => (f i : ℝ) where
+private theorem isCauSeq_iff_lift {f : ℕ → ℚ} :
+   IsCauSeq abs f ↔ IsCauSeq abs fun i => (f i : ℝ) where
   mp H ε ε0 :=
     let ⟨δ, δ0, δε⟩ := exists_pos_rat_lt ε0
     (H _ δ0).imp fun i hi j ij => by dsimp; exact lt_trans (mod_cast hi _ ij) δε
   mpr H ε ε0 :=
     (H _ (Rat.cast_pos.2 ε0)).imp fun i hi j ij => by dsimp at hi; exact mod_cast hi _ ij
 
-theorem of_near (f : ℕ → ℚ) (x : ℝ) (h : ∀ ε > 0, ∃ i, ∀ j ≥ i, |(f j : ℝ) - x| < ε) :
+private theorem of_near (f : ℕ → ℚ) (x : ℝ) (h : ∀ ε > 0, ∃ i, ∀ j ≥ i, |(f j : ℝ) - x| < ε) :
     ∃ h', Real.mk ⟨f, h'⟩ = x :=
   ⟨isCauSeq_iff_lift.2 (CauSeq.of_near _ (const abs x) h),
     sub_eq_zero.1 <|
@@ -163,9 +166,10 @@ theorem le_sSup_iff (h : BddAbove s) (h' : s.Nonempty) :
     a ≤ sSup s ↔ ∀ ε, ε < 0 → ∃ x ∈ s, a + ε < x := by
   rw [le_iff_forall_pos_lt_add]
   refine ⟨fun H ε ε_neg => ?_, fun H ε ε_pos => ?_⟩
-  · exact exists_lt_of_lt_csSup h' (lt_sub_iff_add_lt.mp (H _ (neg_pos.mpr ε_neg)))
+  · exact exists_lt_of_lt_csSup h' (lt_sub_iff_add_lt.mp
+      (by simpa [sub_eq_add_neg] using H _ (neg_pos.mpr ε_neg)))
   · rcases H _ (neg_lt_zero.mpr ε_pos) with ⟨x, x_in, hx⟩
-    exact sub_lt_iff_lt_add.mp (lt_csSup_of_lt h x_in hx)
+    exact sub_lt_iff_lt_add.mp (lt_csSup_of_lt h x_in <| by simpa [sub_eq_add_neg] using hx)
 
 @[simp]
 theorem sSup_empty : sSup (∅ : Set ℝ) = 0 :=
@@ -320,27 +324,6 @@ theorem sInf_le_sSup (s : Set ℝ) (h₁ : BddBelow s) (h₂ : BddAbove s) : sIn
   rcases s.eq_empty_or_nonempty with (rfl | hne)
   · rw [sInf_empty, sSup_empty]
   · exact csInf_le_csSup hne h₁ h₂
-
-theorem cauSeq_converges (f : CauSeq ℝ abs) : ∃ x, f ≈ const abs x := by
-  let s := {x : ℝ | const abs x < f}
-  have lb : ∃ x, x ∈ s := exists_lt f
-  have ub' : ∀ x, f < const abs x → ∀ y ∈ s, y ≤ x := fun x h y yS =>
-    le_of_lt <| const_lt.1 <| CauSeq.lt_trans yS h
-  have ub : ∃ x, ∀ y ∈ s, y ≤ x := (exists_gt f).imp ub'
-  refine ⟨sSup s, ((lt_total _ _).resolve_left fun h => ?_).resolve_right fun h => ?_⟩
-  · rcases h with ⟨ε, ε0, i, ih⟩
-    refine (csSup_le lb (ub' _ ?_)).not_gt (sub_lt_self _ (half_pos ε0))
-    refine ⟨_, half_pos ε0, i, fun j ij => ?_⟩
-    rw [sub_apply, const_apply, sub_right_comm, le_sub_iff_add_le, add_halves]
-    exact ih _ ij
-  · rcases h with ⟨ε, ε0, i, ih⟩
-    refine (le_csSup ub ?_).not_gt ((lt_add_iff_pos_left _).2 (half_pos ε0))
-    refine ⟨_, half_pos ε0, i, fun j ij => ?_⟩
-    rw [sub_apply, const_apply, add_comm, ← sub_sub, le_sub_iff_add_le, add_halves]
-    exact ih _ ij
-
-instance : CauSeq.IsComplete ℝ abs :=
-  ⟨cauSeq_converges⟩
 
 open Set
 

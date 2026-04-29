@@ -5,6 +5,7 @@ Authors: Robert Y. Lewis
 -/
 module
 
+public import Mathlib.Algebra.Order.CauSeq.Completion
 public import Mathlib.RingTheory.Valuation.Basic
 public import Mathlib.NumberTheory.Padics.PadicNorm
 public import Mathlib.Analysis.Normed.Field.Lemmas

@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Field.Subfield.Basic
 public import Mathlib.Topology.Algebra.Order.Archimedean
 public import Mathlib.Topology.Algebra.Ring.Real
 
+import Mathlib.Algebra.Order.CauSeq.Basic
 import Mathlib.Algebra.Order.Monoid.Canonical.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 

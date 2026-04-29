@@ -725,7 +725,7 @@ end OrdConnected
 end Set
 
 /-- While not very useful, this instance uses the same representation as `Real.instRepr`. -/
-unsafe instance : Repr ℝ≥0∞ where
+unsafe instance [Repr ℝ] : Repr ℝ≥0∞ where
   reprPrec
   | (r : ℝ≥0), p => Repr.addAppParen f!"ENNReal.ofReal ({repr r.val})" p
   | ∞, _ => "∞"
