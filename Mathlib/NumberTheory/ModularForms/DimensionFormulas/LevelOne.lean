@@ -66,29 +66,6 @@ private lemma divByDiscriminant_slash_eq (f : CuspForm 𝒮ℒ k) (γ : SL(2, �
     show k + -(k - 12) = (12 : ℤ) by ring]
   exact mul_div_mul_left (f z) (Δ z) (zpow_ne_zero _ (denom_ne_zero γ z))
 
-lemma exp_decay_isBigO_discriminant (f : CuspForm 𝒮ℒ k) : f =O[atImInfty] Δ := by
-  have hf_decay := exp_decay_atImInfty (h := 1) f one_pos one_mem_strictPeriods_SL
-  have hΔ_lower : ∀ᶠ τ : ℍ in atImInfty,
-      ‖(fun τ : ℍ ↦ Real.exp (-2 * Real.pi * τ.im / 1)) τ‖ ≤ 2 * ‖Δ τ‖ := by
-    have hprod := discriminant_bounded_factor.eventually
-      (Metric.ball_mem_nhds (1 : ℂ) (by norm_num : (0 : ℝ) < 1/2))
-    filter_upwards [hprod] with τ hτ
-    simp only [div_one]
-    rw [discriminant_eq_q_prod, norm_mul, Real.norm_of_nonneg (Real.exp_pos _).le]
-    have hq_norm : ‖Function.Periodic.qParam 1 (τ : ℂ)‖ =
-        Real.exp (-2 * Real.pi * τ.im) := by
-      simp [Function.Periodic.qParam, Complex.norm_exp, Complex.mul_re, div_one]
-    rw [← hq_norm]
-    have hprod_bound : 1 / 2 ≤ ‖∏' (n : ℕ), (1 - eta_q n τ) ^ 24‖ := by
-      have hsub : ‖∏' (n : ℕ), (1 - eta_q n τ) ^ 24 - 1‖ < 1 / 2 := by
-        rwa [Complex.dist_eq] at hτ
-      have h1 := norm_sub_norm_le (1 : ℂ) (∏' (n : ℕ), (1 - eta_q n τ) ^ 24)
-      simp only [norm_one] at h1
-      linarith [norm_sub_rev (1 : ℂ) (∏' (n : ℕ), (1 - eta_q n τ) ^ 24)]
-    linarith [norm_nonneg (Function.Periodic.qParam 1 (τ : ℂ)), mul_le_mul_of_nonneg_left
-      hprod_bound (norm_nonneg (Function.Periodic.qParam 1 (τ : ℂ)))]
-  exact hf_decay.trans (IsBigO.of_bound 2 hΔ_lower)
-
 /-- Divide a cusp form by the discriminant to get a modular form of weight `k - 12`. -/
 def divDiscriminant (f : CuspForm 𝒮ℒ k) : ModularForm 𝒮ℒ (k - 12) where
   toFun z := f z / Δ z

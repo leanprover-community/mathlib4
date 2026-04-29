@@ -65,15 +65,12 @@ noncomputable def eta (z : ℂ) := 𝕢 24 z * ∏' n, (1 - eta_q n z)
 /-- Notation for the Dedekind eta function. -/
 scoped[ModularForm] notation "η" => eta
 
-/-! ### q-coordinate facts about `∏ (1 - q^(n+1))` -/
-
 /-- For `‖q‖ < 1`, the infinite product `∏ (1 - q^(n+1))` is multipliable. -/
 lemma multipliable_one_sub_pow {q : ℂ} (hq : ‖q‖ < 1) :
     Multipliable fun n : ℕ ↦ 1 - q ^ (n + 1) := by
   rw [show (fun n : ℕ ↦ 1 - q ^ (n + 1)) = (fun n ↦ 1 + (-q ^ (n + 1))) by ext; ring]
   apply multipliable_one_add_of_summable
-  simp only [norm_neg, norm_pow]
-  exact (summable_nat_add_iff 1).mpr (summable_geometric_of_lt_one (norm_nonneg _) hq)
+  simpa using (summable_nat_add_iff 1).mpr (summable_geometric_of_lt_one (norm_nonneg _) hq)
 
 /-- The infinite product `∏ (1 - q^(n+1))` converges locally uniformly on the open unit disc,
 with limit `q ↦ ∏' n, (1 - q^(n+1))`. -/
@@ -91,7 +88,7 @@ lemma multipliableLocallyUniformlyOn_one_sub_pow :
       (summable_nat_add_iff 1).mpr (summable_geometric_of_lt_one (norm_nonneg _) hq₀_lt)
     refine hsum.hasProdUniformlyOn_nat_one_add hcK (.of_forall fun n x hx ↦ ?_)
       (fun _ ↦ by fun_prop)
-    simpa [norm_pow] using pow_le_pow_left₀ (norm_nonneg _) (HB x hx) (n + 1)
+    simpa using pow_le_pow_left₀ (norm_nonneg _) (HB x hx) (n + 1)
   · rw [hasProdUniformlyOn_iff_tendstoUniformlyOn]
     simpa [not_nonempty_iff_eq_empty.mp hN] using tendstoUniformlyOn_empty
 

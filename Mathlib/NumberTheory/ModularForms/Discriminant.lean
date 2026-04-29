@@ -37,7 +37,7 @@ function, and proves its key properties including invariance under the generator
 -/
 
 open Function Complex Topology Filter SlashInvariantForm SlashInvariantFormClass
-  CongruenceSubgroup MatrixGroups ModularFormClass
+  CongruenceSubgroup MatrixGroups ModularFormClass Asymptotics
 
 open UpperHalfPlane hiding I
 
@@ -176,6 +176,23 @@ lemma discriminant_isZeroAtImInfty : IsZeroAtImInfty Δ := by
   exact (qParam_tendsto_atImInfty zero_lt_one).mul
     (discriminant_bounded_factor.congr fun z ↦ by congr 1)
 
+lemma exp_isBigO_discriminant : (fun τ : ℍ ↦ Real.exp (-2 * Real.pi * τ.im)) =O[atImInfty] Δ := by
+  refine .of_bound 2 ?_
+  have hprod := discriminant_bounded_factor.eventually
+    (Metric.ball_mem_nhds 1 (by norm_num : (0 : ℝ) < 1/2))
+  filter_upwards [hprod] with τ hτ
+  rw [discriminant_eq_q_prod, norm_mul, Real.norm_of_nonneg (Real.exp_pos _).le]
+  have hq_norm : ‖𝕢 1 τ‖ = Real.exp (-2 * Real.pi * τ.im) := by
+    simp [Periodic.qParam, Complex.norm_exp, Complex.mul_re, div_one]
+  rw [← hq_norm]
+  have hprod_bound : 1 / 2 ≤ ‖∏' (n : ℕ), (1 - eta_q n τ) ^ 24‖ := by
+    have hsub : ‖∏' (n : ℕ), (1 - eta_q n τ) ^ 24 - 1‖ < 1 / 2 := by
+      rwa [Complex.dist_eq] at hτ
+    have h1 := norm_sub_norm_le 1 (∏' (n : ℕ), (1 - eta_q n τ) ^ 24)
+    simp only [norm_one] at h1
+    linarith [norm_sub_rev 1 (∏' (n : ℕ), (1 - eta_q n τ) ^ 24)]
+  linarith [norm_nonneg (𝕢 1 τ), mul_le_mul_of_nonneg_left hprod_bound (norm_nonneg (𝕢 1 τ))]
+
 /-- The modular discriminant `Δ` as a cusp form of weight 12 and level 1. -/
 @[expose] def discriminantCuspForm : CuspForm 𝒮ℒ 12 where
   toFun := Δ
@@ -197,3 +214,19 @@ lemma discriminant_isZeroAtImInfty : IsZeroAtImInfty Δ := by
 end
 
 end ModularForm
+
+public section
+
+namespace CuspForm
+
+variable {k : ℤ}
+
+open ModularForm in
+/-- Any cusp form for `𝒮ℒ` is `O(Δ)` at the cusp `i∞`. -/
+lemma exp_decay_isBigO_discriminant (f : CuspForm 𝒮ℒ k) : f =O[atImInfty] discriminant :=
+  (CuspFormClass.exp_decay_atImInfty (h := 1) f one_pos one_mem_strictPeriods_SL).trans
+    (by simpa using exp_isBigO_discriminant)
+
+end CuspForm
+
+end
