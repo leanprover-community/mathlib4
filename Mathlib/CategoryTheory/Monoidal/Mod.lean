@@ -202,6 +202,8 @@ structure Hom (M N : AddMod D A) where
   hom : M.X ⟶ N.X
   [isAddModHom : IsAddModHom A hom]
 
+attribute [instance] Hom.isAddModHom
+
 end AddMod
 
 namespace Mod
