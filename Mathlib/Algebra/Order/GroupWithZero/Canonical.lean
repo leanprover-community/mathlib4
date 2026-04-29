@@ -245,7 +245,7 @@ instance : IsBotZeroClass (WithZero α) where
   isBot_zero _ := bot_le
 
 -- TODO: deprecate
-@[simp] lemma zero_le (a : WithZero α) : 0 ≤ a := _root_.zero_le
+lemma zero_le (a : WithZero α) : 0 ≤ a := by simp
 
 /-- There is a general version `le_zero_iff`, but this lemma does not require a `PartialOrder`. -/
 @[simp]

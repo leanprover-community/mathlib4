@@ -119,11 +119,11 @@ end PartialOrder
 section LinearOrder
 variable [LinearOrder α] [One α] [IsBotOneClass α]
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem one_min (a : α) : min 1 a = 1 :=
   min_eq_left one_le
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem min_one (a : α) : min a 1 = 1 :=
   min_eq_right one_le
 
