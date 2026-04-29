@@ -143,7 +143,8 @@ In a principal G-bundle, G acts transitively on each fiber.
     given p, q in the fiber over b, the element g = h₁⁻¹ * h₂ (where h₁, h₂ are the
     fiber coordinates under the local trivialization) satisfies p <• g = q.
 -/
-omit [IsManifold IB ∞ B] [T2Space G] [CompleteSpace EG] [BoundarylessManifold IG G] in
+omit [IsManifold IB ∞ B] [T2Space G] [CompleteSpace EG] [BoundarylessManifold IG G]
+     [FiberBundle G E] in
 theorem IsPrincipalBundle.is_transitive
     [FiberBundle G E]
     [IsPrincipalBundle (IB := IB) (IG := IG) G E]
@@ -216,6 +217,7 @@ structure ConnectionForm where
 variable
   [IsPrincipalBundle (IG := IG) (IB := IB) G E]
 
+omit [IsManifold IB ∞ B] in
 lemma fundamentalVectorField_mem_vertical
     (A : GroupLieAlgebra IG G) (p : TotalSpace G E) :
     mfderiv (IB.prod IG) IB (fun p : TotalSpace G E ↦ p.proj) p
@@ -238,8 +240,9 @@ lemma fundamentalVectorField_mem_vertical
         hconst.prodMk h2
       have hsmul : ContMDiff ((IB.prod IG).prod IG) (IB.prod IG) (minSmoothness ℝ 2)
         (fun p : TotalSpace G E × G => p.1 <• p.2) :=
-        (SmoothRightGAction.smooth_smul (n := ∞) (I_G := IG) (I_M := IB.prod IG) (G := G) (M := TotalSpace G E)).of_le
-         (by simp only [minSmoothness_of_isRCLikeNormedField]; exact ENat.LEInfty.out)
+        (SmoothRightGAction.smooth_smul (n := ∞) (I_G := IG) (I_M := IB.prod IG) (G := G)
+          (M := TotalSpace G E)).of_le
+            (by simp only [minSmoothness_of_isRCLikeNormedField]; exact ENat.LEInfty.out)
       exact hsmul.comp hprod
     exact h3.mdifferentiableAt (by norm_num)
   have heval : (fun (t : ℝ) ↦ p <• expLie (t • A)) 0 = p := by
@@ -251,7 +254,8 @@ lemma fundamentalVectorField_mem_vertical
   have h121 : MDifferentiableAt (IB.prod IG) IB (fun p : TotalSpace G E ↦ p.proj)
     ((fun (t : ℝ) ↦ p <• expLie (t • A)) 0) := by
     rw [heval]
-    exact (IsPrincipalBundle.smooth_proj (G := G) (IB := IB) (IG := IG) (E := E)).mdifferentiableAt (by norm_num)
+    exact (IsPrincipalBundle.smooth_proj (G := G) (IB := IB) (IG := IG) (E := E)).mdifferentiableAt
+      (by norm_num)
   have hcomp : mfderiv 𝓘(ℝ, ℝ) IB ((fun p : TotalSpace G E ↦ p.proj) ∘
       fun (t : ℝ) ↦ p <• expLie (t • A)) 0 =
       (mfderiv (IB.prod IG) IB (fun p : TotalSpace G E ↦ p.proj)
@@ -277,7 +281,7 @@ lemma fundamentalVectorField_mem_vertical
           (mfderiv 𝓘(ℝ, ℝ) (IB.prod IG) (fun t : ℝ ↦ p <• expLie (t • A)) 0)) 1 := rfl
     _ = 0 := by rw [key]; simp
 
-lemma mfderiv_expLie [T2Space G] [BoundarylessManifold IG G] [CompleteSpace EG]
+lemma mfderiv_expLie
   (A : GroupLieAlgebra IG G) :
     mfderiv 𝓘(ℝ, ℝ) IG (fun t : ℝ ↦ expLie (IG := IG) (t • A)) 0 1 = A := by
   have hcurve : IsMIntegralCurve (fun t ↦ expLie (IG := IG) (t • A))
@@ -311,3 +315,58 @@ lemma mfderiv_expLie [T2Space G] [BoundarylessManifold IG G] [CompleteSpace EG]
     h5.mfderiv
   rw [h7]
   exact h6
+
+section
+open RightActions
+
+omit [TopologicalSpace B] [ChartedSpace HB B] [IsManifold IB ∞ B]
+     [(b : B) → TopologicalSpace (E b)] [FiberBundle G E] in
+lemma fundamentalVectorField_eq_mfderiv_action (p : TotalSpace G E) :
+    ∀ (A : GroupLieAlgebra IG G),
+    fundamentalVectorField (IB := IB) (IG := IG) A p =
+    mfderiv IG (IB.prod IG) (fun g : G ↦ p <• g) 1 A := by
+  intro A
+  have hg : MDifferentiableAt IG (IB.prod IG) (fun g : G ↦ p <• g)
+      ((fun t : ℝ ↦ expLie (IG := IG) (t • A)) 0) := by
+    have h0 : ((fun t : ℝ ↦ expLie (IG := IG) (t • A)) 0) = 1 := by
+      simp [zero_smul, expLie_zero]
+    rw [h0]
+    have := (SmoothRightGAction.smooth_smul (n := ∞) (I_G := IG) (I_M := IB.prod IG)
+      (G := G) (M := TotalSpace G E))
+    exact (this.comp (contMDiff_const.prodMk contMDiff_id)).mdifferentiableAt (by norm_num)
+  have hf : MDifferentiableAt 𝓘(ℝ, ℝ) IG (fun t : ℝ ↦ expLie (IG := IG) (t • A)) 0 := by
+    have h1 : ContMDiff 𝓘(ℝ, ℝ) 𝓘(ℝ, EG) (minSmoothness ℝ 2) (fun t : ℝ ↦ t • (show EG from A)) :=
+      ((contDiff_id.smul_const (show EG from A)).contMDiff).of_le
+        (by simp only [minSmoothness_of_isRCLikeNormedField]; exact Std.IsPreorder.le_refl 2)
+    have h2 : ContMDiff 𝓘(ℝ, ℝ) IG (minSmoothness ℝ 2) (fun t : ℝ ↦ expLie (IG := IG) (t • A)) :=
+      contMDiff_expLie.comp h1
+    exact h2.mdifferentiableAt (by norm_num)
+  have hh : mfderiv 𝓘(ℝ, ℝ) (IB.prod IG)
+        ((fun g : G ↦ p <• g) ∘ (fun t : ℝ ↦ expLie (IG := IG) (t • A))) 0 =
+      (mfderiv IG (IB.prod IG) (fun g : G ↦ p <• g)
+        ((fun t : ℝ ↦ expLie (IG := IG) (t • A)) 0)).comp
+        (mfderiv 𝓘(ℝ, ℝ) IG (fun t : ℝ ↦ expLie (IG := IG) (t • A)) 0) :=
+    mfderiv_comp 0 hg hf
+  have hkey : mfderiv 𝓘(ℝ, ℝ) (IB.prod IG) (fun t : ℝ ↦ p <• expLie (IG := IG) (t • A)) 0 1 =
+      mfderiv IG (IB.prod IG) (fun g : G ↦ p <• g) 1 A := by
+    have hmfderiv : mfderiv 𝓘(ℝ, ℝ) (IB.prod IG) (fun t : ℝ ↦ p <• expLie (IG := IG) (t • A)) 0 =
+        (mfderiv IG (IB.prod IG) (fun g : G ↦ p <• g) 1).comp
+          (mfderiv 𝓘(ℝ, ℝ) IG (fun t : ℝ ↦ expLie (IG := IG) (t • A)) 0) := by
+      have h1 : ((fun (g : G) ↦ p <• g) ∘ fun (t : ℝ) ↦ expLie (IG := IG) (t • A)) =
+               (fun (t : ℝ) ↦ p <• expLie (IG := IG) (t • A)) :=
+        Function.comp_def (fun g ↦ p <• g) fun t ↦ expLie (t • A)
+      have h2 : (expLie ((0 : ℝ) • A)) = 1 := by simp [zero_smul, expLie_zero]
+      rw [← h1, ← h2]
+      exact hh
+    simp only [hmfderiv]
+    have h3 : ((mfderiv 𝓘(ℝ, ℝ) IG (fun t : ℝ ↦ expLie (IG := IG) (t • A))) 0) 1 = A :=
+      mfderiv_expLie (IG := IG) A
+    change (((mfderiv IG (IB.prod IG) fun g ↦ p <• g) 1).comp
+      ((mfderiv 𝓘(ℝ, ℝ) IG fun t ↦ expLie (IG := IG) (t • A)) 0)) 1 =
+      ((mfderiv IG (IB.prod IG) fun g ↦ p <• g) 1) A
+    rw [ContinuousLinearMap.comp_apply]
+    exact Eq.symm (DFunLike.congr rfl (id (Eq.symm h3)))
+  unfold fundamentalVectorField
+  exact hkey
+
+end
