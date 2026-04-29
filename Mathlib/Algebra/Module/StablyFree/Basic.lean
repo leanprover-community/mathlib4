@@ -67,7 +67,7 @@ instance [Free R M] : IsStablyFree R M :=
 theorem IsStablyFree.of_free_prod [Module.Finite R N] [Free R N] [Free R (M × N)] :
     IsStablyFree R M := by
   have : Small.{u} N := Module.Finite.small.{u} R N
-  have eN : N ≃ₗ[R] Shrink.{u} N := (Shrink.linearEquiv R N).symm
+  let +nondep eN : N ≃ₗ[R] Shrink.{u} N := (Shrink.linearEquiv R N).symm
   exact ⟨Shrink.{u} N, inferInstance, inferInstance, Module.Finite.equiv eN,
     Free.of_equiv eN, Free.of_equiv ((LinearEquiv.refl R M).prodCongr eN)⟩
 
