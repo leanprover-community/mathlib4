@@ -606,19 +606,8 @@ lemma finite_setOf_pattern_support_eq
       · simp [hg]
       · simp [hg, cond g hg]
     right_inv := fun f => by ext i; simp [i.2] }
-  haveI : Fintype { p : Pattern A G // p.support = U } :=
-    Fintype.ofEquiv (U → A) e.symm
-  let T := { p : Pattern A G // p.support = U }
-  have h_univ : (Set.univ : Set T).Finite := Set.finite_univ
-  let coeT : T → Pattern A G := fun p => (p : Pattern A G)
-  have h_image : (Set.image coeT (Set.univ : Set T)).Finite := h_univ.image _
-  have himage_eq :
-      Set.image coeT (Set.univ : Set T)
-        = ({ p : Pattern A G | p.support = U } : Set (Pattern A G)) := by
-    ext p; constructor
-    · intro hp; rcases hp with ⟨p', -, rfl⟩; exact p'.property
-    · intro hp; refine ⟨⟨p, hp⟩, ?_, rfl⟩; simp
-  simpa [himage_eq] using h_image
+  let : Fintype { p : Pattern A G | p.support = U } := Fintype.ofEquiv (U → A) e.symm
+  apply toFinite
 
 /-- The language of a set of configurations `X` on a finite shape `U`.
 
