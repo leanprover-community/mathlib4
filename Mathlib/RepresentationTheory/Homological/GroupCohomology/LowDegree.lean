@@ -167,7 +167,7 @@ theorem comp_d₀₁_eq :
     LinearEquiv.funCongrLeft_apply, Equiv.funUnique_symm_apply, LinearMap.funLeft_apply,
     inhomogeneousCochains.d_hom_apply, Fin.isValue, uniqueElim_const, Finset.univ_unique,
     Fin.default_eq_zero, Fin.val_eq_zero, pow_one, neg_smul, one_smul, Finset.sum_neg_distrib,
-    Finset.sum_singleton, ← sub_eq_add_neg]
+    Finset.sum_singleton, ← sub_eq_add_neg, CochainComplex.of.d]
   rw [← Subsingleton.elim (α := Fin 0 → G) default (fun i ↦ y), Subsingleton.elim
     (Fin.contractNth 0 _) default, Pi.default_def]
 
@@ -1006,8 +1006,8 @@ group homs `G → A`. -/
 def H1IsoOfIsTrivial :
     H1 A ≅ ModuleCat.of k (Additive G →+ A) :=
   (HomologicalComplex.isoHomologyπ _ 0 1 (CochainComplex.prev_nat_succ 0) <| by
-    ext; simp [inhomogeneousCochains.d,
-      Unique.eq_default (α := Fin 0 → G)]).symm ≪≫
+    ext; simp [inhomogeneousCochains.d, Unique.eq_default (α := Fin 0 → G),
+      CochainComplex.of.d]).symm ≪≫
   isoCocycles₁ A ≪≫ cocycles₁IsoOfIsTrivial A
 
 set_option backward.isDefEq.respectTransparency false in

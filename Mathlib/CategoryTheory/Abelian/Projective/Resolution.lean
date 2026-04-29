@@ -301,7 +301,7 @@ lemma ofComplex_exactAt_succ (n : ℕ) :
     (ofComplex Z).ExactAt (n + 1) := by
   rw [HomologicalComplex.exactAt_iff' _ (n + 1 + 1) (n + 1) n (by simp) (by simp)]
   simp only [HomologicalComplex.sc', HomologicalComplex.shortComplexFunctor', ofComplex,
-    ChainComplex.mk', ChainComplex.mk, ↓reduceDIte, eqToHom_refl, id_comp]
+    ChainComplex.mk', ChainComplex.mk, ChainComplex.of_d]
   -- TODO: this should just be apply exact_d_f so something is missing
   match n with
   | 0 => apply exact_d_f

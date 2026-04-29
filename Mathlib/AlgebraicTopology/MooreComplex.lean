@@ -156,8 +156,7 @@ def normalizedMooreComplex : SimplicialObject C ⥤ ChainComplex C ℕ where
 
 -- Not `@[simp]` as `simp` can prove this.
 theorem normalizedMooreComplex_objD (X : SimplicialObject C) (n : ℕ) :
-    ((normalizedMooreComplex C).obj X).d (n + 1) n = NormalizedMooreComplex.objD X n :=
-  ChainComplex.of_d _ _ (d_squared X) n
-  -- sorry
+    ((normalizedMooreComplex C).obj X).d (n + 1) n = NormalizedMooreComplex.objD X n := by
+  simp [-objD, -obj_X]
 
 end AlgebraicTopology

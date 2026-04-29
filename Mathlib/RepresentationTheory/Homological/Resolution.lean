@@ -407,7 +407,7 @@ noncomputable abbrev barComplex : ChainComplex (Rep k G) ℕ :=
 
 namespace barComplex
 
-theorem d_def : (barComplex k G).d (n + 1) n = d k G n := ChainComplex.of_d _ _ _ _
+theorem d_def : (barComplex k G).d (n + 1) n = d k G n := by simp
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Isomorphism between the bar resolution and standard resolution, with `n`th map
