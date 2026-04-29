@@ -9,9 +9,9 @@ public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Data.NNReal.Star
 public import Mathlib.Data.Real.Sqrt
 
-/-! # `ℝ` and `ℝ≥0` are *-ordered rings. -/
+/-! # `ℝ` and `ℝ≥0` are \*-ordered rings. -/
 
-@[expose] public section
+public section
 
 open scoped NNReal
 
@@ -27,7 +27,6 @@ instance Real.instStarOrderedRing : StarOrderedRing ℝ :=
     rintro ⟨s, rfl⟩
     exact mul_self_nonneg s
 
-set_option backward.isDefEq.respectTransparency false in
 instance NNReal.instStarOrderedRing : StarOrderedRing ℝ≥0 := by
   refine .of_le_iff fun x y ↦ ⟨fun h ↦ ?_, ?_⟩
   · obtain ⟨d, rfl⟩ := exists_add_of_le h

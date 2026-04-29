@@ -111,8 +111,6 @@ theorem scalar_product_char_eq_finrank_equivariant (V W : FDRep k G) :
   -- The scalar product is the character of `Hom(V, W).`
   rw [FDRep.average_char_eq_finrank_invariants, ← LinearEquiv.finrank_eq
     (Representation.linHom.invariantsEquivFDRepHom V W), of_ρ']
-  simp only [FGModuleCat.of_carrier]
-  rfl
   -- The average over the group of the character of a representation equals the dimension of the
   -- space of invariants, and the space of invariants of `Hom(W, V)` is the subspace of
   --`G`-equivariant linear maps, `Hom_G(W, V)`.
@@ -234,7 +232,7 @@ theorem char_orthonormal [IsIrreducible ρ] [IsIrreducible σ] :
       if Nonempty (Equiv σ ρ) then ↑1 else ↑0 := by
   cases isEmpty_or_nonempty (Equiv σ ρ)
   · rw [card_inv_mul_sum_char_mul_char_eq_finrank]
-    simpa
+    simpa [finrank_eq_zero_of_subsingleton]
   · obtain φ : σ.Equiv ρ := Classical.choice inferInstance
     rw [char_iso φ, card_inv_mul_sum_char_mul_char_eq_finrank]
     simp

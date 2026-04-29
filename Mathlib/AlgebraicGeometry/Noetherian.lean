@@ -45,7 +45,7 @@ giving definitions, equivalent conditions, and basic properties.
 
 -/
 
-@[expose] public section
+public section
 
 universe u v
 
@@ -354,7 +354,7 @@ instance [IsLocallyNoetherian X] {x : X} : IsNoetherianRing (X.presheaf.stalk x)
 @[simp]
 theorem isNoetherian_Spec {R : CommRingCat} :
     IsNoetherian (Spec R) ↔ IsNoetherianRing R := by
-  simp [AlgebraicGeometry.isNoetherian_iff, inferInstanceAs (CompactSpace (Spec R))]
+  simp [AlgebraicGeometry.isNoetherian_iff, (inferInstance : CompactSpace (Spec R))]
 
 /-- A Noetherian scheme has a finite number of irreducible components. -/
 @[stacks 0BA8]

@@ -39,6 +39,15 @@ noncomputable def herglotzRieszKernel (c w z : ℂ) : ℂ :=
 lemma herglotzRieszKernel_def (c w z : ℂ) :
     herglotzRieszKernel c w z = ((z - c) + (w - c)) / ((z - c) - (w - c)) := by rfl
 
+lemma herglotzRieszKernel_fun_def (c w : ℂ) :
+    herglotzRieszKernel c w = fun z ↦ ((z - c) + (w - c)) / ((z - c) - (w - c)) := by
+  ext z
+  exact herglotzRieszKernel_def c w z
+
+lemma herglotzRieszKernel_add_const (c w z : ℂ) :
+    herglotzRieszKernel c w (z + c) = herglotzRieszKernel 0 (w - c) z := by
+  simp [herglotzRieszKernel_fun_def]
+
 /--
 The Poisson kernel of integration.
 -/

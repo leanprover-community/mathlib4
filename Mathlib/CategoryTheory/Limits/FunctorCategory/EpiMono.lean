@@ -18,7 +18,7 @@ see `NatTrans.mono_iff_mono_app` and `NatTrans.epi_iff_epi_app`.
 
 -/
 
-@[expose] public section
+public section
 
 universe v v' v'' u u' u''
 
@@ -42,6 +42,10 @@ instance [Mono f] (H : C ⥤ D) [H.PreservesMonomorphisms] :
     Mono (whiskerRight f H) := by
   have : ∀ X, Mono ((whiskerRight f H).app X) := by intros; dsimp; infer_instance
   apply NatTrans.mono_of_mono_app
+
+instance (F : C ⥤ D) [F.PreservesMonomorphisms] :
+    ((Functor.whiskeringRight K C D).obj F).PreservesMonomorphisms where
+  preserves f _ := by dsimp; infer_instance
 
 end
 

@@ -5,9 +5,9 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.FieldTheory.Minpoly.Finite
 public import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 public import Mathlib.FieldTheory.PrimitiveElement
-public import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 /-!
 # Results about `minpoly R x / (X - C x)`
@@ -15,16 +15,16 @@ public import Mathlib.FieldTheory.IsAlgClosed.Basic
 ## Main definition
 - `minpolyDiv`: The polynomial `minpoly R x / (X - C x)`.
 
-We used the contents of this file to describe the dual basis of a powerbasis under the trace form.
+We used the contents of this file to describe the dual basis of a power basis under the trace form.
 See `traceForm_dualBasis_powerBasis_eq`.
 
 ## Main results
-- `span_coeff_minpolyDiv`: The coefficients of `minpolyDiv` spans `R<x>`.
+- `span_coeff_minpolyDiv`: The coefficients of `minpolyDiv` span `R<x>`.
 -/
 
 @[expose] public section
 
-open Polynomial Module
+open Polynomial Module Algebra
 
 variable (R K) {L S} [CommRing R] [Field K] [Field L] [CommRing S] [Algebra R S] [Algebra K L]
 variable (x : S)
@@ -82,15 +82,15 @@ lemma eval_minpolyDiv_of_aeval_eq_zero [IsDomain S] [DecidableEq S]
 
 
 lemma coeff_minpolyDiv_mem_adjoin (x : S) (i) :
-    coeff (minpolyDiv R x) i ∈ Algebra.adjoin R {x} := by
+    coeff (minpolyDiv R x) i ∈ R[x] := by
   by_contra H
-  have : ∀ j, coeff (minpolyDiv R x) (i + j) ∉ Algebra.adjoin R {x} := by
+  have : ∀ j, coeff (minpolyDiv R x) (i + j) ∉ R[x] := by
     intro j; induction j with
     | zero => exact H
     | succ j IH =>
       intro H; apply IH
       rw [coeff_minpolyDiv]
-      refine add_mem ?_ (mul_mem H (Algebra.self_mem_adjoin_singleton R x))
+      refine add_mem ?_ (mul_mem H (self_mem_adjoin_singleton R x))
       exact Subalgebra.algebraMap_mem _ _
   apply this (natDegree (minpolyDiv R x) + 1)
   rw [coeff_eq_zero_of_natDegree_lt]
@@ -155,7 +155,7 @@ lemma coeff_minpolyDiv_sub_pow_mem_span {i} (hi : i ≤ natDegree (minpolyDiv R 
 
 lemma span_coeff_minpolyDiv :
     Submodule.span R (Set.range (coeff (minpolyDiv R x))) =
-      Subalgebra.toSubmodule (Algebra.adjoin R {x}) := by
+      Subalgebra.toSubmodule (R[x]) := by
   nontriviality S
   classical
   apply le_antisymm
@@ -194,7 +194,7 @@ variable {K}
 
 lemma sum_smul_minpolyDiv_eq_X_pow (E) [Field E] [Algebra K E] [IsAlgClosed E]
     [FiniteDimensional K L] [Algebra.IsSeparable K L]
-    {x : L} (hxL : Algebra.adjoin K {x} = ⊤) {r : ℕ} (hr : r < finrank K L) :
+    {x : L} (hxL : K[x] = ⊤) {r : ℕ} (hr : r < finrank K L) :
     ∑ σ : L →ₐ[K] E, ((x ^ r / aeval x (derivative <| minpoly K x)) •
       minpolyDiv K x).map σ = (X ^ r : E[X]) := by
   classical
@@ -203,12 +203,12 @@ lemma sum_smul_minpolyDiv_eq_X_pow (E) [Field E] [Algebra K E] [IsAlgClosed E]
     AlgHom.ext_of_adjoin_eq_top hxL (fun _ hx ↦ hx ▸ h)
   apply Polynomial.eq_zero_of_natDegree_lt_card_of_eval_eq_zero _ this
   · intro σ
-    simp only [Polynomial.map_smul, map_div₀, map_pow, RingHom.coe_coe, eval_sub, eval_finset_sum,
+    simp only [Polynomial.map_smul, map_div₀, map_pow, RingHom.coe_coe, eval_sub, eval_finsetSum,
       eval_smul, eval_map, eval₂_minpolyDiv_self, this.eq_iff, smul_eq_mul, mul_ite, mul_zero,
       Finset.sum_ite_eq', Finset.mem_univ, ite_true, eval_X_pow]
     rw [sub_eq_zero, div_mul_cancel₀]
     rw [ne_eq, map_eq_zero_iff σ σ.toRingHom.injective]
-    exact (Algebra.IsSeparable.isSeparable _ _).aeval_derivative_ne_zero (minpoly.aeval _ _)
+    exact (IsSeparable.isSeparable _ _).aeval_derivative_ne_zero (minpoly.aeval _ _)
   · refine (Polynomial.natDegree_sub_le _ _).trans_lt
       (max_lt ((Polynomial.natDegree_sum_le _ _).trans_lt ?_) ?_)
     · simp only [Polynomial.map_smul,

@@ -59,7 +59,6 @@ section
 
 variable {F₁ F₂ : J ⥤ C} {c₁ : Cocone F₁} {c₂ : Cocone F₂}
 
-set_option backward.isDefEq.respectTransparency false in
 variable (c₁ c₂) in
 /-- The tensor product of two cocones. -/
 @[simps!]

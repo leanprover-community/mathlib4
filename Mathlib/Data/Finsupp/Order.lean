@@ -24,7 +24,7 @@ This file lifts order structures on `α` to `ι →₀ α`.
   functions.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -88,10 +88,48 @@ lemma sum_le_sum_index [DecidableEq ι] {f₁ f₂ : ι →₀ α} {h : ι → �
   classical
   rw [sum_of_support_subset _ Finset.subset_union_left _ hh₀,
     sum_of_support_subset _ Finset.subset_union_right _ hh₀]
-  exact Finset.sum_le_sum fun i hi ↦ hh _ hi <| hf _
+  gcongr with i hi
+  exact hh _ hi <| hf _
 
 end Preorder
+
+section EmbDomain
+
+@[gcongr]
+lemma embDomain_le_embDomain_iff_le [LE α] [@Std.Refl α (· ≤ ·)]
+    (f : ι ↪ κ) (g₁ g₂ : ι →₀ α) : g₁.embDomain f ≤ g₂.embDomain f ↔ g₁ ≤ g₂ := by
+  constructor
+  · rw [Finsupp.le_def]
+    intro h' x
+    simpa [Finsupp.embDomain_apply] using h' (f x)
+  intro h
+  simp [Finsupp.le_def, embDomain_apply, apply_dite₂, Finsupp.le_def.mp h]
+
+lemma embDomain_mono [Preorder α] (f : ι ↪ κ) : Monotone (embDomain f : (ι →₀ α) → (κ →₀ α)) :=
+  fun _ _ ↦ (embDomain_le_embDomain_iff_le f _ _).mpr
+
+@[gcongr]
+lemma embDomain_lt_embDomain_iff_lt [Preorder α] (f : ι ↪ κ) (g₁ g₂ : ι →₀ α) :
+    g₁.embDomain f < g₂.embDomain f ↔ g₁ < g₂ := by
+  simp [lt_iff_le_not_ge, embDomain_le_embDomain_iff_le]
+
+end EmbDomain
+
 end Zero
+
+section MapDomain
+
+variable [AddCommMonoid α]
+
+lemma mapDomain_le_mapDomain_iff_le [LE α] [@Std.Refl α (· ≤ ·)] {f : ι → κ} (h : f.Injective)
+    (g₁ g₂ : ι →₀ α) : g₁.mapDomain f ≤ g₂.mapDomain f ↔ g₁ ≤ g₂ := by
+  simpa [Finsupp.embDomain_eq_mapDomain] using Finsupp.embDomain_le_embDomain_iff_le ⟨f, h⟩ g₁ g₂
+
+lemma mapDomain_lt_mapDomain_iff_lt [Preorder α] {f : ι → κ} (h : f.Injective)
+    (g₁ g₂ : ι →₀ α) : g₁.mapDomain f < g₂.mapDomain f ↔ g₁ < g₂ := by
+  simpa [Finsupp.embDomain_eq_mapDomain] using Finsupp.embDomain_lt_embDomain_iff_lt ⟨f, h⟩ g₁ g₂
+
+end MapDomain
 
 /-! ### Algebraic order structures -/
 
@@ -133,8 +171,8 @@ instance isOrderedCancelAddMonoid [AddCommMonoid α] [Preorder α] [IsOrderedCan
   { le_of_add_le_add_left := fun _f _g _i h s => le_of_add_le_add_left (h s) }
 
 instance addLeftReflectLE [AddCommMonoid α] [Preorder α] [AddLeftReflectLE α] :
-    AddLeftReflectLE (ι →₀ α) :=
-  ⟨fun _f _g _h H x => le_of_add_le_add_left <| H x⟩
+    AddLeftReflectLE (ι →₀ α) where
+  le_of_add_le_add_left H x := le_of_add_le_add_left <| H x
 
 section SMulZeroClass
 variable [Zero α] [Preorder α] [Zero β] [Preorder β] [SMulZeroClass α β]
@@ -184,10 +222,12 @@ protected theorem bot_eq_zero : (⊥ : ι →₀ α) = 0 :=
 theorem add_eq_zero_iff (f g : ι →₀ α) : f + g = 0 ↔ f = 0 ∧ g = 0 := by
   simp [DFunLike.ext_iff, forall_and]
 
-theorem le_iff' (f g : ι →₀ α) {s : Finset ι} (hf : f.support ⊆ s) : f ≤ g ↔ ∀ i ∈ s, f i ≤ g i :=
-  ⟨fun h s _hs => h s, fun h s => by
-    classical exact
-        if H : s ∈ f.support then h s (hf H) else (notMem_support_iff.1 H).symm ▸ zero_le (g s)⟩
+theorem le_iff' (f g : ι →₀ α) {s : Finset ι} (hf : f.support ⊆ s) :
+    f ≤ g ↔ ∀ i ∈ s, f i ≤ g i := by
+  refine ⟨fun h s _ ↦ h s, fun h s ↦ ?_⟩
+  by_cases H : s ∈ f.support
+  · exact h s (hf H)
+  · exact notMem_support_iff.1 H ▸ zero_le
 
 theorem le_iff (f g : ι →₀ α) : f ≤ g ↔ ∀ i ∈ f.support, f i ≤ g i :=
   le_iff' f g <| Subset.refl _
