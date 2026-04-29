@@ -310,9 +310,8 @@ lemma degree_le_of_le {H : SimpleGraph V} [Fintype (H.neighborSet v)] (hle : G �
   exact Set.card_le_card fun v hv => hle hv
 
 theorem degree_lt_card_verts [Fintype V] [DecidableRel G.Adj] (v : V) :
-    G.degree v < Fintype.card V := by
-  classical
-  exact Finset.card_lt_card <| Finset.ssubset_iff.mpr ⟨v, by simp, Finset.subset_univ _⟩
+    G.degree v < Fintype.card V :=
+  Finset.card_lt_univ_of_notMem <| G.notMem_neighborFinset_self v
 
 end FiniteAt
 
