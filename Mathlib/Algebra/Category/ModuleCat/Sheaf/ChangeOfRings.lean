@@ -34,7 +34,6 @@ variable {R R' : Sheaf J RingCat.{u}} (α : R ⟶ R')
 
 /-- The restriction of scalars functor `SheafOfModules R' ⥤ SheafOfModules R`
 induced by a morphism of sheaves of rings `R ⟶ R'`. -/
-@[simps]
 noncomputable def restrictScalars :
     SheafOfModules.{v} R' ⥤ SheafOfModules.{v} R where
   obj M' :=
@@ -93,34 +92,41 @@ section
 
 variable (f : R ⟶ R) (hf : f = 𝟙 R)
 
+/-- For a sheaf of `R`-modules `M`, the restriction of scalars of `M` by the identity
+morphism identifies to `M`. -/
+noncomputable def restrictScalarsId'App (M : SheafOfModules.{v} R) :
+    (restrictScalars f).obj M ≅ M :=
+  (fullyFaithfulForget _).preimageIso <|
+    PresheafOfModules.restrictScalarsId'App f.hom (by subst hf; rfl) M.val
+
+@[simp]
+lemma restrictScalarsId'App_hom_val_app_apply
+    {M : SheafOfModules.{v} R} {X : Cᵒᵖ} (m : M.val.obj X) :
+    (restrictScalarsId'App f hf M).hom.val.app X m = m :=
+  rfl
+
+@[simp]
+lemma restrictScalarsId'App_inv_val_app_apply
+    {M : SheafOfModules.{v} R} {X : Cᵒᵖ} (m : M.val.obj X) :
+    (restrictScalarsId'App f hf M).inv.val.app X m = m :=
+  rfl
+
 /-- The restriction of scalars by a morphism that is the identity identifies to the
 identity functor. -/
+@[simps! hom_app inv_app]
 noncomputable def restrictScalarsId' : restrictScalars f ≅ 𝟭 _ :=
-  NatIso.ofComponents <| fun M ↦ (fullyFaithfulForget _).preimageIso <|
-    (PresheafOfModules.restrictScalarsId' f.hom (by subst hf; rfl)).app M.val
-
-@[simp]
-lemma restrictScalarsId'_hom_app_val_app_hom_apply
-    {M : SheafOfModules.{v} R} {X : Cᵒᵖ} (m : M.val.obj X) :
-    ((restrictScalarsId' f hf).hom.app M).val.app X m = m :=
-  rfl
-
-@[simp]
-lemma restrictScalarsId'_inv_app_val_app_hom_apply
-    {M : SheafOfModules.{v} R} {X : Cᵒᵖ} (m : M.val.obj X) :
-    ((restrictScalarsId' f hf).inv.app M).val.app X m = m :=
-  rfl
+  NatIso.ofComponents <| fun M ↦ restrictScalarsId'App f hf M
 
 @[reassoc]
-lemma restrictScalarsId'_app_hom_naturality {M N : SheafOfModules R} (φ : M ⟶ N) :
-    (restrictScalars f).map φ ≫ ((restrictScalarsId' f hf).app N).hom =
-      ((restrictScalarsId' f hf).app M).hom ≫ φ :=
+lemma restrictScalarsId'App_hom_naturality {M N : SheafOfModules R} (φ : M ⟶ N) :
+    (restrictScalars f).map φ ≫ (restrictScalarsId'App f hf N).hom =
+      (restrictScalarsId'App f hf M).hom ≫ φ :=
   (restrictScalarsId' f hf).hom.naturality φ
 
 @[reassoc]
-lemma restrictScalarsId'_app_inv_naturality {M N : SheafOfModules R} (φ : M ⟶ N) :
-    φ ≫ ((restrictScalarsId' f hf).app N).inv =
-      ((restrictScalarsId' f hf).app M).inv ≫ (restrictScalars f).map φ :=
+lemma restrictScalarsId'App_inv_naturality {M N : SheafOfModules R} (φ : M ⟶ N) :
+    φ ≫ (restrictScalarsId'App f hf N).inv =
+      (restrictScalarsId'App f hf M).inv ≫ (restrictScalars f).map φ :=
   (restrictScalarsId' f hf).inv.naturality φ
 
 variable (R) in
@@ -136,37 +142,44 @@ section
 variable {R₁ R₂ R₃ : Sheaf J RingCat.{u}} (f : R₁ ⟶ R₂) (g : R₂ ⟶ R₃) (gf : R₁ ⟶ R₃)
   (hgf : f ≫ g = gf)
 
+/-- For each sheaf of `R₃`-modules `M`, restriction of scalars of `M` by a composition of
+ring morphisms identifies to successively restricting scalars. -/
+noncomputable def restrictScalarsComp'App (M : SheafOfModules.{v} R₃) :
+    (restrictScalars gf).obj M ≅ (restrictScalars f).obj ((restrictScalars g).obj M) :=
+  (fullyFaithfulForget _).preimageIso <|
+    PresheafOfModules.restrictScalarsComp'App f.hom g.hom gf.hom (by subst hgf; rfl) M.val
+
+@[simp]
+lemma restrictScalarsComp'App_hom_val_app_hom_apply
+    {M : SheafOfModules.{v} R₃} {X : Cᵒᵖ} (m : M.val.obj X) :
+    (restrictScalarsComp'App f g gf hgf M).hom.val.app X m = m :=
+  rfl
+
+@[simp]
+lemma restrictScalarsComp'App_inv_val_app_hom_apply
+    {M : SheafOfModules.{v} R₃} {X : Cᵒᵖ} (m : M.val.obj X) :
+    (restrictScalarsComp'App f g gf hgf M).inv.val.app X m = m :=
+  rfl
+
 /-- The restriction of scalars by a composition of morphisms identifies to the
 composition of the restriction of scalars functors. -/
+@[simps! hom_app inv_app]
 noncomputable def restrictScalarsComp' :
     restrictScalars gf ≅ restrictScalars g ⋙ restrictScalars f :=
-  NatIso.ofComponents <| fun M ↦ (fullyFaithfulForget _).preimageIso <|
-    (PresheafOfModules.restrictScalarsComp' f.hom g.hom gf.hom (by subst hgf; rfl)).app M.val
-
-@[simp]
-lemma restrictScalarsComp'_hom_app_val_app_hom_apply
-    {M : SheafOfModules.{v} R₃} {X : Cᵒᵖ} (m : M.val.obj X) :
-    ((restrictScalarsComp' f g gf hgf).hom.app M).val.app X m = m :=
-  rfl
-
-@[simp]
-lemma restrictScalarsComp'_inv_app_val_app_hom_apply
-    {M : SheafOfModules.{v} R₃} {X : Cᵒᵖ} (m : M.val.obj X) :
-    ((restrictScalarsComp' f g gf hgf).inv.app M).val.app X m = m :=
-  rfl
+  NatIso.ofComponents <| fun M ↦ restrictScalarsComp'App f g gf hgf M
 
 @[reassoc]
-lemma restrictScalarsComp'_app_hom_naturality {M N : SheafOfModules R₃} (φ : M ⟶ N) :
-    (restrictScalars gf).map φ ≫ ((restrictScalarsComp' f g gf hgf).app N).hom =
-      ((restrictScalarsComp' f g gf hgf).app M).hom ≫
+lemma restrictScalarsComp'App_hom_naturality {M N : SheafOfModules R₃} (φ : M ⟶ N) :
+    (restrictScalars gf).map φ ≫ (restrictScalarsComp'App f g gf hgf N).hom =
+      (restrictScalarsComp'App f g gf hgf M).hom ≫
         (restrictScalars f).map ((restrictScalars g).map φ) :=
   (restrictScalarsComp' f g gf hgf).hom.naturality φ
 
 @[reassoc]
-lemma restrictScalarsComp'_app_inv_naturality {M N : SheafOfModules R₃} (φ : M ⟶ N) :
+lemma restrictScalarsComp'App_inv_naturality {M N : SheafOfModules R₃} (φ : M ⟶ N) :
     (restrictScalars f).map ((restrictScalars g).map φ) ≫
-        ((restrictScalarsComp' f g gf hgf).app N).inv =
-      ((restrictScalarsComp' f g gf hgf).app M).inv ≫ (restrictScalars gf).map φ :=
+        (restrictScalarsComp'App f g gf hgf N).inv =
+      (restrictScalarsComp'App f g gf hgf M).inv ≫ (restrictScalars gf).map φ :=
   (restrictScalarsComp' f g gf hgf).inv.naturality φ
 
 /-- The restriction of scalars by a composition of morphisms identifies to the
