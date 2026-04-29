@@ -15,8 +15,6 @@ public import Mathlib.Topology.Sets.Opens
 Properties of Scott topologies over Pointed (Directed) `CompletePartialOrder`, and Algebraic DCPOs.
 
 ## Main Definitions
-- `Compact`: The element x is compact if for any directed subset A ⊆ D, whenever `x ≤ sSup A`,
-  there is some a ∈ A s.t. x ≤ a already.
 - `AlgebraicDCPO`: an extension of pointed `CompletePartialOrder` which is additionally "algebraic".
   Pointed is just `OrderBot`.
   Algebraicity has a correspondence with the 'inaccessibility of directed joins'
@@ -65,34 +63,11 @@ Scott topology, Algebraic DCPO, Stone Duality
 
 @[expose] public section
 
-namespace CompletePartialOrder
-variable {α : Type*} [CompletePartialOrder α]
-
-/-- An element `k` is compact in a complete partial order if and only if
-any directed set with `sSup` above `k` already got above `k` at some point in the set. -/
-theorem isCompactElement_iff_le_of_directed_sSup_le (k : α) :
-    IsCompactElement k ↔
-      ∀ s : Set α, s.Nonempty → DirectedOn (· ≤ ·) s → k ≤ sSup s → ∃ x : α, x ∈ s ∧ k ≤ x := by
-  constructor
-  · intro hk s hs hs' h_le
-    exact hk s (sSup s) hs hs' hs'.isLUB_sSup h_le
-  · intro h s u hs hs' hu h_le
-    have u_eq_sSup : u = sSup s := hu.unique hs'.isLUB_sSup
-    rw [u_eq_sSup] at h_le
-    exact h s hs hs' h_le
-
-/-- `⊥` in a `CompletePartialOrder` is compact. -/
-lemma isCompactElement_bot : IsCompactElement (⊥ : α) := by
-  intro s _ ⟨e, he⟩ _ _ _
-  exact ⟨e, he, bot_le⟩
-
 /-- An algebraic directed complete partial order is a `CompletePartialOrder` with 1) a least
 element and 2) every element is given by the supremum of a set of compact elements (algebraic). -/
 class AlgebraicDCPO (α : Type*) extends CompletePartialOrder α where
-  algebraic (x : α) : DirectedOn (· ≤ ·) {y : α | IsCompactElement y ∧ y ≤ x} ∧
-    x = sSup {y : α | IsCompactElement y ∧ y ≤ x}
-
-end CompletePartialOrder
+  directedOn_isCompactElement_le (x : α) : DirectedOn (· ≤ ·) {y : α | IsCompactElement y ∧ y ≤ x}
+  isLUB_isCompactElement_le (x : α) : IsLUB {y : α | IsCompactElement y ∧ y ≤ x} x
 
 namespace Topology
 namespace IsScott
@@ -142,27 +117,19 @@ open Opens
 
 /-- Given any point `x` in `D` in an open set `u`, there exists
 an upward closure of a compact element (`Ici e`), within `u` which contains `x`. -/
-lemma exists_Ici_mem (x : D) (u : Set D) (x_in_u : x ∈ u) (hu : IsOpen u)
+lemma exists_Ici_isCompactElement_Ici_mem (x : D) (u : Set D) (x_in_u : x ∈ u) (hu : IsOpen u)
     : ∃ c, IsCompactElement c ∧ x ∈ Ici c ∧ Ici c ⊆ u := by
   rw [isOpen_iff_isUpperSet_and_dirSupInaccOn univ] at hu
   obtain ⟨upper, hausdorff⟩ := hu
   have compactLowerBounded : ∃ c: D, c ≤ x ∧ c ∈ u ∧ IsCompactElement c := by
-    -- the Algebraicity property
-    obtain ⟨directed_cls, join⟩ := AlgebraicDCPO.algebraic x
-    -- We work with this cls to extract a compact elememt from it satisfying our needs
-    let cls := {y : D | IsCompactElement y ∧ y ≤ x}
-    -- by algebraicity, a point, `x`, is the meet of its `cls`
-    have x_is_LUB : IsLUB cls x:= by
-      rw [join]
-      apply CompletePartialOrder.lubOfDirected cls directed_cls
     have nonempty : {y | IsCompactElement y ∧ y ≤ x}.Nonempty :=
       ⟨⊥, ⟨isCompactElement_bot, OrderBot.bot_le x⟩⟩
-    -- We use the innacessible joins property to show get a nonempty intersection
+    -- We use the innacessible joins property to get a nonempty intersection
     -- The intersection contains exactly what we want, a compact point in u and ≤ x
-    have nonempty_inter := hausdorff (mem_univ _) nonempty directed_cls x_is_LUB x_in_u
-    simp only [inter_nonempty] at nonempty_inter
-    obtain ⟨c, ⟨hc₀, hc₁⟩, hc₂⟩ := nonempty_inter
-    exact ⟨c, hc₁, hc₂, hc₀⟩
+    have nonempty_inter := hausdorff (mem_univ _) nonempty
+      (AlgebraicDCPO.directedOn_isCompactElement_le x) (AlgebraicDCPO.isLUB_isCompactElement_le x)
+      x_in_u
+    grind [inter_nonempty]
   choose c hc₀ hc₁ hc₂ using compactLowerBounded
   exact ⟨c, hc₂, hc₀, upper.Ici_subset hc₁⟩
 
@@ -172,7 +139,7 @@ theorem isTopologicalBasis_Ici_image_compactSet
     : IsBasis (CompactElement.toOpen '' (@Set.univ (CompactElement D))) := by
   apply isTopologicalBasis_of_isOpen_of_nhds
   · grind [IsCompactElement.isOpen_Ici, coe_mk]
-  · grind [exists_Ici_mem, Subtype.exists, coe_mk]
+  · grind [exists_Ici_isCompactElement_Ici_mem, Subtype.exists, coe_mk]
 
 end AlgebraicDCPO
 end IsScott
