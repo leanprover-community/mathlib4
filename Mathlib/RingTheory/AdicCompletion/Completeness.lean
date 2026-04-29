@@ -213,7 +213,6 @@ end MvPowerSeries
 
 namespace PowerSeries
 
-open PowerSeries in
 instance : IsAdicComplete (.span {X} : Ideal (PowerSeries R)) (PowerSeries R) := by
   have : IsAdicComplete (.span (.range MvPowerSeries.X) : Ideal (MvPowerSeries Unit R))
     (MvPowerSeries Unit R) := inferInstance
