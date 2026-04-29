@@ -580,6 +580,7 @@ variable [CommSemiring R]
 variable [∀ i, Semiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)]
 variable [∀ i, Algebra R (G i)] [∀ i j h, AlgHomClass (T h) R (G i) (G j)]
 
+/-- The algebra map for the DirectLimit of a directed system of algebras -/
 def algebraMapAux : R →+* DirectLimit G f where
   toFun := fun r => ⟦⟨Classical.arbitrary ι, algebraMap R (G (Classical.arbitrary ι)) r⟩⟧
   map_one' := by rw [algebraMap, RingHom.map_one, one_def]
