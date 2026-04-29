@@ -400,7 +400,7 @@ end Pi
 namespace LatticeHom
 
 /--
-The image of `LatticeHom` is a sublattice.
+The range of `LatticeHom` is a sublattice.
 -/
 def range (f : LatticeHom α β) := (Sublattice.map f ⊤).copy (Set.range f) image_univ.symm
 
