@@ -313,31 +313,22 @@ lemma isLocalization_of_isLocalizedFullyFaithful
     (iso : Φ.functor ⋙ L₂ ≅ L₁ ⋙ F)
     [F.Full] [F.Faithful] [L₁.EssSurj] :
     L₁.IsLocalization W₁ := by
-  -- There is a better proof...
-  have := Localization.essSurj L₂ W₂
-  let G' := Φ.localizedFunctor W₁.Q L₂
-  let iso₂ : Φ.functor ⋙ L₂ ≅ W₁.Q ⋙ G' :=
-    CatCommSq.iso Φ.functor W₁.Q L₂ (Φ.localizedFunctor W₁.Q L₂)
-  let G'' := ObjectProperty.lift F.essImage G'
-    (fun X ↦ ⟨L₁.obj (W₁.Q.objPreimage X), ⟨(iso.symm.trans iso₂).app _ ≪≫
-      G'.mapIso (W₁.Q.objObjPreimageIso X)⟩⟩)
-  let iso₃ : G'' ⋙ F.essImage.ι ≅ G' := Iso.refl _
-  have : G''.EssSurj := ⟨by
-    rintro ⟨X₂, X₁, ⟨e⟩⟩
-    exact ⟨W₁.Q.obj (L₁.objPreimage X₁), ⟨ObjectProperty.isoMk _
-      ((iso₂.symm.trans iso).app _ ≪≫ F.mapIso (L₁.objObjPreimageIso X₁) ≪≫ e)⟩⟩⟩
-  have : G''.IsEquivalence := { }
-  let eq : W₁.Localization ≌ D₁ :=
-    G''.asEquivalence.trans F.toEssImage.asEquivalence.symm
-  let iso₄ : W₁.Q ⋙ G'' ≅ L₁ ⋙ F.toEssImage :=
-    ((whiskeringRight _ _ _).obj F.essImage.ι).preimageIso
-      (associator _ _ _ ≪≫ isoWhiskerLeft _ iso₃ ≪≫ iso₂.symm ≪≫ iso ≪≫
-        isoWhiskerLeft L₁ F.toEssImageCompι.symm ≪≫ (associator _ _ _).symm)
-  let iso₅ : W₁.Q ⋙ eq.functor ≅ L₁ :=
-    (associator _ _ _).symm ≪≫ isoWhiskerRight iso₄ _ ≪≫
-      associator _ _ _ ≪≫ isoWhiskerLeft _ F.toEssImage.asEquivalence.unitIso.symm ≪≫
-        L₁.rightUnitor
-  exact IsLocalization.of_equivalence_target W₁.Q W₁ L₁ eq iso₅
+  have h : W₁.IsInvertedBy L₁ := fun _ _ f hf ↦ by
+    rw [← isIso_iff_of_reflects_iso  _ F]
+    exact ((MorphismProperty.isomorphisms _).arrow_mk_iso_iff
+      (Arrow.isoOfNatIso iso f)).1 (Localization.inverts L₂ W₂ _ (Φ.map _ hf))
+  let G := Localization.lift L₁ h W₁.Q
+  let e : W₁.Q ⋙ G ≅ L₁ := Localization.fac L₁ h W₁.Q
+  letI : CatCommSq Φ.functor W₁.Q L₂ (G ⋙ F) :=
+    ⟨iso ≪≫ isoWhiskerRight e.symm _ ≪≫ associator _ _ _⟩
+  have hG : G.FullyFaithful := Functor.FullyFaithful.ofCompFaithful
+    (Φ.fullyFaithful W₁.Q L₂ (G ⋙ F))
+  have := hG.full
+  have := hG.faithful
+  have : G.EssSurj :=
+    ⟨fun X ↦ ⟨W₁.Q.obj (L₁.objPreimage X), ⟨e.app _ ≪≫ L₁.objObjPreimageIso X⟩⟩⟩
+  have : G.IsEquivalence := { }
+  exact IsLocalization.of_equivalence_target W₁.Q W₁ L₁ G.asEquivalence e
 
 /-- The localizer morphism from `W₁.arrow` to `W₂.arrow` that is induced by
 `Φ : LocalizerMorphism W₁ W₂`. -/
