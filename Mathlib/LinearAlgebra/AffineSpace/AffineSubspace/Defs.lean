@@ -188,7 +188,7 @@ namespace Submodule
 
 variable {k V : Type*} [Ring k] [AddCommGroup V] [Module k V]
 
-/-- Reinterpret `p : Submodule k V` as an `AffineSubspace k V`. -/
+/-- Reinterprets `p : Submodule k V` as an `AffineSubspace k V`. -/
 @[coe] def toAffineSubspace (p : Submodule k V) : AffineSubspace k V where
   carrier := p
   smul_vsub_vadd_mem _ _ _ _ h₁ h₂ h₃ := p.add_mem (p.smul_mem _ (p.sub_mem h₁ h₂)) h₃
@@ -206,6 +206,7 @@ namespace AffineSubspace
 variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
   [AffineSpace V P]
 
+/-- Reinterprets `s : AffineSubspace k V` with `0 ∈ s` as a `Submodule k V`. -/
 def toSubmodule {s : AffineSubspace k V} (hs : 0 ∈ s) : Submodule k V where
   carrier := s
   zero_mem' := hs
