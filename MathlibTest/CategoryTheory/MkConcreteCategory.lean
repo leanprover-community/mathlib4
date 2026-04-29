@@ -208,8 +208,10 @@ info: ModuleTestCat.hom_comp.{u, u_1} {R : Type u} [Ring R] {X Y Z : ModuleTestC
 #guard_msgs in
 #check hom_comp
 
-/-- info: ModuleTestCat.hom_ofHom.{u, u_1} {R : Type u} [Ring R] {X Y : ModuleTestCat R} (f : ↑X →ₗ[R] ↑Y) :
-  Hom.hom (ConcreteCategory.ofHom f) = f -/
+/--
+info: ModuleTestCat.hom_ofHom.{v, u} {R : Type u} [Ring R] {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y]
+  [Module R Y] (f : X →ₗ[R] Y) : Hom.hom (ofHom f) = f
+-/
 #guard_msgs in
 #check hom_ofHom
 
@@ -326,8 +328,9 @@ namespace MultiplicativeTestCat
 #guard_msgs in
 #check hom_comp
 
-/-- info: MultiplicativeTestCat.hom_ofHom.{u_1} {X Y : MultiplicativeTestCat} (f : ↑X →* ↑Y) :
-  Hom.hom (ConcreteCategory.ofHom f) = f -/
+/--
+info: MultiplicativeTestCat.hom_ofHom.{u} {X Y : Type u} [Monoid X] [Monoid Y] (f : X →* Y) : Hom.hom (ofHom f) = f
+-/
 #guard_msgs in
 #check hom_ofHom
 
@@ -388,7 +391,7 @@ namespace AdditiveTestCat
 #guard_msgs in
 #check hom_comp
 
-/-- info: AdditiveTestCat.hom_ofHom.{u_1} {X Y : AdditiveTestCat} (f : ↑X →+ ↑Y) : Hom.hom (ConcreteCategory.ofHom f) = f -/
+/-- info: AdditiveTestCat.hom_ofHom.{u} {X Y : Type u} [AddMonoid X] [AddMonoid Y] (f : X →+ Y) : Hom.hom (ofHom f) = f -/
 #guard_msgs in
 #check hom_ofHom
 
