@@ -26,9 +26,10 @@ of even weight `k ≥ 3`.
 
 @[expose] public noncomputable section
 
-open UpperHalfPlane ModularForm Complex SlashInvariantForm SlashInvariantFormClass
-  ModularFormClass CuspFormClass CongruenceSubgroup MatrixGroups OnePoint Filter Topology
-  EisensteinSeries Asymptotics
+open UpperHalfPlane ModularForm SlashInvariantForm SlashInvariantFormClass ModularFormClass
+  CuspFormClass MatrixGroups OnePoint Filter EisensteinSeries Asymptotics
+
+open scoped Topology
 
 section DeltaIsomorphism
 
@@ -163,7 +164,7 @@ lemma weight_six_rank_one : Module.rank ℂ (ModularForm 𝒮ℒ 6) = 1 :=
 lemma E₄_qExpansion_coeff_one : (qExpansion 1 E₄).coeff 1 = 240 := by
   rw [E_qExpansion_coeff _ ⟨2, rfl⟩, show bernoulli (4 : ℕ) = ((-1 : ℚ) / 30 : ℚ) by
     rw [bernoulli_eq_bernoulli'_of_ne_one (by norm_num)]; exact bernoulli'_four]
-  simp [ArithmeticFunction.sigma_one]; norm_num
+  norm_num [ArithmeticFunction.sigma_one]
 
 lemma E₆_qExpansion_coeff_one : (qExpansion 1 E₆).coeff 1 = -504 := by
   rw [E_qExpansion_coeff _ ⟨3, rfl⟩, show bernoulli (6 : ℕ) = ((1 : ℚ) / 42 : ℚ) by
