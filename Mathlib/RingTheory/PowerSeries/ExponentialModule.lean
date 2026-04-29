@@ -49,6 +49,8 @@ namespace PowerSeries
 
 variable {A R S : Type*}
 
+name_power_vars X₀, X₁ over R
+
 section CommSemiring
 
 -- TODO: generalize to `CommSemiring R`.
@@ -61,11 +63,12 @@ structure IsExponential (f : R⟦X⟧) : Prop where
 
 /-- A power series `f` satisfies `f(X + Y) = f(X)*f(Y)` iff its coefficients `f n` satisfy
   the relations `(p + q).choose p * f (p + q)= f p * f q`. -/
-theorem subst_add_eq_mul_iff {R : Type*} [CommRing R] (f : R⟦X⟧) :
+theorem subst_add_eq_mul_iff (f : R⟦X⟧) :
     (subst (S := R) (X₀ + X₁) f) = (subst X₀ f) * (subst X₁ f) ↔
       ∀ (p q : ℕ), (p + q).choose p * (coeff (p + q) f) = coeff p f * coeff q f := by
   rw [MvPowerSeries.ext_iff]
-  exact forall_congr_curry₀ (fun e ↦ by rw [coeff_subst_X₀_add_X₁ , coeff_subst_X₀_mul_X₁])
+  exact forall_congr_curry₀
+    (fun e ↦ by rw [coeff_subst_X_zero_add_X_one , coeff_subst_X_zero_subst_mul_X_one])
 
 /-- A power series `f` is exponential iff its coefficients `f n` satisfy the relations
   `(p + q).choose p * f (p + q)= f p * f q` and its constant coefficient is `1`. -/
