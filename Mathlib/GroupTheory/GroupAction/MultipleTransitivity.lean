@@ -524,7 +524,7 @@ variable (α) in
 theorem isMultiplyPretransitive (n : ℕ) :
     IsMultiplyPretransitive (Perm α) α n := by
   rw [isMultiplyPretransitive_iff]
-  exact fun x y => exists_smul_eq_embedding x y
+  exact exists_smul_eq_embedding
 
 /-- The action of the permutation group of `α` on `α` is preprimitive -/
 instance : IsPreprimitive (Perm α) α :=
@@ -608,7 +608,6 @@ theorem _root_.IsMultiplyPretransitive.alternatingGroup_le
     alternatingGroup α ≤ G := by
   rcases Nat.lt_or_ge (Nat.card α) 2 with hα1 | hα
   · -- Nat.card α  < 2
-    rw [Nat.card_eq_fintype_card] at hα1
     rw [eq_bot_of_card_le_two hα1.le]
     exact bot_le
   -- 2 ≤ Nat.card α
