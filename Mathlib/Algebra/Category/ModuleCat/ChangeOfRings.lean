@@ -286,17 +286,10 @@ def restrictScalarsEquivalenceOfRingEquiv {R S : Type*} [Ring R] [Ring S] (e : R
     ModuleCat S ≌ ModuleCat R where
   functor := ModuleCat.restrictScalars e.toRingHom
   inverse := ModuleCat.restrictScalars e.symm
-  unitIso := NatIso.ofComponents (fun M ↦ LinearEquiv.toModuleIso
-    (X₁ := M)
-    (X₂ := (restrictScalars e.symm.toRingHom).obj ((restrictScalars e.toRingHom).obj M))
-    { __ := AddEquiv.refl M
-      map_smul' := fun s m ↦ congr_arg (· • m) (e.right_inv s).symm }) (by intros; rfl)
-  counitIso := NatIso.ofComponents (fun M ↦ LinearEquiv.toModuleIso
-    (X₁ := (restrictScalars e.toRingHom).obj ((restrictScalars e.symm.toRingHom).obj M))
-    (X₂ := M)
-    { __ := AddEquiv.refl M
-      map_smul' := fun r _ ↦ congr_arg (· • (_ : M)) (e.left_inv r) }) (by intros; rfl)
-  functor_unitIso_comp := by intros; rfl
+  unitIso := (restrictScalarsId S).symm.trans <|
+    restrictScalarsComp' _ _ _ e.toRingHom_comp_symm_toRingHom.symm
+  counitIso := (restrictScalarsComp' _ _ _ e.symm_toRingHom_comp_toRingHom.symm).symm.trans
+    (restrictScalarsId R)
 
 instance restrictScalars_isEquivalence_of_ringEquiv {R S : Type*} [Ring R] [Ring S] (e : R ≃+* S) :
     (ModuleCat.restrictScalars e.toRingHom).IsEquivalence :=
