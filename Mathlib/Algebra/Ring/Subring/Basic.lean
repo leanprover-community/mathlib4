@@ -930,7 +930,7 @@ def subringCongr (h : s = t) : s ≃+* t :=
 
 @[simp]
 theorem subringCongr_symm (h : s = t) :
-    (subringCongr h).symm = subringCongr (h.symm) := rfl
+    (subringCongr h).symm = subringCongr h.symm := rfl
 
 @[simp]
 theorem coe_subringCongr_apply (h : s = t) (x : s) :

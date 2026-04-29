@@ -526,7 +526,6 @@ theorem equivQuotMaximalIdeal_symm_apply_mk (x : R) (s : p.primeCompl) :
 @[deprecated (since := "2025-11-13")] alias _root_.equivQuotMaximalIdealOfIsLocalization :=
   equivQuotMaximalIdeal
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism `R ⧸ p ^ n ≃+* Rₚ ⧸ maximalIdeal Rₚ ^ n`, where `Rₚ` satisfies
 `IsLocalization.AtPrime Rₚ p`. -/
 noncomputable
@@ -534,7 +533,7 @@ def equivQuotMaximalIdealPow (n : ℕ) : R ⧸ p ^ n ≃+* Rₚ ⧸ IsLocalRing.
   refine Subring.topEquiv.symm.trans <| -- R ⧸ p ^ n ≃ (⊤ : Subring (R ⧸ p ^ n))
     (RingEquiv.subringCongr ?_).trans <| -- ⊤ = (R ⧸ p ^ n ← Rₚ / ker).range
     (IsLocalization.lift fun (u : p.primeCompl) ↦ -- (R ⧸ p ^ n ← Rₚ) => R ⧸ p ^ n ← Rₚ / ker
-      Ideal.Quotient.notMem_of_isUnit_mk_pow _
+      Ideal.Quotient.isUnit_mk_pow_of_notMem _
       (mem_primeCompl_iff.mp u.prop)).quotientKerEquivRange.symm.trans <|
     quotEquivOfEq ?_ -- ker = maximalIdeal ^ n
   · symm
@@ -562,6 +561,23 @@ theorem equivQuotMaximalIdealPow_apply_mk (n : ℕ) (x : R) :
   rw [← RingEquiv.eq_symm_apply]
   ext
   simp
+
+/-- `IsLocalization.AtPrime.equivQuotMaximalIdealPow p Rₚ n` as an `R`-algebra isomorphism. -/
+noncomputable
+def equivQuotMaximalIdealPowₐ (n : ℕ) : (R ⧸ p ^ n) ≃ₐ[R] Rₚ ⧸ IsLocalRing.maximalIdeal Rₚ ^ n
+    where
+  __ := equivQuotMaximalIdealPow p Rₚ n
+  commutes' r := by simp
+
+@[simp]
+theorem equivQuotMaximalIdealPowₐ_toRingEquiv (n : ℕ) :
+    (equivQuotMaximalIdealPowₐ p Rₚ n).toRingEquiv = equivQuotMaximalIdealPow p Rₚ n :=
+  rfl
+
+@[simp]
+theorem coe_equivQuotMaximalIdealPowₐ (n : ℕ) :
+    ⇑(equivQuotMaximalIdealPowₐ p Rₚ n) = ⇑(equivQuotMaximalIdealPow p Rₚ n) :=
+  rfl
 
 variable {Sₚ : Type*} [CommRing S] [Algebra R S] [CommRing Sₚ] [Algebra S Sₚ] [Algebra R Sₚ]
 variable [Algebra Rₚ Sₚ] [IsLocalization (Algebra.algebraMapSubmonoid S p.primeCompl) Sₚ]
