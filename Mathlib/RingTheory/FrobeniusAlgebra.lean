@@ -47,7 +47,7 @@ theorem LinearMap.mul'_comp_map_lid_comp {M N : Type*} [AddCommMonoid M] [Module
     μ[R] ∘ₗ ((λ ∘ₗ f) ⊗ₘ g) = λ ∘ₗ lT R μ ∘ₗ α ∘ₗ (f ⊗ₘ g) := by
   trans μ[R] ∘ₗ (rT _ λ) ∘ₗ (f ⊗ₘ g)
   · ext; simp
-  simp only [← LinearMap.comp_assoc]
+  simp only [← comp_assoc]
   congr 1; ext; simp
 
 /-- If `(id ⊗ mul) ∘ assoc ∘ (comul ⊗ id) = (mul ⊗ id) ∘ assoc.symm ∘ (id ⊗ comul)`,
