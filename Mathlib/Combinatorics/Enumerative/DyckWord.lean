@@ -5,7 +5,7 @@ Authors: Jeremy Tan
 -/
 module
 
-public import Mathlib.Combinatorics.Enumerative.Catalan
+public import Mathlib.Combinatorics.Enumerative.Catalan.Tree
 
 import Batteries.Data.List.Count
 import Mathlib.Tactic.Positivity.Finset
