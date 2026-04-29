@@ -110,7 +110,7 @@ lemma CFC.concaveOn_log : ConcaveOn ℝ {a : A | IsStrictlyPositive a} log := by
   let g := fun a => if a ∈ s then log (A := A) a else 0
   have hg : s.EqOn g (log (A := A)) := by simp +contextual [g, Set.EqOn]
   refine ConcaveOn.congr ?_ hg
-  apply hclosed.mem_of_tendsto (f := f) (b := (𝓝[>] (0 : ℝ)))
+  apply isClosed_setOf_concaveOn.mem_of_tendsto (f := f) (b := (𝓝[>] (0 : ℝ)))
     tendsto_ite_cfc_rpow_sub_one_ite_log ?_
   have h₁ : ∀ᶠ (p : ℝ) in 𝓝[>] 0, 0 < p ∧ p < 1 := nhdsGT_basis 0 |>.mem_of_mem zero_lt_one
   filter_upwards [h₁] with p ⟨hp, hp'⟩
