@@ -170,7 +170,7 @@ lemma logHeight₁_eq (x : K) :
   rw [mulHeight₁_eq] at H
   have : ∀ a ∈ archAbsVal.map (fun v ↦ max (v x) 1), a ≠ 0 := by
     intro a ha
-    contrapose! ha
+    contrapose ha
     rw [ha]
     exact Multiset.prod_eq_zero_iff.not.mp <| left_ne_zero_of_mul H
   rw [log_mul (left_ne_zero_of_mul H) (right_ne_zero_of_mul H), log_multiset_prod this,
@@ -840,7 +840,7 @@ lemma max_abv_sum_one_le_of_isNonarchimedean {v : AbsoluteValue R S} (hv : IsNon
   rcases s.eq_empty_or_nonempty with rfl | hs
   · simp
   refine sup_le ?_ <| s.one_le_prod fun _ _ ↦ le_max_right ..
-  grw [hv.apply_sum_le_sup_of_isNonarchimedean hs]
+  grw [hv.apply_sum_le_sup hs]
   exact sup'_le hs (fun i ↦ v (x i)) fun i hi ↦ le_prod_max_one hi fun i ↦ v (x i)
 
 end Finset

@@ -5,9 +5,11 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos Fernández
 -/
 module
 
+public import Mathlib.Algebra.MvPolynomial.Coeff
 public import Mathlib.RingTheory.MvPowerSeries.Substitution
 public import Mathlib.RingTheory.PowerSeries.Evaluation
 public import Mathlib.Data.Finsupp.Weight
+public import Mathlib.Tactic.Ring.NamePowerVars
 
 /-! # Substitutions in power series
 
@@ -248,12 +250,12 @@ theorem coeff_subst_X_pow {k : ℕ} (hk : k ≠ 0) (f : PowerSeries R) (n : ℕ)
       coeff_X_pow_self, Algebra.algebraMap_eq_smul_one]
     intro j hj
     rw [← pow_mul, coeff_X_pow, if_neg, smul_zero]
-    contrapose! hj
+    contrapose hj
     rw [hj, Nat.mul_div_cancel_left j hk.pos]
   · rw [coeff_subst' (.X_pow hk), finsum_eq_zero_of_forall_eq_zero]
     intro j
     rw [← pow_mul, coeff_X_pow, if_neg, smul_zero]
-    contrapose! h
+    contrapose h
     use j
 
 @[simp]
@@ -264,31 +266,28 @@ theorem constantCoeff_subst_X_pow {k : ℕ} (hk : k ≠ 0) (f : PowerSeries R) :
 
 theorem constantCoeff_subst_eq_zero (ha : a.constantCoeff = 0) (f : PowerSeries R)
     (hf : f.constantCoeff = 0) : MvPowerSeries.constantCoeff (subst a f) = 0 := by
-  rw [constantCoeff_subst (HasSubst.of_constantCoeff_zero ha), finsum_eq_zero_of_forall_eq_zero]
-  intro d
-  by_cases hd : d = 0
-  · simp [hd, hf]
-  · simp [ha, zero_pow hd]
+  have := MvPowerSeries.constantCoeff_subst_eq_zero
+    (hasSubst_iff.mp <| HasSubst.of_constantCoeff_zero ha) (fun _ ↦ ha) hf
+  simpa [hasSubst_iff]
 
 theorem map_algebraMap_eq_subst_X (f : R⟦X⟧) :
     map (algebraMap R S) f = subst X f :=
   MvPowerSeries.map_algebraMap_eq_subst_X f
+
+lemma coeff_subst_single {σ : Type*} [DecidableEq σ] (s : σ) (f : R⟦X⟧) (e : σ →₀ ℕ) :
+    MvPowerSeries.coeff e (subst (MvPowerSeries.X s) f) =
+      if e = Finsupp.single s (e s) then coeff (e s) f else 0 := by
+  rw [coeff_subst (HasSubst.X s), finsum_eq_single _ (e s)] <;>
+  grind [MvPowerSeries.coeff_X_pow, smul_eq_mul]
 
 @[simp]
 theorem X_subst (f : R⟦X⟧) : f.subst (X : R⟦X⟧) = f := by
   rw [← map_algebraMap_eq_subst_X (S := R), Algebra.algebraMap_self]
   exact congr_fun map_id f
 
-theorem _root_.Polynomial.toPowerSeries_toMvPowerSeries (p : Polynomial R) :
-    (p : PowerSeries R) =
-      ((Polynomial.aeval (MvPolynomial.X ()) p : MvPolynomial Unit R) : MvPowerSeries Unit R) := by
-  suffices (Polynomial.coeToPowerSeries.algHom R) p =
-    (MvPolynomial.coeToMvPowerSeries.algHom R)
-      (Polynomial.aeval (MvPolynomial.X () : MvPolynomial Unit R) p) by simpa
-  rw [← AlgHom.comp_apply]
-  apply AlgHom.congr_fun
-  apply Polynomial.algHom_ext
-  simp [X]
+theorem _root_.Polynomial.toPowerSeries_toMvPowerSeries (p : Polynomial R) : (p : PowerSeries R) =
+    ((Polynomial.aeval (MvPolynomial.X ()) p : MvPolynomial Unit R) : MvPowerSeries Unit R) :=
+  Polynomial.pUnitAlgEquiv_symm_toPowerSeries
 
 theorem substAlgHom_coe (ha : HasSubst a) (p : Polynomial R) :
     substAlgHom ha (p : PowerSeries R) = ↑(Polynomial.aeval a p) := by
@@ -315,13 +314,8 @@ theorem subst_X (ha : HasSubst a) :
 
 omit [Algebra R S] in
 theorem map_subst {a : MvPowerSeries τ R} (ha : HasSubst a) {h : R →+* S} (f : PowerSeries R) :
-    (f.subst a).map h = (f.map h).subst (a.map h) := by
-  ext n
-  have {r : R} : h r = h.toAddMonoidHom r := rfl
-  rw [MvPowerSeries.coeff_map, coeff_subst ha, coeff_subst (IsNilpotent.map ha h), this,
-    AddMonoidHom.map_finsum _ (coeff_subst_finite ha _ _), finsum_congr]
-  intro d
-  simp [← map_pow]
+    (f.subst a).map h = (f.map h).subst (a.map h) :=
+  MvPowerSeries.map_subst (HasSubst.const ha) f
 
 section
 
@@ -370,8 +364,7 @@ variable {a : PowerSeries S} {b : MvPowerSeries υ T} {a' : MvPowerSeries τ S}
   {b' : τ → MvPowerSeries υ T} [IsScalarTower R S T]
 
 theorem substAlgHom_comp_substAlgHom (ha : HasSubst a) (hb : HasSubst b) :
-    ((substAlgHom hb).restrictScalars R).comp (substAlgHom ha)
-      = substAlgHom (ha.comp hb) :=
+    ((substAlgHom hb).restrictScalars R).comp (substAlgHom ha) = substAlgHom (ha.comp hb) :=
   MvPowerSeries.substAlgHom_comp_substAlgHom _ _
 
 theorem substAlgHom_comp_substAlgHom_apply (ha : HasSubst a) (hb : HasSubst b) (f : PowerSeries R) :
@@ -555,5 +548,44 @@ lemma subst_substInv_left : P.substInv.subst P = X := by
   · exact (PowerSeries.subst_substInv_right Q hQ).symm
 
 end substInv
+
+section Bivariate
+
+open Finset Finsupp Nat
+
+name_power_vars X₀, X₁ over R
+
+lemma coeff_subst_X_zero_add_X_one (f : R⟦X⟧) (e : Fin 2 →₀ ℕ) :
+    MvPowerSeries.coeff e (subst (X₀ + X₁) f) =
+      (e 0 + e 1).choose (e 0) * coeff (e 0 + e 1) f := by
+  rw [PowerSeries.subst, MvPowerSeries.coeff_subst
+    (MvPowerSeries.hasSubst_of_constantCoeff_zero (fun _ ↦ by simp))]
+  simp_rw [Finsupp.prod_pow, univ_unique, PUnit.default_eq_unit, prod_singleton,
+    smul_eq_mul, ← MvPolynomial.coe_X, ← MvPolynomial.coe_add, ← MvPolynomial.coe_pow,
+    MvPolynomial.coeff_coe]
+  rw [finsum_eq_single _ (single () (e 0 + e 1)), mul_comm]
+  · simp [MvPolynomial.coeff_add_pow, coeff]
+  · simp only [MvPolynomial.coeff_add_pow, mem_antidiagonal, cast_ite]
+    grind
+
+lemma coeff_subst_X_zero_subst_mul_X_one (f : R⟦X⟧) (e : Fin 2 →₀ ℕ) :
+    MvPowerSeries.coeff e (subst X₀ f * subst X₁ f) = coeff (e 0) f * coeff (e 1) f := by
+  rw [MvPowerSeries.coeff_mul, Finset.sum_eq_single (single 0 (e 0), single 1 (e 1)) ?_ ?_]
+  · grind [coeff_subst_single]
+  · intro b hb hb'
+    by_contra hmul_ne_zero
+    rcases ne_zero_and_ne_zero_of_mul hmul_ne_zero with ⟨h0, h1⟩
+    simp only [Fin.isValue, coeff_subst_single, ne_eq, ite_eq_right_iff,
+      not_forall, exists_prop] at h0 h1
+    apply hb'
+    rw [Prod.ext_iff, ← mem_antidiagonal.mp hb, h0.1, h1.1]
+    simp
+  · intro he
+    have he' : single 0 (e 0) + single 1 (e 1) = e := by
+      ext i
+      fin_cases i <;> simp
+    exact absurd (mem_antidiagonal.mpr he') he
+
+end Bivariate
 
 end PowerSeries

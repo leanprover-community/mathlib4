@@ -592,6 +592,15 @@ theorem continuousAt_proj (ex : x ∈ e.source) : ContinuousAt proj x :=
 theorem continuousOn_proj : ContinuousOn proj e.source :=
   continuousOn_of_forall_continuousAt fun _ ↦ e.continuousAt_proj
 
+/-- For fixed `v ∈ F`, `x ↦ e.symm (x,v)` is continuous at any point in the base set. -/
+theorem continuousAt_symm_prodMk_left {b : B} {v : F} (hb : b ∈ e.baseSet) :
+    ContinuousAt (fun x ↦ e.symm (x, v)) b :=
+  (e.toOpenPartialHomeomorph.continuousAt_symm (e.mem_target.mpr hb)).comp (by fun_prop)
+
+/-- For fixed `v ∈ F`, `x ↦ e.symm (x,v)` is continuous on `e.baseSet`. -/
+theorem continuousOn_symm_prodMk_left {v : F} : ContinuousOn (fun x ↦ e.symm (x, v)) e.baseSet :=
+  fun _ hb ↦ (e.continuousAt_symm_prodMk_left hb).continuousWithinAt
+
 /-- Pre-composition of a `Bundle.Trivialization` and a `Homeomorph`. -/
 protected def compHomeomorph {Z' : Type*} [TopologicalSpace Z'] (h : Z' ≃ₜ Z) :
     Trivialization F (proj ∘ h) where
@@ -739,6 +748,7 @@ theorem mk_coordChange (e₁ e₂ : Trivialization F proj) {b : B} (h₁ : b ∈
   · rwa [e₁.proj_symm_apply' h₁]
   · rwa [e₁.proj_symm_apply' h₁]
 
+@[simp]
 theorem coordChange_apply_snd (e₁ e₂ : Trivialization F proj) {p : Z} (h : proj p ∈ e₁.baseSet) :
     e₁.coordChange e₂ (proj p) (e₁ p).snd = (e₂ p).snd := by
   rw [coordChange, e₁.symm_apply_mk_proj (e₁.mem_source.2 h)]
@@ -902,7 +912,7 @@ noncomputable def piecewiseLe [LinearOrder B] [OrderTopology B] (e e' : Triviali
     rintro p rfl
     ext1
     · simp [*]
-    · simp [coordChange_apply_snd, *]
+    · simp [*]
 
 open Classical in
 /-- Given two bundle trivializations `e`, `e'` over disjoint sets, `e.disjoint_union e' H` is the

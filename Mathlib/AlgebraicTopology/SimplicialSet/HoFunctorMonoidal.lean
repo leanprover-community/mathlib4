@@ -246,7 +246,8 @@ def mapHomotopyCategoryProdIdCompInverseIso (f : X ⟶ X') :
     (mkNatIso (fun x ↦ mkNatIso (fun y ↦ Iso.refl _)) (fun x₀ x₁ e ↦ by
       ext y
       obtain ⟨y, rfl⟩ := y.mk_surjective
-      simp))
+      simp
+      rfl))
 
 variable {Y} in
 /-- The naturality of `HomotopyCategory.BinaryProduct.inverse`
@@ -258,7 +259,8 @@ def idProdMapHomotopyCategoryCompInverseIso (g : Y ⟶ Y') :
     (mkNatIso (fun x ↦ mkNatIso (fun y ↦ Iso.refl _)) (fun x₀ x₁ e ↦ by
       ext y
       obtain ⟨y, rfl⟩ := y.mk_surjective
-      simp))
+      simp
+      rfl))
 
 variable {X} in
 lemma mapHomotopyCategory_prod_id_comp_inverse (f : X ⟶ X') :
