@@ -478,6 +478,8 @@ def noEdge (vertexSet : Set α) (β : Type*) : Graph α β where
   eq_or_eq_of_isLink_of_isLink := by simp
   edge_mem_iff_exists_isLink := by simp
 
+attribute [-simp] Graph.noEdge_isLink
+
 variable {vertexSet : Set α} {edgeSet : Set β}
 
 lemma edgeSet_eq_empty : E(G) = ∅ ↔ G = noEdge V(G) β := by

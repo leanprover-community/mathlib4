@@ -619,7 +619,7 @@ def mkIso' {M N : C} [MonObj M] [MonObj N] (e : M ≅ N) [IsMonHom e.hom] : mk M
 
 /-- Construct an isomorphism of monoid objects by giving an isomorphism between the underlying
 objects and checking compatibility with unit and multiplication only in the forward direction. -/
-@[to_additive (attr := simps!)
+@[to_additive
 /-- Construct an isomorphism of additive monoid objects by giving an isomorphism between
 the underlying objects and checking compatibility with zero and addition only in
 the forward direction. -/]
