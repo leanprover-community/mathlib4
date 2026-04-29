@@ -12,7 +12,7 @@ public import Mathlib.Topology.Algebra.ProperAction.Basic
 # The action underlying a topological additive torsor is proper.
 -/
 
-@[expose] public section
+public section
 
 variable {V P : Type*} [AddGroup V] [AddTorsor V P]
 variable [TopologicalSpace V] [TopologicalSpace P] [IsTopologicalAddTorsor P]
