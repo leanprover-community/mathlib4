@@ -25,15 +25,6 @@ open scoped Ring
 
 universe u v w u'
 
-/-- A linear equivalence between topological modules is a homeomorphism if and only if it is
-continuous in both directions. -/
-theorem LinearEquiv.isHomeomorph_iff {R S : Type*} [Semiring R] [Semiring S]
-    {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-    {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [Module R M]
-    {N : Type*} [TopologicalSpace N] [AddCommMonoid N] [Module S N]
-    (e : M ≃ₛₗ[σ] N) : IsHomeomorph e ↔ Continuous e ∧ Continuous e.symm :=
-  e.toEquiv.isHomeomorph_iff
-
 section
 
 /-- Continuous linear equivalences between modules. We only put the type classes that are necessary
@@ -1454,4 +1445,14 @@ theorem trans_smul [IsScalarTower S R G] (α : Sˣ) (e : G ≃L[R] V) (f : V ≃
     e.trans (α • f) = α • (e.trans f) := by ext; simp
 
 end ContinuousLinearEquiv
+
+/-- A linear equivalence between topological modules is a homeomorphism if and only if it is
+continuous in both directions. -/
+theorem LinearEquiv.isHomeomorph_iff {R S : Type*} [Semiring R] [Semiring S]
+    {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+    {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [Module R M]
+    {N : Type*} [TopologicalSpace N] [AddCommMonoid N] [Module S N]
+    (e : M ≃ₛₗ[σ] N) : IsHomeomorph e ↔ Continuous e ∧ Continuous e.symm :=
+  e.toEquiv.isHomeomorph_iff
+
 end
