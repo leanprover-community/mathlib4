@@ -4450,6 +4450,8 @@ public import Mathlib.Geometry.Convex.Cone.Pointed
 public import Mathlib.Geometry.Convex.Cone.Simplicial
 public import Mathlib.Geometry.Convex.Cone.TensorProduct
 public import Mathlib.Geometry.Curves.Basic
+public import Mathlib.Geometry.Curves.FrenetFrame
+public import Mathlib.Geometry.Curves.fund_thm_of_loc_theo_of_curves
 public import Mathlib.Geometry.Diffeology.Basic
 public import Mathlib.Geometry.Euclidean.Altitude
 public import Mathlib.Geometry.Euclidean.Angle.Bisector
