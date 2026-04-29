@@ -530,6 +530,7 @@ lemma stronglyMeasurable_rpow {f : α → ℝ} (hf : AEStronglyMeasurable f μ) 
 theorem memLp_norm_rpow_iff {q : ℝ≥0∞} {f : α → E} (hf : AEStronglyMeasurable f μ) (q_zero : q ≠ 0)
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     (q_top : q ≠ ∞) : MemLp (fun x : α => ‖f x‖ ^ q.toReal) (p / q) μ ↔ MemLp f p μ := by
   by_cases hp : p = 0
   · simp only [hp, ENNReal.zero_div, memLp_zero_iff_aestronglyMeasurable_and_volume_support_lt_top,
