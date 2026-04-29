@@ -54,6 +54,11 @@ theorem rank_eq_zero_iff [FG G] : rank G = 0 ↔ Subsingleton G := by
   rw [h, Finset.card_eq_zero] at hs
   simpa [hs, subsingleton_iff_bot_eq_top] using hs'
 
+variable (G) in
+@[to_additive]
+theorem rank_pos [Nontrivial G] [FG G] : 0 < rank G := by
+  rwa [pos_iff_ne_zero, ne_eq, rank_eq_zero_iff, not_subsingleton_iff_nontrivial]
+
 @[to_additive]
 lemma rank_le_of_surjective [FG G] [FG H] (f : G →* H) (hf : Surjective f) : rank H ≤ rank G := by
   classical
