@@ -447,7 +447,7 @@ protected lemma exists_pos_mul_lt (ha : a ≠ ∞) (hb₀ : b ≠ 0) : ∃ c, 0 
   · exact ⟨1, by simpa [lt_top_iff_ne_top]⟩
   refine ⟨b / (a + 1), ENNReal.div_pos hb₀ (by finiteness), ENNReal.mul_lt_of_lt_div ?_⟩
   gcongr
-  exacts [hb, ENNReal.lt_add_right ha one_ne_zero]
+  exact ENNReal.lt_add_right ha one_ne_zero
 
 theorem inv_le_iff_le_mul (h₁ : b = ∞ → a ≠ 0) (h₂ : a = ∞ → b ≠ 0) : a⁻¹ ≤ b ↔ 1 ≤ a * b := by
   rw [← one_div, ENNReal.div_le_iff_le_mul, mul_comm]
@@ -839,7 +839,7 @@ lemma mul_iInf' (hinfty : a = ∞ → ⨅ i, f i = 0 → ∃ i, f i = 0) (h₀ :
   · simp [h₀ rfl]
   obtain rfl | ha := eq_or_ne a ∞
   · obtain ⟨i, hi⟩ | hf := em (∃ i, f i = 0)
-    · rw [(iInf_eq_bot _).2, (iInf_eq_bot _).2, bot_eq_zero, mul_zero] <;>
+    · rw [iInf_eq_bot.2, iInf_eq_bot.2, bot_eq_zero, mul_zero] <;>
         exact fun _ _ ↦ ⟨i, by simpa [hi]⟩
     · rw [top_mul (mt (hinfty rfl) hf), eq_comm, iInf_eq_top]
       exact fun i ↦ top_mul fun hi ↦ hf ⟨i, hi⟩
@@ -939,6 +939,17 @@ lemma smul_sSup {R} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] 
 theorem ofReal_inv_of_pos {x : ℝ} (hx : 0 < x) : ENNReal.ofReal x⁻¹ = (ENNReal.ofReal x)⁻¹ := by
   rw [ENNReal.ofReal, ENNReal.ofReal, ← @coe_inv (Real.toNNReal x) (by simp [hx]), coe_inj,
     ← Real.toNNReal_inv]
+
+theorem ofReal_inv_le {x : ℝ} : ENNReal.ofReal x⁻¹ ≤ (ENNReal.ofReal x)⁻¹ := by
+  obtain hx | hx := lt_or_ge 0 x
+  · simp [ofReal_inv_of_pos hx]
+  · simp [ofReal_of_nonpos hx]
+
+theorem ofReal_div_le {x y : ℝ} (hy : 0 ≤ y) :
+    ENNReal.ofReal (x / y) ≤ ENNReal.ofReal x / ENNReal.ofReal y := by
+  simp_rw [div_eq_mul_inv, ofReal_mul' (inv_nonneg.2 hy)]
+  gcongr
+  exact ofReal_inv_le
 
 theorem ofReal_div_of_pos {x y : ℝ} (hy : 0 < y) :
     ENNReal.ofReal (x / y) = ENNReal.ofReal x / ENNReal.ofReal y := by

@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 public import Mathlib.Analysis.Normed.Group.Lemmas
 public import Mathlib.Analysis.Normed.Affine.Isometry
-public import Mathlib.Analysis.Normed.Operator.Compact
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.Analysis.Normed.Module.RieszLemma
 public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
@@ -266,7 +265,7 @@ protected theorem LinearIndependent.eventually {ι} [Finite ι] {f : ι → E}
   simp only [Fintype.linearIndependent_iff'] at hf ⊢
   rcases LinearMap.exists_antilipschitzWith _ hf with ⟨K, K0, hK⟩
   have : Tendsto (fun g : ι → E => ∑ i, ‖g i - f i‖) (𝓝 f) (𝓝 <| ∑ i, ‖f i - f i‖) :=
-    tendsto_finset_sum _ fun i _ =>
+    tendsto_finsetSum _ fun i _ =>
       Tendsto.norm <| ((continuous_apply i).tendsto _).sub tendsto_const_nhds
   simp only [sub_self, norm_zero, Finset.sum_const_zero] at this
   refine (this.eventually (gt_mem_nhds <| inv_pos.2 K0)).mono fun g hg => ?_
@@ -489,23 +488,6 @@ lemma ProperSpace.of_locallyCompact_module (V : Type*) [AddCommGroup V] [Topolog
     apply IsClosedEmbedding.locallyCompactSpace this
   .of_locallyCompactSpace 𝕜
 
-variable {𝕜}
-
-theorem isCompactOperator_id_iff_finiteDimensional [LocallyCompactSpace 𝕜] :
-    IsCompactOperator (_root_.id : E → E) ↔ FiniteDimensional 𝕜 E :=
-  isCompactOperator_id_iff_locallyCompactSpace.trans
-    ⟨fun _ ↦ .of_locallyCompactSpace 𝕜, fun _ ↦ .of_finiteDimensional_of_complete 𝕜 E⟩
-
-/-- If the identity operator of a Banach space over a nontrivially normed field is compact,
-then the space is finite dimensional. -/
-lemma FiniteDimensional.of_isCompactOperator_id (h : IsCompactOperator (id : E → E)) :
-    FiniteDimensional 𝕜 E := by
-  have := LocallyCompactSpace.of_isCompactOperator_id h
-  exact FiniteDimensional.of_locallyCompactSpace 𝕜
-
-@[deprecated (since := "2026-03-05")] alias IsCompactOperator.finiteDimensional :=
-  FiniteDimensional.of_isCompactOperator_id
-
 end Riesz
 
 open ContinuousLinearMap
@@ -536,17 +518,30 @@ def ContinuousLinearEquiv.piRing (ι : Type*) [Fintype ι] [DecidableEq ι] :
       rw [norm_smul, mul_comm]
       gcongr <;> apply norm_le_pi_norm }
 
-/-- A family of continuous linear maps is continuous on `s` if all its applications are. -/
+/-- A family of continuous linear maps is continuous within `s` at `x` iff all its applications
+are. -/
+theorem continuousWithinAt_clm_apply {X : Type*} [TopologicalSpace X] [FiniteDimensional 𝕜 E]
+    {f : X → E →L[𝕜] F} {s : Set X} {x : X} :
+    ContinuousWithinAt f s x ↔ ∀ y, ContinuousWithinAt (fun q ↦ f q y) s x := by
+  refine ⟨fun h y ↦ (apply 𝕜 F y).continuous.continuousAt.comp_continuousWithinAt h, fun h ↦ ?_⟩
+  let e : (E →L[𝕜] F) ≃L[𝕜] Fin (finrank 𝕜 E) → F :=
+    ((ContinuousLinearEquiv.ofFinrankEq (finrank_fin_fun 𝕜).symm).arrowCongr
+      (1 : F ≃L[𝕜] F)).trans (ContinuousLinearEquiv.piRing _)
+  rw [e.toHomeomorph.isInducing.continuousWithinAt_iff]
+  exact continuousWithinAt_pi.mpr fun i ↦ h _
+
+/-- A family of continuous linear maps is continuous on `s` iff all its applications are. -/
 theorem continuousOn_clm_apply {X : Type*} [TopologicalSpace X] [FiniteDimensional 𝕜 E]
-    {f : X → E →L[𝕜] F} {s : Set X} : ContinuousOn f s ↔ ∀ y, ContinuousOn (fun x => f x y) s := by
-  refine ⟨fun h y => (ContinuousLinearMap.apply 𝕜 F y).continuous.comp_continuousOn h, fun h => ?_⟩
-  let d := finrank 𝕜 E
-  have hd : d = finrank 𝕜 (Fin d → 𝕜) := (finrank_fin_fun 𝕜).symm
-  let e₁ : E ≃L[𝕜] Fin d → 𝕜 := ContinuousLinearEquiv.ofFinrankEq hd
-  let e₂ : (E →L[𝕜] F) ≃L[𝕜] Fin d → F :=
-    (e₁.arrowCongr (1 : F ≃L[𝕜] F)).trans (ContinuousLinearEquiv.piRing (Fin d))
-  rw [← f.id_comp, ← e₂.symm_comp_self]
-  exact e₂.symm.continuous.comp_continuousOn (continuousOn_pi.mpr fun i => h _)
+    {f : X → E →L[𝕜] F} {s : Set X} :
+    ContinuousOn f s ↔ ∀ y, ContinuousOn (fun x ↦ f x y) s := by
+  simp_rw [ContinuousOn, continuousWithinAt_clm_apply, imp_forall_iff]
+  exact forall_comm
+
+/-- A family of continuous linear maps is continuous at a point iff all its applications are. -/
+theorem continuousAt_clm_apply {X : Type*} [TopologicalSpace X] [FiniteDimensional 𝕜 E]
+    {f : X → E →L[𝕜] F} {x : X} :
+    ContinuousAt f x ↔ ∀ y, ContinuousAt (fun q ↦ f q y) x := by
+  simp_rw [← continuousWithinAt_univ, continuousWithinAt_clm_apply]
 
 theorem continuous_clm_apply {X : Type*} [TopologicalSpace X] [FiniteDimensional 𝕜 E]
     {f : X → E →L[𝕜] F} : Continuous f ↔ ∀ y, Continuous (f · y) := by

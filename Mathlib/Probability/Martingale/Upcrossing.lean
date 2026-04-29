@@ -412,8 +412,8 @@ theorem Submartingale.sum_mul_upcrossingStrat_le [IsFiniteMeasure μ] (hf : Subm
       μ[∑ k ∈ Finset.range n, upcrossingStrat a b f N k * (f (k + 1) - f k)] := by
     simp only [sub_mul, one_mul, Finset.sum_sub_distrib, Pi.sub_apply, Finset.sum_apply,
       Pi.mul_apply]
-    refine integral_sub (Integrable.sub (integrable_finset_sum _ fun i _ => hf.integrable _)
-      (integrable_finset_sum _ fun i _ => hf.integrable _)) ?_
+    refine integral_sub (Integrable.sub (integrable_finsetSum _ fun i _ => hf.integrable _)
+      (integrable_finsetSum _ fun i _ => hf.integrable _)) ?_
     convert (hf.sum_upcrossingStrat_mul a b N).integrable n using 1
     ext; simp
   rw [h₂, sub_nonneg] at h₁

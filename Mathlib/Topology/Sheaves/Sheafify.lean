@@ -73,7 +73,8 @@ sending each section to its germs.
 (This forms the unit of the adjunction.)
 -/
 def toSheafify : F ⟶ F.sheafify.1 where
-  app U f := ⟨fun x => F.germ _ x x.2 f, PrelocalPredicate.sheafifyOf ⟨f, fun x => rfl⟩⟩
+  app U := TypeCat.ofHom fun f ↦ ⟨fun x => F.germ _ x x.2 f, PrelocalPredicate.sheafifyOf
+    ⟨f, fun x => rfl⟩⟩
   naturality U U' f := by
     ext x
     apply Subtype.ext -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Added `apply`

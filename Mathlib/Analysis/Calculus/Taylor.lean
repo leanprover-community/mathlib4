@@ -127,7 +127,7 @@ theorem continuousOn_taylorWithinEval {f : ℝ → E} {x : ℝ} {n : ℕ} {s : S
     (hs : UniqueDiffOn ℝ s) (hf : ContDiffOn ℝ n f s) :
     ContinuousOn (fun t => taylorWithinEval f n s t x) s := by
   simp_rw [taylor_within_apply]
-  refine continuousOn_finset_sum (Finset.range (n + 1)) fun i hi => ?_
+  refine continuousOn_finsetSum (Finset.range (n + 1)) fun i hi => ?_
   refine (continuousOn_const.mul ((continuousOn_const.sub continuousOn_id).pow _)).smul ?_
   rw [contDiffOn_nat_iff_continuousOn_differentiableOn_deriv hs] at hf
   simp only [Finset.mem_range] at hi
@@ -312,7 +312,7 @@ theorem taylor_mean_remainder {f : ℝ → ℝ} {g g' : ℝ → ℝ} {x x₀ : �
     g g' gcont gdiff with ⟨y, hy, h⟩
   use y, hy
   -- The rest is simplifications and trivial calculations
-  grind [smul_eq_mul, taylorWithinEval_self]
+  grind [uIoo, smul_eq_mul, taylorWithinEval_self]
 
 -- see https://github.com/leanprover-community/mathlib4/issues/29041
 set_option linter.unusedSimpArgs false in
@@ -458,7 +458,7 @@ theorem taylor_integral_remainder_aux [NormedAddCommGroup F] [NormedSpace ℝ F]
       ∫ (t : ℝ) in x₀..x, u t • deriv v t = u x • v x - u x₀ • v x₀ -
       ∫ (t : ℝ) in x₀..x, deriv u t • v t) :
     f x - taylorWithinEval f n (uIcc x₀ x) x₀ x =
-      ∫ t in x₀..x, ((x - t) ^ n / n !) • iteratedDerivWithin (n + 1) f (uIcc x₀ x) t  := by
+      ∫ t in x₀..x, ((x - t) ^ n / n !) • iteratedDerivWithin (n + 1) f (uIcc x₀ x) t := by
   rcases eq_or_ne x₀ x with rfl | this
   · simp
   induction n with

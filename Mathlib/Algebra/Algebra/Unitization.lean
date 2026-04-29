@@ -362,23 +362,23 @@ section
 
 variable (R)
 
-@[simp]
+@[simp, norm_cast]
 theorem inr_zero [Zero R] [Zero A] : ↑(0 : A) = (0 : Unitization R A) :=
   rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem inr_add [AddZeroClass R] [Add A] (m₁ m₂ : A) : (↑(m₁ + m₂) : Unitization R A) = m₁ + m₂ :=
   Unitization.ext (add_zero 0).symm rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem inr_neg [AddGroup R] [Neg A] (m : A) : (↑(-m) : Unitization R A) = -m :=
   Unitization.ext neg_zero.symm rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem inr_sub [AddGroup R] [AddGroup A] (m₁ m₂ : A) : (↑(m₁ - m₂) : Unitization R A) = m₁ - m₂ :=
   Unitization.ext (sub_zero 0).symm rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem inr_smul [Zero R] [SMulZeroClass S R] [SMul S A] (r : S) (m : A) :
     (↑(r • m) : Unitization R A) = r • (m : Unitization R A) :=
   Unitization.ext (smul_zero _).symm rfl
@@ -405,19 +405,23 @@ theorem linearMap_ext {N} [CommSemiring S] [AddCommMonoid R] [AddCommMonoid A] [
   (linearEquiv S R A).arrowCongr (.refl ..) |>.injective <|
     LinearMap.prod_ext (LinearMap.ext hl) (LinearMap.ext hr)
 
-variable (R A)
+variable [Semiring S] [Semiring R] [AddCommMonoid A] [SMul R A] [Module S R] [Module S A]
 
--- TODO: generalize to `S`-linear
-/-- The canonical `R`-linear inclusion `A → Unitization R A`. -/
+variable (S R A) in
+/-- The canonical `S`-linear inclusion `A → Unitization R A`. -/
 @[simps apply]
-def inrHom [Semiring R] [AddCommMonoid A] [Module R A] : A →ₗ[R] Unitization R A where
+def inrHom : A →ₗ[S] Unitization R A where
   toFun := (↑)
   map_add' := inr_add R
   map_smul' := inr_smul R
 
-/-- The canonical `R`-linear projection `Unitization R A → A`. -/
+omit [SMul R A] in
+lemma inrHom_injective : Function.Injective (inrHom S R A) := Unitization.inr_injective
+
+variable (S R A) in
+/-- The canonical `S`-linear projection `Unitization R A → A`. -/
 @[simps apply]
-def sndHom [Semiring R] [AddCommMonoid A] [Module R A] : Unitization R A →ₗ[R] A where
+def sndHom : Unitization R A →ₗ[S] A where
   toFun a := a.snd
   map_add' := snd_add
   map_smul' := snd_smul
@@ -485,10 +489,12 @@ theorem inr_mul [MulZeroClass R] [AddZeroClass A] [Mul A] [SMulWithZero R A] (a�
 
 end
 
+@[norm_cast]
 theorem inl_mul_inr [MulZeroClass R] [NonUnitalNonAssocSemiring A] [SMulZeroClass R A] (r : R)
     (a : A) : ((inl r : Unitization R A) * a) = ↑(r • a) :=
   Unitization.ext (mul_zero r) <| by simp
 
+@[norm_cast]
 theorem inr_mul_inl [MulZeroClass R] [NonUnitalNonAssocSemiring A] [SMulZeroClass R A] (r : R)
     (a : A) : a * (inl r : Unitization R A) = ↑(r • a) :=
   Unitization.ext (zero_mul r) <| by simp
@@ -590,7 +596,7 @@ theorem inl_star [Star R] [AddMonoid A] [StarAddMonoid A] (r : R) :
     inl (star r) = star (inl r : Unitization R A) :=
   Unitization.ext rfl (by simp only [snd_star, star_zero, snd_inl])
 
-@[simp]
+@[simp, norm_cast]
 theorem inr_star [AddMonoid R] [StarAddMonoid R] [Star A] (a : A) :
     ↑(star a) = star (a : Unitization R A) :=
   Unitization.ext (by simp only [fst_star, star_zero, fst_inr]) rfl
