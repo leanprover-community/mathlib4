@@ -531,13 +531,14 @@ def mulModularForm [Γ.HasDetPlusMinusOne] {k₁ k₂ : ℤ} (f : CuspForm Γ k�
     simpa [mul_slash] using
       ((f.zero_at_cusps' hc γ hγ).mul_boundedAtFilter (g.bdd_at_cusps' hc γ hγ)).smul _
 
-/-- Cast for cusp forms, which is useful for avoiding `Heq`s. -/
-def mcast {a b : ℤ} {Γ : Subgroup (GL (Fin 2) ℝ)} (h : a = b) (f : CuspForm Γ a) :
-    CuspForm Γ b where
+/-- Cast for cusp forms, which is useful for avoiding `Heq`s. Optionally transports along
+an equality of subgroups. -/
+def mcast {a b : ℤ} {Γ Γ' : Subgroup (GL (Fin 2) ℝ)} (h : a = b) (f : CuspForm Γ a)
+    (hΓ : Γ' = Γ := by rfl) : CuspForm Γ' b where
   toFun := (f : ℍ → ℂ)
-  slash_action_eq' A := h ▸ f.slash_action_eq' A
+  slash_action_eq' A hA := h ▸ f.slash_action_eq' A (hΓ ▸ hA)
   holo' := f.holo'
-  zero_at_cusps' A := h ▸ f.zero_at_cusps' A
+  zero_at_cusps' hc := h ▸ f.zero_at_cusps' (hΓ ▸ hc)
 
 end CuspForm
 
@@ -545,13 +546,14 @@ namespace ModularForm
 
 section GradedRing
 
-/-- Cast for modular forms, which is useful for avoiding `Heq`s. -/
-def mcast {a b : ℤ} {Γ : Subgroup (GL (Fin 2) ℝ)} (h : a = b) (f : ModularForm Γ a) :
-    ModularForm Γ b where
+/-- Cast for modular forms, which is useful for avoiding `Heq`s. Optionally transports along
+an equality of subgroups. -/
+def mcast {a b : ℤ} {Γ Γ' : Subgroup (GL (Fin 2) ℝ)} (h : a = b) (f : ModularForm Γ a)
+    (hΓ : Γ' = Γ := by rfl) : ModularForm Γ' b where
   toFun := (f : ℍ → ℂ)
-  slash_action_eq' A := h ▸ f.slash_action_eq' A
+  slash_action_eq' A hA := h ▸ f.slash_action_eq' A (hΓ ▸ hA)
   holo' := f.holo'
-  bdd_at_cusps' A := h ▸ f.bdd_at_cusps' A
+  bdd_at_cusps' hc := h ▸ f.bdd_at_cusps' (hΓ ▸ hc)
 
 @[ext (iff := false)]
 theorem gradedMonoid_eq_of_cast {Γ : Subgroup (GL (Fin 2) ℝ)} {a b : GradedMonoid (ModularForm Γ)}
