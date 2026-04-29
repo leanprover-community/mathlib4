@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.Algebra.Ring.BooleanRing
 public import Mathlib.Order.Category.BoolAlg
-public import Mathlib.Tactic.CategoryTheory.MkConcreteCategory
 
 /-!
 # The category of Boolean rings

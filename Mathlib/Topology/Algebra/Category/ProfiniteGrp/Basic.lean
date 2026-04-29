@@ -10,7 +10,6 @@ public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Topology.Category.Profinite.Basic
 public import Mathlib.Topology.Separation.Connected
-public import Mathlib.Tactic.CategoryTheory.MkConcreteCategory
 /-!
 
 # Category of Profinite Groups

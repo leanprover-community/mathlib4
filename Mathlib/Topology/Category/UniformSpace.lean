@@ -42,56 +42,20 @@ namespace UniformSpaceCat
 instance : CoeSort UniformSpaceCat Type* :=
   ⟨carrier⟩
 
-/-- A bundled uniform continuous map. -/
-@[ext]
-structure Hom (X Y : UniformSpaceCat) where
-  /-- The underlying `UniformContinuous` function. -/
-  hom' : { f : X → Y // UniformContinuous f }
-
-instance : LargeCategory.{u} UniformSpaceCat.{u} where
-  Hom := Hom
-  id X := ⟨id, uniformContinuous_id⟩
-  comp f g := ⟨⟨g.hom'.val ∘ f.hom'.val, g.hom'.property.comp f.hom'.property⟩⟩
-  id_comp := by intros; apply Hom.ext; simp
-  comp_id := by intros; apply Hom.ext; simp
-  assoc := by intros; apply Hom.ext; ext; simp
-
 instance instFunLike (X Y : UniformSpaceCat) :
     FunLike { f : X → Y // UniformContinuous f } X Y where
   coe := Subtype.val
   coe_injective' _ _ h := Subtype.ext h
 
-instance : ConcreteCategory UniformSpaceCat ({ f : · → · // UniformContinuous f }) where
-  hom f := f.hom'
-  ofHom f := ⟨f⟩
-
-/-- Turn a morphism in `UniformSpaceCat` back into a function which is `UniformContinuous`. -/
-abbrev Hom.hom {X Y : UniformSpaceCat} (f : Hom X Y) :=
-  ConcreteCategory.hom (C := UniformSpaceCat) f
-
-/-- Typecheck a function which is `UniformContinuous` as a morphism in `UniformSpaceCat`. -/
-abbrev ofHom {X Y : Type u} [UniformSpace X] [UniformSpace Y]
-    (f : { f : X → Y // UniformContinuous f }) : of X ⟶ of Y :=
-  ConcreteCategory.ofHom f
+mk_concrete_category UniformSpaceCat ({ f : · → · // UniformContinuous f })
+  (fun _ ↦ ⟨id, uniformContinuous_id⟩) (fun g f ↦ ⟨g ∘ f, g.property.comp f.property⟩)
+  with_of_hom {X Y : Type u} [UniformSpace X] [UniformSpace Y]
+  hom_type { f : X → Y // UniformContinuous f } from (of X) to (of Y)
 
 instance : Inhabited UniformSpaceCat :=
   ⟨UniformSpaceCat.of Empty⟩
 
 theorem coe_of (X : Type u) [UniformSpace X] : (of X : Type u) = X :=
-  rfl
-
-@[simp]
-theorem hom_comp {X Y Z : UniformSpaceCat} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g).hom = ⟨g ∘ f, g.hom.prop.comp f.hom.prop⟩ :=
-  rfl
-
-@[simp]
-theorem hom_id (X : UniformSpaceCat) : (𝟙 X : X ⟶ X).hom = ⟨id, uniformContinuous_id⟩ :=
-  rfl
-
-@[simp]
-theorem hom_ofHom {X Y : Type u} [UniformSpace X] [UniformSpace Y]
-    (f : { f : X → Y // UniformContinuous f }) : (ofHom f).hom = f :=
   rfl
 
 theorem coe_comp {X Y Z : UniformSpaceCat} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g : X → Z) = g ∘ f :=
@@ -101,7 +65,7 @@ theorem coe_id (X : UniformSpaceCat) : (𝟙 X : X → X) = id :=
   rfl
 
 theorem coe_mk {X Y : UniformSpaceCat} (f : X → Y) (hf : UniformContinuous f) :
-    (⟨f, hf⟩ : X ⟶ Y).hom = f :=
+    ((ofHom ⟨f, hf⟩ : X ⟶ Y).hom : X → Y) = f :=
   rfl
 
 @[ext]
@@ -206,9 +170,8 @@ noncomputable def completionFunctor : UniformSpaceCat ⥤ CpltSepUniformSpace wh
 
 /-- The inclusion of a uniform space into its completion. -/
 noncomputable def completionHom (X : UniformSpaceCat) :
-    X ⟶ (forget₂ CpltSepUniformSpace UniformSpaceCat).obj (completionFunctor.obj X) where
-  hom'.val := ((↑) : X → Completion X)
-  hom'.property := Completion.uniformContinuous_coe X
+    X ⟶ (forget₂ CpltSepUniformSpace UniformSpaceCat).obj (completionFunctor.obj X) :=
+  ofHom ⟨((↑) : X → Completion X), Completion.uniformContinuous_coe X⟩
 
 @[simp]
 theorem completionHom_val (X : UniformSpaceCat) (x) : (completionHom X) x = (x : Completion X) :=

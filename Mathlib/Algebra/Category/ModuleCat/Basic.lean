@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Category.ModuleCat.Semi
 public import Mathlib.Algebra.Category.Grp.Preadditive
 public import Mathlib.CategoryTheory.Linear.Basic
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-public import Mathlib.Tactic.CategoryTheory.MkConcreteCategory
 
 /-!
 # The category of `R`-modules
