@@ -3,6 +3,7 @@ import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.Data.List.InsertIdx
 import Mathlib.Algebra.Group.Basic
+import Mathlib.Tactic.AdaptationNote
 
 -- This is partially duplicative with the tests for `rw?` in Lean.
 -- It's useful to re-test here with a larger environment.
