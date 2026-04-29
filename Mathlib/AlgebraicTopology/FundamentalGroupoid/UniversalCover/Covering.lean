@@ -46,7 +46,6 @@ theorem isCoveringMap [LocPathConnectedSpace X] [PathConnectedSpace X]
   intro x
   -- Get a good neighborhood of `x`.
   obtain ⟨U, hU_open, hxU, hU_pathConn, hU_slsc⟩ := exists_pathConnected_slsc_neighborhood x
-  -- Shorthand.
   let S : Path.Homotopic.Quotient x₀ x → Set (UniversalCover x₀) := fun q ↦ sheet U hxU q
   -- Nonempty instances needed by `trivializationDiscrete`.
   have _ne_ι : Nonempty (Path.Homotopic.Quotient x₀ x) :=
