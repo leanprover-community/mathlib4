@@ -66,7 +66,8 @@ theorem WithBot.coe_biSup {ι : Type*} {s : Set ι} (hs : s.Nonempty)
     iSup_le_iff.mpr fun i ↦ ?_) <| iSup_le_iff.mpr <| fun _ ↦ iSup_le_iff.mpr <|
       fun hi ↦ WithBot.coe_le_coe.mpr (le_biSup _ hi)
   by_cases h : i ∈ s
-  · simpa only [iSup_pos h] using by apply le_biSup _ h
+  · simp only [iSup_pos h]
+    apply le_biSup _ h
   · simpa only [iSup_neg h] using le_trans (by simp) (le_biSup _ hj)
 
 @[norm_cast]
@@ -79,7 +80,8 @@ theorem WithBot.coe_biInf {ι : Type*} {s : Set ι} {α : Type*} [CompleteLattic
   refine le_antisymm (by simpa using fun _ ↦ biInf_le _) <|
     (le_iInf_iff.mpr fun i ↦ ?_).trans_eq (WithBot.coe_iInf _ (OrderBot.bddBelow _)).symm
   by_cases h : i ∈ s
-  · simpa only [iInf_pos h] using by apply biInf_le _ h
+  · simp only [iInf_pos h]
+    apply biInf_le _ h
   · simp [iInf_neg h]
 
 end
