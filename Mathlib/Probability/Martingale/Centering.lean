@@ -180,7 +180,7 @@ theorem martingale_martingalePart (hf : StronglyAdapted ℱ f) (hf_int : ∀ n, 
         (μ[f (k + 1) - f k | ℱ i] - μ[μ[f (k + 1) - f k | ℱ k] | ℱ i]) := by
     rw [martingalePart_eq_sum]
     refine (condExp_add (hf_int 0) (by fun_prop) _).trans ?_
-    refine (EventuallyEq.rfl.add (condExp_finset_sum (fun i _ => by fun_prop) _)).trans ?_
+    refine (EventuallyEq.rfl.add (condExp_finsetSum (fun i _ => by fun_prop) _)).trans ?_
     refine EventuallyEq.add ?_ ?_
     · rw [condExp_of_stronglyMeasurable (ℱ.le _) _ (hf_int 0)]
       · exact (hf 0).mono (ℱ.mono (zero_le i))
