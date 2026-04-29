@@ -151,8 +151,7 @@ lemma ediam_eq_top : G.ediam = ⊤ ↔ ∀ b < ⊤, ∃ u v, b < G.edist u v := 
   simp only [ediam, eccent, iSup_eq_top, lt_iSup_iff]
 
 lemma ediam_eq_zero_of_subsingleton [Subsingleton α] : G.ediam = 0 := by
-  rw [ediam_def, ENat.iSup_eq_zero]
-  simpa [edist_eq_zero_iff, Prod.forall] using subsingleton_iff.mp ‹_›
+  simp [ediam_def]
 
 lemma nontrivial_of_ediam_ne_zero (h : G.ediam ≠ 0) : Nontrivial α := by
   contrapose! h
