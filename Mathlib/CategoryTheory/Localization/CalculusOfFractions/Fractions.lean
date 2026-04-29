@@ -319,4 +319,19 @@ lemma exists_leftFraction₃ {X Y : C} (f f' f'' : L.obj X ⟶ L.obj Y) :
 
 end Localization
 
+lemma Functor.faithful_of_precomp_of_hasLeftCalculusOfFractions
+    {E : Type*} [Category* E] (F : D ⥤ E)
+    [W.HasLeftCalculusOfFractions]
+    (h : ∀ ⦃X₁ X₂ : C⦄ (f g : X₁ ⟶ X₂), F.map (L.map f) = F.map (L.map g) → L.map f = L.map g) :
+    Faithful F := by
+  have := Localization.essSurj L W
+  refine F.faithful_of_precomp_essSurj L (fun X₁ X₂ f g hfg ↦ ?_)
+  obtain ⟨φ, rfl, rfl⟩ := Localization.exists_leftFraction₂ L W f g
+  have := Localization.inverts L W φ.s φ.hs
+  rw [← cancel_mono (L.map φ.s)]
+  erw [φ.fst.map_comp_map_s L, φ.snd.map_comp_map_s L]
+  apply h
+  simpa only [← F.map_comp, φ.fst.map_comp_map_s, φ.snd.map_comp_map_s] using
+    hfg =≫ F.map (L.map φ.s)
+
 end CategoryTheory
