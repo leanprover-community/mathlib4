@@ -23,7 +23,8 @@ convention, but implicitly shows the monotonicity in `pentagonal_lt_pentagonal_n
 
 ## TODO
 
-Show the relation between pentagonal numbers and partitions, including the pentagonal number theorem.
+Show the relation between pentagonal numbers and partitions, including the pentagonal number 
+theorem.
 
 ## References
 
