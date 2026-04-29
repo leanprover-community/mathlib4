@@ -221,20 +221,6 @@ instance : AddCommGroup (carrier D U) :=
   Injective.addCommGroup (M₁ := carrier D U) (M₂ := X.functionField)
     Subtype.val Subtype.coe_injective coe_zero coe_add coe_neg coe_sub coe_nsmul coe_zsmul
 
-/-
-def moduleNonempty
-    (D : AlgebraicCycle X ℤ) (U : X.Opens) [Nonempty U] :
-    Submodule Γ(X, U) X.functionField where
-  __ := addSubgroup D U
-  smul_mem' := smul_mem' D U
-
-lemma memModuleNonempty {D : AlgebraicCycle X ℤ} {U : X.Opens} [Nonempty U] (f : carrier D U) :
-    (f : X.functionField) ∈ moduleNonempty D U := by simp
-
-@[simps]
-def mk_of_mem_module_nonempty {D : AlgebraicCycle X ℤ} {U : X.Opens} [Nonempty U]
-    (f : X.functionField) (hf : f ∈ moduleNonempty D U) : carrier D U := ⟨f, hf⟩-/
-
 /--
 At some level, the definition of scalar multiplication on `Γ(𝒪ₓ(D), U)` needs to have some case
 distinction like this because the behaviour at the empty set and any other set is completely
@@ -265,23 +251,9 @@ noncomputable instance : SMul Γ(X, U) (carrier D U) where
   change smulVal a f.val = a • (f : X.functionField)
   simp [smulVal, hU]
 
-/-def moduleInstNonempty (D : AlgebraicCycle X ℤ) (U : X.Opens) [Nonempty U] :
-  Module Γ(X, U) (carrier D U) :=
-  let v : carrier D U →+ X.functionField := {
-    toFun := Subtype.val
-    map_zero' := by simp
-    map_add' := by simp
-  }
-  Injective.module Γ(X, U) (M₂ := carrier D U) (M := X.functionField) v
-  Subtype.coe_injective coe_smul-/
-
---instance : Subsingleton (carrier D ⊥) := by simp [carrier]
 instance instSubsingleTonOfEmpty (h : ¬ Nonempty U) : Subsingleton (carrier D U) := by
   simp [carrier, h]
 
--- Modified by Claude Opus 4.6: define instModuleCarrier with smul := (· • ·) using
--- the global SMul instance. This ensures instModuleCarrier.toSMul is definitionally
--- the global SMul, eliminating the instance diamond across different divisors.
 noncomputable instance instModuleCarrier : Module Γ(X, U) (carrier D U) where
   smul := (· • ·)
   one_smul a := by
@@ -320,8 +292,6 @@ noncomputable instance instModuleCarrier : Module Γ(X, U) (carrier D U) where
       exact congr_arg Subtype.val (Subsingleton.elim x 0)
 
 end insts
-
---open Pseudofunctor
 
 /--
 The action of `𝒪ₓ(D)` on objects.
