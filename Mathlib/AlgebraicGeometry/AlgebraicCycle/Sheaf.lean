@@ -55,8 +55,6 @@ lemma IsRegularInCodimensionOne.stalk_dvr {X : Scheme.{u}} [h : IsRegularInCodim
   have := IsIntegralInCodimensionOne.stalk_domain x hx
   IsDiscreteValuationRing (X.presheaf.stalk x) := h.dvr x hx
 
---variable [IsRegularInCodimensionOne X]
-
 namespace AlgebraicCycle
 namespace Sheaf
 
@@ -236,7 +234,7 @@ noncomputable instance : SMul Γ(X, U) (carrier D U) where
 
 @[simp] lemma coe_smul [hU : Nonempty U] (a : Γ(X, U)) (f : carrier D U) :
     (↑(a • f) : X.functionField) = a • (f : X.functionField) := by
-  show smulVal a f.val = a • (f : X.functionField)
+  change smulVal a f.val = a • (f : X.functionField)
   simp [smulVal, hU]
 
 def moduleInstNonempty (D : AlgebraicCycle X ℤ) (U : X.Opens) [Nonempty U] :
@@ -301,22 +299,14 @@ noncomputable
 def obj (D : AlgebraicCycle X ℤ) (U : (TopologicalSpace.Opens ↥X)ᵒᵖ) :
     ModuleCat (X.ringCatSheaf.obj.obj U) := .of Γ(X, unop U) <| carrier D (unop U)
 
-open Classical in
-lemma _root_.Function.locallyFinsuppWithin_le_iff {X Y : Type*} [TopologicalSpace X] {U : Set X}
-    [Zero Y] [Lattice Y] (D D' : locallyFinsuppWithin U Y) : D ≤ D' ↔ ∀ z ∈ U, D z ≤ D' z :=
-  ⟨fun h z _ ↦ h z, fun h z ↦ if hz : z ∈ U then h z hz else by simp [hz]⟩
-
 lemma mapFunProof (D : AlgebraicCycle X ℤ) {U V : X.Opens}
     (r : V ≤ U) [hV : Nonempty V] (f : X.functionField) (hf : f ∈ carrier D U) :
     f ∈ carrier D V := by
-  intro h
-  specialize hf h
-  refine ⟨hV, ?_⟩
-  simp only [ge_iff_le]
+  refine fun h ↦ ⟨hV, ge_iff_le.mpr ?_⟩
   rw [homogeneous_le_iff (t := V)]
   on_goal 1 =>
     intro z hz
-    have := hf.2 z
+    have := (hf h).2 z
     simpa [hz, r hz] using this
   all_goals simp_all
 
@@ -375,45 +365,45 @@ def map (D : AlgebraicCycle X ℤ) {U V : (TopologicalSpace.Opens ↥X)ᵒᵖ} (
       · simp [mapFun, hV]
         rfl
     map_smul' m a := by
-      /-
-      TODO: Clean this up and make it so this isn't such a pain to work with
-      -/
-      simp
-      by_cases hV : Nonempty V.unop
-      · rw [ModuleCat.restrictScalars.smul_def
-            (X.sheaf.obj.map r).hom m (M := obj D V) (mapFun D (leOfHom (unop r)) a)]
-        have := coe_smul (a := (X.sheaf.obj.map r) m) (f := mapFun D (leOfHom (unop r)) a)
-        rw [coe_smul] at this
+      dsimp [mapFun]
+      split_ifs
+      · dsimp [smulVal]
+        split_ifs
+        · apply Subtype.ext
 
-        convert this.symm
-        simp
-        apply Subtype.ext
-        have : Nonempty U.unop := Nonempty_le (leOfHom r.unop)
-        simp
-        /-
-        The below code worked on an older version of mathlib, however it's unclear to me what has
-        changed. TODO: Figure out how to make the below code work again (I think it'll probably
-        be a matter of feeding the right instances to coe_smul)
-        -/
-        sorry
-        /-rw [coe_smul]
-        simp [obj]
-        rw [coe_smul]
-        simp
-        let o : Algebra Γ(X, U.unop) Γ(X, V.unop) := (X.sheaf.val.map r).hom.toAlgebra
-        let k : Algebra Γ(X, V.unop) X.functionField := (X.germToFunctionField V.unop).hom.toAlgebra
-        have : IsScalarTower Γ(X, U.unop) Γ(X, V.unop) X.functionField := by infer_instance
-        change m • a = (algebraMap  Γ(X, U.unop) Γ(X, V.unop) m) • a.1
-        exact algebra_compatible_smul (↑Γ(X, unop V)) m a.1-/
-
-      · exact Subsingleton.elim (h := instSubsingleTonOfEmpty hV) _ _
+          erw [coe_smul]
+          simp only [op_unop, sheafCompose_obj_obj, Functor.comp_obj,
+            CommRingCat.forgetToRingCat_obj, Functor.comp_map, CommRingCat.forgetToRingCat_map_hom,
+            RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
+            MonoidHom.coe_coe, ZeroHom.coe_mk]
+          let : Algebra Γ(X, U.unop) Γ(X, V.unop) := (X.sheaf.obj.map r).hom.toAlgebra
+          --let k : Algebra Γ(X, V.unop) X.functionField :=
+          --    (X.germToFunctionField V.unop).hom.toAlgebra
+          have : IsScalarTower Γ(X, U.unop) Γ(X, V.unop) X.functionField := by infer_instance
+          change m • a = (algebraMap  Γ(X, U.unop) Γ(X, V.unop) m) • a.1
+          exact algebra_compatible_smul (↑Γ(X, unop V)) m a.1
+        · have : ¬ Nonempty ↑(unop V) := by
+            have := leOfHom r.unop
+            suffices (unop V) = ⊥ by simp_all only [Opens.nonempty_iff,
+              TopologicalSpace.Opens.coe_bot, Set.not_nonempty_empty]
+            have : unop U = ⊥ := by
+              rename_i _ hU
+              rw [Opens.nonempty_iff] at hU
+              rw [TopologicalSpace.Opens.nonempty_coe] at hU
+              rw [← TopologicalSpace.Opens.coe_eq_empty]
+              rw [@Set.eq_empty_iff_forall_notMem]
+              tauto
+            (expose_names; exact eq_bot_mono this_1 this)
+          contradiction
+      · rename_i _ hV
+        exact Subsingleton.elim (h := instSubsingleTonOfEmpty hV) _ _
   }
 
 set_option backward.isDefEq.respectTransparency false in
 def map_id (D : AlgebraicCycle X ℤ) (U : (TopologicalSpace.Opens ↥X)ᵒᵖ) :
     map D (𝟙 U) = (ModuleCat.restrictScalarsId' (RingCat.Hom.hom (X.ringCatSheaf.obj.map (𝟙 U)))
     (congrArg RingCat.Hom.hom (X.ringCatSheaf.obj.map_id U))).inv.app (obj D U) := by
-  simp [map]
+  dsimp [map]
   by_cases h : Nonempty U.unop
   · apply ModuleCat.hom_ext
     rw [@LinearMap.ext_iff]
@@ -430,27 +420,28 @@ set_option backward.isDefEq.respectTransparency false in
 def map_comp (D : AlgebraicCycle X ℤ)
   {U V W : (TopologicalSpace.Opens ↥X)ᵒᵖ} (f : U ⟶ V) (g : V ⟶ W) :
   map D (f ≫ g) = map D f ≫
-    (ModuleCat.restrictScalars (RingCat.Hom.hom (X.ringCatSheaf.val.map f))).map (map D g) ≫
-    (ModuleCat.restrictScalarsComp' (RingCat.Hom.hom (X.ringCatSheaf.val.map f))
+    (ModuleCat.restrictScalars (RingCat.Hom.hom (X.ringCatSheaf.obj.map f))).map (map D g) ≫
+    (ModuleCat.restrictScalarsComp' (RingCat.Hom.hom (X.ringCatSheaf.obj.map f))
     (RingCat.Hom.hom (X.ringCatSheaf.obj.map g))
     (RingCat.Hom.hom (X.ringCatSheaf.obj.map (f ≫ g)))
     (congrArg RingCat.Hom.hom (X.ringCatSheaf.obj.map_comp f g))).inv.app (obj D W) := by
   apply ModuleCat.hom_ext
   rw [@LinearMap.ext_iff]
   intro x
-  simp [map]
+  dsimp [map]
   by_cases h : Nonempty W.unop
   · have hV : Nonempty V.unop := Nonempty_le <| leOfHom g.unop
     apply Subtype.ext
-    simp_all
+    simp only [mapFunApplyNonempty, op_unop, sheafCompose_obj_obj, Functor.comp_obj,
+      CommRingCat.forgetToRingCat_obj, Functor.comp_map, CommRingCat.forgetToRingCat_map_hom]
     change x.1 = (mapFun D (map._proof_1 g) (mapFun D (map._proof_1 f) x))
-    simp [hV, h]
+    simp
   · exact Subsingleton.elim (h := instSubsingleTonOfEmpty h) _ _
 
 
 open Classical in
 noncomputable
-def presheaf (D : AlgebraicCycle X ℤ) : PresheafOfModules X.ringCatSheaf.val where
+def presheaf (D : AlgebraicCycle X ℤ) : PresheafOfModules X.ringCatSheaf.obj where
   obj := obj D
   map := map D
   map_id := map_id D
@@ -465,18 +456,10 @@ lemma presheaf.obj_eq' (D : AlgebraicCycle X ℤ) (U : (TopologicalSpace.Opens �
 lemma presheaf.map_eq (D : AlgebraicCycle X ℤ) {U V : (TopologicalSpace.Opens ↥X)ᵒᵖ}
     (r : U ⟶ V) : (presheaf D).map r = map D r := rfl
 
-
 /--
-Something strange is going on with this as well, note that just by simp should work in the sorried
-statement below
-
-Now the grind statement is not working...
+Given a family of sets indexed by `I`, `i` and `j` are `ConnectedByCover` if there is a series of
+indices `i = i₀, i_1, ..., iₙ = j` such that `iₖ ∩ iₗ` is nonempty for `l = k + 1`.
 -/
-
-lemma presheaf.map_eq' (D : AlgebraicCycle X ℤ) {U V : (TopologicalSpace.Opens ↥X)ᵒᵖ}
-    (r : U ⟶ V) : (presheaf D).presheaf.map r =
-    AddCommGrpCat.ofHom (AddMonoidHom.mk' (map D r) sorry) := rfl
-
 def connectedByCover {I : Type*} (𝒰 : I → X.Opens) :
   Rel I I := Relation.TransGen <| fun a b ↦ Nonempty (𝒰 a ⊓ 𝒰 b : X.Opens)
 
@@ -485,10 +468,10 @@ def sections_equal_of_nonempty_intersection {D : AlgebraicCycle X ℤ} {I : Type
     (s : (i : I) → ToType ((presheaf D).presheaf.obj (op (𝒰 i))))
     (hs : TopCat.Presheaf.IsCompatible (presheaf D).presheaf 𝒰 s) : (s i).1 = (s j).1 := by
   specialize hs i j
-  simp [presheaf, PresheafOfModules.presheaf, map] at hs
+  dsimp [presheaf, PresheafOfModules.presheaf, map] at hs
   change mapFun D (map._proof_1 (TopologicalSpace.Opens.infLELeft (𝒰 i) (𝒰 j)).op) (s i) =
     mapFun D (map._proof_1 (TopologicalSpace.Opens.infLERight (𝒰 i) (𝒰 j)).op) (s j) at hs
-  simp [mapFun] at hs
+  dsimp [mapFun] at hs
   let f := (s i).1
   let hf := (s i).2
   have : s i = ⟨f, hf⟩ := rfl
@@ -515,19 +498,14 @@ We now want to say that on an irreducible space, if we have a cover then any two
 cover are connected by cover
 -/
 open TopologicalSpace
-lemma connectedByCover_of_connected
-    {I : Type*} {𝒰 : I → X.Opens}
-    (h𝒰 : ConnectedSpace (iSup 𝒰).1)
-    (i j : I)
-    (hi : (𝒰 i).1.Nonempty) (hj : (𝒰 j).1.Nonempty) : connectedByCover 𝒰 i j := by
+lemma connectedByCover_of_connected {I : Type*} {𝒰 : I → X.Opens}
+    (h𝒰 : _root_.IsConnected (iSup 𝒰).1) (i j : I) (hi : (𝒰 i).1.Nonempty)
+    (hj : (𝒰 j).1.Nonempty) : connectedByCover 𝒰 i j := by
   by_contra! p
-  simp [connectedByCover] at p
+  dsimp [connectedByCover] at p
   let s := {k : I | connectedByCover 𝒰 i k}
   let U := ⨆ (k ∈ s), 𝒰 k
   let V := ⨆ (k ∈ sᶜ), 𝒰 k
-
-  have hU : U ≤ iSup 𝒰 := iSup₂_le_iSup (Membership.mem s) 𝒰
-  have hV : V ≤ iSup 𝒰 := iSup₂_le_iSup (Membership.mem sᶜ) 𝒰
 
   let U' : Set (iSup 𝒰).1 := {⟨a, b⟩ : (iSup 𝒰).1 | a ∈ U}
   let V' : Set (iSup 𝒰).1 := {⟨a, b⟩ : (iSup 𝒰).1 | a ∈ V}
@@ -577,24 +555,26 @@ lemma connectedByCover_of_connected
 
   have iBot : U ⊓ V = ⊥ := by
     ext a
-    simp
     by_contra!
-    simp [U, V, s] at this
+    simp only [Opens.iSup_mk, Set.mem_setOf_eq, Opens.carrier_eq_coe, Opens.coe_mk,
+      Set.mem_compl_iff, Opens.mk_inf_mk, Set.inf_eq_inter, Set.mem_inter_iff, Set.mem_iUnion,
+      SetLike.mem_coe, exists_prop, Opens.coe_bot, Set.mem_empty_iff_false, not_false_eq_true,
+      and_true, not_and, not_exists, forall_exists_index, and_imp, and_false, or_false, U, s,
+      V] at this
     obtain ⟨⟨k, hk⟩, ⟨l, hl⟩⟩ := this
     have : connectedByCover 𝒰 i l := by
       fapply Relation.TransGen.tail
       · exact k
       · exact hk.1
       · use a
-        simp
         exact ⟨hk.2, hl.2⟩
     exact hl.1 this
 
-
-  have ans := h𝒰.isPreconnected_univ U' V' hU' hV' univ_mem neU' neV'
+  have h' : ConnectedSpace (iSup 𝒰).1 := Subtype.connectedSpace h𝒰
+  have ans := h'.isPreconnected_univ U' V' hU' hV' univ_mem neU' neV'
   have : U.1 ∩ V.1 = ∅ := Opens.ext_iff.mp iBot
   have : U' ∩ V' = ∅ := by
-    simp [U', V']
+    dsimp [U', V']
     ext ⟨a, b⟩
     rw [Set.ext_iff] at this
     specialize this a
@@ -602,43 +582,24 @@ lemma connectedByCover_of_connected
   erw [this] at ans
   simp_all
 
+
 open Presheaf
 lemma isSheaf (D : AlgebraicCycle X ℤ) :
     TopCat.Presheaf.IsSheaf (presheaf D).presheaf := by
 
-  rw[TopCat.Presheaf.isSheaf_iff_isSheafUniqueGluing]
-  intro I 𝒰 s hs
+  rw [TopCat.Presheaf.isSheaf_iff_isSheafUniqueGluingNontrivial]
+  on_goal 2 =>
+    simp [presheaf, obj, carrier]
+    infer_instance
 
-  simp [TopCat.Presheaf.IsGluing, presheaf.map_eq', map]
-  wlog ne : Nonempty I
-  · have : iSup 𝒰 = ⊥ := by aesop
-    let s : (presheaf D).obj (op (iSup 𝒰)) := ⟨0, by simp [carrier]⟩
-    have ss : Subsingleton ((presheaf D).obj (op (iSup 𝒰))) := by
-      rw [this]
-      simp [presheaf, obj, carrier]
-      exact Unique.instSubsingleton
-    have (i : I) : Subsingleton ↑((presheaf D).obj (op (𝒰 i))) := by
-      simp at ne
-      apply False.elim
-      exact IsEmpty.false i
-    use s
-    constructor
-    · intro i
-      apply Subsingleton.elim
-    · exact fun _ _ ↦ Subsingleton.elim ..
+  intro I hI 𝒰 h𝒰 s hs
 
+  obtain ⟨i⟩ := hI
 
-  obtain ⟨i⟩ := ne
-  wlog h : (∀ i : I, Nonempty (𝒰 i))
-  · have : Nonempty X := inferInstance
-
-
-    sorry
-
-  have : Nonempty (iSup 𝒰 : TopologicalSpace.Opens X) := by
-    simp only [Scheme.Opens.nonempty_iff, Opens.coe_iSup, Set.nonempty_iUnion]
+  have : Nonempty (iSup 𝒰 : TopologicalSpace.Opens X) := by aesop
+    /-simp only [Scheme.Opens.nonempty_iff, Opens.coe_iSup, Set.nonempty_iUnion]
     use i
-    exact (Scheme.Opens.nonempty_iff (𝒰 i)).mp (h i)
+    exact (Scheme.Opens.nonempty_iff (𝒰 i)).mp (h𝒰 i)-/
 
   have k : AlgebraicGeometry.IsIntegral (iSup 𝒰 : TopologicalSpace.Opens X) := by infer_instance
   /-
@@ -652,60 +613,61 @@ lemma isSheaf (D : AlgebraicCycle X ℤ) :
   let sec : carrier D (iSup 𝒰) := {
     val := (s i).1
     property := by
-
-      have : (s i).1 ∈ carrier D (𝒰 i) := by exact Subtype.coe_prop (s i)
-      have l : carrier D (𝒰 i) ≤ carrier D (iSup 𝒰) := by
-        simp [carrier]
-        intro f a b
-        specialize a b
-        constructor
-        · exact ⟨i, a.1⟩
-        · have := (a.2)
-          rw [locallyFinsuppWithin_le_iff] at ⊢ this
-          intro z hz
-
-          simp at hz
-          simp [restrict_apply, hz]
-          specialize this z
-
-
-          /-
-          We should case match on whether or not z is in 𝒰 i.
-          if it is then we're done, otherwise z must be in a set
-          which is connected by cover to our 𝒰 i, so we're done.
-          -/
-
-          sorry
-      exact l this
-
+      simp only [carrier, ne_eq, Opens.nonempty_iff, Opens.coe_iSup, Set.nonempty_iUnion, ge_iff_le,
+        Set.mem_setOf_eq]
+      intro hf
+      constructor
+      · use i
+        convert h𝒰 i
+        simp [Set.nonempty_def]
+      · rw [homogeneous_le_iff (t := ⋃ i, ↑(𝒰 i))]
+        · simp_all
+          intro z j hz
+          have : connectedByCover 𝒰 i j := by
+            apply connectedByCover_of_connected
+            · apply IsIrreducible.isConnected
+              have := irreducibleSpace_of_isIntegral ↑(iSup 𝒰)
+              exact isIrreducible_iff_irreducibleSpace.mpr this
+            · exact h𝒰 i
+            · exact h𝒰 j
+          have o := sections_equal_of_connected_by_cover this s hs
+          simp_rw [o]
+          have := (s j).2
+          simp [carrier] at this
+          rw [o] at hf
+          specialize this hf
+          have := this.2 z
+          convert this
+          simp_all
+        all_goals simp_all
   }
   use sec
   simp
   constructor
   · intro j
-   --unfold mapFun
-    simp [sec, h j]
-    change ⟨_, _⟩ = s j
+    --simp [sec, presheaf, PresheafOfModules.presheaf, map]
+    simp [presheaf, PresheafOfModules.presheaf, map]
+    change mapFun D (map._proof_1 (Opens.leSupr 𝒰 j).op) sec = s j
+    have : Nonempty ↑(𝒰 j) := by exact h𝒰 j
+    simp [mapFun, this, sec]
     apply Subtype.ext
     simp
     apply sections_equal_of_connected_by_cover
-    · apply connectedByCover_of_connected
-      · exact IrreducibleSpace.connectedSpace (iSup 𝒰 : TopologicalSpace.Opens X)
-      · exact Set.nonempty_coe_sort.mp (h i)
-      · exact Set.nonempty_coe_sort.mp (h j)
+    · -- This is proven elsewhere in this lemma, we should restructure things to make this less
+      -- awkward
+      sorry
     · exact hs
 
   · intro s' h'
 
     simp [sec]
-    unfold mapFun at h'
-    specialize h i
     specialize h' i
-    simp [h] at h'
-    change ⟨_, _⟩ = s i at h'
-    rw [← h']
+    change mapFun D (map._proof_1 (Opens.leSupr 𝒰 i).op) s' = s i at h'
+    simp_rw [← h']
+    have : Nonempty (𝒰 i) := h𝒰 i
+    simp [mapFun, this]
+    obtain ⟨p, hp⟩ := s'
     simp
-
 
 end Sheaf
 
