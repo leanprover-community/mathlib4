@@ -61,4 +61,29 @@ def dsimpPercentElaborator : TermElab := fun stx expectedType => do
       dsimp e
   go { elaborator := .anonymous } |>.run' { goals := [fresh.mvarId!] }
 
+/--
+`dsimp'% […] t` does the same as `dsimp% […] t`, but doesn't throw an error if `dsimp` makes no
+progress.
+-/
+syntax (name := dsimpPercent') "dsimp'%" optConfig (discharger)? (&" only")?
+  (" [" withoutPosition((simpErase <|> simpLemma),*,?) "]")? ppSpace term : term
+
+@[term_elab dsimpPercent', inherit_doc dsimpPercent']
+def dsimpPercentElaborator' : TermElab := fun stx expectedType => do
+  let fresh ← mkFreshExprMVar default
+  let go : TacticM Expr := do
+    let e ← Term.elabTerm stx[5] expectedType
+    -- `stx` has the same shape as a normal `dsimp` call, so we can pass it to `mkSimpContext`.
+    let { ctx, simprocs, .. } ← mkSimpContext stx (eraseLocal := false) (kind := .dsimp)
+    let dsimp (e : Expr) : MetaM Expr := do
+      -- Ensure that only instantiating metavariables isn't counted as progress.
+      let e ← instantiateMVars e
+      let (dsimpResult, _) ← Meta.dsimp e ctx simprocs
+      return dsimpResult
+    if ← isProof e then
+      mkExpectedTypeHint e (← dsimp (← inferType e))
+    else
+      dsimp e
+  go { elaborator := .anonymous } |>.run' { goals := [fresh.mvarId!] }
+
 end Mathlib.Tactic
