@@ -670,8 +670,15 @@ def fromRelNdrec {motive : Sort*} {sym : Symmetric r} (z : Sym2 α) (hz : z ∈ 
     motive :=
   z.hrec f (fun _ _ ↦ Function.hfunext (sym.iff .. |>.eq) fun _ _ _ ↦ heq_of_eq <| h ..) hz
 
+@[simp]
+theorem fromRelNdrec_mk {motive : Sort*} {sym : Symmetric r} {a b : α} (hz : r a b)
+    (f : (a b : α) → r a b → motive) (h : ∀ (a b : α) (h : r a b), f a b h = f b a (sym h)) :
+    fromRelNdrec s(a, b) hz f h = f a b hz :=
+  rfl
+
 /-- The `fromRel` set of a symmetric relation `r` is equivalent to summing that set restricted to
 fibers of `f` -/
+@[simps]
 def _root_.Equiv.sigmaFiberFromRel (sym : Symmetric r) {f : α → β} (hf : r ≤ Setoid.ker f) :
     fromRel sym ≃ Σ b : β, fromRel (α := { a // f a = b }) <| sym.comap (↑) where
   toFun z := z.val.fromRelNdrec z.prop
@@ -691,6 +698,7 @@ def _root_.Equiv.sigmaFiberFromRel (sym : Symmetric r) {f : α → β} (hf : r �
 /-- For a relation homomorphism `r →r r'` where `r` is symmetric, the `fromRel` set of `r` is
 equivalent to summing that set restricted to equivalence classes of `r'` using a `Subtype`,
 `Quot` version -/
+@[simps!]
 def _root_.Equiv.sigmaQuotFromRel (sym : Symmetric r) {r' : β → β → Prop} (f : r →r r') :
     fromRel sym ≃ Σ q : Quot r', fromRel (α := { x // .mk r' (f x) = q }) <| sym.comap (↑) :=
   .sigmaFiberFromRel sym fun _ _ h ↦ Quot.sound <| f.map_rel h
@@ -698,9 +706,10 @@ def _root_.Equiv.sigmaQuotFromRel (sym : Symmetric r) {r' : β → β → Prop} 
 /-- For a relation homomorphism `r →r r'` where `r` is symmetric, the `fromRel` set of `r` is
 equivalent to summing that set restricted to equivalence classes of `r'` using a `Subtype`,
 `Quotient` version -/
+@[simps!]
 def _root_.Equiv.sigmaQuotientFromRel (sym : Symmetric r) {r' : Setoid β} (f : r →r r') :
     fromRel sym ≃ Σ q : Quotient r', fromRel (α := { x // ⟦f x⟧ = q }) <| sym.comap (↑) :=
-  .sigmaQuotFromRel sym f
+  .sigmaFiberFromRel sym fun _ _ h ↦ Quotient.sound <| f.map_rel h
 
 /-- The inverse to `Sym2.fromRel`. Given a set on `Sym2 α`, give a symmetric relation on `α`
 (see `Sym2.toRel_symmetric`). -/
