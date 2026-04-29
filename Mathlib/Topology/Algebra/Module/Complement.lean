@@ -104,6 +104,10 @@ theorem IsCompl.isTopCompl_iff_linearProjOfIsCompl (h : IsCompl p q) :
   rw [h.isTopCompl_iff, IsInducing.subtypeVal.continuous_iff]
   rfl
 
+theorem IsTopCompl.continuous_linearProjOfIsCompl (h : IsTopCompl p q) :
+    Continuous (p.linearProjOfIsCompl q h.isCompl) :=
+  h.isCompl.isTopCompl_iff_linearProjOfIsCompl.mp h
+
 protected theorem IsTopCompl.symm [ContinuousSub M] (h : IsTopCompl p q) : IsTopCompl q p where
   isCompl := h.isCompl.symm
   continuous_projection := by
@@ -151,9 +155,7 @@ along `q`. This is the continuous version of `Submodule.linearProjOfIsCompl`.
 
 See also `Submodule.IsTopCompl.projection` for the same projection as an element of `M →L[R] M`. -/
 protected noncomputable def IsTopCompl.projectionOnto (h : IsTopCompl p q) : M →L[R] p :=
-  ⟨p.linearProjOfIsCompl q h.isCompl, by
-    rw [IsInducing.subtypeVal.continuous_iff]
-    exact h.continuous_projection⟩
+  ⟨p.linearProjOfIsCompl q h.isCompl, h.continuous_linearProjOfIsCompl⟩
 
 @[simp]
 theorem IsTopCompl.toLinearMap_projectionOnto (h : IsTopCompl p q) :
