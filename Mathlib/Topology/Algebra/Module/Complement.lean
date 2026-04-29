@@ -156,7 +156,7 @@ protected noncomputable def IsTopCompl.projectionOnto (h : IsTopCompl p q) : M �
     exact h.continuous_projection⟩
 
 @[simp]
-theorem IsTopCompl.projectionOnto_toLinearMap (h : IsTopCompl p q) :
+theorem IsTopCompl.toLinearMap_projectionOnto (h : IsTopCompl p q) :
     (h.projectionOnto : M →ₗ[R] p) = p.linearProjOfIsCompl q h.isCompl :=
   rfl
 
@@ -205,7 +205,7 @@ protected noncomputable def IsTopCompl.projection (h : IsTopCompl p q) : M →L[
   p.subtypeL ∘L h.projectionOnto
 
 @[simp]
-theorem IsTopCompl.projection_toLinearMap (h : IsTopCompl p q) :
+theorem IsTopCompl.toLinearMap_projection (h : IsTopCompl p q) :
     (h.projection : M →ₗ[R] M) = h.isCompl.projection :=
   rfl
 
