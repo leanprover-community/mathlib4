@@ -665,7 +665,7 @@ lemma fromRel_relationMap {r : α → α → Prop} (hr : Symmetric r) (f : α �
   exact fun c d hcd hc hd ↦ ⟨d, c, hr hcd, hd, hc⟩
 
 /-- Non-dependent recursor on members of a `fromRel` set -/
-def fromRelNdrec {motive : Sort*} {sym : Symmetric r} (hz : z ∈ fromRel sym)
+def fromRelNdrec {motive : Sort*} {sym : Symmetric r} (z : Sym2 α) (hz : z ∈ fromRel sym)
     (f : (a b : α) → r a b → motive) (h : ∀ (a b : α) (h : r a b), f a b h = f b a (sym h)) :
     motive :=
   z.hrec f (fun _ _ ↦ Function.hfunext (sym.iff .. |>.eq) fun _ _ _ ↦ heq_of_eq <| h ..) hz
@@ -674,7 +674,7 @@ def fromRelNdrec {motive : Sort*} {sym : Symmetric r} (hz : z ∈ fromRel sym)
 fibers of `f` -/
 def _root_.Equiv.sigmaFiberFromRel (sym : Symmetric r) {f : α → β} (hf : r ≤ Setoid.ker f) :
     fromRel sym ≃ Σ b : β, fromRel (α := { a // f a = b }) <| sym.comap (↑) where
-  toFun z := fromRelNdrec z.prop
+  toFun z := z.val.fromRelNdrec z.prop
     (fun a₁ a₂ h ↦ ⟨f a₁, s(⟨a₁, rfl⟩, ⟨a₂, hf a₁ a₂ h |>.symm⟩), h⟩)
     fun a₁ a₂ h ↦ by
       dsimp only
