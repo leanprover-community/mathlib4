@@ -11,6 +11,7 @@ public import Mathlib.Logic.Unique
 public import Mathlib.Util.CompileInductive
 public import Mathlib.Tactic.Simps.NotationClass
 public import Mathlib.Tactic.SplitIfs
+public import Mathlib.Tactic.Simproc.CastData
 
 /-!
 # Typeclass for a type `F` with an injective map to `A → B`
@@ -172,6 +173,8 @@ instance (priority := 100) hasCoeToFun : CoeFun F (fun _ ↦ ∀ a : α, β a) w
 run_cmd Lean.Elab.Command.liftTermElabM do
   Lean.Meta.registerCoercion ``DFunLike.coe
     (some { numArgs := 5, coercee := 4, type := .coeFun })
+
+attribute [cast_data] DFunLike.coe
 
 theorem coe_eq_coe_fn : (DFunLike.coe (F := F)) = (fun f => ↑f) := rfl
 
