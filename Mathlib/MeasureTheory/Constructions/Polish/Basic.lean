@@ -1017,8 +1017,9 @@ theorem MeasureTheory.measurableSet_exists_tendsto [TopologicalSpace γ]
 
 section
 
-variable {α β ι : Type*} [MeasurableSpace α] [CommMonoid β] [TopologicalSpace β]
-  [PolishSpace β] [MeasurableSpace β] [BorelSpace β] [MeasurableMul₂ β]
+variable {α β ι : Type*} [MeasurableSpace α]
+  [CommMonoid β] [TopologicalSpace β] [IsCompletelyPseudoMetrizableSpace β]
+  [SecondCountableTopology β] [MeasurableSpace β] [BorelSpace β] [MeasurableMul₂ β]
   [Countable ι] {L : SummationFilter ι} [L.NeBot] [L.filter.IsCountablyGenerated]
 
 /-- The product of measurable functions is measurable. -/
