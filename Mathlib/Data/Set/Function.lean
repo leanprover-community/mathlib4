@@ -206,7 +206,7 @@ theorem mapsTo_inter : MapsTo f s (t₁ ∩ t₂) ↔ MapsTo f s t₁ ∧ MapsTo
       h.mono (Subset.refl s) inter_subset_right⟩,
     fun h => h.1.inter h.2⟩
 
-theorem mapsTo_univ (f : α → β) (s : Set α) : MapsTo f s univ := fun _ _ => trivial
+@[simp] theorem mapsTo_univ (f : α → β) (s : Set α) : MapsTo f s univ := fun _ _ => trivial
 
 theorem mapsTo_range (f : α → β) (s : Set α) : MapsTo f s (range f) :=
   (mapsTo_image f s).mono (Subset.refl s) (image_subset_range _ _)
@@ -473,6 +473,11 @@ theorem surjOn_image (f : α → β) (s : Set α) : SurjOn f s (f '' s) :=
 
 theorem SurjOn.comap_nonempty (h : SurjOn f s t) (ht : t.Nonempty) : s.Nonempty :=
   (ht.mono h).of_image
+
+lemma SurjOn.nonempty_or_eq_empty (h : SurjOn f s t) :
+    s.Nonempty ∨ t = ∅ := by
+  by_contra!
+  exact (h.comap_nonempty this.2).ne_empty this.1
 
 theorem SurjOn.congr (h : SurjOn f₁ s t) (H : EqOn f₁ f₂ s) : SurjOn f₂ s t := by
   rwa [SurjOn, ← H.image_eq]
@@ -1240,6 +1245,43 @@ protected lemma InvOn.extendDomain (h : InvOn g₁ g₂ s t) :
 end Set
 
 namespace Set
+
+section Prod
+
+variable {α β₁ β₂ : Type*} {s : Set α} {t₁ : Set β₁} {t₂ : Set β₂}
+  {f₁ : α → β₁} {f₂ : α → β₂} {g₁ : β₁ → α} {g₂ : β₂ → α}
+
+lemma InjOn.left_prodMk (h₁ : s.InjOn f₁) : s.InjOn fun x ↦ (f₁ x, f₂ x) :=
+  fun _ hx _ hy h => h₁ hx hy (Prod.ext_iff.1 h).1
+
+lemma InjOn.right_prodMk (h₂ : s.InjOn f₂) : s.InjOn fun x ↦ (f₁ x, f₂ x) :=
+  fun _ hx _ hy h => h₂ hx hy (Prod.ext_iff.1 h).2
+
+lemma prod_surjOn_fst (h : t₂.Nonempty) : (t₁ ×ˢ t₂).SurjOn Prod.fst t₁ :=
+  fun _ h => by simpa [h]
+lemma prod_surjOn_snd (h : t₁.Nonempty) : (t₁ ×ˢ t₂).SurjOn Prod.snd t₂ :=
+  fun _ h => by simpa [h]
+
+lemma prod_surjOn_fst_iff : (t₁ ×ˢ t₂).SurjOn Prod.fst t₁ ↔ t₁ = ∅ ∨ t₂.Nonempty :=
+  ⟨by by_contra!; aesop, by simp +contextual [or_imp, prod_surjOn_fst]⟩
+
+lemma prod_surjOn_snd_iff : (t₁ ×ˢ t₂).SurjOn Prod.snd t₂ ↔ t₁.Nonempty ∨ t₂ = ∅ :=
+  ⟨by by_contra!; aesop, by simp +contextual [or_imp, prod_surjOn_snd]⟩
+
+lemma MapsTo.prodMk (h₁ : MapsTo f₁ s t₁) (h₂ : MapsTo f₂ s t₂) :
+    MapsTo (fun x => (f₁ x, f₂ x)) s (t₁ ×ˢ t₂) :=
+  fun _ hx => ⟨h₁ hx, h₂ hx⟩
+
+lemma LeftInvOn.left_prodMk (h₁ : LeftInvOn g₁ f₁ s) :
+    LeftInvOn (fun x ↦ g₁ x.1) (fun x ↦ (f₁ x, f₂ x)) s := h₁
+
+lemma LeftInvOn.right_prodMk (h₂ : LeftInvOn g₂ f₂ s) :
+    LeftInvOn (fun x ↦ g₂ x.2) (fun x ↦ (f₁ x, f₂ x)) s := h₂
+
+end Prod
+
+section ProdMap
+
 variable {α₁ α₂ β₁ β₂ : Type*} {s₁ : Set α₁} {s₂ : Set α₂} {t₁ : Set β₁} {t₂ : Set β₂}
   {f₁ : α₁ → β₁} {f₂ : α₂ → β₂} {g₁ : β₁ → α₁} {g₂ : β₂ → α₂}
 
@@ -1273,6 +1315,8 @@ lemma RightInvOn.prodMap (h₁ : RightInvOn g₁ f₁ t₁) (h₂ : RightInvOn g
 lemma InvOn.prodMap (h₁ : InvOn g₁ f₁ s₁ t₁) (h₂ : InvOn g₂ f₂ s₂ t₂) :
     InvOn (fun x ↦ (g₁ x.1, g₂ x.2)) (fun x ↦ (f₁ x.1, f₂ x.2)) (s₁ ×ˢ s₂) (t₁ ×ˢ t₂) :=
   ⟨h₁.1.prodMap h₂.1, h₁.2.prodMap h₂.2⟩
+
+end ProdMap
 
 end Set
 

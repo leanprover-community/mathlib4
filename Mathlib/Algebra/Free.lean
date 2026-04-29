@@ -525,6 +525,10 @@ def lift : (α → β) ≃ (FreeSemigroup α →ₙ* β) where
       map_mul' := by simp [← List.foldl_map, List.foldl_assoc] }
   invFun f := f ∘ of
 
+@[to_additive]
+lemma lift_mk_eq_foldl {f : α → β} {x : α} {xs : List α} :
+    lift f ⟨x, xs⟩ = xs.foldl (· * f ·) (f x) := rfl
+
 @[to_additive (attr := simp)]
 theorem lift_of (x : α) : lift f (of x) = f x := rfl
 

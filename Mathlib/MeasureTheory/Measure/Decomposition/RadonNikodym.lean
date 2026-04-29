@@ -76,7 +76,7 @@ lemma rnDeriv_pos [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν) :
     ∀ᵐ x ∂μ, 0 < μ.rnDeriv ν x := by
   rw [← Measure.withDensity_rnDeriv_eq _ _ hμν,
     ae_withDensity_iff (Measure.measurable_rnDeriv _ _), Measure.withDensity_rnDeriv_eq _ _ hμν]
-  exact ae_of_all _ (fun x hx ↦ lt_of_le_of_ne (zero_le _) hx.symm)
+  exact ae_of_all _ (fun x hx ↦ hx.pos)
 
 lemma rnDeriv_pos' [HaveLebesgueDecomposition ν μ] [SigmaFinite μ] (hμν : μ ≪ ν) :
     ∀ᵐ x ∂μ, 0 < ν.rnDeriv μ x := by
@@ -373,8 +373,7 @@ lemma setIntegral_toReal_rnDeriv_le [SigmaFinite μ] {s : Set α} (hμs : μ s �
   _ ≤ μ.real t := by
         simp only [measureReal_def]
         gcongr
-        · exact hμt
-        · apply withDensity_rnDeriv_le
+        apply withDensity_rnDeriv_le
   _ = μ.real s := by rw [measureReal_def, measureReal_def, measure_toMeasurable s]
 
 lemma setIntegral_toReal_rnDeriv' [SigmaFinite μ] [HaveLebesgueDecomposition μ ν]
