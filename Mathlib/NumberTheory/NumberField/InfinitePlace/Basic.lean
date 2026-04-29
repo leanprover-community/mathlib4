@@ -140,7 +140,6 @@ theorem le_iff_le (x : K) (r : ℝ) : (∀ w : InfinitePlace K, w x ≤ r) ↔ �
 
 theorem pos_iff {w : InfinitePlace K} {x : K} : 0 < w x ↔ x ≠ 0 := AbsoluteValue.pos_iff w.1
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mk_eq_iff {φ ψ : K →+* ℂ} : mk φ = mk ψ ↔ φ = ψ ∨ ComplexEmbedding.conjugate φ = ψ := by
   constructor
@@ -617,7 +616,7 @@ theorem denseRange_algebraMap_pi [NumberField K] :
     -- At a fixed place `u`, the limit of `y` with respect to `u`'s topology is `zᵤ`.
     refine tendsto_pi_nhds.mpr fun u ↦ ?_
     simp_rw [← Fintype.sum_pi_single u z, y, map_sum, map_mul]
-    refine tendsto_finset_sum _ fun w _ ↦ ?_
+    refine tendsto_finsetSum _ fun w _ ↦ ?_
     by_cases hw : u = w
     · -- Because `1 / (1 + aᵤ⁻ⁿ) → 1` in `WithAbs u.1`.
       rw [← hw, Pi.single_eq_same]

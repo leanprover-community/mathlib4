@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Category.Grp.Limits
 public import Mathlib.Algebra.Category.Ring.Basic
 public import Mathlib.Algebra.Ring.Pi
-public import Mathlib.Algebra.Ring.Shrink
+public import Mathlib.Algebra.Ring.Shrink  -- shake: keep (Semiring (Shrink ...)), cf. lean#13417
 public import Mathlib.Algebra.Ring.Subring.Defs
 
 /-!
@@ -29,10 +29,7 @@ not obviously match the target type. In this case, instead of just giving the te
 with `by apply` may speed up things considerably as the types are not elaborated in the same order.
 -/
 
-
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 universe v u w
 
@@ -422,7 +419,6 @@ instance limitCommRing :
     (RingCat.sectionsSubring.{v, u} (F ⋙ forget₂ CommRingCat RingCat.{u}))
   inferInstanceAs <| CommRing (Shrink _)
 
-#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
 /-- We show that the forgetful functor `CommRingCat ⥤ RingCat` creates limits.
 
 All we need to do is notice that the limit point has a `CommRing` instance available,
@@ -502,8 +498,6 @@ instance forget₂Ring_preservesLimitsOfSize [UnivLE.{v, u}] :
 instance forget₂Ring_preservesLimits : PreservesLimits (forget₂ CommRingCat RingCat.{u}) :=
   CommRingCat.forget₂Ring_preservesLimitsOfSize.{u, u}
 
-#adaptation_note /-- After nightly-2026-02-23 this requires more heartbeats. -/
-set_option maxHeartbeats 400000 in -- see note above
 /-- An auxiliary declaration to speed up typechecking.
 -/
 def forget₂CommSemiRingPreservesLimitsAux :

@@ -263,7 +263,7 @@ theorem inv_mem_transvections_iff {e : V ≃ₗ[R] V} :
     e⁻¹ ∈ transvections R V ↔ e ∈ transvections R V :=
   symm_mem_transvections_iff
 
-open Pointwise in
+open scoped Pointwise in
 theorem transvections_pow_mono :
     Monotone (fun n : ℕ ↦ (transvections R V) ^ n) :=
   Set.pow_right_monotone one_mem_transvections
@@ -359,6 +359,10 @@ theorem dilatransvection_mem_dilatransvections {f : Dual R V} {v : V} {h : IsUni
   refine ⟨f, v, by simp⟩
 
 open Pointwise in
+theorem coe_dilatransvection {f : Dual R V} {v : V} (h : IsUnit (1 + f v)) :
+    dilatransvection h = LinearMap.transvection f v := rfl
+
+open scoped Pointwise in
 theorem dilatransvections_pow_mono :
     Monotone (fun n : ℕ ↦ (dilatransvections R V) ^ n) :=
   Set.pow_right_monotone one_mem_dilatransvections
@@ -429,7 +433,6 @@ theorem mem_dilatransvections_iff_rank_quotient {e : V ≃ₗ[K] V} :
   rw [mem_dilatransvections_iff_rank, ← (quotKerEquivRange _).rank_eq, ← fixedSubmodule_eq_ker]
 
 variable (e f : V ≃ₗ[K] V)
-open Pointwise MulAction
 
 /-
 theorem mem_stabilizer_submodule {W : Submodule K V} {u : V ≃ₗ[K] V} :
