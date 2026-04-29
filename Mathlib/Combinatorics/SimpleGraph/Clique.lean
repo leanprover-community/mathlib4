@@ -121,10 +121,10 @@ protected theorem IsClique.map (h : G.IsClique s) {f : α ↪ β} : (G.map f).Is
   exact ⟨hab, a, b, h ha hb <| ne_of_apply_ne _ hab, rfl, rfl⟩
 
 theorem IsClique.inter_left {s : Set α} (hs : G.IsClique s) (t : Set α) : G.IsClique <| s ∩ t :=
-  hs.subset Set.inter_subset_left
+  Set.Pairwise.inter_left hs t
 
 theorem IsClique.inter_right {s : Set α} (hs : G.IsClique s) (t : Set α) : G.IsClique <| t ∩ s :=
-  hs.subset Set.inter_subset_right
+  Set.Pairwise.inter_right hs t
 
 theorem isClique_sUnion {S : Set (Set α)} (hd : DirectedOn (· ⊆ ·) S) :
     G.IsClique (⋃₀ S) ↔ ∀ s ∈ S, G.IsClique s :=
