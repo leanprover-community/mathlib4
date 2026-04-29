@@ -333,7 +333,7 @@ lemma isPullback : IsPullback (t i d) (l i d) (r i d) (b i d) where
     subst h
     obtain ⟨c, y, rfl⟩ := ιSigmaStdSimplex_jointly_surjective y
     refine ⟨c.ιSigmaBoundary.app _ ⟨y, ?_⟩, ?_, ?_⟩
-    · rw [dsimp% ConcreteCategory.congr_hom (NatTrans.congr_app c.ι_b_ι (op ⦋n⦌)) y] at hx
+    · rw [dsimp% congr($(c.ι_b_ι).app (op ⦋n⦌) y)] at hx
       rwa [← c.preimage_map, Subcomplex.preimage_obj, Set.mem_preimage]
     · rw [Subtype.ext_iff]
       exact ConcreteCategory.congr_hom (NatTrans.congr_app c.ι_t_ι_eq_ι_l_b_ι _) _
