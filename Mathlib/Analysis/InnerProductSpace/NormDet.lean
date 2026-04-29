@@ -140,7 +140,8 @@ theorem TFAE_normDet_ne_zero (f : U →ₗ[𝕜] V) :
     List.TFAE [f.normDet ≠ 0,
       f.ker = ⊥,
       finrank 𝕜 f.range = finrank 𝕜 U,
-      Nonempty (OrthonormalBasis (Fin (finrank 𝕜 U)) 𝕜 f.range)] := by
+      Nonempty (OrthonormalBasis (Fin (finrank 𝕜 U)) 𝕜 f.range),
+      Function.Injective f] := by
   tfae_have 1 ↔ 2 := f.normDet_eq_zero_iff_ker_ne_bot.not_left
   tfae_have 1 ↔ 3 := f.normDet_eq_zero_iff_rank_range_ne.not_left
   tfae_have 3 → 4 := by
@@ -150,6 +151,7 @@ theorem TFAE_normDet_ne_zero (f : U →ₗ[𝕜] V) :
   tfae_have 4 → 3 := by
     rintro ⟨b⟩
     simpa using Module.finrank_eq_card_basis b.toBasis
+  tfae_have 2 ↔ 5 := ker_eq_bot
   tfae_finish
 
 private noncomputable def orthonormalBasis_range {ι : Type*} [Fintype ι] {f : U →ₗ[𝕜] V}
@@ -163,13 +165,15 @@ theorem TFAE_normDet_eq_zero (f : U →ₗ[𝕜] V) :
       f.ker ≠ ⊥,
       finrank 𝕜 f.range ≠ finrank 𝕜 U,
       finrank 𝕜 f.range < finrank 𝕜 U,
-      IsEmpty (OrthonormalBasis (Fin (finrank 𝕜 U)) 𝕜 f.range)] := by
+      IsEmpty (OrthonormalBasis (Fin (finrank 𝕜 U)) 𝕜 f.range),
+      ¬Function.Injective f] := by
   tfae_have 1 ↔ 2 := f.normDet_eq_zero_iff_ker_ne_bot
   tfae_have 1 ↔ 3 := f.normDet_eq_zero_iff_rank_range_ne
   tfae_have 3 ↔ 4 := by simpa using finrank_range_le f
   tfae_have 3 ↔ 5 := by
     have h := (f.TFAE_normDet_ne_zero.out 2 3).not
     simpa using h
+  tfae_have 2 ↔ 6 := ker_eq_bot.not
   tfae_finish
 
 /--
