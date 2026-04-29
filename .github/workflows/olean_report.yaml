@@ -174,7 +174,7 @@ jobs:
         continue-on-error: true
         run: |
           cd pr-branch
-          "$CACHE_BIN" get
+          lake exec "$CACHE_BIN" get
 
       - name: Check PR head oleans
         id: pr_oleans_check
@@ -195,7 +195,7 @@ jobs:
         continue-on-error: true
         run: |
           cd base
-          "$CACHE_BIN" get
+          lake exec "$CACHE_BIN" get
 
       - name: Generate olean report
         if: steps.check_trigger.outputs.triggered == 'true'
