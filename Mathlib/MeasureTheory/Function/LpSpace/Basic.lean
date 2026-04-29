@@ -529,6 +529,7 @@ lemma stronglyMeasurable_rpow {f : α → ℝ} (hf : AEStronglyMeasurable f μ) 
 
 theorem memLp_norm_rpow_iff {q : ℝ≥0∞} {f : α → E} (hf : AEStronglyMeasurable f μ) (q_zero : q ≠ 0)
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     (q_top : q ≠ ∞) : MemLp (fun x : α => ‖f x‖ ^ q.toReal) (p / q) μ ↔ MemLp f p μ := by
   by_cases hp : p = 0
   · simp only [hp, ENNReal.zero_div, memLp_zero_iff_aestronglyMeasurable_and_volume_support_lt_top,
@@ -558,7 +559,6 @@ theorem memLp_norm_rpow_iff {q : ℝ≥0∞} {f : α → E} (hf : AEStronglyMeas
   rw [← Real.enorm_rpow_of_nonneg (Real.rpow_nonneg (norm_nonneg (f x)) q.toReal)
     ENNReal.toReal_nonneg, ← Real.rpow_mul (norm_nonneg (f x)), ENNReal.toReal_inv, mul_inv_cancel₀
     (ENNReal.toReal_ne_zero.mpr ⟨q_zero, q_top⟩), Real.rpow_one, enorm_norm]
-=======
     (q_top : q ≠ ∞) (hp : p ≠ 0) : MemLp (fun x : α => ‖f x‖ ^ q.toReal) (p / q) μ ↔ MemLp f p μ := by
   refine ⟨fun h => ?_, fun h => h.norm_rpow_div q⟩
   have pq : p / q ≠ 0 := by
@@ -571,7 +571,6 @@ theorem memLp_norm_rpow_iff {q : ℝ≥0∞} {f : α → E} (hf : AEStronglyMeas
     simp [ENNReal.toReal_eq_zero_iff, q_zero, q_top]
   · rw [div_eq_mul_inv, inv_inv, div_eq_mul_inv, mul_assoc, ENNReal.inv_mul_cancel q_zero q_top,
       mul_one]
->>>>>>> Stashed changes
 
 theorem MemLp.enorm_rpow {f : α → ε} (hf : MemLp f p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     MemLp (fun x : α => ‖f x‖ₑ ^ p.toReal) 1 μ := by
