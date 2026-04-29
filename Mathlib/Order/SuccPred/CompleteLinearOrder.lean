@@ -134,7 +134,7 @@ theorem iSup_succ [SuccOrder α] (x : α) : ⨆ a : Iio x, succ a.1 = x := by
 end ConditionallyCompleteLinearOrderBot
 
 section CompleteLinearOrder
-variable [CompleteLinearOrder α] {s : Set α} {f : ι → α} {x l : α}
+variable [CompleteLinearOrder α] {s : Set α} {f : ι → α} {x : α}
 
 lemma sSup_mem_of_not_isSuccPrelimit (hlim : ¬ IsSuccPrelimit (sSup s)) : sSup s ∈ s := by
   obtain ⟨y, hy⟩ := not_forall_not.mp hlim
@@ -155,46 +155,46 @@ lemma exists_eq_iInf_of_not_isPredPrelimit (hf : ¬ IsPredPrelimit (⨅ i, f i))
   sInf_mem_of_not_isPredPrelimit hf
 
 @[to_dual lt_sInf_iff_of_not_isPredPrelimit]
-theorem sSup_lt_iff_of_not_isSuccPrelimit (h : ¬IsSuccPrelimit l) :
-    sSup s < l ↔ ∀ a ∈ s, a < l := by
-  have ⟨l', hl'⟩ := not_isSuccPrelimit_iff_exists_covBy l |>.mp h
-  simp_rw [← hl'.le_iff_lt_left]
+theorem sSup_lt_iff_of_not_isSuccPrelimit (h : ¬IsSuccPrelimit x) :
+    sSup s < x ↔ ∀ a ∈ s, a < x := by
+  have ⟨y, hy⟩ := not_isSuccPrelimit_iff_exists_covBy x |>.mp h
+  simp_rw [← hy.le_iff_lt_left]
   exact sSup_le_iff
 
 @[to_dual lt_iInf_iff_of_not_isPredPrelimit]
-theorem iSup_lt_iff_of_not_isSuccPrelimit (h : ¬IsSuccPrelimit l) :
-    ⨆ i, f i < l ↔ ∀ i, f i < l :=
+theorem iSup_lt_iff_of_not_isSuccPrelimit (h : ¬IsSuccPrelimit x) :
+    ⨆ i, f i < x ↔ ∀ i, f i < x :=
   sSup_lt_iff_of_not_isSuccPrelimit h |>.trans forall_mem_range
 
 @[to_dual sInf_le_iff_of_not_isPredPrelimit]
-theorem le_sSup_iff_of_not_isSuccPrelimit (h : ¬IsSuccPrelimit l) :
-    l ≤ sSup s ↔ ∃ a ∈ s, l ≤ a := by
+theorem le_sSup_iff_of_not_isSuccPrelimit (h : ¬IsSuccPrelimit x) :
+    x ≤ sSup s ↔ ∃ a ∈ s, x ≤ a := by
   simpa using sSup_lt_iff_of_not_isSuccPrelimit h |>.not
 
 @[to_dual iInf_le_iff_of_not_isPredPrelimit]
-theorem le_iSup_iff_of_not_isSuccPrelimit (h : ¬IsSuccPrelimit l) :
-    l ≤ ⨆ i, f i ↔ ∃ i, l ≤ f i :=
+theorem le_iSup_iff_of_not_isSuccPrelimit (h : ¬IsSuccPrelimit x) :
+    x ≤ ⨆ i, f i ↔ ∃ i, x ≤ f i :=
   le_sSup_iff_of_not_isSuccPrelimit h |>.trans exists_range_iff
 
 @[to_dual lt_sInf_iff]
-theorem Order.IsSuccPrelimit.sSup_lt_iff (h : IsSuccPrelimit l) :
-    sSup s < l ↔ ∃ a < l, ∀ b ∈ s, b < a := by
+theorem Order.IsSuccPrelimit.sSup_lt_iff (h : IsSuccPrelimit x) :
+    sSup s < x ↔ ∃ a < x, ∀ b ∈ s, b < a := by
   simp_rw [_root_.sSup_lt_iff, mem_upperBounds]
   grind [lt_iff_exists_lt]
 
 @[to_dual lt_iInf_iff]
-theorem Order.IsSuccPrelimit.iSup_lt_iff (h : IsSuccPrelimit l) :
-    ⨆ i, f i < l ↔ ∃ a < l, ∀ i, f i < a :=
+theorem Order.IsSuccPrelimit.iSup_lt_iff (h : IsSuccPrelimit x) :
+    ⨆ i, f i < x ↔ ∃ a < x, ∀ i, f i < a :=
   h.sSup_lt_iff.trans <| exists_congr fun _ ↦ and_congr_right fun _ ↦ forall_mem_range
 
 @[to_dual sInf_le_iff]
-theorem Order.IsSuccPrelimit.le_sSup_iff (h : IsSuccPrelimit l) :
-    l ≤ sSup s ↔ IsCofinalFor (Iio l) s := by
+theorem Order.IsSuccPrelimit.le_sSup_iff (h : IsSuccPrelimit x) :
+    x ≤ sSup s ↔ IsCofinalFor (Iio x) s := by
   simpa using h.sSup_lt_iff.not
 
 @[to_dual iInf_le_iff]
-theorem Order.IsSuccPrelimit.le_iSup_iff (h : IsSuccPrelimit l) :
-    l ≤ ⨆ i, f i ↔ ∀ a < l, ∃ i, a ≤ f i :=
+theorem Order.IsSuccPrelimit.le_iSup_iff (h : IsSuccPrelimit x) :
+    x ≤ ⨆ i, f i ↔ ∀ a < x, ∃ i, a ≤ f i :=
   h.le_sSup_iff.trans <| forall₂_congr fun _ _ ↦ exists_range_iff
 
 end CompleteLinearOrder
