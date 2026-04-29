@@ -44,7 +44,7 @@ free module, rank, Orzech property, (strong) rank condition, invariant basis num
 
 -/
 
-@[expose] public section
+public section
 
 universe u v w
 
