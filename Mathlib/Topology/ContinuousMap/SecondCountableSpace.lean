@@ -16,7 +16,7 @@ In this file we prove that `C(X, Y)` with compact-open topology has second count
 - `X` is a locally compact space;
 -/
 
-@[expose] public section
+public section
 
 open scoped Topology
 open Set Function Filter TopologicalSpace
