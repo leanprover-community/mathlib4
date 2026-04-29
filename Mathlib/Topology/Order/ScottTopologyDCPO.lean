@@ -77,7 +77,7 @@ theorem isCompactElement_iff_le_of_directed_sSup_le (k : α) :
   · intro hk s hs hs' h_le
     exact hk s (sSup s) hs hs' hs'.isLUB_sSup h_le
   · intro h s u hs hs' hu h_le
-    have u_eq_sSup: u = sSup s := IsLUB.unique hu (lubOfDirected s hs')
+    have u_eq_sSup : u = sSup s := hu.unique hs'.isLUB_sSup
     rw [u_eq_sSup] at h_le
     exact h s hs hs' h_le
 
