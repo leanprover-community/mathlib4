@@ -140,7 +140,7 @@ end CommAlgCat
 
 end from_proetale
 
-variable [IsLocalRing R] (K : Type v) [Field K] [Algebra (ResidueField R) K]
+variable [IsLocalRing R] (K : Type u) [Field K] [Algebra (ResidueField R) K]
 
 section monogenic
 
@@ -577,11 +577,38 @@ lemma flat_of_isColimit (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat R))))
   refine ⟨J, inferInstance, inferInstance, ⟨F ⋙ (forget₂ _ (CommAlgCat R)), c.ι, hc⟩, fun j ↦ ?_⟩
   simpa using (F.obj j).flat
 
-def residueFieldDescOfIsColimit (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat R))))
+variable (F) in
+noncomputable def residueFieldFunctor :=
+  @CommRingCat.FilteredColimit.residueFieldFunctor _ _
+  (F ⋙ (forget₂ _ (CommAlgCat R)) ⋙ (forget₂ _ CommRingCat)) (fun j ↦ (F.obj j).isLocalRing)
+  (fun _ _ f ↦ isLocalHom_toRingHom (F.map f).algHom)
+
+noncomputable def residueFieldCocone (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat R))))
+    (hc : IsColimit c) : Cocone (residueFieldFunctor F) :=
+  @CommRingCat.FilteredColimit.residueFieldCocone
+    _ _ _ _ ((forget₂ (CommAlgCat.{u} R) CommRingCat.{u}).mapCocone c)
+    (fun j ↦ (F.obj j).isLocalRing) (fun _ _ f ↦ isLocalHom_toRingHom (F.map f).algHom)
+    (isColimitOfPreserves _ hc)
+
+noncomputable def isColimitResidueFieldCocone (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat R))))
+    (hc : IsColimit c) : IsColimit (residueFieldCocone c hc) :=
+  @CommRingCat.FilteredColimit.isColimit_residueFieldCocone
+    _ _ _ _ ((forget₂ (CommAlgCat.{u} R) CommRingCat.{u}).mapCocone c)
+    (fun j ↦ (F.obj j).isLocalRing) (fun _ _ f ↦ isLocalHom_toRingHom (F.map f).algHom)
+    (isColimitOfPreserves _ hc)
+
+noncomputable def residueFieldCoconeK : Cocone (residueFieldFunctor F) where
+  pt := CommRingCat.of K
+  ι := {
+    app j := CommRingCat.ofHom <| algebraMap (ResidueField (F.obj j)) K
+    naturality j j' f := sorry
+  }
+
+noncomputable def residueFieldDescOfIsColimit (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat R))))
     (hc : IsColimit c) :
     haveI := isLocalRing_of_isColimit c hc
-    ResidueField c.pt →+* K := by
-  sorry
+    ResidueField c.pt →+* K :=
+  ((isColimitResidueFieldCocone c hc).desc residueFieldCoconeK).hom
 
 noncomputable def coconeOfCoconeForgetPt (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat R))))
     (hc : IsColimit c) : FlatExtension R K := by
@@ -602,10 +629,12 @@ noncomputable def coconeOfCoconeForget (c : Cocone (F ⋙ (forget₂ _ (CommAlgC
   pt := coconeOfCoconeForgetPt c hc
   ι := {
     app j := by
+      let h := isColimitResidueFieldCocone c hc
       refine FlatExtension.Hom.mk' R K (c.ι.app j).hom (isLocalHom_ι_of_isColimit c hc j) ?_
-      change (residueFieldDescOfIsColimit c hc).comp _ = _
-      -- this should be from residue field is colimit
-      sorry
+      change (h.desc residueFieldCoconeK).hom.comp ((residueFieldCocone c hc).ι.app j).hom =
+        (residueFieldCoconeK.ι.app j).hom
+      simp only [Functor.const_obj_obj, ← CommRingCat.hom_comp]
+      exact congr(CommRingCat.Hom.hom <| $(h.fac residueFieldCoconeK j))
     naturality j j' f := by
       ext x
       exact congr($(c.ι.naturality f) x) }
@@ -633,8 +662,7 @@ end FlatExtension
 
 /-- In this version the universe levels of `R` and `K` are assumed to be the same, see
   `exists_isLocalHom_flat` for a version where they have different universe levels. -/
-lemma exists_isLocalHom_flat' (K : Type u) [Field K] [Algebra (ResidueField R) K] :
-    ∃ (R' : Type u) (_ : CommRing R') (_ : IsLocalRing R')
+lemma exists_isLocalHom_flat' : ∃ (R' : Type u) (_ : CommRing R') (_ : IsLocalRing R')
     (_ : Algebra R R') (_ : IsLocalHom (algebraMap R R')), Module.Flat R R' ∧
     maximalIdeal R' = (maximalIdeal R).map (algebraMap R R') ∧
     Nonempty (K ≃ₐ[ResidueField R] (ResidueField R')) := by
@@ -684,7 +712,8 @@ lemma exists_isLocalHom_flat' (K : Type u) [Field K] [Algebra (ResidueField R) K
   absurd Cardinal.lift_mk_le_lift_mk_of_injective (hu.comp e.symm.injective)
   simpa using Cardinal.cantor (Cardinal.mk K)
 
-lemma exists_isLocalHom_flat : ∃ (R' : Type (max u v)) (_ : CommRing R') (_ : IsLocalRing R')
+lemma exists_isLocalHom_flat (K : Type u) [Field K] [Algebra (ResidueField R) K] :
+    ∃ (R' : Type (max u v)) (_ : CommRing R') (_ : IsLocalRing R')
     (_ : Algebra R R') (_ : IsLocalHom (algebraMap R R')), Module.Flat R R' ∧
     maximalIdeal R' = (maximalIdeal R).map (algebraMap R R') ∧
     Nonempty (K ≃ₐ[ResidueField R] (ResidueField R')) := by
