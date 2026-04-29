@@ -310,15 +310,6 @@ def Sublocale.Open : FrameHom X (Sublocale X) where
 
 
 
-
-
-
-
-
-
-
-
-
 set_option backward.isDefEq.respectTransparency false in
 /--
 The map from open sublocales to their corresponding sublocale is a `FrameHom`. It preserves finite
