@@ -206,6 +206,7 @@ lemma δ_pred_comp {i : Fin (n + 3)} {f : ∀ (j : Fin (n + 3)) (_ : j ≠ i), (
 
 variable {i : Fin (n + 2)} {f : ∀ (j : Fin (n + 2)) (_ : j ≠ i), (Δ[n] : SSet) ⟶ X}
 
+set_option backward.defeqAttrib.useBackward true in
 open stdSimplex in
 /-- Auxiliary definition for `horn.IsCompatible.desc`. -/
 private def multicofork (hf : horn.IsCompatible f) :

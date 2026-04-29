@@ -86,6 +86,7 @@ instance : Limits.PreservesFiniteColimits (uliftFunctor.{v', v} R) := by
     (uliftFunctor_map_exact R)
   exact this.2
 
+set_option backward.defeqAttrib.useBackward true in
 instance [Small.{v} R] : (uliftFunctor.{v', v} R).PreservesProjectiveObjects where
   projective_obj {M} proj := by
     have := small_lift.{u, v'} R

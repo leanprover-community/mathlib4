@@ -203,6 +203,7 @@ variable [CartesianMonoidalCategory C] [MonoidalClosed C]
 
 noncomputable section
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The arrow isomorphism `X □ (∅ ⟶ W) ≅ X ▷ W` in a CCC with pushouts and an
 initial object. -/
 @[simps!]
@@ -215,6 +216,7 @@ def isInitialIso (X : Arrow C) {I : C} (i : IsInitial I) {W : C} :
   Arrow.isoMk' _ _ this.isoPushout.symm (Iso.refl _)
     (pushout.hom_ext ((i.ofIso (zeroMul i).symm).hom_ext _ _) (by simp))
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The arrow isomorphism `(∅ ⟶ W) □ X ≅ W ◁ X` in a braided CCC with pushouts and
 an initial object. -/
 @[simps!]
@@ -288,6 +290,7 @@ variable [HasPullbacks C]
 
 noncomputable section
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The arrow isomorphism `(f : A ⟶ B) ⋔ (W ⟶ ⋆) ≅ (B ⟹ W ⟶ A ⟹ W)` in a monoidal closed
 category with pullbacks and a terminal object. -/
@@ -305,6 +308,7 @@ def isTerminalIso [MonoidalCategory C] [MonoidalClosed C]
     (pullback.hom_ext (by simp) ((IsTerminal.isTerminalObj (ihom _) _ t).hom_ext ..)))
 
 open CartesianMonoidalCategory in
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The arrow isomorphism `(∅ ⟶ W) ⋔ (f : A ⟶ B) ≅ (W ⟹ A ⟶ W ⟹ B)` in a braided CCC with
 pullbacks and an initial object. -/
