@@ -750,7 +750,7 @@ private theorem rootMultiplicity_comp_neg_X_le (a : R) :
 variable (p) in
 theorem rootMultiplicity_comp_neg_X (a : R) :
     (p.comp (-X)).rootMultiplicity a = p.rootMultiplicity (-a) := by
-  refine le_antisymm (rootMultiplicity_comp_neg_X_le p a) ?_
+  apply le_antisymm (rootMultiplicity_comp_neg_X_le p a)
   simpa [comp_neg_X_comp_neg_X] using rootMultiplicity_comp_neg_X_le (p.comp (-X)) (-a)
 
 lemma rootMultiplicity_le_rootMultiplicity_of_dvd {p q : R[X]} (hq : q ≠ 0) (hpq : p ∣ q) (x : R) :
