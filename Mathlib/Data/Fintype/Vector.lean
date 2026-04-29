@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Fintype.Pi
+public import Mathlib.Data.Finite.Prod
 public import Mathlib.Data.Sym.Basic
 
 /-!
@@ -18,11 +19,32 @@ open List (Vector)
 
 variable {α : Type*}
 
-instance Vector.fintype [Fintype α] {n : ℕ} : Fintype (List.Vector α n) :=
+namespace List.Vector
+
+instance [Finite α] {n : ℕ} : Finite (List.Vector α n) :=
+  Finite.of_equiv _ (Equiv.vectorEquivFin _ _).symm
+
+instance [Fintype α] {n : ℕ} : Fintype (List.Vector α n) :=
   fast_instance% Fintype.ofEquiv _ (Equiv.vectorEquivFin _ _).symm
 
-instance [DecidableEq α] [Fintype α] {n : ℕ} : Fintype (Sym.Sym' α n) :=
+end List.Vector
+
+namespace Sym.Sym'
+
+instance [Finite α] {n : ℕ} : Finite (Sym.Sym' α n) :=
+  inferInstanceAs <| Finite (Quotient _)
+
+instance instFintype [DecidableEq α] [Fintype α] {n : ℕ} : Fintype (Sym.Sym' α n) :=
   inferInstanceAs <| Fintype (Quotient _)
 
-instance [DecidableEq α] [Fintype α] {n : ℕ} : Fintype (Sym α n) :=
+end Sym.Sym'
+
+namespace Sym
+
+instance [Finite α] {n : ℕ} : Finite (Sym α n) :=
+  Finite.of_equiv _ Sym.symEquivSym'.symm
+
+instance instFintype [DecidableEq α] [Fintype α] {n : ℕ} : Fintype (Sym α n) :=
   fast_instance% Fintype.ofEquiv _ Sym.symEquivSym'.symm
+
+end Sym
