@@ -617,7 +617,7 @@ theorem ValueGroupWithZero.inv_mk (x : R) (y : posSubmonoid R) (hx : ¬x ≤ᵥ 
 
 /-- The value group-with-zero is a linearly ordered commutative group with zero. -/
 instance : LinearOrderedCommGroupWithZero (ValueGroupWithZero R) where
-  zero_le _ := bot_le
+  isBot_zero _ := bot_le
   exists_pair_ne := by
     refine ⟨0, 1, fun h => ?_⟩
     apply ge_of_eq at h
@@ -679,9 +679,9 @@ def ofValuation
   vle_add hab hbc := (map_add_le_max v _ _).trans (sup_le hab hbc)
   mul_vle_mul_left _ h := by simp only [map_mul]; gcongr
   vle_mul_cancel h0 h := by
-    rw [map_zero, le_zero_iff] at h0
+    rw [map_zero, nonpos_iff_eq_zero, ← ne_eq] at h0
     simp only [map_mul] at h
-    exact le_of_mul_le_mul_right h (lt_of_le_of_ne' zero_le' h0)
+    exact le_of_mul_le_mul_right h h0.pos
   not_vle_one_zero := by simp
 
 lemma _root_.Valuation.Compatible.ofValuation
@@ -742,7 +742,7 @@ lemma apply_posSubmonoid_ne_zero (x : posSubmonoid R) : v (x : R) ≠ 0 := by
 
 @[simp]
 lemma apply_posSubmonoid_pos (x : posSubmonoid R) : 0 < v x :=
-  zero_lt_iff.mpr <| v.apply_posSubmonoid_ne_zero x
+  (v.apply_posSubmonoid_ne_zero x).pos
 
 end Valuation
 
@@ -990,8 +990,8 @@ lemma IsNontrivial.exists_lt_one [IsNontrivial R] :
     ∃ γ : ValueGroupWithZero R, 0 < γ ∧ γ < 1 := by
   obtain ⟨γ, h0, h1⟩ := IsNontrivial.condition (R := R)
   obtain h1 | h1 := lt_or_lt_iff_ne.mpr h1
-  · exact ⟨γ, zero_lt_iff.mpr h0, h1⟩
-  · exact ⟨γ⁻¹, by simpa [zero_lt_iff], by simp [inv_lt_one_iff₀, h0, h1]⟩
+  · exact ⟨γ, h0.pos, h1⟩
+  · exact ⟨γ⁻¹, by simpa [pos_iff_ne_zero], by simp [inv_lt_one_iff₀, h0, h1]⟩
 
 lemma isNontrivial_iff_nontrivial_units :
     IsNontrivial R ↔ Nontrivial (ValueGroupWithZero R)ˣ := by
@@ -1181,7 +1181,8 @@ lemma embed_strictMono [v.Compatible] : StrictMono (embed v) := by
   rw [← embedding_strictMono.lt_iff_lt]
   simp only [map_div₀]
   rw [div_lt_div_iff₀] at h ⊢
-  any_goals simp only [zero_lt_iff, ne_eq, Valuation.apply_posSubmonoid_ne_zero, not_false_eq_true]
+  any_goals
+    simp only [pos_iff_ne_zero, ne_eq, Valuation.apply_posSubmonoid_ne_zero, not_false_eq_true]
   · rw [← map_mul, ← map_mul, (isEquiv (valuation R) v).lt_iff_lt] at h
     simp only [embed, coe_mk, ZeroHom.coe_mk, lift_valuation,
       OneMemClass.coe_one, map_one, div_one]

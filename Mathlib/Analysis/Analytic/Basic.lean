@@ -1112,14 +1112,12 @@ theorem hasFPowerSeriesAt_iff :
   refine ⟨p.radius ⊓ r.toNNReal, by simp, ?_, ?_⟩
   · simp only [r_pos.lt, lt_inf_iff, ENNReal.coe_pos, Real.toNNReal_pos, and_true]
     obtain ⟨z, z_pos, le_z⟩ := NormedField.exists_norm_lt 𝕜 r_pos.lt
-    have : (‖z‖₊ : ENNReal) ≤ p.radius := by
-      simp only [dist_zero_right] at h
+    apply lt_of_lt_of_le (b := (‖z‖₊ : ENNReal))
+    · simpa using (nnnorm_ne_zero_iff.mpr (norm_pos_iff.mp z_pos)).pos
+    · simp only [dist_zero_right] at h
       apply FormalMultilinearSeries.le_radius_of_tendsto
       convert tendsto_norm.comp (h le_z).summable.tendsto_atTop_zero
       simp [norm_smul, mul_comm]
-    refine lt_of_lt_of_le ?_ this
-    simp only [ENNReal.coe_pos]
-    exact zero_lt_iff.mpr (nnnorm_ne_zero_iff.mpr (norm_pos_iff.mp z_pos))
   · simp only [Metric.mem_eball, lt_inf_iff, edist_lt_coe, apply_eq_pow_smul_coeff, and_imp,
       dist_zero_right] at h ⊢
     refine fun {y} _ hyr => h ?_

@@ -486,9 +486,9 @@ theorem properDivisors_eq_singleton_one_iff_prime : n.properDivisors = {1} ↔ n
     · rw [← mem_singleton, ← h, mem_properDivisors]
       have := Nat.le_of_dvd ?_ hdvd
       · simpa [hdvd, this] using (le_iff_eq_or_lt.mp this).symm
-      · by_contra!
-        simp only [nonpos_iff_eq_zero.mp this] at h
-        contradiction
+      · rw [pos_iff_ne_zero]
+        rintro rfl
+        simp at h
   · exact fun h => Prime.properDivisors h
 
 theorem sum_properDivisors_eq_one_iff_prime : ∑ x ∈ n.properDivisors, x = 1 ↔ n.Prime := by

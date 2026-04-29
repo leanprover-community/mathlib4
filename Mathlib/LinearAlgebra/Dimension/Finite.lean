@@ -222,7 +222,7 @@ lemma natCast_le_rank_iff_finset [Nontrivial R] {n : ℕ} :
 lemma exists_finset_linearIndependent_of_le_finrank {n : ℕ} (hn : n ≤ finrank R M) :
     ∃ s : Finset M, s.card = n ∧ LinearIndependent R ((↑) : s → M) := by
   by_cases h : finrank R M = 0
-  · rw [le_zero_iff.mp (hn.trans_eq h)]
+  · rw [(hn.trans_eq h).eq_zero]
     exact ⟨∅, rfl, by convert linearIndependent_empty R M using 2 <;> aesop⟩
   exact exists_finset_linearIndependent_of_le_rank
     ((Nat.cast_le.mpr hn).trans_eq (cast_toNat_of_lt_aleph0 (toNat_ne_zero.mp h).2))

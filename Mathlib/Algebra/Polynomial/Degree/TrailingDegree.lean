@@ -196,7 +196,7 @@ theorem trailingDegree_one_le : (0 : ℕ∞) ≤ trailingDegree (1 : R[X]) := by
 
 @[simp]
 theorem natTrailingDegree_C (a : R) : natTrailingDegree (C a) = 0 :=
-  nonpos_iff_eq_zero.1 natTrailingDegree_monomial_le
+  natTrailingDegree_monomial_le.eq_zero
 
 @[simp]
 theorem natTrailingDegree_one : natTrailingDegree (1 : R[X]) = 0 :=
@@ -432,7 +432,7 @@ theorem ne_zero_of_trailingDegree_lt {n : ℕ∞} (h : trailingDegree p < n) : p
 
 lemma natTrailingDegree_eq_zero_of_constantCoeff_ne_zero (h : constantCoeff p ≠ 0) :
     p.natTrailingDegree = 0 :=
-  le_antisymm (natTrailingDegree_le_of_ne_zero h) zero_le'
+  (natTrailingDegree_le_of_ne_zero h).eq_zero
 
 namespace Monic
 

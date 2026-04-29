@@ -82,7 +82,7 @@ theorem subgroups_basis :
       rw [← restrict_lt_iff_lt_embedding] at *
       calc
         v.restrict (r * s) = v.restrict r * v.restrict s := Valuation.map_mul _ _ _
-        _ < γ₀.1 * γ₀.1 := by gcongr <;> exact zero_le'
+        _ < γ₀.1 * γ₀.1 := by gcongr <;> exact zero_le
         _ ≤ γ := mod_cast h
     leftMul := by
       rintro x γ
@@ -272,8 +272,7 @@ theorem isClosed_closedBall (r : ValueGroup₀ _i.v) : IsClosed (X := R) {x | v.
   intro x hx
   simp only [mem_compl_iff, mem_setOf_eq, not_le] at hx
   rw [mem_nhds]
-  have hx' : v.restrict x ≠ 0 := ne_of_gt <| lt_of_le_of_lt zero_le' <| hx
-  exact ⟨Units.mk0 _ hx', fun y hy hy' ↦ ne_of_lt hy <| map_sub_swap v.restrict x y ▸
+  exact ⟨Units.mk0 _ hx.ne_zero, fun y hy hy' ↦ ne_of_lt hy <| map_sub_swap v.restrict x y ▸
       (Valuation.map_sub_eq_of_lt_left _ <| lt_of_le_of_lt hy' hx)⟩
 
 /-- A closed ball centred at the origin in a valued ring is clopen. -/

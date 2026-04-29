@@ -287,7 +287,7 @@ lemma chainTopCoeff_add_one :
   classical
   rw [chainTopCoeff, dif_neg hα]
   apply Nat.succ_pred_eq_of_pos
-  rw [zero_lt_iff]
+  rw [pos_iff_ne_zero]
   intro e
   have : genWeightSpace M (0 • α + β : L → R) = ⊥ := by
     rw [← e]

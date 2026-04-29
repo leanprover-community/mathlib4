@@ -86,15 +86,17 @@ theorem le_one_iff_eq_one : a ≤ 1 ↔ a = 1 :=
 
 @[deprecated (since := "2026-04-28")] alias le_zero_iff := nonpos_iff_eq_zero
 
+@[to_additive] alias ⟨eq_one_of_le_one, _⟩ := le_one_iff_eq_one
+@[to_additive] alias LE.le.eq_one := eq_one_of_le_one
+
 @[to_additive]
 theorem one_lt_iff_ne_one : 1 < a ↔ a ≠ 1 :=
   one_le.lt_iff_ne.trans ne_comm
 
 @[deprecated (since := "2026-04-28")] alias zero_lt_iff := pos_iff_ne_zero
 
-@[to_additive]
-theorem one_lt_of_ne_one (h : a ≠ 1) : 1 < a :=
-  one_lt_iff_ne_one.2 h
+@[to_additive] alias ⟨_, one_lt_of_ne_one⟩ := one_lt_iff_ne_one
+@[to_additive] alias Ne.one_lt := one_lt_of_ne_one
 
 @[to_additive]
 theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := one_le.eq_or_lt.imp_left Eq.symm
@@ -102,8 +104,6 @@ theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := one_le.eq_or_lt.imp_left 
 @[to_additive]
 lemma one_notMem_iff [OrderBot α] {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x :=
   bot_eq_one (α := α) ▸ bot_notMem_iff
-
-@[to_additive] alias Ne.one_lt := one_lt_of_ne_one
 
 @[deprecated (since := "2026-02-17")] alias NE.ne.pos := Ne.pos
 @[deprecated (since := "2026-02-17")] alias NE.ne.one_lt := Ne.one_lt

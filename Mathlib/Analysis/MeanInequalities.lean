@@ -466,7 +466,7 @@ private theorem inner_le_Lp_mul_Lp_of_norm_eq_zero (f g : ι → ℝ≥0) {p q :
     (hpq : p.HolderConjugate q) (hf : ∑ i ∈ s, f i ^ p = 0) :
     ∑ i ∈ s, f i * g i ≤ (∑ i ∈ s, f i ^ p) ^ (1 / p) * (∑ i ∈ s, g i ^ q) ^ (1 / q) := by
   simp only [hf, hpq.ne_zero, one_div, sum_eq_zero_iff, zero_rpow, zero_mul,
-    inv_eq_zero, Ne, not_false_iff, le_zero_iff, mul_eq_zero]
+    inv_eq_zero, Ne, not_false_iff, nonpos_iff_eq_zero, mul_eq_zero]
   intro i his
   left
   rw [sum_eq_zero_iff] at hf

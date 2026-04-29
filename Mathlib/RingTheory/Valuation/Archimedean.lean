@@ -24,7 +24,7 @@ instance MonoidWithZeroHom.instLinearOrderedCommGroupWithZeroMrange (v : F →*�
     LinearOrderedCommGroupWithZero (MonoidHom.mrange v) where
   bot := ⟨⊥, by simp [bot_eq_zero]⟩
   bot_le a := by simp [bot_eq_zero, ← Subtype.coe_le_coe]
-  zero_le a := by simp [← Subtype.coe_le_coe]
+  isBot_zero a := by simp [← Subtype.coe_le_coe]
   mul_lt_mul_of_pos_left := by
     simp only [← Subtype.coe_lt_coe, val_mrange_zero, Submonoid.coe_mul, Subtype.forall,
       MonoidHom.mem_mrange, forall_exists_index, forall_apply_eq_imp_iff]

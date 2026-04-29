@@ -146,7 +146,7 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
   | zero => -- Base case: `n = 0`, the fixed subspace is the whole space, so `φ = id`
     refine ⟨[], rfl.le, show φ = 1 from ?_⟩
     have : (ContinuousLinearMap.id ℝ F - φ).ker = ⊤ := by
-      rwa [le_zero_iff, finrank_eq_zero, orthogonal_eq_bot_iff] at hn
+      rwa [nonpos_iff_eq_zero, finrank_eq_zero, orthogonal_eq_bot_iff] at hn
     symm
     ext x
     have := LinearMap.congr_fun (LinearMap.ker_eq_top.mp this) x

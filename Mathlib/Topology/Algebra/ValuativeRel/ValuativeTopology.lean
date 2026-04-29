@@ -291,8 +291,7 @@ theorem isClopen_ball (r : ValueGroup₀ v) : IsClopen (X := R) {x | v.restrict 
 
 /-- For any valuation `v` compatible with the valuative relation on `R`, the closed `r`-ball
 around zero `{x | v.restrict x ≤ r}` is open in the valuative topology. -/
-theorem isOpen_closedBall {r : ValueGroup₀ v} (hr : r ≠ 0) :
-  IsOpen (X := R) {x | v.restrict x ≤ r} := by
+theorem isOpen_closedBall {r : ValueGroup₀ v} (hr : r ≠ 0) : IsOpen {x | v.restrict x ≤ r} := by
   rw [isOpen_iff_mem_nhds]
   intro x hx
   simp only [v.mem_nhds_iff, setOf_subset_setOf]
@@ -301,13 +300,12 @@ theorem isOpen_closedBall {r : ValueGroup₀ v} (hr : r ≠ 0) :
 
 /-- For any valuation `v` compatible with the valuative relation on `R`, the closed `r`-ball
 around zero `{x | v.restrict x ≤ r}` is closed in the valuative topology. -/
-theorem isClosed_closedBall (r : ValueGroup₀ v) : IsClosed (X := R) {x | v.restrict x ≤ r} := by
+theorem isClosed_closedBall (r : ValueGroup₀ v) : IsClosed {x | v.restrict x ≤ r} := by
   rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
   intro x hx
   simp only [mem_compl_iff, mem_setOf_eq, not_le] at hx
   rw [v.mem_nhds_iff]
-  have hx' : v.restrict x ≠ 0 := ne_of_gt <| lt_of_le_of_lt zero_le' <| hx
-  exact ⟨Units.mk0 _ hx', fun y hy hy' ↦ ne_of_lt hy <| map_sub_swap v.restrict x y ▸
+  exact ⟨Units.mk0 _ hx.ne_zero, fun y hy hy' ↦ ne_of_lt hy <| map_sub_swap v.restrict x y ▸
       (Valuation.map_sub_eq_of_lt_left _ <| lt_of_le_of_lt hy' hx)⟩
 
 /-- For any valuation `v` compatible with the valuative relation on `R`, the closed `r`-ball
@@ -337,7 +335,7 @@ around zero `{x | v.restrict x = r}` is closed in the valuative topology. -/
 theorem isClosed_sphere (r : ValueGroup₀ v) : IsClosed (X := R) {x | v.restrict x = r} := by
   rcases eq_or_ne r 0 with rfl | hr
   · convert v.isClosed_closedBall 0 using 3
-    exact le_zero_iff.symm
+    exact (nonpos_iff_eq_zero (α := ValueGroup₀ v)).symm
   exact isClopen_sphere hr |>.isClosed
 
 /-- For any valuation `v` compatible with the valuative relation on `R`, the closed unit ball

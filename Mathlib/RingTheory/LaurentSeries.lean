@@ -572,7 +572,7 @@ theorem valuation_le_iff_coeff_lt_eq_zero {D : ℤ} {f : K⸨X⸩} :
         rw [powerSeriesPart_coeff f n, hs]
         apply h_val_f
         lia
-    · simp [ne_eq, zero_lt_iff]
+    · simp [pos_iff_ne_zero]
   · obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat <| neg_nonpos_of_nonneg ord_nonpos.le
     rw [neg_inj] at hs
     rw [← f.single_order_mul_powerSeriesPart, hs, map_mul, valuation_single_zpow, mul_comm,
@@ -588,7 +588,7 @@ theorem valuation_le_iff_coeff_lt_eq_zero {D : ℤ} {f : K⸨X⸩} :
         rw [powerSeriesPart_coeff f n, hs]
         apply h_val_f (s + n)
         lia
-    · simp [ne_eq, zero_lt_iff]
+    · simp [pos_iff_ne_zero]
 
 theorem valuation_le_iff_coeff_lt_log_eq_zero {D : ℤᵐ⁰} (hD : D ≠ 0) {f : K⸨X⸩} :
     Valued.v f ≤ D ↔ ∀ n : ℤ, n < -log D → f.coeff n = 0 := by
@@ -835,7 +835,7 @@ theorem exists_Polynomial_intValuation_lt (F : K⟦X⟧) (η : ℤᵐ⁰ˣ) :
     apply lt_of_le_of_lt this
     rw [← mul_one (η : ℤᵐ⁰), mul_assoc, one_mul]
     gcongr
-    · exact zero_lt_iff.2 η.ne_zero
+    · exact η.ne_zero.pos
     rw [← WithZero.coe_one, coe_lt_coe, ofAdd_neg, Right.inv_lt_one_iff, ← ofAdd_zero,
       Multiplicative.ofAdd_lt]
     exact Int.zero_lt_one

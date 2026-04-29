@@ -205,7 +205,7 @@ theorem prod_prod_le (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) ≤ μ s 
 instance prod.instNoAtoms_fst [NoAtoms μ] :
     NoAtoms (Measure.prod μ ν) where
   measure_singleton
-  | (x, y) => nonpos_iff_eq_zero.mp <| calc
+  | (x, y) => eq_zero_of_nonpos <| calc
     μ.prod ν {(x, y)} = μ.prod ν ({x} ×ˢ {y}) := by rw [singleton_prod_singleton]
     _ ≤ μ {x} * ν {y} := prod_prod_le _ _
     _ = 0 := by simp
@@ -213,7 +213,7 @@ instance prod.instNoAtoms_fst [NoAtoms μ] :
 instance prod.instNoAtoms_snd [NoAtoms ν] :
     NoAtoms (Measure.prod μ ν) where
   measure_singleton
-  | (x, y) => nonpos_iff_eq_zero.mp <| calc
+  | (x, y) => eq_zero_of_nonpos <| calc
     μ.prod ν {(x, y)} = μ.prod ν ({x} ×ˢ {y}) := by rw [singleton_prod_singleton]
     _ ≤ μ {x} * ν {y} := prod_prod_le _ _
     _ = 0 := by simp

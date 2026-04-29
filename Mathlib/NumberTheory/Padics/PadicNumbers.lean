@@ -145,7 +145,7 @@ lemma Rat.padicValuation_le_one_iff {p : ℕ} [Fact p.Prime] {x : ℚ} :
         rw [Int.natCast_dvd_natCast] at h
         rw [Int.natCast_dvd] at h'
         exact Nat.not_coprime_of_dvd_of_dvd (Nat.Prime.one_lt Fact.out) h h' x.reduced.symm
-  · simp [zero_lt_iff]
+  · simp [pos_iff_ne_zero]
 
 theorem Rat.surjective_padicValuation (p : ℕ) [hp : Fact (p.Prime)] :
     Function.Surjective (Rat.padicValuation p) := by

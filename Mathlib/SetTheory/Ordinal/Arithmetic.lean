@@ -786,7 +786,7 @@ theorem mul_lt_of_lt_div {a b c : Ordinal} : a < b / c → c * a < b :=
   lt_imp_lt_of_le_imp_le div_le_of_le_mul
 
 @[simp]
-theorem zero_div (a : Ordinal) : 0 / a = 0 := nonpos_iff_eq_zero.1 <| div_le_of_le_mul zero_le
+theorem zero_div (a : Ordinal) : 0 / a = 0 := (div_le_of_le_mul zero_le).eq_zero
 
 theorem mul_div_le (a b : Ordinal) : b * (a / b) ≤ a :=
   if b0 : b = 0 then by simp [b0] else (mul_le_iff_le_div b0).2 le_rfl
