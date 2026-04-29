@@ -129,10 +129,6 @@ public def evalGRewriteSeq : Tactic := fun stx => do
       (grewriteTarget term symm cfg)
       (throwTacticEx `grewrite · "did not find instance of the pattern in the current goal")
 
-@[tactic_alt grewriteSeq]
-macro "grewrite'" c:optConfig s:rwRuleSeq loc:(location)? : tactic => do
-  `(tactic| grewrite $[$(getConfigItems c)]* (useKAbstract := true) $s:rwRuleSeq $(loc)?)
-
 /--
 `grw [e₁, ..., eₙ]` uses each expression `eᵢ : Rᵢ aᵢ bᵢ` (where `Rᵢ` is any two-argument
 relation) as a generalized rewrite rule on the main goal, replacing occurrences of `aᵢ` with `bᵢ`,
@@ -193,10 +189,6 @@ macro (name := grwSeq) "grw " c:optConfig s:rwRuleSeq l:(location)? : tactic =>
     `(tactic| (grewrite $c [$rs,*] $(l)?; with_annotate_state $rbrak (try (with_reducible rfl))))
   | _ => Macro.throwUnsupported
 
-@[tactic_alt grwSeq]
-macro "grw'" c:optConfig s:rwRuleSeq loc:(location)? : tactic => do
-  `(tactic| grw $[$(getConfigItems c)]* (useKAbstract := true) $s:rwRuleSeq $(loc)?)
-
 /--
 `apply_rewrite [e₁, ..., eₙ]` uses the expressions `e₁`, ..., `eₙ` as generalized rewrite rules, of
 type `pᵢ → qᵢ`, on the main goal, replacing occurrences of `pᵢ` with `qᵢ`. The difference with
@@ -213,7 +205,7 @@ used. This provides a convenient way to unfold `e`.
   `apply_rewrite (transparency := default) [e₁, ..., eₙ]`.
 * `apply_rewrite [e₁, ..., eₙ] at l` rewrites at the location(s) `l`.
 -/
-macro "apply_rewrite" c:optConfig s:rwRuleSeq loc:(location)? : tactic => do
+macro "apply_rewrite" c:optConfig s:rwRuleSeq loc:(location)? : tactic =>
   `(tactic| grewrite $[$(getConfigItems c)]* +implicationHyp $s:rwRuleSeq $(loc)?)
 
 /--
@@ -232,7 +224,7 @@ used. This provides a convenient way to unfold `e`.
   `apply_rw (transparency := default) [e₁, ..., eₙ]`.
 * `apply_rw [e₁, ..., eₙ] at l` rewrites at the location(s) `l`.
 -/
-macro (name := applyRwSeq) "apply_rw " c:optConfig s:rwRuleSeq loc:(location)? : tactic => do
+macro (name := applyRwSeq) "apply_rw " c:optConfig s:rwRuleSeq loc:(location)? : tactic =>
   `(tactic| grw $[$(getConfigItems c)]* +implicationHyp $s:rwRuleSeq $(loc)?)
 
 /--
@@ -263,8 +255,9 @@ inequalities.
   * `nth_grewrite +implicationHyp n₁ ... nₖ [e₁, ..., eₙ]` interprets `· → ·` as a relation.
 * `nth_grewrite n₁ ... nₖ [e₁, ..., eₙ] at l` rewrites at the location(s) `l`.
 -/
-macro "nth_grewrite" c:optConfig ppSpace nums:(num)+ s:rwRuleSeq loc:(location)? : tactic => do
-  `(tactic| grewrite' $[$(getConfigItems c)]* (occs := .pos [$[$nums],*]) $s:rwRuleSeq $(loc)?)
+macro "nth_grewrite" c:optConfig ppSpace nums:(num)+ s:rwRuleSeq loc:(location)? : tactic =>
+  `(tactic|
+    grewrite $[$(getConfigItems c)]* +useKAbstract (occs := .pos [$[$nums],*]) $s:rwRuleSeq $(loc)?)
 
 /--
 `nth_grw n₁ ... nₖ [e₁, ..., eₙ]` is a variant of `grw` that for each expression `eᵢ : R aᵢ bᵢ` only
@@ -293,7 +286,8 @@ inequalities.
   * `nth_grw +implicationHyp n₁ ... nₖ [e₁, ..., eₙ]` interprets `· → ·` as a relation.
 * `nth_grw n₁ ... nₖ [e₁, ..., eₙ] at l` rewrites at the location(s) `l`.
 -/
-macro "nth_grw" c:optConfig ppSpace nums:(num)+ s:rwRuleSeq loc:(location)? : tactic => do
-  `(tactic| grw' $[$(getConfigItems c)]* (occs := .pos [$[$nums],*]) $s:rwRuleSeq $(loc)?)
+macro "nth_grw" c:optConfig ppSpace nums:(num)+ s:rwRuleSeq loc:(location)? : tactic =>
+  `(tactic|
+    grw $[$(getConfigItems c)]* +useKAbstract (occs := .pos [$[$nums],*]) $s:rwRuleSeq $(loc)?)
 
 end Mathlib.Tactic.GRewrite

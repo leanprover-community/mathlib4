@@ -292,35 +292,39 @@ def makeGCongrLemma (hyps : Array Expr) (target : Expr) (declName : Name) (prio 
   let mut mainSubgoals := #[]
   -- iterate over antecedents `hyp` to the lemma
   for hyp in hyps, i in 0...* do
-    if let some (mainSubgoal, pair) ← forallTelescopeReducing (← inferType hyp) fun xs hypTy => do
-      -- pull out the conclusion `hypTy` of the antecedent, and check whether it is of the form
-      -- `lhs₁ _ ... _ ≈ rhs₁ _ ... _` (for a possibly different relation `≈` than the relation
-      -- `rel` above)
-      let findGoal (lhs rhs : Expr) (xs : Array Expr) :=
-        lhs.withApp fun lhs lhsArgs => rhs.withApp fun rhs rhsArgs => do
-          guard <| lhsArgs.all xs.contains && lhsArgs == rhsArgs
-          let lhsIdx ← hyps.idxOf? lhs
-          let rhsIdx ← hyps.idxOf? rhs
-          -- check whether `(lhs, rhs)` is in some order one of the "varying argument" pairs from
-          -- the conclusion to the lemma
-          let (pair, isContra) ← pairs.findSome? fun pair =>
-            if (lhs, rhs) == pair then some (pair, false) else
-            if (rhs, lhs) == pair then some (pair, true) else none
-          let hypsPos := xs.toList.map lhsArgs.idxOf?
-          some ({ lhsIdx, rhsIdx, hypIdx := i, hypsPos, isContra }, pair)
+    -- Checks if `∀ xs, lhs ~ rhs` is a valid "main goal".
+    let isMainGoal? (lhs rhs : Expr) (xs : Array Expr) : Option (GCongrHyp × Expr × Expr) :=
+      lhs.withApp fun lhs lhsArgs => rhs.withApp fun rhs rhsArgs => do
+        -- The relation needs to be of the form `lhs y₁ ... yₙ ~ rhs y₁ ... yₙ`,
+        -- where `yᵢ` are free variables from `xs`,
+        -- and `(lhs, rhs)` is a varying argument pair from the conclusion to the lemma
+        guard <| lhsArgs.all xs.contains && lhsArgs == rhsArgs
+        let lhsIdx ← hyps.idxOf? lhs
+        let rhsIdx ← hyps.idxOf? rhs
+        let (pair, isContra) ← pairs.findSome? fun pair =>
+          if (lhs, rhs) == pair then some (pair, false) else
+          if (rhs, lhs) == pair then some (pair, true) else none
+        let hypsPos := xs.toList.map lhsArgs.idxOf?
+        some ({ lhsIdx, rhsIdx, hypIdx := i, hypsPos, isContra }, pair)
+    -- Checks if `hyp` is a valid "main goal".
+    let go := forallTelescopeReducing (← inferType hyp) fun xs hypTy => do
       if let some (_, lhs₁, rhs₁) := getRel (← whnf hypTy) then
-        return findGoal lhs₁ rhs₁ xs
+        return isMainGoal? lhs₁ rhs₁ xs
       else if let some lastFVar := xs.back? then
-        return findGoal (← inferType lastFVar) hypTy xs.pop
+        return isMainGoal? (← inferType lastFVar) hypTy xs.pop
       return none
-      then
+    if let some (mainSubgoal, pair) ← go then
       mainSubgoals := mainSubgoals.push mainSubgoal
+      -- Erase the varying argument pair, to make sure each pair corresponds to just one hypothesis.
       pairs := pairs.erase pair
-  let forGrw := pairs.isEmpty
-  unless forGrw do
+  let forGrw := pairs.size = 0
+  if h : pairs.size ≠ 0 then
+    let (lhs, rhs) := pairs[0]
     Linter.logLintIf linter.gcongr.grw (← getRef)
-      m!"Not all varying argument pairs have a corresponding hypothesis. \
-        This means that the `@[gcongr]` lemma cannot be used in `grw`."
+      m!"`{lhs}` appears on the LHS and `{rhs}` on the RHS, \
+      but there is no corresponding hypothesis `{lhs} ~ {rhs}` or `{rhs} ~ {lhs}`.\n\n\
+      This means that the `@[gcongr]` lemma cannot be used in the `grw` tactic. \
+      It may still be suitable for use in the `gcongr` tactic."
   -- store all the information from this parse of the lemma's structure in a `GCongrLemma`
   let key := { relName, head, arity := lhsArgs.size }
   return { key, declName, mainSubgoals, numHyps := hyps.size, prio, numVarying, forGrw }
@@ -334,8 +338,8 @@ a function to two argument lists, in which the "varying argument" pairs (here `x
 The antecedents of such a lemma are classified as generating "main goals" if they are of the form
 `x₁ ≈ x₂` for some "varying argument" pair `x₁`/`x₂` (and a possibly different relation `≈` to `∼`),
 or more generally of the form `∀ i h h' j h'', f₁ i j ≈ f₂ i j` (say) for some "varying argument"
-pair `f₁`/`f₂`. (Other antecedents are considered to generate "side goals".) The index of the
-"varying argument" pair corresponding to each "main" antecedent is recorded.
+pair `f₁`/`f₂`, where the arguments of `f₁` and `f₂` are the same list of variables which have to
+be bound by the preceding `∀`. (Other antecedents are considered to generate "side goals".)
 
 If a lemma such as `add_le_add : a ≤ b → c ≤ d → a + c ≤ b + d` has been tagged with `gcongr`,
 then a direct consequence like `a ≤ b → a + c ≤ b + c` does *not* need to be tagged.
