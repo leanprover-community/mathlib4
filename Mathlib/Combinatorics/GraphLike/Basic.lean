@@ -13,6 +13,24 @@ public import Mathlib.Data.Sym.Sym2
 This module defines the typeclass `GraphLike` for capturing the common structure of different kinds
 of graph structures including `SimpleGraph`, `Graph`, and `Digraph`.
 
+## Main definitions
+
+* `GraphLike`: is the main typeclass for capturing the common notion of graphs.
+  The field `verts` gives the set of vertices of a graph-like structure,
+  the field `darts` gives the set of darts, which is an oriented edge, of a graph-like structure,
+  the field `edges` gives the set of edges of a graph-like structure,
+  and the field `Adj` gives the adjacency relation between vertices.
+* `darts G` is the direct generalization of `Dart` in `SimpleGraph`.
+
+## Notes
+
+* `GraphLike V D E Gr` generalizes `SimpleGraph`, `Digraph`, and `Graph`. When multi-digraph and
+  hypergraphs are formalized, they can also use this typeclass.
+* `GraphLike V (V × V) E Gr` generalizes `SimpleGraph` and `Digraph` but not `Graph`.
+
+## TODO
+* Migrate from `SimpleGraph` all the results that only depend on the adjacency relation.
+* Define the degree of a graph.
 -/
 
 public section
@@ -24,10 +42,6 @@ class HasSourceTarget (V D : Type*) where
   src : D → V
   /-- The second vertex of a dart. -/
   tgt : D → V
-
-/-- Convert a dart to a pair of vertices. -/
-@[expose] def HasSourceTarget.toProd {V D : Type*} [HasSourceTarget V D] (d : D) : V × V :=
-  (HasSourceTarget.src d, HasSourceTarget.tgt d)
 
 /-- `HasEdge D E` is a typeclass with a function `edge : D → E` that gives the edge of a dart. -/
 class HasEdge (D E : Type*) where
@@ -83,6 +97,9 @@ lemma Adj.right_mem (h : Adj G v w) : w ∈ V(G) := by
   rw [← exists_darts_iff_adj] at h
   obtain ⟨d, hd, rfl, rfl⟩ := h
   exact tgt_mem_of_darts hd
+
+/-- Convert a dart to a pair of vertices. -/
+@[expose] def toProd (d : D(G)) : V × V := (src d.val, tgt d.val)
 
 /-- The step from `u` to `v` is a dart from `u` to `v`. -/
 @[expose]
@@ -158,7 +175,7 @@ lemma step.adj (h : step G u v) : Adj G u v := by
 @[expose] def dartStep (d : darts G) : step G (src d.val) (tgt d.val) := ⟨d.val, d.prop, rfl, rfl⟩
 
 @[simp]
-lemma dartStep_val (d : darts G) : (dartStep d).val = d.val := by simp [dartStep]
+lemma val_dartStep (d : darts G) : (dartStep d).val = d.val := by simp [dartStep]
 
 /-- Two darts are said to be adjacent if they could be consecutive
 darts in a walk -- that is, the first dart's second vertex is equal to
@@ -184,7 +201,7 @@ instance : HasSourceTarget V (V × V) where
 
 @[simp, grind =] lemma tgt_eq : tgt d = d.snd := rfl
 
-@[simp] lemma toProd_eq : toProd d = d := rfl
+@[simp] lemma toProd_eq (d : D(G)) : toProd d = (src d.val, tgt d.val) := rfl
 
 instance : HasEdge (V × V) (Sym2 V) where
   edge d := s(d.fst, d.snd)
@@ -196,7 +213,7 @@ instance : HasEdge (V × V) (V × V) where
 
 @[simp, grind =] lemma edge_eq' : edge d = d := rfl
 
-variable [GraphLike V (V × V) (Sym2 V) Gr]
+variable {E : Type*} [HasEdge (V × V) E] [GraphLike V (V × V) E Gr]
 
 @[simp]
 lemma mem_darts_iff_adj : d ∈ darts G ↔ Adj G d.fst d.snd := by
@@ -213,6 +230,14 @@ instance : Subsingleton (step G u v) where
     rintro ⟨p₁, h₁, rfl, rfl⟩ ⟨p₂, h₂, h1, h2⟩
     obtain rfl := Prod.ext h1 h2
     exact Subtype.ext rfl
+
+lemma Adj.toStep_adj (h : Adj G u v) : (h.toStep).adj = h := rfl
+
+@[simp]
+lemma exists_step_iff_adj {P : (step G u v) → Prop} :
+    (∃ s : step G u v, P s) ↔ (∃ h : Adj G u v, P (h.toStep)) := by
+  refine ⟨fun ⟨s, hp⟩ ↦ ⟨s.adj, ?_⟩, fun ⟨h, hp⟩ ↦ ⟨h.toStep, hp⟩⟩
+  rwa [Subsingleton.elim s.adj.toStep s]
 
 @[simp]
 lemma val_step_eq {s : step G u v} : s.val = (u, v) := by
