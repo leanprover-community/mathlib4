@@ -93,8 +93,8 @@ variable {A : Type*} [Semiring A] [Algebra R A] [Coalgebra R A] [FrobeniusAlgebr
 /-- Composing the Frobenius equations with `Coalgebra.counit` and `Algebra.linearMap`. -/
 theorem rTensor_counit_comp_mul'_assoc_symm_comp_lTensor_comul_comp_algebraLinearMap :
     rT A (ε ∘ₗ μ[R]) ∘ₗ α⁻¹ ∘ₗ lT A (δ ∘ₗ η[R]) = (TensorProduct.comm _ _ _).toLinearMap := by
-  simp_rw [lTensor_comp, ← comp_assoc (lT A η), rTensor_comp, LinearMap.comp_assoc _ (rT _ _),
-    rTensor_mul'_comp_assoc_symm_comp_lTensor_comul_eq_comul_comp_mul, ← LinearMap.comp_assoc,
+  simp_rw [lTensor_comp, ← comp_assoc (lT A η), rTensor_comp, comp_assoc _ (rT _ _),
+    rTensor_mul'_comp_assoc_symm_comp_lTensor_comul_eq_comul_comp_mul, ← comp_assoc,
     rTensor_counit_comp_comul]
   ext; simp
 
