@@ -399,21 +399,6 @@ theorem count_le_of_ideal_ge
 
 @[deprecated (since := "2026-04-16")] alias _root_.count_le_of_ideal_ge := count_le_of_ideal_ge
 
-variable (I J) in
-lemma normalizedFactors_prod_inter_eq_inter :
-    normalizedFactors (normalizedFactors I ∩ normalizedFactors J).prod =
-      normalizedFactors I ∩ normalizedFactors J := by
-  apply normalizedFactors_prod_of_prime
-  intro p hp
-  rw [mem_inter] at hp
-  exact prime_of_normalized_factor p hp.left
-
-variable (I J) in
-lemma prod_inter_normalizedFactors_ne_zero :
-    (normalizedFactors I ∩ normalizedFactors J).prod ≠ 0 :=
-  Multiset.prod_ne_zero_of_prime (normalizedFactors I ∩ normalizedFactors J)
-    fun _ h ↦ prime_of_normalized_factor _ (Multiset.mem_inter.1 h).1
-
 theorem sup_eq_prod_inf_factors (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
     I ⊔ J = (normalizedFactors I ∩ normalizedFactors J).prod := by
   have := prod_inter_normalizedFactors_ne_zero I J
@@ -423,9 +408,9 @@ theorem sup_eq_prod_inf_factors (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
       rw [dvd_iff_normalizedFactors_le_normalizedFactors this (by assumption),
         normalizedFactors_prod_inter_eq_inter]
     exacts [inf_le_left, inf_le_right]
-  · rw [← dvd_iff_le, dvd_iff_normalizedFactors_le_normalizedFactors ?H₁ this,
+  · rw [← dvd_iff_le, dvd_iff_normalizedFactors_le_normalizedFactors ?H this,
       normalizedFactors_prod_inter_eq_inter, le_iff_count]
-    case H₁ => exact ne_bot_of_le_ne_bot hI le_sup_left
+    case H => exact ne_bot_of_le_ne_bot hI le_sup_left
     intro a
     rw [Multiset.count_inter]
     exact le_min (count_le_of_ideal_ge le_sup_left hI a) (count_le_of_ideal_ge le_sup_right hJ a)

@@ -403,3 +403,21 @@ protected noncomputable def normalizationMonoid : NormalizationMonoid α :=
       apply prod_normalizedFactors hx)
 
 end UniqueFactorizationMonoid
+
+namespace UniqueFactorizationMonoid
+
+open  Multiset
+
+variable {α : Type*} [CommMonoidWithZero α] [UniqueFactorizationMonoid α] [DecidableEq α]
+
+lemma normalizedFactors_prod_inter_eq_inter [Subsingleton αˣ] (a b : α) :
+    normalizedFactors (normalizedFactors a ∩ normalizedFactors b).prod =
+      normalizedFactors a ∩ normalizedFactors b :=
+  normalizedFactors_prod_of_prime
+    fun _ h ↦ prime_of_normalized_factor _ (mem_inter.mp h).left
+
+lemma prod_inter_normalizedFactors_ne_zero [NormalizationMonoid α] [Nontrivial α] (a b : α) :
+    (normalizedFactors a ∩ normalizedFactors b).prod ≠ 0 :=
+  prod_ne_zero_of_prime _ fun _ h ↦ prime_of_normalized_factor _ (mem_inter.mp h).left
+
+end UniqueFactorizationMonoid
