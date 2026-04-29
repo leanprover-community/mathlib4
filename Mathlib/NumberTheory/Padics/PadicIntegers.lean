@@ -114,8 +114,8 @@ theorem coe_one : ((1 : ℤ_[p]) : ℚ_[p]) = 1 := rfl
 @[simp, norm_cast]
 theorem coe_zero : ((0 : ℤ_[p]) : ℚ_[p]) = 0 := rfl
 
-set_option backward.isDefEq.respectTransparency false in
-@[simp] lemma coe_eq_zero : (x : ℚ_[p]) = 0 ↔ x = 0 := by rw [← coe_zero, Subtype.coe_inj]
+@[simp]
+lemma coe_eq_zero : (x : ℚ_[p]) = 0 ↔ x = 0 := by simp [← coe_zero, Subtype.coe_inj, PadicInt]
 
 lemma coe_ne_zero : (x : ℚ_[p]) ≠ 0 ↔ x ≠ 0 := coe_eq_zero.not
 

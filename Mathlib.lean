@@ -4199,11 +4199,13 @@ public import Mathlib.Data.Rat.Sqrt
 public import Mathlib.Data.Rat.Star
 public import Mathlib.Data.Real.Archimedean
 public import Mathlib.Data.Real.Basic
+public import Mathlib.Data.Real.Cauchy
 public import Mathlib.Data.Real.CompleteField
 public import Mathlib.Data.Real.ConjExponents
 public import Mathlib.Data.Real.ENatENNReal
 public import Mathlib.Data.Real.Embedding
 public import Mathlib.Data.Real.Hom
+public import Mathlib.Data.Real.OldBasic
 public import Mathlib.Data.Real.Pointwise
 public import Mathlib.Data.Real.Sign
 public import Mathlib.Data.Real.Sqrt
