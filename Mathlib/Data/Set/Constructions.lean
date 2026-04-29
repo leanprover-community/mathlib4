@@ -24,7 +24,7 @@ set of subsets of `α` which is closed under finite intersections.
 
 -/
 
-@[expose] public section
+public section
 
 
 variable {α : Type*} (S : Set (Set α))

@@ -708,6 +708,17 @@ def arrowCongrEquiv (e₁₂ : M₁ ≃SL[σ₁₂] M₂) (e₄₃ : M₄ ≃SL[
     ContinuousLinearMap.ext fun x => by
       simp only [ContinuousLinearMap.comp_apply, apply_symm_apply, coe_coe]
 
+/-- A pair of continuous (semi)linear equivalences generates a linear equivalence between the spaces
+of continuous linear maps. See also `ContinuousLinearEquiv.arrowCongr`. -/
+@[simps]
+def arrowCongrEquivₛₗ [SMulCommClass R₃ R₃ M₃] [SMulCommClass R₄ R₄ M₄]
+    [ContinuousAdd M₃] [ContinuousConstSMul R₃ M₃] [ContinuousAdd M₄] [ContinuousConstSMul R₄ M₄]
+    (e₁₂ : M₁ ≃SL[σ₁₂] M₂) (e₄₃ : M₄ ≃SL[σ₄₃] M₃) :
+    (M₁ →SL[σ₁₄] M₄) ≃ₛₗ[σ₄₃] (M₂ →SL[σ₂₃] M₃) where
+  toEquiv := arrowCongrEquiv e₁₂ e₄₃
+  map_add' := by simp
+  map_smul' := by simp
+
 section Pi
 
 /-- Combine a family of linear equivalences into a linear equivalence of `pi`-types.
@@ -1208,7 +1219,7 @@ theorem inverse_eq_ringInverse (e : M ≃L[R] M₂) (f : M →L[R] M₂) :
     ext
     simp
   · suffices ¬IsUnit ((e.symm : M₂ →L[R] M).comp f) by simp [this, h₁]
-    contrapose! h₁
+    contrapose h₁
     rcases h₁ with ⟨F, hF⟩
     use (ContinuousLinearEquiv.unitsEquiv _ _ F).trans e
     ext
