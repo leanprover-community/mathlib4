@@ -229,8 +229,8 @@ theorem eLpNorm_const_lt_top_iff_enorm {c : ε''} (hc' : ‖c‖ₑ ≠ ∞)
   rw [eLpNorm_const' c hp_ne_zero hp_ne_top]
   obtain hμ_top | hμ_ne_top := eq_or_ne (μ .univ) ∞
   · simp [hc, hμ_top, hp]
-  rw [ENNReal.mul_lt_top_iff]
-  simpa [hμ, hc, hμ_ne_top, hμ_ne_top.lt_top, hc'.lt_top] using by finiteness
+  simp [hc, hμ_ne_top.lt_top]
+  finiteness
 
 theorem eLpNorm_const_lt_top_iff {p : ℝ≥0∞} {c : F} (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     eLpNorm (fun _ : α => c) p μ < ∞ ↔ c = 0 ∨ μ Set.univ < ∞ := by

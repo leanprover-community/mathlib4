@@ -62,8 +62,9 @@ theorem projectiveSeminormAux_nonneg (p : FreeAddMonoid (𝕜 × Π i, E i)) :
     0 ≤ projectiveSeminormAux p := by
   refine List.sum_nonneg fun a ↦ ?_
   simp only [List.mem_map, Prod.exists, forall_exists_index, and_imp]
-  intro x m _ h
-  simpa [← h] using by positivity
+  intro _ _ _ h
+  simp only [← h]
+  positivity
 
 theorem projectiveSeminormAux_add_le (p q : FreeAddMonoid (𝕜 × Π i, E i)) :
     projectiveSeminormAux (p + q) ≤ projectiveSeminormAux p + projectiveSeminormAux q := by

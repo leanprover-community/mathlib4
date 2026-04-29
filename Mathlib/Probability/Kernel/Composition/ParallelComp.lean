@@ -148,7 +148,10 @@ instance [IsMarkovKernel κ] [IsMarkovKernel η] : IsMarkovKernel (κ ∥ₖ η)
 
 instance [IsZeroOrMarkovKernel κ] [IsZeroOrMarkovKernel η] : IsZeroOrMarkovKernel (κ ∥ₖ η) := by
   obtain rfl | _ := eq_zero_or_isMarkovKernel κ <;> obtain rfl | _ := eq_zero_or_isMarkovKernel η
-  all_goals simpa using by infer_instance
+  · simp only [parallelComp_zero_right]; infer_instance
+  · simp only [parallelComp_zero_left]; infer_instance
+  · simp only [parallelComp_zero_right]; infer_instance
+  · infer_instance
 
 instance [IsFiniteKernel κ] [IsFiniteKernel η] : IsFiniteKernel (κ ∥ₖ η) := by
   refine ⟨⟨κ.bound * η.bound, ENNReal.mul_lt_top κ.bound_lt_top η.bound_lt_top, fun a ↦ ?_⟩⟩

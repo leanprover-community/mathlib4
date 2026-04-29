@@ -136,9 +136,7 @@ def poissonPMF (r : ℝ≥0) : PMF ℕ := by
 set_option linter.deprecated false in
 @[deprecated poissonMeasure (since := "2026-03-08")]
 lemma poissonPMFReal_ofReal_eq_poissonPMF (r : ℝ≥0) (n : ℕ) :
-    ENNReal.ofReal (poissonPMFReal r n) = poissonPMF r n := by
-  simp only [poissonPMF]
-  rfl
+    ENNReal.ofReal (poissonPMFReal r n) = poissonPMF r n := rfl
 
 set_option linter.deprecated false in
 @[deprecated Measurable.of_discrete (since := "2026-03-08")]

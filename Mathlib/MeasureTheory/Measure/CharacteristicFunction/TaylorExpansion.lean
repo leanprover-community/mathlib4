@@ -64,7 +64,8 @@ theorem contDiff_charFun' {n : ℕ∞} (hint : ∀ (k : ℕ), MemLp id k μ) :
 @[fun_prop]
 lemma continuous_charFun : Continuous (charFun μ) := by
   refine contDiff_zero.1 (contDiff_charFun ?_)
-  simpa using by fun_prop
+  simp only [CharP.cast_eq_zero, memLp_zero_iff_aestronglyMeasurable]
+  fun_prop
 
 set_option backward.isDefEq.respectTransparency false in
 theorem iteratedFDeriv_charFun {n : ℕ} {t : E} (hint : MemLp id n μ) (x : Fin n → E) :

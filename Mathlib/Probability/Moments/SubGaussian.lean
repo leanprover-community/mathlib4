@@ -208,7 +208,8 @@ lemma cgf_le (h : HasSubgaussianMGF X c κ ν) :
   _ = log (mgf X (κ ω') t) := rfl
   _ ≤ log (exp (c * t ^ 2 / 2)) := by
     by_cases h0 : κ ω' = 0
-    · simpa [h0] using by positivity
+    · simp only [h0, mgf_zero_measure, Pi.zero_apply, log_zero, log_exp]
+      positivity
     gcongr
     · exact mgf_pos' h0 (h_int t)
     · exact h t

@@ -208,7 +208,10 @@ instance IsMarkovKernel.comp (η : Kernel β γ) [IsMarkovKernel η] (κ : Kerne
 instance IsZeroOrMarkovKernel.comp (κ : Kernel α β) [IsZeroOrMarkovKernel κ]
     (η : Kernel β γ) [IsZeroOrMarkovKernel η] : IsZeroOrMarkovKernel (η ∘ₖ κ) := by
   obtain rfl | _ := eq_zero_or_isMarkovKernel κ <;> obtain rfl | _ := eq_zero_or_isMarkovKernel η
-  all_goals simpa using by infer_instance
+  · simp only [comp_zero]; infer_instance
+  · simp only [comp_zero]; infer_instance
+  · simp only [zero_comp]; infer_instance
+  · infer_instance
 
 instance IsFiniteKernel.comp (η : Kernel β γ) [IsFiniteKernel η] (κ : Kernel α β)
     [IsFiniteKernel κ] : IsFiniteKernel (η ∘ₖ κ) := by
