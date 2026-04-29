@@ -361,28 +361,6 @@ end UpperHalfPlane
 namespace ModularGroup -- results specific to `SL(2, ℤ)`
 -- TODO: Move these elsewhere, maybe somewhere in the algebra or number theory hierarchies?
 
-section SLModularAction
-
-variable (g : SL(2, ℤ)) (z : ℍ)
-
-@[simp]
-theorem sl_moeb : g • z = (g : GL (Fin 2) ℝ) • z := rfl
-
-@[simp high]
-theorem SL_neg_smul : -g • z = g • z := by
-  rw [sl_moeb, ← z.neg_smul]
-  congr 1 with i j
-  simp [toGL]
-
-theorem im_smul_eq_div_normSq : (g • z).im = z.im / Complex.normSq (denom g z) := by
-  simpa using z.im_smul_eq_div_normSq g
-
-theorem denom_apply : denom g z = g 1 0 * z + g 1 1 := rfl
-
-@[simp] lemma denom_S : denom S z = z := by simp [S, denom_apply]
-
-end SLModularAction
-
 section ModularScalarTowers
 
 /-- Canonical embedding of `SL(2, ℤ)` into `GL(2, ℝ)⁺`. -/
@@ -439,5 +417,27 @@ def SL_to_GL_tower : IsScalarTower SL(2, ℤ) GL(2, ℝ)⁺ ℍ where
     apply mul_smul'
 
 end ModularScalarTowers
+
+section SLModularAction
+
+variable (g : SL(2, ℤ)) (z : ℍ)
+
+@[simp]
+theorem sl_moeb : g • z = (g : GL (Fin 2) ℝ) • z := rfl
+
+@[simp high]
+theorem SL_neg_smul : -g • z = g • z := by
+  rw [sl_moeb, ← z.neg_smul]
+  congr 1 with i j
+  simp [toGL]
+
+theorem im_smul_eq_div_normSq : (g • z).im = z.im / Complex.normSq (denom g z) := by
+  simpa using z.im_smul_eq_div_normSq g
+
+theorem denom_apply : denom g z = g 1 0 * z + g 1 1 := rfl
+
+@[simp] lemma denom_S : denom S z = z := by simp [S, denom_apply]
+
+end SLModularAction
 
 end ModularGroup
