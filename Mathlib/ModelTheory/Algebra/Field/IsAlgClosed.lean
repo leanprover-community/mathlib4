@@ -6,10 +6,11 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.Data.Nat.PrimeFin
-public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 public import Mathlib.FieldTheory.IsAlgClosed.Classification
 public import Mathlib.ModelTheory.Algebra.Field.CharP
 public import Mathlib.ModelTheory.Satisfiability
+
+import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 
 /-!
 

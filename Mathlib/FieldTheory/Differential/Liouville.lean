@@ -9,7 +9,8 @@ public import Mathlib.Algebra.Algebra.Field
 public import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.FieldTheory.Differential.Basic
 public import Mathlib.FieldTheory.Galois.Basic
-public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+
+import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 
 /-!
 # Liouville's theorem

@@ -11,6 +11,8 @@ public import Mathlib.ModelTheory.Algebra.Field.IsAlgClosed
 public import Mathlib.ModelTheory.Algebra.Ring.Definability
 public import Mathlib.RingTheory.Polynomial.Basic
 
+import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+
 /-!
 # Ax-Grothendieck
 
