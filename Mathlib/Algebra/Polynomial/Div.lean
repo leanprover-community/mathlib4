@@ -6,7 +6,6 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 module
 
 public import Mathlib.Algebra.Field.IsField
-public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Inductions
 public import Mathlib.Algebra.Polynomial.Monic
 public import Mathlib.RingTheory.Multiplicity
@@ -737,21 +736,6 @@ lemma le_rootMultiplicity_mul {p q : R[X]} (x : R) (hpq : p * q ≠ 0) :
     rootMultiplicity x p + rootMultiplicity x q ≤ rootMultiplicity x (p * q) := by
   rw [le_rootMultiplicity_iff hpq, pow_add]
   gcongr <;> apply pow_rootMultiplicity_dvd
-
-variable (p) in
-private theorem rootMultiplicity_comp_neg_X_le (a : R) :
-    (p.comp (-X)).rootMultiplicity a ≤ p.rootMultiplicity (-a) := by
-  by_cases hp : p = 0
-  · simp [hp]
-  have h := pow_rootMultiplicity_dvd (p.comp (-X)) a
-  rw [dvd_comp_neg_X_iff, pow_comp, sub_comp, X_comp, C_comp, ← neg_add', neg_pow] at h
-  simpa [le_rootMultiplicity_iff hp, isUnit_neg_one.pow] using h
-
-variable (p) in
-theorem rootMultiplicity_comp_neg_X (a : R) :
-    (p.comp (-X)).rootMultiplicity a = p.rootMultiplicity (-a) := by
-  apply le_antisymm (rootMultiplicity_comp_neg_X_le p a)
-  simpa [comp_neg_X_comp_neg_X] using rootMultiplicity_comp_neg_X_le (p.comp (-X)) (-a)
 
 lemma rootMultiplicity_le_rootMultiplicity_of_dvd {p q : R[X]} (hq : q ≠ 0) (hpq : p ∣ q) (x : R) :
     p.rootMultiplicity x ≤ q.rootMultiplicity x := by
