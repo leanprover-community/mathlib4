@@ -72,8 +72,8 @@ noncomputable def restrictScalarsCompToPresheaf (α : R ⟶ R') :
     restrictScalars.{v} α ⋙ toPresheaf R ≅ toPresheaf R' := Iso.refl _
 
 @[simp]
-theorem restrictScalars.map_app_hom_apply (α : R ⟶ R') {M M' : PresheafOfModules.{v} R'} (g : M ⟶ M')
-    {X : Cᵒᵖ} (m : ((restrictScalars α).obj M).obj X) :
+theorem restrictScalars.map_app_hom_apply (α : R ⟶ R') {M M' : PresheafOfModules.{v} R'}
+    (g : M ⟶ M') {X : Cᵒᵖ} (m : ((restrictScalars α).obj M).obj X) :
     ((restrictScalars α).map g).app X m = g.app X m :=
   rfl
 
