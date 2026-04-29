@@ -327,6 +327,7 @@ def piEquivFin (n : ℕ) :
     AdicCompletion I (Fin n → R) ≃ₗ[AdicCompletion I R] Fin n → AdicCompletion I R :=
   piEquivOfFintype I (ι := Fin n) (fun _ : Fin n ↦ R)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem piEquivFin_apply (n : ℕ) (x : AdicCompletion I (Fin n → R)) :
     piEquivFin I n x = pi I (fun _ : Fin n ↦ R) x := by
