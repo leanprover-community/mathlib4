@@ -181,7 +181,7 @@ theorem coe_toAlgEquiv : ⇑(e : A ≃ₐ[R] B) = e :=
 theorem toCoalgEquiv_toCoalgHom : ((e : A ≃ₐc[R] B) : A →ₗc[R] B) = (e : A →ₐc[R] B) :=
   rfl
 
-theorem toBialgHom_toAlgHom : ((e : A →ₐc[R] B) : A →ₐ[R] B) = e := rfl
+theorem toBialgHom_toAlgHom : (AlgHomClass.toAlgHom (e : A →ₐc[R] B)) = e := rfl
 
 section
 
@@ -326,11 +326,8 @@ lemma toLinearMap_ofAlgEquiv (f : A ≃ₐ[R] B) (counit_comp map_comp_comul) :
 /-- Promotes a bijective bialgebra homomorphism to a bialgebra equivalence. -/
 @[simps! apply]
 noncomputable def ofBijective (f : A →ₐc[R] B) (hf : Bijective f) : A ≃ₐc[R] B :=
-  .ofAlgEquiv (.ofBijective (f : A →ₐ[R] B) hf) (by ext; simp?) (by
-    ext
-    simp only [AlgHom.coe_comp, comp_apply, comulAlgHom_apply, AlgEquiv.coe_algHom,
-      AlgEquiv.coe_ofBijective, BialgHom.coe_toAlgHom]
-    sorry) --ext; simp)
+  .ofAlgEquiv (.ofBijective (AlgHomClass.toAlgHom f : A →ₐ[R] B) hf) (by ext; simp)
+    (by ext; simp)
 
 @[simp]
 lemma coe_ofBijective (f : A →ₐc[R] B) (hf : Bijective f) : (ofBijective f hf : A → B) = f := rfl

@@ -136,7 +136,7 @@ initialize_simps_projections BialgHom (toFun → apply)
 
 @[simp]
 protected theorem coe_coe {F : Type*} [FunLike F A B] [BialgHomClass F R A B] (f : F) :
-    ⇑(f : A →ₐc[R] B) = f :=
+    ⇑(BialgHomClass.toBialgHom f) = f :=
   rfl
 
 @[simp]
@@ -163,21 +163,12 @@ lemma toCoalgHom_apply (f : A →ₐc[R] B) (a : A) : f.toCoalgHom a = f a := rf
 theorem coe_toLinearMap (f : A →ₐc[R] B) : ⇑(f : A →ₗ[R] B) = f :=
   rfl
 
-@[coe]
-def toAlgHom (f : A →ₐc[R] B) : A →ₐ[R] B where
-  __ := f
-  map_zero' := f.map_zero
-  commutes' := by
-    simp [Algebra.algebraMap_eq_smul_one, toCoalgHom_apply]
-
-instance : Coe (A →ₐc[R] B) (A →ₐ[R] B) := ⟨toAlgHom⟩
-
 @[simp, norm_cast]
-theorem coe_toAlgHom (f : A →ₐc[R] B) : ⇑(f : A →ₐ[R] B) = f :=
+theorem coe_toAlgHom (f : A →ₐc[R] B) : ⇑(AlgHomClass.toAlgHom f) = f :=
   rfl
 
 theorem toAlgHom_toLinearMap (f : A →ₐc[R] B) :
-    ((f : A →ₐ[R] B) : A →ₗ[R] B) = f := by
+    ((AlgHomClass.toAlgHom f) : A →ₗ[R] B) = f := by
   rfl
 
 variable (φ : A →ₐc[R] B)
@@ -192,9 +183,11 @@ theorem coe_coalgHom_injective : Function.Injective ((↑) : (A →ₐc[R] B) �
   fun φ₁ φ₂ H => coe_fn_injective <|
     show ((φ₁ : A →ₗc[R] B) : A → B) = ((φ₂ : A →ₗc[R] B) : A → B) from congr_arg _ H
 
-theorem coe_algHom_injective : Function.Injective ((↑) : (A →ₐc[R] B) → A →ₐ[R] B) :=
+theorem coe_algHom_injective :
+    Function.Injective (AlgHomClass.toAlgHom : (A →ₐc[R] B) → A →ₐ[R] B) :=
   fun φ₁ φ₂ H => coe_fn_injective <|
-    show ((φ₁ : A →ₐ[R] B) : A → B) = ((φ₂ : A →ₐ[R] B) : A → B) from congr_arg _ H
+    show ((AlgHomClass.toAlgHom φ₁) : A → B) = ((AlgHomClass.toAlgHom φ₂) : A → B) from
+      congr_arg _ H
 
 theorem coe_linearMap_injective : Function.Injective ((↑) : (A →ₐc[R] B) → A →ₗ[R] B) :=
   CoalgHom.coe_linearMap_injective.comp coe_coalgHom_injective
@@ -251,14 +244,15 @@ theorem id_toCoalgHom : BialgHom.id R A = CoalgHom.id R A :=
   rfl
 
 @[simp]
-theorem id_toAlgHom : BialgHom.id R A = AlgHom.id R A :=
+theorem id_toAlgHom : (AlgHomClass.toAlgHom (BialgHom.id R A)) = AlgHom.id R A :=
   rfl
 
 end
 
 /-- Composition of bialgebra homomorphisms. -/
 @[simps!] def comp (φ₁ : B →ₐc[R] C) (φ₂ : A →ₐc[R] B) : A →ₐc[R] C :=
-  { (φ₁ : B →ₗc[R] C).comp (φ₂ : A →ₗc[R] B), (φ₁ : B →ₐ[R] C).comp (φ₂ : A →ₐ[R] B) with }
+  { (φ₁ : B →ₗc[R] C).comp (φ₂ : A →ₗc[R] B),
+    (AlgHomClass.toAlgHom φ₁).comp (AlgHomClass.toAlgHom φ₂) with }
 
 @[simp]
 theorem coe_comp (φ₁ : B →ₐc[R] C) (φ₂ : A →ₐc[R] B) : ⇑(φ₁.comp φ₂) = φ₁ ∘ φ₂ :=
@@ -271,7 +265,7 @@ theorem comp_toCoalgHom (φ₁ : B →ₐc[R] C) (φ₂ : A →ₐc[R] B) :
 
 @[simp]
 theorem comp_toAlgHom (φ₁ : B →ₐc[R] C) (φ₂ : A →ₐc[R] B) :
-    φ₁.comp φ₂ = (φ₁ : B →ₐ[R] C).comp (φ₂ : A →ₐ[R] B) :=
+    AlgHomClass.toAlgHom (φ₁.comp φ₂) = (AlgHomClass.toAlgHom φ₁).comp (AlgHomClass.toAlgHom φ₂) :=
   rfl
 
 @[simp]
