@@ -6,14 +6,16 @@ Authors: Yury Kudryashov, Heather Macbeth
 module
 
 public import Mathlib.Analysis.Convex.Cone.Extension
+public import Mathlib.Analysis.LocallyConvex.HahnBanach
 public import Mathlib.Analysis.Normed.Module.RCLike.Extend
 public import Mathlib.Analysis.RCLike.Lemmas
 
 /-!
 # Extension Hahn-Banach theorem
 
-In this file we prove the analytic Hahn-Banach theorem. For any continuous linear function on a
-subspace, we can extend it to a function on the entire space without changing its norm.
+In this file we prove the analytic Hahn-Banach theorem for normed vector spaces. For any continuous
+linear function on a subspace, we can extend it to a function on the entire space without changing
+its norm.
 
 We prove
 * `Real.exists_extension_norm_eq`: Hahn-Banach theorem for continuous linear functions on normed
@@ -65,9 +67,8 @@ section RCLike
 
 open RCLike
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜] {E F : Type*}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜] {E : Type*}
   [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 /-- **Hahn-Banach theorem** for continuous linear functions over `𝕜`
 satisfying `IsRCLikeNormedField 𝕜`. -/
@@ -101,34 +102,6 @@ theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : StrongDual 𝕜 p) :
       _ = ‖f‖ := by rw [reCLM_norm, one_mul]
   · exact f.opNorm_le_bound (g.extendRCLike (𝕜 := 𝕜)).opNorm_nonneg
       fun x ↦ h x ▸ (g.extendRCLike (𝕜 := 𝕜) |>.le_opNorm x)
-
-open Module
-
-/-- Corollary of the **Hahn-Banach theorem**: if `f : p → F` is a continuous linear map
-from a submodule of a normed space `E` over `𝕜`, `𝕜 = ℝ` or `𝕜 = ℂ`,
-with a finite-dimensional range, then `f` admits an extension to a continuous linear map `E → F`.
-
-Note that contrary to the case `F = 𝕜`, see `exists_extension_norm_eq`,
-we provide no estimates on the norm of the extension.
--/
-lemma ContinuousLinearMap.exist_extension_of_finiteDimensional_range {p : Submodule 𝕜 E}
-    (f : p →L[𝕜] F) [FiniteDimensional 𝕜 f.range] :
-    ∃ g : E →L[𝕜] F, f = g.comp p.subtypeL := by
-  letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
-  set b := Module.finBasis 𝕜 f.range
-  set e := b.equivFunL
-  set fi := fun i ↦ (LinearMap.toContinuousLinearMap (b.coord i)).comp
-    (f.codRestrict _ <| LinearMap.mem_range_self _)
-  choose gi hgf _ using fun i ↦ exists_extension_norm_eq p (fi i)
-  use f.range.subtypeL.comp <| e.symm.toContinuousLinearMap.comp (.pi gi)
-  ext x
-  simp [fi, e, hgf]
-
-/-- A finite-dimensional submodule over `ℝ` or `ℂ` is `Submodule.ClosedComplemented`. -/
-lemma Submodule.ClosedComplemented.of_finiteDimensional (p : Submodule 𝕜 F)
-    [FiniteDimensional 𝕜 p] : p.ClosedComplemented :=
-  let ⟨g, hg⟩ := (ContinuousLinearMap.id 𝕜 p).exist_extension_of_finiteDimensional_range
-  ⟨g, DFunLike.congr_fun hg.symm⟩
 
 end RCLike
 

@@ -8,135 +8,86 @@ module
 public import Mathlib.Analysis.Convex.Cone.Extension
 public import Mathlib.Analysis.LocallyConvex.AbsConvexOpen
 public import Mathlib.Analysis.LocallyConvex.WeakDual
-public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.Analysis.RCLike.Extend
-public import Mathlib.Analysis.Seminorm
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-!
-# Hahn-Banach for locally convex spaces
+# Hahn-Banach theorem for locally convex spaces
 
-This file contains an outline of the locally convex analogue of the extension statements from
-`Mathlib.Analysis.Normed.Module.HahnBanach`.
+In this file we prove the analytic Hahn-Banach theorem for locally convex spaces. For any continuous
+linear function on a subspace, we can extend it to a function on the entire space.
 
-The key new ingredient is `Seminorm.bound_of_continuous`: in a locally convex space, a continuous
-linear form on a subspace is bounded by the restriction of a continuous seminorm on the ambient
-space. Once such a seminorm is available, the abstract extension theorem
-`exists_extension_of_le_sublinear` applies exactly as in the normed proof.
+We prove
+* `Real.exists_extension`: Hahn-Banach theorem for continuous linear functions on locally convex
+  spaces over `ℝ`.
+* `exists_extension`: Hahn-Banach theorem for continuous linear functions on locally convex spaces
+  over `ℝ` or `ℂ`.
 
-We outline:
-
-* `Real.exists_extension`: extension of continuous real linear forms;
-* `exists_extension`: the `RCLike` version;
-* `ContinuousLinearMap.exist_extension_of_finiteDimensional_range`: extension of maps with
-  finite-dimensional range;
-* `Submodule.ClosedComplemented.of_finiteDimensional`: finite-dimensional submodules are closed
-  complemented.
 -/
 
 public section
 
-open Module Topology
+open scoped ComplexOrder
+open Module Topology RCLike
 
-variable {𝕜 E F : Type*} [NormedField 𝕜] [TopologicalSpace E] [AddCommGroup E] [Module 𝕜 E]
-  [AddCommGroup F] [Module 𝕜 F]
-
-/-- A seminorm defined by a continuous linear form `f : E →L[𝕜] 𝕜` over a normed field `𝕜` is
-continuous. -/
-theorem ContinuousLinearMap.continuous_seminorm (f : E →L[𝕜] 𝕜) :
-    Continuous f.toSeminorm := by
-  simp only [LinearMap.coe_toSeminorm]
-  fun_prop
-
+variable {𝕜 : Type*} [RCLike 𝕜]
 variable {E : Type*} [AddCommGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E]
-  [Module ℝ E] [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E]
+variable {F : Type*} [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F]
 
 /-- **Hahn-Banach theorem** for continuous linear functions on locally convex spaces over `ℝ`. -/
-theorem Real.exists_extension (p : Subspace ℝ E) (f : StrongDual ℝ p) :
+theorem Real.exists_extension [Module ℝ E] [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E]
+    (p : Subspace ℝ E) (f : StrongDual ℝ p) :
     ∃ g : StrongDual ℝ E, ∀ x : p, g x = f x := by
-  -- Find a sublinear map defined on `E` that bounds `f` on `p`.
-  obtain ⟨s, C, hc, hs⟩ :=
+  obtain ⟨s, C, _, hs⟩ :=
     f.toSeminorm.bound_of_continuous (IsInducing.subtypeVal.withSeminorms
-      (f := p.subtype) (PolynormableSpace.withSeminorms ℝ E)) f.continuous_seminorm
+      (f := p.subtype) (PolynormableSpace.withSeminorms ℝ E)) f.continuous.norm
   let h := C • s.sup (fun q : { q : Seminorm ℝ E // Continuous q } => q.1)
   obtain ⟨g, hg, hl⟩ := by
-    refine exists_extension_of_le_sublinear ⟨p, f⟩ h ?_ ?_ ?_
-    · intro c hc x
-      simp [h]
-      -- missing APIs
-      sorry
-    · intro x y
-      simp [h]
-      -- missing APIs
-      sorry
-    · intro x
-      simp only [LinearPMap.mk_apply, ContinuousLinearMap.coe_coe, h]
-      have := hs x
+    refine exists_extension_of_le_sublinear ⟨p, f⟩ h (fun _ hc _ => ?_) ?_ (fun x => ?_)
+    · simp [h, map_smul_eq_mul, abs_of_nonneg hc.le]
+    · exact fun x y => map_add_le_add h x y
+    · simp only [LinearPMap.mk_apply, ContinuousLinearMap.coe_coe, h]
       calc
       _ ≤ f.toSeminorm x := by simp [le_abs_self]
       _ ≤ C • s.sup (SeminormFamily.comp (fun p ↦ ↑p) p.subtype) x := hs x
-      _ = _ := by
-        -- missing APIs for sup comm comp
-        sorry
-  refine ⟨⟨g, ?_⟩, hg⟩
-  sorry
+      _ = _ := by simp [← SeminormFamily.finset_sup_comp]
+  exact ⟨⟨g, (PolynormableSpace.withSeminorms ℝ E).continuous_real_rng g ⟨s, C, hl⟩⟩, hg⟩
 
-section RCLike
-
-open RCLike
-
-variable {𝕜 : Type*} [RCLike 𝕜] {E F : Type*}
-  [AddCommGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E]
-  [Module 𝕜 E] [ContinuousSMul 𝕜 E]
-  [Module ℝ E] [IsScalarTower ℝ 𝕜 E] [ContinuousSMul ℝ E]
-  [LocallyConvexSpace ℝ E]
+variable [Module 𝕜 E] [ContinuousSMul 𝕜 E] [LocallyConvexSpace 𝕜 E]
 
 /-- **Hahn-Banach theorem** for continuous linear functions on locally convex spaces over an
 `RCLike` field. -/
 theorem exists_extension (p : Submodule 𝕜 E) (f : StrongDual 𝕜 p) :
     ∃ g : StrongDual 𝕜 E, ∀ x : p, g x = f x := by
-  have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
+  letI : Module ℝ E := .restrictScalars ℝ 𝕜 E
+  letI : ContinuousSMul ℝ E := sorry
+  letI : LocallyConvexSpace ℝ E := sorry
+  letI : IsScalarTower ℝ 𝕜 E := .restrictScalars _ _ _
   let fr := reCLM.comp (f.restrictScalars ℝ)
-  obtain ⟨g, hg⟩ := Real.exists_extension (p.restrictScalars ℝ) fr
-  /- Outline:
-  1. Restrict scalars and apply the real theorem to the real part `fr`.
-  2. Extend the resulting real functional to a `𝕜`-linear functional using
-     `StrongDual.extendRCLike`.
-  3. Check, exactly as in `Mathlib.Analysis.Normed.Module.HahnBanach`, that this extension agrees
-     with `f` on `p`.
-  -/
-  sorry
+  obtain ⟨g, (hg : ∀ x : p, g x = fr x)⟩ := Real.exists_extension (p.restrictScalars ℝ) fr
+  refine ⟨g.extendRCLike, fun x ↦ ?_⟩
+  rw [g.extendRCLike_apply, ← Submodule.coe_smul, hg, hg]
+  simp [fr, RCLike.algebraMap_eq_ofReal, mul_comm I]
 
-variable [AddCommGroup F] [TopologicalSpace F] [T2Space F] [IsTopologicalAddGroup F]
-  [Module 𝕜 F] [ContinuousSMul 𝕜 F]
+variable [Module 𝕜 F] [ContinuousSMul 𝕜 F] [T2Space F]
 
-/-- Corollary of the locally convex **Hahn-Banach theorem**: if `f : p → F` is a continuous linear
-map with finite-dimensional range, then `f` extends to a continuous linear map on the whole space.
-
-This is the same coordinatewise argument as
-`ContinuousLinearMap.exist_extension_of_finiteDimensional_range` in the normed setting. -/
+/-- Corollary of the locally convex **Hahn-Banach theorem**: if `f : p → F` is a continuous
+linear map with finite-dimensional range, then `f` extends to a continuous linear map on the whole
+space. -/
 lemma ContinuousLinearMap.exist_extension_of_finiteDimensional_range {p : Submodule 𝕜 E}
     (f : p →L[𝕜] F) [FiniteDimensional 𝕜 f.range] :
     ∃ g : E →L[𝕜] F, f = g.comp p.subtypeL := by
   let b := Module.finBasis 𝕜 f.range
   let e := b.equivFunL
-  let fi := fun i => (LinearMap.toContinuousLinearMap (b.coord i)).comp
+  let fi := fun i ↦ (LinearMap.toContinuousLinearMap (b.coord i)).comp
     (f.codRestrict _ <| LinearMap.mem_range_self _)
-  /- Outline:
-  1. For each coordinate functional `fi i : p →L[𝕜] 𝕜`, apply `exists_extension`.
-  2. Assemble the coordinate extensions into a map `E →L[𝕜] (ι → 𝕜)`.
-  3. Compose with `e.symm` and then with `f.range.subtypeL` to recover an extension of `f`.
-  4. The verification is word-for-word the same as in the normed file.
-  -/
-  sorry
+  choose gi hgf using fun i ↦ exists_extension p (fi i)
+  use f.range.subtypeL.comp <| e.symm.toContinuousLinearMap.comp (.pi gi)
+  ext x
+  simp [fi, e, hgf]
 
-/-- A finite-dimensional submodule of a locally convex real or complex topological vector space is
-`Submodule.ClosedComplemented`. -/
-lemma Submodule.ClosedComplemented.of_finiteDimensional (p : Submodule 𝕜 F)
-    [FiniteDimensional 𝕜 p] [LocallyConvexSpace ℝ F] : p.ClosedComplemented := by
+/-- A finite-dimensional submodule over `ℝ` or `ℂ` is `Submodule.ClosedComplemented`. -/
+lemma Submodule.ClosedComplemented.of_finiteDimensional [LocallyConvexSpace 𝕜 F] (p : Submodule 𝕜 F)
+    [FiniteDimensional 𝕜 p] : p.ClosedComplemented := by
   let ⟨g, hg⟩ := (ContinuousLinearMap.id 𝕜 p).exist_extension_of_finiteDimensional_range
   exact ⟨g, DFunLike.congr_fun hg.symm⟩
-
-end RCLike
-
-#min_imports

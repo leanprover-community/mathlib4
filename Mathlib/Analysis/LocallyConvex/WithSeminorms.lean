@@ -674,14 +674,9 @@ theorem continuous_of_isBounded {p : SeminormFamily 𝕝 E ι} {q : SeminormFami
   have : IsTopologicalAddGroup E := hp.topologicalAddGroup
   refine continuous_of_continuous_comp hq _ fun i => ?_
   rcases hf i with ⟨s, C, hC⟩
-  rw [← Seminorm.finset_sup_smul] at hC
-  -- Note: we deduce continuity of `s.sup (C • p)` from that of `∑ i ∈ s, C • p i`.
-  -- The reason is that there is no `continuous_finset_sup`, and even if it were we couldn't
-  -- really use it since `ℝ` is not an `OrderBot`.
-  refine Seminorm.continuous_of_le ?_ (hC.trans <| Seminorm.finset_sup_le_sum _ _)
-  change Continuous (fun x ↦ Seminorm.coeFnAddMonoidHom _ _ (∑ i ∈ s, C • p i) x)
-  simp_rw [map_sum, Finset.sum_apply]
-  exact (continuous_finsetSum _ fun i _ ↦ (hp.continuous_seminorm i).const_smul (C : ℝ))
+  rw [← finset_sup_smul] at hC
+  exact continuous_of_le
+    (continuous_finset_sup fun i _ ↦ (hp.continuous_seminorm i).const_smul C) hC
 
 @[deprecated (since := "2026-03-09")]
 alias _root_.Seminorm.continuous_from_bounded := continuous_of_isBounded
@@ -692,6 +687,14 @@ theorem continuous_normedSpace_rng (F) [SeminormedAddCommGroup F] [NormedSpace �
     Continuous f := by
   rw [← Seminorm.isBounded_const (Fin 1)] at hf
   exact continuous_of_isBounded hp (norm_withSeminorms 𝕝₂ F) f hf
+
+theorem continuous_real_rng [Module ℝ E] [TopologicalSpace E] {p : ι → Seminorm ℝ E}
+    (hp : WithSeminorms p) (f : E →ₗ[ℝ] ℝ)
+    (hf : ∃ (s : Finset ι) (C : ℝ≥0), ∀ x, f x ≤ (C • s.sup p) x) :
+    Continuous f := by
+  obtain ⟨s, C, hC⟩ := hf
+  exact continuous_normedSpace_rng ℝ hp f ⟨s, C,
+    fun x ↦ abs_le.2 ⟨neg_le.1 (by simpa using hC (-x)), hC x⟩⟩
 
 @[deprecated (since := "2026-03-09")]
 alias _root_.Seminorm.cont_withSeminorms_normedSpace := continuous_normedSpace_rng
