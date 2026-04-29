@@ -200,13 +200,13 @@ theorem IsCompl.projection_apply_eq_zero_iff (hpq : IsCompl p q) {x : E} :
 alias ⟨_, linearProjOfIsCompl_apply_of_mem_right⟩ :=
   linearProjOfIsCompl_apply_eq_zero_iff
 
+alias ⟨_, IsCompl.projection_apply_of_mem_right⟩ :=
+  IsCompl.projection_apply_eq_zero_iff
+
 @[deprecated linearProjOfIsCompl_apply_of_mem_right (since := "2026-04-27")]
 theorem linearProjOfIsCompl_apply_right' (h : IsCompl p q) (x : E) (hx : x ∈ q) :
     linearProjOfIsCompl p q h x = 0 :=
   linearProjOfIsCompl_apply_of_mem_right h hx
-
-alias ⟨_, IsCompl.projection_apply_of_mem_right⟩ :=
-  IsCompl.projection_apply_eq_zero_iff
 
 @[simp]
 theorem linearProjOfIsCompl_apply_right (h : IsCompl p q) (x : q) :
@@ -237,9 +237,12 @@ theorem linearProjOfIsCompl_isCompl_projection (h : IsCompl p q) (x : E) :
 
 /-- The linear projection onto a subspace along its complement is an idempotent. -/
 @[simp]
-theorem IsCompl.projection_isIdempotentElem (hpq : IsCompl p q) :
+theorem IsCompl.isIdempotentElem_projection (hpq : IsCompl p q) :
     IsIdempotentElem hpq.projection :=
   LinearMap.ext fun _ ↦ congr($(linearProjOfIsCompl_isCompl_projection hpq _))
+
+@[deprecated (since := "2026-04-29")]
+alias IsCompl.projection_isIdempotentElem := IsCompl.isIdempotentElem_projection
 
 theorem existsUnique_add_of_isCompl_prod (hc : IsCompl p q) (x : E) :
     ∃! u : p × q, (u.fst : E) + u.snd = x :=
@@ -629,7 +632,7 @@ onto its range along its kernel. -/
 theorem isIdempotentElem_iff_eq_isCompl_projection_range_ker {T : E →ₗ[R] E} :
     IsIdempotentElem T ↔ ∃ (h : IsCompl (range T) (ker T)), T = h.projection :=
   ⟨fun hT => ⟨hT.isProj_range.isCompl, hT.eq_isCompl_projection⟩,
-   fun ⟨hT, h⟩ => h.symm ▸ hT.projection_isIdempotentElem⟩
+   fun ⟨hT, h⟩ => h.symm ▸ hT.isIdempotentElem_projection⟩
 
 open LinearMap in
 /-- Given an idempotent linear operator `q`,

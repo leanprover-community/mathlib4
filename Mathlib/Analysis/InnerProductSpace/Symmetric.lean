@@ -305,7 +305,7 @@ open Submodule in
 theorem _root_.Submodule.IsCompl.projection_isSymmetricProjection_iff
     {U V : Submodule 𝕜 E} (hUV : IsCompl U V) :
     hUV.projection.IsSymmetricProjection ↔ U ⟂ V := by
-  simp [isSymmetricProjection_iff, hUV.projection_isSymmetric_iff, hUV.projection_isIdempotentElem]
+  simp [isSymmetricProjection_iff, hUV.projection_isSymmetric_iff, hUV.isIdempotentElem_projection]
 
 alias ⟨_, _root_.Submodule.IsCompl.projection_isSymmetricProjection_of_isOrtho⟩ :=
   _root_.Submodule.IsCompl.projection_isSymmetricProjection_iff
