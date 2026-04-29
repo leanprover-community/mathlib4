@@ -154,17 +154,6 @@ structure AffineSubspace (k : Type*) {V : Type*} (P : Type*) [Ring k] [AddCommGr
     ∀ (c : k) {p₁ p₂ p₃ : P},
       p₁ ∈ carrier → p₂ ∈ carrier → p₃ ∈ carrier → c • (p₁ -ᵥ p₂ : V) +ᵥ p₃ ∈ carrier
 
-namespace Submodule
-
-variable {k V : Type*} [Ring k] [AddCommGroup V] [Module k V]
-
-/-- Reinterpret `p : Submodule k V` as an `AffineSubspace k V`. -/
-def toAffineSubspace (p : Submodule k V) : AffineSubspace k V where
-  carrier := p
-  smul_vsub_vadd_mem _ _ _ _ h₁ h₂ h₃ := p.add_mem (p.smul_mem _ (p.sub_mem h₁ h₂)) h₃
-
-end Submodule
-
 namespace AffineSubspace
 
 variable (k : Type*) {V : Type*} (P : Type*) [Ring k] [AddCommGroup V] [Module k V]
@@ -181,6 +170,50 @@ subspace. -/
 theorem mem_coe (p : P) (s : AffineSubspace k P) : p ∈ (s : Set P) ↔ p ∈ s := by simp
 
 variable {k P}
+
+/-- Two affine subspaces are equal if they have the same points. -/
+theorem coe_injective : Function.Injective ((↑) : AffineSubspace k P → Set P) :=
+  SetLike.coe_injective
+
+@[ext (iff := false)]
+theorem ext {p q : AffineSubspace k P} (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
+  SetLike.ext h
+
+protected theorem ext_iff (s₁ s₂ : AffineSubspace k P) : s₁ = s₂ ↔ (s₁ : Set P) = s₂ :=
+  SetLike.ext'_iff
+
+end AffineSubspace
+
+namespace Submodule
+
+variable {k V : Type*} [Ring k] [AddCommGroup V] [Module k V]
+
+/-- Reinterpret `p : Submodule k V` as an `AffineSubspace k V`. -/
+@[coe] def toAffineSubspace (p : Submodule k V) : AffineSubspace k V where
+  carrier := p
+  smul_vsub_vadd_mem _ _ _ _ h₁ h₂ h₃ := p.add_mem (p.smul_mem _ (p.sub_mem h₁ h₂)) h₃
+
+instance : Coe (Submodule k V) (AffineSubspace k V) := ⟨toAffineSubspace⟩
+
+@[simp]
+theorem mem_toAffineSubspace {p : Submodule k V} {x : V} :
+    x ∈ (p : AffineSubspace k V) ↔ x ∈ p := Iff.rfl
+
+end Submodule
+
+namespace AffineSubspace
+
+variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
+  [AffineSpace V P]
+
+def toSubmodule_of_zero_mem {s : AffineSubspace k V} (hs : 0 ∈ s) : Submodule k V where
+  carrier := s
+  zero_mem' := hs
+  add_mem' ha hb := by simpa using s.smul_vsub_vadd_mem 1 ha hs hb
+  smul_mem' _ _ ha := by simpa using s.smul_vsub_vadd_mem _ ha hs hs
+
+instance : CanLift (AffineSubspace k V) (Submodule k V) (·) (0 ∈ ·) := ⟨
+  fun _ hs => ⟨toSubmodule_of_zero_mem hs, by ext x; simp [toSubmodule_of_zero_mem]⟩⟩
 
 /-- The direction of an affine subspace is the submodule spanned by
 the pairwise differences of points.  (Except in the case of an empty
@@ -301,17 +334,6 @@ theorem mem_direction_iff_eq_vsub_left {s : AffineSubspace k P} {p : P} (hp : p 
   rw [← SetLike.mem_coe, coe_direction_eq_vsub_set_left hp]
   exact ⟨fun ⟨p₂, hp₂, hv⟩ => ⟨p₂, hp₂, hv.symm⟩, fun ⟨p₂, hp₂, hv⟩ => ⟨p₂, hp₂, hv.symm⟩⟩
 
-/-- Two affine subspaces are equal if they have the same points. -/
-theorem coe_injective : Function.Injective ((↑) : AffineSubspace k P → Set P) :=
-  SetLike.coe_injective
-
-@[ext (iff := false)]
-theorem ext {p q : AffineSubspace k P} (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
-  SetLike.ext h
-
-protected theorem ext_iff (s₁ s₂ : AffineSubspace k P) : s₁ = s₂ ↔ (s₁ : Set P) = s₂ :=
-  SetLike.ext'_iff
-
 /-- Two affine subspaces with the same direction and nonempty intersection are equal. -/
 theorem ext_of_direction_eq {s₁ s₂ : AffineSubspace k P} (hd : s₁.direction = s₂.direction)
     (hn : ((s₁ : Set P) ∩ s₂).Nonempty) : s₁ = s₂ := by
@@ -400,11 +422,6 @@ end AffineSubspace
 namespace Submodule
 
 variable {k V : Type*} [Ring k] [AddCommGroup V] [Module k V]
-
-@[simp]
-theorem mem_toAffineSubspace {p : Submodule k V} {x : V} :
-    x ∈ p.toAffineSubspace ↔ x ∈ p :=
-  Iff.rfl
 
 @[simp]
 theorem toAffineSubspace_direction (s : Submodule k V) : s.toAffineSubspace.direction = s := by
