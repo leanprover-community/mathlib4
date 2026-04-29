@@ -6,6 +6,7 @@ Authors: Julian Berman
 module
 
 public import Mathlib.GroupTheory.PGroup
+public import Mathlib.GroupTheory.Rank
 public import Mathlib.LinearAlgebra.Quotient.Defs
 
 /-!
@@ -280,7 +281,7 @@ end CommMonoid
 
 section CommGroup
 
-variable (G) [CommGroup G]
+variable (G) [CommGroup G] [CommGroup H]
 
 namespace CommGroup
 
@@ -300,9 +301,17 @@ theorem torsion_eq_torsion_submonoid : CommMonoid.torsion G = (torsion G).toSubm
 theorem mem_torsion (g : G) : g ∈ torsion G ↔ IsOfFinOrder g := Iff.rfl
 
 @[to_additive]
+lemma torsion_eq_top_iff : CommGroup.torsion G = ⊤ ↔ IsTorsion G :=
+  (torsion G).eq_top_iff'
+
+@[to_additive]
 lemma isMulTorsionFree_iff_torsion_eq_bot : IsMulTorsionFree G ↔ CommGroup.torsion G = ⊥ := by
   rw [isMulTorsionFree_iff_not_isOfFinOrder, eq_bot_iff, SetLike.le_def]
   simp [not_imp_not, CommGroup.mem_torsion]
+
+@[to_additive]
+lemma torsion_prod : torsion (G × H) = (torsion G).prod (torsion H) := by
+  simp [Subgroup.ext_iff, Subgroup.mem_prod, mem_torsion, IsOfFinOrder.prod_iff]
 
 @[to_additive]
 lemma isTorsion_quotient_range_powMonoidHom {n : ℕ} (hn : n ≠ 0) :
@@ -328,6 +337,62 @@ variable {G} {p}
 theorem primaryComponent.isPGroup : IsPGroup p <| primaryComponent G p := fun g =>
   (propext exists_orderOf_eq_prime_pow_iff.symm).mpr
     (CommMonoid.primaryComponent.exists_orderOf_eq_prime_pow g)
+
+variable (G H)
+
+/-- The free rank of a finitely generated abelian group is the rank of its free part. -/
+@[to_additive]
+noncomputable def freeRank [Group.FG G] : ℕ := Group.rank (G ⧸ torsion G)
+
+@[to_additive]
+theorem freeRank_def [Group.FG G] : freeRank G = Group.rank (G ⧸ torsion G) := rfl
+
+variable {G H}
+
+@[to_additive]
+theorem freeRank_eq_zero_iff [Group.FG G] : freeRank G = 0 ↔ IsTorsion G := by
+  rw [freeRank, Group.rank_eq_zero_iff, QuotientGroup.subsingleton_iff, torsion_eq_top_iff]
+
+@[to_additive]
+theorem freeRank_eq_zero (hG : IsTorsion G) [Group.FG G] : freeRank G = 0 :=
+  freeRank_eq_zero_iff.mpr hG
+
+@[to_additive]
+theorem freeRank_eq_zero_of_finite [Finite G] [Group.FG G] : freeRank G = 0 :=
+  freeRank_eq_zero isTorsion_of_finite
+
+@[to_additive]
+theorem freeRank_congr (e : G ≃* H) [Group.FG G] [Group.FG H] : freeRank G = freeRank H := by
+  refine Group.rank_congr (QuotientGroup.congr  (torsion G) (torsion H) e ?_)
+  sorry
+
+-- todo: golf `index_prod`
+def foo (s : Subgroup G) (t : Subgroup H) : (G × H) ⧸ (s.prod t) ≃* (G ⧸ s) × H ⧸ t := by
+  let f : (G × H) ⧸ (s.prod t) →* (G ⧸ s) × H ⧸ t :=
+    QuotientGroup.lift (s.prod t) ((QuotientGroup.mk' s).prodMap (QuotientGroup.mk' t))
+      (by rintro ⟨x, y⟩ hx; simpa using hx)
+  let g : (G ⧸ s) × H ⧸ t →* (G × H) ⧸ (s.prod t) :=
+    (QuotientGroup.map s (s.prod t) (MonoidHom.inl G H) (by intro; simp [Subgroup.mem_prod])).coprod
+    (QuotientGroup.map t (s.prod t) (MonoidHom.inr G H) (by intro; simp [Subgroup.mem_prod]))
+  apply MonoidHom.toMulEquiv f g
+  · simp_rw [MonoidHom.ext_iff, QuotientGroup.forall_mk, Prod.forall]
+    simp [f, g, ← QuotientGroup.mk_mul]
+  · simp_rw [MonoidHom.ext_iff, Prod.forall, QuotientGroup.forall_mk]
+    simp [f, g]
+
+variable (G H)
+
+@[to_additive]
+theorem freeRank_sum [Group.FG G] [Group.FG H] : freeRank (G × H) = freeRank G + freeRank H := by
+  rw [freeRank_def, torsion_prod, Group.rank_congr (foo (torsion G) (torsion H))]
+  sorry
+
+open scoped DirectSum
+
+@[to_additive]
+theorem freeRank_sum' {ι : Type*} [Finite ι] (G : ι → Type*) : freeRank (⨁ i : ι, G i) = freeRank G + freeRank H := by
+
+  sorry
 
 end CommGroup
 
