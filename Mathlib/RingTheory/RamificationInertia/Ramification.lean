@@ -16,7 +16,7 @@ Given a prime ideal `q` of an `R`-algebra `S`, the ramification index of `q` ove
 to be the length of the quotient `Sq/pSq` as an `Sq`-module where `Sq` is the localization of `S` at
 `q`, `p` is the preimage of `q` in `R`, and `pSq` is the image of `p` in `Sq`.
 
-## Main definitions=
+## Main definitions
 
 * `Ideal.ramificationIdx' q R`: The ramification index of `q` over `R`.
 
