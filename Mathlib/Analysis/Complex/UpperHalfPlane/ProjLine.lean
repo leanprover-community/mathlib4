@@ -147,7 +147,7 @@ namespace UpperHalfPlane
 /-- The pointwise stabilizer of the vertical line `ℝ₊ • I` in `GL(2, ℝ)₊` is the scalar multiples
 of the identity. -/
 lemma forall_smul_pos_mul_I_eq_iff_of_det_pos {g : GL (Fin 2) ℝ} (hdet : 0 < g.det.val) :
-    (∀ (t : ℝ) (ht : 0 < t), g • (⟨t * I, by simpa⟩ : ℍ) = ⟨t * I, by simpa⟩)
+    (∀ (t : ℝ) (ht : 0 < t), g • (⟨t * .I, by simpa⟩ : ℍ) = ⟨t * .I, by simpa⟩)
       ↔ ∃ r : ℝˣ, g = r • 1 where
   mp hg := by
     have hg1 : g • I = I := by simpa using hg 1 (by norm_num)
@@ -172,7 +172,7 @@ lemma forall_smul_pos_mul_I_eq_iff_of_det_pos {g : GL (Fin 2) ℝ} (hdet : 0 < g
 /-- The pointwise stabilizer of the vertical line `ℝ₊ • I` in `GL(2, ℝ)` consists of the scalar
 multiples of the identity and of `J = [-1, 0; 0, 1]`. -/
 lemma forall_smul_pos_mul_I_eq_iff {g : GL (Fin 2) ℝ} :
-    (∀ (t : ℝ) (ht : 0 < t), g • (⟨t * I, by simpa⟩ : ℍ) = ⟨t * I, by simpa⟩) ↔
+    (∀ (t : ℝ) (ht : 0 < t), g • (⟨t * .I, by simpa⟩ : ℍ) = ⟨t * .I, by simpa⟩) ↔
       (∃ r : ℝˣ, g = r • 1) ∨ (∃ r : ℝˣ, g = r • J) := by
   by_cases h : 0 < g.det.val
   · rw [forall_smul_pos_mul_I_eq_iff_of_det_pos h]
