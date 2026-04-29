@@ -29,12 +29,9 @@ public import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
 
 @[expose] public section
 
-open TopologicalSpace Set MeasureTheory intervalIntegral
- Metric Filter Function Complex
-
+open Set Function Complex
 open UpperHalfPlane hiding I
-
-open scoped Interval Real NNReal ENNReal Topology BigOperators Nat
+open scoped Real
 
 local notation "𝕢" => Periodic.qParam
 
@@ -124,7 +121,7 @@ lemma differentiableAt_eta_tprod {z : ℂ} (hz : z ∈ ℍₒ) :
   apply (multipliableLocallyUniformlyOn_eta.hasProdLocallyUniformlyOn.differentiableOn ?_
     isOpen_upperHalfPlaneSet z hz).differentiableAt (isOpen_upperHalfPlaneSet.mem_nhds hz)
   filter_upwards with b
-  simpa [Finset.prod_fn] using DifferentiableOn.finset_prod (by fun_prop)
+  simpa [Finset.prod_fn] using DifferentiableOn.finsetProd (by fun_prop)
 
 theorem differentiableAt_eta_of_mem_upperHalfPlaneSet {z : ℂ} (hz : z ∈ ℍₒ) :
     DifferentiableAt ℂ eta z :=
