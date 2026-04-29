@@ -55,8 +55,7 @@ instance [Infinite α] : Infinite {a : Sym2 α // a.IsDiag} :=
 
 instance [Infinite α] : Infinite {a : Sym2 α // ¬a.IsDiag} :=
   let e := Infinite.natEmbedding α
-  .of_injective (fun n => ⟨s(e 0, e (n + 1)), by simp⟩) fun s₁ s₂ hs => by
-    simpa [Subtype.ext_iff, e.injective.eq_iff] using hs
+  .of_injective (fun n => ⟨s(e 0, e (n + 1)), by simp⟩) fun _ _ => by simp
 
 theorem natCard_subtype_diag : Nat.card { a : Sym2 α // a.IsDiag } = Nat.card α := by
   cases finite_or_infinite α
