@@ -9,7 +9,7 @@ public import Mathlib.Data.Int.DivMod
 public import Mathlib.Order.Lattice
 public import Mathlib.Tactic.Common
 public import Batteries.Data.Fin.Basic
-meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Attr.Register
 
 /-!
 # The finite type with `n` elements

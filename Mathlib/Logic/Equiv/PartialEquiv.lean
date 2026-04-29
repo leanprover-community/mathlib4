@@ -9,7 +9,7 @@ public import Mathlib.Data.Set.Piecewise
 public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Tactic.Core
 public import Mathlib.Tactic.Attr.Core
-meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Attr.Register
 
 /-!
 # Partial equivalences

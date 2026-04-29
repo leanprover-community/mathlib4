@@ -15,7 +15,7 @@ public import Batteries.Tactic.SeqFocus
 public import Mathlib.Data.Subtype
 public import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.AdaptationNote
-meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Attr.Register
 
 /-!
 # Basic properties of lists

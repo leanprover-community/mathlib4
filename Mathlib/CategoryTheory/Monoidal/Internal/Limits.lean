@@ -8,7 +8,7 @@ module
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 public import Mathlib.CategoryTheory.Limits.Creates
 public import Mathlib.CategoryTheory.Monoidal.Mon
-meta import Mathlib.Tactic.Attr.Register
+import Mathlib.Tactic.Attr.Register
 
 /-!
 # Limits of monoid objects.
