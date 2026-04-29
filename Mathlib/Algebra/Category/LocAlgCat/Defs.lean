@@ -126,6 +126,17 @@ instance : Category (LocAlgCat.{w} Λ k) where
     rw [← Ideal.comap_comapₐ, g.comap_maximalIdeal_eq, f.comap_maximalIdeal_eq], by
     rw [← AlgHom.comp_assoc, g.residue_comp, f.residue_comp]⟩
 
+/-- The relative algebra structure on `B` canonically induced by a morphism `f : A ⟶ B`. -/
+abbrev Hom.relativeAlgebra (f : A ⟶ B) : Algebra A B := f.toAlgHom.toRingHom.toAlgebra
+
+lemma Hom.isScalarTower_relativeAlgebra (f : A ⟶ B) :
+    @IsScalarTower Λ A B _ f.relativeAlgebra.toSMul _ := .of_algHom f.toAlgHom
+
+lemma Hom.isScalarTower'_relativeAlgebra (f : A ⟶ B) :
+    @IsScalarTower A B k f.relativeAlgebra.toSMul _ _ :=
+  letI := f.relativeAlgebra
+  .of_algebraMap_eq (fun a ↦ (DFunLike.congr_fun f.residue_comp a).symm)
+
 lemma Hom.isLocalHom_toAlgHom (f : A ⟶ B) : IsLocalHom f.toAlgHom := by
   have := (((local_hom_TFAE (f.toAlgHom : A →+* B)).out 0 4).mpr (by
     rw [Ideal.comap_coe, f.comap_maximalIdeal_eq]))
