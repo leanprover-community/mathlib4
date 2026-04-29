@@ -31,7 +31,7 @@ instance (X Y : TestCat.{u}) : FunLike (Fun X Y) X.α Y.α where
 protected def Fun.id (X : TestCat.{u}) : Fun X X where
   toFun := id
 
-protected def Fun.comp {X Y Z : TestCat.{u}} (f : Fun X Y) (g : Fun Y Z) : Fun X Z where
+protected def Fun.comp {X Y Z : TestCat.{u}} (g : Fun Y Z) (f : Fun X Y)  : Fun X Z where
   toFun := g.toFun ∘ f.toFun
 
 mk_concrete_category TestCat Fun Fun.id Fun.comp
@@ -68,15 +68,14 @@ mk_concrete_category TestCat Fun Fun.id Fun.comp
 #guard_msgs in
 #check ofHom
 
-/-- info: TestCat.Hom.Simps.hom.{u_1} (X Y : TestCat) (f : X.Hom Y) : X.Fun Y -/
-#guard_msgs in
-#check Hom.Simps.hom
 
 /-- info: TestCat.hom_id.{u_1} {X : TestCat} : Hom.hom (𝟙 X) = Fun.id X -/
 #guard_msgs in
 #check hom_id
 
-/-- info: TestCat.hom_comp.{u_1} {X Y Z : TestCat} (f : X ⟶ Y) (g : Y ⟶ Z) : Hom.hom (f ≫ g) = (Hom.hom f).comp (Hom.hom g) -/
+/--
+info: TestCat.hom_comp.{u_1} {X Y Z : TestCat} (f : X ⟶ Y) (g : Y ⟶ Z) : Hom.hom (f ≫ g) = (Hom.hom g).comp (Hom.hom f)
+-/
 #guard_msgs in
 #check hom_comp
 
@@ -104,7 +103,7 @@ example {X : TestCat} : (𝟙 X : X ⟶ X).hom = Fun.id X := by
   dsimp
 
 example {X Y Z : TestCat} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g).hom = Fun.comp f.hom g.hom := by
+    Hom.hom (f ≫ g) = Fun.comp g.hom f.hom := by
   dsimp
 
 example {X Y : TestCat} (f g : X ⟶ Y) (h : f.hom = g.hom) : f = g :=
@@ -114,7 +113,14 @@ example {X Y : TestCat} (f g : X ⟶ Y) (h : ∀ x, f x = g x) : f = g := by
   cat_disch
 
 example {X Y : TestCat} (f : Fun X Y) (x : X.α) : ofHom f x = f x := by
-  dsimp
+  simp
+
+@[simps! hom]
+def morphism (X : TestCat) : X ⟶ X := ofHom ⟨id⟩
+
+/-- info: TestCat.morphism_hom.{u_1} (X : TestCat) : Hom.hom X.morphism = { toFun := id } -/
+#guard_msgs in
+#check morphism_hom
 
 end TestCat
 
@@ -141,7 +147,7 @@ instance : CoeSort (ModuleTestCat.{v} R) (Type v) :=
 attribute [coe] ModuleTestCat.carrier
 
 variable {R} in
-mk_concrete_category (ModuleTestCat R) (· →ₗ[R] ·) (LinearMap.id ·) (LinearMap.comp · ·)
+mk_concrete_category (ModuleTestCat R) (· →ₗ[R] ·) (@LinearMap.id R ·) LinearMap.comp
   with_of_hom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y]
   hom_type (X →ₗ[R] Y) from (of R X) to (of R Y)
 
@@ -188,19 +194,17 @@ info: ModuleTestCat.Hom.ext.{u, u_1, u_2} {R : Type u} {inst✝ : Ring R} {X : M
 #guard_msgs in
 #check ofHom
 
-/--
-info: ModuleTestCat.Hom.Simps.hom.{u, u_1, u_2} {R : Type u} [Ring R] (X : ModuleTestCat R) (Y : ModuleTestCat R)
-  (f : X.Hom Y) : (fun x1 x2 => ↑x1 →ₗ[R] ↑x2) X Y
--/
-#guard_msgs in
-#check Hom.Simps.hom
 
-/-- info: ModuleTestCat.hom_id.{u, u_1} {R : Type u} [Ring R] {X : ModuleTestCat R} : Hom.hom (𝟙 X) = LinearMap.id -/
+/--
+info: ModuleTestCat.hom_id.{u, u_1} {R : Type u} [Ring R] {X : ModuleTestCat R} : Hom.hom (𝟙 X) = LinearMap.id
+-/
 #guard_msgs in
 #check hom_id
 
-/-- info: ModuleTestCat.hom_comp.{u, u_1} {R : Type u} [Ring R] {X Y Z : ModuleTestCat R} (f : X ⟶ Y) (g : Y ⟶ Z) :
-  Hom.hom (f ≫ g) = Hom.hom g ∘ₗ Hom.hom f -/
+/--
+info: ModuleTestCat.hom_comp.{u, u_1} {R : Type u} [Ring R] {X Y Z : ModuleTestCat R} (f : X ⟶ Y) (g : Y ⟶ Z) :
+  Hom.hom (f ≫ g) = Hom.hom g ∘ₗ Hom.hom f
+-/
 #guard_msgs in
 #check hom_comp
 
@@ -230,7 +234,7 @@ example {X : ModuleTestCat.{v} R} : (𝟙 X : X ⟶ X).hom = LinearMap.id := by
   dsimp
 
 example {X Y Z : ModuleTestCat.{v} R} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g).hom = LinearMap.comp g.hom f.hom := by
+    Hom.hom (f ≫ g) = LinearMap.comp g.hom f.hom := by
   dsimp
 
 example {X Y : ModuleTestCat.{v} R} (f g : X ⟶ Y) (h : f.hom = g.hom) : f = g :=
@@ -240,7 +244,16 @@ example {X Y : ModuleTestCat.{v} R} (f g : X ⟶ Y) (h : ∀ x, f x = g x) : f =
   cat_disch
 
 example {X Y : ModuleTestCat.{v} R} (f : X →ₗ[R] Y) (x : X) : ofHom f x = f x := by
-  dsimp
+  simp
+
+@[simps! hom]
+def morphism (X : ModuleTestCat.{v} R) : X ⟶ X := ofHom (LinearMap.id)
+
+/--
+info: ModuleTestCat.morphism_hom.{v, u} (R : Type u) [Ring R] (X : ModuleTestCat R) : Hom.hom (morphism R X) = LinearMap.id
+-/
+#guard_msgs in
+#check morphism_hom
 
 end ModuleTestCat
 
@@ -275,10 +288,10 @@ end MultiplicativeTestCat
 attribute [coe] AdditiveTestCat.carrier MultiplicativeTestCat.carrier
 
 @[to_additive AdditiveTestCat]
-mk_concrete_category MultiplicativeTestCat (· →* ·) (MonoidHom.id ·) (MonoidHom.comp · ·)
+mk_concrete_category MultiplicativeTestCat (· →* ·) MonoidHom.id MonoidHom.comp
   with_of_hom {X Y : Type u} [Monoid X] [Monoid Y]
   hom_type (X →* Y) from (MultiplicativeTestCat.of X) to (MultiplicativeTestCat.of Y)
-  to_additive AdditiveTestCat (· →+ ·) (AddMonoidHom.id ·) (AddMonoidHom.comp · ·)
+  to_additive AdditiveTestCat (· →+ ·) AddMonoidHom.id AddMonoidHom.comp
   with_of_hom {X Y : Type u} [AddMonoid X] [AddMonoid Y]
   hom_type (X →+ Y) from (AdditiveTestCat.of X) to (AdditiveTestCat.of Y)
 
@@ -304,6 +317,24 @@ namespace MultiplicativeTestCat
 #guard_msgs in
 #check ofHom
 
+/-- info: MultiplicativeTestCat.hom_id.{u_1} {X : MultiplicativeTestCat} : Hom.hom (𝟙 X) = MonoidHom.id ↑X -/
+#guard_msgs in
+#check hom_id
+
+/-- info: MultiplicativeTestCat.hom_comp.{u_1} {X Y Z : MultiplicativeTestCat} (f : X ⟶ Y) (g : Y ⟶ Z) :
+  Hom.hom (f ≫ g) = (Hom.hom g).comp (Hom.hom f) -/
+#guard_msgs in
+#check hom_comp
+
+/-- info: MultiplicativeTestCat.hom_ofHom.{u_1} {X Y : MultiplicativeTestCat} (f : ↑X →* ↑Y) :
+  Hom.hom (ConcreteCategory.ofHom f) = f -/
+#guard_msgs in
+#check hom_ofHom
+
+/-- info: MultiplicativeTestCat.ofHom_hom.{u_1} {X Y : MultiplicativeTestCat} (f : X ⟶ Y) : ConcreteCategory.ofHom (Hom.hom f) = f -/
+#guard_msgs in
+#check ofHom_hom
+
 example : Category MultiplicativeTestCat := inferInstance
 
 example : ConcreteCategory MultiplicativeTestCat (fun X Y => X →* Y) := inferInstance
@@ -312,8 +343,17 @@ example {X Y : Type u} [Monoid X] [Monoid Y] (f : X →* Y) : (ofHom f).hom = f 
   dsimp
 
 example {X Y Z : MultiplicativeTestCat} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g).hom = MonoidHom.comp g.hom f.hom := by
+    Hom.hom (f ≫ g) = MonoidHom.comp g.hom f.hom := by
   dsimp
+
+@[simps! hom]
+def morphism (X : MultiplicativeTestCat) : X ⟶ X := ofHom (MonoidHom.id _)
+
+/--
+info: MultiplicativeTestCat.morphism_hom.{u_1} (X : MultiplicativeTestCat) : Hom.hom X.morphism = MonoidHom.id ↑X
+-/
+#guard_msgs in
+#check morphism_hom
 
 end MultiplicativeTestCat
 
@@ -339,6 +379,23 @@ namespace AdditiveTestCat
 #guard_msgs in
 #check ofHom
 
+/-- info: AdditiveTestCat.hom_id.{u_1} {X : AdditiveTestCat} : Hom.hom (𝟙 X) = AddMonoidHom.id ↑X -/
+#guard_msgs in
+#check hom_id
+
+/-- info: AdditiveTestCat.hom_comp.{u_1} {X Y Z : AdditiveTestCat} (f : X ⟶ Y) (g : Y ⟶ Z) :
+  Hom.hom (f ≫ g) = (Hom.hom g).comp (Hom.hom f) -/
+#guard_msgs in
+#check hom_comp
+
+/-- info: AdditiveTestCat.hom_ofHom.{u_1} {X Y : AdditiveTestCat} (f : ↑X →+ ↑Y) : Hom.hom (ConcreteCategory.ofHom f) = f -/
+#guard_msgs in
+#check hom_ofHom
+
+/-- info: AdditiveTestCat.ofHom_hom.{u_1} {X Y : AdditiveTestCat} (f : X ⟶ Y) : ConcreteCategory.ofHom (Hom.hom f) = f -/
+#guard_msgs in
+#check ofHom_hom
+
 example : Category AdditiveTestCat := inferInstance
 
 example : ConcreteCategory AdditiveTestCat (fun X Y => X →+ Y) := inferInstance
@@ -347,7 +404,16 @@ example {X Y : Type u} [AddMonoid X] [AddMonoid Y] (f : X →+ Y) : (ofHom f).ho
   dsimp
 
 example {X Y Z : AdditiveTestCat} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g).hom = AddMonoidHom.comp g.hom f.hom := by
+    Hom.hom (f ≫ g) = AddMonoidHom.comp g.hom f.hom := by
   dsimp
+
+@[simps! hom]
+def morphism (X : AdditiveTestCat) : X ⟶ X := ofHom (AddMonoidHom.id _)
+
+/--
+info: AdditiveTestCat.morphism_hom.{u_1} (X : AdditiveTestCat) : Hom.hom X.morphism = AddMonoidHom.id ↑X
+-/
+#guard_msgs in
+#check morphism_hom
 
 end AdditiveTestCat
