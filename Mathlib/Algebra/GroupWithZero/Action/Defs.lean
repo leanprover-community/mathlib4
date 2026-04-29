@@ -194,7 +194,7 @@ instance (priority := 100) MulActionWithZero.toSMulWithZero (M₀ A) {_ : Monoid
   { m with }
 
 /-- See also `Semiring.toModule` -/
-instance MonoidWithZero.toMulActionWithZero : MulActionWithZero M₀ M₀ :=
+instance (priority := 1100) MonoidWithZero.toMulActionWithZero : MulActionWithZero M₀ M₀ :=
   { MulZeroClass.toSMulWithZero M₀, Monoid.toMulAction M₀ with }
 
 /-- Like `MonoidWithZero.toMulActionWithZero`, but multiplies on the right. See also
