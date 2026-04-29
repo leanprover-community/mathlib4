@@ -28,6 +28,8 @@ open GraphLike
 
 namespace SimpleGraph
 
+open Walk
+
 /-- Circulant graph over additive group `G` with jumps `s` -/
 @[simps!]
 def circulantGraph {G : Type*} [AddGroup G] (s : Set G) : SimpleGraph G :=
@@ -143,6 +145,8 @@ theorem cycleGraph_preconnected {n : ℕ} : (cycleGraph n).Preconnected :=
 theorem cycleGraph_connected {n : ℕ} : (cycleGraph (n + 1)).Connected :=
   (pathGraph_connected n).mono pathGraph_le_cycleGraph
 
+section cycle
+
 set_option backward.privateInPublic true in
 private def cycleGraph.cycleCons (n : ℕ) : ∀ m : Fin (n + 3), Walk (cycleGraph (n + 3)) m 0
   | ⟨0, h⟩ => Walk.nil
@@ -172,11 +176,38 @@ private theorem cycleGraph.length_cycle_cons (n : ℕ) :
     simp only [Walk.length_cons]
     rw [cycleGraph.length_cycle_cons n]
 
-theorem cycleGraph.length_cycle {n : ℕ} : (cycleGraph.cycle n).length = n + 3 := by
+variable {n : ℕ}
+
+@[simp, grind =]
+theorem cycleGraph.length_cycle : (cycleGraph.cycle n).length = n + 3 := by
   unfold cycleGraph.cycle
   simp [cycleGraph.length_cycle_cons]
 
 @[deprecated (since := "2026-02-15")]
 alias cycleGraph_EulerianCircuit_length := cycleGraph.length_cycle
+
+private theorem cycleGraph.getVert_cycleCons (m : Fin (n + 3)) (i : ℕ) (hi : i ≤ m.val) :
+    (cycleGraph.cycleCons n m).getVert i = (m - i) % (n + 3) := by
+  obtain ⟨m, hm⟩ := m
+  induction i generalizing m
+  · simp [Nat.mod_eq_of_lt hm]
+  · cases m <;> grind +locals [getVert_cons_succ]
+
+theorem cycleGraph.getVert_cycle {m : ℕ} (hm : m ≤ n + 3) :
+    (cycleGraph.cycle n).getVert m = ⟨(n + 3 - m) % (n + 3), Nat.mod_lt _ (by lia)⟩ := by
+  cases m
+  · simp
+  · grind +locals [getVert_cons_succ, cycleGraph.getVert_cycleCons]
+
+theorem cycleGraph.isPath_tail_cycle : (cycleGraph.cycle n).tail.IsPath := by
+  refine isPath_iff_injective_get_support _ |>.mpr fun ⟨i, hi⟩ ⟨j, hj⟩ hij ↦ ?_
+  rw [support_tail_of_not_nil _ (of_decide_eq_false rfl)] at hi hj
+  simp only [List.get_eq_getElem, support_getElem_eq_getVert, getVert_tail] at hij
+  grind [← Nat.mod_eq_of_lt, cycleGraph.getVert_cycle]
+
+theorem cycleGraph.isCycle_cycle : (cycleGraph.cycle n).IsCycle :=
+  isCycle_iff_isPath_tail_and_le_length.mpr ⟨cycleGraph.isPath_tail_cycle, by simp⟩
+
+end cycle
 
 end SimpleGraph

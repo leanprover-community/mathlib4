@@ -26,7 +26,7 @@ quotient `R ⧸ I` is finite.
 
 -/
 
-@[expose] public section
+public section
 
 /--
 A ring `R` has finite quotients if the quotient `R ⧸ I` is finite for all nonzero ideals of `R`.
@@ -79,7 +79,7 @@ theorem finite_setOf_mem (x : R) (hx : x ≠ 0) : {I : Ideal R | x ∈ I}.Finite
     .of_equiv _ (Ideal.relIsoOfSurjective _ Ideal.Quotient.mk_surjective).toEquiv
   simpa [← RingHom.ker_eq_comap_bot] using this
 
-open Pointwise in
+open scoped Pointwise in
 /-- For every bound `B`, a ring with finite quotients has only finitely many ideals of norm bounded
 by `B`. -/
 theorem finite_cardQuot_le (B : ℕ) : {I : Ideal R | I.cardQuot ≤ B}.Finite := by

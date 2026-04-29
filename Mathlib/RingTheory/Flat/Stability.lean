@@ -27,7 +27,7 @@ We show that flatness is stable under composition and base change.
                                           for the localization of `R` at `S`.
 -/
 
-@[expose] public section
+public section
 
 universe u v w t
 
