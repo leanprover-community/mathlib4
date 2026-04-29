@@ -31,7 +31,7 @@ if the tensor product `AlgebraicClosure k ⊗[k] A` is reduced.
 
 -/
 
-@[expose] public section
+public section
 
 open TensorProduct
 

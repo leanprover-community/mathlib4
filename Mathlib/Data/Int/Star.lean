@@ -17,7 +17,7 @@ public import Mathlib.Algebra.Order.Star.Basic
 This file shows that `ℤ` is a `StarOrderedRing`.
 -/
 
-@[expose] public section
+public section
 
 open AddSubmonoid Set
 

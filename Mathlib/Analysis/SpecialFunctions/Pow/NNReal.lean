@@ -219,9 +219,11 @@ lemma multiset_prod_map_rpow {ι} (s : Multiset ι) (f : ι → ℝ≥0) (r : �
   s.prod_hom' (rpowMonoidHom r) _
 
 /-- `rpow` version of `Finset.prod_pow` for `ℝ≥0`. -/
-lemma finset_prod_rpow {ι} (s : Finset ι) (f : ι → ℝ≥0) (r : ℝ) :
+lemma finsetProd_rpow {ι} (s : Finset ι) (f : ι → ℝ≥0) (r : ℝ) :
     (∏ i ∈ s, f i ^ r) = (∏ i ∈ s, f i) ^ r :=
   multiset_prod_map_rpow _ _ _
+
+@[deprecated (since := "2026-04-08")] alias finset_prod_rpow := finsetProd_rpow
 
 -- note: these don't really belong here, but they're much easier to prove in terms of the above
 
@@ -251,10 +253,12 @@ theorem _root_.Real.multiset_prod_map_rpow {ι} (s : Multiset ι) (f : ι → �
   simpa using Real.list_prod_map_rpow' l f hs r
 
 /-- `rpow` version of `Finset.prod_pow`. -/
-theorem _root_.Real.finset_prod_rpow
+theorem _root_.Real.finsetProd_rpow
     {ι} (s : Finset ι) (f : ι → ℝ) (hs : ∀ i ∈ s, 0 ≤ f i) (r : ℝ) :
     (∏ i ∈ s, f i ^ r) = (∏ i ∈ s, f i) ^ r :=
   Real.multiset_prod_map_rpow s.val f hs r
+
+@[deprecated (since := "2026-04-08")] alias _root_.Real.finset_prod_rpow := Real.finsetProd_rpow
 
 end Real
 
@@ -831,7 +835,7 @@ theorem rpow_lt_rpow_of_exponent_lt {x : ℝ≥0∞} {y z : ℝ} (hx : 1 < x) (h
     x ^ y < x ^ z := by
   lift x to ℝ≥0 using hx'
   rw [one_lt_coe_iff] at hx
-  simp [← coe_rpow_of_ne_zero (ne_of_gt (lt_trans zero_lt_one hx)),
+  simp [← coe_rpow_of_ne_zero (lt_trans zero_lt_one hx).ne',
     NNReal.rpow_lt_rpow_of_exponent_lt hx hyz]
 
 @[gcongr] theorem rpow_le_rpow_of_exponent_le {x : ℝ≥0∞} {y z : ℝ} (hx : 1 ≤ x) (hyz : y ≤ z) :
@@ -1183,7 +1187,6 @@ theorem IsNat.nnreal_rpow_eq_nnreal_pow {b : ℝ} {n : ℕ} (h : IsNat b n) (a :
     a ^ b = a ^ n := by
   rw [h.1, NNReal.rpow_natCast]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsInt.nnreal_rpow_eq_inv_nnreal_pow {b : ℝ} {n : ℕ} (h : IsInt b (.negOfNat n)) (a : ℝ≥0) :
     a ^ b = (a ^ n)⁻¹ := by
   rw [h.1, NNReal.rpow_intCast, Int.negOfNat_eq, zpow_neg, Int.ofNat_eq_natCast, zpow_natCast]

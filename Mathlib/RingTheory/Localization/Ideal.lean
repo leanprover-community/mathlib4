@@ -145,7 +145,7 @@ theorem comap_map_of_isPrimary_disjoint
     {I : Ideal R} (hI : I.IsPrimary) (hM : Disjoint (M : Set R) I) :
     Ideal.comap (algebraMap R S) (Ideal.map (algebraMap R S) I) = I := by
   have key : Disjoint (M : Set R) I.radical := by
-    contrapose! hM
+    contrapose hM
     rw [Set.not_disjoint_iff] at hM ⊢
     obtain ⟨a, ha, k, hk⟩ := hM
     exact ⟨a ^ k, pow_mem ha k, hk⟩

@@ -19,7 +19,7 @@ and division (apart from zero in the denominator). We also prove theorems like
 then `f * g` tends to positive infinity.
 -/
 
-@[expose] public section
+public section
 
 
 open Set Filter TopologicalSpace Function

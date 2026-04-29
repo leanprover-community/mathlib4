@@ -19,7 +19,7 @@ the main purpose is to allow for the continuous functional calculus to be an iso
 scalar rings `ℝ` and `ℝ≥0` too.
 -/
 
-@[expose] public section
+public section
 
 local notation "σ" => spectrum
 local notation "σₙ" => quasispectrum
@@ -458,11 +458,7 @@ lemma IsGreatest.nnnorm_cfc_nnreal [Nontrivial A] (f : ℝ≥0 → ℝ≥0) (a :
   convert IsGreatest.nnnorm_cfc (fun x : ℝ ↦ (f x.toNNReal : ℝ)) a ?hf_cont
   case hf_cont => exact continuous_subtype_val.comp_continuousOn <|
     ContinuousOn.comp ‹_› continuous_real_toNNReal.continuousOn <| ha'.image ▸ Set.mapsTo_image ..
-  ext x
-  constructor
-  all_goals rintro ⟨x, hx, rfl⟩
-  · exact ⟨x, spectrum.algebraMap_mem ℝ hx, by simp⟩
-  · exact ⟨x.toNNReal, ha'.apply_mem hx, by simp⟩
+  simp [Set.image_image, ← ha'.image]
 
 lemma apply_le_nnnorm_cfc_nnreal (f : ℝ≥0 → ℝ≥0) (a : A) ⦃x : ℝ≥0⦄ (hx : x ∈ σ ℝ≥0 a)
     (hf : ContinuousOn f (σ ℝ≥0 a) := by cfc_cont_tac) (ha : 0 ≤ a := by cfc_tac) :
@@ -536,11 +532,7 @@ lemma IsGreatest.nnnorm_cfcₙ_nnreal (f : ℝ≥0 → ℝ≥0) (a : A)
   convert IsGreatest.nnnorm_cfcₙ (fun x : ℝ ↦ (f x.toNNReal : ℝ)) a ?hf_cont (by simpa)
   case hf_cont => exact continuous_subtype_val.comp_continuousOn <|
     ContinuousOn.comp ‹_› continuous_real_toNNReal.continuousOn <| ha'.image ▸ Set.mapsTo_image ..
-  ext x
-  constructor
-  all_goals rintro ⟨x, hx, rfl⟩
-  · exact ⟨x, quasispectrum.algebraMap_mem ℝ hx, by simp⟩
-  · exact ⟨x.toNNReal, ha'.apply_mem hx, by simp⟩
+  simp [Set.image_image, ← ha'.image]
 
 lemma apply_le_nnnorm_cfcₙ_nnreal (f : ℝ≥0 → ℝ≥0) (a : A) ⦃x : ℝ≥0⦄ (hx : x ∈ σₙ ℝ≥0 a)
     (hf : ContinuousOn f (σₙ ℝ≥0 a) := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)

@@ -213,7 +213,6 @@ theorem RingHom.ofLocalizationSpanTarget_iff_finite :
 
 open TensorProduct
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 lemma RingHom.OfLocalizationSpan.mk (hP : RingHom.RespectsIso P)
     (H : ∀ {R S : Type u} [CommRing R] [CommRing S] [Algebra R S] (s : Set R),
@@ -288,7 +287,7 @@ theorem RingHom.HoldsForLocalizationAway.of_bijective
     (H : RingHom.HoldsForLocalizationAway P) (hf : Function.Bijective f) :
     P f := by
   letI := f.toAlgebra
-  have := IsLocalization.at_units (.powers (1 : R)) (by simp)
+  have := IsLocalization.of_le_isUnit (S := .powers (1 : R)) (by simp)
   have := IsLocalization.isLocalization_of_algEquiv (.powers (1 : R))
     (AlgEquiv.ofBijective (Algebra.ofId R S) hf)
   exact H _ 1
@@ -433,7 +432,7 @@ lemma RingHom.OfLocalizationSpanTarget.ofIsLocalization
   obtain ⟨T, _, _, _, hT⟩ := hT r
   convert hP'.1 _
     (Localization.algEquiv (R := S) (Submonoid.powers (r : S)) T).symm.toRingEquiv hT
-  rw [← RingHom.comp_assoc, RingEquiv.toRingHom_eq_coe, AlgEquiv.toRingEquiv_eq_coe,
+  rw [← RingHom.comp_assoc, RingEquiv.toRingHom_eq_coe,
     AlgEquiv.toRingEquiv_toRingHom, Localization.coe_algEquiv_symm, IsLocalization.map_comp,
     RingHom.comp_id]
 
