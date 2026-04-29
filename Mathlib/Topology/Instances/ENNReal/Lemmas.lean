@@ -277,15 +277,14 @@ theorem tendsto_atTop_zero_iff_lt_of_antitone {β : Type*} [Nonempty β] [Semila
   rw [ENNReal.tendsto_atTop_zero_iff_le_of_antitone hf]
   constructor <;> intro h ε hε
   · obtain ⟨n, hn⟩ := h (min 1 (ε / 2))
-      (lt_min_iff.mpr ⟨zero_lt_one, (ENNReal.div_pos_iff.mpr ⟨ne_of_gt hε, ENNReal.ofNat_ne_top⟩)⟩)
+      (lt_min_iff.mpr ⟨zero_lt_one, (ENNReal.div_pos_iff.mpr ⟨hε.ne', by finiteness⟩)⟩)
     · refine ⟨n, hn.trans_lt ?_⟩
       by_cases hε_top : ε = ∞
-      · rw [hε_top]
-        exact (min_le_left _ _).trans_lt ENNReal.one_lt_top
+      · simp [hε_top]
       refine (min_le_right _ _).trans_lt ?_
       rw [ENNReal.div_lt_iff (Or.inr hε.ne') (Or.inr hε_top)]
       conv_lhs => rw [← mul_one ε]
-      gcongr <;> simp [*]
+      gcongr; simp
   · obtain ⟨n, hn⟩ := h ε hε
     exact ⟨n, hn.le⟩
 
@@ -362,7 +361,7 @@ protected theorem Tendsto.mul_const {f : Filter α} {m : α → ℝ≥0∞} {a b
     (hm : Tendsto m f (𝓝 a)) (ha : a ≠ 0 ∨ b ≠ ∞) : Tendsto (fun x => m x * b) f (𝓝 (a * b)) := by
   simpa only [mul_comm] using ENNReal.Tendsto.const_mul hm ha
 
-theorem tendsto_finset_prod_of_ne_top {ι : Type*} {f : ι → α → ℝ≥0∞} {x : Filter α} {a : ι → ℝ≥0∞}
+theorem tendsto_finsetProd_of_ne_top {ι : Type*} {f : ι → α → ℝ≥0∞} {x : Filter α} {a : ι → ℝ≥0∞}
     (s : Finset ι) (h : ∀ i ∈ s, Tendsto (f i) x (𝓝 (a i))) (h' : ∀ i ∈ s, a i ≠ ∞) :
     Tendsto (fun b => ∏ c ∈ s, f c b) x (𝓝 (∏ c ∈ s, a c)) := by
   classical
@@ -376,6 +375,9 @@ theorem tendsto_finset_prod_of_ne_top {ι : Type*} {f : ι → α → ℝ≥0∞
     · exact IH (fun i hi => h _ (Finset.mem_insert_of_mem hi)) fun i hi =>
         h' _ (Finset.mem_insert_of_mem hi)
     · exact Or.inr (h' _ (Finset.mem_insert_self _ _))
+
+@[deprecated (since := "2026-04-08")]
+alias tendsto_finset_prod_of_ne_top := tendsto_finsetProd_of_ne_top
 
 protected theorem continuousAt_const_mul {a b : ℝ≥0∞} (h : a ≠ ∞ ∨ b ≠ 0) :
     ContinuousAt (a * ·) b :=
@@ -626,7 +628,7 @@ theorem continuous_edist : Continuous fun p : α × α => edist p.1 p.2 := by
   rintro ⟨x, y⟩ ⟨x', y'⟩
   calc
     edist x y ≤ edist x x' + edist x' y' + edist y' y := edist_triangle4 _ _ _ _
-    _ = edist x' y' + (edist x x' + edist y y') := by simp only [edist_comm]; ac_rfl
+    _ = edist x' y' + (edist x x' + edist y y') := by rw [edist_comm y y']; abel
     _ ≤ edist x' y' + (edist (x, y) (x', y') + edist (x, y) (x', y')) := by
       gcongr <;> apply_rules [le_max_left, le_max_right]
     _ = edist x' y' + 2 * edist (x, y) (x', y') := by rw [← mul_two, mul_comm]
@@ -759,7 +761,7 @@ lemma truncateToReal_le {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) {x : ℝ≥0∞}
     truncateToReal t x ≤ t.toReal := by
   rw [truncateToReal]
   gcongr
-  exacts [t_ne_top, min_le_left t x]
+  exact min_le_left t x
 
 lemma truncateToReal_nonneg {t x : ℝ≥0∞} : 0 ≤ truncateToReal t x := toReal_nonneg
 

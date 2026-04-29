@@ -45,7 +45,7 @@ lemma toTopHomeo_naturality {n m : SimplexCategory} (f : n ⟶ m) :
     toTopHomeo m ∘ SSet.toTop.{u}.map (SSet.stdSimplex.map f) =
     stdSimplex.map f ∘ n.toTopHomeo := by
   ext x : 1
-  exact ULift.up_injective (congr_fun ((forget TopCat).congr_map
+  exact ULift.up_injective (ConcreteCategory.congr_hom ((forget TopCat).congr_map
     (toTopSimplex.hom.naturality f)) x)
 
 lemma toTopHomeo_naturality_apply {n m : SimplexCategory} (f : n ⟶ m)
@@ -58,7 +58,7 @@ lemma toTopHomeo_symm_naturality {n m : SimplexCategory} (f : n ⟶ m) :
     m.toTopHomeo.symm ∘ stdSimplex.map f =
       (SSet.toTop.{u}.map (SSet.stdSimplex.map f)).hom ∘ n.toTopHomeo.symm := by
   ext x : 1
-  exact congr_fun ((forget _).congr_map
+  exact ConcreteCategory.congr_hom ((forget _).congr_map
     (toTopSimplex.inv.naturality f)) _
 
 lemma toTopHomeo_symm_naturality_apply {n m : SimplexCategory} (f : n ⟶ m)
@@ -96,6 +96,33 @@ lemma toSSet_map_const (X : TopCat.{u}) {Y : TopCat.{u}} (y : Y) :
       SSet.const (toSSetObj₀Equiv.symm y) :=
   rfl
 
+lemma toSSetObjEquiv_symm_naturality {X : TopCat.{u}} {n m : SimplexCategory} (f : n ⟶ m)
+    (g : C((stdSimplex ℝ (Fin (m.len + 1))), X)) :
+    (toSSet.obj X).map f.op ((X.toSSetObjEquiv _).symm g) =
+      (X.toSSetObjEquiv _).symm (g.comp ⟨stdSimplex.map f, by continuity⟩) :=
+  rfl
+
+@[simp]
+lemma toSSetObjEquiv_naturality_apply {X : TopCat.{u}} {n m : SimplexCategory} (f : n ⟶ m)
+    (x : (toSSet.obj X).obj (op m)) (z : stdSimplex ℝ (Fin (n.len + 1))) :
+    dsimp% X.toSSetObjEquiv _ ((toSSet.obj X).map f.op x) z =
+      X.toSSetObjEquiv _ x (stdSimplex.map f z) :=
+  rfl
+
+@[simp]
+lemma toSSetObjEquiv_δ_apply {X : TopCat.{u}} {n : ℕ}
+    (x : toSSet.obj X _⦋n + 1⦌) (i : Fin (n + 2)) (z : stdSimplex ℝ (Fin (n + 1))) :
+    dsimp% X.toSSetObjEquiv _ ((toSSet.obj X).δ i x) z =
+      X.toSSetObjEquiv _ x (stdSimplex.map i.succAbove z) :=
+  rfl
+
+@[simp]
+lemma toSSetObjEquiv_σ_apply {X : TopCat.{u}} {n : ℕ}
+    (x : toSSet.obj X _⦋n⦌) (i : Fin (n + 1)) (z : stdSimplex ℝ (Fin (n + 2))) :
+    dsimp% X.toSSetObjEquiv _ ((toSSet.obj X).σ i x) z =
+      X.toSSetObjEquiv _ x (stdSimplex.map i.predAbove z) :=
+  rfl
+
 end TopCat
 
 lemma sSetTopAdj_homEquiv_stdSimplex_zero {X : TopCat.{u}}
@@ -112,6 +139,24 @@ lemma sSetTopAdj_homEquiv_stdSimplex_zero {X : TopCat.{u}}
 def TopCat.stdSimplexHomeomorphI :
     _root_.stdSimplex ℝ (Fin 2) ≃ₜ TopCat.I.{u} :=
   stdSimplexHomeomorphUnitInterval.trans Homeomorph.ulift.symm
+
+@[simp]
+lemma TopCat.stdSimplexHomeomorphI_vertex_zero :
+    TopCat.stdSimplexHomeomorphI.{u} (stdSimplex.vertex 0) = 0 := rfl
+
+@[simp]
+lemma TopCat.stdSimplexHomeomorphI_vertex_one :
+    TopCat.stdSimplexHomeomorphI.{u} (stdSimplex.vertex 1) = 1 := rfl
+
+@[simp]
+lemma TopCat.stdSimplexHomeomorphI_symm_zero :
+    TopCat.stdSimplexHomeomorphI.{u}.symm 0 = stdSimplex.vertex 0 := by
+  simp [← TopCat.stdSimplexHomeomorphI_vertex_zero]
+
+@[simp]
+lemma TopCat.stdSimplexHomeomorphI_symm_one :
+    TopCat.stdSimplexHomeomorphI.{u}.symm 1 = stdSimplex.vertex 1 := by
+  simp [← TopCat.stdSimplexHomeomorphI_vertex_one]
 
 namespace SSet.stdSimplex
 

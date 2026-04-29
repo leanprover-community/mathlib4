@@ -28,7 +28,7 @@ minimal neighborhood, which we call the *neighborhoods kernel* of the set.
 Alexandroff, discrete, finitely generated, fg space
 -/
 
-@[expose] public section
+public section
 
 open Filter Set TopologicalSpace Topology
 
@@ -127,7 +127,6 @@ lemma Topology.IsInducing.alexandrovDiscrete [AlexandrovDiscrete α] {f : β →
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 lemma AlexandrovDiscrete.sup {t₁ t₂ : TopologicalSpace α} (_ : @AlexandrovDiscrete α t₁)
     (_ : @AlexandrovDiscrete α t₂) :
     @AlexandrovDiscrete α (t₁ ⊔ t₂) :=
