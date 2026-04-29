@@ -168,7 +168,7 @@ theorem le_sSup_iff (h : BddAbove s) (h' : s.Nonempty) :
   refine ⟨fun H ε ε_neg => ?_, fun H ε ε_pos => ?_⟩
   · exact exists_lt_of_lt_csSup h' (lt_sub_iff_add_lt.mp (H _ (neg_pos.mpr ε_neg)))
   · rcases H _ (neg_lt_zero.mpr ε_pos) with ⟨x, x_in, hx⟩
-    exact sub_lt_iff_lt_add.mp (lt_csSup_of_lt h x_in <| hx)
+    exact sub_lt_iff_lt_add.mp (lt_csSup_of_lt h x_in hx)
 
 @[simp]
 theorem sSup_empty : sSup (∅ : Set ℝ) = 0 :=
