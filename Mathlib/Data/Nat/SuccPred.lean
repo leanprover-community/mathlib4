@@ -21,7 +21,7 @@ public import Mathlib.Order.SuccPred.WithBot
 In this file, we show that `ℕ` is both an archimedean `succOrder` and an archimedean `predOrder`.
 -/
 
-@[expose] public section
+public section
 
 
 open Function Order
@@ -29,16 +29,11 @@ open Function Order
 namespace Nat
 variable {m n : ℕ}
 
--- so that Lean reads `Nat.succ` through `succ_order.succ`
 instance instSuccOrder : SuccOrder ℕ :=
   SuccOrder.ofSuccLeIff succ Nat.succ_le_iff
 
 instance instSuccAddOrder : SuccAddOrder ℕ := ⟨fun _ => rfl⟩
 
-#adaptation_note /-- Before https://github.com/leanprover/lean4/pull/12263
-this was `abbrev`, which is no longer allowed.
-The comment said "so that Lean reads `Nat.pred` through `pred_order.pred`"
--/
 instance instPredOrder : PredOrder ℕ where
   pred := pred
   pred_le := pred_le

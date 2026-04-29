@@ -132,6 +132,11 @@ lemma variance_of_not_memLp [IsFiniteMeasure μ] (hX : AEStronglyMeasurable X μ
     (hX_not : ¬ MemLp X 2 μ) :
     variance X μ = 0 := by simp [variance, (evariance_eq_top_iff hX).mpr hX_not]
 
+lemma memLp_two_of_variance_ne_zero [IsFiniteMeasure μ] (hX : AEStronglyMeasurable X μ)
+    (h : Var[X; μ] ≠ 0) : MemLp X 2 μ := by
+  contrapose h
+  exact variance_of_not_memLp hX h
+
 theorem ofReal_variance [IsFiniteMeasure μ] (hX : MemLp X 2 μ) :
     .ofReal (variance X μ) = evariance X μ := by
   rw [variance, ENNReal.ofReal_toReal]
@@ -149,6 +154,19 @@ theorem evariance_eq_lintegral_ofReal :
 lemma variance_eq_integral (hX : AEMeasurable X μ) : Var[X; μ] = ∫ ω, (X ω - μ[X]) ^ 2 ∂μ := by
   simp [variance, evariance, toReal_enorm, ← integral_toReal ((hX.sub_const _).enorm.pow_const _) <|
     .of_forall fun _ ↦ ENNReal.pow_lt_top enorm_lt_top]
+
+/-- A random variable with variance `0` is almost surely constant. -/
+lemma ae_eq_integral_of_variance_eq_zero [IsFiniteMeasure μ] (hX : MemLp X 2 μ)
+    (h : Var[X; μ] = 0) :
+    ∀ᵐ ω ∂μ, X ω = μ[X] := by
+  rw [variance_eq_integral hX.aemeasurable, integral_eq_zero_iff_of_nonneg] at h
+  · filter_upwards [h] with ω hω
+    simp at hω
+    grind
+  · exact fun _ ↦ by positivity
+  · simp_rw [sub_sq]
+    exact (hX.integrable_sq.sub (((hX.integrable (by simp)).const_mul _).mul_const _)).add
+      (integrable_const _)
 
 lemma variance_of_integral_eq_zero (hX : AEMeasurable X μ) (hXint : μ[X] = 0) :
     variance X μ = ∫ ω, X ω ^ 2 ∂μ := by
@@ -179,6 +197,7 @@ lemma covariance_self {X : Ω → ℝ} (hX : AEMeasurable X μ) :
   congr with x
   ring
 
+@[simp]
 theorem variance_nonneg (X : Ω → ℝ) (μ : Measure Ω) : 0 ≤ variance X μ :=
   ENNReal.toReal_nonneg
 
@@ -269,8 +288,8 @@ lemma variance_sum' [IsFiniteMeasure μ] (hX : ∀ i ∈ s, MemLp (X i) 2 μ) :
   rw [← covariance_self, covariance_sum_left' (by simpa)]
   · refine Finset.sum_congr rfl fun i hi ↦ ?_
     rw [covariance_sum_right' (by simpa) (hX i hi)]
-  · exact memLp_finset_sum' _ (by simpa)
-  · exact (memLp_finset_sum' _ (by simpa)).aemeasurable
+  · exact memLp_finsetSum' _ (by simpa)
+  · exact (memLp_finsetSum' _ (by simpa)).aemeasurable
 
 lemma variance_sum [IsFiniteMeasure μ] [Fintype ι] (hX : ∀ i, MemLp (X i) 2 μ) :
     Var[∑ i, X i; μ] = ∑ i, ∑ j, cov[X i, X j; μ] :=
@@ -379,7 +398,7 @@ theorem meas_ge_le_variance_div_sq [IsFiniteMeasure μ] {X : Ω → ℝ} (hX : M
     (hc : 0 < c) : μ {ω | c ≤ |X ω - μ[X]|} ≤ ENNReal.ofReal (variance X μ / c ^ 2) := by
   rw [ENNReal.ofReal_div_of_pos (sq_pos_of_ne_zero hc.ne.symm), hX.ofReal_variance_eq]
   convert @meas_ge_le_evariance_div_sq _ _ _ _ hX.1 c.toNNReal (by simp [hc]) using 1
-  · simp only [Real.coe_toNNReal', max_le_iff, abs_nonneg, and_true]
+  · simp
   · rw [ENNReal.ofReal_pow hc.le]
     rfl
 

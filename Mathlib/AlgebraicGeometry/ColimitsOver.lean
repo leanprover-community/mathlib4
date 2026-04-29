@@ -68,7 +68,7 @@ def trans {i j : 𝒰.I₀} (hij : i ⟶ j) :
 noncomputable
 def transitionCocone {i j : 𝒰.I₀} (hij : i ⟶ j) :
     Cocone (D ⋙ Over.pullback P ⊤ (𝒰.f i) ⋙ Over.map _ (d.prop_trans hij)) :=
-  (Cocones.precompose (d.trans hij)).obj (d.cocone j)
+  (Cocone.precompose (d.trans hij)).obj (d.cocone j)
 
 /-- (Implementation) Transition map for construction of
 `AlgebraicGeometry.Scheme.Cover.ColimitGluingData.functor`. -/
@@ -127,12 +127,14 @@ lemma isPullback {i j : 𝒰.I₀} (hij : i ⟶ j) :
       d.transitionMap hij := by
     apply (isColimitOfPreserves (Over.map _ (d.prop_trans hij)) (d.isColimit i)).hom_ext
     intro a
-    simp only [IsColimit.coconePointsIsoOfNatIso_hom, Iso.trans_hom, Functor.isoWhiskerLeft_hom,
-      iso1, ← Functor.map_comp_assoc, IsColimit.ι_map, Functor.mapCocone_pt,
-      Functor.mapCocone_ι_app, Functor.map_comp, Category.assoc, Adjunction.counit_naturality,
-      cocone_ι_transitionMap]
+    dsimp only [Functor.comp_obj, Functor.id_obj, Functor.mapCocone_pt, Functor.const_obj_obj,
+      Functor.mapCocone_ι_app, Iso.trans_hom, Functor.isoWhiskerLeft_hom, Iso.symm_hom]
+    rw [IsColimit.coconePointsIsoOfNatIso_hom, ← Functor.map_comp_assoc, IsColimit.ι_map,
+      Functor.mapCocone_ι_app, Functor.map_comp, Category.assoc,
+      Adjunction.counit_naturality, cocone_ι_transitionMap]
     ext
-    simp only [Comma.comp_hom, CategoryTheory.Comma.comp_left, ← Category.assoc]
+    dsimp
+    rw [Category.comp_id, ← Category.assoc]
     congr 1
     apply pullback.hom_ext <;> simp
   let iso2 : (d.cocone i).pt.left ≅ pullback (d.cocone j).pt.hom (𝒰.trans hij) :=

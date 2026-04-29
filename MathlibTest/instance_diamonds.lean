@@ -28,15 +28,15 @@ example : (SubNegMonoid.toZSMul : SMul ℤ ℂ) = (Complex.SMul.instSMulRealComp
   with_reducible_and_instances rfl
 
 set_option backward.isDefEq.respectTransparency false in
-example : RestrictScalars.module ℝ ℂ ℂ = Complex.instModule := by
+example : Module.restrictScalars ℝ ℂ ℂ = Complex.instModule := by
   with_reducible_and_instances rfl
 
 -- fails `with_reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
-example : RestrictScalars.algebra ℝ ℂ ℂ = Complex.instAlgebraOfReal := by
+example : Algebra.restrictScalars ℝ ℂ ℂ = Complex.instAlgebraOfReal := by
   rfl
 
 example (α β : Type _) [AddMonoid α] [AddMonoid β] :
-    (Prod.instSMul : SMul ℕ (α × β)) = AddMonoid.toNatSMul := by
+    (Prod.instSMul : SMul ℕ (α × β)) = AddMonoid.toNSMul := by
   with_reducible_and_instances rfl
 
 example (α β : Type _) [SubNegMonoid α] [SubNegMonoid β] :
@@ -44,7 +44,7 @@ example (α β : Type _) [SubNegMonoid α] [SubNegMonoid β] :
   with_reducible_and_instances rfl
 
 example (α : Type _) (β : α → Type _) [∀ a, AddMonoid (β a)] :
-    (Pi.instSMul : SMul ℕ (∀ a, β a)) = AddMonoid.toNatSMul := by
+    (Pi.instSMul : SMul ℕ (∀ a, β a)) = AddMonoid.toNSMul := by
   with_reducible_and_instances rfl
 
 example (α : Type _) (β : α → Type _) [∀ a, SubNegMonoid (β a)] :
@@ -280,5 +280,5 @@ end complexToReal
 /-- This diamond arose because the semifield structure on `NNRat` needs to be defined as early as
 possible, before `Nonneg.zpow` becomes available; `Nonneg.zpow` is used to then define the
 `LinearOrderedCommGroupWithZero` instance. -/
-example : (inferInstanceAs (Semifield ℚ≥0)).toCommGroupWithZero =
-    (inferInstanceAs (LinearOrderedCommGroupWithZero ℚ≥0)).toCommGroupWithZero := rfl
+example : (inferInstance : (Semifield ℚ≥0)).toCommGroupWithZero =
+    (inferInstance : (LinearOrderedCommGroupWithZero ℚ≥0)).toCommGroupWithZero := rfl

@@ -35,13 +35,18 @@ instance : Pow ℕ∞ ℕ∞ where
     | x, some y => x ^ y
     | x, ⊤ => if x = 0 then 0 else if x = 1 then 1 else ⊤
 
+lemma epow_def {x y : ℕ∞} :
+    x ^ y = if y < ⊤ then x ^ y.toNat else if x = 0 then 0 else if x = 1 then 1 else ⊤ := by
+  cases y with
+  | top => simp only [lt_self_iff_false, ↓reduceIte]; rfl
+  | coe n => simp only [coe_lt_top, ↓reduceIte, toNat_coe]; rfl
+
 @[simp, norm_cast]
 lemma epow_natCast {y : ℕ} : x ^ (y : ℕ∞) = x ^ y := rfl
 
 @[simp]
 lemma zero_epow_top : (0 : ℕ∞) ^ (⊤ : ℕ∞) = 0 := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma zero_epow (h : y ≠ 0) : (0 : ℕ∞) ^ y = 0 := by
   induction y with
   | top => exact zero_epow_top
@@ -56,7 +61,6 @@ lemma one_epow : (1 : ℕ∞) ^ y = 1 := by
 @[simp]
 lemma top_epow_top : (⊤ : ℕ∞) ^ (⊤ : ℕ∞) = ⊤ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma top_epow (h : y ≠ 0) : (⊤ : ℕ∞) ^ y = ⊤ := by
   induction y with
   | top => exact top_epow_top
@@ -71,9 +75,9 @@ lemma epow_one : x ^ (1 : ℕ∞) = x := by
   rw [← coe_one, epow_natCast, pow_one]
 
 lemma epow_top (h : 1 < x) : x ^ (⊤ : ℕ∞) = ⊤ := by
-  simp +instances only [instHPow, instPow, (zero_le_one.trans_lt h).ne.symm, ↓reduceIte, h.ne.symm]
+  have : (0 : ℕ∞) ≤ 1 := zero_le_one
+  rw [epow_def, if_neg, if_neg, if_neg] <;> grind
 
-set_option backward.isDefEq.respectTransparency false in
 lemma epow_right_mono (h : x ≠ 0) : Monotone (fun y : ℕ∞ ↦ x ^ y) := by
   intro y z y_z
   induction y
@@ -85,8 +89,8 @@ lemma epow_right_mono (h : x ≠ 0) : Monotone (fun y : ℕ∞ ↦ x ^ y) := by
     · simp only [epow_top x_2, le_top]
   · exact pow_right_mono₀ (one_le_iff_ne_zero.2 h) (Nat.cast_le.1 y_z)
 
-lemma one_le_epow (h : x ≠ 0) : 1 ≤ x ^ y :=
-  le_of_eq_of_le (by simp) (epow_right_mono h (zero_le y))
+lemma one_le_epow (h : x ≠ 0) : 1 ≤ x ^ y := by
+  simpa using epow_right_mono h zero_le
 
 lemma epow_left_mono : Monotone (fun x : ℕ∞ ↦ x ^ y) := by
   intro x z x_z

@@ -20,7 +20,7 @@ public import Mathlib.Topology.UniformSpace.UniformEmbedding
 Further results about extended metric spaces.
 -/
 
-@[expose] public section
+public section
 
 open Set Filter
 
@@ -47,7 +47,7 @@ theorem edist_le_Ico_sum_edist (f : ℕ → α) {m n} (h : m ≤ n) :
 /-- The triangle (polygon) inequality for sequences of points; `Finset.range` version. -/
 theorem edist_le_range_sum_edist (f : ℕ → α) (n : ℕ) :
     edist (f 0) (f n) ≤ ∑ i ∈ Finset.range n, edist (f i) (f (i + 1)) :=
-  Nat.Ico_zero_eq_range ▸ edist_le_Ico_sum_edist f (Nat.zero_le n)
+  Nat.Ico_zero_eq_range n ▸ edist_le_Ico_sum_edist f (Nat.zero_le n)
 
 /-- A version of `edist_le_Ico_sum_edist` with each intermediate distance replaced
 with an upper estimate. -/
@@ -62,7 +62,7 @@ with an upper estimate. -/
 theorem edist_le_range_sum_of_edist_le {f : ℕ → α} (n : ℕ) {d : ℕ → ℝ≥0∞}
     (hd : ∀ {k}, k < n → edist (f k) (f (k + 1)) ≤ d k) :
     edist (f 0) (f n) ≤ ∑ i ∈ Finset.range n, d i :=
-  Nat.Ico_zero_eq_range ▸ edist_le_Ico_sum_of_edist_le (zero_le n) fun _ => hd
+  Nat.Ico_zero_eq_range n ▸ edist_le_Ico_sum_of_edist_le zero_le fun _ => hd
 
 namespace EMetric
 
@@ -79,16 +79,20 @@ nonrec theorem isUniformEmbedding_iff [PseudoEMetricSpace β] {f : α → β} :
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, edist (f a) (f b) < ε → edist a b < δ :=
   (isUniformEmbedding_iff _).trans <| and_comm.trans <| Iff.rfl.and isUniformInducing_iff
 
-/-- If a map between pseudoemetric spaces is a uniform embedding then the edistance between `f x`
-and `f y` is controlled in terms of the distance between `x` and `y`.
+/-- If a map between pseudoemetric spaces is a uniform inducing map then the edistance between `f x`
+and `f y` is controlled in terms of the distance between `x` and `y`. -/
+theorem controlled_of_isUniformInducing [PseudoEMetricSpace β] {f : α → β}
+    (h : IsUniformInducing f) :
+    (∀ ε > 0, ∃ δ > 0, ∀ {a b : α}, edist a b < δ → edist (f a) (f b) < ε) ∧
+      ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, edist (f a) (f b) < ε → edist a b < δ :=
+  ⟨uniformContinuous_iff.1 h.uniformContinuous, (isUniformInducing_iff.1 h).2⟩
 
-In fact, this lemma holds for a `IsUniformInducing` map.
-TODO: generalize? -/
+@[deprecated controlled_of_isUniformInducing (since := "2026-04-01")]
 theorem controlled_of_isUniformEmbedding [PseudoEMetricSpace β] {f : α → β}
     (h : IsUniformEmbedding f) :
     (∀ ε > 0, ∃ δ > 0, ∀ {a b : α}, edist a b < δ → edist (f a) (f b) < ε) ∧
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, edist (f a) (f b) < ε → edist a b < δ :=
-  ⟨uniformContinuous_iff.1 h.uniformContinuous, (isUniformEmbedding_iff.1 h).2.2⟩
+  controlled_of_isUniformInducing h.toIsUniformInducing
 
 /-- ε-δ characterization of Cauchy sequences on pseudoemetric spaces -/
 protected theorem cauchy_iff {f : Filter α} :
@@ -168,7 +172,6 @@ theorem subsingleton_iff_indiscreteTopology {α} [EMetricSpace α] :
 instance (priority := 100) {α} [EMetricSpace α] [Nontrivial α] : NontrivialTopology α :=
   nontrivial_iff_nontrivialTopology.1 ‹_›
 
--- see Note [nolint_ge]
 /-- In a pseudoemetric space, Cauchy sequences are characterized by the fact that, eventually,
 the pseudoedistance between its elements is arbitrarily small -/
 theorem cauchySeq_iff [Nonempty β] [SemilatticeSup β] {u : β → α} :

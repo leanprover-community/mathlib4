@@ -149,6 +149,7 @@ variable (ι) in
 /-- A locally finite order is a `SuccOrder`.
 This is not an instance, because its `succ` field conflicts with computable `SuccOrder` structures
 on `ℕ` and `ℤ`. -/
+@[implicit_reducible]
 noncomputable def succOrder [LocallyFiniteOrder ι] : SuccOrder ι where
   succ := succFn
   le_succ := le_succFn
@@ -159,6 +160,7 @@ variable (ι) in
 /-- A locally finite order is a `PredOrder`.
 This is not an instance, because its `succ` field conflicts with computable `PredOrder` structures
 on `ℕ` and `ℤ`. -/
+@[implicit_reducible]
 noncomputable def predOrder [LocallyFiniteOrder ι] : PredOrder ι :=
   letI := succOrder (ι := ιᵒᵈ)
   inferInstanceAs (PredOrder ιᵒᵈᵒᵈ)
@@ -222,7 +224,8 @@ theorem toZ_of_lt (hi : i < i0) :
 theorem toZ_of_eq : toZ i0 i0 = 0 := by
   rw [toZ_of_ge le_rfl]
   norm_cast
-  refine le_antisymm (Nat.find_le ?_) (zero_le _)
+  rw [← nonpos_iff_eq_zero]
+  apply Nat.find_le
   rw [Function.iterate_zero, id]
 
 theorem iterate_succ_toZ (i : ι) (hi : i0 ≤ i) : succ^[(toZ i0 i).toNat] i0 = i := by

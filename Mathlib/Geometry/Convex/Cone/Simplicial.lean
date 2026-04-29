@@ -10,18 +10,18 @@ public import Mathlib.Geometry.Convex.Cone.Pointed
 /-!
 # Simplicial cones
 
-A **simplicial cone** is a pointed convex cone that equals the conic span of a finite linearly
+A **simplicial cone** is a pointed convex cone that equals the conic hull of a finite linearly
 independent set of vectors. We do not require that the generators span the ambient module.
 However, when the cone is also generating, its generators linearly span the module.
 
 ## Main definitions
 
-* `PointedCone.IsSimplicial`: A pointed cone is simplicial if it equals the conic span of a finite
+* `PointedCone.IsSimplicial`: A pointed cone is simplicial if it equals the conic hull of a finite
   linearly independent set.
 
 ## Results
 
-* `PointedCone.IsSimplicial.span`: The conic span of a linearly independent finite set is
+* `PointedCone.IsSimplicial.span`: The conic hull of a linearly independent finite set is
   simplicial.
 
 ## References
@@ -38,16 +38,16 @@ variable (C : PointedCone R M)
 
 namespace PointedCone
 
-/-- A pointed cone is simplicial if it equals the conic span of a finite set that is linearly
+/-- A pointed cone is simplicial if it equals the conic hull of a finite set that is linearly
 independent over `R`. -/
 def IsSimplicial : Prop :=
-  ∃ s : Set M, s.Finite ∧ LinearIndepOn R id s ∧ span R s = C
+  ∃ s : Set M, s.Finite ∧ LinearIndepOn R id s ∧ hull R s = C
 
 namespace IsSimplicial
 
-/-- The conic span of a finite linearly independent set is simplicial. -/
-protected theorem span {s : Set M} (hs : s.Finite) (hli : LinearIndepOn R id s) :
-    (PointedCone.span R s).IsSimplicial := ⟨s, hs, hli, rfl⟩
+/-- The conic hull of a finite linearly independent set is simplicial. -/
+protected theorem hull {s : Set M} (hs : s.Finite) (hli : LinearIndepOn R id s) :
+    (PointedCone.hull R s).IsSimplicial := ⟨s, hs, hli, rfl⟩
 
 end IsSimplicial
 

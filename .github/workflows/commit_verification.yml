@@ -3,7 +3,7 @@
 #
 # - Transient commits (prefix: "transient: ") must have zero net effect
 # - Automated commits (prefix: "x: <command>") must match command output
-# - Posts a summary comment categorizing commits for reviewers
+# - Uploads a workflow artifact with verification status and a comment to be posted on the PR
 
 name: Commit Verification
 
@@ -18,7 +18,6 @@ concurrency:
 
 permissions:
   contents: read
-  pull-requests: write
 
 env:
   TRANSIENT_PREFIX: "transient: "
@@ -40,16 +39,15 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           # Fetch full history to access all PR commits
           fetch-depth: 0
-      - name: Checkout mathlib-ci
+      - name: Checkout local actions
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          repository: leanprover-community/mathlib-ci
-          ref: 4af75ac0b0d1aaf38d4546a779bc5c68b4d75069
+          ref: ${{ github.workflow_sha }}
           fetch-depth: 1
-          path: ci-tools
-
-      - name: Set up CI scripts paths
-        uses: ./ci-tools/.github/actions/setup-ci-scripts
+          sparse-checkout: .github/actions
+          path: workflow-actions
+      - name: Get mathlib-ci
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
       - name: Check for special commits
         id: check
         run: |
@@ -68,6 +66,7 @@ jobs:
           else
             echo "has_special=false" >> "$GITHUB_OUTPUT"
             echo "No transient or automated commits found"
+            echo "No transient or automated commits found; this comment should never be posted" > comment_body.md
           fi
 
       - name: Verify commits
@@ -101,26 +100,22 @@ jobs:
           # Save to file (GitHub Actions has issues with multiline outputs)
           echo "$COMMENT" > comment_body.md
 
-      - name: Find existing comment
-        if: steps.check.outputs.has_special == 'true'
-        uses: peter-evans/find-comment@b30e6a3c0ed37e7c023ccd3f1db5c6c0b0c23aad # v4
-        id: find-comment
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          comment-author: 'github-actions[bot]'
-          body-includes: 'Commit Verification Summary'
-
-      - name: Post or update comment
-        if: steps.check.outputs.has_special == 'true'
-        uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v4
-        with:
-          comment-id: ${{ steps.find-comment.outputs.comment-id }}
-          issue-number: ${{ github.event.pull_request.number }}
-          body-path: comment_body.md
-          edit-mode: replace
-
-      - name: Set job status
-        if: steps.check.outputs.has_special == 'true' && steps.verify.outputs.success == 'false'
+      - name: Prepare bridge outputs
         run: |
-          echo "::error::Commit verification failed. See PR comment for details."
-          exit 1
+          jq -n \
+            --arg has_special "${{ steps.check.outputs.has_special }}" \
+            --arg success "${{ steps.verify.outputs.success }}" \
+            '{
+              has_special: $has_special,
+              success: $success,
+            }' > bridge-outputs.json
+
+      - name: Emit bridge artifact
+        uses: leanprover-community/privilege-escalation-bridge/emit@f5dfe313a79647c07315b451b2dc2a81a161a50d # v1.2.0
+        with:
+          artifact: workflow-data
+          outputs_file: bridge-outputs.json
+          include_event: minimal
+          files: |
+            comment_body.md
+          retention_days: 5

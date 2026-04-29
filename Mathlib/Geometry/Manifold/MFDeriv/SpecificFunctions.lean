@@ -480,7 +480,6 @@ theorem MDifferentiable.prodMap (hf : MDiff f) (hg : MDiff g) : MDiff (Prod.map 
   (hf p.1).prodMap' (hg p.2)
 
 set_option backward.isDefEq.respectTransparency false in
-set_option linter.flexible false in -- TODO: fix non-terminal simp_all followed by use
 lemma HasMFDerivWithinAt.prodMap {s : Set <| M × M'} {p : M × M'} {f : M → N} {g : M' → N'}
     {df : TangentSpace I p.1 →L[𝕜] TangentSpace J (f p.1)}
     (hf : HasMFDerivWithinAt I J f (Prod.fst '' s) p.1 df)
@@ -493,13 +492,8 @@ lemma HasMFDerivWithinAt.prodMap {s : Set <| M × M'} {p : M × M'} {f : M → N
         ((extChartAt I' p.2).symm ⁻¹' (Prod.snd '' s) ∩ range I') := by
     simp only [mfld_simps]
     rw [range_prodMap, I.toPartialEquiv.prod_symm, (chartAt H p.1).toPartialEquiv.prod_symm]
-    -- This is very tedious; a nicer proof is welcome!
     intro p₀ ⟨hp₀, ⟨hp₁₁, hp₁₂⟩⟩
-    refine ⟨⟨?_, by assumption⟩, ⟨?_, by assumption⟩⟩
-    · simp_all
-      use (chartAt H' p.2).symm <| I'.symm p₀.2
-    · simp_all
-      use (chartAt H p.1).symm <| I.symm p₀.1
+    exact ⟨⟨by simp_all; grind, by assumption⟩, ⟨by simp_all; grind, by assumption⟩⟩
   rw [writtenInExtChartAt_prod]
   apply HasFDerivWithinAt.mono ?_ better
   apply HasFDerivWithinAt.prodMap

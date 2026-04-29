@@ -84,6 +84,7 @@ set_option backward.isDefEq.respectTransparency false in
 equipped with isomorphisms `e' : ∀ m, L ⋙ F' m ≅ G.shift m`, this is the shift sequence
 induced on `F` induced by a shift sequence for the functor `G`, provided that
 the functor `(whiskeringLeft C D A).obj L` of precomposition by `L` is fully faithful. -/
+@[implicit_reducible]
 noncomputable def induced : F.ShiftSequence M where
   sequence := F'
   isoZero := induced.isoZero e M F' e'

@@ -257,8 +257,27 @@ instance (priority := 100) continuousInv_of_discreteTopology [TopologicalSpace H
   ⟨continuous_of_discreteTopology⟩
 
 @[to_additive]
+instance (priority := 100) continuousInv_of_indiscreteTopology [TopologicalSpace H] [Inv H]
+    [IndiscreteTopology H] : ContinuousInv H :=
+  ⟨continuous_of_indiscreteTopology⟩
+
+@[to_additive]
+instance (priority := 100) continuousDiv_of_discreteTopology [TopologicalSpace H] [Div H]
+    [DiscreteTopology H] : ContinuousDiv H :=
+  ⟨continuous_of_discreteTopology⟩
+
+@[to_additive]
+instance (priority := 100) continuousDiv_of_indiscreteTopology [TopologicalSpace H] [Div H]
+    [IndiscreteTopology H] : ContinuousDiv H :=
+  ⟨continuous_of_indiscreteTopology⟩
+
+@[to_additive]
 instance (priority := 100) topologicalGroup_of_discreteTopology
     [TopologicalSpace H] [Group H] [DiscreteTopology H] : IsTopologicalGroup H := ⟨⟩
+
+@[to_additive]
+instance (priority := 100) topologicalGroup_of_indiscreteTopology
+    [TopologicalSpace H] [Group H] [IndiscreteTopology H] : IsTopologicalGroup H := ⟨⟩
 
 section PointwiseLimits
 
@@ -300,9 +319,7 @@ variable (G)
 @[to_additive /-- Negation in a topological group as a homeomorphism. -/]
 protected def Homeomorph.inv (G : Type*) [TopologicalSpace G] [InvolutiveInv G]
     [ContinuousInv G] : G ≃ₜ G :=
-  { Equiv.inv G with
-    continuous_toFun := continuous_inv
-    continuous_invFun := continuous_inv }
+  { Equiv.inv G with }
 
 @[to_additive (attr := simp)]
 lemma Homeomorph.symm_inv {G : Type*} [TopologicalSpace G] [InvolutiveInv G] [ContinuousInv G] :
@@ -613,9 +630,7 @@ theorem inv_mem_nhds_one {S : Set G} (hS : S ∈ (𝓝 1 : Filter G)) : S⁻¹ �
 /-- The map `(x, y) ↦ (x, x * y)` as a homeomorphism. This is a shear mapping. -/
 @[to_additive /-- The map `(x, y) ↦ (x, x + y)` as a homeomorphism. This is a shear mapping. -/]
 protected def Homeomorph.shearMulRight : G × G ≃ₜ G × G :=
-  { Equiv.prodShear (Equiv.refl _) Equiv.mulLeft with
-    continuous_toFun := by dsimp; fun_prop
-    continuous_invFun := by dsimp; fun_prop }
+  { Equiv.prodShear (Equiv.refl _) Equiv.mulLeft with }
 
 @[to_additive (attr := simp)]
 theorem Homeomorph.shearMulRight_coe :
@@ -864,12 +879,6 @@ lemma IsTopologicalGroup.isOpenMap_iff_nhds_one
   refine (Filter.map_mono h).trans ?_
   simp [Function.comp_def]
 
-@[deprecated (since := "2025-09-16")]
-alias TopologicalGroup.isOpenMap_iff_nhds_one := IsTopologicalGroup.isOpenMap_iff_nhds_one
-
-@[deprecated (since := "2025-09-16")]
-alias TopologicalGroup.isOpenMap_iff_nhds_zero := IsTopologicalAddGroup.isOpenMap_iff_nhds_zero
-
 -- TODO: unify with `QuotientGroup.isOpenQuotientMap_mk`
 /-- Let `A` and `B` be topological groups, and let `φ : A → B` be a continuous surjective group
 homomorphism. Assume furthermore that `φ` is a quotient map (i.e., `V ⊆ B`
@@ -892,7 +901,7 @@ lemma MonoidHom.isOpenQuotientMap_of_isQuotientMap {A : Type*} [Group A]
       -- as `U * k⁻¹` is open because `x ↦ x * k` is continuous.
       -- Remark: here is where we use that we have groups not monoids (you cannot avoid
       -- using both `k` and `k⁻¹` at this point).
-      suffices ⇑φ ⁻¹' (⇑φ '' U) = ⋃ k ∈ ker (φ : A →* B), (fun x ↦ x * k) ⁻¹' U by
+      suffices ⇑φ ⁻¹' ⇑φ '' U = ⋃ k ∈ ker (φ : A →* B), (fun x ↦ x * k) ⁻¹' U by
         exact this ▸ isOpen_biUnion (fun k _ ↦ Continuous.isOpen_preimage (by fun_prop) _ hU)
       ext x
       -- But this is an elementary calculation.
@@ -1289,7 +1298,6 @@ its additive units. -/]
 def toUnits_homeomorph [Group G] [TopologicalSpace G] [ContinuousInv G] : G ≃ₜ Gˣ where
   toEquiv := toUnits.toEquiv
   continuous_toFun := Units.continuous_iff.2 ⟨continuous_id, continuous_inv⟩
-  continuous_invFun := Units.continuous_val
 
 @[to_additive] theorem Units.isEmbedding_val [Group G] [TopologicalSpace G] [ContinuousInv G] :
     IsEmbedding (val : Gˣ → G) :=
@@ -1326,6 +1334,12 @@ theorem isClosedEmbedding_embedProduct [T1Space α] [ContinuousMul α] :
     rw [range_embedProduct]
     refine .inter (isClosed_singleton.preimage ?_) (isClosed_singleton.preimage ?_) <;>
     fun_prop
+
+lemma _root_.Topology.IsClosedEmbedding.units_map [ContinuousMul α] [T1Space α] {f : α →* β}
+    (hf : IsClosedEmbedding f) : IsClosedEmbedding (map f) := by
+  refine .of_comp isEmbedding_embedProduct ?_
+  exact (hf.prodMap (opHomeomorph.isClosedEmbedding.comp
+    <| hf.comp opHomeomorph.symm.isClosedEmbedding)).comp isClosedEmbedding_embedProduct
 
 @[to_additive]
 instance [T1Space α] [ContinuousMul α] [CompactSpace α] : CompactSpace αˣ :=

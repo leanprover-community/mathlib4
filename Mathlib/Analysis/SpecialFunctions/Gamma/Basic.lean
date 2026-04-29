@@ -38,7 +38,7 @@ set it to be `0` by convention.)
 Gamma
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -72,9 +72,7 @@ theorem GammaIntegral_convergent {s : ℝ} (h : 0 < s) :
     refine (intervalIntegrable_iff_integrableOn_Icc_of_le zero_le_one).mp ?_
     exact intervalIntegrable_rpow' (by linarith)
   · refine integrable_of_isBigO_exp_neg one_half_pos ?_ (Gamma_integrand_isLittleO _).isBigO
-    refine continuousOn_id.neg.rexp.mul (continuousOn_id.rpow_const ?_)
-    intro x hx
-    exact Or.inl ((zero_lt_one : (0 : ℝ) < 1).trans_le hx).ne'
+    exact continuousOn_id.neg.rexp.mul (continuousOn_id.rpow_const (by grind))
 
 end Real
 
@@ -109,7 +107,7 @@ theorem GammaIntegral_convergent {s : ℂ} (hs : 0 < s.re) :
 
 See `Complex.GammaIntegral_convergent` for a proof of the convergence of the integral for
 `0 < re s`. -/
-def GammaIntegral (s : ℂ) : ℂ :=
+@[expose] def GammaIntegral (s : ℂ) : ℂ :=
   ∫ x in Ioi (0 : ℝ), ↑(-x).exp * ↑x ^ (s - 1)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -147,7 +145,7 @@ namespace Complex
 section GammaRecurrence
 
 /-- The indefinite version of the `Γ` function, `Γ(s, X) = ∫ x ∈ 0..X, exp(-x) x ^ (s - 1)`. -/
-def partialGamma (s : ℂ) (X : ℝ) : ℂ :=
+@[expose] def partialGamma (s : ℂ) (X : ℝ) : ℂ :=
   ∫ x in 0..X, (-x).exp * x ^ (s - 1)
 
 theorem tendsto_partialGamma {s : ℂ} (hs : 0 < s.re) :
@@ -250,11 +248,11 @@ end GammaRecurrence
 section GammaDef
 
 /-- The `n`th function in this family is `Γ(s)` if `-n < s.re`, and junk otherwise. -/
-noncomputable def GammaAux : ℕ → ℂ → ℂ
+private noncomputable def GammaAux : ℕ → ℂ → ℂ
   | 0 => GammaIntegral
   | n + 1 => fun s : ℂ => GammaAux n (s + 1) / s
 
-theorem GammaAux_recurrence1 (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) :
+private theorem GammaAux_recurrence1 (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) :
     GammaAux n s = GammaAux n (s + 1) / s := by
   induction n generalizing s with
   | zero =>
@@ -269,7 +267,7 @@ theorem GammaAux_recurrence1 (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) :
       rw [add_re, one_re]; linarith
     rw [← hn (s + 1) hh1]
 
-theorem GammaAux_recurrence2 (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) :
+private theorem GammaAux_recurrence2 (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) :
     GammaAux n s = GammaAux (n + 1) s := by
   rcases n with - | n
   · simp only [CharP.cast_eq_zero, Left.neg_neg_iff] at h1
@@ -286,12 +284,13 @@ theorem GammaAux_recurrence2 (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) :
       rw [GammaAux_recurrence1 (s + 1) n hh1]
     rw [this]
 
+/- This definition is deliberately not @[expose]'d, since `GammaAux` is not mathematically
+interesting. -/
 /-- The `Γ` function (of a complex variable `s`). -/
-@[pp_nodot]
-irreducible_def Gamma (s : ℂ) : ℂ :=
+@[irreducible, pp_nodot] def Gamma (s : ℂ) : ℂ :=
   GammaAux ⌊1 - s.re⌋₊ s
 
-theorem Gamma_eq_GammaAux (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) : Gamma s = GammaAux n s := by
+private theorem Gamma_eq_GammaAux (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) : Gamma s = GammaAux n s := by
   have u : ∀ k : ℕ, GammaAux (⌊1 - s.re⌋₊ + k) s = Gamma s := fun k ↦ by
     induction k with
     | zero => simp [Gamma]
@@ -403,25 +402,13 @@ end Complex
 namespace Real
 
 /-- The `Γ` function (of a real variable `s`). -/
-@[pp_nodot]
-def Gamma (s : ℝ) : ℝ :=
+@[pp_nodot, expose] def Gamma (s : ℝ) : ℝ :=
   (Complex.Gamma s).re
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Gamma_eq_integral {s : ℝ} (hs : 0 < s) :
     Gamma s = ∫ x in Ioi 0, exp (-x) * x ^ (s - 1) := by
-  rw [Gamma, Complex.Gamma_eq_integral (by rwa [Complex.ofReal_re] : 0 < Complex.re s)]
-  dsimp only [Complex.GammaIntegral]
-  simp_rw [← Complex.ofReal_one, ← Complex.ofReal_sub]
-  suffices ∫ x : ℝ in Ioi 0, ↑(exp (-x)) * (x : ℂ) ^ ((s - 1 : ℝ) : ℂ) =
-      ∫ x : ℝ in Ioi 0, ((exp (-x) * x ^ (s - 1) : ℝ) : ℂ) by
-    have cc : ∀ r : ℝ, Complex.ofReal r = @RCLike.ofReal ℂ _ r := fun r => rfl
-    conv_lhs => rw [this]; enter [1, 2, x]; rw [cc]
-    rw [_root_.integral_ofReal, ← cc, Complex.ofReal_re]
-  refine setIntegral_congr_fun measurableSet_Ioi fun x hx => ?_
-  push_cast
-  rw [Complex.ofReal_cpow (le_of_lt hx)]
-  push_cast; rfl
+  rw [Gamma, Complex.Gamma_eq_integral (RCLike.ofReal_pos.mp hs), Complex.GammaIntegral_ofReal,
+    Complex.ofReal_re]
 
 theorem Gamma_add_one {s : ℝ} (hs : s ≠ 0) : Gamma (s + 1) = s * Gamma s := by
   simp_rw [Gamma]
@@ -523,7 +510,7 @@ theorem Gamma_ne_zero {s : ℝ} (hs : ∀ m : ℕ, s ≠ -m) : Gamma s ≠ 0 := 
       apply n_ih
       · intro m
         specialize hs (1 + m)
-        contrapose! hs
+        contrapose hs
         rw [← eq_sub_iff_add_eq] at hs
         rw [hs]
         push_cast

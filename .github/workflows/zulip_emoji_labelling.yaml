@@ -16,16 +16,15 @@ jobs:
          github.repository == 'leanprover-community/mathlib4-nightly-testing')
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout mathlib-ci
+    - name: Checkout local actions
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
-        repository: leanprover-community/mathlib-ci
-        ref: 4af75ac0b0d1aaf38d4546a779bc5c68b4d75069
+        ref: ${{ github.workflow_sha }}
         fetch-depth: 1
-        path: ci-tools
-
-    - name: Set up CI scripts paths
-      uses: ./ci-tools/.github/actions/setup-ci-scripts
+        sparse-checkout: .github/actions
+        path: workflow-actions
+    - name: Checkout mathlib-ci
+      uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
     - name: Set up Python
       uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
@@ -38,6 +37,7 @@ jobs:
         pip install -r "$CI_SCRIPTS_DIR/zulip/requirements.txt"
 
     - name: Add or remove emoji
+      continue-on-error: true  # Emoji updates are cosmetic; never fail CI over them
       env:
         ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
         ZULIP_EMAIL: github-mathlib4-bot@leanprover.zulipchat.com

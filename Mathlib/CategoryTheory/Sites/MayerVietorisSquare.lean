@@ -59,8 +59,7 @@ namespace CategoryTheory
 
 open Limits Opposite
 
-variable {C : Type u} [Category.{v} C]
-  {J : GrothendieckTopology C}
+variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
 
 set_option backward.isDefEq.respectTransparency false in
 lemma Sheaf.isPullback_square_op_map_yoneda_presheafToSheaf_yoneda_iff
@@ -75,10 +74,7 @@ lemma Sheaf.isPullback_square_op_map_yoneda_presheafToSheaf_yoneda_iff
     (((sheafificationAdjunction J (Type v)).homEquiv _ _).trans yonedaEquiv) ?_ ?_ ?_ ?_
   all_goals
     ext x
-    dsimp
-    rw [yonedaEquiv_naturality]
-    erw [Adjunction.homEquiv_naturality_left]
-    rfl
+    simp [Adjunction.homEquiv, yonedaEquiv_naturality]
 
 namespace GrothendieckTopology
 
@@ -227,7 +223,6 @@ end
 variable [HasWeakSheafify J (Type v)] [HasSheafify J AddCommGrpCat.{v}]
   (S : J.MayerVietorisSquare)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The short complex of abelian sheaves
 `ℤ[S.X₁] ⟶ ℤ[S.X₂] ⊞ ℤ[S.X₃] ⟶ ℤ[S.X₄]`
 where the left map is a difference and the right map a sum. -/
@@ -257,12 +252,10 @@ instance : Mono S.shortComplex.f := by
     infer_instance
   exact mono_of_mono _ biprod.snd
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Epi S.shortComplex.g :=
   (S.shortComplex.exact_and_epi_g_iff_g_is_cokernel.2
     ⟨S.isPushoutAddCommGrpFreeSheaf.isColimitCokernelCofork⟩).2
 
-set_option backward.isDefEq.respectTransparency false in
 lemma shortComplex_exact : S.shortComplex.Exact :=
   ShortComplex.exact_of_g_is_cokernel _
     S.isPushoutAddCommGrpFreeSheaf.isColimitCokernelCofork

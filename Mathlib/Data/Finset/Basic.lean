@@ -150,6 +150,8 @@ lemma insert_erase_invOn :
 
 theorem erase_ssubset {a : α} {s : Finset α} (h : a ∈ s) : s.erase a ⊂ s := by grind
 
+theorem erase_union_eq (a : α) (s : Finset α) (h : a ∈ s) : (erase s a) ∪ {a} = s := by grind
+
 theorem ssubset_iff_exists_subset_erase {s t : Finset α} : s ⊂ t ↔ ∃ a ∈ t, s ⊆ t.erase a := by
   grind
 
@@ -677,8 +679,8 @@ variable {α : Type*}
 
 theorem mem_union_of_disjoint [DecidableEq α]
     {s t : Finset α} (h : Disjoint s t) {x : α} :
-    x ∈ s ∪ t ↔ Xor' (x ∈ s) (x ∈ t) := by
-  rw [Finset.mem_union, Xor']
+    x ∈ s ∪ t ↔ Xor (x ∈ s) (x ∈ t) := by
+  rw [Finset.mem_union, Xor]
   have := disjoint_left.1 h
   tauto
 

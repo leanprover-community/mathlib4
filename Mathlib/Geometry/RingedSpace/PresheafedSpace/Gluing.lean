@@ -22,8 +22,8 @@ provided.
 
 * `AlgebraicGeometry.PresheafedSpace.GlueData`: A structure containing the family of gluing data.
 * `CategoryTheory.GlueData.glued`: The glued presheafed space.
-    This is defined as the multicoequalizer of `∐ V i j ⇉ ∐ U i`, so that the general colimit API
-    can be used.
+  This is defined as the multicoequalizer of `∐ V i j ⇉ ∐ U i`, so that the general colimit API
+  can be used.
 * `CategoryTheory.GlueData.ι`: The immersion `ι i : U i ⟶ glued` for each `i : J`.
 
 ## Main results
@@ -80,15 +80,16 @@ namespace PresheafedSpace
 1. An index type `J`
 2. A presheafed space `U i` for each `i : J`.
 3. A presheafed space `V i j` for each `i j : J`.
-  (Note that this is `J × J → PresheafedSpace C` rather than `J → J → PresheafedSpace C` to
-  connect to the limits library more easily.)
+   (Note that this is `J × J → PresheafedSpace C` rather than `J → J → PresheafedSpace C` to
+   connect to the limits library more easily.)
 4. An open immersion `f i j : V i j ⟶ U i` for each `i j : J`.
 5. A transition map `t i j : V i j ⟶ V j i` for each `i j : J`.
+
 such that
 6. `f i i` is an isomorphism.
 7. `t i i` is the identity.
 8. `V i j ×[U i] V i k ⟶ V i j ⟶ V j i` factors through `V j k ×[U j] V j i ⟶ V j i` via some
-    `t' : V i j ×[U i] V i k ⟶ V j k ×[U j] V j i`.
+   `t' : V i j ×[U i] V i k ⟶ V j k ×[U j] V j i`.
 9. `t' i j k ≫ t' j k i ≫ t' k i j = 𝟙 _`.
 
 We can then glue the spaces `U i` together by identifying `V i j` with `V j i`, such
@@ -131,7 +132,7 @@ theorem ι_isOpenEmbedding [HasLimits C] (i : D.J) : IsOpenEmbedding (𝖣.ι i)
 
 set_option backward.isDefEq.respectTransparency false in
 theorem pullback_base (i j k : D.J) (S : Set (D.V (i, j)).carrier) :
-    (π₂ i, j, k) '' ((π₁ i, j, k) ⁻¹' S) = D.f i k ⁻¹' (D.f i j '' S) := by
+    (π₂ i, j, k) '' (π₁ i, j, k) ⁻¹' S = D.f i k ⁻¹' D.f i j '' S := by
   have eq₁ : _ = (π₁ i, j, k).base := PreservesPullback.iso_hom_fst (forget C) _ _
   have eq₂ : _ = (π₂ i, j, k).base := PreservesPullback.iso_hom_snd (forget C) _ _
   rw [← eq₁, ← eq₂, TopCat.coe_comp, Set.image_comp, TopCat.coe_comp, Set.preimage_comp,
@@ -256,7 +257,7 @@ theorem ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
   · rw [← TopCat.mono_iff_injective]
     infer_instance
 
-/-- (Implementation). The map `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_{U_j}, 𝖣.ι j ⁻¹' (𝖣.ι i '' U))` -/
+/-- (Implementation). The map `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_{U_j}, 𝖣.ι j ⁻¹' 𝖣.ι i '' U)` -/
 def opensImagePreimageMap (i j : D.J) (U : Opens (D.U i).carrier) :
     (D.U i).presheaf.obj (op U) ⟶
     (D.U j).presheaf.obj (op <|
@@ -390,7 +391,7 @@ theorem ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
     ∃ eq, D.ιInvApp U ≫ D.diagramOverOpenπ U i = (D.U i).presheaf.map (eqToHom eq) := by
   fconstructor
   -- Porting note: I don't know what the magic was in Lean3 proof, it just skipped the proof of `eq`
-  · congr; ext1; change _ = _ ⁻¹' (_ '' _); ext1 x
+  · congr; ext1; change _ = _ ⁻¹' _ '' _; ext1 x
     simp only [SetLike.mem_coe, unop_op, Set.mem_preimage, Set.mem_image]
     refine ⟨fun h => ⟨_, h, rfl⟩, ?_⟩
     rintro ⟨y, h1, h2⟩
@@ -533,15 +534,16 @@ namespace SheafedSpace
 1. An index type `J`
 2. A sheafed space `U i` for each `i : J`.
 3. A sheafed space `V i j` for each `i j : J`.
-  (Note that this is `J × J → SheafedSpace C` rather than `J → J → SheafedSpace C` to
-  connect to the limits library more easily.)
+   (Note that this is `J × J → SheafedSpace C` rather than `J → J → SheafedSpace C` to
+   connect to the limits library more easily.)
 4. An open immersion `f i j : V i j ⟶ U i` for each `i j : J`.
 5. A transition map `t i j : V i j ⟶ V j i` for each `i j : J`.
+
 such that
 6. `f i i` is an isomorphism.
 7. `t i i` is the identity.
 8. `V i j ×[U i] V i k ⟶ V i j ⟶ V j i` factors through `V j k ×[U j] V j i ⟶ V j i` via some
-    `t' : V i j ×[U i] V i k ⟶ V j k ×[U j] V j i`.
+   `t' : V i j ×[U i] V i k ⟶ V j k ×[U j] V j i`.
 9. `t' i j k ≫ t' j k i ≫ t' k i j = 𝟙 _`.
 
 We can then glue the spaces `U i` together by identifying `V i j` with `V j i`, such
@@ -606,15 +608,16 @@ namespace LocallyRingedSpace
 1. An index type `J`
 2. A locally ringed space `U i` for each `i : J`.
 3. A locally ringed space `V i j` for each `i j : J`.
-  (Note that this is `J × J → LocallyRingedSpace` rather than `J → J → LocallyRingedSpace` to
-  connect to the limits library more easily.)
+   (Note that this is `J × J → LocallyRingedSpace` rather than `J → J → LocallyRingedSpace` to
+   connect to the limits library more easily.)
 4. An open immersion `f i j : V i j ⟶ U i` for each `i j : J`.
 5. A transition map `t i j : V i j ⟶ V j i` for each `i j : J`.
+
 such that
 6. `f i i` is an isomorphism.
 7. `t i i` is the identity.
 8. `V i j ×[U i] V i k ⟶ V i j ⟶ V j i` factors through `V j k ×[U j] V j i ⟶ V j i` via some
-    `t' : V i j ×[U i] V i k ⟶ V j k ×[U j] V j i`.
+   `t' : V i j ×[U i] V i k ⟶ V j k ×[U j] V j i`.
 9. `t' i j k ≫ t' j k i ≫ t' k i j = 𝟙 _`.
 
 We can then glue the spaces `U i` together by identifying `V i j` with `V j i`, such
