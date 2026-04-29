@@ -6,7 +6,7 @@ Authors: Etienne Marion
 module
 
 public import Mathlib.MeasureTheory.Constructions.Polish.Basic
-public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
 
 /-!
 # Results about strongly measurable functions
@@ -86,3 +86,34 @@ protected theorem limUnder [hE : Nonempty E] [IsCompletelyMetrizableSpace E]
       exact subset_union_right (mem_singleton e)
 
 end MeasureTheory.StronglyMeasurable
+
+namespace MeasureTheory
+
+variable {α β ι : Type*} [MeasurableSpace α] [CommMonoid β] [TopologicalSpace β]
+  [IsCompletelyPseudoMetrizableSpace β] [ContinuousMul β]
+  [Countable ι] {L : SummationFilter ι} [L.NeBot] [L.filter.IsCountablyGenerated]
+
+/-- The product of strongly measurable functions is measurable. -/
+@[to_additive (attr := fun_prop)
+/-- The sum of strongly measurable functions is measurable. -/]
+theorem StronglyMeasurable.tprod {f : ι → α → β} (h : ∀ i : ι, StronglyMeasurable (f i)) :
+    StronglyMeasurable (fun x => ∏'[L] i : ι, f i x) := by
+  let E := { x | Multipliable (f · x) L }
+  have hE : MeasurableSet E := StronglyMeasurable.measurableSet_exists_tendsto (by fun_prop)
+  have h0 : (Eᶜ.restrict fun x => ∏'[L] i, f i x) = fun _ => 1 :=
+    funext fun ⟨x, hx⟩ => tprod_eq_one_of_not_multipliable hx
+  refine stronglyMeasurable_of_restrict_of_restrict_compl hE ?_ (h0 ▸ stronglyMeasurable_const)
+  refine stronglyMeasurable_of_tendsto L.filter ?_ (tendsto_pi_nhds.mpr fun e => e.2.hasProd)
+  fun_prop
+
+/-- The product of almost everywhere strongly measurable functions is measurable. -/
+@[to_additive (attr := fun_prop)
+/-- The sum of almost everywhere strongly measurable functions is measurable. -/]
+theorem AEStronglyMeasurable.tprod {μ : MeasureTheory.Measure α} {f : ι → α → β}
+    (h : ∀ i : ι, AEStronglyMeasurable (f i) μ) :
+    AEStronglyMeasurable (fun x => ∏'[L] i : ι, f i x) μ := by
+  choose g hg_meas hg_eq_f using h
+  existsi (fun x => ∏'[L] i, g i x), StronglyMeasurable.tprod hg_meas
+  filter_upwards [MeasureTheory.ae_all_iff.mpr hg_eq_f] with x h_eq using tprod_congr h_eq
+
+end MeasureTheory
