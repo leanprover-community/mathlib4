@@ -78,7 +78,7 @@ variable {R : Type u} {S₁ : Type v} {S₂ : Type w} {S₃ : Type x}
 
 /-- Multivariate polynomial, where `σ` is the index set of the variables and
   `R` is the coefficient ring -/
-def MvPolynomial (σ : Type*) (R : Type*) [CommSemiring R] :=
+abbrev MvPolynomial (σ : Type*) (R : Type*) [CommSemiring R] :=
   AddMonoidAlgebra R (σ →₀ ℕ)
 
 namespace MvPolynomial
@@ -86,68 +86,6 @@ namespace MvPolynomial
 variable {σ : Type*} {a a' a₁ a₂ : R} {e : ℕ} {n m : σ} {s : σ →₀ ℕ}
 
 section CommSemiring
-
-section Instances
-
-instance decidableEqMvPolynomial [CommSemiring R] [DecidableEq σ] [DecidableEq R] :
-    DecidableEq (MvPolynomial σ R) :=
-  Finsupp.instDecidableEq
-
-instance commSemiring [CommSemiring R] : CommSemiring (MvPolynomial σ R) :=
-  inferInstanceAs <| CommSemiring (AddMonoidAlgebra R _)
-
-instance inhabited [CommSemiring R] : Inhabited (MvPolynomial σ R) :=
-  ⟨0⟩
-
-instance smul [CommSemiring S₁] [SMulZeroClass R S₁] :
-    SMul R (MvPolynomial σ S₁) where
-  smul a v := v.mapRange (a • ·) (smul_zero _)
-
-instance distribuMulAction [Monoid R] [CommSemiring S₁] [DistribMulAction R S₁] :
-    DistribMulAction R (MvPolynomial σ S₁) :=
-  inferInstanceAs <| DistribMulAction R (AddMonoidAlgebra S₁ (σ →₀ ℕ))
-
-instance smulZeroClass [CommSemiring S₁] [SMulZeroClass R S₁] :
-    SMulZeroClass R (MvPolynomial σ S₁) :=
-  inferInstanceAs <| SMulZeroClass R (AddMonoidAlgebra S₁ (σ →₀ ℕ))
-
-instance faithfulSMul [CommSemiring S₁] [SMulZeroClass R S₁] [FaithfulSMul R S₁] :
-    FaithfulSMul R (MvPolynomial σ S₁) :=
-  inferInstanceAs <| FaithfulSMul R (AddMonoidAlgebra S₁ (σ →₀ ℕ))
-
-instance module [Semiring R] [CommSemiring S₁] [Module R S₁] : Module R (MvPolynomial σ S₁) :=
-  inferInstanceAs <| Module R (AddMonoidAlgebra S₁ (σ →₀ ℕ))
-
-instance isScalarTower [CommSemiring S₂] [SMul R S₁] [SMulZeroClass R S₂] [SMulZeroClass S₁ S₂]
-    [IsScalarTower R S₁ S₂] : IsScalarTower R S₁ (MvPolynomial σ S₂) :=
-  inferInstanceAs <| IsScalarTower R S₁ (AddMonoidAlgebra S₂ (σ →₀ ℕ))
-
-instance smulCommClass [CommSemiring S₂] [SMulZeroClass R S₂] [SMulZeroClass S₁ S₂]
-    [SMulCommClass R S₁ S₂] : SMulCommClass R S₁ (MvPolynomial σ S₂) :=
-  inferInstanceAs <| SMulCommClass R S₁ (AddMonoidAlgebra S₂ (σ →₀ ℕ))
-
-instance isCentralScalar [CommSemiring S₁] [SMulZeroClass R S₁] [SMulZeroClass Rᵐᵒᵖ S₁]
-    [IsCentralScalar R S₁] : IsCentralScalar R (MvPolynomial σ S₁) :=
-  inferInstanceAs <| IsCentralScalar R (AddMonoidAlgebra S₁ (σ →₀ ℕ))
-
-instance algebra [CommSemiring R] [CommSemiring S₁] [Algebra R S₁] :
-    Algebra R (MvPolynomial σ S₁) :=
-  inferInstanceAs <| Algebra R (AddMonoidAlgebra S₁ (σ →₀ ℕ))
-
-instance isScalarTower_right [CommSemiring S₁] [DistribSMul R S₁] [IsScalarTower R S₁ S₁] :
-    IsScalarTower R (MvPolynomial σ S₁) (MvPolynomial σ S₁) :=
-  inferInstanceAs <| IsScalarTower R (AddMonoidAlgebra S₁ (σ →₀ ℕ)) (AddMonoidAlgebra S₁ (σ →₀ ℕ))
-
-instance smulCommClass_right [CommSemiring S₁] [DistribSMul R S₁] [SMulCommClass R S₁ S₁] :
-    SMulCommClass R (MvPolynomial σ S₁) (MvPolynomial σ S₁) :=
-  inferInstanceAs <| SMulCommClass R (AddMonoidAlgebra S₁ (σ →₀ ℕ)) (AddMonoidAlgebra S₁ (σ →₀ ℕ))
-
-/-- If `R` is a subsingleton, then `MvPolynomial σ R` has a unique element -/
-instance unique [CommSemiring R] [Subsingleton R] : Unique (MvPolynomial σ R) :=
-  inferInstanceAs <| Unique (AddMonoidAlgebra R (σ →₀ ℕ))
-
-end Instances
-
 variable [CommSemiring R] [CommSemiring S₁] {p q : MvPolynomial σ R}
 
 /-- `monomial s a` is the monomial with coefficient `a` and exponents given by `s` -/
@@ -219,6 +157,7 @@ theorem C_mul : (C (a * a') : MvPolynomial σ R) = C a * C a' :=
 theorem C_pow (a : R) (n : ℕ) : (C (a ^ n) : MvPolynomial σ R) = C a ^ n :=
   map_pow _ _ _
 
+@[grind inj]
 theorem C_injective (σ : Type*) (R : Type*) [CommSemiring R] :
     Function.Injective (C : R → MvPolynomial σ R) :=
   Finsupp.single_injective _
@@ -366,6 +305,14 @@ theorem monomial_eq : monomial s a = C a * (s.prod fun n e => X n ^ e : MvPolyno
 lemma prod_X_pow_eq_monomial : ∏ x ∈ s.support, X x ^ s x = monomial s (1 : R) := by
   simp only [monomial_eq, map_one, one_mul, Finsupp.prod]
 
+theorem prod_X_pow (x : σ → ℕ) (t : Finset σ) :
+    ∏ y ∈ t, (X y : MvPolynomial σ R) ^ x y = monomial (indicator t (fun i _ ↦ x i)) (1 : R) := by
+  rw [monomial_eq, C_1, one_mul, Finsupp.prod, Finset.prod_subset (support_indicator_subset _ _)]
+  · exact Finset.prod_congr rfl (fun _ hi ↦ by simp [Finsupp.indicator, hi])
+  · intro i hi hi'
+    rw [Finsupp.mem_support_iff, ne_eq, not_not] at hi'
+    rw [hi', pow_zero]
+
 @[elab_as_elim]
 theorem induction_on_monomial {motive : MvPolynomial σ R → Prop}
     (C : ∀ a, motive (C a))
@@ -451,8 +398,10 @@ theorem ringHom_ext {A : Type*} [Semiring A] {f g : MvPolynomial σ R →+* A}
     apply MonoidHom.ext_mnat
     exact hX _
 
-/-- See note [partially-applied ext lemmas]. -/
-@[ext 1100]
+/-- See note [partially-applied ext lemmas].
+
+We set the priority higher than that of `AddMonoidAlgebra.ringHom_ext'`. -/
+@[ext high + 1]
 theorem ringHom_ext' {A : Type*} [Semiring A] {f g : MvPolynomial σ R →+* A}
     (hC : f.comp C = g.comp C) (hX : ∀ i, f (X i) = g (X i)) : f = g :=
   ringHom_ext (RingHom.ext_iff.1 hC) hX
@@ -465,7 +414,10 @@ theorem is_id (f : MvPolynomial σ R →+* MvPolynomial σ R) (hC : f.comp C = C
     (hX : ∀ n : σ, f (X n) = X n) (p : MvPolynomial σ R) : f p = p :=
   hom_eq_hom f (RingHom.id _) hC hX p
 
-@[ext 1100]
+/-- See note [partially-applied ext lemmas].
+
+We set the priority higher than that of `AddMonoidAlgebra.algHom_ext'`. -/
+@[ext high + 1]
 theorem algHom_ext' {A B : Type*} [CommSemiring A] [CommSemiring B] [Algebra R A] [Algebra R B]
     {f g : MvPolynomial σ A →ₐ[R] B}
     (h₁ :
@@ -474,7 +426,10 @@ theorem algHom_ext' {A B : Type*} [CommSemiring A] [CommSemiring B] [Algebra R A
     (h₂ : ∀ i, f (X i) = g (X i)) : f = g :=
   AlgHom.coe_ringHom_injective (MvPolynomial.ringHom_ext' (congr_arg AlgHom.toRingHom h₁) h₂)
 
-@[ext 1200]
+/-- See note [partially-applied ext lemmas].
+
+We set the priority higher than that of `MvPolynomial.algHom_ext'`. -/
+@[ext high + 2]
 theorem algHom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : MvPolynomial σ R →ₐ[R] A}
     (hf : ∀ i : σ, f (X i) = g (X i)) : f = g :=
   AddMonoidAlgebra.algHom_ext' (mulHom_ext' fun X : σ => MonoidHom.ext_mnat (hf X))
@@ -545,7 +500,7 @@ theorem support_smul {S₁ : Type*} [SMulZeroClass S₁ R] {a : S₁} {f : MvPol
 
 theorem support_sum {α : Type*} [DecidableEq σ] {s : Finset α} {f : α → MvPolynomial σ R} :
     (∑ x ∈ s, f x).support ⊆ s.biUnion fun x => (f x).support :=
-  Finsupp.support_finset_sum
+  Finsupp.support_finsetSum
 
 end Support
 
@@ -595,9 +550,12 @@ theorem coeff_zero (m : σ →₀ ℕ) : coeff m (0 : MvPolynomial σ R) = 0 :=
 theorem coeff_zero_X (i : σ) : coeff 0 (X i : MvPolynomial σ R) = 0 :=
   single_eq_of_ne' fun h => by cases Finsupp.single_eq_zero.1 h
 
+-- TODO: Remove once its use in the Witt vector API has been removed.
 @[simp]
-theorem coeff_mapRange (g : S₁ → R) (hg : g 0 = 0) (φ : MvPolynomial σ S₁) (m) :
-    coeff m (mapRange g hg φ) = g (coeff m φ) := rfl
+lemma coeff_addMonoidAlgebraMap (g : S₁ →+ R) (φ : MvPolynomial σ S₁) (m) :
+    coeff m (φ.map g) = g (coeff m φ) := rfl
+
+@[deprecated (since := "2026-03-27")] alias coeff_mapRange := coeff_addMonoidAlgebraMap
 
 /-- `MvPolynomial.coeff m` but promoted to an `AddMonoidHom`. -/
 @[simps]
@@ -703,6 +661,11 @@ lemma coeff_single_X [DecidableEq σ] (s s' : σ) (n : ℕ) :
     (X s).coeff (R := R) (Finsupp.single s' n) = if n = 1 ∧ s = s' then 1 else 0 := by
   simpa [eq_comm, and_comm] using coeff_single_X_pow s s' 1 n
 
+theorem coeff_prod_X_pow [DecidableEq σ] (d : σ →₀ ℕ) (x : σ → ℕ) (s : Finset σ) :
+    coeff d (∏ y ∈ s, (X y : MvPolynomial σ R) ^ x y) =
+      if d = Finsupp.indicator s (fun i _ ↦ x i) then 1 else 0 := by
+  simp_rw [prod_X_pow x s, coeff_monomial, eq_comm]
+
 @[simp]
 theorem support_mul_X (s : σ) (p : MvPolynomial σ R) :
     (p * X s).support = p.support.map (addRightEmbedding (Finsupp.single s 1)) :=
@@ -771,7 +734,7 @@ theorem eq_zero_iff {p : MvPolynomial σ R} : p = 0 ↔ ∀ d, coeff d p = 0 := 
 
 theorem ne_zero_iff {p : MvPolynomial σ R} : p ≠ 0 ↔ ∃ d, coeff d p ≠ 0 := by
   rw [Ne, eq_zero_iff]
-  push_neg
+  push Not
   rfl
 
 @[simp]
@@ -1055,7 +1018,7 @@ lemma coeffsIn_eq_span_monomial : coeffsIn σ M = .span R {monomial i m | (m ∈
 lemma coeffsIn_le {N : Submodule R (MvPolynomial σ S)} :
     coeffsIn σ M ≤ N ↔ ∀ m ∈ M, ∀ i, monomial i m ∈ N := by
   simp [coeffsIn_eq_span_monomial, Submodule.span_le, Set.subset_def,
-    forall_swap (α := MvPolynomial σ S)]
+    forall_comm (α := MvPolynomial σ S)]
 
 lemma mem_coeffsIn_iff_coeffs_subset : p ∈ coeffsIn σ M ↔ (p.coeffs : Set S) ⊆ M := by
   simp only [mem_coeffsIn, coeffs, Finset.coe_image, image_subset_iff]

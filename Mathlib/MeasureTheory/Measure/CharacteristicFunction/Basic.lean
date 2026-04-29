@@ -112,7 +112,7 @@ theorem ext_of_integral_char_eq (he : Continuous e) (he' : e ≠ 1)
   rw [hw]
   have hsum (P : Measure V) [IsFiniteMeasure P] :
       ∫ v, ∑ a ∈ w.support, w a * e (L v a) ∂P = ∑ a ∈ w.support, ∫ v, w a * e (L v a) ∂P :=
-    integral_finset_sum w.support
+    integral_finsetSum w.support
       fun a ha => Integrable.const_mul (integrable P (char he hL a)) _
   rw [hsum P, hsum P']
   apply Finset.sum_congr rfl fun i _ => ?_
@@ -477,7 +477,7 @@ theorem Measure.ext_of_charFunDual [CompleteSpace E]
     simp only [ContinuousLinearMap.toLinearMap₁₂_apply, LinearMap.zero_apply, not_forall]
     change ∃ L : StrongDual ℝ E, L v ≠ 0
     by_contra! h
-    exact hv (NormedSpace.eq_zero_of_forall_dual_eq_zero _ h)
+    exact hv (SeparatingDual.eq_zero_of_forall_dual_eq_zero (R := ℝ) h)
   · exact isBoundedBilinearMap_apply.symm.continuous
 
 /-- The characteristic function of a measure is a product of

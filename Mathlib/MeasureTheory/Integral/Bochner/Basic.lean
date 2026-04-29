@@ -71,7 +71,6 @@ file `Mathlib/MeasureTheory/Integral/SetToL1.lean`).
   * `ContinuousLinearMap.integral_comp_comm`
   * `LinearIsometry.integral_comp_comm`
 
-
 ## Notes
 
 Some tips on how to prove a proposition if the API for the Bochner integral is not enough so that
@@ -105,19 +104,19 @@ functions :
    like `L1.integral_coe_eq_integral`.
 
 4. Since simple functions are dense in `L¹`,
-```
-univ = closure {s simple}
-     = closure {s simple | ∫ s = ∫⁻ s⁺ - ∫⁻ s⁻} : the property holds for all simple functions
-     ⊆ closure {f | ∫ f = ∫⁻ f⁺ - ∫⁻ f⁻}
-     = {f | ∫ f = ∫⁻ f⁺ - ∫⁻ f⁻} : closure of a closed set is itself
-```
-Use `isClosed_property` or `DenseRange.induction_on` for this argument.
+   ```
+   univ = closure {s simple}
+        = closure {s simple | ∫ s = ∫⁻ s⁺ - ∫⁻ s⁻} : the property holds for all simple functions
+        ⊆ closure {f | ∫ f = ∫⁻ f⁺ - ∫⁻ f⁻}
+        = {f | ∫ f = ∫⁻ f⁺ - ∫⁻ f⁻} : closure of a closed set is itself
+   ```
+   Use `isClosed_property` or `DenseRange.induction_on` for this argument.
 
 ## Notation
 
 * `α →ₛ E` : simple functions (defined in `Mathlib/MeasureTheory/Function/SimpleFunc.lean`)
 * `α →₁[μ] E` : functions in L1 space, i.e., equivalence classes of integrable functions (defined in
-                `Mathlib/MeasureTheory/Function/LpSpace/Basic.lean`)
+  `Mathlib/MeasureTheory/Function/LpSpace/Basic.lean`)
 * `∫ a, f a ∂μ` : integral of `f` with respect to a measure `μ`
 * `∫ a, f a` : integral of `f` with respect to `volume`, the default measure on the ambient type
 
@@ -246,12 +245,14 @@ theorem integral_add' {f g : α → G} (hf : Integrable f μ) (hg : Integrable g
     ∫ a, (f + g) a ∂μ = ∫ a, f a ∂μ + ∫ a, g a ∂μ :=
   integral_add hf hg
 
-theorem integral_finset_sum {ι} (s : Finset ι) {f : ι → α → G} (hf : ∀ i ∈ s, Integrable (f i) μ) :
+theorem integral_finsetSum {ι} (s : Finset ι) {f : ι → α → G} (hf : ∀ i ∈ s, Integrable (f i) μ) :
     ∫ a, ∑ i ∈ s, f i a ∂μ = ∑ i ∈ s, ∫ a, f i a ∂μ := by
   by_cases hG : CompleteSpace G
   · simp only [integral, hG, L1.integral]
-    exact setToFun_finset_sum (dominatedFinMeasAdditive_weightedSMul _) s hf
+    exact setToFun_finsetSum (dominatedFinMeasAdditive_weightedSMul _) s hf
   · simp [integral, hG]
+
+@[deprecated (since := "2026-04-08")] alias integral_finset_sum := integral_finsetSum
 
 @[integral_simps]
 theorem integral_neg (f : α → G) : ∫ a, -f a ∂μ = -∫ a, f a ∂μ := by
@@ -366,6 +367,14 @@ theorem edist_integral_le_lintegral_edist
 
 theorem integral_eq_zero_of_ae {f : α → G} (hf : f =ᵐ[μ] 0) : ∫ a, f a ∂μ = 0 := by
   simp [integral_congr_ae hf, integral_zero]
+
+theorem frequently_ae_ne_zero_of_integral_ne_zero {f : α → G}
+    (h : ∫ a, f a ∂μ ≠ 0) : ∃ᶠ a in ae μ, f a ≠ 0 :=
+  fun h' ↦ h (integral_eq_zero_of_ae (h'.mono fun _ ↦ not_not.mp))
+
+theorem exists_ne_zero_of_integral_ne_zero {f : α → G}
+    (h : ∫ a, f a ∂μ ≠ 0) : ∃ a, f a ≠ 0 :=
+  (frequently_ae_ne_zero_of_integral_ne_zero h).exists
 
 /-- If `f` has finite integral, then `∫ x in s, f x ∂μ` is absolutely continuous in `s`: it tends
 to zero as `μ s` tends to zero. -/
@@ -1015,7 +1024,7 @@ theorem setIntegral_measure_zero (f : α → G) {μ : Measure α} {s : Set α} (
 lemma integral_of_isEmpty [IsEmpty α] {f : α → G} : ∫ x, f x ∂μ = 0 :=
   μ.eq_zero_of_isEmpty ▸ integral_zero_measure _
 
-theorem integral_finset_sum_measure {ι} {m : MeasurableSpace α} {f : α → G} {μ : ι → Measure α}
+theorem integral_finsetSum_measure {ι} {m : MeasurableSpace α} {f : α → G} {μ : ι → Measure α}
     {s : Finset ι} (hf : ∀ i ∈ s, Integrable f (μ i)) :
     ∫ a, f a ∂(∑ i ∈ s, μ i) = ∑ i ∈ s, ∫ a, f a ∂μ i := by
   induction s using Finset.cons_induction_on with
@@ -1023,7 +1032,10 @@ theorem integral_finset_sum_measure {ι} {m : MeasurableSpace α} {f : α → G}
   | cons _ _ h ih =>
     rw [Finset.forall_mem_cons] at hf
     rw [Finset.sum_cons, Finset.sum_cons, ← ih hf.2]
-    exact integral_add_measure hf.1 (integrable_finset_sum_measure.2 hf.2)
+    exact integral_add_measure hf.1 (integrable_finsetSum_measure.2 hf.2)
+
+@[deprecated (since := "2026-04-08")]
+alias integral_finset_sum_measure := integral_finsetSum_measure
 
 theorem nndist_integral_add_measure_le_lintegral
     {f : α → G} (h₁ : Integrable f μ) (h₂ : Integrable f ν) :
@@ -1183,11 +1195,11 @@ theorem integral_mul_norm_le_Lp_mul_Lq {E} [NormedAddCommGroup E] {f g : α → 
   rw [integral_eq_lintegral_of_nonneg_ae, integral_eq_lintegral_of_nonneg_ae,
     integral_eq_lintegral_of_nonneg_ae]
   rotate_left
-  · exact Eventually.of_forall fun x => Real.rpow_nonneg (norm_nonneg _) _
+  · exact Eventually.of_forall fun x ↦ by positivity
   · exact (hg.1.norm.aemeasurable.pow aemeasurable_const).aestronglyMeasurable
-  · exact Eventually.of_forall fun x => Real.rpow_nonneg (norm_nonneg _) _
+  · exact Eventually.of_forall fun x ↦ by positivity
   · exact (hf.1.norm.aemeasurable.pow aemeasurable_const).aestronglyMeasurable
-  · exact Eventually.of_forall fun x => mul_nonneg (norm_nonneg _) (norm_nonneg _)
+  · exact Eventually.of_forall fun x ↦ by positivity
   · exact hf.1.norm.mul hg.1.norm
   rw [ENNReal.toReal_rpow, ENNReal.toReal_rpow, ← ENNReal.toReal_mul]
   -- replace norms by nnnorm

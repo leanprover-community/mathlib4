@@ -78,7 +78,6 @@ theorem nnnorm_eq [NumberField K] (x : K) :
     ‖canonicalEmbedding K x‖₊ = Finset.univ.sup (fun φ : K →+* ℂ => ‖φ x‖₊) := by
   simp_rw [Pi.nnnorm_def, apply_at]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_le_iff [NumberField K] (x : K) (r : ℝ) :
     ‖canonicalEmbedding K x‖ ≤ r ↔ ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r := by
   obtain hr | hr := lt_or_ge r 0
@@ -387,7 +386,7 @@ variable [NumberField K]
 
 open scoped Classical in
 theorem nnnorm_eq_sup_normAtPlace (x : mixedSpace K) :
-    ‖x‖₊ = univ.sup fun w ↦ ⟨normAtPlace w x, normAtPlace_nonneg w x⟩ := by
+    ‖x‖₊ = univ.sup fun w ↦ .mk (normAtPlace w x) (normAtPlace_nonneg w x) := by
   have :
       (univ : Finset (InfinitePlace K)) =
       (univ.image (fun w : {w : InfinitePlace K // IsReal w} ↦ w.1)) ∪
@@ -407,7 +406,7 @@ theorem norm_eq_sup'_normAtPlace (x : mixedSpace K) :
     ‖x‖ = univ.sup' univ_nonempty fun w ↦ normAtPlace w x := by
   rw [← coe_nnnorm, nnnorm_eq_sup_normAtPlace, ← sup'_eq_sup univ_nonempty, ← NNReal.val_eq_coe,
     ← OrderHom.Subtype.val_coe, map_finset_sup', OrderHom.Subtype.val_coe]
-  simp only [Function.comp_apply]
+  simp
 
 /-- The norm of `x` is `∏ w, (normAtPlace x) ^ mult w`. It is defined such that the norm of
 `mixedEmbedding K a` for `a : K` is equal to the absolute value of the norm of `a` over `ℚ`,
@@ -467,7 +466,7 @@ theorem norm_eq_zero_iff' {x : mixedSpace K} (hx : x ∈ Set.range (mixedEmbeddi
 variable (K) in
 @[fun_prop]
 protected theorem continuous_norm : Continuous (mixedEmbedding.norm : (mixedSpace K) → ℝ) := by
-  refine continuous_finset_prod Finset.univ fun _ _ ↦ ?_
+  refine continuous_finsetProd Finset.univ fun _ _ ↦ ?_
   simp_rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, dite_pow]
   split_ifs <;> fun_prop
 

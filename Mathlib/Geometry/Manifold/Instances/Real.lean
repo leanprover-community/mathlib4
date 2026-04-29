@@ -57,6 +57,7 @@ open scoped Manifold ContDiff ENNReal
 -/
 def EuclideanHalfSpace (n : ℕ) [NeZero n] : Type :=
   { x : EuclideanSpace ℝ (Fin n) // 0 ≤ x 0 }
+deriving TopologicalSpace
 
 /--
 The quadrant in `ℝ^n`, used to model manifolds with corners, made of all vectors with nonnegative
@@ -64,6 +65,7 @@ coordinates.
 -/
 def EuclideanQuadrant (n : ℕ) : Type :=
   { x : EuclideanSpace ℝ (Fin n) // ∀ i : Fin n, 0 ≤ x i }
+deriving TopologicalSpace
 
 section
 
@@ -71,12 +73,6 @@ section
 without the following reducibility attribute (which is only set in this section). -/
 
 variable {n : ℕ}
-
-instance [NeZero n] : TopologicalSpace (EuclideanHalfSpace n) :=
-  instTopologicalSpaceSubtype
-
-instance : TopologicalSpace (EuclideanQuadrant n) :=
-  instTopologicalSpaceSubtype
 
 instance {n : ℕ} [NeZero n] : Zero (EuclideanHalfSpace n) := ⟨⟨0, by simp⟩⟩
 
@@ -448,7 +444,7 @@ lemma boundary_product [I.Boundaryless] :
   rw [I.boundary_of_boundaryless_left, boundary_Icc]
 
 /-- The manifold structure on `[x, y]` is smooth. -/
-instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : WithTop ℕ∞} :
+instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : ℕ∞ω} :
     IsManifold (𝓡∂ 1) n (Icc x y) := by
   have M : ContDiff ℝ n (show EuclideanSpace ℝ (Fin 1) → EuclideanSpace ℝ (Fin 1)
       from fun z ↦ toLp 2 fun i ↦ -z i + (y - x)) :=
@@ -493,6 +489,6 @@ section
 
 instance : ChartedSpace (EuclideanHalfSpace 1) (Icc (0 : ℝ) 1) := by infer_instance
 
-instance {n : WithTop ℕ∞} : IsManifold (𝓡∂ 1) n (Icc (0 : ℝ) 1) := by infer_instance
+instance {n : ℕ∞ω} : IsManifold (𝓡∂ 1) n (Icc (0 : ℝ) 1) := by infer_instance
 
 end

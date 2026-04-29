@@ -111,7 +111,7 @@ variable [∀ a, DecidableEq (δ a)]
 
 lemma piFinset_inter (s t : ∀ a, Finset (δ a)) :
     piFinset (fun i ↦ s i ∩ t i) = piFinset s ∩ piFinset t := by
-  ext; grind
+  grind
 
 lemma filter_piFinset_of_notMem (t : ∀ a, Finset (δ a)) (a : α) (x : δ a) (hx : x ∉ t a) :
     {f ∈ piFinset t | f a = x} = ∅ := by

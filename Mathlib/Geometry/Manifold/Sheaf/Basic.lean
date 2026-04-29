@@ -45,10 +45,10 @@ variable {H : Type*} [TopologicalSpace H] {H' : Type*} [TopologicalSpace H']
   [ChartedSpace H' M']
 
 instance TopCat.of.chartedSpace : ChartedSpace H (TopCat.of M) :=
-  (inferInstance : ChartedSpace H M)
+  inferInstanceAs <| ChartedSpace H M
 
 instance TopCat.of.hasGroupoid [HasGroupoid M G] : HasGroupoid (TopCat.of M) G :=
-  (inferInstance : HasGroupoid M G)
+  inferInstanceAs <| HasGroupoid M G
 
 /-- Let `P` be a `LocalInvariantProp` for functions between spaces with the groupoids `G`, `G'`
 and let `M`, `M'` be charted spaces modelled on the model spaces of those groupoids.  Then there is

@@ -274,7 +274,7 @@ def rowLen (μ : YoungDiagram) (i : ℕ) : ℕ :=
 
 theorem mem_iff_lt_rowLen {μ : YoungDiagram} {i j : ℕ} : (i, j) ∈ μ ↔ j < μ.rowLen i := by
   rw [rowLen, Nat.lt_find_iff]
-  push_neg
+  push Not
   exact ⟨fun h _ hmj => μ.up_left_mem (by rfl) hmj h, fun h => h _ (by rfl)⟩
 
 theorem row_eq_prod {μ : YoungDiagram} {i : ℕ} : μ.row i = {i} ×ˢ Finset.range (μ.rowLen i) := by

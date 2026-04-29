@@ -549,42 +549,19 @@ theorem nonempty_algEquiv_adjoin_of_isSepClosed [IsCyclotomicExtension S K L]
   have := isSeparable S K L
   let i : L →ₐ[K] M := IsSepClosed.lift
   refine ⟨(show L ≃ₐ[K] i.fieldRange from AlgEquiv.ofInjectiveField i).trans
-    (IntermediateField.equivOfEq (le_antisymm ?_ ?_))⟩
-  · rintro x (hx : x ∈ i.range)
-    let e := Subalgebra.equivOfEq _ _ ((IsCyclotomicExtension.iff_adjoin_eq_top S K L).1 ‹_›).2
-      |>.trans Subalgebra.topEquiv
-    have hrange : i.range = (i.comp (AlgHomClass.toAlgHom e)).range := by
-      ext x
-      simp only [AlgHom.mem_range, AlgHom.coe_comp, AlgHom.coe_coe, Function.comp_apply]
-      constructor
-      · rintro ⟨y, rfl⟩; exact ⟨e.symm y, by simp⟩
-      · rintro ⟨y, rfl⟩; exact ⟨e y, rfl⟩
-    rw [hrange, AlgHom.mem_range] at hx
-    obtain ⟨⟨y, hy⟩, rfl⟩ := hx
-    induction hy using Algebra.adjoin_induction with
-    | mem x hx =>
-      obtain ⟨n, hn, h1, h2⟩ := hx
-      apply IntermediateField.subset_adjoin
-      use n, hn, h1
-      rw [← map_pow, ← map_one (i.comp (AlgHomClass.toAlgHom e))]
-      congr 1
-      apply_fun _ using Subtype.val_injective
-      simpa
-    | algebraMap x =>
-      convert IntermediateField.algebraMap_mem _ x
-      exact AlgHom.commutes _ x
-    | add x y hx hy ihx ihy =>
-      convert add_mem ihx ihy
-      exact map_add (i.comp (AlgHomClass.toAlgHom e)) ⟨x, hx⟩ ⟨y, hy⟩
-    | mul x y hx hy ihx ihy =>
-      convert mul_mem ihx ihy
-      exact map_mul (i.comp (AlgHomClass.toAlgHom e)) ⟨x, hx⟩ ⟨y, hy⟩
-  · rw [IntermediateField.adjoin_le_iff]
-    rintro x ⟨n, hn, h1, h2⟩
-    have := NeZero.mk h1
+    (IntermediateField.equivOfEq ?_)⟩
+  have htop : IntermediateField.adjoin K {x : L | ∃ n ∈ S, n ≠ 0 ∧ x ^ n = 1} = ⊤ :=
+    IntermediateField.adjoin_eq_top_of_algebra K _ ((iff_adjoin_eq_top S K L).1 ‹_›).2
+  rw [AlgHom.fieldRange_eq_map, ← htop, IntermediateField.adjoin_map]
+  apply le_antisymm <;> rw [IntermediateField.adjoin_le_iff]
+  · rintro _ ⟨y, ⟨n, hn, h1, h2⟩, rfl⟩
+    exact IntermediateField.subset_adjoin K _ ⟨n, hn, h1, by simpa using congrArg i h2⟩
+  · rintro x ⟨n, hn, h1, h2⟩
+    have : NeZero n := ⟨h1⟩
     obtain ⟨y, hy⟩ := exists_isPrimitiveRoot K L hn h1
-    obtain ⟨m, -, rfl⟩ := (hy.map_of_injective (f := i) i.injective).eq_pow_of_pow_eq_one h2
-    exact ⟨y ^ m, by simp⟩
+    obtain ⟨m, -, rfl⟩ := (hy.map_of_injective i.injective).eq_pow_of_pow_eq_one h2
+    exact pow_mem (IntermediateField.subset_adjoin K (i '' {x : L | ∃ n ∈ S, n ≠ 0 ∧ x ^ n = 1})
+      ⟨y, ⟨n, hn, h1, hy.pow_eq_one⟩, rfl⟩) m
 
 theorem isGalois [IsCyclotomicExtension S K L] : IsGalois K L := by
   rw [isGalois_iff]
@@ -677,17 +654,18 @@ splitting field of `cyclotomic n K`. If `n` is nonzero in `K`, it has
 the instance `IsCyclotomicExtension {n} K (CyclotomicField n K)`. -/
 def CyclotomicField : Type w :=
   (cyclotomic n K).SplittingField
+deriving Field, Inhabited
 
 namespace CyclotomicField
 
-instance : Field (CyclotomicField n K) :=
-  inferInstanceAs <| Field (cyclotomic n K).SplittingField
+variable [Algebra A K] in
+deriving instance Algebra A, IsScalarTower A K for CyclotomicField n K
 
-instance algebra : Algebra K (CyclotomicField n K) :=
-  inferInstanceAs <| Algebra K (cyclotomic n K).SplittingField
+instance algebra : Algebra K (CyclotomicField n K) := inferInstance
 
-instance : Inhabited (CyclotomicField n K) :=
-  inferInstanceAs <| Inhabited (cyclotomic n K).SplittingField
+/-- Ensure there are no diamonds when `A = ℤ` but there are `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906 -/
+example : Ring.toIntAlgebra (CyclotomicField n ℚ) = CyclotomicField.instAlgebra _ _ _ := rfl
+
 
 instance [CharZero K] : CharZero (CyclotomicField n K) :=
   charZero_of_injective_algebraMap (algebraMap K _).injective
@@ -739,17 +717,6 @@ variable [Algebra A K]
 
 section CyclotomicRing
 
-/-- If `K` is an `A`-algebra, the `A`-algebra structure on `CyclotomicField n K`.
--/
-instance CyclotomicField.algebraBase : Algebra A (CyclotomicField n K) :=
-  SplittingField.instAlgebra (cyclotomic n K)
-
-/-- Ensure there are no diamonds when `A = ℤ` but there are `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906 -/
-example : Ring.toIntAlgebra (CyclotomicField n ℚ) = CyclotomicField.algebraBase _ _ _ := rfl
-
-instance {R : Type*} [CommRing R] [Algebra R K] : IsScalarTower R K (CyclotomicField n K) :=
-  SplittingField.instIsScalarTower _
-
 instance [IsDomain A] [IsFractionRing A K] : Module.IsTorsionFree A (CyclotomicField n K) := by
   rw [isTorsionFree_iff_faithfulSMul, faithfulSMul_iff_algebraMap_injective,
     IsScalarTower.algebraMap_eq A K (CyclotomicField n K)]
@@ -763,17 +730,9 @@ is nonzero in `A`, it has the instance `IsCyclotomicExtension {n} A (CyclotomicR
 @[nolint unusedArguments]
 def CyclotomicRing : Type w :=
   adjoin A {b : CyclotomicField n K | b ^ n = 1}
+deriving CommRing, IsDomain, Inhabited
 
 namespace CyclotomicRing
-
-instance : CommRing (CyclotomicRing n A K) :=
-  inferInstanceAs <| CommRing (adjoin A _)
-
-instance : IsDomain (CyclotomicRing n A K) :=
-  inferInstanceAs <| IsDomain (adjoin A _)
-
-instance : Inhabited (CyclotomicRing n A K) :=
-  inferInstanceAs <| Inhabited (adjoin A _)
 
 /-- The `A`-algebra structure on `CyclotomicRing n A K`. -/
 instance algebraBase : Algebra A (CyclotomicRing n A K) :=
@@ -832,7 +791,6 @@ instance isCyclotomicExtension [IsDomain A] [IsFractionRing A K] [NeZero ((n : �
     · exact Subalgebra.add_mem _ hy hz
     · exact Subalgebra.mul_mem _ hy hz
 
-set_option backward.isDefEq.respectTransparency false in
 instance [IsFractionRing A K] [IsDomain A] [NeZero (n : A)] :
     IsFractionRing (CyclotomicRing n A K) (CyclotomicField n K) where
   map_units := fun ⟨x, hx⟩ => by

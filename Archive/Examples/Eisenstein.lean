@@ -25,7 +25,6 @@ namespace Polynomial
 
 open Ideal.Quotient Ideal RingHom
 
-set_option backward.isDefEq.respectTransparency false in
 set_option linter.flexible false in
 example : Irreducible (X ^ 4 - 10 * X ^ 2 + 1 : ℤ[X]) := by
   -- We will apply the generalized Eisenstein criterion with `q = X ^ 2 + 1` and `K = ZMod 3`.
