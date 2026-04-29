@@ -32,7 +32,7 @@ assert_not_exists MonoidWithZero DistribMulAction
 
 universe u v
 
-open Pointwise
+open scoped Pointwise
 
 open Function
 

@@ -970,3 +970,30 @@ lemma iteratedFDeriv_comp_sub' (n : ℕ) (a : E) :
 lemma iteratedFDeriv_comp_sub (n : ℕ) (a : E) (x : E) :
     iteratedFDeriv 𝕜 n (fun z ↦ f (z - a)) x = iteratedFDeriv 𝕜 n f (x - a) := by
   simp [iteratedFDeriv_comp_sub']
+
+lemma iteratedFDerivWithin_comp_neg {f : 𝕜 → F} {s : Set 𝕜} (n : ℕ) (a : 𝕜) :
+    iteratedFDerivWithin 𝕜 n (fun x ↦ f (-x)) s a
+      = (-1 : 𝕜) ^ n • iteratedFDerivWithin 𝕜 n f (-s) (-a) := by
+  induction n generalizing a with
+  | zero => simp [iteratedFDerivWithin]
+  | succ n ih =>
+    have ih' : iteratedFDerivWithin 𝕜 n (fun x => f (-x)) s
+        = fun a ↦ (-1 : 𝕜) ^ n • iteratedFDerivWithin 𝕜 n f (-s) (-a) := by
+      ext b
+      rw [ih b]
+    set g := fun a ↦ iteratedFDerivWithin 𝕜 n f (-s) a
+    rw [iteratedFDerivWithin_succ_eq_comp_left, iteratedFDerivWithin_succ_eq_comp_left,
+      Function.comp_apply, Function.comp_apply, ih', ← Pi.smul_def,
+      fderivWithin_const_smul_field' ((-1 : 𝕜) ^ n) (f := fun a ↦ g (-a)),
+      fderivWithin_comp_neg (f := g), ← neg_one_smul 𝕜 (fderivWithin 𝕜 _ (-s) (-a)),
+      ← mul_smul _ (-1), ← pow_succ (-1) n, map_smul]
+
+theorem iteratedFDerivWithin_comp_const_sub {f : 𝕜 → F} {s : Set 𝕜} (n : ℕ) (c : 𝕜) :
+    iteratedFDerivWithin 𝕜 n (fun z => f (c - z)) s =
+      fun x ↦ (-1 : 𝕜) ^ n • iteratedFDerivWithin 𝕜 n f (c +ᵥ -s) (c - x) := by
+  ext a
+  have : (fun z : 𝕜 => f (c - z)) = fun z => (fun w => f (c + w)) (-z) := by
+    simp only [sub_eq_add_neg]
+  rw [this, iteratedFDerivWithin_comp_neg (f := fun w => f (c + w)) n a,
+    iteratedFDerivWithin_comp_add_left]
+  ring_nf
