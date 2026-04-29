@@ -115,11 +115,11 @@ nonrec theorem ContMDiffAt.smul (hf : CMDiffAt n f x) (hg : CMDiffAt n g x) :
 
 @[to_additive]
 theorem ContMDiffOn.smul (hf : CMDiff[s] n f) (hg : CMDiff[s] n g) :
-    CMDiff[s] n (f • g) := fun x hx => (hf x hx).smul (hg x hx)
+    CMDiff[s] n (f • g) := fun x hx ↦ (hf x hx).smul (hg x hx)
 
 @[to_additive]
 theorem ContMDiff.smul (hf : CMDiff n f) (hg : CMDiff n g) :
-    CMDiff n (f • g) := fun x => (hf x).smul (hg x)
+    CMDiff n (f • g) := fun x ↦ (hf x).smul (hg x)
 
 end
 
