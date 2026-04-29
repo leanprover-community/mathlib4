@@ -89,7 +89,7 @@ theorem quasiCompact_affineProperty_iff_quasiSeparatedSpace [IsAffine Y] (f : X 
     let g : pullback U.1.ι V.1.ι ⟶ X := pullback.fst _ _ ≫ U.1.ι
     have e := g.isOpenEmbedding.isEmbedding.toHomeomorph
     rw [IsOpenImmersion.range_pullback_to_base_of_left] at e
-    erw [Subtype.range_coe, Subtype.range_coe] at e
+    rw [Scheme.Opens.range_ι, Scheme.Opens.range_ι] at e
     rw [isCompact_iff_compactSpace]
     exact @Homeomorph.compactSpace _ _ _ _ (H _ _) e
   · introv H h₁ h₂
