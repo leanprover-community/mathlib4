@@ -83,10 +83,8 @@ theorem isCompactElement_iff_le_of_directed_sSup_le (k : α) :
 
 /-- `⊥` in a `CompletePartialOrder` is compact. -/
 lemma isCompactElement_bot : IsCompactElement (⊥ : α) := by
-  rw [isCompactElement_iff_le_of_directed_sSup_le]
-  intro s ⟨e, he⟩ _ _
-  use e, he
-  exact OrderBot.bot_le e
+  intro s _ ⟨e, he⟩ _ _ _
+  exact ⟨e, he, bot_le⟩
 
 /-- An algebraic directed complete partial order is a `CompletePartialOrder` with 1) a least
 element and 2) every element is given by the supremum of a set of compact elements (algebraic). -/
