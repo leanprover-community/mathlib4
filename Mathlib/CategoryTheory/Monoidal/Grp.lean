@@ -108,11 +108,11 @@ instance : Inhabited (Grp C) where
 instance : Category (Grp C) :=
   inferInstanceAs (Category (InducedCategory _ Grp.toMon))
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem id_hom_hom (A : Grp C) : Mon.Hom.hom (InducedCategory.Hom.hom (𝟙 A)) = 𝟙 A.X :=
   rfl
 
-@[to_additive (attr := simp, reassoc)]
+@[to_additive (attr := reassoc)]
 theorem comp_hom_hom {R S T : Grp C} (f : R ⟶ S) (g : S ⟶ T) :
     Mon.Hom.hom (f ≫ g).hom = f.hom.hom ≫ g.hom.hom :=
   rfl
@@ -445,6 +445,9 @@ abbrev mkIso {G H : Grp C} (e : G.X ≅ H.X) (one_f : η[G.X] ≫ e.hom = η[H.X
     (mul_f : μ[G.X] ≫ e.hom = (e.hom ⊗ₘ e.hom) ≫ μ[H.X] := by cat_disch) : G ≅ H :=
   have : IsMonHom e.hom := ⟨one_f, mul_f⟩
   mkIso' e
+
+attribute [-simp] Grp.mkIso_hom_hom_hom Grp.mkIso_inv_hom_hom
+  AddGrp.mkIso_hom_hom_hom AddGrp.mkIso_inv_hom_hom
 
 @[deprecated (since := "2025-12-18")] alias mkIso_hom_hom := mkIso_hom_hom_hom
 @[deprecated (since := "2025-12-18")] alias mkIso_inv_hom := mkIso_inv_hom_hom

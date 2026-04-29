@@ -334,12 +334,10 @@ def curriedAction : C ⥤ D ⥤ D where
 
 variable {C} in
 /-- Bundle `d ↦ c ⊙ₗ d` as a functor. -/
-@[simps!]
 abbrev actionLeft (c : C) : D ⥤ D := curriedAction C D |>.obj c
 
 variable {D} in
 /-- Bundle `c ↦ c ⊙ₗ d` as a functor. -/
-@[simps!]
 abbrev actionRight (d : D) : C ⥤ D := curriedAction C D |>.flip.obj d
 
 set_option backward.defeqAttrib.useBackward true in
@@ -647,12 +645,10 @@ def curriedAction : C ⥤ D ⥤ D where
 
 variable {C} in
 /-- Bundle `d ↦ d ⊙ᵣ c` as a functor. -/
-@[simps!]
 abbrev actionRight (c : C) : D ⥤ D := curriedAction C D |>.obj c
 
 variable {D} in
 /-- Bundle `c ↦ d ⊙ᵣ c` as a functor. -/
-@[simps!]
 abbrev actionLeft (d : D) : C ⥤ D := curriedAction C D |>.flip.obj d
 
 set_option backward.defeqAttrib.useBackward true in
