@@ -619,6 +619,8 @@ def LeftExtension.precomp₂
     L'.LeftExtension F₁ ⥤ (L ⋙ L').LeftExtension F₀ :=
   LeftExtension.precomp L' F₁ L ⋙ StructuredArrow.map α
 
+attribute [-simp] Functor.LeftExtension.precomp₂_map_left
+
 variable
     {L : C ⥤ D} {L' : D ⥤ D'}
     {F₀ : C ⥤ H} {F₁ : D ⥤ H} {F₂ : D' ⥤ H}

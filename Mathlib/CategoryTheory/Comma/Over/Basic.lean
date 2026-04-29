@@ -584,6 +584,8 @@ namespace CostructuredArrow
 def toOver (F : D ⥤ T) (X : T) : CostructuredArrow F X ⥤ Over X :=
   CostructuredArrow.pre F (𝟭 T) X
 
+attribute [-simp] CostructuredArrow.toOver_obj_right
+
 instance (F : D ⥤ T) (X : T) [F.Faithful] : (toOver F X).Faithful :=
   show (CostructuredArrow.pre _ _ _).Faithful from inferInstance
 
@@ -1094,6 +1096,8 @@ variable {D : Type u₂} [Category.{v₂} D]
 @[simps!]
 def toUnder (X : T) (F : D ⥤ T) : StructuredArrow X F ⥤ Under X :=
   StructuredArrow.pre X F (𝟭 T)
+
+attribute [-simp] StructuredArrow.toUnder_obj_left
 
 instance (X : T) (F : D ⥤ T) [F.Faithful] : (toUnder X F).Faithful :=
   show (StructuredArrow.pre _ _ _).Faithful from inferInstance

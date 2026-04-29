@@ -285,7 +285,7 @@ section HasBinaryCoproducts
 variable [HasBinaryCoproducts C]
 
 /-- The functor from `C` to `Under X` which sends `Y : C` to `in₁ : X ⟶ X ⨿ Y`. -/
-@[simps! obj_left obj_hom map_left]
+@[simps! obj_left obj_hom]
 def costar : C ⥤ Under X := Monad.free _ ⋙ algebraToUnder X
 
 /-- The functor `Under.forget X : Under X ⥤ C` has a left adjoint given by `costar X`.
