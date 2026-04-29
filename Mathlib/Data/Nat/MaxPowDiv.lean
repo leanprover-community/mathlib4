@@ -209,10 +209,22 @@ theorem _root_.padicValNat_base_mul {p n : ℕ} (hp : 1 < p) (hn : n ≠ 0) :
   simp [padicValNat, *]
 
 @[simp]
-theorem padicValNat_ne_zero_iff_dvd {p : ℕ} (hp : p ≠ 1) (n : ℕ) (hn : n ≠ 0) :
+theorem padicValNat_ne_zero_iff_dvd {p : ℕ} (hp : p ≠ 1) {n : ℕ} (hn : n ≠ 0) :
     (padicValNat p n ≠ 0) ↔ p ∣ n := by
   conv => rhs ; rw [← Nat.pow_one p]
   exact Iff.symm <| Iff.trans (pow_dvd_iff_le_padicValNat hp hn) (one_le_iff_ne_zero)
+
+theorem padicValNat_self_div_lt {p : ℕ} (hp : 1 < p) (n : ℕ) (hn : n ≠ 0) (h : padicValNat p n ≠ 0) :
+    padicValNat p (n / p) < padicValNat p n := by
+  rw [padicValNat_ne_zero_iff_dvd (Nat.ne_of_lt' hp) hn] at h
+  calc
+    padicValNat p (n/p) < padicValNat p (p * (n/p)) := by
+      apply Nat.lt_of_lt_of_eq (Nat.lt_add_one _) ?_
+      apply Eq.symm (padicValNat_base_mul hp ?_)
+      refine Nat.div_ne_zero_iff.mpr ⟨Nat.ne_zero_of_lt hp, Nat.le_of_mod_lt ?_⟩
+      simpa [mod_eq_zero_of_dvd h] using Nat.ne_zero_iff_zero_lt.mp hn
+    _ = padicValNat p n := by
+      simp only [Nat.mul_div_cancel' h]
 
 @[simp]
 theorem divMaxPow_base_mul {p : ℕ} (hp : p ≠ 0) (n : ℕ) :
