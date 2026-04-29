@@ -16,7 +16,7 @@ This file provides some basic properties of eigenspaces of continuous linear map
 These results are in a separate file to avoid heavy topology imports.
 -/
 
-@[expose] public section
+public section
 
 namespace ContinuousLinearMap
 

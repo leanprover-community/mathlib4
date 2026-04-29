@@ -231,10 +231,7 @@ def ε [Limits.HasZeroObject C] :
   naturality X Y f := by
     apply HomologicalComplex.to_single_hom_ext
     dsimp
-    erw [ChainComplex.toSingle₀Equiv_symm_apply_f_zero,
-      ChainComplex.toSingle₀Equiv_symm_apply_f_zero]
-    simp only [ChainComplex.single₀_map_f_zero]
-    exact congr_app f.w _
+    simp [ChainComplex.toSingle₀Equiv, SimplicialObject.Augmented.w₀]
 
 @[simp]
 lemma ε_app_f_zero [Limits.HasZeroObject C] (X : SimplicialObject.Augmented C) :

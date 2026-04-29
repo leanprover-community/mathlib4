@@ -17,7 +17,7 @@ This file proves lipschitzness of normed group operations and shows that normed 
 groups.
 -/
 
-@[expose] public section
+public section
 
 variable {𝓕 E F : Type*}
 

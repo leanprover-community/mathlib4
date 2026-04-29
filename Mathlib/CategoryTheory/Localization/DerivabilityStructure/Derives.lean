@@ -27,7 +27,7 @@ for any `X₁ : C₁`, the map `α.app (Φ.functor.obj X₁)` is an isomorphism.
 
 -/
 
-@[expose] public section
+public section
 
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
