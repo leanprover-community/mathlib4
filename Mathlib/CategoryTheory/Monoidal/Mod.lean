@@ -96,7 +96,7 @@ theorem assoc_flip (X : D) [ModObj M X] : M ⊴ₗ γ ≫ γ =
 variable (M) in
 /-- The action of a monoid object on itself. -/
 -- See note [reducible non-instances]
-@[to_additive]
+@[to_additive /-- The action of an additive monoid object on itself. -/]
 abbrev regular : ModObj M M where
   smul := μ
 
@@ -226,7 +226,10 @@ attribute [to_additive existing (attr := instance)] Hom.isModHom
 /-- An alternative constructor for `Hom`,
 taking a morphism without a `[IsModHom]` instance, as well as the relevant
 equality to put such an instance. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps)
+  /-- An alternative constructor for `Hom`,
+  taking a morphism without a `[IsAddModHom]` instance, as well as the relevant
+  equality to put such an instance. -/]
 def Hom.mk' {M N : Mod D A} (f : M.X ⟶ N.X)
     (smul_hom : γ[M.X] ≫ f = A ⊴ₗ f ≫ γ[N.X] := by cat_disch) : Hom M N :=
   letI : IsModHom A f := ⟨smul_hom⟩
@@ -236,7 +239,11 @@ def Hom.mk' {M N : Mod D A} (f : M.X ⟶ N.X)
 taking a morphism without a `[IsModHom]` instance, between objects with
 a `ModObj` instance (rather than bundled as `Mod`),
 as well as the relevant equality to put such an instance. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps)
+  /-- An alternative constructor for `Hom`,
+  taking a morphism without a `[IsAddModHom]` instance, between objects with
+  an `AddModObj` instance (rather than bundled as `AddMod`),
+  as well as the relevant equality to put such an instance. -/]
 def Hom.mk'' {M N : D} [ModObj A M] [ModObj A N] (f : M ⟶ N)
     (smul_hom : γ[M] ≫ f = A ⊴ₗ f ≫ γ[N] := by cat_disch) :
     Hom (.mk (A := A) M) (.mk (A := A) N) :=
@@ -244,7 +251,7 @@ def Hom.mk'' {M N : D} [ModObj A M] [ModObj A N] (f : M ⟶ N)
   ⟨f⟩
 
 /-- The identity morphism on a module object. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps) /-- The identity morphism on an additive module object. -/]
 def id (M : Mod D A) : Hom M M where hom := 𝟙 M.X
 
 @[to_additive]
@@ -252,7 +259,7 @@ instance homInhabited (M : Mod D A) : Inhabited (Hom M M) :=
   ⟨id M⟩
 
 /-- Composition of module object morphisms. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps) /-- Composition of additive module object morphisms. -/]
 def comp {M N O : Mod D A} (f : Hom M N) (g : Hom N O) :
     Hom M O where
   hom := f.hom ≫ g.hom
@@ -280,7 +287,7 @@ theorem comp_hom' {M N K : Mod D A} (f : M ⟶ N) (g : N ⟶ K) :
 variable (A)
 
 /-- A monoid object as a module over itself. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps) /-- An additive monoid object as an additive module over itself. -/]
 def regular : Mod C A :=
   letI : ModObj A A := .regular A
   ⟨A⟩
@@ -290,7 +297,8 @@ instance : Inhabited (Mod C A) :=
   ⟨regular A⟩
 
 /-- The forgetful functor from module objects to the ambient category. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps)
+  /-- The forgetful functor from additive module objects to the ambient category. -/]
 def forget : Mod D A ⥤ D where
   obj A := A.X
   map f := f.hom
@@ -303,7 +311,10 @@ open MonoidalLeftAction in
 /-- When `M` is a `B`-module in `D` and `f : A ⟶ B` is a morphism of internal
 monoid objects, `M` inherits an `A`-module structure via
 "restriction of scalars", i.e `γ[A, M] = f ⊵ₗ M ≫ γ[B, M]`. -/
-@[to_additive (attr := simps, implicit_reducible)]
+@[to_additive (attr := simps, implicit_reducible)
+  /-- When `M` is a `B`-additive module in `D` and `f : A ⟶ B` is a morphism of internal
+  additive monoid objects, `M` inherits an `A`-additive module structure via
+  "restriction of scalars", i.e `δ[A, M] = f ⊵ₗ M ≫ δ[B, M]`. -/]
 def scalarRestriction (M : D) [ModObj B M] : ModObj A M where
   smul := f ⊵ₗ M ≫ γ[B,M]
   one_smul := by
@@ -321,10 +332,13 @@ def scalarRestriction (M : D) [ModObj B M] : ModObj A M where
       IsMonHom.mul_hom, tensorHom_def, Category.assoc]
 
 open MonoidalLeftAction in
-/-- If `g : M ⟶ N` is a `B`-linear morphisms of `B`-modules, then it induces an
+/-- If `g : M ⟶ N` is a `B`-linear morphism of `B`-modules, then it induces an
 `A`-linear morphism when `M` and `N` have an `A`-module structure obtained
 by restricting scalars along a monoid morphism `A ⟶ B`. -/
-@[to_additive]
+@[to_additive
+  /-- If `g : M ⟶ N` is a `B`-linear morphism of `B`-modules, then it induces an
+  `A`-linear morphism when `M` and `N` have an `A`-module structure obtained
+  by restricting scalars along an additive monoid morphism `A ⟶ B`. -/]
 lemma scalarRestriction_hom
     (M N : D) [ModObj B M] [ModObj B N] (g : M ⟶ N) [IsModHom B g] :
     letI := scalarRestriction f M
@@ -338,7 +352,9 @@ lemma scalarRestriction_hom
 /-- A morphism of monoid objects induces a "restriction" or "comap" functor
 between the categories of module objects.
 -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps)
+  /-- A morphism of additive monoid objects induces a "restriction" or "comap" functor
+  between the categories of additive module objects. -/]
 def comap {A B : C} [MonObj A] [MonObj B] (f : A ⟶ B) [IsMonHom f] :
     Mod D B ⥤ Mod D A where
   obj M :=
