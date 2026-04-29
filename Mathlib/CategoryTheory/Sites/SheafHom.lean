@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Over
 
-/-! Internal hom of sheaves
+/-! # Internal hom of sheaves
 
 In this file, given two sheaves `F` and `G` on a site `(C, J)` with values
 in a category `A`, we define a sheaf of types
@@ -45,7 +45,7 @@ to the type of morphisms between the "restrictions" of `F` and `G` to the catego
 @[simps! obj]
 def presheafHom : Cᵒᵖ ⥤ Type _ where
   obj X := (Over.forget X.unop).op ⋙ F ⟶ (Over.forget X.unop).op ⋙ G
-  map f := TypeCat.ofHom (Functor.whiskerLeft (Over.map f.unop).op)
+  map f := ↾(Functor.whiskerLeft (Over.map f.unop).op)
   map_id := by
     rintro ⟨X⟩
     ext φ ⟨Y⟩
@@ -100,7 +100,6 @@ def presheafHomSectionsEquiv : (presheafHom F G).sections ≃ (F ⟶ G) where
 
 variable {F G}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma PresheafHom.isAmalgamation_iff {X : C} (S : Sieve X)
     (x : Presieve.FamilyOfElements (presheafHom F G) S.arrows)
     (hx : x.Compatible) (y : (presheafHom F G).obj (op X)) :
@@ -129,7 +128,6 @@ namespace PresheafHom.IsSheafFor
 
 variable (x : Presieve.FamilyOfElements (presheafHom F G) S.arrows) {Y : C}
 
-set_option backward.isDefEq.respectTransparency false in
 include hG in
 lemma exists_app (hx : x.Compatible) (g : Y ⟶ X) :
     ∃ (φ : F.obj (op Y) ⟶ G.obj (op Y)),
@@ -218,7 +216,7 @@ lemma Presheaf.IsSheaf.hom (hG : Presheaf.IsSheaf J G) :
 (see `sheafHom'Iso`), but has better definitional properties. -/
 def sheafHom' (F G : Sheaf J A) : Cᵒᵖ ⥤ Type _ where
   obj X := ((J.overPullback A X.unop).obj F ⟶ (J.overPullback A X.unop).obj G)
-  map f := TypeCat.ofHom ((J.overMapPullback A f.unop).map)
+  map f := ↾((J.overMapPullback A f.unop).map)
   map_id X := by
     ext φ : 4
     exact ConcreteCategory.congr_hom ((presheafHom F.1 G.1).map_id X) φ.1
