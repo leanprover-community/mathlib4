@@ -167,13 +167,18 @@ lemma IsMulFreimanHom.to_isMulFreimanIso {g : β → α} (h : InvOn g f A B)
     case g1 => exact h.1 (hsA hx)
     case g2 => exact h.1 (htA hx)
 
-@[to_additive]
+/-- If `f` is a multiplicative Freiman isomorphism from `A` to `B`, then `f.invFunOn A` is
+a multiplicative Freiman isomorphism from `B` to `A`. -/
+@[to_additive /-- If `f` is an additive Freiman isomorphism from `A` to `B`, then `f.invFunOn A` is
+an additive Freiman isomorphism from `B` to `A`. -/]
 protected lemma IsMulFreimanIso.invFunOn (hf : IsMulFreimanIso n A B f) :
     IsMulFreimanIso n B A (f.invFunOn A) :=
   hf.symm hf.bijOn.surjOn.mapsTo_invFunOn hf.bijOn.surjOn.rightInvOn_invFunOn
 
 /-- A version of the Freiman homomorphism condition expressed using `Finset`s, for practicality. -/
-@[to_additive] lemma IsMulFreimanHom.prod_apply (hf : IsMulFreimanHom n A B f) {s t : Finset α}
+@[to_additive /-- A version of the Freiman homomorphism condition expressed using `Finset`s,
+for practicality. -/]
+lemma IsMulFreimanHom.prod_apply (hf : IsMulFreimanHom n A B f) {s t : Finset α}
     {hsA : (s : Set α) ⊆ A} {htA : (t : Set α) ⊆ A}
     (hs : s.card = n) (ht : t.card = n) :
     ∏ i ∈ s, i = ∏ i ∈ t, i → ∏ i ∈ s, f i = ∏ i ∈ t, f i := by
@@ -298,6 +303,12 @@ lemma isMulFreimanIso_empty : IsMulFreimanIso n (∅ : Set α) (∅ : Set β) f 
     rw [← map_multiset_ne_zero_prod _ (by grind [Multiset.card_eq_zero]),
         h, map_multiset_ne_zero_prod _ (by grind [Multiset.card_eq_zero])]
 
+@[deprecated (since := "2026-04-29")]
+alias MonoidHomClass.isMulFreimanHom := MulHomClass.isMulFreimanHom
+
+@[deprecated (since := "2026-04-29")]
+alias AddMonoidHomClass.isAddFreimanHom := AddHomClass.isAddFreimanHom
+
 @[to_additive] lemma MulEquivClass.isMulFreimanIso [EquivLike F α β] [MulEquivClass F α β] (f : F)
     (hfAB : BijOn f A B) : IsMulFreimanIso n A B f where
   bijOn := hfAB
@@ -378,7 +389,7 @@ section
 variable {α β₁ β₂ : Type*} [CommMonoid α] [CommMonoid β₁] [CommMonoid β₂]
   {A : Set α} {B₁ : Set β₁} {B₂ : Set β₂} {f₁ : α → β₁} {f₂ : α → β₂} {n : ℕ}
 
-@[to_additive IsAddFreimanHom.prodMk]
+@[to_additive prodMk]
 lemma IsMulFreimanHom.prodMk (h₁ : IsMulFreimanHom n A B₁ f₁) (h₂ : IsMulFreimanHom n A B₂ f₂) :
     IsMulFreimanHom n A (B₁ ×ˢ B₂) (fun x => (f₁ x, f₂ x)) where
   mapsTo := fun x hx => mk_mem_prod (h₁.mapsTo hx) (h₂.mapsTo hx)
@@ -398,7 +409,7 @@ lemma IsMulFreimanHom.prodMap (h₁ : IsMulFreimanHom n A₁ B₁ f₁) (h₂ : 
     IsMulFreimanHom n (A₁ ×ˢ A₂) (B₁ ×ˢ B₂) (Prod.map f₁ f₂) :=
   (h₁.comp .fst).prodMk (h₂.comp .snd)
 
-@[to_additive]
+@[to_additive prodMap]
 lemma IsMulFreimanIso.prodMap (h₁ : IsMulFreimanIso n A₁ B₁ f₁) (h₂ : IsMulFreimanIso n A₂ B₂ f₂) :
     IsMulFreimanIso n (A₁ ×ˢ A₂) (B₁ ×ˢ B₂) (Prod.map f₁ f₂) :=
   (h₁.isMulFreimanHom.prodMap h₂.isMulFreimanHom).to_isMulFreimanIso
