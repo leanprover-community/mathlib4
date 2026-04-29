@@ -217,6 +217,14 @@ lemma roots_neg (p : R[X]) : (-p).roots = p.roots := by
   rw [← neg_one_smul R p, roots_smul_nonzero p (neg_ne_zero.mpr one_ne_zero)]
 
 @[simp]
+theorem roots_comp_neg_X (p : R[X]) : (p.comp (-X)).roots = p.roots.map (fun x ↦ -x) := by
+  classical
+  rw [Multiset.ext]
+  intro a
+  rw [count_roots, ← neg_neg a, Multiset.count_map_eq_count' Neg.neg p.roots neg_injective,
+    neg_neg, count_roots, rootMultiplicity_comp_neg_X]
+
+@[simp]
 theorem roots_C_mul_X_sub_C_of_IsUnit (b : R) (a : Rˣ) : (C (a : R) * X - C b).roots =
     {a⁻¹ * b} := by
   rw [← roots_C_mul _ (Units.ne_zero a⁻¹), mul_sub, ← mul_assoc, ← C_mul, ← C_mul,
