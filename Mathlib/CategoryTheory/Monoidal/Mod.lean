@@ -75,14 +75,14 @@ namespace AddModObj
 
 end AddModObj
 
-namespace MonObj
+namespace ModObj
 
 @[inherit_doc] scoped[CategoryTheory.MonObj] notation "γ" => ModObj.smul
 @[inherit_doc] scoped[CategoryTheory.MonObj] notation "γ[" Y "]" => ModObj.smul (X := Y)
 @[inherit_doc] scoped[CategoryTheory.MonObj] notation "γ[" N "," Y "]" =>
   ModObj.smul (M := N) (X := Y)
 
-end MonObj
+end ModObj
 
 variable {M}
 
