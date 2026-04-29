@@ -16,7 +16,7 @@ if the corresponding set in `Set (Arrow C)` is.
 
 -/
 
-@[expose] public section
+public section
 
 universe w t v u
 

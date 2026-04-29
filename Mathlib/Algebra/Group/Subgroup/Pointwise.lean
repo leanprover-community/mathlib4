@@ -35,8 +35,7 @@ Where possible, try to keep them in sync.
 assert_not_exists GroupWithZero
 
 open Set
-
-open Pointwise
+open scoped Pointwise
 
 variable {α G A S : Type*}
 
