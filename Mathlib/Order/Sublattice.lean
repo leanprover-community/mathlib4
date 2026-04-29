@@ -396,4 +396,16 @@ lemma pi_univ_eq_bot {L : ∀ i, Sublattice (π i)} {i : κ} (hL : L i = ⊥) : 
   pi_univ_eq_bot_iff.2 ⟨i, hL⟩
 
 end Pi
+
+namespace LatticeHom
+
+/--
+The image of `LatticeHom` is a sublattice.
+-/
+def range (f : LatticeHom α β) := (Sublattice.map f ⊤).copy (Set.range f) image_univ.symm
+
+lemma range_coe : (LatticeHom.range f : Set β) = Set.range f := rfl
+
+end LatticeHom
+
 end Sublattice
