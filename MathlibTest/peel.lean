@@ -1,5 +1,6 @@
 module
 import Mathlib.Tactic.Peel
+import Mathlib.Data.Real.Cauchy
 import Mathlib.Topology.Instances.Real.Lemmas
 
 open Filter Topology
