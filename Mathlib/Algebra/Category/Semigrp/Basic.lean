@@ -69,10 +69,11 @@ abbrev of (M : Type u) [Mul M] : MagmaCat := ⟨M⟩
 
 end MagmaCat
 
-mk_concrete_category MagmaCat (· →ₙ* ·) (MulHom.id ·) (MulHom.comp · ·)
+@[to_additive AddMagmaCat]
+mk_concrete_category MagmaCat (· →ₙ* ·) MulHom.id MulHom.comp
   with_of_hom {X Y : Type u} [Mul X] [Mul Y]
   hom_type (X →ₙ* Y) from (MagmaCat.of X) to (MagmaCat.of Y)
-  to_additive AddMagmaCat (· →ₙ+ ·) (AddHom.id ·) (AddHom.comp · ·)
+  to_additive AddMagmaCat (· →ₙ+ ·) AddHom.id AddHom.comp
   with_of_hom {X Y : Type u} [Add X] [Add Y]
   hom_type (X →ₙ+ Y) from (AddMagmaCat.of X) to (AddMagmaCat.of Y)
 
@@ -176,10 +177,11 @@ abbrev of (M : Type u) [Semigroup M] : Semigrp := ⟨M⟩
 
 end Semigrp
 
-mk_concrete_category Semigrp (· →ₙ* ·) (MulHom.id ·) (MulHom.comp · ·)
+@[to_additive AddSemigrp]
+mk_concrete_category Semigrp (· →ₙ* ·) MulHom.id MulHom.comp
   with_of_hom {X Y : Type u} [Semigroup X] [Semigroup Y]
   hom_type (X →ₙ* Y) from (Semigrp.of X) to (Semigrp.of Y)
-  to_additive AddSemigrp (· →ₙ+ ·) (AddHom.id ·) (AddHom.comp · ·)
+  to_additive AddSemigrp (· →ₙ+ ·) AddHom.id AddHom.comp
   with_of_hom {X Y : Type u} [AddSemigroup X] [AddSemigroup Y]
   hom_type (X →ₙ+ Y) from (AddSemigrp.of X) to (AddSemigrp.of Y)
 

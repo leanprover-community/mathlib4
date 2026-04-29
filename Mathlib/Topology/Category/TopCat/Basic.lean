@@ -64,7 +64,7 @@ lemma coe_of (X : Type u) [TopologicalSpace X] : (of X : Type u) = X :=
 
 lemma of_carrier (X : TopCat.{u}) : of X = X := rfl
 
-mk_concrete_category TopCat (fun X Y => C(X, Y)) (ContinuousMap.id ·) (ContinuousMap.comp · ·)
+mk_concrete_category TopCat C(·, ·) ContinuousMap.id ContinuousMap.comp
   with_of_hom {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y]
   hom_type C(X, Y) from (TopCat.of X) to (TopCat.of Y)
 

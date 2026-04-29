@@ -64,7 +64,7 @@ lemma coe_of (R : Type u) [Semiring R] : (of R : Type u) = R :=
 
 lemma of_carrier (R : SemiRingCat.{u}) : of R = R := rfl
 
-mk_concrete_category SemiRingCat (fun R S => R →+* S) (RingHom.id ·) (RingHom.comp · ·)
+mk_concrete_category SemiRingCat (· →+* ·) RingHom.id RingHom.comp
   with_of_hom {R S : Type u} [Semiring R] [Semiring S]
   hom_type (R →+* S) from (SemiRingCat.of R) to (SemiRingCat.of S)
 
@@ -184,7 +184,7 @@ lemma coe_of (R : Type u) [Ring R] : (of R : Type u) = R :=
 
 lemma of_carrier (R : RingCat.{u}) : of R = R := rfl
 
-mk_concrete_category RingCat (fun R S => R →+* S) (RingHom.id ·) (RingHom.comp · ·)
+mk_concrete_category RingCat (· →+* ·) RingHom.id RingHom.comp
   with_of_hom {R S : Type u} [Ring R] [Ring S]
   hom_type (R →+* S) from (RingCat.of R) to (RingCat.of S)
 
@@ -313,7 +313,7 @@ lemma coe_of (R : Type u) [CommSemiring R] : (of R : Type u) = R :=
 
 lemma of_carrier (R : CommSemiRingCat.{u}) : of R = R := rfl
 
-mk_concrete_category CommSemiRingCat (fun R S => R →+* S) (RingHom.id ·) (RingHom.comp · ·)
+mk_concrete_category CommSemiRingCat (· →+* ·) RingHom.id RingHom.comp
   with_of_hom {R S : Type u} [CommSemiring R] [CommSemiring S]
   hom_type (R →+* S) from (CommSemiRingCat.of R) to (CommSemiRingCat.of S)
 
@@ -439,7 +439,7 @@ lemma coe_of (R : Type u) [CommRing R] : (of R : Type u) = R :=
 
 lemma of_carrier (R : CommRingCat.{u}) : of R = R := rfl
 
-mk_concrete_category CommRingCat (fun R S => R →+* S) (RingHom.id ·) (RingHom.comp · ·)
+mk_concrete_category CommRingCat (· →+* ·) RingHom.id RingHom.comp
   with_of_hom {R S : Type u} [CommRing R] [CommRing S]
   hom_type (R →+* S) from (CommRingCat.of R) to (CommRingCat.of S)
 

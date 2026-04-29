@@ -61,10 +61,11 @@ abbrev of (M : Type u) [Group M] : GrpCat := ⟨M⟩
 
 end GrpCat
 
-mk_concrete_category GrpCat (· →* ·) (MonoidHom.id ·) (MonoidHom.comp · ·)
+@[to_additive AddGrpCat]
+mk_concrete_category GrpCat (· →* ·) MonoidHom.id MonoidHom.comp
   with_of_hom {X Y : Type u} [Group X] [Group Y]
   hom_type (X →* Y) from (GrpCat.of X) to (GrpCat.of Y)
-  to_additive AddGrpCat (· →+ ·) (AddMonoidHom.id ·) (AddMonoidHom.comp · ·)
+  to_additive AddGrpCat (· →+ ·) AddMonoidHom.id AddMonoidHom.comp
   with_of_hom {X Y : Type u} [AddGroup X] [AddGroup Y]
   hom_type (X →+ Y) from (AddGrpCat.of X) to (AddGrpCat.of Y)
 
@@ -223,10 +224,11 @@ abbrev of (M : Type u) [CommGroup M] : CommGrpCat := ⟨M⟩
 
 end CommGrpCat
 
-mk_concrete_category CommGrpCat (· →* ·) (MonoidHom.id ·) (MonoidHom.comp · ·)
+@[to_additive AddCommGrpCat]
+mk_concrete_category CommGrpCat (· →* ·) MonoidHom.id MonoidHom.comp
   with_of_hom {X Y : Type u} [CommGroup X] [CommGroup Y]
   hom_type (X →* Y) from (CommGrpCat.of X) to (CommGrpCat.of Y)
-  to_additive AddCommGrpCat (· →+ ·) (AddMonoidHom.id ·) (AddMonoidHom.comp · ·)
+  to_additive AddCommGrpCat (· →+ ·) AddMonoidHom.id AddMonoidHom.comp
   with_of_hom {X Y : Type u} [AddCommGroup X] [AddCommGroup Y]
   hom_type (X →+ Y) from (AddCommGrpCat.of X) to (AddCommGrpCat.of Y)
 

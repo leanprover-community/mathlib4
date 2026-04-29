@@ -86,7 +86,7 @@ example (X : Type v) [Ring X] [Module R X] : (of R X : Type v) = X := by with_re
 example (M : ModuleCat.{v} R) : of R M = M := by with_reducible rfl
 
 variable {R} in
-mk_concrete_category (ModuleCat R) (· →ₗ[R] ·) (LinearMap.id ·) (LinearMap.comp · ·)
+mk_concrete_category (ModuleCat R) (· →ₗ[R] ·) (@LinearMap.id R ·) (LinearMap.comp · ·)
   with_of_hom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y]
   hom_type (X →ₗ[R] Y) from (of R X) to (of R Y)
 

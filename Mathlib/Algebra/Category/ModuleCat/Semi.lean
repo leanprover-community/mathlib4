@@ -84,7 +84,7 @@ example (X : Type v) [Semiring X] [Module R X] : (of R X : Type v) = X := by wit
 example (M : SemimoduleCat.{v} R) : of R M = M := by with_reducible rfl
 
 variable {R} in
-mk_concrete_category (SemimoduleCat R) (· →ₗ[R] ·) (LinearMap.id ·) (LinearMap.comp · ·)
+mk_concrete_category (SemimoduleCat R) (· →ₗ[R] ·) (@LinearMap.id R ·) LinearMap.comp
   with_of_hom {X Y : Type v} [AddCommMonoid X] [Module R X] [AddCommMonoid Y] [Module R Y]
   hom_type (X →ₗ[R] Y) from (of R X) to (of R Y)
 
