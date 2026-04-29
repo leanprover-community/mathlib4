@@ -216,7 +216,7 @@ theorem lowerSemicontinuous_aux {ι : Type*} {F : ι → α → E} {p : Filter �
     lt_iSup_iff.mp hv
   have : Tendsto (fun j => ∑ i ∈ Finset.range n, edist (F j (u (i + 1))) (F j (u i))) p
       (𝓝 (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i)))) := by
-    apply tendsto_finset_sum
+    apply tendsto_finsetSum
     exact fun i _ => Tendsto.edist (Ffs (u i.succ) (us i.succ)) (Ffs (u i) (us i))
   exact (this.eventually_const_lt hlt).mono fun i h => h.trans_le (sum_le um us)
 
