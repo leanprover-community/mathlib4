@@ -181,13 +181,12 @@ lemma meromorphicOrderAt_canonicalFactor_ne_top {z : ℂ} {R : ℝ} (w : ℂ) (h
   use 0, Set.mem_univ 0
   by_cases hw : w = 0
   · simp_all [meromorphicOrderAt_canonicalFactor (mem_ball_self hR)]
-  have : meromorphicOrderAt (canonicalFactor R w) 0 = 0 := by
-    rw [MeromorphicNFAt.meromorphicOrderAt_eq_zero_iff]
-    · simp_all [canonicalFactor, ne_of_gt hR]
-    · apply AnalyticAt.meromorphicNFAt
-      apply analyticOnNhd_canonicalFactor
-      grind
-  simp_all
+  suffices meromorphicOrderAt (canonicalFactor R w) 0 = 0 by simp_all
+  rw [MeromorphicNFAt.meromorphicOrderAt_eq_zero_iff]
+  · simp_all [canonicalFactor, ne_of_gt hR]
+  · apply AnalyticAt.meromorphicNFAt
+    apply analyticOnNhd_canonicalFactor
+    grind
 
 /--
 The divisor of `CanonicalFactor R w` is `-w`.
