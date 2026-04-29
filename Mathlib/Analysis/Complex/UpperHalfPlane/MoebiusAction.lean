@@ -398,6 +398,7 @@ set_option linter.deprecated false in
 lemma coe_one : coe 1 = 1 := by
   simp only [coe, map_one]
 
+/-- Multiplication action of `SL(2, ℤ)` on `GL(2, ℝ)⁺`. -/
 @[reducible, deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
 def SLOnGLPos : SMul SL(2, ℤ) GL(2, ℝ)⁺ :=
   ⟨fun s g => s * g⟩
@@ -410,8 +411,8 @@ theorem SLOnGLPos_smul_apply (s : SL(2, ℤ)) (g : GL(2, ℝ)⁺) (z : ℍ) :
   rfl
 
 set_option linter.deprecated false in
-@[reducible, deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
-def SL_to_GL_tower : IsScalarTower SL(2, ℤ) GL(2, ℝ)⁺ ℍ where
+@[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
+lemma SL_to_GL_tower : IsScalarTower SL(2, ℤ) GL(2, ℝ)⁺ ℍ where
   smul_assoc s g z := by
     simp only [SLOnGLPos_smul_apply]
     apply mul_smul'
