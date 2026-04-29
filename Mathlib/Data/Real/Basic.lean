@@ -59,11 +59,17 @@ private theorem ext_cauchy_iff {x y : Real} : x = y ↔ x.cauchy = y.cauchy := b
 private theorem ext_cauchy {x y : Real} : x.cauchy = y.cauchy → x = y :=
   ext_cauchy_iff.2
 
+/-- The zero element of the real numbers. -/
 protected def zero : ℝ := equivCauchy.symm 0
+/-- The one element of the real numbers. -/
 protected def one : ℝ := equivCauchy.symm 1
+/-- The sum of two real numbers. -/
 protected def add (a b : ℝ) : ℝ := equivCauchy.symm (equivCauchy a + equivCauchy b)
+/-- The negation of a real number. -/
 protected def neg (a : ℝ) : ℝ := equivCauchy.symm (-equivCauchy a)
+/-- The product of two real numbers. -/
 protected def mul (a b : ℝ) : ℝ := equivCauchy.symm (equivCauchy a * equivCauchy b)
+/-- The multiplicative inverse of a real number. -/
 protected noncomputable def inv (a : ℝ) : ℝ := equivCauchy.symm (equivCauchy a)⁻¹
 
 instance : Zero ℝ := ⟨Real.zero⟩
@@ -123,6 +129,7 @@ private theorem cauchy_sub (a b : ℝ) : (a - b).cauchy = a.cauchy - b.cauchy :=
 private theorem cauchy_inv (a : ℝ) : (a⁻¹).cauchy = a.cauchy⁻¹ :=
   equivCauchy.apply_symm_apply _
 
+/-- The natural embedding of rational numbers into the real numbers. -/
 protected def ratCast (q : ℚ) : ℝ := equivCauchy.symm q
 
 instance instRatCast : RatCast ℝ := ⟨Real.ratCast⟩
@@ -211,6 +218,7 @@ private def mk (x : CauSeq ℚ abs) : ℝ :=
 private theorem mk_eq {f g : CauSeq ℚ abs} : mk f = mk g ↔ f ≈ g :=
   ext_cauchy_iff.trans CauSeq.Completion.mk_eq
 
+/-- The less-than relation on real numbers. -/
 protected def lt (x y : ℝ) : Prop :=
   (Quotient.liftOn₂ x y (· < ·)) fun _ _ _ _ hf hg ↦
     propext <|
@@ -243,6 +251,7 @@ private theorem mk_pos {f : CauSeq ℚ abs} : 0 < mk f ↔ Pos f := by
 
 private lemma mk_const {x : ℚ} : mk (const abs x) = x := rfl
 
+/-- The less-than-or-equal relation on real numbers. -/
 protected def le (x y : ℝ) : Prop :=
   x < y ∨ x = y
 
@@ -318,6 +327,7 @@ instance instIsOrderedRing : IsOrderedRing ℝ :=
 instance instIsOrderedCancelAddMonoid : IsOrderedCancelAddMonoid ℝ :=
   inferInstance
 
+/-- The supremum of two real numbers. -/
 protected def sup (x y : ℝ) : ℝ :=
   Quotient.map₂ (· ⊔ ·) (fun _ _ hx _ _ hy ↦ sup_equiv_sup hx hy) x y
 
@@ -327,6 +337,7 @@ instance : Max ℝ := ⟨Real.sup⟩
 private theorem mk_sup (a b) : (mk (a ⊔ b) : ℝ) = mk a ⊔ mk b :=
   rfl
 
+/-- The infimum of two real numbers. -/
 protected def inf (x y : ℝ) : ℝ :=
   Quotient.map₂ (· ⊓ ·) (fun _ _ hx _ _ hy ↦ inf_equiv_inf hx hy) x y
 
