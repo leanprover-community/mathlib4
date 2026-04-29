@@ -26,6 +26,7 @@ variable {X : TopCat.{u}} {U : Opens X}
 
 namespace TopCat
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Presheaf.sections_exact_of_exact
     {S : ShortComplex (Presheaf AddCommGrpCat.{u} X)}
     (hS : S.Exact) {s : S.X₂.obj (Opposite.op U)} (h : S.g.app (Opposite.op U) s = 0) :
@@ -44,7 +45,7 @@ lemma Sheaf.sections_exact_of_left_exact {S : ShortComplex (TopCat.Sheaf AddComm
     inferInstance S ⟨hS, hf⟩).left h
 
 lemma Presheaf.restrict_sum {V : Opens X} {F : Presheaf AddCommGrpCat X} (h : V ≤ U)
-    (s t : F.obj (op U)) : (s + t) |_ V = s |_V + t |_V := by
+    (s t : F.obj (op U)) : (s + t) |_ V = s |_ V + t |_ V := by
   delta Presheaf.restrictOpen Presheaf.restrict
   cat_disch
 

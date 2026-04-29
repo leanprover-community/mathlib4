@@ -64,7 +64,11 @@ lemma IsTutteViolator.mono {u : Set V} (h : G ≤ G') (ht : G'.IsTutteViolator u
   simp only [IsTutteViolator, Subgraph.induce_verts, Subgraph.verts_top] at *
   have := ncard_oddComponents_mono _ (Subgraph.deleteVerts_mono' (G := G) (G' := G') u h)
   simp only [oddComponents] at *
-  lia
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `lia` closed this goal.
+  It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+  canonicalizer; a minimization would help. The original proof was: `lia` -/
+  exact lt_of_lt_of_le ht this
 
 /-- Given a graph in which the universal vertices do not violate Tutte's condition,
 if the graph decomposes into cliques, there exists a matching that covers
@@ -152,7 +156,6 @@ lemma not_isTutteViolator_of_isPerfectMatching {M : Subgraph G} (hM : M.IsPerfec
 
 open scoped symmDiff
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This lemma constructs a perfect matching on `G` from two near-matchings. -/
 private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
     {M1 : Subgraph (G ⊔ edge x b)} {M2 : Subgraph (G ⊔ edge a c)} (hxa : G.Adj x a)
@@ -283,7 +286,7 @@ lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
   · -- Deleting universal vertices splits the graph into cliques
     rw [Fintype.card_eq_nat_card] at hc
     simp_rw [Fintype.card_eq_nat_card, Nat.card_coe_set_eq] at hc
-    push_neg at hc
+    push Not at hc
     obtain ⟨M, hM⟩ := Subgraph.IsPerfectMatching.exists_of_isClique_supp hvEven
       (by simpa [IsTutteViolator] using hc) h'
     exact hMatchingFree M hM

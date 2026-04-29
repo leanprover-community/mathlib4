@@ -196,7 +196,7 @@ private theorem primeFactorsPiBij_inj (d n : ℕ)
     rw [if_pos rfl]
   · rw [mem_primeFactors] at hp
     rw [Prime.dvd_finset_prod_iff hp.1.prime]
-    push_neg
+    push Not
     intro q hq
     rw [Nat.prime_dvd_prime_iff_eq hp.1 (Nat.prime_of_mem_primeFactorsList
       <| List.mem_toFinset.mp q.2)]

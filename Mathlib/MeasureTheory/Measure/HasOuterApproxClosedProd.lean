@@ -72,7 +72,6 @@ section fintype
 
 variable [Fintype ι] [Fintype κ]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A finite measure `μ` over `(Π i, X i) × (Π j, Y j)` is determined by the values
 `∫⁻ p, (Π i, f i (p.1 i)) * (Π j, g j (p.2 j)) ∂μ`, for `f : (i : ι) → X i → ℝ≥0`
 and `g : (j : κ) → Y j → ℝ≥0` any families of bounded continuous functions. -/

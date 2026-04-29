@@ -141,22 +141,10 @@ instance : SMul ℝ (ConvexBody V) where
 theorem coe_smul (c : ℝ) (K : ConvexBody V) : (↑(c • K) : Set V) = c • (K : Set V) :=
   rfl
 
-variable [ContinuousAdd V]
-
-noncomputable instance : DistribMulAction ℝ (ConvexBody V) :=
-  SetLike.coe_injective.distribMulAction ⟨⟨_, coe_zero⟩, coe_add⟩ coe_smul
-
 @[simp, norm_cast]
 theorem coe_smul' (c : ℝ≥0) (K : ConvexBody V) : (↑(c • K) : Set V) = c • (K : Set V) :=
   rfl
 
-/-- The convex bodies in a fixed space $V$ form a module over the nonnegative reals.
--/
-noncomputable instance : Module ℝ≥0 (ConvexBody V) where
-  add_smul c d K := SetLike.ext' <| Convex.add_smul K.convex c.coe_nonneg d.coe_nonneg
-  zero_smul K := SetLike.ext' <| Set.zero_smul_set K.nonempty
-
-set_option backward.isDefEq.respectTransparency false in
 theorem smul_le_of_le (K : ConvexBody V) (h_zero : 0 ∈ K) {a b : ℝ≥0} (h : a ≤ b) :
     a • K ≤ b • K := by
   rw [← SetLike.coe_subset_coe, coe_smul', coe_smul']
@@ -168,6 +156,16 @@ theorem smul_le_of_le (K : ConvexBody V) (h_zero : 0 ∈ K) {a b : ℝ≥0} (h :
     rw [← Set.mem_inv_smul_set_iff₀ ha.ne', smul_smul]
     refine Convex.mem_smul_of_zero_mem K.convex h_zero hy (?_ : 1 ≤ a⁻¹ * b)
     rwa [le_inv_mul_iff₀ ha, mul_one]
+
+variable [ContinuousAdd V]
+
+noncomputable instance : DistribMulAction ℝ (ConvexBody V) :=
+  SetLike.coe_injective.distribMulAction ⟨⟨_, coe_zero⟩, coe_add⟩ coe_smul
+
+/-- The convex bodies in a fixed space $V$ form a module over the nonnegative reals. -/
+noncomputable instance : Module ℝ≥0 (ConvexBody V) where
+  add_smul c d K := SetLike.ext' <| Convex.add_smul K.convex c.coe_nonneg d.coe_nonneg
+  zero_smul K := SetLike.ext' <| Set.zero_smul_set K.nonempty
 
 end TVS
 
@@ -227,7 +225,7 @@ theorem iInter_smul_eq_self [T2Space V] {u : ℕ → ℝ≥0} (K : ConvexBody V)
     specialize hn n le_rfl
     rw [lt_div_iff₀' hC_pos, mul_comm, NNReal.coe_zero, sub_zero, Real.norm_eq_abs] at hn
     refine lt_of_le_of_lt ?_ hn
-    exact mul_le_mul_of_nonneg_left (hC_bdd _ hyK) (abs_nonneg _)
+    gcongr; exact hC_bdd _ hyK
   · refine Set.mem_iInter.mpr (fun n => Convex.mem_smul_of_zero_mem K.convex h_zero h ?_)
     exact le_add_of_nonneg_right (by positivity)
 

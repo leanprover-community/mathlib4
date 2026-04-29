@@ -65,12 +65,8 @@ protected lemma Connected.preconnected {H : G.Subgraph} (h : H.Connected) : H.Pr
 protected lemma Connected.nonempty {H : G.Subgraph} (h : H.Connected) : H.verts.Nonempty := by
   rw [H.connected_iff] at h; exact h.2
 
-theorem singletonSubgraph_connected {v : V} : (G.singletonSubgraph v).Connected := by
-  refine ⟨⟨?_⟩⟩
-  rintro ⟨a, ha⟩ ⟨b, hb⟩
-  simp only [singletonSubgraph_verts, Set.mem_singleton_iff] at ha hb
-  subst_vars
-  rfl
+theorem singletonSubgraph_connected {v : V} : (G.singletonSubgraph v).Connected :=
+  ⟨⟨Preconnected.of_subsingleton⟩⟩
 
 @[simp]
 theorem subgraphOfAdj_connected {v w : V} (hvw : G.Adj v w) : (G.subgraphOfAdj hvw).Connected := by
@@ -193,7 +189,6 @@ protected def toSubgraph {u v : V} : Walk G u v → G.Subgraph
   | nil => G.singletonSubgraph u
   | cons h p => G.subgraphOfAdj h.adj ⊔ p.toSubgraph
 
-set_option backward.isDefEq.respectTransparency false in
 theorem toSubgraph_cons_nil_eq_subgraphOfAdj (h : G.Adj u v) :
     (cons (Adj.toStep h) nil).toSubgraph = G.subgraphOfAdj h := by simp
 
@@ -227,12 +222,10 @@ theorem mem_edges_toSubgraph (p : Walk G u v) {e : Sym2 V} :
 theorem edgeSet_toSubgraph (p : Walk G u v) : p.toSubgraph.edgeSet = p.edgeSet :=
   Set.ext fun _ => p.mem_edges_toSubgraph
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toSubgraph_append (p : Walk G u v) (q : Walk G v w) :
     (p.append q).toSubgraph = p.toSubgraph ⊔ q.toSubgraph := by induction p <;> simp [*, sup_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toSubgraph_reverse (p : Walk G u v) : p.reverse.toSubgraph = p.toSubgraph := by
   induction p with
@@ -240,7 +233,6 @@ theorem toSubgraph_reverse (p : Walk G u v) : p.reverse.toSubgraph = p.toSubgrap
   | cons s p ih =>
     simp [ih, sup_comm, subgraphOfAdj_symm s.adj]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toSubgraph_rotate [DecidableEq V] (c : Walk G v v) (h : u ∈ c.support) :
     (c.rotate u h).toSubgraph = c.toSubgraph := by
@@ -618,7 +610,6 @@ lemma Walk.connected_induce_support {u v : V} (p : Walk G u v) :
   rw [← p.verts_toSubgraph]
   exact p.toSubgraph_connected.induce_verts
 
-set_option backward.isDefEq.respectTransparency false in
 lemma connected_induce_union {v w : V} {s t : Set V}
     (sconn : (G.induce s).Preconnected) (tconn : (G.induce t).Preconnected)
     (hv : v ∈ s) (hw : w ∈ t) (ha : G.Adj v w) :

@@ -27,7 +27,7 @@ open GraphLike
 
 namespace SimpleGraph
 
-variable {V : Type*} {G H : SimpleGraph V} {k l : ℕ} {u v w x : V}
+variable {V : Type*} {G H : SimpleGraph V} {k l : ℕ} {u v w x y : V}
 
 variable (G k u v) in
 /-- Two vertices are `k`-edge-reachable if they remain reachable after removing strictly fewer than
@@ -39,9 +39,10 @@ variable (G k) in
 /-- A graph is `k`-edge-connected if any two vertices are `k`-edge-reachable. -/
 def IsEdgeConnected : Prop := ∀ u v, G.IsEdgeReachable k u v
 
-@[refl, simp] lemma IsEdgeReachable.refl (u : V) : G.IsEdgeReachable k u u := fun _ _ ↦ .rfl
+@[refl, simp]
+protected lemma IsEdgeReachable.rfl {u : V} : G.IsEdgeReachable k u u := fun _ _ ↦ .rfl
 
-@[deprecated (since := "2026-01-06")] alias IsEdgeReachable.rfl := IsEdgeReachable.refl
+protected lemma IsEdgeReachable.refl (u : V) : G.IsEdgeReachable k u u := .rfl
 
 @[symm]
 lemma IsEdgeReachable.symm (h : G.IsEdgeReachable k u v) : G.IsEdgeReachable k v u :=
@@ -121,9 +122,8 @@ lemma isEdgeReachable_add_one (hk : k ≠ 0) :
 
 lemma isEdgeConnected_add_one (hk : k ≠ 0) :
     G.IsEdgeConnected (k + 1) ↔ ∀ e, (G.deleteEdges {e}).IsEdgeConnected k := by
-  simp [IsEdgeConnected, isEdgeReachable_add_one hk, forall_swap (α := Sym2 _)]
+  simp [IsEdgeConnected, isEdgeReachable_add_one hk, forall_comm (α := Sym2 _)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An edge is a bridge iff its endpoints are adjacent and not 2-edge-reachable. -/
 lemma isBridge_iff_adj_and_not_isEdgeConnected_two {u v : V} :
     G.IsBridge s(u, v) ↔ G.Adj u v ∧ ¬G.IsEdgeReachable 2 u v := by
@@ -147,6 +147,22 @@ lemma isEdgeReachable_two : G.IsEdgeReachable 2 u v ↔ ∀ e, (G.deleteEdges {e
 lemma isEdgeConnected_two : G.IsEdgeConnected 2 ↔ ∀ e, (G.deleteEdges {e}).Preconnected := by
   simp [isEdgeConnected_add_one]
 
+lemma exists_adj_isEdgeReachable_two (hne : u ≠ v) (h : G.IsEdgeReachable 2 u v) :
+    ∃ w : V, G.Adj u w ∧ G.IsEdgeReachable 2 u w := by
+  obtain ⟨w, hw⟩ := h.reachable (by simp) |>.exists_isPath
+  have : G.Adj u w.snd := Walk.adj_snd (by grind [Walk.not_nil_of_ne])
+  refine ⟨w.snd, this, fun s hs ↦ ?_⟩
+  by_cases! h' : s = {s(u, w.snd)}
+  · subst h'
+    refine Reachable.trans (h hs) <| w.tail.toDeleteEdge _ (fun hh ↦ ?_) |>.reachable.symm
+    have := hw.tail.eq_snd_of_mem_edges (Sym2.eq_swap ▸ hh)
+    simp only [Walk.getVert_tail, Nat.reduceAdd] at this
+    simpa using hw.getVert_eq_start_iff_of_not_nil (Walk.not_nil_of_ne hne) |>.mp this.symm
+  · refine Walk.reachable <| Walk.cons (deleteEdges_adj.mpr ⟨this, ?_⟩) Walk.nil
+    contrapose h'
+    refine (Set.subsingleton_iff_singleton h').mp ?_
+    exact Set.encard_le_one_iff_subsingleton.mp (Order.le_of_lt_succ hs)
+
 /-!
 ### 2-reachability
 
@@ -156,16 +172,34 @@ In this section, we prove results about 2-connected components of a graph, but w
 namespace Walk
 variable {w : Walk G u v}
 
-/-- A trail doesn't go through a vertex that is not 2-edge-reachable from its 2-edge-reachable
-endpoints. -/
-lemma IsTrail.not_mem_edges_of_not_isEdgeReachable_two (hw : w.IsTrail)
-    (huv : G.IsEdgeReachable 2 u v) (huy : ¬ G.IsEdgeReachable 2 u x) : x ∉ w.support := by
+private lemma IsTrail.isEdgeReachable_two_of_isEdgeReachable_two_aux (hw : w.IsTrail)
+    (huv : G.IsEdgeReachable 2 u v) (huy : x ∈ w.support) : G.IsEdgeReachable 2 u x := by
   classical
+  contrapose huy
   obtain ⟨e, he⟩ := by simpa [isEdgeReachable_two] using huy
   have he' : ¬ (G.deleteEdges {e}).Reachable v x := fun hvy ↦
     he <| (isEdgeReachable_two.1 huv _).trans hvy
   exact fun hy ↦ hw.disjoint_edges_takeUntil_dropUntil hy
     ((w.takeUntil x _).mem_edges_of_not_reachable_deleteEdges he)
     (by simpa using (w.dropUntil x _).reverse.mem_edges_of_not_reachable_deleteEdges he')
+
+/-- Vertices of a trail with 2-edge reachable endpoints are 2-edge reachable. -/
+lemma IsTrail.isEdgeReachable_two_of_isEdgeReachable_two (hw : w.IsTrail)
+    (huv : G.IsEdgeReachable 2 u v) (hx : x ∈ w.support) (hy : y ∈ w.support) :
+    G.IsEdgeReachable 2 x y :=
+  (hw.isEdgeReachable_two_of_isEdgeReachable_two_aux huv hx).symm.trans
+    (hw.isEdgeReachable_two_of_isEdgeReachable_two_aux huv hy)
+
+/-- A trail doesn't go through a vertex that is not 2-edge-reachable from its 2-edge-reachable
+endpoints. -/
+@[deprecated IsTrail.isEdgeReachable_two_of_isEdgeReachable_two (since := "2026-04-01")]
+lemma IsTrail.not_mem_edges_of_not_isEdgeReachable_two (hw : w.IsTrail)
+    (huv : G.IsEdgeReachable 2 u v) (huy : ¬ G.IsEdgeReachable 2 u x) : x ∉ w.support :=
+  mt (hw.isEdgeReachable_two_of_isEdgeReachable_two_aux huv) huy
+
+/-- Vertices of a closed trail are 2-edge reachable. -/
+lemma IsTrail.isEdgeReachable_two {w : G.Walk u u} (hw : w.IsTrail) (hx : x ∈ w.support)
+    (hy : y ∈ w.support) : G.IsEdgeReachable 2 x y :=
+  hw.isEdgeReachable_two_of_isEdgeReachable_two .rfl hx hy
 
 end SimpleGraph.Walk

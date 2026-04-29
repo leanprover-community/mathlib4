@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kyle Miller, Vincent Beffara, Rida Hamadani
+Authors: Kyle Miller, Vincent Beffara, Rida Hamadani, Nelson Spence
 -/
 module
 
@@ -13,12 +13,14 @@ public import Mathlib.Data.ENat.Lattice
 
 This module defines the `SimpleGraph.edist` function, which takes pairs of vertices to the length of
 the shortest walk between them, or `⊤` if they are disconnected. It also defines `SimpleGraph.dist`
-which is the `ℕ`-valued version of `SimpleGraph.edist`.
+which is the `ℕ`-valued version of `SimpleGraph.edist`, and `SimpleGraph.ball` which is the open
+ball in the graph extended metric.
 
 ## Main definitions
 
 - `SimpleGraph.edist` is the graph extended metric.
 - `SimpleGraph.dist` is the graph metric.
+- `SimpleGraph.ball` is the open ball of a given radius around a vertex.
 
 ## TODO
 
@@ -30,7 +32,7 @@ which is the `ℕ`-valued version of `SimpleGraph.edist`.
 
 ## Tags
 
-graph metric, distance
+graph metric, distance, ball
 
 -/
 
@@ -72,7 +74,6 @@ theorem edist_le (p : Walk G u v) :
   sInf_le ⟨p, rfl⟩
 protected alias Walk.edist_le := edist_le
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem edist_eq_zero_iff :
     G.edist u v = 0 ↔ u = v := by
@@ -115,7 +116,6 @@ theorem edist_comm : G.edist u v = G.edist v u := by
     ← Set.image_comp, Set.image_univ, Function.comp_def]
   simp_rw [Walk.length_reverse, ← edist_eq_sInf]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_walk_of_edist_eq_coe {k : ℕ} (h : G.edist u v = k) :
     ∃ p : Walk G u v, p.length = k :=
   have : G.edist u v ≠ ⊤ := by rw [h]; exact ENat.coe_ne_top _
@@ -128,7 +128,6 @@ lemma edist_ne_top_iff_reachable : G.edist u v ≠ ⊤ ↔ Reachable G u v := by
   simp only [edist, iInf_eq_top, ENat.coe_ne_top] at hx
   exact h.elim hx
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The extended distance between vertices is equal to `1` if and only if these vertices are adjacent.
 -/
@@ -401,5 +400,58 @@ lemma Walk.exists_adj_adj_not_adj_ne {p : Walk G v w} (hp : p.length = G.dist v 
   exact ⟨p.adj_snd hnp, p.adj_getVert_succ (hp ▸ hl), hadj, hv⟩
 
 end dist
+
+/-! ## Ball -/
+
+section ball
+
+/-- The open ball of radius `r` centered at the vertex `c` in the graph extended metric. -/
+def ball (c : V) (r : ℕ∞) : Set V :=
+  {v | G.edist v c < r}
+
+variable {G} {c v : V} {r r₁ r₂ : ℕ∞}
+
+@[simp]
+theorem mem_ball : v ∈ G.ball c r ↔ G.edist v c < r := .rfl
+
+/-- The ball of radius zero is empty. -/
+@[simp]
+theorem ball_zero : G.ball c 0 = ∅ := by simp [ball]
+
+/-- The ball of radius one consists of just the center. -/
+@[simp]
+theorem ball_one : G.ball c 1 = {c} := by
+  simp [ball, ENat.lt_one_iff_eq_zero]
+
+/-- The ball of radius two consists of the center and its neighbors. -/
+@[simp]
+theorem ball_two : G.ball c 2 = insert c (G.neighborSet c) := by
+  ext v
+  simp [one_add_one_eq_two.symm, ENat.lt_add_one_iff ENat.one_ne_top,
+    edist_le_one_iff_adj_or_eq, adj_comm, or_comm]
+
+/-- The ball of radius `⊤` is the connected component of the center. -/
+theorem ball_top :
+    G.ball c ⊤ = (G.connectedComponentMk c).supp := by
+  simp [Set.ext_iff, lt_top_iff_ne_top, edist_ne_top_iff_reachable]
+
+/-- A vertex is in the ball of radius `⊤` iff it is reachable from the center. -/
+theorem mem_ball_top : v ∈ G.ball c ⊤ ↔ G.Reachable v c := by
+  simp [lt_top_iff_ne_top, edist_ne_top_iff_reachable]
+
+/-- Balls are monotone in the radius. -/
+@[gcongr]
+theorem ball_mono (h : r₁ ≤ r₂) : G.ball c r₁ ⊆ G.ball c r₂ :=
+  fun _ hv ↦ lt_of_lt_of_le hv h
+
+/-- The center vertex belongs to any ball of positive radius. -/
+theorem mem_ball_self (hr : 0 < r) : c ∈ G.ball c r := by
+  simp [ball, hr]
+
+/-- Ball membership is symmetric in center and point. -/
+theorem mem_ball_comm : v ∈ G.ball c r ↔ c ∈ G.ball v r := by
+  simp [ball, edist_comm]
+
+end ball
 
 end SimpleGraph

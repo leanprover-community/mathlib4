@@ -105,7 +105,6 @@ lemma IsMatching.not_adj_left_of_ne (hM : M.IsMatching) (hvw : v ≠ w) (huv : M
 lemma IsMatching.not_adj_right_of_ne (hM : M.IsMatching) (huv : u ≠ v) (huw : M.Adj u w) :
     ¬M.Adj v w := fun hvw ↦ huv <| hM.eq_of_adj_right huw hvw
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsMatching.sup (hM : M.IsMatching) (hM' : M'.IsMatching)
     (hd : Disjoint M.support M'.support) : (M ⊔ M').IsMatching := by
   intro v hv
@@ -288,7 +287,9 @@ lemma even_card_of_isPerfectMatching [Fintype V] [DecidableEq V] [DecidableRel G
   blocked by the discrimination tree. This can be fixed by redeclaring the instance for `X`
   using the double coercion but the proper fix seems to avoid the double coercion. -/
   letI : DecidablePred fun x ↦ x ∈ (M.induce c.supp).verts := fun a ↦ G.instDecidableMemSupp c a
-  simpa using (hM.induce_connectedComponent_isMatching c).even_card
+  have := (hM.induce_connectedComponent_isMatching c).even_card
+  simp only [Subgraph.induce_verts, Set.toFinset_card] at this
+  exact this
 
 set_option backward.isDefEq.respectTransparency false in
 lemma odd_matches_node_outside [Finite V] {u : Set V}
@@ -494,7 +495,6 @@ lemma IsCycles.reachable_sdiff_toSubgraph_spanningCoe [Finite V] {v w : V} (hcyc
   have : Fintype V := Fintype.ofFinite V
   exact reachable_sdiff_toSubgraph_spanningCoe_aux hcyc p hp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsCycles.reachable_deleteEdges [Finite V] (hadj : G.Adj v w)
     (hcyc : G.IsCycles) : (G.deleteEdges {s(v, w)}).Reachable v w := by
   have : fromEdgeSet {s(v, w)} = (Adj.toWalk hadj).toSubgraph.spanningCoe := by
@@ -567,15 +567,13 @@ lemma IsAlternating.sup_edge {u x : V} (halt : G.IsAlternating G') (hnadj : ¬G'
   · exact halt hww' hl h1
   · rw [G'.adj_congr_of_sym2 (by grind : s(v, w') = s(u, x))]
     simp only [hnadj, not_false_eq_true, iff_true]
-    rcases h2.1 with ⟨h2l1, h2l2⟩ | ⟨h2r1, h2r2⟩
-    · subst h2l1 h2l2
-      exact (hx' _ hww' hl.symm).symm
+    rcases h2.1 with ⟨rfl, rfl⟩ | ⟨h2r1, h2r2⟩
+    · exact (hx' _ hww' hl.symm).symm
     · simp_all
   · rw [G'.adj_congr_of_sym2 (by grind : s(v, w) = s(u, x))]
     simp only [hnadj, false_iff, not_not]
-    rcases hr.1 with ⟨hrl1, hrl2⟩ | ⟨hrr1, hrr2⟩
-    · subst hrl1 hrl2
-      exact (hx' _ hww'.symm h1.symm).symm
+    rcases hr.1 with ⟨rfl, rfl⟩ | ⟨hrr1, hrr2⟩
+    · exact (hx' _ hww'.symm h1.symm).symm
     · grind
   · grind
 
