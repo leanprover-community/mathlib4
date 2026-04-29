@@ -25,7 +25,7 @@ public import Mathlib.RingTheory.IntegralClosure.IsIntegral.AlmostIntegral
 
 -/
 
-@[expose] public section
+public section
 
 variable {R S ι : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
