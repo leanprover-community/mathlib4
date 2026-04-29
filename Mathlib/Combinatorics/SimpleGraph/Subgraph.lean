@@ -951,12 +951,9 @@ theorem edgeSet_subgraphOfAdj {v w : V} (hvw : G.Adj v w) :
 
 lemma subgraphOfAdj_le_of_adj {v w : V} (H : G.Subgraph) (h : H.Adj v w) :
     G.subgraphOfAdj (H.adj_sub h) ≤ H := by
-  refine ⟨fun u ↦ ?_, fun v' w' ↦ ?_⟩
-  · rintro (rfl | rfl)
-    exacts [h.fst_mem, h.snd_mem]
-  · rw [subgraphOfAdj_adj, Sym2.eq_iff]
-    rintro (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)
-    exacts [h, h.symm]
+  constructor
+  · grind [subgraphOfAdj_verts, h.fst_mem, h.snd_mem]
+  · grind [subgraphOfAdj_adj, h.symm]
 
 @[simp]
 theorem subgraphOfAdj_le_iff {u v : V} (h : G.Adj u v) (H : G.Subgraph) :
