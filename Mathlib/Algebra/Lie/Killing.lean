@@ -42,7 +42,7 @@ This file contains basic definitions and results for such Lie algebras.
 
 -/
 
-@[expose] public section
+public section
 
 variable (R K L : Type*) [CommRing R] [Field K] [LieRing L] [LieAlgebra R L] [LieAlgebra K L]
 
