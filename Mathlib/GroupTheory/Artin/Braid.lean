@@ -154,8 +154,7 @@ def braidGroupTwoEquivInt : BraidGroup 2 ≃* Multiplicative ℤ := by
 @[simp]
 theorem braidGroupTwoEquivInt_σ :
     braidGroupTwoEquivInt (σ 0) = Multiplicative.ofAdd 1 := by
-  simp only [braidGroupTwoEquivInt, MulEquiv.trans_apply, QuotientGroup.quotientBot_apply,
-    FreeGroup.freeGroupCongr_apply, FreeGroup.freeGroupUnitMulEquivInt]
+  simp only [braidGroupTwoEquivInt, FreeGroup.freeGroupUnitMulEquivInt]
   rfl
 
 end BraidGroup
