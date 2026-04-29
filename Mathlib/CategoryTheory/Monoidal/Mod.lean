@@ -68,18 +68,18 @@ attribute [to_additive existing (attr := reassoc (attr := simp))] ModObj.mul_smu
 
 namespace AddModObj
 
-@[inherit_doc] scoped[CategoryTheory.MonObj] notation "δ" => AddModObj.vadd
-@[inherit_doc] scoped[CategoryTheory.MonObj] notation "δ[" Y "]" => AddModObj.vadd (X := Y)
-@[inherit_doc] scoped[CategoryTheory.MonObj] notation "δ[" N "," Y "]" =>
+@[inherit_doc] scoped[CategoryTheory.AddMonObj] notation "δ" => AddModObj.vadd
+@[inherit_doc] scoped[CategoryTheory.AddMonObj] notation "δ[" Y "]" => AddModObj.vadd (X := Y)
+@[inherit_doc] scoped[CategoryTheory.AddMonObj] notation "δ[" N "," Y "]" =>
   AddModObj.vadd (M := N) (X := Y)
 
 end AddModObj
 
 namespace MonObj
 
-@[inherit_doc] scoped notation "γ" => ModObj.smul
-@[inherit_doc] scoped notation "γ[" Y "]" => ModObj.smul (X := Y)
-@[inherit_doc] scoped notation "γ[" N "," Y "]" =>
+@[inherit_doc] scoped[CategoryTheory.MonObj] notation "γ" => ModObj.smul
+@[inherit_doc] scoped[CategoryTheory.MonObj] notation "γ[" Y "]" => ModObj.smul (X := Y)
+@[inherit_doc] scoped[CategoryTheory.MonObj] notation "γ[" N "," Y "]" =>
   ModObj.smul (M := N) (X := Y)
 
 end MonObj
@@ -126,7 +126,7 @@ open scoped ModObj MonoidalLeftAction
 
 variable {M' N' O' : D}
 
-open AddModObj in
+open AddMonObj in
 /-- A morphism in `D` is a morphism of `A`-additive module objects if it commutes with
 the action maps -/
 class IsAddModHom (A : C) [AddMonObj A] [AddModObj A M'] [AddModObj A N'] (f : M' ⟶ N') where
