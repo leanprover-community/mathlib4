@@ -21,7 +21,18 @@ import re
 import sys
 from pathlib import Path
 
-from set_option_utils import PROJECT_DIR, lakefile_pattern
+try:
+    from set_option_utils import PROJECT_DIR, lakefile_pattern
+    from dag_traversal import DAG
+except ImportError as _e:
+    raise SystemExit(
+        f"error: {_e}\n\n"
+        f"  This script depends on sibling Python files in {Path(__file__).parent}:\n"
+        "    - dag_traversal.py\n"
+        "    - set_option_utils.py\n"
+        "  These are mathlib scripts, not pip packages.  Copy them into your\n"
+        "  `scripts/` directory alongside this script."
+    )
 
 DEFAULT_OPTION = "backward.defeq.atInstanceTransparency"
 
@@ -168,11 +179,14 @@ def main():
                 if not args.dry_run:
                     lakefile.write_text(new_content)
                 print(f"Removed {option} from lakefile.lean")
+        elif (PROJECT_DIR / "lakefile.toml").exists():
+            print(
+                f"Note: lakefile.toml detected.  If {option} is set in `leanOptions`\n"
+                "  there, you'll need to remove the entry manually — this script only\n"
+                "  edits lakefile.lean."
+            )
 
     # Step 2: determine which files to process via the import DAG
-    sys.path.insert(0, str(Path(__file__).parent))
-    from dag_traversal import DAG
-
     dag = DAG.from_directories(PROJECT_DIR, args.directories)
 
     if args.deps_of:

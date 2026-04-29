@@ -106,13 +106,20 @@ file used by the library's own linters.
 These scripts help with testing Lean PRs that change backward-compatibility option
 behaviour. They share a common DAG traversal library that parallelises work in import-graph order.
 
-To use these scripts outside mathlib, copy `dag_traversal.py`, `set_option_utils.py`,
-and the script(s) you need into a `scripts/` directory in your project, then run from
-the project root.  `fix_nonlocal_set_option.py` additionally requires
-`add_module_set_option.py` and `rm_module_set_option.py`.  Pass `--directories <root>`
-if your source files aren't directly under the project root.  Module-name derivation
-assumes a Mathlib-style layout where `Foo/Bar.lean` corresponds to module `Foo.Bar`
-(no `srcDir` indirection).
+***Using these scripts in a downstream project.***  Each script depends on sibling
+files in the same directory.  Minimally:
+
+1. Copy the script you want plus `dag_traversal.py` and `set_option_utils.py` into
+   a `scripts/` directory in your project.  `fix_nonlocal_set_option.py` additionally
+   requires `add_module_set_option.py` and `rm_module_set_option.py`.
+2. From the project root, run e.g. `python3 scripts/rm_set_option.py --dry-run --option <name>`.
+3. If you see "warning: no .lean files found", pass `--directories <your-source-dir>`
+   (e.g. `--directories FLT`).
+4. If you have a `lakefile.toml` and have configured the option in `leanOptions`,
+   remove the entry manually — these scripts only edit `lakefile.lean`.
+
+Module-name derivation assumes a Mathlib-style layout where `Foo/Bar.lean` corresponds
+to module `Foo.Bar` (no `srcDir` indirection).
 
 - `dag_traversal.py`
   Reusable parallel DAG traversal for Lean import graphs. Parses the import DAG from `.lean`

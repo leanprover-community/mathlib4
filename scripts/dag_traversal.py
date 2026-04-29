@@ -557,6 +557,16 @@ class DAG:
                     full_path = Path(root) / fname
                     rel_paths.append(full_path.relative_to(project_root))
 
+        if not rel_paths:
+            import sys as _sys
+            _sys.stderr.write(
+                f"warning: no .lean files found under {project_root} "
+                f"(directories={list(directories)}).\n"
+                "  hint: pass --directories <your-source-dir> if your files\n"
+                "  aren't directly under the project root.\n"
+            )
+            return DAG({}, project_root.resolve())
+
         # Batch-parse imports using lean --deps-json.
         all_imports = _parse_all_imports(rel_paths, project_root)
 

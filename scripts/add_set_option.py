@@ -17,18 +17,28 @@ from pathlib import Path
 from threading import Lock
 from typing import Callable
 
-from dag_traversal import (
-    DAG,
-    DAGTraverser,
-    Display,
-    TraversalResult,
-)
-from set_option_utils import (
-    DEFAULT_OPTIONS,
-    PROJECT_DIR,
-    lake_build_with_progress,
-    set_option_line,
-)
+try:
+    from dag_traversal import (
+        DAG,
+        DAGTraverser,
+        Display,
+        TraversalResult,
+    )
+    from set_option_utils import (
+        DEFAULT_OPTIONS,
+        PROJECT_DIR,
+        lake_build_with_progress,
+        set_option_line,
+    )
+except ImportError as _e:
+    raise SystemExit(
+        f"error: {_e}\n\n"
+        f"  This script depends on sibling Python files in {Path(__file__).parent}:\n"
+        "    - dag_traversal.py\n"
+        "    - set_option_utils.py\n"
+        "  These are mathlib scripts, not pip packages.  Copy them into your\n"
+        "  `scripts/` directory alongside this script."
+    )
 
 
 @dataclass

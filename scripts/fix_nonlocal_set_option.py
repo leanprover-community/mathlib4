@@ -25,10 +25,22 @@ import subprocess
 import sys
 from pathlib import Path
 
-from dag_traversal import DAG
-from set_option_utils import PROJECT_DIR
-from add_module_set_option import add_to_file, find_insert_point
-from rm_module_set_option import module_set_option_pattern, scan_files
+try:
+    from dag_traversal import DAG
+    from set_option_utils import PROJECT_DIR
+    from add_module_set_option import add_to_file, find_insert_point
+    from rm_module_set_option import module_set_option_pattern, scan_files
+except ImportError as _e:
+    raise SystemExit(
+        f"error: {_e}\n\n"
+        f"  This script depends on sibling Python files in {Path(__file__).parent}:\n"
+        "    - dag_traversal.py\n"
+        "    - set_option_utils.py\n"
+        "    - add_module_set_option.py\n"
+        "    - rm_module_set_option.py\n"
+        "  These are mathlib scripts, not pip packages.  Copy them into your\n"
+        "  `scripts/` directory alongside this script."
+    )
 
 DEFAULT_OPTION = "backward.defeq.atInstanceTransparency"
 

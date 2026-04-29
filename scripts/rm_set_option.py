@@ -18,20 +18,30 @@ from pathlib import Path
 from threading import Lock
 from typing import Callable
 
-from dag_traversal import (
-    DAG,
-    DAGTraverser,
-    Display,
-    ShutdownError,
-)
-from set_option_utils import (
-    DEFAULT_OPTIONS,
-    PROJECT_DIR,
-    commented_pattern,
-    lake_build_with_progress,
-    lakefile_pattern,
-    removable_pattern,
-)
+try:
+    from dag_traversal import (
+        DAG,
+        DAGTraverser,
+        Display,
+        ShutdownError,
+    )
+    from set_option_utils import (
+        DEFAULT_OPTIONS,
+        PROJECT_DIR,
+        commented_pattern,
+        lake_build_with_progress,
+        lakefile_pattern,
+        removable_pattern,
+    )
+except ImportError as _e:
+    raise SystemExit(
+        f"error: {_e}\n\n"
+        f"  This script depends on sibling Python files in {Path(__file__).parent}:\n"
+        "    - dag_traversal.py\n"
+        "    - set_option_utils.py\n"
+        "  These are mathlib scripts, not pip packages.  Copy them into your\n"
+        "  `scripts/` directory alongside this script."
+    )
 
 
 PROGRESS_FILE = PROJECT_DIR / "scripts" / ".rm_set_option_progress.jsonl"
@@ -391,6 +401,13 @@ def main():
     # Step 1: lakefile.lean
     if not args.dry_run and (PROJECT_DIR / "lakefile.lean").exists():
         handle_lakefile(options, args.value)
+    elif (PROJECT_DIR / "lakefile.toml").exists():
+        opts_str = ", ".join(options)
+        print(
+            f"Note: lakefile.toml detected.  If {opts_str} is set in `leanOptions`\n"
+            "  there, you'll need to remove the entry manually — this script only\n"
+            "  edits lakefile.lean."
+        )
 
     # Step 2: build DAG
     print("Building import DAG...", flush=True)
