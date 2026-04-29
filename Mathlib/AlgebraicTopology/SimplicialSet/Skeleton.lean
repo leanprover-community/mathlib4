@@ -235,15 +235,6 @@ noncomputable abbrev ιSigmaBoundary : (∂Δ[d] : SSet) ⟶ sigmaBoundary i d :
 of `Y` not in the range of `i`, this is the corresponding morphism `Δ[d] ⟶ Y`. -/
 abbrev map : Δ[d] ⟶ Y := yonedaEquiv.symm c.simplex
 
-lemma map_app_objEquiv_symm {n : SimplexCategory} (f : n ⟶ ⦋d⦌) :
-    c.map.app _ (stdSimplex.objEquiv.symm f) = Y.map f.op c.simplex := rfl
-
-@[simp]
-lemma map_app_objEquiv_symm_id :
-    dsimp% c.map.app _ (stdSimplex.objEquiv.symm (𝟙 ⦋d⦌)) = c.simplex := by
-  rw [map_app_objEquiv_symm]
-  simp
-
 lemma mem_skeletonOfMono_obj_iff {d' : ℕ} :
     c.simplex ∈ (skeletonOfMono i d').obj _ ↔
     c.simplex ∈ Set.range (i.app _) ∨ d < d' := by
@@ -322,7 +313,7 @@ lemma ι_b_ι (c : Cell i d) : c.ιSigmaStdSimplex ≫ b i d ≫ Subcomplex.ι _
 lemma b_app_ι_app_objEquiv_symm_val (c : Cell i d) {n : SimplexCategory} (f : n ⟶ ⦋d⦌) :
     dsimp% ((b i d).app _ (c.ιSigmaStdSimplex.app _ (stdSimplex.objEquiv.symm f))).val =
       Y.map f.op c.simplex := by
-  rw [← map_app_objEquiv_symm, ← ι_b_ι]
+  simp only [← yonedaEquiv_symm_app_objEquiv_symm, ← ι_b_ι]
   rfl
 
 end Cell
