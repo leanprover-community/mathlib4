@@ -37,13 +37,13 @@ instance : SymmDartLike α (Dart α β) where
     | dir _ _ v _ => v
     | fwd _ v => v
     | bwd _ v => v
-  symm d := match d with
+  inv d := match d with
     | dir e u v h => dir e v u h.symm
     | fwd e u => bwd e u
     | bwd e u => fwd e u
-  symm_invol := by grind
-  symm_fst := by grind
-  symm_snd := by grind
+  inv_invol := by grind
+  inv_fst := by grind
+  inv_snd := by grind
 
 @[grind =]
 lemma src_eq (d : Dart α β) : src d = match d with
@@ -58,7 +58,7 @@ lemma tgt_eq (d : Dart α β) : tgt d = match d with
     | bwd _ v => v := rfl
 
 @[grind =]
-lemma symm_eq (d : Dart α β) : symm d = match d with
+lemma inv_eq (d : Dart α β) : inv d = match d with
     | dir e u v h => dir e v u h.symm
     | fwd e u => bwd e u
     | bwd e u => fwd e u := rfl
@@ -82,8 +82,8 @@ instance : SymmGraphLike α (Dart α β) β (Graph α β) where
   src_mem_of_darts _ _ := IsLink.left_mem
   tgt_mem_of_darts _ _ := IsLink.right_mem
   edge_mem_of_darts _ _ := IsLink.edge_mem
-  symm_ne G d hd := by grind
-  symm_mem_darts_iff G d := by grind [isLink_comm]
+  inv_ne G d hd := by grind
+  inv_mem_darts_iff G d := by grind [isLink_comm]
   edge_eq_edge_iff G d d' hd hd' := by
     cases d <;> cases d' <;> grind [IsLink.eq_and_eq_or_eq_and_eq]
   Adj G u v := G.Adj u v

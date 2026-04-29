@@ -37,13 +37,13 @@ public section
 /-- `HasInvol D` is a typeclass with a function `symm : D → D` that gives the inverse of a dart. -/
 class HasInvol (D : Type*) where
   /-- The inverse of a dart. -/
-  symm : D → D
-  symm_invol : ∀ ⦃d⦄, symm (symm d) = d
+  inv : D → D
+  inv_invol : ∀ ⦃d⦄, inv (inv d) = d
 
 /-- `SymmDartLike` extends `HasSourceTarget` and `HasInvol` for darts that are symmetric. -/
 class SymmDartLike (V D : Type*) extends HasSourceTarget V D, HasInvol D where
-  symm_fst (d : D) : src (symm d) = (tgt d : V)
-  symm_snd (d : D) : tgt (symm d) = (src d : V)
+  inv_fst (d : D) : src (inv d) = (tgt d : V)
+  inv_snd (d : D) : tgt (inv d) = (src d : V)
 
 open HasSourceTarget HasEdge HasInvol SymmDartLike
 
@@ -51,15 +51,15 @@ open HasSourceTarget HasEdge HasInvol SymmDartLike
 class SymmGraphLike (V D E : outParam Type*) [HasEdge D E] [SymmDartLike V D]
     (Gr : Type*) extends GraphLike V D E Gr where
   /-- The inverse of a dart. -/
-  symm_ne : ∀ ⦃G d⦄, d ∈ darts G → symm d ≠ d
-  symm_mem_darts_iff : ∀ ⦃G d⦄, symm d ∈ darts G ↔ d ∈ darts G
+  inv_ne : ∀ ⦃G d⦄, d ∈ darts G → inv d ≠ d
+  inv_mem_darts_iff : ∀ ⦃G d⦄, inv d ∈ darts G ↔ d ∈ darts G
   edge_eq_edge_iff : ∀ ⦃G d d'⦄, d ∈ darts G → d' ∈ darts G →
-    ((edge d : E) = edge d' ↔ d = d' ∨ symm d = d')
+    ((edge d : E) = edge d' ↔ d = d' ∨ inv d = d')
 
 open SymmGraphLike
 
-attribute [simp, grind =] symm_invol symm_fst symm_snd symm_mem_darts_iff
-attribute [grind →] symm_ne
+attribute [simp, grind =] inv_invol inv_fst inv_snd inv_mem_darts_iff
+attribute [grind →] inv_ne
 
 variable {V D E Gr : Type*} {G : Gr} {u v w : V} {d : D}
 
@@ -67,28 +67,28 @@ namespace GraphLike
 
 variable [HasEdge D E] [SymmDartLike V D] [SymmGraphLike V D E Gr]
 
-lemma symm_mem_darts (hd : d ∈ darts G) : symm d ∈ darts G :=
-  symm_mem_darts_iff.mpr hd
+lemma inv_mem_darts (hd : d ∈ darts G) : inv d ∈ darts G :=
+  inv_mem_darts_iff.mpr hd
 
 /-- The inverse of a step. -/
-@[symm] def step.symm (h : step G u v) : step G v u where
-  val := HasInvol.symm h.val
+@[symm] def step.inv (h : step G u v) : step G v u where
+  val := HasInvol.inv h.val
   property := by
     obtain ⟨d, hd, hu, hv⟩ := h
-    use symm_mem_darts hd, hv ▸ symm_fst d, hu ▸ symm_snd d
+    use inv_mem_darts hd, hv ▸ inv_fst d, hu ▸ inv_snd d
 
 @[simp]
-lemma step.symm_symm (h : step G u v) : h.symm.symm = h := by
+lemma step.inv_inv (h : step G u v) : h.inv.inv = h := by
   obtain ⟨d, hd, hu, hv⟩ := h
-  change step.symm (⟨HasInvol.symm d, symm_mem_darts hd, hv ▸ symm_fst d, hu ▸ symm_snd d⟩ :
+  change step.inv (⟨HasInvol.inv d, inv_mem_darts hd, hv ▸ inv_fst d, hu ▸ inv_snd d⟩ :
     step G v u) = _
-  simp [symm]
+  simp [inv]
 
 instance : Std.Symm (Adj G) where
   symm _ _ h := by
     rw [← exists_darts_iff_adj] at h ⊢
     obtain ⟨d, hd, rfl, rfl⟩ := h
-    exact ⟨HasInvol.symm d, symm_mem_darts hd, symm_fst d, symm_snd d⟩
+    exact ⟨HasInvol.inv d, inv_mem_darts hd, inv_fst d, inv_snd d⟩
 
 @[symm] lemma Adj.symm (h : Adj G v w) : Adj G w v := symm_of (Adj G) h
 
@@ -106,23 +106,23 @@ lemma step.todart_dartSym2 (h : step G u v) : dartSym2 h.todart = s(u, v) := by
   grind [dartSym2, todart]
 
 /-- The dart with reversed orientation from a given dart. -/
-@[expose] def dartSymm (d : darts G) : darts G := ⟨symm d.val, symm_mem_darts_iff.mpr d.prop⟩
+@[expose] def dartSymm (d : darts G) : darts G := ⟨inv d.val, inv_mem_darts_iff.mpr d.prop⟩
 
 @[simp]
-theorem dartSymm_mk (h : d ∈ darts G) : dartSymm (⟨d, h⟩) = ⟨symm d, symm_mem_darts_iff.mpr h⟩ :=
+theorem dartSymm_mk (h : d ∈ darts G) : dartSymm (⟨d, h⟩) = ⟨inv d, inv_mem_darts_iff.mpr h⟩ :=
   rfl
 
 @[simp]
-lemma step.symm_todart (h : step G u v) : h.symm.todart = dartSymm h.todart := by
-  simp [todart, step.symm]
+lemma step.inv_todart (h : step G u v) : h.inv.todart = dartSymm h.todart := by
+  simp [todart, step.inv]
 
 @[simp]
-theorem dartSym2_symm (d : darts G) : dartSym2 (dartSymm d) = dartSym2 d := by
+theorem dartSym2_inv (d : darts G) : dartSym2 (dartSymm d) = dartSym2 d := by
   simp [dartSym2, dartSymm]
 
 @[simp]
-theorem dartSym2_comp_symm : dartSym2 ∘ dartSymm = (dartSym2 : darts G → Sym2 _) :=
-  funext dartSym2_symm
+theorem dartSym2_comp_inv : dartSym2 ∘ dartSymm = (dartSym2 : darts G → Sym2 _) :=
+  funext dartSym2_inv
 
 @[simp]
 theorem dartSymm_dartSymm (d : darts G) : dartSymm (dartSymm d) = d :=
@@ -151,19 +151,19 @@ section GraphLikeProd
 variable {d : V × V} {Gr : Type*} {G : Gr}
 
 instance : SymmDartLike V (V × V) where
-  symm := Prod.swap
-  symm_invol := Prod.swap_swap
-  symm_fst d := by simp
-  symm_snd d := by simp
+  inv := Prod.swap
+  inv_invol := Prod.swap_swap
+  inv_fst d := by simp
+  inv_snd d := by simp
 
 variable [SymmGraphLike V (V × V) (Sym2 V) Gr]
 
-@[simp, grind =] lemma symm_apply (d : V × V) : HasInvol.symm d = Prod.swap d := rfl
+@[simp, grind =] lemma inv_apply (d : V × V) : HasInvol.inv d = Prod.swap d := rfl
 
 lemma Adj.ne (h : Adj G u v) : u ≠ v := by
   rw [← exists_darts_iff_adj] at h
   obtain ⟨⟨u, v⟩, hd, rfl, rfl⟩ := h
-  grind [symm_ne hd]
+  grind [inv_ne hd]
 
 instance : Std.Irrefl (Adj G) where
   irrefl _ h := h.ne rfl

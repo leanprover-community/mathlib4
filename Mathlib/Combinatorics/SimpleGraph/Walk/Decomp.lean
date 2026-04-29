@@ -18,7 +18,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Walk.Subwalks
 
 @[expose] public section
 
-open SimpleGraph DartLike SymmDartLike GraphLike SymmGraphLike
+open SimpleGraph SymmDartLike GraphLike SymmGraphLike
 
 namespace GraphLike.Walk
 
@@ -34,7 +34,7 @@ variable [DecidableEq V]
 
 /-- Given a vertex in the support of a path, give the path up until (and including) that vertex. -/
 def takeUntil {v w : V} : ∀ (p : Walk G v w) (u : V), u ∈ p.support → Walk G v u
-  | nil, u, h => by rw [mem_support_nil_iff.mp h]
+  | nil, u, h => by rw [mem_support_nil_iff.mp h]; exact nil
   | cons r p, u, h =>
     if hx : v = u then
       hx ▸ Walk.nil
@@ -81,7 +81,7 @@ lemma length_takeUntil (p : Walk G u v) (h : w ∈ p.support) :
 the end. In other words, drop vertices from the front of a path until (and not including)
 that vertex. -/
 def dropUntil {v w : V} : ∀ (p : Walk G v w) (u : V), u ∈ p.support → Walk G u w
-  | nil, u, h => by rw [mem_support_nil_iff.mp h]
+  | nil, u, h => by rw [mem_support_nil_iff.mp h]; exact nil
   | cons r p, u, h =>
     if hx : v = u then by
       subst u
@@ -170,10 +170,11 @@ theorem count_edges_takeUntil_le_one {u v w : V} (p : Walk G v w) (h : u ∈ p.s
         simp
       · rw [edges_cons, List.count_cons]
         split_ifs with h''
-        · simp only [beq_iff_eq, Sym2.eq, Sym2.rel_iff'] at h''
+        · simp only [beq_iff_eq, edge_eq, Sym2.eq, Sym2.rel_iff'] at h''
           obtain ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ := h''
-          · exact (h' rfl).elim
-          · cases p' <;> simp!
+          · simp at h'
+          · obtain ⟨d, hd, rfl, rfl⟩ := ha
+            cases p' <;> simp!
         · apply ih
 
 @[simp]
@@ -315,10 +316,10 @@ theorem rotate_darts (c : Walk G v v) (u : V) (h) : (c.rotate u h).darts ~r c.da
 theorem rotate_edges (c : Walk G v v) (u : V) (h) : (c.rotate u h).edges ~r c.edges :=
   (rotate_darts c u h).map _
 
-@[simp] lemma length_rotate (c : G.Walk v v) (u : V) (h) : (c.rotate u h).length = c.length := by
+@[simp] lemma length_rotate (c : Walk G v v) (u : V) (h) : (c.rotate u h).length = c.length := by
   simpa using (rotate_edges c u h).perm.length_eq
 
-@[simp] lemma rotate_eq_nil {c : G.Walk v v} {u : V} (h) : c.rotate u h = nil ↔ c = nil := by
+@[simp] lemma rotate_eq_nil {c : Walk G v v} {u : V} (h) : c.rotate u h = nil ↔ c = nil := by
   simp [← length_eq_zero_iff]
 
 end WalkDecomp

@@ -175,7 +175,7 @@ lemma step.adj (h : step G u v) : Adj G u v := by
 @[expose] def dartStep (d : darts G) : step G (src d.val) (tgt d.val) := ⟨d.val, d.prop, rfl, rfl⟩
 
 @[simp]
-lemma dartStep_val (d : darts G) : (dartStep d).val = d.val := by simp [dartStep]
+lemma val_dartStep (d : darts G) : (dartStep d).val = d.val := by simp [dartStep]
 
 /-- Two darts are said to be adjacent if they could be consecutive
 darts in a walk -- that is, the first dart's second vertex is equal to
@@ -230,6 +230,14 @@ instance : Subsingleton (step G u v) where
     rintro ⟨p₁, h₁, rfl, rfl⟩ ⟨p₂, h₂, h1, h2⟩
     obtain rfl := Prod.ext h1 h2
     exact Subtype.ext rfl
+
+lemma Adj.toStep_adj (h : Adj G u v) : (h.toStep).adj = h := rfl
+
+@[simp]
+lemma exists_step_iff_adj {P : (step G u v) → Prop} :
+    (∃ s : step G u v, P s) ↔ (∃ h : Adj G u v, P (h.toStep)) := by
+  refine ⟨fun ⟨s, hp⟩ ↦ ⟨s.adj, ?_⟩, fun ⟨h, hp⟩ ↦ ⟨h.toStep, hp⟩⟩
+  rwa [Subsingleton.elim s.adj.toStep s]
 
 @[simp]
 lemma val_step_eq {s : step G u v} : s.val = (u, v) := by

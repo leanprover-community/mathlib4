@@ -41,7 +41,7 @@ public section
 
 assert_not_exists Field TwoSidedIdeal
 
-open Finset GraphLike DartLike
+open Finset GraphLike HasSourceTarget HasEdge
 
 namespace SimpleGraph
 
@@ -53,8 +53,8 @@ section DegreeSum
 
 variable [Fintype V] [DecidableRel G.Adj]
 
-theorem dart_fst_fiber [DecidableEq V] (v : V) :
-    ({d : darts G | fst d.val = v} : Finset _) = univ.image (G.dartOfNeighborSet v) := by
+theorem dart_src_fiber [DecidableEq V] (v : V) :
+    ({d : darts G | src d.val = v} : Finset _) = univ.image (G.dartOfNeighborSet v) := by
   ext d
   simp only [mem_image, true_and, mem_filter, SetCoe.exists, mem_univ]
   constructor
@@ -63,14 +63,20 @@ theorem dart_fst_fiber [DecidableEq V] (v : V) :
   · rintro ⟨e, he, rfl⟩
     rfl
 
-theorem dart_fst_fiber_card_eq_degree [DecidableEq V] (v : V) :
-    #{d : darts G | fst d.val = v} = G.degree v := by
-  simpa only [dart_fst_fiber, Finset.card_univ, card_neighborSet_eq_degree] using
+@[deprecated dart_fst_fiber (since := "2026-04-28")]
+alias dart_fst_fiber := dart_src_fiber
+
+theorem dart_src_fiber_card_eq_degree [DecidableEq V] (v : V) :
+    #{d : darts G | src d.val = v} = G.degree v := by
+  simpa only [dart_src_fiber, Finset.card_univ, card_neighborSet_eq_degree] using
     card_image_of_injective univ (G.dartOfNeighborSet_injective v)
+
+@[deprecated dart_fst_fiber_card_eq_degree (since := "2026-04-28")]
+alias dart_fst_fiber_card_eq_degree := dart_src_fiber_card_eq_degree
 
 theorem dart_card_eq_sum_degrees : Fintype.card (darts G) = ∑ v, G.degree v := by
   haveI := Classical.decEq V
-  simp only [← card_univ, ← dart_fst_fiber_card_eq_degree]
+  simp only [← card_univ, ← dart_src_fiber_card_eq_degree]
   exact card_eq_sum_card_fiberwise (by simp [Set.mapsTo_univ])
 
 variable {G} in

@@ -17,7 +17,7 @@ oriented edge. This file defines darts and proves some of their basic properties
 
 @[expose] public section
 
-open DartLike SymmDartLike GraphLike SymmGraphLike
+open HasSourceTarget HasEdge HasInvol SymmDartLike SymmGraphLike GraphLike
 
 variable {V : Type*} {G : SimpleGraph V} {d : V × V}
 

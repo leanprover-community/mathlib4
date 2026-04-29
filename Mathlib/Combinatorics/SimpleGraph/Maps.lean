@@ -368,7 +368,7 @@ theorem mapStep_injective {f : G →g G'} (u v : V) :
 theorem mapStep_id (s : step G u v) : Hom.id.mapStep s = s := step.ext rfl
 
 @[simp]
-theorem mapStep_inv (s : step G u v) : f.mapStep s.inv = (f.mapStep s).inv := by simp
+theorem mapStep_symm (s : step G u v) : f.mapStep s.inv = (f.mapStep s).inv := by simp
 
 /-- The graph homomorphism from a smaller graph to a bigger one. -/
 def ofLE (h : G₁ ≤ G₂) : G₁ →g G₂ := ⟨id, @h⟩

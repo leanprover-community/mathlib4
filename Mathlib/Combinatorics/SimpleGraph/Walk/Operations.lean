@@ -347,7 +347,8 @@ theorem tail_support_append {u v w : V} (p : Walk G u v) (p' : Walk G v w) :
     (p.append p').support.tail = p.support.tail ++ p'.support.tail := by
   rw [support_append, List.tail_append_of_ne_nil (support_ne_nil _)]
 
-theorem support_eq_concat {u v : V} (p : Walk G u v) : p.support.dropLast ++ [v] = p.support := by
+theorem dropLast_support_concat {u v : V} (p : Walk G u v) :
+    p.support.dropLast ++ [v] = p.support := by
   cases p with | nil => rfl | cons h p
   have ⟨_, _, _, hp⟩ := p.exists_cons_eq_concat h
   simp [hp]

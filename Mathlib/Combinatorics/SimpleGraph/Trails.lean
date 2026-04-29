@@ -43,7 +43,7 @@ namespace GraphLike.Walk
 
 variable {V : Type*} {G : SimpleGraph V}
 
-open SimpleGraph DartLike SymmDartLike GraphLike SymmGraphLike
+open SimpleGraph SymmDartLike GraphLike SymmGraphLike
 
 /-- The edges of a trail as a finset, since each edge in a trail appears exactly once. -/
 abbrev IsTrail.edgesFinset {u v : V} {p : Walk G u v} (h : p.IsTrail) : Finset (Sym2 V) :=
@@ -58,10 +58,10 @@ theorem IsTrail.even_countP_edges_iff {u v : V} {p : Walk G u v} (ht : p.IsTrail
   | cons huv p ih =>
     rw [isTrail_cons] at ht
     specialize ih ht.1
-    simp only [List.countP_cons, Ne, edges_cons, Sym2.mem_iff]
+    simp only [edges_cons, src_eq, tgt_eq, val_step_eq, edge_eq, List.countP_cons, Sym2.mem_iff,
+      Bool.decide_or, Bool.or_eq_true, decide_eq_true_eq, Ne]
     split_ifs with h
-    · rw [decide_eq_true_eq] at h
-      obtain (rfl | rfl) := h
+    · obtain (rfl | rfl) := h
       · rw [Nat.even_add_one, ih]
         simp only [huv.ne, imp_false, Ne, not_false_iff, true_and, not_forall,
           Classical.not_not, exists_prop, not_true, false_and,

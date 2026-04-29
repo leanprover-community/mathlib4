@@ -159,6 +159,26 @@ def darts {u v : V} : Walk G u v → List (darts G)
 This is defined to be the list of edges underlying `SimpleGraph.Walk.darts`. -/
 @[expose] def edges {u v : V} (p : Walk G u v) : List E := p.darts.map (edge ·.val)
 
+attribute [cast_data] length support darts edges
+
+section CastDataTests
+
+example {u v u' : V} (hu : u = u') (p : Walk G u v) : (hu ▸ p : Walk G u' v).edges = p.edges := by
+  simp
+
+example {u v v' : V} (hv : v = v') (p : Walk G u v) : (hv ▸ p : Walk G u v').darts = p.darts := by
+  simp
+
+example {u v u' v' : V} (hu : u = u') (hv : v = v') (p : Walk G u v) :
+    (hu ▸ hv ▸ p : Walk G u' v').edges = p.edges := by
+  simp
+
+example {u v u' v' : V} (hu : u = u') (hv : v = v') (p : Walk G u v) :
+    (hu ▸ hv ▸ p : Walk G u' v').length = p.length := by
+  simp
+
+end CastDataTests
+
 @[simp]
 theorem support_nil : (nil : Walk G u u).support = [u] := rfl
 
@@ -269,6 +289,8 @@ lemma support_getElem_zero (p : Walk G u v) : p.support[0] = u := by cases p <;>
 lemma support_getElem_length (p : Walk G u v) : p.support[p.length] = v := by
   induction p <;> simp_all
 
+/-- Until the `reverse` is generalized to `GraphLike`, the dual lemma is only available for
+  `SimpleGraph` and called `dart_snd_mem_support_of_mem_darts`. (Note `snd` not `tgt`) -/
 theorem dart_src_mem_support_of_mem_darts {u v : V} :
     ∀ (p : Walk G u v) {d : GraphLike.darts G}, d ∈ p.darts → src d.val ∈ p.support
   | cons h p', d, hd => by
@@ -303,9 +325,6 @@ theorem edges_subset_edgeSet {u v} : ∀ (p : Walk G u v) ⦃e : E⦄, e ∈ p.e
     · exact edge_mem_of_darts h'.prop.1
     next h' => exact edges_subset_edgeSet p' h'
 
--- theorem adj_of_mem_edges {u v x y : V} (p : Walk G u v) (h : s(x, y) ∈ p.edges) : G.Adj x y :=
---   p.edges_subset_edgeSet h
-
 @[simp]
 theorem edges_nil {u : V} : (nil : Walk G u u).edges = [] := rfl
 
@@ -316,27 +335,8 @@ theorem edges_cons {u v w : V} (s : step G u v) (p : Walk G v w) :
 @[simp, grind =]
 theorem length_edges {u v : V} (p : Walk G u v) : p.edges.length = p.length := by simp [edges]
 
--- theorem mem_support_iff_exists_mem_edges {u v w : V} {p : Walk G u v} :
---     w ∈ p.support ↔ w = v ∨ ∃ e ∈ p.edges, w ∈ e := by
---   induction p <;> aesop
-
--- theorem edges_eq_zipWith_support {u v : V} {p : Walk G u v} :
---     p.edges = List.zipWith (s(·, ·)) p.support p.support.tail := by
---   induction p with
---   | nil => simp
---   | cons _ p' ih => cases p' <;> simp [edges_cons, ih]
-
--- theorem edges_injective {u v : V} : Function.Injective (Walk.edges : Walk G u v → List E)
---   | .nil, .nil, _ => rfl
---   | .nil, .cons _ _, h => by simp at h
---   | .cons _ _, .nil, h => by simp at h
---   | .cons' u v c h₁ w₁, .cons' _ v' _ h₂ w₂, h => by
---     have h₃ : u ≠ v' := by rintro rfl; exact G.loopless.irrefl _ h₂.adj
---     obtain ⟨rfl, h₃⟩ : v = v' ∧ w₁.edges = w₂.edges := by simpa [h₁.adj, h₃] using h
---     rw [edges_injective h₃, Subsingleton.elim h₁ h₂]
-
 /-- The `Set` of edges of a walk. -/
-def edgeSet {u v : V} (p : Walk G u v) : Set E := {e | e ∈ p.edges}
+@[expose] def edgeSet {u v : V} (p : Walk G u v) : Set E := {e | e ∈ p.edges}
 
 @[simp]
 lemma mem_edgeSet {u v : V} {p : Walk G u v} {e : E} : e ∈ p.edgeSet ↔ e ∈ p.edges := Iff.rfl
@@ -418,18 +418,6 @@ theorem end_mem_tail_support (h : ¬ p.Nil) : v ∈ p.support.tail :=
 @[simp]
 lemma edges_eq_nil {p : Walk G v w} : p.edges = [] ↔ p.Nil := by
   cases p <;> simp
-
--- lemma nil_of_subsingleton [Subsingleton V] (p : Walk G v w) : p.Nil :=
---   match p with
---   | nil => Nil.nil
---   | cons s w => (Unique.eq_default G ▸ s).adj |>.elim
-
--- theorem mem_support_iff_exists_mem_edges_of_not_nil {u v w : V} {p : Walk G u v}
---     (hnil : ¬p.Nil) :
---     w ∈ p.support ↔ ∃ e ∈ p.edges, w ∈ e := by
---   induction p with
---   | nil => simp at hnil
---   | cons h p ih => cases p <;> aesop
 
 /-- Given a set `S` and a walk `w` from `u` to `v` such that `u ∈ S` but `v ∉ S`,
 there exists a step in the walk whose start is in `S` but whose end is not. -/

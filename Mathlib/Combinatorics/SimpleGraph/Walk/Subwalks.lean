@@ -25,7 +25,7 @@ walks, subwalks
 
 @[expose] public section
 
-open SimpleGraph DartLike
+open SimpleGraph
 
 namespace GraphLike.Walk
 
@@ -129,13 +129,13 @@ theorem isSubwalk_iff_darts_isInfix {p₁ : Walk G u v} {p₂ : Walk G u' v'} (h
   refine ⟨fun ⟨k, hk, h⟩ ↦ ⟨k, by grind, fun i hi ↦ ?_⟩,
     fun ⟨k, hk, h⟩ ↦ ⟨k, by grind, fun i hi ↦ ?_⟩⟩
   · rw [getElem?_pos _ _ <| by grind, Option.some_inj]
-    ext <;> grind [fst_darts_getElem, snd_darts_getElem]
+    ext <;> grind [src_darts_getElem, tgt_darts_getElem]
   · rw [getElem?_pos _ _ <| by grind, Option.some_inj]
     by_cases hi' : i = p₁.length
     · have := h <| i - 1
-      grind [not_nil_iff_lt_length, snd_darts_getElem]
+      grind [not_nil_iff_lt_length, tgt_darts_getElem]
     have := h i
-    grind [fst_darts_getElem]
+    grind [src_darts_getElem]
 
 @[simp]
 theorem isSubwalk_nil_iff_mem_support (p : Walk G u v) :
@@ -155,7 +155,7 @@ theorem isSubwalk_toWalk_iff_mem_edges {p : Walk G u v} (h : step G u' v') :
   rw [isSubwalk_toWalk_iff_mem_darts, isSubwalk_toWalk_iff_mem_darts, edges, List.mem_map]
   refine ⟨fun h ↦ by grind [dartSym2], fun h ↦ ?_⟩
   have ⟨d, hd, h⟩ := h
-  rw [dartSym2, Sym2.eq, Sym2.rel_iff'] at h
+  rw [edge_eq, Sym2.eq, Sym2.rel_iff'] at h
   refine h.imp (fun h ↦ ?_) (fun h ↦ ?_)
     <;> convert hd using 2
     <;> exact h.symm
