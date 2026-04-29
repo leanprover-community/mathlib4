@@ -81,11 +81,18 @@ theorem isCompactElement_iff_le_of_directed_sSup_le (k : α) :
     rw [u_eq_sSup] at h_le
     exact h s hs hs' h_le
 
+/-- `⊥` in a `CompletePartialOrder` is compact. -/
+lemma isCompactElement_bot : IsCompactElement (⊥ : α) := by
+  rw [isCompactElement_iff_le_of_directed_sSup_le]
+  intro s ⟨e, he⟩ _ _
+  use e, he
+  exact OrderBot.bot_le e
+
 /-- An algebraic directed complete partial order is a `CompletePartialOrder` with 1) a least
 element and 2) every element is given by the supremum of a set of compact elements (algebraic). -/
-class AlgebraicDCPO (α : Type*) extends CompletePartialOrder α, OrderBot α where
-  algebraic : ∀ x : α, ({y : α | IsCompactElement y ∧ y ≤ x}).Nonempty ∧ DirectedOn (· ≤ ·)
-    {y : α | IsCompactElement y ∧ y ≤ x} ∧ x = sSup {y : α | IsCompactElement y ∧ y ≤ x}
+class AlgebraicDCPO (α : Type*) extends CompletePartialOrder α where
+  algebraic (x : α) : DirectedOn (· ≤ ·) {y : α | IsCompactElement y ∧ y ≤ x} ∧
+    x = sSup {y : α | IsCompactElement y ∧ y ≤ x}
 
 end CompletePartialOrder
 
@@ -100,12 +107,9 @@ variable {α : Type*} [TopologicalSpace α] [CompletePartialOrder α]
 /-- The order from `CompletePartialOrder` and the specialization order induced by the Scott
 topology, correspond. Unfortunately Mathlib's specialization order `⤳` is opposite to `≤`.
 Prop 3.5.2 in [renata2024]. Prop 2.3.2(1) in [abramsky_gabbay_maibaum_1994]. -/
-lemma specialization_iff_ge {x y : α} : x ≤ y ↔ y ⤳ x := by
+lemma specialization_iff_ge {x y : α} : y ⤳ x ↔ x ≤ y  := by
   rw [specializes_iff_forall_open]
   constructor
-  · intro x_le_y u hu x_in_u
-    apply isUpperSet_of_isOpen univ at hu
-    exact hu x_le_y x_in_u
   · let u := {z : α | ¬(z ≤ y)}
     have hu: IsOpen u := by
       rw [isOpen_iff_isUpperSet_and_dirSupInaccOn univ]
@@ -131,19 +135,15 @@ lemma specialization_iff_ge {x y : α} : x ≤ y ↔ y ⤳ x := by
       u] at h_specialize
     -- in other words x ≤ y as required
     exact h_specialize
+  · intro x_le_y u hu x_in_u
+    apply isUpperSet_of_isOpen univ at hu
+    exact hu x_le_y x_in_u
 
-/-- The upward closure of a compact element (`Ici e`) is an open set.
-We refer to the `Ici e` as basis due to `isTopologicalBasis_Ici_image_compactSet`. -/
-lemma isOpen_of_basis (e : α) (he₀ : IsCompactElement e) : IsOpen (Ici e) := by
+/-- The upward closure of a compact element (`Ici e`) is an open set. -/
+lemma IsCompactElement.isOpen_Ici (e : α) (he₀ : IsCompactElement e) : IsOpen (Ici e) := by
   rw [isOpen_iff_isUpperSet_and_dirSupInaccOn univ]
   constructor
-  · -- u is an upper set
-    unfold IsUpperSet
-    intro x y x_le_y hx
-    simp only [Ici, mem_setOf_eq] at hx ⊢
-    transitivity x
-    · exact hx
-    · exact x_le_y
+  · grind [IsUpperSet]
   · -- u is a Scott-Hausdorff open set, ie it has the inaccessable directed joins property
     -- However the directed sets for our topology are defined precisely as
     -- the directed sets of the our DCPOs
@@ -162,14 +162,14 @@ lemma isOpen_of_basis (e : α) (he₀ : IsCompactElement e) : IsOpen (Ici e) := 
 /-- The upwards closure of a compact element forms an open set.
 In this version the data is implicit. -/
 abbrev IsCompactElement.toOpen {c : α} (hc : IsCompactElement c) : Opens α :=
-  ⟨Ici c, isOpen_of_basis c hc⟩
+  ⟨Ici c, IsCompactElement.isOpen_Ici c hc⟩
 
 /-- A compact element as a subtype. -/
 abbrev CompactElement (α : Type*) [PartialOrder α] := {c : α // IsCompactElement c}
 
 /-- The upwards closure of a compact element forms an open set. -/
 abbrev CompactElement.toOpen (c : CompactElement α) : Opens α :=
-  ⟨Ici c.val, isOpen_of_basis c.val c.prop⟩
+  ⟨Ici c.val, IsCompactElement.isOpen_Ici c.val c.prop⟩
 
 end CompletePartialOrder
 
@@ -178,21 +178,22 @@ variable {D : Type*} [TopologicalSpace D] [AlgebraicDCPO D] [IsScott D univ]
 open Opens
 
 /-- Given any point `x` in `D` in an open set `u`, there exists
-an upward closure of a compact element (`Ici e`), within `u` which contains `x`.
-We refer to the `Ici e` as basis due to `isTopologicalBasis_Ici_image_compactSet`. -/
-lemma exists_basis_mem_basis (x : D) (u : Set D) (x_in_u : x ∈ u) (hu : IsOpen u)
+an upward closure of a compact element (`Ici e`), within `u` which contains `x`. -/
+lemma exists_Ici_mem (x : D) (u : Set D) (x_in_u : x ∈ u) (hu : IsOpen u)
     : ∃ c, IsCompactElement c ∧ x ∈ Ici c ∧ Ici c ⊆ u := by
   rw [isOpen_iff_isUpperSet_and_dirSupInaccOn univ] at hu
   obtain ⟨upper, hausdorff⟩ := hu
   have compactLowerBounded : ∃ c: D, c ≤ x ∧ c ∈ u ∧ IsCompactElement c := by
     -- the Algebraicity property
-    obtain ⟨nonempty, directed_cls, join⟩ := AlgebraicDCPO.algebraic x
+    obtain ⟨directed_cls, join⟩ := AlgebraicDCPO.algebraic x
     -- We work with this cls to extract a compact elememt from it satisfying our needs
     let cls := {y : D | IsCompactElement y ∧ y ≤ x}
     -- by algebraicity, a point, `x`, is the meet of its `cls`
     have x_is_LUB : IsLUB cls x:= by
       rw [join]
       apply CompletePartialOrder.lubOfDirected cls directed_cls
+    have nonempty : {y | IsCompactElement y ∧ y ≤ x}.Nonempty :=
+      ⟨⊥, ⟨isCompactElement_bot, OrderBot.bot_le x⟩⟩
     -- We use the innacessible joins property to show get a nonempty intersection
     -- The intersection contains exactly what we want, a compact point in u and ≤ x
     have nonempty_inter := hausdorff (mem_univ _) nonempty directed_cls x_is_LUB x_in_u
@@ -207,19 +208,8 @@ basis under the Scott Topology. Prop 3.5.2 in [renata2024] -/
 theorem isTopologicalBasis_Ici_image_compactSet
     : IsBasis (CompactElement.toOpen '' (@Set.univ (CompactElement D))) := by
   apply isTopologicalBasis_of_isOpen_of_nhds
-  · -- every upper set of a compact element in the DCPO is a Scott open set
-    -- This is the true by definition direction, as compactness corresponds to Scott-Hausdorrf open,
-    -- and upper set corresponds to Upper set open
-    simp only [image_univ, mem_image, mem_range, Subtype.exists, ↓existsAndEq, coe_mk,
-      true_and, exists_prop, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
-    apply isOpen_of_basis
-  · -- If a point `x` is in an open set `u`, we can find it in a set in the basis (`Ici c`)
-    intro x u x_in_u hu
-    choose c hc x_in_c' hc' using exists_basis_mem_basis x u x_in_u hu
-    simp only [image_univ, mem_image, mem_range, Subtype.exists, ↓existsAndEq, coe_mk, true_and,
-      exists_prop, exists_exists_and_eq_and, mem_Ici]
-    use c, hc
-    exact ⟨mem_Ici.1 x_in_c', Subset.refl (LE.le (Ici c)) hc'⟩
+  · grind [IsCompactElement.isOpen_Ici, coe_mk]
+  · grind [exists_Ici_mem, Subtype.exists, coe_mk]
 
 end AlgebraicDCPO
 end IsScott
