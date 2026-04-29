@@ -5,7 +5,6 @@ Authors: Jun Kwon
 -/
 module
 
-public import Mathlib.Init
 public import Lean.Meta.Tactic.Simp
 public import Batteries.Logic
 

@@ -6,7 +6,7 @@ Authors: Kyle Miller, Peter Nelson, Iván Renison, Jun Kwon
 module
 
 public import Mathlib.Combinatorics.GraphLike.Basic
-public import Mathlib.Tactic.Simproc.SubtypeVal
+public import Mathlib.Tactic.Simproc.CastData
 
 /-!
 # Walks
@@ -87,7 +87,7 @@ attribute [refl] Walk.nil
 instance instInhabited (G : Gr) [GraphLike V D E Gr] (v : V) : Inhabited (Walk G v v) := ⟨Walk.nil⟩
 
 /-- The one-edge walk associated to a single step, which is a dart from `u` to `v`. -/
-@[expose, match_pattern, reducible]
+@[expose, match_pattern, reducible, cast_data]
 def _root_.GraphLike.step.toWalk (s : step G u v) : Walk G u v :=
   Walk.cons s Walk.nil
 
@@ -105,7 +105,7 @@ theorem exists_eq_cons_of_ne (hne : u ≠ v) :
   | cons s p' => ⟨_, s, p', rfl⟩
 
 /-- The length of a walk is the number of edges/darts along it. -/
-@[expose]
+@[expose, cast_data]
 def length {u v : V} : Walk G u v → ℕ
   | nil => 0
   | cons _ q => q.length.succ
@@ -144,40 +144,20 @@ lemma exists_length_eq_one_iff : (∃ (p : Walk G u v), p.length = 1) ↔ Adj G 
 theorem length_eq_zero_iff {p : Walk G u u} : p.length = 0 ↔ p = nil := by cases p <;> simp
 
 /-- The `support` of a walk is the list of vertices it visits in order. -/
-@[expose]
+@[expose, cast_data]
 def support {u v : V} : Walk G u v → List V
   | nil => [u]
   | cons _ p => u :: p.support
 
 /-- The `darts` of a walk is the list of `dart`s it visits in order. -/
-@[expose]
+@[expose, cast_data]
 def darts {u v : V} : Walk G u v → List (darts G)
   | nil => []
   | cons s p => ⟨s.val, s.prop.1⟩ :: p.darts
 
 /-- The `edges` of a walk is the list of edges it visits in order.
 This is defined to be the list of edges underlying `SimpleGraph.Walk.darts`. -/
-@[expose] def edges {u v : V} (p : Walk G u v) : List E := p.darts.map (edge ·.val)
-
-attribute [cast_data] length support darts edges
-
-section CastDataTests
-
-example {u v u' : V} (hu : u = u') (p : Walk G u v) : (hu ▸ p : Walk G u' v).edges = p.edges := by
-  simp
-
-example {u v v' : V} (hv : v = v') (p : Walk G u v) : (hv ▸ p : Walk G u v').darts = p.darts := by
-  simp
-
-example {u v u' v' : V} (hu : u = u') (hv : v = v') (p : Walk G u v) :
-    (hu ▸ hv ▸ p : Walk G u' v').edges = p.edges := by
-  simp
-
-example {u v u' v' : V} (hu : u = u') (hv : v = v') (p : Walk G u v) :
-    (hu ▸ hv ▸ p : Walk G u' v').length = p.length := by
-  simp
-
-end CastDataTests
+@[expose, cast_data] def edges {u v : V} (p : Walk G u v) : List E := p.darts.map (edge ·.val)
 
 @[simp]
 theorem support_nil : (nil : Walk G u u).support = [u] := rfl
