@@ -6,29 +6,32 @@ Authors: Raphael Douglas Giles
 module
 
 public import Mathlib.AlgebraicGeometry.AlgebraicCycle.Principal
-public import Mathlib.AlgebraicGeometry.Modules.Presheaf
 public import Mathlib.AlgebraicGeometry.Modules.Sheaf
 
 /-!
 # The sheaf 𝒪ₓ(D) associated to a Weil divisor D
 
-In this file we construct the sheaf `𝒪(D)` associated to a Weil divisor `D`, defining it on `U`
+In this file we construct the sheaf `𝒪ₓ(D)` associated to a Weil divisor `D` on a locally
+Noetherian, integral scheme which is regular in codimension 1, defining it on `U`
 to be rational functions such that `(f) + D ≥ 0` on `U`. By Weil divisor we just mean an algebraic
 cycle purely of codimension `1`. In this file, we actually don't place any restrictions on `D`,
 just taking it to be any cycle with coefficients in `ℤ`, just because the actual definitions do
 not require this anywhere.
 
-This definition gives good results on Noetherian, integral separated schemes which are regular in
-codimension 1. In particular this is useful for working with normal varieties, where the map from
-Cartier divisors to Weil divisors is injective.
+This definition gives good results on locally Noetherian, integral separated schemes which are
+regular in codimension 1. In particular this is useful for working with normal varieties,
+where the map from Cartier divisors to Weil divisors is injective.
+
+Note that we can extend the construction here to schemes which are not necessarily irreducible with
+some extra bookkeeping. That said, in my opinion the most sensible way to do this goes via the
+construction on integral schemes, and in any case the construction for integral schemes comes up the
+most in applications.
 -/
 
 open AlgebraicGeometry Scheme CategoryTheory Order AlgebraicCycle Opposite
 
 universe u v
-variable {X : Scheme.{u}}
-         [IsIntegral X]
-         [IsLocallyNoetherian X]
+variable {X : Scheme.{u}} [IsIntegral X] [IsLocallyNoetherian X]
 
 open Function locallyFinsuppWithin Ring
 
@@ -43,7 +46,8 @@ instance {X : Scheme.{u}} [IsIntegral X] : IsIntegralInCodimensionOne X := ⟨in
 
 /--
 We define a scheme to be regular in codimension one if all its stalks at codimension one are DVRs.
-This is equivalent to being regular since a ring is a DVR iff it is a regular local ring of dimension one.
+This is equivalent to being regular since a ring is a DVR iff it is a regular local ring of
+dimension one.
 -/
 class IsRegularInCodimensionOne (X : Scheme.{u}) extends IsIntegralInCodimensionOne X where
   dvr : ∀ (x : X) (hx : coheight x = 1),
@@ -65,6 +69,12 @@ The underlying set of `Γ(𝒪ₓ(D), U)`, defined to be:
 def carrier (D : AlgebraicCycle X ℤ) (U : X.Opens) : Set X.functionField :=
     {s : (X.functionField) | (h : s ≠ 0) → Nonempty U ∧ (div s h).restrict U + D.restrict U ≥ 0}
 
+/--
+The sum of two sections in `Γ(𝒪ₓ(D), U)` is another section of `Γ(𝒪ₓ(D), U)` on a scheme which is
+regular in codimension one. Note that we are using regulariy in codimension one in a fairly
+essential way here. One should note that this is the key point where regularity in codimension one
+is used in the construction of `𝒪ₓ(D)`.
+-/
 def add_mem' [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (U : X.Opens)
     {a b : ↑X.functionField}
     (ha : a ∈ carrier D U) (hb : b ∈ carrier D U) : a + b ∈ carrier D U := by
@@ -101,15 +111,26 @@ def add_mem' [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (U : X.Ope
         · simp [restrict_eq_zero_of_not_mem _ _ _ o]
     · simp_all [carrier]
 
+/--
+Zero is an element of `Γ(𝒪ₓ(D), U)` by definition
+-/
 def zero_mem' (D : AlgebraicCycle X ℤ) (U : X.Opens) : 0 ∈ carrier D U := by
   simp [carrier]
 
-def neg_mem' (D : AlgebraicCycle X ℤ) (U : X.Opens) (f : X.functionField) (hf : f ∈ carrier D U) :
+/--
+`Γ(𝒪ₓ(D), U)` is closed under negatives.
+-/
+def neg_mem' (D : AlgebraicCycle X ℤ) (U : X.Opens) {f : X.functionField} (hf : f ∈ carrier D U) :
     (- f) ∈ carrier D U := by
   simp_all [carrier]
 
-def smul_mem' (D : AlgebraicCycle X ℤ) (U : X.Opens) [Nonempty U] (a : Γ(X, U)) {f : X.functionField}
-  (hf : f ∈ carrier D U) : a • f ∈ carrier D U := by
+/--
+TODO: Rename this
+
+On a nonempty set `U`, `Γ(𝒪ₓ(D), U)` is closed scalar multiplication by elements of `Γ(X, U)`.
+-/
+def smul_mem' (D : AlgebraicCycle X ℤ) (U : X.Opens) [Nonempty U] (a : Γ(X, U))
+    {f : X.functionField} (hf : f ∈ carrier D U) : a • f ∈ carrier D U := by
     simp_all only [carrier, true_and]
     intro nez z
     have h : ¬ f = 0 := by
@@ -127,8 +148,8 @@ def smul_mem' (D : AlgebraicCycle X ℤ) (U : X.Opens) [Nonempty U] (a : Γ(X, U
           this
     by_cases hz : coheight z = 1
     · by_cases o : z ∈ U
-      · simp [restrict_eq_of_mem _ _ _ o,
-          div_eq_ord_of_coheight_eq_one _ _ _ hz, Scheme.ord]
+      · simp only [restrict_eq_of_mem _ _ _ o, div_eq_ord_of_coheight_eq_one _ _ _ hz, Scheme.ord,
+        Multiplicative.toAdd_le, WithZero.unzero_le_unzero]
         let i := TopCat.Presheaf.algebra_section_stalk X.presheaf ⟨z, o⟩
         have : Ring.KrullDimLE 1 ↑(X.presheaf.stalk z) := krullDimLE_of_coheight hz
         let test : IsScalarTower ↑Γ(X, U) ↑(X.presheaf.stalk z) ↑X.functionField :=
@@ -148,7 +169,7 @@ def addSubgroup (D : AlgebraicCycle X ℤ) (U : X.Opens) : AddSubgroup X.functio
   carrier := carrier D U
   add_mem' := add_mem' D U
   zero_mem' := zero_mem' D U
-  neg_mem' := by simp_all [carrier];
+  neg_mem' := neg_mem' D U
 
 lemma memAddSubgroup {D : AlgebraicCycle X ℤ} {U : X.Opens} (f : carrier D U) :
     (f : X.functionField) ∈ addSubgroup D U := by simp
@@ -200,6 +221,7 @@ instance : AddCommGroup (carrier D U) :=
   Injective.addCommGroup (M₁ := carrier D U) (M₂ := X.functionField)
     Subtype.val Subtype.coe_injective coe_zero coe_add coe_neg coe_sub coe_nsmul coe_zsmul
 
+/-
 def moduleNonempty
     (D : AlgebraicCycle X ℤ) (U : X.Opens) [Nonempty U] :
     Submodule Γ(X, U) X.functionField where
@@ -211,16 +233,22 @@ lemma memModuleNonempty {D : AlgebraicCycle X ℤ} {U : X.Opens} [Nonempty U] (f
 
 @[simps]
 def mk_of_mem_module_nonempty {D : AlgebraicCycle X ℤ} {U : X.Opens} [Nonempty U]
-    (f : X.functionField) (hf : f ∈ moduleNonempty D U) :
-    carrier D U := ⟨f, hf⟩
+    (f : X.functionField) (hf : f ∈ moduleNonempty D U) : carrier D U := ⟨f, hf⟩-/
 
--- Modified by Claude Opus 4.6: unconditional SMul to eliminate instance diamond.
--- The key invariant: smulVal does NOT depend on D, so (a • f).val is the same
--- for carrier D U and carrier D' U, making map_smul' in extend provable by rfl.
+/--
+At some level, the definition of scalar multiplication on `Γ(𝒪ₓ(D), U)` needs to have some case
+distinction like this because the behaviour at the empty set and any other set is completely
+different. Here, we have decided to put this case distinction into the definition of the scalar
+multiplication function, rather than having two different module instances depending on whether
+the set is empty or not. The thought is that this awkwardness is excusable in the SMul definition
+because users shouldn't be unfolding this, but that comparing the action on different sets is going
+to be really annoying if we always need to carry around some if then else.
+-/
 private noncomputable def smulVal (a : Γ(X, U)) (v : X.functionField) : X.functionField := by
   by_cases h : Nonempty U
   · haveI := h; exact a • v
   · exact v
+
 
 private lemma smulVal_mem_carrier (a : Γ(X, U)) (f : carrier D U) :
     smulVal a f.val ∈ carrier D U := by
@@ -237,7 +265,7 @@ noncomputable instance : SMul Γ(X, U) (carrier D U) where
   change smulVal a f.val = a • (f : X.functionField)
   simp [smulVal, hU]
 
-def moduleInstNonempty (D : AlgebraicCycle X ℤ) (U : X.Opens) [Nonempty U] :
+/-def moduleInstNonempty (D : AlgebraicCycle X ℤ) (U : X.Opens) [Nonempty U] :
   Module Γ(X, U) (carrier D U) :=
   let v : carrier D U →+ X.functionField := {
     toFun := Subtype.val
@@ -245,7 +273,7 @@ def moduleInstNonempty (D : AlgebraicCycle X ℤ) (U : X.Opens) [Nonempty U] :
     map_add' := by simp
   }
   Injective.module Γ(X, U) (M₂ := carrier D U) (M := X.functionField) v
-  Subtype.coe_injective coe_smul
+  Subtype.coe_injective coe_smul-/
 
 --instance : Subsingleton (carrier D ⊥) := by simp [carrier]
 instance instSubsingleTonOfEmpty (h : ¬ Nonempty U) : Subsingleton (carrier D U) := by
@@ -295,10 +323,16 @@ end insts
 
 --open Pseudofunctor
 
+/--
+The action of `𝒪ₓ(D)` on objects.
+-/
 noncomputable
 def obj (D : AlgebraicCycle X ℤ) (U : (TopologicalSpace.Opens ↥X)ᵒᵖ) :
     ModuleCat (X.ringCatSheaf.obj.obj U) := .of Γ(X, unop U) <| carrier D (unop U)
 
+/--
+TODO rename
+-/
 lemma mapFunProof (D : AlgebraicCycle X ℤ) {U V : X.Opens}
     (r : V ≤ U) [hV : Nonempty V] (f : X.functionField) (hf : f ∈ carrier D U) :
     f ∈ carrier D V := by
@@ -311,6 +345,9 @@ lemma mapFunProof (D : AlgebraicCycle X ℤ) {U V : X.Opens}
   all_goals simp_all
 
 open Classical in
+/--
+The function underlying the action of `𝒪ₓ(D)` on morphisms.
+-/
 noncomputable
 def mapFun (D : AlgebraicCycle X ℤ) {U V : X.Opens} (r : V ≤ U) : carrier D U → carrier D V :=
   fun ⟨f, hf⟩ ↦ if hV : Nonempty V then ⟨f, mapFunProof D r f hf⟩ else ⟨0, by simp [carrier]⟩
@@ -330,10 +367,13 @@ lemma _root_.Nonempty_le {U V : X.Opens} (k : V ≤ U) [Nonempty V] : Nonempty U
   use a
   exact k b
 
-instance [IrreducibleSpace X] {U V : X.Opens} (k : V ≤ U)
-    [Nonempty V] :
-    let o := algebra_restrict k
-    have : Nonempty U := by
+/--
+TODO: Make this statement less cursed and put it in its own? PR (or at the very least in a
+more sensible file).
+-/
+instance [IrreducibleSpace X] {U V : X.Opens} (k : V ≤ U) [Nonempty V] :
+    letI o := algebra_restrict k
+    haveI : Nonempty U := by
       rename_i hV
       obtain ⟨⟨a, b⟩⟩ := hV
       use a
@@ -370,7 +410,6 @@ def map (D : AlgebraicCycle X ℤ) {U V : (TopologicalSpace.Opens ↥X)ᵒᵖ} (
       · dsimp [smulVal]
         split_ifs
         · apply Subtype.ext
-
           erw [coe_smul]
           simp only [op_unop, sheafCompose_obj_obj, Functor.comp_obj,
             CommRingCat.forgetToRingCat_obj, Functor.comp_map, CommRingCat.forgetToRingCat_map_hom,
@@ -515,8 +554,7 @@ lemma connectedByCover_of_connected {I : Type*} {𝒰 : I → X.Opens}
   obtain ⟨x, -, hxU, hxV⟩ := h𝒰.isPreconnected U.1 V.1 U.2 V.2 hcover hUne hVne
   have hxU' : x ∈ U := hxU
   have hxV' : x ∈ V := hxV
-  simp only [U, Opens.mem_iSup] at hxU'
-  simp only [V, Opens.mem_iSup] at hxV'
+  simp only [U, V, Opens.mem_iSup] at hxU' hxV'
   obtain ⟨k, hk, hxk⟩ := hxU'
   obtain ⟨l, hl, hxl⟩ := hxV'
   exact hl (hk.tail ⟨x, hxk, hxl⟩)
@@ -528,7 +566,9 @@ lemma isSheaf (D : AlgebraicCycle X ℤ) :
 
   rw [TopCat.Presheaf.isSheaf_iff_isSheafUniqueGluingNontrivial]
   on_goal 2 =>
-    simp [presheaf, obj, carrier]
+    simp only [sheafCompose_obj_obj, presheaf, PresheafOfModules.presheaf_obj_coe, Functor.comp_obj,
+      CommRingCat.forgetToRingCat_obj, obj, carrier, ne_eq, Opens.coe_bot, Set.coe_setOf,
+      Opens.nonempty_iff, Set.not_nonempty_empty, ge_iff_le, false_and, imp_false, not_not]
     infer_instance
 
   intro I hI 𝒰 h𝒰 s hs
