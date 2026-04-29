@@ -5,7 +5,7 @@ Authors: Jeremy Tan
 -/
 module
 
-public import Mathlib.Combinatorics.Enumerative.Catalan
+public import Mathlib.Combinatorics.Enumerative.Catalan.Tree
 
 import Batteries.Data.List.Count
 import Mathlib.Tactic.Positivity.Finset
@@ -468,7 +468,7 @@ lemma monotone_semilength : Monotone semilength := fun p q pq ↦ by
 lemma strictMono_semilength : StrictMono semilength := fun p q pq ↦ by
   obtain ⟨plq, pnq⟩ := lt_iff_le_and_ne.mp pq
   apply lt_of_le_of_ne (monotone_semilength plq)
-  contrapose! pnq
+  contrapose pnq
   replace pnq := congr(2 * $(pnq))
   simp_rw [two_mul_semilength_eq_length] at pnq
   exact DyckWord.ext ((infix_of_le plq).eq_of_length pnq)

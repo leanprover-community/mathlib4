@@ -20,7 +20,7 @@ equivalent to `Algebra.QuasiFiniteAt` under all relevant scenarios.
 This class should only be used in stating (and proving) Zariski's main theorem and should not be
 used elsewhere, and all public API shall have a `Algebra.QuasiFiniteAt` version.
 
-# Implementation details
+## Implementation details
 
 The definition of `Algebra.QuasiFiniteAt R q` as is says that the whole `S_q` is quasi-finite,
 which requires not only `q` to be quasi-finite, but also all primes below it (i.e. all generic
