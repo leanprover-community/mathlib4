@@ -1015,11 +1015,14 @@ theorem MeasureTheory.measurableSet_exists_tendsto [TopologicalSpace γ]
       MeasurableSet.biInter (to_countable (u N)) fun j _ =>
         measurableSet_lt (Measurable.dist (hf i) (hf j)) measurable_const
 
+section Measurable
+
+variable {α β ι : Type*} [MeasurableSpace α] [CommMonoid β] [TopologicalSpace β]
+
 section
 
-variable {α β ι : Type*} [MeasurableSpace α]
-  [CommMonoid β] [TopologicalSpace β] [IsCompletelyPseudoMetrizableSpace β]
-  [SecondCountableTopology β] [MeasurableSpace β] [BorelSpace β] [MeasurableMul₂ β]
+variable [IsCompletelyPseudoMetrizableSpace β] [SecondCountableTopology β]
+  [MeasurableSpace β] [BorelSpace β] [MeasurableMul₂ β]
   [Countable ι] {L : SummationFilter ι} [L.NeBot] [L.filter.IsCountablyGenerated]
 
 /-- The product of measurable functions is measurable. -/
@@ -1045,6 +1048,39 @@ theorem AEMeasurable.tprod {μ : MeasureTheory.Measure α} {f : ι → α → β
   filter_upwards [MeasureTheory.ae_all_iff.mpr hg_eq_f] with x h_eq using tprod_congr h_eq
 
 end
+
+section
+
+variable [PseudoMetrizableSpace β] [MeasurableSpace β] [BorelSpace β] [MeasurableMul₂ β]
+  {L : SummationFilter ι} [L.NeBot] [L.filter.IsCountablyGenerated]
+
+/-- The product of measurable functions is measurable. -/
+@[to_additive (attr := fun_prop)
+/-- The sum of measurable functions is measurable. -/]
+theorem Measurable.tprod' {f : ι → α → β} (h : ∀ i : ι, Measurable (f i)) :
+    Measurable (∏'[L] i : ι, f i) := by
+  rw [tprod_def, finprod_def']
+  split_ifs with hm <;> try exact measurable_one
+  · refine Finset.measurable_prod_apply ?_ measurable_id
+    exact fun _ _ ↦ by simp only [Set.mulIndicator]; split_ifs <;> fun_prop
+  · exact measurable_of_tendsto_metrizable' L.filter (by fun_prop) hm.choose_spec
+
+/-- The product of almost everywhere measurable functions is measurable. -/
+@[to_additive (attr := fun_prop)
+/-- The sum of almost everywhere measurable functions is measurable. -/]
+theorem AEMeasurable.tprod' {μ : MeasureTheory.Measure α} {f : ι → α → β}
+    (h : ∀ i : ι, AEMeasurable (f i) μ) : AEMeasurable (∏'[L] i : ι, f i) μ := by
+  rw [tprod_def, finprod_def']
+  split_ifs with hm <;> try exact aemeasurable_one
+  · apply Finset.aemeasurable_prod
+    exact fun _ _ ↦ by simp only [Set.mulIndicator]; split_ifs <;> fun_prop
+  · apply aemeasurable_of_tendsto_metrizable_ae L.filter (f := fun s => ∏ i ∈ s, f i)
+    · fun_prop
+    · filter_upwards with x using Tendsto.apply_nhds hm.choose_spec x
+
+end
+
+end Measurable
 
 section StandardBorelSpace
 
