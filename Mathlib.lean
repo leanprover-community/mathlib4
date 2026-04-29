@@ -5670,6 +5670,7 @@ public import Mathlib.NumberTheory.ModularForms.JacobiTheta.TwoVariable
 public import Mathlib.NumberTheory.ModularForms.LevelOne
 public import Mathlib.NumberTheory.ModularForms.NormTrace
 public import Mathlib.NumberTheory.ModularForms.Petersson
+public import Mathlib.NumberTheory.ModularForms.ProperlyDiscontinuous
 public import Mathlib.NumberTheory.ModularForms.QExpansion
 public import Mathlib.NumberTheory.ModularForms.SlashActions
 public import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
@@ -7335,6 +7336,7 @@ public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 public import Mathlib.Topology.Algebra.Group.Compact
 public import Mathlib.Topology.Algebra.Group.CompactOpen
 public import Mathlib.Topology.Algebra.Group.Defs
+public import Mathlib.Topology.Algebra.Group.DiscontinuousSubgroup
 public import Mathlib.Topology.Algebra.Group.Extension
 public import Mathlib.Topology.Algebra.Group.GroupTopology
 public import Mathlib.Topology.Algebra.Group.Matrix
