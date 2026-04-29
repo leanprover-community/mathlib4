@@ -367,7 +367,7 @@ lemma ext_inc {G₁ G₂ : Graph α β} (hV : V(G₁) = V(G₂)) (h : ∀ e x, G
 /-- `Graph.copy` produces a graph equal to `G` but with provided definitional choices
 for `vertexSet`, `edgeSet`, and `IsLink`. This is mainly useful for improving
 definitional equalities while keeping the same underlying graph. -/
-@[simps]
+@[simps -isSimp]
 def copy (G : Graph α β) {vertexSet : Set α} {edgeSet : Set β} {IsLink : β → α → α → Prop}
     (hvertexSet : V(G) = vertexSet) (hedgeSet : E(G) = edgeSet)
     (hIsLink : ∀ e x y, G.IsLink e x y ↔ IsLink e x y) : Graph α β where
@@ -391,7 +391,7 @@ def copy (G : Graph α β) {vertexSet : Set α} {edgeSet : Set β} {IsLink : β 
 lemma copy_eq (G : Graph α β) {V : Set α} {E : Set β} {IsLink : β → α → α → Prop}
     (hV : V(G) = V) (hE : E(G) = E) (h_isLink : ∀ e x y, G.IsLink e x y ↔ IsLink e x y) :
     G.copy hV hE h_isLink = G := by
-  ext <;> simp_all
+  ext <;> simp_all [copy]
 
 /-! ### Sets of edges or loops incident to a vertex -/
 

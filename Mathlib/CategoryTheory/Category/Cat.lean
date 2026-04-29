@@ -252,7 +252,6 @@ theorem Hom.id_map {C : Cat.{v, u}} {X Y : C} (f : X ⟶ Y) : (𝟙 C : C ⟶ C)
 lemma Hom.comp_toFunctor {C D E : Cat.{v, u}} (F : C ⟶ D) (G : D ⟶ E) :
   (F ≫ G).toFunctor = F.toFunctor ⋙ G.toFunctor := rfl
 
-@[simp]
 theorem Hom.comp_obj {C D E : Cat.{v, u}} (F : C ⟶ D) (G : D ⟶ E) (X : C) :
     (F ≫ G).toFunctor.obj X = G.toFunctor.obj (F.toFunctor.obj X) := by
   simp
@@ -283,7 +282,6 @@ theorem eqToHom_app {C D : Cat.{v, u}} (F G : C ⟶ D) (h : F = G) (X : C) :
 lemma whiskerLeft_toNatTrans {C D E : Cat.{v, u}} (F : C ⟶ D) {G H : D ⟶ E} (η : G ⟶ H) :
   (F ◁ η).toNatTrans = F.toFunctor.whiskerLeft η.toNatTrans := rfl
 
-@[simp]
 lemma whiskerLeft_app {C D E : Cat.{v, u}} (F : C ⟶ D) {G H : D ⟶ E} (η : G ⟶ H) (X : C) :
     (F ◁ η).toNatTrans.app X = η.toNatTrans.app (F.toFunctor.obj X) := by simp
 
@@ -291,7 +289,6 @@ lemma whiskerLeft_app {C D E : Cat.{v, u}} (F : C ⟶ D) {G H : D ⟶ E} (η : G
 lemma whiskerRight_toNatTrans {C D E : Cat.{v, u}} {F G : C ⟶ D} (H : D ⟶ E) (η : F ⟶ G) :
     (η ▷ H).toNatTrans = Functor.whiskerRight η.toNatTrans H.toFunctor := rfl
 
-@[simp]
 lemma whiskerRight_app {C D E : Cat.{v, u}} {F G : C ⟶ D} (H : D ⟶ E) (η : F ⟶ G) (X : C) :
     (η ▷ H).toNatTrans.app X = H.toFunctor.map (η.toNatTrans.app X) := by simp
 
