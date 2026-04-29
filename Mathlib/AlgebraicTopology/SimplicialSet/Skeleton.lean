@@ -233,7 +233,7 @@ noncomputable abbrev ιSigmaBoundary : (∂Δ[d] : SSet) ⟶ sigmaBoundary i d :
 
 /-- Given a monomorphism `i : X ⟶ Y` of simplicial sets and a nondegenerate `d`-simplex
 of `Y` not in the range of `i`, this is the corresponding morphism `Δ[d] ⟶ Y`. -/
-def map : Δ[d] ⟶ Y := yonedaEquiv.symm c.simplex
+abbrev map : Δ[d] ⟶ Y := yonedaEquiv.symm c.simplex
 
 lemma map_app_objEquiv_symm {n : SimplexCategory} (f : n ⟶ ⦋d⦌) :
     c.map.app _ (stdSimplex.objEquiv.symm f) = Y.map f.op c.simplex := rfl
