@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Over
 
-/-! Internal hom of sheaves
+/-! # Internal hom of sheaves
 
 In this file, given two sheaves `F` and `G` on a site `(C, J)` with values
 in a category `A`, we define a sheaf of types
