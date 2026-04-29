@@ -369,17 +369,6 @@ theorem finset_sup_smul (p : ι → Seminorm 𝕜 E) (s : Finset ι) (C : ℝ≥
   symm
   exact congr_arg ((↑) : ℝ≥0 → ℝ) (NNReal.mul_finset_sup C s (fun i ↦ ⟨p i x, apply_nonneg _ _⟩))
 
-theorem finset_sup_smul_apply (p : ι → Seminorm 𝕜 E) (s : Finset ι) (C : 𝕜) (x : E) :
-    s.sup p (C • x) = ‖C‖ * (s.sup p x) := by
-  simp only [finset_sup_apply, ← coe_nnnorm, ← NNReal.coe_mul, NNReal.mul_finset_sup]
-  congr with i
-  simpa using (p i).smul' C x
-
-theorem finset_sup_add_apply (p : ι → Seminorm 𝕜 E) (s : Finset ι) (x y : E) :
-    s.sup p (x + y) ≤ s.sup p x + s.sup p y := by
-  simp only [finset_sup_apply, ← NNReal.coe_add]
-  gcongr
-
 theorem finset_sup_le_sum (p : ι → Seminorm 𝕜 E) (s : Finset ι) : s.sup p ≤ ∑ i ∈ s, p i := by
   classical
   refine Finset.sup_le_iff.mpr ?_
