@@ -101,7 +101,7 @@ abbrev regular : ModObj M M where
   smul := μ
 
 attribute [local instance] regular in
-@[to_additive, simp]
+@[to_additive (attr := simp)]
 lemma smul_eq_mul (M : C) [MonObj M] : γ[M,M] = μ[M] := rfl
 
 /-- If `C` acts monoidally on `D`, then every object of `D` is canonically a
@@ -153,14 +153,14 @@ attribute [to_additive existing] IsModHom.smul_hom_assoc
 variable {M N O : D} [ModObj A M] [ModObj A N] [ModObj A O]
 
 @[to_additive]
-instance instIsModHomId : IsModHom A (𝟙 M) where
+instance : IsModHom A (𝟙 M) where
 
 @[to_additive]
-instance instIsModHomComp (f : M ⟶ N) (g : N ⟶ O) [IsModHom A f] [IsModHom A g] :
+instance (f : M ⟶ N) (g : N ⟶ O) [IsModHom A f] [IsModHom A g] :
     IsModHom A (f ≫ g) where
 
 @[to_additive]
-instance instIsModHomIso (f : M ≅ N) [IsModHom A f.hom] :
+instance (f : M ≅ N) [IsModHom A f.hom] :
     IsModHom A f.inv where
   smul_hom := by simp [Iso.comp_inv_eq]
 
@@ -226,7 +226,7 @@ attribute [to_additive existing (attr := instance)] Hom.isModHom
 /-- An alternative constructor for `Hom`,
 taking a morphism without a `[IsModHom]` instance, as well as the relevant
 equality to put such an instance. -/
-@[to_additive (attr := simps)
+@[to_additive (attr := simps!)
   /-- An alternative constructor for `Hom`,
   taking a morphism without a `[IsAddModHom]` instance, as well as the relevant
   equality to put such an instance. -/]
@@ -239,7 +239,7 @@ def Hom.mk' {M N : Mod D A} (f : M.X ⟶ N.X)
 taking a morphism without a `[IsModHom]` instance, between objects with
 a `ModObj` instance (rather than bundled as `Mod`),
 as well as the relevant equality to put such an instance. -/
-@[to_additive (attr := simps)
+@[to_additive (attr := simps!)
   /-- An alternative constructor for `Hom`,
   taking a morphism without a `[IsAddModHom]` instance, between objects with
   an `AddModObj` instance (rather than bundled as `AddMod`),
@@ -292,7 +292,7 @@ def regular : Mod C A :=
   letI : ModObj A A := .regular A
   ⟨A⟩
 
-@[to_additive (attr := simps)]
+@[to_additive]
 instance : Inhabited (Mod C A) :=
   ⟨regular A⟩
 
@@ -311,7 +311,7 @@ open MonoidalLeftAction in
 /-- When `M` is a `B`-module in `D` and `f : A ⟶ B` is a morphism of internal
 monoid objects, `M` inherits an `A`-module structure via
 "restriction of scalars", i.e `γ[A, M] = f ⊵ₗ M ≫ γ[B, M]`. -/
-@[to_additive (attr := simps, implicit_reducible)
+@[to_additive (attr := simps!, implicit_reducible)
   /-- When `M` is a `B`-additive module in `D` and `f : A ⟶ B` is a morphism of internal
   additive monoid objects, `M` inherits an `A`-additive module structure via
   "restriction of scalars", i.e `δ[A, M] = f ⊵ₗ M ≫ δ[B, M]`. -/]
