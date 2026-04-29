@@ -59,7 +59,7 @@ private theorem not_power_nat_pow {n p q : ℕ} (h_coprime : p.Coprime q) (hq : 
     have hf0 : f 0 = 0 := by simpa [hq.ne'] using congr($hf 0)
     refine ⟨f.prod (· ^ ·), Nat.factorization_inj hn (by simp [hf0]) ?_⟩
     rwa [Nat.factorization_pow, n.factorization_prod_pow_eq_self_of_le_factorization ?_]
-    exact hf ▸ le_self_nsmul (zero_le f) (by lia)
+    exact hf ▸ le_self_nsmul zero_le (by lia)
   ext z
   rw [Finsupp.smul_apply, smul_eq_mul, Finsupp.mapRange_apply, Nat.mul_div_cancel']
   simpa using h_coprime.symm.dvd_of_dvd_mul_left ⟨_, by simpa using congr(Nat.factorization $h z)⟩
