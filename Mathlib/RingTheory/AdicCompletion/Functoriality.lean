@@ -327,6 +327,14 @@ def piEquivFin (n : ℕ) :
     AdicCompletion I (Fin n → R) ≃ₗ[AdicCompletion I R] Fin n → AdicCompletion I R :=
   piEquivOfFintype I (ι := Fin n) (fun _ : Fin n ↦ R)
 
+/-
+#defeq_abuse: tactic fails with `backward.isDefEq.respectTransparency true` but succeeds
+  with `false`.
+The following isDefEq checks are the root causes of the failure:
+  ❌️ Quot.lift (fun x ↦ x • (eval I R n) x2✝) ⋯
+  ((eval I R n) x1✝) =?= Ideal.Quotient.ring._aux_1 (I ^ n • ⊤) (↑x1✝ n) (↑x2✝ n)
+  ❌️ { smul := fun x1 x2 ↦ x1 * x2 } =?= smul I
+-/
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem piEquivFin_apply (n : ℕ) (x : AdicCompletion I (Fin n → R)) :
