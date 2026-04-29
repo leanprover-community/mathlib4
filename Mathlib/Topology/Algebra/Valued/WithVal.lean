@@ -188,7 +188,7 @@ section CommRing
 
 variable [CommRing R] (v : Valuation R Γ₀)
 
-instance : CommRing (WithVal v) := normalize_instance% (equiv v).commRing
+instance : CommRing (WithVal v) := wrap_instance% (equiv v).commRing
 
 instance : ValuativeRel (WithVal v) := .ofValuation (valuation v)
 
@@ -237,7 +237,7 @@ instance [AddCommMonoid S] [Module R S] [Module.Finite R S] :
     Module.Finite (WithVal v) S := .of_restrictScalars_finite R (WithVal v) S
 
 instance [Semiring S] [Module S R] : Module S (WithVal v) :=
-  normalize_instance% (equiv v).module S
+  wrap_instance% (equiv v).module S
 
 @[simp] theorem toVal_smul [SMul S R] (s : S) (r : R) : toVal v (s • r) = s • toVal v r := rfl
 
@@ -315,7 +315,7 @@ section Field
 
 variable [Field R] (v : Valuation R Γ₀)
 
-instance : Field (WithVal v) := normalize_instance% (equiv v).field
+instance : Field (WithVal v) := wrap_instance% (equiv v).field
 
 instance [NumberField R] : NumberField (WithVal v) where
 

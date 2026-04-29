@@ -117,7 +117,7 @@ instance : SMul ℕ (IntertwiningMap ρ σ) :=
     ((n • f : IntertwiningMap ρ σ) : V → W) = n • f := rfl
 
 instance instAddCommMonoid : AddCommMonoid (IntertwiningMap ρ σ) :=
-  normalize_instance%
+  wrap_instance%
   DFunLike.coe_injective.addCommMonoid _ (coe_zero ρ σ) (coe_add ρ σ) (by intro f n; rw [coe_nsmul])
 
 /-- The range of an intertwining map from `V` to `W` as a subrepresentation of `W`. -/
@@ -181,7 +181,7 @@ instance : SMul ℤ (IntertwiningMap ρ σ) :=
     ((z • f : IntertwiningMap ρ σ) : V → W) = z • f := rfl
 
 instance : AddCommGroup (IntertwiningMap ρ σ) :=
-  normalize_instance%
+  wrap_instance%
   DFunLike.coe_injective.addCommGroup _ (coe_zero ρ σ) (coe_add ρ σ) (coe_neg ρ σ) (coe_sub ρ σ)
     (coe_nsmul ρ σ) (coe_zsmul ρ σ)
 
@@ -405,7 +405,7 @@ lemma smul_apply (a : A) (f : IntertwiningMap ρ σ) (v : V) :
     (a • f) v = a • f v := rfl
 
 instance : Module A (IntertwiningMap ρ σ) :=
-  normalize_instance%
+  wrap_instance%
   Function.Injective.module A (coeFnAddMonoidHom ρ σ) DFunLike.coe_injective (coe_smul ρ σ)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -478,7 +478,7 @@ instance : NatCast (IntertwiningMap ρ ρ) where
   natCast n := n • (1 : IntertwiningMap ρ ρ)
 
 instance instSemiring : Semiring (IntertwiningMap ρ ρ) :=
-  normalize_instance%
+  wrap_instance%
   Function.Injective.semiring (fun f : IntertwiningMap ρ ρ => f.toLinearMap)
     (toLinearMap_injective ρ ρ) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (by

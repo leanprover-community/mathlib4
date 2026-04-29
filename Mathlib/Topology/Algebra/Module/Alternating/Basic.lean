@@ -194,7 +194,7 @@ instance [SMul R' R''] [IsScalarTower R' R'' N] : IsScalarTower R' R'' (M [⋀^�
 instance [DistribMulAction R'ᵐᵒᵖ N] [IsCentralScalar R' N] : IsCentralScalar R' (M [⋀^ι]→L[A] N) :=
   ⟨fun _ _ => ext fun _ => op_smul_eq_smul _ _⟩
 
-instance : MulAction R' (M [⋀^ι]→L[A] N) := normalize_instance%
+instance : MulAction R' (M [⋀^ι]→L[A] N) := wrap_instance%
   toContinuousMultilinearMap_injective.mulAction toContinuousMultilinearMap fun _ _ => rfl
 
 end SMul
@@ -223,7 +223,7 @@ theorem toAlternatingMap_add (f g : M [⋀^ι]→L[R] N) :
     (f + g).toAlternatingMap = f.toAlternatingMap + g.toAlternatingMap :=
   rfl
 
-instance addCommMonoid : AddCommMonoid (M [⋀^ι]→L[R] N) := normalize_instance%
+instance addCommMonoid : AddCommMonoid (M [⋀^ι]→L[R] N) := wrap_instance%
   toContinuousMultilinearMap_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 
 /-- Evaluation of a `ContinuousAlternatingMap` at a vector as an `AddMonoidHom`. -/
@@ -494,7 +494,7 @@ instance : Sub (M [⋀^ι]→L[R] N) :=
 
 theorem sub_apply (m : ι → M) : (f - g) m = f m - g m := rfl
 
-instance : AddCommGroup (M [⋀^ι]→L[R] N) := normalize_instance%
+instance : AddCommGroup (M [⋀^ι]→L[R] N) := wrap_instance%
   toContinuousMultilinearMap_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
@@ -539,7 +539,7 @@ variable {R A M N ι : Type*} [Monoid R] [Semiring A] [AddCommMonoid M] [AddComm
   [TopologicalSpace M] [TopologicalSpace N] [Module A M] [Module A N] [DistribMulAction R N]
   [ContinuousConstSMul R N] [SMulCommClass A R N]
 
-instance [ContinuousAdd N] : DistribMulAction R (M [⋀^ι]→L[A] N) := normalize_instance%
+instance [ContinuousAdd N] : DistribMulAction R (M [⋀^ι]→L[A] N) := wrap_instance%
   Function.Injective.distribMulAction toMultilinearAddHom
     toContinuousMultilinearMap_injective fun _ _ => rfl
 
@@ -553,7 +553,7 @@ variable {R A M N ι : Type*} [Semiring R] [Semiring A] [AddCommMonoid M] [AddCo
 
 /-- The space of continuous alternating maps over an algebra over `R` is a module over `R`, for the
 pointwise addition and scalar multiplication. -/
-instance : Module R (M [⋀^ι]→L[A] N) := normalize_instance%
+instance : Module R (M [⋀^ι]→L[A] N) := wrap_instance%
   Function.Injective.module _ toMultilinearAddHom toContinuousMultilinearMap_injective fun _ _ =>
     rfl
 

@@ -81,11 +81,11 @@ instance [AddCommMonoid A] : AddCommMonoid (WithConv A) := (WithConv.equiv A).ad
 instance [AddGroup A] : AddGroup (WithConv A) := (WithConv.equiv A).addGroup
 instance [AddCommGroup A] : AddCommGroup (WithConv A) := (WithConv.equiv A).addCommGroup
 @[to_additive] instance [Monoid R] [MulAction R A] : MulAction R (WithConv A) :=
-  normalize_instance% (WithConv.equiv A).mulAction R
+  wrap_instance% (WithConv.equiv A).mulAction R
 instance [Monoid R] [AddCommMonoid A] [DistribMulAction R A] : DistribMulAction R (WithConv A) :=
-  normalize_instance% (WithConv.equiv A).distribMulAction R
+  wrap_instance% (WithConv.equiv A).distribMulAction R
 instance [Semiring R] [AddCommMonoid A] [Module R A] : Module R (WithConv A) :=
-  normalize_instance% (WithConv.equiv A).module R
+  wrap_instance% (WithConv.equiv A).module R
 
 /-- Lift an equivalence between `A` and `B` to `WithConv A` and `WithConv B`. -/
 protected def congr (f : A ≃ B) : WithConv A ≃ WithConv B :=

@@ -215,10 +215,10 @@ theorem coe_smul (c : S) (f : MultilinearMap R M₁ M₂) : ⇑(c • f) = c •
 end SMul
 
 -- The `AddMonoid` instance exists to help speedup unification
-instance : AddMonoid (MultilinearMap R M₁ M₂) := normalize_instance%
+instance : AddMonoid (MultilinearMap R M₁ M₂) := wrap_instance%
   coe_injective.addMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 
-instance addCommMonoid : AddCommMonoid (MultilinearMap R M₁ M₂) := normalize_instance%
+instance addCommMonoid : AddCommMonoid (MultilinearMap R M₁ M₂) := wrap_instance%
   coe_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 
 /-- Coercion of a multilinear map to a function as an additive monoid homomorphism. -/
@@ -885,7 +885,7 @@ variable [Semiring R] [(i : ι) → AddCommMonoid (M₁ i)] [(i : ι) → Module
   [AddCommMonoid M₂] [Module R M₂]
 
 instance [Monoid S] [DistribMulAction S M₂] [SMulCommClass R S M₂] :
-    DistribMulAction S (MultilinearMap R M₁ M₂) := normalize_instance%
+    DistribMulAction S (MultilinearMap R M₁ M₂) := wrap_instance%
   coe_injective.distribMulAction coeAddMonoidHom fun _ _ ↦ rfl
 
 section Module
@@ -894,7 +894,7 @@ variable [Semiring S] [Module S M₂] [SMulCommClass R S M₂]
 
 /-- The space of multilinear maps over an algebra over `R` is a module over `R`, for the pointwise
 addition and scalar multiplication. -/
-instance : Module S (MultilinearMap R M₁ M₂) := normalize_instance%
+instance : Module S (MultilinearMap R M₁ M₂) := wrap_instance%
   coe_injective.module _ coeAddMonoidHom fun _ _ ↦ rfl
 
 instance [Module.IsTorsionFree S M₂] : Module.IsTorsionFree S (MultilinearMap R M₁ M₂) :=
@@ -1303,7 +1303,7 @@ instance : Sub (MultilinearMap R M₁ M₂) :=
 theorem sub_apply (m : ∀ i, M₁ i) : (f - g) m = f m - g m :=
   rfl
 
-instance : AddCommGroup (MultilinearMap R M₁ M₂) := normalize_instance%
+instance : AddCommGroup (MultilinearMap R M₁ M₂) := wrap_instance%
   coe_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl)
 

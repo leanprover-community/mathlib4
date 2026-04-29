@@ -26,7 +26,7 @@ variable (R) in
 /-- Transfer `Algebra` across an `Equiv` -/
 protected abbrev algebra (e : α ≃ β) [Semiring β] :
     let _ := Equiv.semiring e
-    ∀ [Algebra R β], Algebra R α := normalize_instance%
+    ∀ [Algebra R β], Algebra R α := wrap_instance%
   letI := Equiv.semiring e
   letI := e.smul R
   { algebraMap :=

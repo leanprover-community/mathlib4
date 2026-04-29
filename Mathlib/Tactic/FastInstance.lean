@@ -155,18 +155,18 @@ macro "inferInstanceAs% " source:term : term =>
   `(fast_instance% _root_.inferInstanceAs <| $source)
 
 /--
-`normalize_instance% inst` normalizes an instance expression using Lean core's
+`wrap_instance% inst` wraps an instance expression using Lean core's
 `wrapInstance` (from lean4#12897).
 
 Like `fast_instance%`, it reduces `inst` to constructor applications and reuses existing
 canonical instances for sub-instance fields. Unlike `fast_instance%`, it works at `instances`
 transparency (not `reducible`) and may wrap data fields in auxiliary definitions.
 -/
-syntax (name := normalizeInstanceStx) "normalize_instance% " term : term
+syntax (name := wrapInstanceStx) "wrap_instance% " term : term
 
-@[term_elab normalizeInstanceStx, inherit_doc normalizeInstanceStx]
-public def elabNormalizeInstance : TermElab
-  | `(term| normalize_instance% $arg), expectedType? => do
+@[term_elab wrapInstanceStx, inherit_doc wrapInstanceStx]
+public def elabWrapInstance : TermElab
+  | `(term| wrap_instance% $arg), expectedType? => do
     let inst ← withSynthesize <| elabTerm arg expectedType?
     let expectedType ← expectedType?.getDM (inferType inst)
     let logCompileErrors := !(← read).isNoncomputableSection
