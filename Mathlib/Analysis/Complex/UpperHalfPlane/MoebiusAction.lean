@@ -363,7 +363,7 @@ lemma denom_J_mul (g : GL (Fin 2) ℝ) (τ : ℂ) : denom (J * g) τ = denom g �
 @[simp] lemma inv_J : J⁻¹ = J := by rw [inv_eq_iff_mul_eq_one, ← sq, J_sq]
 
 @[simp] lemma J_smul_pos_mul_I {t : ℝ} (ht : 0 < t) :
-    J • (⟨t * I, by simpa⟩ : ℍ) = ⟨t * I, by simpa⟩ := by
+    J • (⟨t * .I, by simpa⟩ : ℍ) = ⟨t * .I, by simpa⟩ := by
   ext
   simp [coe_J_smul]
 
