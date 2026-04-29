@@ -237,8 +237,10 @@ def parallelPairHom (f g : X ⟶ Y) {x y : WalkingParallelPair} (h : x ⟶ y) :
 
 @[simp] theorem parallelPairHom_id {f g : X ⟶ Y} {x : WalkingParallelPair} :
   parallelPairHom f g (𝟙 x) = 𝟙 (parallelPairObj X Y x) := (rfl)
+
 @[simp] theorem parallelPairHom_left {f g : X ⟶ Y} :
   parallelPairHom f g .left = f := (rfl)
+
 @[simp] theorem parallelPairHom_right {f g : X ⟶ Y} :
   parallelPairHom f g .right = g := (rfl)
 
