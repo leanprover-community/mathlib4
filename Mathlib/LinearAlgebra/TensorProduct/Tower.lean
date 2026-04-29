@@ -52,7 +52,7 @@ namespace TensorProduct
 
 namespace AlgebraTensorModule
 
-universe u₁ u₂ u₃ u₄ uR uS uA uB uM uN uP uQ uP' uQ'
+universe uR uS uA uB uM uN uP uQ uP' uQ'
 variable {R : Type uR} {S : Type uS} {A : Type uA} {B : Type uB}
 variable {M : Type uM} {N : Type uN} {P : Type uP} {Q : Type uQ} {P' : Type uP'} {Q' : Type uQ'}
 
@@ -590,6 +590,8 @@ theorem tensorTensorTensorComm_eq :
 end tensorTensorTensorComm
 
 section
+
+universe u₁ u₂ u₃ u₄
 
 attribute [local instance] ULift.algebra' in
 /-- `ULift` commutes with tensor products. -/

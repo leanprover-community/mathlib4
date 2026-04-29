@@ -32,8 +32,6 @@ This file provides results about maps between tensor products of `R`-algebras.
 
 @[expose] public section
 
-universe u₁ u₂ u₃ u₄ u₅
-
 assert_not_exists Equiv.Perm.cycleType
 
 open scoped TensorProduct
@@ -855,6 +853,8 @@ lemma Subalgebra.tmul_mem_baseChange {x : A} (hx : x ∈ C) (b : B) : b ⊗ₜ[R
   ⟨(b ⊗ₜ[R] ⟨x, hx⟩), rfl⟩
 
 section
+
+universe u₁ u₂ u₃ u₄ u₅
 
 variable (R S A B : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S]
   [Semiring A] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Semiring B] [Algebra R B]
