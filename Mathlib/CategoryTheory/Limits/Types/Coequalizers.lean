@@ -43,10 +43,10 @@ def coequalizerColimit : Limits.ColimitCocone (parallelPair f g) where
       (fun _ _ hm ↦ by ext x; exact Quot.inductionOn x (congr_hom hm))
 
 /-- If `π : Y ⟶ Z` is a coequalizer for `(f, g)`, and `U ⊆ Y` such that `f ⁻¹' U = g ⁻¹' U`,
-then `π ⁻¹' (π '' U) = U`.
+then `π ⁻¹' π '' U = U`.
 -/
 theorem coequalizer_preimage_image_eq_of_preimage_eq (π : Y ⟶ Z) (e : f ≫ π = g ≫ π)
-    (h : IsColimit (Cofork.ofπ π e)) (U : Set Y) (H : f ⁻¹' U = g ⁻¹' U) : π ⁻¹' (π '' U) = U := by
+    (h : IsColimit (Cofork.ofπ π e)) (U : Set Y) (H : f ⁻¹' U = g ⁻¹' U) : π ⁻¹' π '' U = U := by
   have lem : ∀ x y, Function.Coequalizer.Rel f g x y → (x ∈ U ↔ y ∈ U) := by
     rintro _ _ ⟨x⟩
     change x ∈ f ⁻¹' U ↔ x ∈ g ⁻¹' U

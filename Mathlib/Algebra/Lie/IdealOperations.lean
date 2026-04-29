@@ -33,7 +33,7 @@ the action defined in this file.
 lie algebra, ideal operation
 -/
 
-@[expose] public section
+public section
 
 
 universe u v w w₁ w₂
