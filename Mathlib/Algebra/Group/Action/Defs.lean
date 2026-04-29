@@ -463,12 +463,11 @@ variable (M)
 /-- The regular action of a monoid on itself by left multiplication.
 
 This is promoted to a module by `Semiring.toModule`. -/
--- see Note [lower instance priority]
 @[to_additive
 /-- The regular action of a monoid on itself by left addition.
 
 This is promoted to an `AddTorsor` by `addGroup_is_addTorsor`. -/]
-instance (priority := 910) Monoid.toMulAction : MulAction M M where
+instance (priority := 1100) Monoid.toMulAction : MulAction M M where
   smul := (· * ·)
   one_smul := one_mul
   mul_smul := mul_assoc
