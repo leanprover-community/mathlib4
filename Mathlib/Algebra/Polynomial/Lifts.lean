@@ -161,6 +161,10 @@ theorem exists_degree_eq_of_mem_lifts {p : S[X]} (hlifts : p ∈ lifts f) :
   obtain ⟨q, hq, hq'⟩ := exists_support_eq_of_mem_lifts hlifts
   exact ⟨q, hq, congrArg Finset.max hq'⟩
 
+theorem exists_natDegree_eq_of_mem_lifts {p : S[X]} (hlifts : p ∈ lifts f) :
+    ∃ q, map f q = p ∧ q.natDegree = p.natDegree :=
+  (exists_degree_eq_of_mem_lifts hlifts).imp fun _ ↦ And.imp_right natDegree_eq_of_degree_eq
+
 @[deprecated (since := "2026-02-11")]
 alias mem_lifts_and_degree_eq := exists_degree_eq_of_mem_lifts
 
