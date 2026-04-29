@@ -274,8 +274,8 @@ lemma ιSigmaStdSimplex_jointly_surjective
     {n : ℕ} (a : (sigmaStdSimplex i d) _⦋n⦌) :
     ∃ (c : Cell i d) (x : Δ[d] _⦋n⦌), c.ιSigmaStdSimplex.app _ x = a :=
   Cofan.inj_jointly_surjective_of_isColimit
-    ((isColimitCofanMkObjOfIsColimit ((CategoryTheory.evaluation _ _).obj _) _ _
-      (coproductIsCoproduct _))) a
+    (isColimitCofanMkObjOfIsColimit ((CategoryTheory.evaluation _ _).obj _) _ _
+      (coproductIsCoproduct _)) a
 
 /-- the left morphism of the pushout square `isPushout i d`: this is
 the coproduct of copies of the boundary inclusion `∂Δ[d] ⟶ Δ[d]` indexed
