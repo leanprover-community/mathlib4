@@ -486,12 +486,9 @@ def sections_equal_of_connected_by_cover {D : AlgebraicCycle X ℤ} {I : Type*} 
     {i j : I} (h : connectedByCover 𝒰 i j)
     (s : (i : I) → ToType ((presheaf D).presheaf.obj (op (𝒰 i))))
     (hs : TopCat.Presheaf.IsCompatible (presheaf D).presheaf 𝒰 s) : (s i).1 = (s j).1 := by
-  induction h
-  · rename_i j h
-    exact sections_equal_of_nonempty_intersection h s hs
-  · rename_i j k ih m l
-    rw [l]
-    exact sections_equal_of_nonempty_intersection m s hs
+  induction h with
+  | single h => exact sections_equal_of_nonempty_intersection h s hs
+  | tail _ step ih => rw [ih]; exact sections_equal_of_nonempty_intersection step s hs
 
 /-
 We now want to say that on an irreducible space, if we have a cover then any two elements of the
@@ -501,86 +498,28 @@ open TopologicalSpace
 lemma connectedByCover_of_connected {I : Type*} {𝒰 : I → X.Opens}
     (h𝒰 : _root_.IsConnected (iSup 𝒰).1) (i j : I) (hi : (𝒰 i).1.Nonempty)
     (hj : (𝒰 j).1.Nonempty) : connectedByCover 𝒰 i j := by
-  by_contra! p
-  dsimp [connectedByCover] at p
-  let s := {k : I | connectedByCover 𝒰 i k}
-  let U := ⨆ (k ∈ s), 𝒰 k
-  let V := ⨆ (k ∈ sᶜ), 𝒰 k
-
-  let U' : Set (iSup 𝒰).1 := {⟨a, b⟩ : (iSup 𝒰).1 | a ∈ U}
-  let V' : Set (iSup 𝒰).1 := {⟨a, b⟩ : (iSup 𝒰).1 | a ∈ V}
-
-  have hU' : IsOpen U' := isOpen_induced_eq.mpr ⟨U, U.2, rfl⟩
-
-  have hV' : IsOpen V' := isOpen_induced_eq.mpr ⟨V, V.2, rfl⟩
-
-  have univ_mem : Set.univ ⊆ U' ∪ V' := by
-    have : (⨆ k ∈ s, 𝒰 k) ⊔ (⨆ k ∈ sᶜ, 𝒰 k) = (⨆ k, 𝒰 k) :=
-      Eq.symm (iSup_split 𝒰 (Membership.mem s))
-    simp [U', V']
-    ext ⟨a, ha⟩
-    simp [U, V]
-    rw [Opens.ext_iff, Set.ext_iff] at this
-    specialize this a
-    simp at this
-    rw [this]
-    simp at ha
-    exact ha
-
-  have neU' : (Set.univ ∩ U').Nonempty := by
-    simp [U', U]
-    have nonsense := hi
-    obtain ⟨x, hx⟩ := hi
-    have : x ∈ iSup 𝒰 := by simp; exact ⟨i, hx⟩
-    use ⟨x, this⟩
-    simp
-    use i
-    constructor
-    · simp [s, connectedByCover]
-      apply Relation.TransGen.single
-      aesop
-    · exact hx
-  have neV' : (Set.univ ∩ V').Nonempty := by
-    simp [V', V]
-    have nonsense := hj
-    obtain ⟨x, hx⟩ := hj
-    have : x ∈ iSup 𝒰 := by simp; exact ⟨j, hx⟩
-    use ⟨x, this⟩
-    simp
-    use j
-    constructor
-    · simpa [s, connectedByCover] using p
-    · exact hx
-
-
-  have iBot : U ⊓ V = ⊥ := by
-    ext a
-    by_contra!
-    simp only [Opens.iSup_mk, Set.mem_setOf_eq, Opens.carrier_eq_coe, Opens.coe_mk,
-      Set.mem_compl_iff, Opens.mk_inf_mk, Set.inf_eq_inter, Set.mem_inter_iff, Set.mem_iUnion,
-      SetLike.mem_coe, exists_prop, Opens.coe_bot, Set.mem_empty_iff_false, not_false_eq_true,
-      and_true, not_and, not_exists, forall_exists_index, and_imp, and_false, or_false, U, s,
-      V] at this
-    obtain ⟨⟨k, hk⟩, ⟨l, hl⟩⟩ := this
-    have : connectedByCover 𝒰 i l := by
-      fapply Relation.TransGen.tail
-      · exact k
-      · exact hk.1
-      · use a
-        exact ⟨hk.2, hl.2⟩
-    exact hl.1 this
-
-  have h' : ConnectedSpace (iSup 𝒰).1 := Subtype.connectedSpace h𝒰
-  have ans := h'.isPreconnected_univ U' V' hU' hV' univ_mem neU' neV'
-  have : U.1 ∩ V.1 = ∅ := Opens.ext_iff.mp iBot
-  have : U' ∩ V' = ∅ := by
-    dsimp [U', V']
-    ext ⟨a, b⟩
-    rw [Set.ext_iff] at this
-    specialize this a
-    simp_all
-  erw [this] at ans
-  simp_all
+  by_contra hij
+  let S : Set I := {k | connectedByCover 𝒰 i k}
+  let U : X.Opens := ⨆ k ∈ S, 𝒰 k
+  let V : X.Opens := ⨆ k ∈ Sᶜ, 𝒰 k
+  have hsplit : iSup 𝒰 = U ⊔ V := iSup_split 𝒰 (· ∈ S)
+  have hi_S : i ∈ S :=
+    let ⟨x, hx⟩ := hi; Relation.TransGen.single ⟨x, hx, hx⟩
+  have hcover : (iSup 𝒰).1 ⊆ U.1 ∪ V.1 := by rw [hsplit]; exact subset_rfl
+  have mem_iSup_at {T : Set I} {k : I} (hk : k ∈ T) {x : X} (hx : x ∈ 𝒰 k) :
+      x ∈ (⨆ l ∈ T, 𝒰 l : X.Opens) := Opens.mem_iSup.mpr ⟨k, Opens.mem_iSup.mpr ⟨hk, hx⟩⟩
+  have hUne : ((iSup 𝒰).1 ∩ U.1).Nonempty :=
+    let ⟨x, hx⟩ := hi; ⟨x, Opens.mem_iSup.mpr ⟨i, hx⟩, mem_iSup_at hi_S hx⟩
+  have hVne : ((iSup 𝒰).1 ∩ V.1).Nonempty :=
+    let ⟨x, hx⟩ := hj; ⟨x, Opens.mem_iSup.mpr ⟨j, hx⟩, mem_iSup_at hij hx⟩
+  obtain ⟨x, -, hxU, hxV⟩ := h𝒰.isPreconnected U.1 V.1 U.2 V.2 hcover hUne hVne
+  have hxU' : x ∈ U := hxU
+  have hxV' : x ∈ V := hxV
+  simp only [U, Opens.mem_iSup] at hxU'
+  simp only [V, Opens.mem_iSup] at hxV'
+  obtain ⟨k, hk, hxk⟩ := hxU'
+  obtain ⟨l, hl, hxl⟩ := hxV'
+  exact hl (hk.tail ⟨x, hxk, hxl⟩)
 
 
 open Presheaf
