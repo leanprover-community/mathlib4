@@ -378,28 +378,17 @@ end PreimgCodiscrete
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-private lemma AnalyticAt.dslope_of_ne {f : 𝕜 → E} {z₀ s : 𝕜} (hf : AnalyticAt 𝕜 f s)
-    (hs : s ≠ z₀) : AnalyticAt 𝕜 (_root_.dslope f z₀) s := by
-  have h_inv : AnalyticAt 𝕜 (fun z => (z - z₀)⁻¹) s :=
-    (analyticAt_id.sub analyticAt_const).inv (sub_ne_zero.mpr hs)
-  have h_quot : AnalyticAt 𝕜 (fun z => (z - z₀)⁻¹ • (f z - f z₀)) s :=
-    h_inv.smul (hf.sub analyticAt_const)
-  have h_eq : (fun z => (z - z₀)⁻¹ • (f z - f z₀)) =ᶠ[𝓝 s] _root_.dslope f z₀ := by
-    filter_upwards [isOpen_ne.mem_nhds hs] with z hz
-    exact (_root_.dslope_of_ne f hz).symm
-  exact h_quot.congr h_eq
-
 /-- If `f` is analytic at `s`, then `dslope f z₀` is analytic at `s`. -/
-lemma AnalyticAt.dslope {f : 𝕜 → E} {z₀ s : 𝕜} (hf : AnalyticAt 𝕜 f s) :
-    AnalyticAt 𝕜 (_root_.dslope f z₀) s := by
-  by_cases hs : s = z₀
-  · subst hs
-    obtain ⟨p, hp⟩ := hf
+protected lemma AnalyticAt.dslope {f : 𝕜 → E} {z₀ s : 𝕜} (hf : AnalyticAt 𝕜 f s) :
+    AnalyticAt 𝕜 (dslope f z₀) s := by
+  obtain (rfl | hs) := eq_or_ne s z₀
+  · obtain ⟨p, hp⟩ := hf
     exact ⟨_, hp.has_fpower_series_dslope_fslope⟩
-  · exact hf.dslope_of_ne hs
+  · apply AnalyticAt.congr (f := fun z => (z - z₀)⁻¹ • (f z - f z₀)) (by fun_prop (disch := grind))
+    filter_upwards [isOpen_ne.mem_nhds hs] with z hz using (dslope_of_ne f hz).symm
 
 /-- If `f` is analytic at `s`, then the `n`-th iterated `dslope` of `f` at `z₀`
 is analytic at `s`. -/
 lemma AnalyticAt.iterate_dslope {f : 𝕜 → E} {z₀ s : 𝕜} (hf : AnalyticAt 𝕜 f s) (n : ℕ) :
-    AnalyticAt 𝕜 ((Function.swap _root_.dslope z₀)^[n] f) s :=
+    AnalyticAt 𝕜 ((Function.swap dslope z₀)^[n] f) s :=
   Function.Iterate.rec _ hf (fun _ hf ↦ hf.dslope) n
