@@ -91,16 +91,20 @@ simproc castData (_) := fun e => do
   let .lam _ _ (.lam _ _ body _) _ := motive | return .continue
   if body.hasLooseBVar 0 then return .continue
   let β := Expr.lam `i ι (body.lowerLooseBVars 1 1) .default
-  -- Build `f : (i : ι) → β i → γ` by abstracting `b` in the earlier args of `e`.
+  -- Build the proof speculatively: if the tagged constant is not actually invariant under
+  -- `Eq.rec`, the kernel will reject `congr_eqRec` and `mkAppM` throws. We catch the failure
+  -- so the simproc degrades to `.continue` instead of erroring out of `simp`.
   let earlyArgs := args.pop
-  let earlyArgsKab ← earlyArgs.mapM (kabstract · b)
-  let f ← withTransparency .all <| withLocalDeclD `i ι fun iVar => do
-    let earlyArgsAtI := earlyArgsKab.map (·.instantiate1 iVar)
-    withLocalDeclD `z (β.beta #[iVar]) fun zVar => do
-      mkLambdaFVars #[iVar, zVar] <| mkAppN head (earlyArgsAtI.push zVar)
-  -- Apply `congr_eqRec` to produce the rewrite proof: `f b (Eq.rec x h) = f a x`.
-  let proof ← withTransparency .all <| mkAppM ``congr_eqRec #[f, h, x]
-  let earlyArgsAtA := earlyArgsKab.map (·.instantiate1 a)
-  return .visit { expr := mkAppN head (earlyArgsAtA.push x), proof? := some proof }
+  try
+    let earlyArgsKab ← earlyArgs.mapM (kabstract · b)
+    let f ← withTransparency .all <| withLocalDeclD `i ι fun iVar => do
+      let earlyArgsAtI := earlyArgsKab.map (·.instantiate1 iVar)
+      withLocalDeclD `z (β.beta #[iVar]) fun zVar => do
+        mkLambdaFVars #[iVar, zVar] <| mkAppN head (earlyArgsAtI.push zVar)
+    let proof ← withTransparency .all <| mkAppM ``congr_eqRec #[f, h, x]
+    let earlyArgsAtA := earlyArgsKab.map (·.instantiate1 a)
+    return .visit { expr := mkAppN head (earlyArgsAtA.push x), proof? := some proof }
+  catch _ =>
+    return .continue
 
 end

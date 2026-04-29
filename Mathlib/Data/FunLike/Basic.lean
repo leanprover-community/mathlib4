@@ -174,8 +174,6 @@ run_cmd Lean.Elab.Command.liftTermElabM do
   Lean.Meta.registerCoercion ``DFunLike.coe
     (some { numArgs := 5, coercee := 4, type := .coeFun })
 
-attribute [cast_data] DFunLike.coe
-
 theorem coe_eq_coe_fn : (DFunLike.coe (F := F)) = (fun f => ↑f) := rfl
 
 theorem coe_injective : Function.Injective (fun f : F ↦ (f : ∀ a : α, β a)) :=
