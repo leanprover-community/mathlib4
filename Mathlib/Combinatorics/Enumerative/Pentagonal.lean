@@ -18,6 +18,7 @@ convention, but implicitly shows the monotonicity in `pentagonal_lt_pentagonal_n
 `pentagonal_neg_lt_pentagonal_add_one`.
 
 ## Main definitions
+
 * `pentagonal`: pentagonal numbers as a function `ℤ → ℕ`.
 
 ## TODO
