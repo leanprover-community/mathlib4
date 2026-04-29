@@ -773,3 +773,259 @@ lemma _root_.DifferentiableOn.deriv_eq_smul_circleIntegral (h0 : 0 < R)
 end derivatives
 
 end Complex
+
+-- ==========================================
+-- Morera's Theorem and related lemmas
+-- ==========================================
+
+section MoreraTheorem
+
+variable {α E : Type*} [TopologicalSpace α] [NormedAddCommGroup E]
+variable {ι : Type*} {l : Filter ι} [NeBot l]
+
+/-- If a sequence of continuous functions `F i` converges uniformly to `f` on a compact set `K`,
+then the functions `F i` are eventually uniformly bounded on `K`.
+This constant bound is useful as a dominating function for the Dominated Convergence Theorem. -/
+lemma eventually_bound_of_tendstoUniformlyOn {F : ι → α → E} {f : α → E} {K : Set α}
+    (hK : IsCompact K) (h_unif : TendstoUniformlyOn F f l K)
+    (h_cont : ∀ᶠ i in l, ContinuousOn (F i) K) :
+    ∃ M : ℝ, ∀ᶠ i in l, ∀ x ∈ K, ‖F i x‖ ≤ M := by
+  have hf_cont : ContinuousOn f K := TendstoUniformlyOn.continuousOn h_unif h_cont.frequently
+  obtain ⟨M_f, hM_f⟩ := hK.bddAbove_image (continuous_norm.comp_continuousOn hf_cont)
+  use M_f + 1
+  filter_upwards [Metric.tendstoUniformlyOn_iff.mp h_unif 1 zero_lt_one] with i hi x hx
+  calc
+    ‖F i x‖ = ‖(F i x - f x) + f x‖ := by rw [sub_add_cancel]
+    _       ≤ ‖F i x - f x‖ + ‖f x‖ := norm_add_le (F i x - f x) (f x)
+    _       ≤ 1 + M_f               := by
+      apply add_le_add
+      · rw [← dist_eq_norm, dist_comm]
+        exact (hi x hx).le
+      · exact hM_f (mem_image_of_mem (fun a ↦ ‖f a‖) hx)
+    _       = M_f + 1               := add_comm 1 M_f
+
+/-- Parameterizes a straight line segment from `z₁` to `z₂` in the complex plane
+using `t ∈ [0, 1]`. -/
+def paramSegment (z₁ z₂ : ℂ) (t : ℝ) : ℂ :=
+  z₁ + t * (z₂ - z₁)
+
+/-- The complex integral of a function `f` along the straight line segment from `z₁` to `z₂`. -/
+def segmentIntegral (z₁ z₂ : ℂ) (f : ℂ → ℂ) : ℂ :=
+  (z₂ - z₁) * ∫ t in (0:ℝ)..1, f (paramSegment z₁ z₂ t)
+
+/-- If a sequence of functions `F i` converges uniformly to `f` along the parameterized segment
+`[z₁, z₂]`, then the segment integral of `F i` converges to the segment integral of `f`. -/
+lemma tendsto_segmentIntegral_of_tendstoUniformlyOn
+    {ι : Type*} {l : Filter ι} [NeBot l] [IsCountablyGenerated l]
+    (F : ι → ℂ → ℂ) (f : ℂ → ℂ) (z₁ z₂ : ℂ)
+    (h_unif : TendstoUniformlyOn (fun i t ↦ F i (paramSegment z₁ z₂ t))
+      (fun t ↦ f (paramSegment z₁ z₂ t)) l (Icc 0 1))
+    (h_cont : ∀ᶠ i in l, ContinuousOn (fun t ↦ F i (paramSegment z₁ z₂ t)) (Icc 0 1)) :
+    Tendsto (fun i ↦ segmentIntegral z₁ z₂ (F i)) l (𝓝 (segmentIntegral z₁ z₂ f)) := by
+  obtain ⟨M, hM⟩ := eventually_bound_of_tendstoUniformlyOn isCompact_Icc h_unif h_cont
+  have h_int_tendsto : Tendsto (fun i ↦ ∫ t in (0:ℝ)..1, F i (paramSegment z₁ z₂ t)) l
+      (𝓝 (∫ t in (0:ℝ)..1, f (paramSegment z₁ z₂ t))) := by
+    apply intervalIntegral.tendsto_integral_filter_of_dominated_convergence (fun _ ↦ M)
+    · filter_upwards [h_cont] with i hi
+      rw [uIoc_of_le zero_le_one]
+      exact ContinuousOn.aestronglyMeasurable (hi.mono Ioc_subset_Icc_self) measurableSet_Ioc
+    · filter_upwards [hM] with i hi
+      rw [uIoc_of_le zero_le_one]
+      exact ae_of_all _ fun t ht ↦ hi t (Ioc_subset_Icc_self ht)
+    · exact intervalIntegrable_const
+    · rw [uIoc_of_le zero_le_one]
+      apply ae_of_all
+      intro t ht
+      apply Metric.tendsto_nhds.mpr
+      intro ε hε
+      filter_upwards [Metric.tendstoUniformlyOn_iff.mp h_unif ε hε] with i hi
+      rw [dist_comm]
+      exact hi t (Ioc_subset_Icc_self ht)
+  exact Tendsto.const_mul (z₂ - z₁) h_int_tendsto
+
+/-- The integral of a function `f` around the boundary of the triangle with
+vertices `z₁`, `z₂`, and `z₃`. The integration follows the path z₁ → z₂ → z₃ → z₁. -/
+def triangleIntegral (z₁ z₂ z₃ : ℂ) (f : ℂ → ℂ) : ℂ :=
+  segmentIntegral z₁ z₂ f + segmentIntegral z₂ z₃ f + segmentIntegral z₃ z₁ f
+
+/-- [Phase A-4 Core Lemma]
+If a sequence of functions `F i` converges uniformly on each segment and is continuous,
+then the triangle integral of `F i` converges to the triangle integral of `f`. -/
+lemma tendsto_triangleIntegral_of_tendstoUniformlyOn
+    {ι : Type*} {l : Filter ι} [NeBot l] [IsCountablyGenerated l]
+    (F : ι → ℂ → ℂ) (f : ℂ → ℂ) (z₁ z₂ z₃ : ℂ)
+    (h_unif₁₂ : TendstoUniformlyOn (fun i t ↦ F i (paramSegment z₁ z₂ t))
+      (fun t ↦ f (paramSegment z₁ z₂ t)) l (Icc 0 1))
+    (h_cont₁₂ : ∀ᶠ i in l, ContinuousOn (fun t ↦ F i (paramSegment z₁ z₂ t)) (Icc 0 1))
+    (h_unif₂₃ : TendstoUniformlyOn (fun i t ↦ F i (paramSegment z₂ z₃ t))
+      (fun t ↦ f (paramSegment z₂ z₃ t)) l (Icc 0 1))
+    (h_cont₂₃ : ∀ᶠ i in l, ContinuousOn (fun t ↦ F i (paramSegment z₂ z₃ t)) (Icc 0 1))
+    (h_unif₃₁ : TendstoUniformlyOn (fun i t ↦ F i (paramSegment z₃ z₁ t))
+      (fun t ↦ f (paramSegment z₃ z₁ t)) l (Icc 0 1))
+    (h_cont₃₁ : ∀ᶠ i in l, ContinuousOn (fun t ↦ F i (paramSegment z₃ z₁ t)) (Icc 0 1)) :
+    Tendsto (fun i ↦ triangleIntegral z₁ z₂ z₃ (F i)) l (𝓝 (triangleIntegral z₁ z₂ z₃ f)) := by
+  have h₁₂ := tendsto_segmentIntegral_of_tendstoUniformlyOn F f z₁ z₂ h_unif₁₂ h_cont₁₂
+  have h₂₃ := tendsto_segmentIntegral_of_tendstoUniformlyOn F f z₂ z₃ h_unif₂₃ h_cont₂₃
+  have h₃₁ := tendsto_segmentIntegral_of_tendstoUniformlyOn F f z₃ z₁ h_unif₃₁ h_cont₃₁
+  unfold triangleIntegral
+  exact (h₁₂.add h₂₃).add h₃₁
+
+/-- The primitive function of `f` with respect to a base point `z₀`,
+defined as the integral along the segment from `z₀` to `z`. -/
+def complexPrimitive (z₀ : ℂ) (f : ℂ → ℂ) (z : ℂ) : ℂ :=
+  segmentIntegral z₀ z f
+
+/-- Symmetry property of the segment integral: reversing the path flips the sign. -/
+lemma segmentIntegral_symm (z₁ z₂ : ℂ) (f : ℂ → ℂ) :
+    segmentIntegral z₁ z₂ f = - segmentIntegral z₂ z₁ f := by
+  unfold segmentIntegral paramSegment
+  let g := fun (x : ℝ) ↦ f (z₁ + (x : ℂ) * (z₂ - z₁))
+  have h_left : (fun (t : ℝ) ↦ f (z₁ + (t : ℂ) * (z₂ - z₁))) = g := rfl
+  have h_right : (fun (t : ℝ) ↦ f (z₂ + (t : ℂ) * (z₁ - z₂))) = (fun (t : ℝ) ↦ g (1 - t)) := by
+    ext t
+    dsimp [g]
+    congr 1
+    push_cast
+    ring
+  rw [h_left, h_right, intervalIntegral.integral_comp_sub_left]
+  have h0 : (1 : ℝ) - 1 = 0 := by ring
+  have h1 : (1 : ℝ) - 0 = 1 := by ring
+  rw [h0, h1]
+  generalize (∫ (t : ℝ) in (0:ℝ)..1, g t) = I
+  ring
+
+/-- [Phase B-2 Core Lemma]
+The difference between the primitive values at `z + h` and `z` is equal to
+the integral along the segment from `z` to `z + h`. -/
+lemma primitive_diff_eq_segmentIntegral (z₀ z h : ℂ) (f : ℂ → ℂ)
+    (h_tri : triangleIntegral z₀ z (z + h) f = 0) :
+    complexPrimitive z₀ f (z + h) - complexPrimitive z₀ f z =
+      segmentIntegral z (z + h) f := by
+  unfold complexPrimitive
+  unfold triangleIntegral at h_tri
+  rw [segmentIntegral_symm (z + h) z₀ f] at h_tri
+  generalize segmentIntegral z₀ z f = A at h_tri ⊢
+  generalize segmentIntegral z (z + h) f = B at h_tri ⊢
+  generalize segmentIntegral z₀ (z + h) f = C at h_tri ⊢
+  calc
+    C - A = C - A + (A + B + -C) := by rw [h_tri, add_zero]
+    _     = B := by ring
+
+/-- ML inequality (Darboux's inequality) for segment integrals. -/
+lemma norm_segmentIntegral_le (z₁ z₂ : ℂ) (f : ℂ → ℂ) (M : ℝ)
+    (h_bound : ∀ t ∈ Icc (0 : ℝ) 1, ‖f (paramSegment z₁ z₂ t)‖ ≤ M) :
+    ‖segmentIntegral z₁ z₂ f‖ ≤ ‖z₂ - z₁‖ * M := by
+  unfold segmentIntegral
+  rw [norm_mul]
+  apply mul_le_mul_of_nonneg_left
+  · have hM : M = M * |(1:ℝ) - 0| := by rw [sub_zero, abs_one, mul_one]
+    rw [hM]
+    apply intervalIntegral.norm_integral_le_of_norm_le_const
+    rw [uIoc_of_le zero_le_one]
+    intro t ht
+    exact h_bound t (Ioc_subset_Icc_self ht)
+  · exact norm_nonneg _
+
+/-- The integral of a constant function `c` along a segment from `z₁` to `z₂`. -/
+lemma segmentIntegral_const (z₁ z₂ c : ℂ) :
+    segmentIntegral z₁ z₂ (fun _ ↦ c) = (z₂ - z₁) * c := by
+  unfold segmentIntegral
+  have h_eq : (fun t : ℝ ↦ (fun _ : ℂ ↦ c) (paramSegment z₁ z₂ t)) = fun t : ℝ ↦ c := rfl
+  rw [h_eq, intervalIntegral.integral_const]
+  simp
+
+/-- The segment integral is linear with respect to subtraction. -/
+lemma segmentIntegral_sub (z₁ z₂ : ℂ) (f g : ℂ → ℂ)
+    (hf : IntervalIntegrable (fun t ↦ f (paramSegment z₁ z₂ t)) volume 0 1)
+    (hg : IntervalIntegrable (fun t ↦ g (paramSegment z₁ z₂ t)) volume 0 1) :
+    segmentIntegral z₁ z₂ (fun w ↦ f w - g w) =
+      segmentIntegral z₁ z₂ f - segmentIntegral z₁ z₂ g := by
+  unfold segmentIntegral
+  have h_eq : (fun t : ℝ ↦ (fun w ↦ f w - g w) (paramSegment z₁ z₂ t)) =
+    fun t : ℝ ↦ f (paramSegment z₁ z₂ t) - g (paramSegment z₁ z₂ t) := rfl
+  rw [h_eq, intervalIntegral.integral_sub hf hg, mul_sub]
+
+/-- [Phase B-3 Core Bound]
+Evaluates the error of the linear approximation of the primitive function. -/
+lemma primitive_diff_sub_mul_bound (z₀ z h : ℂ) (f : ℂ → ℂ)
+    (hf_cont : Continuous f)
+    (h_tri : triangleIntegral z₀ z (z + h) f = 0) (ε : ℝ)
+    (h_bound : ∀ t ∈ Icc (0 : ℝ) 1, ‖f (paramSegment z (z + h) t) - f z‖ ≤ ε) :
+    ‖complexPrimitive z₀ f (z + h) - complexPrimitive z₀ f z - h * f z‖ ≤ ‖h‖ * ε := by
+  rw [primitive_diff_eq_segmentIntegral z₀ z h f h_tri]
+  have h_const : h * f z = segmentIntegral z (z + h) (fun _ ↦ f z) := by
+    rw [segmentIntegral_const]
+    congr 1
+    ring
+  rw [h_const]
+  have hint_f : IntervalIntegrable (fun t ↦ f (paramSegment z (z + h) t)) volume 0 1 := by
+    apply Continuous.intervalIntegrable
+    unfold paramSegment
+    continuity
+  have hint_c : IntervalIntegrable (fun t ↦ f z) volume 0 1 := intervalIntegrable_const
+  rw [← segmentIntegral_sub z (z + h) f (fun _ ↦ f z) hint_f hint_c]
+  have h_norm := norm_segmentIntegral_le z (z + h) (fun w ↦ f w - f z) ε h_bound
+  have h_diff : (z + h) - z = h := by ring
+  rw [h_diff] at h_norm
+  exact h_norm
+
+/-- [Phase B-4 Main Theorem]
+The primitive function `F(z) = ∫[z₀, z] f(w) dw` is complex differentiable
+at `z` with derivative `f(z)`. -/
+lemma hasDerivAt_complexPrimitive (z₀ z : ℂ) (f : ℂ → ℂ)
+    (hf_cont : Continuous f)
+    (h_tri : ∀ z₁ z₂ z₃ : ℂ, triangleIntegral z₁ z₂ z₃ f = 0) :
+    HasDerivAt (complexPrimitive z₀ f) (f z) z := by
+  rw [hasDerivAt_iff_isLittleO_nhds_zero, Asymptotics.isLittleO_iff]
+  intro c hc
+  have hf_contAt : ContinuousAt f z := hf_cont.continuousAt
+  rcases Metric.continuousAt_iff.mp hf_contAt c hc with ⟨δ, hδ_pos, hδ_bound⟩
+  rw [Metric.eventually_nhds_iff]
+  use δ, hδ_pos
+  intro h hh
+  have h_norm_lt_delta : ‖h‖ < δ := by
+    have h_eq : dist h 0 = ‖h‖ := by simp [dist_eq_norm]
+    rwa [h_eq] at hh
+  have h_seg_bound : ∀ t ∈ Icc (0:ℝ) 1, ‖f (paramSegment z (z + h) t) - f z‖ ≤ c := by
+    intro t ht
+    have h_dist : dist (paramSegment z (z + h) t) z < δ := by
+      rw [dist_eq_norm]
+      unfold paramSegment
+      have h_alg : z + (t:ℂ) * (z + h - z) - z = (t:ℂ) * h := by ring
+      rw [h_alg, norm_mul]
+      have ht_norm : ‖(t:ℂ)‖ ≤ 1 := by
+        have h_abs : ‖(t:ℂ)‖ = ‖t‖ := by simp
+        rw [h_abs, Real.norm_eq_abs, abs_of_nonneg ht.1]
+        exact ht.2
+      calc ‖(t:ℂ)‖ * ‖h‖ ≤ 1 * ‖h‖ := mul_le_mul_of_nonneg_right ht_norm (norm_nonneg _)
+        _ = ‖h‖ := one_mul _
+        _ < δ := h_norm_lt_delta
+    have h_lt_c := hδ_bound h_dist
+    rw [dist_eq_norm] at h_lt_c
+    exact h_lt_c.le
+  have h_core := primitive_diff_sub_mul_bound z₀ z h f hf_cont
+    (h_tri z₀ z (z + h)) c h_seg_bound
+  rw [mul_comm c ‖h‖]
+  exact h_core
+
+/-- [Phase C: Morera's Theorem]
+If a continuous complex function `f` has vanishing integrals along all triangles,
+then `f` is complex differentiable (holomorphic) everywhere on ℂ. -/
+lemma morera_theorem (f : ℂ → ℂ)
+    (hf_cont : Continuous f)
+    (h_tri : ∀ z₁ z₂ z₃ : ℂ, triangleIntegral z₁ z₂ z₃ f = 0) :
+    Differentiable ℂ f := by
+  let F := complexPrimitive 0 f
+  have hF_hasDeriv : ∀ z, HasDerivAt F (f z) z :=
+    fun z ↦ hasDerivAt_complexPrimitive 0 z f hf_cont h_tri
+  have hF_diff : Differentiable ℂ F := fun z ↦ (hF_hasDeriv z).differentiableAt
+  have h_deriv_eq : deriv F = f := by
+    ext z
+    exact (hF_hasDeriv z).deriv
+  intro z
+  have hF_analytic : AnalyticAt ℂ F z := hF_diff.analyticAt z
+  have hf_analytic : AnalyticAt ℂ (deriv F) z := hF_analytic.deriv
+  rw [← h_deriv_eq]
+  exact hf_analytic.differentiableAt
+
+end MoreraTheorem
