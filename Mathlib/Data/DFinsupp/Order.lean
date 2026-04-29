@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.Module.Defs
+public import Mathlib.Algebra.Order.Pi
 public import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.Data.DFinsupp.Module
 
@@ -61,7 +62,7 @@ theorem orderEmbeddingToFun_apply {f : Π₀ i, α i} {i : ι} :
 end LE
 
 section Preorder
-variable [∀ i, Preorder (α i)] {f g : Π₀ i, α i}
+variable [∀ i, Preorder (α i)] {f g : Π₀ i, α i} {i : ι} {a b : α i}
 
 instance : Preorder (Π₀ i, α i) :=
   { (inferInstance : LE (DFinsupp α)) with
@@ -74,6 +75,16 @@ lemma lt_def : f < g ↔ f ≤ g ∧ ∃ i, f i < g i := Pi.lt_def
 lemma coe_mono : Monotone ((⇑) : (Π₀ i, α i) → ∀ i, α i) := fun _ _ ↦ id
 
 lemma coe_strictMono : Monotone ((⇑) : (Π₀ i, α i) → ∀ i, α i) := fun _ _ ↦ id
+
+variable [DecidableEq ι]
+
+@[simp, gcongr] lemma single_le_single : single i a ≤ single i b ↔ a ≤ b :=
+  Pi.single_le_single
+
+lemma single_mono : Monotone (single i : α i → Π₀ i, α i) := fun _ _ ↦ single_le_single.2
+
+@[simp] lemma single_nonneg : 0 ≤ single i a ↔ 0 ≤ a := Pi.single_nonneg
+@[simp] lemma single_nonpos : single i a ≤ 0 ↔ a ≤ 0 := Pi.single_nonpos
 
 end Preorder
 
