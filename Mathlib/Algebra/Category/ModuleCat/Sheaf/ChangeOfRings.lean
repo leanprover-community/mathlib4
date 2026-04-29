@@ -100,13 +100,13 @@ noncomputable def restrictScalarsId' : restrictScalars f ≅ 𝟭 _ :=
     (PresheafOfModules.restrictScalarsId' f.hom (by subst hf; rfl)).app M.val
 
 @[simp]
-lemma restrictScalarsId'_hom_app_app_hom_apply
+lemma restrictScalarsId'_hom_app_val_app_hom_apply
     {M : SheafOfModules.{v} R} {X : Cᵒᵖ} (m : M.val.obj X) :
     ((restrictScalarsId' f hf).hom.app M).val.app X m = m :=
   rfl
 
 @[simp]
-lemma restrictScalarsId'_inv_app_app_hom_apply
+lemma restrictScalarsId'_inv_app_val_app_hom_apply
     {M : SheafOfModules.{v} R} {X : Cᵒᵖ} (m : M.val.obj X) :
     ((restrictScalarsId' f hf).inv.app M).val.app X m = m :=
   rfl
@@ -144,13 +144,13 @@ noncomputable def restrictScalarsComp' :
     (PresheafOfModules.restrictScalarsComp' f.hom g.hom gf.hom (by subst hgf; rfl)).app M.val
 
 @[simp]
-lemma restrictScalarsComp'_hom_app_app_hom_apply
+lemma restrictScalarsComp'_hom_app_val_app_hom_apply
     {M : SheafOfModules.{v} R₃} {X : Cᵒᵖ} (m : M.val.obj X) :
     ((restrictScalarsComp' f g gf hgf).hom.app M).val.app X m = m :=
   rfl
 
 @[simp]
-lemma restrictScalarsComp'_inv_app_app_hom_apply
+lemma restrictScalarsComp'_inv_app_val_app_hom_apply
     {M : SheafOfModules.{v} R₃} {X : Cᵒᵖ} (m : M.val.obj X) :
     ((restrictScalarsComp' f g gf hgf).inv.app M).val.app X m = m :=
   rfl
