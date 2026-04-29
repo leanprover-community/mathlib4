@@ -5,6 +5,7 @@ Authors: Weiyi Wang
 -/
 module
 
+public import Mathlib.Combinatorics.Enumerative.Pentagonal
 public import Mathlib.Topology.Algebra.InfiniteSum.Ring
 public import Mathlib.Topology.Algebra.TopologicallyNilpotent
 
@@ -49,7 +50,6 @@ $$ b_{k, n} = x^{(k+1)n} (x^{2k + n + 3} - 1) \prod_{i=0}^{n-1} (1 - x^{k + i + 
 def aux (k n : ℕ) (x : R) : R :=
   x ^ ((k + 1) * n) * (x ^ (2 * k + n + 3) - 1) * ∏ i ∈ Finset.range n, (1 - x ^ (k + i + 2))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `powMulProdOneSubPow` and `aux` have relation
 
 $$ a_{k,n} + x^{3k + 5}a_{k + 1, n} = b_{k, n+1} - b_{k, n} $$ -/
@@ -108,7 +108,6 @@ theorem tprod_one_sub_pow_eq_powMulProdOneSubPow_zero {x : R}
       ← pow_add x 1 1, one_add_one_eq_two, mul_assoc (x ^ 2)]
   simp [hsum.tsum_mul_left, powMulProdOneSubPow]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Applying the recurrence formula repeatedly, we get
 
 $$ \prod_{n = 0}^{\infty} (1 - x^{n + 1}) =
@@ -146,17 +145,19 @@ public theorem tprod_one_sub_pow {x : R} (hx : IsTopologicallyNilpotent x)
     (hsum : ∀ k, Summable (powMulProdOneSubPow k · x))
     (hlhs : ∀ k, Multipliable (fun n ↦ 1 - x ^ (n + k + 1)))
     (hrhs : Summable fun (k : ℕ) ↦
-      (-1) ^ k * (x ^ (k * (3 * k + 1) / 2) - x ^ ((k + 1) * (3 * k + 2) / 2)))
+      (-1) ^ k * (x ^ pentagonal (-k) - x ^ pentagonal (k + 1)))
     (htail : Tendsto (fun k ↦ (-1) ^ (k + 1) * x ^ ((k + 1) * (3 * k + 4) / 2) *
       ∑' (n : ℕ), powMulProdOneSubPow k n x) atTop (nhds 0)) :
     ∏' n, (1 - x ^ (n + 1)) =
-    ∑' k, (-1) ^ k * (x ^ (k * (3 * k + 1) / 2) - x ^ ((k + 1) * (3 * k + 2) / 2)) := by
+    ∑' (k : ℕ), (-1) ^ k * (x ^ pentagonal (-k) - x ^ pentagonal (k + 1)) := by
   obtain h := fun n ↦ tprod_one_sub_pow_eq_powMulProdOneSubPow n hx hsum hlhs
   simp_rw [← sub_eq_iff_eq_add] at h
   refine (HasSum.tsum_eq ?_).symm
   rw [hrhs.hasSum_iff_tendsto_nat, (map_add_atTop_eq_nat 1).symm]
   apply tendsto_map'
-  simp_rw [Function.comp_def, ← h]
+  have h1 (k : ℕ) : pentagonal (k + 1) = ((k + 1) * (3 * k + 2) / 2) := by grind [pentagonal_def]
+  have h2 (k : ℕ) : pentagonal (-k) = (k * (3 * k + 1) / 2) := by grind [pentagonal_neg]
+  simp_rw [h1, h2, Function.comp_def, ← h]
   rw [← tendsto_sub_nhds_zero_iff]
   simpa using htail.neg
 
