@@ -8,7 +8,7 @@ module
 public import Mathlib.Data.Int.SuccPred
 
 /-!
-# Pentagonal number
+# Pentagonal numbers
 
 This file introduces (generalized) pentagonal numbers $k(3k-1)/2$ for integer $k$.
 
