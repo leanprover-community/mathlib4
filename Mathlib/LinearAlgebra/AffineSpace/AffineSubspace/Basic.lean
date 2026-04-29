@@ -882,7 +882,7 @@ theorem _root_.affineSpan_prod (s : Set P₁) (t : Set P₂) :
     simp only [coe_affineSpan, prod_coe, mem_inter_iff, Set.mem_prod]
     refine ⟨?_, ?_, ?_⟩ <;> apply mem_spanPoints <;> trivial
 
-theorem _root_.affineSpan_prod_set_eq (s : Set P₁) (t : Set P₂) :
+theorem _root_.coe_affineSpan_prod (s : Set P₁) (t : Set P₂) :
     (affineSpan k (s ×ˢ t) : Set (P₁ × P₂)) =
       (affineSpan k s : Set P₁) ×ˢ (affineSpan k t : Set P₂) := by
   simpa only [AffineSubspace.ext_iff, prod_coe] using (affineSpan_prod s t)
