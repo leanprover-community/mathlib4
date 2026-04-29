@@ -114,7 +114,7 @@ alias ⟨IsClique.subsingleton, _⟩ := isClique_bot_iff
 
 @[simp]
 theorem isClique_univ : G.IsClique .univ ↔ G = ⊤ :=
-  ⟨fun h ↦ eq_top_iff_forall_ne_adj.mpr fun _ _ ↦ h trivial trivial, (· ▸ .top .univ)⟩
+  Set.pairwise_univ.trans G.eq_top_iff_forall_ne_adj.symm
 
 protected theorem IsClique.map (h : G.IsClique s) {f : α ↪ β} : (G.map f).IsClique (f '' s) := by
   rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ hab
