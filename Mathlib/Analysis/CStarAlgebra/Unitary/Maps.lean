@@ -77,7 +77,7 @@ lemma mulRight_trans_mulRight (u v : unitary A) :
 lemma mulRight_mul_apply (u v : unitary A) (x : A) :
     mulRight R (u * v) x = mulRight R v (mulRight R u x) := by simp [mul_assoc]
 
-@[simp] lemma toLinearMap_mulRight (u : unitary A) :
+lemma toLinearMap_mulRight (u : unitary A) :
     (mulRight R u).toLinearMap = LinearMap.mulRight R (u : A) := rfl
 
 @[simp] lemma mulRight_one : mulRight R 1 = .refl R A := by

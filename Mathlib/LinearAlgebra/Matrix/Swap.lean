@@ -135,6 +135,8 @@ def swap (i j : n) : GL n R where
   val_inv := swap_mul_self i j
   inv_val := swap_mul_self i j
 
+attribute [-simp] Matrix.GeneralLinearGroup.val_inv_swap
+
 variable {R} {S : Type*} [CommRing S] (f : R →+* S)
 
 @[simp]
