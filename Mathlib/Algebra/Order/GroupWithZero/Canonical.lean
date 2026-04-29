@@ -580,6 +580,9 @@ lemma lt_log_of_exp_lt (hax : exp a < x) : a < log x :=
   __ := logEquiv
   map_rel_iff' := by simp
 
+attribute [-simp] WithZero.val_inv_expOrderIso_apply
+  WithZero.val_inv_logOrderIso_symm_apply
+
 lemma lt_mul_exp_iff_le {x y : ℤᵐ⁰} (hy : y ≠ 0) : x < y * exp 1 ↔ x ≤ y := by
   lift y to Multiplicative ℤ using hy
   obtain rfl | hx := eq_or_ne x 0

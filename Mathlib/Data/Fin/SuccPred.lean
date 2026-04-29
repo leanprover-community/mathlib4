@@ -141,6 +141,8 @@ def _root_.finCongr (eq : n = m) : Fin n ≃ Fin m where
   left_inv := leftInverse_cast eq
   right_inv := rightInverse_cast eq
 
+attribute [-simp] finCongr_symm_apply
+
 @[simp] lemma _root_.finCongr_apply_mk (h : m = n) (k : ℕ) (hk : k < m) :
     finCongr h ⟨k, hk⟩ = ⟨k, h ▸ hk⟩ := rfl
 

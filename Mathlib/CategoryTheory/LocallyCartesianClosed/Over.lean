@@ -255,7 +255,7 @@ variable {C : Type u₁} [Category.{v₁} C] [CartesianMonoidalCategory C]
 set_option backward.defeqAttrib.useBackward true in
 /-- The functor which maps an object `A` in `C` to the projection `A ⊗ X ⟶ X` in `Over X`.
 This is the computable analogue of the functor `Over.star`. -/
-@[simps! obj_left obj_hom map_left]
+@[simps! obj_left obj_hom]
 def toOver (X : C) : C ⥤ Over X where
   obj A := Over.mk <| CartesianMonoidalCategory.snd A X
   map f := Over.homMk (f ▷ X)

@@ -127,7 +127,6 @@ def mkIso' {M N : C} (e : M ≅ N) [MonObj M] [IsCommMonObj M] [MonObj N] [IsCom
 /-- Construct an isomorphism of commutative monoid objects by giving an isomorphism between the
 underlying objects and checking compatibility with unit and multiplication only in the forward
 direction. -/
-@[simps!]
 abbrev mkIso {M N : CommMon C} (e : M.X ≅ N.X) (one_f : η[M.X] ≫ e.hom = η[N.X] := by cat_disch)
     (mul_f : μ[M.X] ≫ e.hom = (e.hom ⊗ₘ e.hom) ≫ μ[N.X] := by cat_disch) : M ≅ N :=
   have : IsMonHom e.hom := ⟨one_f, mul_f⟩

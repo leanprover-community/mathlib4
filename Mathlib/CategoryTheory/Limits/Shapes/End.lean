@@ -96,7 +96,6 @@ variable (pt : C) (π : ∀ (j : J), pt ⟶ (F.obj (op j)).obj j)
   (hπ : ∀ ⦃i j : J⦄ (f : i ⟶ j), π i ≫ (F.obj (op i)).map f = π j ≫ (F.map f.op).app j)
 
 /-- Constructor for wedges. -/
-@[simps! pt]
 abbrev mk : Wedge F :=
   Multifork.ofι _ pt π (fun f ↦ hπ f.hom)
 
@@ -160,7 +159,6 @@ variable (pt : C) (ι : ∀ (j : J), (F.obj (op j)).obj j ⟶ pt)
   (hι : ∀ ⦃i j : J⦄ (f : i ⟶ j), (F.map f.op).app i ≫ ι i = (F.obj (op j)).map f ≫ ι j)
 
 /-- Constructor for cowedges. -/
-@[simps! pt]
 abbrev mk : Cowedge F :=
   Multicofork.ofπ _ pt ι (fun f ↦ hι f.hom)
 
