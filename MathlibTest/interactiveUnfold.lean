@@ -122,7 +122,7 @@ variable {α : Type} [Group α] (a : α) in
 -- The proof `aux._proof_1` is an implementation detail. It should not be a problem if
 -- that appears in the expression, as long as it appears inside an implicit argument.
 def aux {α : Type} [Semiring α] := (3 : α)
-set_option linter.style.auxLemma false in
+set_option linter.auxLemma false in
 /--
 info: Unfolds for 3 + 3:
 · Nat.add 3 3

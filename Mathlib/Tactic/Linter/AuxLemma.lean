@@ -25,11 +25,11 @@ meta section
 
 open Lean Elab Linter
 
-namespace Mathlib.Linter.Style
+namespace Mathlib.Linter.AuxLemma
 
 /-- Returns `true` if `s` has the form `pfx ++ digits`, e.g. `"_proof_17"`. -/
-private def matchesAuxPattern (pfx : String) (s : String) : Bool :=
-  s.startsWith pfx && (s.drop pfx.length).all (·.isDigit) && s.length > pfx.length
+@[inline] private def matchesAuxPattern (pfx : String) (s : String) : Bool :=
+  s.startsWith pfx && (s.drop pfx.length).all (·.isDigit) && s.rawEndPos > pfx.rawEndPos
 
 /-- Returns `true` if `s` is an auto-generated auxiliary name component,
 such as `_proof_1`, `match_2`, or `_sizeOf_3`. -/
@@ -37,9 +37,13 @@ private def isAuxName (s : String) : Bool :=
   matchesAuxPattern "_proof_" s ||
   matchesAuxPattern "match_" s ||
   matchesAuxPattern "_match_" s ||
-  matchesAuxPattern "_sizeOf_" s
+  matchesAuxPattern "_sizeOf_" s ||
+  matchesAuxPattern "grind_" s ||
+  matchesAuxPattern "_simp_" s ||
+  matchesAuxPattern "_gcongr_" s ||
+  matchesAuxPattern "_aux_" s
 
-/-- Returns `true` if any component of `nm` is an auto-generated auxiliary name. -/
+/-- Returns `true` if any component of the name is an auto-generated auxiliary name. -/
 private def nameRefersToAuxLemma : Name → Bool
   | .str p s => isAuxName s || nameRefersToAuxLemma p
   | .num p _ => nameRefersToAuxLemma p
@@ -48,24 +52,23 @@ private def nameRefersToAuxLemma : Name → Bool
 /-- The `auxLemma` linter emits a warning on any explicit reference to an auto-generated
 auxiliary declaration (such as `_proof_1`, `_match_1`, or `_sizeOf_1`).
 
-These names are internal to the Lean elaborator and are not stable across refactors.
--/
-public register_option linter.style.auxLemma : Bool := {
+These names are internal to the Lean elaborator and are not stable across refactors. -/
+public register_option linter.auxLemma : Bool := {
   defValue := true
   descr := "enable the `auxLemma` linter"
 }
 
-/-- The `auxLemma` linter: see docstring above -/
+@[inherit_doc linter.auxLemma]
 def auxLemmaLinter : Linter where run := withSetOptionIn fun stx => do
-    unless getLinterValue linter.style.auxLemma (← getLinterOptions) do
+    unless getLinterValue linter.auxLemma (← getLinterOptions) do
       return
-    if (← MonadState.get).messages.hasErrors then
+    if ← MonadLog.hasErrors then
       return
     if let some id := stx.find? fun s => s.isIdent && nameRefersToAuxLemma s.getId then
-      Linter.logLint linter.style.auxLemma id
-        m!"'{id.getId}' refers to an auto-generated auxiliary declaration. \
+      logLint linter.auxLemma id
+        m!"`{id.getId}` refers to an auto-generated auxiliary declaration. \
           These are not stable across refactors; consider using a different approach."
 
 initialize addLinter auxLemmaLinter
 
-end Mathlib.Linter.Style
+end Mathlib.Linter.AuxLemma

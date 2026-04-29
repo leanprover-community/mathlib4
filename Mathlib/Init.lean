@@ -83,7 +83,7 @@ all these linters, or add the `weak.linter.mathlibStandardSet` option to their l
 register_linter_set linter.mathlibStandardSet :=
   -- linter.allScriptsDocumented -- disabled, let's not impose this requirement downstream.
   -- linter.checkInitImports -- disabled, not relevant downstream.
-  linter.style.auxLemma
+  linter.auxLemma
   linter.flexible
   linter.hashCommand
   linter.oldObtain
@@ -128,7 +128,7 @@ register_linter_set linter.weeklyLintSet :=
   linter.tacticAnalysis.verifyGrindOnly
 
 -- Check that all linter options mentioned in the mathlib standard linter set exist.
-open Lean Elab.Command Linter Mathlib.Linter Style UnusedInstancesInType
+open Lean Elab.Command Linter Mathlib.Linter Style UnusedInstancesInType AuxLemma
 
 run_cmd liftTermElabM do
   let DefinedInScripts : Array Name :=

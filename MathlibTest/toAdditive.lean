@@ -769,13 +769,13 @@ def Subtype.mul_inv_iff_mul_inv {α β : Type} [Group α] [MyRing β] (a : α) (
   exists a
   simp
 
-set_option linter.style.auxLemma false in
+set_option linter.auxLemma false in
 /--
 info: Subtype.mul_inv_iff_mul_inv._proof_1 {α β : Type} [Group α] [MyRing β] (a : α) (b : β) : a * a⁻¹ = 1 ↔ b * b⁻¹ = 1
 -/
 #guard_msgs in
 #check Subtype.mul_inv_iff_mul_inv._proof_1
-set_option linter.style.auxLemma false in
+set_option linter.auxLemma false in
 /--
 info: Subtype.add_neg_iff_mul_inv._proof_1 {α β : Type} [AddGroup α] [MyRing β] (a : α) (b : β) : a + -a = 0 ↔ b * b⁻¹ = 1
 -/

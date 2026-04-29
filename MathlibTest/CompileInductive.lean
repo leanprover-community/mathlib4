@@ -21,7 +21,7 @@ example := @Nat.brecOn
 example := @List.brecOn
 example := @Fin2.brecOn
 
-set_option linter.style.auxLemma false in
+set_option linter.auxLemma false in
 example := @List._sizeOf_1
 
 open Lean Elab Term
