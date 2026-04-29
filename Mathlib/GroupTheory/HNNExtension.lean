@@ -443,13 +443,10 @@ theorem unitsSMul_neg (u : ℤˣ) (w : NormalWord d) :
       apply NormalWord.ext
       · -- This used to `simp [this]` before https://github.com/leanprover/lean4/pull/2644
         dsimp
-        conv_lhs => erw [IsComplement.equiv_mul_left]
-        rw [map_mul, Submonoid.coe_mul, toSubgroupEquiv_neg_apply, this]
+        rw [IsComplement.equiv_mul_left, map_mul, Submonoid.coe_mul, toSubgroupEquiv_neg_apply,
+          this]
         simp
-      · -- The next two lines were not needed before https://github.com/leanprover/lean4/pull/2644
-        dsimp
-        conv_lhs => erw [IsComplement.equiv_mul_left]
-        simp [Units.ext_iff, (d.compl (-u)).equiv_snd_eq_inv_mul, this,
+      · simp [IsComplement.equiv_mul_left,Units.ext_iff, (d.compl (-u)).equiv_snd_eq_inv_mul, this,
           -SetLike.coe_sort_coe]
 
 /-- the equivalence given by multiplication on the left by `t` -/
@@ -660,9 +657,9 @@ theorem exists_normalWord_prod_eq
             (List.head?_eq_some_head _) hS
           rwa [List.head?_eq_some_head hl, Option.map_some, ← this, Option.some_inj] at hx'
         simp at this
-      rw [List.map_cons, mul_smul, of_smul_eq_smul, NormalWord.group_smul_def,
+      rw [List.map_cons, mul_smul, of_smul_eq_smul,
         t_pow_smul_eq_unitsSMul, unitsSMul]
-      erw [dif_neg this]
+      rw [dif_neg this]
       rw [← hw'2]
       simp [mul_assoc, unitsSMulGroup]
 
