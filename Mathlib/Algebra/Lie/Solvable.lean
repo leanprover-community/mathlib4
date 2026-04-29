@@ -103,16 +103,16 @@ theorem derivedSeriesOfIdeal_le {I J : LieIdeal R L} {k l : ℕ} (h₁ : I ≤ J
     · rw [derivedSeriesOfIdeal_succ]; exact le_trans (LieSubmodule.lie_le_left _ _) (ih h)
 
 theorem derivedSeriesOfIdeal_succ_le (k : ℕ) : D (k + 1) I ≤ D k I :=
-  derivedSeriesOfIdeal_le (le_refl I) k.le_succ
+  derivedSeriesOfIdeal_le le_rfl k.le_succ
 
 theorem derivedSeriesOfIdeal_le_self (k : ℕ) : D k I ≤ I :=
-  derivedSeriesOfIdeal_le (le_refl I) (zero_le k)
+  derivedSeriesOfIdeal_le le_rfl zero_le
 
 theorem derivedSeriesOfIdeal_mono {I J : LieIdeal R L} (h : I ≤ J) (k : ℕ) : D k I ≤ D k J :=
-  derivedSeriesOfIdeal_le h (le_refl k)
+  derivedSeriesOfIdeal_le h le_rfl
 
 theorem derivedSeriesOfIdeal_antitone {k l : ℕ} (h : l ≤ k) : D k I ≤ D l I :=
-  derivedSeriesOfIdeal_le (le_refl I) h
+  derivedSeriesOfIdeal_le le_rfl h
 
 theorem derivedSeriesOfIdeal_add_le_add (J : LieIdeal R L) (k l : ℕ) :
     D (k + l) (I + J) ≤ D k I + D l J := by

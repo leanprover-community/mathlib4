@@ -220,16 +220,7 @@ theorem combinatorial_nullstellensatz_exists_linearCombination
   apply eq_zero_of_eval_zero_at_prod_finset r S
   · intro i
     rw [degreeOf_eq_sup, Finset.sup_lt_iff (by simp [Sne i])]
-    intro c hc
-    rw [← not_le]
-    intro h'
-    apply hr c hc i
-    intro j
-    rw [Alon.degree_P, single_apply]
-    split_ifs with hj
-    · rw [← hj]
-      exact h'
-    · exact zero_le _
+    aesop (add simp [Alon.degree_P])
   · intro x hx
     rw [Iff.symm sub_eq_iff_eq_add'] at hf
     rw [← hf, map_sub, Heval x hx, zero_sub, neg_eq_zero,

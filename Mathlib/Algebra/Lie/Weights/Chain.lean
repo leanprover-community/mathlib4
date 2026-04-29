@@ -219,7 +219,7 @@ lemma exists_forall_mem_corootSpace_smul_add_eq_zero
   let b := ∑ i ∈ Finset.Ioo p q, finrank R (genWeightSpace M (i • α + χ))
   have hb : 0 < b := by
     replace hχ : Nontrivial (genWeightSpace M χ) := by rwa [LieSubmodule.nontrivial_iff_ne_bot]
-    refine Finset.sum_pos' (fun _ _ ↦ zero_le _) ⟨0, Finset.mem_Ioo.mpr ⟨hp₀, hq₀⟩, ?_⟩
+    refine Finset.sum_pos' (fun _ _ ↦ zero_le) ⟨0, Finset.mem_Ioo.mpr ⟨hp₀, hq₀⟩, ?_⟩
     rw [zero_smul, zero_add]
     exact finrank_pos
   refine ⟨a, b, Int.natCast_pos.mpr hb, fun x hx ↦ ?_⟩

@@ -1220,7 +1220,7 @@ theorem normAtAllPlaces_eq_of_normAtComplexPlaces_eq {x y : mixedSpace K}
 
 theorem normAtAllPlaces_image_preimage_of_nonneg {s : Set (realSpace K)}
     (hs : ∀ x ∈ s, ∀ w, 0 ≤ x w) :
-    normAtAllPlaces '' (normAtAllPlaces ⁻¹' s) = s := by
+    normAtAllPlaces '' normAtAllPlaces ⁻¹' s = s := by
   rw [Set.image_preimage_eq_iff]
   rintro x hx
   refine ⟨mixedSpaceOfRealSpace x, funext fun w ↦ ?_⟩

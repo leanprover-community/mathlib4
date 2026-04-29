@@ -127,7 +127,7 @@ theorem SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge (f : α →ₛ ℝ
     obtain ⟨u, su, u_open, μu⟩ : ∃ (u : _), u ⊇ s ∧ IsOpen u ∧ μ u < μ s + ε / c :=
       s.exists_isOpen_lt_of_lt _ this
     refine ⟨Set.indicator u fun _ => c,
-            fun x => ?_, u_open.lowerSemicontinuous_indicator (zero_le _), ?_⟩
+      fun x => ?_, u_open.lowerSemicontinuous_indicator zero_le, ?_⟩
     · simp only [SimpleFunc.coe_const, SimpleFunc.const_zero, SimpleFunc.coe_zero,
         Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise, ← Function.const_def]
       grw [su]
@@ -323,7 +323,7 @@ theorem SimpleFunc.exists_upperSemicontinuous_le_lintegral_le (f : α →ₛ ℝ
     obtain ⟨F, Fs, F_closed, μF⟩ : ∃ (F : _), F ⊆ s ∧ IsClosed F ∧ μ s < μ F + ε / c :=
       hs.exists_isClosed_lt_add μs_lt_top.ne this.ne'
     refine
-      ⟨Set.indicator F fun _ => c, fun x => ?_, F_closed.upperSemicontinuous_indicator (zero_le _),
+      ⟨Set.indicator F fun _ => c, fun x => ?_, F_closed.upperSemicontinuous_indicator zero_le,
         ?_⟩
     · simp only [SimpleFunc.coe_const, SimpleFunc.const_zero, SimpleFunc.coe_zero,
         Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise, ← Function.const_def]

@@ -494,10 +494,10 @@ theorem lt_iff_exists_rat_btwn (a b : ℝ≥0) :
 theorem bot_eq_zero : (⊥ : ℝ≥0) = 0 := rfl
 
 theorem mul_sup (a b c : ℝ≥0) : a * (b ⊔ c) = a * b ⊔ a * c :=
-  mul_max_of_nonneg _ _ <| zero_le a
+  mul_max_of_nonneg _ _ zero_le
 
 theorem sup_mul (a b c : ℝ≥0) : (a ⊔ b) * c = a * c ⊔ b * c :=
-  max_mul_of_nonneg _ _ <| zero_le c
+  max_mul_of_nonneg _ _ zero_le
 
 @[simp, norm_cast]
 theorem coe_max (x y : ℝ≥0) : ((max x y : ℝ≥0) : ℝ) = max (x : ℝ) (y : ℝ) :=
@@ -704,7 +704,7 @@ end Mul
 section Pow
 
 theorem pow_antitone_exp {a : ℝ≥0} (m n : ℕ) (mn : m ≤ n) (a1 : a ≤ 1) : a ^ n ≤ a ^ m :=
-  pow_le_pow_of_le_one (zero_le a) a1 mn
+  pow_le_pow_of_le_one zero_le a1 mn
 
 nonrec theorem exists_pow_lt_of_lt_one {a b : ℝ≥0} (ha : 0 < a) (hb : b < 1) :
     ∃ n : ℕ, b ^ n < a := by
@@ -772,7 +772,7 @@ theorem mul_lt_of_lt_div {a b r : ℝ≥0} (h : a < b / r) : a * r < b :=
 
 theorem le_of_forall_lt_one_mul_le {x y : ℝ≥0} (h : ∀ a < 1, a * x ≤ y) : x ≤ y :=
   le_of_forall_lt_imp_le_of_dense fun a ha => by
-    have hx : x ≠ 0 := pos_iff_ne_zero.1 (lt_of_le_of_lt (zero_le _) ha)
+    have hx : x ≠ 0 := ha.ne_zero
     have hx' : x⁻¹ ≠ 0 := by rwa [Ne, inv_eq_zero]
     have : a * x⁻¹ < 1 := by rwa [← lt_inv_iff_mul_lt hx', inv_inv]
     have : a * x⁻¹ * x ≤ y := h _ this

@@ -340,7 +340,7 @@ open omegaLimit
 theorem omegaLimit_image_eq (hf : ∀ t, Tendsto (· + t) f f) (t : τ) : ω f ϕ (ϕ t '' s) = ω f ϕ s :=
   Subset.antisymm (omegaLimit_image_subset _ _ _ _ (hf t)) <|
     calc
-      ω f ϕ s = ω f ϕ (ϕ (-t) '' (ϕ t '' s)) := by simp [image_image, ← map_add]
+      ω f ϕ s = ω f ϕ (ϕ (-t) '' ϕ t '' s) := by simp [image_image, ← map_add]
       _ ⊆ ω f ϕ (ϕ t '' s) := omegaLimit_image_subset _ _ _ _ (hf _)
 
 theorem omegaLimit_omegaLimit (hf : ∀ t, Tendsto (t + ·) f f) : ω f ϕ (ω f ϕ s) ⊆ ω f ϕ s := by

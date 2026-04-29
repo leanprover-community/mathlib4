@@ -702,7 +702,7 @@ lemma comap_evalRingHom_basicOpen [DecidableEq ι] (i : ι) (f : R i) :
     exact ⟨q, by simpa using hp, by ext; simp⟩
 
 lemma sigmaToPi_mk_basicOpen [DecidableEq ι] (i : ι) (f : R i) :
-    sigmaToPi R '' (Sigma.mk i '' basicOpen f) = basicOpen (Pi.single i f) := by
+    sigmaToPi R '' Sigma.mk i '' basicOpen f = basicOpen (Pi.single i f) := by
   simp only [Set.image_image, sigmaToPi_apply]
   exact PrimeSpectrum.comap_evalRingHom_basicOpen _ _
 

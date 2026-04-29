@@ -170,7 +170,7 @@ instance Lex.wellFoundedLT [LT ι] [@Std.Trichotomous ι (· < ·)] [hι : WellF
     [∀ i, AddMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, CanonicallyOrderedAdd (α i)]
     [hα : ∀ i, WellFoundedLT (α i)] :
     WellFoundedLT (Lex (Π₀ i, α i)) :=
-  ⟨Lex.wellFounded' (fun _ a => (zero_le a).not_gt) (fun i => (hα i).wf) hι.wf⟩
+  ⟨Lex.wellFounded' (fun _ _ => not_lt_zero) (fun i => (hα i).wf) hι.wf⟩
 
 instance Colex.wellFoundedLT [LT ι] [@Std.Trichotomous ι (· < ·)] [WellFoundedLT ι]
     [∀ i, AddMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, CanonicallyOrderedAdd (α i)]
@@ -238,7 +238,7 @@ protected theorem DFinsupp.wellFoundedLT [∀ i, Zero (α i)] [∀ i, Preorder (
 instance DFinsupp.wellFoundedLT'
     [∀ i, AddMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, CanonicallyOrderedAdd (α i)]
     [∀ i, WellFoundedLT (α i)] : WellFoundedLT (Π₀ i, α i) :=
-  DFinsupp.wellFoundedLT fun _i a => (zero_le a).not_gt
+  DFinsupp.wellFoundedLT fun _ _ => not_lt_zero
 
 instance Pi.wellFoundedLT [Finite ι] [∀ i, Preorder (α i)] [hw : ∀ i, WellFoundedLT (α i)] :
     WellFoundedLT (∀ i, α i) :=

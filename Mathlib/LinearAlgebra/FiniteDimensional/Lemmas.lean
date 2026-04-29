@@ -405,7 +405,7 @@ theorem exists_ker_pow_eq_ker_pow_succ [FiniteDimensional K V] (f : End K V) :
         n ≤ finrank K (LinearMap.ker (f ^ n)) := by
       intro n hn
       induction n with
-      | zero => exact zero_le (finrank _ _)
+      | zero => exact zero_le
       | succ n ih =>
         have h_ker_lt_ker : LinearMap.ker (f ^ n) < LinearMap.ker (f ^ n.succ) := by
           refine lt_of_le_of_ne ?_ (h_contra n (Nat.le_of_succ_le_succ hn))

@@ -779,7 +779,7 @@ protected theorem push_pull (f : α → β) (F : Filter α) (G : Filter β) :
     calc
       f '' V ∩ Z = f '' (V ∩ f ⁻¹' Z) := by rw [image_inter_preimage]
       _ ⊆ f '' (V ∩ W) := by gcongr
-      _ = f '' (f ⁻¹' U) := by rw [h]
+      _ = f '' f ⁻¹' U := by rw [h]
       _ ⊆ U := image_preimage_subset f U
 
 protected theorem push_pull' (f : α → β) (F : Filter α) (G : Filter β) :

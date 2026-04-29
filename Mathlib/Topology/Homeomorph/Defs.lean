@@ -199,11 +199,11 @@ theorem preimage_symm (h : X ≃ₜ Y) : preimage h.symm = image h :=
   (funext h.toEquiv.image_eq_preimage_symm).symm
 
 @[simp]
-theorem image_preimage (h : X ≃ₜ Y) (s : Set Y) : h '' (h ⁻¹' s) = s :=
+theorem image_preimage (h : X ≃ₜ Y) (s : Set Y) : h '' h ⁻¹' s = s :=
   h.toEquiv.image_preimage s
 
 @[simp]
-theorem preimage_image (h : X ≃ₜ Y) (s : Set X) : h ⁻¹' (h '' s) = s :=
+theorem preimage_image (h : X ≃ₜ Y) (s : Set X) : h ⁻¹' h '' s = s :=
   h.toEquiv.preimage_image s
 
 theorem image_eq_preimage_symm (h : X ≃ₜ Y) (s : Set X) : h '' s = h.symm ⁻¹' s :=

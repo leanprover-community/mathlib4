@@ -347,8 +347,8 @@ theorem snd_iso_of_left_embedding_range_subset {X Y S : TopCat} {f : X ⟶ S} (h
   convert (isoOfHomeo esto).isIso_hom
 
 theorem pullback_snd_image_fst_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set X) :
-    (pullback.snd f g) '' ((pullback.fst f g) ⁻¹' U) =
-      g ⁻¹' (f '' U) := by
+    (pullback.snd f g) '' (pullback.fst f g) ⁻¹' U =
+      g ⁻¹' f '' U := by
   ext x
   constructor
   · rintro ⟨y, hy, rfl⟩
@@ -364,8 +364,8 @@ theorem pullback_snd_image_fst_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set X) 
     · rw [pullbackIsoProdSubtype_inv_snd_apply]
 
 theorem pullback_fst_image_snd_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set Y) :
-    (pullback.fst f g) '' ((pullback.snd f g) ⁻¹' U) =
-      f ⁻¹' (g '' U) := by
+    (pullback.fst f g) '' (pullback.snd f g) ⁻¹' U =
+      f ⁻¹' g '' U := by
   ext x
   constructor
   · rintro ⟨y, hy, rfl⟩

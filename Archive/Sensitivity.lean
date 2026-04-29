@@ -335,7 +335,7 @@ theorem g_injective : Injective (g m) := by
 set_option backward.isDefEq.respectTransparency false in
 theorem f_image_g (w : V m.succ) (hv : ∃ v, g m v = w) : f m.succ w = √(m + 1) • w := by
   rcases hv with ⟨v, rfl⟩
-  have : √(m + 1) * √(m + 1) = m + 1 := Real.mul_self_sqrt (mod_cast zero_le _)
+  have : √(m + 1) * √(m + 1) = m + 1 := Real.mul_self_sqrt (mod_cast zero_le)
   rw [f_succ_apply, g_apply]
   simp [this, f_squared, smul_add, add_smul, smul_smul]
   abel
