@@ -14,7 +14,7 @@ This file introduces (generalized) pentagonal numbers $k(3k-1)/2$ for integer $k
 
 Some sources, such as A001318 in the OEIS, order generalized pentagonal numbers by indices
 $k = 0, 1, -1, 2, -2, \cdots$ to form a strictly monotone sequence. This file doesn't follow this
-convention, but implicitly shows the monotonicity by `pentagonal_lt_pentagonal_neg` and
+convention, but implicitly shows the monotonicity in `pentagonal_lt_pentagonal_neg` and
 `pentagonal_neg_lt_pentagonal_add_one`.
 
 ## Main definitions
