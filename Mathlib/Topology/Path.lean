@@ -369,6 +369,10 @@ theorem map_id (γ : Path x y) : γ.map continuous_id = γ := by
   rfl
 
 @[simp]
+theorem map_refl {f : X → Y} (hf : Continuous f) (x : X) :
+    (Path.refl x).map hf = Path.refl (f x) := rfl
+
+@[simp]
 theorem map_map (γ : Path x y) {Z : Type*} [TopologicalSpace Z]
     {f : X → Y} (hf : Continuous f) {g : Y → Z} (hg : Continuous g) :
     (γ.map hf).map hg = γ.map (hg.comp hf) := by

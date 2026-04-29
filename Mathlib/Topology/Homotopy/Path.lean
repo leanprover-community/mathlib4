@@ -373,6 +373,10 @@ theorem cast_rfl_rfl {x y : X} (γ : Homotopic.Quotient x y) : γ.cast rfl rfl =
   rfl
 
 @[simp, grind =]
+theorem refl_cast {x y : X} (h : y = x) : (refl x).cast h h = refl y := by
+  cases h; rfl
+
+@[simp, grind =]
 theorem cast_cast {x y : X} (γ : Homotopic.Quotient x y) {x' y'} (hx : x' = x) (hy : y' = y)
     {x'' y''} (hx' : x'' = x') (hy' : y'' = y') :
     (γ.cast hx hy).cast hx' hy' = γ.cast (hx'.trans hx) (hy'.trans hy) := by

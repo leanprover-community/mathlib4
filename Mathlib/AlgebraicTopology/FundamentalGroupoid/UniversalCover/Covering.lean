@@ -206,12 +206,12 @@ theorem simplyConnectedSpace [LocPathConnectedSpace X] [PathConnectedSpace X]
   refine ⟨pathConnectedSpace x₀, ?_⟩
   intro z p
   obtain ⟨α, rfl⟩ := surjective_ofBasedPath x₀ z
-  let γ : Path (BasedPath.endpoint α) (BasedPath.endpoint α) := p.map (continuous_proj x₀)
-  have hγ0 : γ 0 = BasedPath.endpoint α := by
-    -- `γ 0` unfolds to `proj (p 0)`; then `p.source` gives `p 0 = ofBasedPath x₀ α`,
-    -- and `proj (ofBasedPath x₀ α) = endpoint α` by `proj_ofBasedPath`.
-    change proj (p 0) = BasedPath.endpoint α
-    rw [p.source, proj_ofBasedPath]
+  let γ : Path (BasedPath.endpoint α) (BasedPath.endpoint α) :=
+    (p.map (continuous_proj x₀)).cast
+      (proj_ofBasedPath x₀ α).symm (proj_ofBasedPath x₀ α).symm
+  have hγ0 : γ 0 = proj (ofBasedPath x₀ α) := by
+    change proj (p 0) = _
+    rw [p.source]
   have hp_eq_lift :
       (p : C(I, UniversalCover x₀)) =
         (isCoveringMap x₀).liftPath γ (ofBasedPath x₀ α) hγ0 := by
@@ -228,14 +228,15 @@ theorem simplyConnectedSpace [LocPathConnectedSpace X] [PathConnectedSpace X]
       have h1 : BasedPath.ofPath (α.toPath.trans γ) = BasedPath.append α γ := rfl
       have h2 : BasedPath.ofPath α.toPath = α := by cases α; rfl
       rw [h1, h2]; exact h_end
-    -- Unfold the `UniversalCover` def to a raw `Σ` so that `Sigma.mk.injEq` applies.
-    have h_end_sigma :
-        (⟨BasedPath.endpoint α, Path.Homotopic.Quotient.mk (α.toPath.trans γ)⟩ :
-          Σ y : X, Path.Homotopic.Quotient x₀ y) =
-        ⟨BasedPath.endpoint α, Path.Homotopic.Quotient.mk α.toPath⟩ := by
+    -- Repackage as an equality of `mk` values so the `mk_inj` simp lemma fires.
+    have h_end_mk :
+        UniversalCover.mk (x₀ := x₀) (BasedPath.endpoint α)
+            (Path.Homotopic.Quotient.mk (α.toPath.trans γ)) =
+          UniversalCover.mk (BasedPath.endpoint α)
+            (Path.Homotopic.Quotient.mk α.toPath) := by
       rw [← ofBasedPath_ofPath, ← ofBasedPath_ofPath]
       exact h_end'
-    exact eq_of_heq (Sigma.mk.inj_iff.mp h_end_sigma).2
+    simpa using h_end_mk
   have hγ_null :
       (Path.Homotopic.Quotient.mk γ : Path.Homotopic.Quotient
           (BasedPath.endpoint α) (BasedPath.endpoint α)) =
@@ -259,7 +260,12 @@ theorem simplyConnectedSpace [LocPathConnectedSpace X] [PathConnectedSpace X]
   rw [← Path.Homotopic.Quotient.eq]
   apply (isCoveringMap x₀).injective_path_homotopic_map
     (ofBasedPath x₀ α) (ofBasedPath x₀ α)
-  simpa [γ, Path.Homotopic.Quotient.mk_map] using hγ_null
+  -- Cast `hγ_null` from `Quotient α.endpoint α.endpoint` to `Quotient (proj e) (proj e)`;
+  -- `refl_cast` and `← mk_map` then align it with the goal.
+  have hcast :=
+    congrArg (Path.Homotopic.Quotient.cast · (proj_ofBasedPath x₀ α) (proj_ofBasedPath x₀ α))
+      hγ_null
+  simpa [γ, ← Path.Homotopic.Quotient.mk_map] using hcast
 
 /-- Universal property of the universal cover: any continuous map `f : A → X` from a simply
 connected, locally path-connected space `A` lifts uniquely to the universal cover, after
