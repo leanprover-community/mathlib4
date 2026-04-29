@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
+public import Mathlib.CategoryTheory.ObjectProperty.Opposite
 public import Mathlib.Order.CompleteLattice.Basic
 
 /-!
@@ -40,6 +41,18 @@ instance nonempty_sup_right [Q.Nonempty] : (P ⊔ Q).Nonempty :=
 
 instance nonempty_top [Nonempty C] : (⊤ : ObjectProperty C).Nonempty :=
   nonempty_of_prop (X := Classical.arbitrary C) (by trivial)
+
+@[simp]
+lemma op_inf : (P ⊓ Q).op = P.op ⊓ Q.op := rfl
+
+@[simp]
+lemma op_sup : (P ⊔ Q).op = P.op ⊔ Q.op := rfl
+
+@[simp]
+lemma unop_inf (P Q : ObjectProperty Cᵒᵖ) : (P ⊓ Q).unop = P.unop ⊓ Q.unop := rfl
+
+@[simp]
+lemma unop_sup (P Q : ObjectProperty Cᵒᵖ) : (P ⊔ Q).unop = P.unop ⊔ Q.unop := rfl
 
 lemma isoClosure_sup : (P ⊔ Q).isoClosure = P.isoClosure ⊔ Q.isoClosure := by
   ext X
