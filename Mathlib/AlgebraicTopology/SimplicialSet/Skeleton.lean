@@ -314,7 +314,8 @@ lemma b_app_ι_app_objEquiv_symm_val (c : Cell i d) {n : SimplexCategory} (f : n
     dsimp% ((b i d).app _ (c.ιSigmaStdSimplex.app _ (stdSimplex.objEquiv.symm f))).val =
       Y.map f.op c.simplex := by
   simp only [← yonedaEquiv_symm_app_objEquiv_symm, ← ι_b_ι]
-  rfl
+    simp +instances only [Subfunctor.toFunctor_obj, NatTrans.comp_app, Subfunctor.ι_app,
+      types_comp_apply, TypeCat.hom_ofHom, TypeCat.Fun.coe_mk]
 
 end Cell
 
