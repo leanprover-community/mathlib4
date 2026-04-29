@@ -339,7 +339,7 @@ lemma isPullback : IsPullback (t i d) (l i d) (r i d) (b i d) where
       exact ConcreteCategory.congr_hom (NatTrans.congr_app c.ι_t_ι_eq_ι_l_b_ι _) _
     · exact ConcreteCategory.congr_hom (NatTrans.congr_app c.ι_l _) _)⟩
 
-lemma max_range_r_range_b :
+lemma sup_range_r_range_b :
     Subcomplex.range (r i d) ⊔ Subcomplex.range (b i d) = ⊤ := by
   rw [← top_le_iff]
   rintro ⟨n⟩ ⟨x, hx⟩ _
