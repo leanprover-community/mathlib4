@@ -40,15 +40,17 @@ def isArcLengthParametrized3 (α : ParametrizedDifferentiableCurve3) : Prop :=
   ∀ t ∈ Set.Ioo α.a α.b, ‖deriv α.toFun t‖ = 1
 
 /-- The **curvature** `κ(t) = ‖α''(t)‖` of a curve `α` parametrized by arc length. -/
+@[nolint unusedArguments]
 noncomputable def Curvature3
   (α : ParametrizedDifferentiableCurve3)
   (_h : isArcLengthParametrized3 α) (t : ℝ) : ℝ :=
     ‖deriv (deriv α.toFun) t‖
 
 /-- The **unit tangent vector** `T(t) = α'(t)` of a curve `α` parametrized by arc length. -/
+@[nolint unusedArguments]
 noncomputable def curveTangent3 (α : ParametrizedDifferentiableCurve3)
     (_h : isArcLengthParametrized3 α) (t : ℝ) : ℝ^3 :=
-  deriv α.toFun t
+    deriv α.toFun t
 
 /-- The **principal normal vector** `N(t) = α''(t) / κ(t)` of a curve
   `α` parametrized by arc length. -/
