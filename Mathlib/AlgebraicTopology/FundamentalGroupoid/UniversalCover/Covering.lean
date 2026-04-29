@@ -27,8 +27,6 @@ simple connectedness, and the universal lifting property of the universal cover.
 * `UniversalCover.existsUnique_continuousMap_lifts`: the universal lifting property.
 -/
 
-@[expose] public section
-
 open scoped unitInterval
 open Topology
 
@@ -40,7 +38,7 @@ variable {x₀ x : X}
 
 /-- The endpoint projection `proj` is a covering map, assuming `X` is semilocally simply
 connected, locally path-connected, and path-connected. -/
-theorem isCoveringMap [LocPathConnectedSpace X] [PathConnectedSpace X]
+public theorem isCoveringMap [LocPathConnectedSpace X] [PathConnectedSpace X]
     [SemilocallySimplyConnectedSpace X] (x₀ : X) :
     IsCoveringMap (proj (x₀ := x₀)) := by
   intro x
@@ -90,7 +88,7 @@ theorem isCoveringMap [LocPathConnectedSpace X] [PathConnectedSpace X]
   exact hxU
 
 /-- Helper: every point of `UniversalCover x₀` is joined to the basepoint. -/
-private theorem joined_basepoint_of_ofBasedPath (α : BasedPath x₀) :
+theorem joined_basepoint_of_ofBasedPath (α : BasedPath x₀) :
     Joined (ofBasedPath x₀ (BasedPath.ofPath (Path.refl x₀))) (ofBasedPath x₀ α) := by
   -- Family of based paths: `F t s = α ⟨s * t, _⟩` — at `t = 0` constant at `x₀`, at `t = 1` `α`.
   have hst_mem : ∀ s t : I, (s : ℝ) * (t : ℝ) ∈ I := fun s t ↦
@@ -141,7 +139,7 @@ private theorem joined_basepoint_of_ofBasedPath (α : BasedPath x₀) :
   · exact h_end
 
 /-- The universal cover is path-connected. -/
-theorem pathConnectedSpace [PathConnectedSpace X] (x₀ : X) :
+public theorem pathConnectedSpace [PathConnectedSpace X] (x₀ : X) :
     PathConnectedSpace (UniversalCover x₀) := by
   refine ⟨⟨ofBasedPath x₀ (BasedPath.ofPath (Path.refl x₀))⟩, fun z₁ z₂ ↦ ?_⟩
   obtain ⟨α₁, rfl⟩ := surjective_ofBasedPath x₀ z₁
@@ -151,7 +149,7 @@ theorem pathConnectedSpace [PathConnectedSpace X] (x₀ : X) :
 /-- The lift through the covering map `proj` of a path `γ : Path (endpoint α) y` starting at
 `ofBasedPath α` ends at `ofBasedPath (append α γ)`. This is the key ingredient for the
 simply-connectedness proof. -/
-private theorem liftPath_apply_one_eq_ofBasedPath_append
+theorem liftPath_apply_one_eq_ofBasedPath_append
     [LocPathConnectedSpace X] [PathConnectedSpace X]
     [SemilocallySimplyConnectedSpace X] {α : BasedPath x₀} {y : X}
     (γ : Path (BasedPath.endpoint α) y) :
@@ -198,7 +196,7 @@ private theorem liftPath_apply_one_eq_ofBasedPath_append
     congrArg (fun δ ↦ ofBasedPath x₀ (BasedPath.append α δ)) (Path.initialSegmentFamily_one γ)
 
 /-- The universal cover is simply connected. -/
-theorem simplyConnectedSpace [LocPathConnectedSpace X] [PathConnectedSpace X]
+public theorem simplyConnectedSpace [LocPathConnectedSpace X] [PathConnectedSpace X]
     [SemilocallySimplyConnectedSpace X] (x₀ : X) :
     SimplyConnectedSpace (UniversalCover x₀) := by
   rw [simply_connected_iff_loops_nullhomotopic]
@@ -272,7 +270,7 @@ specifying a lift `e₀ : UniversalCover x₀` of any point `a₀ : A`.
 
 This is a thin wrapper over `IsCoveringMap.existsUnique_continuousMap_lifts` applied to
 `UniversalCover.isCoveringMap`. -/
-theorem existsUnique_continuousMap_lifts {A : Type*} [TopologicalSpace A]
+public theorem existsUnique_continuousMap_lifts {A : Type*} [TopologicalSpace A]
     [SimplyConnectedSpace A] [LocPathConnectedSpace A]
     [LocPathConnectedSpace X] [PathConnectedSpace X]
     [SemilocallySimplyConnectedSpace X] (x₀ : X)
