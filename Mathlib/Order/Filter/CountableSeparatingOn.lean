@@ -72,7 +72,7 @@ We formalize several versions of this theorem in
 filter, countable
 -/
 
-@[expose] public section
+public section
 
 open Function Set Filter
 

@@ -213,7 +213,6 @@ theorem RingHom.ofLocalizationSpanTarget_iff_finite :
 
 open TensorProduct
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 lemma RingHom.OfLocalizationSpan.mk (hP : RingHom.RespectsIso P)
     (H : ∀ {R S : Type u} [CommRing R] [CommRing S] [Algebra R S] (s : Set R),
