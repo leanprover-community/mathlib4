@@ -71,6 +71,21 @@ theorem strictMono_comap_prod_map :
     StrictMono fun H : Subgroup G ↦ (H.comap N.subtype, H.map (mk' N)) :=
   strictMono_comap_prod_image N
 
+@[to_additive (attr := simps)]
+def prodEquiv (A : Subgroup G) (B : Subgroup H) : (G × H) ⧸ (A.prod B) ≃ (G ⧸ A) × H ⧸ B where
+  toFun q := q.liftOn' (fun (g, h) ↦ (g, h))
+      (by simp [QuotientGroup.leftRel_apply, Subgroup.mem_prod, QuotientGroup.eq])
+  invFun q := q.1.liftOn₂' q.2 (fun g h ↦ (g, h))
+    (by simp [QuotientGroup.leftRel_apply, Subgroup.mem_prod, QuotientGroup.eq, ← and_imp])
+  left_inv q := q.inductionOn' (by simp)
+  right_inv := fun (q₁, q₂) ↦ Quotient.inductionOn₂' q₁ q₂ (by simp)
+
+@[to_additive (attr := simps!)]
+def prodMulEquiv (A : Subgroup G) (B : Subgroup H) [A.Normal] [B.Normal] :
+    (G × H) ⧸ (A.prod B) ≃* (G ⧸ A) × H ⧸ B where
+  __ := prodEquiv A B
+  map_mul' q₁ q₂ := Quotient.inductionOn₂' q₁ q₂ (fun _ _ ↦ rfl)
+
 variable (φ : G →* H)
 
 open MonoidHom
