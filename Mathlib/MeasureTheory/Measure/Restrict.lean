@@ -744,14 +744,10 @@ lemma NullMeasurable.measure_preimage_eq_measure_restrict_preimage_of_ae_compl_e
   · apply le_antisymm _ (measure_mono inter_subset_left)
     apply (measure_mono (Eq.symm (inter_union_compl (f ⁻¹' t) s)).le).trans
     apply (measure_union_le _ _).trans
-    have obs : μ ((f ⁻¹' t) ∩ sᶜ) = 0 := by
-      apply le_antisymm _ (zero_le _)
-      rw [← hs]
-      apply measure_mono (inter_subset_inter_left _ _)
-      intro x hx hfx
-      simp only [mem_preimage] at hx hfx
-      exact ht (hfx ▸ hx)
-    simp only [obs, add_zero, le_refl]
+    suffices μ ((f ⁻¹' t) ∩ sᶜ) = 0 by simp [this]
+    rw [← nonpos_iff_eq_zero, ← hs]
+    gcongr
+    exact fun x hx hfx ↦ ht (hfx ▸ hx)
   · exact NullMeasurableSet.of_null hs
 
 lemma nullMeasurableSet_restrict (hs : NullMeasurableSet s μ) {t : Set α} :
@@ -1144,7 +1140,7 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
       have hCM : (C : Set ι).encard ≤ M :=
         have ⟨x, hx⟩ := Set.nonempty_iff_ne_empty.mpr hPC
         (encard_mono (mem_iInter₂.mp hx.1)).trans (hs x)
-      exact nsmul_le_nsmul_left (zero_le _) <| calc {a ∈ F | a ∈ C}.card
+      exact nsmul_le_nsmul_left zero_le <| calc {a ∈ F | a ∈ C}.card
         _ ≤ C.card := card_mono <| fun i hi ↦ (F.mem_filter.mp hi).2
         _ = (C : Set ι).ncard := (ncard_coe_finset C).symm
         _ ≤ M := ENat.toNat_le_of_le_coe hCM
