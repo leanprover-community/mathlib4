@@ -114,6 +114,14 @@ lemma isTriangulatedRightLocalizing_iff [A.IsTriangulated] [B.IsTriangulated]
     exact ⟨U, t, a, hU, (B.trW_iff_of_distinguished' _ hT').1 (trW_monotone (by simp) _ hs'),
       by cat_disch⟩
 
+variable {A B} in
+lemma IsTriangulatedRightLocalizing.fac'
+    [A.IsTriangulated] [B.IsTriangulated] [B.IsClosedUnderIsomorphisms]
+    [A.IsTriangulatedRightLocalizing B]
+    {X Y : C} (s : X ⟶ Y) (hX : A X) (hs : B.trW s) :
+    ∃ (Z : C) (s' : X ⟶ Z) (b : Y ⟶ Z), A Z ∧ (A ⊓ B).trW s' ∧ s ≫ b = s' :=
+  (isTriangulatedRightLocalizing_iff A B).1 inferInstance s hX hs
+
 -- to be moved
 instance [A.ContainsZero] [B.ContainsZero] [B.IsClosedUnderIsomorphisms] :
     (A ⊓ B).ContainsZero where
@@ -140,6 +148,14 @@ lemma isTriangulatedLeftLocalizing_iff [A.IsTriangulated] [B.IsTriangulated]
   · obtain ⟨Z', s', b, hZ', hs', fac⟩ := hA s.unop hX (trW_of_op _ hs)
     exact ⟨_, s'.op, b.op, hZ', trW_of_unop _ hs', by cat_disch⟩
 
+variable {A B} in
+lemma IsTriangulatedLeftLocalizing.fac'
+    [A.IsTriangulated] [B.IsTriangulated] [B.IsClosedUnderIsomorphisms]
+    [A.IsTriangulatedLeftLocalizing B]
+    {X Y : C} (s : X ⟶ Y) (hY : A Y) (hs : B.trW s) :
+    ∃ (Z : C) (s' : Z ⟶ Y) (a : Z ⟶ X), A Z ∧ (A ⊓ B).trW s' ∧ a ≫ s = s' :=
+  (isTriangulatedLeftLocalizing_iff A B).1 inferInstance s hY hs
+
 /-- If `A` is a triangulated subcategory of a pretriangulated category `C`,
 and `B : ObjectProperty C`, this is the inclusion functor
 `A.ι : A.FullSubcategory ⥤ C`, considered as a localized morphism,
@@ -154,8 +170,9 @@ def triangulatedLocalizedMorphism [A.IsTriangulated] :
     obtain ⟨Z, a, b, hT, hZ⟩ := hf
     exact ⟨_, _, _, A.ι.map_distinguished _ hT, hZ⟩
 
-instance [A.IsTriangulated] [B.IsTriangulated] [B.IsClosedUnderIsomorphisms]
-    [A.IsTriangulatedRightLocalizing B] :
+variable [IsTriangulated C] [A.IsTriangulated] [B.IsTriangulated] [B.IsClosedUnderIsomorphisms]
+
+instance [A.IsTriangulatedRightLocalizing B] :
     (A.triangulatedLocalizedMorphism B).IsLocalizedFullyFaithful where
   nonempty_fullyFaithful := by
     let L₁ := (B.inverseImage A.ι).trW.Q
@@ -164,8 +181,17 @@ instance [A.IsTriangulated] [B.IsTriangulated] [B.IsClosedUnderIsomorphisms]
       (A.triangulatedLocalizedMorphism B).localizedFunctor L₁ L₂
     let e : A.ι ⋙ L₂ ≅ L₁ ⋙ F :=
       CatCommSq.iso (A.triangulatedLocalizedMorphism B).functor L₁ L₂ F
-    have : F.Full := sorry
-    have : F.Faithful := sorry
+    have : F.Full :=
+      Functor.full_of_precomp_essSurj _ L₁ (fun X₁ X₂ φ ↦ by
+        obtain ⟨φ', hφ'⟩ : ∃ φ', φ = e.inv.app X₁ ≫ φ' ≫ e.hom.app X₂ :=
+          ⟨e.hom.app X₁ ≫ φ ≫ e.inv.app X₂, by
+            simp [dsimp% e.inv_hom_id_app_assoc, dsimp% e.inv_hom_id_app]⟩
+        dsimp at φ' hφ'
+        obtain ⟨f, hf⟩ := Localization.exists_leftFraction L₂ B.trW φ'
+        have := IsTriangulatedRightLocalizing.fac' f.s X₂.property f.hs
+        sorry )
+    have : F.Faithful := by
+      sorry
     exact ⟨.ofFullyFaithful F⟩
 
 instance [A.IsTriangulated] [B.IsTriangulated] [B.IsClosedUnderIsomorphisms]
