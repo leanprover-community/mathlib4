@@ -118,8 +118,7 @@ def toEven : CliffordAlgebra Q →ₐ[R] CliffordAlgebra.even (Q' Q) := by
     simp [← mul_assoc, v_sq_scalar]
 
 theorem toEven_ι (m : M) : (toEven Q (ι Q m) : CliffordAlgebra (Q' Q)) = e0 Q * v Q m := by
-  rw [toEven, CliffordAlgebra.lift_ι_apply]
-  simp only [← even_toSubmodule]
+  simp only [toEven, CliffordAlgebra.lift_ι_apply, ← even_toSubmodule]
   rw [LinearMap.codRestrict_apply, LinearMap.coe_comp, Function.comp_apply, LinearMap.mulLeft_apply]
 
 /-- The embedding from the even subalgebra with an extra dimension into the original algebra. -/
