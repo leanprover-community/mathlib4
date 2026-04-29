@@ -117,7 +117,7 @@ class SMulWithZero [Zero M₀] [Zero A] extends SMulZeroClass M₀ A where
   /-- Scalar multiplication by the scalar `0` is `0`. -/
   zero_smul : ∀ m : A, (0 : M₀) • m = 0
 
-instance MulZeroClass.toSMulWithZero [MulZeroClass M₀] : SMulWithZero M₀ M₀ where
+instance (priority := 1100) MulZeroClass.toSMulWithZero [MulZeroClass M₀] : SMulWithZero M₀ M₀ where
   smul := (· * ·)
   smul_zero := mul_zero
   zero_smul := zero_mul
