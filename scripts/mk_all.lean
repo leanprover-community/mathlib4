@@ -44,8 +44,8 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
   let git := (args.flag? "git").isSome
   -- Check whether we only verify the files, or update them in-place.
   let check := (args.flag? "check").isSome
-  -- The `--module` flag only affects newly created aggregator files; for existing files,
-  -- module-ness is inferred by parsing the header with `Lean.parseImports'`.
+  -- If `--module` is passed, force module style; otherwise infer from the existing
+  -- aggregator file (when present), or default to plain.
   let moduleFlag := (args.flag? "module").isSome
   -- Check whether the `--lib` flag was set. If so, build the file corresponding to the library
   -- passed to `--lib`. Else build all the libraries of the package.
@@ -59,19 +59,20 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
     let fileName := addExtension d "lean"
     let fileExists ← pathExists fileName
     let existingContent ← if fileExists then IO.FS.readFile fileName else pure ""
-    -- If the aggregator file already exists, infer whether it uses the module system;
-    -- otherwise, fall back to the `--module` flag.
-    let useModule ← if fileExists then
-      try
-        let header ← Lean.parseImports' existingContent fileName.toString
-        pure header.isModule
-      catch e =>
-        throw <| IO.userError s!"\
-          Could not parse the header of '{fileName}' to determine whether it should be a \
-          module file: {e.toString}\n\
-          Fix or delete the file, then re-run `mk_all` (with `--module` if you want a \
-          module-style aggregator)."
-    else pure moduleFlag
+    -- If `--module` was passed explicitly, honor it. Otherwise, if the aggregator file already
+    -- exists, infer whether it uses the module system; if not, default to plain.
+    let useModule ← if moduleFlag then pure true
+      else if fileExists then
+        try
+          let header ← Lean.parseImports' existingContent fileName.toString
+          pure header.isModule
+        catch e =>
+          throw <| IO.userError s!"\
+            Could not parse the header of '{fileName}' to determine whether it should be a \
+            module file: {e.toString}\n\
+            Fix or delete the file, then re-run `mk_all` (with `--module` if you want a \
+            module-style aggregator)."
+      else pure false
     let mut allFiles ← getAllModulesSorted git d
     -- mathlib exception: manually import Std and Batteries in `Mathlib.lean`
     if d == "Mathlib" then
@@ -115,9 +116,10 @@ def mkAll : Cmd := `[Cli|
     lib : String; "Create a folder importing all Lean files from the specified library/subfolder."
     git;          "Use the folder content information from git."
     check;        "Only check if the files are up-to-date; print an error if not"
-    module;       "When creating a new aggregator file, generate it as a `module` with \
-                   `public` imports. Existing files keep their current style (module or plain), \
-                   inferred by parsing the existing header with `Lean.parseImports'`."
+    module;       "Force the aggregator file to be generated as a `module` with `public` imports. \
+                   When this flag is omitted, the style is inferred from the existing file by \
+                   parsing its header with `Lean.parseImports'`, or defaults to plain for new \
+                   files."
 ]
 
 /-- The entrypoint to the `lake exe mk_all` command. -/
