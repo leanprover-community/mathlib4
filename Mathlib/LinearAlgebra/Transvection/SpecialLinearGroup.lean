@@ -172,7 +172,7 @@ theorem mem_transvections_pow_of_notIsExceptional
   by_cases hV : finrank K (V ⧸ e.toLinearEquiv.fixedSubmodule) = 0
   · suffices e = 1 by
       rw [this]
-      apply transvections_pow_mono (zero_le _)
+      apply transvections_pow_mono zero_le
       simp
     rw [← Subtype.coe_inj, coe_one, one_eq_refl, ← LinearEquiv.fixedSubmodule_eq_top_iff]
     apply Submodule.eq_top_of_finrank_eq
