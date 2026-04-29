@@ -30,8 +30,6 @@ open UpperHalfPlane ModularForm Complex SlashInvariantForm SlashInvariantFormCla
   ModularFormClass CuspFormClass CongruenceSubgroup MatrixGroups OnePoint Filter Topology
   EisensteinSeries Asymptotics
 
-/-! ### Delta isomorphism: `CuspForm 𝒮ℒ k ≃ₗ[ℂ] ModularForm 𝒮ℒ (k - 12)` -/
-
 section DeltaIsomorphism
 
 variable {k : ℤ}
@@ -98,8 +96,6 @@ end CuspForm
 
 end DeltaIsomorphism
 
-/-! ### Rank identities -/
-
 section RankIdentity
 
 variable {k : ℤ}
@@ -151,8 +147,6 @@ lemma ModularForm.rank_eq_one_add_rank_cuspForm {k : ℕ} (hk : 3 ≤ k) (hk2 : 
       sub_eq_zero, eq_comm] at h0
 
 end RankIdentity
-
-/-! ### Dimension formula -/
 
 section DimensionFormula
 
