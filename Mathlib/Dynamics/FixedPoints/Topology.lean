@@ -5,8 +5,8 @@ Authors: Yury Kudryashov, Johannes Hölzl
 -/
 module
 
-public import Mathlib.Dynamics.FixedPoints.Basic
 public import Mathlib.Topology.Separation.Hausdorff
+public import Mathlib.Dynamics.FixedPoints.Defs
 
 /-!
 # Topological properties of fixed points

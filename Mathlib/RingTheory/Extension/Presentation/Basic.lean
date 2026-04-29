@@ -10,6 +10,7 @@ public import Mathlib.RingTheory.FinitePresentation
 public import Mathlib.RingTheory.Extension.Generators
 public import Mathlib.RingTheory.MvPolynomial.Localization
 public import Mathlib.RingTheory.TensorProduct.MvPolynomial
+public import Mathlib.Algebra.MvPolynomial.CommRing
 
 /-!
 

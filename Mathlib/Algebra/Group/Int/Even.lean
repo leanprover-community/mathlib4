@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Group.Int.Defs
 public import Mathlib.Algebra.Group.Nat.Even
 public import Mathlib.Data.Int.Sqrt
+meta import Mathlib.Tactic.Attr.Register
 
 /-!
 # Parity of integers

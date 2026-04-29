@@ -5,11 +5,13 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Order.GaloisConnection.Basic
-public import Mathlib.Order.Interval.Set.Basic
-public import Mathlib.Order.WellFounded
 
 import Mathlib.Data.Set.Lattice
+public import Mathlib.Order.Bounds.Defs
+public import Mathlib.Order.GaloisConnection.Defs
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.Order.Interval.Set.Defs
+public import Mathlib.Order.SetNotation
 
 /-!
 # Cofinal sets

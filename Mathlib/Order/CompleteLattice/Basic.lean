@@ -10,6 +10,7 @@ public import Mathlib.Data.ULift
 public import Mathlib.Order.Bounds.Image
 public import Mathlib.Order.CompleteLattice.Defs
 public import Mathlib.Order.Hom.Set
+public import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Theory of complete lattices

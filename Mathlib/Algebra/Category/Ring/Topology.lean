@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Category.Ring.Colimits
 public import Mathlib.Algebra.Category.Ring.Constructions
-public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+public import Mathlib.Algebra.MvPolynomial.Eval
 
 /-!
 # Topology on `Hom(R, S)`

@@ -10,6 +10,7 @@ public import Mathlib.CategoryTheory.Monad.Basic
 public import Mathlib.CategoryTheory.Monad.Kleisli
 public import Mathlib.CategoryTheory.Types.Basic
 public import Mathlib.Control.Basic
+public meta import Mathlib.Tactic.Attr.Register
 
 /-!
 

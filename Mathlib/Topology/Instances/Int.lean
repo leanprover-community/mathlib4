@@ -9,7 +9,6 @@ public import Mathlib.Data.Int.Interval
 public import Mathlib.Data.Int.ConditionallyCompleteOrder
 public import Mathlib.Topology.Instances.Discrete
 public import Mathlib.Topology.MetricSpace.Bounded
-public import Mathlib.Order.Filter.AtTopBot.Archimedean
 public import Mathlib.Topology.MetricSpace.Basic
 public import Mathlib.Topology.Order.Bornology
 

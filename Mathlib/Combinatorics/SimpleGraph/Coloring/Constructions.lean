@@ -5,7 +5,6 @@ Authors: Iván Renison
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.Circulant
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.VertexColoring
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite

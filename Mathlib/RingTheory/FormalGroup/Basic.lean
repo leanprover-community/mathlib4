@@ -5,8 +5,10 @@ Authors: Wenrong Zou
 -/
 module
 
-public import Mathlib.RingTheory.PowerSeries.Substitution
 public import Mathlib.Tactic.Ring.NamePowerVars
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Data.Nat.Factorial.DoubleFactorial
+public import Mathlib.RingTheory.MvPowerSeries.Substitution
 
 /-! # Formal group laws over commutative ring
 

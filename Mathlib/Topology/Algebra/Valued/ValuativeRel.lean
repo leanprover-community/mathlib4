@@ -6,6 +6,7 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
+public import Mathlib.Topology.Algebra.WithZeroTopology
 
 /-!
 

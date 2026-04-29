@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.Calculus.Deriv.Add
 public import Mathlib.Analysis.Calculus.Deriv.Comp
 public import Mathlib.Analysis.Calculus.FDeriv.Measurable
-public import Mathlib.Analysis.Normed.Module.Dual
 public import Mathlib.MeasureTheory.Integral.Bochner.FundThmCalculus
 public import Mathlib.MeasureTheory.Integral.Bochner.VitaliCaratheodory
 public import Mathlib.MeasureTheory.Integral.DominatedConvergence

@@ -20,6 +20,7 @@ public import Mathlib.Tactic.Translate.Attributes
 public import Mathlib.Tactic.Translate.GuessName
 public import Mathlib.Tactic.Translate.Reorder
 public import Mathlib.Tactic.Translate.UnfoldBoundary
+meta import Mathlib.Tactic.Translate.Reorder
 
 /-!
 # The translation attribute.

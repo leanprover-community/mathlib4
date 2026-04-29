@@ -5,11 +5,9 @@ Authors: Kenny Lau, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Module.Equiv.Basic
-public import Mathlib.Algebra.Module.Shrink
 public import Mathlib.Algebra.Module.Submodule.Bilinear
 public import Mathlib.GroupTheory.Congruence.Hom
-public import Mathlib.Tactic.Abel
+public import Mathlib.Tactic.NormNum.Basic
 
 /-!
 # Tensor product of modules over commutative semirings

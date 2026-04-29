@@ -6,7 +6,7 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.RingTheory.AdicCompletion.Basic
-public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+public import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Basic Properties of Complete Local Ring

@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Category.Grp.Adjunctions
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
 public import Mathlib.CategoryTheory.Sites.Abelian
 public import Mathlib.CategoryTheory.Sites.ConstantSheaf
-public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
 public import Mathlib.Algebra.Category.Grp.Zero
 
 /-!

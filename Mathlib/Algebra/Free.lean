@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Control.Applicative
 public import Mathlib.Control.Traversable.Basic
 public import Mathlib.Logic.Equiv.Defs
-public import Mathlib.Tactic.AdaptationNote
 
 import Mathlib.Tactic.Attr.Register
 

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.MeasureTheory.Group.Measure
+public import Mathlib.MeasureTheory.Integral.IntegrableOn
 
 /-!
 # Bochner Integration on Groups

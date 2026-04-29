@@ -10,7 +10,6 @@ public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 public import Mathlib.LinearAlgebra.Ray
 
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 
 /-!
 # Segments in vector spaces
