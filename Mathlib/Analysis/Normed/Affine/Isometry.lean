@@ -847,3 +847,20 @@ theorem isometryEquivMap.toAffineMap_eq (φ : P₁' →ᵃⁱ[𝕜] P₂) (E : A
   rfl
 
 end AffineSubspace
+
+namespace AffineIsometry
+
+/-- An affine isometry induces a homeomorphism between the affine span of a nonempty set and the
+affine span of its image. -/
+noncomputable def affineSpanImageHomeomorph (φ : P₁' →ᵃⁱ[𝕜] P₂) (s : Set P₁')
+    [Nonempty s] : (affineSpan 𝕜 s) ≃ₜ (affineSpan 𝕜 (φ '' s)) :=
+  ((affineSpan 𝕜 s).isometryEquivMap φ).toHomeomorph.trans <|
+    Homeomorph.setCongr <| congrArg ((↑) : AffineSubspace 𝕜 P₂ → Set P₂) <| by
+      simpa [φ.coe_toAffineMap] using AffineSubspace.map_span φ.toAffineMap s
+
+@[simp]
+theorem affineSpanImageHomeomorph_apply (φ : P₁' →ᵃⁱ[𝕜] P₂) (s : Set P₁')
+    [Nonempty s] (x : affineSpan 𝕜 s) : (φ.affineSpanImageHomeomorph s x : P₂) = φ x :=
+  AffineSubspace.isometryEquivMap.coe_apply φ (affineSpan 𝕜 s) x
+
+end AffineIsometry

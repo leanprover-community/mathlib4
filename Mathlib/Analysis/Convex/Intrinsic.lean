@@ -211,7 +211,62 @@ theorem intrinsicClosure_eq_closure_inter_affineSpan (s : Set P) :
   rw [Subtype.range_coe]
   apply subset_affineSpan
 
+section ImageOpPreimage
+
+private theorem image_op_preimage {A B P Q : Type*} {f : P → Q} {s : Set P}
+    {iA : A → P} {iB : B → Q} {opA : Set A → Set A} {opB : Set B → Set B} (e : A ≃ B)
+    (hcomm : f ∘ iA = iB ∘ e) (hpre : iA ⁻¹' (f ⁻¹' (f '' s)) = iA ⁻¹' s)
+    (hop : ∀ t, e '' opA t = opB (e '' t)) :
+    iB '' opB (iB ⁻¹' (f '' s)) = f '' (iA '' opA (iA ⁻¹' s)) := by
+  rw [← Equiv.symm_preimage_preimage e (iB ⁻¹' (f '' s)), ← preimage_comp (f := e), ← hcomm,
+    preimage_comp, hpre, ← Equiv.image_eq_preimage_symm, ← hop, ← image_comp, ← image_comp, ← hcomm]
+
+omit [TopologicalSpace P] in
+private theorem image_op_preimage_of_affineSpan [AddCommGroup W] [Module 𝕜 W] [AddTorsor W Q]
+    {f : P → Q} (hf : Function.Injective f) {s : Set P}
+    {opA : Set (affineSpan 𝕜 s) → Set (affineSpan 𝕜 s)}
+    {opB : Set (affineSpan 𝕜 (f '' s)) → Set (affineSpan 𝕜 (f '' s))}
+    (h_emptyA : opA ∅ = ∅) (h_emptyB : opB ∅ = ∅)
+    (e : [Nonempty s] → (affineSpan 𝕜 s) ≃ (affineSpan 𝕜 (f '' s)))
+    (hcomm : [Nonempty s] → f ∘ (↑) = (↑) ∘ e)
+    (hop : [Nonempty s] → ∀ t, e '' opA t = opB (e '' t)) :
+    (↑) '' opB ((↑) ⁻¹' (f '' s)) = f '' ((↑) '' opA ((↑) ⁻¹' s)) :=
+  match s.eq_empty_or_nonempty with
+  | .inl hs => by simp [hs, h_emptyA, h_emptyB]
+  | .inr hs => haveI : Nonempty s := hs.to_subtype
+    image_op_preimage e hcomm (by rw [hf.preimage_image s]) hop
+
+end ImageOpPreimage
+
 end AddTorsor
+
+namespace ContinuousAffineEquiv
+
+variable [Ring 𝕜] [AddCommGroup V] [AddCommGroup W] [Module 𝕜 V] [Module 𝕜 W]
+  [TopologicalSpace P] [TopologicalSpace Q] [AddTorsor V P] [AddTorsor W Q]
+
+@[simp]
+theorem image_intrinsicInterior (φ : P ≃ᴬ[𝕜] Q) (s : Set P) :
+    intrinsicInterior 𝕜 (φ '' s) = φ '' intrinsicInterior 𝕜 s :=
+  image_op_preimage_of_affineSpan φ.injective (by simp) (by simp)
+    (fun [_] => φ.affineSpanImageEquiv s) (fun [_] => by ext; simp)
+    (fun [_] t => (φ.affineSpanImageEquiv s).toHomeomorph.image_interior t)
+
+@[simp]
+theorem image_intrinsicClosure (φ : P ≃ᴬ[𝕜] Q) (s : Set P) :
+    intrinsicClosure 𝕜 (φ '' s) = φ '' intrinsicClosure 𝕜 s :=
+  image_op_preimage_of_affineSpan φ.injective (by simp) (by simp)
+    (fun [_] => φ.affineSpanImageEquiv s) (fun [_] => by ext; simp)
+    (fun [_] t => (φ.affineSpanImageEquiv s).toHomeomorph.image_closure t)
+
+@[simp]
+theorem image_intrinsicFrontier (φ : P ≃ᴬ[𝕜] Q) (s : Set P) :
+    intrinsicFrontier 𝕜 (φ '' s) = φ '' intrinsicFrontier 𝕜 s :=
+  image_op_preimage_of_affineSpan φ.injective (by simp) (by simp)
+    (fun [_] => φ.affineSpanImageEquiv s) (fun [_] => by ext; simp)
+    (fun [_] t => (φ.affineSpanImageEquiv s).toHomeomorph.image_frontier t)
+
+end ContinuousAffineEquiv
 
 namespace AffineIsometry
 
@@ -221,42 +276,24 @@ variable [NormedField 𝕜] [SeminormedAddCommGroup V] [SeminormedAddCommGroup W
 
 @[simp]
 theorem image_intrinsicInterior (φ : P →ᵃⁱ[𝕜] Q) (s : Set P) :
-    intrinsicInterior 𝕜 (φ '' s) = φ '' intrinsicInterior 𝕜 s := by
-  obtain rfl | hs := s.eq_empty_or_nonempty
-  · simp only [intrinsicInterior_empty, image_empty]
-  haveI : Nonempty s := hs.to_subtype
-  let f := ((affineSpan 𝕜 s).isometryEquivMap φ).toHomeomorph
-  have : φ.toAffineMap ∘ (↑) ∘ f.symm = (↑) := funext isometryEquivMap.apply_symm_apply
-  rw [intrinsicInterior, intrinsicInterior, ← φ.coe_toAffineMap, ← map_span φ.toAffineMap s, ← this,
-    ← Function.comp_assoc, image_comp, image_comp, f.symm.image_interior, f.image_symm,
-    ← preimage_comp, Function.comp_assoc, f.symm_comp_self, AffineIsometry.coe_toAffineMap,
-    Function.comp_id, preimage_comp, φ.injective.preimage_image]
+    intrinsicInterior 𝕜 (φ '' s) = φ '' intrinsicInterior 𝕜 s :=
+  image_op_preimage_of_affineSpan φ.injective (by simp) (by simp)
+    (fun [_] => φ.affineSpanImageHomeomorph s) (fun [_] => by ext; simp)
+    (fun [_] t => (φ.affineSpanImageHomeomorph s).image_interior t)
 
 @[simp]
 theorem image_intrinsicFrontier (φ : P →ᵃⁱ[𝕜] Q) (s : Set P) :
-    intrinsicFrontier 𝕜 (φ '' s) = φ '' intrinsicFrontier 𝕜 s := by
-  obtain rfl | hs := s.eq_empty_or_nonempty
-  · simp
-  haveI : Nonempty s := hs.to_subtype
-  let f := ((affineSpan 𝕜 s).isometryEquivMap φ).toHomeomorph
-  have : φ.toAffineMap ∘ (↑) ∘ f.symm = (↑) := funext isometryEquivMap.apply_symm_apply
-  rw [intrinsicFrontier, intrinsicFrontier, ← φ.coe_toAffineMap, ← map_span φ.toAffineMap s, ← this,
-    ← Function.comp_assoc, image_comp, image_comp, f.symm.image_frontier, f.image_symm,
-    ← preimage_comp, Function.comp_assoc, f.symm_comp_self, AffineIsometry.coe_toAffineMap,
-    Function.comp_id, preimage_comp, φ.injective.preimage_image]
+    intrinsicFrontier 𝕜 (φ '' s) = φ '' intrinsicFrontier 𝕜 s :=
+  image_op_preimage_of_affineSpan φ.injective (by simp) (by simp)
+    (fun [_] => φ.affineSpanImageHomeomorph s) (fun [_] => by ext; simp)
+    (fun [_] t => (φ.affineSpanImageHomeomorph s).image_frontier t)
 
 @[simp]
 theorem image_intrinsicClosure (φ : P →ᵃⁱ[𝕜] Q) (s : Set P) :
-    intrinsicClosure 𝕜 (φ '' s) = φ '' intrinsicClosure 𝕜 s := by
-  obtain rfl | hs := s.eq_empty_or_nonempty
-  · simp
-  haveI : Nonempty s := hs.to_subtype
-  let f := ((affineSpan 𝕜 s).isometryEquivMap φ).toHomeomorph
-  have : φ.toAffineMap ∘ (↑) ∘ f.symm = (↑) := funext isometryEquivMap.apply_symm_apply
-  rw [intrinsicClosure, intrinsicClosure, ← φ.coe_toAffineMap, ← map_span φ.toAffineMap s, ← this,
-    ← Function.comp_assoc, image_comp, image_comp, f.symm.image_closure, f.image_symm,
-    ← preimage_comp, Function.comp_assoc, f.symm_comp_self, AffineIsometry.coe_toAffineMap,
-    Function.comp_id, preimage_comp, φ.injective.preimage_image]
+    intrinsicClosure 𝕜 (φ '' s) = φ '' intrinsicClosure 𝕜 s :=
+  image_op_preimage_of_affineSpan φ.injective (by simp) (by simp)
+    (fun [_] => φ.affineSpanImageHomeomorph s) (fun [_] => by ext; simp)
+    (fun [_] t => (φ.affineSpanImageHomeomorph s).image_closure t)
 
 end AffineIsometry
 
@@ -270,21 +307,18 @@ variable [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
 
 @[simp]
 theorem intrinsicInterior_image (φ : P ≃ᵃ[𝕜] Q) (s : Set P) :
-    intrinsicInterior 𝕜 (φ '' s) = φ '' intrinsicInterior 𝕜 s := by
-  obtain rfl | hs := s.eq_empty_or_nonempty
-  · simp
-  haveI : Nonempty s := hs.to_subtype
-  let spanEquiv : affineSpan 𝕜 s ≃ᵃ[𝕜] (affineSpan 𝕜 s).map φ.toAffineMap :=
-    (affineSpan 𝕜 s).equivMapOfInjective φ.toAffineMap φ.injective
-  let spanHomeomorph := spanEquiv.toHomeomorphOfFiniteDimensional
-  have hsubtype : φ.toAffineMap ∘ (↑) ∘ spanHomeomorph.symm = (↑) := by
-    funext x
-    exact congrArg Subtype.val (spanEquiv.apply_symm_apply x)
-  rw [intrinsicInterior, intrinsicInterior, ← φ.coe_toAffineMap, ← map_span φ.toAffineMap s,
-    ← hsubtype, ← Function.comp_assoc, image_comp, image_comp,
-    spanHomeomorph.symm.image_interior, spanHomeomorph.image_symm, ← preimage_comp,
-    Function.comp_assoc, spanHomeomorph.symm_comp_self, Function.comp_id, preimage_comp]
-  simp [φ.injective.preimage_image]
+    intrinsicInterior 𝕜 (φ '' s) = φ '' intrinsicInterior 𝕜 s :=
+  φ.toContinuousAffineEquiv.image_intrinsicInterior s
+
+@[simp]
+theorem intrinsicFrontier_image (φ : P ≃ᵃ[𝕜] Q) (s : Set P) :
+    intrinsicFrontier 𝕜 (φ '' s) = φ '' intrinsicFrontier 𝕜 s :=
+  φ.toContinuousAffineEquiv.image_intrinsicFrontier s
+
+@[simp]
+theorem intrinsicClosure_image (φ : P ≃ᵃ[𝕜] Q) (s : Set P) :
+    intrinsicClosure 𝕜 (φ '' s) = φ '' intrinsicClosure 𝕜 s :=
+  φ.toContinuousAffineEquiv.image_intrinsicClosure s
 
 end AffineEquiv
 
