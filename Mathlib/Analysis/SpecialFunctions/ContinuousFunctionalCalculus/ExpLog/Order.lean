@@ -54,29 +54,21 @@ lemma CFC.tendsto_ite_cfc_rpow_sub_one_ite_log :
     Tendsto (fun (p : ℝ) (a : A) =>
       if a ∈ {b : A | IsStrictlyPositive b} then cfc (fun x => p⁻¹ * (x ^ p - 1)) a else 0) (𝓝[>] 0)
       (𝓝 (fun a => if a ∈ {b : A | IsStrictlyPositive b} then CFC.log a else 0)) := by
-  let s := {a : A | IsStrictlyPositive a}
-  let f (p : ℝ) :=
-    fun a => if IsStrictlyPositive a then cfc (A := A) (fun x => p⁻¹ * (x ^ p - 1)) a else 0
-  let g := fun a => if IsStrictlyPositive a then log (A := A) a else 0
-  have hg : s.EqOn g (log (A := A)) := by simp [g, Set.EqOn]; grind
   rw [tendsto_pi_nhds]
   intro a
   by_cases ha : IsStrictlyPositive a
-  · have hf : ∀ p, cfc (fun x => p⁻¹ * (x ^ p - 1)) a = f p a := by simp [f, ha]
-    exact (hg ha ▸ tendsto_cfc_rpow_sub_one_log ha).congr hf
-  · simp [ha]
+  · simpa [ha] using CFC.tendsto_cfc_rpow_sub_one_log ha
+  · simp_all
 
 open Classical in
 private lemma CFC.cfc_rpow_sub_one_eqOn {p : ℝ} :
     {a : A | IsStrictlyPositive a}.EqOn
       (fun a => if a ∈ {b : A | IsStrictlyPositive b}
         then cfc (fun x => p⁻¹ * (x ^ p - 1)) a else 0) (fun a => p⁻¹ • (a ^ p - (1 : A))) := by
-  let s := {a : A | IsStrictlyPositive a}
-  let f (p : ℝ) := fun a => if a ∈ s then cfc (A := A) (fun x => p⁻¹ * (x ^ p - 1)) a else 0
   intro a ha
   simp only [ha, ↓reduceIte, ← smul_eq_mul]
-  rw [cfc_smul _ (hf := by fun_prop (disch := grind -abstractProof)),
-    cfc_sub _ _ (hf := by fun_prop (disch := grind -abstractProof)),
+  rw [cfc_smul _ (hf := by fun_prop (disch := grind)),
+    cfc_sub _ _ (hf := by fun_prop (disch := grind)),
     cfc_const_one .., rpow_eq_cfc_real ..]
 
 open Classical Real in
@@ -113,19 +105,15 @@ lemma CFC.concaveOn_log : ConcaveOn ℝ {a : A | IsStrictlyPositive a} log := by
   by the continuity of the continuous functional calculus (`tendsto_cfc_fun`). Then, we use the
   fact that `x^p` is concave for `p ∈ [0,1]` (`CFC.concaveOn_rpow`) and that the set of
   concave functions is closed (`isClosed_setOf_concaveOn`) to conclude the proof. -/
-  let s := {a : A | IsStrictlyPositive a}
-  let sconc := {f : A → A | ConcaveOn ℝ s f}
+  set s := {a : A | IsStrictlyPositive a}
   let f (p : ℝ) := fun a => if a ∈ s then cfc (A := A) (fun x => p⁻¹ * (x ^ p - 1)) a else 0
   let g := fun a => if a ∈ s then log (A := A) a else 0
   have hg : s.EqOn g (log (A := A)) := by simp +contextual [g, Set.EqOn]
   refine ConcaveOn.congr ?_ hg
-  have hclosed : IsClosed sconc := isClosed_setOf_concaveOn
-  suffices g ∈ sconc by rwa [Set.mem_setOf] at this
-  refine hclosed.mem_of_tendsto (f := f) (b := (𝓝[>] (0 : ℝ)))
+  apply hclosed.mem_of_tendsto (f := f) (b := (𝓝[>] (0 : ℝ)))
     tendsto_ite_cfc_rpow_sub_one_ite_log ?_
   have h₁ : ∀ᶠ (p : ℝ) in 𝓝[>] 0, 0 < p ∧ p < 1 := nhdsGT_basis 0 |>.mem_of_mem zero_lt_one
   filter_upwards [h₁] with p ⟨hp, hp'⟩
-  rw [Set.mem_setOf]
   refine ConcaveOn.congr ?_ CFC.cfc_rpow_sub_one_eqOn.symm
   refine ConcaveOn.smul (by positivity) ?_
   have h_convex : Convex ℝ s := by grind [convex_iff_forall_pos]
