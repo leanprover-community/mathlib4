@@ -75,6 +75,12 @@ instance (J : Type w) [LinearOrder J] [Nonempty J] (C : Type u) [Category.{v} C]
     have : Nonempty (Set.Iio j) := Set.Nonempty.coe_sort (Set.Iio_nonempty.mpr hj.not_isMin)
     infer_instance
 
+theorem isLocalHom_of_toRingHom {R S : Type*} [Semiring R] [Semiring S]
+    {F : Type*} [FunLike F R S] [RingHomClass F R S] (f : F) [inst : IsLocalHom (f : R →+* S)] :
+  IsLocalHom f := ⟨inst.map_nonunit⟩
+
+instance : PreservesFilteredColimits (forget₂ (CommAlgCat.{u} R) CommRingCat) := sorry
+
 end instances
 
 section from_proetale
@@ -539,22 +545,37 @@ namespace FilteredColimit
 
 variable {R K} {J : Type u} [SmallCategory J] [IsFiltered J] {F : J ⥤ FlatExtension R K}
 
-#check PreservesColimit
-
--- instance : PreservesFilteredLimits (forget₂ (CommAlgCat R) CommRingCat) := sorry
-
 lemma isLocalRing_of_isColimit (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat R))))
-    (hc : IsColimit c) : IsLocalRing c.pt := by
-  sorry
+    (hc : IsColimit c) : IsLocalRing c.pt :=
+  @CommRingCat.FilteredColimit.isLocalRing_of_isColimit _ _ _ _
+  ((forget₂ (CommAlgCat.{u} R) CommRingCat.{u}).mapCocone c) (fun j ↦ (F.obj j).isLocalRing)
+  (fun _ _ f ↦ isLocalHom_toRingHom (F.map f).algHom) (isColimitOfPreserves _ hc)
 
-lemma isLocalHom_of_isColimit (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat R))))
+
+lemma isLocalHom_ι_of_isColimit (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat R))))
+    (hc : IsColimit c) (j : J) : IsLocalHom (c.ι.app j).hom := by
+  have := @CommRingCat.FilteredColimit.isLocalHom_ι _ _ _ _
+    ((forget₂ (CommAlgCat.{u} R) CommRingCat.{u}).mapCocone c)
+    (fun _ _ f ↦ isLocalHom_toRingHom (F.map f).algHom) (isColimitOfPreserves _ hc) j
+  simp only [Functor.comp_obj, CommAlgCat.forget₂_commRingCat_obj, Functor.mapCocone_pt,
+    Functor.const_obj_obj, Functor.mapCocone_ι_app, CommAlgCat.forget₂_commRingCat_map,
+    ConcreteCategory.hom_ofHom] at this
+  exact isLocalHom_of_toRingHom _ (inst := this)
+
+lemma isLocalHom_algebraMap_of_isColimit (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat R))))
     (hc : IsColimit c) : IsLocalHom (algebraMap R c.pt) := by
-  sorry
+  obtain ⟨j⟩ : Nonempty J := ‹IsFiltered J›.2
+  have : algebraMap R c.pt = (RingHomClass.toRingHom (c.ι.app j).hom).comp
+    (algebraMap R (F.obj j)) := (AlgHom.comp_algebraMap (CommAlgCat.Hom.hom (c.ι.app j))).symm
+  rw [this]
+  exact @RingHom.isLocalHom_comp _ _ _ _ _ _ _ _
+    (@isLocalHom_toRingHom _ _ _ _ _ _ _ _ <| isLocalHom_ι_of_isColimit c hc j) (F.obj j).isLocalHom
 
 lemma flat_of_isColimit (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat R))))
     (hc : IsColimit c) : Module.Flat R c.pt := by
-  rw [← CommAlgCat.flat_iff]
-  sorry
+  rw [← CommAlgCat.flat_iff, ← CommAlgCat.ind_flat]
+  refine ⟨J, inferInstance, inferInstance, ⟨F ⋙ (forget₂ _ (CommAlgCat R)), c.ι, hc⟩, fun j ↦ ?_⟩
+  simpa using (F.obj j).flat
 
 def residueFieldDescOfIsColimit (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat R))))
     (hc : IsColimit c) :
@@ -566,7 +587,7 @@ noncomputable def coconeOfCoconeForgetPt (c : Cocone (F ⋙ (forget₂ _ (CommAl
     (hc : IsColimit c) : FlatExtension R K := by
   have := isLocalRing_of_isColimit c hc
   have := flat_of_isColimit c hc
-  refine FlatExtension.mk' R K c.pt (isLocalHom_of_isColimit c hc)
+  refine FlatExtension.mk' R K c.pt (isLocalHom_algebraMap_of_isColimit c hc)
     (residueFieldDescOfIsColimit c hc) ?_ ?_
   · sorry
   · sorry
@@ -576,16 +597,12 @@ lemma coconeOfCoconeForgetPt_algebraMap_eq (c : Cocone (F ⋙ (forget₂ _ (Comm
     (algebraMap (ResidueField (coconeOfCoconeForgetPt c hc)) K) =
     residueFieldDescOfIsColimit c hc := rfl
 
-lemma ι_isLocalHom_of_isColimit (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat R))))
-    (hc : IsColimit c) (j : J) : IsLocalHom (c.ι.app j).hom := by
-  sorry
-
 noncomputable def coconeOfCoconeForget (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat R))))
     (hc : IsColimit c) : Cocone F where
   pt := coconeOfCoconeForgetPt c hc
   ι := {
     app j := by
-      refine FlatExtension.Hom.mk' R K (c.ι.app j).hom (ι_isLocalHom_of_isColimit c hc j) ?_
+      refine FlatExtension.Hom.mk' R K (c.ι.app j).hom (isLocalHom_ι_of_isColimit c hc j) ?_
       change (residueFieldDescOfIsColimit c hc).comp _ = _
       -- this should be from residue field is colimit
       sorry
