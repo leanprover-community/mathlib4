@@ -232,7 +232,7 @@ def IsHamiltonian (G : SimpleGraph α) : Prop :=
   Fintype.card α ≠ 1 → ∃ a, ∃ p : Walk G a a, p.IsHamiltonianCycle
 
 lemma IsHamiltonian.exists_isHamiltonianCycle [Nontrivial α] (hG : G.IsHamiltonian) (v : α) :
-    ∃ p : G.Walk v v, p.IsHamiltonianCycle := by
+    ∃ p : Walk G v v, p.IsHamiltonianCycle := by
   obtain ⟨u, p, hp⟩ := hG Fintype.one_lt_card.ne'; exact ⟨p.rotate v <| hp.mem_support _, by simpa⟩
 
 lemma IsHamiltonian.mono {H : SimpleGraph α} (hGH : G ≤ H) (hG : G.IsHamiltonian) :

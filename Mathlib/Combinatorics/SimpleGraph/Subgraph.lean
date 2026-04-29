@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
 public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # Subgraphs of a simple graph
@@ -435,12 +436,10 @@ theorem verts_sInf (s : Set G.Subgraph) : (sInf s).verts = ⋂ G' ∈ s, verts G
   rfl
 
 @[simp]
-theorem verts_iSup {f : ι → G.Subgraph} : (⨆ i, f i).verts = ⋃ i, (f i).verts := by
-  sorry -- simp [iSup]
+theorem verts_iSup {f : ι → G.Subgraph} : (⨆ i, f i).verts = ⋃ i, (f i).verts := by simp [iSup]
 
 @[simp]
-theorem verts_iInf {f : ι → G.Subgraph} : (⨅ i, f i).verts = ⋂ i, (f i).verts := by
-  sorry -- simp [iInf]
+theorem verts_iInf {f : ι → G.Subgraph} : (⨅ i, f i).verts = ⋂ i, (f i).verts := by simp [iInf]
 
 @[simp] lemma coe_bot : (⊥ : G.Subgraph).coe = ⊥ := rfl
 
@@ -526,12 +525,11 @@ theorem neighborSet_sInf (s : Set G.Subgraph) (v : V) :
 
 @[simp]
 theorem neighborSet_iSup (f : ι → G.Subgraph) (v : V) :
-    (⨆ i, f i).neighborSet v = ⋃ i, (f i).neighborSet v := by sorry -- simp [iSup]
+    (⨆ i, f i).neighborSet v = ⋃ i, (f i).neighborSet v := by simp [iSup]
 
 @[simp]
 theorem neighborSet_iInf (f : ι → G.Subgraph) (v : V) :
-    (⨅ i, f i).neighborSet v = (⋂ i, (f i).neighborSet v) ∩ G.neighborSet v := by
-  sorry -- simp [iInf]
+    (⨅ i, f i).neighborSet v = (⋂ i, (f i).neighborSet v) ∩ G.neighborSet v := by simp [iInf]
 
 @[simp]
 theorem edgeSet_top : (⊤ : Subgraph G).edgeSet = G.edgeSet := rfl
@@ -563,12 +561,11 @@ theorem edgeSet_sInf (s : Set G.Subgraph) :
 
 @[simp]
 theorem edgeSet_iSup (f : ι → G.Subgraph) :
-    (⨆ i, f i).edgeSet = ⋃ i, (f i).edgeSet := by sorry -- simp [iSup]
+    (⨆ i, f i).edgeSet = ⋃ i, (f i).edgeSet := by simp [iSup]
 
 @[simp]
 theorem edgeSet_iInf (f : ι → G.Subgraph) :
-    (⨅ i, f i).edgeSet = (⋂ i, (f i).edgeSet) ∩ G.edgeSet := by
-  sorry -- simp [iInf]
+    (⨅ i, f i).edgeSet = (⋂ i, (f i).edgeSet) ∩ G.edgeSet := by simp [iInf]
 
 @[simp]
 theorem spanningCoe_top : (⊤ : Subgraph G).spanningCoe = G := rfl

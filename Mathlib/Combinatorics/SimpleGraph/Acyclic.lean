@@ -181,7 +181,7 @@ theorem isAcyclic_iff_forall_adj_isBridge :
   · rintro hb v (_ | ⟨ha, p⟩) hp
     · exact hp.not_of_nil
     · apply (hb ha.adj).2 _ hp
-      rw [Walk.edges_cons]
+      rw [Walk.edges_cons, val_step_eq, edge_eq]
       apply List.mem_cons_self
 
 theorem isAcyclic_iff_forall_edge_isBridge :
@@ -208,7 +208,7 @@ theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p
       | nil => simp at hp
       | cons s q =>
         rw [Walk.cons_isPath_iff] at hp hq
-        simp only [Walk.edges_cons, List.mem_cons, Sym2.eq_iff, true_and] at h
+        simp only [Walk.edges_cons, List.mem_cons, val_step_eq, edge_eq, Sym2.eq_iff, true_and] at h
         rcases h with (⟨h, rfl⟩ | ⟨rfl, rfl⟩) | h
         · cases ih hp.1 q hq.1
           rw [Subsingleton.elim s ph]
@@ -285,7 +285,7 @@ theorem IsAcyclic.isPath_iff_isChain (hG : G.IsAcyclic) {v w : V} (p : Walk G v 
   induction p with
   | nil => simp
   | @cons u' v' _ head tail ih =>
-    have hcc := List.isChain_cons.mp (edges_cons _ _ ▸ h)
+    have hcc := List.isChain_cons.mp (edges_cons _ tail ▸ h)
     refine cons_isPath_iff head tail |>.mpr ⟨ih hcc.2, ?_⟩
     rcases tail.length.eq_zero_or_pos with h' | h'
     · simp [nil_iff_support_eq'.mp (nil_iff_length_eq.mpr h'), head.ne]
@@ -298,6 +298,7 @@ theorem IsAcyclic.isPath_iff_isChain (hG : G.IsAcyclic) {v w : V} (p : Walk G v 
           ⟨[], (tail.dropUntil u' hh).support.tail, by simp [← support_append]⟩
       refine ⟨⟨?_, edges_nodup_of_support_nodup this⟩, this⟩
       by_contra hhh
+      simp only [src_eq, tgt_eq, val_step_eq, edge_eq] at hhh hcc
       refine hcc.1 s(u', v') ?_ rfl
       rw [← tail.cons_tail_eq (by simp [not_nil_iff_lt_length, h'])]
       have := IsPath.mk' this |>.eq_snd_of_mem_edges (Sym2.eq_swap ▸ hhh)
@@ -419,7 +420,7 @@ lemma reachable_eq_of_maximal_isAcyclic (F : SimpleGraph V)
   suffices F ⊔ edge v' u' ≤ F by
     grind [Adj.reachable, sup_le_iff, le_iff_adj, edge_adj]
   refine h.le_of_ge ⟨?_, h.prop.right.sup_edge_of_not_reachable this⟩ le_sup_left
-  grind [Maximal, sup_le, le_iff_adj, edge_adj, huv.symm]
+  grind [Maximal, sup_le, le_iff_adj, edge_adj, huv.symm, mem_edgeSet, edge_le]
 
 /-- A subgraph is maximal acyclic iff its reachability relation agrees with the larger graph. -/
 theorem maximal_isAcyclic_iff_reachable_eq {F : SimpleGraph V} (hle : F ≤ G) (hF : F.IsAcyclic) :
@@ -651,7 +652,7 @@ lemma IsTree.chromaticNumber_le_two (hG : G.IsTree) : G.chromaticNumber ≤ 2 :=
   hG.colorable_two.chromaticNumber_le
 
 lemma exists_isCycle_of_two_le_isEdgeReachable {u v : V} (huv : u ≠ v) {n : ℕ} (hn : 2 ≤ n)
-    (h : G.IsEdgeReachable n u v) : ∃ w : G.Walk u u, w.IsCycle := by
+    (h : G.IsEdgeReachable n u v) : ∃ w : Walk G u u, w.IsCycle := by
   classical
   obtain ⟨w, hw, h⟩ := exists_adj_isEdgeReachable_two huv (h.anti hn)
   #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166

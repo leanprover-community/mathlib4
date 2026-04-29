@@ -813,7 +813,7 @@ lemma IsCircuit.isCycle_cycleBypass : ∀ {w : Walk G v v}, w.IsCircuit → w.cy
       exact hw.2 <| edges_bypass_subset _ hvv'
     · simpa using (bypass_isPath _).support_nodup
 
-lemma IsTrail.isCycle_cycleBypass {w : G.Walk v v} (hw : w ≠ .nil) (hw' : w.IsTrail) :
+lemma IsTrail.isCycle_cycleBypass {w : Walk G v v} (hw : w ≠ .nil) (hw' : w.IsTrail) :
     w.cycleBypass.IsCycle :=
   (w.isCircuit_def.mpr ⟨hw', hw⟩).isCycle_cycleBypass
 

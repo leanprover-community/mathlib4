@@ -135,7 +135,7 @@ The extended distance between vertices is equal to `1` if and only if these vert
 theorem edist_eq_one_iff_adj : G.edist u v = 1 ↔ G.Adj u v := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨w, hw⟩ := exists_walk_of_edist_ne_top <| by rw [h]; simp
-    exact step.adj <| w.adj_of_length_eq_one <| Nat.cast_eq_one.mp <| h ▸ hw
+    exact w.adj_of_length_eq_one <| Nat.cast_eq_one.mp <| h ▸ hw
   · exact le_antisymm (edist_le <| Adj.toWalk h) (Order.one_le_iff_pos.mpr <| edist_pos_of_ne h.ne)
 
 lemma edist_le_one_iff_adj_or_eq : G.edist u v ≤ 1 ↔ G.Adj u v ∨ u = v := by
