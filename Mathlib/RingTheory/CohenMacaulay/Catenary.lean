@@ -30,11 +30,9 @@ lemma Ideal.ofList_spanFinrank_le_length (rs : List R) :
   rw [Set.ncard_coe_finset]
   apply List.toFinset_card_le
 
---set_option backward.isDefEq.respectTransparency false in
 lemma Ideal.ofList_height_le_length (rs : List R) (h : Ideal.ofList rs ≠ ⊤) :
     (Ideal.ofList rs).height ≤ rs.length := by
   apply le_trans (Ideal.height_le_spanFinrank _ h)
-  let : CharZero ℕ∞ := instCharZeroENat
   exact (Nat.cast_le.mpr (ofList_spanFinrank_le_length rs))
 
 lemma IsLocalRing.Ideal.ofList_height_le_length' [IsLocalRing R] (rs : List R)
@@ -50,7 +48,7 @@ lemma Ideal.ofList_height_eq_length_of_isWeaklyRegular (rs : List R) (reg : IsWe
   · rename_i n hn
     simp only [Nat.cast_add, Nat.cast_one, height, le_iInf_iff]
     intro p hp
-    let _ := hp.1.1
+    have := Ideal.minimalPrimes_isPrime hp
     have : Ideal.ofList (rs.take n) ≤ p :=
       le_trans (Ideal.span_mono (fun r hr ↦ List.mem_of_mem_take hr)) hp.1.2
     rcases Ideal.exists_minimalPrimes_le this with ⟨q, hq, lep⟩
@@ -62,7 +60,7 @@ lemma Ideal.ofList_height_eq_length_of_isWeaklyRegular (rs : List R) (reg : IsWe
         simp [List.take_take, le_of_lt hi]
       rw [List.getElem_take, this]
       exact reg.1 i (lt_of_lt_of_le hi (rs.length_take_le' n))
-    let _ := hq.1.1
+    have := Ideal.minimalPrimes_isPrime hq
     have le := le_trans (hn (rs.take n) reg' (ne_top_of_le_ne_top h (Ideal.span_mono
       (fun r hr ↦ List.mem_of_mem_take hr))) len') (Ideal.height_mono hq.1.2)
     rw [Ideal.height_eq_primeHeight] at le
@@ -93,7 +91,6 @@ lemma IsLocalRing.height_eq_height_maximalIdeal_of_maximalIdeal_mem_minimalPrime
     · simpa [Set.mem_singleton_iff.mp h] using mem
   simp [Ideal.height, this]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma maximalIdeal_mem_ofList_append_minimalPrimes_of_ofList_height_eq_length [IsLocalRing R]
     (rs : List R) (mem : ∀ r ∈ rs, r ∈ maximalIdeal R) (ht : (Ideal.ofList rs).height = rs.length) :
     ∃ rs' : List R, maximalIdeal R ∈ (Ideal.ofList (rs ++ rs')).minimalPrimes ∧
@@ -222,7 +219,7 @@ lemma isRegular_of_maximalIdeal_mem_ofList_minimalPrimes
         have : Nontrivial (R ⧸ p) := Ideal.Quotient.nontrivial_iff.mpr (Ideal.IsPrime.ne_top ass.1)
         have : IsLocalHom (Ideal.Quotient.mk p) :=
           IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
-        let _ : IsLocalRing (R ⧸ p) :=
+        have : IsLocalRing (R ⧸ p) :=
           IsLocalRing.of_surjective (Ideal.Quotient.mk p) Ideal.Quotient.mk_surjective
         have mem_max : ∀ r ∈ rs'.map (algebraMap R (R ⧸ p)), r ∈ maximalIdeal (R ⧸ p) := by
           simp only [Ideal.Quotient.algebraMap_eq, List.mem_map,
@@ -268,7 +265,7 @@ lemma isRegular_of_maximalIdeal_mem_ofList_minimalPrimes
             fun r hr ↦ map_nonunit (Ideal.Quotient.mk (x • (⊤ : Ideal R))) r
             (mem.1.2 (Ideal.subset_span (by simp [hr])))
         exact ne_top_of_le_ne_top Ideal.IsPrime.ne_top' (Ideal.span_le.mpr mem_max)
-      let _ := (quotient_regular_smul_top_isCohenMacaulay_iff_isCohenMacaulay R x xreg xmem).mp ‹_›
+      have := (quotient_regular_smul_top_isCohenMacaulay_iff_isCohenMacaulay R x xreg xmem).mp ‹_›
       rw [← RingTheory.Sequence.isWeaklyRegular_map_algebraMap_iff R' R' rs']
       apply hn (rs'.map (algebraMap R R')) min _ (by simpa using len)
       have : ringKrullDim (QuotSMulTop x R) + 1 = ringKrullDim R := by
@@ -372,7 +369,6 @@ lemma ringKrullDim_quotient_eq_iSup_quotient_minimalPrimes (I : Ideal R) :
     intro p hp
     exact ringKrullDim_le_of_surjective _ (Ideal.Quotient.factor_surjective hp.1.2)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Ideal.height_add_ringKrullDim_quotient_eq_ringKrullDim [IsCohenMacaulayLocalRing R]
     (I : Ideal R) (netop : I ≠ ⊤) : I.height + ringKrullDim (R ⧸ I) = ringKrullDim R := by
   have : Nontrivial (R ⧸ I) := Ideal.Quotient.nontrivial_iff.mpr netop
@@ -383,11 +379,11 @@ lemma Ideal.height_add_ringKrullDim_quotient_eq_ringKrullDim [IsCohenMacaulayLoc
   apply le_antisymm
   · let f : min → WithBot ℕ∞ := fun x ↦ ringKrullDim (R ⧸ x.1)
     rcases exists_eq_ciSup_of_finite (f := f) with ⟨p, hp⟩
-    let _ := p.2.1.1
+    have := Ideal.minimalPrimes_isPrime p.2
     rw [← hp, ← Ideal.primeHeight_add_ringKrullDim_quotient_eq_ringKrullDim p.1]
     apply add_le_add_left (WithBot.coe_le_coe.mpr (iInf_le_iff.mpr fun b a ↦ a p))
   · let g : min → ℕ∞ := fun x ↦ @Ideal.primeHeight _ _ x.1 (minimalPrimes_isPrime x.2)
     rcases exists_eq_ciInf_of_finite (f := g) with ⟨p, hp⟩
-    let _ := p.2.1.1
+    have := Ideal.minimalPrimes_isPrime p.2
     rw [← hp, ← Ideal.primeHeight_add_ringKrullDim_quotient_eq_ringKrullDim p.1]
     apply add_le_add_right (le_iSup_iff.mpr fun b a ↦ a p)
