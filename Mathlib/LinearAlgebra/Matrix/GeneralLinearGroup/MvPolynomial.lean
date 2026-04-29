@@ -6,7 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.MvPolynomial.Funext
-public import Mathlib.LinearAlgebra.Matrix.MvPolynomial
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 
 /-!
@@ -35,7 +34,6 @@ theorem eq_of_eval_eq_on_gl {m k : Type*} [Fintype m] [DecidableEq m] [Field k] 
            MvPolynomial.eval (fun ij : m × m => (g : Matrix m m k) ij.1 ij.2) p =
            MvPolynomial.eval (fun ij : m × m => (g : Matrix m m k) ij.1 ij.2) q) :
     p = q := by
-  classical
   have hdet_ne : Matrix.det (Matrix.mvPolynomialX m m k) ≠ 0 :=
     Matrix.det_mvPolynomialX_ne_zero m k
   have hprod : (p - q) * Matrix.det (Matrix.mvPolynomialX m m k) = 0 := by
@@ -50,19 +48,11 @@ theorem eq_of_eval_eq_on_gl {m k : Type*} [Fintype m] [DecidableEq m] [Field k] 
       ext i j
       simp [Matrix.mvPolynomialX]
     rw [hdet_eval]
-    by_cases hdet_s :
-        Matrix.det (Matrix.of fun i j : m => s (i, j)) = 0
-    · rw [hdet_s, mul_zero]
-    · have hh := h (Matrix.GeneralLinearGroup.mkOfDetNeZero
-        (Matrix.of fun i j : m => s (i, j)) hdet_s)
-      have hs_eq :
-          (fun ij : m × m =>
-              (Matrix.GeneralLinearGroup.mkOfDetNeZero
-                  (Matrix.of fun i j : m => s (i, j)) hdet_s :
-                Matrix m m k) ij.1 ij.2) = s := by
-        funext ij
-        rfl
-      rw [hs_eq] at hh
+    by_cases hs_det : Matrix.det (Matrix.of fun i j : m => s (i, j)) = 0
+    · rw [hs_det, mul_zero]
+    · have hh : (eval s) p = (eval s) q :=
+        h (Matrix.GeneralLinearGroup.mkOfDetNeZero
+          (Matrix.of fun i j : m => s (i, j)) hs_det)
       rw [hh, sub_self, zero_mul]
   exact sub_eq_zero.mp ((mul_eq_zero.mp hprod).resolve_right hdet_ne)
 
