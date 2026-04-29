@@ -259,11 +259,9 @@ theorem liftIsometry_apply_apply (f : ContinuousMultilinearMap 𝕜 E F) (x : �
 
 variable (𝕜) in
 /-- The canonical continuous multilinear map from `E = Πᵢ Eᵢ` to `⨂[𝕜] i, Eᵢ`. -/
-@[simps!]
+@[simps! toFun]
 noncomputable def tprodL : ContinuousMultilinearMap 𝕜 E (⨂[𝕜] i, E i) :=
   (liftIsometry 𝕜 E _).symm (ContinuousLinearMap.id 𝕜 _)
-
-attribute [-simp] _root_.PiTensorProduct.tprodL_apply
 
 @[simp]
 theorem tprodL_coe : (tprodL 𝕜).toMultilinearMap = tprod 𝕜 (s := E) := by
@@ -378,7 +376,7 @@ variable (𝕜 E E')
 
 /-- The tensor of a family of linear maps from `Eᵢ` to `E'ᵢ`, as a continuous multilinear map of
 the family. -/
-@[simps!]
+@[simps! toFun_apply]
 noncomputable def mapLMultilinear : ContinuousMultilinearMap 𝕜 (fun (i : ι) ↦ E i →L[𝕜] E' i)
     ((⨂[𝕜] i, E i) →L[𝕜] ⨂[𝕜] i, E' i) :=
   MultilinearMap.mkContinuous
@@ -388,8 +386,6 @@ noncomputable def mapLMultilinear : ContinuousMultilinearMap 𝕜 (fun (i : ι) 
   1 (fun f ↦ by rw [one_mul]; exact mapL_opNorm f)
 
 variable {𝕜 E E'}
-
-attribute [-simp] _root_.PiTensorProduct.mapLMultilinear_apply_apply
 
 theorem mapLMultilinear_opNorm : ‖mapLMultilinear 𝕜 E E'‖ ≤ 1 :=
   MultilinearMap.mkContinuous_norm_le _ zero_le_one _

@@ -580,11 +580,9 @@ namespace CostructuredArrow
 
 /-- Reinterpreting an `F`-costructured arrow `F.obj d ⟶ X` as an arrow over `X` induces a functor
     `CostructuredArrow F X ⥤ Over X`. -/
-@[simps!]
+@[simps! obj_left obj_hom map_left]
 def toOver (F : D ⥤ T) (X : T) : CostructuredArrow F X ⥤ Over X :=
   CostructuredArrow.pre F (𝟭 T) X
-
-attribute [-simp] _root_.CategoryTheory.CostructuredArrow.toOver_obj_right
 
 instance (F : D ⥤ T) (X : T) [F.Faithful] : (toOver F X).Faithful :=
   show (CostructuredArrow.pre _ _ _).Faithful from inferInstance
@@ -1093,11 +1091,9 @@ variable {D : Type u₂} [Category.{v₂} D]
 
 /-- Reinterpreting an `F`-structured arrow `X ⟶ F.obj d` as an arrow under `X` induces a functor
     `StructuredArrow X F ⥤ Under X`. -/
-@[simps!]
+@[simps! obj_right obj_hom map_right]
 def toUnder (X : T) (F : D ⥤ T) : StructuredArrow X F ⥤ Under X :=
   StructuredArrow.pre X F (𝟭 T)
-
-attribute [-simp] _root_.CategoryTheory.StructuredArrow.toUnder_obj_left
 
 instance (X : T) (F : D ⥤ T) [F.Faithful] : (toUnder X F).Faithful :=
   show (StructuredArrow.pre _ _ _).Faithful from inferInstance

@@ -50,17 +50,12 @@ structure CoreHom (X Y : Core C) where
   /-- The isomorphism of objects of `C` underlying a morphism in `Core C`. -/
   iso : X.of ≅ Y.of
 
-@[simps!]
+@[simps! id_iso inv_iso]
 instance coreCategory : Groupoid.{v₁} (Core C) where
   Hom (X Y : Core C) := CoreHom X Y
   id (X : Core C) := .mk <| Iso.refl X.of
   comp f g := .mk <| Iso.trans f.iso g.iso
   inv {_ _} f := .mk <| Iso.symm f.iso
-
-attribute [-simp] _root_.CategoryTheory.coreCategory_inv_iso_hom
-  _root_.CategoryTheory.coreCategory_inv_iso_inv
-  _root_.CategoryTheory.coreCategory_comp_iso_hom
-  _root_.CategoryTheory.coreCategory_comp_iso_inv
 
 @[simp]
 lemma coreCategory_comp_iso {x y z : Core C} (f : x ⟶ y) (g : y ⟶ z) :
