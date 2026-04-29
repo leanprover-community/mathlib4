@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.Coprime.Lemmas
 
 ## Tags
 
-finset, lcm, prod, coprime
+finset, lcm, prod, coprime, Rat.den
 -/
 
 public section
