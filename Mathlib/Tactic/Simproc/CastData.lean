@@ -5,6 +5,7 @@ Authors: Jun Kwon
 -/
 module
 
+public import Mathlib.Init
 public import Lean.Meta.Tactic.Simp
 public import Batteries.Logic
 
@@ -39,14 +40,14 @@ invocation. Nested transports (such as `hv ▸ hu ▸ p`) are handled by repeate
 
 public meta section
 
-namespace Mathlib.Tactic.CastData
-
 open Lean Meta Simp
+
+namespace Mathlib.Tactic.CastData
 
 /-- Environment extension storing names of constants registered as `cast_data` projections. -/
 initialize castDataExt : SimpleScopedEnvExtension Name NameSet ←
   registerSimpleScopedEnvExtension {
-    initial := ∅
+    initial := NameSet.insert {`Subtype.val} `Fin.val
     addEntry := fun s n => s.insert n
   }
 
@@ -68,6 +69,10 @@ initialize registerBuiltinAttribute {
   add := fun declName _ kind => MetaM.run' do
     castDataExt.add declName kind
 }
+
+end Mathlib.Tactic.CastData
+
+open Mathlib.Tactic.CastData
 
 /-- Simproc that rewrites `f ... (h ▸ x) ↦ f ... x` for any constant `f` registered via
 `@[cast_data]`. Uses the universal `congr_eqRec` as the underlying lemma. -/
@@ -107,7 +112,5 @@ simproc castData (_) := fun e => do
   let earlyArgsAtA := earlyArgsKab.map (·.instantiate1 a)
   let newExpr := mkAppN head (earlyArgsAtA.push x)
   return .visit { expr := newExpr, proof? := some proof }
-
-end Mathlib.Tactic.CastData
 
 end
