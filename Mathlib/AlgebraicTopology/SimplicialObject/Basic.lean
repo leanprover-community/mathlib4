@@ -430,9 +430,8 @@ def toArrow : Augmented C ⥤ Arrow C where
       right := point.map η
       w := by
         dsimp
-        rw [← NatTrans.comp_app]
-        erw [η.w]
-        rfl }
+        rw [← NatTrans.comp_app, ← Functor.id_map η.left, ← Functor.const_map_app
+          (J := SimplexCategoryᵒᵖ) η.right (op ⦋0⦌), ← NatTrans.comp_app, congr_app η.w (op ⦋0⦌)] }
 
 /-- The compatibility of a morphism with the augmentation, on 0-simplices -/
 @[reassoc]
@@ -458,8 +457,8 @@ def whiskeringObj (D : Type*) [Category* D] (F : C ⥤ D) : Augmented C ⥤ Augm
         ext
         dsimp [whiskerRight]
         simp only [Category.comp_id, ← F.map_comp, ← NatTrans.comp_app]
-        erw [η.w]
-        rfl }
+        rw [← Functor.id_map η.left, ← Functor.const_map_app (J := SimplexCategoryᵒᵖ)
+          η.right _, ← NatTrans.comp_app, η.w] }
 
 /-- Functor composition induces a functor on augmented simplicial objects. -/
 @[simps]
@@ -803,9 +802,8 @@ def toArrow : Augmented C ⥤ Arrow C where
       right := (drop.map η).app _
       w := by
         dsimp
-        rw [← NatTrans.comp_app]
-        erw [← η.w]
-        rfl }
+        rw [← NatTrans.comp_app, ← Functor.const_map_app (J := SimplexCategory) η.left _,
+          ← Functor.id_map η.right, ← NatTrans.comp_app, congr_app η.w ⦋0⦌] }
 
 variable (C)
 
@@ -823,9 +821,9 @@ def whiskeringObj (D : Type*) [Category* D] (F : C ⥤ D) : Augmented C ⥤ Augm
       w := by
         ext
         dsimp
-        rw [Category.id_comp, Category.id_comp, ← F.map_comp, ← F.map_comp, ← NatTrans.comp_app]
-        erw [← η.w]
-        rfl }
+        rw [Category.id_comp, Category.id_comp, ← F.map_comp, ← F.map_comp, ← NatTrans.comp_app,
+          ← Functor.const_map_app (J := SimplexCategory) η.left _, ← Functor.id_map η.right,
+          ← NatTrans.comp_app, ← η.w] }
 
 /-- Functor composition induces a functor on augmented cosimplicial objects. -/
 @[simps]
