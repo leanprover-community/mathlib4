@@ -47,18 +47,18 @@ namespace Sym2
 theorem natCard_subtype_diag : Nat.card { a : Sym2 α // a.IsDiag } = Nat.card α := by
   obtain ⟨_⟩ := nonempty_fintype α; letI := Classical.decEq α
   simp_rw [Nat.card_eq_fintype_card]
-  exact Sym2.card_subtype_diag
+  exact card_subtype_diag
 
 theorem natCard_subtype_not_diag :
     Nat.card { a : Sym2 α // ¬a.IsDiag } = (Nat.card α).choose 2 := by
   obtain ⟨_⟩ := nonempty_fintype α; letI := Classical.decEq α
   simp_rw [Nat.card_eq_fintype_card]
-  exact Sym2.card_subtype_not_diag
+  exact card_subtype_not_diag
 
 lemma natCard_diagSet_compl : Nat.card (diagSetᶜ : Set (Sym2 α)) = (Nat.card α).choose 2 := by
   obtain ⟨_⟩ := nonempty_fintype α; letI := Classical.decEq α
   simp_rw [Nat.card_eq_fintype_card]
-  exact Sym2.card_diagSet_compl
+  exact card_diagSet_compl
 
 /-- Type **stars and bars** for the case `n = 2`. -/
 protected theorem natCard : Nat.card (Sym2 α) = Nat.choose (Nat.card α + 1) 2 :=by
