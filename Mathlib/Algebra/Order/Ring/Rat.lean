@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 public import Mathlib.Algebra.Ring.Rat
+public import Mathlib.Algebra.Order.Nonneg.Ring
+public import Mathlib.Data.NNRat.Defs
 
 /-!
 # The rational numbers form a linear ordered field
@@ -25,7 +27,7 @@ rat, rationals, field, ℚ, numerator, denominator, num, denom, order, ordering
 
 public section
 
-assert_not_exists Field Finset Set.Icc GaloisConnection
+assert_not_exists Field Finset
 
 namespace Rat
 
@@ -36,3 +38,11 @@ instance instIsStrictOrderedRing : IsStrictOrderedRing ℚ := .of_mul_pos fun _ 
   (Rat.mul_nonneg ha.le hb.le).lt_of_ne' (mul_ne_zero ha.ne' hb.ne')
 
 end Rat
+
+namespace NNRat
+
+instance : IsStrictOrderedRing ℚ≥0 := Nonneg.isStrictOrderedRing
+
+deriving instance OrderedSub, CanonicallyOrderedAdd for NNRat
+
+end NNRat
