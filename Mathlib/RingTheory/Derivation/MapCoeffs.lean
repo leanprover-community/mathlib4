@@ -21,6 +21,7 @@ are generalizations of that for algebras. We also have a special case for `Diffe
 
 @[expose] public section
 
+
 noncomputable section
 
 open Polynomial Module
@@ -30,6 +31,7 @@ namespace Derivation
 variable {R A M : Type*} [CommRing R] [CommRing A] [Algebra R A] [AddCommGroup M]
   [Module A M] [Module R M] (d : Derivation R A M)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 The `R`-derivation from `A[X]` to `M[X]` which applies the derivative to each

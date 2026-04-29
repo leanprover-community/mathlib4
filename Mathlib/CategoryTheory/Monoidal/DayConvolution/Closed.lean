@@ -94,6 +94,7 @@ attribute [reassoc] hπ
 
 variable {F : C ⥤ V} {G : C ⥤ V} {H : C ⥤ V}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If we have a map `G ⟶ G'` and a `DayConvolutionInternalHom F G' H'`, then
 there is a unique map `H ⟶ H'` induced by functoriality of ends and functoriality
@@ -128,6 +129,7 @@ def map (ℌ : DayConvolutionInternalHom F G H) {G' : C ⥤ V} {H' : C ⥤ V}
       Wedge.IsLimit.lift_ι_assoc (ℌ'.isLimitWedge c)]
     simp [← Functor.map_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma map_app_comp_π (ℌ : DayConvolutionInternalHom F G H)
@@ -145,6 +147,7 @@ section ev
 
 variable [DayConvolution F H] (ℌ : DayConvolutionInternalHom F G H)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given `ℌ : DayConvolutionInternalHom F H`, if we think of `H.obj G`
 as the internal hom `[F, G]`, then this is the transformation
@@ -166,6 +169,7 @@ def ev_app : F ⊛ H ⟶ G :=
         rw [reassoc_of% this]
         simp }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma unit_app_ev_app_app (x y : C) :
@@ -176,6 +180,7 @@ lemma unit_app_ev_app_app (x y : C) :
   dsimp at this
   simp [this, ev_app]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma ev_naturality_app {G' H' : C ⥤ V} (ℌ' : DayConvolutionInternalHom F G' H')
     [DayConvolution F H'] (η : G ⟶ G') :
@@ -192,6 +197,7 @@ section coev
 variable {G : C ⥤ V} [DayConvolution F G]
     (ℌ : DayConvolutionInternalHom F (F ⊛ G) H)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given `ℌ : DayConvolutionInternalHom F H`, if we think of `H.obj G`
 as the internal hom `[F, G]`, then this is the transformation
@@ -242,6 +248,7 @@ lemma coev_app_π (c j : C) :
       (H.obj c) (ℌ.π c) (ℌ.hπ c),
     Wedge.IsLimit.lift_ι]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma coev_naturality_app {G' H' : C ⥤ V} [DayConvolution F G'] (η : G ⟶ G')
     (ℌ' : DayConvolutionInternalHom F (F ⊛ G') H') :
@@ -261,6 +268,7 @@ lemma coev_naturality_app {G' H' : C ⥤ V} [DayConvolution F G'] (η : G ⟶ G'
 
 end coev
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem left_triangle_components (G : C ⥤ V) [DayConvolution F G]
     (ℌ : DayConvolutionInternalHom F (F ⊛ G) H) [DayConvolution F H] :
@@ -271,6 +279,7 @@ theorem left_triangle_components (G : C ⥤ V) [DayConvolution F G]
   apply MonoidalClosed.curry_injective
   simp [MonoidalClosed.curry_natural_left]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem right_triangle_components (G : C ⥤ V) [DayConvolution F H]
     (ℌ : DayConvolutionInternalHom F G H) {H' : C ⥤ V}

@@ -197,6 +197,7 @@ section
 variable {X₁ X₂ X₃ X₄ : Type u} {t : X₁ ⟶ X₂} {r : X₂ ⟶ X₄}
   {l : X₁ ⟶ X₃} {b : X₃ ⟶ X₄}
 
+set_option backward.defeqAttrib.useBackward true in
 lemma ext_of_isPullback (h : IsPullback t l r b) {x₁ y₁ : X₁}
     (h₁ : t x₁ = t y₁) (h₂ : l x₁ = l y₁) : x₁ = y₁ :=
   (h.isLimit.conePointUniqueUpToIso (Types.pullbackLimitCone _ _).isLimit).toEquiv.injective

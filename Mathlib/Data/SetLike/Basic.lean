@@ -53,6 +53,7 @@ instance : PartialOrder (MySubobject X) := .ofSetLike (MySubobject X) X
 
 /-- Copy of a `MySubobject` with a new `carrier` equal to the old one. Useful to fix definitional
 equalities. See Note [range copy pattern]. -/
+
 protected def copy (p : MySubobject X) (s : Set X) (hs : s = ↑p) : MySubobject X :=
   { carrier := s
     op_mem' := hs.symm ▸ p.op_mem' }

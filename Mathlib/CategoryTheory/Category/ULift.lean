@@ -41,6 +41,7 @@ and the backward direction is `AsSmall.down`. The equivalence itself is `AsSmall
 
 @[expose] public section
 
+
 universe w₁ v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
@@ -61,6 +62,7 @@ def ULift.downFunctor : ULift.{u₂} C ⥤ C where
   obj := ULift.down
   map f := f
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The categorical equivalence between `C` and `ULift C`. -/
 @[simps]
@@ -124,6 +126,7 @@ def ULiftHom.down : ULiftHom C ⥤ C where
   obj := ULiftHom.objDown
   map f := f.down
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence between `C` and `ULiftHom C`. -/
 def ULiftHom.equiv : C ≌ ULiftHom C where
   functor := ULiftHom.up

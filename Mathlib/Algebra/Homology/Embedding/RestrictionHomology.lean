@@ -35,6 +35,7 @@ variable (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k)
   {i' j' k' : ι'} (hi' : e.f i = i') (hj' : e.f j = j') (hk' : e.f k = k')
   (hi'' : c'.prev j' = i') (hk'' : c'.next j' = k')
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism `(K.restriction e).sc' i j k ≅ K.sc' i' j' k'` when
 `e` is an embedding of complex shapes, `i'`, `j`, `k`' are the respective
 images of `i`, `j`, `k` by `e.f`, `j` is the previous index of `i`, etc. -/
@@ -126,6 +127,7 @@ noncomputable def restrictionHomologyIso :
     ShortComplex.homologyMapIso (restriction.sc'Iso K e i j k hi' hj' hk' hi'' hk'') ≪≫
     (K.homologyIsoSc' i' j' k' hi'' hk'').symm
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp, nolint unusedHavesSuffices)]
 lemma homologyπ_restrictionHomologyIso_hom :
@@ -153,6 +155,7 @@ lemma homologyπ_restrictionHomologyIso_inv :
     assoc, assoc, Iso.inv_hom_id, homologyπ_restrictionHomologyIso_hom, comp_id,
     Iso.inv_hom_id_assoc]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp, nolint unusedHavesSuffices)]
 lemma restrictionHomologyIso_inv_homologyι :

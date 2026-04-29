@@ -165,6 +165,7 @@ instance (priority := 100) [P.IsClosedUnderColimitsOfShape (Discrete.{0} PEmpty)
     P.Nonempty :=
   nonempty_of_prop P.prop_initial
 
+set_option backward.defeqAttrib.useBackward true in
 lemma IsClosedUnderBinaryCoproducts.closedUnderIsomorphisms [HasInitial C]
     [P.IsClosedUnderColimitsOfShape (Discrete.{0} PEmpty)] [P.IsClosedUnderBinaryCoproducts] :
     P.IsClosedUnderIsomorphisms where

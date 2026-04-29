@@ -28,6 +28,7 @@ result in the various `eqToHom` morphisms to drop out at the appropriate moment!
 
 @[expose] public section
 
+
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
 -- morphism levels before object levels. See note [category theory universes].
@@ -361,6 +362,7 @@ lemma ObjectProperty.eqToHom_hom {C : Type*} [Category C] {P : ObjectProperty C}
   subst h
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `T ≃ D` is a bijection and `D` is a category, then
 `InducedCategory D e` is equivalent to `D`. -/
 @[simps]

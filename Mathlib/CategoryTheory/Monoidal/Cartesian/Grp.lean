@@ -42,7 +42,7 @@ def GrpObj.ofRepresentableBy (F : Cᵒᵖ ⥤ GrpCat.{w}) (α : (F ⋙ forget _)
         toUnit X ≫ α.homEquiv'.symm 1
     apply α.homEquiv'.injective
     simp only [α.homEquiv'_comp, Equiv.apply_symm_apply, map_mul, map_one]
-    simp only [← α.homEquiv'_comp, Functor.comp_obj, lift_fst, Equiv.apply_symm_apply, lift_snd]
+    simp only [← α.homEquiv'_comp, lift_fst, Equiv.apply_symm_apply, lift_snd]
     exact inv_mul_cancel (α.homEquiv (𝟙 X))
   right_inv := by
     change lift (𝟙 X) (α.homEquiv'.symm (α.homEquiv' (𝟙 X))⁻¹) ≫
@@ -107,6 +107,7 @@ def yonedaGrpObjIsoOfRepresentableBy (F : Cᵒᵖ ⥤ GrpCat.{v}) (α : (F ⋙ f
   ((yonedaMonObjIsoOfRepresentableBy X (F ⋙ forget₂ GrpCat MonCat) α).hom.app Y).hom.map_mul })
       fun φ ↦ GrpCat.hom_ext <| MonoidHom.ext <| α.homEquiv_comp φ.unop
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The yoneda embedding of `Grp C` into presheaves of groups. -/
 @[to_additive (attr := simps)

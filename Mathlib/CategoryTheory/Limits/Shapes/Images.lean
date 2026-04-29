@@ -258,6 +258,7 @@ def ofIsoI {F : MonoFactorisation f} (hF : IsImage F) {I' : C} (e : F.I ≅ I') 
     IsImage (F.ofIsoI e) where
   lift F' := e.inv ≫ hF.lift F'
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 Copying a mono factorisation to another mono factorisation with propositionally equal fields
 preserves the property of being an image.
@@ -604,6 +605,7 @@ instance image.preComp_epi_of_epi [HasImage g] [HasImage (f ≫ g)] [Epi f] :
   apply @epi_of_epi_fac _ _ _ _ _ _ _ _ ?_ (image.factorThruImage_preComp _ _)
   exact epi_comp _ _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance hasImage_iso_comp [IsIso f] [HasImage g] : HasImage (f ≫ g) :=
   HasImage.mk
@@ -643,7 +645,7 @@ instance hasImage_comp_iso [HasImage f] [IsIso g] : HasImage (f ≫ g) :=
           have : (image.lift (MonoFactorisation.ofCompIso F') ≫ F'.m) ≫ inv g =
             image.lift (MonoFactorisation.ofCompIso F') ≫
             ((MonoFactorisation.ofCompIso F').m) := by
-              simp only [MonoFactorisation.ofCompIso_I, Category.assoc,
+              simp only [ Category.assoc,
                 MonoFactorisation.ofCompIso_m]
           rw [this, image.lift_fac (MonoFactorisation.ofCompIso F'), image.as_ι] } }
 
@@ -987,6 +989,7 @@ def image.isoStrongEpiMono {I' : C} (e : X ⟶ I') (m : I' ⟶ Y) (comm : e ≫ 
   let F : StrongEpiMonoFactorisation f := { I := I', m := m, e := e }
   IsImage.isoExt F.toMonoIsImage <| Image.isImage f
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem image.isoStrongEpiMono_hom_comp_ι {I' : C} (e : X ⟶ I') (m : I' ⟶ Y) (comm : e ≫ m = f)
     [StrongEpi e] [Mono m] : (image.isoStrongEpiMono e m comm).hom ≫ image.ι f = m := by
@@ -1034,7 +1037,7 @@ theorem hasStrongEpiMonoFactorisations_imp_of_isEquivalence (F : C ⥤ D) [IsEqu
           e := F.asEquivalence.counitIso.inv.app X ≫ F.map em.e
           m := F.map em.m ≫ F.asEquivalence.counitIso.hom.app Y
           fac := by
-            simp only [asEquivalence_functor, Category.assoc, ← F.map_comp_assoc,
+            simp only [ Category.assoc, ← F.map_comp_assoc,
               MonoFactorisation.fac, fun_inv_map, id_obj, Iso.inv_hom_id_app, Category.comp_id,
               Iso.inv_hom_id_app_assoc] }⟩
 

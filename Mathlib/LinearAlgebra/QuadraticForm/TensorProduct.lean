@@ -21,6 +21,7 @@ public import Mathlib.Tactic.LinearCombination
 
 @[expose] public section
 
+
 universe uR uA uM₁ uM₂ uN₁ uN₂
 
 variable {R : Type uR} {A : Type uA} {M₁ : Type uM₁} {M₂ : Type uM₂} {N₁ : Type uN₁} {N₂ : Type uN₂}
@@ -145,6 +146,7 @@ end QuadraticForm
 
 end InvertibleTwo
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If two quadratic maps from `A ⊗[R] M₂` agree on elements of the form `1 ⊗ m`, they are equal.
 
 In other words, if a base change exists for a quadratic map, it is unique.

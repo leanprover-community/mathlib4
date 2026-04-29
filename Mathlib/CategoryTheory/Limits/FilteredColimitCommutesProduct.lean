@@ -55,6 +55,7 @@ noncomputable def pointwiseProduct : (∀ i, I i) ⥤ C where
 
 variable [∀ i, HasColimitsOfShape (I i) C] [HasColimitsOfShape (∀ i, I i) C]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The inclusions `(F s).obj (k s) ⟶ colimit (F s)` induce a cocone on `pointwiseProduct F` with
 cone point `∏ᶜ (fun s : α) => colimit (F s)`. -/
 @[simps]
@@ -85,6 +86,7 @@ variable {C : Type u} [Category.{v} C] {D : Type u₁} [Category.{v₁} D]
   [HasLimitsOfShape (Discrete α) C]
   (F : ∀ i, I i ⥤ D ⥤ C)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Evaluating the pointwise product `k ↦ ∏ᶜ fun (s : α) => (F s).obj (k s)` at `d` is the same as
 taking the pointwise product `k ↦ ∏ᶜ fun (s : α) => ((F s).obj (k s)).obj d`. -/
 @[simps!]
@@ -96,6 +98,7 @@ noncomputable def pointwiseProductCompEvaluation (d : D) :
 
 variable [∀ i, HasColimitsOfShape (I i) C] [HasColimitsOfShape (∀ i, I i) C]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem colimitPointwiseProductToProductColimit_app (d : D) :
     (colimitPointwiseProductToProductColimit F).app d =
@@ -132,6 +135,7 @@ section types
 
 variable {α : Type u} {I : α → Type u} [∀ i, SmallCategory (I i)] [∀ i, IsFiltered (I i)]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem Types.isIso_colimitPointwiseProductToProductColimit (F : ∀ i, I i ⥤ Type u) :
     IsIso (colimitPointwiseProductToProductColimit F) := by

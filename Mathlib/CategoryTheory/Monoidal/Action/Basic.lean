@@ -40,6 +40,7 @@ on `d` is `d ⊙ᵣ c`, and the structure isomorphisms are of the form
 
 @[expose] public section
 
+
 namespace CategoryTheory.MonoidalCategory
 
 variable (C D : Type*)
@@ -341,6 +342,7 @@ variable {D} in
 @[simps!]
 abbrev actionRight (d : D) : C ⥤ D := curriedAction C D |>.flip.obj d
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Bundle `αₗ _ _ _` as an isomorphism of trifunctors. -/
 @[simps!]
 def actionAssocNatIso :
@@ -350,6 +352,7 @@ def actionAssocNatIso :
     NatIso.ofComponents fun _ ↦
      NatIso.ofComponents fun _ ↦ αₗ _ _ _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Bundle `λₗ _` as an isomorphism of functors. -/
 @[simps!]
 def actionUnitNatIso : actionLeft D (𝟙_ C) ≅ 𝟭 D := NatIso.ofComponents (λₗ ·)
@@ -652,6 +655,7 @@ variable {D} in
 @[simps!]
 abbrev actionLeft (d : D) : C ⥤ D := curriedAction C D |>.flip.obj d
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Bundle `αᵣ _ _ _` as an isomorphism of trifunctors. -/
 @[simps!]
 def actionAssocNatIso :
@@ -661,6 +665,7 @@ def actionAssocNatIso :
     NatIso.ofComponents fun _ ↦
      NatIso.ofComponents fun _ ↦ αᵣ _ _ _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Bundle `ρᵣ _` as an isomorphism of functors. -/
 @[simps!]
 def actionUnitNatIso : actionRight D (𝟙_ C) ≅ 𝟭 D := NatIso.ofComponents (ρᵣ ·)

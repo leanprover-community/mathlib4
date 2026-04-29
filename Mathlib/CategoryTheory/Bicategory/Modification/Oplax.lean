@@ -289,6 +289,7 @@ namespace Modification
 
 variable (Γ : Modification η θ)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The modification between the underlying strong transformations of oplax functors -/
 @[simps]
 def toOplax : OplaxTrans.Modification η.toOplax θ.toOplax where

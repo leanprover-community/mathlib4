@@ -22,6 +22,7 @@ In this file we define normal field extensions.
 
 @[expose] public section
 
+
 noncomputable section
 
 open Polynomial IsScalarTower
@@ -221,6 +222,7 @@ end Restrict
 
 section lift
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The group homomorphism given by restricting an algebra isomorphism to itself
 is the identity map. -/
 @[simp]

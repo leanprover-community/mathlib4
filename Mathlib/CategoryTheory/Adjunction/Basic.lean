@@ -80,7 +80,10 @@ Conversely `Equivalence.toAdjunction` recovers the underlying adjunction from an
   isomorphism `L ⋙ R ≅ 𝟭 C`, the unit is an isomorphism, and similarly for the counit.
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
+
 
 
 namespace CategoryTheory
@@ -211,6 +214,7 @@ instance (L : C ⥤ D) [L.IsLeftAdjoint] : L.rightAdjoint.IsRightAdjoint :=
 
 variable {X' X : C} {Y Y' : D}
 
+set_option backward.defeqAttrib.useBackward true in
 theorem homEquiv_id (X : C) : adj.homEquiv X _ (𝟙 _) = adj.unit.app X := by simp
 
 theorem homEquiv_symm_id (X : D) : (adj.homEquiv _ X).symm (𝟙 _) = adj.counit.app X := by simp
@@ -229,6 +233,7 @@ theorem homEquiv_naturality_left (f : X' ⟶ X) (g : F.obj X ⟶ Y) :
   rw [← Equiv.eq_symm_apply]
   simp only [Equiv.symm_apply_apply, homEquiv_naturality_left_symm]
 
+set_option backward.defeqAttrib.useBackward true in
 theorem homEquiv_naturality_right (f : F.obj X ⟶ Y) (g : Y ⟶ Y') :
     (adj.homEquiv X Y') (f ≫ g) = (adj.homEquiv X Y) f ≫ G.map g := by
   simp

@@ -26,6 +26,7 @@ its carrier type.
 @[expose] public section
 
 
+
 universe v u
 
 namespace CategoryTheory
@@ -212,6 +213,7 @@ end Hom
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Bicategory structure on `Cat` -/
 instance bicategory : Bicategory.{max v u, max v u} Cat.{v, u} where
@@ -305,9 +307,11 @@ lemma leftUnitor_hom_toNatTrans {B C : Cat.{v, u}} (F : B ⟶ C) :
 lemma leftUnitor_inv_toNatTrans {B C : Cat.{v, u}} (F : B ⟶ C) :
     (λ_ F).inv.toNatTrans = (F.toFunctor.leftUnitor).inv := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 lemma leftUnitor_hom_app {B C : Cat} (F : B ⟶ C) (X : B) :
     (λ_ F).hom.toNatTrans.app X = eqToHom (by simp) := by simp
 
+set_option backward.defeqAttrib.useBackward true in
 lemma leftUnitor_inv_app {B C : Cat} (F : B ⟶ C) (X : B) :
     (λ_ F).inv.toNatTrans.app X = eqToHom (by simp) := by simp
 
@@ -323,9 +327,11 @@ lemma rightUnitor_hom_toNatTrans {B C : Cat.{v, u}} (F : B ⟶ C) :
 lemma rightUnitor_inv_toNatTrans {B C : Cat.{v, u}} (F : B ⟶ C) :
     (ρ_ F).inv.toNatTrans = (F.toFunctor.rightUnitor).inv := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 lemma rightUnitor_hom_app {B C : Cat.{v, u}} (F : B ⟶ C) (X : B) :
     (ρ_ F).hom.toNatTrans.app X = eqToHom (by simp) := by simp
 
+set_option backward.defeqAttrib.useBackward true in
 lemma rightUnitor_inv_app {B C : Cat.{v, u}} (F : B ⟶ C) (X : B) :
     (ρ_ F).inv.toNatTrans.app X = eqToHom (by simp) := by simp
 
@@ -341,9 +347,11 @@ lemma associator_hom_toNatTrans {B C D E : Cat.{v, u}} (F : B ⟶ C) (G : C ⟶ 
 lemma associator_inv_toNatTrans {B C D E : Cat.{v, u}} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ E) :
     (α_ F G H).inv.toNatTrans = (Functor.associator F.toFunctor G.toFunctor H.toFunctor).inv := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 lemma associator_hom_app {B C D E : Cat} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ E) (X : B) :
     (α_ F G H).hom.toNatTrans.app X = eqToHom (by simp) := by simp
 
+set_option backward.defeqAttrib.useBackward true in
 lemma associator_inv_app {B C D E : Cat} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ E) (X : B) :
     (α_ F G H).inv.toNatTrans.app X = eqToHom (by simp) := by simp
 
@@ -371,6 +379,7 @@ section
 
 attribute [local simp] eqToHom_map
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Any isomorphism in `Cat` induces an equivalence of the underlying categories. -/
 def equivOfIso {C D : Cat} (γ : C ≅ D) : C ≌ D where
   functor := γ.hom.toFunctor

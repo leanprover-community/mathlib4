@@ -157,6 +157,7 @@ theorem map_PInfty_f {D : Type*} [Category* D] [Preadditive D] (G : C ⥤ D) [G.
       G.map ((PInfty : AlternatingFaceMapComplex.obj X ⟶ _).f n) := by
   simp only [PInfty_f, map_P]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given an object `Y : Karoubi (SimplicialObject C)`, this lemma
 computes `PInfty` for the associated object in `SimplicialObject (Karoubi C)`

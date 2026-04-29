@@ -173,6 +173,7 @@ def stalkPushforward (f : X ⟶ Y) (F : X.Presheaf C) (x : X) : (f _* F).stalk (
   refine ?_ ≫ colimit.pre _ (OpenNhds.map f x).op
   exact colim.map (whiskerRight (NatTrans.op (OpenNhds.inclusionMapIso f x).inv) F)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem stalkPushforward_germ (f : X ⟶ Y) (F : X.Presheaf C) (U : Opens Y)
@@ -196,6 +197,7 @@ theorem stalkPushforward_germ (f : X ⟶ Y) (F : X.Presheaf C) (U : Opens Y)
 
 namespace stalkPushforward
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem id (ℱ : X.Presheaf C) (x : X) :
@@ -205,6 +207,7 @@ theorem id (ℱ : X.Presheaf C) (x : X) :
   erw [CategoryTheory.Functor.map_id]
   simp [stalkFunctor]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem comp (ℱ : X.Presheaf C) (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
@@ -231,6 +234,7 @@ def stalkPullbackHom (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) :
   (stalkFunctor _ (f x)).map ((pullbackPushforwardAdjunction C f).unit.app F) ≫
     stalkPushforward _ _ _ x
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma germ_stalkPullbackHom
@@ -240,6 +244,7 @@ lemma germ_stalkPullbackHom
         ((pullback C f).obj F).germ ((Opens.map f).obj U) x hU := by
   simp [stalkPullbackHom, germ, stalkFunctor, stalkPushforward]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The morphism `(f⁻¹ℱ)(U) ⟶ ℱ_{f(x)}` for some `U ∋ x`. -/
 def germToPullbackStalk (f : X ⟶ Y) (F : Y.Presheaf C) (U : Opens X) (x : X) (hx : x ∈ U) :
     ((pullback C f).obj F).obj (op U) ⟶ F.stalk (f x) :=
@@ -249,6 +254,7 @@ def germToPullbackStalk (f : X ⟶ Y) (F : Y.Presheaf C) (U : Opens X) (x : X) (
         { app := fun V => F.germ _ (f x) (V.hom.unop.le hx)
           naturality := fun _ _ i => by simp } }
 
+set_option backward.defeqAttrib.useBackward true in
 variable {C} in
 @[ext]
 lemma pullback_obj_obj_ext {Z : C} {f : X ⟶ Y} {F : Y.Presheaf C} (U : (Opens X)ᵒᵖ)
@@ -263,6 +269,7 @@ lemma pullback_obj_obj_ext {Z : C} {f : X ⟶ Y} {F : Y.Presheaf C} (U : (Opens 
   simpa [pullbackPushforwardAdjunction, Functor.lanAdjunction_unit]
     using h V (leOfHom b)
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma pullbackPushforwardAdjunction_unit_pullback_map_germToPullbackStalk
     (f : X ⟶ Y) (F : Y.Presheaf C) (U : Opens X) (x : X) (hx : x ∈ U) (V : Opens Y)
@@ -285,6 +292,7 @@ lemma germToPullbackStalk_stalkPullbackHom
   simp only [pullbackPushforwardAdjunction_unit_pullback_map_germToPullbackStalk_assoc,
     germ_stalkPullbackHom, germ_res]
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma pullbackPushforwardAdjunction_unit_app_app_germToPullbackStalk
     (f : X ⟶ Y) (F : Y.Presheaf C) (V : (Opens Y)ᵒᵖ) (x : X) (hx : f x ∈ V.unop) :
@@ -293,6 +301,7 @@ lemma pullbackPushforwardAdjunction_unit_app_app_germToPullbackStalk
   simpa using pullbackPushforwardAdjunction_unit_pullback_map_germToPullbackStalk
     C f F ((Opens.map f).obj V.unop) x hx V.unop (by rfl)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The morphism `(f⁻¹ℱ)ₓ ⟶ ℱ_{f(x)}`. -/
 def stalkPullbackInv (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) :
@@ -337,6 +346,7 @@ section stalkSpecializes
 
 variable {C}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `x` specializes to `y`, then there is a natural map `F.stalk y ⟶ F.stalk x`. -/
 noncomputable def stalkSpecializes (F : X.Presheaf C) {x y : X} (h : x ⤳ y) :
     F.stalk y ⟶ F.stalk x := by

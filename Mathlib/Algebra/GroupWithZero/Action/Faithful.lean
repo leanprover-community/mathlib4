@@ -11,6 +11,7 @@ public import Mathlib.Algebra.GroupWithZero.NeZero
 /-!
 # Faithful actions involving groups with zero
 -/
+
 deprecated_module (since := "2026-02-03")
 
 public section

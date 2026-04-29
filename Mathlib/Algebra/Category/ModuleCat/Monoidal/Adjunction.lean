@@ -17,7 +17,7 @@ Let `f : R →+* S` be a morphism of commutative rings. We show that the functor
 
 -/
 
-public section
+set_option backward.defeqAttrib.useBackward true
 
 universe u
 
@@ -73,20 +73,24 @@ noncomputable instance : (extendScalars f).Monoidal :=
         rw [one_smul]
         rfl))
 
+set_option backward.defeqAttrib.useBackward true in
 lemma extendScalars_ε :
     letI := f.toAlgebra
     dsimp% ε (extendScalars f) = (AlgebraTensorModule.rid R S S).toModuleIso.inv := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 lemma extendScalars_η :
     letI := f.toAlgebra
     dsimp% η (extendScalars f) = (AlgebraTensorModule.rid R S S).toModuleIso.hom := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 lemma extendScalars_μ (M₁ M₂ : ModuleCat R) :
     letI := f.toAlgebra
     dsimp% μ (extendScalars f) M₁ M₂ =
       (AlgebraTensorModule.distribBaseChange R S M₁ M₂).toModuleIso.inv :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 lemma extendScalars_δ (M₁ M₂ : ModuleCat R) :
     letI := f.toAlgebra
     dsimp% δ (extendScalars f) M₁ M₂ =

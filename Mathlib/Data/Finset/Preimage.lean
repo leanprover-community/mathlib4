@@ -193,6 +193,7 @@ def restrictPreimageFinset (e : α ≃ β) (s : Finset β) : (s.preimage e e.inj
 
 end Equiv
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Reindexing and then restricting to a `Finset` is the same as first restricting to the preimage
 of this `Finset` and then reindexing. -/

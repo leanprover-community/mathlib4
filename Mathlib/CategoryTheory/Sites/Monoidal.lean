@@ -45,6 +45,7 @@ namespace Presheaf
 
 variable [MonoidalClosed A]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Relation between `functorEnrichedHom` and `presheafHom`. -/
 noncomputable def functorEnrichedHomCoyonedaObjEquiv (M : A) (F G : Cᵒᵖ ⥤ A)
@@ -85,6 +86,7 @@ noncomputable def functorEnrichedHomCoyonedaObjEquiv (M : A) (F G : Cᵒᵖ ⥤ 
     simp only [uncurry_curry, end_.lift_π]
     rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma functorEnrichedHomCoyonedaObjEquiv_naturality
     {M : A} {F G : Cᵒᵖ ⥤ A} {X Y : C} (f : X ⟶ Y)
@@ -141,6 +143,7 @@ lemma whiskerLeft {G₁ G₂ : Cᵒᵖ ⥤ A} {g : G₁ ⟶ G₂} (hg : J.W g) (
   dsimp
   rw [curry_natural_left]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma whiskerRight [BraidedCategory A]
     {F₁ F₂ : Cᵒᵖ ⥤ A} {f : F₁ ⟶ F₂} (hf : J.W f) (G : Cᵒᵖ ⥤ A) :
     J.W (f ▷ G) :=

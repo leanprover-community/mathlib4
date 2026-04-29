@@ -29,6 +29,7 @@ We follow a nice proof from http://drorbn.net/AcademicPensieve/2015-12/CayleyHam
 
 @[expose] public section
 
+
 noncomputable section
 
 universe u v w
@@ -230,6 +231,7 @@ theorem aeval_self_charpoly (M : Matrix n n R) : aeval M M.charpoly = 0 := by
   -- Thus we have $χ_M(M) = 0$, which is the desired result.
   exact h
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 A version of `Matrix.charpoly_mul_comm` for rectangular matrices.
 See also `Matrix.charpoly_mul_comm_of_le` which has just `(A * B).charpoly` as the LHS.

@@ -237,6 +237,7 @@ instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
   .of_algebraMap_smul fun r m ↦ Subtype.ext <| funext fun x ↦
     IsScalarTower.algebraMap_smul (Localizations R x.1) r (m.1 x)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable (R M) in
 /-- The structure sheaf of a module as a presheaf of modules on `Spec R`.
@@ -720,6 +721,7 @@ theorem toStalkₗ'_stalkToFiberRingHom (x : PrimeSpectrum.Top R) :
 
 open TopCat.Presheaf
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable (R M) in
 /-- The ring isomorphism between the stalk of the structure sheaf of `R` at a point `p`
@@ -974,6 +976,7 @@ def Localizations.comapFun (y : PrimeSpectrum.Top S) :
   { __ := g,
     map_smul' r x := by simpa [Localizations] using (IsScalarTower.algebraMap_smul ..).symm }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma Localizations.comapFun_mk (y : PrimeSpectrum.Top S)

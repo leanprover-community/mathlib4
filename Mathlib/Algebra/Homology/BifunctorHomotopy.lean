@@ -130,7 +130,7 @@ lemma comm₁ (j : J) :
       Functor.map_comp, NatTrans.app_add, NatTrans.comp_app,
       Preadditive.add_comp, assoc, HomologicalComplex₂.total_d,
       Functor.mapBifunctorHomologicalComplex_obj_obj_toGradedObject, Preadditive.comp_add,
-      HomologicalComplex₂.ι_D₁_assoc, Functor.mapBifunctorHomologicalComplex_obj_obj_X_X,
+      HomologicalComplex₂.ι_D₁_assoc,
       HomologicalComplex₂.ι_D₂_assoc, add_left_inj]
   have : ∀ {X Y : D} (a b c d e f : X ⟶ Y), a = c → b = e → f = -d →
       a + b = c + d + (e + f) := by rintro X Y a b _ d _ _ rfl rfl rfl; abel
@@ -183,6 +183,7 @@ noncomputable def mapBifunctorMapHomotopy₁ :
   zero := zero₁ h₁ f₂ F c
   comm := comm₁ h₁ f₂ F c
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable (f₁) {f₂ f₂'} in
 open mapBifunctorMapHomotopy in

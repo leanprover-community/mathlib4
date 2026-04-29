@@ -219,8 +219,8 @@ def spanCone [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsCompact C
   { app s := ConcreteCategory.ofHom ⟨ProjRestrict C (· ∈ unop s), continuous_projRestrict _ _⟩
     naturality := by
       intro X Y h
-      simp only [Functor.const_obj_obj,
-        Functor.const_obj_map, Category.id_comp, ← projRestricts_comp_projRestrict C
+      simp only [
+        Functor.const_obj_map, ← projRestricts_comp_projRestrict C
         (leOfHom h.unop)]
       rfl }
 
@@ -380,6 +380,7 @@ end GoodProducts
 
 namespace Products
 
+set_option backward.defeqAttrib.useBackward true in
 theorem eval_eq (l : Products I) (x : C) :
     l.eval C x = if ∀ i, i ∈ l.val → (x.val i = true) then 1 else 0 := by
   change LocallyConstant.evalMonoidHom x (l.eval C) = _

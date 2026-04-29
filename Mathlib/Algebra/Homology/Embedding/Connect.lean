@@ -153,6 +153,7 @@ def restrictionGEIso :
       (j' := (n + 1 : ℕ)) (by simp) (by simp), cochainComplex_d, h.d_ofNat]
     simp)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `h : ConnectData K L`, then `h.cochainComplex` identifies to `K` in degrees `≤ -1`. -/
 @[simps!]
 def restrictionLEIso :
@@ -206,13 +207,16 @@ protected def map : h.cochainComplex ⟶ h'.cochainComplex where
   | .negSucc 0, _, .refl _ => by simpa
   | .negSucc (i + 1), _, .refl _ => fK.comm _ _
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp] lemma map_id : h.map h (𝟙 K) (𝟙 L) (by simp) = 𝟙 _ := by ext (m | _ | m) <;> simp; rfl
 
+set_option backward.defeqAttrib.useBackward true in
 lemma map_comp_map :
     h.map h' fK fL f_comm ≫ h'.map h'' fK' fL' f_comm'
      = h.map h'' (fK ≫ fK') (fL ≫ fL') (by simp [f_comm', reassoc_of% f_comm]) := by
   ext (m | _ | m) <;> simp; rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma homologyMap_map_of_eq_succ (n : ℕ) [NeZero n] (m : ℤ) (hmn : m = n)
     [HasHomology h.cochainComplex m] [HasHomology L n]
@@ -228,6 +232,7 @@ lemma homologyMap_map_of_eq_succ (n : ℕ) [NeZero n] (m : ℤ) (hmn : m = n)
   subst hmn
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma homologyMap_map_of_eq_neg_succ (n : ℕ) [NeZero n] (m : ℤ) (hmn : m = -↑(n + 1))
     [HasHomology h.cochainComplex m] [HasHomology K n]

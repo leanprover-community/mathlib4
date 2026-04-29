@@ -23,6 +23,7 @@ we define a functor `inducedFunctor : C ⥤ Fiber p S` that `F` factors through.
 
 @[expose] public section
 
+
 universe v₁ u₁ v₂ u₂ v₃ u₃
 
 namespace CategoryTheory
@@ -63,6 +64,7 @@ instance : (fiberInclusion : Fiber p S ⥤ _).Faithful where
 lemma fiberInclusion_obj_inj : (fiberInclusion : Fiber p S ⥤ _).obj.Injective :=
   fun _ _ f ↦ Subtype.val_inj.1 f
 
+set_option backward.defeqAttrib.useBackward true in
 /-- For fixed `S : 𝒮` this is the natural isomorphism between `fiberInclusion ⋙ p` and the constant
 function valued at `S`. -/
 @[simps!]
@@ -107,6 +109,7 @@ section
 variable {p : 𝒳 ⥤ 𝒮} {S : 𝒮} {C : Type u₃} [Category.{v₃} C] {F : C ⥤ 𝒳}
   (hF : F ⋙ p = (const C).obj S)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given a functor `F : C ⥤ 𝒳` such that `F ⋙ p` is constant at some `S : 𝒮`, then
 we get an induced functor `C ⥤ Fiber p S` that `F` factors through. -/
 def inducedFunctor : C ⥤ Fiber p S where

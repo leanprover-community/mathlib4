@@ -32,6 +32,7 @@ variable (C : Type*) [Category* C] [HasShift C ℤ] [HasZeroObject C] [Preadditi
 
 namespace Opposite
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 scoped instance [IsTriangulated C] : IsTriangulated Cᵒᵖ where
   octahedron_axiom := by

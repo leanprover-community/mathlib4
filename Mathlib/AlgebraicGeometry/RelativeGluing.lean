@@ -24,6 +24,7 @@ open CategoryTheory Limits
 
 namespace AlgebraicGeometry
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma Scheme.isLocallyDirected_of_equifibered_of_injective {J : Type*} [Category J]
     {F G : J ⥤ Scheme.{u}} (s : F ⟶ G) [Quiver.IsThin J] (hs : s.Equifibered)
@@ -116,11 +117,13 @@ noncomputable def toBase : d.glued ⟶ S :=
     { pt := S
       ι := d.natTrans ≫ 𝒰.functorOfLocallyDirectedHomBase }
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma ι_toBase (i : 𝒰.I₀) :
     colimit.ι d.functor i ≫ d.toBase = d.natTrans.app i ≫ 𝒰.f i := by
   simp [toBase]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance : d.cover.LocallyDirected where
   trans {i j} hij := d.functor.map hij
@@ -143,6 +146,7 @@ instance : d.cover.LocallyDirected where
     rw [← Scheme.Hom.comp_apply]
     simp [h1, xj]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma preimage_toBase_eq_range_ι (i : 𝒰.I₀) :
     d.toBase ⁻¹' (Set.range <| 𝒰.f i) = Set.range (colimit.ι d.functor i) := by
@@ -167,6 +171,7 @@ lemma toBase_preimage_eq_opensRange_ι (i : 𝒰.I₀) :
     d.toBase ⁻¹ᵁ (𝒰.f i).opensRange = (colimit.ι d.functor i).opensRange :=
   TopologicalSpace.Opens.coe_inj.mp (preimage_toBase_eq_range_ι d i)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isPullback_natTrans_ι_toBase (i : 𝒰.I₀) :
     IsPullback (d.natTrans.app i) (colimit.ι d.functor i) (𝒰.f i) d.toBase := by

@@ -114,6 +114,7 @@ lemma IsSeparating.of_equivalence
     simp only [Adjunction.homEquiv_unit, Category.assoc, ← Functor.map_comp,
       H _ (P.strictMap_obj _ hZ) h']))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma IsCoseparating.of_equivalence
     (h : IsCoseparating P) {D : Type*} [Category* D] (α : C ≌ D) :

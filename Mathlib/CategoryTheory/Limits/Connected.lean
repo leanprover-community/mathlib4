@@ -63,6 +63,7 @@ def constCocone : Cocone ((Functor.const J).obj X) where
 
 variable [IsConnected J]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- When `J` is a connected category, the limit of a
 constant functor `J ⥤ C` with value `X : C` identifies to `X`. -/
 def isLimitConstCone : IsLimit (constCone J X) where
@@ -74,6 +75,7 @@ def isLimitConstCone : IsLimit (constCone J X) where
       (fun _ _ f ↦ by simpa using s.w f) _ _
   uniq s m hm := by simpa using hm (Classical.arbitrary _)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- When `J` is a connected category, the colimit of a
 constant functor `J ⥤ C` with value `X : C` identifies to `X`. -/
 def isColimitConstCocone : IsColimit (constCocone J X) where
@@ -106,7 +108,7 @@ def Cone.isLimitOfIsIsoLimMapπ {F : J ⥤ C} [HasLimit F] (c : Cone F)
   refine IsLimit.ofIsoLimit (limit.isLimit _) (Cone.ext ((asIso (limMap c.π)).symm ≪≫
     (limit.isLimit _).conePointUniqueUpToIso (isLimitConstCone J c.pt)) ?_)
   intro j
-  simp only [limit.cone_x, Functor.const_obj_obj, limit.cone_π, Iso.trans_hom, Iso.symm_hom,
+  simp only [limit.cone_x, limit.cone_π, Iso.trans_hom, Iso.symm_hom,
     asIso_inv, assoc, IsIso.eq_inv_comp, limMap_π]
   congr 1
   simp [← Iso.inv_comp_eq_id]
@@ -118,7 +120,7 @@ theorem IsLimit.isIso_limMap_π {F : J ⥤ C} [HasLimit F] {c : Cone F} (hc : Is
       hc.conePointUniqueUpToIso (limit.isLimit _)).hom by
     rw [this]; infer_instance
   ext j
-  simp only [limMap_π, Functor.const_obj_obj, limit.cone_x, constCone_pt, Iso.trans_hom, assoc,
+  simp only [limMap_π, limit.cone_x, Iso.trans_hom, assoc,
     limit.conePointUniqueUpToIso_hom_comp]
   congr 1
   simp [← Iso.inv_comp_eq_id]
@@ -143,7 +145,7 @@ theorem IsColimit.isIso_colimMap_ι {F : J ⥤ C} [HasColimit F] {c : Cocone F} 
       (isColimitConstCocone J c.pt).coconePointUniqueUpToIso (colimit.isColimit _)).hom by
     rw [this]; infer_instance
   ext j
-  simp only [ι_colimMap, Functor.const_obj_obj, colimit.cocone_x, Iso.trans_hom,
+  simp only [ι_colimMap, colimit.cocone_x, Iso.trans_hom,
     colimit.comp_coconePointUniqueUpToIso_hom_assoc]
   congr 1
   simp [← Iso.comp_inv_eq_id]
@@ -192,10 +194,12 @@ variable {J : Type v₂} [SmallCategory J]
 
 namespace ProdPreservesConnectedLimits
 
+set_option backward.defeqAttrib.useBackward true in
 /-- (Impl). The obvious natural transformation from (X × K -) to K. -/
 @[simps]
 def γ₂ {K : J ⥤ C} (X : C) : K ⋙ prod.functor.obj X ⟶ K where app _ := Limits.prod.snd
 
+set_option backward.defeqAttrib.useBackward true in
 /-- (Impl). The obvious natural transformation from (X × K -) to X -/
 @[simps]
 def γ₁ {K : J ⥤ C} (X : C) : K ⋙ prod.functor.obj X ⟶ (Functor.const J).obj X where

@@ -23,6 +23,7 @@ cotangent space of the extended ideal `I · (T ⊗[R] S)`.
 - `Ideal.tensorCotangentEquiv`: When `T` is `R`-flat, `tensorCotangentHom` is an isomorphism.
 -/
 
+
 @[expose] public noncomputable section
 
 universe u
@@ -80,6 +81,7 @@ lemma tensorCotangentHom_surjective :
     simp [-AlgHom.toRingHom_eq_coe, tensorCotangentHom_tmul, Algebra.smul_def,
       ← Ideal.Quotient.mk_algebraMap, ← map_mul]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `T` is a flat `R`-module, the canonical map `tensorCotangentHom R T I` is injective. -/
 lemma tensorCotangentHom_injective_of_flat [Module.Flat R T] :
     Function.Injective (I.tensorCotangentHom R T) := by

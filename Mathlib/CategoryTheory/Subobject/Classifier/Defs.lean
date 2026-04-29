@@ -334,6 +334,7 @@ lemma pullback_χ_obj_mk_truth {Z X : C} (i : Z ⟶ X) [Mono i] :
 @[deprecated (since := "2026-03-06")]
 alias _root_.CategoryTheory.Classifier.pullback_χ_obj_mk_truth := pullback_χ_obj_mk_truth
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma χ_pullback_obj_mk_truth_arrow {X : C} (φ : X ⟶ 𝒞.Ω) :

@@ -36,6 +36,7 @@ public import Mathlib.RingTheory.Extension.Cotangent.Basic
 
 @[expose] public section
 
+
 universe u
 
 open TensorProduct KaehlerDifferential
@@ -370,6 +371,7 @@ def retractionKerCotangentToTensorEquivSection :
 
 namespace Algebra.Extension
 
+set_option backward.defeqAttrib.useBackward true in
 lemma CotangentSpace.map_toInfinitesimal_bijective (P : Extension.{u} R S) :
     Function.Bijective (CotangentSpace.map P.toInfinitesimal) := by
   suffices CotangentSpace.map P.toInfinitesimal =

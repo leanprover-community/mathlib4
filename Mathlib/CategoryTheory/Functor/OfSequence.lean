@@ -26,6 +26,7 @@ The duals of the above for functors `ℕᵒᵖ ⥤ C` are given by `Functor.ofOp
 
 @[expose] public section
 
+
 namespace CategoryTheory
 
 open Category
@@ -160,6 +161,7 @@ example : (ofOpSequence f).map (homOfLE (show 0 ≤ 3 by lia)).op = (f 2 ≫ f 1
 example : (ofOpSequence f).map (homOfLE (show 3 ≤ 7 by lia)).op =
     ((f 6 ≫ f 5) ≫ f 4) ≫ f 3 := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma ofOpSequence_map_homOfLE_succ (n : ℕ) :
     (ofOpSequence f).map (homOfLE (Nat.le_add_right n 1)).op = f n := by

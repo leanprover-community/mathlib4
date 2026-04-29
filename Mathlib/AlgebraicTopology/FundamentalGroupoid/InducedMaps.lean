@@ -71,7 +71,7 @@ def homotopicMapsNatIso (H : ContinuousMap.Homotopy f g) : map f ⟶ map g where
   naturality := by
     rintro ⟨x⟩ ⟨y⟩ p
     rcases Path.Homotopic.Quotient.mk_surjective p with ⟨p, rfl⟩
-    simp only [map_map, map_obj_as, Path.Homotopic.Quotient.mk''_eq_mk, comp_eq,
+    simp only [map_map, Path.Homotopic.Quotient.mk''_eq_mk, comp_eq,
       ← Path.Homotopic.Quotient.mk_map, ← Path.Homotopic.Quotient.mk_trans]
     rw [Path.Homotopic.Quotient.eq]
     exact .map_trans_evalAt _ _

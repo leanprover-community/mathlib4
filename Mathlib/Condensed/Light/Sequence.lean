@@ -224,7 +224,7 @@ noncomputable def cocone {X : LightCondMod R} {S T : LightProfinite} (π : T ⟶
   · simp [← map_comp_assoc, -Functor.map_comp]
     rfl
   · -- simp? [← map_comp_assoc, -Functor.map_comp] says:
-    simp only [comp_obj, pair_obj_right, mapCocone_pt, const_obj_obj, mapCocone_ι_app,
+    simp only [ pair_obj_right, mapCocone_ι_app,
       Functor.comp_map, parallelPair_obj_zero, parallelPair_obj_one, parallelPair_map_left,
       Preadditive.comp_add, Preadditive.comp_sub, ← map_comp_assoc, parallelPair_map_right]
     have : cover π = (BinaryCofan.IsColimit.desc' (coproductIsColimit _ _)
@@ -234,8 +234,8 @@ noncomputable def cocone {X : LightCondMod R} {S T : LightProfinite} (π : T ⟶
           ((pullback.snd _ _) ≫ LightProfinite.fibreIncl _ _)
           (by simp [pullback.condition]))).val := rfl
     -- simp? [this, ← Functor.map_comp] says:
-    simp only [this, pair_obj_left, const_obj_obj, pair_obj_right, BinaryCofan.IsColimit.desc'_coe,
-      IsColimit.fac, BinaryCofan.mk_pt, BinaryCofan.mk_inr, ← Functor.map_comp,
+    simp only [this, pair_obj_left, pair_obj_right, BinaryCofan.IsColimit.desc'_coe,
+      IsColimit.fac, BinaryCofan.mk_inr, ← Functor.map_comp,
       pullback.lift_fst, IsColimit.fac_assoc, assoc,
       pullback.lift_snd]
     -- simp? [-Functor.map_comp, ← assoc, hr] says:
@@ -343,8 +343,8 @@ public theorem LightCondensed.internallyProjective_free_natUnionInfty :
     -- commutes, which is true by the universal property of the colimit.
     rw [hc.fac]
     -- simp? [← comm] says:
-    simp only [comp_obj, Limits.parallelPair_obj_one, Functor.comp_map, Functor.map_comp,
-      assoc, cocone_pt, cocone_ι_app, eqToHom_refl, Preadditive.comp_add, Preadditive.comp_sub,
+    simp only [ Limits.parallelPair_obj_one, Functor.comp_map, Functor.map_comp,
+      assoc, cocone_ι_app, eqToHom_refl, Preadditive.comp_add, Preadditive.comp_sub,
       id_comp, Preadditive.add_comp, Preadditive.sub_comp, ← comm]
     simp only [← Functor.map_comp, ← Functor.comp_map, ← assoc, ← comp]
     symm

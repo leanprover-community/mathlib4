@@ -141,6 +141,7 @@ lemma mulInvariantVectorField_eq_mpullback (g : G) (V : Π (g : G), TangentSpace
   congr
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 @[to_additive]
 theorem contMDiff_mulInvariantVectorField (v : GroupLieAlgebra I G) :
     CMDiff (minSmoothness 𝕜 2)

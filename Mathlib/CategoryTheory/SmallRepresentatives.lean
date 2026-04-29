@@ -29,6 +29,7 @@ any category `C` such that `HasCardinalLT C κ` holds.
 
 @[expose] public section
 
+
 universe w v u
 
 namespace CategoryTheory
@@ -121,6 +122,7 @@ the obvious functor `h.smallCategoryOfSet.obj ⥤ C` is an equivalence. -/
 noncomputable def equivalence : h.smallCategoryOfSet.obj ≌ C :=
   h.functor.asEquivalence
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given `h : CoreSmallCategoryOfSet Ω C`, the equivalence of categories
 `h.smallCategoryOfSet.obj ≌ C` is actually an isomorphism: it induces
 a bijection on the type of arrows. -/

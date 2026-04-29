@@ -154,6 +154,7 @@ theorem comp_distTriang_mor_zero₃₁ (T : Triangle C) (H : T ∈ distTriang C)
 def shortComplexOfDistTriangle (T : Triangle C) (hT : T ∈ distTriang C) : ShortComplex C :=
   ShortComplex.mk T.mor₁ T.mor₂ (comp_distTriang_mor_zero₁₂ _ hT)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism between the short complex attached to
 two isomorphic distinguished triangles. -/
 @[simps!]
@@ -168,6 +169,7 @@ lemma distinguished_cocone_triangle₁ {Y Z : C} (g : Y ⟶ Z) :
   obtain ⟨X', f', g', mem⟩ := distinguished_cocone_triangle g
   exact ⟨_, _, _, inv_rot_of_distTriang _ mem⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Any morphism `Z ⟶ X⟦1⟧` is part of a distinguished triangle `X ⟶ Y ⟶ Z ⟶ X⟦1⟧` -/
 lemma distinguished_cocone_triangle₂ {Z X : C} (h : Z ⟶ X⟦(1 : ℤ)⟧) :
@@ -180,6 +182,7 @@ lemma distinguished_cocone_triangle₂ {Z X : C} (h : Z ⟶ X⟦(1 : ℤ)⟧) :
     (by cat_disch) (by cat_disch)
     (by dsimp; simp only [shift_shiftFunctorCompIsoId_inv_app, id_comp])
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A commutative square involving the morphisms `mor₂` of two distinguished triangles
 can be extended as morphism of triangles -/
 lemma complete_distinguished_triangle_morphism₁ (T₁ T₂ : Triangle C)
@@ -196,6 +199,7 @@ lemma complete_distinguished_triangle_morphism₁ (T₁ T₂ : Triangle C)
     simpa only [Functor.map_comp, Functor.map_preimage] using ha₂
   · simpa only [Functor.map_preimage] using ha₁
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A commutative square involving the morphisms `mor₃` of two distinguished triangles
 can be extended as morphism of triangles -/
@@ -213,6 +217,7 @@ lemma complete_distinguished_triangle_morphism₂ (T₁ T₂ : Triangle C)
   rw [← cancel_mono ((shiftEquiv C (1 : ℤ)).counitIso.inv.app T₂.obj₃), assoc, assoc, ← ha₂]
   simp only [shiftEquiv'_counitIso, shift_neg_shift', assoc, Iso.inv_hom_id_app_assoc]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Obvious triangles `0 ⟶ X ⟶ X ⟶ 0⟦1⟧` are distinguished -/
 lemma contractible_distinguished₁ (X : C) :
     Triangle.mk (0 : 0 ⟶ X) (𝟙 X) 0 ∈ distTriang C := by
@@ -221,6 +226,7 @@ lemma contractible_distinguished₁ (X : C) :
   exact Triangle.isoMk _ _ (Functor.mapZeroObject _).symm (Iso.refl _) (Iso.refl _)
     (by simp) (by simp) (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Obvious triangles `X ⟶ 0 ⟶ X⟦1⟧ ⟶ X⟦1⟧` are distinguished -/
 lemma contractible_distinguished₂ (X : C) :
@@ -236,6 +242,7 @@ namespace Triangle
 variable (T : Triangle C) (hT : T ∈ distTriang C)
 include hT
 
+set_option backward.defeqAttrib.useBackward true in
 lemma yoneda_exact₂ {X : C} (f : T.obj₂ ⟶ X) (hf : T.mor₁ ≫ f = 0) :
     ∃ (g : T.obj₃ ⟶ X), f = T.mor₂ ≫ g := by
   obtain ⟨g, ⟨hg₁, _⟩⟩ := complete_distinguished_triangle_morphism T _ hT
@@ -246,12 +253,14 @@ lemma yoneda_exact₃ {X : C} (f : T.obj₃ ⟶ X) (hf : T.mor₂ ≫ f = 0) :
     ∃ (g : T.obj₁⟦(1 : ℤ)⟧ ⟶ X), f = T.mor₃ ≫ g :=
   yoneda_exact₂ _ (rot_of_distTriang _ hT) f hf
 
+set_option backward.defeqAttrib.useBackward true in
 lemma coyoneda_exact₂ {X : C} (f : X ⟶ T.obj₂) (hf : f ≫ T.mor₂ = 0) :
     ∃ (g : X ⟶ T.obj₁), f = g ≫ T.mor₁ := by
   obtain ⟨a, ⟨ha₁, _⟩⟩ := complete_distinguished_triangle_morphism₁ _ T
     (contractible_distinguished X) hT f 0 (by cat_disch)
   exact ⟨a, by simpa using ha₁⟩
 
+set_option backward.defeqAttrib.useBackward true in
 lemma coyoneda_exact₁ {X : C} (f : X ⟶ T.obj₁⟦(1 : ℤ)⟧) (hf : f ≫ T.mor₁⟦1⟧' = 0) :
     ∃ (g : X ⟶ T.obj₃), f = g ≫ T.mor₃ :=
   coyoneda_exact₂ _ (rot_of_distTriang _ (rot_of_distTriang _ hT)) f (by cat_disch)
@@ -270,12 +279,14 @@ lemma mor₃_eq_zero_iff_epi₂ : T.mor₃ = 0 ↔ Epi T.mor₂ := by
   · intro
     rw [← cancel_epi T.mor₂, comp_distTriang_mor_zero₂₃ _ hT, comp_zero]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma mor₂_eq_zero_iff_epi₁ : T.mor₂ = 0 ↔ Epi T.mor₁ := by
   have h := mor₃_eq_zero_iff_epi₂ _ (inv_rot_of_distTriang _ hT)
   dsimp at h
   rw [← h, IsIso.comp_right_eq_zero]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma mor₁_eq_zero_iff_epi₃ : T.mor₁ = 0 ↔ Epi T.mor₃ := by
   have h := mor₃_eq_zero_iff_epi₂ _ (rot_of_distTriang _ hT)
@@ -304,6 +315,7 @@ lemma mor₁_eq_zero_iff_mono₂ : T.mor₁ = 0 ↔ Mono T.mor₂ := by
 lemma mor₂_eq_zero_iff_mono₃ : T.mor₂ = 0 ↔ Mono T.mor₃ :=
   mor₁_eq_zero_iff_mono₂ _ (rot_of_distTriang _ hT)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma mor₃_eq_zero_iff_mono₁ : T.mor₃ = 0 ↔ Mono T.mor₁ := by
   have h := mor₁_eq_zero_iff_mono₂ _ (inv_rot_of_distTriang _ hT)
@@ -327,6 +339,7 @@ lemma isZero₂_iff : IsZero T.obj₂ ↔ (T.mor₁ = 0 ∧ T.mor₂ = 0) := by
     obtain ⟨f, hf⟩ := coyoneda_exact₂ T hT (𝟙 _) (by rw [h₂, comp_zero])
     rw [IsZero.iff_id_eq_zero, hf, h₁, comp_zero]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isZero₁_iff : IsZero T.obj₁ ↔ (T.mor₁ = 0 ∧ T.mor₃ = 0) := by
   refine (isZero₂_iff _ (inv_rot_of_distTriang _ hT)).trans ?_
@@ -347,6 +360,7 @@ lemma isZero₂_of_isZero₁₃ (h₁ : IsZero T.obj₁) (h₃ : IsZero T.obj₃
   rw [T.isZero₂_iff hT]
   exact ⟨h₁.eq_of_src _ _, h₃.eq_of_tgt _ _⟩
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isZero₃_of_isZero₁₂ (h₁ : IsZero T.obj₁) (h₂ : IsZero T.obj₂) : IsZero T.obj₃ :=
   isZero₂_of_isZero₁₃ _ (rot_of_distTriang _ hT) h₂ (by
     dsimp
@@ -368,6 +382,7 @@ lemma isZero₁_iff_isIso₂ :
 lemma isZero₂_iff_isIso₃ : IsZero T.obj₂ ↔ IsIso T.mor₃ :=
   isZero₁_iff_isIso₂ _ (rot_of_distTriang _ hT)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma isZero₃_iff_isIso₁ : IsZero T.obj₃ ↔ IsIso T.mor₁ := by
   refine Iff.trans ?_ (Triangle.isZero₁_iff_isIso₂ _ (inv_rot_of_distTriang _ hT))
   dsimp
@@ -414,6 +429,7 @@ lemma shift_distinguished_iff (n : ℤ) :
       ((shiftEquiv (Triangle C) n).unitIso.app T),
     fun hT ↦ shift_distinguished T hT n⟩
 
+set_option backward.defeqAttrib.useBackward true in
 lemma distinguished_iff_of_isZero₃ (T : Triangle C) (h : IsZero T.obj₃) :
     T ∈ distTriang _ ↔ IsIso T.mor₁ :=
   ⟨fun hT ↦ by rwa [← isZero₃_iff_isIso₁ _ hT],
@@ -421,12 +437,14 @@ lemma distinguished_iff_of_isZero₃ (T : Triangle C) (h : IsZero T.obj₃) :
       (isoMk _ _ (Iso.refl _) (asIso T.mor₁).symm h.isoZero (by simp)
         ((isZero_zero C).eq_of_tgt _ _) (h.eq_of_src _ _))⟩
 
+set_option backward.defeqAttrib.useBackward true in
 lemma distinguished_iff_of_isZero₁ (T : Triangle C) (h : IsZero T.obj₁) :
     T ∈ distTriang _ ↔ IsIso T.mor₂ := by
   rw [rotate_distinguished_triangle,
     distinguished_iff_of_isZero₃ _ (Functor.map_isZero (CategoryTheory.shiftFunctor C 1) h)]
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 lemma distinguished_iff_of_isZero₂ (T : Triangle C) (h : IsZero T.obj₂) :
     T ∈ distTriang _ ↔ IsIso T.mor₃ := by
   rw [rotate_distinguished_triangle, distinguished_iff_of_isZero₁ _ h]
@@ -450,6 +468,7 @@ instance : SplitMonoCategory C where
       rw [Triangle.mor₁_eq_zero_of_mono₂ _ hT hf, zero_comp])
     exact ⟨r, hr.symm⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If the first and third components of a morphism of distinguished triangles are
 isomorphisms, the second component is as well. This can be thought of as a
@@ -487,6 +506,7 @@ lemma isIso₂_of_isIso₁₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ di
     dsimp
     rw [add_comp, assoc, φ.comm₁, reassoc_of% hx₁, ← hy₁, add_sub_cancel]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If the first and second components of a morphism of distinguished triangles are
 isomorphisms, the third component is as well. This can be thought of as a
 pretriangulated category theoretical version of the five lemma. -/
@@ -496,6 +516,7 @@ lemma isIso₃_of_isIso₁₂ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ di
   isIso₂_of_isIso₁₃ ((rotate C).map φ) (rot_of_distTriang _ hT)
     (rot_of_distTriang _ hT') h₂ (by dsimp; infer_instance)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If the second and third components of a morphism of distinguished triangles are
 isomorphisms, the first component is as well. This can be thought of as a
 pretriangulated category theoretical version of the five lemma. -/
@@ -534,6 +555,7 @@ def binaryBiproductData (T : Triangle C) (hT : T ∈ distTriang C) (hT₀ : T.mo
         inr_snd := inr_snd }
       isBilimit := isBinaryBilimitOfTotal _ total }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance : HasBinaryBiproducts C := ⟨fun X₁ X₃ => by
   obtain ⟨X₂, inl, snd, mem⟩ := distinguished_cocone_triangle₂ (0 : X₃ ⟶ X₁⟦(1 : ℤ)⟧)
@@ -551,6 +573,7 @@ instance : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
 instance : HasFiniteCoproducts C := hasFiniteCoproducts_of_has_binary_and_initial
 instance : HasFiniteBiproducts C := HasFiniteBiproducts.of_hasFiniteProducts
 
+set_option backward.defeqAttrib.useBackward true in
 lemma exists_iso_binaryBiproduct_of_distTriang (T : Triangle C) (hT : T ∈ distTriang C)
     (zero : T.mor₃ = 0) :
     ∃ (e : T.obj₂ ≅ T.obj₁ ⊞ T.obj₃), T.mor₁ ≫ e.hom = biprod.inl ∧
@@ -565,6 +588,7 @@ lemma exists_iso_binaryBiproduct_of_distTriang (T : Triangle C) (hT : T ∈ dist
   · simpa [d] using d.bicone.inl_fst
   · simpa [d] using d.bicone.inl_snd
 
+set_option backward.defeqAttrib.useBackward true in
 lemma binaryBiproductTriangle_distinguished (X₁ X₂ : C) :
     binaryBiproductTriangle X₁ X₂ ∈ distTriang C := by
   obtain ⟨Y, g, h, mem⟩ := distinguished_cocone_triangle₂ (0 : X₂ ⟶ X₁⟦(1 : ℤ)⟧)
@@ -593,6 +617,7 @@ def completeDistinguishedTriangleMorphism (T₁ T₂ : Triangle C)
       comm₂ := h.choose_spec.1
       comm₃ := h.choose_spec.2 }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A product of distinguished triangles is distinguished -/
 lemma productTriangle_distinguished {J : Type*} (T : J → Triangle C)
@@ -664,6 +689,7 @@ lemma productTriangle_distinguished {J : Type*} (T : J → Triangle C)
       rw [add_comp, assoc, φ'.comm₂, h₂, id_comp, ← hb', add_sub_cancel]
     exact ⟨_, this⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma exists_iso_of_arrow_iso (T₁ T₂ : Triangle C) (hT₁ : T₁ ∈ distTriang C)
     (hT₂ : T₂ ∈ distTriang C) (e : Arrow.mk T₁.mor₁ ≅ Arrow.mk T₂.mor₁) :
@@ -677,6 +703,7 @@ lemma exists_iso_of_arrow_iso (T₁ T₂ : Triangle C) (hT₁ : T₁ ∈ distTri
     all_goals infer_instance
   exact ⟨asIso φ, by simp [φ], by simp [φ]⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A choice of isomorphism `T₁ ≅ T₂` between two distinguished triangles
 when we are given two isomorphisms `e₁ : T₁.obj₁ ≅ T₂.obj₁` and `e₂ : T₁.obj₂ ≅ T₂.obj₂`. -/
 @[simps! hom_hom₁ hom_hom₂ inv_hom₁ inv_hom₂]
@@ -692,6 +719,7 @@ def isoTriangleOfIso₁₂ (T₁ T₂ : Triangle C) (hT₁ : T₁ ∈ distTriang
     dsimp at eq ⊢
     conv_lhs => rw [← eq, TriangleMorphism.comm₃])
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A choice of isomorphism `T₁ ≅ T₂` between two distinguished triangles
 when we are given two isomorphisms `e₁ : T₁.obj₁ ≅ T₂.obj₁` and `e₃ : T₁.obj₃ ≅ T₂.obj₃`. -/

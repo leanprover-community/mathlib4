@@ -103,12 +103,11 @@ def ϕ : F₁ f g P₁ P₂ ⟶ F₂ f g P₁ P₂ where
   app h := h.hom.1.left
   naturality _ _ h := by
     have := h.w
-    simp only [prod'_obj, comp_obj, prod'_map, Functor.comp_map, prod_comp, Prod.hom_ext_iff,
-      CostructuredArrow.hom_eq_iff, CostructuredArrow.map_obj_left,
-      IndObjectPresentation.toCostructuredArrow_obj_left, CostructuredArrow.comp_left,
-      CostructuredArrow.map_map_left, IndObjectPresentation.toCostructuredArrow_map_left] at this
+    simp only [ prod'_map, Functor.comp_map, Prod.hom_ext_iff,
+      CostructuredArrow.hom_eq_iff] at this
     exact this.1
 
+set_option backward.defeqAttrib.useBackward true in
 theorem hf : f = IsColimit.map (isColimit₁ f g P₁ P₂)
     (Cocone.mk B (ι₂ f g P₁ P₂)) (whiskerRight (ϕ f g P₁ P₂) yoneda) := by
   refine (isColimit₁ f g P₁ P₂).hom_ext (fun i => ?_)
@@ -120,12 +119,11 @@ def ψ : F₁ f g P₁ P₂ ⟶ F₂ f g P₁ P₂ where
   app h := h.hom.2.left
   naturality _ _ h := by
     have := h.w
-    simp only [prod'_obj, comp_obj, prod'_map, Functor.comp_map, prod_comp, Prod.hom_ext_iff,
-      CostructuredArrow.hom_eq_iff, CostructuredArrow.map_obj_left,
-      IndObjectPresentation.toCostructuredArrow_obj_left, CostructuredArrow.comp_left,
-      CostructuredArrow.map_map_left, IndObjectPresentation.toCostructuredArrow_map_left] at this
+    simp only [ prod'_map, Functor.comp_map, Prod.hom_ext_iff,
+      CostructuredArrow.hom_eq_iff] at this
     exact this.2
 
+set_option backward.defeqAttrib.useBackward true in
 theorem hg : g = IsColimit.map (isColimit₁ f g P₁ P₂)
     (Cocone.mk B (ι₂ f g P₁ P₂)) (whiskerRight (ψ f g P₁ P₂) yoneda) := by
   refine (isColimit₁ f g P₁ P₂).hom_ext (fun i => ?_)

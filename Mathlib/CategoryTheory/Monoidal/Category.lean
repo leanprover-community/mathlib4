@@ -74,6 +74,7 @@ respectively, since it requires a huge refactoring. We hope to add these simp le
 
 @[expose] public section
 
+
 universe v u
 
 open CategoryTheory.Category
@@ -851,16 +852,19 @@ abbrev tensorUnitRight : C ⥤ C := tensorRight (𝟙_ C)
 def associatorNatIso : leftAssocTensor C ≅ rightAssocTensor C :=
   NatIso.ofComponents (fun _ => MonoidalCategory.associator _ _ _)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The left unitor as a natural isomorphism. -/
 @[simps!]
 def leftUnitorNatIso : tensorUnitLeft C ≅ 𝟭 C :=
   NatIso.ofComponents MonoidalCategory.leftUnitor
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The right unitor as a natural isomorphism. -/
 @[simps!]
 def rightUnitorNatIso : tensorUnitRight C ≅ 𝟭 C :=
   NatIso.ofComponents MonoidalCategory.rightUnitor
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The associator as a natural isomorphism between trifunctors `C ⥤ C ⥤ C ⥤ C`. -/
 @[simps!]
 def curriedAssociatorNatIso :
@@ -873,6 +877,7 @@ section
 
 variable {C}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Tensoring on the left with `X ⊗ Y` is naturally isomorphic to
 tensoring on the left with `Y`, and then again with `X`.
 -/
@@ -908,6 +913,7 @@ We later show this is a monoidal functor.
 -/
 abbrev tensoringRight : C ⥤ C ⥤ C := (curriedTensor C).flip
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (tensoringRight C).Faithful where
   map_injective {X} {Y} f g h := by
     injections h
@@ -916,6 +922,7 @@ instance : (tensoringRight C).Faithful where
 
 variable {C}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Tensoring on the right with `X ⊗ Y` is naturally isomorphic to
 tensoring on the right with `X`, and then again with `Y`.
 -/

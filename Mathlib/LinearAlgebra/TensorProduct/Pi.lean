@@ -117,8 +117,9 @@ TODO: generalize to `S`-linear. -/
 
 end
 
-/-- (Implementation): Bilinear map for defining `TensorProduct.piScalarRightHom`. -/
-def piScalarRightHomBil : N →ₗ[S] (ι → R) →ₗ[R] (ι → N) where
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.privateInPublic true in
+private def piScalarRightHomBil : N →ₗ[S] (ι → R) →ₗ[R] (ι → N) where
   toFun n := LinearMap.compLeft (toSpanSingleton R N n) ι
   map_add' x y := by
     ext i j
@@ -130,11 +131,15 @@ def piScalarRightHomBil : N →ₗ[S] (ι → R) →ₗ[R] (ι → N) where
     rw [← IsScalarTower.smul_assoc, _root_.Algebra.smul_def, mul_comm, mul_smul]
     simp
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- For any `R`-module `N` and index type `ι`, there is a natural
 linear map `N ⊗[R] (ι → R) →ₗ (ι → N)`. This map is an isomorphism if `ι` is finite. -/
 def piScalarRightHom : N ⊗[R] (ι → R) →ₗ[S] (ι → N) :=
   AlgebraTensorModule.lift <| piScalarRightHomBil R S N ι
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[simp]
 lemma piScalarRightHom_tmul (x : N) (f : ι → R) :
     piScalarRightHom R S N ι (x ⊗ₜ f) = (fun j ↦ f j • x) := by

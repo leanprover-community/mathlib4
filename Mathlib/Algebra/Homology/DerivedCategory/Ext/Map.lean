@@ -35,6 +35,8 @@ where `F` is an exact functor between abelian categories.
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 universe t t' w w' u u' v v'
@@ -52,6 +54,7 @@ section
 
 open DerivedCategory
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma DerivedCategory.map_triangleOfSESδ [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
     {S : ShortComplex (CochainComplex C ℤ)} (hS : S.ShortExact) :
@@ -65,13 +68,13 @@ lemma DerivedCategory.map_triangleOfSESδ [HasDerivedCategory.{t} C] [HasDerived
     (Q.map (CochainComplex.mappingCone.descShortComplex S))), ← Functor.map_comp,
     descShortComplex_triangleOfSESδ, F.mapDerivedCategoryFactors_hom_naturality_assoc,
     ← CochainComplex.mappingCone.mapHomologicalComplexIso_hom_descShortComplex,
-    Functor.map_comp_assoc, descShortComplex_triangleOfSESδ_assoc, Category.assoc,
-    ← Functor.map_comp_assoc]
+    Functor.map_comp, Category.assoc, Functor.map_comp_assoc,
+    descShortComplex_triangleOfSESδ_assoc]
   dsimp
-  rw [← CochainComplex.mappingCone.map_δ, Functor.map_comp_assoc,
-    ← F.mapDerivedCategoryFactors_hom_naturality_assoc, Functor.map_comp]
-  simp [NatTrans.shift_app, Functor.commShiftIso_comp_hom_app, Functor.commShiftIso_comp_inv_app,
-    ← Functor.map_comp_assoc]
+  rw [← Functor.map_comp_assoc, ← CochainComplex.mappingCone.map_δ, Functor.map_comp_assoc,
+    ← reassoc_of% dsimp% F.mapDerivedCategoryFactors_hom_naturality]
+  simp [← Q.map_comp_assoc, NatTrans.shift_app,
+    Functor.commShiftIso_comp_hom_app, Functor.commShiftIso_comp_inv_app]
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]

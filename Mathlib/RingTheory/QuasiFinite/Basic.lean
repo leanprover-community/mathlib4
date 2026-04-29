@@ -38,6 +38,7 @@ In this file, we define the notion of quasi-finite algebras and prove basic prop
 
 @[expose] public section
 
+
 variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
   [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
@@ -425,6 +426,7 @@ instance (p : Ideal R) [p.IsPrime] (P : Ideal S) [P.IsPrime] [P.LiesOver p] [Qua
         P.primeCompl _).residueFieldMap_bijective P m (m.over_def P))
   exact .of_surjective e.symm.toLinearMap e.symm.surjective
 
+set_option backward.defeqAttrib.useBackward true in
 lemma QuasiFiniteAt.exists_basicOpen_eq_singleton
     (p : Ideal S) [p.IsPrime] [IsArtinianRing R] [Algebra.EssFiniteType R S]
     [Algebra.QuasiFiniteAt R p] :

@@ -90,6 +90,7 @@ theorem mk' (h : ∀ A B : C, ∃ (c : BinaryCofan A B) (_ : IsColimit c), Mono 
     obtain ⟨c, hc₁, hc₂⟩ := h A B
     simpa only [mono_inl_iff hc' hc₁] using hc₂⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance monoCoprodType : MonoCoprod (Type u) :=
   MonoCoprod.mk' fun A B => by
@@ -169,6 +170,7 @@ section
 
 variable [MonoCoprod C] {I J : Type*} (X : I → C) (ι : J → I)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma mono_of_injective_aux (hι : Function.Injective ι) (c : Cofan X) (c₁ : Cofan (X ∘ ι))
     (hc : IsColimit c) (hc₁ : IsColimit c₁)
@@ -211,6 +213,7 @@ section
 
 variable [MonoCoprod C] {I : Type*} (X : I → C)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma mono_inj (c : Cofan X) (h : IsColimit c) (i : I)
     [HasCoproduct (fun (k : ((Set.range (fun _ : Unit ↦ i))ᶜ : Set I)) => X k.1)] :
     Mono (Cofan.inj c i) := by
@@ -244,7 +247,7 @@ theorem monoCoprod_of_preservesCoprod_of_reflectsMono [MonoCoprod D]
     apply mapIsColimitOfPreservesOfIsColimit F
     apply IsColimit.ofIsoColimit h
     refine Cocone.ext (φ := eqToIso rfl) ?_
-    rintro ⟨(j₁ | j₂)⟩ <;> simp only [const_obj_obj, eqToIso_refl, Iso.refl_hom,
+    rintro ⟨(j₁ | j₂)⟩ <;> simp only [ eqToIso_refl, Iso.refl_hom,
       Category.comp_id, BinaryCofan.mk_inl, BinaryCofan.mk_inr]
 
 end Preservation

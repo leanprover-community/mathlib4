@@ -35,7 +35,10 @@ And, of course, we dualise all this to cocones as well.
 For more results about the category of cones, see `cone_category.lean`.
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
+
 
 
 -- morphism levels before object levels. See note [category theory universes].
@@ -152,6 +155,7 @@ instance inhabitedCone (F : Discrete PUnit ⥤ C) : Inhabited (Cone F) :=
            }
   }⟩
 
+set_option backward.defeqAttrib.useBackward true in
 @[to_dual (attr := reassoc (attr := simp))]
 theorem Cone.w {F : J ⥤ C} (c : Cone F) {j j' : J} (f : j ⟶ j') :
     dsimp% c.π.app j ≫ F.map f = c.π.app j' := by

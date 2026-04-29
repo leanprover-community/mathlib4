@@ -590,6 +590,7 @@ def HomEquiv.toRestriction {X : ModuleCat R} {Y : ModuleCat S} (g : Y ⟶ (coext
     (g : Y ⟶ (coextendScalars f).obj X) (y) :
     (HomEquiv.toRestriction f g).hom y = g.hom y (1 : S) := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `unit'`, to address timeouts. -/
 def app' (Y : ModuleCat S) : Y →ₗ[S] (restrictScalars f ⋙ coextendScalars f).obj Y :=
@@ -626,7 +627,7 @@ protected noncomputable def unit' : 𝟭 (ModuleCat S) ⟶ restrictScalars f ⋙
   naturality Y Y' g :=
     hom_ext <| LinearMap.ext fun y : Y => LinearMap.ext fun s : S => by
       -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): previously simp [CoextendScalars.map_apply]
-      simp only [ModuleCat.hom_comp, Functor.id_map, Functor.id_obj, Functor.comp_obj,
+      simp only [ModuleCat.hom_comp, Functor.id_map, Functor.id_obj,
         Functor.comp_map]
       change s • (g y) = g (s • y)
       rw [map_smul]
@@ -732,6 +733,7 @@ def HomEquiv.evalAt {X : ModuleCat R} {Y : ModuleCat S} (s : S)
       intro r x
       rw [AddHom.toFun_eq_coe, AddHom.coe_mk, RingHom.id_apply, map_smul, smul_comm r s (g x : Y)])
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 Given `R`-module X and `S`-module Y and a map `X ⟶ (restrictScalars f).obj Y`, i.e `R`-linear map
@@ -766,6 +768,7 @@ def HomEquiv.fromExtendScalars {X : ModuleCat R} {Y : ModuleCat S}
       rw [mul_smul]
     | add _ _ ih1 ih2 => rw [smul_add, map_add, ih1, ih2, map_add, smul_add]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given `R`-module X and `S`-module Y, `S`-linear maps `(extendScalars f).obj X ⟶ Y`
 bijectively correspond to `R`-linear maps `X ⟶ (restrictScalars f).obj Y`.
@@ -799,6 +802,7 @@ def homEquiv {X : ModuleCat R} {Y : ModuleCat S} :
     dsimp
     rw [one_smul]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 For any `R`-module X, there is a natural `R`-linear map from `X` to `X ⨂ S` by sending `x ↦ x ⊗ 1`
@@ -865,6 +869,7 @@ lemma Counit.map_apply_one_tmul {Y : ModuleCat S} (y : Y) :
   change (1 : S) • y = y
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation from the composition of restriction and extension of scalars to the
 identity functor on `S`-module.
@@ -928,6 +933,7 @@ lemma extendRestrictScalarsAdj_unit_app_apply
     (extendRestrictScalarsAdj f).unit.app M m = (1 : S) ⊗ₜ[R,f] m :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma extendRestrictScalarsAdj_counit_app_apply_one_tmul (M : ModuleCat S) (m : M) :
     dsimp% (extendRestrictScalarsAdj f).counit.app M ((1 : S) ⊗ₜ[R] m) = m := by
@@ -978,6 +984,7 @@ lemma homEquiv_extendScalarsId (M : ModuleCat R) :
   rw [extendRestrictScalarsAdj_homEquiv_apply, ← extendScalarsId_inv_app_apply, ← comp_apply]
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma extendScalarsId_hom_app_one_tmul (M : ModuleCat R) (m : M) :
     (extendScalarsId R).hom.app M ((1 : R) ⊗ₜ m) = m := by
@@ -998,6 +1005,7 @@ noncomputable def extendScalarsComp :
     ((extendRestrictScalarsAdj f₁₂).comp (extendRestrictScalarsAdj f₂₃))
     (extendRestrictScalarsAdj (f₂₃.comp f₁₂))).symm (restrictScalarsComp f₁₂ f₂₃).symm
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma homEquiv_extendScalarsComp (M : ModuleCat R₁) :
     (extendRestrictScalarsAdj (f₂₃.comp f₁₂)).homEquiv _ _
@@ -1019,6 +1027,7 @@ lemma extendScalarsComp_hom_app_one_tmul (M : ModuleCat R₁) (m : M) :
   rw [← extendRestrictScalarsAdj_homEquiv_apply, homEquiv_extendScalarsComp]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma extendScalars_assoc :
@@ -1051,6 +1060,7 @@ lemma extendScalars_assoc' :
   simp only [Iso.inv_hom_id_assoc, ← Functor.whiskerLeft_comp_assoc, Iso.hom_inv_id,
     Functor.whiskerLeft_id', Category.id_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma extendScalars_id_comp :

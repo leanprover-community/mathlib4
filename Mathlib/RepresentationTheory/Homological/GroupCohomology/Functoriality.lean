@@ -313,6 +313,7 @@ lemma cocyclesMap_comp_isoCocycles₁_hom :
     cocyclesMap f φ 1 ≫ (isoCocycles₁ B).hom = (isoCocycles₁ A).hom ≫ mapCocycles₁.{u, u} f φ := by
   simp [← cancel_mono (moduleCatLeftHomologyData (shortComplexH1 B)).i]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mapCocycles₁_one (φ : res 1 A ⟶ B) :
@@ -351,6 +352,7 @@ noncomputable def H1InfRes :
   zero := by rw [← map_comp, Category.comp_id, congr (QuotientGroup.mk'_comp_subtype S)
     (fun f φ => map f φ 1), map₁_one]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The inflation map `H¹(G ⧸ S, A^S) ⟶ H¹(G, A)` is a monomorphism. -/
 instance : Mono (H1InfRes A S).f := by
@@ -364,6 +366,7 @@ instance : Mono (H1InfRes A S).f := by
   simpa [coe_mapCocycles₁ (x := x), sub_eq_zero, (QuotientGroup.eq_one_iff s.1).2 s.2] using
     congr_fun hy s.1
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a `G`-representation `A` and a normal subgroup `S ≤ G`, the short complex
 `H¹(G ⧸ S, A^S) ⟶ H¹(G, A) ⟶ H¹(S, A)` is exact. -/
@@ -521,7 +524,7 @@ noncomputable def resNatTrans (n : ℕ) :
     functor k H n ⟶ resFunctor f ⋙ functor k G n where
   app X := map f (𝟙 _) n
   naturality {X Y} φ := by
-    simp only [functor_obj, Functor.comp_obj, functor_map, Functor.comp_map,
+    simp only [ functor_map, Functor.comp_map,
       ← cancel_epi (groupCohomology.π _ n), HomologicalComplex.homologyπ_naturality_assoc,
       HomologicalComplex.homologyπ_naturality, ← HomologicalComplex.cyclesMap_comp_assoc,
       ← cochainsMap_comp, res_obj_ρ, Category.comp_id, Rep.hom_id]

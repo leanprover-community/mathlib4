@@ -216,6 +216,7 @@ private lemma map_ideal_basicOpen_of_eq
       I.ideal V := by
   subst hV; exact I.map_ideal_basicOpen _ _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma map_ideal {U V : X.affineOpens} (h : U ≤ V) :
     (I.ideal V).map (X.presheaf.map (homOfLE h).op).hom = I.ideal U := by
@@ -282,6 +283,7 @@ lemma supportSet_subset_zeroLocus (I : IdealSheafData X) (U : X.affineOpens) :
     I.supportSet ⊆ X.zeroLocus (U := U.1) (I.ideal U) :=
   I.supportSet_eq_iInter_zeroLocus.trans_subset (Set.iInter_subset _ _)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma zeroLocus_inter_subset_supportSet (I : IdealSheafData X) (U : X.affineOpens) :
     X.zeroLocus (U := U.1) (I.ideal U) ∩ U ⊆ I.supportSet := by
@@ -627,6 +629,7 @@ lemma gc : @GaloisConnection X.IdealSheafData (Closeds X)ᵒᵈ _ _ (support ·)
 lemma vanishingIdeal_antimono {S T : Closeds X} (h : S ≤ T) : vanishingIdeal T ≤ vanishingIdeal S :=
   gc.monotone_u h
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma vanishingIdeal_support {I : IdealSheafData X} :
     vanishingIdeal I.support = I.radical := by
@@ -693,6 +696,7 @@ lemma Hom.ideal_ker_le (f : X.Hom Y) (U : Y.affineOpens) :
     f.ker.ideal U ≤ RingHom.ker (f.app U).hom :=
   ideal_ofIdeals_le _ _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma Hom.ker_apply (f : X.Hom Y) [QuasiCompact f] (U : Y.affineOpens) :

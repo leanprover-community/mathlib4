@@ -82,6 +82,7 @@ lemma ι_map_πQ : ι.map (πQ f₂ β) = f₂ ≫ β :=
 
 variable {f₂ f₃} [Preadditive A] [ι.Faithful]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hT in
 @[reassoc]
@@ -91,6 +92,7 @@ lemma ιK_mor₁ : ιK f₃ α ≫ f₁ = 0 :=
     dsimp at this
     simp [this])
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hT in
 @[reassoc]
@@ -110,7 +112,7 @@ lemma mono_ιK : Mono (ιK f₃ α) := by
   intro B k hk
   replace hk := (ι ⋙ shiftFunctor C (1 : ℤ)).congr_map hk
   apply (ι ⋙ shiftFunctor C (1 : ℤ)).map_injective
-  simp only [Functor.comp_obj, Functor.comp_map, Functor.map_comp,
+  simp only [ Functor.comp_map, Functor.map_comp,
     shift_ι_map_ιK, Functor.map_zero, ← assoc] at hk ⊢
   obtain ⟨l, hl⟩ := Triangle.coyoneda_exact₃ _ hT _ hk
   rw [eq_zero_of_hom_shift_pos hι l (by lia), zero_comp] at hl
@@ -219,6 +221,7 @@ attribute [local instance] hasZeroObject_of_hasTerminal_object
 
 variable [HasFiniteProducts A] [ι.Additive]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `ι.obj X₁ ⟶ ι.obj X₂ ⟶ ι.obj X₃ ⟶ ...` is a distinguished triangle,
 then `X₁` is a kernel of `X₂ ⟶ X₃`. -/
@@ -240,6 +243,7 @@ noncomputable def isLimitKernelForkOfDistTriang {X₁ X₂ X₃ : A}
   exact Fork.ext (-(Iso.refl _)) ((ι ⋙ shiftFunctor C (1 : ℤ)).map_injective
     (by simp))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `ι.obj X₁ ⟶ ι.obj X₂ ⟶ ι.obj X₃ ⟶ ...` is a distinguished triangle,
 then `X₃` is a cokernel of `X₁ ⟶ X₂`. -/
@@ -266,6 +270,7 @@ noncomputable def isColimitCokernelCoforkOfDistTriang {X₁ X₂ X₃ : A}
 
 variable (hA : admissibleMorphism ι = ⊤)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hι hA in
 omit [HasFiniteProducts A] in
@@ -287,6 +292,7 @@ lemma exists_distinguished_triangle_of_epi {X₂ X₃ : A} (π : X₂ ⟶ X₃) 
   refine isomorphic_distinguished _ hT _ ?_
   exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (asIso α)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable (ι) in
 /-- Let `ι : A ⥤ C` be a fully faithful additive functor where `A` is

@@ -51,6 +51,7 @@ def pullbackCone (f : X ⟶ Z) (g : Y ⟶ Z) : PullbackCone f g :=
       ext ⟨x, h⟩
       simpa)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The constructed cone is a limit. -/
 def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g) :=
   PullbackCone.isLimitAux' _
@@ -187,7 +188,7 @@ theorem range_pullback_map {W X Y Z S T : TopCat} (f₁ : W ⟶ S) (f₂ : X ⟶
   · rintro ⟨y, rfl⟩
     simp only [Set.mem_inter_iff, Set.mem_preimage, Set.mem_range]
     rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply]
-    simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app]
+    simp only [limit.lift_π, PullbackCone.mk_π_app]
     exact ⟨exists_apply_eq_apply _ _, exists_apply_eq_apply _ _⟩
   rintro ⟨⟨x₁, hx₁⟩, ⟨x₂, hx₂⟩⟩
   have : f₁ x₁ = f₂ x₂ := by

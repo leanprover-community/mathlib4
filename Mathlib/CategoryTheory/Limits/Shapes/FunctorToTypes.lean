@@ -184,6 +184,7 @@ def coprod.inl : F ⟶ coprod F G where
 def coprod.inr : G ⟶ coprod F G where
   app _ := TypeCat.ofHom (fun x ↦ .inr x)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given natural transformations `F₁ ⟶ F` and `F₂ ⟶ F`, construct
 a natural transformation `coprod F₁ F₂ ⟶ F`. -/
 @[simps]
@@ -207,6 +208,7 @@ variable (F G)
 def binaryCoproductCocone : BinaryCofan F G :=
   BinaryCofan.mk coprod.inl coprod.inr
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `coprod F G` is a colimit cocone. -/
 @[simps]
 def binaryCoproductColimit : IsColimit (binaryCoproductCocone F G) where

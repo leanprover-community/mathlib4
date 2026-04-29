@@ -41,6 +41,7 @@ corresponding hom types.
 
 @[expose] public section
 
+
 namespace CategoryTheory
 
 open Category Bicategory
@@ -202,6 +203,7 @@ lemma map₂_eqToHom {x y : B} (f g : x ⟶ y) (hfg : f = g) :
   subst hfg
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 lemma map₂Iso_eqToIso {x y : B} (f g : x ⟶ y) (hfg : f = g) :
     F.map₂Iso (eqToIso hfg) = eqToIso (by rw [← hfg]) := by
   subst hfg
