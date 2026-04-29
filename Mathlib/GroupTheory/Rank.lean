@@ -41,6 +41,19 @@ lemma rank_spec [h : FG G] : ∃ S : Finset G, S.card = rank G ∧ .closure S = 
 lemma rank_le [h : FG G] {S : Finset G} (hS : .closure S = (⊤ : Subgroup G)) : rank G ≤ S.card :=
   @Nat.find_le _ _ (Classical.decPred _) (fg_iff'.mp h) ⟨S, rfl, hS⟩
 
+variable (G) in
+@[to_additive]
+theorem rank_eq_zero [Subsingleton G] : rank G = 0 := by
+  rw [← le_zero_iff, ← Finset.card_empty]
+  exact rank_le (Subsingleton.elim _ _)
+
+@[to_additive]
+theorem rank_eq_zero_iff [FG G] : rank G = 0 ↔ Subsingleton G := by
+  refine ⟨fun h ↦ ?_, fun _ ↦ rank_eq_zero G⟩
+  obtain ⟨s, hs, hs'⟩ := rank_spec G
+  rw [h, Finset.card_eq_zero] at hs
+  simpa [hs, subsingleton_iff_bot_eq_top] using hs'
+
 @[to_additive]
 lemma rank_le_of_surjective [FG G] [FG H] (f : G →* H) (hf : Surjective f) : rank H ≤ rank G := by
   classical
