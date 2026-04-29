@@ -381,8 +381,8 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   if (← get).messages.hasErrors then
     return
-  -- Defensive: skip linting the library root file itself. In practice the
-  -- `inLibraryRoot?` check above already covers this (a well-formed `<root>.lean`
+  -- Skip linting the library root file itself.
+  -- In practice, the `inLibraryRoot?` check above already covers this (a well-formed `<root>.lean`
   -- does not import itself), but a root module could appear in `headerTestFiles`.
   if mainModule == mainModule.getRoot then return
   let fm ← getFileMap
