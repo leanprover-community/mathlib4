@@ -758,12 +758,7 @@ def HomEquiv.fromExtendScalars {X : ModuleCat R} {Y : ModuleCat S}
     change lift _ (s • z) = s • lift _ z
     induction z using TensorProduct.induction_on with
     | zero => rw [smul_zero, map_zero, smul_zero]
-    | tmul s' x =>
-      rw [LinearMap.coe_mk, ExtendScalars.smul_tmul]
-      erw [lift.tmul, lift.tmul]
-      set s' : S := s'
-      change (s * s') • (g x) = s • s' • (g x)
-      rw [mul_smul]
+    | tmul s' x => simp [mul_smul]
     | add _ _ ih1 ih2 => rw [smul_add, map_add, ih1, ih2, map_add, smul_add]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -852,12 +847,7 @@ def Counit.map {Y : ModuleCat S} : (restrictScalars f ⋙ extendScalars f).obj Y
       let m2 : Module R Y := Module.compHom Y f
       induction z using TensorProduct.induction_on with
       | zero => rw [smul_zero, map_zero, smul_zero]
-      | tmul s' y =>
-        rw [ExtendScalars.smul_tmul, LinearMap.coe_mk]
-        erw [TensorProduct.lift.tmul, TensorProduct.lift.tmul]
-        set s' : S := s'
-        change (s * s') • y = s • s' • y
-        rw [mul_smul]
+      | tmul s' y => simp [mul_smul]
       | add _ _ ih1 ih2 => rw [smul_add, map_add, map_add, ih1, ih2, smul_add] }
 
 lemma Counit.map_apply_one_tmul {Y : ModuleCat S} (y : Y) :
