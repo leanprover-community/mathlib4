@@ -79,7 +79,8 @@ instance mulAction' [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M]
   one_smul _ := Units.ext <| one_smul _ _
   mul_smul _ _ _ := Units.ext <| mul_smul _ _ _
 
-/-- This is not the usual `smul_eq_mul` because `mulAction'` creates a diamond when `G = Mˣ` and `M` is commutative.
+/-- This is not the usual `smul_eq_mul` because `mulAction'` creates a diamond when `G = Mˣ` and
+`M` is commutative.
 
 Discussed [on Zulip](https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/units.2Emul_action'.20diamond/near/246400399). -/
 @[simp]
