@@ -40,7 +40,8 @@ theorem isBot_one : IsBot (1 : α) :=
 theorem one_le {a : α} : 1 ≤ a :=
   isBot_one a
 
-@[deprecated (since := "2026-04-28")] alias zero_le' := zero_le
+-- TODO: deprecate
+alias zero_le' := zero_le
 
 end LE
 
@@ -55,7 +56,9 @@ variable [Preorder α] [One α] [IsBotOneClass α]
 theorem not_lt_one : ¬ a < 1 := one_le.not_gt
 
 @[deprecated (since := "2025-12-03")] alias not_neg := not_lt_zero
-@[deprecated (since := "2026-04-28")] alias not_lt_zero' := not_lt_zero
+
+-- TODO: deprecate
+alias not_lt_zero' := not_lt_zero
 
 @[to_additive] -- `(attr := simp)` cannot be used here because `a` cannot be inferred by `simp`.
 theorem one_lt_of_gt (h : a < b) : 1 < b :=
@@ -78,13 +81,15 @@ variable [PartialOrder α] [One α] [IsBotOneClass α]
 @[to_additive]
 theorem bot_eq_one [OrderBot α] : (⊥ : α) = 1 := isBot_one.eq_bot.symm
 
-@[deprecated (since := "2026-04-28")] alias bot_eq_zero'' := bot_eq_zero
+-- TODO: deprecate
+alias bot_eq_zero'' := bot_eq_zero
 
 @[to_additive (attr := simp)]
 theorem le_one_iff_eq_one : a ≤ 1 ↔ a = 1 :=
   one_le.ge_iff_eq'
 
-@[deprecated (since := "2026-04-28")] alias le_zero_iff := nonpos_iff_eq_zero
+-- TODO: deprecate
+alias le_zero_iff := nonpos_iff_eq_zero
 
 @[to_additive] alias ⟨eq_one_of_le_one, _⟩ := le_one_iff_eq_one
 @[to_additive] alias LE.le.eq_one := eq_one_of_le_one
@@ -93,7 +98,8 @@ theorem le_one_iff_eq_one : a ≤ 1 ↔ a = 1 :=
 theorem one_lt_iff_ne_one : 1 < a ↔ a ≠ 1 :=
   one_le.lt_iff_ne.trans ne_comm
 
-@[deprecated (since := "2026-04-28")] alias zero_lt_iff := pos_iff_ne_zero
+-- TODO: deprecate
+alias zero_lt_iff := pos_iff_ne_zero
 
 @[to_additive] alias ⟨_, one_lt_of_ne_one⟩ := one_lt_iff_ne_one
 @[to_additive] alias Ne.one_lt := one_lt_of_ne_one

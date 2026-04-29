@@ -47,7 +47,7 @@ instance : IsOrderedMonoid (ValueGroup₀ f) :=
   Function.Injective.isOrderedMonoid embedding (map_mul _) embedding_strictMono.le_iff_le
 
 instance : LinearOrderedCommGroupWithZero (ValueGroup₀ f) where
-  zero_le := by simp
+  isBot_zero _ := by simp
   mul_lt_mul_of_pos_left a ha b c hbc := by
     simp only [← (embedding_strictMono (f := f)).lt_iff_lt, map_mul] at *
     exact (mul_lt_mul_iff_of_pos_left ha).mpr hbc
