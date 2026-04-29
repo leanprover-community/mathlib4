@@ -174,6 +174,12 @@ theorem subtype_comp_codRestrict (p : Submodule R₂ M₂) (h : ∀ b, f b ∈ p
     p.subtype.comp (codRestrict p f h) = f :=
   ext fun _ => rfl
 
+@[simp]
+theorem domRestrict_comp_codRestrict (f : M →ₛₗ[σ₁₂] M₂) (g : M₂ →ₛₗ[σ₂₃] M₃) (p : Submodule R₂ M₂)
+    (h : ∀ c, f c ∈ p) :
+    g.domRestrict p ∘ₛₗ f.codRestrict p h = g ∘ₛₗ f :=
+  rfl
+
 section
 
 variable {M₂' : Type*} [AddCommMonoid M₂'] [Module R₂ M₂']
