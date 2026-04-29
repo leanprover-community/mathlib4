@@ -8,6 +8,7 @@ module
 public import Mathlib.RingTheory.Depth.AuslanderBuchsbaum
 public import Mathlib.RingTheory.Depth.Ischebeck
 public import Mathlib.RingTheory.GlobalDimension
+public import Mathlib.RingTheory.Regular.Free
 public import Mathlib.RingTheory.RegularLocalRing.Basic
 
 /-!
@@ -28,96 +29,6 @@ private instance finite_QuotSMulTop (M : Type*) [AddCommGroup M] [Module R M] [M
     (x : R) : Module.Finite (R ⧸ Ideal.span {x}) (QuotSMulTop x M) :=
   Module.Finite.of_restrictScalars_finite R _ _
 
-open Pointwise in
-lemma ker_mapRange_eq_smul_top (I : Type*) [Finite I] (x : R) :
-    LinearMap.ker (Finsupp.mapRange.linearMap (Submodule.mkQ (Ideal.span {x}))) =
-    x • (⊤ : Submodule R (I →₀ R)) := by
-  ext y
-  simp only [Finsupp.ker_mapRange, Submodule.ker_mkQ, Finsupp.mem_submodule_iff]
-  refine ⟨fun h ↦ ?_, fun h i ↦ ?_⟩
-  · let : Fintype I := Fintype.ofFinite I
-    simp only [Ideal.mem_span_singleton', mul_comm] at h
-    rw [← Finsupp.univ_sum_single y]
-    refine Submodule.sum_mem _ (fun i _ ↦ ?_)
-    rcases h i with ⟨z, hz⟩
-    simpa only [← hz, ← Finsupp.smul_single'] using
-      Submodule.smul_mem_pointwise_smul (Finsupp.single i z) x ⊤ trivial
-  · rcases (Submodule.mem_smul_pointwise_iff_exists _ _ _).mp h with ⟨z, _, eq⟩
-    simpa [← eq] using
-      Ideal.IsTwoSided.mul_mem_of_left (z i) (Ideal.mem_span_singleton_self x)
-
-open Pointwise in
-lemma free_iff_quotSMulTop_free [IsLocalRing R] [IsNoetherianRing R] (M : Type*) [AddCommGroup M]
-    [Module R M] [Module.Finite R M] {x : R} (mem : x ∈ maximalIdeal R) (reg : IsSMulRegular M x) :
-    Module.Free (R ⧸ Ideal.span {x}) (QuotSMulTop x M) ↔ Module.Free R M := by
-  refine ⟨fun free ↦ ?_, fun free ↦ ?_⟩
-  · let I := Module.Free.ChooseBasisIndex (R ⧸ Ideal.span {x}) (QuotSMulTop x M)
-    let fin : Fintype I := Module.Free.ChooseBasisIndex.fintype _ _
-    have : Module.Finite R (I →₀ R) := by simp [Fintype.finite fin]
-    let b := Module.Free.chooseBasis (R ⧸ Ideal.span {x}) (QuotSMulTop x M)
-    let b' : QuotSMulTop x M ≃ₗ[R] I →₀ R ⧸ Ideal.span {x} := {
-      __ := b.1
-      map_smul' r m := by simp}
-    let f := b'.symm.toLinearMap.comp (Finsupp.mapRange.linearMap (Submodule.mkQ (Ideal.span {x})))
-    rcases Module.projective_lifting_property (Submodule.mkQ (x • (⊤ : Submodule R M))) f
-      (Submodule.mkQ_surjective _) with ⟨g, hg⟩
-    have surjf : Function.Surjective f := by
-      simpa [f] using Finsupp.mapRange_surjective _ rfl (Submodule.mkQ_surjective (Ideal.span {x}))
-    have lejac : Ideal.span {x} ≤ (⊥ :Ideal R).jacobson :=
-      le_trans ((Ideal.span_singleton_le_iff_mem (maximalIdeal R)).mpr mem)
-      (IsLocalRing.maximalIdeal_le_jacobson _)
-    have surjg : Function.Surjective g := by
-      rw [← LinearMap.range_eq_top, ← top_le_iff]
-      apply Submodule.le_of_le_smul_of_le_jacobson_bot (Module.finite_def.mp ‹_›) lejac
-      rw [top_le_iff, sup_comm, ← Submodule.map_mkQ_eq_top, ← LinearMap.range_comp,
-        Submodule.ideal_span_singleton_smul x ⊤, hg]
-      exact LinearMap.range_eq_top_of_surjective f surjf
-    have kerf : LinearMap.ker f = x • (⊤ : Submodule R (I →₀ R)) := by
-      simpa only [LinearEquiv.ker_comp, f] using ker_mapRange_eq_smul_top R I x
-    have injg : Function.Injective g := by
-      rw [← LinearMap.ker_eq_bot]
-      have fg : (LinearMap.ker g).FG := IsNoetherian.noetherian (LinearMap.ker g)
-      apply Submodule.eq_bot_of_le_smul_of_le_jacobson_bot (Ideal.span {x}) _ fg _ lejac
-      rw [Submodule.ideal_span_singleton_smul]
-      intro y hy
-      have : y ∈ x • (⊤ : Submodule R (I →₀ R)) := by simp [← kerf, ← hg, LinearMap.mem_ker.mp hy]
-      rcases (Submodule.mem_smul_pointwise_iff_exists _ _ _).mp this with ⟨z, _, hz⟩
-      simp only [← hz, LinearMap.mem_ker, map_smul] at hy
-      have := LinearMap.mem_ker.mpr (IsSMulRegular.right_eq_zero_of_smul reg hy)
-      simpa [hz] using Submodule.smul_mem_pointwise_smul z x _ this
-    exact Module.Free.of_equiv (LinearEquiv.ofBijective g ⟨injg, surjg⟩)
-  · let I := Module.Free.ChooseBasisIndex R M
-    let fin : Fintype I := Module.Free.ChooseBasisIndex.fintype _ _
-    have : Module.Finite R (I →₀ R) := by simp [Fintype.finite fin]
-    let b := Module.Free.chooseBasis R M
-    let f : M →ₗ[R] I →₀ (R ⧸ Ideal.span {x}) :=
-      (Finsupp.mapRange.linearMap (Submodule.mkQ (Ideal.span {x}))).comp b.1.toLinearMap
-    have surjf : Function.Surjective f := by
-      simpa only [f] using Function.Surjective.comp (Finsupp.mapRange_surjective _ rfl
-        (Submodule.mkQ_surjective (Ideal.span {x}))) b.1.surjective
-    have kerf : LinearMap.ker f = x • (⊤ : Submodule R M) := by
-      simp only [f, LinearMap.ker_comp, ker_mapRange_eq_smul_top R I x]
-      ext y
-      simp only [Submodule.mem_comap, Submodule.mem_smul_pointwise_iff_exists, Submodule.mem_top,
-        true_and]
-      refine ⟨fun ⟨z, hz⟩ ↦ ?_, fun ⟨z, hz⟩ ↦ ?_⟩
-      · use b.1.symm z
-        apply b.1.injective
-        simp only [map_smul, LinearEquiv.apply_symm_apply, hz]
-        rfl
-      · use b.1 z
-        rw [← map_smul, hz]
-        rfl
-    let e' := LinearMap.quotKerEquivOfSurjective f surjf
-    rw [kerf] at e'
-    let e : QuotSMulTop x M ≃ₗ[R ⧸ Ideal.span {x}] I →₀ R ⧸ Ideal.span {x} := {
-      __ := e'
-      map_smul' r m := by
-        rcases Ideal.Quotient.mk_surjective r with ⟨s, hs⟩
-        simp only [← hs, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe]
-        exact map_smul e' s m }
-    exact Module.Free.of_equiv e.symm
-
 section
 
 variable {R} (x : R) {M N L : Type*} [AddCommGroup M] [AddCommGroup N] [AddCommGroup L]
@@ -130,9 +41,8 @@ def QuotSMulTop_map (f : M →ₗ[R] N) :
     rcases (Submodule.mem_smul_pointwise_iff_exists _ _ _).mp hm with ⟨m', _, hm'⟩
     simpa [← hm'] using Submodule.smul_mem_pointwise_smul _ x ⊤ trivial)
   map_smul' r m := by
-    rcases Ideal.Quotient.mk_surjective r with ⟨s, hs⟩
-    simp only [← hs, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom]
-    exact map_smul _ s m
+    rcases Ideal.Quotient.mk_surjective r with ⟨s, rfl⟩
+    exact map_smul (Submodule.mapQ _ _ f _) s m
 
 lemma QuotSMulTop_map_surjective {f : M →ₗ[R] N} (surj : Function.Surjective f) :
     Function.Surjective (QuotSMulTop_map x f) :=
@@ -264,7 +174,6 @@ lemma exist_isSMulRegular_of_exist_hasProjectiveDimensionLE_aux [IsLocalRing R] 
   have : Module.Projective R (R ⧸ maximalIdeal R) :=
     Module.Projective.of_equiv (Shrink.linearEquiv.{v} R (R ⧸ maximalIdeal R))
   have : Module.Free R (R ⧸ maximalIdeal R) := Module.free_of_flat_of_isLocalRing
-  let I := Module.Free.ChooseBasisIndex R (R ⧸ maximalIdeal R)
   let b := Module.Free.chooseBasis R (R ⧸ maximalIdeal R)
   have := b.1.annihilator_eq
   rw [Module.annihilator_finsupp, Ideal.annihilator_quotient] at this
@@ -309,7 +218,6 @@ lemma exist_isSMulRegular_of_exist_hasProjectiveDimensionLE [IsLocalRing R] [IsN
     simpa using xnmem.2
   simpa [xmem, xnmem.1]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma spanFinrank_maximalIdeal_quotient [IsLocalRing R] [IsNoetherianRing R] (x : R)
     (mem : x ∈ maximalIdeal R) (nmem : x ∉ (maximalIdeal R) ^ 2) :
     letI : IsLocalRing (R ⧸ Ideal.span {x}) :=
@@ -354,8 +262,7 @@ theorem generate_by_regular_aux [IsLocalRing R] [IsNoetherianRing R] [Small.{v} 
     have nebot : maximalIdeal R ≠ ⊥ := by
       simp [← Submodule.spanRank_eq_zero_iff_eq_bot, hrank,
         Submodule.fg_iff_spanRank_eq_spanFinrank.mpr fg]
-    rcases exist_isSMulRegular_of_exist_hasProjectiveDimensionLE nebot h with
-      ⟨x, mem, nmem, xreg⟩
+    rcases exist_isSMulRegular_of_exist_hasProjectiveDimensionLE nebot h with ⟨x, mem, nmem, xreg⟩
     let R' := R ⧸ Ideal.span {x}
     have : Nontrivial (R ⧸ Ideal.span {x}) := Ideal.Quotient.nontrivial_iff.mpr
       (by simpa [← Submodule.ideal_span_singleton_smul] using mem)
@@ -370,7 +277,7 @@ theorem generate_by_regular_aux [IsLocalRing R] [IsNoetherianRing R] [Small.{v} 
       map_smul' r m := map_smul (maximalIdeal R).toCotangent r m }
     have surjg : Function.Surjective g := (maximalIdeal R).toCotangent_surjective
     have supeq : (J'.comap g) ⊔ Submodule.span R {⟨x, mem⟩} = ⊤ := by
-      let : RingHomSurjective (residue R) := ⟨residue_surjective⟩
+      have : RingHomSurjective (residue R) := ⟨residue_surjective⟩
       rw [sup_comm, ← sup_eq_left.mpr (LinearMap.ker_le_comap g), ← sup_assoc,
         ← Submodule.comap_map_eq, Submodule.map_sup, Submodule.map_span,
         Submodule.map_comap_eq_of_surjective surjg]
@@ -453,10 +360,8 @@ theorem generate_by_regular_aux [IsLocalRing R] [IsNoetherianRing R] [Small.{v} 
       simp [e1, e1']
     have : IsScalarTower R (R ⧸ Ideal.span {x}) (Shrink.{v} (maximalIdeal R')) :=
       (equivShrink (maximalIdeal R')).symm.isScalarTower R _
-    let r := (LinearMap.extendScalarsOfSurjective (Ideal.Quotient.mk_surjective
-      (I := Ideal.span {x})) r')
-    let i := (LinearMap.extendScalarsOfSurjective
-      (Ideal.Quotient.mk_surjective (I := Ideal.span {x})) i')
+    let r := r'.extendScalarsOfSurjective (Ideal.Quotient.mk_surjective (I := Ideal.span {x}))
+    let i := i'.extendScalarsOfSurjective (Ideal.Quotient.mk_surjective (I := Ideal.span {x}))
     have compid' : r.comp i = LinearMap.id := by
       apply LinearMap.ext (fun y ↦ ?_)
       simpa using LinearMap.ext_iff.mp compid y
