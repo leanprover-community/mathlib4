@@ -200,13 +200,13 @@ theorem IsCompl.projection_apply_eq_zero_iff (hpq : IsCompl p q) {x : E} :
 alias ⟨_, linearProjOfIsCompl_apply_of_mem_right⟩ :=
   linearProjOfIsCompl_apply_eq_zero_iff
 
+alias ⟨_, IsCompl.projection_apply_of_mem_right⟩ :=
+  IsCompl.projection_apply_eq_zero_iff
+
 @[deprecated linearProjOfIsCompl_apply_of_mem_right (since := "2026-04-27")]
 theorem linearProjOfIsCompl_apply_right' (h : IsCompl p q) (x : E) (hx : x ∈ q) :
     linearProjOfIsCompl p q h x = 0 :=
   linearProjOfIsCompl_apply_of_mem_right h hx
-
-alias ⟨_, IsCompl.projection_apply_of_mem_right⟩ :=
-  IsCompl.projection_apply_eq_zero_iff
 
 @[simp]
 theorem linearProjOfIsCompl_apply_right (h : IsCompl p q) (x : q) :
