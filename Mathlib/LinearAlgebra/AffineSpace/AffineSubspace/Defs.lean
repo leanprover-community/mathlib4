@@ -206,14 +206,14 @@ namespace AffineSubspace
 variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
   [AffineSpace V P]
 
-def toSubmodule_of_zero_mem {s : AffineSubspace k V} (hs : 0 ∈ s) : Submodule k V where
+def toSubmodule {s : AffineSubspace k V} (hs : 0 ∈ s) : Submodule k V where
   carrier := s
   zero_mem' := hs
   add_mem' ha hb := by simpa using s.smul_vsub_vadd_mem 1 ha hs hb
   smul_mem' _ _ ha := by simpa using s.smul_vsub_vadd_mem _ ha hs hs
 
 instance : CanLift (AffineSubspace k V) (Submodule k V) (·) (0 ∈ ·) := ⟨
-  fun _ hs => ⟨toSubmodule_of_zero_mem hs, by ext x; simp [toSubmodule_of_zero_mem]⟩⟩
+  fun _ hs => ⟨toSubmodule hs, by ext x; simp [toSubmodule]⟩⟩
 
 /-- The direction of an affine subspace is the submodule spanned by
 the pairwise differences of points.  (Except in the case of an empty
