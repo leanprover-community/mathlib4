@@ -542,12 +542,15 @@ class DAG:
             directories = ["."]
 
         # Collect all .lean file paths (relative to project_root).
+        # Skip the Lake build directory (`.lake/`); it contains vendored
+        # dependencies that we don't want to modify or build directly.
         rel_paths: list[Path] = []
         for directory in directories:
             dir_path = project_root / directory
             if not dir_path.exists():
                 continue
-            for root, _, files in os.walk(dir_path):
+            for root, dirs, files in os.walk(dir_path):
+                dirs[:] = [d for d in dirs if d != ".lake"]
                 for fname in files:
                     if not fname.endswith(".lean"):
                         continue

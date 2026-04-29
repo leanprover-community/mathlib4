@@ -106,6 +106,14 @@ file used by the library's own linters.
 These scripts help with testing Lean PRs that change backward-compatibility option
 behaviour. They share a common DAG traversal library that parallelises work in import-graph order.
 
+To use these scripts outside mathlib, copy `dag_traversal.py`, `set_option_utils.py`,
+and the script(s) you need into a `scripts/` directory in your project, then run from
+the project root.  `fix_nonlocal_set_option.py` additionally requires
+`add_module_set_option.py` and `rm_module_set_option.py`.  Pass `--directories <root>`
+if your source files aren't directly under the project root.  Module-name derivation
+assumes a Mathlib-style layout where `Foo/Bar.lean` corresponds to module `Foo.Bar`
+(no `srcDir` indirection).
+
 - `dag_traversal.py`
   Reusable parallel DAG traversal for Lean import graphs. Parses the import DAG from `.lean`
   source files and parallelises an action over a forward or backward traversal. Each module is
@@ -149,11 +157,14 @@ behaviour. They share a common DAG traversal library that parallelises work in i
 - `add_module_set_option.py`, `rm_module_set_option.py`
   File-level variants of `add_set_option.py` / `rm_set_option.py`: they insert or remove a
   `set_option ...` at the top of the file rather than scoped to individual declarations.
+  Both accept `--directories <root>` for downstream projects whose source files aren't
+  directly under the project root.
 
 - `fix_nonlocal_set_option.py`
   Helper that bisects the import DAG to find the upstream file whose missing
   `set_option ...` is causing a downstream failure — useful when the direct fix is in a
-  different module than the one reporting the error.
+  different module than the one reporting the error.  Accepts `--directories <root>` for
+  downstream projects.
 
 - `fix_unused_simp_args.py`
   Parses `lake build` warnings of the form `This simp argument is unused: X` and removes `X`

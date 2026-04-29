@@ -394,7 +394,11 @@ def print_summary(
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Add set_option ... false in before failing declarations."
+        description="Add `set_option ... false in` before failing declarations.\n\n"
+                    "To use outside mathlib, copy `add_set_option.py`, `dag_traversal.py` and "
+                    "`set_option_utils.py` to a subdirectory of your project named `scripts/` "
+                    "and then run from the project root with `scripts/add_set_option.py`.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
         "--option",
@@ -423,6 +427,12 @@ def main():
         help="Only process these files (paths relative to project root)",
     )
     parser.add_argument(
+        "--directories",
+        nargs="+",
+        default=None,
+        help="Directories to scan when building the import DAG (default: '.')",
+    )
+    parser.add_argument(
         "--no-initial",
         action="store_true",
         help="Skip the initial build (build every module individually)",
@@ -440,7 +450,7 @@ def main():
 
     # Build DAG
     print("Building import DAG...", flush=True)
-    dag = DAG.from_directories(PROJECT_DIR)
+    dag = DAG.from_directories(PROJECT_DIR, args.directories)
     print(f"  {len(dag.modules)} modules parsed")
 
     # Filter to requested files

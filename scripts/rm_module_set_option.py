@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Remove unnecessary module-level `set_option` lines from Mathlib.
+Remove unnecessary module-level `set_option` lines from a Lean project.
 
 Traverses the import DAG **backward** (downstream first) so removing an
 option from an upstream file doesn't invalidate cached .oleans of already-
@@ -9,6 +9,12 @@ processed downstream files.
 For each file that contains the target line, tries removing it and building
 the module.  If the build succeeds the line stays removed; otherwise it is
 restored.
+
+To use outside mathlib, copy `rm_module_set_option.py`, `dag_traversal.py` and
+`set_option_utils.py` to a subdirectory of your project named `scripts/` and
+then run from the project root with `scripts/rm_module_set_option.py`.  Pass
+`--directories <root>` if your source files aren't directly under the project
+root.
 
 Usage:
     python3 scripts/rm_module_set_option.py [--option NAME] [--dry-run] [--resume] ...
@@ -292,6 +298,12 @@ def main():
         help="Build timeout per module in seconds (default: 600)",
     )
     parser.add_argument(
+        "--directories",
+        nargs="+",
+        default=None,
+        help="Directories to scan when building the import DAG (default: '.')",
+    )
+    parser.add_argument(
         "--no-initial",
         action="store_true",
         help="Skip the initial lake build",
@@ -334,7 +346,7 @@ def main():
 
     # Build DAG
     print("Building import DAG...", flush=True)
-    full_dag = DAG.from_directories(PROJECT_DIR)
+    full_dag = DAG.from_directories(PROJECT_DIR, args.directories)
     print(f"  {len(full_dag.modules)} modules parsed")
 
     # Scan for removable lines

@@ -1,10 +1,16 @@
 #!/usr/bin/env python3
 """
-Add module-level `set_option` lines to every Mathlib file.
+Add module-level `set_option` lines to every Lean file in the project.
 
 Inserts `set_option <option> false` (module-scoped, no `in`) after the last
-import line in each .lean file under Mathlib/.  Also removes the corresponding
+import line in each .lean file in the project.  Also removes the corresponding
 entry from lakefile.lean if present.
+
+To use outside mathlib, copy `add_module_set_option.py`, `dag_traversal.py` and
+`set_option_utils.py` to a subdirectory of your project named `scripts/` and
+then run from the project root with `scripts/add_module_set_option.py`.  Pass
+`--directories <root>` if your source files aren't directly under the project
+root.
 
 Usage:
     python3 scripts/add_module_set_option.py [--option NAME] [--dry-run]
@@ -112,7 +118,7 @@ def add_to_file(filepath: Path, option: str, value: str, dry_run: bool) -> bool:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Add module-level set_option to every Mathlib file."
+        description="Add module-level set_option to every Lean file in the project."
     )
     parser.add_argument(
         "--option",
@@ -128,6 +134,12 @@ def main():
         "--dry-run",
         action="store_true",
         help="Report without modifying files",
+    )
+    parser.add_argument(
+        "--directories",
+        nargs="+",
+        default=None,
+        help="Directories to scan for .lean files (default: '.')",
     )
     parser.add_argument(
         "--deps-of",
@@ -157,13 +169,13 @@ def main():
                     lakefile.write_text(new_content)
                 print(f"Removed {option} from lakefile.lean")
 
-    # Step 2: determine which files to process
-    if args.deps_of:
-        # Import DAG to find dependencies
-        sys.path.insert(0, str(Path(__file__).parent))
-        from dag_traversal import DAG
+    # Step 2: determine which files to process via the import DAG
+    sys.path.insert(0, str(Path(__file__).parent))
+    from dag_traversal import DAG
 
-        dag = DAG.from_directories(PROJECT_DIR)
+    dag = DAG.from_directories(PROJECT_DIR, args.directories)
+
+    if args.deps_of:
         deps_set: set[str] = set()
         for mod in args.deps_of:
             # Collect transitive dependencies
@@ -181,18 +193,21 @@ def main():
                             next_frontier.add(imp)
                 frontier = next_frontier
             deps_set |= visited
-        # Convert module names to file paths
         files = []
         for name in sorted(deps_set):
             info = dag.modules.get(name)
-            if info and info.filepath.startswith("Mathlib/"):
+            if info:
                 fp = dag.project_root / info.filepath
                 if fp.exists():
                     files.append(fp)
         print(f"  {len(files)} dependencies of {', '.join(args.deps_of)}")
     else:
-        mathlib_dir = PROJECT_DIR / "Mathlib"
-        files = sorted(mathlib_dir.rglob("*.lean"))
+        files = []
+        for name in sorted(dag.modules):
+            info = dag.modules[name]
+            fp = dag.project_root / info.filepath
+            if fp.exists():
+                files.append(fp)
 
     modified = 0
     for filepath in files:

@@ -8,6 +8,13 @@ For each failing module A:
 3. Binary-search remove unnecessary options from deps of A,
    checking that A (and all previously-fixed modules) still build
 
+To use outside mathlib, copy `fix_nonlocal_set_option.py`,
+`add_module_set_option.py`, `rm_module_set_option.py`, `dag_traversal.py` and
+`set_option_utils.py` to a subdirectory of your project named `scripts/` and
+then run from the project root with `scripts/fix_nonlocal_set_option.py`.
+Pass `--directories <root>` if your source files aren't directly under the
+project root.
+
 Usage:
     python3 scripts/fix_nonlocal_set_option.py MODULE1 MODULE2 ...
 """
@@ -217,13 +224,19 @@ def main():
         default=600,
         help="Build timeout per module in seconds (default: 600)",
     )
+    parser.add_argument(
+        "--directories",
+        nargs="+",
+        default=None,
+        help="Directories to scan when building the import DAG (default: '.')",
+    )
     args = parser.parse_args()
 
     option = args.option
     value = args.value
 
     print("Building import DAG...", flush=True)
-    dag = DAG.from_directories(PROJECT_DIR)
+    dag = DAG.from_directories(PROJECT_DIR, args.directories)
     print(f"  {len(dag.modules)} modules parsed")
 
     check_modules = list(args.modules)
@@ -233,16 +246,9 @@ def main():
     for mod in args.modules:
         all_deps |= collect_all_dependencies(dag, mod)
 
-    # Filter to Mathlib files
-    mathlib_deps = []
-    for d in sorted(all_deps):
-        info = dag.modules.get(d)
-        if info and str(info.filepath).startswith("Mathlib/"):
-            mathlib_deps.append(d)
-
     # Step 2: add option to all deps that don't already have it
     added = []
-    for d in mathlib_deps:
+    for d in sorted(all_deps):
         info = dag.modules.get(d)
         if info is None:
             continue
