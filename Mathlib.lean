@@ -1651,6 +1651,7 @@ public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unitary
 public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 public import Mathlib.Analysis.CStarAlgebra.ContinuousMap
 public import Mathlib.Analysis.CStarAlgebra.Exponential
+public import Mathlib.Analysis.CStarAlgebra.Extreme
 public import Mathlib.Analysis.CStarAlgebra.Fuglede
 public import Mathlib.Analysis.CStarAlgebra.GelfandDuality
 public import Mathlib.Analysis.CStarAlgebra.GelfandNaimarkSegal
@@ -2223,6 +2224,7 @@ public import Mathlib.Analysis.NormedSpace.PiTensorProduct.InjectiveSeminorm
 public import Mathlib.Analysis.NormedSpace.PiTensorProduct.ProjectiveSeminorm
 public import Mathlib.Analysis.NormedSpace.RieszLemma
 public import Mathlib.Analysis.ODE.Basic
+public import Mathlib.Analysis.ODE.DiscreteGronwall
 public import Mathlib.Analysis.ODE.Gronwall
 public import Mathlib.Analysis.ODE.PicardLindelof
 public import Mathlib.Analysis.ODE.Transform
