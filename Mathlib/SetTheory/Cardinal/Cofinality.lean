@@ -383,7 +383,7 @@ theorem lift_cof_iSup_add_one [Small.{u} β] {f : β → Ordinal} (hf : StrictMo
       obtain ⟨i, hi⟩ := hb
       exact ⟨_, Set.mem_range_self i, hi⟩
   · rw [mem_Iio]
-    exact (lt_add_one _).trans_le <| le_ciSup (bddAbove_of_small _) _
+    exact (lt_add_one _).trans_le <| le_ciSup bddAbove_of_small _
 
 theorem cof_iSup_add_one {f : γ → Ordinal} (hf : StrictMono f) :
     cof (⨆ i, f i + 1) = Order.cof γ := by
@@ -420,9 +420,9 @@ alias IsNormal.cof_eq := cof_eq_of_isNormal
 theorem le_cof_map_of_isNormal {f} (hf : IsNormal f) (a) : cof a ≤ cof (f a) := by
   rcases zero_or_succ_or_isSuccLimit a with (rfl | ⟨b, rfl⟩ | ha)
   · rw [cof_zero]
-    exact zero_le _
-  · rw [cof_succ, Cardinal.one_le_iff_ne_zero, cof_eq_zero.ne, ← pos_iff_ne_zero]
-    exact (zero_le (f b)).trans_lt (hf.strictMono (lt_succ b))
+    exact zero_le
+  · rw [cof_succ, Cardinal.one_le_iff_ne_zero, cof_eq_zero.ne]
+    exact (hf.strictMono (lt_succ b)).ne_zero
   · rw [cof_map_of_isNormal hf ha]
 
 @[deprecated (since := "2026-03-19")]

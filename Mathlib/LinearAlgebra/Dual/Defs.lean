@@ -17,7 +17,6 @@ The dual space of an $R$-module $M$ is the $R$-module of $R$-linear maps $M \to 
 
 * Duals and transposes:
   * `Module.Dual R M` defines the dual space of the `R`-module `M`, as `M →ₗ[R] R`.
-  * `Module.dualPairing R M` is the canonical pairing between `Dual R M` and `M`.
   * `Module.Dual.eval R M : M →ₗ[R] Dual R (Dual R)` is the canonical map to the double dual.
   * `Module.Dual.transpose` is the linear map from `M →ₗ[R] M'` to `Dual R M' →ₗ[R] Dual R M`.
   * `LinearMap.dualMap` is `Module.Dual.transpose` of a given linear map, for dot notation.
@@ -38,6 +37,12 @@ The dual space of an $R$-module $M$ is the $R$-module of $R$-linear maps $M \to 
   * `Module.evalEquiv` is the equivalence `V ≃ₗ[K] Dual K (Dual K V)`
   * `Module.mapEvalEquiv` is the order isomorphism between subspaces of `V` and
     subspaces of `Dual K (Dual K V)`.
+
+## Notes
+
+* The identity map `id` on `Module.Dual R M` can be interpreted as a bilinear pairing when read as
+  `Module.Dual R V →ₗ[R] M →ₗ[R] R`. It is the flipped pairing to `Module.Dual.eval`.
+
 -/
 
 @[expose] public section
@@ -95,12 +100,13 @@ end Semiring
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- The canonical pairing of a vector space and its algebraic dual. -/
+@[deprecated LinearMap.id (since := "2026-04-02")]
 def dualPairing : Module.Dual R M →ₗ[R] M →ₗ[R] R :=
   LinearMap.id
 
-@[simp]
-theorem dualPairing_apply (v x) : dualPairing R M v x = v x :=
-  rfl
+set_option linter.deprecated false in
+@[deprecated "`Module.dualPairing` has been deprecated" (since := "2026-04-02")]
+theorem dualPairing_apply (v x) : dualPairing R M v x = v x := rfl
 
 namespace Dual
 

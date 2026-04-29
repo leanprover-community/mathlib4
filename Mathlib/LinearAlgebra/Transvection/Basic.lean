@@ -88,13 +88,6 @@ theorem comp_of_left_eq {f : Dual R V} {v w : V} (hw : f w = 0) :
     (transvection f v) ∘ₗ (transvection f w) = transvection f (v + w) := by
   ext; simp [comp_of_left_eq_apply hw]
 
-theorem comp_smul_smul {f : Dual R V} {v : V} {r s : R} :
-    transvection f (r • v) ∘ₗ transvection f (s • v) =
-      transvection f ((r + s + s * f v * r) • v) := by
-  ext x
-  simp only [LinearMap.comp_apply, apply, map_add, map_smul, add_assoc]
-  simp only [smul_add, ← mul_smul, ← add_smul, ← mul_add (f x), mul_assoc]
-
 theorem comp_of_right_eq_apply {f g : Dual R V} {v : V} {x : V} (hf : f v = 0) :
     (transvection f v) (transvection g v x) = transvection (f + g) v x := by
   simp [transvection, map_add, hf, add_smul, add_assoc]
@@ -114,6 +107,13 @@ theorem of_right_eq_zero (f : Dual R V) :
     transvection f 0 = id := by
   ext
   simp [transvection]
+
+theorem comp_smul_smul {f : Dual R V} {v : V} {r s : R} :
+    transvection f (r • v) ∘ₗ transvection f (s • v) =
+      transvection f ((r + s + s * f v * r) • v) := by
+  ext x
+  simp only [LinearMap.comp_apply, apply, map_add, map_smul, add_assoc]
+  simp only [smul_add, ← mul_smul, ← add_smul, ← mul_add (f x), mul_assoc]
 
 theorem pow {f : Dual R V} {v : V} (hf : f v = 0) (n : ℕ) :
     (transvection f v) ^ n = transvection f (n • v) := by
@@ -432,6 +432,9 @@ theorem dilatransvection.coe_toLinearMap {f : Dual R V} {v : V} {h : IsUnit (1 +
     (dilatransvection h).toLinearMap = LinearMap.transvection f v :=
   rfl
 
+theorem coe_dilatransvection {f : Dual R V} {v : V} (h : IsUnit (1 + f v)) :
+    dilatransvection h = LinearMap.transvection f v := rfl
+
 theorem dilatransvection.apply {f : Dual R V} {v : V} {h : IsUnit (1 + f v)} {x : V} :
     dilatransvection h x = x + f x • v := by
   simp [dilatransvection, LinearMap.transvection.apply]
@@ -443,6 +446,10 @@ theorem dilatransvection_mem_dilatransvections {f : Dual R V} {v : V} {h : IsUni
   refine ⟨f, v, by simp⟩
 
 open Pointwise in
+theorem coe_dilatransvection {f : Dual R V} {v : V} (h : IsUnit (1 + f v)) :
+    dilatransvection h = LinearMap.transvection f v := rfl
+
+open scoped Pointwise in
 theorem dilatransvections_pow_mono :
     Monotone (fun n : ℕ ↦ (dilatransvections R V) ^ n) :=
   Set.pow_right_monotone one_mem_dilatransvections
@@ -558,7 +565,6 @@ theorem mem_dilatransvections_iff_rank_quotient {e : V ≃ₗ[K] V} :
   rw [mem_dilatransvections_iff_rank, ← (quotKerEquivRange _).rank_eq, ← fixedSubmodule_eq_ker]
 
 variable (e f : V ≃ₗ[K] V)
-open Pointwise MulAction
 
 /-
 theorem mem_stabilizer_submodule {W : Submodule K V} {u : V ≃ₗ[K] V} :

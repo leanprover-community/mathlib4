@@ -16,7 +16,7 @@ public import Mathlib.Logic.Equiv.Nat
 In this file we provide basic instances of the `Countable` typeclass defined elsewhere.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Monoid
 
