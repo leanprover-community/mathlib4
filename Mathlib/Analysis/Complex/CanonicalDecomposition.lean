@@ -6,6 +6,7 @@ Authors: Stefan Kebekus
 module
 
 public import Mathlib.Analysis.Meromorphic.FactorizedRational
+public import Mathlib.Analysis.Meromorphic.RCLike
 
 /-!
 # Canonical Decomposition
@@ -69,8 +70,8 @@ variable (R w) in
 /--
 Canonical factors are meromorphic.
 -/
-theorem meromorphicOn_canonicalFactor : MeromorphicOn (canonicalFactor R w) Set.univ := by
-  intro x hx
+theorem meromorphic_canonicalFactor : Meromorphic (canonicalFactor R w) := by
+  intro x
   unfold canonicalFactor
   fun_prop
 
@@ -115,7 +116,7 @@ theorem meromorphicNFOn_canonicalFactor (h : w ∈ ball 0 R) :
   obtain (rfl | h₁) := eq_or_ne z w
   · rw [meromorphicNFAt_iff_analyticAt_or]
     right
-    refine ⟨meromorphicOn_canonicalFactor R z z (Set.mem_univ z), ?_, by simp⟩
+    refine ⟨meromorphic_canonicalFactor R z z, ?_, by simp⟩
     simpa [meromorphicOrderAt_canonicalFactor h] using WithTop.coe_lt_zero.mpr (by lia : -1 < 0)
   apply (analyticOnNhd_canonicalFactor R w z h₁).meromorphicNFAt
 
@@ -172,13 +173,10 @@ theorem norm_canonicalFactor_eval_circle_eq_one {z : ℂ} (hw : w ∈ ball 0 R) 
 /--
 Canonical factors are nowhere locally constant zero.
 -/
-lemma meromorphicOrderAt_canonicalFactor_ne_top {z : ℂ} {R : ℝ} (w : ℂ) (hR : 0 < R) :
+theorem meromorphicOrderAt_canonicalFactor_ne_top {z : ℂ} {R : ℝ} (w : ℂ) (hR : 0 < R) :
     meromorphicOrderAt (canonicalFactor R w) z ≠ ⊤ := by
-  suffices h : ∀ z ∈ Set.univ, meromorphicOrderAt (canonicalFactor R w) z ≠ ⊤ from
-    h z (Set.mem_univ z)
-  rw [← (meromorphicOn_canonicalFactor R w).exists_meromorphicOrderAt_ne_top_iff_forall_mem
-    isConnected_univ]
-  use 0, Set.mem_univ 0
+  apply (meromorphic_canonicalFactor R w).exists_meromorphicOrderAt_ne_top_iff_forall.1
+  use 0
   by_cases hw : w = 0
   · simp_all [meromorphicOrderAt_canonicalFactor (mem_ball_self hR)]
   suffices meromorphicOrderAt (canonicalFactor R w) 0 = 0 by simp_all
@@ -197,7 +195,7 @@ theorem divisor_canonicalFactor (hw : w ∈ ball 0 R) :
   ext z
   by_cases hz : z ∈ ball 0 R
   · rw [MeromorphicOn.divisor_apply
-      (fun z hz ↦ meromorphicOn_canonicalFactor R w z (Set.mem_univ z)) hz]
+      (fun z hz ↦ meromorphic_canonicalFactor R w z) hz]
     by_cases h₂z : z = w
     · subst h₂z
       rw [meromorphicOrderAt_canonicalFactor hz]
@@ -270,7 +268,7 @@ private lemma canonicalDecomposition_aux₂ (h₁f : MeromorphicOn f (closedBall
     rw [divisor_apply h₁f (ball_subset_closedBall (by aesop))]
     rwa [divisor_apply (h₁f.mono_set ball_subset_closedBall) (by aesop)] at hz
   rw [finprod_eq_prod_of_mulSupport_subset_of_finite _ (by aesop) η₀, divisor_prod]
-  · simp_rw [divisor_zpow (fun z hz ↦ meromorphicOn_canonicalFactor R _ z (mem_univ z))]
+  · simp_rw [divisor_zpow (fun z hz ↦ meromorphic_canonicalFactor R _ z)]
     conv =>
       right
       rw [← sum_apply_smul_single_eq_self η₀]
@@ -280,9 +278,9 @@ private lemma canonicalDecomposition_aux₂ (h₁f : MeromorphicOn f (closedBall
     by_contra
     simp_all
   · intro z hz
-    apply zpow (fun x hx ↦ meromorphicOn_canonicalFactor R z x (mem_univ x))
+    apply zpow (fun x hx ↦ meromorphic_canonicalFactor R z x)
   · intro z hz x hx
-    rw [meromorphicOrderAt_zpow (meromorphicOn_canonicalFactor R z x (mem_univ x))]
+    rw [meromorphicOrderAt_zpow (meromorphic_canonicalFactor R z x)]
     lift (meromorphicOrderAt (canonicalFactor R z) x) to ℤ using
       (meromorphicOrderAt_canonicalFactor_ne_top z (pos_of_mem_ball hx)) with ℓ
     simp [← WithTop.coe_mul]
@@ -292,9 +290,9 @@ private lemma canonicalDecomposition_aux₃ {z : ℂ} (hR : 0 < R) :
     meromorphicOrderAt
       (∏ᶠ (c : ℂ), canonicalFactor R c ^ (divisor f (ball 0 R)) c) z ≠ ⊤ := by
   apply meromorphicOrderAt_finprod_ne_top
-    (fun _ ↦ MeromorphicAt.zpow (meromorphicOn_canonicalFactor _ _ _ (mem_univ z)) _)
+    (fun _ ↦ MeromorphicAt.zpow (meromorphic_canonicalFactor _ _ _) _)
   intro c
-  rw [meromorphicOrderAt_zpow (meromorphicOn_canonicalFactor R c z (mem_univ z))]
+  rw [meromorphicOrderAt_zpow (meromorphic_canonicalFactor R c z)]
   lift meromorphicOrderAt (canonicalFactor R c) z to ℤ using
     (meromorphicOrderAt_canonicalFactor_ne_top c hR) with ℓ
   simp [← WithTop.coe_mul]
@@ -334,7 +332,7 @@ theorem _root_.MeromorphicOn.congr_codiscreteWitin_closedBall_prod_canonicalFact
   let φ := (∏ᶠ c, canonicalFactor R c ^ (divisor f (ball 0 R)) c) • f
   have hφ : MeromorphicOn φ (closedBall 0 R) := by
     apply smul (MeromorphicOn.finprod _) h₁f
-    exact fun z ↦ zpow (fun z₁ hz₁ ↦ meromorphicOn_canonicalFactor _ _ _ (mem_univ z₁)) _
+    exact fun z ↦ zpow (fun z₁ hz₁ ↦ meromorphic_canonicalFactor _ _ _) _
   let g := toMeromorphicNFOn φ (closedBall 0 R)
   have h₁g : MeromorphicNFOn g (closedBall 0 R) :=
     meromorphicNFOn_toMeromorphicNFOn φ (closedBall 0 R)
@@ -354,7 +352,7 @@ theorem _root_.MeromorphicOn.congr_codiscreteWitin_closedBall_prod_canonicalFact
     rw [meromorphicOrderAt_toMeromorphicNFOn hφ hz, meromorphicOrderAt_smul _ (h₁f z hz)]
     · simp only [ne_eq, LinearOrderedAddCommGroupWithTop.add_eq_top, h₂f ⟨z, hz⟩, or_false]
       apply canonicalDecomposition_aux₃ hR
-    · apply MeromorphicAt.finprod (fun x ↦ (meromorphicOn_canonicalFactor R x z (by tauto)).zpow _)
+    · apply MeromorphicAt.finprod (fun x ↦ (meromorphic_canonicalFactor R x z).zpow _)
   use g, h₁g
   constructor
   · intro z hz

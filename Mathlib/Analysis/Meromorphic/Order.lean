@@ -692,8 +692,14 @@ theorem isClopen_setOf_meromorphicOrderAt_eq_top (hf : MeromorphicOn f U) :
     · apply (mem_diff w).1
       exact ⟨hw, mem_singleton_iff.not.1 (Subtype.coe_ne_coe.2 h₁w)⟩
 
-/-- On a connected set, there exists a point where a meromorphic function `f` has finite order iff
-`f` has finite order at every point. -/
+/--
+On a connected set, there exists a point where a meromorphic function `f` has finite order iff `f`
+has finite order at every point.
+
+See `Meromorphic.exists_meromorphicOrderAt_ne_top_iff_forall` in file
+`Mathlib/Analysis/Meromorphic/RCLike` for a related result assuming that `f` is meromorphic on all
+of `𝕜`.
+-/
 theorem exists_meromorphicOrderAt_ne_top_iff_forall (hf : MeromorphicOn f U) (hU : IsConnected U) :
     (∃ u : U, meromorphicOrderAt f u ≠ ⊤) ↔ (∀ u : U, meromorphicOrderAt f u ≠ ⊤) := by
   constructor
