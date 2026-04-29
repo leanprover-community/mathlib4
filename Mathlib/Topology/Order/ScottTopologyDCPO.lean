@@ -105,37 +105,13 @@ variable {α : Type*} [TopologicalSpace α] [CompletePartialOrder α]
 /-- The order from `CompletePartialOrder` and the specialization order induced by the Scott
 topology, correspond. Unfortunately Mathlib's specialization order `⤳` is opposite to `≤`.
 Prop 3.5.2 in [renata2024]. Prop 2.3.2(1) in [abramsky_gabbay_maibaum_1994]. -/
-lemma specialization_iff_ge {x y : α} : y ⤳ x ↔ x ≤ y  := by
-  rw [specializes_iff_forall_open]
+lemma specialization_iff_ge {x y : α} : y ⤳ x ↔ x ≤ y := by
+  rw [specializes_iff_forall_closed]
   constructor
-  · let u := {z : α | ¬(z ≤ y)}
-    have hu: IsOpen u := by
-      rw [isOpen_iff_isUpperSet_and_dirSupInaccOn univ]
-      constructor
-      · intro a b a_le_b a_in_u b_le_y
-        exact (and_not_self_iff (a ≤ y)).1 ⟨a_le_b.trans b_le_y, a_in_u⟩
-      · intro d hd hd₁ _ join h_join join_in_u
-        by_contra inter_empty
-        simp only [Set.Nonempty, mem_inter_iff, mem_setOf_eq, not_exists, not_and, not_not,
-          u] at inter_empty
-        have join_le_y : join ≤ y := by
-          have y_in_UB_d : y ∈ upperBounds d := by
-            simp_all only [mem_setOf_eq, u]
-            exact inter_empty
-          have h_join := isLUB_iff_le_iff.1 h_join y
-          rwa [←  h_join] at y_in_UB_d
-        exact (and_not_self_iff (join ≤ y)).1 ⟨join_le_y, join_in_u⟩
-    intro h_specialize
-    -- Take the contrapose of x being in an open implying y must also be in it
-    have h_specialize := not_imp_not.2 <| h_specialize u hu
-    -- we know y ∉ u as y ≤ y. And from specialization relation on y we deduce that x ∉ u
-    simp only [mem_setOf_eq, le_refl, not_true_eq_false, not_false_eq_true, not_not, forall_const,
-      u] at h_specialize
-    -- in other words x ≤ y as required
-    exact h_specialize
-  · intro x_le_y u hu x_in_u
-    apply isUpperSet_of_isOpen univ at hu
-    exact hu x_le_y x_in_u
+  · intro h
+    simpa using h (Iic y) isClosed_Iic (by simp)
+  · intro hxy s hs hys
+    exact isLowerSet_of_isClosed hs hxy hys
 
 /-- The upward closure of a compact element (`Ici e`) is an open set. -/
 lemma IsCompactElement.isOpen_Ici (e : α) (he₀ : IsCompactElement e) : IsOpen (Ici e) := by
