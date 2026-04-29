@@ -24,7 +24,7 @@ Note that we don't require quasi-compact, since this is implied by universally c
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

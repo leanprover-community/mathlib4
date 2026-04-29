@@ -19,7 +19,7 @@ public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 eigenvalue, minimal polynomial
 -/
 
-@[expose] public section
+public section
 
 
 universe u v w

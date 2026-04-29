@@ -35,7 +35,7 @@ We also define a typeclass `MeasureTheory.OuterMeasureClass`.
 outer measure
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Module.Basis IsTopologicalRing UniformSpace
 
