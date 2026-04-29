@@ -178,17 +178,16 @@ negation if `β` is an involutive negation. -/]
 protected abbrev involutiveInv [InvolutiveInv β] [IsInvApply F α β] : InvolutiveInv F :=
   DFunLike.coe_injective.involutiveInv (fun (f : F) ↦ (f : α → β)) coe_inv
 
-/-- A `FunLike` type with `1` and inverse that satisfies `1⁻¹ = 1` is an `InvOneClass`
-if `β` is an `InvOneClass`. -/
-@[to_additive /-- A `FunLike` type with `0` and negation that satisfies `(- 0) = 0` is a
-`NegZeroClass` if `β` is a `NegZeroClass`. -/]
+/-- A `FunLike` type with `1` and inverse is an `InvOneClass` if `β` is an `InvOneClass`. -/
+@[to_additive /-- A `FunLike` type with `0` and negation is a `NegZeroClass` if `β` is a
+`NegZeroClass`. -/]
 protected abbrev invOneClass [InvOneClass β] [IsOneApply F α β] [IsInvApply F α β] :
     InvOneClass F :=
   DFunLike.coe_injective.invOneClass (fun (f : F) ↦ (f : α → β)) coe_one coe_inv
 
 variable [Div F] [Pow F ℤ]
 
-/-- A `FunLike` type is a div inv monoid if `β` is a div inv monoid. -/
+/-- A `FunLike` type is a `DivInvMonoid` if `β` is a `DivInvMonoid`. -/
 @[to_additive subNegMonoid /-- A `FunLike` type is a `SubNegMonoid` if `β` is a `SubNegMonoid`. -/]
 protected abbrev divInvMonoid [DivInvMonoid β] [IsOneApply F α β] [IsMulApply F α β]
     [IsInvApply F α β] [IsDivApply F α β] [IsPowApply ℕ F α β] [IsPowApply ℤ F α β] :
