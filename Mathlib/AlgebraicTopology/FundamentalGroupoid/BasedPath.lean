@@ -734,16 +734,16 @@ the SLSC hypothesis.
 ## Proof sketch
 
 1. Uncurry the path `F : Path α β` in `BasedPath x₀` (which lives in
-   `endpoint ⁻¹' U`) to a continuous map `F̃ : I × I → X`, `F̃(t, s) := (F t).1 s`.
-   So `F̃(0, ·) = α`, `F̃(1, ·) = β`, and `F̃(·, 1)` is a loop `L : Path v v` trace
+   `endpoint ⁻¹' U`) to a continuous map `F' : I × I → X`, `F'(t, s) := (F t).1 s`.
+   So `F'(0, ·) = α`, `F'(1, ·) = β`, and `F'(·, 1)` is a loop `L : Path v v` trace
    contained in `U`.
 2. Since `U` has the SLSC uniqueness property, the loop `L` is null-homotopic in `U` via
    some `L ≃ refl v`.
-3. Combine `F̃` with this null-homotopy to build a rel-endpoints homotopy between
+3. Combine `F'` with this null-homotopy to build a rel-endpoints homotopy between
    `α.toPath` (with target cast to `v`) and `β.toPath`. The reparametrisation is
    carried by the pair of coordinate helpers `joinedInSLSC_uFn` / `joinedInSLSC_vFn`
    above, which rescale `(t, s) ∈ I × I` so that the bottom edge (`s = 0`) evaluates
-   to the free-homotopy `F̃` and the top edge (`s = 1`) picks up the null-homotopy of
+   to the free-homotopy `F'` and the top edge (`s = 1`) picks up the null-homotopy of
    `L`, with a continuous interpolation between the two. -/
 theorem toPath_homotopic_of_joinedIn_slsc
     {U : Set X}
