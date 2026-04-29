@@ -296,8 +296,9 @@ instance [I.IsTwoSided] :
 
 
 variable {𝒜 I} in
+@[simp]
 theorem Ideal.isHomogeneous_restrictScalars_iff :
-    I.IsHomogeneous 𝒜 ↔ (I.restrictScalars R).IsHomogeneous 𝒜 :=
+    (I.restrictScalars R).IsHomogeneous 𝒜 ↔ I.IsHomogeneous 𝒜 :=
   Iff.rfl
 
 /-- The decomposition at the higher level -/
