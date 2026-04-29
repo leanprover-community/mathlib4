@@ -321,7 +321,7 @@ theorem not_isHamiltonian_of_isBridge (G : SimpleGraph V)
   have he_not_in_p : s(x, y) ∉ p.edges :=
     fun h => he_not_in_cX (Walk.edges_takeUntil_subset cX hyX h)
   exact he_not_in_p (hWalkAllMem p)
-  
+
 /-- A finite simple graph with a bridge is not hamiltonian. -/
 theorem IsBridge.not_isHamiltonian {e : Sym2 α} (he : G.IsBridge e) : ¬G.IsHamiltonian := by
   induction e with | h u v
