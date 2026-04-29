@@ -73,7 +73,6 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Pi
 public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 public import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 public import Mathlib.Algebra.BigOperators.Group.Finset.Preimage
-public import Mathlib.Algebra.BigOperators.Group.Finset.Rat
 public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 public import Mathlib.Algebra.BigOperators.Group.List.Basic
 public import Mathlib.Algebra.BigOperators.Group.List.Defs
