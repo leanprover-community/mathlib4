@@ -3467,6 +3467,8 @@ public import Mathlib.Combinatorics.Digraph.Basic
 public import Mathlib.Combinatorics.Digraph.Orientation
 public import Mathlib.Combinatorics.Enumerative.Bell
 public import Mathlib.Combinatorics.Enumerative.Catalan
+public import Mathlib.Combinatorics.Enumerative.Catalan.Basic
+public import Mathlib.Combinatorics.Enumerative.Catalan.Tree
 public import Mathlib.Combinatorics.Enumerative.Composition
 public import Mathlib.Combinatorics.Enumerative.DoubleCounting
 public import Mathlib.Combinatorics.Enumerative.DyckWord
