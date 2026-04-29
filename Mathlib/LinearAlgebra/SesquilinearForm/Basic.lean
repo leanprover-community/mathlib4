@@ -366,6 +366,10 @@ variable [CommSemiring R] [CommSemiring R₁] [CommSemiring R₂]
 variable [AddCommMonoid M] [Module R M]
 variable [AddCommMonoid M₁] [Module R₁ M₁]
 variable [AddCommMonoid M₂] [Module R₂ M₂]
+variable {N L : Submodule R₁ M₁}
+
+section
+
 variable {I₁ : R₁ →+* R} {I₂ : R₂ →+* R} {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M}
 
 variable (B) in
@@ -382,8 +386,6 @@ def orthogonalBilin (N : Submodule R₁ M₁) : Submodule R₂ M₂ where
   add_mem' {u v} hu hv x hx := by simp [hu _ hx, hv _ hx]
   smul_mem' c y hy x hx := by simp [hy _ hx]
 
-variable {N L : Submodule R₁ M₁}
-
 @[simp]
 theorem mem_orthogonalBilin_iff {m : M₂} : m ∈ N.orthogonalBilin B ↔ ∀ n ∈ N, B n m = 0:=
   Iff.rfl
@@ -391,10 +393,16 @@ theorem mem_orthogonalBilin_iff {m : M₂} : m ∈ N.orthogonalBilin B ↔ ∀ n
 theorem orthogonalBilin_le (h : N ≤ L) : L.orthogonalBilin B ≤ N.orthogonalBilin B :=
   fun _ hn l hl ↦ hn l (h hl)
 
-variable {I₂ : R₁ →+* R} {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M}
+end
+
+section
+
+variable {I₁ : R₁ →+* R} {I₂ : R₁ →+* R} {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₂] M}
 
 theorem le_orthogonalBilin_orthogonalBilin (b : B.IsRefl) :
     N ≤ (N.orthogonalBilin B).orthogonalBilin B := fun n hn _m hm ↦ b _ _ (hm n hn)
+
+end
 
 end Submodule
 
@@ -407,7 +415,7 @@ variable [Field K] [AddCommGroup V] [Module K V] [Field K₁] [AddCommGroup V₁
 
 -- ↓ This lemma only applies in fields as we require `a * b = 0 → a = 0 ∨ b = 0`
 theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →ₛₗ[J₁'] V₂) (x : V₁)
-    (hx : B x x ≠ 0) : (K₁ ∙ x) ⊓ Submodule.orthogonalBilin B  (K₁ ∙ x)= ⊥ := by
+    (hx : B x x ≠ 0) : (K₁ ∙ x) ⊓ (K₁ ∙ x).orthogonalBilin B = ⊥ := by
   rw [← Finset.coe_singleton]
   refine eq_bot_iff.2 fun y h ↦ ?_
   obtain ⟨μ, -, rfl⟩ := Submodule.mem_span_finset.1 h.1
@@ -421,7 +429,7 @@ theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →�
 
 -- ↓ This lemma only applies in fields since we use the `mul_eq_zero`
 theorem orthogonal_span_singleton_eq_to_lin_ker {B : V →ₗ[K] V →ₛₗ[J] V₂} (x : V) :
-    Submodule.orthogonalBilin B (K ∙ x) = LinearMap.ker (B x) := by
+    (K ∙ x).orthogonalBilin B = LinearMap.ker (B x) := by
   ext y
   simp_rw [Submodule.mem_orthogonalBilin_iff, LinearMap.mem_ker, Submodule.mem_span_singleton]
   constructor
@@ -432,7 +440,7 @@ theorem orthogonal_span_singleton_eq_to_lin_ker {B : V →ₗ[K] V →ₛₗ[J] 
 
 -- todo: Generalize this to sesquilinear maps
 theorem span_singleton_sup_orthogonal_eq_top {B : V →ₗ[K] V →ₗ[K] K} {x : V} (hx : B x x ≠ 0) :
-    (K ∙ x) ⊔ Submodule.orthogonalBilin B (K ∙ x) = ⊤ := by
+    (K ∙ x) ⊔ (K ∙ x).orthogonalBilin B = ⊤ := by
   rw [orthogonal_span_singleton_eq_to_lin_ker]
   exact (B x).span_singleton_sup_ker_eq_top hx
 
@@ -440,7 +448,7 @@ theorem span_singleton_sup_orthogonal_eq_top {B : V →ₗ[K] V →ₗ[K] K} {x 
 /-- Given a bilinear form `B` and some `x` such that `B x x ≠ 0`, the span of the singleton of `x`
   is complement to its orthogonal complement. -/
 theorem isCompl_span_singleton_orthogonal {B : V →ₗ[K] V →ₗ[K] K} {x : V} (hx : B x x ≠ 0) :
-    IsCompl (K ∙ x) (Submodule.orthogonalBilin B (K ∙ x)) :=
+    IsCompl (K ∙ x) ((K ∙ x).orthogonalBilin B) :=
   { disjoint := disjoint_iff.2 <| span_singleton_inf_orthogonal_eq_bot B x hx
     codisjoint := codisjoint_iff.2 <| span_singleton_sup_orthogonal_eq_top hx }
 
