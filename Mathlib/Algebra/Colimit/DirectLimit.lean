@@ -580,11 +580,11 @@ variable [CommSemiring R]
 variable [∀ i, Semiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)]
 variable [∀ i, Algebra R (G i)] [∀ i j h, AlgHomClass (T h) R (G i) (G j)]
 
-noncomputable def algebraMapAux : R →+* DirectLimit G f where
+def algebraMapAux : R →+* DirectLimit G f where
   toFun := fun r => ⟦⟨Classical.arbitrary ι, algebraMap R (G (Classical.arbitrary ι)) r⟩⟧
   map_one' := by rw [algebraMap, RingHom.map_one, one_def]
   map_mul' := fun r s => by rw [algebraMap, mul_def, map_mul]
-  map_add' := fun r s => by simp only [algebraMap, add_def, map_add]
+  map_add' := fun r s => by simp only [add_def, map_add]
   map_zero' := by rw [algebraMap, map_zero, zero_def]
 
 lemma algebraMapAux_at (i : ι) (r : R) :
@@ -597,12 +597,12 @@ lemma algebraMapAux_at (i : ι) (r : R) :
   rw [eq_of_le (f := f) ⟨i, (algebraMap R (G i) r)⟩ k hik]
   simp_rw [AlgHomClass.commutes]
 
-noncomputable instance : Algebra R (DirectLimit G f) where
+instance : Algebra R (DirectLimit G f) where
   algebraMap := algebraMapAux
   commutes' r := DirectLimit.induction f fun i _ ↦ by
     rw [algebraMapAux_at i, mul_def, mul_def, Algebra.commutes]
   smul_def' r := DirectLimit.induction _ fun i _ => by
-    rw [smul_def, algebraMapAux_at i, mul_def, Algebra.smul_def']; rfl
+    rw [smul_def, algebraMapAux_at i, mul_def, Algebra.smul_def']
 
 lemma algebraMap_at (i : ι) (r : R) :
     algebraMap R (DirectLimit G f) r = (⟦⟨i, algebraMap R (G i) r⟩⟧ : DirectLimit G f) := by
@@ -806,7 +806,7 @@ variable [Nonempty ι]
 
 variable (G f) in
 /-- The canonical map from a component to the direct limit. -/
-noncomputable def of (i) : G i →ₐ[R] DirectLimit G f where
+def of (i) : G i →ₐ[R] DirectLimit G f where
   toFun x := ⟦⟨i, x⟩⟧
   __ := (DirectLimit.Ring.of G f i)
   commutes' r := by rw [algebraMap_at i]
@@ -820,7 +820,7 @@ variable (G f) in
 that respect the directed system structure (i.e. make some diagram commute) give rise
 to a unique map out of the direct limit.
 -/
-noncomputable def lift (g : ∀ i, G i →ₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
+def lift (g : ∀ i, G i →ₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
     DirectLimit G f →ₐ[R] P where
   toFun := _root_.DirectLimit.lift _ (g · ·) fun i j h x ↦ (Hg i j h x).symm
   __ := DirectLimit.Ring.lift G f P (g:= fun i => (g i).toRingHom) (Hg:=Hg)
