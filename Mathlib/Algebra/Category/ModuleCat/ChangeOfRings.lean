@@ -281,6 +281,7 @@ abbrev restrictScalarsComp := restrictScalarsComp'.{v} f g _ rfl
 end
 
 /-- The equivalence of categories `ModuleCat S ≌ ModuleCat R` induced by `e : R ≃+* S`. -/
+@[simps]
 def restrictScalarsEquivalenceOfRingEquiv {R S : Type*} [Ring R] [Ring S] (e : R ≃+* S) :
     ModuleCat S ≌ ModuleCat R where
   functor := ModuleCat.restrictScalars e.toRingHom
