@@ -314,8 +314,7 @@ lemma b_app_ι_app_objEquiv_symm_val (c : Cell i d) {n : SimplexCategory} (f : n
     dsimp% ((b i d).app _ (c.ιSigmaStdSimplex.app _ (stdSimplex.objEquiv.symm f))).val =
       Y.map f.op c.simplex := by
   simp only [← yonedaEquiv_symm_app_objEquiv_symm, ← ι_b_ι]
-    simp +instances only [Subfunctor.toFunctor_obj, NatTrans.comp_app, Subfunctor.ι_app,
-      types_comp_apply, TypeCat.hom_ofHom, TypeCat.Fun.coe_mk]
+  dsimp +instances
 
 end Cell
 
@@ -337,8 +336,8 @@ lemma isPullback : IsPullback (t i d) (l i d) (r i d) (b i d) where
     · rw [dsimp% congr($(c.ι_b_ι).app (op ⦋n⦌) y)] at hx
       rwa [← c.preimage_map, Subcomplex.preimage_obj, Set.mem_preimage]
     · rw [Subtype.ext_iff]
-      exact ConcreteCategory.congr_hom (NatTrans.congr_app c.ι_t_ι_eq_ι_l_b_ι _) _
-    · exact ConcreteCategory.congr_hom (NatTrans.congr_app c.ι_l _) _)⟩
+      exact congr($(c.ι_t_ι_eq_ι_l_b_ι).app _ ⟨y, _⟩)
+    · exact congr($(c.ι_l).app _ ⟨y, _⟩))⟩
 
 lemma sup_range_r_range_b :
     Subcomplex.range (r i d) ⊔ Subcomplex.range (b i d) = ⊤ := by
@@ -359,7 +358,7 @@ lemma sup_range_r_range_b :
 lemma range_r_app_union_range_b_app (n : SimplexCategoryᵒᵖ) :
     Set.range ((r i d).app n) ∪
       Set.range ((b i d).app n) = Set.univ :=
-  congr($(max_range_r_range_b i d).obj n)
+  congr($(sup_range_r_range_b i d).obj n)
 
 variable {i d} in
 lemma isPushout_aux {n : ℕ} (y : (sigmaStdSimplex i d) _⦋n⦌)
@@ -368,8 +367,7 @@ lemma isPushout_aux {n : ℕ} (y : (sigmaStdSimplex i d) _⦋n⦌)
       c.ιSigmaStdSimplex.app _ (stdSimplex.objEquiv.symm f) = y := by
   obtain ⟨c, s, rfl⟩ := ιSigmaStdSimplex_jointly_surjective y
   have hs : s ∉ ∂Δ[d].obj _ :=
-    fun hs ↦ hy (⟨c.ιSigmaBoundary.app _ ⟨s, hs⟩,
-      ConcreteCategory.congr_hom (NatTrans.congr_app c.ι_l _) _⟩)
+    fun hs ↦ hy (⟨c.ιSigmaBoundary.app _ ⟨s, hs⟩, congr($(c.ι_l).app _ ⟨s, _⟩)⟩)
   refine ⟨c, stdSimplex.objEquiv s, ?_, by simp⟩
   simpa [SimplexCategory.epi_iff_surjective, boundary] using hs
 
