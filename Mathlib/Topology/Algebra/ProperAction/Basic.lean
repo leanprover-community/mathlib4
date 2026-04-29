@@ -38,7 +38,7 @@ ultrafilters and show the transfer of proper action to a closed subgroup.
 Hausdorff, group action, proper action
 -/
 
-@[expose] public section
+public section
 
 open Filter Topology Set Prod
 
@@ -132,13 +132,10 @@ then this topological space is T2. -/]
 theorem t2Space_of_properSMul_of_t1Group [h_proper : ProperSMul G X] [T1Space G] : T2Space X := by
   let f := fun x : X ↦ ((1 : G), x)
   have proper_f : IsProperMap f := by
-    refine IsClosedEmbedding.isProperMap ⟨?_, ?_⟩
-    · let g := fun gx : G × X ↦ gx.2
-      have : Function.LeftInverse g f := fun x ↦ by simp [f, g]
-      exact this.isEmbedding (by fun_prop) (by fun_prop)
-    · have : range f = ({1} ×ˢ univ) := by simp [f, Set.singleton_prod]
-      rw [this]
-      exact isClosed_singleton.prod isClosed_univ
+    refine IsClosedEmbedding.isProperMap ⟨isEmbedding_prodMkRight 1, ?_⟩
+    have : range f = ({1} ×ˢ univ) := by simp [f, Set.singleton_prod]
+    rw [this]
+    exact isClosed_singleton.prod isClosed_univ
   rw [t2_iff_isClosed_diagonal]
   let g := fun gx : G × X ↦ (gx.1 • gx.2, gx.2)
   have proper_g : IsProperMap g := (properSMul_iff G X).1 h_proper
@@ -228,7 +225,7 @@ lemma ProperSMul.isProperMap_smul_pair_set [ProperSMul G X] {t : Set X} :
       ((Homeomorph.Set.prod _ t).symm) |>.trans (Homeomorph.setCongr univ_prod)
   exact β.symm.isProperMap.comp (Φ_proper.restrictPreimage (snd ⁻¹' t)) |>.comp α.isProperMap
 
-open Pointwise in
+open scoped Pointwise in
 /-- If `G` acts on `X` properly, the set `s • t` is closed when `s : Set G` is *closed* and
 `t : Set X` is *compact*.
 
@@ -258,3 +255,40 @@ but such a lemma can't be true in this level of generality. For a counterexample
 `ℚ` acting on `ℝ` by translation, and let `s : Set ℚ := univ`, `t : set ℝ := {0}`. Then `s` is
 closed and `t` is compact, but `s +ᵥ t` is the set of all rationals, which is definitely not
 closed in `ℝ`. -/
+
+open scoped Pointwise in
+/-- If `G` acts properly on `X`, then for each pair of compacts `U, V ⊆ X`,
+the set of `g` such that `g • U` intersects `V` is compact.
+
+See `MulAction.properSMul_iff_isCompact_setOf_inter_nonempty` for the two-way implication
+under additional conditions on `G` and `X`. -/
+@[to_additive /-- If `G` acts properly on `X`, then for each pair of compacts `U, V ⊆ X`,
+the set of `g` such that `g +ᵥ U` intersects `V` is compact.
+
+See `AddAction.properVAdd_iff_isCompact_setOf_inter_nonempty` for the two-way implication
+under additional conditions on `G` and `X`. -/]
+lemma ProperSMul.isCompact_setOf_inter_nonempty
+    {G : Type*} [Group G] [MulAction G X] [TopologicalSpace G] [ProperSMul G X]
+    {U V : Set X} (hU : IsCompact U) (hV : IsCompact V) :
+    IsCompact {g : G | (g • U ∩ V).Nonempty} := by
+  convert ((ProperSMul.isProperMap_smul_pair (G := G)).isCompact_preimage
+    (hV.prod hU)).image continuous_fst
+  ext g
+  suffices (∃ v, v ∈ g • U ∧ v ∈ V) ↔ ∃ u, g • u ∈ V ∧ u ∈ U by simpa
+  rw [← (MulAction.toPerm g).exists_congr_right]
+  simp [and_comm]
+
+/-- If `G` acts transitively on `X`, and the orbit map of a point in `X` is a proper map, then the
+action is proper. -/
+@[to_additive]
+lemma MulAction.properSMul_of_proper_orbitMap
+    [ContinuousSMul G X] [IsTopologicalGroup G] [MulAction.IsPretransitive G X]
+    {x : X} (hx : IsProperMap fun g : G ↦ g • x) : ProperSMul G X := by
+  constructor
+  let f : G × G → G × X := Prod.map id (fun g ↦ g • x)
+  have hfsurj : f.Surjective := Function.surjective_id.prodMap (surjective_smul G x)
+  refine isProperMap_of_comp_of_surj (by fun_prop) (by fun_prop) ?_ hfsurj
+  simpa [Function.comp_def, Prod.map_apply, mul_smul]
+    using (hx.prodMap hx).comp (ProperSMul.isProperMap_smul_pair (G := G))
+
+end

@@ -47,7 +47,6 @@ lemma Ideal.ResidueField.map_algebraMap (I : Ideal R) [I.IsPrime] (J : Ideal S) 
   simp [IsLocalRing.ResidueField.map_residue, Localization.localRingHom_to_map]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma RingHom.SurjectiveOnStalks.residueFieldMap_bijective
     {f : R →+* S} (H : f.SurjectiveOnStalks)
     (I : Ideal R) [I.IsPrime] (J : Ideal S) [J.IsPrime] (hf : I = J.comap f) :
@@ -87,14 +86,12 @@ noncomputable instance : Algebra (R ⧸ I) I.ResidueField :=
   (Ideal.Quotient.liftₐ I (Algebra.ofId _ _)
     fun _ ↦ Ideal.algebraMap_residueField_eq_zero.mpr).toRingHom.toAlgebra
 
-set_option backward.isDefEq.respectTransparency false in
 instance (I : Ideal A) [I.IsPrime] : IsScalarTower R (A ⧸ I) I.ResidueField :=
   .of_algebraMap_eq' rfl
 
 instance (I : Ideal R) [I.IsPrime] : (⊥ : Ideal I.ResidueField).LiesOver I :=
   ⟨I.ker_algebraMap_residueField.symm⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma Ideal.algebraMap_quotient_residueField_mk (x) :
     algebraMap (R ⧸ I) I.ResidueField (Ideal.Quotient.mk _ x) =
@@ -103,7 +100,6 @@ lemma Ideal.algebraMap_quotient_residueField_mk (x) :
 @[deprecated (since := "2025-12-02")]
 alias algebraMap_mk := Ideal.algebraMap_quotient_residueField_mk
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Ideal.injective_algebraMap_quotient_residueField :
     Function.Injective (algebraMap (R ⧸ I) I.ResidueField) := by
   rw [RingHom.injective_iff_ker_eq_bot]
@@ -111,7 +107,6 @@ lemma Ideal.injective_algebraMap_quotient_residueField :
   change map (Quotient.mk I) (RingHom.ker (algebraMap R I.ResidueField)) = ⊥
   rw [Ideal.ker_algebraMap_residueField, map_quotient_self]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsFractionRing (R ⧸ I) I.ResidueField where
   map_units y := isUnit_iff_ne_zero.mpr
     (map_ne_zero_of_mem_nonZeroDivisors _ I.injective_algebraMap_quotient_residueField y.2)
@@ -132,13 +127,11 @@ instance : IsFractionRing (R ⧸ I) I.ResidueField where
     use 1
     simp [e]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Ideal.bijective_algebraMap_quotient_residueField (I : Ideal R) [I.IsMaximal] :
     Function.Bijective (algebraMap (R ⧸ I) I.ResidueField) :=
   ⟨I.injective_algebraMap_quotient_residueField, IsFractionRing.surjective_iff_isField.mpr
     ((Quotient.maximal_ideal_iff_isField_quotient I).mp inferInstance)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Ideal.algebraMap_residueField_surjective (I : Ideal R) [I.IsMaximal] :
     Function.Surjective (algebraMap R I.ResidueField) := by
   rw [IsScalarTower.algebraMap_eq R (R ⧸ I) _]
@@ -156,18 +149,15 @@ instance (p : Ideal R) [p.IsPrime] (q : Ideal A) [q.IsPrime] [q.LiesOver p] :
     IsLocalHom (algebraMap (Localization.AtPrime p) (Localization.AtPrime q)) :=
   Localization.isLocalHom_localRingHom _ _ _ (Ideal.over_def _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 instance (p : Ideal R) [p.IsPrime] : Algebra.EssFiniteType R p.ResidueField :=
   .comp _ (Localization.AtPrime p) _
 
-set_option backward.isDefEq.respectTransparency false in
 instance [Algebra.EssFiniteType R A]
     (p : Ideal R) [p.IsPrime] (q : Ideal A) [q.IsPrime] [q.LiesOver p] :
     Algebra.EssFiniteType p.ResidueField q.ResidueField := by
   have : Algebra.EssFiniteType R q.ResidueField := .comp _ A _
   refine .of_comp R _ _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` sends `I` to `0` and `Iᶜ` to units, then `f` lifts to `κ(I)`. -/
 noncomputable def Ideal.ResidueField.lift
     (f : R →+* S) (hf₁ : I ≤ RingHom.ker f)
@@ -175,7 +165,6 @@ noncomputable def Ideal.ResidueField.lift
   IsLocalization.lift (M := (R ⧸ I)⁰) (g := Ideal.Quotient.lift I (f := f) hf₁) <| by
     simpa [Ideal.Quotient.mk_surjective.forall, Ideal.Quotient.eq_zero_iff_mem]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma Ideal.ResidueField.lift_algebraMap
     (f : R →+* S) (hf₁ : I ≤ RingHom.ker f)
     (hf₂ : I.primeCompl ≤ (IsUnit.submonoid S).comap f) (r : R) :
@@ -201,7 +190,6 @@ lemma Ideal.ResidueField.liftₐ_algebraMap (I : Ideal A) [I.IsPrime] (f : A →
     (liftₐ I f hf₁ hf₂).comp (IsScalarTower.toAlgHom _ A _) = f :=
   AlgHom.ext fun _ ↦ liftₐ_algebraMap _ _ _ hf₂ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[ext high] -- higher than `RingHom.ext`.
 lemma Ideal.ResidueField.ringHom_ext {I : Ideal R} [I.IsPrime]
     {f g : I.ResidueField →+* S} (H : f.comp (algebraMap R _) = g.comp (algebraMap R _)) : f = g :=

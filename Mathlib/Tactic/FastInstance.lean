@@ -6,7 +6,7 @@ Authors: Eric Wieser, Kyle Miller, Jovan Gerbscheid
 module
 
 public import Mathlib.Init
-public meta import Lean.Meta.InstanceNormalForm
+public meta import Lean.Meta.WrapInstance
 
 /-!
 # The `fast_instance%` and `inferInstanceAs%` term elaborators
@@ -19,6 +19,11 @@ namespace Mathlib.Elab.FastInstance
 open Lean Meta Elab Term
 
 initialize registerTraceClass `Elab.fast_instance
+
+/-- Show a warning if `fast_instance%` can be replaced with `inferInstance`. -/
+register_option linter.fast_instance_existing : Bool := {
+  defValue := true
+  descr := "Show a warning if `fast_instance%` can be replaced with `inferInstance`." }
 
 /--
 Throw an error for `makeFastInstance`. The trace is a list of fields.
@@ -40,7 +45,7 @@ Core algorithm for normalizing instances.
 Many reductions for typeclasses are done with reducible transparency, so the entire body
 is `withReducible` with some exceptions.
 -/
-partial def makeFastInstance (inst expectedType : Expr) (trace : Array Name := #[]) :
+partial def makeFastInstance (inst expectedType : Expr) (root := true) (trace : Array Name := #[]) :
     MetaM Expr := withReducible do
   withTraceNode `Elab.fast_instance (fun _ => return m!"type: {expectedType}") do
   let some className ← isClass? expectedType
@@ -53,6 +58,10 @@ partial def makeFastInstance (inst expectedType : Expr) (trace : Array Name := #
 
   -- Try to synthesize a total replacement for this term:
   if let .some new ← trySynthInstance expectedType then
+    if root then
+      Linter.logLintIf linter.fast_instance_existing (← getRef) m!"\
+        An instance of `{expectedType}` already exists.\n\
+        Please use `inferInstance` instead of `fast_instance%`"
     if ← withDefault <| isDefEq inst new then
       trace[Elab.fast_instance] "replaced with synthesized instance"
       return new
@@ -100,7 +109,7 @@ partial def makeFastInstance (inst expectedType : Expr) (trace : Array Name := #
       -- Recurse into instance arguments of the constructor
       else if bi.isInstImplicit then
         let trace' := trace.push (className ++ mvarDecl.userName)
-        mvarId.assign (← makeFastInstance arg argExpectedType (trace := trace'))
+        mvarId.assign (← makeFastInstance arg argExpectedType (root := false) (trace := trace'))
       else
         -- For data fields, make sure that the lambda binders have the right type.
         forallTelescopeReducing argExpectedType fun xs _ ↦ do
@@ -147,7 +156,7 @@ macro "inferInstanceAs% " source:term : term =>
 
 /--
 `normalize_instance% inst` normalizes an instance expression using Lean core's
-`normalizeInstance` (from lean4#12897).
+`wrapInstance` (from lean4#12897).
 
 Like `fast_instance%`, it reduces `inst` to constructor applications and reuses existing
 canonical instances for sub-instance fields. Unlike `fast_instance%`, it works at `instances`
@@ -166,7 +175,7 @@ public def elabNormalizeInstance : TermElab
       -- Telescope since it might be a family of instances.
       forallTelescopeReducing expectedType fun xs expectedType => do
         mkLambdaFVars xs <| ← withNewMCtxDepth <|
-          _root_.Lean.Meta.normalizeInstance inst expectedType
+          _root_.Lean.Meta.wrapInstance inst expectedType
             (logCompileErrors := logCompileErrors) (isMeta := isMeta)
     catch e =>
       logException e

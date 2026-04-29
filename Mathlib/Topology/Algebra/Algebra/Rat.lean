@@ -18,7 +18,7 @@ This is just a minimal stub for now!
 
 -/
 
-@[expose] public section
+public section
 
 section DivisionRing
 

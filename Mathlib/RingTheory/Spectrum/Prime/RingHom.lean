@@ -117,12 +117,22 @@ section Pi
 
 variable {ι} (R : ι → Type*) [∀ i, CommSemiring (R i)]
 
-/-- The canonical map from a disjoint union of prime spectra of commutative semirings to
-the prime spectrum of the product semiring. -/
-/- TODO: show this is always a topological embedding (even when ι is infinite)
-and is a homeomorphism when ι is finite. -/
-@[simps! asIdeal] def sigmaToPi : (Σ i, PrimeSpectrum (R i)) → PrimeSpectrum (Π i, R i)
+/--
+The canonical map from a disjoint union of prime spectra of commutative semirings to
+the prime spectrum of the product semiring.
+This is always an open embedding, see `PrimeSpectrum.isOpenEmbedding_sigmaToPi` and
+a homeomorphism if `ι` is finite, see `PrimeSpectrum.sigmaHomeoPi`.
+-/
+def sigmaToPi : (Σ i, PrimeSpectrum (R i)) → PrimeSpectrum (Π i, R i)
   | ⟨i, p⟩ => comap (Pi.evalRingHom R i) p
+
+@[simp]
+lemma sigmaToPi_apply (i : ι) (p : PrimeSpectrum (R i)) :
+    sigmaToPi R ⟨i, p⟩ = comap (Pi.evalRingHom R i) p :=
+  rfl
+
+@[deprecated (since := "2026-04-17")]
+alias coe_sigmaToPi_asIdeal := sigmaToPi_apply
 
 theorem sigmaToPi_injective : (sigmaToPi R).Injective := fun ⟨i, p⟩ ⟨j, q⟩ eq ↦ by
   classical
@@ -291,7 +301,6 @@ lemma PrimeSpectrum.mem_range_comap_iff {p : PrimeSpectrum R} :
 
 open TensorProduct
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A prime `p` is in the range of `Spec S → Spec R` if the fiber over `p` is nontrivial. -/
 lemma PrimeSpectrum.nontrivial_iff_mem_rangeComap {S : Type*} [CommRing S]
     [Algebra R S] (p : PrimeSpectrum R) :

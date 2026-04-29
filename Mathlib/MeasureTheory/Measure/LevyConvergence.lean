@@ -121,7 +121,7 @@ lemma isTightMeasureSet_of_tendsto_charFun {μ : ℕ → Measure E} [∀ i, IsPr
     refine (hδ_lt ?_).le
     simp only [norm_smul, Real.norm_eq_abs, mul_one, hz]
     calc |x|
-    _ ≤ 2 * r⁻¹ := by simp at hx; grind
+    _ ≤ 2 * r⁻¹ := by grind
     _ < δ := by
       rw [← lt_div_iff₀' (by positivity), inv_lt_comm₀ hr (by positivity)]
       refine lt_of_lt_of_le ?_ hrδ
@@ -173,7 +173,7 @@ lemma ProbabilityMeasure.tendsto_of_tight_of_separatesPoints (𝕜 : Type*) [RCL
 
 variable {ι : Type*} {𝓕 : Filter ι} {μ₀ : ProbabilityMeasure E}
 
-set_option backward.isDefEq.respectTransparency false
+set_option backward.isDefEq.respectTransparency false in
 omit [FiniteDimensional ℝ E] in
 lemma ProbabilityMeasure.tendsto_charPoly_of_tendsto_charFun {μ : ι → ProbabilityMeasure E}
     (h : ∀ t : E, Tendsto (fun n ↦ charFun (μ n) t) 𝓕 (𝓝 (charFun μ₀ t)))
@@ -184,14 +184,14 @@ lemma ProbabilityMeasure.tendsto_charPoly_of_tendsto_charFun {μ : ι → Probab
   have h_eq (μ : Measure E) (hμ : IsProbabilityMeasure μ) :
       ∫ x, g x ∂μ = ∑ a ∈ w.support, w a * ∫ x, (probChar (innerₗ E x a) : ℂ) ∂μ := by
     simp_rw [hw]
-    rw [integral_finset_sum]
+    rw [integral_finsetSum]
     · congr with y
       rw [integral_const_mul]
     · refine fun i hi ↦ Integrable.const_mul ?_ _
       change Integrable (innerProbChar i) μ
       exact BoundedContinuousFunction.integrable μ _
   simp_rw [h_eq (μ _), h_eq μ₀]
-  refine tendsto_finset_sum _ fun y hy ↦ Tendsto.const_mul _ ?_
+  refine tendsto_finsetSum _ fun y hy ↦ Tendsto.const_mul _ ?_
   simpa [← charFun_eq_integral_probChar] using h y
 
 variable {μ : ℕ → ProbabilityMeasure E}

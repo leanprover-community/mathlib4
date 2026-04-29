@@ -167,7 +167,7 @@ theorem lintegral_eq_nnreal {m : MeasurableSpace α} (f : α → ℝ≥0∞) (μ
     have : ∀ x, ↑(ψ x) ≤ f x := fun x => le_trans ENNReal.coe_toNNReal_le_self (hφ x)
     exact le_iSup₂_of_le (φ.map ENNReal.toNNReal) this (ge_of_eq <| lintegral_congr h)
   · have h_meas : μ (φ ⁻¹' {∞}) ≠ 0 := mt measure_eq_zero_iff_ae_notMem.1 h
-    refine le_trans le_top (ge_of_eq <| (iSup_eq_top _).2 fun b hb => ?_)
+    refine le_trans le_top (ge_of_eq <| iSup_eq_top.2 fun b hb => ?_)
     obtain ⟨n, hn⟩ : ∃ n : ℕ, b < n * μ (φ ⁻¹' {∞}) := exists_nat_mul_gt h_meas (ne_of_lt hb)
     use (const α (n : ℝ≥0)).restrict (φ ⁻¹' {∞})
     simp only [lt_iSup_iff, exists_prop, coe_restrict, φ.measurableSet_preimage, coe_const,
@@ -357,7 +357,6 @@ theorem setLIntegral_pos_iff {f : α → ℝ≥0∞} (hf : Measurable f) {s : Se
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` has finite integral, then `∫⁻ x in s, f x ∂μ` is absolutely continuous in `s`: it tends
 to zero as `μ s` tends to zero. This lemma states this fact in terms of `ε` and `δ`. -/
 theorem exists_pos_setLIntegral_lt_of_measure_lt {f : α → ℝ≥0∞} (h : ∫⁻ x, f x ∂μ ≠ ∞) {ε : ℝ≥0∞}
@@ -428,7 +427,7 @@ theorem lintegral_add_measure (f : α → ℝ≥0∞) (μ ν : Measure α) :
   exacts [le_sup_left, le_sup_right]
 
 @[simp]
-theorem lintegral_finset_sum_measure {ι} (s : Finset ι) (f : α → ℝ≥0∞) (μ : ι → Measure α) :
+theorem lintegral_finsetSum_measure {ι} (s : Finset ι) (f : α → ℝ≥0∞) (μ : ι → Measure α) :
     ∫⁻ a, f a ∂(∑ i ∈ s, μ i) = ∑ i ∈ s, ∫⁻ a, f a ∂μ i :=
   let F : Measure α →+ ℝ≥0∞ :=
     { toFun := (lintegral · f),
@@ -436,12 +435,15 @@ theorem lintegral_finset_sum_measure {ι} (s : Finset ι) (f : α → ℝ≥0∞
       map_add' := lintegral_add_measure f }
   map_sum F μ s
 
+@[deprecated (since := "2026-04-08")]
+alias lintegral_finset_sum_measure := lintegral_finsetSum_measure
+
 @[simp]
 theorem lintegral_sum_measure {m : MeasurableSpace α} {ι} (f : α → ℝ≥0∞) (μ : ι → Measure α) :
     ∫⁻ a, f a ∂Measure.sum μ = ∑' i, ∫⁻ a, f a ∂μ i := by
-  simp_rw [ENNReal.tsum_eq_iSup_sum, ← lintegral_finset_sum_measure,
+  simp_rw [ENNReal.tsum_eq_iSup_sum, ← lintegral_finsetSum_measure,
     lintegral, SimpleFunc.lintegral_sum, ENNReal.tsum_eq_iSup_sum,
-    SimpleFunc.lintegral_finset_sum, iSup_comm (ι := Finset ι)]
+    SimpleFunc.lintegral_finsetSum, iSup_comm (ι := Finset ι)]
 
 theorem hasSum_lintegral_measure {ι} {_ : MeasurableSpace α} (f : α → ℝ≥0∞) (μ : ι → Measure α) :
     HasSum (fun i => ∫⁻ a, f a ∂μ i) (∫⁻ a, f a ∂Measure.sum μ) :=
@@ -487,7 +489,7 @@ theorem lintegral_indicator_le (f : α → ℝ≥0∞) (s : Set α) :
   congr with x
   simp only [mem_preimage, mem_singleton_iff, mem_inter_iff, iff_self_and]
   rintro rfl
-  contrapose! H
+  contrapose H
   simpa [H] using hg x
 
 @[simp]

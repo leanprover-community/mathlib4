@@ -456,7 +456,6 @@ theorem distortion_eq_of_sub_eq_div {I J : Box ι} {r : ℝ}
   have hn0 := (map_ne_zero Real.nnabs).2 this.ne'
   simp_rw [NNReal.finset_sup_div, div_div_div_cancel_right₀ hn0]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem nndist_le_distortion_mul (I : Box ι) (i : ι) :
     nndist I.lower I.upper ≤ I.distortion * nndist (I.lower i) (I.upper i) :=
   calc

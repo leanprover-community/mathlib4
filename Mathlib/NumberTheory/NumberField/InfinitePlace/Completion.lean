@@ -5,8 +5,6 @@ Authors: Salvatore Mercuri
 -/
 module -- shake: keep-all
 
-public import Mathlib.Analysis.Normed.Field.WithAbs
-public import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
-public import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
+public import Mathlib.NumberTheory.NumberField.Completion.InfinitePlace
 
 deprecated_module (since := "2026-03-09")

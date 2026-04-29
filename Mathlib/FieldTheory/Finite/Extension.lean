@@ -27,7 +27,7 @@ This extension is Galois with cyclic Galois group of degree `n`, and the (arithm
 ## Main Results
 
 * `FiniteField.algEquivExtension`: any other field extension `l/k` of degree `n` is (non-uniquely)
-isomorphic to our chosen `FiniteField.Extension k p n`.
+  isomorphic to our chosen `FiniteField.Extension k p n`.
 
 -/
 
@@ -45,7 +45,7 @@ namespace FiniteField
 
 /-- Given a finite field `k` of characteristic `p`, we have a non-canonically chosen extension
 of any given degree `n > 0`. -/
-def Extension [CharP k p] : Type :=
+def Extension : Type :=
   letI := ZMod.algebra k p
   GaloisField p (Module.finrank (ZMod p) k * n)
   deriving Field, Finite, Algebra (ZMod p), FiniteDimensional (ZMod p)
@@ -53,8 +53,9 @@ def Extension [CharP k p] : Type :=
 theorem finrank_zmod_extension [Algebra (ZMod p) k] :
     Module.finrank (ZMod p) (Extension k p n) = Module.finrank (ZMod p) k * n := by
   letI := ZMod.algebra k p
+  unfold Extension
   convert GaloisField.finrank p (n := Module.finrank (ZMod p) k * n) <|
-    mul_ne_zero Module.finrank_pos.ne' <| NeZero.ne n using 4
+    mul_ne_zero Module.finrank_pos.ne' <| NeZero.ne n
   subsingleton
 
 theorem nonempty_algHom_extension [Algebra (ZMod p) k] :
@@ -107,6 +108,14 @@ noncomputable def Extension.frob :
     frob k p n x = x ^ Nat.card k := by
   simp [frob, ← Nat.card_eq_fintype_card]
 
+@[simp]
+theorem Extension.frob_iterate_apply (i : ℕ) {x : Extension k p n} :
+    (frob k p n ^ i) x = x ^ (Nat.card k ^ i) := by
+  induction i generalizing x with
+  | zero => simp
+  | succ i ih =>
+      rw [pow_add, pow_one, AlgEquiv.mul_apply, ih, frob_apply, ← pow_mul, ← Nat.pow_add_one']
+
 theorem Extension.exists_frob_pow_eq (g : Gal(Extension k p n/k)) :
     ∃ i < n, Extension.frob k p n ^ i = g := by
   let := Fintype.ofFinite k
@@ -128,6 +137,17 @@ noncomputable def algEquivExtension (l : Type*) [Field l] [Algebra k l]
     exact FiniteField.isSplittingField_sub l k
   refine ⟨(IsSplittingField.algEquiv _ (X ^ (Nat.card k ^ n) - X)).trans ?_⟩
   exact (IsSplittingField.algEquiv _ (X ^ (Nat.card k ^ n) - X)).symm
+
+include p in
+theorem exists_forall_apply_eq_pow (l : Type*) [Field l] [Algebra k l] [Finite l] (g : Gal(l/k)) :
+    ∃ i, ∀ x, g x = x ^ (Nat.card k ^ i) := by
+  let n := Module.finrank k l
+  have : NeZero n := NeZero.of_pos Module.finrank_pos
+  obtain ⟨i, _, hi⟩ := Extension.exists_frob_pow_eq k p n <|
+    (algEquivExtension k p n l rfl).symm.trans (g.trans (algEquivExtension k p n l rfl))
+  refine ⟨i, fun x ↦ ?_⟩
+  simpa using (AlgEquiv.congr_arg (f := (algEquivExtension k p n l rfl).symm) <|
+    AlgEquiv.congr_fun hi (algEquivExtension k p n l rfl x)).symm
 
 end FiniteField
 
