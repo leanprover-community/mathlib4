@@ -64,17 +64,17 @@ protected abbrev commSemigroup [CommSemigroup β] [IsMulApply F α β] :
   DFunLike.coe_injective.commSemigroup (fun (f : F) ↦ (f : α → β)) coe_mul
 
 @[to_additive]
-protected abbrev isLeftCancelMul [Mul β] [IsLeftCancelMul β] [IsMulApply F α β] :
+protected theorem isLeftCancelMul [Mul β] [IsLeftCancelMul β] [IsMulApply F α β] :
     IsLeftCancelMul F :=
   DFunLike.coe_injective.isLeftCancelMul (fun (f : F) ↦ (f : α → β)) coe_mul
 
 @[to_additive]
-protected abbrev isRightCancelMul [Mul β] [IsRightCancelMul β] [IsMulApply F α β] :
+protected theorem isRightCancelMul [Mul β] [IsRightCancelMul β] [IsMulApply F α β] :
     IsRightCancelMul F :=
   DFunLike.coe_injective.isRightCancelMul (fun (f : F) ↦ (f : α → β)) coe_mul
 
 @[to_additive]
-protected abbrev isCancelMul [Mul β] [IsCancelMul β] [IsMulApply F α β] :
+protected theorem isCancelMul [Mul β] [IsCancelMul β] [IsMulApply F α β] :
     IsCancelMul F :=
   DFunLike.coe_injective.isCancelMul (fun (f : F) ↦ (f : α → β)) coe_mul
 

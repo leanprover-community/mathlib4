@@ -14,7 +14,7 @@ In this file we define various instances related to modules for `FunLike` types.
 
 public section
 
-variable {M M' F α β : Type*} [FunLike F α β]
+variable {M M' F α β : Type*} [i : FunLike F α β]
 
 namespace FunLike
 
@@ -22,17 +22,20 @@ section SMulInstances
 
 variable [SMul M β] [SMul M' β] [SMul M F] [SMul M' F] [IsSMulApply M F α β] [IsSMulApply M' F α β]
 
-protected abbrev isScalarTower [SMul M M'] [IsScalarTower M M' β] : IsScalarTower M M' F where
+include i in
+protected theorem isScalarTower [SMul M M'] [IsScalarTower M M' β] : IsScalarTower M M' F where
   smul_assoc _ _ _ := by apply DFunLike.ext; simp
 
-protected abbrev smulCommClass [SMulCommClass M M' β] : SMulCommClass M M' F where
+include i in
+protected theorem smulCommClass [SMulCommClass M M' β] : SMulCommClass M M' F where
   smul_comm _ _ _ := by apply DFunLike.ext; simp [smul_comm]
 
 end SMulInstances
 
 section ModuleInstance
 
-protected abbrev isCentralScalar [SMul M F] [SMul Mᵐᵒᵖ F] [SMul M β] [SMul Mᵐᵒᵖ β]
+include i in
+protected theorem isCentralScalar [SMul M F] [SMul Mᵐᵒᵖ F] [SMul M β] [SMul Mᵐᵒᵖ β]
     [IsCentralScalar M β] [IsSMulApply M F α β] [IsSMulApply Mᵐᵒᵖ F α β] :
     IsCentralScalar M F where
   op_smul_eq_smul a b := by apply DFunLike.ext; simp [op_smul_eq_smul]
