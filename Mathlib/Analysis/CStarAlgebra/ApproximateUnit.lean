@@ -183,7 +183,7 @@ lemma tendsto_mul_right_of_forall_nonneg_tendsto {l : Filter A}
     change m ∈ span ℂ ({x | 0 ≤ x} ∩ ball 0 1)
     simp [span_nonneg_inter_unitBall]
   simp_rw [Finset.mul_sum]
-  refine tendsto_finset_sum _ fun i _ ↦ ?_
+  refine tendsto_finsetSum _ fun i _ ↦ ?_
   simp_rw [mul_smul_comm]
   exact tendsto_const_nhds.smul <| h (x i) (x i).2.1 <| by simpa using (x i).2.2
 
