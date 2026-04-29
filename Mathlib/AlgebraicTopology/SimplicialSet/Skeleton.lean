@@ -334,7 +334,6 @@ lemma isPullback : IsPullback (t i d) (l i d) (r i d) (b i d) where
       (IsPullback.isLimit ?_)
     dsimp
     rw [Types.isPullback_iff]
-    dsimp
     refine ⟨NatTrans.congr_app (w i d) _,
       fun x₁ x₂ ⟨_, h⟩ ↦ injective_of_mono ((l i d).app (op ⦋n⦌)) h,
       fun ⟨x, hx⟩ y h ↦ ?_⟩
