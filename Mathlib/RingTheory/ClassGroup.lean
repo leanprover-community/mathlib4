@@ -442,15 +442,15 @@ theorem FractionalIdeal.map_ringEquivOfRingEquiv_toPrincipalIdeal {S L : Type*} 
         ← FractionalIdeal.ringEquivOfRingEquiv_symm_eq, hu]
       rfl
 
-/-- A ring isomorphism `P ≃+* P'` induces an isomorphism on their class groups. -/
+/-- A ring isomorphism `R ≃+* R'` induces an isomorphism on their class groups. -/
 @[simps!]
-noncomputable def ClassGroup.mulEquiv {P P' : Type*} [CommRing P] [IsDomain P] [CommRing P']
-    [IsDomain P'] (g : P ≃+* P') : ClassGroup P ≃* ClassGroup P' :=
-  (ClassGroup.equiv (R := P) (FractionRing P)).trans
-    ((QuotientGroup.congr (toPrincipalIdeal P (FractionRing P)).range
-        (toPrincipalIdeal P' (FractionRing P')).range
-        (Units.mapEquiv (FractionalIdeal.ringEquivOfRingEquiv (FractionRing P) (FractionRing P') g))
+noncomputable def ClassGroup.mulEquiv {R' : Type*} [CommRing R'] [IsDomain R'] (g : R ≃+* R') :
+    ClassGroup R ≃* ClassGroup R' :=
+  (ClassGroup.equiv (R := R) (FractionRing R)).trans
+    ((QuotientGroup.congr (toPrincipalIdeal R (FractionRing R)).range
+        (toPrincipalIdeal R' (FractionRing R')).range
+        (Units.mapEquiv (FractionalIdeal.ringEquivOfRingEquiv (FractionRing R) (FractionRing R') g))
         (FractionalIdeal.map_ringEquivOfRingEquiv_toPrincipalIdeal g)).trans
-      (ClassGroup.equiv (FractionRing P')).symm)
+      (ClassGroup.equiv (FractionRing R')).symm)
 
 end MulEquiv
