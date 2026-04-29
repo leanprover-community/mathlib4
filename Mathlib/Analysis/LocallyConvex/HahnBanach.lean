@@ -60,9 +60,9 @@ variable [Module 𝕜 E] [ContinuousSMul 𝕜 E] [LocallyConvexSpace 𝕜 E]
 theorem exists_extension (p : Submodule 𝕜 E) (f : StrongDual 𝕜 p) :
     ∃ g : StrongDual 𝕜 E, ∀ x : p, g x = f x := by
   letI : Module ℝ E := .restrictScalars ℝ 𝕜 E
-  letI : ContinuousSMul ℝ E := sorry
-  letI : LocallyConvexSpace ℝ E := sorry
   letI : IsScalarTower ℝ 𝕜 E := .restrictScalars _ _ _
+  letI : ContinuousSMul ℝ E := IsScalarTower.continuousSMul 𝕜
+  letI : LocallyConvexSpace ℝ E := (PolynormableSpace.withSeminorms 𝕜 E).toLocallyConvexSpace
   let fr := reCLM.comp (f.restrictScalars ℝ)
   obtain ⟨g, (hg : ∀ x : p, g x = fr x)⟩ := Real.exists_extension (p.restrictScalars ℝ) fr
   refine ⟨g.extendRCLike, fun x ↦ ?_⟩

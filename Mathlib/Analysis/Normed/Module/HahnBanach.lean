@@ -6,7 +6,6 @@ Authors: Yury Kudryashov, Heather Macbeth
 module
 
 public import Mathlib.Analysis.Convex.Cone.Extension
-public import Mathlib.Analysis.LocallyConvex.HahnBanach
 public import Mathlib.Analysis.Normed.Module.RCLike.Extend
 public import Mathlib.Analysis.RCLike.Lemmas
 
