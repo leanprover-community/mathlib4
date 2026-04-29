@@ -256,7 +256,7 @@ lemma range_map_le : Subcomplex.range c.map ≤ skeletonOfMono i (d + 1) := by
   lia
 
 @[simp]
-lemma preimage_map : ((skeletonOfMono i) d).preimage c.map = ∂Δ[d] := by
+lemma preimage_map : (skeletonOfMono i d).preimage c.map = ∂Δ[d] := by
   rw [stdSimplex.eq_boundary_iff]
   refine ⟨?_, fun h ↦ c.notMem ?_⟩
   · rw [Subcomplex.le_iff_contains_nonDegenerate]
