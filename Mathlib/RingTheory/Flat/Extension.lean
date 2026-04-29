@@ -51,7 +51,7 @@ private lemma AlgHom.comp_toRingHom' {S₁ S₂ S₃ : Type*} [Semiring S₁] [S
     [Algebra R S₁] [Algebra R S₂] [Algebra R S₃] (f : S₁ →ₐ[R] S₂) (g : S₂ →ₐ[R] S₃) :
     (g.comp f) = (RingHomClass.toRingHom g).comp (RingHomClass.toRingHom f) := rfl
 
-instance [IsLocalRing R] [Small.{w} R] : IsLocalRing (Shrink R) :=
+instance [IsLocalRing R] [Small R] : IsLocalRing (Shrink R) :=
   let := IsLocalHom.of_surjective (Shrink.ringEquiv R).symm.toRingHom
     (Shrink.ringEquiv R).symm.surjective
   IsLocalRing.of_surjective (Shrink.ringEquiv R).symm.toRingHom (Shrink.ringEquiv R).symm.surjective
@@ -74,9 +74,6 @@ instance (J : Type w) [LinearOrder J] [Nonempty J] (C : Type u) [Category.{v} C]
   hasColimitsOfShape_of_isSuccLimit j hj := by
     have : Nonempty (Set.Iio j) := Set.Nonempty.coe_sort (Set.Iio_nonempty.mpr hj.not_isMin)
     infer_instance
-
-/- from mathlib (to be generalized) -/
-instance : HasColimits (CommAlgCat.{v} R) := sorry
 
 end instances
 
@@ -125,7 +122,7 @@ namespace CommAlgCat
 variable {R : Type u} [CommRing R]
 
 /-- The object property of flat `R`-algebras. -/
-def flat (R : Type u) [CommRing R] : ObjectProperty (CommAlgCat.{w} R) := sorry
+def flat (R : Type u) [CommRing R] : ObjectProperty (CommAlgCat R) := sorry
 
 @[simp]
 lemma flat_iff {S : CommAlgCat R} : flat R S ↔ Module.Flat R S := sorry
@@ -347,7 +344,7 @@ lemma adjoinTranscendental_mem_range (x : K) (nint : ¬ IsIntegral (ResidueField
 end monogenic
 
 structure FlatExtension where
-  Ring : Type w
+  Ring : Type u
   [commRing : CommRing Ring]
   [isLocalRing : IsLocalRing Ring]
   [algebra : Algebra R Ring]
@@ -361,14 +358,14 @@ namespace FlatExtension
 
 attribute [instance] commRing algebra isLocalRing isLocalHom algebraK isScalarTower flat
 
-instance : CoeSort (FlatExtension.{w} R K) (Type w) := ⟨FlatExtension.Ring⟩
+instance : CoeSort (FlatExtension R K) (Type u) := ⟨FlatExtension.Ring⟩
 
 attribute [coe] FlatExtension.Ring
 
-noncomputable def mk' (S : Type w) [CommRing S] [Algebra R S] [Module.Flat R S]
+noncomputable def mk' (S : Type u) [CommRing S] [Algebra R S] [Module.Flat R S]
     [IsLocalRing S] (hf : IsLocalHom (algebraMap R S)) (g : (ResidueField S) →+* K)
     (hg : g.comp (ResidueField.map (algebraMap R S)) = algebraMap (ResidueField R) K)
-    (eqmap : maximalIdeal S = (maximalIdeal R).map (algebraMap R S)) : FlatExtension.{w} R K := by
+    (eqmap : maximalIdeal S = (maximalIdeal R).map (algebraMap R S)) : FlatExtension R K := by
   algebraize [g]
   have : IsLocalHom (algebraMap R S) := hf
   have : IsScalarTower (ResidueField R) (ResidueField S) K :=
@@ -379,7 +376,7 @@ noncomputable def mk' (S : Type w) [CommRing S] [Algebra R S] [Module.Flat R S]
 noncomputable def mk'' (S : Type w) [CommRing S] (h_isLocalRing : IsLocalRing S)
     (f : R →+* S) (hf : IsLocalHom f) (hf_flat : f.Flat) (g : (ResidueField S) →+* K)
     (hg : g.comp (ResidueField.map f) = algebraMap (ResidueField R) K)
-    (eqmap : maximalIdeal S = (maximalIdeal R).map f) : FlatExtension.{w} R K := by
+    (eqmap : maximalIdeal S = (maximalIdeal R).map f) : FlatExtension R K := by
   algebraize [f, g]
   have : IsLocalHom (algebraMap R S) := hf
   have : IsScalarTower (ResidueField R) (ResidueField S) K :=
@@ -387,22 +384,13 @@ noncomputable def mk'' (S : Type w) [CommRing S] (h_isLocalRing : IsLocalRing S)
   exact FlatExtension.mk S eqmap
 -/
 
-noncomputable def trivial [Small.{w} R] : FlatExtension R K := by
-  let e : R ≃+* Shrink.{w} R := (Shrink.ringEquiv R).symm
-  let : Algebra (ResidueField (Shrink.{w} R)) K :=
-    ((algebraMap (ResidueField R) K).comp
-      (ResidueField.mapEquiv (Shrink.ringEquiv R)).toRingHom).toAlgebra
-  let : IsScalarTower (ResidueField R) (ResidueField (Shrink.{w, u} R)) K := by
-    refine IsScalarTower.of_algebraMap_eq (fun x ↦ ?_)
-    rcases residue_surjective x with ⟨y, hy⟩
-    simp [RingHom.algebraMap_toAlgebra, ← hy, ResidueField.map_residue, Equiv.algebraMap_def,
-      Shrink.ringEquiv]
-  refine ⟨Shrink.{w} R, ?_⟩
-  apply (IsLocalRing.eq_maximalIdeal _).symm
-  exact (Ideal.isMaximal_map_iff_of_bijective _ e.bijective).2 inferInstance
+noncomputable def trivial : FlatExtension R K where
+  Ring := R
+  isScalarTower := IsScalarTower.left (ResidueField R)
+  eqmap := by simp
 
 variable {R K} in
-structure Hom (S₁ S₂ : FlatExtension.{w} R K) where
+structure Hom (S₁ S₂ : FlatExtension R K) where
   algHom : S₁.Ring →ₐ[R] S₂.Ring
   [isLocalHom : IsLocalHom algHom]
   comm : (algebraMap (ResidueField S₂.Ring) K).comp (ResidueField.map algHom) =
@@ -412,19 +400,19 @@ attribute [instance] Hom.isLocalHom
 
 variable {R K}
 
-def Hom.id (S : FlatExtension.{w} R K) : Hom S S := ⟨AlgHom.id R S.Ring, by simp⟩
+def Hom.id (S : FlatExtension R K) : Hom S S := ⟨AlgHom.id R S.Ring, by simp⟩
 
-def Hom.comp {S₁ S₂ S₃ : FlatExtension.{w} R K} (f : Hom S₁ S₂) (g : Hom S₂ S₃) :
+def Hom.comp {S₁ S₂ S₃ : FlatExtension R K} (f : Hom S₁ S₂) (g : Hom S₂ S₃) :
     Hom S₁ S₃ := ⟨g.algHom.comp f.algHom, by
   simp [← f.comm, ← g.comm, AlgHom.comp_toRingHom', ResidueField.map_comp, ← RingHom.comp_assoc]⟩
 
-instance : Category.{w} (FlatExtension.{w} R K) where
+instance : Category (FlatExtension R K) where
   Hom S₁ S₂ := Hom S₁ S₂
   id S := Hom.id S
   comp f g := f.comp g
 
-noncomputable abbrev adjoinAlgebraic (S : FlatExtension.{w} R K) (x : K)
-    (int : IsIntegral (ResidueField S.Ring) x) : FlatExtension.{w} R K :=
+noncomputable abbrev adjoinAlgebraic (S : FlatExtension R K) (x : K)
+    (int : IsIntegral (ResidueField S.Ring) x) : FlatExtension R K :=
   let : IsLocalHom (algebraMap R (_root_.adjoinAlgebraic K S.Ring x int)) := by
     rw [IsScalarTower.algebraMap_eq R S.Ring]
     apply RingHom.isLocalHom_comp
@@ -438,7 +426,7 @@ noncomputable abbrev adjoinAlgebraic (S : FlatExtension.{w} R K) (x : K)
       rw [adjoinAlgebraic_maximalIdeal_eq_map K S.Ring x int, IsScalarTower.algebraMap_eq R S.Ring,
         ← Ideal.map_map, S.eqmap] }
 
-noncomputable abbrev toAdjoinAlgebraic (S : FlatExtension.{w} R K) (x : K)
+noncomputable abbrev toAdjoinAlgebraic (S : FlatExtension R K) (x : K)
     (int : IsIntegral (ResidueField S.Ring) x) : S ⟶ S.adjoinAlgebraic x int where
   algHom := IsScalarTower.toAlgHom R S.Ring _
   isLocalHom := ⟨by simp⟩
@@ -447,8 +435,8 @@ noncomputable abbrev toAdjoinAlgebraic (S : FlatExtension.{w} R K) (x : K)
     let := adjoinAlgebraicIsScalarTower K S.Ring x int
     (IsScalarTower.algebraMap_eq _ _ K).symm
 
-noncomputable abbrev adjoinTranscendental (S : FlatExtension.{w} R K) (x : K)
-    (nint : ¬ IsIntegral (ResidueField S.Ring) x) : FlatExtension.{w} R K :=
+noncomputable abbrev adjoinTranscendental (S : FlatExtension R K) (x : K)
+    (nint : ¬ IsIntegral (ResidueField S.Ring) x) : FlatExtension R K :=
   let : IsLocalHom (algebraMap R (_root_.adjoinTranscendental S.Ring)) := by
     rw [IsScalarTower.algebraMap_eq R S.Ring]
     apply RingHom.isLocalHom_comp
@@ -464,7 +452,7 @@ noncomputable abbrev adjoinTranscendental (S : FlatExtension.{w} R K) (x : K)
       rw [adjoinTranscendental_maximalIdeal_eq_map S.Ring, IsScalarTower.algebraMap_eq R S.Ring,
         ← Ideal.map_map, ← S.eqmap] }
 
-noncomputable abbrev toAdjoinTranscendental (S : FlatExtension.{w} R K) (x : K)
+noncomputable abbrev toAdjoinTranscendental (S : FlatExtension R K) (x : K)
     (nint : ¬ IsIntegral (ResidueField S.Ring) x) : S ⟶ S.adjoinTranscendental x nint where
   algHom := IsScalarTower.toAlgHom R S.Ring _
   isLocalHom := ⟨by simp⟩
@@ -479,7 +467,7 @@ noncomputable abbrev toAdjoinTranscendental (S : FlatExtension.{w} R K) (x : K)
 variable (R K)
 
 open Classical in
-noncomputable def SuccStruct [Small.{w} R] : SuccStruct (FlatExtension.{w} R K) where
+noncomputable def SuccStruct : SuccStruct (FlatExtension R K) where
   X₀ := trivial R K
   succ S := if surj : Function.Surjective (algebraMap (ResidueField S.Ring) K) then S else
       if int : IsIntegral (ResidueField S.Ring) (Classical.choose (Decidable.not_forall.mp surj))
@@ -491,7 +479,7 @@ noncomputable def SuccStruct [Small.{w} R] : SuccStruct (FlatExtension.{w} R K) 
         then by simpa only [surj, int, ↓reduceDIte] using toAdjoinAlgebraic S _ int
         else by simpa only [surj, int, ↓reduceDIte] using toAdjoinTranscendental S _ int
 
-lemma algebraMap_range_lt_of_not_surjective [Small.{w} R] (S : FlatExtension R K)
+lemma algebraMap_range_lt_of_not_surjective (S : FlatExtension R K)
     (nsurj : ¬ Function.Surjective (algebraMap (ResidueField S.Ring) K)) :
     (algebraMap (ResidueField S.Ring) K).range <
     (algebraMap (ResidueField ((FlatExtension.SuccStruct R K).succ S).Ring) K).range := by
@@ -536,45 +524,45 @@ instance : ConcreteCategory (FlatExtension R K)
     isLocalHom := f.2.1
     comm := f.2.2 }
 
-def Hom.mk' {S₁ S₂ : FlatExtension.{w} R K} (f : S₁ →ₐ[R] S₂)
+def Hom.mk' {S₁ S₂ : FlatExtension R K} (f : S₁ →ₐ[R] S₂)
     (isl : IsLocalHom f) (comm : (algebraMap (ResidueField S₂) K).comp
       (ResidueField.map f) = (algebraMap (ResidueField S₁) K)) : S₁.Hom S₂ where
   algHom := f
   comm := comm
 
-instance : HasForget₂ (FlatExtension.{w} R K) (CommAlgCat.{w} R) where
+instance : HasForget₂ (FlatExtension R K) (CommAlgCat R) where
   forget₂ := {
     obj S := CommAlgCat.of R S.Ring
     map f := CommAlgCat.ofHom f.1 }
 
 namespace FilteredColimit
 
-variable {R K} {J : Type w} [Category.{w} J] [IsFiltered J] {F : J ⥤ FlatExtension.{w} R K}
+variable {R K} {J : Type u} [SmallCategory J] [IsFiltered J] {F : J ⥤ FlatExtension R K}
 
 #check PreservesColimit
 
--- instance : PreservesFilteredLimits (forget₂ (CommAlgCat.{w} R) CommRingCat.{w}) := sorry
+-- instance : PreservesFilteredLimits (forget₂ (CommAlgCat R) CommRingCat) := sorry
 
-lemma isLocalRing_of_isColimit (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat.{w} R))))
+lemma isLocalRing_of_isColimit (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat R))))
     (hc : IsColimit c) : IsLocalRing c.pt := by
   sorry
 
-lemma isLocalHom_of_isColimit (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat.{w} R))))
+lemma isLocalHom_of_isColimit (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat R))))
     (hc : IsColimit c) : IsLocalHom (algebraMap R c.pt) := by
   sorry
 
-lemma flat_of_isColimit (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat.{w} R))))
+lemma flat_of_isColimit (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat R))))
     (hc : IsColimit c) : Module.Flat R c.pt := by
   rw [← CommAlgCat.flat_iff]
   sorry
 
-def residueFieldDescOfIsColimit (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat.{w} R))))
+def residueFieldDescOfIsColimit (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat R))))
     (hc : IsColimit c) :
     haveI := isLocalRing_of_isColimit c hc
     ResidueField c.pt →+* K := by
   sorry
 
-noncomputable def coconeOfCoconeForgetPt (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat.{w} R))))
+noncomputable def coconeOfCoconeForgetPt (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat R))))
     (hc : IsColimit c) : FlatExtension R K := by
   have := isLocalRing_of_isColimit c hc
   have := flat_of_isColimit c hc
@@ -583,16 +571,16 @@ noncomputable def coconeOfCoconeForgetPt (c : Cocone (F ⋙ (forget₂ _ (CommAl
   · sorry
   · sorry
 
-lemma coconeOfCoconeForgetPt_algebraMap_eq (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat.{w} R))))
+lemma coconeOfCoconeForgetPt_algebraMap_eq (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat R))))
     (hc : IsColimit c) :
     (algebraMap (ResidueField (coconeOfCoconeForgetPt c hc)) K) =
     residueFieldDescOfIsColimit c hc := rfl
 
-lemma ι_isLocalHom_of_isColimit (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat.{w} R))))
+lemma ι_isLocalHom_of_isColimit (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat R))))
     (hc : IsColimit c) (j : J) : IsLocalHom (c.ι.app j).hom := by
   sorry
 
-noncomputable def coconeOfCoconeForget (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat.{w} R))))
+noncomputable def coconeOfCoconeForget (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat R))))
     (hc : IsColimit c) : Cocone F where
   pt := coconeOfCoconeForgetPt c hc
   ι := {
@@ -605,38 +593,40 @@ noncomputable def coconeOfCoconeForget (c : Cocone (F ⋙ (forget₂ _ (CommAlgC
       ext x
       exact congr($(c.ι.naturality f) x) }
 
-noncomputable def isColimit_coconeOfCoconeForget (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat.{w} R))))
+noncomputable def isColimit_coconeOfCoconeForget (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat R))))
     (hc : IsColimit c) : IsColimit (coconeOfCoconeForget c hc) := by
-  refine IsColimit.ofFaithful (forget₂ (FlatExtension.{w} R K) (CommAlgCat.{w} R)) hc
-    (fun s ↦ FlatExtension.Hom.mk' R K (hc.desc ((forget₂ _ (CommAlgCat.{w} R)).mapCocone s)).hom ?_
+  refine IsColimit.ofFaithful (forget₂ (FlatExtension R K) (CommAlgCat R)) hc
+    (fun s ↦ FlatExtension.Hom.mk' R K (hc.desc ((forget₂ _ (CommAlgCat R)).mapCocone s)).hom ?_
       ?_) (fun s ↦ rfl)
   · sorry
   · sorry
 
 set_option pp.universes true in
-instance : HasColimitsOfShape J (FlatExtension.{w} R K) where
+instance : HasColimitsOfShape J (FlatExtension R K) where
   has_colimit F := by
-    obtain ⟨⟨c, hc⟩⟩ : HasColimit (F ⋙ (forget₂ _ (CommAlgCat.{w} R))) := inferInstance
+    obtain ⟨⟨c, hc⟩⟩ : HasColimit (F ⋙ (forget₂ _ (CommAlgCat R))) := inferInstance
     exact ⟨⟨⟨coconeOfCoconeForget c hc, isColimit_coconeOfCoconeForget c hc⟩⟩⟩
 
-instance : HasFilteredColimitsOfSize.{w, w} (FlatExtension.{w} R K) where
+instance : HasFilteredColimitsOfSize.{u, u} (FlatExtension R K) where
   HasColimitsOfShape _ _ _ := inferInstance
 
 end FilteredColimit
 
 end FlatExtension
 
-set_option backward.isDefEq.respectTransparency false in
-lemma exists_isLocalHom_flat : ∃ (R' : Type (max u v)) (_ : CommRing R') (_ : IsLocalRing R')
+/-- In this version the universe levels of `R` and `K` are assumed to be the same, see
+  `exists_isLocalHom_flat` for a version where they have different universe levels. -/
+lemma exists_isLocalHom_flat' (K : Type u) [Field K] [Algebra (ResidueField R) K] :
+    ∃ (R' : Type u) (_ : CommRing R') (_ : IsLocalRing R')
     (_ : Algebra R R') (_ : IsLocalHom (algebraMap R R')), Module.Flat R R' ∧
     maximalIdeal R' = (maximalIdeal R).map (algebraMap R R') ∧
     Nonempty (K ≃ₐ[ResidueField R] (ResidueField R')) := by
-  obtain ⟨setK, ⟨e⟩⟩ : ∃ S : Type max u v, Nonempty (S ≃ Set K) := ⟨ULift (Set K), ⟨Equiv.ulift⟩⟩
+  obtain ⟨setK, ⟨e⟩⟩ : ∃ S : Type u, Nonempty (S ≃ Set K) := ⟨ULift (Set K), ⟨Equiv.ulift⟩⟩
   let ⟨lin, wf⟩ := exists_wellFoundedLT setK
   let : WellFoundedLT (WithTop setK) := WithTop.instWellFoundedLT
   let : SuccOrder (WithTop setK) := SuccOrder.ofLinearWellFoundedLT _
   let : OrderBot (WithTop setK) := WellFoundedLT.toOrderBot _
-  obtain ⟨φ⟩ : Nonempty ((FlatExtension.SuccStruct.{max u v} R K).Iteration (⊤ : WithTop setK)) :=
+  obtain ⟨φ⟩ : Nonempty ((FlatExtension.SuccStruct R K).Iteration (⊤ : WithTop setK)) :=
     inferInstance
   let fi : WithTop setK ≃o Set.Iic (⊤ : WithTop setK) := OrderIso.IicTop.symm
   let φobj := fun i ↦ (algebraMap (ResidueField ((φ.F.obj (fi i)).Ring)) K).range
@@ -676,3 +666,10 @@ lemma exists_isLocalHom_flat : ∃ (R' : Type (max u v)) (_ : CommRing R') (_ : 
     exact Order.succ_le_of_lt <| Subtype.mk_lt_mk.mpr (WithTop.coe_lt_coe.mpr hxy)
   absurd Cardinal.lift_mk_le_lift_mk_of_injective (hu.comp e.symm.injective)
   simpa using Cardinal.cantor (Cardinal.mk K)
+
+lemma exists_isLocalHom_flat : ∃ (R' : Type (max u v)) (_ : CommRing R') (_ : IsLocalRing R')
+    (_ : Algebra R R') (_ : IsLocalHom (algebraMap R R')), Module.Flat R R' ∧
+    maximalIdeal R' = (maximalIdeal R).map (algebraMap R R') ∧
+    Nonempty (K ≃ₐ[ResidueField R] (ResidueField R')) := by
+  -- obtain ⟨R₁, _, _, _, _, h⟩ := exists_isLocalHom_flat' (ULift.{v, u} R) (ULift.{u, v} K)
+  sorry
