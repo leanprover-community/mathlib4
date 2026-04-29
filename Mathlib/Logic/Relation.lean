@@ -216,7 +216,7 @@ theorem _root_.Acc.of_downward_closed (dc : ∀ {a b}, rβ b (f a) → ∃ c, f 
 end Fibration
 
 section Map
-variable {r : α → β → Prop} {f : α → γ} {g : β → δ} {c : γ} {d : δ}
+variable {r : α → β → Prop} {s : γ → δ → Prop} {f : α → γ} {g : β → δ} {c : γ} {d : δ}
 
 /-- The map of a relation `r` through a pair of functions pushes the
 relation to the codomains of the functions.  The resulting relation is
@@ -278,59 +278,99 @@ lemma map_mono {r s : α → β → Prop} {f : α → γ} {g : β → δ} (h : �
     ∀ x y, Relation.Map r f g x y → Relation.Map s f g x y :=
   fun _ _ ⟨x, y, hxy, hx, hy⟩ => ⟨x, y, h _ _ hxy, hx, hy⟩
 
-theorem onFun_le_of_le_map {α β : Type*} {r : α → α → Prop} {s : β → β → Prop} {f : α → β}
-    (hf : f.Injective) (hle : Subrelation s (Relation.Map r f f)) : Subrelation (s.onFun f) r := by
-  intro a b hs
-  grind [hle hs, Relation.Map]
+theorem bicompl_le_of_le_map (hf : f.Injective) (hg : g.Injective)
+    (hle : ∀ a b, s a b → Relation.Map r f g a b) (a b) (hs : s.bicompl f g a b) : r a b := by
+  grind [hle _ _ hs, Relation.Map]
 
-theorem le_map_of_onFun_le {α β : Type*} {r : α → α → Prop} {s : β → β → Prop} {f : α → β}
-    (hf : f.Surjective) (hle : Subrelation (s.onFun f) r) : Subrelation s (Relation.Map r f f) := by
-  intro a b hs
+theorem onFun_le_of_le_map {r : α → α → Prop} {s : β → β → Prop} {f : α → β}
+    (hf : f.Injective) (hle : Subrelation s (Relation.Map r f f)) : Subrelation (s.onFun f) r :=
+  bicompl_le_of_le_map hf hf (fun _ _ ↦ hle) _ _
+
+theorem le_map_of_bicompl_le (hf : f.Surjective) (hg : g.Surjective)
+    (hle : ∀ a b, s.bicompl f g a b → r a b) (a b) (hs : s a b) : Relation.Map r f g a b := by
   obtain ⟨a, rfl⟩ := hf a
-  obtain ⟨b, rfl⟩ := hf b
-  exact ⟨a, b, hle hs, rfl, rfl⟩
+  obtain ⟨b, rfl⟩ := hg b
+  exact ⟨a, b, hle a b hs, rfl, rfl⟩
 
-theorem le_map_iff_onFun_le {α β : Type*} {r : α → α → Prop} {s : β → β → Prop} {f : α → β}
+theorem le_map_of_onFun_le {r : α → α → Prop} {s : β → β → Prop} {f : α → β}
+    (hf : f.Surjective) (hle : Subrelation (s.onFun f) r) : Subrelation s (Relation.Map r f f) :=
+  le_map_of_bicompl_le hf hf (fun _ _ ↦ hle) _ _
+
+theorem le_map_iff_bicompl_le (hf : f.Bijective) (hg : g.Bijective) :
+    (∀ a b, s a b → Relation.Map r f g a b) ↔ (∀ a b, s.bicompl f g a b → r a b) :=
+  ⟨bicompl_le_of_le_map hf.left hg.left, le_map_of_bicompl_le hf.right hg.right⟩
+
+theorem le_map_iff_onFun_le {r : α → α → Prop} {s : β → β → Prop} {f : α → β}
     (hf : f.Bijective) : Subrelation s (Relation.Map r f f) ↔ Subrelation (s.onFun f) r :=
   ⟨onFun_le_of_le_map hf.left, le_map_of_onFun_le hf.right⟩
 
-theorem map_le_iff_le_onFun {α β : Type*} {r : α → α → Prop} {s : β → β → Prop} {f : α → β} :
+theorem map_le_iff_le_bicompl :
+    (∀ a b, Relation.Map r f g a b → s a b) ↔ (∀ a b, r a b → s.bicompl f g a b) := by
+  grind [Relation.Map, bicompl]
+
+theorem map_le_iff_le_onFun {r : α → α → Prop} {s : β → β → Prop} {f : α → β} :
     Subrelation (Relation.Map r f f) s ↔ Subrelation r (s.onFun f) := by
-  refine ⟨fun hle a b hr ↦ hle ⟨a, b, hr, rfl, rfl⟩, ?_⟩
-  rintro hle _ _ ⟨a, b, hr, rfl, rfl⟩
-  exact hle hr
+  grind [Subrelation, Relation.Map]
 
-lemma le_onFun_map {r : α → α → Prop} (f : α → β) : Subrelation r (Relation.Map r f f on f) := by
-  intro
-  grind [Relation.Map]
+theorem le_bicompl_map (a b) (h : r a b) : (Relation.Map r f g).bicompl f g a b :=
+  ⟨a, b, h, rfl, rfl⟩
 
-lemma onFun_map_eq_of_injective {r : α → α → Prop} {f : α → β} (hinj : f.Injective) :
-    (Relation.Map r f f on f) = r := by
-  ext x y
-  exact ⟨fun ⟨x', y', hr, hx, hy⟩ ↦ hinj hx ▸ hinj hy ▸ hr, fun h ↦ ⟨x, y, h, rfl, rfl⟩⟩
+theorem le_onFun_map {r : α → α → Prop} (f : α → β) : Subrelation r (Relation.Map r f f on f) :=
+  le_bicompl_map _ _
 
-lemma map_onFun_le {r : β → β → Prop} (f : α → β) : Subrelation (Relation.Map (r on f) f f) r := by
-  intro
-  grind [Relation.Map]
+variable (r) in
+theorem bicompl_map_eq_of_injective (hf : f.Injective) (hg : g.Injective) :
+    (Relation.Map r f g).bicompl f g = r := by
+  grind [Relation.Map, bicompl]
 
-lemma map_onFun_eq_of_surjective {r : β → β → Prop} {f : α → β} (hsurj : f.Surjective) :
-    Relation.Map (r on f) f f = r := by
-  ext x y
-  have _ := hsurj x
-  have _ := hsurj y
-  grind [Relation.Map]
+theorem onFun_map_eq_of_injective (r : α → α → Prop) {f : α → β} (hf : f.Injective) :
+    (Relation.Map r f f on f) = r :=
+  bicompl_map_eq_of_injective r hf hf
 
-lemma map_onFun_map_eq_map {r : α → α → Prop} (f : α → β) :
-    Relation.Map (Relation.Map r f f on f) f f = Relation.Map r f f := by
-  grind [Relation.Map]
+variable (s f g) in
+theorem map_bicompl_le (a b) (hs : Relation.Map (s.bicompl f g) f g a b) : s a b := by
+  grind [Relation.Map, bicompl]
 
-lemma onFun_map_onFun_eq_onFun {r : β → β → Prop} (f : α → β) :
-    (Relation.Map (r on f) f f on f) = (r on f) := by
-  grind [Relation.Map]
+theorem map_onFun_le (r : β → β → Prop) (f : α → β) : Subrelation (Relation.Map (r on f) f f) r :=
+  map_bicompl_le r f f _ _
 
-lemma onFun_map_onFun_iff_onFun {r : β → β → Prop} (f : α → β) (a₁ a₂ : α) :
-    Relation.Map (r on f) f f (f a₁) (f a₂) ↔ r (f a₁) (f a₂) := by
-  grind [Relation.Map]
+variable (s) in
+theorem map_bicompl_eq_of_surjective (hf : f.Surjective) (hg : g.Surjective) :
+    Relation.Map (s.bicompl f g) f g = s := by
+  ext a b
+  have _ := hf a
+  have _ := hg b
+  grind [Relation.Map, bicompl]
+
+theorem map_onFun_eq_of_surjective (r : β → β → Prop) {f : α → β} (hf : f.Surjective) :
+    Relation.Map (r on f) f f = r :=
+  map_bicompl_eq_of_surjective r hf hf
+
+variable (r f g) in
+theorem map_bicompl_map_eq_map :
+    Relation.Map (Relation.Map r f g |>.bicompl f g) f g = Relation.Map r f g := by
+  grind [Relation.Map, bicompl]
+
+theorem map_onFun_map_eq_map (r : α → α → Prop) (f : α → β) :
+    Relation.Map (Relation.Map r f f on f) f f = Relation.Map r f f :=
+  map_bicompl_map_eq_map r f f
+
+variable (s f g) in
+theorem bicompl_map_bicompl_eq_bicompl :
+    (Relation.Map (s.bicompl f g) f g).bicompl f g = s.bicompl f g := by
+  grind [Relation.Map, bicompl]
+
+theorem onFun_map_onFun_eq_onFun (r : β → β → Prop) (f : α → β) :
+    (Relation.Map (r on f) f f on f) = (r on f) :=
+  bicompl_map_bicompl_eq_bicompl r f f
+
+theorem bicompl_map_bicompl_iff_bicompl {a b} :
+    Relation.Map (s.bicompl f g) f g (f a) (g b) ↔ s (f a) (g b) := by
+  grind [Relation.Map, bicompl]
+
+theorem onFun_map_onFun_iff_onFun {r : β → β → Prop} {f : α → β} {a b : α} :
+    Relation.Map (r on f) f f (f a) (f b) ↔ r (f a) (f b) :=
+  bicompl_map_bicompl_iff_bicompl
 
 end Map
 
