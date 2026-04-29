@@ -232,7 +232,7 @@ variable [Field K] [AddCommGroup V] [Module K V] [Field K₁] [AddCommGroup V₁
 
 -- ↓ This lemma only applies in fields as we require `a * b = 0 → a = 0 ∨ b = 0`
 theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →ₛₗ[J₁'] V₂) (x : V₁)
-    (hx : B x x ≠ 0) : (K₁ ∙ x) ⊓ Submodule.orthogonalBilin B (K₁ ∙ x) = ⊥ := by
+    (hx : B x x ≠ 0) : (K₁ ∙ x) ⊓ (K₁ ∙ x).orthogonalBilin B = ⊥ := by
   rw [← Finset.coe_singleton]
   refine eq_bot_iff.2 fun y h ↦ ?_
   obtain ⟨μ, -, rfl⟩ := Submodule.mem_span_finset.1 h.1
@@ -246,14 +246,14 @@ theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →�
 
 -- todo: Generalize this to sesquilinear maps
 theorem span_singleton_sup_orthogonal_eq_top {B : V →ₗ[K] V →ₗ[K] K} {x : V} (hx : B x x ≠ 0) :
-    (K ∙ x) ⊔ Submodule.orthogonalBilin B (K ∙ x) = ⊤ := by
+    (K ∙ x) ⊔ (K ∙ x).orthogonalBilin B = ⊤ := by
   simpa only [Submodule.orthogonalBilin_span_singleton] using (B x).span_singleton_sup_ker_eq_top hx
 
 -- todo: Generalize this to sesquilinear maps
 /-- Given a bilinear form `B` and some `x` such that `B x x ≠ 0`, the span of the singleton of `x`
   is complement to its orthogonal complement. -/
 theorem isCompl_span_singleton_orthogonal {B : V →ₗ[K] V →ₗ[K] K} {x : V} (hx : B x x ≠ 0) :
-    IsCompl (K ∙ x) (Submodule.orthogonalBilin B (K ∙ x)) :=
+    IsCompl (K ∙ x) ((K ∙ x).orthogonalBilin B) :=
   { disjoint := disjoint_iff.2 <| span_singleton_inf_orthogonal_eq_bot B x hx
     codisjoint := codisjoint_iff.2 <| span_singleton_sup_orthogonal_eq_top hx }
 
