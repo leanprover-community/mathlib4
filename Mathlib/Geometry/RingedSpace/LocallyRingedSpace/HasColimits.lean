@@ -159,7 +159,7 @@ restriction of `s` onto `U'` is invertible. This `U'` is given by `π '' V`, whe
 basic open set of `π⋆x`.
 
 Since `f ⁻¹' V = Y.basic_open (f ≫ π)꙳ x = Y.basic_open (g ≫ π)꙳ x = g ⁻¹' V`, we have
-`π ⁻¹' (π '' V) = V` (as the underlying set map is merely the set-theoretic coequalizer).
+`π ⁻¹' π '' V = V` (as the underlying set map is merely the set-theoretic coequalizer).
 This shows that `π '' V` is indeed open, and `s` is invertible on `π '' V` as the components of `π꙳`
 are local ring homs.
 -/

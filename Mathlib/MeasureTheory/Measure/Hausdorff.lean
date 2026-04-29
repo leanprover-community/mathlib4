@@ -795,7 +795,7 @@ theorem hausdorffMeasure_preimage_le (hf : AntilipschitzWith K f) (hd : 0 ≤ d)
 theorem le_hausdorffMeasure_image (hf : AntilipschitzWith K f) (hd : 0 ≤ d) (s : Set X) :
     μH[d] s ≤ (K : ℝ≥0∞) ^ d * μH[d] (f '' s) :=
   calc
-    μH[d] s ≤ μH[d] (f ⁻¹' (f '' s)) := measure_mono (subset_preimage_image _ _)
+    μH[d] s ≤ μH[d] (f ⁻¹' f '' s) := measure_mono (subset_preimage_image _ _)
     _ ≤ (K : ℝ≥0∞) ^ d * μH[d] (f '' s) := hf.hausdorffMeasure_preimage_le hd (f '' s)
 
 end AntilipschitzWith
@@ -1030,7 +1030,7 @@ theorem hausdorffMeasure_smul_right_image [NormedAddCommGroup E] [NormedSpace �
   have hn : ‖v‖ ≠ 0 := norm_ne_zero_iff.mpr hv
   -- break lineMap into pieces
   suffices
-      μH[1] ((‖v‖ • ·) '' (LinearMap.toSpanSingleton ℝ E (‖v‖⁻¹ • v) '' s)) = ‖v‖₊ • μH[1] s by
+      μH[1] ((‖v‖ • ·) '' LinearMap.toSpanSingleton ℝ E (‖v‖⁻¹ • v) '' s) = ‖v‖₊ • μH[1] s by
     simpa only [Set.image_image, smul_comm (norm _), inv_smul_smul₀ hn,
       LinearMap.toSpanSingleton_apply] using this
   have iso_smul : Isometry (LinearMap.toSpanSingleton ℝ E (‖v‖⁻¹ • v)) := by
@@ -1048,7 +1048,7 @@ variable [MetricSpace P] [NormedAddTorsor E P] [BorelSpace P]
 theorem hausdorffMeasure_homothety_image {d : ℝ} (hd : 0 ≤ d) (x : P) {c : 𝕜} (hc : c ≠ 0)
     (s : Set P) : μH[d] (AffineMap.homothety x c '' s) = ‖c‖₊ ^ d • μH[d] s := by
   suffices
-    μH[d] (IsometryEquiv.vaddConst x '' ((c • ·) '' ((IsometryEquiv.vaddConst x).symm '' s))) =
+    μH[d] (IsometryEquiv.vaddConst x '' (c • ·) '' (IsometryEquiv.vaddConst x).symm '' s) =
       ‖c‖₊ ^ d • μH[d] s by
     simpa only [Set.image_image]
   borelize E
@@ -1078,7 +1078,7 @@ variable [MetricSpace P] [NormedAddTorsor E P] [BorelSpace P]
 This is an auxiliary result used to prove `hausdorffMeasure_affineSegment`. -/
 theorem hausdorffMeasure_lineMap_image (x y : P) (s : Set ℝ) :
     μH[1] (AffineMap.lineMap x y '' s) = nndist x y • μH[1] s := by
-  suffices μH[1] (IsometryEquiv.vaddConst x '' ((· • (y -ᵥ x)) '' s)) = nndist x y • μH[1] s by
+  suffices μH[1] (IsometryEquiv.vaddConst x '' (· • (y -ᵥ x)) '' s) = nndist x y • μH[1] s by
     simpa only [Set.image_image]
   borelize E
   rw [IsometryEquiv.hausdorffMeasure_image, hausdorffMeasure_smul_right_image,

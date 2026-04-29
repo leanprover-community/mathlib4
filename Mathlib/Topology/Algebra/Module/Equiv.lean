@@ -536,11 +536,11 @@ theorem symm_trans_apply (e₁ : M₂ ≃SL[σ₂₁] M₁) (e₂ : M₃ ≃SL[�
   rfl
 
 @[simp]
-theorem symm_image_image (e : M₁ ≃SL[σ₁₂] M₂) (s : Set M₁) : e.symm '' (e '' s) = s :=
+theorem symm_image_image (e : M₁ ≃SL[σ₁₂] M₂) (s : Set M₁) : e.symm '' e '' s = s :=
   e.toLinearEquiv.toEquiv.symm_image_image s
 
 @[simp]
-theorem image_symm_image (e : M₁ ≃SL[σ₁₂] M₂) (s : Set M₂) : e '' (e.symm '' s) = s :=
+theorem image_symm_image (e : M₁ ≃SL[σ₁₂] M₂) (s : Set M₂) : e '' e.symm '' s = s :=
   e.symm.symm_image_image s
 
 @[simp, norm_cast]
@@ -597,12 +597,12 @@ protected theorem image_symm_eq_preimage (e : M₁ ≃SL[σ₁₂] M₂) (s : Se
 
 @[simp]
 protected theorem symm_preimage_preimage (e : M₁ ≃SL[σ₁₂] M₂) (s : Set M₂) :
-    e.symm ⁻¹' (e ⁻¹' s) = s :=
+    e.symm ⁻¹' e ⁻¹' s = s :=
   e.toLinearEquiv.toEquiv.symm_preimage_preimage s
 
 @[simp]
 protected theorem preimage_symm_preimage (e : M₁ ≃SL[σ₁₂] M₂) (s : Set M₁) :
-    e ⁻¹' (e.symm ⁻¹' s) = s :=
+    e ⁻¹' e.symm ⁻¹' s = s :=
   e.symm.symm_preimage_preimage s
 
 lemma isUniformEmbedding {E₁ E₂ : Type*} [UniformSpace E₁] [UniformSpace E₂]
