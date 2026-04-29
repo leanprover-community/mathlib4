@@ -99,6 +99,11 @@ theorem IsCompl.isTopCompl_iff (h : IsCompl p q) :
     IsTopCompl p q ↔ Continuous h.projection :=
   ⟨IsTopCompl.continuous_projection, fun h' ↦ ⟨h, h'⟩⟩
 
+theorem IsCompl.isTopCompl_iff_linearProjOfIsCompl (h : IsCompl p q) :
+    IsTopCompl p q ↔ Continuous (p.linearProjOfIsCompl q h) := by
+  rw [h.isTopCompl_iff, IsInducing.subtypeVal.continuous_iff]
+  rfl
+
 protected theorem IsTopCompl.symm [ContinuousSub M] (h : IsTopCompl p q) : IsTopCompl q p where
   isCompl := h.isCompl.symm
   continuous_projection := by
