@@ -174,7 +174,9 @@ def toAlgHom : A₁ →ₐ[R] A₂ :=
     map_one' := map_one e
     map_zero' := map_zero e }
 
-@[simp]
+instance : CoeOut (A₁ ≃ₐ[R] A₂) (A₁ →ₐ[R] A₂) where coe := AlgEquiv.toAlgHom
+
+@[deprecated "Now a syntactic equality" (since := "2026-04-29"), nolint synTaut]
 theorem toAlgHom_eq_coe : e.toAlgHom = e :=
   rfl
 
@@ -182,7 +184,7 @@ theorem toAlgHom_apply (x : A₁) : e.toAlgHom x = e x :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_algHom : DFunLike.coe (e.toAlgHom) = DFunLike.coe e :=
+theorem coe_algHom : DFunLike.coe e.toAlgHom = DFunLike.coe e :=
   rfl
 
 theorem coe_algHom_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A₂) → A₁ →ₐ[R] A₂) :=
@@ -405,10 +407,10 @@ def arrowCongr (e₁ : A₁ ≃ₐ[R] A₁') (e₂ : A₂ ≃ₐ[R] A₂') : (A�
   toFun f := (e₂.toAlgHom.comp f).comp e₁.symm.toAlgHom
   invFun f := (e₂.symm.toAlgHom.comp f).comp e₁.toAlgHom
   left_inv f := by
-    simp only [AlgHom.comp_assoc, toAlgHom_eq_coe, symm_comp]
+    simp only [AlgHom.comp_assoc, symm_comp]
     simp only [← AlgHom.comp_assoc, symm_comp, AlgHom.id_comp, AlgHom.comp_id]
   right_inv f := by
-    simp only [AlgHom.comp_assoc, toAlgHom_eq_coe, comp_symm]
+    simp only [AlgHom.comp_assoc, comp_symm]
     simp only [← AlgHom.comp_assoc, comp_symm, AlgHom.id_comp, AlgHom.comp_id]
 
 theorem arrowCongr_comp (e₁ : A₁ ≃ₐ[R] A₁') (e₂ : A₂ ≃ₐ[R] A₂')

@@ -58,8 +58,8 @@ theorem autToPow_injective : Function.Injective <| hμ.autToPow K := by
   intro f g hfg
   have : f.toAlgHom = g.toAlgHom := by
     apply (hμ.powerBasis K).algHom_ext
-    rw [AlgEquiv.toAlgHom_eq_coe, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_coe, AlgHom.coe_coe,
-      powerBasis_gen, ← autToPow_spec K hμ g, ← autToPow_spec K hμ f, hfg]
+    rw [AlgEquiv.coe_algHom, AlgEquiv.coe_algHom, powerBasis_gen,
+      ← autToPow_spec K hμ g, ← autToPow_spec K hμ f, hfg]
   exact AlgEquiv.coe_algHom_injective this
 
 end IsPrimitiveRoot
@@ -91,7 +91,7 @@ noncomputable def autEquivPow (h : Irreducible (cyclotomic n K)) : Gal(L/K) ≃*
       simp only [MonoidHom.toFun_eq_coe]
       apply AlgEquiv.coe_algHom_injective
       apply (hζ.powerBasis K).algHom_ext
-      simp only [AlgHom.coe_coe]
+      simp only [AlgEquiv.coe_algHom]
       rw [PowerBasis.equivOfMinpoly_gen]
       simp only [IsPrimitiveRoot.powerBasis_gen, IsPrimitiveRoot.autToPow_spec]
     right_inv := fun x => by

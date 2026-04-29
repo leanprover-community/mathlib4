@@ -91,12 +91,13 @@ variable [CommSemiring R] [Semiring A] [Bialgebra R A] [Semiring B] [Bialgebra R
 
 @[simp]
 theorem counitAlgHom_comp (f : F) :
-    (counitAlgHom R B).comp (f : A →ₐ[R] B) = counitAlgHom R A :=
+    (counitAlgHom R B).comp (AlgHomClass.toAlgHom f) = counitAlgHom R A :=
   AlgHom.toLinearMap_injective (CoalgHomClass.counit_comp f)
 
 @[simp]
 theorem map_comp_comulAlgHom (f : F) :
-    (Algebra.TensorProduct.map f f).comp (comulAlgHom R A) = (comulAlgHom R B).comp f :=
+    (Algebra.TensorProduct.map (AlgHomClass.toAlgHom f) (AlgHomClass.toAlgHom f)).comp
+      (comulAlgHom R A) = (comulAlgHom R B).comp (AlgHomClass.toAlgHom f) :=
   AlgHom.toLinearMap_injective (CoalgHomClass.map_comp_comul f)
 
 end
@@ -162,7 +163,16 @@ lemma toCoalgHom_apply (f : A →ₐc[R] B) (a : A) : f.toCoalgHom a = f a := rf
 theorem coe_toLinearMap (f : A →ₐc[R] B) : ⇑(f : A →ₗ[R] B) = f :=
   rfl
 
-@[norm_cast]
+@[coe]
+def toAlgHom (f : A →ₐc[R] B) : A →ₐ[R] B where
+  __ := f
+  map_zero' := f.map_zero
+  commutes' := by
+    simp [Algebra.algebraMap_eq_smul_one, toCoalgHom_apply]
+
+instance : Coe (A →ₐc[R] B) (A →ₐ[R] B) := ⟨toAlgHom⟩
+
+@[simp, norm_cast]
 theorem coe_toAlgHom (f : A →ₐc[R] B) : ⇑(f : A →ₐ[R] B) = f :=
   rfl
 

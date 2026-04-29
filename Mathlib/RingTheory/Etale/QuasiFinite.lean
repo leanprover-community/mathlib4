@@ -363,8 +363,7 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux₂
   apply IsLocalization.ringHom_ext (.powers f)
   dsimp [-AlgEquiv.symm_toRingEquiv,
     ← AlgEquiv.toAlgHom_toRingHom, -AlgHomClass.toRingHom_toAlgHom]
-  simp only [← IsScalarTower.algebraMap_eq, RingHom.comp_assoc, AlgHom.comp_algebraMap_of_tower,
-    Algebra.ofId_apply]
+  simp only [← IsScalarTower.algebraMap_eq, RingHom.comp_assoc, AlgHom.comp_algebraMap_of_tower]
 
 /--
 Let `S` be a finite type `R`-algebra, and `q` a prime lying over `p` such that `S` is quasi-finite

@@ -204,6 +204,10 @@ instance {A : Type u} [CommRing A] [Bialgebra R A] [IsCocomm R A] :
 
 instance {A B : Type u} [CommRing A] [Bialgebra R A] [CommRing B] [Bialgebra R B]
     (f : A →ₐc[R] B) : IsMonHom (CommAlgCat.ofHom (f : A →ₐ[R] B)).op where
+  mul_hom := by
+    ext
+    simp
+    sorry
 
 instance (A : (CommAlgCat R)ᵒᵖ) [MonObj A] : Bialgebra R A.unop :=
   .ofAlgHom μ[A].unop.hom η[A].unop.hom
