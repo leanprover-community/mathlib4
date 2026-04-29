@@ -394,7 +394,7 @@ theorem normDet_eq_abs_det (f : U →ₗ[ℝ] U) : f.normDet = |f.det| := by
   simpa using f.normDet_eq_norm_det
 
 /--
-Using Hausdorff measure wih the domain dimension, the volume of the image is scaled by
+Using Hausdorff measure with the domain dimension, the volume of the image is scaled by
 `LinearMap.normDet`.
 -/
 theorem hausdorffMeasure_image [MeasurableSpace U] [BorelSpace U] [MeasurableSpace V] [BorelSpace V]
@@ -420,7 +420,7 @@ theorem hausdorffMeasure_image [MeasurableSpace U] [BorelSpace U] [MeasurableSpa
     simp [Real.hausdorffMeasure_of_finrank_lt h]
 
 /--
-Using Euclidean Hausdorff measure wih the domain dimension, the volume of the image is scaled by
+Using Euclidean Hausdorff measure with the domain dimension, the volume of the image is scaled by
 `LinearMap.normDet`.
 -/
 theorem euclideanHausdorffMeasure_image [MeasurableSpace U] [BorelSpace U] [MeasurableSpace V]
