@@ -313,7 +313,8 @@ alias ⟨IsContained.exists_iso_subgraph, IsContained.of_exists_iso_subgraph⟩ 
 
 theorem Copy.degree_le (f : Copy G H) (v : V) [Fintype <| G.neighborSet v]
     [Fintype <| H.neighborSet (f v)] : G.degree v ≤ H.degree (f v) := by
-  simpa using Fintype.card_le_of_injective _ (f.mapNeighborSet v).injective
+  simpa [card_neighborSet_eq_degree] using
+    Fintype.card_le_of_injective _ (f.mapNeighborSet v).injective
 
 theorem Copy.max_degree_le [Fintype V] [Fintype W] [DecidableRel G.Adj] [DecidableRel H.Adj]
     (f : Copy G H) : G.maxDegree ≤ H.maxDegree := by
