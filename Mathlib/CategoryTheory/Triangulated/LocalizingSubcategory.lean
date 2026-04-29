@@ -227,8 +227,7 @@ instance [A.IsTriangulatedRightLocalizing B] :
             f := A.homMk (f.f ≫ a)
             s := A.homMk s'
             hs := by rwa [trW_inverseImage_ι_iff] }
-        have : IsIso (L₁.map g.s) :=
-          Localization.inverts L₁ (B.inverseImage A.ι).trW _ g.hs
+        have : IsIso (L₁.map g.s) := Localization.inverts L₁ _ _ g.hs
         refine ⟨g.map L₁ (Localization.inverts _ _), ?_⟩
         rw [← cancel_mono (F.map (L₁.map g.s)), ← Functor.map_comp,
           MorphismProperty.LeftFraction.map_comp_map_s]
