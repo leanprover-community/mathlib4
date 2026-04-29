@@ -403,20 +403,24 @@ theorem fixedPoints_fixingSubgroup [Finite G] :
   rw [← ofDual_intermediateFieldEquivSubgroup_apply, ← intermediateFieldEquivSubgroup_symm_apply,
     OrderIso.symm_apply_apply]
 
+/-- If `G` acts as a Galois group on `L/K` and the subgroup `H` acts as a Galois group on `L/R`,
+then the fixed points of `H` equals the range of `algebraMap R L`. -/
+theorem fixedPoints_eq_range_algebraMap [Finite G] (R : Type*)
+    [CommSemiring R] [Algebra R L] [IsGaloisGroup H R L] :
+    (FixedPoints.intermediateField H : IntermediateField K L) = Set.range (algebraMap R L) := by
+  ext
+  rw [SetLike.mem_coe, FixedPoints.mem_intermediateField_iff, Set.mem_range]
+  refine ⟨IsGaloisGroup.isInvariant.isInvariant _, ?_⟩
+  rintro ⟨x, rfl⟩ h
+  exact smul_algebraMap h x
+
 include K in
 /-- If `G` acts as a Galois group on `L/K` and the subgroup `H` acts as a Galois group on `L/R`,
 then the fixing subgroup of `algebraMap R L` inside `G` equals `H`. -/
 theorem fixingSubgroup_range_algebraMap [Finite G] (R : Type*) [CommSemiring R] [Algebra R L]
     [IsGaloisGroup H R L] :
     fixingSubgroup G (Set.range (algebraMap R L)) = H := by
-  suffices Set.range (algebraMap R L) =
-      ((FixedPoints.intermediateField H : IntermediateField K L) : Set L) by
-    rw [this, fixingSubgroup_fixedPoints]
-  ext
-  rw [SetLike.mem_coe, FixedPoints.mem_intermediateField_iff, Set.mem_range]
-  refine ⟨?_, IsGaloisGroup.isInvariant.isInvariant _⟩
-  rintro ⟨x, rfl⟩ h
-  exact smul_algebraMap h x
+  rw [← fixedPoints_eq_range_algebraMap G K L H, fixingSubgroup_fixedPoints]
 
 attribute [local instance] FractionRing.liftAlgebra in
 /-- The ring analogue of `fixingSubgroup_range_algebraMap`: if `G` acts on a domain `T`
