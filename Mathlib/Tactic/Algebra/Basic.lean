@@ -315,6 +315,7 @@ theorem Rat.cast_eq_algebraMap {K : Type*} [Field K] [CharZero K] {q : ℚ} :
 
 initialize registerTraceClass `algebra.debug
 
+/-- The head symbols that are to be navigated during the preprocessing step. -/
 def heads : Std.HashSet Name := {
   ``HAdd.hAdd, ``Add.add,
   ``HMul.hMul, ``Mul.mul,
@@ -329,6 +330,8 @@ def heads : Std.HashSet Name := {
   ``NatCast.natCast, ``IntCast.intCast, ``RatCast.ratCast
 }
 
+/-- A simproc that prevents simp from descending into any expressions whose head symbol is not in
+`heads`. -/
 simproc_decl guard (_) := fun e ↦  do
   trace[algebra.debug] m!"Guarding Expression {e}"
   let e' ← withReducible <| whnf e
