@@ -32,9 +32,11 @@ structure SemiNormedGrp : Type (u + 1) where
   of ::
   /-- The underlying seminormed abelian group. -/
   carrier : Type u
-  [str : SeminormedAddCommGroup carrier]
+  [toNormPseudoMetric : NormPseudoMetric carrier]
+  [toAddCommGroup : AddCommGroup carrier]
+  [str : IsNormedAddGroup carrier]
 
-attribute [instance] SemiNormedGrp.str
+attribute [instance] SemiNormedGrp.toNormPseudoMetric SemiNormedGrp.toAddCommGroup SemiNormedGrp.str
 
 namespace SemiNormedGrp
 
@@ -215,9 +217,12 @@ structure SemiNormedGrp₁ : Type (u + 1) where
   of ::
   /-- The underlying seminormed abelian group. -/
   carrier : Type u
-  [str : SeminormedAddCommGroup carrier]
+  [toNormPseudoMetric : NormPseudoMetric carrier]
+  [toAddCommGroup : AddCommGroup carrier]
+  [str : IsNormedAddGroup carrier]
 
-attribute [instance] SemiNormedGrp₁.str
+attribute [instance] SemiNormedGrp₁.toNormPseudoMetric SemiNormedGrp₁.toAddCommGroup
+  SemiNormedGrp₁.str
 
 namespace SemiNormedGrp₁
 
@@ -329,9 +334,6 @@ lemma inv_hom_apply {M N : SemiNormedGrp₁} (e : M ≅ N) (r : M) : e.inv (e.ho
 lemma hom_inv_apply {M N : SemiNormedGrp₁} (e : M ≅ N) (s : N) : e.hom (e.inv s) = s := by
   rw [← comp_apply]
   simp
-
-instance (M : SemiNormedGrp₁) : SeminormedAddCommGroup M :=
-  M.str
 
 /-- Promote an isomorphism in `SemiNormedGrp` to an isomorphism in `SemiNormedGrp₁`. -/
 @[simps]

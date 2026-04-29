@@ -45,7 +45,7 @@ open Finset in
 rings, using the sup norm. -/
 instance Pi.nonUnitalSeminormedRing {R : ι → Type*} [Fintype ι]
     [∀ i, NonUnitalSeminormedRing (R i)] : NonUnitalSeminormedRing (∀ i, R i) :=
-  { seminormedAddCommGroup, nonUnitalRing with
+  { instIsNormedAddGroup, nonUnitalRing with
     norm_mul_le x y := NNReal.coe_mono <| calc
       (univ.sup fun i ↦ ‖x i * y i‖₊) ≤ univ.sup ((‖x ·‖₊) * (‖y ·‖₊)) :=
         sup_mono_fun fun _ _ ↦ nnnorm_mul_le _ _
@@ -91,7 +91,7 @@ variable [NonUnitalNormedRing α]
 norm. -/
 instance Pi.nonUnitalNormedRing {R : ι → Type*} [Fintype ι] [∀ i, NonUnitalNormedRing (R i)] :
     NonUnitalNormedRing (∀ i, R i) :=
-  { Pi.nonUnitalSeminormedRing, Pi.normedAddCommGroup with }
+  { Pi.nonUnitalSeminormedRing, Pi.instNormMetric with }
 
 end NonUnitalNormedRing
 
@@ -102,7 +102,7 @@ variable [NormedRing α]
 /-- Normed ring structure on the product of finitely many normed rings, using the sup norm. -/
 instance Pi.normedRing {R : ι → Type*} [Fintype ι] [∀ i, NormedRing (R i)] :
     NormedRing (∀ i, R i) :=
-  { Pi.seminormedRing, Pi.normedAddCommGroup with }
+  { Pi.seminormedRing, Pi.instNormMetric with }
 
 end NormedRing
 
@@ -126,7 +126,7 @@ variable [NonUnitalNormedCommRing α]
 commutative rings, using the sup norm. -/
 instance Pi.nonUnitalNormedCommRing {R : ι → Type*} [Fintype ι]
     [∀ i, NonUnitalNormedCommRing (R i)] : NonUnitalNormedCommRing (∀ i, R i) :=
-  { Pi.nonUnitalSeminormedCommRing, Pi.normedAddCommGroup with }
+  { Pi.nonUnitalSeminormedCommRing, Pi.instNormMetric with }
 
 end NonUnitalNormedCommRing
 
@@ -150,7 +150,7 @@ variable [NormedCommRing α]
 using the sup norm. -/
 instance Pi.normedCommutativeRing {R : ι → Type*} [Fintype ι] [∀ i, NormedCommRing (R i)] :
     NormedCommRing (∀ i, R i) :=
-  { Pi.seminormedCommRing, Pi.normedAddCommGroup with }
+  { Pi.seminormedCommRing, Pi.instNormMetric with }
 
 end NormedCommRing
 
@@ -183,22 +183,22 @@ namespace SeparationQuotient
 
 instance [NonUnitalSeminormedRing α] : NonUnitalNormedRing (SeparationQuotient α) where
   __ : NonUnitalRing (SeparationQuotient α) := inferInstance
-  __ : NormedAddCommGroup (SeparationQuotient α) := inferInstance
+  __ : IsNormedAddGroup (SeparationQuotient α) := inferInstance
   norm_mul_le := Quotient.ind₂ norm_mul_le
 
 instance [NonUnitalSeminormedCommRing α] : NonUnitalNormedCommRing (SeparationQuotient α) where
   __ : NonUnitalCommRing (SeparationQuotient α) := inferInstance
-  __ : NormedAddCommGroup (SeparationQuotient α) := inferInstance
+  __ : IsNormedAddGroup (SeparationQuotient α) := inferInstance
   norm_mul_le := Quotient.ind₂ norm_mul_le
 
 instance [SeminormedRing α] : NormedRing (SeparationQuotient α) where
   __ : Ring (SeparationQuotient α) := inferInstance
-  __ : NormedAddCommGroup (SeparationQuotient α) := inferInstance
+  __ : IsNormedAddGroup (SeparationQuotient α) := inferInstance
   norm_mul_le := Quotient.ind₂ norm_mul_le
 
 instance [SeminormedCommRing α] : NormedCommRing (SeparationQuotient α) where
   __ : CommRing (SeparationQuotient α) := inferInstance
-  __ : NormedAddCommGroup (SeparationQuotient α) := inferInstance
+  __ : IsNormedAddGroup (SeparationQuotient α) := inferInstance
   norm_mul_le := Quotient.ind₂ norm_mul_le
 
 instance [SeminormedAddCommGroup α] [One α] [NormOneClass α] :
@@ -221,7 +221,7 @@ end NNReal
 
 instance Int.instNormedCommRing : NormedCommRing ℤ where
   __ := instCommRing
-  __ := instNormedAddCommGroup
+  __ := instIsNormedAddGroup
   norm_mul_le m n := by simp only [norm, Int.cast_mul, abs_mul, le_rfl]
 
 instance Int.instNormOneClass : NormOneClass ℤ :=

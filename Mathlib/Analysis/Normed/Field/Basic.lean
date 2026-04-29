@@ -293,7 +293,7 @@ def NontriviallyNormedField.ofNormNeOne {𝕜 : Type*} [h' : NormedField 𝕜]
     · exact ⟨x, hlt⟩
 
 noncomputable instance Real.normedField : NormedField ℝ :=
-  { Real.normedAddCommGroup, Real.instField with
+  { Real.instIsNormedAddGroup, Real.instField with
     norm_mul := abs_mul }
 
 noncomputable instance Real.denselyNormedField : DenselyNormedField ℝ where
@@ -325,7 +325,8 @@ variable {F : Type*} (R S : Type*) [FunLike F R S]
 See note [reducible non-instances] -/
 abbrev NormedDivisionRing.induced [DivisionRing R] [NormedDivisionRing S]
     [NonUnitalRingHomClass F R S] (f : F) (hf : Function.Injective f) : NormedDivisionRing R :=
-  fast_instance% { NormedAddCommGroup.induced R S f hf, ‹DivisionRing R› with
+  fast_instance% { NormMetric.induced R S f hf, IsNormedAddGroup.induced R S f,
+    ‹DivisionRing R› with
     norm_mul x y := show ‖f _‖ = _ from (map_mul f x y).symm ▸ norm_mul (f x) (f y) }
 
 /-- An injective non-unital ring homomorphism from a `Field` to a `NormedRing` induces a

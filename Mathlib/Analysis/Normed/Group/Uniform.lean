@@ -392,13 +392,15 @@ namespace SeparationQuotient
 instance instMulNorm : Norm (SeparationQuotient E) where
   norm := lift Norm.norm fun _ _ h => h.norm_eq_norm'
 
+@[to_additive instNormMetric]
+instance instMulNormMetric : NormMetric (SeparationQuotient E) where
+
 set_option linter.docPrime false in
 @[to_additive (attr := simp) norm_mk]
 theorem norm_mk' (p : E) : ‖mk p‖ = ‖p‖ := rfl
 
 @[to_additive]
-instance : NormedCommGroup (SeparationQuotient E) where
-  __ : CommGroup (SeparationQuotient E) := instCommGroup
+instance : IsNormedGroup (SeparationQuotient E) where
   dist_eq := Quotient.ind₂ dist_eq_norm_inv_mul
 
 @[to_additive]
@@ -429,7 +431,7 @@ theorem cauchySeq_prod_of_eventually_eq {u v : ℕ → E} {N : ℕ} (huv : ∀ n
 lemma CauchySeq.mul_norm_bddAbove {G : Type*} [SeminormedGroup G] {u : ℕ → G}
     (hu : CauchySeq u) : BddAbove (Set.range (fun n ↦ ‖u n‖)) := by
   obtain ⟨C, -, hC⟩ := cauchySeq_bdd hu
-  simp_rw [SeminormedGroup.dist_eq] at hC
+  simp_rw [IsNormedGroup.dist_eq] at hC
   have : ∀ n, ‖u n‖ ≤ C + ‖u 0‖ := by
     intro n
     rw [add_comm]

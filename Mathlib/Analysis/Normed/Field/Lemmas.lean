@@ -215,7 +215,7 @@ lemma tendsto_zpow_nhdsNE_zero_cobounded {m : ℤ} (hm : m < 0) :
   obtain ⟨m, rfl⟩ := neg_surjective m
   lift m to ℕ using by lia
   simpa [Function.comp_def] using
-    (tendsto_pow_cobounded_cobounded (by lia)).comp tendsto_inv₀_nhdsNE_zero
+    (tendsto_pow_cobounded_cobounded (α := α) (by lia)).comp tendsto_inv₀_nhdsNE_zero
 
 @[deprecated tendsto_zpow_nhdsNE_zero_cobounded (since := "2025-11-26")]
 lemma NormedField.tendsto_norm_zpow_nhdsNE_zero_atTop {m : ℤ} (hm : m < 0) :
@@ -283,7 +283,7 @@ end NormedField
 
 instance Rat.instNormedField : NormedField ℚ where
   __ := instField
-  __ := instNormedAddCommGroup
+  __ := instIsNormedAddGroup
   norm_mul a b := by simp only [norm, Rat.cast_mul, abs_mul]
 
 instance Rat.instDenselyNormedField : DenselyNormedField ℚ where

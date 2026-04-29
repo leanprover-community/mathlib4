@@ -501,20 +501,25 @@ instance toAddCommGroup : AddCommGroup (NormedAddGroupHom V₁ V₂) :=
   coe_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     fun _ _ => rfl
 
-/-- Normed group homomorphisms themselves form a seminormed group with respect to
-the operator norm. -/
-instance toSeminormedAddCommGroup : SeminormedAddCommGroup (NormedAddGroupHom V₁ V₂) :=
-  AddGroupSeminorm.toSeminormedAddCommGroup
+instance toNormPseudoMetric : NormPseudoMetric (NormedAddGroupHom V₁ V₂) :=
+  AddGroupSeminorm.toNormPseudoMetric
     { toFun := opNorm
       map_zero' := opNorm_zero
       neg' := opNorm_neg
       add_le' := opNorm_add_le }
 
-/-- Normed group homomorphisms themselves form a normed group with respect to
+/-- Normed group homomorphisms themselves form a seminormed group with respect to
 the operator norm. -/
-instance toNormedAddCommGroup {V₁ V₂ : Type*} [NormedAddCommGroup V₁] [NormedAddCommGroup V₂] :
-    NormedAddCommGroup (NormedAddGroupHom V₁ V₂) :=
-  AddGroupNorm.toNormedAddCommGroup
+instance toIsNormedAddGroup : IsNormedAddGroup (NormedAddGroupHom V₁ V₂) :=
+  AddGroupSeminorm.toIsNormedAddGroup
+    { toFun := opNorm
+      map_zero' := opNorm_zero
+      neg' := opNorm_neg
+      add_le' := opNorm_add_le }
+
+instance toNormMetric {V₁ V₂ : Type*} [NormedAddCommGroup V₁] [NormedAddCommGroup V₂] :
+    NormMetric (NormedAddGroupHom V₁ V₂) :=
+  AddGroupNorm.toNormMetric
     { toFun := opNorm
       map_zero' := opNorm_zero
       neg' := opNorm_neg
