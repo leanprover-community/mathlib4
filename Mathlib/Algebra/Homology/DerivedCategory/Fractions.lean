@@ -21,7 +21,7 @@ on the auxiliary object appearing in the fraction.
 
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 
