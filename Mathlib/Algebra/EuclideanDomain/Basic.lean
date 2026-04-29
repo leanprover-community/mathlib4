@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.EuclideanDomain.Defs
 public import Mathlib.Algebra.Ring.Divisibility.Basic
 public import Mathlib.Algebra.GroupWithZero.Divisibility
-public import Mathlib.Algebra.Ring.Basic
+public import Mathlib.Algebra.Ring.Equiv
 
 /-!
 # Lemmas about Euclidean domains
@@ -411,5 +411,30 @@ theorem div_eq_div_iff_mul_eq_mul_of_dvd {x y z t : R} (h1 : y ≠ 0) (h2 : t �
   rw [ha, mul_comm, mul_assoc, mul_comm y a]
 
 end Div
+
+section RingEquiv
+
+variable (S : Type*) [CommRing S] [Nontrivial S]
+
+protected abbrev RingEquiv.euclideanDomain (e : S ≃+* R) : EuclideanDomain S where
+  quotient a b := RingEquiv.symm e (e a / e b)
+  remainder a b := e.symm (e a % e b)
+  r a b := EuclideanDomain.r (e a) (e b)
+  r_wellFounded := InvImage.wf e EuclideanDomain.r_wellFounded
+  quotient_zero a := by simp
+  quotient_mul_add_remainder_eq a b := by
+    apply e.injective
+    simp only [map_add, map_mul, RingEquiv.apply_symm_apply]
+    exact EuclideanDomain.quotient_mul_add_remainder_eq (e a) (e b)
+  remainder_lt a b hb := by
+    have hb' : e b ≠ 0 := by simp_all
+    simp only [RingEquiv.apply_symm_apply]
+    exact EuclideanDomain.remainder_lt (e a) hb'
+  mul_left_not_lt a b hb := by
+    have hb' : e b ≠ 0 := by simp_all
+    simp only [map_mul]
+    exact EuclideanDomain.mul_left_not_lt (e a) hb'
+
+end RingEquiv
 
 end EuclideanDomain
