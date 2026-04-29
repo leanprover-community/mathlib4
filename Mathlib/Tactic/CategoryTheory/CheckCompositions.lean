@@ -12,7 +12,7 @@ public meta import Mathlib.Tactic.ToDual
 /-!
 The `check_compositions` tactic,
 which checks the typing of categorical compositions in the goal,
-reporting discrepancies at "instances and reducible" transparency.
+reporting discrepancies at `reducible` transparency.
 
 Reports from this tactic do not necessarily indicate a problem,
 although typically `simp` should reduce rather than increase the reported discrepancies.
@@ -34,14 +34,14 @@ def forEachComposition (e : Expr) (f : Expr → MetaM Unit) : MetaM Unit := do
 
 /-- Given a composition `CategoryStruct.comp _ _ X Y Z f g`,
 infer the types of `f` and `g` and check whether their sources and targets agree,
-at "instances and reducible" transparency, with `X`, `Y`, and `Z`,
+at `reducible` transparency, with `X`, `Y`, and `Z`,
 reporting any discrepancies. -/
 def checkComposition (e : Expr) : MetaM Unit := do
   match_expr e with
   | CategoryStruct.comp _ _ X Y Z f g =>
     match_expr ← inferType f with
     | Quiver.Hom _ _ X' Y' =>
-      withReducibleAndInstances do
+      withReducible do
         if !(← isDefEq X' X) then
           logInfo m!"In composition\n  {e}\nthe source of\n  {f}\nis\n  {X'}\nbut should be\n  {X}"
         if !(← isDefEq Y' Y) then
@@ -49,7 +49,7 @@ def checkComposition (e : Expr) : MetaM Unit := do
     | _ => throwError "In composition\n  {e}\nthe type of\n  {f}\nis not a morphism."
     match_expr ← inferType g with
     | Quiver.Hom _ _ Y' Z' =>
-      withReducibleAndInstances do
+      withReducible do
         if !(← isDefEq Y' Y) then
           logInfo m!"In composition\n  {e}\nthe source of\n  {g}\nis\n  {Y'}\nbut should be\n  {Y}"
         if !(← isDefEq Z' Z) then
@@ -69,7 +69,7 @@ def checkCompositionsTac : TacticM Unit := withMainContext do
 /-- For each composition `f ≫ g` in the goal,
 which internally is represented as `CategoryStruct.comp C inst X Y Z f g`,
 infer the types of `f` and `g` and check whether their sources and targets agree
-with `X`, `Y`, and `Z` at "instances and reducible" transparency,
+with `X`, `Y`, and `Z` at `reducible` transparency,
 reporting any discrepancies.
 
 An example:
