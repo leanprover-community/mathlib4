@@ -177,7 +177,7 @@ theorem Rel.IsPureHomogeneous.ideal_ofRel_isHomogeneous
     {r : A → A → Prop} (hr : Rel.IsPureHomogeneous 𝒜 r) :
     (Ideal.ofRel r).IsHomogeneous 𝒜 := by
   apply Ideal.homogeneous_span
-  rintro x  ⟨a, b, ⟨h, heq⟩⟩
+  rintro x ⟨a, b, h, heq⟩
   obtain ⟨i, hi⟩ := hr h
   use i
   rw [DirectSum.mem_iff_forall_ne_decompose_eq_zero]
@@ -211,8 +211,8 @@ theorem Rel.IsHomogeneous.ideal_ofRel_isHomogeneous
   | zero => simp
   | add x y _ _ hx hy => exact Ideal.add_mem _ hx hy
   | smul a x _ hx =>
-      simp only [smul_eq_mul]
-      apply Ideal.mul_mem_left _ _ hx
+    simp only [smul_eq_mul]
+    apply Ideal.mul_mem_left _ _ hx
 
 /-- For any `I : Ideal A`, not necessarily homogeneous, `I.homogeneousCore' 𝒜`
 is the largest homogeneous ideal of `A` contained in `I`. -/

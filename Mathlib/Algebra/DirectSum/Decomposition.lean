@@ -191,9 +191,8 @@ theorem mem_iff_forall_ne_decompose_eq_zero {m : M} {i : ι} :
   · intro hm j hj
     simpa using DirectSum.decompose_of_mem_ne ℳ hm (Ne.symm hj)
   · intro hm
-    suffices m = decompose ℳ m i by grind
-    suffices decompose ℳ m = DirectSum.of (fun j ↦ ℳ j) i (decompose ℳ m i) by
-      simpa only [Equiv.symm_apply_apply, decompose_symm_of] using congr((decompose ℳ).symm $this)
+    rw [mem_iff_exists_decompose_eq_of_same]
+    use decompose ℳ m i
     ext j
     by_cases hj : j = i
     · subst hj; simp
