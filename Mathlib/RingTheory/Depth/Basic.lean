@@ -93,6 +93,18 @@ lemma moduleDepth_eq_top_iff (N M : ModuleCat.{v} R) :
   rw [moduleDepth_eq_find N M exist] at h
   simp at h
 
+lemma Ideal.depth_eq_top_of_subsingleton (I : Ideal R)
+    (M : ModuleCat.{v} R) (sub : Subsingleton M) : I.depth M = ⊤ := by
+  simp only [Ideal.depth, moduleDepth_eq_top_iff]
+  intro i
+  apply AddCommGrpCat.isZero_iff_subsingleton'.mp
+  apply (extFunctorObj (ModuleCat.of R (Shrink.{v} (R ⧸ I))) i).map_isZero
+  exact ModuleCat.isZero_iff_subsingleton.mpr sub
+
+lemma IsLocalRing.depth_eq_top_of_subsingleton [IsLocalRing R]
+    (M : ModuleCat.{v} R) (sub : Subsingleton M) : IsLocalRing.depth M = ⊤ :=
+  Ideal.depth_eq_top_of_subsingleton _ M sub
+
 lemma moduleDepth_lt_top_iff (N M : ModuleCat.{v} R) :
     moduleDepth N M < ⊤ ↔ ∃ n, Nontrivial (Ext N M n) := by
   convert (moduleDepth_eq_top_iff N M).not
