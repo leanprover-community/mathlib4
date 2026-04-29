@@ -43,9 +43,9 @@ public section
 open Set Metric TopologicalSpace Function Filter Complex ArithmeticFunction
   ModularForm EisensteinSeries
 
-open scoped Topology Real Nat Complex Pointwise ArithmeticFunction.sigma MatrixGroups
+open scoped Real Nat ArithmeticFunction.sigma
 
-open _root_.UpperHalfPlane hiding I
+open UpperHalfPlane hiding I
 
 local notation "ℍₒ" => upperHalfPlaneSet
 

@@ -69,7 +69,7 @@ scoped[ModularForm] notation "η" => eta
 lemma multipliable_one_sub_pow {q : ℂ} (hq : ‖q‖ < 1) :
     Multipliable fun n : ℕ ↦ 1 - q ^ (n + 1) := by
   rw [show (fun n : ℕ ↦ 1 - q ^ (n + 1)) = (fun n ↦ 1 + (-q ^ (n + 1))) by ext; ring]
-  apply multipliable_one_add_of_summable
+  apply multipliable_one_add_of_summable (f := fun n ↦ -q ^ (n + 1))
   simpa using (summable_nat_add_iff 1).mpr (summable_geometric_of_lt_one (norm_nonneg _) hq)
 
 /-- The infinite product `∏ (1 - q^(n+1))` converges locally uniformly on the open unit disc,
@@ -95,7 +95,7 @@ lemma multipliableLocallyUniformlyOn_one_sub_pow :
 /-- The infinite product `q ↦ ∏' n, (1 - q^(n+1))` is differentiable on the open unit disc. -/
 lemma differentiableOn_tprod_one_sub_pow :
     DifferentiableOn ℂ (fun q ↦ ∏' n, (1 - q ^ (n + 1))) (Metric.ball (0 : ℂ) 1) := by
-  apply multipliableLocallyUniformlyOn_one_sub_pow.hasProdLocallyUniformlyOn.differentiableOn
+  refine multipliableLocallyUniformlyOn_one_sub_pow.hasProdLocallyUniformlyOn.differentiableOn
     ?_ Metric.isOpen_ball
   filter_upwards with n
   simpa [Finset.prod_fn] using DifferentiableOn.finsetProd (fun _ _ ↦ by fun_prop)
@@ -105,21 +105,17 @@ open unit disc. -/
 lemma differentiableOn_tprod_one_sub_pow_pow (k : ℕ) :
     DifferentiableOn ℂ (fun q ↦ ∏' n, (1 - q ^ (n + 1)) ^ k) (Metric.ball (0 : ℂ) 1) := by
   refine (differentiableOn_tprod_one_sub_pow.fun_pow k).congr fun q hq ↦ ?_
-  have hq_lt : ‖q‖ < 1 := by simpa [Metric.mem_ball, dist_zero_right] using hq
+  have hq_lt : ‖q‖ < 1 := by simpa using hq
   exact (multipliable_one_sub_pow hq_lt).tprod_pow k
 
 theorem summable_eta_q (z : ℍ) : Summable fun n ↦ ‖-eta_q n z‖ := by
-  have hq : ‖(𝕢 (1 : ℝ) ↑z : ℂ)‖ < 1 := by exact_mod_cast norm_qParam_lt_one 1 z
-  simpa only [norm_neg, eta_q, norm_pow] using
-    (summable_nat_add_iff 1).mpr (summable_geometric_of_lt_one (norm_nonneg _) hq)
+  simpa [summable_nat_add_iff] using
+    summable_geometric_of_lt_one (norm_nonneg _) (mod_cast norm_qParam_lt_one 1 z)
 
 lemma multipliableLocallyUniformlyOn_eta :
     MultipliableLocallyUniformlyOn (fun n a ↦ 1 - eta_q n a) ℍₒ :=
-  ⟨_, (multipliableLocallyUniformlyOn_one_sub_pow.hasProdLocallyUniformlyOn :
-      TendstoLocallyUniformlyOn _ _ _ _).comp (Periodic.qParam 1)
-    (fun z hz ↦ by simpa [Metric.mem_ball, dist_zero_right] using
-      (by exact_mod_cast norm_qParam_lt_one 1 ⟨z, hz⟩ : ‖(𝕢 (1 : ℝ) z : ℂ)‖ < 1))
-      (by fun_prop)⟩
+  multipliableLocallyUniformlyOn_one_sub_pow.comp (𝕢 1)
+    (fun z hz ↦ by simpa using norm_qParam_lt_one 1 ⟨z, hz⟩) (by fun_prop)
 
 lemma eta_tprod_ne_zero {z : ℂ} (hz : z ∈ ℍₒ) : ∏' n, (1 - eta_q n z) ≠ 0 := by
   refine tprod_one_add_ne_zero_of_summable (f := fun n ↦ -eta_q n z) ?_ ?_
@@ -157,12 +153,9 @@ lemma tsum_logDeriv_eta_q (z : ℂ) : ∑' n, logDeriv (fun x ↦ 1 - eta_q n x)
 
 lemma differentiableAt_eta_tprod {z : ℂ} (hz : z ∈ ℍₒ) :
     DifferentiableAt ℂ (fun x ↦ ∏' n, (1 - eta_q n x)) z := by
-  have hq : (𝕢 (1 : ℝ) z : ℂ) ∈ Metric.ball (0 : ℂ) 1 := by
-    simpa [Metric.mem_ball, dist_zero_right] using
-      (by exact_mod_cast norm_qParam_lt_one 1 ⟨z, hz⟩ : ‖(𝕢 (1 : ℝ) z : ℂ)‖ < 1)
-  exact (((differentiableOn_tprod_one_sub_pow).differentiableAt
-    (Metric.isOpen_ball.mem_nhds hq)).comp z
-      (by fun_prop : DifferentiableAt ℂ (𝕢 (1 : ℝ)) z))
+  have hq : 𝕢 1 z ∈ Metric.ball 0 1 := by simpa using norm_qParam_lt_one 1 ⟨z, hz⟩
+  exact (differentiableOn_tprod_one_sub_pow.differentiableAt
+    (Metric.isOpen_ball.mem_nhds hq)).comp z (by fun_prop)
 
 theorem differentiableAt_eta_of_mem_upperHalfPlaneSet {z : ℂ} (hz : z ∈ ℍₒ) :
     DifferentiableAt ℂ eta z :=

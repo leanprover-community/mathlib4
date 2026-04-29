@@ -53,11 +53,6 @@ end LinearOrderedSemifield
 section LinearOrderedField
 variable [Field K] [LinearOrder K] [IsOrderedRing K] [FloorSemiring K] {a b : K}
 
-theorem floor_div_eq_one_add_floor_sub_div (k a : K) (ha : 0 < a) (hak : a ≤ k) :
-    ⌊k / a⌋₊ = 1 + ⌊(k - a) / a⌋₊ := by
-  rw [sub_div, div_self ha.ne', Nat.floor_sub_one]
-  exact (Nat.add_sub_cancel' (Nat.le_floor (mod_cast (one_le_div₀ ha).mpr hak))).symm
-
 lemma mul_lt_floor (hb₀ : 0 < b) (hb : b < 1) (hba : ⌈b / (1 - b)⌉₊ ≤ a) : b * a < ⌊a⌋₊ := by
   calc
     b * a < b * (⌊a⌋₊ + 1) := by gcongr; apply lt_floor_add_one

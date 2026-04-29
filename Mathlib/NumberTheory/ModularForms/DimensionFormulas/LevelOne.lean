@@ -41,13 +41,13 @@ namespace CuspForm
 /-- Multiply a modular form of weight `k - 12` by the discriminant to get a cusp form of
 weight `k`. Built directly as a `CuspForm` (no `IsCuspForm` intermediary). -/
 def ofMulDiscriminant (f : ModularForm 𝒮ℒ (k - 12)) : CuspForm 𝒮ℒ k := by
-  let Δ' : ModularForm 𝒮ℒ 12 := discriminantCuspForm
+  let Δ' : ModularForm 𝒮ℒ 12 := CuspForm.discriminant
   apply toCuspForm (mcast (by ring) (f.mul Δ'))
   rw [show (mcast _ (f.mul Δ')) = (⇑f : ℍ → ℂ) * Δ' by rfl,
     qExpansion_mul_coeff_zero (ModularFormClass.analyticAt_cuspFunction_zero f one_pos
     one_mem_strictPeriods_SL).continuousAt (ModularFormClass.analyticAt_cuspFunction_zero Δ'
     one_pos one_mem_strictPeriods_SL).continuousAt, (isCuspForm_iff_coeffZero_eq_zero Δ').mp
-    ⟨discriminantCuspForm, rfl⟩, mul_zero]
+    ⟨CuspForm.discriminant, rfl⟩, mul_zero]
 
 @[simp]
 lemma ofMulDiscriminant_apply (f : ModularForm 𝒮ℒ (k - 12)) (z : ℍ) :
@@ -57,7 +57,7 @@ private lemma divByDiscriminant_slash_eq (f : CuspForm 𝒮ℒ k) (γ : SL(2, �
     (fun z ↦ f z / Δ z) ∣[k - 12] γ = fun z ↦ f z / Δ z := by
   have hγ : (γ : GL (Fin 2) ℝ) ∈ 𝒮ℒ := ⟨γ, rfl⟩
   have hf z := (ModularGroup.sl_moeb γ z).symm ▸ slash_action_eqn'' f hγ z
-  have hΔ z := (ModularGroup.sl_moeb γ z).symm ▸ slash_action_eqn'' discriminantCuspForm hγ z
+  have hΔ z := (ModularGroup.sl_moeb γ z).symm ▸ slash_action_eqn'' CuspForm.discriminant hγ z
   ext z
   rw [SL_slash_apply, hf, show Δ (γ • z) = denom γ z ^ (12 : ℤ) * Δ z from hΔ z,
     div_mul_eq_mul_div, mul_right_comm, ← zpow_add₀ (denom_ne_zero γ z),
@@ -71,7 +71,7 @@ def divDiscriminant (f : CuspForm 𝒮ℒ k) : ModularForm 𝒮ℒ (k - 12) wher
   holo' := by
     rw [UpperHalfPlane.mdifferentiable_iff]
     exact (UpperHalfPlane.mdifferentiable_iff.mp f.holo').div
-      (UpperHalfPlane.mdifferentiable_iff.mp discriminantCuspForm.holo') fun z hz ↦ by
+      (UpperHalfPlane.mdifferentiable_iff.mp CuspForm.discriminant.holo') fun z hz ↦ by
         simpa [ofComplex_apply_of_im_pos hz] using discriminant_ne_zero ⟨z, hz⟩
   bdd_at_cusps' {c} hc := by
     rw [Subgroup.IsArithmetic.isCusp_iff_isCusp_SL2Z] at hc; rw [isBoundedAt_iff_forall_SL2Z hc]
@@ -112,8 +112,8 @@ lemma cuspForm_rank_twelve : Module.rank ℂ (CuspForm 𝒮ℒ 12) = 1 := by
 
 /-- Every weight 12 cusp form for `𝒮ℒ` is a scalar multiple of the discriminant. -/
 lemma cuspForm_twelve_smul_discriminant (f : CuspForm 𝒮ℒ 12) :
-    ∃ c : ℂ, c • discriminantCuspForm = f :=
-  (finrank_eq_one_iff_of_nonzero' discriminantCuspForm (fun h ↦
+    ∃ c : ℂ, c • CuspForm.discriminant = f :=
+  (finrank_eq_one_iff_of_nonzero' CuspForm.discriminant (fun h ↦
       discriminant_ne_zero UpperHalfPlane.I (DFunLike.congr_fun h _))).mp
     (Module.rank_eq_one_iff_finrank_eq_one.mp cuspForm_rank_twelve) f
 
@@ -238,16 +238,16 @@ theorem dimension_level_one (k : ℕ) (hk : 3 ≤ (k : ℤ)) (hk2 : Even k) :
     have hk12 : (((k - 12) : ℕ) : ℤ) = k - 12 := by grind
     rw [hk12] at iH
     rw [iH, show ((k - 12 : ℕ) : ℚ) = k - 12 by norm_cast]
-    have hfl (hk' : (12 : ℚ) ≤ k) :
-        ⌊(k : ℚ) / 12⌋₊ = 1 + ⌊((k : ℚ) - 12) / 12⌋₊ :=
-      Nat.floor_div_eq_one_add_floor_sub_div (k : ℚ) 12 (by norm_num) hk'
+    have hfl (hk' : 12 ≤ k) : ⌊(k : ℚ) / 12⌋₊ = 1 + ⌊((k : ℚ) - 12) / 12⌋₊ := by
+      rw [Nat.floor_div_ofNat, Nat.floor_div_ofNat, Nat.floor_sub_ofNat,
+        Nat.div_eq_sub_div (by norm_num) (mod_cast hk'), add_comm, Nat.floor_natCast]
     by_cases h12 : 12 ∣ (k : ℤ) - 2
     · simp only [show 12 ∣ (k : ℤ) - 12 - 2 by omega, ↓reduceIte, h12]
       norm_cast at *
-      rw [hfl (by exact_mod_cast (by omega : (12 : ℤ) ≤ k))]
+      rw [hfl (by omega)]
     · simp only [show ¬ 12 ∣ (k : ℤ) - 12 - 2 by omega, ↓reduceIte, h12, Nat.cast_add, Nat.cast_one]
       norm_cast at *
-      rw [← add_assoc, ← hfl (by exact_mod_cast (by omega : (12 : ℤ) ≤ k))]
+      rw [← add_assoc, ← hfl (by omega)]
   · simp only [not_le] at HK
     have hkop : k ∈ Finset.filter Even (Finset.Icc 3 14) := by
       simp only [Finset.mem_filter, Finset.mem_Icc, hk2, and_true]; omega
