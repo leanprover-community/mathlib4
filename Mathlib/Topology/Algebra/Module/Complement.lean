@@ -85,7 +85,7 @@ open ContinuousLinearMap
 the projection on `p` parallel to `q` is continuous. -/
 structure IsTopCompl (p q : Submodule R M) : Prop where
   isCompl : IsCompl p q
-  continuous_projection : Continuous (isCompl.projection)
+  continuous_projection : Continuous isCompl.projection
 
 /-- A submodule `p` is called *complemented* if there exists a continuous projection `M →ₗ[R] p`. -/
 def ClosedComplemented (p : Submodule R M) : Prop :=
@@ -245,7 +245,7 @@ theorem IsTopCompl.ker_projection (h : IsTopCompl p q) :
   h.isCompl.projection_ker
 
 @[simp]
-theorem IsTopCompl.projection_isIdempotentElem (h : IsTopCompl p q) :
+theorem IsTopCompl.isIdempotentElem_projection (h : IsTopCompl p q) :
     IsIdempotentElem h.projection := by
   simp [← isIdempotentElem_toLinearMap_iff]
 
