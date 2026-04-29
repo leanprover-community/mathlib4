@@ -272,6 +272,25 @@ theorem totalSpaceMk_isClosedEmbedding [T1Space B] (x : B) :
     rw [TotalSpace.range_mk]
     exact isClosed_singleton.preimage <| continuous_proj F E⟩
 
+/-- An arbitrary homeomorphism between any fiber and the model fiber.
+This is useful to transfer topological properties of the model fiber. -/
+noncomputable def homeomorphAt (b : B) : E b ≃ₜ F :=
+  ((totalSpaceMk_isEmbedding F E b).toHomeomorph.trans <|
+    Homeomorph.ofEqSubtypes <| TotalSpace.range_mk b).trans <|
+    (trivializationAt F E b).preimageSingletonHomeomorph <| mem_baseSet_trivializationAt' b
+
+lemma t0Space [T0Space F] (b : B) : T0Space (E b) :=
+  FiberBundle.homeomorphAt F E b |>.symm.t0Space
+
+lemma t1Space [T1Space F] (b : B) : T1Space (E b) :=
+  FiberBundle.homeomorphAt F E b |>.symm.t1Space
+
+lemma t2Space [T2Space F] (b : B) : T2Space (E b) :=
+  FiberBundle.homeomorphAt F E b |>.symm.t2Space
+
+lemma t3Space [T3Space F] (b : B) : T3Space (E b) :=
+  FiberBundle.homeomorphAt F E b |>.symm.t3Space
+
 variable {E F}
 
 @[simp, mfld_simps]
@@ -300,6 +319,19 @@ theorem continuousAt_totalSpace (f : X → TotalSpace F E) {x₀ : X} :
       ContinuousAt (fun x => (f x).proj) x₀ ∧
         ContinuousAt (fun x => ((trivializationAt F E (f x₀).proj) (f x)).2) x₀ :=
   (trivializationAt F E (f x₀).proj).tendsto_nhds_iff mem_trivializationAt_proj_source
+
+/-- Characterization of continuous sections within a set at a point of a vector bundle. -/
+theorem continuousWithinAt_section {s : ∀ x, E x} {a : Set B} {x₀ : B} :
+    ContinuousWithinAt (fun x ↦ TotalSpace.mk' F x (s x)) a x₀ ↔
+      ContinuousWithinAt (fun x ↦ (trivializationAt F E x₀ ⟨x, s x⟩).2) a x₀ := by
+  simp_rw [continuousWithinAt_totalSpace, and_iff_right_iff_imp]
+  intro; exact continuousWithinAt_id
+
+/-- Characterization of continuous sections of a vector bundle. -/
+theorem continuousAt_section {s : ∀ x, E x} (x₀ : B) :
+    ContinuousAt (fun x ↦ TotalSpace.mk' F x (s x)) x₀ ↔
+      ContinuousAt (fun x ↦ (trivializationAt F E x₀ ⟨x, s x⟩).2) x₀ := by
+  simp_rw [← continuousWithinAt_univ]; exact continuousWithinAt_section F
 
 end FiberBundle
 
@@ -369,7 +401,7 @@ theorem FiberBundle.exists_trivialization_Icc_subset [ConditionallyCompleteLinea
   · /- If `(c, d)` is nonempty, then take `d' ∈ (c, d)`. Since the base set of `ec` includes
           `[a, d)`, it includes `[a, d'] ⊆ [a, d)` as well. -/
     rw [disjoint_left] at he
-    push_neg at he
+    push Not at he
     rcases he with ⟨d', hdd' : d' < d, hd'c⟩
     exact ⟨d', ⟨hd'c, hdd'.le.trans hdcb.2⟩, ec, (Icc_subset_Ico_right hdd').trans had⟩
 
@@ -730,6 +762,7 @@ variable {F E}
 variable (a : FiberPrebundle F E) {e : Pretrivialization F (π F E)}
 
 /-- Topology on the total space that will make the prebundle into a bundle. -/
+@[implicit_reducible]
 def totalSpaceTopology (a : FiberPrebundle F E) : TopologicalSpace (TotalSpace F E) :=
   ⨆ (e : Pretrivialization F (π F E)) (_ : e ∈ a.pretrivializationAtlas),
     coinduced e.setSymm instTopologicalSpaceSubtype
@@ -811,6 +844,7 @@ number of "pretrivializations" identifying parts of `E` with product spaces `U �
 establishes that for the topology constructed on the sigma-type using
 `FiberPrebundle.totalSpaceTopology`, these "pretrivializations" are actually
 "trivializations" (i.e., homeomorphisms with respect to the constructed topology). -/
+@[implicit_reducible]
 def toFiberBundle : @FiberBundle B F _ _ E a.totalSpaceTopology _ :=
   let _ := a.totalSpaceTopology
   { totalSpaceMk_isInducing' := fun b ↦ a.inducing_totalSpaceMk_of_inducing_comp b

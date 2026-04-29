@@ -23,14 +23,14 @@ This file proves the Bourbaki-Witt Theorem.
 ## Main statements
 
 - `nonempty_fixedPoints_of_inflationary` : The Bourbaki-Witt Theorem : If $X$ is a chain complete
-partial order and $f : X → X$ is inflationary (i.e. ∀ x, x ≤ f x), then $f$ has a fixed point
+  partial order and $f : X → X$ is inflationary (i.e. ∀ x, x ≤ f x), then $f$ has a fixed point
 
 ## References
 
 The proof used can be found in [serge_lang_algebra]
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*}
 

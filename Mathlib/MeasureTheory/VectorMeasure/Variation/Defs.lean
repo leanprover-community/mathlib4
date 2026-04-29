@@ -21,8 +21,8 @@ not less than this function. It turns out that this function is a measure.
 
 ## Main definitions
 
-* `VectorMeasure.ennrealVariation` — the variation as a `VectorMeasure X ℝ≥0∞`
-* `VectorMeasure.variation` — the variation as a `Measure X`
+* `VectorMeasure.variation`: the variation as a `Measure X`
+* `VectorMeasure.ennrealVariation`: the variation as a `VectorMeasure X ℝ≥0∞`
 
 ## References
 
@@ -34,7 +34,7 @@ not less than this function. It turns out that this function is a measure.
 
 variable {X : Type*} [MeasurableSpace X]
 
-open MeasureTheory BigOperators NNReal ENNReal Function
+open scoped ENNReal
 
 namespace MeasureTheory.VectorMeasure
 
@@ -47,12 +47,12 @@ lemma isSigmaSubadditiveSetFun_enorm (μ : VectorMeasure X V) :
   have hmeas : ∀ i, MeasurableSet (s i).val := fun i => (s i).prop
   simpa [VectorMeasure.of_disjoint_iUnion hmeas hs] using enorm_tsum_le_tsum_enorm
 
-/-- The variation of a `VectorMeasure` as an `ℝ≥0∞`-valued `VectorMeasure`. -/
-noncomputable def ennrealVariation (μ : VectorMeasure X V) : VectorMeasure X ℝ≥0∞ :=
-  ennrealPreVariation (‖μ ·‖ₑ) (isSigmaSubadditiveSetFun_enorm μ) (by simp)
-
 /-- The variation of a `VectorMeasure` as a `Measure`. -/
 noncomputable def variation (μ : VectorMeasure X V) : Measure X :=
   preVariation (‖μ ·‖ₑ) (isSigmaSubadditiveSetFun_enorm μ) (by simp)
+
+/-- The variation of a `VectorMeasure` as an `ℝ≥0∞`-valued `VectorMeasure`. -/
+noncomputable def ennrealVariation (μ : VectorMeasure X V) : VectorMeasure X ℝ≥0∞ :=
+  μ.variation.toENNRealVectorMeasure
 
 end MeasureTheory.VectorMeasure

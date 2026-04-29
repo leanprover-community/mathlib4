@@ -78,7 +78,6 @@ theorem nnnorm_eq [NumberField K] (x : K) :
     ‖canonicalEmbedding K x‖₊ = Finset.univ.sup (fun φ : K →+* ℂ => ‖φ x‖₊) := by
   simp_rw [Pi.nnnorm_def, apply_at]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_le_iff [NumberField K] (x : K) (r : ℝ) :
     ‖canonicalEmbedding K x‖ ≤ r ↔ ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r := by
   obtain hr | hr := lt_or_ge r 0
@@ -210,7 +209,6 @@ instance [NumberField K] : Nontrivial (mixedSpace K) := by
   · have : Nonempty {w : InfinitePlace K // IsComplex w} := ⟨⟨w, hw⟩⟩
     exact nontrivial_prod_right
 
-set_option backward.isDefEq.respectTransparency false in
 protected theorem finrank [NumberField K] : finrank ℝ (mixedSpace K) = finrank ℚ K := by
   classical
   rw [finrank_prod, finrank_pi, finrank_pi_fintype, Complex.finrank_real_complex, sum_const,
@@ -228,12 +226,10 @@ open MeasureTheory.Measure MeasureTheory
 
 variable [NumberField K]
 
-set_option backward.isDefEq.respectTransparency false in
 open Classical in
 instance : IsAddHaarMeasure (volume : Measure (mixedSpace K)) :=
   prod.instIsAddHaarMeasure volume volume
 
-set_option backward.isDefEq.respectTransparency false in
 open Classical in
 instance : NoAtoms (volume : Measure (mixedSpace K)) := by
   obtain ⟨w⟩ := (inferInstance : Nonempty (InfinitePlace K))
@@ -244,7 +240,6 @@ instance : NoAtoms (volume : Measure (mixedSpace K)) := by
       pi_noAtoms ⟨w, not_isReal_iff_isComplex.mp hw⟩
     exact prod.instNoAtoms_snd
 
-set_option backward.isDefEq.respectTransparency false in
 variable {K} in
 open Classical in
 /-- The set of points in the mixedSpace that are equal to `0` at a fixed (real) place has
@@ -391,7 +386,7 @@ variable [NumberField K]
 
 open scoped Classical in
 theorem nnnorm_eq_sup_normAtPlace (x : mixedSpace K) :
-    ‖x‖₊ = univ.sup fun w ↦ ⟨normAtPlace w x, normAtPlace_nonneg w x⟩ := by
+    ‖x‖₊ = univ.sup fun w ↦ .mk (normAtPlace w x) (normAtPlace_nonneg w x) := by
   have :
       (univ : Finset (InfinitePlace K)) =
       (univ.image (fun w : {w : InfinitePlace K // IsReal w} ↦ w.1)) ∪
@@ -411,7 +406,7 @@ theorem norm_eq_sup'_normAtPlace (x : mixedSpace K) :
     ‖x‖ = univ.sup' univ_nonempty fun w ↦ normAtPlace w x := by
   rw [← coe_nnnorm, nnnorm_eq_sup_normAtPlace, ← sup'_eq_sup univ_nonempty, ← NNReal.val_eq_coe,
     ← OrderHom.Subtype.val_coe, map_finset_sup', OrderHom.Subtype.val_coe]
-  simp only [Function.comp_apply]
+  simp
 
 /-- The norm of `x` is `∏ w, (normAtPlace x) ^ mult w`. It is defined such that the norm of
 `mixedEmbedding K a` for `a : K` is equal to the absolute value of the norm of `a` over `ℚ`,
@@ -471,7 +466,7 @@ theorem norm_eq_zero_iff' {x : mixedSpace K} (hx : x ∈ Set.range (mixedEmbeddi
 variable (K) in
 @[fun_prop]
 protected theorem continuous_norm : Continuous (mixedEmbedding.norm : (mixedSpace K) → ℝ) := by
-  refine continuous_finset_prod Finset.univ fun _ _ ↦ ?_
+  refine continuous_finsetProd Finset.univ fun _ _ ↦ ?_
   simp_rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, dite_pow]
   split_ifs <;> fun_prop
 
@@ -521,7 +516,6 @@ theorem fundamentalDomain_stdBasis :
   ext
   simp [stdBasis, mem_fundamentalDomain, Complex.measurableEquivPi]
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem volume_fundamentalDomain_stdBasis :
     volume (fundamentalDomain (stdBasis K)) = 1 := by
@@ -688,7 +682,6 @@ instance : IsZLattice ℝ (mixedEmbedding.integerLattice K) := by
   simp_rw [← span_latticeBasis]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 open Classical in
 theorem fundamentalDomain_integerLattice :
     MeasureTheory.IsAddFundamentalDomain (mixedEmbedding.integerLattice K)
@@ -800,7 +793,6 @@ instance : IsZLattice ℝ (mixedEmbedding.idealLattice K I) := by
   simp_rw [← span_idealLatticeBasis]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 open Classical in
 theorem fundamentalDomain_idealLattice :
     MeasureTheory.IsAddFundamentalDomain (mixedEmbedding.idealLattice K I)
@@ -828,7 +820,6 @@ instance : Ring (euclidean.mixedSpace K) :=
 
 variable [NumberField K]
 
-set_option backward.isDefEq.respectTransparency false in
 open Classical in
 /-- The continuous linear equivalence between the Euclidean mixed space and the mixed space. -/
 def toMixed : (euclidean.mixedSpace K) ≃L[ℝ] (mixedSpace K) :=
@@ -853,7 +844,6 @@ theorem stdOrthonormalBasis_map_eq :
       mixedEmbedding.stdBasis K := by
   ext <;> rfl
 
-set_option backward.isDefEq.respectTransparency false in
 open Classical in
 theorem volumePreserving_toMixed :
     MeasurePreserving (toMixed K) where
@@ -864,7 +854,6 @@ theorem volumePreserving_toMixed :
       ← measure_congr (ZSpan.fundamentalDomain_ae_parallelepiped (stdBasis K) volume),
       volume_fundamentalDomain_stdBasis K]
 
-set_option backward.isDefEq.respectTransparency false in
 open Classical in
 theorem volumePreserving_toMixed_symm :
     MeasurePreserving (toMixed K).symm := by
@@ -930,7 +919,6 @@ theorem negAt_apply_norm_isReal (x : mixedSpace K) (w : {w // IsReal w}) :
     ‖(negAt s x).1 w‖ = ‖x.1 w‖ := by
   by_cases hw : w ∈ s <;> simp [hw]
 
-set_option backward.isDefEq.respectTransparency false in
 open MeasureTheory Classical in
 /-- `negAt` preserves the volume . -/
 theorem volume_preserving_negAt [NumberField K] :
@@ -1060,7 +1048,6 @@ open MeasureTheory
 
 variable [NumberField K]
 
-set_option backward.isDefEq.respectTransparency false in
 include hA in
 open Classical in
 theorem iUnion_negAt_plusPart_ae :
@@ -1085,7 +1072,6 @@ theorem measurableSet_negAt_plusPart (hm : MeasurableSet A) :
 
 variable {A}
 
-set_option backward.isDefEq.respectTransparency false in
 open Classical in
 /-- The image of the `plusPart` of `A` by `negAt` have all the same volume as `plusPart A`. -/
 theorem volume_negAt_plusPart (hm : MeasurableSet A) :
@@ -1093,7 +1079,6 @@ theorem volume_negAt_plusPart (hm : MeasurableSet A) :
   rw [← negAt_symm, ContinuousLinearEquiv.image_symm_eq_preimage,
     volume_preserving_negAt.measure_preimage (measurableSet_plusPart hm).nullMeasurableSet]
 
-set_option backward.isDefEq.respectTransparency false in
 include hA in
 open Classical in
 /-- If a subset `A` of the `mixedSpace` is symmetric at real places, then its volume is
@@ -1235,7 +1220,7 @@ theorem normAtAllPlaces_eq_of_normAtComplexPlaces_eq {x y : mixedSpace K}
 
 theorem normAtAllPlaces_image_preimage_of_nonneg {s : Set (realSpace K)}
     (hs : ∀ x ∈ s, ∀ w, 0 ≤ x w) :
-    normAtAllPlaces '' (normAtAllPlaces ⁻¹' s) = s := by
+    normAtAllPlaces '' normAtAllPlaces ⁻¹' s = s := by
   rw [Set.image_preimage_eq_iff]
   rintro x hx
   refine ⟨mixedSpaceOfRealSpace x, funext fun w ↦ ?_⟩

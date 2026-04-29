@@ -144,6 +144,7 @@ class GeneralizedHeytingAlgebra (α : Type*) extends Lattice α, OrderTop α, HI
 difference operation `\` such that `(· \ a)` is left adjoint to `(· ⊔ a)`.
 
 This generalizes `CoheytingAlgebra` by not requiring a top element. -/
+@[to_dual]
 class GeneralizedCoheytingAlgebra (α : Type*) extends Lattice α, OrderBot α, SDiff α where
   /-- `(· \ a)` is left adjoint to `(· ⊔ a)` -/
   sdiff_le_iff (a b c : α) : a \ b ≤ c ↔ a ≤ b ⊔ c
@@ -156,6 +157,7 @@ class HeytingAlgebra (α : Type*) extends GeneralizedHeytingAlgebra α, OrderBot
 
 /-- A co-Heyting algebra is a bounded lattice with an additional binary difference operation `\`
 such that `(· \ a)` is left adjoint to `(· ⊔ a)`. -/
+@[to_dual]
 class CoheytingAlgebra (α : Type*) extends GeneralizedCoheytingAlgebra α, OrderTop α, HNot α where
   /-- `⊤ \ a` is `￢a` -/
   top_sdiff (a : α) : ⊤ \ a = ￢a
@@ -172,14 +174,12 @@ attribute [instance 100] GeneralizedHeytingAlgebra.toOrderTop
 attribute [instance 100] GeneralizedCoheytingAlgebra.toOrderBot
 
 -- See note [lower instance priority]
+@[to_dual]
 instance (priority := 100) HeytingAlgebra.toBoundedOrder [HeytingAlgebra α] : BoundedOrder α :=
   { bot_le := ‹HeytingAlgebra α›.bot_le }
 
 -- See note [lower instance priority]
-instance (priority := 100) CoheytingAlgebra.toBoundedOrder [CoheytingAlgebra α] : BoundedOrder α :=
-  { ‹CoheytingAlgebra α› with }
-
--- See note [lower instance priority]
+@[to_dual existing]
 instance (priority := 100) BiheytingAlgebra.toCoheytingAlgebra [BiheytingAlgebra α] :
     CoheytingAlgebra α :=
   { ‹BiheytingAlgebra α› with }
@@ -448,6 +448,9 @@ theorem sup_sdiff_cancel_right (h : a ≤ b) : a ⊔ b \ a = b :=
   sup_sdiff_cancel' le_rfl h
 
 theorem sdiff_sup_cancel (h : b ≤ a) : a \ b ⊔ b = a := by rw [sup_comm, sup_sdiff_cancel_right h]
+
+theorem sdiff_left_inj (hac : c ≤ a) (hbc : c ≤ b) : a \ c = b \ c ↔ a = b :=
+  ⟨fun h => by rw [← sdiff_sup_cancel hac, h, sdiff_sup_cancel hbc], congrArg (· \ c)⟩
 
 theorem sup_le_of_le_sdiff_left (h : b ≤ c \ a) (hac : a ≤ c) : a ⊔ b ≤ c :=
   sup_le hac <| h.trans sdiff_le
@@ -1059,6 +1062,50 @@ protected abbrev Function.Injective.biheytingAlgebra [Max α] [Min α] [LE α] [
     BiheytingAlgebra α where
   __ := hf.heytingAlgebra f le lt map_sup map_inf map_top map_bot map_compl map_himp
   __ := hf.coheytingAlgebra f le lt map_sup map_inf map_top map_bot map_hnot map_sdiff
+
+namespace Equiv
+
+variable (e : α ≃ β)
+
+/-- Transfer `GeneralizedHeytingAlgebra` across an `Equiv`. -/
+protected abbrev generalizedHeytingAlgebra [GeneralizedHeytingAlgebra β] :
+    GeneralizedHeytingAlgebra α := by
+  let lattice := e.lattice
+  let top := e.top
+  let himp := e.himp
+  apply e.injective.generalizedHeytingAlgebra <;> intros <;>
+  first | rfl | exact e.apply_symm_apply _
+
+/-- Transfer `GeneralizedCoheytingAlgebra` across an `Equiv`. -/
+protected abbrev generalizedCoheytingAlgebra [GeneralizedCoheytingAlgebra β] :
+    GeneralizedCoheytingAlgebra α := by
+  let lattice := e.lattice
+  let bot := e.bot
+  let sdiff := e.sdiff
+  apply e.injective.generalizedCoheytingAlgebra <;> intros <;>
+  first | rfl | exact e.apply_symm_apply _
+
+/-- Transfer `HeytingAlgebra` across an `Equiv`. -/
+protected abbrev heytingAlgebra [HeytingAlgebra β] : HeytingAlgebra α := by
+  let generalizedHeytingAlgebra := e.generalizedHeytingAlgebra
+  let bot := e.bot
+  let compl := e.compl
+  apply e.injective.heytingAlgebra <;> intros <;> first | rfl | exact e.apply_symm_apply _
+
+/-- Transfer `CoheytingAlgebra` across an `Equiv`. -/
+protected abbrev coheytingAlgebra [CoheytingAlgebra β] : CoheytingAlgebra α := by
+  let generalizedCoheytingAlgebra := e.generalizedCoheytingAlgebra
+  let top := e.top
+  let hnot := e.hnot
+  apply e.injective.coheytingAlgebra <;> intros <;> first | rfl | exact e.apply_symm_apply _
+
+/-- Transfer `BiheytingAlgebra` across an `Equiv`. -/
+protected abbrev biheytingAlgebra [BiheytingAlgebra β] : BiheytingAlgebra α := by
+  let heytingAlgebra := e.heytingAlgebra
+  let coheytingAlgebra := e.coheytingAlgebra
+  apply e.injective.biheytingAlgebra <;> intros <;> first | rfl | exact e.apply_symm_apply _
+
+end Equiv
 
 end lift
 

@@ -126,7 +126,6 @@ theorem initial_of_final_op (F : C ⥤ D) [Final F.op] : Initial F :=
 
 attribute [local simp] Adjunction.homEquiv_unit Adjunction.homEquiv_counit
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a functor `R : D ⥤ C` is a right adjoint, it is final. -/
 theorem final_of_adjunction {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) : Final R :=
   { out := fun c =>
@@ -140,7 +139,6 @@ theorem final_of_adjunction {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) : Final 
             (show Zag u g from
               Or.inl ⟨StructuredArrow.homMk ((adj.homEquiv c g.right).symm g.hom) (by simp [u])⟩)) }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a functor `L : C ⥤ D` is a left adjoint, it is initial. -/
 theorem initial_of_adjunction {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) : Initial L :=
   { out := fun d =>
@@ -211,17 +209,10 @@ def induction {d : D} (Z : ∀ (X : C) (_ : d ⟶ F.obj X), Sort*)
         k₁ ≫ F.map f = k₂ → Z X₂ k₂ → Z X₁ k₁)
     {X₀ : C} {k₀ : d ⟶ F.obj X₀} (z : Z X₀ k₀) : Z (lift F d) (homToLift F d) := by
   apply Nonempty.some
-  apply
-    @isPreconnected_induction _ _ _ (fun Y : StructuredArrow d F => Z Y.right Y.hom) _ _
-      (StructuredArrow.mk k₀) z
-  · intro j₁ j₂ f a
-    fapply h₁ _ _ _ _ f.right _ a
-    convert f.w.symm
-    simp
-  · intro j₁ j₂ f a
-    fapply h₂ _ _ _ _ f.right _ a
-    convert f.w.symm
-    simp
+  refine isPreconnected_induction (Z := fun Y : StructuredArrow d F => Z Y.right Y.hom)
+    ?_ ?_ (j₀ := StructuredArrow.mk k₀) z _
+  · exact fun f a ↦ h₁ _ _ _ _ f.right f.w a
+  · exact fun f a ↦ h₂ _ _ _ _ f.right f.w a
 
 variable {F G}
 
@@ -410,6 +401,7 @@ theorem reflectsColimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B
     exact IsColimit.ofIsoColimit hc' (Cocone.ext (Iso.refl _) (by simp))
 
 /-- If `F` is final and `F ⋙ G` creates colimits of `H`, then so does `G`. -/
+@[implicit_reducible]
 def createsColimitOfComp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [CreatesColimit (F ⋙ G) H] : CreatesColimit G H where
   reflects := (reflectsColimit_of_comp F).reflects
@@ -436,6 +428,7 @@ theorem reflectsColimitsOfShape_of_final {B : Type u₄} [Category.{v₄} B] (H 
 include F in
 /-- If `H` creates colimits of shape `C` and `F : C ⥤ D` is final, then `H` creates colimits of
 shape `D`. -/
+@[implicit_reducible]
 def createsColimitsOfShapeOfFinal {B : Type u₄} [Category.{v₄} B] (H : E ⥤ B)
     [CreatesColimitsOfShape C H] : CreatesColimitsOfShape D H where
   CreatesColimit := createsColimitOfComp F
@@ -751,6 +744,7 @@ theorem reflectsLimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     exact IsLimit.ofIsoLimit hc' (Cone.ext (Iso.refl _) (by simp))
 
 /-- If `F` is initial and `F ⋙ G` creates limits of `H`, then so does `G`. -/
+@[implicit_reducible]
 def createsLimitOfComp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [CreatesLimit (F ⋙ G) H] : CreatesLimit G H where
   reflects := (reflectsLimit_of_comp F).reflects
@@ -777,6 +771,7 @@ theorem reflectsLimitsOfShape_of_initial {B : Type u₄} [Category.{v₄} B] (H 
 include F in
 /-- If `H` creates limits of shape `C` and `F : C ⥤ D` is initial, then `H` creates limits of shape
 `D`. -/
+@[implicit_reducible]
 def createsLimitsOfShapeOfInitial {B : Type u₄} [Category.{v₄} B] (H : E ⥤ B)
     [CreatesLimitsOfShape C H] : CreatesLimitsOfShape D H where
   CreatesLimit := createsLimitOfComp F
@@ -1175,10 +1170,10 @@ theorem initial_ι {C : Type u₁} [Category.{v₁} C] (P : ObjectProperty C)
     P.ι.Initial := .mk <| fun d => by
   by_cases hd : P d
   · have : Nonempty (CostructuredArrow P.ι d) := ⟨⟨d, hd⟩, ⟨⟨⟩⟩, 𝟙 _⟩
-    refine zigzag_isConnected fun ⟨c₁, ⟨⟨⟩⟩, g₁⟩ ⟨c₂, ⟨⟨⟩⟩, g₂⟩ =>
-      Zigzag.trans (j₂ := ⟨⟨d, hd⟩, ⟨⟨⟩⟩, 𝟙 _⟩) (.of_hom ?_) (.of_inv ?_)
-    · exact CostructuredArrow.homMk (InducedCategory.homMk g₁)
-    · exact CostructuredArrow.homMk (InducedCategory.homMk g₂)
+    refine zigzag_isConnected (fun j₁ j₂ ↦ Zigzag.trans
+      (j₂ := by exact CostructuredArrow.mk (Y := ⟨d, hd⟩) (𝟙 _)) (.of_hom ?_) (.of_inv ?_))
+    · exact CostructuredArrow.homMk (InducedCategory.homMk j₁.hom)
+    · exact CostructuredArrow.homMk (InducedCategory.homMk j₂.hom)
   · exact h d hd
 
 end ObjectProperty
@@ -1187,7 +1182,6 @@ section Restriction
 
 variable {J C : Type*} [Category* J] [Category* C] {D : J ⥤ C}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `Over j ⥤ J` is initial, restricting a limit cone to the diagram above `j`,
 preserves the limit. -/
 noncomputable def Limits.IsLimit.overPost {c : Cone D} (hc : IsLimit c) (j : J)
@@ -1202,7 +1196,6 @@ noncomputable def Limits.IsLimit.overPost {c : Cone D} (hc : IsLimit c) (j : J)
   · exact NatIso.ofComponents (fun k ↦ CategoryTheory.Over.isoMk (Iso.refl _))
   · exact Cone.ext (Iso.refl _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `Over j ⥤ J` is final, restricting a colimit cocone to the diagram below `j`,
 preserves the limit. -/
 noncomputable def Limits.IsColimit.underPost {c : Cocone D} (hc : IsColimit c) (j : J)

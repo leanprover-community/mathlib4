@@ -39,6 +39,15 @@ noncomputable def herglotzRieszKernel (c w z : ℂ) : ℂ :=
 lemma herglotzRieszKernel_def (c w z : ℂ) :
     herglotzRieszKernel c w z = ((z - c) + (w - c)) / ((z - c) - (w - c)) := by rfl
 
+lemma herglotzRieszKernel_fun_def (c w : ℂ) :
+    herglotzRieszKernel c w = fun z ↦ ((z - c) + (w - c)) / ((z - c) - (w - c)) := by
+  ext z
+  exact herglotzRieszKernel_def c w z
+
+lemma herglotzRieszKernel_add_const (c w z : ℂ) :
+    herglotzRieszKernel c w (z + c) = herglotzRieszKernel 0 (w - c) z := by
+  simp [herglotzRieszKernel_fun_def]
+
 /--
 The Poisson kernel of integration.
 -/
@@ -152,7 +161,7 @@ private lemma DiffContOnCl.circleAverage_re_smul_on_ball_zero [CompleteSpace E]
     Real.circleAverage (fun z ↦ ((z + w) / (z - w)).re • f z) 0 R = f w := by
   -- Trivial case: nonpositive radius
   rcases le_or_gt R 0 with hR | hR
-  · simp_all [(ball_eq_empty).2 hR]
+  · simp_all [ball_eq_empty.2 hR]
   -- Trivial case: w is at the center
   obtain rfl | h₁w := eq_or_ne w 0
   · refine (circleAverage_congr_sphere fun z hz ↦ ?_).trans (abs_of_pos hR ▸ hf |>.circleAverage)
@@ -214,7 +223,7 @@ theorem DiffContOnCl.circleAverage_re_herglotzRieszKernel_smul [CompleteSpace E]
     (hf : DiffContOnCl ℂ f (ball c R)) (hw : w ∈ ball c R) :
     Real.circleAverage ((re ∘ herglotzRieszKernel c w) • f) c R = f w := by
   rcases le_or_gt R 0 with hR | hR
-  · simp_all [(ball_eq_empty).2 hR]
+  · simp_all [ball_eq_empty.2 hR]
   have h₁g : DiffContOnCl ℂ (fun z ↦ f (z + c)) (ball 0 R) :=
     hf.comp (DifferentiableOn.diffContOnCl <| by fun_prop) (by intro; aesop)
   have h₂g : w - c ∈ ball 0 R := by simpa using mem_ball_iff_norm.1 hw

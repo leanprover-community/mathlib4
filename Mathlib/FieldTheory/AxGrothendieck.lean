@@ -45,7 +45,6 @@ noncomputable section
 
 open MvPolynomial Finset
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Any injective polynomial map over an algebraic extension of a finite field is surjective. -/
 theorem ax_grothendieck_of_locally_finite {ι K R : Type*} [Field K] [Finite K] [CommRing R]
     [Finite ι] [Algebra K R] [alg : Algebra.IsAlgebraic K R] (ps : ι → MvPolynomial ι R)

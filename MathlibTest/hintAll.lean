@@ -20,7 +20,7 @@ import Mathlib.Tactic.TautoSet
 
 /--
 info: Try these:
-  [apply] 🎉 trivial
+  [apply] 🎉️ trivial
   [apply] norm_num
   Remaining subgoals:
   ⊢ False
@@ -30,11 +30,8 @@ example (h : 1 < 0) : False := by hint
 
 /--
 info: Try these:
-  [apply] 🎉 simp_all only [forall_const]
+  [apply] 🎉️ simp_all only [forall_const]
   [apply] norm_num
-  Remaining subgoals:
-  ⊢ Q
-  [apply] group
   Remaining subgoals:
   ⊢ Q
 -/
@@ -43,11 +40,8 @@ example {P Q : Prop} (p : P) (f : P → Q) : Q := by hint
 
 /--
 info: Try these:
-  [apply] 🎉 simp_all only [and_self]
+  [apply] 🎉️ simp_all only [and_self]
   [apply] norm_num
-  Remaining subgoals:
-  ⊢ Q ∧ P ∧ R
-  [apply] group
   Remaining subgoals:
   ⊢ Q ∧ P ∧ R
 -/
@@ -56,16 +50,13 @@ example {P Q R : Prop} (x : P ∧ Q ∧ R ∧ R) : Q ∧ P ∧ R := by hint
 
 /--
 info: Try these:
-  [apply] 🎉 exact Std.not_gt_of_lt h
+  [apply] 🎉️ exact Std.not_gt_of_lt h
   [apply] norm_num
   Remaining subgoals:
   ⊢ a ≤ b
   [apply] intro
   Remaining subgoals:
   ⊢ False
-  [apply] group
-  Remaining subgoals:
-  ⊢ ¬b < a
   [apply] simp_all only [not_lt]
   Remaining subgoals:
   ⊢ a ≤ b
@@ -75,7 +66,7 @@ example {a b : ℚ} (h : a < b) : ¬ b < a := by hint
 
 /--
 info: Try these:
-  [apply] 🎉 norm_num
+  [apply] 🎉️ norm_num
   [apply] noncomm_ring
   Remaining subgoals:
   ⊢ 1369 • 1 - 1225 • 1 = 72 • 2
@@ -85,7 +76,7 @@ example : 37^2 - 35^2 = 72 * 2 := by hint
 
 /--
 info: Try these:
-  [apply] 🎉 decide
+  [apply] 🎉️ decide
   [apply] norm_num
   Remaining subgoals:
   ⊢ Nat.Prime 37
@@ -98,14 +89,11 @@ example : Nat.Prime 37 := by hint
 
 /--
 info: Try these:
-  [apply] 🎉 grind
+  [apply] 🎉️ grind
   [apply] norm_num
   Remaining subgoals:
   ⊢ ∃ x, P x
   [apply] ring_nf
-  Remaining subgoals:
-  ⊢ ∃ x, P x ∧ 0 ≤ x
-  [apply] group
   Remaining subgoals:
   ⊢ ∃ x, P x ∧ 0 ≤ x
   [apply] simp_all only [zero_le, and_true]
@@ -118,7 +106,7 @@ example {P : Nat → Prop} (h : { x // P x }) : ∃ x, P x ∧ 0 ≤ x := by hin
 def f (p : Nat × Nat) := (p.fst, p.snd)
 /--
 info: Try these:
-  [apply] 🎉 trivial
+  [apply] 🎉️ trivial
   [apply] norm_num
   Remaining subgoals:
   ⊢ f = id
@@ -140,7 +128,7 @@ register_hint 1000 long_trivial
 
 /--
 info: Try these:
-  [apply] 🎉 long_trivial
+  [apply] 🎉️ long_trivial
 -/
 #guard_msgs in
 example : True := by
@@ -151,7 +139,7 @@ end multiline_hint
 section finiteness
 /--
 info: Try these:
-  [apply] 🎉 norm_num
+  [apply] 🎉️ norm_num
 -/
 #guard_msgs in
 open ENNReal in
@@ -164,7 +152,7 @@ register_hint 1000 tauto_set
 
 /--
 info: Try these:
-  [apply] 🎉 tauto_set
+  [apply] 🎉️ tauto_set
 -/
 #guard_msgs in
 example {α} (A B C : Set α) (h1 : A ⊆ B ∪ C) : (A ∩ B) ∪ (A ∩ C) = A := by hint
@@ -180,9 +168,6 @@ info: Try these:
   [apply] ring_nf
   Remaining subgoals:
   ⊢ 2 ≤ 1
-  [apply] group
-  Remaining subgoals:
-  ⊢ 2 ≤ 1
   [apply] simp_all only [Nat.not_ofNat_le_one]
   Remaining subgoals:
   ⊢ False
@@ -195,7 +180,7 @@ example : 2 ≤ 1 := by hint
 section compute_degree
 /--
 info: Try these:
-  [apply] 🎉 compute_degree
+  [apply] 🎉️ compute_degree
   [apply] norm_num
   Remaining subgoals:
   ⊢ (X + 1).natDegree ≤ 1
@@ -214,7 +199,7 @@ this test no longer reports `field_simp` amongst the successful tactics.
 
 /--
 info: Try these:
-  [apply] 🎉 exact Units.divp_add_divp_same a b u₁
+  [apply] 🎉️ exact Units.divp_add_divp_same a b u₁
   [apply] norm_num
   Remaining subgoals:
   ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
@@ -222,9 +207,6 @@ info: Try these:
   Remaining subgoals:
   ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
   [apply] abel_nf
-  Remaining subgoals:
-  ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
-  [apply] group
   Remaining subgoals:
   ⊢ a /ₚ u₁ + b /ₚ u₁ = (a + b) /ₚ u₁
 -/
@@ -236,7 +218,7 @@ end field_simp
 -- but apparently `tauto_set` also works.
 /--
 info: Try these:
-  [apply] 🎉 tauto_set
+  [apply] 🎉️ tauto_set
 -/
 #guard_msgs in
 open ENNReal in

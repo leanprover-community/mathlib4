@@ -45,14 +45,8 @@ private lemma mk_mem_triangleIndices : (a, b, c) ∈ triangleIndices A ↔ (a, b
 
 @[simp] private lemma card_triangleIndices : #(triangleIndices A) = #A := card_map _
 
--- TODO: fix non-terminal simp (operates on three goals, leaving two)
-set_option linter.flexible false in
 private instance triangleIndices.instExplicitDisjoint : ExplicitDisjoint (triangleIndices A) := by
-  constructor
-  all_goals
-    simp only [mk_mem_triangleIndices, and_imp]
-    rintro a b _ a' - rfl - h'
-    simp [*] at * <;> assumption
+  constructor <;> simp +contextual
 
 private lemma noAccidental (hs : IsCornerFree (A : Set (G × G))) :
     NoAccidental (triangleIndices A) where
@@ -60,7 +54,6 @@ private lemma noAccidental (hs : IsCornerFree (A : Set (G × G))) :
     simp only [mk_mem_triangleIndices] at ha hb hc
     exact .inl <| hs ⟨hc.1, hb.1, ha.1, hb.2.symm.trans ha.2⟩
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma farFromTriangleFree_graph [Fintype G] [DecidableEq G] (hε : ε * card G ^ 2 ≤ #A) :
     (graph <| triangleIndices A).FarFromTriangleFree (ε / 9) := by
   refine farFromTriangleFree _ ?_

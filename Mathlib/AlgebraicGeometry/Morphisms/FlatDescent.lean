@@ -28,7 +28,7 @@ In this file we show some global properties satisfy fpqc descent.
   (`AlgebraicGeometry.descendsAlong_isOpenImmersion_surjective_inf_flat_inf_quasicompact`)
 -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -120,7 +120,7 @@ instance descendsAlong_isomorphisms_surjective_inf_flat_inf_quasicompact :
       RingHom.FaithfullyFlat.codescendsAlong_bijective ?_ ?_ h hfst
   · intro _ _ f hf
     rwa [← flat_and_surjective_SpecMap_iff, and_comm]
-  · simp_rw [← isIso_SpecMap_iff, isomorphisms.iff, implies_true]
+  · simp_rw [← isIso_SpecMap_iff, implies_true]
 
 /-- Being an open immersion satisfies fpqc descent. -/
 @[stacks 02L3]

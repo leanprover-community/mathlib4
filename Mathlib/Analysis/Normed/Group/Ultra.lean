@@ -128,7 +128,6 @@ lemma nnnorm_div_eq_max_of_nnnorm_div_ne_nnnorm_div (x y z : S) (h : ‖x / y‖
   simpa only [← NNReal.coe_inj, NNReal.coe_max] using
     norm_div_eq_max_of_norm_div_ne_norm_div _ _ _ (NNReal.coe_injective.ne h)
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma nnnorm_pow_le (x : S) (n : ℕ) :
     ‖x ^ n‖₊ ≤ ‖x‖₊ := by
@@ -217,7 +216,6 @@ lemma _root_.Finset.Nonempty.norm_prod_le_sup'_norm {s : Finset ι} (hs : s.None
       · exact ⟨_, IH.choose_spec.left, (norm_mul_le_max _ _).trans <|
           ((max_eq_right h).le.trans IH.choose_spec.right)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Nonarchimedean norm of a product is less than or equal to the largest norm of a term in the
 product. -/
 @[to_additive /-- Nonarchimedean norm of a sum is less than or equal to the largest norm of a term
@@ -225,7 +223,7 @@ in the sum. -/]
 lemma _root_.Finset.nnnorm_prod_le_sup_nnnorm (s : Finset ι) (f : ι → M) :
     ‖∏ i ∈ s, f i‖₊ ≤ s.sup (‖f ·‖₊) := by
   rcases s.eq_empty_or_nonempty with rfl | hs
-  · simp only [Finset.prod_empty, nnnorm_one', Finset.sup_empty, bot_eq_zero', le_refl]
+  · simp
   · simpa only [← Finset.sup'_eq_sup hs, Finset.le_sup'_iff, coe_le_coe, coe_nnnorm']
       using hs.norm_prod_le_sup'_norm f
 
@@ -266,10 +264,16 @@ Given a function `f : ι → M` and a nonempty finite set `t ⊆ ι`, we can alw
 -/
 @[to_additive /-- Given a function `f : ι → M` and a nonempty finite set `t ⊆ ι`, we can always find
 `i ∈ t` such that `‖∑ j ∈ t, f j‖ ≤ ‖f i‖`. -/]
-theorem exists_norm_finset_prod_le_of_nonempty {t : Finset ι} (ht : t.Nonempty) (f : ι → M) :
+theorem exists_norm_finsetProd_le_of_nonempty {t : Finset ι} (ht : t.Nonempty) (f : ι → M) :
     ∃ i ∈ t, ‖∏ j ∈ t, f j‖ ≤ ‖f i‖ :=
   match t.exists_mem_eq_sup' ht (‖f ·‖) with
   | ⟨j, hj, hj'⟩ => ⟨j, hj, (ht.norm_prod_le_sup'_norm f).trans (le_of_eq hj')⟩
+
+@[deprecated (since := "2026-04-08")]
+alias exists_norm_finset_sum_le_of_nonempty := exists_norm_finsetSum_le_of_nonempty
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias exists_norm_finset_prod_le_of_nonempty := exists_norm_finsetProd_le_of_nonempty
 
 /--
 Given a function `f : ι → M` and a finite set `t ⊆ ι`, we can always find `i : ι`, belonging to `t`
@@ -277,11 +281,16 @@ if `t` is nonempty, such that `‖∏ j ∈ t, f j‖ ≤ ‖f i‖`.
 -/
 @[to_additive /-- Given a function `f : ι → M` and a finite set `t ⊆ ι`, we can always find `i : ι`,
 belonging to `t` if `t` is nonempty, such that `‖∑ j ∈ t, f j‖ ≤ ‖f i‖`. -/]
-theorem exists_norm_finset_prod_le (t : Finset ι) [Nonempty ι] (f : ι → M) :
+theorem exists_norm_finsetProd_le (t : Finset ι) [Nonempty ι] (f : ι → M) :
     ∃ i : ι, (t.Nonempty → i ∈ t) ∧ ‖∏ j ∈ t, f j‖ ≤ ‖f i‖ := by
   rcases t.eq_empty_or_nonempty with rfl | ht
   · simp
-  exact (fun ⟨i, h, h'⟩ => ⟨i, fun _ ↦ h, h'⟩) <| exists_norm_finset_prod_le_of_nonempty ht f
+  exact (fun ⟨i, h, h'⟩ => ⟨i, fun _ ↦ h, h'⟩) <| exists_norm_finsetProd_le_of_nonempty ht f
+
+@[deprecated (since := "2026-04-08")] alias exists_norm_finset_sum_le := exists_norm_finsetSum_le
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias exists_norm_finset_prod_le := exists_norm_finsetProd_le
 
 /--
 Given a function `f : ι → M` and a multiset `t : Multiset ι`, we can always find `i : ι`, belonging

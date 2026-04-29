@@ -20,9 +20,9 @@ Abbreviations are also provided for `SheafedSpace`, `LocallyRingedSpace` and `Sc
 ## Main definitions
 
 * `AlgebraicGeometry.PresheafedSpace.IsOpenImmersion`: the `Prop`-valued typeclass asserting
-  that a PresheafedSpace hom `f` is an open_immersion.
+  that a PresheafedSpace hom `f` is an open immersion.
 * `AlgebraicGeometry.IsOpenImmersion`: the `Prop`-valued typeclass asserting
-  that a Scheme morphism `f` is an open_immersion.
+  that a Scheme morphism `f` is an open immersion.
 * `AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.isoRestrict`: The source of an
   open immersion is isomorphic to the restriction of the target onto the image.
 * `AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.lift`: Any morphism whose range is
@@ -984,9 +984,6 @@ instance mono : Mono f :=
 instance : SheafedSpace.IsOpenImmersion (LocallyRingedSpace.forgetToSheafedSpace.map f) :=
   H
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/12564
-`infer_instance` needs more heartbeats after this change. -/
-set_option synthInstance.maxHeartbeats 40000 in -- see adaptation note
 set_option backward.isDefEq.respectTransparency false in
 /-- An explicit pullback cone over `cospan f g` if `f` is an open immersion. -/
 def pullbackConeOfLeft : PullbackCone f g := by
@@ -1000,7 +997,7 @@ def pullbackConeOfLeft : PullbackCone f g := by
     rw [← IsIso.eq_inv_comp] at this
     rw [this]
     dsimp
-    infer_instance
+    apply RingHom.isLocalHom_comp
   · exact LocallyRingedSpace.Hom.ext'
         (PresheafedSpace.IsOpenImmersion.pullback_cone_of_left_condition _ _)
 

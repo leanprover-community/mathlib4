@@ -418,6 +418,7 @@ theorem mem_extChartAt_ind_source (x : M) (hx : x ∈ s) :
   fs.mem_extChartAt_source_of_eq_one (fs.apply_ind x hx)
 
 /-- The index type of a `SmoothBumpCovering` of a compact manifold is finite. -/
+@[implicit_reducible]
 protected def fintype [CompactSpace M] : Fintype ι :=
   fs.locallyFinite.fintypeOfCompact fun i => (fs i).nonempty_support
 
@@ -695,7 +696,7 @@ theorem Metric.exists_contMDiffMap_forall_closedEBall_subset
     (hfin : LocallyFinite K) :
     ∃ δ : C^n⟮I, M; 𝓘(ℝ, ℝ), ℝ⟯,
       (∀ x, 0 < δ x) ∧ ∀ i, ∀ x ∈ K i, Metric.closedEBall x (ENNReal.ofReal (δ x)) ⊆ U i := by
-  simpa only [mem_inter_iff, forall_and, mem_preimage, mem_iInter, @forall_swap ι M]
+  simpa only [mem_inter_iff, forall_and, mem_preimage, mem_iInter, @forall_comm ι M]
     using exists_contMDiffMap_forall_mem_convex_of_local_const I
       Metric.exists_forall_closedEBall_subset_aux₂
       (Metric.exists_forall_closedEBall_subset_aux₁ hK hU hKU hfin)
@@ -776,10 +777,10 @@ theorem IsOpen.exists_contMDiff_support_eq {s : Set M} (hs : IsOpen s) :
       by_cases Hx : x ∈ tsupport (f c)
       · suffices g c (chartAt H c x) = 0 by simp only [this, mul_zero]
         rw [← notMem_support, g_supp, ← mem_preimage, preimage_inter]
-        contrapose! hx
+        contrapose hx
         simp only [mem_inter_iff, mem_preimage, (chartAt H c).left_inv (hf c Hx)] at hx
         exact hx.2
-      · have : x ∉ support (f c) := by contrapose! Hx; exact subset_tsupport _ Hx
+      · have : x ∉ support (f c) := by contrapose Hx; exact subset_tsupport _ Hx
         rw [notMem_support] at this
         simp [this]
   · apply SmoothPartitionOfUnity.contMDiff_finsum_smul
@@ -812,7 +813,7 @@ theorem exists_contMDiff_support_eq_eq_one_iff
         classical
         apply lt_of_le_of_ne (g_pos x) (Ne.symm ?_)
         rw [← mem_support, g_supp]
-        contrapose! xs
+        contrapose xs
         exact h.trans f_supp.symm.subset (by simpa using xs)
       linarith [f_pos x]
   refine ⟨fun x ↦ f x / (f x + g x), ?_, ?_, ?_, ?_⟩

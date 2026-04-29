@@ -5,26 +5,33 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.IntegralCharFun
-public import Mathlib.MeasureTheory.Measure.TightNormed
+public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
+public import Mathlib.MeasureTheory.Measure.Tight
+
+import Mathlib.MeasureTheory.Measure.CharacteristicFunction.TaylorExpansion
+import Mathlib.MeasureTheory.Measure.IntegralCharFun
+import Mathlib.MeasureTheory.Measure.Prokhorov
+import Mathlib.MeasureTheory.Measure.TightNormed
 
 /-!
 # Lévy's convergence theorem
 
 This file contains developments related to Lévy's convergence theorem, which links convergence of
-characteristic functions and convergence in distribution.
+characteristic functions and convergence in distribution in finite dimensional inner product spaces.
 
 ## Main statements
 
 * `isTightMeasureSet_of_tendsto_charFun`: if the characteristic functions of a sequence of measures
   `μ : ℕ → Measure E` on a finite dimensional inner product space converge pointwise
   to a function which is continuous at 0, then `{μ n | n}` is tight.
+* `ProbabilityMeasure.tendsto_iff_tendsto_charFun`: the weak convergence of probability measures is
+  equivalent to the pointwise convergence of their characteristic functions.
 
 -/
 
 public section
 
-open Filter
+open Filter BoundedContinuousFunction Real RCLike
 open scoped Topology RealInnerProductSpace ENNReal
 
 namespace MeasureTheory
@@ -114,7 +121,7 @@ lemma isTightMeasureSet_of_tendsto_charFun {μ : ℕ → Measure E} [∀ i, IsPr
     refine (hδ_lt ?_).le
     simp only [norm_smul, Real.norm_eq_abs, mul_one, hz]
     calc |x|
-    _ ≤ 2 * r⁻¹ := by simp at hx; grind
+    _ ≤ 2 * r⁻¹ := by grind
     _ < δ := by
       rw [← lt_div_iff₀' (by positivity), inv_lt_comm₀ hr (by positivity)]
       refine lt_of_lt_of_le ?_ hrδ
@@ -137,5 +144,79 @@ lemma isTightMeasureSet_of_tendsto_charFun {μ : ℕ → Measure E} [∀ i, IsPr
     · exact ae_restrict_of_forall_mem measurableSet_Ioc h_le_Ioc
   _ = ε / 2 := by simp; field
   _ < ε := by simp [hε]
+
+/-- Let `μ` be a tight sequence of probability measures and `μ₀` a probability measure.
+If `A` is a star sub-algebra of bounded continuous scalar functions that separates points
+and the integrals of elements of `A` with respect to `μ` converge to the integrals
+with respect to `μ₀`, then `μ` converges weakly to `μ₀`. -/
+lemma ProbabilityMeasure.tendsto_of_tight_of_separatesPoints (𝕜 : Type*) [RCLike 𝕜]
+    {E : Type*} [MeasurableSpace E] [TopologicalSpace E] [PolishSpace E] [BorelSpace E]
+    {ι : Type*} {𝓕 : Filter ι}
+    {μ : ι → ProbabilityMeasure E} (h_tight : IsTightMeasureSet {(μ n : Measure E) | n})
+    {μ₀ : ProbabilityMeasure E}
+    {A : StarSubalgebra 𝕜 (E →ᵇ 𝕜)} (hA : (A.map (toContinuousMapStarₐ 𝕜)).SeparatesPoints)
+    (hμ : ∀ g ∈ A, Tendsto (fun n ↦ ∫ x, g x ∂(μ n)) 𝓕 (𝓝 (∫ x, g x ∂μ₀))) :
+    Tendsto μ 𝓕 (𝓝 μ₀) := by
+  letI := TopologicalSpace.upgradeIsCompletelyMetrizable E
+  obtain rfl | _ := 𝓕.eq_or_neBot
+  · simp
+  refine (Filter.tendsto_iff_ultrafilter _ _ _).2 fun U hU ↦ ?_
+  have h_compact : IsCompact (closure {μ n | n}) :=
+    isCompact_closure_of_isTightMeasureSet (by simpa using h_tight)
+  obtain ⟨μ', -, hμ' : Tendsto _ _ _⟩ := h_compact.ultrafilter_le_nhds (U.map μ)
+    (.trans (by simp) (monotone_principal subset_closure))
+  suffices (μ' : Measure E) = μ₀ by convert hμ'; ext; rw [this]
+  refine ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_countable hA
+    fun g hg ↦ tendsto_nhds_unique ?_ ((hμ g hg).comp hU)
+  rw [ProbabilityMeasure.tendsto_iff_forall_integral_rclike_tendsto 𝕜] at hμ'
+  exact hμ' g
+
+variable {ι : Type*} {𝓕 : Filter ι} {μ₀ : ProbabilityMeasure E}
+
+set_option backward.isDefEq.respectTransparency false in
+omit [FiniteDimensional ℝ E] in
+lemma ProbabilityMeasure.tendsto_charPoly_of_tendsto_charFun {μ : ι → ProbabilityMeasure E}
+    (h : ∀ t : E, Tendsto (fun n ↦ charFun (μ n) t) 𝓕 (𝓝 (charFun μ₀ t)))
+    {g : E →ᵇ ℂ} (hg : g ∈ charPoly continuous_probChar (L := innerₗ E) continuous_inner) :
+    Tendsto (fun n ↦ ∫ x, g x ∂(μ n)) 𝓕 (𝓝 (∫ x, g x ∂μ₀)) := by
+  rw [mem_charPoly] at hg
+  obtain ⟨w, hw⟩ := hg
+  have h_eq (μ : Measure E) (hμ : IsProbabilityMeasure μ) :
+      ∫ x, g x ∂μ = ∑ a ∈ w.support, w a * ∫ x, (probChar (innerₗ E x a) : ℂ) ∂μ := by
+    simp_rw [hw]
+    rw [integral_finsetSum]
+    · congr with y
+      rw [integral_const_mul]
+    · refine fun i hi ↦ Integrable.const_mul ?_ _
+      change Integrable (innerProbChar i) μ
+      exact BoundedContinuousFunction.integrable μ _
+  simp_rw [h_eq (μ _), h_eq μ₀]
+  refine tendsto_finsetSum _ fun y hy ↦ Tendsto.const_mul _ ?_
+  simpa [← charFun_eq_integral_probChar] using h y
+
+variable {μ : ℕ → ProbabilityMeasure E}
+
+/-- If the characteristic functions of a sequence of probability measures converge pointwise to
+the characteristic function of a probability measure, then the measures converge weakly. -/
+lemma ProbabilityMeasure.tendsto_of_tendsto_charFun
+    (h : ∀ t : E, Tendsto (fun n ↦ charFun (μ n) t) atTop (𝓝 (charFun μ₀ t))) :
+    Tendsto μ atTop (𝓝 μ₀) := by
+  have h_tight : IsTightMeasureSet (𝓧 := E) {μ n | n} :=
+    isTightMeasureSet_of_tendsto_charFun (by fun_prop) h
+  refine tendsto_of_tight_of_separatesPoints h_tight (𝕜 := ℂ)
+    (A := charPoly continuous_probChar (L := innerₗ E) continuous_inner) ?_ ?_
+  · refine separatesPoints_charPoly continuous_probChar probChar_ne_one _ ?_
+    exact fun v hv ↦ DFunLike.ne_iff.mpr ⟨v, inner_self_ne_zero.mpr hv⟩
+  · exact fun g ↦ tendsto_charPoly_of_tendsto_charFun h
+
+/-- The **Lévy convergence theorem**: the weak convergence of probability measures is equivalent
+to the pointwise convergence of their characteristic functions. -/
+theorem ProbabilityMeasure.tendsto_iff_tendsto_charFun :
+    Tendsto μ atTop (𝓝 μ₀) ↔
+      ∀ t : E, Tendsto (fun n ↦ charFun (μ n) t) atTop (𝓝 (charFun μ₀ t)) := by
+  refine ⟨fun h t ↦ ?_, tendsto_of_tendsto_charFun⟩
+  rw [ProbabilityMeasure.tendsto_iff_forall_integral_rclike_tendsto ℂ] at h
+  simp_rw [charFun_eq_integral_innerProbChar]
+  exact h (innerProbChar t)
 
 end MeasureTheory
