@@ -8,10 +8,12 @@ axiom sorryAlgebraTest {P : Prop} : P
 
 variable {R : Type*}
 
+-- set_option trace.algebra.debug true in
 example [CommRing R] (x : R) (n : ℕ) : n • x + x = (n: ℤ) • x + x := by
   algebra
 
-example (x : ℚ) (a : ℤ) : algebraMap ℤ ℚ a * x = a • x := by
+-- set_option trace.algebra.debug true in
+example (x : ℝ) (a : ℤ) : algebraMap ℤ ℝ a * x = a • x := by
   algebra
 
 example {R A : Type*} {a : R} [CommSemiring R] [CommSemiring A] [Algebra R A] (x : A) :
@@ -160,43 +162,24 @@ example {A R R' : Type*} [CommRing A] [CommRing R] [CommRing R'] [Algebra R A] [
 example : (0.5 : ℝ) + 0.5 = 1 := by
   algebra with ℚ
 
--- TODO: Fix
-/--
-error: algebra failed, algebra expressions not equal
-R : Type u_1
-s : ℕ
-k : ℝ := ⋯
-⊢ k * (algebraMap ℚ ℝ) 1 = (algebraMap ℚ ℝ) ↑s
--/
-#guard_msgs in
 example (s : ℕ) : 1 = 1 := by
   let k : ℝ := s
   have : k = s := by
     algebra
   rfl
 
--- TODO: Fix
-/--
-error: algebra failed, algebra expressions not equal
-R : Type u_1
-F : ℚ → ℝ
-f : ℤ →+* ℚ := ⋯
-x : ℤ
-⊢ F (x • 1) * (algebraMap ℚ ℝ) 1 = F (f x) * (algebraMap ℚ ℝ) 1
--/
-#guard_msgs in
+-- set_option trace.algebra.debug true in
 example {F : ℚ → ℝ} : 1 = 1 := by
   let f := algebraMap ℤ ℚ
   have {x : ℤ} : F (algebraMap ℤ ℚ x) = F (f x) := by
     algebra
   rfl
 
-
+-- set_option trace.algebra.debug true in
 example {n₁ : ℕ} : 1 = 1 := by
   let a : ℕ → ℝ := fun n ↦ (n + n₁)
   have : n₁ = a 0 := by
-    fail_if_success algebra
-    ring1
+    algebra
   rfl
 
 example {x y : ℝ} : 1 = 1 := by

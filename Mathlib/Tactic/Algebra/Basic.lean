@@ -310,6 +310,34 @@ theorem Int.cast_eq_algebraMap (A : Type*) [CommRing A] (n : ℤ) :
 theorem Int.algebraMap_eq_cast (A : Type*) [CommRing A] (n : ℤ) :
     algebraMap ℤ A n = Int.cast n := rfl
 
+theorem Rat.cast_eq_algebraMap {K : Type*} [Field K] [CharZero K] {q : ℚ} :
+    q = algebraMap ℚ K q := rfl
+
+initialize registerTraceClass `algebra.debug
+
+def heads : Std.HashSet Name := {
+  ``HAdd.hAdd, ``Add.add,
+  ``HMul.hMul, ``Mul.mul,
+  ``HSMul.hSMul, ``SMul.smul,
+  ``HPow.hPow, ``Pow.pow,
+  ``Neg.neg,
+  ``HSub.hSub, ``Sub.sub,
+  ``Inv.inv,
+  ``HDiv.hDiv, ``Div.div,
+  ``Eq,
+  ``DFunLike.coe,
+  ``NatCast.natCast, ``IntCast.intCast, ``RatCast.ratCast
+}
+
+simproc_decl guard (_) := fun e ↦  do
+  trace[algebra.debug] m!"Guarding Expression {e}"
+  let e' ← withReducible <| whnf e
+  let .const n _ := e'.getAppFn
+    | return .done { expr := e }
+  trace[algebra.debug] m!"With head symbol {n}"
+  unless n ∈ heads do return .done { expr := e }
+  return .continue (some { expr := e' })
+
 -- TODO: This preprocessing step runs on all subexpressions, even ones in would-be atoms.
 -- Possible solution: Have a "guard" simproc that always fires and tells simp to skip
 -- the subexpression if it doesn't have the right head.
@@ -317,11 +345,13 @@ theorem Int.algebraMap_eq_cast (A : Type*) [CommRing A] (n : ℤ) :
 def preprocess (mvarId : MVarId) : MetaM MVarId := do
   -- collect the available `push_cast` lemmas
   let thms : SimpTheorems := {}
-  let thms ← [``Nat.cast_eq_algebraMap, ``Int.cast_eq_algebraMap,
+  let thms ← [``Nat.cast_eq_algebraMap, ``Int.cast_eq_algebraMap, ``Rat.cast_eq_algebraMap,
     ``Algebra.algebraMap_eq_smul_one].foldlM (·.addConst ·) thms
-  let ctx ← Simp.mkContext { failIfUnchanged := false } (simpTheorems := #[thms])
-  let (some r, _) ← simpTarget mvarId ctx (simprocs := #[]) |
-    throwError "internal error in polynomial tactic: preprocessing should not close goals"
+  let ctx ← Simp.mkContext { failIfUnchanged := false, zetaDelta := true } (simpTheorems := #[thms])
+  let simprocs : Simp.Simprocs := {}
+  let simprocs ← simprocs.add ``guard (post := false)
+  let (some r, _) ← simpTarget mvarId ctx (simprocs := #[simprocs]) |
+    throwError "internal error in algebra tactic: preprocessing should not close goals"
   return r
 
 /-- Clean up the normal form into a more human-friendly format. This does everything
@@ -496,6 +526,7 @@ elab (name := algebra) "algebra":tactic =>
   withMainContext do
     liftMetaTactic' preprocess
     let g ← getMainGoal
+    trace[algebra.debug] m!"Preprocessing produced {← g.getType}"
     AtomM.run .default (proveEq none g)
 
 @[tactic_alt algebra]
@@ -504,6 +535,7 @@ elab (name := algebraWith) "algebra" " with " R:term : tactic =>
     liftMetaTactic' preprocess
     let ⟨u, R⟩ ← getLevelQ' (← elabTerm R none)
     let g ← getMainGoal
+    trace[algebra.debug] m!"Preprocessing produced {← g.getType}"
     AtomM.run .default (proveEq (some ⟨u, R⟩) g)
 
 end Mathlib.Tactic.Algebra
