@@ -263,7 +263,7 @@ variable (𝕜) in
 noncomputable def tprodL : ContinuousMultilinearMap 𝕜 E (⨂[𝕜] i, E i) :=
   (liftIsometry 𝕜 E _).symm (ContinuousLinearMap.id 𝕜 _)
 
-attribute [-simp] PiTensorProduct.tprodL_apply
+attribute [-simp] _root_.PiTensorProduct.tprodL_apply
 
 @[simp]
 theorem tprodL_coe : (tprodL 𝕜).toMultilinearMap = tprod 𝕜 (s := E) := by
@@ -389,7 +389,7 @@ noncomputable def mapLMultilinear : ContinuousMultilinearMap 𝕜 (fun (i : ι) 
 
 variable {𝕜 E E'}
 
-attribute [-simp] PiTensorProduct.mapLMultilinear_apply_apply
+attribute [-simp] _root_.PiTensorProduct.mapLMultilinear_apply_apply
 
 theorem mapLMultilinear_opNorm : ‖mapLMultilinear 𝕜 E E'‖ ≤ 1 :=
   MultilinearMap.mkContinuous_norm_le _ zero_le_one _

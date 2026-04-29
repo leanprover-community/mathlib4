@@ -57,8 +57,10 @@ instance coreCategory : Groupoid.{v₁} (Core C) where
   comp f g := .mk <| Iso.trans f.iso g.iso
   inv {_ _} f := .mk <| Iso.symm f.iso
 
-attribute [-simp] coreCategory_inv_iso_hom coreCategory_inv_iso_inv
-  coreCategory_comp_iso_hom coreCategory_comp_iso_inv
+attribute [-simp] _root_.CategoryTheory.coreCategory_inv_iso_hom
+  _root_.CategoryTheory.coreCategory_inv_iso_inv
+  _root_.CategoryTheory.coreCategory_comp_iso_hom
+  _root_.CategoryTheory.coreCategory_comp_iso_inv
 
 @[simp]
 lemma coreCategory_comp_iso {x y z : Core C} (f : x ⟶ y) (g : y ⟶ z) :

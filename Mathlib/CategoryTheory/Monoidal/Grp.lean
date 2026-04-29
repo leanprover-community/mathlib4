@@ -446,8 +446,10 @@ abbrev mkIso {G H : Grp C} (e : G.X ≅ H.X) (one_f : η[G.X] ≫ e.hom = η[H.X
   have : IsMonHom e.hom := ⟨one_f, mul_f⟩
   mkIso' e
 
-attribute [-simp] Grp.mkIso_hom_hom_hom Grp.mkIso_inv_hom_hom
-  AddGrp.mkIso_hom_hom_hom AddGrp.mkIso_inv_hom_hom
+attribute [-simp] _root_.CategoryTheory.Grp.mkIso_hom_hom_hom
+  _root_.CategoryTheory.Grp.mkIso_inv_hom_hom
+  _root_.CategoryTheory.AddGrp.mkIso_hom_hom_hom
+  _root_.CategoryTheory.AddGrp.mkIso_inv_hom_hom
 
 @[deprecated (since := "2025-12-18")] alias mkIso_hom_hom := mkIso_hom_hom_hom
 @[deprecated (since := "2025-12-18")] alias mkIso_inv_hom := mkIso_inv_hom_hom

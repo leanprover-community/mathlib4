@@ -221,7 +221,7 @@ noncomputable def ofHasCoeffs :
   map := P.map
   map_inj := P.map_inj
 
-attribute [-simp] Algebra.PreSubmersivePresentation.ofHasCoeffs_algebra_algebraMap_apply
+attribute [-simp] _root_.Algebra.PreSubmersivePresentation.ofHasCoeffs_algebra_algebraMap_apply
 
 end Algebra.PreSubmersivePresentation
 

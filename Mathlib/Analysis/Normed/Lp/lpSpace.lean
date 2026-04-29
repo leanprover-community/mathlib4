@@ -1062,7 +1062,7 @@ noncomputable def zeroBasis : Module.Basis α 𝕜 ℓ⁰(α, 𝕜) where
       left_inv _ := rfl
       right_inv _ := Finsupp.ext fun _ ↦ rfl }
 
-attribute [-simp] lp.zeroBasis_repr_symm_apply_coe
+attribute [-simp] _root_.lp.zeroBasis_repr_symm_apply_coe
 
 lemma zeroBasis_apply (i : α) : zeroBasis i = lp.single 0 i (1 : 𝕜) := by
   ext; simp [zeroBasis, Finsupp.single_apply, Pi.single, Function.update, eq_comm]

@@ -300,7 +300,7 @@ def StandardEtalePresentation.toPresentation : Algebra.Presentation R S (Fin 2) 
       RingHom.ker_comp_of_injective _ (by exact P.equivMvPolynomialQuotient.symm.injective)]
     simp [Set.pair_comm]
 
-attribute [-simp] StandardEtalePresentation.toPresentation_algebra_algebraMap_apply
+attribute [-simp] _root_.StandardEtalePresentation.toPresentation_algebra_algebraMap_apply
 
 @[simp] lemma StandardEtalePresentation.aeval_val_equivMvPolynomial (p : R[X]) :
     MvPolynomial.aeval P.toPresentation.val

@@ -370,7 +370,7 @@ theorem algEquivCMulXAddC_symm_eq {R : Type*} [CommRing R] (a b : R) [Invertible
 def algEquivAevalXAddC {R : Type*} [CommRing R] (t : R) : R[X] ≃ₐ[R] R[X] :=
   algEquivOfCompEqX (X + C t) (X - C t) (by simp) (by simp)
 
-attribute [-simp] Polynomial.algEquivAevalXAddC_symm_apply
+attribute [-simp] _root_.Polynomial.algEquivAevalXAddC_symm_apply
 
 @[simp]
 theorem algEquivAevalXAddC_eq_iff {R : Type*} [CommRing R] (t t' : R) :
