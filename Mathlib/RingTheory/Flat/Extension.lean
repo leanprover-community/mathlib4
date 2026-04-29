@@ -601,7 +601,9 @@ noncomputable def residueFieldCoconeK : Cocone (residueFieldFunctor F) where
   pt := CommRingCat.of K
   ι := {
     app j := CommRingCat.ofHom <| algebraMap (ResidueField (F.obj j)) K
-    naturality j j' f := sorry
+    naturality j j' f := by
+      simpa [residueFieldFunctor, CommRingCat.FilteredColimit.residueFieldFunctor,
+        ← CommRingCat.ofHom_comp] using congr(CommRingCat.ofHom $((F.map f).comm))
   }
 
 noncomputable def residueFieldDescOfIsColimit (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat R))))
