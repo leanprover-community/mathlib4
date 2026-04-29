@@ -549,13 +549,13 @@ variable [Fintype V] [DecidableRel G.Adj] [Fintype W] [DecidableRel G'.Adj]
 
 theorem minDegree_eq (f : G ≃g G') : G.minDegree = G'.minDegree := by
   classical
-  rw [minDegree, minDegree, ← show (G'.degree ·) ∘ f = (G.degree ·) from funext (f.degree_eq ·),
-    ← image_image, Finset.image_univ_of_surjective f.surjective]
+  have : (G'.degree ·) ∘ f = (G.degree ·) := funext (f.degree_eq ·)
+  rw [minDegree, minDegree, ← this, ← image_image, Finset.image_univ_of_surjective f.surjective]
 
 theorem maxDegree_eq (f : G ≃g G') : G.maxDegree = G'.maxDegree := by
   classical
-  rw [maxDegree, maxDegree, ← show (G'.degree ·) ∘ f = (G.degree ·) from funext (f.degree_eq ·),
-    ← image_image, Finset.image_univ_of_surjective f.surjective]
+  have : (G'.degree ·) ∘ f = (G.degree ·) := funext (f.degree_eq ·)
+  rw [maxDegree, maxDegree, ← this, ← image_image, Finset.image_univ_of_surjective f.surjective]
 
 end Iso
 
