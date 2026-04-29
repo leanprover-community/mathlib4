@@ -19,8 +19,9 @@ the *dual family* of `𝒜` relative to `X` assigns to each `x ∈ X` the subfam
 Assouad's 1983 dual VC bound: if `𝒜.vcDim ≤ d`, then
 `(𝒜.dualFamily X).vcDim ≤ 2 ^ (d + 1) - 1`.
 
-The proof is Assouad's original bitstring-coding argument. The `2 ^ (d + 1) - 1`
-bound is tight for small `d` (e.g. halfspaces in `ℝ` realise the `d = 1` case).
+The proof is Assouad's original bitstring-coding argument. This bound works well
+for small `d`.
+
 
 ## Main definitions
 
@@ -28,8 +29,8 @@ bound is tight for small `d` (e.g. halfspaces in `ℝ` realise the `d = 1` case)
   set.
 * `Finset.mem_dualFamily`: membership characterisation.
 * `Finset.exists_shatters_of_dualFamily_shatters`: the bitstring-coding lemma.
-  A subfamily of size `2 ^ (d + 1)` shattered by the dual family yields a
-  `(d + 1)`-element subset of the ground set shattered by the original family.
+  A subfamily of size `2 ^ n` shattered by the dual family yields an
+  `n`-element subset of the ground set shattered by the original family.
 * `Finset.vcDim_dualFamily_le`: Assouad's VC bound for the dual family.
 
 ## References
@@ -75,54 +76,62 @@ private lemma subset_of_dualFamily_shatters {S : Finset (Finset α)}
   obtain ⟨_, _, rfl⟩ := mem_dualFamily.mp hu
   exact hSu.trans (filter_subset _ _)
 
-/-- **Bitstring coding (Assouad 1983, Theorem 2.13).** If `𝒜.dualFamily X`
-shatters a subfamily `S` of size at least `2 ^ (d + 1)`, then `𝒜` shatters
-some `(d + 1)`-element subset of `X`.
+/-- Embedding `(Fin n → Bool) ↪ ↥S` when `2 ^ n ≤ #S`,
+via `(Fin n → Bool) ≃ Fin (2 ^ n) ↪ Fin #S ≃ ↥S`. -/
+private noncomputable def cubeEmbedding {n : ℕ} (S : Finset (Finset α))
+    (hcard : 2 ^ n ≤ S.card) :
+    (Fin n → Bool) ↪ ↥S :=
+  ((Fintype.equivOfCardEq (by rw [Fintype.card_pi_const, Fintype.card_bool,
+    Fintype.card_fin])).toEmbedding.trans (Fin.castLEEmb hcard)).trans
+    S.equivFin.symm.toEmbedding
 
-This is the combinatorial core of the dual VC bound: embed the `2 ^ (d + 1)`
-bit-patterns of length `d + 1` into `S`; for each coordinate, shattering
+/-- The image of `{b : Fin n → Bool | b k = true}` under a cube embedding. -/
+private def cubeBitSlice {n : ℕ} {S : Finset (Finset α)} (cube : (Fin n → Bool) ↪ ↥S)
+    (k : Fin n) : Finset (Finset α) :=
+  ((Finset.univ : Finset (Fin n → Bool)).filter fun b ↦ b k = true).image
+    fun b ↦ (cube b).val
+
+private lemma cubeBitSlice_subset {n : ℕ} {S : Finset (Finset α)}
+    (cube : (Fin n → Bool) ↪ ↥S) (k : Fin n) : cubeBitSlice cube k ⊆ S := by
+  intro A hA
+  obtain ⟨b, _, rfl⟩ := mem_image.mp hA
+  exact (cube b).property
+
+/-- Codeword `(cube b).val` is in `cubeBitSlice cube k` iff `b k = true`. -/
+private lemma mem_cubeBitSlice_iff {n : ℕ} {S : Finset (Finset α)}
+    (cube : (Fin n → Bool) ↪ ↥S) (b : Fin n → Bool) (k : Fin n) :
+    (cube b).val ∈ cubeBitSlice cube k ↔ b k = true := by
+  simp only [cubeBitSlice, mem_image, mem_filter, mem_univ, true_and]
+  refine ⟨fun ⟨b', hb'k, hb'eq⟩ ↦ ?_, fun hk ↦ ⟨b, hk, rfl⟩⟩
+  rwa [cube.injective (Subtype.ext hb'eq)] at hb'k
+
+/-- **Bitstring coding (Assouad 1983, Theorem 2.13).** If `𝒜.dualFamily X`
+shatters a subfamily `S` of size at least `2 ^ n`, then `𝒜` shatters
+some `n`-element subset of `X`.
+
+This is the combinatorial side of the dual VC bound: embed the `2 ^ n`
+bit-patterns of length `n` into `S`; for each coordinate, shattering
 provides a ground-set element distinguishing the patterns with that bit set;
-these `d + 1` elements are then shattered by `𝒜`. -/
+these `n` elements are then shattered by `𝒜`. -/
 theorem exists_shatters_of_dualFamily_shatters
     (𝒜 : Finset (Finset α)) (X : Finset α)
     {S : Finset (Finset α)} (hS : (𝒜.dualFamily X).Shatters S)
-    {d : ℕ} (hcard : 2 ^ (d + 1) ≤ S.card) :
-    ∃ T : Finset α, T ⊆ X ∧ T.card = d + 1 ∧ 𝒜.Shatters T := by
+    {n : ℕ} (hcard : 2 ^ n ≤ S.card) :
+    ∃ T : Finset α, T ⊆ X ∧ T.card = n ∧ 𝒜.Shatters T := by
   classical
   have hSsub : S ⊆ 𝒜 := subset_of_dualFamily_shatters hS
-  -- Embed `(Fin (d + 1) → Bool)` into `↥S` as a `Function.Embedding` via
-  -- cardinality: `(Fin (d + 1) → Bool) ≃ Fin (2 ^ (d + 1)) ↪ Fin #S ≃ ↥S`.
-  have hcardeq : Fintype.card (Fin (d + 1) → Bool) = Fintype.card (Fin (2 ^ (d + 1))) := by
-    rw [Fintype.card_pi_const, Fintype.card_bool, Fintype.card_fin]
-  let cube : (Fin (d + 1) → Bool) ↪ ↥S :=
-    ((Fintype.equivOfCardEq hcardeq).toEmbedding.trans (Fin.castLEEmb hcard)).trans
-      S.equivFin.symm.toEmbedding
-  -- For each coordinate `k`, the codeword-bit slice of `S`.
-  let T_k (k : Fin (d + 1)) : Finset (Finset α) :=
-    S.filter fun A ↦ ∃ b : Fin (d + 1) → Bool, (cube b).val = A ∧ b k = true
-  -- A codeword `(cube b).val` lies in `T_k k` exactly when `b k = true`.
-  have mem_Tk_cube_iff (b : Fin (d + 1) → Bool) (k : Fin (d + 1)) :
-      (cube b).val ∈ T_k k ↔ b k = true := by
-    refine ⟨fun hb ↦ ?_, fun hk ↦ mem_filter.mpr ⟨(cube b).property, b, rfl, hk⟩⟩
-    obtain ⟨_, b', hb'eq, hb'k⟩ := mem_filter.mp hb
-    rwa [cube.injective (Subtype.ext hb'eq)] at hb'k
-  -- Extract distinguishing ground-set elements `x k ∈ X` from shattering
-  -- of the slice `T_k k`.
-  have hT_k_sub (k) : T_k k ⊆ S := filter_subset _ _
-  have hcols (k : Fin (d + 1)) :
-      ∃ x : α, x ∈ X ∧ ∀ A ∈ S, x ∈ A ↔ A ∈ T_k k := by
-    obtain ⟨u, hu, huT⟩ := hS (hT_k_sub k)
+  let cube := cubeEmbedding S hcard
+  have hcols (k : Fin n) :
+      ∃ x : α, x ∈ X ∧ ∀ A ∈ S, x ∈ A ↔ A ∈ cubeBitSlice cube k := by
+    obtain ⟨u, hu, huT⟩ := hS (cubeBitSlice_subset cube k)
     obtain ⟨x, hxX, rfl⟩ := mem_dualFamily.mp hu
     refine ⟨x, hxX, fun A hA ↦ ?_⟩
     rw [← huT]; simp [mem_inter, mem_filter, hA, hSsub hA]
   choose x hxX hx using hcols
-  -- The bit-value witness collapses to a one-line composition of equivalences:
-  -- `x k ∈ A ↔ A ∈ T_k k` (from `hx`) followed by `A ∈ T_k k ↔ b k = true`
-  -- (from `mem_Tk_cube_iff`), specialised to `A := (cube b).val`.
-  have hx_cube (b : Fin (d + 1) → Bool) (k : Fin (d + 1)) :
+  have hx_cube (b : Fin n → Bool) (k : Fin n) :
       x k ∈ (cube b).val ↔ b k = true :=
-    (hx k (cube b).val (cube b).property).trans (mem_Tk_cube_iff b k)
-  -- `x` is injective on `Fin (d + 1)` via the singleton bitstring `b i := (i = j)`.
+    (hx k (cube b).val (cube b).property).trans (mem_cubeBitSlice_iff cube b k)
+  -- `x` is injective via the singleton bitstring `b i := (i = j)`.
   have hx_inj : Function.Injective x := fun j k hjk ↦ by
     by_contra hne
     have h1 : x j ∈ (cube fun i ↦ decide (i = j)).val :=
@@ -130,10 +139,6 @@ theorem exists_shatters_of_dualFamily_shatters
     have h2 : x k ∉ (cube fun i ↦ decide (i = j)).val := fun hxk ↦
       hne (of_decide_eq_true ((hx_cube _ k).mp hxk)).symm
     exact h2 (hjk ▸ h1)
-  -- Assemble `T := univ.map ⟨x, hx_inj⟩`. The three bullets discharge
-  -- `T ⊆ X` (each `x k ∈ X`), `#T = d + 1` (by `card_map`), and
-  -- `𝒜.Shatters T` (decode each `t ⊆ T` as a Boolean codeword `g k := x k ∈ t`
-  -- and apply `hx_cube`).
   refine ⟨univ.map ⟨x, hx_inj⟩, ?_, by simp, fun t ht ↦ ?_⟩
   · intro y hy
     obtain ⟨k, _, rfl⟩ := mem_map.mp hy
@@ -158,7 +163,7 @@ theorem vcDim_dualFamily_le (𝒜 : Finset (Finset α)) (X : Finset α)
     (𝒜.dualFamily X).vcDim ≤ 2 ^ (d + 1) - 1 := by
   by_contra hlt
   push Not at hlt
-  have hge : 2 ^ (d + 1) ≤ (𝒜.dualFamily X).vcDim := by grind
+  have hge : 2 ^ (d + 1) ≤ (𝒜.dualFamily X).vcDim := by lia
   have hpos : 0 < 2 ^ (d + 1) := Nat.two_pow_pos (d + 1)
   obtain ⟨S, hS_mem, hS_card⟩ :=
     (Finset.le_sup_iff hpos).mp (hge : 2 ^ (d + 1) ≤ _)
