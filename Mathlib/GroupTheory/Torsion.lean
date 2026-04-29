@@ -300,6 +300,7 @@ theorem torsion_eq_torsion_submonoid : CommMonoid.torsion G = (torsion G).toSubm
 @[to_additive]
 theorem mem_torsion (g : G) : g ∈ torsion G ↔ IsOfFinOrder g := Iff.rfl
 
+-- PRed
 @[to_additive]
 lemma torsion_eq_top_iff : CommGroup.torsion G = ⊤ ↔ IsTorsion G :=
   (torsion G).eq_top_iff'
@@ -366,25 +367,29 @@ theorem freeRank_congr (e : G ≃* H) [Group.FG G] [Group.FG H] : freeRank G = f
   refine Group.rank_congr (QuotientGroup.congr  (torsion G) (torsion H) e ?_)
   sorry
 
--- todo: golf `index_prod`
-def foo (s : Subgroup G) (t : Subgroup H) : (G × H) ⧸ (s.prod t) ≃* (G ⧸ s) × H ⧸ t := by
-  let f : (G × H) ⧸ (s.prod t) →* (G ⧸ s) × H ⧸ t :=
-    QuotientGroup.lift (s.prod t) ((QuotientGroup.mk' s).prodMap (QuotientGroup.mk' t))
-      (by rintro ⟨x, y⟩ hx; simpa using hx)
-  let g : (G ⧸ s) × H ⧸ t →* (G × H) ⧸ (s.prod t) :=
-    (QuotientGroup.map s (s.prod t) (MonoidHom.inl G H) (by intro; simp [Subgroup.mem_prod])).coprod
-    (QuotientGroup.map t (s.prod t) (MonoidHom.inr G H) (by intro; simp [Subgroup.mem_prod]))
-  apply MonoidHom.toMulEquiv f g
-  · simp_rw [MonoidHom.ext_iff, QuotientGroup.forall_mk, Prod.forall]
-    simp [f, g, ← QuotientGroup.mk_mul]
-  · simp_rw [MonoidHom.ext_iff, Prod.forall, QuotientGroup.forall_mk]
-    simp [f, g]
+-- PRed
+@[to_additive (attr := simps)]
+def _root_.QuotientGroup.prodEquiv (A : Subgroup G) (B : Subgroup H) : (G × H) ⧸ (A.prod B) ≃ (G ⧸ A) × H ⧸ B where
+  toFun q := q.liftOn' (fun (g, h) ↦ (g, h))
+      (by simp [QuotientGroup.leftRel_apply, Subgroup.mem_prod, QuotientGroup.eq])
+  invFun q := q.1.liftOn₂' q.2 (fun g h ↦ (g, h))
+    (by simp [QuotientGroup.leftRel_apply, Subgroup.mem_prod, QuotientGroup.eq, ← and_imp])
+  left_inv q := q.inductionOn' (by simp)
+  right_inv := fun (q₁, q₂) ↦ Quotient.inductionOn₂' q₁ q₂ (by simp)
+
+-- PRed
+@[to_additive (attr := simps!)]
+def _root_.QuotientGroup.prodMulEquiv (A : Subgroup G) (B : Subgroup H) [A.Normal] [B.Normal] :
+    (G × H) ⧸ (A.prod B) ≃* (G ⧸ A) × H ⧸ B where
+  __ := QuotientGroup.prodEquiv A B
+  map_mul' q₁ q₂ := Quotient.inductionOn₂' q₁ q₂ (fun _ _ ↦ rfl)
 
 variable (G H)
 
 @[to_additive]
 theorem freeRank_sum [Group.FG G] [Group.FG H] : freeRank (G × H) = freeRank G + freeRank H := by
-  rw [freeRank_def, torsion_prod, Group.rank_congr (foo (torsion G) (torsion H))]
+  rw [freeRank_def, torsion_prod, Group.rank_congr
+    (QuotientGroup.prodMulEquiv (torsion G) (torsion H))]
   sorry
 
 open scoped DirectSum
