@@ -368,13 +368,13 @@ private meta def elabMkConcreteCategoryCore (mods : Syntax) (cat FC idTerm compT
     elabCommand <| ← set_option hygiene false in `(command|
       @[to_additive (attr := simp), simp]
       lemma hom_comp {X Y Z : $cat} (f : X ⟶ Y) (g : Y ⟶ Z) :
-          (f ≫ g).hom = (($compTerm) g.hom f.hom) :=
+          (f ≫ g).hom = dsimp'% (($compTerm) g.hom f.hom) :=
         rfl)
   else
     elabCommand <| ← set_option hygiene false in `(command|
       @[simp]
       lemma hom_comp {X Y Z : $cat} (f : X ⟶ Y) (g : Y ⟶ Z) :
-          (f ≫ g).hom = (($compTerm) g.hom f.hom) :=
+          (f ≫ g).hom = dsimp'% (($compTerm) g.hom f.hom) :=
         rfl)
 
   if useToAdditive then
