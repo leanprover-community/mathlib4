@@ -117,12 +117,14 @@ end SMul
 
 section Cast
 
+/-- `IsNatCastApply F α` states for all `n : ℕ` and `x : α`, `(n : F) x = n • x`. -/
 class IsNatCastApply (F : Type*) (α : outParam Type*) [FunLike F α α] [NatCast F] [SMul Nat α] where
   natCast_apply (n : Nat) (x : α) : (n : F) x = n • x
 
 @[simp, grind =]
 alias natCast_apply := IsNatCastApply.natCast_apply
 
+/-- `IsIntCastApply F α` states for all `n : ℤ` and `x : α`, `(n : F) x = n • x`. -/
 class IsIntCastApply (F : Type*) (α : outParam Type*) [FunLike F α α] [IntCast F] [SMul Int α] where
   intCast_apply (n : Int) (x : α) : (n : F) x = n • x
 

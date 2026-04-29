@@ -24,6 +24,8 @@ variable [FunLike F α α] [Zero F] [One F] [Mul F] [Zero α]
   [IsZeroApply F α α] [IsOneApplyEqSelf F α] [IsMulApplyEqComp F α]
   [ZeroHomClass F α α]
 
+/-- A `FunLike` type with `(f + g) x = f x + g x` and `(f * g) x = f (g x)` is a `MonoidWithZero`
+if `α` is a `MonoidWithZero`. -/
 protected abbrev FunLike.monoidWithZero : MonoidWithZero F where
   mul_zero f := by apply DFunLike.ext; simp
   zero_mul _ := by apply DFunLike.ext; simp
@@ -39,6 +41,8 @@ variable [FunLike F α α] [Zero F] [One F] [Mul F] [Add F] [AddCommMonoid α]
   [IsZeroApply F α α] [IsAddApply F α α] [IsOneApplyEqSelf F α] [IsMulApplyEqComp F α]
   [SMul ℕ F] [IsSMulApply ℕ F α α] [AddMonoidHomClass F α α] [NatCast F] [IsNatCastApply F α]
 
+/-- A `FunLike` type with `(f + g) x = f x + g x` and `(f * g) x = f (g x)` is a `Semiring` if `α`
+is a `Semiring`. -/
 protected abbrev FunLike.semiring : Semiring F where
   __ := FunLike.monoidWithZero
   __ := FunLike.addCommMonoid
@@ -59,6 +63,8 @@ variable [FunLike F α α] [Zero F] [One F] [Mul F] [Add F] [Neg F] [Sub F]
   [SMul ℤ F] [IsSMulApply ℤ F α α] [AddMonoidHomClass F α α]
   [NatCast F] [IsNatCastApply F α] [IntCast F] [IsIntCastApply F α]
 
+/-- A `FunLike` type with `(f + g) x = f x + g x` and `(f * g) x = f (g x)` is a `Ring` if `α` is a
+`Ring`. -/
 protected abbrev FunLike.ring : Ring F where
   __ := FunLike.semiring
   __ := FunLike.addCommGroup
