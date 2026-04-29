@@ -26,10 +26,42 @@ namespace CategoryTheory
 
 open Category Limits Pretriangulated Triangulated Pretriangulated.Opposite
 
+-- to be moved
+lemma Functor.faithful_of_precomp_of_hasLeftCalculusOfFractions
+    {C D E : Type*} [Category* C] [Category* D] [Category* E]
+    (F : D ⥤ E) (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W]
+    [W.HasLeftCalculusOfFractions]
+    (h : ∀ ⦃X₁ X₂ : C⦄ (f g : X₁ ⟶ X₂), F.map (L.map f) = F.map (L.map g) → L.map f = L.map g) :
+    Faithful F := by
+  have := Localization.essSurj L W
+  refine F.faithful_of_precomp_essSurj L (fun X₁ X₂ f g hfg ↦ ?_)
+  obtain ⟨φ, rfl, rfl⟩ := Localization.exists_leftFraction₂ L W f g
+  have := Localization.inverts L W φ.s φ.hs
+  rw [← cancel_mono (L.map φ.s)]
+  erw [φ.fst.map_comp_map_s L, φ.snd.map_comp_map_s L]
+  apply h
+  simpa only [← F.map_comp, φ.fst.map_comp_map_s, φ.snd.map_comp_map_s] using
+    hfg =≫ F.map (L.map φ.s)
+
+-- to be moved
+lemma Functor.faithful_of_precomp_cancel_zero_of_hasLeftCalculusOfFractions
+    {C D E : Type*} [Category* C] [Category* D] [Category* E]
+    (F : D ⥤ E) (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W]
+    [W.HasLeftCalculusOfFractions]
+    [Preadditive C] [Preadditive D] [Preadditive E] [L.Additive] [F.Additive]
+    (h : ∀ ⦃X₁ X₂ : C⦄ (f : X₁ ⟶ X₂), F.map (L.map f) = 0 → L.map f = 0) :
+    Faithful F :=
+  faithful_of_precomp_of_hasLeftCalculusOfFractions F L W
+    (fun X₁ X₂ f g hfg => by
+      rw [← sub_eq_zero, ← L.map_sub]
+      exact h _ (by rw [L.map_sub, F.map_sub, hfg, sub_self]))
+
 namespace ObjectProperty
 
 variable {C D D' : Type*} [Category* C] [Category* D] [Category* D']
 
+/-- Given `P : ObjectProperty C`, this is the equivalence between `P.op.FullSubcategory`
+and `P.FullSubcategoryᵒᵖ`. -/
 @[simps]
 def opEquivalence (P : ObjectProperty C) : P.op.FullSubcategory ≌ P.FullSubcategoryᵒᵖ where
   functor := (P.lift P.op.ι.leftOp (fun X ↦ X.unop.property)).rightOp
@@ -234,8 +266,28 @@ instance [A.IsTriangulatedRightLocalizing B] :
         simp only [← fac, hφ', Category.assoc, hf, ← dsimp% NatIso.naturality_1 e,
           homMk_hom, Functor.map_comp, assoc, dsimp% e.hom_inv_id_app_assoc,
           MorphismProperty.LeftFraction.map_comp_map_s_assoc] )
-    have : F.Faithful := by
-      sorry
+    have : F.Additive := by
+      rw [Localization.functor_additive_iff L₁ (B.inverseImage A.ι).trW]
+      exact Functor.additive_of_iso e
+    have : F.Faithful :=
+      Functor.faithful_of_precomp_cancel_zero_of_hasLeftCalculusOfFractions _ L₁
+        (B.inverseImage A.ι).trW (fun X₁ X₂ f hf ↦ by
+          replace hf : L₂.map f.hom = L₂.map 0 := by
+            simp [← dsimp% NatIso.naturality_2 e f, hf]
+          rw [MorphismProperty.map_eq_iff_postcomp L₂ B.trW] at hf
+          obtain ⟨X₃, s, hs, fac⟩ := hf
+          simp only [zero_comp] at fac
+          obtain ⟨X₄, t, a, hX₄, ht, fac'⟩ :=
+            IsTriangulatedRightLocalizing.fac' s X₂.property hs
+          let t' : X₂ ⟶ ⟨X₄, hX₄⟩ := A.homMk t
+          have := Localization.inverts L₁ (B.inverseImage A.ι).trW t'
+            (by rwa [trW_inverseImage_ι_iff])
+          rw [← cancel_mono (L₁.map t'), zero_comp, ← L₁.map_comp,
+            ← L₁.map_zero]
+          congr 1
+          ext
+          dsimp [t']
+          rw [← fac', reassoc_of% fac, zero_comp])
     exact ⟨.ofFullyFaithful F⟩
 
 instance [A.IsTriangulated] [B.IsTriangulated] [B.IsClosedUnderIsomorphisms]
@@ -259,8 +311,7 @@ instance [A.IsTriangulated] [B.IsTriangulated] [B.IsClosedUnderIsomorphisms]
       intro _ _ f hf
       simp only [MorphismProperty.inverseImage_iff, Equivalence.symm_functor] at hf ⊢
       exact MorphismProperty.le_isoClosure _ _ hf
-    · intro _ _ f hf
-      refine Localization.inverts L₁.op (B.inverseImage A.ι).trW.op _ ?_
+    · refine fun _ _ _ hf ↦ Localization.inverts L₁.op (B.inverseImage A.ι).trW.op _ ?_
       simpa [trW_inverseImage_ι_iff, ← op_inf, trW_op] using hf
   exact LocalizerMorphism.IsLocalizedFullyFaithful.mk' (A.triangulatedLocalizedMorphism B)
     L₁ L₂ F (((A.op.triangulatedLocalizedMorphism B.op).fullyFaithful
