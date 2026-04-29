@@ -153,7 +153,7 @@ If the inverse of a Freiman homomorphism is itself a Freiman homomorphism, then 
 isomorphism.
 -/
 @[to_additive]
-lemma IsMulFreimanHom.toIsMulFreimanIso {g : β → α} (h : InvOn g f A B)
+lemma IsMulFreimanHom.to_isMulFreimanIso {g : β → α} (h : InvOn g f A B)
     (hf : IsMulFreimanHom n A B f) (hg : IsMulFreimanHom n B A g) :
     IsMulFreimanIso n A B f where
   bijOn := h.bijOn hf.mapsTo hg.mapsTo
@@ -337,7 +337,7 @@ variable [CancelCommMonoid α] [CancelCommMonoid β] {A : Set α} {B : Set β} {
 @[to_additive]
 lemma IsMulFreimanIso.mono {hmn : m ≤ n} (hf : IsMulFreimanIso n A B f) :
     IsMulFreimanIso m A B f :=
-  (hf.isMulFreimanHom.mono hmn).toIsMulFreimanIso hf.bijOn.invOn_invFunOn
+  (hf.isMulFreimanHom.mono hmn).to_isMulFreimanIso hf.bijOn.invOn_invFunOn
     (hf.invFunOn.isMulFreimanHom.mono hmn)
 
 end CancelCommMonoid
@@ -393,7 +393,7 @@ section
 variable {α₁ α₂ β₁ β₂ : Type*} [CommMonoid α₁] [CommMonoid α₂] [CommMonoid β₁] [CommMonoid β₂]
   {A₁ : Set α₁} {A₂ : Set α₂} {B₁ : Set β₁} {B₂ : Set β₂} {f₁ : α₁ → β₁} {f₂ : α₂ → β₂} {n : ℕ}
 
-@[to_additive IsAddFreimanHom.prodMap]
+@[to_additive prodMap]
 lemma IsMulFreimanHom.prodMap (h₁ : IsMulFreimanHom n A₁ B₁ f₁) (h₂ : IsMulFreimanHom n A₂ B₂ f₂) :
     IsMulFreimanHom n (A₁ ×ˢ A₂) (B₁ ×ˢ B₂) (Prod.map f₁ f₂) :=
   (h₁.comp .fst).prodMk (h₂.comp .snd)
@@ -401,7 +401,7 @@ lemma IsMulFreimanHom.prodMap (h₁ : IsMulFreimanHom n A₁ B₁ f₁) (h₂ : 
 @[to_additive]
 lemma IsMulFreimanIso.prodMap (h₁ : IsMulFreimanIso n A₁ B₁ f₁) (h₂ : IsMulFreimanIso n A₂ B₂ f₂) :
     IsMulFreimanIso n (A₁ ×ˢ A₂) (B₁ ×ˢ B₂) (Prod.map f₁ f₂) :=
-  (h₁.isMulFreimanHom.prodMap h₂.isMulFreimanHom).toIsMulFreimanIso
+  (h₁.isMulFreimanHom.prodMap h₂.isMulFreimanHom).to_isMulFreimanIso
     (h₁.bijOn.invOn_invFunOn.prodMap h₂.bijOn.invOn_invFunOn)
     (h₁.invFunOn.isMulFreimanHom.prodMap h₂.invFunOn.isMulFreimanHom)
 
