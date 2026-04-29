@@ -359,7 +359,7 @@ lemma sup_range_r_range_b :
 lemma range_r_app_union_range_b_app (n : SimplexCategoryᵒᵖ) :
     Set.range ((r i d).app n) ∪
       Set.range ((b i d).app n) = Set.univ :=
-  congr_fun (congr_arg Subfunctor.obj (max_range_r_range_b i d)) n
+  congr($(max_range_r_range_b i d).obj n)
 
 variable {i d} in
 lemma isPushout_aux {n : ℕ} (y : (sigmaStdSimplex i d) _⦋n⦌)
