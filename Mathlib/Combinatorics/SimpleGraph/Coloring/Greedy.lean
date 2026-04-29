@@ -21,10 +21,6 @@ set_option linter.style.longLine false
 theorem SimpleGraph.isClique_top {α : Type*} (s : Set α) : (⊤ : SimpleGraph α).IsClique s := sorry
 -- #35619
 theorem SimpleGraph.isClique_univ_iff {V : Type*} (G : SimpleGraph V) : G.IsClique .univ ↔ G = ⊤ := sorry
--- #35622
-theorem Function.Injective.isWellOrder_onFun {α β : Type*} (r : β → β → Prop) {f : α → β} (hf : f.Injective) [IsWellOrder β r] : IsWellOrder α (r.onFun f) := sorry
--- #35628
-theorem SimpleGraph.Embedding.image_neighborSet {V V' : Type*} {G : SimpleGraph V} {G' : SimpleGraph V'} {f : G ↪g G'} (v : V) : f '' G.neighborSet v = G'.neighborSet (f v) ∩ Set.range f := sorry
 -- #36626
 theorem IsLowerSet.eqOn_id_of_injOn_of_forall_not_lt {α : Type*} {r : α → α → Prop} [IsWellOrder α r] {s : Set α} (hs : @IsLowerSet α ⟨r⟩ s) {f : α → α} (hf : s.InjOn f) (h : ∀ x ∈ s, ¬r x (f x)) : s.EqOn f id := sorry
 -- #36626
@@ -239,7 +235,7 @@ theorem nonempty_coloring_iff_exists_isWellOrder {α : Type*} :
   -- Take arbitrary well-orders on `α` and `V`, then order the vertices first by their color,
   -- and then by themselves to break ties (i.e. use the lexicographic order).
   let r := Prod.Lex WellOrderingRel WellOrderingRel |>.onFun fun v ↦ (C v, v)
-  have : IsWellOrder V r := Function.Injective.isWellOrder_onFun _ fun _ _ h ↦ congr(($h).snd)
+  have : IsWellOrder V r := Function.Injective.isWellOrder _ fun _ _ h ↦ congr(($h).snd)
   -- For every color `v` assigned in the greedy coloring, let `f v` be the first vertex that was
   -- greedy-colored by the color `v`, with respect to the order `r`.
   let f : Set.range (G.greedyColoring r) → V := (IsWellFounded.wf.min (r := r) _ <| ·.prop)

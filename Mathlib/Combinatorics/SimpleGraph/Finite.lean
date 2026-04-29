@@ -41,16 +41,6 @@ or `card_verts`.
   is locally finite, too.
 -/
 
-@[expose] public section Dependencies
-
-set_option warn.sorry false
-set_option linter.style.longLine false
-
--- #35628
-theorem SimpleGraph.neighborSet_map {V W : Type*} (G : SimpleGraph V) (v : V) (f : V ↪ W) : (G.map f).neighborSet (f v) = f '' G.neighborSet v := sorry
-
-end Dependencies
-
 @[expose] public section
 
 
