@@ -673,12 +673,12 @@ def induceUnivIso (G : SimpleGraph V) : G.induce Set.univ ≃g G where
   map_rel_iff' := by simp only [Equiv.Set.univ, Equiv.coe_fn_mk, comap_adj, Embedding.coe_subtype,
                                 implies_true]
 
-/-- The isomorphism between `completeBipartiteGraph α₁ β₁` and
-`completeBipartiteGraph α₂ β₂ ` where `α₁ ≃ α₂` and `β₁ ≃ β₂`. -/
-def completeBipartiteGraph.congr {α₁ α₂ β₁ β₂ : Type*} (hα : α₁ ≃ α₂) (hβ : β₁ ≃ β₂) :
-    completeBipartiteGraph α₁ β₁ ≃g completeBipartiteGraph α₂ β₂ where
-  toFun := Sum.map hα hβ
-  invFun := Sum.map hα.symm hβ.symm
+/-- The isomorphism between `completeBipartiteGraph V₁ W₁` and
+`completeBipartiteGraph V₂ W₂` where `V₁ ≃ V₂` and `W₁ ≃ W₂`. -/
+def completeBipartiteGraph.congr {V₁ V₂ W₁ W₂ : Type*} (hV : V₁ ≃ V₂) (hW : W₁ ≃ W₂) :
+    completeBipartiteGraph V₁ W₁ ≃g completeBipartiteGraph V₂ W₂ where
+  toFun := Sum.map hV hW
+  invFun := Sum.map hV.symm hW.symm
   left_inv _ := by simp
   right_inv _ := by simp
   map_rel_iff' := by simp

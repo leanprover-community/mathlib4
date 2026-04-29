@@ -19,7 +19,7 @@ public import Mathlib.Tactic.Rify
 This file defines the **Zarankiewicz function** in terms of bipartite graphs.
 -/
 
-@[expose] public section
+public section
 
 
 open Finset Fintype
@@ -70,7 +70,7 @@ theorem zarankiewicz_of_fintypeCard_eq
 
 /-- `zarankiewicz (card V) (card W) (card α) (card β)` is at most `x` if and only if every
 `completeBipartiteGraph α β`-free bipartite graph `G` has at most `x` edges. -/
-theorem zarankiewicz_le_iff (x : ℕ) :
+theorem zarankiewicz_card_le_iff (x : ℕ) :
     zarankiewicz (card V) (card W) (card α) (card β) ≤ x ↔
       ∀ ⦃G : SimpleGraph (V ⊕ W)⦄ [DecidableRel G.Adj], G ≤ completeBipartiteGraph V W →
         (completeBipartiteGraph α β).Free G → #G.edgeFinset ≤ x := by
@@ -79,9 +79,17 @@ theorem zarankiewicz_le_iff (x : ℕ) :
   exact ⟨fun h _ _ h_le h_free ↦ by convert h _ ⟨h_le, h_free⟩,
     fun h _ ⟨h_le, h_free⟩ ↦ by convert h h_le h_free⟩
 
+/-- `zarankiewicz m n s t` is at most `x` if and only if every
+`completeBipartiteGraph (Fin s) (Fin t)`-free bipartite graph `G` has at most `x` edges. -/
+theorem zarankiewicz_le_iff (x : ℕ) :
+    zarankiewicz m n s t ≤ x ↔ ∀ ⦃G : SimpleGraph ((Fin m) ⊕ (Fin n))⦄ [DecidableRel G.Adj],
+      G ≤ completeBipartiteGraph (Fin m) (Fin n) →
+        (completeBipartiteGraph (Fin s) (Fin t)).Free G → #G.edgeFinset ≤ x := by
+  simp_rw [← zarankiewicz_card_le_iff, Fintype.card_fin]
+
 /-- `zarankiewicz (card V) (card W) (card α) (card β)` is greater than `x` if and only if there
 exists a `completeBipartiteGraph α β`-free bipartite graph `G` with more than `x` edges. -/
-theorem lt_zarankiewicz_iff (x : ℕ) :
+theorem lt_zarankiewicz_card_iff (x : ℕ) :
     x < zarankiewicz (card V) (card W) (card α) (card β) ↔
       ∃ G : SimpleGraph (V ⊕ W), ∃ _ : DecidableRel G.Adj, G ≤ completeBipartiteGraph V W ∧
         (completeBipartiteGraph α β).Free G ∧  x < #G.edgeFinset := by
@@ -90,23 +98,45 @@ theorem lt_zarankiewicz_iff (x : ℕ) :
   exact ⟨fun ⟨_, ⟨h_le, h_free⟩, h_lt⟩ ↦ ⟨_, _, h_le, h_free, by convert h_lt⟩,
     fun ⟨_, _, ⟨h_le, h_free, h_lt⟩⟩ ↦ ⟨_, ⟨h_le, h_free⟩, by convert h_lt⟩⟩
 
+/-- `zarankiewicz m n s t` is greater than `x` if and only if there exists
+a `completeBipartiteGraph (Fin s) (Fin t)`-free bipartite graph `G` with more than `x` edges. -/
+theorem lt_zarankiewicz_iff (x : ℕ) :
+    x < zarankiewicz m n s t ↔ ∃ G : SimpleGraph ((Fin m) ⊕ (Fin n)),
+      ∃ _ : DecidableRel G.Adj, G ≤ completeBipartiteGraph (Fin m) (Fin n) ∧
+        (completeBipartiteGraph (Fin s) (Fin t)).Free G ∧ x < #G.edgeFinset := by
+  simp_rw [← lt_zarankiewicz_card_iff, Fintype.card_fin]
+
 variable {R : Type*} [Semiring R] [LinearOrder R] [FloorSemiring R]
 
-@[inherit_doc zarankiewicz_le_iff]
-theorem zarankiewicz_le_iff_of_nonneg {x : R} (h : 0 ≤ x) :
+@[inherit_doc zarankiewicz_card_le_iff]
+theorem zarankiewicz_card_le_iff_of_nonneg {x : R} (h : 0 ≤ x) :
     zarankiewicz (card V) (card W) (card α) (card β) ≤ x ↔
       ∀ ⦃G : SimpleGraph (V ⊕ W)⦄ [DecidableRel G.Adj], G ≤ completeBipartiteGraph V W →
         (completeBipartiteGraph α β).Free G → #G.edgeFinset ≤ x := by
   simp_rw [← Nat.le_floor_iff h]
-  exact zarankiewicz_le_iff ⌊x⌋₊
+  exact zarankiewicz_card_le_iff ⌊x⌋₊
 
-@[inherit_doc lt_zarankiewicz_iff]
-theorem lt_zarankiewicz_iff_of_nonneg {x : R} (h : 0 ≤ x) :
+@[inherit_doc zarankiewicz_le_iff]
+theorem zarankiewicz_le_iff_of_nonneg {x : R} (h : 0 ≤ x) :
+    zarankiewicz m n s t ≤ x ↔ ∀ ⦃G : SimpleGraph ((Fin m) ⊕ (Fin n))⦄ [DecidableRel G.Adj],
+      G ≤ completeBipartiteGraph (Fin m) (Fin n) →
+        (completeBipartiteGraph (Fin s) (Fin t)).Free G → #G.edgeFinset ≤ x := by
+  simp_rw [← zarankiewicz_card_le_iff_of_nonneg h, Fintype.card_fin]
+
+@[inherit_doc lt_zarankiewicz_card_iff]
+theorem lt_zarankiewicz_card_iff_of_nonneg {x : R} (h : 0 ≤ x) :
     x < zarankiewicz (card V) (card W) (card α) (card β) ↔
       ∃ G : SimpleGraph (V ⊕ W), ∃ _ : DecidableRel G.Adj, G ≤ completeBipartiteGraph V W ∧
         (completeBipartiteGraph α β).Free G ∧  x < #G.edgeFinset := by
   simp_rw [← Nat.floor_lt h]
-  exact lt_zarankiewicz_iff ⌊x⌋₊
+  exact lt_zarankiewicz_card_iff ⌊x⌋₊
+
+@[inherit_doc lt_zarankiewicz_iff]
+theorem lt_zarankiewicz_iff_of_nonneg {x : R} (h : 0 ≤ x) :
+    x < zarankiewicz m n s t ↔ ∃ G : SimpleGraph ((Fin m) ⊕ (Fin n)),
+      ∃ _ : DecidableRel G.Adj, G ≤ completeBipartiteGraph (Fin m) (Fin n) ∧
+        (completeBipartiteGraph (Fin s) (Fin t)).Free G ∧  x < #G.edgeFinset := by
+  simp_rw [← lt_zarankiewicz_card_iff_of_nonneg h, Fintype.card_fin]
 
 open Classical in
 /-- The Zarankiewicz function is at most the corresponding extremal number. -/
