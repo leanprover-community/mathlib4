@@ -114,7 +114,11 @@ theorem coe_one : ((1 : ℤ_[p]) : ℚ_[p]) = 1 := rfl
 @[simp, norm_cast]
 theorem coe_zero : ((0 : ℤ_[p]) : ℚ_[p]) = 0 := rfl
 
-@[simp]
+#adaptation_note /-- https://github.com/leanprover-community/mathlib4/pull/38702
+The simpNF linter complains that the LHS is not in simp normal form.
+
+See also https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Encapsulate.20real.20numbers/near/591781966 -/
+-- @[simp]
 lemma coe_eq_zero : (x : ℚ_[p]) = 0 ↔ x = 0 := by simp [← coe_zero, Subtype.coe_inj, PadicInt]
 
 lemma coe_ne_zero : (x : ℚ_[p]) ≠ 0 ↔ x ≠ 0 := coe_eq_zero.not
