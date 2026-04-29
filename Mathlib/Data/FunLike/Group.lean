@@ -56,140 +56,132 @@ section GroupInstances
 variable [Mul F]
 
 @[to_additive]
-instance instSemigroup [Semigroup β] [IsMulApply F α β] : Semigroup F :=
-  fast_instance% DFunLike.coe_injective.semigroup (fun (f : F) ↦ (f : α → β)) coe_mul
+protected abbrev semigroup [Semigroup β] [IsMulApply F α β] : Semigroup F :=
+  DFunLike.coe_injective.semigroup (fun (f : F) ↦ (f : α → β)) coe_mul
 
 @[to_additive]
-instance instCommSemigroup [CommSemigroup β] [IsMulApply F α β] :
+protected abbrev commSemigroup [CommSemigroup β] [IsMulApply F α β] :
     CommSemigroup F :=
-  fast_instance% DFunLike.coe_injective.commSemigroup (fun (f : F) ↦ (f : α → β)) coe_mul
+  DFunLike.coe_injective.commSemigroup (fun (f : F) ↦ (f : α → β)) coe_mul
 
 @[to_additive]
-instance instIsLeftCancelMul [Mul β] [IsLeftCancelMul β] [IsMulApply F α β] :
+protected abbrev isLeftCancelMul [Mul β] [IsLeftCancelMul β] [IsMulApply F α β] :
     IsLeftCancelMul F :=
   DFunLike.coe_injective.isLeftCancelMul (fun (f : F) ↦ (f : α → β)) coe_mul
 
 @[to_additive]
-instance instIsRightCancelMul [Mul β] [IsRightCancelMul β] [IsMulApply F α β] :
+protected abbrev isRightCancelMul [Mul β] [IsRightCancelMul β] [IsMulApply F α β] :
     IsRightCancelMul F :=
   DFunLike.coe_injective.isRightCancelMul (fun (f : F) ↦ (f : α → β)) coe_mul
 
 @[to_additive]
-instance instIsCancelMul [Mul β] [IsCancelMul β] [IsMulApply F α β] :
+protected abbrev isCancelMul [Mul β] [IsCancelMul β] [IsMulApply F α β] :
     IsCancelMul F :=
   DFunLike.coe_injective.isCancelMul (fun (f : F) ↦ (f : α → β)) coe_mul
 
 @[to_additive]
-instance instLeftCancelSemigroup [LeftCancelSemigroup β] [IsMulApply F α β] :
+protected abbrev leftCancelSemigroup [LeftCancelSemigroup β] [IsMulApply F α β] :
     LeftCancelSemigroup F :=
   DFunLike.coe_injective.leftCancelSemigroup (fun (f : F) ↦ (f : α → β)) coe_mul
 
 @[to_additive]
-instance instRightCancelSemigroup [RightCancelSemigroup β] [IsMulApply F α β] :
+protected abbrev rightCancelSemigroup [RightCancelSemigroup β] [IsMulApply F α β] :
     RightCancelSemigroup F :=
   DFunLike.coe_injective.rightCancelSemigroup (fun (f : F) ↦ (f : α → β)) coe_mul
 
 variable [One F]
 
 @[to_additive]
-instance instMulOne [MulOneClass β] [IsOneApply F α β] [IsMulApply F α β] :
+protected abbrev mulOneClass [MulOneClass β] [IsOneApply F α β] [IsMulApply F α β] :
     MulOneClass F :=
-  fast_instance% DFunLike.coe_injective.mulOneClass (fun (f : F) ↦ (f : α → β)) coe_one coe_mul
+  DFunLike.coe_injective.mulOneClass (fun (f : F) ↦ (f : α → β)) coe_one coe_mul
 
 variable [Pow F ℕ]
 
 @[to_additive]
-instance instMonoid [Monoid β] [IsOneApply F α β] [IsMulApply F α β] [IsPowApply ℕ F α β] :
+protected abbrev monoid [Monoid β] [IsOneApply F α β] [IsMulApply F α β] [IsPowApply ℕ F α β] :
     Monoid F :=
-  fast_instance% DFunLike.coe_injective.monoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_pow
+  DFunLike.coe_injective.monoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_pow
 
 @[to_additive]
-instance instLeftCancelMonoid [LeftCancelMonoid β] [IsOneApply F α β] [IsMulApply F α β]
-    [IsPowApply ℕ F α β] :
-    LeftCancelMonoid F :=
-  fast_instance%
-    DFunLike.coe_injective.leftCancelMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_pow
+protected abbrev leftCancelMonoid [LeftCancelMonoid β] [IsOneApply F α β] [IsMulApply F α β]
+    [IsPowApply ℕ F α β] : LeftCancelMonoid F :=
+  DFunLike.coe_injective.leftCancelMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_pow
 
 @[to_additive]
-instance instRightCancelMonoid [RightCancelMonoid β] [IsOneApply F α β] [IsMulApply F α β]
-    [IsPowApply ℕ F α β] :
-    RightCancelMonoid F :=
-  fast_instance%
-    DFunLike.coe_injective.rightCancelMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_pow
+protected abbrev rightCancelMonoid [RightCancelMonoid β] [IsOneApply F α β] [IsMulApply F α β]
+    [IsPowApply ℕ F α β] : RightCancelMonoid F :=
+  DFunLike.coe_injective.rightCancelMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_pow
 
 @[to_additive]
-instance instCancelMonoid [CancelMonoid β] [IsOneApply F α β] [IsMulApply F α β]
-    [IsPowApply ℕ F α β] :
-    CancelMonoid F :=
-  fast_instance%
-    DFunLike.coe_injective.cancelMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_pow
+protected abbrev cancelMonoid [CancelMonoid β] [IsOneApply F α β] [IsMulApply F α β]
+    [IsPowApply ℕ F α β] : CancelMonoid F :=
+  DFunLike.coe_injective.cancelMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_pow
 
 @[to_additive]
-instance instCommMonoid [CommMonoid β] [IsOneApply F α β] [IsMulApply F α β]
-    [IsPowApply ℕ F α β] :
-    CommMonoid F :=
-  fast_instance%
-    DFunLike.coe_injective.commMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_pow
+protected abbrev commMonoid [CommMonoid β] [IsOneApply F α β] [IsMulApply F α β]
+    [IsPowApply ℕ F α β] : CommMonoid F :=
+  DFunLike.coe_injective.commMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_pow
 
 @[to_additive]
-instance instCancelCommMonoid [CancelCommMonoid β] [IsOneApply F α β] [IsMulApply F α β]
-    [IsPowApply ℕ F α β] :
-    CancelCommMonoid F :=
-  fast_instance%
-    DFunLike.coe_injective.cancelCommMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_pow
+protected abbrev cancelCommMonoid [CancelCommMonoid β] [IsOneApply F α β] [IsMulApply F α β]
+    [IsPowApply ℕ F α β] : CancelCommMonoid F :=
+  DFunLike.coe_injective.cancelCommMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_pow
 
 variable [Inv F]
 
 @[to_additive]
-instance instInvolutiveInv [InvolutiveInv β] [IsInvApply F α β] : InvolutiveInv F :=
-  fast_instance% DFunLike.coe_injective.involutiveInv (fun (f : F) ↦ (f : α → β)) coe_inv
+protected abbrev involutiveInv [InvolutiveInv β] [IsInvApply F α β] : InvolutiveInv F :=
+  DFunLike.coe_injective.involutiveInv (fun (f : F) ↦ (f : α → β)) coe_inv
 
 @[to_additive]
-instance instInvOneClass [InvOneClass β] [IsOneApply F α β] [IsInvApply F α β] : InvOneClass F :=
-  fast_instance% DFunLike.coe_injective.invOneClass (fun (f : F) ↦ (f : α → β)) coe_one coe_inv
+protected abbrev invOneClass [InvOneClass β] [IsOneApply F α β] [IsInvApply F α β] :
+    InvOneClass F :=
+  DFunLike.coe_injective.invOneClass (fun (f : F) ↦ (f : α → β)) coe_one coe_inv
 
 variable [Div F] [Pow F ℤ]
 
-@[to_additive instSubNegMonoid]
-instance instDivInvMonoid [DivInvMonoid β] [IsOneApply F α β] [IsMulApply F α β] [IsInvApply F α β]
-    [IsDivApply F α β] [IsPowApply ℕ F α β] [IsPowApply ℤ F α β] : DivInvMonoid F :=
-  fast_instance% DFunLike.coe_injective.divInvMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul
-    coe_inv coe_div coe_pow coe_pow
+@[to_additive subNegMonoid]
+protected abbrev divInvMonoid [DivInvMonoid β] [IsOneApply F α β] [IsMulApply F α β]
+    [IsInvApply F α β] [IsDivApply F α β] [IsPowApply ℕ F α β] [IsPowApply ℤ F α β] :
+    DivInvMonoid F :=
+  DFunLike.coe_injective.divInvMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_inv coe_div
+    coe_pow coe_pow
 
 @[to_additive]
-instance instDivInvOneMonoid [DivInvOneMonoid β] [IsOneApply F α β] [IsMulApply F α β]
+protected abbrev divInvOneMonoid [DivInvOneMonoid β] [IsOneApply F α β] [IsMulApply F α β]
     [IsInvApply F α β] [IsDivApply F α β] [IsPowApply ℕ F α β] [IsPowApply ℤ F α β] :
     DivInvOneMonoid F :=
-  fast_instance% DFunLike.coe_injective.divInvOneMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul
+  DFunLike.coe_injective.divInvOneMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul
     coe_inv coe_div coe_pow coe_pow
 
 @[to_additive]
-instance instDivisionMonoid [DivisionMonoid β] [IsOneApply F α β] [IsMulApply F α β]
+protected abbrev divisionMonoid [DivisionMonoid β] [IsOneApply F α β] [IsMulApply F α β]
     [IsInvApply F α β] [IsDivApply F α β] [IsPowApply ℕ F α β] [IsPowApply ℤ F α β] :
     DivisionMonoid F :=
-  fast_instance% DFunLike.coe_injective.divisionMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul
+  DFunLike.coe_injective.divisionMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul
     coe_inv coe_div coe_pow coe_pow
 
 @[to_additive instSubtractionCommMonoid]
-instance instDivisionCommMonoid [DivisionCommMonoid β] [IsOneApply F α β] [IsMulApply F α β]
+protected abbrev divisionCommMonoid [DivisionCommMonoid β] [IsOneApply F α β] [IsMulApply F α β]
     [IsInvApply F α β] [IsDivApply F α β] [IsPowApply ℕ F α β] [IsPowApply ℤ F α β] :
     DivisionCommMonoid F :=
-  fast_instance% DFunLike.coe_injective.divisionCommMonoid (fun (f : F) ↦ (f : α → β)) coe_one
-    coe_mul coe_inv coe_div coe_pow coe_pow
-
-@[to_additive]
-instance instGroup [Group β] [IsOneApply F α β] [IsMulApply F α β] [IsInvApply F α β]
-    [IsDivApply F α β] [IsPowApply ℕ F α β] [IsPowApply ℤ F α β] :
-    Group F :=
-  fast_instance% DFunLike.coe_injective.group (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_inv
+  DFunLike.coe_injective.divisionCommMonoid (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_inv
     coe_div coe_pow coe_pow
 
 @[to_additive]
-instance instCommGroup [CommGroup β] [IsOneApply F α β] [IsMulApply F α β] [IsInvApply F α β]
+protected abbrev group [Group β] [IsOneApply F α β] [IsMulApply F α β] [IsInvApply F α β]
+    [IsDivApply F α β] [IsPowApply ℕ F α β] [IsPowApply ℤ F α β] :
+    Group F :=
+  DFunLike.coe_injective.group (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_inv coe_div coe_pow
+    coe_pow
+
+@[to_additive]
+protected abbrev commGroup [CommGroup β] [IsOneApply F α β] [IsMulApply F α β] [IsInvApply F α β]
     [IsDivApply F α β] [IsPowApply ℕ F α β] [IsPowApply ℤ F α β] :
     CommGroup F :=
-  fast_instance% DFunLike.coe_injective.commGroup (fun (f : F) ↦ (f : α → β)) coe_one coe_mul
-    coe_inv coe_div coe_pow coe_pow
+  DFunLike.coe_injective.commGroup (fun (f : F) ↦ (f : α → β)) coe_one coe_mul coe_inv coe_div
+    coe_pow coe_pow
 
 end GroupInstances
 
