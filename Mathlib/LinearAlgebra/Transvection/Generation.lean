@@ -663,7 +663,7 @@ theorem mem_transvections_pow_mul_dilatransvections :
   wlog finrank_le_add : 2 ≤ finrank K (V ⧸ e.fixedSubmodule)
   · rw [← one_mul e]
     apply Set.mul_mem_mul
-    · apply transvections_pow_mono (zero_le _)
+    · apply transvections_pow_mono zero_le
       simp
     rw [mem_dilatransvections_iff_finrank_quotient]
     simp only [not_le] at finrank_le_add
