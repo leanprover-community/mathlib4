@@ -150,6 +150,8 @@ end RankIdentity
 
 section DimensionFormula
 
+namespace ModularForm
+
 lemma weight_four_rank_one : Module.rank ℂ (ModularForm 𝒮ℒ 4) = 1 :=
   (rank_eq_one_add_rank_cuspForm (by norm_num) ⟨2, rfl⟩).trans
     ((congrArg (1 + ·) (cuspForm_rank_lt_twelve (by norm_num))).trans (by norm_cast))
@@ -214,7 +216,7 @@ private lemma weight_two_eq_zero_of_not_cuspForm (f : ModularForm 𝒮ℒ 2) (hf
       (E_qExpansion_coeff_zero _ ⟨3, rfl⟩) E₄_qExpansion_coeff_one E₆_qExpansion_coeff_one hqc4 hqc6
 
 /-- Modular forms of weight 2 for `𝒮ℒ` are zero. -/
-theorem ModularForm.levelOne_weight_two_rank_zero :
+theorem levelOne_weight_two_rank_zero :
     Module.rank ℂ (ModularForm 𝒮ℒ 2) = 0 := by
   rw [rank_zero_iff_forall_zero]
   intro f
@@ -224,7 +226,7 @@ theorem ModularForm.levelOne_weight_two_rank_zero :
   · exact weight_two_eq_zero_of_not_cuspForm f hf
 
 /-- The dimension formula for `𝒮ℒ` modular forms of even weight `k ≥ 3`. -/
-theorem ModularForm.dimension_level_one (k : ℕ) (hk : 3 ≤ (k : ℤ)) (hk2 : Even k) :
+theorem dimension_level_one (k : ℕ) (hk : 3 ≤ (k : ℤ)) (hk2 : Even k) :
     Module.rank ℂ (ModularForm 𝒮ℒ k) =
       if 12 ∣ ((k : ℤ) - 2) then Nat.floor ((k : ℚ) / 12)
       else Nat.floor ((k : ℚ) / 12) + 1 := by
@@ -235,7 +237,7 @@ theorem ModularForm.dimension_level_one (k : ℕ) (hk : 3 ≤ (k : ℤ)) (hk2 : 
   · have iH := ihn (k - 12) (by omega) (by omega) ((Nat.even_sub (by omega)).mpr (by grind))
     have hk12 : (((k - 12) : ℕ) : ℤ) = k - 12 := by grind
     rw [hk12] at iH
-    rw [iH, show ((k - 12 : ℕ) : ℚ) = (k : ℚ) - 12 by norm_cast]
+    rw [iH, show ((k - 12 : ℕ) : ℚ) = k - 12 by norm_cast]
     have hfl (hk' : (12 : ℚ) ≤ k) :
         ⌊(k : ℚ) / 12⌋₊ = 1 + ⌊((k : ℚ) - 12) / 12⌋₊ :=
       Nat.floor_div_eq_one_add_floor_sub_div (k : ℚ) 12 (by norm_num) hk'
@@ -243,8 +245,7 @@ theorem ModularForm.dimension_level_one (k : ℕ) (hk : 3 ≤ (k : ℤ)) (hk2 : 
     · simp only [show 12 ∣ (k : ℤ) - 12 - 2 by omega, ↓reduceIte, h12]
       norm_cast at *
       rw [hfl (by exact_mod_cast (by omega : (12 : ℤ) ≤ k))]
-    · simp only [show ¬ 12 ∣ (k : ℤ) - 12 - 2 by omega, ↓reduceIte, h12,
-        Nat.cast_add, Nat.cast_one]
+    · simp only [show ¬ 12 ∣ (k : ℤ) - 12 - 2 by omega, ↓reduceIte, h12, Nat.cast_add, Nat.cast_one]
       norm_cast at *
       rw [← add_assoc, ← hfl (by exact_mod_cast (by omega : (12 : ℤ) ≤ k))]
   · simp only [not_le] at HK
@@ -257,5 +258,7 @@ theorem ModularForm.dimension_level_one (k : ℕ) (hk : 3 ≤ (k : ℤ)) (hk2 : 
       | exact (congrArg (1 + ·) (levelOne_neg_weight_rank_zero (by omega))).trans (by norm_cast)
       | exact (congrArg (1 + ·) levelOne_weight_zero_rank_one).trans (by norm_cast)
       | exact (congrArg (1 + ·) levelOne_weight_two_rank_zero).trans (by norm_cast)
+
+end ModularForm
 
 end DimensionFormula
