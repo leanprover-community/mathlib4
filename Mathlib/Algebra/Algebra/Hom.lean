@@ -71,9 +71,6 @@ def toAlgHom {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) : A →�
   toFun := f
   commutes' := AlgHomClass.commutes f
 
--- instance coeTC {F : Type*} [FunLike F A B] [AlgHomClass F R A B] : CoeTC F (A →ₐ[R] B) :=
---   ⟨AlgHomClass.toAlgHom⟩
-
 end AlgHomClass
 
 namespace AlgHom
