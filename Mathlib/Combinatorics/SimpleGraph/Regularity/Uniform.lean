@@ -235,7 +235,7 @@ def IsUniform (ε : 𝕜) : Prop :=
 lemma bot_isUniform (hε : 0 < ε) : (⊥ : Finpartition A).IsUniform G ε := by
   rw [Finpartition.IsUniform, Finpartition.card_bot, nonUniforms_bot _ hε, Finset.card_empty,
     Nat.cast_zero]
-  exact mul_nonneg (Nat.cast_nonneg _) hε.le
+  positivity
 
 lemma isUniform_one : P.IsUniform G (1 : 𝕜) := by
   rw [IsUniform, mul_one, Nat.cast_le]

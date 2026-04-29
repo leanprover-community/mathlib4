@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Ring.Defs
 Transfer algebraic instances from `R` to `Rᵒᵈ` and `Lex R`.
 -/
 
-@[expose] public section
+public section
 
 
 variable {R : Type*}
