@@ -144,20 +144,9 @@ lemma IsCompactElement.isOpen_Ici (e : α) (he₀ : IsCompactElement e) : IsOpen
   rw [isOpen_iff_isUpperSet_and_dirSupInaccOn univ]
   constructor
   · grind [IsUpperSet]
-  · -- u is a Scott-Hausdorff open set, ie it has the inaccessable directed joins property
-    -- However the directed sets for our topology are defined precisely as
-    -- the directed sets of the our DCPOs
-    -- So compact points are precisely those points which have directed innaccessable joins
-    intro d _ nonempty hd  x hx hx' -- he₁
-    rw [isCompactElement_iff_le_of_directed_sSup_le] at he₀
-    -- rewrite `x`'s LUB propoerty in terms of sSup
-    have hx : x = sSup d := IsLUB.unique hx (lubOfDirected d hd)
-    have he₁ : e ≤ sSup d := by
-      rw [← hx]
-      simp only [Ici, mem_setOf_eq] at hx'
-      exact hx'
-    choose a a_in_d ha' using he₀ d nonempty hd he₁
-    exact ⟨a, a_in_d, mem_Ici.mpr ha'⟩
+  · rw [dirSupInaccOn_univ]
+    intro d nonempty hd x hx hx'
+    exact he₀ d x nonempty hd hx hx'
 
 /-- The upwards closure of a compact element forms an open set.
 In this version the data is implicit. -/
