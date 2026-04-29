@@ -42,42 +42,10 @@ instance : CoeSort BddOrd Type* :=
 abbrev of (X : Type*) [PartialOrder X] [BoundedOrder X] : BddOrd where
   carrier := X
 
-set_option backward.privateInPublic true in
-/-- The type of morphisms in `BddOrd R`. -/
-@[ext]
-structure Hom (X Y : BddOrd.{u}) where
-  private mk ::
-  /-- The underlying `BoundedOrderHom`. -/
-  hom' : BoundedOrderHom X Y
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance : Category BddOrd.{u} where
-  Hom X Y := Hom X Y
-  id _ := ⟨BoundedOrderHom.id _⟩
-  comp f g := ⟨g.hom'.comp f.hom'⟩
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance : ConcreteCategory BddOrd (BoundedOrderHom · ·) where
-  hom := Hom.hom'
-  ofHom := Hom.mk
-
-/-- Turn a morphism in `BddOrd` back into a `BoundedOrderHom`. -/
-abbrev Hom.hom {X Y : BddOrd.{u}} (f : Hom X Y) :=
-  ConcreteCategory.hom (C := BddOrd) f
-
-/-- Typecheck a `BoundedOrderHom` as a morphism in `BddOrd`. -/
-abbrev ofHom {X Y : Type u} [PartialOrder X] [BoundedOrder X] [PartialOrder Y] [BoundedOrder Y]
-    (f : BoundedOrderHom X Y) : of X ⟶ of Y :=
-  ConcreteCategory.ofHom (C := BddOrd) f
-
-variable {R} in
-/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
-def Hom.Simps.hom (X Y : BddOrd.{u}) (f : Hom X Y) :=
-  f.hom
-
-initialize_simps_projections Hom (hom' → hom)
+mk_concrete_category BddOrd (BoundedOrderHom · ·) (fun (X : BddOrd) ↦ BoundedOrderHom.id X)
+  BoundedOrderHom.comp
+  with_of_hom {X Y : Type u} [PartialOrder X] [BoundedOrder X] [PartialOrder Y]
+  [BoundedOrder Y] hom_type (BoundedOrderHom X Y) from (of X) to (of Y)
 
 /-!
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
@@ -100,16 +68,9 @@ lemma ext {X Y : BddOrd} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
 -- This is not `simp` to avoid rewriting in types of terms.
 theorem coe_of (X : Type u) [PartialOrder X] [BoundedOrder X] : (BddOrd.of X : Type u) = X := rfl
 
-@[simp]
-lemma hom_id {X : BddOrd} : (𝟙 X : X ⟶ X).hom = BoundedOrderHom.id _ := rfl
-
 /- Provided for rewriting. -/
 lemma id_apply (X : BddOrd) (x : X) :
     (𝟙 X : X ⟶ X) x = x := by simp
-
-@[simp]
-lemma hom_comp {X Y Z : BddOrd} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g).hom = g.hom.comp f.hom := rfl
 
 /- Provided for rewriting. -/
 lemma comp_apply {X Y Z : BddOrd} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
@@ -118,15 +79,6 @@ lemma comp_apply {X Y Z : BddOrd} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
 @[ext]
 lemma hom_ext {X Y : BddOrd} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
-
-@[simp]
-lemma hom_ofHom {X Y : Type u} [PartialOrder X] [BoundedOrder X] [PartialOrder Y] [BoundedOrder Y]
-    (f : BoundedOrderHom X Y) :
-    (ofHom f).hom = f := rfl
-
-@[simp]
-lemma ofHom_hom {X Y : BddOrd} (f : X ⟶ Y) :
-    ofHom f.hom = f := rfl
 
 @[simp]
 lemma ofHom_id {X : Type u} [PartialOrder X] [BoundedOrder X] :

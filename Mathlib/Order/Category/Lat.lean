@@ -48,41 +48,9 @@ attribute [coe] Lat.carrier
 /-- Construct a bundled `Lat` from the underlying type and typeclass. -/
 abbrev of (X : Type*) [Lattice X] : Lat := ⟨X⟩
 
-set_option backward.privateInPublic true in
-/-- The type of morphisms in `Lat R`. -/
-@[ext]
-structure Hom (X Y : Lat.{u}) where
-  private mk ::
-  /-- The underlying `LatticeHom`. -/
-  hom' : LatticeHom X Y
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance : Category Lat.{u} where
-  Hom X Y := Hom X Y
-  id X := ⟨LatticeHom.id X⟩
-  comp f g := ⟨g.hom'.comp f.hom'⟩
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance : ConcreteCategory Lat (LatticeHom · ·) where
-  hom := Hom.hom'
-  ofHom := Hom.mk
-
-/-- Turn a morphism in `Lat` back into a `LatticeHom`. -/
-abbrev Hom.hom {X Y : Lat.{u}} (f : Hom X Y) :=
-  ConcreteCategory.hom (C := Lat) f
-
-/-- Typecheck a `LatticeHom` as a morphism in `Lat`. -/
-abbrev ofHom {X Y : Type u} [Lattice X] [Lattice Y] (f : LatticeHom X Y) : of X ⟶ of Y :=
-  ConcreteCategory.ofHom (C := Lat) f
-
-variable {R} in
-/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
-def Hom.Simps.hom (X Y : Lat.{u}) (f : Hom X Y) :=
-  f.hom
-
-initialize_simps_projections Hom (hom' → hom)
+mk_concrete_category Lat (LatticeHom · ·) (fun (X : Lat) ↦ LatticeHom.id X) LatticeHom.comp
+  with_of_hom {X Y : Type u} [Lattice X] [Lattice Y]
+  hom_type (LatticeHom X Y) from (of X) to (of Y)
 
 /-!
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
@@ -105,16 +73,9 @@ lemma ext {X Y : Lat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
 -- This is not `simp` to avoid rewriting in types of terms.
 theorem coe_of (X : Type u) [Lattice X] : (Lat.of X : Type u) = X := rfl
 
-@[simp]
-lemma hom_id {X : Lat} : (𝟙 X : X ⟶ X).hom = LatticeHom.id _ := rfl
-
 /- Provided for rewriting. -/
 lemma id_apply (X : Lat) (x : X) :
     (𝟙 X : X ⟶ X) x = x := by simp
-
-@[simp]
-lemma hom_comp {X Y Z : Lat} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g).hom = g.hom.comp f.hom := rfl
 
 /- Provided for rewriting. -/
 lemma comp_apply {X Y Z : Lat} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
@@ -123,14 +84,6 @@ lemma comp_apply {X Y Z : Lat} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
 @[ext]
 lemma hom_ext {X Y : Lat} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
-
-@[simp]
-lemma hom_ofHom {X Y : Type u} [Lattice X] [Lattice Y] (f : LatticeHom X Y) : (ofHom f).hom = f :=
-  rfl
-
-@[simp]
-lemma ofHom_hom {X Y : Lat} (f : X ⟶ Y) :
-    ofHom (Hom.hom f) = f := rfl
 
 @[simp]
 lemma ofHom_id {X : Type u} [Lattice X] : ofHom (LatticeHom.id _) = 𝟙 (of X) := rfl

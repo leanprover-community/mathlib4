@@ -42,42 +42,10 @@ instance : CoeSort BoolAlg (Type _) :=
 
 attribute [coe] BoolAlg.carrier
 
-set_option backward.privateInPublic true in
-/-- The type of morphisms in `BoolAlg R`. -/
-@[ext]
-structure Hom (X Y : BoolAlg.{u}) where
-  private mk ::
-  /-- The underlying `BoundedLatticeHom`. -/
-  hom' : BoundedLatticeHom X Y
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance : Category BoolAlg.{u} where
-  Hom X Y := Hom X Y
-  id X := ⟨BoundedLatticeHom.id X⟩
-  comp f g := ⟨g.hom'.comp f.hom'⟩
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance : ConcreteCategory BoolAlg (BoundedLatticeHom · ·) where
-  hom := Hom.hom'
-  ofHom := Hom.mk
-
-/-- Turn a morphism in `BoolAlg` back into a `BoundedLatticeHom`. -/
-abbrev Hom.hom {X Y : BoolAlg.{u}} (f : Hom X Y) :=
-  ConcreteCategory.hom (C := BoolAlg) f
-
-/-- Typecheck a `BoundedLatticeHom` as a morphism in `BoolAlg`. -/
-abbrev ofHom {X Y : Type u} [BooleanAlgebra X] [BooleanAlgebra Y] (f : BoundedLatticeHom X Y) :
-    of X ⟶ of Y :=
-  ConcreteCategory.ofHom (C := BoolAlg) f
-
-variable {R} in
-/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
-def Hom.Simps.hom (X Y : BoolAlg.{u}) (f : Hom X Y) :=
-  f.hom
-
-initialize_simps_projections Hom (hom' → hom)
+mk_concrete_category BoolAlg (BoundedLatticeHom · ·) (fun (X : BoolAlg) ↦ BoundedLatticeHom.id X)
+  BoundedLatticeHom.comp
+  with_of_hom {X Y : Type u} [BooleanAlgebra X] [BooleanAlgebra Y]
+  hom_type (BoundedLatticeHom X Y) from (of X) to (of Y)
 
 /-!
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
@@ -100,16 +68,9 @@ lemma ext {X Y : BoolAlg} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
 -- This is not `simp` to avoid rewriting in types of terms.
 theorem coe_of (X : Type u) [BooleanAlgebra X] : (BoolAlg.of X : Type u) = X := rfl
 
-@[simp]
-lemma hom_id {X : BoolAlg} : (𝟙 X : X ⟶ X).hom = BoundedLatticeHom.id _ := rfl
-
 /- Provided for rewriting. -/
 lemma id_apply (X : BoolAlg) (x : X) :
     (𝟙 X : X ⟶ X) x = x := by simp
-
-@[simp]
-lemma hom_comp {X Y Z : BoolAlg} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g).hom = g.hom.comp f.hom := rfl
 
 /- Provided for rewriting. -/
 lemma comp_apply {X Y Z : BoolAlg} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
@@ -118,15 +79,6 @@ lemma comp_apply {X Y Z : BoolAlg} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
 @[ext]
 lemma hom_ext {X Y : BoolAlg} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
-
-@[simp]
-lemma hom_ofHom {X Y : Type u} [BooleanAlgebra X] [BooleanAlgebra Y] (f : BoundedLatticeHom X Y) :
-    (ofHom f).hom = f :=
-  rfl
-
-@[simp]
-lemma ofHom_hom {X Y : BoolAlg} (f : X ⟶ Y) :
-    ofHom (Hom.hom f) = f := rfl
 
 @[simp]
 lemma ofHom_id {X : Type u} [BooleanAlgebra X] : ofHom (BoundedLatticeHom.id _) = 𝟙 (of X) := rfl

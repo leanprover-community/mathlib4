@@ -48,56 +48,17 @@ abbrev of (α : Type*) [Lattice α] [BoundedOrder α] : BddLat where
 theorem coe_of (α : Type*) [Lattice α] [BoundedOrder α] : ↥(of α) = α :=
   rfl
 
-set_option backward.privateInPublic true in
-/-- The type of morphisms in `BddLat`. -/
-@[ext]
-structure Hom (X Y : BddLat.{u}) where
-  private mk ::
-  /-- The underlying `BoundedLatticeHom`. -/
-  hom' : BoundedLatticeHom X Y
-
 instance : Inhabited BddLat :=
   ⟨of PUnit⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance : LargeCategory.{u} BddLat where
-  Hom := Hom
-  id X := ⟨BoundedLatticeHom.id X⟩
-  comp f g := ⟨g.hom'.comp f.hom'⟩
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance : ConcreteCategory BddLat (BoundedLatticeHom · ·) where
-  hom := Hom.hom'
-  ofHom := Hom.mk
-
-/-- Turn a morphism in `BddLat` back into a `BoundedLatticeHom`. -/
-abbrev Hom.hom {X Y : BddLat.{u}} (f : Hom X Y) :=
-  ConcreteCategory.hom (C := BddLat) f
-
-/-- Typecheck a `BoundedLatticeHom` as a morphism in `BddLat`. -/
-abbrev ofHom {X Y : Type u} [Lattice X] [BoundedOrder X] [Lattice Y] [BoundedOrder Y]
-    (f : BoundedLatticeHom X Y) : of X ⟶ of Y :=
-  ConcreteCategory.ofHom (C := BddLat) f
-
-variable {R} in
-/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
-def Hom.Simps.hom (X Y : BddLat.{u}) (f : Hom X Y) :=
-  f.hom
-
-initialize_simps_projections Hom (hom' → hom)
-
-@[simp]
-lemma hom_id {X : Lat} : (𝟙 X : X ⟶ X).hom = LatticeHom.id _ := rfl
+mk_concrete_category BddLat (BoundedLatticeHom · ·) (fun (X : BddLat) ↦ BoundedLatticeHom.id X)
+  BoundedLatticeHom.comp
+  with_of_hom {X Y : Type u} [Lattice X] [BoundedOrder X] [Lattice Y] [BoundedOrder Y]
+  hom_type (BoundedLatticeHom X Y) from (of X) to (of Y)
 
 /- Provided for rewriting. -/
 lemma id_apply (X : Lat) (x : X) :
     (𝟙 X : X ⟶ X) x = x := by simp
-
-@[simp]
-lemma hom_comp {X Y Z : Lat} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g).hom = g.hom.comp f.hom := rfl
 
 /- Provided for rewriting. -/
 lemma comp_apply {X Y Z : Lat} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :

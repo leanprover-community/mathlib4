@@ -59,54 +59,18 @@ abbrev of (X : Type v) [CommRing X] [Bialgebra R X] : CommBialgCat.{v} R := ⟨X
 variable (R) in
 lemma coe_of (X : Type v) [CommRing X] [Bialgebra R X] : (of R X : Type v) = X := rfl
 
-set_option backward.privateInPublic true in
-/-- The type of morphisms in `CommBialgCat R`. -/
-@[ext]
-structure Hom (A B : CommBialgCat.{v} R) where
-  private mk ::
-  /-- The underlying bialgebra map. -/
-  hom' : A →ₐc[R] B
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance : Category (CommBialgCat.{v} R) where
-  Hom A B := Hom A B
-  id A := ⟨.id R A⟩
-  comp f g := ⟨g.hom'.comp f.hom'⟩
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance : ConcreteCategory (CommBialgCat.{v} R) (· →ₐc[R] ·) where
-  hom := Hom.hom'
-  ofHom := Hom.mk
-
-/-- Turn a morphism in `CommBialgCat` back into a `BialgHom`. -/
-abbrev Hom.hom (f : Hom A B) : A →ₐc[R] B := ConcreteCategory.hom (C := CommBialgCat R) f
-
-/-- Typecheck a `BialgHom` as a morphism in `CommBialgCat R`. -/
-abbrev ofHom {X Y : Type v} {_ : CommRing X} {_ : CommRing Y} {_ : Bialgebra R X}
-    {_ : Bialgebra R Y} (f : X →ₐc[R] Y) : of R X ⟶ of R Y :=
-  ConcreteCategory.ofHom (C := CommBialgCat R) f
-
-/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
-def Hom.Simps.hom (A B : CommBialgCat.{v} R) (f : Hom A B) := f.hom
-
-initialize_simps_projections Hom (hom' → hom)
+mk_concrete_category (CommBialgCat.{v} R) (· →ₐc[R] ·) (BialgHom.id R) BialgHom.comp
+  with_of_hom {X Y : Type v} [CommRing X] [Bialgebra R X] [CommRing Y] [Bialgebra R Y]
+  hom_type (X →ₐc[R] Y) from (of R X) to (of R Y)
 
 /-!
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
 -/
 
-@[simp] lemma hom_id : (𝟙 A : A ⟶ A).hom = AlgHom.id R A := rfl
-@[simp] lemma hom_comp (f : A ⟶ B) (g : B ⟶ C) : (f ≫ g).hom = g.hom.comp f.hom := rfl
-
 lemma id_apply (A : CommBialgCat.{v} R) (a : A) : (𝟙 A : A ⟶ A) a = a := by simp
 lemma comp_apply (f : A ⟶ B) (g : B ⟶ C) (a : A) : (f ≫ g) a = g (f a) := by simp
 
 @[ext] lemma hom_ext {f g : A ⟶ B} (hf : f.hom = g.hom) : f = g := Hom.ext hf
-
-@[simp] lemma hom_ofHom (f : X →ₐc[R] Y) : (ofHom f).hom = f := rfl
-@[simp] lemma ofHom_hom (f : A ⟶ B) : ofHom f.hom = f := rfl
 
 @[simp] lemma ofHom_id : ofHom (.id R X) = 𝟙 (of R X) := rfl
 

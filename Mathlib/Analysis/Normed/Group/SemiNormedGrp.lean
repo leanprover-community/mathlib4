@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Normed.Group.Constructions
 public import Mathlib.Analysis.Normed.Group.Hom
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
+public import Mathlib.Tactic.CategoryTheory.MkConcreteCategory
 
 /-!
 # The category of seminormed groups
@@ -41,35 +42,10 @@ namespace SemiNormedGrp
 instance : CoeSort SemiNormedGrp Type* where
   coe X := X.carrier
 
-/-- The type of morphisms in `SemiNormedGrp` -/
-@[ext]
-structure Hom (M N : SemiNormedGrp.{u}) where
-  /-- The underlying `NormedAddGroupHom`. -/
-  hom' : NormedAddGroupHom M N
-
-instance : LargeCategory.{u} SemiNormedGrp where
-  Hom X Y := Hom X Y
-  id X := ⟨NormedAddGroupHom.id X⟩
-  comp f g := ⟨g.hom'.comp f.hom'⟩
-
-instance : ConcreteCategory SemiNormedGrp (NormedAddGroupHom · ·) where
-  hom f := f.hom'
-  ofHom f := ⟨f⟩
-
-/-- Turn a morphism in `SemiNormedGrp` back into a `NormedAddGroupHom`. -/
-abbrev Hom.hom {M N : SemiNormedGrp.{u}} (f : Hom M N) :=
-  ConcreteCategory.hom (C := SemiNormedGrp) f
-
-/-- Typecheck a `NormedAddGroupHom` as a morphism in `SemiNormedGrp`. -/
-abbrev ofHom {M N : Type u} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
-    (f : NormedAddGroupHom M N) : of M ⟶ of N :=
-  ConcreteCategory.ofHom (C := SemiNormedGrp) f
-
-/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
-def Hom.Simps.hom (M N : SemiNormedGrp.{u}) (f : Hom M N) :=
-  f.hom
-
-initialize_simps_projections Hom (hom' → hom)
+mk_concrete_category SemiNormedGrp (NormedAddGroupHom · ·)
+  NormedAddGroupHom.id NormedAddGroupHom.comp
+  with_of_hom {M N : Type u} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
+  hom_type (NormedAddGroupHom M N) from (of M) to (of N)
 
 /-!
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
@@ -78,16 +54,9 @@ The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep 
 lemma ext {M N : SemiNormedGrp} {f₁ f₂ : M ⟶ N} (h : ∀ (x : M), f₁ x = f₂ x) : f₁ = f₂ :=
   ConcreteCategory.ext_apply h
 
-@[simp]
-lemma hom_id {M : SemiNormedGrp} : (𝟙 M : M ⟶ M).hom = NormedAddGroupHom.id M := rfl
-
 /- Provided for rewriting. -/
 lemma id_apply (M : SemiNormedGrp) (r : M) :
     (𝟙 M : M ⟶ M) r = r := by simp
-
-@[simp]
-lemma hom_comp {M N O : SemiNormedGrp} (f : M ⟶ N) (g : N ⟶ O) :
-    (f ≫ g).hom = g.hom.comp f.hom := rfl
 
 /- Provided for rewriting. -/
 lemma comp_apply {M N O : SemiNormedGrp} (f : M ⟶ N) (g : N ⟶ O) (r : M) :
@@ -96,14 +65,6 @@ lemma comp_apply {M N O : SemiNormedGrp} (f : M ⟶ N) (g : N ⟶ O) (r : M) :
 @[ext]
 lemma hom_ext {M N : SemiNormedGrp} {f g : M ⟶ N} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
-
-@[simp]
-lemma hom_ofHom {M N : Type u} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
-    (f : NormedAddGroupHom M N) : (ofHom f).hom = f := rfl
-
-@[simp]
-lemma ofHom_hom {M N : SemiNormedGrp} (f : M ⟶ N) :
-    ofHom (Hom.hom f) = f := rfl
 
 @[simp]
 lemma ofHom_id {M : Type u} [SeminormedAddCommGroup M] :

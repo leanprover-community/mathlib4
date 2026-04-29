@@ -43,41 +43,9 @@ instance : CoeSort PartOrdEmb (Type _) :=
 
 attribute [coe] PartOrdEmb.carrier
 
-set_option backward.privateInPublic true in
-/-- The type of morphisms in `PartOrdEmb R`. -/
-@[ext]
-structure Hom (X Y : PartOrdEmb.{u}) where
-  private mk ::
-  /-- The underlying `OrderEmbedding`. -/
-  hom' : X ↪o Y
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance : Category PartOrdEmb.{u} where
-  Hom X Y := Hom X Y
-  id _ := ⟨RelEmbedding.refl _⟩
-  comp f g := ⟨f.hom'.trans g.hom'⟩
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance : ConcreteCategory PartOrdEmb (· ↪o ·) where
-  hom := Hom.hom'
-  ofHom := Hom.mk
-
-/-- Turn a morphism in `PartOrdEmb` back into a `OrderEmbedding`. -/
-abbrev Hom.hom {X Y : PartOrdEmb.{u}} (f : Hom X Y) :=
-  ConcreteCategory.hom (C := PartOrdEmb) f
-
-/-- Typecheck a `OrderEmbedding` as a morphism in `PartOrdEmb`. -/
-abbrev ofHom {X Y : Type u} [PartialOrder X] [PartialOrder Y] (f : X ↪o Y) : of X ⟶ of Y :=
-  ConcreteCategory.ofHom (C := PartOrdEmb) f
-
-variable {R} in
-/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
-def Hom.Simps.hom (X Y : PartOrdEmb.{u}) (f : Hom X Y) :=
-  f.hom
-
-initialize_simps_projections Hom (hom' → hom)
+mk_concrete_category PartOrdEmb (· ↪o ·) (fun _ ↦ RelEmbedding.refl _) (fun g f ↦ f.trans g)
+  with_of_hom {X Y : Type u} [PartialOrder X] [PartialOrder Y]
+  hom_type (X ↪o Y) from (of X) to (of Y)
 
 /-!
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
@@ -100,15 +68,9 @@ lemma ext {X Y : PartOrdEmb} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g 
 -- This is not `simp` to avoid rewriting in types of terms.
 theorem coe_of (X : Type u) [PartialOrder X] : (PartOrdEmb.of X : Type u) = X := rfl
 
-lemma hom_id {X : PartOrdEmb} : (𝟙 X : X ⟶ X).hom = RelEmbedding.refl _ := rfl
-
 /- Provided for rewriting. -/
 lemma id_apply (X : PartOrdEmb) (x : X) :
     (𝟙 X : X ⟶ X) x = x := by simp
-
-@[simp]
-lemma hom_comp {X Y Z : PartOrdEmb} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g).hom = f.hom.trans g.hom := rfl
 
 /- Provided for rewriting. -/
 lemma comp_apply {X Y Z : PartOrdEmb} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
@@ -124,14 +86,6 @@ lemma Hom.le_iff_le {X Y : PartOrdEmb.{u}} (f : X ⟶ Y) (x₁ x₂ : X) :
 @[ext]
 lemma hom_ext {X Y : PartOrdEmb} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
-
-@[simp]
-lemma hom_ofHom {X Y : Type u} [PartialOrder X] [PartialOrder Y] (f : X ↪o Y) :
-    (ofHom f).hom = f :=
-  rfl
-
-@[simp]
-lemma ofHom_hom {X Y : PartOrdEmb} (f : X ⟶ Y) : ofHom (Hom.hom f) = f := rfl
 
 @[simp]
 lemma ofHom_id {X : Type u} [PartialOrder X] : ofHom (RelEmbedding.refl _) = 𝟙 (of X) := rfl
