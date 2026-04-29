@@ -991,14 +991,14 @@ lemma MeasureTheory.measurableSet_tendsto_fun [MeasurableSpace γ] [Countable ι
 
 /-- The set of points for which a measurable sequence of functions converges is measurable. -/
 @[measurability]
-theorem MeasureTheory.measurableSet_exists_tendsto
-    [TopologicalSpace γ] [PolishSpace γ] [MeasurableSpace γ]
+theorem MeasureTheory.measurableSet_exists_tendsto [TopologicalSpace γ]
+    [IsCompletelyPseudoMetrizableSpace γ] [SecondCountableTopology γ] [MeasurableSpace γ]
     [hγ : OpensMeasurableSpace γ] [Countable ι] {l : Filter ι}
     [l.IsCountablyGenerated] {f : ι → β → γ} (hf : ∀ i, Measurable (f i)) :
     MeasurableSet { x | ∃ c, Tendsto (fun n => f n x) l (𝓝 c) } := by
   rcases l.eq_or_neBot with rfl | hl
   · simp
-  letI := TopologicalSpace.upgradeIsCompletelyMetrizable γ
+  letI := TopologicalSpace.upgradeIsCompletelyPseudoMetrizable γ
   rcases l.exists_antitone_basis with ⟨u, hu⟩
   simp_rw [← cauchy_map_iff_exists_tendsto]
   change MeasurableSet { x | _ ∧ _ }
