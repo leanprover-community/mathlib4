@@ -213,6 +213,13 @@ theorem mul_slash_SL2 (k1 k2 : ℤ) (A : SL(2, ℤ)) (f g : ℍ → ℂ) :
     (f * g) ∣[k1 + k2] A = f ∣[k1] A * g ∣[k2] A := by
   simp [SL_slash, mul_slash]
 
+theorem div_slash_SL2 (k1 k2 : ℤ) (A : SL(2, ℤ)) (f g : ℍ → ℂ) :
+    (f / g) ∣[k1 - k2] A = f ∣[k1] A / g ∣[k2] A := by
+  ext τ
+  simp only [SL_slash_apply, Pi.div_apply, sub_eq_add_neg, neg_add_rev, neg_neg,
+    zpow_add₀ (denom_ne_zero _ τ), zpow_neg]
+  field_simp
+
 open Finset
 
 set_option backward.isDefEq.respectTransparency false in

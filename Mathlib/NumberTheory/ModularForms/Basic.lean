@@ -520,6 +520,25 @@ instance (priority := 99) [FunLike F ℍ ℂ] [CuspFormClass F Γ k] : ModularFo
   holo := CuspFormClass.holo
   bdd_at_cusps f _ hc g hg := (CuspFormClass.zero_at_cusps f hc g hg).boundedAtFilter
 
+/-- Multiplying a `CuspForm` by a `ModularForm` gives a `CuspForm` (the cusp condition is
+preserved since a function tending to zero times a bounded function tends to zero). -/
+@[simps! -fullyApplied coe]
+def mulModularForm [Γ.HasDetPlusMinusOne] {k₁ k₂ : ℤ} (f : CuspForm Γ k₁) (g : ModularForm Γ k₂) :
+    CuspForm Γ (k₁ + k₂) where
+  toSlashInvariantForm := f.1.mul g.1
+  holo' := f.holo'.mul g.holo'
+  zero_at_cusps' hc γ hγ := by
+    simpa [mul_slash] using
+      ((f.zero_at_cusps' hc γ hγ).mul_boundedAtFilter (g.bdd_at_cusps' hc γ hγ)).smul _
+
+/-- Cast for cusp forms, which is useful for avoiding `Heq`s. -/
+def mcast {a b : ℤ} {Γ : Subgroup (GL (Fin 2) ℝ)} (h : a = b) (f : CuspForm Γ a) :
+    CuspForm Γ b where
+  toFun := (f : ℍ → ℂ)
+  slash_action_eq' A := h ▸ f.slash_action_eq' A
+  holo' := f.holo'
+  zero_at_cusps' A := h ▸ f.zero_at_cusps' A
+
 end CuspForm
 
 namespace ModularForm

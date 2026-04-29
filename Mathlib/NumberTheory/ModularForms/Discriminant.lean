@@ -175,18 +175,17 @@ lemma discriminant_isZeroAtImInfty : IsZeroAtImInfty Δ := by
   exact (qParam_tendsto_atImInfty zero_lt_one).mul
     (tendsto_atImInfty_tprod_one_sub_eta_q_pow.congr fun z ↦ by congr 1)
 
-lemma exp_isBigO_discriminant : (fun τ : ℍ ↦ Real.exp (-2 * Real.pi * τ.im)) =O[atImInfty] Δ := by
+lemma exp_isBigO_discriminant : (fun τ ↦ Real.exp (-2 * π * τ.im)) =O[atImInfty] Δ := by
   refine .of_bound 2 ?_
   have hprod := tendsto_atImInfty_tprod_one_sub_eta_q_pow.eventually
     (Metric.ball_mem_nhds 1 (by norm_num : (0 : ℝ) < 1/2))
   filter_upwards [hprod] with τ hτ
   rw [discriminant_eq_q_prod, norm_mul, Real.norm_of_nonneg (Real.exp_pos _).le]
-  have hq_norm : ‖𝕢 1 τ‖ = Real.exp (-2 * Real.pi * τ.im) := by
-    simp [Periodic.qParam, Complex.norm_exp]
+  have hq_norm : ‖𝕢 1 τ‖ = Real.exp (-2 * π * τ.im) := by simp [Periodic.qParam, Complex.norm_exp]
   rw [← hq_norm]
-  have hprod_bound : 1 / 2 ≤ ‖∏' (n : ℕ), (1 - eta_q n τ) ^ 24‖ := by
-    have hsub : ‖∏' (n : ℕ), (1 - eta_q n τ) ^ 24 - 1‖ < 1 / 2 := by rwa [Complex.dist_eq] at hτ
-    have h1 := norm_sub_norm_le 1 (∏' (n : ℕ), (1 - eta_q n τ) ^ 24)
+  have hprod_bound : 1 / 2 ≤ ‖∏' n, (1 - eta_q n τ) ^ 24‖ := by
+    have hsub : ‖∏' n, (1 - eta_q n τ) ^ 24 - 1‖ < 1 / 2 := by rwa [Complex.dist_eq] at hτ
+    have h1 := norm_sub_norm_le 1 (∏' n, (1 - eta_q n τ) ^ 24)
     grind [norm_one, norm_sub_rev]
   linarith [norm_nonneg (𝕢 1 τ), mul_le_mul_of_nonneg_left hprod_bound (norm_nonneg (𝕢 1 τ))]
 
@@ -221,7 +220,7 @@ local notation "Δ" => ModularForm.discriminant
     exact discriminant_isZeroAtImInfty
 
 @[simp]
-lemma coe_discriminant : ⇑(CuspForm.discriminant) = Δ := rfl
+lemma coe_discriminant : ⇑discriminant = Δ := rfl
 
 variable {k : ℤ}
 
