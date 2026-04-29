@@ -29,6 +29,7 @@ namespace Subcomplex
 
 namespace unionProd
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The inclusion `(S.unionProd T).toSSet ⟶ X ⊗ Y` is isomorphic to the pushout-product
 `S.ι □ T.ι`. -/
 @[simps! -isSimp]
