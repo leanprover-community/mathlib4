@@ -201,6 +201,7 @@ def normalizeIsoApp' :
     normalizeIsoApp' C (X ⊗ Y) n =
       (α_ _ _ _).symm ≪≫ whiskerRightIso (normalizeIsoApp' C X n) Y ≪≫
         normalizeIsoApp' C Y _ := rfl
+
 @[simp] theorem normalizeIsoApp'_unit (n : NormalMonoidalObject C) :
     normalizeIsoApp' C (𝟙_ (F C)) n = ρ_ _ := rfl
 
