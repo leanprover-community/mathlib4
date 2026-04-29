@@ -280,7 +280,7 @@ end CommMonoid
 
 section CommGroup
 
-variable (G) [CommGroup G]
+variable (G) [CommGroup G] [CommGroup H]
 
 namespace CommGroup
 
