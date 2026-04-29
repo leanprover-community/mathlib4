@@ -106,7 +106,7 @@ theorem mul_apply (f g : Perm α) (x) : (f * g) x = f (g x) :=
 theorem one_apply (x) : (1 : Perm α) x = x :=
   rfl
 
-@[simp, grind =]
+@[grind =]
 theorem pow_add_one_apply (f : Perm α) (n : ℕ) (x : α) :
     (f ^ (n + 1)) x = (f^n) (f x) := by
   rfl

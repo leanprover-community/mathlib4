@@ -165,7 +165,8 @@ theorem pow_pow_self (a : M) (m n : ℕ) : Commute (a ^ m) (a ^ n) :=
   | n + 1 => by simp only [pow_succ', h.mul_pow n, ← mul_assoc, (h.pow_left n).right_comm]
 
 /-- For commuting elements satisfying `a ^ m = 1` and `b ^ m = 1`, we have `(a * b) ^ m = 1`. -/
-@[to_additive /-- For commuting elements satisfying `m • a = 0` and `m • b = 0`,
+@[to_additive AddCommute.nsmul_add_eq_zero
+/-- For commuting elements satisfying `m • a = 0` and `m • b = 0`,
 we have `m • (a + b) = 0`. -/]
 theorem mul_pow_eq_one (h : Commute a b) {m : ℕ} (ha : a ^ m = 1) (hb : b ^ m = 1) :
     (a * b) ^ m = 1 := by
