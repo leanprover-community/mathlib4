@@ -53,6 +53,9 @@ open Function (Injective Surjective)
 
 variable {M N G H α β γ δ : Type*}
 
+-- Note that https://github.com/leanprover/lean4/pull/13554
+-- also makes the instance priority change, so if that is merged then `instance 1100` can
+-- be removed here (we still want `to_additive` though).
 /- See also `Monoid.toMulAction` and `MulZeroClass.toSMulWithZero`. -/
 attribute [instance 1100, to_additive /-- See also `AddMonoid.toAddAction` -/] instSMulOfMul
 
