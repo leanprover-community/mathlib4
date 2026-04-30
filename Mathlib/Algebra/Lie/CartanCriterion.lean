@@ -230,10 +230,8 @@ public theorem isSolvable_of_killingForm_apply_lie_eq_zero
   have ddi_nilpotent : LieRing.IsNilpotent DDI := by
     rw [LieAlgebra.isNilpotent_iff_forall (R := K)]
     rintro ⟨x, hx⟩
-    have ad_eq : ad K DDI ⟨x, hx⟩ = (ad K L x).restrict (fun _ hy ↦ DDI.lie_mem hy) := by
-      ext ⟨_, _⟩; rfl
-    rw [ad_eq]
-    exact Module.End.isNilpotent.restrict _ (ad_nil x hx)
+    exact LieSubalgebra.isNilpotent_ad_of_isNilpotent_ad (DDI : LieSubalgebra K L)
+      (x := ⟨x, hx⟩) (ad_nil x hx)
   obtain ⟨k, hk⟩ := IsSolvable.solvable K DDI
   rw [derivedSeries_eq_bot_iff] at hk
   refine .mk (k := k + 2) ((derivedSeries_eq_bot_iff I (k + 2)).mpr ?_)
