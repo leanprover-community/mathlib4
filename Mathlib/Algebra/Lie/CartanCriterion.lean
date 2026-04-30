@@ -213,17 +213,17 @@ public theorem isSolvable_of_killingForm_apply_lie_eq_zero
     IsSolvable I := by
   set DI : LieIdeal K L := ⁅I, I⁆
   set DDI : LieIdeal K L := ⁅DI, DI⁆
-  have h_tf : LieModule.traceForm K DI L = 0 := by
+  have tf_eq_zero : LieModule.traceForm K DI L = 0 := by
     ext ⟨x, hx⟩ ⟨y, hy⟩
     change killingForm K L x y = 0
     exact h x (LieSubmodule.lie_le_left I I hx) y hy
-  have module_nilp : LieModule.IsNilpotent (LieAlgebra.derivedSeries K DI 1) L :=
-    isNilpotent_derivedSeries_of_traceForm_eq_zero h_tf
+  have module_nilp : LieModule.IsNilpotent (derivedSeries K DI 1) L :=
+    isNilpotent_derivedSeries_of_traceForm_eq_zero tf_eq_zero
   have ring_nilp : LieRing.IsNilpotent DDI := by
     rw [LieAlgebra.isNilpotent_iff_forall (R := K)]
     rintro ⟨x, hx⟩
     apply LieSubalgebra.isNilpotent_ad_of_isNilpotent_ad (DDI : LieSubalgebra K L) (x := ⟨x, hx⟩)
-    refine (isNilpotent_iff_forall' (R := K)).mp module_nilp
+    refine (LieModule.isNilpotent_iff_forall' (R := K)).mp module_nilp
       ⟨⟨x, LieSubmodule.lie_le_left DI DI hx⟩, ?_⟩
     rwa [derivedSeries_eq_derivedSeriesOfIdeal_comap, mem_comap]
   obtain ⟨k, hk⟩ := IsSolvable.solvable K DDI
