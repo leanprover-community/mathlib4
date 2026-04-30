@@ -657,11 +657,7 @@ theorem exists_normalWord_prod_eq
             (List.head?_eq_some_head _) hS
           rwa [List.head?_eq_some_head hl, Option.map_some, ← this, Option.some_inj] at hx'
         simp at this
-      rw [List.map_cons, mul_smul, of_smul_eq_smul,
-        t_pow_smul_eq_unitsSMul, unitsSMul]
-      rw [dif_neg this]
-      rw [← hw'2]
-      simp [mul_assoc, unitsSMulGroup]
+      simp [mul_smul, of_smul_eq_smul, t_pow_smul_eq_unitsSMul, unitsSMul, dif_neg this, ← hw'2]
 
 /-- Two reduced words representing the same element of the `HNNExtension G A B φ` have the same
 length corresponding list, with the same pattern of occurrences of `t^1` and `t^(-1)`,
