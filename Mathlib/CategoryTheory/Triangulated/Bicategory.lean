@@ -23,10 +23,13 @@ section
 
 variable {C₁ C₂ : Type*} [Category* C₁] [Category* C₂]
 
+/-- The type of bundled natural transformations which commute with shifts
+between functors which commute with shifts. -/
 @[ext]
 structure CommShiftNatTrans (F G : C₁ ⥤ C₂) (A : Type*) [AddMonoid A]
     [HasShift C₁ A] [HasShift C₂ A] [F.CommShift A] [G.CommShift A] where
     of ::
+    /-- the underlying natural transformation -/
     natTrans : F ⟶ G
     [commShift : NatTrans.CommShift natTrans A]
 
@@ -38,20 +41,22 @@ open Limits
 
 namespace Pretriangulated
 
-variable {C₁ C₂ C₃ C₄ : Type*} [Category C₁] [Category C₂] [Category C₃] [Category C₄]
-  [HasZeroObject C₁] [HasZeroObject C₂] [HasZeroObject C₃] [HasZeroObject C₄]
-  [HasShift C₁ ℤ] [HasShift C₂ ℤ] [HasShift C₃ ℤ] [HasShift C₄ ℤ]
-  [Preadditive C₁] [Preadditive C₂] [Preadditive C₃] [Preadditive C₄]
+variable {C₁ C₂ C₃ C₄ : Type*} [Category C₁] [Category C₂] [Category C₃]
+  [HasZeroObject C₁] [HasZeroObject C₂] [HasZeroObject C₃]
+  [HasShift C₁ ℤ] [HasShift C₂ ℤ] [HasShift C₃ ℤ]
+  [Preadditive C₁] [Preadditive C₂] [Preadditive C₃]
   [∀ (n : ℤ), (shiftFunctor C₁ n).Additive]
   [∀ (n : ℤ), (shiftFunctor C₂ n).Additive]
   [∀ (n : ℤ), (shiftFunctor C₃ n).Additive]
-  [∀ (n : ℤ), (shiftFunctor C₄ n).Additive]
-  [Pretriangulated C₁] [Pretriangulated C₂] [Pretriangulated C₃] [Pretriangulated C₄]
+  [Pretriangulated C₁] [Pretriangulated C₂] [Pretriangulated C₃]
 
 variable (C₁ C₂) in
+/-- The type of bundled triangulated functors between pretriangulated categories. -/
 structure TriangulatedFunctor where
   of ::
+  /-- the underlying functor -/
   functor : C₁ ⥤ C₂
+  /-- the commutation isomorphisms with shifts, along with their compatibilites -/
   [commShift : functor.CommShift ℤ]
   [isTriangulated : functor.IsTriangulated]
 
@@ -60,8 +65,10 @@ namespace TriangulatedFunctor
 attribute [instance] commShift isTriangulated
 
 variable (C₁) in
+/-- The identity functor, as a triangulated functor. -/
 abbrev id : TriangulatedFunctor C₁ C₁ := .of (𝟭 _)
 
+/-- The composition of triangulated functors. -/
 abbrev comp (F : TriangulatedFunctor C₁ C₂) (G : TriangulatedFunctor C₂ C₃) :
     TriangulatedFunctor C₁ C₃ :=
   .of (F.functor ⋙ G.functor)
@@ -77,6 +84,8 @@ lemma hom_ext {F G : TriangulatedFunctor C₁ C₂} {f g : F ⟶ G}
     (h : f.natTrans = g.natTrans) : f = g :=
   CommShiftNatTrans.ext h
 
+/-- Constructor for isomorphisms in the category of triangulated functors
+between pretriangulated categories. -/
 abbrev isoMk {F G : TriangulatedFunctor C₁ C₂} (e : F.functor ≅ G.functor)
     [NatTrans.CommShift e.hom ℤ] :
     F ≅ G where
@@ -89,8 +98,11 @@ end Pretriangulated
 
 open Pretriangulated
 
+/-- The bicategory of triangulated categories. -/
+@[nolint checkUnivs]
 structure TrCat where
   of ::
+  /-- the type of objects of a triangulated category in `TrCat` -/
   Obj : Type u
   [cat : Category.{v} Obj]
   [hasZeroObject : HasZeroObject Obj]
