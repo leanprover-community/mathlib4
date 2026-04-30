@@ -8,7 +8,7 @@ module
 public import Mathlib.AlgebraicGeometry.AlgClosed.Basic
 public import Mathlib.AlgebraicGeometry.Geometrically.Integral
 public import Mathlib.AlgebraicGeometry.ZariskisMainTheorem
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp_
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
 
 /-!
 # Abelian varieties
@@ -19,7 +19,7 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp_
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Limits
 
