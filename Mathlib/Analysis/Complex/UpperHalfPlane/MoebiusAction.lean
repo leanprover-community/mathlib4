@@ -6,7 +6,6 @@ Authors: Alex Kontorovich, Heather Macbeth, Marc Masdeu
 module
 
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
-public import Mathlib.Data.Fintype.Parity
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 
 /-!
@@ -42,7 +41,7 @@ lemma denom_neg (g : GL (Fin 2) ℝ) (z : ℂ) : denom (-g) z = -(denom g z) := 
 
 theorem linear_ne_zero_of_im {cd : Fin 2 → ℝ} {z : ℂ} (hz : z.im ≠ 0) (h : cd ≠ 0) :
     (cd 0 : ℂ) * z + cd 1 ≠ 0 := by
-  contrapose! h
+  contrapose h
   have : cd 0 = 0 := by
     -- we will need this twice
     apply_fun Complex.im at h
@@ -229,7 +228,7 @@ theorem c_mul_im_sq_le_normSq_denom : (g 1 0 * z.im) ^ 2 ≤ Complex.normSq (den
   set d := g 1 1
   calc
     (c * z.im) ^ 2 ≤ (c * z.im) ^ 2 + (c * z.re + d) ^ 2 := by nlinarith
-    _ = Complex.normSq (denom g z) := by dsimp [c, d, denom, Complex.normSq]; ring
+    _ = Complex.normSq (denom g z) := by simp [denom, Complex.normSq]; ring
 
 @[simp]
 theorem neg_smul : -g • z = g • z := by
@@ -365,43 +364,55 @@ namespace ModularGroup -- results specific to `SL(2, ℤ)`
 section ModularScalarTowers
 
 /-- Canonical embedding of `SL(2, ℤ)` into `GL(2, ℝ)⁺`. -/
-@[coe]
+@[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
 def coe (g : SL(2, ℤ)) : GL(2, ℝ)⁺ := ((g : SL(2, ℝ)) : GL(2, ℝ)⁺)
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
 lemma coe_inj (a b : SL(2, ℤ)) : coe a = coe b ↔ a = b := by
   refine ⟨fun h ↦ a.ext b fun i j ↦ ?_, congr_arg _⟩
   simp only [Subtype.ext_iff, GeneralLinearGroup.ext_iff] at h
   simpa [coe] using h i j
 
-instance : Coe SL(2, ℤ) GL(2, ℝ)⁺ :=
-  ⟨coe⟩
-
 /-- Canonical embedding of `SL(2, ℤ)` into `GL(2, ℝ)⁺`, bundled as a group hom. -/
+@[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
 def coeHom : SL(2, ℤ) →* GL(2, ℝ)⁺ := toGLPos.comp <| map <| Int.castRingHom _
 
-@[simp] lemma coeHom_apply (g : SL(2, ℤ)) : coeHom g = coe g := rfl
+set_option linter.deprecated false in
+@[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
+lemma coeHom_apply (g : SL(2, ℤ)) : coeHom g = coe g := rfl
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
 theorem coe_apply_complex {g : SL(2, ℤ)} {i j : Fin 2} :
     (Units.val <| Subtype.val <| coe g) i j = (Subtype.val g i j : ℂ) :=
   rfl
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
 theorem det_coe {g : SL(2, ℤ)} : det (Units.val <| Subtype.val <| coe g) = 1 := by
   simp only [SpecialLinearGroup.coe_GLPos_coe_GL_coe_matrix, SpecialLinearGroup.det_coe, coe]
 
+set_option linter.deprecated false in
+@[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
 lemma coe_one : coe 1 = 1 := by
   simp only [coe, map_one]
 
-instance SLOnGLPos : SMul SL(2, ℤ) GL(2, ℝ)⁺ :=
+/-- Multiplication action of `SL(2, ℤ)` on `GL(2, ℝ)⁺`. -/
+@[reducible, deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
+def SLOnGLPos : SMul SL(2, ℤ) GL(2, ℝ)⁺ :=
   ⟨fun s g => s * g⟩
 
+attribute [local instance] SLOnGLPos
+
+@[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
 theorem SLOnGLPos_smul_apply (s : SL(2, ℤ)) (g : GL(2, ℝ)⁺) (z : ℍ) :
     (s • g) • z = ((s : GL(2, ℝ)⁺) * g) • z :=
   rfl
 
-instance SL_to_GL_tower : IsScalarTower SL(2, ℤ) GL(2, ℝ)⁺ ℍ where
+set_option linter.deprecated false in
+@[deprecated "use GL(2, ℝ)" (since := "2026-04-29")]
+lemma SL_to_GL_tower : IsScalarTower SL(2, ℤ) GL(2, ℝ)⁺ ℍ where
   smul_assoc s g z := by
     simp only [SLOnGLPos_smul_apply]
     apply mul_smul'

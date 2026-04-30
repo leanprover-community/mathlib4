@@ -805,13 +805,18 @@ lemma edges_cycleBypass_subset : ∀ {w : G.Walk v v}, w.cycleBypass.edges ⊆ w
     gcongr
     exact edges_bypass_subset _
 
-lemma IsTrail.isCycle_cycleBypass : ∀ {w : G.Walk v v}, w ≠ .nil → w.IsTrail → w.cycleBypass.IsCycle
-  | .cons (v := v') hvv' w, _, hw => by
+lemma IsCircuit.isCycle_cycleBypass : ∀ {w : G.Walk v v}, w.IsCircuit → w.cycleBypass.IsCycle
+  | .cons (v := v') hvv' w, hw => by
     dsimp [cycleBypass]
     refine ⟨⟨(bypass_isPath _).isTrail.cons _ fun hvv' ↦ ?_, by simp⟩, ?_⟩
-    · simp only [isTrail_cons] at hw
+    · simp only [isCircuit_def, isTrail_cons, ne_eq, reduceCtorEq, not_false_eq_true,
+        and_true] at hw
       exact hw.2 <| edges_bypass_subset _ hvv'
     · simpa using (bypass_isPath _).support_nodup
+
+lemma IsTrail.isCycle_cycleBypass {w : G.Walk v v} (hw : w ≠ .nil) (hw' : w.IsTrail) :
+    w.cycleBypass.IsCycle :=
+  (w.isCircuit_def.mpr ⟨hw', hw⟩).isCycle_cycleBypass
 
 end Walk
 

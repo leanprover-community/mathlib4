@@ -39,6 +39,10 @@ public section
 
 variable {α β : Type*} [CommSemiring α] [PartialOrder α] [Semiring β] [PartialOrder β] [Algebra α β]
 
+theorem IsOrderedModule.of_algebraMap_mono [PosMulMono β] [MulPosMono β]
+    (h : Monotone (algebraMap α β)) : IsOrderedModule α β :=
+  .of_smul_one_mono (by simpa [Algebra.smul_def] using h)
+
 section ZeroLEOneClass
 variable [ZeroLEOneClass β]
 
@@ -53,6 +57,10 @@ lemma algebraMap_nonneg {a : α} (ha : 0 ≤ a) : 0 ≤ algebraMap α β a := by
   simpa using algebraMap_mono β ha
 
 end SMulPosMono
+
+theorem isOrderedModule_iff_algebraMap_mono [PosMulMono β] [MulPosMono β] :
+    IsOrderedModule α β ↔ Monotone (algebraMap α β) := by
+  simp [isOrderedModule_iff_smul_one_mono, Algebra.smul_def]
 
 section Nontrivial
 variable [Nontrivial β]

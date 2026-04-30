@@ -6,6 +6,7 @@ Authors: Junyan Xu
 module
 
 public import Mathlib.Algebra.Module.LinearMap.Defs
+public import Mathlib.Algebra.Star.StarRingHom
 public import Mathlib.Data.Rat.Cast.Defs
 public import Mathlib.Order.DirectedInverseSystem
 public import Mathlib.Tactic.SuppressCompilation
@@ -37,7 +38,13 @@ universal object for each type of algebraic structure; the same type `DirectLimi
 works for all of them. This file is therefore more general than the `Module` and `Ring`
 files in terms of the variety of algebraic structures supported.
 
-So far we only show that `DirectLimit` is the colimit in the categories of modules and rings,
+So far we only show that `DirectLimit` is the colimit in the following categories:
+
+* modules
+* non-unital semirings
+* rings
+* (non-unital) star rings
+
 but for the other algebraic structures the constructions and proofs will be easy following
 the same pattern. Since any two colimits are isomorphic, this allows us to golf proofs of
 equality criteria for `Module/AddCommGroup/Ring.DirectLimit`.
@@ -47,15 +54,16 @@ equality criteria for `Module/AddCommGroup/Ring.DirectLimit`.
 
 suppress_compilation
 
-variable {R ι : Type*} [Preorder ι] {G : ι → Type*}
+variable {R ι : Type*} [Preorder ι] {G : ι → Type*} {H : ι → Type*} {C : Type*}
 variable {T : ∀ ⦃i j : ι⦄, i ≤ j → Type*} {f : ∀ _ _ h, T h}
-variable [∀ i j (h : i ≤ j), FunLike (T h) (G i) (G j)] [DirectedSystem G (f · · ·)]
+variable [∀ i j (h : i ≤ j), FunLike (T h) (G i) (G j)] [∀ i, FunLike (H i) (G i) C]
+variable [DirectedSystem G (f · · ·)]
 variable [IsDirectedOrder ι]
 
 namespace DirectLimit
 
 section ZeroOne
-variable [Nonempty ι] [∀ i, One (G i)]
+variable [Nonempty ι] [∀ i, One (G i)] [One C] [∀ i, OneHomClass (H i) (G i) C]
 
 @[to_additive] instance : One (DirectLimit G f) where
   one := map₀ f fun _ ↦ 1
@@ -71,10 +79,46 @@ variable [∀ i j h, OneHomClass (T h) (G i) (G j)]
   exact ⟨fun ⟨i, h, _, eq⟩ ↦ ⟨i, h, eq.trans (map_one _)⟩,
     fun ⟨i, h, eq⟩ ↦ ⟨i, h, h, eq.trans (map_one _).symm⟩⟩
 
+@[to_additive (attr := simp)]
+theorem lift_one (g : ∀ i, H i) (h) :
+    DirectLimit.lift f (g ·) h (1 : DirectLimit G f) = (1 : C) := by
+  let ⟨i⟩ := ‹Nonempty ι›
+  rw [one_def, lift_def, map_one (g i)]
+
 end ZeroOne
 
+section Star
+variable [∀ i, Star (G i)] [Star C]
+variable [∀ i j h, StarHomClass (T h) (G i) (G j)] [∀ i, StarHomClass (H i) (G i) C]
+
+instance : Star (DirectLimit G f) where
+  star := .map f f (fun _ x ↦ star x) (fun i j h x ↦ map_star (f i j h) x)
+
+lemma star_def (i : ι) (x : G i) :
+    star ⟦⟨i, x⟩⟧ = (⟦⟨i, star x⟩⟧ : DirectLimit G f) := by
+  rfl
+
+@[simp]
+theorem lift_star (g : ∀ i, H i) (h) (x : DirectLimit G f) :
+    DirectLimit.lift f (g ·) h (star x) = star (DirectLimit.lift f (g ·) h x) :=
+  x.induction _ fun i x ↦ by simp_rw [star_def, lift_def, map_star (g i)]
+
+end Star
+
+section InvolutiveStar
+variable [∀ i, InvolutiveStar (G i)] [∀ i j h, StarHomClass (T h) (G i) (G j)]
+
+instance : InvolutiveStar (DirectLimit G f) where
+  star_involutive := by
+    apply DirectLimit.induction
+    intro i x
+    rw [star_def, star_def, star_star]
+
+end InvolutiveStar
+
 section AddMul
-variable [∀ i, Mul (G i)] [∀ i j h, MulHomClass (T h) (G i) (G j)]
+variable [∀ i, Mul (G i)] [Mul C]
+variable [∀ i j h, MulHomClass (T h) (G i) (G j)] [∀ i, MulHomClass (H i) (G i) C]
 
 @[to_additive] instance : Mul (DirectLimit G f) where
   mul := map₂ f f f (fun _ ↦ (· * ·)) fun _ _ _ ↦ map_mul _
@@ -82,6 +126,12 @@ variable [∀ i, Mul (G i)] [∀ i j h, MulHomClass (T h) (G i) (G j)]
 @[to_additive] theorem mul_def (i) (x y : G i) :
     ⟦⟨i, x⟩⟧ * ⟦⟨i, y⟩⟧ = (⟦⟨i, x * y⟩⟧ : DirectLimit G f) :=
   map₂_def ..
+
+@[to_additive (attr := simp)]
+theorem lift_mul (g : ∀ i, H i) (h) (x y : DirectLimit G f) :
+    DirectLimit.lift f (g ·) h (x * y) =
+      DirectLimit.lift f (g ·) h x * DirectLimit.lift f (g ·) h y :=
+  DirectLimit.induction₂ _ (fun i x y ↦ by simp_rw [mul_def, lift_def, map_mul (g i)]) x y
 
 end AddMul
 
@@ -97,8 +147,18 @@ end AddMul
     CommSemigroup (DirectLimit G f) where
   mul_comm := mul_comm
 
+section StarMul
+variable [∀ i, Mul (G i)] [∀ i j h, MulHomClass (T h) (G i) (G j)]
+variable [∀ i, StarMul (G i)] [∀ i j h, StarHomClass (T h) (G i) (G j)]
+
+instance : StarMul (DirectLimit G f) where
+  star_mul := DirectLimit.induction₂ _ fun i _ _ ↦ by simp_rw [mul_def, star_def, star_mul, mul_def]
+
+end StarMul
+
 section SMul
-variable [∀ i, SMul R (G i)] [∀ i j h, MulActionHomClass (T h) R (G i) (G j)]
+variable [∀ i, SMul R (G i)] [SMul R C]
+variable [∀ i j h, MulActionHomClass (T h) R (G i) (G j)] [∀ i, MulActionHomClass (H i) R (G i) C]
 
 @[to_additive] instance : SMul R (DirectLimit G f) where
   smul r := map _ _ (fun _ ↦ (r • ·)) fun _ _ _ ↦ map_smul _ r
@@ -106,7 +166,19 @@ variable [∀ i, SMul R (G i)] [∀ i j h, MulActionHomClass (T h) R (G i) (G j)
 @[to_additive] theorem smul_def (i x) (r : R) : r • ⟦⟨i, x⟩⟧ = (⟦⟨i, r • x⟩⟧ : DirectLimit G f) :=
   rfl
 
+@[to_additive (attr := simp)]
+theorem lift_smul (g : ∀ i, H i) (h) (r : R) (x : DirectLimit G f) :
+    DirectLimit.lift f (g ·) h (r • x) = r • DirectLimit.lift f (g ·) h x :=
+  x.induction _ fun i x ↦ by simp_rw [smul_def, lift_def, map_smul (g i)]
+
 end SMul
+
+instance [Star R] [∀ i, Star (G i)] [∀ i j h, StarHomClass (T h) (G i) (G j)]
+    [∀ i, SMul R (G i)] [∀ i j h, MulActionHomClass (T h) R (G i) (G j)]
+    [∀ i, StarModule R (G i)] :
+    StarModule R (DirectLimit G f) where
+  star_smul r := DirectLimit.induction _ fun i x ↦ by
+    simp_rw [star_def, smul_def, ← star_smul, star_def]
 
 @[to_additive] instance [Monoid R] [∀ i, MulAction R (G i)]
     [∀ i j h, MulActionHomClass (T h) R (G i) (G j)] :
@@ -122,7 +194,8 @@ variable [Nonempty ι]
   mul_one := DirectLimit.induction _ fun i _ ↦ by simp_rw [one_def i, mul_def, mul_one]
 
 section Monoid
-variable [∀ i, Monoid (G i)] [∀ i j h, MonoidHomClass (T h) (G i) (G j)]
+variable [∀ i, Monoid (G i)] [Monoid C]
+variable [∀ i j h, MonoidHomClass (T h) (G i) (G j)] [∀ i, MonoidHomClass (H i) (G i) C]
 
 @[to_additive] instance : Monoid (DirectLimit G f) where
   one_mul := one_mul
@@ -134,14 +207,29 @@ variable [∀ i, Monoid (G i)] [∀ i j h, MonoidHomClass (T h) (G i) (G j)]
 @[to_additive] theorem npow_def (i x) (n : ℕ) : ⟦⟨i, x⟩⟧ ^ n = (⟦⟨i, x ^ n⟩⟧ : DirectLimit G f) :=
   rfl
 
+@[to_additive (attr := simp)]
+theorem lift_npow (g : ∀ i, H i) (h) (x : DirectLimit G f) (n : ℕ) :
+    DirectLimit.lift f (g ·) h (x ^ n) = DirectLimit.lift f (g ·) h x ^ n :=
+  x.induction _ fun i x ↦ by simp_rw [npow_def, lift_def, map_pow (g i)]
+
 end Monoid
 
 @[to_additive] instance [∀ i, CommMonoid (G i)] [∀ i j h, MonoidHomClass (T h) (G i) (G j)] :
     CommMonoid (DirectLimit G f) where
   mul_comm := mul_comm
 
+section StarAddMonoid
+variable [∀ i, AddMonoid (G i)] [∀ i j h, AddMonoidHomClass (T h) (G i) (G j)]
+variable [∀ i, StarAddMonoid (G i)] [∀ i j h, StarHomClass (T h) (G i) (G j)]
+
+instance : StarAddMonoid (DirectLimit G f) where
+  star_add := DirectLimit.induction₂ _ fun i _ _ ↦ by simp_rw [add_def, star_def, star_add, add_def]
+
+end StarAddMonoid
+
 section Group
-variable [∀ i, Group (G i)] [∀ i j h, MonoidHomClass (T h) (G i) (G j)]
+variable [∀ i, Group (G i)] [Group C]
+variable [∀ i j h, MonoidHomClass (T h) (G i) (G j)] [∀ i, MonoidHomClass (H i) (G i) C]
 
 @[to_additive] instance : Group (DirectLimit G f) where
   inv := map _ _ (fun _ ↦ (·⁻¹)) fun _ _ _ ↦ map_inv _
@@ -164,6 +252,22 @@ variable [∀ i, Group (G i)] [∀ i j h, MonoidHomClass (T h) (G i) (G j)]
 
 @[to_additive] theorem zpow_def (i x) (n : ℤ) : ⟦⟨i, x⟩⟧ ^ n = (⟦⟨i, x ^ n⟩⟧ : DirectLimit G f) :=
   rfl
+
+@[to_additive (attr := simp)]
+theorem lift_inv (g : ∀ i, H i) (h) (x : DirectLimit G f) :
+    DirectLimit.lift f (g ·) h (x⁻¹) = (DirectLimit.lift f (g ·) h x)⁻¹ :=
+  x.induction _ fun i x ↦ by simp_rw [inv_def, lift_def, map_inv (g i)]
+
+@[to_additive (attr := simp)]
+theorem lift_div (g : ∀ i, H i) (h) (x y : DirectLimit G f) :
+    DirectLimit.lift f (g ·) h (x / y) =
+      (DirectLimit.lift f (g ·) h x) / (DirectLimit.lift f (g ·) h y) :=
+  DirectLimit.induction₂ _ (fun i x y ↦ by simp_rw [div_def, lift_def, map_div (g i)]) x y
+
+@[to_additive (attr := simp)]
+theorem lift_zpow (g : ∀ i, H i) (h) (x : DirectLimit G f) (z : ℤ) :
+    DirectLimit.lift f (g ·) h (x ^ z) = DirectLimit.lift f (g ·) h x ^ z :=
+  x.induction _ fun i x ↦ by simp_rw [zpow_def, lift_def, map_zpow (g i)]
 
 end Group
 
@@ -208,7 +312,9 @@ instance [∀ i, CommMonoidWithZero (G i)] [∀ i j h, MonoidWithZeroHomClass (T
 
 section GroupWithZero
 
-variable [∀ i, GroupWithZero (G i)] [∀ i j h, MonoidWithZeroHomClass (T h) (G i) (G j)]
+variable [∀ i, GroupWithZero (G i)] [GroupWithZero C]
+variable [∀ i j h, MonoidWithZeroHomClass (T h) (G i) (G j)]
+variable [∀ i, MonoidWithZeroHomClass (H i) (G i) C]
 
 instance : GroupWithZero (DirectLimit G f) where
   inv := map _ _ (fun _ ↦ (·⁻¹)) fun _ _ _ ↦ map_inv₀ _
@@ -232,6 +338,22 @@ theorem div₀_def (i x y) : ⟦⟨i, x⟩⟧ / ⟦⟨i, y⟩⟧ = (⟦⟨i, x /
   map₂_def ..
 
 theorem zpow₀_def (i x) (n : ℤ) : ⟦⟨i, x⟩⟧ ^ n = (⟦⟨i, x ^ n⟩⟧ : DirectLimit G f) := rfl
+
+@[simp]
+theorem lift_inv₀ (g : ∀ i, H i) (h) (x : DirectLimit G f) :
+    DirectLimit.lift f (g ·) h (x⁻¹) = (DirectLimit.lift f (g ·) h x)⁻¹ :=
+  x.induction _ fun i x ↦ by simp_rw [inv₀_def, lift_def, map_inv₀ (g i)]
+
+@[simp]
+theorem lift_div₀ (g : ∀ i, H i) (h) (x y : DirectLimit G f) :
+    DirectLimit.lift f (g ·) h (x / y) =
+      (DirectLimit.lift f (g ·) h x) / (DirectLimit.lift f (g ·) h y) :=
+  DirectLimit.induction₂ _ (fun i x y ↦ by simp_rw [div₀_def, lift_def, map_div₀ (g i)]) x y
+
+@[simp]
+theorem lift_zpow₀ (g : ∀ i, H i) (h) (x : DirectLimit G f) (z : ℤ) :
+    DirectLimit.lift f (g ·) h (x ^ z) = DirectLimit.lift f (g ·) h x ^ z :=
+  x.induction _ fun i x ↦ by simp_rw [zpow₀_def, lift_def, map_zpow₀ (g i)]
 
 end GroupWithZero
 
@@ -290,6 +412,11 @@ instance [∀ i, NonUnitalNonAssocSemiring (G i)] [∀ i j h, NonUnitalRingHomCl
     simp_rw [add_def, mul_def, right_distrib, add_def]
   zero_mul := zero_mul
   mul_zero := mul_zero
+
+instance [∀ i, NonUnitalNonAssocSemiring (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)]
+    [∀ i, StarRing (G i)] [∀ i j h, StarHomClass (T h) (G i) (G j)] :
+    StarRing (DirectLimit G f) where
+  star_add := star_add
 
 instance [∀ i, NonUnitalSemiring (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
     NonUnitalSemiring (DirectLimit G f) where
@@ -386,7 +513,8 @@ instance [Semiring R] [∀ i, AddCommMonoid (G i)] [∀ i, Module R (G i)]
 end Action
 
 section DivisionSemiring
-variable [∀ i, DivisionSemiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)]
+variable [∀ i, DivisionSemiring (G i)] [DivisionSemiring C]
+variable [∀ i j h, RingHomClass (T h) (G i) (G j)] [∀ i, RingHomClass (H i) (G i) C]
 
 instance : DivisionSemiring (DirectLimit G f) where
   __ : GroupWithZero _ := inferInstance
@@ -401,6 +529,12 @@ instance : DivisionSemiring (DirectLimit G f) where
 theorem nnratCast_def (q : ℚ≥0) (i) : (q : DirectLimit G f) = ⟦⟨i, q⟩⟧ :=
   map₀_def _ _ (fun _ _ _ ↦ map_nnratCast _ _) _
 
+@[simp]
+theorem lift_nnratCast (g : ∀ i, H i) (h) (q : ℚ≥0) :
+    DirectLimit.lift f (g ·) h (q : DirectLimit G f) = (q : C) := by
+  let ⟨i⟩ := ‹Nonempty ι›
+  rw [nnratCast_def, lift_def, map_nnratCast (g i)]
+
 end DivisionSemiring
 
 instance [∀ i, Semifield (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
@@ -409,7 +543,8 @@ instance [∀ i, Semifield (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
   mul_comm := mul_comm
 
 section DivisionRing
-variable [∀ i, DivisionRing (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)]
+variable [∀ i, DivisionRing (G i)] [DivisionRing C]
+variable [∀ i j h, RingHomClass (T h) (G i) (G j)] [∀ i, RingHomClass (H i) (G i) C]
 
 instance : DivisionRing (DirectLimit G f) where
   __ : DivisionSemiring _ := inferInstance
@@ -423,6 +558,12 @@ instance : DivisionRing (DirectLimit G f) where
 
 theorem ratCast_def (q : ℚ) (i) : (q : DirectLimit G f) = ⟦⟨i, q⟩⟧ :=
   map₀_def _ _ (fun _ _ _ ↦ map_ratCast _ _) _
+
+@[simp]
+theorem lift_ratCast (g : ∀ i, H i) (h) (q : ℚ) :
+    DirectLimit.lift f (g ·) h (q : DirectLimit G f) = (q : C) := by
+  let ⟨i⟩ := ‹Nonempty ι›
+  rw [ratCast_def, lift_def, map_ratCast (g i)]
 
 end DivisionRing
 
@@ -442,6 +583,7 @@ variable [∀ i j h, LinearMapClass (T h) R (G i) (G j)]
 variable (R ι G f) [Nonempty ι]
 
 /-- The canonical map from a component to the direct limit. -/
+@[simps]
 def of (i) : G i →ₗ[R] DirectLimit G f where
   toFun x := ⟦⟨i, x⟩⟧
   map_add' _ _ := (add_def ..).symm
@@ -449,7 +591,6 @@ def of (i) : G i →ₗ[R] DirectLimit G f where
 
 variable {R ι G f}
 
-@[simp]
 theorem of_f {i j hij x} : of R ι G f j (f i j hij x) = of R ι G f i x := .symm <| eq_of_le ..
 
 variable {P : Type*} [AddCommMonoid P] [Module R P]
@@ -458,17 +599,18 @@ variable (R ι G f) in
 /-- The universal property of the direct limit: maps from the components to another module
 that respect the directed system structure (i.e. make some diagram commute) give rise
 to a unique map out of the direct limit. -/
-@[simps -isSimp]
+@[simps]
 def lift (g : ∀ i, G i →ₗ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
     DirectLimit G f →ₗ[R] P where
   toFun := _root_.DirectLimit.lift _ (g · ·) fun i j h x ↦ (Hg i j h x).symm
-  map_add' := DirectLimit.induction₂ _ fun i x y ↦ by simp_rw [add_def, lift_def, map_add]
-  map_smul' r := DirectLimit.induction _ fun i x ↦ by
-    simp_rw [smul_def, lift_def, map_smul, RingHom.id_apply]
+  map_add' := lift_add _ _
+  map_smul' := lift_smul _ _
 
 variable (g : ∀ i, G i →ₗ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 
 @[simp]
+theorem lift_comp_of {i} : lift R ι G f g Hg ∘ₗ of R ι G f i = g i := rfl
+
 theorem lift_of {i} (x) : lift R ι G f g Hg (of R ι G f i x) = g i x := rfl
 
 @[ext]
@@ -480,20 +622,65 @@ theorem hom_ext {g₁ g₂ : DirectLimit G f →ₗ[R] P}
 
 end Module
 
+namespace NonUnitalRing
+variable [∀ i, NonUnitalNonAssocSemiring (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)]
+variable [Nonempty ι]
+
+variable (G f) in
+/-- The canonical map from a component to the direct limit. -/
+@[simps]
+nonrec def of (i) : G i →ₙ+* DirectLimit G f where
+  toFun x := ⟦⟨i, x⟩⟧
+  map_mul' _ _ := (mul_def ..).symm
+  map_zero' := (zero_def i).symm
+  map_add' _ _ := (add_def ..).symm
+
+theorem of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x := by simp
+
+variable (P : Type*) [NonUnitalNonAssocSemiring P]
+variable (G f) in
+/-- The universal property of the direct limit: maps from the components to another
+NonUnitalNonAsssocSemiRing that respect the directed system structure
+(i.e. make some diagram commute) give rise to a unique map out of the direct limit.
+-/
+@[simps]
+noncomputable def lift
+    (g : ∀ i, (G i) →ₙ+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
+    DirectLimit G f →ₙ+* P where
+  toFun := _root_.DirectLimit.lift _ (g · ·) (fun i j hij x ↦ (Hg i j hij x).symm)
+  map_mul' := lift_mul _ _
+  map_zero' := lift_zero _ _
+  map_add' := lift_add _ _
+
+variable (g : ∀ i, G i →ₙ+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
+
+@[simp]
+theorem lift_comp_of {i} : (lift G f P g Hg).comp (of G f i) = g i := rfl
+
+theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x := rfl
+
+@[ext]
+theorem hom_ext {g₁ g₂ : DirectLimit G f →ₙ+* P} (h : ∀ i, g₁.comp (of G f i) = g₂.comp (of G f i)):
+    g₁ = g₂ := by
+  ext x
+  induction x using DirectLimit.induction with | _ i x
+  exact congr($(h i) x)
+
+end NonUnitalRing
+
 namespace Ring
 
 variable [∀ i, NonAssocSemiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] [Nonempty ι]
 
 variable (G f) in
 /-- The canonical map from a component to the direct limit. -/
+@[simps]
 nonrec def of (i) : G i →+* DirectLimit G f where
+  __ := NonUnitalRing.of G f i
   toFun x := ⟦⟨i, x⟩⟧
   map_one' := (one_def i).symm
-  map_mul' _ _ := (mul_def ..).symm
-  map_zero' := (zero_def i).symm
-  map_add' _ _ := (add_def ..).symm
 
-@[simp] theorem of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x := .symm <| eq_of_le ..
+theorem of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x := .symm <| eq_of_le ..
 
 variable (P : Type*) [NonAssocSemiring P]
 
@@ -502,17 +689,19 @@ variable (G f) in
 that respect the directed system structure (i.e. make some diagram commute) give rise
 to a unique map out of the direct limit.
 -/
+@[simps]
 def lift (g : ∀ i, G i →+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
     DirectLimit G f →+* P where
+  __ := (NonUnitalRing.lift G f P (fun _ => (g _).toNonUnitalRingHom) Hg)
   toFun := _root_.DirectLimit.lift _ (g · ·) fun i j h x ↦ (Hg i j h x).symm
-  map_one' := by rw [one_def (Classical.arbitrary ι), lift_def, map_one]
-  map_mul' := DirectLimit.induction₂ _ fun i x y ↦ by simp_rw [mul_def, lift_def, map_mul]
-  map_zero' := by simp_rw [zero_def (Classical.arbitrary ι), lift_def, map_zero]
-  map_add' := DirectLimit.induction₂ _ fun i x y ↦ by simp_rw [add_def, lift_def, map_add]
+  map_one' := lift_one _ _
 
 variable (g : ∀ i, G i →+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 
-@[simp] theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x := rfl
+@[simp]
+theorem lift_comp_of {i} : (lift G f P g Hg).comp (of G f i) = g i := rfl
+
+theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x := rfl
 
 @[ext]
 theorem hom_ext {g₁ g₂ : DirectLimit G f →+* P} (h : ∀ i, g₁.comp (of G f i) = g₂.comp (of G f i)) :
@@ -522,5 +711,52 @@ theorem hom_ext {g₁ g₂ : DirectLimit G f →+* P} (h : ∀ i, g₁.comp (of 
   exact congr($(h i) x)
 
 end Ring
+
+namespace NonUnitalStarRing
+
+variable [∀ i, NonUnitalNonAssocSemiring (G i)] [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)]
+variable [∀ i, StarRing (G i)] [∀ i j h, StarHomClass (T h) (G i) (G j)]
+variable [Nonempty ι]
+
+variable (G f) in
+/-- The canonical map from a component to the direct limit. -/
+@[simps]
+noncomputable def of (i) : G i →⋆ₙ+* DirectLimit G f where
+  __ := NonUnitalRing.of G f i
+  toFun x := ⟦⟨i, x⟩⟧
+  map_star' _ := (star_def ..).symm
+
+lemma of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x := .symm <| eq_of_le ..
+
+variable (P : Type*) [NonUnitalNonAssocSemiring P] [StarRing P]
+variable (G f) in
+/-- The universal property of the direct limit: maps from the components to another StarRing
+that respect the directed system structure (i.e. make some diagram commute) give rise
+to a unique map out of the direct limit.
+-/
+@[simps]
+noncomputable def lift
+    (g : ∀ i, (G i) →⋆ₙ+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
+    DirectLimit G f →⋆ₙ+* P where
+  __ := (NonUnitalRing.lift G f P (fun _ => (g _).toNonUnitalRingHom) Hg)
+  toFun := _root_.DirectLimit.lift _ (g · ·) (fun i j hij x ↦ (Hg i j hij x).symm)
+  map_star' := lift_star _ _
+
+variable (g : ∀ i, G i →⋆ₙ+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
+
+@[simp]
+theorem lift_comp_of {i} : (lift G f P g Hg).comp (of G f i) = g i := rfl
+
+theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x := rfl
+
+@[ext]
+theorem hom_ext {g₁ g₂ : DirectLimit G f →⋆ₙ+* P}
+    (h : ∀ i, g₁.comp (of G f i) = g₂.comp (of G f i)) :
+    g₁ = g₂ := by
+  ext x
+  induction x using DirectLimit.induction with | _ i x
+  exact congr($(h i) x)
+
+end NonUnitalStarRing
 
 end DirectLimit
