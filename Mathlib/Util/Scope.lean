@@ -413,10 +413,3 @@ elab_rules : command
     let stx ← `(command|#scope%$tk $scopeStx')
     liftCoreM <| Meta.Tactic.TryThis.addSuggestion tk (origSpan? := (← getRef)) stx
       (diffGranularity := .word)
-
-#scope
-  public meta
-  namespace Mathlib.Tactic.Scope
-  open @Lean @Lean.Meta @Lean.Elab @Lean.Elab.Command
-  set_options maxSynthPendingDepth 3, linter.style.header true, pp.unicode.fun true, autoImplicit
-    false
