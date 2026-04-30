@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
 public import Mathlib.CategoryTheory.Opposites
 
 /-!
@@ -146,6 +147,18 @@ def opEquivalence (P : ObjectProperty C) : P.op.FullSubcategory ≌ P.FullSubcat
   unitIso := Iso.refl _
   counitIso := Iso.refl _
   functor_unitIso_comp X := Quiver.Hom.unop_inj (by cat_disch)
+
+@[simp]
+lemma op_inf (P Q : ObjectProperty C) : (P ⊓ Q).op = P.op ⊓ Q.op := rfl
+
+@[simp]
+lemma op_sup (P Q : ObjectProperty C) : (P ⊔ Q).op = P.op ⊔ Q.op := rfl
+
+@[simp]
+lemma unop_inf (P Q : ObjectProperty Cᵒᵖ) : (P ⊓ Q).unop = P.unop ⊓ Q.unop := rfl
+
+@[simp]
+lemma unop_sup (P Q : ObjectProperty Cᵒᵖ) : (P ⊔ Q).unop = P.unop ⊔ Q.unop := rfl
 
 end
 
