@@ -953,7 +953,7 @@ theorem exists_adj_iff_not_isIsolated : (∃ u, G.Adj v u) ↔ ¬G.IsIsolated v 
 @[simp]
 theorem IsIsolated.of_subsingleton [Subsingleton V] (G : SimpleGraph V) (v : V) :
     G.IsIsolated v :=
-  fun _ hadj ↦ not_nontrivial V <| hadj.nontrivial
+  fun _ hadj ↦ not_nontrivial V hadj.nontrivial
 
 variable {G} in
 theorem nontrivial_of_not_isIsolated (h : ¬G.IsIsolated v) : Nontrivial V :=
