@@ -120,12 +120,7 @@ lemma contDiffOn_comp {n : WithTop ℕ∞}
     (hf : ContDiffOn ℝ n (uncurry f) (s ×ˢ u))
     (hα : ContDiffOn ℝ n α s) (hmem : ∀ t ∈ s, α t ∈ u) :
     ContDiffOn ℝ n (fun t ↦ f t (α t)) s := by
-  have : (fun t ↦ f t (α t)) = (uncurry f) ∘ fun t ↦ (t, α t) := rfl
-  rw [this]
-  apply hf.comp (by fun_prop)
-  intro _ ht
-  rw [mem_prod]
-  exact ⟨ht, hmem _ ht⟩
+  simpa only [← uncurry_apply_pair f] using hf.comp (by fun_prop) (by tauto)
 
 /-- Given a continuous time-dependent vector field `f` and a continuous curve `α`, the composition
 `f t (α t)` is continuous in `t`. -/
@@ -172,7 +167,7 @@ lemma ext {α β : FunSpace t₀ x₀ r L} (h : ∀ t, α t = β t) : α = β :=
 
 /-- `FunSpace t₀ x₀ r L` contains the constant map at `x₀`. -/
 instance : Inhabited (FunSpace t₀ x₀ r L) :=
-  ⟨fun _ ↦ x₀, (LipschitzWith.const _).weaken (zero_le _), mem_closedBall_self r.2⟩
+  ⟨fun _ ↦ x₀, (LipschitzWith.const _).weaken zero_le, mem_closedBall_self r.2⟩
 
 protected lemma continuous (α : FunSpace t₀ x₀ L r) : Continuous α := α.lipschitzWith.continuous
 
@@ -254,9 +249,8 @@ protected lemma mem_closedBall
 
 lemma compProj_mem_closedBall
     (α : FunSpace t₀ x₀ r L) (h : L * max (tmax - t₀) (t₀ - tmin) ≤ a - r) {t : ℝ} :
-    α.compProj t ∈ closedBall x₀ a := by
-  rw [compProj_apply]
-  exact α.mem_closedBall h
+    α.compProj t ∈ closedBall x₀ a :=
+  α.mem_closedBall h
 
 end
 
@@ -564,9 +558,7 @@ lemma contDiffOn_enat_picard_Icc
   | top =>
     rw [contDiffOn_infty] at *
     exact fun k ↦ contDiffOn_nat_picard_Icc ht₀ (hf k) hα hmem x₀ heqon
-  | coe n =>
-    simp only [WithTop.coe_natCast] at *
-    exact contDiffOn_nat_picard_Icc ht₀ hf hα hmem x₀ heqon
+  | coe n => exact contDiffOn_nat_picard_Icc ht₀ hf hα hmem x₀ heqon
 
 /-- Solutions to ODEs defined by $C^n$ vector fields are also $C^n$. -/
 theorem contDiffOn_enat_Icc_of_hasDerivWithinAt {n : ℕ∞}

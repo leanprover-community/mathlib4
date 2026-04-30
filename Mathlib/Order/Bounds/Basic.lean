@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 module
 
+public import Mathlib.Order.Antisymmetrization
 public import Mathlib.Order.Bounds.Defs
 public import Mathlib.Order.Directed
 public import Mathlib.Order.BoundedOrder.Monotone
@@ -759,6 +760,15 @@ theorem le_of_isLUB_le_isGLB {x y} (ha : IsGLB s a) (hb : IsLUB s b) (hab : b �
 @[to_dual]
 lemma IsLUB.prod {b : β} (hs : s.Nonempty) (ht : t.Nonempty) (ha : IsLUB s a) (hb : IsLUB t b) :
     IsLUB (s ×ˢ t) (a, b) := by simp_all +contextual [IsLUB, IsLeast, lowerBounds]
+
+theorem isLUB_congr_of_antisymmRel {a b : α} (h : AntisymmRel (· ≤ ·) a b) :
+    IsLUB s a ↔ IsLUB s b := by
+  simp [isLUB_iff_le_iff, h.le_congr_left]
+
+-- TODO: `to_dual` doesn't work with `AntisymmRel`.
+theorem isGLB_congr_of_antisymmRel {a b : α} (h : AntisymmRel (· ≤ ·) a b) :
+    IsGLB s a ↔ IsGLB s b := by
+  simp [isGLB_iff_le_iff, h.le_congr_right]
 
 end Preorder
 

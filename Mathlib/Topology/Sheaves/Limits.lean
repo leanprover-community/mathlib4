@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 # Presheaves in `C` have limits and colimits when `C` does.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -39,7 +39,7 @@ instance [HasColimitsOfShape J C] (X : TopCat) : HasColimitsOfShape J (Presheaf 
 instance [HasColimits.{v, u} C] (X : TopCat.{t}) : HasColimitsOfSize.{v, v} (Presheaf C X) where
 
 instance [HasLimitsOfShape J C] (X : TopCat.{t}) : CreatesLimitsOfShape J (Sheaf.forget C X) :=
-  Sheaf.createsLimitsOfShape
+  inferInstanceAs <| CreatesLimitsOfShape J (sheafToPresheaf _ _)
 
 instance [HasLimitsOfShape J C] (X : TopCat.{t}) : HasLimitsOfShape J (Sheaf C X) :=
   hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape (Sheaf.forget C X)
