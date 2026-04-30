@@ -573,17 +573,23 @@ instance instSup : Max (α →ₘ[μ] β) where max f g := AEEqFun.comp₂ (· �
 theorem coeFn_sup (f g : α →ₘ[μ] β) : ⇑(f ⊔ g) =ᵐ[μ] fun x => f x ⊔ g x :=
   coeFn_comp₂ _ _ _ _
 
-instance instSemilatticeSup : SemilatticeSup (α →ₘ[μ] β) :=
-  toGerm_injective.semilatticeSup toGerm .rfl .rfl (comp₂_toGerm _ continuous_sup)
+protected theorem le_sup_left (f g : α →ₘ[μ] β) : f ≤ f ⊔ g := by
+  rw [← coeFn_le]
+  filter_upwards [coeFn_sup f g] with _ ha
+  rw [ha]
+  exact le_sup_left
 
-protected theorem le_sup_left (f g : α →ₘ[μ] β) : f ≤ f ⊔ g :=
-  _root_.le_sup_left
+protected theorem le_sup_right (f g : α →ₘ[μ] β) : g ≤ f ⊔ g := by
+  rw [← coeFn_le]
+  filter_upwards [coeFn_sup f g] with _ ha
+  rw [ha]
+  exact le_sup_right
 
-protected theorem le_sup_right (f g : α →ₘ[μ] β) : g ≤ f ⊔ g :=
-  _root_.le_sup_right
-
-protected theorem sup_le (f g f' : α →ₘ[μ] β) (hf : f ≤ f') (hg : g ≤ f') : f ⊔ g ≤ f' :=
-  _root_.sup_le hf hg
+protected theorem sup_le (f g f' : α →ₘ[μ] β) (hf : f ≤ f') (hg : g ≤ f') : f ⊔ g ≤ f' := by
+  rw [← coeFn_le] at hf hg ⊢
+  filter_upwards [hf, hg, coeFn_sup f g] with _ haf hag ha_sup
+  rw [ha_sup]
+  exact sup_le haf hag
 
 end Sup
 
@@ -596,21 +602,36 @@ instance instInf : Min (α →ₘ[μ] β) where min f g := AEEqFun.comp₂ (· �
 theorem coeFn_inf (f g : α →ₘ[μ] β) : ⇑(f ⊓ g) =ᵐ[μ] fun x => f x ⊓ g x :=
   coeFn_comp₂ _ _ _ _
 
-instance instSemilatticeInf : SemilatticeInf (α →ₘ[μ] β) :=
-  toGerm_injective.semilatticeInf toGerm .rfl .rfl (comp₂_toGerm _ continuous_inf)
+protected theorem inf_le_left (f g : α →ₘ[μ] β) : f ⊓ g ≤ f := by
+  rw [← coeFn_le]
+  filter_upwards [coeFn_inf f g] with _ ha
+  rw [ha]
+  exact inf_le_left
 
-protected theorem inf_le_left (f g : α →ₘ[μ] β) : f ⊓ g ≤ f :=
-  _root_.inf_le_left
+protected theorem inf_le_right (f g : α →ₘ[μ] β) : f ⊓ g ≤ g := by
+  rw [← coeFn_le]
+  filter_upwards [coeFn_inf f g] with _ ha
+  rw [ha]
+  exact inf_le_right
 
-protected theorem inf_le_right (f g : α →ₘ[μ] β) : f ⊓ g ≤ g :=
-  _root_.inf_le_right
-
-protected theorem le_inf (f' f g : α →ₘ[μ] β) (hf : f' ≤ f) (hg : f' ≤ g) : f' ≤ f ⊓ g :=
-  _root_.le_inf hf hg
+protected theorem le_inf (f' f g : α →ₘ[μ] β) (hf : f' ≤ f) (hg : f' ≤ g) : f' ≤ f ⊓ g := by
+  rw [← coeFn_le] at hf hg ⊢
+  filter_upwards [hf, hg, coeFn_inf f g] with _ haf hag ha_inf
+  rw [ha_inf]
+  exact le_inf haf hag
 
 end Inf
 
-instance instLattice [Lattice β] [TopologicalLattice β] : Lattice (α →ₘ[μ] β) where
+instance instLattice [Lattice β] [TopologicalLattice β] : Lattice (α →ₘ[μ] β) :=
+  { AEEqFun.instPartialOrder with
+    sup := max
+    le_sup_left := AEEqFun.le_sup_left
+    le_sup_right := AEEqFun.le_sup_right
+    sup_le := AEEqFun.sup_le
+    inf := min
+    inf_le_left := AEEqFun.inf_le_left
+    inf_le_right := AEEqFun.inf_le_right
+    le_inf := AEEqFun.le_inf }
 
 end Lattice
 

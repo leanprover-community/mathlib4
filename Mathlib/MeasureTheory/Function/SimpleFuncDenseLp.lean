@@ -271,17 +271,16 @@ protected theorem eLpNorm'_eq {p : ℝ} (f : α →ₛ F) (μ : Measure α) :
 theorem measure_preimage_lt_top_of_memLp (hp_pos : p ≠ 0) (hp_ne_top : p ≠ ∞) (f : α →ₛ E)
     (hf : MemLp f p μ) (y : E) (hy_ne : y ≠ 0) : μ (f ⁻¹' {y}) < ∞ := by
   have hp_pos_real : 0 < p.toReal := ENNReal.toReal_pos hp_pos hp_ne_top
-  have h_lin :
-      (f.map fun x => ‖x‖ₑ ^ p.toReal).lintegral μ = ∫⁻ a, ‖f a‖ₑ ^ p.toReal ∂μ := by
+  have h_lin : (f.map fun x => ‖x‖ₑ ^ p.toReal).lintegral μ = ∫⁻ a, ‖f a‖ₑ ^ p.toReal ∂μ := by
     simpa using ((f.map fun x => ‖x‖ₑ ^ p.toReal).lintegral_eq_lintegral μ).symm
   have h_fin : (f.map fun x => ‖x‖ₑ ^ p.toReal).FinMeasSupp μ := by
     refine SimpleFunc.FinMeasSupp.of_lintegral_ne_top ?_
     rw [h_lin]
     exact (lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top hp_pos hp_ne_top hf.eLpNorm_lt_top).ne
   have hf_fin : f.FinMeasSupp μ := by
-    rwa [SimpleFunc.FinMeasSupp.map_iff (g := fun x => ‖x‖ₑ ^ p.toReal) (by
-      intro x
-      simp [ENNReal.rpow_eq_zero_iff_of_pos hp_pos_real, enorm_eq_zero])] at h_fin
+    have {b : E} : (fun x ↦ ‖x‖ₑ ^ p.toReal) b = 0 ↔ b = 0 := by
+      simp [ENNReal.rpow_eq_zero_iff_of_pos hp_pos_real, enorm_eq_zero]
+    rwa [SimpleFunc.FinMeasSupp.map_iff (g := fun x => ‖x‖ₑ ^ p.toReal) this] at h_fin
   exact hf_fin.meas_preimage_singleton_ne_zero hy_ne
 
 theorem memLp_of_finite_measure_preimage (p : ℝ≥0∞) {f : α →ₛ E}
@@ -538,8 +537,8 @@ theorem toSimpleFunc_toLp (f : α →ₛ E) (hfi : MemLp f p μ) : toSimpleFunc 
 
 variable (E μ)
 
-theorem zero_toSimpleFunc : toSimpleFunc (0 : Lp.simpleFunc E p μ) =ᵐ[μ] 0 := by
-  exact (toSimpleFunc_eq_toFun (0 : Lp.simpleFunc E p μ)).trans <| Lp.coeFn_zero E 1 μ
+theorem zero_toSimpleFunc : toSimpleFunc (0 : Lp.simpleFunc E p μ) =ᵐ[μ] 0 :=
+  (toSimpleFunc_eq_toFun (0 : Lp.simpleFunc E p μ)).trans <| Lp.coeFn_zero E 1 μ
 
 variable {E μ}
 

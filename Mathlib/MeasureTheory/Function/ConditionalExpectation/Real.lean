@@ -62,14 +62,14 @@ theorem eLpNorm_one_condExp_le_eLpNorm (f : α → ℝ) : eLpNorm (μ[f | m]) 1 
   by_cases hm : m ≤ m0
   swap; · rw [condExp_of_not_le hm, eLpNorm_zero]; exact zero_le
   by_cases hsig : SigmaFinite (μ.trim hm)
-  swap; · rw [condExp_of_not_sigmaFinite hm hsig, eLpNorm_zero]; exact zero_le _
+  swap; · rw [condExp_of_not_sigmaFinite hm hsig, eLpNorm_zero]; exact zero_le
   have hleft : eLpNorm (μ[f | m]) 1 μ ≠ ∞ := by
     simpa [eLpNorm_one_eq_lintegral_enorm] using
       (hasFiniteIntegral_iff_enorm.mp integrable_condExp.2).ne
   have hright : eLpNorm f 1 μ ≠ ∞ := by
     simpa [eLpNorm_one_eq_lintegral_enorm] using (hasFiniteIntegral_iff_enorm.mp hf.2).ne
-  rw [← ENNReal.toReal_le_toReal hleft hright]
-  rw [eLpNorm_one_eq_lintegral_enorm, eLpNorm_one_eq_lintegral_enorm,
+  rw [← ENNReal.toReal_le_toReal hleft hright, eLpNorm_one_eq_lintegral_enorm,
+    eLpNorm_one_eq_lintegral_enorm,
     ← integral_norm_eq_lintegral_enorm (stronglyMeasurable_condExp.mono hm).aestronglyMeasurable,
     ← integral_norm_eq_lintegral_enorm hf.1]
   refine (integral_mono_ae integrable_condExp.norm integrable_condExp norm_condExp_le).trans_eq ?_
