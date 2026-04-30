@@ -20,7 +20,7 @@ public import Mathlib.Topology.UniformSpace.UniformEmbedding
 Further results about extended metric spaces.
 -/
 
-@[expose] public section
+public section
 
 open Set Filter
 
@@ -62,7 +62,7 @@ with an upper estimate. -/
 theorem edist_le_range_sum_of_edist_le {f : ℕ → α} (n : ℕ) {d : ℕ → ℝ≥0∞}
     (hd : ∀ {k}, k < n → edist (f k) (f (k + 1)) ≤ d k) :
     edist (f 0) (f n) ≤ ∑ i ∈ Finset.range n, d i :=
-  Nat.Ico_zero_eq_range n ▸ edist_le_Ico_sum_of_edist_le (zero_le n) fun _ => hd
+  Nat.Ico_zero_eq_range n ▸ edist_le_Ico_sum_of_edist_le zero_le fun _ => hd
 
 namespace EMetric
 
@@ -172,7 +172,6 @@ theorem subsingleton_iff_indiscreteTopology {α} [EMetricSpace α] :
 instance (priority := 100) {α} [EMetricSpace α] [Nontrivial α] : NontrivialTopology α :=
   nontrivial_iff_nontrivialTopology.1 ‹_›
 
--- see Note [nolint_ge]
 /-- In a pseudoemetric space, Cauchy sequences are characterized by the fact that, eventually,
 the pseudoedistance between its elements is arbitrarily small -/
 theorem cauchySeq_iff [Nonempty β] [SemilatticeSup β] {u : β → α} :

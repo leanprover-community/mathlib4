@@ -217,7 +217,7 @@ end
 definitional equality issues. -/
 lemma forget_obj {M : ModuleCat.{v} R} : (forget (ModuleCat.{v} R)).obj M = M := rfl
 
-@[simp]
+@[deprecated ConcreteCategory.forget_map_eq_ofHom (since := "2026-03-02")]
 lemma forget_map {M N : ModuleCat.{v} R} (f : M ⟶ N) :
     (forget (ModuleCat.{v} R)).map f = (f : _ → _) :=
   rfl
@@ -298,9 +298,9 @@ end CategoryTheory.Iso
 in `ModuleCat` -/
 @[simps]
 def linearEquivIsoModuleIso {X Y : Type u} [AddCommGroup X] [AddCommGroup Y] [Module R X]
-    [Module R Y] : (X ≃ₗ[R] Y) ≅ ModuleCat.of R X ≅ ModuleCat.of R Y where
-  hom e := e.toModuleIso
-  inv i := i.toLinearEquiv
+    [Module R Y] : (X ≃ₗ[R] Y) ≅ (ModuleCat.of R X ≅ ModuleCat.of R Y) where
+  hom := ↾fun e ↦ e.toModuleIso
+  inv := ↾fun i ↦ i.toLinearEquiv
 
 end
 
@@ -509,26 +509,10 @@ def smulNatTrans : R →+* End (forget₂ (ModuleCat R) AddCommGrpCat) where
   toFun r :=
     { app := fun M => M.smul r
       naturality := fun _ _ _ => smul_naturality _ r }
-  map_one' := NatTrans.ext (by
-    #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
-    this was just `cat_disch`. -/
-    simp +instances only [forget₂_obj, map_one, End.one_def]
-    cat_disch)
-  map_zero' := NatTrans.ext (by
-    #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
-    this was just `cat_disch`. -/
-    simp +instances only [forget₂_obj, map_zero]
-    cat_disch)
-  map_mul' _ _ := NatTrans.ext (by
-    #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
-    this was just `cat_disch`. -/
-    simp +instances only [forget₂_obj, map_mul, End.mul_def]
-    cat_disch)
-  map_add' _ _ := NatTrans.ext (by
-    #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
-    this was just `cat_disch`. -/
-    simp +instances only [forget₂_obj, map_add]
-    cat_disch)
+  map_one' := by cat_disch
+  map_zero' := by cat_disch
+  map_mul' _ _ := by cat_disch
+  map_add' _ _ := by cat_disch
 
 /-- Given `A : AddCommGrpCat` and a ring morphism `R →+* End A`, this is a type synonym
 for `A`, on which we shall define a structure of `R`-module. -/

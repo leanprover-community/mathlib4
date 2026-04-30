@@ -87,18 +87,10 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Since `colimit_limit_to_limit_colimit` is a morphism from a colimit to a limit,
 this lemma characterises it.
 -/
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 theorem ι_colimitLimitToLimitColimit_π (j) (k) :
     colimit.ι _ k ≫ colimitLimitToLimitColimit F ≫ limit.π _ j =
       limit.π ((curry.obj (Prod.swap K J ⋙ F)).obj k) j ≫ colimit.ι ((curry.obj F).obj j) k := by
-  dsimp [colimitLimitToLimitColimit]
-  simp
-
-@[simp]
-theorem ι_colimitLimitToLimitColimit_π_apply [Small.{v} J] [Small.{v} K] (F : J × K ⥤ Type v)
-    (j : J) (k : K) (f) : limit.π (curry.obj F ⋙ colim) j
-        (colimitLimitToLimitColimit F (colimit.ι (curry.obj (Prod.swap K J ⋙ F) ⋙ lim) k f)) =
-      colimit.ι ((curry.obj F).obj j) k (limit.π ((curry.obj (Prod.swap K J ⋙ F)).obj k) j f) := by
   dsimp [colimitLimitToLimitColimit]
   simp
 
@@ -119,6 +111,6 @@ noncomputable def colimitLimitToLimitColimitCone (G : J ⥤ K ⥤ C) [HasLimit G
       ι_colimitLimitToLimitColimit_π_assoc, curry_obj_obj_obj, Prod.swap_obj,
       uncurry_obj_obj, ι_colimMap, currying_unitIso_inv_app_app_app, Category.id_comp,
       limMap_π_assoc, Functor.flip_obj_obj, flipIsoCurrySwapUncurry_hom_app_app]
-    erw [limitObjIsoLimitCompEvaluation_hom_π_assoc]
+    simp only [← comp_evaluation G k, limitObjIsoLimitCompEvaluation_hom_π_assoc]
 
 end CategoryTheory.Limits
