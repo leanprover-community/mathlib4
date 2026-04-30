@@ -205,44 +205,31 @@ theorem levelOne_weight_two_rank_zero : Module.rank ℂ (ModularForm 𝒮ℒ 2) 
 /-- The dimension formula for `𝒮ℒ` modular forms of even weight. -/
 theorem dimension_level_one (k : ℕ) (hk2 : Even k) :
     Module.rank ℂ (ModularForm 𝒮ℒ k) =
-      if 12 ∣ ((k : ℤ) - 2) then Nat.floor ((k : ℚ) / 12)
-      else Nat.floor ((k : ℚ) / 12) + 1 := by
+      if 12 ∣ (k : ℤ) - 2 then ⌊(k / 12 : ℚ)⌋₊ else ⌊(k / 12 : ℚ)⌋₊ + 1 := by
   induction k using Nat.strong_induction_on with | h k ihn =>
-  by_cases hk3 : 3 ≤ k
-  · rw [rank_eq_one_add_rank_cuspForm hk3 hk2, CuspForm.discriminantEquiv.rank_eq]
-    by_cases HK : (3 : ℤ) ≤ (k : ℤ) - 12
-    · have iH := ihn (k - 12) (by omega) ((Nat.even_sub (by omega)).mpr (by grind))
-      have hk12 : (((k - 12) : ℕ) : ℤ) = k - 12 := by grind
-      rw [hk12] at iH
-      rw [iH, show ((k - 12 : ℕ) : ℚ) = k - 12 by norm_cast]
-      have hfl (hk' : 12 ≤ k) : ⌊(k : ℚ) / 12⌋₊ = 1 + ⌊((k : ℚ) - 12) / 12⌋₊ := by
-        rw [Nat.floor_div_ofNat, Nat.floor_div_ofNat, Nat.floor_sub_ofNat,
-          Nat.div_eq_sub_div (by norm_num) (mod_cast hk'), add_comm, Nat.floor_natCast]
-      by_cases h12 : 12 ∣ (k : ℤ) - 2
-      · simp only [show 12 ∣ (k : ℤ) - 12 - 2 by omega, ↓reduceIte, h12]
-        norm_cast at *
-        rw [hfl (by omega)]
-      · simp only [show ¬ 12 ∣ (k : ℤ) - 12 - 2 by omega, ↓reduceIte, h12, Nat.cast_add,
-          Nat.cast_one]
-        norm_cast at *
-        rw [← add_assoc, ← hfl (by omega)]
-    · simp only [not_le] at HK
-      have hkop : k ∈ Finset.filter Even (Finset.Icc 3 14) := by
-        simp only [Finset.mem_filter, Finset.mem_Icc, hk2, and_true]
-        omega
-      rw [show Finset.filter Even (Finset.Icc 3 14) = ({4, 6, 8, 10, 12, 14} : Finset ℕ) by
-        decide] at hkop
-      fin_cases hkop <;> simp only [Nat.cast_ofNat, Int.reduceSub, Int.reduceNeg] at *
-      all_goals first
-        | exact (congrArg (1 + ·) (levelOne_neg_weight_rank_zero (by omega))).trans (by norm_cast)
-        | exact (congrArg (1 + ·) levelOne_weight_zero_rank_one).trans (by norm_cast)
-        | exact (congrArg (1 + ·) levelOne_weight_two_rank_zero).trans (by norm_cast)
-  · have hk_lt : k < 3 := by omega
+  have : k < 3 ∨ (3 ≤ k ∧ k < 12) ∨ 12 ≤ k := by grind
+  rcases this with hk | hk | hk
+  · -- `k < 3`: direct case-by-case check
     interval_cases k
     · simpa using levelOne_weight_zero_rank_one
-    · simp [show ¬ Even 1 by decide] at hk2
+    · grind
     · convert levelOne_weight_two_rank_zero
       norm_num
+  · -- `3 ≤ k < 12`: the lemma `rank_eq_one_add_rank_cuspForm` applies
+    -- and the mod form space of weight `k - 12` is zero
+    rw [rank_eq_one_add_rank_cuspForm hk.1 hk2, CuspForm.discriminantEquiv.rank_eq]
+    have hkop : k ∈ (Finset.Icc 3 14).filter Even := by grind
+    fin_cases hkop <;>
+    exact (congrArg _ (levelOne_neg_weight_rank_zero (by lia))).trans (by norm_cast)
+  · -- `12 ≤ k`: use `CuspForm.discriminantEquiv` and induction hypothesis
+    rw [rank_eq_one_add_rank_cuspForm (by lia) hk2, CuspForm.discriminantEquiv.rank_eq]
+    have hk12 : (k - 12 : ℕ) = (k - 12 : ℤ) := by grind
+    simp only [hk12 ▸ ihn (k - 12) (by lia) (by grind),
+      show ((k - 12 : ℕ) : ℚ) = k - 12 by norm_cast, sub_right_comm, dvd_sub_self_right]
+    have hfl : ⌊(k : ℚ) / 12⌋₊ = 1 + ⌊((k : ℚ) - 12) / 12⌋₊ := by
+      rw [Nat.floor_div_ofNat, Nat.floor_div_ofNat, Nat.floor_sub_ofNat,
+        Nat.div_eq_sub_div (by decide) (by simpa), add_comm, Nat.floor_natCast]
+    split_ifs <;> simp [hfl, add_assoc]
 
 instance (k : ℤ) : FiniteDimensional ℂ (ModularForm 𝒮ℒ k) := by
   rw [FiniteDimensional, ← Module.rank_lt_aleph0_iff]
