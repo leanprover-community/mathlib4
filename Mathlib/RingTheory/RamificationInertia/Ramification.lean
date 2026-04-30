@@ -12,9 +12,10 @@ public import Mathlib.RingTheory.LocalRing.Length
 /-!
 # Ramification index
 
-Given a prime ideal `q` of an `R`-algebra `S`, the ramification index of `q` over `R` is defined
-to be the length of the quotient `Sq/pSq` as an `Sq`-module where `Sq` is the localization of `S` at
-`q`, `p` is the preimage of `q` in `R`, and `pSq` is the image of `p` in `Sq`.
+Let `S/R` be an extension of rings, and let `q` be a prime ideal of `S` lying over a prime ideal
+`p` of `R`. Let `Sq` be the localization of `S` and `q`, and let `pSq` be the image of `p` in `Sq`.
+Then the ramification index of `q` over `R` is defined to be the length of the quotient `Sq/pSq` as
+an `Sq`-module.
 
 ## Main definitions
 
@@ -37,9 +38,10 @@ section
 variable {S : Type*} [CommRing S] (q : Ideal S) (R : Type*) [CommRing R] [Algebra R S]
 
 open Classical in
-/-- Given a prime ideal `q` of an `R`-algebra `S`, the ramification index of `q` over `R` is defined
-to be the length of the quotient `Sq/pSq` as an `Sq`-module where `Sq` is the localization of `S` at
-`q`, `p` is the preimage of `q` in `R`, and `pSq` is the image of `p` in `Sq`.
+/-- Let `S/R` be an extension of rings, and let `q` be a prime ideal of `S` lying over a prime ideal
+`p` of `R`. Let `Sq` be the localization of `S` and `q`, and let `pSq` be the image of `p` in `Sq`.
+Then the ramification index of `q` over `R` is defined to be the length of the quotient `Sq/pSq` as
+an `Sq`-module.
 
 When `q` is not prime, we use a junk value of `0`.
 
@@ -105,7 +107,7 @@ theorem ramificationIdx'_tower' [q.IsPrime] [r.IsPrime] [r.LiesOver q]
     f.toLinearEquiv.length_eq, IsLocalRing.length_baseChange, ENat.toNat_mul,
     ← Localization.AtPrime.map_eq_maximalIdeal, map_map, ← IsScalarTower.algebraMap_eq]
 
-/-- See `ramificationIdx'_tower` for a version that only assumes local flatness. -/
+/-- See `ramificationIdx'_tower'` for a version that only assumes local flatness. -/
 theorem ramificationIdx'_tower [r.LiesOver q] [Module.Flat S T] :
     r.ramificationIdx' R = q.ramificationIdx' R * r.ramificationIdx' S := by
   by_cases hr : r.IsPrime

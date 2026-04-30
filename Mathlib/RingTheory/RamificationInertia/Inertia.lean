@@ -57,7 +57,7 @@ variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
   [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
   (p : Ideal R) (q : Ideal S) (r : Ideal T)
 
-theorem inertiaDeg'_eq [h : q.LiesOver p] [q.IsPrime] :
+theorem inertiaDeg'_eq [q.LiesOver p] [q.IsPrime] :
     letI := isPrime_of_liesOver q p
     q.inertiaDeg' R = Module.finrank p.ResidueField q.ResidueField := by
   have := Ideal.over_def q p
@@ -75,7 +75,7 @@ theorem inertiaDeg_eq_inertiaDeg' [q.LiesOver p] [p.IsMaximal] [q.IsMaximal] :
   have : IsScalarTower (R ⧸ p) (S ⧸ q) q.ResidueField := IsScalarTower.of_algebraMap_eq' rfl
   have : IsScalarTower (R ⧸ p) p.ResidueField q.ResidueField := IsScalarTower.of_algebraMap_eq' h
   rw [← mul_one (Module.finrank (R ⧸ p) (S ⧸ q)),
-    ←  Module.finrank_of_bijective_algebraMap (bijective_algebraMap_quotient_residueField q),
+    ← Module.finrank_of_bijective_algebraMap (bijective_algebraMap_quotient_residueField q),
     Module.finrank_mul_finrank, ← Module.finrank_mul_finrank (R ⧸ p) p.ResidueField q.ResidueField,
     Module.finrank_of_bijective_algebraMap (bijective_algebraMap_quotient_residueField p), one_mul]
 
