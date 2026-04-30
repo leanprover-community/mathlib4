@@ -19,9 +19,9 @@ public import Mathlib.RingTheory.Flat.Localization
 /-!
 # Cartan's criteria
 
-If the trace form of a finite-dimensional representation `M` of a Lie algebra `L` is zero,
-then the `⁅L, L⁆`-module `M` is nilpotent. This is the key technical lemma behind Cartan's
-criterion.
+The two **Cartan criteria** characterise solvability and semisimplicity of finite-dimensional
+Lie algebras over fields of characteristic zero in terms of the Killing form: solvability
+via its vanishing on `L × ⁅L, L⁆`, semisimplicity via its non-degeneracy.
 
 ## Main results
 
