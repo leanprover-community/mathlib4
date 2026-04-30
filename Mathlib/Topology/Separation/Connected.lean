@@ -42,7 +42,7 @@ theorem IsPreconnected.infinite_of_nontrivial [T1Space X] {s : Set X} (h : IsPre
 theorem PreconnectedSpace.infinite [PreconnectedSpace X] [Nontrivial X] [T1Space X] : Infinite X :=
   infinite_univ_iff.mp <| isPreconnected_univ.infinite_of_nontrivial nontrivial_univ
 
-theorem subsingleont_iff_discrete_and_indiscrete :
+theorem subsingleton_iff_discrete_and_indiscrete :
     Subsingleton X ↔ DiscreteTopology X ∧ IndiscreteTopology X :=
   ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ PreconnectedSpace.trivial_of_discrete⟩
 
