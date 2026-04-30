@@ -1,4 +1,10 @@
-import Mathlib.Util.AliasIn
+module
+
+public import Mathlib.Util.AliasIn
+
+/-! Tests for the `@[alias_in]` attribute, within the module system  -/
+
+public section
 
 @[alias_in Baz] def Foo.Bar.baz : Nat := 1
 /-- info: Foo.Baz.baz : Nat -/
@@ -64,3 +70,25 @@ Look at this docstring!
 #guard_msgs in
 open Lean in
 run_cmd logInfo m!"{(← Lean.findDocString? (← getEnv) `Foo.Baz.baz5).get!}"
+
+@[alias_in Baz] public def Foo.Bar.baz6 : Nat := 1
+
+/-- error: The `alias_in` attribute cannot be used for private declarations. -/
+#guard_msgs in
+@[alias_in Baz] private def Foo.Bar.baz7 : Nat := 1
+
+end
+
+section
+
+/-- error: The `alias_in` attribute cannot be used for private declarations. -/
+#guard_msgs in
+@[alias_in Baz] def Foo.Bar.baz8 : Nat := 2
+
+
+#guard_msgs in
+@[alias_in Baz] public def Foo.Bar.baz9 : Nat := 2
+
+/-- error: The `alias_in` attribute cannot be used for private declarations. -/
+#guard_msgs in
+@[alias_in Baz] private def Foo.Bar.baz10 : Nat := 2
