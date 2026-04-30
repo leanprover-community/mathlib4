@@ -29,7 +29,7 @@ We show that flatness is stable under composition and base change.
 
 public section
 
-universe u v w t
+universe u v w t t'
 
 open Function (Injective Surjective)
 
@@ -67,6 +67,19 @@ theorem trans [Flat R S] [Flat S M] : Flat R M := by
     LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.comp_injective]
   iterate 2 apply Flat.lTensor_preserves_injective_linearMap
   exact Subtype.val_injective
+
+variable {R M} in
+@[simp]
+lemma ulift_left_iff : Flat (ULift.{t} R) M ↔ Flat R M := by
+  refine ⟨fun h ↦ .trans _ (ULift R) _, fun h ↦ ?_⟩
+  have : Module.Flat (ULift.{t} R) R := .of_ulift
+  let _ := ULift.algebra'
+  exact .trans _ R _
+
+variable {R M} in
+@[simp]
+lemma ulift_right_iff : Flat R (ULift.{t} M) ↔ Flat R M :=
+  Flat.equiv_iff ULift.moduleEquiv
 
 end Composition
 

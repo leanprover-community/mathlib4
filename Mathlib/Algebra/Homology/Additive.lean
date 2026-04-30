@@ -214,8 +214,7 @@ theorem map_chain_complex_of (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms] (X :
         rw [← F.map_comp, sq n, Functor.map_zero] := by
   refine HomologicalComplex.ext rfl ?_
   rintro i j (rfl : j + 1 = i)
-  simp only [CategoryTheory.Functor.mapHomologicalComplex_obj_d, of_d, eqToHom_refl, comp_id,
-    id_comp]
+  simp
 
 end ChainComplex
 
