@@ -181,7 +181,8 @@ theorem coe_toAlgEquiv : ⇑(e : A ≃ₐ[R] B) = e :=
 theorem toCoalgEquiv_toCoalgHom : ((e : A ≃ₐc[R] B) : A →ₗc[R] B) = (e : A →ₐc[R] B) :=
   rfl
 
-theorem toBialgHom_toAlgHom : (e : A →ₐc[R] B) = e := rfl
+@[deprecated "Now a syntactic equality" (since := "2026-04-30"), nolint synTaut]
+theorem toBialgHom_toAlgHom : ((e : A →ₐc[R] B) : A →ₐ[R] B) = e := rfl
 
 section
 

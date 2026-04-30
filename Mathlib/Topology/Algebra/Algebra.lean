@@ -171,7 +171,6 @@ theorem toAlgHom_eq_coe (f : A →A[R] B) : f.toAlgHom = f := rfl
 theorem coe_inj {f g : A →A[R] B} : (f : A →ₐ[R] B) = g ↔ f = g := by
   cases f; cases g; simp only [mk.injEq]
 
-@[simp]
 theorem coe_mk (f : A →ₐ[R] B) (h) : (mk f h : A →ₐ[R] B) = f := rfl
 
 @[simp]

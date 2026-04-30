@@ -164,6 +164,7 @@ lemma toCoalgHom_apply (f : A →ₐc[R] B) (a : A) : f.toCoalgHom a = f a := rf
 theorem coe_toLinearMap (f : A →ₐc[R] B) : ⇑(f : A →ₗ[R] B) = f :=
   rfl
 
+/-- Turn a bialgebra homomorphism into an algebra homomorphism. -/
 @[coe]
 def toAlgHom (f : A →ₐc[R] B) : A →ₐ[R] B where
   __ := f
