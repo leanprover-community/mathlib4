@@ -217,21 +217,15 @@ public theorem isSolvable_of_killingForm_apply_lie_eq_zero
     ext ⟨x, hx⟩ ⟨y, hy⟩
     change killingForm K L x y = 0
     exact h x (LieSubmodule.lie_le_left I I hx) y hy
-  have h_nilp : LieModule.IsNilpotent (LieAlgebra.derivedSeries K DI 1) L :=
+  have module_nilp : LieModule.IsNilpotent (LieAlgebra.derivedSeries K DI 1) L :=
     isNilpotent_derivedSeries_of_traceForm_eq_zero h_tf
-  rw [isNilpotent_iff_forall' (R := K)] at h_nilp
-  have ad_nil : ∀ x ∈ DDI.toSubmodule, IsNilpotent (ad K L x) := by
-    intro x hx
-    have hx_di : x ∈ DI := LieSubmodule.lie_le_left DI DI hx
-    have hx_der : (⟨x, hx_di⟩ : DI) ∈ derivedSeries K DI 1 := by
-      rw [derivedSeries_eq_derivedSeriesOfIdeal_comap, mem_comap]
-      exact hx
-    exact h_nilp ⟨⟨x, hx_di⟩, hx_der⟩
-  have ddi_nilpotent : LieRing.IsNilpotent DDI := by
+  have ring_nilp : LieRing.IsNilpotent DDI := by
     rw [LieAlgebra.isNilpotent_iff_forall (R := K)]
     rintro ⟨x, hx⟩
-    exact LieSubalgebra.isNilpotent_ad_of_isNilpotent_ad (DDI : LieSubalgebra K L)
-      (x := ⟨x, hx⟩) (ad_nil x hx)
+    apply LieSubalgebra.isNilpotent_ad_of_isNilpotent_ad (DDI : LieSubalgebra K L) (x := ⟨x, hx⟩)
+    exact (isNilpotent_iff_forall' (R := K)).mp module_nilp
+      ⟨⟨x, LieSubmodule.lie_le_left DI DI hx⟩, by
+        rw [derivedSeries_eq_derivedSeriesOfIdeal_comap, mem_comap]; exact hx⟩
   obtain ⟨k, hk⟩ := IsSolvable.solvable K DDI
   rw [derivedSeries_eq_bot_iff] at hk
   refine .mk (k := k + 2) ((derivedSeries_eq_bot_iff I (k + 2)).mpr ?_)
