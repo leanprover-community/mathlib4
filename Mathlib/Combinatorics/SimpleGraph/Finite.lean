@@ -367,6 +367,7 @@ theorem complete_graph_degree [DecidableEq V] (v : V) :
   simp_rw [degree, neighborFinset_eq_filter, top_adj, filter_ne]
   rw [card_erase_of_mem (mem_univ v), card_univ]
 
+-- #38747
 theorem bot_degree (v : V) : (⊥ : SimpleGraph V).degree v = 0 := by
   simp
 

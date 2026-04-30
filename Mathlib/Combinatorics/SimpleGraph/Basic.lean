@@ -793,7 +793,6 @@ theorem neighborSet_top : neighborSet ⊤ v = {v}ᶜ := by
   grind [mem_neighborSet, top_adj]
 
 -- #38747
-@[simp]
 theorem neighborSet_bot : neighborSet ⊥ v = ∅ := by
   grind [mem_neighborSet, bot_adj]
 
@@ -958,8 +957,8 @@ theorem Adj.not_isIsolated_right (h : G.Adj u v) : ¬G.IsIsolated v :=
 
 -- #38747
 @[simp]
-theorem isIsolated_bot : IsIsolated ⊥ v := by
-  simp [← neighborSet_eq_empty]
+theorem isIsolated_bot : IsIsolated ⊥ v :=
+  neighborSet_eq_empty _ |>.mp neighborSet_bot
 
 -- #38747
 theorem eq_bot_iff_isIsolated : G = ⊥ ↔ ∀ v, G.IsIsolated v := by
