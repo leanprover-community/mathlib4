@@ -37,24 +37,6 @@ section
 
 open Ideal
 
--- PRed
-theorem le_of_liesOver_quotient {R : Type*} [CommRing R]
-    (I : Ideal R) (p : Ideal R) (q : Ideal (R ⧸ I)) [q.LiesOver p] : I ≤ p := by
-  simp [over_def q p, ← map_le_iff_le_comap]
-
--- PRed
-theorem algebraMapSubmonoid_primeCompl_of_liesOver_quotient
-    {R : Type*} [CommRing R] (I : Ideal R) (p : Ideal R) (q : Ideal (R ⧸ I))
-    [p.IsPrime] [q.IsPrime] [q.LiesOver p] :
-    Algebra.algebraMapSubmonoid (R ⧸ I) p.primeCompl = q.primeCompl := by
-  ext x
-  obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-  rw [mem_primeCompl_iff, ← Quotient.algebraMap_eq, ← mem_comap, ← under_def, ← over_def q p]
-  refine ⟨fun ⟨y, hy, hx⟩ ↦ ?_, fun hx ↦ ⟨x, hx, rfl⟩⟩
-  rw [← sub_eq_zero, ← map_sub, Quotient.algebraMap_eq, Quotient.eq_zero_iff_mem] at hx
-  contrapose! hy
-  simpa [p.sub_mem_iff_left hy] using le_of_liesOver_quotient I p q hx
-
 namespace Ideal
 
 section ramification_inertia
@@ -202,7 +184,8 @@ noncomputable def foo8 (q : Ideal (p.Fiber S)) [q.IsPrime] :
       simp [Sp, pS, pSp, map_map, ← IsScalarTower.algebraMap_eq,
         ← Localization.AtPrime.map_eq_maximalIdeal]
   letI q' : Ideal (Sp ⧸ pSp) := q.comap e₁
-  haveI := algebraMapSubmonoid_primeCompl_of_liesOver_quotient pS r (q'.under (S ⧸ pS))
+  haveI : Algebra.algebraMapSubmonoid (S ⧸ pS) r.primeCompl = (under (S ⧸ pS) q').primeCompl :=
+    algebraMapSubmonoid_primeCompl_of_liesOver_surjective (q'.under (S ⧸ pS)) r Ideal.Quotient.mk_surjective
   haveI : IsLocalization (Algebra.algebraMapSubmonoid (S ⧸ pS) r.primeCompl)
       (Localization.AtPrime q') := by
     convert IsLocalization.isLocalization_isLocalization_atPrime_isLocalization
