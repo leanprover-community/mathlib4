@@ -65,7 +65,7 @@ scoped instance (X : C) : TopologicalSpace (Aut (F.obj X)) := ⊥
 /-- We give `F.obj X  ⟶ F.obj Y` the product topology. -/
 @[local simp]
 scoped instance {X Y : C} : TopologicalSpace (F.obj X ⟶ F.obj Y) :=
-  .coinduced (fun f ↦ ObjectProperty.homMk (TypeCat.ofHom f)) inferInstance
+  .coinduced (fun f ↦ ObjectProperty.homMk (↾f)) inferInstance
 
 scoped instance {X Y : C} : DiscreteTopology (F.obj X ⟶ F.obj Y) :=
   ⟨by simp [DiscreteTopology.eq_bot]⟩
