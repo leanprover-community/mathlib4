@@ -215,21 +215,20 @@ public theorem isSolvable_of_killingForm_apply_lie_eq_zero
   set DDI : LieIdeal K L := ⁅DI, DI⁆
   have h_tf : LieModule.traceForm K DI L = 0 := by
     ext ⟨x, hx⟩ ⟨y, hy⟩
-    change trace K L ((ad K L) x ∘ₗ (ad K L) y) = 0
-    rw [← killingForm_apply_apply]
+    change killingForm K L x y = 0
     exact h x (LieSubmodule.lie_le_left I I hx) y hy
-  have key : LieModule.IsNilpotent (LieAlgebra.derivedSeries K DI 1) L :=
+  have h_nilp : LieModule.IsNilpotent (LieAlgebra.derivedSeries K DI 1) L :=
     isNilpotent_derivedSeries_of_traceForm_eq_zero h_tf
-  rw [isNilpotent_iff_forall' (R := K)] at key
-  have ad_nil : ∀ x ∈ (DDI : LieSubmodule K L L).toSubmodule, IsNilpotent (ad K L x) := by
+  rw [isNilpotent_iff_forall' (R := K)] at h_nilp
+  have ad_nil : ∀ x ∈ DDI.toSubmodule, IsNilpotent (ad K L x) := by
     intro x hx
     have hxDI : x ∈ DI := LieSubmodule.lie_le_left DI DI hx
     have hxDS : (⟨x, hxDI⟩ : DI) ∈ derivedSeries K DI 1 := by
       rw [derivedSeries_eq_derivedSeriesOfIdeal_comap, mem_comap]
       exact hx
-    exact key ⟨⟨x, hxDI⟩, hxDS⟩
+    exact h_nilp ⟨⟨x, hxDI⟩, hxDS⟩
   have ddi_nilpotent : LieRing.IsNilpotent DDI := by
-    have : IsNoetherian K DDI := isNoetherian_submodule' (DDI : LieSubmodule K L L).toSubmodule
+    have : IsNoetherian K DDI := isNoetherian_submodule' DDI.toSubmodule
     rw [LieAlgebra.isNilpotent_iff_forall (R := K)]
     rintro ⟨x, hx⟩
     rw [show ad K DDI ⟨x, hx⟩ = (ad K L x).restrict fun _ hy ↦ DDI.lie_mem hy from
