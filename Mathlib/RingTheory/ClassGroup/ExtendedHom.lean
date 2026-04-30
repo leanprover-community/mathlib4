@@ -21,7 +21,7 @@ along the algebra map.
 - `ClassGroup.extendedHom A B`: the induced map between the class groups.
 -/
 
-@[expose] public section
+public section
 
 open scoped nonZeroDivisors
 
@@ -46,7 +46,8 @@ noncomputable def extendedHom : ClassGroup A →* ClassGroup B :=
 @[simp]
 lemma extendedHom_quotientMk (α : (FractionalIdeal A⁰ (FractionRing A))ˣ) :
     extendedHom A B (QuotientGroup.mk α) = QuotientGroup.mk
-      (Units.map (FractionalIdeal.extendedHom (FractionRing B) B).toMonoidHom α) :=
+      (Units.map (FractionalIdeal.extendedHom (FractionRing B) B).toMonoidHom α) := by
+  rw [extendedHom]
   rfl
 
 @[simp]
