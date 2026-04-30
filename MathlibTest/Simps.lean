@@ -1359,3 +1359,30 @@ set_option pp.explicit true in
 /-- info: zero_n : @Eq MyNat zero.n MyNat.zero -/
 #guard_msgs in
 #check zero_n
+
+namespace UnifHints
+
+/-- Test the `addUnifHints` option: check that unification hint declarations are generated. -/
+@[simps +addUnifHints]
+def myPair : Nat × Bool := (1, true)
+
+-- Verify the simp lemmas are generated as normal
+example : myPair.1 = 1 := myPair_fst
+example : myPair.2 = true := myPair_snd
+
+-- Verify the unification hint declarations exist
+#check @myPair_fst.simpsUnifHint
+#check @myPair_snd.simpsUnifHint
+
+-- The hints make the projection equalities provable by with_reducible rfl,
+-- even though `myPair` is not a reducible definition
+example : myPair.1 = 1 := by with_reducible rfl
+example : myPair.2 = true := by with_reducible rfl
+
+-- Without addUnifHints, with_reducible rfl fails on the same shape of goal
+@[simps] def myPair2 : Nat × Bool := (2, false)
+example : myPair2.1 = 2 := by
+  fail_if_success (with_reducible rfl)
+  rfl
+
+end UnifHints
