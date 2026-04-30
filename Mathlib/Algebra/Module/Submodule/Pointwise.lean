@@ -69,6 +69,7 @@ instance : IsConcreteNeg (Submodule R M) M where
     smul_mem' := fun r m hm => Set.mem_neg.2 <| smul_neg r m ▸ p.smul_mem r <| Set.mem_neg.1 hm }
   coe_set_neg' p := by simp
 
+set_option linter.missingDocs false in
 @[instance_reducible, deprecated SetLike.pointwiseNeg (since := "2026-04-30")]
 protected def pointwiseNeg : Neg (Submodule R M) where
   neg p :=

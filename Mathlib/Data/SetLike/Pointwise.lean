@@ -22,6 +22,9 @@ This file provides:
 
 open scoped Pointwise
 
+/-- A class to indicate that the instance of `Neg` on the type is compatible with the
+canonical injection between `A` and `Set B`.
+-/
 class IsConcreteNeg (α : Type*) (V : outParam Type*) [Neg V] [SetLike α V] where
   neg : α → α
   coe_set_neg' (p : α) : neg p = -(p : Set V)
@@ -41,18 +44,13 @@ scoped[Pointwise] attribute [instance] SetLike.pointwiseNeg
 
 open scoped Pointwise
 
-variable (p : α)
+@[simp] theorem coe_set_neg (p : α) : ↑(-p) = -(p : Set V) :=
+  IsConcreteNeg.coe_set_neg' p
 
-@[simp] theorem coe_set_neg : ↑(-p) = -(p : Set V) := IsConcreteNeg.coe_set_neg' p
-
-variable {p}
-
-@[simp] theorem mem_neg {g : V} : g ∈ -p ↔ -g ∈ p := by simp [← SetLike.mem_coe]
+@[simp] theorem mem_neg {p : α} {g : V} : g ∈ -p ↔ -g ∈ p := by simp [← SetLike.mem_coe]
 
 variable {α : Type*} {V : Type*}
 variable [InvolutiveNeg V] [SetLike α V] [IsConcreteNeg α V]
-
-variable {p : α}
 
 /-- `SetLike.pointwiseNeg` is involutive.
 
@@ -64,20 +62,18 @@ protected def involutivePointwiseNeg : InvolutiveNeg α where
 scoped[Pointwise] attribute [instance] SetLike.involutivePointwiseNeg
 
 variable [LE α] [IsConcreteLE α V]
-variable {p q : α}
 
-@[simp] theorem neg_le_neg : -p ≤ -q ↔ p ≤ q := by
+@[simp] theorem neg_le_neg {p q : α} : -p ≤ -q ↔ p ≤ q := by
   simp [← SetLike.coe_subset_coe]
 
-theorem neg_le : -p ≤ q ↔ p ≤ -q := by
+theorem neg_le {p q : α} : -p ≤ q ↔ p ≤ -q := by
   simp [← SetLike.coe_subset_coe, Set.neg_subset]
 
 variable {α : Type*} {V : Type*}
 variable [InvolutiveNeg V] [SetLike α V] [IsConcreteNeg α V]
 variable [PartialOrder α] [IsConcreteLE α V]
-variable {p q : α}
 
-theorem neg_eq_self_iff_neg_le : -p = p ↔ -p ≤ p :=
+theorem neg_eq_self_iff_neg_le {p : α} : -p = p ↔ -p ≤ p :=
   ⟨le_of_eq, fun h => antisymm h <| neg_le.mp h⟩
 
 /-- `SetLike.pointwiseNeg` as an order isomorphism. -/
