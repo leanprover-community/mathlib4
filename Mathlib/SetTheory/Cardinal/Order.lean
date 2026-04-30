@@ -298,7 +298,7 @@ instance canonicallyOrderedAdd : CanonicallyOrderedAdd Cardinal.{u} where
   le_add_self a b := (zero_add a).ge.trans <| add_left_mono bot_le
 
 @[deprecated zero_le (since := "2026-04-17")]
-protected theorem zero_le : ∀ a : Cardinal, 0 ≤ a := zero_le
+protected theorem zero_le (a : Cardinal) : 0 ≤ a := zero_le
 
 instance isOrderedRing : IsOrderedRing Cardinal.{u} :=
   CanonicallyOrderedAdd.toIsOrderedRing
