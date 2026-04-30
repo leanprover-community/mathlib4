@@ -36,10 +36,6 @@ This file contains basic definitions and results for such Lie algebras.
 * `LieIdeal.isCompl_killingCompl`: if a Lie algebra has non-singular Killing form then for all
   ideals, an ideal and its Killing orthogonal complement are complements.
 
-## TODO
-
-* Prove that in characteristic zero, a semisimple Lie algebra has non-singular Killing form.
-
 -/
 
 public section
@@ -86,7 +82,8 @@ instance instSemisimple [IsKilling K L] [Module.Finite K L] : IsSemisimple K L :
   · intro I h₁ h₂
     exact h₁.1 <| IsKilling.ideal_eq_bot_of_isLieAbelian I
 
-/-- The converse of this is true over a field of characteristic zero. There are counterexamples
+/-- The converse of this is true over a field of characteristic zero, it is
+`LieAlgebra.HasTrivialRadical.instIsKilling`. There are counterexamples
 over fields with positive characteristic.
 
 Note that when the coefficients are a field this instance is redundant since we have
