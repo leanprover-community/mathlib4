@@ -149,7 +149,7 @@ covers where no element of the cover is empty, and for which the indexing type f
 nonempty.
 -/
 lemma isSheafUniqueGluing_iff_isSheafUniqueGluingNontrivial_types
-    (k : Unique (ToType (F.obj (op ⊥)))) :
+    [Nonempty (ToType (F.obj (op ⊥)))] [Subsingleton (ToType (F.obj (op ⊥)))] :
     IsSheafUniqueGluing F ↔ IsSheafUniqueGluingNontrivial F := by
   refine ⟨fun h _ _ U _ sf ↦ h U sf, fun h ι U sf com ↦ ?_⟩
   have empty {V : Opens X} (hV : V = ⊥) : Unique (ToType (F.obj (op V))) := by
