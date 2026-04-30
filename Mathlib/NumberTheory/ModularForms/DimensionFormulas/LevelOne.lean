@@ -219,7 +219,7 @@ theorem dimension_level_one (k : ℕ) (hk2 : Even k) :
     -- and the mod form space of weight `k - 12` is zero
     rw [rank_eq_one_add_rank_cuspForm hk.1 hk2, CuspForm.discriminantEquiv.rank_eq]
     apply (congrArg _ (levelOne_neg_weight_rank_zero (by lia))).trans
-    have : k ∈ Finset.Icc 3 11 := by grind
+    have : k ∈ (Finset.Icc 3 11).filter Even := by grind
     fin_cases this <;> norm_num
   · -- `12 ≤ k`: use `CuspForm.discriminantEquiv` and induction hypothesis
     rw [rank_eq_one_add_rank_cuspForm (by lia) hk2, CuspForm.discriminantEquiv.rank_eq]
