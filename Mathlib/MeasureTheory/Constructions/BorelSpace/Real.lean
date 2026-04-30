@@ -348,32 +348,44 @@ theorem AEMeasurable.ennreal_toReal {f : α → ℝ≥0∞} {μ : Measure α} (h
     AEMeasurable (fun x => ENNReal.toReal (f x)) μ :=
   ENNReal.measurable_toReal.comp_aemeasurable hf
 
-/-- note: `ℝ≥0∞` can probably be generalized in a future version of this lemma. -/
-@[fun_prop]
+@[fun_prop, deprecated
+  "Use `Measurable.tsum` from `Mathlib.MeasureTheory.Constructions.Polish.Basic` insted"
+  (since := "2026-04-30")]
 theorem Measurable.ennreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
     Measurable fun x => ∑' i, f i x := by
   simp_rw [ENNReal.tsum_eq_iSup_sum]
   exact .iSup fun s ↦ s.measurable_fun_sum fun i _ => h i
 
-@[fun_prop]
+set_option linter.deprecated false in
+@[fun_prop, deprecated
+  "Use `Measurable.tsum'` from `Mathlib.MeasureTheory.Constructions.Polish.Basic` insted"
+  (since := "2026-04-30")]
 theorem Measurable.ennreal_tsum' {ι} [Countable ι] {f : ι → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
     Measurable (∑' i, f i) := by
   convert Measurable.ennreal_tsum h with x
   exact tsum_apply (Pi.summable.2 fun _ => ENNReal.summable)
 
-@[fun_prop]
+set_option linter.deprecated false in
+@[fun_prop, deprecated
+  "Use `Measurable.tsum` from `Mathlib.MeasureTheory.Constructions.Polish.Basic` insted"
+  (since := "2026-04-30")]
 theorem Measurable.nnreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0} (h : ∀ i, Measurable (f i)) :
     Measurable fun x => ∑' i, f i x := by
   simp_rw [NNReal.tsum_eq_toNNReal_tsum]
   exact (Measurable.ennreal_tsum fun i => (h i).coe_nnreal_ennreal).ennreal_toNNReal
 
-@[fun_prop]
+@[fun_prop, deprecated
+  "Use `AEMeasurable.tsum` from `Mathlib.MeasureTheory.Constructions.Polish.Basic` insted"
+ (since := "2026-04-30")]
 theorem AEMeasurable.ennreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0∞} {μ : Measure α}
     (h : ∀ i, AEMeasurable (f i) μ) : AEMeasurable (fun x => ∑' i, f i x) μ := by
   simp_rw [ENNReal.tsum_eq_iSup_sum]
   exact .iSup fun s ↦ Finset.aemeasurable_fun_sum s fun i _ => h i
 
-@[fun_prop]
+set_option linter.deprecated false in
+@[fun_prop, deprecated
+  "Use `AEMeasurable.tsum` from `Mathlib.MeasureTheory.Constructions.Polish.Basic` insted"
+  (since := "2026-04-30")]
 theorem AEMeasurable.nnreal_tsum {α : Type*} {_ : MeasurableSpace α} {ι : Type*} [Countable ι]
     {f : ι → α → NNReal} {μ : Measure α} (h : ∀ i : ι, AEMeasurable (f i) μ) :
     AEMeasurable (fun x : α => ∑' i : ι, f i x) μ := by
