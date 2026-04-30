@@ -115,8 +115,7 @@ variable {X} {Y : SSet.{u}} (i : X ⟶ Y)
 
 /-- The skeleton of a monomorphism `i : X ⟶ Y` of simplicial sets.
 It sends `n : ℕ` to `Subcomplex.range i ⊔ Y.skeleton n`. -/
-@[nolint unusedArguments]
-def skeletonOfMono [Mono i] : ℕ →o Y.Subcomplex where
+def skeletonOfMono : ℕ →o Y.Subcomplex where
   toFun n := Subcomplex.range i ⊔ Y.skeleton n
   monotone' n m h := by
     dsimp
@@ -124,8 +123,6 @@ def skeletonOfMono [Mono i] : ℕ →o Y.Subcomplex where
     exact le_trans (Y.skeleton.monotone h) le_sup_right
 
 section
-
-variable [Mono i]
 
 lemma skeleton_le_skeletonOfMono (n : ℕ) :
     Y.skeleton n ≤ skeletonOfMono i n := le_sup_right
@@ -195,13 +192,13 @@ of `Y` not in the range of `i`.
 the type of nondegenerate `d`-simplices of `Y` which do not belong to
 the range of `i`. -/
 @[ext]
-structure Cell [Mono i] (d : ℕ) where
+structure Cell (d : ℕ) where
   /-- a `d`-simplex in the target of the monomorphism -/
   simplex : Y _⦋d⦌
   nonDegenerate : simplex ∈ Y.nonDegenerate d
   notMem : simplex ∉ Set.range (i.app _)
 
-variable [Mono i] (d : ℕ)
+variable (d : ℕ)
 
 /-- If `i : X ⟶ Y` is a monomorphism of simplicial sets and `d : ℕ`, this is
 a coproduct of copies of `Δ[d]` indexed by the nondegenerate `d`-simplices of `Y`
