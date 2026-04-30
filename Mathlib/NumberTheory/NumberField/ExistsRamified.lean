@@ -36,7 +36,7 @@ lemma NumberField.exists_not_isUramifiedAt_int (H : Module.finrank ℚ K ≠ 1) 
   have := NumberField.abs_discr_gt_two (K := K) (by lia)
   obtain ⟨q, hq, hqK⟩ := Int.exists_prime_and_dvd (n := discr K) (by zify; linarith)
   have := (not_dvd_discr_iff_forall_mem K 𝒪 hq).not_right.mp hqK
-  push_neg at this
+  push Not at this
   obtain ⟨P, hP, h, H⟩ := this
   exact ⟨P, hP.isMaximal (by aesop), H⟩
 

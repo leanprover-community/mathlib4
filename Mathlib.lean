@@ -1226,6 +1226,7 @@ public import Mathlib.Algebra.Ring.Idempotent
 public import Mathlib.Algebra.Ring.Identities
 public import Mathlib.Algebra.Ring.InjSurj
 public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Algebra.Ring.Int.Field
 public import Mathlib.Algebra.Ring.Int.Parity
 public import Mathlib.Algebra.Ring.Int.Units
 public import Mathlib.Algebra.Ring.Invertible
@@ -5706,8 +5707,8 @@ public import Mathlib.NumberTheory.NumberField.DedekindZeta
 public import Mathlib.NumberTheory.NumberField.Discriminant.Basic
 public import Mathlib.NumberTheory.NumberField.Discriminant.Defs
 public import Mathlib.NumberTheory.NumberField.Discriminant.Different
-public import Mathlib.NumberTheory.NumberField.ExistsRamified
 public import Mathlib.NumberTheory.NumberField.EquivReindex
+public import Mathlib.NumberTheory.NumberField.ExistsRamified
 public import Mathlib.NumberTheory.NumberField.FinitePlaces
 public import Mathlib.NumberTheory.NumberField.FractionalIdeal
 public import Mathlib.NumberTheory.NumberField.House
