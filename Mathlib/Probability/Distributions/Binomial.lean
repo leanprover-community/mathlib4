@@ -162,7 +162,7 @@ lemma binomial_eq_sum_dirac (n : ℕ) (p : I) :
     Bin(n, p) =
       ∑ k ∈ Finset.Iic n, ENNReal.ofReal ((n.choose k) * p ^ k * (1 - p) ^ (n - k)) • dirac k := by
   refine ext_of_singleton fun k ↦ ?_
-  rw [binomial_singleton, finset_sum_apply, Finset.sum_eq_single k]
+  rw [binomial_singleton, finsetSum_apply, Finset.sum_eq_single k]
   · simp
   · simp_all
   · simp_all [Nat.choose_eq_zero_of_lt]
@@ -180,7 +180,7 @@ variable {E : Type*} [NormedAddCommGroup E]
 
 lemma integrable_map_cast_binomial [MeasurableSingletonClass R] (f : R → E) :
     Integrable f Bin(R, n, p) := by
-  simp [map_cast_binomial_eq_sum_dirac, integrable_finset_sum_measure, integrable_dirac,
+  simp [map_cast_binomial_eq_sum_dirac, integrable_finsetSum_measure, integrable_dirac,
     Integrable.smul_measure]
 
 lemma integrable_binomial (f : ℕ → E) :
@@ -191,7 +191,7 @@ variable [NormedSpace ℝ E] [CompleteSpace E]
 lemma integral_binomial (f : ℕ → E) :
     ∫ x, f x ∂Bin(n, p) =
       ∑ k ∈ Finset.Iic n, (n.choose k * (p : ℝ) ^ k * (1 - p) ^ (n - k)) • f k := by
-  rw [binomial_eq_sum_dirac, integral_finset_sum_measure]
+  rw [binomial_eq_sum_dirac, integral_finsetSum_measure]
   · simp
   exact fun _ _ ↦ (integrable_dirac (by simp)).smul_measure (by simp)
 
