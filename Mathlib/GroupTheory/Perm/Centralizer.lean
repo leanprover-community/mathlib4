@@ -434,7 +434,7 @@ end Basis
 
 namespace OnCycleFactors
 
-open Basis BigOperators Nat Equiv.Perm
+open Basis Nat
 
 theorem mem_range_toPermHom_iff {τ} : τ ∈ (toPermHom g).range ↔
     ∀ c, #(τ c).val.support = #c.val.support := by

@@ -142,7 +142,7 @@ set_option backward.isDefEq.respectTransparency false in
 def adj : free.{u} R ⊣ forget (AlgCat.{u} R) :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun _ _ =>
-        { toFun := fun f ↦ TypeCat.ofHom ((FreeAlgebra.lift _).symm f.hom)
+        { toFun := fun f ↦ ↾((FreeAlgebra.lift _).symm f.hom)
           invFun := fun f ↦ ofHom <| (FreeAlgebra.lift _) f
           left_inv := fun f ↦ by aesop
           right_inv := fun f ↦ by aesop } }
@@ -179,8 +179,8 @@ end CategoryTheory.Iso
 @[simps]
 def algEquivIsoAlgebraIso {X Y : Type u} [Ring X] [Ring Y] [Algebra R X] [Algebra R Y] :
     (X ≃ₐ[R] Y) ≅ (AlgCat.of R X ≅ AlgCat.of R Y) where
-  hom := TypeCat.ofHom (fun e ↦ e.toAlgebraIso)
-  inv := TypeCat.ofHom (fun i ↦ i.toAlgEquiv)
+  hom := ↾fun e ↦ e.toAlgebraIso
+  inv := ↾fun i ↦ i.toAlgEquiv
 
 instance AlgCat.forget_reflects_isos : (forget (AlgCat.{u} R)).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
