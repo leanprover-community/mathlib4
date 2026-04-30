@@ -471,8 +471,8 @@ open Set.Icc
 
 variable {X : Type*} [TopologicalSpace X] {x y : X}
 
-/-- Extract a subpath from `γ` on the interval `[a, b]`.
-This is `γ` reparametrized via the affine map `t ↦ a + t (b - a)`. -/
+/-- Extract a subpath from `γ` on the interval `[a, b]`. This is `γ` reparametrised via
+`Set.Icc.convexCombo a b`, i.e. `t ↦ a + t (b - a)`. -/
 def subpathOn (γ : Path x y) (a b : unitInterval) : Path (γ a) (γ b) where
   toFun t := γ (convexCombo a b t)
   source' := by simp
