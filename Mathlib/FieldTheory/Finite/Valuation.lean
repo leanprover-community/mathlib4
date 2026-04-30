@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.Valuation.Basic
 # Valuations on an algebra over a finite field.
 -/
 
-@[expose] public section
+public section
 
 namespace FiniteField
 
