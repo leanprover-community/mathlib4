@@ -261,7 +261,7 @@ section Restrict
 /-- The restriction of a presheafed space along an open embedding into the space.
 -/
 @[simps]
-def restrict {U : TopCat} (X : PresheafedSpace C) {f : U ⟶ (X : TopCat)}
+def restrict {U : TopCat.{u}} (X : PresheafedSpace.{u} C) {f : U ⟶ (X : TopCat)}
     (h : IsOpenEmbedding f) : PresheafedSpace C where
   carrier := U
   presheaf := h.functor.op ⋙ X.presheaf
@@ -270,7 +270,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The map from the restriction of a presheafed space.
 -/
 @[simps]
-def ofRestrict {U : TopCat} (X : PresheafedSpace C) {f : U ⟶ (X : TopCat)}
+def ofRestrict {U : TopCat.{u}} (X : PresheafedSpace.{u} C) {f : U ⟶ (X : TopCat)}
     (h : IsOpenEmbedding f) : X.restrict h ⟶ X where
   base := f
   c :=
@@ -281,7 +281,7 @@ def ofRestrict {U : TopCat} (X : PresheafedSpace C) {f : U ⟶ (X : TopCat)}
           rfl }
 
 set_option backward.isDefEq.respectTransparency false in
-instance ofRestrict_mono {U : TopCat} (X : PresheafedSpace C) (f : U ⟶ X.1)
+instance ofRestrict_mono {U : TopCat.{u}} (X : PresheafedSpace.{u} C) (f : U ⟶ X.1)
     (hf : IsOpenEmbedding f) : Mono (X.ofRestrict hf) := by
   haveI : Mono f := (TopCat.mono_iff_injective _).mpr hf.injective
   constructor
