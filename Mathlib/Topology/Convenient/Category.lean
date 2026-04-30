@@ -60,7 +60,7 @@ instance (Y : GeneratedByTopCat.{v} X) : IsGeneratedBy X (toTopCat.obj Y) := Y.p
 
 /-- The inclusion functor `toTopCat : GeneratedByTopCat X ⥤ TopCat`
 is fully faithful. -/
-def fullyFaithfulToTopCat : (toTopCat.{v} (X := X)).FullyFaithful :=
+abbrev fullyFaithfulToTopCat : (toTopCat.{v} (X := X)).FullyFaithful :=
   ObjectProperty.fullyFaithfulι _
 
 variable {X} in
