@@ -222,17 +222,17 @@ public theorem isSolvable_of_killingForm_apply_lie_eq_zero
   rw [isNilpotent_iff_forall' (R := K)] at h_nilp
   have ad_nil : ∀ x ∈ DDI.toSubmodule, IsNilpotent (ad K L x) := by
     intro x hx
-    have hxDI : x ∈ DI := LieSubmodule.lie_le_left DI DI hx
-    have hxDS : (⟨x, hxDI⟩ : DI) ∈ derivedSeries K DI 1 := by
+    have hx_di : x ∈ DI := LieSubmodule.lie_le_left DI DI hx
+    have hx_der : (⟨x, hx_di⟩ : DI) ∈ derivedSeries K DI 1 := by
       rw [derivedSeries_eq_derivedSeriesOfIdeal_comap, mem_comap]
       exact hx
-    exact h_nilp ⟨⟨x, hxDI⟩, hxDS⟩
+    exact h_nilp ⟨⟨x, hx_di⟩, hx_der⟩
   have ddi_nilpotent : LieRing.IsNilpotent DDI := by
-    have : IsNoetherian K DDI := isNoetherian_submodule' DDI.toSubmodule
     rw [LieAlgebra.isNilpotent_iff_forall (R := K)]
     rintro ⟨x, hx⟩
-    rw [show ad K DDI ⟨x, hx⟩ = (ad K L x).restrict fun _ hy ↦ DDI.lie_mem hy from
-      by ext ⟨_, _⟩; rfl]
+    have ad_eq : ad K DDI ⟨x, hx⟩ = (ad K L x).restrict (fun _ hy ↦ DDI.lie_mem hy) := by
+      ext ⟨_, _⟩; rfl
+    rw [ad_eq]
     exact Module.End.isNilpotent.restrict _ (ad_nil x hx)
   obtain ⟨k, hk⟩ := IsSolvable.solvable K DDI
   rw [derivedSeries_eq_bot_iff] at hk
