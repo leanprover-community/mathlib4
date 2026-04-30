@@ -46,7 +46,7 @@ open ConvexSpace
 variable {I X : Type*} [ConvexSpace ℝ X] [MetricSpace X]
 
 variable (X) in
-/-- Typeclass for a A convex metric space is a real convex space with a compatible metric structure.
+/-- A convex metric space is a real convex space with a compatible metric structure.
 Concretely, we ask for `dist(∑ tᵢ xᵢ, ∑ tᵢ yᵢ) ≤ ∑ tᵢ dist(xᵢ, yᵢ)`,
 which is what one would expect from the triangle inequality.
 
