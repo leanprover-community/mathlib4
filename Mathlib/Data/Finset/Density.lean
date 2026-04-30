@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Field.Rat
 public import Mathlib.Data.Fintype.Card
+public import Mathlib.Data.Fintype.Prod
 public import Mathlib.Data.Rat.Cast.CharZero
 public import Mathlib.Tactic.Positivity.Basic
 
@@ -53,7 +54,7 @@ overengineering basic definitions is likely to hinder user experience.
 
 open Function Multiset Nat
 
-variable {𝕜 α β : Type*} [Fintype α]
+variable {𝕜 α β : Type*} [Fintype α] [Fintype β]
 
 namespace Finset
 variable {s t : Finset α} {a b : α}
@@ -100,7 +101,7 @@ lemma dens_lt_dens (h : s ⊂ t) : dens s < dens t :=
 @[mono] lemma dens_mono : Monotone (dens : Finset α → ℚ≥0) := fun _ _ ↦ dens_le_dens
 @[mono] lemma dens_strictMono : StrictMono (dens : Finset α → ℚ≥0) := fun _ _ ↦ dens_lt_dens
 
-lemma dens_map_le [Fintype β] (f : α ↪ β) : dens (s.map f) ≤ dens s := by
+lemma dens_map_le (f : α ↪ β) : dens (s.map f) ≤ dens s := by
   cases isEmpty_or_nonempty α
   · simp [Subsingleton.elim s ∅]
   simp_rw [dens, card_map]
@@ -108,10 +109,10 @@ lemma dens_map_le [Fintype β] (f : α ↪ β) : dens (s.map f) ≤ dens s := by
   · exact mod_cast Fintype.card_pos
   · exact Fintype.card_le_of_injective _ f.2
 
-@[simp] lemma dens_map_equiv [Fintype β] (e : α ≃ β) : (s.map e.toEmbedding).dens = s.dens := by
+@[simp] lemma dens_map_equiv (e : α ≃ β) : (s.map e.toEmbedding).dens = s.dens := by
   simp [dens, Fintype.card_congr e]
 
-lemma dens_image [Fintype β] [DecidableEq β] {f : α → β} (hf : Bijective f) (s : Finset α) :
+lemma dens_image [DecidableEq β] {f : α → β} (hf : Bijective f) (s : Finset α) :
     (s.image f).dens = s.dens := by
   simpa [map_eq_image, -dens_map_equiv] using dens_map_equiv (.ofBijective f hf)
 
@@ -124,19 +125,8 @@ lemma dens_image [Fintype β] [DecidableEq β] {f : α → β} (hf : Bijective f
 @[simp] lemma dens_mul_card (s : Finset α) : s.dens * Fintype.card α = s.card := by
   rw [mul_comm, card_mul_dens]
 
-section Semifield
-variable [Semifield 𝕜] [CharZero 𝕜]
-
-@[simp] lemma natCast_card_mul_nnratCast_dens (s : Finset α) :
-    (Fintype.card α * s.dens : 𝕜) = s.card := mod_cast s.card_mul_dens
-
-@[simp] lemma nnratCast_dens_mul_natCast_card (s : Finset α) :
-    (s.dens * Fintype.card α : 𝕜) = s.card := mod_cast s.dens_mul_card
-
-@[norm_cast] lemma nnratCast_dens (s : Finset α) : (s.dens : 𝕜) = s.card / Fintype.card α := by
-  simp [dens]
-
-end Semifield
+@[simp] lemma dens_product (s : Finset α) (t : Finset β) : (s ×ˢ t).dens = s.dens * t.dens := by
+  simp [dens, mul_div_mul_comm]
 
 section Nonempty
 variable [Nonempty α]
@@ -204,5 +194,38 @@ lemma dens_sdiff (h : s ⊆ t) : dens (t \ s) = dens t - dens s :=
 lemma le_dens_sdiff (s t : Finset α) : dens t - dens s ≤ dens (t \ s) :=
   tsub_le_iff_right.2 dens_le_dens_sdiff_add_dens
 
+lemma dens_union_eq_dens_add_dens : (s ∪ t).dens = s.dens + t.dens ↔ Disjoint s t := by
+  rw [← dens_union_add_dens_inter]; simp [disjoint_iff_inter_eq_empty]
+
+@[grind =]
+lemma dens_sdiff_of_subset (h : s ⊆ t) : (t \ s).dens = t.dens - s.dens := by
+  suffices (t \ s).dens = (t \ s ∪ s).dens - s.dens by rwa [sdiff_union_of_subset h] at this
+  rw [dens_union_of_disjoint sdiff_disjoint, add_tsub_cancel_right]
+
 end Lattice
+
+section DivisionRing
+variable [DivisionRing 𝕜] [CharZero 𝕜]
+
+@[simp] lemma natCast_card_mul_nnratCast_dens (s : Finset α) :
+    (Fintype.card α * s.dens : 𝕜) = s.card := mod_cast s.card_mul_dens
+
+@[simp] lemma nnratCast_dens_mul_natCast_card (s : Finset α) :
+    (s.dens * Fintype.card α : 𝕜) = s.card := mod_cast s.dens_mul_card
+
+@[norm_cast] lemma nnratCast_dens (s : Finset α) : (s.dens : 𝕜) = s.card / Fintype.card α := by
+  simp [dens]
+
+variable [DecidableEq α]
+
+lemma cast_dens_inter : ((s ∩ t).dens : 𝕜) = s.dens + t.dens - (s ∪ t).dens := by
+  rw [eq_sub_iff_add_eq]; norm_cast; exact dens_inter_add_dens_union ..
+
+lemma cast_dens_union : ((s ∪ t).dens : 𝕜) = s.dens + t.dens - (s ∩ t).dens := by
+  rw [eq_sub_iff_add_eq]; norm_cast; exact dens_union_add_dens_inter ..
+
+lemma cast_dens_sdiff (h : s ⊆ t) : ((t \ s).dens : 𝕜) = t.dens - s.dens := by
+  rw [dens_sdiff_of_subset h, NNRat.cast_sub (dens_mono h)]
+
+end DivisionRing
 end Finset
