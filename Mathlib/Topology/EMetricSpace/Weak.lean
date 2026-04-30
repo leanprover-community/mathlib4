@@ -5,12 +5,10 @@ Authors: Felix Pernegger
 -/
 module
 
-public import Mathlib.Topology.EMetricSpace.Basic
-public import Mathlib.Topology.Order.Real
-public import Mathlib.Topology.MetricSpace.Pseudo.Constructions
-public import Mathlib.Topology.MetricSpace.Basic
 public import Mathlib.Topology.Bornology.Real
 public import Mathlib.Topology.Compactification.OnePoint.Basic
+public import Mathlib.Topology.MetricSpace.Basic
+public import Mathlib.Topology.Order.Real
 
 /-!
 # Lemmas around weak (pseudo) extended metric spaces.
@@ -19,7 +17,7 @@ In this file we show that whenever `some : α → Option α` is an open embeddin
 `WeakPseudoEMetricSpace`, then `Option α` is as well in a natural manner. We then use this to prove
 `ℝ≥0` and `EReal` are weak extended metric spaces.
 
-## Main definitions and lemmas
+## Main statements
 
 * `Option.weakPseudoEMetricSpace_of_isOpenEmbedding`: states that under a weak condition, if `α` is
   a weak pseudo extended space, so is `Option α`.
@@ -168,11 +166,25 @@ abbrev weakPseudoEMetricSpace_of_isOpenEmbedding {α : Type u} [t : TopologicalS
       rw [ball_infty_of_pos ENNReal.zero_lt_top]
       exact Subsingleton.discreteTopology
 
+
+/-- If `some : α → Option α` is an open embedding and `α` is has a weak pseudo extended metric
+structure, the structure extends naturally to `Option α`. -/
+abbrev weakEMetricSpace_of_isOpenEmbedding {α : Type u} [t : TopologicalSpace α]
+    [TopologicalSpace (Option α)] [m : WeakEMetricSpace α]
+    (h : IsOpenEmbedding (some (α := α))) : WeakEMetricSpace (Option α) :=
+  { toWeakPseudoEMetricSpace := weakPseudoEMetricSpace_of_isOpenEmbedding h,
+    eq_of_edist_eq_zero {x y} xy := by
+      cases x <;> cases y
+      · rfl
+      · simp at xy
+      · simp at xy
+      rw [m.eq_of_edist_eq_zero xy]
+    }
+
 end Option
 
 variable [LinearOrder α] [OrderTopology α]
 
-variable (α) in
 /-- If `α` has a linear order topology, `some : α → WithTop α` is an open embedding with respect to
 the order topologies. -/
 @[to_dual]
@@ -186,23 +198,14 @@ so if `WithTop α` -/
 instance instWeakPseudoEMetricSpaceWithTop [m : WeakPseudoEMetricSpace α] :
     WeakPseudoEMetricSpace (WithTop α) :=
   let : TopologicalSpace (Option α) := instTopologicalSpaceWithTopOfOrderTopology
-  Option.weakPseudoEMetricSpace_of_isOpenEmbedding (WithTop.isOpenEmbedding_some α)
+  Option.weakPseudoEMetricSpace_of_isOpenEmbedding WithTop.isOpenEmbedding_some
 
 /-- If `α` has a topology induced by a linear order in is a weak extended metric space,
 so if `WithTop α` -/
 @[to_dual]
-instance instWeakEMetricSpaceWithTop [m : WeakEMetricSpace α] : WeakEMetricSpace (WithTop α) where
-  eq_of_edist_eq_zero {x y} h := by
-    cases x <;> cases y
-    · rfl
-    · contrapose! h
-      exact ENNReal.top_ne_zero
-    · contrapose! h
-      exact ENNReal.top_ne_zero
-    · congr 1
-      apply m.eq_of_edist_eq_zero
-      rw [← h]
-      rfl
+instance instWeakEMetricSpaceWithTop [m : WeakEMetricSpace α] : WeakEMetricSpace (WithTop α) :=
+  let : TopologicalSpace (Option α) := instTopologicalSpaceWithTopOfOrderTopology
+  Option.weakEMetricSpace_of_isOpenEmbedding WithTop.isOpenEmbedding_some
 
 /-- The one point compactification of a weak pseudo extended metric space is again a weak pseudo
 extended metric space. -/
@@ -210,6 +213,13 @@ instance instWeakPseudoEMetricSpaceOnePoint [m : WeakPseudoEMetricSpace α] :
     WeakPseudoEMetricSpace (OnePoint α) :=
   let : TopologicalSpace (Option α) := OnePoint.instTopologicalSpace
   Option.weakPseudoEMetricSpace_of_isOpenEmbedding OnePoint.isOpenEmbedding_coe
+
+/-- The one point compactification of a weak extended metric space is again a weak extended metric
+space. -/
+instance instWeakEMetricSpaceOnePoint [m : WeakEMetricSpace α] :
+    WeakEMetricSpace (OnePoint α) :=
+  let : TopologicalSpace (Option α) := OnePoint.instTopologicalSpace
+  Option.weakEMetricSpace_of_isOpenEmbedding OnePoint.isOpenEmbedding_coe
 
 /-- `ℝ≥0∞` is a weak extended metric space with its usual distance function. -/
 noncomputable instance instWeakEMetricSpaceENNReal : WeakEMetricSpace ℝ≥0∞ :=
