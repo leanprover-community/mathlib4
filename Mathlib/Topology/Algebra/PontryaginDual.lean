@@ -84,38 +84,6 @@ for PontryaginDual A
 /-- A discrete monoid has compact Pontryagin dual. -/
 add_decl_doc instLocallyCompactSpacePontryaginDual
 
-private lemma exists_pos_cos_mul_nonpos_of_pos {θ : ℝ} (hθ0 : 0 < θ) (hθπ : θ ≤ π) :
-    ∃ n > (0 : ℕ), cos ((n : ℝ) * θ) ≤ 0 := by
-  refine ⟨⌈π / 2 / θ⌉₊, by positivity, cos_nonpos_of_pi_div_two_le_of_le ?_ ?_⟩
-  · grw [← Nat.le_ceil]
-    simp [hθ0.ne']
-  · grw [Nat.ceil_lt_add_one (by positivity), add_one_mul]
-    simpa [hθ0.ne', add_comm]
-
-private lemma exists_pos_cos_mul_nonpos {θ : ℝ} (hθ₁ : -π < θ) (hθ₂ : θ ≤ π)
-    (hθ : θ ≠ 0) :
-    ∃ n > (0 : ℕ), cos ((n : ℝ) * θ) ≤ 0 := by
-  obtain (_hθ | hθ) := hθ.lt_or_gt
-  · simpa using exists_pos_cos_mul_nonpos_of_pos (θ := -θ) (by linarith) (by linarith)
-  · exact exists_pos_cos_mul_nonpos_of_pos hθ hθ₂
-
-private lemma eq_one_of_forall_pow_mem_centeredArc_pi_div_two {z : Circle}
-    (hz : ∀ n > 0, z ^ n ∈ Circle.centeredArc (π / 2)) : z = 1 := by
-  rw [← Circle.arg_eq_zero]
-  by_contra hθ
-  obtain ⟨n, hn, hcos⟩ :=
-    exists_pos_cos_mul_nonpos (Complex.neg_pi_lt_arg _) (Complex.arg_le_pi _) hθ
-  have hzarg : |Complex.arg (z ^ n)| < π / 2 :=
-    (Circle.mem_centeredArc (z := z ^ n) (by linarith [pi_pos])).1 (hz n hn)
-  have hpow : Circle.exp ((n : ℝ) * (z : ℂ).arg) = Circle.exp (Complex.arg (z ^ n)) := by
-    rw [Circle.exp_natCast_mul, Circle.exp_arg]
-    exact (Circle.exp_arg (z ^ n)).symm
-  have : cos ((n : ℝ) * (z : ℂ).arg) = cos (Complex.arg (z ^ n)) :=
-    Circle.cos_eq_cos_of_exp_eq_exp hpow
-  have hzargIoo : Complex.arg (z ^ n) ∈ Set.Ioo (-(π / 2)) (π / 2) := by
-    simpa [Set.mem_Ioo] using (abs_lt.mp hzarg)
-  linarith [cos_pos_of_mem_Ioo hzargIoo]
-
 /-- A compact monoid has discrete Pontryagin dual. -/
 instance [CompactSpace A] : DiscreteTopology (PontryaginDual A) := by
   let V : Set (PontryaginDual A) := {ψ | Set.MapsTo ψ Set.univ (Circle.centeredArc (π / 2))}
@@ -129,7 +97,7 @@ instance [CompactSpace A] : DiscreteTopology (PontryaginDual A) := by
     · rw [Set.mem_singleton_iff]
       apply ContinuousMonoidHom.ext
       intro a
-      refine eq_one_of_forall_pow_mem_centeredArc_pi_div_two fun n hn ↦ ?_
+      refine Circle.eq_one_of_forall_pow_mem_centeredArc_pi_div_two fun n hn ↦ ?_
       simpa [map_pow] using hψ (Set.mem_univ (a ^ n))
     · rw [Set.mem_singleton_iff] at hψ
       subst ψ

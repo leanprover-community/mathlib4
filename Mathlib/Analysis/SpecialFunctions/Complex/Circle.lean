@@ -56,6 +56,39 @@ theorem mem_centeredArc {r : ℝ} (hr : r ≤ π) {z : Circle} :
   have htπ : |t| < π := ht.trans_le hr
   rwa [arg_exp (neg_lt_of_abs_lt htπ) (lt_of_abs_lt htπ).le]
 
+/-- If all positive powers of a point on the circle lie in the right half centered arc,
+then the point is `1`. -/
+theorem eq_one_of_forall_pow_mem_centeredArc_pi_div_two {z : Circle}
+    (hz : ∀ n > 0, z ^ n ∈ centeredArc (π / 2)) : z = 1 := by
+  have exists_pos_cos_mul_nonpos_of_pos :
+      ∀ {θ : ℝ}, 0 < θ → θ ≤ π → ∃ n > (0 : ℕ), Real.cos ((n : ℝ) * θ) ≤ 0 := by
+    intro θ hθ0 hθπ
+    refine ⟨⌈π / 2 / θ⌉₊, by positivity, cos_nonpos_of_pi_div_two_le_of_le ?_ ?_⟩
+    · grw [← Nat.le_ceil]
+      simp [hθ0.ne']
+    · grw [Nat.ceil_lt_add_one (by positivity), add_one_mul]
+      simpa [hθ0.ne', add_comm]
+  have exists_pos_cos_mul_nonpos :
+      ∀ {θ : ℝ}, -π < θ → θ ≤ π → θ ≠ 0 →
+        ∃ n > (0 : ℕ), Real.cos ((n : ℝ) * θ) ≤ 0 := by
+    intro θ hθ₁ hθ₂ hθ
+    obtain (_hθ | hθ) := hθ.lt_or_gt
+    · simpa using exists_pos_cos_mul_nonpos_of_pos (θ := -θ) (by linarith) (by linarith)
+    · exact exists_pos_cos_mul_nonpos_of_pos hθ hθ₂
+  rw [← arg_eq_zero]
+  by_contra hθ
+  obtain ⟨n, hn, hcos⟩ := exists_pos_cos_mul_nonpos (neg_pi_lt_arg _) (arg_le_pi _) hθ
+  have hzarg : |arg (z ^ n)| < π / 2 :=
+    (mem_centeredArc (z := z ^ n) (by linarith [pi_pos])).1 (hz n hn)
+  have hpow : exp ((n : ℝ) * arg z) = exp (arg (z ^ n)) := by
+    rw [exp_natCast_mul, exp_arg]
+    exact (exp_arg (z ^ n)).symm
+  have : Real.cos ((n : ℝ) * arg z) = Real.cos (arg (z ^ n)) :=
+    cos_eq_cos_of_exp_eq_exp hpow
+  have hzargIoo : arg (z ^ n) ∈ Set.Ioo (-(π / 2)) (π / 2) := by
+    simpa [Set.mem_Ioo] using abs_lt.mp hzarg
+  linarith [cos_pos_of_mem_Ioo hzargIoo]
+
 /-- `Complex.arg ∘ (↑)` and `Circle.exp` define a partial equivalence between `Circle` and `ℝ`
 with `source = Set.univ` and `target = Set.Ioc (-π) π`. -/
 @[simps -fullyApplied]
