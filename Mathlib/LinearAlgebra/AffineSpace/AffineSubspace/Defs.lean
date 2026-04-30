@@ -206,21 +206,23 @@ namespace AffineSubspace
 variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
   [AffineSpace V P]
 
-/-- Reinterprets `s : AffineSubspace k V` with `0 ∈ s` as a `Submodule k V`. -/
-def toSubmodule {s : AffineSubspace k V} (hs : 0 ∈ s) : Submodule k V where
-  carrier := s
-  zero_mem' := hs
-  add_mem' ha hb := by simpa using s.smul_vsub_vadd_mem 1 ha hs hb
-  smul_mem' _ _ ha := by simpa using s.smul_vsub_vadd_mem _ ha hs hs
-
-instance : CanLift (AffineSubspace k V) (Submodule k V) (·) (0 ∈ ·) := ⟨
-  fun _ hs => ⟨toSubmodule hs, by ext x; simp [toSubmodule]⟩⟩
+lemma vsub_self_of_zero_mem {s : AffineSubspace k V} (hs : 0 ∈ s) :
+    (s : Set V) -ᵥ s = s := by
+  ext x
+  constructor
+  · rintro ⟨a, ha, b, hb, rfl⟩
+    simpa using s.smul_vsub_vadd_mem 1 ha hb hs
+  · exact fun h => ⟨x, h, 0, hs, by simp⟩
 
 /-- The direction of an affine subspace is the submodule spanned by
 the pairwise differences of points.  (Except in the case of an empty
 affine subspace, where the direction is the zero submodule, every
 vector in the direction is the difference of two points in the affine
-subspace.) -/
+subspace.)
+
+This can also be used to reinterpret an affine subspace that contains
+zero as a submodule, see `direction_eq_self_of_zero_mem`.
+-/
 def direction (s : AffineSubspace k P) : Submodule k V :=
   vectorSpan k (s : Set P)
 
@@ -334,6 +336,16 @@ theorem mem_direction_iff_eq_vsub_left {s : AffineSubspace k P} {p : P} (hp : p 
     v ∈ s.direction ↔ ∃ p₂ ∈ s, v = p -ᵥ p₂ := by
   rw [← SetLike.mem_coe, coe_direction_eq_vsub_set_left hp]
   exact ⟨fun ⟨p₂, hp₂, hv⟩ => ⟨p₂, hp₂, hv.symm⟩, fun ⟨p₂, hp₂, hv⟩ => ⟨p₂, hp₂, hv.symm⟩⟩
+
+/-- If an affine subspace contains zero, then it equals its directions. -/
+lemma direction_eq_self_of_zero_mem {s : AffineSubspace k V} (hs : 0 ∈ s) :
+    s.direction = s := by
+  ext x
+  change x ∈ (s.direction : Set V) ↔ _
+  simp [s.coe_direction_eq_vsub_set ⟨0, hs⟩, vsub_self_of_zero_mem hs]
+
+instance : CanLift (AffineSubspace k V) (Submodule k V) (·) (0 ∈ ·) := ⟨
+  fun _ hs => ⟨_, direction_eq_self_of_zero_mem hs⟩⟩
 
 /-- Two affine subspaces with the same direction and nonempty intersection are equal. -/
 theorem ext_of_direction_eq {s₁ s₂ : AffineSubspace k P} (hd : s₁.direction = s₂.direction)
