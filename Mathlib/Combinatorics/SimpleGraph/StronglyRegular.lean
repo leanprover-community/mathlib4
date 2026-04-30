@@ -64,6 +64,7 @@ theorem bot_strongly_regular : (⊥ : SimpleGraph V).IsSRGWith (Fintype.card V) 
   of_not_adj v w _ := by
     simp only [card_eq_zero, Fintype.card_ofFinset, forall_true_left, not_false_iff, bot_adj]
     ext
+    -- #38747
     simp
 
 theorem IsSRGWith.ediam_eq_two [Nontrivial V] (h : G.IsSRGWith n k ℓ μ) (ht : G ≠ ⊤) (hm : μ ≠ 0) :

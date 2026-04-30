@@ -406,14 +406,6 @@ def support : Set V :=
 theorem mem_support {v : V} : v ∈ G.support ↔ ∃ w, G.Adj v w :=
   Iff.rfl
 
-variable {G} in
-theorem Adj.mem_support_left (hadj : G.Adj u v) : u ∈ G.support :=
-  G.mem_support.mpr ⟨v, hadj⟩
-
-variable {G} in
-theorem Adj.mem_support_right (hadj : G.Adj u v) : v ∈ G.support :=
-  hadj.symm.mem_support_left
-
 @[gcongr]
 theorem support_mono {G G' : SimpleGraph V} (h : G ≤ G') : G.support ⊆ G'.support :=
   SetRel.dom_mono fun _uv huv ↦ h huv
@@ -447,10 +439,6 @@ theorem support_of_subsingleton [Subsingleton V] : G.support = ∅ :=
 
 /-- `G.neighborSet v` is the set of vertices adjacent to `v` in `G`. -/
 def neighborSet (v : V) : Set V := {w | G.Adj v w}
-
-variable {G} in
-theorem nonempty_neighborSet : (G.neighborSet v).Nonempty ↔ ∃ u, G.Adj v u :=
-  .rfl
 
 instance neighborSet.memDecidable (v : V) [DecidableRel G.Adj] :
     DecidablePred (· ∈ G.neighborSet v) :=
@@ -794,31 +782,26 @@ theorem neighborSet_compl (G : SimpleGraph V) (v : V) :
   ext w
   simp [and_comm, eq_comm]
 
-variable (v) in
-theorem neighborSet_subset_compl : G.neighborSet v ⊆ {v}ᶜ := by
-  simp
-
+-- #38747
 variable (v) in
 theorem neighborSet_ne_univ : G.neighborSet v ≠ .univ :=
   Set.ne_univ_iff_exists_notMem _ |>.mpr ⟨v, G.notMem_neighborSet_self⟩
 
-variable {G} in
-@[gcongr]
-theorem neighborSet_mono {G' : SimpleGraph V} (hle : G ≤ G') (v : V) :
-    G.neighborSet v ⊆ G'.neighborSet v :=
-  fun _ hadj ↦ hle hadj
-
+-- #38747
 @[simp]
 theorem neighborSet_top : neighborSet ⊤ v = {v}ᶜ := by
   grind [mem_neighborSet, top_adj]
 
+-- #38747
 @[simp]
 theorem neighborSet_bot : neighborSet ⊥ v = ∅ := by
   grind [mem_neighborSet, bot_adj]
 
+-- #38747
 theorem eq_bot_iff_neighborSet : G = ⊥ ↔ ∀ v, G.neighborSet v = ∅ := by
   simp [eq_bot_iff_forall_not_adj, Set.eq_empty_iff_forall_notMem]
 
+-- #38747
 variable {G} in
 theorem Adj.nontrivial (hadj : G.Adj u v) : Nontrivial V :=
   ⟨u, v, hadj.ne⟩
@@ -859,10 +842,6 @@ theorem commonNeighbors_top_eq {v w : V} :
     (⊤ : SimpleGraph V).commonNeighbors v w = Set.univ \ {v, w} := by
   ext u
   simp [commonNeighbors, eq_comm, not_or]
-
-@[simp]
-theorem commonNeighbors_bot_eq : commonNeighbors ⊥ u v = ∅ := by
-  simp [commonNeighbors]
 
 section Incidence
 
@@ -951,26 +930,32 @@ attribute [simp] IsIsolated.neighborSet_eq_empty
 lemma mem_support_iff_not_isIsolated : v ∈ G.support ↔ ¬ G.IsIsolated v := by
   simp [mem_support, IsIsolated]
 
+-- #38747
 theorem notMem_support_iff_isIsolated : v ∉ G.support ↔ G.IsIsolated v := by
   simp [mem_support_iff_not_isIsolated]
 
+-- #38747
 variable {G} in
 theorem exists_adj_iff_not_isIsolated : (∃ u, G.Adj v u) ↔ ¬G.IsIsolated v := by
   simp [IsIsolated]
 
+-- #38747
 @[simp]
 theorem IsIsolated.of_subsingleton [Subsingleton V] (G : SimpleGraph V) (v : V) :
     G.IsIsolated v :=
-  fun _ hadj ↦ not_nontrivial V <| hadj.nontrivial
+  fun _ hadj ↦ not_nontrivial V hadj.nontrivial
 
+-- #38747
 variable {G} in
 theorem nontrivial_of_not_isIsolated (h : ¬G.IsIsolated v) : Nontrivial V :=
   exists_adj_iff_not_isIsolated.mpr h |>.elim fun _ ↦ Adj.nontrivial
 
+-- #38747
 variable {G} in
 theorem Adj.not_isIsolated_left (h : G.Adj u v) : ¬G.IsIsolated u :=
   exists_adj_iff_not_isIsolated.mp ⟨_, h⟩
 
+-- #38747
 variable {G} in
 theorem Adj.not_isIsolated_right (h : G.Adj u v) : ¬G.IsIsolated v :=
   h.symm.not_isIsolated_left
