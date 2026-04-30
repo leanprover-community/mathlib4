@@ -166,9 +166,6 @@ def join (f : StdSimplex R (StdSimplex R M)) : StdSimplex R M where
     convert f.total
     rw [Finsupp.sum_smul_index (fun _ ↦ rfl), ← Finsupp.mul_sum, StdSimplex.total, mul_one]
 
-@[simp]
-theorem single_weights (x : M) : (single x : StdSimplex R M).weights = Finsupp.single x 1 := rfl
-
 theorem single_weights_support (x : M) : (single x : StdSimplex R M).weights.support = {x} :=
   Finsupp.support_single_ne_zero x one_ne_zero
 
@@ -176,13 +173,6 @@ theorem single_weights_support (x : M) : (single x : StdSimplex R M).weights.sup
 theorem single_support_card (x : M) : (single x : StdSimplex R M).weights.support.card = 1 := by
   rw [single_weights_support]
   exact Finset.card_singleton x
-
-/-- Mapping over a single-point simplex. -/
-@[simp]
-theorem map_single {N : Type w} (g : M → N) (x : M) :
-    (single x : StdSimplex R M).map g = single (g x) := by
-  ext n
-  simp only [map, single_weights, Finsupp.mapDomain_single]
 
 /-- Join of a single-point outer simplex: join (single d) = d -/
 @[simp]
@@ -249,13 +239,6 @@ theorem join_map {M : Type*} {N : Type*} (g : M → N) (f : StdSimplex R (StdSim
     · intro d r₁ r₂; exact add_smul r₁ r₂ _
   exact key f.weights
 
-/-- Functoriality of map: composing two maps equals mapping the composition. -/
-theorem map_comp {M : Type*} {N : Type*} {P : Type*}
-    (g : M → N) (h : N → P) (f : StdSimplex R M) :
-    (f.map g).map h = f.map (h ∘ g) := by
-  ext p
-  simp only [map, Finsupp.mapDomain_comp]
-
 /-- Monad associativity: join after join equals join after mapping join. -/
 theorem join_join {M : Type*} (f : StdSimplex R (StdSimplex R (StdSimplex R M))) :
     f.join.join = (f.map StdSimplex.join).join := by
@@ -281,13 +264,6 @@ theorem join_join {M : Type*} (f : StdSimplex R (StdSimplex R (StdSimplex R M)))
       exact Finsupp.smul_sum.symm
   simp only [join, map]
   exact key f.weights
-
-/-- Mapping over a duple distributes to each element. -/
-theorem map_duple {M : Type*} {N : Type*} (g : M → N) (x y : M)
-    {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) :
-    (duple x y hs ht h).map g = duple (g x) (g y) hs ht h := by
-  ext n
-  simp only [map, duple, Finsupp.mapDomain_add, Finsupp.mapDomain_single]
 
 end StdSimplex
 
@@ -3483,12 +3459,12 @@ theorem affineOfBinary_assoc_flattening [Inhabited M]
     conv_lhs =>
       rw [StdSimplex.join_map (convexCombinationOfBinary u op)
             (StdSimplex.duple g₁ g₂ hs' ht' hst)]
-      rw [StdSimplex.map_duple
-            (fun d => d.map (convexCombinationOfBinary u op)) g₁ g₂ hs' ht' hst]
+      rw [StdSimplex.map_duple hs' ht' hst g₁ g₂
+            (fun d => d.map (convexCombinationOfBinary u op))]
     -- RHS: rewrite using join_join + map_duple
     conv_rhs =>
       rw [StdSimplex.join_join (StdSimplex.duple g₁ g₂ hs' ht' hst)]
-      rw [StdSimplex.map_duple StdSimplex.join g₁ g₂ hs' ht' hst]
+      rw [StdSimplex.map_duple hs' ht' hst g₁ g₂ StdSimplex.join]
     -- Goal: A(D₁.join.toWS) = A(D₂.join.toWS) where
     -- D₁ = duple (g₁.map F) (g₂.map F), D₂ = duple g₁.join g₂.join
     -- F = convexCombinationOfBinary u op
@@ -3514,11 +3490,12 @@ theorem affineOfBinary_assoc_flattening [Inhabited M]
     -- Goal: A(D₁.map F .toWS) = A(D₂.map F .toWS)
     -- D₁.map F = D₂.map F because F(g₁.map F) = F(g₁.join) by ih₁
     congr 1; congr 1
-    rw [StdSimplex.map_duple (convexCombinationOfBinary u op)
+    rw [StdSimplex.map_duple hs' ht' hst
           (g₁.map (convexCombinationOfBinary u op))
-          (g₂.map (convexCombinationOfBinary u op)) hs' ht' hst,
-        StdSimplex.map_duple (convexCombinationOfBinary u op)
-          g₁.join g₂.join hs' ht' hst,
+          (g₂.map (convexCombinationOfBinary u op))
+          (convexCombinationOfBinary u op),
+        StdSimplex.map_duple hs' ht' hst g₁.join g₂.join
+          (convexCombinationOfBinary u op),
         show convexCombinationOfBinary u op
               (g₁.map (convexCombinationOfBinary u op)) =
             convexCombinationOfBinary u op g₁.join from ih₁,
