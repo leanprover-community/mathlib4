@@ -10,8 +10,6 @@ public import Mathlib.CategoryTheory.Comma.Over.Basic
 public import Mathlib.CategoryTheory.IsConnected
 public import Mathlib.CategoryTheory.Filtered.Final
 
-import Mathlib.CategoryTheory.Limits.Preserves.Opposites
-
 /-!
 # Connected limits in the over category
 
@@ -180,16 +178,6 @@ def isLimitConePost [IsCofilteredOrEmpty J] {F : J ⥤ C} {c : Cone F} (i : J) (
 end Over
 
 namespace Under
-
-instance [IsConnected J] {B : C} : PreservesColimitsOfShape J (Under.forget B) := by
-  suffices PreservesLimitsOfShape Jᵒᵖ (Under.forget B).op from preservesColimitsOfShape_of_op _ _
-  exact inferInstanceAs (PreservesLimitsOfShape Jᵒᵖ
-    ((Over.opEquivOpUnder _).inverse ⋙ Over.forget (Opposite.op B)))
-
-instance [IsConnected J] {B : C} : ReflectsColimitsOfShape J (Under.forget B) := by
-  have : ReflectsLimitsOfShape Jᵒᵖ (Under.forget B).op := inferInstanceAs
-    (ReflectsLimitsOfShape Jᵒᵖ ((Over.opEquivOpUnder _).inverse ⋙ Over.forget (Opposite.op B)))
-  exact ⟨fun {F} ↦ ⟨fun {c} hc ↦ ⟨((this.1 (K := F.op)).1 (c := c.op) hc.op).some.unop⟩⟩⟩
 
 /-- The forgetful functor from the under category creates any connected limit. -/
 instance createsColimitsOfShapeForgetOfIsConnected [IsConnected J] {B : C} :
