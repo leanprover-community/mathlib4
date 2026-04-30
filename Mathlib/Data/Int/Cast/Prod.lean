@@ -12,7 +12,7 @@ public import Mathlib.Data.Nat.Cast.Prod
 # The product of two `AddGroupWithOne`s.
 -/
 
-@[expose] public section
+public section
 
 
 namespace Prod
