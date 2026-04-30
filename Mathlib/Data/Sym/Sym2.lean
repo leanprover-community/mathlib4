@@ -677,7 +677,7 @@ theorem fromRelNdrec_mk {motive : Sort*} {sym : Symmetric r} {a b : α} (hz : r 
   rfl
 
 /-- The `fromRel` set of a symmetric relation `r` is equivalent to summing that set restricted to
-fibers of `f` -/
+fibers of a function `f`, given that `f` agrees on elements related by `r`. -/
 @[simps]
 def _root_.Equiv.sigmaFiberFromRel (sym : Symmetric r) {f : α → β} (hf : r ≤ Setoid.ker f) :
     fromRel sym ≃ Σ b : β, fromRel (α := { a // f a = b }) <| sym.comap (↑) where
