@@ -247,8 +247,7 @@ end LieIdeal
 
 namespace LieAlgebra
 
-variable (K L : Type*) [Field K] [CharZero K]
-  [LieRing L] [LieAlgebra K L] [Module.Finite K L]
+variable (K L : Type*) [Field K] [CharZero K] [LieRing L] [LieAlgebra K L] [Module.Finite K L]
 
 /-- The kernel of the Killing form of a finite-dimensional Lie algebra over a field of
 characteristic zero is contained in the solvable radical. -/
