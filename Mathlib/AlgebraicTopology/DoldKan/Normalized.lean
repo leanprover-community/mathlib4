@@ -63,13 +63,13 @@ set_option backward.isDefEq.respectTransparency false in
 /-- `PInfty` factors through the normalized Moore complex -/
 @[simps!]
 def PInftyToNormalizedMooreComplex (X : SimplicialObject A) : K[X] ⟶ N[X] :=
-  ChainComplex.ofHom _ _ (AlternatingFaceMapComplex.d_squared X) _ _
-    (NormalizedMooreComplex.d_squared X)
+  ChainComplex.ofHom
     (fun n => factorThru _ _ (factors_normalizedMooreComplex_PInfty n)) fun n => by
     rw [← cancel_mono (NormalizedMooreComplex.objX X n).arrow, assoc, assoc, factorThru_arrow,
-      ← inclusionOfMooreComplexMap_f, ← normalizedMooreComplex_objD,
-      ← (inclusionOfMooreComplexMap X).comm (n + 1) n, inclusionOfMooreComplexMap_f,
-      factorThru_arrow_assoc, ← alternatingFaceMapComplex_obj_d]
+      ← inclusionOfMooreComplexMap_f, NormalizedMooreComplex.obj_d, ChainComplex.of_d,
+      ← normalizedMooreComplex_objD, ← (inclusionOfMooreComplexMap X).comm (n + 1) n,
+      inclusionOfMooreComplexMap_f, factorThru_arrow_assoc, alternatingFaceMapComplex_obj_d,
+      ← alternatingFaceMapComplex_obj_d]
     exact PInfty.comm (n + 1) n
 
 @[reassoc (attr := simp)]
