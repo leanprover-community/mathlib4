@@ -50,7 +50,7 @@ def freeMonic : (MvPolynomial (Fin n) R)[X] :=
 
 lemma coeff_freeMonic :
     (freeMonic R n).coeff k = if h : k < n then .X ⟨k, h⟩ else if k = n then 1 else 0 := by
-  simp only [freeMonic, Polynomial.coeff_add, Polynomial.coeff_X_pow, Polynomial.finset_sum_coeff,
+  simp only [freeMonic, Polynomial.coeff_add, Polynomial.coeff_X_pow, Polynomial.finsetSum_coeff,
     Polynomial.coeff_C_mul, mul_ite, mul_one, mul_zero]
   by_cases h : k < n
   · simp +contextual [Finset.sum_eq_single (ι := Fin n) (a := ⟨k, h⟩),
@@ -161,8 +161,6 @@ lemma universalFactorizationMap_comp_map :
     simp only [map_X, aeval_X, ← AlgHom.coe_toRingHom, ← Polynomial.coeff_map, Polynomial.map_mul,
       Polynomial.map_map, ← map_map_freeMonic (f := algebraMap R S)]
     congr 2 <;> ext <;> simp
-    · congr
-    congr
 
 /-- Lifts along `universalFactorizationMap` corresponds to factorization of `p` into
 monic polynomials with fixed degrees. -/
