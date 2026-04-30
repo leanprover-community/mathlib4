@@ -208,32 +208,25 @@ theorem _root_.padicValNat_base_mul {p n : ℕ} (hp : 1 < p) (hn : n ≠ 0) :
     padicValNat p (p * n) = padicValNat p n + 1 := by
   simp [padicValNat, *]
 
+/-- If `p ≠ 1`, `n > 0`, then `padicValNat p n ≠ 0` iff `p` divides `n`. -/
 @[simp]
 theorem padicValNat_ne_zero_iff_dvd {p : ℕ} (hp : p ≠ 1) {n : ℕ} (hn : n ≠ 0) :
     (padicValNat p n ≠ 0) ↔ p ∣ n := by
   conv => rhs ; rw [← Nat.pow_one p]
   exact Iff.symm <| Iff.trans (pow_dvd_iff_le_padicValNat hp hn) (one_le_iff_ne_zero)
 
-theorem padicValNat_self_div_lt {p : ℕ} (hp : 1 < p) (n : ℕ) (hn : n ≠ 0) (h : padicValNat p n ≠ 0) :
-    padicValNat p (n / p) < padicValNat p n := by
-  rw [padicValNat_ne_zero_iff_dvd (Nat.ne_of_lt' hp) hn] at h
-  calc
-    padicValNat p (n/p) < padicValNat p (p * (n/p)) := by
-      apply Nat.lt_of_lt_of_eq (Nat.lt_add_one _) ?_
-      apply Eq.symm (padicValNat_base_mul hp ?_)
-      refine Nat.div_ne_zero_iff.mpr ⟨Nat.ne_zero_of_lt hp, Nat.le_of_mod_lt ?_⟩
-      simpa [mod_eq_zero_of_dvd h] using Nat.ne_zero_iff_zero_lt.mp hn
-    _ = padicValNat p n := by
-      simp only [Nat.mul_div_cancel' h]
-
-theorem padicValNat_eq_of_dvd_of_not_dvd {p n : ℕ}
-    {k : ℕ} (hk : p ^ k ∣ n) (hsucc : ¬p ^ (k + 1) ∣ n) :
+/-- If `p ^ k ∣ n`, and `¬p ^ (k + 1) ∣ n`, then `padicValNat p n = k`. -/
+theorem padicValNat_eq_of_dvd_of_not_dvd {p n k : ℕ} (hk : p ^ k ∣ n) (hsucc : ¬p ^ (k + 1) ∣ n) :
     padicValNat p n = k := by
-  refine Nat.eq_iff_le_and_ge.mpr ⟨?_, ?_⟩
-  · sorry
-  · sorry
+  have hp : p ≠ 1 := fun _ => by simp_all
+  have hn : n ≠ 0 := fun _ => by simp_all
+  exact Nat.eq_iff_le_and_ge.mpr
+    ⟨Nat.le_of_not_gt <| (pow_dvd_iff_le_padicValNat hp hn).not.mp hsucc,
+    (pow_dvd_iff_le_padicValNat hp hn).mp hk⟩
 
-theorem padicValNat_add_of_gt {p n m: ℕ} (hm : m ≠ 0) (h : padicValNat p m < padicValNat p n) :
+/-- If `m ≠ 0` and `padicValNat p m < padicValNat p n`, then `padicValNat p (n + m) =
+padicValNat p m`. -/
+theorem padicValNat_add_of_gt {p n m : ℕ} (hm : m ≠ 0) (h : padicValNat p m < padicValNat p n) :
     padicValNat p (n + m) = padicValNat p m := by
   have hp : p ≠ 1 := fun this => by simp_all
   have hn : n ≠ 0 := fun this => by simp_all
