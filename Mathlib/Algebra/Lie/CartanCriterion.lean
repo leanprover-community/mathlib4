@@ -42,7 +42,7 @@ via its vanishing on `L × ⁅L, L⁆`, semisimplicity via its non-degeneracy.
 
 * The converse direction of `LieIdeal.isSolvable_of_killingForm_apply_lie_eq_zero`, i.e.
   `IsSolvable I → ∀ x ∈ I, ∀ y ∈ ⁅I, I⁆, killingForm K L x y = 0`. Together with the
-  sufficient direction it gives the iff form of Cartan's criterion for solvability.
+  sufficient direction it would give the iff form of Cartan's criterion for solvability.
 
 ## References
 
