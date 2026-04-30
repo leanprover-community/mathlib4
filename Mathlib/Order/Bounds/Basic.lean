@@ -147,7 +147,7 @@ theorem DirectedOn.of_isCofinalFor (hd : DirectedOn (· ≤ ·) t)
   obtain ⟨w, hw, hzw⟩ := hc hz
   exact ⟨w, hw, hxz.trans hzw, hyz.trans hzw⟩
 
-theorem isCofinalFor_of_directedOn_union (h : DirectedOn (· ≤ ·) (s ∪ t)) :
+theorem isCofinalFor_or_isCofinalFor_of_directedOn_union (h : DirectedOn (· ≤ ·) (s ∪ t)) :
     IsCofinalFor t s ∨ IsCofinalFor s t := by
   rw [or_iff_not_imp_left]
   intro hts x hx
@@ -157,8 +157,9 @@ theorem isCofinalFor_of_directedOn_union (h : DirectedOn (· ≤ ·) (s ∪ t)) 
   · exact (hys z hzs hyz).elim
   · exact ⟨z, hzt, hxz⟩
 
-theorem directedOn_union_iff : DirectedOn (· ≤ ·) (s ∪ t) ↔
-    (DirectedOn (· ≤ ·) s ∧ IsCofinalFor t s) ∨ (DirectedOn (· ≤ ·) t ∧ IsCofinalFor s t) := by
+theorem directedOn_union_iff :
+    DirectedOn (· ≤ ·) (s ∪ t) ↔
+      DirectedOn (· ≤ ·) s ∧ IsCofinalFor t s ∨ DirectedOn (· ≤ ·) t ∧ IsCofinalFor s t := by
   refine ⟨fun h ↦ ?_, ?_⟩
   · rcases isCofinalFor_of_directedOn_union h with hts | hst
     · exact .inl ⟨DirectedOn.of_isCofinalFor h subset_union_left hts.union_right, hts⟩
