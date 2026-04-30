@@ -622,7 +622,7 @@ lemma disjoint_verts_iff_disjoint {H H' : Subgraph G} :
     · grind [verts_bot]
     · exact ⟨(hdisj hsub₀ hsub₁ <| M'.edge_vert · :), False.elim⟩
   · intro hdisj S h₀ h₁ v hvS
-    let M' : Subgraph G := {verts := {v}, Adj := ⊥, adj_sub := by simp, edge_vert := by simp}
+    let M' : Subgraph G := { verts := {v}, Adj := ⊥, adj_sub := by simp, edge_vert := by simp }
     have hle {M : Subgraph G} (h : v ∈ M.verts) : M' ≤ M := by constructor <;> simp [h, M']
     exact hdisj (hle <| h₀ hvS) (hle <| h₁ hvS) |>.left <| Set.mem_singleton v
 
@@ -938,6 +938,9 @@ instance nonempty_subgraphOfAdj_verts {v w : V} (hvw : G.Adj v w) :
     Nonempty (G.subgraphOfAdj hvw).verts :=
   ⟨⟨v, by simp⟩⟩
 
+theorem subgraphOfAdj_adj_self {u v : V} (h : G.Adj u v) : (G.subgraphOfAdj h).Adj u v :=
+  rfl
+
 @[simp]
 theorem edgeSet_subgraphOfAdj {v w : V} (hvw : G.Adj v w) :
     (G.subgraphOfAdj hvw).edgeSet = {s(v, w)} := by
@@ -949,10 +952,13 @@ theorem edgeSet_subgraphOfAdj {v w : V} (hvw : G.Adj v w) :
 lemma subgraphOfAdj_le_of_adj {v w : V} (H : G.Subgraph) (h : H.Adj v w) :
     G.subgraphOfAdj (H.adj_sub h) ≤ H := by
   constructor
-  · intro x
-    rintro (rfl | rfl) <;> simp [H.edge_vert h, H.edge_vert h.symm]
-  · simp only [subgraphOfAdj_adj, Sym2.eq, Sym2.rel_iff]
-    rintro _ _ (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩) <;> simp [h, h.symm]
+  · grind [subgraphOfAdj_verts, h.fst_mem, h.snd_mem]
+  · grind [subgraphOfAdj_adj, h.symm]
+
+@[simp]
+theorem subgraphOfAdj_le_iff {u v : V} (h : G.Adj u v) (H : G.Subgraph) :
+    G.subgraphOfAdj h ≤ H ↔ H.Adj u v :=
+  ⟨fun hle ↦ hle.right <| subgraphOfAdj_adj_self h, subgraphOfAdj_le_of_adj H⟩
 
 theorem subgraphOfAdj_symm {v w : V} (hvw : G.Adj v w) :
     G.subgraphOfAdj hvw.symm = G.subgraphOfAdj hvw := by
@@ -1119,7 +1125,7 @@ theorem deleteEdges_coe_eq (s : Set (Sym2 G'.verts)) :
     refine Sym2.ind ?_
     rintro ⟨v', hv'⟩ ⟨w', hw'⟩
     simp only [Sym2.map_mk, Sym2.eq]
-    contrapose!
+    contrapose
     rintro (_ | _) <;> simpa only [Sym2.eq_swap]
   · intro h' hs
     exact h' _ hs rfl
@@ -1182,7 +1188,13 @@ theorem _root_.SimpleGraph.induce_eq_coe_induce_top (s : Set V) :
 
 lemma _root_.SimpleGraph.spanningCoe_induce_top (s : Set V) :
     ((⊤ : G.Subgraph).induce s).spanningCoe = (G.induce s).spanningCoe := by
-  grind [induce_eq_coe_induce_top, Subgraph.spanningCoe_coe]
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
+  It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+  canonicalizer; a minimization would help. The original proof was:
+  `grind [induce_eq_coe_induce_top, Subgraph.spanningCoe_coe]` -/
+  rw [induce_eq_coe_induce_top]
+  exact (Subgraph.spanningCoe_coe _).symm
 
 section Induce
 

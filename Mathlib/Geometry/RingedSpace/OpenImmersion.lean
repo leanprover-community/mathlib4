@@ -20,9 +20,9 @@ Abbreviations are also provided for `SheafedSpace`, `LocallyRingedSpace` and `Sc
 ## Main definitions
 
 * `AlgebraicGeometry.PresheafedSpace.IsOpenImmersion`: the `Prop`-valued typeclass asserting
-  that a PresheafedSpace hom `f` is an open_immersion.
+  that a PresheafedSpace hom `f` is an open immersion.
 * `AlgebraicGeometry.IsOpenImmersion`: the `Prop`-valued typeclass asserting
-  that a Scheme morphism `f` is an open_immersion.
+  that a Scheme morphism `f` is an open immersion.
 * `AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.isoRestrict`: The source of an
   open immersion is isomorphic to the restriction of the target onto the image.
 * `AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.lift`: Any morphism whose range is
@@ -215,7 +215,8 @@ theorem app_invApp (U : Opens Y) :
       Y.presheaf.map
         ((homOfLE (Set.image_preimage_subset f.base U.1)).op :
           op U ⟶ op (opensFunctor f |>.obj ((Opens.map f.base).obj U))) := by
-  erw [← Category.assoc]; rw [IsIso.comp_inv_eq, f.c.naturality]; congr
+  rw [invApp, ← Category.assoc, IsIso.comp_inv_eq, f.c.naturality]
+  congr
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A variant of `app_inv_app` that gives an `eqToHom` instead of `homOfLe`. -/

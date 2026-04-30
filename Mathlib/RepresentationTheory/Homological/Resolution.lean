@@ -88,7 +88,7 @@ def classifyingSpaceUniversalCover [Monoid G] :
     SimplicialObject (Action (Type u) G) where
   obj n := Action.ofMulAction G (Fin (n.unop.len + 1) → G)
   map f :=
-    { hom := fun x => x ∘ f.unop.toOrderHom
+    { hom := ↾fun x => x ∘ f.unop.toOrderHom
       comm := fun _ => rfl }
   map_id _ := rfl
   map_comp _ _ := rfl
@@ -102,8 +102,8 @@ variable [Monoid G]
 set_option backward.isDefEq.respectTransparency false in
 /-- When the category is `G`-Set, `cechNerveTerminalFrom` of `G` with the left regular action is
 isomorphic to `EG`, the universal cover of the classifying space of `G` as a simplicial `G`-set. -/
-def cechNerveTerminalFromIso :
-    cechNerveTerminalFrom (Action.ofMulAction G G) ≅ classifyingSpaceUniversalCover G :=
+def cechNerveTerminalFromIso : cechNerveTerminalFrom (Action.ofMulAction G (G)) ≅
+    classifyingSpaceUniversalCover G :=
   NatIso.ofComponents (fun _ => limit.isoLimitCone (Action.ofMulActionLimitCone _ _)) fun f => by
     refine IsLimit.hom_ext (Action.ofMulActionLimitCone.{u, 0} G fun _ => G).2 fun j => ?_
     dsimp only [cechNerveTerminalFrom, Pi.lift]
@@ -113,9 +113,10 @@ def cechNerveTerminalFromIso :
 /-- As a simplicial set, `cechNerveTerminalFrom` of a monoid `G` is isomorphic to the universal
 cover of the classifying space of `G` as a simplicial set. -/
 def cechNerveTerminalFromIsoCompForget :
-    cechNerveTerminalFrom G ≅ classifyingSpaceUniversalCover G ⋙ forget _ :=
-  NatIso.ofComponents (fun _ => Types.productIso _) fun _ =>
-    Matrix.ext fun _ _ => Types.Limit.lift_π_apply (Discrete.functor fun _ ↦ G) _ _ _
+    cechNerveTerminalFrom G ≅ classifyingSpaceUniversalCover G ⋙ forget _ := by
+  refine NatIso.ofComponents (fun _ => Types.productIso _) fun _ => ?_
+  ext : 2
+  exact Matrix.ext fun _ _ => Pi.lift_π_apply (f := fun _ ↦ G) _ _ _
 
 variable (k)
 
@@ -132,8 +133,7 @@ extra degeneracy. -/
 def extraDegeneracyAugmentedCechNerve :
     ExtraDegeneracy (Arrow.mk <| terminal.from G).augmentedCechNerve :=
   AugmentedCechNerve.extraDegeneracy (Arrow.mk <| terminal.from G)
-    ⟨fun _ => (1 : G),
-      @Subsingleton.elim _ (@Unique.instSubsingleton _ (Limits.uniqueToTerminal _)) _ _⟩
+    ⟨↾fun _ => (1 : G), by cat_disch⟩
 
 /-- The universal cover of the classifying space of `G` as a simplicial set, augmented by the map
 from `Fin 1 → G` to the terminal object in `Type u`, has an extra degeneracy. -/
@@ -380,11 +380,10 @@ lemma d_comp_diagonalSuccIsoFree_inv_eq :
   free_ext k G _ _ _ fun i ↦ by
     have eq3 : single (i 0 • Fin.partialProd fun i_1 ↦ i i_1.succ) (1 : k) =
       single (Fin.partialProd i ∘ Fin.succ) 1 := by
-      congr; exact funext fun j ↦ Fin.partialProd_succ' i j|>.symm
+      congr; exact funext fun j ↦ Fin.partialProd_succ' i j |>.symm
     simp [μ_hom, d_single (k := k), Rep.mkIso_inv_hom_apply _,
       Representation.linearizeOfMulActionIso_symm_apply,
       Representation.linearizeTrivialIso_symm_apply _, d_apply (k := k),
-      Action.diagonalSuccIsoTensorTrivial_inv_hom_apply _,
       Representation.μ_apply_single_single_leftRegular _,
       Representation.linearizeMap_single_diagonal _]
     simp [Fin.partialProd_contractNth, Fin.sum_univ_succ, Action.ofMulAction_V, eq3]
@@ -417,7 +416,7 @@ set_option backward.isDefEq.respectTransparency false in
 def isoStandardComplex : barComplex k G ≅ standardComplex k G :=
   HomologicalComplex.Hom.isoOfComponents (fun i => (diagonalSuccIsoFree k G i).symm) fun i j => by
     rintro (rfl : j + 1 = i)
-    simp only [ChainComplex.of_x, Iso.symm_hom, d_def, d_comp_diagonalSuccIsoFree_inv_eq]
+    simp only [ChainComplex.of_X, Iso.symm_hom, d_def, d_comp_diagonalSuccIsoFree_inv_eq]
 
 end barComplex
 

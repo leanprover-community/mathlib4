@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Sheaf
 
-/-! Objects which cover the terminal object
+/-! # Objects which cover the terminal object
 
 In this file, given a site `(C, J)`, we introduce the notion of a family
 of objects `Y : I → C` which "cover the final object": this means
@@ -69,7 +69,7 @@ lemma ext (F : Sheaf J A) {c : Cone F.1} (hc : IsLimit c) {X : A} {f g : X ⟶ c
   rintro ⟨W, a, ⟨i, ⟨b⟩⟩⟩
   simpa using h i =≫ F.1.map b.op
 
-lemma sections_ext (F : Sheaf J (Type _)) {x y : F.1.sections}
+lemma sections_ext (F : Sheaf J Type*) {x y : F.1.sections}
     (h : ∀ (i : I), x.1 (Opposite.op (Y i)) = y.1 (Opposite.op (Y i))) :
     x = y := by
   ext W

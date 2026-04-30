@@ -19,7 +19,7 @@ public import Mathlib.Data.Fintype.Pi
   then `DFinsupp` is infinite
 -/
 
-@[expose] public section
+public section
 
 
 universe u u₁ u₂ v v₁ v₂ v₃ w x y l

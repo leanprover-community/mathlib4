@@ -214,6 +214,10 @@ theorem coe_smul (c : S) (f : MultilinearMap R M₁ M₂) : ⇑(c • f) = c •
 
 end SMul
 
+-- The `AddMonoid` instance exists to help speedup unification
+instance : AddMonoid (MultilinearMap R M₁ M₂) := fast_instance%
+  coe_injective.addMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
+
 instance addCommMonoid : AddCommMonoid (MultilinearMap R M₁ M₂) := fast_instance%
   coe_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 
