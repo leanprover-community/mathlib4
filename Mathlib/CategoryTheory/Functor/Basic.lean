@@ -89,7 +89,7 @@ instance : Inhabited (C ⥤ C) :=
 
 variable {C}
 
-@[simp, grind =]
+@[simp, grind =, unifHint]
 theorem id_obj (X : C) : (𝟭 C).obj X = X := rfl
 
 @[simp, grind =, to_dual self]
