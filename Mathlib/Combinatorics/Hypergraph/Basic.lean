@@ -308,14 +308,12 @@ def IsTrivial (H : Hypergraph α) : Prop := Set.Nonempty V(H) ∧ E(H) = ∅
 A trivial hypergraph of type α with vertex set h
 -/
 @[simps]
-def trivialHypergraph (f : Set α) :=
-  Hypergraph.mk
-  f
-  ∅
-  (by
+def trivialHypergraph (f : Set α) : Hypergraph α where
+  vertexSet := f
+  edgeSet := ∅
+  edge_isSubset_vertexSet' := by
     intro e he
     exact False.elim he
-  )
 
 lemma not_isEmpty_trivial_hypergraph (hh : IsTrivial H) : ¬IsEmpty H := by
   grind [IsEmpty, IsTrivial, Set.nonempty_iff_ne_empty]
