@@ -73,7 +73,7 @@ theorem of_contDiff (hf : ContDiff ℝ ∞ f) (h : ∀ n : ℕ, ∀ x ∈ s, 0 �
     AbsolutelyMonotoneOn f s := by
   refine ⟨ftaylorSeries ℝ f, (hf.ftaylorSeries).hasFTaylorSeriesUpToOn s, fun n x hx => ?_⟩
   -- ftaylorSeries ℝ f x n = iteratedFDeriv ℝ n f x; evaluated at (1, ..., 1) gives iteratedDeriv.
-  show 0 ≤ iteratedFDeriv ℝ n f x fun _ ↦ (1 : ℝ)
+  change 0 ≤ iteratedFDeriv ℝ n f x fun _ ↦ (1 : ℝ)
   rw [← iteratedDeriv_eq_iteratedFDeriv]
   exact h n x hx
 
@@ -97,7 +97,7 @@ theorem add (hf : AbsolutelyMonotoneOn f s) (hg : AbsolutelyMonotoneOn g s) :
   obtain ⟨q, hq, hq_nn⟩ := hg
   refine ⟨p + q, hp.add hq, fun n x hx => ?_⟩
   -- (p x + q x) n applied to (1, ..., 1) splits as p x n (1...) + q x n (1...).
-  show 0 ≤ ((p + q) x n) fun _ ↦ (1 : ℝ)
+  change 0 ≤ ((p + q) x n) fun _ ↦ (1 : ℝ)
   simp only [Pi.add_apply, FormalMultilinearSeries.add_apply,
     ContinuousMultilinearMap.add_apply]
   exact add_nonneg (hp_nn n hx) (hq_nn n hx)
@@ -112,7 +112,7 @@ theorem smul {c : ℝ} (hf : AbsolutelyMonotoneOn f s) (hc : 0 ≤ c) :
   have hcomp : (T ∘ f) = c • f := by ext x; simp [hT, smul_eq_mul]
   refine ⟨_, hcomp ▸ hp.continuousLinearMap_comp T, fun n x hx => ?_⟩
   -- The new witness's nth term applied to (1,...,1) is c * (p x n (1,...,1)).
-  show 0 ≤ T.compContinuousMultilinearMap (p x n) fun _ ↦ (1 : ℝ)
+  change 0 ≤ T.compContinuousMultilinearMap (p x n) fun _ ↦ (1 : ℝ)
   simp only [ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply, hT,
     ContinuousLinearMap.smul_apply, ContinuousLinearMap.id_apply, smul_eq_mul]
   exact mul_nonneg hc (hp_nn n hx)
@@ -128,7 +128,7 @@ theorem mul (hs : UniqueDiffOn ℝ s)
   have hfg : ContDiffOn ℝ ∞ (f * g) s := hf.contDiffOn.mul hg.contDiffOn
   refine ⟨ftaylorSeriesWithin ℝ (f * g) s, hfg.ftaylorSeriesWithin hs, fun n x hx => ?_⟩
   -- Reduce to nonnegativity of `iteratedDerivWithin n (f * g) s x`.
-  show 0 ≤ iteratedFDerivWithin ℝ n (f * g) s x fun _ ↦ (1 : ℝ)
+  change 0 ≤ iteratedFDerivWithin ℝ n (f * g) s x fun _ ↦ (1 : ℝ)
   rw [← iteratedDerivWithin_eq_iteratedFDerivWithin, iteratedDerivWithin_mul hx hs
     ((hf.contDiffOn x hx).of_le (by exact_mod_cast le_top))
     ((hg.contDiffOn x hx).of_le (by exact_mod_cast le_top))]
@@ -168,7 +168,7 @@ theorem of_contDiff (hf : ContDiff ℝ ∞ f)
     (h : ∀ n : ℕ, ∀ x ∈ s, 0 ≤ (-1 : ℝ) ^ n * iteratedDeriv n f x) :
     CompletelyMonotoneOn f s := by
   refine ⟨ftaylorSeries ℝ f, (hf.ftaylorSeries).hasFTaylorSeriesUpToOn s, fun n x hx => ?_⟩
-  show 0 ≤ iteratedFDeriv ℝ n f x fun _ ↦ (-1 : ℝ)
+  change 0 ≤ iteratedFDeriv ℝ n f x fun _ ↦ (-1 : ℝ)
   have : (fun _ : Fin n ↦ (-1 : ℝ)) = fun _ ↦ (-1 : ℝ) • (1 : ℝ) := by simp
   rw [this, ContinuousMultilinearMap.map_smul_univ, ← iteratedDeriv_eq_iteratedFDeriv,
     smul_eq_mul, Finset.prod_const, Finset.card_univ, Fintype.card_fin]
