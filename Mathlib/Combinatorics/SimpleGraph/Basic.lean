@@ -808,9 +808,6 @@ theorem neighborSet_top : neighborSet ⊤ v = {v}ᶜ := by
 theorem neighborSet_bot : neighborSet ⊥ v = ∅ := by
   grind [mem_neighborSet, bot_adj]
 
-theorem eq_bot_iff_neighborSet : G = ⊥ ↔ ∀ v, G.neighborSet v = ∅ := by
-  simp [eq_bot_iff_forall_not_adj, Set.eq_empty_iff_forall_notMem]
-
 variable {G} in
 theorem Adj.nontrivial (hadj : G.Adj u v) : Nontrivial V :=
   ⟨u, v, hadj.ne⟩
@@ -966,5 +963,8 @@ theorem Adj.not_isIsolated_left (h : G.Adj u v) : ¬G.IsIsolated u :=
 variable {G} in
 theorem Adj.not_isIsolated_right (h : G.Adj u v) : ¬G.IsIsolated v :=
   h.symm.not_isIsolated_left
+
+theorem eq_bot_iff_isIsolated : G = ⊥ ↔ ∀ v, G.IsIsolated v := by
+  simp [eq_bot_iff_forall_not_adj, ← neighborSet_eq_empty, Set.eq_empty_iff_forall_notMem]
 
 end SimpleGraph
