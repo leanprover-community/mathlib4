@@ -151,7 +151,8 @@ theorem _root_.NumberField.mixedEmbedding.covolume_idealLattice (I : (Fractional
 -- example (K : Type u_1)
 --     [Field K]
 --     [NumberField K] :
---     ↑(nrRealPlaces K) + 2 * ↑(nrComplexPlaces K) - ↑(nrComplexPlaces K) - ↑(nrRealPlaces K) + ↑(nrComplexPlaces K) = (2 : ℤ) * ↑(nrComplexPlaces K) := by
+--     ↑(nrRealPlaces K) + 2 * ↑(nrComplexPlaces K) - ↑(nrComplexPlaces K) - ↑(nrRealPlaces K) +
+-- ↑(nrComplexPlaces K) = (2 : ℤ) * ↑(nrComplexPlaces K) := by
 --   run_tac
 --     Lean.Elab.Tactic.liftMetaTactic' Mathlib.Tactic.Algebra.preprocess
 --   ring1
