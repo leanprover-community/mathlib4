@@ -206,10 +206,9 @@ open LieAlgebra LieModule LinearMap Module
 variable {K L : Type*} [Field K] [CharZero K]
   [LieRing L] [LieAlgebra K L] [Module.Finite K L]
 
-/-- **Cartan's criterion for solvability** (ideal version).
-For an ideal `I` of a finite-dimensional Lie algebra `L` over a field of characteristic zero,
-if the Killing form of `L` vanishes on `I × ⁅I, I⁆`, then `I` is solvable.
-The converse is left as a TODO; together they give the iff form. -/
+/-- For an ideal `I` of a finite-dimensional Lie algebra `L` over a field of characteristic zero,
+if the Killing form of `L` vanishes on `I × ⁅I, I⁆`, then `I` is solvable. The converse is
+left as a TODO; together they give the iff form of **Cartan's criterion for solvability**. -/
 public theorem isSolvable_of_killingForm_apply_lie_eq_zero
     (I : LieIdeal K L)
     (h : ∀ x ∈ I, ∀ y ∈ ⁅I, I⁆, killingForm K L x y = 0) :
