@@ -804,7 +804,6 @@ theorem neighborSet_mono {G' : SimpleGraph V} (hle : G ≤ G') (v : V) :
 theorem neighborSet_top : neighborSet ⊤ v = {v}ᶜ := by
   grind [mem_neighborSet, top_adj]
 
-@[simp]
 theorem neighborSet_bot : neighborSet ⊥ v = ∅ := by
   grind [mem_neighborSet, bot_adj]
 
@@ -851,7 +850,7 @@ theorem commonNeighbors_top_eq {v w : V} :
 
 @[simp]
 theorem commonNeighbors_bot_eq : commonNeighbors ⊥ u v = ∅ := by
-  simp [commonNeighbors]
+  simp [commonNeighbors, neighborSet_bot]
 
 section Incidence
 
@@ -965,8 +964,8 @@ theorem Adj.not_isIsolated_right (h : G.Adj u v) : ¬G.IsIsolated v :=
   h.symm.not_isIsolated_left
 
 @[simp]
-theorem isIsolated_bot : IsIsolated ⊥ v := by
-  simp [← neighborSet_eq_empty]
+theorem isIsolated_bot : IsIsolated ⊥ v :=
+  neighborSet_eq_empty _ |>.mp neighborSet_bot
 
 theorem eq_bot_iff_isIsolated : G = ⊥ ↔ ∀ v, G.IsIsolated v := by
   simp [eq_bot_iff_forall_not_adj, ← neighborSet_eq_empty, Set.eq_empty_iff_forall_notMem]
