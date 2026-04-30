@@ -124,8 +124,8 @@ def WeakFEPair.symm (P : WeakFEPair E) : WeakFEPair E where
   hg_int := P.hf_int
   hf_top := P.hg_top
   hg_top := P.hf_top
-  hε     := inv_ne_zero P.hε
-  hk     := P.hk
+  hε := inv_ne_zero P.hε
+  hk := P.hk
   h_feq  := P.h_feq'
 
 /-- The hypotheses are symmetric in `f` and `g`, with the constant `ε` replaced by `ε⁻¹`. -/
@@ -273,15 +273,9 @@ lemma hf_modif_int :
     fun_prop (discharger := assumption)
   refine LocallyIntegrableOn.add (fun x hx ↦ ?_) (fun x hx ↦ ?_)
   · obtain ⟨s, hs, hs'⟩ := P.hf_int.sub (locallyIntegrableOn_const _) x hx
-    refine ⟨s, hs, ?_⟩
-    rw [IntegrableOn, integrable_indicator_iff measurableSet_Ioi, IntegrableOn,
-      Measure.restrict_restrict measurableSet_Ioi, ← IntegrableOn]
-    exact hs'.mono_set Set.inter_subset_right
+    exact ⟨s, hs, hs'.indicator measurableSet_Ioi⟩
   · obtain ⟨s, hs, hs'⟩ := P.hf_int.sub this x hx
-    refine ⟨s, hs, ?_⟩
-    rw [IntegrableOn, integrable_indicator_iff measurableSet_Ioo, IntegrableOn,
-      Measure.restrict_restrict measurableSet_Ioo, ← IntegrableOn]
-    exact hs'.mono_set Set.inter_subset_right
+    exact ⟨s, hs, hs'.indicator measurableSet_Ioo⟩
 
 lemma hf_modif_FE (x : ℝ) (hx : 0 < x) :
     P.f_modif (1 / x) = (P.ε * ↑(x ^ P.k)) • P.g_modif x := by
@@ -317,15 +311,15 @@ def toStrongFEPair : StrongFEPair E where
   ε := P.ε
   f₀ := 0
   g₀ := 0
-  hf_int   := P.hf_modif_int
-  hg_int   := P.symm.hf_modif_int
-  h_feq    := P.hf_modif_FE
-  hε       := P.hε
-  hk       := P.hk
-  hf₀      := rfl
-  hg₀      := rfl
-  hf_top   := P.hf_modif_top
-  hg_top   := P.symm.hf_modif_top
+  hf_int := P.hf_modif_int
+  hg_int := P.symm.hf_modif_int
+  h_feq := P.hf_modif_FE
+  hε := P.hε
+  hk := P.hk
+  hf₀ := rfl
+  hg₀ := rfl
+  hf_top := P.hf_modif_top
+  hg_top := P.symm.hf_modif_top
 
 /- Alternative form for the difference between `f - f₀` and its modified term. -/
 lemma f_modif_aux1 : EqOn (fun x ↦ P.f_modif x - P.f x + P.f₀)
