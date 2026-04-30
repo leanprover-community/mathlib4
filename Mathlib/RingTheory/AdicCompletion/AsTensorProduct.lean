@@ -69,7 +69,6 @@ lemma ofTensorProduct_tmul (r : AdicCompletion I R) (x : M) :
     ofTensorProduct I M (r ⊗ₜ x) = r • of I M x := by
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 variable {M} in
 /-- `ofTensorProduct` is functorial in `M`. -/
 lemma ofTensorProduct_naturality (f : M →ₗ[R] N) :
@@ -90,6 +89,22 @@ section DecidableEq
 
 variable [Fintype ι] [DecidableEq ι]
 
+/-
+import Mathlib.RingTheory.AdicCompletion.Algebra
+
+variable {R : Type*} [CommRing R] (I : Ideal R) (ι : Type*) [Fintype ι] [DecidableEq ι]
+
+-- `AdicCompletion.module` has type `Module X Y → Module (F X) (F Y)` so introduces
+-- diamonds if `X = Y`.
+example : AdicCompletion.module I = Semiring.toModule := by
+  fail_if_success with_reducible_and_instances rfl
+  rfl
+
+example : ((AdicCompletion.module I).toSMul : SMul (AdicCompletion I R) (AdicCompletion I R)) =
+    Semiring.toModule.toSMul := by
+  fail_if_success with_reducible_and_instances rfl
+  rfl
+-/
 set_option backward.isDefEq.respectTransparency false in
 private lemma piEquivOfFintype_comp_ofTensorProduct_eq :
     piEquivOfFintype I (fun _ : ι ↦ R) ∘ₗ ofTensorProduct I (ι → R) =
@@ -99,6 +114,22 @@ private lemma piEquivOfFintype_comp_ofTensorProduct_eq :
     simpa [Pi.single_apply, -smul_eq_mul]
   split <;> simp
 
+/-
+import Mathlib.RingTheory.AdicCompletion.Algebra
+
+variable {R : Type*} [CommRing R] (I : Ideal R) (ι : Type*) [Fintype ι] [DecidableEq ι]
+
+-- `AdicCompletion.module` has type `Module X Y → Module (F X) (F Y)` so introduces
+-- diamonds if `X = Y`.
+example : AdicCompletion.module I = Semiring.toModule := by
+  fail_if_success with_reducible_and_instances rfl
+  rfl
+
+example : ((AdicCompletion.module I).toSMul : SMul (AdicCompletion I R) (AdicCompletion I R)) =
+    Semiring.toModule.toSMul := by
+  fail_if_success with_reducible_and_instances rfl
+  rfl
+-/
 set_option backward.isDefEq.respectTransparency false in
 private lemma ofTensorProduct_eq :
     ofTensorProduct I (ι → R) = (piEquivOfFintype I (ι := ι) (fun _ : ι ↦ R)).symm.toLinearMap ∘ₗ
@@ -114,12 +145,28 @@ def ofTensorProductInvOfPiFintype :
   letI g := (TensorProduct.piScalarRight R (AdicCompletion I R) (AdicCompletion I R) ι).symm
   f.trans g
 
+/-
+import Mathlib.RingTheory.AdicCompletion.Algebra
+
+variable {R : Type*} [CommRing R] (I : Ideal R) (ι : Type*) [Fintype ι] [DecidableEq ι]
+
+-- `AdicCompletion.module` has type `Module X Y → Module (F X) (F Y)` so introduces
+-- diamonds if `X = Y`.
+example : AdicCompletion.module I = Semiring.toModule := by
+  fail_if_success with_reducible_and_instances rfl
+  rfl
+
+example : ((AdicCompletion.module I).toSMul : SMul (AdicCompletion I R) (AdicCompletion I R)) =
+    Semiring.toModule.toSMul := by
+  fail_if_success with_reducible_and_instances rfl
+  rfl
+-/
 set_option backward.isDefEq.respectTransparency false in
 lemma ofTensorProductInvOfPiFintype_comp_ofTensorProduct :
     ofTensorProductInvOfPiFintype I ι ∘ₗ ofTensorProduct I (ι → R) = LinearMap.id := by
-  dsimp only [ofTensorProductInvOfPiFintype]
+  dsimp [ofTensorProductInvOfPiFintype]
   rw [LinearEquiv.coe_trans, LinearMap.comp_assoc, piEquivOfFintype_comp_ofTensorProduct_eq]
-  simp
+  exact LinearEquiv.symm_comp _
 
 set_option backward.isDefEq.respectTransparency false in
 lemma ofTensorProduct_comp_ofTensorProductInvOfPiFintype :
@@ -149,7 +196,6 @@ lemma ofTensorProduct_bijective_of_pi_of_fintype [Finite ι] :
 
 end PiFintype
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `M` is a finite `R`-module, then the canonical map
 `AdicCompletion I R ⊗[R] M →ₗ AdicCompletion I M` is surjective. -/
 lemma ofTensorProduct_surjective_of_finite [Module.Finite R M] :
@@ -308,7 +354,6 @@ variable {M : Type u} [AddCommGroup M] [Module R M]
 variable {N : Type u} [AddCommGroup N] [Module R N] (f : M →ₗ[R] N)
 variable [Module.Finite R M] [Module.Finite R N]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma tensor_map_id_left_eq_map :
     (AlgebraTensorModule.map LinearMap.id f) =
       (ofTensorProductEquivOfFiniteNoetherian I N).symm.toLinearMap ∘ₗ
