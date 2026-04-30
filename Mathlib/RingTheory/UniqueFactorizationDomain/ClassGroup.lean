@@ -26,7 +26,7 @@ open scoped nonZeroDivisors
 
 open FractionalIdeal Ideal
 
-@[expose] public section
+public section
 
 variable {R : Type*} [CommRing R] [IsDomain R] [Nonempty (NormalizedGCDMonoid R)]
 namespace NormalizedGCDMonoid

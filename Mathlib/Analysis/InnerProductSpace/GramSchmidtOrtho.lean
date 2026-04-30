@@ -39,7 +39,7 @@ and outputs a set of orthogonal vectors which have the same span.
 open Finset Submodule Module
 
 variable (𝕜 : Type*) {E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrderBot ι] [WellFoundedLT ι]
+variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrderBot ι]
 
 attribute [local instance] IsWellOrder.toHasWellFounded
 
@@ -53,6 +53,8 @@ noncomputable def gramSchmidt [WellFoundedLT ι] (f : ι → E) (n : ι) : E :=
   f n - ∑ i : Iio n, (𝕜 ∙ gramSchmidt f i).starProjection (f n)
 termination_by n
 decreasing_by exact mem_Iio.1 i.2
+
+variable [WellFoundedLT ι]
 
 /-- This lemma uses `∑ i in` instead of `∑ i :`. -/
 theorem gramSchmidt_def (f : ι → E) (n : ι) :

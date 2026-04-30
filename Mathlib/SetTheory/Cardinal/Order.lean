@@ -302,7 +302,7 @@ instance isOrderedRing : IsOrderedRing Cardinal.{u} :=
 
 instance orderBot : OrderBot Cardinal.{u} where
   bot := 0
-  bot_le := zero_le
+  bot_le _ := zero_le
 
 instance noZeroDivisors : NoZeroDivisors Cardinal.{u} where
   eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} =>
@@ -330,7 +330,7 @@ theorem power_le_power_left : ∀ {a b c : Cardinal}, a ≠ 0 → b ≤ c → a 
 
 theorem self_le_power (a : Cardinal) {b : Cardinal} (hb : 1 ≤ b) : a ≤ a ^ b := by
   rcases eq_or_ne a 0 with (rfl | ha)
-  · exact zero_le _
+  · exact zero_le
   · convert power_le_power_left ha hb
     exact (power_one a).symm
 
@@ -384,10 +384,11 @@ theorem sInf_empty : sInf (∅ : Set Cardinal.{u}) = 0 :=
   dif_neg Set.not_nonempty_empty
 
 /-- Note that the successor of `c` is not the same as `c + 1` except in the case of finite `c`. -/
-instance : SuccOrder Cardinal := ConditionallyCompleteLinearOrder.toSuccOrder
+@[no_expose] instance : SuccOrder Cardinal := .ofLinearWellFoundedLT _
 
+@[deprecated Order.succ_eq_csInf (since := "2026-03-21")]
 theorem succ_def (c : Cardinal) : succ c = sInf { c' | c < c' } :=
-  dif_neg <| not_isMax c
+  Order.succ_eq_csInf c
 
 theorem succ_pos : ∀ c : Cardinal, 0 < succ c := by simp
 
@@ -395,27 +396,26 @@ theorem succ_pos : ∀ c : Cardinal, 0 < succ c := by simp
 theorem succ_ne_zero (c : Cardinal) : succ c ≠ 0 :=
   (succ_pos _).ne'
 
-theorem add_one_le_succ (c : Cardinal.{u}) : c + 1 ≤ succ c := by
-  have : Set.Nonempty { c' | c < c' } := exists_gt c
-  simp_rw [succ_def, le_csInf_iff'' this, mem_setOf]
-  intro b hlt
-  rcases b, c with ⟨⟨β⟩, ⟨γ⟩⟩
-  obtain ⟨f⟩ := le_of_lt hlt
-  have : ¬Surjective f := fun hn => (not_le_of_gt hlt) (mk_le_of_surjective hn)
-  simp only [Surjective, not_forall] at this
-  rcases this with ⟨b, hb⟩
-  calc
-    #γ + 1 = #(Option γ) := mk_option.symm
-    _ ≤ #β := (f.optionElim b hb).cardinal_le
+theorem add_one_le_of_lt {a b : Cardinal} (h : a < b) : a + 1 ≤ b := by
+  induction a, b using Cardinal.inductionOn₂ with | mk α β
+  obtain ⟨f⟩ := h.le
+  have hf : ¬Surjective f := fun hn ↦ h.not_ge (mk_le_of_surjective hn)
+  rw [Surjective, not_forall] at hf
+  obtain ⟨b, hb⟩ := hf
+  rw [← mk_option]
+  exact (f.optionElim b hb).cardinal_le
+
+@[deprecated add_one_le_of_lt (since := "2026-03-21")]
+theorem add_one_le_succ (c : Cardinal) : c + 1 ≤ succ c :=
+  add_one_le_of_lt (lt_succ c)
 
 @[simp]
-theorem lift_succ (a) : lift.{v, u} (succ a) = succ (lift.{v, u} a) :=
-  le_antisymm
-    (le_of_not_gt fun h => by
-      rcases lt_lift_iff.1 h with ⟨b, h, e⟩
-      rw [lt_succ_iff, ← lift_le, e] at h
-      exact h.not_gt (lt_succ _))
-    (succ_le_of_lt <| lift_lt.2 <| lt_succ a)
+theorem lift_succ (a) : lift.{v, u} (succ a) = succ (lift.{v, u} a) := by
+  apply (succ_le_of_lt <| lift_lt.2 <| lt_succ a).antisymm'
+  by_contra! h
+  rcases lt_lift_iff.1 h with ⟨b, h, hb⟩
+  rw [lt_succ_iff, ← lift_le, hb] at h
+  exact h.not_gt (lt_succ _)
 
 /-! ### Limit cardinals -/
 
@@ -529,7 +529,6 @@ variable (α) in
 every type has a linear order which satisfies `WellFoundedGT` -/
 lemma exists_wellFoundedGT : ∃ (_ : LinearOrder α), WellFoundedGT α := by
   classical
-  have : IsStrictTotalOrder α _ := IsStrictTotalOrder.swap WellOrderingRel
   exact ⟨linearOrderOfSTO (Function.swap WellOrderingRel),
     by simpa [isWellFounded_iff] using WellOrderingRel.isWellOrder.wf⟩
 
