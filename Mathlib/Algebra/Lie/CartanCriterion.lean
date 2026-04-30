@@ -228,7 +228,7 @@ public theorem isSolvable_of_killingForm_apply_lie_eq_zero
     rwa [derivedSeries_eq_derivedSeriesOfIdeal_comap, mem_comap]
   obtain ⟨k, hk⟩ := IsSolvable.solvable K DDI
   rw [derivedSeries_eq_bot_iff] at hk
-  refine .mk (k := k + 2) ((derivedSeries_eq_bot_iff I (k + 2)).mpr ?_)
+  refine IsSolvable.mk (k := k + 2) ((derivedSeries_eq_bot_iff I (k + 2)).mpr ?_)
   rwa [derivedSeriesOfIdeal_add, derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_succ,
     derivedSeriesOfIdeal_zero]
 
