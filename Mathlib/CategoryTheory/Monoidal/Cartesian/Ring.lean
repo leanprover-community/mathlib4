@@ -26,7 +26,6 @@ variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C] [BraidedCat
 open scoped CommRingObj RingObj
 
 /-- If `R` is a ring object, then `Hom(-, R)` is a presheaf of rings. -/
---@[simps! obj map]
 @[simps! obj]
 def yonedaRingObj (R : C) [RingObj R] : Cᵒᵖ ⥤ RingCat.{v} where
   obj X := .of (X.unop ⟶ R)
@@ -41,6 +40,7 @@ def yonedaRingObj (R : C) [RingObj R] : Cᵒᵖ ⥤ RingCat.{v} where
 lemma yonedaRingObj_map_apply {R : C} [RingObj R] {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : X.unop ⟶ R) :
     dsimp% (yonedaRingObj R).map f x = f.unop ≫ x := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The yoneda embedding of `RingObjCat C` into presheaves of rings. -/
 def yonedaRing : RingObjCat C ⥤ Cᵒᵖ ⥤ RingCat.{v} where
   obj R := yonedaRingObj R.X
@@ -50,9 +50,7 @@ def yonedaRing : RingObjCat C ⥤ Cᵒᵖ ⥤ RingCat.{v} where
           map_one' := by simp
           map_zero' := by simp
           map_mul' _ _ := MonObj.mul_comp _ _ _
-          map_add' _ _ := AddMonObj.add_comp _ _ _ }
-      naturality _ _ f := by ext g; apply Category.assoc }
-  map_comp _ _ := by ext; exact (Category.assoc ..).symm
+          map_add' _ _ := AddMonObj.add_comp _ _ _ } }
 
 /-- If `R` is a commutative ring object, then `Hom(-, R)` is a presheaf of commutative rings. -/
 @[simps obj]
@@ -64,6 +62,7 @@ def yonedaCommRingObj (R : C) [CommRingObj R] : Cᵒᵖ ⥤ CommRingCat.{v} wher
 lemma yonedaCommRingObj_map_apply {R : C} [CommRingObj R] {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : X.unop ⟶ R) :
     dsimp% (yonedaCommRingObj R).map f x = f.unop ≫ x := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The yoneda embedding of `CommRingObjCat C` into presheaves of commutative rings. -/
 @[simps obj]
 def yonedaCommRing : CommRingObjCat C ⥤ Cᵒᵖ ⥤ CommRingCat.{v} where
@@ -74,9 +73,7 @@ def yonedaCommRing : CommRingObjCat C ⥤ Cᵒᵖ ⥤ CommRingCat.{v} where
           map_one' := by simp
           map_zero' := by simp
           map_mul' _ _ := MonObj.mul_comp _ _ _
-          map_add' _ _ := AddMonObj.add_comp _ _ _ }
-      naturality _ _ f := by ext; apply Category.assoc }
-  map_comp _ _ := by ext; exact (Category.assoc ..).symm
+          map_add' _ _ := AddMonObj.add_comp _ _ _ } }
 
 @[simp]
 lemma yonedaCommRing_map_app_apply {R₁ R₂ : CommRingObjCat C} (f : R₁ ⟶ R₂)
