@@ -939,6 +939,7 @@ attribute [simp] IsIsolated.neighborSet_eq_empty
 lemma mem_support_iff_not_isIsolated : v ∈ G.support ↔ ¬ G.IsIsolated v := by
   simp [mem_support, IsIsolated]
 
+@[simp]
 theorem notMem_support_iff_isIsolated : v ∉ G.support ↔ G.IsIsolated v := by
   simp [mem_support_iff_not_isIsolated]
 
