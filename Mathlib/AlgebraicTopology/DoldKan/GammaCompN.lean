@@ -148,7 +148,7 @@ lemma N₂Γ₂ToKaroubiIso_inv_app (X : ChainComplex C ℕ) :
   apply (Γ₀.splitting X).hom_ext'
   intro A
   rw [Splitting.ι_desc]
-  erw [comp_id, id_comp]
+  simp [CategoryTheory.SimplicialObject.Splitting.cofan, Γ₀.splitting]
 
 /-- The counit isomorphism of the Dold-Kan equivalence for additive categories. -/
 def N₂Γ₂ : Γ₂ ⋙ N₂ ≅ 𝟭 (Karoubi (ChainComplex C ℕ)) :=
