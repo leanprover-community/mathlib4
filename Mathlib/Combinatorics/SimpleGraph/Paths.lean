@@ -690,22 +690,44 @@ namespace Walk
 
 variable {G} {u v : V}
 
-lemma IsPath.exists_of_edges {u v a b : V} {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPath)
-    (hep : s(a, b) ∈ p.edges) (heq : s(a, b) ∈ q.edges) (hl : 1 < p.length) :
+lemma IsPath.exists_of_edges {u v : V} {e} {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPath)
+    (hep : e ∈ p.edges) (heq : e ∈ q.edges) (hl : 1 < p.length) :
     ∃ z, z ∈ p.support.tail ∧ z ∈ q.support.tail := by
+  have : ∀ e : Sym2 V, ∃ a b : V, e = s(a, b) := by
+    intro e
+    rw [← Sym2.exists]
+    use e
+  obtain ⟨a, b, hab⟩ := this e
+  subst hab
   by_cases! h : a = v ∨ b = v
-  · wlog hh : a = v
-    · exact this hp (by grind) (by grind) hl h.symm (by simpa [hh] using h)
-    use b
-    grind [getVert_mem_tail_support, not_nil_iff_lt_length, q.mem_support_iff.mp,
-      mem_support_of_mem_edges, getVert_eq_end_iff, eq_penultimate_of_mem_edges hp (hh ▸ hep)]
-  · by_cases a = u
+  · by_cases hh : a = v
     · use b
-      cases p.mem_support_iff (w := b) |>.mp (by grind [snd_mem_support_of_mem_edges])
-      · grind [p.adj_of_mem_edges hep, G.irrefl]
-      · grind [q.mem_support_iff (w := b), snd_mem_support_of_mem_edges]
-    · use a
-      grind [p.mem_support_iff.mp, q.mem_support_iff.mp, fst_mem_support_of_mem_edges]
+      grind [getVert_mem_tail_support, not_nil_iff_lt_length, q.mem_support_iff.mp,
+        mem_support_of_mem_edges, getVert_eq_end_iff, eq_penultimate_of_mem_edges hp (hh ▸ hep)]
+    · by_cases ha : a = u
+      · cases p.mem_support_iff (w := b) |>.mp (by grind [snd_mem_support_of_mem_edges])
+        · grind [p.adj_of_mem_edges hep, G.irrefl]
+        · have : b ∉ p.support.tail := by
+            intro hc
+            have hb : b = v := by tauto
+            have : p.getVert (p.length - 1) = a := by
+              symm
+              apply eq_penultimate_of_mem_edges hp
+              rwa [hb, Sym2.eq_swap] at hep
+            have : p.length = 1 := by
+              rw [ha, hp.getVert_eq_start_iff (p.length.sub_le 1)] at this
+              lia
+            lia
+          contradiction
+      · use a
+        grind [p.mem_support_iff.mp, q.mem_support_iff.mp, fst_mem_support_of_mem_edges]
+  by_cases a = u
+  · use b
+    cases p.mem_support_iff (w := b) |>.mp (by grind [snd_mem_support_of_mem_edges])
+    · grind [p.adj_of_mem_edges hep, G.irrefl]
+    · grind [q.mem_support_iff (w := b), snd_mem_support_of_mem_edges]
+  · use a
+    grind [p.mem_support_iff.mp, q.mem_support_iff.mp, fst_mem_support_of_mem_edges]
 
 lemma isPath_append_isCycle {u v} {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPath) (hq : q.IsPath)
     (h : p.support.tail.Disjoint q.support.tail) (hn : 1 < p.length ⊔ q.length) :
