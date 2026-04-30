@@ -46,7 +46,7 @@ theorem tsub_le_self : a - b ≤ a :=
 
 @[simp]
 theorem zero_tsub (a : α) : 0 - a = 0 :=
-  tsub_eq_zero_of_le <| zero_le a
+  tsub_eq_zero_of_le zero_le
 
 theorem tsub_self_add (a b : α) : a - (a + b) = 0 :=
   tsub_eq_zero_of_le <| self_le_add_right _ _
@@ -140,8 +140,7 @@ protected theorem tsub_lt_self (ha : AddLECancellable a) (h₁ : 0 < a) (h₂ : 
   exact h₂.not_ge (ha.add_le_iff_nonpos_left.1 <| add_le_of_le_tsub_left_of_le h₁.le h.ge)
 
 protected theorem tsub_lt_self_iff (ha : AddLECancellable a) : a - b < a ↔ 0 < a ∧ 0 < b := by
-  refine
-    ⟨fun h => ⟨(zero_le _).trans_lt h, (zero_le b).lt_of_ne ?_⟩, fun h => ha.tsub_lt_self h.1 h.2⟩
+  refine ⟨fun h => ⟨h.pos, pos_of_ne_zero ?_⟩, fun h => ha.tsub_lt_self h.1 h.2⟩
   rintro rfl
   rw [tsub_zero] at h
   exact h.false
@@ -229,6 +228,6 @@ theorem toOrderedSub [AddRightReflectLE α] : OrderedSub α where
     · rw [not_le] at h
       constructor <;> intro h'
       · simpa using add_le_add h' h.le
-      · exact zero_le c
+      · exact zero_le
 
 end CanonicallyOrderedAdd
