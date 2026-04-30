@@ -340,7 +340,7 @@ theorem max_norm_root_eq_spectralValue [DecidableEq L] {f : AlgebraNorm K L} (hf
       apply le_trans h_pr
       have hs_ne : s ≠ 0 :=
         have hpos : 0 < s.toFinset.card := by
-          have hs0 : 0 < s.card := hps ▸ lt_of_le_of_lt (zero_le _) hm
+          have hs0 : 0 < s.card := hps ▸ hm.pos
           obtain ⟨x, hx⟩ := card_pos_iff_exists_mem.mp hs0
           exact Finset.card_pos.mpr ⟨x, mem_toFinset.mpr hx⟩
         toFinset_nonempty.mp (Finset.card_pos.mp hpos)
@@ -880,7 +880,7 @@ def normedField : NormedField L :=
 
 /-- `L` with the spectral norm is a `NontriviallyNormedField`. -/
 @[implicit_reducible]
-def nontriviallyNormedField [CompleteSpace K] : NontriviallyNormedField L where
+def nontriviallyNormedField : NontriviallyNormedField L where
   __ := spectralNorm.normedField K L
   non_trivial :=
     let ⟨x, hx⟩ := NontriviallyNormedField.non_trivial (α := K)
