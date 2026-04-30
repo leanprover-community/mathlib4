@@ -176,7 +176,7 @@ theorem filter_map {p : β → Prop} [DecidablePred p] :
 lemma map_filter' (p : α → Prop) [DecidablePred p] (f : α ↪ β) (s : Finset α)
     [DecidablePred (∃ a, p a ∧ f a = ·)] :
     (s.filter p).map f = (s.map f).filter fun b => ∃ a, p a ∧ f a = b := by
-  simp [Function.comp_def, filter_map, f.injective.eq_iff]
+  simp [filter_map]
 
 lemma filter_attach' [DecidableEq α] (s : Finset α) (p : s → Prop) [DecidablePred p] :
     s.attach.filter p =
@@ -369,6 +369,22 @@ theorem image_subset_iff : s.image f ⊆ t ↔ ∀ x ∈ s, f x ∈ t :=
     s.image f ⊆ t ↔ f '' ↑s ⊆ ↑t := by norm_cast
     _ ↔ _ := Set.image_subset_iff
 
+lemma mapsTo_iff_image_subset : Set.MapsTo f s t ↔ s.image f ⊆ t := by
+  simp [Set.MapsTo, image_subset_iff]
+
+alias ⟨_root_.Set.MapsTo.finsetImage_subset, _⟩ := mapsTo_iff_image_subset
+
+lemma surjOn_iff_subset_image : Set.SurjOn f s t ↔ t ⊆ s.image f := by
+  simp only [Set.SurjOn]
+  norm_cast
+
+alias ⟨_root_.Set.SurjOn.subset_finsetImage, _⟩ := surjOn_iff_subset_image
+
+lemma image_eq_iff_surjOn_mapsTo : s.image f = t ↔ Set.SurjOn f s t ∧ Set.MapsTo f s t := by
+  grind [mapsTo_iff_image_subset, surjOn_iff_subset_image]
+
+alias ⟨_root_.Set.SurjOn.finsetImage_eq_of_mapsTo, _⟩ := image_eq_iff_surjOn_mapsTo
+
 theorem image_mono (f : α → β) : Monotone (Finset.image f) := fun _ _ => image_subset_image
 
 lemma image_injective (hf : Injective f) : Injective (image f) := by
@@ -503,6 +519,12 @@ theorem map_erase [DecidableEq α] (f : α ↪ β) (s : Finset α) (a : α) :
     (s.erase a).map f = (s.map f).erase (f a) := by
   simp_rw [map_eq_image]
   exact s.image_erase f.2 a
+
+theorem iterate_image [DecidableEq α] (f : α → α) (n : ℕ) :
+    (Finset.image f)^[n] s = s.image f^[n] := by
+  induction n with
+  | zero => simp
+  | succ n ih => rw [iterate_succ_apply', iterate_succ', ih, image_image]
 
 end Image
 

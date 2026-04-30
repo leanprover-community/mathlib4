@@ -57,7 +57,7 @@ theorem supportDim_le_supportDim_quotSMulTop_succ_of_mem_jacobson {x : R}
         Submodule.Quotient.nontrivial_iff.mpr <|
           (Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator h).symm
     rw [hp0, ← WithBot.coe_unbot (supportDim R (QuotSMulTop x M)) hb]
-    exact WithBot.coe_le_coe.mpr (zero_le ((supportDim R (QuotSMulTop x M)).unbot hb + 1))
+    exact WithBot.coe_le_coe.mpr zero_le
   -- Let `q' i := q (i + 1)`, then `q'` is a chain of prime ideals in `Supp(M/xM)`.
   let q' : LTSeries (support R (QuotSMulTop x M)) := {
     length := p.length - 1

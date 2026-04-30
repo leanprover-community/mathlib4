@@ -1141,7 +1141,7 @@ theorem ord_zero : ord 0 = 0 :=
 theorem ord_nat (n : ℕ) : ord n = n := by
   apply (ord_le.2 (card_nat n).ge).antisymm
   induction n with
-  | zero => exact _root_.zero_le _
+  | zero => exact zero_le
   | succ n IH => exact (IH.trans_lt <| by simp).succ_le
 
 @[simp]
@@ -1183,6 +1183,10 @@ theorem card_typein_lt {r : α → α → Prop} [IsWellOrder α r] (x : α) (h :
 theorem mk_Iio_lt [LinearOrder α] [WellFoundedLT α] (i : α) (h : ord #α = typeLT α) :
     #(Iio i) < #α :=
   card_typein_lt (r := LT.lt) i h
+
+theorem mk_Ioi_lt {α : Type*} [LinearOrder α] [WellFoundedGT α] (i : α) (h : ord #α = typeLT αᵒᵈ) :
+    #(Ioi i) < #α :=
+  mk_Iio_lt (OrderDual.toDual i) h
 
 @[deprecated mk_Iio_lt (since := "2026-04-12")]
 theorem mk_Iio_toType_ord_lt {c : Cardinal} (i : c.ord.ToType) : #(Iio i) < c := by
