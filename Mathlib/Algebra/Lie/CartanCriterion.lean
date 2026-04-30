@@ -28,15 +28,16 @@ criterion.
 * `LieModule.isNilpotent_derivedSeries_of_traceForm_eq_zero`: over a field of characteristic zero,
   if a finite-dimensional representation `M` of `L` has trivial trace form, then `M` is nilpotent
   as a `⁅L, L⁆`-module.
-* `LieIdeal.isSolvable_of_killingForm_apply_lie_eq_zero`: **Cartan's criterion for solvability**.
-  For an ideal `I` of a finite-dimensional Lie algebra `L` over a field of characteristic zero,
-  if the Killing form of `L` vanishes on `I × ⁅I, I⁆`, then `I` is solvable.
+* `LieIdeal.isSolvable_of_killingForm_apply_lie_eq_zero`: for an ideal `I` of a
+  finite-dimensional Lie algebra `L` over a field of characteristic zero, if the Killing form
+  of `L` vanishes on `I × ⁅I, I⁆`, then `I` is solvable. This is one direction of
+  **Cartan's criterion for solvability**; the converse is left as a TODO.
 * `LieAlgebra.killingCompl_top_le_radical`: the kernel of the Killing form of a finite-dimensional
   Lie algebra over a field of characteristic zero is contained in the solvable radical.
-* `LieAlgebra.HasTrivialRadical.instIsKilling`: converse of
-  `LieAlgebra.IsKilling.instHasTrivialRadical` in the finite-dimensional, characteristic-zero
-  setting. Together they give the iff `HasTrivialRadical ↔ IsKilling`, which is
-  **Cartan's criterion for semisimplicity**.
+* `LieAlgebra.HasTrivialRadical.instIsKilling`: a finite-dimensional Lie algebra over a field of
+  characteristic zero with trivial radical has non-degenerate Killing form. This is one direction
+  of **Cartan's criterion for semisimplicity**; the converse is the existing
+  `LieAlgebra.IsKilling.instHasTrivialRadical`.
 
 ## TODO
 
