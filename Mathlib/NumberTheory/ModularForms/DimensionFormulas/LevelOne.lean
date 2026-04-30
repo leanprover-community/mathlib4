@@ -15,13 +15,15 @@ public import Mathlib.LinearAlgebra.Dimension.Localization
 # Dimension formula for level 1 modular forms
 
 This file proves the dimension formula for the space of modular forms for `𝒮ℒ` (= `SL(2, ℤ)`)
-of even weight `k ≥ 3`.
+of even weight.
 
 ## Main results
 
 * `CuspForm.discriminantEquiv`: `CuspForm 𝒮ℒ k ≃ₗ[ℂ] ModularForm 𝒮ℒ (k - 12)`.
 * `ModularForm.rank_eq_one_add_rank_cuspForm`: `rank M_k = 1 + rank S_k` for even `k ≥ 3`.
-* `ModularForm.dimension_level_one`: the full dimension formula.
+* `ModularForm.dimension_level_one`: the full dimension formula for all even `k : ℕ`.
+* `ModularForm.levelOne_odd_weight_rank_zero`: modular forms of odd weight are zero.
+* A `FiniteDimensional ℂ (ModularForm 𝒮ℒ k)` instance for every `k : ℤ`.
 -/
 
 @[expose] public noncomputable section

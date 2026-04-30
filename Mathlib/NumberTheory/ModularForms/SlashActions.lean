@@ -216,8 +216,9 @@ theorem mul_slash_SL2 (k1 k2 : ℤ) (A : SL(2, ℤ)) (f g : ℍ → ℂ) :
 theorem div_slash_SL2 (k1 k2 : ℤ) (A : SL(2, ℤ)) (f g : ℍ → ℂ) :
     (f / g) ∣[k1 - k2] A = f ∣[k1] A / g ∣[k2] A := by
   ext τ
-  simp only [SL_slash_apply, Pi.div_apply, neg_sub, zpow_sub₀ (denom_ne_zero A τ), zpow_neg]
-  field_simp
+  simp [SL_slash_apply, zpow_sub₀ (denom_ne_zero A τ)]
+  grind
+
 
 open Finset
 
