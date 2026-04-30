@@ -505,9 +505,8 @@ theorem mem_map_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e
 
 lemma map_primeCompl_comap_of_surjective (hf : Function.Surjective f) (p : Ideal S) [p.IsPrime] :
     Submonoid.map f (p.comap f).primeCompl = p.primeCompl := by
-  ext x
-  obtain ⟨x, rfl⟩ := hf x
-  exact ⟨fun ⟨y, hy, hx⟩ ↦ hx ▸ hy, fun hx ↦ ⟨x, hx, rfl⟩⟩
+  rw [SetLike.ext_iff, hf.forall]
+  grind [Submonoid.mem_map, mem_primeCompl_iff, mem_comap]
 
 lemma _root_.RingEquiv.map_primeCompl_comap_eq (e : R ≃+* S) (p : Ideal S) [p.IsPrime] :
     (p.comap e).primeCompl.map e = p.primeCompl :=
