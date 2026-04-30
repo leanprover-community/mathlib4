@@ -440,14 +440,8 @@ theorem unitsSMul_neg (u : ℤˣ) (w : NormalWord d) :
       cases hcan2.2
       have : ((d.compl (-u)).equiv w.head).1 = 1 :=
         (d.compl (-u)).equiv_fst_eq_one_of_mem_of_one_mem _ h1
-      apply NormalWord.ext
-      · -- This used to `simp [this]` before https://github.com/leanprover/lean4/pull/2644
-        dsimp
-        rw [IsComplement.equiv_mul_left, map_mul, Submonoid.coe_mul, toSubgroupEquiv_neg_apply,
-          this]
-        simp
-      · simp [IsComplement.equiv_mul_left,Units.ext_iff, (d.compl (-u)).equiv_snd_eq_inv_mul, this,
-          -SetLike.coe_sort_coe]
+      simpa [NormalWord.ext_iff, (d.compl (-u)).equiv_mul_left, Units.ext_iff,
+        (d.compl (-u)).equiv_snd_eq_inv_mul]
 
 /-- the equivalence given by multiplication on the left by `t` -/
 @[simps]
