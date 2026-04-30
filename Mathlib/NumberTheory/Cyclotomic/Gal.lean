@@ -92,7 +92,6 @@ noncomputable def autEquivPow (h : Irreducible (cyclotomic n K)) : Gal(L/K) ≃*
       apply AlgEquiv.coe_algHom_injective
       apply (hζ.powerBasis K).algHom_ext
       simp only [AlgEquiv.coe_algHom]
-      simp only [AlgHom.coe_coeₛₐ]
       rw [PowerBasis.equivOfMinpoly_gen]
       simp only [IsPrimitiveRoot.powerBasis_gen, IsPrimitiveRoot.autToPow_spec]
     right_inv := fun x => by

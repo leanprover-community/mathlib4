@@ -262,7 +262,7 @@ def autAdjoinRootXPowSubCEquiv [NeZero n] :
     apply AlgEquiv.coe_algHom_injective
     apply AdjoinRoot.algHom_ext
     simp only [AdjoinRootXPowSubCEquivToRootsOfUnity, AdjoinRoot.algebraMap_eq, OneHom.toFun_eq_coe,
-      MonoidHom.toOneHom_coe, AlgHom.coe_coeₛₐ, autAdjoinRootXPowSubC_root, Algebra.smul_def]
+      MonoidHom.toOneHom_coe, AlgEquiv.coe_algHom, autAdjoinRootXPowSubC_root, Algebra.smul_def]
     rw [rootsOfUnityEquivOfPrimitiveRoots_symm_apply, rootsOfUnity.val_mkOfPowEq_coe]
     split_ifs with h
     · obtain rfl := not_imp_not.mp (fun hn ↦ ne_zero_of_irreducible_X_pow_sub_C' hn H) h

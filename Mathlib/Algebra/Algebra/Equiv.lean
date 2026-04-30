@@ -208,15 +208,13 @@ def toAlgHom : A →ₛₐ[φ] B :=
     map_zero' := map_zero e
     commutes' _:= e.commutes' _ }
 
-instance : CoeOut (A₁ ≃ₐ[R] A₂) (A₁ →ₐ[R] A₂) where coe := AlgEquiv.toAlgHom
+instance : CoeOut (A ≃ₛₐ[φ] B) (A →ₛₐ[φ] B) where coe := AlgEquiv.toAlgHom
 
-@[deprecated "Now a syntactic equality" (since := "2026-04-29"), nolint synTaut]
-theorem toAlgHom_eq_coe : e.toAlgHom = e :=
-  rfl
-
+-- TODO: remove
 theorem toAlgHom_eq_coeₛₐ : e.toAlgHom = e :=
   rfl
 
+@[deprecated "Now a syntactic equality" (since := "2026-04-29"), nolint synTaut]
 theorem toAlgHom_eq_coe [Algebra R B] (e : A ≃ₐ[R] B) : e.toAlgHom = e :=
   rfl
 

@@ -451,8 +451,6 @@ theorem map_fixingSubgroup (σ : Gal(L/K)) :
     Subgroup.mem_pointwise_smul_iff_inv_smul_mem, ← symm_apply_eq,
     IntermediateField.fixingSubgroup, mem_fixingSubgroup_iff]
   rfl
-  simp [IntermediateField.fixingSubgroup, _root_.mem_fixingSubgroup_iff,
-    ← symm_apply_eq, Subgroup.mem_pointwise_smul_iff_inv_smul_mem]
 
 /-- Let `E` be an intermediateField of a Galois extension `L / K`. If `E / K` is
 Galois extension, then `E.fixingSubgroup` is a normal subgroup of `Gal(L / K)`. -/

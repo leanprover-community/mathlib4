@@ -98,8 +98,6 @@ theorem counitAlgHom_comp (f : F) :
 theorem map_comp_comulAlgHom (f : F) :
     (Algebra.TensorProduct.map (AlgHomClass.toAlgHom f) (AlgHomClass.toAlgHom f)).comp
       (comulAlgHom R A) = (comulAlgHom R B).comp (AlgHomClass.toAlgHom f) :=
-    (Algebra.TensorProduct.map f f).comp (comulAlgHom R A) =
-      (comulAlgHom R B).comp (f : A →ₐ[R] B) :=
   AlgHom.toLinearMap_injective (CoalgHomClass.map_comp_comul f)
 
 end
@@ -327,12 +325,12 @@ def ofAlgHom (f : A →ₐ[R] B) (counit_comp : (counitAlgHom R B).comp f = coun
 
 @[simp]
 theorem counitAlgHom_comp (f : A →ₐc[R] B) :
-    (counitAlgHom R B).comp f = counitAlgHom R A :=
+    (counitAlgHom R B).comp f.toAlgHom = counitAlgHom R A :=
   AlgHom.toLinearMap_injective (CoalgHomClass.counit_comp f)
 
 @[simp]
 theorem map_comp_comulAlgHom (f : A →ₐc[R] B) :
-    (Algebra.TensorProduct.map f f).comp (comulAlgHom R A) = (comulAlgHom R B).comp f :=
+    (Algebra.TensorProduct.map f f).comp (comulAlgHom R A) = (comulAlgHom R B).comp f.toAlgHom :=
   AlgHom.toLinearMap_injective (CoalgHomClass.map_comp_comul f)
 
 end BialgHom

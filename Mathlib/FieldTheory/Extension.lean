@@ -61,7 +61,6 @@ noncomputable instance : OrderBot (Lifts F E K) where
     obtain ⟨x, rfl⟩ := (botEquiv F E).symm.surjective x
     simp_rw [AlgHom.comp_apply, AlgEquiv.coe_algHom, AlgEquiv.apply_symm_apply]
     exact L.emb.commutes x⟩
-    simp⟩
 
 noncomputable instance : Inhabited (Lifts F E K) :=
   ⟨⊥⟩

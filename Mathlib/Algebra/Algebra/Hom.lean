@@ -52,14 +52,6 @@ infixr:25 " →ₐ " => AlgHom (RingHom.id _)
 /-- `A →ₐ[R] B` is the type of `R`-algebra maps from `A` to `B`. -/
 notation:25 A " →ₐ[" R "] " B => AlgHom (RingHom.id R) A B
 
-/-- The algebra morphism underlying `algebraMap` -/
-def Algebra.algHom (R A B : Type*)
-    [CommSemiring R] [CommSemiring A] [Semiring B] [Algebra R A] [Algebra R B]
-    [Algebra A B] [IsScalarTower R A B] :
-    A →ₐ[R] B where
-  toRingHom := algebraMap A B
-  commutes' r := by simp [algebraMap_eq_smul_one, smul_assoc]
-
 /-- `SemialgHomClass F R A B` asserts `F` is a type of bundled semialgebra homomorphisms
 from `A` to `B`. -/
 class SemialgHomClass (F : Type*) {R S : outParam Type*}
@@ -165,22 +157,10 @@ namespace AlgHom
 
 section Semiring
 
-variable [CommSemiring R] [Semiring A] [Semiring B] [Semiring C] [Semiring D]
-variable [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
-
-instance funLike : FunLike (A →ₐ[R] B) A B where
-  coe f := f.toFun
-  coe_injective' f g h := by
-    rcases f with ⟨⟨⟨⟨_, _⟩, _⟩, _, _⟩, _⟩
-    rcases g with ⟨⟨⟨⟨_, _⟩, _⟩, _, _⟩, _⟩
-    congr
-
-instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
-  map_add f := f.map_add'
-  map_zero f := f.map_zero'
-  map_mul f := f.map_mul'
-  map_one f := f.map_one'
-  commutes f := f.commutes'
+variable {R : Type uR} {S : Type uS} [CommSemiring R] [CommSemiring S]
+variable {φ : R →+* S}
+variable {A : Type uA} {B : Type uB} [Semiring A] [Semiring B]
+variable [Algebra R A] [Algebra S B]
 
 @[simp] lemma _root_.AlgHomClass.toLinearMap_toAlgHom {R A B F : Type*} [CommSemiring R]
     [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] [FunLike F A B] [AlgHomClass F R A B]
@@ -503,15 +483,6 @@ end IsScalarTower
 alias Algebra.algHom := IsScalarTower.toAlgHom
 
 alias Algebra.algHom_apply := IsScalarTower.toAlgHom_apply
-
-namespace AlgHomClass
-
-@[simp]
-lemma toRingHom_toAlgHom {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
-    [Algebra R B] {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
-    RingHomClass.toRingHom (AlgHomClass.toAlgHom f) = RingHomClass.toRingHom f := rfl
-
-end AlgHomClass
 
 namespace RingHom
 
