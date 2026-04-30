@@ -45,6 +45,17 @@ theorem arg_exp {x : ℝ} (h₁ : -π < x) (h₂ : x ≤ π) : arg (exp x) = x :
 theorem exp_arg (z : Circle) : exp (arg z) = z :=
   injective_arg <| arg_exp (neg_pi_lt_arg _) (arg_le_pi _)
 
+/-- The image under `Circle.exp` of the interval of angles `(-r, r)`. -/
+def centeredArc (r : ℝ) : Set Circle :=
+  exp '' {x | |x| < r}
+
+theorem mem_centeredArc {r : ℝ} (hr : r ≤ π) {z : Circle} :
+    z ∈ centeredArc r ↔ |arg z| < r := by
+  refine ⟨?_, fun hz ↦ ⟨arg z, hz, exp_arg z⟩⟩
+  rintro ⟨t, ht, rfl⟩
+  have htπ : |t| < π := ht.trans_le hr
+  rwa [arg_exp (neg_lt_of_abs_lt htπ) (lt_of_abs_lt htπ).le]
+
 /-- `Complex.arg ∘ (↑)` and `Circle.exp` define a partial equivalence between `Circle` and `ℝ`
 with `source = Set.univ` and `target = Set.Ioc (-π) π`. -/
 @[simps -fullyApplied]
@@ -406,6 +417,9 @@ theorem Circle.isCoveringMap_exp : IsCoveringMap exp := isAddQuotientCoveringMap
 
 lemma isLocalHomeomorph_circleExp : IsLocalHomeomorph Circle.exp :=
   Circle.isCoveringMap_exp.isLocalHomeomorph
+
+theorem Circle.isOpen_centeredArc (r : ℝ) : IsOpen (centeredArc r) := by
+  simpa [centeredArc, abs_lt] using isLocalHomeomorph_circleExp.isOpenMap _ isOpen_Ioo
 
 /- TODO: this generalizes to a large class of groups, but requires an open mapping theorem for
 topological groups to show the `n`th power map is open (see https://www.mathematik.tu-darmstadt.de/media/mathematik/forschung/preprint/preprints/2480.pdf
