@@ -269,7 +269,8 @@ open Function
 
 namespace Monotone
 
-variable {α β : Type*} [LinearOrder α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β]
+variable {α β : Type*} [LinearOrder α]
+  [LinearOrder β] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β]
   [OrderTopology β] {f : α → β} (hf : Monotone f) {x y : α}
 include hf
 
@@ -391,7 +392,8 @@ end Monotone
 
 namespace Antitone
 
-variable {α β : Type*} [LinearOrder α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β]
+variable {α β : Type*} [LinearOrder α]
+  [LinearOrder β] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β]
   [OrderTopology β] {f : α → β} (hf : Antitone f) {x y : α}
 include hf
 

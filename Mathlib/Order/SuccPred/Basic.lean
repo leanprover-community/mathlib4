@@ -592,7 +592,8 @@ theorem succ_eq_sInf [CompleteLattice α] [SuccOrder α] (a : α) :
 theorem succ_eq_iInf [CompleteLattice α] [SuccOrder α] (a : α) : succ a = ⨅ b > a, b := by
   rw [succ_eq_sInf, iInf_subtype', iInf, Subtype.range_coe_subtype, Ioi]
 
-theorem succ_eq_csInf [ConditionallyCompleteLattice α] [SuccOrder α] [NoMaxOrder α] (a : α) :
+theorem succ_eq_csInf [PartialOrder α] [ConditionallyCompleteLattice α] [SuccOrder α] [NoMaxOrder α]
+    (a : α) :
     succ a = sInf (Set.Ioi a) := by
   apply (le_csInf nonempty_Ioi fun b => succ_le_of_lt).antisymm
   exact csInf_le ⟨a, fun b => le_of_lt⟩ <| lt_succ a
@@ -707,7 +708,8 @@ theorem pred_eq_sSup [CompleteLattice α] [PredOrder α] :
 theorem pred_eq_iSup [CompleteLattice α] [PredOrder α] (a : α) : pred a = ⨆ b < a, b :=
   succ_eq_iInf (α := αᵒᵈ) a
 
-theorem pred_eq_csSup [ConditionallyCompleteLattice α] [PredOrder α] [NoMinOrder α] (a : α) :
+theorem pred_eq_csSup [PartialOrder α] [ConditionallyCompleteLattice α] [PredOrder α] [NoMinOrder α]
+    (a : α) :
     pred a = sSup (Set.Iio a) :=
   succ_eq_csInf (α := αᵒᵈ) a
 

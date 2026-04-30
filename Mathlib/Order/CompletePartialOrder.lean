@@ -43,7 +43,7 @@ section CompletePartialOrder
 /--
 Complete partial orders are partial orders where every directed set has a least upper bound.
 -/
-class CompletePartialOrder (α : Type*) extends PartialOrder α, SupSet α, OrderBot α where
+class CompletePartialOrder (α : Type*) [PartialOrder α] extends SupSet α, OrderBot α where
   /-- For each directed set `d`, `sSup d` is the least upper bound of `d`. -/
   lubOfDirected : ∀ d, DirectedOn (· ≤ ·) d → IsLUB d (sSup d)
 
@@ -61,7 +61,7 @@ def CompletePartialOrder.ofLubOfDirected (α : Type*) [H1 : PartialOrder α] [H2
   bot_le := isLUB_empty_iff.mp <| lub_of_directed ∅ IsChain.empty.directedOn
   lubOfDirected := lub_of_directed
 
-variable [CompletePartialOrder α] [Preorder β] {f : ι → α} {d : Set α} {a : α}
+variable [PartialOrder α] [CompletePartialOrder α] [Preorder β] {f : ι → α} {d : Set α} {a : α}
 
 protected lemma DirectedOn.isLUB_sSup : DirectedOn (· ≤ ·) d → IsLUB d (sSup d) :=
 CompletePartialOrder.lubOfDirected _

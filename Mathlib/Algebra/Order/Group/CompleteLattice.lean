@@ -16,7 +16,8 @@ public section
 
 open Function Set
 
-variable {ι G : Type*} [Group G] [ConditionallyCompleteLattice G] [Nonempty ι] {f : ι → G}
+variable {ι G : Type*} [Group G] [PartialOrder G] [ConditionallyCompleteLattice G] [Nonempty ι]
+  {f : ι → G}
 
 section Right
 variable [MulRightMono G]

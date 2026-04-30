@@ -30,22 +30,22 @@ variable {α β γ : Type*} {ι : Sort*}
 
 namespace OrderDual
 
-instance [ConditionallyCompletePartialOrderSup α] :
+instance [PartialOrder α] [ConditionallyCompletePartialOrderSup α] :
     ConditionallyCompletePartialOrderInf αᵒᵈ where
   isGLB_csInf_of_directed _ h_dir h_non h_bdd := h_dir.isLUB_csSup (α := α) h_non h_bdd
 
-instance [ConditionallyCompletePartialOrderInf α] :
+instance [PartialOrder α] [ConditionallyCompletePartialOrderInf α] :
     ConditionallyCompletePartialOrderSup αᵒᵈ where
   isLUB_csSup_of_directed _ h_dir h_non h_bdd := h_dir.isGLB_csInf (α := α) h_non h_bdd
 
-instance [ConditionallyCompletePartialOrder α] :
+instance [PartialOrder α] [ConditionallyCompletePartialOrder α] :
     ConditionallyCompletePartialOrder αᵒᵈ where
 
 end OrderDual
 
 section ConditionallyCompletePartialOrderSup
 
-variable [ConditionallyCompletePartialOrderSup α] {s t : Set α} {a b : α}
+variable [PartialOrder α] [ConditionallyCompletePartialOrderSup α] {s t : Set α} {a b : α}
 
 @[to_dual csInf_le_of_le]
 protected theorem DirectedOn.le_csSup_of_le (hd : DirectedOn (· ≤ ·) s)
@@ -63,6 +63,7 @@ protected theorem DirectedOn.le_csSup_iff (hd : DirectedOn (· ≤ ·) s) (h : B
     (hs : s.Nonempty) : a ≤ sSup s ↔ ∀ b, b ∈ upperBounds s → a ≤ b :=
   ⟨fun h _ hb => le_trans h (hd.csSup_le hs hb), fun hb => hb _ fun _ => hd.le_csSup h⟩
 
+omit [ConditionallyCompletePartialOrderSup α] in
 @[to_dual]
 theorem IsGreatest.directedOn (H : IsGreatest s a) : DirectedOn (· ≤ ·) s :=
   fun _ h₁ _ h₂ ↦ ⟨a, H.1, H.2 h₁, H.2 h₂⟩
@@ -121,17 +122,17 @@ theorem csSup_singleton (a : α) : sSup {a} = a :=
   isGreatest_singleton.csSup_eq
 
 @[simp]
-theorem csInf_Ici {α : Type*} [ConditionallyCompletePartialOrderInf α] {a : α} :
+theorem csInf_Ici {α : Type*} [PartialOrder α] [ConditionallyCompletePartialOrderInf α] {a : α} :
     sInf (Ici a) = a :=
   isLeast_Ici.csInf_eq
 
 @[simp]
-theorem csInf_Ico {α : Type*} [ConditionallyCompletePartialOrderInf α] {a b : α} (h : a < b) :
-    sInf (Ico a b) = a :=
+theorem csInf_Ico {α : Type*} [PartialOrder α] [ConditionallyCompletePartialOrderInf α] {a b : α}
+    (h : a < b) : sInf (Ico a b) = a :=
   (isLeast_Ico h).csInf_eq
 
 @[simp]
-theorem csInf_Icc {α : Type*} [ConditionallyCompletePartialOrderInf α] {a b : α}
+theorem csInf_Icc {α : Type*} [PartialOrder α] [ConditionallyCompletePartialOrderInf α] {a b : α}
     (h : a ≤ b) : sInf (Icc a b) = a :=
   (isLeast_Icc h).csInf_eq
 
@@ -155,7 +156,7 @@ end ConditionallyCompletePartialOrderSup
 
 section ConditionallyCompletePartialOrder
 
-variable [ConditionallyCompletePartialOrder α] {s t : Set α} {a b : α}
+variable [PartialOrder α] [ConditionallyCompletePartialOrder α] {s t : Set α} {a b : α}
 
 protected theorem DirectedOn.subset_Icc_csInf_csSup (hdb : DirectedOn (· ≥ ·) s)
     (hda : DirectedOn (· ≤ ·) s) (hb : BddBelow s) (ha : BddAbove s) :

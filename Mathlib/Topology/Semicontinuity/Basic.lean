@@ -636,7 +636,8 @@ end
 
 section
 
-variable {ι : Sort*} {δ δ' : Type*} [CompleteLinearOrder δ] [ConditionallyCompleteLinearOrder δ']
+variable {ι : Sort*} {δ δ' : Type*} [CompleteLinearOrder δ]
+  [LinearOrder δ'] [ConditionallyCompleteLinearOrder δ']
 
 theorem lowerSemicontinuousWithinAt_ciSup {f : ι → α → δ'}
     (bdd : ∀ᶠ y in 𝓝[s] x, BddAbove (range fun i => f i y))
@@ -1193,7 +1194,8 @@ end
 
 section
 
-variable {ι : Sort*} {δ δ' : Type*} [CompleteLinearOrder δ] [ConditionallyCompleteLinearOrder δ']
+variable {ι : Sort*} {δ δ' : Type*} [CompleteLinearOrder δ]
+  [LinearOrder δ'] [ConditionallyCompleteLinearOrder δ']
 
 theorem upperSemicontinuousWithinAt_ciInf {f : ι → α → δ'}
     (bdd : ∀ᶠ y in 𝓝[s] x, BddBelow (range fun i => f i y))
@@ -1214,7 +1216,7 @@ theorem upperSemicontinuousWithinAt_biInf {p : ι → Prop} {f : ∀ i, p i → 
 theorem upperSemicontinuousAt_ciInf {f : ι → α → δ'}
     (bdd : ∀ᶠ y in 𝓝 x, BddBelow (range fun i => f i y)) (h : ∀ i, UpperSemicontinuousAt (f i) x) :
     UpperSemicontinuousAt (fun x' => ⨅ i, f i x') x :=
-  @lowerSemicontinuousAt_ciSup α _ x ι δ'ᵒᵈ _ f bdd h
+  @lowerSemicontinuousAt_ciSup α _ x ι δ'ᵒᵈ _ _ f bdd h
 
 theorem upperSemicontinuousAt_iInf {f : ι → α → δ} (h : ∀ i, UpperSemicontinuousAt (f i) x) :
     UpperSemicontinuousAt (fun x' => ⨅ i, f i x') x :=

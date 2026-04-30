@@ -568,7 +568,7 @@ theorem spectralNorm_unique_of_finiteDimensional_normal {f : AlgebraNorm K L}
     (hf_ext : ∀ (x : K), f (algebraMap K L x) = ‖x‖₊)
     (hf_iso : ∀ (σ : Gal(L/K)) (x : L), f x = f (σ x)) (x : L) : f x = spectralNorm K L x := by
   have h_sup : (⨆ σ : Gal(L/K), f (σ x)) = f x := by
-    rw [← @ciSup_const _ Gal(L/K) _ _ (f x)]
+    rw [← @ciSup_const _ Gal(L/K) _ _ _ (f x)]
     exact iSup_congr fun σ ↦ by rw [hf_iso σ x]
   rw [spectralNorm_eq_iSup_of_finiteDimensional_normal K L hf_pm hf_na hf_ext, h_sup]
 

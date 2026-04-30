@@ -39,7 +39,7 @@ open scoped Topology
 
 section definition
 
-variable {R : Type*} [ConditionallyCompleteLattice R] [Div R] [NatCast R]
+variable {R : Type*} [PartialOrder R] [ConditionallyCompleteLattice R] [Div R] [NatCast R]
 
 /-- Lower linear growth of a sequence. -/
 noncomputable def linearGrowthInf (u : ℕ → R) : R := liminf (fun n ↦ u n / n) atTop
@@ -53,7 +53,8 @@ end definition
 
 section basic_properties
 
-variable {R : Type*} [ConditionallyCompleteLattice R] [Div R] [NatCast R] {u v : ℕ → R}
+variable {R : Type*} [PartialOrder R] [ConditionallyCompleteLattice R] [Div R] [NatCast R]
+  {u v : ℕ → R}
 
 lemma linearGrowthInf_congr (h : u =ᶠ[atTop] v) :
     linearGrowthInf u = linearGrowthInf v :=

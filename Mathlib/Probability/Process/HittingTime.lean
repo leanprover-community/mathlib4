@@ -89,7 +89,8 @@ lemma hittingBtwn_empty (n m : ι) : hittingBtwn u ∅ n m = fun _ ↦ m := by e
 lemma hittingAfter_empty (n : ι) : hittingAfter u ∅ n = fun _ ↦ ⊤ := by ext; simp [hittingAfter]
 
 @[simp]
-lemma hittingBtwn_univ {ι : Type*} [ConditionallyCompleteLinearOrder ι] {u : ι → Ω → β} (n m : ι) :
+lemma hittingBtwn_univ {ι : Type*} [LinearOrder ι] [ConditionallyCompleteLinearOrder ι]
+    {u : ι → Ω → β} (n m : ι) :
     hittingBtwn u .univ n m = fun _ ↦ min n m := by
   ext ω
   classical
@@ -97,7 +98,8 @@ lemma hittingBtwn_univ {ι : Type*} [ConditionallyCompleteLinearOrder ι] {u : �
   by_cases hnm : n ≤ m <;> simp [hnm] <;> grind
 
 @[simp]
-lemma hittingAfter_univ {ι : Type*} [ConditionallyCompleteLattice ι] {u : ι → Ω → β} (n : ι) :
+lemma hittingAfter_univ {ι : Type*} [PartialOrder ι] [ConditionallyCompleteLattice ι]
+    {u : ι → Ω → β} (n : ι) :
     hittingAfter u .univ n = fun _ ↦ (n : WithTop ι) := by
   ext ω
   classical
@@ -109,7 +111,8 @@ end Basic
 
 section Inequalities
 
-variable [ConditionallyCompleteLinearOrder ι] {u : ι → Ω → β} {s : Set β} {n i : ι} {ω : Ω}
+variable [LinearOrder ι] [ConditionallyCompleteLinearOrder ι]
+  {u : ι → Ω → β} {s : Set β} {n i : ι} {ω : Ω}
 
 /-- This lemma is strictly weaker than `hittingBtwn_of_le`. -/
 theorem hittingBtwn_of_lt {m : ι} (h : m < n) : hittingBtwn u s n m ω = m := by
@@ -438,7 +441,8 @@ lemma hittingAfter_apply_mono (u : ι → Ω → β) (s : Set β) (ω : Ω) :
 end Inequalities
 
 /-- A discrete hitting time is a stopping time. -/
-theorem Adapted.isStoppingTime_hittingBtwn [ConditionallyCompleteLinearOrder ι] [WellFoundedLT ι]
+theorem Adapted.isStoppingTime_hittingBtwn
+    [LinearOrder ι] [ConditionallyCompleteLinearOrder ι] [WellFoundedLT ι]
     [Countable ι] {_ : MeasurableSpace β} {f : Filtration ι m} {u : ι → Ω → β} {s : Set β}
     {n n' : ι} (hu : Adapted f u) (hs : MeasurableSet s) :
     IsStoppingTime f (fun ω ↦ (hittingBtwn u s n n' ω : ι)) := by
@@ -456,7 +460,7 @@ theorem Adapted.isStoppingTime_hittingBtwn [ConditionallyCompleteLinearOrder ι]
 @[deprecated (since := "2026-01-25")]
 alias hittingBtwn_isStoppingTime := Adapted.isStoppingTime_hittingBtwn
 
-theorem Adapted.isStoppingTime_hittingAfter [ConditionallyCompleteLinearOrder ι]
+theorem Adapted.isStoppingTime_hittingAfter [LinearOrder ι] [ConditionallyCompleteLinearOrder ι]
     [WellFoundedLT ι] [Countable ι] {_ : MeasurableSpace β} {f : Filtration ι m} {u : ι → Ω → β}
     {s : Set β} {n : ι} (hu : Adapted f u) (hs : MeasurableSet s) :
     IsStoppingTime f (hittingAfter u s n) := by
@@ -469,7 +473,8 @@ theorem Adapted.isStoppingTime_hittingAfter [ConditionallyCompleteLinearOrder ι
 @[deprecated (since := "2026-01-25")]
 alias hittingAfter_isStoppingTime := Adapted.isStoppingTime_hittingAfter
 
-theorem stoppedValue_hittingBtwn_mem [ConditionallyCompleteLinearOrder ι] [WellFoundedLT ι]
+theorem stoppedValue_hittingBtwn_mem
+    [LinearOrder ι] [ConditionallyCompleteLinearOrder ι] [WellFoundedLT ι]
     {u : ι → Ω → β} {s : Set β} {n m : ι} {ω : Ω} (h : ∃ j ∈ Set.Icc n m, u j ω ∈ s) :
     stoppedValue u (fun ω ↦ (hittingBtwn u s n m ω : ι)) ω ∈ s := by
   simp only [stoppedValue, hittingBtwn, if_pos h]
@@ -482,7 +487,8 @@ theorem stoppedValue_hittingBtwn_mem [ConditionallyCompleteLinearOrder ι] [Well
 
 /-- The hitting time of a discrete process with the starting time indexed by a stopping time
 is a stopping time. -/
-theorem Adapted.isStoppingTime_hittingBtwn_isStoppingTime [ConditionallyCompleteLinearOrder ι]
+theorem Adapted.isStoppingTime_hittingBtwn_isStoppingTime
+    [LinearOrder ι] [ConditionallyCompleteLinearOrder ι]
     [WellFoundedLT ι] [Countable ι] [TopologicalSpace ι] [OrderTopology ι]
     [FirstCountableTopology ι] [MeasurableSpace β] {f : Filtration ι m} {u : ι → Ω → β}
     {τ : Ω → WithTop ι} (hτ : IsStoppingTime f τ)
@@ -544,7 +550,7 @@ end CompleteLattice
 
 section ConditionallyCompleteLinearOrderBot
 
-variable [ConditionallyCompleteLinearOrderBot ι] [WellFoundedLT ι]
+variable [LinearOrder ι] [OrderBot ι] [ConditionallyCompleteLinearOrderBot ι] [WellFoundedLT ι]
 variable {u : ι → Ω → β} {s : Set β}
 
 theorem hittingBtwn_bot_le_iff {i n : ι} {ω : Ω} (hx : ∃ j, j ≤ n ∧ u j ω ∈ s) :

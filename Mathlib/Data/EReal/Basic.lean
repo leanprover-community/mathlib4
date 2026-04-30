@@ -34,8 +34,13 @@ noncomputable section
 def EReal := WithBot (WithTop ℝ)
 deriving Nontrivial,
   Zero, One, AddMonoid, AddCommMonoid, AddCommMonoidWithOne, CharZero,
-  Top, Bot, SupSet, InfSet, PartialOrder, LinearOrder, CompleteLinearOrder, DenselyOrdered,
+  Top, Bot, SupSet, InfSet, PartialOrder, DecidableEq, DecidableLE, DecidableLT,
+  LinearOrder, CompleteLinearOrder, DenselyOrdered,
   ZeroLEOneClass, IsOrderedAddMonoid
+
+set_option allowUnsafeReducibility true in
+attribute [semireducible] instDecidableEqEReal._aux_1 instDecidableLEEReal._aux_1
+  instDecidableLTEReal._aux_1
 
 /-- The canonical inclusion from reals to ereals. Registered as a coercion. -/
 @[coe] def Real.toEReal : ℝ → EReal := WithBot.some ∘ WithTop.some

@@ -56,12 +56,13 @@ This axiomatizes the reals. -/
 @[deprecated "Use `[Field α] [ConditionallyCompleteLinearOrder α] [IsStrictOrderedRing α]` instead."
   (since := "2026-02-23")]
 structure ConditionallyCompleteLinearOrderedField (α : Type*) extends
-    Field α, ConditionallyCompleteLinearOrder α, IsStrictOrderedRing α where
+    Field α, LinearOrder α, ConditionallyCompleteLinearOrder α, IsStrictOrderedRing α where
 
 -- see Note [lower instance priority]
 /-- Any conditionally complete linearly ordered field is archimedean. -/
 scoped instance (priority := 100) ConditionallyCompleteLinearOrderedField.to_archimedean
-    [Field α] [ConditionallyCompleteLinearOrder α] [IsStrictOrderedRing α] : Archimedean α :=
+    [Field α] [LinearOrder α] [ConditionallyCompleteLinearOrder α] [IsStrictOrderedRing α] :
+    Archimedean α :=
   archimedean_iff_nat_lt.2 <| by
     by_contra! ⟨x, h⟩
     have := csSup_le (range_nonempty Nat.cast)
@@ -156,8 +157,8 @@ open LinearOrderedField
 section InducedMap
 
 variable (α β γ) [Field α] [LinearOrder α] [IsStrictOrderedRing α]
-  [Field β] [ConditionallyCompleteLinearOrder β] [IsStrictOrderedRing β]
-  [Field γ] [ConditionallyCompleteLinearOrder γ] [IsStrictOrderedRing γ]
+  [Field β] [LinearOrder β] [ConditionallyCompleteLinearOrder β] [IsStrictOrderedRing β]
+  [Field γ] [LinearOrder γ] [ConditionallyCompleteLinearOrder γ] [IsStrictOrderedRing γ]
 
 /-- The induced order-preserving function from a linear ordered field to a conditionally complete
 linear ordered field, defined by taking the Sup in the codomain of all the rationals less than the

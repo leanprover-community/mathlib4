@@ -29,7 +29,7 @@ public section
 
 open Filter Set Topology
 
-variable {X Y : Type*}
+variable {X Y : Type*} [LinearOrder X]
   [ConditionallyCompleteLinearOrder X] [DenselyOrdered X] [TopologicalSpace X] [OrderTopology X]
   [LinearOrder Y] [TopologicalSpace Y] [OrderTopology Y]
   {f : X → Y} {a b : X} {l : Y}

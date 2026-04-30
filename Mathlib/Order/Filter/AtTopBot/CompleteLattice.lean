@@ -39,7 +39,8 @@ then the indexed supremum of `f ∘ g` is equal to the indexed supremum of `f`.
 The assumption `BddAbove (range f)` can be omitted,
 if the codomain of `f` is a conditionally complete linear order or a complete lattice, see below.
 -/
-theorem _root_.Monotone.ciSup_comp_tendsto_atTop [Preorder β] [ConditionallyCompleteLattice γ]
+theorem _root_.Monotone.ciSup_comp_tendsto_atTop [Preorder β]
+    [PartialOrder γ] [ConditionallyCompleteLattice γ]
     {l : Filter α} [l.NeBot] {f : β → γ} (hf : Monotone f) (hb : BddAbove (range f))
     {g : α → β} (hg : Tendsto g l atTop) : ⨆ a, f (g a) = ⨆ b, f b := by
   have : Nonempty α := nonempty_of_neBot l
@@ -55,7 +56,8 @@ then the indexed infimum of `f ∘ g` is equal to the indexed infimum of `f`.
 The assumption `BddBelow (range f)` can be omitted,
 if the codomain of `f` is a conditionally complete linear order or a complete lattice, see below.
 -/
-theorem _root_.Monotone.ciInf_comp_tendsto_atBot [Preorder β] [ConditionallyCompleteLattice γ]
+theorem _root_.Monotone.ciInf_comp_tendsto_atBot [Preorder β]
+    [PartialOrder γ] [ConditionallyCompleteLattice γ]
     {l : Filter α} [l.NeBot] {f : β → γ} (hf : Monotone f) (hb : BddBelow (range f))
     {g : α → β} (hg : Tendsto g l atBot) : ⨅ a, f (g a) = ⨅ b, f b :=
   hf.dual.ciSup_comp_tendsto_atTop hb hg
@@ -67,7 +69,8 @@ then the indexed supremum of `f ∘ g` is equal to the indexed supremum of `f`.
 The assumption `BddAbove (range f)` can be omitted,
 if the codomain of `f` is a conditionally complete linear order or a complete lattice, see below.
 -/
-theorem _root_.Antitone.ciSup_comp_tendsto_atBot [Preorder β] [ConditionallyCompleteLattice γ]
+theorem _root_.Antitone.ciSup_comp_tendsto_atBot [Preorder β]
+    [PartialOrder γ] [ConditionallyCompleteLattice γ]
     {l : Filter α} [l.NeBot] {f : β → γ} (hf : Antitone f) (hb : BddAbove (range f))
     {g : α → β} (hg : Tendsto g l atBot) : ⨆ a, f (g a) = ⨆ b, f b :=
   hf.dual_left.ciSup_comp_tendsto_atTop hb hg
@@ -79,7 +82,8 @@ then the indexed infimum of `f ∘ g` is equal to the indexed infimum of `f`.
 The assumption `BddBelow (range f)` can be omitted,
 if the codomain of `f` is a conditionally complete linear order or a complete lattice, see below.
 -/
-theorem _root_.Antitone.ciInf_comp_tendsto_atTop [Preorder β] [ConditionallyCompleteLattice γ]
+theorem _root_.Antitone.ciInf_comp_tendsto_atTop [Preorder β]
+    [PartialOrder γ] [ConditionallyCompleteLattice γ]
     {l : Filter α} [l.NeBot] {f : β → γ} (hf : Antitone f) (hb : BddBelow (range f))
     {g : α → β} (hg : Tendsto g l atTop) : ⨅ a, f (g a) = ⨅ b, f b :=
   hf.dual.ciSup_comp_tendsto_atBot hb hg
@@ -87,7 +91,7 @@ theorem _root_.Antitone.ciInf_comp_tendsto_atTop [Preorder β] [ConditionallyCom
 /-- If `f` is a monotone function taking values in a conditionally complete linear order
 and `g` tends to `atTop` along a nontrivial filter,
 then the indexed supremum of `f ∘ g` is equal to the indexed supremum of `f`. -/
-theorem _root_.Monotone.ciSup_comp_tendsto_atTop_of_linearOrder [Preorder β]
+theorem _root_.Monotone.ciSup_comp_tendsto_atTop_of_linearOrder [Preorder β] [LinearOrder γ]
     [ConditionallyCompleteLinearOrder γ] {l : Filter α} [l.NeBot] {f : β → γ} (hf : Monotone f)
     {g : α → β} (hg : Tendsto g l atTop) : ⨆ a, f (g a) = ⨆ b, f b := by
   if hb : BddAbove (range f) then
@@ -99,7 +103,7 @@ theorem _root_.Monotone.ciSup_comp_tendsto_atTop_of_linearOrder [Preorder β]
 /-- If `f` is a monotone function taking values in a conditionally complete linear order
 and `g` tends to `atBot` along a nontrivial filter,
 then the indexed infimum of `f ∘ g` is equal to the indexed infimum of `f`. -/
-theorem _root_.Monotone.ciInf_comp_tendsto_atBot_of_linearOrder [Preorder β]
+theorem _root_.Monotone.ciInf_comp_tendsto_atBot_of_linearOrder [Preorder β] [LinearOrder γ]
     [ConditionallyCompleteLinearOrder γ] {l : Filter α} [l.NeBot] {f : β → γ} (hf : Monotone f)
     {g : α → β} (hg : Tendsto g l atBot) : ⨅ a, f (g a) = ⨅ b, f b :=
   hf.dual.ciSup_comp_tendsto_atTop_of_linearOrder hg
@@ -107,7 +111,7 @@ theorem _root_.Monotone.ciInf_comp_tendsto_atBot_of_linearOrder [Preorder β]
 /-- If `f` is an antitone function taking values in a conditionally complete linear order
 and `g` tends to `atTop` along a nontrivial filter,
 then the indexed infimum of `f ∘ g` is equal to the indexed infimum of `f`. -/
-theorem _root_.Antitone.ciInf_comp_tendsto_atTop_of_linearOrder [Preorder β]
+theorem _root_.Antitone.ciInf_comp_tendsto_atTop_of_linearOrder [Preorder β] [LinearOrder γ]
     [ConditionallyCompleteLinearOrder γ] {l : Filter α} [l.NeBot] {f : β → γ} (hf : Antitone f)
     {g : α → β} (hg : Tendsto g l atTop) : ⨅ a, f (g a) = ⨅ b, f b :=
   hf.dual_left.ciInf_comp_tendsto_atBot_of_linearOrder hg
@@ -115,7 +119,7 @@ theorem _root_.Antitone.ciInf_comp_tendsto_atTop_of_linearOrder [Preorder β]
 /-- If `f` is an antitone function taking values in a conditionally complete linear order
 and `g` tends to `atBot` along a nontrivial filter,
 then the indexed supremum of `f ∘ g` is equal to the indexed supremum of `f`. -/
-theorem _root_.Antitone.ciSup_comp_tendsto_atBot_of_linearOrder [Preorder β]
+theorem _root_.Antitone.ciSup_comp_tendsto_atBot_of_linearOrder [Preorder β] [LinearOrder γ]
     [ConditionallyCompleteLinearOrder γ] {l : Filter α} [l.NeBot] {f : β → γ} (hf : Antitone f)
     {g : α → β} (hg : Tendsto g l atBot) : ⨆ a, f (g a) = ⨆ b, f b :=
   hf.dual_left.ciSup_comp_tendsto_atTop_of_linearOrder hg
@@ -124,7 +128,7 @@ theorem _root_.Antitone.ciSup_comp_tendsto_atBot_of_linearOrder [Preorder β]
 and `g` tends to `atTop` along a nontrivial filter,
 then the indexed supremum of `f ∘ g` is equal to the indexed supremum of `f`. -/
 theorem _root_.Monotone.iSup_comp_tendsto_atTop
-    [Preorder β] [ConditionallyCompleteLattice γ] [OrderTop γ]
+    [Preorder β] [PartialOrder γ] [ConditionallyCompleteLattice γ] [OrderTop γ]
     {l : Filter α} [l.NeBot] {f : β → γ} (hf : Monotone f) {g : α → β} (hg : Tendsto g l atTop) :
     ⨆ a, f (g a) = ⨆ b, f b :=
   hf.ciSup_comp_tendsto_atTop (OrderTop.bddAbove _) hg
@@ -133,7 +137,7 @@ theorem _root_.Monotone.iSup_comp_tendsto_atTop
 and `g` tends to `atBot` along a nontrivial filter,
 then the indexed infimum of `f ∘ g` is equal to the indexed infimum of `f`. -/
 theorem _root_.Monotone.iInf_comp_tendsto_atBot
-    [Preorder β] [ConditionallyCompleteLattice γ] [OrderBot γ]
+    [Preorder β] [PartialOrder γ] [ConditionallyCompleteLattice γ] [OrderBot γ]
     {l : Filter α} [l.NeBot] {f : β → γ} (hf : Monotone f) {g : α → β} (hg : Tendsto g l atBot) :
     ⨅ a, f (g a) = ⨅ b, f b :=
   hf.ciInf_comp_tendsto_atBot (OrderBot.bddBelow _) hg
@@ -142,7 +146,7 @@ theorem _root_.Monotone.iInf_comp_tendsto_atBot
 and `g` tends to `atBot` along a nontrivial filter,
 then the indexed supremum of `f ∘ g` is equal to the indexed supremum of `f`. -/
 theorem _root_.Antitone.iSup_comp_tendsto_atBot
-    [Preorder β] [ConditionallyCompleteLattice γ] [OrderTop γ]
+    [Preorder β] [PartialOrder γ] [ConditionallyCompleteLattice γ] [OrderTop γ]
     {l : Filter α} [l.NeBot] {f : β → γ} (hf : Antitone f) {g : α → β} (hg : Tendsto g l atBot) :
     ⨆ a, f (g a) = ⨆ b, f b :=
   hf.ciSup_comp_tendsto_atBot (OrderTop.bddAbove _) hg
@@ -151,7 +155,7 @@ theorem _root_.Antitone.iSup_comp_tendsto_atBot
 and `g` tends to `atTop` along a nontrivial filter,
 then the indexed infimum of `f ∘ g` is equal to the indexed infimum of `f`. -/
 theorem _root_.Antitone.iInf_comp_tendsto_atTop
-    [Preorder β] [ConditionallyCompleteLattice γ] [OrderBot γ]
+    [Preorder β] [PartialOrder γ] [ConditionallyCompleteLattice γ] [OrderBot γ]
     {l : Filter α} [l.NeBot] {f : β → γ} (hf : Antitone f) {g : α → β} (hg : Tendsto g l atTop) :
     ⨅ a, f (g a) = ⨅ b, f b :=
   hf.ciInf_comp_tendsto_atTop (OrderBot.bddBelow _) hg

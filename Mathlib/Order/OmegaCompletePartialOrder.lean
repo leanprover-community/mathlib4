@@ -176,7 +176,7 @@ call `ωSup`). In this sense, it is strictly weaker than join complete
 semi-lattices as only ω-sized totally ordered sets have a supremum.
 
 See the definition on page 114 of [gunter1992]. -/
-class OmegaCompletePartialOrder (α : Type*) extends PartialOrder α where
+class OmegaCompletePartialOrder (α : Type*) [PartialOrder α] where
   /-- The supremum of an increasing sequence -/
   ωSup : Chain α → α
   /-- `ωSup` is an upper bound of the increasing sequence -/
@@ -185,7 +185,7 @@ class OmegaCompletePartialOrder (α : Type*) extends PartialOrder α where
   ωSup_le : ∀ (c : Chain α) (x), (∀ i, c i ≤ x) → ωSup c ≤ x
 
 namespace OmegaCompletePartialOrder
-variable [OmegaCompletePartialOrder α]
+variable [PartialOrder α] [OmegaCompletePartialOrder α]
 
 /-- Transfer an `OmegaCompletePartialOrder` on `β` to an `OmegaCompletePartialOrder` on `α`
 using a strictly monotone function `f : β →o α`, a definition of ωSup and a proof that `f` is
@@ -244,7 +244,7 @@ lemma ωSup_eq_of_isLUB {c : Chain α} {a : α} (h : IsLUB (Set.range c) a) : a 
 /-- A subset `p : α → Prop` of the type closed under `ωSup` induces an
 `OmegaCompletePartialOrder` on the subtype `{a : α // p a}`. -/
 @[implicit_reducible]
-def subtype {α : Type*} [OmegaCompletePartialOrder α] (p : α → Prop)
+def subtype {α : Type*} [PartialOrder α] [OmegaCompletePartialOrder α] (p : α → Prop)
     (hp : ∀ c : Chain α, (∀ i ∈ c, p i) → p (ωSup c)) : OmegaCompletePartialOrder (Subtype p) :=
   OmegaCompletePartialOrder.lift (OrderHom.Subtype.val p)
     (fun c => ⟨ωSup _, hp (c.map (OrderHom.Subtype.val p)) fun _ ⟨n, q⟩ => q.symm ▸ (c n).2⟩)
@@ -252,8 +252,8 @@ def subtype {α : Type*} [OmegaCompletePartialOrder α] (p : α → Prop)
 
 section Continuity
 
-variable [OmegaCompletePartialOrder β]
-variable [OmegaCompletePartialOrder γ]
+variable [PartialOrder β] [OmegaCompletePartialOrder β]
+variable [PartialOrder γ] [OmegaCompletePartialOrder γ]
 variable {f : α → β} {g : β → γ}
 
 /-- A function `f` between `ω`-complete partial orders is `ωScottContinuous` if it is
@@ -262,18 +262,22 @@ Scott continuous over chains. -/
 def ωScottContinuous (f : α → β) : Prop :=
     ScottContinuousOn (Set.range fun c : Chain α => Set.range c) f
 
+omit [OmegaCompletePartialOrder α] [OmegaCompletePartialOrder β] in
 lemma _root_.ScottContinuous.ωScottContinuous (hf : ScottContinuous f) : ωScottContinuous f :=
   hf.scottContinuousOn
 
+omit [OmegaCompletePartialOrder α] [OmegaCompletePartialOrder β] in
 lemma ωScottContinuous.monotone (h : ωScottContinuous f) : Monotone f :=
   ScottContinuousOn.monotone _ (fun a b hab => by
     use pair a b hab; exact range_pair a b hab) h
 
+omit [OmegaCompletePartialOrder β] in
 lemma ωScottContinuous.isLUB {c : Chain α} (hf : ωScottContinuous f) :
     IsLUB (Set.range (c.map ⟨f, hf.monotone⟩)) (f (ωSup c)) := by
   simpa [Set.range_comp]
     using hf (by simp) (Set.range_nonempty _) (isChain_range c).directedOn (isLUB_range_ωSup c)
 
+omit [OmegaCompletePartialOrder α] in
 @[fun_prop, to_fun (attr := simp)]
 lemma ωScottContinuous.id : ωScottContinuous (id : α → α) := ScottContinuousOn.id
 
@@ -311,6 +315,7 @@ lemma ωScottContinuous.comp (hg : ωScottContinuous g) (hf : ωScottContinuous 
   ωScottContinuous.of_monotone_map_ωSup
     ⟨hg.monotone.comp hf.monotone, by simp [hf.map_ωSup, hg.map_ωSup, map_comp]⟩
 
+omit [OmegaCompletePartialOrder α] [OmegaCompletePartialOrder β] in
 @[fun_prop, to_fun (attr := simp)]
 lemma ωScottContinuous.const {x : β} : ωScottContinuous (Function.const α x) :=
   ScottContinuousOn.const x
@@ -390,7 +395,7 @@ section Pi
 
 variable {β : α → Type*}
 
-instance [∀ a, OmegaCompletePartialOrder (β a)] :
+instance [∀ a, PartialOrder (β a)] [∀ a, OmegaCompletePartialOrder (β a)] :
     OmegaCompletePartialOrder (∀ a, β a) where
   ωSup c a := ωSup (c.map (Pi.evalOrderHom a))
   ωSup_le _ _ hf a :=
@@ -401,8 +406,8 @@ instance [∀ a, OmegaCompletePartialOrder (β a)] :
 
 namespace OmegaCompletePartialOrder
 
-variable [∀ x, OmegaCompletePartialOrder <| β x]
-variable [OmegaCompletePartialOrder γ]
+variable [∀ x, PartialOrder (β x)] [∀ x, OmegaCompletePartialOrder <| β x]
+variable [PartialOrder γ] [OmegaCompletePartialOrder γ]
 variable {f : γ → ∀ x, β x}
 
 lemma ωScottContinuous.apply₂ (hf : ωScottContinuous f) (a : α) : ωScottContinuous (f · a) :=
@@ -427,9 +432,9 @@ end Pi
 
 namespace Prod
 
-variable [OmegaCompletePartialOrder α]
-variable [OmegaCompletePartialOrder β]
-variable [OmegaCompletePartialOrder γ]
+variable [PartialOrder α] [OmegaCompletePartialOrder α]
+variable [PartialOrder β] [OmegaCompletePartialOrder β]
+variable [PartialOrder γ] [OmegaCompletePartialOrder γ]
 
 /-- The supremum of a chain in the product `ω`-CPO. -/
 @[simps]
@@ -444,16 +449,19 @@ instance : OmegaCompletePartialOrder (α × β) where
 
 theorem ωSup_zip (c₀ : Chain α) (c₁ : Chain β) : ωSup (c₀.zip c₁) = (ωSup c₀, ωSup c₁) := rfl
 
+omit [OmegaCompletePartialOrder α] [OmegaCompletePartialOrder β] [OmegaCompletePartialOrder γ] in
 @[fun_prop]
 lemma ωScottContinuous.prodMk
     {f : α → β} (hf : ωScottContinuous f) {g : α → γ} (hg : ωScottContinuous g) :
     ωScottContinuous fun x ↦ (f x, g x) :=
   ScottContinuousOn.prodMk (fun a b hab ↦ ⟨pair a b hab, range_pair a b hab⟩) hf hg
 
+omit [OmegaCompletePartialOrder α] [OmegaCompletePartialOrder β] in
 @[fun_prop]
 lemma ωScottContinuous_fst : ωScottContinuous (Prod.fst : α × β → α) :=
   ScottContinuousOn.fst
 
+omit [OmegaCompletePartialOrder α] [OmegaCompletePartialOrder β] in
 @[fun_prop]
 lemma ωScottContinuous_snd : ωScottContinuous (Prod.snd : α × β → β) :=
   ScottContinuousOn.snd
@@ -470,7 +478,7 @@ instance (priority := 100) [CompleteLattice α] : OmegaCompletePartialOrder α w
   ωSup_le := fun ⟨c, _⟩ s hs => by simpa only [iSup_le_iff]
   le_ωSup := fun ⟨c, _⟩ i => le_iSup_of_le i le_rfl
 
-variable [OmegaCompletePartialOrder α] [CompleteLattice β] {f g : α → β}
+variable [PartialOrder α] [OmegaCompletePartialOrder α] [CompleteLattice β] {f g : α → β}
 
 lemma ωScottContinuous.iSup {f : ι → α → β} (hf : ∀ i, ωScottContinuous (f i)) :
     ωScottContinuous (⨆ i, f i) := by
@@ -499,7 +507,7 @@ end CompleteLattice
 
 namespace CompleteLattice
 
-variable [OmegaCompletePartialOrder α] [CompleteLinearOrder β] {f g : α → β}
+variable [PartialOrder α] [OmegaCompletePartialOrder α] [CompleteLinearOrder β] {f g : α → β}
 
 -- TODO Prove this result for `ScottContinuousOn` and deduce this as a special case
 -- Also consider if it holds in greater generality (e.g. finite sets)
@@ -520,8 +528,10 @@ lemma ωScottContinuous.inf (hf : ωScottContinuous f) (hg : ωScottContinuous g
 end CompleteLattice
 
 namespace OmegaCompletePartialOrder
-variable [OmegaCompletePartialOrder α] [OmegaCompletePartialOrder β]
-variable [OmegaCompletePartialOrder γ] [OmegaCompletePartialOrder δ]
+variable [PartialOrder α] [OmegaCompletePartialOrder α]
+variable [PartialOrder β] [OmegaCompletePartialOrder β]
+variable [PartialOrder γ] [OmegaCompletePartialOrder γ]
+variable [PartialOrder δ] [OmegaCompletePartialOrder δ]
 
 namespace OrderHom
 
@@ -602,6 +612,7 @@ protected theorem monotone (f : α →𝒄 β) : Monotone f :=
 theorem apply_mono {f g : α →𝒄 β} {x y : α} (h₁ : f ≤ g) (h₂ : x ≤ y) : f x ≤ g y :=
   OrderHom.apply_mono (show (f : α →o β) ≤ g from h₁) h₂
 
+omit [OmegaCompletePartialOrder α] in
 theorem ωSup_bind {β γ : Type v} (c : Chain α) (f : α →o Part β) (g : α →o β → Part γ) :
     ωSup (c.map (f.partBind g)) = ωSup (c.map f) >>= ωSup (c.map g) := by
   apply eq_of_forall_ge_iff; intro x

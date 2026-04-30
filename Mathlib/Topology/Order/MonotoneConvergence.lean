@@ -111,7 +111,8 @@ end IsGLB
 
 section CiSup
 
-variable [ConditionallyCompletePartialOrderSup α] [SupConvergenceClass α] {f : ι → α}
+variable [PartialOrder α] [ConditionallyCompletePartialOrderSup α] [SupConvergenceClass α]
+  {f : ι → α}
 
 theorem tendsto_atTop_ciSup (h_mono : Monotone f) (hbdd : BddAbove <| range f) :
     Tendsto f atTop (𝓝 (⨆ i, f i)) := by
@@ -128,7 +129,8 @@ end CiSup
 
 section CiInf
 
-variable [ConditionallyCompletePartialOrderInf α] [InfConvergenceClass α] {f : ι → α}
+variable [PartialOrder α] [ConditionallyCompletePartialOrderInf α] [InfConvergenceClass α]
+  {f : ι → α}
 
 theorem tendsto_atBot_ciInf (h_mono : Monotone f) (hbdd : BddBelow <| range f) :
     Tendsto f atBot (𝓝 (⨅ i, f i)) := by convert tendsto_atTop_ciSup h_mono.dual hbdd.dual using 1
@@ -201,7 +203,8 @@ instance Pi.infConvergenceClass' {ι : Type*} [Preorder α] [TopologicalSpace α
   Pi.infConvergenceClass
 
 theorem tendsto_atTop_of_monotone {ι α : Type*} [Preorder ι] [TopologicalSpace α]
-    [ConditionallyCompleteLinearOrder α] [OrderTopology α] {f : ι → α} (h_mono : Monotone f) :
+    [LinearOrder α] [ConditionallyCompleteLinearOrder α] [OrderTopology α]
+    {f : ι → α} (h_mono : Monotone f) :
     Tendsto f atTop atTop ∨ ∃ l, Tendsto f atTop (𝓝 l) := by
   classical
   exact if H : BddAbove (range f) then Or.inr ⟨_, tendsto_atTop_ciSup h_mono H⟩
@@ -210,24 +213,28 @@ theorem tendsto_atTop_of_monotone {ι α : Type*} [Preorder ι] [TopologicalSpac
 @[deprecated (since := "2026-01-22")] alias tendsto_of_monotone := tendsto_atTop_of_monotone
 
 theorem tendsto_atTop_of_antitone {ι α : Type*} [Preorder ι] [TopologicalSpace α]
-    [ConditionallyCompleteLinearOrder α] [OrderTopology α] {f : ι → α} (h_mono : Antitone f) :
+    [LinearOrder α] [ConditionallyCompleteLinearOrder α] [OrderTopology α]
+    {f : ι → α} (h_mono : Antitone f) :
     Tendsto f atTop atBot ∨ ∃ l, Tendsto f atTop (𝓝 l) :=
   tendsto_atTop_of_monotone (α := αᵒᵈ) h_mono
 
 @[deprecated (since := "2026-01-22")] alias tendsto_of_antitone := tendsto_atTop_of_antitone
 
 theorem tendsto_atBot_of_monotone {ι α : Type*} [Preorder ι] [TopologicalSpace α]
-    [ConditionallyCompleteLinearOrder α] [OrderTopology α] {f : ι → α} (h_mono : Monotone f) :
+    [LinearOrder α] [ConditionallyCompleteLinearOrder α] [OrderTopology α]
+    {f : ι → α} (h_mono : Monotone f) :
     Tendsto f atBot atBot ∨ ∃ l, Tendsto f atBot (𝓝 l) :=
   tendsto_atTop_of_monotone (ι := ιᵒᵈ) (α := αᵒᵈ) h_mono.dual
 
 theorem tendsto_atBot_of_antitone {ι α : Type*} [Preorder ι] [TopologicalSpace α]
-    [ConditionallyCompleteLinearOrder α] [OrderTopology α] {f : ι → α} (h_mono : Antitone f) :
+    [LinearOrder α] [ConditionallyCompleteLinearOrder α] [OrderTopology α]
+    {f : ι → α} (h_mono : Antitone f) :
     Tendsto f atBot atTop ∨ ∃ l, Tendsto f atBot (𝓝 l) :=
   tendsto_atTop_of_antitone (ι := ιᵒᵈ) (α := αᵒᵈ) h_mono.dual
 
 theorem tendsto_iff_tendsto_subseq_of_monotone {ι₁ ι₂ α : Type*} [SemilatticeSup ι₁] [Preorder ι₂]
-    [Nonempty ι₁] [TopologicalSpace α] [ConditionallyCompleteLinearOrder α] [OrderTopology α]
+    [Nonempty ι₁] [TopologicalSpace α]
+    [LinearOrder α] [ConditionallyCompleteLinearOrder α] [OrderTopology α]
     [NoMaxOrder α] {f : ι₂ → α} {φ : ι₁ → ι₂} {l : α} (hf : Monotone f)
     (hg : Tendsto φ atTop atTop) : Tendsto f atTop (𝓝 l) ↔ Tendsto (f ∘ φ) atTop (𝓝 l) := by
   constructor <;> intro h
@@ -237,7 +244,8 @@ theorem tendsto_iff_tendsto_subseq_of_monotone {ι₁ ι₂ α : Type*} [Semilat
     · rwa [tendsto_nhds_unique h (hl'.comp hg)]
 
 theorem tendsto_iff_tendsto_subseq_of_antitone {ι₁ ι₂ α : Type*} [SemilatticeSup ι₁] [Preorder ι₂]
-    [Nonempty ι₁] [TopologicalSpace α] [ConditionallyCompleteLinearOrder α] [OrderTopology α]
+    [Nonempty ι₁] [TopologicalSpace α]
+    [LinearOrder α] [ConditionallyCompleteLinearOrder α] [OrderTopology α]
     [NoMinOrder α] {f : ι₂ → α} {φ : ι₁ → ι₂} {l : α} (hf : Antitone f)
     (hg : Tendsto φ atTop atTop) : Tendsto f atTop (𝓝 l) ↔ Tendsto (f ∘ φ) atTop (𝓝 l) :=
   tendsto_iff_tendsto_subseq_of_monotone (α := αᵒᵈ) hf hg

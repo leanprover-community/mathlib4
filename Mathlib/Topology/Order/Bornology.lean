@@ -150,7 +150,7 @@ lemma IsOrderBornology.cobounded_eq_atBot [NoMinOrder α] [OrderTop α] :
 end LinearOrder
 
 section ConditionallyCompleteLattice
-variable [ConditionallyCompleteLattice α] [IsOrderBornology α] {s : Set α}
+variable [PartialOrder α] [ConditionallyCompleteLattice α] [IsOrderBornology α] {s : Set α}
 
 protected lemma Bornology.IsBounded.subset_Icc_sInf_sSup (hs : IsBounded s) :
     s ⊆ Icc (sInf s) (sSup s) := subset_Icc_csInf_csSup hs.bddBelow hs.bddAbove

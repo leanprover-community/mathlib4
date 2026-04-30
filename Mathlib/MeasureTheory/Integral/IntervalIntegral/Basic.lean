@@ -511,7 +511,8 @@ end
 -/
 section
 
-variable {μ : Measure ℝ} [IsLocallyFiniteMeasure μ] [ConditionallyCompleteLinearOrder E]
+variable {μ : Measure ℝ} [IsLocallyFiniteMeasure μ]
+  [LinearOrder E] [ConditionallyCompleteLinearOrder E]
   [OrderTopology E] [SecondCountableTopology E]
 
 theorem MonotoneOn.intervalIntegrable {u : ℝ → E} {a b : ℝ} (hu : MonotoneOn u (uIcc a b)) :

@@ -303,8 +303,9 @@ lemma _root_.Finsupp.logHeight_eq_log_mulHeight (x : α →₀ K) :
 ### First properties of heights
 -/
 
-private lemma max_eq_iSup {α : Type*} [ConditionallyCompleteLattice α] (a b : α) :
-    max a b = iSup ![a, b] :=
+private lemma sup_eq_iSup {α : Type*} [SemilatticeSup α] [ConditionallyCompleteLattice α]
+    (a b : α) :
+    a ⊔ b = iSup ![a, b] :=
   eq_of_forall_ge_iff <| by simp [ciSup_le_iff, Fin.forall_fin_two]
 
 variable [Finite ι] [Finite ι']
@@ -552,7 +553,7 @@ lemma logHeight_smul_eq_logHeight (x : ι → K) {c : K} (hc : c ≠ 0) :
 lemma mulHeight₁_eq_mulHeight (x : K) : mulHeight₁ x = mulHeight ![x, 1] := by
   have H (v : AbsoluteValue K ℝ) (x : K) : v x ⊔ 1 = ⨆ i, v (![x, 1] i) := by
     have (i : Fin 2) : v (![x, 1] i) = ![v x, 1] i := by fin_cases i <;> simp
-    simpa [this] using max_eq_iSup (v x) 1
+    simpa [this] using sup_eq_iSup (v x) 1
   have hx : ![x, 1] ≠ 0 := by simp
   simp only [mulHeight₁_eq, mulHeight_eq hx, H]
 

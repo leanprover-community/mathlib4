@@ -180,7 +180,7 @@ end
 
 section ConditionallyCompleteLinearOrderBot
 
-variable [ConditionallyCompleteLinearOrderBot ι]
+variable [LinearOrder ι] [OrderBot ι] [ConditionallyCompleteLinearOrderBot ι]
 variable {a b : ℝ} {f : ι → Ω → ℝ} {N : ι} {n m : ℕ} {ω : Ω}
 
 theorem upperCrossingTime_le : upperCrossingTime a b f N n ω ≤ N := by

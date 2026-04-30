@@ -774,9 +774,9 @@ end Pi
 
 end LinearOrder
 
-section ConditionallyCompleteLinearOrder
-variable {X : Type*} [ConditionallyCompleteLinearOrder X] [TopologicalSpace X] [OrderTopology X]
-variable {Y : Type*} [ConditionallyCompleteLinearOrder Y] [TopologicalSpace Y] [OrderTopology Y]
+section LinearOrder
+variable {X : Type*} [LinearOrder X] [TopologicalSpace X] [OrderTopology X]
+variable {Y : Type*} [LinearOrder Y] [TopologicalSpace Y] [OrderTopology Y]
 variable [DenselyOrdered X] {f : X → Y} {x : X}
 
 /-- An order-theoretically left-continuous function is topologically left-continuous, assuming
@@ -799,4 +799,4 @@ is densely ordered. -/
 lemma RightOrdContinuous.continuousWithinAt_Ici (hf : RightOrdContinuous f) :
     ContinuousWithinAt f (Ici x) x := hf.dual.continuousWithinAt_Iic
 
-end ConditionallyCompleteLinearOrder
+end LinearOrder

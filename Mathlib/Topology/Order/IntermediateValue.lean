@@ -229,7 +229,7 @@ theorem denselyOrdered_of_preconnectedSpace [LinearOrder α] [OrderTopology α]
     exact nonempty_inter (isOpen_Iio' y) (isOpen_Ioi' x) (Set.Iio_union_Ioi_of_lt hxy)
       ⟨x, Set.mem_Iio.mpr hxy⟩ ⟨y, Set.mem_Ioi.mpr hxy⟩
 
-variable [ConditionallyCompleteLinearOrder α] [OrderTopology α]
+variable [LinearOrder α] [ConditionallyCompleteLinearOrder α] [OrderTopology α]
 
 /-- A bounded connected subset of a conditionally complete linear order includes the open interval
 `(Inf s, Sup s)`. -/

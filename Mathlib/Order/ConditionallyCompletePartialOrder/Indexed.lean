@@ -31,7 +31,7 @@ variable {α β γ : Type*} {ι : Sort*}
 
 section ConditionallyCompletePartialOrderSup
 
-variable [ConditionallyCompletePartialOrderSup α] {a b : α}
+variable [PartialOrder α] [ConditionallyCompletePartialOrderSup α] {a b : α}
 
 @[to_dual]
 theorem Directed.isLUB_ciSup [Nonempty ι] {f : ι → α} (hd : Directed (· ≤ ·) f)
@@ -89,7 +89,7 @@ theorem ciSup_unique [Unique ι] {s : ι → α} : ⨆ i, s i = s default := by
 
 @[to_dual]
 theorem ciSup_subsingleton [Subsingleton ι] (i : ι) (s : ι → α) : ⨆ i, s i = s i :=
-  @ciSup_unique α ι _ ⟨⟨i⟩, fun j => Subsingleton.elim j i⟩ _
+  @ciSup_unique α ι _ _ ⟨⟨i⟩, fun j => Subsingleton.elim j i⟩ _
 
 @[to_dual]
 theorem ciSup_pos {p : Prop} {f : p → α} (hp : p) : ⨆ h : p, f h = f hp := by
@@ -182,7 +182,8 @@ theorem ciSup_Iic [Preorder β] {f : β → α} (a : β) (hf : Monotone f) :
 
 end ConditionallyCompletePartialOrderSup
 
-lemma Directed.ciInf_le_ciSup [ConditionallyCompletePartialOrder α] [Nonempty ι] {f : ι → α}
+lemma Directed.ciInf_le_ciSup [PartialOrder α] [ConditionallyCompletePartialOrder α] [Nonempty ι]
+    {f : ι → α}
     (hd : Directed (· ≥ ·) f) (hf : BddBelow (range f))
     (hd' : Directed (· ≤ ·) f) (hf' : BddAbove (range f)) :
     ⨅ i, f i ≤ ⨆ i, f i :=
@@ -192,7 +193,8 @@ namespace GaloisConnection
 
 section Sup
 
-variable [ConditionallyCompletePartialOrderSup α] [ConditionallyCompletePartialOrderSup β]
+variable [PartialOrder α] [ConditionallyCompletePartialOrderSup α]
+    [PartialOrder β] [ConditionallyCompletePartialOrderSup β]
     [Nonempty ι] {l : α → β} {u : β → α}
 
 theorem l_csSup_of_directedOn' (gc : GaloisConnection l u) {s : Set α}
@@ -222,7 +224,8 @@ end Sup
 
 section Inf
 
-variable [ConditionallyCompletePartialOrderInf α] [ConditionallyCompletePartialOrderInf β]
+variable [PartialOrder α] [ConditionallyCompletePartialOrderInf α]
+    [PartialOrder β] [ConditionallyCompletePartialOrderInf β]
     [Nonempty ι] {l : α → β} {u : β → α}
 
 theorem u_csInf_of_directedOn (gc : GaloisConnection l u) {s : Set β} (hd : DirectedOn (· ≥ ·) s)
@@ -253,7 +256,8 @@ namespace OrderIso
 
 section Sup
 
-variable [ConditionallyCompletePartialOrderSup α] [ConditionallyCompletePartialOrderSup β]
+variable [PartialOrder α] [ConditionallyCompletePartialOrderSup α]
+  [PartialOrder β] [ConditionallyCompletePartialOrderSup β]
   [Nonempty ι]
 
 -- these need to have `directed` in their names.
@@ -278,7 +282,8 @@ end Sup
 
 section Inf
 
-variable [ConditionallyCompletePartialOrderInf α] [ConditionallyCompletePartialOrderInf β]
+variable [PartialOrder α] [ConditionallyCompletePartialOrderInf α]
+  [PartialOrder β] [ConditionallyCompletePartialOrderInf β]
   [Nonempty ι]
 
 theorem map_csInf_of_directedOn (e : α ≃o β) {s : Set α} (hd : DirectedOn (· ≥ ·) s)

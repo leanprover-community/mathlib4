@@ -504,16 +504,16 @@ theorem ext_of_Ioc' {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
 /-- Two measures which are finite on closed-open intervals are equal if they agree on all
 closed-open intervals. -/
 theorem ext_of_Ico {α : Type*} [TopologicalSpace α] {_m : MeasurableSpace α}
-    [SecondCountableTopology α] [ConditionallyCompleteLinearOrder α] [OrderTopology α]
-    [BorelSpace α] [NoMaxOrder α] (μ ν : Measure α) [IsLocallyFiniteMeasure μ]
+    [SecondCountableTopology α] [LinearOrder α] [ConditionallyCompleteLinearOrder α]
+    [OrderTopology α] [BorelSpace α] [NoMaxOrder α] (μ ν : Measure α) [IsLocallyFiniteMeasure μ]
     (h : ∀ ⦃a b⦄, a < b → μ (Ico a b) = ν (Ico a b)) : μ = ν :=
   μ.ext_of_Ico' ν (fun _ _ _ => measure_Ico_lt_top.ne) h
 
 /-- Two measures which are finite on closed-open intervals are equal if they agree on all
 open-closed intervals. -/
 theorem ext_of_Ioc {α : Type*} [TopologicalSpace α] {_m : MeasurableSpace α}
-    [SecondCountableTopology α] [ConditionallyCompleteLinearOrder α] [OrderTopology α]
-    [BorelSpace α] [NoMinOrder α] (μ ν : Measure α) [IsLocallyFiniteMeasure μ]
+    [SecondCountableTopology α] [LinearOrder α] [ConditionallyCompleteLinearOrder α]
+    [OrderTopology α] [BorelSpace α] [NoMinOrder α] (μ ν : Measure α) [IsLocallyFiniteMeasure μ]
     (h : ∀ ⦃a b⦄, a < b → μ (Ioc a b) = ν (Ioc a b)) : μ = ν :=
   μ.ext_of_Ioc' ν (fun _ _ _ => measure_Ioc_lt_top.ne) h
 
@@ -882,7 +882,8 @@ end LinearOrder
 section ConditionallyCompleteLattice
 
 @[fun_prop]
-theorem Measurable.iSup_Prop {α} {mα : MeasurableSpace α} [ConditionallyCompleteLattice α]
+theorem Measurable.iSup_Prop {α} {mα : MeasurableSpace α}
+    [PartialOrder α] [ConditionallyCompleteLattice α]
     (p : Prop) {f : δ → α} (hf : Measurable f) : Measurable fun b => ⨆ _ : p, f b := by
   classical
   simp_rw [ciSup_eq_ite]
@@ -891,7 +892,8 @@ theorem Measurable.iSup_Prop {α} {mα : MeasurableSpace α} [ConditionallyCompl
   · exact measurable_const
 
 @[fun_prop]
-theorem Measurable.iInf_Prop {α} {mα : MeasurableSpace α} [ConditionallyCompleteLattice α]
+theorem Measurable.iInf_Prop {α} {mα : MeasurableSpace α}
+    [PartialOrder α] [ConditionallyCompleteLattice α]
     (p : Prop) {f : δ → α} (hf : Measurable f) : Measurable fun b => ⨅ _ : p, f b := by
   classical
   simp_rw [ciInf_eq_ite]
@@ -903,7 +905,8 @@ end ConditionallyCompleteLattice
 
 section ConditionallyCompleteLinearOrder
 
-variable [ConditionallyCompleteLinearOrder α] [OrderTopology α] [SecondCountableTopology α]
+variable [LinearOrder α] [ConditionallyCompleteLinearOrder α] [OrderTopology α]
+  [SecondCountableTopology α]
 
 @[fun_prop]
 protected theorem Measurable.iSup {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :

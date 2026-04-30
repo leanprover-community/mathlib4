@@ -40,7 +40,7 @@ variable {α β : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
 
 section ConditionallyCompleteLattice
 
-variable [ConditionallyCompleteLattice β] {f : α → β}
+variable [PartialOrder β] [ConditionallyCompleteLattice β] {f : α → β}
 
 /-- Essential supremum of `f` with respect to measure `μ`: the smallest `c : β` such that
 `f x ≤ c` a.e. -/
@@ -56,7 +56,7 @@ theorem essSup_congr_ae {f g : α → β} (hfg : f =ᵐ[μ] g) : essSup f μ = e
   limsup_congr hfg
 
 theorem essInf_congr_ae {f g : α → β} (hfg : f =ᵐ[μ] g) : essInf f μ = essInf g μ :=
-  @essSup_congr_ae α βᵒᵈ _ _ _ _ _ hfg
+  @essSup_congr_ae α βᵒᵈ _ _ _ _ _ _ hfg
 
 @[simp]
 theorem essSup_const' [NeZero μ] (c : β) : essSup (fun _ : α => c) μ = c :=
@@ -115,7 +115,7 @@ end ConditionallyCompleteLattice
 
 section ConditionallyCompleteLinearOrder
 
-variable [ConditionallyCompleteLinearOrder β] {x : β} {f : α → β}
+variable [LinearOrder β] [ConditionallyCompleteLinearOrder β] {x : β} {f : α → β}
 
 theorem essSup_eq_sInf {m : MeasurableSpace α} (μ : Measure α) (f : α → β) :
     essSup f μ = sInf { a | μ { x | a < f x } = 0 } := by

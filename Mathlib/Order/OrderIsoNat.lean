@@ -253,8 +253,8 @@ theorem WellFoundedGT.iSup_eq_monotonicSequenceLimit [CompleteLattice α]
     [WellFoundedGT α] (a : ℕ →o α) : iSup a = monotonicSequenceLimit a :=
   (iSup_le (le_monotonicSequenceLimit a)).antisymm (le_iSup a _)
 
-theorem WellFoundedGT.ciSup_eq_monotonicSequenceLimit [ConditionallyCompleteLattice α]
-    [WellFoundedGT α] (a : ℕ →o α) (ha : BddAbove (Set.range a)) :
+theorem WellFoundedGT.ciSup_eq_monotonicSequenceLimit [PartialOrder α]
+    [ConditionallyCompleteLattice α] [WellFoundedGT α] (a : ℕ →o α) (ha : BddAbove (Set.range a)) :
     iSup a = monotonicSequenceLimit a :=
   (ciSup_le (le_monotonicSequenceLimit a)).antisymm (le_ciSup ha _)
 

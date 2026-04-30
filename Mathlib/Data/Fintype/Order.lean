@@ -241,7 +241,7 @@ namespace Finite
 
 section CCL
 
-variable {α ι ι' : Type*} [Finite ι] [Finite ι'] [ConditionallyCompleteLattice α]
+variable {α ι ι' : Type*} [Finite ι] [Finite ι'] [Lattice α] [ConditionallyCompleteLattice α]
 
 lemma le_ciSup_of_le {a : α} {f : ι → α} (c : ι) (h : a ≤ f c) : a ≤ iSup f :=
   _root_.le_ciSup_of_le (bddAbove_range f) c h
@@ -283,7 +283,8 @@ end CCL
 
 section CCLO
 
-variable {α β ι : Type*} [ConditionallyCompleteLinearOrder α] [ConditionallyCompleteLattice β]
+variable {α β ι : Type*} [LinearOrder α] [ConditionallyCompleteLinearOrder α]
+  [Lattice β] [ConditionallyCompleteLattice β]
   [Finite ι] [Nonempty ι]
 
 lemma map_iSup_of_monotoneOn {s : Set α} {f : ι → α} {g : α → β} (hg : MonotoneOn g s)

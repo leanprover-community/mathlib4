@@ -112,7 +112,7 @@ end InfSet
 
 section OrdConnected
 
-variable [ConditionallyCompleteLinearOrder α]
+variable [LinearOrder α] [ConditionallyCompleteLinearOrder α]
 
 attribute [local instance] subsetSupSet
 
@@ -126,7 +126,7 @@ noncomputable abbrev subsetConditionallyCompleteLinearOrder [Inhabited s]
     (h_Sup : ∀ {t : Set s} (_ : t.Nonempty) (_h_bdd : BddAbove t), sSup ((↑) '' t : Set α) ∈ s)
     (h_Inf : ∀ {t : Set s} (_ : t.Nonempty) (_h_bdd : BddBelow t), sInf ((↑) '' t : Set α) ∈ s) :
     ConditionallyCompleteLinearOrder s :=
-  { subsetSupSet s, subsetInfSet s, DistribLattice.toLattice, (inferInstance : LinearOrder s) with
+  { subsetSupSet s, subsetInfSet s with
     isLUB_csSup t ht h_bdd := .of_image Subtype.coe_le_coe <| by
       rw [← subset_sSup_of_within s ht h_bdd (h_Sup ht h_bdd)]
       exact isLUB_csSup (ht.image _) ((Subtype.mono_coe _).map_bddAbove h_bdd)
@@ -170,7 +170,7 @@ section Icc
 
 open Classical in
 /-- Complete lattice structure on `Set.Icc` -/
-noncomputable instance Set.Icc.completeLattice [ConditionallyCompleteLattice α]
+noncomputable instance Set.Icc.completeLattice [Lattice α] [ConditionallyCompleteLattice α]
     {a b : α} [Fact (a ≤ b)] : CompleteLattice (Set.Icc a b) where
   __ := (inferInstance : BoundedOrder ↑(Icc a b))
   sSup S := if hS : S = ∅ then ⟨a, le_rfl, Fact.out⟩ else ⟨sSup ((↑) '' S), by
@@ -195,26 +195,27 @@ noncomputable instance Set.Icc.completeLattice [ConditionallyCompleteLattice α]
         ((Subtype.mono_coe _).map_bddBelow (OrderBot.bddBelow S))
 
 /-- Complete linear order structure on `Set.Icc` -/
-noncomputable instance [ConditionallyCompleteLinearOrder α] {a b : α} [Fact (a ≤ b)] :
+noncomputable instance [LinearOrder α] [ConditionallyCompleteLinearOrder α]
+    {a b : α} [Fact (a ≤ b)] :
     CompleteLinearOrder (Set.Icc a b) :=
   { Set.Icc.completeLattice, Subtype.instLinearOrder _, LinearOrder.toBiheytingAlgebra _ with }
 
-lemma Set.Icc.coe_sSup [ConditionallyCompleteLattice α] {a b : α} (h : a ≤ b)
+lemma Set.Icc.coe_sSup [Lattice α] [ConditionallyCompleteLattice α] {a b : α} (h : a ≤ b)
     {S : Set (Set.Icc a b)} (hS : S.Nonempty) : have : Fact (a ≤ b) := ⟨h⟩
     ↑(sSup S) = sSup ((↑) '' S : Set α) :=
   congrArg Subtype.val (dif_neg hS.ne_empty)
 
-lemma Set.Icc.coe_sInf [ConditionallyCompleteLattice α] {a b : α} (h : a ≤ b)
+lemma Set.Icc.coe_sInf [Lattice α] [ConditionallyCompleteLattice α] {a b : α} (h : a ≤ b)
     {S : Set (Set.Icc a b)} (hS : S.Nonempty) : have : Fact (a ≤ b) := ⟨h⟩
     ↑(sInf S) = sInf ((↑) '' S : Set α) :=
   congrArg Subtype.val (dif_neg hS.ne_empty)
 
-lemma Set.Icc.coe_iSup [ConditionallyCompleteLattice α] {a b : α} (h : a ≤ b)
+lemma Set.Icc.coe_iSup [Lattice α] [ConditionallyCompleteLattice α] {a b : α} (h : a ≤ b)
     [Nonempty ι] {S : ι → Set.Icc a b} : have : Fact (a ≤ b) := ⟨h⟩
     ↑(iSup S) = (⨆ i, S i : α) :=
   (Set.Icc.coe_sSup h (range_nonempty S)).trans (congrArg sSup (range_comp Subtype.val S).symm)
 
-lemma Set.Icc.coe_iInf [ConditionallyCompleteLattice α] {a b : α} (h : a ≤ b)
+lemma Set.Icc.coe_iInf [Lattice α] [ConditionallyCompleteLattice α] {a b : α} (h : a ≤ b)
     [Nonempty ι] {S : ι → Set.Icc a b} : have : Fact (a ≤ b) := ⟨h⟩
     ↑(iInf S) = (⨅ i, S i : α) :=
   (Set.Icc.coe_sInf h (range_nonempty S)).trans (congrArg sInf (range_comp Subtype.val S).symm)

@@ -733,14 +733,14 @@ end Eventually
 
 section ConditionallyCompleteLinearOrder
 
-variable [ConditionallyCompleteLinearOrder α] {f : β → α} {s : Set β} {x₀ : β}
+variable [LinearOrder α] [ConditionallyCompleteLinearOrder α] {f : β → α} {s : Set β} {x₀ : β}
 
 theorem IsMaxOn.iSup_eq (hx₀ : x₀ ∈ s) (h : IsMaxOn f s x₀) : ⨆ x : s, f x = f x₀ :=
   haveI : Nonempty s := ⟨⟨x₀, hx₀⟩⟩
   ciSup_eq_of_forall_le_of_forall_lt_exists_gt (fun x => h x.2) fun _w hw => ⟨⟨x₀, hx₀⟩, hw⟩
 
 theorem IsMinOn.iInf_eq (hx₀ : x₀ ∈ s) (h : IsMinOn f s x₀) : ⨅ x : s, f x = f x₀ :=
-  @IsMaxOn.iSup_eq αᵒᵈ β _ _ _ _ hx₀ h
+  @IsMaxOn.iSup_eq αᵒᵈ β _ _ _ _ _ hx₀ h
 
 end ConditionallyCompleteLinearOrder
 

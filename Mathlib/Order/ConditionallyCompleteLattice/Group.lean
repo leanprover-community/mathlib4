@@ -20,7 +20,8 @@ open Set
 
 section Mul
 
-variable {α : Type*} {ι : Sort*} [Nonempty ι] [ConditionallyCompleteLattice α] [Mul α]
+variable {α : Type*} {ι : Sort*} [Nonempty ι]
+  [PartialOrder α] [ConditionallyCompleteLattice α] [Mul α]
 
 @[to_additive]
 lemma ciSup_mul_le_ciSup_mul_ciSup [MulLeftMono α] [MulRightMono α]
@@ -39,7 +40,7 @@ end Mul
 section Group
 
 variable {α : Type*} {ι : Sort*} {ι' : Sort*} [Nonempty ι] [Nonempty ι']
-  [ConditionallyCompleteLattice α] [Group α]
+  [PartialOrder α] [ConditionallyCompleteLattice α] [Group α]
 
 @[to_additive]
 theorem le_mul_ciInf [MulLeftMono α] {a : α} {g : α} {h : ι → α}

@@ -28,7 +28,7 @@ section aux
 
 private lemma Height.iSup_fun_eq_max (f : Fin 2 → ℝ) : iSup f = max (f 0) (f 1) := by
   rw [show f = ![f 0, f 1] from List.ofFn_inj.mp rfl]
-  exact (max_eq_iSup ..).symm
+  exact (sup_eq_iSup ..).symm
 
 namespace IsNonarchimedean
 

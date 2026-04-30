@@ -53,7 +53,8 @@ noncomputable def leastGE [Preorder ι] [OrderBot ι] [InfSet ι] [Preorder β]
     (f : ι → Ω → β) (r : β) : Ω → WithTop ι :=
   hittingAfter f (Set.Ici r) ⊥
 
-theorem StronglyAdapted.isStoppingTime_leastGE [ConditionallyCompleteLinearOrderBot ι]
+theorem StronglyAdapted.isStoppingTime_leastGE
+    [LinearOrder ι] [OrderBot ι] [ConditionallyCompleteLinearOrderBot ι]
     {ℱ : Filtration ι m0} [WellFoundedLT ι] [Countable ι] [TopologicalSpace β]
     [Preorder β] [ClosedIciTopology β] [TopologicalSpace.PseudoMetrizableSpace β]
     [MeasurableSpace β] [BorelSpace β]

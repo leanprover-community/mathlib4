@@ -252,15 +252,10 @@ def CompleteDistribLattice.copy (c : CompleteDistribLattice α)
 /-- A function to create a provable equal copy of a conditionally complete lattice
 with possibly different definitional equalities. -/
 @[implicit_reducible]
-def ConditionallyCompleteLattice.copy (c : ConditionallyCompleteLattice α)
-    (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
-    (sup : α → α → α) (eq_sup : sup = (by infer_instance : Max α).max)
-    (inf : α → α → α) (eq_inf : inf = (by infer_instance : Min α).min)
+def ConditionallyCompleteLattice.copy [PartialOrder α] (c : ConditionallyCompleteLattice α)
     (sSup : Set α → α) (eq_sSup : sSup = (by infer_instance : SupSet α).sSup)
     (sInf : Set α → α) (eq_sInf : sInf = (by infer_instance : InfSet α).sInf) :
     ConditionallyCompleteLattice α where
-  toLattice := Lattice.copy (@ConditionallyCompleteLattice.toLattice α c)
-    le eq_le sup eq_sup inf eq_inf
   sSup := sSup
   sInf := sInf
   isLUB_csSup := by subst_vars; exact c.isLUB_csSup

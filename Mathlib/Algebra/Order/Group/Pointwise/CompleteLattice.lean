@@ -27,7 +27,7 @@ open scoped Pointwise
 variable {M : Type*}
 
 section ConditionallyCompleteLattice
-variable [ConditionallyCompleteLattice M]
+variable [PartialOrder M] [ConditionallyCompleteLattice M]
 
 section One
 variable [One M]

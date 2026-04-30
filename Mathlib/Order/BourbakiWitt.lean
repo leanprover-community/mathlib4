@@ -50,7 +50,7 @@ instance {α : Type*} [LE α] : PartialOrder (NonemptyChain α) := .ofSetLike (N
 
 /-- A chain complete partial order (CCPO) is a nonempty partial order such that every
 nonempty chain has a supremum (which we call `cSup`) -/
-class ChainCompletePartialOrder (α : Type*) extends PartialOrder α where
+class ChainCompletePartialOrder (α : Type*) [PartialOrder α] where
   /-- The supremum of a nonempty chain -/
   cSup : NonemptyChain α → α
   /-- `cSup` is an upper bound of the nonempty chain -/
@@ -62,7 +62,7 @@ open ChainCompletePartialOrder Set OmegaCompletePartialOrder.Chain
 
 namespace ChainCompletePartialOrder
 
-instance [ChainCompletePartialOrder α] : OmegaCompletePartialOrder α where
+instance [PartialOrder α] [ChainCompletePartialOrder α] : OmegaCompletePartialOrder α where
   ωSup c := cSup (NonemptyChain.mk (range c) (range_nonempty c) (isChain_range c))
   le_ωSup _ i := le_cSup _ _ (mem_range_self i)
   ωSup_le _ _ hx := cSup_le _ _ (fun _ ⟨i, hi⟩ ↦ hi ▸ hx i)
@@ -72,7 +72,7 @@ instance [CompleteLattice α] : ChainCompletePartialOrder α where
   le_cSup _ _ hx := le_sSup hx
   cSup_le _ _ h := sSup_le h
 
-variable [ChainCompletePartialOrder α] {x : α} {f : α → α}
+variable [PartialOrder α] [ChainCompletePartialOrder α] {x : α} {f : α → α}
 
 /-- An admissible set for given `x : α` and `f : α → α` has `x`, the base point, as a least element
 and is closed under applying `f` and `cSup`. -/

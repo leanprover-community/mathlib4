@@ -219,7 +219,7 @@ These lemmas require some completeness assumptions on the target space.
 -/
 variable [Preorder ι] [LocallyFiniteOrderBot ι]
 
-theorem partialSups_eq_ciSup_Iic [ConditionallyCompleteLattice α] (f : ι → α) (i : ι) :
+theorem partialSups_eq_ciSup_Iic [Lattice α] [ConditionallyCompleteLattice α] (f : ι → α) (i : ι) :
     partialSups f i = ⨆ i : Set.Iic i, f i := by
   simp only [partialSups_apply]
   apply le_antisymm
@@ -228,7 +228,7 @@ theorem partialSups_eq_ciSup_Iic [ConditionallyCompleteLattice α] (f : ι → �
   · exact ciSup_le fun ⟨j, hj⟩ ↦ le_sup' f (by simpa only [mem_Iic, Set.mem_Iic] using hj)
 
 @[simp]
-theorem ciSup_partialSups_eq [ConditionallyCompleteLattice α]
+theorem ciSup_partialSups_eq [Lattice α] [ConditionallyCompleteLattice α]
     {f : ι → α} (h : BddAbove (Set.range f)) :
     ⨆ i, partialSups f i = ⨆ i, f i := by
   by_cases hι : Nonempty ι
@@ -240,7 +240,7 @@ theorem ciSup_partialSups_eq [ConditionallyCompleteLattice α]
 /-- Version of `ciSup_partialSups_eq` without boundedness assumptions, but requiring a
 `ConditionallyCompleteLinearOrder` rather than just a `ConditionallyCompleteLattice`. -/
 @[simp]
-theorem ciSup_partialSups_eq' [ConditionallyCompleteLinearOrder α] (f : ι → α) :
+theorem ciSup_partialSups_eq' [LinearOrder α] [ConditionallyCompleteLinearOrder α] (f : ι → α) :
     ⨆ i, partialSups f i = ⨆ i, f i := by
   by_cases h : BddAbove (Set.range f)
   · exact ciSup_partialSups_eq h

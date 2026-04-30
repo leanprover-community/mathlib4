@@ -44,7 +44,8 @@ variable {ι : Sort*} {S : Set (Set α)} {f : ι → Set α} {s t : Set α} {a :
 open Set
 
 /-- A set `s` is *sup-closed* if `a ⊔ b ∈ s` for all `a ∈ s`, `b ∈ s`. -/
-def SupClosed (s : Set α) : Prop := ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → a ⊔ b ∈ s
+@[to_dual /-- A set `s` is *inf-closed* if `a ⊓ b ∈ s` for all `a ∈ s`, `b ∈ s`. -/]
+def SupClosed [SemilatticeSup α] (s : Set α) : Prop := ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → a ⊔ b ∈ s
 
 @[simp] lemma supClosed_empty : SupClosed (∅ : Set α) := by simp [SupClosed]
 @[simp] lemma supClosed_singleton : SupClosed ({a} : Set α) := by simp [SupClosed]
@@ -101,10 +102,12 @@ section Finset
 variable {ι : Type*} {f : ι → α} {s : Set α} {t : Finset ι} {a : α}
 open Finset
 
+@[to_dual]
 lemma SupClosed.finsetSup'_mem (hs : SupClosed s) (ht : t.Nonempty) :
     (∀ i ∈ t, f i ∈ s) → t.sup' ht f ∈ s :=
   sup'_induction _ _ hs
 
+@[to_dual]
 lemma SupClosed.finsetSup_mem [OrderBot α] (hs : SupClosed s) (ht : t.Nonempty) :
     (∀ i ∈ t, f i ∈ s) → t.sup f ∈ s :=
   sup'_eq_sup ht f ▸ hs.finsetSup'_mem ht
@@ -118,9 +121,6 @@ variable [SemilatticeInf α] [SemilatticeInf β]
 section Set
 variable {ι : Sort*} {S : Set (Set α)} {f : ι → Set α} {s t : Set α} {a : α}
 open Set
-
-/-- A set `s` is *inf-closed* if `a ⊓ b ∈ s` for all `a ∈ s`, `b ∈ s`. -/
-def InfClosed (s : Set α) : Prop := ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → a ⊓ b ∈ s
 
 @[simp] lemma infClosed_empty : InfClosed (∅ : Set α) := by simp [InfClosed]
 @[simp] lemma infClosed_singleton : InfClosed ({a} : Set α) := by simp [InfClosed]
@@ -173,19 +173,6 @@ lemma InfClosed.insert_lowerBounds {s : Set α} {a : α} (h : InfClosed s) (ha :
 
 end Set
 
-section Finset
-variable {ι : Type*} {f : ι → α} {s : Set α} {t : Finset ι} {a : α}
-open Finset
-
-lemma InfClosed.finsetInf'_mem (hs : InfClosed s) (ht : t.Nonempty) :
-    (∀ i ∈ t, f i ∈ s) → t.inf' ht f ∈ s :=
-  inf'_induction _ _ hs
-
-lemma InfClosed.finsetInf_mem [OrderTop α] (hs : InfClosed s) (ht : t.Nonempty) :
-    (∀ i ∈ t, f i ∈ s) → t.inf f ∈ s :=
-  inf'_eq_inf ht f ▸ hs.finsetInf'_mem ht
-
-end Finset
 end SemilatticeInf
 
 open Finset OrderDual
@@ -548,26 +535,22 @@ def SemilatticeInf.toCompleteSemilatticeInf [SemilatticeInf α] (sInf : Set α �
 
 
 section ConditionallyCompleteLattice
-variable [ConditionallyCompleteLattice α] {f : ι → α} {s t : Set α}
+variable [SemilatticeSup α] [ConditionallyCompleteLattice α] {f : ι → α} {s t : Set α}
 
+@[to_dual]
 lemma SupClosed.iSup_mem_of_nonempty [Finite ι] [Nonempty ι] (hs : SupClosed s)
     (hf : ∀ i, f i ∈ s) : ⨆ i, f i ∈ s := by
   cases nonempty_fintype (PLift ι)
   rw [← iSup_plift_down, ← Finset.sup'_univ_eq_ciSup]
   exact hs.finsetSup'_mem Finset.univ_nonempty fun _ _ ↦ hf _
 
-lemma InfClosed.iInf_mem_of_nonempty [Finite ι] [Nonempty ι] (hs : InfClosed s)
-    (hf : ∀ i, f i ∈ s) : ⨅ i, f i ∈ s := hs.dual.iSup_mem_of_nonempty hf
-
+@[to_dual]
 lemma SupClosed.sSup_mem_of_nonempty (hs : SupClosed s) (ht : t.Finite) (ht' : t.Nonempty)
     (hts : t ⊆ s) : sSup t ∈ s := by
   have := ht.to_subtype
   have := ht'.to_subtype
   rw [sSup_eq_iSup']
   exact hs.iSup_mem_of_nonempty (by simpa)
-
-lemma InfClosed.sInf_mem_of_nonempty (hs : InfClosed s) (ht : t.Finite) (ht' : t.Nonempty)
-    (hts : t ⊆ s) : sInf t ∈ s := hs.dual.sSup_mem_of_nonempty ht ht' hts
 
 end ConditionallyCompleteLattice
 
