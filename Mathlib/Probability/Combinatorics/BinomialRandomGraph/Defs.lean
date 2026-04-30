@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Sym.Card
 public import Mathlib.MeasureTheory.Constructions.SimpleGraph
 public import Mathlib.Probability.Distributions.SetBernoulli
+public import Mathlib.Combinatorics.SimpleGraph.Copy
 
 /-!
 # Binomial random graphs
@@ -34,10 +35,16 @@ Erdos-Renyi graph
 
 public section
 
+
+
 open MeasureTheory Measure ProbabilityTheory unitInterval
 open scoped Finset
 
 namespace SimpleGraph
+
+-- Name conflict matter
+lemma zero_statement : 0 = 0 := by rfl
+
 variable {V : Type*} {p : I}
 
 variable (V p) in
