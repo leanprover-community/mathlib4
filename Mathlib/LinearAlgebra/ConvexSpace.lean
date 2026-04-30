@@ -74,6 +74,11 @@ lemma nonempty [Nontrivial R] (f : StdSimplex R M) : Nonempty M := by
 theorem ext {f g : StdSimplex R M} (h : f.weights = g.weights) : f = g := by
   cases f; cases g; simp_all
 
+instance instFunLike : FunLike (StdSimplex R M) M R := {
+  coe s := s.weights.toFun
+  coe_injective' := fun _ _ h ↦ ext (Finsupp.ext fun i ↦ congrFun h i)
+}
+
 variable [IsStrictOrderedRing R]
 
 /-- The point mass distribution concentrated at `x`. -/
@@ -134,6 +139,15 @@ lemma map_map (f : StdSimplex R M) (g₁ : M → N) (g₂ : N → P) :
     (f.map g₁).map g₂ = f.map (fun x ↦ g₂ (g₁ x)) :=
   (map_comp ..).symm
 
+lemma sum_map {s : StdSimplex R M} {f : M → N} {g : N → R → R}
+    (hadd : ∀ (a : N) (b₁ b₂ : R), g a (b₁ + b₂) = g a b₁ + g a b₂) :
+    (map f s).sum g = s.sum (fun m r ↦ g (f m) r) := by
+  have hzero (n : N) : g n 0 = 0 := by simpa using hadd n 0 0
+  simp only [map, Finsupp.mapDomain, Finsupp.sum_sum_index hzero hadd]
+  congr
+  ext m r
+  rw [Finsupp.sum_single_index (hzero (f m))]
+
 /--
 Join operation for standard simplices (monadic join).
 Given a distribution over distributions, flattens it to a single distribution.
@@ -145,6 +159,39 @@ def join (f : StdSimplex R (StdSimplex R M)) : StdSimplex R M where
     rw [Finsupp.sum_sum_index (fun _ ↦ rfl) (fun _ _ _ ↦ rfl)]
     convert f.total
     rw [Finsupp.sum_smul_index (fun _ ↦ rfl), ← Finsupp.mul_sum, StdSimplex.total, mul_one]
+
+/--
+Monadic bind operation for standard simplices. Given weights `f : StdSimplex R M` and
+a family of weights `g : M → StdSimplex R N'`, `StdSimplex.bind f g` is the convex
+combination of the `g m`, weighted by `f`.
+-/
+def bind (f : StdSimplex R M) (g : M → StdSimplex R N) : StdSimplex R N := (f.map g).join
+
+@[simp]
+lemma bind_single (m : M) (g : M → StdSimplex R N) : bind (single m) g = g m := by
+  simp [bind, join]
+
+@[simp]
+lemma bind_const (f : StdSimplex R M) (g : StdSimplex R N) : bind f (fun _ ↦ g) = g := by
+  simp [bind, join]
+
+lemma bind_weights (f : StdSimplex R M) (g : M → StdSimplex R N) :
+  (bind f g).weights = fun n ↦ ∑ k ∈ f.support, f.weights k * (g k).weights n := by
+  ext n
+  simp only [bind, join, map, Finsupp.sum_apply]
+  rw [Finsupp.sum_mapDomain_index (fun _ => by simp) (fun _ _ _ => by simp [add_mul])]
+  simp [Finsupp.sum]
+
+lemma support_subset_bind_support {f : StdSimplex R M} (g : M → StdSimplex R N) {m : M}
+    (hm : m ∈ f.support) : (g m).support ⊆ (bind f g).support := by
+  intro n hn
+  rw [Finsupp.mem_support_iff, bind_weights]
+  refine ne_of_gt ?_
+  have hpos : 0 < f.weights m * (g m).weights n :=
+    mul_pos ((f.nonneg m).lt_of_ne' (by grind)) (((g m).nonneg n).lt_of_ne' (by grind))
+  have hnonneg (k : M) (hk : k ∈ f.support) : 0 ≤ f.weights k * (g k).weights n := by
+    exact mul_nonneg (f.nonneg k) ((g k).nonneg n)
+  exact lt_of_lt_of_le hpos (Finset.single_le_sum hnonneg hm)
 
 end StdSimplex
 
