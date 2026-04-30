@@ -122,7 +122,7 @@ def edgeColoringEquivOfColorIso (f : α ≃ β) : G.EdgeColoring α ≃ G.EdgeCo
 
 @[gcongr]
 theorem EdgeColorableWith.mono (f : α ↪ β) (h : G.EdgeColorableWith α) : G.EdgeColorableWith β :=
-  ⟨edgeColoringEmbeddingofColorEmbedding f h.some⟩
+  ⟨edgeColoringEmbedding f h.some⟩
 
 @[gcongr]
 theorem EdgeColorable.mono (hle : n ≤ m) (h : G.EdgeColorable n) : G.EdgeColorable m :=
