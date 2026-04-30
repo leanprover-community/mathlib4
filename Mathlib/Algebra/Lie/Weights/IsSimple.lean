@@ -5,6 +5,7 @@ Authors: Janos Wolosz
 -/
 module
 
+public import Mathlib.Algebra.Lie.CartanCriterion
 public import Mathlib.Algebra.Lie.Weights.RootSystem
 public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 
@@ -224,12 +225,11 @@ end LieIdeal
 
 namespace LieAlgebra.IsKilling
 
-variable {K L : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L] [FiniteDimensional K L]
 open LieAlgebra LieModule Module
-variable {H : LieSubalgebra K L} [H.IsCartanSubalgebra]
 
--- Note that after https://github.com/leanprover-community/mathlib4/issues/10068 (Cartan's criterion) is complete we can omit `[IsKilling K L]`
-variable [IsKilling K L] [IsTriangularizable K H L]
+variable {K L : Type*} [Field K] [CharZero K]
+  [LieRing L] [LieAlgebra K L] [FiniteDimensional K L] [IsKilling K L]
+  {H : LieSubalgebra K L} [H.IsCartanSubalgebra] [IsTriangularizable K H L]
 
 section aux
 
@@ -557,7 +557,18 @@ theorem isSimple_iff_isIrreducible : (rootSystem H).IsIrreducible ↔ IsSimple K
   rw [RootPairing.isIrreducible_iff_invtRootSubmodule, ← isSimple_iff_of_not_isLieAbelian K L hL,
     (lieIdealOrderIso H).isSimpleOrder_iff]
 
-instance [IsSimple K L] : (rootSystem H).IsIrreducible :=
-  isSimple_iff_isIrreducible.mpr ‹_›
-
 end LieAlgebra.IsKilling
+
+namespace LieAlgebra
+
+open LieModule
+
+variable {K L : Type*} [Field K] [CharZero K]
+    [LieRing L] [LieAlgebra K L] [FiniteDimensional K L]
+    {H : LieSubalgebra K L} [H.IsCartanSubalgebra] [IsTriangularizable K H L]
+
+instance instIsIrreducibleRootSystem_of_isSimple [IsSimple K L] :
+    (IsKilling.rootSystem H).IsIrreducible :=
+  LieAlgebra.IsKilling.isSimple_iff_isIrreducible.mpr ‹_›
+
+end LieAlgebra

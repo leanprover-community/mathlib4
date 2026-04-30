@@ -5,6 +5,7 @@ Authors: Oliver Nash
 -/
 module
 
+public import Mathlib.Algebra.Lie.CartanCriterion
 public import Mathlib.Algebra.Lie.Basis
 public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Semisimple
 public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Relations
@@ -88,10 +89,8 @@ def basis :
 instance : (cartanSubalgebra' b).IsCartanSubalgebra :=
   inferInstanceAs (basis b).cartan.IsCartanSubalgebra
 
--- Thanks to `RootPairing.GeckConstruction.instHasTrivialRadical`, we can drop this after:
--- https://github.com/leanprover-community/mathlib4/issues/28713
--- https://github.com/leanprover-community/mathlib4/issues/10068
-variable [LieAlgebra.IsKilling K (lieAlgebra b)]
+-- TODO drop this after: https://github.com/leanprover-community/mathlib4/issues/28713
+variable [Fact ((4 - b.cartanMatrix).det ≠ 0)]
 
 open LieAlgebra.IsKilling in
 /-- Up to equivalence, `LieAlgebra.IsKilling.rootSystem` is left inverse to
