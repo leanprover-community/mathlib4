@@ -418,44 +418,46 @@ section RestrictScalars
 
 section NormInstances
 
+variable [NonAssocSemiring 𝕜] [NonAssocSemiring 𝕜'] (f : 𝕜 →+* 𝕜')
+
 instance [I : SeminormedAddCommGroup E] :
-    SeminormedAddCommGroup (RestrictScalars 𝕜 𝕜' E) :=
+    SeminormedAddCommGroup (RestrictScalarsRingHom f E) :=
   I
 
 instance [I : NormedAddCommGroup E] :
-    NormedAddCommGroup (RestrictScalars 𝕜 𝕜' E) :=
+    NormedAddCommGroup (RestrictScalarsRingHom f E) :=
   I
 
 instance [I : NonUnitalSeminormedRing E] :
-    NonUnitalSeminormedRing (RestrictScalars 𝕜 𝕜' E) :=
+    NonUnitalSeminormedRing (RestrictScalarsRingHom f E) :=
   I
 
 instance [I : NonUnitalNormedRing E] :
-    NonUnitalNormedRing (RestrictScalars 𝕜 𝕜' E) :=
+    NonUnitalNormedRing (RestrictScalarsRingHom f E) :=
   I
 
 instance [I : SeminormedRing E] :
-    SeminormedRing (RestrictScalars 𝕜 𝕜' E) :=
+    SeminormedRing (RestrictScalarsRingHom f E) :=
   I
 
 instance [I : NormedRing E] :
-    NormedRing (RestrictScalars 𝕜 𝕜' E) :=
+    NormedRing (RestrictScalarsRingHom f E) :=
   I
 
 instance [I : NonUnitalSeminormedCommRing E] :
-    NonUnitalSeminormedCommRing (RestrictScalars 𝕜 𝕜' E) :=
+    NonUnitalSeminormedCommRing (RestrictScalarsRingHom f E) :=
   I
 
 instance [I : NonUnitalNormedCommRing E] :
-    NonUnitalNormedCommRing (RestrictScalars 𝕜 𝕜' E) :=
+    NonUnitalNormedCommRing (RestrictScalarsRingHom f E) :=
   I
 
 instance [I : SeminormedCommRing E] :
-    SeminormedCommRing (RestrictScalars 𝕜 𝕜' E) :=
+    SeminormedCommRing (RestrictScalarsRingHom f E) :=
   I
 
 instance [I : NormedCommRing E] :
-    NormedCommRing (RestrictScalars 𝕜 𝕜' E) :=
+    NormedCommRing (RestrictScalarsRingHom f E) :=
   I
 
 end NormInstances
@@ -498,8 +500,9 @@ instance RestrictScalars.normedSpace : NormedSpace 𝕜 (RestrictScalars 𝕜 �
 This is not an instance as it would be contrary to the purpose of `RestrictScalars`.
 -/
 @[implicit_reducible]
-def Module.RestrictScalars.normedSpaceOrig {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [NormedField 𝕜']
-    [SeminormedAddCommGroup E] [I : NormedSpace 𝕜' E] : NormedSpace 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
+def Module.RestrictScalars.normedSpaceOrig {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [NormedField 𝕜]
+    [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [SeminormedAddCommGroup E] [I : NormedSpace 𝕜' E] :
+    NormedSpace 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
   I
 
 end NormedSpace
@@ -534,8 +537,9 @@ instance RestrictScalars.normedAlgebra : NormedAlgebra 𝕜 (RestrictScalars �
 This is not an instance as it would be contrary to the purpose of `RestrictScalars`.
 -/
 @[implicit_reducible]
-def Module.RestrictScalars.normedAlgebraOrig {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [NormedField 𝕜']
-    [SeminormedRing E] [I : NormedAlgebra 𝕜' E] : NormedAlgebra 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
+def Module.RestrictScalars.normedAlgebraOrig {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [NormedField 𝕜]
+    [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [SeminormedRing E] [I : NormedAlgebra 𝕜' E] :
+    NormedAlgebra 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
   I
 end NormedAlgebra
 
