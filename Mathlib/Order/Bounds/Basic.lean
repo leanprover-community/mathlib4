@@ -155,7 +155,7 @@ theorem isCofinalFor_or_isCofinalFor_of_directedOn_union (h : DirectedOn (· ≤
   simp only [IsCofinalFor, not_forall, not_exists, not_and] at hts
   obtain ⟨y, hy, hys⟩ := hts
   obtain ⟨z, (hzs | hzt), hxz, hyz⟩ := h x (.inl hx) y (.inr hy)
-  · exact (hys z hzs hyz).elim
+  · cases hys z hzs hyz
   · exact ⟨z, hzt, hxz⟩
 
 theorem directedOn_union_iff :
