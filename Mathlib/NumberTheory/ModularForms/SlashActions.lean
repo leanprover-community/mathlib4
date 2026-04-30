@@ -219,7 +219,6 @@ theorem div_slash_SL2 (k1 k2 : ℤ) (A : SL(2, ℤ)) (f g : ℍ → ℂ) :
   simp [SL_slash_apply, zpow_sub₀ (denom_ne_zero A τ)]
   grind
 
-
 open Finset
 
 set_option backward.isDefEq.respectTransparency false in
