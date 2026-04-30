@@ -159,7 +159,7 @@ theorem addHaar_eq_zero_of_disjoint_translates {E : Type*} [NormedAddCommGroup E
     [IsAddHaarMeasure μ] {s : Set E} (u : ℕ → E) (hu : IsBounded (range u))
     (hs : Pairwise (Disjoint on fun n => {u n} + s)) (h's : MeasurableSet s) : μ s = 0 := by
   suffices H : ∀ R, μ (s ∩ closedBall 0 R) = 0 by
-    apply le_antisymm _ (zero_le _)
+    rw [← nonpos_iff_eq_zero]
     calc
       μ s ≤ ∑' n : ℕ, μ (s ∩ closedBall 0 n) := by
         conv_lhs => rw [← iUnion_inter_closedBall_nat s 0]
@@ -171,7 +171,6 @@ theorem addHaar_eq_zero_of_disjoint_translates {E : Type*} [NormedAddCommGroup E
   refine pairwise_disjoint_mono hs fun n => ?_
   exact add_subset_add Subset.rfl inter_subset_left
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A strict vector subspace has measure zero. -/
 theorem addHaar_submodule {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E]
     [BorelSpace E] [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ] (s : Submodule ℝ E)
@@ -305,10 +304,8 @@ theorem addHaar_image_linearMap (f : E →ₗ[ℝ] E) (s : Set E) :
     change μ (g '' s) = _
     rw [ContinuousLinearEquiv.image_eq_preimage_symm g s, addHaar_preimage_continuousLinearEquiv]
     congr
-  · simp only [hf, zero_mul, ENNReal.ofReal_zero, abs_zero]
-    have : μ (LinearMap.range f) = 0 :=
+  · simpa [hf] using (measure_mono (image_subset_range _ _)).trans_eq <|
       addHaar_submodule μ _ (LinearMap.range_lt_top_of_det_eq_zero hf).ne
-    exact le_antisymm (le_trans (measure_mono (image_subset_range _ _)) this.le) (zero_le _)
 
 /-- The image of a set `s` under a continuous linear map `f` has measure
 equal to `μ s` times the absolute value of the determinant of `f`. -/
@@ -384,7 +381,6 @@ theorem addHaar_smul_of_nonneg {r : ℝ} (hr : 0 ≤ r) (s : Set E) :
     μ (r • s) = ENNReal.ofReal (r ^ finrank ℝ E) * μ s := by
   rw [addHaar_smul, abs_pow, abs_of_nonneg hr]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem addHaar_nnreal_smul (r : ℝ≥0) (s : Set E) :
     μ (r • s) = r ^ Module.finrank ℝ E * μ s := by
@@ -635,7 +631,7 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero_aux1 (s : Set E) (x : E)
   have A : Tendsto (fun r : ℝ => μ (s ∩ ({x} + r • t)) / μ (closedBall x r)) (𝓝[>] 0) (𝓝 0) := by
     apply
       tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds h
-        (Eventually.of_forall fun b => zero_le _)
+        (Eventually.of_forall fun b => zero_le)
     filter_upwards [self_mem_nhdsWithin]
     rintro r (rpos : 0 < r)
     grw [t_bound]
@@ -711,7 +707,7 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero (s : Set E) (x : E)
   · filter_upwards with r
     suffices H : μ (s ∩ ({x} + r • t)) = 0 by
       rw [H]; simpa only [ENNReal.zero_div] using εpos
-    apply le_antisymm _ (zero_le _)
+    rw [← nonpos_iff_eq_zero]
     calc
       μ (s ∩ ({x} + r • t)) ≤ μ ({x} + r • t) := measure_mono inter_subset_right
       _ = 0 := by
@@ -725,7 +721,7 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero (s : Set E) (x : E)
         ⟨0, ((measure_mono diff_subset).trans_lt h''t.lt_top).ne⟩
       refine tendsto_measure_iInter_atTop
         (fun n ↦ (ht.diff measurableSet_closedBall).nullMeasurableSet) (fun m n hmn ↦ ?_) N
-      exact diff_subset_diff Subset.rfl (closedBall_subset_closedBall (Nat.cast_le.2 hmn))
+      exact diff_subset_diff Subset.rfl (by gcongr)
     have : ⋂ n : ℕ, t \ closedBall 0 n = ∅ := by
       simp_rw [diff_eq, ← inter_iInter, iInter_eq_compl_iUnion_compl, compl_compl,
         iUnion_closedBall_nat, compl_univ, inter_empty]

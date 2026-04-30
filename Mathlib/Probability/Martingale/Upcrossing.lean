@@ -107,6 +107,7 @@ $$
 $$
 
 Furthermore,
+$$
 \begin{align}
     (C \bullet f)_N & =
       \sum_{n \le N} \sum_{k \le N} \mathbf{1}_{[\sigma_k, \tau_{k + 1})}(n)(f_{n + 1} - f_n)\\
@@ -116,6 +117,7 @@ Furthermore,
     & = \sum_{k \le N} (f_{\tau_{k + 1}} - f_{\sigma_k})
       \ge \sum_{k < U_N(a, b)} (b - a) = (b - a) U_N(a, b)
 \end{align}
+$$
 where the inequality follows since for all $k < U_N(a, b)$,
 $f_{\tau_{k + 1}} - f_{\sigma_k} \ge b - a$ while for all $k > U_N(a, b)$,
 $f_{\tau_{k + 1}} = f_{\sigma_k} = f_N$ and
@@ -312,7 +314,6 @@ theorem upperCrossingTime_eq_of_bound_le (hab : a < b) (hn : N ≤ n) :
 
 variable {ℱ : Filtration ℕ m0}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem StronglyAdapted.isStoppingTime_crossing (hf : StronglyAdapted ℱ f) :
     IsStoppingTime ℱ (fun ω ↦ (upperCrossingTime a b f N n ω : ℕ)) ∧
       IsStoppingTime ℱ (fun ω ↦ (lowerCrossingTime a b f N n ω : ℕ)) := by
@@ -368,7 +369,6 @@ theorem upcrossingStrat_le_one : upcrossingStrat a b f N n ω ≤ 1 := by
     refine le_trans upperCrossingTime_le_lowerCrossingTime
       (lowerCrossingTime_mono (Nat.succ_le_of_lt hij'))
 
-set_option backward.isDefEq.respectTransparency false in
 theorem StronglyAdapted.upcrossingStrat (hf : StronglyAdapted ℱ f) :
     StronglyAdapted ℱ (upcrossingStrat a b f N) := by
   intro n
@@ -389,7 +389,6 @@ theorem Submartingale.sum_upcrossingStrat_mul [IsFiniteMeasure μ] (hf : Submart
   hf.sum_mul_sub hf.stronglyAdapted.upcrossingStrat (fun _ _ => upcrossingStrat_le_one) fun _ _ =>
     upcrossingStrat_nonneg
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Submartingale.sum_sub_upcrossingStrat_mul [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (a b : ℝ) (N : ℕ) : Submartingale (fun n : ℕ =>
       ∑ k ∈ Finset.range n, (1 - upcrossingStrat a b f N k) * (f (k + 1) - f k)) ℱ μ := by
@@ -400,12 +399,11 @@ theorem Submartingale.sum_sub_upcrossingStrat_mul [IsFiniteMeasure μ] (hf : Sub
   · intro n ω
     simp [upcrossingStrat_le_one]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Submartingale.sum_mul_upcrossingStrat_le [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ) :
     μ[∑ k ∈ Finset.range n, upcrossingStrat a b f N k * (f (k + 1) - f k)] ≤ μ[f n] - μ[f 0] := by
   have h₁ : (0 : ℝ) ≤
       μ[∑ k ∈ Finset.range n, (1 - upcrossingStrat a b f N k) * (f (k + 1) - f k)] := by
-    have := (hf.sum_sub_upcrossingStrat_mul a b N).setIntegral_le (zero_le n) MeasurableSet.univ
+    have := (hf.sum_sub_upcrossingStrat_mul a b N).setIntegral_le (zero_le (a := n)) .univ
     rw [setIntegral_univ, setIntegral_univ] at this
     refine le_trans ?_ this
     simp only [Finset.range_zero, Finset.sum_empty, integral_zero', le_refl]
@@ -414,8 +412,8 @@ theorem Submartingale.sum_mul_upcrossingStrat_le [IsFiniteMeasure μ] (hf : Subm
       μ[∑ k ∈ Finset.range n, upcrossingStrat a b f N k * (f (k + 1) - f k)] := by
     simp only [sub_mul, one_mul, Finset.sum_sub_distrib, Pi.sub_apply, Finset.sum_apply,
       Pi.mul_apply]
-    refine integral_sub (Integrable.sub (integrable_finset_sum _ fun i _ => hf.integrable _)
-      (integrable_finset_sum _ fun i _ => hf.integrable _)) ?_
+    refine integral_sub (Integrable.sub (integrable_finsetSum _ fun i _ => hf.integrable _)
+      (integrable_finsetSum _ fun i _ => hf.integrable _)) ?_
     convert (hf.sum_upcrossingStrat_mul a b N).integrable n using 1
     ext; simp
   rw [h₂, sub_nonneg] at h₁
@@ -749,7 +747,6 @@ theorem upcrossingsBefore_eq_sum (hab : a < b) : upcrossingsBefore a b f N ω =
     smul_eq_mul, mul_one, smul_eq_mul, mul_zero, Nat.card_Ico, Nat.add_succ_sub_one,
     add_zero, add_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem StronglyAdapted.measurable_upcrossingsBefore (hf : StronglyAdapted ℱ f) (hab : a < b) :
     Measurable (upcrossingsBefore a b f N) := by
   have : upcrossingsBefore a b f N = fun ω =>
@@ -828,6 +825,6 @@ theorem Submartingale.mul_lintegral_upcrossings_le_lintegral_pos_part [IsFiniteM
       exact upcrossingsBefore_mono hab hNM ω
   · rw [← sub_nonpos] at hab
     rw [ENNReal.ofReal_of_nonpos hab, zero_mul]
-    exact zero_le _
+    exact zero_le
 
 end MeasureTheory

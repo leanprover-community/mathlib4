@@ -82,7 +82,6 @@ protected theorem eq [T0Space α] (h : IsGenericPoint x S) (h' : IsGenericPoint 
 theorem mem_open_set_iff (h : IsGenericPoint x S) (hU : IsOpen U) : x ∈ U ↔ (S ∩ U).Nonempty :=
   ⟨fun h' => ⟨x, h.mem, h'⟩, fun ⟨_y, hyS, hyU⟩ => (h.specializes hyS).mem_open hU hyU⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem disjoint_iff (h : IsGenericPoint x S) (hU : IsOpen U) : Disjoint S U ↔ x ∉ U := by
   rw [h.mem_open_set_iff hU, ← not_disjoint_iff_nonempty_inter, Classical.not_not]
 
@@ -174,6 +173,10 @@ noncomputable def irreducibleSetEquivPoints [QuasiSober α] [T0Space α] :
     refine specializes_iff_closure_subset.trans ?_
     simp
     rfl
+
+@[simp]
+lemma coe_irreducibleEquivPoints_symm_apply [QuasiSober α] [T0Space α] (x : α) :
+    (irreducibleSetEquivPoints.symm x : Set α) = closure {x} := rfl
 
 lemma Topology.IsClosedEmbedding.quasiSober {f : α → β} (hf : IsClosedEmbedding f) [QuasiSober β] :
     QuasiSober α where

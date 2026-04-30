@@ -109,7 +109,6 @@ protected theorem exists_eq_mk (C : G.ComponentCompl K) :
     ∃ (v : _) (h : v ∉ K), G.componentComplMk h = C :=
   C.nonempty
 
-set_option backward.isDefEq.respectTransparency false in
 protected theorem disjoint_right (C : G.ComponentCompl K) : Disjoint K C := by
   rw [Set.disjoint_iff]
   exact fun v ⟨vK, vC⟩ => vC.choose vK
@@ -117,7 +116,6 @@ protected theorem disjoint_right (C : G.ComponentCompl K) : Disjoint K C := by
 theorem notMem_of_mem {C : G.ComponentCompl K} {c : V} (cC : c ∈ C) : c ∉ K := fun cK =>
   Set.disjoint_iff.mp C.disjoint_right ⟨cK, cC⟩
 
-set_option backward.isDefEq.respectTransparency false in
 protected theorem pairwise_disjoint :
     Pairwise fun C D : G.ComponentCompl K => Disjoint (C : Set V) (D : Set V) := by
   rintro C D ne
@@ -171,7 +169,6 @@ theorem hom_eq_iff_le (C : G.ComponentCompl L) (h : K ⊆ L) (D : G.ComponentCom
     C.hom h = D ↔ (C : Set V) ⊆ (D : Set V) :=
   ⟨fun h' => h' ▸ C.subset_hom h, C.ind fun _ vnL vD => (vD ⟨vnL, rfl⟩).choose_spec⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem hom_eq_iff_not_disjoint (C : G.ComponentCompl L) (h : K ⊆ L) (D : G.ComponentCompl K) :
     C.hom h = D ↔ ¬Disjoint (C : Set V) (D : Set V) := by
   rw [Set.not_disjoint_iff]
@@ -202,7 +199,6 @@ theorem hom_infinite (C : G.ComponentCompl L) (h : K ⊆ L) (Cinf : (C : Set V).
     (C.hom h : Set V).Infinite :=
   Set.Infinite.mono (C.subset_hom h) Cinf
 
-set_option backward.isDefEq.respectTransparency false in
 theorem infinite_iff_in_all_ranges {K : Finset V} (C : G.ComponentCompl K) :
     C.supp.Infinite ↔ ∀ (L) (h : K ⊆ L), ∃ D : G.ComponentCompl L, D.hom h = C := by
   classical
@@ -261,11 +257,13 @@ The functor assigning, to a finite set in `V`, the set of connected components i
 @[simps]
 def componentComplFunctor : (Finset V)ᵒᵖ ⥤ Type u where
   obj K := G.ComponentCompl K.unop
-  map f := ComponentCompl.hom (le_of_op_hom f)
-  map_id _ := funext fun C => C.hom_refl
-  map_comp {_ Y Z} h h' := funext fun C => by
-    convert C.hom_trans (le_of_op_hom h) (le_of_op_hom _)
-    exact h'
+  map f := ↾(ComponentCompl.hom (le_of_op_hom f))
+  map_id _ := by
+    ext
+    simp [ComponentCompl.hom_refl]
+  map_comp {_ Y Z} h h' := by
+    ext C
+    simp [C.hom_trans (le_of_op_hom h) (le_of_op_hom h')]
 
 /-- The end of a graph, defined as the sections of the functor `component_compl_functor` . -/
 protected def «end» :=

@@ -70,13 +70,16 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {I'' : ModelWithCorners 𝕜 E'' H''} {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M'']
   -- declare functions, sets, points and smoothness indices
   {e : OpenPartialHomeomorph M H}
-  {e' : OpenPartialHomeomorph M' H'} {f f₁ : M → M'} {s s₁ t : Set M} {x : M} {m n : WithTop ℕ∞}
+  {e' : OpenPartialHomeomorph M' H'} {f f₁ : M → M'} {s s₁ t : Set M} {x : M} {m n : ℕ∞ω}
 
 variable (I I') in
 /-- Property in the model space of a model with corners of being `C^n` within a set at a point,
 when read in the model vector space. This property will be lifted to manifolds to define `C^n`
-functions between manifolds. -/
-def ContDiffWithinAtProp (n : WithTop ℕ∞) (f : H → H') (s : Set H) (x : H) : Prop :=
+functions between manifolds.
+The parameter `n` belongs to `ℕ∞ω` (accessible in the `ContDiff` scope), i.e. it can be a natural
+number, `∞`, or `ω`, where `C^ω` corresponds to analytic functions.
+-/
+def ContDiffWithinAtProp (n : ℕ∞ω) (f : H → H') (s : Set H) (x : H) : Prop :=
   ContDiffWithinAt 𝕜 n (I' ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ range I) (I x)
 
 theorem contDiffWithinAtProp_self_source {f : E → H'} {s : Set E} {x : E} :
@@ -95,7 +98,7 @@ theorem contDiffWithinAtProp_self_target {f : H → E'} {s : Set H} {x : H} :
 
 /-- Being `Cⁿ` in the model space is a local property, invariant under `Cⁿ` maps. Therefore,
 it lifts nicely to manifolds. -/
-theorem contDiffWithinAt_localInvariantProp_of_le (n m : WithTop ℕ∞) (hmn : m ≤ n) :
+theorem contDiffWithinAt_localInvariantProp_of_le (n m : ℕ∞ω) (hmn : m ≤ n) :
     (contDiffGroupoid n I).LocalInvariantProp (contDiffGroupoid n I')
       (ContDiffWithinAtProp I I' m) where
   is_local {s x u f} u_open xu := by
@@ -138,13 +141,13 @@ theorem contDiffWithinAt_localInvariantProp_of_le (n m : WithTop ℕ∞) (hmn : 
 
 /-- Being `Cⁿ` in the model space is a local property, invariant under `C^n` maps. Therefore,
 it lifts nicely to manifolds. -/
-theorem contDiffWithinAt_localInvariantProp (n : WithTop ℕ∞) :
+theorem contDiffWithinAt_localInvariantProp (n : ℕ∞ω) :
     (contDiffGroupoid n I).LocalInvariantProp (contDiffGroupoid n I')
       (ContDiffWithinAtProp I I' n) :=
   contDiffWithinAt_localInvariantProp_of_le n n le_rfl
 
 theorem contDiffWithinAtProp_mono_of_mem_nhdsWithin
-    (n : WithTop ℕ∞) ⦃s x t⦄ ⦃f : H → H'⦄ (hts : s ∈ 𝓝[t] x)
+    (n : ℕ∞ω) ⦃s x t⦄ ⦃f : H → H'⦄ (hts : s ∈ 𝓝[t] x)
     (h : ContDiffWithinAtProp I I' n f s x) : ContDiffWithinAtProp I I' n f t x := by
   refine h.mono_of_mem_nhdsWithin ?_
   refine inter_mem ?_ (mem_of_superset self_mem_nhdsWithin inter_subset_right)
@@ -160,18 +163,22 @@ theorem contDiffWithinAtProp_id (x : H) : ContDiffWithinAtProp I I n id univ x :
 variable (I I') in
 /-- A function is `n` times continuously differentiable within a set at a point in a manifold if
 it is continuous and it is `n` times continuously differentiable in this set around this point, when
-read in the preferred chart at this point. -/
-def ContMDiffWithinAt (n : WithTop ℕ∞) (f : M → M') (s : Set M) (x : M) :=
+read in the preferred chart at this point.
+The parameter `n` belongs to `ℕ∞ω` (accessible in the `ContDiff` scope), i.e. it can be a natural
+number, `∞`, or `ω`, where `C^ω` corresponds to analytic functions. -/
+def ContMDiffWithinAt (n : ℕ∞ω) (f : M → M') (s : Set M) (x : M) :=
   LiftPropWithinAt (ContDiffWithinAtProp I I' n) f s x
 
 variable (I I') in
 /-- A function is `n` times continuously differentiable at a point in a manifold if
 it is continuous and it is `n` times continuously differentiable around this point, when
-read in the preferred chart at this point. -/
-def ContMDiffAt (n : WithTop ℕ∞) (f : M → M') (x : M) :=
+read in the preferred chart at this point.
+The parameter `n` belongs to `ℕ∞ω` (accessible in the `ContDiff` scope), i.e. it can be a natural
+number, `∞`, or `ω`, where `C^ω` corresponds to analytic functions. -/
+def ContMDiffAt (n : ℕ∞ω) (f : M → M') (x : M) :=
   ContMDiffWithinAt I I' n f univ x
 
-theorem contMDiffAt_iff {n : WithTop ℕ∞} {f : M → M'} {x : M} :
+theorem contMDiffAt_iff {n : ℕ∞ω} {f : M → M'} {x : M} :
     ContMDiffAt I I' n f x ↔
       ContinuousAt f x ∧
         ContDiffWithinAt 𝕜 n (extChartAt I' (f x) ∘ f ∘ (extChartAt I x).symm) (range I)
@@ -181,15 +188,19 @@ theorem contMDiffAt_iff {n : WithTop ℕ∞} {f : M → M'} {x : M} :
 variable (I I') in
 /-- A function is `n` times continuously differentiable in a set of a manifold if it is continuous
 and, for any pair of points, it is `n` times continuously differentiable on this set in the charts
-around these points. -/
-def ContMDiffOn (n : WithTop ℕ∞) (f : M → M') (s : Set M) :=
+around these points.
+The parameter `n` belongs to `ℕ∞ω` (accessible in the `ContDiff` scope), i.e. it can be a natural
+number, `∞`, or `ω`, where `C^ω` corresponds to analytic functions. -/
+def ContMDiffOn (n : ℕ∞ω) (f : M → M') (s : Set M) :=
   ∀ x ∈ s, ContMDiffWithinAt I I' n f s x
 
 variable (I I') in
 /-- A function is `n` times continuously differentiable in a manifold if it is continuous
 and, for any pair of points, it is `n` times continuously differentiable in the charts
-around these points. -/
-def ContMDiff (n : WithTop ℕ∞) (f : M → M') :=
+around these points.
+The parameter `n` belongs to `ℕ∞ω` (accessible in the `ContDiff` scope), i.e. it can be a natural
+number, `∞`, or `ω`, where `C^ω` corresponds to analytic functions. -/
+def ContMDiff (n : ℕ∞ω) (f : M → M') :=
   ∀ x, ContMDiffAt I I' n f x
 
 /-! ### Deducing smoothness from higher smoothness -/
@@ -270,7 +281,6 @@ theorem contMDiffAt_iff_target {x : M} :
       ContinuousAt f x ∧ ContMDiffAt I 𝓘(𝕜, E') n (extChartAt I' (f x) ∘ f) x := by
   rw [ContMDiffAt, ContMDiffAt, contMDiffWithinAt_iff_target, continuousWithinAt_univ]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- One can reformulate being `Cⁿ` within a set at a point as being `Cⁿ` in the source space when
 composing with the extended chart. -/
 theorem contMDiffWithinAt_iff_source :
@@ -532,7 +542,7 @@ theorem contMDiff_iff :
         ∀ (x : M) (y : M'),
           ContDiffOn 𝕜 n (extChartAt I' y ∘ f ∘ (extChartAt I x).symm)
             ((extChartAt I x).target ∩
-              (extChartAt I x).symm ⁻¹' (f ⁻¹' (extChartAt I' y).source)) := by
+              (extChartAt I x).symm ⁻¹' f ⁻¹' (extChartAt I' y).source) := by
   simp [← contMDiffOn_univ, contMDiffOn_iff, continuousOn_univ]
 
 /-- One can reformulate being `C^n` as continuity and being `C^n` in any extended chart in the
@@ -593,16 +603,13 @@ theorem contMDiffWithinAt_infty :
 theorem contMDiffAt_infty : ContMDiffAt I I' ∞ f x ↔ ∀ n : ℕ, ContMDiffAt I I' n f x :=
   contMDiffWithinAt_infty
 
-set_option backward.isDefEq.respectTransparency false in
 theorem contMDiffOn_infty : ContMDiffOn I I' ∞ f s ↔ ∀ n : ℕ, ContMDiffOn I I' n f s :=
   ⟨fun h _ => h.of_le (mod_cast le_top),
     fun h x hx => contMDiffWithinAt_infty.2 fun n => h n x hx⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem contMDiff_infty : ContMDiff I I' ∞ f ↔ ∀ n : ℕ, ContMDiff I I' n f :=
   ⟨fun h _ => h.of_le (mod_cast le_top), fun h x => contMDiffWithinAt_infty.2 fun n => h n x⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem contMDiffWithinAt_iff_nat {n : ℕ∞} :
     ContMDiffWithinAt I I' n f s x ↔ ∀ m : ℕ, (m : ℕ∞) ≤ n → ContMDiffWithinAt I I' m f s x := by
   refine ⟨fun h m hm => h.of_le (mod_cast hm), fun h => ?_⟩
@@ -614,7 +621,6 @@ theorem contMDiffAt_iff_nat {n : ℕ∞} :
     ContMDiffAt I I' n f x ↔ ∀ m : ℕ, (m : ℕ∞) ≤ n → ContMDiffAt I I' m f x := by
   simp [← contMDiffWithinAt_univ, contMDiffWithinAt_iff_nat]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A function is `C^n` within a set at a point iff it is `C^m` within this set at this point, for
 any `m ≤ n` which is different from `∞`. This result is useful because, when `m ≠ ∞`, being
 `C^m` extends locally to a neighborhood, giving flexibility for local proofs. -/

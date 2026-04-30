@@ -347,8 +347,8 @@ theorem snd_iso_of_left_embedding_range_subset {X Y S : TopCat} {f : X ⟶ S} (h
   convert (isoOfHomeo esto).isIso_hom
 
 theorem pullback_snd_image_fst_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set X) :
-    (pullback.snd f g) '' ((pullback.fst f g) ⁻¹' U) =
-      g ⁻¹' (f '' U) := by
+    (pullback.snd f g) '' (pullback.fst f g) ⁻¹' U =
+      g ⁻¹' f '' U := by
   ext x
   constructor
   · rintro ⟨y, hy, rfl⟩
@@ -364,8 +364,8 @@ theorem pullback_snd_image_fst_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set X) 
     · rw [pullbackIsoProdSubtype_inv_snd_apply]
 
 theorem pullback_fst_image_snd_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set Y) :
-    (pullback.fst f g) '' ((pullback.snd f g) ⁻¹' U) =
-      f ⁻¹' (g '' U) := by
+    (pullback.fst f g) '' (pullback.snd f g) ⁻¹' U =
+      f ⁻¹' g '' U := by
   ext x
   constructor
   · rintro ⟨y, hy, rfl⟩
@@ -402,9 +402,9 @@ lemma isOpen_iff_of_isColimit_cofork (c : Cofork f g) (hc : IsColimit c) (U : Se
 lemma isQuotientMap_of_isColimit_cofork (c : Cofork f g) (hc : IsColimit c) :
     IsQuotientMap c.π := by
   rw [isQuotientMap_iff]
-  constructor
+  refine ⟨.of_isOpen_preimage_iff_isOpen fun s ↦ ?_, ?_⟩
+  · exact (isOpen_iff_of_isColimit_cofork c hc s).symm
   · simpa only [← epi_iff_surjective] using epi_of_isColimit_cofork hc
-  · exact isOpen_iff_of_isColimit_cofork c hc
 
 theorem coequalizer_isOpen_iff (U : Set ((coequalizer f g :) : Type u)) :
     IsOpen U ↔ IsOpen (coequalizer.π f g ⁻¹' U) :=

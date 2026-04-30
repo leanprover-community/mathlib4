@@ -149,6 +149,7 @@ namespace Scheme
 
 /-- The category `Etale X` is the category of schemes étale over `X`. -/
 protected def Etale (X : Scheme.{u}) : Type _ := MorphismProperty.Over @Etale ⊤ X
+deriving Category, HasPullbacks
 
 variable (X : Scheme.{u})
 
@@ -160,19 +161,11 @@ instance : Category X.Etale :=
 /-- The forgetful functor from schemes étale over `X` to schemes over `X`. -/
 def Etale.forget : X.Etale ⥤ Over X :=
   MorphismProperty.Over.forget @Etale ⊤ X
+deriving Functor.Full, Functor.Faithful
 
 /-- The forgetful functor from schemes étale over `X` to schemes over `X` is fully faithful. -/
 def Etale.forgetFullyFaithful : (Etale.forget X).FullyFaithful :=
   MorphismProperty.Comma.forgetFullyFaithful _ _ _
-
-instance : (Etale.forget X).Full :=
-  inferInstanceAs <| (MorphismProperty.Comma.forget _ _ _ _ _).Full
-instance : (Etale.forget X).Faithful :=
-  inferInstanceAs <| (MorphismProperty.Comma.forget _ _ _ _ _).Faithful
-
-instance : HasPullbacks X.Etale := by
-  unfold Scheme.Etale
-  infer_instance
 
 end Scheme
 

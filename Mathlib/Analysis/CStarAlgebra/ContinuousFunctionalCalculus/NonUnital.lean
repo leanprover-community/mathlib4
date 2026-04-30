@@ -384,7 +384,6 @@ lemma cfcₙ_add : cfcₙ (fun x ↦ f x + g x) a = cfcₙ f a + cfcₙ g a := b
     congr
   · simp [cfcₙ_apply_of_not_predicate a ha]
 
-set_option backward.isDefEq.respectTransparency false in
 open Finset in
 lemma cfcₙ_sum {ι : Type*} (f : ι → R → R) (a : A) (s : Finset ι)
     (hf : ∀ i ∈ s, ContinuousOn (f i) (σₙ R a) := by cfc_cont_tac)
@@ -394,7 +393,7 @@ lemma cfcₙ_sum {ι : Type*} (f : ι → R → R) (a : A) (s : Finset ι)
   · have hsum : s.sum f = fun z => ∑ i ∈ s, f i z := by ext; simp
     have hf' : ContinuousOn (∑ i : s, f i) (σₙ R a) := by
       rw [sum_coe_sort s, hsum]
-      exact continuousOn_finset_sum s fun i hi => hf i hi
+      exact continuousOn_finsetSum s fun i hi => hf i hi
     rw [← sum_coe_sort s, ← sum_coe_sort s]
     rw [cfcₙ_apply_pi _ a ha (fun ⟨i, hi⟩ => hf i hi), ← map_sum, cfcₙ_apply _ a hf']
     congr 1
@@ -586,6 +585,8 @@ lemma cfcₙ_neg : cfcₙ (fun x ↦ -(f x)) a = -(cfcₙ f a) := by
     · rw [cfcₙ_apply_of_not_map_zero a h0, cfcₙ_apply_of_not_map_zero, neg_zero]
       exact (h0 <| neg_eq_zero.mp ·)
 
+lemma cfcₙ_neg' : cfcₙ (-f) = (-cfcₙ f : A → A) := by ext1 a; exact (cfcₙ_neg f a)
+
 lemma cfcₙ_neg_id (ha : p a := by cfc_tac) :
     cfcₙ (- · : R → R) a = -a := by
   rw [cfcₙ_neg .., cfcₙ_id' R a]
@@ -676,7 +677,6 @@ variable [TopologicalSpace A] [NonUnitalRing A] [StarRing A] [PartialOrder A] [S
 variable [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
 variable [NonUnitalContinuousFunctionalCalculus R A p] [NonnegSpectrumClass R A]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma cfcₙHom_le_iff {a : A} (ha : p a) {f g : C(σₙ R a, R)₀} :
     cfcₙHom ha f ≤ cfcₙHom ha g ↔ f ≤ g := by
   rw [← sub_nonneg, ← map_sub, cfcₙHom_nonneg_iff, sub_nonneg]
@@ -823,7 +823,6 @@ lemma cfcₙHom_of_cfcHom_map_quasispectrum [ContinuousFunctionalCalculus R A p]
 -- gives access to the `ContinuousFunctionalCalculus.compactSpace_spectrum` instance
 open scoped ContinuousFunctionalCalculus
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isClosedEmbedding_cfcₙHom_of_cfcHom [ClosedEmbeddingContinuousFunctionalCalculus R A p]
     [CompleteSpace R] {a : A} (ha : p a) :
     IsClosedEmbedding (cfcₙHom_of_cfcHom R ha) := by
@@ -837,7 +836,7 @@ lemma isClosedEmbedding_cfcₙHom_of_cfcHom [ClosedEmbeddingContinuousFunctional
         ContinuousMap.coe_zero, range_zero, image_union, image_singleton,
         quasispectrum.coe_zero, ← range_comp, val_comp_inclusion, image_univ, Subtype.range_coe,
         quasispectrum_eq_spectrum_union_zero]
-  simp_rw +instances [ContinuousMapZero.instUniformSpace, this, uniformity_comap,
+  simp_rw +instances [← isUniformEmbedding_toContinuousMap.comap_uniformity, this,
     @inf_uniformity _ (.comap _ _) (.comap _ _), uniformity_comap, Filter.comap_inf,
     Filter.comap_comap]
   refine .symm <| inf_eq_left.mpr <| le_top.trans <| eq_top_iff.mp ?_

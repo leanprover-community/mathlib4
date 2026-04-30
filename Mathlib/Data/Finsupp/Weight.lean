@@ -165,9 +165,8 @@ section CanonicallyOrderedAddCommMonoid
 variable {M : Type*} [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M]
   [CanonicallyOrderedAdd M] (w : σ → M)
 
-theorem le_weight_of_ne_zero' {s : σ} {f : σ →₀ ℕ} (hs : f s ≠ 0) :
-    w s ≤ weight w f :=
-  le_weight_of_ne_zero (fun _ ↦ zero_le _) hs
+theorem le_weight_of_ne_zero' {s : σ} {f : σ →₀ ℕ} (hs : f s ≠ 0) : w s ≤ weight w f :=
+  le_weight_of_ne_zero (fun _ ↦ zero_le) hs
 
 /-- If `M` is a `CanonicallyOrderedAddCommMonoid`, then `weight f` is zero iff `f = 0`. -/
 theorem weight_eq_zero_iff_eq_zero
@@ -255,6 +254,9 @@ theorem finite_of_degree_le [Finite σ] (n : ℕ) :
   intro _
   simp only [Function.const_apply, ne_eq, one_ne_zero, not_false_eq_true]
 
+lemma finite_of_degree_lt [Finite σ] (n : ℕ) : {f : σ →₀ ℕ | degree f < n}.Finite :=
+  Set.Finite.subset (finite_of_degree_le n) (by grind)
+
 lemma range_single_one :
     Set.range (fun a : σ ↦ Finsupp.single a 1) = { d | d.degree = 1 } := by
   refine subset_antisymm ?_ ?_
@@ -262,6 +264,21 @@ lemma range_single_one :
   · intro p (hp : p.sum (fun a k ↦ k) = 1)
     obtain ⟨a, rfl⟩ := (Finsupp.sum_eq_one_iff _).mp hp
     use a
+
+theorem degree_mapDomain_eq_of_subsingletonAddUnits {τ : Type*} (f : σ → τ) [AddCommMonoid M]
+    [Subsingleton (AddUnits M)] (x : σ →₀ M) : degree (x.mapDomain f) = degree x := by
+  classical
+  trans (x.mapDomain f).sum (fun _ ↦ id)
+  · simp [degree, sum]
+  · simpa [sum, mapDomain_support_of_subsingletonAddUnits, degree] using Finset.sum_image' _
+      (fun _ _ ↦ mapDomain_apply_eq_sum ..)
+
+theorem degree_comapDomain_le_of_canonicallyOrderedAdd {τ : Type*} {f : σ → τ} [AddCommMonoid M]
+    [PartialOrder M] [CanonicallyOrderedAdd M] {x : τ →₀ M} (hf : Set.InjOn f (f ⁻¹' x.support)) :
+      degree (x.comapDomain f hf) ≤ degree x := by
+  classical
+  simpa [degree, comapDomain, Finset.sum_preimage' f x.support hf x] using
+    Finset.sum_le_sum_of_subset (Finset.filter_subset ..)
 
 lemma degree_mono {R : Type*} [AddCommMonoid R] [PartialOrder R] [CanonicallyOrderedAdd R] :
     Monotone (Finsupp.degree (σ := σ) (R := R)) :=
@@ -293,7 +310,6 @@ lemma degree_preimage_nsmul {σ : Type*} (s : Set ℕ) (n : ℕ) (hn : n ≠ 0) 
   obtain (_ | n) := n; · contradiction
   induction n <;> simp_all [succ_nsmul, degree_preimage_add]
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Pointwise in
 lemma nsmul_single_one_image {α : Type*} {n : ℕ} {s : Set α} :
     n • (single · 1) '' s = {x : α →₀ ℕ | x.degree = n ∧ ↑x.support ⊆ s} := by

@@ -118,7 +118,7 @@ given `(y_₀, ...,y_ₙ)` outputs `x_{n+1} : X (n + 1)`, and it builds an eleme
 by starting with `(x_₀, ..., x_ₐ)` and then iterating `ind`. -/
 def iterateInduction {a : ℕ} (x : Π i : Iic a, X i)
     (ind : (n : ℕ) → (Π i : Iic n, X i) → X (n + 1)) : Π n, X n
-  | 0 => x ⟨0, mem_Iic.2 <| zero_le a⟩
+  | 0 => x ⟨0, mem_Iic.2 zero_le⟩
   | k + 1 => if h : k + 1 ≤ a
       then x ⟨k + 1, mem_Iic.2 h⟩
       else ind k (fun i ↦ iterateInduction x ind i)
@@ -239,7 +239,6 @@ theorem trajContent_cylinder {a b : ℕ} {S : Set (Π i : Iic b, X i)} (mS : Mea
     trajContent κ x₀ (cylinder (Iic b) S) = partialTraj κ a b x₀ S := by
   rw [trajContent, projectiveFamilyContent_cylinder _ mS, inducedFamily_Iic]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `trajContent` of a cylinder is equal to the integral of its indicator function against
 `partialTraj`. -/
 theorem trajContent_eq_lmarginalPartialTraj {b : ℕ} {S : Set (Π i : Iic b, X i)}
@@ -278,7 +277,7 @@ theorem le_lmarginalPartialTraj_succ {f : ℕ → (Π n, X n) → ℝ≥0∞} {a
       (update (updateFinset x (Iic k) y) (k + 1) z) := by
   have _ n : Nonempty (X n) := by
     induction n using Nat.case_strong_induction_on with
-    | hz => exact ⟨y ⟨0, mem_Iic.2 (zero_le _)⟩⟩
+    | hz => exact ⟨y ⟨0, mem_Iic.2 zero_le⟩⟩
     | hi m hm =>
       have : Nonempty (Π i : Iic m, X i) :=
         ⟨fun i ↦ @Classical.ofNonempty _ (hm i.1 (mem_Iic.1 i.2))⟩
@@ -350,7 +349,7 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
     Tendsto (fun n ↦ trajContent κ x₀ (A n)) atTop (𝓝 0) := by
   have _ n : Nonempty (X n) := by
     induction n using Nat.case_strong_induction_on with
-    | hz => exact ⟨x₀ ⟨0, mem_Iic.2 (zero_le _)⟩⟩
+    | hz => exact ⟨x₀ ⟨0, mem_Iic.2 zero_le⟩⟩
     | hi m hm =>
       have : Nonempty (Π i : Iic m, X i) :=
         ⟨fun i ↦ @Classical.ofNonempty _ (hm i.1 (mem_Iic.1 i.2))⟩
@@ -653,7 +652,6 @@ theorem integral_traj {a : ℕ} (x₀ : Π i : Iic a, X i) {f : (Π n, X n) → 
   · convert mf
     rw [traj_map_updateFinset]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma partialTraj_compProd_traj {a b : ℕ} (hab : a ≤ b) (u : Π i : Iic a, X i) :
     (partialTraj κ a b u) ⊗ₘ (traj κ b) = (traj κ a u).map (fun x ↦ (frestrictLe b x, x)) := by
   ext s ms

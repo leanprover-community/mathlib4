@@ -45,7 +45,7 @@ instance : SetLike (Closeds α) α where
   coe := Closeds.carrier
   coe_injective' s t h := by cases s; cases t; congr
 
-instance : PartialOrder (Closeds α) := .ofSetLike (Closeds α) α
+instance : PartialOrder (Closeds α) := fast_instance% .ofSetLike (Closeds α) α
 
 instance : CanLift (Set α) (Closeds α) (↑) IsClosed where
   prf s hs := ⟨⟨s, hs⟩, rfl⟩
@@ -96,7 +96,7 @@ def gi : GaloisInsertion (@Closeds.closure α _) (↑) where
   choice_eq _s hs := SetLike.coe_injective <| subset_closure.antisymm hs
 
 instance instCompleteLattice : CompleteLattice (Closeds α) :=
-  CompleteLattice.copy
+  fast_instance% CompleteLattice.copy
     (GaloisInsertion.liftCompleteLattice gi)
     -- le
     _ rfl
@@ -159,7 +159,6 @@ theorem coe_finset_sup (f : ι → Closeds α) (s : Finset ι) :
     (↑(s.sup f) : Set α) = s.sup ((↑) ∘ f) :=
   map_finset_sup (⟨⟨(↑), coe_sup⟩, coe_bot⟩ : SupBotHom (Closeds α) (Set α)) _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem coe_finset_inf (f : ι → Closeds α) (s : Finset ι) :
     (↑(s.inf f) : Set α) = s.inf ((↑) ∘ f) :=
@@ -184,11 +183,12 @@ theorem iInf_mk {ι} (s : ι → Set α) (h : ∀ i, IsClosed (s i)) :
   iInf_def _
 
 /-- Closed sets in a topological space form a coframe. -/
+@[implicit_reducible]
 def coframeMinimalAxioms : Coframe.MinimalAxioms (Closeds α) where
   iInf_sup_le_sup_sInf a s :=
     (SetLike.coe_injective <| by simp only [coe_sup, coe_iInf, coe_sInf, Set.union_iInter₂]).le
 
-instance instCoframe : Coframe (Closeds α) := .ofMinimalAxioms coframeMinimalAxioms
+instance instCoframe : Coframe (Closeds α) := fast_instance% .ofMinimalAxioms coframeMinimalAxioms
 
 @[simps]
 instance [T1Space α] : Singleton α (Closeds α) where
@@ -216,6 +216,23 @@ theorem singleton_inj [T1Space α] {x y : α} : ({x} : Closeds α) = {y} ↔ x =
 @[simps]
 def preimage (s : Closeds β) {f : α → β} (hf : Continuous f) : Closeds α :=
   ⟨f ⁻¹' s, s.isClosed.preimage hf⟩
+
+instance : SProd (Closeds α) (Closeds β) (Closeds (α × β)) where
+  sprod s t := ⟨s ×ˢ t, s.isClosed.prod t.isClosed⟩
+
+@[simp]
+theorem coe_prod (s : Closeds α) (t : Closeds β) :
+    (s ×ˢ t : Closeds (α × β)) = (s : Set α) ×ˢ (t : Set β) :=
+  rfl
+
+@[simp]
+theorem mem_prod {s : Closeds α} {t : Closeds β} {x : α × β} : x ∈ s ×ˢ t ↔ x.1 ∈ s ∧ x.2 ∈ t :=
+  Iff.rfl
+
+@[simp]
+theorem singleton_prod_singleton [T1Space α] [T1Space β] (x : α) (y : β) :
+    ({x} ×ˢ {y} : Closeds (α × β)) = {(x, y)} :=
+  Closeds.ext Set.singleton_prod_singleton
 
 end Closeds
 
@@ -265,26 +282,22 @@ def Opens.complOrderIso : Opens α ≃o (Closeds α)ᵒᵈ where
 
 variable {α}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Closeds.coe_eq_singleton_of_isAtom [T0Space α] {s : Closeds α} (hs : IsAtom s) :
     ∃ a, (s : Set α) = {a} := by
   refine minimal_nonempty_closed_eq_singleton s.2 (coe_nonempty.2 hs.1) fun t hts ht ht' ↦ ?_
   lift t to Closeds α using ht'
   exact SetLike.coe_injective.eq_iff.2 <| (hs.le_iff_eq <| coe_nonempty.1 ht).1 hts
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast] lemma Closeds.isAtom_coe [T1Space α] {s : Closeds α} :
     IsAtom (s : Set α) ↔ IsAtom s :=
   Closeds.gi.isAtom_iff' rfl
     (fun t ht ↦ by obtain ⟨x, rfl⟩ := Set.isAtom_iff.1 ht; exact closure_singleton) s
 
-set_option backward.isDefEq.respectTransparency false in
 /-- in a `T1Space`, atoms of `TopologicalSpace.Closeds α` are precisely the singletons. -/
 theorem Closeds.isAtom_iff [T1Space α] {s : Closeds α} :
     IsAtom s ↔ ∃ x, s = {x} := by
   simp [← Closeds.isAtom_coe, Set.isAtom_iff, SetLike.ext_iff, Set.ext_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- in a `T1Space`, coatoms of `TopologicalSpace.Opens α` are precisely complements of singletons:
 `({x} : Closeds α).compl`. -/
 theorem Opens.isCoatom_iff [T1Space α] {s : Opens α} :
@@ -309,7 +322,7 @@ instance : SetLike (Clopens α) α where
   coe s := s.carrier
   coe_injective' s t h := by cases s; cases t; congr
 
-instance : PartialOrder (Clopens α) := .ofSetLike (Clopens α) α
+instance : PartialOrder (Clopens α) := fast_instance% .ofSetLike (Clopens α) α
 
 theorem isClopen (s : Clopens α) : IsClopen (s : Set α) :=
   s.isClopen'
@@ -355,7 +368,7 @@ instance : Compl (Clopens α) := ⟨fun s => ⟨sᶜ, s.isClopen.compl⟩⟩
 @[simp, norm_cast] lemma coe_himp (s t : Clopens α) : ↑(s ⇨ t) = (s ⇨ t : Set α) := rfl
 @[simp, norm_cast] lemma coe_compl (s : Clopens α) : (↑sᶜ : Set α) = (↑s)ᶜ := rfl
 
-instance : BooleanAlgebra (Clopens α) :=
+instance : BooleanAlgebra (Clopens α) := fast_instance%
   SetLike.coe_injective.booleanAlgebra _ .rfl .rfl coe_sup coe_inf coe_top coe_bot coe_compl
     coe_sdiff coe_himp
 
@@ -376,7 +389,6 @@ lemma coe_finset_sup (s : Finset ι) (U : ι → Clopens α) :
   | empty => simp
   | insert _ _ _ IH => simp [IH]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_disjoint {s t : Clopens α} : Disjoint (s : Set α) t ↔ Disjoint s t := by
   simp [disjoint_iff, ← SetLike.coe_set_eq]
@@ -398,18 +410,14 @@ instance : SetLike (IrreducibleCloseds α) α where
   coe := IrreducibleCloseds.carrier
   coe_injective' s t h := by cases s; cases t; congr
 
-instance : PartialOrder (IrreducibleCloseds α) := .ofSetLike (IrreducibleCloseds α) α
+instance : PartialOrder (IrreducibleCloseds α) := fast_instance% .ofSetLike (IrreducibleCloseds α) α
 
 instance : CanLift (Set α) (IrreducibleCloseds α) (↑) (fun s ↦ IsIrreducible s ∧ IsClosed s) where
   prf s hs := ⟨⟨s, hs.1, hs.2⟩, rfl⟩
 
 theorem isIrreducible (s : IrreducibleCloseds α) : IsIrreducible (s : Set α) := s.isIrreducible'
 
-@[deprecated (since := "2025-10-14")] alias is_irreducible' := isIrreducible
-
 theorem isClosed (s : IrreducibleCloseds α) : IsClosed (s : Set α) := s.isClosed'
-
-@[deprecated (since := "2025-10-14")] alias is_closed' := isClosed
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : IrreducibleCloseds α) : Set α := s
@@ -509,6 +517,30 @@ lemma map_injective_of_isInducing {f : β → α} (hf : IsInducing f) :
 lemma map_strictMono_of_isInducing {f : β → α} (hf : IsInducing f) :
     StrictMono (map f hf.continuous) :=
   Monotone.strictMono_of_injective (map_mono hf.continuous) (map_injective_of_isInducing hf)
+
+set_option backward.isDefEq.respectTransparency false in
+/--
+Given `f : U → X` a continuous open embedding, the irreducible closeds of `U` are order isomorphic
+to the irreducible closeds of `X` nontrivially intersecting the range of `f`.
+-/
+noncomputable
+def orderIsoOfIsOpenEmbedding (f : β → α) (h : IsOpenEmbedding f) :
+    IrreducibleCloseds β ≃o {V : IrreducibleCloseds α | (f ⁻¹' V).Nonempty} where
+  toFun T := ⟨map f h.continuous T, nonempty_preimage_closure_image h.continuous T T.2.nonempty⟩
+  invFun V :=
+    { carrier := f ⁻¹' V
+      isIrreducible' := ⟨V.2, V.1.2.isPreirreducible.preimage h⟩
+      isClosed' := V.1.3.preimage h.continuous }
+  left_inv V := by
+    ext
+    simp [h.isOpenMap.preimage_closure_image h.injective h.continuous _ V.isClosed]
+  right_inv V := by
+    ext
+    simp [closure_image_preimage_of_isPreirreducible f h.isOpenMap V V.2 V.1.2.2 V.1.3]
+  map_rel_iff' {a b} := by
+    refine ⟨fun hle ↦ ?_, fun hle ↦ map_mono h.continuous hle⟩
+    simpa [← h.isEmbedding.closure_eq_preimage_closure_image, a.isClosed.closure_eq,
+      b.isClosed.closure_eq] using Set.preimage_mono (f := f) hle
 
 end IrreducibleCloseds
 

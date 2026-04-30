@@ -44,8 +44,9 @@ Also the instances finite + free => f.p. => finite are also provided
 Suppose `S` is an `R`-algebra, `M` is an `S`-module. Then
 1. If `S` is f.p., then `M` is `R`-f.p. implies `M` is `S`-f.p.
 2. If `S` is both f.p. (as an algebra) and finite (as a module),
-  then `M` is `S`-fp implies that `M` is `R`-f.p.
+   then `M` is `S`-fp implies that `M` is `R`-f.p.
 3. If `S` is f.p. as a module, then `S` is f.p. as an algebra.
+
 In particular,
 4. `S` is f.p. as an `R`-module iff it is f.p. as an algebra and is finite as a module.
 
@@ -117,7 +118,6 @@ lemma Module.finitePresentation_iff_finite [IsNoetherianRing R] :
 
 variable {R M N}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Module.finitePresentation_of_free_of_surjective [Module.Free R M] [Module.Finite R M]
     (l : M →ₗ[R] N)
     (hl : Function.Surjective l) (hl' : (LinearMap.ker l).FG) :
@@ -175,13 +175,12 @@ lemma Module.finitePresentation_of_surjective [h : Module.FinitePresentation R M
   apply Module.finitePresentation_of_free_of_surjective (l ∘ₗ linearCombination R Subtype.val)
     (hl.comp H)
   choose σ hσ using (show _ from H)
-  have : Finsupp.linearCombination R Subtype.val '' (σ '' t) = t := by
+  have : Finsupp.linearCombination R Subtype.val '' σ '' t = t := by
     simp only [Set.image_image, hσ, Set.image_id']
   rw [LinearMap.ker_comp, ← ht, ← this, ← Submodule.map_span, Submodule.comap_map_eq,
     ← Finset.coe_image]
   exact Submodule.FG.sup ⟨_, rfl⟩ hs'
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Module.FinitePresentation.fg_ker [Module.Finite R M]
     [h : Module.FinitePresentation R N] (l : M →ₗ[R] N) (hl : Function.Surjective l) :
     (LinearMap.ker l).FG := by
@@ -211,7 +210,6 @@ lemma Module.FinitePresentation.fg_ker_iff [Module.FinitePresentation R M]
     Submodule.FG (LinearMap.ker l) ↔ Module.FinitePresentation R N :=
   ⟨finitePresentation_of_surjective l hl, fun _ ↦ fg_ker l hl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Module.finitePresentation_of_ker [Module.FinitePresentation R N]
     (l : M →ₗ[R] N) (hl : Function.Surjective l) [Module.FinitePresentation R (LinearMap.ker l)] :
     Module.FinitePresentation R M := by
@@ -286,7 +284,6 @@ instance (priority := 900) of_subsingleton [Subsingleton M] :
     Module.FinitePresentation R M :=
   .of_equiv (default : (Fin 0 → R) ≃ₗ[R] M)
 
-set_option backward.isDefEq.respectTransparency false in
 variable (M N) in
 instance prod [Module.FinitePresentation R M] [Module.FinitePresentation R N] :
     Module.FinitePresentation R (M × N) := by
@@ -331,7 +328,6 @@ lemma Module.FinitePresentation.trans (S : Type*) [CommRing S] [Algebra R S]
     simp only [f, LinearMap.ker_restrictScalars, ← Module.Finite.iff_fg]
     exact Module.Finite.trans S _
 
-set_option backward.isDefEq.respectTransparency false in
 open TensorProduct in
 instance {A} [CommRing A] [Algebra R A] [Module.FinitePresentation R M] :
     Module.FinitePresentation A (A ⊗[R] M) := by
@@ -362,7 +358,6 @@ instance (S : Submonoid R) [Module.FinitePresentation R M] :
   FinitePresentation.of_isBaseChange (LocalizedModule.mkLinearMap S M)
     ((isLocalizedModule_iff_isBaseChange S _ _).mp inferInstance)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
     [h : Module.FinitePresentation R M] (g : M →ₗ[R] N') :
     ∃ (h : M →ₗ[R] N) (s : S), f ∘ₗ h = s • g := by
@@ -410,7 +405,6 @@ lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
     ← LinearMap.comp_smul, LinearMap.comp_assoc, LinearMap.comp_assoc]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Module.Finite.exists_smul_of_comp_eq_of_isLocalizedModule
     [hM : Module.Finite R M] (g₁ g₂ : M →ₗ[R] N) (h : f.comp g₁ = f.comp g₂) :
     ∃ (s : S), s • g₁ = s • g₂ := by
@@ -428,7 +422,6 @@ lemma Module.Finite.exists_smul_of_comp_eq_of_isLocalizedModule
 variable {M' : Type*} [AddCommGroup M'] [Module R M'] (f : M →ₗ[R] M') [IsLocalizedModule S f]
 variable {N' : Type*} [AddCommGroup N'] [Module R N'] (g : N →ₗ[R] N') [IsLocalizedModule S g]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Let `M` be a finite `R`-module, and `N` be a finitely presented `R`-module.
 If `l : M →ₗ[R] N` is a linear map whose localization at `S : Submonoid R` is bijective,
@@ -502,7 +495,6 @@ lemma Module.FinitePresentation.exists_notMem_bijective [Module.Finite R M]
   obtain ⟨g, hg, h⟩ := exists_bijective_map_powers p.primeCompl fM fN f hf
   exact ⟨g, hg, h g dvd_rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 open IsLocalizedModule in
 /--
 Let `M` `N` be a finitely presented `R`-modules.

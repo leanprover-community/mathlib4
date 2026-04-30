@@ -100,7 +100,7 @@ theorem coe_subtype : (Submodule.subtype p : p → M) = Subtype.val :=
 theorem injective_subtype : Injective p.subtype :=
   Subtype.coe_injective
 
-/-- Note the `AddSubmonoid` version of this lemma is called `AddSubmonoid.coe_finset_sum`. -/
+/-- Note the `AddSubmonoid` version of this lemma is called `AddSubmonoid.coe_finsetSum`. -/
 theorem coe_sum (x : ι → p) (s : Finset ι) : ↑(∑ i ∈ s, x i) = ∑ i ∈ s, (x i : M) :=
   map_sum p.subtype _ _
 
@@ -110,7 +110,7 @@ variable {α β : Type*}
 
 /-- The action by a submodule is the action by the underlying module. -/
 instance [AddAction M α] : AddAction p α :=
-  AddAction.compHom _ p.subtype.toAddMonoidHom
+  AddSubmonoid.instAddActionSubtypeMem p
 
 end AddAction
 
@@ -213,7 +213,6 @@ theorem restrict_apply {f : M →ₗ[R] M₁} {p : Submodule R M} {q : Submodule
     (hf : ∀ x ∈ p, f x ∈ q) (x : p) : f.restrict hf x = ⟨f x, hf x.1 x.2⟩ :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma restrict_sub {R M M₁ : Type*}
     [Ring R] [AddCommGroup M] [AddCommGroup M₁] [Module R M] [Module R M₁]
     {p : Submodule R M} {q : Submodule R M₁} {f g : M →ₗ[R] M₁}

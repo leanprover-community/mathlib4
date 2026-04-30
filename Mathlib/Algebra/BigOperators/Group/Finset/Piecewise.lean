@@ -64,7 +64,6 @@ theorem prod_ite {s : Finset ι} {p : ι → Prop} [DecidablePred p] (f g : ι �
     ∏ x ∈ s, (if p x then f x else g x) = (∏ x ∈ s with p x, f x) * ∏ x ∈ s with ¬p x, g x := by
   simp [prod_apply_ite _ _ fun x => x]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma prod_dite_of_false {p : ι → Prop} [DecidablePred p] (h : ∀ i ∈ s, ¬ p i)
     (f : ∀ i, p i → M) (g : ∀ i, ¬ p i → M) :
@@ -104,7 +103,6 @@ theorem prod_ite_mem [DecidableEq ι] (s t : Finset ι) (f : ι → M) :
     ∏ i ∈ s, (if i ∈ t then f i else 1) = ∏ i ∈ s ∩ t, f i := by
   rw [← Finset.prod_filter, Finset.filter_mem_eq_inter]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma prod_attach_eq_prod_dite [Fintype ι] (s : Finset ι) (f : s → M) [DecidablePred (· ∈ s)] :
     ∏ i ∈ s.attach, f i = ∏ i, if h : i ∈ s then f ⟨i, h⟩ else 1 := by
@@ -248,7 +246,7 @@ theorem prod_ite_one (s : Finset ι) (p : ι → Prop) [DecidablePred p]
   · obtain ⟨i, hi, hpi⟩ := h
     rw [prod_eq_single_of_mem _ hi, if_pos hpi]
     exact fun j hj hji ↦ if_neg fun hpj ↦ hji <| h _ hj _ hi hpj hpi
-  · push_neg at h
+  · push Not at h
     rw [prod_eq_one]
     exact fun i hi => if_neg (h i hi)
 

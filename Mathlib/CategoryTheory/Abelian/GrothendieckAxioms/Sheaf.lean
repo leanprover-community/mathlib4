@@ -21,7 +21,7 @@ then `Sheaf J A` is a Grothendieck abelian category.
 
 -/
 
-@[expose] public section
+public section
 
 universe v v₁ v₂ u u₁ u₂
 
@@ -69,16 +69,16 @@ instance ab5ofSize [HasFiniteLimits A] [HasSheafify J A]
     AB5OfSize.{v₂, u₂} (Sheaf J A) where
   ofShape K _ _ := by infer_instance
 
-lemma isGrothendieckAbelian_of_small
-    {C : Type v} [SmallCategory.{v} C] (J : GrothendieckTopology C)
-    (A : Type u₁) [Category.{v} A] [Abelian A] [IsGrothendieckAbelian.{v} A]
+instance {C : Type v} [SmallCategory.{v} C] (J : GrothendieckTopology C)
+    (A : Type u₁) [Category.{v₁} A] [Abelian A] [IsGrothendieckAbelian.{v} A]
     [HasSheafify J A] : IsGrothendieckAbelian.{v} (Sheaf J A) where
 
 attribute [local instance] hasSheafifyEssentiallySmallSite isGrothendieckAbelian_of_small in
 lemma isGrothendieckAbelian_of_essentiallySmall
-    {C : Type u₂} [Category.{v} C] [EssentiallySmall.{v} C]
+    {C : Type u₂} [Category.{v₂} C] [EssentiallySmall.{v} C]
     (J : GrothendieckTopology C)
-    (A : Type u₁) [Category.{v} A] [Abelian A] [IsGrothendieckAbelian.{v} A]
+    (A : Type u₁) [Category.{v₁} A] [Abelian A] [IsGrothendieckAbelian.{v} A]
+    [∀ (X : Cᵒᵖ), HasLimitsOfShape (StructuredArrow X (equivSmallModel C).inverse.op) A]
     [HasSheafify ((equivSmallModel C).inverse.inducedTopology J) A] :
       IsGrothendieckAbelian.{v} (Sheaf J A) :=
   IsGrothendieckAbelian.of_equivalence

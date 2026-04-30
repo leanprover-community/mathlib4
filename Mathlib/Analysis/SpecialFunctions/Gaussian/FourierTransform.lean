@@ -109,7 +109,6 @@ theorem verticalIntegral_norm_le (hb : 0 < b.re) (c : ℝ) {T : ℝ} (hT : 0 ≤
     rw [← abs_neg y] at absy
     simpa only [neg_mul, ofReal_neg] using vert_norm_bound hT absy
 
-set_option backward.isDefEq.respectTransparency false in
 theorem tendsto_verticalIntegral (hb : 0 < b.re) (c : ℝ) :
     Tendsto (verticalIntegral b c) atTop (𝓝 0) := by
   -- complete proof using squeeze theorem:
@@ -213,7 +212,6 @@ theorem _root_.fourierIntegral_gaussian (hb : 0 < b.re) (t : ℂ) :
   rw [integral_cexp_quadratic (show (-b).re < 0 by rwa [neg_re, neg_lt_zero]), neg_neg, zero_sub,
     mul_neg, div_neg, neg_neg, mul_pow, I_sq, neg_one_mul, mul_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem _root_.fourier_gaussian_pi' (hb : 0 < b.re) (c : ℂ) :
     (𝓕 fun x : ℝ => cexp (-π * b * x ^ 2 + 2 * π * c * x)) = fun t : ℝ =>
     1 / b ^ (1 / 2 : ℂ) * cexp (-π / b * (t + I * c) ^ 2) := by
@@ -345,7 +343,6 @@ theorem integral_cexp_neg_mul_sq_norm (hb : 0 < b.re) :
     ∫ v : V, cexp (-b * ‖v‖ ^ 2) = (π / b) ^ (Module.finrank ℝ V / 2 : ℂ) := by
   simpa using integral_cexp_neg_mul_sq_norm_add hb 0 (0 : V)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem integral_rexp_neg_mul_sq_norm {b : ℝ} (hb : 0 < b) :
     ∫ v : V, rexp (-b * ‖v‖ ^ 2) = (π / b) ^ (Module.finrank ℝ V / 2 : ℝ) := by
   rw [← ofReal_inj]

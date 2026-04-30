@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.Sheaves.LocalPredicate
 public import Mathlib.Topology.Sheaves.Stalks
+public import Mathlib.Topology.Sheaves.Skyscraper
 
 /-!
 # Sheafification of `Type`-valued presheaves
@@ -34,7 +35,7 @@ following <https://stacks.math.columbia.edu/tag/007X>.
 assert_not_exists CommRingCat
 
 
-universe v
+universe v u
 
 noncomputable section
 
@@ -72,7 +73,8 @@ sending each section to its germs.
 (This forms the unit of the adjunction.)
 -/
 def toSheafify : F ⟶ F.sheafify.1 where
-  app U f := ⟨fun x => F.germ _ x x.2 f, PrelocalPredicate.sheafifyOf ⟨f, fun x => rfl⟩⟩
+  app U := ↾fun f ↦ ⟨fun x => F.germ _ x x.2 f, PrelocalPredicate.sheafifyOf
+    ⟨f, fun x => rfl⟩⟩
   naturality U U' f := by
     ext x
     apply Subtype.ext -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Added `apply`
@@ -123,4 +125,19 @@ def sheafifyStalkIso (x : X) : F.sheafify.presheaf.stalk x ≅ F.stalk x :=
   (Equiv.ofBijective _ ⟨stalkToFiber_injective _ _, stalkToFiber_surjective _ _⟩).toIso
 
 -- PROJECT functoriality, and that sheafification is the left adjoint of the forgetful functor.
+end TopCat.Presheaf
+
+namespace TopCat.Presheaf
+
+variable (p₀ : X) (C : Type u) [Category.{v} C] [Limits.HasColimits C]
+  [Limits.HasTerminal C] (𝓕 : Presheaf C X) [HasWeakSheafify (Opens.grothendieckTopology X) C]
+
+/-- Given a presheaf `𝓕`, the induced map on stalks of `CategoryTheory.toSheafify`, `𝓕ₓ ⟶ 𝓕⁺ₓ`,
+is an isomorphism -/
+theorem stalkFunctor_map_unit_toSheafify_isIso : IsIso ((Presheaf.stalkFunctor C p₀).map
+    (CategoryTheory.toSheafify (Opens.grothendieckTopology X) 𝓕)) := by
+  classical
+  exact Adjunction.isIso_map_unit_of_isLeftAdjoint_comp (sheafificationAdjunction _ C)
+    (skyscraperSheafForgetAdjunction p₀)
+
 end TopCat.Presheaf

@@ -96,30 +96,15 @@ def expMeasure (r : ℝ) : Measure ℝ := gammaMeasure 1 r
 lemma isProbabilityMeasure_expMeasure {r : ℝ} (hr : 0 < r) :
     IsProbabilityMeasure (expMeasure r) := isProbabilityMeasure_gammaMeasure zero_lt_one hr
 
-@[deprecated (since := "2025-08-29")] alias isProbabilityMeasureExponential :=
-  isProbabilityMeasure_expMeasure
-
 section ExponentialCDF
-
-/-- CDF of the exponential distribution -/
-@[deprecated "Use `cdf (expMeasure r)` instead." (since := "2025-08-28")]
-noncomputable
-def exponentialCDFReal (r : ℝ) : StieltjesFunction ℝ :=
-  cdf (expMeasure r)
 
 lemma cdf_expMeasure_eq_integral {r : ℝ} (hr : 0 < r) (x : ℝ) :
     cdf (expMeasure r) x = ∫ x in Iic x, exponentialPDFReal r x :=
   cdf_gammaMeasure_eq_integral zero_lt_one hr x
 
-@[deprecated (since := "2025-08-28")] alias exponentialCDFReal_eq_integral :=
-  cdf_expMeasure_eq_integral
-
 lemma cdf_expMeasure_eq_lintegral {r : ℝ} (hr : 0 < r) (x : ℝ) :
     cdf (expMeasure r) x = ENNReal.toReal (∫⁻ x in Iic x, exponentialPDF r x) :=
   cdf_gammaMeasure_eq_lintegral zero_lt_one hr x
-
-@[deprecated (since := "2025-08-28")] alias exponentialCDFReal_eq_lintegral :=
-  cdf_expMeasure_eq_lintegral
 
 open Topology
 
@@ -174,7 +159,6 @@ lemma lintegral_exponentialPDF_eq_antiDeriv {r : ℝ} (hr : 0 < r) (x : ℝ) :
       rw [integrableOn_Icc_iff_integrableOn_Ioc]
       exact Integrable.const_mul (exp_neg_integrableOn_Ioc hr) _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The CDF of the exponential distribution equals ``1 - exp (-(r * x))`` -/
 lemma cdf_expMeasure_eq {r : ℝ} (hr : 0 < r) (x : ℝ) :
     cdf (expMeasure r) x = if 0 ≤ x then 1 - exp (-(r * x)) else 0 := by
@@ -184,8 +168,6 @@ lemma cdf_expMeasure_eq {r : ℝ} (hr : 0 < r) (x : ℝ) :
   · simp only [sub_nonneg, exp_le_one_iff, Left.neg_nonpos_iff]
     exact mul_nonneg hr.le h
   · exact le_rfl
-
-@[deprecated (since := "2025-08-28")] alias exponentialCDFReal_eq := cdf_expMeasure_eq
 
 end ExponentialCDF
 

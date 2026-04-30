@@ -9,6 +9,7 @@ public import Mathlib.RingTheory.DedekindDomain.Basic
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 public import Mathlib.RingTheory.Finiteness.Ideal
 public import Mathlib.RingTheory.Ideal.Cotangent
+public import Mathlib.RingTheory.KrullDimension.Zero
 
 /-!
 
@@ -27,7 +28,7 @@ Noetherian local domain that is not a field `(R, m, k)`:
 Also see `tfae_of_isNoetherianRing_of_isLocalRing_of_isDomain` for a version without `¬ IsField R`.
 -/
 
-@[expose] public section
+public section
 
 
 variable (R : Type*) [CommRing R]
@@ -36,7 +37,6 @@ open scoped Multiplicative
 
 open IsLocalRing Module
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_maximalIdeal_pow_eq_of_principal [IsNoetherianRing R] [IsLocalRing R] [IsDomain R]
     (h' : (maximalIdeal R).IsPrincipal) (I : Ideal R) (hI : I ≠ ⊥) :
     ∃ n : ℕ, I = maximalIdeal R ^ n := by
@@ -226,7 +226,6 @@ theorem IsDiscreteValuationRing.TFAE [IsNoetherianRing R] [IsLocalRing R] [IsDom
 
 variable {R}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsLocalRing.finrank_CotangentSpace_eq_one_iff [IsNoetherianRing R] [IsLocalRing R]
     [IsDomain R] : finrank (ResidueField R) (CotangentSpace R) = 1 ↔ IsDiscreteValuationRing R := by
   by_cases hR : IsField R
@@ -240,6 +239,23 @@ variable (R)
 lemma IsLocalRing.finrank_CotangentSpace_eq_one [IsDomain R] [IsDiscreteValuationRing R] :
     finrank (ResidueField R) (CotangentSpace R) = 1 :=
   finrank_CotangentSpace_eq_one_iff.mpr ‹_›
+
+open Ring in
+lemma IsDiscreteValuationRing.ringKrullDim_eq_one [IsDomain R] [IsDiscreteValuationRing R] :
+    ringKrullDim R = 1 := by
+  refine eq_of_le_of_not_lt (krullDimLE_iff (n := 1).mp ?_) fun h ↦ ?_
+  · exact krullDimLE_one_iff_of_isPrime_bot.mpr fun I hI hI' ↦ hI'.isMaximal hI
+  · have : KrullDimLE 0 R := krullDimLE_iff.mpr (ENat.WithBot.lt_add_one_iff.mp h)
+    exact IsDiscreteValuationRing.not_isField R KrullDimLE.isField_of_isDomain
+
+open Ring in
+lemma IsDiscreteValuationRing.not_krullDimLE_zero [IsDomain R] [IsDiscreteValuationRing R] :
+      ¬ KrullDimLE 0 R := by
+  simp [krullDimLE_iff, ringKrullDim_eq_one R]
+
+open Ring in
+instance [IsDomain R] [IsDiscreteValuationRing R] : KrullDimLE 1 R :=
+    krullDimLE_iff.mpr (IsDiscreteValuationRing.ringKrullDim_eq_one R).le
 
 instance (priority := 100) IsDedekindDomain.isPrincipalIdealRing
     [IsLocalRing R] [IsDedekindDomain R] : IsPrincipalIdealRing R :=

@@ -121,9 +121,11 @@ theorem mapRange_multiset_sum (f : F) (m : Multiset (α →₀ M)) :
     mapRange f (map_zero f) m.sum = (m.map fun x => mapRange f (map_zero f) x).sum :=
   (mapRange.addMonoidHom (f : M →+ N) : (α →₀ _) →+ _).map_multiset_sum _
 
-theorem mapRange_finset_sum (f : F) (s : Finset ι) (g : ι → α →₀ M) :
+theorem mapRange_finsetSum (f : F) (s : Finset ι) (g : ι → α →₀ M) :
     mapRange f (map_zero f) (∑ x ∈ s, g x) = ∑ x ∈ s, mapRange f (map_zero f) (g x) :=
   map_sum (mapRange.addMonoidHom (f : M →+ N)) _ _
+
+@[deprecated (since := "2026-04-08")] alias mapRange_finset_sum := mapRange_finsetSum
 
 end Finsupp
 
@@ -266,7 +268,7 @@ variable [AddCommMonoid M] {v v₁ v₂ : α →₀ M}
 def mapDomain (f : α → β) (v : α →₀ M) : β →₀ M :=
   v.sum fun a => single (f a)
 
-theorem mapDomain_apply {f : α → β} (hf : Function.Injective f) (x : α →₀ M) (a : α) :
+@[simp] theorem mapDomain_apply {f : α → β} (hf : Function.Injective f) (x : α →₀ M) (a : α) :
     mapDomain f x (f a) = x a := by
   rw [mapDomain, sum_apply, sum_eq_single a, single_eq_same]
   · intro b _ hba
@@ -308,6 +310,10 @@ theorem mapDomain_congr {f g : α → β} (h : ∀ x ∈ v.support, f x = g x) :
 theorem mapDomain_add {f : α → β} : mapDomain f (v₁ + v₂) = mapDomain f v₁ + mapDomain f v₂ :=
   sum_add_index' (fun _ => single_zero _) fun _ => single_add _
 
+lemma mapDomain_sub {α β M : Type*} [AddCommGroup M] {v₁ v₂ : α →₀ M} {f : α → β} :
+    mapDomain f (v₁ - v₂) = mapDomain f v₁ - mapDomain f v₂ := by
+  simp [mapDomain, sum_sub_index]
+
 @[simp]
 theorem mapDomain_equiv_apply {f : α ≃ β} (x : α →₀ M) (a : β) :
     mapDomain f x a = x (f.symm a) := by
@@ -330,9 +336,11 @@ theorem mapDomain.addMonoidHom_comp (f : β → γ) (g : α → β) :
       (mapDomain.addMonoidHom f).comp (mapDomain.addMonoidHom g) :=
   AddMonoidHom.ext fun _ => mapDomain_comp
 
-theorem mapDomain_finset_sum {f : α → β} {s : Finset ι} {v : ι → α →₀ M} :
+theorem mapDomain_finsetSum {f : α → β} {s : Finset ι} {v : ι → α →₀ M} :
     mapDomain f (∑ i ∈ s, v i) = ∑ i ∈ s, mapDomain f (v i) :=
   map_sum (mapDomain.addMonoidHom f) _ _
+
+@[deprecated (since := "2026-04-08")] alias mapDomain_finset_sum := mapDomain_finsetSum
 
 theorem mapDomain_sum [Zero N] {f : α → β} {s : α →₀ N} {v : α → N → α →₀ M} :
     mapDomain f (s.sum v) = s.sum fun a b => mapDomain f (v a b) :=
@@ -498,6 +506,15 @@ theorem eq_zero_of_comapDomain_eq_zero [Zero M] (f : α → β) (l : β →₀ M
   intro h a ha
   obtain ⟨b, hb⟩ := hf.2.2 ha
   exact h b (hb.2.symm ▸ ha)
+
+@[simp]
+lemma comapDomain_single_of_not_mem_range [Zero M] {f : α → β} {b : β} (hb : b ∉ Set.range f)
+    (m : M) (hf) : comapDomain f (single b m) hf = 0 := by
+  classical
+  ext a
+  simp only [comapDomain, single_apply, coe_mk, coe_zero, Pi.zero_apply, ite_eq_right_iff]
+  rintro rfl
+  simp at hb
 
 section FInjective
 
@@ -864,11 +881,13 @@ theorem mem_support_multiset_sum [AddCommMonoid M] {s : Multiset (α →₀ M)} 
         rcases ih (mem_support_iff.2 ha) with ⟨f', h₀, h₁⟩
         exact ⟨f', Multiset.mem_cons_of_mem h₀, h₁⟩)
 
-theorem mem_support_finset_sum [AddCommMonoid M] {s : Finset ι} {h : ι → α →₀ M} (a : α)
+theorem mem_support_finsetSum [AddCommMonoid M] {s : Finset ι} {h : ι → α →₀ M} (a : α)
     (ha : a ∈ (∑ c ∈ s, h c).support) : ∃ c ∈ s, a ∈ (h c).support :=
   let ⟨_, hf, hfa⟩ := mem_support_multiset_sum a ha
   let ⟨c, hc, Eq⟩ := Multiset.mem_map.1 hf
   ⟨c, hc, Eq.symm ▸ hfa⟩
+
+@[deprecated (since := "2026-04-08")] alias mem_support_finset_sum := mem_support_finsetSum
 
 /-! ### Declarations about `curry` and `uncurry` -/
 
@@ -987,36 +1006,81 @@ end
 
 
 section Sum
+variable [Zero γ]
 
 /-- `Finsupp.sumElim f g` maps `inl x` to `f x` and `inr y` to `g y`. -/
 @[simps support]
-def sumElim {α β γ : Type*} [Zero γ] (f : α →₀ γ) (g : β →₀ γ) : α ⊕ β →₀ γ where
+def sumElim (f : α →₀ γ) (g : β →₀ γ) : α ⊕ β →₀ γ where
   support := f.support.disjSum g.support
   toFun := Sum.elim f g
   mem_support_toFun := by simp
 
 @[simp, norm_cast]
-theorem coe_sumElim {α β γ : Type*} [Zero γ] (f : α →₀ γ) (g : β →₀ γ) :
-    ⇑(sumElim f g) = Sum.elim f g :=
-  rfl
+theorem coe_sumElim (f : α →₀ γ) (g : β →₀ γ) : ⇑(sumElim f g) = Sum.elim f g := rfl
 
-theorem sumElim_apply {α β γ : Type*} [Zero γ] (f : α →₀ γ) (g : β →₀ γ) (x : α ⊕ β) :
-    sumElim f g x = Sum.elim f g x :=
-  rfl
+theorem sumElim_apply (f : α →₀ γ) (g : β →₀ γ) (x : α ⊕ β) : sumElim f g x = Sum.elim f g x := rfl
 
-theorem sumElim_inl {α β γ : Type*} [Zero γ] (f : α →₀ γ) (g : β →₀ γ) (x : α) :
-    sumElim f g (Sum.inl x) = f x :=
-  rfl
+lemma sumElim_inl (f : α →₀ γ) (g : β →₀ γ) (x : α) : sumElim f g (Sum.inl x) = f x := rfl
+lemma sumElim_inr (f : α →₀ γ) (g : β →₀ γ) (x : β) : sumElim f g (Sum.inr x) = g x := rfl
 
-theorem sumElim_inr {α β γ : Type*} [Zero γ] (f : α →₀ γ) (g : β →₀ γ) (x : β) :
-    sumElim f g (Sum.inr x) = g x :=
-  rfl
+@[simp] lemma sumElim_zero_zero : sumElim 0 0 = (0 : α ⊕ β →₀ γ) := by ext (_ | _) <;> simp
+
+@[simp] lemma sumElim_single_zero (a : α) (c : γ) :
+    sumElim (single a c) (0 : β →₀ γ) = single (.inl a) c := by
+  classical ext (_ | _) <;> simp [single_apply]
+
+@[simp] lemma sumElim_zero_single (b : β) (c : γ) :
+    sumElim (0 : α →₀ γ) (single b c) = single (.inr b) c := by
+  classical ext (_ | _) <;> simp [single_apply]
+
+@[simp] lemma sumElim_single_single [AddMonoid M] (a : α) (b : β) (m₁ m₂ : M) :
+    sumElim (single a m₁) (single b m₂) = single (.inl a) m₁ + single (.inr b) m₂ := by
+  classical ext (_ | _) <;> simp [single_apply]
+
+lemma sumElim_eq_add [AddCommMonoid M] (f : α →₀ M) (g : β →₀ M) :
+    sumElim f g = mapDomain Sum.inl f + mapDomain Sum.inr g := by
+  ext (_ | _) <;> simp [mapDomain_notin_range, Sum.inl_injective, Sum.inr_injective]
+
+@[simp] lemma mapDomain_swap_sumElim [AddCommMonoid M] (f : α →₀ M) (g : β →₀ M) :
+    mapDomain Sum.swap (sumElim f g) = sumElim g f := by
+  simp [sumElim_eq_add, mapDomain_add, ← mapDomain_comp, Function.comp_def, add_comm]
 
 @[to_additive]
 lemma prod_sumElim {ι₁ ι₂ α M : Type*} [Zero α] [CommMonoid M]
     (f₁ : ι₁ →₀ α) (f₂ : ι₂ →₀ α) (g : ι₁ ⊕ ι₂ → α → M) :
     (f₁.sumElim f₂).prod g = f₁.prod (g ∘ Sum.inl) * f₂.prod (g ∘ Sum.inr) := by
   simp [Finsupp.prod, Finset.prod_disjSum]
+
+@[simp]
+lemma comapDomain_inl_sumElim (f : α →₀ γ) (g : β →₀ γ) :
+    comapDomain Sum.inl (f.sumElim g) Sum.inl_injective.injOn = f := by
+  ext; simp
+
+@[simp]
+lemma comapDomain_inr_sumElim (f : α →₀ γ) (g : β →₀ γ) :
+    comapDomain Sum.inr (f.sumElim g) Sum.inr_injective.injOn = g := by
+  ext; simp
+
+@[simp]
+lemma embDomain_inl (a : α →₀ γ) :
+    embDomain Function.Embedding.inl a = sumElim a (0 : β →₀ γ) := by
+  ext (_ | _) <;> simp [embDomain_apply]
+
+@[simp]
+lemma embDomain_inr (b : β →₀ γ) :
+    embDomain Function.Embedding.inr b = sumElim (0 : α →₀ γ) b := by
+  ext (_ | _) <;> simp [embDomain_apply]
+
+@[simp]
+lemma comapDomain_sumElim_comapDomain (c : α ⊕ β →₀ γ) :
+    (comapDomain Sum.inl c Sum.inl_injective.injOn).sumElim
+      (comapDomain Sum.inr c Sum.inr_injective.injOn) = c := by
+  ext (_ | _) <;> simp
+
+@[simp]
+lemma sumElim_add [AddZeroClass M] (a b : α →₀ M) (c d : β →₀ M) :
+    (a + b).sumElim (c + d) = a.sumElim c + b.sumElim d := by
+  ext (_ | _) <;> simp
 
 /-- The equivalence between `(α ⊕ β) →₀ γ` and `(α →₀ γ) × (β →₀ γ)`.
 
@@ -1310,5 +1374,35 @@ theorem sigmaFinsuppAddEquivPiFinsupp_apply {α : Type*} {ιs : η → Type*} [A
   rfl
 
 end Sigma
+
+lemma mem_range_embDomain_iff [AddCommMonoid M] (f : α ↪ β) (x : β →₀ M) :
+    x ∈ Set.range (embDomain f) ↔ ↑x.support ⊆ Set.range f := by
+  convert mem_range_mapDomain_iff _ f.injective _
+  · ext; rw [embDomain_eq_mapDomain]
+  · grind
+
+theorem embDomain_trans_apply [AddCommMonoid M] (v : α →₀ M) (f : α ↪ β) (g : β ↪ γ) :
+    embDomain (f.trans g) v = embDomain g (embDomain f v) := by
+  simp only [embDomain_eq_mapDomain, ← mapDomain_comp, Embedding.coe_trans]
+
+theorem mapDomain_support_of_subsingletonAddUnits [DecidableEq β] [AddCommMonoid M]
+    (f : α → β) [Subsingleton (AddUnits M)] (x : α →₀ M) :
+      (x.mapDomain f).support = x.support.image f := by
+  ext t
+  rw [mem_support_iff, ne_eq, Finset.mem_image]
+  refine ⟨?_, fun ⟨i, i_in, hi⟩ ↦ ?_⟩
+  · simpa [mapDomain, sum, single_apply] using fun i h h' _ ↦ ⟨i, h, h'⟩
+  simpa [mapDomain, sum, ← hi, single_apply] using ⟨i, by simp [mem_support_iff.mp i_in]⟩
+
+theorem mapDomain_apply_eq_sum [DecidableEq β] [AddCommMonoid M] (f : α → β)
+    (x : α →₀ M) {a : α} : (x.mapDomain f) (f a) = ∑ i ∈ x.support with f i = f a, x i := by
+  simp [mapDomain, sum, single_apply, Finset.sum_ite]
+
+theorem mapDomain_apply_eq_zero_iff_of_subsingletonAddUnits [AddCommMonoid M] (f : α → β)
+    [Subsingleton (AddUnits M)] (x : α →₀ M) : mapDomain (M := M) f x = 0 ↔ x = 0 := by
+  classical
+  refine ⟨fun h ↦ Finsupp.ext (fun i ↦ ?_), fun h ↦ by rw [h, mapDomain_zero]⟩
+  replace h := Finsupp.ext_iff.mp h (f i)
+  simp [mapDomain_apply_eq_sum] at h; grind
 
 end Finsupp

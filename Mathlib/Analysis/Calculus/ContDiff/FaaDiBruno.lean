@@ -117,7 +117,6 @@ namespace OrderedFinpartition
 
 /-! ### Basic API for ordered finpartitions -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The ordered finpartition of `Fin n` into singletons. -/
 @[simps -fullyApplied]
 def atomic (n : ℕ) : OrderedFinpartition n where
@@ -1105,7 +1104,7 @@ theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E �
     rw [Finset.sum_sigma']
     exact Fintype.sum_equiv (OrderedFinpartition.extendEquiv m) _ _ (fun p ↦ rfl)
   · intro m hm
-    apply continuousOn_finset_sum _ (fun c _ ↦ ?_)
+    apply continuousOn_finsetSum _ (fun c _ ↦ ?_)
     let B := c.compAlongOrderedFinpartitionL 𝕜 E F G
     change ContinuousOn
       ((fun p ↦ B p.1 p.2) ∘ (fun x ↦ (q (f x) c.length, fun i ↦ p x (c.partSize i)))) s

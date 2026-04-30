@@ -93,6 +93,12 @@ protected lemma linearIndepOn (s : Set ι) : LinearIndepOn R b s :=
 protected theorem ne_zero [Nontrivial R] (i) : b i ≠ 0 :=
   b.linearIndependent.ne_zero i
 
+theorem injective_constr_of_linearIndependent
+    [Semiring R₂] [Module R₂ M'] [SMulCommClass R R₂ M'] {v : ι → M'}
+    (hv : LinearIndependent R v) : Injective (b.constr R₂ v) :=
+  fun _ _ hab ↦ b.repr.injective <| hv.finsuppLinearCombination_injective <| by
+    simpa [constr_def] using hab
+
 end Properties
 
 variable {v : ι → M} {x y : M}
@@ -123,6 +129,13 @@ theorem coe_mk : ⇑(Basis.mk hli hsp) = v :=
 end Mk
 
 section Coord
+
+@[simp]
+theorem linearIndependent_coord {R : Type*} [CommSemiring R] [Module R M] (b : Basis ι R M) :
+    LinearIndependent R b.coord := by
+  classical
+  refine linearIndependent_iff'ₛ.mpr fun s l₁ l₂ h j hj ↦ ?_
+  simpa [hj, Finsupp.single_apply] using congr($h (b j))
 
 variable (hli : LinearIndependent R v) (hsp : ⊤ ≤ span R (range v))
 
@@ -175,8 +188,25 @@ protected noncomputable def span : Basis ι R (span R (range v)) :=
     rwa [h_x_eq_y]
 
 @[simp]
-protected theorem span_apply (i : ι) : (Basis.span hli i : M) = v i :=
-  congr_arg ((↑) : span R (range v) → M) <| Basis.mk_apply _ _ _
+protected theorem span_apply (i : ι) :
+    Basis.span hli i = ⟨v i, Submodule.subset_span <| mem_range_self _⟩ := by
+  ext
+  exact congr_arg ((↑) : span R (range v) → M) <| Basis.mk_apply _ _ _
+
+protected theorem coe_span_apply (i : ι) : (Basis.span hli i : M) = v i := by simp
+
+@[simp]
+protected theorem span_repr_eq_single (i : ι)
+    (hi : v i ∈ span R (range v) := subset_span <| mem_range_self i) :
+    (Basis.span hli).repr ⟨v i, hi⟩ = single i 1 := by
+  rw [← LinearEquiv.eq_symm_apply]
+  simp [Basis.span]
+
+lemma span_neg {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+    {v : ι → M} (hli : LinearIndependent R v)
+    (h : span R (range v) = span R (range (-v)) := by simp [← neg_range']) :
+    Basis.span hli.neg = ((Basis.span hli).map <| (LinearEquiv.neg _).trans (.ofEq _ _ h)) := by
+  ext; simp
 
 end Span
 

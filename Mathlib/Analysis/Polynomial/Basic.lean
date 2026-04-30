@@ -374,7 +374,7 @@ end Cobounded
 lemma finite_abs_eval_le_of_degree_lt {P Q : ℤ[X]} (h : Q.degree < P.degree) :
     {x | |P.eval x| ≤ |Q.eval x|}.Finite := by
   have o := isLittleO_cobounded_of_degree_lt h
-  rw [Int.cobounded_eq, ← Int.cofinite_eq] at o
+  rw [IsOrderBornology.cobounded_eq, ← Int.cofinite_eq] at o
   have nr := eventually_cofinite_not_isRoot (ne_zero_of_degree_gt h)
   have key := o.eventuallyLT_norm_of_eventually_pos (nr.congr (.of_forall (by simp)))
   simp_rw [eventually_cofinite, not_lt, Int.norm_eq_abs] at key
@@ -383,7 +383,7 @@ lemma finite_abs_eval_le_of_degree_lt {P Q : ℤ[X]} (h : Q.degree < P.degree) :
 /-- If `Q(x) ∣ P(x)` at infinitely many integers `x` and `Q` is monic, `Q ∣ P`. -/
 theorem dvd_of_infinite_eval_dvd_eval
     {P Q : ℤ[X]} (mQ : Q.Monic) (h : {a | Q.eval a ∣ P.eval a}.Infinite) : Q ∣ P := by
-  have eqR := modByMonic_add_div P mQ
+  have eqR := modByMonic_add_div P Q
   have degR := degree_modByMonic_lt P mQ
   rw [← modByMonic_eq_zero_iff_dvd mQ]
   set R := P %ₘ Q

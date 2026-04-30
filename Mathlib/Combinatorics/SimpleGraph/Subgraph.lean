@@ -194,6 +194,13 @@ lemma spanningCoe_subgraphOfAdj {v w : V} (hadj : G.Adj v w) :
   ext v w
   aesop
 
+/-- `coe` can be embedded in `spanningCoe`. -/
+@[simps]
+def coeEmbeddingSpanningCoe (G' : Subgraph G) : G'.coe ↪g G'.spanningCoe where
+  toFun := Subtype.val
+  inj' := Subtype.val_injective
+  map_rel_iff' := .rfl
+
 /-- `spanningCoe` is equivalent to `coe` for a subgraph that `IsSpanning`. -/
 @[simps]
 def spanningCoeEquivCoeOfSpanning (G' : Subgraph G) (h : G'.IsSpanning) :
@@ -255,6 +262,10 @@ lemma image_coe_edgeSet_coe (G' : G.Subgraph) : Sym2.map (↑) '' G'.coe.edgeSet
   induction e using Sym2.ind with | h a b =>
   rw [Subgraph.mem_edgeSet] at he
   exact ⟨s(⟨a, edge_vert _ he⟩, ⟨b, edge_vert _ he.symm⟩), Sym2.map_mk ..⟩
+
+@[simp]
+lemma edgeSet_spanningCoe (G' : G.Subgraph) : G'.spanningCoe.edgeSet = G'.edgeSet := by
+  rfl
 
 theorem mem_verts_of_mem_edge {G' : Subgraph G} {e : Sym2 V} {v : V} (he : e ∈ G'.edgeSet)
     (hv : v ∈ e) : v ∈ G'.verts := by
@@ -460,24 +471,24 @@ instance : BoundedOrder (Subgraph G) where
   bot_le _ := ⟨Set.empty_subset _, fun _ _ => False.elim⟩
 
 /-- Note that subgraphs do not form a Boolean algebra, because of `verts`. -/
+@[implicit_reducible]
 def completelyDistribLatticeMinimalAxioms : CompletelyDistribLattice.MinimalAxioms G.Subgraph where
   le_top G' := ⟨Set.subset_univ _, fun _ _ => G'.adj_sub⟩
   bot_le _ := ⟨Set.empty_subset _, fun _ _ => False.elim⟩
-  -- Porting note: needed `apply` here to modify elaboration; previously the term itself was fine.
-  le_sSup s G' hG' := ⟨by apply Set.subset_iUnion₂ G' hG', fun _ _ hab => ⟨G', hG', hab⟩⟩
-  sSup_le s G' hG' :=
-    ⟨Set.iUnion₂_subset fun _ hH => (hG' _ hH).1, by
-      rintro a b ⟨H, hH, hab⟩
-      exact (hG' _ hH).2 hab⟩
-  sInf_le _ G' hG' := ⟨Set.iInter₂_subset G' hG', fun _ _ hab => hab.1 hG'⟩
-  le_sInf _ G' hG' :=
-    ⟨Set.subset_iInter₂ fun _ hH => (hG' _ hH).1, fun _ _ hab =>
-      ⟨fun _ hH => (hG' _ hH).2 hab, G'.adj_sub hab⟩⟩
+  isLUB_sSup _ :=
+    ⟨fun G' hG' ↦ ⟨Set.subset_biUnion_of_mem hG', fun _ _ hab => ⟨G', hG', hab⟩⟩,
+      fun G' hG' ↦
+        ⟨Set.iUnion₂_subset fun _ hH => (hG' hH).1, fun a b ⟨H, hH, hab⟩ ↦ (hG' hH).2 hab⟩⟩
+  isGLB_sInf _ :=
+    ⟨fun G' hG' ↦ ⟨Set.iInter₂_subset G' hG', fun _ _ hab => hab.1 hG'⟩,
+      fun G' hG' ↦
+        ⟨Set.subset_iInter₂ fun _ hH => (hG' hH).1, fun _ _ hab =>
+          ⟨fun _ hH => (hG' hH).2 hab, G'.adj_sub hab⟩⟩⟩
   iInf_iSup_eq f := Subgraph.ext (by simpa using iInf_iSup_eq)
     (by ext; simp [Classical.skolem])
 
 instance : CompletelyDistribLattice G.Subgraph :=
-  .ofMinimalAxioms completelyDistribLatticeMinimalAxioms
+  fast_instance% .ofMinimalAxioms completelyDistribLatticeMinimalAxioms
 
 @[gcongr] lemma verts_mono {H H' : G.Subgraph} (h : H ≤ H') : H.verts ⊆ H'.verts := h.1
 lemma verts_monotone : Monotone (verts : G.Subgraph → Set V) := fun _ _ h ↦ h.1
@@ -585,9 +596,6 @@ theorem spanningCoe_le_of_le {H H' : Subgraph G} (h : H ≤ H') : H.spanningCoe 
 lemma sup_spanningCoe (H H' : Subgraph G) :
     (H ⊔ H').spanningCoe = H.spanningCoe ⊔ H'.spanningCoe := rfl
 
-/-- The top of the `Subgraph G` lattice is equivalent to the graph itself. -/
-@[deprecated (since := "2025-09-15")] alias topEquiv := topIso
-
 /-- The bottom of the `Subgraph G` lattice is isomorphic to the empty graph on the empty
 vertex type. -/
 def botIso : (⊥ : Subgraph G).coe ≃g emptyGraph Empty where
@@ -597,15 +605,26 @@ def botIso : (⊥ : Subgraph G).coe ≃g emptyGraph Empty where
   right_inv v := v.elim
   map_rel_iff' := Iff.rfl
 
-@[deprecated (since := "2025-09-15")] alias botEquiv := botIso
-
 theorem edgeSet_mono {H₁ H₂ : Subgraph G} (h : H₁ ≤ H₂) : H₁.edgeSet ≤ H₂.edgeSet :=
   Sym2.ind h.2
 
-set_option backward.isDefEq.respectTransparency false in
 theorem _root_.Disjoint.edgeSet {H₁ H₂ : Subgraph G} (h : Disjoint H₁ H₂) :
     Disjoint H₁.edgeSet H₂.edgeSet :=
   disjoint_iff_inf_le.mpr <| by simpa using edgeSet_mono h.le_bot
+
+@[simp]
+lemma disjoint_verts_iff_disjoint {H H' : Subgraph G} :
+    Disjoint H.verts H'.verts ↔ Disjoint H H' := by
+  constructor
+  · rintro hdisj M' ⟨hsub₀, _⟩ ⟨hsub₁, _⟩
+    rw [le_bot_iff]
+    ext
+    · grind [verts_bot]
+    · exact ⟨(hdisj hsub₀ hsub₁ <| M'.edge_vert · :), False.elim⟩
+  · intro hdisj S h₀ h₁ v hvS
+    let M' : Subgraph G := { verts := {v}, Adj := ⊥, adj_sub := by simp, edge_vert := by simp }
+    have hle {M : Subgraph G} (h : v ∈ M.verts) : M' ≤ M := by constructor <;> simp [h, M']
+    exact hdisj (hle <| h₀ hvS) (hle <| h₁ hvS) |>.left <| Set.mem_singleton v
 
 section map
 variable {G' : SimpleGraph W} {f : G →g G'}
@@ -710,10 +729,8 @@ def inclusion {x y : Subgraph G} (h : x ≤ y) : x.coe →g y.coe where
   toFun v := ⟨↑v, And.left h v.property⟩
   map_rel' hvw := h.2 hvw
 
-theorem inclusion.injective {x y : Subgraph G} (h : x ≤ y) : Function.Injective (inclusion h) := by
-  intro v w h
-  rw [inclusion, DFunLike.coe, Subtype.mk_eq_mk] at h
-  exact Subtype.ext h
+theorem inclusion.injective {x y : Subgraph G} (h : x ≤ y) : Function.Injective (inclusion h) :=
+  fun _ _ h ↦ Subtype.ext congr(Subtype.val $h)
 
 /-- There is an induced injective homomorphism of a subgraph of `G` into `G`. -/
 @[simps]
@@ -756,6 +773,7 @@ instance finiteAt {G' : Subgraph G} (v : G'.verts) [DecidableRel G'.Adj]
 /-- If a subgraph is locally finite at a vertex, then so are subgraphs of that subgraph.
 
 This is not an instance because `G''` cannot be inferred. -/
+@[implicit_reducible]
 def finiteAtOfSubgraph {G' G'' : Subgraph G} [DecidableRel G'.Adj] (h : G' ≤ G'') (v : G'.verts)
     [Fintype (G''.neighborSet v)] : Fintype (G'.neighborSet v) :=
   Set.fintypeSubset (G''.neighborSet v) (neighborSet_subset_of_subgraph h v)
@@ -850,7 +868,6 @@ lemma adj_iff_of_neighborSet_equiv {v : V} {H : Subgraph G}
 
 end Subgraph
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem card_neighborSet_toSubgraph (G H : SimpleGraph V) (h : H ≤ G)
     (v : V) [Fintype ↑((toSubgraph H h).neighborSet v)] [Fintype ↑(H.neighborSet v)] :
@@ -921,6 +938,9 @@ instance nonempty_subgraphOfAdj_verts {v w : V} (hvw : G.Adj v w) :
     Nonempty (G.subgraphOfAdj hvw).verts :=
   ⟨⟨v, by simp⟩⟩
 
+theorem subgraphOfAdj_adj_self {u v : V} (h : G.Adj u v) : (G.subgraphOfAdj h).Adj u v :=
+  rfl
+
 @[simp]
 theorem edgeSet_subgraphOfAdj {v w : V} (hvw : G.Adj v w) :
     (G.subgraphOfAdj hvw).edgeSet = {s(v, w)} := by
@@ -932,10 +952,13 @@ theorem edgeSet_subgraphOfAdj {v w : V} (hvw : G.Adj v w) :
 lemma subgraphOfAdj_le_of_adj {v w : V} (H : G.Subgraph) (h : H.Adj v w) :
     G.subgraphOfAdj (H.adj_sub h) ≤ H := by
   constructor
-  · intro x
-    rintro (rfl | rfl) <;> simp [H.edge_vert h, H.edge_vert h.symm]
-  · simp only [subgraphOfAdj_adj, Sym2.eq, Sym2.rel_iff]
-    rintro _ _ (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩) <;> simp [h, h.symm]
+  · grind [subgraphOfAdj_verts, h.fst_mem, h.snd_mem]
+  · grind [subgraphOfAdj_adj, h.symm]
+
+@[simp]
+theorem subgraphOfAdj_le_iff {u v : V} (h : G.Adj u v) (H : G.Subgraph) :
+    G.subgraphOfAdj h ≤ H ↔ H.Adj u v :=
+  ⟨fun hle ↦ hle.right <| subgraphOfAdj_adj_self h, subgraphOfAdj_le_of_adj H⟩
 
 theorem subgraphOfAdj_symm {v w : V} (hvw : G.Adj v w) :
     G.subgraphOfAdj hvw.symm = G.subgraphOfAdj hvw := by
@@ -1102,7 +1125,7 @@ theorem deleteEdges_coe_eq (s : Set (Sym2 G'.verts)) :
     refine Sym2.ind ?_
     rintro ⟨v', hv'⟩ ⟨w', hw'⟩
     simp only [Sym2.map_mk, Sym2.eq]
-    contrapose!
+    contrapose
     rintro (_ | _) <;> simpa only [Sym2.eq_swap]
   · intro h' hs
     exact h' _ hs rfl
@@ -1165,7 +1188,13 @@ theorem _root_.SimpleGraph.induce_eq_coe_induce_top (s : Set V) :
 
 lemma _root_.SimpleGraph.spanningCoe_induce_top (s : Set V) :
     ((⊤ : G.Subgraph).induce s).spanningCoe = (G.induce s).spanningCoe := by
-  grind [induce_eq_coe_induce_top, Subgraph.spanningCoe_coe]
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
+  It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+  canonicalizer; a minimization would help. The original proof was:
+  `grind [induce_eq_coe_induce_top, Subgraph.spanningCoe_coe]` -/
+  rw [induce_eq_coe_induce_top]
+  exact (Subgraph.spanningCoe_coe _).symm
 
 section Induce
 
@@ -1282,7 +1311,7 @@ theorem deleteVerts_empty : G'.deleteVerts ∅ = G' := by
   simp [deleteVerts]
 
 theorem deleteVerts_le : G'.deleteVerts s ≤ G' := by
-  constructor <;> simp [Set.diff_subset]
+  constructor <;> simp
 
 @[gcongr, mono]
 theorem deleteVerts_mono {G' G'' : G.Subgraph} (h : G' ≤ G'') :

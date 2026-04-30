@@ -302,7 +302,6 @@ lemma sum_excenterWeightsUnnorm_singleton_pos [Nat.AtLeastTwo n] (i : Fin (n + 1
   · rw [Finset.mem_filter_univ] at h
     simp [excenterWeightsUnnorm, h]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sign_excenterWeights_singleton_neg [Nat.AtLeastTwo n] (i : Fin (n + 1)) :
     SignType.sign (s.excenterWeights {i} i) = -1 := by
   simp_rw [excenterWeights, Pi.smul_apply, smul_eq_mul, sign_mul]
@@ -311,7 +310,6 @@ lemma sign_excenterWeights_singleton_neg [Nat.AtLeastTwo n] (i : Fin (n + 1)) :
     exact s.sum_excenterWeightsUnnorm_singleton_pos i
   · simp [excenterWeightsUnnorm]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sign_excenterWeights_singleton_pos [Nat.AtLeastTwo n] {i j : Fin (n + 1)} (h : i ≠ j) :
     SignType.sign (s.excenterWeights {i} j) = 1 := by
   simp_rw [excenterWeights, Pi.smul_apply, smul_eq_mul, sign_mul]
@@ -562,7 +560,6 @@ lemma ExcenterExists.signedInfDist_excenter_eq_mul_sum_inv {signs : Finset (Fin 
   rw [← altitudeFoot, ← height]
   simp [(s.height_pos i).ne']
 
-set_option backward.isDefEq.respectTransparency false in
 variable {s} in
 lemma ExcenterExists.sign_signedInfDist_excenter {signs : Finset (Fin (n + 1))}
     (h : s.ExcenterExists signs) (i : Fin (n + 1)) :
@@ -650,7 +647,6 @@ lemma incenter_notMem_affineSpan_pair [Nat.AtLeastTwo n] (i j : Fin (n + 1)) :
     s.incenter ∉ line[ℝ, s.points i, s.points j] :=
   s.excenterExists_empty.excenter_notMem_affineSpan_pair i j
 
-set_option backward.isDefEq.respectTransparency false in
 variable {s} in
 lemma ExcenterExists.excenterWeights_eq_excenterWeights_iff {signs₁ signs₂ : Finset (Fin (n + 1))}
     (h₁ : s.ExcenterExists signs₁) (h₂ : s.ExcenterExists signs₂) :
@@ -818,7 +814,6 @@ lemma touchpoint_eq_point_rev (s : Simplex ℝ P 1) (signs : Finset (Fin 2)) (i 
     s.touchpoint signs i = s.points i.rev :=
   s.orthogonalProjectionSpan_faceOpposite_eq_point_rev _ _
 
-set_option backward.isDefEq.respectTransparency false in
 variable {s} in
 /-- The signed distance between the excenter and its projection in the plane of each face is the
 exradius. -/
@@ -980,7 +975,7 @@ lemma exists_forall_dist_eq_iff_exists_excenterExists_and_eq_excenter {p : P}
     refine ⟨{i ∈ (Finset.univ : Finset (Fin (n + 1))) | s.signedInfDist i p = -r}, ?_⟩
     apply (s.exists_forall_signedInfDist_eq_iff_excenterExists_and_eq_excenter hp).1
     refine ⟨r, ?_⟩
-    grind [Finset.mem_filter_univ]
+    grind
   · rintro ⟨signs, h⟩
     replace h := (s.exists_forall_signedInfDist_eq_iff_excenterExists_and_eq_excenter hp).2 h
     rcases h with ⟨r, h⟩
@@ -1038,7 +1033,6 @@ lemma touchpoint_empty_notMem_affineSpan_of_ne {i j : Fin (n + 1)} (hne : i ≠ 
     s.touchpoint ∅ i ∉ affineSpan ℝ (Set.range (s.faceOpposite j).points) :=
   s.excenterExists_empty.touchpoint_notMem_affineSpan_of_ne hne
 
-set_option backward.isDefEq.respectTransparency false in
 variable {s} in
 lemma ExcenterExists.sign_signedInfDist_lineMap_excenter_touchpoint {signs : Finset (Fin (n + 1))}
     (h : s.ExcenterExists signs) {i j : Fin (n + 1)} (hne : i ≠ j) {r : ℝ} (hr : r ∈ Set.Icc 0 1) :
@@ -1154,7 +1148,6 @@ variable {s} in
   haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
   exact (h.touchpointWeights_map S.subtypeₐᵢ).symm
 
-set_option backward.isDefEq.respectTransparency false in
 variable {s} in
 lemma ExcenterExists.sign_touchpointWeights {signs : Finset (Fin (n + 1))}
     (h : s.ExcenterExists signs) {i j : Fin (n + 1)} (hne : i ≠ j) :
@@ -1228,22 +1221,15 @@ variable {s} in
 lemma ExcenterExists.touchpoint_ne_point [Nat.AtLeastTwo n] {signs : Finset (Fin (n + 1))}
     (h : s.ExcenterExists signs) (i j : Fin (n + 1)) : s.touchpoint signs i ≠ s.points j := by
   intro he
-  rw [eq_comm, ← Finset.univ.affineCombination_affineCombinationSingleWeights ℝ s.points
-    (Finset.mem_univ _), affineCombination_eq_touchpoint_iff
-    (Finset.univ.sum_affineCombinationSingleWeights ℝ (Finset.mem_univ _))] at he
+  rw [eq_comm, ← Finset.univ.affineCombination_piSingle ℝ s.points (Finset.mem_univ _),
+    affineCombination_eq_touchpoint_iff (Fintype.sum_pi_single' _ _)] at he
   have : 1 < n := Nat.AtLeastTwo.one_lt
   obtain ⟨k, hki, hkj⟩ : ∃ k, k ≠ i ∧ k ≠ j := Fin.exists_ne_and_ne_of_two_lt i j (by lia)
-  have he' : Finset.affineCombinationSingleWeights ℝ j k = s.touchpointWeights signs i k := by
-    rw [he]
-  simp only [ne_eq, hkj, not_false_eq_true,
-    Finset.affineCombinationSingleWeights_apply_of_ne] at he'
-  rw [eq_comm] at he'
-  apply_fun SignType.sign at he'
-  rw [h.sign_touchpointWeights hki.symm, excenterWeights] at he'
-  have h' := h
-  rw [ExcenterExists] at h'
-  simp only [Pi.smul_apply, smul_eq_mul, sign_zero, sign_eq_zero_iff, mul_eq_zero, inv_eq_zero,
-    h', false_or] at he'
+  have he' := congr(SignType.sign ($he k))
+  rw [Pi.single_eq_of_ne hkj, sign_zero, eq_comm, h.sign_touchpointWeights hki.symm,
+    sign_eq_zero_iff, excenterWeights] at he'
+  rw [ExcenterExists] at h
+  simp only [Pi.smul_apply, smul_eq_mul, mul_eq_zero, inv_eq_zero, h, false_or] at he'
   rw [excenterWeightsUnnorm] at he'
   by_cases hk : k ∈ signs <;> simp [hk, (s.height_pos k).ne'] at he'
 

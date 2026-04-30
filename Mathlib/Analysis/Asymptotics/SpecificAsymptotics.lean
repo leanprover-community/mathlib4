@@ -47,15 +47,15 @@ theorem Asymptotics.isLittleO_pow_pow_cobounded_of_lt (hpq : p < q) :
   nontriviality R
   have noc : NormOneClass R := NormMulClass.toNormOneClass
   refine IsLittleO.of_bound fun c cpos ↦ ?_
-  rw [← (Nat.sub_add_cancel hpq.le)]
+  rw [← Nat.sub_add_cancel hpq.le]
   simp_rw [pow_add, norm_mul, norm_pow, eventually_iff_exists_mem]
   refine ⟨{y | c⁻¹ ≤ ‖y‖ ^ (q - p)}, ?_, fun y my ↦ ?_⟩
-  · have key : Tendsto (fun y ↦ ‖y‖ ^ (q - p)) (cobounded R) atTop :=
+  · have key : Tendsto (‖·‖ ^ (q - p)) (cobounded R) atTop :=
       (tendsto_pow_atTop (Nat.sub_ne_zero_iff_lt.mpr hpq)).comp tendsto_norm_cobounded_atTop
     rw [tendsto_atTop] at key
     exact mem_map.mp (key c⁻¹)
   · rw [← inv_mul_le_iff₀ cpos]
-    exact mul_le_mul_of_nonneg_right my (by positivity)
+    gcongr; exact my
 
 theorem Asymptotics.isBigO_pow_pow_cobounded_of_le (hpq : p ≤ q) :
     (· ^ p) =O[cobounded R] (· ^ q) := by
@@ -169,7 +169,7 @@ theorem Asymptotics.IsLittleO.sum_range {α : Type*} [NormedAddCommGroup α] {f 
       gcongr
       · exact fun i _ _ ↦ mul_nonneg (half_pos εpos).le (hg i)
       · rw [range_eq_Ico]
-        exact Ico_subset_Ico (zero_le _) le_rfl
+        exact Ico_subset_Ico zero_le le_rfl
     _ ≤ ε / 2 * ‖∑ i ∈ range n, g i‖ + ε / 2 * ∑ i ∈ range n, g i := by rw [← mul_sum]; gcongr
     _ = ε * ‖∑ i ∈ range n, g i‖ := by
       simp only [B]

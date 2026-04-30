@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.MonoidAlgebra.Ideal
 public import Mathlib.Algebra.MvPolynomial.Division
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 public import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.Algebra.Order.Group.Pointwise.Interval
@@ -64,7 +65,11 @@ open Finset Finsupp
 
 variable (σ R) in
 /-- The ideal spanned by all variables. -/
-noncomputable def idealOfVars : Ideal (MvPolynomial σ R) := .span (.range X)
+noncomputable abbrev idealOfVars : Ideal (MvPolynomial σ R) := .span (.range X)
+
+variable (σ R) in
+lemma idealOfVars_fg [Finite σ] : (idealOfVars σ R).FG :=
+  Submodule.fg_span <| Set.finite_range _
 
 lemma idealOfVars_eq_restrictSupportIdeal :
     idealOfVars σ R = restrictSupportIdeal _ _ ((isUpperSet_Ici 1).preimage degree_mono) := by
@@ -78,7 +83,7 @@ lemma idealOfVars_eq_restrictSupportIdeal :
     obtain ⟨c, rfl⟩ := le_iff_exists_add'.mp (show single i 1 ≤ x by simp_all; lia)
     simpa [monomial_add_single] using Ideal.mul_mem_left _ _ (Ideal.subset_span (by simp))
 
-open Pointwise in
+open scoped Pointwise in
 theorem pow_idealOfVars (n : ℕ) :
     idealOfVars σ R ^ n = restrictSupportIdeal _ _ ((isUpperSet_Ici n).preimage degree_mono) := by
   rw [idealOfVars_eq_restrictSupportIdeal]
@@ -90,12 +95,11 @@ theorem pow_idealOfVars (n : ℕ) :
 
 /-- The `n`th power of `idealOfVars` is spanned by all monic monomials of total degree `n`. -/
 theorem pow_idealOfVars_eq_span (n) : idealOfVars σ R ^ n =
-    .span ((monomial · 1) '' (degree ⁻¹' {n})) := by
+    .span ((monomial · 1) '' degree ⁻¹' {n}) := by
   rw [idealOfVars, Ideal.span, Submodule.span_pow, ← Set.image_univ,
     image_pow_eq_finsuppProd_image]
   simp [monomial_eq, Set.preimage, degree]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mem_pow_idealOfVars_iff (n : ℕ) (p : MvPolynomial σ R) :
     p ∈ idealOfVars σ R ^ n ↔ ∀ x ∈ p.support, n ≤ degree x := by
   rw [pow_idealOfVars]
@@ -116,6 +120,23 @@ theorem C_mem_pow_idealOfVars_iff (n r) : C r ∈ idealOfVars σ R ^ n ↔ r = 0
   simpa [h] using monomial_mem_pow_idealOfVars_iff (σ := σ) n 0 h
 
 end idealOfVars
+
+section Quotient
+
+variable {A σ : Type*} [CommRing A] (I : Ideal (MvPolynomial σ A))
+
+theorem mkₐ_eq_aeval :
+    Ideal.Quotient.mkₐ A I = aeval fun d : σ => Ideal.Quotient.mk I (X d) := by
+  ext d
+  simp
+
+theorem mk_eq_eval₂ : (Ideal.Quotient.mk I).toFun =
+      eval₂ (algebraMap A (MvPolynomial σ A ⧸ I)) fun d : σ => Ideal.Quotient.mk I (X d) := by
+  ext d
+  simp_rw [RingHom.toFun_eq_coe, ← Ideal.Quotient.mkₐ_eq_mk A, mkₐ_eq_aeval, aeval_X, aeval,
+    AlgHom.coe_mk, coe_eval₂Hom]
+
+end Quotient
 
 end MvPolynomial
 

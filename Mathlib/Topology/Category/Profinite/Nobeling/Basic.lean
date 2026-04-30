@@ -210,7 +210,6 @@ def spanFunctor [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsCompac
   map_id J := by simp only [projRestricts_eq_id C (· ∈ (unop J))]; rfl
   map_comp _ _ := by rw [← CompHausLike.ofHom_comp]; congr; dsimp; rw [projRestricts_eq_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The limit cone on `spanFunctor` with point `C`. -/
 noncomputable
 def spanCone [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsCompact C) :
@@ -225,7 +224,6 @@ def spanCone [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsCompact C
         (leOfHom h.unop)]
       rfl }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism `spanFunctor hC ≅ indexFunctor hC` when `hC : IsCompact C`. -/
 @[simps!]
 noncomputable def spanFunctorIsoIndexFunctor
@@ -246,7 +244,7 @@ noncomputable
 def spanCone_isLimit [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsCompact C) :
     CategoryTheory.Limits.IsLimit (spanCone hC) :=
   IsLimit.postcomposeHomEquiv (spanFunctorIsoIndexFunctor hC) _
-    (IsLimit.ofIsoLimit (indexCone_isLimit hC) (Cones.ext (Iso.refl _) (fun ⟨s⟩ ↦ by
+    (IsLimit.ofIsoLimit (indexCone_isLimit hC) (Cone.ext (Iso.refl _) (fun ⟨s⟩ ↦ by
       ext
       have : iso_map C (· ∈ s) ∘ ProjRestrict C (· ∈ s) = IndexFunctor.π_app C (· ∈ s) := by
         ext _ i; exact dif_pos i.prop
@@ -393,7 +391,7 @@ theorem eval_eq (l : Products I) (x : C) :
     rintro _ ⟨i, hi, rfl⟩
     exact if_pos (h i hi)
   · simp only [List.map_map, List.prod_eq_zero_iff, List.mem_map, Function.comp_apply]
-    push_neg at h
+    push Not at h
     convert h with i
     dsimp [LocallyConstant.evalMonoidHom, e]
     simp only [ite_eq_right_iff, one_ne_zero]
@@ -610,7 +608,7 @@ theorem eval_πs' {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
 
 theorem eval_πs_image {l : Products I} {o : Ordinal}
     (hl : ∀ i ∈ l.val, ord I i < o) : eval C '' { m | m < l } =
-    (πs C o) '' (eval (π C (ord I · < o)) '' { m | m < l }) := by
+    (πs C o) '' eval (π C (ord I · < o)) '' { m | m < l } := by
   ext f
   simp only [Set.mem_image, Set.mem_setOf_eq, exists_exists_and_eq_and]
   apply exists_congr; intro m
@@ -619,7 +617,7 @@ theorem eval_πs_image {l : Products I} {o : Ordinal}
 
 theorem eval_πs_image' {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
     (hl : ∀ i ∈ l.val, ord I i < o₁) : eval (π C (ord I · < o₂)) '' { m | m < l } =
-    (πs' C h) '' (eval (π C (ord I · < o₁)) '' { m | m < l }) := by
+    (πs' C h) '' eval (π C (ord I · < o₁)) '' { m | m < l } := by
   ext f
   simp only [Set.mem_image, Set.mem_setOf_eq, exists_exists_and_eq_and]
   apply exists_congr; intro m

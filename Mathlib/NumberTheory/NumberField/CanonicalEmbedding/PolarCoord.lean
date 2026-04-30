@@ -79,7 +79,6 @@ theorem mixedSpaceToRealMixedSpace_apply (x : mixedSpace K) :
 
 variable [NumberField K]
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem volume_preserving_mixedSpaceToRealMixedSpace_symm :
     MeasurePreserving (mixedSpaceToRealMixedSpace K).symm :=
@@ -202,7 +201,6 @@ theorem normAtPlace_polarCoord_symm_of_isComplex (x : realMixedSpace K)
     normAtPlace w ((mixedEmbedding.polarCoord K).symm x) = ‖(x.2 ⟨w, hw⟩).1‖ := by
   simp [normAtPlace_apply_of_isComplex hw]
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 protected theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (f : mixedSpace K → E) :
@@ -213,7 +211,6 @@ protected theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup 
     (mixedSpaceToRealMixedSpace K).symm.measurableEmbedding, ← integral_comp_polarCoordReal_symm,
     polarCoord_target_eq_polarCoordReal_target, polarCoord_symm_eq, Function.comp_def]
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 protected theorem lintegral_comp_polarCoord_symm (f : mixedSpace K → ℝ≥0∞) :
     ∫⁻ x in (mixedEmbedding.polarCoord K).target, (∏ w : {w // IsComplex w}, .ofReal (x.2 w).1) *
@@ -324,7 +321,6 @@ theorem polarSpaceCoord_target' [NumberField K] :
     Set.mem_prod, Set.mem_univ, true_and, Set.mem_univ_pi, Set.mem_ite_univ_left,
     not_isReal_iff_isComplex, Subtype.forall, Complex.polarCoord_target, Set.mem_prod, forall_and]
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem integral_comp_polarSpaceCoord_symm [NumberField K] {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] (f : mixedSpace K → E) :
@@ -339,7 +335,6 @@ theorem integral_comp_polarSpaceCoord_symm [NumberField K] {E : Type*} [NormedAd
     homeoRealMixedSpacePolarSpace_apply_fst_ofIsReal,
     homeoRealMixedSpacePolarSpace_apply_fst_ofIsComplex, homeoRealMixedSpacePolarSpace_apply_snd]
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem lintegral_comp_polarSpaceCoord_symm [NumberField K] (f : mixedSpace K → ℝ≥0∞) :
     ∫⁻ x in (polarSpaceCoord K).target,
@@ -368,7 +363,7 @@ theorem normAtComplexPlaces_polarSpaceCoord_symm [NumberField K] (x : polarSpace
 
 open scoped ComplexOrder Classical in
 private theorem volume_eq_two_pi_pow_mul_integral_aux
-    (hA : normAtComplexPlaces ⁻¹' (normAtComplexPlaces '' A) = A) :
+    (hA : normAtComplexPlaces ⁻¹' normAtComplexPlaces '' A = A) :
     normAtComplexPlaces '' A =
       (mixedSpaceOfRealSpace ⁻¹' A) ∩
         Set.univ.pi fun w ↦ if w.IsReal then Set.univ else Set.Ici 0 := by
@@ -386,7 +381,6 @@ private theorem volume_eq_two_pi_pow_mul_integral_aux
     intro w hw
     simpa [if_neg (not_isReal_iff_isComplex.mpr hw)] using hx₂ w (Set.mem_univ w)
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /--
 If the measurable set `A` is norm-stable at complex places in the sense that
@@ -394,7 +388,7 @@ If the measurable set `A` is norm-stable at complex places in the sense that
 integral over `normAtComplexPlaces '' A`.
 -/
 theorem volume_eq_two_pi_pow_mul_integral [NumberField K]
-    (hA : normAtComplexPlaces ⁻¹' (normAtComplexPlaces '' A) = A) (hm : MeasurableSet A) :
+    (hA : normAtComplexPlaces ⁻¹' normAtComplexPlaces '' A = A) (hm : MeasurableSet A) :
     volume A = .ofReal (2 * π) ^ nrComplexPlaces K *
       ∫⁻ x in normAtComplexPlaces '' A, ∏ w : {w // IsComplex w}, ENNReal.ofReal (x w.1) := by
   have hA' {x} : (A.indicator 1 x : ℝ≥0∞) =
@@ -417,7 +411,7 @@ theorem volume_eq_two_pi_pow_mul_integral [NumberField K]
       <| measurable_const.indicator <| hm.preimage (measurable_polarSpaceCoord_symm K)).aemeasurable
 
 private theorem volume_eq_two_pow_mul_two_pi_pow_mul_integral_aux
-    (hA : normAtAllPlaces ⁻¹' (normAtAllPlaces '' A) = A) :
+    (hA : normAtAllPlaces ⁻¹' normAtAllPlaces '' A = A) :
     normAtAllPlaces '' A ∩ (⋂ w : {w // IsReal w}, {x | x w.1 ≠ 0}) =
       normAtComplexPlaces '' plusPart A := by
   ext x
@@ -438,7 +432,6 @@ private theorem volume_eq_two_pow_mul_two_pi_pow_mul_integral_aux
           normAtComplexPlaces_apply_isComplex ⟨w, hw⟩]
     · simpa [Set.mem_setOf_eq, normAtComplexPlaces_apply_isReal] using (ha₂ w).ne'
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /--
 If the measurable set `A` is norm-stable in the sense that
@@ -446,13 +439,13 @@ If the measurable set `A` is norm-stable in the sense that
 over `normAtAllPlaces '' A`.
 -/
 theorem volume_eq_two_pow_mul_two_pi_pow_mul_integral [NumberField K]
-    (hA : normAtAllPlaces ⁻¹' (normAtAllPlaces '' A) = A) (hm : MeasurableSet A) :
+    (hA : normAtAllPlaces ⁻¹' normAtAllPlaces '' A = A) (hm : MeasurableSet A) :
     volume A = 2 ^ nrRealPlaces K * .ofReal (2 * π) ^ nrComplexPlaces K *
       ∫⁻ x in normAtAllPlaces '' A, ∏ w : {w // IsComplex w}, ENNReal.ofReal (x w.1) := by
   have hA₁ (x : mixedSpace K) : x ∈ A ↔ (fun w ↦ ‖x.1 w‖, x.2) ∈ A := by
     rw [← hA]
     simp_rw [Set.mem_preimage, Set.mem_image, normAtAllPlaces_norm_at_real_places]
-  have hA₃ : normAtComplexPlaces ⁻¹' (normAtComplexPlaces '' (plusPart A)) = plusPart A := by
+  have hA₃ : normAtComplexPlaces ⁻¹' normAtComplexPlaces '' plusPart A = plusPart A := by
     refine subset_antisymm (fun x ⟨a, ha₁, ha₂⟩ ↦ ⟨?_, fun w ↦ ?_⟩) (Set.subset_preimage_image _ _)
     · rw [← hA, Set.mem_preimage, ← normAtAllPlaces_eq_of_normAtComplexPlaces_eq ha₂]
       exact Set.mem_image_of_mem normAtAllPlaces (Set.inter_subset_left ha₁)

@@ -57,7 +57,7 @@ theorem smul_modByMonic (c : R) (p : R[X]) : c • p %ₘ q = c • (p %ₘ q) :
     · simp only [eq_iff_true_of_subsingleton]
     · exact
       (div_modByMonic_unique (c • (p /ₘ q)) (c • (p %ₘ q)) hq
-          ⟨by rw [mul_smul_comm, ← smul_add, modByMonic_add_div p hq],
+          ⟨by rw [mul_smul_comm, ← smul_add, modByMonic_add_div],
             (degree_smul_le _ _).trans_lt (degree_modByMonic_lt _ hq)⟩).2
   · simp_rw [modByMonic_eq_of_not_monic _ hq]
 
@@ -76,11 +76,10 @@ section
 
 variable [Ring S]
 
-theorem aeval_modByMonic_eq_self_of_root [Algebra R S] {p q : R[X]} (hq : q.Monic) {x : S}
+theorem aeval_modByMonic_eq_self_of_root [Algebra R S] {p q : R[X]} {x : S}
     (hx : aeval x q = 0) : aeval x (p %ₘ q) = aeval x p := by
-    --`eval₂_modByMonic_eq_self_of_root` doesn't work here as it needs commutativity
-  rw [modByMonic_eq_sub_mul_div p hq, map_sub, map_mul, hx, zero_mul,
-    sub_zero]
+  --`eval₂_modByMonic_eq_self_of_root` doesn't work here as it needs commutativity
+  rw [modByMonic_eq_sub_mul_div, map_sub, map_mul, hx, zero_mul, sub_zero]
 
 end
 
@@ -232,9 +231,8 @@ theorem irreducible_of_degree_eq_one_of_isRelPrime_coeff
     apply not_le.mpr (zero_lt_one' (WithBot ℕ))
     simp [← hp, ← h, degree_C_le]
   isUnit_or_isUnit f g h := by
-    wlog H : f.degree ≤ g.degree generalizing f g
-    · push_neg at H
-      rw [mul_comm] at h
+    wlog! H : f.degree ≤ g.degree generalizing f g
+    · rw [mul_comm] at h
       exact (this g f h H.le).symm
     left
     rw [h, degree_mul, Nat.WithBot.add_eq_one_iff] at hp
@@ -293,7 +291,7 @@ theorem exists_multiset_roots [DecidableEq R] :
       have hd0 : p /ₘ (X - C x) ≠ 0 := fun h => by
         rw [← mul_divByMonic_eq_iff_isRoot.2 hx, h, mul_zero] at hp; exact hp rfl
       have wf : degree (p /ₘ (X - C x)) < degree p :=
-        degree_divByMonic_lt _ (monic_X_sub_C x) hp ((degree_X_sub_C x).symm ▸ by decide)
+        degree_divByMonic_lt _ _ hp ((degree_X_sub_C x).symm ▸ by decide)
       let ⟨t, htd, htr⟩ := @exists_multiset_roots _ (p /ₘ (X - C x)) hd0
       have hdeg : degree (X - C x) ≤ degree p := by
         simpa using Nat.WithBot.one_le_iff_zero_lt.mpr hpd

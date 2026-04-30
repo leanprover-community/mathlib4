@@ -101,14 +101,13 @@ theorem stoppedAbove_le (hr : 0 ≤ r) (hf0 : f 0 = 0)
 
 @[deprecated (since := "2025-10-25")] alias norm_stoppedValue_leastGE_le := stoppedAbove_le
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Submartingale.eLpNorm_stoppedAbove_le [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (hr : 0 ≤ r) (hf0 : f 0 = 0) (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) (i : ℕ) :
     eLpNorm (stoppedAbove f r i) 1 μ ≤ 2 * μ Set.univ * ENNReal.ofReal (r + R) := by
   refine eLpNorm_one_le_of_le' ((hf.stoppedAbove r).integrable _) ?_
     (stoppedAbove_le hr hf0 hbdd i)
   rw [← setIntegral_univ]
-  refine le_trans ?_ ((hf.stoppedAbove r).setIntegral_le (zero_le _) MeasurableSet.univ)
+  refine le_trans ?_ ((hf.stoppedAbove r).setIntegral_le zero_le MeasurableSet.univ)
   simp [stoppedAbove, stoppedProcess, hf0]
 
 @[deprecated (since := "2025-10-25")] alias Submartingale.stoppedValue_leastGE_eLpNorm_le :=
@@ -271,7 +270,6 @@ theorem predictablePart_process_ae_eq (ℱ : Filtration ℕ m0) (μ : Measure Ω
   simp_rw [martingalePart, process, Finset.sum_sub_distrib] at this
   exact sub_right_injective this
 
-set_option backward.isDefEq.respectTransparency false in
 theorem process_difference_le (s : ℕ → Set Ω) (ω : Ω) (n : ℕ) :
     |process s (n + 1) ω - process s n ω| ≤ (1 : ℝ≥0) := by
   norm_cast
@@ -282,7 +280,7 @@ theorem process_difference_le (s : ℕ → Set Ω) (ω : Ω) (n : ℕ) :
 
 theorem integrable_process (μ : Measure Ω) [IsFiniteMeasure μ] (hs : ∀ n, MeasurableSet[ℱ n] (s n))
     (n : ℕ) : Integrable (process s n) μ :=
-  integrable_finset_sum' _ fun _ _ =>
+  integrable_finsetSum' _ fun _ _ =>
     IntegrableOn.integrable_indicator (integrable_const 1) <| ℱ.le _ _ <| hs _
 
 end BorelCantelli

@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.Basic
 import Batteries.Tactic.Init
 

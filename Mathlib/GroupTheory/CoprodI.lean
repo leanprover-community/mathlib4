@@ -791,11 +791,9 @@ end NeWord
 
 section PingPongLemma
 
-open Pointwise
-
 open Cardinal
-
 open scoped Function -- required for scoped `on` notation
+open scoped Pointwise
 
 variable {G : Type*} [Group G]
 variable {H : ι → Type*} [∀ i, Group (H i)]
@@ -930,7 +928,7 @@ instance {ι : Type*} (G : ι → Type*) [∀ i, Group (G i)] [∀ i, IsFreeGrou
 
 -- NB: One might expect this theorem to be phrased with ℤ, but ℤ is an additive group,
 -- and using `Multiplicative ℤ` runs into diamond issues.
-/-- A free group is a free product of copies of the free_group over one generator. -/
+/-- A free group is a free product of copies of the `FreeGroup` over one generator. -/
 @[simps!]
 def _root_.freeGroupEquivCoprodI {ι : Type u_1} :
     FreeGroup ι ≃* CoprodI fun _ : ι => FreeGroup Unit := by
@@ -942,9 +940,9 @@ def _root_.freeGroupEquivCoprodI {ι : Type u_1} :
 
 section PingPongLemma
 
-open Pointwise Cardinal
-
+open Cardinal
 open scoped Function -- required for scoped `on` notation
+open scoped Pointwise
 
 variable [Nontrivial ι]
 variable {G : Type u_1} [Group G] (a : ι → G)
