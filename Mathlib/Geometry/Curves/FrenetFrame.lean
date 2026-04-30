@@ -3,11 +3,15 @@ Copyright (c) 2026 Miraj Samarakkody. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Miraj Samarakkody
 -/
-import Mathlib.Geometry.Curves.Basic
+module
+
+public import Mathlib.Geometry.Curves.Basic
 
 /-!
 # Frenet frame of space curves
 -/
+
+@[expose] public section
 
 namespace Curves
 open scoped InnerProductSpace
