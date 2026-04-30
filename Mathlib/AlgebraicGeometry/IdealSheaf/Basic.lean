@@ -594,8 +594,7 @@ noncomputable nonrec def vanishingIdeal (Z : Closeds X) : IdealSheafData X :=
         rw [← vanishingIdeal_closure,
           ← this.isOpenMap.preimage_closure_eq_closure_preimage this.continuous, e] at hx
         rw [← vanishingIdeal_closure, e]
-        rw [specMap_coe] at hx
-        rw [preimage_comap_zeroLocus] at hx
+        rw [specMap_coe, preimage_comap_zeroLocus] at hx
         rwa [← PrimeSpectrum.zeroLocus_span, ← Ideal.map, vanishingIdeal_zeroLocus_eq_radical,
           ← RingHom.algebraMap_toAlgebra (X.presheaf.map _).hom,
           ← IsLocalization.map_radical (.powers f), ← vanishingIdeal_zeroLocus_eq_radical] at hx)
