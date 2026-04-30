@@ -69,17 +69,18 @@ theorem equalizerCondition_yonedaPresheaf
   apply EqualizerCondition.mk
   intro Z B π _ _
   refine ⟨fun a b h ↦ ?_, fun ⟨a, ha⟩ ↦ ?_⟩
-  · simp only [yonedaPresheaf, unop_op, Quiver.Hom.unop_op, Set.coe_setOf, mapToEqualizer,
-      Set.mem_setOf_eq, Subtype.mk.injEq, comp, ContinuousMap.mk.injEq] at h
+  · simp only [yonedaPresheaf, comp, Quiver.Hom.unop_op, TypeCat.Fun.coe_mk,
+      Set.coe_setOf, mapToEqualizer, Set.mem_setOf_eq, ConcreteCategory.hom_ofHom, Subtype.mk.injEq,
+      mk.injEq] at h
     simp only [yonedaPresheaf, unop_op]
     ext x
     obtain ⟨y, hy⟩ := (hq Z B π).surjective x
     rw [← hy]
     exact congr_fun h y
-  · simp only [yonedaPresheaf, comp, unop_op, Quiver.Hom.unop_op, Set.mem_setOf_eq,
-      ContinuousMap.mk.injEq] at ha
-    simp only [yonedaPresheaf, comp, unop_op, Quiver.Hom.unop_op, Set.coe_setOf,
-      mapToEqualizer, Set.mem_setOf_eq, Subtype.mk.injEq]
+  · simp only [yonedaPresheaf, comp, Quiver.Hom.unop_op, ConcreteCategory.hom_ofHom,
+      TypeCat.Fun.coe_mk, mk.injEq, Set.mem_setOf_eq] at ha
+    simp only [yonedaPresheaf, comp, Quiver.Hom.unop_op, TypeCat.Fun.coe_mk,
+      Set.coe_setOf, mapToEqualizer, Set.mem_setOf_eq, ConcreteCategory.hom_ofHom, Subtype.mk.injEq]
     simp only [yonedaPresheaf, unop_op] at a
     refine ⟨(hq Z B π).lift a (factorsThrough_of_pullbackCondition G X ha), ?_⟩
     congr 1
@@ -127,7 +128,7 @@ noncomputable def topCatToSheafCompHausLike :
     have := CompHausLike.preregular hs
     TopCat.{max u w} ⥤ Sheaf (coherentTopology (CompHausLike.{u} P)) (Type (max u w)) where
   obj X := X.toSheafCompHausLike P hs
-  map f := ⟨⟨fun _ g ↦ f.hom.comp g, by aesop⟩⟩
+  map f := ⟨⟨fun _ ↦ ↾fun g ↦ f.hom.comp g,  by aesop⟩⟩
 
 end
 

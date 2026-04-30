@@ -296,7 +296,7 @@ theorem Filter.HasBasis.cauchySeq_iff {γ} [Nonempty β] [SemilatticeSup β] {u 
   rw [cauchySeq_iff_tendsto, ← prod_atTop_atTop_eq]
   refine (atTop_basis.prod_self.tendsto_iff h).trans ?_
   simp only [true_and, Prod.forall, mem_prod_eq,
-    mem_Ici, and_imp, Prod.map, @forall_swap (_ ≤ _) β]
+    mem_Ici, and_imp, Prod.map, @forall_comm (_ ≤ _) β]
 
 theorem Filter.HasBasis.cauchySeq_iff' {γ} [Nonempty β] [SemilatticeSup β] {u : β → α}
     {p : γ → Prop} {s : γ → SetRel α α} (H : (𝓤 α).HasBasis p s) :
@@ -746,9 +746,6 @@ theorem TotallyBounded.isCompact_of_isComplete {s : Set α} (ht : TotallyBounded
 
 theorem TotallyBounded.isCompact_of_isClosed [CompleteSpace α] {s : Set α} (ht : TotallyBounded s)
     (hc : IsClosed s) : IsCompact s := ht.isCompact_of_isComplete hc.isComplete
-
-@[deprecated (since := "2025-08-30")] alias isCompact_of_totallyBounded_isClosed :=
-    TotallyBounded.isCompact_of_isClosed
 
 theorem Filter.TotallyBounded.isCompact_setOf_clusterPt
     [CompleteSpace α] {f : Filter α} (hf : f.TotallyBounded) : IsCompact {x | ClusterPt x f} :=

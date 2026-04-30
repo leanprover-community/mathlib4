@@ -154,7 +154,7 @@ subobject classifier for the category of presheaves. -/
 @[simps]
 def Functor.sieves : Cᵒᵖ ⥤ Type max v u where
   obj X := Sieve X.unop
-  map f S := S.pullback f.unop
+  map f := ↾fun S ↦ S.pullback f.unop
 
 /--
 The presheaf sending each object to the set of `J`-closed sieves on it. This presheaf is a `J`-sheaf
@@ -165,6 +165,7 @@ def Functor.closedSieves : Subfunctor (Functor.sieves C) where
   obj X := {S : Sieve X.unop | J₁.IsClosed S}
   map f _ := J₁.isClosed_pullback f.unop _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The presheaf of `J`-closed sieves is a `J`-sheaf.
 The proof of this is adapted from [MM92], Chapter III, Section 7, Lemma 1.
 -/
@@ -180,12 +181,8 @@ theorem classifier_isSheaf : Presieve.IsSheaf J₁ (Functor.closedSieves J₁).t
     have q : ∀ ⦃Z : C⦄ (g : Z ⟶ X) (_ : S g), M.pullback g = N.pullback g :=
       fun Z g hg => congr_arg Subtype.val ((hM₂ g hg).trans (hN₂ g hg).symm)
     have MSNS : M ⊓ S = N ⊓ S := by
-      ext Z g
-      rw [Sieve.inter_apply, Sieve.inter_apply]
-      simp only [and_comm]
-      apply and_congr_right
-      intro hg
-      rw [Sieve.mem_iff_pullback_eq_top, Sieve.mem_iff_pullback_eq_top, q g hg]
+      ext
+      grind [Sieve.inter_apply, Sieve.mem_iff_pullback_eq_top]
     constructor
     · intro hf
       rw [J₁.covers_iff]
@@ -218,6 +215,7 @@ theorem classifier_isSheaf : Presieve.IsSheaf J₁ (Functor.closedSieves J₁).t
     rw [← J₁.pullback_close, this _ hf]
     apply le_antisymm (J₁.le_close_of_isClosed le_rfl (x f hf).2) (J₁.le_close _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A sieve `S` is covering for `J` if and only if the subobject classifier
 is a sheaf for `S`. -/
 lemma GrothendieckTopology.mem_iff_isSheafFor_closedSieves
@@ -250,7 +248,7 @@ theorem le_topology_of_closedSieves_isSheaf {J₁ J₂ : GrothendieckTopology C}
 
 /-- If being a sheaf for `J₁` is equivalent to being a sheaf for `J₂`, then `J₁ = J₂`. -/
 theorem topology_eq_iff_same_sheaves {J₁ J₂ : GrothendieckTopology C} :
-    J₁ = J₂ ↔ ∀ P : Cᵒᵖ ⥤ Type max v u, Presieve.IsSheaf J₁ P ↔ Presieve.IsSheaf J₂ P := by
+    J₁ = J₂ ↔ ∀ P : Cᵒᵖ ⥤ Type (max v u), Presieve.IsSheaf J₁ P ↔ Presieve.IsSheaf J₂ P := by
   constructor
   · rintro rfl
     intro P

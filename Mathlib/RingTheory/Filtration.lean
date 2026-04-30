@@ -317,7 +317,7 @@ theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
       (Set.subset_iUnion₂ (s := fun i _ => (single R i '' (N F i : Set M))) i hi).trans
         Submodule.subset_span
     induction i with
-    | zero => exact this _ (zero_le _)
+    | zero => exact this _ zero_le
     | succ j hj => ?_
     by_cases hj' : j.succ ≤ n₀
     · exact this _ hj'
@@ -349,12 +349,7 @@ theorem submodule_fg_iff_stable (hF' : ∀ i, (F.N i).FG) : F.submodule.FG ↔ F
       exact hi.trans e
     · dsimp
       rw [← Submodule.span_iUnion, ← submodule_span_single]
-      congr 1
-      ext
-      simp only [Set.mem_iUnion, Set.mem_image, SetLike.mem_coe, exists_prop]
-      constructor
-      · rintro ⟨-, i, -, e⟩; exact ⟨i, e⟩
-      · rintro ⟨i, e⟩; exact ⟨i, i, le_refl i, e⟩
+      simp [Set.biUnion_le_eq_iUnion]
   · rintro ⟨n, hn⟩
     rw [hn]
     simp_rw [Submodule.span_iUnion₂, ← Finset.mem_range_succ_iff, iSup_subtype']

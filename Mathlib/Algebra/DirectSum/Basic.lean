@@ -105,6 +105,11 @@ variable {β}
 theorem add_apply (g₁ g₂ : ⨁ i, β i) (i : ι) : (g₁ + g₂) i = g₁ i + g₂ i :=
   rfl
 
+@[simp]
+theorem sum_apply {α} (s : Finset α) (g : α → ⨁ i, β i) (i : ι) :
+    (∑ a ∈ s, g a) i = ∑ a ∈ s, g a i :=
+  DFinsupp.finsetSum_apply s g i
+
 section DecidableEq
 
 variable [DecidableEq ι]
@@ -135,16 +140,12 @@ lemma of_apply {i : ι} (j : ι) (x : β i) : of β i x j = if h : i = j then Eq
   DFinsupp.single_apply
 
 theorem mk_apply_of_mem {s : Finset ι} {f : ∀ i : (↑s : Set ι), β i.val} {n : ι} (hn : n ∈ s) :
-    mk β s f n = f ⟨n, hn⟩ := by
-  dsimp only [Finset.coe_sort_coe, mk, AddMonoidHom.coe_mk, ZeroHom.coe_mk]
-  -- Previously, `DFinsupp.mk_apply` was in the `dsimp only`
-  rw [DFinsupp.mk_apply, dif_pos hn]
+    mk β s f n = f ⟨n, hn⟩ :=
+  DFinsupp.mk_of_mem hn
 
 theorem mk_apply_of_notMem {s : Finset ι} {f : ∀ i : (↑s : Set ι), β i.val} {n : ι} (hn : n ∉ s) :
-    mk β s f n = 0 := by
-  dsimp only [Finset.coe_sort_coe, mk, AddMonoidHom.coe_mk, ZeroHom.coe_mk]
-  -- Previously, `DFinsupp.mk_apply` was in the `dsimp only`
-  rw [DFinsupp.mk_apply, dif_neg hn]
+    mk β s f n = 0 :=
+  DFinsupp.mk_of_notMem hn
 
 @[simp]
 theorem support_zero [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] : (0 : ⨁ i, β i).support = ∅ :=
@@ -163,11 +164,9 @@ theorem sum_support_of [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] (x : ⨁ i
     (∑ i ∈ x.support, of β i (x i)) = x :=
   DFinsupp.sum_single
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sum_univ_of [Fintype ι] (x : ⨁ i, β i) :
     ∑ i ∈ Finset.univ, of β i (x i) = x := by
-  apply DFinsupp.ext (fun i ↦ ?_)
-  rw [DFinsupp.finset_sum_apply]
+  ext i
   simp [of_apply]
 
 theorem mk_injective (s : Finset ι) : Function.Injective (mk β s) :=
@@ -183,6 +182,13 @@ protected theorem induction_on {motive : (⨁ i, β i) → Prop} (x : ⨁ i, β 
   apply DFinsupp.induction x zero
   intro i b f h1 h2 ih
   solve_by_elim
+
+/-- An alternative induction, where the addition assumption is restricted to singles. -/
+@[elab_as_elim]
+protected theorem induction_on' {motive : (⨁ i, β i) → Prop} (f : ⨁ i, β i) (h0 : motive 0)
+    (hadd : ∀ (i b) (f : ⨁ i, β i), f i = 0 → b ≠ 0 → motive f → motive (of β i b + f)) :
+    motive f :=
+  DFinsupp.induction f h0 hadd
 
 /-- If two additive homomorphisms from `⨁ i, β i` are equal on each `of β i y`,
 then they are equal. -/
@@ -217,12 +223,13 @@ def toAddMonoid : (⨁ i, β i) →+ γ :=
 theorem toAddMonoid_of (i) (x : β i) : toAddMonoid φ (of β i x) = φ i x :=
   DFinsupp.liftAddHom_apply_single φ i x
 
-set_option backward.isDefEq.respectTransparency false in
 theorem toAddMonoid.unique (f : ⨁ i, β i) : ψ f = toAddMonoid (fun i => ψ.comp (of β i)) f := by
   congr
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` applies addHom_ext' here, which isn't what we want.
   apply DFinsupp.addHom_ext'
-  simp [toAddMonoid, of]
+  intro
+  simp [toAddMonoid]
+  rfl
 
 lemma toAddMonoid_injective : Injective (toAddMonoid : (∀ i, β i →+ γ) → (⨁ i, β i) →+ γ) :=
   DFinsupp.liftAddHom.injective

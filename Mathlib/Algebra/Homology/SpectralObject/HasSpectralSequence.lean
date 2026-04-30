@@ -15,7 +15,7 @@ public import Mathlib.Order.WithBotTop
 
 This file prepares for the construction of the spectral sequence
 of a spectral object in an abelian category which shall be conducted
-in the file `Mathlib/Algebra/Homology/SpectralObject/SpectralSequence.lean` (TODO).
+in the file `Mathlib/Algebra/Homology/SpectralObject/SpectralSequence.lean`.
 
 In this file, we introduce a structure `SpectralSequenceDataCore` which
 contains a recipe for the construction of the pages of the spectral sequence.
@@ -209,7 +209,6 @@ def coreE₂CohomologicalFin (l : ℕ) :
   hc _ _ _ := fun ⟨h₁, h₂⟩ ↦ by lia
   hc₀₂ r := by
     rintro ⟨a₁, ⟨a₂, _⟩⟩ ⟨b₁, ⟨b₂, _⟩⟩ ⟨h₁, h₂⟩ hr
-    ext
     grind
   hc₁₃ r := by
     rintro ⟨a₁, ⟨a₂, _⟩⟩ ⟨b₁, ⟨b₂, _⟩⟩ ⟨h₁, h₂⟩ hr
@@ -277,7 +276,7 @@ by `data`. The conditions given allow to show that the homology of a page identi
 to the next page. -/
 class HasSpectralSequence : Prop where
   isZero_H_obj_mk₁_i₀_le (r r' : ℤ) (pq : κ) (hpq : ∀ (pq' : κ), ¬ ((c r).Rel pq pq'))
-    (n : ℤ) (hn : n = data.deg pq + 1 )
+    (n : ℤ) (hn : n = data.deg pq + 1)
     (hrr' : r + 1 = r' := by lia) (hr : r₀ ≤ r := by lia) :
       IsZero ((X.H n).obj (mk₁ (homOfLE (data.i₀_le r r' pq))))
   isZero_H_obj_mk₁_i₃_le (r r' : ℤ) (pq : κ) (hpq : ∀ (pq' : κ), ¬ ((c r).Rel pq' pq))
@@ -325,7 +324,7 @@ instance (E : SpectralObject C EInt) : E.HasSpectralSequence coreE₂Cohomologic
     exact hpq _ rfl
   isZero_H_obj_mk₁_i₃_le r r' pq hpq n hn hrr' hr := by
     exfalso
-    exact hpq (pq - (r, 1-r)) (by simp)
+    exact hpq (pq - (r, 1 - r)) (by simp)
 
 instance {l : ℕ} (E : SpectralObject C (Fin (l + 1))) :
     E.HasSpectralSequence (coreE₂CohomologicalFin l) where
@@ -375,7 +374,7 @@ variable [Y.IsFirstQuadrant]
 
 lemma isZero₁_of_isFirstQuadrant (i j : EInt) (hij : i ≤ j) (hj : j ≤ (0 : ℤ)) (n : ℤ) :
     IsZero ((Y.H n).obj (mk₁ (homOfLE hij))) :=
-  IsFirstQuadrant.isZero₁ i j hij  hj n
+  IsFirstQuadrant.isZero₁ i j hij hj n
 
 lemma isZero₂_of_isFirstQuadrant (i j : EInt) (hij : i ≤ j) (n : ℤ) (hi : n < i) :
     IsZero ((Y.H n).obj (mk₁ (homOfLE hij))) :=

@@ -83,6 +83,10 @@ theorem diagonal_zero [Zero α] : (diagonal fun _ => 0 : Matrix n n α) = 0 := b
 theorem diagonal_zero' [Zero α] : (diagonal 0 : Matrix n n α) = 0 := diagonal_zero
 
 @[simp]
+theorem diagonal_eq_zero [Zero α] {d : n → α} : diagonal d = 0 ↔ d = 0 :=
+  diagonal_injective.eq_iff' diagonal_zero
+
+@[simp]
 theorem diagonal_transpose [Zero α] (v : n → α) : (diagonal v)ᵀ = diagonal v := by
   ext i j
   by_cases h : i = j
@@ -131,11 +135,21 @@ theorem diagonal_natCast [Zero α] [NatCast α] (m : ℕ) : diagonal (fun _ : n 
 @[norm_cast]
 theorem diagonal_natCast' [Zero α] [NatCast α] (m : ℕ) : diagonal ((m : n → α)) = m := rfl
 
+@[simp]
+theorem diagonal_eq_natCast [Zero α] [NatCast α] {d : n → α} {m : ℕ} :
+    diagonal d = m ↔ d = m :=
+  diagonal_injective.eq_iff' <| diagonal_natCast' _
+
 theorem diagonal_ofNat [Zero α] [NatCast α] (m : ℕ) [m.AtLeastTwo] :
-    diagonal (fun _ : n => (ofNat(m) : α)) = OfNat.ofNat m := rfl
+    diagonal (fun _ : n => (ofNat(m) : α)) = ofNat(m) := rfl
 
 theorem diagonal_ofNat' [Zero α] [NatCast α] (m : ℕ) [m.AtLeastTwo] :
-    diagonal (ofNat(m) : n → α) = OfNat.ofNat m := rfl
+    diagonal (ofNat(m) : n → α) = ofNat(m) := rfl
+
+@[simp]
+theorem diagonal_eq_ofNat [Zero α] [NatCast α] {d : n → α} {m : ℕ} [m.AtLeastTwo] :
+    diagonal d = ofNat(m) ↔ d = ofNat(m) :=
+  diagonal_injective.eq_iff' <| diagonal_ofNat' _
 
 instance [Zero α] [IntCast α] : IntCast (Matrix n n α) where
   intCast m := diagonal fun _ => m
@@ -145,6 +159,11 @@ theorem diagonal_intCast [Zero α] [IntCast α] (m : ℤ) : diagonal (fun _ : n 
 
 @[norm_cast]
 theorem diagonal_intCast' [Zero α] [IntCast α] (m : ℤ) : diagonal ((m : n → α)) = m := rfl
+
+@[simp]
+theorem diagonal_eq_intCast [Zero α] [IntCast α] {d : n → α} {m : ℤ} :
+    diagonal d = m ↔ d = m :=
+  diagonal_injective.eq_iff' <| diagonal_intCast' _
 
 @[simp]
 theorem diagonal_map [Zero α] [Zero β] {f : α → β} (h : f 0 = 0) {d : n → α} :
@@ -209,6 +228,10 @@ theorem diagonal_one : (diagonal fun _ => 1 : Matrix n n α) = 1 :=
 @[simp]
 theorem diagonal_one' : (diagonal 1 : Matrix n n α) = 1 :=
   rfl
+
+@[simp]
+theorem diagonal_eq_one {d : n → α} : diagonal d = 1 ↔ d = 1 :=
+  diagonal_injective.eq_iff' diagonal_one
 
 theorem one_apply {i j} : (1 : Matrix n n α) i j = if i = j then 1 else 0 :=
   rfl

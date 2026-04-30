@@ -86,8 +86,8 @@ lemma _root_.LinearMap.map_mul_of_map_mul_tmul {f : A ⊗[R] B →ₗ[S] C}
     (x y : A ⊗[R] B) : f (x * y) = f x * f y :=
   f.map_mul_iff.2 (by
     -- these instances are needed by the statement of `ext`, but not by the current definition.
-    letI : Algebra R C := RestrictScalars.algebra R S C
-    letI : IsScalarTower R S C := RestrictScalars.isScalarTower R S C
+    letI : Algebra R C := .restrictScalars R S C
+    letI : IsScalarTower R S C := .restrictScalars R S C
     ext
     dsimp
     exact hf _ _ _ _) x y
@@ -805,6 +805,13 @@ def tensorProductEnd : A ⊗[R] (End R M) →ₐ[A] End A (A ⊗[R] M) :=
         baseChangeHom_apply, baseChange_eq_ltensor, Module.End.one_eq_id,
         lTensor_id, LinearMap.id_apply])
 
+/-- If `R →+* S` is surjective, the multiplication map `S ⊗[R] S →+* S` is an isomorphism. This
+is the algebraic version of closed immersions are monomorphisms. -/
+lemma mul'_bijective_of_surjective (h : Function.Surjective (algebraMap R A)) :
+    Function.Bijective (LinearMap.mul' R A) :=
+  have : TensorProduct.CompatibleSMul R A A A := .of_algebraMap_surjective _ _ h
+  (Algebra.TensorProduct.lmulEquiv R A).bijective
+
 end LinearMap
 
 namespace Module
@@ -844,3 +851,46 @@ variable {C : Subalgebra R A}
 
 lemma Subalgebra.tmul_mem_baseChange {x : A} (hx : x ∈ C) (b : B) : b ⊗ₜ[R] x ∈ C.baseChange B :=
   ⟨(b ⊗ₜ[R] ⟨x, hx⟩), rfl⟩
+
+section
+
+universe u₁ u₂ u₃ u₄ u₅
+
+variable (R S A B : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S]
+  [Semiring A] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Semiring B] [Algebra R B]
+
+attribute [local instance] ULift.algebra' in
+/-- `ULift` commutes with tensor products of algebras. -/
+def Algebra.TensorProduct.uliftEquiv :
+    ULift.{u₁} (A ⊗[R] B) ≃ₐ[S] ULift.{u₂} A ⊗[ULift.{u₃} R] ULift.{u₄} B :=
+  AlgEquiv.trans ULift.algEquiv
+    (.trans (congr ULift.algEquiv.symm ULift.algEquiv.symm) <|
+      Algebra.TensorProduct.equivOfCompatibleSMul _ _ _ _ _)
+
+variable {A B}
+
+@[simp]
+lemma Algebra.TensorProduct.uliftEquiv_tmul (a : A) (b : B) :
+    uliftEquiv R S A B ⟨a ⊗ₜ b⟩ = ⟨a⟩ ⊗ₜ ⟨b⟩ :=
+  rfl
+
+attribute [local instance] ULift.algebra' in
+@[simp]
+lemma Algebra.TensorProduct.down_uliftEquiv_symm_tmul (a : ULift A) (b : ULift B) :
+    ((uliftEquiv R S A B).symm (a ⊗ₜ b)).down = a.down ⊗ₜ b.down :=
+  rfl
+
+attribute [local instance] ULift.algebra' in
+lemma Algebra.TensorProduct.uliftEquiv_symm_tmul (a : ULift A) (b : ULift B) :
+    (uliftEquiv R S A B).symm (a ⊗ₜ b) = ⟨a.down ⊗ₜ b.down⟩ :=
+  rfl
+
+set_option backward.isDefEq.respectTransparency false in
+attribute [local instance] ULift.algebra' in
+lemma Algebra.TensorProduct.lmul'_ulift :
+    TensorProduct.lmul' (S := ULift.{u₂} S) (ULift.{u₁} R) =
+      (TensorProduct.lmul' (S := S) R).ulift.comp
+        (uliftEquiv _ _ _ _).symm.toAlgHom := by
+  ext <;> simp
+
+end

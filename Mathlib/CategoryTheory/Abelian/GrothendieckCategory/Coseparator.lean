@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Generator.Abelian
 # Grothendieck categories have a coseparator
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 
