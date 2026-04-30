@@ -181,16 +181,17 @@ lemma not_dvd_discr_iff_forall_liesOver [IsIntegralClosure 𝒪 ℤ K] {p : ℤ}
   have := IsIntegralClosure.finite ℤ ℚ K 𝒪
   have := CharZero.of_module (R := 𝒪) K
   simp_rw [← not_dvd_differentIdeal_iff]
+  contrapose!
   constructor
-  · intro H P hP hP' hP''
+  · intro h
+    rw [← Int.dvd_natAbs, ← absNorm_differentIdeal K 𝒪] at h
+    obtain ⟨P, hP, h₁, h₂⟩ := Ideal.exists_isMaximal_dvd_of_dvd_absNorm hp _ h
+    exact ⟨P, hP, ⟨h₁.symm⟩, h₂⟩
+  · rintro ⟨P, hP, hP', hP''⟩
     have := Ideal.absNorm_dvd_absNorm_of_le (Ideal.dvd_iff_le.mp hP'')
     rw [absNorm_differentIdeal K, Ideal.absNorm_eq_pow_inertiaDeg P hp,
       ← Int.natAbs_pow, Int.natAbs_dvd_natAbs] at this
-    exact H (.trans (dvd_pow_self _ (Ideal.inertiaDeg_pos' ..).ne') this)
-  · intro H h
-    rw [← Int.dvd_natAbs, ← absNorm_differentIdeal K 𝒪] at h
-    obtain ⟨P, hP, h₁, h₂⟩ := Ideal.exists_isMaximal_dvd_of_dvd_absNorm hp _ h
-    exact H P hP ⟨h₁.symm⟩ h₂
+    exact (dvd_pow_self _ (Ideal.inertiaDeg_pos' ..).ne').trans this
 
 /-- Also see `not_dvd_discr_iff_forall_liesOver` for a slightly easier to prove RHS. -/
 lemma not_dvd_discr_iff_forall_mem [IsIntegralClosure 𝒪 ℤ K] {p : ℤ} (hp : Prime p) :
