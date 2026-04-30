@@ -215,7 +215,8 @@ theorem app_invApp (U : Opens Y) :
       Y.presheaf.map
         ((homOfLE (Set.image_preimage_subset f.base U.1)).op :
           op U ⟶ op (opensFunctor f |>.obj ((Opens.map f.base).obj U))) := by
-  erw [← Category.assoc]; rw [IsIso.comp_inv_eq, f.c.naturality]; congr
+  rw [invApp, ← Category.assoc, IsIso.comp_inv_eq, f.c.naturality]
+  congr
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A variant of `app_inv_app` that gives an `eqToHom` instead of `homOfLe`. -/

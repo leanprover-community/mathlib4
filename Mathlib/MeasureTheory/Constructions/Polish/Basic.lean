@@ -868,7 +868,7 @@ theorem ContinuousOn.measurableEmbedding [BorelSpace β]
       intro u hu
       have A : MeasurableSet (((↑) : s → γ) '' u) :=
         (MeasurableEmbedding.subtype_coe hs).measurableSet_image.2 hu
-      have B : MeasurableSet (f '' (((↑) : s → γ) '' u)) :=
+      have B : MeasurableSet (f '' ((↑) : s → γ) '' u) :=
         A.image_of_continuousOn_injOn (f_cont.mono (Subtype.coe_image_subset s u))
           (f_inj.mono (Subtype.coe_image_subset s u))
       rwa [← image_comp] at B }
