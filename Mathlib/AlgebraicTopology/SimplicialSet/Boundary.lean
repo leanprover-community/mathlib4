@@ -94,7 +94,6 @@ lemma boundary_zero : boundary.{u} 0 = ⊥ := by
   simp only [boundary, Nat.reduceAdd, Set.mem_setOf_eq, Subfunctor.bot_obj, Set.bot_eq_empty,
     Set.mem_empty_iff_false, iff_false, Decidable.not_not]
   intro x
-  fin_cases x
   exact ⟨0, by subsingleton⟩
 
 lemma op_boundary (n : ℕ) :
