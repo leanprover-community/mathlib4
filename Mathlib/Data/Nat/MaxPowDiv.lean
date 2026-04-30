@@ -240,9 +240,17 @@ theorem padicValNat_add_of_gt {p n m : ℕ} (hm : m ≠ 0) (h : padicValNat p m 
     apply (pow_dvd_iff_le_padicValNat hp hn).mpr
     exact add_one_le_of_lt h
 
-proof_wanted padicValNat_add_eq_min {p a b : ℕ} (ha : a ≠ 0)
-    (hb : b ≠ 0) (hpab : padicValNat p a ≠ padicValNat p b) :
-    padicValNat p (a + b) = min (padicValNat p a) (padicValNat p b)
+/-- If `n ≠ 0`, `m ≠ 0`, and `padicValNat p m` and `padicValNat p n` are distinct, then
+`padicValNat p (n + m)` is the minimum of the two. -/
+theorem padicValNat_add_eq_min {p n m : ℕ} (hn : n ≠ 0) (hm : m ≠ 0)
+    (hpnm : padicValNat p n ≠ padicValNat p m) :
+    padicValNat p (n + m) = min (padicValNat p n) (padicValNat p m) := by
+  rcases (padicValNat p n).lt_trichotomy (padicValNat p m) with h | h | h
+  · rw [Nat.min_eq_left (Nat.le_of_lt h), Nat.add_comm]
+    apply padicValNat_add_of_gt hn h
+  · exact False.elim (hpnm h)
+  · rw [Nat.min_eq_right (Nat.le_of_lt h)]
+    apply padicValNat_add_of_gt hm h
 
 @[simp]
 theorem divMaxPow_base_mul {p : ℕ} (hp : p ≠ 0) (n : ℕ) :
