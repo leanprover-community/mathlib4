@@ -7,10 +7,10 @@ module
 
 public meta import Lean.Elab.Tactic.Simp
 public meta import Lean.Elab.App
-public meta import Lean.Meta.UnificationHint
 public meta import Mathlib.Lean.Expr.Basic
 public import Mathlib.Util.AddRelatedDecl
 public import Mathlib.Tactic.Simps.NotationClass
+public import Mathlib.Tactic.Simps.UnifHintAttr
 public import Mathlib.Tactic.Translate.Attributes
 
 /-!
@@ -1016,18 +1016,7 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
   TermElabM.run' do
     Elab.Term.applyAttributes declName cfg.attrs
   if cfg.addUnifHints then
-    let hintDeclName := .str declName "simpsUnifHint"
-    let hintValue ← mkLambdaFVars args eqAp
-    let hintType ← mkForallFVars args (mkSort Level.zero)
-    prependError "Failed to add unification hint for {declName}:" do
-      addDecl <| .defnDecl {
-        name := hintDeclName
-        levelParams := univs
-        type := hintType
-        value := hintValue
-        hints := .abbrev
-        safety := .safe }
-    addUnificationHint hintDeclName .global
+    addUnifHintFromLemma declName .global
 
 /--
 Perform head-structure-eta-reduction on expression `e`. That is, if `e` is of the form
