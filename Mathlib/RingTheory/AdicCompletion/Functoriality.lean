@@ -328,12 +328,20 @@ def piEquivFin (n : ℕ) :
   piEquivOfFintype I (ι := Fin n) (fun _ : Fin n ↦ R)
 
 /-
-#defeq_abuse: tactic fails with `backward.isDefEq.respectTransparency true` but succeeds
-  with `false`.
-The following isDefEq checks are the root causes of the failure:
-  ❌️ Quot.lift (fun x ↦ x • (eval I R n) x2✝) ⋯
-  ((eval I R n) x1✝) =?= Ideal.Quotient.ring._aux_1 (I ^ n • ⊤) (↑x1✝ n) (↑x2✝ n)
-  ❌️ { smul := fun x1 x2 ↦ x1 * x2 } =?= smul I
+import Mathlib.RingTheory.AdicCompletion.Algebra
+
+variable {R : Type*} [CommRing R] (I : Ideal R) (ι : Type*) [Fintype ι] [DecidableEq ι]
+
+-- `AdicCompletion.module` has type `Module X Y → Module (F X) (F Y)` so introduces
+-- diamonds if `X = Y`.
+example : AdicCompletion.module I = Semiring.toModule := by
+  fail_if_success with_reducible_and_instances rfl
+  rfl
+
+example : ((AdicCompletion.module I).toSMul : SMul (AdicCompletion I R) (AdicCompletion I R)) =
+    Semiring.toModule.toSMul := by
+  fail_if_success with_reducible_and_instances rfl
+  rfl
 -/
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
