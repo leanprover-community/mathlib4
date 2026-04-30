@@ -49,7 +49,10 @@ open Topology
 
 variable {X : Type*} [TopologicalSpace X]
 
-/-- The quotient of paths by homotopy inherits its topology as a quotient of the path space. -/
+/-- Pin the topology on `Path.Homotopic.Quotient x₀ x` to the quotient topology induced
+from `Path x₀ x` (which itself inherits the compact-open topology via `C(I, X)`). This is
+what makes the based-path-quotient model of the universal cover line up with the
+compact-open topology on `BasedPath x₀`. -/
 instance instTopologicalSpaceHomotopicQuotient (x₀ x : X) :
     TopologicalSpace (Path.Homotopic.Quotient x₀ x) :=
   inferInstanceAs (TopologicalSpace (Quotient _))
@@ -552,7 +555,7 @@ theorem exists_open_nhd_pathComponent_preimage
   obtain ⟨n, part, T, hα_tube⟩ := α.toPath.exists_partition_in_slsc_neighborhoods
   -- Rule out `n = 0`; the rest of the proof assumes `n = n' + 1`.
   match n, part, T, hα_tube with
-  | 0, part, _, _ => exact (IntervalPartition.not_zero part).elim
+  | 0, part, _, _ => exact isEmptyElim part
   | n' + 1, part, T, hα_tube =>
   -- Endpoint of α at the last partition point equals `endpoint α`.
   have hα_at_last : α.toPath (part.t (Fin.last (n' + 1))) = endpoint α := by
@@ -746,9 +749,7 @@ the SLSC hypothesis.
    to the free-homotopy `F'` and the top edge (`s = 1`) picks up the null-homotopy of
    `L`, with a continuous interpolation between the two. -/
 theorem toPath_homotopic_of_joinedIn_slsc
-    {U : Set X}
-    (hU_slsc : ∀ {a b : X}, a ∈ U → b ∈ U → ∀ (p q : Path a b),
-      Set.range p ⊆ U → Set.range q ⊆ U → Path.Homotopic p q)
+    {U : Set X} (hU_slsc : IsPathHomotopyTrivial U)
     {α β : BasedPath x₀} (hα_end : endpoint α ∈ U)
     (heq : endpoint α = endpoint β)
     (hAB : JoinedIn (endpoint (x₀ := x₀) ⁻¹' U) α β) :
@@ -771,7 +772,7 @@ theorem toPath_homotopic_of_joinedIn_slsc
       source' := by rw [hF0_eq]; exact heq
       target' := by rw [hF1_eq]; rfl }
   have hL_refl : L.Homotopic (Path.refl v) :=
-    hU_slsc hv hv L (Path.refl v) (by rintro _ ⟨t, rfl⟩; exact hF_U t) (by
+    hU_slsc L (Path.refl v) (by rintro _ ⟨t, rfl⟩; exact hF_U t) (by
       rintro _ ⟨_, rfl⟩; simpa using hv)
   -- Cast α.toPath to target `v`.
   let α' : Path x₀ v := α.toPath.cast rfl heq.symm

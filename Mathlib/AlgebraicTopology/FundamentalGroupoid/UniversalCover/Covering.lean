@@ -43,7 +43,9 @@ public theorem isCoveringMap [LocPathConnectedSpace X] [PathConnectedSpace X]
     IsCoveringMap (proj (x₀ := x₀)) := by
   intro x
   -- Get a good neighborhood of `x`.
-  obtain ⟨U, hU_open, hxU, hU_pathConn, hU_slsc⟩ := exists_pathConnected_slsc_neighborhood x
+  obtain ⟨U, hU_open, hxU, hU_pathConn, hU_slsc_raw⟩ := exists_pathConnected_slsc_neighborhood x
+  have hU_slsc : IsPathHomotopyTrivial U := fun {_ _} p q hp hq ↦
+    hU_slsc_raw (p.source ▸ hp ⟨0, rfl⟩) (p.target ▸ hp ⟨1, rfl⟩) p q hp hq
   let S := sheet (x₀ := x₀) U hxU
   -- Nonempty instances needed by `trivializationDiscrete`.
   have _ne_ι : Nonempty (Path.Homotopic.Quotient x₀ x) :=

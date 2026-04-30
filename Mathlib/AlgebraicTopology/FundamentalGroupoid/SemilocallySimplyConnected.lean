@@ -157,6 +157,15 @@ theorem SemilocallySimplyConnectedOn.mono (h : SemilocallySimplyConnectedOn t) (
     SemilocallySimplyConnectedOn s :=
   fun x hx ↦ h x (hst hx)
 
+/-- A subset `U` of a topological space `X` is *path-homotopy-trivial* if any two paths
+in `X` whose images lie in `U` and which share endpoints are homotopic in `X`. (Equivalently,
+by `paths_homotopic_iff_loops_nullhomotopic`, every loop with image in `U` is nullhomotopic
+in `X`.) This is the form of "`U` is simply connected" used in the universal-cover
+construction: it is weaker than `IsSimplyConnected U` because the homotopy is not required
+to lie inside `U`. -/
+def IsPathHomotopyTrivial (U : Set X) : Prop :=
+  ∀ ⦃a b : X⦄ (p q : Path a b), range p ⊆ U → range q ⊆ U → Path.Homotopic p q
+
 theorem semilocallySimplyConnectedOn_iff :
     SemilocallySimplyConnectedOn s ↔
     ∀ x ∈ s, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧
@@ -273,15 +282,13 @@ namespace IntervalPartition
 
 attribute [simp, grind =] h_start h_end
 
-/-- IntervalPartition 0 is impossible because it requires a single point
-to be both 0 and 1. -/
-lemma not_zero (part : IntervalPartition 0) : False := by
-  have h0 : part.t 0 = 0 := part.h_start
-  have h1 : part.t (Fin.last 0) = 1 := part.h_end
-  have : Fin.last 0 = 0 := rfl
-  rw [this] at h1
-  rw [h0] at h1
-  exact zero_ne_one h1
+/-- `IntervalPartition 0` is empty: a single partition point cannot be simultaneously
+`0` (by `h_start`) and `1` (by `h_end`). -/
+instance : IsEmpty (IntervalPartition 0) where
+  false part := by
+    have h0 : part.t 0 = 0 := part.h_start
+    have h1 : part.t 0 = 1 := part.h_end
+    exact zero_ne_one (h0.symm.trans h1)
 
 end IntervalPartition
 
@@ -945,7 +952,7 @@ theorem Path.tube_subset_homotopy_class {x y : X} {n : ℕ}
       exact (hα_ranges i).2
   -- Step 3: Apply the stronger pasting lemma that uses SLSC to handle endpoint loops.
   cases n with
-  | zero => exfalso; exact IntervalPartition.not_zero part
+  | zero => exact isEmptyElim part
   | succ n' =>
     let i_first : Fin (n' + 1) := ⟨0, Nat.zero_lt_succ n'⟩
     let i_last : Fin (n' + 1) := ⟨n', Nat.lt_succ_self n'⟩

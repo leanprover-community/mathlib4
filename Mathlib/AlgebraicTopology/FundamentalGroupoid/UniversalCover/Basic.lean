@@ -88,7 +88,7 @@ why we do not use the Hatcher-style bespoke basis. -/
 instance instTopologicalSpaceUniversalCover (x₀ : X) : TopologicalSpace (UniversalCover x₀) :=
   TopologicalSpace.coinduced (ofBasedPath x₀) inferInstance
 
-@[continuity] theorem continuous_ofBasedPath (x₀ : X) : Continuous (ofBasedPath x₀) :=
+@[fun_prop] theorem continuous_ofBasedPath (x₀ : X) : Continuous (ofBasedPath x₀) :=
   continuous_coinduced_rng
 
 /-- Every point of `UniversalCover x₀` is represented by some based path. -/
@@ -167,7 +167,7 @@ theorem ofBasedPath_eq_of_homotopic_toPath {α β : BasedPath x₀}
     Path.Homotopic.hpath_hext (fun _ ↦ rfl)
   exact h1.trans (heq_of_eq (Quotient.sound h))
 
-@[continuity] theorem continuous_proj (x₀ : X) : Continuous (proj (x₀ := x₀)) := by
+@[fun_prop] theorem continuous_proj (x₀ : X) : Continuous (proj (x₀ := x₀)) := by
   rw [(isQuotientMap_ofBasedPath x₀).continuous_iff]
   exact (continuous_eval_const (1 : I)).comp continuous_subtype_val
 
@@ -347,10 +347,7 @@ theorem sheet_surjOn [LocPathConnectedSpace X]
 /-- Sheets over the same good neighborhood, indexed by `Path.Homotopic.Quotient`, are pairwise
 disjoint. -/
 theorem sheet_pairwise_disjoint [LocPathConnectedSpace X]
-    {U : Set X}
-    (hU_slsc : ∀ {a b : X}, a ∈ U → b ∈ U → ∀ (p q : Path a b),
-      Set.range p ⊆ U → Set.range q ⊆ U → Path.Homotopic p q)
-    (hxU : x ∈ U) :
+    {U : Set X} (hU_slsc : IsPathHomotopyTrivial U) (hxU : x ∈ U) :
     Pairwise fun (q₁ q₂ : Path.Homotopic.Quotient x₀ x) ↦
       Disjoint (sheet U hxU q₁) (sheet U hxU q₂) := by
   intro q₁ q₂ hne
@@ -402,9 +399,7 @@ theorem sheet_exhaustive [LocPathConnectedSpace X]
 
 /-- In a good neighborhood `U`, the projection `proj` is injective on each sheet. -/
 theorem sheet_proj_injOn [LocPathConnectedSpace X]
-    {U : Set X}
-    (hU_slsc : ∀ {a b : X}, a ∈ U → b ∈ U → ∀ (p q : Path a b),
-      Set.range p ⊆ U → Set.range q ⊆ U → Path.Homotopic p q)
+    {U : Set X} (hU_slsc : IsPathHomotopyTrivial U)
     (hxU : x ∈ U) (q : Path.Homotopic.Quotient x₀ x) :
     (sheet U hxU q).InjOn (proj (x₀ := x₀)) := by
   rintro _ ⟨α₁, hα₁, rfl⟩ _ ⟨α₂, hα₂, rfl⟩ h_proj
