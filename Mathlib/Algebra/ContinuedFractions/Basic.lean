@@ -13,12 +13,12 @@ public import Mathlib.Algebra.Field.Defs
 
 ## Summary
 
-We define generalized, simple, and regular continued fractions and functions to evaluate their
+We define generalised, simple, and regular continued fractions and functions to evaluate their
 convergents. We follow the naming conventions from Wikipedia and [wall2018analytic], Chapter 1.
 
 ## Main definitions
 
-1. Generalized continued fractions (gcfs)
+1. Generalised continued fractions (gcfs)
 2. Simple continued fractions (scfs)
 3. (Regular) continued fractions ((r)cfs)
 4. Computation of convergents using the recurrence relation in `convs`.
@@ -91,7 +91,7 @@ end coe
 
 end GenContFract.Pair
 
-/-- A *generalized continued fraction* (gcf) is a potentially infinite expression of the form
+/-- A *generalised continued fraction* (gcf) is a potentially infinite expression of the form
 $$
   h + \dfrac{a_0}
             {b_0 + \dfrac{a_1}
