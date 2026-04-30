@@ -172,30 +172,30 @@ theorem limsup_const_mul_of_ne_top {u : α → ℝ≥0∞} {a : ℝ≥0∞} (ha_
   exact g_iso.limsup_apply.symm
 
 theorem limsup_mul_const_of_ne_top {u : α → ℝ≥0∞} {a : ℝ≥0∞} (ha_top : a ≠ ⊤) :
-    (f.limsup fun x : α => u x * a) = a * f.limsup u := by
+    f.limsup (fun x : α => u x * a) = a * f.limsup u := by
   simpa [mul_comm] using limsup_const_mul_of_ne_top ha_top
 
 theorem liminf_const_mul_of_ne_zero_of_ne_top {u : α → ℝ≥0∞} {a : ℝ≥0∞}
     (ha₀ : a ≠ 0) (ha_top : a ≠ ⊤) :
-    (f.liminf fun x : α => a * u x) = a * f.liminf u := by
+    f.liminf (fun x : α => a * u x) = a * f.liminf u := by
   let g_iso := (ENNReal.mul_right_strictMono ha₀ ha_top).orderIsoOfSurjective _ fun x ↦
     ⟨a⁻¹ * x, ENNReal.mul_inv_cancel_left ha₀ ha_top⟩
   exact g_iso.liminf_apply.symm
 
 theorem liminf_mul_const_of_ne_zero_of_ne_top {u : α → ℝ≥0∞} {a : ℝ≥0∞}
     (ha₀ : a ≠ 0) (ha_top : a ≠ ⊤) :
-    (f.liminf fun x : α => u x * a) = a * f.liminf u := by
+    f.liminf (fun x : α => u x * a) = a * f.liminf u := by
   simpa [mul_comm] using liminf_const_mul_of_ne_zero_of_ne_top ha₀ ha_top
 
 theorem liminf_const_mul_of_ne_top [f.NeBot] {u : α → ℝ≥0∞} {a : ℝ≥0∞} (ha_top : a ≠ ⊤) :
-    (f.liminf fun x : α => a * u x) = a * f.liminf u := by
+    f.liminf (fun x : α => a * u x) = a * f.liminf u := by
   by_cases ha₀ : a = 0
   · simp_rw [ha₀, zero_mul, ← ENNReal.bot_eq_zero]
     apply liminf_const
   exact liminf_const_mul_of_ne_zero_of_ne_top ha₀ ha_top
 
 theorem liminf_mul_const_of_ne_top [f.NeBot] {u : α → ℝ≥0∞} {a : ℝ≥0∞} (ha_top : a ≠ ⊤) :
-    (f.liminf fun x : α => u x * a) = a * f.liminf u := by
+    f.liminf (fun x : α => u x * a) = a * f.liminf u := by
   simpa [mul_comm] using liminf_const_mul_of_ne_top ha_top
 
 theorem limsup_const_mul [CountableInterFilter f] {u : α → ℝ≥0∞} {a : ℝ≥0∞} :
