@@ -447,7 +447,7 @@ theorem carrier.denom_notMem : f ∉ carrier.asIdeal f_deg hm q := fun rid =>
           HomogeneousLocalization.val_mk]
         dsimp
         simp_rw [decompose_of_mem_same _ f_deg]
-        simp only [mk_eq_monoidOf_mk', Submonoid.LocalizationMap.mk'_self])
+        simp)
 
 theorem carrier.relevant : ¬HomogeneousIdeal.irrelevant 𝒜 ≤ carrier.asHomogeneousIdeal f_deg hm q :=
   fun rid => carrier.denom_notMem f_deg hm q <| rid <| DirectSum.decompose_of_mem_ne 𝒜 f_deg hm.ne'
@@ -531,7 +531,7 @@ include hm f_deg
 set_option backward.isDefEq.respectTransparency false in
 variable {𝒜} in
 lemma image_basicOpen_eq_basicOpen (a : A) (i : ℕ) :
-    toSpec 𝒜 f '' (Subtype.val ⁻¹' (pbo (decompose 𝒜 a i) : Set (ProjectiveSpectrum 𝒜))) =
+    toSpec 𝒜 f '' Subtype.val ⁻¹' (pbo (decompose 𝒜 a i) : Set (ProjectiveSpectrum 𝒜)) =
     (PrimeSpectrum.basicOpen (R := A⁰_ f) <|
       HomogeneousLocalization.mk
         ⟨m * i, ⟨decompose 𝒜 a i ^ m,
@@ -697,7 +697,6 @@ lemma toSpec_preimage_basicOpen {f}
   convert (ProjIsoSpecTopComponent.ToSpec.preimage_basicOpen f t)
   exact funext fun _ => toSpec_base_apply_eq _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma toOpen_toSpec_val_c_app (f) (U) :
     (Scheme.ΓSpecIso _).inv ≫ (Spec A⁰_ f).presheaf.map (homOfLE le_top).op ≫
@@ -733,8 +732,8 @@ lemma isLocalization_atPrime (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 
     obtain ⟨y, rfl⟩ := HomogeneousLocalization.mk_surjective y
     refine .of_mul_eq_one
       (.mk ⟨y.deg, y.den, y.num, (mk_mem_toSpec_base_apply _ _ _).not.mp hy⟩) <| val_injective _ ?_
-    simp only [RingHom.algebraMap_toAlgebra, map_mk, RingHom.id_apply, val_mul, val_mk, mk_eq_mk',
-      val_one, IsLocalization.mk'_mul_mk'_eq_one']
+    simp only [RingHom.algebraMap_toAlgebra, map_mk, GradedRingHom.id_apply, val_mul, val_mk,
+      mk_eq_mk', val_one, IsLocalization.mk'_mul_mk'_eq_one']
   · intro z
     obtain ⟨⟨i, a, ⟨b, hb⟩, (hb' : b ∉ x.1.1)⟩, rfl⟩ := z.mk_surjective
     refine ⟨⟨HomogeneousLocalization.mk ⟨i * m, ⟨a * b ^ (m - 1), ?_⟩,
@@ -745,7 +744,7 @@ lemma isLocalization_atPrime (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 
         val_injective _ ?_⟩
     · convert SetLike.mul_mem_graded a.2 (SetLike.pow_mem_graded (m - 1) hb) using 2
       rw [← succ_nsmul', tsub_add_cancel_of_le (by lia), mul_comm, smul_eq_mul]
-    · simp only [RingHom.algebraMap_toAlgebra, map_mk, RingHom.id_apply, val_mul, val_mk,
+    · simp only [RingHom.algebraMap_toAlgebra, map_mk, GradedRingHom.id_apply, val_mul, val_mk,
         mk_eq_mk', ← IsLocalization.mk'_mul, Submonoid.mk_mul_mk, IsLocalization.mk'_eq_iff_eq]
       rw [mul_comm b, mul_mul_mul_comm, ← pow_succ', mul_assoc, tsub_add_cancel_of_le (by lia)]
   · intro y z e
@@ -754,7 +753,7 @@ lemma isLocalization_atPrime (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 
     obtain ⟨i, c, hc, hc', e⟩ : ∃ i, ∃ c ∈ 𝒜 i, c ∉ x.1.asHomogeneousIdeal ∧
         c * (z.den.1 * y.num.1) = c * (y.den.1 * z.num.1) := by
       apply_fun HomogeneousLocalization.val at e
-      simp only [RingHom.algebraMap_toAlgebra, map_mk, RingHom.id_apply, val_mk, mk_eq_mk',
+      simp only [RingHom.algebraMap_toAlgebra, map_mk, GradedRingHom.id_apply, val_mk, mk_eq_mk',
         IsLocalization.mk'_eq_iff_eq] at e
       obtain ⟨⟨c, hcx⟩, hc⟩ := IsLocalization.exists_of_eq (M := x.1.1.toIdeal.primeCompl) e
       obtain ⟨i, hi⟩ := not_forall.mp ((x.1.1.isHomogeneous.mem_iff _).not.mp hcx)

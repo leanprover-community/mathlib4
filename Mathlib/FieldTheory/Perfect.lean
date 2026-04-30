@@ -52,6 +52,8 @@ section PerfectRing
 section Monoid
 variable (M : Type*) (p q : ℕ) [CommMonoid M] [PerfectRing M p] [PerfectRing M q]
 
+namespace PerfectRing
+
 instance one : PerfectRing M 1 :=
   ⟨by simpa using bijective_id⟩
 
@@ -60,6 +62,8 @@ instance mul : PerfectRing M (p * q) :=
 
 instance pow (n : ℕ) : PerfectRing M (p ^ n) :=
   n.recOn (inferInstanceAs (PerfectRing M 1)) fun n _ ↦ inferInstanceAs (PerfectRing M (p ^ n * p))
+
+end PerfectRing
 
 /-- The `p`-th power automorphism for a perfect monoid. -/
 @[simps! apply]
@@ -179,12 +183,12 @@ theorem iterateFrobeniusEquiv_symm :
 @[simp]
 theorem frobeniusEquiv_symm_apply_frobenius (x : R) :
     (frobeniusEquiv R p).symm (frobenius R p x) = x :=
-  leftInverse_surjInv PerfectRing.bijective_frobenius x
+  (frobeniusEquiv R p).symm_apply_apply x
 
 @[simp]
 theorem frobenius_apply_frobeniusEquiv_symm (x : R) :
     frobenius R p ((frobeniusEquiv R p).symm x) = x :=
-  surjInv_eq _ _
+  (frobeniusEquiv R p).apply_symm_apply x
 
 @[simp]
 theorem frobenius_comp_frobeniusEquiv_symm :

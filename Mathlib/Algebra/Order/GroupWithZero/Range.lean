@@ -32,37 +32,34 @@ variable (f) in
 /-- The inclusion of `ValueGroup₀ f` into `WithZero Bˣ` as a homomorphism of monoids with zero. -/
 def orderMonoidWithZeroHom : ValueGroup₀ f →*₀o WithZero Bˣ where
   __ := WithZero.map' (valueGroup f).subtype
-  monotone' := map'_strictMono (Subtype.strictMono_coe _)|>.monotone
+  monotone' := map'_strictMono (Subtype.strictMono_coe _) |>.monotone
 
 lemma monoidWithZeroHom_strictMono :
     StrictMono (orderMonoidWithZeroHom f) :=
   map'_strictMono (Subtype.strictMono_coe _)
 
-variable (f) in
-/-- The inclusion of `ValueGroup₀ f` into `WithZero Bˣ` as an order embedding. In general, prefer
-the use of `MonoidWithZeroHom` and apply the above lemma
-`MonoidWithZeroHom_strictMono` if properties about ordering are needed. -/
-def orderEmbedding : ValueGroup₀ f ↪o WithZero Bˣ where
-  __ := orderMonoidWithZeroHom f
-  inj' := monoidWithZeroHom_strictMono.injective
-  map_rel_iff' := monoidWithZeroHom_strictMono.le_iff_le
-
-@[simp]
-lemma orderEmbedding_apply (x : ValueGroup₀ f) :
-    orderEmbedding f x = orderMonoidWithZeroHom f x := rfl
-
-lemma orderEmbedding_mul (x y : ValueGroup₀ f) :
-    orderEmbedding f (x * y) = orderEmbedding f x * orderEmbedding f y := by simp
+lemma embedding_strictMono : StrictMono (embedding (f := f)) := by
+  intro x y hxy
+  rw [← monoidWithZeroHom_strictMono.lt_iff_lt] at hxy
+  simpa using (OrderEmbedding.lt_iff_lt (OrderIso.withZeroUnits.toOrderEmbedding)).mpr hxy
 
 instance : IsOrderedMonoid (ValueGroup₀ f) :=
-  Function.Injective.isOrderedMonoid (orderEmbedding f) orderEmbedding_mul
-    <| OrderEmbedding.le_iff_le (orderEmbedding f)
+  Function.Injective.isOrderedMonoid embedding (map_mul _) embedding_strictMono.le_iff_le
 
 instance : LinearOrderedCommGroupWithZero (ValueGroup₀ f) where
   zero_le := by simp
   mul_lt_mul_of_pos_left a ha b c hbc := by
-    simp only [← OrderEmbedding.lt_iff_lt (orderEmbedding f), orderEmbedding_mul] at *
+    simp only [← (embedding_strictMono (f := f)).lt_iff_lt, map_mul] at *
     exact (mul_lt_mul_iff_of_pos_left ha).mpr hbc
+
+lemma embedding_unit_pos (a : (ValueGroup₀ f)ˣ) :
+    0 < embedding a.1 := by
+  conv_lhs => rw [← map_zero f, ← ValueGroup₀.embedding_restrict₀ (0 : A)]
+  rw [embedding_strictMono.lt_iff_lt]
+  simp
+
+lemma embedding_unit_ne_zero (a : (ValueGroup₀ f)ˣ) :
+    embedding a.1 ≠ 0 := (embedding_unit_pos a).ne.symm
 
 end ValueGroup₀
 

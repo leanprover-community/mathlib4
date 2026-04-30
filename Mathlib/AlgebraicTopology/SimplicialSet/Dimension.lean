@@ -16,7 +16,7 @@ i.e. all nondegenerate simplices of `X` are of dimension `< d`.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -37,17 +37,22 @@ section
 
 variable (X : SSet.{u}) (d : ℕ) [X.HasDimensionLT d] (n : ℕ)
 
-lemma degenerate_eq_top_of_hasDimensionLT (hn : d ≤ n) : X.degenerate n = ⊤ :=
+lemma degenerate_eq_univ_of_hasDimensionLT (hn : d ≤ n := by lia) : X.degenerate n = Set.univ :=
   HasDimensionLT.degenerate_eq_top n hn
 
-lemma nonDegenerate_eq_bot_of_hasDimensionLT (hn : d ≤ n) : X.nonDegenerate n = ⊥ := by
-  simp [nonDegenerate, X.degenerate_eq_top_of_hasDimensionLT d n hn]
+lemma nonDegenerate_eq_empty_of_hasDimensionLT (hn : d ≤ n := by lia) : X.nonDegenerate n = ∅ := by
+  simp [nonDegenerate, X.degenerate_eq_univ_of_hasDimensionLT d n hn]
+
+@[deprecated (since := "2026-04-06")]
+alias degenerate_eq_top_of_hasDimensionLT := degenerate_eq_univ_of_hasDimensionLT
+@[deprecated (since := "2026-04-06")]
+alias nonDegenerate_eq_bot_of_hasDimensionLT := nonDegenerate_eq_empty_of_hasDimensionLT
 
 lemma dim_lt_of_nonDegenerate {n : ℕ} (x : X.nonDegenerate n) (d : ℕ)
     [X.HasDimensionLT d] : n < d := by
   by_contra!
   obtain ⟨x, hx⟩ := x
-  simp [X.nonDegenerate_eq_bot_of_hasDimensionLT d n this] at hx
+  simp [X.nonDegenerate_eq_empty_of_hasDimensionLT d n this] at hx
 
 lemma dim_le_of_nonDegenerate {n : ℕ} (x : X.nonDegenerate n) (d : ℕ)
     [X.HasDimensionLE d] : n ≤ d :=
@@ -55,7 +60,7 @@ lemma dim_le_of_nonDegenerate {n : ℕ} (x : X.nonDegenerate n) (d : ℕ)
 
 lemma hasDimensionLT_of_le (hn : d ≤ n := by lia) : HasDimensionLT X n where
   degenerate_eq_top i hi :=
-    X.degenerate_eq_top_of_hasDimensionLT d i (hn.trans hi)
+    X.degenerate_eq_univ_of_hasDimensionLT d i (hn.trans hi)
 
 instance [HasDimensionLT X n] (k : ℕ) : HasDimensionLT X (n + k) :=
   X.hasDimensionLT_of_le n _
@@ -70,7 +75,7 @@ set_option backward.isDefEq.respectTransparency false in
 instance (d : ℕ) [X.HasDimensionLT d] (A : X.Subcomplex) : HasDimensionLT A d where
   degenerate_eq_top (n : ℕ) (hd : d ≤ n) := by
     ext x
-    simp [A.mem_degenerate_iff, X.degenerate_eq_top_of_hasDimensionLT d n hd]
+    simp [A.mem_degenerate_iff, X.degenerate_eq_univ_of_hasDimensionLT d n hd]
 
 lemma le_iff_of_hasDimensionLT (A B : X.Subcomplex) (d : ℕ) [X.HasDimensionLT d] :
     A ≤ B ↔ ∀ i < d, A.obj _ ∩ X.nonDegenerate i ⊆ B.obj (op ⦋i⦌) := by
@@ -91,7 +96,7 @@ lemma hasDimensionLT_of_mono {X Y : SSet.{u}} (f : X ⟶ Y) [Mono f] (d : ℕ)
   degenerate_eq_top n hn := by
     ext x
     rw [← degenerate_iff_of_isIso (Subcomplex.toRange f),
-      Subcomplex.mem_degenerate_iff, Y.degenerate_eq_top_of_hasDimensionLT d n hn]
+      Subcomplex.mem_degenerate_iff, Y.degenerate_eq_univ_of_hasDimensionLT d n hn]
     simp
 
 lemma Subcomplex.hasDimensionLT_of_le
@@ -99,7 +104,6 @@ lemma Subcomplex.hasDimensionLT_of_le
     HasDimensionLT A d :=
   hasDimensionLT_of_mono (Subcomplex.homOfLE h) d
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasDimensionLT_of_epi {X Y : SSet.{u}} (f : X ⟶ Y) [Epi f] (d : ℕ)
     [X.HasDimensionLT d] : Y.HasDimensionLT d where
   degenerate_eq_top n hn := by
@@ -107,7 +111,7 @@ lemma hasDimensionLT_of_epi {X Y : SSet.{u}} (f : X ⟶ Y) [Epi f] (d : ℕ)
     simp only [Set.top_eq_univ, Set.mem_univ, iff_true]
     obtain ⟨x, rfl⟩ := epi_iff_surjective (f := (f.app (op ⦋n⦌))).1 inferInstance y
     apply degenerate_app_apply
-    simp [X.degenerate_eq_top_of_hasDimensionLT d n hn]
+    simp [X.degenerate_eq_univ_of_hasDimensionLT d n hn]
 
 lemma hasDimensionLT_iff_of_iso {X Y : SSet.{u}} (e : X ≅ Y) (d : ℕ) :
     X.HasDimensionLT d ↔ Y.HasDimensionLT d :=
@@ -129,6 +133,6 @@ lemma hasDimensionLT_subcomplex_top_iff (X : SSet.{u}) (d : ℕ) :
 instance {X : SSet.{u}} (n : ℕ) : HasDimensionLT (⊥ : X.Subcomplex) n where
   degenerate_eq_top k hk := by
     ext ⟨x, hx⟩
-    simp at hx
+    tauto
 
 end SSet

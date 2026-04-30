@@ -235,7 +235,7 @@ theorem biUnion_associatedPrimes_eq_zero_divisors [IsNoetherianRing R] :
   · intro r ⟨x, h, h'⟩
     obtain ⟨P, hP, hx⟩ := exists_le_isAssociatedPrime_of_isNoetherianRing R x h
     rw [isAssociatedPrime_iff] at hP
-    exact Set.mem_biUnion hP (hx (by rwa [mem_colon_singleton]))
+    exact Set.mem_iUnion₂_of_mem hP (hx (by rwa [mem_colon_singleton]))
 
 theorem biUnion_associatedPrimes_eq_compl_nonZeroDivisors [IsNoetherianRing R] :
     ⋃ p ∈ associatedPrimes R R, p = (nonZeroDivisors R : Set R)ᶜ :=
@@ -265,7 +265,6 @@ theorem isAssociatedPrime_iff_exists_injective_linearMap [IsNoetherianRing R] :
 
 variable {I J M}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsAssociatedPrime.eq_radical (hI : I.IsPrimary) (h : IsAssociatedPrime J (R ⧸ I)) :
     J = I.radical := by
   obtain ⟨hJ, x, e⟩ := h

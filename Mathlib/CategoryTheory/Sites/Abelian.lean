@@ -19,7 +19,7 @@ Hence, `presheafToSheaf` is an additive functor (`presheafToSheaf_additive`).
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -43,7 +43,6 @@ instance sheafIsAbelian : Abelian (Sheaf J D) :=
 
 attribute [local instance] preservesBinaryBiproducts_of_preservesBinaryProducts
 
-set_option backward.isDefEq.respectTransparency false in
 instance presheafToSheaf_additive : (presheafToSheaf J D).Additive :=
   (presheafToSheaf J D).additive_of_preservesBinaryBiproducts
 

@@ -70,8 +70,8 @@ instance category : LargeCategory.{max v u} Grpd.{v, u} where
 /-- Functor that gets the set of objects of a groupoid. It is not
 called `forget`, because it is not a faithful functor. -/
 def objects : Grpd.{v, u} ⥤ Type u where
-  obj := Bundled.α
-  map F := F.obj
+  obj C := Bundled.α C
+  map F := ↾F.obj
 
 /-- Forgetting functor to `Cat` -/
 def forgetToCat : Grpd.{v, u} ⥤ Cat.{v, u} where
@@ -92,12 +92,6 @@ theorem comp_eq_comp {C D E : Grpd.{v, u}} (f : C ⟶ D) (g : D ⟶ E) : f ≫ g
 
 /-- Converts identity in the category of groupoids to the functor identity -/
 theorem id_eq_id {C : Grpd.{v, u}} : 𝟙 C = 𝟭 C :=
-  rfl
-
-@[deprecated (since := "2025-09-04")] alias hom_to_functor := comp_eq_comp
-
-@[deprecated "Deprecated in favor of using `CategoryTheory.Grpd.id_eq_id`" (since := "2025-09-04")]
-theorem id_to_functor {C : Grpd.{v, u}} : 𝟭 C = 𝟙 C :=
   rfl
 
 section Products

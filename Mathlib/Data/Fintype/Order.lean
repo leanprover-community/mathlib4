@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Data.Finset.Order
-public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Data.Set.Finite.Basic  -- shake: keep (IsAtomic α), cf. lean#13417
 public import Mathlib.Data.Set.Finite.Range
 public import Mathlib.Order.Atoms
 
@@ -49,7 +49,7 @@ We provide a few instances for concrete types:
 * `Bool.completeBooleanAlgebra`
 -/
 
-@[expose] public section
+public section
 
 
 open Finset
@@ -93,10 +93,8 @@ noncomputable abbrev toCompleteLattice [Lattice α] [BoundedOrder α] : Complete
   __ := ‹BoundedOrder α›
   sSup := fun s => s.toFinset.sup id
   sInf := fun s => s.toFinset.inf id
-  le_sSup := fun _ _ ha => Finset.le_sup (f := id) (Set.mem_toFinset.mpr ha)
-  sSup_le := fun _ _ ha => Finset.sup_le fun _ hb => ha _ <| Set.mem_toFinset.mp hb
-  sInf_le := fun _ _ ha => Finset.inf_le (Set.mem_toFinset.mpr ha)
-  le_sInf := fun _ _ ha => Finset.le_inf fun _ hb => ha _ <| Set.mem_toFinset.mp hb
+  isLUB_sSup s := Set.coe_toFinset s ▸ Finset.isLUB_sup_id
+  isGLB_sInf s := Set.coe_toFinset s ▸ Finset.isGLB_inf_id
 
 -- See note [reducible non-instances]
 /-- A finite bounded distributive lattice is completely distributive. -/
@@ -285,7 +283,7 @@ end CCL
 
 section CCLO
 
-variable {α β ι : Type*} [ConditionallyCompleteLinearOrder α] [ConditionallyCompleteLinearOrder β]
+variable {α β ι : Type*} [ConditionallyCompleteLinearOrder α] [ConditionallyCompleteLattice β]
   [Finite ι] [Nonempty ι]
 
 lemma map_iSup_of_monotoneOn {s : Set α} {f : ι → α} {g : α → β} (hg : MonotoneOn g s)

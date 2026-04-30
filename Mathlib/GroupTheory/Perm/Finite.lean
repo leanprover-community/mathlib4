@@ -17,7 +17,7 @@ This file contains miscellaneous lemmas about `Equiv.Perm` and `Equiv.swap`, bui
 of those in `Mathlib/Logic/Equiv/Basic.lean` and other files in `Mathlib/GroupTheory/Perm/*`.
 -/
 
-@[expose] public section
+public section
 
 universe u v
 
@@ -289,6 +289,18 @@ lemma disjoint_closure_of_disjoint_support {S T : Set (Perm α)}
   apply disjoint_of_disjoint_support
   apply disjoint_support_closure_of_disjoint_support
   exact h
+
+theorem mem_range_ofSubtype_iff {p : α → Prop} [DecidablePred p] {g : Perm α} :
+    g ∈ (ofSubtype : Perm (Subtype p) →* Perm α).range ↔ (g.support : Set α) ⊆ setOf p := by
+  constructor
+  · rintro ⟨k, rfl⟩ x
+    simp only [Finset.mem_coe, mem_support_ofSubtype, Set.mem_setOf_eq]
+    exact fun ⟨hx, _⟩ ↦ hx
+  · intro hg
+    refine ⟨g.subtypePerm fun x ↦ ?_, ofSubtype_subtypePerm _ fun x hx ↦ hg (mem_support.mpr hx)⟩
+    by_cases hx : g x = x
+    · rw [hx]
+    · refine iff_of_true (hg ?_) (hg ?_) <;> simpa
 
 end Fintype
 

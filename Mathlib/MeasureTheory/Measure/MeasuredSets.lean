@@ -44,7 +44,7 @@ instance : SetLike (MeasuredSets μ) α where
   coe s := s.1
   coe_injective' := Subtype.coe_injective
 
-instance : PseudoEMetricSpace (MeasuredSets μ) where
+noncomputable instance : PseudoEMetricSpace (MeasuredSets μ) where
   edist s t := μ ((s : Set α) ∆ t)
   edist_self := by simp
   edist_comm := by grind
@@ -63,7 +63,7 @@ lemma MeasuredSets.continuous_measure : Continuous (fun (s : MeasuredSets μ) �
   rw [one_mul, ← tsub_le_iff_left]
   exact sub_le_edist s t
 
-instance [IsFiniteMeasure μ] : PseudoMetricSpace (MeasuredSets μ) :=
+noncomputable instance [IsFiniteMeasure μ] : PseudoMetricSpace (MeasuredSets μ) :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist
     (fun s t ↦ μ.real ((s : Set α) ∆ t)) (fun s t ↦ ENNReal.toReal_nonneg)
     (fun s t ↦ by simp [Measure.real, MeasuredSets.edist_def])

@@ -40,7 +40,7 @@ of a Noetherian scheme (e.g., the spectrum of a Noetherian ring) is Noetherian.
 
 -/
 
-@[expose] public section
+public section
 
 open Topology
 
@@ -51,7 +51,6 @@ namespace TopologicalSpace
 /-- Type class for Noetherian spaces. It is defined to be spaces whose open sets satisfies ACC. -/
 abbrev NoetherianSpace : Prop := WellFoundedGT (Opens α)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem noetherianSpace_iff_opens : NoetherianSpace α ↔ ∀ s : Opens α, IsCompact (s : Set α) := by
   rw [NoetherianSpace, CompleteLattice.wellFoundedGT_iff_isSupFiniteCompact,
     CompleteLattice.isSupFiniteCompact_iff_all_elements_compact]
@@ -137,7 +136,6 @@ theorem NoetherianSpace.iUnion {ι : Type*} (f : ι → Set α) [Finite ι]
   rw [← Set.inter_eq_left.mpr ht, Set.inter_iUnion]
   exact isCompact_iUnion fun i => hf i _ Set.inter_subset_right
 
-set_option backward.isDefEq.respectTransparency false in
 -- This is not an instance since it makes a loop with `t2_space_discrete`.
 theorem NoetherianSpace.discrete [NoetherianSpace α] [T2Space α] : DiscreteTopology α :=
   ⟨eq_bot_iff.mpr fun _ _ => isClosed_compl_iff.mp (NoetherianSpace.isCompact _).isClosed⟩
@@ -151,7 +149,6 @@ theorem NoetherianSpace.finite [NoetherianSpace α] [T2Space α] : Finite α :=
 instance (priority := 100) Finite.to_noetherianSpace [Finite α] : NoetherianSpace α :=
   ⟨Finite.wellFounded_of_trans_of_irrefl _⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a Noetherian space, every closed set is a finite union of irreducible closed sets. -/
 theorem NoetherianSpace.exists_finite_set_closeds_irreducible [NoetherianSpace α] (s : Closeds α) :
     ∃ S : Set (Closeds α), S.Finite ∧ (∀ t ∈ S, IsIrreducible (t : Set α)) ∧ s = sSup S := by

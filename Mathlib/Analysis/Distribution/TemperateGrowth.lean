@@ -107,8 +107,7 @@ lemma HasTemperateGrowth.of_fderiv {f : E → F}
 lemma HasTemperateGrowth.zero :
     Function.HasTemperateGrowth (fun _ : E ↦ (0 : F)) := by
   refine ⟨contDiff_const, fun n ↦ ⟨0, 0, fun x ↦ ?_⟩⟩
-  simp only [iteratedFDeriv_zero_fun, Pi.zero_apply, norm_zero]
-  positivity
+  simp
 
 @[fun_prop, simp]
 lemma HasTemperateGrowth.const (c : F) :
@@ -137,7 +136,7 @@ theorem HasTemperateGrowth.comp' [NormedAddCommGroup D] [NormedSpace ℝ D] {g :
   refine ⟨hg₁.comp_contDiff hf.1 (ht ⟨·, rfl⟩), fun n ↦ ?_⟩
   obtain ⟨k₁, C₁, hC₁, h₁⟩ := hf.norm_iteratedFDeriv_le_uniform n
   obtain ⟨k₂, C₂, hC₂, h₂⟩ := hg₂ n
-  have h₁' : ∀ x, ‖f x‖ ≤ C₁ * (1 + ‖x‖) ^ k₁ := by simpa using h₁ 0 (zero_le _)
+  have h₁' : ∀ x, ‖f x‖ ≤ C₁ * (1 + ‖x‖) ^ k₁ := by simpa using h₁ 0
   set C₃ := ∑ k ∈ Finset.range (k₂ + 1), C₂ * (k₂.choose k : ℝ) * (C₁ ^ k)
   use k₁ * k₂ + k₁ * n, n ! * C₃ * (1 + C₁) ^ n
   intro x
