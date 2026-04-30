@@ -227,12 +227,7 @@ theorem disjoint_primeCompl_of_liesOver [p.IsPrime] [hPp : 𝔓.LiesOver p] :
 theorem algebraMapSubmonoid_primeCompl_of_liesOver_surjective
     [p.IsPrime] [P.IsPrime] [P.LiesOver p] (hf : Function.Surjective (algebraMap A B)) :
     Algebra.algebraMapSubmonoid B p.primeCompl = P.primeCompl := by
-  ext x
-  obtain ⟨x, rfl⟩ := hf x
-  rw [mem_primeCompl_iff]
-  refine ⟨fun ⟨y, hy, hx⟩ ↦ ?_, fun hx ↦ ⟨x, ?_, rfl⟩⟩
-  · rwa [← hx, ← mem_of_liesOver P p]
-  · rwa [← mem_of_liesOver P p] at hx
+  simpa [over_def P p] using P.map_primeCompl_comap_of_surjective (algebraMap A B) hf
 
 variable (B)
 
