@@ -381,16 +381,10 @@ def map (D : AlgebraicCycle X ℤ) {U V : (TopologicalSpace.Opens ↥X)ᵒᵖ} (
       split_ifs
       · dsimp [smulVal]
         split_ifs
-        · apply Subtype.ext
+        · let : Algebra Γ(X, U.unop) Γ(X, V.unop) := (X.sheaf.obj.map r).hom.toAlgebra
+          apply Subtype.ext
           erw [coe_smul]
-          simp only [op_unop, sheafCompose_obj_obj, Functor.comp_obj,
-            CommRingCat.forgetToRingCat_obj, Functor.comp_map, CommRingCat.forgetToRingCat_map_hom,
-            RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
-            MonoidHom.coe_coe, ZeroHom.coe_mk]
-          let : Algebra Γ(X, U.unop) Γ(X, V.unop) := (X.sheaf.obj.map r).hom.toAlgebra
-          have : IsScalarTower Γ(X, U.unop) Γ(X, V.unop) X.functionField := by infer_instance
-          change m • a = (algebraMap  Γ(X, U.unop) Γ(X, V.unop) m) • a.1
-          exact algebra_compatible_smul (↑Γ(X, unop V)) m a.1
+          exact algebra_compatible_smul Γ(X, V.unop) m a.1
         · have : ¬ Nonempty ↑(unop V) := by
             have := leOfHom r.unop
             suffices (unop V) = ⊥ by simp_all only [Opens.nonempty_iff,
@@ -410,13 +404,12 @@ set_option backward.isDefEq.respectTransparency false in
 def map_id (D : AlgebraicCycle X ℤ) (U : (TopologicalSpace.Opens ↥X)ᵒᵖ) :
     map D (𝟙 U) = (ModuleCat.restrictScalarsId' (RingCat.Hom.hom (X.ringCatSheaf.obj.map (𝟙 U)))
     (congrArg RingCat.Hom.hom (X.ringCatSheaf.obj.map_id U))).inv.app (obj D U) := by
-  dsimp [map]
   by_cases h : Nonempty U.unop
   · apply ModuleCat.hom_ext
     rw [@LinearMap.ext_iff]
     intro x
     apply Subtype.ext
-    simp
+    simp [map]
     rfl
   · apply ModuleCat.hom_ext
     rw [@LinearMap.ext_iff]
