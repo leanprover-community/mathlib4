@@ -179,8 +179,8 @@ theorem existsUnique_continuousMap_lifts [PathConnectedSpace A] [LocPathConnecte
     DFunLike.ext _ _ fun a ↦ ?_⟩
   · obtain ⟨p, hep, rfl⟩ := homeo (F a)
     have hfap : f a ∈ p.target := by rw [← this]; exact p.map_source hep
-    refine ContinuousAt.congr (f := p.symm ∘ f) ((p.continuousOn_symm.continuousAt <|
-      p.open_target.mem_nhds hfap).comp f.2.continuousAt) ?_
+    refine ContinuousAt.congr (f := p.symm ∘ f)
+      ((p.continuousAt_symm hfap).comp f.2.continuousAt) ?_
     have ⟨U, ⟨haU, U_conn⟩, hUp⟩ := (path_connected_basis a).mem_iff.mp
       ((p.open_target.preimage f.continuous).mem_nhds hfap)
     refine Filter.mem_of_superset haU fun x hxU ↦ ?_
@@ -393,7 +393,7 @@ open CategoryTheory
 https://ncatlab.org/nlab/show/monodromy. -/
 @[simps] noncomputable def monodromyFunctor : FundamentalGroupoid X ⥤ Type _ where
   obj x := p ⁻¹' {x.as}
-  map f := TypeCat.ofHom (cov.monodromy f)
+  map f := ↾(cov.monodromy f)
   map_id _ := by ext x : 3; simpa using congr_fun cov.monodromy_refl x
   map_comp _ _ := by ext : 3; simpa using cov.monodromy_trans_apply _ _ _
 

@@ -52,7 +52,7 @@ universe uι u v
 
 open Algebra Set MulOpposite
 
-open Pointwise
+open scoped Pointwise
 
 namespace SubMulAction
 
@@ -518,7 +518,7 @@ end
 
 section
 
-open Pointwise
+open scoped Pointwise
 
 /-- `Submodule.pointwiseNeg` distributes over multiplication.
 
