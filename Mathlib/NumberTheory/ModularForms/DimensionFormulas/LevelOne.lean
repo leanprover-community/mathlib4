@@ -62,11 +62,7 @@ def divDiscriminant (f : CuspForm 𝒮ℒ k) : ModularForm 𝒮ℒ (k - 12) wher
   slash_action_eq' _ hA := by
     obtain ⟨γ, rfl⟩ := hA
     exact divByDiscriminant_slash_eq f γ
-  holo' := by
-    -- TODO: missing `MDifferentiableAt.div` or `MDifferentiableAt.inv`
-    refine f.holo'.mul fun z ↦ .comp z ?_ (CuspForm.discriminant.holo' _)
-    rw [mdifferentiableAt_iff_differentiableAt]
-    exact differentiableAt_inv <| discriminant_ne_zero z
+  holo' z := f.holo' z |>.div (CuspForm.discriminant.holo' z) (discriminant_ne_zero z)
   bdd_at_cusps' {c} hc := by
     rw [Subgroup.IsArithmetic.isCusp_iff_isCusp_SL2Z] at hc
     rw [isBoundedAt_iff_forall_SL2Z hc]
