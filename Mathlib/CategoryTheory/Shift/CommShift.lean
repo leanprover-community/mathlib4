@@ -183,13 +183,16 @@ lemma commShiftIso_inv_naturality {X Y : C} (f : X ⟶ Y) (a : A) :
       (F.commShiftIso a).inv.app X ≫ F.map (f⟦a⟧') :=
   (F.commShiftIso a).inv.naturality f
 
+-- The next two lemmas are added to ease automation. They could be proven by `simp`
+-- using `set_option backward.isDefEq.respectTransparency false`
+
 @[reassoc (attr := simp)]
-lemma commShiftIso_hom_inv_id_apply (X : C) (a : A) :
+lemma commShiftIso_hom_inv_id_app (X : C) (a : A) :
     dsimp% (F.commShiftIso a).hom.app X ≫ (F.commShiftIso a).inv.app X = 𝟙 _ :=
   (F.commShiftIso a).hom_inv_id_app X
 
 @[reassoc (attr := simp)]
-lemma commShiftIso_inv_hom_id_apply (X : C) (a : A) :
+lemma commShiftIso_inv_hom_id_app (X : C) (a : A) :
     dsimp% (F.commShiftIso a).inv.app X ≫ (F.commShiftIso a).hom.app X = 𝟙 _ :=
   (F.commShiftIso a).inv_hom_id_app X
 
