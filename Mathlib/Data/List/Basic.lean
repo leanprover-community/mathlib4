@@ -20,7 +20,7 @@ public import Mathlib.Tactic.Attr.Core
 # Basic properties of lists
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Lattice
 assert_not_exists Monoid
@@ -94,6 +94,10 @@ theorem length_pos_iff_ne_nil {l : List α} : 0 < length l ↔ l ≠ [] :=
 theorem exists_of_length_succ {n} : ∀ l : List α, l.length = n + 1 → ∃ h t, l = h :: t
   | [], H => absurd H.symm <| succ_ne_zero n
   | h :: t, _ => ⟨h, t, rfl⟩
+
+theorem length_eq_succ_iff {n} {l : List α} :
+    l.length = n + 1 ↔ ∃ h t, h :: t = l ∧ t.length = n := by
+  grind [cases List]
 
 @[simp] lemma length_injective_iff : Injective (List.length : List α → ℕ) ↔ Subsingleton α := by
   constructor
@@ -591,7 +595,7 @@ theorem succ_idxOf_lt_length_of_mem_dropLast {l : List α} {a : α} (ha : a ∈ 
 theorem idxOf_getLast {l : List α} (hl : l ≠ []) (hl' : l.getLast hl ∉ l.dropLast) :
     l.idxOf (l.getLast hl) = l.length - 1 :=
   Nat.le_antisymm (Nat.le_pred_of_lt <| l.idxOf_lt_length_of_mem <| getLast_mem hl) <| by
-    contrapose! hl'
+    contrapose hl'
     rwa [mem_dropLast_iff_idxOf_lt <| getLast_mem hl, ← Nat.not_le]
 
 end IndexOf
@@ -925,17 +929,16 @@ theorem filter_eq_foldr (p : α → Bool) (l : List α) :
     filter p l = foldr (fun a out => bif p a then a :: out else out) [] l := by
   induction l <;> simp [*, filter]; rfl
 
-#adaptation_note /-- nightly-2024-07-27
-This has to be temporarily renamed to avoid an unintentional collision.
-The prime should be removed at nightly-2024-07-27. -/
 @[simp]
-theorem filter_subset' (l : List α) : filter p l ⊆ l :=
+theorem filter_subset_self (l : List α) : filter p l ⊆ l :=
   filter_sublist.subset
+
+@[deprecated (since := "2026-04-24")] alias filter_subset' := filter_subset_self
 
 theorem of_mem_filter {a : α} {l} (h : a ∈ filter p l) : p a := (mem_filter.1 h).2
 
 theorem mem_of_mem_filter {a : α} {l} (h : a ∈ filter p l) : a ∈ l :=
-  filter_subset' l h
+  filter_subset_self l h
 
 theorem mem_filter_of_mem {a : α} {l} (h₁ : a ∈ l) (h₂ : p a) : a ∈ filter p l :=
   mem_filter.2 ⟨h₁, h₂⟩
