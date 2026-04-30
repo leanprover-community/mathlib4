@@ -157,7 +157,7 @@ theorem isRat_inv_neg {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} 
 open Lean
 
 attribute [local instance] monadLiftOptionMetaM in
-/-- The result of inverting a norm_num result. -/
+/-- The result of inverting a `norm_num` result. -/
 def Result.inv {u : Level} {α : Q(Type u)} {a : Q($α)} (ra : Result a)
     (dsα : Q(DivisionSemiring $α)) (czα? : Option Q(CharZero $α)) :
     MetaM (Result q($a⁻¹)) := do

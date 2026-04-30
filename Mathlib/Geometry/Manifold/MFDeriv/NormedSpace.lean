@@ -15,6 +15,10 @@ The API in this file is mostly copied from `Mathlib/Geometry/Manifold/ContMDiff/
 providing the same statements for higher smoothness. In this file, we do the same for
 differentiability.
 
+In addition to the above, this file provides
+* results about the differentiability of scalar multiplication (`mfderiv_smul` and friends), and
+* `extDerivFun`: the exterior derivative of a scalar function, as a section of the cotangent bundle
+
 -/
 
 public section
@@ -52,129 +56,122 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
 section Module
 
 theorem DifferentiableWithinAt.comp_mdifferentiableWithinAt
-    {g : F → F'} {f : M → F} {s : Set M} {t : Set F}
-    {x : M} (hg : DifferentiableWithinAt 𝕜 g t (f x)) (hf : MDifferentiableWithinAt I 𝓘(𝕜, F) f s x)
-    (h : MapsTo f s t) : MDifferentiableWithinAt I 𝓘(𝕜, F') (g ∘ f) s x :=
+    {g : F → F'} {f : M → F} {s : Set M} {t : Set F} {x : M}
+    (hg : DifferentiableWithinAt 𝕜 g t (f x)) (hf : MDiffAt[s] f x) (h : MapsTo f s t) :
+    MDiffAt[s] (g ∘ f) x :=
   hg.mdifferentiableWithinAt.comp x hf h
 
-theorem DifferentiableAt.comp_mdifferentiableWithinAt {g : F → F'} {f : M → F} {s : Set M}
-    {x : M} (hg : DifferentiableAt 𝕜 g (f x)) (hf : MDifferentiableWithinAt I 𝓘(𝕜, F) f s x) :
-    MDifferentiableWithinAt I 𝓘(𝕜, F') (g ∘ f) s x :=
+theorem DifferentiableAt.comp_mdifferentiableWithinAt {g : F → F'} {f : M → F} {s : Set M} {x : M}
+    (hg : DifferentiableAt 𝕜 g (f x)) (hf : MDiffAt[s] f x) : MDiffAt[s] (g ∘ f) x :=
   hg.mdifferentiableAt.comp_mdifferentiableWithinAt x hf
 
-theorem DifferentiableAt.comp_mdifferentiableAt
-    {g : F → F'} {f : M → F} {x : M} (hg : DifferentiableAt 𝕜 g (f x))
-    (hf : MDifferentiableAt I 𝓘(𝕜, F) f x) : MDifferentiableAt I 𝓘(𝕜, F') (g ∘ f) x :=
+theorem DifferentiableAt.comp_mdifferentiableAt {g : F → F'} {f : M → F} {x : M}
+    (hg : DifferentiableAt 𝕜 g (f x)) (hf : MDiffAt f x) : MDiffAt (g ∘ f) x :=
   hg.comp_mdifferentiableWithinAt hf
 
 theorem Differentiable.comp_mdifferentiableWithinAt {g : F → F'} {f : M → F} {s : Set M} {x : M}
-    (hg : Differentiable 𝕜 g) (hf : MDifferentiableWithinAt I 𝓘(𝕜, F) f s x) :
-    MDifferentiableWithinAt I 𝓘(𝕜, F') (g ∘ f) s x :=
+    (hg : Differentiable 𝕜 g) (hf : MDiffAt[s] f x) : MDiffAt[s] (g ∘ f) x :=
   hg.differentiableAt.comp_mdifferentiableWithinAt hf
 
-theorem Differentiable.comp_mdifferentiableAt
-    {g : F → F'} {f : M → F} {x : M} (hg : Differentiable 𝕜 g)
-    (hf : MDifferentiableAt I 𝓘(𝕜, F) f x) : MDifferentiableAt I 𝓘(𝕜, F') (g ∘ f) x :=
+theorem Differentiable.comp_mdifferentiableAt {g : F → F'} {f : M → F} {x : M}
+    (hg : Differentiable 𝕜 g) (hf : MDiffAt f x) : MDiffAt (g ∘ f) x :=
   hg.comp_mdifferentiableWithinAt hf
 
-theorem Differentiable.comp_mdifferentiable {g : F → F'} {f : M → F} (hg : Differentiable 𝕜 g)
-    (hf : MDifferentiable I 𝓘(𝕜, F) f) : MDifferentiable I 𝓘(𝕜, F') (g ∘ f) := fun x =>
-  hg.differentiableAt.comp_mdifferentiableAt (hf x)
+theorem Differentiable.comp_mdifferentiable {g : F → F'} {f : M → F}
+    (hg : Differentiable 𝕜 g) (hf : MDiff f) : MDiff (g ∘ f) :=
+  fun x ↦ hg.differentiableAt.comp_mdifferentiableAt (hf x)
 
 end Module
+
+section ExtChartAt
+
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : M → F}
+
+-- TODO: add pre-composition version also
+theorem MDifferentiableWithinAt.differentiableWithinAt_comp_extChartAt_symm (hf : MDiffAt[s] f x) :
+    letI φ := extChartAt I x
+    DifferentiableWithinAt 𝕜 (f ∘ φ.symm) (φ.symm ⁻¹' s ∩ range I) (φ x) := by
+  simpa [extChartAt_self_eq] using (mdifferentiableWithinAt_iff.1 hf).2
+
+-- TODO: the `IsManifold I 1 M` assumption can probably be removed
+theorem DifferentiableWithinAt.mdifferentiableWithinAt_of_comp_extChartAt_symm [IsManifold I 1 M]
+    (hf : letI φ := extChartAt I x
+      DifferentiableWithinAt 𝕜 (f ∘ φ.symm) (φ.symm ⁻¹' s ∩ range I) (φ x)) :
+    MDiffAt[s] f x := by
+  refine (mdifferentiableWithinAt_iff_source_of_mem_source (mem_chart_source H x)).2 ?_
+  simpa [extChartAt_self_eq] using hf.mdifferentiableWithinAt
+
+end ExtChartAt
 
 /-! ### Linear maps between normed spaces are differentiable -/
 
 theorem MDifferentiableWithinAt.clm_precomp {f : M → F₁ →L[𝕜] F₂} {s : Set M} {x : M}
-    (hf : MDifferentiableWithinAt I 𝓘(𝕜, F₁ →L[𝕜] F₂) f s x) :
-    MDifferentiableWithinAt I 𝓘(𝕜, (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃))
-      (fun y ↦ (f y).precomp F₃ : M → (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) s x :=
+    (hf : MDiffAt[s] f x) :
+    MDiffAt[s] (fun y ↦ (f y).precomp F₃ : M → (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) x :=
   Differentiable.comp_mdifferentiableWithinAt
-    (ContinuousLinearMap.differentiable
-      (ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃).flip) hf
+    (ContinuousLinearMap.differentiable (ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃).flip) hf
 
-nonrec theorem MDifferentiableAt.clm_precomp {f : M → F₁ →L[𝕜] F₂} {x : M}
-    (hf : MDifferentiableAt I 𝓘(𝕜, F₁ →L[𝕜] F₂) f x) :
-    MDifferentiableAt I 𝓘(𝕜, (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃))
-      (fun y ↦ (f y).precomp F₃ : M → (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) x :=
+nonrec theorem MDifferentiableAt.clm_precomp {f : M → F₁ →L[𝕜] F₂} {x : M} (hf : MDiffAt f x) :
+    MDiffAt (fun y ↦ (f y).precomp F₃ : M → (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) x :=
   Differentiable.comp_mdifferentiableAt
-    (ContinuousLinearMap.differentiable
-      (ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃).flip) hf
+    (ContinuousLinearMap.differentiable (ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃).flip) hf
 
-theorem MDifferentiableOn.clm_precomp {f : M → F₁ →L[𝕜] F₂} {s : Set M}
-    (hf : MDifferentiableOn I 𝓘(𝕜, F₁ →L[𝕜] F₂) f s) :
-    MDifferentiableOn I 𝓘(𝕜, (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃))
-      (fun y ↦ (f y).precomp F₃ : M → (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) s := fun x hx ↦
-  (hf x hx).clm_precomp
+theorem MDifferentiableOn.clm_precomp {f : M → F₁ →L[𝕜] F₂} {s : Set M} (hf : MDiff[s] f) :
+    MDiff[s] (fun y ↦ (f y).precomp F₃ : M → (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) :=
+  fun x hx ↦ (hf x hx).clm_precomp
 
-theorem MDifferentiable.clm_precomp
-    {f : M → F₁ →L[𝕜] F₂} (hf : MDifferentiable I 𝓘(𝕜, F₁ →L[𝕜] F₂) f) :
-    MDifferentiable I 𝓘(𝕜, (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃))
-      (fun y ↦ (f y).precomp F₃ : M → (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) := fun x ↦
-  (hf x).clm_precomp
+theorem MDifferentiable.clm_precomp {f : M → F₁ →L[𝕜] F₂} (hf : MDiff f) :
+    MDiff (fun y ↦ (f y).precomp F₃ : M → (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) :=
+  fun x ↦ (hf x).clm_precomp
 
 theorem MDifferentiableWithinAt.clm_postcomp {f : M → F₂ →L[𝕜] F₃} {s : Set M} {x : M}
-    (hf : MDifferentiableWithinAt I 𝓘(𝕜, F₂ →L[𝕜] F₃) f s x) :
-    MDifferentiableWithinAt I 𝓘(𝕜, (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃))
-      (fun y ↦ (f y).postcomp F₁ : M → (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃)) s x :=
+    (hf : MDiffAt[s] f x) :
+    MDiffAt[s] (fun y ↦ (f y).postcomp F₁ : M → (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃)) x :=
   Differentiable.comp_mdifferentiableWithinAt
-    (ContinuousLinearMap.differentiable
-      (ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃)) hf
+    (ContinuousLinearMap.differentiable (ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃)) hf
 
-theorem MDifferentiableAt.clm_postcomp {f : M → F₂ →L[𝕜] F₃} {x : M}
-    (hf : MDifferentiableAt I 𝓘(𝕜, F₂ →L[𝕜] F₃) f x) :
-    MDifferentiableAt I 𝓘(𝕜, (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃))
-      (fun y ↦ (f y).postcomp F₁ : M → (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃)) x :=
+theorem MDifferentiableAt.clm_postcomp {f : M → F₂ →L[𝕜] F₃} {x : M} (hf : MDiffAt f x) :
+    MDiffAt (fun y ↦ (f y).postcomp F₁ : M → (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃)) x :=
   Differentiable.comp_mdifferentiableAt
-    (ContinuousLinearMap.differentiable
-      (ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃)) hf
+    (ContinuousLinearMap.differentiable (ContinuousLinearMap.compL 𝕜 F₁ F₂ F₃)) hf
 
-nonrec theorem MDifferentiableOn.clm_postcomp {f : M → F₂ →L[𝕜] F₃} {s : Set M}
-    (hf : MDifferentiableOn I 𝓘(𝕜, F₂ →L[𝕜] F₃) f s) :
-    MDifferentiableOn I 𝓘(𝕜, (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃))
-      (fun y ↦ (f y).postcomp F₁ : M → (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃)) s := fun x hx ↦
+nonrec theorem MDifferentiableOn.clm_postcomp {f : M → F₂ →L[𝕜] F₃} {s : Set M} (hf : MDiff[s] f) :
+    MDiff[s] (fun y ↦ (f y).postcomp F₁ : M → (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃)) := fun x hx ↦
   (hf x hx).clm_postcomp
 
-theorem MDifferentiable.clm_postcomp
-    {f : M → F₂ →L[𝕜] F₃} (hf : MDifferentiable I 𝓘(𝕜, F₂ →L[𝕜] F₃) f) :
-    MDifferentiable I 𝓘(𝕜, (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃))
-      (fun y ↦ (f y).postcomp F₁ : M → (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃)) := fun x ↦
-  (hf x).clm_postcomp
+theorem MDifferentiable.clm_postcomp {f : M → F₂ →L[𝕜] F₃} (hf : MDiff f) :
+    MDiff (fun y ↦ (f y).postcomp F₁ : M → (F₁ →L[𝕜] F₂) →L[𝕜] (F₁ →L[𝕜] F₃)) :=
+  fun x ↦ (hf x).clm_postcomp
 
 theorem MDifferentiableWithinAt.clm_comp
     {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ →L[𝕜] F₁} {s : Set M} {x : M}
-    (hg : MDifferentiableWithinAt I 𝓘(𝕜, F₁ →L[𝕜] F₃) g s x)
-    (hf : MDifferentiableWithinAt I 𝓘(𝕜, F₂ →L[𝕜] F₁) f s x) :
-    MDifferentiableWithinAt I 𝓘(𝕜, F₂ →L[𝕜] F₃) (fun x => (g x).comp (f x)) s x :=
+    (hg : MDiffAt[s] g x) (hf : MDiffAt[s] f x) :
+    MDiffAt[s] (fun x ↦ (g x).comp (f x)) x :=
   Differentiable.comp_mdifferentiableWithinAt
     (g := fun x : (F₁ →L[𝕜] F₃) × (F₂ →L[𝕜] F₁) => x.1.comp x.2)
     (f := fun x => (g x, f x)) (differentiable_fst.clm_comp differentiable_snd)
     (hg.prodMk_space hf)
 
 theorem MDifferentiableAt.clm_comp {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ →L[𝕜] F₁} {x : M}
-    (hg : MDifferentiableAt I 𝓘(𝕜, F₁ →L[𝕜] F₃) g x)
-    (hf : MDifferentiableAt I 𝓘(𝕜, F₂ →L[𝕜] F₁) f x) :
-    MDifferentiableAt I 𝓘(𝕜, F₂ →L[𝕜] F₃) (fun x => (g x).comp (f x)) x :=
+    (hg : MDiffAt g x) (hf : MDiffAt f x) :
+    MDiffAt (fun x ↦ (g x).comp (f x)) x :=
   (hg.mdifferentiableWithinAt.clm_comp hf.mdifferentiableWithinAt).mdifferentiableAt Filter.univ_mem
 
 theorem MDifferentiableOn.clm_comp {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ →L[𝕜] F₁} {s : Set M}
-    (hg : MDifferentiableOn I 𝓘(𝕜, F₁ →L[𝕜] F₃) g s)
-    (hf : MDifferentiableOn I 𝓘(𝕜, F₂ →L[𝕜] F₁) f s) :
-    MDifferentiableOn I 𝓘(𝕜, F₂ →L[𝕜] F₃) (fun x => (g x).comp (f x)) s := fun x hx =>
-  (hg x hx).clm_comp (hf x hx)
+    (hg : MDiff[s] g) (hf : MDiff[s] f) : MDiff[s] (fun x ↦ (g x).comp (f x)) :=
+  fun x hx ↦ (hg x hx).clm_comp (hf x hx)
 
 theorem MDifferentiable.clm_comp {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ →L[𝕜] F₁}
-    (hg : MDifferentiable I 𝓘(𝕜, F₁ →L[𝕜] F₃) g) (hf : MDifferentiable I 𝓘(𝕜, F₂ →L[𝕜] F₁) f) :
-    MDifferentiable I 𝓘(𝕜, F₂ →L[𝕜] F₃) fun x => (g x).comp (f x) := fun x => (hg x).clm_comp (hf x)
+    (hg : MDiff g) (hf : MDiff f) : MDiff fun x ↦ (g x).comp (f x) :=
+  fun x ↦ (hg x).clm_comp (hf x)
 
 /-- Applying a linear map to a vector is differentiable within a set. Version in vector spaces. For
 a version in nontrivial vector bundles, see `MDifferentiableWithinAt.clm_apply_of_inCoordinates`. -/
 theorem MDifferentiableWithinAt.clm_apply {g : M → F₁ →L[𝕜] F₂} {f : M → F₁} {s : Set M} {x : M}
-    (hg : MDifferentiableWithinAt I 𝓘(𝕜, F₁ →L[𝕜] F₂) g s x)
-    (hf : MDifferentiableWithinAt I 𝓘(𝕜, F₁) f s x) :
-    MDifferentiableWithinAt I 𝓘(𝕜, F₂) (fun x => g x (f x)) s x :=
+    (hg : MDiffAt[s] g x) (hf : MDiffAt[s] f x) :
+    MDiffAt[s] (fun x ↦ g x (f x)) x :=
   DifferentiableWithinAt.comp_mdifferentiableWithinAt (t := univ)
-    (g := fun x : (F₁ →L[𝕜] F₂) × F₁ => x.1 x.2)
+    (g := fun x : (F₁ →L[𝕜] F₂) × F₁ ↦ x.1 x.2)
     (by apply (Differentiable.differentiableAt _).differentiableWithinAt
         exact differentiable_fst.clm_apply differentiable_snd) (hg.prodMk_space hf)
     (by simp_rw [mapsTo_univ])
@@ -182,8 +179,7 @@ theorem MDifferentiableWithinAt.clm_apply {g : M → F₁ →L[𝕜] F₂} {f : 
 /-- Applying a linear map to a vector is differentiable. Version in vector spaces. For a
 version in nontrivial vector bundles, see `MDifferentiableAt.clm_apply_of_inCoordinates`. -/
 theorem MDifferentiableAt.clm_apply {g : M → F₁ →L[𝕜] F₂} {f : M → F₁} {x : M}
-    (hg : MDifferentiableAt I 𝓘(𝕜, F₁ →L[𝕜] F₂) g x) (hf : MDifferentiableAt I 𝓘(𝕜, F₁) f x) :
-    MDifferentiableAt I 𝓘(𝕜, F₂) (fun x => g x (f x)) x :=
+    (hg : MDiffAt g x) (hf : MDiffAt f x) : MDiffAt (fun x ↦ g x (f x)) x :=
   DifferentiableWithinAt.comp_mdifferentiableWithinAt (t := univ)
     (g := fun x : (F₁ →L[𝕜] F₂) × F₁ => x.1 x.2)
     (by apply (Differentiable.differentiableAt _).differentiableWithinAt
@@ -191,95 +187,231 @@ theorem MDifferentiableAt.clm_apply {g : M → F₁ →L[𝕜] F₂} {f : M → 
     (by simp_rw [mapsTo_univ])
 
 theorem MDifferentiableOn.clm_apply {g : M → F₁ →L[𝕜] F₂} {f : M → F₁} {s : Set M}
-    (hg : MDifferentiableOn I 𝓘(𝕜, F₁ →L[𝕜] F₂) g s) (hf : MDifferentiableOn I 𝓘(𝕜, F₁) f s) :
-    MDifferentiableOn I 𝓘(𝕜, F₂) (fun x => g x (f x)) s := fun x hx => (hg x hx).clm_apply (hf x hx)
+    (hg : MDiff[s] g) (hf : MDiff[s] f) : MDiff[s] (fun x ↦ g x (f x)) :=
+  fun x hx ↦ (hg x hx).clm_apply (hf x hx)
 
 theorem MDifferentiable.clm_apply {g : M → F₁ →L[𝕜] F₂} {f : M → F₁}
-    (hg : MDifferentiable I 𝓘(𝕜, F₁ →L[𝕜] F₂) g) (hf : MDifferentiable I 𝓘(𝕜, F₁) f) :
-    MDifferentiable I 𝓘(𝕜, F₂) fun x => g x (f x) := fun x => (hg x).clm_apply (hf x)
+    (hg : MDiff g) (hf : MDiff f) : MDiff fun x ↦ g x (f x) :=
+  fun x ↦ (hg x).clm_apply (hf x)
 
-theorem MDifferentiableWithinAt.cle_arrowCongr {f : M → F₁ ≃L[𝕜] F₂} {g : M → F₃ ≃L[𝕜] F₄}
-    {s : Set M} {x : M}
-    (hf : MDifferentiableWithinAt I 𝓘(𝕜, F₂ →L[𝕜] F₁) (fun x ↦ ((f x).symm : F₂ →L[𝕜] F₁)) s x)
-    (hg : MDifferentiableWithinAt I 𝓘(𝕜, F₃ →L[𝕜] F₄) (fun x ↦ (g x : F₃ →L[𝕜] F₄)) s x) :
-    MDifferentiableWithinAt I 𝓘(𝕜, (F₁ →L[𝕜] F₃) →L[𝕜] (F₂ →L[𝕜] F₄))
-      (fun y ↦ (f y).arrowCongr (g y) : M → (F₁ →L[𝕜] F₃) →L[𝕜] (F₂ →L[𝕜] F₄)) s x :=
+theorem MDifferentiableWithinAt.cle_arrowCongr
+    {f : M → F₁ ≃L[𝕜] F₂} {g : M → F₃ ≃L[𝕜] F₄} {s : Set M} {x : M}
+    (hf : MDiffAt[s] (fun x ↦ ((f x).symm : F₂ →L[𝕜] F₁)) x)
+    (hg : MDiffAt[s] (fun x ↦ (g x : F₃ →L[𝕜] F₄)) x) :
+    MDiffAt[s] (fun y ↦ (f y).arrowCongr (g y) : M → (F₁ →L[𝕜] F₃) →L[𝕜] (F₂ →L[𝕜] F₄)) x :=
   show MDifferentiableWithinAt I 𝓘(𝕜, (F₁ →L[𝕜] F₃) →L[𝕜] (F₂ →L[𝕜] F₄))
     (fun y ↦ (((f y).symm : F₂ →L[𝕜] F₁).precomp F₄).comp ((g y : F₃ →L[𝕜] F₄).postcomp F₁)) s x
   from hf.clm_precomp (F₃ := F₄) |>.clm_comp <| hg.clm_postcomp (F₁ := F₁)
 
 theorem MDifferentiableAt.cle_arrowCongr {f : M → F₁ ≃L[𝕜] F₂} {g : M → F₃ ≃L[𝕜] F₄} {x : M}
-    (hf : MDifferentiableAt I 𝓘(𝕜, F₂ →L[𝕜] F₁) (fun x ↦ ((f x).symm : F₂ →L[𝕜] F₁)) x)
-    (hg : MDifferentiableAt I 𝓘(𝕜, F₃ →L[𝕜] F₄) (fun x ↦ (g x : F₃ →L[𝕜] F₄)) x) :
-    MDifferentiableAt I 𝓘(𝕜, (F₁ →L[𝕜] F₃) →L[𝕜] (F₂ →L[𝕜] F₄))
-      (fun y ↦ (f y).arrowCongr (g y) : M → (F₁ →L[𝕜] F₃) →L[𝕜] (F₂ →L[𝕜] F₄)) x :=
+    (hf : MDiffAt (fun x ↦ ((f x).symm : F₂ →L[𝕜] F₁)) x)
+    (hg : MDiffAt (fun x ↦ (g x : F₃ →L[𝕜] F₄)) x) :
+    MDiffAt (fun y ↦ (f y).arrowCongr (g y) : M → (F₁ →L[𝕜] F₃) →L[𝕜] (F₂ →L[𝕜] F₄)) x :=
   show MDifferentiableAt I 𝓘(𝕜, (F₁ →L[𝕜] F₃) →L[𝕜] (F₂ →L[𝕜] F₄))
     (fun y ↦ (((f y).symm : F₂ →L[𝕜] F₁).precomp F₄).comp ((g y : F₃ →L[𝕜] F₄).postcomp F₁)) x
   from hf.clm_precomp (F₃ := F₄) |>.clm_comp <| hg.clm_postcomp (F₁ := F₁)
 
 theorem MDifferentiableOn.cle_arrowCongr {f : M → F₁ ≃L[𝕜] F₂} {g : M → F₃ ≃L[𝕜] F₄} {s : Set M}
-    (hf : MDifferentiableOn I 𝓘(𝕜, F₂ →L[𝕜] F₁) (fun x ↦ ((f x).symm : F₂ →L[𝕜] F₁)) s)
-    (hg : MDifferentiableOn I 𝓘(𝕜, F₃ →L[𝕜] F₄) (fun x ↦ (g x : F₃ →L[𝕜] F₄)) s) :
-    MDifferentiableOn I 𝓘(𝕜, (F₁ →L[𝕜] F₃) →L[𝕜] (F₂ →L[𝕜] F₄))
-      (fun y ↦ (f y).arrowCongr (g y) : M → (F₁ →L[𝕜] F₃) →L[𝕜] (F₂ →L[𝕜] F₄)) s := fun x hx ↦
+    (hf : MDiff[s] (fun x ↦ ((f x).symm : F₂ →L[𝕜] F₁)))
+    (hg : MDiff[s] (fun x ↦ (g x : F₃ →L[𝕜] F₄))) :
+    MDiff[s] (fun y ↦ (f y).arrowCongr (g y) : M → (F₁ →L[𝕜] F₃) →L[𝕜] (F₂ →L[𝕜] F₄)) := fun x hx ↦
   (hf x hx).cle_arrowCongr (hg x hx)
 
 theorem MDifferentiable.cle_arrowCongr {f : M → F₁ ≃L[𝕜] F₂} {g : M → F₃ ≃L[𝕜] F₄}
-    (hf : MDifferentiable I 𝓘(𝕜, F₂ →L[𝕜] F₁) (fun x ↦ ((f x).symm : F₂ →L[𝕜] F₁)))
-    (hg : MDifferentiable I 𝓘(𝕜, F₃ →L[𝕜] F₄) (fun x ↦ (g x : F₃ →L[𝕜] F₄))) :
-    MDifferentiable I 𝓘(𝕜, (F₁ →L[𝕜] F₃) →L[𝕜] (F₂ →L[𝕜] F₄))
-      (fun y ↦ (f y).arrowCongr (g y) : M → (F₁ →L[𝕜] F₃) →L[𝕜] (F₂ →L[𝕜] F₄)) := fun x ↦
+    (hf : MDiff (fun x ↦ ((f x).symm : F₂ →L[𝕜] F₁)))
+    (hg : MDiff (fun x ↦ (g x : F₃ →L[𝕜] F₄))) :
+    MDiff (fun y ↦ (f y).arrowCongr (g y) : M → (F₁ →L[𝕜] F₃) →L[𝕜] (F₂ →L[𝕜] F₄)) := fun x ↦
   (hf x).cle_arrowCongr (hg x)
 
 theorem MDifferentiableWithinAt.clm_prodMap {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ →L[𝕜] F₄} {s : Set M}
-    {x : M} (hg : MDifferentiableWithinAt I 𝓘(𝕜, F₁ →L[𝕜] F₃) g s x)
-    (hf : MDifferentiableWithinAt I 𝓘(𝕜, F₂ →L[𝕜] F₄) f s x) :
-    MDifferentiableWithinAt I 𝓘(𝕜, F₁ × F₂ →L[𝕜] F₃ × F₄) (fun x => (g x).prodMap (f x)) s x :=
+    {x : M} (hg : MDiffAt[s] g x) (hf : MDiffAt[s] f x) :
+    MDiffAt[s] (fun x ↦ (g x).prodMap (f x)) x :=
   Differentiable.comp_mdifferentiableWithinAt
     (g := fun x : (F₁ →L[𝕜] F₃) × (F₂ →L[𝕜] F₄) => x.1.prodMap x.2)
     (f := fun x => (g x, f x)) (ContinuousLinearMap.prodMapL 𝕜 F₁ F₃ F₂ F₄).differentiable
     (hg.prodMk_space hf)
 
 nonrec theorem MDifferentiableAt.clm_prodMap {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ →L[𝕜] F₄} {x : M}
-    (hg : MDifferentiableAt I 𝓘(𝕜, F₁ →L[𝕜] F₃) g x)
-    (hf : MDifferentiableAt I 𝓘(𝕜, F₂ →L[𝕜] F₄) f x) :
-    MDifferentiableAt I 𝓘(𝕜, F₁ × F₂ →L[𝕜] F₃ × F₄) (fun x => (g x).prodMap (f x)) x :=
+    (hg : MDiffAt g x) (hf : MDiffAt f x) : MDiffAt (fun x ↦ (g x).prodMap (f x)) x :=
   Differentiable.comp_mdifferentiableWithinAt
     (g := fun x : (F₁ →L[𝕜] F₃) × (F₂ →L[𝕜] F₄) => x.1.prodMap x.2)
     (f := fun x => (g x, f x)) (ContinuousLinearMap.prodMapL 𝕜 F₁ F₃ F₂ F₄).differentiable
     (hg.prodMk_space hf)
 
 theorem MDifferentiableOn.clm_prodMap {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ →L[𝕜] F₄} {s : Set M}
-    (hg : MDifferentiableOn I 𝓘(𝕜, F₁ →L[𝕜] F₃) g s)
-    (hf : MDifferentiableOn I 𝓘(𝕜, F₂ →L[𝕜] F₄) f s) :
-    MDifferentiableOn I 𝓘(𝕜, F₁ × F₂ →L[𝕜] F₃ × F₄) (fun x => (g x).prodMap (f x)) s := fun x hx =>
-  (hg x hx).clm_prodMap (hf x hx)
+    (hg : MDiff[s] g) (hf : MDiff[s] f) :
+    MDiff[s] (fun x ↦ (g x).prodMap (f x)) :=
+  fun x hx ↦ (hg x hx).clm_prodMap (hf x hx)
 
 theorem MDifferentiable.clm_prodMap {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ →L[𝕜] F₄}
-    (hg : MDifferentiable I 𝓘(𝕜, F₁ →L[𝕜] F₃) g) (hf : MDifferentiable I 𝓘(𝕜, F₂ →L[𝕜] F₄) f) :
-    MDifferentiable I 𝓘(𝕜, F₁ × F₂ →L[𝕜] F₃ × F₄) fun x => (g x).prodMap (f x) := fun x =>
-  (hg x).clm_prodMap (hf x)
+    (hg : MDiff g) (hf : MDiff f) : MDiff fun x ↦ (g x).prodMap (f x) :=
+  fun x ↦ (hg x).clm_prodMap (hf x)
 
 /-! ### Differentiability of scalar multiplication -/
 
-variable {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
+section smul
 
-set_option backward.isDefEq.respectTransparency false in
-theorem MDifferentiableWithinAt.smul {f : M → 𝕜} {g : M → V}
-    (hf : MDifferentiableWithinAt I 𝓘(𝕜) f s x) (hg : MDifferentiableWithinAt I 𝓘(𝕜, V) g s x) :
-    MDifferentiableWithinAt I 𝓘(𝕜, V) (fun p => f p • g p) s x :=
+open NormedSpace ContinuousLinearMap
+
+variable {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
+variable {f : M → 𝕜} {g : M → V}
+
+/-- Given maps `f`, `g` from a manifold into a field `𝕜` and `𝕜`-vector space `V`, respectively, if
+at some point `x`, `f` has differential `f' : TangentSpace I x →L[𝕜] 𝕜` and `g` has differential
+`g' : TangentSpace I x →L[𝕜] V` (both phrased using the predicate `HasMFDerivAt`), it follows that
+their scalar multiplication `f • g` has differential `f x • g' + toSpanSingleton 𝕜 (g x) ∘L f'`.
+
+In fact, the statement above is not literally true, because, for example, the differential of `g`
+really takes values in the tangent space to `V` at `g x`, rather than in `V` itself. Of course, this
+tangent space can be canonically identified with `V`.
+
+This lemma phrases the formula using the equiv `NormedSpace.fromTangentSpace`, which provides this
+canonical identification. (It would also be possible to phrase the formula without this equiv,
+instead using casting and definitional abuse.) -/
+lemma HasMFDerivAt.smul
+    {f' : TangentSpace I x →L[𝕜] 𝕜}
+    (hs : HasMFDerivAt% f x ((fromTangentSpace (f x)).symm.toContinuousLinearMap ∘L f'))
+    {g' : TangentSpace I x →L[𝕜] V}
+    (hg : HasMFDerivAt% g x ((fromTangentSpace (g x)).symm.toContinuousLinearMap ∘L g')) :
+    -- canonically identify `g'` with a linear map into the tangent space at `(f • g) x`
+    letI g'_ : TangentSpace I x →L[𝕜] TangentSpace 𝓘(𝕜, V) ((f • g) x) :=
+      (fromTangentSpace _).symm.toContinuousLinearMap ∘L g'
+    -- canonically identify `g x` with a linear map into a tangent space at `(f • g) x`
+    letI gx : 𝕜 →L[𝕜] TangentSpace 𝓘(𝕜, V) ((f • g) x) :=
+      toSpanSingleton 𝕜 ((fromTangentSpace _).symm (g x))
+    -- now the main statement typechecks
+    HasMFDerivAt% (f • g) x (f x • g'_ + gx ∘L f') := by
+  constructor
+  · exact hs.1.smul hg.1
+  · simpa using hs.2.smul hg.2
+
+theorem MDifferentiableWithinAt.smul
+    (hf : MDiffAt[s] f x) (hg : MDiffAt[s] g x) :
+    MDiffAt[s] (fun p ↦ f p • g p) x :=
   ((contMDiff_smul.of_le le_top).mdifferentiable one_ne_zero _).comp_mdifferentiableWithinAt x
     (hf.prodMk hg)
 
-set_option backward.isDefEq.respectTransparency false in
-theorem MDifferentiableAt.smul {f : M → 𝕜} {g : M → V} (hf : MDifferentiableAt I 𝓘(𝕜) f x)
-    (hg : MDifferentiableAt I 𝓘(𝕜, V) g x) : MDifferentiableAt I 𝓘(𝕜, V) (fun p => f p • g p) x :=
+theorem MDifferentiableAt.smul (hf : MDiffAt f x)
+    (hg : MDiffAt g x) : MDiffAt (fun p ↦ f p • g p) x :=
   ((contMDiff_smul.of_le le_top).mdifferentiable one_ne_zero _).comp x (hf.prodMk hg)
 
-theorem MDifferentiableOn.smul {f : M → 𝕜} {g : M → V} (hf : MDifferentiableOn I 𝓘(𝕜) f s)
-    (hg : MDifferentiableOn I 𝓘(𝕜, V) g s) : MDifferentiableOn I 𝓘(𝕜, V) (fun p => f p • g p) s :=
-  fun x hx => (hf x hx).smul (hg x hx)
+theorem MDifferentiableOn.smul (hf : MDiff[s] f)
+    (hg : MDiff[s] g) : MDiff[s] (fun p ↦ f p • g p) :=
+  fun x hx ↦ (hf x hx).smul (hg x hx)
 
-theorem MDifferentiable.smul {f : M → 𝕜} {g : M → V} (hf : MDifferentiable I 𝓘(𝕜) f)
-    (hg : MDifferentiable I 𝓘(𝕜, V) g) : MDifferentiable I 𝓘(𝕜, V) fun p => f p • g p := fun x =>
-  (hf x).smul (hg x)
+theorem MDifferentiable.smul (hf : MDiff f) (hg : MDiff g) : MDiff fun p ↦ f p • g p :=
+  fun x ↦ (hf x).smul (hg x)
+
+/-- Given maps `f`, `g` from a manifold into a field `𝕜` and `𝕜`-vector space `V`, respectively, the
+formula for the `mfderiv` (differential) of their scalar multiplication `f • g`.
+
+Mathematically speaking the formula is `d(f • g) = f • dg + df ⊗ g`, i.e.
+`mfderiv% (f • g) x = f x • mfderiv% g x + toSpanSingleton 𝕜 (g x) ∘L mfderiv% f x`,
+but this doesn't typecheck because `mfderiv% (f • g) x` and `mfderiv% g x` take values in different
+tangent spaces -- respectively the tangent spaces to `V` at `(f • g) x` and `g x`. Of course, both
+these tangent spaces can be canonically identified with `V`.
+
+This lemma phrases the formula using the equiv `NormedSpace.fromTangentSpace`, which provides this
+canonical identification. (It would also be possible to phrase the formula without this equiv,
+instead using casting and definitional abuse.)
+
+It is good practice to use the equiv `NormedSpace.fromTangentSpace` throughout a computation. If
+this is done, typically `mfderiv% (f • g) x` will only turn up paired with this equiv (i.e., in an
+expression `(fromTangentSpace _) ∘L mfderiv% (f • g) x`), and the more convenient lemma
+`fromTangentSpace_mfderiv_smul` (see below) can be used instead. -/
+lemma mfderiv_smul (hf : MDiffAt f x) (hg : MDiffAt g x) :
+    mfderiv% (f • g) x
+    = f x • (fromTangentSpace _).symm.toContinuousLinearMap ∘L
+      ((fromTangentSpace (g x)).toContinuousLinearMap ∘L mfderiv% g x)
+    + toSpanSingleton 𝕜 ((fromTangentSpace _).symm (g x)) ∘L
+      ((fromTangentSpace (f x)).toContinuousLinearMap ∘L mfderiv% f x) :=
+  (hf.hasMFDerivAt.smul hg.hasMFDerivAt).mfderiv
+
+/-- Given maps `f`, `g` from a manifold into a field `𝕜` and `𝕜`-vector space `V`, respectively, the
+formula for the `mfderiv` (differential) of their scalar multiplication `f • g`.
+
+Mathematically speaking the formula is `d(f • g) = f • dg + df ⊗ g`, i.e.
+`mfderiv% (f • g) x = f x • mfderiv% g x + toSpanSingleton 𝕜 (g x) ∘L mfderiv% f x`,
+but this doesn't typecheck because `mfderiv% (f • g) x` and `mfderiv% g x` take values in different
+tangent spaces -- respectively the tangent spaces to `V` at `(f • g) x` and `g x`. Of course, both
+these tangent spaces can be canonically identified with `V`.
+
+This lemma phrases the formula using the equiv `NormedSpace.fromTangentSpace`, which provides this
+canonical identification. (It would also be possible to phrase the formula without this equiv,
+instead using casting and definitional abuse.) -/
+lemma fromTangentSpace_mfderiv_smul (hf : MDiffAt f x) (hg : MDiffAt g x) :
+    (fromTangentSpace ((f • g) x)).toContinuousLinearMap ∘L mfderiv% (f • g) x
+    = f x • (fromTangentSpace _).toContinuousLinearMap ∘L mfderiv% g x
+    + toSpanSingleton 𝕜 (g x) ∘L (fromTangentSpace _).toContinuousLinearMap ∘L mfderiv% f x := by
+  rw [mfderiv_smul hf hg]
+  rfl
+
+/-- Given maps `f`, `g` from a manifold into a field `𝕜` and `𝕜`-vector space `V`, respectively, the
+formula for the `mfderiv` (differential) of their scalar multiplication `f • g`.
+
+Mathematically speaking the formula is `d(f • g) = f • dg + df ⊗ g`, but to get it to typecheck
+we need a phrasing involving the canonical identification `NormedSpace.fromTangentSpace` between
+the vector space `V` and the tangent space to this vector space at any point. This is because two
+different tangent spaces (at `(f • g) x` and `g x`) appear in the equation.
+
+This is a defeq variant of the main lemma `fromTangentSpace_mfderiv_smul`, in which we work in the
+tangent space at `f x • g x` (the simp-normal form) rather than at `(f • g) x`. -/
+lemma fromTangentSpace_mfderiv_smul' (hf : MDiffAt f x) (hg : MDiffAt g x) :
+    (fromTangentSpace (f x • g x)).toContinuousLinearMap ∘L mfderiv% (f • g) x
+    = f x • (fromTangentSpace _).toContinuousLinearMap ∘L mfderiv% g x
+    + toSpanSingleton 𝕜 (g x) ∘L (fromTangentSpace _).toContinuousLinearMap ∘L mfderiv% f x :=
+  fromTangentSpace_mfderiv_smul hf hg
+
+/-- Given maps `f`, `g` from a manifold into a field `𝕜` and `𝕜`-vector space `V`, respectively, the
+formula for the `mfderiv` (differential) of their scalar multiplication `f • g` in the direction of
+the tangent vector `v`.
+
+Mathematically speaking the formula is `d(f • g)(v) = f • dg(v) + df(v) • g`, but to get it to
+typecheck we need a phrasing involving the canonical identification `NormedSpace.fromTangentSpace`
+between the vector space `V` and the tangent space to this vector space at any point. This is
+because two different tangent spaces (at `(f • g) x` and `g x`) appear in the equation. -/
+lemma fromTangentSpace_mfderiv_smul_apply (hf : MDiffAt f x) (hg : MDiffAt g x)
+    (v : TangentSpace I x) :
+    fromTangentSpace _ (mfderiv% (f • g) x v)
+    = f x • fromTangentSpace _ (mfderiv% g x v) + fromTangentSpace _ (mfderiv% f x v) • g x := by
+  simpa using congr($(fromTangentSpace_mfderiv_smul hf hg) v)
+
+/-- Given maps `f`, `g` from a manifold into a field `𝕜` and `𝕜`-vector space `V`, respectively, the
+formula for the `mfderiv` (differential) of their scalar multiplication `f • g` in the direction of
+the tangent vector `v`.
+
+Mathematically speaking the formula is `d(f • g)(v) = f • dg(v) + df(v) • g`, but to get it to
+typecheck we need a phrasing involving the canonical identification `NormedSpace.fromTangentSpace`
+between the vector space `V` and the tangent space to this vector space at any point. This is
+because two different tangent spaces (at `(f • g) x` and `g x`) appear in the equation.
+
+This is a defeq variant of the main lemma `fromTangentSpace_mfderiv_smul_apply`, in which we work in
+the tangent space at `f x • g x` (the simp-normal form) rather than at `(f • g) x`. -/
+lemma fromTangentSpace_mfderiv_smul_apply' (hf : MDiffAt f x) (hg : MDiffAt g x)
+    (v : TangentSpace I x) :
+    fromTangentSpace (f x • g x) (mfderiv% (f • g) x v)
+    = f x • fromTangentSpace _ (mfderiv% g x v) + fromTangentSpace _ (mfderiv% f x v) • g x :=
+  fromTangentSpace_mfderiv_smul_apply hf hg v
+
+end smul
+
+/-! ### Exterior derivative of a scalar function -/
+
+/-- The exterior derivative of a scalar function on `M`, as a section of the cotangent bundle. -/
+noncomputable abbrev extDerivFun (g : M → 𝕜) :
+    Π x : M, TangentSpace I x →L[𝕜] 𝕜 :=
+  fun x ↦ (NormedSpace.fromTangentSpace <| g x).toContinuousLinearMap ∘L (mfderiv% g x)
+
+@[simp]
+lemma extDerivFun_add {g g' : M → 𝕜} {x : M} (hg : MDiffAt g x) (hg' : MDiffAt g' x) :
+    extDerivFun (g + g') x = extDerivFun (I := I) g x + extDerivFun g' x := by
+  simp [extDerivFun, mfderiv_add hg hg']
+  congr
+
+@[simp]
+lemma extDerivFun_zero {x : M} : extDerivFun (I := I) (0 : M → 𝕜) x = 0 := by
+  have : extDerivFun (0 : M → 𝕜) x + extDerivFun (0 : M → 𝕜) x =
+      extDerivFun (I := I) (0 : M → 𝕜) x := by
+    rw [← extDerivFun_add (by exact mdifferentiable_const ..) (by exact mdifferentiable_const ..)]
+    simp
+  simpa using this

@@ -18,10 +18,10 @@ public import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
 ## Main definitions
 
 * We define the Dedekind eta function as the infinite product
-`η(z) = q ^ 1/24 * ∏' (1 - q ^ (n + 1))` where `q = e ^ (2πiz)` and `z` is in the upper half-plane.
-The product is taken over all non-negative integers `n`. We then show it is non-vanishing and
-differentiable on the upper half-plane. Lastly, we compute its logarithmic derivative and show that
-it is a multiple of the Eisenstein series `E2`.
+  `η(z) = q ^ 1/24 * ∏' (1 - q ^ (n + 1))` where `q = e ^ (2πiz)` and `z` is in the upper
+  half-plane. The product is taken over all non-negative integers `n`. We then show it is
+  non-vanishing and differentiable on the upper half-plane. Lastly, we compute its logarithmic
+  derivative and show that it is a multiple of the Eisenstein series `E2`.
 
 ## References
 * [F. Diamond and J. Shurman, *A First Course in Modular Forms*][diamondshurman2005], section 1.2
@@ -29,12 +29,9 @@ it is a multiple of the Eisenstein series `E2`.
 
 @[expose] public section
 
-open TopologicalSpace Set MeasureTheory intervalIntegral
- Metric Filter Function Complex
-
+open Set Function Complex
 open UpperHalfPlane hiding I
-
-open scoped Interval Real NNReal ENNReal Topology BigOperators Nat
+open scoped Real
 
 local notation "𝕢" => Periodic.qParam
 
@@ -62,7 +59,8 @@ lemma one_sub_eta_q_ne_zero (n : ℕ) {z : ℂ} (hz : z ∈ ℍₒ) : 1 - eta_q 
 /-- The eta function, whose value at z is `q^ 1 / 24 * ∏' 1 - q ^ (n + 1)` for `q = e ^ 2 π i z`. -/
 noncomputable def eta (z : ℂ) := 𝕢 24 z * ∏' n, (1 - eta_q n z)
 
-local notation "η" => eta
+/-- Notation for the Dedekind eta function. -/
+scoped[ModularForm] notation "η" => eta
 
 theorem summable_eta_q (z : ℍ) : Summable fun n ↦ ‖-eta_q n z‖ := by
   simp [eta_q, eta_q_eq_pow, summable_nat_add_iff 1, norm_exp_two_pi_I_lt_one z]
@@ -109,12 +107,8 @@ private theorem one_sub_eta_logDeriv_eq (z : ℂ) (n : ℕ) :
     logDeriv (1 - eta_q n ·) z = 2 * π * I * (n + 1) * -eta_q n z / (1 - eta_q n z) := by
   have h2 : (fun x ↦ 1 - cexp (2 * ↑π * I * (n + 1) * x)) =
       ((fun z ↦ 1 - 1 * cexp z) ∘ fun x ↦ 2 * ↑π * I * (n + 1) * x) := by aesop
-  have h3 : deriv (fun x : ℂ ↦ (2 * π * I * (n + 1) * x)) =
-      fun _ ↦ 2 * π * I * (n + 1) := by
-    ext y
-    simpa using deriv_const_mul (2 * π * I * (n + 1)) (d := fun (x : ℂ) ↦ x) (x := y)
   simp_rw [eta_q_eq_cexp, h2, logDeriv_one_sub_mul_cexp_comp 1
-    (g := fun x ↦ (2 * π * I * (n + 1) * x)) (by fun_prop), h3]
+    (g := fun x ↦ (2 * π * I * (n + 1) * x)) (by fun_prop), deriv_const_mul_id]
   simp
 
 lemma tsum_logDeriv_eta_q (z : ℂ) : ∑' n, logDeriv (fun x ↦ 1 - eta_q n x) z =
@@ -127,7 +121,7 @@ lemma differentiableAt_eta_tprod {z : ℂ} (hz : z ∈ ℍₒ) :
   apply (multipliableLocallyUniformlyOn_eta.hasProdLocallyUniformlyOn.differentiableOn ?_
     isOpen_upperHalfPlaneSet z hz).differentiableAt (isOpen_upperHalfPlaneSet.mem_nhds hz)
   filter_upwards with b
-  simpa [Finset.prod_fn] using DifferentiableOn.finset_prod (by fun_prop)
+  simpa [Finset.prod_fn] using DifferentiableOn.finsetProd (by fun_prop)
 
 theorem differentiableAt_eta_of_mem_upperHalfPlaneSet {z : ℂ} (hz : z ∈ ℍₒ) :
     DifferentiableAt ℂ eta z :=
@@ -137,7 +131,7 @@ lemma logDeriv_qParam (h : ℝ) (z : ℂ) : logDeriv (𝕢 h) z = 2 * π * I / h
   have : 𝕢 h = cexp ∘ ((2 * π * I / h) * ·) := by
     ext
     grind [Periodic.qParam]
-  rw [this, logDeriv_comp (by fun_prop) (by fun_prop), deriv_const_mul _ (by fun_prop)]
+  rw [this, logDeriv_comp (by fun_prop) (by fun_prop), deriv_const_mul_id]
   simp [logDeriv_exp]
 
 lemma summable_logDeriv_one_sub_eta_q {z : ℂ} (hz : z ∈ ℍₒ) :

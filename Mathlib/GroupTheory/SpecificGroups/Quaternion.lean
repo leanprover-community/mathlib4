@@ -85,7 +85,6 @@ private def inv : QuaternionGroup n → QuaternionGroup n
   | a i => a (-i)
   | xa i => xa (n + i)
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- The group structure on `QuaternionGroup n`.
@@ -93,12 +92,10 @@ set_option backward.privateInPublic.warn false in
 instance : Group (QuaternionGroup n) where
   mul := mul
   mul_assoc := by
-    rintro (i | i) (j | j) (k | k) <;> simp only [(· * ·), mul] <;> ring_nf
-    congr
-    calc
-      -(n : ZMod (2 * n)) = 0 - n := by rw [zero_sub]
-      _ = 2 * n - n := by norm_cast; simp
-      _ = n := by ring
+    unfold instHMul
+    rintro (i | i) (j | j) (k | k) <;> simp only [mul] <;> ring_nf
+    have : (2 * n : ZMod (2 * n)) = 0 := by norm_cast; simp
+    grind
   one := one
   one_mul := by
     rintro (i | i)
@@ -227,9 +224,8 @@ theorem quaternionGroup_one_isCyclic : IsCyclic (QuaternionGroup 1) := by
 -/
 @[simp]
 theorem orderOf_a_one : orderOf (a 1 : QuaternionGroup n) = 2 * n := by
-  rcases eq_zero_or_neZero n with hn | hn
-  · subst hn
-    simp_rw [mul_zero, orderOf_eq_zero_iff']
+  rcases eq_zero_or_neZero n with rfl | hn
+  · simp_rw [mul_zero, orderOf_eq_zero_iff']
     intro n h
     rw [one_def, a_one_pow]
     apply mt a.inj
@@ -253,10 +249,9 @@ theorem orderOf_a [NeZero n] (i : ZMod (2 * n)) :
 
 theorem exponent : Monoid.exponent (QuaternionGroup n) = 2 * lcm n 2 := by
   rw [← normalize_eq 2, ← lcm_mul_left, normalize_eq]
-  norm_num
-  rcases eq_zero_or_neZero n with hn | hn
-  · subst hn
-    simp only [lcm_zero_left, mul_zero]
+  simp only [Nat.reduceMul]
+  rcases eq_zero_or_neZero n with rfl | hn
+  · simp only [lcm_zero_left, mul_zero]
     exact Monoid.exponent_eq_zero_of_order_zero orderOf_a_one
   apply Nat.dvd_antisymm
   · apply Monoid.exponent_dvd_of_forall_pow_eq_one

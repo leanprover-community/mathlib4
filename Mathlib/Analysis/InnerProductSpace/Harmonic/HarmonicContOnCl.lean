@@ -15,7 +15,7 @@ on its closure. In this file we define a predicate `HarmonicContOnCl` that expre
 and prove basic facts about this predicate.
 -/
 
-@[expose] public section
+public section
 
 variable
   {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
@@ -51,7 +51,7 @@ theorem harmonicContOnCl_const {c : F} : HarmonicContOnCl (fun _ : E ↦ c) s :=
 
 namespace HarmonicContOnCl
 
-theorem continuousOn_ball [NormedSpace ℝ E] {x : E} {r : ℝ} (h : HarmonicContOnCl f (ball x r)) :
+theorem continuousOn_ball {x : E} {r : ℝ} (h : HarmonicContOnCl f (ball x r)) :
     ContinuousOn f (closedBall x r) := by
   rcases eq_or_ne r 0 with (rfl | hr)
   · rw [closedBall_zero]
@@ -67,7 +67,6 @@ theorem mk_ball {x : E} {r : ℝ} (hd : HarmonicOnNhd f (ball x r))
 theorem contDiffAt (h : HarmonicContOnCl f s) (hx : x ∈ s) :
     ContDiffAt ℝ 2 f x := (h.1 x hx).1
 
-set_option backward.isDefEq.respectTransparency false in
 theorem differentiableAt (h : HarmonicContOnCl f s) (hx : x ∈ s) :
     DifferentiableAt ℝ f x := (h.contDiffAt hx).differentiableAt two_ne_zero
 

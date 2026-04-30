@@ -108,8 +108,6 @@ instance : Repr MiuAtom :=
 -/
 abbrev Miustr := List MiuAtom
 
-instance : Membership MiuAtom Miustr := by unfold Miustr; infer_instance
-
 /-- For display purposes, an `Miustr` can be represented as a `String`.
 -/
 def Miustr.mrepr : Miustr → String

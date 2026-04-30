@@ -32,7 +32,7 @@ assert_not_exists MonoidWithZero DistribMulAction
 
 universe u v
 
-open Pointwise
+open scoped Pointwise
 
 open Function
 
@@ -74,8 +74,6 @@ theorem mem_orbit_self (a : α) : a ∈ orbit M a :=
 @[to_additive]
 theorem nonempty_orbit (a : α) : Set.Nonempty (orbit M a) :=
   Set.range_nonempty _
-
-@[deprecated (since := "2025-09-25")] alias orbit_nonempty := nonempty_orbit
 
 @[to_additive]
 theorem mapsTo_smul_orbit (m : M) (a : α) : Set.MapsTo (m • ·) (orbit M a) (orbit M a) :=
@@ -295,7 +293,7 @@ of the orbit of `U` under `G`. -/
 of the orbit of `U` under `G`. -/]
 theorem quotient_preimage_image_eq_union_mul (U : Set α) :
     letI := orbitRel G α
-    Quotient.mk' ⁻¹' (Quotient.mk' '' U) = ⋃ g : G, (g • ·) '' U := by
+    Quotient.mk' ⁻¹' Quotient.mk' '' U = ⋃ g : G, (g • ·) '' U := by
   letI := orbitRel G α
   set f : α → Quotient (MulAction.orbitRel G α) := Quotient.mk'
   ext a
@@ -313,7 +311,6 @@ theorem quotient_preimage_image_eq_union_mul (U : Set α) :
     convert hu₁
     simp only [inv_smul_smul]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem disjoint_image_image_iff {U V : Set α} :
     letI := orbitRel G α
@@ -400,9 +397,6 @@ nonrec lemma orbitRel.Quotient.nonempty_orbit (x : orbitRel.Quotient G α) :
     Set.Nonempty x.orbit := by
   rw [orbitRel.Quotient.orbit_eq_orbit_out x Quotient.out_eq']
   exact nonempty_orbit _
-
-@[deprecated (since := "2025-09-25")]
-alias orbitRel.Quotient.orbit_nonempty := orbitRel.Quotient.nonempty_orbit
 
 @[to_additive]
 nonrec lemma orbitRel.Quotient.mapsTo_smul_orbit (g : G) (x : orbitRel.Quotient G α) :

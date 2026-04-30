@@ -98,7 +98,7 @@ theorem coe_symm_eq (x : I) : (σ x : ℝ) = 1 - x :=
   rfl
 
 lemma image_coe_preimage_symm {s : Set I} :
-    Subtype.val '' (σ ⁻¹' s) = (1 - ·) ⁻¹' (Subtype.val '' s) := by
+    Subtype.val '' σ ⁻¹' s = (1 - ·) ⁻¹' Subtype.val '' s := by
   simp [symm_involutive, ← Function.Involutive.image_eq_preimage_symm, image_image]
 
 @[simp]
@@ -230,7 +230,7 @@ instance : LinearOrderedCommMonoidWithZero I where
   mul_zero i := mul_zero i
   zero_le x := x.2.1
   mul_lt_mul_of_pos_left i hi j k hjk := by
-    simp only [← Subtype.coe_lt_coe, coe_mul]; gcongr; exact hi
+    simp only [← Subtype.coe_lt_coe, coe_mul]; gcongr
 
 lemma subtype_Iic_eq_Icc (x : I) : Subtype.val ⁻¹' (Iic ↑x) = Icc 0 x := by
   rw [preimage_subtype_val_Iic]
@@ -324,6 +324,14 @@ theorem convexCombo_one {a b : ℝ} (x y : Icc a b) : convexCombo x y 1 = y := b
   simp [convexCombo]
 
 @[simp, grind =]
+theorem convexCombo_zero_one (t : unitInterval) : convexCombo 0 1 t = t := by
+  simp [convexCombo]
+
+@[simp, grind =]
+theorem convexCombo_eq {a b : ℝ} (x : Icc a b) (t : unitInterval) : convexCombo x x t = x := by
+  simp [convexCombo, sub_mul]
+
+@[simp, grind =]
 theorem convexCombo_symm {a b : ℝ} (x y : Icc a b) (t : unitInterval) :
     convexCombo x y (unitInterval.symm t) = convexCombo y x t := by
   simp [convexCombo]
@@ -342,6 +350,17 @@ theorem convexCombo_le {a b : ℝ} {x y : Icc a b} (h : x ≤ y) (t : unitInterv
   rw [← Subtype.coe_le_coe] at h ⊢
   simp
   nlinarith [t.2.1, t.2.2]
+
+@[continuity, fun_prop]
+theorem continuous_convexCombo {a b : ℝ} (x y : Icc a b) : Continuous (convexCombo x y) := by
+  unfold Icc.convexCombo
+  fun_prop
+
+@[continuity, fun_prop]
+theorem continuous_convexCombo_prod {a b : ℝ} :
+    Continuous fun x : Icc a b × Icc a b × unitInterval ↦ Icc.convexCombo x.1 x.2.1 x.2.2 := by
+  unfold Icc.convexCombo
+  fun_prop
 
 /--
 Helper definition for `convexCombo_assoc`, giving one of the coefficients appearing

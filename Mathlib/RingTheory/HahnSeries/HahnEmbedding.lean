@@ -26,7 +26,7 @@ Archimedean classes of the group. The theorem is stated as `hahnEmbedding_isOrde
 
 -/
 
-@[expose] public section
+public section
 
 open ArchimedeanClass HahnSeries
 
@@ -50,7 +50,6 @@ theorem hahnEmbedding_isOrderedModule_rat :
 
 end Module
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 **Hahn embedding theorem**
 

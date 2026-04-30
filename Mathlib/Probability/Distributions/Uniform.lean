@@ -294,13 +294,11 @@ variable [Fintype α] [Nonempty α]
 theorem uniformOfFintype_apply (a : α) : uniformOfFintype α a = (Fintype.card α : ℝ≥0∞)⁻¹ := by
   simp [uniformOfFintype, Finset.mem_univ, uniformOfFinset_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem support_uniformOfFintype (α : Type*) [Fintype α] [Nonempty α] :
     (uniformOfFintype α).support = ⊤ :=
   Set.ext fun x => by simp [mem_support_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mem_support_uniformOfFintype (a : α) : a ∈ (uniformOfFintype α).support := by simp
 
 section Measure
@@ -324,7 +322,6 @@ end UniformOfFintype
 
 section OfMultiset
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- Given a non-empty multiset `s` we construct the `PMF` which sends `a` to the fraction of
   elements in `s` that are `a`. -/

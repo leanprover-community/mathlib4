@@ -5,6 +5,7 @@ Authors: Patrick Massot, Kim Morrison, Mario Carneiro
 -/
 module
 
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.Elementwise
 public import Mathlib.Topology.ContinuousMap.Basic
 
@@ -34,6 +35,17 @@ structure TopCat where
   /-- The underlying type. -/
   carrier : Type u
   [str : TopologicalSpace carrier]
+
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prevents `TopCat.of X` being printed as `{ carrier := X, str := ... }` by
+`delabStructureInstance`. -/
+@[app_delab TopCat.of]
+meta def TopCat.delabOf : Delab := delabApp
+
+end Notation
 
 attribute [instance] TopCat.str
 
@@ -145,14 +157,16 @@ def Hom.equivContinuousMap (X Y : TopCat.{u}) : (X ⟶ Y) ≃ C(X, Y) where
   toFun f := f.hom
   invFun f := ofHom f
 
+set_option linter.deprecated false in
 /--
 Replace a function coercion for a morphism `TopCat.of X ⟶ TopCat.of Y` with the definitionally
 equal function coercion for a continuous map `C(X, Y)`.
 -/
-@[simp] theorem coe_of_of {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y]
+@[deprecated "No replacement" (since := "2026-04-23")]
+theorem coe_of_of {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y]
     {f : C(X, Y)} {x} :
     @DFunLike.coe (TopCat.of X ⟶ TopCat.of Y) ((CategoryTheory.forget TopCat).obj (TopCat.of X))
-      (fun _ ↦ (CategoryTheory.forget TopCat).obj (TopCat.of Y)) HasForget.instFunLike
+      (fun _ ↦ (CategoryTheory.forget TopCat).obj (TopCat.of Y)) ConcreteCategory.instFunLike
       (ofHom f) x =
     @DFunLike.coe C(X, Y) X
       (fun _ ↦ Y) _
@@ -241,5 +255,13 @@ theorem isOpenEmbedding_iff_isIso_comp' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y �
     IsOpenEmbedding (g ∘ f) ↔ IsOpenEmbedding g := by
   simp only
   exact isOpenEmbedding_iff_isIso_comp f g
+
+/-- The constant morphism `X ⟶ Y` in `TopCat` given by `y : Y`. -/
+def const {X Y : TopCat.{u}} (y : Y) : X ⟶ Y :=
+  ofHom ⟨fun _ ↦ y, by continuity⟩
+
+@[simp]
+lemma const_apply {X Y : TopCat.{u}} (y : Y) (x : X) :
+    const y x = y := rfl
 
 end TopCat

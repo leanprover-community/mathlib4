@@ -11,7 +11,7 @@ public import Mathlib.Data.Fintype.Vector
 # Finiteness of vector types
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*}
 

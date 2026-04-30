@@ -69,7 +69,6 @@ private def tendsto_norm_le_and_mk_eq_div_atTop_aux₂ :
   · rintro ⟨⟨hx₁, ⟨x, hx₂, rfl⟩⟩, hx₃⟩
     exact ⟨(toMixed K).symm (mixedEmbedding K x), ⟨⟨hx₁, hx₃⟩, ⟨(x : K), by simp [hx₂], rfl⟩⟩, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 variable (C) in
 /--
 The limit of the number of nonzero integral ideals of norm `≤ s` in a fixed class `C` of the
@@ -130,7 +129,7 @@ theorem tendsto_norm_le_div_atTop₀ :
             (torsionOrder K * Real.sqrt |discr K|))) := by
   classical
   convert Filter.Tendsto.congr' ?_
-    (tendsto_finset_sum Finset.univ (fun C _ ↦ tendsto_norm_le_and_mk_eq_div_atTop K C))
+    (tendsto_finsetSum Finset.univ (fun C _ ↦ tendsto_norm_le_and_mk_eq_div_atTop K C))
   · rw [Finset.sum_const, Finset.card_univ, nsmul_eq_mul, classNumber]
     ring
   · filter_upwards [eventually_ge_atTop 0] with s hs

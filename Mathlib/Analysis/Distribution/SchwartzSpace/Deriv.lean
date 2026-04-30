@@ -73,9 +73,11 @@ theorem derivCLM_apply (f : 𝓢(ℝ, F)) (x : ℝ) : derivCLM 𝕜 F f x = deri
 theorem hasDerivAt (f : 𝓢(ℝ, F)) (x : ℝ) : HasDerivAt f (deriv f x) x :=
   f.differentiableAt.hasDerivAt
 
-variable [SMulCommClass ℝ 𝕜 F]
-
 open LineDeriv
+
+section fderiv
+
+variable [SMulCommClass ℝ 𝕜 F]
 
 variable (E F) in
 /-- The Fréchet derivative on Schwartz space as a continuous `𝕜`-linear map. -/
@@ -133,14 +135,6 @@ alias pderivCLM_apply := LineDeriv.lineDerivOpCLM_apply
 theorem lineDerivOp_apply (m : E) (f : 𝓢(E, F)) (x : E) : ∂_{m} f x = lineDeriv ℝ f x m :=
   f.differentiableAt.lineDeriv_eq_fderiv.symm
 
-variable [NormedAddCommGroup D] [NormedSpace ℝ D]
-
-theorem lineDerivOp_compCLMOfContinuousLinearEquiv (m : D) (g : D ≃L[ℝ] E) (f : 𝓢(E, F)) :
-    ∂_{m} (compCLMOfContinuousLinearEquiv 𝕜 g f) =
-    compCLMOfContinuousLinearEquiv 𝕜 g (∂_{g m} f) := by
-  ext x
-  simp [lineDerivOp_apply_eq_fderiv, ContinuousLinearEquiv.comp_right_fderiv]
-
 @[deprecated (since := "2025-11-25")]
 alias iteratedPDeriv := LineDeriv.iteratedLineDerivOpCLM
 
@@ -156,7 +150,6 @@ alias iteratedPDeriv_succ_left := LineDeriv.iteratedLineDerivOp_succ_left
 @[deprecated (since := "2025-11-25")]
 alias iteratedPDeriv_succ_right := LineDeriv.iteratedLineDerivOp_succ_right
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iteratedLineDerivOp_eq_iteratedFDeriv {n : ℕ} {m : Fin n → E} {f : 𝓢(E, F)} {x : E} :
     ∂^{m} f x = iteratedFDeriv ℝ n f x m := by
   induction n generalizing x with
@@ -169,6 +162,16 @@ theorem iteratedLineDerivOp_eq_iteratedFDeriv {n : ℕ} {m : Fin n → E} {f : �
 
 @[deprecated (since := "2025-11-25")]
 alias iteratedPDeriv_eq_iteratedFDeriv := iteratedLineDerivOp_eq_iteratedFDeriv
+
+end fderiv
+
+variable [NormedAddCommGroup D] [NormedSpace ℝ D]
+
+theorem lineDerivOp_compCLMOfContinuousLinearEquiv (m : D) (g : D ≃L[ℝ] E) (f : 𝓢(E, F)) :
+    ∂_{m} (compCLMOfContinuousLinearEquiv 𝕜 g f) =
+    compCLMOfContinuousLinearEquiv 𝕜 g (∂_{g m} f) := by
+  ext x
+  simp [lineDerivOp_apply_eq_fderiv, ContinuousLinearEquiv.comp_right_fderiv]
 
 end Derivatives
 
@@ -345,7 +348,7 @@ theorem integral_bilinear_laplacian_right_eq_left (f : 𝓢(E, F₁)) (g : 𝓢(
     ∫ x, L (f x) (Δ g x) ∂μ = ∫ x, L (Δ f x) (g x) ∂μ := by
   simp_rw [laplacian_eq_sum (stdOrthonormalBasis ℝ E), sum_apply, map_sum,
     ContinuousLinearMap.coe_sum', Finset.sum_apply]
-  rw [MeasureTheory.integral_finset_sum, MeasureTheory.integral_finset_sum]
+  rw [MeasureTheory.integral_finsetSum, MeasureTheory.integral_finsetSum]
   · simp [integral_bilinear_lineDerivOp_right_eq_neg_left]
   · exact fun _ _ ↦ (pairing L (∂_{_} <| ∂_{_} f) g).integrable
   · exact fun _ _ ↦ (pairing L f (∂_{_} <| ∂_{_} g)).integrable

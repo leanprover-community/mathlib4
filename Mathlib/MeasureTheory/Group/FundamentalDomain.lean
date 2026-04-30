@@ -434,7 +434,6 @@ theorem measure_le_of_pairwise_disjoint (hs : IsFundamentalDomain G s μ)
       (ht.smul _).inter hs.nullMeasurableSet
     _ ≤ μ s := measure_mono (iUnion_subset fun _ => inter_subset_right)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the action of a countable group `G` admits an invariant measure `μ` with a fundamental domain
 `s`, then every null-measurable set `t` of measure strictly greater than `μ s` contains two
 points `x y` such that `g • x = y` for some `g ≠ 1`. -/
@@ -834,7 +833,7 @@ lemma QuotientMeasureEqMeasurePreimage.sigmaFiniteQuotient
   simp only [mem_setOf_eq] at hA_meas
   refine ⟨⟨fun n ↦ π '' (A n), by simp, fun n ↦ ?_, ?_⟩⟩
   · obtain ⟨s, fund_dom_s⟩ := i'
-    have : π ⁻¹' (π '' (A n)) = _ := MulAction.quotient_preimage_image_eq_union_mul (A n) (G := G)
+    have : π ⁻¹' π '' (A n) = _ := MulAction.quotient_preimage_image_eq_union_mul (A n) (G := G)
     have measπAn : MeasurableSet (π '' A n) := by
       let _ : Setoid α := α_mod_G
       rw [measurableSet_quotient, Quotient.mk''_eq_mk, this]

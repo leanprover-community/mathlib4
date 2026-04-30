@@ -68,7 +68,7 @@ class RingHom.Flat {R : Type u} {S : Type v} [CommRing R] [CommRing S] (f : R â†
   out : f.toAlgebra.Flat := by infer_instance
 ```
 
-## algebraize_only
+## `algebraize_only`
 
 To avoid searching through the local context and adding corresponding `Algebra` properties, use
 `algebraize_only` which only adds `Algebra` and `IsScalarTower` instances.

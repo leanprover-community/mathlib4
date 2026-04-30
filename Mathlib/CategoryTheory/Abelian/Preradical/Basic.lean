@@ -31,7 +31,7 @@ with codomain `𝟭 C`, i.e. an element of `MonoOver (𝟭 C)`.
 category theory, preradical, torsion theory
 -/
 
-@[expose] public section
+public section
 
 universe v u
 
@@ -73,6 +73,14 @@ set_option backward.isDefEq.respectTransparency false in
 instance [Φ.IsIdempotent] (X : C) :
     IsIso (Φ.r.map (Φ.ι.app X)) := by
   rw [r_map_ι_app]
+  infer_instance
+
+set_option backward.isDefEq.respectTransparency false in
+instance {D : Type*} [Category* D] (F : D ⥤ C) :
+    Mono (Functor.whiskerLeft F Φ.ι) := by
+  rw [NatTrans.mono_iff_mono_app]
+  intro
+  dsimp
   infer_instance
 
 end Preradical

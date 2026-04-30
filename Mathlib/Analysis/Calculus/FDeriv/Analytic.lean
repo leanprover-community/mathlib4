@@ -758,20 +758,19 @@ theorem hasFTaylorSeriesUpTo_iteratedFDeriv :
           apply h
           simp_rw [← Equiv.embeddingFinSucc_snd e]
     · have hkf : k ∉ Set.range (Equiv.embeddingFinSucc n ι e).1 := by
-        contrapose! hke
+        contrapose hke
         rw [Equiv.embeddingFinSucc_fst] at hke
         exact Set.range_comp_subset_range _ _ hke
       simp only [hke, hkf, ↓reduceDIte, Pi.compRightL,
         ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk]
       rw [Function.update_of_ne]
-      contrapose! hke
+      contrapose hke
       rw [show k = _ from Subtype.ext_iff.1 hke, Equiv.embeddingFinSucc_snd e]
       exact Set.mem_range_self _
   · rintro n -
-    apply continuous_finset_sum _ (fun e _ ↦ ?_)
+    apply continuous_finsetSum _ (fun e _ ↦ ?_)
     exact (ContinuousMultilinearMap.coe_continuous _).comp (ContinuousLinearMap.continuous _)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iteratedFDeriv_eq (n : ℕ) :
     iteratedFDeriv 𝕜 n f = f.iteratedFDeriv n :=
   funext fun x ↦ (f.hasFTaylorSeriesUpTo_iteratedFDeriv.eq_iteratedFDeriv (m := n) le_top x).symm

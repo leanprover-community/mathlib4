@@ -113,7 +113,7 @@ namespace IsTopologicalGroup
 lead to a diamond since a topological field would inherit two `HSpace` structures, one from the
 `MulOneClass` and one from the `AddZeroClass`. In the case of a group, we make
 `IsTopologicalGroup.hSpace` an instance." -/
-@[to_additive
+@[to_additive (attr := implicit_reducible)
       /-- The definition `toHSpace` is not an instance because it comes together with a
       multiplicative version which would lead to a diamond since a topological field would inherit
       two `HSpace` structures, one from the `MulOneClass` and one from the `AddZeroClass`.

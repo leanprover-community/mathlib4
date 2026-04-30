@@ -6,7 +6,7 @@ Authors: Heather Macbeth
 module
 
 public import Mathlib.Geometry.Manifold.Sheaf.Smooth
-public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
+public import Mathlib.Geometry.RingedSpace.OpenImmersion
 
 /-! # Smooth manifolds as locally ringed spaces
 
@@ -20,12 +20,14 @@ This file equips a smooth manifold with the structure of a locally ringed space.
 
 ## Main definitions
 
-* `IsManifold.locallyRingedSpace`: A smooth manifold can be considered as a locally ringed space.
+* `ChartedSpace.locallyRingedSpace`: A smooth manifold can be considered as a locally ringed space.
+* `ChartedSpace.locallyRingedSpaceMap`: A smooth map between smooth manifolds induces a morphism
+  of locally ringed spaces.
 
 ## TODO
 
-Characterize morphisms-of-locally-ringed-spaces (`AlgebraicGeometry.LocallyRingedSpace.Hom`) between
-smooth manifolds.
+- Show that every morphism of locally ringed spaces between two smooth manifolds is induced
+  by a smooth map via `ChartedSpace.locallyRingedSpaceMap`.
 
 -/
 
@@ -40,6 +42,12 @@ variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
   {EM : Type*} [NormedAddCommGroup EM] [NormedSpace 𝕜 EM]
   {HM : Type*} [TopologicalSpace HM] (IM : ModelWithCorners 𝕜 EM HM)
   {M : Type u} [TopologicalSpace M] [ChartedSpace HM M]
+  {EN : Type*} [NormedAddCommGroup EN] [NormedSpace 𝕜 EN]
+  {HN : Type*} [TopologicalSpace HN] (IN : ModelWithCorners 𝕜 EN HN)
+  {N : Type u} [TopologicalSpace N] [ChartedSpace HN N]
+  {EP : Type*} [NormedAddCommGroup EP] [NormedSpace 𝕜 EP]
+  {HP : Type*} [TopologicalSpace HP] (IP : ModelWithCorners 𝕜 EP HP)
+  {P : Type u} [TopologicalSpace P] [ChartedSpace HP P]
 
 open AlgebraicGeometry Manifold TopologicalSpace Topology
 
@@ -69,7 +77,7 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
     have hV : V₀ = Set.range (Set.inclusion hUV) := by
       convert (Set.range_inclusion hUV).symm
       ext y
-      change _ ↔ y ∈ Subtype.val ⁻¹' (Subtype.val '' V₀)
+      change _ ↔ y ∈ Subtype.val ⁻¹' Subtype.val '' V₀
       rw [Set.preimage_image_eq _ Subtype.coe_injective]
     clear_value V
     subst hV
@@ -122,8 +130,108 @@ instance smoothSheafCommRing.instLocalRing_stalk (x : M) :
 variable (M)
 
 /-- A smooth manifold can be considered as a locally ringed space. -/
-def IsManifold.locallyRingedSpace : LocallyRingedSpace where
+def ChartedSpace.locallyRingedSpace : LocallyRingedSpace where
   carrier := TopCat.of M
   presheaf := smoothPresheafCommRing IM 𝓘(𝕜) M 𝕜
-  IsSheaf := (smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).cond
+  IsSheaf := (smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).property
   isLocalRing x := smoothSheafCommRing.instLocalRing_stalk IM x
+
+@[deprecated (since := "2026-04-01")]
+alias IsManifold.locallyRingedSpace := ChartedSpace.locallyRingedSpace
+
+open CategoryTheory Limits
+
+variable {M IM IN}
+
+/-- (Implementation): Use `ChartedSpace.locallyRingedSpaceMap`. -/
+def ChartedSpace.locallyRingedSpaceMapAux (f : M → N) (hf : ContMDiff IM IN ∞ f) :
+    (locallyRingedSpace IM M).toPresheafedSpace ⟶
+      (locallyRingedSpace IN N).toPresheafedSpace where
+  base := TopCat.ofHom ⟨f, hf.continuous⟩
+  c := (hf.smoothSheafCommRingHom _ _ f).hom
+
+/-- (Implementation): Use `ChartedSpace.stalkMap_locallyRingedSpaceMap_evalHom`. -/
+lemma ChartedSpace.stalkMap_locallyRingedSpaceMapAux (f : M → N) (hf : ContMDiff IM IN ∞ f)
+    (x : M) :
+    (locallyRingedSpaceMapAux f hf).stalkMap x ≫
+      smoothSheafCommRing.evalHom IM 𝓘(𝕜) M 𝕜 x =
+      smoothSheafCommRing.evalHom IN 𝓘(𝕜) N 𝕜 (f x) := by
+  apply TopCat.Presheaf.stalk_hom_ext
+  intro U hxU
+  rw [PresheafedSpace.stalkMap_germ_assoc]
+  ext a
+  refine Eq.trans ?_ (smoothSheafCommRing.evalHom_germ _ _ _ _ _ _ _ a).symm
+  apply smoothSheafCommRing.evalHom_germ
+
+set_option backward.isDefEq.respectTransparency false in
+/-- A smooth function of manifolds `f : M → N` induces a morphism of locally ringed spaces. -/
+@[simps! base]
+def ChartedSpace.locallyRingedSpaceMap (f : M → N) (hf : ContMDiff IM IN ∞ f) :
+    locallyRingedSpace IM M ⟶ locallyRingedSpace IN N where
+  __ := locallyRingedSpaceMapAux f hf
+  prop x := by
+    refine ⟨fun a ha ↦ ?_⟩
+    rw [smoothSheafCommRing.isUnit_stalk_iff, RingHom.mem_ker] at ha ⊢
+    convert ha
+    exact (congr($(stalkMap_locallyRingedSpaceMapAux f hf x) a)).symm
+
+@[reassoc (attr := simp)]
+lemma ChartedSpace.stalkMap_locallyRingedSpaceMap_evalHom (f : M → N) (hf : ContMDiff IM IN ∞ f)
+    (x : M) :
+    (locallyRingedSpaceMap f hf).stalkMap x ≫
+      smoothSheafCommRing.evalHom IM 𝓘(𝕜) M 𝕜 x =
+      smoothSheafCommRing.evalHom IN 𝓘(𝕜) N 𝕜 (f x) :=
+  stalkMap_locallyRingedSpaceMapAux f hf x
+
+variable (IM M) in
+lemma ChartedSpace.locallyRingedSpace_id :
+    locallyRingedSpaceMap (IM := IM) (IN := IM) (M := M) id contMDiff_id = 𝟙 _ :=
+  rfl
+
+lemma ChartedSpace.locallyRingedSpace_comp {f : M → N} (hf : ContMDiff IM IN ∞ f)
+    {g : N → P} (hg : ContMDiff IN IP ∞ g) :
+    locallyRingedSpaceMap (g ∘ f) (hg.comp hf) =
+      locallyRingedSpaceMap f hf ≫ locallyRingedSpaceMap g hg :=
+  rfl
+
+-- TODO: This holds more generally if `U` is replaced by an open embedding that
+-- is also a smooth immersion.
+instance (U : Opens M) :
+    LocallyRingedSpace.IsOpenImmersion
+      (ChartedSpace.locallyRingedSpaceMap _ (contMDiff_subtype_val (I := IM) (U := U))) where
+  base_open := U.isOpenEmbedding'
+  c_iso V := by
+    rw [ConcreteCategory.isIso_iff_bijective]
+    refine ⟨fun a b hab ↦ Subtype.ext ?_, fun ⟨g, hg⟩ ↦ ?_⟩
+    · ext ⟨x, y, hy, rfl⟩
+      exact congr($(hab).1 ⟨y, ⟨y, hy, rfl⟩⟩)
+    · let a : TopCat.of U ⟶ TopCat.of M := TopCat.ofHom ⟨Subtype.val, continuous_subtype_val⟩
+      have ha : IsOpenEmbedding a.hom := U.isOpenEmbedding'
+      let V' : Opens U := (Opens.map a).obj (ha.isOpenMap.functor.obj V)
+      let b : V' ≃ₜ ha.isOpenMap.functor.obj V :=
+        U.isOpenEmbedding'.homeomorphOfSubsetRange <| Set.image_subset_range _ V.1
+      refine ⟨⟨g ∘ b.symm, ContMDiff.comp hg ?_⟩, Subtype.ext <| funext fun _ ↦ ?_⟩
+      · refine (ContMDiff.subtypeVal_comp_iff V' _).mp ?_
+        rw [← ContMDiff.subtypeVal_comp_iff]
+        convert contMDiff_subtype_val
+        ext x
+        exact congr($(b.apply_symm_apply x).1)
+      · change g _ = _
+        congr
+        apply b.symm_apply_apply
+
+/-- Viewing a manifold as a locally ringed space commutes with restriction to open subsets. -/
+@[simps]
+def ChartedSpace.restrictLocallyRingedSpaceIso (U : Opens M) :
+    (locallyRingedSpace IM M).restrict U.isOpenEmbedding ≅
+      locallyRingedSpace IM U where
+  hom := LocallyRingedSpace.IsOpenImmersion.lift
+    (locallyRingedSpaceMap _ contMDiff_subtype_val)
+    (LocallyRingedSpace.ofRestrict _ _) (by rfl)
+  inv := LocallyRingedSpace.IsOpenImmersion.lift
+    ((locallyRingedSpace IM M).ofRestrict U.isOpenEmbedding)
+    (locallyRingedSpaceMap _ contMDiff_subtype_val) (by rfl)
+  hom_inv_id := by
+    simp [← cancel_mono ((locallyRingedSpace IM M).ofRestrict U.isOpenEmbedding)]
+  inv_hom_id := by
+    simp [← cancel_mono (locallyRingedSpaceMap _ contMDiff_subtype_val)]
