@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Connected
 public import Mathlib.CategoryTheory.Comma.Over.Pullback
 public import Mathlib.CategoryTheory.Functor.Flat
 
-/-! Localization
+/-! # Localization
 
 In this file, given a Grothendieck topology `J` on a category `C` and `X : C`, we construct
 a Grothendieck topology `J.over X` on the category `Over X`. In order to do this,
