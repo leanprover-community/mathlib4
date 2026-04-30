@@ -212,6 +212,7 @@ def Normal.algHomEquivAut [Normal F E] : (E →ₐ[F] K₁) ≃ Gal(E/F) where
     simp [AlgHom.restrictNormal']
   right_inv σ := by
     ext
+    simp only [AlgHom.restrictNormal', AlgEquiv.coe_ofBijective]
     simp only [AlgHom.restrictNormal', AlgEquiv.ofBijective_apply]
     apply FaithfulSMul.algebraMap_injective E K₁
     rw [AlgHom.restrictNormal_commutes]

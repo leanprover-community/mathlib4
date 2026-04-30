@@ -252,7 +252,7 @@ variable {A B} in
 theorem val_mulMap'_tmul (a : A) (b : B) : (mulMap' A B (a ⊗ₜ[R] b) : S) = a.1 * b.1 := rfl
 
 theorem mulMap'_surjective : Function.Surjective (mulMap' A B) := by
-  simp_rw [mulMap', AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe,
+  simp_rw [mulMap', AlgHom.coe_comp, AlgEquiv.coe_algHom,
     EquivLike.comp_surjective, AlgHom.rangeRestrict_surjective]
 
 end Subalgebra

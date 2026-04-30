@@ -91,11 +91,13 @@ variable [CommSemiring R] [Semiring A] [Bialgebra R A] [Semiring B] [Bialgebra R
 
 @[simp]
 theorem counitAlgHom_comp (f : F) :
-    (counitAlgHom R B).comp (f : A →ₐ[R] B) = counitAlgHom R A :=
+    (counitAlgHom R B).comp (AlgHomClass.toAlgHom f) = counitAlgHom R A :=
   AlgHom.toLinearMap_injective (CoalgHomClass.counit_comp f)
 
 @[simp]
 theorem map_comp_comulAlgHom (f : F) :
+    (Algebra.TensorProduct.map (AlgHomClass.toAlgHom f) (AlgHomClass.toAlgHom f)).comp
+      (comulAlgHom R A) = (comulAlgHom R B).comp (AlgHomClass.toAlgHom f) :=
     (Algebra.TensorProduct.map f f).comp (comulAlgHom R A) =
       (comulAlgHom R B).comp (f : A →ₐ[R] B) :=
   AlgHom.toLinearMap_injective (CoalgHomClass.map_comp_comul f)
@@ -108,6 +110,7 @@ namespace BialgHom
 variable {R A B C D : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Semiring C] [Semiring D]
 
 section AlgebraCoalgebra
+
 variable [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
   [CoalgebraStruct R A] [CoalgebraStruct R B] [CoalgebraStruct R C] [CoalgebraStruct R D]
 
@@ -136,7 +139,7 @@ initialize_simps_projections BialgHom (toFun → apply)
 
 @[simp]
 protected theorem coe_coe {F : Type*} [FunLike F A B] [BialgHomClass F R A B] (f : F) :
-    ⇑(f : A →ₐc[R] B) = f :=
+    ⇑(BialgHomClass.toBialgHom f) = f :=
   rfl
 
 @[simp]
@@ -163,7 +166,17 @@ lemma toCoalgHom_apply (f : A →ₐc[R] B) (a : A) : f.toCoalgHom a = f a := rf
 theorem coe_toLinearMap (f : A →ₐc[R] B) : ⇑(f : A →ₗ[R] B) = f :=
   rfl
 
-@[norm_cast]
+/-- Turn a bialgebra homomorphism into an algebra homomorphism. -/
+@[coe]
+def toAlgHom (f : A →ₐc[R] B) : A →ₐ[R] B where
+  __ := f
+  map_zero' := f.map_zero
+  commutes' := by
+    simp [Algebra.algebraMap_eq_smul_one, toCoalgHom_apply]
+
+instance : Coe (A →ₐc[R] B) (A →ₐ[R] B) := ⟨toAlgHom⟩
+
+@[simp, norm_cast]
 theorem coe_toAlgHom (f : A →ₐc[R] B) : ⇑(f : A →ₐ[R] B) = f :=
   rfl
 
@@ -311,6 +324,16 @@ def ofAlgHom (f : A →ₐ[R] B) (counit_comp : (counitAlgHom R B).comp f = coun
   map_smul' := map_smul f
   counit_comp := congr(($counit_comp).toLinearMap)
   map_comp_comul := congr(($map_comp_comul).toLinearMap)
+
+@[simp]
+theorem counitAlgHom_comp (f : A →ₐc[R] B) :
+    (counitAlgHom R B).comp f = counitAlgHom R A :=
+  AlgHom.toLinearMap_injective (CoalgHomClass.counit_comp f)
+
+@[simp]
+theorem map_comp_comulAlgHom (f : A →ₐc[R] B) :
+    (Algebra.TensorProduct.map f f).comp (comulAlgHom R A) = (comulAlgHom R B).comp f :=
+  AlgHom.toLinearMap_injective (CoalgHomClass.map_comp_comul f)
 
 end BialgHom
 

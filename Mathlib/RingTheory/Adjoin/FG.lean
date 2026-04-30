@@ -34,7 +34,7 @@ universe u v w
 
 open Subsemiring Ring Submodule
 
-open Pointwise
+open scoped Pointwise
 
 namespace Algebra
 

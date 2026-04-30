@@ -208,6 +208,12 @@ def toAlgHom : A →ₛₐ[φ] B :=
     map_zero' := map_zero e
     commutes' _:= e.commutes' _ }
 
+instance : CoeOut (A₁ ≃ₐ[R] A₂) (A₁ →ₐ[R] A₂) where coe := AlgEquiv.toAlgHom
+
+@[deprecated "Now a syntactic equality" (since := "2026-04-29"), nolint synTaut]
+theorem toAlgHom_eq_coe : e.toAlgHom = e :=
+  rfl
+
 theorem toAlgHom_eq_coeₛₐ : e.toAlgHom = e :=
   rfl
 
@@ -218,7 +224,7 @@ theorem toAlgHom_apply (x : A) : e.toAlgHom x = e x :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_algHom : DFunLike.coe (e.toAlgHom) = DFunLike.coe e :=
+theorem coe_algHom : DFunLike.coe e.toAlgHom = DFunLike.coe e :=
   rfl
 
 theorem coe_algHom_injective : Function.Injective ((↑) : (A ≃ₛₐ[φ] B) → A →ₛₐ[φ] B) :=

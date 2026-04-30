@@ -90,6 +90,9 @@ theorem pi_iff [Finite I] :
     use iso.symm.toAlgHom.comp (Pi.algHom _ _ fun i ↦ (a i).comp (Pi.evalAlgHom R A i))
     ext x; rw [← AlgHom.toLinearMap_apply, ← AlgHom.toLinearMap_apply]; congr 1
     ext i x
+    simp only [AlgHom.comp_toLinearMap, AlgEquiv.toAlgHom_toLinearMap,
+      LinearMap.coe_comp, LinearMap.coe_single, Function.comp_apply, AlgHom.toLinearMap_apply,
+      AlgEquiv.toLinearMap_apply, Ideal.Quotient.mkₐ_eq_mk]
     simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.comp_toLinearMap, LinearMap.coe_comp,
       LinearMap.coe_single, Function.comp_apply, AlgHom.toLinearMap_apply, Ideal.Quotient.mkₐ_eq_mk]
     obtain ⟨y, hy⟩ := Ideal.Quotient.mk_surjective (a i x)

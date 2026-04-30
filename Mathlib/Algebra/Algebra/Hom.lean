@@ -165,14 +165,22 @@ namespace AlgHom
 
 section Semiring
 
-variable {R : Type uR} {S : Type uS} [CommSemiring R] [CommSemiring S]
-variable {φ : R →+* S}
-variable {A : Type uA} {B : Type uB} [Semiring A] [Semiring B]
-variable [Algebra R A] [Algebra S B]
+variable [CommSemiring R] [Semiring A] [Semiring B] [Semiring C] [Semiring D]
+variable [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
 
-lemma _root_.Algebra.algHom_apply (R A B : Type*) [CommSemiring R] [CommSemiring A] [Semiring B]
-    [Algebra R A] [Algebra A B] [Algebra R B] [IsScalarTower R A B] (x : A) :
-    Algebra.algHom R A B x = algebraMap A B x := rfl
+instance funLike : FunLike (A →ₐ[R] B) A B where
+  coe f := f.toFun
+  coe_injective' f g h := by
+    rcases f with ⟨⟨⟨⟨_, _⟩, _⟩, _, _⟩, _⟩
+    rcases g with ⟨⟨⟨⟨_, _⟩, _⟩, _, _⟩, _⟩
+    congr
+
+instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
+  map_add f := f.map_add'
+  map_zero f := f.map_zero'
+  map_mul f := f.map_mul'
+  map_one f := f.map_one'
+  commutes f := f.commutes'
 
 @[simp] lemma _root_.AlgHomClass.toLinearMap_toAlgHom {R A B F : Type*} [CommSemiring R]
     [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] [FunLike F A B] [AlgHomClass F R A B]
@@ -185,7 +193,7 @@ initialize_simps_projections AlgHom (toFun → apply)
 
 @[simp]
 protected theorem coe_coe [Algebra R B] {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
-    ⇑(f : A →ₐ[R] B) = f :=
+    ⇑(AlgHomClass.toAlgHom f : A →ₐ[R] B) = f :=
   rfl
 
 @[simp]
@@ -468,6 +476,42 @@ theorem algebraMap_eq_apply [Algebra R B] (f : A →ₐ[R] B) {y : R} {x : A}
 
 end Semiring
 end AlgHom
+
+namespace IsScalarTower
+
+variable (R S A : Type*) [CommSemiring R] [CommSemiring S] [Semiring A]
+  [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A]
+
+/-- In a tower, the canonical map from the middle element to the top element is an
+algebra homomorphism over the bottom element. -/
+def toAlgHom : S →ₐ[R] A where
+  toRingHom := algebraMap S A
+  commutes' r := by simpa [Algebra.smul_def] using smul_assoc r (1 : S) (1 : A)
+
+theorem toAlgHom_apply (y : S) : toAlgHom R S A y = algebraMap S A y := rfl
+
+@[simp]
+theorem coe_toAlgHom : ↑(toAlgHom R S A) = algebraMap S A :=
+  RingHom.ext fun _ => rfl
+
+@[simp]
+theorem coe_toAlgHom' : (toAlgHom R S A : S → A) = algebraMap S A := rfl
+
+end IsScalarTower
+
+/-- The algebra morphism underlying `algebraMap`. -/
+alias Algebra.algHom := IsScalarTower.toAlgHom
+
+alias Algebra.algHom_apply := IsScalarTower.toAlgHom_apply
+
+namespace AlgHomClass
+
+@[simp]
+lemma toRingHom_toAlgHom {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
+    [Algebra R B] {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
+    RingHomClass.toRingHom (AlgHomClass.toAlgHom f) = RingHomClass.toRingHom f := rfl
+
+end AlgHomClass
 
 namespace RingHom
 

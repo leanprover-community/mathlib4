@@ -43,7 +43,7 @@ variable {P : Ideal A}
 variable [TopologicalSpace G] [CompactSpace G] [TotallyDisconnectedSpace G]
 variable [IsTopologicalGroup G] [TopologicalSpace B] [DiscreteTopology B] [ContinuousSMul G B]
 
-open Pointwise CategoryTheory
+open CategoryTheory
 
 include G in
 lemma Algebra.IsInvariant.isIntegral_of_profinite

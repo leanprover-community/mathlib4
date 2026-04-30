@@ -798,7 +798,7 @@ variable [FunLike F A B] [AlgHomClass F R A B] [StarHomClass F A B] (f g : F)
 
 /-- The equalizer of two star `R`-algebra homomorphisms. -/
 def equalizer : StarSubalgebra R A where
-  toSubalgebra := AlgHom.equalizer (f : A →ₐ[R] B) g
+  toSubalgebra := AlgHom.equalizer (AlgHomClass.toAlgHom f) (AlgHomClass.toAlgHom g)
   star_mem' {a} (ha : f a = g a) := by simpa only [← map_star] using congrArg star ha
 
 @[simp]
@@ -860,7 +860,7 @@ def rangeRestrict (f : A →⋆ₐ[R] B) : A →⋆ₐ[R] f.range :=
 @[simps]
 noncomputable def _root_.StarAlgEquiv.ofInjective (f : A →⋆ₐ[R] B)
     (hf : Function.Injective f) : A ≃⋆ₐ[R] f.range :=
-  { AlgEquiv.ofInjective (f : A →ₐ[R] B) hf with
+  { AlgEquiv.ofInjective f.toAlgHom hf with
     toFun := f.rangeRestrict
     map_star' := fun a => Subtype.ext (map_star f a)
     map_smul' := fun r a => Subtype.ext (map_smul f r a) }

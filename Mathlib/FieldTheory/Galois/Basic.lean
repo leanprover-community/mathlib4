@@ -446,6 +446,11 @@ open scoped Pointwise
 theorem map_fixingSubgroup (σ : Gal(L/K)) :
     (E.map σ.toAlgHom).fixingSubgroup = (MulAut.conj σ) • E.fixingSubgroup := by
   ext τ
+  simp only [coe_map, AlgEquiv.coe_algHom, Set.mem_image, SetLike.mem_coe, AlgEquiv.smul_def,
+    forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
+    Subgroup.mem_pointwise_smul_iff_inv_smul_mem, ← symm_apply_eq,
+    IntermediateField.fixingSubgroup, mem_fixingSubgroup_iff]
+  rfl
   simp [IntermediateField.fixingSubgroup, _root_.mem_fixingSubgroup_iff,
     ← symm_apply_eq, Subgroup.mem_pointwise_smul_iff_inv_smul_mem]
 

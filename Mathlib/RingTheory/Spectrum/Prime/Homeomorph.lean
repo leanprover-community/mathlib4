@@ -84,6 +84,8 @@ lemma PrimeSpectrum.isHomeomorph_comap_tensorProductMap_of_isPurelyInseparable [
         (IsScalarTower.toAlgHom K (K ⊗[R] S) ((K ⊗[R] S) ⊗[K] L)) := by
     ext; simp [e, e2]
   rw [heq]
+  simp only [AlgHom.toRingHom_eq_coe, AlgHom.comp_toRingHom,
+    AlgEquiv.toAlgHom_toRingHom, IsScalarTower.coe_toAlgHom, comap_comp]
   simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe, AlgHom.comp_toRingHom,
     IsScalarTower.coe_toAlgHom, comap_comp]
   exact (isHomeomorph_comap_of_isPurelyInseparable K L (K ⊗[R] S)).comp <|

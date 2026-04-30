@@ -59,6 +59,8 @@ noncomputable instance : OrderBot (Lifts F E K) where
   bot := ⟨⊥, (Algebra.ofId F K).comp (botEquiv F E).toAlgHom⟩
   bot_le L := ⟨bot_le, fun x ↦ by
     obtain ⟨x, rfl⟩ := (botEquiv F E).symm.surjective x
+    simp_rw [AlgHom.comp_apply, AlgEquiv.coe_algHom, AlgEquiv.apply_symm_apply]
+    exact L.emb.commutes x⟩
     simp⟩
 
 noncomputable instance : Inhabited (Lifts F E K) :=
@@ -261,14 +263,14 @@ theorem exists_algHom_adjoin_of_splits' :
     · ext x
       let y := (AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F L E)) x
       refine Eq.trans congr($hφ y) ?_
-      simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, Function.comp_apply, f']
+      simp only [AlgHom.coe_comp, Function.comp_apply, f']
       exact congr_arg f (AlgEquiv.symm_apply_apply _ _)
   letI : Algebra L L' := (AlgEquiv.ofInjectiveField _).toRingHom.toAlgebra
   have : IsScalarTower L L' E := IsScalarTower.of_algebraMap_eq' rfl
   refine ⟨(hK s hs).1.tower_top, (hK s hs).1.minpoly_splits_tower_top' ?_⟩
   convert (hK s hs).2
   ext
-  simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe,
+  simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe,
     AlgHom.coe_comp, Function.comp_apply, f']
   exact congr_arg f (AlgEquiv.symm_apply_apply _ _)
 

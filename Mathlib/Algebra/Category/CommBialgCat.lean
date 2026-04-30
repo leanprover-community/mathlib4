@@ -6,7 +6,7 @@ Authors: Yaël Dillies, Michał Mrugała, Andrew Yang
 module
 
 public import Mathlib.Algebra.Category.CommAlgCat.Monoidal
-public import Mathlib.CategoryTheory.Monoidal.Mon_
+public import Mathlib.CategoryTheory.Monoidal.Mon
 public import Mathlib.RingTheory.Bialgebra.Equiv
 
 /-!
@@ -97,7 +97,7 @@ initialize_simps_projections Hom (hom' → hom)
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
 -/
 
-@[simp] lemma hom_id : (𝟙 A : A ⟶ A).hom = AlgHom.id R A := rfl
+@[simp] lemma hom_id : AlgHomClass.toAlgHom (𝟙 A : A ⟶ A).hom = AlgHom.id R A := rfl
 @[simp] lemma hom_comp (f : A ⟶ B) (g : B ⟶ C) : (f ≫ g).hom = g.hom.comp f.hom := rfl
 
 lemma id_apply (A : CommBialgCat.{v} R) (a : A) : (𝟙 A : A ⟶ A) a = a := by simp
@@ -132,13 +132,14 @@ instance : Bialgebra R ((forget (CommBialgCat R)).obj A) := inferInstanceAs <| B
 
 instance hasForgetToCommAlgCat : HasForget₂ (CommBialgCat.{v} R) (CommAlgCat.{v} R) where
   forget₂.obj M := .of R M
-  forget₂.map f := CommAlgCat.ofHom f.hom
+  forget₂.map f := CommAlgCat.ofHom (AlgHomClass.toAlgHom f.hom)
 
 @[simp] lemma forget₂_commAlgCat_obj (A : CommBialgCat.{v} R) :
     (forget₂ (CommBialgCat.{v} R) (CommAlgCat.{v} R)).obj A = .of R A := rfl
 
 @[simp] lemma forget₂_commAlgCat_map (f : A ⟶ B) :
-    (forget₂ (CommBialgCat.{v} R) (CommAlgCat.{v} R)).map f = CommAlgCat.ofHom f.hom := rfl
+    (forget₂ (CommBialgCat.{v} R) (CommAlgCat.{v} R)).map f =
+      CommAlgCat.ofHom (AlgHomClass.toAlgHom f.hom) := rfl
 
 /-- Forgetting to the underlying type and then building the bundled object returns the original
 bialgebra. -/
@@ -203,7 +204,7 @@ instance {A : Type u} [CommRing A] [Bialgebra R A] [IsCocomm R A] :
   mul_comm := by ext; exact comm_comul R _
 
 instance {A B : Type u} [CommRing A] [Bialgebra R A] [CommRing B] [Bialgebra R B]
-    (f : A →ₐc[R] B) : IsMonHom (CommAlgCat.ofHom (f : A →ₐ[R] B)).op where
+    (f : A →ₐc[R] B) : IsMonHom (CommAlgCat.ofHom (AlgHomClass.toAlgHom f)).op where
 
 instance (A : (CommAlgCat R)ᵒᵖ) [MonObj A] : Bialgebra R A.unop :=
   .ofAlgHom μ[A].unop.hom η[A].unop.hom
@@ -218,7 +219,7 @@ variable (R) in
   unitIso_inv_app counitIso_hom_app counitIso_inv_app]
 def commBialgCatEquivComonCommAlgCat : CommBialgCat R ≌ (Mon (CommAlgCat R)ᵒᵖ)ᵒᵖ where
   functor.obj A := .op <| .mk <| .op <| .of R A
-  functor.map {A B} f := .op <| .mk' <| .op <| CommAlgCat.ofHom f.hom
+  functor.map {A B} f := .op <| .mk' <| .op <| CommAlgCat.ofHom <| AlgHomClass.toAlgHom f.hom
   inverse.obj A := .of R A.unop.X.unop
   inverse.map {A B} f := CommBialgCat.ofHom <| .ofAlgHom f.unop.hom.unop.hom
     congr(($(IsMonHom.one_hom (f := f.unop.hom))).unop.hom)
