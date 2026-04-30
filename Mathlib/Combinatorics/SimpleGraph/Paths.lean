@@ -162,12 +162,12 @@ theorem IsTrail.of_append_right {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
   rw [isTrail_def, edges_append, List.nodup_append] at h
   exact ⟨h.2.1⟩
 
-theorem append_isTrail_iff_edges_disjoint {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
-    (hp : p.IsTrail) (hq : q.IsTrail) :
-    (p.append q).IsTrail ↔ p.edges.Disjoint q.edges := by
+theorem append_isTrail_iff_edges_disjoint {u v w : V} (p : G.Walk u v) (q : G.Walk v w) :
+    (p.append q).IsTrail ↔ p.IsTrail ∧ q.IsTrail ∧ p.edges.Disjoint q.edges := by
   rw [Walk.isTrail_def, Walk.edges_append, List.nodup_append]
-  exact ⟨fun h _ x y ↦ h.2.2 _ x _ y rfl,
-    fun h ↦ ⟨hp.edges_nodup, hq.edges_nodup, fun _ x _ y ↦ ne_of_mem_of_not_mem x (h.symm y)⟩⟩
+  refine ⟨fun h ↦ ⟨?_, ?_, fun _ x y ↦ h.2.2 _ x _ y rfl⟩, fun ⟨hp, hq, h⟩ ↦
+    ⟨hp.edges_nodup, hq.edges_nodup, fun _ x _ y ↦ ne_of_mem_of_not_mem x (h.symm y)⟩⟩
+  <;> tauto
 
 theorem IsTrail.count_edges_le_one [DecidableEq V] {u v : V} {p : G.Walk u v} (h : p.IsTrail)
     (e : Sym2 V) : p.edges.count e ≤ 1 :=
@@ -711,7 +711,8 @@ lemma isPath_append_isCycle {u v} {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPa
     (h : p.support.tail.Disjoint q.support.tail) (hn : 1 < p.length ⊔ q.length) :
     (p.append q).IsCycle := by
   rw [Walk.isCycle_def]
-  refine ⟨(append_isTrail_iff_edges_disjoint hp.isTrail hq.isTrail).mpr (fun x h₁ h₂ ↦ ?_), ?_, ?_⟩
+  refine ⟨(p.append_isTrail_iff_edges_disjoint q).mpr ⟨hp.isTrail, hq.isTrail, fun x h₁ h₂ ↦ ?_⟩,
+    ?_, ?_⟩
   · cases x
     cases lt_sup_iff.mp hn
     · obtain ⟨z, hz₁, hz₂⟩ := hp.exists_of_edges h₁ h₂ ‹_›
