@@ -567,10 +567,8 @@ variable {s : Set V} [DecidablePred (· ∈ s)] [Fintype V] {G : SimpleGraph V} 
 
 lemma edgeFinset_subset_sym2_of_support_subset (h : G.support ⊆ s) :
     G.edgeFinset ⊆ s.toFinset.sym2 := by
-  simp_rw [subset_iff, Sym2.forall,
-    mem_edgeFinset, mem_edgeSet, mk_mem_sym2_iff, Set.mem_toFinset]
-  intro _ _ hadj
-  exact ⟨h ⟨_, hadj⟩, h ⟨_, hadj.symm⟩⟩
+  rw [← coe_subset, coe_sym2, edgeFinset, Set.coe_toFinset, Set.coe_toFinset]
+  exact edgeSet_subset_sym2_iff.mpr h
 
 instance : DecidablePred (· ∈ G.support) :=
   inferInstanceAs <| DecidablePred (· ∈ { v | ∃ w, G.Adj v w })

@@ -406,6 +406,14 @@ def support : Set V :=
 theorem mem_support {v : V} : v ∈ G.support ↔ ∃ w, G.Adj v w :=
   Iff.rfl
 
+variable {G} in
+theorem Adj.mem_support_left (hadj : G.Adj u v) : u ∈ G.support :=
+  G.mem_support.mpr ⟨v, hadj⟩
+
+variable {G} in
+theorem Adj.mem_support_right (hadj : G.Adj u v) : v ∈ G.support :=
+  hadj.symm.mem_support_left
+
 @[gcongr]
 theorem support_mono {G G' : SimpleGraph V} (h : G ≤ G') : G.support ⊆ G'.support :=
   SetRel.dom_mono fun _uv huv ↦ h huv
@@ -562,6 +570,15 @@ theorem adj_iff_exists_edge {v w : V} : G.Adj v w ↔ v ≠ w ∧ ∃ e ∈ G.ed
 
 theorem adj_iff_exists_edge_coe : G.Adj a b ↔ ∃ e : G.edgeSet, e.val = s(a, b) := by
   simp only [mem_edgeSet, exists_prop, SetCoe.exists, exists_eq_right]
+
+@[simp]
+theorem edgeSet_subset_sym2_iff {s : Set V} :
+    G.edgeSet ⊆ s.sym2 ↔ G.support ⊆ s := by
+  refine ⟨fun h u hu ↦ ?_, fun h e hadj ↦ ?_⟩
+  · have ⟨v, huv⟩ := hu
+    exact (Set.mk_mem_sym2_iff.mp <| h huv).left
+  · cases e
+    exact ⟨h hadj.mem_support_left, h hadj.mem_support_right⟩
 
 variable (G G₁ G₂)
 
