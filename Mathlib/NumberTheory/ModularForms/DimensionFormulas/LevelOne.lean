@@ -48,7 +48,7 @@ def ofMulDiscriminant (f : ModularForm 𝒮ℒ (k - 12)) : CuspForm 𝒮ℒ k :=
 lemma ofMulDiscriminant_apply (f : ModularForm 𝒮ℒ (k - 12)) (z : ℍ) :
     (ofMulDiscriminant f) z = Δ z * f z := rfl
 
-lemma divByDiscriminant_slash_eq (f : CuspForm 𝒮ℒ k) (γ : SL(2, ℤ)) :
+private lemma divByDiscriminant_slash_eq (f : CuspForm 𝒮ℒ k) (γ : SL(2, ℤ)) :
     (fun z ↦ f z / Δ z) ∣[k - 12] γ = fun z ↦ f z / Δ z := by
   have hγ : (γ : GL (Fin 2) ℝ) ∈ 𝒮ℒ := ⟨γ, rfl⟩
   change (⇑f / ⇑CuspForm.discriminant) ∣[k - 12] γ = ⇑f / ⇑CuspForm.discriminant
@@ -57,7 +57,9 @@ lemma divByDiscriminant_slash_eq (f : CuspForm 𝒮ℒ k) (γ : SL(2, ℤ)) :
 /-- Divide a cusp form by the discriminant to get a modular form of weight `k - 12`. -/
 def divDiscriminant (f : CuspForm 𝒮ℒ k) : ModularForm 𝒮ℒ (k - 12) where
   toFun z := f z / Δ z
-  slash_action_eq' := fun _ ⟨γ, hγ⟩ ↦ hγ ▸ divByDiscriminant_slash_eq f γ
+  slash_action_eq' _ hA := by
+    obtain ⟨γ, rfl⟩ := hA
+    exact divByDiscriminant_slash_eq f γ
   holo' := by
     -- TODO: missing `MDifferentiableAt.div` or `MDifferentiableAt.inv`
     refine f.holo'.mul fun z ↦ .comp z ?_ (CuspForm.discriminant.holo' _)
