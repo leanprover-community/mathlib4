@@ -184,12 +184,14 @@ theorem of_shortExact_of_isFlasque₁₂ {S : ShortComplex (Sheaf AddCommGrpCat 
       exact CategoryTheory.epi_comp' inferInstance (epi_of_shortExact hS)
     exact CategoryTheory.epi_of_epi (S.g.1.app U) (S.X₃.obj.map i)
 
+end TopCat.Sheaf.IsFlasque
+
 /--
 If the unique map from `A` to the terminal object is an epimorphism, then the skyscraper sheaf
 valued in `A` supported at an arbitrary point is a flasque sheaf.
 -/
-theorem isFlasque_skyscraperSheaf {X : TopCat} (p₀ : ↑X) [(U : Opens ↑X) → Decidable (p₀ ∈ U)]
-    {C : Type*} [Category* C] (A : C) [HasTerminal C]
+theorem isFlasque_skyscraperSheaf_of_epi_from {X : TopCat} (p₀ : ↑X)
+    [(U : Opens ↑X) → Decidable (p₀ ∈ U)] {C : Type*} [Category* C] (A : C) [HasTerminal C]
     (h : Epi <| terminalIsTerminal.from A) :
     (skyscraperSheaf p₀ A).IsFlasque := by
   constructor
@@ -208,16 +210,12 @@ theorem isFlasque_skyscraperSheaf {X : TopCat} (p₀ : ↑X) [(U : Opens ↑X) �
     have := isIso_of_isTerminal hU hV ((skyscraperSheaf p₀ A).obj.map r)
     infer_instance
 
-
 /--
 If the target category has a zero object, then any skyscraper sheaf valued in this category is a
 flasque sheaf.
 -/
-theorem isFlasque_skyscraperSheaf_zeroObject {X : TopCat} (p₀ : ↑X)
-    [(U : Opens ↑X) → Decidable (p₀ ∈ U)] {C : Type*} [Category* C]
-    (A : C) [HasZeroObject C] : (skyscraperSheaf p₀ A).IsFlasque :=
-  isFlasque_skyscraperSheaf p₀ A
+theorem isFlasque_skyscraperSheaf_of_hasZeroObject {X : TopCat} (p₀ : ↑X)
+    [(U : Opens ↑X) → Decidable (p₀ ∈ U)] {C : Type*} [Category* C] (A : C) [HasZeroObject C] :
+    (skyscraperSheaf p₀ A).IsFlasque :=
+  isFlasque_skyscraperSheaf_of_epi_from p₀ A
     (((isZero_zero C).of_iso HasZeroObject.zeroIsoTerminal.symm).epi _)
-
-
-end TopCat.Sheaf.IsFlasque
