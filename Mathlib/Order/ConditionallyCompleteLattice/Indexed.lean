@@ -173,11 +173,8 @@ theorem ciSup_sup_eq {f g : ι → α} (Hf : BddAbove <| range f) (Hg : BddAbove
   cases isEmpty_or_nonempty ι
   · simp [iSup_of_empty']
   apply le_antisymm <| ciSup_le fun x ↦ sup_le_sup (le_ciSup Hf x) (le_ciSup Hg x)
-  suffices BddAbove <| range fun x ↦ f x ⊔ g x from
-    sup_le (ciSup_mono this fun _ ↦ le_sup_left) (ciSup_mono this fun _ ↦ le_sup_right)
-  have ⟨af, hf⟩ := Hf
-  have ⟨ag, hg⟩ := Hg
-  exact ⟨af ⊔ ag, fun a ⟨i, ha⟩ ↦ ha ▸ sup_le_sup (hf ⟨i, rfl⟩) (hg ⟨i, rfl⟩)⟩
+  have := bbdAbove_range_sup Hf Hg
+  exact sup_le (ciSup_mono this fun _ ↦ le_sup_left) (ciSup_mono this fun _ ↦ le_sup_right)
 
 theorem le_ciSup_set {f : β → α} {s : Set β} (H : BddAbove (f '' s)) {c : β} (hc : c ∈ s) :
     f c ≤ ⨆ i : s, f i :=
@@ -382,17 +379,13 @@ section ConditionallyCompleteLinearOrder
 variable [ConditionallyCompleteLinearOrder α] {a b : α}
 
 theorem ciSup_sup_le {f g : ι → α} : ⨆ x, f x ⊔ g x ≤ (⨆ x, f x) ⊔ (⨆ x, g x) := by
-  by_cases! Hf : ¬BddAbove (range f)
-  · have : BddAbove (range fun x ↦ f x ⊔ g x) → BddAbove (range f) :=
-      fun ⟨b, h⟩ ↦ ⟨b, fun a ⟨i, ha⟩ ↦ ha ▸ le_sup_left.trans (h ⟨i, rfl⟩)⟩
-    rw [ciSup_of_not_bddAbove Hf, ciSup_of_not_bddAbove <| mt this Hf]
+  by_cases! hf : ¬BddAbove (range f)
+  · rw [ciSup_of_not_bddAbove hf, ciSup_of_not_bddAbove <| mt bbdAbove_range_left_of_sup hf]
     exact le_sup_left
-  by_cases! Hg : ¬BddAbove (range g)
-  · have : BddAbove (range fun x ↦ f x ⊔ g x) → BddAbove (range g) :=
-      fun ⟨b, h⟩ ↦ ⟨b, fun a ⟨i, ha⟩ ↦ ha ▸ le_sup_right.trans (h ⟨i, rfl⟩)⟩
-    rw [ciSup_of_not_bddAbove Hg, ciSup_of_not_bddAbove <| mt this Hg]
+  by_cases! hg : ¬BddAbove (range g)
+  · rw [ciSup_of_not_bddAbove hg, ciSup_of_not_bddAbove <| mt bbdAbove_range_right_of_sup hg]
     exact le_sup_right
-  exact ciSup_sup_eq Hf Hg |>.le
+  exact ciSup_sup_eq hf hg |>.le
 
 theorem ciInf_le_inf {f g : ι → α} : (⨅ x, f x) ⊓ (⨅ x, g x) ≤ ⨅ x, f x ⊓ g x :=
   ciSup_sup_le (α := αᵒᵈ)

@@ -274,6 +274,32 @@ theorem bddAbove_union [IsDirectedOrder α] {s t : Set α} :
   ⟨fun h => ⟨h.mono subset_union_left, h.mono subset_union_right⟩, fun h =>
     h.1.union h.2⟩
 
+@[to_dual]
+theorem bbdAbove_range_sup {ι : Sort*} {α : Type*} [SemilatticeSup α] {f g : ι → α}
+    (hf : BddAbove <| range f) (hg : BddAbove <| range g) :
+    BddAbove <| range fun x ↦ f x ⊔ g x := by
+  have ⟨af, haf⟩ := hf
+  have ⟨ag, hag⟩ := hg
+  exact ⟨af ⊔ ag, fun a ⟨i, ha⟩ ↦ ha ▸ sup_le_sup (haf ⟨i, rfl⟩) (hag ⟨i, rfl⟩)⟩
+
+@[to_dual]
+theorem bbdAbove_range_left_of_sup {ι : Sort*} {α : Type*} [SemilatticeSup α] {f g : ι → α}
+    (h : BddAbove <| range fun x ↦ f x ⊔ g x) : BddAbove <| range f := by
+  have ⟨b, hb⟩ := h
+  exact ⟨b, fun a ⟨i, ha⟩ ↦ ha ▸ le_sup_left.trans (hb ⟨i, rfl⟩)⟩
+
+@[to_dual]
+theorem bbdAbove_range_right_of_sup {ι : Sort*} {α : Type*} [SemilatticeSup α] {f g : ι → α}
+    (h : BddAbove <| range fun x ↦ f x ⊔ g x) : BddAbove <| range g := by
+  have ⟨b, hb⟩ := h
+  exact ⟨b, fun a ⟨i, ha⟩ ↦ ha ▸ le_sup_right.trans (hb ⟨i, rfl⟩)⟩
+
+@[to_dual]
+theorem bbdAbove_range_sup_iff {ι : Sort*} {α : Type*} [SemilatticeSup α] {f g : ι → α} :
+    BddAbove (range fun x ↦ f x ⊔ g x) ↔ BddAbove (range f) ∧ BddAbove (range g) where
+  mp h := ⟨bbdAbove_range_left_of_sup h, bbdAbove_range_right_of_sup h⟩
+  mpr := fun ⟨hf, hg⟩ ↦ bbdAbove_range_sup hf hg
+
 /-- If `a` is the least upper bound of `s` and `b` is the least upper bound of `t`,
 then `a ⊔ b` is the least upper bound of `s ∪ t`. -/
 @[to_dual /-- If `a` is the greatest lower bound of `s` and `b` is the greatest lower bound of `t`,
