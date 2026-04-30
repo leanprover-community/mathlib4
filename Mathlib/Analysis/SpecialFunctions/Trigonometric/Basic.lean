@@ -1260,30 +1260,45 @@ theorem norm_exp_mul_exp_add_exp_neg_le_of_abs_im_le {a b : ℝ} (ha : a ≤ 0) 
   · refine Real.cos_nonneg_of_mem_Icc ⟨?_, hb⟩
     exact (neg_nonpos.2 <| Real.pi_div_two_pos.le).trans ((_root_.abs_nonneg _).trans hz)
 
-@[simp]
-public theorem sinh_add_pi_I (z : ℂ) : sinh (z + π * I) = -sinh z := by
-    simp [Complex.sinh_add, sinh_mul_I, cosh_mul_I]
+theorem sinh_antiperiodic : Function.Antiperiodic sinh (π * I) := by
+  simp [Complex.sinh_add, sinh_mul_I, cosh_mul_I]
 
 @[simp]
-public theorem sinh_sub_pi_I (z : ℂ) : sinh (z - π * I) = -sinh z := by
-    simp [Complex.sinh_sub, sinh_mul_I, cosh_mul_I]
+public theorem sinh_add_pi_I (z : ℂ) : sinh (z + π * I) = -sinh z :=
+  sinh_antiperiodic z
+
+theorem sinh_periodic : Function.Periodic sinh (2 * π * I) := by
+  convert sinh_antiperiodic.periodic_two_mul using 1
+  ring
 
 @[simp]
-public theorem cosh_add_pi_I (z : ℂ) : cosh (z + π * I) = -cosh z := by
-    simp [Complex.cosh_add, cosh_mul_I, sinh_mul_I]
+public theorem sinh_sub_pi_I (z : ℂ) : sinh (z - π * I) = -sinh z :=
+  sinh_antiperiodic.sub_eq z
+
+theorem cosh_antiperiodic : Function.Antiperiodic cosh (π * I) := by
+  simp [Complex.cosh_add, cosh_mul_I, sinh_mul_I]
 
 @[simp]
-public theorem cosh_sub_pi_I (z : ℂ) : cosh (z - π * I) = -cosh z := by
-    simp [Complex.cosh_sub, cosh_mul_I, sinh_mul_I]
+public theorem cosh_add_pi_I (z : ℂ) : cosh (z + π * I) = -cosh z :=
+  cosh_antiperiodic z
+
+theorem cosh_periodic : Function.Periodic cosh (2 * π * I) := by
+  convert cosh_antiperiodic.periodic_two_mul using 1
+  ring
 
 @[simp]
-public theorem tanh_add_pi_I (z : ℂ) : tanh (z + π * I) = tanh z := by
-  rw [Complex.tanh_eq_sinh_div_cosh, Complex.tanh_eq_sinh_div_cosh,
-    sinh_add_pi_I, cosh_add_pi_I]; field_simp
+public theorem cosh_sub_pi_I (z : ℂ) : cosh (z - π * I) = -cosh z :=
+  cosh_antiperiodic.sub_eq z
+
+theorem tanh_periodic : Function.Periodic tanh (π * I) := by
+  simp [tanh_eq_sinh_div_cosh]
 
 @[simp]
-public theorem tanh_sub_pi_I (z : ℂ) : tanh (z - π * I) = tanh z := by
-  rw [Complex.tanh_eq_sinh_div_cosh, Complex.tanh_eq_sinh_div_cosh,
-    sinh_sub_pi_I, cosh_sub_pi_I]; field_simp
+public theorem tanh_add_pi_I (z : ℂ) : tanh (z + π * I) = tanh z :=
+  tanh_periodic z
+
+@[simp]
+public theorem tanh_sub_pi_I (z : ℂ) : tanh (z - π * I) = tanh z :=
+  tanh_periodic.sub_eq z
 
 end Complex
