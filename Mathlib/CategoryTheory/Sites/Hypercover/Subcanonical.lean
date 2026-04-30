@@ -89,6 +89,62 @@ instance : (isomorphisms C).IsLocalAtTarget J := by
   · exact 𝒰.hom_ext fun i ↦ by simp [pullback.condition]
 
 set_option backward.isDefEq.respectTransparency false in
+/-- Given an open cover `{ Uᵢ }` of `X` in a subcanonical topology, and a diagram `F : J ⥤ Over X`.
+Then any cone over `F` is limiting if it is limiting when restricted onto `Uᵢ`. -/
+noncomputable
+def isLimitOverOfCover {D : Type*} [Category* D] {X : C} {F : D ⥤ Over X} (c : Cone F)
+    (𝒰 : J.ZeroHypercover X) (H : ∀ i, IsLimit ((Over.pullback (𝒰.f i)).mapCone c)) :
+    IsLimit c := by
+  refine .ofExistsUnique fun s ↦ ?_
+  let f₀ (i : 𝒰.I₀) : Over.mk (pullback.snd s.1.hom (𝒰.f i)) ⟶ (Over.pullback (𝒰.f i)).obj c.pt :=
+    (H i).lift ⟨_, fun i ↦ (Over.pullback _).map (s.π.app i), fun i j e ↦ by
+      ext; dsimp; ext <;> simp [← Comma.comp_left]⟩
+  have hf₁ (i : 𝒰.I₀) (j) : (f₀ i).left ≫ pullback.fst _ _ ≫ (c.π.app j).left =
+        pullback.fst _ _ ≫ (s.π.app j).left := by
+    have : f₀ i ≫ _ = _ := (H i).fac _ j
+    simpa using congr(($this).left ≫ pullback.fst _ _)
+  have hf₂ (i : 𝒰.I₀) : (f₀ i).left ≫ pullback.snd _ _ = pullback.snd _ _ := Over.w (f₀ i)
+  have Hext (Y : C) (i : 𝒰.I₀) (f g : Y ⟶ pullback c.1.hom (𝒰.f i))
+      (H₁ : f ≫ pullback.snd _ _ = g ≫ pullback.snd _ _)
+      (H₂ : ∀ j, f ≫ pullback.fst _ _ ≫ (c.π.app j).left =
+        g ≫ pullback.fst _ _ ≫ (c.π.app j).left) : f = g :=
+    congr($((H i).hom_ext (W := Over.mk (f ≫ pullback.snd _ _)) (f := Over.homMk f rfl)
+      (f' := Over.homMk g H₁.symm) fun j ↦ by ext; dsimp; ext <;> simp [*]).left)
+  let f : s.pt.left ⟶ c.pt.1 := (𝒰.pullback₁ s.pt.hom).glueMorphisms
+      (fun i ↦ (f₀ i).left ≫ pullback.fst _ _) <| by
+    intro i j
+    dsimp at i j ⊢
+    have H : (pullback.snd (pullback.fst s.pt.hom (𝒰.f i)) (pullback.fst s.pt.hom (𝒰.f j)) ≫
+        (f₀ j).left ≫ pullback.fst _ _) ≫ c.pt.hom =
+        (pullback.fst _ _ ≫ pullback.snd _ _) ≫ 𝒰.f i := by
+      simp only [Category.assoc]
+      rw [pullback.condition, reassoc_of% hf₂ j, ← pullback.condition, ← pullback.condition,
+        ← pullback.condition_assoc]
+    have : pullback.fst _ _ ≫ (f₀ i).left = pullback.lift _ _ H := by
+      apply Hext <;> simp [hf₁, hf₂, pullback.condition_assoc]
+    rw [reassoc_of% this, pullback.lift_fst]
+  refine ⟨Over.homMk f ?_, ?_, ?_⟩
+  · refine (𝒰.pullback₁ s.pt.hom).hom_ext fun i ↦ ?_
+    rw [f_glueMorphisms_assoc]
+    dsimp
+    simp only [Category.assoc, pullback.condition]
+    rw [reassoc_of% hf₂]
+  · intro j
+    ext
+    dsimp
+    refine (𝒰.pullback₁ s.pt.hom).hom_ext fun i ↦ ?_
+    rw [f_glueMorphisms_assoc]
+    simp [hf₁]
+  · intro f' hf'
+    ext
+    dsimp
+    refine (𝒰.pullback₁ s.pt.hom).hom_ext fun i ↦ ?_
+    rw [f_glueMorphisms]
+    have : (f₀ i).left = pullback.lift (pullback.fst _ _ ≫ f'.left) (pullback.snd _ _)
+        (by simp [pullback.condition]) := by apply Hext <;> simp [hf₁, hf₂, ← hf']
+    simp [this]
+
+set_option backward.isDefEq.respectTransparency false in
 /--
 To show that
 ```

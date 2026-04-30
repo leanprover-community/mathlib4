@@ -6,21 +6,19 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Affine
-public import Mathlib.AlgebraicGeometry.Sites.SmallAffineZariski
-public import Mathlib.CategoryTheory.Adjunction.Evaluation
-public import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
+public import Mathlib.AlgebraicGeometry.Sites.BigZariski
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Over
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.EquifiberedLimits
 public import Mathlib.CategoryTheory.MorphismProperty.OverAdjunction
-public import Mathlib.Tactic.CategoryTheory.CheckCompositions
+public import Mathlib.CategoryTheory.Sites.Hypercover.Subcanonical
 
 /-!
 # Schemes affine over a base
 
 We show that the category of affine `X`-schemes is contravariantly equivalent to
 `X.CoequifiberedQCohAlgCat`, a model of the category of quasi-coherent `𝒪ₓ`-algebras.
-We use this to conclude that the category of affine `X`-schemes is cocomplete, and that
-the forgetful functor to `X`-schemes preserves (and reflects) colimits.
+We use this to conclude that the category of affine `X`-schemes is complete, and that
+the forgetful functor to `X`-schemes preserves (and reflects) limits.
 
 ## Main definitions
 - `AlgebraicGeometry.Scheme.CoequifiberedQCohAlgCat`:
@@ -28,8 +26,10 @@ the forgetful functor to `X`-schemes preserves (and reflects) colimits.
   with a structure morphism `α : 𝒪ₓ ⟶ F` satisfying `Γ(F, D(f)) = Γ(F, U)[1/α(f)]`
   for each `f : Γ(𝒪ₓ, U)`.
   This is essentially the category of quasi-coherent `𝒪ₓ`-algebras.
+- `AlgebraicGeometry.Scheme.AffineCat`:
+  The category of schemes affine over a fixed base. This is an abbrev of `MorphismProperty.Over`.
 - `AlgebraicGeometry.Scheme.coequifiberedQCohAlgCatEquivOver`:
-  The contravariant equivalence between `X.CoequifiberedQCohAlgCat` and affine `X`-schemes.
+  The contravariant equivalence between `X.CoequifiberedQCohAlgCat` and `X.AffineCat`.
 -/
 
 @[expose] public section
@@ -87,6 +87,17 @@ noncomputable instance : CreatesColimits X.CoequifiberedQCohAlgCatForget :=
 
 end CoequifiberedQCohAlgCat
 
+section AffineCat
+
+/-- The category of schemes relatively affine over a fixed base. -/
+abbrev AffineCat (X : Scheme) := MorphismProperty.Over @IsAffineHom ⊤ X
+
+/-- Constructor for `S.AffineCat`. -/
+abbrev AffineCat.mk {X S : Scheme} (f : X ⟶ S) [IsAffineHom f] : S.AffineCat :=
+  MorphismProperty.Over.mk _ f ‹_›
+
+end AffineCat
+
 section Equivalence
 
 instance {f : MorphismProperty.Over @IsAffineHom ⊤ X} : IsAffineHom f.hom := f.prop
@@ -95,10 +106,10 @@ set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation). The "relative Spec" functor from quasi-coherent `𝒪ₓ`-algebras to
 affine `X`-schemes. Use `coequifiberedQCohAlgCatEquivOver` directly. -/
 noncomputable def coequifiberedQCohAlgCatToOver (X : Scheme.{u}) :
-    X.CoequifiberedQCohAlgCatᵒᵖ ⥤ MorphismProperty.Over @IsAffineHom ⊤ X where
-  obj F := .mk _ F.unop.gluingData.toBase <| by
+    X.CoequifiberedQCohAlgCatᵒᵖ ⥤ X.AffineCat where
+  obj F := MorphismProperty.Over.mk _ F.unop.gluingData.toBase <| by
     refine ⟨fun U hU ↦ ?_⟩
-    rw [relativeGluingData_toBase_preimage _ _ F.unop.property _ hU]
+    rw [toBase_relativeGluingData_preimage _ _ F.unop.property _ hU]
     exact isAffineOpen_opensRange _
   map {F G} α := MorphismProperty.Over.homMk
     (colimMap (Functor.whiskerRight (α.unop.hom.right.rightOp) _)) <| by
@@ -110,7 +121,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation). The sections functor from affine `X`-schemes to quasi-coherent `𝒪ₓ`-algebras.
 Use `coequifiberedQCohAlgCatEquivOver` directly. -/
 noncomputable def coequifiberedQCohAlgCatOfOver (X : Scheme.{u}) :
-    (MorphismProperty.Over @IsAffineHom ⊤ X)ᵒᵖ ⥤ X.CoequifiberedQCohAlgCat where
+    X.AffineCatᵒᵖ ⥤ X.CoequifiberedQCohAlgCat where
   obj f := .mk (.mk (Y := ((preimage f.unop.hom).op ⋙ (toOpensFunctor _).op) ⋙ f.unop.left.presheaf)
       (Functor.whiskerLeft _ f.unop.hom.c)) <| coequifibered_iff_forall_isLocalizationAway.mpr
     fun U r ↦
@@ -134,15 +145,16 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence between quasi-coherent `𝒪ₓ`-algebras and affine `X`-schemes.
 The forwards direction is the relative Spec functor, taking `F` to `colim (F ⋙ Spec)`.
 The inverse direction takes `f : Y ⟶ X` to `f_* 𝒪_Y`. -/
+@[simps! functor_obj_left functor_obj_hom functor_map_hom_left counitIso_hom_app_hom_left]
 noncomputable def coequifiberedQCohAlgCatEquivOver (X : Scheme.{u}) :
-    X.CoequifiberedQCohAlgCatᵒᵖ ≌ MorphismProperty.Over @IsAffineHom ⊤ X where
+    X.CoequifiberedQCohAlgCatᵒᵖ ≌ X.AffineCat where
   functor := X.coequifiberedQCohAlgCatToOver
   inverse := X.coequifiberedQCohAlgCatOfOver.rightOp
   unitIso := by
     refine NatIso.ofComponents (fun F ↦ .op (ObjectProperty.isoMk _ (Under.isoMk
       (NatIso.ofComponents (fun U ↦ F.unop.gluingData.glued.presheaf.mapIso
         (eqToIso ((F.unop.gluingData.cover.f U.unop).image_top_eq_opensRange
-        |>.trans (relativeGluingData_toBase_preimage _ _ F.unop.2 _ U.unop.2).symm)).op ≪≫
+        |>.trans (toBase_relativeGluingData_preimage _ _ F.unop.2 _ U.unop.2).symm)).op ≪≫
         ((relativeGluingData F.unop.2).cover.f U.unop).appIso _ ≪≫ Scheme.ΓSpecIso _) ?_) ?_))) ?_
     · intros U V i
       dsimp [coequifiberedQCohAlgCatToOver, coequifiberedQCohAlgCatOfOver, toOpens]
@@ -186,7 +198,7 @@ noncomputable def coequifiberedQCohAlgCatEquivOver (X : Scheme.{u}) :
           rw [← Hom.coe_opensRange, ← Hom.coe_opensRange]
           congr 1
           rw [Hom.opensRange_comp_of_isIso, Hom.opensRange_pullbackFst, Opens.opensRange_ι]
-          exact congr($hc₁ ⁻¹ᵁ U.1).trans (relativeGluingData_toBase_preimage _ _ _ U.1 U.2)
+          exact congr($hc₁ ⁻¹ᵁ U.1).trans (toBase_relativeGluingData_preimage _ _ _ U.1 U.2)
         rw [← cancel_mono (f.hom ⁻¹ᵁ U.1).ι]
         refine (pullback.condition ..).symm.trans ((Iso.inv_comp_eq _).mp ?_)
         refine (IsOpenImmersion.isoOfRangeEq_inv_fac_assoc ..).trans ?_
@@ -210,9 +222,6 @@ noncomputable def coequifiberedQCohAlgCatEquivOver (X : Scheme.{u}) :
     rw [IsAffineOpen.SpecMap_appLE_fromSpec (hV := isAffineOpen_top (Spec _)),
       IsAffineOpen.fromSpec_top, isoSpec_Spec_inv]
     exact toSpecΓ_SpecMap_ΓSpecIso_inv_assoc ..
-
-attribute [simps! functor_obj_left functor_obj_hom functor_map_hom_left counitIso_hom_app_hom_left]
-  coequifiberedQCohAlgCatEquivOver
 
 @[simp]
 lemma coequifiberedQCohAlgCatEquivOver_inverse_obj_unop_obj_right_obj
@@ -313,7 +322,7 @@ set_option backward.isDefEq.respectTransparency false in
 instance : PreservesLimits (MorphismProperty.Over.forget @IsAffineHom ⊤ X) := by
   clear Y f
   wlog hX : IsAffine X
-  · exact ⟨fun {J} _ ↦ ⟨fun {F} ↦ ⟨fun {c} hc ↦ ⟨isLimitOverOfOpenCover _ X.affineCover fun i ↦
+  · exact ⟨fun {J} _ ↦ ⟨fun {F} ↦ ⟨fun {c} hc ↦ ⟨X.affineCover.isLimitOverOfCover _ fun i ↦
       ((this inferInstance).1.1.1 (isLimitOfPreserves
       (MorphismProperty.Over.pullback _ ⊤ (X.affineCover.f i)) hc)).some⟩⟩⟩⟩
   refine ⟨fun {J} _ ↦ ⟨fun {F} ↦ ⟨fun {c} hc ↦ ⟨.ofExistsUnique fun s ↦ ?_⟩⟩⟩⟩
