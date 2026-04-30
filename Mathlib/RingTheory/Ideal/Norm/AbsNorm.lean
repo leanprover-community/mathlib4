@@ -385,7 +385,7 @@ lemma exists_isMaximal_dvd_of_dvd_absNorm
     cases hI with
     | inr h =>
       obtain ⟨Q, h₁, h₂, h₃⟩ := IH h
-      refine ⟨Q, h₁, h₂, dvd_mul_of_dvd_right h₃ _⟩
+      exact ⟨Q, h₁, h₂, dvd_mul_of_dvd_right h₃ _⟩
     | inl hI =>
       have := (Ideal.isPrime_of_prime hP).isMaximal hP.ne_zero
       refine ⟨P, this, (hpMax.eq_of_le (by simpa using this.ne_top) ?_).symm, dvd_mul_right _ _⟩
