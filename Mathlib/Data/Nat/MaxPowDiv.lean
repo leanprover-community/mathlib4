@@ -226,6 +226,31 @@ theorem padicValNat_self_div_lt {p : ℕ} (hp : 1 < p) (n : ℕ) (hn : n ≠ 0) 
     _ = padicValNat p n := by
       simp only [Nat.mul_div_cancel' h]
 
+theorem padicValNat_eq_of_dvd_of_not_dvd {p n : ℕ}
+    {k : ℕ} (hk : p ^ k ∣ n) (hsucc : ¬p ^ (k + 1) ∣ n) :
+    padicValNat p n = k := by
+  refine Nat.eq_iff_le_and_ge.mpr ⟨?_, ?_⟩
+  · sorry
+  · sorry
+
+theorem padicValNat_add_of_gt {p n m: ℕ} (hm : m ≠ 0) (h : padicValNat p m < padicValNat p n) :
+    padicValNat p (n + m) = padicValNat p m := by
+  have hp : p ≠ 1 := fun this => by simp_all
+  have hn : n ≠ 0 := fun this => by simp_all
+  apply padicValNat_eq_of_dvd_of_not_dvd
+  · apply Nat.dvd_add
+    · exact (pow_dvd_iff_le_padicValNat hp hn).mpr (Nat.le_of_lt h)
+    · simp [pow_padicValNat_dvd]
+  · rw [Nat.dvd_add_right]
+    · apply (pow_dvd_iff_le_padicValNat hp hm).not.mpr ?_
+      simp
+    apply (pow_dvd_iff_le_padicValNat hp hn).mpr
+    exact add_one_le_of_lt h
+
+proof_wanted padicValNat_add_eq_min {p a b : ℕ} (ha : a ≠ 0)
+    (hb : b ≠ 0) (hpab : padicValNat p a ≠ padicValNat p b) :
+    padicValNat p (a + b) = min (padicValNat p a) (padicValNat p b)
+
 @[simp]
 theorem divMaxPow_base_mul {p : ℕ} (hp : p ≠ 0) (n : ℕ) :
     (p * n).divMaxPow p = n.divMaxPow p := by
