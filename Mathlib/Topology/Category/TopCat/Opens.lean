@@ -320,8 +320,8 @@ def IsOpenMap.adjunction {X Y : TopCat.{u}} {f : X ⟶ Y} (hf : IsOpenMap f) :
   unit := { app := fun _ => homOfLE fun x hxU => ⟨x, hxU, rfl⟩ }
   counit := { app := fun _ => homOfLE fun _ ⟨_, hfxV, hxy⟩ => hxy ▸ hfxV }
 
-instance IsOpenMap.functorFullOfMono {X Y : TopCat.{u}} {f : X ⟶ Y} (hf : IsOpenMap f) [H : Mono f] :
-    hf.functor.Full where
+instance IsOpenMap.functorFullOfMono {X Y : TopCat.{u}} {f : X ⟶ Y} (hf : IsOpenMap f)
+    [H : Mono f] : hf.functor.Full where
   map_surjective i :=
     ⟨homOfLE fun x hx => by
       obtain ⟨y, hy, eq⟩ := i.le ⟨x, hx, rfl⟩
@@ -405,7 +405,8 @@ theorem isOpenEmbedding_obj_top {X : TopCat.{u}} (U : Opens X) :
   exact Set.image_univ.trans Subtype.range_coe
 
 @[simp]
-theorem inclusion'_map_eq_top {X : TopCat.{u}} (U : Opens X) : (Opens.map U.inclusion').obj U = ⊤ := by
+theorem inclusion'_map_eq_top {X : TopCat.{u}} (U : Opens X) :
+    (Opens.map U.inclusion').obj U = ⊤ := by
   ext1
   exact Subtype.coe_preimage_self _
 

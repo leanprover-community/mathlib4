@@ -175,14 +175,14 @@ open TopCat.Presheaf
 
 /-- The restriction of a sheafed space along an open embedding into the space.
 -/
-def restrict {U : TopCat.{u'}} (X : SheafedSpace.{u'} C) {f : U ⟶ (X : TopCat)} (h : IsOpenEmbedding f) :
+def restrict {U : TopCat} (X : SheafedSpace C) {f : U ⟶ (X : TopCat)} (h : IsOpenEmbedding f) :
     SheafedSpace C :=
   { X.toPresheafedSpace.restrict h with IsSheaf := isSheaf_of_isOpenEmbedding h X.IsSheaf }
 
 /-- The map from the restriction of a presheafed space.
 -/
 @[simps!]
-def ofRestrict {U : TopCat.{u'}} (X : SheafedSpace.{u'} C) {f : U ⟶ (X : TopCat)}
+def ofRestrict {U : TopCat} (X : SheafedSpace C) {f : U ⟶ (X : TopCat)}
     (h : IsOpenEmbedding f) : X.restrict h ⟶ X :=
   InducedCategory.homMk (X.toPresheafedSpace.ofRestrict h)
 

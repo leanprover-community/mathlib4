@@ -40,9 +40,7 @@ We give conditions sufficient to show that this map is injective and/or surjecti
 
 noncomputable section
 
-universe u
-
-variable {X : TopCat.{u}}
+variable {X : TopCat}
 variable (T : X → Type*)
 
 open TopologicalSpace
@@ -167,7 +165,7 @@ theorem sheafifyOf {T : X → Type*} {P : PrelocalPredicate T} {U : Opens X}
 /-- For a unary operation (e.g. `x ↦ -x`) defined at each stalk, if a prelocal predicate is closed
 under the operation on each open set (possibly by refinement), then the sheafified predicate is
 also closed under the operation. See `sheafify_inductionOn'` for the version without refinement. -/
-theorem sheafify_inductionOn {X : TopCat.{u}} {T : X → Type*} (P : PrelocalPredicate T)
+theorem sheafify_inductionOn {X : TopCat} {T : X → Type*} (P : PrelocalPredicate T)
     (op : {x : X} → T x → T x)
     (hop : ∀ {U : Opens X} {a : (x : U) → T x}, P.pred a →
       ∀ (p : U), ∃ (W : Opens X) (i : W ⟶ U), p.1 ∈ W ∧ P.pred fun x : W ↦ op (a (i x)))
@@ -181,7 +179,7 @@ theorem sheafify_inductionOn {X : TopCat.{u}} {T : X → Type*} (P : PrelocalPre
 /-- For a unary operation (e.g. `x ↦ -x`) defined at each stalk, if a prelocal predicate is closed
 under the operation on each open set, then the sheafified predicate is also closed under the
 operation. See `sheafify_inductionOn` for the version with refinement. -/
-theorem sheafify_inductionOn' {X : TopCat.{u}} {T : X → Type*} (P : PrelocalPredicate T)
+theorem sheafify_inductionOn' {X : TopCat} {T : X → Type*} (P : PrelocalPredicate T)
     (op : {x : X} → T x → T x)
     (hop : ∀ {U : Opens X} {a : (x : U) → T x}, P.pred a → P.pred fun x : U ↦ op (a x))
     {U : Opens X} {a : (x : U) → T x} (ha : P.sheafify.pred a) :
@@ -192,7 +190,7 @@ theorem sheafify_inductionOn' {X : TopCat.{u}} {T : X → Type*} (P : PrelocalPr
 closed under the operation on each open set (possibly by refinement), then the sheafified predicate
 is also closed under the operation. See `sheafify_inductionOn₂'` for the version without
 refinement. -/
-theorem sheafify_inductionOn₂ {X : TopCat.{u}} {T₁ T₂ T₃ : X → Type*}
+theorem sheafify_inductionOn₂ {X : TopCat} {T₁ T₂ T₃ : X → Type*}
     (P₁ : PrelocalPredicate T₁) (P₂ : PrelocalPredicate T₂) (P₃ : PrelocalPredicate T₃)
     (op : {x : X} → T₁ x → T₂ x → T₃ x)
     (hop : ∀ {U V : Opens X} {a : (x : U) → T₁ x} {b : (x : V) → T₂ x}, P₁.pred a → P₂.pred b →
@@ -210,7 +208,7 @@ theorem sheafify_inductionOn₂ {X : TopCat.{u}} {T₁ T₂ T₃ : X → Type*}
 /-- For a binary operation (e.g. `x ↦ y ↦ x + y`) defined at each stalk, if a prelocal predicate is
 closed under the operation on each open set, then the sheafified predicate is also closed under the
 operation. See `sheafify_inductionOn₂` for the version with refinement. -/
-theorem sheafify_inductionOn₂' {X : TopCat.{u}} {T₁ T₂ T₃ : X → Type*}
+theorem sheafify_inductionOn₂' {X : TopCat} {T₁ T₂ T₃ : X → Type*}
     (P₁ : PrelocalPredicate T₁) (P₂ : PrelocalPredicate T₂) (P₃ : PrelocalPredicate T₃)
     (op : {x : X} → T₁ x → T₂ x → T₃ x)
     (hop : ∀ {U V : Opens X} {a : (x : U) → T₁ x} {b : (x : V) → T₂ x}, P₁.pred a → P₂.pred b →
