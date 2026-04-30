@@ -227,10 +227,6 @@ theorem degree_pos_iff_nonempty : 0 < G.degree v ↔ (G.neighborSet v).Nonempty 
   G.degree_pos_iff_exists_adj v
 
 variable {G v} in
-theorem degree_eq_zero_iff_neighborSet_eq_empty : G.degree v = 0 ↔ G.neighborSet v = ∅ := by
-  rw [← ncard_neighborSet, Set.ncard_eq_zero]
-
-variable {G v} in
 theorem Adj.degree_pos_left {w : V} (h : G.Adj v w) : 0 < G.degree v :=
   G.degree_pos_iff_nonempty.mpr ⟨_, h⟩
 
@@ -371,13 +367,8 @@ theorem complete_graph_degree [DecidableEq V] (v : V) :
   simp_rw [degree, neighborFinset_eq_filter, top_adj, filter_ne]
   rw [card_erase_of_mem (mem_univ v), card_univ]
 
-@[simp]
 theorem bot_degree (v : V) : (⊥ : SimpleGraph V).degree v = 0 := by
-  simp [degree_eq_zero_iff_neighborSet_eq_empty]
-
-omit [Fintype V] in
-theorem eq_bot_iff_degree [G.LocallyFinite] : G = ⊥ ↔ ∀ v, G.degree v = 0 := by
-  simp [eq_bot_iff_neighborSet, degree_eq_zero_iff_neighborSet_eq_empty]
+  simp
 
 theorem IsRegularOfDegree.top [DecidableEq V] :
     (⊤ : SimpleGraph V).IsRegularOfDegree (Fintype.card V - 1) := by
@@ -480,9 +471,9 @@ variable {G} in
 @[simp]
 theorem maxDegree_eq_zero_iff [DecidableRel G.Adj] : G.maxDegree = 0 ↔ G = ⊥ := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rw [eq_bot_iff_degree]
+  · rw [eq_bot_iff_isIsolated]
     intro v
-    grind [G.degree_le_maxDegree v]
+    grind [degree_eq_zero, G.degree_le_maxDegree v]
   · convert maxDegree_bot_eq_zero
     assumption
 
