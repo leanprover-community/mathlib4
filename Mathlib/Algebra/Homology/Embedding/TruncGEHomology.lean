@@ -221,6 +221,11 @@ lemma acyclic_truncGE_iff_isSupportedOutside :
 
 variable {K L}
 
+lemma Acyclic.truncGE (hK : K.Acyclic) (e : c.Embedding c') [e.IsTruncGE] :
+    (K.truncGE e).Acyclic := by
+  rw [acyclic_truncGE_iff_isSupportedOutside]
+  exact ⟨fun _ ↦ hK _⟩
+
 lemma quasiIso_truncGEMap_iff :
     QuasiIso (truncGEMap φ e) ↔ ∀ (i : ι) (i' : ι') (_ : e.f i = i'), QuasiIsoAt φ i' := by
   have : ∀ (i : ι) (i' : ι') (_ : e.f i = i'),

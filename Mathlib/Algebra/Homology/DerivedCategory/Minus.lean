@@ -66,32 +66,20 @@ instance : (Qh : _ ⥤ Minus C).IsTriangulated := by
   dsimp only [Qh]
   infer_instance
 
-instance : (HomotopyCategory.subcategoryAcyclic C).IsLeftLocalizing (HomotopyCategory.Minus.ι C)
-    where
-  fac {L K} φ hK := by
-    obtain ⟨K : CochainComplex C ℤ⟩ := K
-    obtain ⟨⟨L : CochainComplex C ℤ⟩, n, (hn : L.IsStrictlyLE n)⟩ := L
-    obtain ⟨φ, rfl⟩ : ∃ (ψ : L ⟶ K), φ = (HomotopyCategory.quotient _ _).map ψ := by
-      obtain ⟨ψ⟩ := φ
-      exact ⟨ψ, rfl⟩
-    let M : HomotopyCategory.Minus C :=
-      ⟨(HomotopyCategory.quotient C (ComplexShape.up ℤ)).obj (K.truncLE n), n, by
-        change (K.truncLE n).IsStrictlyLE n
-        infer_instance⟩
-    have hM : (HomotopyCategory.subcategoryAcyclic C) ((HomotopyCategory.Minus.ι C).obj M) := by
-      dsimp [M, HomotopyCategory.Minus.ι]
-      rw [HomotopyCategory.quotient_obj_mem_subcategoryAcyclic_iff_acyclic,
-        K.acyclic_truncLE_iff n (n + 1) (by omega)]
-      erw [HomotopyCategory.quotient_obj_mem_subcategoryAcyclic_iff_acyclic] at hK
-      exact ⟨fun i _ => by simpa only [HomologicalComplex.exactAt_iff_isZero_homology] using hK i⟩
-    have : IsIso (L.ιTruncLE n) := by
-      rw [CochainComplex.isIso_ιTruncLE_iff]
-      infer_instance
-    refine ⟨M, hM, (HomotopyCategory.quotient C (ComplexShape.up ℤ)).map (K.ιTruncLE n),
-      ObjectProperty.homMk ((HomotopyCategory.quotient C (ComplexShape.up ℤ)).map
-        (inv (L.ιTruncLE n) ≫ CochainComplex.truncLEMap φ n)), ?_⟩
-    erw [← (HomotopyCategory.quotient C (ComplexShape.up ℤ)).map_comp]
-    simp
+instance : (HomotopyCategory.minus C).IsTriangulatedLeftLocalizing
+    (HomotopyCategory.subcategoryAcyclic C) where
+  fac {K L} φ hK hL := by
+    obtain ⟨K : CochainComplex _ _, rfl⟩ := HomotopyCategory.quotient_obj_surjective K
+    obtain ⟨L : CochainComplex _ _, rfl⟩ := HomotopyCategory.quotient_obj_surjective L
+    obtain ⟨n, hn : K.IsStrictlyLE n⟩ := hK
+    obtain ⟨φ, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective φ
+    rw [HomotopyCategory.quotient_obj_mem_subcategoryAcyclic_iff_acyclic] at hL
+    refine ⟨(HomotopyCategory.quotient _ _).obj (L.truncLE n),
+      (HomotopyCategory.quotient _ _).map (inv (K.ιTruncLE n) ≫ CochainComplex.truncLEMap φ n),
+      (HomotopyCategory.quotient _ _).map (L.ιTruncLE n),
+      ⟨n, (inferInstance : (L.truncLE n).IsStrictlyLE n)⟩, ?_, by simp [← Functor.map_comp]⟩
+    rw [HomotopyCategory.quotient_obj_mem_subcategoryAcyclic_iff_acyclic]
+    exact hL.truncLE _
 
 variable (C)
 
@@ -114,8 +102,8 @@ instance : (Qh (C := C)).EssSurj := by
     ⟨(asIso (Q.map ((Q.objPreimage X).πTruncGE n))).symm ≪≫ Q.objObjPreimageIso X⟩⟩
 
 instance : Qh.IsLocalization (HomotopyCategory.Minus.subcategoryAcyclic C).trW :=
-  (HomotopyCategory.subcategoryAcyclic C).isLocalization_of_isLeftLocalizing
-    (HomotopyCategory.Minus.ι C) (QhCompιIsoιCompQh C)
+  ObjectProperty.isLocalization_of_isTriangulated_of_isLocalizedFullyFaithful
+    (QhCompιIsoιCompQh C).symm
 
 instance : Qh.IsLocalization (HomotopyCategory.Minus.quasiIso C) := by
   rw [HomotopyCategory.Minus.quasiIso_eq_subcategoryAcyclic_trW]

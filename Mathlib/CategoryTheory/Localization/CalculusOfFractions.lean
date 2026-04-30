@@ -76,6 +76,10 @@ variable {W}
 def ofInv (s : Y ⟶ X) (hs : W s) :
     W.LeftFraction X Y := mk (𝟙 X) s hs
 
+instance {X Y : C} {L : C ⥤ D} [L.IsLocalization W] (z : W.LeftFraction X Y) :
+    IsIso (L.map z.s) :=
+  Localization.inverts L W _ z.hs
+
 /-- If `φ : W.LeftFraction X Y` and `L` is a functor which inverts `W`, this is the
 induced morphism `L.obj X ⟶ L.obj Y` -/
 noncomputable def map (φ : W.LeftFraction X Y) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
@@ -143,6 +147,10 @@ variable {W}
 @[simps]
 def ofInv (s : Y ⟶ X) (hs : W s) :
     W.RightFraction X Y := mk s hs (𝟙 Y)
+
+instance {X Y : C} {L : C ⥤ D} [L.IsLocalization W] (z : W.RightFraction X Y) :
+    IsIso (L.map z.s) :=
+  Localization.inverts L W _ z.hs
 
 /-- If `φ : W.RightFraction X Y` and `L` is a functor which inverts `W`, this is the
 induced morphism `L.obj X ⟶ L.obj Y` -/
@@ -659,11 +667,8 @@ end
 
 lemma homMk_eq {X Y : C} (f : LeftFraction W X Y) :
     homMk f = f.map (Q W) (Localization.inverts _ W) := by
-  have := Localization.inverts (Q W) W f.s f.hs
-  erw [← Q_map_comp_Qinv f.f f.s f.hs]
-  rw [← cancel_mono ((Q W).map f.s),
+  rw [← Q_map_comp_Qinv f.f f.s f.hs, ← cancel_mono ((Q W).map f.s),
     assoc, Qiso_inv_hom_id, comp_id, map_comp_map_s]
-
 
 lemma map_eq_iff {X Y : C} (f g : LeftFraction W X Y) :
     f.map (LeftFraction.Localization.Q W) (Localization.inverts _ _) =
@@ -695,7 +700,6 @@ lemma map_compatibility {W} {X Y : C}
         φ.map L₂ (Localization.inverts L₂ W) ≫
         (Localization.compUniqFunctor L₁ L₂ W).inv.app Y := by
   let e := Localization.compUniqFunctor L₁ L₂ W
-  have := Localization.inverts L₂ W φ.s φ.hs
   rw [← cancel_mono (e.hom.app Y), assoc, assoc, e.inv_hom_id_app, comp_id,
     ← cancel_mono (L₂.map φ.s), assoc, assoc, map_comp_map_s, ← e.hom.naturality]
   simpa [← Functor.map_comp_assoc, map_comp_map_s] using e.hom.naturality φ.f
@@ -713,8 +717,6 @@ lemma map_comp_map_eq_map {X Y Z : C} (z₁ : W.LeftFraction X Y) (z₂ : W.Left
     (L : C ⥤ D) [L.IsLocalization W] :
     z₁.map L (Localization.inverts L W) ≫ z₂.map L (Localization.inverts L W) =
       (z₁.comp₀ z₂ z₃).map L (Localization.inverts L W) := by
-  have := Localization.inverts L W _ z₂.hs
-  have := Localization.inverts L W _ z₃.hs
   have : IsIso (L.map (z₂.s ≫ z₃.s)) := by
     rw [L.map_comp]
     infer_instance

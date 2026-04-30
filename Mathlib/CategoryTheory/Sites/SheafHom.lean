@@ -9,7 +9,7 @@ public import Mathlib.CategoryTheory.Sites.Over
 public import Mathlib.CategoryTheory.Sites.CoversTop
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Jointly
 
-/-! Internal hom of sheaves
+/-! # Internal hom of sheaves
 
 In this file, given two sheaves `F` and `G` on a site `(C, J)` with values
 in a category `A`, we define a sheaf of types
@@ -47,7 +47,7 @@ to the type of morphisms between the "restrictions" of `F` and `G` to the catego
 @[simps! obj]
 def presheafHom : Cᵒᵖ ⥤ Type _ where
   obj X := (Over.forget X.unop).op ⋙ F ⟶ (Over.forget X.unop).op ⋙ G
-  map f := TypeCat.ofHom (Functor.whiskerLeft (Over.map f.unop).op)
+  map f := ↾(Functor.whiskerLeft (Over.map f.unop).op)
   map_id := by
     rintro ⟨X⟩
     ext φ ⟨Y⟩
@@ -218,7 +218,7 @@ lemma Presheaf.IsSheaf.hom (hG : Presheaf.IsSheaf J G) :
 (see `sheafHom'Iso`), but has better definitional properties. -/
 def sheafHom' (F G : Sheaf J A) : Cᵒᵖ ⥤ Type _ where
   obj X := ((J.overPullback A X.unop).obj F ⟶ (J.overPullback A X.unop).obj G)
-  map f := TypeCat.ofHom ((J.overMapPullback A f.unop).map)
+  map f := ↾((J.overMapPullback A f.unop).map)
   map_id X := by
     ext φ : 4
     exact ConcreteCategory.congr_hom ((presheafHom F.1 G.1).map_id X) φ.1

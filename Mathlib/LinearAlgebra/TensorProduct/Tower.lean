@@ -589,6 +589,30 @@ theorem tensorTensorTensorComm_eq :
 
 end tensorTensorTensorComm
 
+section
+
+universe u₁ u₂ u₃ u₄
+
+attribute [local instance] ULift.algebra' in
+/-- `ULift` commutes with tensor products. -/
+def uliftEquiv : ULift.{u₁} (M ⊗[R] N) ≃ₗ[A] ULift.{u₂} M ⊗[ULift.{u₃} R] ULift.{u₄} N :=
+  ULift.moduleEquiv ≪≫ₗ
+    AlgebraTensorModule.congr ULift.moduleEquiv.symm ULift.moduleEquiv.symm ≪≫ₗ
+    (equivOfCompatibleSMul _ _ _ _ _)
+
+variable {M N}
+
+@[simp]
+lemma down_uliftEquiv_symm_tmul (m : ULift M) (n : ULift N) :
+    ((uliftEquiv R A M N).symm (m ⊗ₜ n)).down = m.down ⊗ₜ n.down :=
+  rfl
+
+@[simp]
+lemma uliftEquiv_tmul (m : M) (n : N) : uliftEquiv R A M N ⟨m ⊗ₜ n⟩ = ⟨m⟩ ⊗ₜ ⟨n⟩ :=
+  rfl
+
+end
+
 end CommSemiring
 
 end AlgebraTensorModule

@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Joël Riou. All rights reserved.
+Copyright (c) 2026 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
@@ -9,10 +9,14 @@ public import Mathlib.CategoryTheory.Triangulated.Opposite.Subcategory
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Functor
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Triangulated
 public import Mathlib.CategoryTheory.Localization.Triangulated
-public import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Lemmas
 
 /-!
 # Localizing subcategories
+
+
+
+## References
+* [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 
 -/
 
@@ -20,241 +24,256 @@ public import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Lemmas
 
 namespace CategoryTheory
 
-open Category Limits Pretriangulated Triangulated Pretriangulated.Opposite
+open Category Limits Pretriangulated Opposite
 
 namespace ObjectProperty
 
-variable {A C D D' : Type*} [Category A] [Category C] [Category D] [Category D']
-  [HasZeroObject C]
-  [HasShift C ℤ]
-  [Preadditive C]
-  [∀ (n : ℤ), (shiftFunctor C n).Additive]
-  [Pretriangulated C]
-  (B : ObjectProperty C) (F : A ⥤ C)
+variable {C D D' : Type*} [Category* C] [Category* D] [Category* D']
 
-class IsRightLocalizing [B.IsTriangulated] : Prop where
-  fac {Y : C} {X : A} (φ : Y ⟶ F.obj X) (hY : B Y) :
-    ∃ (Y' : A) (_ : B (F.obj Y')) (a : Y ⟶ F.obj Y') (b : Y' ⟶ X),
-      a ≫ F.map b = φ
+/-- If `A` and `B` are triangulated subcategories of a (pre)triangulated
+category `C` (with `B` closed under isomorphisms), we say that `A` is
+right `B`-localizing if any morphism `X ⟶ Y` with `X` in `B` and
+`Y` in `A` factors through an object that is in `A` and `B`.
+See `isTriangulatedRightLocalizing_iff` for another characterization. -/
+class IsTriangulatedRightLocalizing (A B : ObjectProperty C) : Prop where
+  fac {X Y : C} (f : X ⟶ Y) (hX : B X) (hY : A Y) :
+    ∃ (Z : C) (a : X ⟶ Z) (b : Z ⟶ Y), A Z ∧ B Z ∧ a ≫ b = f
 
-class IsLeftLocalizing [B.IsTriangulated] : Prop where
-  fac {X : A} {Y : C} (φ : F.obj X ⟶ Y) (hY : B Y) :
-    ∃ (Y' : A) (_ : B (F.obj Y')) (a : F.obj Y' ⟶ Y) (b : X ⟶ Y'),
-      F.map b ≫ a = φ
+/-- If `A` and `B` are triangulated subcategories of a (pre)triangulated
+category `C` (with `B` closed under isomorphisms), we say that `A` is
+left `B`-localizing if any morphism `X ⟶ Y` with `X` in `A` and
+`Y` in `B` factors through an object that is in `A` and `B`.
+See `isTriangulatedLeftLocalizing_iff` for another characterization. -/
+class IsTriangulatedLeftLocalizing (A B : ObjectProperty C) : Prop where
+  fac {X Y : C} (f : X ⟶ Y) (hX : A X) (hY : B Y) :
+    ∃ (Z : C) (a : X ⟶ Z) (b : Z ⟶ Y), A Z ∧ B Z ∧ a ≫ b = f
 
-variable [B.IsTriangulated]
+instance (A B : ObjectProperty C) [A.IsTriangulatedLeftLocalizing B] :
+    A.op.IsTriangulatedRightLocalizing B.op where
+  fac f hX hY := by
+    obtain ⟨Z, a, b, h₁, h₂, fac⟩ :=
+      IsTriangulatedLeftLocalizing.fac f.unop hY hX
+    exact ⟨_, b.op, a.op, h₁, h₂, Quiver.Hom.unop_inj fac⟩
 
-lemma fac_of_isRightLocalizing [B.IsRightLocalizing F]
-    {Y : C} {X : A} (φ : Y ⟶ F.obj X) (hY : B Y) :
-    ∃ (Y' : A) (_ : B (F.obj Y')) (a : Y ⟶ F.obj Y') (b : Y' ⟶ X),
-      a ≫ F.map b = φ :=
-  IsRightLocalizing.fac φ hY
+instance (A B : ObjectProperty Cᵒᵖ) [A.IsTriangulatedLeftLocalizing B] :
+    A.unop.IsTriangulatedRightLocalizing B.unop where
+  fac f hX hY := by
+    obtain ⟨Z, a, b, h₁, h₂, fac⟩ := IsTriangulatedLeftLocalizing.fac f.op hY hX
+    exact ⟨_, b.unop, a.unop, h₁, h₂, Quiver.Hom.op_inj fac⟩
 
-lemma fac_of_isLeftLocalizing [B.IsLeftLocalizing F]
-    {X : A} {Y : C} (φ : F.obj X ⟶ Y) (hY : B Y) :
-    ∃ (Y' : A) (_ : B (F.obj Y')) (a : F.obj Y' ⟶ Y) (b : X ⟶ Y'),
-      F.map b ≫ a = φ :=
-  IsLeftLocalizing.fac φ hY
+instance (A B : ObjectProperty C) [A.IsTriangulatedRightLocalizing B] :
+    A.op.IsTriangulatedLeftLocalizing B.op where
+  fac f hX hY := by
+    obtain ⟨Z, a, b, h₁, h₂, fac⟩ := IsTriangulatedRightLocalizing.fac f.unop hY hX
+    exact ⟨_, b.op, a.op, h₁, h₂, Quiver.Hom.unop_inj fac⟩
 
-open CategoryTheory.Pretriangulated.Opposite
+instance (A B : ObjectProperty Cᵒᵖ) [A.IsTriangulatedRightLocalizing B] :
+    A.unop.IsTriangulatedLeftLocalizing B.unop where
+  fac f hX hY := by
+    obtain ⟨Z, a, b, h₁, h₂, fac⟩ := IsTriangulatedRightLocalizing.fac f.op hY hX
+    exact ⟨_, b.unop, a.unop, h₁, h₂, Quiver.Hom.op_inj fac⟩
 
-instance [B.IsLeftLocalizing F] : B.op.IsRightLocalizing F.op where
-  fac {Y X} φ hY := by
-    obtain ⟨Y', hY', a, b, fac⟩ := B.fac_of_isLeftLocalizing F φ.unop hY
-    exact ⟨Opposite.op Y', hY', a.op, b.op, Quiver.Hom.unop_inj fac⟩
+variable (A B : ObjectProperty C)
 
-lemma isLeftLocalizing_of_op [B.op.IsRightLocalizing F.op] : B.IsLeftLocalizing F where
-  fac {X Y} φ hY := by
-    obtain ⟨Y', hY', a, b, fac⟩ := B.op.fac_of_isRightLocalizing F.op φ.op hY
-    exact ⟨Y'.unop, hY', a.unop, b.unop, Quiver.Hom.op_inj fac⟩
+lemma isTriangulatedLeftLocalizing_op_iff :
+    A.op.IsTriangulatedLeftLocalizing B.op ↔ A.IsTriangulatedRightLocalizing B :=
+  ⟨fun _ ↦ inferInstanceAs (A.op.unop.IsTriangulatedRightLocalizing B.op.unop),
+    fun _ ↦ inferInstance⟩
 
-variable [HasZeroObject A]
-  [HasShift A ℤ]
-  [Preadditive A]
-  [∀ (n : ℤ), (shiftFunctor A n).Additive]
-  [Pretriangulated A]
-  [F.CommShift ℤ] [F.IsTriangulated]
+lemma isTriangulatedRightLocalizing_op_iff :
+    A.op.IsTriangulatedRightLocalizing B.op ↔ A.IsTriangulatedLeftLocalizing B :=
+  ⟨fun _ ↦ inferInstanceAs (A.op.unop.IsTriangulatedLeftLocalizing B.op.unop),
+    fun _ ↦ inferInstance⟩
 
-section
+variable [HasZeroObject C] [HasShift C ℤ] [Preadditive C]
+  [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
 
-variable [B.IsClosedUnderIsomorphisms]
-
-/-- Factorization property of right localizing subcategories. -/
-lemma fac_of_isRightLocalizing' [B.IsRightLocalizing F]
-    {X : A} {Y : C} (s : F.obj X ⟶ Y) (hs : B.trW s) :
-    ∃ (X' : A) (s' : X ⟶ X') (_ : (B.inverseImage F).trW s') (b : Y ⟶ F.obj X'),
-      s ≫ b = F.map s' := by
-  rw [ObjectProperty.trW_iff'] at hs
-  obtain ⟨W, a, b, hT, hW⟩ := hs
-  obtain ⟨W', hW', c, d, fac⟩ := B.fac_of_isRightLocalizing F a hW
-  obtain ⟨U, e, f, hT'⟩ := Pretriangulated.distinguished_cocone_triangle d
-  obtain ⟨β, hβ, _⟩ := complete_distinguished_triangle_morphism _ _ hT (F.map_distinguished _ hT')
-    c (𝟙 _) (by simpa using fac.symm)
-  dsimp at β hβ
-  refine ⟨U, e, ?_, β, by simpa using hβ⟩
-  rw [ObjectProperty.trW_iff']
-  exact ⟨_, _, _, hT', hW'⟩
-
-/-- Factorization property of left localizing subcategories. -/
-lemma fac_of_isLeftLocalizing' [B.IsLeftLocalizing F]
-    {X : A} {Y : C} (s : Y ⟶ F.obj X) (hs : B.trW s) :
-    ∃ (X' : A) (s' : X' ⟶ X) (_ : (B.inverseImage F).trW s') (b : F.obj X' ⟶ Y),
-      b ≫ s = F.map s' := by
-  obtain ⟨X', s', hs', b, fac⟩ := B.op.fac_of_isRightLocalizing' F.op s.op
-    (by simpa only [ObjectProperty.trW_op_iff] using hs)
-  refine ⟨X'.unop, s'.unop, ?_, b.unop, Quiver.Hom.op_inj fac⟩
-  rw [← trW_op_iff]
-  exact hs'
-
-variable {B F} in
-/-- Constructor for right localizing categories. -/
-lemma IsRightLocalizing.mk'
-    (h : ∀ ⦃X : A⦄ ⦃Y : C⦄ (s : F.obj X ⟶ Y) (_ : B.trW s),
-      ∃ (X' : A) (s' : X ⟶ X') (_ : (B.inverseImage F).trW s')
-        (b : Y ⟶ F.obj X'), s ≫ b = F.map s') :
-    B.IsRightLocalizing F where
-  fac {Y X} φ hY := by
-    obtain ⟨Z, s, b, hT⟩ := Pretriangulated.distinguished_cocone_triangle φ
+lemma isTriangulatedRightLocalizing_iff [A.IsTriangulated] [B.IsTriangulated]
+    [B.IsClosedUnderIsomorphisms] :
+    A.IsTriangulatedRightLocalizing B ↔
+      ∀ ⦃X Y : C⦄ (s : X ⟶ Y) (_ : A X) (_ : B.trW s),
+        ∃ (Z : C) (s' : X ⟶ Z) (b : Y ⟶ Z), A Z ∧ (A ⊓ B).trW s' ∧ s ≫ b = s' := by
+  refine ⟨fun _ X Y s hX hs ↦ ?_, fun hA ↦ ⟨fun {X Y} f hX hY ↦ ?_⟩⟩
+  · rw [ObjectProperty.trW_iff'] at hs
+    obtain ⟨W, a, b, hT, hW⟩ := hs
+    obtain ⟨W', c, d, h₁, h₂, fac⟩ := IsTriangulatedRightLocalizing.fac a hW hX
+    obtain ⟨U, hU, e, f, hT'⟩ := A.distinguished_cocone_triangle d h₁ hX
+    obtain ⟨g, hg, _⟩ := complete_distinguished_triangle_morphism _ _ hT hT'
+      c (𝟙 _) (by cat_disch)
+    refine ⟨U, e, g, hU, ?_, by cat_disch⟩
+    rw [ObjectProperty.trW_iff']
+    exact ⟨_, _, _, hT', h₁, h₂⟩
+  · obtain ⟨Z, s, b, hT⟩ := Pretriangulated.distinguished_cocone_triangle f
     have hs : B.trW s := by
       rw [trW_iff']
-      exact ⟨_, _, _, hT, hY⟩
-    obtain ⟨W, s', hs', c, fac⟩ := h s hs
-    obtain ⟨U, d, e, hT'⟩ := distinguished_cocone_triangle₁ s'
-    obtain ⟨β, hβ, _⟩ := complete_distinguished_triangle_morphism₁ _ _ hT
-      (F.map_distinguished _ hT') (𝟙 _) c (by simpa using fac)
-    dsimp at β hβ
-    refine ⟨U, (B.trW_iff_of_distinguished' _ (F.map_distinguished _ hT')).1 ?_,
-      β, d, by simpa using hβ.symm⟩
-    rw [trW_iff] at hs' ⊢
-    obtain ⟨_, _, _, hT'', hV⟩ := hs'
-    exact ⟨_, _, _, F.map_distinguished _ hT'', hV⟩
+      exact ⟨_, _, _, hT, hX⟩
+    obtain ⟨W, s', g, hW, hs', fac⟩ := hA s hY hs
+    obtain ⟨U, hU, a, c, hT'⟩ := A.distinguished_cocone_triangle₁ s' hY hW
+    obtain ⟨t, ht, ht'⟩ :=
+      complete_distinguished_triangle_morphism₁ _ _ hT hT' (𝟙 Y) g (by cat_disch)
+    exact ⟨U, t, a, hU, (B.trW_iff_of_distinguished' _ hT').1 (trW_monotone (by simp) _ hs'),
+      by cat_disch⟩
 
-variable {B F} in
-/-- Constructor for left localizing categories. -/
-lemma IsLeftLocalizing.mk'
-    (h : ∀ ⦃Y : C⦄ ⦃X : A⦄ (s : Y ⟶ F.obj X) (_ : B.trW s),
-      ∃ (X' : A) (s' : X' ⟶ X) (_ : (B.inverseImage F).trW s')
-        (b : F.obj X' ⟶ Y), b ≫ s = F.map s') :
-    B.IsLeftLocalizing F := by
-  have : B.op.IsRightLocalizing F.op := IsRightLocalizing.mk' (fun X Y s hs => by
-    obtain ⟨X', s', h, b, fac⟩ := h s.unop (trW_of_op _ _ hs)
-    exact ⟨Opposite.op X', s'.op, trW_of_unop _ _ h, b.op, Quiver.Hom.unop_inj fac⟩)
-  exact B.isLeftLocalizing_of_op F
+variable {A B} in
+lemma IsTriangulatedRightLocalizing.fac'
+    [A.IsTriangulated] [B.IsTriangulated] [B.IsClosedUnderIsomorphisms]
+    [A.IsTriangulatedRightLocalizing B]
+    {X Y : C} (s : X ⟶ Y) (hX : A X) (hs : B.trW s) :
+    ∃ (Z : C) (s' : X ⟶ Z) (b : Y ⟶ Z), A Z ∧ (A ⊓ B).trW s' ∧ s ≫ b = s' :=
+  (isTriangulatedRightLocalizing_iff A B).1 inferInstance s hX hs
 
-end
+lemma isTriangulatedLeftLocalizing_iff [A.IsTriangulated] [B.IsTriangulated]
+    [B.IsClosedUnderIsomorphisms] :
+    A.IsTriangulatedLeftLocalizing B ↔
+      ∀ ⦃X Y : C⦄ (s : X ⟶ Y) (_ : A Y) (_ : B.trW s),
+        ∃ (Z : C) (s' : Z ⟶ Y) (a : Z ⟶ X), A Z ∧ (A ⊓ B).trW s' ∧ a ≫ s = s' := by
+  rw [← isTriangulatedRightLocalizing_op_iff, isTriangulatedRightLocalizing_iff]
+  refine ⟨fun hA X Y s hY hs ↦ ?_, fun hA X Y s hX hs ↦ ?_⟩
+  · obtain ⟨Z', s', b, hZ', hs', fac⟩ := hA s.op hY (by simpa [trW_op_iff])
+    exact ⟨Z'.unop, s'.unop, b.unop, hZ', trW_of_op _ hs', by cat_disch⟩
+  · obtain ⟨Z', s', b, hZ', hs', fac⟩ := hA s.unop hX (trW_of_op _ hs)
+    exact ⟨_, s'.op, b.op, hZ', trW_of_unop _ hs', by cat_disch⟩
 
-variable (L : C ⥤ D) [L.IsLocalization B.trW]
+variable {A B} in
+lemma IsTriangulatedLeftLocalizing.fac'
+    [A.IsTriangulated] [B.IsTriangulated] [B.IsClosedUnderIsomorphisms]
+    [A.IsTriangulatedLeftLocalizing B]
+    {X Y : C} (s : X ⟶ Y) (hY : A Y) (hs : B.trW s) :
+    ∃ (Z : C) (s' : Z ⟶ Y) (a : Z ⟶ X), A Z ∧ (A ⊓ B).trW s' ∧ a ≫ s = s' :=
+  (isTriangulatedLeftLocalizing_iff A B).1 inferInstance s hY hs
+
+/-- If `A` is a triangulated subcategory of a pretriangulated category `C`,
+and `B : ObjectProperty C`, this is the inclusion functor
+`A.ι : A.FullSubcategory ⥤ C`, considered as a localized morphism,
+where `C` is equipped with the property of morphisms `B.trW`
+and `A.FullSubcategory` with the property of morphisms `(B.inverseImage A.ι).trW`. -/
+@[simps]
+def triangulatedLocalizedMorphism [A.IsTriangulated] :
+    LocalizerMorphism (B.inverseImage A.ι).trW B.trW where
+  functor := A.ι
+  map X Y f hf := by
+    simp only [MorphismProperty.inverseImage_iff, trW_iff] at hf ⊢
+    obtain ⟨Z, a, b, hT, hZ⟩ := hf
+    exact ⟨_, _, _, A.ι.map_distinguished _ hT, hZ⟩
+
+lemma trW_inverseImage_ι_iff [A.IsTriangulated] {X Y : A.FullSubcategory} (f : X ⟶ Y) :
+    (B.inverseImage A.ι).trW f ↔ (A ⊓ B).trW f.hom := by
+  simp only [trW_iff]
+  constructor
+  · rintro ⟨Z, a, b, h, hZ⟩
+    exact ⟨_, _, _, A.ι.map_distinguished _ h, Z.property, hZ⟩
+  · rintro ⟨Z, a, b, h, hZ⟩
+    refine ⟨⟨Z, hZ.1⟩, A.homMk a, A.homMk (b ≫ (A.ι.commShiftIso 1).inv.app _), ?_, hZ.2⟩
+    rw [← A.ι.map_distinguished_iff]
+    refine isomorphic_distinguished _ h _
+      (Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) ?_ ?_ ?_)
+    · cat_disch
+    · cat_disch
+    · simp [dsimp% (A.ι.commShiftIso (1 : ℤ)).inv_hom_id_app X]
+
+lemma inverseImage_opEquivalence_inverse_trW_inverseImage_ι_op [A.IsTriangulated]
+    [B.IsTriangulated] [B.IsClosedUnderIsomorphisms] :
+    (B.op.inverseImage A.op.ι).trW.inverseImage A.opEquivalence.inverse =
+      (B.inverseImage A.ι).op.trW := by
+  ext ⟨X₁⟩ ⟨X₂⟩ a
+  simp [trW_op, trW_inverseImage_ι_iff, ← op_inf]
 
 section
 
-variable [B.IsClosedUnderIsomorphisms]
-  (L' : A ⥤ D') [L'.IsLocalization (B.inverseImage F).trW]
-  (F' : D' ⥤ D) [Localization.Lifting L' (B.inverseImage F).trW (F ⋙ L) F']
-  [IsTriangulated C]
+variable [IsTriangulated C] [A.IsTriangulated] [B.IsTriangulated] [B.IsClosedUnderIsomorphisms]
 
-include L L' F' in
-set_option backward.isDefEq.respectTransparency false in
-lemma full_of_isRightLocalizing [B.IsRightLocalizing F] [F.Full] : F'.Full := by
-  have := Localization.essSurj L' (B.inverseImage F).trW
-  apply F'.full_of_precomp_essSurj L'
-  intro X₁ X₂ φ
-  have e := Localization.Lifting.iso L' (B.inverseImage F).trW (F ⋙ L) F'
-  obtain ⟨φ', hφ'⟩ : ∃ φ', φ = e.hom.app X₁ ≫ φ' ≫ e.inv.app X₂ :=
-    ⟨e.inv.app X₁ ≫ φ ≫ e.hom.app X₂, by simp⟩
-  obtain ⟨f, hf⟩ := Localization.exists_leftFraction L B.trW φ'
-  obtain ⟨X₃, s', hs', t, fac⟩ := B.fac_of_isRightLocalizing' F f.s f.hs
-  let f' : (B.inverseImage F).trW.LeftFraction X₁ X₂ :=
-    { f := F.preimage (f.f ≫ t)
-      s := F.preimage (f.s ≫ t)
-      hs := by
-        rw [B.inverseImage_trW_iff, F.map_preimage, fac, ← B.inverseImage_trW_iff F]
-        exact hs' }
-  have hf' : φ' ≫ L.map (F.map f'.s) = L.map (F.map f'.f) := by
-    replace hf := hf =≫ L.map (f.s)
-    rw [f.map_comp_map_s] at hf
-    dsimp
-    rw [F.map_preimage, F.map_preimage, L.map_comp, L.map_comp, reassoc_of% hf]
-  have : IsIso (F'.map (L'.map f'.s)) :=
-    ((MorphismProperty.isomorphisms D).arrow_mk_iso_iff
-      ((Arrow.isoOfNatIso e) (Arrow.mk f'.s))).2
-        (Localization.inverts _ B.trW _
-          (by simpa only [← B.inverseImage_trW_iff F] using f'.hs))
-  refine ⟨f'.map L' (Localization.inverts _ _), ?_⟩
-  rw [hφ', ← cancel_mono (F'.map (L'.map f'.s)), ← F'.map_comp, f'.map_comp_map_s,
-    assoc, assoc]
-  erw [← e.inv.naturality]
-  rw [Functor.comp_map, reassoc_of% hf']
-  erw [e.inv.naturality, e.hom_inv_id_app_assoc]
-  rfl
+instance [A.IsTriangulatedRightLocalizing B] :
+    (A.triangulatedLocalizedMorphism B).IsLocalizedFullyFaithful where
+  nonempty_fullyFaithful := by
+    let L₁ := (B.inverseImage A.ι).trW.Q
+    let L₂ := B.trW.Q
+    let F : (B.inverseImage A.ι).trW.Localization ⥤ B.trW.Localization :=
+      (A.triangulatedLocalizedMorphism B).localizedFunctor L₁ L₂
+    let e : A.ι ⋙ L₂ ≅ L₁ ⋙ F :=
+      CatCommSq.iso (A.triangulatedLocalizedMorphism B).functor L₁ L₂ F
+    have : F.Full :=
+      Functor.full_of_precomp_essSurj _ L₁ (fun X₁ X₂ φ ↦ by
+        obtain ⟨φ', hφ'⟩ : ∃ φ', φ = e.inv.app X₁ ≫ φ' ≫ e.hom.app X₂ :=
+          ⟨e.hom.app X₁ ≫ φ ≫ e.inv.app X₂, by
+            simp [dsimp% e.inv_hom_id_app_assoc, dsimp% e.inv_hom_id_app]⟩
+        dsimp at φ' hφ'
+        obtain ⟨f, hf⟩ := Localization.exists_leftFraction L₂ B.trW φ'
+        obtain ⟨X₃, s', a, hX₃, hs', fac⟩ :=
+          IsTriangulatedRightLocalizing.fac' f.s X₂.property f.hs
+        let g : (B.inverseImage A.ι).trW.LeftFraction X₁ X₂ :=
+          { Y' := ⟨X₃, hX₃⟩
+            f := A.homMk (f.f ≫ a)
+            s := A.homMk s'
+            hs := by rwa [trW_inverseImage_ι_iff] }
+        have : IsIso (L₁.map g.s) := Localization.inverts L₁ _ _ g.hs
+        refine ⟨g.map L₁ (Localization.inverts _ _), ?_⟩
+        rw [← cancel_mono (F.map (L₁.map g.s)), ← Functor.map_comp,
+          MorphismProperty.LeftFraction.map_comp_map_s]
+        dsimp [g]
+        simp only [← fac, hφ', Category.assoc, hf, ← dsimp% NatIso.naturality_1 e,
+          homMk_hom, Functor.map_comp, assoc, dsimp% e.hom_inv_id_app_assoc,
+          MorphismProperty.LeftFraction.map_comp_map_s_assoc] )
+    have : F.Additive := by
+      rw [Localization.functor_additive_iff L₁ (B.inverseImage A.ι).trW]
+      exact Functor.additive_of_iso e
+    have : F.Faithful :=
+      Functor.faithful_of_precomp_cancel_zero_of_hasLeftCalculusOfFractions L₁
+        (B.inverseImage A.ι).trW _ (fun X₁ X₂ f hf ↦ by
+          replace hf : L₂.map f.hom = L₂.map 0 := by
+            simp [← dsimp% NatIso.naturality_2 e f, hf]
+          rw [MorphismProperty.map_eq_iff_postcomp L₂ B.trW] at hf
+          obtain ⟨X₃, s, hs, fac⟩ := hf
+          simp only [zero_comp] at fac
+          obtain ⟨X₄, t, a, hX₄, ht, fac'⟩ :=
+            IsTriangulatedRightLocalizing.fac' s X₂.property hs
+          let t' : X₂ ⟶ ⟨X₄, hX₄⟩ := A.homMk t
+          have := Localization.inverts L₁ (B.inverseImage A.ι).trW t'
+            (by rwa [trW_inverseImage_ι_iff])
+          rw [← cancel_mono (L₁.map t'), zero_comp, ← L₁.map_comp,
+            ← L₁.map_zero]
+          congr 1
+          ext
+          dsimp [t']
+          rw [← fac', reassoc_of% fac, zero_comp])
+    exact ⟨.ofFullyFaithful F⟩
 
-set_option backward.isDefEq.respectTransparency false in
-include L L' in
-lemma faithful_of_isRightLocalizing [B.IsRightLocalizing F] [F.Full] [F.Faithful] :
-    F'.Faithful := by
-  have e := Localization.Lifting.iso L' (B.inverseImage F).trW (F ⋙ L) F'
-  have := IsTriangulated.of_fully_faithful_triangulated_functor F
-  letI := Localization.preadditive L' (B.inverseImage F).trW
-  letI := Localization.functor_additive L' (B.inverseImage F).trW
-  letI := Localization.preadditive L B.trW
-  letI := Localization.functor_additive L B.trW
-  have : (B.inverseImage F).trW.HasLeftCalculusOfFractions := inferInstance
-  have : F'.Additive := by
-    rw [Localization.functor_additive_iff L' (B.inverseImage F).trW]
-    exact Functor.additive_of_iso e.symm
-  apply F'.faithful_of_precomp_cancel_zero_of_hasLeftCalculusOfFractions L' (B.inverseImage F).trW
-  intro X₁ X₂ f hf
-  replace hf : L.map (F.map f) = L.map 0 := by
-    erw [L.map_zero, ← NatIso.naturality_1 e f, hf, zero_comp, comp_zero]
-  rw [MorphismProperty.map_eq_iff_postcomp L B.trW] at hf
-  obtain ⟨Z, s, hs, fac⟩ := hf
-  rw [zero_comp] at fac
-  obtain ⟨W, s', hs', t, fac'⟩ := B.fac_of_isRightLocalizing' F s hs
-  have hfs' : f ≫ s' = 0 := F.map_injective (by
-    rw [F.map_zero, F.map_comp, ← fac', reassoc_of% fac, zero_comp])
-  have := Localization.inverts L' (B.inverseImage F).trW s' hs'
-  rw [← cancel_mono (L'.map s'), zero_comp, ← L'.map_comp, hfs', L'.map_zero]
+instance [A.IsTriangulated] [B.IsTriangulated] [B.IsClosedUnderIsomorphisms]
+    [A.IsTriangulatedLeftLocalizing B] :
+    (A.triangulatedLocalizedMorphism B).IsLocalizedFullyFaithful := by
+  let L₁ := (B.inverseImage A.ι).trW.Q
+  let L₂ := B.trW.Q
+  let F : (B.inverseImage A.ι).trW.Localization ⥤ B.trW.Localization :=
+    (A.triangulatedLocalizedMorphism B).localizedFunctor L₁ L₂
+  letI : CatCommSq (A.op.triangulatedLocalizedMorphism B.op).functor
+    (A.opEquivalence.functor ⋙ L₁.op) L₂.op F.op :=
+    ⟨Functor.isoWhiskerLeft A.opEquivalence.functor
+      (NatIso.op (CatCommSq.iso (A.triangulatedLocalizedMorphism B).functor L₁ L₂ F).symm)⟩
+  have : L₂.op.IsLocalization B.op.trW := by rw [trW_op]; infer_instance
+  have : (A.opEquivalence.functor ⋙ L₁.op).IsLocalization (B.op.inverseImage A.op.ι).trW := by
+    refine Functor.IsLocalization.of_equivalence_source L₁.op (B.inverseImage A.ι).trW.op
+      _ _ A.opEquivalence.symm ?_ ?_
+      ((Functor.associator _ _ _).symm ≪≫
+        Functor.isoWhiskerRight A.opEquivalence.counitIso _ ≪≫ Functor.leftUnitor _)
+    · rw [← trW_op, ← inverseImage_opEquivalence_inverse_trW_inverseImage_ι_op]
+      intro _ _ f hf
+      simp only [MorphismProperty.inverseImage_iff, Equivalence.symm_functor] at hf ⊢
+      exact MorphismProperty.le_isoClosure _ _ hf
+    · refine fun _ _ _ hf ↦ Localization.inverts L₁.op (B.inverseImage A.ι).trW.op _ ?_
+      simpa [trW_inverseImage_ι_iff, ← op_inf, trW_op] using hf
+  exact LocalizerMorphism.IsLocalizedFullyFaithful.mk' (A.triangulatedLocalizedMorphism B)
+    L₁ L₂ F (((A.op.triangulatedLocalizedMorphism B.op).fullyFaithful
+    (A.opEquivalence.functor ⋙ L₁.op) L₂.op F.op).unop)
 
 end
 
-variable {L : C ⥤ D} {L' : A ⥤ D'} {H : D' ⥤ D} (e : L' ⋙ H ≅ F ⋙ L)
-  [L'.EssSurj] [H.Full] [H.Faithful] [L.IsLocalization B.trW]
-  [IsTriangulated C] [B.IsClosedUnderIsomorphisms]
-
-include e in
-lemma isLocalization_of_isRightLocalizing [B.IsRightLocalizing F] [F.Full] [F.Faithful] :
-    L'.IsLocalization (B.inverseImage F).trW := by
-  have hL' : (B.inverseImage F).trW.IsInvertedBy L' := fun X₁ X₂ f hf => by
-    rw [B.inverseImage_trW_iff] at hf
-    have : IsIso (H.map (L'.map f)) :=
-      ((MorphismProperty.isomorphisms D).arrow_mk_iso_iff
-        (Arrow.isoOfNatIso e f)).2 (Localization.inverts L B.trW _ hf)
-    apply isIso_of_fully_faithful H
-  let G := Localization.lift _ hL' (B.inverseImage F).trW.Q
-  have eG : (B.inverseImage F).trW.Q ⋙ G ≅ L' :=
-    Localization.Lifting.iso _ (B.inverseImage F).trW _ _
-  have : Localization.Lifting (B.inverseImage F).trW.Q (B.inverseImage F).trW
-    (F ⋙ L) (G ⋙ H) :=
-    ⟨(Functor.associator _ _ _).symm ≪≫ Functor.isoWhiskerRight eG H ≪≫ e⟩
-  have := full_of_isRightLocalizing B F L (B.inverseImage F).trW.Q (G ⋙ H)
-  have := faithful_of_isRightLocalizing B F L (B.inverseImage F).trW.Q (G ⋙ H)
-  have : G.EssSurj :=
-    { mem_essImage := fun X =>
-        ⟨_, ⟨eG.app (L'.objPreimage X) ≪≫ L'.objObjPreimageIso X⟩⟩ }
-  have : G.Full := Functor.Full.of_comp_faithful G H
-  have : G.Faithful := Functor.Faithful.of_comp_iso (Iso.refl (G ⋙ H))
-  have : G.IsEquivalence := { }
-  exact Functor.IsLocalization.of_equivalence_target (B.inverseImage F).trW.Q _ _
-    G.asEquivalence eG
-
-include e in
-lemma isLocalization_of_isLeftLocalizing [B.IsLeftLocalizing F] [F.Full] [F.Faithful] :
-    L'.IsLocalization (B.inverseImage F).trW := by
-  rw [← Functor.IsLocalization.op_iff, ← trW_op]
-  have : Functor.IsLocalization L.op (B.op.trW) := by
-    rw [trW_op]
-    infer_instance
-  let e' : L'.op ⋙ H.op ≅ F.op ⋙ L.op := NatIso.op e.symm
-  exact B.op.isLocalization_of_isRightLocalizing F.op e'
+variable {A B} in
+lemma isLocalization_of_isTriangulated_of_isLocalizedFullyFaithful [A.IsTriangulated]
+    [(A.triangulatedLocalizedMorphism B).IsLocalizedFullyFaithful]
+    {L₁ : A.FullSubcategory ⥤ D'} {L₂ : C ⥤ D} {F : D' ⥤ D} [L₁.EssSurj]
+    [L₂.IsLocalization B.trW] [F.Full] [F.Faithful]
+    (e : (A.triangulatedLocalizedMorphism B).functor ⋙ L₂ ≅ L₁ ⋙ F) :
+    L₁.IsLocalization (B.inverseImage A.ι).trW :=
+  (A.triangulatedLocalizedMorphism B).isLocalization_of_isLocalizedFullyFaithful e
 
 end ObjectProperty
 
