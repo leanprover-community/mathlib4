@@ -533,88 +533,54 @@ lemma connectedByCover_of_connected {I : Type*} {𝒰 : I → X.Opens}
 open Presheaf
 lemma isSheaf (D : AlgebraicCycle X ℤ) :
     TopCat.Presheaf.IsSheaf (presheaf D).presheaf := by
-
   rw [TopCat.Presheaf.isSheaf_iff_isSheafUniqueGluingNontrivial]
   on_goal 2 =>
     simp only [sheafCompose_obj_obj, presheaf, PresheafOfModules.presheaf_obj_coe, Functor.comp_obj,
       CommRingCat.forgetToRingCat_obj, obj, carrier, ne_eq, Opens.coe_bot, Set.coe_setOf,
       Opens.nonempty_iff, Set.not_nonempty_empty, ge_iff_le, false_and, imp_false, not_not]
     infer_instance
-
   intro I hI 𝒰 h𝒰 s hs
-
   obtain ⟨i⟩ := hI
-
   have : Nonempty (iSup 𝒰 : TopologicalSpace.Opens X) := by aesop
-    /-simp only [Scheme.Opens.nonempty_iff, Opens.coe_iSup, Set.nonempty_iUnion]
-    use i
-    exact (Scheme.Opens.nonempty_iff (𝒰 i)).mp (h𝒰 i)-/
-
-  have k : AlgebraicGeometry.IsIntegral (iSup 𝒰 : TopologicalSpace.Opens X) := by infer_instance
-  /-
-  We need to show here that if you have some rational function which is a
-  section on some open set, then it should be a section globally.
-
-  This is only true because we have stuff defined for all opens.
-
-
-  -/
+  have h_eq (j : I) : (s i).1 = (s j).1 := by
+    apply sections_equal_of_connected_by_cover _ s hs
+    apply connectedByCover_of_connected
+    · apply IsIrreducible.isConnected
+      have := irreducibleSpace_of_isIntegral ↑(iSup 𝒰)
+      exact isIrreducible_iff_irreducibleSpace.mpr this
+    · exact Set.nonempty_coe_sort.mp (h𝒰 i)
+    · exact Set.nonempty_coe_sort.mp (h𝒰 j)
   let sec : carrier D (iSup 𝒰) := {
     val := (s i).1
     property := by
       simp only [carrier, ne_eq, Opens.nonempty_iff, Opens.coe_iSup, Set.nonempty_iUnion, ge_iff_le,
         Set.mem_setOf_eq]
       intro hf
-      constructor
-      · use i
-        convert h𝒰 i
-        simp [Set.nonempty_def]
-      · rw [homogeneous_le_iff (t := ⋃ i, ↑(𝒰 i))]
-        · simp_all
-          intro z j hz
-          have : connectedByCover 𝒰 i j := by
-            apply connectedByCover_of_connected
-            · apply IsIrreducible.isConnected
-              have := irreducibleSpace_of_isIntegral ↑(iSup 𝒰)
-              exact isIrreducible_iff_irreducibleSpace.mpr this
-            · exact h𝒰 i
-            · exact h𝒰 j
-          have o := sections_equal_of_connected_by_cover this s hs
-          simp_rw [o]
-          have := (s j).2
-          simp [carrier] at this
-          rw [o] at hf
-          specialize this hf
-          have := this.2 z
-          convert this
-          simp_all
-        all_goals simp_all
+      refine ⟨⟨i, Set.nonempty_coe_sort.mp (h𝒰 i)⟩, ?_⟩
+      rw [homogeneous_le_iff (t := ⋃ i, ↑(𝒰 i))]
+      · simp_all only [nonempty_subtype, sheafCompose_obj_obj, Opens.nonempty_iff, Opens.coe_iSup,
+        Set.nonempty_iUnion, Set.mem_iUnion, SetLike.mem_coe, locallyFinsuppWithin.coe_zero,
+        Pi.zero_apply, locallyFinsuppWithin.coe_add, Pi.add_apply, restrict_eq_of_mem,
+        forall_exists_index]
+        intro z j hz
+        simp_rw [h_eq j]
+        rw [h_eq j] at hf
+        have hsj := (s j).2
+        convert (hsj hf).2 z
+        simp_all
+      all_goals simp_all
   }
-  use sec
-  simp
-  constructor
-  · intro j
-    --simp [sec, presheaf, PresheafOfModules.presheaf, map]
-    simp [presheaf, PresheafOfModules.presheaf, map]
-    change mapFun D (map._proof_1 (Opens.leSupr 𝒰 j).op) sec = s j
-    have : Nonempty ↑(𝒰 j) := by exact h𝒰 j
-    simp [mapFun, this, sec]
-    apply Subtype.ext
-    simp
-    apply sections_equal_of_connected_by_cover
-    · -- This is proven elsewhere in this lemma, we should restructure things to make this less
-      -- awkward
-      sorry
-    · exact hs
-
+  refine ⟨sec, fun j ↦ ?_, ?_⟩
+  · change mapFun D (map._proof_1 (Opens.leSupr 𝒰 j).op) sec = s j
+    have : Nonempty ↑(𝒰 j) := h𝒰 j
+    simp only [mapFun, this, sec]
+    exact Subtype.ext (h_eq j)
   · intro s' h'
-
-    simp [sec]
+    simp only [sec]
     specialize h' i
     change mapFun D (map._proof_1 (Opens.leSupr 𝒰 i).op) s' = s i at h'
     simp_rw [← h']
     have : Nonempty (𝒰 i) := h𝒰 i
-    simp [mapFun, this]
     obtain ⟨p, hp⟩ := s'
     simp
 
