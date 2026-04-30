@@ -54,21 +54,21 @@ def eraseInstances (e : Expr) : MetaM Expr := do
       args := args.set! i default
   return mkAppN f args
 
-/-- Compute the data carrying parent classes of `cls`.
-This excludes parent classes that have a data carrying parent themselves.
+/-- Compute the parent classes of `cls`, excluding parent classes that have a parent themselves.
 The reason to exclude such classes is that if there is a duplication in such a class,
-then there will necessarily also be a duplication in all of its parents.
-If `cls` is a `Prop` or a non-structure class, this simply returns `#[cls]`.
+then there will necessarily also be a duplication in its parent.
+If `cls` carries data, then only consider parents that carry data.
+If `cls` is a non-structure class, this simply returns `#[cls]`.
 
 The resulting expressions contain bound variables that correspond to the parameters of `cls`.
 The universe levels and bound variables need to be instantiated to get concrete data projections. -/
-partial def getAbstractDataProjections (cls : Name) : CoreM (Array Expr) := do
+partial def getAbstractProjections (cls : Name) : CoreM (Array Expr) := do
   let cinfo ← getConstInfo cls
-  MetaM.run' <| forallTelescope cinfo.type fun xs _ ↦ do
+  MetaM.run' <| forallTelescope cinfo.type fun xs type ↦ do
     withLocalDeclD `self (mkAppN (.const cls (cinfo.levelParams.map .param)) xs) fun inst ↦ do
-      go cls inst #[] xs |>.run' {}
+      go cls inst #[] xs type.isProp |>.run' {}
 where
-  go (cls : Name) (inst : Expr) (acc : Array Expr) (xs : Array Expr) :
+  go (cls : Name) (inst : Expr) (acc : Array Expr) (xs : Array Expr) (isProp : Bool) :
       StateRefT NameSet MetaM (Array Expr) := do
     let type ← whnf (← inferType inst)
     let mut acc := acc
@@ -79,9 +79,10 @@ where
         let parent := info.structName
         if (← get).contains parent then continue
         modify (·.insert parent)
-        if (← getConstInfo parent).type.getForallBody.isProp then continue
+        unless isProp do
+          if (← getConstInfo parent).type.getForallBody.isProp then continue
         let proj := Expr.app (mkAppN (.const info.projFn us) type.getAppArgs) inst
-        acc ← go parent proj acc xs
+        acc ← go parent proj acc xs isProp
         anyParent := true
     if !anyParent then
       acc := acc.push (← eraseInstances (type.abstract xs))
@@ -92,15 +93,15 @@ initialize dataProjectionCache : IO.Ref (NameMap (Array Expr)) ← IO.mkRef {}
 
 /-- Return the result of `getAbstractDataProjections`, using a global cache.
 To ensure soundness, the cache is only used for imported declarations. -/
-def getAbstractDataProjectionsCached (cls : Name) : CoreM (Array Expr) := do
+def getAbstractProjectionsCached (cls : Name) : CoreM (Array Expr) := do
   if (← getEnv).isImportedConst cls then
     if let some result := (← dataProjectionCache.get).find? cls then
       return result
-    let result ← getAbstractDataProjections cls
+    let result ← getAbstractProjections cls
     dataProjectionCache.modify (·.insert cls result)
     return result
   else
-    getAbstractDataProjections cls
+    getAbstractProjections cls
 
 /-- Find classes for which multiple different instances can be synthesized in the local context.
 The result maps classes to the (at least 2) local instances that generate them. -/
@@ -118,7 +119,7 @@ partial def findOverlappingDataInstances : MetaM (ExprMap (Array FVarId)) := do
         let .const cls us := f |
           return #[] -- This can happen when using `set_option checkBinderAnnotations false`
         let levelParams := (← getConstInfo cls).levelParams
-        let projs ← getAbstractDataProjectionsCached cls
+        let projs ← getAbstractProjectionsCached cls
         projs.mapM fun proj ↦
           mkForallFVars xs <| (proj.instantiateLevelParams levelParams us).instantiateRev args
       for projCls in projClasses do
@@ -155,7 +156,7 @@ def runLinter (ctx : ContextInfo) (lctx : LocalContext) (expectedType? : Option 
     else
       let fvarTypes := .andList <| fvarTypes.toList.map (m!"`{.sbracket ·}`")
       let overlaps := .andList <| overlaps.toList.map (m!"`{.sbracket ·}`")
-      msgs := msgs.push <| m!"{fvarTypes} give conflicting instances of {overlaps}."
+      msgs := msgs.push <| m!"{fvarTypes} give different instances of {overlaps}."
   let declDescr ←
     if let some decl := ctx.parentDecl? then
       -- Use `addMessageContextPartial` to clear the local context,
