@@ -571,8 +571,8 @@ instance : PreservesLimit (cospan f g) Scheme.forget := by delta Scheme.forget; 
 
 instance : PreservesLimit (cospan g f) Scheme.forget := by delta Scheme.forget; infer_instance
 
--- @[simp] lemma Scheme.forgetToTop_map_eq_base {X Y : Scheme.{u}} (f : X ⟶ Y) :
---     Scheme.forgetToTop.map f = f.base := rfl
+@[simp] lemma Scheme.forgetToTop_map_eq_base {X Y : Scheme.{u}} (f : X ⟶ Y) :
+  Scheme.forgetToTop.map f = f.base := rfl
 
 set_option backward.isDefEq.respectTransparency false in
 theorem range_pullbackSnd :
