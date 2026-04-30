@@ -782,10 +782,10 @@ end MonoidalCategory
 @[reassoc]
 theorem SymmetricCategory.tensorμ_braid_swap
     {C : Type*} [Category* C] [MonoidalCategory C] [SymmetricCategory C]
-    (A Y : C) :
-    tensorμ A A Y Y ≫ (β_ (A ⊗ Y) (A ⊗ Y)).hom =
-      ((β_ A A).hom ⊗ₘ (β_ Y Y).hom) ≫ tensorμ A A Y Y := by
-  simp [tensorμ, SymmetricCategory.braiding_swap_eq_inv_braiding Y A, tensorHom_def]
+    (X Y : C) :
+    tensorμ X X Y Y ≫ (β_ (X ⊗ Y) (X ⊗ Y)).hom =
+      ((β_ X X).hom ⊗ₘ (β_ Y Y).hom) ≫ tensorμ X X Y Y := by
+  simp [tensorμ, SymmetricCategory.braiding_swap_eq_inv_braiding Y X, tensorHom_def]
 
 instance : BraidedCategory Cᵒᵖ where
   braiding X Y := (β_ Y.unop X.unop).op
