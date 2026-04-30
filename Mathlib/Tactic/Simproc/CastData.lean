@@ -15,7 +15,7 @@ public import Batteries.Logic
 This module defines the `@[cast_data]` attribute and a registered simproc that simplifies
 expressions of the form `f ... (h ▸ x)` to `f ... x` for any constant `f` whose value is
 independent of indices that may change under `Eq.rec`. Common examples include `Subtype.val`
-and projection-style functions on indexed inductive types such as `GraphLike.Walk.edges`.
+and projection-style functions on indexed inductive types such as `SimpleGraph.Walk.edges`.
 
 ## Usage
 
