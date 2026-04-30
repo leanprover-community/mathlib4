@@ -112,17 +112,17 @@ theorem chromaticIndex_eq_zero : G.chromaticIndex = 0 ↔ G = ⊥ := by
 
 /-- Lift an embedding of colors to an embedding of edge colorings. -/
 @[expose]
-def EdgeColoring.ofColorEmbedding (f : α ↪ β) : G.EdgeColoring α ↪ G.EdgeColoring β :=
+def edgeColoringEmbeddingofColorEmbedding (f : α ↪ β) : G.EdgeColoring α ↪ G.EdgeColoring β :=
   recolorOfEmbedding _ f
 
 /-- Lift an isomorphism of colors to an isomorphism of edge colorings. -/
 @[expose]
-def EdgeColoring.ofColorIso (f : α ≃ β) : G.EdgeColoring α ≃ G.EdgeColoring β :=
+def edgeColoringEquivOfColorIso (f : α ≃ β) : G.EdgeColoring α ≃ G.EdgeColoring β :=
   recolorOfEquiv _ f
 
 @[gcongr]
 theorem EdgeColorableWith.mono (f : α ↪ β) (h : G.EdgeColorableWith α) : G.EdgeColorableWith β :=
-  ⟨.ofColorEmbedding f h.some⟩
+  ⟨edgeColoringEmbeddingofColorEmbedding f h.some⟩
 
 @[gcongr]
 theorem EdgeColorable.mono (hle : n ≤ m) (h : G.EdgeColorable n) : G.EdgeColorable m :=
