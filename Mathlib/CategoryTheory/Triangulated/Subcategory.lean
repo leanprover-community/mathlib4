@@ -178,6 +178,12 @@ instance [P.IsTriangulated] : P.IsTriangulatedClosed₃ where
 
 instance [P.IsTriangulated] : P.isoClosure.IsTriangulated where
 
+instance {Q : ObjectProperty C} [P.IsTriangulated] [Q.IsTriangulated]
+    [Q.IsClosedUnderIsomorphisms] :
+    (P ⊓ Q).IsTriangulated where
+  ext₂' T hT h₁ h₃ := by
+    obtain ⟨Y, hY, ⟨e⟩⟩ := P.ext_of_isTriangulatedClosed₂' T hT h₁.1 h₃.1
+    exact ⟨Y, ⟨hY, Q.prop_of_iso e (Q.ext_of_isTriangulatedClosed₂ T hT h₁.2 h₃.2)⟩, ⟨e⟩⟩
 
 section
 

@@ -24,21 +24,11 @@ public import Mathlib.CategoryTheory.Localization.Triangulated
 
 namespace CategoryTheory
 
-open Category Limits Pretriangulated Triangulated Pretriangulated.Opposite
+open Category Limits Pretriangulated Opposite
 
 namespace ObjectProperty
 
 variable {C D D' : Type*} [Category* C] [Category* D] [Category* D']
-
-/-- Given `P : ObjectProperty C`, this is the equivalence between `P.op.FullSubcategory`
-and `P.FullSubcategoryᵒᵖ`. -/
-@[simps]
-def opEquivalence (P : ObjectProperty C) : P.op.FullSubcategory ≌ P.FullSubcategoryᵒᵖ where
-  functor := (P.lift P.op.ι.leftOp (fun X ↦ X.unop.property)).rightOp
-  inverse := P.op.lift P.ι.op (fun X ↦ X.unop.property)
-  unitIso := Iso.refl _
-  counitIso := Iso.refl _
-  functor_unitIso_comp X := Quiver.Hom.unop_inj (by cat_disch)
 
 /-- If `A` and `B` are triangulated subcategories of a (pre)triangulated
 category `C` (with `B` closed under isomorphisms), we say that `A` is
@@ -131,20 +121,6 @@ lemma IsTriangulatedRightLocalizing.fac'
     {X Y : C} (s : X ⟶ Y) (hX : A X) (hs : B.trW s) :
     ∃ (Z : C) (s' : X ⟶ Z) (b : Y ⟶ Z), A Z ∧ (A ⊓ B).trW s' ∧ s ≫ b = s' :=
   (isTriangulatedRightLocalizing_iff A B).1 inferInstance s hX hs
-
--- to be moved
-instance [A.ContainsZero] [B.ContainsZero] [B.IsClosedUnderIsomorphisms] :
-    (A ⊓ B).ContainsZero where
-  exists_zero := by
-    obtain ⟨Z, hZ, hA⟩ := A.exists_prop_of_containsZero
-    exact ⟨Z, hZ, hA, B.prop_of_isZero hZ⟩
-
--- to be moved
-instance [A.IsTriangulated] [B.IsTriangulated] [B.IsClosedUnderIsomorphisms] :
-    (A ⊓ B).IsTriangulated where
-  ext₂' T hT h₁ h₃ := by
-    obtain ⟨Y, hY, ⟨e⟩⟩ := A.ext_of_isTriangulatedClosed₂' T hT h₁.1 h₃.1
-    exact ⟨Y, ⟨hY, B.prop_of_iso e (B.ext_of_isTriangulatedClosed₂ T hT h₁.2 h₃.2)⟩, ⟨e⟩⟩
 
 lemma isTriangulatedLeftLocalizing_iff [A.IsTriangulated] [B.IsTriangulated]
     [B.IsClosedUnderIsomorphisms] :
