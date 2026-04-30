@@ -29,7 +29,7 @@ if there exist charts near `x` and `f x` in which `f` looks like the standard pr
   respectively, such that in these charts, `f` looks like `(u, v) ↦ u`, w.r.t. some equivalence
   `E ≃L[𝕜] (E'' × F)`. Differentiability of `f` is not assumed as it follows from this definition.
 * `IsSubmersionAt I J n f x` means that `f` is a `C^n` submersion at `x : M` for some choice of a
-  complement `F` of the model normed space `E` of `M` in the model normed space `E'` of `N`.
+  complement `F` of the model normed space `E` of `M` in the model normed space `E''` of `N`.
 * `IsSubmersionOfComplement F I J n f` means `f : M → N` is a submersion at every point `x : M`,
   w.r.t. the chosen complement `F`.
 * `IsSubmersion I J n f` means `f : M → N` is a submersion at every point `x : M`,
@@ -90,9 +90,12 @@ This will be the topic of Samantha Naranjo's master's thesis, and it's nice to c
 
 open scoped Topology ContDiff
 
-open Function Set Manifold
+open Function Set
+
+namespace Manifold
 
 universe u
+-- We manually name the universe of `E` as `IsSubmersionAt` will use it.
 
 variable {𝕜 E' E'' E''' F F' H H' G G' : Type*} {E : Type u} [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
@@ -108,11 +111,15 @@ variable {M M' N N' : Type*}
   {n : WithTop ℕ∞}
 
 variable (F I J M N) in
-/-- The local property of being a submersion at `x` -/
+/-- The local property of being a submersion at a point: `f : M → N` is a submersion at `x` if
+there exist charts `φ` and `ψ` of `M` and `N` around `x` and `f x`, respectively, such that in these
+charts, `f` looks like the projection `(u, v) ↦ u`.
+This definition has a fixed parameter `F`, which is a choice of complement of `E''` in the model
+normed space `E` of `M`: being a submersion at `x` includes a choice of linear isomorphism
+between `E'' × F` and `E`. -/
 def SubmersionAtProp :
-    ((M → N) → OpenPartialHomeomorph M H → OpenPartialHomeomorph N G → Prop) :=
-  fun f domChart codChart ↦
-    ∃ equiv : E ≃L[𝕜] (E'' × F),
+    (M → N) → OpenPartialHomeomorph M H → OpenPartialHomeomorph N G → Prop :=
+  fun f domChart codChart ↦ ∃ equiv : E ≃L[𝕜] (E'' × F),
     EqOn ((codChart.extend J) ∘ f ∘ (domChart.extend I).symm) (Prod.fst ∘ equiv)
       (domChart.extend I).target
 
@@ -121,24 +128,31 @@ omit [ChartedSpace H M] [ChartedSpace G N] in
 lemma isLocalSourceTargetProperty_submmersionAtProp :
     IsLocalSourceTargetProperty (SubmersionAtProp F I J M N) where
   mono_source {f φ ψ s} hs := fun ⟨equiv, hf⟩ ↦ ⟨equiv, hf.mono (by simp; grind)⟩
-  congr {f g φ ψ} hfg hf := by
-    obtain ⟨equiv, hf⟩ := hf
+  congr {f g φ ψ} hfg := by
+    intro ⟨equiv, hf⟩
     refine ⟨equiv, EqOn.trans (fun x hx ↦ ?_) (hf.mono (by simp))⟩
     have : ((φ.extend I).symm) x ∈ φ.source := by simp_all
     grind
 
 variable (F I J n) in
-/-- `f : M → N` is a `C^k` submersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
+/-- `f : M → N` is a `C^n` submersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
 around `x` and `f x`, respectively such that in these charts, `f` looks like `(u, v) ↦ u`.
 Additionally, we demand that `f` map `φ.source` into `ψ.source`.
 
 NB. We don't know the particular atlasses used for `M` and `N`, so asking for `φ` and `ψ` to be
 in the `atlas` would be too optimistic: lying in the `maximalAtlas` is sufficient.
+
+This definition has a fixed parameter `F`, which is a choice of complement of `E''` in `E`:
+being an immersion at `x` includes a choice of linear isomorphism between `E'' × F` and `E`.
+While the particular choice of complement is often not important, choosing a complement is useful
+in some settings, such as proving that embedded submanifolds are locally given either by an
+immersion or a submersion.
+Unless you have a particular reason, prefer to use `IsSubmersionAt` instead.
 -/
 irreducible_def IsSubmersionAtOfComplement (f : M → N) (x : M) : Prop :=
   LiftSourceTargetPropertyAt I J n f x (SubmersionAtProp F I J M N)
-
-/-- `f : M → N` is a `C^k` submersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
+variable (I J n) in
+/-- `f : M → N` is a `C^n` submersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
 around `x` and `f x`, respectively such that in these charts, `f` looks like `(u, v) ↦ u`.
 Additionally, we demand that `f` map `φ.source` into `ψ.source`.
 
@@ -156,6 +170,7 @@ irreducible_def IsSubmersionAt (I : ModelWithCorners 𝕜 E H) (J : ModelWithCor
     IsSubmersionAtOfComplement F I J n f x
 
 variable {f g : M → N} {x : M}
+
 namespace IsSubmersionAtOfComplement
 
 lemma mk_of_charts (equiv : E ≃L[𝕜] (E'' × F)) (domChart : OpenPartialHomeomorph M H)
@@ -375,11 +390,11 @@ def complement (h : IsSubmersionAt I J n f x) : Type u := by
   rw [IsSubmersionAt_def] at h
   exact Classical.choose h
 
-noncomputable instance (h : IsSubmersionAt I J n f x) : NormedAddCommGroup h.complement := by
+instance (h : IsSubmersionAt I J n f x) : NormedAddCommGroup h.complement := by
   rw [IsSubmersionAt_def] at h
   exact Classical.choose <| Classical.choose_spec h
 
-noncomputable instance (h : IsSubmersionAt I J n f x) : NormedSpace 𝕜 h.complement := by
+instance (h : IsSubmersionAt I J n f x) : NormedSpace 𝕜 h.complement := by
   rw [IsSubmersionAt_def] at h
   exact Classical.choose <| Classical.choose_spec <| Classical.choose_spec h
 
@@ -482,7 +497,7 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
 end IsSubmersionAt
 
 variable (F I J n) in
-/-- `f : M → N` is a `C^k` submersion if around each point `x ∈ M`,
+/-- `f : M → N` is a `C^n` submersion if around each point `x ∈ M`,
 there are charts `φ` and `ψ` of `M` and `N` around `x` and `f x`, respectively
 such that in these charts, `f` looks like `(u, v) ↦ u`.
 
@@ -563,10 +578,10 @@ variable {f g : M → N}
 `E'` of `N` -/
 def complement (h : IsSubmersion I J n f) : Type u := Classical.choose h
 
-noncomputable instance (h : IsSubmersion I J n f) : NormedAddCommGroup h.complement :=
+instance (h : IsSubmersion I J n f) : NormedAddCommGroup h.complement :=
   Classical.choose <| Classical.choose_spec h
 
-noncomputable instance (h : IsSubmersion I J n f) : NormedSpace 𝕜 h.complement :=
+instance (h : IsSubmersion I J n f) : NormedSpace 𝕜 h.complement :=
   Classical.choose <| Classical.choose_spec <| Classical.choose_spec h
 
 lemma isSubmersionOfComplement_complement (h : IsSubmersion I J n f) :
