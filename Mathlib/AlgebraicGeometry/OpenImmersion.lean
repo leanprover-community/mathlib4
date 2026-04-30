@@ -31,6 +31,9 @@ universe v v₁ v₂ u
 
 variable {C : Type u} [Category.{v} C]
 
+@[simp] lemma Spec.map_eq_comap {R S : CommRingCat} (f : R ⟶ S) :
+    (Spec.map f : Spec S → Spec R) = PrimeSpectrum.comap f.hom := rfl
+
 /-- A morphism of Schemes is an open immersion if it is an open immersion as a morphism
 of LocallyRingedSpaces
 -/
@@ -313,7 +316,8 @@ theorem exists_affine_mem_range_and_range_subset
     Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away r))) ≫ ⟨e.inv ≫ X.ofRestrict _⟩
   refine ⟨.of (Localization.Away r), f, inferInstance, ?_⟩
   rw [Scheme.Hom.comp_base, TopCat.coe_comp, Set.range_comp]
-  erw [PrimeSpectrum.localization_away_comap_range (Localization.Away r) r]
+  rw [Spec.map_eq_comap, CommRingCat.hom_ofHom,
+    PrimeSpectrum.localization_away_comap_range (Localization.Away r) r]
   exact ⟨⟨_, hr, congr(($(e.hom_inv_id).base ⟨x, hxV⟩).1)⟩, Set.image_subset_iff.mpr hr'⟩
 
 end Scheme
@@ -567,14 +571,16 @@ instance : PreservesLimit (cospan f g) Scheme.forget := by delta Scheme.forget; 
 
 instance : PreservesLimit (cospan g f) Scheme.forget := by delta Scheme.forget; infer_instance
 
+-- @[simp] lemma Scheme.forgetToTop_map_eq_base {X Y : Scheme.{u}} (f : X ⟶ Y) :
+--     Scheme.forgetToTop.map f = f.base := rfl
+
 set_option backward.isDefEq.respectTransparency false in
 theorem range_pullbackSnd :
     Set.range (pullback.snd f g) = g ⁻¹ᵁ f.opensRange := by
   rw [← show _ = (pullback.snd f g).base from
     PreservesPullback.iso_hom_snd Scheme.forgetToTop f g, TopCat.coe_comp, Set.range_comp,
     Set.range_eq_univ.mpr, ← @Set.preimage_univ _ _ (pullback.fst f.base g.base)]
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): was `rw`
-  · erw [TopCat.pullback_snd_image_fst_preimage]
+  · simp only [Scheme.forgetToTop_map_eq_base, TopCat.pullback_snd_image_fst_preimage]
     rw [Set.image_univ]
     rfl
   rw [← TopCat.epi_iff_surjective]
@@ -591,7 +597,7 @@ theorem range_pullbackFst :
     PreservesPullback.iso_hom_fst Scheme.forgetToTop g f, TopCat.coe_comp, Set.range_comp,
     Set.range_eq_univ.mpr, ← @Set.preimage_univ _ _ (pullback.snd g.base f.base)]
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): was `rw`
-  · erw [TopCat.pullback_fst_image_snd_preimage]
+  · simp only [Scheme.forgetToTop_map_eq_base, TopCat.pullback_fst_image_snd_preimage]
     rw [Set.image_univ]
     rfl
   rw [← TopCat.epi_iff_surjective]

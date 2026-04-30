@@ -29,9 +29,12 @@ instance instIsUniformAddGroup [AddGroup 𝕜] [IsUniformAddGroup 𝕜] :
     IsUniformAddGroup (Matrix m n 𝕜) :=
   inferInstanceAs <| IsUniformAddGroup (m → n → 𝕜)
 
+private theorem uniformity_eq_pi : 𝓤 (Matrix m n 𝕜) = 𝓤 (m → n → 𝕜) :=
+  Filter.filter_eq rfl
+
 theorem uniformity :
     𝓤 (Matrix m n 𝕜) = ⨅ (i : m) (j : n), (𝓤 𝕜).comap fun a => (a.1 i j, a.2 i j) := by
-  erw [Pi.uniformity]
+  rw [uniformity_eq_pi, Pi.uniformity]
   simp_rw [Pi.uniformity, Filter.comap_iInf, Filter.comap_comap]
   rfl
 

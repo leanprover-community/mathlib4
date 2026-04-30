@@ -555,6 +555,9 @@ lemma radical_mul {I J : IdealSheafData X} :
   ext U : 2
   simp only [radical_ideal, ideal_mul, Pi.mul_apply, Ideal.radical_mul, ideal_inf, Pi.inf_apply]
 
+private lemma specMap_coe {R S : CommRingCat} (f : R ⟶ S) :
+    ⇑(Spec.map f) = PrimeSpectrum.comap f.hom := rfl
+
 set_option backward.isDefEq.respectTransparency false in
 /-- The vanishing ideal sheaf of a closed set,
 which is the largest ideal sheaf whose support is equal to it.
@@ -591,7 +594,8 @@ noncomputable nonrec def vanishingIdeal (Z : Closeds X) : IdealSheafData X :=
         rw [← vanishingIdeal_closure,
           ← this.isOpenMap.preimage_closure_eq_closure_preimage this.continuous, e] at hx
         rw [← vanishingIdeal_closure, e]
-        erw [preimage_comap_zeroLocus] at hx
+        rw [specMap_coe] at hx
+        rw [preimage_comap_zeroLocus] at hx
         rwa [← PrimeSpectrum.zeroLocus_span, ← Ideal.map, vanishingIdeal_zeroLocus_eq_radical,
           ← RingHom.algebraMap_toAlgebra (X.presheaf.map _).hom,
           ← IsLocalization.map_radical (.powers f), ← vanishingIdeal_zeroLocus_eq_radical] at hx)
