@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Algebra.Lie.AdjointAction.JordanChevalley
-public import Mathlib.Algebra.Lie.Engel
 public import Mathlib.Algebra.Lie.Killing
 public import Mathlib.Algebra.Lie.TraceForm
 public import Mathlib.LinearAlgebra.Eigenspace.Matrix
@@ -220,13 +219,13 @@ public theorem isSolvable_of_killingForm_apply_lie_eq_zero
     rw [← killingForm_apply_apply]
     exact h x (LieSubmodule.lie_le_left I I hx) y hy
   have key : LieModule.IsNilpotent (LieAlgebra.derivedSeries K DI 1) L :=
-    LieModule.isNilpotent_derivedSeries_of_traceForm_eq_zero h_tf
-  rw [LieModule.isNilpotent_iff_forall' (R := K)] at key
+    isNilpotent_derivedSeries_of_traceForm_eq_zero h_tf
+  rw [isNilpotent_iff_forall' (R := K)] at key
   have ad_nil : ∀ x ∈ (DDI : LieSubmodule K L L).toSubmodule, IsNilpotent (ad K L x) := by
     intro x hx
     have hxDI : x ∈ DI := LieSubmodule.lie_le_left DI DI hx
-    have hxDS : (⟨x, hxDI⟩ : DI) ∈ LieAlgebra.derivedSeries K DI 1 := by
-      rw [LieIdeal.derivedSeries_eq_derivedSeriesOfIdeal_comap, LieIdeal.mem_comap]
+    have hxDS : (⟨x, hxDI⟩ : DI) ∈ derivedSeries K DI 1 := by
+      rw [derivedSeries_eq_derivedSeriesOfIdeal_comap, mem_comap]
       exact hx
     exact key ⟨⟨x, hxDI⟩, hxDS⟩
   have ddi_nilpotent : LieRing.IsNilpotent DDI := by
@@ -237,11 +236,10 @@ public theorem isSolvable_of_killingForm_apply_lie_eq_zero
       by ext ⟨_, _⟩; rfl]
     exact Module.End.isNilpotent.restrict _ (ad_nil x hx)
   obtain ⟨k, hk⟩ := IsSolvable.solvable K DDI
-  rw [LieIdeal.derivedSeries_eq_bot_iff] at hk
-  refine .mk (k := k + 2) ((LieIdeal.derivedSeries_eq_bot_iff I (k + 2)).mpr ?_)
-  rw [derivedSeriesOfIdeal_add, derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_succ,
+  rw [derivedSeries_eq_bot_iff] at hk
+  refine .mk (k := k + 2) ((derivedSeries_eq_bot_iff I (k + 2)).mpr ?_)
+  rwa [derivedSeriesOfIdeal_add, derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_succ,
     derivedSeriesOfIdeal_zero]
-  exact hk
 
 end LieIdeal
 
