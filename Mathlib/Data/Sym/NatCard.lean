@@ -79,7 +79,7 @@ lemma ncard_diagSet_compl : (diagSetᶜ : Set (Sym2 α)).ncard = (Nat.card α).c
   natCard_subtype_not_diag _
 
 /-- Type **stars and bars** for the case `n = 2`. -/
-protected theorem natCard : Nat.card (Sym2 α) = Nat.choose (Nat.card α + 1) 2 :=by
+protected theorem natCard : Nat.card (Sym2 α) = Nat.choose (Nat.card α + 1) 2 := by
   cases finite_or_infinite α
   · obtain ⟨_⟩ := nonempty_fintype α; letI := Classical.decEq α
     simp_rw [Nat.card_eq_fintype_card]
