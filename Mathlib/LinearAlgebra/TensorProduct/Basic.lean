@@ -53,7 +53,7 @@ A map `f : M →+ N →+ P` additive in both components is `R`-balanced, or midd
 to `R`, if scalar multiplication in either argument is equivalent, `f (r • m) n = f m (r • n)`.
 Note that strictly the first action should be a right-action by `R`, but for now `R` is commutative
 so it doesn't matter. -/
--- TODO: use this to implement `lift` and `SMul.aux`. For now we do not do this as it causes
+-- TODO: use this to implement `SMul.aux`. For now we do not do this as it causes
 -- performance issues elsewhere.
 def liftAddHom (f : M →+ N →+ P)
     (hf : ∀ (r : R) (m : M) (n : N), f (r • m) n = f m (r • n)) :
@@ -400,6 +400,10 @@ instance addCommGroup : AddCommGroup (M ⊗[R] N) where
     rw [← zero_add (_ • x), ← TensorProduct.neg_add_cancel ((n.succ : ℤ) • x), add_assoc,
       ← add_smul, ← sub_eq_add_neg, sub_self, zero_smul, add_zero]
     rfl
+
+example {R S : Type*} [CommRing R] [CommRing S] : (TensorProduct.instSMul : SMul ℤ (R ⊗[ℤ] S)) =
+    SubNegMonoid.toZSMul := by
+  with_reducible_and_instances rfl
 
 theorem neg_tmul (m : M) (n : N) : (-m) ⊗ₜ n = -m ⊗ₜ[R] n :=
   rfl
