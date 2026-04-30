@@ -75,7 +75,7 @@ theorem iUnionLift_of_mem (x : T) {i : ι} (hx : (x : α) ∈ S i) :
 
 theorem preimage_iUnionLift (t : Set β) :
     iUnionLift S f hf T hT ⁻¹' t =
-      inclusion hT ⁻¹' (⋃ i, inclusion (subset_iUnion S i) '' (f i ⁻¹' t)) := by
+      inclusion hT ⁻¹' (⋃ i, inclusion (subset_iUnion S i) '' f i ⁻¹' t) := by
   ext x
   simp only [mem_preimage, mem_iUnion, mem_image]
   constructor
@@ -164,7 +164,7 @@ theorem liftCover_of_mem {i : ι} {x : α} (hx : (x : α) ∈ S i) :
     liftCover S f hf hS x = f i ⟨x, hx⟩ :=
   iUnionLift_of_mem ⟨x, mem_univ x⟩ hx
 
-theorem preimage_liftCover (t : Set β) : liftCover S f hf hS ⁻¹' t = ⋃ i, (↑) '' (f i ⁻¹' t) := by
+theorem preimage_liftCover (t : Set β) : liftCover S f hf hS ⁻¹' t = ⋃ i, (↑) '' f i ⁻¹' t := by
   change (iUnionLift S f hf univ hS.symm.subset ∘ fun a => ⟨a, mem_univ a⟩) ⁻¹' t = _
   rw [preimage_comp, preimage_iUnionLift]
   ext; simp
