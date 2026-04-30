@@ -12,6 +12,7 @@ public import Mathlib.LinearAlgebra.Eigenspace.Matrix
 public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 public import Mathlib.LinearAlgebra.Eigenspace.Semisimple
 public import Mathlib.LinearAlgebra.Lagrange
+public import Mathlib.RingTheory.Flat.Localization
 
 /-!
 # Cartan's criteria
@@ -22,9 +23,9 @@ criterion.
 
 ## Main results
 
-* `LieModule.isNilpotent_derivedSeries_of_traceForm_eq_zero_algClosed`: over an algebraically
-  closed field of characteristic zero, if a finite-dimensional representation `M` of `L` has
-  trivial trace form, then `M` is nilpotent as a `⁅L, L⁆`-module.
+* `LieModule.isNilpotent_derivedSeries_of_traceForm_eq_zero`: over a field of characteristic zero,
+  if a finite-dimensional representation `M` of `L` has trivial trace form, then `M` is nilpotent
+  as a `⁅L, L⁆`-module.
 
 ## TODO
 
@@ -37,17 +38,19 @@ criterion.
 * [J. Humphreys, *Introduction to Lie Algebras and ...*](humphreys1972) Chapter II 4.3
 -/
 
-
 namespace LieModule
 
-variable {K L M : Type*}
-  [Field K] [CharZero K] [IsAlgClosed K]
+variable {R K L M : Type*}
+  [Field K] [CharZero K]
   [LieRing L] [LieAlgebra K L]
   [AddCommGroup M] [Module K M] [LieRingModule L M] [LieModule K L M] [FiniteDimensional K M]
+  [CommRing R] [CharZero R] [IsDomain R]
+  [LieAlgebra R L] [Module R M] [LieModule R L M] [IsNoetherian R M] [Module.Free R M]
 
 local notation "φ" => toEnd K L M
 
-open Algebra LieAlgebra LinearMap Module Module.End Polynomial
+open Algebra Function LieAlgebra LinearMap Module Module.End Polynomial
+open scoped TensorProduct
 
 lemma exists_polynomial_eval_sub_aux
     {ι R K : Type*} [Finite ι] [CommRing R] [Field K] [Algebra R K]
@@ -63,8 +66,10 @@ lemma exists_polynomial_eval_sub_aux
   have heq : (⟨a i, ha i⟩ - ⟨a j, ha j⟩ : E) = ⟨a k, ha k⟩ - ⟨a l, ha l⟩ := Subtype.ext hij
   rw [← (algebraMap R K).map_sub, ← (algebraMap R K).map_sub, ← map_sub, ← map_sub, heq]
 
-/-- If the trace form of `M` is zero, then the `⁅L, L⁆`-module `M` is nilpotent. -/
-public theorem isNilpotent_derivedSeries_of_traceForm_eq_zero_algClosed (h : traceForm K L M = 0) :
+/-- An auxiliary lemma used to prove `LieModule.isNilpotent_derivedSeries_of_traceForm_eq_zero`
+which proves the same result except without the algebraically closed assumption. -/
+theorem isNilpotent_derivedSeries_of_traceForm_eq_zero_aux [IsAlgClosed K]
+    (h : traceForm K L M = 0) :
     IsNilpotent (derivedSeries K L 1) M := by
   /- By Engel's theorem it suffices to prove that `⁅L, L⁆` acts nilpotently on `M`. -/
   suffices ∀ x ∈ derivedSeries K L 1, _root_.IsNilpotent (φ x) from
@@ -82,7 +87,7 @@ public theorem isNilpotent_derivedSeries_of_traceForm_eq_zero_algClosed (h : tra
     s.eigenspaces_iSupIndep hs_ss.iSup_eigenspace_eq_top
   let I := (ν : K) × Fin (finrank K (s.eigenspace ν))
   let v : Basis I K M := eigenDecomp.collectedBasis fun μ ↦ finBasis K (s.eigenspace μ)
-  have : Fintype I := v.fintypeIndexOfRankLtAleph0 (rank_lt_aleph0 K M)
+  have : Fintype I := FiniteDimensional.fintypeBasisIndex v
   let μ : I → K := Sigma.fst
   have hsv (i : I) : s (v i) = μ i • v i :=
     mem_eigenspace_iff.mp (eigenDecomp.collectedBasis_mem _ i)
@@ -159,5 +164,24 @@ public theorem isNilpotent_derivedSeries_of_traceForm_eq_zero_algClosed (h : tra
     rw [trace_eq_matrix_trace _ v, Matrix.trace]
     exact Finset.sum_congr rfl <| by simp [toMatrix_apply, hyv, hsv]
   rw [hX_ns, add_mul, map_add, htr_n, htr_s, zero_add]
+
+/-- If the trace form of `M` is zero, then the `⁅L, L⁆`-module `M` is nilpotent. -/
+public theorem isNilpotent_derivedSeries_of_traceForm_eq_zero (h : traceForm R L M = 0) :
+    IsNilpotent (derivedSeries R L 1) M := by
+  set A := AlgebraicClosure (FractionRing R)
+  have _i : FaithfulSMul R A := FaithfulSMul.trans R (FractionRing R) A
+  have nilp_ext : IsNilpotent (derivedSeries A (A ⊗[R] L) 1) (A ⊗[R] M) :=
+    isNilpotent_derivedSeries_of_traceForm_eq_zero_aux <| by simpa
+  rw [isNilpotent_iff_forall' (R := R)]
+  rw [isNilpotent_iff_forall' (R := A)] at nilp_ext
+  intro ⟨x, hx⟩
+  have hx_ext : 1 ⊗ₜ[R] x ∈ derivedSeries A (A ⊗[R] L) 1 := by
+    rw [derivedSeries_baseChange]
+    exact Submodule.tmul_mem_baseChange_of_mem 1 hx
+  have hbc_inj : Injective (End.baseChangeHom R A M) := LinearMap.baseChangeHom_injective R M A
+  have aux : (toEnd R (derivedSeries R L 1) M ⟨x, hx⟩).baseChangeHom R A M =
+      (toEnd R L M x).baseChange A := rfl
+  rw [← IsNilpotent.map_iff hbc_inj, aux, ← toEnd_baseChange]
+  exact nilp_ext ⟨_, hx_ext⟩
 
 end LieModule
