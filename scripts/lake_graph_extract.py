@@ -561,6 +561,30 @@ def build_module_registry(packages: dict[str, Path]) -> dict[str, ModuleEntry]:
     return registry
 
 
+def direct_imports(
+    module: str, registry: dict[str, ModuleEntry],
+) -> list[str]:
+    """The immediate imports of `module` that are present in the registry.
+
+    Module-name dedup (multiple flag-distinct edges to the same module collapse
+    to one entry, preserving first-occurrence order). Stdlib/runtime modules
+    aren't in the registry, so they're naturally excluded — same filter as
+    `transitive_imports`.
+    """
+    if module not in registry:
+        raise KeyError(module)
+    seen: set[str] = set()
+    out: list[str] = []
+    for imp in registry[module].imports:
+        if imp.module in seen:
+            continue
+        if imp.module not in registry:
+            continue
+        seen.add(imp.module)
+        out.append(imp.module)
+    return out
+
+
 def transitive_imports(
     module: str, registry: dict[str, ModuleEntry],
 ) -> tuple[list[str], dict[str, bool]]:
@@ -943,12 +967,24 @@ def _build_lean_module_node_dict(
     packages: dict[str, Path],
     lib_options: _LibOptionsCache,
     lean_bin: Path,
+    deps_mode: str = "transitive",
 ) -> dict:
     """Pure-dict node for a Lean module — what `emit-graph` writes per node.
 
     Paths are *absolute*. Relativization is a separate post-pass so the same
     builder serves both the graph-execution path (uses absolutes directly) and
     the JSON-emission path (rewrites to ``$WORKSPACE``/etc.).
+
+    ``deps_mode`` controls only ``graph_deps`` — the *graph-edge* dependency
+    list. Other fields (``inputs``, ``setup_json.importArts``) always carry
+    the full transitive set, because ``lean --setup`` reads every transitive
+    olean and the worker must stage them all.
+
+    - ``"transitive"`` (default): ``graph_deps`` lists every module in
+      ``setup_json.importArts``. Redundant given importArts already enumerates
+      them, but cheap to consume.
+    - ``"immediate"``: ``graph_deps`` lists only direct imports. Smaller; the
+      scheduler computes transitivity by walking edges.
     """
     entry = registry[module]
     pkg_dir = packages[entry.pkg]
@@ -999,8 +1035,10 @@ def _build_lean_module_node_dict(
         ])
     outputs.append(setup_path)
 
-    # Build-graph deps: every module whose oleans appear as importArts inputs.
-    graph_deps = sorted(setup_json["importArts"].keys())
+    if deps_mode == "immediate":
+        graph_deps = direct_imports(module, registry)
+    else:
+        graph_deps = sorted(setup_json["importArts"].keys())
 
     return {
         "id": f"{entry.pkg}:{module}",
@@ -1023,6 +1061,7 @@ def _build_exe_lean_module_node(
     packages: dict[str, Path],
     lib_options: _LibOptionsCache,
     lean_bin: Path,
+    deps_mode: str = "transitive",
 ) -> dict:
     """Build the lean_module node that compiles the exe's root .lean file.
 
@@ -1117,6 +1156,11 @@ def _build_exe_lean_module_node(
         ])
     outputs.append(setup_path)
 
+    if deps_mode == "immediate":
+        graph_deps = direct_imports(file_module_name, registry)
+    else:
+        graph_deps = sorted(importArts.keys())
+
     return {
         "id": f"mathlib:exe:{exe.name}:lean",
         "kind": "lean_module",
@@ -1127,7 +1171,7 @@ def _build_exe_lean_module_node(
         "inputs": inputs,
         "outputs": outputs,
         "setup_json": setup_json,
-        "graph_deps": sorted(importArts.keys()),
+        "graph_deps": graph_deps,
     }
 
 
@@ -1314,7 +1358,26 @@ def _topo_order_modules(
     return out
 
 
-def emit_graph(target: str, *, output_path: Optional[Path]) -> dict:
+def _summarize_node(n: dict) -> None:
+    """Replace bulky list/dict fields with their lengths for compact output.
+
+    Mutates `n` in place. Safe for any node kind: only touches fields that
+    are present (cc_compile/cc_link nodes don't have ``setup_json``).
+    """
+    if isinstance(n.get("inputs"), list):
+        n["inputs"] = len(n["inputs"])
+    setup = n.get("setup_json")
+    if isinstance(setup, dict) and isinstance(setup.get("importArts"), dict):
+        setup["importArts"] = len(setup["importArts"])
+
+
+def emit_graph(
+    target: str,
+    *,
+    output_path: Optional[Path],
+    deps_mode: str = "transitive",
+    summarize: bool = False,
+) -> dict:
     """Emit the build subgraph for ``target``.
 
     Dispatch:
@@ -1354,12 +1417,14 @@ def emit_graph(target: str, *, output_path: Optional[Path]) -> dict:
             nodes.append(_build_lean_module_node_dict(
                 m, registry=registry, packages=packages,
                 lib_options=lib_options, lean_bin=lean_bin,
+                deps_mode=deps_mode,
             ))
 
         # 2. lean_module node for the exe's own root.
         exe_lean_node = _build_exe_lean_module_node(
             exe, registry=registry, packages=packages,
             lib_options=lib_options, lean_bin=lean_bin,
+            deps_mode=deps_mode,
         )
         nodes.append(exe_lean_node)
 
@@ -1414,15 +1479,20 @@ def emit_graph(target: str, *, output_path: Optional[Path]) -> dict:
             _build_lean_module_node_dict(
                 m, registry=registry, packages=packages,
                 lib_options=lib_options, lean_bin=lean_bin,
+                deps_mode=deps_mode,
             )
             for m in ordered
         ]
 
     ctx = _placeholder_ctx(lean_bin)
     nodes_rel = [_relativize_obj(n, ctx) for n in nodes]
+    if summarize:
+        for n in nodes_rel:
+            _summarize_node(n)
     graph = {
         "version": "v1",
         "target": target,
+        "deps_mode": deps_mode,
         "workspace": {
             "WORKSPACE": str(WORKSPACE),
             "LAKE_HOME": str(LAKE_HOME),
@@ -1627,22 +1697,30 @@ def _is_diffable_output(path: str) -> bool:
     return not any(path.endswith(s) for s in _OUTPUT_EXCLUDE_SUFFIXES)
 
 
-def _delete_module_artifacts(parent: Path, stem: str) -> int:
-    """Delete every regular file in `parent` whose name is `stem` or `stem.X`.
+_OUTPUT_SIDECAR_SUFFIXES = (".hash", ".trace", ".trace.nobuild")
 
-    Skips directories — a sibling subdirectory can share the stem (e.g. a
-    `Lint/` subdir next to a `Lint.olean` for the lib's namespace module).
-    Returns the count of files removed.
+
+def _delete_node_outputs(node: dict, ctx: list[tuple[str, str]]) -> int:
+    """Delete a node's declared outputs (plus their hash/trace sidecars).
+
+    Replaces the older stem-based deletion which was over-eager: a
+    lean_module's stem (e.g. ``Init``) would collide with a sibling
+    cc_compile node's output (``Init.c.o.export``) and wipe artifacts that
+    belong to other nodes. Now we delete only files this node actually
+    produces, plus their immediate hash/trace sidecars (Lake's incremental
+    bookkeeping that the executor doesn't replicate).
     """
-    if not parent.exists():
-        return 0
     n = 0
-    for f in parent.iterdir():
-        if not f.is_file():
-            continue
-        if f.name == stem or f.name.startswith(stem + "."):
-            f.unlink()
+    for out_rel in node.get("outputs", []):
+        p = Path(absolutize(out_rel, ctx))
+        if p.exists() and p.is_file():
+            p.unlink()
             n += 1
+        for ext in _OUTPUT_SIDECAR_SUFFIXES:
+            sidecar = Path(str(p) + ext)
+            if sidecar.exists() and sidecar.is_file():
+                sidecar.unlink()
+                n += 1
     return n
 
 
@@ -1677,7 +1755,9 @@ def validate_outputs(target: str, *, full: bool = False) -> int:
 
     graph_path = Path(tempfile.mkstemp(prefix="build_graph_", suffix=".json")[1])
     try:
-        emit_graph(target, output_path=graph_path)
+        # validate-outputs writes the temp graph to disk and re-reads it via
+        # run_graph.py, which needs the full inputs/importArts data.
+        emit_graph(target, output_path=graph_path, summarize=False)
         graph = json.loads(graph_path.read_text())
         ws = graph["workspace"]
         ctx = [
@@ -1722,17 +1802,12 @@ def validate_outputs(target: str, *, full: bool = False) -> int:
               f"golden present: {len(golden)}  "
               f"missing pre-run: {len(missing_pre)}")
 
-        # Delete outputs to force a fresh rebuild. We delete by parent dir +
-        # module stem so sidecars (.hash, .trace) also go.
-        deleted = 0
-        deleted_parents: set[tuple[Path, str]] = set()
-        for p in outputs_abs:
-            stem = p.name.split(".", 1)[0]
-            key = (p.parent, stem)
-            if key in deleted_parents:
-                continue
-            deleted_parents.add(key)
-            deleted += _delete_module_artifacts(p.parent, stem)
+        # Delete outputs to force a fresh rebuild. Per-node deletion only
+        # touches each node's declared outputs (plus their hash/trace
+        # sidecars), avoiding the cross-node collisions that the older
+        # stem-prefix sweep caused (e.g. lean_module Mathlib.Init wiping the
+        # neighboring cc_compile node's Mathlib/Init.c.o.export).
+        deleted = sum(_delete_node_outputs(n, ctx) for n in nodes_to_check)
         print(f"deleted {deleted} files (output set + sidecars)")
 
         # Run.
@@ -1889,6 +1964,20 @@ def main(argv: list[str] | None = None) -> int:
     p_emit_graph.add_argument("target")
     p_emit_graph.add_argument("-o", "--output", type=Path, default=None,
                               help="output path (default: stdout)")
+    p_emit_graph.add_argument(
+        "--deps", choices=("transitive", "immediate"), default="transitive",
+        help="lean_module graph_deps mode: 'transitive' lists every module in "
+             "setup_json.importArts (default; redundant but explicit), "
+             "'immediate' lists only direct imports (smaller; scheduler "
+             "computes transitivity). setup_json.importArts and inputs always "
+             "carry the full transitive set regardless.",
+    )
+    p_emit_graph.add_argument(
+        "--full", action="store_true",
+        help="emit the full graph (every input path, every importArts entry). "
+             "Default is human-readable summary form (counts in place of long "
+             "lists). Required for run_graph.py / validate-outputs consumption.",
+    )
 
     sub.add_parser(
         "preflight",
@@ -1935,12 +2024,17 @@ def main(argv: list[str] | None = None) -> int:
         return validate_setup(args.module)
 
     if args.cmd == "emit-graph":
-        graph = emit_graph(args.target, output_path=args.output)
+        graph = emit_graph(
+            args.target, output_path=args.output, deps_mode=args.deps,
+            summarize=not args.full,
+        )
         if args.output is None:
             json.dump(graph, sys.stdout, indent=1)
             sys.stdout.write("\n")
         else:
-            print(f"wrote {args.output} ({graph['node_count']} nodes)")
+            mode = "full" if args.full else "summary"
+            print(f"wrote {args.output} ({graph['node_count']} nodes, "
+                  f"deps_mode={graph['deps_mode']}, {mode})")
         return 0
 
     if args.cmd == "validate-outputs":

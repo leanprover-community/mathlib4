@@ -69,14 +69,15 @@ python3 scripts/lake_graph_extract.py emit Mathlib.Init
 
 Each call invokes `lake setup-file` once (a few seconds).
 
-### 3.3 `emit-graph <target> [-o file]`
+### 3.3 `emit-graph <target> [-o file] [--deps {transitive,immediate}]`
 
-Emit the full transitive build subgraph for a target.
+Emit the build subgraph for a target.
 
 ```
 python3 scripts/lake_graph_extract.py emit-graph Mathlib.Init -o /tmp/graph.json
 python3 scripts/lake_graph_extract.py emit-graph autolabel    -o /tmp/autolabel.json
 python3 scripts/lake_graph_extract.py emit-graph Mathlib      -o /tmp/full.json   # 8310+ nodes
+python3 scripts/lake_graph_extract.py emit-graph Mathlib.Algebra.Group.Defs -o /tmp/g.json --deps immediate
 ```
 
 The target may be:
@@ -84,6 +85,17 @@ The target may be:
 - a `lean_exe` name from mathlib's lakefile (`autolabel`, `cache`, `mk_all`, ...)
 
 The graph is topo-ordered (leaves first) and written with `$WORKSPACE` / `$LAKE_HOME` / `$TOOLCHAIN` / `$TOOLCHAIN_ROOT` placeholders so it's portable across machines that share the same toolchain.
+
+**`--deps` modes:**
+
+- `transitive` *(default)* — every `lean_module` node's `graph_deps` lists every module in its `setup_json.importArts`. Redundant given importArts already enumerates them, but explicit.
+- `immediate` — `graph_deps` lists only direct imports. The scheduler computes transitivity by walking edges. Typical reduction is ~10× on `sum(len(graph_deps))`; on a 84-node `Mathlib.Algebra.Group.Defs` graph the totals go from 1552 to 156.
+
+**The mode only affects `graph_deps`.** `setup_json.importArts` and `inputs` always carry the full transitive set — `lean --setup` reads every transitive olean and the worker must stage them all for hermetic execution. `cc_compile`/`cc_link` deps are already minimal (a cc_compile depends on its lean_module; a cc_link depends on every cc_compile in the closure, all of which it directly consumes), so those nodes are unaffected.
+
+The mode is recorded as `graph["deps_mode"]` at the top level so consumers can detect it. `run_graph.py`'s closure walk handles both modes uniformly (it BFSs over `graph_deps` recursively).
+
+**`--full` flag:** by default `emit-graph` writes a *summary* form — each node's `inputs` list and `setup_json.importArts` dict are replaced by their lengths, so the file is small and human-readable. The full form is required by `run_graph.py` and by `validate-outputs`'s internal use; pass `--full` to emit it. `validate-outputs` always uses the full form internally regardless of CLI defaults.
 
 ### 3.4 `validate-commands <module>`
 
@@ -249,6 +261,7 @@ The `workspace` field of the graph JSON records the absolute paths the placehold
 {
   "version": "v1",
   "target": "Mathlib.Init",
+  "deps_mode": "transitive"|"immediate",
   "workspace": {
     "WORKSPACE": "/Users/chelo/mathlib4",
     "LAKE_HOME": "/Users/chelo/mathlib4/.lake",
@@ -331,7 +344,7 @@ Lake's `Lean.Json` writes setup.json with implementation-defined field/dict orde
 ## 7. Known limitations / caveats
 
 - **macOS-only constants**: `MACOSX_DEPLOYMENT_TARGET=99.0`, the static cc flag list, and the link rsp tail were captured on Darwin/x86_64. Linux/Windows would need a re-capture (the cc flag set differs and the link tail may use `-no-pie` etc.).
-- **`mathlib_test_executable` validation pending**: the deepest exe root we have (`MathlibTest/MathlibTestExecutable.lean`) hung in a 30+min validate-outputs run. Other 7 exes pass; root cause not yet diagnosed.
+- **`mathlib_test_executable` validation is huge** (16,645 nodes — its closure is essentially all of mathlib + every package). A `--missing` rebuild from scratch produces ~14,000 cc_compile invocations and runs for many hours; not practical for routine validation. The original failure of this exe under `validate-outputs` traced to a deletion-collision bug (now fixed): the lean_module deletion used a stem-prefix sweep that wiped neighboring nodes' artifacts (`Mathlib.Init`'s lean_module deletion would also remove `Mathlib/Init.c.o.export`, which belongs to the cc_compile node). Per-node deletion now only touches each node's declared `outputs` plus immediate `.hash` / `.trace` sidecars.
 - **Shared lakefile knowledge**: the `LEAN_EXES` table and `LEAN_PATH_PACKAGES` order are hand-mirrored from the lakefile rather than parsed. They match today; a lakefile edit would require updating the script too. The validators trip on any drift.
 - **`lake setup-file` calls during emission**: per-lib `leanOptions` come from one `lake setup-file` per `(pkg, lib)`. For 10–15 lib pairs that's a few seconds each; cached so it pays once per `emit-graph` call.
 - **Per-input sha256 not yet emitted**: input entries currently carry only `path`. Distributed dispatch needs `sha256` per input plus a per-node `cache_key`; see §8.
