@@ -31,14 +31,14 @@ properties about them.
   only if it is a zero-one measure for every input.
 * `IsDeterministic.exists_eq_deterministic`: in a standard Borel space, a deterministic Markov
   kernel is a Dirac kernel of some measurable function.
-* `parallelComp_id_comp_copy_comp`: if the composition of two Markov kernels `η ∘ₖ κ` is
+* `comp_parallelComp_comp_copy`: if the composition of two Markov kernels `η ∘ₖ κ` is
   deterministic, the distribution over both `η ∘ₖ κ` and `κ` can be obtained by computing `η ∘ₖ κ`
   and `κ` independently. This corresponds to the equation of a Positive Markov category.
   See Example 11.25 of [fritz2020].
 
 ## Implementation notes
 
-`parallelComp_id_comp_copy_comp` is true only when considering Markov kernels. To see why, consider
+`comp_parallelComp_comp_copy` is true only when considering Markov kernels. To see why, consider
 the counterexample with $X = Y = \{\varnothing\}$, kernels $\kappa(\cdot | \varnothing) = 2\delta_
 {\varnothing}$ and $\eta(\cdot | \varnothing) = (1/2)\delta_{\varnothing}$: although their
 composition is deterministic, the equation fails.
@@ -253,7 +253,7 @@ theorem IsDeterministic.exists_eq_deterministic [StandardBorelSpace β] (κ : Ke
 /-- The equation of a Positive Markov category: if the composition of two Markov kernels `η ∘ₖ κ` is
  deterministic, the distribution over both `η ∘ₖ κ` and `κ` can be obtained by computing `η ∘ₖ κ`
 and `κ` independently. -/
-lemma parallelComp_id_comp_copy_comp {γ : Type*} [MeasurableSpace γ] {κ : Kernel α β}
+lemma comp_parallelComp_comp_copy {γ : Type*} [MeasurableSpace γ] {κ : Kernel α β}
     {η : Kernel β γ} [IsMarkovKernel κ] [IsMarkovKernel η] [IsDeterministic (η ∘ₖ κ)] :
     η ∘ₖ κ ∥ₖ κ ∘ₖ copy α = η ∥ₖ Kernel.id ∘ₖ copy β ∘ₖ κ := by
   simp only [parallelComp_comp_copy]
