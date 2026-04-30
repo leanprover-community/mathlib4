@@ -162,7 +162,7 @@ theorem directedOn_union_iff :
     DirectedOn (· ≤ ·) (s ∪ t) ↔
       DirectedOn (· ≤ ·) s ∧ IsCofinalFor t s ∨ DirectedOn (· ≤ ·) t ∧ IsCofinalFor s t := by
   refine ⟨fun h ↦ ?_, ?_⟩
-  · rcases isCofinalFor_of_directedOn_union h with hts | hst
+  · rcases isCofinalFor_or_isCofinalFor_of_directedOn_union h with hts | hst
     · exact .inl ⟨DirectedOn.of_isCofinalFor h subset_union_left hts.union_right, hts⟩
     · exact .inr ⟨DirectedOn.of_isCofinalFor h subset_union_right hst.union_left, hst⟩
   · rintro (⟨hs, hts⟩ | ⟨ht, hst⟩) x hx y hy
