@@ -388,7 +388,7 @@ def homIso (h : IsLimit t) (W : C) :
 
 @[simp]
 theorem homIso_hom (h : IsLimit t) {W : C} :
-    (IsLimit.homIso h W).hom = TypeCat.ofHom (fun f ↦ (t.extend f.down).π) :=
+    (IsLimit.homIso h W).hom = ↾fun f ↦ (t.extend f.down).π :=
   rfl
 
 /-- The limit of `F` represents the functor taking `W` to
@@ -402,9 +402,9 @@ def homIso' (h : IsLimit t) (W : C) :
     (ULift.{u₁} (W ⟶ t.pt : Type v₃)) ≅
       { p : ∀ j, W ⟶ F.obj j // ∀ {j j'} (f : j ⟶ j'), p j ≫ F.map f = p j' } :=
   h.homIso W ≪≫
-    { hom := TypeCat.ofHom fun π =>
+    { hom := ↾fun π =>
         ⟨fun j => π.app j, fun f => by convert ← (π.naturality f).symm; apply id_comp⟩
-      inv := TypeCat.ofHom fun p =>
+      inv := ↾fun p =>
         { app := fun j => p.1 j
           naturality := fun j j' f => by dsimp; rw [id_comp]; exact (p.2 f).symm } }
 
@@ -435,10 +435,10 @@ there is a unique cone morphism from any other cone.
 -/
 def isoUniqueConeMorphism {t : Cone F} :
     IsLimit t ≅ ∀ s, Unique (s ⟶ t) where
-  hom := TypeCat.ofHom fun h s ↦
+  hom := ↾fun h s ↦
     { default := h.liftConeMorphism s
       uniq := fun _ => h.uniq_cone_morphism }
-  inv := TypeCat.ofHom fun h =>
+  inv := ↾fun h =>
     { lift := fun s => (h s).default.hom
       uniq := fun s f w => congrArg ConeMorphism.hom ((h s).uniq ⟨f, w⟩) }
 
@@ -886,7 +886,7 @@ def homIso (h : IsColimit t) (W : C) :
 
 @[simp]
 theorem homIso_hom (h : IsColimit t) {W : C} :
-    (IsColimit.homIso h W).hom = TypeCat.ofHom (fun f ↦ (t.extend f.down).ι) :=
+    (IsColimit.homIso h W).hom = ↾fun f ↦ (t.extend f.down).ι :=
   rfl
 
 /-- The colimit of `F` represents the functor taking `W` to
@@ -900,9 +900,9 @@ def homIso' (h : IsColimit t) (W : C) :
     (ULift.{u₁} (t.pt ⟶ W : Type v₃)) ≅
       { p : ∀ j, F.obj j ⟶ W // ∀ {j j' : J} (f : j ⟶ j'), F.map f ≫ p j' = p j } :=
   h.homIso W ≪≫
-    { hom := TypeCat.ofHom fun ι =>
+    { hom := ↾fun ι =>
         ⟨fun j => ι.app j, fun {j} {j'} f => by convert ← ι.naturality f; apply comp_id⟩
-      inv := TypeCat.ofHom fun p =>
+      inv := ↾fun p =>
         { app := fun j => p.1 j
           naturality := fun j j' f => by dsimp; rw [comp_id]; exact p.2 f } }
 
@@ -934,10 +934,10 @@ there is a unique cocone morphism from any other cocone.
 -/
 def isoUniqueCoconeMorphism {t : Cocone F} :
     IsColimit t ≅ ∀ s, Unique (t ⟶ s) where
-  hom := TypeCat.ofHom fun h s ↦
+  hom := ↾fun h s ↦
     { default := h.descCoconeMorphism s
       uniq := fun _ => h.uniq_cocone_morphism }
-  inv := TypeCat.ofHom fun h ↦
+  inv := ↾fun h ↦
     { desc := fun s => (h s).default.hom
       uniq := fun s f w => congrArg CoconeMorphism.hom ((h s).uniq ⟨f, w⟩) }
 

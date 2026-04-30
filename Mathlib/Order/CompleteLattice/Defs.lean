@@ -73,7 +73,7 @@ class CompleteSemilatticeInf (α : Type*) extends PartialOrder α, InfSet α whe
 
 section
 
-variable [CompleteSemilatticeSup α] {s t : Set α} {a b : α}
+variable [CompleteSemilatticeSup α] {s t : Set α} {a b l : α} {f : ι → α}
 
 @[to_dual]
 theorem isLUB_sSup (s : Set α) : IsLUB s (sSup s) :=
@@ -94,6 +94,10 @@ lemma isLUB_iff_sSup_eq : IsLUB s a ↔ sSup s = a :=
 @[to_dual]
 alias ⟨IsLUB.sSup_eq, _⟩ := isLUB_iff_sSup_eq
 
+@[to_dual]
+theorem sSup_mem_upperBounds : sSup s ∈ upperBounds s :=
+  (isLUB_le_iff <| isLUB_sSup s).mp <| refl _
+
 @[to_dual sInf_le_of_le]
 theorem le_sSup_of_le (hb : b ∈ s) (h : a ≤ b) : a ≤ sSup s :=
   le_trans h (le_sSup hb)
@@ -113,6 +117,15 @@ theorem le_sSup_iff : a ≤ sSup s ↔ ∀ b ∈ upperBounds s, a ≤ b :=
 @[to_dual iInf_le_iff]
 theorem le_iSup_iff {s : ι → α} : a ≤ iSup s ↔ ∀ b, (∀ i, s i ≤ b) → a ≤ b := by
   simp [iSup, le_sSup_iff, upperBounds]
+
+@[to_dual lt_sInf_iff]
+theorem sSup_lt_iff : sSup s < l ↔ ∃ b < l, b ∈ upperBounds s where
+  mp hsl := ⟨sSup s, hsl, sSup_mem_upperBounds⟩
+  mpr := fun ⟨_, hbl, hbs⟩ ↦ sSup_le_iff.mpr hbs |>.trans_lt hbl
+
+@[to_dual lt_iInf_iff]
+theorem iSup_lt_iff : iSup f < l ↔ ∃ b < l, ∀ i, f i ≤ b :=
+  sSup_lt_iff.trans <| exists_congr fun _ ↦ and_congr_right fun _ ↦ forall_mem_range
 
 end
 
@@ -291,23 +304,31 @@ end OrderDual
 
 section CompleteLinearOrder
 
-variable [CompleteLinearOrder α] {s : Set α} {a b : α}
+variable [CompleteLinearOrder α] {s : Set α} {a b l : α} {f : ι → α}
 
 @[to_dual sInf_lt_iff]
 theorem lt_sSup_iff : b < sSup s ↔ ∃ a ∈ s, b < a :=
   lt_isLUB_iff <| isLUB_sSup s
 
-@[to_dual]
-theorem sSup_eq_top : sSup s = ⊤ ↔ ∀ b < ⊤, ∃ a ∈ s, b < a :=
-  ⟨fun h _ hb => lt_sSup_iff.1 <| hb.trans_eq h.symm, fun h =>
-    top_unique <|
-      le_of_not_gt fun h' =>
-        let ⟨_, ha, h⟩ := h _ h'
-        (h.trans_le <| le_sSup ha).false⟩
-
 @[to_dual iInf_lt_iff]
-theorem lt_iSup_iff {f : ι → α} : a < iSup f ↔ ∃ i, a < f i :=
+theorem lt_iSup_iff : a < iSup f ↔ ∃ i, a < f i :=
   lt_sSup_iff.trans exists_range_iff
+
+@[to_dual sInf_le_iff_forall_lt]
+theorem le_sSup_iff_forall_lt : l ≤ sSup s ↔ ∀ b < l, ∃ a ∈ s, b < a := by
+  grind [sSup_lt_iff, mem_upperBounds, not_le]
+
+@[to_dual iInf_le_iff_forall_lt]
+theorem le_iSup_iff_forall_lt : l ≤ iSup f ↔ ∀ b < l, ∃ i, b < f i :=
+  le_sSup_iff_forall_lt.trans <| forall₂_congr fun _ _ ↦ exists_range_iff
+
+@[to_dual]
+theorem sSup_eq_top : sSup s = ⊤ ↔ ∀ b < ⊤, ∃ a ∈ s, b < a := by
+  rw [eq_top_iff, le_sSup_iff_forall_lt]
+
+@[to_dual]
+theorem iSup_eq_top : iSup f = ⊤ ↔ ∀ b < ⊤, ∃ i, b < f i := by
+  rw [eq_top_iff, le_iSup_iff_forall_lt]
 
 @[to_dual]
 theorem lt_biSup_iff {s : Set β} {f : β → α} : a < ⨆ i ∈ s, f i ↔ ∃ i ∈ s, a < f i := by
