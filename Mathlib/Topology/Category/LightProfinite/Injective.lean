@@ -68,7 +68,7 @@ lemma exists_lift_of_finite_of_injective_of_surjective {X Y S T : Type*}
   -- `T` is finite because it admits a surjection from a finite set
   have : Finite T := Finite.of_surjective f' f'_surj
   -- define the closed partition `Z` so `Z i` is the image under `f` of the fiber of `g` at `i`
-  let Z : S → Set Y := fun i ↦ f '' (g ⁻¹' {i})
+  let Z : S → Set Y := fun i ↦ f '' g ⁻¹' {i}
   have Z_closed (i) : IsClosed (Z i) :=
     (IsClosedEmbedding.isClosed_iff_image_isClosed (Continuous.isClosedEmbedding hf f_inj)).mp
     (IsClosed.preimage hg isClosed_singleton)
