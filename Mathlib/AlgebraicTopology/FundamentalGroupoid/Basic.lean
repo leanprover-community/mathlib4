@@ -249,7 +249,7 @@ theorem trans_refl (γ : Homotopic.Quotient x₀ x₁) :
   induction γ using Quotient.ind with | mk γ =>
   simpa [← mk_trans, ← mk_refl, eq] using Homotopic.trans_refl γ
 
-@[simp, grind =]
+@[simp]
 theorem refl_cast_trans {x₀ x₀' x₁ x₂ : X} (p : Homotopic.Quotient x₁ x₂)
     (hx : x₀' = x₀) (hy : x₁ = x₀) :
     trans ((refl x₀).cast hx hy) p = p.cast (hx.trans hy.symm) rfl := by
@@ -257,7 +257,7 @@ theorem refl_cast_trans {x₀ x₀' x₁ x₂ : X} (p : Homotopic.Quotient x₁ 
   simp only [← mk_trans, ← mk_refl, ← mk_cast, eq]
   exact Homotopic.refl_cast_trans p hx hy
 
-@[simp, grind =]
+@[simp]
 theorem trans_refl_cast {x₀ x₁ x₁' x₂ : X} (p : Homotopic.Quotient x₀ x₁)
     (hx : x₁ = x₂) (hy : x₁' = x₂) :
     trans p ((refl x₂).cast hx hy) = p.cast rfl (hy.trans hx.symm) := by
