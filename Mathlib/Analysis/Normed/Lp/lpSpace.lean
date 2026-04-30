@@ -988,7 +988,7 @@ variable [DecidableEq α]
 /-- The element of `lp E p` which is `a : E i` at the index `i`, and zero elsewhere. -/
 protected def single (p) (i : α) (a : E i) : lp E p :=
   ⟨Pi.single i a, by
-    refine (memℓp_zero ?_).of_exponent_ge (zero_le p)
+    refine (memℓp_zero ?_).of_exponent_ge zero_le
     refine (Set.finite_singleton i).subset ?_
     intro j
     simp only [Set.mem_singleton_iff, Ne,
