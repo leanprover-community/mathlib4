@@ -130,7 +130,6 @@ theorem δ_apply {i j : ℕ} (hij : j + 1 = i)
       π X.X₁ j (cyclesMkOfCompEqD hX hx) := by
   exact (map_chainsFunctor_shortExact hX).δ_apply i j hij z hz y hy x (by simpa using hx) _ rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem δ₀_apply
     -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short exact sequence of `G`-representations.
     -- Let `z` by a 1-cycle for `X₃` and `y` a 1-chain for `X₂` such that `g ∘ y = z`.
@@ -141,9 +140,12 @@ theorem δ₀_apply
     δ hX 1 0 rfl (H1π X.X₃ z) = H0π X.X₁ x := by
   simpa only [H1π, ModuleCat.hom_comp, LinearMap.coe_comp, Function.comp_apply, H0π,
     ← cyclesMk₀_eq X.X₁, ← cyclesMk₁_eq X.X₃]
-  using δ_apply hX (i := 1) (j := 0) rfl ((chainsIso₁ X.X₃).inv z.1) (by simp +instances)
+  using δ_apply hX (i := 1) (j := 0) rfl ((chainsIso₁ X.X₃).inv z.1) (by
+    rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, eq_d₁₀_comp_inv]; simp)
     ((chainsIso₁ X.X₂).inv y) (Finsupp.ext fun _ => by simp [chainsIso₁, ← hy])
-    ((chainsIso₀ X.X₁).inv x) (Finsupp.ext fun _ => by simp [chainsIso₀, ← hx])
+    ((chainsIso₀ X.X₁).inv x) (Finsupp.ext fun _ => by
+      conv_rhs => rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, eq_d₁₀_comp_inv]
+      simp [chainsIso₀, ← hx])
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Stated for readability of `δ₁_apply`. -/
@@ -154,7 +156,6 @@ theorem mem_cycles₁_of_comp_eq_d₂₁
   have := congr($((mapShortComplexH1 (MonoidHom.id G) X.f).comm₂₃.symm) x)
   simp_all [shortComplexH1]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem δ₁_apply
     -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short exact sequence of `G`-representations.
     -- Let `z` by a 2-cycle for `X₃` and `y` a 2-chain for `X₂` such that `g ∘ y = z`.
@@ -165,9 +166,12 @@ theorem δ₁_apply
     δ hX 2 1 rfl (H2π X.X₃ z) = H1π X.X₁ ⟨x, mem_cycles₁_of_comp_eq_d₂₁ hX hx⟩ := by
   simpa only [H2π, ModuleCat.hom_comp, LinearMap.coe_comp, Function.comp_apply, H1π,
     ← cyclesMk₂_eq X.X₃, ← cyclesMk₁_eq X.X₁]
-  using δ_apply hX (i := 2) (j := 1) rfl ((chainsIso₂ X.X₃).inv z.1) (by simp +instances)
+  using δ_apply hX (i := 2) (j := 1) rfl ((chainsIso₂ X.X₃).inv z.1) (by
+    rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, eq_d₂₁_comp_inv]; simp)
     ((chainsIso₂ X.X₂).inv y) (Finsupp.ext fun _ => by simp [chainsIso₂, ← hy])
-    ((chainsIso₁ X.X₁).inv x) (Finsupp.ext fun _ => by simp [chainsIso₁, ← hx])
+    ((chainsIso₁ X.X₁).inv x) (Finsupp.ext fun _ => by
+    conv_rhs => rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, eq_d₂₁_comp_inv]
+    simp [← hx, chainsIso₁])
 
 /-- `S.map (chainsFunctor k G)` is short exact in each degree. -/
 lemma map_chainsFunctor_eval_shortExact (n : ℕ) :

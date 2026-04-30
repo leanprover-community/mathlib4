@@ -22,7 +22,7 @@ set multiplication, set addition, pointwise addition, pointwise multiplication, 
 
 public section
 
-open Pointwise
+open scoped Pointwise
 
 open Set
 
