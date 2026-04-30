@@ -649,7 +649,6 @@ abbrev of (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) �
 
 variable (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ d n = 0)
 
--- @[simp]
 theorem of_X : (of X d sq).X = X :=
   rfl
 
