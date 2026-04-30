@@ -38,7 +38,7 @@ whose vertices represent the available colors.
   We write `G.chromaticIndex ≠ ⊤` to mean a graph is colorable with finitely many colors.
 -/
 
-@[expose] public section
+public section
 
 namespace SimpleGraph
 
@@ -58,11 +58,13 @@ instance : Coe (G.EdgeColoring α) (G.EdgeLabeling α) where
 
 variable (G) in
 /-- Whether a graph can be edge-colored using colors from `α`. -/
+@[expose]
 def EdgeColorableWith (α : Type*) : Prop :=
   Nonempty <| G.EdgeColoring α
 
 variable (G n) in
 /-- Whether a graph can be edge-colored by at most `n` colors. -/
+@[expose]
 def EdgeColorable : Prop :=
   G.EdgeColorableWith <| Fin n
 
@@ -70,11 +72,13 @@ variable (G) in
 /-- The chromatic index of a graph is the minimal number of colors needed to color its edges.
 This is `⊤` (infinity) iff `G` isn't edge-colorable with finitely many colors.
 If `G` is edge-colorable, then `G.chromaticIndex.toNat` is the `ℕ`-valued chromatic number. -/
+@[expose]
 noncomputable def chromaticIndex : ℕ∞ :=
   ⨅ n, ⨅ _ : G.EdgeColorable n, (n : ℕ∞)
 
 variable (α) in
 /-- The unique coloring of the empty graph. -/
+@[expose]
 def EdgeColoring.bot : (⊥ : SimpleGraph V).EdgeColoring α :=
   .mk (fun ⟨_, h⟩ ↦ edgeSet_bot ▸ h |>.elim) (lineGraph_bot ▸ · |>.elim)
 
@@ -107,10 +111,12 @@ theorem chromaticIndex_eq_zero : G.chromaticIndex = 0 ↔ G = ⊥ := by
   simpa using isEmpty_of_chromaticNumber_eq_zero h
 
 /-- Lift an embedding of colors to an embedding of edge colorings. -/
+@[expose]
 def EdgeColoring.ofColorEmbedding (f : α ↪ β) : G.EdgeColoring α ↪ G.EdgeColoring β :=
   recolorOfEmbedding _ f
 
 /-- Lift an isomorphism of colors to an isomorphism of edge colorings. -/
+@[expose]
 def EdgeColoring.ofColorIso (f : α ≃ β) : G.EdgeColoring α ≃ G.EdgeColoring β :=
   recolorOfEquiv _ f
 
@@ -123,6 +129,7 @@ theorem EdgeColorable.mono (hle : n ≤ m) (h : G.EdgeColorable n) : G.EdgeColor
   Colorable.mono hle h
 
 /-- Edge coloring using the edges themselves as colors, coloring with the identity function. -/
+@[expose]
 def EdgeColoring.id : G.EdgeColoring G.edgeSet :=
   selfColoring _
 
@@ -134,16 +141,19 @@ theorem EdgeColorable.of_fintype [Fintype G.edgeSet] : G.EdgeColorable <| card G
   colorable_of_fintype _
 
 /-- Pre-compose an edge coloring with a line-graph homomorphism. -/
+@[expose]
 def EdgeColoring.ofLineGraphHom (f : G.lineGraph →g G'.lineGraph) (C : G'.EdgeColoring α) :
     G.EdgeColoring α :=
   C.comp f
 
 /-- Pre-compose an edge-coloring with a line-graph homomorphism induced by a copy. -/
+@[expose]
 def EdgeColoring.ofCopy (f : Copy G G') (C : G'.EdgeColoring α) : G.EdgeColoring α :=
   C.ofLineGraphHom f.lineGraph.toHom
 
 variable (α) in
 /-- Edge-colorings of graphs with isomorphic line-graphs are equivalent. -/
+@[expose]
 def EdgeColoring.ofLineGraphIso (f : G.lineGraph ≃g G'.lineGraph) :
     G.EdgeColoring α ≃ G'.EdgeColoring α where
   toFun C := .ofLineGraphHom f.symm.toHom C
@@ -153,6 +163,7 @@ def EdgeColoring.ofLineGraphIso (f : G.lineGraph ≃g G'.lineGraph) :
 
 variable (α) in
 /-- Edge-colorings of isomorphic graphs are equivalent. -/
+@[expose]
 def EdgeColoring.ofIso (f : G ≃g G') : G.EdgeColoring α ≃ G'.EdgeColoring α :=
   EdgeColoring.ofLineGraphIso α f.lineGraph
 
@@ -204,6 +215,7 @@ theorem Iso.chromaticIndex_eq (f : G ≃g G') : G.chromaticIndex = G'.chromaticI
   chromaticIndex_eq_of_lineGraph_iso f.lineGraph
 
 /-- Induce an edge-coloring of a subgraph from an edge-coloring of a graph. -/
+@[expose]
 def EdgeColoring.ofIsSubgraph (hle : G ≤ H) (C : H.EdgeColoring α) : G.EdgeColoring α :=
   C.ofCopy <| .ofLE _ _ hle
 
@@ -270,6 +282,7 @@ theorem two_le_chromaticIndex_of_adj {u v w : V} (huv : G.Adj u v) (huw : G.Adj 
   @two_le_chromaticNumber_of_adj _ _ ⟨s(u, v), huv⟩ ⟨s(u, w), huw⟩ ⟨by grind, u, by simp⟩
 
 /-- The subgraph containing all the edges colored with the given color, and all their vertices. -/
+@[expose]
 def EdgeColoring.colorClassSubgraph (C : G.EdgeColoring α) (a : α) : G.Subgraph where
   verts := {u | ∃ (v : V) (hadj : G.Adj u v), C ⟨s(u, v), hadj⟩ = a}
   Adj u v := ∃ (hadj : G.Adj u v), C ⟨s(u, v), hadj⟩ = a
