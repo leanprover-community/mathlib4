@@ -308,15 +308,10 @@ variable (R M) in
 theorem exists_exact_and_surjective [FinitePresentation R M] :
     ∃ (m n : ℕ) (f : (Fin m → R) →ₗ[R] Fin n → R) (g : (Fin n → R) →ₗ[R] M),
       Function.Exact f g ∧ Function.Surjective g := by
-  obtain ⟨n, K, e, S, hS⟩ := exists_fin R M
-  let m := S.card
-  let o : Fin m → Fin n → R := Subtype.val ∘ (Finset.equivFin S).symm
-  let f : (Fin m → R) →ₗ[R] Fin n → R := Fintype.linearCombination R o
-  let g : (Fin n → R) →ₗ[R] M := e.symm.toLinearMap.comp (Submodule.mkQ K)
-  have h : g.ker = f.range := Eq.trans (b := K) (by simp [g]) <| by
-    simp [← hS, f, o, (Finset.equivFin S).symm.surjective.range_comp Subtype.val]
-  refine ⟨m, n, f, g, LinearMap.exact_iff.mpr h, ?_⟩
-  simp [g, Submodule.mkQ_surjective, LinearEquiv.surjective]
+  obtain ⟨n', K, e, S, hS⟩ := exists_fin R M
+  refine ⟨S.card, n', Fintype.linearCombination R (Subtype.val ∘ S.equivFin.symm),
+    e.symm.toLinearMap.comp K.mkQ, LinearMap.exact_iff.mpr (by simp [← hS]), ?_⟩
+  simp [Submodule.mkQ_surjective, LinearEquiv.surjective]
 
 end Module.FinitePresentation
 
