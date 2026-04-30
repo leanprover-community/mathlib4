@@ -222,7 +222,8 @@ part of the equivalence `ContinuousGeneratedByCat.equivalence`. -/
 def toGeneratedByTopCat : ContinuousGeneratedByCat.{v} X ⥤ GeneratedByTopCat.{v} X :=
   ObjectProperty.lift _ (toTopCat X) (fun Y ↦ by
     rw [TopCat.generatedBy_def]
-    exact IsGeneratedBy.instWithGeneratedByTopology (Y := Y))
+    dsimp +instances
+    infer_instance)
 
 lemma toGeneratedByTopCat_map_apply {Y Z : ContinuousGeneratedByCat.{v} X} (f : Y ⟶ Z)
     (y : WithGeneratedByTopology X Y) :
