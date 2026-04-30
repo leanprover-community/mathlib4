@@ -127,6 +127,15 @@ lemma monotone_inverseImage (F : C ⥤ D) :
     Monotone (fun P : MorphismProperty D ↦ P.inverseImage F) :=
   fun _ _ h _ _ _ hf ↦ h _ hf
 
+@[simp]
+lemma inverseImage_id (P : MorphismProperty C) : P.inverseImage (𝟭 C) = P :=
+  rfl
+
+@[simp]
+lemma inverseImage_inverseImage (P : MorphismProperty E) (F : C ⥤ D) (G : D ⥤ E) :
+    (P.inverseImage G).inverseImage F = P.inverseImage (F ⋙ G) :=
+  rfl
+
 /-- The (strict) image of a `MorphismProperty C` by a functor `C ⥤ D` -/
 inductive strictMap (P : MorphismProperty C) (F : C ⥤ D) : MorphismProperty D where
   | map {X Y : C} {f : X ⟶ Y} (hf : P f) : strictMap _ _ (F.map f)
