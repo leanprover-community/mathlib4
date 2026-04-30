@@ -218,10 +218,7 @@ theorem primaryComponent.map_surjective (M₁ M₂ : Type*)
       DFinsupp.filter_ne_eq_erase, DFinsupp.support_erase, DFinsupp.erase_apply,
       DFinsupp.mapRange_apply, LinearMap.toAddMonoidHom_coe, subtype_apply, Finset.erase_eq]
     apply Finset.sum_congr_of_eq_on_inter
-    · simp only [Finset.mem_sdiff, DFinsupp.mem_support_toFun, DFinsupp.mapRange_apply, ne_eq,
-      Finset.mem_singleton, not_and, Decidable.not_not, ZeroMemClass.coe_eq_zero, ite_eq_left_iff,
-      and_imp]
-      grind
+    · simp_all
     · simp only [Finset.mem_sdiff, DFinsupp.mem_support_toFun, ne_eq, Finset.mem_singleton,
       DFinsupp.mapRange_apply, not_and, Decidable.not_not, and_imp]
       intro a ha hne hnfa
@@ -229,10 +226,7 @@ theorem primaryComponent.map_surjective (M₁ M₂ : Type*)
       suffices ¬(primaryComponent.map a.asIdeal φ) (f a) = 0 by grind
       simpa [Subtype.ext_iff, primaryComponent.map, LinearMap.codRestrict_apply,
         LinearMap.domRestrict_apply]
-    · simp only [Finset.mem_sdiff, DFinsupp.mem_support_toFun, DFinsupp.mapRange_apply, ne_eq,
-      Finset.mem_singleton, and_imp]
-      intro a ha hne hnfa hne
-      simp [if_neg hne, map]
+    · aesop
 
 end IsDedekindDomain
 
