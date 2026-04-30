@@ -502,11 +502,10 @@ lemma finsuppToCoinvariantsTensorFree_single (i : α) (x : A) :
 
 variable (A α)
 
-#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12179
-the simpNF linter complains about `@[simps! symm_apply]`, but removing it seems to be harmless. -/
 /-- Given a `k`-linear `G`-representation `(A, ρ)` and a type `α`, this is the linear equivalence
 `(A ⊗ (α →₀ k[G]))_G ≃ₗ[k] (α →₀ A)` sending
 `⟦a ⊗ single x (single g r)⟧ ↦ single x (r • ρ(g⁻¹)(a)).` -/
+@[simps! symm_apply]
 noncomputable abbrev coinvariantsTensorFreeLEquiv :
     Coinvariants (A ⊗ free k G α).ρ ≃ₗ[k] (α →₀ A) :=
   LinearEquiv.ofLinear (coinvariantsTensorFreeToFinsupp A α) (finsuppToCoinvariantsTensorFree A α)

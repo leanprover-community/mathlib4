@@ -1193,25 +1193,25 @@ end Functor
 @[simps obj map]
 def functor (S : Sieve X) : Cᵒᵖ ⥤ Type v₁ where
   obj Y := { g : Y.unop ⟶ X // S g }
-  map f := TypeCat.ofHom fun g ↦ ⟨f.unop ≫ g.1, downward_closed _ g.2 _⟩
+  map f := ↾fun g ↦ ⟨f.unop ≫ g.1, downward_closed _ g.2 _⟩
 
 /-- If a sieve S is contained in a sieve T, then we have a morphism of presheaves on their induced
 presheaves.
 -/
 @[simps]
 def natTransOfLe {S T : Sieve X} (h : S ≤ T) : S.functor ⟶ T.functor where
-  app _ := TypeCat.ofHom fun f ↦ ⟨f.1, h _ f.2⟩
+  app _ := ↾fun f ↦ ⟨f.1, h _ f.2⟩
 
 /-- The natural inclusion from the functor induced by a sieve to the yoneda embedding. -/
 @[simps]
 def functorInclusion (S : Sieve X) : S.functor ⟶ yoneda.obj X where
-  app _ := TypeCat.ofHom (fun f ↦ f.1)
+  app _ := ↾fun f ↦ f.1
 
 /-- Any component `f : Y ⟶ X` of the sieve `S` induces a natural transformation from `yoneda.obj Y`
 to the presheaf induced by `S`. -/
 @[simps]
 def toFunctor (S : Sieve X) {Y : C} (f : Y ⟶ X) (hf : S f) : yoneda.obj Y ⟶ S.functor where
-  app Z := TypeCat.ofHom fun g ↦ ⟨g ≫ f, S.downward_closed hf g⟩
+  app Z := ↾fun g ↦ ⟨g ≫ f, S.downward_closed hf g⟩
 
 theorem natTransOfLe_comm {S T : Sieve X} (h : S ≤ T) :
     natTransOfLe h ≫ functorInclusion _ = functorInclusion _ :=
@@ -1248,7 +1248,7 @@ theorem sieveOfSubfunctor_functorInclusion : sieveOfSubfunctor S.functorInclusio
     exact ⟨⟨_, hf⟩, rfl⟩
 
 instance functorInclusion_top_isIso : IsIso (⊤ : Sieve X).functorInclusion :=
-  ⟨⟨{ app := fun _ => TypeCat.ofHom fun a => ⟨a, ⟨⟩⟩ }, rfl, rfl⟩⟩
+  ⟨⟨{ app := fun _ => ↾fun a => ⟨a, ⟨⟩⟩ }, rfl, rfl⟩⟩
 
 /-- A variant of `Sieve.functor` with universe lifting. -/
 abbrev uliftFunctor (S : Sieve X) : Cᵒᵖ ⥤ Type (max w v₁) :=
@@ -1258,7 +1258,7 @@ abbrev uliftFunctor (S : Sieve X) : Cᵒᵖ ⥤ Type (max w v₁) :=
 @[simps]
 def uliftNatTransOfLe {S T : Sieve X} (h : S ≤ T) :
     Sieve.uliftFunctor.{w} S ⟶ Sieve.uliftFunctor.{w} T where
-  app _ := TypeCat.ofHom fun f ↦ ⟨f.down.1, h _ f.down.2⟩
+  app _ := ↾fun f ↦ ⟨f.down.1, h _ f.down.2⟩
 
 /-- A variant of `Sieve.functorInclusion` with universe lifting. -/
 @[simps! app]
@@ -1302,7 +1302,7 @@ theorem sieveOfUliftSubfunctor_uliftFunctorInclusion {S : Sieve X} :
   cat_disch
 
 instance uliftFunctorInclusion_top_isIso : IsIso (Sieve.uliftFunctorInclusion.{w} (⊤ : Sieve X)) :=
-  ⟨⟨{ app := fun _ ↦ TypeCat.ofHom fun a ↦ ⟨a.down, ⟨⟩⟩ }, rfl, rfl⟩⟩
+  ⟨⟨{ app := fun _ ↦ ↾fun a ↦ ⟨a.down, ⟨⟩⟩ }, rfl, rfl⟩⟩
 
 lemma ofArrows_eq_pullback_of_isPullback {ι : Type*} {S : C} {X : ι → C} (f : (i : ι) → X i ⟶ S)
     {Y : C} {g : Y ⟶ S} {P : ι → C} {p₁ : (i : ι) → P i ⟶ Y} {p₂ : (i : ι) → P i ⟶ X i}

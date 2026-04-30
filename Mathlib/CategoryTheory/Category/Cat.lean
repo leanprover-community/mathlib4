@@ -367,7 +367,7 @@ theorem comp_eq_comp {X Y Z : Cat} (F : X ⟶ Y) (G : Y ⟶ Z) :
 called `forget`, because it is not a faithful functor. -/
 def objects : Cat.{v, u} ⥤ Type u where
   obj C := C
-  map F := TypeCat.ofHom F.toFunctor.obj
+  map F := ↾F.toFunctor.obj
 
 /-- See through the defeq `objects.obj X = X`. -/
 instance (X : Cat.{v, u}) : Category (objects.obj X) := inferInstanceAs <| Category X
@@ -432,7 +432,7 @@ instance : Functor.Faithful typeToCat.{u} where
     exact congrArg Discrete.as (Functor.congr_obj congr(($h).toFunctor) ⟨x⟩)
 
 instance : Functor.Full typeToCat.{u} where
-  map_surjective F := ⟨TypeCat.ofHom (Discrete.as ∘ F.toFunctor.obj ∘ Discrete.mk), by
+  map_surjective F := ⟨↾(Discrete.as ∘ F.toFunctor.obj ∘ Discrete.mk), by
     ext
     refine Functor.ext (by cat_disch) ?_
     intro x y f

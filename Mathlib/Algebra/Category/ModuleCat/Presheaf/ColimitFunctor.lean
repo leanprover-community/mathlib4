@@ -80,7 +80,7 @@ by `cR.pt` on `ModuleColimit hcR hcM`. -/
 noncomputable def coconeSMul :
     Cocone (R ⋙ forget _ ⊗ M.presheaf ⋙ forget _) where
   pt := ModuleColimit hcR hcM
-  ι.app U := TypeCat.ofHom fun ⟨(r : R.obj U), (m : M.obj U)⟩ ↦ by exact cM.ι.app U (r • m)
+  ι.app U := ↾fun ⟨(r : R.obj U), (m : M.obj U)⟩ ↦ by exact cM.ι.app U (r • m)
   ι.naturality V U f := by
     ext ⟨r, m⟩
     exact (ConcreteCategory.congr_arg (cM.ι.app U)

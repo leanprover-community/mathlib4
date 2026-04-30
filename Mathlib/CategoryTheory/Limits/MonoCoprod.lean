@@ -94,10 +94,10 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance monoCoprodType : MonoCoprod (Type u) :=
   MonoCoprod.mk' fun A B => by
-    refine ⟨BinaryCofan.mk (TypeCat.ofHom (Sum.inl : A → A ⊕ B))
-      (TypeCat.ofHom Sum.inr), ?_, ?_⟩
+    refine ⟨BinaryCofan.mk (↾(Sum.inl : A → A ⊕ B))
+      (↾Sum.inr), ?_, ?_⟩
     · exact BinaryCofan.IsColimit.mk _
-        (fun f₁ f₂ => TypeCat.ofHom fun x => by
+        (fun f₁ f₂ => ↾fun x => by
           rcases x with x | x
           exacts [f₁ x, f₂ x])
         (fun f₁ f₂ => by rfl)

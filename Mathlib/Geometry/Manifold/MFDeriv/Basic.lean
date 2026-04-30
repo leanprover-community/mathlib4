@@ -448,7 +448,7 @@ theorem mdifferentiable_iff :
         ∀ (x : M) (y : M'),
           DifferentiableOn 𝕜 (extChartAt I' y ∘ f ∘ (extChartAt I x).symm)
             ((extChartAt I x).target ∩
-              (extChartAt I x).symm ⁻¹' (f ⁻¹' (extChartAt I' y).source)) := by
+              (extChartAt I x).symm ⁻¹' f ⁻¹' (extChartAt I' y).source) := by
   simp [← mdifferentiableOn_univ, mdifferentiableOn_iff, continuousOn_univ]
 
 /-- One can reformulate smoothness as continuity and smoothness in any extended chart in the
@@ -1127,7 +1127,7 @@ theorem HasMFDerivWithinAt.comp (hg : HasMFDerivWithinAt I' I'' g u (f x) g')
       (ContinuousLinearMap.comp g' f' : E →L[𝕜] E'') ((extChartAt I x).symm ⁻¹' s ∩ range I)
       ((extChartAt I x) x) := by
     have :
-      (extChartAt I x).symm ⁻¹' (f ⁻¹' (extChartAt I' (f x)).source) ∈
+      (extChartAt I x).symm ⁻¹' f ⁻¹' (extChartAt I' (f x)).source ∈
         𝓝[(extChartAt I x).symm ⁻¹' s ∩ range I] (extChartAt I x) x :=
       extChartAt_preimage_mem_nhdsWithin
         (hf.1.preimage_mem_nhdsWithin (extChartAt_source_mem_nhds _))

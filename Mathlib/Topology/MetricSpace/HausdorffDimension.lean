@@ -169,8 +169,8 @@ theorem dimH_mono {s t : Set X} (h : s ⊆ t) : dimH s ≤ dimH t := by
 
 theorem dimH_subsingleton {s : Set X} (h : s.Subsingleton) : dimH s = 0 := by
   borelize X
-  apply le_antisymm _ (zero_le _)
-  refine dimH_le_of_hausdorffMeasure_ne_top ?_
+  rw [← nonpos_iff_eq_zero]
+  apply dimH_le_of_hausdorffMeasure_ne_top
   exact ((hausdorffMeasure_le_one_of_subsingleton h le_rfl).trans_lt ENNReal.one_lt_top).ne
 
 alias Set.Subsingleton.dimH_zero := dimH_subsingleton
@@ -383,7 +383,7 @@ theorem dimH_preimage_le (hf : AntilipschitzWith K f) (s : Set Y) : dimH (f ⁻�
 
 theorem le_dimH_image (hf : AntilipschitzWith K f) (s : Set X) : dimH s ≤ dimH (f '' s) :=
   calc
-    dimH s ≤ dimH (f ⁻¹' (f '' s)) := dimH_mono (subset_preimage_image _ _)
+    dimH s ≤ dimH (f ⁻¹' f '' s) := dimH_mono (subset_preimage_image _ _)
     _ ≤ dimH (f '' s) := hf.dimH_preimage_le _
 
 end AntilipschitzWith

@@ -38,7 +38,7 @@ variable {C : Type u} [Category.{v} C]
 @[simps]
 def colimitCocone (X : Cᵒᵖ) : Cocone (coyoneda.obj X) where
   pt := PUnit
-  ι := { app _ := TypeCat.ofHom (fun _ ↦ by cat_disch) }
+  ι := { app _ := ↾fun _ ↦ by cat_disch }
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -46,7 +46,7 @@ set_option backward.isDefEq.respectTransparency false in
 -/
 @[simps]
 def colimitCoconeIsColimit (X : Cᵒᵖ) : IsColimit (colimitCocone X) where
-  desc s := TypeCat.ofHom (fun _ ↦ s.ι.app (unop X) (𝟙 _))
+  desc s := ↾fun _ ↦ s.ι.app (unop X) (𝟙 _)
   fac s Y := by
     ext f
     simpa using congr_hom (s.w f).symm (𝟙 (unop X))

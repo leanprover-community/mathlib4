@@ -168,7 +168,7 @@ theorem map_π {F₁ F₂ : C ⥤ Type w} (α : F₁ ⟶ F₂) : map α ⋙ π F
 
 /-- The forward direction of the equivalence `F.Elements ≅ (*, F)`. -/
 def toStructuredArrow : F.Elements ⥤ StructuredArrow PUnit F where
-  obj X := StructuredArrow.mk <| TypeCat.ofHom (fun _ => X.2)
+  obj X := StructuredArrow.mk <| ↾fun _ => X.2
   map {X Y} f := StructuredArrow.homMk f.val (by ext; simp [f.2])
 
 @[simp]
@@ -176,7 +176,7 @@ theorem toStructuredArrow_obj (X) :
     (toStructuredArrow F).obj X =
       { left := ⟨⟨⟩⟩
         right := X.1
-        hom := TypeCat.ofHom (fun _ => X.2) } :=
+        hom := ↾fun _ => X.2 } :=
   rfl
 
 @[simp]

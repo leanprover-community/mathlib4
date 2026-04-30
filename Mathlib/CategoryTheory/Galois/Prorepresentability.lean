@@ -150,7 +150,7 @@ This is a colimit cocone (see `PreGaloisCategory.isColimit`) -/
 def cocone : Cocone ((incl F).op ⋙ coyoneda) where
   pt := F ⋙ FintypeCat.incl
   ι := {
-    app := fun ⟨A, a, _⟩ ↦ { app X := TypeCat.ofHom (fun (f : (A : C) ⟶ X) ↦ F.map f a) }
+    app := fun ⟨A, a, _⟩ ↦ { app X := ↾fun (f : (A : C) ⟶ X) ↦ F.map f a }
     naturality := fun ⟨A, a, _⟩ ⟨B, b, _⟩ ⟨f, (hf : F.map f b = a)⟩ ↦ by
       ext Y (g : (A : C) ⟶ Y)
       suffices h : F.map g (F.map f b) = F.map g a by simpa
@@ -159,7 +159,7 @@ def cocone : Cocone ((incl F).op ⋙ coyoneda) where
 
 @[simp]
 lemma cocone_app (A : PointedGaloisObject F) (B : C) :
-    ((cocone F).ι.app ⟨A⟩).app B = TypeCat.ofHom (fun (f : (A : C) ⟶ B) ↦ F.map f A.pt) :=
+    ((cocone F).ι.app ⟨A⟩).app B = ↾fun (f : (A : C) ⟶ B) ↦ F.map f A.pt :=
   rfl
 
 variable [FiberFunctor F]

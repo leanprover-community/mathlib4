@@ -230,7 +230,7 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
             (ConcreteCategory.congr_hom hαY val :).symm
       delta ExistsUnique at this
       choose l hl hl' using this
-      refine ⟨TypeCat.ofHom (l), ?_, Types.isTerminalPUnit.hom_ext _ _, fun {l'} h₁ _ => ?_⟩
+      refine ⟨↾(l), ?_, Types.isTerminalPUnit.hom_ext _ _, fun {l'} h₁ _ => ?_⟩
       · ext x
         exact (hl x).symm
       · ext x
@@ -246,7 +246,7 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
         · simp
       delta ExistsUnique at this
       choose l hl hl' using this
-      refine ⟨TypeCat.ofHom l, ?_, Types.isTerminalPUnit.hom_ext _ _, fun {l'} h₁ _ => ?_⟩
+      refine ⟨↾l, ?_, Types.isTerminalPUnit.hom_ext _ _, fun {l'} h₁ _ => ?_⟩
       · ext x
         exact (hl x).symm
       · ext x
@@ -264,7 +264,7 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
       ⟨fun p => ⟨p.1.1, p.2.trans (congr_arg Sum.inr <| Subsingleton.elim _ _)⟩,
         fun x => ⟨⟨_, _⟩, x.2⟩, fun _ => by ext; rfl, fun _ => by ext; rfl⟩
     fapply BinaryCofan.isColimitMk
-    · exact fun s => TypeCat.ofHom fun x => dite _ (fun h => s.inl <| eX.symm ⟨x, h⟩)
+    · exact fun s => ↾fun x => dite _ (fun h => s.inl <| eX.symm ⟨x, h⟩)
         fun h => s.inr <| eY.symm ⟨x, (this x).resolve_left h⟩
     · intro s
       ext ⟨⟨x, ⟨⟩⟩, _⟩

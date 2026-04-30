@@ -77,36 +77,18 @@ noncomputable def limitPresheafOfModules : PresheafOfModules R where
     dsimp
     rw [← cancel_mono (preservesLimitIso _ _).hom, assoc, Iso.inv_hom_id, comp_id]
     apply limit.hom_ext
-    intro j
-    dsimp
-    simp only [limMap_π, Functor.comp_obj, evaluation_obj, Functor.whiskerLeft_app,
-      restriction_app, assoc]
-    -- Here we should rewrite using `Functor.assoc` but that gives a "motive is type-incorrect"
-    erw [preservesLimitIso_hom_π]
-    rw [← ModuleCat.restrictScalarsId'App_inv_naturality, map_id,
+    simp [← Functor.assoc, ← ModuleCat.restrictScalarsId'App_inv_naturality,
       ModuleCat.restrictScalarsId'_inv_app]
-    dsimp
   map_comp {X Y Z} f g := by
     dsimp
     rw [← cancel_mono (preservesLimitIso _ _).hom, assoc, assoc, assoc, assoc, Iso.inv_hom_id,
       comp_id]
     apply limit.hom_ext
     intro j
-    simp only [Functor.comp_obj, evaluation_obj, limMap_π, Functor.whiskerLeft_app, restriction_app,
-      map_comp, ModuleCat.restrictScalarsComp'_inv_app, Functor.map_comp, assoc]
-    -- Here we should rewrite using `Functor.assoc` but that gives a "motive is type-incorrect"
-    erw [preservesLimitIso_hom_π]
-    rw [← ModuleCat.restrictScalarsComp'App_inv_naturality]
-    dsimp
-    rw [← Functor.map_comp_assoc, ← Functor.map_comp_assoc, assoc,
-      preservesLimitIso_inv_π]
-    -- Here we should rewrite using `Functor.assoc` but that gives a "motive is type-incorrect"
-    erw [limMap_π]
-    dsimp
-    simp only [Functor.map_comp, assoc, preservesLimitIso_inv_π_assoc]
-    -- Here we should rewrite using `Functor.assoc` but that gives a "motive is type-incorrect"
-    erw [limMap_π_assoc]
-    dsimp
+    simp only [Functor.map_comp, assoc, ← Functor.assoc, preservesLimitIso_hom_π,
+      ← ModuleCat.restrictScalarsComp'App_inv_naturality]
+    rw [← Functor.map_comp_assoc, ← Functor.map_comp_assoc, assoc, preservesLimitIso_inv_π]
+    simp
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

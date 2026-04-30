@@ -66,7 +66,7 @@ noncomputable def isColimitOf (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x 
   let f : ∀ (x : t.pt), F.obj (α x) := fun x => (hsurj x).choose_spec.choose
   have hf : ∀ (x : t.pt), x = t.ι.app _ (f x) := fun x => (hsurj x).choose_spec.choose_spec
   exact
-    { desc s := TypeCat.ofHom (fun x => s.ι.app _ (f x))
+    { desc s := ↾fun x => s.ι.app _ (f x)
       fac := fun s j => by
         ext y
         obtain ⟨k, l, g, eq⟩ := hinj _ _ _ _ (hf (t.ι.app j y))

@@ -44,7 +44,9 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
   let git := (args.flag? "git").isSome
   -- Check whether we only verify the files, or update them in-place.
   let check := (args.flag? "check").isSome
-  let useModule := (args.flag? "module").isSome
+  -- If `--module` is passed, force module style; otherwise infer from the existing
+  -- aggregator file (when present), or default to plain.
+  let moduleFlag := (args.flag? "module").isSome
   -- Check whether the `--lib` flag was set. If so, build the file corresponding to the library
   -- passed to `--lib`. Else build all the libraries of the package.
   -- If the package is `mathlib`, then it removes the libraries `Cache` and `MathlibTest` and it
@@ -54,8 +56,23 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
               | none => getLeanLibs
   let mut updates := 0
   for d in libs.reverse do  -- reverse to create `Mathlib/Tactic.lean` before `Mathlib.lean`
-    let useModule := useModule || d.startsWith "Mathlib"
     let fileName := addExtension d "lean"
+    let fileExists ← pathExists fileName
+    let existingContent ← if fileExists then IO.FS.readFile fileName else pure ""
+    -- If `--module` was passed explicitly, honor it. Otherwise, if the aggregator file already
+    -- exists, infer whether it uses the module system; if not, default to plain.
+    let useModule ← if moduleFlag then pure true
+      else if fileExists then
+        try
+          let header ← Lean.parseImports' existingContent fileName.toString
+          pure header.isModule
+        catch e =>
+          throw <| IO.userError s!"\
+            Could not parse the header of '{fileName}' to determine whether it should be a \
+            module file: {e.toString}\n\
+            Fix or delete the file, then re-run `mk_all` (with `--module` if you want a \
+            module-style aggregator)."
+      else pure false
     let mut allFiles ← getAllModulesSorted git d
     -- mathlib exception: manually import Std and Batteries in `Mathlib.lean`
     if d == "Mathlib" then
@@ -64,18 +81,17 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
       ("\n".intercalate (allFiles.map ((if useModule then "public " else "") ++ "import " ++ ·)).toList) ++
       (if d == "Mathlib" then "\n\nset_option linter.style.longLine false" else "") ++
       "\n"
-    if !(← pathExists fileName) then
+    if !fileExists then
       if check then
         IO.println s!"File '{fileName}' does not exist"
       else
         IO.println s!"Creating '{fileName}'"
         IO.FS.writeFile fileName fileContent
       updates := updates + 1
-    else if (← IO.FS.readFile fileName) != fileContent then
+    else if existingContent != fileContent then
       if check then
         IO.println s!"The file '{fileName}' is out of date: \
-          run `lake exe mk_all{if git then " --git" else ""}{if useModule then " --module" else ""}` \
-          to update it"
+          run `lake exe mk_all{if git then " --git" else ""}` to update it"
       else
         IO.println s!"Updating '{fileName}'"
         IO.FS.writeFile fileName fileContent
@@ -100,7 +116,10 @@ def mkAll : Cmd := `[Cli|
     lib : String; "Create a folder importing all Lean files from the specified library/subfolder."
     git;          "Use the folder content information from git."
     check;        "Only check if the files are up-to-date; print an error if not"
-    module;       "Generate `module` files with `public` imports."
+    module;       "Force the aggregator file to be generated as a `module` with `public` imports. \
+                   When this flag is omitted, the style is inferred from the existing file by \
+                   parsing its header with `Lean.parseImports'`, or defaults to plain for new \
+                   files."
 ]
 
 /-- The entrypoint to the `lake exe mk_all` command. -/

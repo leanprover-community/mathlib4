@@ -40,7 +40,7 @@ lemma isCardinalPresentable (hX : HasCardinalLT X κ) [Fact κ.IsRegular] :
       · dsimp at f
         choose j g hg using fun x ↦ Types.jointly_surjective_of_isColimit hc (f x)
         refine ⟨IsCardinalFiltered.max j hX,
-          TypeCat.ofHom (fun x ↦ F.map (IsCardinalFiltered.toMax j hX x) (g x)), ?_⟩
+          ↾fun x ↦ F.map (IsCardinalFiltered.toMax j hX x) (g x), ?_⟩
         dsimp
         ext x
         dsimp at j g hg x ⊢
@@ -97,7 +97,7 @@ def functor : HasCardinalLT.Set X κ ⥤ Type u :=
 @[simps]
 def cocone : Cocone (Set.functor X κ) where
   pt := X
-  ι.app _ := TypeCat.ofHom (Subtype.val)
+  ι.app _ := ↾(Subtype.val)
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Any type `X` is the (filtered) colimit of its subsets of cardinality `< κ`

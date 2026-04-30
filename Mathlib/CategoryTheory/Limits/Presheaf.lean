@@ -97,7 +97,7 @@ def restrictedULiftYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type max w v₁ v₂) (E : �
       (Functor.const (CostructuredArrow uliftYoneda.{max w v₂} P)).obj E) ≃
       (P ⟶ (restrictedULiftYoneda.{max w v₁} A).obj E) where
   toFun f :=
-    { app _ := TypeCat.ofHom fun x ↦ ULift.up
+    { app _ := ↾fun x ↦ ULift.up
         (f.app (CostructuredArrow.mk (uliftYonedaEquiv.symm x)))
       naturality _ _ g := by
         ext x
@@ -289,7 +289,7 @@ The result of [MM92], Chapter I, Section 5, Corollary 3.
 def colimitOfRepresentable (P : Cᵒᵖ ⥤ Type max w v₁) :
     IsColimit (coconeOfRepresentable P) where
   desc s :=
-    { app X := TypeCat.ofHom fun x ↦ uliftYonedaEquiv
+    { app X := ↾fun x ↦ uliftYonedaEquiv
         (s.ι.app (Opposite.op (Functor.elementsMk P X x)))
       naturality X Y f := by
         ext x
@@ -739,7 +739,7 @@ this is the colimit cocone which identifies `F.obj X` to the colimit of
 noncomputable def coconeπOpCompShrinkYonedaObj (X : C) :
     Cocone ((CategoryOfElements.π F).op ⋙ shrinkYoneda.{w}.obj X) where
   pt := F.obj X
-  ι.app u := TypeCat.ofHom (fun t ↦ F.map (shrinkYonedaObjObjEquiv t) u.unop.snd)
+  ι.app u := ↾fun t ↦ F.map (shrinkYonedaObjObjEquiv t) u.unop.snd
   ι.naturality u₁ u₂ g := by
     ext f
     obtain ⟨f, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective f

@@ -37,8 +37,8 @@ coyoneda embedding. -/]
 def CommGrpCat.coyonedaForget :
     coyoneda ⋙ (Functor.whiskeringRight _ _ _).obj (forget _) ≅ CategoryTheory.coyoneda :=
   dsimp% NatIso.ofComponents fun X ↦ NatIso.ofComponents fun Y ↦ {
-    hom := TypeCat.ofHom (fun f ↦ ofHom f),
-    inv := TypeCat.ofHom (fun f ↦ f.hom) }
+    hom := ↾fun f ↦ ofHom f,
+    inv := ↾fun f ↦ f.hom }
 
 /-- The Hom bifunctor sending a type `X` and a commutative group `G` to the commutative group
 `X → G` with pointwise operations.

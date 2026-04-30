@@ -609,7 +609,7 @@ theorem eval_πs' {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
 
 theorem eval_πs_image {l : Products I} {o : Ordinal}
     (hl : ∀ i ∈ l.val, ord I i < o) : eval C '' { m | m < l } =
-    (πs C o) '' (eval (π C (ord I · < o)) '' { m | m < l }) := by
+    (πs C o) '' eval (π C (ord I · < o)) '' { m | m < l } := by
   ext f
   simp only [Set.mem_image, Set.mem_setOf_eq, exists_exists_and_eq_and]
   apply exists_congr; intro m
@@ -618,7 +618,7 @@ theorem eval_πs_image {l : Products I} {o : Ordinal}
 
 theorem eval_πs_image' {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
     (hl : ∀ i ∈ l.val, ord I i < o₁) : eval (π C (ord I · < o₂)) '' { m | m < l } =
-    (πs' C h) '' (eval (π C (ord I · < o₁)) '' { m | m < l }) := by
+    (πs' C h) '' eval (π C (ord I · < o₁)) '' { m | m < l } := by
   ext f
   simp only [Set.mem_image, Set.mem_setOf_eq, exists_exists_and_eq_and]
   apply exists_congr; intro m

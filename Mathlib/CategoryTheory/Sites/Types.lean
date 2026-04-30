@@ -27,7 +27,7 @@ namespace CategoryTheory
 /-- A Grothendieck topology associated to the category of all types.
 A sieve is a covering iff it is jointly surjective. -/
 def typesGrothendieckTopology : GrothendieckTopology (Type u) where
-  sieves α := {S | ∀ x : α, S <| TypeCat.ofHom (fun _ : PUnit => x)}
+  sieves α := {S | ∀ x : α, S <| ↾fun _ : PUnit => x}
   top_mem' _ _ := trivial
   pullback_stable' _ _ _ f hs x := hs (f x)
   transitive' _ _ hs _ hr x := hr (hs x) PUnit.unit
@@ -47,16 +47,16 @@ def discretePresieve (α : Type u) : Presieve α :=
 
 theorem generate_discretePresieve_mem (α : Type u) :
     Sieve.generate (discretePresieve α) ∈ typesGrothendieckTopology α :=
-  fun x => ⟨PUnit, 𝟙 _, TypeCat.ofHom (fun _ => x),
+  fun x => ⟨PUnit, 𝟙 _, ↾fun _ => x,
     ⟨PUnit.unit, fun _ => Subsingleton.elim _ _⟩, rfl⟩
 
 /-- The sheaf condition for `yoneda'`. -/
 theorem Presieve.isSheaf_yoneda' {α : Type u} :
     Presieve.IsSheaf typesGrothendieckTopology (yoneda.obj α) :=
   fun β _ hs x hx =>
-  ⟨TypeCat.ofHom (fun y => (x _ (hs y)).hom PUnit.unit) , fun γ f h =>
+  ⟨↾fun y => (x _ (hs y)).hom PUnit.unit , fun γ f h =>
     ConcreteCategory.hom_ext _ _ fun z => by
-      convert ConcreteCategory.congr_hom (hx (𝟙 _) (TypeCat.ofHom (fun _ => z))
+      convert ConcreteCategory.congr_hom (hx (𝟙 _) (↾fun _ => z)
         (hs <| f z) h rfl) PUnit.unit using 1,
       fun f hf => ConcreteCategory.hom_ext _ _ fun y => by
         convert ConcreteCategory.congr_hom (hf _ (hs y)) PUnit.unit⟩
@@ -83,7 +83,7 @@ open Opposite
 a map `P(α) → (α → P(*))` for all type `α`. -/
 def eval (P : Type uᵒᵖ ⥤ Type u) (α : Type u) (s : P.obj (op α)) :
     α ⟶ P.obj (op PUnit) :=
-  TypeCat.ofHom (fun x ↦ P.map (TypeCat.ofHom (fun _ => x)).op s)
+  ↾fun x ↦ P.map (↾fun _ => x).op s
 
 open Presieve
 
@@ -93,7 +93,7 @@ noncomputable def typesGlue (S : Type uᵒᵖ ⥤ Type u)
     (hs : IsSheaf typesGrothendieckTopology S) (α : Type u)
     (f : α → S.obj (op PUnit)) : S.obj (op α) :=
   (hs.isSheafFor _ (generate_discretePresieve_mem α)).amalgamate
-    (fun _ g hg => S.map (TypeCat.ofHom (fun _ => PUnit.unit)).op <| f <| g <| Classical.choose hg)
+    (fun _ g hg => S.map (↾fun _ => PUnit.unit).op <| f <| g <| Classical.choose hg)
     fun β γ δ g₁ g₂ f₁ f₂ hf₁ hf₂ h =>
     (hs.isSheafFor _ (generate_discretePresieve_mem δ)).isSeparatedFor.ext fun ε g ⟨x, _⟩ => by
       have : f₁ (Classical.choose hf₁) = f₂ (Classical.choose hf₂) :=
@@ -156,7 +156,7 @@ noncomputable def equivYoneda' (S : Sheaf typesGrothendieckTopology (Type u)) :
 theorem eval_app (S₁ S₂ : Sheaf typesGrothendieckTopology (Type u)) (f : S₁ ⟶ S₂)
     (α : Type u) (s : S₁.1.obj (op α)) (x : α) :
     eval S₂.1 α (f.hom.app (op α) s) x = f.hom.app (op PUnit) (eval S₁.1 α s x) :=
-  (ConcreteCategory.congr_hom (f.hom.naturality (TypeCat.ofHom (fun _ => x)).op) s).symm
+  (ConcreteCategory.congr_hom (f.hom.naturality (↾fun _ => x).op) s).symm
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -168,8 +168,8 @@ noncomputable def typeEquiv : Type u ≌ Sheaf typesGrothendieckTopology (Type u
   inverse := sheafToPresheaf _ _ ⋙ (evaluation _ _).obj (op (PUnit))
   unitIso := dsimp% NatIso.ofComponents
       (fun _α => -- α ≅ PUnit ⟶ α
-        { hom := TypeCat.ofHom (fun x => TypeCat.ofHom (fun _ => x))
-          inv := TypeCat.ofHom (fun f => f.hom PUnit.unit) })
+        { hom := ↾fun x => ↾fun _ => x
+          inv := ↾fun f => f.hom PUnit.unit })
       fun _ => rfl
   counitIso := Iso.symm <|
       NatIso.ofComponents (fun S => equivYoneda' S) (fun {S₁ S₂} f => by
@@ -195,12 +195,12 @@ theorem typesGrothendieckTopology_eq_canonical :
   ext S
   refine ⟨fun hs x => ?_, fun hs β f => Presieve.isSheaf_yoneda' _ fun y => hs (f y)⟩
   by_contra hsx
-  have : TypeCat.ofHom (fun _ => ULift.up true) = TypeCat.ofHom (fun _ => ULift.up false) :=
-    (hs PUnit (TypeCat.ofHom (fun _ => x))).isSeparatedFor.ext
+  have : (↾fun _ => ULift.up true) = ↾fun _ => ULift.up false :=
+    (hs PUnit (↾fun _ => x)).isSeparatedFor.ext
       fun β f hf => by
         dsimp
         ext y
-        exact hsx.elim <| S.2 hf (TypeCat.ofHom (fun _ => y))
+        exact hsx.elim <| S.2 hf (↾fun _ => y)
   simp [ConcreteCategory.hom_ext_iff] at this
 
 

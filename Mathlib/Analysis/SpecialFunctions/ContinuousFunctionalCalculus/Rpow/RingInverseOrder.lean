@@ -104,7 +104,7 @@ public lemma convexOn_ringInverse_algebraMap_add {t : ℝ} (ht : 0 < t) :
   have : ∀ x ∈ Ici (0 : A), IsStrictlyPositive (algebraMap ℝ A t + x) := by grind
   let addl : A →ᵃ[ℝ] A := (AffineMap.toConstProdLinearMap ℝ).symm (algebraMap ℝ A t, .id)
   have haddl : Function.Injective addl := by intro _ _; simp [addl]
-  have hici : Ici (0 : A) = addl ⁻¹' (addl '' (Ici 0)) := by
+  have hici : Ici (0 : A) = addl ⁻¹' addl '' Ici 0 := by
     rw [Set.preimage_image_eq _ haddl]
   simp_rw [add_comm]
   change ConvexOn ℝ (Ici 0) (Ring.inverse ∘ addl)

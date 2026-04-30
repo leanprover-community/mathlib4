@@ -414,7 +414,7 @@ lemma exists_preimage_of_isPullback {P X Y Z : Scheme.{u}} {fst : P ⟶ X} {snd 
 
 lemma image_preimage_eq_of_isPullback {P X Y Z : Scheme.{u}} {fst : P ⟶ X} {snd : P ⟶ Y}
     {f : X ⟶ Z} {g : Y ⟶ Z} (h : IsPullback fst snd f g) (s : Set X) :
-    snd.base '' (fst.base ⁻¹' s) = g.base ⁻¹' (f.base '' s) := by
+    snd.base '' fst.base ⁻¹' s = g.base ⁻¹' f.base '' s := by
   refine subset_antisymm ?_ (fun x hx ↦ ?_)
   · rw [Set.image_subset_iff, ← Set.preimage_comp, ← TopCat.coe_comp, ← Hom.comp_base, ← h.1.1]
     rw [Hom.comp_base, TopCat.coe_comp, ← Set.image_subset_iff, Set.image_comp]

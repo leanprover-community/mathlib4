@@ -88,7 +88,7 @@ def classifyingSpaceUniversalCover [Monoid G] :
     SimplicialObject (Action (Type u) G) where
   obj n := Action.ofMulAction G (Fin (n.unop.len + 1) → G)
   map f :=
-    { hom := TypeCat.ofHom (fun x => x ∘ f.unop.toOrderHom)
+    { hom := ↾fun x => x ∘ f.unop.toOrderHom
       comm := fun _ => rfl }
   map_id _ := rfl
   map_comp _ _ := rfl
@@ -134,7 +134,7 @@ extra degeneracy. -/
 def extraDegeneracyAugmentedCechNerve :
     ExtraDegeneracy (Arrow.mk <| terminal.from G).augmentedCechNerve :=
   AugmentedCechNerve.extraDegeneracy (Arrow.mk <| terminal.from G)
-    ⟨TypeCat.ofHom (fun _ => (1 : G)), by cat_disch⟩
+    ⟨↾fun _ => (1 : G), by cat_disch⟩
 
 /-- The universal cover of the classifying space of `G` as a simplicial set, augmented by the map
 from `Fin 1 → G` to the terminal object in `Type u`, has an extra degeneracy. -/
