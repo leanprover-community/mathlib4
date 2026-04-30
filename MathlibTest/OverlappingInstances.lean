@@ -284,3 +284,11 @@ where
 -- Sadly, the linter does not work when the declaration doesn't have a body:
 
 class FooClass (α : Type) [Add α] [Add α] where
+
+/-! Test classes that extend a non-class -/
+
+structure NotAClass where
+class IsAClass1 extends NotAClass
+class IsAClass2 extends NotAClass
+
+example [IsAClass1] [IsAClass2] : True := trivial

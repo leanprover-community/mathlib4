@@ -79,6 +79,7 @@ where
         let parent := info.structName
         if (← get).contains parent then continue
         modify (·.insert parent)
+        unless ← isInstance info.projFn do continue
         unless isProp do
           if (← getConstInfo parent).type.getForallBody.isProp then continue
         let proj := Expr.app (mkAppN (.const info.projFn us) type.getAppArgs) inst
