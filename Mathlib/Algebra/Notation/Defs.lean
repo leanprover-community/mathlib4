@@ -31,7 +31,7 @@ Note `Zero` has already been defined in core Lean.
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Function.Bijective
 

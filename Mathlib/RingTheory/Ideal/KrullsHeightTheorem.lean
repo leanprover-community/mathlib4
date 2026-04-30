@@ -41,7 +41,7 @@ In this file, we prove **Krull's principal ideal theorem** (also known as
   by no more than `n` elements.
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*} [CommRing R] [IsNoetherianRing R]
 
