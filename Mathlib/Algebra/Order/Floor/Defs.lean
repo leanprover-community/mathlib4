@@ -363,6 +363,8 @@ end FloorRingToSemiring
 
 namespace FloorRing
 
+/-! #### `Int.cast` is strictly monotone on floor rings -/
+
 variable [Ring α] [LinearOrder α] [FloorRing α]
 
 theorem intCast_mono : Monotone (Int.cast : ℤ → α) :=
@@ -374,17 +376,13 @@ theorem intCast_strictMono : StrictMono (Int.cast : ℤ → α) := by
   grind
 
 theorem natCast_mono : Monotone (Nat.cast : ℕ → α) :=
-  fun m n h => by simpa using intCast_mono (Int.natCast_strictMono.monotone h)
+  FloorSemiring.natCast_mono
 
-theorem natCast_nonneg (n : ℕ) : 0 ≤ (n : α) := by
-  simpa using natCast_mono n.zero_le
+theorem natCast_nonneg (n : ℕ) : 0 ≤ (n : α) :=
+  FloorSemiring.natCast_nonneg n
 
 theorem natCast_strictMono : StrictMono (Nat.cast : ℕ → α) :=
-  fun m n h => by simpa using intCast_strictMono (Int.natCast_strictMono h)
-
-instance : CharZero α := ⟨natCast_strictMono.injective⟩
-
-instance : ZeroLEOneClass α := ⟨by simpa only [Nat.cast_one] using natCast_nonneg 1⟩
+  FloorSemiring.natCast_strictMono
 
 end FloorRing
 
