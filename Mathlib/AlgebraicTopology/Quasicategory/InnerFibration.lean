@@ -29,20 +29,31 @@ namespace SSet
 
 /-- The family of morphisms in `SSet` which consists of inner horn inclusions
 `Λ[n, i].ι : Λ[n, i] ⟶ Δ[n]` (for `0 < i < n`). -/
-def innerHornInclusions : MorphismProperty SSet.{u} :=
-  ⨆ n, .ofHoms (fun p : {p : Fin (n + 3) // 0 < p ∧ p < Fin.last (n + 2)} ↦ Λ[n + 2, p].ι)
+inductive innerHornInclusions : MorphismProperty SSet.{u} where
+  | intro {n : ℕ} (i : Fin (n + 3)) (h0 : 0 < i) (hn : i < Fin.last (n + 2)) :
+    innerHornInclusions Λ[n + 2, i].ι
 
-lemma horn_ι_mem_innerHornInclusions {n : ℕ} {i : Fin (n + 3)}
-    (h0 : 0 < i) (hn : i < Fin.last (n + 2)) : innerHornInclusions (horn.{u} (n + 2) i).ι := by
-  simp only [innerHornInclusions, iSup_iff, ofHoms_iff]
-  use n
-  use ⟨i, h0, hn⟩
+lemma horn_ι_mem_innerHornInclusions {n : ℕ} {i : Fin (n + 1)}
+    (h0 : 0 < i) (hn : i < Fin.last n) : innerHornInclusions (horn.{u} n i).ι := by
+  obtain _ | _ | k := n
+  · grind
+  · grind
+  · exact ⟨i, h0, hn⟩
 
-lemma innerHornInclusions_le_J : innerHornInclusions.{u} ≤ modelCategoryQuillen.J := by
-  intro _ _ _ h
-  simp only [innerHornInclusions, iSup_iff] at h
-  obtain ⟨n, ⟨i⟩⟩ := h
-  apply modelCategoryQuillen.horn_ι_mem_J
+lemma innerHornInclusions_eq_iSup :
+    innerHornInclusions.{u} =
+    ⨆ n, .ofHoms (fun p : {p : Fin (n + 3) // 0 < p ∧ p < Fin.last (n + 2)} ↦ Λ[n + 2, p].ι) := by
+  ext
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · obtain @⟨n, i, h0, hn⟩ := h
+    simp only [iSup_iff, ofHoms_iff, Subtype.exists, exists_prop]
+    use n, i
+  · simp only [iSup_iff, ofHoms_iff] at h
+    obtain ⟨n, ⟨⟨i, h0, hn⟩, _, _⟩⟩ := h
+    exact horn_ι_mem_innerHornInclusions h0 hn
+
+lemma innerHornInclusions_le_J : innerHornInclusions.{u} ≤ modelCategoryQuillen.J :=
+  fun _ _ _ ⟨_, _, _⟩ ↦ modelCategoryQuillen.horn_ι_mem_J ..
 
 lemma innerHornInclusions_le_monomorphisms :
     innerHornInclusions.{u} ≤ monomorphisms SSet :=
@@ -67,11 +78,8 @@ lemma quasicategory_of_from_innerFibrations (S : SSet) {X : SSet} (t : Limits.Is
   quasicategory_of_hasLiftingProperty S t (fun h0 hn ↦ h _ (horn_ι_mem_innerHornInclusions h0 hn))
 
 lemma Quasicategory.from_innerFibrations (S : SSet) [Quasicategory S]
-    {X : SSet} (t : Limits.IsTerminal X) : innerFibrations (t.from S) := by
-  intro _ _ _ h
-  simp only [innerHornInclusions, iSup_iff] at h
-  obtain ⟨n, ⟨i, h0, hn⟩⟩ := h
-  exact hasLiftingProperty S t h0 hn
+    {X : SSet} (t : Limits.IsTerminal X) : innerFibrations (t.from S) :=
+  fun _ _ _ ⟨_, h0, hn⟩ ↦ hasLiftingProperty S t h0 hn
 
 @[kerodon 01BB]
 lemma quasicategory_iff_from_innerFibration (S : SSet) {X : SSet} (t : Limits.IsTerminal X) :

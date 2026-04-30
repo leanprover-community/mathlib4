@@ -71,13 +71,14 @@ instance (n : ℕ) : MorphismProperty.IsSmall.{u}
       (fun p : {p : Fin (n + 3) // 0 < p ∧ p < Fin.last (n + 2)} ↦ Λ[n + 2, p].ι)) :=
   isSmall_ofHoms ..
 
-instance : MorphismProperty.IsSmall.{u} innerHornInclusions.{u} :=
-  isSmall_iSup ..
+instance : MorphismProperty.IsSmall.{u} innerHornInclusions.{u} := by
+  rw [innerHornInclusions_eq_iSup]
+  exact isSmall_iSup ..
 
 instance : IsCardinalForSmallObjectArgument innerHornInclusions.{u} Cardinal.aleph0.{u} where
   preservesColimit {A B X Y} i hi f hf := by
     have : IsFinitelyPresentable.{u} A := by
-      simp only [innerHornInclusions, iSup_iff] at hi
+      simp only [innerHornInclusions_eq_iSup, iSup_iff] at hi
       obtain ⟨n, ⟨i⟩⟩ := hi
       infer_instance
     infer_instance
