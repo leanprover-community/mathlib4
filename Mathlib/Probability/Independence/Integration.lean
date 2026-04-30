@@ -216,6 +216,12 @@ theorem IndepFun.integrable_right_of_integrable_smul {α β : Type*}
   rw [lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' hX.enorm hY.enorm J, H] at A
   simp only [ENNReal.mul_top I, lt_self_iff_false] at A
 
+@[deprecated (since := "2026-04-30")] alias IndepFun.integrable_left_of_integrable_mul :=
+  IndepFun.integrable_left_of_integrable_smul
+
+@[deprecated (since := "2026-04-30")] alias IndepFun.integrable_right_of_integrable_mul :=
+  IndepFun.integrable_right_of_integrable_smul
+
 lemma IndepFun.integral_fun_comp_smul_comp {α β : Type*} [RCLike α] [MeasurableSpace β]
     [NormedAddCommGroup β] [NormedSpace ℝ β] [NormedSpace α β] [BorelSpace β]
     {𝓧 𝓨 : Type*} {m𝓧 : MeasurableSpace 𝓧}
