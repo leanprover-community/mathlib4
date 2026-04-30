@@ -356,6 +356,8 @@ divisible by two; but that would be more awkward to use. -/
 def equivExterior [Invertible (2 : R)] : CliffordAlgebra Q ≃ₗ[R] ExteriorAlgebra R M :=
   changeFormEquiv changeForm.associated_neg_proof
 
+#adaptation_note /-- As of nightly-2026-04-29, the simpNF linter is failing here.
+Assistance investigating this would be appreciated. -/
 attribute [nolint simpNF] equivExterior.eq_1
 
 /-- A `CliffordAlgebra` over a nontrivial ring is nontrivial, in characteristic not two. -/
