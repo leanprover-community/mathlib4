@@ -797,13 +797,13 @@ def cycleBypass : G.Walk v v → G.Walk v v
 
 @[simp] lemma cycleBypass_nil : (.nil : G.Walk v v).cycleBypass = .nil := rfl
 
-lemma edges_cycleBypass_subset : ∀ {w : G.Walk v v}, w.cycleBypass.edges ⊆ w.edges
-  | .nil => by simp
-  | .cons (v := v') hvv' w => by
-    classical
-    dsimp only [cycleBypass, edges_cons]
-    gcongr
-    exact edges_bypass_subset _
+open List in
+lemma edges_cycleBypass_sublist : ∀ {w : G.Walk v v}, w.cycleBypass.edges <+ w.edges
+  | .nil => .refl _
+  | .cons _ w => w.edges_bypass_sublist.cons_cons _
+
+lemma edges_cycleBypass_subset {w : G.Walk v v} : w.cycleBypass.edges ⊆ w.edges :=
+  w.edges_cycleBypass_sublist.subset
 
 lemma IsCircuit.isCycle_cycleBypass : ∀ {w : G.Walk v v}, w.IsCircuit → w.cycleBypass.IsCycle
   | .cons (v := v') hvv' w, hw => by
