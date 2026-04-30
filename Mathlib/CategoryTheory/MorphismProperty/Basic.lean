@@ -108,7 +108,7 @@ end
 
 section
 
-variable {C : Type u} [Category.{v} C] {D : Type*} [Category* D]
+variable {C : Type u} [Category.{v} C] {D : Type*} [Category* D] {E : Type*} [Category* E]
 
 /-- The inverse image of a `MorphismProperty D` by a functor `C ⥤ D` -/
 def inverseImage (P : MorphismProperty D) (F : C ⥤ D) : MorphismProperty C := fun _ _ f =>
@@ -122,12 +122,37 @@ lemma inverseImage_iff (P : MorphismProperty D) (F : C ⥤ D) {X Y : C} (f : X �
 lemma op_inverseImage (P : MorphismProperty D) (F : C ⥤ D) :
     (P.inverseImage F).op = P.op.inverseImage F.op := rfl
 
+@[gcongr]
+lemma monotone_inverseImage (F : C ⥤ D) :
+    Monotone (fun P : MorphismProperty D ↦ P.inverseImage F) :=
+  fun _ _ h _ _ _ hf ↦ h _ hf
+
 /-- The (strict) image of a `MorphismProperty C` by a functor `C ⥤ D` -/
 inductive strictMap (P : MorphismProperty C) (F : C ⥤ D) : MorphismProperty D where
   | map {X Y : C} {f : X ⟶ Y} (hf : P f) : strictMap _ _ (F.map f)
 
 lemma map_mem_strictMap (P : MorphismProperty C) (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) (hf : P f) :
     (P.strictMap F) (F.map f) := ⟨hf⟩
+
+@[gcongr]
+lemma monotone_strictMap (F : C ⥤ D) : Monotone (fun P : MorphismProperty C ↦ P.strictMap F) :=
+  fun _ _ h _ _ _ ⟨hf⟩ ↦ ⟨h _ hf⟩
+
+@[simp]
+lemma strictMap_id (P : MorphismProperty C) :
+    P.strictMap (𝟭 C) = P := by
+  ext _ _ f
+  exact ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
+
+@[simp]
+lemma strictMap_strictMap (P : MorphismProperty C) (F : C ⥤ D) (G : D ⥤ E) :
+    (P.strictMap F).strictMap G = P.strictMap (F ⋙ G) := by
+  ext _ _ f
+  refine ⟨fun ⟨⟨h⟩⟩ ↦ ⟨h⟩, fun ⟨h⟩ ↦ ⟨⟨h⟩⟩⟩
+
+lemma strictMap_le_iff_le_inverseImage (F : C ⥤ D) (P : MorphismProperty C)
+    (P' : MorphismProperty D) : P.strictMap F ≤ P' ↔ P ≤ P'.inverseImage F :=
+  ⟨fun h _ _ _ hf ↦ h _ ⟨hf⟩, fun h _ _ _ ⟨hf⟩ ↦ h _ hf⟩
 
 /-- The image (up to isomorphisms) of a `MorphismProperty C` by a functor `C ⥤ D` -/
 def map (P : MorphismProperty C) (F : C ⥤ D) : MorphismProperty D := fun _ _ f =>
@@ -384,6 +409,17 @@ lemma isoClosure_le_iff (P Q : MorphismProperty C) [Q.RespectsIso] :
 section
 
 variable {D : Type*} [Category* D]
+
+lemma isoClosure_strictMap_le (P : MorphismProperty C) (F : C ⥤ D) :
+    P.isoClosure.strictMap F ≤ (P.strictMap F).isoClosure :=
+  fun _ _ _ ⟨⟨_, _, _, hf, ⟨i⟩⟩⟩ ↦ ⟨_, _, _, ⟨hf⟩, ⟨F.mapArrow.mapIso i⟩⟩
+
+lemma map_eq_isoClosure (W : MorphismProperty C) (F : C ⥤ D) :
+    W.map F = (W.strictMap F).isoClosure := by
+  ext
+  refine ⟨fun ⟨_, _, f, hf, hf'⟩ ↦ ⟨_, _, _, ⟨hf⟩, hf'⟩, fun ⟨_, _, f, hf, hf'⟩ ↦ ?_⟩
+  obtain ⟨hf⟩ := hf
+  exact ⟨_, _, _, hf, hf'⟩
 
 instance map_respectsIso (P : MorphismProperty C) (F : C ⥤ D) :
     (P.map F).RespectsIso := by
