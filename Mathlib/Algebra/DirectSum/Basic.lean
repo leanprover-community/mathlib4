@@ -108,7 +108,7 @@ theorem add_apply (g₁ g₂ : ⨁ i, β i) (i : ι) : (g₁ + g₂) i = g₁ i 
 @[simp]
 theorem sum_apply {α} (s : Finset α) (g : α → ⨁ i, β i) (i : ι) :
     (∑ a ∈ s, g a) i = ∑ a ∈ s, g a i :=
-  DFinsupp.finset_sum_apply s g i
+  DFinsupp.finsetSum_apply s g i
 
 section DecidableEq
 
@@ -182,6 +182,13 @@ protected theorem induction_on {motive : (⨁ i, β i) → Prop} (x : ⨁ i, β 
   apply DFinsupp.induction x zero
   intro i b f h1 h2 ih
   solve_by_elim
+
+/-- An alternative induction, where the addition assumption is restricted to singles. -/
+@[elab_as_elim]
+protected theorem induction_on' {motive : (⨁ i, β i) → Prop} (f : ⨁ i, β i) (h0 : motive 0)
+    (hadd : ∀ (i b) (f : ⨁ i, β i), f i = 0 → b ≠ 0 → motive f → motive (of β i b + f)) :
+    motive f :=
+  DFinsupp.induction f h0 hadd
 
 /-- If two additive homomorphisms from `⨁ i, β i` are equal on each `of β i y`,
 then they are equal. -/

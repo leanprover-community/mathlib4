@@ -29,9 +29,9 @@ specific families of vectors, requiring more theory to state.
 We prove several specialized tests for linear independence of families of vectors and of sets of
 vectors.
 
-* `linearIndependent_option`, `linearIndependent_fin_cons`,
-  `linearIndependent_fin_succ`: type-specific tests for linear independence of families of vector
-  fields;
+* `linearIndependent_option`, `linearIndependent_finCons`,
+  `linearIndependent_finSucc`, `linearIndependent_finSnoc`: type-specific tests for linear
+  independence of families of vector fields;
 * `linearIndependent_insert`, `linearIndependent_pair`: linear independence tests for set operations
 
 In many cases we additionally provide dot-style operations (e.g., `LinearIndependent.union`) to
@@ -333,7 +333,7 @@ private lemma LinearIndependent.pair_add_smul_add_smul_iff_aux (h : a * d ≠ b 
   rcases eq_or_ne (a * d) (b * c) with h | h
   · suffices ¬ LinearIndependent R ![a • x + b • y, c • x + d • y] by simpa [h]
     rw [pair_iff]
-    push_neg
+    push Not
     by_cases hbd : b = 0 ∧ d = 0
     · simp only [hbd.1, hbd.2, zero_smul, add_zero]
       by_cases hac : a = 0 ∧ c = 0; · exact ⟨1, 0, by simp [hac.1, hac.2], by simp⟩
@@ -641,32 +641,77 @@ theorem LinearIndependent.pair_iff' {x y : V} (hx : x ≠ 0) :
     Finset.coe_insert, Finset.coe_singleton, linearIndepOn_pair_iff _ (by simp) (by simpa)]
   simp
 
-theorem linearIndependent_fin_cons {n} {v : Fin n → V} :
+theorem linearIndependent_finCons {n} {v : Fin n → V} :
     LinearIndependent K (Fin.cons x v : Fin (n + 1) → V) ↔
       LinearIndependent K v ∧ x ∉ Submodule.span K (range v) := by
   rw [← linearIndependent_equiv (finSuccEquiv n).symm, linearIndependent_option]
-  exact Iff.rfl
+  rfl
 
-theorem linearIndependent_fin_snoc {n} {v : Fin n → V} :
+@[deprecated (since := "2026-04-07")]
+alias linearIndependent_fin_cons := linearIndependent_finCons
+
+theorem linearIndependent_finSnoc {n} {v : Fin n → V} :
     LinearIndependent K (Fin.snoc v x : Fin (n + 1) → V) ↔
       LinearIndependent K v ∧ x ∉ Submodule.span K (range v) := by
   rw [Fin.snoc_eq_cons_rotate, ← Function.comp_def, linearIndependent_equiv,
-    linearIndependent_fin_cons]
+    linearIndependent_finCons]
 
-/-- See `LinearIndependent.fin_cons'` for an uglier version that works if you
+@[deprecated (since := "2026-04-07")]
+alias linearIndependent_fin_snoc := linearIndependent_finSnoc
+
+/-- See `LinearIndependent.finCons'` for an uglier version that works if you
 only have a module over a semiring. -/
-theorem LinearIndependent.fin_cons {n} {v : Fin n → V} (hv : LinearIndependent K v)
+theorem LinearIndependent.finCons {n} {v : Fin n → V} (hv : LinearIndependent K v)
     (hx : x ∉ Submodule.span K (range v)) : LinearIndependent K (Fin.cons x v : Fin (n + 1) → V) :=
-  linearIndependent_fin_cons.2 ⟨hv, hx⟩
+  linearIndependent_finCons.2 ⟨hv, hx⟩
 
-theorem linearIndependent_fin_succ {n} {v : Fin (n + 1) → V} :
+@[deprecated (since := "2026-04-07")]
+alias LinearIndependent.fin_cons := LinearIndependent.finCons
+
+/-- See `LinearIndependent.finSnoc'` for an uglier version that works if you
+only have a module over a semiring, and `LinearIndependent.finSnoc_of_not_mem_span_over` for a
+version over a subring of a division ring. -/
+lemma LinearIndependent.finSnoc {n} {v : Fin n → V} (hv : LinearIndependent K v)
+    (hx : x ∉ Submodule.span K (range v)) : LinearIndependent K (Fin.snoc v x : Fin (n + 1) → V) :=
+  linearIndependent_finSnoc.2 ⟨hv, hx⟩
+
+/-- If `v` is `R`-linearly independent and `x` is not in the `K`-span of `range v` (where `K` is a
+division ring extending `R` and acting on the same module), then `Fin.snoc v x` is `R`-linearly
+independent.
+
+This is useful when proving `ℤ`-linear independence using the fact that an element is outside the
+`ℝ`-span, which arises naturally in lattice theory and geometry of numbers. -/
+theorem LinearIndependent.finSnoc_of_not_mem_span_over
+    {R : Type*} {K : Type*} {M : Type*}
+    [CommRing R] [DivisionRing K] [AddCommGroup M]
+    [Algebra R K] [Module K M] [Module R M] [IsScalarTower R K M] [FaithfulSMul R K]
+    {n : ℕ} {v : Fin n → M} (hv : LinearIndependent R v) {x : M}
+    (hx : x ∉ Submodule.span K (Set.range v)) :
+    LinearIndependent R (Fin.snoc v x) := by
+  apply hv.finSnoc' v x
+  intro c y hcy heq
+  by_contra hc
+  apply hx
+  have hc' : algebraMap R K c ≠ 0 := by
+    rwa [ne_eq, FaithfulSMul.algebraMap_eq_zero_iff]
+  rw [← algebraMap_smul K c x] at heq
+  rw [(eq_inv_smul_iff₀ hc').mpr (eq_neg_of_add_eq_zero_left heq), smul_neg]
+  exact Submodule.neg_mem _ (Submodule.smul_mem _ _ (Submodule.span_subset_span R K _ hcy))
+
+theorem linearIndependent_finSucc {n} {v : Fin (n + 1) → V} :
     LinearIndependent K v ↔
       LinearIndependent K (Fin.tail v) ∧ v 0 ∉ Submodule.span K (range <| Fin.tail v) := by
-  rw [← linearIndependent_fin_cons, Fin.cons_self_tail]
+  rw [← linearIndependent_finCons, Fin.cons_self_tail]
 
-theorem linearIndependent_fin_succ' {n} {v : Fin (n + 1) → V} : LinearIndependent K v ↔
+@[deprecated (since := "2026-04-07")]
+alias linearIndependent_fin_succ := linearIndependent_finSucc
+
+theorem linearIndependent_finSucc' {n} {v : Fin (n + 1) → V} : LinearIndependent K v ↔
     LinearIndependent K (Fin.init v) ∧ v (Fin.last _) ∉ Submodule.span K (range <| Fin.init v) := by
-  rw [← linearIndependent_fin_snoc, Fin.snoc_init_self]
+  rw [← linearIndependent_finSnoc, Fin.snoc_init_self]
+
+@[deprecated (since := "2026-04-07")]
+alias linearIndependent_fin_succ' := linearIndependent_finSucc'
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence between `k + 1` vectors of length `n` and `k` vectors of length `n` along with a
@@ -676,17 +721,17 @@ def equiv_linearIndependent (n : ℕ) :
     { s : Fin (n + 1) → V // LinearIndependent K s } ≃
       Σ s : { s : Fin n → V // LinearIndependent K s },
         ((Submodule.span K (Set.range (s : Fin n → V)))ᶜ : Set V) where
-  toFun s := ⟨⟨Fin.tail s.val, (linearIndependent_fin_succ.mp s.property).left⟩,
-    ⟨s.val 0, (linearIndependent_fin_succ.mp s.property).right⟩⟩
+  toFun s := ⟨⟨Fin.tail s.val, (linearIndependent_finSucc.mp s.property).left⟩,
+    ⟨s.val 0, (linearIndependent_finSucc.mp s.property).right⟩⟩
   invFun s := ⟨Fin.cons s.2.val s.1.val,
-    linearIndependent_fin_cons.mpr ⟨s.1.property, s.2.property⟩⟩
+    linearIndependent_finCons.mpr ⟨s.1.property, s.2.property⟩⟩
   left_inv _ := by simp only [Fin.cons_self_tail, Subtype.coe_eta]
   right_inv := fun ⟨_, _⟩ => by simp only [Fin.cons_zero, Subtype.coe_eta, Sigma.mk.inj_iff,
     Fin.tail_cons, heq_eq_eq, and_self]
 
 theorem linearIndependent_fin2 {f : Fin 2 → V} :
     LinearIndependent K f ↔ f 1 ≠ 0 ∧ ∀ a : K, a • f 1 ≠ f 0 := by
-  rw [linearIndependent_fin_succ, linearIndependent_unique_iff, range_unique, mem_span_singleton,
+  rw [linearIndependent_finSucc, linearIndependent_unique_iff, range_unique, mem_span_singleton,
     not_exists, show Fin.tail f default = f 1 by rw [← Fin.succ_zero_eq_one]; rfl]
 
 theorem exists_linearIndepOn_extension {s t : Set ι} (hs : LinearIndepOn K v s) (hst : s ⊆ t) :

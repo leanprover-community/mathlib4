@@ -105,8 +105,6 @@ instance instSMulRat (s : S) : SMul ℚ s where smul q x := ⟨q • x, qsmul_me
 @[simp, norm_cast] lemma coe_nnqsmul (s : S) (q : ℚ≥0) (x : s) : ↑(q • x) = q • (x : K) := rfl
 @[simp, norm_cast] lemma coe_qsmul (s : S) (q : ℚ) (x : s) : ↑(q • x) = q • (x : K) := rfl
 
-variable (S)
-
 /-- A subfield inherits a division ring structure -/
 instance (priority := 75) toDivisionRing (s : S) : DivisionRing s := fast_instance%
   Subtype.coe_injective.divisionRing ((↑) : s → K)
@@ -141,6 +139,7 @@ add_decl_doc Subfield.toSubring
 namespace Subfield
 
 /-- The underlying `AddSubgroup` of a subfield. -/
+@[reducible]
 def toAddSubgroup (s : Subfield K) : AddSubgroup K :=
   { s.toSubring.toAddSubgroup with }
 
@@ -267,18 +266,9 @@ instance : Inv s :=
 instance : Pow s ℤ :=
   ⟨fun x z => ⟨x ^ z, s.zpow_mem x.2 z⟩⟩
 
--- TODO: Those are just special cases of `SubfieldClass.toDivisionRing`/`SubfieldClass.toField`
-instance toDivisionRing (s : Subfield K) : DivisionRing s := fast_instance%
-  Subtype.coe_injective.divisionRing ((↑) : s → K) rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
-    (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
-    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
-    (fun _ ↦ rfl) fun _ ↦ rfl
+instance toDivisionRing (s : Subfield K) : DivisionRing s := SubfieldClass.toDivisionRing s
 
-instance toField {K} [Field K] (s : Subfield K) : Field s := fast_instance%
-  Subtype.coe_injective.field ((↑) : s → K) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ ↦ rfl) (fun _ => rfl)
-    (fun _ => rfl) (fun _ ↦ rfl) fun _ => rfl
+instance toField {K} [Field K] (s : Subfield K) : Field s := SubfieldClass.toField s
 
 @[simp, norm_cast]
 theorem coe_add (x y : s) : (↑(x + y) : K) = ↑x + ↑y :=
@@ -345,7 +335,6 @@ theorem mem_toSubmonoid {s : Subfield K} {x : K} : x ∈ s.toSubmonoid ↔ x ∈
 theorem coe_toSubmonoid : (s.toSubmonoid : Set K) = s :=
   rfl
 
-@[simp]
 theorem mem_toAddSubgroup {s : Subfield K} {x : K} : x ∈ s.toAddSubgroup ↔ x ∈ s :=
   Iff.rfl
 

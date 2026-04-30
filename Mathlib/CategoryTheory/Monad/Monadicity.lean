@@ -67,8 +67,8 @@ instance main_pair_reflexive (A : adj.toMonad.Algebra) :
   apply IsReflexivePair.mk' (F.map (adj.unit.app _)) _ _
   · rw [← F.map_comp, ← F.map_id]
     exact congr_arg F.map A.unit
-  · rw [adj.left_triangle_components]
-    rfl
+  · dsimp
+    rw [adj.left_triangle_components]
 
 /-- The "main pair" for an algebra `(A, α)` is the pair of morphisms `(F α, ε_FA)`. It is always a
 `G`-split pair, and will be used to construct the left adjoint to the comparison functor and show it
@@ -84,7 +84,6 @@ def comparisonLeftAdjointObj (A : adj.toMonad.Algebra)
     [HasCoequalizer (F.map A.a) (adj.counit.app _)] : D :=
   coequalizer (F.map A.a) (adj.counit.app _)
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 We have a bijection of homsets which will be used to construct the left adjoint to the comparison
 functor.

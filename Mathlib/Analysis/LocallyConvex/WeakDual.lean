@@ -9,7 +9,7 @@ public import Mathlib.Analysis.Normed.Field.Lemmas
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.Finsupp.Span
-public import Mathlib.Topology.Algebra.Module.WeakBilin
+public import Mathlib.Topology.Algebra.Module.Spaces.WeakBilin
 
 /-!
 # Weak Dual in Topological Vector Spaces

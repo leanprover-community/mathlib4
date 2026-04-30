@@ -190,7 +190,7 @@ theorem zero_iff_subsingleton : IsSMulRegular M (0 : R) ↔ Subsingleton M :=
 /-- The `0` element is not `M`-regular, on a non-trivial module. -/
 theorem not_zero_iff : ¬IsSMulRegular M (0 : R) ↔ Nontrivial M := by
   rw [nontrivial_iff, not_iff_comm, zero_iff_subsingleton, subsingleton_iff]
-  push_neg
+  push Not
   exact Iff.rfl
 
 /-- The element `0` is `M`-regular when `M` is trivial. -/

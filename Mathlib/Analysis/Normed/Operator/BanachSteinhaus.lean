@@ -20,7 +20,7 @@ Note that we prove the more general version about barrelled spaces in
 more general setup.
 -/
 
-@[expose] public section
+public section
 
 open Set
 
@@ -48,7 +48,3 @@ theorem banach_steinhaus_iSup_nnnorm {ι : Type*} [CompleteSpace E] {g : ι → 
   rw [show ((⨆ i, ↑‖g i‖₊) < ∞) ↔ _ from (NormedSpace.equicontinuous_TFAE g).out 8 2]
   refine (norm_withSeminorms 𝕜₂ F).banach_steinhaus (fun _ x ↦ ?_)
   simpa [← NNReal.bddAbove_coe, ← Set.range_comp] using ENNReal.iSup_coe_lt_top.1 (h x)
-
-open Topology
-
-open Filter
