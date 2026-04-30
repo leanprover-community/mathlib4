@@ -195,7 +195,7 @@ lemma Prime.isMaximal_span_singleton [NoZeroDivisors R] [Ring.KrullDimLE 1 R]
 lemma Ideal.liesOver_span_iff [NoZeroDivisors R] [Ring.KrullDimLE 1 R] [Algebra R S]
     {P : Ideal S} {p : R} (hP : P ≠ ⊤) (hp : Prime p) :
       P.LiesOver (.span {p}) ↔ algebraMap R S p ∈ P := by
-  have hP : P.under S ≠ ⊤ := Ideal.comap_ne_top _ hP
+  have hP : P.under R ≠ ⊤ := Ideal.comap_ne_top _ hP
   simp [Ideal.liesOver_iff, Ideal.IsMaximal.eq_iff_le hp.isMaximal_span_singleton hP]
 
 end One
