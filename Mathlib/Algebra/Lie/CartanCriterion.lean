@@ -37,7 +37,7 @@ via its vanishing on `L × ⁅L, L⁆`, semisimplicity via its non-degeneracy.
 * `LieAlgebra.HasTrivialRadical.instIsKilling`: a finite-dimensional Lie algebra over a field of
   characteristic zero with trivial radical has non-degenerate Killing form. This is one direction
   of **Cartan's criterion for semisimplicity**; the converse is the existing
-  `LieAlgebra.IsKilling.instHasTrivialRadical`.
+  `LieAlgebra.IsKilling.instHasTrivialRadical` (which holds in greater generality, over any PID).
 
 ## TODO
 
