@@ -157,11 +157,11 @@ lemma tendsto_atImInfty_tprod_one_sub_eta_q_pow :
       (f := fun (q : ℂ) (n : ℕ) ↦ -q ^ (n + 1)) (bound := fun n ↦ (1 / 2 : ℝ) ^ (n + 1))
     simp only [Pi.zero_apply, norm_neg, norm_pow, add_zero, tprod_one] at this
     simp_rw [sub_eq_add_neg]
-    apply this
-    · simpa only [pow_succ'] using (summable_geometric_of_abs_lt_one (by norm_num)).mul_left _
-    · exact fun k ↦ by simpa using ((continuous_pow (M := ℂ) (k + 1)).tendsto 0).neg
-    · filter_upwards [Metric.ball_mem_nhds (0 : ℂ) (by norm_num : (0 : ℝ) < 1 / 2)] with q hq k
-      exact pow_le_pow_left₀ (norm_nonneg _) (mem_ball_zero_iff.mp hq).le _
+    refine this
+      (by simpa only [pow_succ'] using (summable_geometric_of_abs_lt_one (by norm_num)).mul_left _)
+      (fun k ↦ by simpa using ((continuous_pow (M := ℂ) (k + 1)).tendsto 0).neg) ?_
+    filter_upwards [Metric.ball_mem_nhds (0 : ℂ) (by norm_num : (0 : ℝ) < 1 / 2)] with q hq k
+    exact pow_le_pow_left₀ (norm_nonneg _) (mem_ball_zero_iff.mp hq).le _
   have := (htprod.comp (UpperHalfPlane.qParam_tendsto_atImInfty zero_lt_one)).pow 24
   simp only [Periodic.qParam, ofReal_one, div_one, comp_apply, one_pow, eta_q] at *
   convert this using 2 with τ

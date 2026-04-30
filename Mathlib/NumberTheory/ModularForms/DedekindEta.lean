@@ -79,33 +79,28 @@ lemma multipliableLocallyUniformlyOn_one_sub_pow :
   simp_rw [sub_eq_add_neg]
   apply hasProdLocallyUniformlyOn_of_forall_compact Metric.isOpen_ball
   intro K hK hcK
-  by_cases hN : K.Nonempty
-  · have hc : ContinuousOn (fun q : ℂ ↦ ‖q‖) K := by fun_prop
-    obtain ⟨q₀, hq₀, _, HB⟩ := hcK.exists_sSup_image_eq_and_ge hN hc
-    have hq₀_lt : ‖q₀‖ < 1 := by simpa [Metric.mem_ball, dist_zero_right] using hK hq₀
-    have hsum : Summable fun n : ℕ ↦ ‖q₀‖ ^ (n + 1) :=
-      (summable_nat_add_iff 1).mpr (summable_geometric_of_lt_one (norm_nonneg _) hq₀_lt)
-    refine hsum.hasProdUniformlyOn_nat_one_add hcK (.of_forall fun n x hx ↦ ?_)
-      (fun _ ↦ by fun_prop)
+  rcases K.eq_empty_or_nonempty with hN | hN
+  · simpa [hasProdUniformlyOn_iff_tendstoUniformlyOn, hN] using tendstoUniformlyOn_empty
+  · obtain ⟨q₀, hq₀, _, HB⟩ := hcK.exists_sSup_image_eq_and_ge hN
+      (show ContinuousOn (fun q : ℂ ↦ ‖q‖) K by fun_prop)
+    refine ((summable_nat_add_iff 1).mpr (summable_geometric_of_lt_one (norm_nonneg _)
+      (by simpa [Metric.mem_ball, dist_zero_right] using hK hq₀))).hasProdUniformlyOn_nat_one_add
+      hcK (.of_forall fun n x hx ↦ ?_) (fun _ ↦ by fun_prop)
     simpa using pow_le_pow_left₀ (norm_nonneg _) (HB x hx) (n + 1)
-  · rw [hasProdUniformlyOn_iff_tendstoUniformlyOn]
-    simpa [not_nonempty_iff_eq_empty.mp hN] using tendstoUniformlyOn_empty
 
 /-- The infinite product `q ↦ ∏' n, (1 - q^(n+1))` is differentiable on the open unit disc. -/
 lemma differentiableOn_tprod_one_sub_pow :
-    DifferentiableOn ℂ (fun q ↦ ∏' n, (1 - q ^ (n + 1))) (Metric.ball (0 : ℂ) 1) := by
-  refine multipliableLocallyUniformlyOn_one_sub_pow.hasProdLocallyUniformlyOn.differentiableOn
-    ?_ Metric.isOpen_ball
-  filter_upwards with n
-  simpa [Finset.prod_fn] using DifferentiableOn.finsetProd (fun _ _ ↦ by fun_prop)
+    DifferentiableOn ℂ (fun q ↦ ∏' n, (1 - q ^ (n + 1))) (Metric.ball (0 : ℂ) 1) :=
+  multipliableLocallyUniformlyOn_one_sub_pow.hasProdLocallyUniformlyOn.differentiableOn
+    (.of_forall fun _ ↦ by simpa [Finset.prod_fn] using
+      DifferentiableOn.finsetProd (fun _ _ ↦ by fun_prop)) Metric.isOpen_ball
 
 /-- For any `k`, the function `q ↦ ∏' n, (1 - q^(n+1))^k` is differentiable on the
 open unit disc. -/
 lemma differentiableOn_tprod_one_sub_pow_pow (k : ℕ) :
-    DifferentiableOn ℂ (fun q ↦ ∏' n, (1 - q ^ (n + 1)) ^ k) (Metric.ball (0 : ℂ) 1) := by
-  refine (differentiableOn_tprod_one_sub_pow.fun_pow k).congr fun q hq ↦ ?_
-  have hq_lt : ‖q‖ < 1 := by simpa using hq
-  exact (multipliable_one_sub_pow hq_lt).tprod_pow k
+    DifferentiableOn ℂ (fun q ↦ ∏' n, (1 - q ^ (n + 1)) ^ k) (Metric.ball (0 : ℂ) 1) :=
+  (differentiableOn_tprod_one_sub_pow.fun_pow k).congr fun _ hq ↦
+    (multipliable_one_sub_pow (by simpa using hq)).tprod_pow k
 
 theorem summable_eta_q (z : ℍ) : Summable fun n ↦ ‖-eta_q n z‖ := by
   simpa [summable_nat_add_iff] using
