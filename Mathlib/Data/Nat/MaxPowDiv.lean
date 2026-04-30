@@ -212,7 +212,7 @@ theorem _root_.padicValNat_base_mul {p n : ℕ} (hp : 1 < p) (hn : n ≠ 0) :
 @[simp]
 theorem padicValNat_ne_zero_iff_dvd {p : ℕ} (hp : p ≠ 1) {n : ℕ} (hn : n ≠ 0) :
     (padicValNat p n ≠ 0) ↔ p ∣ n := by
-  conv => rhs ; rw [← Nat.pow_one p]
+  conv => rhs; rw [← Nat.pow_one p]
   exact Iff.symm <| Iff.trans (pow_dvd_iff_le_padicValNat hp hn) (one_le_iff_ne_zero)
 
 /-- If `p ^ k ∣ n`, and `¬p ^ (k + 1) ∣ n`, then `padicValNat p n = k`. -/
