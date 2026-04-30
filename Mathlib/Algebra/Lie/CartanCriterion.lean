@@ -223,9 +223,9 @@ public theorem isSolvable_of_killingForm_apply_lie_eq_zero
     rw [LieAlgebra.isNilpotent_iff_forall (R := K)]
     rintro ⟨x, hx⟩
     apply LieSubalgebra.isNilpotent_ad_of_isNilpotent_ad (DDI : LieSubalgebra K L) (x := ⟨x, hx⟩)
-    exact (isNilpotent_iff_forall' (R := K)).mp module_nilp
-      ⟨⟨x, LieSubmodule.lie_le_left DI DI hx⟩, by
-        rw [derivedSeries_eq_derivedSeriesOfIdeal_comap, mem_comap]; exact hx⟩
+    refine (isNilpotent_iff_forall' (R := K)).mp module_nilp
+      ⟨⟨x, LieSubmodule.lie_le_left DI DI hx⟩, ?_⟩
+    rwa [derivedSeries_eq_derivedSeriesOfIdeal_comap, mem_comap]
   obtain ⟨k, hk⟩ := IsSolvable.solvable K DDI
   rw [derivedSeries_eq_bot_iff] at hk
   refine .mk (k := k + 2) ((derivedSeries_eq_bot_iff I (k + 2)).mpr ?_)
