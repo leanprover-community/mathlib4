@@ -11,21 +11,22 @@ public import Mathlib.AlgebraicGeometry.Modules.Sheaf
 /-!
 # The sheaf 𝒪ₓ(D) associated to a Weil divisor D
 
-In this file we construct the sheaf `𝒪ₓ(D)` associated to a Weil divisor `D` on a locally
+In this file we construct the sheaf of modules `𝒪ₓ(D)` associated to a Weil divisor `D` on a locally
 Noetherian, integral scheme which is regular in codimension 1, defining it on `U`
 to be rational functions such that `(f) + D ≥ 0` on `U`. By Weil divisor we just mean an algebraic
 cycle purely of codimension `1`. In this file, we actually don't place any restrictions on `D`,
 just taking it to be any cycle with coefficients in `ℤ`, just because the actual definitions do
 not require this anywhere.
 
-This definition gives good results on locally Noetherian, integral separated schemes which are
+This definition gives good results on locally Noetherian, integral schemes which are
 regular in codimension 1. In particular this is useful for working with normal varieties,
-where the map from Cartier divisors to Weil divisors is injective.
+where the map from Cartier divisors to Weil divisors is injective. Note that when applied to Weil
+divisors which are not Cartier, this sheaf will not necessarily be invertible.
 
 Note that we can extend the construction here to schemes which are not necessarily irreducible with
 some extra bookkeeping. That said, in my opinion the most sensible way to do this goes via the
 construction on integral schemes, and in any case the construction for integral schemes comes up the
-most in applications.
+most in applications, hence our decision to formalize the version for integral schemes  .
 -/
 
 open AlgebraicGeometry Scheme CategoryTheory Order AlgebraicCycle Opposite
@@ -89,7 +90,6 @@ def add_mem' [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (U : X.Ope
       specialize ha ha0 Z
       specialize hb hb0 Z
       simp_all only [coe_zero, Pi.zero_apply, coe_add, Pi.add_apply]
-      have hU : U.1 ⊆ ⊤ := by aesop
       suffices min ((div a ha0).restrict U Z) ((div b hb0).restrict U Z) ≤
               (div (a + b) h).restrict U Z by omega
       by_cases hZ : coheight Z = 1
@@ -121,8 +121,7 @@ def zero_mem' (D : AlgebraicCycle X ℤ) (U : X.Opens) : 0 ∈ carrier D U := by
 `Γ(𝒪ₓ(D), U)` is closed under negatives.
 -/
 def neg_mem' (D : AlgebraicCycle X ℤ) (U : X.Opens) {f : X.functionField} (hf : f ∈ carrier D U) :
-    (- f) ∈ carrier D U := by
-  simp_all [carrier]
+    (- f) ∈ carrier D U := by simp_all [carrier]
 
 /--
 TODO: Rename this
@@ -331,6 +330,9 @@ lemma mapFunApplyNonempty (D : AlgebraicCycle X ℤ) {U V : X.Opens} (r : V ≤ 
 instance algebra_restrict {U V : X.Opens} (k : V ≤ U) :
     Algebra Γ(X, U) Γ(X, V) := (X.presheaf.map (homOfLE k).op).hom.toAlgebra
 
+/--
+TODO: Put in a more sensible file
+-/
 lemma _root_.Nonempty_le {U V : X.Opens} (k : V ≤ U) [Nonempty V] : Nonempty U := by
   rename_i hV
   obtain ⟨⟨a, b⟩⟩ := hV
@@ -363,10 +365,10 @@ instance [IrreducibleSpace X] {U V : X.Opens} (k : V ≤ U) [Nonempty V] :
 set_option backward.isDefEq.respectTransparency false in
 noncomputable
 def map (D : AlgebraicCycle X ℤ) {U V : (TopologicalSpace.Opens ↥X)ᵒᵖ} (r : U ⟶ V) :
-    obj D U ⟶ (ModuleCat.restrictScalars (X.ringCatSheaf.obj.map r).hom).obj (obj D V) := by
-  apply ModuleCat.ofHom
+    obj D U ⟶ (ModuleCat.restrictScalars (X.ringCatSheaf.obj.map r).hom).obj (obj D V) :=
+  ModuleCat.ofHom
     (Y := (ModuleCat.restrictScalars (X.ringCatSheaf.obj.map r).hom).obj (obj D V))
-  exact {
+  {
     toFun := mapFun D (leOfHom (unop r))
     map_add' x y := by
       by_cases hV : Nonempty V.unop
@@ -386,8 +388,6 @@ def map (D : AlgebraicCycle X ℤ) {U V : (TopologicalSpace.Opens ↥X)ᵒᵖ} (
             RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
             MonoidHom.coe_coe, ZeroHom.coe_mk]
           let : Algebra Γ(X, U.unop) Γ(X, V.unop) := (X.sheaf.obj.map r).hom.toAlgebra
-          --let k : Algebra Γ(X, V.unop) X.functionField :=
-          --    (X.germToFunctionField V.unop).hom.toAlgebra
           have : IsScalarTower Γ(X, U.unop) Γ(X, V.unop) X.functionField := by infer_instance
           change m • a = (algebraMap  Γ(X, U.unop) Γ(X, V.unop) m) • a.1
           exact algebra_compatible_smul (↑Γ(X, unop V)) m a.1
@@ -395,14 +395,12 @@ def map (D : AlgebraicCycle X ℤ) {U V : (TopologicalSpace.Opens ↥X)ᵒᵖ} (
             have := leOfHom r.unop
             suffices (unop V) = ⊥ by simp_all only [Opens.nonempty_iff,
               TopologicalSpace.Opens.coe_bot, Set.not_nonempty_empty]
-            have : unop U = ⊥ := by
+            have a : unop U = ⊥ := by
               rename_i _ hU
-              rw [Opens.nonempty_iff] at hU
-              rw [TopologicalSpace.Opens.nonempty_coe] at hU
-              rw [← TopologicalSpace.Opens.coe_eq_empty]
-              rw [@Set.eq_empty_iff_forall_notMem]
+              rw [Opens.nonempty_iff, TopologicalSpace.Opens.nonempty_coe] at hU
+              rw [← TopologicalSpace.Opens.coe_eq_empty, Set.eq_empty_iff_forall_notMem]
               tauto
-            (expose_names; exact eq_bot_mono this_1 this)
+            exact eq_bot_mono this a
           contradiction
       · rename_i _ hV
         exact Subsingleton.elim (h := instSubsingleTonOfEmpty hV) _ _
@@ -472,7 +470,11 @@ indices `i = i₀, i_1, ..., iₙ = j` such that `iₖ ∩ iₗ` is nonempty for
 def connectedByCover {I : Type*} (𝒰 : I → X.Opens) :
   Rel I I := Relation.TransGen <| fun a b ↦ Nonempty (𝒰 a ⊓ 𝒰 b : X.Opens)
 
-def sections_equal_of_nonempty_intersection {D : AlgebraicCycle X ℤ} {I : Type*}
+/--
+If sections `s : Γ(𝒪ₓ(D), U)` and `s' : Γ(𝒪ₓ(D), V)` are equal on `U ∩ V` and `U ∩ V` is nonempty,
+then `s` and `s'` have the same underlying rational function.
+-/
+lemma sections_equal_of_nonempty_intersection {D : AlgebraicCycle X ℤ} {I : Type*}
     {𝒰 : I → X.Opens} {i j : I} (h : Nonempty (𝒰 i ⊓ 𝒰 j : X.Opens))
     (s : (i : I) → ToType ((presheaf D).presheaf.obj (op (𝒰 i))))
     (hs : TopCat.Presheaf.IsCompatible (presheaf D).presheaf 𝒰 s) : (s i).1 = (s j).1 := by
@@ -491,7 +493,7 @@ def sections_equal_of_nonempty_intersection {D : AlgebraicCycle X ℤ} {I : Type
   rw [this] at hs
   simpa [h] using hs
 
-def sections_equal_of_connected_by_cover {D : AlgebraicCycle X ℤ} {I : Type*} {𝒰 : I → X.Opens}
+lemma sections_equal_of_connected_by_cover {D : AlgebraicCycle X ℤ} {I : Type*} {𝒰 : I → X.Opens}
     {i j : I} (h : connectedByCover 𝒰 i j)
     (s : (i : I) → ToType ((presheaf D).presheaf.obj (op (𝒰 i))))
     (hs : TopCat.Presheaf.IsCompatible (presheaf D).presheaf 𝒰 s) : (s i).1 = (s j).1 := by
@@ -499,11 +501,12 @@ def sections_equal_of_connected_by_cover {D : AlgebraicCycle X ℤ} {I : Type*} 
   | single h => exact sections_equal_of_nonempty_intersection h s hs
   | tail _ step ih => rw [ih]; exact sections_equal_of_nonempty_intersection step s hs
 
-/-
-We now want to say that on an irreducible space, if we have a cover then any two elements of the
-cover are connected by cover
--/
+
 open TopologicalSpace
+/--
+If a family of sets has a connected supremum, then between any two sets of the cover there is a
+sequence of sets in the cover which intersect nontrivially pairwise.
+-/
 lemma connectedByCover_of_connected {I : Type*} {𝒰 : I → X.Opens}
     (h𝒰 : _root_.IsConnected (iSup 𝒰).1) (i j : I) (hi : (𝒰 i).1.Nonempty)
     (hj : (𝒰 j).1.Nonempty) : connectedByCover 𝒰 i j := by
@@ -529,8 +532,10 @@ lemma connectedByCover_of_connected {I : Type*} {𝒰 : I → X.Opens}
   obtain ⟨l, hl, hxl⟩ := hxV'
   exact hl (hk.tail ⟨x, hxk, hxl⟩)
 
-
 open Presheaf
+/--
+`𝒪ₓ(D)` is a sheaf
+-/
 lemma isSheaf (D : AlgebraicCycle X ℤ) :
     TopCat.Presheaf.IsSheaf (presheaf D).presheaf := by
   rw [TopCat.Presheaf.isSheaf_iff_isSheafUniqueGluingNontrivial]
@@ -570,13 +575,12 @@ lemma isSheaf (D : AlgebraicCycle X ℤ) :
         simp_all
       all_goals simp_all
   }
-  refine ⟨sec, fun j ↦ ?_, ?_⟩
+  refine ⟨sec, fun j ↦ ?_, fun s' h' ↦ ?_⟩
   · change mapFun D (map._proof_1 (Opens.leSupr 𝒰 j).op) sec = s j
     have : Nonempty ↑(𝒰 j) := h𝒰 j
     simp only [mapFun, this, sec]
     exact Subtype.ext (h_eq j)
-  · intro s' h'
-    simp only [sec]
+  · simp only [sec]
     specialize h' i
     change mapFun D (map._proof_1 (Opens.leSupr 𝒰 i).op) s' = s i at h'
     simp_rw [← h']
@@ -589,7 +593,8 @@ end Sheaf
 /--
 Given a Weil divisor `D` on a locally noetherian, integral scheme which is regular in
 codimension one, this is a construction of `𝒪ₓ(D)`. Note that the definition does not depend on
-`D` only being supported in codimension one, so this definition works for any cycle `D`.
+`D` only being supported in codimension one, so this definition works for any cycle `D`. That said,
+this definition is unlikely to give interesting results when `D` is not a Weil divisor.
 -/
 noncomputable
 def sheafOfModules {X : Scheme} [AlgebraicGeometry.IsIntegral X] [IsLocallyNoetherian X]
