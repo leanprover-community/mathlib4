@@ -241,10 +241,7 @@ lemma mem_skeletonOfMono_obj_iff {d' : ℕ} :
   simp [skeletonOfMono, Y.mem_skeleton_obj_iff_of_nonDegenerate ⟨_, c.nonDegenerate⟩ d']
 
 lemma range_map_le : Subcomplex.range c.map ≤ skeletonOfMono i (d + 1) := by
-  dsimp [map]
-  simp only [Subcomplex.range_eq_ofSimplex, Equiv.apply_symm_apply, Subfunctor.ofSection_le_iff,
-    mem_skeletonOfMono_obj_iff]
-  lia
+  simp [map, Subcomplex.range_eq_ofSimplex, mem_skeletonOfMono_obj_iff]
 
 @[simp]
 lemma preimage_map : (skeletonOfMono i d).preimage c.map = ∂Δ[d] := by
