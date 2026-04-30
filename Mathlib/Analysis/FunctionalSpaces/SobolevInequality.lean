@@ -179,7 +179,7 @@ theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0
               · intros
                 exact hF₁.aemeasurable
               · simp only [sum_const, nsmul_eq_mul]
-                ring1
+                ring
               · exact hk'
               · exact fun _ _ ↦ hp₀
     _ = (∫⋯∫⁻_{i}, f ∂μ) x ^ p *
@@ -202,7 +202,7 @@ theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0
           ∏ j ∈ s, (∫⋯∫⁻_{j}, (∫⋯∫⁻_{i}, f ∂μ) ∂μ) x ^ p := by
               -- identify the result with the RHS integrand
               congr! 2 with j hj
-              · ring1
+              · ring
               · congr! 1
                 rw [← lmarginal_union μ f hf]
                 · congr
@@ -695,7 +695,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_le [FiniteDimensional ℝ F]
           exact h2u.trans subset_closure
         rel [eLpNorm_le_eLpNorm_fderiv_of_eq μ hu h2u' hp (mod_cast (zero_le p).trans_lt h2p) hp']
     _ = eLpNormLESNormFDerivOfLeConst F μ s p q * eLpNorm (fderiv ℝ u) p μ := by
-      simp_rw [eLpNormLESNormFDerivOfLeConst, ENNReal.coe_mul]; ring1
+      simp_rw [eLpNormLESNormFDerivOfLeConst, ENNReal.coe_mul]; ring
 
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 function `u` supported in a bounded set `s` in a normed space `E` of finite dimension

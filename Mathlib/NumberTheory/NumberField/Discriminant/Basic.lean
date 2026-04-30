@@ -142,6 +142,20 @@ theorem _root_.NumberField.mixedEmbedding.covolume_idealLattice (I : (Fractional
     ENNReal.coe_toReal, Real.coe_sqrt, coe_nnnorm, Int.norm_eq_abs,
     ENNReal.toReal_ofReal (Rat.cast_nonneg.mpr (FractionalIdeal.absNorm_nonneg I.val)), mul_assoc]
 
+-- example (m n : ℕ) :
+--     ↑(m) + 2 * ↑(n) - ↑(n) - ↑(m) + ↑(n) = (2 : ℤ) * ↑(n) := by
+--   algebra with ℤ
+--   -- ring1
+
+
+-- example (K : Type u_1)
+--     [Field K]
+--     [NumberField K] :
+--     ↑(nrRealPlaces K) + 2 * ↑(nrComplexPlaces K) - ↑(nrComplexPlaces K) - ↑(nrRealPlaces K) + ↑(nrComplexPlaces K) = (2 : ℤ) * ↑(nrComplexPlaces K) := by
+--   run_tac
+--     Lean.Elab.Tactic.liftMetaTactic' Mathlib.Tactic.Algebra.preprocess
+--   ring1
+
 theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     ∃ a ∈ (I : FractionalIdeal (𝓞 K)⁰ K), a ≠ 0 ∧
       |Algebra.norm ℚ (a : K)| ≤ FractionalIdeal.absNorm I.1 * (4 / π) ^ nrComplexPlaces K *
@@ -179,20 +193,20 @@ theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal
       simp_rw [inv_div, div_eq_mul_inv, mul_inv, ← zpow_neg_one, ← zpow_natCast, mul_zpow,
         ← zpow_mul, neg_one_mul, mul_neg_one, neg_neg, Real.coe_sqrt, coe_nnnorm, sub_eq_add_neg,
         zpow_add₀ (two_ne_zero : (2 : ℝ) ≠ 0)]
-      -- This file is so slow I can't debug the issue; algebra times out.
-      ring1
+      ring
     _ = FractionalIdeal.absNorm I.1 * (2 : ℝ) ^ (2 * nrComplexPlaces K : ℤ) * Real.sqrt ‖discr K‖ *
           Nat.factorial (finrank ℚ K) * π⁻¹ ^ (nrComplexPlaces K) := by
       congr
       rw [← card_add_two_mul_card_eq_rank, Nat.cast_add, Nat.cast_mul, Nat.cast_ofNat]
-      ring1
+      ring
     _ = FractionalIdeal.absNorm I.1 * (4 / π) ^ nrComplexPlaces K * (finrank ℚ K).factorial *
           Real.sqrt |discr K| := by
       rw [Int.norm_eq_abs, zpow_mul, show (2 : ℝ) ^ (2 : ℤ) = 4 by norm_cast, div_pow,
         inv_eq_one_div, div_pow, one_pow, zpow_natCast]
-      ring1
+      ring
 
 
+#exit
 theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr :
     ∃ (a : 𝓞 K), a ≠ 0 ∧
       |Algebra.norm ℚ (a : K)| ≤ (4 / π) ^ nrComplexPlaces K *

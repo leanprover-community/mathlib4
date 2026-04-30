@@ -339,7 +339,7 @@ lemma EisensteinSeries.E_qExpansion_coeff {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k
     simp_rw [zpow_natCast] at this
     rw [this, ← tsum_pnat_eq_tsum_succ (f := fun n ↦ (σ (k - 1) n : ℂ) * cexp (2 * π * I * τ) ^ n)]
     -- The problem is the cast in the definition of β
-    ring1
+    ring
   rw [hval]
   convert (hS.mul_left β).hasSum using 1
   · grind [Periodic.qParam, ofReal_one, div_one]

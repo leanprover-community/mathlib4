@@ -152,6 +152,7 @@ def evalSMulCast {u u' v : Lean.Level} {R : Q(Type u)} {R' : Q(Type u')} {A : Q(
     {sR : Q(CommSemiring $R)} {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A))
     (smul : Q(SMul $R' $A)) (r' : Q($R')) :
     MetaM <| Σ r : Q($R), Q(∀ a : $A, $r • a = $r' • a) := do
+  trace[algebra.debug] m!"Running evalSMulCast on {r'}."
   if (← isDefEq R R') then
     have : u =QL u' := ⟨⟩
     have : $R =Q $R' := ⟨⟩
@@ -173,6 +174,7 @@ namespace RingCompute
 /-- Evaluate the sum of two normalized expressions in `R` using `ring`. -/
 def add (cR : Common.Cache sR) {a b : Q($A)} (za : BaseType sAlg a) (zb : BaseType sAlg b) :
     MetaM (Common.Result (BaseType sAlg) q($a + $b) × Option Q(IsNat ($a + $b) 0)) := do
+  trace[algebra.debug] m!"Running add on {a} and {b}."
   let ⟨r, vr⟩ := za
   let ⟨s, vs⟩ := zb
   let ⟨t, vt, pt⟩ ← Common.evalAdd (Ring.ringCompute cR) rcℕ vr vs
@@ -186,6 +188,7 @@ def add (cR : Common.Cache sR) {a b : Q($A)} (za : BaseType sAlg a) (zb : BaseTy
 /-- Evaluate the product of two normalized expressions in `R` using `ring`. -/
 def mul (cR : Common.Cache sR) {a b : Q($A)} (za : BaseType sAlg a) (zb : BaseType sAlg b) :
     MetaM (Common.Result (BaseType sAlg) q($a * $b)) := do
+  trace[algebra.debug] m!"Running mul on {a} and {b}."
   let ⟨r, vr⟩ := za
   let ⟨s, vs⟩ := zb
   let ⟨t, vt, pt⟩ ← Common.evalMul (Ring.ringCompute cR) rcℕ vr vs
@@ -199,6 +202,7 @@ def cast (cR : Algebra.Cache sR) (u' : Level) (R' : Q(Type u'))
     (_ : Q(CommSemiring $R')) (_smul : Q(SMul $R' $A)) (r' : Q($R')) :
     AtomM ((y : Q($A)) × Common.ExSum (BaseType sAlg) sA q($y) ×
       Q(∀ (a : $A), $r' • a = $y * a)) := do
+  trace[algebra.debug] m!"Running cast on {r'} casting from {R'} to {R} to {A}."
   let ⟨r, pf_smul⟩ ← evalSMulCast q($sAlg) q($_smul) r'
   let ⟨_r'', vr, pr⟩ ←
     Common.eval rcℕ (Ring.ringCompute cR.toCache) cR.toCache q($r)
@@ -214,6 +218,7 @@ def cast (cR : Algebra.Cache sR) (u' : Level) (R' : Q(Type u'))
 /-- Evaluate the product of two normalized expressions in `R` using `ring`. -/
 def neg (cR : Algebra.Cache sR) {a : Q($A)} (_rA : Q(CommRing $A)) (za : BaseType sAlg a) :
     MetaM (Common.Result (BaseType sAlg) q(-$a)) := do
+  trace[algebra.debug] m!"Running neg on {a}"
   let ⟨r, vr⟩ := za
   match cR.rα with
   | some rR =>
@@ -227,6 +232,7 @@ using `ring`. -/
 def pow (cR : Common.Cache sR) {a : Q($A)} {b : Q(ℕ)} (za : BaseType sAlg a)
     (vb : Common.ExProdNat q($b)) :
     OptionT MetaM (Common.Result (BaseType sAlg) q($a ^ $b)) := do
+  trace[algebra.debug] m!"Running pow on {a} and {b}"
   let ⟨r, vr⟩ := za
   let ⟨_, vs, ps⟩ ← Common.evalPow₁ (Ring.ringCompute cR) rcℕ vr vb
   return ⟨_, ⟨_, vs⟩, q(pow_algebraMap $ps)⟩
@@ -236,6 +242,7 @@ def pow (cR : Common.Cache sR) {a : Q($A)} {b : Q(ℕ)} (za : BaseType sAlg a)
 @[nolint unusedArguments]
 def inv (cR : Algebra.Cache sR) {a : Q($A)} (_ : Option Q(CharZero $A)) (fA : Q(Semifield $A))
     (za : BaseType sAlg a) : AtomM (Option (Common.Result (BaseType sAlg) q($a⁻¹))) := do
+  trace[algebra.debug] m!"Running inv on {a}"
   match cR.dsα with
   | some fR =>
     let ⟨r, vr⟩ := za
@@ -249,6 +256,7 @@ def inv (cR : Algebra.Cache sR) {a : Q($A)} (_ : Option Q(CharZero $A)) (fA : Q(
 /-- Evaluate constants in `A` using `norm_num`. -/
 def derive (cR : Algebra.Cache sR) (cA : Algebra.Cache sA) (x : Q($A)) :
     MetaM (Common.Result (Common.ExSum (BaseType sAlg) sA) q($x)) := do
+  trace[algebra.debug] m!"Running derive on {x}"
   let res ← NormNum.derive x
   let ⟨_, vr, pr⟩ ← evalCast sAlg cR cA res
   return ⟨_, vr, q($pr)⟩
@@ -480,12 +488,14 @@ def proveEq (base : Option (Σ u : Lean.Level, Q(Type u))) (g : MVarId) : AtomM 
       | .some p => do pure p
       | none => do
         pure (← inferBase cA (← g.getType))
+  trace[algebra.debug] m!"Working in ring {A} over {R}."
   -- This algorithm does not work well if R = A, and we should probably just call `ring`?
   /- This can happen for two reasons: either there is a scalar product with base ring `A`, or
   we inferred the base ring from the typeclass assumptions and `A` is one of `ℕ`, `ℤ` or `ℚ` -/
   /- TODO: Decide if we want to warn the user if this case fires and tell them to either pass the
   base ring explicitly or use ring directly. -/
   if ← isDefEq R A then
+    trace[algebra.debug] m!"Both rings are the same, using `ring` instead."
     Ring.proveEq g
     return
   let sR ← synthInstanceQ q(CommSemiring $R)
@@ -525,21 +535,21 @@ and `S` that appear are comparable, in the sense that either `R` is an `S`-algeb
 * `algebra with R` uses the term `R` as the scalar ring, instead of attempting to infer it
 automatically.
  -/
-elab (name := algebra) "algebra":tactic =>
+elab (name := algebra) "algebra" tk:"!"?:tactic =>
   withMainContext do
     liftMetaTactic' preprocess
     let g ← getMainGoal
     trace[algebra.debug] m!"Preprocessing produced {← g.getType}"
-    AtomM.run .default (proveEq none g)
+    AtomM.run (if tk.isSome then .default else .reducible) (proveEq none g)
 
 @[tactic_alt algebra]
-elab (name := algebraWith) "algebra" " with " R:term : tactic =>
+elab (name := algebraWith) "algebra" tk:"!"? " with " R:term : tactic =>
   withMainContext do
     liftMetaTactic' preprocess
     let ⟨u, R⟩ ← getLevelQ' (← elabTerm R none)
     let g ← getMainGoal
     trace[algebra.debug] m!"Preprocessing produced {← g.getType}"
-    AtomM.run .default (proveEq (some ⟨u, R⟩) g)
+    AtomM.run (if tk.isSome then .default else .reducible) (proveEq (some ⟨u, R⟩) g)
 
 end Mathlib.Tactic.Algebra
 
