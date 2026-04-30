@@ -350,7 +350,7 @@ theorem InjOn.mem_image_iff {x} (hf : InjOn f s) (hs : s₁ ⊆ s) (hx : x ∈ s
     f x ∈ f '' s₁ ↔ x ∈ s₁ :=
   ⟨hf.mem_of_mem_image hs hx, mem_image_of_mem f⟩
 
-theorem InjOn.preimage_image_inter (hf : InjOn f s) (hs : s₁ ⊆ s) : f ⁻¹' (f '' s₁) ∩ s = s₁ :=
+theorem InjOn.preimage_image_inter (hf : InjOn f s) (hs : s₁ ⊆ s) : f ⁻¹' f '' s₁ ∩ s = s₁ :=
   ext fun _ => ⟨fun ⟨h₁, h₂⟩ => hf.mem_of_mem_image hs h₂ h₁, fun h => ⟨mem_image_of_mem _ h, hs h⟩⟩
 
 theorem EqOn.cancel_left (h : s.EqOn (g ∘ f₁) (g ∘ f₂)) (hg : t.InjOn g) (hf₁ : s.MapsTo f₁ t)
@@ -559,7 +559,7 @@ theorem image_eq_iff_surjOn_mapsTo : f '' s = t ↔ s.SurjOn f t ∧ s.MapsTo f 
   rintro rfl
   exact ⟨s.surjOn_image f, s.mapsTo_image f⟩
 
-lemma SurjOn.image_preimage (h : Set.SurjOn f s t) (ht : t₁ ⊆ t) : f '' (f ⁻¹' t₁) = t₁ :=
+lemma SurjOn.image_preimage (h : Set.SurjOn f s t) (ht : t₁ ⊆ t) : f '' f ⁻¹' t₁ = t₁ :=
   image_preimage_eq_iff.2 fun _ hx ↦ mem_range_of_mem_image f s <| h <| ht hx
 
 theorem SurjOn.mapsTo_compl (h : SurjOn f s t) (h' : Injective f) : MapsTo f sᶜ tᶜ :=
@@ -826,10 +826,10 @@ theorem image_inter (hf : LeftInvOn f' f s) :
   refine Subset.antisymm ?_ (inter_subset_inter_left _ (preimage_mono inter_subset_left))
   rintro _ ⟨h₁, x, hx, rfl⟩; exact ⟨⟨h₁, by rwa [hf hx]⟩, mem_image_of_mem _ hx⟩
 
-theorem image_image (hf : LeftInvOn f' f s) : f' '' (f '' s) = s := by
+theorem image_image (hf : LeftInvOn f' f s) : f' '' f '' s = s := by
   rw [Set.image_image, image_congr hf, image_id']
 
-theorem image_image' (hf : LeftInvOn f' f s) (hs : s₁ ⊆ s) : f' '' (f '' s₁) = s₁ :=
+theorem image_image' (hf : LeftInvOn f' f s) (hs : s₁ ⊆ s) : f' '' f '' s₁ = s₁ :=
   (hf.mono hs).image_image
 
 end LeftInvOn
@@ -974,17 +974,17 @@ theorem InjOn.leftInvOn_invFunOn [Nonempty α] (h : InjOn f s) : LeftInvOn (invF
   fun _a ha => h (invFunOn_apply_mem ha) ha (invFunOn_apply_eq ha)
 
 theorem InjOn.invFunOn_image [Nonempty α] (h : InjOn f s₂) (ht : s₁ ⊆ s₂) :
-    invFunOn f s₂ '' (f '' s₁) = s₁ :=
+    invFunOn f s₂ '' f '' s₁ = s₁ :=
   h.leftInvOn_invFunOn.image_image' ht
 
 theorem _root_.Function.leftInvOn_invFunOn_of_subset_image_image [Nonempty α]
-    (h : s ⊆ (invFunOn f s) '' (f '' s)) : LeftInvOn (invFunOn f s) f s :=
+    (h : s ⊆ (invFunOn f s) '' f '' s) : LeftInvOn (invFunOn f s) f s :=
   fun x hx ↦ by
     obtain ⟨-, ⟨x, hx', rfl⟩, rfl⟩ := h hx
     rw [invFunOn_apply_eq (f := f) hx']
 
 theorem injOn_iff_invFunOn_image_image_eq_self [Nonempty α] :
-    InjOn f s ↔ (invFunOn f s) '' (f '' s) = s :=
+    InjOn f s ↔ (invFunOn f s) '' f '' s = s :=
   ⟨fun h ↦ h.invFunOn_image Subset.rfl, fun h ↦
     (Function.leftInvOn_invFunOn_of_subset_image_image h.symm.subset).injOn⟩
 
@@ -994,7 +994,7 @@ theorem _root_.Function.invFunOn_injOn_image [Nonempty α] (f : α → β) (s : 
   rw [← invFunOn_apply_eq (f := f) hx, he, invFunOn_apply_eq (f := f) hx']
 
 theorem _root_.Function.invFunOn_image_image_subset [Nonempty α] (f : α → β) (s : Set α) :
-    (invFunOn f s) '' (f '' s) ⊆ s := by
+    (invFunOn f s) '' f '' s ⊆ s := by
   rintro _ ⟨_, ⟨x, hx, rfl⟩, rfl⟩; exact invFunOn_apply_mem hx
 
 theorem SurjOn.rightInvOn_invFunOn [Nonempty α] (h : SurjOn f s t) :
@@ -1015,13 +1015,13 @@ theorem SurjOn.mapsTo_invFunOn [Nonempty α] (h : SurjOn f s t) : MapsTo (invFun
 /-- This lemma is a special case of `rightInvOn_invFunOn.image_image'`; it may make more sense
 to use the other lemma directly in an application. -/
 theorem SurjOn.image_invFunOn_image_of_subset [Nonempty α] {r : Set β} (hf : SurjOn f s t)
-    (hrt : r ⊆ t) : f '' (f.invFunOn s '' r) = r :=
+    (hrt : r ⊆ t) : f '' f.invFunOn s '' r = r :=
   hf.rightInvOn_invFunOn.image_image' hrt
 
 /-- This lemma is a special case of `rightInvOn_invFunOn.image_image`; it may make more sense
 to use the other lemma directly in an application. -/
 theorem SurjOn.image_invFunOn_image [Nonempty α] (hf : SurjOn f s t) :
-    f '' (f.invFunOn s '' t) = t :=
+    f '' f.invFunOn s '' t = t :=
   hf.rightInvOn_invFunOn.image_image
 
 theorem SurjOn.bijOn_subset [Nonempty α] (h : SurjOn f s t) : BijOn f (invFunOn f s '' t) t := by
