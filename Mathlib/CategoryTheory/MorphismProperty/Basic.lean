@@ -150,15 +150,16 @@ lemma monotone_strictMap (F : C ⥤ D) : Monotone (fun P : MorphismProperty C �
 @[simp]
 lemma strictMap_id (P : MorphismProperty C) :
     P.strictMap (𝟭 C) = P := by
-  ext _ _ f
+  ext
   exact ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
 @[simp]
 lemma strictMap_strictMap (P : MorphismProperty C) (F : C ⥤ D) (G : D ⥤ E) :
     (P.strictMap F).strictMap G = P.strictMap (F ⋙ G) := by
-  ext _ _ f
-  refine ⟨fun ⟨⟨h⟩⟩ ↦ ⟨h⟩, fun ⟨h⟩ ↦ ⟨⟨h⟩⟩⟩
+  ext
+  exact ⟨fun ⟨⟨h⟩⟩ ↦ ⟨h⟩, fun ⟨h⟩ ↦ ⟨⟨h⟩⟩⟩
 
+@[simp]
 lemma strictMap_le_iff_le_inverseImage (F : C ⥤ D) (P : MorphismProperty C)
     (P' : MorphismProperty D) : P.strictMap F ≤ P' ↔ P ≤ P'.inverseImage F :=
   ⟨fun h _ _ _ hf ↦ h _ ⟨hf⟩, fun h _ _ _ ⟨hf⟩ ↦ h _ hf⟩
