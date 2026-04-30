@@ -229,8 +229,8 @@ theorem ciSup_union [DecidableEq ι] {f : ι → α} {s t : Finset ι} :
   suffices ∀ st : Finset ι, BddAbove (.range fun x ↦ ⨆ (_ : x ∈ st), f x) by
     simp [ciSup_or', ciSup_sup_eq, this]
   refine fun st ↦ ⟨st.sup f, fun a ⟨i, ha⟩ ↦ ha ▸ ?_⟩
-  by_cases h : i ∈ st
-    <;> simp [h, Finset.le_sup]
+  by_cases h : i ∈ st <;>
+    simp [h, Finset.le_sup]
 
 end ConditionallyCompleteLinearOrderBot
 
