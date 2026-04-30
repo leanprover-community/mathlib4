@@ -48,7 +48,7 @@ theorem HigherFacesVanish.inclusionOfMooreComplexMap (n : ℕ) :
     HigherFacesVanish (n + 1) ((inclusionOfMooreComplexMap X).f (n + 1)) := fun j _ => by
   dsimp [AlgebraicTopology.inclusionOfMooreComplexMap, NormalizedMooreComplex.objX]
   rw [← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ j
-    (by simp only [Finset.mem_univ])), assoc, kernelSubobject_arrow_comp, comp_zero]
+    (by simp)), assoc, kernelSubobject_arrow_comp, comp_zero]
 
 theorem factors_normalizedMooreComplex_PInfty (n : ℕ) :
     Subobject.Factors (NormalizedMooreComplex.objX X n) (PInfty.f n) := by
@@ -63,7 +63,8 @@ set_option backward.isDefEq.respectTransparency false in
 /-- `PInfty` factors through the normalized Moore complex -/
 @[simps!]
 def PInftyToNormalizedMooreComplex (X : SimplicialObject A) : K[X] ⟶ N[X] :=
-  ChainComplex.ofHom _ _ _ _ _ _
+  ChainComplex.ofHom _ _ (AlternatingFaceMapComplex.d_squared X) _ _
+    (NormalizedMooreComplex.d_squared X)
     (fun n => factorThru _ _ (factors_normalizedMooreComplex_PInfty n)) fun n => by
     rw [← cancel_mono (NormalizedMooreComplex.objX X n).arrow, assoc, assoc, factorThru_arrow,
       ← inclusionOfMooreComplexMap_f, ← normalizedMooreComplex_objD,

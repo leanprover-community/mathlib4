@@ -159,7 +159,7 @@ instance [LocallyQuasiFinite f] (y : Y) : IsLocallyArtinian (f.fiber y) :=
 lemma Scheme.Hom.isDiscrete_preimage_singleton [LocallyQuasiFinite f] (y : Y) :
     IsDiscrete (f ⁻¹' {y}) := by
   simpa [Scheme.Hom.range_fiberι] using
-    (isDiscrete_univ_iff.mpr inferInstance).image (f.fiberι y).isEmbedding
+    (isDiscrete_univ_iff.mpr inferInstance).image (f.fiberι y).isEmbedding.toIsInducing
 
 lemma Scheme.Hom.isDiscrete_preimage [LocallyQuasiFinite f] {s : Set Y} (hs : IsDiscrete s) :
     IsDiscrete (f ⁻¹' s) :=
@@ -202,7 +202,6 @@ nonrec lemma IsFinite.of_locallyQuasiFinite (f : X ⟶ Y) [LocallyQuasiFinite f]
   algebraize [φ.hom]
   exact .of_quasiFinite
 
-set_option backward.isDefEq.respectTransparency false in
 instance (f : X ⟶ Y) [LocallyQuasiFinite f] [QuasiCompact f] (x : Y) :
     IsFinite (f.fiberToSpecResidueField x) :=
   .of_locallyQuasiFinite (pullback.snd _ _)
@@ -222,7 +221,7 @@ nonrec lemma LocallyQuasiFinite.of_fiberToSpecResidueField
       pullback.map _ _ _ _ (pullback.fst _ _) (Spec.map ((Y.affineCover.f i).residueFieldMap _))
         (Y.affineCover.f i) (by simp [pullback.condition]) (by simp)
     have : IsClosedImmersion g := .of_isPreimmersion _ (isClosed_discrete _)
-    convert (inferInstanceAs (LocallyQuasiFinite <| g ≫ f.fiberToSpecResidueField _)) using 1
+    convert (inferInstance : LocallyQuasiFinite <| g ≫ f.fiberToSpecResidueField _) using 1
     simp [g, Hom.fiberToSpecResidueField]
   obtain ⟨R, rfl⟩ := hY
   wlog hX : ∃ S, X = Spec S
@@ -233,7 +232,7 @@ nonrec lemma LocallyQuasiFinite.of_fiberToSpecResidueField
     let g : (X.affineCover.f i ≫ f).fiber x ⟶ f.fiber x :=
       pullback.map _ _ _ _ (X.affineCover.f i) (𝟙 _) (𝟙 _) (by simp) (by simp)
     have : IsClosedImmersion g := .of_isPreimmersion _ (isClosed_discrete _)
-    convert (inferInstanceAs (LocallyQuasiFinite <| g ≫ f.fiberToSpecResidueField _)) using 1
+    convert (inferInstance : LocallyQuasiFinite <| g ≫ f.fiberToSpecResidueField _) using 1
     simp [g, Hom.fiberToSpecResidueField]
   obtain ⟨S, rfl⟩ := hX
   obtain ⟨φ, rfl⟩ := Spec.map_surjective f
@@ -307,7 +306,7 @@ nonrec lemma LocallyQuasiFinite.of_finite_preimage_singleton
   obtain ⟨R, rfl⟩ := hY
   wlog hX : ∃ S, X = Spec S
   · exact (IsZariskiLocalAtSource.iff_of_openCover X.affineCover).mpr fun i ↦ this _ _
-      (fun x ↦ ((hf x).preimage (X.affineCover.f _).isOpenEmbedding.injective.injOn:)) ⟨_, rfl⟩
+      (fun x ↦ ((hf x).preimage (X.affineCover.f _).isOpenEmbedding.injective.injOn :)) ⟨_, rfl⟩
   obtain ⟨S, rfl⟩ := hX
   obtain ⟨φ, rfl⟩ := Spec.map_surjective f
   simp only [HasRingHomProperty.Spec_iff, id_eq] at *
@@ -359,8 +358,8 @@ lemma Scheme.Hom.quasiFiniteAt [LocallyQuasiFinite f] (x : X) :
   introv hf
   algebraize [f]
   refine .of_comp (g := algebraMap R _) ?_
-  convert RingHom.quasiFinite_algebraMap.mpr (inferInstanceAs
-    (Algebra.QuasiFinite R (Localization.AtPrime J)))
+  convert RingHom.quasiFinite_algebraMap.mpr (inferInstance :
+    Algebra.QuasiFinite R (Localization.AtPrime J))
   ext; simp; rfl
 
 set_option backward.isDefEq.respectTransparency false in
@@ -395,7 +394,7 @@ nonrec lemma Scheme.Hom.quasiFiniteAt_iff_isOpen_singleton_asFiber
     · exact (RingHom.QuasiFinite.respectsIso.arrow_mk_iso_iff
         (Scheme.stalkMapIsoOfIsPullback (.of_hasPullback f ι) x))
     have H : pullback.snd f ι ⁻¹' {pullback.snd f ι x} =
-        pullback.fst f ι ⁻¹' (f ⁻¹' {f (pullback.fst f ι x)}) := by
+        pullback.fst f ι ⁻¹' f ⁻¹' {f (pullback.fst f ι x)} := by
       rw [← Set.preimage_comp, ← TopCat.coe_comp, ← Scheme.Hom.comp_base, ← Scheme.Hom.comp_apply,
         pullback.condition]
       simp [← Set.image_singleton, Set.preimage_comp, Set.preimage_image_eq _ ι.injective]

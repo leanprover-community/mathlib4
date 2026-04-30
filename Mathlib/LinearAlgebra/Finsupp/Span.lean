@@ -5,9 +5,8 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.LinearAlgebra.Finsupp.Defs
+public import Mathlib.LinearAlgebra.Finsupp.LSum
 public import Mathlib.LinearAlgebra.Span.Basic
-public import Mathlib.Algebra.Module.Submodule.Pointwise
 
 /-!
 # Finitely supported functions and spans
@@ -124,9 +123,9 @@ theorem mem_iSup_iff_exists_finset {ι : Sort _} {p : ι → Submodule R M} {m :
 theorem mem_sSup_iff_exists_finset {S : Set (Submodule R M)} {m : M} :
     m ∈ sSup S ↔ ∃ s : Finset (Submodule R M), ↑s ⊆ S ∧ m ∈ ⨆ i ∈ s, i := by
   rw [sSup_eq_iSup, iSup_subtype', Submodule.mem_iSup_iff_exists_finset]
-  refine ⟨fun ⟨s, hs⟩ ↦ ⟨s.map (Function.Embedding.subtype S), ?_, ?_⟩,
+  refine ⟨fun ⟨s, hs⟩ ↦ ⟨s.map (Function.Embedding.subtype (· ∈ S)), ?_, ?_⟩,
           fun ⟨s, hsS, hs⟩ ↦ ⟨s.preimage (↑) Subtype.coe_injective.injOn, ?_⟩⟩
-  · simpa using fun x _ ↦ x.property
+  · simp
   · suffices m ∈ ⨆ (i) (hi : i ∈ S) (_ : ⟨i, hi⟩ ∈ s), i by simpa
     rwa [iSup_subtype']
   · have : ⨆ (i) (_ : i ∈ S ∧ i ∈ s), i = ⨆ (i) (_ : i ∈ s), i := by convert rfl; grind

@@ -32,7 +32,6 @@ variable (M : Type*) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R
 variable {N P : Type*} [AddCommGroup N] [AddCommGroup P] [Module R N] [Module R P]
   (f g : N →ₗ[R] P)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Module.Flat.ker_lTensor_eq [Module.Flat R M] :
     LinearMap.ker (AlgebraTensorModule.lTensor S M f) =
       LinearMap.range (AlgebraTensorModule.lTensor S M (LinearMap.ker f).subtype) := by
@@ -102,8 +101,8 @@ lemma LinearMap.tensorEqLocus_coe (x : M ⊗[R] (LinearMap.eqLocus f g)) :
     (tensorEqLocus S M f g x : M ⊗[R] N) = (eqLocus f g).subtype.lTensor M x := by
   induction x <;> simp_all
 
-set_option backward.privateInPublic true in
-private def LinearMap.tensorKerInv [Module.Flat R M] :
+/-- (Implementation): Inverse for `LinearMap.tensorKerEquiv`. -/
+def LinearMap.tensorKerInv [Module.Flat R M] :
     ker (AlgebraTensorModule.lTensor S M f) →ₗ[S] M ⊗[R] (ker f) :=
   LinearMap.codRestrictOfInjective (LinearMap.ker (AlgebraTensorModule.lTensor S M f)).subtype
     (AlgebraTensorModule.lTensor S M (ker f).subtype)
@@ -117,8 +116,8 @@ private lemma LinearMap.lTensor_ker_subtype_tensorKerInv [Module.Flat R M]
   rw [← AlgebraTensorModule.coe_lTensor (A := S)]
   simp [LinearMap.tensorKerInv]
 
-set_option backward.privateInPublic true in
-private def LinearMap.tensorEqLocusInv [Module.Flat R M] :
+/-- (Implementation): Inverse for `LinearMap.tensorEqLocusEquiv`. -/
+def LinearMap.tensorEqLocusInv [Module.Flat R M] :
     eqLocus (AlgebraTensorModule.lTensor S M f) (AlgebraTensorModule.lTensor S M g) →ₗ[S]
       M ⊗[R] (eqLocus f g) :=
   LinearMap.codRestrictOfInjective
@@ -135,8 +134,6 @@ private lemma LinearMap.lTensor_eqLocus_subtype_tensorEqLocusInv [Module.Flat R 
   rw [← AlgebraTensorModule.coe_lTensor (A := S)]
   simp [LinearMap.tensorEqLocusInv]
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- If `M` is `R`-flat, the canonical map `M ⊗[R] ker f →ₗ[R] ker (𝟙 ⊗ f)` is an isomorphism. -/
 def LinearMap.tensorKerEquiv [Module.Flat R M] :
     M ⊗[R] LinearMap.ker f ≃ₗ[S] LinearMap.ker (AlgebraTensorModule.lTensor S M f) :=
@@ -159,8 +156,6 @@ lemma LinearMap.lTensor_ker_subtype_tensorKerEquiv_symm [Module.Flat R M]
     (lTensor M (ker f).subtype) ((tensorKerEquiv S M f).symm x) = x :=
   lTensor_ker_subtype_tensorKerInv S M f x
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- If `M` is `R`-flat, the canonical map `M ⊗[R] eq(f, g) →ₗ[S] eq (𝟙 ⊗ f, 𝟙 ⊗ g)` is an
 isomorphism. -/
 def LinearMap.tensorEqLocusEquiv [Module.Flat R M] :
@@ -188,7 +183,6 @@ lemma LinearMap.lTensor_eqLocus_subtype_tensoreqLocusEquiv_symm [Module.Flat R M
 
 variable {M}
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given a short exact sequence `0 → M → N → P → 0` with `P` flat,
 then any `A ⊗ M → A ⊗ N` is injective.
@@ -228,7 +222,6 @@ to get `0 → A ⊗ K → A ⊗ M` exact.
   rw [Subsingleton.elim (SnakeLemma.δ' ..) 0] at this
   simpa using this
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given surjection `f : N → P` with `P` flat, then `A ⊗ ker f ≃ ker (A ⊗ f)`.
 Also see `LinearMap.tensorKerEquiv` for the version with `A` flat instead. -/
 def LinearMap.kerLTensorEquivOfSurjective [Module.Flat R P]
@@ -251,9 +244,8 @@ variable (T : Type*) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
   (f g : A →ₐ[R] B)
 
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.privateInPublic true in
-private def AlgHom.tensorEqualizerAux :
+/-- (Implementation): Use `AlgHom.tensorEqualizer` instead. -/
+def AlgHom.tensorEqualizerAux :
     T ⊗[R] AlgHom.equalizer f g →ₗ[S]
       AlgHom.equalizer (Algebra.TensorProduct.map (AlgHom.id S T) f)
         (Algebra.TensorProduct.map (AlgHom.id S T) g) :=
@@ -261,7 +253,6 @@ private def AlgHom.tensorEqualizerAux :
 
 private local instance : AddHomClass (A →ₐ[R] B) A B := inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 private lemma AlgHom.coe_tensorEqualizerAux (x : T ⊗[R] AlgHom.equalizer f g) :
     (AlgHom.tensorEqualizerAux S T f g x : T ⊗[R] A) =
@@ -271,9 +262,7 @@ private lemma AlgHom.coe_tensorEqualizerAux (x : T ⊗[R] AlgHom.equalizer f g) 
   | tmul => rfl
   | add x y hx hy => simp [hx, hy]
 
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.privateInPublic true in
-private lemma AlgHom.tensorEqualizerAux_mul (x y : T ⊗[R] AlgHom.equalizer f g) :
+lemma AlgHom.tensorEqualizerAux_mul (x y : T ⊗[R] AlgHom.equalizer f g) :
     AlgHom.tensorEqualizerAux S T f g (x * y) =
       AlgHom.tensorEqualizerAux S T f g x *
         AlgHom.tensorEqualizerAux S T f g y := by
@@ -281,9 +270,6 @@ private lemma AlgHom.tensorEqualizerAux_mul (x y : T ⊗[R] AlgHom.equalizer f g
   rw [AlgHom.coe_tensorEqualizerAux]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The canonical map `T ⊗[R] eq(f, g) →ₐ[S] eq (𝟙 ⊗ f, 𝟙 ⊗ g)`. -/
 def AlgHom.tensorEqualizer :
     T ⊗[R] AlgHom.equalizer f g →ₐ[S]
@@ -292,16 +278,12 @@ def AlgHom.tensorEqualizer :
   AlgHom.ofLinearMap (AlgHom.tensorEqualizerAux S T f g)
     rfl (AlgHom.tensorEqualizerAux_mul S T f g)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma AlgHom.coe_tensorEqualizer (x : T ⊗[R] AlgHom.equalizer f g) :
     (AlgHom.tensorEqualizer S T f g x : T ⊗[R] A) =
       Algebra.TensorProduct.map (AlgHom.id S T) (AlgHom.equalizer f g).val x :=
   AlgHom.coe_tensorEqualizerAux S T f g x
 
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- If `T` is `R`-flat, the canonical map
 `T ⊗[R] eq(f, g) →ₐ[S] eq (𝟙 ⊗ f, 𝟙 ⊗ g)` is an isomorphism. -/
 def AlgHom.tensorEqualizerEquiv [Module.Flat R T] :
@@ -311,14 +293,12 @@ def AlgHom.tensorEqualizerEquiv [Module.Flat R T] :
   AlgEquiv.ofLinearEquiv (LinearMap.tensorEqLocusEquiv S T f.toLinearMap g.toLinearMap)
     rfl (AlgHom.tensorEqualizerAux_mul S T f g)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma AlgHom.tensorEqualizerEquiv_apply [Module.Flat R T]
     (x : T ⊗[R] AlgHom.equalizer f g) :
     AlgHom.tensorEqualizerEquiv S T f g x = AlgHom.tensorEqualizer S T f g x :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R A) in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 /--

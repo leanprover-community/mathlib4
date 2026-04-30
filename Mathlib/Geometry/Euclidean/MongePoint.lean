@@ -89,8 +89,7 @@ theorem mongePoint_eq_smul_vsub_vadd_circumcenter {n : ℕ} (s : Simplex ℝ P n
 @[simp] lemma mongePoint_reindex {m n : ℕ} (s : Simplex ℝ P n) (e : Fin (n + 1) ≃ Fin (m + 1)) :
     (s.reindex e).mongePoint = s.mongePoint := by
   simp_rw [mongePoint, circumcenter_reindex, centroid_def, reindex]
-  have h : n = m := by simpa using Fintype.card_eq.2 ⟨e⟩
-  subst h
+  obtain rfl : n = m := by simpa using Fintype.card_eq.2 ⟨e⟩
   congr 3
   convert Finset.univ.affineCombination_map e.toEmbedding _ _ <;> simp [Function.comp_assoc]
 
@@ -123,7 +122,6 @@ theorem mongePoint_mem_affineSpan {n : ℕ} (s : Simplex ℝ P n) :
   smul_vsub_vadd_mem _ _ (centroid_mem_affineSpan_of_card_eq_add_one ℝ _ (card_fin (n + 1)))
     s.circumcenter_mem_affineSpan s.circumcenter_mem_affineSpan
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mongePoint_restrict {n : ℕ} (s : Simplex ℝ P n) (S : AffineSubspace ℝ P)
     (hS : affineSpan ℝ (Set.range s.points) ≤ S) :
@@ -278,8 +276,7 @@ theorem mongePlane_def {n : ℕ} (s : Simplex ℝ P (n + 2)) (i₁ i₂ : Fin (n
 lemma mongePlane_reindex {m n : ℕ} (s : Simplex ℝ P (n + 2)) (e : Fin (n + 3) ≃ Fin (m + 3))
     (i₁ i₂ : Fin (m + 3)) :
     (s.reindex e).mongePlane i₁ i₂ = s.mongePlane (e.symm i₁) (e.symm i₂) := by
-  have h : n = m := by simpa using Fintype.card_eq.2 ⟨e⟩
-  subst h
+  obtain rfl : n = m := by simpa using Fintype.card_eq.2 ⟨e⟩
   simp_rw [mongePlane, reindex_points, reindex_range_points, Function.comp_apply, centroid_def,
     reindex]
   congr 2
@@ -337,7 +334,7 @@ theorem eq_mongePoint_of_forall_mem_mongePlane {n : ℕ} {s : Simplex ℝ P (n +
   rw [Submodule.iInf_orthogonal, ← Submodule.span_iUnion] at hi
   have hu :
     ⋃ i : { i // i₁ ≠ i }, ({s.points i₁ -ᵥ s.points i} : Set V) =
-      (s.points i₁ -ᵥ ·) '' (s.points '' (Set.univ \ {i₁})) := by
+      (s.points i₁ -ᵥ ·) '' s.points '' (Set.univ \ {i₁}) := by
     rw [Set.image_image]
     ext x
     simp_rw [Set.mem_iUnion, Set.mem_image, Set.mem_singleton_iff, Set.mem_diff_singleton]
@@ -436,7 +433,6 @@ theorem eq_orthocenter_of_forall_mem_altitude {t : Triangle ℝ P} {i₁ i₂ : 
     all_goals assumption
   exact eq_mongePoint_of_forall_mem_mongePlane ha
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The distance from the orthocenter to the reflection of the
 circumcenter in a side equals the circumradius. -/
 theorem dist_orthocenter_reflection_circumcenter (t : Triangle ℝ P) {i₁ i₂ : Fin 3} (h : i₁ ≠ i₂) :

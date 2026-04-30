@@ -59,8 +59,8 @@ variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] (N : Subm
 
 /-- `I : Ideal R` is an associated prime of a submodule `N : Submodule R M` if `I` is prime
 and `I = (colon N {x}).radical` for some `x : M`. -/
-protected def IsAssociatedPrime : Prop :=
-  I.IsPrime ∧ ∃ x, I = (colon N {x}).radical
+protected structure IsAssociatedPrime : Prop extends I.IsPrime where
+  eq_radical_colon : ∃ x, I = (colon N {x}).radical
 
 /-- The set of associated primes of a submodule. -/
 protected def associatedPrimes : Set (Ideal R) :=
@@ -70,7 +70,7 @@ variable {N I}
 
 protected theorem isAssociatedPrime_def :
     N.IsAssociatedPrime I ↔ I.IsPrime ∧ ∃ x, I = (colon N {x}).radical :=
-  .rfl
+  ⟨fun h ↦ ⟨h.1, h.2⟩, fun h ↦ ⟨h.1, h.2⟩⟩
 
 protected theorem isAssociatedPrime_iff [IsNoetherianRing R] :
     N.IsAssociatedPrime I ↔ I.IsPrime ∧ ∃ x, I = colon N {x} := by
@@ -81,6 +81,8 @@ protected theorem isAssociatedPrime_iff [IsNoetherianRing R] :
       Set.mem_singleton_iff]
   · rintro ⟨hx, x, rfl⟩
     exact ⟨hx, x, hx.radical.symm⟩
+
+instance (I : N.associatedPrimes) : I.1.IsPrime := I.2.1
 
 protected theorem AssociatePrimes.mem_iff : I ∈ N.associatedPrimes ↔ N.IsAssociatedPrime I :=
   .rfl
@@ -94,7 +96,7 @@ variable {R : Type*} [CommSemiring R] (I J : Ideal R) (M : Type*) [AddCommMonoid
 /-- `IsAssociatedPrime I M` if the prime ideal `I` is the radical of the annihilator
 of some `x : M`. -/
 def IsAssociatedPrime : Prop :=
-  (⊥: Submodule R M).IsAssociatedPrime I
+  (⊥ : Submodule R M).IsAssociatedPrime I
 
 variable (R) in
 /-- The set of associated primes of a module. -/
@@ -109,6 +111,8 @@ theorem AssociatedPrimes.mem_iff : I ∈ associatedPrimes R M ↔ IsAssociatedPr
 alias AssociatePrimes.mem_iff := AssociatedPrimes.mem_iff
 
 theorem IsAssociatedPrime.isPrime (h : IsAssociatedPrime I M) : I.IsPrime := h.1
+
+instance (I : associatedPrimes R M) : I.1.IsPrime := I.2.1
 
 theorem isAssociatedPrime_iff [IsNoetherianRing R] :
     IsAssociatedPrime I M ↔ I.IsPrime ∧ ∃ x : M, I = colon ⊥ {x} :=
@@ -231,7 +235,7 @@ theorem biUnion_associatedPrimes_eq_zero_divisors [IsNoetherianRing R] :
   · intro r ⟨x, h, h'⟩
     obtain ⟨P, hP, hx⟩ := exists_le_isAssociatedPrime_of_isNoetherianRing R x h
     rw [isAssociatedPrime_iff] at hP
-    exact Set.mem_biUnion hP (hx (by rwa [mem_colon_singleton]))
+    exact Set.mem_iUnion₂_of_mem hP (hx (by rwa [mem_colon_singleton]))
 
 theorem biUnion_associatedPrimes_eq_compl_nonZeroDivisors [IsNoetherianRing R] :
     ⋃ p ∈ associatedPrimes R R, p = (nonZeroDivisors R : Set R)ᶜ :=
@@ -261,7 +265,6 @@ theorem isAssociatedPrime_iff_exists_injective_linearMap [IsNoetherianRing R] :
 
 variable {I J M}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsAssociatedPrime.eq_radical (hI : I.IsPrimary) (h : IsAssociatedPrime J (R ⧸ I)) :
     J = I.radical := by
   obtain ⟨hJ, x, e⟩ := h

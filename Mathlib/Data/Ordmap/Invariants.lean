@@ -142,14 +142,11 @@ def Balanced : Ordnode α → Prop
   | node _ l _ r => BalancedSz (size l) (size r) ∧ Balanced l ∧ Balanced r
 
 instance Balanced.dec : DecidablePred (@Balanced α)
-  | nil => by
-    unfold Balanced
-    infer_instance
-  | node _ l _ r => by
-    unfold Balanced
+  | nil => inferInstanceAs <| Decidable True
+  | node _ l _ r =>
     haveI := Balanced.dec l
     haveI := Balanced.dec r
-    infer_instance
+    inferInstanceAs <| Decidable (BalancedSz l.size r.size ∧ l.Balanced ∧ r.Balanced)
 
 @[symm]
 theorem BalancedSz.symm {l r : ℕ} : BalancedSz l r → BalancedSz r l :=

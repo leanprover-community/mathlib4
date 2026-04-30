@@ -76,8 +76,7 @@ section
 variable {i₁ i₂ : E.I₀} [HasPullback (E.f i₁) (E.f i₂)]
 
 /-- The obvious morphism `E.Y j ⟶ pullback (E.f i₁) (E.f i₂)` given by `E : PreOneHypercover S`. -/
-noncomputable abbrev toPullback (j : E.I₁ i₁ i₂) [HasPullback (E.f i₁) (E.f i₂)] :
-    E.Y j ⟶ pullback (E.f i₁) (E.f i₂) :=
+noncomputable abbrev toPullback (j : E.I₁ i₁ i₂) : E.Y j ⟶ pullback (E.f i₁) (E.f i₂) :=
   pullback.lift (E.p₁ j) (E.p₂ j) (E.w j)
 
 variable (i₁ i₂) in
@@ -393,7 +392,7 @@ def Hom.mapMultiforkOfIsLimit (f : E.Hom F) (P : Cᵒᵖ ⥤ A) {c : Multifork (
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
-lemma Hom.mapMultiforkOfIsLimit_ι {E F : PreOneHypercover.{w} S}
+lemma Hom.mapMultiforkOfIsLimit_ι
     (f : E.Hom F) (P : Cᵒᵖ ⥤ A) {c : Multifork (E.multicospanIndex P)} (hc : IsLimit c)
     (d : Multifork (F.multicospanIndex P)) (a : E.I₀) :
     f.mapMultiforkOfIsLimit P hc d ≫ c.ι a = d.ι (f.s₀ a) ≫ P.map (f.h₀ a).op := by
@@ -401,10 +400,33 @@ lemma Hom.mapMultiforkOfIsLimit_ι {E F : PreOneHypercover.{w} S}
 
 section
 
+variable (f : E.Hom F) (P : Cᵒᵖ ⥤ A)
+  {c : Multifork (E.multicospanIndex P)} (hc : IsLimit c) {d : Multifork (F.multicospanIndex P)}
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma Hom.mapMultiforkOfIsLimit_id (d : Multifork (E.multicospanIndex P)) :
+    (Hom.id E).mapMultiforkOfIsLimit P hc d = Multifork.IsLimit.lift hc d.ι d.condition := by
+  apply Multifork.IsLimit.hom_ext hc
+  simp
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc]
+lemma Hom.mapMultiforkOfIsLimit_comp (g : F.Hom G) (t : Multifork (G.multicospanIndex P))
+    (hd : IsLimit d) :
+    (f.comp g).mapMultiforkOfIsLimit P hc t =
+      g.mapMultiforkOfIsLimit P hd t ≫ f.mapMultiforkOfIsLimit P hc d := by
+  apply Multifork.IsLimit.hom_ext hc
+  simp
+
+end
+
+section
+
 variable {S : C} {E : PreOneHypercover.{w} S} {F : PreOneHypercover.{w'} S}
   {i i' j j' : E.I₀} (hii' : i = i') (hjj' : j = j')
 
-/-- If `i = i'` and `j = j'` this is an equivalence betweeen the `1`-index type at `i`, `j` and
+/-- If `i = i'` and `j = j'` this is an equivalence between the `1`-index type at `i`, `j` and
 the one at `i'`, `j'`. -/
 def congrIndexOneOfEq {E : PreOneHypercover.{w} S} {i i' j j' : E.I₀}
     (hii' : i = i') (hjj' : j = j') :
@@ -415,6 +437,14 @@ def congrIndexOneOfEq {E : PreOneHypercover.{w} S} {i i' j j' : E.I₀}
 lemma congrIndexOneOfEq_refl (i j : E.I₀) :
     E.congrIndexOneOfEq rfl rfl = Equiv.refl (E.I₁ i j) := by
   simp [congrIndexOneOfEq]
+
+@[simp]
+lemma congrIndexOneOfEq_trans {i'' j'' : E.I₀} (hii'' : i' = i'') (hjj'' : j' = j'')
+    (k : E.I₁ i j) :
+    E.congrIndexOneOfEq hii'' hjj'' (E.congrIndexOneOfEq hii' hjj' k) =
+      E.congrIndexOneOfEq (hii'.trans hii'') (hjj'.trans hjj'') k := by
+  subst hii' hjj'
+  simp
 
 lemma congrIndexOneOfEq_naturality (u₀ : E.I₀ → F.I₀) (u₁ : ∀ ⦃i j⦄, E.I₁ i j → F.I₁ (u₀ i) (u₀ j))
     (k : E.I₁ i j) :
@@ -435,9 +465,19 @@ lemma congrIndexOneOfEq_congrFun
   subst h₀
   simp [h₁]
 
+@[ext (iff := false)]
+lemma I₁'.ext {a b : E.I₁'} (left : a.1.1 = b.1.1) (right : a.1.2 = b.1.2)
+    (h : E.congrIndexOneOfEq left right a.2 = b.2) :
+    a = b := by
+  obtain ⟨⟨i, j⟩, k⟩ := a
+  obtain ⟨⟨i', j'⟩, k'⟩ := b
+  dsimp at left right
+  subst left right
+  simpa using h
+
 /--
-If `i = i'` and `j = j'` this is the isomorphism betweeen the `1`-component at
-`congrIndexOneOfEq k : E.I₁ i' j'` and the `1``-compontent at `k : E.I₁ i j`.
+If `i = i'` and `j = j'` this is the isomorphism between the `1`-component at
+`congrIndexOneOfEq k : E.I₁ i' j'` and the `1`-component at `k : E.I₁ i j`.
 
 Note: This isomorphism could also be constructed inline from `eqToIso`. We only
 use `eqToIso` directly to construct isomorphisms `E.Y k ≅ E.Y k'` where `k k' : E.I₁ i j`
@@ -451,6 +491,7 @@ def congrIndexOneOfEqIso {E : PreOneHypercover S} {i i' j j' : E.I₀}
     E.Y (E.congrIndexOneOfEq hii' hjj' k) ≅ E.Y k :=
   eqToIso (by subst hii' hjj'; simp)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma congrIndexOneOfEqIso_refl {i j : E.I₀} (k : E.I₁ i j) :
     E.congrIndexOneOfEqIso rfl rfl k = Iso.refl _ := by
@@ -500,6 +541,7 @@ lemma congrIndexOneOfEqIso_inv_naturality :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Hom.ext' {E F : PreOneHypercover S} {f g : E.Hom F}
     (hs₀ : f.s₀ = g.s₀) (hh₀ : ∀ i, f.h₀ i = g.h₀ i ≫ eqToHom (by simp [hs₀]))
     (hs₁ : ∀ (i j : E.I₀) (k : E.I₁ i j),
@@ -520,6 +562,18 @@ lemma Hom.ext' {E F : PreOneHypercover S} {f g : E.Hom F}
   ext i j k
   rw [hh₁ i j k]
   exact Category.comp_id _
+
+lemma Hom.ext'_iff {E F : PreOneHypercover S} {f g : E.Hom F} :
+    f = g ↔ ∃ (hs₀ : f.s₀ = g.s₀) (_ : ∀ i, f.h₀ i = g.h₀ i ≫ eqToHom (by simp [hs₀]))
+      (hs₁ : ∀ (i j : E.I₀) (k : E.I₁ i j),
+        f.s₁ k = F.congrIndexOneOfEq (by simp [hs₀]) (by simp [hs₀]) (g.s₁ k)),
+      ∀ (i j : E.I₀) (k : E.I₁ i j),
+        f.h₁ k = g.h₁ k ≫
+          (F.congrIndexOneOfEqIso (congrFun hs₀.symm i) (congrFun hs₀.symm j) (g.s₁ k)).inv ≫
+          eqToHom (by rw [PreOneHypercover.congrIndexOneOfEq_congrFun hs₀ hs₁]) := by
+  refine ⟨fun h ↦ ?_, fun ⟨hs₀, hh₀, hs₁, hh₁⟩ ↦ Hom.ext' hs₀ hh₀ hs₁ hh₁⟩
+  subst h
+  simp [congrIndexOneOfEq]
 
 section
 
@@ -552,6 +606,7 @@ lemma isoMk_aux (h₁ : ∀ ⦃i j : E.I₀⦄ (k : E.I₁ i j), E.Y k ≅ F.Y (
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Construct an isomorphism of `1`-hypercovers by giving the compatibility conditions only
 in the forward direction. -/
 @[simps!]
@@ -607,6 +662,139 @@ def isoMk {S : C} {E F : PreOneHypercover S}
       (fun i j k ↦ (E.congrIndexOneOfEq_equiv s₀ s₁ _).symm) ?_
     intro i j k
     simpa using E.isoMk_aux s₀ s₁ h₁ k
+
+section
+
+variable {S : C} {E F : PreOneHypercover.{w} S} (e : E ≅ F)
+
+@[simp]
+lemma hom_inv_s₀_apply (i : E.I₀) : e.inv.s₀ (e.hom.s₀ i) = i :=
+  congr($(e.hom_inv_id).s₀ i)
+
+@[simp]
+lemma inv_hom_s₀_apply (i : F.I₀) : e.hom.s₀ (e.inv.s₀ i) = i :=
+  congr($(e.inv_hom_id).s₀ i)
+
+@[simp]
+lemma hom_inv_s₁_apply {i j : E.I₀} (k : E.I₁ i j) :
+    e.inv.s₁ (e.hom.s₁ k) = E.congrIndexOneOfEq (by simp) (by simp) k := by
+  obtain ⟨hs₀, hh₀, hs₁, hh₁⟩ := PreOneHypercover.Hom.ext'_iff.mp e.hom_inv_id
+  simpa using hs₁ i j k
+
+@[simp]
+lemma inv_hom_s₁_apply {i j : F.I₀} (k : F.I₁ i j) :
+    e.hom.s₁ (e.inv.s₁ k) = F.congrIndexOneOfEq (by simp) (by simp) k := by
+  obtain ⟨hs₀, hh₀, hs₁, hh₁⟩ := PreOneHypercover.Hom.ext'_iff.mp e.inv_hom_id
+  simpa using hs₁ i j k
+
+@[reassoc (attr := simp)]
+lemma hom_inv_h₀ (i : E.I₀) : e.hom.h₀ i ≫ e.inv.h₀ (e.hom.s₀ i) = eqToHom (by simp) := by
+  obtain ⟨hs, hh, _⟩ := Hom.ext'_iff.mp e.hom_inv_id
+  simpa using hh i
+
+@[reassoc (attr := simp)]
+lemma inv_hom_h₀ (i : F.I₀) : e.inv.h₀ i ≫ e.hom.h₀ (e.inv.s₀ i) = eqToHom (by simp) := by
+  obtain ⟨hs, hh, _⟩ := Hom.ext'_iff.mp e.inv_hom_id
+  simpa using hh i
+
+@[reassoc (attr := simp)]
+lemma hom_inv_h₁ {i j : E.I₀} (k : E.I₁ i j) :
+    e.hom.h₁ k ≫ e.inv.h₁ (e.hom.s₁ k) =
+      (E.congrIndexOneOfEqIso (hom_inv_s₀_apply e i).symm (hom_inv_s₀_apply e j).symm k).inv ≫
+      eqToHom (by congr 1; simp) := by
+  obtain ⟨hs, _, _, hh⟩ := Hom.ext'_iff.mp e.hom_inv_id
+  simpa using hh i j k
+
+@[reassoc (attr := simp)]
+lemma inv_hom_h₁ {i j : F.I₀} (k : F.I₁ i j) :
+    e.inv.h₁ k ≫ e.hom.h₁ (e.inv.s₁ k) =
+      (F.congrIndexOneOfEqIso (inv_hom_s₀_apply e i).symm (inv_hom_s₀_apply e j).symm k).inv ≫
+      eqToHom (by congr 1; simp) := by
+  obtain ⟨hs, _, _, hh⟩ := Hom.ext'_iff.mp e.inv_hom_id
+  simpa using hh i j k
+
+instance (i : E.I₀) : IsIso (e.hom.h₀ i) := by
+  use e.inv.h₀ (e.hom.s₀ i) ≫ eqToHom (by simp)
+  rw [PreOneHypercover.hom_inv_h₀_assoc, eqToHom_trans, eqToHom_refl, Category.assoc,
+    ← eqToHom_naturality _ (by simp), PreOneHypercover.inv_hom_h₀_assoc]
+  simp
+
+instance (i : F.I₀) : IsIso (e.inv.h₀ i) :=
+  .of_isIso_fac_right (PreOneHypercover.inv_hom_h₀ e i)
+
+instance {i j : E.I₀} (k : E.I₁ i j) : IsIso (e.hom.h₁ k) := by
+  use e.inv.h₁ _ ≫ eqToHom (by congr 1; simp) ≫ (E.congrIndexOneOfEqIso (by simp) (by simp) k).hom
+  simp only [PreOneHypercover.hom_inv_h₁_assoc, eqToHom_trans_assoc, eqToHom_refl, Category.id_comp,
+    Iso.inv_hom_id, Category.assoc, true_and, PreOneHypercover.congrIndexOneOfEqIso_hom_naturality]
+  rw [← eqToHom_naturality_assoc _ (by simp)]
+  simp
+
+instance {i j : F.I₀} (k : F.I₁ i j) : IsIso (e.inv.h₁ k) :=
+  .of_isIso_fac_right (PreOneHypercover.inv_hom_h₁ e k)
+
+end
+
+section
+
+/-- A refinement morphism `E ⟶ F` induces a functor between the multifork indexing categories. -/
+@[simps]
+def Hom.mapMulticospan {E : PreOneHypercover.{w} S} {F : PreOneHypercover.{w'} S} (f : E.Hom F) :
+    WalkingMulticospan E.multicospanShape ⥤ WalkingMulticospan F.multicospanShape where
+  obj
+    | .left i => .left (f.s₀ i)
+    | .right i => .right (f.s₁' i)
+  map
+    | .id _ => .id _
+    | .fst i => WalkingMulticospan.Hom.fst (J := F.multicospanShape) (f.s₁' i)
+    | .snd i => WalkingMulticospan.Hom.snd (J := F.multicospanShape) (f.s₁' i)
+  map_id := by simp
+  map_comp
+    | .id _, _ => by simp
+    | .fst _, .id _ => by simp
+    | .snd _, .id _ => by simp
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Isomorphic pre-`1`-hypercovers have equivalent multifork index categories. -/
+@[simps! functor inverse]
+def equivalenceMulticospanOfIso {E F : PreOneHypercover.{w} S} (f : E ≅ F) :
+    WalkingMulticospan E.multicospanShape ≌ WalkingMulticospan F.multicospanShape where
+  functor := f.hom.mapMulticospan
+  inverse := f.inv.mapMulticospan
+  unitIso :=
+    eqToIso (WalkingMulticospan.functor_ext (by simp)
+      (fun _ ↦ by dsimp; congr; apply PreOneHypercover.I₁'.ext <;> simp)
+      (fun _ ↦ by dsimp; rw [eqToHom_naturality]; apply PreOneHypercover.I₁'.ext <;> simp)
+      (fun _ ↦ by dsimp; rw [eqToHom_naturality]; apply PreOneHypercover.I₁'.ext <;> simp))
+  counitIso :=
+    eqToIso (WalkingMulticospan.functor_ext (by simp)
+      (fun _ ↦ by dsimp; congr 1; apply PreOneHypercover.I₁'.ext <;> simp)
+      (fun _ ↦ by dsimp; rw [eqToHom_naturality]; apply PreOneHypercover.I₁'.ext <;> simp)
+      (fun _ ↦ by dsimp; rw [eqToHom_naturality]; apply PreOneHypercover.I₁'.ext <;> simp))
+  functor_unitIso_comp c := by
+    cases c <;> rw [eqToIso.hom, eqToHom_app, eqToHom_map] <;> simp
+
+set_option backward.isDefEq.respectTransparency false in
+/-- If `E` and `F` are isomorphic pre-`1`-hypercovers and `G` is a presheaf,
+the multifork for `E` is exact if and only if the multifork for `F` is exact. -/
+noncomputable
+def isLimitEquivOfIso {E F : PreOneHypercover.{w} S} (f : E ≅ F) (G : Cᵒᵖ ⥤ A) :
+    IsLimit (E.multifork G) ≃ IsLimit (F.multifork G) := by
+  refine Equiv.trans ?_
+    (IsLimit.whiskerEquivalenceEquiv <| PreOneHypercover.equivalenceMulticospanOfIso f).symm
+  refine IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_
+  · refine WalkingMulticospan.functorExt ?_ ?_ ?_ ?_
+    · intro i
+      exact G.mapIso (asIso (f.hom.h₀ i)).symm.op
+    · intro i
+      exact G.mapIso (asIso (f.hom.h₁ i.2)).symm.op
+    · simp [← Functor.map_comp_assoc, ← Functor.map_comp, ← op_comp, f.hom.w₁₁]
+    · simp [← Functor.map_comp_assoc, ← Functor.map_comp, ← op_comp, f.hom.w₁₂]
+  · refine Cone.ext (Iso.refl _) fun i ↦ ?_
+    induction i with
+    | left _ => simp [← Functor.map_comp, ← op_comp]
+    | right _ => simp [← Functor.map_comp, ← op_comp, f.hom.w₁₁_assoc]
+
+end
 
 end Category
 
@@ -701,20 +889,20 @@ variable {S : C} (E : J.OneHypercover S) (F : Sheaf J A)
 section
 
 variable {E F}
-variable (c : Multifork (E.multicospanIndex F.val))
+variable (c : Multifork (E.multicospanIndex F.obj))
 
 /-- Auxiliary definition of `isLimitMultifork`. -/
-noncomputable def multiforkLift : c.pt ⟶ F.val.obj (Opposite.op S) :=
-  F.cond.amalgamateOfArrows _ E.mem₀ c.ι (fun W i₁ i₂ p₁ p₂ w => by
-    apply F.cond.hom_ext ⟨_, E.mem₁ _ _ _ _ w⟩
+noncomputable def multiforkLift : c.pt ⟶ F.obj.obj (Opposite.op S) :=
+  F.property.amalgamateOfArrows _ E.mem₀ c.ι (fun W i₁ i₂ p₁ p₂ w => by
+    apply F.property.hom_ext ⟨_, E.mem₁ _ _ _ _ w⟩
     rintro ⟨T, g, j, h, fac₁, fac₂⟩
     dsimp
     simp only [assoc, ← Functor.map_comp, ← op_comp, fac₁, fac₂]
     simp only [op_comp, Functor.map_comp]
-    simpa using c.condition ⟨⟨i₁, i₂⟩, j⟩ =≫ F.val.map h.op)
+    simpa using c.condition ⟨⟨i₁, i₂⟩, j⟩ =≫ F.obj.map h.op)
 
 @[reassoc]
-lemma multiforkLift_map (i₀ : E.I₀) : multiforkLift c ≫ F.val.map (E.f i₀).op = c.ι i₀ := by
+lemma multiforkLift_map (i₀ : E.I₀) : multiforkLift c ≫ F.obj.map (E.f i₀).op = c.ι i₀ := by
   simp [multiforkLift]
 
 end
@@ -725,7 +913,7 @@ induced by `E.p₁ j` and `E.p₂ j`. -/
 noncomputable def isLimitMultifork : IsLimit (E.multifork F.1) :=
   Multifork.IsLimit.mk _ (fun c => multiforkLift c) (fun c => multiforkLift_map c) (by
     intro c m hm
-    apply F.cond.hom_ext_ofArrows _ E.mem₀
+    apply F.property.hom_ext_ofArrows _ E.mem₀
     intro i₀
     dsimp only
     rw [multiforkLift_map]
@@ -909,6 +1097,7 @@ variable {X : C} (E : PreZeroHypercover.{w} X) [E.HasPullbacks]
 
 instance : (E.refineOneHypercover F).HasPullbacks := ‹_›
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma PreZeroHypercover.sieve₁'_refineOneHypercover (i j : E.I₀) :
     (E.refineOneHypercover F).sieve₁' i j = (F i j).sieve₀ := by

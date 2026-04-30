@@ -27,14 +27,12 @@ This file defines the AGM in the `NNReal` namespace and proves some of its basic
 
 namespace NNReal
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The AM–GM inequality for two `NNReal`s, with means in canonical form. -/
 lemma sqrt_mul_le_half_add (x y : ℝ≥0) : sqrt (x * y) ≤ (x + y) / 2 := by
   rw [sqrt_le_iff_le_sq, div_pow, le_div_iff₀' (by positivity), ← mul_assoc]
   norm_num
   exact four_mul_le_sq_add ..
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The strict AM–GM inequality for two `NNReal`s, with means in canonical form. -/
 lemma sqrt_mul_lt_half_add_of_ne {x y : ℝ≥0} (h : x ≠ y) : sqrt (x * y) < (x + y) / 2 := by
   wlog hl : y < x generalizing x y
@@ -136,7 +134,6 @@ lemma agmSequences_fst_lt_snd_of_ne (h : x ≠ y) (n m : ℕ) :
     rw [agmSequences_succ']
     exact sqrt_mul_lt_half_add_of_ne (ih h).ne
 
-set_option backward.isDefEq.respectTransparency false in
 lemma agmSequences_min_max : agmSequences (min x y) (max x y) = agmSequences x y := by
   obtain h | h := le_total x y
   · rw [min_eq_left h, max_eq_right h]
@@ -173,13 +170,11 @@ lemma agm_comm : agm x y = agm y x := by
 
 lemma agm_eq_ciInf : agm x y = ⨅ n, (agmSequences x y n).2 := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma tendsto_agmSequences_snd_agm : Tendsto (fun n ↦ (agmSequences x y n).2) atTop (𝓝 (agm x y)) :=
   tendsto_atTop_ciInf agmSequences_snd_antitone (OrderBot.bddBelow _)
 
 lemma agm_le_agmSequences_snd (n : ℕ) : agm x y ≤ (agmSequences x y n).2 := ciInf_le' _ n
 
-set_option backward.isDefEq.respectTransparency false in
 lemma agm_le_max : agm x y ≤ max x y := by
   wlog h : x ≤ y generalizing x y
   · simpa [agm_comm, max_comm] using this (not_le.mp h).le
@@ -194,7 +189,6 @@ lemma bddAbove_range_agmSequences_fst : BddAbove (Set.range fun n ↦ (agmSequen
   simp_rw [Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff]
   exact fun _ ↦ agmSequences_fst_le_snd ..
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The AGM is also the supremum of the geometric means. -/
 lemma agm_eq_ciSup : agm x y = ⨆ n, (agmSequences x y n).1 := by
   refine tendsto_nhds_unique (tendsto_agmSequences_snd_agm.congr_dist ?_)
@@ -204,7 +198,6 @@ lemma agm_eq_ciSup : agm x y = ⨆ n, (agmSequences x y n).1 := by
     rw [dist_comm]
   exact tendsto_dist_agmSequences_atTop_zero
 
-set_option backward.isDefEq.respectTransparency false in
 lemma tendsto_agmSequences_fst_agm :
     Tendsto (fun n ↦ (agmSequences x y n).1) atTop (𝓝 (agm x y)) := by
   rw [agm_eq_ciSup]
@@ -214,7 +207,6 @@ lemma agmSequences_fst_le_agm (n : ℕ) : (agmSequences x y n).1 ≤ agm x y := 
   rw [agm_eq_ciSup]
   exact le_ciSup bddAbove_range_agmSequences_fst _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma min_le_agm : min x y ≤ agm x y := by
   wlog h : x ≤ y generalizing x y
   · simpa [agm_comm, min_comm] using this (not_le.mp h).le
@@ -264,7 +256,7 @@ lemma agmSequences_fst_lt_agm_of_pos_of_ne (hx : 0 < x) (hy : 0 < y) (hn : x ≠
   set q := (agmSequences x y n).2
   apply (?_ : p < sqrt (p * q)).trans_le (agmSequences_fst_le_agm 0)
   have ppos : 0 < p :=
-    (show 0 < sqrt (x * y) by positivity).trans_le (agmSequences_fst_monotone (zero_le n))
+    (show 0 < sqrt (x * y) by positivity).trans_le (agmSequences_fst_monotone zero_le)
   have plq : p < q := agmSequences_fst_lt_snd_of_ne hn ..
   nth_rw 1 [← mul_self_sqrt p, sqrt_mul]
   gcongr
@@ -279,7 +271,6 @@ lemma agm_lt_agmSequences_snd_of_ne (hn : x ≠ y) (n : ℕ) : agm x y < (agmSeq
   rw [add_div]
   gcongr
 
-set_option backward.isDefEq.respectTransparency false in
 lemma min_lt_agm_of_pos_of_ne (hx : 0 < x) (hy : 0 < y) (hn : x ≠ y) : min x y < agm x y := by
   wlog h : x < y generalizing x y
   · simpa [agm_comm, min_comm] using this hy hx hn.symm (hn.gt_or_lt.resolve_right h)
@@ -288,7 +279,6 @@ lemma min_lt_agm_of_pos_of_ne (hx : 0 < x) (hy : 0 < y) (hn : x ≠ y) : min x y
   rw [agmSequences_zero]
   exact (le_gm_and_am_le h.le).1
 
-set_option backward.isDefEq.respectTransparency false in
 lemma agm_lt_max_of_ne (hn : x ≠ y) : agm x y < max x y := by
   wlog h : x < y generalizing x y
   · simpa [agm_comm, max_comm] using this hn.symm (hn.gt_or_lt.resolve_right h)

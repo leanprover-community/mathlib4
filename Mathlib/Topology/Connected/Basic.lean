@@ -296,7 +296,6 @@ protected theorem IsConnected.image [TopologicalSpace β] {s : Set α} (H : IsCo
     (hf : ContinuousOn f s) : IsConnected (f '' s) :=
   ⟨image_nonempty.mpr H.nonempty, H.isPreconnected.image f hf⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isPreconnected_closed_iff {s : Set α} :
     IsPreconnected s ↔ ∀ t t', IsClosed t → IsClosed t' →
       s ⊆ t ∪ t' → (s ∩ t).Nonempty → (s ∩ t').Nonempty → (s ∩ (t ∩ t')).Nonempty :=
@@ -336,7 +335,7 @@ theorem Topology.IsInducing.isPreconnected_image [TopologicalSpace β] {s : Set 
 theorem IsPreconnected.preimage_of_isOpenMap [TopologicalSpace β] {f : α → β} {s : Set β}
     (hs : IsPreconnected s) (hinj : Function.Injective f) (hf : IsOpenMap f) (hsf : s ⊆ range f) :
     IsPreconnected (f ⁻¹' s) := fun u v hu hv hsuv hsu hsv => by
-  replace hsf : f '' (f ⁻¹' s) = s := image_preimage_eq_of_subset hsf
+  replace hsf : f '' f ⁻¹' s = s := image_preimage_eq_of_subset hsf
   obtain ⟨_, has, ⟨a, hau, rfl⟩, hav⟩ : (s ∩ (f '' u ∩ f '' v)).Nonempty := by
     refine hs (f '' u) (f '' v) (hf u hu) (hf v hv) ?_ ?_ ?_
     · simpa only [hsf, image_union] using image_mono (f := f) hsuv
@@ -348,7 +347,7 @@ theorem IsPreconnected.preimage_of_isClosedMap [TopologicalSpace β] {s : Set β
     (hs : IsPreconnected s) {f : α → β} (hinj : Function.Injective f) (hf : IsClosedMap f)
     (hsf : s ⊆ range f) : IsPreconnected (f ⁻¹' s) :=
   isPreconnected_closed_iff.2 fun u v hu hv hsuv hsu hsv => by
-    replace hsf : f '' (f ⁻¹' s) = s := image_preimage_eq_of_subset hsf
+    replace hsf : f '' f ⁻¹' s = s := image_preimage_eq_of_subset hsf
     obtain ⟨_, has, ⟨a, hau, rfl⟩, hav⟩ : (s ∩ (f '' u ∩ f '' v)).Nonempty := by
       refine isPreconnected_closed_iff.1 hs (f '' u) (f '' v) (hf u hu) (hf v hv) ?_ ?_ ?_
       · simpa only [hsf, image_union] using image_mono (f := f) hsuv
@@ -659,6 +658,11 @@ theorem Function.Surjective.connectedSpace [ConnectedSpace α] [TopologicalSpace
     {f : α → β} (hf : Surjective f) (hf' : Continuous f) : ConnectedSpace β := by
   rw [connectedSpace_iff_univ, ← hf.range_eq]
   exact isConnected_range hf'
+
+lemma Homeomorph.connectedSpace_iff [TopologicalSpace β] (e : α ≃ₜ β) :
+    ConnectedSpace α ↔ ConnectedSpace β :=
+  ⟨fun _ ↦ e.surjective.connectedSpace e.continuous,
+    fun _ ↦ e.symm.surjective.connectedSpace e.symm.continuous⟩
 
 instance Quotient.instConnectedSpace {s : Setoid α} [ConnectedSpace α] :
     ConnectedSpace (Quotient s) :=

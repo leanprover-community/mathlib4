@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexShift
 public import Mathlib.CategoryTheory.Triangulated.Functor
 
-/-! The pretriangulated structure on the homotopy category of complexes
+/-! # The pretriangulated structure on the homotopy category of complexes
 
 In this file, we define the pretriangulated structure on the homotopy
 category `HomotopyCategory C (ComplexShape.up ℤ)` of an additive category `C`.
@@ -21,7 +21,7 @@ cochain complexes `φ : K ⟶ L`.
 This result first appeared in the Liquid Tensor Experiment. In the LTE, the
 formalization followed the Stacks Project: in particular, the distinguished
 triangles were defined using degreewise-split short exact sequences of cochain
-complexes. Here, we follow the original definitions in [Verdiers's thesis, I.3][verdier1996]
+complexes. Here, we follow the original definitions in [Verdier's thesis, I.3][verdier1996]
 (with the better sign conventions from the introduction of
 [Brian Conrad's book *Grothendieck duality and base change*][conrad2000]).
 
@@ -465,8 +465,8 @@ namespace Pretriangulated
 the triangle `CochainComplex.mappingCone.triangleh φ` for some morphism of cochain
 complexes `φ`. -/
 def distinguishedTriangles : Set (Triangle (HomotopyCategory C (ComplexShape.up ℤ))) :=
-  fun T => ∃ (X Y : CochainComplex C ℤ) (φ : X ⟶ Y),
-    Nonempty (T ≅ CochainComplex.mappingCone.triangleh φ)
+  {T | ∃ (X Y : CochainComplex C ℤ) (φ : X ⟶ Y),
+    Nonempty (T ≅ CochainComplex.mappingCone.triangleh φ)}
 
 variable {C}
 

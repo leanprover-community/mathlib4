@@ -49,9 +49,11 @@ public import Mathlib.Tactic.Constructor
 public import Mathlib.Tactic.Contrapose
 public import Mathlib.Tactic.Conv
 public import Mathlib.Tactic.Convert
+public import Mathlib.Tactic.DefEqAbuse
 public import Mathlib.Tactic.DefEqTransformations
 public import Mathlib.Tactic.DeprecateTo
 public import Mathlib.Tactic.DepRewrite
+public import Mathlib.Tactic.DSimpPercent
 public import Mathlib.Tactic.ErwQuestion
 public import Mathlib.Tactic.Eqns
 public import Mathlib.Tactic.ExistsI
@@ -121,6 +123,8 @@ public import Mathlib.Util.TransImports
 public import Mathlib.Util.WhatsNew
 
 /-!
+# Common tactics, linters, and utilities
+
 This file imports all tactics which do not have significant theory imports,
 and hence can be imported very low in the theory import hierarchy,
 thereby making tactics widely available without needing specific imports.
@@ -135,27 +139,27 @@ import hierarchy.
 public meta section
 
 /-!
-# Register tactics with `hint`. Tactics with larger priority run first.
+### Register tactics with `hint`. Tactics with larger priority run first.
 -/
 
 section Hint
 
-register_hint 200 grind
 register_hint 1000 trivial
-register_hint 500 tauto
 register_hint 1000 split
 register_hint 1000 intro
-register_hint 80 aesop
+register_hint 1000 decide
 register_hint 800 simp_all?
 register_hint 600 exact?
-register_hint 1000 decide
+register_hint 500 tauto
+register_hint 200 grind
 register_hint 200 omega
 register_hint 200 fun_prop
+register_hint 80 aesop
 
 end Hint
 
 /-!
-# Register tactics with `try?`. Tactics with larger priority run first.
+### Register tactics with `try?`. Tactics with larger priority run first.
 -/
 
 section Try

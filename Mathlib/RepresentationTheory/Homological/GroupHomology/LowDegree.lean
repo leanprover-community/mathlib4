@@ -53,7 +53,7 @@ noncomputable section
 
 open CategoryTheory Limits Representation Rep Finsupp
 
-variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G)
+variable {k G : Type u} [CommRing k] [Group G] (A : Rep.{u} k G)
 
 namespace groupHomology
 
@@ -61,7 +61,7 @@ section Chains
 
 /-- The 0th object in the complex of inhomogeneous chains of `A : Rep k G` is isomorphic
 to `A` as a `k`-module. -/
-def chainsIso₀ : (inhomogeneousChains A).X 0 ≅ A.V :=
+def chainsIso₀ : (inhomogeneousChains A).X 0 ≅ ModuleCat.of k A.V :=
   (LinearEquiv.finsuppUnique _ _ _).toModuleIso
 
 /-- The 1st object in the complex of inhomogeneous chains of `A : Rep k G` is isomorphic
@@ -84,27 +84,22 @@ end Chains
 
 section Differentials
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The 0th differential in the complex of inhomogeneous chains of `A : Rep k G`, as a
 `k`-linear map `(G →₀ A) → A`. It is defined by `single g a ↦ ρ_A(g⁻¹)(a) - a.` -/
-def d₁₀ : ModuleCat.of k (G →₀ A) ⟶ A.V :=
+def d₁₀ : ModuleCat.of k (G →₀ A) ⟶ ModuleCat.of k A.V :=
   ModuleCat.ofHom <| lsum k fun g => A.ρ g⁻¹ - LinearMap.id
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem d₁₀_single (g : G) (a : A) : d₁₀ A (single g a) = A.ρ g⁻¹ a - a := by
   simp [d₁₀]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem d₁₀_single_one (a : A) : d₁₀ A (single 1 a) = 0 := by
   simp [d₁₀]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem d₁₀_single_inv (g : G) (a : A) :
     d₁₀ A (single g⁻¹ a) = -d₁₀ A (single g (A.ρ g a)) := by
   simp [d₁₀]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem range_d₁₀_eq_coinvariantsKer :
     LinearMap.range (d₁₀ A).hom = Coinvariants.ker A.ρ := by
   symm
@@ -125,7 +120,6 @@ lemma d₁₀_comp_coinvariantsMk : d₁₀ A ≫ (coinvariantsMk k G).app A = 0
   ext
   simp [d₁₀]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The 0th differential in the complex of inhomogeneous chains of a `G`-representation `A` as a
 linear map into the `k`-submodule of `A` spanned by elements of the form
 `ρ(g)(x) - x, g ∈ G, x ∈ A`. -/
@@ -140,7 +134,6 @@ lemma chains₁ToCoinvariantsKer_surjective :
   rcases range_d₁₀_eq_coinvariantsKer A ▸ hx with ⟨y, hy⟩
   use y, Subtype.ext hy
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem d₁₀_eq_zero_of_isTrivial [A.IsTrivial] : d₁₀ A = 0 := by
   ext
@@ -222,7 +215,6 @@ lemma d₃₂_single_one_thd (g h : G) (a : A) :
 
 variable (A)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `C(G, A)` denote the complex of inhomogeneous chains of `A : Rep k G`. This lemma
 says `d₁₀` gives a simpler expression for the 0th differential: that is, the following
 square commutes:
@@ -239,15 +231,15 @@ where the vertical arrows are `chainsIso₁` and `chainsIso₀` respectively.
 theorem comp_d₁₀_eq :
     (chainsIso₁ A).hom ≫ d₁₀ A = (inhomogeneousChains A).d 1 0 ≫ (chainsIso₀ A).hom :=
   ModuleCat.hom_ext <| lhom_ext fun _ _ => by
-    simp [inhomogeneousChains.d_def, chainsIso₀, chainsIso₁, d₁₀_single (G := G),
+    simp [chainsIso₀, chainsIso₁, d₁₀_single (G := G), ChainComplex.of.d,
       Unique.eq_default (α := Fin 0 → G), sub_eq_add_neg, inhomogeneousChains.d_single (G := G)]
 
-@[reassoc (attr := simp), elementwise (attr := simp)]
+-- @[reassoc (attr := simp), elementwise (attr := simp)]
+@[reassoc, elementwise]
 theorem eq_d₁₀_comp_inv :
     (chainsIso₁ A).inv ≫ (inhomogeneousChains A).d 1 0 = d₁₀ A ≫ (chainsIso₀ A).inv :=
   (CommSq.horiz_inv ⟨comp_d₁₀_eq A⟩).w
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `C(G, A)` denote the complex of inhomogeneous chains of `A : Rep k G`. This lemma
 says `d₂₁` gives a simpler expression for the 1st differential: that is, the following
 square commutes:
@@ -264,16 +256,15 @@ where the vertical arrows are `chainsIso₂` and `chainsIso₁` respectively.
 theorem comp_d₂₁_eq :
     (chainsIso₂ A).hom ≫ d₂₁ A = (inhomogeneousChains A).d 2 1 ≫ (chainsIso₁ A).hom :=
   ModuleCat.hom_ext <| lhom_ext fun _ _ => by
-    simp [inhomogeneousChains.d_def, chainsIso₁, add_assoc, chainsIso₂, d₂₁_single (G := G),
-      -Finsupp.domLCongr_apply, domLCongr_single, sub_eq_add_neg, Fin.contractNth,
-      inhomogeneousChains.d_single (G := G)]
+    simp [chainsIso₁, add_assoc, chainsIso₂, d₂₁_single (G := G),
+      -Finsupp.domLCongr_apply, domLCongr_single, sub_eq_add_neg, ChainComplex.of.d,
+      Fin.contractNth, inhomogeneousChains.d_single (G := G)]
 
-@[reassoc (attr := simp), elementwise (attr := simp)]
+@[reassoc, elementwise]
 theorem eq_d₂₁_comp_inv :
     (chainsIso₂ A).inv ≫ (inhomogeneousChains A).d 2 1 = d₂₁ A ≫ (chainsIso₁ A).inv :=
   (CommSq.horiz_inv ⟨comp_d₂₁_eq A⟩).w
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `C(G, A)` denote the complex of inhomogeneous chains of `A : Rep k G`. This lemma
 says `d₃₂` gives a simpler expression for the 2nd differential: that is, the following
 square commutes:
@@ -290,18 +281,17 @@ where the vertical arrows are `chainsIso₃` and `chainsIso₂` respectively.
 theorem comp_d₃₂_eq :
     (chainsIso₃ A).hom ≫ d₃₂ A = (inhomogeneousChains A).d 3 2 ≫ (chainsIso₂ A).hom :=
   ModuleCat.hom_ext <| lhom_ext fun _ _ => by
-    simp [inhomogeneousChains.d_def, chainsIso₂, pow_succ, chainsIso₃,
+    simp [chainsIso₂, ChainComplex.of.d, pow_succ, chainsIso₃,
       -domLCongr_apply, domLCongr_single, d₃₂, Fin.sum_univ_three,
       Fin.contractNth, Fin.tail_def, sub_eq_add_neg, add_assoc,
       inhomogeneousChains.d_single (G := G), add_rotate' (-(single (_ * _, _) _)),
       add_left_comm (single (_, _ * _) _)]
 
-@[reassoc (attr := simp), elementwise (attr := simp)]
+@[reassoc, elementwise]
 theorem eq_d₃₂_comp_inv :
     (chainsIso₃ A).inv ≫ (inhomogeneousChains A).d 3 2 = d₃₂ A ≫ (chainsIso₂ A).inv :=
   (CommSq.horiz_inv ⟨comp_d₃₂_eq A⟩).w
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem d₂₁_comp_d₁₀ : d₂₁ A ≫ d₁₀ A = 0 := by
   ext x g
@@ -310,7 +300,8 @@ theorem d₂₁_comp_d₁₀ : d₂₁ A ≫ d₁₀ A = 0 := by
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem d₃₂_comp_d₂₁ : d₃₂ A ≫ d₂₁ A = 0 := by
-  simp [← cancel_mono (chainsIso₁ A).inv, ← eq_d₂₁_comp_inv, ← eq_d₃₂_comp_inv_assoc]
+  simp [← cancel_mono (chainsIso₁ A).inv, ← eq_d₂₁_comp_inv, ← eq_d₃₂_comp_inv_assoc,
+    ChainComplex.of.d, inhomogeneousChains.d_comp_d]
 
 open ShortComplex
 
@@ -360,12 +351,10 @@ theorem d₂₁_apply_mem_cycles₁ (x : G × G →₀ A) :
     d₂₁ A x ∈ cycles₁ A :=
   congr($(d₂₁_comp_d₁₀ A) x)
 
-set_option backward.isDefEq.respectTransparency false in
 variable (A) in
 theorem cycles₁_eq_top_of_isTrivial [A.IsTrivial] : cycles₁ A = ⊤ := by
   rw [cycles₁, d₁₀_eq_zero_of_isTrivial, ModuleCat.hom_zero, LinearMap.ker_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (A) in
 /-- The natural inclusion `Z₁(G, A) ⟶ C₁(G, A)` is an isomorphism when the representation
 on `A` is trivial. -/
@@ -706,8 +695,8 @@ lemma shortComplexH0_exact : (shortComplexH0 A).Exact := by
   rfl
 
 /-- The 0-cycles of the complex of inhomogeneous chains of `A` are isomorphic to `A`. -/
-def cyclesIso₀ : cycles A 0 ≅ A.V :=
-  (inhomogeneousChains A).iCyclesIso _ 0 (by aesop) (by aesop) ≪≫ chainsIso₀ A
+def cyclesIso₀ : cycles A 0 ≅ ModuleCat.of k A.V :=
+  (inhomogeneousChains A).iCyclesIso _ 0 (by simp) (by simp [ChainComplex.of.d]) ≪≫ chainsIso₀ A
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
@@ -743,7 +732,8 @@ lemma coinvariantsMk_comp_opcyclesIso₀_inv :
 
 set_option backward.isDefEq.respectTransparency false in
 lemma cyclesMk₀_eq (x : A) :
-    cyclesMk 0 0 (by simp) ((chainsIso₀ A).inv x) (by simp) = (cyclesIso₀ A).inv x :=
+    cyclesMk 0 0 (by simp) ((chainsIso₀ A).inv x) (by simp [ChainComplex.of.d]) =
+    (cyclesIso₀ A).inv x :=
   (ModuleCat.mono_iff_injective <| iCycles A 0).1 inferInstance <| by rw [iCycles_mk]; simp
 
 end cyclesIso₀
@@ -757,7 +747,6 @@ def isoShortComplexH1 : (inhomogeneousChains A).sc 1 ≅ shortComplexH1 A :=
   (inhomogeneousChains A).isoSc' 2 1 0 (by simp) (by simp) ≪≫
     isoMk (chainsIso₂ A) (chainsIso₁ A) (chainsIso₀ A) (comp_d₂₁_eq A) (comp_d₁₀_eq A)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The 1-cycles of the complex of inhomogeneous chains of `A` are isomorphic to
 `cycles₁ A`, which is a simpler type. -/
 def isoCycles₁ : cycles A 1 ≅ ModuleCat.of k (cycles₁ A) :=
@@ -787,10 +776,12 @@ lemma toCycles_comp_isoCycles₁_hom :
 
 set_option backward.isDefEq.respectTransparency false in
 lemma cyclesMk₁_eq (x : cycles₁ A) :
-    cyclesMk 1 0 (by simp) ((chainsIso₁ A).inv x) (by simp +instances) = (isoCycles₁ A).inv x :=
+    cyclesMk 1 0 (by simp) ((chainsIso₁ A).inv x) (by
+      rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, eq_d₁₀_comp_inv]; simp) =
+      (isoCycles₁ A).inv x :=
   (ModuleCat.mono_iff_injective <| iCycles A 1).1 inferInstance <| by
     rw [iCycles_mk]
-    simp only [ChainComplex.of_x, isoCycles₁_inv_comp_iCycles_apply]
+    simp only [ChainComplex.of_X, isoCycles₁_inv_comp_iCycles_apply]
     rfl
 
 end isoCycles₁
@@ -804,7 +795,6 @@ def isoShortComplexH2 : (inhomogeneousChains A).sc 2 ≅ shortComplexH2 A :=
   (inhomogeneousChains A).isoSc' 3 2 1 (by simp) (by simp) ≪≫
     isoMk (chainsIso₃ A) (chainsIso₂ A) (chainsIso₁ A) (comp_d₃₂_eq A) (comp_d₂₁_eq A)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The 2-cycles of the complex of inhomogeneous chains of `A` are isomorphic to
 `cycles₂ A`, which is a simpler type. -/
 def isoCycles₂ : cycles A 2 ≅ ModuleCat.of k (cycles₂ A) :=
@@ -834,10 +824,12 @@ lemma toCycles_comp_isoCycles₂_hom :
 
 set_option backward.isDefEq.respectTransparency false in
 lemma cyclesMk₂_eq (x : cycles₂ A) :
-    cyclesMk 2 1 (by simp) ((chainsIso₂ A).inv x) (by simp +instances) = (isoCycles₂ A).inv x :=
+    cyclesMk 2 1 (by simp) ((chainsIso₂ A).inv x) (by
+      rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, eq_d₂₁_comp_inv]
+      simp) = (isoCycles₂ A).inv x :=
   (ModuleCat.mono_iff_injective <| iCycles A 2).1 inferInstance <| by
     rw [iCycles_mk]
-    simp only [ChainComplex.of_x, isoCycles₂_inv_comp_iCycles_apply]
+    simp only [ChainComplex.of_X, isoCycles₂_inv_comp_iCycles_apply]
     rfl
 
 end isoCycles₂
@@ -856,10 +848,10 @@ def H0Iso : H0 A ≅ (coinvariantsFunctor k G).obj A :=
   (ChainComplex.isoHomologyι₀ _) ≪≫ opcyclesIso₀ A
 
 /-- The quotient map from `A` to `H₀(G, A)`. -/
-def H0π : A.V ⟶ H0 A := (cyclesIso₀ A).inv ≫ π A 0
+def H0π : ModuleCat.of k A.V ⟶ H0 A := (cyclesIso₀ A).inv ≫ π A 0
 
 set_option backward.isDefEq.respectTransparency false in
-instance : Epi (H0π A) := by unfold H0π; infer_instance
+instance : Epi (H0π A) := inferInstanceAs <| Epi (_ ≫ _)
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
@@ -894,9 +886,9 @@ variable [A.IsTrivial]
 set_option backward.isDefEq.respectTransparency false in
 /-- When the representation on `A` is trivial, then `H₀(G, A)` is all of `A.` -/
 def H0IsoOfIsTrivial :
-    H0 A ≅ A.V :=
+    H0 A ≅ ModuleCat.of k A.V :=
   ((inhomogeneousChains A).isoHomologyπ 1 0 (by simp) <| by
-    ext; simp [inhomogeneousChains.d_def, inhomogeneousChains.d_single (G := G),
+    ext; simp [inhomogeneousChains.d_single (G := G), ChainComplex.of.d,
        Unique.eq_default (α := Fin 0 → G)]).symm ≪≫ cyclesIso₀ A
 
 @[simp]
@@ -919,13 +911,12 @@ section H1
 defined as the 1st homology of the complex of inhomogeneous chains of `A`. -/
 abbrev H1 := groupHomology A 1
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The quotient map from the 1-cycles of `A`, as a submodule of `G →₀ A`, to `H₁(G, A)`. -/
 def H1π : ModuleCat.of k (cycles₁ A) ⟶ H1 A :=
   (isoCycles₁ A).inv ≫ π A 1
 
 set_option backward.isDefEq.respectTransparency false in
-instance : Epi (H1π A) := by unfold H1π; infer_instance
+instance : Epi (H1π A) := inferInstanceAs <| Epi (_ ≫ _)
 
 variable {A}
 
@@ -940,7 +931,6 @@ lemma H1π_eq_zero_iff (x : cycles₁ A) : H1π A x = 0 ↔ x.1 ∈ boundaries�
     ((ModuleCat.mono_iff_injective <| _).1 inferInstance)]
   simp [LinearMap.range_codRestrict, boundaries₁, shortComplexH1, cycles₁]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma H1π_eq_iff (x y : cycles₁ A) :
     H1π A x = H1π A y ↔ x.1 - y.1 ∈ boundaries₁ A := by
   rw [← sub_eq_zero, ← map_sub, H1π_eq_zero_iff]
@@ -976,7 +966,6 @@ variable [A.IsTrivial]
 
 open TensorProduct
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a `G`-representation on `A` is trivial, this is the natural map `Gᵃᵇ → A → H₁(G, A)`
 sending `⟦g⟧, a` to `⟦single g a⟧`. -/
 def mkH1OfIsTrivial : Additive (Abelianization G) →ₗ[ℤ] A →ₗ[ℤ] H1 A :=
@@ -1017,7 +1006,6 @@ lemma H1ToTensorOfIsTrivial_H1π_single (g : G) (a : A) :
   change QuotientAddGroup.lift _ _ _ ((H1Iso A).hom _) = _
   simp [π_comp_H1Iso_hom_apply, ← Submodule.Quotient.quotientAddGroupMk_eq_mk, Submodule.mkQ,
     AddSubgroup.subtype, cycles₁IsoOfIsTrivial]
-
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If a `G`-representation on `A` is trivial, this is the group isomorphism between
@@ -1065,13 +1053,12 @@ section H2
 defined as the 2nd homology of the complex of inhomogeneous chains of `A`. -/
 abbrev H2 := groupHomology A 2
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The quotient map from the 2-cycles of `A`, as a submodule of `G × G →₀ A`, to `H₂(G, A)`. -/
 def H2π : ModuleCat.of k (cycles₂ A) ⟶ H2 A :=
   (isoCycles₂ A).inv ≫ π A 2
 
 set_option backward.isDefEq.respectTransparency false in
-instance : Epi (H2π A) := by unfold H2π; infer_instance
+instance : Epi (H2π A) := inferInstanceAs <| Epi (_ ≫ _)
 
 variable {A}
 
@@ -1086,7 +1073,6 @@ lemma H2π_eq_zero_iff (x : cycles₂ A) : H2π A x = 0 ↔ x.1 ∈ boundaries�
     ((ModuleCat.mono_iff_injective <| _).1 inferInstance)]
   simp [LinearMap.range_codRestrict, boundaries₂, shortComplexH2, cycles₂]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma H2π_eq_iff (x y : cycles₂ A) :
     H2π A x = H2π A y ↔ x.1 - y.1 ∈ boundaries₂ A := by
   rw [← sub_eq_zero, ← map_sub, H2π_eq_zero_iff]

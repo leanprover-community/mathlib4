@@ -12,9 +12,9 @@ public import Mathlib.Topology.Algebra.Polynomial
 public import Mathlib.Topology.MetricSpace.CauSeqFilter
 
 /-!
-# Hensel's lemma on ℤ_p
+# Hensel's lemma on `ℤ_p`
 
-This file proves Hensel's lemma on ℤ_p, roughly following Keith Conrad's writeup:
+This file proves Hensel's lemma on `ℤ_p`, roughly following Keith Conrad's writeup:
 <http://www.math.uconn.edu/~kconrad/blurbs/gradnumthy/hensel.pdf>
 
 Hensel's lemma gives a simple condition for the existence of a root of a polynomial.
@@ -53,7 +53,6 @@ theorem padic_polynomial_dist {p : ℕ} [Fact p.Prime] {R : Type*} [CommSemiring
 
 open Filter Metric
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem comp_tendsto_lim {p : ℕ} [Fact p.Prime] {F : Polynomial ℤ_[p]}
     (ncs : CauSeq ℤ_[p] norm) : Tendsto (fun i => F.eval (ncs i)) atTop (𝓝 (F.eval ncs.lim)) :=
   Filter.Tendsto.comp (@Polynomial.continuousAt _ _ _ _ F _) ncs.tendsto_limit
@@ -150,7 +149,7 @@ private theorem T_pow {n : ℕ} (hn : n ≠ 0) : T ^ n < 1 := pow_lt_one₀ T_no
 
 private theorem T_pow' (n : ℕ) : T ^ 2 ^ n < 1 := T_pow hnorm (pow_ne_zero _ two_ne_zero)
 
-/-- We will construct a sequence of elements of ℤ_p satisfying successive values of `ih`. -/
+/-- We will construct a sequence of elements of `ℤ_p` satisfying successive values of `ih`. -/
 private def ih_gen (n : ℕ) (z : ℤ_[p]) : Prop :=
   ‖F.derivative.aeval z‖ = ‖F.derivative.aeval a‖ ∧ ‖F.aeval z‖ ≤
     ‖F.derivative.aeval a‖ ^ 2 * T ^ 2 ^ n

@@ -409,7 +409,7 @@ def CommRing.Pic (R : Type u) [CommSemiring R] : Type u :=
 
 open CommRing (Pic)
 
-noncomputable instance : CommGroup (Pic R) := (equivShrink _).symm.commGroup
+noncomputable instance : CommGroup (Pic R) := fast_instance% (equivShrink _).symm.commGroup
 
 variable (M N : Type*) [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
   [Module.Invertible R M] [Module.Invertible R N]
@@ -591,7 +591,6 @@ variable (A : Type*) [CommSemiring A] [Algebra R A]
 defined to be the kernel of `Pic.mapAlgebra R A`. -/
 noncomputable def relPic : Subgroup (Pic R) := (Pic.mapAlgebra R A).ker
 
-set_option backward.isDefEq.respectTransparency false in
 theorem relPic_eq_top [Subsingleton (Pic A)] : relPic R A = ⊤ :=
   top_unique fun _ _ ↦ Subsingleton.elim ..
 

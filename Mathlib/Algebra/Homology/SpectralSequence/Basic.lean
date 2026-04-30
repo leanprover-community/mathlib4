@@ -68,7 +68,7 @@ attribute [reassoc (attr := simp)] Hom.comm
 @[simps! id_hom comp_hom]
 instance : Category (SpectralSequence C c r₀) where
   Hom := Hom
-  id _ := { hom _ _ := 𝟙 _}
+  id _ := { hom _ _ := 𝟙 _ }
   comp f g :=
     { hom r hr := f.hom r ≫ g.hom r
       comm r r' hrr' pq hr := by

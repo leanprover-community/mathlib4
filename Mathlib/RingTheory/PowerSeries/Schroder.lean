@@ -58,7 +58,6 @@ lemma coeff_X_mul_largeSchroderSeries (n : ℕ) (hn : 0 < n) :
   rintro rfl
   simp_all only [lt_self_iff_false]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma coeff_X_mul_largeSchroderSeriesSeries_sq (n : ℕ) (hn : 0 < n) :
     coeff n (X * largeSchroderSeries ^ 2) =
       ∑ i ∈ range n, largeSchroder i * largeSchroder (n - 1 - i) := by
@@ -76,11 +75,11 @@ lemma coeff_X_mul_largeSchroderSeriesSeries_sq (n : ℕ) (hn : 0 < n) :
     split
     next h =>
       simp_all only [mul_eq_mul_right_iff]
-      simp [coeff_X_mul_largeSchroderSeries x (by omega)]
+      simp [coeff_X_mul_largeSchroderSeries x (by lia)]
     next h =>
       simp_all only [not_lt, nonpos_iff_eq_zero, coeff_zero_eq_constantCoeff, map_mul,
       constantCoeff_X, constantCoeff_largeSchroderSeries, mul_one, tsub_zero, zero_mul]
-  rw [this, sum_range_eq_add_Ico _ (by omega)]
+  rw [this, sum_range_eq_add_Ico _ (by lia)]
   simp only [lt_self_iff_false, reduceIte, zero_add]
   have : (∑ x ∈ Ico 1 n, if 0 < x then largeSchroder (x - 1) * largeSchroder (n - x) else 0) =
     ∑ x ∈ Ico 1 n, largeSchroder (x - 1) * largeSchroder (n - x) := by
@@ -88,7 +87,7 @@ lemma coeff_X_mul_largeSchroderSeriesSeries_sq (n : ℕ) (hn : 0 < n) :
     intros x hx
     have hx' : 0 < x := by grind
     rw [if_pos hx']
-  rw [this, sum_Ico_eq_sum_range, show n = n - 1 + 1 by omega,
+  rw [this, sum_Ico_eq_sum_range, show n = n - 1 + 1 by lia,
     sum_range_succ]
   grind [largeSchroder_zero]
 

@@ -29,7 +29,7 @@ We also prove that independent Gaussian random variables are jointly Gaussian.
 * `IndepFun.hasGaussianLaw`: Independent Gaussian random variables are jointly Gaussian,
   product version.
 * `HasGaussianLaw.iIndepFun_of_covariance_eq_zero`: If $(X_i)_{i \in \iota}$ are jointly Gaussian,
-  then they are independent if for all $i \ne j$, \mathrm{Cov}(X_i, X_j) = 0$.
+  then they are independent if for all $i \ne j$, $\mathrm{Cov}(X_i, X_j) = 0$.
 * `HasGaussianLaw.indepFun_of_covariance_eq_zero`: If $(X, Y)$ is Gaussian,
   then $X$ and $Y$ are independent if $\mathrm{Cov}(X, Y) = 0$.
 
@@ -167,7 +167,6 @@ section NormedSpace
 
 variable [∀ i, NormedSpace ℝ (E i)] {X : Π i, Ω → (E i)}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Independent Gaussian random variables are jointly Gaussian. -/
 lemma iIndepFun.hasGaussianLaw (hX1 : ∀ i, HasGaussianLaw (X i) P) (hX2 : iIndepFun X P) :
     HasGaussianLaw (fun ω ↦ (X · ω)) P where
@@ -206,7 +205,7 @@ lemma HasGaussianLaw.iIndepFun_of_covariance_strongDual (hX : HasGaussianLaw (fu
     sum_sub_distrib, ← sum_mul, this]
   congr
   · simp_rw [← Complex.ofReal_sum]
-    rw [integral_finset_sum _ fun i _ ↦ ((hX.eval i).map_fun _).integrable.ofReal]
+    rw [integral_finsetSum _ fun i _ ↦ ((hX.eval i).map_fun _).integrable.ofReal]
   · rw [variance_fun_sum fun i ↦ ((hX.eval i).map_fun _).memLp_two]
     simp only [← sum_div, ← ofReal_sum, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
       div_left_inj', ofReal_inj]
@@ -260,7 +259,7 @@ lemma HasGaussianLaw.iIndepFun_of_covariance_eval {κ : ι → Type*} [∀ i, Fi
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If $(X_i)_{i \in \iota}$ are jointly Gaussian, then they are independent if for all $i \ne j$,
-\mathrm{Cov}(X_i, X_j) = 0$. -/
+$\mathrm{Cov}(X_i, X_j) = 0$. -/
 lemma HasGaussianLaw.iIndepFun_of_covariance_eq_zero {X : ι → Ω → ℝ}
     (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) (h : ∀ i j : ι, i ≠ j → cov[X i, X j; P] = 0) :
     iIndepFun X P :=
@@ -280,7 +279,6 @@ variable {E F : Type*}
     [NormedAddCommGroup F] [MeasurableSpace F]
     [CompleteSpace F] [BorelSpace F] [SecondCountableTopology F]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Independent Gaussian random variables are jointly Gaussian. -/
 lemma IndepFun.hasGaussianLaw [NormedSpace ℝ E] [NormedSpace ℝ F] {X : Ω → E} {Y : Ω → F}
     (hX : HasGaussianLaw X P) (hY : HasGaussianLaw Y P) (hXY : X ⟂ᵢ[P] Y) :

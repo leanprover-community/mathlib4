@@ -68,7 +68,7 @@ section Cochains
 
 /-- The 0th object in the complex of inhomogeneous cochains of `A : Rep k G` is isomorphic
 to `A` as a `k`-module. -/
-def cochainsIso₀ : (inhomogeneousCochains A).X 0 ≅ A.V :=
+def cochainsIso₀ : (inhomogeneousCochains A).X 0 ≅ ModuleCat.of k A.V :=
   (LinearEquiv.funUnique (Fin 0 → G) k A).toModuleIso
 
 /-- The 1st object in the complex of inhomogeneous cochains of `A : Rep k G` is isomorphic
@@ -91,17 +91,15 @@ end Cochains
 
 section Differentials
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The 0th differential in the complex of inhomogeneous cochains of `A : Rep k G`, as a
 `k`-linear map `A → Fun(G, A)`. It sends `(a, g) ↦ ρ_A(g)(a) - a.` -/
 @[simps!]
-def d₀₁ : A.V ⟶ ModuleCat.of k (G → A) :=
+def d₀₁ : ModuleCat.of k A.V ⟶ ModuleCat.of k (G → A) :=
   ModuleCat.ofHom
   { toFun m g := A.ρ g m - m
     map_add' x y := funext fun g => by simp only [map_add, add_sub_add_comm]; rfl
     map_smul' r x := funext fun g => by dsimp; rw [map_smul, smul_sub] }
 
-set_option backward.isDefEq.respectTransparency false in
 theorem d₀₁_ker_eq_invariants : LinearMap.ker (d₀₁ A).hom = invariants A.ρ := by
   ext x
   simp only [LinearMap.mem_ker, mem_invariants, ← @sub_eq_zero _ _ _ x, funext_iff]
@@ -112,7 +110,6 @@ theorem d₀₁_ker_eq_invariants : LinearMap.ker (d₀₁ A).hom = invariants A
   rw [d₀₁_hom_apply, isTrivial_apply, sub_self]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma subtype_comp_d₀₁ : ModuleCat.ofHom (A.ρ.invariants.subtype) ≫ d₀₁ A = 0 := by
   ext ⟨x, hx⟩ g
@@ -161,13 +158,21 @@ where the vertical arrows are `cochainsIso₀` and `cochainsIso₁` respectively
 theorem comp_d₀₁_eq :
     (cochainsIso₀ A).hom ≫ d₀₁ A =
       (inhomogeneousCochains A).d 0 1 ≫ (cochainsIso₁ A).hom := by
-  ext x y
-  change A.ρ y (x default) - x default = _ + ({0} : Finset _).sum _
-  simp_rw [Fin.val_eq_zero, zero_add, pow_one, neg_smul, one_smul,
-    Finset.sum_singleton, sub_eq_add_neg]
-  rcongr i <;> exact Fin.elim0 i
+  ext x a y
+  simp only [cochainsIso₀, LinearEquiv.toModuleIso_hom, ModuleCat.hom_comp,
+    ConcreteCategory.hom_ofHom, LinearMap.coe_comp, LinearEquiv.coe_coe,
+    LinearEquiv.funUnique_apply, LinearMap.coe_single, Function.comp_apply, Function.eval,
+    d₀₁_hom_apply, zero_add, ↓reduceDIte, Nat.reduceAdd, eqToHom_refl, Category.comp_id,
+    cochainsIso₁, Iso.symm_hom, LinearEquiv.toModuleIso_inv, LinearEquiv.funCongrLeft_symm,
+    LinearEquiv.funCongrLeft_apply, Equiv.funUnique_symm_apply, LinearMap.funLeft_apply,
+    inhomogeneousCochains.d_hom_apply, Fin.isValue, uniqueElim_const, Finset.univ_unique,
+    Fin.default_eq_zero, Fin.val_eq_zero, pow_one, neg_smul, one_smul, Finset.sum_neg_distrib,
+    Finset.sum_singleton, ← sub_eq_add_neg, CochainComplex.of.d]
+  rw [← Subsingleton.elim (α := Fin 0 → G) default (fun i ↦ y), Subsingleton.elim
+    (Fin.contractNth 0 _) default, Pi.default_def]
 
-@[reassoc (attr := simp), elementwise (attr := simp)]
+-- @[reassoc (attr := simp), elementwise (attr := simp)]
+@[reassoc, elementwise]
 theorem eq_d₀₁_comp_inv :
     (cochainsIso₀ A).inv ≫ (inhomogeneousCochains A).d 0 1 =
       d₀₁ A ≫ (cochainsIso₁ A).inv :=
@@ -196,7 +201,8 @@ theorem comp_d₁₂_eq :
     Nat.one_add, neg_one_sq, sub_eq_add_neg, add_assoc]
   rcongr i <;> rw [Subsingleton.elim i 0] <;> rfl
 
-@[reassoc (attr := simp), elementwise (attr := simp)]
+-- @[reassoc (attr := simp), elementwise (attr := simp)]
+@[reassoc, elementwise]
 theorem eq_d₁₂_comp_inv :
     (cochainsIso₁ A).inv ≫ (inhomogeneousCochains A).d 1 2 =
       d₁₂ A ≫ (cochainsIso₂ A).inv :=
@@ -226,13 +232,13 @@ theorem comp_d₂₃_eq :
     one_smul, Fin.val_one, Fin.val_two, pow_succ' (-1 : k) 2, neg_sq, Nat.one_add, one_pow, mul_one]
   rcongr i <;> fin_cases i <;> rfl
 
-@[reassoc (attr := simp), elementwise (attr := simp)]
+-- @[reassoc (attr := simp), elementwise (attr := simp)]
+@[reassoc, elementwise]
 theorem eq_d₂₃_comp_inv :
     (cochainsIso₂ A).inv ≫ (inhomogeneousCochains A).d 2 3 =
       d₂₃ A ≫ (cochainsIso₃ A).inv :=
   (CommSq.horiz_inv ⟨comp_d₂₃_eq A⟩).w
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem d₀₁_comp_d₁₂ : d₀₁ A ≫ d₁₂ A = 0 := by
   ext
@@ -325,7 +331,6 @@ theorem mem_cocycles₁_of_addMonoidHom [A.IsTrivial] (f : Additive G →+ A) :
     simp only [Function.comp_apply, ofMul_mul, map_add,
       isTrivial_apply A.ρ g (f (Additive.ofMul h)), add_comm (f (Additive.ofMul g))]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (A) in
 /-- When `A : Rep k G` is a trivial representation of `G`, `Z¹(G, A)` is isomorphic to the
 group homs `G → A`. -/
@@ -707,7 +712,7 @@ theorem isMulCoboundary₁_of_mem_coboundaries₁
 
 /-- Given an abelian group `M` with a `MulDistribMulAction` of `G`, and a function
 `f : G × G → M` satisfying the multiplicative 2-cocycle condition, produces a 2-cocycle for the
-representation on `Additive M` induced by the `MulDistribMulAction`. -/
+representation on `cochainsIso₁Additive M` induced by the `MulDistribMulAction`. -/
 @[simps]
 def cocyclesOfIsMulCocycle₂ {f : G × G → M} (hf : IsMulCocycle₂ f) :
     cocycles₂ (Rep.ofMulDistribMulAction G M) :=
@@ -757,7 +762,6 @@ def dArrowIso₀₁ :
     Arrow.mk ((inhomogeneousCochains A).d 0 1) ≅ Arrow.mk (d₀₁ A) :=
   Arrow.isoMk (cochainsIso₀ A) (cochainsIso₁ A) (comp_d₀₁_eq A)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The 0-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `A.ρ.invariants`, which is a simpler type. -/
 def cocyclesIso₀ : cocycles A 0 ≅ ModuleCat.of k A.ρ.invariants :=
@@ -799,7 +803,6 @@ def isoShortComplexH1 : (inhomogeneousCochains A).sc 1 ≅ shortComplexH1 A :=
     isoMk (cochainsIso₀ A) (cochainsIso₁ A) (cochainsIso₂ A)
       (comp_d₀₁_eq A) (comp_d₁₂_eq A)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The 1-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `cocycles₁ A`, which is a simpler type. -/
 def isoCocycles₁ : cocycles A 1 ≅ ModuleCat.of k (cocycles₁ A) :=
@@ -826,15 +829,19 @@ lemma toCocycles_comp_isoCocycles₁_hom :
   simp [← cancel_mono (shortComplexH1 A).moduleCatLeftHomologyData.i, comp_d₀₁_eq,
     shortComplexH1_f]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma cocyclesMk₁_eq (x : cocycles₁ A) :
     cocyclesMk ((cochainsIso₁ A).inv x) (by
-      simp +instances [← inhomogeneousCochains.d_def, cocycles₁.d₁₂_apply x]) =
-      (isoCocycles₁ A).inv x := by
+      rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, ← inhomogeneousCochains.d_def,
+        eq_d₁₂_comp_inv, ModuleCat.hom_comp, LinearMap.comp_apply, cocycles₁.d₁₂_apply x,
+        map_zero]) = (isoCocycles₁ A).inv x := by
   apply_fun (forget₂ _ Ab).map ((inhomogeneousCochains A).iCycles 1) using
     (AddCommGrpCat.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
-  simpa only [HomologicalComplex.i_cyclesMk] using
-    (isoCocycles₁_inv_comp_iCocycles_apply _ x).symm
+  have := (isoCocycles₁_inv_comp_iCocycles_apply _ x).symm
+  rw [HomologicalComplex.i_cyclesMk]
+  simp only [ModuleCat.forget₂_obj, ModuleCat.forget₂_map, ConcreteCategory.hom_ofHom,
+    AddMonoidHom.coe_coe]
+  rw [← this]
+  rfl
 
 end isoCocycles₁
 
@@ -849,7 +856,6 @@ def isoShortComplexH2 :
     isoMk (cochainsIso₁ A) (cochainsIso₂ A) (cochainsIso₃ A)
       (comp_d₁₂_eq A) (comp_d₂₃_eq A)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The 2-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `cocycles₂ A`, which is a simpler type. -/
 def isoCocycles₂ : cocycles A 2 ≅ ModuleCat.of k (cocycles₂ A) :=
@@ -879,12 +885,13 @@ lemma toCocycles_comp_isoCocycles₂_hom :
 set_option backward.isDefEq.respectTransparency false in
 lemma cocyclesMk₂_eq (x : cocycles₂ A) :
     cocyclesMk ((cochainsIso₂ A).inv x) (by
-      simp +instances [← inhomogeneousCochains.d_def, cocycles₂.d₂₃_apply x]) =
-      (isoCocycles₂ A).inv x := by
+      rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, ← inhomogeneousCochains.d_def,
+        eq_d₂₃_comp_inv, ModuleCat.hom_comp, LinearMap.comp_apply, cocycles₂.d₂₃_apply x,
+        map_zero]) = (isoCocycles₂ A).inv x := by
   apply_fun (forget₂ _ Ab).map ((inhomogeneousCochains A).iCycles 2) using
     (AddCommGrpCat.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
-  simpa only [HomologicalComplex.i_cyclesMk] using
-    (isoCocycles₂_inv_comp_iCocycles_apply _ x).symm
+  rw [HomologicalComplex.i_cyclesMk]
+  simp; rfl
 
 end isoCocycles₂
 end CocyclesIso
@@ -897,7 +904,6 @@ section H0
 defined as the 0th cohomology of the complex of inhomogeneous cochains of `A`. -/
 abbrev H0 := groupCohomology A 0
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The 0th group cohomology of `A`, defined as the 0th cohomology of the complex of inhomogeneous
 cochains, is isomorphic to the invariants of the representation on `A`. -/
 def H0Iso : H0 A ≅ ModuleCat.of k A.ρ.invariants :=
@@ -920,7 +926,8 @@ variable [A.IsTrivial]
 
 /-- When the representation on `A` is trivial, then `H⁰(G, A)` is all of `A.` -/
 def H0IsoOfIsTrivial :
-    H0 A ≅ A.V := H0Iso A ≪≫ (LinearEquiv.ofTop _ (invariants_eq_top A.ρ)).toModuleIso
+    H0 A ≅ ModuleCat.of k A.V :=
+    H0Iso A ≪≫ (LinearEquiv.ofTop _ (invariants_eq_top A.ρ)).toModuleIso
 
 @[simp]
 theorem H0IsoOfIsTrivial_hom :
@@ -945,13 +952,12 @@ section H1
 defined as the 1st cohomology of the complex of inhomogeneous cochains of `A`. -/
 abbrev H1 := groupCohomology A 1
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The quotient map from the 1-cocycles of `A`, as a submodule of `G → A`, to `H¹(G, A)`. -/
 def H1π : ModuleCat.of k (cocycles₁ A) ⟶ H1 A :=
   (isoCocycles₁ A).inv ≫ π A 1
 
 set_option backward.isDefEq.respectTransparency false in
-instance : Epi (H1π A) := by unfold H1π; infer_instance
+instance : Epi (H1π A) := inferInstanceAs <| Epi (_ ≫ _)
 
 variable {A}
 
@@ -966,7 +972,6 @@ lemma H1π_eq_zero_iff (x : cocycles₁ A) : H1π A x = 0 ↔ ⇑x ∈ coboundar
     ((ModuleCat.mono_iff_injective <| _).1 inferInstance)]
   simp [LinearMap.range_codRestrict, coboundaries₁, shortComplexH1, cocycles₁]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma H1π_eq_iff (x y : cocycles₁ A) :
     H1π A x = H1π A y ↔ ⇑x - ⇑y ∈ coboundaries₁ A := by
   rw [← sub_eq_zero, ← map_sub, H1π_eq_zero_iff]
@@ -1001,8 +1006,8 @@ group homs `G → A`. -/
 def H1IsoOfIsTrivial :
     H1 A ≅ ModuleCat.of k (Additive G →+ A) :=
   (HomologicalComplex.isoHomologyπ _ 0 1 (CochainComplex.prev_nat_succ 0) <| by
-    ext; simp [inhomogeneousCochains.d_def, inhomogeneousCochains.d,
-      Unique.eq_default (α := Fin 0 → G), Pi.zero_apply (M := fun _ => A)]).symm ≪≫
+    ext; simp [inhomogeneousCochains.d, Unique.eq_default (α := Fin 0 → G),
+      CochainComplex.of.d]).symm ≪≫
   isoCocycles₁ A ≪≫ cocycles₁IsoOfIsTrivial A
 
 set_option backward.isDefEq.respectTransparency false in
@@ -1028,13 +1033,12 @@ section H2
 defined as the 2nd cohomology of the complex of inhomogeneous cochains of `A`. -/
 abbrev H2 := groupCohomology A 2
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The quotient map from the 2-cocycles of `A`, as a submodule of `G × G → A`, to `H²(G, A)`. -/
 def H2π : ModuleCat.of k (cocycles₂ A) ⟶ H2 A :=
   (isoCocycles₂ A).inv ≫ π A 2
 
 set_option backward.isDefEq.respectTransparency false in
-instance : Epi (H2π A) := by unfold H2π; infer_instance
+instance : Epi (H2π A) := inferInstanceAs <| Epi (_ ≫ _)
 
 variable {A}
 
@@ -1049,7 +1053,6 @@ lemma H2π_eq_zero_iff (x : cocycles₂ A) : H2π A x = 0 ↔ ⇑x ∈ coboundar
     ((ModuleCat.mono_iff_injective <| _).1 inferInstance)]
   simp [LinearMap.range_codRestrict, coboundaries₂, shortComplexH2, cocycles₂]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma H2π_eq_iff (x y : cocycles₂ A) :
     H2π A x = H2π A y ↔ ⇑x - ⇑y ∈ coboundaries₂ A := by
   rw [← sub_eq_zero, ← map_sub, H2π_eq_zero_iff]

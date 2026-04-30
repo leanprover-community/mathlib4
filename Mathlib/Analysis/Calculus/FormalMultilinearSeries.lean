@@ -50,7 +50,10 @@ def FormalMultilinearSeries (𝕜 : Type*) (E : Type*) (F : Type*) [Semiring �
     [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F] [ContinuousAdd F]
     [ContinuousConstSMul 𝕜 F] :=
   ∀ n : ℕ, E [×n]→L[𝕜] F
-deriving AddCommMonoid, Inhabited
+deriving Inhabited
+
+set_option backward.inferInstanceAs.wrap.data false in
+deriving instance AddCommMonoid for FormalMultilinearSeries
 
 section Module
 

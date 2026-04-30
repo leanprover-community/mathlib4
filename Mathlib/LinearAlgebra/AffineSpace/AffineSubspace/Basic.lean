@@ -90,14 +90,12 @@ theorem coe_vadd (s : AffineSubspace k P) [Nonempty s] (a : s.direction) (b : s)
     ↑(a +ᵥ b) = (a : V) +ᵥ (b : P) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Embedding of an affine subspace to the ambient space, as an affine map. -/
 protected def subtype (s : AffineSubspace k P) [Nonempty s] : s →ᵃ[k] P where
   toFun := (↑)
   linear := s.direction.subtype
   map_vadd' _ _ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem subtype_linear (s : AffineSubspace k P) [Nonempty s] :
     s.subtype.linear = s.direction.subtype := rfl
@@ -158,7 +156,6 @@ theorem preimage_coe_affineSpan_singleton (x : P) :
 
 variable (P)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The top affine subspace is linearly equivalent to the affine space.
 This is the affine version of `Submodule.topEquiv`. -/
 @[simps! linear apply symm_apply_coe]
@@ -261,7 +258,7 @@ theorem vectorSpan_eq_span_vsub_finset_right_ne [DecidableEq P] [DecidableEq V] 
 /-- The `vectorSpan` of the image of a function is the span of the pairwise subtractions with a
 given point on the left, excluding the subtraction of that point from itself. -/
 theorem vectorSpan_image_eq_span_vsub_set_left_ne (p : ι → P) {s : Set ι} {i : ι} (hi : i ∈ s) :
-    vectorSpan k (p '' s) = Submodule.span k ((p i -ᵥ ·) '' (p '' (s \ {i}))) := by
+    vectorSpan k (p '' s) = Submodule.span k ((p i -ᵥ ·) '' p '' (s \ {i})) := by
   conv_lhs =>
     rw [vectorSpan_eq_span_vsub_set_left k (Set.mem_image_of_mem p hi), ← Set.insert_eq_of_mem hi, ←
       Set.insert_diff_singleton, Set.image_insert_eq, Set.image_insert_eq]
@@ -270,7 +267,7 @@ theorem vectorSpan_image_eq_span_vsub_set_left_ne (p : ι → P) {s : Set ι} {i
 /-- The `vectorSpan` of the image of a function is the span of the pairwise subtractions with a
 given point on the right, excluding the subtraction of that point from itself. -/
 theorem vectorSpan_image_eq_span_vsub_set_right_ne (p : ι → P) {s : Set ι} {i : ι} (hi : i ∈ s) :
-    vectorSpan k (p '' s) = Submodule.span k ((· -ᵥ p i) '' (p '' (s \ {i}))) := by
+    vectorSpan k (p '' s) = Submodule.span k ((· -ᵥ p i) '' p '' (s \ {i})) := by
   conv_lhs =>
     rw [vectorSpan_eq_span_vsub_set_right k (Set.mem_image_of_mem p hi), ← Set.insert_eq_of_mem hi,
       ← Set.insert_diff_singleton, Set.image_insert_eq, Set.image_insert_eq]
@@ -318,7 +315,6 @@ theorem vectorSpan_range_eq_span_range_vsub_right_ne (p : ι → P) (i₀ : ι) 
 
 variable {k}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A set, considered as a subset of its spanned affine subspace, spans the whole subspace. -/
 @[simp]
 theorem affineSpan_coe_preimage_eq_top (A : Set P) [Nonempty A] :
@@ -615,7 +611,6 @@ lemma map_mk' (p : P₁) (direction : Submodule k V₁) :
 section inclusion
 variable {S₁ S₂ : AffineSubspace k P₁} [Nonempty S₁]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Affine map from a smaller to a larger subspace of the same space.
 
 This is the affine version of `Submodule.inclusion`. -/
@@ -632,7 +627,6 @@ def inclusion (h : S₁ ≤ S₂) :
 theorem coe_inclusion_apply (h : S₁ ≤ S₂) (x : S₁) : (inclusion h x : P₁) = x :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem inclusion_rfl : inclusion (le_refl S₁) = AffineMap.id k S₁ := rfl
 
@@ -688,7 +682,6 @@ theorem ext_on {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AddTorso
 section ofEq
 variable (S₁ S₂ : AffineSubspace k P₁) [Nonempty S₁] [Nonempty S₂]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Affine equivalence between two equal affine subspace.
 
 This is the affine version of `LinearEquiv.ofEq`. -/
@@ -702,13 +695,11 @@ def ofEq (h : S₁ = S₂) : S₁ ≃ᵃ[k] S₂ where
 theorem coe_ofEq_apply (h : S₁ = S₂) (x : S₁) : (ofEq S₁ S₂ h x : P₁) = x :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofEq_symm (h : S₁ = S₂) : (ofEq S₁ S₂ h).symm = ofEq S₂ S₁ h.symm := by
   ext
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofEq_rfl : ofEq S₁ S₁ rfl = AffineEquiv.refl k S₁ := rfl
 
@@ -718,7 +709,7 @@ theorem span_eq_top_iff {s : Set P₁} (e : P₁ ≃ᵃ[k] P₂) :
     affineSpan k s = ⊤ ↔ affineSpan k (e '' s) = ⊤ := by
   refine ⟨(e : P₁ →ᵃ[k] P₂).span_eq_top_of_surjective e.surjective, ?_⟩
   intro h
-  have : s = e.symm '' (e '' s) := by rw [← image_comp]; simp
+  have : s = e.symm '' e '' s := by rw [← image_comp]; simp
   rw [this]
   exact (e.symm : P₂ →ᵃ[k] P₁).span_eq_top_of_surjective e.symm.surjective h
 

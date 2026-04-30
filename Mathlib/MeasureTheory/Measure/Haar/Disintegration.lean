@@ -24,7 +24,7 @@ TODO: this holds more generally in any locally compact group, see
 [Fremlin, *Measure Theory* (volume 4, 443Q)][fremlin_vol4]
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Measure Set
 
@@ -40,7 +40,6 @@ variable {𝕜 E F : Type*}
 variable [LocallyCompactSpace E]
 variable (L μ ν)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The image of an additive Haar measure under a surjective linear map is proportional to a given
 additive Haar measure. The proportionality factor will be infinite if the linear map has a
 nontrivial kernel. -/

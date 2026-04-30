@@ -273,7 +273,6 @@ theorem GammaSeq_eq_approx_Gamma_integral {s : ℂ} (hs : 0 < re s) {n : ℕ} (h
       mul_cpow_ofReal_nonneg hx.1.le (Nat.cast_pos.mpr (Nat.pos_of_ne_zero hn)).le]
   rw [A, B, cpow_natCast]; ring
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The main technical lemma for `GammaSeq_tendsto_Gamma`, expressing the integral defining the
 Gamma function for `0 < re s` as the limit of a sequence of integrals over finite intervals. -/
 theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
@@ -328,7 +327,7 @@ theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
     rcases lt_or_ge (n : ℝ) x with (hxn | hxn)
     · rw [indicator_of_notMem (notMem_Ioc_of_gt hxn), norm_zero,
         mul_nonneg_iff_right_nonneg_of_pos (exp_pos _)]
-      exact rpow_nonneg (le_of_lt hx) _
+      positivity
     · rw [indicator_of_mem (mem_Ioc.mpr ⟨mem_Ioi.mp hx, hxn⟩), norm_mul, Complex.norm_of_nonneg
           (pow_nonneg (sub_nonneg.mpr <| div_le_one_of_le₀ hxn <| by positivity) _),
           norm_cpow_eq_rpow_re_of_pos hx, sub_re, one_re]
@@ -337,31 +336,30 @@ theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
 
 /-- Euler's limit formula for the complex Gamma function. -/
 theorem GammaSeq_tendsto_Gamma (s : ℂ) : Tendsto (GammaSeq s) atTop (𝓝 <| Gamma s) := by
-  suffices ∀ m : ℕ, -↑m < re s → Tendsto (GammaSeq s) atTop (𝓝 <| GammaAux m s) by
-    rw [Gamma]
-    apply this
-    rw [neg_lt]
-    rcases lt_or_ge 0 (re s) with (hs | hs)
-    · exact (neg_neg_of_pos hs).trans_le (Nat.cast_nonneg _)
-    · refine (Nat.lt_floor_add_one _).trans_le ?_
-      rw [sub_eq_neg_add, Nat.floor_add_one (neg_nonneg.mpr hs), Nat.cast_add_one]
+  suffices ∀ m : ℕ, ⌊1 - s.re⌋₊ = m → Tendsto (GammaSeq s) atTop (𝓝 <| Gamma s) by tauto
   intro m
   induction m generalizing s with intro hs
   | zero => -- Base case: `0 < re s`, so Gamma is given by the integral formula
-    rw [Nat.cast_zero, neg_zero] at hs
-    rw [← Gamma_eq_GammaAux]
-    · refine Tendsto.congr' ?_ (approx_Gamma_integral_tendsto_Gamma_integral hs)
-      refine (eventually_ne_atTop 0).mp (Eventually.of_forall fun n hn => ?_)
-      exact (GammaSeq_eq_approx_Gamma_integral hs hn).symm
-    · rwa [Nat.cast_zero, neg_lt_zero]
+    rw [Nat.floor_eq_zero, sub_lt_self_iff] at hs
+    apply (approx_Gamma_integral_tendsto_Gamma_integral hs).congr'
+    filter_upwards [eventually_ne_atTop 0] with n hn using
+      (GammaSeq_eq_approx_Gamma_integral hs hn).symm
   | succ m IH => -- Induction step: use recurrence formulae in `s` for Gamma and GammaSeq
-    rw [Nat.cast_succ, neg_add, ← sub_eq_add_neg, sub_lt_iff_lt_add, ← one_re, ← add_re] at hs
-    rw [GammaAux]
-    have := @Tendsto.congr' _ _ _ ?_ _ _
-      ((eventually_ne_atTop 0).mp (Eventually.of_forall fun n hn => ?_)) ((IH _ hs).div_const s)
-    pick_goal 3; · exact GammaSeq_add_one_left s hn -- doesn't work if inlined?
-    conv at this => arg 1; intro n; rw [mul_comm]
-    rwa [← mul_one (GammaAux m (s + 1) / s), tendsto_mul_iff_of_ne_zero _ (one_ne_zero' ℂ)] at this
+    -- Silly case `s = 0`: both sides are zero
+    rcases eq_or_ne s 0 with rfl | hsne
+    · unfold GammaSeq
+      simp [Finset.prod_range_succ']
+    specialize IH (s + 1) ?_
+    · rw [Nat.floor_eq_iff' (by lia)] at hs
+      have : s.re ≤ -m := by grind
+      rw [Nat.floor_eq_iff <| by simpa using (show s.re ≤ 0 by grind)]
+      grind [add_re, one_re]
+    rw [Gamma_add_one _ hsne] at IH
+    have := (IH.div_const s).congr' <| by
+      filter_upwards [eventually_ne_atTop 0] with n using GammaSeq_add_one_left s
+    simp only [mul_comm _ (s.GammaSeq _)] at this
+    rwa [mul_div_cancel_left₀ _ hsne, ← mul_one (Gamma s),
+      tendsto_mul_iff_of_ne_zero _ (one_ne_zero' ℂ)] at this
     simp_rw [add_assoc]
     exact tendsto_natCast_div_add_atTop (1 + s)
 
@@ -399,7 +397,6 @@ theorem GammaSeq_mul (z : ℂ) {n : ℕ} (hn : n ≠ 0) :
     mul_div_cancel_right₀, ← div_div, mul_comm z _, mul_one_div]
   exact pow_ne_zero 2 (Nat.cast_ne_zero.mpr <| by positivity)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Euler's reflection formula for the complex Gamma function. -/
 theorem Gamma_mul_Gamma_one_sub (z : ℂ) : Gamma z * Gamma (1 - z) = π / sin (π * z) := by
   have pi_ne : (π : ℂ) ≠ 0 := Complex.ofReal_ne_zero.mpr pi_ne_zero
@@ -436,7 +433,7 @@ theorem Gamma_ne_zero {s : ℂ} (hs : ∀ m : ℕ, s ≠ -m) : Gamma s ≠ 0 := 
     rw [this, Gamma_ofReal, ofReal_ne_zero]
     refine Real.Gamma_ne_zero fun n => ?_
     specialize hs n
-    contrapose! hs
+    contrapose hs
     rwa [this, ← ofReal_natCast, ← ofReal_neg, ofReal_inj]
   · have : sin (↑π * s) ≠ 0 := by
       rw [Complex.sin_ne_zero_iff]

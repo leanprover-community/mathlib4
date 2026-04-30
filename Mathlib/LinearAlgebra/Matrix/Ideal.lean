@@ -131,7 +131,7 @@ def matrix (c : RingCon R) : RingCon (Matrix n n R) where
   iseqv.symm h := fun _ _ ↦ c.symm <| h _ _
   iseqv.trans h₁ h₂ := fun _ _ ↦ c.trans (h₁ _ _) (h₂ _ _)
   add' h₁ h₂ := fun _ _ ↦ c.add (h₁ _ _) (h₂ _ _)
-  mul' h₁ h₂ := fun _ _ ↦ c.finset_sum _ fun _ _ => c.mul (h₁ _ _) (h₂ _ _)
+  mul' h₁ h₂ := fun _ _ ↦ c.finsetSum _ fun _ _ => c.mul (h₁ _ _) (h₂ _ _)
 
 @[simp low]
 theorem matrix_apply {c : RingCon R} {M N : Matrix n n R} :
@@ -160,12 +160,10 @@ theorem matrix_strictMono_of_nonempty [Nonempty n] :
     StrictMono (matrix (R := R) n) :=
   matrix_monotone n |>.strictMono_of_injective <| matrix_injective _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem matrix_bot : (⊥ : RingCon R).matrix n = ⊥ :=
   eq_bot_iff.2 fun _ _ h ↦ Matrix.ext h
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem matrix_top : (⊤ : RingCon R).matrix n = ⊤ :=
   eq_top_iff.2 fun _ _ _ _ _ ↦ by simp
@@ -216,7 +214,7 @@ theorem matrix_ofMatrix [DecidableEq n] (c : RingCon (Matrix n n R)) :
   constructor
   · intro h
     rw [matrix_eq_sum_single x, matrix_eq_sum_single y]
-    refine c.finset_sum _ fun i _ ↦ c.finset_sum _ fun j _ ↦ h i j i j
+    refine c.finsetSum _ fun i _ ↦ c.finsetSum _ fun j _ ↦ h i j i j
   · intro h i' j' i j
     simpa using c.mul (c.mul (c.refl <| single i i' 1) h) (c.refl <| single j' j 1)
 
@@ -324,7 +322,6 @@ end NonAssocRing
 section Ring
 variable [Ring R] [Fintype n]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem asIdeal_matrix [DecidableEq n] (I : TwoSidedIdeal R) :
     asIdeal (I.matrix n) = (asIdeal I).matrix n := by
   ext; simp
@@ -340,7 +337,6 @@ open Matrix
 
 variable {R : Type*} [Ring R] {n : Type*} [Fintype n] [DecidableEq n]
 
-set_option backward.privateInPublic true in
 private lemma jacobson_matrix_le (I : TwoSidedIdeal R) :
     (I.matrix n).jacobson ≤ I.jacobson.matrix n := by
   -- Proof generalized from example 8 in

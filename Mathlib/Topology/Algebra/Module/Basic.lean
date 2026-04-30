@@ -125,7 +125,7 @@ lemma TopologicalSpace.IsSeparable.span {R M : Type*} [AddCommMonoid M] [Semirin
   · have : IsSeparable {f : Fin n → R × M | ∀ (i : Fin n), f i ∈ Set.univ ×ˢ s} := by
       apply isSeparable_pi (fun i ↦ .prod (.of_separableSpace Set.univ) hs)
     rwa [Set.univ_prod] at this
-  · apply continuous_finset_sum _ (fun i _ ↦ ?_)
+  · apply continuous_finsetSum _ (fun i _ ↦ ?_)
     exact (continuous_fst.comp (continuous_apply i)).smul (continuous_snd.comp (continuous_apply i))
 
 namespace Submodule
@@ -221,7 +221,6 @@ namespace Submodule
 variable {ι R : Type*} {M : ι → Type*} [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
   [∀ i, TopologicalSpace (M i)] [DecidableEq ι]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `s i` is a family of submodules, each is in its module,
 then the closure of their span in the indexed product of the modules
 is the product of their closures.

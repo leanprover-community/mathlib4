@@ -20,7 +20,7 @@ This file provides some result on multiplicative and additive subgroups in the f
 subgroup, subgroups
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 
@@ -88,9 +88,15 @@ theorem val_multiset_prod {G} [CommGroup G] (H : Subgroup G) (m : Multiset H) :
   SubmonoidClass.coe_multiset_prod m
 
 @[to_additive (attr := simp 1100, norm_cast)]
-theorem val_finset_prod {ι G} [CommGroup G] (H : Subgroup G) (f : ι → H) (s : Finset ι) :
+theorem val_finsetProd {ι G} [CommGroup G] (H : Subgroup G) (f : ι → H) (s : Finset ι) :
     ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : G) :=
-  SubmonoidClass.coe_finset_prod f s
+  SubmonoidClass.coe_finsetProd f s
+
+@[deprecated (since := "2026-04-08")]
+alias _root_.AddSubgroup.val_finset_sum := _root_.AddSubgroup.val_finsetSum
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias val_finset_prod := val_finsetProd
 
 @[to_additive]
 instance fintypeBot : Fintype (⊥ : Subgroup G) :=
@@ -111,7 +117,6 @@ theorem eq_of_le_of_card_ge {H K : Subgroup G} [Finite K] (hle : H ≤ K)
     H = K :=
   SetLike.coe_injective <| Set.Finite.eq_of_subset_of_card_le (Set.toFinite _) hle hcard
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem eq_top_of_le_card [Finite G] (h : Nat.card G ≤ Nat.card H) : H = ⊤ :=
   eq_of_le_of_card_ge le_top (Nat.card_congr (Equiv.Set.univ G) ▸ h)
@@ -175,12 +180,6 @@ open Set
 
 variable {η : Type*} {f : η → Type*} [∀ i, Group (f i)]
 
-@[to_additive (attr := deprecated Submonoid.pi_mem_of_mulSingle_mem_aux (since := "2025-10-08"))]
-theorem pi_mem_of_mulSingle_mem_aux [DecidableEq η] (I : Finset η) {H : Subgroup (∀ i, f i)}
-    (x : ∀ i, f i) (h1 : ∀ i, i ∉ I → x i = 1) (h2 : ∀ i, i ∈ I → Pi.mulSingle i (x i) ∈ H) :
-    x ∈ H :=
-  Submonoid.pi_mem_of_mulSingle_mem_aux I x h1 h2
-
 @[to_additive]
 theorem pi_mem_of_mulSingle_mem [Finite η] [DecidableEq η] {H : Subgroup (∀ i, f i)} (x : ∀ i, f i)
     (h : ∀ i, Pi.mulSingle i (x i) ∈ H) : x ∈ H :=
@@ -212,7 +211,7 @@ end Pi
 section Normalizer
 
 theorem mem_normalizer_fintype {S : Set G} [Finite S] {x : G} (h : ∀ n, n ∈ S → x * n * x⁻¹ ∈ S) :
-    x ∈ Subgroup.setNormalizer S := by
+    x ∈ Subgroup.normalizer S := by
   haveI := Classical.propDecidable; cases nonempty_fintype S
   exact fun n =>
     ⟨h n, fun h₁ =>

@@ -101,17 +101,17 @@ variable [Group G] (A : Rep k G) (n : ℕ)
 set_option backward.isDefEq.respectTransparency false in
 theorem d_eq :
     d A n =
-      (freeLiftLEquiv (Fin n → G) A).toModuleIso.inv ≫
+      (freeLiftLEquiv k G (Fin n → G) A).toModuleIso.inv ≫
         ((barComplex k G).linearYonedaObj k A).d n (n + 1) ≫
-          (freeLiftLEquiv (Fin (n + 1) → G) A).toModuleIso.hom := by
+          (freeLiftLEquiv k G (Fin (n + 1) → G) A).toModuleIso.hom := by
   ext
-  simp [d_hom_apply, map_add, barComplex.d_single (k := k)]
+  simp [d_hom_apply, map_add, barComplex.d_single (k := k), homEquiv]
 
 end inhomogeneousCochains
 
 namespace groupCohomology
 
-variable [Group G] (n) (A : Rep k G)
+variable [Group G] (n) (A : Rep.{u} k G)
 
 open inhomogeneousCochains Rep
 
@@ -123,9 +123,10 @@ noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
   CochainComplex.of (fun n => ModuleCat.of k ((Fin n → G) → A))
     (fun n => inhomogeneousCochains.d A n) fun n => by
     classical
-    simp only [d_eq]
-    slice_lhs 3 4 => {rw [Iso.hom_inv_id]}
-    slice_lhs 2 4 => {rw [Category.id_comp, ((barComplex k G).linearYonedaObj k A).d_comp_d]}
+    simp only
+    rw [d_eq, d_eq]
+    slice_lhs 3 4 => rw [Iso.hom_inv_id]
+    slice_lhs 2 4 => rw [Category.id_comp, ((barComplex k G).linearYonedaObj k A).d_comp_d]
     simp
 
 variable {A n} in
@@ -139,7 +140,7 @@ theorem inhomogeneousCochains.d_def (n : ℕ) :
 
 theorem inhomogeneousCochains.d_comp_d :
     d A n ≫ d A (n + 1) = 0 := by
-  simpa [CochainComplex.of] using (inhomogeneousCochains A).d_comp_d n (n + 1) (n + 2)
+  simpa [CochainComplex.of.d] using (inhomogeneousCochains A).d_comp_d n (n + 1) (n + 2)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous cochains is isomorphic
@@ -147,7 +148,7 @@ to `Hom(P, A)`, where `P` is the bar resolution of `k` as a trivial `G`-represen
 def inhomogeneousCochainsIso :
     inhomogeneousCochains A ≅ (barComplex k G).linearYonedaObj k A := by
   refine HomologicalComplex.Hom.isoOfComponents
-    (fun i => (Rep.freeLiftLEquiv (Fin i → G) A).toModuleIso.symm) ?_
+    (fun i ↦ (Rep.freeLiftLEquiv k G (Fin i → G) A).toModuleIso.symm) ?_
   rintro i j (h : i + 1 = j)
   subst h
   simp [d_eq, -LinearEquiv.toModuleIso_hom, -LinearEquiv.toModuleIso_inv]
@@ -201,7 +202,6 @@ theorem groupCohomology_induction_on [Group G] {A : Rep k G} {n : ℕ}
   rcases (ModuleCat.epi_iff_surjective (π A n)).1 inferInstance x with ⟨y, rfl⟩
   exact h y
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `n`th group cohomology of a `k`-linear `G`-representation `A` is isomorphic to
 `Extⁿ(k, A)` (taken in `Rep k G`), where `k` is a trivial `k`-linear `G`-representation. -/
 def groupCohomologyIsoExt [Group G] (A : Rep k G) (n : ℕ) :
@@ -209,7 +209,6 @@ def groupCohomologyIsoExt [Group G] (A : Rep k G) (n : ℕ) :
   isoOfQuasiIsoAt (HomotopyEquiv.ofIso (inhomogeneousCochainsIso A)).hom n ≪≫
     (Rep.barResolution.extIso k G A n).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `n`th group cohomology of a `k`-linear `G`-representation `A` is isomorphic to
 `Hⁿ(Hom(P, A))`, where `P` is any projective resolution of `k` as a trivial `k`-linear
 `G`-representation. -/
@@ -218,7 +217,6 @@ def groupCohomologyIso [Group G] (A : Rep k G) (n : ℕ)
     groupCohomology A n ≅ (P.complex.linearYonedaObj k A).homology n :=
   groupCohomologyIsoExt A n ≪≫ P.isoExt _ _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isZero_groupCohomology_succ_of_subsingleton
     [Group G] [Subsingleton G] (A : Rep k G) (n : ℕ) :
     Limits.IsZero (groupCohomology A (n + 1)) :=

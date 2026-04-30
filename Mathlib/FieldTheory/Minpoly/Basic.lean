@@ -45,7 +45,7 @@ end MinPolyDef
 
 namespace minpoly
 
-section Ring
+section CommRing
 
 variable [CommRing A] [Ring B] [Ring B'] [Algebra A B] [Algebra A B']
 variable {x : B}
@@ -81,6 +81,7 @@ theorem algebraMap_eq {B} [CommRing B] [Algebra A B] [Algebra B B'] [IsScalarTow
 theorem algEquiv_eq (f : B ≃ₐ[A] B') (x : B) : minpoly A (f x) = minpoly A x :=
   algHom_eq (f : B →ₐ[A] B') f.injective x
 
+section
 variable (A x)
 
 /-- An element is a root of its minimal polynomial. -/
@@ -133,7 +134,8 @@ it is the monic polynomial with smallest degree that has `x` as its root. -/
 theorem min {p : A[X]} (pmonic : p.Monic) (hp : Polynomial.aeval x p = 0) :
     degree (minpoly A x) ≤ degree p := by
   delta minpoly; split_ifs with hx
-  · exact le_of_not_gt (degree_lt_wf.not_lt_min _ hx ⟨pmonic, hp⟩)
+  · refine le_of_not_gt <| degree_lt_wf.not_lt_min _ ?_
+    exact ⟨pmonic, hp⟩
   · simp only [degree_zero, bot_le]
 
 theorem unique' {p : A[X]} (hm : p.Monic) (hp : Polynomial.aeval x p = 0)
@@ -143,7 +145,7 @@ theorem unique' {p : A[X]} (hm : p.Monic) (hp : Polynomial.aeval x p = 0)
   have hx : IsIntegral A x := ⟨p, hm, hp⟩
   obtain h | h := hl _ ((minpoly A x).degree_modByMonic_lt hm)
   swap
-  · exact (h <| (aeval_modByMonic_eq_self_of_root hm hp).trans <| aeval A x).elim
+  · exact (h <| (aeval_modByMonic_eq_self_of_root hp).trans <| aeval A x).elim
   obtain ⟨r, hr⟩ := (modByMonic_eq_zero_iff_dvd hm).1 h
   rw [hr]
   have hlead := congr_arg leadingCoeff hr
@@ -184,16 +186,7 @@ theorem subsingleton [Subsingleton B] : minpoly A x = 1 := by
            (minpoly A x).Monic).degree_le_zero_iff_eq_one] at h
   · exact (this.not_gt h).elim
 
-end Ring
-
-section CommRing
-
-variable [CommRing A]
-
-section Ring
-
-variable [Ring B] [Algebra A B]
-variable {x : B}
+end
 
 /-- The degree of a minimal polynomial, as a natural number, is positive. -/
 theorem natDegree_pos [Nontrivial B] (hx : IsIntegral A x) : 0 < natDegree (minpoly A x) := by
@@ -230,7 +223,6 @@ theorem two_le_natDegree_iff (int : IsIntegral A x) :
   rw [iff_not_comm, ← natDegree_eq_one_iff, not_le]
   exact ⟨fun h ↦ h.trans_lt one_lt_two, fun h ↦ by linarith only [minpoly.natDegree_pos int, h]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem two_le_natDegree_subalgebra {B} [CommRing B] [Algebra A B] [Nontrivial B]
     {S : Subalgebra A B} {x : B} (int : IsIntegral S x) : 2 ≤ (minpoly S x).natDegree ↔ x ∉ S := by
   rw [two_le_natDegree_iff int, Iff.not]
@@ -251,13 +243,6 @@ theorem eq_X_sub_C_of_algebraMap_inj (a : A) (hf : Function.Injective (algebraMa
   rw [eq_C_of_natDegree_eq_zero hl] at h0 ⊢
   rwa [aeval_C, map_ne_zero_iff _ hf, ← C_ne_zero]
 
-end Ring
-
-section IsDomain
-
-variable [Ring B] [Algebra A B]
-variable {x : B}
-
 /-- If `a` strictly divides the minimal polynomial of `x`, then `x` cannot be a root for `a`. -/
 theorem aeval_ne_zero_of_dvdNotUnit_minpoly {a : A[X]} (hx : IsIntegral A x) (hamonic : a.Monic)
     (hdvd : DvdNotUnit a (minpoly A x)) : Polynomial.aeval x a ≠ 0 := by
@@ -271,6 +256,8 @@ theorem aeval_ne_zero_of_dvdNotUnit_minpoly {a : A[X]} (hx : IsIntegral A x) (ha
   rw [eq_C_of_natDegree_le_zero h, ← Nat.eq_zero_of_le_zero h, ← leadingCoeff, hcm.leadingCoeff,
     C_1]
   exact isUnit_one
+
+section IsDomain
 
 variable [IsDomain A] [IsDomain B]
 

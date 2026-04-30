@@ -96,10 +96,7 @@ open Localization.Construction
 in `W : MorphismProperty C` -/
 def Localization :=
   CategoryTheory.Quotient (Localization.Construction.relations W)
-
-instance : Category (Localization W) := by
-  dsimp only [Localization]
-  infer_instance
+deriving Category
 
 /-- The obvious functor `C ⥤ W.Localization` -/
 def Q : C ⥤ W.Localization where
@@ -192,6 +189,9 @@ def objEquiv : C ≃ W.Localization where
   right_inv := by
     rintro ⟨⟨X⟩⟩
     rfl
+
+instance : W.Q.EssSurj where
+  mem_essImage Y := ⟨(objEquiv W).symm Y, ⟨Iso.refl _⟩⟩
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A `MorphismProperty` in `W.Localization` is satisfied by all
@@ -330,9 +330,7 @@ def unitIso : 𝟭 (W.Localization ⥤ D) ≅ functor W D ⋙ inverse W D :=
     (by
       refine Functor.ext (fun G => ?_) fun G₁ G₂ τ => ?_
       · apply uniq
-        dsimp [Functor]
-        erw [fac]
-        rfl
+        simp [functor, inverse, fac]
       · apply natTrans_hcomp_injective
         ext X
         simp)
@@ -369,7 +367,6 @@ def whiskeringLeftEquivalence : W.Localization ⥤ D ≌ W.FunctorsInverting D w
     ext
     simp only [WhiskeringLeftEquivalence.unitIso_hom, eqToHom_app, eqToHom_refl,
       WhiskeringLeftEquivalence.counitIso_hom, eqToHom_map, eqToHom_trans]
-    rfl
 
 end Construction
 

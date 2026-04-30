@@ -19,7 +19,7 @@ stating that for a subspace `K` of `E` such that `K` admits an orthogonal projec
 `K ⊔ Kᗮ = ⊤`, is a typical example.
 -/
 
-@[expose] public section
+public section
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
@@ -166,7 +166,6 @@ theorem topologicalClosure_eq_top_iff [CompleteSpace E] :
   · rw [← Submodule.triorthogonal_eq_orthogonal, h, Submodule.top_orthogonal_eq_bot]
   · rw [h, Submodule.bot_orthogonal_eq_top]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem orthogonalProjection_apply_eq_linearProjOfIsCompl [K.HasOrthogonalProjection] (x : E) :
     K.orthogonalProjection x =
       K.linearProjOfIsCompl _ Submodule.isCompl_orthogonal_of_hasOrthogonalProjection x := by

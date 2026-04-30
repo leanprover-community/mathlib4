@@ -186,7 +186,6 @@ def NatIso.mapHomologicalComplex {F G : W₁ ⥤ W₂} [F.PreservesZeroMorphisms
   inv_hom_id := by simp only [← NatTrans.mapHomologicalComplex_comp, α.inv_hom_id,
     NatTrans.mapHomologicalComplex_id]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An equivalence of categories induces an equivalences between the respective categories
 of homological complex.
 -/
@@ -215,8 +214,7 @@ theorem map_chain_complex_of (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms] (X :
         rw [← F.map_comp, sq n, Functor.map_zero] := by
   refine HomologicalComplex.ext rfl ?_
   rintro i j (rfl : j + 1 = i)
-  simp only [CategoryTheory.Functor.mapHomologicalComplex_obj_d, of_d, eqToHom_refl, comp_id,
-    id_comp]
+  simp
 
 end ChainComplex
 

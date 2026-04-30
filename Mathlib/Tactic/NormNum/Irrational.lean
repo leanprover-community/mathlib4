@@ -38,9 +38,6 @@ open Qq Lean Elab.Tactic Mathlib.Meta.NormNum
 
 section lemmas
 
-set_option backward.isDefEq.respectTransparency false in
--- TODO: fix non-terminal simp (acting on three goals, with different simp sets)
-set_option linter.flexible false in
 private theorem irrational_rpow_rat_of_not_power {q : ℚ} {a b : ℕ}
     (h : ∀ p : ℚ, q ^ a ≠ p ^ b) (hb : 0 < b) (hq : 0 ≤ q) :
     Irrational (Real.rpow q (a / b : ℚ)) := by
@@ -49,51 +46,23 @@ private theorem irrational_rpow_rat_of_not_power {q : ℚ} {a b : ℕ}
   intro x hx
   absurd h x
   rify
-  rw [hx, ← Real.rpow_mul_natCast, div_mul_cancel₀] <;> simp
-  · lia
-  · assumption
+  rw [hx, ← Real.rpow_mul_natCast (by simpa), div_mul_cancel₀ _ (by simp; lia)]
+  simp
 
-private theorem not_power_nat_pow {n p q : ℕ}
-    (h_coprime : p.Coprime q)
-    (hq : 0 < q)
-    (h : ∀ m, n ≠ m ^ q) (m : ℕ) :
-    n ^ p ≠ m ^ q := by
-  by_cases hn : n = 0
-  · specialize h 0
-    simp [hn, zero_pow hq.ne.symm] at h
+private theorem not_power_nat_pow {n p q : ℕ} (h_coprime : p.Coprime q) (hq : 0 < q)
+    (h : ∀ m, n ≠ m ^ q) (m : ℕ) : n ^ p ≠ m ^ q := by
+  rcases eq_or_ne n 0 with (rfl | hn)
+  · simpa [hq.ne'] using h 0
   contrapose! h
-  apply_fun Nat.factorization at h
-  simp only [Nat.factorization_pow] at h
-  suffices ∃ f : ℕ →₀ ℕ, n.factorization = q • f by
-    obtain ⟨f, hf⟩ := this
-    have : f = (f.prod fun x1 x2 => x1 ^ x2).factorization := by
-      rw [Nat.prod_pow_factorization_eq_self]
-      intro z hz
-      apply_fun Finsupp.support at hf
-      rw [Finsupp.support_smul_eq (by lia)] at hf
-      rw [← hf] at hz
-      exact Nat.prime_of_mem_primeFactors hz
-    have hf0 : f 0 = 0 := by
-      apply_fun (· 0) at hf
-      simp only [Nat.factorization_zero_right, Finsupp.coe_smul, Pi.smul_apply, smul_eq_mul,
-        zero_eq_mul] at hf
-      cases hf
-      · lia
-      · assumption
-    rw [this, ← Nat.factorization_pow] at hf
-    apply Nat.factorization_inj at hf
-    · use f.prod (· ^ ·)
-    · exact hn
-    · simp only [ne_eq, Set.mem_setOf_eq, pow_eq_zero_iff', Finsupp.prod_eq_zero_iff,
-        Finsupp.mem_support_iff, existsAndEq, true_and, and_self, not_and, Decidable.not_not]
-      tauto
-  use n.factorization.mapRange (fun e ↦ e / q) (by simp)
+  let f := n.factorization.mapRange (· / q) <| by simp
+  suffices hf : n.factorization = q • f by
+    have hf0 : f 0 = 0 := by simpa [hq.ne'] using congr($hf 0)
+    refine ⟨f.prod (· ^ ·), Nat.factorization_inj hn (by simp [hf0]) ?_⟩
+    rwa [Nat.factorization_pow, n.factorization_prod_pow_eq_self_of_le_factorization ?_]
+    exact hf ▸ le_self_nsmul zero_le (by lia)
   ext z
-  apply_fun (· z) at h
-  simp only [Finsupp.coe_smul, Pi.smul_apply, smul_eq_mul, Finsupp.mapRange_apply] at h ⊢
-  rw [Nat.mul_div_cancel']
-  apply Nat.Coprime.dvd_of_dvd_mul_left _ ⟨_, h⟩
-  rwa [Nat.coprime_comm]
+  rw [Finsupp.smul_apply, smul_eq_mul, Finsupp.mapRange_apply, Nat.mul_div_cancel']
+  simpa using h_coprime.symm.dvd_of_dvd_mul_left ⟨_, by simpa using congr(Nat.factorization $h z)⟩
 
 private theorem not_power_nat_of_bounds {n k d : ℕ}
     (h_left : k ^ d < n) (h_right : n < (k + 1) ^ d) {m : ℕ} :
@@ -163,11 +132,11 @@ private theorem not_power_rat_of_num {a b d : ℕ}
   rcases d.even_or_odd with (h_even | h_odd)
   · have := not_power_rat_of_num_aux h_coprime (q := -q) ha (by linarith)
     rwa [h_even.neg_pow] at this
-  · contrapose! hq
+  · contrapose hq
     rw [← h_odd.pow_nonneg_iff, ← hq]
     positivity
 
-private theorem irrational_rpow_rat_rat_of_num {x y : ℝ} {x_num x_den y_num y_den k_num : ℕ}
+theorem irrational_rpow_rat_rat_of_num {x y : ℝ} {x_num x_den y_num y_den k_num : ℕ}
     (hx_isNNRat : IsNNRat x x_num x_den)
     (hy_isNNRat : IsNNRat y y_num y_den)
     (hx_coprime : Nat.Coprime x_num x_den)
@@ -197,7 +166,7 @@ private theorem irrational_rpow_rat_rat_of_num {x y : ℝ} {x_num x_den y_num y_
     · apply not_power_nat_pow_of_bounds hy_den_pos hy_coprime hn1 hn2
   · positivity
 
-private theorem irrational_rpow_rat_rat_of_den {x y : ℝ} {x_num x_den y_num y_den k_den : ℕ}
+theorem irrational_rpow_rat_rat_of_den {x y : ℝ} {x_num x_den y_num y_den k_den : ℕ}
     (hx_isNNRat : IsNNRat x x_num x_den)
     (hy_isNNRat : IsNNRat y y_num y_den)
     (hx_coprime : Nat.Coprime x_num x_den)
@@ -213,7 +182,7 @@ private theorem irrational_rpow_rat_rat_of_den {x y : ℝ} {x_num x_den y_num y_
   refine ⟨invertibleOfNonzero (fun _ ↦ ?_), by simp [hx_eq]⟩
   simp_all
 
-private theorem irrational_rpow_nat_rat {x y : ℝ} {x_num y_num y_den k : ℕ}
+theorem irrational_rpow_nat_rat {x y : ℝ} {x_num y_num y_den k : ℕ}
     (hx_isNat : IsNat x x_num)
     (hy_isNNRat : IsNNRat y y_num y_den)
     (hy_coprime : Nat.Coprime y_num y_den)
@@ -222,7 +191,7 @@ private theorem irrational_rpow_nat_rat {x y : ℝ} {x_num y_num y_den k : ℕ}
     Irrational (x ^ y) :=
   irrational_rpow_rat_rat_of_num hx_isNat.to_isNNRat hy_isNNRat (by simp) hy_coprime hn1 hn2
 
-private theorem irrational_sqrt_rat_of_num {x : ℝ} {num den num_k : ℕ}
+theorem irrational_sqrt_rat_of_num {x : ℝ} {num den num_k : ℕ}
     (hx_isNNRat : IsNNRat x num den)
     (hx_coprime : Nat.Coprime num den)
     (hn1 : num_k ^ 2 < num)
@@ -233,7 +202,7 @@ private theorem irrational_sqrt_rat_of_num {x : ℝ} {num den num_k : ℕ}
     hn1 hn2
   exact ⟨Invertible.mk (1/2) (by simp) (by simp), by simp⟩
 
-private theorem irrational_sqrt_rat_of_den {x : ℝ} {num den den_k : ℕ}
+theorem irrational_sqrt_rat_of_den {x : ℝ} {num den den_k : ℕ}
     (hx_isNNRat : IsNNRat x num den)
     (hx_coprime : Nat.Coprime num den)
     (hd1 : den_k ^ 2 < den)
@@ -244,7 +213,7 @@ private theorem irrational_sqrt_rat_of_den {x : ℝ} {num den den_k : ℕ}
     hd1 hd2
   exact ⟨Invertible.mk (1/2) (by simp) (by simp), by simp⟩
 
-private theorem irrational_sqrt_nat {x : ℝ} {n k : ℕ}
+theorem irrational_sqrt_nat {x : ℝ} {n k : ℕ}
     (hx_isNat : IsNat x n)
     (hn1 : k ^ 2 < n)
     (hn2 : n < (k + 1) ^ 2) :

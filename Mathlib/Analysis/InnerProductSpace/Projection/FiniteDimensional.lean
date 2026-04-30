@@ -57,7 +57,6 @@ variable [FiniteDimensional 𝕜 K]
 theorem topologicalClosure_eq_self : K.topologicalClosure = K :=
   K.closed_of_finiteDimensional.submodule_topologicalClosure_eq
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem det_reflection : LinearMap.det K.reflection.toLinearMap = (-1) ^ finrank 𝕜 Kᗮ := by
   by_cases hK : FiniteDimensional 𝕜 Kᗮ
@@ -249,7 +248,6 @@ theorem OrthogonalFamily.isInternal_iff_of_isComplete [DecidableEq ι] {V : ι �
   simp only [DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top, hV.independent,
     true_and, orthogonal_eq_bot_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An orthogonal family of subspaces of `E` satisfies `DirectSum.IsInternal` (that is,
 they provide an internal direct sum decomposition of `E`) if and only if their span has trivial
 orthogonal complement. -/
