@@ -35,7 +35,6 @@ variable {ι : Type*} (b : Basis ι ℤ L)
 
 namespace ZLattice
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_forall_abs_repr_le_norm :
     ∃ (ε : ℝ), 0 < ε ∧ ∀ (x : L), ∀ i, ε * |b.repr x i| ≤ ‖x‖ := by
   wlog H : IsZLattice ℝ L

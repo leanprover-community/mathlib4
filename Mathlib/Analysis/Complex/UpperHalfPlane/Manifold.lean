@@ -31,7 +31,7 @@ open Filter
 
 open scoped Manifold ContDiff MatrixGroups Topology
 
-variable {n : WithTop ℕ∞}
+variable {n : ℕ∞ω}
 
 namespace UpperHalfPlane
 
@@ -83,10 +83,10 @@ lemma mdifferentiable_iff {f : ℍ → ℂ} :
      <| isOpen_upperHalfPlaneSet.mem_nhds hz⟩
 
 lemma contMDiff_num (g : GL (Fin 2) ℝ) : CMDiff n (fun τ : ℍ ↦ num g τ) :=
-  (contMDiff_const.smul contMDiff_coe).add contMDiff_const
+  (contMDiff_const.mul contMDiff_coe).add contMDiff_const
 
 lemma contMDiff_denom (g : GL (Fin 2) ℝ) : CMDiff n (fun τ : ℍ ↦ denom g τ) :=
-  (contMDiff_const.smul contMDiff_coe).add contMDiff_const
+  (contMDiff_const.mul contMDiff_coe).add contMDiff_const
 
 lemma contMDiff_denom_zpow (g : GL (Fin 2) ℝ) (k : ℤ) : CMDiff n (denom g · ^ k : ℍ → ℂ) := by
   intro τ

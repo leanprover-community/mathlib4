@@ -593,7 +593,6 @@ end CommSemiring
 
 variable {k : Type u} {G : Type v} [CommRing k] [Monoid G]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Functor.Linear k (forget₂ (Rep.{w} k G) (ModuleCat.{w} k)) where
   map_smul {X Y} f r := by
     ext
@@ -831,7 +830,7 @@ end MonoidalClosed
 
 section
 
-variable {G : Type v} [Group G] [Fintype G] (A : Rep.{w} k G)
+variable {k : Type u} [Semiring k] {G : Type v} [Group G] [Fintype G] (A : Rep.{w} k G)
 
 /-- Given a representation `A` of a finite group `G`, `norm A` is the representation morphism
 `A ⟶ A` defined by `x ↦ ∑ A.ρ g x` for `g` in `G`. -/
