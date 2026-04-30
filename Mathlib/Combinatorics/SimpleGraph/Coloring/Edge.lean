@@ -47,13 +47,14 @@ open Fintype
 variable {V V' α β : Type*} {G H : SimpleGraph V} {G' : SimpleGraph V'} {n m : ℕ}
 
 variable (G) in
-/-- An `α`-edge-coloring of a simple graph `G` is a coloring of `G.lineGraph`. -/
+/-- An `α`-edge-coloring of a simple graph `G` is an `α`-coloring of its line graph,
+`G.lineGraph`. -/
 abbrev EdgeColoring (α : Type*) :=
   G.lineGraph.Coloring α
 
 /-- `α`-edge-coloring is a special case of `α`-edge-labeling. -/
-instance : Coe (G.EdgeColoring α) (G.EdgeLabeling α) :=
-  ⟨RelHom.toFun⟩
+instance : Coe (G.EdgeColoring α) (G.EdgeLabeling α) where
+  coe := DFunLike.coe
 
 variable (G) in
 /-- Whether a graph can be edge-colored using colors from `α`. -/
@@ -70,16 +71,16 @@ variable (G) in
 This is `⊤` (infinity) iff `G` isn't edge-colorable with finitely many colors.
 If `G` is edge-colorable, then `G.chromaticIndex.toNat` is the `ℕ`-valued chromatic number. -/
 noncomputable def chromaticIndex : ℕ∞ :=
-  ⨅ n ∈ setOf G.EdgeColorable, (n : ℕ∞)
+  ⨅ n, ⨅ _ : G.EdgeColorable n, (n : ℕ∞)
 
 variable (α) in
 /-- The unique coloring of the empty graph. -/
-def EdgeColoring.ofBot : (⊥ : SimpleGraph V).EdgeColoring α :=
+def EdgeColoring.bot : (⊥ : SimpleGraph V).EdgeColoring α :=
   .mk (fun ⟨_, h⟩ ↦ edgeSet_bot ▸ h |>.elim) (lineGraph_bot ▸ · |>.elim)
 
 variable (α) in
 theorem EdgeColorableWith.of_bot : (⊥ : SimpleGraph V).EdgeColorableWith α :=
-  ⟨.ofBot _⟩
+  ⟨.bot _⟩
 
 variable (α) in
 @[simp]
