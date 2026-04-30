@@ -79,7 +79,7 @@ noncomputable def chromaticIndex : ℕ∞ :=
 variable (α) in
 /-- The unique coloring of the empty graph. -/
 @[expose]
-def EdgeColoring.bot : (⊥ : SimpleGraph V).EdgeColoring α :=
+protected def EdgeColoring.bot : (⊥ : SimpleGraph V).EdgeColoring α :=
   .mk (fun ⟨_, h⟩ ↦ edgeSet_bot ▸ h |>.elim) (lineGraph_bot ▸ · |>.elim)
 
 variable (α) in
