@@ -188,33 +188,26 @@ theorem iSupIndep_primaryComponent :
 
 open Classical in
 theorem primaryComponent.map_surjective (M₁ M₂ : Type*)
-    [AddCommGroup M₁] [AddCommGroup M₂] [Module A M₁] [Module A M₂]
-    (hM₁ : IsTorsion A M₁) (hM₂ : IsTorsion A M₂)
+    [AddCommGroup M₁] [AddCommGroup M₂] [Module A M₁] [Module A M₂] (hM₁ : IsTorsion A M₁)
     (P : HeightOneSpectrum A) (φ : M₁ →ₗ[A] M₂) (hf : Surjective φ) :
     Surjective (primaryComponent.map P.asIdeal φ) := by
   rintro ⟨y, hy⟩
   obtain ⟨b, rfl⟩ := hf y
   simp only [primaryComponent_mem, mem_torsionBySet_iff, SetLike.coe_sort_coe, Subtype.forall] at hy
   obtain ⟨n, hn⟩ := hy
-  obtain ⟨h1, h2⟩ := by simpa [isInternal_submodule_iff_iSupIndep_and_iSup_eq_top, eq_top_iff']
-    using isInternal_primaryComponent hM₁
-  specialize h2 b
-  rw [mem_iSup_iff_exists_dfinsupp] at h2
-  obtain ⟨f, hf⟩ := h2
+  have h₁ := by simpa [eq_top_iff'] using iSup_primaryComponent_eq_top hM₁
+  specialize h₁ b
+  rw [mem_iSup_iff_exists_dfinsupp] at h₁
+  obtain ⟨f, hf⟩ := h₁
   use f P
   ext
   simp only [map, LinearMap.codRestrict_apply, LinearMap.domRestrict_apply, ← hf, DFinsupp.sum,
     DFinsupp.lsum_apply_apply, DFinsupp.sumAddHom_apply, LinearMap.toAddMonoidHom_coe,
     subtype_apply, map_sum]
   rw [Finset.sum_eq_add_sum_diff_singleton P _ (by aesop), left_eq_add]
-  obtain ⟨h1, h2⟩ := by simpa [isInternal_submodule_iff_iSupIndep_and_iSup_eq_top]
-    using isInternal_primaryComponent hM₂
-  specialize h1 P
-  simp only [ne_eq, disjoint_iff, Submodule.eq_bot_iff, Submodule.mem_inf] at h1
-  apply h1
-  constructor
+  apply (by simpa [disjoint_iff, Submodule.eq_bot_iff] using iSupIndep_primaryComponent A M₂ P)
   · have := (Finset.sum_eq_add_sum_diff_singleton (s := f.support) P (fun P ↦ φ (f P))
-      (by clear h1; aesop))
+      (by aesop))
     rw [← sub_eq_of_eq_add' this]
     replace hf := by simpa [DFinsupp.sumAddHom_apply, DFinsupp.sum] using congr(φ $hf)
     rw [hf]
