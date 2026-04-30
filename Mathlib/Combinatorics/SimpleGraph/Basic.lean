@@ -964,6 +964,10 @@ variable {G} in
 theorem Adj.not_isIsolated_right (h : G.Adj u v) : ¬G.IsIsolated v :=
   h.symm.not_isIsolated_left
 
+@[simp]
+theorem isIsolated_bot : IsIsolated ⊥ v := by
+  simp [← neighborSet_eq_empty]
+
 theorem eq_bot_iff_isIsolated : G = ⊥ ↔ ∀ v, G.IsIsolated v := by
   simp [eq_bot_iff_forall_not_adj, ← neighborSet_eq_empty, Set.eq_empty_iff_forall_notMem]
 
