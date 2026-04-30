@@ -739,6 +739,18 @@ theorem mem_neighborSet (v w : V) : w ∈ G.neighborSet v ↔ G.Adj v w :=
 
 lemma notMem_neighborSet_self : a ∉ G.neighborSet a := by simp
 
+variable {G} in
+theorem nonempty_neighborSet : (G.neighborSet v).Nonempty ↔ ∃ u, G.Adj v u :=
+  .rfl
+
+variable (v) in
+theorem neighborSet_subset_compl : G.neighborSet v ⊆ {v}ᶜ := by
+  simp
+
+variable (v) in
+theorem neighborSet_ne_univ : G.neighborSet v ≠ .univ :=
+  Set.ne_univ_iff_exists_notMem _ |>.mpr ⟨v, G.notMem_neighborSet_self⟩
+
 @[simp]
 theorem mem_incidenceSet (v w : V) : s(v, w) ∈ G.incidenceSet v ↔ G.Adj v w := by
   simp [incidenceSet]
@@ -782,6 +794,27 @@ theorem neighborSet_compl (G : SimpleGraph V) (v : V) :
   ext w
   simp [and_comm, eq_comm]
 
+variable {G} in
+@[gcongr]
+theorem neighborSet_mono {G' : SimpleGraph V} (hle : G ≤ G') (v : V) :
+    G.neighborSet v ⊆ G'.neighborSet v :=
+  fun _ hadj ↦ hle hadj
+
+@[simp]
+theorem neighborSet_top : neighborSet ⊤ v = {v}ᶜ := by
+  grind [mem_neighborSet, top_adj]
+
+@[simp]
+theorem neighborSet_bot : neighborSet ⊥ v = ∅ := by
+  grind [mem_neighborSet, bot_adj]
+
+theorem eq_bot_iff_neighborSet : G = ⊥ ↔ ∀ v, G.neighborSet v = ∅ := by
+  simp [eq_bot_iff_forall_not_adj, Set.eq_empty_iff_forall_notMem]
+
+variable {G} in
+theorem Adj.nontrivial (hadj : G.Adj u v) : Nontrivial V :=
+  ⟨u, v, hadj.ne⟩
+
 /-- The set of common neighbors between two vertices `v` and `w` in a graph `G` is the
 intersection of the neighbor sets of `v` and `w`. -/
 def commonNeighbors (v w : V) : Set V :=
@@ -818,6 +851,10 @@ theorem commonNeighbors_top_eq {v w : V} :
     (⊤ : SimpleGraph V).commonNeighbors v w = Set.univ \ {v, w} := by
   ext u
   simp [commonNeighbors, eq_comm, not_or]
+
+@[simp]
+theorem commonNeighbors_bot_eq : commonNeighbors ⊥ u v = ∅ := by
+  simp [commonNeighbors]
 
 section Incidence
 
@@ -905,5 +942,29 @@ attribute [simp] IsIsolated.neighborSet_eq_empty
 
 lemma mem_support_iff_not_isIsolated : v ∈ G.support ↔ ¬ G.IsIsolated v := by
   simp [mem_support, IsIsolated]
+
+theorem notMem_support_iff_isIsolated : v ∉ G.support ↔ G.IsIsolated v := by
+  simp [mem_support_iff_not_isIsolated]
+
+variable {G} in
+theorem exists_adj_iff_not_isIsolated : (∃ u, G.Adj v u) ↔ ¬G.IsIsolated v := by
+  simp [IsIsolated]
+
+@[simp]
+theorem IsIsolated.of_subsingleton [Subsingleton V] (G : SimpleGraph V) (v : V) :
+    G.IsIsolated v :=
+  fun _ hadj ↦ not_nontrivial V <| hadj.nontrivial
+
+variable {G} in
+theorem nontrivial_of_not_isIsolated (h : ¬G.IsIsolated v) : Nontrivial V :=
+  exists_adj_iff_not_isIsolated.mpr h |>.elim fun _ ↦ Adj.nontrivial
+
+variable {G} in
+theorem Adj.not_isIsolated_left (h : G.Adj u v) : ¬G.IsIsolated u :=
+  exists_adj_iff_not_isIsolated.mp ⟨_, h⟩
+
+variable {G} in
+theorem Adj.not_isIsolated_right (h : G.Adj u v) : ¬G.IsIsolated v :=
+  h.symm.not_isIsolated_left
 
 end SimpleGraph
