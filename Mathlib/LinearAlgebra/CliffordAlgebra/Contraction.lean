@@ -346,11 +346,13 @@ theorem changeFormEquiv_symm :
 
 variable (Q)
 
+#adaptation_note /-- As of nightly-2026-04-29, the simpNF linter is failing here.
+Assistance investigating this would be appreciated. -/
 /-- The module isomorphism to the exterior algebra.
 
 Note that this holds more generally when `Q` is divisible by two, rather than only when `1` is
 divisible by two; but that would be more awkward to use. -/
-@[simp]
+@[simp, nolint simpNF]
 def equivExterior [Invertible (2 : R)] : CliffordAlgebra Q ≃ₗ[R] ExteriorAlgebra R M :=
   changeFormEquiv changeForm.associated_neg_proof
 

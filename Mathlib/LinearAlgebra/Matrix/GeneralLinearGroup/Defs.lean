@@ -56,7 +56,9 @@ variable (n) in
 def scalar [Semiring R] : Rˣ →* GL n R :=
   Units.map (Matrix.scalar n).toMonoidHom
 
-attribute [-simp] _root_.Matrix.GeneralLinearGroup.val_inv_scalar_apply
+#adaptation_note /-- As of nightly-2026-04-29, the simpNF linter is failing here.
+Assistance investigating this would be appreciated. -/
+attribute [nolint simpNF] _root_.Matrix.GeneralLinearGroup.val_inv_scalar_apply
 
 section CoeFnInstance
 

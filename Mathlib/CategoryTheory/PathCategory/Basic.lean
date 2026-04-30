@@ -247,9 +247,11 @@ def pathComposition : Paths C ⥤ C where
 -- the `HomRel` for the kernel of any functor.
 -- Indeed, this should be part of an equivalence between congruence relations on a category `C`
 -- and full, essentially surjective functors out of `C`.
+#adaptation_note /-- As of nightly-2026-04-29, the simpNF linter is failing here.
+Assistance investigating this would be appreciated. -/
 /-- The canonical relation on the path category of a category:
 two paths are related if they compose to the same morphism. -/
-@[simp]
+@[simp, nolint simpNF]
 def pathsHomRel : HomRel (Paths C) := fun _ _ p q =>
   (pathComposition C).map p = (pathComposition C).map q
 

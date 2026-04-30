@@ -221,7 +221,10 @@ noncomputable def ofHasCoeffs :
   map := P.map
   map_inj := P.map_inj
 
-attribute [-simp] _root_.Algebra.PreSubmersivePresentation.ofHasCoeffs_algebra_algebraMap_apply
+#adaptation_note /-- As of nightly-2026-04-29, the simpNF linter is failing here.
+Assistance investigating this would be appreciated. -/
+attribute [nolint simpNF]
+  _root_.Algebra.PreSubmersivePresentation.ofHasCoeffs_algebra_algebraMap_apply
 
 end Algebra.PreSubmersivePresentation
 

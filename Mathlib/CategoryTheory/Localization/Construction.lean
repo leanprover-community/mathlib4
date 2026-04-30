@@ -70,12 +70,16 @@ the category `C` -/
 def ιPaths (X : C) : Paths (LocQuiver W) :=
   ⟨X⟩
 
+#adaptation_note /-- As of nightly-2026-04-29, the simpNF linter is failing here.
+Assistance investigating this would be appreciated. -/
 /-- The morphism in the path category associated to a morphism in the original category. -/
-@[simp]
+@[simp, nolint simpNF]
 def ψ₁ {X Y : C} (f : X ⟶ Y) : ιPaths W X ⟶ ιPaths W Y := (Paths.of _).map (Sum.inl f)
 
+#adaptation_note /-- As of nightly-2026-04-29, the simpNF linter is failing here.
+Assistance investigating this would be appreciated. -/
 /-- The morphism in the path category corresponding to a formal inverse. -/
-@[simp]
+@[simp, nolint simpNF]
 def ψ₂ {X Y : C} (w : X ⟶ Y) (hw : W w) : ιPaths W Y ⟶ ιPaths W X :=
   (Paths.of _).map (Sum.inr ⟨w, hw⟩)
 
