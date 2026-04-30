@@ -415,7 +415,7 @@ instance mapCycles₁_quotientGroupMk'_epi :
   choose! s hs using QuotientGroup.mk_surjective (s := S)
   have hs₁ : QuotientGroup.mk ∘ s = id := funext hs
   refine ⟨⟨mapDomain s x, ?_⟩, Subtype.ext <| by
-    simp [mapCycles₁_hom, ← mapDomain_comp, hs₁, res, Rep.hom_id (of _)]⟩
+    simp [mapCycles₁_hom, ← mapDomain_comp, hs₁, res, Rep.hom_id (X := of _)]⟩
   simpa [mem_cycles₁_iff, ← (mem_cycles₁_iff _).1 hx, sum_mapDomain_index_inj (f := s)
       (fun x y h => by rw [← hs x, ← hs y, h])]
     using Finsupp.sum_congr fun a b => QuotientGroup.induction_on a fun a => by
@@ -472,14 +472,14 @@ theorem H1CoresCoinfOfTrivial_exact :
       (d₂₁ (A.ofQuotient S)).hom y := by
     have := congr($((mapShortComplexH1 (QuotientGroup.mk' S)
       (resOfQuotientIso A S).inv).comm₁₂.symm) z)
-    simp_all [shortComplexH1, z, ← mapDomain_comp, Prod.map_comp_map, Rep.hom_id (res _ _)]
+    simp_all [shortComplexH1, z, ← mapDomain_comp, Prod.map_comp_map, Rep.hom_id (X := res _ _)]
   let v := x - (d₂₁ _).hom z
 /- We have `C₁(s ∘ π)(v) = ∑ v(g)·s(π(g)) = 0`, since `C₁(π)(v) = dC₁(π)(z) - C₁(π)(dz) = 0` by
 previous assumptions. -/
   have hv : mapDomain (s ∘ QuotientGroup.mk) v = 0 := by
     rw [mapDomain_comp]
     simp only [QuotientGroup.coe_mk', lmapDomain_apply, mapDomain_sub, v] at hz ⊢
-    simp [hz, hy, coe_mapCycles₁ (QuotientGroup.mk' S), Rep.hom_id (of _)]
+    simp [hz, hy, coe_mapCycles₁ (QuotientGroup.mk' S), Rep.hom_id (X := of _)]
   let e : G → G × G := fun (g : G) => (s (g : G ⧸ S), (s (g : G ⧸ S))⁻¹ * g)
   have he : e.Injective := fun x y hxy => by
     obtain ⟨(h₁ : s _ = s _), (h₂ : _ * _ = _ * _)⟩ := Prod.ext_iff.1 hxy
@@ -591,7 +591,7 @@ and `Y - ∑ aᵢ·sᵢ` is a cycle. -/
 /- Moreover, the image of `Y - ∑ aᵢ·sᵢ` in `Z₁(G ⧸ S, A_S)` is `x - ∑ aᵢ·1`, and hence differs from
 `x` by a boundary, since `aᵢ·1 = d(aᵢ·(1, 1))`. -/
   refine (H1π_eq_iff _ _).2 ?_
-  simpa [← hy, mapCycles₁_hom, map_sub, Rep.hom_id (res _ _), ← mapDomain_comp,
+  simpa [← hy, mapCycles₁_hom, map_sub, Rep.hom_id (X := res _ _), ← mapDomain_comp,
     ← mapDomain_mapRange, hY, Function.comp_def, (QuotientGroup.eq_one_iff <| Subtype.val _).2
     (Subtype.prop _)] using Submodule.finsuppSum_mem _ _ _ _ fun _ _ ↦ single_one_mem_boundaries₁ _
 

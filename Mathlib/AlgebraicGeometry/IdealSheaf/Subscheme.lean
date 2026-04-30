@@ -146,7 +146,8 @@ lemma glueDataObjMap_glueDataObjι {U V : X.affineOpens} (h : U ≤ V) :
     Ideal.quotientMap_comp_mk, CommRingCat.ofHom_comp, Spec.map_comp_assoc, glueDataObjι,
     Category.assoc]
   congr 1
-  rw [Iso.eq_inv_comp, IsAffineOpen.isoSpec_hom, CommRingCat.ofHom_hom]
+  rw [Iso.eq_inv_comp, IsAffineOpen.isoSpec_hom]
+  dsimp
   erw [Scheme.Opens.toSpecΓ_SpecMap_presheaf_map_assoc U.1 V.1 h]
   rw [← IsAffineOpen.isoSpec_hom V.2, Iso.hom_inv_id, Category.comp_id]
 
@@ -741,7 +742,7 @@ lemma Hom.toImage_app :
     ← IsIso.eq_comp_inv, ← Functor.map_inv]
   simp only [Hom.comp_base, Opens.map_comp_obj, Category.assoc,
     Iso.inv_hom_id_assoc, eqToHom_op, inv_eqToHom]
-  rw [← reassoc_of% CommRingCat.ofHom_comp, Ideal.Quotient.lift_comp_mk, CommRingCat.ofHom_hom,
+  rw [← reassoc_of% CommRingCat.ofHom_comp, Ideal.Quotient.lift_comp_mk,
     eqToHom_refl, CategoryTheory.Functor.map_id]
   exact (Category.comp_id _).symm
 

@@ -32,7 +32,7 @@ def LightProfinite.fibre : LightProfinite :=
     isCompact_iff_compactSpace.mp (IsClosed.preimage (by fun_prop) isClosed_singleton).isCompact
   of (f ⁻¹' {y})
 
-def LightProfinite.fibreIncl : fibre y f ⟶ X := ⟨⟨{ toFun := Subtype.val }⟩⟩
+def LightProfinite.fibreIncl : fibre y f ⟶ X := ⟨TopCat.ofHom { toFun := Subtype.val }⟩
 
 end
 
@@ -190,9 +190,9 @@ are equal. This can be checked by precomposing with an epimorphism,
 which is given by this morphism. -/
 def cover {S T : LightProfinite} (π : T ⟶ S ⊗ ℕ∪{∞}) :
     (of _ (T ⊕ (pullback (LightProfinite.fibreIncl ∞ (π ≫ snd S ℕ∪{∞}) ≫ π)
-      (LightProfinite.fibreIncl ∞ (π ≫ snd S ℕ∪{∞}) ≫ π)))) ⟶ pullback π π := ⟨⟨{
+      (LightProfinite.fibreIncl ∞ (π ≫ snd S ℕ∪{∞}) ≫ π)))) ⟶ pullback π π := ⟨TopCat.ofHom {
   toFun := coverToFun _ _
-  continuous_toFun := by dsimp [coverToFun]; fun_prop }⟩⟩
+  continuous_toFun := by dsimp [coverToFun]; fun_prop }⟩
 
 open Limits in
 set_option backward.isDefEq.respectTransparency false in
@@ -262,7 +262,7 @@ lemma aux {S T : LightProfinite} (π : T ⟶ S ⊗ ℕ∪{∞}) [Epi π] :
   -- `fibres`.
   have := S'_compactSpace π (by fun_prop)
   let S'π (n : ℕ∪{∞}) : LightProfinite.of (S' π) ⟶ LightProfinite.fibre n (π ≫ snd _ _) :=
-    ⟨⟨{ toFun x := x.val n, continuous_toFun := by refine (continuous_apply _).comp ?_; fun_prop }⟩⟩
+    ⟨TopCat.ofHom ⟨fun x ↦ x.val n, by refine (continuous_apply _).comp ?_; fun_prop⟩⟩
   let y' : LightProfinite.of (S' π) ⟶ S := ConcreteCategory.ofHom ⟨y π, y_continuous π⟩
   let π' := pullback.snd π (y' ▷ ℕ∪{∞})
   let σ' : ℕ∪{∞} → LightProfinite.of (S' π) → pullback π (y' ▷ ℕ∪{∞}) := fun n ↦
@@ -276,8 +276,8 @@ lemma aux {S T : LightProfinite} (π : T ⟶ S ⊗ ℕ∪{∞}) [Epi π] :
   have : CompactSpace (fibres π' σ') := isCompact_iff_compactSpace.mp
     (fibres_closed π' (by fun_prop) σ' (by fun_prop) hσ').isCompact
   refine ⟨LightProfinite.of (S' π), LightProfinite.of (fibres π' σ'), y',
-    ⟨⟨Subtype.val, by fun_prop⟩⟩ ≫ π',
-    ⟨⟨Subtype.val, by fun_prop⟩⟩ ≫ pullback.fst _ _, ?_, ?_, ?_, ?_, ?_⟩
+    ⟨TopCat.ofHom ⟨Subtype.val, by fun_prop⟩⟩ ≫ π',
+    ⟨TopCat.ofHom ⟨Subtype.val, by fun_prop⟩⟩ ≫ pullback.fst _ _, ?_, ?_, ?_, ?_, ?_⟩
   · rw [LightProfinite.epi_iff_surjective]
     refine fibres_surjective _ ?_ _ hσ hσ'
     rw [← LightProfinite.epi_iff_surjective]
