@@ -224,7 +224,7 @@ lemma sup_univ_eq_ciSup [Fintype ι] (f : ι → α) : univ.sup f = ⨆ i, f i :
     (Finset.sup_le fun _ _ => le_ciSup (finite_range _).bddAbove _)
     (ciSup_le' fun _ => Finset.le_sup (mem_univ _))
 
-theorem ciSup_union' [DecidableEq ι] {f : ι → α} {s t : Finset ι} :
+theorem ciSup_union [DecidableEq ι] {f : ι → α} {s t : Finset ι} :
     (⨆ x ∈ s ∪ t, f x) = (⨆ x ∈ s, f x) ⊔ (⨆ x ∈ t, f x) := by
   suffices ∀ st : Finset ι, BddAbove (.range fun x ↦ ⨆ (_ : x ∈ st), f x) by
     simp [ciSup_or', ciSup_sup_eq, this]
