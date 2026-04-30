@@ -184,4 +184,40 @@ theorem of_shortExact_of_isFlasque₁₂ {S : ShortComplex (Sheaf AddCommGrpCat 
       exact CategoryTheory.epi_comp' inferInstance (epi_of_shortExact hS)
     exact CategoryTheory.epi_of_epi (S.g.1.app U) (S.X₃.obj.map i)
 
+/--
+If the unique map from `A` to the terminal object is an epimorphism, then the skyscraper sheaf
+valued in `A` supported at an arbitrary point is a flasque sheaf.
+-/
+theorem isFlasque_skyscraperSheaf {X : TopCat} (p₀ : ↑X) [(U : Opens ↑X) → Decidable (p₀ ∈ U)]
+    {C : Type*} [Category* C] (A : C) [HasTerminal C]
+    (h : Epi <| terminalIsTerminal.from A) :
+    (skyscraperSheaf p₀ A).IsFlasque := by
+  constructor
+  intro U V r
+  by_cases h1 : p₀ ∈ unop U
+  · by_cases h2 : p₀ ∈ unop V
+    · simp_all only [skyscraperSheaf, skyscraperPresheaf_obj, skyscraperPresheaf_map, ↓reduceDIte]
+      infer_instance
+    · simp_all only [skyscraperSheaf, skyscraperPresheaf_obj, skyscraperPresheaf_map, ↓reduceDIte]
+      convert h <;> simp_all
+  · have h2 : p₀ ∉ unop V := fun hV => h1 (r.unop.le hV)
+    have hU : IsTerminal ((skyscraperSheaf p₀ A).obj.obj U) :=
+      show IsTerminal (if p₀ ∈ unop U then A else ⊤_ C) from if_neg h1 ▸ terminalIsTerminal
+    have hV : IsTerminal ((skyscraperSheaf p₀ A).obj.obj V) :=
+      show IsTerminal (if p₀ ∈ unop V then A else ⊤_ C) from if_neg h2 ▸ terminalIsTerminal
+    have := isIso_of_isTerminal hU hV ((skyscraperSheaf p₀ A).obj.map r)
+    infer_instance
+
+
+/--
+If the target category has a zero object, then any skyscraper sheaf valued in this category is a
+flasque sheaf.
+-/
+theorem isFlasque_skyscraperSheaf_zeroObject {X : TopCat} (p₀ : ↑X)
+    [(U : Opens ↑X) → Decidable (p₀ ∈ U)] {C : Type*} [Category* C]
+    (A : C) [HasZeroObject C] : (skyscraperSheaf p₀ A).IsFlasque :=
+  isFlasque_skyscraperSheaf p₀ A
+    (((isZero_zero C).of_iso HasZeroObject.zeroIsoTerminal.symm).epi _)
+
+
 end TopCat.Sheaf.IsFlasque
