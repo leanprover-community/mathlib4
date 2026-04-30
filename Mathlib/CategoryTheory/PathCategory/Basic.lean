@@ -255,6 +255,8 @@ two paths are related if they compose to the same morphism. -/
 def pathsHomRel : HomRel (Paths C) := fun _ _ p q =>
   (pathComposition C).map p = (pathComposition C).map q
 
+attribute [nolint simpNF] pathsHomRel.eq_1
+
 /-- The functor from a category to the canonical quotient of its path category. -/
 @[simps]
 def toQuotientPaths : C ⥤ Quotient (pathsHomRel C) where

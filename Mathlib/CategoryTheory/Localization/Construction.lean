@@ -76,12 +76,16 @@ Assistance investigating this would be appreciated. -/
 @[simp, nolint simpNF]
 def ψ₁ {X Y : C} (f : X ⟶ Y) : ιPaths W X ⟶ ιPaths W Y := (Paths.of _).map (Sum.inl f)
 
+attribute [nolint simpNF] ψ₁.eq_1
+
 #adaptation_note /-- As of nightly-2026-04-29, the simpNF linter is failing here.
 Assistance investigating this would be appreciated. -/
 /-- The morphism in the path category corresponding to a formal inverse. -/
 @[simp, nolint simpNF]
 def ψ₂ {X Y : C} (w : X ⟶ Y) (hw : W w) : ιPaths W Y ⟶ ιPaths W X :=
   (Paths.of _).map (Sum.inr ⟨w, hw⟩)
+
+attribute [nolint simpNF] ψ₂.eq_1
 
 /-- The relations by which we take the quotient in order to get the localized category. -/
 inductive relations : HomRel (Paths (LocQuiver W))
