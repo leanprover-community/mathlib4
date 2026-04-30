@@ -736,6 +736,12 @@ theorem comp_restrict (f : R →+* S) (s' : σR) (s : σS) (h : ∀ x ∈ s', f 
     (SubsemiringClass.subtype s).comp (f.restrict s' s h) = f.comp (SubsemiringClass.subtype s') :=
   rfl
 
+@[simp]
+theorem domRestrict_comp_codRestrict (g : S →+* T) (f : R →+* S) (p : Subsemiring S)
+    (h : ∀ c, f c ∈ p) :
+    (g.domRestrict p).comp (f.codRestrict p h) = g.comp f :=
+  rfl
+
 /-- Restriction of a ring homomorphism to its range interpreted as a subsemiring.
 
 This is the bundled version of `Set.rangeFactorization`. -/
