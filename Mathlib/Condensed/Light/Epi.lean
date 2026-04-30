@@ -141,7 +141,7 @@ instance : (lim (J := Discrete ℕ) (C := LightCondMod R)).PreservesEpimorphisms
       intro ⟨n⟩
       simp
     rw [this]
-    simp only [lim_obj, epi_comp_iff_of_epi, MorphismProperty.epimorphisms.iff]
+    dsimp
     infer_instance
 
 end LightCondensed
