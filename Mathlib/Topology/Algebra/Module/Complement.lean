@@ -114,13 +114,11 @@ protected theorem IsTopCompl.symm [ContinuousSub M] (h : IsTopCompl p q) : IsTop
     rw [h.isCompl.projection_eq_id_sub_projection]
     exact continuous_id.sub h.continuous_projection
 
+open LinearMap in
 theorem _root_.ContinuousLinearMap.IsIdempotentElem.isTopCompl {f : M →L[R] M}
-    (hf : IsIdempotentElem f) :
-    IsTopCompl f.range f.ker := by
-  rw [← isIdempotentElem_toLinearMap_iff] at hf
-  refine ⟨LinearMap.IsIdempotentElem.isCompl hf, ?_⟩
-  rw [← LinearMap.IsIdempotentElem.eq_isCompl_projection hf]
-  exact f.continuous
+    (hf : IsIdempotentElem f) : IsTopCompl f.range f.ker where
+  isCompl := hf.toLinearMap.isCompl
+  continuous_projection := hf.toLinearMap.eq_isCompl_projection ▸ f.continuous
 
 theorem isTopCompl_bot_top :
     IsTopCompl (⊥ : Submodule R M) ⊤ := by
@@ -262,23 +260,29 @@ theorem IsTopCompl.projection_add_projection_eq_self [ContinuousSub M]
   h.isCompl.projection_add_projection_eq_self x
 
 theorem IsTopCompl.projection_add_projection_eq_id [IsTopologicalAddGroup M] (h : IsTopCompl p q) :
-    h.projection + h.symm.projection = .id R M := by
-  ext
-  apply h.projection_add_projection_eq_self
+    h.projection + h.symm.projection = .id R M :=
+  ContinuousLinearMap.ext h.projection_add_projection_eq_self
 
 lemma IsTopCompl.projection_eq_self_sub_projection [ContinuousSub M] (h : IsTopCompl p q) (x : M) :
     h.symm.projection x = x - h.projection x := by
   rw [eq_sub_iff_add_eq, projection_add_projection_eq_self]
 
 lemma IsTopCompl.projection_eq_id_sub_projection [IsTopologicalAddGroup M] (h : IsTopCompl p q) :
-    h.symm.projection = .id R M - h.projection := by
-  ext
-  apply h.projection_eq_self_sub_projection
+    h.symm.projection = .id R M - h.projection :=
+  ContinuousLinearMap.ext h.projection_eq_self_sub_projection
 
 /-- The projection to `p` along `q` of `x` equals `x` if and only if `x ∈ p`. -/
 @[simp] lemma IsTopCompl.projection_eq_self_iff [ContinuousSub M] (h : IsTopCompl p q) (x : M) :
     h.projection x = x ↔ x ∈ p :=
   h.isCompl.projection_eq_self_iff x
+
+theorem _root_.ContinuousLinearMap.IsIdempotentElem.eq_isTopCompl_projection
+    {f : M →L[R] M} (hf : IsIdempotentElem f) : f = hf.isTopCompl.projection :=
+  coe_inj.mp <| LinearMap.IsIdempotentElem.eq_isCompl_projection hf.toLinearMap
+
+theorem _root_.ContinuousLinearMap.isIdempotentElem_iff_eq_isTopCompl_projection_range_ker
+    {f : M →L[R] M} : IsIdempotentElem f ↔ ∃ h : IsTopCompl f.range f.ker, f = h.projection :=
+  ⟨fun h ↦ ⟨_, h.eq_isTopCompl_projection⟩, fun ⟨hf, h⟩ ↦ h.symm ▸ hf.isIdempotentElem_projection⟩
 
 end projection
 
