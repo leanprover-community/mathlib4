@@ -88,17 +88,17 @@ lemma toOfQuot_comp_mapOfQuot (f : A ⟶ B) {I : Ideal A} {J : Ideal B}
 
 /-- The quotient of a local Artinian algebra by the `n`-th power of its maximal ideal,
 viewed as an object in `BaseCat`. -/
-abbrev infinitesimalNeighborhood (n : ℕ) [NeZero n] (A : BaseCat.{w} Λ k) : BaseCat Λ k :=
+abbrev infinitesimal (n : ℕ) [NeZero n] (A : BaseCat.{w} Λ k) : BaseCat Λ k :=
   A.ofQuot (maximalIdeal A ^ n)
 
 /-- The canonical quotient morphism from `A` to its infinitesimal neighborhood in `BaseCat`. -/
-abbrev toInfinitesimalNeighborhood (n : ℕ) [NeZero n] (A : BaseCat.{w} Λ k) :
-    A ⟶ A.infinitesimalNeighborhood n := toOfQuot ..
+abbrev toInfinitesimal (n : ℕ) [NeZero n] (A : BaseCat.{w} Λ k) : A ⟶ A.infinitesimal n :=
+  toOfQuot ..
 
 /-- The morphism between infinitesimal neighborhoods induced by a morphism in `BaseCat`. -/
-abbrev mapInfinitesimalNeighborhood (m n : ℕ) [NeZero m] [NeZero n] (hmn : n ≤ m) (f : A ⟶ B) :
-    A.infinitesimalNeighborhood m ⟶ B.infinitesimalNeighborhood n :=
-  ObjectProperty.homMk (LocAlgCat.mapInfinitesimalNeighborhood m n hmn f.hom)
+abbrev mapInfinitesimal (m n : ℕ) [NeZero m] [NeZero n] (hmn : n ≤ m) (f : A ⟶ B) :
+    A.infinitesimal m ⟶ B.infinitesimal n :=
+  ObjectProperty.homMk (LocAlgCat.mapInfinitesimal m n hmn f.hom)
 
 /-- The special fiber of `A` over `Λ` when `Λ` is a local ring, defined as the quotient by
 the extended maximal ideal of `Λ`, viewed as an object in `BaseCat`. -/

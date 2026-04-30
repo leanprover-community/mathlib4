@@ -10,6 +10,8 @@ public import Mathlib.Algebra.Category.LocAlgCat.Basic
 public import Mathlib.RingTheory.Ideal.Cotangent
 public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 public import Mathlib.RingTheory.AdicCompletion.Functoriality
+public import Mathlib.RingTheory.Kaehler.Basic
+public import Mathlib.RingTheory.Extension.Cotangent.Basic
 
 /-!
 # Cotangent Spaces in `LocAlgCat`
@@ -40,7 +42,7 @@ noncomputable section
 
 universe w v u
 
-open IsLocalRing Function TensorProduct CategoryTheory
+open IsLocalRing Function TensorProduct CategoryTheory KaehlerDifferential Algebra
 
 namespace LocAlgCat
 
@@ -189,7 +191,150 @@ theorem surjective_of_surjective_mapCotangent [IsPrecomplete (maximalIdeal A) A]
     Ideal.map_coe, map_eq, ← residue_eq_zero_iff, map_sub, sub_eq_zero, ← hx, ← AlgHom.comp_apply,
     f.residue_comp]⟩
 
+/-- The relative cotangent space for an object in `LocAlgCat`. -/
+@[stacks 06GY]
+abbrev RelCotangent (A : LocAlgCat.{w} Λ k) : Type _ := k ⊗[A] Ω[A⁄Λ]
+
+/-- The canonical `k`-linear map between relative cotangent spaces
+induced by a morphism in `LocAlgCat`. -/
+def mapRelCotangent (f : A ⟶ B) : A.RelCotangent →ₗ[k] B.RelCotangent :=
+  letI := f.relativeAlgebra
+  haveI := f.isScalarTower'_relativeAlgebra
+  letI F : k →ₗ[k] Ω[A⁄Λ] →ₗ[A] B.RelCotangent := .mk₂' k A (fun (r : k) (ω : Ω[A⁄Λ]) ↦
+    r ⊗ₜ[B] map Λ Λ A B ω) (fun _ _ _ ↦ by simp only [add_tmul])
+    (fun _ _ _ ↦ by simp only [smul_tmul']) (fun _ _ _ ↦ by simp only [map_add, tmul_add])
+    (fun _ _ _ ↦ by simp only [map_smul, tmul_smul])
+  TensorProduct.AlgebraTensorModule.lift F
+
+lemma mapRelCotangent_tmul (f : A ⟶ B) (r : k) (ω : Ω[A⁄Λ]) :
+    letI := f.relativeAlgebra
+    mapRelCotangent f (r ⊗ₜ[A] ω) = r ⊗ₜ[B] map Λ Λ A B ω := rfl
+
+/-- The canonical `k`-linear map from cotangent space to relative cotangent space. -/
+def cotangentComplex (A : LocAlgCat.{w} Λ k) : CotangentSpace A →ₗ[k] RelCotangent A where
+  toFun x := kerCotangentToTensor Λ A k <| Ideal.Cotangent.equivOfEq (maximalIdeal A)
+    (RingHom.ker (algebraMap A k)) (by rw [← ker_residue, ← RingHom.ker_coe_toRingHom, residue,
+      IsScalarTower.coe_toAlgHom]) x
+  map_add' := by simp
+  map_smul' r x := by
+    obtain ⟨r, rfl⟩ := A.residue_surjective r
+    obtain ⟨x, rfl⟩ := (maximalIdeal A).toCotangent_surjective x
+    rw [residue_smul_cotangent, ← map_smul, Ideal.Cotangent.equivOfEq_toCotangent,
+      kerCotangentToTensor_toCotangent, RingHom.id_apply, Ideal.Cotangent.equivOfEq_toCotangent,
+      kerCotangentToTensor_toCotangent, map_smul, SetLike.val_smul, smul_eq_mul]
+    change 1 ⊗ₜ[A] (D Λ A) (r * x.val) = A.residue r • 1 ⊗ₜ[A] (D Λ A) x.val
+    rw [Derivation.leibniz, tmul_add, tmul_smul, smul_tmul', Algebra.smul_def,
+      ← smul_tmul, Algebra.smul_def, ← residue_toRingHom, RingHom.coe_coe,
+      residue_eq_zero_iff.mpr x.prop, zero_mul, zero_tmul, add_zero, smul_tmul', smul_eq_mul]
+
+@[simp]
+lemma cotangentComplex_toCotangent (A : LocAlgCat.{w} Λ k) (a : maximalIdeal A) :
+    A.cotangentComplex ((maximalIdeal A).toCotangent a) = 1 ⊗ₜ (D Λ A) a := rfl
+
+/-- The canonical extension of `k` associated to the object `A`, defined via
+its surjective residue map. -/
+abbrev extension (A : LocAlgCat.{w} Λ k) : Extension Λ k :=
+  (Extension.ofSurjective A.residue A.residue_surjective)
+
+namespace Extension
+
+@[simp]
+lemma residue_σ_apply (A : LocAlgCat.{w} Λ k) (r : k) :
+    A.residue (A.extension.σ r) = r := A.extension.algebraMap_σ r
+
+/-- The canonical `Λ`-algebra equivalence between the underlying ring of
+the extension associated to `A` and `A` itself. -/
+abbrev ringAlgEquiv (A : LocAlgCat.{w} Λ k) : A.extension.Ring ≃ₐ[Λ] A :=
+  AlgEquiv.refl
+
+lemma residue_ringAlgEquiv_apply (x : A.extension.Ring) : A.residue (ringAlgEquiv A x) =
+    algebraMap A.extension.Ring k x := rfl
+
+lemma ringAlgEquiv_apply_smul (a : A.extension.Ring) (r : k) : ringAlgEquiv A a • r = a • r := by
+  rw [Algebra.smul_def, Algebra.smul_def, ← residue_apply, residue_ringAlgEquiv_apply]
+
+/-- The canonical linear equivalence between the module of Kähler differentials of
+the extension ring associated to `A` and that of `A`. -/
+abbrev kaehlerDifferentialEquiv (A : LocAlgCat.{w} Λ k) :
+    Ω[A.extension.Ring⁄Λ] ≃ₗ[Λ] Ω[A⁄Λ] := LinearEquiv.refl Λ _
+
+lemma kaehlerDifferentialEquiv_smul (ω : Ω[A.extension.Ring⁄Λ]) (a : A.extension.Ring) :
+    kaehlerDifferentialEquiv A (a • ω) =
+      ringAlgEquiv A a • Extension.kaehlerDifferentialEquiv A ω := rfl
+
+lemma kaehlerDifferentialEquiv_symm_smul (ω : Ω[A⁄Λ]) (a : A) :
+    (kaehlerDifferentialEquiv A).symm (a • ω) =
+      (ringAlgEquiv A).symm a • (Extension.kaehlerDifferentialEquiv A).symm ω := rfl
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The canonical `k`-linear equivalence between the cotangent space of
+the extension associated to `A` and the cotangent space of `A`. -/
+def cotangentEquiv (A : LocAlgCat.{w} Λ k) : A.extension.Cotangent ≃ₗ[k] CotangentSpace A where
+  toFun x := Ideal.Cotangent.equivOfEq A.extension.ker (maximalIdeal A) (by
+    change RingHom.ker A.residue = _; simp) <| A.extension.cotangentEquivCotangentKer x
+  map_add' := by simp
+  map_smul' r x := by
+    simp only [Extension.cotangentEquivCotangentKer_apply, Extension.Cotangent.val_smul,
+      RingHom.id_apply]
+    rcases A.extension.ker.toCotangent_surjective x.val with ⟨y, hy⟩
+    nth_rw 2 [← residue_σ_apply A r]
+    rw [← hy, residue_smul_cotangent, ← map_smul, Ideal.Cotangent.equivOfEq_toCotangent,
+      Ideal.Cotangent.equivOfEq_toCotangent, ← map_smul, Ideal.toCotangent_eq]
+    simp
+  invFun x := A.extension.cotangentEquivCotangentKer.symm <|
+    (Ideal.Cotangent.equivOfEq A.extension.ker (maximalIdeal A) (by
+      change RingHom.ker A.residue = _; simp)).symm x
+  left_inv _ := by simp only [LinearEquiv.symm_apply_apply]
+  right_inv _ := by simp only [LinearEquiv.apply_symm_apply]
+
+@[simp]
+lemma cotangentEquiv_mk_apply (A : LocAlgCat.{w} Λ k) (x : A.extension.ker) :
+    Extension.cotangentEquiv A (Extension.Cotangent.mk x) =
+      (maximalIdeal A).toCotangent ⟨x.val, by rw [← ker_residue]; exact x.prop⟩ := rfl
+
+/-- Implementation details of `cotangentSpaceEquiv`. -/
+private def cotangentSpaceEquivAux (A : LocAlgCat.{w} Λ k) :
+    k →ₗ[k] Ω[A.extension.Ring⁄Λ] →ₗ[A.extension.Ring] A.RelCotangent := .mk₂' k A.extension.Ring
+  (fun (r : k) (ω : Ω[A.extension.Ring⁄Λ]) ↦ r ⊗ₜ[A] Extension.kaehlerDifferentialEquiv A ω)
+  (fun _ _ _ ↦ by simp only [add_tmul]) (fun _ _ _ ↦ by simp only [smul_tmul'])
+  (fun _ _ _ ↦ by simp only [← tmul_add, ← map_add]) (fun _ _ _ ↦ by
+    simp only [kaehlerDifferentialEquiv_smul, tmul_smul, smul_tmul', ← ringAlgEquiv_apply_smul])
+
+/-- Implementation details of `cotangentSpaceEquiv`. -/
+private def cotangentSpaceEquivAux' (A : LocAlgCat.{w} Λ k) :
+    k →ₗ[k] Ω[A⁄Λ] →ₗ[A] A.extension.CotangentSpace := .mk₂' k A
+  (fun (r : k) (ω : Ω[A⁄Λ]) ↦ r ⊗ₜ[A.extension.Ring] (Extension.kaehlerDifferentialEquiv A).symm ω)
+  (fun _ _ _ ↦ by simp only [add_tmul]) (fun _ _ _ ↦ by simp only [smul_tmul'])
+  (fun _ _ _ ↦ by simp only [← tmul_add, ← map_add]) (fun a r ω ↦ by
+    simp only [kaehlerDifferentialEquiv_symm_smul, tmul_smul, smul_tmul']
+    nth_rw 2 [← (ringAlgEquiv A).apply_symm_apply a]
+    rw [ringAlgEquiv_apply_smul])
+
+/-- The canonical linear equivalence between the cotangent space of
+the extension associated to `A` and the relative cotangent space of `A`. -/
+@[no_expose]
+def cotangentSpaceEquiv (A : LocAlgCat.{w} Λ k) :
+    A.extension.CotangentSpace ≃ₗ[k] A.RelCotangent := .ofLinear
+  (TensorProduct.AlgebraTensorModule.lift (Extension.cotangentSpaceEquivAux A))
+  (TensorProduct.AlgebraTensorModule.lift (Extension.cotangentSpaceEquivAux' A))
+  (by ext; simp [cotangentSpaceEquivAux, cotangentSpaceEquivAux'])
+  (by ext; simp [cotangentSpaceEquivAux, cotangentSpaceEquivAux'])
+
+@[simp]
+lemma cotangentSpaceEquiv_tmul (r : k) (ω : Ω[A.extension.Ring⁄Λ]) :
+    cotangentSpaceEquiv A (r ⊗ₜ ω) = r ⊗ₜ (kaehlerDifferentialEquiv A) ω := by
+  simp [cotangentSpaceEquiv, cotangentSpaceEquivAux]
+
+@[simp]
+lemma cotangentSpaceEquiv_symm_tmul (r : k) (ω : Ω[A⁄Λ]) :
+    (cotangentSpaceEquiv A).symm (r ⊗ₜ ω) = r ⊗ₜ (kaehlerDifferentialEquiv A).symm ω := by
+  simp [cotangentSpaceEquiv, cotangentSpaceEquivAux']
+
+end Extension
+
 section IsLocalRing
+
+open LinearMap
 
 variable [IsLocalRing Λ] [Algebra.IsIntegral Λ k]
 
@@ -207,34 +352,33 @@ instance : IsScalarTower Λ (ResidueField Λ) (CotangentSpace A) := .of_algebraM
 theorem surjective_mapCotangent_toSpecialFiber : Surjective (mapCotangent A.toSpecialFiber) :=
   surjective_mapCotangent_toOfQuot _
 
-/-- The canonical `k`-linear map from the base-changed cotangent space of `Λ`
-to the cotangent space of `A`, induced by the algebra structure map. -/
+/-- The canonical linear map from the cotangent space of `Λ` to the cotangent space of `A`. -/
 def baseCotangentMap (A : LocAlgCat.{w} Λ k) :
-    k ⊗[ResidueField Λ] CotangentSpace Λ →ₗ[k] CotangentSpace A :=
-  letI baseMap : CotangentSpace Λ →ₗ[ResidueField Λ] CotangentSpace A :=
-    ((maximalIdeal Λ).mapCotangent (maximalIdeal A) (Algebra.ofId Λ A) (by rw [← Ideal.comap_coe,
-      Algebra.toRingHom_ofId, comap_algebraMap_maximalIdeal])).extendScalarsOfSurjective
-    IsLocalRing.residue_surjective
-  LinearMap.liftBaseChange k baseMap
+    CotangentSpace Λ →ₗ[ResidueField Λ] CotangentSpace A :=
+  ((maximalIdeal Λ).mapCotangent (maximalIdeal A) (Algebra.ofId Λ A) (by rw [← Ideal.comap_coe,
+    Algebra.toRingHom_ofId, comap_algebraMap_maximalIdeal])).extendScalarsOfSurjective
+      IsLocalRing.residue_surjective
 
 @[simp]
-lemma baseCotangentMap_tmul (r : k) (a : CotangentSpace Λ) : A.baseCotangentMap (r ⊗ₜ a) =
-    r • ((maximalIdeal Λ).mapCotangent (maximalIdeal A) (Algebra.ofId Λ A) (by
-      rw [← Ideal.comap_coe, Algebra.toRingHom_ofId, comap_algebraMap_maximalIdeal]) a) := rfl
+lemma baseCotangentMap_toCotangent (x : maximalIdeal Λ) :
+    A.baseCotangentMap ((maximalIdeal Λ).toCotangent x) =
+      (maximalIdeal A).toCotangent ⟨algebraMap Λ A x, by
+        have := isLocalHom_algebraMap A
+        rw [← Ideal.mem_comap, maximalIdeal_comap]; exact x.prop⟩ := rfl
 
-@[simp]
-lemma mapCotangent_baseCotangentMap_apply (f : A ⟶ B) (z : k ⊗[ResidueField Λ] CotangentSpace Λ) :
-    mapCotangent f (A.baseCotangentMap z) = B.baseCotangentMap z := by
+lemma mapCotangent_comp_liftBaseChange_baseCotangentMap (f : A ⟶ B) :
+    (mapCotangent f).comp (liftBaseChange k A.baseCotangentMap) =
+      liftBaseChange k B.baseCotangentMap := LinearMap.ext fun z ↦ by
   induction z using TensorProduct.induction_on with
   | zero => simp
   | tmul r a =>
     rcases (maximalIdeal Λ).toCotangent_surjective a with ⟨a, rfl⟩
     simp
-  | add x y hx hy => simp [hx, hy]
+  | add x y hx hy => simp_all
 
 open Submodule in
-theorem range_baseCotangentMap :
-    A.baseCotangentMap.range = (mapCotangent A.toSpecialFiber).ker := by
+theorem range_liftBaseChange_baseCotangentMap :
+    (liftBaseChange k A.baseCotangentMap).range = (mapCotangent A.toSpecialFiber).ker := by
   refine le_antisymm (fun x hx ↦ ?_) (fun x hx ↦ ?_)
   · rcases (maximalIdeal A).toCotangent_surjective x with ⟨x, rfl⟩
     rcases hx with ⟨y, hy⟩
@@ -270,9 +414,9 @@ theorem range_baseCotangentMap :
       simpa only [← SetLike.mk_smul_mk _ _ _ (map_maximalIdeal_le _ hx), map_smul,
         ← residue_smul_cotangent] using smul_mem _ _ (ihx hx)
 
-theorem exact_baseCotangentMap_mapCotangent_toSpecialFiber :
-    Exact A.baseCotangentMap (mapCotangent A.toSpecialFiber) :=
-  LinearMap.exact_iff.mpr A.range_baseCotangentMap.symm
+theorem exact_liftBaseChange_baseCotangentMap_mapCotangent_toSpecialFiber :
+    Exact (liftBaseChange k A.baseCotangentMap) (mapCotangent A.toSpecialFiber) :=
+  LinearMap.exact_iff.mpr A.range_liftBaseChange_baseCotangentMap.symm
 
 @[stacks 06S3 "(3) => (2)"]
 theorem surjective_mapCotangent_of_surjective_mapCotangent_mapSpecialFiber
@@ -284,9 +428,11 @@ theorem surjective_mapCotangent_of_surjective_mapCotangent_mapSpecialFiber
     mapCotangent_comp, LinearMap.comp_apply] at hx
   have h_ker : y - mapCotangent f x ∈ LinearMap.ker (mapCotangent B.toSpecialFiber) := by
     rw [LinearMap.mem_ker, map_sub, hx, sub_self]
-  rw [← B.range_baseCotangentMap, LinearMap.mem_range] at h_ker
+  rw [← B.range_liftBaseChange_baseCotangentMap, LinearMap.mem_range] at h_ker
   rcases h_ker with ⟨z, hz⟩
-  exact ⟨x + A.baseCotangentMap z, by simp [hz]⟩
+  use x + liftBaseChange k A.baseCotangentMap z
+  rw [map_add, ← LinearMap.comp_apply, mapCotangent_comp_liftBaseChange_baseCotangentMap, hz,
+    add_sub_cancel]
 
 end IsLocalRing
 

@@ -28,7 +28,7 @@ import Mathlib.RingTheory.HopkinsLevitzki
 * `LocAlgCat.mapOfQuot` : The canonical morphism `A.ofQuot I ⟶ B.ofQuot J` induced
   by a morphism `f : A ⟶ B`. This is the categorical counterpart to `Ideal.quotientMapₐ`.
 
-* `LocAlgCat.infinitesimalNeighborhood` : The object in `LocAlgCat` obtained from the quotient by
+* `LocAlgCat.infinitesimal` : The object in `LocAlgCat` obtained from the quotient by
   the `n`-th power of the maximal ideal.
 
 * `LocAlgCat.specialFiber` : The special fiber of an object over a local base ring, defined as
@@ -218,23 +218,22 @@ lemma toOfQuot_comp_ofQuotKerIsoOfSurjective_hom {f : A ⟶ B} (h : Surjective f
 
 /-- The quotient of a local algebra by the `n`-th power of its maximal ideal.
 Geometrically, this represents an infinitesimal neighborhood of the closed point. -/
-abbrev infinitesimalNeighborhood (n : ℕ) [NeZero n] (A : LocAlgCat.{w} Λ k) : LocAlgCat Λ k :=
+abbrev infinitesimal (n : ℕ) [NeZero n] (A : LocAlgCat.{w} Λ k) : LocAlgCat Λ k :=
   A.ofQuot (maximalIdeal A ^ n)
 
 /-- The canonical quotient morphism from `A` to its infinitesimal neighborhood. -/
-abbrev toInfinitesimalNeighborhood (n : ℕ) [NeZero n] (A : LocAlgCat.{w} Λ k) :
-    A ⟶ A.infinitesimalNeighborhood n :=
+abbrev toInfinitesimal (n : ℕ) [NeZero n] (A : LocAlgCat.{w} Λ k) : A ⟶ A.infinitesimal n :=
   toOfQuot ..
 
 /-- The morphism between infinitesimal neighborhoods induced by a morphism in `LocAlgCat`. -/
-abbrev mapInfinitesimalNeighborhood (m n : ℕ) [NeZero m] [NeZero n] (hmn : n ≤ m) (f : A ⟶ B) :
-    A.infinitesimalNeighborhood m ⟶ B.infinitesimalNeighborhood n :=
+abbrev mapInfinitesimal (m n : ℕ) [NeZero m] [NeZero n] (hmn : n ≤ m) (f : A ⟶ B) :
+    A.infinitesimal m ⟶ B.infinitesimal n :=
   mapOfQuot f (le_trans (Ideal.pow_le_pow_right hmn) (f.comap_maximalIdeal_eq ▸
       Ideal.le_comap_pow f.toAlgHom n))
 
-lemma toInfinitesimalNeighborhood_comp_map (m n : ℕ) [NeZero m] [NeZero n] (hmn : n ≤ m)
-    (f : A ⟶ B) : A.toInfinitesimalNeighborhood m ≫ mapInfinitesimalNeighborhood m n hmn f =
-      f ≫ B.toInfinitesimalNeighborhood n := by simp
+lemma toInfinitesimal_comp_map (m n : ℕ) [NeZero m] [NeZero n] (hmn : n ≤ m)
+    (f : A ⟶ B) : A.toInfinitesimal m ≫ mapInfinitesimal m n hmn f =
+      f ≫ B.toInfinitesimal n := by simp
 
 /-- The special fiber of `A` over `Λ` when `Λ` is a local ring, defined as the quotient by
 the extended maximal ideal of `Λ`, viewed as an object in `LocAlgCat`. -/
@@ -251,10 +250,10 @@ abbrev mapSpecialFiber [IsLocalRing Λ] [Algebra.IsIntegral Λ k] (f : A ⟶ B) 
   mapOfQuot f (by rw [Ideal.map_le_iff_le_comap, ← Ideal.comap_coe f.toAlgHom,
     Ideal.comap_comap, AlgHom.comp_algebraMap, ← Ideal.map_le_iff_le_comap])
 
-lemma toInfinitesimalNeighborhood_comp_mapInfinitesimalNeighborhood_toSpecialFiber [IsLocalRing Λ]
+lemma toInfinitesimal_comp_mapInfinitesimal_toSpecialFiber [IsLocalRing Λ]
     [Algebra.IsIntegral Λ k] (n : ℕ) [NeZero n] (A : LocAlgCat.{w} Λ k) :
-    A.toInfinitesimalNeighborhood n ≫ mapInfinitesimalNeighborhood n n le_rfl A.toSpecialFiber =
-      A.toSpecialFiber ≫ (A.specialFiber).toInfinitesimalNeighborhood n := by simp
+    A.toInfinitesimal n ≫ mapInfinitesimal n n le_rfl A.toSpecialFiber =
+      A.toSpecialFiber ≫ (A.specialFiber).toInfinitesimal n := by simp
 
 @[simp]
 lemma algebraMap_specialFiber_apply_eq_zero [IsLocalRing Λ] [Algebra.IsIntegral Λ k]

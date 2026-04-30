@@ -88,6 +88,7 @@ lemma residue_toRingHom : A.residue = algebraMap A k := rfl
 
 lemma residue_apply {a : A} : A.residue a = algebraMap A k a := rfl
 
+@[simp]
 lemma ker_residue : RingHom.ker (residue A) = maximalIdeal A :=
   eq_maximalIdeal (RingHom.ker_isMaximal_of_surjective _ A.isSurjective)
 
