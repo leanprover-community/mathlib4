@@ -190,7 +190,6 @@ noncomputable def MulAction.automorphize [Group α] [MulAction α β] (f : β �
     Quotient (MulAction.orbitRel α β) → M := by
   refine @Quotient.lift _ _ (_) (fun b ↦ ∑' (a : α), f (a • b)) ?_
   intro b₁ b₂ ⟨a, (ha : a • b₂ = b₁)⟩
-  simp only
   rw [← ha]
   convert (Equiv.mulRight a).tsum_eq (fun a' ↦ f (a' • b₂)) using 1
   simp only [Equiv.coe_mulRight]

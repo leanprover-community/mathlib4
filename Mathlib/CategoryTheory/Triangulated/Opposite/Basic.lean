@@ -55,7 +55,7 @@ by `-n` on `C`, the user shall have to do `open CategoryTheory.Pretriangulated.O
 in order to get this shift and the (pre)triangulated structure on `Cᵒᵖ`. -/
 private abbrev OppositeShiftAux :=
   PullbackShift (OppositeShift C ℤ)
-    (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; lia))
+    (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; lia))
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in

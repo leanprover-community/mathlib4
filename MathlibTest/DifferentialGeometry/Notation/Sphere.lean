@@ -55,6 +55,8 @@ error: failed to synthesize instance of type class
   ChartedSpace (EuclideanSpace ℝ (Fin n)) ↑(Metric.sphere 0 1)
 
 Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+---
+info: ContMDiff I (𝓡 n) 2 g : Prop
 -/
 #guard_msgs in
 #check ContMDiff I (𝓡 n) 2 g

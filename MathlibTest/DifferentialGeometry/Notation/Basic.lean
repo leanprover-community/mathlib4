@@ -1022,6 +1022,13 @@ error: failed to synthesize instance of type class
   ChartedSpace H (M ⊕ F)
 
 Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+---
+error: failed to synthesize instance of type class
+  ChartedSpace H (M' ⊕ M')
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+---
+info: MDiff (Sum.map f h') : Prop
 -/
 #guard_msgs in
 #check MDifferentiable I I (Sum.map f h')

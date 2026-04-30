@@ -65,6 +65,16 @@ error: failed to synthesize instance of type class
   Semiring R
 
 Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+---
+error: failed to synthesize instance of type class
+  AddCommMonoid M
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+---
+warning: Calculated binders do not match the expected binders given after `=>`.
+---
+info: Try this:
+  [apply] variable? [Module R M] => [Semiring R] [AddCommMonoid M] [Module R M]
 -/
 #guard_msgs in
 variable? [Module R M] => [Module R M]
