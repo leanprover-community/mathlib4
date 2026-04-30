@@ -240,3 +240,31 @@ instance : flat.IsStableUnderCobaseChange := by
   exact RingHom.Flat.isStableUnderBaseChange
 
 end CommRingCat
+
+open CategoryTheory Limits
+
+set_option backward.isDefEq.respectTransparency false in
+/-- If `S ⊗[R] S → S` is flat, then also `T ⊗[R] A → T ⊗[S] A` is flat. -/
+lemma RingHom.Flat.mapOfCompatibleSMul {R S : Type u} (T A : Type u)
+    [CommRing R] [CommRing S] [CommRing T] [CommRing A] [Algebra R S]
+    [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+    [Algebra R A] [Algebra S A] [IsScalarTower R S A]
+    (h : (Algebra.TensorProduct.lmul' (S := S) R).Flat) :
+    (Algebra.TensorProduct.mapOfCompatibleSMul S R T T A).Flat := by
+  rw [← CommRingCat.flat_ofHom_iff] at h ⊢
+  apply MorphismProperty.of_isPushout _ h
+  · exact CommRingCat.ofHom
+      (Algebra.TensorProduct.map (IsScalarTower.toAlgHom R S T)
+      (IsScalarTower.toAlgHom R S A)).toRingHom
+  · exact CommRingCat.ofHom
+      (RingHom.comp (Algebra.TensorProduct.includeLeft (S := R)).toRingHom (algebraMap S T))
+  · refine .of_iso
+      (isPushout_map_codiagonal (CommRingCat.ofHom <| algebraMap S T)
+        (CommRingCat.ofHom <| algebraMap S A) (CommRingCat.ofHom <| algebraMap R S))
+      ?_ ?_ (.refl _) ?_ ?_ ?_ ?_ ?_
+    · exact (CommRingCat.isPushout_tensorProduct R S S).isoPushout.symm
+    · exact pushout.congrHom (by simp [IsScalarTower.algebraMap_eq R S T])
+          (by simp [IsScalarTower.algebraMap_eq R S A]) ≪≫
+        (CommRingCat.isPushout_tensorProduct R T A).isoPushout.symm
+    · exact (CommRingCat.isPushout_tensorProduct S T A).isoPushout.symm
+    all_goals ext <;> simp
