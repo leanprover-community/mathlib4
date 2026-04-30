@@ -82,7 +82,6 @@ instance : FloorSemiring ℕ where
   gc_ceil n a := by
     rw [Nat.cast_id, id_def]
 
-
 namespace FloorSemiring
 
 variable [Semiring α] [PartialOrder α] [FloorSemiring α]
@@ -105,7 +104,6 @@ instance : ZeroLEOneClass α := ⟨by simpa only [Nat.cast_one] using natCast_no
 instance : CharZero α := ⟨natCast_strictMono.injective⟩
 
 end FloorSemiring
-
 
 namespace Nat
 
@@ -240,39 +238,6 @@ noncomputable def FloorRing.ofBounded
     exact_mod_cast hn
   .ofFloor _ _ fun n x ↦ (Classical.choose_spec (exists_floor' x (below x) (above x)) n).symm
 
-
-namespace FloorRing
-
-variable [Ring α] [LinearOrder α] [FloorRing α]
-
-theorem intCast_mono : Monotone (Int.cast : ℤ → α) :=
-  fun _ _ h => (gc_ceil_coe _ _).mp <| h.trans' <| (gc_ceil_coe _ _).mpr (le_refl _)
-
-theorem intCast_strictMono : StrictMono (Int.cast : ℤ → α) := by
-  have h : (1 : α) ≠ 0 := by
-    intro h
-    suffices floor (0 : α) + 1 ≤ floor (0 : α) by grind
-    rw [← FloorRing.gc_coe_floor]
-    exact (eq_zero_of_zero_eq_one h.symm _).le
-  refine strictMono_int_of_lt_succ fun n => (intCast_mono (Int.le_add_one (le_refl _))).lt_of_ne ?_
-  grind
-
-theorem natCast_mono : Monotone (Nat.cast : ℕ → α) :=
-  fun m n h => by simpa using intCast_mono (Int.natCast_strictMono.monotone h)
-
-theorem natCast_nonneg (n : ℕ) : 0 ≤ (n : α) := by
-  simpa using natCast_mono n.zero_le
-
-theorem natCast_strictMono : StrictMono (Nat.cast : ℕ → α) :=
-  fun m n h => by simpa using intCast_strictMono (Int.natCast_strictMono h)
-
-instance : CharZero α := ⟨natCast_strictMono.injective⟩
-
-instance : ZeroLEOneClass α := ⟨by simpa only [Nat.cast_one] using natCast_nonneg 1⟩
-
-end FloorRing
-
-
 namespace Int
 
 variable [Ring α] [LinearOrder α] [FloorRing α] {z : ℤ} {a b : α}
@@ -340,11 +305,6 @@ theorem floor_nonneg : 0 ≤ ⌊a⌋ ↔ 0 ≤ a := by rw [le_floor, Int.cast_ze
 
 theorem floor_lt_zero : ⌊a⌋ < 0 ↔ a < 0 := by rw [floor_lt, Int.cast_zero]
 
-@[bound]
-theorem floor_nonpos (ha : a ≤ 0) : ⌊a⌋ ≤ 0 := by
-  rw [← FloorRing.intCast_strictMono.le_iff_le (β := α), Int.cast_zero]
-  exact (floor_le a).trans ha
-
 /-! #### Ceil -/
 
 theorem gc_ceil_coe : GaloisConnection ceil ((↑) : ℤ → α) :=
@@ -368,11 +328,6 @@ theorem ceil_nonpos : ⌈a⌉ ≤ 0 ↔ a ≤ 0 := by rw [ceil_le, cast_zero]
 
 @[simp]
 theorem ceil_pos : 0 < ⌈a⌉ ↔ 0 < a := by rw [lt_ceil, cast_zero]
-
-@[bound]
-theorem ceil_nonneg (ha : 0 ≤ a) : 0 ≤ ⌈a⌉ := by
-  rw [← FloorRing.intCast_strictMono.le_iff_le (β := α), Int.cast_zero]
-  exact ha.trans (le_ceil a)
 
 end Int
 
@@ -405,3 +360,46 @@ theorem Nat.ceil_int : (Nat.ceil : ℤ → ℕ) = Int.toNat :=
   rfl
 
 end FloorRingToSemiring
+
+namespace FloorRing
+
+variable [Ring α] [LinearOrder α] [FloorRing α]
+
+theorem intCast_mono : Monotone (Int.cast : ℤ → α) :=
+  fun _ _ h => (gc_ceil_coe _ _).mp <| h.trans' <| (gc_ceil_coe _ _).mpr (le_refl _)
+
+theorem intCast_strictMono : StrictMono (Int.cast : ℤ → α) := by
+  obtain ⟨h⟩ : NeZero (1 : α) := inferInstance
+  refine strictMono_int_of_lt_succ fun n => (intCast_mono (Int.le_add_one (le_refl _))).lt_of_ne ?_
+  grind
+
+theorem natCast_mono : Monotone (Nat.cast : ℕ → α) :=
+  fun m n h => by simpa using intCast_mono (Int.natCast_strictMono.monotone h)
+
+theorem natCast_nonneg (n : ℕ) : 0 ≤ (n : α) := by
+  simpa using natCast_mono n.zero_le
+
+theorem natCast_strictMono : StrictMono (Nat.cast : ℕ → α) :=
+  fun m n h => by simpa using intCast_strictMono (Int.natCast_strictMono h)
+
+instance : CharZero α := ⟨natCast_strictMono.injective⟩
+
+instance : ZeroLEOneClass α := ⟨by simpa only [Nat.cast_one] using natCast_nonneg 1⟩
+
+end FloorRing
+
+namespace Int
+
+variable [Ring α] [LinearOrder α] [FloorRing α] {z : ℤ} {a b : α}
+
+@[bound]
+theorem ceil_nonneg (ha : 0 ≤ a) : 0 ≤ ⌈a⌉ := by
+  rw [← FloorRing.intCast_strictMono.le_iff_le (β := α), Int.cast_zero]
+  exact ha.trans (le_ceil a)
+
+@[bound]
+theorem floor_nonpos (ha : a ≤ 0) : ⌊a⌋ ≤ 0 := by
+  rw [← FloorRing.intCast_strictMono.le_iff_le (β := α), Int.cast_zero]
+  exact (floor_le a).trans ha
+
+end Int
