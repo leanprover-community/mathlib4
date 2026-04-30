@@ -359,9 +359,8 @@ theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
         equiv_mul_left_of_mem (d.compl i) ⟨_, rfl⟩, hhead, Subtype.ext_iff,
         Prod.ext_iff] at h
       rcases h with ⟨h₁, h₂⟩
-      simp only [h₂, equiv_one (d.compl i) (one_mem _) (d.one_mem _),
-        ← OneMemClass.one_def ((φ i).range), mul_one,
-        (injective_iff_map_eq_one' _).1 (d.injective i)] at h₁
+      rw [h₂, coe_mul, ((d.compl i).coe_equiv_fst_eq_one_iff_mem (one_mem _)).mpr (d.one_mem _),
+        mul_one, Subtype.coe_mk, map_eq_one_iff (φ i) (d.injective i)] at h₁
       contradiction
     · rw [Word.equivPair_head]
       dsimp
