@@ -25,7 +25,7 @@ We define the normed group structure on `AddCircle p`, for `p : ℝ`. For exampl
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
