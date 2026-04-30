@@ -368,7 +368,7 @@ theorem exists_opNNNorm_le {ι : Type*} [Finite ι] (v : Basis ι 𝕜 E) :
   exact
     ⟨max (Fintype.card ι • ‖v.equivFunL.toContinuousLinearMap‖₊) 1,
       zero_lt_one.trans_le (le_max_right _ _), fun {u} M hu =>
-      (v.opNNNorm_le M hu).trans <| mul_le_mul_of_nonneg_right (le_max_left _ _) (zero_le M)⟩
+      (v.opNNNorm_le M hu).trans <| mul_le_mul_of_nonneg_right (le_max_left _ _) zero_le⟩
 
 /-- A weaker version of `Basis.opNorm_le` that abstracts away the value of `C`. -/
 theorem exists_opNorm_le {ι : Type*} [Finite ι] (v : Basis ι 𝕜 E) :

@@ -786,7 +786,7 @@ theorem mul_lt_of_lt_div {a b c : Ordinal} : a < b / c → c * a < b :=
   lt_imp_lt_of_le_imp_le div_le_of_le_mul
 
 @[simp]
-theorem zero_div (a : Ordinal) : 0 / a = 0 := nonpos_iff_eq_zero.1 <| div_le_of_le_mul <| zero_le _
+theorem zero_div (a : Ordinal) : 0 / a = 0 := nonpos_iff_eq_zero.1 <| div_le_of_le_mul zero_le
 
 theorem mul_div_le (a b : Ordinal) : b * (a / b) ≤ a :=
   if b0 : b = 0 then by simp [b0] else (mul_le_iff_le_div b0).2 le_rfl
@@ -815,10 +815,9 @@ theorem mul_div_cancel (a) {b : Ordinal} (b0 : b ≠ 0) : b * a / b = a := by
 
 theorem mul_add_div_mul {a c : Ordinal} (hc : c < a) (b d : Ordinal) :
     (a * b + c) / (a * d) = b / d := by
-  have ha : a ≠ 0 := ((zero_le c).trans_lt hc).ne'
   obtain rfl | hd := eq_or_ne d 0
   · rw [mul_zero, div_zero, div_zero]
-  · have H := mul_ne_zero ha hd
+  · have H := mul_ne_zero hc.ne_zero hd
     apply le_antisymm
     · rw [← lt_succ_iff, ← lt_mul_iff_div_lt H, mul_assoc]
       · apply (add_lt_add_right hc _).trans_le
