@@ -2013,6 +2013,7 @@ public import Mathlib.Analysis.LocallyConvex.Barrelled
 public import Mathlib.Analysis.LocallyConvex.Basic
 public import Mathlib.Analysis.LocallyConvex.Bounded
 public import Mathlib.Analysis.LocallyConvex.ContinuousOfBounded
+public import Mathlib.Analysis.LocallyConvex.HahnBanach
 public import Mathlib.Analysis.LocallyConvex.Montel
 public import Mathlib.Analysis.LocallyConvex.PointwiseConvergence
 public import Mathlib.Analysis.LocallyConvex.Polar
