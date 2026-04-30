@@ -15,7 +15,7 @@ In this file we define `WithBot` and `WithTop`.
 
 @[expose] public section
 
-variable {α : Type*}
+variable {α β : Type*}
 
 /-- Attach `⊥` to a type. -/
 @[to_dual /-- Attach `⊤` to a type. -/]
@@ -69,5 +69,37 @@ theorem recBotCoe_bot {C : WithBot α → Sort*} (d : C ⊥) (f : ∀ a : α, C 
 theorem recBotCoe_coe {C : WithBot α → Sort*} (d : C ⊥) (f : ∀ a : α, C a) (x : α) :
     @recBotCoe _ C d f ↑x = f x :=
   rfl
+
+/-- Returns `true` on `some x` and false on `⊥`. -/
+@[to_dual /-- Returns `true` on `some x` and false on `⊤`. -/]
+def isSome : WithBot α → Bool
+  | ⊥ => false
+  | (_ : α) => true
+
+@[to_dual (attr := simp)]
+lemma isSome_bot : isSome (⊥ : WithBot α) = false := rfl
+
+@[to_dual (attr := simp)]
+lemma isSome_some (x : α) : isSome (x : WithBot α) = true := rfl
+
+@[to_dual (attr := simp)]
+theorem isSome_dite {p : Prop} {_ : Decidable p} {b : p → α} :
+    (if h : p then some (b h) else ⊥).isSome = true ↔ p := by
+  split <;> simpa
+
+@[to_dual (attr := simp)]
+theorem isSome_ite {p : Prop} {_ : Decidable p} {b : α} :
+    (if p then some b else ⊥).isSome = true ↔ p := by
+  split <;> simpa
+
+@[to_dual (attr := simp)]
+theorem isSome_dite' {p : Prop} {_ : Decidable p} {b : ¬ p → α} :
+    (if h : p then ⊥ else some (b h)).isSome = true ↔ ¬ p := by
+  split <;> simpa
+
+@[to_dual (attr := simp)]
+theorem isSome_ite' {p : Prop} {_ : Decidable p} {b : α} :
+    (if p then ⊥ else some b).isSome = true ↔ ¬ p := by
+  split <;> simpa
 
 end WithBot

@@ -62,11 +62,11 @@ lemma mul_def (a b : WithTop α) :
 lemma mul_eq_top_iff : a * b = ⊤ ↔ a ≠ 0 ∧ b = ⊤ ∨ a = ⊤ ∧ b ≠ 0 := by rw [mul_def]; aesop
 
 lemma mul_coe_eq_bind {b : α} (hb : b ≠ 0) : ∀ a, (a * b : WithTop α) = a.bind fun a ↦ ↑(a * b)
-  | ⊤ => by simp [top_mul, hb]; rfl
+  | ⊤ => by simp [top_mul, hb]
   | (a : α) => rfl
 
 lemma coe_mul_eq_bind {a : α} (ha : a ≠ 0) : ∀ b, (a * b : WithTop α) = b.bind fun b ↦ ↑(a * b)
-  | ⊤ => by simp [ha]; rfl
+  | ⊤ => by simp [ha]
   | (b : α) => rfl
 
 @[simp]

@@ -75,6 +75,17 @@ theorem bot_ne_coe : ⊥ ≠ (a : WithBot α) :=
 theorem coe_ne_bot : (a : WithBot α) ≠ ⊥ :=
   nofun
 
+@[to_dual]
+lemma isSome_iff_ne_none (x : WithBot α) : isSome x = true ↔ x ≠ ⊥ := by
+  cases x
+  · simp
+  · simp
+
+@[to_dual (attr := simp)]
+theorem isSome_eq_false_iff {x : WithBot α} :
+    x.isSome = false ↔ x = ⊥ := by
+  cases x <;> simp
+
 /-- Specialization of `Option.getD` to values in `WithBot α` that respects API boundaries. -/
 @[to_dual
 /-- Specialization of `Option.getD` to values in `WithTop α` that respects API boundaries. -/]
@@ -186,6 +197,21 @@ lemma map₂_coe_right (f : α → β → γ) (a) (b : β) : map₂ f a b = a.ma
 lemma map₂_eq_bot_iff {f : α → β → γ} {a : WithBot α} {b : WithBot β} :
     map₂ f a b = ⊥ ↔ a = ⊥ ∨ b = ⊥ := Option.map₂_eq_none_iff
 
+/-- Sequencing of `WithBot` computations. -/
+@[to_dual /-- Sequencing of `WithTop` computations. -/]
+def bind (x : WithBot α) (f : α → WithBot β) : WithBot β := Option.bind x f
+
+@[to_dual (attr := simp)]
+lemma bind_bot (f : α → WithBot β) : bind ⊥ f = ⊥ := rfl
+
+@[to_dual (attr := simp)]
+lemma bind_some (x : α) (f : α → WithBot β) : bind x f = f x := rfl
+
+@[to_dual]
+lemma map_eq_bind (x : WithBot α) (f : α → β) :
+    map f x = x.bind (fun y ↦ f y) := by
+  cases x <;> simp
+
 @[to_dual]
 lemma ne_bot_iff_exists {x : WithBot α} : x ≠ ⊥ ↔ ∃ a : α, ↑a = x := Option.ne_none_iff_exists
 
@@ -212,6 +238,34 @@ lemma coe_unbot : ∀ (x : WithBot α) hx, x.unbot hx = x | (x : α), _ => rfl
 @[to_dual (attr := simp)]
 theorem unbot_coe (x : α) (h : (x : WithBot α) ≠ ⊥ := coe_ne_bot) : (x : WithBot α).unbot h = x :=
   rfl
+
+@[to_dual (attr := simp)]
+theorem unbot_dite {p : Prop} {_ : Decidable p} (b : p → α) (w) :
+    (if h : p then some (b h) else ⊥).unbot w = b (by simpa using w) := by
+  split
+  · simp
+  · exfalso
+    simp at w
+    contradiction
+
+@[to_dual (attr := simp)]
+theorem unbot_ite {p : Prop} {_ : Decidable p} (h) :
+    (if p then some b else ⊥).unbot h = b := by
+  simpa using unbot_dite (p := p) (fun _ => b) (by simpa using h)
+
+@[to_dual (attr := simp)]
+theorem unbot_dite' {p : Prop} {_ : Decidable p} (b : ¬ p → α) (w) :
+    (if h : p then ⊥ else some (b h)).unbot w = b (by simpa using w) := by
+  split
+  · exfalso
+    simp at w
+    contradiction
+  · simp
+
+@[to_dual (attr := simp)]
+theorem unbot_ite' {p : Prop} {_ : Decidable p} (h) :
+    (if p then ⊥ else some b).unbot h = b := by
+  simpa using unbot_dite' (p := p) (fun _ => b) (by simpa using h)
 
 @[to_dual]
 instance canLift : CanLift (WithBot α) α (↑) fun r => r ≠ ⊥ where
@@ -524,7 +578,7 @@ instance [Preorder α] : Preorder (WithBot α) where
 
 section Preorder
 
-variable [Preorder α] [Preorder β] {x y : WithBot α}
+variable [Preorder α] [Preorder β] [Preorder γ] {x y : WithBot α}
 
 @[to_dual]
 theorem coe_strictMono : StrictMono (fun (a : α) => (a : WithBot α)) := fun _ _ => coe_lt_coe.2
@@ -620,6 +674,30 @@ theorem forall_coe_le {p : WithBot α → Prop} :
 theorem exists_coe_le {p : WithBot α → Prop} :
     (∃ x, (a : WithBot α) ≤ x ∧ p x) ↔ ∃ b, a ≤ b ∧ p b := by
   simp [WithBot.exists]
+
+/- to_dual does not seem able to handle this. -/
+lemma isSome_mono : Monotone (fun x : WithBot α ↦ x.isSome) := by
+  intro x y h
+  cases x <;> cases y <;> simp_all
+
+lemma _root_.WithTop.isSome_mono : Monotone (fun x : WithBot α ↦ x.isSome) := by
+  intro x y h
+  cases x <;> cases y <;> simp_all
+
+@[to_dual]
+lemma bind_mono
+    {f : α → WithBot β} (hf : Monotone f)
+    {g : α → β → WithBot γ} (hg : Monotone (Function.uncurry g)) :
+    Monotone (fun x ↦ (f x).bind (g x)) := by
+  intro x₁ x₂ hx
+  specialize hf hx
+  cases hfx₁ : f x₁
+  · simp [hfx₁]
+  · cases hfx₂ : f x₂
+    · simp [hfx₁, hfx₂] at hf
+    · simp only [hfx₁, bind_some, hfx₂]
+      simp only [hfx₁, hfx₂, coe_le_coe] at hf
+      apply hg (Prod.mk_le_mk.mpr ⟨hx, hf⟩)
 
 end Preorder
 
