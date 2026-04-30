@@ -84,7 +84,7 @@ cover `U` of the given open set is nontrivial, in the sense that the indexing ty
 and that for every `i` in the indexing type `ι`, `U i` is nonempty.
 -/
 def IsSheafUniqueGluingNontrivial : Prop :=
-  ∀ ⦃ι : Type x⦄ [Nonempty ι] (U : ι → Opens X) (_ : ∀ i : ι, Nonempty (U i))
+  ∀ ⦃ι : Type x⦄ [Nonempty ι] (U : ι → Opens X) (_ : ∀ i : ι, (U i).carrier.Nonempty)
     (sf : ∀ i : ι, ToType (F.obj (op (U i)))),
     IsCompatible F U sf → ∃! s : ToType (F.obj (op (iSup U))), IsGluing F U sf s
 
