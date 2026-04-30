@@ -86,8 +86,9 @@ theorem center_eq_top_iff : center G = ⊤ ↔ IsMulCommutative G := by
 theorem center_eq_top [hG : IsMulCommutative G] : center G = ⊤ :=
     center_eq_top_iff.mpr hG
 
-/-- A group is commutative if the center is the whole group -/
-@[to_additive, implicit_reducible]
+/-- A group is commutative if the center is the whole group. -/
+@[to_additive /-- An additive group is commutative if the center is the whole group. -/,
+  implicit_reducible]
 def _root_.Group.commGroupOfCenterEqTop (h : center G = ⊤) : CommGroup G :=
   { ‹Group G› with
     mul_comm := by
