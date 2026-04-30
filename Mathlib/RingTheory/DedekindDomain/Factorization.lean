@@ -40,7 +40,7 @@ prove some of its properties. If `I = 0`, we define `val_v(I) = 0`.
   maximal ideals of `R`.
 - `IsDedekindDomain.exists_sup_span_eq`: For all ideals `0 < I ≤ J`,
   there exists `a` such that `J = I + ⟨a⟩`.
-- `Ideal.map_algebraMap_eq_finset_prod_pow`: if `p` is a maximal ideal, then the lift of `p`
+- `Ideal.map_algebraMap_eq_finsetProd_pow`: if `p` is a maximal ideal, then the lift of `p`
   in an extension is the product of the primes over `p` to the power the ramification index.
 
 ## Implementation notes
@@ -534,7 +534,7 @@ theorem count_finprod (exps : HeightOneSpectrum R → ℤ)
     count K v (∏ᶠ v : HeightOneSpectrum R,
       (v.asIdeal : FractionalIdeal R⁰ K) ^ exps v) = exps v := by
   convert count_finsuppProd K v (Finsupp.mk h_exps.toFinset exps (fun _ ↦ h_exps.mem_toFinset))
-  rw [finprod_eq_finset_prod_of_mulSupport_subset (s := h_exps.toFinset), Finsupp.prod]
+  rw [finprod_eq_finsetProd_of_mulSupport_subset (s := h_exps.toFinset), Finsupp.prod]
   · rfl
   · rw [Finite.coe_toFinset]
     intro v hv h
@@ -595,7 +595,7 @@ theorem finite_factors' {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) {a : R}
     have hv_irred : Irreducible v.asIdeal := v.irreducible
     by_contra h_notMem
     rw [mem_union, mem_setOf_eq, mem_setOf_eq] at h_notMem
-    push_neg at h_notMem
+    push Not at h_notMem
     rw [← Associates.count_ne_zero_iff_dvd ha_ne_zero hv_irred, not_not,
       ← Associates.count_ne_zero_iff_dvd hJ_ne_zero hv_irred, not_not] at h_notMem
     rw [mem_setOf_eq, h_notMem.1, h_notMem.2, sub_self] at hv
@@ -820,14 +820,14 @@ open IsDedekindDomain Ideal.IsDedekindDomain HeightOneSpectrum
 If `p` is a maximal ideal, then the lift of `p` in an extension is the product of the primes
 over `p` to the power the ramification index.
 -/
-theorem Ideal.map_algebraMap_eq_finset_prod_pow {p : Ideal S} [p.IsMaximal] (hp : p ≠ 0) :
+theorem Ideal.map_algebraMap_eq_finsetProd_pow {p : Ideal S} [p.IsMaximal] (hp : p ≠ 0) :
     map (algebraMap S R) p = ∏ P ∈ p.primesOver R, P ^ p.ramificationIdx P := by
   classical
   have h : map (algebraMap S R) p ≠ 0 := map_ne_bot_of_ne_bot hp
   rw [← finprod_heightOneSpectrum_factorization (I := p.map (algebraMap S R)) h]
   let hF : Fintype {v : HeightOneSpectrum R | v.asIdeal ∣ map (algebraMap S R) p} :=
     (finite_factors h).fintype
-  rw [finprod_eq_finset_prod_of_mulSupport_subset
+  rw [finprod_eq_finsetProd_of_mulSupport_subset
     (s := {v | v.asIdeal ∣ p.map (algebraMap S R)}.toFinset), ← Finset.prod_set_coe,
     ← Finset.prod_set_coe]
   · let _ : Fintype {v : HeightOneSpectrum R // v.asIdeal ∣ map (algebraMap S R) p} := hF
@@ -837,5 +837,8 @@ theorem Ideal.map_algebraMap_eq_finset_prod_pow {p : Ideal S} [p.IsMaximal] (hp 
   · intro v hv
     simpa [maxPowDividing, Function.mem_mulSupport, IsPrime.ne_top _,
       Associates.count_ne_zero_iff_dvd h (irreducible v)] using hv
+
+@[deprecated (since := "2026-04-08")]
+alias Ideal.map_algebraMap_eq_finset_prod_pow := Ideal.map_algebraMap_eq_finsetProd_pow
 
 end primesOver

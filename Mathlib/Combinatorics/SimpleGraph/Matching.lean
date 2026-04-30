@@ -105,7 +105,6 @@ lemma IsMatching.not_adj_left_of_ne (hM : M.IsMatching) (hvw : v ≠ w) (huv : M
 lemma IsMatching.not_adj_right_of_ne (hM : M.IsMatching) (huv : u ≠ v) (huw : M.Adj u w) :
     ¬M.Adj v w := fun hvw ↦ huv <| hM.eq_of_adj_right huw hvw
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsMatching.sup (hM : M.IsMatching) (hM' : M'.IsMatching)
     (hd : Disjoint M.support M'.support) : (M ⊔ M').IsMatching := by
   intro v hv
@@ -288,7 +287,9 @@ lemma even_card_of_isPerfectMatching [Fintype V] [DecidableEq V] [DecidableRel G
   blocked by the discrimination tree. This can be fixed by redeclaring the instance for `X`
   using the double coercion but the proper fix seems to avoid the double coercion. -/
   letI : DecidablePred fun x ↦ x ∈ (M.induce c.supp).verts := fun a ↦ G.instDecidableMemSupp c a
-  simpa using (hM.induce_connectedComponent_isMatching c).even_card
+  have := (hM.induce_connectedComponent_isMatching c).even_card
+  simp only [Subgraph.induce_verts, Set.toFinset_card] at this
+  exact this
 
 set_option backward.isDefEq.respectTransparency false in
 lemma odd_matches_node_outside [Finite V] {u : Set V}
@@ -491,7 +492,6 @@ lemma IsCycles.reachable_sdiff_toSubgraph_spanningCoe [Finite V] {v w : V} (hcyc
   have : Fintype V := Fintype.ofFinite V
   exact reachable_sdiff_toSubgraph_spanningCoe_aux hcyc p hp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsCycles.reachable_deleteEdges [Finite V] (hadj : G.Adj v w)
     (hcyc : G.IsCycles) : (G.deleteEdges {s(v, w)}).Reachable v w := by
   have : fromEdgeSet {s(v, w)} = hadj.toWalk.toSubgraph.spanningCoe := by

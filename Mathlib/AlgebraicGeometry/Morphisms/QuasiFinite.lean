@@ -159,7 +159,7 @@ instance [LocallyQuasiFinite f] (y : Y) : IsLocallyArtinian (f.fiber y) :=
 lemma Scheme.Hom.isDiscrete_preimage_singleton [LocallyQuasiFinite f] (y : Y) :
     IsDiscrete (f ⁻¹' {y}) := by
   simpa [Scheme.Hom.range_fiberι] using
-    (isDiscrete_univ_iff.mpr inferInstance).image (f.fiberι y).isEmbedding
+    (isDiscrete_univ_iff.mpr inferInstance).image (f.fiberι y).isEmbedding.toIsInducing
 
 lemma Scheme.Hom.isDiscrete_preimage [LocallyQuasiFinite f] {s : Set Y} (hs : IsDiscrete s) :
     IsDiscrete (f ⁻¹' s) :=
@@ -394,7 +394,7 @@ nonrec lemma Scheme.Hom.quasiFiniteAt_iff_isOpen_singleton_asFiber
     · exact (RingHom.QuasiFinite.respectsIso.arrow_mk_iso_iff
         (Scheme.stalkMapIsoOfIsPullback (.of_hasPullback f ι) x))
     have H : pullback.snd f ι ⁻¹' {pullback.snd f ι x} =
-        pullback.fst f ι ⁻¹' (f ⁻¹' {f (pullback.fst f ι x)}) := by
+        pullback.fst f ι ⁻¹' f ⁻¹' {f (pullback.fst f ι x)} := by
       rw [← Set.preimage_comp, ← TopCat.coe_comp, ← Scheme.Hom.comp_base, ← Scheme.Hom.comp_apply,
         pullback.condition]
       simp [← Set.image_singleton, Set.preimage_comp, Set.preimage_image_eq _ ι.injective]

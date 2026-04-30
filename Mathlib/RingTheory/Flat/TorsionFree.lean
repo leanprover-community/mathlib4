@@ -28,7 +28,7 @@ domains and valuation rings.
   flat `R`-module.
 -/
 
-@[expose] public section
+public section
 -- TODO: Add definition and properties of Prüfer domains.
 -- TODO: Use `IsTorsionFree`.
 
@@ -62,6 +62,9 @@ lemma isSMulRegular_of_isRegular {r : R} (hr : IsRegular r) [Flat R M] :
   -- Hence `(r • ·) : M → M` is also injective
   rw [IsSMulRegular, h2]
   simp [h, LinearEquiv.injective]
+
+instance isTorsionFree [Flat R M] : IsTorsionFree R M :=
+  ⟨fun _ hr ↦ isSMulRegular_of_isRegular hr⟩
 
 end Semiring
 

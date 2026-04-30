@@ -606,14 +606,13 @@ protected lemma Icc_subset_segment {x y : {t : 𝕜 // 0 ≤ t}} :
   intro a ⟨hxa, hay⟩
   rw [← Subtype.coe_le_coe] at hxa hay
   rcases Icc_subset_segment ⟨hxa, hay⟩ with ⟨t₁, t₂, t₁_nonneg, t₂_nonneg, t_add, hta⟩
-  refine ⟨⟨t₁, t₁_nonneg⟩, ⟨t₂, t₂_nonneg⟩, zero_le _, zero_le _, ?_, ?_⟩ <;>
+  refine ⟨⟨t₁, t₁_nonneg⟩, ⟨t₂, t₂_nonneg⟩, zero_le, zero_le, ?_, ?_⟩ <;>
   ext <;> simpa
 
 protected lemma segment_eq_Icc {x y : {t : 𝕜 // 0 ≤ t}} (hxy : x ≤ y) :
     segment {t : 𝕜 // 0 ≤ t} x y = Icc x y := by
   refine subset_antisymm (segment_subset_Icc hxy) Nonneg.Icc_subset_segment
 
-set_option backward.isDefEq.respectTransparency false in
 protected lemma segment_eq_uIcc {x y : {t : 𝕜 // 0 ≤ t}} :
     segment {t : 𝕜 // 0 ≤ t} x y = uIcc x y := by
   rcases le_total x y with h | h

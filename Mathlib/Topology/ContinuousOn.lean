@@ -213,7 +213,7 @@ theorem continuousOn_to_generateFrom_iff {β : Type*} {T : Set (Set β)} {f : α
     delta ContinuousWithinAt
     simp only [TopologicalSpace.nhds_generateFrom, tendsto_iInf, tendsto_principal, mem_setOf_eq,
       and_imp]
-    exact forall_congr' fun t => forall_swap
+    exact forall_congr' fun t => forall_comm
 
 theorem continuousOn_isOpen_of_generateFrom {β : Type*} {s : Set α} {T : Set (Set β)} {f : α → β}
     (h : ∀ t ∈ T, IsOpen (s ∩ f ⁻¹' t)) :
@@ -656,7 +656,7 @@ theorem continuousOn_prod_of_discrete_left [DiscreteTopology α] {f : α × β �
 
 theorem continuousOn_prod_of_discrete_right [DiscreteTopology β] {f : α × β → γ} {s : Set (α × β)} :
     ContinuousOn f s ↔ ∀ b, ContinuousOn (f ⟨·, b⟩) {a | (a, b) ∈ s} := by
-  simp_rw [ContinuousOn, Prod.forall, continuousWithinAt_prod_of_discrete_right]; apply forall_swap
+  simp_rw [ContinuousOn, Prod.forall, continuousWithinAt_prod_of_discrete_right]; apply forall_comm
 
 /-- If a function `f a b` is such that `y ↦ f a b` is continuous for all `a`, and `a` lives in a
 discrete space, then `f` is continuous, and vice versa. -/
@@ -675,7 +675,7 @@ theorem isOpenMap_prod_of_discrete_left [DiscreteTopology α] {f : α × β → 
 
 theorem isOpenMap_prod_of_discrete_right [DiscreteTopology β] {f : α × β → γ} :
     IsOpenMap f ↔ ∀ b, IsOpenMap (f ⟨·, b⟩) := by
-  simp_rw [isOpenMap_iff_nhds_le, Prod.forall, forall_swap (α := α) (β := β), nhds_prod_eq,
+  simp_rw [isOpenMap_iff_nhds_le, Prod.forall, forall_comm (α := α) (β := β), nhds_prod_eq,
     nhds_discrete, prod_pure, map_map]; rfl
 
 theorem ContinuousOn.uncurry_left {f : α → β → γ} {sα : Set α} {sβ : Set β} (a : α) (ha : a ∈ sα)

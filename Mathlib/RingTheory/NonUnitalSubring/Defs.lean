@@ -129,6 +129,7 @@ add_decl_doc NonUnitalSubring.toAddSubgroup
 namespace NonUnitalSubring
 
 /-- The underlying submonoid of a `NonUnitalSubring`. -/
+@[reducible]
 def toSubsemigroup (s : NonUnitalSubring R) : Subsemigroup R :=
   { s.toNonUnitalSubsemiring.toSubsemigroup with carrier := s.carrier }
 
@@ -294,9 +295,8 @@ protected theorem sub_mem {x y : R} (hx : x ∈ s) (hy : y ∈ s) : x - y ∈ s 
 
 /-- A non-unital subring of a non-unital ring inherits a non-unital ring structure -/
 instance toNonUnitalRing {R : Type*} [NonUnitalRing R] (s : NonUnitalSubring R) :
-    NonUnitalRing s := fast_instance%
-  Subtype.coe_injective.nonUnitalRing _ rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+    NonUnitalRing s :=
+  NonUnitalSubringClass.toNonUnitalRing s
 
 protected theorem zsmul_mem {x : R} (hx : x ∈ s) (n : ℤ) : n • x ∈ s :=
   zsmul_mem hx n
@@ -322,14 +322,12 @@ theorem coe_eq_zero_iff {x : s} : (x : R) = 0 ↔ x = 0 := by
 
 /-- A non-unital subring of a `NonUnitalCommRing` is a `NonUnitalCommRing`. -/
 instance toNonUnitalCommRing {R} [NonUnitalCommRing R] (s : NonUnitalSubring R) :
-    NonUnitalCommRing s := fast_instance%
-  Subtype.coe_injective.nonUnitalCommRing _ rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+    NonUnitalCommRing s :=
+  NonUnitalSubringClass.toNonUnitalCommRing s
 
 /-! ## Partial order -/
 
 
-@[simp]
 theorem mem_toSubsemigroup {s : NonUnitalSubring R} {x : R} : x ∈ s.toSubsemigroup ↔ x ∈ s :=
   Iff.rfl
 

@@ -48,6 +48,9 @@ Other example tests
 recall id (x : α) : α := x
 
 /--
+info: Try this:
+  [apply] recall id {α : Sort u} (a : α) : α
+---
 error: Type mismatch
   @id
 has type
@@ -125,3 +128,65 @@ end RecallTest
 -- Test that `recall` works with `open` namespaces.
 open RecallTest in
 recall myDef : Nat
+
+/-
+## `recall?` tests
+-/
+
+-- Test recall? with a simple function
+/--
+info: Try this:
+  [apply] recall Nat.add_comm (n m : ℕ) : n + m = m + n
+-/
+#guard_msgs in recall? Nat.add_comm
+-- Verify the suggestion is accepted:
+recall Nat.add_comm (n m : ℕ) : n + m = m + n
+
+-- Test recall? with a polymorphic function
+/--
+info: Try this:
+  [apply] recall id {α : Sort u} (a : α) : α
+-/
+#guard_msgs in recall? id
+-- Verify the suggestion is accepted:
+recall id {α : Sort u} (a : α) : α
+
+-- Test recall? with unknown constant
+/-- error: Unknown constant `nonexistent` -/
+#guard_msgs in recall? nonexistent
+
+-- Test recall? with a simple def
+/--
+info: Try this:
+  [apply] recall foo : ℕ
+-/
+#guard_msgs in recall? foo
+-- Verify the suggestion is accepted:
+recall foo : ℕ
+
+-- Test recall? with instance implicit arguments
+/--
+info: Try this:
+  [apply] recall add_assoc {G : Type u_1} [AddSemigroup G] (a b c : G) : a + b + c = a + (b + c)
+-/
+#guard_msgs in recall? add_assoc
+-- Verify the suggestion is accepted:
+recall add_assoc {G : Type u_1} [AddSemigroup G] (a b c : G) : a + b + c = a + (b + c)
+
+/-
+## Type mismatch suggestion tests
+-/
+
+-- Test that type mismatch on recall without value gives a suggestion
+/--
+info: Try this:
+  [apply] recall Nat.add_comm (n m : ℕ) : n + m = m + n
+---
+error: Type mismatch
+  Nat.add_comm
+has type
+  ∀ (n m : ℕ), n + m = m + m
+but is expected to have type
+  ∀ (n m : ℕ), n + m = m + n
+-/
+#guard_msgs in recall Nat.add_comm (n m : Nat) : n + m = m + m

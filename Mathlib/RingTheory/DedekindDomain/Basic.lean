@@ -46,7 +46,7 @@ to add a `(h : ¬ IsField A)` assumption whenever this is explicitly needed.
 dedekind domain, dedekind ring
 -/
 
-@[expose] public section
+public section
 
 
 variable (R A K : Type*) [CommRing R] [CommRing A] [Field K]

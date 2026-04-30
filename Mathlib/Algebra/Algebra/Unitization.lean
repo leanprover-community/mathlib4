@@ -362,23 +362,23 @@ section
 
 variable (R)
 
-@[simp]
+@[simp, norm_cast]
 theorem inr_zero [Zero R] [Zero A] : ↑(0 : A) = (0 : Unitization R A) :=
   rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem inr_add [AddZeroClass R] [Add A] (m₁ m₂ : A) : (↑(m₁ + m₂) : Unitization R A) = m₁ + m₂ :=
   Unitization.ext (add_zero 0).symm rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem inr_neg [AddGroup R] [Neg A] (m : A) : (↑(-m) : Unitization R A) = -m :=
   Unitization.ext neg_zero.symm rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem inr_sub [AddGroup R] [AddGroup A] (m₁ m₂ : A) : (↑(m₁ - m₂) : Unitization R A) = m₁ - m₂ :=
   Unitization.ext (sub_zero 0).symm rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem inr_smul [Zero R] [SMulZeroClass S R] [SMul S A] (r : S) (m : A) :
     (↑(r • m) : Unitization R A) = r • (m : Unitization R A) :=
   Unitization.ext (smul_zero _).symm rfl
@@ -405,19 +405,23 @@ theorem linearMap_ext {N} [CommSemiring S] [AddCommMonoid R] [AddCommMonoid A] [
   (linearEquiv S R A).arrowCongr (.refl ..) |>.injective <|
     LinearMap.prod_ext (LinearMap.ext hl) (LinearMap.ext hr)
 
-variable (R A)
+variable [Semiring S] [Semiring R] [AddCommMonoid A] [SMul R A] [Module S R] [Module S A]
 
--- TODO: generalize to `S`-linear
-/-- The canonical `R`-linear inclusion `A → Unitization R A`. -/
+variable (S R A) in
+/-- The canonical `S`-linear inclusion `A → Unitization R A`. -/
 @[simps apply]
-def inrHom [Semiring R] [AddCommMonoid A] [Module R A] : A →ₗ[R] Unitization R A where
+def inrHom : A →ₗ[S] Unitization R A where
   toFun := (↑)
   map_add' := inr_add R
   map_smul' := inr_smul R
 
-/-- The canonical `R`-linear projection `Unitization R A → A`. -/
+omit [SMul R A] in
+lemma inrHom_injective : Function.Injective (inrHom S R A) := Unitization.inr_injective
+
+variable (S R A) in
+/-- The canonical `S`-linear projection `Unitization R A → A`. -/
 @[simps apply]
-def sndHom [Semiring R] [AddCommMonoid A] [Module R A] : Unitization R A →ₗ[R] A where
+def sndHom : Unitization R A →ₗ[S] A where
   toFun a := a.snd
   map_add' := snd_add
   map_smul' := snd_smul
@@ -485,10 +489,12 @@ theorem inr_mul [MulZeroClass R] [AddZeroClass A] [Mul A] [SMulWithZero R A] (a�
 
 end
 
+@[norm_cast]
 theorem inl_mul_inr [MulZeroClass R] [NonUnitalNonAssocSemiring A] [SMulZeroClass R A] (r : R)
     (a : A) : ((inl r : Unitization R A) * a) = ↑(r • a) :=
   Unitization.ext (mul_zero r) <| by simp
 
+@[norm_cast]
 theorem inr_mul_inl [MulZeroClass R] [NonUnitalNonAssocSemiring A] [SMulZeroClass R A] (r : R)
     (a : A) : a * (inl r : Unitization R A) = ↑(r • a) :=
   Unitization.ext (zero_mul r) <| by simp
@@ -590,7 +596,7 @@ theorem inl_star [Star R] [AddMonoid A] [StarAddMonoid A] (r : R) :
     inl (star r) = star (inl r : Unitization R A) :=
   Unitization.ext rfl (by simp only [snd_star, star_zero, snd_inl])
 
-@[simp]
+@[simp, norm_cast]
 theorem inr_star [AddMonoid R] [StarAddMonoid R] [Star A] (a : A) :
     ↑(star a) = star (a : Unitization R A) :=
   Unitization.ext (by simp only [fst_star, star_zero, fst_inr]) rfl
@@ -623,7 +629,6 @@ variable (S R A : Type*) [CommSemiring S] [CommSemiring R] [NonUnitalSemiring A]
   [IsScalarTower R A A] [SMulCommClass R A A] [Algebra S R] [DistribMulAction S A]
   [IsScalarTower S R A]
 
-set_option backward.isDefEq.respectTransparency false in
 instance instAlgebra : Algebra S (Unitization R A) where
   algebraMap := (Unitization.inlRingHom R A).comp (algebraMap S R)
   commutes' := fun s x => by
@@ -783,7 +788,6 @@ variable {R A C : Type*} [CommSemiring R] [StarRing R] [NonUnitalSemiring A] [St
 variable [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
 variable [Semiring C] [Algebra R C] [StarRing C]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- See note [partially-applied ext lemmas] -/
 @[ext]
 theorem starAlgHom_ext {φ ψ : Unitization R A →⋆ₐ[R] C}
@@ -794,7 +798,6 @@ theorem starAlgHom_ext {φ ψ : Unitization R A →⋆ₐ[R] C}
 
 variable [StarModule R C]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Non-unital star algebra homomorphisms from `A` into a unital star `R`-algebra `C` lift uniquely
 to `Unitization R A →⋆ₐ[R] C`. This is the universal property of the unitization. -/
 @[simps! apply symm_apply apply_apply]
@@ -807,9 +810,7 @@ def starLift : (A →⋆ₙₐ[R] C) ≃ (Unitization R A →⋆ₐ[R] C) :=
   left_inv _ := by ext; simp,
   right_inv _ := by ext; simp }
 
-#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12179
-the simpNF linter complains about this being `@[simp]`. -/
-theorem starLift_symm_apply_apply (φ : Unitization R A →⋆ₐ[R] C) (a : A) :
+@[simp] theorem starLift_symm_apply_apply (φ : Unitization R A →⋆ₐ[R] C) (a : A) :
     Unitization.starLift.symm φ a = φ a :=
   rfl
 
@@ -833,7 +834,6 @@ This sends `φ : A →⋆ₙₐ[R] B` to a map `Unitization R A →⋆ₐ[R] Uni
 def starMap (φ : A →⋆ₙₐ[R] B) : Unitization R A →⋆ₐ[R] Unitization R B :=
   Unitization.starLift <| (Unitization.inrNonUnitalStarAlgHom R B).comp φ
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp high]
 lemma starMap_inr (φ : A →⋆ₙₐ[R] B) (a : A) :
     starMap φ (inr a) = inr (φ a) := by
@@ -844,7 +844,6 @@ lemma starMap_inl (φ : A →⋆ₙₐ[R] B) (r : R) :
     starMap φ (inl r) = algebraMap R (Unitization R B) r := by
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `φ : A →⋆ₙₐ[R] B` is injective, the lift `starMap φ : Unitization R A →⋆ₐ[R] Unitization R B`
 is also injective. -/
 lemma starMap_injective {φ : A →⋆ₙₐ[R] B} (hφ : Function.Injective φ) :

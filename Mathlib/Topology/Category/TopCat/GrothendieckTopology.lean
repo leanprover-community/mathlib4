@@ -64,8 +64,8 @@ instance : isOpenEmbedding.IsStableUnderBaseChange :=
 /-- The precoverage on `TopCat` given by jointly surjective families of open embeddings. -/
 def precoverage : Precoverage TopCat.{u} :=
     Types.jointlySurjectivePrecoverage.comap (forget TopCat) ⊓ isOpenEmbedding.precoverage
-  deriving Precoverage.HasIsos, Precoverage.IsStableUnderBaseChange,
-    Precoverage.IsStableUnderComposition
+  deriving Precoverage.HasIsos, Precoverage.IsStableUnderComposition,
+    Precoverage.IsStableUnderBaseChange
 
 /-- The Grothendieck topology on the category of topological spaces is the topology given by
 jointly surjective open embeddings. -/
@@ -106,9 +106,10 @@ instance subcanonical_grothendieckTopology : grothendieckTopology.Subcanonical :
     · intro x
       obtain ⟨i, hi⟩ := exists_mem_zeroHypercover_range 𝒰 x
       exact ⟨i, (isOpenEmbedding_f_zeroHypercover 𝒰 i).isOpen_range.mem_nhds hi⟩
-  · dsimp
-    ext
-    simp only [hom_comp, hom_ofHom, ContinuousMap.comp_apply]
+  · apply ConcreteCategory.hom_ext
+    intro
+    simp only [yoneda_obj_map, Quiver.Hom.unop_op, ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk,
+      hom_comp, ContinuousMap.comp_apply]
     rw [heq, ContinuousMap.liftCover_coe]
     simp
   · dsimp
@@ -124,8 +125,8 @@ lemma precoverage_le_comap_uliftFunctor :
   refine Precoverage.le_of_zeroHypercover fun X E ↦ ?_
   refine ⟨?_, ?_⟩
   · simp only [Presieve.map_ofArrows, Precoverage.mem_comap_iff,
-      ConcreteCategory.forget_map_eq_coe, Types.ofArrows_mem_jointlySurjectivePrecoverage_iff,
-      Set.mem_range]
+      Types.ofArrows_mem_jointlySurjectivePrecoverage_iff, ConcreteCategory.hom_ofHom,
+      Set.mem_range, TypeCat.Fun.coe_mk]
     intro ⟨x⟩
     obtain ⟨i, y, rfl⟩ := exists_mem_zeroHypercover_range E x
     use i, ⟨y⟩

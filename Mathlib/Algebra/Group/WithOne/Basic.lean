@@ -54,10 +54,8 @@ variable [Mul α] [MulOneClass β]
 Lift an additive semigroup homomorphism `f` to a bundled additive monoid homomorphism. -/]
 def lift : (α →ₙ* β) ≃ (WithOne α →* β) where
   toFun f :=
-    { toFun := fun x => Option.casesOn x 1 f, map_one' := rfl,
-      map_mul' := fun x y => WithOne.cases_on x (by rw [one_mul]; exact (one_mul _).symm)
-        (fun x => WithOne.cases_on y (by rw [mul_one]; exact (mul_one _).symm)
-          (fun y => f.map_mul x y)) }
+    { toFun := WithOne.recOneCoe 1 f, map_one' := rfl,
+      map_mul' := fun x y => x.cases_on (by simp) (fun x => y.cases_on (by simp) (f.map_mul x)) }
   invFun F := F.toMulHom.comp coeMulHom
   right_inv F := MonoidHom.ext fun x => WithOne.cases_on x F.map_one.symm (fun _ => rfl)
 
@@ -74,6 +72,9 @@ theorem lift_one : lift f 1 = 1 :=
 @[to_additive]
 theorem lift_unique (f : WithOne α →* β) : f = lift (f.toMulHom.comp coeMulHom) :=
   (lift.apply_symm_apply f).symm
+
+@[to_additive (attr := simp)]
+theorem lift_symm_apply (f : WithOne α →* β) (x : α) : lift.symm f x = f x := rfl
 
 end lift
 

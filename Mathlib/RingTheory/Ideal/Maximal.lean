@@ -34,7 +34,7 @@ variable {α : Type u} {β : Type v} {F : Type w}
 
 open Set Function
 
-open Pointwise
+open scoped Pointwise
 
 section Semiring
 
@@ -53,6 +53,9 @@ theorem isMaximal_def {I : Ideal α} : I.IsMaximal ↔ IsCoatom I :=
 
 theorem IsMaximal.ne_top {I : Ideal α} (h : I.IsMaximal) : I ≠ ⊤ :=
   (isMaximal_def.1 h).1
+
+theorem IsMaximal.lt_top {I : Ideal α} (h : I.IsMaximal) : I < ⊤ :=
+  h.ne_top.lt_top
 
 theorem isMaximal_iff {I : Ideal α} :
     I.IsMaximal ↔ (1 : α) ∉ I ∧ ∀ (J : Ideal α) (x), I ≤ J → x ∉ I → x ∈ J → (1 : α) ∈ J := by
@@ -120,7 +123,7 @@ theorem sInf_isPrime_of_isChain {s : Set (Ideal α)} (hs : s.Nonempty) (hs' : Is
     fun e =>
     or_iff_not_imp_left.mpr fun hx => by
       rw [Ideal.mem_sInf] at hx e ⊢
-      push_neg at hx
+      push Not at hx
       obtain ⟨I, hI, hI'⟩ := hx
       intro J hJ
       rcases hs'.total hI hJ with h | h
