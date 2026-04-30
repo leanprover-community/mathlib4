@@ -98,6 +98,10 @@ lemma isLocalHom_ι (hc : IsColimit c) (j : J) : IsLocalHom (c.ι.app j).hom := 
 
 theorem isLocalRing_of_isColimit (hc : IsColimit c) : IsLocalRing c.pt := by sorry
 
+lemma maximalIdeal_eq_iUnion_of_isColimit (hc : IsColimit c) :
+    (isLocalRing_of_isColimit F hc).maximalIdeal =
+    ⋃ (j : J), ((c.ι.app j) '' (maximalIdeal (F.obj j)) : Set c.pt) := sorry
+
 /-- The functor of taking residue fields from a functor `F : J ⥤ CommRingCat`, when the `F.obj` are
   local rings and `F.map` are local ring homomorphisms. -/
 noncomputable def residueFieldFunctor : J ⥤ CommRingCat.{u} where
@@ -616,10 +620,35 @@ noncomputable def coconeOfCoconeForgetPt (c : Cocone (F ⋙ (forget₂ _ (CommAl
     (hc : IsColimit c) : FlatExtension R K := by
   have := isLocalRing_of_isColimit c hc
   have := flat_of_isColimit c hc
+  let c' := (forget₂ (CommAlgCat.{u} R) CommRingCat.{u}).mapCocone c
+  let hc' : IsColimit c' := isColimitOfPreserves _ hc
+  have heq (j : J) : algebraMap R c.pt = (c'.ι.app j).hom.comp (algebraMap R (F.obj j)) :=
+      (AlgHom.comp_algebraMap (CommAlgCat.Hom.hom (c.ι.app j))).symm
   refine FlatExtension.mk' R K c.pt (isLocalHom_algebraMap_of_isColimit c hc)
     (residueFieldDescOfIsColimit c hc) ?_ ?_
-  · sorry
-  · sorry
+  · obtain ⟨j⟩ := ‹IsFiltered J›.2
+    have : IsLocalRing (((Functor.const J).obj c'.pt).obj j) := isLocalRing_of_isColimit c hc
+    have : IsLocalHom (c'.ι.app j).hom := @isLocalHom_toRingHom _ _ _ _ _ _ _ _ <|
+      (isLocalHom_ι_of_isColimit c hc j)
+    have h1 := @ResidueField.map_comp _ _ _ _ _ _ _ _ _ (algebraMap R (F.obj j)) (c'.ι.app j).hom
+      inferInstance this
+    have : (residueFieldDescOfIsColimit c hc).comp
+      (@ResidueField.map _ _ _ (inferInstanceAs (IsLocalRing (F.obj j))) _ _ _ this) =
+      algebraMap (ResidueField (F.obj j)) K := congr(CommRingCat.Hom.hom
+      $(((isColimitResidueFieldCocone c hc).fac residueFieldCoconeK) j))
+    simp_rw [heq j]
+    erw [h1, ← RingHom.comp_assoc, this]
+    exact (F.obj j).isScalarTower.algebraMap_eq.symm
+  · refine le_antisymm (fun x hx ↦ ?_) (((local_hom_TFAE (algebraMap R c.pt)).out 0 2).mp
+      (isLocalHom_algebraMap_of_isColimit c hc))
+    obtain ⟨j, x, hx', rfl⟩ := Set.mem_iUnion.mp <| (le_of_eq <|
+      @CommRingCat.FilteredColimit.maximalIdeal_eq_iUnion_of_isColimit _ _ _ _
+      c' (fun j ↦ (F.obj j).isLocalRing) (fun _ _ f ↦ isLocalHom_toRingHom (F.map f).algHom) hc') hx
+    change x ∈ maximalIdeal (F.obj j) at hx'
+    rw [(F.obj j).eqmap] at hx'
+    rw [heq j]
+    erw [← Ideal.map_map]
+    exact Ideal.mem_map_of_mem (c'.ι.app j).hom hx'
 
 lemma coconeOfCoconeForgetPt_algebraMap_eq (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat R))))
     (hc : IsColimit c) :
@@ -641,6 +670,7 @@ noncomputable def coconeOfCoconeForget (c : Cocone (F ⋙ (forget₂ _ (CommAlgC
       ext x
       exact congr($(c.ι.naturality f) x) }
 
+#check CategoryTheory.preserves_desc_mapCocone
 noncomputable def isColimit_coconeOfCoconeForget (c : Cocone (F ⋙ (forget₂ _ (CommAlgCat R))))
     (hc : IsColimit c) : IsColimit (coconeOfCoconeForget c hc) := by
   refine IsColimit.ofFaithful (forget₂ (FlatExtension R K) (CommAlgCat R)) hc
