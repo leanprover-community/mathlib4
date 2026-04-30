@@ -12,7 +12,7 @@ public import Mathlib.Data.Fintype.Units
 # Conjugacy of elements of finite groups
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 

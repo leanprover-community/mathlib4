@@ -158,13 +158,21 @@ where the vertical arrows are `cochainsIso₀` and `cochainsIso₁` respectively
 theorem comp_d₀₁_eq :
     (cochainsIso₀ A).hom ≫ d₀₁ A =
       (inhomogeneousCochains A).d 0 1 ≫ (cochainsIso₁ A).hom := by
-  ext x y
-  change A.ρ y (x default) - x default = _ + ({0} : Finset _).sum _
-  simp_rw [Fin.val_eq_zero, zero_add, pow_one, neg_smul, one_smul,
-    Finset.sum_singleton, sub_eq_add_neg]
-  rcongr i <;> exact Fin.elim0 i
+  ext x a y
+  simp only [cochainsIso₀, LinearEquiv.toModuleIso_hom, ModuleCat.hom_comp,
+    ConcreteCategory.hom_ofHom, LinearMap.coe_comp, LinearEquiv.coe_coe,
+    LinearEquiv.funUnique_apply, LinearMap.coe_single, Function.comp_apply, Function.eval,
+    d₀₁_hom_apply, zero_add, ↓reduceDIte, Nat.reduceAdd, eqToHom_refl, Category.comp_id,
+    cochainsIso₁, Iso.symm_hom, LinearEquiv.toModuleIso_inv, LinearEquiv.funCongrLeft_symm,
+    LinearEquiv.funCongrLeft_apply, Equiv.funUnique_symm_apply, LinearMap.funLeft_apply,
+    inhomogeneousCochains.d_hom_apply, Fin.isValue, uniqueElim_const, Finset.univ_unique,
+    Fin.default_eq_zero, Fin.val_eq_zero, pow_one, neg_smul, one_smul, Finset.sum_neg_distrib,
+    Finset.sum_singleton, ← sub_eq_add_neg, CochainComplex.of.d]
+  rw [← Subsingleton.elim (α := Fin 0 → G) default (fun i ↦ y), Subsingleton.elim
+    (Fin.contractNth 0 _) default, Pi.default_def]
 
-@[reassoc (attr := simp), elementwise (attr := simp)]
+-- @[reassoc (attr := simp), elementwise (attr := simp)]
+@[reassoc, elementwise]
 theorem eq_d₀₁_comp_inv :
     (cochainsIso₀ A).inv ≫ (inhomogeneousCochains A).d 0 1 =
       d₀₁ A ≫ (cochainsIso₁ A).inv :=
@@ -193,7 +201,8 @@ theorem comp_d₁₂_eq :
     Nat.one_add, neg_one_sq, sub_eq_add_neg, add_assoc]
   rcongr i <;> rw [Subsingleton.elim i 0] <;> rfl
 
-@[reassoc (attr := simp), elementwise (attr := simp)]
+-- @[reassoc (attr := simp), elementwise (attr := simp)]
+@[reassoc, elementwise]
 theorem eq_d₁₂_comp_inv :
     (cochainsIso₁ A).inv ≫ (inhomogeneousCochains A).d 1 2 =
       d₁₂ A ≫ (cochainsIso₂ A).inv :=
@@ -223,7 +232,8 @@ theorem comp_d₂₃_eq :
     one_smul, Fin.val_one, Fin.val_two, pow_succ' (-1 : k) 2, neg_sq, Nat.one_add, one_pow, mul_one]
   rcongr i <;> fin_cases i <;> rfl
 
-@[reassoc (attr := simp), elementwise (attr := simp)]
+-- @[reassoc (attr := simp), elementwise (attr := simp)]
+@[reassoc, elementwise]
 theorem eq_d₂₃_comp_inv :
     (cochainsIso₂ A).inv ≫ (inhomogeneousCochains A).d 2 3 =
       d₂₃ A ≫ (cochainsIso₃ A).inv :=
@@ -702,7 +712,7 @@ theorem isMulCoboundary₁_of_mem_coboundaries₁
 
 /-- Given an abelian group `M` with a `MulDistribMulAction` of `G`, and a function
 `f : G × G → M` satisfying the multiplicative 2-cocycle condition, produces a 2-cocycle for the
-representation on `Additive M` induced by the `MulDistribMulAction`. -/
+representation on `cochainsIso₁Additive M` induced by the `MulDistribMulAction`. -/
 @[simps]
 def cocyclesOfIsMulCocycle₂ {f : G × G → M} (hf : IsMulCocycle₂ f) :
     cocycles₂ (Rep.ofMulDistribMulAction G M) :=
@@ -819,15 +829,19 @@ lemma toCocycles_comp_isoCocycles₁_hom :
   simp [← cancel_mono (shortComplexH1 A).moduleCatLeftHomologyData.i, comp_d₀₁_eq,
     shortComplexH1_f]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma cocyclesMk₁_eq (x : cocycles₁ A) :
     cocyclesMk ((cochainsIso₁ A).inv x) (by
-      simp +instances [← inhomogeneousCochains.d_def, cocycles₁.d₁₂_apply x]) =
-      (isoCocycles₁ A).inv x := by
+      rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, ← inhomogeneousCochains.d_def,
+        eq_d₁₂_comp_inv, ModuleCat.hom_comp, LinearMap.comp_apply, cocycles₁.d₁₂_apply x,
+        map_zero]) = (isoCocycles₁ A).inv x := by
   apply_fun (forget₂ _ Ab).map ((inhomogeneousCochains A).iCycles 1) using
     (AddCommGrpCat.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
-  simpa only [HomologicalComplex.i_cyclesMk] using
-    (isoCocycles₁_inv_comp_iCocycles_apply _ x).symm
+  have := (isoCocycles₁_inv_comp_iCocycles_apply _ x).symm
+  rw [HomologicalComplex.i_cyclesMk]
+  simp only [ModuleCat.forget₂_obj, ModuleCat.forget₂_map, ConcreteCategory.hom_ofHom,
+    AddMonoidHom.coe_coe]
+  rw [← this]
+  rfl
 
 end isoCocycles₁
 
@@ -871,12 +885,13 @@ lemma toCocycles_comp_isoCocycles₂_hom :
 set_option backward.isDefEq.respectTransparency false in
 lemma cocyclesMk₂_eq (x : cocycles₂ A) :
     cocyclesMk ((cochainsIso₂ A).inv x) (by
-      simp +instances [← inhomogeneousCochains.d_def, cocycles₂.d₂₃_apply x]) =
-      (isoCocycles₂ A).inv x := by
+      rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, ← inhomogeneousCochains.d_def,
+        eq_d₂₃_comp_inv, ModuleCat.hom_comp, LinearMap.comp_apply, cocycles₂.d₂₃_apply x,
+        map_zero]) = (isoCocycles₂ A).inv x := by
   apply_fun (forget₂ _ Ab).map ((inhomogeneousCochains A).iCycles 2) using
     (AddCommGrpCat.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
-  simpa only [HomologicalComplex.i_cyclesMk] using
-    (isoCocycles₂_inv_comp_iCocycles_apply _ x).symm
+  rw [HomologicalComplex.i_cyclesMk]
+  simp; rfl
 
 end isoCocycles₂
 end CocyclesIso
@@ -991,8 +1006,8 @@ group homs `G → A`. -/
 def H1IsoOfIsTrivial :
     H1 A ≅ ModuleCat.of k (Additive G →+ A) :=
   (HomologicalComplex.isoHomologyπ _ 0 1 (CochainComplex.prev_nat_succ 0) <| by
-    ext; simp [inhomogeneousCochains.d_def, inhomogeneousCochains.d,
-      Unique.eq_default (α := Fin 0 → G), Pi.zero_apply (M := fun _ => A)]).symm ≪≫
+    ext; simp [inhomogeneousCochains.d, Unique.eq_default (α := Fin 0 → G),
+      CochainComplex.of.d]).symm ≪≫
   isoCocycles₁ A ≪≫ cocycles₁IsoOfIsTrivial A
 
 set_option backward.isDefEq.respectTransparency false in

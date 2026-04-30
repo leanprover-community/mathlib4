@@ -302,8 +302,6 @@ theorem Scheme.isBasis_affineOpens (X : Scheme) : Opens.IsBasis X.affineOpens :=
   rcases hS with ⟨i, rfl⟩
   exact isAffineOpen_opensRange _
 
-@[deprecated (since := "2025-10-07")] alias isBasis_affine_open := Scheme.isBasis_affineOpens
-
 theorem iSup_affineOpens_eq_top (X : Scheme) : ⨆ i : X.affineOpens, (i : X.Opens) = ⊤ := by
   apply Opens.ext
   rw [Opens.coe_iSup]
@@ -337,12 +335,6 @@ lemma Scheme.Opens.toSpecΓ_SpecMap_presheaf_map {X : Scheme} (U V : X.Opens) (h
     U.toSpecΓ ≫ Spec.map (X.presheaf.map (homOfLE h).op) = X.homOfLE h ≫ V.toSpecΓ := by
   delta Scheme.Opens.toSpecΓ
   simp [← Spec.map_comp, ← X.presheaf.map_comp, toSpecΓ_naturality_assoc]
-
-@[deprecated (since := "2025-10-07")]
-alias Scheme.Opens.toSpecΓ_SpecMap_map := Scheme.Opens.toSpecΓ_SpecMap_presheaf_map
-
-@[deprecated (since := "2025-10-07")]
-alias Scheme.Opens.toSpecΓ_SpecMap_map_assoc := Scheme.Opens.toSpecΓ_SpecMap_presheaf_map_assoc
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc] -- not simp because simp can prove this.
@@ -406,8 +398,6 @@ lemma isoSpec_hom_apply (x : U) :
     X.presheaf.germ_res_assoc, Spec.map_comp, Scheme.Hom.comp_apply]
   congr 1
   exact IsLocalRing.comap_closedPoint (U.stalkIso x).inv.hom
-
-@[deprecated (since := "2025-10-07")] alias isoSpec_hom_base_apply := isoSpec_hom_apply
 
 lemma isoSpec_hom_appTop :
     hU.isoSpec.hom.appTop = (Scheme.ΓSpecIso Γ(X, U)).hom ≫ U.topIso.inv := by
@@ -482,10 +472,6 @@ lemma SpecMap_appLE_fromSpec (f : X ⟶ Y) {V : X.Opens} {U : Y.Opens}
     ← Spec.map_comp_assoc, ← Spec.map_comp_assoc, Scheme.Hom.comp_appTop, morphismRestrict_appTop,
     Scheme.homOfLE_appTop, Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map,
     Scheme.Hom.appLE_map, Scheme.Hom.appLE_map, Scheme.Hom.map_appLE]
-
-@[deprecated (since := "2025-10-07")] alias Spec_map_appLE_fromSpec := SpecMap_appLE_fromSpec
-@[deprecated (since := "2025-10-07")]
-alias Spec_map_appLE_fromSpec_assoc := SpecMap_appLE_fromSpec_assoc
 
 lemma fromSpec_top [IsAffine X] : (isAffineOpen_top X).fromSpec = X.isoSpec.inv := by
   rw [fromSpec, Iso.inv_comp_eq]
@@ -590,7 +576,7 @@ theorem fromSpec_image_basicOpen :
     hU.fromSpec ''ᵁ PrimeSpectrum.basicOpen f = X.basicOpen f := by
   rw [← hU.fromSpec_preimage_basicOpen]
   ext1
-  change hU.fromSpec '' (hU.fromSpec ⁻¹' (X.basicOpen f : Set X)) = _
+  change hU.fromSpec '' hU.fromSpec ⁻¹' (X.basicOpen f : Set X) = _
   rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left, hU.range_fromSpec]
   exact Scheme.basicOpen_le _ _
 
@@ -935,9 +921,6 @@ theorem iSup_basicOpen_eq_self_iff {s : Set Γ(X, U)} :
       PrimeSpectrum.zeroLocus_empty_iff_eq_top, PrimeSpectrum.zeroLocus_span]
     simp only [Set.iUnion_singleton_eq_range, Subtype.range_val_subtype, Set.setOf_mem_eq]
 
-@[deprecated (since := "2025-10-07")]
-alias basicOpen_union_eq_self_iff := iSup_basicOpen_eq_self_iff
-
 include hU in
 theorem self_le_iSup_basicOpen_iff {s : Set Γ(X, U)} :
     (U ≤ ⨆ f : s, X.basicOpen f.1) ↔ Ideal.span s = ⊤ := by
@@ -946,9 +929,6 @@ theorem self_le_iSup_basicOpen_iff {s : Set Γ(X, U)} :
   simp only [iSup_le_iff, SetCoe.forall]
   intro x _
   exact X.basicOpen_le x
-
-@[deprecated (since := "2025-10-07")]
-alias self_le_basicOpen_union_iff := self_le_iSup_basicOpen_iff
 
 end IsAffineOpen
 
