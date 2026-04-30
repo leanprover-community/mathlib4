@@ -1044,7 +1044,7 @@ theorem Measurable.tprod {f : ι → α → β} (h : ∀ i : ι, Measurable (f i
 theorem AEMeasurable.tprod {μ : MeasureTheory.Measure α} {f : ι → α → β}
     (h : ∀ i : ι, AEMeasurable (f i) μ) : AEMeasurable (fun x => ∏'[L] i : ι, f i x) μ := by
   choose g hg_meas hg_eq_f using h
-  existsi (fun x => ∏'[L] i, g i x), Measurable.tprod hg_meas
+  use (fun x => ∏'[L] i, g i x), Measurable.tprod hg_meas
   filter_upwards [MeasureTheory.ae_all_iff.mpr hg_eq_f] with x h_eq using tprod_congr h_eq
 
 end
@@ -1060,10 +1060,13 @@ variable [PseudoMetrizableSpace β] [MeasurableSpace β] [BorelSpace β] [Measur
 theorem Measurable.tprod' {f : ι → α → β} (h : ∀ i : ι, Measurable (f i)) :
     Measurable (∏'[L] i : ι, f i) := by
   rw [tprod_def, finprod_def']
-  split_ifs with hm <;> try exact measurable_one
+  split_ifs with hm
   · refine Finset.measurable_prod_apply ?_ measurable_id
-    exact fun _ _ ↦ by simp only [Set.mulIndicator]; split_ifs <;> fun_prop
+    exact fun _ _ ↦ by rw [Set.mulIndicator]; split_ifs <;> fun_prop
+  · exact measurable_one
+  · exact measurable_one
   · exact measurable_of_tendsto_metrizable' L.filter (by fun_prop) hm.choose_spec
+  · exact measurable_one
 
 /-- The product of almost everywhere measurable functions is measurable. -/
 @[to_additive (attr := fun_prop)
@@ -1071,12 +1074,15 @@ theorem Measurable.tprod' {f : ι → α → β} (h : ∀ i : ι, Measurable (f 
 theorem AEMeasurable.tprod' {μ : MeasureTheory.Measure α} {f : ι → α → β}
     (h : ∀ i : ι, AEMeasurable (f i) μ) : AEMeasurable (∏'[L] i : ι, f i) μ := by
   rw [tprod_def, finprod_def']
-  split_ifs with hm <;> try exact aemeasurable_one
+  split_ifs with hm
   · apply Finset.aemeasurable_prod
-    exact fun _ _ ↦ by simp only [Set.mulIndicator]; split_ifs <;> fun_prop
+    exact fun _ _ ↦ by rw [Set.mulIndicator]; split_ifs <;> fun_prop
+  · exact aemeasurable_one
+  · exact aemeasurable_one
   · apply aemeasurable_of_tendsto_metrizable_ae L.filter (f := fun s => ∏ i ∈ s, f i)
     · fun_prop
     · filter_upwards with x using Tendsto.apply_nhds hm.choose_spec x
+  · exact aemeasurable_one
 
 end
 

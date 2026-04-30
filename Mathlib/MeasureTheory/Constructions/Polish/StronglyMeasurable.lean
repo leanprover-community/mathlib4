@@ -116,7 +116,7 @@ theorem AEStronglyMeasurable.tprod {μ : MeasureTheory.Measure α} {f : ι → �
     (h : ∀ i : ι, AEStronglyMeasurable (f i) μ) :
     AEStronglyMeasurable (fun x => ∏'[L] i : ι, f i x) μ := by
   choose g hg_meas hg_eq_f using h
-  existsi (fun x => ∏'[L] i, g i x), StronglyMeasurable.tprod hg_meas
+  use (fun x => ∏'[L] i, g i x), StronglyMeasurable.tprod hg_meas
   filter_upwards [MeasureTheory.ae_all_iff.mpr hg_eq_f] with x h_eq using tprod_congr h_eq
 
 end
@@ -132,12 +132,16 @@ variable [PseudoMetrizableSpace β] [ContinuousMul β]
 theorem StronglyMeasurable.tprod' {f : ι → α → β} (h : ∀ i : ι, StronglyMeasurable (f i)) :
     StronglyMeasurable (∏'[L] i : ι, f i) := by
   rw [tprod_def, finprod_def']
-  split_ifs with hm <;> try exact stronglyMeasurable_one
+  split_ifs with hm
   · refine Finset.stronglyMeasurable_prod _ fun _ _ => ?_
     rw [Set.mulIndicator]
-    split_ifs <;> try exact stronglyMeasurable_one
-    fun_prop
+    split_ifs
+    · fun_prop
+    · exact stronglyMeasurable_one
+  · exact stronglyMeasurable_one
+  · exact stronglyMeasurable_one
   · exact stronglyMeasurable_of_tendsto L.filter (by fun_prop) hm.choose_spec
+  · exact stronglyMeasurable_one
 
 /-- The product of almost everywhere strongly measurable functions is measurable. -/
 @[to_additive (attr := fun_prop)
@@ -145,12 +149,15 @@ theorem StronglyMeasurable.tprod' {f : ι → α → β} (h : ∀ i : ι, Strong
 theorem AEStronglyMeasurable.tprod' {μ : MeasureTheory.Measure α} {f : ι → α → β}
     (h : ∀ i : ι, AEStronglyMeasurable (f i) μ) : AEStronglyMeasurable (∏'[L] i : ι, f i) μ := by
   rw [tprod_def, finprod_def']
-  split_ifs with hm <;> try exact aestronglyMeasurable_one
+  split_ifs with hm
   · refine Finset.aestronglyMeasurable_prod _ fun _ _ => ?_
     rw [Set.mulIndicator]
     split_ifs <;> fun_prop
+  · exact aestronglyMeasurable_one
+  · exact aestronglyMeasurable_one
   · apply aestronglyMeasurable_of_tendsto_ae L.filter (f := fun s => ∏ i ∈ s, f i) (by fun_prop)
     filter_upwards with x using Tendsto.apply_nhds hm.choose_spec x
+  · exact aestronglyMeasurable_one
 
 end
 
