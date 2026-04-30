@@ -298,11 +298,11 @@ variable {R M : Type*} [Ring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup
 
 lemma sup_inf_assoc_of_le_submodule {C : PointedCone R E} (D : PointedCone R E)
     {S : Submodule R E} (hCS : C ≤ S) : (C ⊔ D) ⊓ S = C ⊔ (D ⊓ S) :=
-  sup_inf_assoc_of_le_of_neg_le _ hCS (by simpa [Submodule.neg_le])
+  sup_inf_assoc_of_le_of_neg_le _ hCS (by simpa [SetLike.neg_le])
 
 lemma inf_sup_assoc_of_le_of_submodule_le {C : PointedCone R E} (D : PointedCone R E)
     {S : Submodule R E} (hSC : S ≤ C) : (C ⊓ D) ⊔ S = C ⊓ (D ⊔ S) :=
-  inf_sup_assoc_of_le_of_neg_le _ hSC (by simpa [Submodule.neg_le])
+  inf_sup_assoc_of_le_of_neg_le _ hSC (by simpa [SetLike.neg_le])
 
 end AddCommGroup
 

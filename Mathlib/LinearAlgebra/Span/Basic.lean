@@ -489,7 +489,7 @@ lemma sup_inf_assoc_of_le_of_neg_le {s : Submodule R M} (t : Submodule R M)
   · rintro ⟨⟨y, hy, z, hz, hyzx⟩, hx⟩
     refine ⟨y, hy, z, ⟨hz, ?_⟩, hyzx⟩
     rw [← add_right_inj, neg_add_cancel_left] at hyzx
-    simpa [hyzx] using p.add_mem (neg_le.mp hnsp hy) hx
+    simpa [hyzx] using p.add_mem (SetLike.neg_le.mp hnsp hy) hx
   · rintro ⟨y, hy, z, ⟨hz, hz'⟩, hyzx⟩
     refine ⟨⟨y, hy, z, hz, hyzx⟩, ?_⟩
     simpa [← hyzx] using p.add_mem (hsp hy) hz'
@@ -501,9 +501,9 @@ lemma inf_sup_assoc_of_le_of_neg_le {s : Submodule R M} (t : Submodule R M)
 
 theorem span_neg_eq_neg (s : Set M) : span R (-s) = -span R s := by
   apply le_antisymm
-  · rw [span_le, coe_set_neg, ← Set.neg_subset, neg_neg]
+  · rw [span_le, SetLike.coe_set_neg, ← Set.neg_subset, neg_neg]
     exact subset_span
-  · rw [neg_le, span_le, coe_set_neg, ← Set.neg_subset]
+  · rw [SetLike.neg_le, span_le, SetLike.coe_set_neg, ← Set.neg_subset]
     exact subset_span
 
 variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]

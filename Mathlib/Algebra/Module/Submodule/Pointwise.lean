@@ -5,6 +5,7 @@ Authors: Eric Wieser, Jujian Zhang
 -/
 module
 
+public import Mathlib.Data.SetLike.Pointwise
 public import Mathlib.Algebra.GroupWithZero.Subgroup
 public import Mathlib.Algebra.Order.Group.Action
 public import Mathlib.Algebra.Module.Submodule.Range
@@ -59,21 +60,24 @@ variable [Semiring R] [AddCommGroup M] [Module R M]
 /-- The submodule with every element negated. Note if `R` is a ring and not just a semiring, this
 is a no-op, as shown by `Submodule.neg_eq_self`.
 
-Recall that When `R` is the semiring corresponding to the nonnegative elements of `R'`,
+Recall that when `R` is the semiring corresponding to the nonnegative elements of `R'`,
 `Submodule R' M` is the type of cones of `M`. This instance reflects such cones about `0`.
 
 This is available as an instance in the `Pointwise` locale. -/
-@[instance_reducible]
+instance : IsConcreteNeg (Submodule R M) M where
+  neg p := { -p.toAddSubmonoid with
+    smul_mem' := fun r m hm => Set.mem_neg.2 <| smul_neg r m ▸ p.smul_mem r <| Set.mem_neg.1 hm }
+  coe_set_neg' p := by simp
+
+@[instance_reducible, deprecated SetLike.pointwiseNeg (since := "2026-04-30")]
 protected def pointwiseNeg : Neg (Submodule R M) where
   neg p :=
     { -p.toAddSubmonoid with
       smul_mem' := fun r m hm => Set.mem_neg.2 <| smul_neg r m ▸ p.smul_mem r <| Set.mem_neg.1 hm }
 
-scoped[Pointwise] attribute [instance] Submodule.pointwiseNeg
-
 open scoped Pointwise
 
-@[simp]
+@[deprecated SetLike.coe_set_neg (since := "2026-04-30")]
 theorem coe_set_neg (S : Submodule R M) : ↑(-S) = -(S : Set M) :=
   rfl
 
@@ -81,40 +85,41 @@ theorem coe_set_neg (S : Submodule R M) : ↑(-S) = -(S : Set M) :=
 theorem neg_toAddSubmonoid (S : Submodule R M) : (-S).toAddSubmonoid = -S.toAddSubmonoid :=
   rfl
 
-@[simp]
+@[deprecated SetLike.mem_neg (since := "2026-04-30")]
 theorem mem_neg {g : M} {S : Submodule R M} : g ∈ -S ↔ -g ∈ S :=
   Iff.rfl
 
 /-- `Submodule.pointwiseNeg` is involutive.
 
 This is available as an instance in the `Pointwise` locale. -/
-@[instance_reducible]
+@[instance_reducible, deprecated SetLike.involutivePointwiseNeg (since := "2026-04-30")]
 protected def involutivePointwiseNeg : InvolutiveNeg (Submodule R M) where
   neg_neg _S := SetLike.coe_injective <| neg_neg _
 
-scoped[Pointwise] attribute [instance] Submodule.involutivePointwiseNeg
-
-@[simp]
+@[deprecated SetLike.neg_le_neg (since := "2026-04-30")]
 theorem neg_le_neg {S T : Submodule R M} : -S ≤ -T ↔ S ≤ T :=
   SetLike.coe_subset_coe.symm.trans Set.neg_subset_neg
 
+@[deprecated SetLike.neg_le (since := "2026-04-30")]
 theorem neg_le {S T : Submodule R M} : -S ≤ T ↔ S ≤ -T :=
   SetLike.coe_subset_coe.symm.trans Set.neg_subset
 
+@[deprecated SetLike.neg_eq_self_iff_neg_le (since := "2026-04-30")]
 theorem neg_eq_self_iff_neg_le {S : Submodule R M} : -S = S ↔ -S ≤ S :=
-  ⟨le_of_eq, fun h => antisymm h <| neg_le.mp h⟩
+  ⟨le_of_eq, fun h => antisymm h <| SetLike.neg_le.mp h⟩
 
 /-- `Submodule.pointwiseNeg` as an order isomorphism. -/
+@[deprecated SetLike.negOrderIso (since := "2026-04-30")]
 def negOrderIso : Submodule R M ≃o Submodule R M where
   toEquiv := Equiv.neg _
-  map_rel_iff' := @neg_le_neg _ _ _ _ _
+  map_rel_iff' := SetLike.neg_le_neg ..
 
 @[simp]
 theorem neg_inf (S T : Submodule R M) : -(S ⊓ T) = -S ⊓ -T := rfl
 
 @[simp]
 theorem neg_sup (S T : Submodule R M) : -(S ⊔ T) = -S ⊔ -T :=
-  (negOrderIso : Submodule R M ≃o Submodule R M).map_sup S T
+  (SetLike.negOrderIso : Submodule R M ≃o Submodule R M).map_sup S T
 
 @[simp]
 theorem neg_bot : -(⊥ : Submodule R M) = ⊥ :=
@@ -126,11 +131,11 @@ theorem neg_top : -(⊤ : Submodule R M) = ⊤ :=
 
 @[simp]
 theorem neg_iInf {ι : Sort*} (S : ι → Submodule R M) : (-⨅ i, S i) = ⨅ i, -S i :=
-  (negOrderIso : Submodule R M ≃o Submodule R M).map_iInf _
+  (SetLike.negOrderIso : Submodule R M ≃o Submodule R M).map_iInf _
 
 @[simp]
 theorem neg_iSup {ι : Sort*} (S : ι → Submodule R M) : (-⨆ i, S i) = ⨆ i, -S i :=
-  (negOrderIso : Submodule R M ≃o Submodule R M).map_iSup _
+  (SetLike.negOrderIso : Submodule R M ≃o Submodule R M).map_iSup _
 
 variable {S : Type*} [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M]
 
