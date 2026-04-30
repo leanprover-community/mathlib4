@@ -693,11 +693,7 @@ variable {G} {u v : V}
 lemma IsPath.exists_of_edges {u v : V} {e} {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPath)
     (hep : e ∈ p.edges) (heq : e ∈ q.edges) (hl : 1 < p.length) :
     ∃ z, z ∈ p.support.tail ∧ z ∈ q.support.tail := by
-  have : ∀ e : Sym2 V, ∃ a b : V, e = s(a, b) := by
-    intro e
-    rw [← Sym2.exists]
-    use e
-  obtain ⟨a, b, hab⟩ := this e
+  obtain ⟨a, b, hab⟩ := Sym2.exists.mp ⟨e, rfl⟩
   subst hab
   by_cases! h : a = v ∨ b = v
   · by_cases hh : a = v
@@ -707,18 +703,9 @@ lemma IsPath.exists_of_edges {u v : V} {e} {p : G.Walk u v} {q : G.Walk v u} (hp
     · by_cases ha : a = u
       · cases p.mem_support_iff (w := b) |>.mp (by grind [snd_mem_support_of_mem_edges])
         · grind [p.adj_of_mem_edges hep, G.irrefl]
-        · have : b ∉ p.support.tail := by
-            intro hc
-            have hb : b = v := by tauto
-            have : p.getVert (p.length - 1) = a := by
-              symm
-              apply eq_penultimate_of_mem_edges hp
-              rwa [hb, Sym2.eq_swap] at hep
-            have : p.length = 1 := by
-              rw [ha, hp.getVert_eq_start_iff (p.length.sub_le 1)] at this
-              lia
-            lia
-          contradiction
+        · suffices p.length - 1 = 0 by lia
+          refine hp.getVert_eq_start_iff (p.length.sub_le 1) |>.mp ?_
+          exact eq_penultimate_of_mem_edges hp (by grind) |>.symm
       · use a
         grind [p.mem_support_iff.mp, q.mem_support_iff.mp, fst_mem_support_of_mem_edges]
   by_cases a = u
