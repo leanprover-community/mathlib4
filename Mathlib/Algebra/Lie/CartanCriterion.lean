@@ -29,16 +29,19 @@ criterion.
   if a finite-dimensional representation `M` of `L` has trivial trace form, then `M` is nilpotent
   as a `⁅L, L⁆`-module.
 * `LieIdeal.isSolvable_of_killingForm_apply_lie_eq_zero`: **Cartan's criterion for solvability**
-  Desc here
+  (sufficient direction). For an ideal `I` of a finite-dimensional Lie algebra `L` over a field
+  of characteristic zero, if the Killing form of `L` vanishes on `I × ⁅I, I⁆`, then `I` is
+  solvable.
 * `LieAlgebra.killingCompl_top_le_radical`: the kernel of the Killing form of a finite-dimensional
   Lie algebra over a field of characteristic zero is contained in the solvable radical.
 * `LieAlgebra.HasTrivialRadical.instIsKilling`: **Cartan's criterion for semisimplicity**
-  Desc here
+  (sufficient direction). A finite-dimensional Lie algebra over a field of characteristic zero
+  with trivial radical has non-degenerate Killing form.
 
 ## TODO
 
 * The **necessary direction of Cartan's criterion for solvability**:
-  `IsSolvable I → ∀ x ∈ I, ∀ y ∈ ⁅I, I⁆, killingForm K L x y = 0`. Desc here.
+  `IsSolvable I → ∀ x ∈ I, ∀ y ∈ ⁅I, I⁆, killingForm K L x y = 0`.
 
 ## References
 
