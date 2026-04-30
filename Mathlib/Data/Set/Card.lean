@@ -943,6 +943,24 @@ theorem ncard_coe {α : Type*} (s : Set α) :
 @[simp] lemma ncard_graphOn (s : Set α) (f : α → β) : (s.graphOn f).ncard = s.ncard := by
   rw [← fst_injOn_graph.ncard_image, image_fst_graphOn]
 
+/-- Given a finite set `s`, the number of subsets of `s` with cardinality `n` is
+`s.ncard.choose n`. See also `Finset.card_powersetCard`. -/
+lemma ncard_powerset_ncard (hs : s.Finite) (n : ℕ) :
+    {t : Set α | t.ncard = n ∧ t ⊆ s}.ncard = s.ncard.choose n := by
+  have : {t : Set α | t.ncard = n ∧ t ⊆ s}.Finite := hs.finite_subsets.subset (by grind)
+  rw [Set.ncard_eq_toFinset_card _ this]
+  convert Finset.card_powersetCard n hs.toFinset
+  swap; · exact s.ncard_eq_toFinset_card hs
+  convert Finset.card_image_of_injOn Finset.coe_injective.injOn
+  ext t
+  simp only [Set.Finite.mem_toFinset, Set.mem_setOf_eq, Finset.mem_image, Finset.mem_powersetCard,
+    Set.Finite.subset_toFinset]
+  refine ⟨fun ⟨h1, h2⟩ ↦ ⟨(hs.subset h2).toFinset, ⟨by simpa, ?_⟩, by simp⟩,
+    fun ⟨u, ⟨h1, h2⟩, h3⟩ ↦ ?_⟩
+  · rw [← t.ncard_eq_toFinset_card _, h1]
+  · rw [← h3, Set.ncard_coe_finset, h2]
+    exact ⟨rfl, h1⟩
+
 section Lattice
 
 theorem ncard_union_add_ncard_inter (s t : Set α) (hs : s.Finite := by toFinite_tac)
@@ -989,6 +1007,11 @@ theorem ncard_diff (hst : s ⊆ t) (hs : s.Finite := by toFinite_tac) :
   obtain ht | ht := t.finite_or_infinite
   · rw [← ncard_diff_add_ncard_of_subset hst ht, add_tsub_cancel_right]
   · rw [ht.ncard, Nat.zero_sub, (ht.diff hs).ncard]
+
+/-- This is the same as `ncard_diff` but we require `t` to be finite instead. -/
+theorem ncard_diff' (hst : s ⊆ t) (ht : t.Finite := by toFinite_tac) :
+    (t \ s).ncard = t.ncard - s.ncard :=
+  ncard_diff hst (ht.subset hst)
 
 lemma cast_ncard_sdiff {R : Type*} [AddGroupWithOne R] (hst : s ⊆ t) (ht : t.Finite) :
     ((t \ s).ncard : R) = t.ncard - s.ncard := by
