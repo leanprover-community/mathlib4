@@ -232,6 +232,7 @@ public import Mathlib.Algebra.Category.Ring.FinitePresentation
 public import Mathlib.Algebra.Category.Ring.Instances
 public import Mathlib.Algebra.Category.Ring.Limits
 public import Mathlib.Algebra.Category.Ring.LinearAlgebra
+public import Mathlib.Algebra.Category.Ring.Small
 public import Mathlib.Algebra.Category.Ring.Topology
 public import Mathlib.Algebra.Category.Ring.Under.Basic
 public import Mathlib.Algebra.Category.Ring.Under.Limits
