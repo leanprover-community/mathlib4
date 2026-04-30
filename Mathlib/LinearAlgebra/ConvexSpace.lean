@@ -175,17 +175,17 @@ lemma bind_single (m : M) (g : M → StdSimplex R N) : bind (single m) g = g m :
 lemma bind_const (f : StdSimplex R M) (g : StdSimplex R N) : bind f (fun _ ↦ g) = g := by
   simp [bind, join]
 
-lemma bind_weights (f : StdSimplex R M) (g : M → StdSimplex R N) :
+lemma weights_bind (f : StdSimplex R M) (g : M → StdSimplex R N) :
   (bind f g).weights = fun n ↦ ∑ k ∈ f.support, f.weights k * (g k).weights n := by
   ext n
   simp only [bind, join, map, Finsupp.sum_apply]
   rw [Finsupp.sum_mapDomain_index (fun _ => by simp) (fun _ _ _ => by simp [add_mul])]
   simp [Finsupp.sum]
 
-lemma support_subset_bind_support {f : StdSimplex R M} (g : M → StdSimplex R N) {m : M}
+lemma support_subset_support_bind {f : StdSimplex R M} (g : M → StdSimplex R N) {m : M}
     (hm : m ∈ f.support) : (g m).support ⊆ (bind f g).support := by
   intro n hn
-  rw [Finsupp.mem_support_iff, bind_weights]
+  rw [Finsupp.mem_support_iff, weights_bind]
   refine ne_of_gt ?_
   have hpos : 0 < f.weights m * (g m).weights n :=
     mul_pos ((f.nonneg m).lt_of_ne' (by grind)) (((g m).nonneg n).lt_of_ne' (by grind))
