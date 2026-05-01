@@ -663,7 +663,7 @@ theorem _root_.Measurable.stronglyMeasurable [TopologicalSpace β] [PseudoMetriz
     SimpleFunc.tendsto_approxOn hf (Set.mem_univ _) (by simp)⟩
 
 /-- In a space with second countable topology, strongly measurable and measurable are equivalent. -/
-theorem _root_.stronglyMeasurable_iff_measurable [TopologicalSpace β] [MetrizableSpace β]
+theorem _root_.stronglyMeasurable_iff_measurable [TopologicalSpace β] [PseudoMetrizableSpace β]
     [BorelSpace β] [SecondCountableTopology β] : StronglyMeasurable f ↔ Measurable f :=
   ⟨fun h => h.measurable, fun h => Measurable.stronglyMeasurable h⟩
 

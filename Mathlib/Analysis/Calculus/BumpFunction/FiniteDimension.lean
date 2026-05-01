@@ -164,7 +164,7 @@ theorem IsOpen.exists_contDiff_support_eq {n : ℕ∞} {s : Set E} (hs : IsOpen 
   have S : ∀ x, Summable fun n => (r n • g n) x := fun x ↦ by
     refine .of_nnnorm_bounded δc.summable fun n => ?_
     rw [← NNReal.coe_le_coe, coe_nnnorm]
-    simpa only [norm_iteratedFDeriv_zero] using hr n 0 (zero_le n) x
+    simpa only [norm_iteratedFDeriv_zero] using hr n 0 zero_le x
   refine ⟨fun x => ∑' n, (r n • g n) x, ?_, ?_, ?_⟩
   · apply Subset.antisymm
     · intro x hx
@@ -193,7 +193,7 @@ theorem IsOpen.exists_contDiff_support_eq {n : ℕ∞} {s : Set E} (hs : IsOpen 
     apply Summable.tsum_le_tsum _ (S y) A.summable
     intro n
     apply (le_abs_self _).trans
-    simpa only [norm_iteratedFDeriv_zero] using hr n 0 (zero_le n) y
+    simpa only [norm_iteratedFDeriv_zero] using hr n 0 zero_le y
 
 @[deprecated (since := "2025-12-17")]
 alias IsOpen.exists_smooth_support_eq := IsOpen.exists_contDiff_support_eq

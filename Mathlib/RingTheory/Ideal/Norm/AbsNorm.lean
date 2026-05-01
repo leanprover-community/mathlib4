@@ -413,7 +413,6 @@ section Int
 
 open Ideal
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Int.ideal_span_absNorm_eq_self (J : Ideal ℤ) :
     span {(absNorm J : ℤ)} = J := by

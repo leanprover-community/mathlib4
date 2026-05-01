@@ -15,7 +15,7 @@ public import Mathlib.CategoryTheory.Shift.Linear
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Category Limits Pretriangulated ZeroObject Preadditive
 

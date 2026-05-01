@@ -158,14 +158,14 @@ noncomputable def freeSumIso : free I ⨿ free J ≅ free (R := R) (I ⊕ J) :=
 @[reassoc (attr := simp)]
 lemma inl_freeSumIso_hom :
     coprod.inl ≫ (freeSumIso (R := R) I J).hom = freeMap Sum.inl := by
-  rw [← dsimp% freeFunctor_map (TypeCat.ofHom (Sum.inl : I → I ⊕ J))]
+  rw [← dsimp% freeFunctor_map (↾(Sum.inl : I → I ⊕ J))]
   exact IsColimit.comp_coconePointUniqueUpToIso_hom
     (coprodIsCoprod (free (R := R) I) (free J)) _ (.mk .left)
 
 @[reassoc (attr := simp)]
 lemma inr_freeSumIso_hom :
     coprod.inr ≫ (freeSumIso (R := R) I J).hom = freeMap Sum.inr := by
-  rw [← dsimp% freeFunctor_map (TypeCat.ofHom (Sum.inr : J → I ⊕ J))]
+  rw [← dsimp% freeFunctor_map (↾(Sum.inr : J → I ⊕ J))]
   exact IsColimit.comp_coconePointUniqueUpToIso_hom
     (coprodIsCoprod (free (R := R) I) (free J)) _ (.mk .right)
 
@@ -176,30 +176,46 @@ section
 variable {C' : Type u₂} [Category.{v₂} C'] {J' : GrothendieckTopology C'} {S : Sheaf J' RingCat.{u}}
   [HasSheafify J' AddCommGrpCat.{u}] [J'.WEqualsLocallyBijective AddCommGrpCat.{u}]
   [J'.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
-  (F : SheafOfModules.{u} R ⥤ SheafOfModules.{u} S)
-  (η : F.obj (unit R) ≅ unit S) (I : Type u) (i : I)
-  [PreservesColimitsOfShape (Discrete I) F]
+  (F : SheafOfModules.{u} R ⥤ SheafOfModules.{u} S) (I : Type u)
 
 /-- Let `F` be a functor from the category of sheaves of `R`-modules to sheaves of `S`-modules.
-If `F` preserves coproducts and `F.obj (unit R) ≅ unit S`, then `F` preserves free sheaves of
+Then a morphism `η : unit S ⟶ F.obj (unit R)` induces a morphism from `free (R := S) I` to
+`F.obj (free I)`. See also `mapFreeIso` for the iso version. -/
+noncomputable def mapFree (η : unit S ⟶ F.obj (unit R)) : free (R := S) I ⟶ F.obj (free I) :=
+  (isColimitFreeCofan I).map (F.mapCocone (freeCofan I)) (Discrete.natTrans fun _ ↦ η)
+
+@[reassoc (attr := simp)]
+lemma ιFree_mapFree (η : unit S ⟶ F.obj (unit R)) (i : I) :
+    ιFree i ≫ mapFree F I η = η ≫ F.map (ιFree i) :=
+  IsColimit.ι_map (isColimitFreeCofan I) (F.mapCocone (freeCofan I))
+    (Discrete.natTrans fun _ ↦ η) (Discrete.mk i)
+
+variable [PreservesColimitsOfShape (Discrete I) F]
+
+/-- Let `F` be a functor from the category of sheaves of `R`-modules to sheaves of `S`-modules.
+If `F` preserves coproducts and `unit S ≅ F.obj (unit R)`, then `F` preserves free sheaves of
 modules. -/
-noncomputable def mapFree : F.obj (free I) ≅ free (R := S) I :=
-  (isColimitOfPreserves F (isColimitFreeCofan I)).coconePointsIsoOfEquivalence
-    (isColimitFreeCofan I) CategoryTheory.Equivalence.refl (Discrete.natIso fun _ ↦ η).symm
+noncomputable def mapFreeIso (η : unit S ≅ F.obj (unit R)) : free (R := S) I ≅ F.obj (free I) :=
+  (isColimitFreeCofan I).coconePointsIsoOfNatIso (isColimitOfPreserves F (isColimitFreeCofan I))
+    (Discrete.natIso fun _ ↦ η)
 
-set_option backward.isDefEq.respectTransparency false in
-@[reassoc (attr := simp)]
-lemma ιFree_mapFree_inv :
-    ιFree i ≫ (mapFree F η I).inv = η.inv ≫ F.map (ιFree i) := by
-  simp [mapFree, ← freeCofan_inj, Cofan.inj]
+lemma mapFreeIso_hom (η : unit S ≅ F.obj (unit R)) :
+    (mapFreeIso F I η).hom = mapFree F I η.hom := rfl
 
 @[reassoc (attr := simp)]
-lemma map_ιFree_mapFree_hom :
-    F.map (ιFree i) ≫ (mapFree F η I).hom = η.hom ≫ ιFree i := by
-  have : η.inv ≫ η.hom ≫ ιFree i = (η.inv ≫ F.map (ιFree i)) ≫ (mapFree F η I).hom := by
-    simp [← ιFree_mapFree_inv]
-  rw [← Iso.hom_inv_id_assoc η (η.hom ≫ ιFree i)]
-  simp [this]
+lemma ιFree_mapFreeIso_hom (η : unit S ≅ F.obj (unit R)) (i : I) :
+    ιFree i ≫ (mapFreeIso F I η).hom = η.hom ≫ F.map (ιFree i) :=
+  ιFree_mapFree _ _ _ _
+
+@[deprecated (since := "2026-04-21")] alias ιFree_mapFree_inv := ιFree_mapFreeIso_hom
+
+@[reassoc (attr := simp)]
+lemma map_ιFree_mapFreeIso_inv (η : unit S ≅ F.obj (unit R)) (i : I) :
+    F.map (ιFree i) ≫ (mapFreeIso F I η).inv = η.inv ≫ ιFree i :=
+  IsColimit.ι_map (isColimitOfPreserves F (isColimitFreeCofan I)) (freeCofan I)
+    (Discrete.natTrans fun _ ↦ η.inv) (Discrete.mk i)
+
+@[deprecated (since := "2026-04-21")] alias map_ιFree_mapFree_hom := map_ιFree_mapFreeIso_inv
 
 end
 

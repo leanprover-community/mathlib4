@@ -12,7 +12,7 @@ public import Mathlib.Algebra.GroupWithZero.Action.Defs
 # Distributive actions by submonoids
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists RelIso Ring
 
