@@ -164,7 +164,7 @@ theorem isTranscendenceBasis_iff_of_subsingleton [Subsingleton R] (x : ι → A)
 @[nontriviality] theorem trdeg_subsingleton [Subsingleton R] : trdeg R A = 1 :=
   have := Module.subsingleton R A
   (ciSup_le' fun s ↦ by simpa using Set.subsingleton_of_subsingleton).antisymm <| le_ciSup_of_le
-    (Cardinal.bddAbove_range _) ⟨{0}, .of_subsingleton⟩ (by simp)
+    Cardinal.bddAbove_of_small ⟨{0}, .of_subsingleton⟩ (by simp)
 
 theorem algebraicIndependent_adjoin (hs : AlgebraicIndependent R x) :
     @AlgebraicIndependent ι R (adjoin R (range x))
@@ -234,8 +234,8 @@ end RingHom
 /-- Every finite subset of an algebraically independent set is algebraically independent. -/
 theorem algebraicIndependent_finset_map_embedding_subtype (s : Set A)
     (li : AlgebraicIndependent R ((↑) : s → A)) (t : Finset s) :
-    AlgebraicIndependent R ((↑) : Finset.map (Embedding.subtype s) t → A) := by
-  let f : t.map (Embedding.subtype s) → s := fun x =>
+    AlgebraicIndependent R ((↑) : Finset.map (Embedding.subtype (· ∈ s)) t → A) := by
+  let f : t.map (Embedding.subtype (· ∈ s)) → s := fun x =>
     ⟨x.1, by
       obtain ⟨x, h⟩ := x
       rw [Finset.mem_map] at h
@@ -256,7 +256,7 @@ theorem algebraicIndependent_bounded_of_finset_algebraicIndependent_bounded {n :
   intro s li
   apply Cardinal.card_le_of
   intro t
-  rw [← Finset.card_map (Embedding.subtype s)]
+  rw [← Finset.card_map (Embedding.subtype (· ∈ s))]
   apply H
   apply algebraicIndependent_finset_map_embedding_subtype _ li
 
@@ -324,7 +324,7 @@ open Cardinal
 theorem AlgebraicIndependent.lift_cardinalMk_le_trdeg [Nontrivial R]
     (hx : AlgebraicIndependent R x) : lift.{v} #ι ≤ lift.{u} (trdeg R A) := by
   rw [lift_mk_eq'.mpr ⟨.ofInjective _ hx.injective⟩, lift_le]
-  exact le_ciSup_of_le (bddAbove_range _) ⟨_, hx.to_subtype_range⟩ le_rfl
+  exact le_ciSup_of_le bddAbove_of_small ⟨_, hx.to_subtype_range⟩ le_rfl
 
 theorem AlgebraicIndependent.cardinalMk_le_trdeg [Nontrivial R] {ι : Type v} {x : ι → A}
     (hx : AlgebraicIndependent R x) : #ι ≤ trdeg R A := by
@@ -333,7 +333,7 @@ theorem AlgebraicIndependent.cardinalMk_le_trdeg [Nontrivial R] {ι : Type v} {x
 theorem lift_trdeg_le_of_injective (f : A →ₐ[R] A') (hf : Injective f) :
     lift.{v'} (trdeg R A) ≤ lift.{v} (trdeg R A') := by
   nontriviality R
-  rw [trdeg, lift_iSup (bddAbove_range _)]
+  rw [trdeg, lift_iSup bddAbove_of_small]
   exact ciSup_le' fun i ↦ (i.2.map' hf).lift_cardinalMk_le_trdeg
 
 theorem trdeg_le_of_injective {A' : Type v} [CommRing A'] [Algebra R A'] (f : A →ₐ[R] A')
@@ -343,7 +343,7 @@ theorem trdeg_le_of_injective {A' : Type v} [CommRing A'] [Algebra R A'] (f : A 
 theorem lift_trdeg_le_of_surjective (f : A →ₐ[R] A') (hf : Surjective f) :
     lift.{v} (trdeg R A') ≤ lift.{v'} (trdeg R A) := by
   nontriviality R
-  rw [trdeg, lift_iSup (bddAbove_range _)]
+  rw [trdeg, lift_iSup bddAbove_of_small]
   refine ciSup_le' fun i ↦ (lift_cardinalMk_le_trdeg (x := fun a : i.1 ↦ (⇑f).invFun a) <|
     of_comp f ?_)
   convert i.2; simp [invFun_eq (hf _)]

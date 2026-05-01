@@ -19,7 +19,7 @@ public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 
 ## Note
 We actually prove something stronger, namely that the `Xⁿ⁻ⁱ`-th coefficient lives in `Iⁿ`.
-This the definitition that `x` is integral over `I` in https://stacks.math.columbia.edu/tag/00H2.
+This is the definition that `x` is integral over `I` in https://stacks.math.columbia.edu/tag/00H2.
 
 -/
 
@@ -61,7 +61,7 @@ lemma exists_monic_aeval_eq_zero_forall_mem_pow_of_isIntegral
   refine ⟨q, ?_, ?_, ?_⟩
   · simpa [← hq] using show q.coeff p.natDegree = 1 by simp [q, hp]
   · replace e := congr(($e).coeff p.natDegree)
-    simp only [eval₂_eq_sum_range, finset_sum_coeff, coeff_zero] at e
+    simp only [eval₂_eq_sum_range, finsetSum_coeff, coeff_zero] at e
     simp only [q, map_sum, map_mul, aeval_C, map_pow, aeval_X]
     refine (Finset.sum_congr rfl fun i hi ↦ ?_).trans e
     simp only [Finset.mem_range, Nat.lt_succ_iff] at hi

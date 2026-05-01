@@ -26,7 +26,7 @@ and its additive version `ClosedAddSubgroup`.
 Actually provide the `Order.Frame (ClosedSubgroup G)` instance.
 -/
 
-@[expose] public section
+public section
 
 section
 
@@ -82,7 +82,7 @@ instance instInfClosedSubgroup : Min (ClosedSubgroup G) :=
 
 @[to_additive]
 instance instSemilatticeInfClosedSubgroup : SemilatticeInf (ClosedSubgroup G) :=
-  SetLike.coe_injective.semilatticeInf ((↑) : ClosedSubgroup G → Set G) fun _ _ ↦ rfl
+  SetLike.coe_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 @[to_additive]
 instance [CompactSpace G] (H : ClosedSubgroup G) : CompactSpace H :=
@@ -94,7 +94,7 @@ open scoped Pointwise
 
 namespace Subgroup
 
-variable {G : Type u} [Group G] [TopologicalSpace G] [ContinuousMul G]
+variable {G : Type u} [Group G] [TopologicalSpace G] [SeparatelyContinuousMul G]
 
 lemma normalCore_isClosed (H : Subgroup G) (h : IsClosed (H : Set G)) :
     IsClosed (H.normalCore : Set G) := by

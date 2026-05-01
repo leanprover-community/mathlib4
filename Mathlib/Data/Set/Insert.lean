@@ -5,7 +5,9 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 module
 
+public import Aesop
 public import Mathlib.Data.Set.Disjoint
+public import Mathlib.Tactic.Simproc.ExistsAndEq
 
 /-!
 # Lemmas about insertion, singleton, and pairs
@@ -26,11 +28,9 @@ assert_not_exists HeytingAlgebra
 
 open Function
 
-universe u v
-
 namespace Set
 
-variable {α : Type u} {s t : Set α} {a b : α}
+variable {α β : Type*} {s t : Set α} {a b : α}
 
 /-!
 ### Lemmas about `insert`
@@ -257,6 +257,9 @@ theorem eq_singleton_iff_nonempty_unique_mem : s = {a} ↔ s.Nonempty ∧ ∀ x 
   eq_singleton_iff_unique_mem.trans <|
     and_congr_left fun H => ⟨fun h' => ⟨_, h'⟩, fun ⟨x, h⟩ => H x h ▸ h⟩
 
+theorem singleton_iff_unique_mem : (∃ a, s = {a}) ↔ ∃! a, a ∈ s :=
+  ⟨fun ⟨a, h⟩ ↦ ⟨a, by grind⟩, fun ⟨a, h⟩ ↦ ⟨a, by grind⟩⟩
+
 theorem setOf_mem_list_eq_replicate {l : List α} {a : α} :
     { x | x ∈ l } = {a} ↔ ∃ n > 0, l = List.replicate n a := by
   simpa +contextual [Set.ext_iff, iff_iff_implies_and_implies, forall_and, List.eq_replicate_iff,
@@ -370,6 +373,11 @@ theorem Nonempty.subset_pair_iff_eq (hs : s.Nonempty) :
     s ⊆ {a, b} ↔ s = {a} ∨ s = {b} ∨ s = {a, b} := by
   rw [Set.subset_pair_iff_eq, or_iff_right]; exact hs.ne_empty
 
+theorem range_ite_const {p : α → Prop} [DecidablePred p] {x y : β}
+    (hp : ∃ a, p a) (hn : ∃ a, ¬ p a) :
+    Set.range (fun a ↦ if p a then x else y) = {x, y} := by
+  grind
+
 /-! ### Powerset -/
 
 /-- The powerset of a singleton contains only `∅` and the singleton itself. -/
@@ -390,7 +398,7 @@ end
 
 /-! ### Decidability instances for sets -/
 
-variable {α : Type u} (s t : Set α) (a b : α)
+variable (s t : Set α) (a b : α)
 
 instance decidableSingleton [Decidable (a = b)] : Decidable (a ∈ ({b} : Set α)) :=
   inferInstanceAs (Decidable (a = b))

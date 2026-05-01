@@ -5,7 +5,6 @@ Authors: Kim Morrison, Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.ConcreteCategory.Basic
 public import Mathlib.CategoryTheory.Shift.Basic
 public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Algebra.Group.Int.Defs
@@ -182,6 +181,7 @@ theorem eqToHom_apply {β : Type w} {X Y : β → C} (h : X = Y) (b : β) :
   subst h
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence between β-graded objects and γ-graded objects,
 given an equivalence between β and γ.
 -/

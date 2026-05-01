@@ -24,7 +24,7 @@ which is the original bound given by Karl Weierstrass. There is a better bound $
 ## References
 
 * [Weierstrass, Karl, *Über continuirliche Functionen eines reellen Arguments, die für keinen Werth
-des letzeren einen bestimmten Differentialquotienten besitzen*][weierstrass1895]
+  des letzeren einen bestimmten Differentialquotienten besitzen*][weierstrass1895]
 * [G. H. Hardy, *Weierstrass's Non-Differentiable Function*][hardyweierstrass]
 
 -/
@@ -77,8 +77,8 @@ theorem uniformContinuous_weierstrass {a : ℝ} (ha : a ∈ Set.Ioo 0 1) (b : �
 To show that Weierstrass function $f(x)$ is not differentiable at any $x$, we choose a sequence
 $\{x_m\}$ such that, as $m\to\infty$
  - $\{x_m\}$ converges to $x$
- - The slope $(f(x_m) - f(x)) / (x_m - x)$ grows unbounded
-which means the derivative $f'(x)$ cannot exist.
+ - The slope $(f(x_m) - f(x)) / (x_m - x)$ grows unbounded,
+   which means the derivative $f'(x)$ cannot exist.
 -/
 
 /-- The approximating sequence `seq` is defined as $x_m = \lfloor b^m x + 3/2 \rfloor / b^m$ -/

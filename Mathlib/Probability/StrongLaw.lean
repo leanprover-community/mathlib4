@@ -42,13 +42,13 @@ random variables. Let `Yₙ` be the truncation of `Xₙ` up to `n`. We claim tha
   `1 + 𝔼[X]` (see `sum_prob_mem_Ioc_le` and `tsum_prob_mem_Ioi_lt_top`).
 * Let `c > 1`. Along the sequence `n = c ^ k`, then `(∑_{i=0}^{n-1} Yᵢ - 𝔼[Yᵢ])/n` converges almost
   surely to `0`. This follows from a variance control, as
-```
+  ```
   ∑_k ℙ (|∑_{i=0}^{c^k - 1} Yᵢ - 𝔼[Yᵢ]| > c^k ε)
     ≤ ∑_k (c^k ε)^{-2} ∑_{i=0}^{c^k - 1} Var[Yᵢ]    (by Markov inequality)
     ≤ ∑_i (C/i^2) Var[Yᵢ]                           (as ∑_{c^k > i} 1/(c^k)^2 ≤ C/i^2)
     ≤ ∑_i (C/i^2) 𝔼[Yᵢ^2]
     ≤ 2C 𝔼[X^2]                                     (see `sum_variance_truncation_le`)
-```
+  ```
 * As `𝔼[Yᵢ]` converges to `𝔼[X]`, it follows from the two previous items and Cesàro that, along
   the sequence `n = c^k`, one has `(∑_{i=0}^{n-1} Xᵢ) / n → 𝔼[X]` almost surely.
 * To generalize it to all indices, we use the fact that `∑_{i=0}^{n-1} Xᵢ` is nondecreasing and
@@ -294,7 +294,7 @@ theorem tsum_prob_mem_Ioi_lt_top {X : Ω → ℝ} (hint : Integrable X) (hnonneg
   intro K
   have A : Tendsto (fun N : ℕ => ∑ j ∈ range K, ℙ {ω | X ω ∈ Set.Ioc (j : ℝ) N}) atTop
       (𝓝 (∑ j ∈ range K, ℙ {ω | X ω ∈ Set.Ioi (j : ℝ)})) := by
-    refine tendsto_finset_sum _ fun i _ => ?_
+    refine tendsto_finsetSum _ fun i _ => ?_
     have : {ω | X ω ∈ Set.Ioi (i : ℝ)} = ⋃ N : ℕ, {ω | X ω ∈ Set.Ioc (i : ℝ) N} := by
       apply Set.Subset.antisymm _ _
       · intro ω hω
@@ -448,7 +448,7 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
           ∑ i ∈ range N, ENNReal.ofReal (Var[S (u i)] / (u i * ε) ^ 2) := by
         gcongr with i _
         apply meas_ge_le_variance_div_sq
-        · exact memLp_finset_sum' _ fun j _ => (hident j).aestronglyMeasurable_fst.memLp_truncation
+        · exact memLp_finsetSum' _ fun j _ => (hident j).aestronglyMeasurable_fst.memLp_truncation
         · apply mul_pos (Nat.cast_pos.2 _) εpos
           refine zero_lt_one.trans_le ?_
           apply Nat.le_floor
@@ -500,7 +500,7 @@ theorem strong_law_aux3 :
   convert Asymptotics.isLittleO_sum_range_of_tendsto_zero (tendsto_sub_nhds_zero_iff.2 A) using 1
   ext1 n
   simp only [sum_sub_distrib, sum_const, card_range, nsmul_eq_mul, sum_apply, sub_left_inj]
-  rw [integral_finset_sum _ fun i _ => ?_]
+  rw [integral_finsetSum _ fun i _ => ?_]
   exact ((hident i).symm.integrable_snd hint).1.integrable_truncation
 
 include hint hindep hident hnonneg in
@@ -627,7 +627,7 @@ theorem strong_law_ae_real {Ω : Type*} {m : MeasurableSpace Ω} {μ : Measure �
   convert hωpos.sub hωneg using 2
   · simp only [pos, neg, ← sub_div, ← sum_sub_distrib, max_zero_sub_max_neg_zero_eq_self,
       Function.comp_apply]
-  · simp only [pos, neg, ← integral_sub hint.pos_part hint.neg_part,
+  · simp +instances only [pos, neg, ← integral_sub hint.pos_part hint.neg_part,
       max_zero_sub_max_neg_zero_eq_self, Function.comp_apply, mΩ]
 
 end StrongLawAeReal

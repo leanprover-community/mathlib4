@@ -279,7 +279,7 @@ theorem essSup_indicator_eq_essSup_restrict {s : Set α} {f : α → ℝ≥0∞}
     essSup (s.indicator f) μ = essSup f (μ.restrict s) := by
   classical
   simp only [← piecewise_eq_indicator, essSup_piecewise hs, max_eq_left_iff]
-  exact limsup_const_bot.trans_le (zero_le _)
+  exact limsup_const_bot.trans_le zero_le
 
 theorem ae_le_essSup (f : α → ℝ≥0∞) : ∀ᵐ y ∂μ, f y ≤ essSup f μ :=
   eventually_le_limsup f
@@ -308,6 +308,17 @@ theorem coe_essSup {f : α → ℝ≥0} (hf : IsBoundedUnder (· ≤ ·) (ae μ)
   (ENNReal.coe_sInf <| hf).trans <|
     eq_of_forall_le_iff fun r => by
       simp [essSup, limsup, limsSup, eventually_map, ENNReal.forall_ennreal]; rfl
+
+lemma ofReal_essSup {f : α → ℝ} (h₁ : IsCoboundedUnder (· ≤ ·) (ae μ) f)
+    (h₂ : IsBoundedUnder (· ≤ ·) (ae μ) f) :
+    ENNReal.ofReal (essSup f μ) = essSup (fun a ↦ .ofReal (f a)) μ := ENNReal.ofReal_limsup
+
+lemma toReal_essSup {f : α → ℝ≥0∞} (h₁ : ∀ᵐ a ∂μ, f a ≠ ⊤)
+    (h₂ : IsBoundedUnder (· ≤ ·) (ae μ) fun i ↦ (f i).toReal) :
+    (essSup f μ).toReal = essSup (fun a ↦ (f a).toReal) μ := by
+  obtain rfl | hμ := eq_zero_or_neZero μ
+  · simp [essSup, limsup, limsSup]
+  · exact ENNReal.toReal_limsup h₁
 
 lemma essSup_restrict_eq_of_support_subset {s : Set α} {f : α → ℝ≥0∞} (hsf : f.support ⊆ s) :
     essSup f (μ.restrict s) = essSup f μ := by

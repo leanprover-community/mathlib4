@@ -44,6 +44,7 @@ abbrev combPairHoms : (i : ι₁ ⊕ ι₂) → bc.pt ⟶ Sum.elim f₁ f₂ i
 
 variable {c₁ c₂ bc}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `c₁` and `c₂` are limit fans and `bc` is a limit binary fan on their cone
 points, then the fan constructed from `combPairHoms` is a limit cone. -/
 def combPairIsLimit : IsLimit (Fan.mk bc.pt (combPairHoms c₁ c₂ bc)) :=
@@ -79,6 +80,7 @@ abbrev combPairHoms : (i : ι₁ ⊕ ι₂) → Sum.elim f₁ f₂ i ⟶ bc.pt
 
 variable {c₁ c₂ bc}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `c₁` and `c₂` are colimit cofans and `bc` is a colimit binary cofan on their cocone
 points, then the cofan constructed from `combPairHoms` is a colimit cocone. -/
 def combPairIsColimit : IsColimit (Cofan.mk bc.pt (combPairHoms c₁ c₂ bc)) :=

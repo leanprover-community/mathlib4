@@ -226,6 +226,7 @@ protected theorem sound {a b : C} {f₁ f₂ : a ⟶ b} (h : r f₁ f₂) :
     (functor r).map f₁ = (functor r).map f₂ := by
   simpa using Quot.sound (HomRel.CompClosure.intro _ _ (𝟙 a) f₁ f₂ (𝟙 b) h)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem functor_map_eq_iff [h : Congruence r] {X Y : C} (f f' : X ⟶ Y) :
     (functor r).map f = (functor r).map f' ↔ r f f' := by
   dsimp [functor]
@@ -238,7 +239,7 @@ theorem functor_homRel_eq_compClosure_eqvGen {X Y : C} (f g : X ⟶ Y) :
 
 theorem compClosure.congruence :
     Congruence fun X Y => Relation.EqvGen (@HomRel.CompClosure C _ r X Y) := by
-  convert inferInstanceAs (Congruence (functor r).homRel)
+  convert (inferInstance : Congruence (functor r).homRel)
   ext
   rw [functor_homRel_eq_compClosure_eqvGen]
 
@@ -262,6 +263,7 @@ variable (H : ∀ (x y : C) (f₁ f₂ : x ⟶ y), r f₁ f₂ → F.map f₁ = 
 theorem lift_spec : functor r ⋙ lift r F H = F := by
   tauto
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lift_unique (Φ : Quotient r ⥤ D) (hΦ : functor r ⋙ Φ = F) : Φ = lift r F H := by
   subst_vars
   fapply Functor.hext
@@ -283,6 +285,7 @@ lemma lift_unique' (F₁ F₂ : Quotient r ⥤ D) (h : functor r ⋙ F₁ = func
   apply lift_unique
   rw [h]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The original functor factors through the induced functor. -/
 def lift.isLift : functor r ⋙ lift r F H ≅ F :=
   NatIso.ofComponents fun _ ↦ Iso.refl _
@@ -354,5 +357,28 @@ instance faithful_whiskeringLeft_functor :
     ((whiskeringLeft C _ D).obj (functor r)).Faithful := ⟨by apply natTrans_ext⟩
 
 end Quotient
+
+namespace Functor
+
+variable {D : Type*} [Category* D] (L : C ⥤ D)
+
+instance [L.Full] : (Quotient.lift L.homRel L (by simp)).Full where
+  map_surjective := by
+    rintro ⟨X⟩ ⟨Y⟩ (f : L.obj X ⟶ L.obj Y)
+    obtain ⟨f, rfl⟩ := L.map_surjective f
+    exact ⟨(Quotient.functor _).map f, rfl⟩
+
+instance : (Quotient.lift L.homRel L (by simp)).Faithful where
+  map_injective := by
+    rintro ⟨_⟩ ⟨_⟩ ⟨_⟩ ⟨_⟩ h
+    exact Quotient.sound _ h
+
+instance [L.EssSurj] : (Quotient.lift L.homRel L (by simp)).EssSurj where
+  mem_essImage X :=
+    ⟨(Quotient.functor _).obj (L.objPreimage X), ⟨L.objObjPreimageIso X⟩⟩
+
+instance [L.Full] [L.EssSurj] : (Quotient.lift L.homRel L (by simp)).IsEquivalence where
+
+end Functor
 
 end CategoryTheory

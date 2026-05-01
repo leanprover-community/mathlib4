@@ -27,7 +27,7 @@ More sophisticated lemmas belong in `GroupTheory.GroupAction`.
 group action
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero
 
@@ -91,10 +91,6 @@ lemma RightCancelMonoid.faithfulSMul [RightCancelMonoid α] : FaithfulSMul α α
   /-- `AddMonoid.toOppositeAddAction` is faithful on additive cancellative monoids. -/]
 lemma LeftCancelMonoid.to_faithfulSMul_mulOpposite [LeftCancelMonoid α] : FaithfulSMul αᵐᵒᵖ α :=
   inferInstance
-
-@[deprecated (since := "2025-09-15")]
-alias LefttCancelMonoid.to_faithfulSMul_mulOpposite := LeftCancelMonoid.to_faithfulSMul_mulOpposite
-
 
 @[to_additive]
 lemma faithfulSMul_iff_injective_smul_one (R A : Type*)

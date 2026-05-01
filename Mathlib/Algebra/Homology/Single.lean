@@ -213,6 +213,7 @@ lemma single₀_map_f_zero {A B : V} (f : A ⟶ B) :
 lemma single₀ObjXSelf (X : V) :
     HomologicalComplex.singleObjXSelf (ComplexShape.down ℕ) 0 X = Iso.refl _ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Morphisms from an `ℕ`-indexed chain complex `C`
 to a single object chain complex with `X` concentrated in degree 0
 are the same as morphisms `f : C.X 0 ⟶ X` such that `C.d 1 0 ≫ f = 0`.
@@ -247,7 +248,7 @@ noncomputable def fromSingle₀Equiv (C : ChainComplex V ℕ) (X : V) :
 @[simp]
 lemma fromSingle₀Equiv_symm_apply_f_zero
     {C : ChainComplex V ℕ} {X : V} (f : X ⟶ C.X 0) :
-    ((fromSingle₀Equiv C X).symm f).f 0 = f := by
+    dsimp% ((fromSingle₀Equiv C X).symm f).f 0 = f := by
   simp [fromSingle₀Equiv]
 
 @[simp]
@@ -280,6 +281,7 @@ lemma single₀_map_f_zero {A B : V} (f : A ⟶ B) :
 lemma single₀ObjXSelf (X : V) :
     HomologicalComplex.singleObjXSelf (ComplexShape.up ℕ) 0 X = Iso.refl _ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Morphisms from a single object cochain complex with `X` concentrated in degree 0
 to an `ℕ`-indexed cochain complex `C`
 are the same as morphisms `f : X ⟶ C.X 0` such that `f ≫ C.d 0 1 = 0`. -/

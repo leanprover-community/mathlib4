@@ -10,12 +10,13 @@ public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 public import Mathlib.Algebra.NeZero
 public import Mathlib.Order.BoundedOrder.Basic
+public import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Canonically ordered monoids
 -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -127,26 +128,56 @@ section LE
 variable [LE α] [CanonicallyOrderedMul α] {a b : α}
 
 @[to_additive (attr := simp) zero_le]
-theorem one_le (a : α) : 1 ≤ a :=
+theorem one_le : 1 ≤ a :=
   le_self_mul.trans_eq (one_mul _)
 
-@[to_additive] theorem isBot_one : IsBot (1 : α) := one_le
+@[to_additive] theorem isBot_one : IsBot (1 : α) := fun _ ↦ one_le
 
 end LE
 
 section Preorder
 variable [Preorder α] [CanonicallyOrderedMul α] {a b : α}
 
-@[to_additive (attr := simp) not_lt_zero] lemma not_lt_one : ¬ a < 1 := (one_le a).not_gt
+@[to_additive]
+instance isEmpty_Iio_one : IsEmpty (Set.Iio (1 : α)) :=
+  ⟨fun ⟨a, ha⟩ ↦ not_le_of_gt ha (isBot_one a)⟩
 
-@[deprecated (since := "2025-12-03")] alias not_neg := not_lt_one
+@[to_additive (attr := simp) not_lt_zero] lemma not_lt_one : ¬ a < 1 := one_le.not_gt
+
+@[deprecated (since := "2025-12-03")] alias not_neg := not_lt_zero
 
 @[to_additive] -- `(attr := simp)` cannot be used here because `a` cannot be inferred by `simp`.
 theorem one_lt_of_gt (h : a < b) : 1 < b :=
-  (one_le _).trans_lt h
+  one_le.trans_lt h
 
-alias LT.lt.pos := pos_of_gt
-@[to_additive existing] alias LT.lt.one_lt := one_lt_of_gt
+@[to_additive] alias LT.lt.one_lt := one_lt_of_gt
+
+-- TODO: `ne_zero_of_lt` exists elsewhere
+-- Create a common typeclass `IsBotZeroClass` collecting these lemmas.
+@[to_additive ne_zero_of_lt']
+theorem ne_one_of_lt (h : a < b) : b ≠ 1 :=
+  h.one_lt.ne'
+
+@[to_additive] alias LT.lt.ne_one := ne_one_of_lt
+
+@[to_additive]
+theorem Left.one_lt_mul_of_left [MulLeftMono α] (ha : 1 < a) (b : α) : 1 < a * b :=
+  Left.one_lt_mul_of_lt_of_le ha one_le
+
+@[to_additive]
+theorem Left.one_lt_mul_of_right [MulLeftStrictMono α] (hb : 1 < b) (a : α) : 1 < a * b :=
+  Left.one_lt_mul_of_le_of_lt one_le hb
+
+@[to_additive]
+theorem Right.one_lt_mul_of_left [MulRightStrictMono α] (ha : 1 < a) (b : α) : 1 < a * b :=
+  Right.one_lt_mul_of_lt_of_le ha one_le
+
+@[to_additive]
+theorem Right.one_lt_mul_of_right [MulRightMono α] (hb : 1 < b) (a : α) : 1 < a * b :=
+  Right.one_lt_mul_of_le_of_lt one_le hb
+
+@[to_additive add_pos_of_left] alias one_lt_mul_of_left := Left.one_lt_mul_of_left
+@[to_additive add_pos_of_right] alias one_lt_mul_of_right := Right.one_lt_mul_of_right
 
 end Preorder
 
@@ -158,25 +189,28 @@ theorem bot_eq_one [OrderBot α] : (⊥ : α) = 1 := isBot_one.eq_bot.symm
 
 @[to_additive (attr := simp)]
 theorem le_one_iff_eq_one : a ≤ 1 ↔ a = 1 :=
-  (one_le a).ge_iff_eq'
+  one_le.ge_iff_eq'
 
 @[to_additive]
 theorem one_lt_iff_ne_one : 1 < a ↔ a ≠ 1 :=
-  (one_le a).lt_iff_ne.trans ne_comm
+  one_le.lt_iff_ne.trans ne_comm
 
 @[to_additive]
 theorem one_lt_of_ne_one (h : a ≠ 1) : 1 < a :=
   one_lt_iff_ne_one.2 h
 
 @[to_additive]
-theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := (one_le a).eq_or_lt.imp_left Eq.symm
+theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := one_le.eq_or_lt.imp_left Eq.symm
 
 @[to_additive]
 lemma one_notMem_iff [OrderBot α] {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x :=
   bot_eq_one (α := α) ▸ bot_notMem_iff
 
-alias NE.ne.pos := pos_of_ne_zero
-@[to_additive existing] alias NE.ne.one_lt := one_lt_of_ne_one
+alias Ne.pos := pos_of_ne_zero
+@[to_additive existing] alias Ne.one_lt := one_lt_of_ne_one
+
+@[deprecated (since := "2026-02-17")] alias NE.ne.pos := Ne.pos
+@[deprecated (since := "2026-02-17")] alias NE.ne.one_lt := Ne.one_lt
 
 @[to_additive]
 theorem exists_one_lt_mul_of_lt (h : a < b) : ∃ (c : _) (_ : 1 < c), a * c = b := by
@@ -226,7 +260,7 @@ end Semigroup
 -- TODO: make it an instance
 @[to_additive]
 lemma CanonicallyOrderedMul.toIsOrderedMonoid
-    [CommMonoid α] [PartialOrder α] [CanonicallyOrderedMul α] : IsOrderedMonoid α where
+    [CommMonoid α] [Preorder α] [CanonicallyOrderedMul α] : IsOrderedMonoid α where
   mul_le_mul_left _ _ := mul_le_mul_left
 
 section Monoid
@@ -260,7 +294,7 @@ namespace NeZero
 
 theorem pos {M} [AddZeroClass M] [PartialOrder M] [CanonicallyOrderedAdd M]
     (a : M) [NeZero a] : 0 < a :=
-  (zero_le a).lt_of_ne <| NeZero.out.symm
+  zero_le.lt_of_ne <| NeZero.out.symm
 
 theorem of_gt {M} [AddZeroClass M] [Preorder M] [CanonicallyOrderedAdd M]
     {x y : M} (h : x < y) : NeZero y :=
@@ -297,11 +331,11 @@ theorem min_mul_distrib' (a b c : α) : min (a * b) c = min (min a c * min b c) 
 
 @[to_additive]
 theorem one_min (a : α) : min 1 a = 1 :=
-  min_eq_left (one_le a)
+  min_eq_left one_le
 
 @[to_additive]
 theorem min_one (a : α) : min a 1 = 1 :=
-  min_eq_right (one_le a)
+  min_eq_right one_le
 
 /-- In a linearly ordered monoid, we are happy for `bot_eq_one` to be a `@[simp]` lemma. -/
 @[to_additive (attr := simp)

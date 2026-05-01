@@ -6,12 +6,12 @@ Authors: Heather Macbeth, Arend Mellendijk, Michael Rothgang
 module
 
 public import Mathlib.Algebra.BigOperators.Group.List.Basic
-public import Mathlib.Algebra.Field.Power  -- shake: keep (Qq dependency)
+public import Mathlib.Algebra.Field.Defs  -- shake: keep (Qq dependency)
+public import Mathlib.Algebra.Ring.Int.Parity -- shake: keep (Qq dependency)
 public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 public import Mathlib.Util.Qq
-public meta import Mathlib.Algebra.Group.Int.Even
 
-/-! # Lemmas for the field_simp tactic
+/-! # Lemmas for the `field_simp` tactic
 
 -/
 
@@ -315,7 +315,7 @@ instance : Inv (NF M) where
   inv l := l.map fun (a, x) ↦ (-a, x)
 
 theorem eval_inv [CommGroupWithZero M] (l : NF M) : (l⁻¹).eval = l.eval⁻¹ := by
-  simp only [NF.eval, List.map_map, NF.instInv, List.prod_inv]
+  simp +instances only [NF.eval, List.map_map, NF.instInv, List.prod_inv]
   congr! 2
   ext p
   simp [zpow'_neg]
@@ -467,7 +467,7 @@ def Sign.pow (iM : Q(CommGroupWithZero $M)) (y : Q($M)) (g : Sign M) (s : ℕ) :
   | .plus => pure ⟨.plus, q(rfl)⟩
   | .minus i =>
     assumeInstancesCommute
-    if Even s then
+    if 2 ∣ s then
       let pf_s ← mkDecideProofQ q(Even $s)
       pure ⟨.plus, q(Even.neg_pow $pf_s $y)⟩
     else
@@ -483,7 +483,7 @@ def Sign.zpow (iM : Q(CommGroupWithZero $M)) (y : Q($M)) (g : Sign M) (s : ℤ) 
   | .plus => pure ⟨.plus, q(rfl)⟩
   | .minus i =>
     assumeInstancesCommute
-    if Even s then
+    if 2 ∣ s then
       let pf_s ← mkDecideProofQ q(Even $s)
       pure ⟨.plus, q(Even.neg_zpow $pf_s $y)⟩
     else

@@ -46,7 +46,7 @@ end Preorder
 
 section OrderedCommMonoid
 
-variable [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α]
+variable [CommMonoid α] [Preorder α] [IsOrderedMonoid α]
   [TopologicalSpace α] [OrderClosedTopology α] {f g : ι → α}
   {a a₁ a₂ : α}
 
@@ -183,7 +183,9 @@ theorem tprod_le_one (h : ∀ i, f i ≤ 1) : ∏'[L] i, f i ≤ 1 := by
   · rw [tprod_eq_one_of_not_multipliable hf]
 
 @[to_additive]
-theorem hasProd_one_iff_of_one_le [L.LeAtTop] [L.NeBot] (hf : ∀ i, 1 ≤ f i) :
+theorem hasProd_one_iff_of_one_le {ι α : Type*} {L : SummationFilter ι} [CommMonoid α]
+  [PartialOrder α] [IsOrderedMonoid α] [TopologicalSpace α] [OrderClosedTopology α]
+  {f : ι → α} [L.LeAtTop] [L.NeBot] (hf : ∀ i, 1 ≤ f i) :
     HasProd f 1 L ↔ f = 1 := by
   refine ⟨fun hf' ↦ ?_, ?_⟩
   · ext i
@@ -241,15 +243,15 @@ variable [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α]
 
 @[to_additive]
 theorem le_hasProd' (hf : HasProd f a) (i : ι) : f i ≤ a :=
-  le_hasProd hf i fun _ _ ↦ one_le _
+  le_hasProd hf i fun _ _ ↦ one_le
 
 @[to_additive]
 protected theorem Multipliable.le_tprod' (hf : Multipliable f) (i : ι) : f i ≤ ∏' i, f i :=
-  hf.le_tprod i fun _ _ ↦ one_le _
+  hf.le_tprod i fun _ _ ↦ one_le
 
 @[to_additive]
 theorem hasProd_one_iff : HasProd f 1 ↔ ∀ x, f x = 1 :=
-  (hasProd_one_iff_of_one_le fun _ ↦ one_le _).trans funext_iff
+  (hasProd_one_iff_of_one_le fun _ ↦ one_le).trans funext_iff
 
 @[to_additive]
 protected theorem Multipliable.tprod_eq_one_iff (hf : Multipliable f) :
@@ -292,7 +294,7 @@ theorem hasProd_of_isGLB_of_le_one [CommMonoid α] [LinearOrder α] [IsOrderedMo
     [TopologicalSpace α]
     [OrderTopology α] {f : ι → α} (i : α) (h₀ : ∀ i, f i ≤ 1)
     (hf : IsGLB (Set.range fun s ↦ ∏ i ∈ s, f i) i) : HasProd f i :=
-  tendsto_atTop_isGLB (Finset.prod_anti_set_of_le_one h₀) hf
+  tendsto_atTop_isGLB (Finset.prod_anti_set_of_le_one' h₀) hf
 
 @[to_additive]
 theorem hasProd_of_isLUB [CommMonoid α] [LinearOrder α]
@@ -378,7 +380,7 @@ meta def evalTsum : PositivityExt where eval {u α} zα pα e := do
       let pbody ← rbody.toNonneg
       let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
       let mα' ← synthInstanceQ q(AddCommMonoid $α)
-      let oα' ← synthInstanceQ q(PartialOrder $α)
+      let oα' ← synthInstanceQ q(Preorder $α)
       let pα' ← synthInstanceQ q(IsOrderedAddMonoid $α)
       let instOrderClosed ← synthInstanceQ q(OrderClosedTopology $α)
       assertInstancesCommute

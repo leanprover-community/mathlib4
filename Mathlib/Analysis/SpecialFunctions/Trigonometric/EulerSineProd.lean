@@ -301,9 +301,7 @@ theorem _root_.Real.tendsto_euler_sin_prod (x : ℝ) :
       (∏ j ∈ Finset.range n, (1 - x ^ 2 / (j + 1) ^ 2) : ℂ) =
         (∏ j ∈ Finset.range n, (1 - x ^ 2 / (j + 1) ^ 2) : ℝ) by
       rw [this, Complex.ofReal_re]
-    rw [Complex.ofReal_prod]
-    refine Finset.prod_congr (by rfl) fun n _ => ?_
-    norm_cast
+    simp
   · rw [← Complex.ofReal_mul, ← Complex.ofReal_sin, Complex.ofReal_re]
 
 end EulerSine

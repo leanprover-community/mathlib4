@@ -44,7 +44,7 @@ instance : SetLike (MeasuredSets μ) α where
   coe s := s.1
   coe_injective' := Subtype.coe_injective
 
-instance : PseudoEMetricSpace (MeasuredSets μ) where
+noncomputable instance : PseudoEMetricSpace (MeasuredSets μ) where
   edist s t := μ ((s : Set α) ∆ t)
   edist_self := by simp
   edist_comm := by grind
@@ -63,7 +63,7 @@ lemma MeasuredSets.continuous_measure : Continuous (fun (s : MeasuredSets μ) �
   rw [one_mul, ← tsub_le_iff_left]
   exact sub_le_edist s t
 
-instance [IsFiniteMeasure μ] : PseudoMetricSpace (MeasuredSets μ) :=
+noncomputable instance [IsFiniteMeasure μ] : PseudoMetricSpace (MeasuredSets μ) :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist
     (fun s t ↦ μ.real ((s : Set α) ∆ t)) (fun s t ↦ ENNReal.toReal_nonneg)
     (fun s t ↦ by simp [Measure.real, MeasuredSets.edist_def])
@@ -80,6 +80,7 @@ lemma MeasuredSets.lipschitzWith_measureReal [IsFiniteMeasure μ] :
     LipschitzWith 1 (fun s : MeasuredSets μ ↦ μ.real s) :=
   .of_le_add fun s t ↦ sub_le_iff_le_add'.mp <| real_sub_real_le_dist s t
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a ring of sets `C` covering the space modulo `0` and generating the measurable space
 structure, any measurable set can be approximated by elements of `C`. -/
 lemma exists_measure_symmDiff_lt_of_generateFrom_isSetRing [IsFiniteMeasure μ]
@@ -114,7 +115,7 @@ lemma exists_measure_symmDiff_lt_of_generateFrom_isSetRing [IsFiniteMeasure μ]
       have fC n : Set.accumulate f n ∈ C := hC.accumulate_mem (fun n ↦ DC (by simp [hf])) n
       have : Tendsto (fun n ↦ μ (Set.accumulate f n)ᶜ) atTop (𝓝 0) := by
         have : ⋃₀ D = ⋃ n, Set.accumulate f n := by simp [hf, iUnion_accumulate]
-        rw [show (⋃₀ D)ᶜ = ⋂ n, (Set.accumulate f n)ᶜ by simp [this]] at hD
+        rw [show (⋃₀ D)ᶜ = ⋂ n, (Set.accumulate f n)ᶜ by simp [this, accumulate]] at hD
         rw [← hD]
         apply tendsto_measure_iInter_atTop (fun i ↦ ?_)
           (fun i j hij ↦ by simpa using monotone_accumulate hij) ⟨0, by simp⟩
@@ -159,7 +160,7 @@ lemma exists_measure_symmDiff_lt_of_generateFrom_isSetRing [IsFiniteMeasure μ]
     _ ≤ ∑' i, δ i + μ (⋃ i ∈ Ici n, f i) := by
       gcongr; exact ENNReal.sum_le_tsum (Finset.range n)
     _ < ε / 2 + ε / 2 := by gcongr
-    _ = ε :=  ENNReal.add_halves ε
+    _ = ε := ENNReal.add_halves ε
 
 /-- Given a semiring of sets `C` covering the space modulo `0` and generating the measurable space
 structure, any measurable set can be approximated by finite unions of elements of `C`. -/

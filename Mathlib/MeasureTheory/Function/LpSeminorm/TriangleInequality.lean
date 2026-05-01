@@ -15,10 +15,10 @@ In this file we prove several versions of the triangle inequality for the `Lp` s
 as well as simple corollaries.
 -/
 
-@[expose] public section
+public section
 
-open Filter
-open scoped ENNReal Topology
+open Filter ENNReal
+open scoped Topology
 
 namespace MeasureTheory
 
@@ -60,31 +60,9 @@ theorem eLpNorm_add_le (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurab
   repeat rw [eLpNorm_eq_eLpNorm' hp0 hp_top]
   exact eLpNorm'_add_le hf hg hp1_real
 
-/-- A constant for the inequality `‖f + g‖_{L^p} ≤ C * (‖f‖_{L^p} + ‖g‖_{L^p})`. It is equal to `1`
-for `p ≥ 1` or `p = 0`, and `2^(1/p-1)` in the more tricky interval `(0, 1)`. -/
-noncomputable def LpAddConst (p : ℝ≥0∞) : ℝ≥0∞ :=
-  if p ∈ Set.Ioo (0 : ℝ≥0∞) 1 then (2 : ℝ≥0∞) ^ (1 / p.toReal - 1) else 1
-
-theorem LpAddConst_of_one_le {p : ℝ≥0∞} (hp : 1 ≤ p) : LpAddConst p = 1 := by
-  rw [LpAddConst, if_neg]
-  intro h
-  exact lt_irrefl _ (h.2.trans_le hp)
-
-theorem LpAddConst_zero : LpAddConst 0 = 1 := by
-  rw [LpAddConst, if_neg]
-  intro h
-  exact lt_irrefl _ h.1
-
-theorem LpAddConst_lt_top (p : ℝ≥0∞) : LpAddConst p < ∞ := by
-  rw [LpAddConst]
-  split_ifs with h
-  · apply ENNReal.rpow_lt_top_of_nonneg _ ENNReal.ofNat_ne_top
-    rw [one_div, sub_nonneg, ← ENNReal.toReal_inv, ← ENNReal.toReal_one]
-    exact ENNReal.toReal_mono (by simpa using h.1.ne') (ENNReal.one_le_inv.2 h.2.le)
-  · exact ENNReal.one_lt_top
-
 theorem eLpNorm_add_le' (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
-    (p : ℝ≥0∞) : eLpNorm (f + g) p μ ≤ LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) := by
+    (p : ℝ≥0∞) :
+    eLpNorm (f + g) p μ ≤ LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) := by
   rcases eq_or_ne p 0 with (rfl | hp)
   · simp
   rcases lt_or_ge p 1 with (h'p | h'p)
@@ -106,7 +84,8 @@ theorem exists_Lp_half (p : ℝ≥0∞) {δ : ℝ≥0∞} (hδ : δ ≠ 0) :
         ∀ (f g : α → ε), AEStronglyMeasurable f μ → AEStronglyMeasurable g μ →
           eLpNorm f p μ ≤ η → eLpNorm g p μ ≤ η → eLpNorm (f + g) p μ < δ := by
   have :
-    Tendsto (fun η : ℝ≥0∞ => LpAddConst p * (η + η)) (𝓝[>] 0) (𝓝 (LpAddConst p * (0 + 0))) :=
+    Tendsto (fun η : ℝ≥0∞ => LpAddConst p * (η + η)) (𝓝[>] 0)
+        (𝓝 (LpAddConst p * (0 + 0))) :=
     (ENNReal.Tendsto.const_mul (tendsto_id.add tendsto_id)
           (Or.inr (LpAddConst_lt_top p).ne)).mono_left
       nhdsWithin_le_nhds
@@ -114,13 +93,15 @@ theorem exists_Lp_half (p : ℝ≥0∞) {δ : ℝ≥0∞} (hδ : δ ≠ 0) :
   rcases (((tendsto_order.1 this).2 δ hδ.bot_lt).and self_mem_nhdsWithin).exists with ⟨η, hη, ηpos⟩
   refine ⟨η, ηpos, fun f g hf hg Hf Hg => ?_⟩
   calc
-    eLpNorm (f + g) p μ ≤ LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) := eLpNorm_add_le' hf hg p
+    eLpNorm (f + g) p μ ≤ LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) :=
+      eLpNorm_add_le' hf hg p
     _ ≤ LpAddConst p * (η + η) := by gcongr
     _ < δ := hη
 
 theorem eLpNorm_sub_le' {f g : α → E}
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
-    (p : ℝ≥0∞) : eLpNorm (f - g) p μ ≤ LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) := by
+    (p : ℝ≥0∞) :
+    eLpNorm (f - g) p μ ≤ LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) := by
   simpa only [sub_eq_add_neg, eLpNorm_neg] using eLpNorm_add_le' hf hg.neg p
 
 theorem eLpNorm_sub_le {f g : α → E} (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
@@ -151,6 +132,8 @@ theorem eLpNorm_sum_le [ContinuousAdd ε'] {ι} {f : ι → α → ε'} {s : Fin
     (fun _f _g hf hg => eLpNorm_add_le hf hg hp1)
     (fun _f _g hf hg => hf.add hg) _ hfs
 
+-- TODO: We can prove `eLpNorm_expect_le` once we have `Module ℚ≥0 ℝ≥0∞`
+
 theorem MemLp.add [ContinuousAdd ε] (hf : MemLp f p μ) (hg : MemLp g p μ) : MemLp (f + g) p μ :=
   ⟨AEStronglyMeasurable.add hf.1 hg.1, eLpNorm_add_lt_top hf hg⟩
 
@@ -158,7 +141,7 @@ theorem MemLp.sub {f g : α → E} (hf : MemLp f p μ) (hg : MemLp g p μ) : Mem
   rw [sub_eq_add_neg]
   exact hf.add hg.neg
 
-theorem memLp_finset_sum [ContinuousAdd ε']
+theorem memLp_finsetSum [ContinuousAdd ε']
     {ι} (s : Finset ι) {f : ι → α → ε'} (hf : ∀ i ∈ s, MemLp (f i) p μ) :
     MemLp (fun a => ∑ i ∈ s, f i a) p μ := by
   haveI : DecidableEq ι := Classical.decEq _
@@ -169,11 +152,15 @@ theorem memLp_finset_sum [ContinuousAdd ε']
     simp only [his, Finset.sum_insert, not_false_iff]
     exact (hf i (s.mem_insert_self i)).add (ih fun j hj => hf j (Finset.mem_insert_of_mem hj))
 
-theorem memLp_finset_sum' [ContinuousAdd ε']
+@[deprecated (since := "2026-04-08")] alias memLp_finset_sum := memLp_finsetSum
+
+theorem memLp_finsetSum' [ContinuousAdd ε']
     {ι} (s : Finset ι) {f : ι → α → ε'} (hf : ∀ i ∈ s, MemLp (f i) p μ) :
     MemLp (∑ i ∈ s, f i) p μ := by
-  convert memLp_finset_sum s hf using 1
+  convert memLp_finsetSum s hf using 1
   ext x
   simp
+
+@[deprecated (since := "2026-04-08")] alias memLp_finset_sum' := memLp_finsetSum'
 
 end MeasureTheory

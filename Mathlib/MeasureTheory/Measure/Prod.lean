@@ -85,7 +85,7 @@ theorem measurable_measure_prodMk_left_finite [IsFiniteMeasure ν] {s : Set (α 
     have (a : α) : ν (Prod.mk a ⁻¹' ⋃ i, f i) = ∑' i, ν (Prod.mk a ⁻¹' f i) := by
       rw [preimage_iUnion, measure_iUnion]
       exacts [hfd.mono fun _ _ ↦ .preimage _, fun i ↦ measurable_prodMk_left (hfm i)]
-    simpa only [this] using Measurable.ennreal_tsum ihf
+    simpa only [this] using Measurable.tsum ihf
 
 /-- If `ν` is an s-finite measure, and `s ⊆ α × β` is measurable, then `x ↦ ν { y | (x, y) ∈ s }`
 is a measurable function.
@@ -98,7 +98,7 @@ theorem measurable_measure_prodMk_left [SFinite ν] {s : Set (α × β)} (hs : M
     Measurable fun x => ν (Prod.mk x ⁻¹' s) := by
   rw [← sum_sfiniteSeq ν]
   simp_rw [Measure.sum_apply_of_countable]
-  exact Measurable.ennreal_tsum (fun i ↦ measurable_measure_prodMk_left_finite hs)
+  exact Measurable.tsum (fun i ↦ measurable_measure_prodMk_left_finite hs)
 
 /-- If `μ` is an s-finite measure, and `s ⊆ α × β` is measurable, then `y ↦ μ { x | (x, y) ∈ s }` is
   a measurable function. -/
@@ -120,7 +120,6 @@ theorem Measurable.map_prodMk_right {μ : Measure α} [SFinite μ] :
 
 /-- The Lebesgue integral is measurable. This shows that the integrand of (the right-hand-side of)
   Tonelli's theorem is measurable. -/
-@[fun_prop, measurability]
 theorem Measurable.lintegral_prod_right' [SFinite ν] :
     ∀ {f : α × β → ℝ≥0∞}, Measurable f → Measurable fun x => ∫⁻ y, f (x, y) ∂ν := by
   have m := @measurable_prodMk_left
@@ -142,14 +141,13 @@ theorem Measurable.lintegral_prod_right' [SFinite ν] :
 /-- The Lebesgue integral is measurable. This shows that the integrand of (the right-hand-side of)
   Tonelli's theorem is measurable.
   This version has the argument `f` in curried form. -/
-@[fun_prop, measurability]
+@[fun_prop]
 theorem Measurable.lintegral_prod_right [SFinite ν] {f : α → β → ℝ≥0∞}
     (hf : Measurable (uncurry f)) : Measurable fun x => ∫⁻ y, f x y ∂ν :=
   hf.lintegral_prod_right'
 
 /-- The Lebesgue integral is measurable. This shows that the integrand of (the right-hand-side of)
   the symmetric version of Tonelli's theorem is measurable. -/
-@[fun_prop, measurability]
 theorem Measurable.lintegral_prod_left' [SFinite μ] {f : α × β → ℝ≥0∞} (hf : Measurable f) :
     Measurable fun y => ∫⁻ x, f (x, y) ∂μ :=
   (measurable_swap_iff.mpr hf).lintegral_prod_right'
@@ -157,7 +155,6 @@ theorem Measurable.lintegral_prod_left' [SFinite μ] {f : α × β → ℝ≥0�
 /-- The Lebesgue integral is measurable. This shows that the integrand of (the right-hand-side of)
   the symmetric version of Tonelli's theorem is measurable.
   This version has the argument `f` in curried form. -/
-@[fun_prop, measurability]
 theorem Measurable.lintegral_prod_left [SFinite μ] {f : α → β → ℝ≥0∞}
     (hf : Measurable (uncurry f)) : Measurable fun y => ∫⁻ x, f x y ∂μ :=
   hf.lintegral_prod_left'
@@ -411,9 +408,8 @@ theorem measure_ae_null_of_prod_null {s : Set (α × β)} (h : μ.prod ν s = 0)
   rw [measure_prod_null mt] at ht
   rw [eventuallyLE_antisymm_iff]
   exact
-    ⟨EventuallyLE.trans_eq (Eventually.of_forall fun x => measure_mono (preimage_mono hst))
-        ht,
-      Eventually.of_forall fun x => zero_le _⟩
+    ⟨EventuallyLE.trans_eq (Eventually.of_forall fun x => measure_mono (preimage_mono hst)) ht,
+      Eventually.of_forall fun x => zero_le⟩
 
 omit [SFinite ν] in
 theorem AbsolutelyContinuous.prod [SFinite ν'] (h1 : μ ≪ μ') (h2 : ν ≪ ν') :
@@ -800,7 +796,7 @@ theorem dirac_prod (x : α) : (dirac x).prod ν = map (Prod.mk x) ν := by
     dirac_apply' _ hs, ← indicator_mul_left _ _ fun _ => sfiniteSeq ν i t, Pi.one_apply, one_mul]
 
 theorem dirac_prod_dirac {x : α} {y : β} : (dirac x).prod (dirac y) = dirac (x, y) := by
-  rw [prod_dirac, map_dirac measurable_prodMk_right]
+  rw [prod_dirac, map_dirac' measurable_prodMk_right]
 
 theorem prod_add (ν' : Measure β) [SFinite ν'] : μ.prod (ν + ν') = μ.prod ν + μ.prod ν' := by
   simp_rw [← sum_sfiniteSeq ν, ← sum_sfiniteSeq ν', sum_add_sum, ← sum_sfiniteSeq μ, prod_sum,
@@ -963,24 +959,22 @@ theorem AEMeasurable.comp_snd {f : β → γ} (hf : AEMeasurable f ν) :
     AEMeasurable (fun z : α × β => f z.2) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_snd
 
-@[fun_prop, measurability]
 theorem AEMeasurable.lintegral_prod_right' [SFinite ν] {f : α × β → ℝ≥0∞}
     (hf : AEMeasurable f (μ.prod ν)) : AEMeasurable (fun x ↦ ∫⁻ y, f (x, y) ∂ν) μ := by
   obtain ⟨g, hg, hfg⟩ := hf
   refine ⟨fun x ↦ ∫⁻ y, g (x, y) ∂ν, by fun_prop, ?_⟩
   exact (ae_ae_of_ae_prod hfg).mono fun x hfg' ↦ lintegral_congr_ae hfg'
 
-@[fun_prop, measurability]
+@[fun_prop]
 theorem AEMeasurable.lintegral_prod_right [SFinite ν] {f : α → β → ℝ≥0∞}
     (hf : AEMeasurable f.uncurry (μ.prod ν)) : AEMeasurable (fun x ↦ ∫⁻ y, f x y ∂ν) μ :=
   hf.lintegral_prod_right'
 
-@[fun_prop, measurability]
 theorem AEMeasurable.lintegral_prod_left' [SFinite ν] [SFinite μ] {f : α × β → ℝ≥0∞}
     (hf : AEMeasurable f (μ.prod ν)) : AEMeasurable (fun y ↦ ∫⁻ x, f (x, y) ∂μ) ν :=
   hf.prod_swap.lintegral_prod_right'
 
-@[fun_prop, measurability]
+@[fun_prop]
 theorem AEMeasurable.lintegral_prod_left [SFinite ν] [SFinite μ] {f : α → β → ℝ≥0∞}
     (hf : AEMeasurable f.uncurry (μ.prod ν)) : AEMeasurable (fun y ↦ ∫⁻ x, f x y ∂μ) ν :=
   hf.lintegral_prod_left'
@@ -1122,7 +1116,7 @@ theorem fst_map_prodMk₀ {X : α → β} {Y : α → γ} {μ : Measure α}
       Measure.map_apply_of_aemeasurable hX hs, ← prod_univ, mk_preimage_prod, preimage_univ,
       inter_univ]
   · have : ¬AEMeasurable (fun x ↦ (X x, Y x)) μ := by
-      contrapose! hX
+      contrapose hX
       exact measurable_fst.comp_aemeasurable hX
     simp [map_of_not_aemeasurable, hX, this]
 
@@ -1184,7 +1178,7 @@ theorem snd_map_prodMk₀ {X : α → β} {Y : α → γ} {μ : Measure α} (hX 
       Measure.map_apply_of_aemeasurable hY hs, ← univ_prod, mk_preimage_prod, preimage_univ,
       univ_inter]
   · have : ¬AEMeasurable (fun x ↦ (X x, Y x)) μ := by
-      contrapose! hY
+      contrapose hY
       exact measurable_snd.comp_aemeasurable hY
     simp [map_of_not_aemeasurable, hY, this]
 

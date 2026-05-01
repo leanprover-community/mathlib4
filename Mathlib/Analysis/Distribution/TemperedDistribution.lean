@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
 public import Mathlib.MeasureTheory.Function.Holder
-public import Mathlib.Topology.Algebra.Module.PointwiseConvergence
+public import Mathlib.Topology.Algebra.Module.Spaces.PointwiseConvergenceCLM
 
 /-!
 # TemperedDistribution
@@ -16,22 +16,22 @@ public import Mathlib.Topology.Algebra.Module.PointwiseConvergence
 ## Main definitions
 
 * `TemperedDistribution E F`: The space `𝓢(E, ℂ) →L[ℂ] F` equipped with the pointwise
-convergence topology.
+  convergence topology.
 * `MeasureTheory.Measure.toTemperedDistribution`: Every measure of temperate growth is a tempered
-distribution.
+  distribution.
 * `Function.HasTemperateGrowth.toTemperedDistribution`: Every function of temperate growth is a
-tempered distribution.
+  tempered distribution.
 * `SchwartzMap.toTemperedDistributionCLM`: The canonical map from `𝓢` to `𝓢'` as a continuous linear
-map.
+  map.
 * `MeasureTheory.Lp.toTemperedDistribution`: Every `Lp` function is a tempered distribution.
 * `TemperedDistribution.mulLeftCLM`: Multiplication with temperate growth function as a continuous
-linear map.
+  linear map.
 * `TemperedDistribution.instLineDeriv`: The directional derivative on tempered distributions.
 * `TemperedDistribution.fourierTransformCLM`: The Fourier transform on tempered distributions.
 
 ## Notation
 * `𝓢'(E, F)`: The space of tempered distributions `TemperedDistribution E F` scoped in
-`SchwartzMap`
+  `SchwartzMap`
 -/
 
 @[expose] public noncomputable section
@@ -53,7 +53,7 @@ abbrev TemperedDistribution := 𝓢(E, ℂ) →Lₚₜ[ℂ] F
 /- Since mathlib is missing quite a few results that show that continuity of linear maps and
 convergence of sequences can be checked for strong duals of Fréchet-Montel spaces pointwise, we
 use the pointwise topology for now and not the strong topology. The pointwise topology is
-conventially used in PDE texts, but has the downside that it is not barrelled, hence the uniform
+conventionally used in PDE texts, but has the downside that it is not barrelled, hence the uniform
 boundedness principle does not hold. -/
 
 @[inherit_doc]
@@ -109,6 +109,7 @@ section MeasurableSpace
 
 variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (E F) in
 /-- The canonical embedding of `𝓢(E, F)` into `𝓢'(E, F)` as a continuous linear map. -/
 def toTemperedDistributionCLM (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth] :
@@ -119,6 +120,7 @@ def toTemperedDistributionCLM (μ : Measure E := by volume_tac) [hμ : μ.HasTem
   cont := PointwiseConvergenceCLM.continuous_of_continuous_eval
     fun g ↦ (integralCLM ℂ μ).cont.comp <| pairing_continuous_left (lsmul ℂ ℂ).flip g
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toTemperedDistributionCLM_apply_apply (μ : Measure E := by volume_tac)
     [hμ : μ.HasTemperateGrowth] (f : 𝓢(E, F)) (g : 𝓢(E, ℂ)) :
@@ -160,6 +162,7 @@ def toTemperedDistribution {p : ℝ≥0∞}
   toPointwiseConvergenceCLM _ _ _ _ <|
     (lsmul ℂ ℂ).flip.lpPairing μ p (1 - p⁻¹)⁻¹ f ∘L toLpCLM ℂ ℂ (1 - p⁻¹)⁻¹ μ
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem toTemperedDistribution_apply {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : Lp F p μ)
     (g : 𝓢(E, ℂ)) :
@@ -183,6 +186,7 @@ theorem toTemperedDistribution_toLp_eq [SecondCountableTopology E] {p : ℝ≥0�
   filter_upwards [f.coeFn_toLp p μ] with x hf
   rw [hf]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (F) in
 /-- The natural embedding of L^p into tempered distributions. -/
 def toTemperedDistributionCLM (μ : Measure E := by volume_tac) [μ.HasTemperateGrowth]
@@ -357,6 +361,7 @@ instance : LineDerivSMul ℝ E 𝓢'(E, F) 𝓢'(E, F) where
   lineDerivOp_smul m :=
     (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_smul_of_tower
 
+set_option backward.isDefEq.respectTransparency false in
 instance : LineDerivLeftSMul ℝ E 𝓢'(E, F) 𝓢'(E, F) where
   lineDerivOp_left_smul r x f := by
     ext u

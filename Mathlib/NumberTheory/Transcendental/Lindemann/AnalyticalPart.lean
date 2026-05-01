@@ -136,7 +136,7 @@ private theorem exp_polynomial_approx_aux (f : ℤ[X]) (s : ℂ) :
   split_ifs with hx1
   · rw [one_pow]
     exact pow_le_one₀ (mul_nonneg hx.1.le (norm_nonneg _)) hx1
-  · push_neg at hx1
+  · push Not at hx1
     exact pow_le_pow_right₀ hx1.le (Nat.sub_le _ _)
 
 /--

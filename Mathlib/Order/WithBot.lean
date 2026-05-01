@@ -35,10 +35,11 @@ variable {a b : α}
 
 @[to_dual]
 instance nontrivial [Nonempty α] : Nontrivial (WithBot α) :=
-  Option.nontrivial
+  inferInstanceAs <| Nontrivial (Option α)
 
 @[to_dual]
-instance [IsEmpty α] : Unique (WithBot α) := Option.instUniqueOfIsEmpty
+instance [IsEmpty α] : Unique (WithBot α) :=
+  inferInstanceAs <| Unique (Option α)
 
 open Function
 
@@ -131,7 +132,7 @@ theorem some_eq_map_iff {f : α → β} {y : β} {v : WithBot α} :
     .some y = WithBot.map f v ↔ ∃ x, v = .some x ∧ f x = y := by
   cases v <;> simp [eq_comm]
 
-@[to_dual]
+@[to_dual (attr := simp)]
 theorem map_id : map (id : α → α) = id :=
   Option.map_id
 
@@ -240,6 +241,11 @@ theorem eq_unbot_iff {a : α} {b : WithBot α} (h : b ≠ ⊥) :
   induction b
   · simpa using h rfl
   · simp
+
+@[to_dual]
+theorem unbot_inj {a b : WithBot α} (ha : a ≠ ⊥) (hb : b ≠ ⊥) :
+    a.unbot ha = b.unbot hb ↔ a = b := by
+  rw [unbot_eq_iff, coe_unbot]
 
 /-- The equivalence between the non-bottom elements of `WithBot α` and `α`. -/
 @[to_dual (attr := simps)
@@ -520,18 +526,13 @@ section Preorder
 
 variable [Preorder α] [Preorder β] {x y : WithBot α}
 
+@[to_dual]
 theorem coe_strictMono : StrictMono (fun (a : α) => (a : WithBot α)) := fun _ _ => coe_lt_coe.2
 
-@[to_dual existing]
-theorem _root_.WithTop.coe_strictMono : StrictMono (fun a : α => (a : WithTop α)) :=
-  fun _ _ => WithTop.coe_lt_coe.2
-
+@[to_dual]
 theorem coe_mono : Monotone (fun (a : α) => (a : WithBot α)) := fun _ _ => coe_le_coe.2
 
-@[to_dual existing]
-theorem _root_.WithTop.coe_mono : Monotone (fun a : α => (a : WithTop α)) :=
-    fun _ _ => WithTop.coe_le_coe.2
-
+@[to_dual]
 theorem monotone_iff {f : WithBot α → β} :
     Monotone f ↔ Monotone (fun a ↦ f a : α → β) ∧ ∀ x : α, f ⊥ ≤ f x :=
   ⟨fun h ↦ ⟨h.comp WithBot.coe_mono, fun _ ↦ h bot_le⟩, fun h ↦
@@ -540,25 +541,14 @@ theorem monotone_iff {f : WithBot α → β} :
         WithBot.forall.2 ⟨fun h => (not_coe_le_bot _ h).elim,
           fun _ hle => h.1 (coe_le_coe.1 hle)⟩⟩⟩
 
-@[to_dual existing]
-theorem _root_.WithTop.monotone_iff {f : WithTop α → β} :
-    Monotone f ↔ Monotone (fun (a : α) => f a) ∧ ∀ x : α, f x ≤ f ⊤ :=
-  ⟨fun h => ⟨h.comp WithTop.coe_mono, fun _ => h le_top⟩, fun h =>
-    WithTop.forall.2
-      ⟨WithTop.forall.2 ⟨fun _ => le_rfl, fun _ h => (WithTop.not_top_le_coe _ h).elim⟩, fun x =>
-        WithTop.forall.2 ⟨fun _ => h.2 x, fun _ hle => h.1 (WithTop.coe_le_coe.1 hle)⟩⟩⟩
-
-@[simp]
+@[to_dual (attr := simp)]
 theorem monotone_map_iff {f : α → β} : Monotone (WithBot.map f) ↔ Monotone f :=
   monotone_iff.trans <| by simp [Monotone]
-
-@[to_dual existing, simp]
-theorem _root_.WithTop.monotone_map_iff {f : α → β} : Monotone (WithTop.map f) ↔ Monotone f :=
-  WithTop.monotone_iff.trans <| by simp [Monotone]
 
 @[to_dual]
 alias ⟨_, _root_.Monotone.withBot_map⟩ := monotone_map_iff
 
+@[to_dual]
 theorem strictMono_iff {f : WithBot α → β} :
     StrictMono f ↔ StrictMono (fun a => f a : α → β) ∧ ∀ x : α, f ⊥ < f x :=
   ⟨fun h => ⟨h.comp WithBot.coe_strictMono, fun _ => h (bot_lt_coe _)⟩, fun h =>
@@ -566,31 +556,15 @@ theorem strictMono_iff {f : WithBot α → β} :
       ⟨WithBot.forall.2 ⟨flip absurd (lt_irrefl _), fun x _ => h.2 x⟩, fun _ =>
         WithBot.forall.2 ⟨fun h => (not_lt_bot h).elim, fun _ hle => h.1 (coe_lt_coe.1 hle)⟩⟩⟩
 
-@[to_dual existing]
-theorem _root_.WithTop.strictMono_iff {f : WithTop α → β} :
-    StrictMono f ↔ StrictMono (fun (a : α) => f a) ∧ ∀ x : α, f x < f ⊤ :=
-  ⟨fun h => ⟨h.comp WithTop.coe_strictMono, fun _ => h (WithTop.coe_lt_top _)⟩, fun h =>
-    WithTop.forall.2
-      ⟨WithTop.forall.2 ⟨flip absurd (lt_irrefl _), fun _ h => (not_top_lt h).elim⟩, fun x =>
-        WithTop.forall.2 ⟨fun _ => h.2 x, fun _ hle => h.1 (WithTop.coe_lt_coe.1 hle)⟩⟩⟩
-
+@[to_dual]
 theorem strictAnti_iff {f : WithBot α → β} :
     StrictAnti f ↔ StrictAnti (fun a ↦ f a : α → β) ∧ ∀ x : α, f x < f ⊥ :=
   strictMono_iff (β := βᵒᵈ)
 
-@[to_dual existing]
-theorem _root_.WithTop.strictAnti_iff {f : WithTop α → β} :
-    StrictAnti f ↔ StrictAnti (fun a ↦ f a : α → β) ∧ ∀ x : α, f ⊤ < f x :=
-  WithTop.strictMono_iff (β := βᵒᵈ)
-
-@[simp]
+@[to_dual (attr := simp)]
 theorem strictMono_map_iff {f : α → β} :
     StrictMono (WithBot.map f) ↔ StrictMono f :=
   strictMono_iff.trans <| by simp [StrictMono, bot_lt_coe]
-
-@[to_dual existing, simp]
-theorem _root_.WithTop.strictMono_map_iff {f : α → β} : StrictMono (WithTop.map f) ↔ StrictMono f :=
-  WithTop.strictMono_iff.trans <| by simp [StrictMono, WithTop.coe_lt_top]
 
 @[to_dual]
 alias ⟨_, _root_.StrictMono.withBot_map⟩ := strictMono_map_iff
@@ -835,11 +809,13 @@ instance _root_.WithTop.IsWellOrder.lt [Preorder α] [IsWellOrder α (· < ·)] 
 
 instance trichotomous.gt [Preorder α] [@Std.Trichotomous α (· > ·)] :
     @Std.Trichotomous (WithBot α) (· > ·) :=
-  have : @Std.Trichotomous α (· < ·) := .swap _; .swap _
+  have : @Std.Trichotomous α (· < ·) := inferInstanceAs <| Std.Trichotomous <| Function.swap _
+  inferInstance
 
 instance _root_.WithTop.trichotomous.gt [Preorder α] [@Std.Trichotomous α (· > ·)] :
     @Std.Trichotomous (WithTop α) (· > ·) :=
-  have : @Std.Trichotomous α (· < ·) := .swap _; .swap _
+  have : @Std.Trichotomous α (· < ·) := inferInstanceAs <| Std.Trichotomous <| Function.swap _
+  inferInstance
 
 -- TODO: the hypotheses are equivalent to `LinearOrder` + `WellFoundedGT`, remove this.
 instance IsWellOrder.gt [Preorder α] [IsWellOrder α (· > ·)] :

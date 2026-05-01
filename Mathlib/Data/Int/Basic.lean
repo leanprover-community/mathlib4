@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Data.Int.Init
 public import Mathlib.Data.Nat.Basic
-public import Mathlib.Logic.Nontrivial.Defs
+public import Mathlib.Logic.Function.Basic
 public import Mathlib.Tactic.Conv
 public import Mathlib.Tactic.Convert
 public import Mathlib.Tactic.Lift
@@ -20,15 +20,12 @@ This file builds on `Data.Int.Init` by adding basic lemmas on integers.
 depending on Mathlib definitions.
 -/
 
-@[expose] public section
+public section
 
 open Nat
 
 namespace Int
 variable {a b c d m n : ℤ}
-
--- TODO: Tag in Lean
-attribute [simp] natAbs_pos
 
 attribute [gcongr] ofNat_le
 

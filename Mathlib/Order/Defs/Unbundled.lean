@@ -6,8 +6,10 @@ Authors: Leonardo de Moura
 module
 
 public import Mathlib.Data.Set.Defs
-import Mathlib.Tactic.ToDual
 public import Batteries.Tactic.Alias
+public import Mathlib.Tactic.ExtendDoc
+
+import Mathlib.Tactic.ToDual
 
 /-!
 # Orders
@@ -124,6 +126,30 @@ lemma asymm [Std.Asymm r] : a ≺ b → ¬b ≺ a := Std.Asymm.asymm _ _
 lemma trichotomous [Std.Trichotomous r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b ≺ a :=
   fun _ _ ↦ Std.Trichotomous.rel_or_eq_or_rel_swap
 
+lemma irrefl_def : Std.Irrefl r ↔ ∀ ⦃a⦄, ¬r a a :=
+  ⟨(·.irrefl), .mk⟩
+
+lemma refl_def : Std.Refl r ↔ ∀ ⦃a⦄, r a a :=
+  ⟨(·.refl), .mk⟩
+
+lemma isTrans_def {α : Sort*} {r : α → α → Prop} : IsTrans α r ↔ ∀ ⦃a b c⦄, r a b → r b c → r a c :=
+  ⟨(·.trans), .mk⟩
+
+lemma symm_def : Std.Symm r ↔ ∀ ⦃a b⦄, r a b → r b a :=
+  ⟨(·.symm), .mk⟩
+
+lemma antisymm_def : Std.Antisymm r ↔ ∀ ⦃a b⦄, r a b → r b a → a = b :=
+  ⟨(·.antisymm), .mk⟩
+
+lemma asymm_def : Std.Asymm r ↔ ∀ ⦃a b⦄, r a b → ¬r b a :=
+  ⟨(·.asymm), .mk⟩
+
+lemma total_def : Std.Total r ↔ ∀ ⦃a b⦄, r a b ∨ r b a :=
+  ⟨(·.total), .mk⟩
+
+lemma trichotomous_def : Std.Trichotomous r ↔ ∀ ⦃a b⦄, ¬r a b → ¬r b a → a = b :=
+  ⟨(·.trichotomous), .mk⟩
+
 instance (priority := 90) asymm_of_isTrans_of_irrefl [IsTrans α r] [Std.Irrefl r] : Std.Asymm r :=
   ⟨fun a _b h₁ h₂ => absurd (_root_.trans h₁ h₂) (irrefl a)⟩
 
@@ -176,38 +202,52 @@ lemma trichotomous_of [Std.Trichotomous r] : ∀ a b : α, a ≺ b ∨ a = b ∨
 section
 
 /-- `Std.Refl` as a definition, suitable for use in proofs. -/
+@[deprecated Std.Refl (since := "2026-03-27")]
 def Reflexive := ∀ x, x ≺ x
 
 /-- `Std.Symm` as a definition, suitable for use in proofs. -/
 def Symmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x
 
 /-- `IsTrans` as a definition, suitable for use in proofs. -/
+@[deprecated IsTrans (since := "2026-02-20")]
 def Transitive := ∀ ⦃x y z⦄, x ≺ y → y ≺ z → x ≺ z
 
 /-- `Std.Irrefl` as a definition, suitable for use in proofs. -/
+@[deprecated Std.Irrefl (since := "2026-02-12")]
 def Irreflexive := ∀ x, ¬x ≺ x
 
 /-- `Std.Antisymm` as a definition, suitable for use in proofs. -/
+@[deprecated Std.Antisymm (since := "2026-02-09")]
 def AntiSymmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x → x = y
 
 /-- `Std.Total` as a definition, suitable for use in proofs. -/
+@[deprecated Std.Total (since := "2026-02-10")]
 def Total := ∀ x y, x ≺ y ∨ y ≺ x
 
-theorem Equivalence.reflexive (h : Equivalence r) : Reflexive r := h.refl
+theorem Equivalence.stdRefl (h : Equivalence r) : Std.Refl r where
+  refl := h.refl
+
+@[deprecated (since := "2026-03-27")] alias Equivalence.reflexive := Equivalence.stdRefl
 
 theorem Equivalence.symmetric (h : Equivalence r) : Symmetric r :=
   fun _ _ ↦ h.symm
 
-theorem Equivalence.transitive (h : Equivalence r) : Transitive r :=
-  fun _ _ _ ↦ h.trans
+theorem Equivalence.isTrans (h : Equivalence r) : IsTrans α r :=
+  ⟨fun _ _ _ ↦ h.trans⟩
+
+@[deprecated (since := "2026-02-20")] alias Equivalence.transitive := Equivalence.isTrans
 
 variable {β : Sort*} (r : β → β → Prop) (f : α → β)
 
-theorem InvImage.trans (h : Transitive r) : Transitive (InvImage r f) :=
-  fun (a₁ a₂ a₃ : α) (h₁ : InvImage r f a₁ a₂) (h₂ : InvImage r f a₂ a₃) ↦ h h₁ h₂
+instance InvImage.isTrans [IsTrans β r] : IsTrans α (InvImage r f) :=
+  ⟨fun _ _ _ ↦ trans_of r⟩
 
-theorem InvImage.irreflexive (h : Irreflexive r) : Irreflexive (InvImage r f) :=
-  fun (a : α) (h₁ : InvImage r f a a) ↦ h (f a) h₁
+@[deprecated (since := "2026-02-20")] alias InvImage.trans := InvImage.isTrans
+
+instance InvImage.irrefl [Std.Irrefl r] : Std.Irrefl (InvImage r f) :=
+  ⟨fun (a : α) (h₁ : InvImage r f a a) ↦ irrefl_of r (f a) h₁⟩
+
+@[deprecated (since := "2026-02-12")] alias InvImage.irreflexive := InvImage.irrefl
 
 end
 
@@ -305,7 +345,7 @@ structure RelLowerSet {α : Type*} [LE α] (P : α → Prop) where
 
 extend_docs RelLowerSet before "The type of lower sets of an order relative to `P`."
 
-variable {α β : Type*} {r : α → α → Prop} {s : β → β → Prop}
+variable {α β : Sort*} {r : α → α → Prop} {s : β → β → Prop}
 
 theorem of_eq [Std.Refl r] : ∀ {a b}, a = b → r a b
   | _, _, .refl _ => refl _
@@ -404,6 +444,8 @@ theorem trans_trichotomous_right [IsTrans α r] [Std.Trichotomous r] {a b c : α
   · exact h₁
   · exact absurd h₃ h₂
 
+set_option linter.deprecated false in
+@[deprecated IsTrans.trans (since := "2026-02-20")]
 theorem transitive_of_trans (r : α → α → Prop) [IsTrans α r] : Transitive r := IsTrans.trans
 
 /-- In a trichotomous irreflexive order, every element is determined by the set of predecessors. -/

@@ -244,7 +244,8 @@ theorem toFiniteMeasure_nonzero (μ : ProbabilityMeasure Ω) : μ.toFiniteMeasur
   simp [← FiniteMeasure.mass_nonzero_iff]
 
 /-- The type of probability measures is a measurable space when equipped with the Giry monad. -/
-instance : MeasurableSpace (ProbabilityMeasure Ω) := Subtype.instMeasurableSpace
+instance : MeasurableSpace (ProbabilityMeasure Ω) :=
+  inferInstanceAs <| MeasurableSpace (Subtype _)
 
 lemma measurableSet_isProbabilityMeasure :
     MeasurableSet { μ : Measure Ω | IsProbabilityMeasure μ } := by
@@ -365,14 +366,14 @@ integrals of every continuous bounded nonnegative function are continuous. -/
 lemma continuous_iff_forall_continuous_lintegral :
     Continuous μs ↔ ∀ f : Ω →ᵇ ℝ≥0, Continuous fun x ↦ ∫⁻ ω, f ω ∂(μs x) := by
   simp [continuous_iff_continuousAt, ContinuousAt, tendsto_iff_forall_lintegral_tendsto,
-    forall_swap (α := X)]
+    forall_comm (α := X)]
 
 /-- The characterization of weak convergence of probability measures by the usual (defining)
 condition that the integrals of every continuous bounded function are continuous. -/
 lemma continuous_iff_forall_continuous_integral :
     Continuous μs ↔ ∀ f : Ω →ᵇ ℝ, Continuous fun x ↦ ∫ ω, f ω ∂(μs x) := by
   simp [continuous_iff_continuousAt, ContinuousAt, tendsto_iff_forall_integral_tendsto,
-    forall_swap (α := X)]
+    forall_comm (α := X)]
 
 lemma continuous_lintegral_boundedContinuousFunction [MeasurableSpace X] [OpensMeasurableSpace X]
     (f : X →ᵇ ℝ≥0) : Continuous fun μ : ProbabilityMeasure X ↦ ∫⁻ x, f x ∂μ :=

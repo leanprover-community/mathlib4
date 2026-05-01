@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 module
 
 public import Mathlib.Geometry.Manifold.MFDeriv.Basic
+public import Mathlib.Geometry.Manifold.Notation
 
 /-!
 ### Relations between vector space derivative and manifold derivative
@@ -64,7 +65,7 @@ alias ⟨HasMFDerivAt.hasFDerivAt, HasFDerivAt.hasMFDerivAt⟩ := hasMFDerivAt_i
 /-- For maps between vector spaces, `MDifferentiableWithinAt` and `DifferentiableWithinAt`
 coincide -/
 theorem mdifferentiableWithinAt_iff_differentiableWithinAt :
-    MDifferentiableWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E') f s x ↔ DifferentiableWithinAt 𝕜 f s x := by
+    MDiffAt[s] f x ↔ DifferentiableWithinAt 𝕜 f s x := by
   simp only [mdifferentiableWithinAt_iff', mfld_simps]
   exact ⟨fun H => H.2, fun H => ⟨H.continuousWithinAt, H⟩⟩
 
@@ -74,7 +75,7 @@ alias ⟨MDifferentiableWithinAt.differentiableWithinAt,
 
 /-- For maps between vector spaces, `MDifferentiableAt` and `DifferentiableAt` coincide -/
 theorem mdifferentiableAt_iff_differentiableAt :
-    MDifferentiableAt 𝓘(𝕜, E) 𝓘(𝕜, E') f x ↔ DifferentiableAt 𝕜 f x := by
+    MDiffAt f x ↔ DifferentiableAt 𝕜 f x := by
   simp only [mdifferentiableAt_iff, differentiableWithinAt_univ, mfld_simps]
   exact ⟨fun H => H.2, fun H => ⟨H.continuousAt, H⟩⟩
 
@@ -83,7 +84,7 @@ alias ⟨MDifferentiableAt.differentiableAt, DifferentiableAt.mdifferentiableAt�
 
 /-- For maps between vector spaces, `MDifferentiableOn` and `DifferentiableOn` coincide -/
 theorem mdifferentiableOn_iff_differentiableOn :
-    MDifferentiableOn 𝓘(𝕜, E) 𝓘(𝕜, E') f s ↔ DifferentiableOn 𝕜 f s := by
+    MDiff[s] f ↔ DifferentiableOn 𝕜 f s := by
   simp only [MDifferentiableOn, DifferentiableOn,
     mdifferentiableWithinAt_iff_differentiableWithinAt]
 
@@ -91,8 +92,7 @@ alias ⟨MDifferentiableOn.differentiableOn, DifferentiableOn.mdifferentiableOn�
   mdifferentiableOn_iff_differentiableOn
 
 /-- For maps between vector spaces, `MDifferentiable` and `Differentiable` coincide -/
-theorem mdifferentiable_iff_differentiable :
-    MDifferentiable 𝓘(𝕜, E) 𝓘(𝕜, E') f ↔ Differentiable 𝕜 f := by
+theorem mdifferentiable_iff_differentiable : MDiff f ↔ Differentiable 𝕜 f := by
   simp only [MDifferentiable, Differentiable, mdifferentiableAt_iff_differentiableAt]
 
 alias ⟨MDifferentiable.differentiable, Differentiable.mdifferentiable⟩ :=
@@ -101,8 +101,8 @@ alias ⟨MDifferentiable.differentiable, Differentiable.mdifferentiable⟩ :=
 /-- For maps between vector spaces, `mfderivWithin` and `fderivWithin` coincide -/
 @[simp]
 theorem mfderivWithin_eq_fderivWithin :
-    mfderivWithin 𝓘(𝕜, E) 𝓘(𝕜, E') f s x = fderivWithin 𝕜 f s x := by
-  by_cases h : MDifferentiableWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E') f s x
+    mfderiv[s] f x = fderivWithin 𝕜 f s x := by
+  by_cases h : MDiffAt[s] f x
   · simp only [mfderivWithin, h, if_pos, mfld_simps]
   · simp only [mfderivWithin, h, if_neg, not_false_iff]
     rw [mdifferentiableWithinAt_iff_differentiableWithinAt] at h
@@ -110,7 +110,7 @@ theorem mfderivWithin_eq_fderivWithin :
 
 /-- For maps between vector spaces, `mfderiv` and `fderiv` coincide -/
 @[simp]
-theorem mfderiv_eq_fderiv : mfderiv 𝓘(𝕜, E) 𝓘(𝕜, E') f x = fderiv 𝕜 f x := by
+theorem mfderiv_eq_fderiv : mfderiv% f x = fderiv 𝕜 f x := by
   rw [← mfderivWithin_univ, ← fderivWithin_univ]
   exact mfderivWithin_eq_fderivWithin
 

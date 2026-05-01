@@ -18,15 +18,9 @@ public import Mathlib.Order.SuccPred.WithBot
 We define the `SuccAddOrder` and `PredSubOrder` typeclasses, for orders satisfying `succ x = x + 1`
 and `pred x = x - 1` respectively. This allows us to transfer the API for successors and
 predecessors into these common arithmetical forms.
-
-## Todo
-
-In the future, we will make `x + 1` and `x - 1` the `simp`-normal forms for `succ x` and `pred x`
-respectively. This will require a refactor of `Ordinal` first, as the `simp`-normal form is
-currently set the other way around.
 -/
 
-@[expose] public section
+public section
 
 /-- A typeclass for `succ x = x + 1`. -/
 class SuccAddOrder (α : Type*) [Preorder α] [Add α] [One α] extends SuccOrder α where
@@ -48,6 +42,7 @@ section Add
 
 variable [Add α] [One α] [SuccAddOrder α]
 
+@[simp]
 theorem succ_eq_add_one (x : α) : succ x = x + 1 :=
   SuccAddOrder.succ_eq_add_one x
 
@@ -78,6 +73,7 @@ section Sub
 
 variable [Sub α] [One α] [PredSubOrder α]
 
+@[simp]
 theorem pred_eq_sub_one (x : α) : pred x = x - 1 :=
   PredSubOrder.pred_eq_sub_one x
 
@@ -135,6 +131,10 @@ theorem not_isMax_zero [Zero α] [One α] [ZeroLEOneClass α] [NeZero (1 : α)] 
 theorem one_le_iff_pos [AddMonoidWithOne α] [ZeroLEOneClass α] [NeZero (1 : α)]
     [SuccAddOrder α] : 1 ≤ x ↔ 0 < x := by
   rw [← succ_le_iff_of_not_isMax not_isMax_zero, succ_eq_add_one, zero_add]
+
+theorem one_le_iff_ne_zero [AddMonoidWithOne α] [ZeroLEOneClass α] [NeZero (1 : α)]
+    [SuccAddOrder α] [CanonicallyOrderedAdd α] : 1 ≤ x ↔ x ≠ 0 := by
+  rw [Order.one_le_iff_pos, pos_iff_ne_zero]
 
 theorem covBy_iff_add_one_eq [Add α] [One α] [SuccAddOrder α] [NoMaxOrder α] :
     x ⋖ y ↔ x + 1 = y := by
@@ -197,12 +197,22 @@ theorem not_isSuccLimit_natCast [AddMonoidWithOne α] [SuccAddOrder α]
   fun h ↦ (h.natCast_lt n).false
 
 @[simp]
+theorem not_isSuccPrelimit_add_one (a : α) [Add α] [One α] [SuccAddOrder α] [NoMaxOrder α] :
+    ¬ IsSuccPrelimit (a + 1) :=
+  succ_eq_add_one a ▸ not_isSuccPrelimit_succ a
+
+@[simp]
+theorem not_isSuccLimit_add_one (a : α) [Add α] [One α] [SuccAddOrder α] [NoMaxOrder α] :
+    ¬ IsSuccLimit (a + 1) :=
+  succ_eq_add_one a ▸ not_isSuccLimit_succ a
+
+@[simp]
 theorem succ_eq_zero [AddZeroClass α] [OrderBot α] [CanonicallyOrderedAdd α] [One α] [NoMaxOrder α]
     [SuccAddOrder α] {a : WithBot α} : WithBot.succ a = 0 ↔ a = ⊥ := by
   cases a
   · simp [bot_eq_zero]
   · rename_i a
-    simp only [WithBot.succ_coe, WithBot.coe_ne_bot, iff_false]
+    simp only [WithBot.succ_coe, WithBot.coe_ne_bot, iff_false, succ_eq_add_one]
     by_contra h
     simpa [h] using max_of_succ_le (a := a)
 
@@ -227,7 +237,43 @@ theorem lt_add_one_iff_of_not_isMax (hy : ¬ IsMax y) : x < y + 1 ↔ x ≤ y :=
 theorem lt_add_one_iff [NoMaxOrder α] : x < y + 1 ↔ x ≤ y :=
   lt_add_one_iff_of_not_isMax (not_isMax y)
 
+@[simp]
+theorem add_one_inj [NoMaxOrder α] : x + 1 = y + 1 ↔ x = y := by
+  simp [← succ_eq_add_one]
+
 end Add
+
+section AddMonoidWithOne
+variable [AddMonoidWithOne α] [NoMaxOrder α] [SuccAddOrder α]
+
+@[simp]
+theorem lt_one_iff [CanonicallyOrderedAdd α] : x < 1 ↔ x = 0 := by
+  rw [← zero_add 1, lt_add_one_iff, nonpos_iff_eq_zero]
+
+theorem le_one_iff [CanonicallyOrderedAdd α] : x ≤ 1 ↔ x = 0 ∨ x = 1 := by
+  rw [le_iff_lt_or_eq, lt_one_iff]
+
+@[simp]
+theorem Iio_one [CanonicallyOrderedAdd α] : Set.Iio (1 : α) = {0} := by
+  ext; simp
+
+theorem Iic_one [CanonicallyOrderedAdd α] : Set.Iic (1 : α) = {0, 1} := by
+  ext; simp [le_one_iff]
+
+@[simp]
+theorem lt_two_iff : x < 2 ↔ x ≤ 1 := by
+  rw [← one_add_one_eq_two, lt_add_one_iff]
+
+theorem le_two_iff [CanonicallyOrderedAdd α] : x ≤ 2 ↔ x = 0 ∨ x = 1 ∨ x = 2 := by
+  rw [le_iff_lt_or_eq, lt_two_iff, le_one_iff, or_assoc]
+
+theorem Iio_two [CanonicallyOrderedAdd α] : Set.Iio (2 : α) = {0, 1} := by
+  ext; simp [le_one_iff]
+
+theorem Iic_two [CanonicallyOrderedAdd α] : Set.Iic (2 : α) = {0, 1, 2} := by
+  ext; simp [le_two_iff]
+
+end AddMonoidWithOne
 
 section Sub
 

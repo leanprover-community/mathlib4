@@ -31,7 +31,7 @@ and `A` and `B` are filtered.
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Lemma 3.4.3 -- 3.4.5
 -/
 
-@[expose] public section
+public section
 
 universe v₁ v₂ v₃ v₄ v₅ v₆ u₁ u₂ u₃ u₄ u₅ u₆
 
@@ -48,6 +48,7 @@ variable {B : Type v₁} [Category.{v₁} B]
 variable {T : Type v₁} [Category.{v₁} T]
 variable (L : A ⥤ T) (R : B ⥤ T)
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma final_fst_small [R.Final] : (fst L R).Final := by
   rw [Functor.final_iff_isIso_colimit_pre]
   intro G

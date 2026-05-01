@@ -49,7 +49,7 @@ Ramsey theory, ultrafilter
 open Filter
 
 /-- Multiplication of ultrafilters given by `∀ᶠ m in U*V, p m ↔ ∀ᶠ m in U, ∀ᶠ m' in V, p (m*m')`. -/
-@[to_additive
+@[to_additive (attr := implicit_reducible)
 /-- Addition of ultrafilters given by `∀ᶠ m in U+V, p m ↔ ∀ᶠ m in U, ∀ᶠ m' in V, p (m+m')`. -/]
 def Ultrafilter.mul {M} [Mul M] : Mul (Ultrafilter M) where mul U V := (· * ·) <$> U <*> V
 
@@ -63,7 +63,8 @@ theorem Ultrafilter.eventually_mul {M} [Mul M] (U V : Ultrafilter M) (p : M → 
   Iff.rfl
 
 /-- Semigroup structure on `Ultrafilter M` induced by a semigroup structure on `M`. -/
-@[to_additive /-- Additive semigroup structure on `Ultrafilter M` induced by an additive semigroup
+@[to_additive (attr := implicit_reducible)
+/-- Additive semigroup structure on `Ultrafilter M` induced by an additive semigroup
 structure on `M`. -/]
 def Ultrafilter.semigroup {M} [Semigroup M] : Semigroup (Ultrafilter M) :=
   { Ultrafilter.mul with
@@ -253,7 +254,7 @@ theorem FP.mul_two {M} [Semigroup M] (a : Stream' M) (i j : ℕ) (ij : i < j) :
   lia
 
 @[to_additive]
-theorem FP.finset_prod {M} [CommMonoid M] (a : Stream' M) (s : Finset ℕ) (hs : s.Nonempty) :
+theorem FP.finsetProd {M} [CommMonoid M] (a : Stream' M) (s : Finset ℕ) (hs : s.Nonempty) :
     (s.prod fun i => a.get i) ∈ FP a := by
   refine FP_drop_subset_FP _ (s.min' hs) ?_
   induction s using Finset.eraseInduction with | H s ih => _
@@ -269,5 +270,10 @@ theorem FP.finset_prod {M} [CommMonoid M] (a : Stream' M) (s : Finset ℕ) (hs :
     obtain ⟨d, hd⟩ := Nat.exists_eq_add_of_le this
     rw [hd, ← Stream'.drop_drop, add_comm]
     apply FP_drop_subset_FP
+
+@[deprecated (since := "2026-04-08")] alias FS.finset_sum := FS.finsetSum
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias FP.finset_prod := FP.finsetProd
 
 end Hindman

@@ -110,7 +110,7 @@ theorem convexBodyLT_volume :
       simp_rw [convexBodyLTFactor, coe_mul, ENNReal.coe_pow]
       ring
     _ = (convexBodyLTFactor K) * ∏ w, (f w) ^ (mult w) := by
-      simp_rw [prod_eq_prod_mul_prod, coe_mul, coe_finset_prod, mult_isReal, mult_isComplex,
+      simp_rw [prod_eq_prod_mul_prod, coe_mul, coe_finsetProd, mult_isReal, mult_isComplex,
         pow_one, ENNReal.coe_pow, ofReal_coe_nnreal]
 
 variable {f}
@@ -241,7 +241,7 @@ theorem convexBodyLT'_volume :
       simp_rw [coe_mul, ENNReal.coe_pow]
       ring
     _ = convexBodyLT'Factor K * ∏ w, (f w) ^ (mult w) := by
-      simp_rw [prod_eq_prod_mul_prod, coe_mul, coe_finset_prod, mult_isReal, mult_isComplex,
+      simp_rw [prod_eq_prod_mul_prod, coe_mul, coe_finsetProd, mult_isReal, mult_isComplex,
         pow_one, ENNReal.coe_pow, ofReal_coe_nnreal, mul_assoc]
 
 end convexBodyLT'
@@ -291,11 +291,7 @@ theorem convexBodySumFun_eq_zero_iff (x : mixedSpace K) :
     convexBodySumFun x = 0 ↔ x = 0 := by
   rw [← forall_normAtPlace_eq_zero_iff, convexBodySumFun, Finset.sum_eq_zero_iff_of_nonneg
     fun _ _ ↦ mul_nonneg (Nat.cast_pos.mpr mult_pos).le (normAtPlace_nonneg _ _)]
-  conv =>
-    enter [1, w, hw]
-    rw [mul_left_mem_nonZeroDivisors_eq_zero_iff
-      (mem_nonZeroDivisors_iff_ne_zero.mpr mult_coe_ne_zero)]
-  simp_rw [Finset.mem_univ, true_implies]
+  simp
 
 open scoped Classical in
 theorem norm_le_convexBodySumFun (x : mixedSpace K) : ‖x‖ ≤ convexBodySumFun x := by
@@ -350,6 +346,7 @@ theorem convexBodySum_convex : Convex ℝ (convexBodySum K B) := by
 theorem convexBodySum_isBounded : Bornology.IsBounded (convexBodySum K B) := by
   classical
   refine Metric.isBounded_iff.mpr ⟨B + B, fun x hx y hy => ?_⟩
+  simp_rw [dist_eq_norm]
   refine le_trans (norm_sub_le x y) (add_le_add ?_ ?_)
   · exact le_trans (norm_le_convexBodySumFun x) hx
   · exact le_trans (norm_le_convexBodySumFun y) hy

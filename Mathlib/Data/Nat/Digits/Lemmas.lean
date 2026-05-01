@@ -50,7 +50,8 @@ theorem ofDigits_eq_sum_mapIdx (b : ℕ) (L : List ℕ) :
 This section contains various lemmas of properties relating to `digits` and `ofDigits`.
 -/
 
-theorem digits_len (b n : ℕ) (hb : 1 < b) (hn : n ≠ 0) : (b.digits n).length = b.log n + 1 := by
+theorem length_digits (b n : ℕ) (hb : 1 < b) (hn : n ≠ 0) :
+    (b.digits n).length = b.log n + 1 := by
   induction n using Nat.strong_induction_on with | _ n IH
   rw [digits_eq_cons_digits_div hb hn, List.length]
   by_cases h : n / b = 0
@@ -62,12 +63,14 @@ theorem digits_len (b n : ℕ) (hb : 1 < b) (hn : n ≠ 0) : (b.digits n).length
     contrapose! h
     exact div_eq_of_lt h
 
+@[deprecated (since := "2026-03-18")] alias digits_len := length_digits
+
 theorem digits_length_le_iff {b k : ℕ} (hb : 1 < b) (n : ℕ) :
     (b.digits n).length ≤ k ↔ n < b ^ k := by
   by_cases h : n = 0
   · have : 0 < b ^ k := by positivity
     simpa [h]
-  rw [digits_len b n hb h, ← log_lt_iff_lt_pow hb h]
+  rw [length_digits b n hb h, ← log_lt_iff_lt_pow hb h]
   exact add_one_le_iff
 
 theorem lt_digits_length_iff {b k : ℕ} (hb : 1 < b) (n : ℕ) :
@@ -81,10 +84,7 @@ theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :
   · cases m
     · cases hm rfl
     · simp
-  · cases m
-    · cases hm rfl
-    simp only [zero_add, digits_one, List.getLast_replicate_succ]
-    exact Nat.one_ne_zero
+  · simp
   revert hm
   induction m using Nat.strongRecOn with | ind n IH => ?_
   intro hn
@@ -115,16 +115,21 @@ theorem digits_append_zeroes_append_digits {b k m n : ℕ} (hb : 1 < b) (hm : 0 
   simp only [digits_append_digits (zero_lt_of_lt hb), digits_inj_iff, add_right_inj]
   ring
 
-theorem digits_len_le_digits_len_succ (b n : ℕ) :
+theorem length_digits_le_length_digits_succ (b n : ℕ) :
     (digits b n).length ≤ (digits b (n + 1)).length := by
   rcases Decidable.eq_or_ne n 0 with (rfl | hn)
   · simp
   rcases le_or_gt b 1 with hb | hb
   · interval_cases b <;> simp +arith [digits_zero_succ', hn]
-  simpa [digits_len, hb, hn] using log_mono_right (le_succ _)
+  simpa [length_digits, hb, hn] using log_mono_right (le_succ _)
 
-theorem le_digits_len_le (b n m : ℕ) (h : n ≤ m) : (digits b n).length ≤ (digits b m).length :=
-  monotone_nat_of_le_succ (digits_len_le_digits_len_succ b) h
+@[deprecated (since := "2026-03-18")]
+alias digits_len_le_digits_len_succ := length_digits_le_length_digits_succ
+
+theorem le_length_digits_le (b n m : ℕ) (h : n ≤ m) : (digits b n).length ≤ (digits b m).length :=
+  monotone_nat_of_le_succ (length_digits_le_length_digits_succ b) h
+
+@[deprecated (since := "2026-03-18")] alias le_digits_len_le := le_length_digits_le
 
 theorem pow_length_le_mul_ofDigits {b : ℕ} {l : List ℕ} (hl : l ≠ []) (hl2 : l.getLast hl ≠ 0) :
     (b + 2) ^ l.length ≤ (b + 2) * ofDigits (b + 2) l := by
@@ -147,15 +152,12 @@ theorem base_pow_length_digits_le' (b m : ℕ) (hm : m ≠ 0) :
     this (getLast_digit_ne_zero _ hm)
   rw [ofDigits_digits]
 
--- TODO: fix the non-terminal simp_all; it runs on three goals, leaving only one
-set_option linter.flexible false in
 /-- Any non-zero natural number `m` is greater than
 b^((number of digits in the base b representation of m) - 1)
 -/
 theorem base_pow_length_digits_le (b m : ℕ) (hb : 1 < b) :
     m ≠ 0 → b ^ (digits b m).length ≤ b * m := by
-  rcases b with (_ | _ | b) <;> try simp_all
-  exact base_pow_length_digits_le' b m
+  rcases b with (_ | _ | b) <;> simp_all [base_pow_length_digits_le']
 
 open Finset
 
@@ -201,7 +203,7 @@ theorem sub_one_mul_sum_log_div_pow_eq_sub_sum_digits {p : ℕ} (n : ℕ) :
     · simp
     · convert sub_one_mul_sum_div_pow_eq_sub_sum_digits (p.digits n) (getLast_digit_ne_zero p hn) <|
           (fun l a ↦ digits_lt_base h a)
-      · refine (digits_len p n h hn).symm
+      · refine (length_digits p n h hn).symm
       all_goals exact (ofDigits_digits p n).symm
   · simp
   · simp [lt_one_iff.mp h]
@@ -356,7 +358,7 @@ theorem mapsTo_digitsAppend {b : ℕ} (hb : 1 < b) (l : ℕ) :
 
 theorem injOn_ofDigits {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.InjOn (ofDigits b) {L : List ℕ | L.length = l ∧ ∀ x ∈ L, x < b} :=
-  fun _ _ _ _ h ↦ ofDigits_inj_of_len_eq hb (by aesop) (by aesop) (by aesop) h
+  fun _ _ _ _ h ↦ ofDigits_inj_of_len_eq hb (by simp_all) (by simp_all) (by simp_all) h
 
 theorem setInvOn_digitsAppend_ofDigits {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.InvOn (digitsAppend b l) (ofDigits b) {L : List ℕ | L.length = l ∧ ∀ x ∈ L, x < b}
@@ -436,7 +438,8 @@ theorem _root_.Nat.bijOn_digitsAppend' {b : ℕ} (hb : 1 < b) (l : ℕ) :
 theorem fixedLengthDigits_zero {b : ℕ} (hb : 1 < b) :
     fixedLengthDigits hb 0 = {[]} := by
   ext
-  simpa [eq_comm, fixedLengthDigits] using by grind
+  simp [fixedLengthDigits]
+  grind
 
 @[simp]
 theorem fixedLengthDigits_one {b : ℕ} (hb : 1 < b) :

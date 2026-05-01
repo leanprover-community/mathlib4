@@ -85,7 +85,7 @@ lemma Unitary.norm_sub_one_sq_eq {u : A} (hu : u ∈ unitary A) {x : ℝ}
     have : Antitone (fun y : ℝ ↦ 2 * (1 - y)) := by intro _ _ _; simp only; gcongr
     simpa [Set.image_image] using this.map_isLeast hz
   have h₃ : IsGreatest ((‖· - 1‖ ^ 2) '' spectrum ℂ u) (‖cfc (· - 1 : ℂ → ℂ) u‖ ^ 2) := by
-    have := pow_left_monotoneOn (n := 2) |>.mono (s₂ := ((‖· - 1‖) '' spectrum ℂ u)) (by aesop)
+    have := pow_left_monotoneOn (n := 2) |>.mono (s₂ := ((‖· - 1‖) '' spectrum ℂ u)) (by simp)
     simpa [Set.image_image] using this.map_isGreatest (IsGreatest.norm_cfc (fun z : ℂ ↦ z - 1) u)
   exact h₃.unique (h_eqOn.image_eq ▸ h₂)
 
@@ -139,7 +139,7 @@ lemma selfAdjoint.norm_sq_expUnitary_sub_one {x : selfAdjoint A} (hx : ‖x‖ �
     ‖(expUnitary x - 1 : A)‖ ^ 2 = 2 * (1 - Real.cos ‖x‖) := by
   nontriviality A
   apply norm_sub_one_sq_eq (expUnitary x).2
-  simp only [expUnitary_coe, AddSubgroupClass.coe_norm]
+  simp only [expUnitary_coe]
   rw [← CFC.exp_eq_normedSpace_exp (𝕜 := ℂ), ← cfc_comp_smul I _ (x : A), cfc_map_spectrum ..,
     ← x.2.spectrumRestricts.algebraMap_image]
   simp only [Set.image_image, coe_algebraMap, smul_eq_mul, mul_comm I, ← exp_eq_exp_ℂ,
@@ -216,6 +216,7 @@ lemma Unitary.norm_argSelfAdjoint {u : unitary A} (hu : ‖(u - 1 : A)‖ < 2) :
 @[deprecated (since := "2025-10-29")] alias unitary.norm_argSelfAdjoint :=
   Unitary.norm_argSelfAdjoint
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Unitary.norm_expUnitary_smul_argSelfAdjoint_sub_one_le (u : unitary A)
     {t : ℝ} (ht : t ∈ Set.Icc 0 1) (hu : ‖(u - 1 : A)‖ < 2) :
     ‖(expUnitary (t • argSelfAdjoint u) - 1 : A)‖ ≤ ‖(u - 1 : A)‖ := by
@@ -266,6 +267,7 @@ lemma Unitary.continuousOn_argSelfAdjoint :
 @[deprecated (since := "2025-10-29")] alias unitary.continuousOn_argSelfAdjoint :=
   Unitary.continuousOn_argSelfAdjoint
 
+set_option backward.isDefEq.respectTransparency false in
 /-- the maps `unitary.argSelfAdjoint` and `selfAdjoint.expUnitary` form a partial
 homeomorphism between `ball (1 : unitary A) 2` and `ball (0 : selfAdjoint A) π`. -/
 @[simps]

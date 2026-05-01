@@ -47,7 +47,7 @@ def gammaSet := {v : Fin 2 → ℤ | (↑) ∘ v = a ∧ (v 0).gcd (v 1) = r}
 open scoped Function in -- required for scoped `on` notation
 lemma pairwise_disjoint_gammaSet : Pairwise (Disjoint on gammaSet N r) := by
   refine fun u v huv ↦ ?_
-  contrapose! huv
+  contrapose huv
   obtain ⟨f, hf⟩ := Set.not_disjoint_iff.mp huv
   exact hf.1.1.symm.trans hf.2.1
 
@@ -132,9 +132,8 @@ lemma gammaSetDivGcdEquiv_eq (r : ℕ) [NeZero r] (v : gammaSet 1 r 0) :
 def gammaSetDivGcdSigmaEquiv : (Fin 2 → ℤ) ≃ (Σ r : ℕ, gammaSet 1 r 0) := by
   apply (Equiv.sigmaFiberEquiv finGcdMap).symm.trans
   refine Equiv.sigmaCongrRight fun b => ?_
-  apply Equiv.setCongr
-  rw [gammaSet_one_eq]
-  rfl
+  apply Equiv.subtypeEquivProp
+  simp [gammaSet_one_eq]
 
 @[simp]
 lemma gammaSetDivGcdSigmaEquiv_symm_eq (v : Σ r : ℕ, gammaSet 1 r 0) :
@@ -214,15 +213,20 @@ lemma eisensteinSeries_slash_apply (k : ℤ) (γ : SL(2, ℤ)) :
   congr 1
   exact (gammaSetEquiv a γ).tsum_eq (eisSummand k · z)
 
-/-- The SlashInvariantForm defined by an Eisenstein series of weight `k : ℤ`, level `Γ(N)`,
-  and congruence condition given by `a : Fin 2 → ZMod N`. -/
-def eisensteinSeries_SIF (k : ℤ) : SlashInvariantForm (Gamma N) k where
+/-- The `SlashInvariantForm` defined by an Eisenstein series of weight `k : ℤ`, level `Γ(N)`,
+and congruence condition given by `a : Fin 2 → ZMod N`. -/
+def eisensteinSeriesSIF (k : ℤ) : SlashInvariantForm (Gamma N) k where
   toFun := eisensteinSeries a k
   slash_action_eq' A hA := by
     obtain ⟨A, (hA : A ∈ Γ(N)), rfl⟩ := hA
     simp [SpecialLinearGroup.mapGL, ← SL_slash, eisensteinSeries_slash_apply, Gamma_mem'.mp hA]
 
-lemma eisensteinSeries_SIF_apply (k : ℤ) (z : ℍ) :
-    eisensteinSeries_SIF a k z = eisensteinSeries a k z := rfl
+@[deprecated (since := "2026-02-10")]
+noncomputable alias eisensteinSeries_SIF := eisensteinSeriesSIF
+
+lemma eisensteinSeriesSIF_apply (k : ℤ) (z : ℍ) :
+    eisensteinSeriesSIF a k z = eisensteinSeries a k z := rfl
+
+@[deprecated (since := "2026-02-10")] alias eisensteinSeries_SIF_apply := eisensteinSeriesSIF_apply
 
 end EisensteinSeries

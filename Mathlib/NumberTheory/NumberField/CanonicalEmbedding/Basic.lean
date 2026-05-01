@@ -384,7 +384,7 @@ variable [NumberField K]
 
 open scoped Classical in
 theorem nnnorm_eq_sup_normAtPlace (x : mixedSpace K) :
-    ‖x‖₊ = univ.sup fun w ↦ ⟨normAtPlace w x, normAtPlace_nonneg w x⟩ := by
+    ‖x‖₊ = univ.sup fun w ↦ .mk (normAtPlace w x) (normAtPlace_nonneg w x) := by
   have :
       (univ : Finset (InfinitePlace K)) =
       (univ.image (fun w : {w : InfinitePlace K // IsReal w} ↦ w.1)) ∪
@@ -398,12 +398,13 @@ theorem nnnorm_eq_sup_normAtPlace (x : mixedSpace K) :
   · ext w
     simp [normAtPlace_apply_of_isComplex w.prop]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem norm_eq_sup'_normAtPlace (x : mixedSpace K) :
     ‖x‖ = univ.sup' univ_nonempty fun w ↦ normAtPlace w x := by
   rw [← coe_nnnorm, nnnorm_eq_sup_normAtPlace, ← sup'_eq_sup univ_nonempty, ← NNReal.val_eq_coe,
     ← OrderHom.Subtype.val_coe, map_finset_sup', OrderHom.Subtype.val_coe]
-  simp only [Function.comp_apply]
+  simp
 
 /-- The norm of `x` is `∏ w, (normAtPlace x) ^ mult w`. It is defined such that the norm of
 `mixedEmbedding K a` for `a : K` is equal to the absolute value of the norm of `a` over `ℚ`,
@@ -463,7 +464,7 @@ theorem norm_eq_zero_iff' {x : mixedSpace K} (hx : x ∈ Set.range (mixedEmbeddi
 variable (K) in
 @[fun_prop]
 protected theorem continuous_norm : Continuous (mixedEmbedding.norm : (mixedSpace K) → ℝ) := by
-  refine continuous_finset_prod Finset.univ fun _ _ ↦ ?_
+  refine continuous_finsetProd Finset.univ fun _ _ ↦ ?_
   simp_rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, dite_pow]
   split_ifs <;> fun_prop
 
@@ -1215,7 +1216,7 @@ theorem normAtAllPlaces_eq_of_normAtComplexPlaces_eq {x y : mixedSpace K}
 
 theorem normAtAllPlaces_image_preimage_of_nonneg {s : Set (realSpace K)}
     (hs : ∀ x ∈ s, ∀ w, 0 ≤ x w) :
-    normAtAllPlaces '' (normAtAllPlaces ⁻¹' s) = s := by
+    normAtAllPlaces '' normAtAllPlaces ⁻¹' s = s := by
   rw [Set.image_preimage_eq_iff]
   rintro x hx
   refine ⟨mixedSpaceOfRealSpace x, funext fun w ↦ ?_⟩

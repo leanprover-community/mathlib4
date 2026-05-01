@@ -141,7 +141,7 @@ lemma isIso_π_of_isLimit' {c : Cone F} (hc : IsLimit c) (j : J) (π : j ⟶ i�
 `c.π.app i₀` is an isomorphism, `c` a limit cone. -/
 noncomputable def isLimitOfIsIso (c : Cone F) [IsIso (c.π.app i₀)] : IsLimit c :=
   IsLimit.ofIsoLimit h.isLimitCone (by
-    refine Cones.ext (asIso (c.π.app i₀)).symm (fun j ↦ ?_)
+    refine Cone.ext (asIso (c.π.app i₀)).symm (fun j ↦ ?_)
     let i := IsCofiltered.min i₀ j
     let α : i ⟶ i₀ := IsCofiltered.minToLeft _ _
     let β : i ⟶ j := IsCofiltered.minToRight _ _
@@ -220,6 +220,7 @@ noncomputable def cocone : Cocone F where
         let β : j' ⟶ i := IsFiltered.rightToMax _ _
         rw [h.coconeιApp_eq j' _ β α, h.coconeιApp_eq j _ (φ ≫ β) α, map_comp, assoc] }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When `h : F.IsEventuallyConstantFrom i₀`, the colimit of `F` exists and is `F.obj i₀`. -/
 noncomputable def isColimitCocone : IsColimit h.cocone where
   desc s := s.ι.app i₀
@@ -231,6 +232,7 @@ noncomputable def isColimitCocone : IsColimit h.cocone where
 
 lemma hasColimit : HasColimit F := ⟨_, h.isColimitCocone⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isIso_ι_of_isColimit {c : Cocone F} (hc : IsColimit c) :
     IsIso (c.ι.app i₀) := by
   simp only [← IsColimit.comp_coconePointUniqueUpToIso_inv hc h.isColimitCocone i₀,
@@ -242,11 +244,12 @@ lemma isIso_ι_of_isColimit' {c : Cocone F} (hc : IsColimit c) (j : J) (ι : i�
     IsIso (c.ι.app j) :=
   (h.postcomp ι).isIso_ι_of_isColimit hc
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a cocone `c` on a filtered diagram `F` which `IsEventuallyConstantFrom i₀`, such that
 `c.π.app i₀` is an isomorphism, `c` a colimit cocone. -/
 noncomputable def isColimitOfIsIso (c : Cocone F) [IsIso (c.ι.app i₀)] : IsColimit c :=
   IsColimit.ofIsoColimit h.isColimitCocone (by
-    refine Cocones.ext (asIso (c.ι.app i₀)) (fun j ↦ ?_)
+    refine Cocone.ext (asIso (c.ι.app i₀)) (fun j ↦ ?_)
     let i := IsFiltered.max i₀ j
     let α : i₀ ⟶ i := IsFiltered.leftToMax _ _
     let β : j ⟶ i := IsFiltered.rightToMax _ _

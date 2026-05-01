@@ -102,7 +102,7 @@ lemma Submonoid.closure_image_isMulIndecomposable_baseOf [Finite ι]
   have ⟨(hi₀ : 1 < f (v i)), (hi₁ : v i ∉ _)⟩ : i ∈ s := hi.prop
   have hi₂ (k : ι) (hk₀ : 1 < f (v k)) (hk₁ : f (v k) < f (v i)) : v k ∈ closure (v '' t) := by
     by_contra hk₂; exact not_le.mpr hk₁ <| hi.le_of_le ⟨hk₀, hk₂⟩ hk₁.le
-  have hi₃ : i ∉ t := by contrapose! hi₁; exact subset_closure <| mem_image_of_mem v hi₁
+  have hi₃ : i ∉ t := by contrapose hi₁; exact subset_closure <| mem_image_of_mem v hi₁
   obtain ⟨j, k, hj, hk, hjk⟩ : ∃ (j k : ι) (hj : 1 < f (v j)) (hk : 1 < f (v k)),
       v i = v j * v k := by
     grind [IsMulIndecomposable]
@@ -199,7 +199,7 @@ lemma Submonoid.mem_closure_image_one_lt_iff [CommMonoid S] [IsOrderedCancelMono
     v i ∈ closure (v '' {i | 1 < f (v i)}) ↔ 1 < f (v i) := by
   refine ⟨fun hi ↦ ?_, fun hi ↦ subset_closure <| mem_image_of_mem v hi⟩
   suffices v i = 1 ∨ 1 < f (v i) from this.resolve_left hv_one
-  refine closure_induction (by aesop) (by simp) (fun x y _ _ hx hy ↦ ?_) hi
+  refine closure_induction (by grind) (by simp) (fun x y _ _ hx hy ↦ ?_) hi
   rcases hx with rfl | hx; · simpa
   rcases hy with rfl | hy; · right; simpa
   right
@@ -220,7 +220,7 @@ lemma Submonoid.apply_ne_one_of_mem_or_inv_mem_closure
     simpa [hv_inv] using this v f s hf i⁻¹ (by simpa [hv_inv]) (by simp [hv_inv])
       (by left; simpa [hv_inv]) (by simpa [hv_inv])
   suffices v i ≠ 1 → 1 < f (v i) from (this hv_one).ne'
-  refine closure_induction (by aesop) (by simp) (fun x y _ _ hx hy _ ↦ ?_) hi
+  refine closure_induction (by simp_all) (by simp) (fun x y _ _ hx hy _ ↦ ?_) hi
   rcases eq_or_ne x 1 with rfl | hx'; · grind
   rcases eq_or_ne y 1 with rfl | hy'; · grind
   simpa using lt_mul_of_lt_of_one_lt (hx hx') (hy hy')

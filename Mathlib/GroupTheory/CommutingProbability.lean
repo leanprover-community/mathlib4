@@ -77,14 +77,13 @@ theorem commProb_le_one : commProb M ≤ 1 := by
 
 variable {M}
 
-theorem commProb_eq_one_iff [h : Nonempty M] :
-    commProb M = 1 ↔ Std.Commutative ((· * ·) : M → M → M) := by
+theorem commProb_eq_one_iff [h : Nonempty M] : commProb M = 1 ↔ IsMulCommutative M := by
   classical
   haveI := Fintype.ofFinite M
   rw [commProb, ← Set.coe_setOf, Nat.card_eq_fintype_card, Nat.card_eq_fintype_card]
   rw [div_eq_one_iff_eq, ← Nat.cast_pow, Nat.cast_inj, sq, ← card_prod,
     set_fintype_card_eq_univ_iff, Set.eq_univ_iff_forall]
-  · exact ⟨fun h ↦ ⟨fun x y ↦ h (x, y)⟩, fun h x ↦ h.comm x.1 x.2⟩
+  · exact ⟨fun h ↦ ⟨⟨fun x y ↦ h (x, y)⟩⟩, fun h x ↦ mul_comm' ..⟩
   · exact pow_ne_zero 2 (Nat.cast_ne_zero.mpr card_ne_zero)
 
 variable (G : Type*) [Group G]
@@ -123,7 +122,7 @@ variable (G)
 
 theorem inv_card_commutator_le_commProb : (↑(Nat.card (commutator G)))⁻¹ ≤ commProb G :=
   (inv_le_iff_one_le_mul₀ (Nat.cast_pos.mpr Finite.card_pos)).mpr
-    (le_trans (ge_of_eq (commProb_eq_one_iff.mpr ⟨(Abelianization.commGroup G).mul_comm⟩))
+    (le_trans (ge_of_eq (commProb_eq_one_iff.mpr (Abelianization.commGroup G).to_isCommutative))
       (commutator G).commProb_quotient_le)
 
 -- Construction of group with commuting probability 1/n
@@ -173,6 +172,7 @@ abbrev Product (l : List ℕ) : Type :=
 lemma commProb_nil : commProb (Product []) = 1 := by
   simp [Product, commProb_pi]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma commProb_cons (n : ℕ) (l : List ℕ) :
     commProb (Product (n :: l)) = commProb (DihedralGroup n) * commProb (Product l) := by
   simp only [commProb_pi, Fin.prod_univ_succ, Fin.getElem_fin, Fin.val_succ, Fin.val_zero,
@@ -194,7 +194,7 @@ theorem commProb_reciprocal (n : ℕ) :
   · rw [reciprocalFactors_odd h1 h2, commProb_cons, commProb_reciprocal (n / 4 + 1)]
     have hn : Odd (n % 4) := by grind
     rw [commProb_odd (hn.mul h2), div_mul_div_comm, div_eq_div_iff] <;> norm_cast
-    · grind [Nat.div_add_mod n 4]
+    · grind [Nat.div_add_mod n 4, Odd]
     · positivity [hn.pos.ne']
 
 end DihedralGroup

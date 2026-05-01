@@ -106,7 +106,7 @@ theorem IsVonNBounded.of_subsingleton [Subsingleton E] {s : Set E} : IsVonNBound
 @[simp]
 theorem isVonNBounded_iUnion {ι : Sort*} [Finite ι] {s : ι → Set E} :
     IsVonNBounded 𝕜 (⋃ i, s i) ↔ ∀ i, IsVonNBounded 𝕜 (s i) := by
-  simp only [IsVonNBounded, absorbs_iUnion, @forall_swap ι]
+  simp only [IsVonNBounded, absorbs_iUnion, @forall_comm ι]
 
 theorem isVonNBounded_biUnion {ι : Type*} {I : Set ι} (hI : I.Finite) {s : ι → Set E} :
     IsVonNBounded 𝕜 (⋃ i ∈ I, s i) ↔ ∀ i ∈ I, IsVonNBounded 𝕜 (s i) := by
@@ -225,7 +225,7 @@ theorem isVonNBounded_of_smul_tendsto_zero {ε : ι → 𝕜} {l : Filter ι} [l
   have : ∀ᶠ n in l, ∃ x : S, ε n • (x : E) ∉ V := by
     filter_upwards [hε] with n hn
     rw [absorbs_iff_norm] at hVS
-    push_neg at hVS
+    push Not at hVS
     rcases hVS ‖(ε n)⁻¹‖ with ⟨a, haε, haS⟩
     rcases Set.not_subset.mp haS with ⟨x, hxS, hx⟩
     refine ⟨⟨x, hxS⟩, fun hnx => ?_⟩
@@ -409,13 +409,20 @@ theorem TotallyBounded.isVonNBounded {s : Set E} (hs : TotallyBounded s) :
     have hx_fstsnd : x.fst + x.snd ⊆ U := add_subset_iff.mpr fun z1 hz1 z2 hz2 ↦
       h'' <| mk_mem_prod hz1 hz2
     refine fun y _ => Absorbs.mono_left ?_ hx_fstsnd
-    -- TODO: with dot notation, Lean timeouts on the next line. Why?
-    exact Absorbent.vadd_absorbs (absorbent_nhds_zero hx.1.1) hx.2.2.absorbs_self
+    exact (absorbent_nhds_zero hx.1.1).vadd_absorbs hx.2.2.absorbs_self
   else
     haveI : BoundedSpace 𝕜 := ⟨Metric.isBounded_iff.2 ⟨1, by simp_all [dist_eq_norm]⟩⟩
     exact Bornology.IsVonNBounded.of_boundedSpace
 
 end IsUniformAddGroup
+
+variable (𝕜) in
+theorem IsCompact.isVonNBounded [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+    [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] {s : Set E}
+    (hs : IsCompact s) : Bornology.IsVonNBounded 𝕜 s :=
+  letI := IsTopologicalAddGroup.rightUniformSpace E
+  haveI := isUniformAddGroup_of_addCommGroup (G := E)
+  hs.totallyBounded.isVonNBounded 𝕜
 
 variable (𝕜) in
 theorem Filter.Tendsto.isVonNBounded_range [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
