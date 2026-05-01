@@ -205,9 +205,4 @@ Given an equation `t` of the form `η = θ` between either natural transformatio
 elab "to_app_of% " t:term : term => do
   toAppAttributeExpr (← elabTerm t none)
 
-open Term in
-/-- Alias for `to_app_of%`. -/
-elab "to_app% " t:term : term => do
-  toAppAttributeExpr (← elabTerm t none)
-
 end Mathlib.Tactic.CategoryTheory.ToApp
