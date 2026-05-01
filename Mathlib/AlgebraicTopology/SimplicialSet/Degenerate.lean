@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.AlgebraicTopology.SimplicialSet.Op
 public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 
 /-!
@@ -64,7 +65,6 @@ lemma σ_mem_degenerate (i : Fin (n + 1)) (x : X _⦋n⦌) :
     X.σ i x ∈ X.degenerate (n + 1) :=
   ⟨n, by lia, SimplexCategory.σ i, Set.mem_range_self x⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mem_degenerate_iff (x : X _⦋n⦌) :
     x ∈ X.degenerate n ↔ ∃ (m : ℕ) (_ : m < n) (f : ⦋n⦌ ⟶ ⦋m⦌) (_ : Epi f),
         x ∈ Set.range (X.map f.op) := by
@@ -75,6 +75,23 @@ lemma mem_degenerate_iff (x : X _⦋n⦌) :
     exact ⟨(image f).len, by lia, factorThruImage f, inferInstance, by aesop⟩
   · rintro ⟨m, hm, f, hf, hx⟩
     exact ⟨m, hm, f, hx⟩
+
+set_option backward.isDefEq.respectTransparency false in
+lemma opObjEquiv_mem_degenerate_iff (x : X.op _⦋n⦌) :
+    opObjEquiv x ∈ X.degenerate n ↔ x ∈ X.op.degenerate n := by
+  simp only [mem_degenerate_iff]
+  refine exists_congr (fun m ↦ exists_congr (fun _ ↦ ?_))
+  constructor
+  · obtain ⟨x, rfl⟩ := opObjEquiv.symm.surjective x
+    rintro ⟨f, _, y, rfl⟩
+    exact ⟨SimplexCategory.rev.map f, inferInstance, opObjEquiv.symm y, by simp [op_map]⟩
+  · rintro ⟨f, _, y, rfl⟩
+    exact ⟨SimplexCategory.rev.map f, inferInstance, opObjEquiv y, by simp [op_map]⟩
+
+lemma opObjEquiv_mem_nonDegenerate_iff (x : X.op _⦋n⦌) :
+    opObjEquiv x ∈ X.nonDegenerate n ↔ x ∈ X.op.nonDegenerate n := by
+  simp only [mem_nonDegenerate_iff_notMem_degenerate,
+    opObjEquiv_mem_degenerate_iff]
 
 lemma degenerate_eq_iUnion_range_σ :
     X.degenerate (n + 1) = ⋃ (i : Fin (n + 1)), Set.range (X.σ i) := by
@@ -125,7 +142,7 @@ lemma mono_of_nonDegenerate (x : X.nonDegenerate n)
     (y : X.obj (op m)) (hy : X.map f.op y = x) :
     Mono f := by
   have := X.isIso_of_nonDegenerate x (factorThruImage f) (y := X.map (image.ι f).op y) (by
-      rw [← FunctorToTypes.map_comp_apply, ← op_comp, image.fac f, hy])
+      rw [← comp_apply, ← Functor.map_comp, ← op_comp, image.fac f, hy])
   rw [← image.fac f]
   infer_instance
 
@@ -155,13 +172,13 @@ include hf₁ hy₁ hy₂
 
 private lemma map_g_op_y₂ : X.map (g hf₁ f₂).op y₂ = y₁ := by
   dsimp [g]
-  rw [FunctorToTypes.map_comp_apply, ← hy₂, hy₁, ← FunctorToTypes.map_comp_apply, ← op_comp,
-    SplitEpi.id, op_id, FunctorToTypes.map_id_apply]
+  rw [Functor.map_comp, comp_apply, ← hy₂, hy₁, ← comp_apply, ← Functor.map_comp, ← op_comp,
+    SplitEpi.id, op_id, CategoryTheory.Functor.map_id, id_apply]
 
 private lemma isIso_factorThruImage_g :
     IsIso (factorThruImage (g hf₁ f₂)) := by
   have := map_g_op_y₂ hf₁ hy₁ hy₂
-  rw [← image.fac (g hf₁ f₂), op_comp, FunctorToTypes.map_comp_apply] at this
+  rw [← image.fac (g hf₁ f₂), op_comp, Functor.map_comp, comp_apply] at this
   exact X.isIso_of_nonDegenerate y₁ (factorThruImage (g hf₁ f₂)) _ this
 
 private lemma mono_g : Mono (g hf₁ f₂) := by
@@ -212,7 +229,6 @@ lemma unique_nonDegenerate_simplex (x : X _⦋n⦌) {m : ℕ}
   ext
   simpa [g_eq_id hy₁ hy₂ hf₁] using (map_g_op_y₂ hf₁ hy₁ hy₂).symm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma unique_nonDegenerate_map (x : X _⦋n⦌) {m : ℕ}
     (f₁ : ⦋n⦌ ⟶ ⦋m⦌) [Epi f₁] (y₁ : X.nonDegenerate m) (hy₁ : x = X.map f₁.op y₁)
     (f₂ : ⦋n⦌ ⟶ ⦋m⦌) (y₂ : X.nonDegenerate m) (hy₂ : x = X.map f₂.op y₂) :
@@ -247,7 +263,7 @@ variable {X} (A : X.Subcomplex)
 
 set_option backward.isDefEq.respectTransparency false in
 lemma mem_degenerate_iff {n : ℕ} (x : A.obj (op ⦋n⦌)) :
-    x ∈ degenerate A n ↔ x.val ∈ X.degenerate n := by
+    dsimp% x ∈ degenerate A n ↔ x.val ∈ X.degenerate n := by
   rw [SSet.mem_degenerate_iff, SSet.mem_degenerate_iff]
   constructor
   · rintro ⟨m, hm, f, _, y, rfl⟩
@@ -256,12 +272,12 @@ lemma mem_degenerate_iff {n : ℕ} (x : A.obj (op ⦋n⦌)) :
     rintro ⟨m, hm, f, _, ⟨y, rfl⟩⟩
     refine ⟨m, hm, f, inferInstance, ⟨y, ?_⟩, rfl⟩
     have := isSplitEpi_of_epi f
-    simpa [Set.mem_preimage, ← op_comp, ← FunctorToTypes.map_comp_apply,
-      IsSplitEpi.id, op_id, FunctorToTypes.map_id_apply] using A.map (section_ f).op hx
+    simpa [Set.mem_preimage, ← op_comp, ← comp_apply, ← Functor.map_comp] using
+      A.map (section_ f).op hx
 
 set_option backward.isDefEq.respectTransparency false in
 lemma mem_nonDegenerate_iff {n : ℕ} (x : A.obj (op ⦋n⦌)) :
-    x ∈ nonDegenerate A n ↔ x.val ∈ X.nonDegenerate n := by
+    dsimp% x ∈ nonDegenerate A n ↔ x.val ∈ X.nonDegenerate n := by
   rw [mem_nonDegenerate_iff_notMem_degenerate,
     mem_nonDegenerate_iff_notMem_degenerate, mem_degenerate_iff]
 
@@ -274,7 +290,7 @@ lemma le_iff_contains_nonDegenerate (B : X.Subcomplex) :
     induction n using SimplexCategory.rec with | _ n =>
     obtain ⟨m, f, _, ⟨a, ha⟩, ha'⟩ := exists_nonDegenerate A ⟨x, hx⟩
     simp only [Subfunctor.toFunctor_obj, Subtype.ext_iff,
-      Subfunctor.toFunctor_map_coe] at ha'
+      Subfunctor.toFunctor_map] at ha'
     subst ha'
     rw [mem_nonDegenerate_iff] at ha
     exact B.map f.op (h _ ⟨_, ha⟩ a.prop)
@@ -315,7 +331,7 @@ variable {X} {Y : SSet.{u}}
 lemma degenerate_app_apply {n : ℕ} {x : X _⦋n⦌} (hx : x ∈ X.degenerate n) (f : X ⟶ Y) :
     f.app _ x ∈ Y.degenerate n := by
   obtain ⟨m, hm, g, y, rfl⟩ := hx
-  exact ⟨m, hm, g, f.app _ y, by rw [FunctorToTypes.naturality]⟩
+  exact ⟨m, hm, g, f.app _ y, by rw [NatTrans.naturality_apply]⟩
 
 lemma degenerate_le_preimage (f : X ⟶ Y) (n : ℕ) :
     X.degenerate n ⊆ (f.app _) ⁻¹' (Y.degenerate n) :=
@@ -329,7 +345,7 @@ lemma degenerate_iff_of_isIso (f : X ⟶ Y) [IsIso f] {n : ℕ} (x : X _⦋n⦌)
     f.app _ x ∈ Y.degenerate n ↔ x ∈ X.degenerate n := by
   constructor
   · intro hy
-    simpa [← FunctorToTypes.comp] using degenerate_app_apply hy (inv f)
+    simpa [← comp_apply, ← NatTrans.comp_app] using degenerate_app_apply hy (inv f)
   · exact fun hx ↦ degenerate_app_apply hx f
 
 lemma nonDegenerate_iff_of_isIso (f : X ⟶ Y) [IsIso f] {n : ℕ} (x : X _⦋n⦌) :
