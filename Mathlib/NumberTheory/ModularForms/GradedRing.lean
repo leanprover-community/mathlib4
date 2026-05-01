@@ -559,14 +559,40 @@ private lemma discriminantPoly_isWeightedHomogeneous :
     · exact ((MvPolynomial.isWeightedHomogeneous_X ℂ E₄E₆Weight (1 : Fin 2)).pow 2) hd6
     · push_neg at hd6; simp only [hd3, hd6, sub_self, mul_zero, ne_eq, not_true] at hd
 
+/-- `evalE₄E₆ discriminantPoly = DirectSum.of _ 12 Δ`. -/
+private lemma evalE₄E₆_discriminantPoly :
+    evalE₄E₆ discriminantPoly =
+      DirectSum.of (ModularForm 𝒮ℒ) 12
+        ((CuspForm.discriminant : CuspForm 𝒮ℒ 12) : ModularForm 𝒮ℒ 12) := by
+  rw [discriminantPoly, map_smul, map_sub, map_pow, map_pow, evalE₄E₆_X0, evalE₄E₆_X1,
+    ← discriminant_eq_E₄_cube_sub_E₆_sq_graded]
+
 /-- The 0th q-expansion coefficient of a `Δ_poly * s` term in the graded ring vanishes. -/
 private lemma evalE₄E₆_discriminantPoly_mul_coeff_zero {n : ℕ} (hn12 : 12 ≤ n)
     (s : MvPolynomial (Fin 2) ℂ)
     (hs : MvPolynomial.IsWeightedHomogeneous E₄E₆Weight s (n - 12)) :
     (qExpansion 1 ↑((evalE₄E₆ (discriminantPoly * s)) (↑n : ℤ))).coeff 0 = 0 := by
-  -- TODO: Δ_poly evaluates to Δ at weight 12; multiplying by anything gives a cusp form,
-  -- whose 0th q-expansion coefficient vanishes.
-  sorry
+  rw [map_mul, evalE₄E₆_discriminantPoly,
+    evalE₄E₆_whc_eq_single (n - 12) s hs, DirectSum.of_mul_of]
+  have hcast : (12 : ℤ) + ((n - 12 : ℕ) : ℤ) = (↑n : ℤ) := by omega
+  rw [DirectSum.of_apply, dif_pos hcast]
+  -- The product evaluated at ↑n is a modular form of weight n with q-expansion Δ * s_eval.
+  -- Its 0th q-expansion coefficient vanishes since Δ is a cusp form.
+  set f := ((CuspForm.discriminant : CuspForm 𝒮ℒ 12) : ModularForm 𝒮ℒ 12)
+  set g := (evalE₄E₆ s) ((n - 12 : ℕ) : ℤ)
+  show (qExpansion 1 ((hcast ▸ GradedMonoid.GMul.mul f g : ModularForm 𝒮ℒ ↑n) : ℍ → ℂ)).coeff 0 = 0
+  have hcoe : ((hcast ▸ GradedMonoid.GMul.mul f g : ModularForm 𝒮ℒ ↑n) : ℍ → ℂ) =
+      ((f.mul g : ModularForm 𝒮ℒ (12 + ((n - 12 : ℕ) : ℤ))) : ℍ → ℂ) := by
+    ext z
+    have helper : ∀ {k₁ k₂ : ℤ} (heq : k₁ = k₂) (h : ModularForm 𝒮ℒ k₁) (z : ℍ),
+        (heq ▸ h : ModularForm 𝒮ℒ k₂) z = h z := by
+      intros; subst_vars; rfl
+    exact helper hcast _ z
+  rw [hcoe, ModularForm.qExpansion_mul one_pos one_mem_strictPeriods_SL f g,
+    PowerSeries.coeff_mul]
+  have hΔ_coeff : (qExpansion 1 (f : ℍ → ℂ)).coeff 0 = 0 :=
+    (ModularForm.isCuspForm_iff_coeffZero_eq_zero f).mp ⟨CuspForm.discriminant, rfl⟩
+  simp [Finset.antidiagonal_zero, hΔ_coeff]
 
 private lemma per_weight_injective_unique_monomial {n : ℕ} (p : MvPolynomial (Fin 2) ℂ)
     (hp : MvPolynomial.IsWeightedHomogeneous E₄E₆Weight p n)
@@ -624,6 +650,67 @@ private lemma per_weight_injective_zero
   · rw [hc, map_zero]
   · exact absurd h1z one_ne_zero_modularForm
 
+private lemma X0_pow_mul_X1_pow_isWeightedHomogeneous' {a b : ℕ} :
+    MvPolynomial.IsWeightedHomogeneous E₄E₆Weight
+      (MvPolynomial.X (0 : Fin 2) ^ a * MvPolynomial.X (1 : Fin 2) ^ b :
+        MvPolynomial (Fin 2) ℂ) (a * 4 + b * 6) :=
+  X0_pow_mul_X1_pow_isWeightedHomogeneous a b _ rfl
+
+/-- Polynomial decomposition: any weighted-homogeneous polynomial `p` of weight `n ≥ 12` can
+be written as `r + Δ_poly * s` where `r` is weighted-homogeneous of weight `n` whose monomials
+all have `X₀`-degree `< 3`. -/
+private lemma whomog_poly_Delta_decomp {n : ℕ} (hn12 : 12 ≤ n)
+    (p : MvPolynomial (Fin 2) ℂ)
+    (hp : MvPolynomial.IsWeightedHomogeneous E₄E₆Weight p n) :
+    ∃ r s : MvPolynomial (Fin 2) ℂ,
+      MvPolynomial.IsWeightedHomogeneous E₄E₆Weight r n ∧
+      MvPolynomial.IsWeightedHomogeneous E₄E₆Weight s (n - 12) ∧
+      p = r + discriminantPoly * s ∧
+      (∀ d ∈ r.support, d 0 < 3) := by
+  -- TODO: induction on `∑ d ∈ p.support, d 0`. Each step uses
+  -- `X₀³ = X₁² + 1728 • Δ_poly` to reduce a monomial with `d 0 ≥ 3`.
+  sorry
+
+/-- If `eval (r + Δ_poly * s) ↑n = 0` and `r` is reduced, then `r = 0`. -/
+private lemma reduced_part_eq_zero {n : ℕ} (hn12 : 12 ≤ n)
+    (r s : MvPolynomial (Fin 2) ℂ)
+    (hr : MvPolynomial.IsWeightedHomogeneous E₄E₆Weight r n)
+    (hs : MvPolynomial.IsWeightedHomogeneous E₄E₆Weight s (n - 12))
+    (hr_red : ∀ d ∈ r.support, d 0 < 3)
+    (heval : (evalE₄E₆ (r + discriminantPoly * s)) (↑n : ℤ) = 0) :
+    r = 0 := by
+  -- TODO: use that `qExp 0` of `Δ_poly * s` is 0 and the q-expansion-coeff at 0 of `r`
+  -- equals its leading coefficient (since r is reduced and weighted-homog).
+  sorry
+
+/-- If `eval (Δ_poly * s) ↑n = 0` (with `s` weighted-homog of weight `n - 12`),
+then `eval s ↑(n - 12) = 0`. -/
+private lemma eval_discriminantPoly_mul_zero_imp {n : ℕ} (hn12 : 12 ≤ n)
+    (s : MvPolynomial (Fin 2) ℂ)
+    (hs : MvPolynomial.IsWeightedHomogeneous E₄E₆Weight s (n - 12))
+    (hds : (evalE₄E₆ (discriminantPoly * s)) (↑n : ℤ) = 0) :
+    (evalE₄E₆ s) (↑(n - 12) : ℤ) = 0 := by
+  rw [map_mul, evalE₄E₆_discriminantPoly,
+    evalE₄E₆_whc_eq_single (n - 12) s hs, DirectSum.of_mul_of] at hds
+  have hcast : (12 : ℤ) + ((n - 12 : ℕ) : ℤ) = (↑n : ℤ) := by omega
+  rw [DirectSum.of_apply, dif_pos hcast] at hds
+  set f := ((CuspForm.discriminant : CuspForm 𝒮ℒ 12) : ModularForm 𝒮ℒ 12)
+  set g := (evalE₄E₆ s) ((n - 12 : ℕ) : ℤ)
+  have helper : ∀ {k₁ k₂ : ℤ} (heq : k₁ = k₂) (h : ModularForm 𝒮ℒ k₁) (z : ℍ),
+      (heq ▸ h : ModularForm 𝒮ℒ k₂) z = h z := by intros; subst_vars; rfl
+  ext z
+  simp only [ModularForm.zero_apply]
+  have hpw := DFunLike.congr_fun hds z
+  simp only [ModularForm.zero_apply] at hpw
+  rw [helper hcast _ z] at hpw
+  -- hpw : (GMul.mul f g) z = 0, i.e., f z * g z = 0
+  have hpw' : f z * g z = 0 := by
+    have heq : (GradedMonoid.GMul.mul f g : ModularForm 𝒮ℒ (12 + ↑(n - 12))) z = f z * g z := rfl
+    rw [← heq]; exact hpw
+  rcases mul_eq_zero.mp hpw' with hf0 | hg0
+  · exact absurd hf0 (discriminant_ne_zero z)
+  · exact hg0
+
 private lemma per_weight_injective_inductive_step (n : ℕ)
     (ih : ∀ m < n, ∀ (p : MvPolynomial (Fin 2) ℂ),
       MvPolynomial.IsWeightedHomogeneous E₄E₆Weight p m →
@@ -632,10 +719,12 @@ private lemma per_weight_injective_inductive_step (n : ℕ)
     (hp : MvPolynomial.IsWeightedHomogeneous E₄E₆Weight p n)
     (heval : (evalE₄E₆ p) (↑n : ℤ) = 0)
     (hn12 : 12 ≤ n) : p = 0 := by
-  -- Use Δ_poly divisibility: any p of weight n ≥ 12 evaluating to 0 is divisible by Δ_poly,
-  -- and the quotient (of weight n-12) also evaluates to 0, then apply IH.
-  -- TODO: complete proof.
-  sorry
+  obtain ⟨r, s, hr_wh, hs_wh, hp_eq, hr_red⟩ := whomog_poly_Delta_decomp hn12 p hp
+  have hr0 : r = 0 := reduced_part_eq_zero hn12 r s hr_wh hs_wh hr_red (hp_eq ▸ heval)
+  rw [hp_eq, hr0, zero_add] at heval ⊢
+  have hs0 : s = 0 := ih (n - 12) (by omega) s hs_wh
+    (eval_discriminantPoly_mul_zero_imp hn12 s hs_wh heval)
+  rw [hs0, mul_zero]
 
 private lemma per_weight_injective : ∀ (n : ℕ) (p : MvPolynomial (Fin 2) ℂ),
     MvPolynomial.IsWeightedHomogeneous E₄E₆Weight p n →
