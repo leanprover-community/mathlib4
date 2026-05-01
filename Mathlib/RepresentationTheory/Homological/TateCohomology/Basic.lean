@@ -55,7 +55,6 @@ def Rep.tateNorm (M : Rep R G) : (inhomogeneousChains M).X 0 ⟶ (inhomogeneousC
 lemma tateNorm_hom_apply (M : Rep R G) (x : (Fin 0 → G) →₀ ↑M.V) (y : Fin 0 → G) :
     M.tateNorm.hom x y = (cochainsIso₀ M).inv.hom (M.ρ.norm <| (chainsIso₀ M).hom.hom x) y := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Rep.tateNorm_eq (M : Rep R G) :
     M.tateNorm = ModuleCat.ofHom (Finsupp.lsum R fun _ ↦ LinearMap.pi fun _ ↦ M.ρ.norm) := by
   ext
@@ -84,7 +83,6 @@ lemma Rep.comp_eq_zero (M : Rep R G) : d₁₀ M ≫ M.norm.toModuleCatHom = 0 :
   ext
   simp [d₁₀_single M, Rep.norm, ← LinearMap.comp_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Rep.d_comp_tateNorm (M : Rep R G) : (inhomogeneousChains M).d 1 0 ≫ M.tateNorm = 0 := by
   simp only [ChainComplex.of.d, zero_add, ↓reduceDIte, Nat.reduceAdd, eqToHom_refl,
     Category.id_comp, tateNorm, ← Category.assoc, Preadditive.IsIso.comp_right_eq_zero]
@@ -125,7 +123,6 @@ lemma tateComplex.norm_hom_comm {A B : Rep R G} (φ : A ⟶ B) :
     ← Rep.hom_comp, A.norm_comm φ]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The chain map on the Tate complex induced by a morphism of representations. -/
 @[reducible]
 def tateComplex.map {X Y : Rep R G} (φ : X ⟶ Y) : tateComplex X ⟶ tateComplex Y := by
