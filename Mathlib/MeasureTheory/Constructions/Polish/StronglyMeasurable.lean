@@ -89,17 +89,17 @@ end MeasureTheory.StronglyMeasurable
 
 namespace MeasureTheory
 
-variable {α β ι : Type*} [MeasurableSpace α] [CommMonoid β] [TopologicalSpace β]
+variable {X E ι : Type*} [MeasurableSpace X] [CommMonoid E] [TopologicalSpace E]
 
 section
 
-variable [IsCompletelyPseudoMetrizableSpace β] [ContinuousMul β]
+variable [IsCompletelyPseudoMetrizableSpace E] [ContinuousMul E]
   [Countable ι] {L : SummationFilter ι} [L.NeBot] [L.filter.IsCountablyGenerated]
 
 /-- The product of strongly measurable functions is measurable. -/
 @[to_additive (attr := fun_prop)
 /-- The sum of strongly measurable functions is measurable. -/]
-theorem StronglyMeasurable.tprod {f : ι → α → β} (h : ∀ i : ι, StronglyMeasurable (f i)) :
+theorem StronglyMeasurable.tprod {f : ι → X → E} (h : ∀ i : ι, StronglyMeasurable (f i)) :
     StronglyMeasurable (fun x => ∏'[L] i : ι, f i x) := by
   let E := { x | Multipliable (f · x) L }
   have hE : MeasurableSet E := StronglyMeasurable.measurableSet_exists_tendsto (by fun_prop)
@@ -112,52 +112,48 @@ theorem StronglyMeasurable.tprod {f : ι → α → β} (h : ∀ i : ι, Strongl
 /-- The product of almost everywhere strongly measurable functions is measurable. -/
 @[to_additive (attr := fun_prop)
 /-- The sum of almost everywhere strongly measurable functions is measurable. -/]
-theorem AEStronglyMeasurable.tprod {μ : MeasureTheory.Measure α} {f : ι → α → β}
+theorem AEStronglyMeasurable.tprod {μ : MeasureTheory.Measure X} {f : ι → X → E}
     (h : ∀ i : ι, AEStronglyMeasurable (f i) μ) :
     AEStronglyMeasurable (fun x => ∏'[L] i : ι, f i x) μ := by
   choose g hg_meas hg_eq_f using h
   use (fun x => ∏'[L] i, g i x), StronglyMeasurable.tprod hg_meas
-  filter_upwards [MeasureTheory.ae_all_iff.mpr hg_eq_f] with x h_eq using tprod_congr h_eq
+  filter_upwards [ae_all_iff.mpr hg_eq_f] with x h_eq using tprod_congr h_eq
 
 end
 
 section
 
-variable [PseudoMetrizableSpace β] [ContinuousMul β]
+variable [PseudoMetrizableSpace E] [ContinuousMul E]
   {L : SummationFilter ι} [L.NeBot] [L.filter.IsCountablyGenerated]
 
 /-- The product of strongly measurable functions is measurable. -/
 @[to_additive (attr := fun_prop)
 /-- The sum of strongly measurable functions is measurable. -/]
-theorem StronglyMeasurable.tprod' {f : ι → α → β} (h : ∀ i : ι, StronglyMeasurable (f i)) :
+theorem StronglyMeasurable.tprod' {f : ι → X → E} (h : ∀ i : ι, StronglyMeasurable (f i)) :
     StronglyMeasurable (∏'[L] i : ι, f i) := by
   rw [tprod_def, finprod_def']
   split_ifs with hm
-  · refine Finset.stronglyMeasurable_prod _ fun _ _ => ?_
+  any_goals exact stronglyMeasurable_one
+  · refine Finset.stronglyMeasurable_prod _ (fun _ _ ↦ ?_)
     rw [Set.mulIndicator]
     split_ifs
     · fun_prop
     · exact stronglyMeasurable_one
-  · exact stronglyMeasurable_one
-  · exact stronglyMeasurable_one
   · exact stronglyMeasurable_of_tendsto L.filter (by fun_prop) hm.choose_spec
-  · exact stronglyMeasurable_one
 
 /-- The product of almost everywhere strongly measurable functions is measurable. -/
 @[to_additive (attr := fun_prop)
 /-- The sum of almost everywhere strongly measurable functions is measurable. -/]
-theorem AEStronglyMeasurable.tprod' {μ : MeasureTheory.Measure α} {f : ι → α → β}
+theorem AEStronglyMeasurable.tprod' {μ : MeasureTheory.Measure X} {f : ι → X → E}
     (h : ∀ i : ι, AEStronglyMeasurable (f i) μ) : AEStronglyMeasurable (∏'[L] i : ι, f i) μ := by
   rw [tprod_def, finprod_def']
   split_ifs with hm
-  · refine Finset.aestronglyMeasurable_prod _ fun _ _ => ?_
+  any_goals exact aestronglyMeasurable_one
+  · refine Finset.aestronglyMeasurable_prod _ (fun _ _ ↦ ?_)
     rw [Set.mulIndicator]
     split_ifs <;> fun_prop
-  · exact aestronglyMeasurable_one
-  · exact aestronglyMeasurable_one
   · apply aestronglyMeasurable_of_tendsto_ae L.filter (f := fun s => ∏ i ∈ s, f i) (by fun_prop)
-    filter_upwards with x using Tendsto.apply_nhds hm.choose_spec x
-  · exact aestronglyMeasurable_one
+    exact .of_forall fun x ↦ hm.choose_spec.apply_nhds x
 
 end
 

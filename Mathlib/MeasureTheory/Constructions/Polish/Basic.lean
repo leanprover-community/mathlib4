@@ -1017,18 +1017,18 @@ theorem MeasureTheory.measurableSet_exists_tendsto [TopologicalSpace γ]
 
 section Measurable
 
-variable {α β ι : Type*} [MeasurableSpace α] [CommMonoid β] [TopologicalSpace β]
+variable {X E ι : Type*} [MeasurableSpace X] [CommMonoid E] [TopologicalSpace E]
 
 section
 
-variable [IsCompletelyPseudoMetrizableSpace β] [SecondCountableTopology β]
-  [MeasurableSpace β] [BorelSpace β] [MeasurableMul₂ β]
+variable [IsCompletelyPseudoMetrizableSpace E] [SecondCountableTopology E]
+  [MeasurableSpace E] [BorelSpace E] [MeasurableMul₂ E]
   [Countable ι] {L : SummationFilter ι} [L.NeBot] [L.filter.IsCountablyGenerated]
 
 /-- The product of measurable functions is measurable. -/
 @[to_additive (attr := fun_prop)
 /-- The sum of measurable functions is measurable. -/]
-theorem Measurable.tprod {f : ι → α → β} (h : ∀ i : ι, Measurable (f i)) :
+theorem Measurable.tprod {f : ι → X → E} (h : ∀ i : ι, Measurable (f i)) :
     Measurable (fun x => ∏'[L] i : ι, f i x) := by
   let E := { x | Multipliable (f · x) L }
   have hE : MeasurableSet E := measurableSet_exists_tendsto (by fun_prop)
@@ -1041,48 +1041,46 @@ theorem Measurable.tprod {f : ι → α → β} (h : ∀ i : ι, Measurable (f i
 /-- The product of almost everywhere measurable functions is measurable. -/
 @[to_additive (attr := fun_prop)
 /-- The sum of almost everywhere measurable functions is measurable. -/]
-theorem AEMeasurable.tprod {μ : MeasureTheory.Measure α} {f : ι → α → β}
+theorem AEMeasurable.tprod {μ : MeasureTheory.Measure X} {f : ι → X → E}
     (h : ∀ i : ι, AEMeasurable (f i) μ) : AEMeasurable (fun x => ∏'[L] i : ι, f i x) μ := by
   choose g hg_meas hg_eq_f using h
   use (fun x => ∏'[L] i, g i x), Measurable.tprod hg_meas
-  filter_upwards [MeasureTheory.ae_all_iff.mpr hg_eq_f] with x h_eq using tprod_congr h_eq
+  filter_upwards [ae_all_iff.mpr hg_eq_f] with x h_eq using tprod_congr h_eq
 
 end
 
 section
 
-variable [PseudoMetrizableSpace β] [MeasurableSpace β] [BorelSpace β] [MeasurableMul₂ β]
+variable [PseudoMetrizableSpace E] [MeasurableSpace E] [BorelSpace E] [MeasurableMul₂ E]
   {L : SummationFilter ι} [L.NeBot] [L.filter.IsCountablyGenerated]
 
 /-- The product of measurable functions is measurable. -/
 @[to_additive (attr := fun_prop)
 /-- The sum of measurable functions is measurable. -/]
-theorem Measurable.tprod' {f : ι → α → β} (h : ∀ i : ι, Measurable (f i)) :
+theorem Measurable.tprod' {f : ι → X → E} (h : ∀ i : ι, Measurable (f i)) :
     Measurable (∏'[L] i : ι, f i) := by
   rw [tprod_def, finprod_def']
   split_ifs with hm
-  · refine Finset.measurable_prod_apply ?_ measurable_id
-    exact fun _ _ ↦ by rw [Set.mulIndicator]; split_ifs <;> fun_prop
-  · exact measurable_one
-  · exact measurable_one
+  any_goals exact measurable_one
+  · refine Finset.measurable_prod_apply (fun _ _ ↦ ?_) measurable_id
+    rw [Set.mulIndicator]
+    split_ifs <;> fun_prop
   · exact measurable_of_tendsto_metrizable' L.filter (by fun_prop) hm.choose_spec
-  · exact measurable_one
 
 /-- The product of almost everywhere measurable functions is measurable. -/
 @[to_additive (attr := fun_prop)
 /-- The sum of almost everywhere measurable functions is measurable. -/]
-theorem AEMeasurable.tprod' {μ : MeasureTheory.Measure α} {f : ι → α → β}
+theorem AEMeasurable.tprod' {μ : MeasureTheory.Measure X} {f : ι → X → E}
     (h : ∀ i : ι, AEMeasurable (f i) μ) : AEMeasurable (∏'[L] i : ι, f i) μ := by
   rw [tprod_def, finprod_def']
   split_ifs with hm
-  · apply Finset.aemeasurable_prod
-    exact fun _ _ ↦ by rw [Set.mulIndicator]; split_ifs <;> fun_prop
-  · exact aemeasurable_one
-  · exact aemeasurable_one
+  any_goals exact aemeasurable_one
+  · refine Finset.aemeasurable_prod _ (fun _ _ ↦ ?_)
+    rw [Set.mulIndicator]
+    split_ifs <;> fun_prop
   · apply aemeasurable_of_tendsto_metrizable_ae L.filter (f := fun s => ∏ i ∈ s, f i)
     · fun_prop
-    · filter_upwards with x using Tendsto.apply_nhds hm.choose_spec x
-  · exact aemeasurable_one
+    · exact .of_forall fun x ↦ hm.choose_spec.apply_nhds x
 
 end
 
