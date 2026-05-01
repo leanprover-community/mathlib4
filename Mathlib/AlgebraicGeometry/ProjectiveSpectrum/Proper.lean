@@ -108,7 +108,11 @@ instance isSeparated : IsSeparated (toSpecZero 𝒜) := by
   · simp only [Iso.trans_hom, congrHom_hom, Category.assoc, Iso.hom_inv_id, Category.comp_id,
       limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, e₂, e₁,
       pullbackSpecIso_inv_fst, ← Spec.map_comp, affineOpenCover_f,
-      pullbackDiagonalMapIdIso_inv_snd_fst, pullbackAwayιIso_inv_fst, ← Spec.map_comp]
+  · -- `simp? [e₂, e₁, ← Spec.map_comp]` says
+    simp only [affineOpenCover_f, Iso.trans_hom, congrHom_hom, Category.assoc, Iso.hom_inv_id,
+      Category.comp_id, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
+      pullbackDiagonalMapIdIso_inv_snd_fst, pullbackAwayιIso_inv_fst, pullbackSpecIso_inv_fst,
+      ← Spec.map_comp, e₂, e₁]
     congr 1
     ext x : 2
     exact DFunLike.congr_fun (Algebra.TensorProduct.lift_comp_includeLeft
