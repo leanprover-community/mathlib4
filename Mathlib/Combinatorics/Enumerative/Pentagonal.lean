@@ -21,6 +21,8 @@ convention, but implicitly shows the monotonicity in `pentagonal_lt_pentagonal_n
 ## Main definitions
 
 * `pentagonal`: pentagonal numbers as a function `ℤ → ℕ`.
+* `pentagonalCoeff`: coefficients of the power series $\sum_{k=-\infty}^{\infty}(-1)^k x^{f(k)}$,
+  where $f(k)$ are pentagonal numbers.
 
 ## TODO
 
@@ -79,7 +81,8 @@ theorem pentagonal_strictAntiOn : StrictAntiOn pentagonal (Set.Iic 0) := by
 variable (R : Type*) [Ring R]
 
 open Classical in
-/-- TODO -/
+/-- Coefficients of the power series $\sum_{k=-\infty}^{\infty}(-1)^k x^{f(k)}$, where $f(k)$ are
+pentagonal numbers. -/
 noncomputable def pentagonalCoeff (n : ℕ) : R :=
   if h : ∃ k, pentagonal k = n then
     Int.negOnePow h.choose
