@@ -144,7 +144,7 @@ theorem restrict_le_self : μ.restrict s ≤ μ :=
 theorem absolutelyContinuous_restrict : μ.restrict s ≪ μ :=
   Measure.absolutelyContinuous_of_le Measure.restrict_le_self
 
-theorem restrict_absolutelyContinuous_restrict' ⦃s s' : Set α⦄ ⦃μ ν : Measure α⦄
+theorem restrict_absolutelyContinuous_restrict' {s s' : Set α} {μ ν : Measure α}
     (hs : (· ∈ s) ≤ᵐ[μ] (· ∈ s')) (hμν : μ ≪ ν) :
     μ.restrict s ≪ ν.restrict s' := by
   refine .mk fun t ht h ↦ ?_
@@ -153,7 +153,7 @@ theorem restrict_absolutelyContinuous_restrict' ⦃s s' : Set α⦄ ⦃μ ν : M
     measure_mono_ae <| hs.mono fun _x hx ⟨hxt, hxs⟩ => ⟨hxt, hx hxs⟩
   simpa [nonpos_iff_eq_zero, hμν.null_mono, h] using hv
 
-theorem restrict_absolutelyContinuous_restrict ⦃s s' : Set α⦄ ⦃μ ν : Measure α⦄
+theorem restrict_absolutelyContinuous_restrict {s s' : Set α} {μ ν : Measure α}
     (hs : s ⊆ s') (hμν : μ ≪ ν) : μ.restrict s ≪ ν.restrict s' :=
   restrict_absolutelyContinuous_restrict' (ae_of_all _ hs) hμν
 
@@ -527,7 +527,7 @@ lemma AbsolutelyContinuous.restrict (h : μ ≪ ν) (s : Set α) : μ.restrict s
   rw [restrict_apply ht] at htν ⊢
   exact h htν
 
-lemma AbsolutelyContinuous.restrict_of_subset ⦃s s' : Set α⦄ ⦃μ ν : Measure α⦄
+lemma AbsolutelyContinuous.restrict_of_subset {s s' : Set α} {μ ν : Measure α}
     (hμν : μ.restrict s' ≪ ν.restrict s') (hs : s ⊆ s') :
     μ.restrict s ≪ ν.restrict s := by
   simpa [hs] using hμν.restrict s
