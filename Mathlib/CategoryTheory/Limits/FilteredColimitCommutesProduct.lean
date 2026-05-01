@@ -159,6 +159,7 @@ variable {ι : Type*} [HasProductsOfShape ι C]
 
 /-- A category `C` has the `w`-IPC property for shape `ι` if `w`-sized filtered colimits commute
 with products of shape `ι`. -/
+@[pp_with_univ]
 class IsIPCOfShape (ι : Type*) (C : Type*) [Category* C] [HasProductsOfShape ι C] : Prop where
   nonempty_isColimit ⦃J : ι → Type w⦄ [∀ i, SmallCategory (J i)]
     [∀ i, IsFiltered (J i)] ⦃F : ∀ i, J i ⥤ C⦄ ⦃c : ∀ i, Cocone (F i)⦄ :
