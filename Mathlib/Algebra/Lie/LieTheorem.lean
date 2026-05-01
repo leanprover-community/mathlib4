@@ -49,7 +49,6 @@ local notation "π" => LieModule.toEnd R _ V
 
 private abbrev T (w : A) : Module.End R V := (π w) - χ w • 1
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 /-- An auxiliary lemma used only in the definition `LieModule.weightSpaceOfIsLieTower` below. -/
 private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpace V χ) :
