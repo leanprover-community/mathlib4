@@ -728,6 +728,18 @@ theorem continuousWithinAt_const {b : β} {s : Set α} {x : α} :
     ContinuousWithinAt (fun _ : α => b) s x :=
   continuous_const.continuousWithinAt
 
+@[nontriviality]
+theorem continuousWithinAt_of_subsingleton [Subsingleton β] {s : Set α} {x : α} :
+    ContinuousWithinAt f s x := by
+  intro U hU
+  have hU' : U = univ := Subsingleton.eq_univ_of_nonempty <| Filter.nonempty_of_mem hU
+  rw [hU']
+  exact univ_mem
+
+@[nontriviality]
+theorem continuousOn_of_subsingleton [Subsingleton β] {s : Set α} : ContinuousOn f s :=
+  fun _ _ => continuousWithinAt_of_subsingleton
+
 theorem continuousOn_id {s : Set α} : ContinuousOn id s :=
   continuous_id.continuousOn
 
