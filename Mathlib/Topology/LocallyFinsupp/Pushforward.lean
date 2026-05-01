@@ -37,62 +37,32 @@ variable {X Y R : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 namespace Function
 namespace locallyFinsupp
 
-section Zero
-variable [Zero R]
-
-variable (f) in
-/--
-Implementation detail for the pushforward; the support of a locally finsupp function on `X`
-intersected with the preimage of a point `z : Y` along a function `f : X ⟶ Y`.
--/
-def preimageSupport (c : X → R) (z : Y) : Set X :=
-  f ⁻¹' {z} ∩ c.support
-
-/--
-A function `f` has finite preimage support with respect to a function `c : X → R` where `R` has a
-zero element if its fibers all have finite intersection with the support of `c`.
-
-This is a nonstandard notion and is mainly here to define the pushforward of algebraic cycles.
-In this case, we define the pushforward with respect to quasicompact morphisms which automatically
-satisfy this property, so in practice this definition shouldn't be exposed to the user too much.
--/
-def PreimageSupportFinite (c : X → R) (f : X → Y) : Prop :=
-    ∀ (z : Y), (preimageSupport f c z).Finite
-
-lemma _root_.IsProperMap.preimageSupportFinite (c : locallyFinsupp X R)
-    (f : X → Y) (hf : IsProperMap f) : PreimageSupportFinite c f := by
-  intro z
-  exact LocallyFiniteSupport.finite_inter_support_of_isCompact
-    c.locallyFiniteSupport <| hf.isCompact_preimage isCompact_singleton
-
-end Zero
-
 section map
 
 variable [Semiring R] {W : TopologicalSpace.Opens Y} (c : Function.locallyFinsupp X R)
 
 lemma inter_preimageSupport_nonempty_finite (hf : IsSpectralMap f) (hW : IsCompact W.1) :
-    (W.carrier ∩ {z : Y | (preimageSupport f c z).Nonempty}).Finite := by
-  suffices (f ⁻¹' (W.carrier ∩ {z | (preimageSupport f c z).Nonempty}) ∩ c.support).Finite from
-    (this.image f).subset (fun a ha ↦ by grind [preimageSupport, Set.Nonempty])
+    (W.carrier ∩ {z : Y | (f ⁻¹' {z} ∩ c.support).Nonempty}).Finite := by
+  suffices (f ⁻¹' (W.carrier ∩ {z | (f ⁻¹' {z} ∩ c.support).Nonempty}) ∩ c.support).Finite from
+    (this.image f).subset (fun a ha ↦ by grind [Set.Nonempty])
   rw [preimage_inter]
-  suffices (f ⁻¹' W ∩ ⋃ z, preimageSupport f c z).Finite by
+  suffices (f ⁻¹' W ∩ ⋃ z, f ⁻¹' {z} ∩ c.support).Finite by
     apply Finite.subset this
     rw [Set.inter_assoc]
-    exact Set.inter_subset_inter_right _ (fun p hp ↦ by simp_all [preimageSupport])
+    exact Set.inter_subset_inter_right _ (fun p hp ↦ by simp_all)
   rw [inter_iUnion]
   suffices (f ⁻¹' W.carrier ∩ c.support).Finite by
-    grind [preimageSupport, Opens.carrier_eq_coe, iUnion_subset_iff, SetLike.mem_coe,
+    grind [Opens.carrier_eq_coe, iUnion_subset_iff, SetLike.mem_coe,
       Function.mem_support, Finite.subset]
   exact LocallyFiniteSupport.finite_inter_support_of_isCompact c.locallyFiniteSupport <|
     hf.2 W.is_open' hW
 
 variable {N : Type*} [PrespectralSpace Y]
 
-lemma map_locally_finite (hf : IsSpectralMap f)
-    (hf' : PreimageSupportFinite c f) (y : Y) :
+lemma map_locally_finite (hf : IsSpectralMap f) (hf' : ∀ y : Y, IsCompact <| f ⁻¹' {y}) (y : Y) :
     ∃ t ∈ 𝓝 y, (t ∩ Function.support fun z ↦
-    ∑ x ∈ (hf' z).toFinset, (c x) * w x).Finite := by
+    ∑ x ∈ (c.locallyFiniteSupport.finite_inter_support_of_isCompact <| hf' z).toFinset,
+    (c x) * w x).Finite := by
   obtain ⟨W, hW⟩ : ∃ W : TopologicalSpace.Opens Y, IsCompact W.1 ∧ y ∈ W := by
     obtain ⟨U, hU⟩ := (PrespectralSpace.isTopologicalBasis (X := Y)).exists_subset_of_mem_open
         (by simp : y ∈ ⊤) (by simp)
@@ -100,12 +70,13 @@ lemma map_locally_finite (hf : IsSpectralMap f)
     exact ⟨hU.1.2, hU.2.1⟩
   use W
   refine ⟨IsOpen.mem_nhds (Opens.isOpen W) hW.2, ?_⟩
-  suffices (W.carrier ∩ {z : Y | (preimageSupport f c z).Nonempty}).Finite by
+  suffices (W.carrier ∩ {z : Y | (f ⁻¹' {z} ∩ support c.toFun).Nonempty}).Finite by
     apply Finite.subset this
     apply inter_subset_inter_right
     intro x
     contrapose!
-    simp +contextual [Set.not_nonempty_iff_eq_empty]
+    simp +contextual only [mem_setOf_eq, not_nonempty_iff_eq_empty, mem_support, toFinite_toFinset,
+      toFinset_empty, Finset.sum_empty, ne_eq, not_true_eq_false, not_false_eq_true, implies_true]
   exact inter_preimageSupport_nonempty_finite c hf hW.1
 
 variable (f) in
@@ -119,8 +90,10 @@ if the dimensions of the points correspond, and is zero otherwise).
 -/
 @[simps]
 noncomputable
-def map (hf : IsSpectralMap f) (hf' : PreimageSupportFinite c f) : Function.locallyFinsupp Y R where
-  toFun z := (∑ x ∈ (hf' z).toFinset, (c x) * w x)
+def map (hf : IsSpectralMap f) (hf' : ∀ y : Y, IsCompact <| f ⁻¹' {y}) :
+    Function.locallyFinsupp Y R where
+  toFun z := ∑ x ∈ (c.locallyFiniteSupport.finite_inter_support_of_isCompact <| hf' z).toFinset,
+    (c x) * w x
   supportWithinDomain' := by simp
   supportLocallyFiniteWithinDomain' z _ := map_locally_finite w c hf hf' z
 
@@ -128,33 +101,29 @@ def map (hf : IsSpectralMap f) (hf' : PreimageSupportFinite c f) : Function.loca
 Pushforward preserves cycles of pure dimension `d` in the dimension grading.
 -/
 lemma map_homogeneous (s : Set X) (t : Set Y) (hc : c.support ⊆ s)
-    (hf' : PreimageSupportFinite c f)
+    (hf' : ∀ y : Y, IsCompact <| f ⁻¹' {y})
     (h : ∀ x : X, x ∈ s → w x ≠ 0 → f x ∈ t) :
     (map f w c hf hf').support ⊆ t := by
   intro y hy
-  simp only [map, preimageSupport, Function.mem_support, ne_eq] at hy
+  simp only [map, Function.mem_support, ne_eq] at hy
   obtain ⟨x, hx⟩ := Finset.exists_ne_zero_of_sum_ne_zero hy
   simp only [Finite.mem_toFinset, mem_inter_iff, mem_preimage, mem_singleton_iff,
     Function.mem_support, ne_eq] at hx
   specialize h x (hc hx.1.2)
   grind
 
-lemma preimageSupportFinite_id : PreimageSupportFinite c id := by
-  intro z
-  simp [preimageSupport, toFinite ({z} ∩ locallyFinsuppWithin.support c)]
-
 /--
 The pushforward of `c` along the identity morphism is `c`.
 -/
 @[simp]
 lemma map_id [PrespectralSpace X] (hw : ∀ z : X, w z = 1) :
-    map id w c isSpectralMap_id (preimageSupportFinite_id c) = c := by
+    map id w c isSpectralMap_id (by simp) = c := by
+  classical
   ext z
-  obtain h | h : (c z ≠ 0 ∧ (preimageSupportFinite_id c z).toFinset = {z}) ∨
-        (c z = 0 ∧ (preimageSupportFinite_id c z).toFinset = ∅) := by
-    grind [Finite.toFinset, preimageSupport, Function.mem_support]
-  · simp_all
-  · simp_all
+  change ∑ x ∈ _, c x * w x = c z
+  rw [show (Set.Finite.toFinset _ : Finset X) = if c z = 0 then ∅ else {z} from by
+    ext; split_ifs <;> aesop]
+  split_ifs with h <;> simp [hw, h]
 
 end map
 end locallyFinsupp
