@@ -19,7 +19,7 @@ stating that for a subspace `K` of `E` such that `K` admits an orthogonal projec
 `K ⊔ Kᗮ = ⊤`, is a typical example.
 -/
 
-@[expose] public section
+public section
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
@@ -44,17 +44,11 @@ theorem sup_orthogonal_inf_of_hasOrthogonalProjection {K₁ K₂ : Submodule �
     exact K₂.add_mem (h hy) hz.2
   · exact fun hx => ⟨v, v.prop, x - v, ⟨hvm, K₂.sub_mem hx (h v.prop)⟩, add_sub_cancel _ _⟩
 
-@[deprecated (since := "2025-07-27")] alias sup_orthogonal_inf_of_completeSpace :=
-  sup_orthogonal_inf_of_hasOrthogonalProjection
-
 variable {K} in
 /-- If `K` admits an orthogonal projection, then `K` and `Kᗮ` span the whole space. -/
 theorem sup_orthogonal_of_hasOrthogonalProjection [K.HasOrthogonalProjection] : K ⊔ Kᗮ = ⊤ := by
   convert Submodule.sup_orthogonal_inf_of_hasOrthogonalProjection (le_top : K ≤ ⊤) using 2
   simp
-
-@[deprecated (since := "2025-07-27")] alias sup_orthogonal_of_completeSpace :=
-  sup_orthogonal_of_hasOrthogonalProjection
 
 /-- If `K` admits an orthogonal projection, then the orthogonal complement of its orthogonal
 complement is itself. -/
@@ -102,9 +96,6 @@ variable {K}
 /-- If `K` admits an orthogonal projection, `K` and `Kᗮ` are complements of each other. -/
 theorem isCompl_orthogonal_of_hasOrthogonalProjection [K.HasOrthogonalProjection] : IsCompl K Kᗮ :=
   ⟨K.orthogonal_disjoint, codisjoint_iff.2 Submodule.sup_orthogonal_of_hasOrthogonalProjection⟩
-
-@[deprecated (since := "2025-07-27")] alias isCompl_orthogonal_of_completeSpace :=
-  isCompl_orthogonal_of_hasOrthogonalProjection
 
 @[simp]
 theorem orthogonalComplement_eq_orthogonalComplement {L : Submodule 𝕜 E} [K.HasOrthogonalProjection]
@@ -216,27 +207,12 @@ open Submodule
 
 variable {K} {x y : E}
 
-theorem eq_zero_of_inner_left (hK : Dense (K : Set E)) (h : ∀ v : K, ⟪x, v⟫ = 0) : x = 0 := by
-  have : (⟪x, ·⟫) = 0 := (continuous_const.inner continuous_id).ext_on
-    hK continuous_const (Subtype.forall.1 h)
-  simpa using congr_fun this x
-
 theorem eq_zero_of_mem_orthogonal (hK : Dense (K : Set E)) (h : x ∈ Kᗮ) : x = 0 :=
-  eq_zero_of_inner_left hK fun v ↦ (mem_orthogonal' _ _).1 h _ v.2
+  eq_zero_of_inner_left 𝕜 hK fun _ ↦ (mem_orthogonal' _ _).1 h _
 
 /-- If `S` is dense and `x - y ∈ Kᗮ`, then `x = y`. -/
 theorem eq_of_sub_mem_orthogonal (hK : Dense (K : Set E)) (h : x - y ∈ Kᗮ) : x = y :=
   sub_eq_zero.1 <| eq_zero_of_mem_orthogonal hK h
-
-theorem eq_of_inner_left (hK : Dense (K : Set E)) (h : ∀ v : K, ⟪x, v⟫ = ⟪y, v⟫) : x = y :=
-  hK.eq_of_sub_mem_orthogonal (Submodule.sub_mem_orthogonal_of_inner_left h)
-
-theorem eq_of_inner_right (hK : Dense (K : Set E)) (h : ∀ v : K, ⟪(v : E), x⟫ = ⟪(v : E), y⟫) :
-    x = y :=
-  hK.eq_of_sub_mem_orthogonal (Submodule.sub_mem_orthogonal_of_inner_right h)
-
-theorem eq_zero_of_inner_right (hK : Dense (K : Set E)) (h : ∀ v : K, ⟪(v : E), x⟫ = 0) : x = 0 :=
-  hK.eq_of_inner_right fun v => by rw [inner_zero_right, h v]
 
 end Dense
 

@@ -32,7 +32,7 @@ namespace TopCat
 space in `Type (max u v)`. -/
 def uliftFunctor : TopCat.{u} ⥤ TopCat.{max u v} where
   obj X := TopCat.of (ULift.{v} X)
-  map {X Y} f := ofHom ⟨ULift.map f, by continuity⟩
+  map {X Y} f := ofHom ⟨ULift.map f, by fun_prop⟩
 
 /-- Given `X : TopCat.{u}`, this is the homeomorphism `X ≃ₜ uliftFunctor.{v}.obj X`. -/
 def uliftFunctorObjHomeo (X : TopCat.{u}) : X ≃ₜ uliftFunctor.{v}.obj X :=
@@ -58,7 +58,7 @@ def uliftFunctorCompForgetIso : uliftFunctor.{v, u} ⋙ forget TopCat.{max u v} 
 
 /-- The `ULift` functor on categories of topological spaces is fully faithful. -/
 def uliftFunctorFullyFaithful : uliftFunctor.{v, u}.FullyFaithful where
-  preimage f := ofHom ⟨ULift.down ∘ f ∘ ULift.up, by continuity⟩
+  preimage f := ofHom ⟨ULift.down ∘ f ∘ ULift.up, by fun_prop⟩
 
 instance : uliftFunctor.{v, u}.Full :=
   uliftFunctorFullyFaithful.full
@@ -85,6 +85,7 @@ instance : PreservesLimitsOfSize.{w', w} uliftFunctor.{v, u} := by
       exact ⟨i, ULift.down ⁻¹' t, Homeomorph.ulift.continuous_toFun.isOpen_preimage _ ht, rfl⟩
   · exact isLimitOfPreserves (forget TopCat ⋙ CategoryTheory.uliftFunctor) hc
 
+set_option backward.isDefEq.respectTransparency false in
 instance : PreservesColimitsOfSize.{w', w} uliftFunctor.{v, u} := by
   refine ⟨⟨fun {K} ↦ ⟨fun {c} hc ↦ ?_⟩⟩⟩
   rw [nonempty_isColimit_iff_eq_coinduced]

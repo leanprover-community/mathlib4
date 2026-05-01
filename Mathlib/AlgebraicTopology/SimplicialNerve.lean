@@ -76,7 +76,7 @@ lemma Path.le {J : Type*} [LinearOrder J] {i j : J} (f : Path i j) : i ≤ j :=
 instance {J : Type*} [LinearOrder J] (i j : J) : Category (Path i j) :=
   inferInstanceAs (Category (InducedCategory _ (fun f : Path i j ↦ f.I)))
 
-@[simps]
+@[simps -isSimp]
 instance (J : Type*) [LinearOrder J] : CategoryStruct (SimplicialThickening J) where
   Hom i j := Path i.as j.as
   id i := { I := {i.as} }
@@ -90,6 +90,8 @@ instance (J : Type*) [LinearOrder J] : CategoryStruct (SimplicialThickening J) w
     le_right l := by
       rintro (h | h)
       exacts [(f.le_right _ h).trans (Path.le g), (g.le_right l h)] }
+
+attribute [local simp] SimplicialThickening.comp_I SimplicialThickening.id_I
 
 instance {J : Type*} [LinearOrder J] (i j : SimplicialThickening J) : Category (i ⟶ j) :=
   inferInstanceAs (Category (Path i.as j.as))
@@ -114,53 +116,21 @@ def compFunctor {J : Type*} [LinearOrder J]
   obj x := x.1 ≫ x.2
   map f := ⟨⟨⟨Set.union_subset_union f.1.1.1.1 f.2.1.1.1⟩⟩⟩
 
-namespace SimplicialCategory
-
-variable {J : Type*} [LinearOrder J]
-
-/-- The hom simplicial set of the simplicial category structure on `SimplicialThickening J` -/
-abbrev Hom (i j : SimplicialThickening J) : SSet := nerve (i ⟶ j)
-
-/-- The identity of the simplicial category structure on `SimplicialThickening J` -/
-abbrev id (i : SimplicialThickening J) : 𝟙_ SSet ⟶ Hom i i :=
-  ⟨fun _ _ ↦ (Functor.const _).obj (𝟙 _), fun _ _ _ ↦ by simp; rfl⟩
-
-/-- The composition of the simplicial category structure on `SimplicialThickening J` -/
-abbrev comp (i j k : SimplicialThickening J) : Hom i j ⊗ Hom j k ⟶ Hom i k :=
-  ⟨fun _ x ↦ x.1.prod' x.2 ⋙ compFunctor i j k, fun _ _ _ ↦ by simp; rfl⟩
-
-attribute [local ext (iff := false)] Functor.ext
-
-@[simp]
-lemma id_comp (i j : SimplicialThickening J) :
-    (λ_ (Hom i j)).inv ≫ id i ▷ Hom i j ≫ comp i i j = 𝟙 (Hom i j) := by
-  cat_disch
-
-@[simp]
-lemma comp_id (i j : SimplicialThickening J) :
-    (ρ_ (Hom i j)).inv ≫ Hom i j ◁ id j ≫ comp i j j = 𝟙 (Hom i j) := by
-  cat_disch
-
-@[simp]
-lemma assoc (i j k l : SimplicialThickening J) :
-    (α_ (Hom i j) (Hom j k) (Hom k l)).inv ≫ comp i j k ▷ Hom k l ≫ comp i k l =
-      Hom i j ◁ comp j k l ≫ comp i j l := by
-  cat_disch
-
-end SimplicialCategory
-
-open SimplicialThickening.SimplicialCategory
-
-noncomputable instance (J : Type*) [LinearOrder J] :
+attribute [local ext (iff := false)] Functor.ext in
+attribute [local simp] types_tensorObj_def in
+@[simps -isSimp]
+instance (J : Type*) [LinearOrder J] :
     SimplicialCategory (SimplicialThickening J) where
-  Hom := Hom
-  id := id
-  comp := comp
-  homEquiv {i j} :=
-    nerveEquiv.symm.trans (SSet.unitHomEquiv (SimplicialCategory.Hom i j)).symm
+  Hom i j := nerve (i ⟶ j)
+  id _ := ⟨fun _ ↦ ↾fun _ ↦ (Functor.const _).obj (𝟙 _), fun _ _ _ ↦ by simp; rfl⟩
+  comp i j k := ⟨fun _ ↦ ↾fun x ↦ x.1.prod' x.2 ⋙ compFunctor i j k,
+    fun _ _ _ ↦ by simp; rfl⟩
+  homEquiv {i j} := nerveEquiv.symm.trans (SSet.unitHomEquiv (nerve (i ⟶ j))).symm
+
+attribute [local simp] SimplicialThickening.Hom_def
 
 /-- Auxiliary definition for `SimplicialThickening.functor` -/
-noncomputable abbrev functorMap {J K : Type u} [LinearOrder J] [LinearOrder K]
+abbrev functorMap {J K : Type u} [LinearOrder J] [LinearOrder K]
     (f : J →o K) (i j : SimplicialThickening J) :
       (i ⟶ j) ⥤ ((SimplicialThickening.mk <| f i.as) ⟶ (SimplicialThickening.mk <| f j.as)) where
   obj I := ⟨f '' I.I, Set.mem_image_of_mem f I.left, Set.mem_image_of_mem f I.right,
@@ -173,12 +143,13 @@ alias orderHom := functorMap
 
 attribute [local simp] nerveMap_app
 
+attribute [local simp] types_tensorObj_def in
 /--
 The simplicial thickening defines a functor from the category of linear orders to the category of
 simplicial categories
 -/
 @[simps]
-noncomputable def functor {J K : Type u} [LinearOrder J] [LinearOrder K]
+def functor {J K : Type u} [LinearOrder J] [LinearOrder K]
     (f : J →o K) : EnrichedFunctor SSet (SimplicialThickening J) (SimplicialThickening K) where
   obj x := .mk (f x.as)
   map i j := nerveMap ((functorMap f i j))
@@ -191,12 +162,14 @@ noncomputable def functor {J K : Type u} [LinearOrder J] [LinearOrder K]
     simp only [eComp, EnrichedCategory.comp]
     exact Functor.ext (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma functor_id (J : Type u) [LinearOrder J] :
     (functor (OrderHom.id (α := J))) = EnrichedFunctor.id _ _ := by
   refine EnrichedFunctor.ext _ (fun _ ↦ rfl) fun i j ↦ ?_
   ext
   exact Functor.ext (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma functor_comp {J K L : Type u} [LinearOrder J] [LinearOrder K]
     [LinearOrder L] (f : J →o K) (g : K →o L) :
     functor (g.comp f) =
@@ -212,17 +185,20 @@ The simplicial nerve of a simplicial category `C` is defined as the simplicial s
 `n`-simplices are given by the set of simplicial functors from the simplicial thickening of
 the linear order `Fin (n + 1)` to `C`
 -/
-noncomputable def SimplicialNerve (C : Type u) [Category.{v} C] [SimplicialCategory C] :
+def SimplicialNerve (C : Type u) [Category.{v} C] [SimplicialCategory C] :
     SSet.{max u v} where
   obj n := EnrichedFunctor SSet (SimplicialThickening (ULift (Fin (n.unop.len + 1)))) C
-  map f := (SimplicialThickening.functor f.unop.toOrderHom.uliftMap).comp (E := C) SSet
+  map f := ↾((SimplicialThickening.functor f.unop.toOrderHom.uliftMap).comp
+    (E := C) SSet)
   map_id i := by
-    change EnrichedFunctor.comp SSet (SimplicialThickening.functor (OrderHom.id)) = _
+    ext
+    change EnrichedFunctor.comp SSet (SimplicialThickening.functor OrderHom.id) _ = _
     rw [SimplicialThickening.functor_id]
     rfl
   map_comp f g := by
+    ext
     change EnrichedFunctor.comp SSet (SimplicialThickening.functor
-      (f.unop.toOrderHom.uliftMap.comp g.unop.toOrderHom.uliftMap)) = _
+      (f.unop.toOrderHom.uliftMap.comp g.unop.toOrderHom.uliftMap)) _ = _
     rw [SimplicialThickening.functor_comp]
     rfl
 

@@ -18,12 +18,12 @@ In this file, we assume `A` is an integrally closed domain; `K` is the fraction 
 `L` is a finite extension of `K`; `B` is the integral closure of `A` in `L`.
 We call this the AKLB setup.
 
-## Main definition
+## Main definitions
 - `galRestrict`: The restriction `Aut(L/K) → Aut(B/A)` as an `MulEquiv` in an AKLB setup.
 - `Algebra.intTrace`: The trace map of a finite extension of integrally closed domains `B/A` is
-defined to be the restriction of the trace map of `Frac(B)/Frac(A)`.
+  defined to be the restriction of the trace map of `Frac(B)/Frac(A)`.
 - `Algebra.intNorm`: The norm map of a finite extension of integrally closed domains `B/A` is
-defined to be the restriction of the norm map of `Frac(B)/Frac(A)`.
+  defined to be the restriction of the norm map of `Frac(B)/Frac(A)`.
 
 -/
 

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Combinatorics.Enumerative.DoubleCounting
 public import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
+public import Mathlib.Combinatorics.SimpleGraph.Diam
 
 /-!
 # Strongly regular graphs
@@ -28,7 +29,7 @@ public import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
   `I` be the identity matrix, then `A ^ 2 = k • I + ℓ • A + μ • C`.
 -/
 
-@[expose] public section
+public section
 
 
 open Finset
@@ -58,12 +59,29 @@ variable {G} {n k ℓ μ : ℕ}
 for empty graphs, since there are no pairs of adjacent vertices. -/
 theorem bot_strongly_regular : (⊥ : SimpleGraph V).IsSRGWith (Fintype.card V) 0 ℓ 0 where
   card := rfl
-  regular := bot_degree
+  regular := .bot
   of_adj _ _ h := h.elim
   of_not_adj v w _ := by
     simp only [card_eq_zero, Fintype.card_ofFinset, forall_true_left, not_false_iff, bot_adj]
     ext
     simp [mem_commonNeighbors]
+
+theorem IsSRGWith.ediam_eq_two [Nontrivial V] (h : G.IsSRGWith n k ℓ μ) (ht : G ≠ ⊤) (hm : μ ≠ 0) :
+    G.ediam = 2 := by
+  apply le_antisymm
+  · rw [ediam_le_iff]
+    intro u v
+    by_contra! hc
+    obtain ⟨hn, ha, he⟩ := two_lt_edist_iff.mp hc
+    have h := h.of_not_adj hn ha
+    simp_rw [he, Fintype.card_eq_zero] at h
+    exact false_of_ne (h ▸ hm)
+  · by_contra! hc
+    cases ENat.le_one_iff_eq_zero_or_eq_one.mp (Order.le_of_lt_succ hc) with
+    | inl hc =>
+      rw [ediam_eq_zero_iff_subsingleton] at hc
+      exact false_of_nontrivial_of_subsingleton V
+    | inr hc => exact ht.elim (ediam_eq_one.mp hc)
 
 /-- **Conway's 99-graph problem** (from https://oeis.org/A248380/a248380.pdf)
 can be reformulated as the existence of a strongly regular graph with params (99, 14, 1, 2).
@@ -194,9 +212,10 @@ more often found in the literature, where `J` is the all-ones matrix. -/
 theorem IsSRGWith.matrix_eq {α : Type*} [Semiring α] (h : G.IsSRGWith n k ℓ μ) :
     G.adjMatrix α ^ 2 = k • (1 : Matrix V V α) + ℓ • G.adjMatrix α + μ • Gᶜ.adjMatrix α := by
   ext v w
-  simp only [adjMatrix_pow_apply_eq_card_walk, Set.coe_setOf, Matrix.add_apply, Matrix.smul_apply,
+  simp only [adjMatrix_pow_apply_eq_card_walk, Matrix.add_apply, Matrix.smul_apply,
     adjMatrix_apply, compl_adj]
-  rw [Fintype.card_congr (G.walkLengthTwoEquivCommonNeighbors v w)]
+  rw [@Fintype.card_congr _ _ (G.fintypeSetWalkLength v w 2) _
+    (G.walkLengthTwoEquivCommonNeighbors v w)]
   obtain rfl | hn := eq_or_ne v w
   · rw [← Set.toFinset_card]
     simp [commonNeighbors, ← neighborFinset_def, h.regular v]

@@ -6,8 +6,8 @@ Authors: Jovan Gerbscheid
 module
 
 public meta import Lean.Meta.Tactic.Delta
-public import Batteries.Lean.NameMapAttribute
 public import Mathlib.Init
+public import Lean.Meta.Tactic.Simp
 
 /-!
 # Modify proof terms so that they don't rely on unfolding certain constants
@@ -53,7 +53,7 @@ Set up the monadic context:
 def run {α} (b : UnfoldBoundaries) (x : SimpM α) : MetaM α :=
   withCanUnfoldPred (fun _ i => return !b.unfolds.contains i.name && !b.casts.contains i.name) do
   withTransparency .all do
-  let ctx ← Simp.mkContext Simp.neutralConfig
+  let ctx ← Simp.mkContext { Simp.neutralConfig with instances := true }
   x (Simp.Methods.toMethodsRef { pre }) ctx |>.run' {}
 where
   pre (e : Expr) : SimpM Simp.Step := do

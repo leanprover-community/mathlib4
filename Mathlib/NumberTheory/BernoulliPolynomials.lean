@@ -61,7 +61,7 @@ theorem bernoulli_def (n : ℕ) : bernoulli n =
 
 theorem coeff_bernoulli (n i : ℕ) :
     (bernoulli n).coeff i = if i ≤ n then (_root_.bernoulli (n - i) * choose n i) else 0 := by
-  simp only [bernoulli, finset_sum_coeff, coeff_monomial]
+  simp only [bernoulli, finsetSum_coeff, coeff_monomial]
   split_ifs with h
   · convert sum_ite_eq_of_mem (range (n + 1)) (n - i) _ (by grind) using 3 <;> grind [choose_symm]
   · exact Finset.sum_eq_zero <| by grind
@@ -80,7 +80,7 @@ theorem bernoulli_one : bernoulli 1 = X - C 2⁻¹ := by
 
 @[simp]
 theorem bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = _root_.bernoulli n := by
-  rw [bernoulli, eval_finset_sum, sum_range_succ]
+  rw [bernoulli, eval_finsetSum, sum_range_succ]
   have : ∑ x ∈ range n, _root_.bernoulli x * n.choose x * 0 ^ (n - x) = 0 := by
     apply sum_eq_zero fun x hx => _
     intro x hx
@@ -89,7 +89,7 @@ theorem bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = _root_.bernoulli 
 
 @[simp]
 theorem bernoulli_eval_one (n : ℕ) : (bernoulli n).eval 1 = bernoulli' n := by
-  simp only [bernoulli, eval_finset_sum]
+  simp only [bernoulli, eval_finsetSum]
   simp only [← succ_eq_add_one, sum_range_succ, mul_one, cast_one, choose_self,
     (_root_.bernoulli _).mul_comm, sum_bernoulli, one_pow, mul_one, eval_monomial, one_mul]
   by_cases h : n = 1
@@ -132,7 +132,7 @@ nonrec theorem sum_bernoulli (n : ℕ) :
     (∑ k ∈ range (n + 1), ((n + 1).choose k : ℚ) • bernoulli k) = monomial n (n + 1 : ℚ) := by
   simp_rw [bernoulli_def, Finset.smul_sum, Finset.range_eq_Ico, ← Finset.sum_Ico_Ico_comm,
     Finset.sum_Ico_eq_sum_range]
-  simp only [add_tsub_cancel_left, tsub_zero, zero_add, map_add]
+  simp only [add_tsub_cancel_left, zero_add, map_add]
   simp_rw [smul_monomial, mul_comm (_root_.bernoulli _) _, smul_eq_mul, ← mul_assoc]
   conv_lhs =>
     apply_congr
@@ -142,7 +142,7 @@ nonrec theorem sum_bernoulli (n : ℕ) :
       · skip
       · rw [← Nat.cast_mul, choose_mul (le_add_right _ _), Nat.cast_mul, add_tsub_cancel_left,
           mul_assoc, mul_comm, ← smul_eq_mul, ← smul_monomial]
-  simp_rw [← sum_smul]
+  simp_rw [← sum_smul, Nat.sub_zero]
   rw [sum_range_succ_comm]
   simp only [add_eq_left, mul_one, cast_one, cast_add, add_tsub_cancel_left,
     choose_succ_self_right, one_smul, _root_.bernoulli_zero, sum_singleton, zero_add,
@@ -169,7 +169,7 @@ theorem bernoulli_eq_sub_sum (n : ℕ) :
 theorem sum_range_pow_eq_bernoulli_sub (n p : ℕ) :
     ((p + 1 : ℚ) * ∑ k ∈ range n, (k : ℚ) ^ p) = (bernoulli p.succ).eval (n : ℚ) -
     _root_.bernoulli p.succ := by
-  rw [sum_range_pow, bernoulli_def, eval_finset_sum, ← sum_div, mul_div_cancel₀ _ _]
+  rw [sum_range_pow, bernoulli_def, eval_finsetSum, ← sum_div, mul_div_cancel₀ _ _]
   · simp_rw [eval_monomial]
     symm
     rw [← sum_flip _, sum_range_succ]
@@ -222,6 +222,7 @@ theorem bernoulli_eval_one_add (n : ℕ) (x : ℚ) :
   have := bernoulli_comp_one_add_X n
   simpa using congr(Polynomial.eval x $this)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem bernoulli_comp_neg_X (n : ℕ) :
     (bernoulli n).comp (-X) = (-1) ^ n • (bernoulli n + n • X ^ (n - 1)) := by
   cases n with
@@ -251,7 +252,7 @@ theorem bernoulli_comp_one_sub_X (n : ℕ) :
   | succ n =>
     trans ((bernoulli (n + 1)).comp (1 + X)).comp (-X)
     · simp [comp_assoc, sub_eq_add_neg]
-    simp [bernoulli_comp_one_add_X, bernoulli_comp_neg_X, neg_pow (X : Polynomial ℚ), add_assoc]
+    simp [bernoulli_comp_one_add_X, bernoulli_comp_neg_X, neg_pow (X : Polynomial ℚ)]
     ring
 
 theorem bernoulli_eval_one_sub (n : ℕ) (x : ℚ) :
@@ -297,7 +298,7 @@ theorem bernoulli_generating_function (t : A) :
   intro i hi
   -- deal with coefficients of e^X-1
   simp only [Nat.cast_choose ℚ (mem_range_le hi), coeff_mk, if_neg (mem_range_sub_ne_zero hi),
-    one_div, PowerSeries.coeff_one, coeff_exp, sub_zero, Algebra.smul_def,
+    PowerSeries.coeff_one, coeff_exp, sub_zero, Algebra.smul_def,
     mul_right_comm _ ((aeval t) _), ← mul_assoc, ← map_mul, ← Polynomial.C_eq_algebraMap,
     Polynomial.aeval_mul, Polynomial.aeval_C]
   -- finally cancel the Bernoulli polynomial and the algebra_map

@@ -494,6 +494,7 @@ Finally, if the original space `X` is *not* compact and is a preconnected space,
 `OnePoint X` is a connected space.
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For any topological space `X`, its one point compactification is a compact space. -/
 instance : CompactSpace (OnePoint X) where
   isCompact_univ := by

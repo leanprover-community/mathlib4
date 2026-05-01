@@ -21,7 +21,7 @@ may differ between the multiplicative and the additive version of a lemma.
 The reason is that we did not want to change existing names in the library.
 -/
 
-@[expose] public section
+public section
 
 /-
 `NeZero` theory should not be needed at this point in the ordered algebraic hierarchy.
@@ -51,7 +51,7 @@ attribute [to_additive] OrderedCommGroup.lt_of_mul_lt_mul_left
 -- See note [lower instance priority]
 @[to_additive IsOrderedAddMonoid.toIsOrderedCancelAddMonoid]
 instance (priority := 100) IsOrderedMonoid.toIsOrderedCancelMonoid
-    [CommGroup α] [PartialOrder α] [IsOrderedMonoid α] : IsOrderedCancelMonoid α where
+    [CommGroup α] [Preorder α] [IsOrderedMonoid α] : IsOrderedCancelMonoid α where
   le_of_mul_le_mul_left a b c bc := by simpa using mul_le_mul_right bc a⁻¹
   le_of_mul_le_mul_right a b c bc := by simpa using mul_le_mul_right bc a⁻¹
 
@@ -69,12 +69,6 @@ insert_to_additive_translation LinearOrderedCommGroup LinearOrderedAddCommGroup
 section LinearOrderedCommGroup
 
 variable [CommGroup α] [LinearOrder α] [IsOrderedMonoid α] {a : α}
-
-@[deprecated (since := "2025-10-06")]
-alias LinearOrderedCommGroup.mul_lt_mul_left' := mul_lt_mul_right
-
-@[deprecated (since := "2025-10-06")]
-alias LinearOrderedCommGroup.mul_lt_mul_right' := mul_lt_mul_left
 
 @[to_additive eq_zero_of_neg_eq]
 theorem eq_one_of_inv_eq' (h : a⁻¹ = a) : a = 1 :=

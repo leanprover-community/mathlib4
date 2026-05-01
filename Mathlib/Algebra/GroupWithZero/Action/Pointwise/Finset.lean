@@ -28,22 +28,26 @@ variable {α β : Type*} [DecidableEq β]
 
 /-- If scalar multiplication by elements of `α` sends `(0 : β)` to zero,
 then the same is true for `(0 : Finset β)`. -/
+@[instance_reducible]
 protected def smulZeroClass [Zero β] [SMulZeroClass α β] : SMulZeroClass α (Finset β) :=
   coe_injective.smulZeroClass ⟨_, coe_zero⟩ coe_smul_finset
 
 /-- If the scalar multiplication `(· • ·) : α → β → β` is distributive,
 then so is `(· • ·) : α → Finset β → Finset β`. -/
+@[instance_reducible]
 protected noncomputable def distribSMul [AddZeroClass β] [DistribSMul α β] :
     DistribSMul α (Finset β) :=
   coe_injective.distribSMul coeAddMonoidHom coe_smul_finset
 
 /-- A distributive multiplicative action of a monoid on an additive monoid `β` gives a distributive
 multiplicative action on `Finset β`. -/
+@[instance_reducible]
 protected noncomputable def distribMulAction [Monoid α] [AddMonoid β] [DistribMulAction α β] :
     DistribMulAction α (Finset β) :=
   coe_injective.distribMulAction coeAddMonoidHom coe_smul_finset
 
 /-- A multiplicative action of a monoid on a monoid `β` gives a multiplicative action on `Set β`. -/
+@[instance_reducible]
 protected noncomputable def mulDistribMulAction [Monoid α] [Monoid β] [MulDistribMulAction α β] :
     MulDistribMulAction α (Finset β) :=
   coe_injective.mulDistribMulAction coeMonoidHom coe_smul_finset
@@ -108,6 +112,11 @@ lemma mem_inv_smul_finset_iff₀ (ha : a ≠ 0) : b ∈ a⁻¹ • s ↔ a • b
 lemma smul_finset_subset_smul_finset_iff₀ (ha : a ≠ 0) : a • s ⊆ a • t ↔ s ⊆ t :=
   show Units.mk0 a ha • _ ⊆ _ ↔ _ from smul_finset_subset_smul_finset_iff
 
+theorem pairwiseDisjoint_smul_iff₀ {s : Set α} {t : Finset β} (hs : ∀ a ∈ s, a ≠ 0) :
+    s.PairwiseDisjoint (· • t) ↔ (s ×ˢ t : Set (α × β)).InjOn fun p => p.1 • p.2 := by
+  simp_rw [← pairwiseDisjoint_coe, coe_smul_finset]
+  exact Set.pairwiseDisjoint_image_right_iff (fun a ha => MulAction.injective₀ (hs a ha))
+
 lemma smul_finset_subset_iff₀ (ha : a ≠ 0) : a • s ⊆ t ↔ s ⊆ a⁻¹ • t :=
   show Units.mk0 a ha • _ ⊆ _ ↔ _ from smul_finset_subset_iff
 
@@ -127,6 +136,10 @@ lemma smul_finset_symmDiff₀ (ha : a ≠ 0) : a • s ∆ t = (a • s) ∆ (a 
 lemma smul_finset_univ₀ [Fintype β] (ha : a ≠ 0) : a • (univ : Finset β) = univ :=
   coe_injective <| by push_cast; exact Set.smul_set_univ₀ ha
 
+@[simp]
+lemma smul_finset_eq_univ₀ [Fintype β] (ha : a ≠ 0) : a • s = univ ↔ s = univ := by
+  exact_mod_cast smul_finset_eq_univ (α := Units α) (a := Units.mk0 a ha)
+
 lemma smul_univ₀ [Fintype β] {s : Finset α} (hs : ¬s ⊆ 0) : s • (univ : Finset β) = univ :=
   coe_injective <| by
     rw [← coe_subset] at hs
@@ -135,6 +148,16 @@ lemma smul_univ₀ [Fintype β] {s : Finset α} (hs : ¬s ⊆ 0) : s • (univ :
 
 lemma smul_univ₀' [Fintype β] {s : Finset α} (hs : s.Nontrivial) : s • (univ : Finset β) = univ :=
   coe_injective <| by push_cast; exact Set.smul_univ₀' hs
+
+@[simp]
+lemma card_smul_finset₀ (ha : a ≠ 0) (s : Finset β) : (a • s).card = s.card :=
+  card_image_of_injective _ (MulAction.injective₀ ha)
+
+/-- If the left cosets of `t` by elements of `s` are disjoint (but not necessarily distinct!), then
+the size of `t` divides the size of `s • t`. -/
+lemma card_dvd_card_smul_right₀ {s : Finset α} (hs : ∀ a ∈ s, a ≠ 0) :
+    ((· • t) '' (s : Set α)).PairwiseDisjoint id → t.card ∣ (s • t).card :=
+  card_dvd_card_image₂_right fun a ha => MulAction.injective₀ (hs a ha)
 
 end MulAction
 

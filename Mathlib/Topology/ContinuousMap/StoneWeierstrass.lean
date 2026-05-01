@@ -71,6 +71,7 @@ def attachBound (f : C(X, ℝ)) : C(X, Set.Icc (-‖f‖) ‖f‖) where
 theorem attachBound_apply_coe (f : C(X, ℝ)) (x : X) : ((attachBound f) x : ℝ) = f x :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem polynomial_comp_attachBound (A : Subalgebra ℝ C(X, ℝ)) (f : A) (g : ℝ[X]) :
     (g.toContinuousMapOn (Set.Icc (-‖f‖) ‖f‖)).comp (f : C(X, ℝ)).attachBound =
       Polynomial.aeval f g := by
@@ -155,10 +156,7 @@ theorem sup_mem_closed_subalgebra (A : Subalgebra ℝ C(X, ℝ)) (h : IsClosed (
     (f g : A) : (f : C(X, ℝ)) ⊔ (g : C(X, ℝ)) ∈ A := by
   convert sup_mem_subalgebra_closure A f g
   apply SetLike.ext'
-  symm
-  dsimp
-  rw [closure_eq_iff_isClosed]
-  exact h
+  simp
 
 open scoped Topology
 
@@ -546,7 +544,7 @@ lemma adjoin_id_eq_span_one_union (s : Set 𝕜) :
     ← StarSubalgebra.mem_toSubalgebra, ← Subalgebra.mem_toSubmodule,
     StarAlgebra.adjoin_nonUnitalStarSubalgebra_eq_span, span_union, span_eq_toSubmodule]
 
-open Pointwise in
+open scoped Pointwise in
 lemma adjoin_id_eq_span_one_add (s : Set 𝕜) :
     ((StarAlgebra.adjoin 𝕜 {(restrict s (.id 𝕜) : C(s, 𝕜))}) : Set C(s, 𝕜)) =
       (span 𝕜 {(1 : C(s, 𝕜))} : Set C(s, 𝕜)) + (adjoin 𝕜 {(restrict s (.id 𝕜) : C(s, 𝕜))}) := by
@@ -679,7 +677,7 @@ theorem ContinuousMapZero.induction_on_of_compact {s : Set 𝕜} [Fact (0 ∈ s)
   exact mem_closure_iff_frequently.mp this |>.mp <| .of_forall h
 
 lemma ContinuousMapZero.nonUnitalStarAlgHom_apply_mul_eq_zero {𝕜 A : Type*}
-    [RCLike 𝕜] [NonUnitalSemiring A] [Star A] [TopologicalSpace A] [ContinuousMul A]
+    [RCLike 𝕜] [NonUnitalSemiring A] [Star A] [TopologicalSpace A] [SeparatelyContinuousMul A]
     [T2Space A] [DistribMulAction 𝕜 A] [IsScalarTower 𝕜 A A] {s : Set 𝕜} [Fact (0 ∈ s)]
     [CompactSpace s] (φ : C(s, 𝕜)₀ →⋆ₙₐ[𝕜] A) (a : A) (hmul_id : φ (.id s) * a = 0)
     (hmul_star_id : φ (star (.id s)) * a = 0) (hφ : Continuous φ) (f : C(s, 𝕜)₀) :
@@ -694,7 +692,7 @@ lemma ContinuousMapZero.nonUnitalStarAlgHom_apply_mul_eq_zero {𝕜 A : Type*}
   | frequently f h => exact h.mem_of_closed <| isClosed_eq (by fun_prop) continuous_zero
 
 lemma ContinuousMapZero.mul_nonUnitalStarAlgHom_apply_eq_zero {𝕜 A : Type*}
-    [RCLike 𝕜] [NonUnitalSemiring A] [Star A] [TopologicalSpace A] [ContinuousMul A]
+    [RCLike 𝕜] [NonUnitalSemiring A] [Star A] [TopologicalSpace A] [SeparatelyContinuousMul A]
     [T2Space A] [DistribMulAction 𝕜 A] [SMulCommClass 𝕜 A A] {s : Set 𝕜} [Fact (0 ∈ s)]
     [CompactSpace s] (φ : C(s, 𝕜)₀ →⋆ₙₐ[𝕜] A) (a : A) (hmul_id : a * φ (.id s) = 0)
     (hmul_star_id : a * φ (star (.id s)) = 0) (hφ : Continuous φ) (f : C(s, 𝕜)₀) :

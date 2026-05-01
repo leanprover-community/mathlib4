@@ -26,6 +26,10 @@ jobs:
     name: Remove outdated deprecated declarations
     runs-on: ubuntu-latest
     if: github.repository == 'leanprover-community/mathlib4'
+    permissions:
+      contents: read
+      pull-requests: read
+      id-token: write
     env:
       BRANCH_NAME: "deprecated-decls"
     steps:
@@ -207,17 +211,22 @@ jobs:
     - name: Generate app token
       id: app-token
       if: ${{ steps.process_dates.outputs.from_date && toJson(inputs.dry_run) != 'true' && steps.find-pr.outputs.pr_found != 'true' }}
-      uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+      uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
       with:
         app-id: ${{ secrets.MATHLIB_NOLINTS_APP_ID }}
-        private-key: ${{ secrets.MATHLIB_NOLINTS_PRIVATE_KEY }}
+        key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
+        key-name: mathlib-nolints-app-pk
+        azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_PR_WRITERS }}
+        azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
 
-    # The create-github-app-token README states that this token is masked and will not be logged accidentally.
+    # This token is masked by the token minting action and will not be logged accidentally.
     - name: Create Pull Request
       id: pr
       if: ${{ steps.process_dates.outputs.from_date && toJson(inputs.dry_run) != 'true' && steps.find-pr.outputs.pr_found != 'true' }}
       uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v8.1.0
       with:
+        # this needs to be set, otherwise the last person who edited the `cron` line may get tagged
+        author: "mathlib-nolints[bot] <258989889+mathlib-nolints[bot]@users.noreply.github.com>"
         token: ${{ steps.app-token.outputs.token }}
         commit-message: "chore: remove declarations deprecated between ${{ steps.process_dates.outputs.from_date }} and ${{ steps.process_dates.outputs.to_date }}"
         branch: ${{ env.BRANCH_NAME }}

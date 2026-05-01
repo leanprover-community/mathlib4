@@ -148,6 +148,9 @@ theorem eq_zero_rpow_iff {x : ℝ} {a : ℝ} : a = 0 ^ x ↔ x ≠ 0 ∧ a = 0 �
 theorem rpow_one (x : ℝ) : x ^ (1 : ℝ) = x := by simp [rpow_def]
 
 @[simp]
+theorem pi_rpow_one {α : Type*} (f : α → ℝ) : f ^ (1 : ℝ) = f := by ext; simp
+
+@[simp]
 theorem one_rpow (x : ℝ) : (1 : ℝ) ^ x = 1 := by simp [rpow_def]
 
 theorem zero_rpow_le_one (x : ℝ) : (0 : ℝ) ^ x ≤ 1 := by
@@ -229,8 +232,9 @@ theorem le_rpow_add {x : ℝ} (hx : 0 ≤ x) (y z : ℝ) : x ^ y * x ^ z ≤ x ^
   · by_cases h : y + z = 0
     · simp only [H.symm, h, rpow_zero]
       calc
-        (0 : ℝ) ^ y * 0 ^ z ≤ 1 * 1 :=
-          mul_le_mul (zero_rpow_le_one y) (zero_rpow_le_one z) (zero_rpow_nonneg z) zero_le_one
+        (0 : ℝ) ^ y * 0 ^ z ≤ 1 * 1 := by
+          gcongr
+          exacts [zero_rpow_nonneg z, zero_rpow_le_one y, zero_rpow_le_one z]
         _ = 1 := by simp
     · simp [rpow_add', ← H, h]
   · simp [rpow_add pos]
@@ -518,7 +522,7 @@ lemma rpow_intCast_mul (hx : 0 ≤ x) (n : ℤ) (z : ℝ) : x ^ (n * z) = (x ^ n
 lemma rpow_mul_intCast (hx : 0 ≤ x) (y : ℝ) (n : ℤ) : x ^ (y * n) = (x ^ y) ^ n := by
   rw [rpow_mul hx, rpow_intCast]
 
-/-! Note: lemmas about `(∏ i ∈ s, f i ^ r)` such as `Real.finset_prod_rpow` are proved
+/-! Note: lemmas about `(∏ i ∈ s, f i ^ r)` such as `Real.finsetProd_rpow` are proved
 in `Mathlib/Analysis/SpecialFunctions/Pow/NNReal.lean` instead. -/
 
 /-!
@@ -561,7 +565,7 @@ lemma rpow_le_rpow_of_nonpos (hx : 0 < x) (hxy : x ≤ y) (hz : z ≤ 0) : y ^ z
   all_goals positivity
 
 theorem rpow_lt_rpow_iff (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 < z) : x ^ z < y ^ z ↔ x < y :=
-  ⟨lt_imp_lt_of_le_imp_le fun h => rpow_le_rpow hy h (le_of_lt hz), fun h => rpow_lt_rpow hx h hz⟩
+  ⟨lt_imp_lt_of_le_imp_le fun h ↦ by gcongr, fun h ↦ by gcongr⟩
 
 theorem rpow_le_rpow_iff (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 < z) : x ^ z ≤ y ^ z ↔ x ≤ y :=
   le_iff_le_iff_lt_iff_lt.2 <| rpow_lt_rpow_iff hy hx hz
@@ -608,7 +612,7 @@ theorem rpow_lt_rpow_of_exponent_lt (hx : 1 < x) (hyz : y < z) : x ^ y < x ^ z :
 @[gcongr]
 theorem rpow_le_rpow_of_exponent_le (hx : 1 ≤ x) (hyz : y ≤ z) : x ^ y ≤ x ^ z := by
   repeat' rw [rpow_def_of_pos (lt_of_lt_of_le zero_lt_one hx)]
-  rw [exp_le_exp]; exact mul_le_mul_of_nonneg_left hyz (log_nonneg hx)
+  rw [exp_le_exp]; gcongr; exact log_nonneg hx
 
 @[deprecated (since := "2025-10-28")] alias rpow_lt_rpow_of_exponent_neg :=
   rpow_lt_rpow_of_neg
@@ -659,7 +663,7 @@ theorem rpow_lt_one {x z : ℝ} (hx1 : 0 ≤ x) (hx2 : x < 1) (hz : 0 < z) : x ^
 
 theorem rpow_le_one {x z : ℝ} (hx1 : 0 ≤ x) (hx2 : x ≤ 1) (hz : 0 ≤ z) : x ^ z ≤ 1 := by
   rw [← one_rpow z]
-  exact rpow_le_rpow hx1 hx2 hz
+  gcongr
 
 theorem rpow_lt_one_of_one_lt_of_neg {x z : ℝ} (hx : 1 < x) (hz : z < 0) : x ^ z < 1 := by
   convert rpow_lt_rpow_of_exponent_lt hx hz
@@ -675,7 +679,7 @@ theorem one_lt_rpow {x z : ℝ} (hx : 1 < x) (hz : 0 < z) : 1 < x ^ z := by
 
 theorem one_le_rpow {x z : ℝ} (hx : 1 ≤ x) (hz : 0 ≤ z) : 1 ≤ x ^ z := by
   rw [← one_rpow z]
-  exact rpow_le_rpow zero_le_one hx hz
+  gcongr
 
 theorem one_lt_rpow_of_pos_of_lt_one_of_neg (hx1 : 0 < x) (hx2 : x < 1) (hz : z < 0) :
     1 < x ^ z := by
@@ -729,8 +733,8 @@ theorem rpow_le_rpow_of_exponent_ge' (hx0 : 0 ≤ x) (hx1 : x ≤ 1) (hz : 0 ≤
 lemma rpow_max {x y p : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) (hp : 0 ≤ p) :
     (max x y) ^ p = max (x ^ p) (y ^ p) := by
   rcases le_total x y with hxy | hxy
-  · rw [max_eq_right hxy, max_eq_right (rpow_le_rpow hx hxy hp)]
-  · rw [max_eq_left hxy, max_eq_left (rpow_le_rpow hy hxy hp)]
+  · rw [max_eq_right hxy, max_eq_right (by gcongr)]
+  · rw [max_eq_left hxy, max_eq_left (by gcongr)]
 
 theorem self_le_rpow_of_le_one (h₁ : 0 ≤ x) (h₂ : x ≤ 1) (h₃ : y ≤ 1) : x ≤ x ^ y := by
   simpa only [rpow_one]
@@ -1107,6 +1111,7 @@ theorem isRat_rpow_neg {a b : ℝ} {nb : ℕ}
 - that `a` is a natural number `m`
 - that `b` is a nonnegative rational number `n / d`
 - that `r ^ d = m ^ n` (written as `r ^ d = k`, `m ^ n = l`, `k = l`)
+
 prove that `a ^ b = r`.
 -/
 theorem IsNat.rpow_isNNRat {a b : ℝ} {m n d r : ℕ} (ha : IsNat a m) (hb : IsNNRat b n d)
@@ -1135,6 +1140,7 @@ open Lean in
 /-- Given proofs
 - that `a` is a natural number `na`;
 - that `b` is a nonnegative rational number `nb / db`;
+
 returns a tuple of
 - a natural number `r` (result);
 - the same number, as an expression;

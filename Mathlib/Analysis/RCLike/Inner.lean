@@ -23,9 +23,9 @@ from `RCLike.innerProductSpace`.
   convention, similarly to `MeasureTheory.average`?
 -/
 
-@[expose] public section
+public section
 
-open Finset Function Real WithLp
+open Finset Function WithLp
 open scoped BigOperators ComplexConjugate ComplexOrder InnerProductSpace
 
 variable {ι κ 𝕜 : Type*} {E : ι → Type*} [Fintype ι]
@@ -153,6 +153,7 @@ lemma linearIndependent_of_ne_zero_of_wInner_cWeight_eq_zero {f : κ → ι → 
 lemma wInner_nonneg (hw : 0 ≤ w) (hf : 0 ≤ f) (hg : 0 ≤ g) : 0 ≤ ⟪f, g⟫_[𝕜, w] :=
   sum_nonneg fun _ _ ↦ smul_nonneg (hw _) <| mul_nonneg (hg _) (star_nonneg_iff.2 (hf _))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma norm_wInner_le (hw : 0 ≤ w) : ‖⟪f, g⟫_[𝕜, w]‖ ≤ ⟪fun i ↦ ‖f i‖, fun i ↦ ‖g i‖⟫_[ℝ, w] :=
   (norm_sum_le ..).trans_eq <| sum_congr rfl fun i _ ↦ by
     simp [Algebra.smul_def, norm_mul, abs_of_nonneg (hw i)]

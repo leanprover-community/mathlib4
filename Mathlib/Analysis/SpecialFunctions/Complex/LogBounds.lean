@@ -33,11 +33,13 @@ namespace Complex
 ### Integral representation of the complex log
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 lemma continuousOn_one_add_mul_inv {z : ℂ} (hz : 1 + z ∈ slitPlane) :
     ContinuousOn (fun t : ℝ ↦ (1 + t • z)⁻¹) (Set.Icc 0 1) :=
   ContinuousOn.inv₀ (by fun_prop)
     (fun _ ht ↦ slitPlane_ne_zero <| StarConvex.add_smul_mem starConvex_one_slitPlane hz ht.1 ht.2)
 
+set_option backward.isDefEq.respectTransparency false in
 open intervalIntegral in
 /-- Represent `log (1 + z)` as an integral over the unit interval -/
 lemma log_eq_integral {z : ℂ} (hz : 1 + z ∈ slitPlane) :
@@ -47,6 +49,7 @@ lemma log_eq_integral {z : ℂ} (hz : 1 + z ∈ slitPlane) :
       StarConvex.add_smul_mem starConvex_one_slitPlane hz ht.1 ht.2)).symm using 1
   simp only [log_one, sub_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Represent `log (1 - z)⁻¹` as an integral over the unit interval -/
 lemma log_inv_eq_integral {z : ℂ} (hz : 1 - z ∈ slitPlane) :
     log (1 - z)⁻¹ = z * ∫ (t : ℝ) in (0 : ℝ)..1, (1 - t • z)⁻¹ := by
@@ -132,6 +135,7 @@ lemma integrable_pow_mul_norm_one_add_mul_inv (n : ℕ) {z : ℂ} (hz : ‖z‖ 
   rw [← Set.uIcc_of_le zero_le_one] at this
   exact ContinuousOn.intervalIntegrable (by fun_prop)
 
+set_option backward.isDefEq.respectTransparency false in
 open intervalIntegral in
 /-- The difference of `log (1+z)` and its `(n+1)`st Taylor polynomial can be bounded in
 terms of `‖z‖`. -/
@@ -238,6 +242,7 @@ lemma norm_log_one_sub_inv_sub_self_le {z : ℂ} (hz : ‖z‖ < 1) :
   · simp [logTaylor_succ, logTaylor_zero, sub_eq_add_neg]
   · norm_num
 
+set_option backward.isDefEq.respectTransparency false in
 open Filter Asymptotics in
 /-- The Taylor series of the complex logarithm at `1` converges to the logarithm in the
 open unit disk. -/
@@ -358,6 +363,18 @@ lemma tendsto_one_add_pow_exp_of_tendsto {g : ℕ → ℂ} {t : ℂ}
 lemma tendsto_one_add_div_pow_exp (t : ℂ) :
     Tendsto (fun n : ℕ ↦ (1 + t / n) ^ n) atTop (𝓝 (exp t)) :=
   tendsto_one_add_div_cpow_exp t |>.comp tendsto_natCast_atTop_atTop |>.congr (by simp)
+
+/-- `(1 + t/n + o(1/n)) ^ n → exp t` for `t ∈ ℂ`. -/
+lemma tendsto_pow_exp_of_isLittleO_sub_add_div {f : ℕ → ℂ} (t : ℂ)
+    (hf : (fun n ↦ f n - (1 + t / n)) =o[atTop] fun n ↦ 1 / (n : ℂ)) :
+    Tendsto (fun n ↦ f n ^ n) atTop (𝓝 (exp t)) := by
+  rw [show (fun n ↦ f n ^ n) = (fun n ↦ (1 + (f n - 1)) ^ n) by ext; simp]
+  refine tendsto_one_add_pow_exp_of_tendsto (tendsto_sub_nhds_zero_iff.1 ?_)
+  convert hf.tendsto_inv_smul_nhds_zero.congr' ?_
+  filter_upwards [eventually_ne_atTop 0] with n h0
+  simp
+  field_simp [n.cast_ne_zero.2 h0]
+  ring
 
 end Complex
 

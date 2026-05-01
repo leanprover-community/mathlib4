@@ -149,8 +149,7 @@ lemma TensorProduct.toIntegralClosure_mvPolynomial_bijective {σ : Type*} :
       (Algebra.TensorProduct.map (AlgHom.id R (MvPolynomial σ R)) (integralClosure R B).val) =
       (MvPolynomial.mapAlgHom (integralClosure R B).val).comp
       MvPolynomial.scalarRTensorAlgEquiv.toAlgHom := by
-    ext <;> simp [e₀, -MvPolynomial.mapAlgHom_apply, MvPolynomial.mapAlgHom, MvPolynomial.coeff_map,
-      MvPolynomial.scalarRTensorAlgEquiv]
+    ext <;> simp [e₀, MvPolynomial.coeff_map, MvPolynomial.scalarRTensorAlgEquiv]
   exact congr($this y)
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
@@ -267,11 +266,12 @@ lemma exists_derivative_mul_eq_and_isIntegral_coeff
         (by simp [coeff_C, apply_ite, isIntegral_zero, hm' b (Multiset.mem_of_mem_erase hbm)])
     · simpa [isIntegral_iff_isIntegral_coeff, coeff_C, apply_ite, isIntegral_zero] using H' a ham
   refine ⟨_, ?_, Polynomial.isIntegral_iff_isIntegral_coeff.mp H''⟩
-  rw [modByMonic_eq_sub_mul_div _ hf, map_sub, map_mul, map_mul,
+  rw [modByMonic_eq_sub_mul_div, map_sub, map_mul, map_mul,
     show φ f = 0 from hfx.ge (Ideal.mem_span_singleton_self _), zero_mul, sub_zero]
 
 open TensorProduct
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] Polynomial.algebra in
 @[stacks 03GE "without the generalization to arbitrary etale algebra"]
 theorem mem_adjoin_map_integralClosure_of_isStandardEtale [Algebra.IsStandardEtale R S]
@@ -385,4 +385,4 @@ theorem TensorProduct.toIntegralClosure_bijective_of_smooth [Algebra.Smooth R S]
     (s := Set.range f) (B := B) ?_ (Localization.Away ·.1) (Set.forall_subtype_range_iff.mpr hf)
   by_contra H
   obtain ⟨m, hm, e⟩ := Ideal.exists_le_maximal _ H
-  exact hfm ⟨m, inferInstance⟩ (e (Ideal.subset_span (Set.mem_range_self ⟨m, inferInstance⟩)):)
+  exact hfm ⟨m, inferInstance⟩ (e (Ideal.subset_span (Set.mem_range_self ⟨m, inferInstance⟩)) :)

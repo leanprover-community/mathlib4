@@ -102,7 +102,7 @@ theorem terminates_parallel.aux :
             match o with
             | Sum.inl a => Sum.inl a
             | Sum.inr ls => rmap (fun c' => c' :: ls) (destruct c))
-          (Sum.inr List.nil) l with a' | ls <;> erw [e] at e'
+          (Sum.inr List.nil) l with a' | ls <;> simp only [rmap] at e <;> rw [e] at e'
         · contradiction
         have := IH' m _ e
         grind
@@ -116,6 +116,7 @@ theorem terminates_parallel.aux :
       have := H1 _ h
       rcases Seq.destruct S with (_ | ⟨_ | c, S'⟩) <;> apply IH <;> simp [this]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : Terminates c] :
     Terminates (parallel S) := by
   suffices

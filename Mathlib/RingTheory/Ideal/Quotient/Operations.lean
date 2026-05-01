@@ -310,7 +310,7 @@ theorem snd_comp_quotientInfEquivQuotientProd (I J : Ideal R) (coprime : IsCopri
 /-- **Chinese remainder theorem**, specialized to two ideals. -/
 noncomputable def quotientMulEquivQuotientProd (I J : Ideal R) (coprime : IsCoprime I J) :
     R ⧸ I * J ≃+* (R ⧸ I) × R ⧸ J :=
-  Ideal.quotEquivOfEq (inf_eq_mul_of_isCoprime coprime).symm |>.trans <|
+  Ideal.quotEquivOfEq (mul_eq_inf_of_isCoprime coprime) |>.trans <|
     Ideal.quotientInfEquivQuotientProd I J coprime
 
 @[simp]
@@ -492,7 +492,7 @@ theorem Quotient.span_singleton_one (I : Ideal A) [I.IsTwoSided] :
   rw [← map_one (mk _), ← Submodule.range_mkQ I, ← Submodule.map_top, ← Ideal.span_singleton_one,
     Ideal.span, Submodule.map_span, Set.image_singleton, Submodule.mkQ_apply, Quotient.mk_eq_mk]
 
-open Pointwise in
+open scoped Pointwise in
 lemma Quotient.smul_top {R : Type*} [CommRing R] (a : R) (I : Ideal R) :
     (a • ⊤ : Submodule R (R ⧸ I)) = Submodule.span R {Submodule.Quotient.mk a} := by
   simp [← Ideal.Quotient.span_singleton_one, Algebra.smul_def, Submodule.smul_span]
@@ -1142,6 +1142,7 @@ section PowQuot
 
 variable {R : Type*} [CommRing R] (I : Ideal R) (n : ℕ)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `I ^ n ⧸ I ^ (n + 1)` can be viewed as a quotient module and as ideal of `R ⧸ I ^ (n + 1)`.
 This definition gives the `R`-linear equivalence between the two. -/
 noncomputable

@@ -80,4 +80,4 @@ lemma Set.Nonempty.eq_Icc_iff_nat {I : Set ℕ}
 lemma Set.Nonempty.eq_Icc_iff_int {I : Set ℤ}
     (h₀ : I.Nonempty) (h₁ : BddBelow I) (h₂ : BddAbove I) :
     I = Icc (sInf I) (sSup I) ↔ ∀ᵉ (x ∈ I) (y ∈ I), Disjoint (Ioo x y) I → y ≤ x + 1 := by
-  simp [← h₀.ordConnected_iff_of_bdd h₁ h₂, ordConnected_iff_disjoint_Ioo_empty, Int.succ]
+  simp [← h₀.ordConnected_iff_of_bdd h₁ h₂, ordConnected_iff_disjoint_Ioo_empty]

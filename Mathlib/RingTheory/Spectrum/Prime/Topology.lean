@@ -272,9 +272,12 @@ lemma vanishingIdeal_isClosed_isIrreducible :
   rintro _ ⟨s, hs, rfl⟩
   exact ⟨closure s, ⟨isClosed_closure, hs.closure⟩, vanishingIdeal_closure s⟩
 
+lemma irreducibleSpace_iff_isPrime_nilradical :
+    IrreducibleSpace (PrimeSpectrum R) ↔ (nilradical R).IsPrime := by
+  simp [irreducibleSpace_def, isIrreducible_iff_vanishingIdeal_isPrime]
+
 instance irreducibleSpace [IsDomain R] : IrreducibleSpace (PrimeSpectrum R) := by
-  rw [irreducibleSpace_def, Set.top_eq_univ, ← zeroLocus_bot, isIrreducible_zeroLocus_iff]
-  simpa using Ideal.isPrime_bot
+  simpa [irreducibleSpace_iff_isPrime_nilradical] using Ideal.isPrime_bot
 
 instance quasiSober : QuasiSober (PrimeSpectrum R) :=
   ⟨fun {S} h₁ h₂ =>
@@ -672,6 +675,65 @@ instance : QuasiSeparatedSpace (PrimeSpectrum R) :=
 
 end BasicOpen
 
+section Pi
+
+variable {ι : Type*} {R : ι → Type*} [∀ i, CommRing (R i)]
+
+lemma comap_evalRingHom_basicOpen [DecidableEq ι] (i : ι) (f : R i) :
+    comap (Pi.evalRingHom R i) '' basicOpen f = basicOpen (Pi.single i f) := by
+  ext p
+  refine ⟨?_, ?_⟩
+  · rintro ⟨p, hp, rfl⟩
+    simpa
+  · intro hp
+    have : p ∈ Set.range (PrimeSpectrum.comap (Pi.evalRingHom R i)) := by
+      rw [range_comap_of_surjective _ _ (RingHom.surjective _), mem_zeroLocus,
+        SetLike.coe_subset_coe]
+      intro x hx
+      rw [RingHom.mem_ker, Pi.evalRingHom_apply] at hx
+      have : Pi.single i f * x = 0 := by
+        ext j
+        by_cases h : i = j
+        · subst h
+          simp [hx]
+        · simp [h]
+      obtain (h | h) := Ideal.IsPrime.mem_or_mem_of_mul_eq_zero p.isPrime this <;> tauto
+    obtain ⟨q, rfl⟩ := this
+    exact ⟨q, by simpa using hp, by ext; simp⟩
+
+lemma sigmaToPi_mk_basicOpen [DecidableEq ι] (i : ι) (f : R i) :
+    sigmaToPi R '' Sigma.mk i '' basicOpen f = basicOpen (Pi.single i f) := by
+  simp only [Set.image_image, sigmaToPi_apply]
+  exact PrimeSpectrum.comap_evalRingHom_basicOpen _ _
+
+variable (R) in
+lemma isOpenEmbedding_sigmaToPi : Topology.IsOpenEmbedding (sigmaToPi R) := by
+  classical
+  refine .of_continuous_injective_isOpenMap ?_ ?_ ?_
+  · rw [continuous_sigma_iff]
+    intro i
+    exact continuous_comap (Pi.evalRingHom R i)
+  · exact sigmaToPi_injective R
+  · rw [isOpenMap_sigma]
+    intro i
+    simp only [sigmaToPi_apply, PrimeSpectrum.isTopologicalBasis_basic_opens.isOpenMap_iff]
+    rintro - ⟨f, rfl⟩
+    rw [PrimeSpectrum.comap_evalRingHom_basicOpen]
+    exact isOpen_basicOpen
+
+/-- If `ι` is finite, the disjoint union of the prime spectra of the `R i` is homeomorphic
+to the prime spectrum of the product. -/
+noncomputable def sigmaToPiHomeo {ι : Type*} (R : ι → Type*) [∀ i, CommRing (R i)] [Finite ι] :
+    (Σ i, PrimeSpectrum (R i)) ≃ₜ PrimeSpectrum (Π i, R i) :=
+  (isOpenEmbedding_sigmaToPi R).toHomeomorphOfSurjective (sigmaToPi_bijective R).surjective
+
+@[simp]
+lemma sigmaToPiHomeo_apply [Finite ι] (p : Σ i, PrimeSpectrum (R i)) :
+    sigmaToPiHomeo R p = sigmaToPi R p :=
+  rfl
+
+end Pi
+
 section DiscreteTopology
 
 variable (R) [DiscreteTopology (PrimeSpectrum R)]
@@ -715,9 +777,19 @@ canonically isomorphic to the product of its localizations at the (finitely many
 @[stacks 00JA
 "See also `PrimeSpectrum.discreteTopology_iff_finite_isMaximal_and_sInf_le_nilradical`."]
 def _root_.MaximalSpectrum.toPiLocalizationEquiv :
-    R ≃+* MaximalSpectrum.PiLocalization R :=
+    R ≃ₐ[R] MaximalSpectrum.PiLocalization R :=
   .ofBijective _ ⟨MaximalSpectrum.toPiLocalization_injective R,
     maximalSpectrumToPiLocalization_surjective_of_discreteTopology R⟩
+
+@[simp]
+theorem _root_.MaximalSpectrum.toPiLocalizationEquiv_apply (x : R) :
+    MaximalSpectrum.toPiLocalizationEquiv R x = algebraMap R _ x :=
+  rfl
+
+@[simp]
+theorem _root_.MaximalSpectrum.toPiLocalizationEquiv_apply_apply (x : R) (I : MaximalSpectrum R) :
+    MaximalSpectrum.toPiLocalizationEquiv R x I = algebraMap R _ x :=
+  rfl
 
 theorem discreteTopology_iff_toPiLocalization_surjective {R} [CommSemiring R] :
     DiscreteTopology (PrimeSpectrum R) ↔ Function.Surjective (toPiLocalization R) :=
@@ -729,9 +801,23 @@ theorem discreteTopology_iff_toPiLocalization_bijective {R} [CommSemiring R] :
   discreteTopology_iff_toPiLocalization_surjective.trans
     (and_iff_right <| toPiLocalization_injective _).symm
 
-lemma toPiLocalization_bijective {R : Type*} [CommRing R]
-    [DiscreteTopology (PrimeSpectrum R)] : Function.Bijective (toPiLocalization R) :=
+variable {R} in
+lemma toPiLocalization_bijective : Function.Bijective (toPiLocalization R) :=
   discreteTopology_iff_toPiLocalization_bijective.mp inferInstance
+
+/-- If the prime spectrum of a commutative semiring R has discrete Zariski topology, then R is
+canonically isomorphic to the product of its localizations at the (finitely many) prime ideals. -/
+def toPiLocalizationEquiv : R ≃ₐ[R] PiLocalization R :=
+  .ofBijective _ toPiLocalization_bijective
+
+@[simp]
+theorem toPiLocalizationEquiv_apply (x : R) : toPiLocalizationEquiv R x = algebraMap R _ x :=
+  rfl
+
+@[simp]
+theorem toPiLocalizationEquiv_apply_apply (x : R) (I : PrimeSpectrum R) :
+    toPiLocalizationEquiv R x I = algebraMap R _ x :=
+  rfl
 
 end DiscreteTopology
 
@@ -1019,7 +1105,7 @@ lemma isClopen_iff_mul_add {s : Set (PrimeSpectrum R)} :
 
 lemma isClopen_iff_mul_add_zeroLocus {s : Set (PrimeSpectrum R)} :
     IsClopen s ↔ ∃ e f : R, e * f = 0 ∧ e + f = 1 ∧ s = zeroLocus {e} := by
-  rw [isClopen_iff_mul_add, exists_swap]
+  rw [isClopen_iff_mul_add, exists_comm]
   refine exists₂_congr fun e f ↦ ?_
   rw [mul_comm, add_comm, ← and_assoc, ← and_assoc, and_congr_right]
   intro ⟨mul, add⟩
@@ -1031,7 +1117,7 @@ open TopologicalSpace (Clopens)
 bijection with pairs of elements with product 0 and sum 1. (By definition, `(e₁, f₁) ≤ (e₂, f₂)`
 iff `e₁ * e₂ = e₁`.) Both elements in such pairs must be idempotents, but there may exists
 idempotents that do not form such pairs (does not have a "complement"). For example, in the
-semiring {0, 0.5, 1} with ⊔ as + and ⊓ as *, 0.5 has no complement. -/
+semiring `{0, 0.5, 1}` with `⊔` as `+` and `⊓` as `*`, `0.5` has no complement. -/
 def mulZeroAddOneEquivClopens :
     {e : R × R // e.1 * e.2 = 0 ∧ e.1 + e.2 = 1} ≃o Clopens (PrimeSpectrum R) where
   toEquiv := .ofBijective
@@ -1134,13 +1220,21 @@ lemma isIntegral_of_isClosedMap_comap_mapRingHom (h : IsClosedMap (comap (mapRin
       eval_mul, reflect_sub, reflect_mul _ _ (by simp) (by simp)]
     simp [← pow_succ']
 
-lemma _root_.RingHom.IsIntegral.comap_surjective {f : R →+* S} (hf : f.IsIntegral)
-    (hinj : Function.Injective f) : Function.Surjective (comap f) := by
-  algebraize [f]
+variable (R S) in
+lemma _root_.Algebra.IsIntegral.comap_surjective [Algebra R S] [Algebra.IsIntegral R S]
+    [FaithfulSMul R S] :
+    Function.Surjective (comap (algebraMap R S)) := by
   intro ⟨p, hp⟩
+  have hinj : Function.Injective (algebraMap R S) := FaithfulSMul.algebraMap_injective _ _
   obtain ⟨Q, _, hQ, rfl⟩ := Ideal.exists_ideal_over_prime_of_isIntegral p (⊥ : Ideal S)
     (by simp [Ideal.comap_bot_of_injective (algebraMap R S) hinj])
   exact ⟨⟨Q, hQ⟩, rfl⟩
+
+lemma _root_.RingHom.IsIntegral.comap_surjective {f : R →+* S} (hf : f.IsIntegral)
+    (hinj : Function.Injective f) : Function.Surjective (comap f) := by
+  algebraize [f]
+  have : FaithfulSMul R S := (faithfulSMul_iff_algebraMap_injective R S).mpr hinj
+  exact Algebra.IsIntegral.comap_surjective _ _
 
 @[deprecated (since := "2025-12-10")]
 alias _root_.RingHom.IsIntegral.specComap_surjective := _root_.RingHom.IsIntegral.comap_surjective

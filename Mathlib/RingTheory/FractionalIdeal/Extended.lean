@@ -18,13 +18,13 @@ This file defines the extension of a fractional ideal along a ring homomorphism.
   `IsLocalization M K` and `IsLocalization N L`. Let `f : A →+* B` be a ring homomorphism with
   `hf : M ≤ Submonoid.comap f N`. If `I : FractionalIdeal M K`, then the extension of `I` along
   `f` is `extended L hf I : FractionalIdeal N L`.
-* `FractionalIdeal.extendedHom`: The ring homomorphism version of `FractionalIdeal.extended`.
-* `FractionalIdeal.extendedHomₐ`: For `A ⊆ B` an extension of domains, the ring homomorphism that
+* `FractionalIdeal.extendedHom'`: The ring homomorphism version of `FractionalIdeal.extended`.
+* `FractionalIdeal.extendedHom`: For `A ⊆ B` an extension of domains, the ring homomorphism that
   sends a fractional ideal of `A` to a fractional ideal of `B`.
 
 ## Main results
 
-* `FractionalIdeal.extendedHomₐ_injective`: the map `FractionalIdeal.extendedHomₐ` is injective.
+* `FractionalIdeal.extendedHom_injective`: the map `FractionalIdeal.extendedHom` is injective.
 * `Ideal.map_algebraMap_injective`: For `A ⊆ B` an extension of Dedekind domains, the map that
   sends an ideal `I` of `A` to `I·B` is injective.
 
@@ -110,15 +110,11 @@ theorem extended_one : extended L hf (1 : FractionalIdeal M K) = 1 := by
 theorem extended_le_one_of_le_one (hI : I ≤ 1) : extended L hf I ≤ 1 := by
   obtain ⟨J, rfl⟩ := le_one_iff_exists_coeIdeal.mp hI
   intro x hx
-  simp only [mem_extended_iff, mem_span_image_iff_exists_fun, Finset.univ_eq_attach] at hx
-  rw [← mem_coe, coe_one] -- TODO : FractionalIdeal.mem_one
+  simp only [mem_extended_iff, mem_span_image_iff_exists_fun] at hx
   obtain ⟨s, hs, c, rfl⟩ := hx
-  refine Submodule.sum_smul_mem (1 : Submodule B L) _ fun x h ↦ mem_one.mpr ?_
-  obtain ⟨a, ha⟩ : ∃ a, (algebraMap A K) a = ↑x := by
-    have := hI <| hs x.prop
-    rw [← mem_coe, coe_one, mem_one] at this -- TODO : FractionalIdeal.mem_one
-    exact this
-  exact ⟨f a, by rw [← ha, map_eq]⟩
+  refine Submodule.sum_smul_mem _ _ fun ⟨x, hx⟩ h ↦ ?_
+  obtain ⟨a, ha, rfl⟩ := hI (hs hx)
+  exact ⟨f a, by simp [map_eq]⟩
 
 theorem one_le_extended_of_one_le (hI : 1 ≤ I) : 1 ≤ extended L hf I := by
   rw [one_le] at hI ⊢
@@ -171,9 +167,10 @@ theorem extended_coeIdeal_eq_map (I₀ : Ideal A) :
 
 /--
 The ring homomorphism version of `FractionalIdeal.extended`.
+See `FractionalIdeal.extendedHom` for a more convient version that is often enough.
 -/
 @[simps]
-def extendedHom : FractionalIdeal M K →+* FractionalIdeal N L where
+def extendedHom' : FractionalIdeal M K →+* FractionalIdeal N L where
   toFun := extended L hf
   map_one' := extended_one L hf
   map_zero' := extended_zero L hf
@@ -191,68 +188,88 @@ variable {A K : Type*} (L B : Type*) [CommRing A] [IsDomain A] [CommRing B] [IsD
   [IsFractionRing A K] [IsFractionRing B L] {I : FractionalIdeal A⁰ K}
 
 /--
-The ring homomorphisme that extends a fractional ideal of `A` to a fractional ideal of `B` for
-`A ⊆ B` an extension of domains.
+The ring homomorphism that extends a fractional ideal of `A` to a fractional ideal of `B` for
+an extension of domains `A ⊆ B`.
 -/
-abbrev extendedHomₐ : FractionalIdeal A⁰ K →+* FractionalIdeal B⁰ L :=
-  extendedHom L <|
+abbrev extendedHom : FractionalIdeal A⁰ K →+* FractionalIdeal B⁰ L :=
+  extendedHom' L <|
     nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ (FaithfulSMul.algebraMap_injective _ _)
 
-theorem extendedHomₐ_eq_zero_iff {I : FractionalIdeal A⁰ K} :
-    extendedHomₐ L B I = 0 ↔ I = 0 :=
+@[deprecated (since := "2026-04-16")] alias extendedHomₐ := extendedHom
+
+theorem extendedHom_eq_zero_iff {I : FractionalIdeal A⁰ K} :
+    extendedHom L B I = 0 ↔ I = 0 :=
   extended_eq_zero_iff _ _ (FaithfulSMul.algebraMap_injective _ _) zero_notMem_nonZeroDivisors
 
-theorem extendedHomₐ_coeIdeal_eq_map (I : Ideal A) :
-    (I : FractionalIdeal A⁰ K).extendedHomₐ L B =
+@[deprecated (since := "2026-04-16")] alias extendedHomₐ_eq_zero_iff := extendedHom_eq_zero_iff
+
+theorem extendedHom_coeIdeal_eq_map (I : Ideal A) :
+    (I : FractionalIdeal A⁰ K).extendedHom L B =
       (I.map (algebraMap A B) : FractionalIdeal B⁰ L) := extended_coeIdeal_eq_map L _ I
+
+@[deprecated (since := "2026-04-16")]
+alias extendedHomₐ_coeIdeal_eq_map := extendedHom_coeIdeal_eq_map
 
 variable [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L]
   [Algebra.IsIntegral A B]
 
-theorem coe_extendedHomₐ_eq_span (I : FractionalIdeal A⁰ K) :
-    extendedHomₐ L B I = span B (algebraMap K L '' I) := by
-  rw [extendedHom_apply, coe_extended_eq_span,
+theorem coe_extendedHom_eq_span (I : FractionalIdeal A⁰ K) :
+    extendedHom L B I = span B (algebraMap K L '' I) := by
+  rw [extendedHom'_apply, coe_extended_eq_span,
     IsLocalization.algebraMap_eq_map_map_submonoid A⁰ B K L]
   rfl
 
-theorem le_one_of_extendedHomₐ_le_one [IsIntegrallyClosed A] [IsIntegrallyClosed B]
-  (hI : extendedHomₐ L B I ≤ 1) : I ≤ 1 := by
-  contrapose! hI
+@[deprecated (since := "2026-04-16")] alias coe_extendedHomₐ_eq_span := coe_extendedHom_eq_span
+
+theorem le_one_of_extendedHom_le_one [IsIntegrallyClosed A] [IsIntegrallyClosed B]
+    (hI : extendedHom L B I ≤ 1) : I ≤ 1 := by
+  contrapose hI
   rw [SetLike.not_le_iff_exists] at hI ⊢
   obtain ⟨x, hx₁, hx₂⟩ := hI
   refine ⟨algebraMap K L x, ?_, ?_⟩
   · simpa [← FractionalIdeal.mem_coe, IsLocalization.algebraMap_eq_map_map_submonoid A⁰ B K L]
       using subset_span <| Set.mem_image_of_mem _ hx₁
-  · contrapose! hx₂
+  · contrapose hx₂
     rw [mem_one_iff, ← IsIntegrallyClosed.isIntegral_iff] at hx₂ ⊢
     exact IsIntegral.tower_bot_of_field <| isIntegral_trans _ hx₂
 
-theorem extendedHomₐ_le_one_iff [IsIntegrallyClosed A] [IsIntegrallyClosed B] :
-    extendedHomₐ L B I ≤ 1 ↔ I ≤ 1 :=
-  ⟨fun h ↦ le_one_of_extendedHomₐ_le_one L B h, fun a ↦ extended_le_one_of_le_one L _ I a⟩
+@[deprecated (since := "2026-04-16")]
+alias le_one_of_extendedHomₐ_le_one := le_one_of_extendedHom_le_one
+
+theorem extendedHom_le_one_iff [IsIntegrallyClosed A] [IsIntegrallyClosed B] :
+    extendedHom L B I ≤ 1 ↔ I ≤ 1 :=
+  ⟨fun h ↦ le_one_of_extendedHom_le_one L B h, fun a ↦ extended_le_one_of_le_one L _ I a⟩
+
+@[deprecated (since := "2026-04-16")] alias extendedHomₐ_le_one_iff := extendedHom_le_one_iff
 
 section IsDedekindDomain
 
 variable [IsDedekindDomain A] [IsDedekindDomain B]
 
-theorem one_le_extendedHomₐ_iff (hI : I ≠ 0) : 1 ≤ extendedHomₐ L B I ↔ 1 ≤ I := by
-  rw [← inv_le_inv_iff ((extendedHomₐ_eq_zero_iff _ _).not.mpr hI) (by simp), inv_one, ← map_inv₀,
-    extendedHomₐ_le_one_iff, inv_le_comm hI (by simp), inv_one]
+theorem one_le_extendedHom_iff (hI : I ≠ 0) : 1 ≤ extendedHom L B I ↔ 1 ≤ I := by
+  rw [← inv_le_inv_iff ((extendedHom_eq_zero_iff _ _).not.mpr hI) (by simp), inv_one, ← map_inv₀,
+    extendedHom_le_one_iff, inv_le_comm hI (by simp), inv_one]
 
-theorem extendedHomₐ_eq_one_iff (hI : I ≠ 0) : extendedHomₐ L B I = 1 ↔ I = 1 := by
-  rw [le_antisymm_iff, extendedHomₐ_le_one_iff, one_le_extendedHomₐ_iff _ _ hI, ← le_antisymm_iff]
+@[deprecated (since := "2026-04-16")] alias one_le_extendedHomₐ_iff := one_le_extendedHom_iff
+
+theorem extendedHom_eq_one_iff (hI : I ≠ 0) : extendedHom L B I = 1 ↔ I = 1 := by
+  rw [le_antisymm_iff, extendedHom_le_one_iff, one_le_extendedHom_iff _ _ hI, ← le_antisymm_iff]
+
+@[deprecated (since := "2026-04-16")] alias extendedHomₐ_eq_one_iff := extendedHom_eq_one_iff
 
 variable (A K) in
-theorem extendedHomₐ_injective :
-    Function.Injective (fun I : FractionalIdeal A⁰ K ↦ extendedHomₐ L B I) := by
+theorem extendedHom_injective :
+    Function.Injective (fun I : FractionalIdeal A⁰ K ↦ extendedHom L B I) := by
   intro I J h
   dsimp only at h
   by_cases hI : I = 0
-  · rwa [hI, map_zero, eq_comm, extendedHomₐ_eq_zero_iff L B, eq_comm, ← hI] at h
+  · rwa [hI, map_zero, eq_comm, extendedHom_eq_zero_iff L B, eq_comm, ← hI] at h
   by_cases hJ : J = 0
-  · rwa [hJ, map_zero, extendedHomₐ_eq_zero_iff L B, ← hJ] at h
-  rwa [← mul_inv_eq_one₀ ((extendedHomₐ_eq_zero_iff _ _).not.mpr hJ), ← map_inv₀, ← map_mul,
-    extendedHomₐ_eq_one_iff _ _ (mul_ne_zero hI (inv_ne_zero hJ)), mul_inv_eq_one₀ hJ] at h
+  · rwa [hJ, map_zero, extendedHom_eq_zero_iff L B, ← hJ] at h
+  rwa [← mul_inv_eq_one₀ ((extendedHom_eq_zero_iff _ _).not.mpr hJ), ← map_inv₀, ← map_mul,
+    extendedHom_eq_one_iff _ _ (mul_ne_zero hI (inv_ne_zero hJ)), mul_inv_eq_one₀ hJ] at h
+
+@[deprecated (since := "2026-04-16")] alias extendedHomₐ_injective := extendedHom_injective
 
 end IsDedekindDomain
 

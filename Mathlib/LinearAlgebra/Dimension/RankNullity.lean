@@ -29,7 +29,7 @@ TODO: prove the rank-nullity theorem for `[Ring R] [IsDomain R] [StrongRankCondi
 See `nonempty_oreSet_of_strongRankCondition` for a start.
 -/
 
-@[expose] public section
+public section
 universe u v
 
 open Function Set Cardinal Module Submodule LinearMap
@@ -144,7 +144,7 @@ theorem exists_linearIndependent_pair_of_one_lt_rank [IsDomain R] [StrongRankCon
     [IsTorsionFree R M] (h : 1 < Module.rank R M) {x : M} (hx : x ≠ 0) :
     ∃ y, LinearIndependent R ![x, y] := by
   obtain ⟨y, hy⟩ := exists_linearIndependent_snoc_of_lt_rank (.of_subsingleton (v := ![x]) 0 hx) h
-  have : Fin.snoc ![x] y = ![x, y] := by simp [Fin.snoc, ← List.ofFn_inj]
+  have : Fin.snoc ![x] y = ![x, y] := by simp
   rw [this] at hy
   exact ⟨y, hy⟩
 
@@ -155,7 +155,7 @@ theorem Submodule.exists_smul_notMem_of_rank_lt {N : Submodule R M}
     rw [← rank_quotient_add_rank N, e, zero_add] at h
     exact h.ne rfl
   rw [ne_eq, rank_eq_zero_iff, (Submodule.Quotient.mk_surjective N).forall] at this
-  push_neg at this
+  push Not at this
   simp_rw [← N.mkQ_apply, ← map_smul, N.mkQ_apply, ne_eq, Submodule.Quotient.mk_eq_zero] at this
   exact this
 

@@ -6,13 +6,16 @@ Authors: Sébastien Gouëzel, Anatole Dedecker
 module
 
 public import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
+public import Mathlib.Analysis.LocallyConvex.Bounded
 public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.RingTheory.LocalRing.Basic
 public import Mathlib.Topology.Algebra.Module.Determinant
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
 public import Mathlib.Topology.Algebra.Module.Simple
 public import Mathlib.Topology.Algebra.SeparationQuotient.FiniteDimensional
+public import Mathlib.Topology.Maps.Strict.Basic
 
 /-!
 # Finite-dimensional topological vector spaces over complete fields
@@ -131,10 +134,7 @@ theorem unique_topology_of_t2 {t : TopologicalSpace 𝕜} (h₁ : @IsTopological
           map id (@nhds 𝕜 hnorm.toUniformSpace.toTopologicalSpace 0) :=
         map_id.symm
       _ = map (fun x => id x • (1 : 𝕜)) (@nhds 𝕜 hnorm.toUniformSpace.toTopologicalSpace 0) := by
-        conv_rhs =>
-          congr
-          ext
-          rw [smul_eq_mul, mul_one]
+        simp
       _ ≤ @nhds 𝕜 t ((0 : 𝕜) • (1 : 𝕜)) :=
         (@Tendsto.smul_const _ _ _ hnorm.toUniformSpace.toTopologicalSpace t _ _ _ _ _
           tendsto_id (1 : 𝕜))
@@ -181,7 +181,7 @@ theorem LinearMap.continuous_of_isClosed_ker (l : E →ₗ[𝕜] 𝕜)
     -- Finally, the pullback by `φ.symm` is exactly the pushforward by `φ`, so we have to prove
     -- that `φ` is continuous when `𝕜` is endowed with the pushforward by `φ` of the quotient
     -- topology, which is trivial by definition of the pushforward.
-    simp_rw [this.symm, Equiv.induced_symm]
+    simp_rw +instances [this.symm, Equiv.induced_symm]
     exact continuous_coinduced_rng
 
 /-- Any linear form on a topological vector space over a nontrivially normed field is continuous if
@@ -526,7 +526,7 @@ end IsUniformAddGroup
 variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
   [AddCommGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E] [Module 𝕜 E]
   [ContinuousSMul 𝕜 E]
-  [AddCommGroup F] [TopologicalSpace F] [T2Space F] [IsTopologicalAddGroup F] [Module 𝕜 F]
+  [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F] [Module 𝕜 F]
   [ContinuousSMul 𝕜 F]
 
 /-- A finite-dimensional subspace is closed. -/
@@ -537,13 +537,27 @@ theorem Submodule.closed_of_finiteDimensional
   haveI : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
   s.complete_of_finiteDimensional.isClosed
 
+/-- If `s` is a closed subspace with finite codimension, any subspace containing `s` is closed. -/
+theorem Submodule.isClosed_mono_of_finiteDimensional_quotient
+    {s t : Submodule 𝕜 E} [FiniteDimensional 𝕜 (E ⧸ s)] (s_closed : IsClosed (s : Set E))
+    (s_le_t : s ≤ t) :
+    IsClosed (t : Set E) := by
+  rw [show t = comap s.mkQ (map s.mkQ t) by simpa]
+  exact (map s.mkQ t).closed_of_finiteDimensional.preimage continuous_quot_mk
+
+/-- The supremum of a closed subspace and a finite dimensional subspace is closed. -/
+theorem Submodule.isClosed_sup_finiteDimensional
+    (s t : Submodule 𝕜 E) (hs : IsClosed (s : Set E)) [ht : FiniteDimensional 𝕜 t] :
+    IsClosed ((s ⊔ t : Submodule 𝕜 E) : Set E) := by
+  rw [← comap_map_mkQ]
+  exact (map s.mkQ t).closed_of_finiteDimensional.preimage continuous_quot_mk
+
 /-- An injective linear map with finite-dimensional domain is a closed embedding. -/
-theorem LinearMap.isClosedEmbedding_of_injective [T2Space E] [FiniteDimensional 𝕜 E] {f : E →ₗ[𝕜] F}
-    (hf : LinearMap.ker f = ⊥) : IsClosedEmbedding f :=
+theorem LinearMap.isClosedEmbedding_of_injective [T2Space E] [FiniteDimensional 𝕜 E] [T2Space F]
+    {f : E →ₗ[𝕜] F} (hf : LinearMap.ker f = ⊥) : IsClosedEmbedding f :=
   let g := LinearEquiv.ofInjective f (LinearMap.ker_eq_bot.mp hf)
   { IsEmbedding.subtypeVal.comp g.toContinuousLinearEquiv.toHomeomorph.isEmbedding with
     isClosed_range := by
-      haveI := f.finiteDimensional_range
       simpa [LinearMap.coe_range f] using (LinearMap.range f).closed_of_finiteDimensional }
 
 theorem isClosedEmbedding_smul_left [T2Space E] {c : E} (hc : c ≠ 0) :
@@ -557,11 +571,26 @@ theorem isClosedMap_smul_left [T2Space E] (c : E) : IsClosedMap fun x : 𝕜 => 
     exact isClosedMap_const
   · exact (isClosedEmbedding_smul_left hc).isClosedMap
 
-theorem ContinuousLinearMap.exists_right_inverse_of_surjective [FiniteDimensional 𝕜 F]
-    (f : E →L[𝕜] F) (hf : f.range = ⊤) :
-    ∃ g : F →L[𝕜] E, f.comp g = ContinuousLinearMap.id 𝕜 F :=
+theorem ContinuousLinearMap.exists_rightInverse_of_surjective [T2Space F] [FiniteDimensional 𝕜 F]
+    (f : E →L[𝕜] F) (hf : f.range = ⊤) : ∃ g : F →L[𝕜] E, f.comp g = ContinuousLinearMap.id 𝕜 F :=
   let ⟨g, hg⟩ := (f : E →ₗ[𝕜] F).exists_rightInverse_of_surjective hf
   ⟨LinearMap.toContinuousLinearMap g, ContinuousLinearMap.coe_inj.1 hg⟩
+
+@[deprecated (since := "2026-04-24")]
+alias ContinuousLinearMap.exists_right_inverse_of_surjective :=
+  ContinuousLinearMap.exists_rightInverse_of_surjective
+
+theorem ContinuousLinearMap.isQuotientMap_of_finiteDimensional [T2Space F] [FiniteDimensional 𝕜 F]
+    (f : E →L[𝕜] F) (hf : f.range = ⊤) :
+    IsQuotientMap f :=
+  let ⟨g, hg⟩ := f.exists_rightInverse_of_surjective hf
+  .of_inverse g.continuous f.continuous (fun _ ↦ congr($hg _))
+
+theorem ContinuousLinearMap.isStrictMap_of_finiteDimensional [T2Space F] [FiniteDimensional 𝕜 F]
+    (f : E →L[𝕜] F) :
+    IsStrictMap f := by
+  rw [isStrictMap_iff_isQuotientMap_rangeFactorization]
+  exact f.rangeRestrict.isQuotientMap_of_finiteDimensional (by simp)
 
 /-- If `K` is a complete field and `V` is a finite-dimensional vector space over `K` (equipped with
 any topology so that `V` is a topological `K`-module, meaning `[IsTopologicalAddGroup V]`
@@ -580,3 +609,98 @@ theorem LocallyCompactSpace.of_finiteDimensional_of_complete (K V : Type*)
   let ⟨_, ⟨b⟩⟩ := Basis.exists_basis K (SeparationQuotient V)
   have := FiniteDimensional.fintypeBasisIndex b
   b.equivFun.toContinuousLinearEquiv.toHomeomorph.isOpenEmbedding.locallyCompactSpace
+
+section Riesz
+
+variable (𝕜 : Type*) [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+  {E Eᵤ : Type*} [AddCommGroup E] [AddCommGroup Eᵤ] [Module 𝕜 E] [Module 𝕜 Eᵤ]
+  [TopologicalSpace E] [UniformSpace Eᵤ] [T2Space E] [T2Space Eᵤ]
+  [IsTopologicalAddGroup E] [IsUniformAddGroup Eᵤ]
+  [ContinuousSMul 𝕜 E] [ContinuousSMul 𝕜 Eᵤ]
+
+open scoped Pointwise in
+/-- **Riesz's theorem**: a T2 topological vector space over a complete non-trivial normed field
+which admits a totally bounded neighborhood of `0` is finite-dimensional. -/
+theorem FiniteDimensional.of_totallyBounded_nhds_zero {U : Set Eᵤ} (hU_nhds : U ∈ 𝓝 (0 : Eᵤ))
+    (hU_tb : TotallyBounded U) : FiniteDimensional 𝕜 Eᵤ := by
+  obtain ⟨c, hc0, hc1⟩ : ∃ c : 𝕜, 0 < ‖c‖ ∧ ‖c‖ < 1 := NormedField.exists_norm_lt 𝕜 zero_lt_one
+  have hc_ne : c ≠ 0 := norm_pos_iff.mp hc0
+  obtain ⟨F, hF_finite, hF_cover⟩ := totallyBounded_iff_subset_finite_iUnion_nhds_zero.mp hU_tb
+    (c • U) ((set_smul_mem_nhds_zero_iff hc_ne).mpr hU_nhds)
+  let M : Submodule 𝕜 Eᵤ := Submodule.span 𝕜 F
+  letI : FiniteDimensional 𝕜 M := Finite.span_of_finite 𝕜 hF_finite
+  have h_cover : U ⊆ M + c • U := fun x hx ↦ by
+    obtain ⟨f, hf, y, hy, rfl⟩ := Set.mem_iUnion₂.mp <| hF_cover hx
+    exact ⟨f, Submodule.subset_span hf, y, hy, rfl⟩
+  have h_ind (n : ℕ) : U ⊆ M + c ^ n • U := by
+    induction n with
+    | zero => simpa using fun x hx ↦ ⟨0, M.zero_mem, x, hx, zero_add x⟩
+    | succ n ih =>
+      calc
+        U ⊆ M + c ^ n • U := ih
+        _ ⊆ M + c ^ n • (M + c • U) := by gcongr
+        _ ⊆ M + c ^ (n + 1) • U := by
+          rw [smul_add, smul_smul, pow_succ, ← add_assoc]
+          congr!
+          lift c to 𝕜ˣ using isUnit_iff_ne_zero.mpr hc_ne
+          simp [← Units.val_pow_eq_pow_val, ← Units.smul_def]
+  have h_small : Tendsto (fun n ↦ c ^ n • U) atTop (𝓝 0).smallSets :=
+    (TotallyBounded.isVonNBounded 𝕜 hU_tb).tendsto_smallSets_nhds.comp
+    (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hc1)
+  have hU_sub_M : U ⊆ M := by
+    intro x hx
+    choose m hm u hu h_eq using fun n ↦ h_ind n hx
+    have hu_tendsto : Tendsto u atTop (𝓝 0) := by
+      intro W hW
+      exact (tendsto_smallSets_iff.mp h_small W hW).mono fun n hn ↦ hn (hu n)
+    have hm_tendsto : Tendsto m atTop (𝓝 x) := by
+      simpa [show m = fun n ↦ x - u n by grind] using tendsto_const_nhds.sub hu_tendsto
+    exact M.closed_of_finiteDimensional.mem_of_tendsto hm_tendsto (Eventually.of_forall hm)
+  have hM_top : M = ⊤ := absorbent_nhds_zero (𝕜 := 𝕜) hU_nhds |>.mono hU_sub_M |>.submodule_eq_top
+  exact FiniteDimensional.of_surjective M.subtype fun x ↦ ⟨⟨x, by simp [hM_top]⟩, rfl⟩
+
+open scoped Pointwise in
+/-- **Riesz's theorem**: if a T2 topological vector space over a complete non-trivial
+normed field admits a totally bounded neighborhood of some point, then it is
+finite-dimensional. -/
+theorem FiniteDimensional.of_totallyBounded_nhds {x : Eᵤ} {U : Set Eᵤ} (hU_nhds : U ∈ 𝓝 x)
+    (hU_tb : TotallyBounded U) : FiniteDimensional 𝕜 Eᵤ := by
+  replace hU_nhds : x +ᵥ (-x) +ᵥ U ∈ 𝓝 x := by simpa
+  rw [vadd_mem_nhds_self] at hU_nhds
+  refine .of_totallyBounded_nhds_zero _ hU_nhds ?_
+  have : -x +ᵥ U = (· - x) '' U := by simp [← Set.image_vadd, neg_add_eq_sub]
+  exact this ▸ hU_tb.image (uniformContinuous_id.sub uniformContinuous_const)
+
+/-- **Riesz's theorem**: in a T2 topological vector space over a complete non-trivial normed field,
+if there exists a totally bounded neighborhood of some point, then the space is finite-dimensional.
+-/
+theorem FiniteDimensional.of_exists_totallyBounded_nhds
+    (h : ∃ x : Eᵤ, ∃ U ∈ 𝓝 x, TotallyBounded U) : FiniteDimensional 𝕜 Eᵤ := by
+  rcases h with ⟨x, U, hU_nhds, hU_tb⟩
+  exact FiniteDimensional.of_totallyBounded_nhds (𝕜 := 𝕜) hU_nhds hU_tb
+
+/-- **Riesz's theorem**: a locally compact topological vector space is finite-dimensional. -/
+theorem FiniteDimensional.of_locallyCompactSpace [WeaklyLocallyCompactSpace E] :
+    FiniteDimensional 𝕜 E :=
+  let : UniformSpace E := IsTopologicalAddGroup.rightUniformSpace E
+  have : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
+  let ⟨_, hU_compact, hU_nhds⟩ := exists_compact_mem_nhds (0 : E)
+  .of_totallyBounded_nhds_zero 𝕜 hU_nhds hU_compact.totallyBounded
+
+/-- If a function has compact support, then either the function is trivial
+or the space is finite-dimensional. -/
+theorem HasCompactSupport.eq_zero_or_finiteDimensional {X : Type*} [TopologicalSpace X] [Zero X]
+    [T1Space X] {f : E → X} (hf : HasCompactSupport f) (h'f : Continuous f) :
+    f = 0 ∨ FiniteDimensional 𝕜 E :=
+  (HasCompactSupport.eq_zero_or_locallyCompactSpace_of_addGroup hf h'f).imp_right fun h ↦
+    have : LocallyCompactSpace E := h; .of_locallyCompactSpace 𝕜
+
+/-- If a function has compact multiplicative support, then either the function is trivial
+or the space is finite-dimensional. -/
+theorem HasCompactMulSupport.eq_one_or_finiteDimensional {X : Type*} [TopologicalSpace X] [One X]
+    [T1Space X] {f : E → X} (hf : HasCompactMulSupport f) (h'f : Continuous f) :
+    f = 1 ∨ FiniteDimensional 𝕜 E :=
+  have : T1Space (Additive X) := ‹_›
+  HasCompactSupport.eq_zero_or_finiteDimensional 𝕜 (X := Additive X) hf h'f
+
+end Riesz

@@ -217,7 +217,7 @@ end
 definitional equality issues. -/
 lemma forget_obj {M : ModuleCat.{v} R} : (forget (ModuleCat.{v} R)).obj M = M := rfl
 
-@[simp]
+@[deprecated ConcreteCategory.forget_map_eq_ofHom (since := "2026-03-02")]
 lemma forget_map {M N : ModuleCat.{v} R} (f : M ⟶ N) :
     (forget (ModuleCat.{v} R)).map f = (f : _ → _) :=
   rfl
@@ -298,9 +298,9 @@ end CategoryTheory.Iso
 in `ModuleCat` -/
 @[simps]
 def linearEquivIsoModuleIso {X Y : Type u} [AddCommGroup X] [AddCommGroup Y] [Module R X]
-    [Module R Y] : (X ≃ₗ[R] Y) ≅ ModuleCat.of R X ≅ ModuleCat.of R Y where
-  hom e := e.toModuleIso
-  inv i := i.toLinearEquiv
+    [Module R Y] : (X ≃ₗ[R] Y) ≅ (ModuleCat.of R X ≅ ModuleCat.of R Y) where
+  hom := ↾fun e ↦ e.toModuleIso
+  inv := ↾fun i ↦ i.toLinearEquiv
 
 end
 
@@ -482,6 +482,7 @@ variable (M N : ModuleCat.{v} R)
   map_mul' _ _ := rfl
   map_add' _ _ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The scalar multiplication on an object of `ModuleCat R` considered as
 a morphism of rings from `R` to the endomorphisms of the underlying abelian group. -/
 def smul : R →+* End ((forget₂ (ModuleCat R) AddCommGrpCat).obj M) where
@@ -508,10 +509,10 @@ def smulNatTrans : R →+* End (forget₂ (ModuleCat R) AddCommGrpCat) where
   toFun r :=
     { app := fun M => M.smul r
       naturality := fun _ _ _ => smul_naturality _ r }
-  map_one' := NatTrans.ext (by cat_disch)
-  map_zero' := NatTrans.ext (by cat_disch)
-  map_mul' _ _ := NatTrans.ext (by cat_disch)
-  map_add' _ _ := NatTrans.ext (by cat_disch)
+  map_one' := by cat_disch
+  map_zero' := by cat_disch
+  map_mul' _ _ := by cat_disch
+  map_add' _ _ := by cat_disch
 
 /-- Given `A : AddCommGrpCat` and a ring morphism `R →+* End A`, this is a type synonym
 for `A`, on which we shall define a structure of `R`-module. -/
@@ -522,18 +523,16 @@ section
 
 variable {A : AddCommGrpCat} (φ : R →+* End A)
 
-instance : AddCommGroup (mkOfSMul' φ) := by
-  dsimp only [mkOfSMul']
-  infer_instance
+instance : AddCommGroup (mkOfSMul' φ) :=
+  inferInstanceAs <| AddCommGroup A
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : SMul R (mkOfSMul' φ) := ⟨fun r (x : A) => (show A ⟶ A from φ r) x⟩
 
 @[simp]
 lemma mkOfSMul'_smul (r : R) (x : mkOfSMul' φ) :
     r • x = (show A ⟶ A from φ r) x := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Module R (mkOfSMul' φ) where
   smul_zero _ := map_zero (N := A) _
   smul_add _ _ _ := map_add (N := A) _ _ _

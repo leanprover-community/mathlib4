@@ -47,7 +47,7 @@ multiplicative ring norms but outside of this use we only consider real-valued s
 Finitary versions of the current lemmas.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 
@@ -60,6 +60,7 @@ Diamond inheritance cannot depend on `outParam`s in the following circumstances:
 * the instance `Bottom.toMiddle` takes a `[Left α]` parameter
 * the instance `Middle.toTop` takes a `[Right α]` parameter
 * there is a `Leaf` class that inherits from both `Left` and `Right`.
+
 In that case, given instances `Bottom α` and `Leaf α`, Lean cannot synthesize a `Top α` instance,
 even though the hypotheses of the instances `Bottom.toMiddle` and `Middle.toTop` are satisfied.
 
@@ -216,6 +217,11 @@ theorem map_div_le_add : f (x / y) ≤ f x + f y := by
 
 @[to_additive]
 theorem map_div_rev : f (x / y) = f (y / x) := by rw [← inv_div, map_inv_eq_map]
+
+@[to_additive]
+theorem map_inv_mul {α : Type*} [FunLike F α β] [CommGroup α] [GroupSeminormClass F α β] (x y : α) :
+    f (x⁻¹ * y) = f (x * y⁻¹) := by
+  rw [← map_inv_eq_map, inv_mul', inv_inv, div_eq_mul_inv]
 
 @[to_additive]
 theorem le_map_add_map_div' : f x ≤ f y + f (y / x) := by

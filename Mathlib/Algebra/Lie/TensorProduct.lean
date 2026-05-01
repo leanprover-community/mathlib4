@@ -47,6 +47,7 @@ expression of the fact that `L` acts by linear endomorphisms. It simplifies the 
 def hasBracketAux (x : L) : Module.End R (M ⊗[R] N) :=
   (toEnd R L M x).rTensor N + (toEnd R L N x).lTensor M
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The tensor product of two Lie modules is a Lie ring module. -/
 instance lieRingModule : LieRingModule L (M ⊗[R] N) where
   bracket x := hasBracketAux x

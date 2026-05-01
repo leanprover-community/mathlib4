@@ -40,11 +40,12 @@ variable {k G : Type u} [CommRing k] [Group G]
 
 include hX
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_cochainsFunctor_shortExact :
     ShortExact (X.map (cochainsFunctor k G)) :=
   HomologicalComplex.shortExact_of_degreewise_shortExact _ fun i => {
     exact := by
-      have : LinearMap.range X.f.hom.hom = LinearMap.ker X.g.hom.hom :=
+      have : LinearMap.range X.f.hom.toLinearMap = LinearMap.ker X.g.hom.toLinearMap :=
         (hX.exact.map (forget₂ (Rep k G) (ModuleCat k))).moduleCat_range_eq_ker
       simp [moduleCat_exact_iff_range_eq_ker, LinearMap.range_compLeft,
         LinearMap.ker_compLeft, this]
@@ -106,7 +107,7 @@ Stated for readability of `δ_apply`. -/
 noncomputable abbrev cocyclesMkOfCompEqD {i j : ℕ} {y : (Fin i → G) → X.X₂}
     {x : (Fin j → G) → X.X₁} (hx : X.f.hom ∘ x = (inhomogeneousCochains X.X₂).d i j y) :
     cocycles X.X₁ j :=
-  cocyclesMk x <| by simpa using
+  cocyclesMk x <| by simpa [CochainComplex.of.d] using
     ((map_cochainsFunctor_shortExact hX).d_eq_zero_of_f_eq_d_apply i j y x
       (by simpa using hx) (j + 1))
 
@@ -119,11 +120,12 @@ theorem δ_apply {i j : ℕ} (hij : i + 1 = j)
     -- Let `x` be an `i + 1`-cochain for `X₁` such that `f ∘ x = d(y)`
     (x : (Fin j → G) → X.X₁) (hx : X.f.hom ∘ x = (inhomogeneousCochains X.X₂).d i j y) :
     -- Then `x` is an `i + 1`-cocycle and `δ z = x` in `Hⁱ⁺¹(X₁)`.
-    δ hX i j hij (π X.X₃ i <| cocyclesMk z (by subst hij; simpa using hz)) =
+    δ hX i j hij (π X.X₃ i <| cocyclesMk z (by subst hij; simpa [CochainComplex.of.d] using hz)) =
       π X.X₁ j (cocyclesMkOfCompEqD hX hx) := by
   exact (map_cochainsFunctor_shortExact hX).δ_apply i j hij z hz y hy x
     (by simpa using hx) (j + 1) (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Stated for readability of `δ₀_apply`. -/
 theorem mem_cocycles₁_of_comp_eq_d₀₁
     {y : X.X₂} {x : G → X.X₁} (hx : X.f.hom ∘ x = d₀₁ X.X₂ y) :
@@ -132,6 +134,7 @@ theorem mem_cocycles₁_of_comp_eq_d₀₁
   have := congr($((mapShortComplexH1 (MonoidHom.id G) X.f).comm₂₃.symm) x)
   simp_all [shortComplexH1, LinearMap.compLeft]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem δ₀_apply
     -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short exact sequence of `G`-representations.
     -- Let `z : X₃ᴳ` and `y : X₂` be such that `g(y) = z`.
@@ -141,12 +144,16 @@ theorem δ₀_apply
     -- Then `x` is a 1-cocycle and `δ z = x` in `H¹(X₁)`.
     δ hX 0 1 rfl ((H0Iso X.X₃).inv z) = H1π X.X₁ ⟨x, mem_cocycles₁_of_comp_eq_d₀₁ hX hx⟩ := by
   simpa [H0Iso, H1π, ← cocyclesMk₁_eq X.X₁, ← cocyclesMk₀_eq z] using
-    δ_apply hX rfl ((cochainsIso₀ X.X₃).inv z.1) (by simp) ((cochainsIso₀ X.X₂).inv y)
+    δ_apply hX rfl ((cochainsIso₀ X.X₃).inv z.1) (by
+      rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, eq_d₀₁_comp_inv]; simp)
+      ((cochainsIso₀ X.X₂).inv y)
     (by ext; simp [← hy, cochainsIso₀]) ((cochainsIso₁ X.X₁).inv x) <| by
       ext g
+      rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, eq_d₀₁_comp_inv]
       simpa [← hx] using congr_fun (congr($((CommSq.vert_inv
         ⟨cochainsMap_f_1_comp_cochainsIso₁ (MonoidHom.id G) X.f⟩).w) x)) g
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Stated for readability of `δ₁_apply`. -/
 theorem mem_cocycles₂_of_comp_eq_d₁₂
     {y : G → X.X₂} {x : G × G → X.X₁} (hx : X.f.hom ∘ x = d₁₂ X.X₂ y) :
@@ -155,6 +162,7 @@ theorem mem_cocycles₂_of_comp_eq_d₁₂
   have := congr($((mapShortComplexH2 (MonoidHom.id G) X.f).comm₂₃.symm) x)
   simp_all [shortComplexH2, LinearMap.compLeft]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem δ₁_apply
     -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short exact sequence of `G`-representations.
     -- Let `z` be a 1-cocycle for `X₃` and `y` be a 1-cochain for `X₂` such that `g ∘ y = z`.
@@ -164,10 +172,12 @@ theorem δ₁_apply
     -- Then `x` is a 2-cocycle and `δ z = x` in `H²(X₁)`.
     δ hX 1 2 rfl (H1π X.X₃ z) = H2π X.X₁ ⟨x, mem_cocycles₂_of_comp_eq_d₁₂ hX hx⟩ := by
   simpa [H1π, H2π, ← cocyclesMk₂_eq X.X₁, ← cocyclesMk₁_eq X.X₃] using
-    δ_apply hX rfl ((cochainsIso₁ X.X₃).inv z) (by simp [cocycles₁.d₁₂_apply z])
-    ((cochainsIso₁ X.X₂).inv y) (by ext; simp [cochainsIso₁, ← hy])
+    δ_apply hX rfl ((cochainsIso₁ X.X₃).inv z) (by
+      rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, eq_d₁₂_comp_inv]
+      simp [cocycles₁.d₁₂_apply z]) ((cochainsIso₁ X.X₂).inv y) (by ext; simp [cochainsIso₁, ← hy])
     ((cochainsIso₂ X.X₁).inv x) <| by
       ext g
+      rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, eq_d₁₂_comp_inv]
       simpa [← hx] using congr_fun (congr($((CommSq.vert_inv
         ⟨cochainsMap_f_2_comp_cochainsIso₂ (MonoidHom.id G) X.f⟩).w) x)) g
 

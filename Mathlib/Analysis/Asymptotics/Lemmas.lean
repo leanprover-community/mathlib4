@@ -6,7 +6,6 @@ Authors: Jeremy Avigad, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Asymptotics.Defs
-public import Mathlib.Analysis.Normed.Field.Lemmas
 public import Mathlib.Analysis.Normed.Group.Bounded
 public import Mathlib.Analysis.Normed.Group.InfiniteSum
 public import Mathlib.Analysis.Normed.MulAction
@@ -499,7 +498,7 @@ theorem isLittleO_iff_exists_eq_mul :
   · exact fun h => ⟨fun x => u x / v x, h.tendsto_div_nhds_zero, h.eventually_mul_div_cancel.symm⟩
   · simp only [IsLittleO_def]
     rintro ⟨φ, hφ, huvφ⟩ c hpos
-    rw [NormedAddCommGroup.tendsto_nhds_zero] at hφ
+    rw [NormedAddGroup.tendsto_nhds_zero] at hφ
     exact isBigOWith_of_eq_mul _ ((hφ c hpos).mono fun x => le_of_lt) huvφ
 
 alias ⟨IsLittleO.exists_eq_mul, _⟩ := isLittleO_iff_exists_eq_mul
@@ -668,7 +667,7 @@ theorem IsBigO.nat_of_atTop {f : ℕ → E''} {g : ℕ → F''} (hfg : f =O[atTo
 theorem isBigOWith_pi {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, SeminormedAddCommGroup (E' i)]
     {f : α → ∀ i, E' i} {C : ℝ} (hC : 0 ≤ C) :
     IsBigOWith C l f g' ↔ ∀ i, IsBigOWith C l (fun x => f x i) g' := by
-  have : ∀ x, 0 ≤ C * ‖g' x‖ := fun x => mul_nonneg hC (norm_nonneg _)
+  have this (x) : 0 ≤ C * ‖g' x‖ := by positivity
   simp only [isBigOWith_iff, pi_norm_le_iff_of_nonneg (this _), eventually_all]
 
 @[simp]
@@ -859,7 +858,7 @@ variable [SeminormedAddGroup E] [Norm F]
 
 protected theorem isBigOWith_principal
     (hf : ContinuousOn f s) (hs : IsCompact s) (hc : ‖c‖ ≠ 0) :
-    IsBigOWith (sSup (Norm.norm '' (f '' s)) / ‖c‖) (𝓟 s) f fun _ => c := by
+    IsBigOWith (sSup (Norm.norm '' f '' s) / ‖c‖) (𝓟 s) f fun _ => c := by
   rw [isBigOWith_principal, div_mul_cancel₀ _ hc]
   exact fun x hx ↦ hs.image_of_continuousOn hf |>.image continuous_norm
    |>.isLUB_sSup (Set.image_nonempty.mpr <| Set.image_nonempty.mpr ⟨x, hx⟩)
@@ -877,7 +876,7 @@ variable [NormedAddGroup E] [SeminormedAddGroup F]
 
 protected theorem isBigOWith_rev_principal
     (hf : ContinuousOn f s) (hs : IsCompact s) (hC : ∀ i ∈ s, f i ≠ 0) (c : F) :
-    IsBigOWith (‖c‖ / sInf (Norm.norm '' (f '' s))) (𝓟 s) (fun _ => c) f := by
+    IsBigOWith (‖c‖ / sInf (Norm.norm '' f '' s)) (𝓟 s) (fun _ => c) f := by
   refine isBigOWith_principal.mpr fun x hx ↦ ?_
   rw [mul_comm_div]
   replace hs := hs.image_of_continuousOn hf |>.image continuous_norm

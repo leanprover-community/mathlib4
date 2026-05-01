@@ -6,8 +6,9 @@ Authors: Wanyi He, Jiedong Jiang, Jingting Wang, Andrew Yang, Shouxin Zhang
 module
 
 public import Mathlib.Algebra.Module.SpanRank
-public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
+public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
+public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!
 # The Height of an Ideal
@@ -74,6 +75,7 @@ lemma Ideal.primeHeight_lt_top (I : Ideal R) [I.FiniteHeight] [I.IsPrime] :
   rw [← I.height_eq_primeHeight]
   exact Ideal.height_lt_top ‹I.IsPrime›.ne_top
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Ideal.exists_ltSeries_length_eq_height (p : Ideal R) [p.IsPrime] [p.FiniteHeight] :
     ∃ (l : LTSeries (PrimeSpectrum R)),
       RelSeries.last l = ⟨p, inferInstance⟩ ∧ l.length = p.height := by
@@ -131,6 +133,11 @@ lemma Ideal.height_strict_mono_of_is_prime {I J : Ideal R} [I.IsPrime]
     haveI := Ideal.minimalPrimes_isPrime hK
     have : I < K := lt_of_lt_of_le h hK.1.2
     exact Ideal.primeHeight_add_one_le_of_lt this
+
+/-- A prime ideal of finite height is equal to any ideal that contains it with no greater height. -/
+lemma Ideal.eq_of_le_of_height_le [I.IsPrime] [I.FiniteHeight]
+    {J : Ideal R} (h : I ≤ J) (h_height : J.height ≤ I.height) : I = J :=
+  eq_of_le_of_not_lt h fun hlt => not_le.mpr (Ideal.height_strict_mono_of_is_prime hlt) h_height
 
 lemma Ideal.primeHeight_le_ringKrullDim {I : Ideal R} [I.IsPrime] :
     I.primeHeight ≤ ringKrullDim R := Order.height_le_krullDim _
@@ -360,10 +367,7 @@ lemma mem_minimalPrimes_of_primeHeight_eq_height {I J : Ideal R} [J.IsPrime] (e 
 lemma exists_spanRank_le_and_le_height_of_le_height [IsNoetherianRing R] (I : Ideal R) (r : ℕ)
     (hr : r ≤ I.height) : ∃ J ≤ I, J.spanRank ≤ r ∧ r ≤ J.height := by
   induction r with
-  | zero =>
-    refine ⟨⊥, bot_le, ?_, zero_le _⟩
-    rw [Submodule.spanRank_bot]
-    exact le_refl 0
+  | zero => simp
   | succ r ih =>
     obtain ⟨J, h₁, h₂, h₃⟩ := ih ((WithTop.coe_le_coe.mpr r.le_succ).trans hr)
     let S := { K | K ∈ J.minimalPrimes ∧ Ideal.height K = r }
@@ -374,7 +378,7 @@ lemma exists_spanRank_le_and_le_height_of_le_height [IsNoetherianRing R] (I : Id
       · rintro K hK - -
         rw [Set.Finite.mem_toFinset] at hK
         exact hK.1.1.1
-      · push_neg
+      · push Not
         intro K hK e
         have := hr.trans (Ideal.height_mono e)
         rw [Set.Finite.mem_toFinset] at hK

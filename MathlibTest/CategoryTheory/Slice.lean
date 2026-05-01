@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.CategoryTheory.Slice
 
 open CategoryTheory

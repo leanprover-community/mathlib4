@@ -247,7 +247,7 @@ def ofTwoCocycle : Extension R M L where
     { toFun x := ofProd c (0, x)
       map_add' _ _ := by simp [← of_add]
       map_smul' _ _ := by simp [← of_smul]
-      map_lie' {_ _} := by simp [bracket_ofTwoCocycle] }
+      map_lie' {_ _} := by simp [trivial_lie_zero, bracket_ofTwoCocycle] }
   proj :=
     { toFun x := ((ofProd c).symm x).1
       map_add' _ _ := by simp
@@ -298,6 +298,7 @@ lemma lie_incl_mem_ker {E : Extension R M L} (x : E.L) (y : M) :
     ⁅x, E.incl y⁆ ∈ E.proj.ker := by
   rw [LieHom.mem_ker, LieHom.map_lie, proj_incl, lie_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Lie algebra isomorphism from the kernel of an extension to the kernel of the projection. -/
 noncomputable def toKer (E : Extension R M L) :
     M ≃ₗ⁅R⁆ E.proj.ker where
@@ -321,7 +322,7 @@ instance [IsLieAbelian M] (E : Extension R M L) : IsLieAbelian E.proj.ker :=
 /-- Given an extension of `L` by `M` whose kernel `M` is abelian, the kernel `M` gets an `L`-module
 structure. We do not make this an instance, because we may have to work with more than one
 extension. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def ringModuleOf [IsLieAbelian M] (E : Extension R M L) : LieRingModule L M where
   bracket x y := E.toKer.symm ⁅E.proj_surjective.hasRightInverse.choose x, E.toKer y⁆
   add_lie x y m := by

@@ -31,7 +31,7 @@ namespace Submodule
 
 open Function Set
 
-open Pointwise
+open scoped Pointwise
 
 section AddCommMonoid
 
@@ -226,9 +226,6 @@ theorem span_nat_eq_addSubmonoidClosure (s : Set M) :
   rw [span_le]
   exact AddSubmonoid.subset_closure
 
-@[deprecated (since := "2025-08-20")]
-alias span_nat_eq_addSubmonoid_closure := span_nat_eq_addSubmonoidClosure
-
 @[simp]
 theorem span_nat_eq (s : AddSubmonoid M) : (span ℕ (s : Set M)).toAddSubmonoid = s := by
   rw [span_nat_eq_addSubmonoidClosure, s.closure_eq]
@@ -239,9 +236,6 @@ theorem span_int_eq_addSubgroupClosure {M : Type*} [AddCommGroup M] (s : Set M) 
     AddSubgroup.closure_eq_of_le _ subset_span fun _ hx =>
       span_induction (fun _ hx => AddSubgroup.subset_closure hx) (AddSubgroup.zero_mem _)
         (fun _ _ _ _ => AddSubgroup.add_mem _) (fun _ _ _ _ => AddSubgroup.zsmul_mem _ ‹_› _) hx
-
-@[deprecated (since := "2025-08-20")]
-alias span_int_eq_addSubgroup_closure := span_int_eq_addSubgroupClosure
 
 @[simp]
 theorem span_int_eq {M : Type*} [AddCommGroup M] (s : AddSubgroup M) :
@@ -279,8 +273,30 @@ theorem span_empty : span R (∅ : Set M) = ⊥ :=
 theorem span_univ : span R (univ : Set M) = ⊤ :=
   eq_top_iff.2 <| SetLike.le_def.2 <| subset_span
 
+@[simp]
+theorem span_inter (S S' : Submodule R M) : span R (S ∩ S') = S ⊓ S' :=
+  (Submodule.gi R M).l_inf_u S S'
+
+theorem span_sInf_le (s : Set (Set M)) : span R (⋂₀ s) ≤ sInf (span R '' s) :=
+  le_sInf fun _ ⟨_, hTs, h⟩ ↦ h ▸ span_mono (sInter_subset_of_mem hTs)
+
+theorem span_sInf (s : Set (Submodule R M)) : span R (sInf s : Submodule R M) = sInf s :=
+  span_eq (sInf s)
+
+theorem span_biInter (s : Set (Submodule R M)) : span R (⋂ S ∈ s, S) = sInf s := by
+  rw [← Submodule.coe_sInf, span_eq]
+
+@[simp]
 theorem span_union (s t : Set M) : span R (s ∪ t) = span R s ⊔ span R t :=
   (Submodule.gi R M).gc.l_sup
+
+theorem span_sSup (s : Set (Set M)) : span R (⋃₀ s) = sSup (span R '' s) := by
+  refine le_antisymm ?_ (sSup_le fun P ⟨t, ht, h⟩ ↦ h ▸ span_mono (subset_sUnion_of_mem ht))
+  rw [span_le]
+  exact fun x ⟨t, hts, hxt⟩ ↦ le_sSup (mem_image_of_mem (span R) hts) (subset_span hxt)
+
+theorem span_sSup' (s : Set (Submodule R M)) :
+    span R (sSup s : Submodule R M) = sSup s := Submodule.span_eq (sSup s)
 
 theorem span_iUnion {ι} (s : ι → Set M) : span R (⋃ i, s i) = ⨆ i, span R (s i) :=
   (Submodule.gi R M).gc.l_iSup
@@ -288,6 +304,9 @@ theorem span_iUnion {ι} (s : ι → Set M) : span R (⋃ i, s i) = ⨆ i, span 
 theorem span_iUnion₂ {ι} {κ : ι → Sort*} (s : ∀ i, κ i → Set M) :
     span R (⋃ (i) (j), s i j) = ⨆ (i) (j), span R (s i j) :=
   (Submodule.gi R M).gc.l_iSup₂
+
+theorem span_biUnion (s : Set (Submodule R M)) : span R (⋃ S ∈ s, S) = sSup s := by
+  simpa using (Submodule.gi R M).l_sSup_u_image s
 
 theorem span_attach_biUnion [DecidableEq M] {α : Type*} (s : Finset α) (f : s → Finset M) :
     span R (s.attach.biUnion f : Set M) = ⨆ x, span R (f x) := by simp [span_iUnion]

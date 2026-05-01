@@ -36,7 +36,7 @@ classes and allows to transfer order instances.
 
 `≤` and `<` are highly favored over `≥` and `>` in mathlib. The reason is that we can formulate all
 lemmas using `≤`/`<`, and `rw` has trouble unifying `≤` and `≥`. Hence choosing one direction spares
-us useless duplication. This is enforced by a linter. See Note [nolint_ge] for more infos.
+us useless duplication.
 
 Dot notation is particularly useful on `≤` (`LE.le`) and `<` (`LT.lt`). To that end, we
 provide many aliases to dot notation-less lemmas. For example, `le_trans` is aliased with
@@ -166,14 +166,10 @@ theorem le_of_forall_le (H : ∀ c, c ≤ a → c ≤ b) : a ≤ b := H _ le_rfl
 theorem forall_le_iff_le : (∀ ⦃c⦄, c ≤ a → c ≤ b) ↔ a ≤ b :=
   ⟨le_of_forall_le, fun h _ hca ↦ le_trans hca h⟩
 
-@[deprecated (since := "2025-07-27")] alias forall_le_iff_ge := forall_ge_iff_le
-
 /-- monotonicity of `≤` with respect to `→` -/
 @[gcongr, to_dual self (reorder := a b, c d, h₁ h₂)]
 theorem le_imp_le_of_le_of_le (h₁ : c ≤ a) (h₂ : b ≤ d) : a ≤ b → c ≤ d :=
   fun hab ↦ (h₁.trans hab).trans h₂
-
-@[deprecated (since := "2025-07-31")] alias le_implies_le_of_le_of_le := le_imp_le_of_le_of_le
 
 /-- monotonicity of `<` with respect to `→` -/
 @[gcongr, to_dual self (reorder := a b, c d, h₁ h₂)]
@@ -480,18 +476,23 @@ lemma LinearOrder.toPartialOrder_injective : Function.Injective (@LinearOrder.to
       exact (A_compare_canonical _ _).trans (B_compare_canonical _ _).symm
     congr
 
+@[to_dual self]
 lemma Preorder.ext {A B : Preorder α} (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y) : A = B := by
   ext x y; exact H x y
 
+@[to_dual self]
 lemma PartialOrder.ext {A B : PartialOrder α} (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y) :
     A = B := by ext x y; exact H x y
 
+@[to_dual self]
 lemma PartialOrder.ext_lt {A B : PartialOrder α} (H : ∀ x y : α, (haveI := A; x < y) ↔ x < y) :
     A = B := by ext x y; rw [le_iff_lt_or_eq, @le_iff_lt_or_eq _ A, H]
 
+@[to_dual self]
 lemma LinearOrder.ext {A B : LinearOrder α} (H : ∀ x y : α, (haveI := A; x ≤ y) ↔ x ≤ y) :
     A = B := by ext x y; exact H x y
 
+@[to_dual self]
 lemma LinearOrder.ext_lt {A B : LinearOrder α} (H : ∀ x y : α, (haveI := A; x < y) ↔ x < y) :
     A = B := LinearOrder.toPartialOrder_injective (PartialOrder.ext_lt H)
 
@@ -535,15 +536,17 @@ instance Ne.instIsEquiv_compl : IsEquiv α (· ≠ ·)ᶜ := by
 instance Pi.hasLe [∀ i, LE (π i)] :
     LE (∀ i, π i) where le x y := ∀ i, x i ≤ y i
 
+@[to_dual self]
 theorem Pi.le_def [∀ i, LE (π i)] {x y : ∀ i, π i} :
     x ≤ y ↔ ∀ i, x i ≤ y i :=
   Iff.rfl
 
 instance Pi.preorder [∀ i, Preorder (π i)] : Preorder (∀ i, π i) where
-  __ := inferInstanceAs (LE (∀ i, π i))
+  __ := (inferInstance : LE (∀ i, π i))
   le_refl := fun a i ↦ le_refl (a i)
   le_trans := fun _ _ _ h₁ h₂ i ↦ le_trans (h₁ i) (h₂ i)
 
+@[to_dual self]
 theorem Pi.lt_def [∀ i, Preorder (π i)] {x y : ∀ i, π i} :
     x < y ↔ x ≤ y ∧ ∃ i, x i < y i := by
   simp +contextual [lt_iff_le_not_ge, Pi.le_def]
@@ -660,10 +663,10 @@ end Function
 
 /-! ### Pullbacks of order instances -/
 
--- `to_dual` cannot yet reorder arguments of arguments
 /-- Pull back a `Preorder` instance along an injective function.
 
 See note [reducible non-instances]. -/
+@[to_dual self]
 abbrev Function.Injective.preorder [Preorder β] [LE α] [LT α] (f : α → β)
     (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y) :
     Preorder α where
@@ -675,6 +678,7 @@ abbrev Function.Injective.preorder [Preorder β] [LE α] [LT α] (f : α → β)
 /-- Pull back a `PartialOrder` instance along an injective function.
 
 See note [reducible non-instances]. -/
+@[to_dual self]
 abbrev Function.Injective.partialOrder [PartialOrder β] [LE α] [LT α] (f : α → β)
     (hf : Function.Injective f)
     (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y) :
@@ -868,7 +872,7 @@ instance : LE (α × β) where le p q := p.1 ≤ q.1 ∧ p.2 ≤ q.2
 
 @[to_dual self]
 instance instDecidableLE [Decidable (x.1 ≤ y.1)] [Decidable (x.2 ≤ y.2)] : Decidable (x ≤ y) :=
-  inferInstanceAs (Decidable (x.1 ≤ y.1 ∧ x.2 ≤ y.2))
+  inferInstanceAs <| Decidable (x.1 ≤ y.1 ∧ x.2 ≤ y.2)
 
 @[to_dual self] lemma le_def : x ≤ y ↔ x.1 ≤ y.1 ∧ x.2 ≤ y.2 := .rfl
 
@@ -889,7 +893,7 @@ section Preorder
 variable [Preorder α] [Preorder β] {a a₁ a₂ : α} {b b₁ b₂ : β} {x y : α × β}
 
 instance : Preorder (α × β) where
-  __ := inferInstanceAs (LE (α × β))
+  __ := (inferInstance : LE (α × β))
   le_refl := fun ⟨a, b⟩ ↦ ⟨le_refl a, le_refl b⟩
   le_trans := fun ⟨_, _⟩ ⟨_, _⟩ ⟨_, _⟩ ⟨hac, hbd⟩ ⟨hce, hdf⟩ ↦ ⟨le_trans hac hce, le_trans hbd hdf⟩
 
@@ -951,7 +955,7 @@ end Preorder
 available via the type synonym `α ×ₗ β = α × β`.) -/
 instance instPartialOrder (α β : Type*) [PartialOrder α] [PartialOrder β] :
     PartialOrder (α × β) where
-  __ := inferInstanceAs (Preorder (α × β))
+  __ := (inferInstance : Preorder (α × β))
   le_antisymm := fun _ _ ⟨hac, hbd⟩ ⟨hca, hdb⟩ ↦ Prod.ext (hac.antisymm hca) (hbd.antisymm hdb)
 
 end Prod
@@ -1027,8 +1031,8 @@ theorem dense_or_discrete [LinearOrder α] (a₁ a₂ : α) :
     ⟨fun a ha₁ ↦ le_of_not_gt fun ha₂ ↦ h ⟨a, ha₁, ha₂⟩,
      fun a ha₂ ↦ le_of_not_gt fun ha₁ ↦ h ⟨a, ha₁, ha₂⟩⟩
 
--- `to_dual` cannot yet reorder arguments of arguments
 /-- If a linear order has no elements `x < y < z`, then it has at most two elements. -/
+@[to_dual self (reorder := h (x z, 4 5))]
 lemma eq_or_eq_or_eq_of_forall_not_lt_lt [LinearOrder α]
     (h : ∀ ⦃x y z : α⦄, x < y → y < z → False) (x y z : α) : x = y ∨ y = z ∨ x = z := by
   by_contra hne
@@ -1112,6 +1116,6 @@ set_option linter.deprecated false in
 @[deprecated "`AsLinearOrder` is deprecated" (since := "2025-10-28")]
 noncomputable instance AsLinearOrder.linearOrder [PartialOrder α] [IsTotal α (· ≤ ·)] :
     LinearOrder (AsLinearOrder α) where
-  __ := inferInstanceAs (PartialOrder α)
+  __ := (inferInstance : PartialOrder α)
   le_total := @total_of α (· ≤ ·) _
   toDecidableLE := Classical.decRel _
