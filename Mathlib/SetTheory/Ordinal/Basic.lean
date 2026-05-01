@@ -1117,11 +1117,11 @@ The converse, however, is false (for instance, `o = ω+1` and `c = ℵ₀`).
 lemma card_le_of_le_ord {o : Ordinal} {c : Cardinal} (ho : o ≤ c.ord) : o.card ≤ c := by
   rw [← card_ord c]; exact Ordinal.card_le_card ho
 
-@[mono]
+@[gcongr, mono]
 theorem ord_strictMono : StrictMono ord :=
   gciOrdCard.strictMono_l
 
-@[mono]
+@[gcongr, mono]
 theorem ord_mono : Monotone ord :=
   gc_ord_card.monotone_l
 

@@ -67,7 +67,7 @@ theorem gc_map_comap : GaloisConnection (map f) (comap f) := fun _ _ ↦
 
 @[mono, aesop safe apply] lemma map_mono : Monotone (map f) := (gc_map_comap f).monotone_l
 
-@[mono] lemma comap_mono : Monotone (comap f) := (gc_map_comap f).monotone_u
+@[gcongr, mono] lemma comap_mono : Monotone (comap f) := (gc_map_comap f).monotone_u
 
 @[simp] lemma toIdeal_comap : (J.comap f).toIdeal = J.toIdeal.comap f := rfl
 

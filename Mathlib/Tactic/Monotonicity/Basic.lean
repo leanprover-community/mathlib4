@@ -11,7 +11,7 @@ public import Mathlib.Tactic.Monotonicity.Attr
 /-! # Monotonicity tactic
 
 The tactic `mono` applies monotonicity rules (collected through the library by being tagged
-`@[mono]`).
+`@[gcongr, mono]`).
 
 The version of the tactic here is a cheap partial port of the `mono` tactic from Lean 3, which had
 many more options and features.  It is implemented as a wrapper on top of `solve_by_elim`.

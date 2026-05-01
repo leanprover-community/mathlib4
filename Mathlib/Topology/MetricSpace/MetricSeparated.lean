@@ -122,7 +122,7 @@ protected theorem disjoint (h : AreSeparated s t) : Disjoint s t :=
 theorem subset_compl_right (h : AreSeparated s t) : s ⊆ tᶜ := fun _ hs ht =>
   h.disjoint.le_bot ⟨hs, ht⟩
 
-@[mono]
+@[gcongr, mono]
 theorem mono {s' t'} (hs : s ⊆ s') (ht : t ⊆ t') :
     AreSeparated s' t' → AreSeparated s t := fun ⟨r, r0, hr⟩ =>
   ⟨r, r0, fun x hx y hy => hr x (hs hx) y (ht hy)⟩

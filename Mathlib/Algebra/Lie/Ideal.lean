@@ -209,12 +209,12 @@ theorem map_comap_le : map f (comap f J) ≤ J := by rw [map_le_iff_le_comap]
 /-- See also `LieIdeal.map_comap_eq`. -/
 theorem comap_map_le : I ≤ comap f (map f I) := by rw [← map_le_iff_le_comap]
 
-@[mono]
+@[gcongr, mono]
 theorem map_mono : Monotone (map f) := fun I₁ I₂ h ↦ by
   unfold map
   gcongr; exact h
 
-@[mono]
+@[gcongr, mono]
 theorem comap_mono : Monotone (comap f) := fun J₁ J₂ h ↦ by
   rw [← SetLike.coe_subset_coe] at h ⊢
   dsimp only [SetLike.coe]

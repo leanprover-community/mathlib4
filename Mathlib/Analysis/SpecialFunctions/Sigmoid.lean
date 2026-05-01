@@ -82,7 +82,7 @@ lemma sigmoid_lt_one (x : ℝ) : sigmoid x < 1 :=
 @[bound]
 lemma sigmoid_le_one (x : ℝ) : sigmoid x ≤ 1 := (sigmoid_lt_one x).le
 
-@[mono]
+@[gcongr, mono]
 lemma sigmoid_strictMono : StrictMono sigmoid := fun a b hab ↦ by
   simp only [sigmoid]
   gcongr
@@ -97,7 +97,7 @@ lemma sigmoid_lt_iff {a b : ℝ} : sigmoid a < sigmoid b ↔ a < b := sigmoid_st
 @[gcongr]
 lemma sigmoid_lt {a b : ℝ} : a < b → sigmoid a < sigmoid b := sigmoid_lt_iff.mpr
 
-@[mono]
+@[gcongr, mono]
 lemma sigmoid_monotone : Monotone sigmoid := sigmoid_strictMono.monotone
 
 lemma sigmoid_injective : Function.Injective sigmoid := sigmoid_strictMono.injective
@@ -224,7 +224,7 @@ lemma sigmoid_pos (x : ℝ) : 0 < sigmoid x := Real.sigmoid_pos x
 @[bound]
 lemma sigmoid_lt_one (x : ℝ) : sigmoid x < 1 := Real.sigmoid_lt_one x
 
-@[mono]
+@[gcongr, mono]
 lemma sigmoid_strictMono : StrictMono sigmoid := Real.sigmoid_strictMono
 
 lemma sigmoid_le_iff {a b : ℝ} : sigmoid a ≤ sigmoid b ↔ a ≤ b := Real.sigmoid_le_iff
@@ -237,7 +237,7 @@ lemma sigmoid_lt_iff {a b : ℝ} : sigmoid a < sigmoid b ↔ a < b := Real.sigmo
 @[gcongr]
 lemma sigmoid_lt {a b : ℝ} : a < b → sigmoid a < sigmoid b := sigmoid_lt_iff.mpr
 
-@[mono]
+@[gcongr, mono]
 lemma sigmoid_monotone : Monotone sigmoid := sigmoid_strictMono.monotone
 
 lemma sigmoid_injective : Function.Injective sigmoid := sigmoid_strictMono.injective

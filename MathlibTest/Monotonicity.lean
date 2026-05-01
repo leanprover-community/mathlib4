@@ -147,7 +147,7 @@ example {x y z w : ℕ} : true := by
 --     apply le_trans h.left h'.left,
 --     apply xs_ih _ h.right h'.right, }
 
--- @[mono]
+-- @[gcongr, mono]
 -- lemma list_le_mono_left {α : Type*} [preorder α] {xs ys zs : list α}
 --     (h : xs ≤ ys) :
 --     xs ++ zs ≤ ys ++ zs := by
@@ -158,7 +158,7 @@ example {x y z w : ℕ} : true := by
 --     revert h; apply and.imp_right
 --     apply xs_ih
 
--- @[mono]
+-- @[gcongr, mono]
 -- lemma list_le_mono_right {α : Type*} [preorder α] {xs ys zs : list α}
 --     (h : xs ≤ ys) :
 --     zs ++ xs ≤ zs ++ ys := by
@@ -202,14 +202,14 @@ example {x y z w : ℕ} : true := by
 -- def P (x : ℕ) := 7 ≤ x
 -- def Q (x : ℕ) := x ≤ 7
 
--- @[mono]
+-- @[gcongr, mono]
 -- lemma P_mono {x y : ℕ}
 --     (h : x ≤ y) :
 --     P x → P y := by
 --   intro h'
 --   apply le_trans h' h
 
--- @[mono]
+-- @[gcongr, mono]
 -- lemma Q_mono {x y : ℕ}
 --     (h : y ≤ x) :
 --     Q x → Q y := by

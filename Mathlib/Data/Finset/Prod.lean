@@ -295,10 +295,10 @@ theorem offDiag_card : (offDiag s).card = s.card * s.card - s.card := by
   rcases s with ⟨⟨s⟩, hs⟩
   apply List.length_offDiag
 
-@[mono]
+@[gcongr, mono]
 theorem diag_mono : Monotone (diag : Finset α → Finset (α × α)) := fun _ _ ↦ by simp [diag]
 
-@[mono]
+@[gcongr, mono]
 theorem offDiag_mono : Monotone (offDiag : Finset α → Finset (α × α)) := fun _ _ h _ hx =>
   mem_offDiag.2 <| And.imp (@h _) (And.imp_left <| @h _) <| mem_offDiag.1 hx
 
