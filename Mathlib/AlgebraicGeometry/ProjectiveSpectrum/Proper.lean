@@ -105,9 +105,6 @@ instance isSeparated : IsSeparated (toSpecZero 𝒜) := by
     (CommRingCat.ofHom (R := Away 𝒜 i.2.1 ⊗[𝒜 0] Away 𝒜 j.2.1) F) this using 1
   rw [← cancel_mono (pullbackSpecIso ..).inv]
   apply pullback.hom_ext
-  · simp only [Iso.trans_hom, congrHom_hom, Category.assoc, Iso.hom_inv_id, Category.comp_id,
-      limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, e₂, e₁,
-      pullbackSpecIso_inv_fst, ← Spec.map_comp, affineOpenCover_f,
   · -- `simp? [e₂, e₁, ← Spec.map_comp]` says
     simp only [affineOpenCover_f, Iso.trans_hom, congrHom_hom, Category.assoc, Iso.hom_inv_id,
       Category.comp_id, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
@@ -115,16 +112,14 @@ instance isSeparated : IsSeparated (toSpecZero 𝒜) := by
       ← Spec.map_comp, e₂, e₁]
     congr 1
     ext x : 2
-    exact DFunLike.congr_fun (Algebra.TensorProduct.lift_comp_includeLeft
-      (awayMapₐ 𝒜 j.2.2 rfl) (awayMapₐ 𝒜 i.2.2 (mul_comm _ _)) (fun _ _ ↦ .all _ _)).symm x
+    simp [F]
   · simp only [Iso.trans_hom, congrHom_hom, Category.assoc, Iso.hom_inv_id, Category.comp_id,
       limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, pullbackSpecIso_inv_snd,
       ← Spec.map_comp, e₂, e₁, affineOpenCover_f, pullbackDiagonalMapIdIso_inv_snd_snd,
       pullbackAwayιIso_inv_snd, ← Spec.map_comp]
     congr 1
     ext x : 2
-    exact DFunLike.congr_fun (Algebra.TensorProduct.lift_comp_includeRight
-      (awayMapₐ 𝒜 j.2.2 rfl) (awayMapₐ 𝒜 i.2.2 (mul_comm _ _)) (fun _ _ ↦ .all _ _)).symm x
+    simp [F]
 
 @[stacks 01MC]
 instance : Scheme.IsSeparated (Proj 𝒜) :=
