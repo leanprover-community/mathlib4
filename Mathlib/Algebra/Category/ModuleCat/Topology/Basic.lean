@@ -369,7 +369,6 @@ def withModuleTopologyAdj : withModuleTopology R ⊣ forget₂ (TopModuleCat R) 
 instance : (forget₂ (TopModuleCat R) (ModuleCat R)).IsRightAdjoint := ⟨_, ⟨withModuleTopologyAdj R⟩⟩
 instance : (withModuleTopology R).IsLeftAdjoint := ⟨_, ⟨withModuleTopologyAdj R⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor equipping a module with the indiscrete topology.
 This is right adjoint to the forgetful functor. -/
 def indiscrete : ModuleCat.{v} R ⥤ TopModuleCat.{v} R where
@@ -384,7 +383,6 @@ def indiscrete : ModuleCat.{v} R ⥤ TopModuleCat.{v} R where
     ConcreteCategory.ofHom (C := TopModuleCat R)
       ⟨f.hom, by rw [continuous_iff_coinduced_le]; exact le_top⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction between the forgetful functor and the indiscrete topology functor. -/
 def indiscreteAdj : forget₂ (TopModuleCat.{v} R) (ModuleCat.{v} R) ⊣ indiscrete.{v} R where
   counit := 𝟙 _
@@ -423,7 +421,7 @@ def freeMap {X Y : TopCat.{v}} (f : X ⟶ Y) : freeObj R X ⟶ freeObj R Y :=
     ext x
     simp [coe_freeObj]⟩
 
-lemma freeMap_map {X Y : TopCat} (f : X ⟶ Y) (v : X →₀ R) :
+lemma freeMap_map {X Y : TopCat.{v}} (f : X ⟶ Y) (v : X →₀ R) :
     (freeMap R f : (X →₀ R) → (Y →₀ R)) v = Finsupp.mapDomain f.hom v := rfl
 
 /-- The free topological module over a topological space as a functor.

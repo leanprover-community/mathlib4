@@ -457,7 +457,7 @@ lemma fst_map_prod (κ : Kernel α β) {f : β → γ} {g : β → δ} (hg : Mea
     · simp only [Set.preimage, Set.mem_setOf]
     · exact measurable_fst hs
   · have : ¬ Measurable (fun x ↦ (f x, g x)) := by
-      contrapose! hf; exact hf.fst
+      contrapose hf; exact hf.fst
     simp [map_of_not_measurable _ hf, map_of_not_measurable _ this]
 
 lemma fst_map_id_prod (κ : Kernel α β) {f : β → γ} (hf : Measurable f) :
@@ -519,7 +519,7 @@ lemma snd_map_prod (κ : Kernel α β) {f : β → γ} {g : β → δ} (hf : Mea
     · simp only [Set.preimage, Set.mem_setOf]
     · exact measurable_snd hs
   · have : ¬ Measurable (fun x ↦ (f x, g x)) := by
-      contrapose! hg; exact hg.snd
+      contrapose hg; exact hg.snd
     simp [map_of_not_measurable _ hg, map_of_not_measurable _ this]
 
 lemma snd_map_prod_id (κ : Kernel α β) {f : β → γ} (hf : Measurable f) :

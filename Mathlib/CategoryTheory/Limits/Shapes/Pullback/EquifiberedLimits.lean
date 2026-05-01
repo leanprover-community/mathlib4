@@ -16,7 +16,7 @@ import Mathlib.CategoryTheory.WithTerminal.Cone
 
 /-! # Functors equifibered over a fixed functor is closed under limits -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.NatTrans
 
@@ -42,7 +42,6 @@ instance (F : C ⥤ D) [∀ a b : C, HasCoproductsOfShape (a ⟶ b) D] :
   refine ⟨fun G ⟨⟨c, α, hc⟩, H⟩ i j f ↦ ⟨⟨by simp⟩, ⟨Limits.PullbackCone.isLimitAux' _ fun s ↦ ?_⟩⟩⟩
   let hcᵢ := isLimitOfPreserves (Over.forget _ ⋙ (evaluation _ _).obj i) hc
   let hcⱼ := isLimitOfPreserves (Over.forget _ ⋙ (evaluation _ _).obj j) hc
-  dsimp at s
   let l : s.pt ⟶ G.left.obj i := hcᵢ.lift ⟨_, fun k ↦ (H k f).lift (s.fst ≫ (α.app k).left.app j)
     s.snd (by simp [← s.condition, ← NatTrans.comp_app]), fun k₁ k₂ fk₁k₂ ↦ (H _ f).hom_ext
     (by simp [← NatTrans.naturality, ← NatTrans.comp_app, ← Over.comp_left])
@@ -58,7 +57,6 @@ instance (F : C ⥤ D) [∀ a b : C, HasCoproductsOfShape (a ⟶ b) D] :
     simp [← NatTrans.naturality, reassoc_of% hm₁]
   · simpa [← NatTrans.comp_app]
 
-set_option backward.isDefEq.respectTransparency false in
 open Over in
 instance (F : C ⥤ D) [∀ a b : C, HasProductsOfShape (a ⟶ b) D] :
     IsClosedUnderColimitsOfShape (fun f : Under F ↦ f.hom.Coequifibered) J := by

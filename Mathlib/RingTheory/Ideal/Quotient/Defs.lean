@@ -73,7 +73,8 @@ instance commRing {R} [CommRing R] (I : Ideal R) : CommRing (R ⧸ I) where
 variable [I.IsTwoSided]
 
 -- Sanity test to make sure no diamonds have emerged in `commRing`
-example : (ring I).toAddCommGroup = Submodule.Quotient.addCommGroup I := rfl
+example : (ring I).toAddCommGroup = Submodule.Quotient.addCommGroup I := by
+  with_reducible_and_instances rfl
 
 variable (I) in
 /-- The ring homomorphism from a ring `R` to a quotient ring `R/I`. -/
@@ -127,7 +128,7 @@ instance : RingHomSurjective (mk I) :=
 /-- If `I` is an ideal of a commutative ring `R`, if `q : R → R/I` is the quotient map, and if
 `s ⊆ R` is a subset, then `q⁻¹(q(s)) = ⋃ᵢ(i + s)`, the union running over all `i ∈ I`. -/
 theorem quotient_ring_saturate (s : Set R) :
-    mk I ⁻¹' (mk I '' s) = ⋃ x : I, (fun y => x.1 + y) '' s := by
+    mk I ⁻¹' mk I '' s = ⋃ x : I, (fun y => x.1 + y) '' s := by
   ext x
   simp only [mem_preimage, mem_image, mem_iUnion, Ideal.Quotient.eq]
   exact
