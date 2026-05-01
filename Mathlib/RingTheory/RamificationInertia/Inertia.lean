@@ -40,11 +40,16 @@ When `q` is not prime, we use a junk value of `0`.
 
 This will eventually replace the existing definition of `Ideal.inertiaDeg`. -/
 noncomputable def inertiaDeg' : ℕ :=
-  if _ : q.IsPrime then Module.finrank (q.under R).ResidueField q.ResidueField else 0
+  if _ : q.IsPrime then
+    letI := Localization.AtPrime.algebraOfLiesOver (q.under R) q
+    Module.finrank (q.under R).ResidueField q.ResidueField else 0
 
-theorem inertiaDeg'_def [q.IsPrime] :
-    q.inertiaDeg' R = Module.finrank (q.under R).ResidueField q.ResidueField :=
-  dif_pos _
+theorem inertiaDeg'_def [hq : q.IsPrime]
+    [Algebra (Localization.AtPrime (q.under R)) (Localization.AtPrime q)]
+    [Localization.AtPrime.IsLiesOverAlgebra (q.under R) q] :
+    q.inertiaDeg' R = Module.finrank (q.under R).ResidueField q.ResidueField := by
+  convert dif_pos hq
+  simp [Algebra.algebra_ext_iff, Localization.AtPrime.IsLiesOverAlgebra.algebraMap_eq]
 
 theorem inertiaDeg'_of_not_isPrime (hq : ¬ q.IsPrime) : q.inertiaDeg' R = 0 :=
   dif_neg hq
@@ -57,16 +62,19 @@ variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
   [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
   (p : Ideal R) (q : Ideal S) (r : Ideal T)
 
-theorem inertiaDeg'_eq [q.LiesOver p] [q.IsPrime] :
-    letI := isPrime_of_liesOver q p
+theorem inertiaDeg'_eq [q.LiesOver p] [q.IsPrime] [p.IsPrime]
+    [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
+    [Localization.AtPrime.IsLiesOverAlgebra p q] :
     q.inertiaDeg' R = Module.finrank p.ResidueField q.ResidueField := by
   have := Ideal.over_def q p
-  convert inertiaDeg'_def q R
+  subst this
+  exact inertiaDeg'_def q R
 
 theorem inertiaDeg_eq_inertiaDeg' [q.LiesOver p] [p.IsMaximal] [q.IsMaximal] :
     p.inertiaDeg q = q.inertiaDeg' R := by
   let : Field (R ⧸ p) := Quotient.field p
   let : Field (S ⧸ q) := Quotient.field q
+  let := Localization.AtPrime.algebraOfLiesOver p q
   rw [inertiaDeg'_eq p q, inertiaDeg_algebraMap]
   let f := (algebraMap (S ⧸ q) q.ResidueField).comp (algebraMap (R ⧸ p) (S ⧸ q))
   let g := (algebraMap p.ResidueField q.ResidueField).comp (algebraMap (R ⧸ p) p.ResidueField)
@@ -84,6 +92,9 @@ theorem inertiaDeg'_tower [r.LiesOver q] :
   by_cases hr : r.IsPrime
   · have : q.IsPrime := isPrime_of_liesOver r q
     have : q.LiesOver (r.under R) := LiesOver.tower_bot r q (r.under R)
+    let := Localization.AtPrime.algebraOfLiesOver (r.under R) r
+    let := Localization.AtPrime.algebraOfLiesOver (r.under R) q
+    let := Localization.AtPrime.algebraOfLiesOver q r
     rw [inertiaDeg'_def, inertiaDeg'_eq (r.under R), inertiaDeg'_eq q, eq_comm]
     apply Module.finrank_mul_finrank
   · rw [inertiaDeg'_of_not_isPrime r R hr, inertiaDeg'_of_not_isPrime r S hr, mul_zero]

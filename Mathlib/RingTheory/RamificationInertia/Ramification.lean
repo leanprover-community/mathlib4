@@ -96,6 +96,8 @@ theorem ramificationIdx_eq_ramificationIdx'
 
 /-- See `ramificationIdx'_tower` for a version that does not assume primality. -/
 theorem ramificationIdx'_tower' [q.IsPrime] [r.IsPrime] [r.LiesOver q]
+    [Algebra (Localization.AtPrime q) (Localization.AtPrime r)]
+    [Localization.AtPrime.IsLiesOverAlgebra q r]
     [Module.Flat (Localization.AtPrime q) (Localization.AtPrime r)] :
     r.ramificationIdx' R = q.ramificationIdx' R * r.ramificationIdx' S := by
   have : q.LiesOver (r.under R) := LiesOver.tower_bot r q (r.under R)
@@ -112,6 +114,7 @@ theorem ramificationIdx'_tower [r.LiesOver q] [Module.Flat S T] :
     r.ramificationIdx' R = q.ramificationIdx' R * r.ramificationIdx' S := by
   by_cases hr : r.IsPrime
   · have : q.IsPrime := isPrime_of_liesOver r q
+    let := Localization.AtPrime.algebraOfLiesOver q r
     apply ramificationIdx'_tower'
   · rw [ramificationIdx'_of_not_isPrime r R hr, ramificationIdx'_of_not_isPrime r S hr, mul_zero]
 
