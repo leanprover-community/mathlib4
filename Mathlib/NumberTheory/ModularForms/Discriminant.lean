@@ -202,7 +202,7 @@ private lemma discriminant_cuspFunction_eqOn : Set.EqOn (cuspFunction 1 Δ)
       discriminant_isZeroAtImInfty.zero_at_infty_comp_ofComplex
   · have him := Periodic.im_invQParam_pos_of_norm_lt_one one_pos
       (by simpa [dist_zero_right] using hq) hq0
-    simp [cuspFunction, Periodic.cuspFunction_eq_of_nonzero 1 _ hq0, comp_apply,
+    simp [cuspFunction, Periodic.cuspFunction_eq_of_nonzero 1 _ hq0,
       ofComplex_apply_of_im_pos him, discriminant_eq_q_prod ⟨_, him⟩,
       Periodic.qParam_right_inv one_ne_zero hq0, eta_q]
 
