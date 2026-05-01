@@ -51,8 +51,7 @@ lemma exists_density_of_mem_open (hU : IsOpen U) (hx : x ∈ U)
 
 namespace Measure
 
-/-- A measure `μ` is uniformly distributed if any balls of the same radius have finite positive
-measure. -/
+/-- A measure `μ` is uniformly distributed if the measure of a ball depends only on its radius. -/
 class UniformlyDistributed (μ : Measure X) : Prop where
   eq_measure : ∀ ⦃r : ℝ⦄, 0 < r → ∀ x y, μ (ball x r) = μ (ball y r)
   zero_lt : ∀ ⦃r : ℝ⦄, 0 < r → ∀ x, 0 < μ (ball x r)
@@ -143,9 +142,8 @@ private lemma le_smul (μ ν : Measure X) [OpensMeasurableSpace X]
 
 /-- **Christensen's Lemma**: Uniformly distributed outerregular measures are unique up to
 a finite constant. -/
-theorem eq_smul (μ ν : Measure X) [OpensMeasurableSpace X]
-    [SecondCountableTopology X] [OuterRegular μ] [OuterRegular ν] [UniformlyDistributed μ]
-    [UniformlyDistributed ν] :
+theorem eq_smul (μ ν : Measure X) [OpensMeasurableSpace X] [SecondCountableTopology X] 
+    [OuterRegular μ] [OuterRegular ν] [UniformlyDistributed μ] [UniformlyDistributed ν] :
     ∃ c : ℝ≥0, μ = c • ν := by
   by_cases! hX : IsEmpty X
   · simp [eq_zero_of_isEmpty]
