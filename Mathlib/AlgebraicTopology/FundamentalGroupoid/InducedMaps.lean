@@ -134,11 +134,11 @@ open unitInterval (uhpath01)
 section Casts
 
 /-- Abbreviation for `eqToHom` that accepts points in a topological space -/
-abbrev hcast {X : TopCat} {x₀ x₁ : X} (hx : x₀ = x₁) : fromTop x₀ ⟶ fromTop x₁ :=
+abbrev hcast {X : TopCat.{u}} {x₀ x₁ : X} (hx : x₀ = x₁) : fromTop x₀ ⟶ fromTop x₁ :=
   eqToHom <| FundamentalGroupoid.ext hx
 
 @[simp]
-theorem hcast_def {X : TopCat} {x₀ x₁ : X} (hx₀ : x₀ = x₁) :
+theorem hcast_def {X : TopCat.{u}} {x₀ x₁ : X} (hx₀ : x₀ = x₁) :
     hcast hx₀ = eqToHom (FundamentalGroupoid.ext hx₀) :=
   rfl
 
@@ -181,6 +181,7 @@ variable {X Y : TopCat.{u}} {f g : C(X, Y)} (H : ContinuousMap.Homotopy f g) {x�
 /-!
 These definitions set up the following diagram, for each path `p`:
 
+```
             f(p)
         *--------*
         | \      |
@@ -188,6 +189,7 @@ These definitions set up the following diagram, for each path `p`:
         |     \  |
         *--------*
             g(p)
+```
 
 Here, `H₀ = H.evalAt x₀` is the path from `f(x₀)` to `g(x₀)`,
 and similarly for `H₁`. Similarly, `f(p)` denotes the
