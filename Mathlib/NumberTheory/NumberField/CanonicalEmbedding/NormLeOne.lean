@@ -173,7 +173,7 @@ theorem measurableSet_normLeOne :
     measurableSet_le (mixedEmbedding.continuous_norm K).measurable measurable_const
 
 theorem normLeOne_eq_preimage_image :
-    normLeOne K = normAtAllPlaces ⁻¹' (normAtAllPlaces '' (normLeOne K)) := by
+    normLeOne K = normAtAllPlaces ⁻¹' normAtAllPlaces '' (normLeOne K) := by
   refine subset_antisymm (Set.subset_preimage_image _ _) ?_
   rintro x ⟨y, hy₁, hy₂⟩
   rw [mem_normLeOne, ← normAtAllPlaces_mem_fundamentalCone_iff, ← norm_normAtAllPlaces,
@@ -550,7 +550,7 @@ theorem logMap_expMapBasis (x : realSpace K) :
     smul_ite, smul_eq_mul, mul_one, mul_zero, Fintype.sum_ite_eq']
 
 theorem normAtAllPlaces_image_preimage_expMapBasis (s : Set (realSpace K)) :
-    normAtAllPlaces '' (normAtAllPlaces ⁻¹' (expMapBasis '' s)) = expMapBasis '' s := by
+    normAtAllPlaces '' normAtAllPlaces ⁻¹' expMapBasis '' s = expMapBasis '' s := by
   apply normAtAllPlaces_image_preimage_of_nonneg
   rintro _ ⟨x, _, rfl⟩ w
   exact (expMapBasis_pos _ _).le
@@ -672,11 +672,11 @@ theorem normAtAllPlaces_normLeOne_eq_image :
       exact (hx fun w ↦ expMapBasis_pos a w).elim
 
 theorem normLeOne_eq_preimage :
-    normLeOne K = normAtAllPlaces ⁻¹' (expMapBasis '' (paramSet K)) := by
+    normLeOne K = normAtAllPlaces ⁻¹' expMapBasis '' (paramSet K) := by
   rw [normLeOne_eq_preimage_image, normAtAllPlaces_normLeOne_eq_image]
 
 theorem subset_interior_normLeOne :
-    normAtAllPlaces ⁻¹' (expMapBasis '' interior (paramSet K)) ⊆ interior (normLeOne K) := by
+    normAtAllPlaces ⁻¹' expMapBasis '' interior (paramSet K) ⊆ interior (normLeOne K) := by
   rw [normLeOne_eq_preimage]
   refine subset_trans (Set.preimage_mono ?_) <|
     preimage_interior_subset_interior_preimage (continuous_normAtAllPlaces K)
@@ -848,7 +848,7 @@ theorem volume_interior_eq_volume_closure :
     volume (interior (normLeOne K)) = volume (closure (normLeOne K)) := by
   have h₁ : MeasurableSet (normAtAllPlaces ⁻¹' compactSet K) :=
     (isCompact_compactSet K).measurableSet.preimage (continuous_normAtAllPlaces K).measurable
-  have h₂ : MeasurableSet (normAtAllPlaces ⁻¹' (expMapBasis '' interior (paramSet K))) := by
+  have h₂ : MeasurableSet (normAtAllPlaces ⁻¹' expMapBasis '' interior (paramSet K)) := by
     refine MeasurableSet.preimage ?_ (continuous_normAtAllPlaces K).measurable
     refine MeasurableSet.image_of_continuousOn_injOn ?_ (continuous_expMapBasis K).continuousOn
       (injective_expMapBasis K).injOn

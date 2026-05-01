@@ -829,6 +829,14 @@ lemma ofBijective_symm_apply_apply (f : α → β) (hf : Bijective f) (x : α) :
     (ofBijective f hf).symm (f x) = x :=
   (ofBijective f hf).symm_apply_apply x
 
+/-- Bijective functions are equivalent to equivalences. -/
+@[simps]
+noncomputable def bijectiveEquiv : { f : α → β // Bijective f } ≃ (α ≃ β) where
+  toFun f := .ofBijective f f.prop
+  invFun f := ⟨f, f.bijective⟩
+  left_inv _ := rfl
+  right_inv _ := by ext; rfl
+
 end Equiv
 
 namespace Quot
