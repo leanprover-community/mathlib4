@@ -656,7 +656,7 @@ def morphismRestrictRestrictBasicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Op
           U.toScheme.basicOpen (Y.presheaf.map (eqToHom U.isOpenEmbedding_obj_top).op r)) ≅
       Arrow.mk (f ∣_ Y.basicOpen r) := by
   refine morphismRestrictRestrict _ _ _ ≪≫ morphismRestrictEq _ ?_
-  rw [Scheme.Opens.ι_image_basicOpen, Scheme.basicOpen_res_eq]
+  simp [Scheme.Opens.ι_image_basicOpen]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The stalk map of a restriction of a morphism is isomorphic to the stalk map of the original map.
