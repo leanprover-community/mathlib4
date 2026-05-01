@@ -226,12 +226,12 @@ lemma inverseImage_inf (F : C ⥤ D) (P P' : MorphismProperty D) :
   (gc_strictMap F).u_inf
 
 @[simp]
-lemma inverseImage_iSup (F : C ⥤ D) {ι : Type*} (P : ι → MorphismProperty D) :
+lemma inverseImage_iInf (F : C ⥤ D) {ι : Type*} (P : ι → MorphismProperty D) :
     (⨅ i, P i).inverseImage F = ⨅ i, (P i).inverseImage F :=
   (gc_strictMap F).u_iInf
 
 @[simp]
-lemma inverseImage_sSup (F : C ⥤ D) (P : Set (MorphismProperty D)) :
+lemma inverseImage_sInf (F : C ⥤ D) (P : Set (MorphismProperty D)) :
     (sInf P).inverseImage F = ⨅ P' ∈ P, P'.inverseImage F :=
   (gc_strictMap F).u_sInf
 
