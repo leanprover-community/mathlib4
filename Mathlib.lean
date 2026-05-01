@@ -2243,6 +2243,7 @@ public import Mathlib.Analysis.Polynomial.Order
 public import Mathlib.Analysis.Quaternion
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Analysis.RCLike.BoundedContinuous
+public import Mathlib.Analysis.RCLike.ContinuousMap
 public import Mathlib.Analysis.RCLike.Extend
 public import Mathlib.Analysis.RCLike.Inner
 public import Mathlib.Analysis.RCLike.Lemmas
