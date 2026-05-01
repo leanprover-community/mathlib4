@@ -36,6 +36,11 @@ public import Mathlib.RingTheory.Flat.TorsionFree
 section
 
 -- PRed
+instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
+    (q : Ideal (p.Fiber S)) [q.IsPrime] : Localization.AtPrime.IsLiesOverAlgebra p q where
+  algebraMap_eq := (Localization.localRingHom_unique p q _ Ideal.LiesOver.over fun _ ↦ rfl).symm
+
+-- PRed
 open Module TensorProduct in
 lemma _root_.Ideal.finrank_fiber_eq_finrank {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
     [Module.Flat R M] [Module.Finite R M] [IsDomain R] (p : Ideal R) [p.IsPrime] :
@@ -203,10 +208,6 @@ noncomputable def Fiber.algEquivQuotient :
       commutes' := by simp }
 
 open TensorProduct
-
-instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
-    (q : Ideal (p.Fiber S)) [q.IsPrime] : Localization.AtPrime.IsLiesOverAlgebra p q where
-  algebraMap_eq := (Localization.localRingHom_unique p q _ Ideal.LiesOver.over fun _ ↦ rfl).symm
 
 /-- The localization of the fiber `p.Fiber S` is isomorphic to a quotient of a localization. -/
 noncomputable def foo8 (q : Ideal (p.Fiber S)) [q.IsPrime]
