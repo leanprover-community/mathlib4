@@ -878,25 +878,20 @@ theorem norm_add_eq_iff_real {x y : F} : ‖x + y‖ = ‖x‖ + ‖y‖ ↔ ‖
 
 end Norm
 
-section induced
-
-variable {G H : Type*} [AddCommGroup G] [Module 𝕜 G] [FunLike H G E]
-
 /-- A linear map from a `Module` to an `InnerProductSpace` induces an `SemiInnerProductSpace`
-structure on the domain using the `SeminormedAddCommGroup.induced` norm. -/
-abbrev InnerProductSpace.induced [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-    [LinearMapClass H 𝕜 G E] (f : H) :
-    @InnerProductSpace 𝕜 G _ (SeminormedAddCommGroup.induced G E f) :=
+structure on the domain using the `SeminormedAddCommGroup.induced` norm.
+
+See note [reducible non-instances]. -/
+abbrev InnerProductSpace.induced {F G : Type*} [AddCommGroup G] [Module 𝕜 G] [FunLike F G E]
+    [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E] [LinearMapClass F 𝕜 G E] (f : F) :
+    letI := SeminormedAddCommGroup.induced G E f; InnerProductSpace 𝕜 G :=
   letI := SeminormedAddCommGroup.induced G E f
   letI := NormedSpace.induced 𝕜 G E f
   { inner x y := inner 𝕜 (f x) (f y)
-    add_left x y z := by simpa only [map_add] using inner_add_left (f x) (f y) (f z)
-    smul_left x y r := by simpa only [map_smul] using inner_smul_left (f x) (f y) r
+    add_left x y z := by rw [map_add, inner_add_left]
+    smul_left x y r := by rw [map_smul, inner_smul_left]
     norm_sq_eq_re_inner x := norm_sq_eq_re_inner (f x)
-    conj_inner_symm x y := inner_conj_symm (f x) (f y)
-  }
-
-end induced
+    conj_inner_symm x y := inner_conj_symm (f x) (f y) }
 
 section RCLike
 
