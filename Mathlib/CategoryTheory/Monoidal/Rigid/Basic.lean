@@ -261,12 +261,14 @@ instance hasLeftDualRightDual {X : C} [HasRightDual X] : HasLeftDual Xᘁ where
 
 /-- The tensor product of two objects with right duals has a right dual,
 given by the tensor product of the duals in the opposite order. -/
+@[implicit_reducible]
 def hasRightDualTensor {X Y : C} [HasRightDual X] [HasRightDual Y] :
     HasRightDual (X ⊗ Y) where
   rightDual := Yᘁ ⊗ Xᘁ
 
 /-- The tensor product of two objects with left duals has a left dual,
 given by the tensor product of the duals in the opposite order. -/
+@[implicit_reducible]
 def hasLeftDualTensor {X Y : C} [HasLeftDual X] [HasLeftDual Y] :
     HasLeftDual (X ⊗ Y) where
   leftDual := ᘁY ⊗ ᘁX
