@@ -250,8 +250,14 @@ theorem dirSupInacc_iff_inter_subset :
 lemma IsUpperSet.dirSupClosed (hs : IsUpperSet s) : DirSupClosed s :=
   fun _d hds ⟨_b, hb⟩ _ _a ha ↦ hs (ha.1 hb) <| hds hb
 
+lemma IsUpperSet.dirSupClosedOn (hs : IsUpperSet s) : DirSupClosedOn D s :=
+  hs.dirSupClosed.dirSupClosedOn
+
 lemma IsLowerSet.dirSupInacc (hs : IsLowerSet s) : DirSupInacc s :=
   hs.compl.dirSupClosed.of_compl
+
+lemma IsLowerSet.dirSupInaccOn (hs : IsLowerSet s) : DirSupInaccOn D s :=
+  hs.compl.dirSupClosedOn.of_compl
 
 private theorem DirSupClosed.mem_imp_of_antisymmRel (hs : DirSupClosed s) {a b : α}
     (h : AntisymmRel (· ≤ ·) a b) (ha : a ∈ s) : b ∈ s := by
@@ -270,8 +276,14 @@ theorem DirSupInacc.mem_iff_of_antisymmRel (hs : DirSupInacc s) {a b : α}
 lemma dirSupClosed_Iic (a : α) : DirSupClosed (Iic a) :=
   fun _d h _ _ _a ha ↦ (isLUB_le_iff ha).2 h
 
+lemma dirSupClosedOn_Iic (a : α) : DirSupClosedOn D (Iic a) :=
+  (dirSupClosed_Iic a).dirSupClosedOn
+
 lemma dirSupInacc_Iic (a : α) : DirSupInacc (Iic a) :=
   (isLowerSet_Iic a).dirSupInacc
+
+lemma dirSupInaccOn_Iic (a : α) : DirSupInaccOn D (Iic a) :=
+  (isLowerSet_Iic a).dirSupInaccOn
 
 end Preorder
 
