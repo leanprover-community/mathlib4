@@ -878,6 +878,44 @@ theorem norm_add_eq_iff_real {x y : F} : ‖x + y‖ = ‖x‖ + ‖y‖ ↔ ‖
 
 end Norm
 
+section induced
+
+variable {G H : Type*} [AddCommGroup G] [Module 𝕜 G] [FunLike H G E]
+
+/-- A linear map from a `Module` to an `InnerProductSpace` induces an `SemiInnerProductSpace`
+structure on the domain using the `SeminormedAddCommGroup.induced` norm. -/
+abbrev InnerProductSpace.induced [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+    [LinearMapClass H 𝕜 G E] (f : H) :
+    @InnerProductSpace 𝕜 G _ (SeminormedAddCommGroup.induced G E f) :=
+  letI := SeminormedAddCommGroup.induced G E f
+  letI := NormedSpace.induced 𝕜 G E f
+  { inner     := fun x y => @inner 𝕜 E _ (f x) (f y)
+    add_left  := fun x y z => by
+      simpa only [map_add] using inner_add_left (f x) (f y) (f z)
+    smul_left := fun x y r => by
+      simpa only [map_smul] using inner_smul_left (f x) (f y) r
+    norm_sq_eq_re_inner := fun x => norm_sq_eq_re_inner (𝕜 := 𝕜) (f x)
+    conj_inner_symm := fun x y => inner_conj_symm (f x) (f y)
+  }
+
+/-- An injective linear map from a `Module` to an `InnerProductSpace` induces an `InnerProductSpace`
+structure on the domain using the `NormedAddCommGroup.induced` norm. -/
+abbrev InnerProductSpace.induced' [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+    [LinearMapClass H 𝕜 G E] (f : H) (_ : Function.Injective f) :
+    @InnerProductSpace 𝕜 G _ (SeminormedAddCommGroup.induced G E f) :=
+  letI := NormedAddCommGroup.induced G E f _
+  letI := NormedSpace.induced 𝕜 G E f
+  { inner     := fun x y => @inner 𝕜 E _ (f x) (f y)
+    add_left  := fun x y z => by
+      simpa only [map_add] using inner_add_left (f x) (f y) (f z)
+    smul_left := fun x y r => by
+      simpa only [map_smul] using inner_smul_left (f x) (f y) r
+    norm_sq_eq_re_inner := fun x => norm_sq_eq_re_inner (𝕜 := 𝕜) (f x)
+    conj_inner_symm := fun x y => inner_conj_symm (f x) (f y)
+  }
+
+end induced
+
 section RCLike
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
