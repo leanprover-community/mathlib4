@@ -80,8 +80,8 @@ lemma ae_map_iff_ae_trim {f : α → β} (hf : Measurable f)
 lemma trim_add {ν : Measure α} (hm : m ≤ m0) : (μ + ν).trim hm = μ.trim hm + ν.trim hm :=
   @Measure.ext _ m _ _ (fun s hs ↦ by simp [trim_measurableSet_eq hm hs])
 
-theorem measure_eq_zero_of_trim_eq_zero (hm : m ≤ m0) (h : μ.trim hm s = 0) : μ s = 0 :=
-  le_antisymm ((le_trim hm).trans (le_of_eq h)) (zero_le _)
+theorem measure_eq_zero_of_trim_eq_zero (hm : m ≤ m0) (h : μ.trim hm s = 0) : μ s = 0 := by
+  grw [← nonpos_iff_eq_zero, ← h, le_trim hm]
 
 theorem measure_trim_toMeasurable_eq_zero {hm : m ≤ m0} (hs : μ.trim hm s = 0) :
     μ (@toMeasurable α m (μ.trim hm) s) = 0 :=
