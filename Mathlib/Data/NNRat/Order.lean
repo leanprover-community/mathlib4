@@ -5,8 +5,6 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Data.NNRat.Defs
 public import Mathlib.Algebra.Order.Ring.Rat
-public import Mathlib.Algebra.Order.Nonneg.Ring
 
 deprecated_module (since := "2026-04-29")

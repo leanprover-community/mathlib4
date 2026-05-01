@@ -6,7 +6,7 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.Order.Floor.Semiring
-public import Mathlib.Data.NNRat.Order
+public import Mathlib.Algebra.Order.Ring.Rat
 public import Mathlib.Data.Rat.Floor
 public meta import Mathlib.Data.Rat.Floor
 
