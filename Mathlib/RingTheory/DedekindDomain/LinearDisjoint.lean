@@ -78,6 +78,8 @@ variable [IsDomain A] [IsDedekindDomain B] [IsDedekindDomain R₁] [IsDedekindDo
 
 namespace IsDedekindDomain
 
+set_option linter.overlappingInstances false
+
 theorem differentIdeal_dvd_map_differentIdeal [Algebra.IsIntegral R₂ B]
     [Module.Free A R₂] [IsLocalization (Algebra.algebraMapSubmonoid R₂ A⁰) F₂]
     (h₁ : F₁.LinearDisjoint F₂) (h₂ : F₁ ⊔ F₂ = ⊤) :

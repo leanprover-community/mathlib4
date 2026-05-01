@@ -265,6 +265,8 @@ theorem ne_bot_of_prod_finsetApprox_mem (J : Ideal S)
     (h : algebraMap _ _ (∏ m ∈ finsetApprox bS adm, m) ∈ J) : J ≠ ⊥ :=
   (Submodule.ne_bot_iff _).mpr ⟨_, h, prod_finsetApprox_ne_zero _ _⟩
 
+set_option linter.overlappingInstances false
+
 /-- Each class in the class group contains an ideal `J`
 such that `M := Π m ∈ finsetApprox` is in `J`. -/
 theorem exists_mk0_eq_mk0 [IsDedekindDomain S] [Algebra.IsAlgebraic R S] (I : (Ideal S)⁰) :

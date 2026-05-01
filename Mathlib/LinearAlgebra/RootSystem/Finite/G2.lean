@@ -110,6 +110,7 @@ lemma not_isG2_iff_isNotG2 :
   · specialize h i j
     lia
 
+set_option linter.overlappingInstances false in
 lemma IsG2.pairingIn_mem_zero_one_three [P.IsG2]
     (i j : ι) (h : P.root i ≠ P.root j) (h' : P.root i ≠ -P.root j) :
     P.pairingIn ℤ i j ∈ ({-3, -1, 0, 1, 3} : Set ℤ) := by

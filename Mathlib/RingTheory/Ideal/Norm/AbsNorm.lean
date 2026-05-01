@@ -197,7 +197,7 @@ theorem cardQuot_mul [IsDedekindDomain S] [Module.Free ℤ S] (I J : Ideal S) :
           (hIJ (Ideal.dvd_iff_le.mpr le_sup_left) (Ideal.dvd_iff_le.mpr le_sup_right)))
 
 /-- The absolute norm of the ideal `I : Ideal R` is the cardinality of the quotient `R ⧸ I`. -/
-noncomputable def Ideal.absNorm [Nontrivial S] [IsDedekindDomain S] [Module.Free ℤ S] :
+noncomputable def Ideal.absNorm [IsDedekindDomain S] [Module.Free ℤ S] :
     Ideal S →*₀ ℕ where
   toFun := Submodule.cardQuot
   map_mul' I J := by rw [cardQuot_mul]
@@ -208,7 +208,7 @@ noncomputable def Ideal.absNorm [Nontrivial S] [IsDedekindDomain S] [Module.Free
 
 namespace Ideal
 
-variable [Nontrivial S] [IsDedekindDomain S] [Module.Free ℤ S]
+variable [IsDedekindDomain S] [Module.Free ℤ S]
 
 theorem absNorm_apply (I : Ideal S) : absNorm I = cardQuot I := rfl
 

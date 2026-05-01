@@ -80,6 +80,8 @@ theorem Ring.DimensionLEOne.localization {R : Type*} (Rₘ : Type*) [CommRing R]
   refine h.not_lt_lt ⊥ (Ideal.comap _ _) (Ideal.comap _ _) ⟨?_, hlt⟩
   exact IsLocalization.bot_lt_comap_prime _ _ hM _ hp0⟩
 
+set_option linter.overlappingInstances false
+
 /-- The localization of a Dedekind domain is a Dedekind domain. -/
 theorem IsLocalization.isDedekindDomain [IsDedekindDomain A] {M : Submonoid A} (hM : M ≤ A⁰)
     (Aₘ : Type*) [CommRing Aₘ] [IsDomain Aₘ] [Algebra A Aₘ] [IsLocalization M Aₘ] :

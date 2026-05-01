@@ -1189,6 +1189,7 @@ alias _root_.mem_primesOverFinset_iff := mem_primesOverFinset_iff
 
 end IsDedekindDomain
 
+set_option linter.overlappingInstances false in
 variable {R} (A) in
 theorem IsLocalRing.primesOverFinset_eq [IsLocalRing A] [IsDedekindDomain A]
     [Algebra R A] [FaithfulSMul R A] [Module.Finite R A] {p : Ideal R} [p.IsMaximal] (hp0 : p ≠ ⊥) :

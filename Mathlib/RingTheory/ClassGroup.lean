@@ -220,6 +220,8 @@ theorem ClassGroup.mk_canonicalEquiv (K' : Type*) [Field K'] [Algebra R K'] [IsF
       ← Units.map_comp, ← RingEquiv.coe_monoidHom_trans,
       FractionalIdeal.canonicalEquiv_trans_canonicalEquiv]
 
+set_option linter.overlappingInstances false
+
 /-- Send a nonzero integral ideal to an invertible fractional ideal. -/
 def FractionalIdeal.mk0 [IsDedekindDomain R] :
     (Ideal R)⁰ →* (FractionalIdeal R⁰ K)ˣ where

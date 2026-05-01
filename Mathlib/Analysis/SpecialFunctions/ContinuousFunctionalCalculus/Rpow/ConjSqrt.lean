@@ -55,6 +55,8 @@ lemma conjSqrt_le_conjSqrt {c a b : A} (h : a ≤ b) : conjSqrt c a ≤ conjSqrt
 
 variable [IsSemitopologicalRing A] [T2Space A]
 
+set_option linter.overlappingInstances false
+
 @[grind =]
 lemma isStrictlyPositive_conjSqrt_iff (c a : A) (hc : IsStrictlyPositive c := by cfc_tac) :
     IsStrictlyPositive (conjSqrt c a) ↔ IsStrictlyPositive a := by

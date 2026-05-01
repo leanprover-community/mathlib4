@@ -208,6 +208,8 @@ theorem integralClosure.isNoetherianRing [IsIntegrallyClosed A] [IsNoetherianRin
 
 variable (A K) [IsDomain C]
 
+set_option linter.overlappingInstances false
+
 /-- If `L` is a finite separable extension of `K = Frac(A)`, where `A` is a Dedekind domain,
 the integral closure `C` of `A` in `L` is a Dedekind domain.
 

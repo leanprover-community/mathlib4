@@ -56,6 +56,7 @@ def Over.mapCongr [Q.RespectsIso] {X Y : T} {f g : X ⟶ Y} (hfg : f = g) (hf : 
     Over.map Q hf ≅ Over.map (f := g) Q (by cat_disch) :=
   NatIso.ofComponents (fun Y ↦ Over.isoMk (Iso.refl _))
 
+set_option linter.overlappingInstances false in
 /-- `Over.map` preserves identities. -/
 @[simps!]
 def Over.mapId [P.IsMultiplicative] [Q.RespectsIso] (X : T) (f : X ⟶ X := 𝟙 X)
@@ -216,6 +217,7 @@ def Under.mapCongr [Q.RespectsIso] {X Y : T} {f g : X ⟶ Y} (hfg : f = g) (hf :
     Under.map Q hf ≅ Under.map (f := g) Q (by cat_disch) :=
   NatIso.ofComponents (fun Y ↦ Under.isoMk (Iso.refl _))
 
+set_option linter.overlappingInstances false in
 /-- `Under.map` preserves identities. -/
 @[simps!]
 def Under.mapId [P.IsMultiplicative] [Q.RespectsIso] (X : T) (f : X ⟶ X := 𝟙 X)
