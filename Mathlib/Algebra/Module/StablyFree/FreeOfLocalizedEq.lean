@@ -60,10 +60,9 @@ theorem Module.free_of_isStablyFree_of_localized_eq_ring [Nontrivial R] [Module.
     [IsStablyFree R M] (hlo : ∀ (m : Ideal R) [m.IsMaximal],
       LocalizedModule.AtPrime m M ≃ₗ[Localization.AtPrime m] Localization.AtPrime m) :
     Module.Free R M := by
-  have : Module.Projective R M := IsStablyFree.projective R M
   obtain ⟨N, _, _, _, _, _⟩ := IsStablyFree.exist_free_prod R M
   obtain ⟨𝔪, h𝔪⟩ := Ideal.exists_maximal R
-  have h1 : Module.rankAtStalk M ⟨𝔪, h𝔪.isPrime⟩ = 1 := by simpa using (hlo 𝔪).finrank_eq
+  have h1 : Module.rankAtStalk M ⟨𝔪, h𝔪.isPrime⟩ = 1 := by simp [rankAtStalk, (hlo 𝔪).finrank_eq]
   let n := Module.finrank R N
   have hp : Module.finrank R (M × N) = n + 1 := by
     simpa [← h1, n, Nat.add_comm] using congrArg (fun f ↦ f ⟨𝔪, h𝔪.isPrime⟩) <|
