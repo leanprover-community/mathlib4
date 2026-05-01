@@ -2971,6 +2971,7 @@ public import Mathlib.CategoryTheory.Localization.Monoidal
 public import Mathlib.CategoryTheory.Localization.Monoidal.Basic
 public import Mathlib.CategoryTheory.Localization.Monoidal.Braided
 public import Mathlib.CategoryTheory.Localization.Monoidal.Functor
+public import Mathlib.CategoryTheory.Localization.OfQuotient
 public import Mathlib.CategoryTheory.Localization.Opposite
 public import Mathlib.CategoryTheory.Localization.Pi
 public import Mathlib.CategoryTheory.Localization.Preadditive
@@ -3275,7 +3276,8 @@ public import Mathlib.CategoryTheory.Sites.CoproductSheafCondition
 public import Mathlib.CategoryTheory.Sites.CoverLifting
 public import Mathlib.CategoryTheory.Sites.CoverPreserving
 public import Mathlib.CategoryTheory.Sites.Coverage
-public import Mathlib.CategoryTheory.Sites.CoversTop
+public import Mathlib.CategoryTheory.Sites.CoversTop.Basic
+public import Mathlib.CategoryTheory.Sites.CoversTop.Over
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.OneHypercoverDense
@@ -7559,6 +7561,7 @@ public import Mathlib.Topology.Category.TopCat.Sphere
 public import Mathlib.Topology.Category.TopCat.ULift
 public import Mathlib.Topology.Category.TopCat.Yoneda
 public import Mathlib.Topology.Category.TopCommRingCat
+public import Mathlib.Topology.Category.TopPair
 public import Mathlib.Topology.Category.UniformSpace
 public import Mathlib.Topology.Clopen
 public import Mathlib.Topology.ClopenBox

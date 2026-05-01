@@ -250,7 +250,6 @@ theorem Complex.deriv_const_cpow (hf : DifferentiableAt ℂ f x) (c : ℂ) :
   rw [← derivWithin_univ, derivWithin_const_cpow, derivWithin_univ]
   rwa [differentiableWithinAt_univ]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Although `fun x => x ^ r` for fixed `r` is *not* complex-differentiable along the negative real
 line, it is still real-differentiable, and the derivative is what one would formally expect.
 See `hasDerivAt_ofReal_cpow_const` for an alternate formulation. -/
