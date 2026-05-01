@@ -99,6 +99,8 @@ theorem iff_eq_one_of_isUnit (h : IsUnit a) : IsIdempotentElem a ↔ a = 1 where
     rw [← eq, ← idem.eq, ← mul_assoc, eq, one_mul, idem.eq]
   mpr := by rintro rfl; exact .one
 
+alias ⟨eq_one_of_isUnit, _⟩ := iff_eq_one_of_isUnit
+
 end Monoid
 
 section CancelMonoid

@@ -126,6 +126,19 @@ protected def compLeft (f : A →ₐ[R] B) (ι : Type*) : (ι → A) →ₐ[R] �
       ext
       exact f.commutes' c }
 
+variable (R) in
+/-- Reindex a family of algebras. -/
+@[expose, simps!]
+protected def compRight {ι : Type*} (S : ι → Type*) [CommRing R] [∀ i, CommRing (S i)]
+    [∀ i, Algebra R (S i)] {σ : Type*} (f : σ → ι) :
+    (Π i, S i) →ₐ[R] Π i, S (f i) :=
+  Pi.algHom R _ fun x ↦ Pi.evalAlgHom R _ (f x)
+
+lemma compRight_apply_eq {ι : Type*} (S : ι → Type*) [CommRing R] [∀ i, CommRing (S i)]
+    [∀ i, Algebra R (S i)] {σ : Type*} (f : σ → ι) (x : Π i, S i) :
+    AlgHom.compRight R S f x = fun i ↦ x (f i) :=
+  rfl
+
 end AlgHom
 
 namespace AlgEquiv

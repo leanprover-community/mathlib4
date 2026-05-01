@@ -151,6 +151,16 @@ theorem bijective_linearMap_mul' : Function.Bijective (LinearMap.mul' R A) :=
 
 end IsLocalization
 
+lemma IsLocalizedModule.map_tensorProductMk_eq_lTensor {N : Type*} [AddCommMonoid N] [Module R N]
+    {f : M →ₗ[R] N} :
+    map S (TensorProduct.mk R A M 1) (TensorProduct.mk R A N 1) f = f.lTensor A := by
+  ext a x
+  simp only [AlgebraTensorModule.curry_apply, LinearMap.restrictScalars_self, curry_apply,
+    LinearMap.lTensor_tmul]
+  rw [tmul_eq_smul_one_tmul, ← mk_apply,
+    (IsLocalization.linearMap_compatibleSMul S A _ _).map_smul, map_apply]
+  simp [smul_tmul']
+
 variable (T B : Type*) [CommSemiring T] [CommSemiring B]
   [Algebra R T] [Algebra T B] [Algebra R B] [Algebra A B] [IsScalarTower R T B]
   [IsScalarTower R A B]
