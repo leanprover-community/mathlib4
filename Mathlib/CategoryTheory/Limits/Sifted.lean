@@ -125,7 +125,6 @@ variable {D : Type u₁} [Category.{v₁} D]
 instance [IsSiftedOrEmpty C] [IsSiftedOrEmpty D] :
     IsSiftedOrEmpty (C × D) :=
   let e : (C × C) × (D × D) ≌ (C × D) × (C × D) := prod.prodμ ..
-  have := final_comp_equivalence ((Functor.diag C).prod (Functor.diag D)) e.functor
   final_of_natIso (Iso.refl ((Functor.diag C).prod (Functor.diag D) ⋙ e.functor))
 
 /-- The product of two sifted categories is sifted. -/
