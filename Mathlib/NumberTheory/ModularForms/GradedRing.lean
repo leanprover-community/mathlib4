@@ -185,17 +185,45 @@ private lemma mul_modularForm_ne_zero_of_qExpansion_coeff_zero_eq_one {k₁ k₂
     PowerSeries.coeff_mul] at this
   simp [hf, hg] at this
 
+/-- Weight casting: rewriting the index of `DirectSum.of` along an equality of weights. -/
+private lemma directSumOf_cast_eq {k₁ k₂ : ℤ} (hk : k₁ = k₂) (x : ModularForm 𝒮ℒ k₁) :
+    DirectSum.of (ModularForm 𝒮ℒ) k₁ x = DirectSum.of (ModularForm 𝒮ℒ) k₂ (hk ▸ x) := by
+  subst hk; rfl
+
 /-- The 0th q-expansion coefficient of `(of _ 4 E₄)^a * (of _ 6 E₆)^b` evaluated at
 weight `n = 4a + 6b` equals `1`. -/
 private lemma monomial_qExpansion_coeff_zero_eq_one {n a b : ℕ} (hab : 4 * a + 6 * b = n) :
     (qExpansion 1
       ((DirectSum.of (ModularForm 𝒮ℒ) 4 E₄ ^ a *
         DirectSum.of (ModularForm 𝒮ℒ) 6 E₆ ^ b) (n : ℤ))).coeff 0 = 1 := by
-  -- TODO: complete proof. Strategy: show the product is concentrated at weight n,
-  -- use ModularForm.qExpansion_mul and ModularForm.qExpansion_of_pow to compute
-  -- the q-expansion as `(qExpansion E₄)^a * (qExpansion E₆)^b`, then use
-  -- E_qExpansion_coeff_zero to reduce to 1 * 1 = 1.
-  sorry
+  set R := ModularForm.qExpansionRingHom (1 : ℝ) one_pos one_mem_strictPeriods_SL with hR_def
+  set prod := DirectSum.of (ModularForm 𝒮ℒ) 4 E₄ ^ a * DirectSum.of (ModularForm 𝒮ℒ) 6 E₆ ^ b
+    with hprod_def
+  have hweight : (a • (4 : ℤ) + b • (6 : ℤ)) = (n : ℤ) := by
+    change ((a : ℤ) * 4 + (b : ℤ) * 6) = (n : ℤ)
+    push_cast [← hab]; ring
+  -- `prod` is concentrated at weight `n`.
+  have hprod_eq : prod = DirectSum.of (ModularForm 𝒮ℒ) (n : ℤ) (prod (n : ℤ)) := by
+    refine DFinsupp.ext (fun k : ℤ => ?_)
+    by_cases hk : k = (n : ℤ)
+    · subst hk; simp
+    · rw [DirectSum.of_eq_of_ne _ _ _ hk]
+      rw [hprod_def, DirectSum.ofPow, DirectSum.ofPow, DirectSum.of_mul_of]
+      refine DirectSum.of_eq_of_ne _ _ _ ?_
+      rw [← hweight] at hk
+      exact hk
+  -- Compute `R prod` two ways.
+  have hR_eval : R prod = qExpansion 1 E₄ ^ a * qExpansion 1 E₆ ^ b := by
+    rw [hprod_def, hR_def, map_mul, map_pow, map_pow,
+      ModularForm.qExpansionRingHom_apply (h := 1) one_pos one_mem_strictPeriods_SL,
+      ModularForm.qExpansionRingHom_apply (h := 1) one_pos one_mem_strictPeriods_SL]
+  have hR_concentrated : R prod = qExpansion 1 (prod (n : ℤ)) := by
+    conv_lhs => rw [hprod_eq]
+    rw [hR_def]
+    exact ModularForm.qExpansionRingHom_apply (h := 1) one_pos one_mem_strictPeriods_SL _ _
+  rw [← hR_concentrated, hR_eval, PowerSeries.coeff_mul]
+  simp [Finset.antidiagonal_zero, PowerSeries.coeff_pow,
+    E_qExpansion_coeff_zero _ ⟨2, rfl⟩, E_qExpansion_coeff_zero _ ⟨3, rfl⟩]
 
 /-- For weight 12 ≤ n, every cusp form of weight n is `Δ * h` for some modular form
 `h` of weight `n - 12`. Lifted to the graded ring. -/
@@ -231,11 +259,6 @@ private lemma discriminant_mem_range_evalE₄E₆ :
   refine ⟨(1 / 1728 : ℂ) • (MvPolynomial.X 0 ^ 3 - MvPolynomial.X 1 ^ 2), ?_⟩
   simp only [map_smul, map_sub, map_pow, evalE₄E₆_X0, evalE₄E₆_X1]
   rw [← discriminant_eq_E₄_cube_sub_E₆_sq_graded]
-
-/-- Weight casting: rewriting the index of `DirectSum.of` along an equality of weights. -/
-private lemma directSumOf_cast_eq {k₁ k₂ : ℤ} (hk : k₁ = k₂) (x : ModularForm 𝒮ℒ k₁) :
-    DirectSum.of (ModularForm 𝒮ℒ) k₁ x = DirectSum.of (ModularForm 𝒮ℒ) k₂ (hk ▸ x) := by
-  subst hk; rfl
 
 /-- Inductive step: for `n ≥ 12` even, surjectivity at weight `n` follows from surjectivity
 at all lower weights via the cusp-form / `Δ` decomposition. -/
