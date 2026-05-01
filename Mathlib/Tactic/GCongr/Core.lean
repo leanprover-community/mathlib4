@@ -144,11 +144,6 @@ public meta section
 namespace Mathlib.Tactic.GCongr
 open Lean Meta
 
-/-- Linter for `@[gcongr]` lemmas that are not suitable for use in `grw`. -/
-register_option linter.gcongr.grw : Bool := {
-  defValue := true
-  descr := "Linter for `@[gcongr]` lemmas that are not suitable for use in `grw`" }
-
 /-- `GCongrKey` is the key used in the hashmap for looking up `gcongr` lemmas. -/
 structure GCongrKey where
   /-- The name of the relation. For example, `a + b ≤ a + c` has ``relName := `LE.le``. -/
@@ -258,8 +253,8 @@ def updateRel (r e : Expr) (isLhs : Bool) : Expr :=
 
 /-- Try to construct the `GCongrLemma` for a lemma with hypotheses `hyps` and
 conclusion `target`. -/
-def makeGCongrLemma (hyps : Array Expr) (target : Expr) (declName : Name) (prio : Nat) :
-    MetaM GCongrLemma := do
+def makeGCongrLemma (hyps : Array Expr) (target : Expr) (declName : Name) (prio : Nat)
+    (forGrw : Bool) : MetaM GCongrLemma := do
   let fail {α} (m : MessageData) : MetaM α := throwError "\
     @[gcongr] attribute only applies to lemmas proving f x₁ ... xₙ ∼ f x₁' ... xₙ'.\n \
     {m} in {target}"
@@ -295,17 +290,18 @@ def makeGCongrLemma (hyps : Array Expr) (target : Expr) (declName : Name) (prio 
     -- Checks if `∀ xs, lhs ~ rhs` is a valid "main goal".
     let isMainGoal? (lhs rhs : Expr) (xs : Array Expr) : Option (GCongrHyp × Expr × Expr) :=
       lhs.withApp fun lhs lhsArgs => rhs.withApp fun rhs rhsArgs => do
-        -- The relation needs to be of the form `lhs y₁ ... yₙ ~ rhs y₁ ... yₙ`,
-        -- where `yᵢ` are free variables from `xs`,
-        -- and `(lhs, rhs)` is a varying argument pair from the conclusion to the lemma
-        guard <| lhsArgs.all xs.contains && lhsArgs == rhsArgs
-        let lhsIdx ← hyps.idxOf? lhs
-        let rhsIdx ← hyps.idxOf? rhs
-        let (pair, isContra) ← pairs.findSome? fun pair =>
-          if (lhs, rhs) == pair then some (pair, false) else
-          if (rhs, lhs) == pair then some (pair, true) else none
-        let hypsPos := xs.toList.map lhsArgs.idxOf?
-        some ({ lhsIdx, rhsIdx, hypIdx := i, hypsPos, isContra }, pair)
+      /- The relation needs to be of the form `lhs y₁ ... yₙ ~ rhs y₁ ... yₙ`,
+      where `yᵢ` are free variables from `xs`,
+      and `(lhs, rhs)` is a varying argument pair from the conclusion to the lemma
+      We relax these conditions for lemmas that are not used by `grw`. -/
+      guard <| !forGrw || lhsArgs.all xs.contains && lhsArgs == rhsArgs
+      let lhsIdx ← hyps.idxOf? lhs
+      let rhsIdx ← hyps.idxOf? rhs
+      let (pair, isContra) ← pairs.findSome? fun pair =>
+        if (lhs, rhs) == pair then some (pair, false) else
+        if (rhs, lhs) == pair then some (pair, true) else none
+      let hypsPos := xs.toList.map lhsArgs.idxOf?
+      some ({ lhsIdx, rhsIdx, hypIdx := i, hypsPos, isContra }, pair)
     -- Checks if `hyp` is a valid "main goal".
     let go := forallTelescopeReducing (← inferType hyp) fun xs hypTy => do
       if let some (_, lhs₁, rhs₁) := getRel (← whnf hypTy) then
@@ -317,14 +313,12 @@ def makeGCongrLemma (hyps : Array Expr) (target : Expr) (declName : Name) (prio 
       mainSubgoals := mainSubgoals.push mainSubgoal
       -- Erase the varying argument pair, to make sure each pair corresponds to just one hypothesis.
       pairs := pairs.erase pair
-  let forGrw := pairs.size = 0
-  if h : pairs.size ≠ 0 then
+  if h : forGrw ∧ pairs.size ≠ 0 then
     let (lhs, rhs) := pairs[0]
-    Linter.logLintIf linter.gcongr.grw (← getRef)
-      m!"`{lhs}` appears on the LHS and `{rhs}` on the RHS, \
+    throwError "`{lhs}` appears on the LHS and `{rhs}` on the RHS, \
       but there is no corresponding hypothesis `{lhs} ~ {rhs}` or `{rhs} ~ {lhs}`.\n\n\
       This means that the `@[gcongr]` lemma cannot be used in the `grw` tactic. \
-      It may still be suitable for use in the `gcongr` tactic."
+      Please use `@[gcongr only]` instead."
   -- store all the information from this parse of the lemma's structure in a `GCongrLemma`
   let key := { relName, head, arity := lhsArgs.size }
   return { key, declName, mainSubgoals, numHyps := hyps.size, prio, numVarying, forGrw }
@@ -340,6 +334,7 @@ The antecedents of such a lemma are classified as generating "main goals" if the
 or more generally of the form `∀ i h h' j h'', f₁ i j ≈ f₂ i j` (say) for some "varying argument"
 pair `f₁`/`f₂`, where the arguments of `f₁` and `f₂` are the same list of variables which have to
 be bound by the preceding `∀`. (Other antecedents are considered to generate "side goals".)
+Use `gcongr only` to relax these conditions. A `gcongr only` lemma is not used by `grw`.
 
 If a lemma such as `add_le_add : a ≤ b → c ≤ d → a + c ≤ b + d` has been tagged with `gcongr`,
 then a direct consequence like `a ≤ b → a + c ≤ b + c` does *not* need to be tagged.
@@ -347,11 +342,15 @@ However, if a more specific lemma has fewer side conditions, it should also be t
 For example, `mul_le_mul_of_nonneg_right` and `mul_le_mul_of_nonneg_left` are both tagged.
 
 Lemmas involving `<` or `≤` can also be marked `@[bound]` for use in the related `bound` tactic. -/
+syntax (name := gcongrAttr) "gcongr" (&" only")? (prio)? : attr
+
+@[inherit_doc gcongrAttr]
 initialize registerBuiltinAttribute {
-  name := `gcongr
+  name := `gcongrAttr
   descr := "generalized congruence"
   add := fun declName stx kind ↦ MetaM.run' do withReducible do
-    let prio ← getAttrParamOptPrio stx[1]
+    let forGrw := stx[1].isNone
+    let prio ← getAttrParamOptPrio stx[2]
     let cinfo ← getConstInfo declName
     let type := cinfo.type
     forallTelescope type fun xs type => do
@@ -360,17 +359,17 @@ initialize registerBuiltinAttribute {
         `Monotone | `Antitone | `StrictMono | `StrictAnti |
         `MonotoneOn | `AntitoneOn | `StrictMonoOn | `StrictAntiOn then
       forallTelescope (← withDefault <| unfoldDefinition type) fun xs' type => do
-        gcongrExt.add (← makeGCongrLemma (xs ++ xs') type declName prio) kind
+        gcongrExt.add (← makeGCongrLemma (xs ++ xs') type declName prio forGrw) kind
       return
     -- If the conclusion is a free variable, it is a lemma like `imp_imp_imp` or `forall_imp`,
     -- so we revert the last two variables.
     if type.getAppFn.isFVar then
       let type ← mkForallFVars xs[(xs.size-2)...xs.size] type
-      gcongrExt.add (← makeGCongrLemma xs.pop.pop type declName prio) kind
+      gcongrExt.add (← makeGCongrLemma xs.pop.pop type declName prio forGrw) kind
       return
     try
       -- Add a `gcongr` lemma in the "normal" way.
-      gcongrExt.add (← makeGCongrLemma xs type declName prio) kind
+      gcongrExt.add (← makeGCongrLemma xs type declName prio forGrw) kind
     catch e => try
       match_expr type with
       | Iff lhs rhs =>
@@ -378,7 +377,7 @@ initialize registerBuiltinAttribute {
         try
           -- Try using the `←` implication.
           withLocalDeclD `_a rhs fun x => do
-            let gcongrLemma ← makeGCongrLemma (xs.push x) lhs declName prio
+            let gcongrLemma ← makeGCongrLemma (xs.push x) lhs declName prio forGrw
             let auxType ← mkForallFVars (xs.push x) lhs
             let auxValue ← mkLambdaFVars xs <| mkApp3 (.const ``Iff.mpr []) lhs rhs <|
               mkAppN (.const declName (cinfo.levelParams.map .param)) xs
@@ -387,7 +386,7 @@ initialize registerBuiltinAttribute {
         catch _ =>
           -- Try using the `→` implication.
           withLocalDeclD `_a lhs fun x => do
-            let gcongrLemma ← makeGCongrLemma (xs.push x) rhs declName prio
+            let gcongrLemma ← makeGCongrLemma (xs.push x) rhs declName prio forGrw
             let auxType ← mkForallFVars (xs.push x) rhs
             let auxValue ← mkLambdaFVars xs <| mkApp3 (.const ``Iff.mp []) lhs rhs <|
               mkAppN (.const declName (cinfo.levelParams.map .param)) xs
@@ -411,7 +410,7 @@ initialize registerBuiltinAttribute {
         let i ← findIdx xs.size xs.size.le_refl
         let type ← mkForallFVars #[xs[i]] type
         let xs' :=  xs.eraseIdx i i.isLt
-        let gcongrLemma ← makeGCongrLemma xs' type declName prio
+        let gcongrLemma ← makeGCongrLemma xs' type declName prio forGrw
         if i == xs.size - 1 then
           -- The argument order is already correct.
           gcongrExt.add gcongrLemma kind
