@@ -6,7 +6,6 @@ Authors: Essam Abadir
 module
 public import Mathlib.InformationTheory.EntropyNumber.Hierarchy
 
-@[expose] public section
 
 
 /-!
@@ -70,6 +69,8 @@ map* — the natural number index IS the cardinality.
 * `all_infinities_indexed_by_Nat` -- every infinite cardinality in the hierarchy is some `beth n`.
 * `AbadirCompletenessTheorem` -- every constructible type has cardinality `beth n` for some `n`.
 -/
+
+@[expose] public section
 
 namespace InformationTheory
 

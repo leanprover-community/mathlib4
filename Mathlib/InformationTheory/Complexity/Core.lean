@@ -9,7 +9,6 @@ public import Mathlib.Tactic.NormNum
 public import Mathlib.InformationTheory.EntropyNumber.Basic
 public import Mathlib.InformationTheory.Complexity.CNF
 
-@[expose] public section
 
 
 /-!
@@ -34,6 +33,8 @@ instances.
   encoding equals `encodeCNF` on the underlying value.
 * `encodeCanonicalCNFAsProgram_length` -- the encoded length equals the `encodeCNF` length.
 -/
+
+@[expose] public section
 
 open InformationTheory InformationTheory.EntropyNat
 
@@ -62,6 +63,7 @@ canonical CNF.  This is a readability alias for reviewers: canonical
 SAT instances are handled as executable binary programs in the
 machine model.
 -/
+@[nolint unusedArguments]
 abbrev CanonicalCNFProgram (_k : ℕ) := List Bool
 
 /-- Encode a canonical CNF as a `CanonicalCNFProgram`. -/

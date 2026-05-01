@@ -7,7 +7,6 @@ module
 
 public import Mathlib.InformationTheory.Entropy.Shannon
 
-@[expose] public section
 
 
 /-!
@@ -43,6 +42,8 @@ Shannon entropy up to a positive scalar.
 
 entropy, axioms, rota, information theory
 -/
+
+@[expose] public section
 
 open Finset Real
 
@@ -203,6 +204,7 @@ lemma sum_ext_zero_eq_one
 
 /-- `entropyUniform H n = H(uniform distribution on n outcomes)` for
 `n > 0`. -/
+@[nolint unusedArguments]
 noncomputable def entropyUniform
     {H_func : ∀ {α : Type} [Fintype α], (α → NNReal) → NNReal}
     (_hH_axioms : HasRotaEntropyAxioms H_func) {n : ℕ}

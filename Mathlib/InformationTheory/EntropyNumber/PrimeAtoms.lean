@@ -6,7 +6,6 @@ Authors: Essam Abadir
 module
 public import Mathlib.InformationTheory.EntropyNumber.RotaEntropy
 
-@[expose] public section
 
 
 open Real Finset
@@ -32,6 +31,8 @@ expressed in terms of `Real.logb 2`.
   over prime atoms.
 * `factorial_information_increment` -- `logb 2 ((n+1)!) = logb 2 (n!) + logb 2 (n+1)`.
 -/
+
+@[expose] public section
 
 namespace InformationTheory
 

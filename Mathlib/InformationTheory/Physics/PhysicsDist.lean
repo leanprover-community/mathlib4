@@ -15,7 +15,6 @@ public import Mathlib.InformationTheory.Physics.UniformSystems
 public import Mathlib.InformationTheory.Physics.StatisticalDistributions
 public import Mathlib.InformationTheory.Entropy.SourceCoding
 
-@[expose] public section
 
 
 /-!
@@ -64,6 +63,8 @@ of the three canonical distributions.
 physics distribution, statistical mechanics, entropy
 -/
 
+@[expose] public section
+
 namespace InformationTheory.Physics.PhysicsDist
 
 open InformationTheory
@@ -81,13 +82,16 @@ inductive StatSystemType
 
 /-- Parameters (number of states `N` and particles `M`) for a statistical system. -/
 structure SystemParams where
+  /-- The number of available single-particle states. -/
   N : ℕ
+  /-- The number of particles in the system. -/
   M : ℕ
 
 /--
 Calculates the entropy of a given statistical system (BE, FD, MB)
 using the axiomatic H_physical_system.
 -/
+@[nolint unusedArguments]
 noncomputable def entropy_of_stat_system
     (type : StatSystemType) (params : SystemParams)
     (_h_domain_valid : params.N ≠ 0 ∨ params.M = 0) :
@@ -109,6 +113,7 @@ noncomputable def entropy_of_stat_system
 Calculates the standard Shannon entropy (ln-based) of a given
 statistical system's canonical (uniform) probability distribution.
 -/
+@[nolint unusedArguments]
 noncomputable def shannon_entropy_of_stat_system
     (type : StatSystemType) (params : SystemParams)
     (_h_domain_valid : params.N ≠ 0 ∨ params.M = 0) :
@@ -186,8 +191,11 @@ theorem entropy_MB_eq_C_shannon
 
 /-- Weights for the three statistical-mechanics components (BE, FD, MB). -/
 structure SystemWeights where
+  /-- The Bose-Einstein component weight. -/
   w_BE : NNReal
+  /-- The Fermi-Dirac component weight. -/
   w_FD : NNReal
+  /-- The Maxwell-Boltzmann component weight. -/
   w_MB : NNReal
 
 /--
@@ -278,9 +286,13 @@ theorem
 
 /-- Complete configuration for a physics system: weights and parameters for each component. -/
 structure PhysicsSystemConfig where
+  /-- The mixing weights between the three statistical components. -/
   weights   : SystemWeights
+  /-- Parameters for the Bose-Einstein component. -/
   params_BE : SystemParams
+  /-- Parameters for the Fermi-Dirac component. -/
   params_FD : SystemParams
+  /-- Parameters for the Maxwell-Boltzmann component. -/
   params_MB : SystemParams
 
 /--

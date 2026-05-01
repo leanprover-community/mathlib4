@@ -7,7 +7,6 @@ module
 public import Mathlib.InformationTheory.EntropyNumber.Basic
 public import Mathlib.Logic.Equiv.Nat
 
-@[expose] public section
 
 
 /-!
@@ -28,6 +27,8 @@ where the `EntropyNat` component encodes the magnitude and the `Bool` encodes th
 (No standalone theorems; the key result is the construction of the
 equivalence `entropyIntEquivInt : EntropyInt ≃ ℤ`.)
 -/
+
+@[expose] public section
 
 namespace InformationTheory
 

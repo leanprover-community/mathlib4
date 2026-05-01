@@ -13,7 +13,6 @@ public import Mathlib.Algebra.Order.Floor.Defs
 public import Mathlib.Tactic.Linarith
 public import Mathlib.Algebra.Ring.Nat
 
-@[expose] public section
 
 
 /-!
@@ -55,6 +54,8 @@ Rota–Khinchin uniqueness theorem.
 entropy, rota, uniqueness, information theory
 -/
 
+@[expose] public section
+
 open Finset Real NNReal Fin Set Filter Function BigOperators Topology
 
 namespace InformationTheory
@@ -64,6 +65,7 @@ namespace InformationTheory
 /-- A rational probability distribution on `Fin n` with weights
 `a : Fin n → ℕ` summing to `N_den`. The `i`-th probability is
 `a i / N_den`. -/
+@[nolint unusedArguments]
 noncomputable def rationalDist (n : ℕ) (a : Fin n → ℕ) (N_den : ℕ)
     (_h_sum_a_eq_N : ∑ i, a i = N_den)
     (_hN_den_pos : N_den > 0) : Fin n → NNReal :=
@@ -111,7 +113,7 @@ lemma rotaConstant_nonneg
 /-! ### Helper lemmas -/
 
 /-- `(n : NNReal) ≠ 0 ↔ n ≠ 0` for natural numbers. -/
-@[simp] private lemma nnreal_natCast_ne_zero_iff {n : ℕ} :
+private lemma nnreal_natCast_ne_zero_iff {n : ℕ} :
     (n : NNReal) ≠ 0 ↔ n ≠ 0 := by
   constructor
   · intro h hc; exact h (by simp [hc])
@@ -263,6 +265,7 @@ theorem entropyUniform₀_mono
 /-! ### Independent-distribution helpers -/
 
 /-- `P(i,j) = prior(i) * q_const(j)` using `dependentPairDistSigma`. -/
+@[nolint unusedArguments]
 noncomputable def dependentPairDistSigma_of_independent
     {N M : ℕ} [NeZero N] [NeZero M]
     (prior : Fin N → NNReal) (q_const : Fin M → NNReal) :
@@ -929,8 +932,11 @@ theorem rota_uniqueness
 /-- An `EntropyFunction` bundles `H_func` together with a proof
 that it satisfies `HasRotaEntropyAxioms`. -/
 structure EntropyFunction where
+  /-- The underlying entropy function valued in `NNReal` and parameterised
+  by the outcome type. -/
   (H_func : ∀ {α : Type} [Fintype α],
     (α → NNReal) → NNReal)
+  /-- Proof that `H_func` satisfies all seven Rota entropy axioms. -/
   (props : HasRotaEntropyAxioms H_func)
 
 /-- Evaluate an `EntropyFunction` and get a `ℝ` value. -/
@@ -1260,7 +1266,7 @@ private lemma rota_rational_intermediate_formula
 
 /-! ### Shannon-entropy micro-helpers -/
 
-@[simp] private lemma Real.log_inv_eq_neg_log {x : ℝ}
+private lemma Real.log_inv_eq_neg_log {x : ℝ}
     (_hx : 0 < x) :
     Real.log (x⁻¹) = -Real.log x := by
   simp [Real.log_inv]

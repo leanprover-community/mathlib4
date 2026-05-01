@@ -8,7 +8,6 @@ module
 public import Mathlib.InformationTheory.Complexity.CNF
 public import Mathlib.Data.Nat.Prime.Infinite
 
-@[expose] public section
 
 
 /-!
@@ -36,6 +35,8 @@ and clauses are encoded as products of their literal primes.
 * `literalAtom_prime` -- the prime-indexed literal atom is prime.
 * `literalAtom_injective` -- the prime-indexed literal atom map is injective.
 -/
+
+@[expose] public section
 
 namespace InformationTheory
 

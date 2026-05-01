@@ -9,7 +9,6 @@ public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Data.NNReal.Basic
 
-@[expose] public section
 
 
 /-!
@@ -44,6 +43,8 @@ on finite types using `NNReal`-valued inputs and proves its basic properties.
 
 entropy, shannon, information theory
 -/
+
+@[expose] public section
 
 open Finset Real
 
@@ -87,6 +88,7 @@ noncomputable def uniformProb (n : ℕ) : NNReal :=
 
 /-- The uniform distribution on a finite type with positive
 cardinality, valued in `NNReal`. -/
+@[nolint unusedArguments]
 noncomputable def uniformDist
     (_h_card_pos : 0 < Fintype.card α) : α → NNReal :=
   fun _ => (Fintype.card α : NNReal)⁻¹

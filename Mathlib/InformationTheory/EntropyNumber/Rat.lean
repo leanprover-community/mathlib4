@@ -9,7 +9,6 @@ public import Mathlib.Data.Rat.Defs
 public import Mathlib.Data.Rat.Lemmas
 public import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 
-@[expose] public section
 
 
 /-!
@@ -35,6 +34,8 @@ bijection `EntropyRat ≃ ℚ`.
 (No standalone theorems; the key result is the construction of the
 equivalence `entropyRatEquivRat : EntropyRat ≃ ℚ`.)
 -/
+
+@[expose] public section
 
 namespace InformationTheory
 

@@ -11,7 +11,6 @@ public import Mathlib.InformationTheory.Entropy.Uniqueness
 public import Mathlib.InformationTheory.Entropy.Shannon
 public import Mathlib.InformationTheory.Physics.Common
 
-@[expose] public section
 
 
 /-!
@@ -43,6 +42,8 @@ entropy equals `C * shannonEntropy`.
 
 uniform distribution, combinatorics, entropy, statistical mechanics
 -/
+
+@[expose] public section
 
 namespace InformationTheory.Physics.UniformSystems
 
@@ -630,11 +631,13 @@ instance fintypeOmegaUD (N M : ℕ) :
 Defines the uniform probability distribution `p_UD` over the state
 space `OmegaUD N M`.
 -/
+@[nolint unusedArguments]
 noncomputable def p_UD (N M : ℕ) :
     OmegaUD N M → NNReal :=
   fun _q => uniformProb (Fintype.card (OmegaUD N M))
 
 /-- The uniform distribution `p_UD` indexed by `Fin` of the state-space cardinality. -/
+@[nolint unusedArguments]
 noncomputable def p_UD_fin (N M : ℕ) :
     Fin (Fintype.card (OmegaUD N M)) → NNReal :=
   fun _i => uniformProb (Fintype.card (OmegaUD N M))

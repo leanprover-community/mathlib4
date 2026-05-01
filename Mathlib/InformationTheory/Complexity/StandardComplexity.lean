@@ -9,7 +9,6 @@ public import Mathlib.InformationTheory.Complexity.PPNP
 public import Mathlib.InformationTheory.Complexity.CNF.Prime
 public import Mathlib.InformationTheory.Complexity.CNF.Encoding
 
-@[expose] public section
 
 
 /-!
@@ -35,6 +34,8 @@ and Chain 2 (SetRFL.lean).
   languages in the standard `Language` type.
 -/
 
+@[expose] public section
+
 namespace InformationTheory
 
 open InformationTheory
@@ -50,6 +51,7 @@ def languageFromCNFFamily (L_family : ∀ k, Set (CanonicalCNF k)) : Language :=
 
 /-- A deterministic decision procedure: maps binary inputs to Bool. -/
 structure DecisionProcedure where
+  /-- The decision function from a binary input to its accept/reject verdict. -/
   decide : List Bool → Bool
 
 /-- A function is polynomially bounded: f(n) ≤ n^c + c for some c. -/

@@ -8,7 +8,6 @@ module
 public import Mathlib.InformationTheory.Entropy.Program
 public import Mathlib.Analysis.SpecialFunctions.Log.Base
 
-@[expose] public section
 
 
 /-!
@@ -50,6 +49,8 @@ inverse (ISCT), and the distribution-level RECT bridge.
 source coding, entropy, information theory, SCT, ISCT
 -/
 
+@[expose] public section
+
 open Finset Real
 
 namespace InformationTheory
@@ -89,6 +90,7 @@ abbrev InformationSource := FiniteIIDSample
 /-- The Shannon entropy (in bits) of a single choice from an
 `FiniteIIDSample`. Assumes each fundamental choice is a raw bit,
 so entropy contribution is 1 bit. -/
+@[nolint unusedArguments]
 def BitsPerChoice_IIDParticleSource
     (_source : FiniteIIDSample) : ℕ :=
   1
@@ -105,6 +107,7 @@ def BitsPerSubSample_IIDParticleSource
 
 /-- The Shannon entropy (in bits) of a single trial from a biased
 source with `true` probability `p / (p + q)`. -/
+@[nolint unusedArguments]
 noncomputable def shannonEntropyOfBiasedSource
     (p q : ℕ) (_h_pos : p + q > 0) : ℝ :=
   let p_real := (p : ℝ)

@@ -8,7 +8,6 @@ module
 public import Mathlib.Control.Random
 public import Mathlib.Data.Fintype.Vector
 
-@[expose] public section
 
 
 /-!
@@ -38,9 +37,10 @@ paths, and position helpers.
 
 ## Main results
 
-* `ComputerProgram.length_eq` — program length equals tape length.
 * `ComputerProgram.append_length` — concatenation has additive length.
 -/
+
+@[expose] public section
 
 open List
 
@@ -57,12 +57,8 @@ def ComputerTape := List ComputerInstruction
 /-- A computer program is represented as a tape of binary instructions. -/
 abbrev ComputerProgram := ComputerTape
 
-/-- Program length equals tape length. -/
-@[simp] theorem ComputerProgram.length_eq (prog : ComputerProgram) :
-    prog.length = (prog : ComputerTape).length := rfl
-
 /-- Concatenating two programs yields a program with additive length. -/
-@[simp] theorem ComputerProgram.append_length (p q : ComputerProgram) :
+theorem ComputerProgram.append_length (p q : ComputerProgram) :
     (List.append p q).length = p.length + q.length := by
   simp
 
@@ -113,14 +109,18 @@ def randomWalkFromPosition (pos : ParticlePosition) : RandomWalkPath :=
   List.append [sign_bit] (List.replicate magnitude true)
 
 /-- A pseudo-random i.i.d. source seeded by a natural number. -/
-instance mkPseudoRandomSource (seed : ℕ) : IIDParticleSource Bool :=
+@[reducible] def mkPseudoRandomSource (seed : ℕ) : IIDParticleSource Bool :=
 { stream := fun n =>
     let gen0 := mkStdGen seed
     let genN := (List.range n).foldl (fun g _ => (stdNext g).2) gen0
     (randBool genN).1 }
 
-/-- A biased i.i.d. source generating `true` with probability `p / (p + q)`. -/
-instance mkBiasedIIDParticleSource (seed : ℕ) (p : ℕ) (q : ℕ)
+/-- A biased i.i.d. source generating `true` with probability `p / (p + q)`.
+The `p`, `q`, and positivity hypothesis are recorded for downstream callers
+that interpret the source's distribution; the underlying generator is seeded
+solely by `seed`. -/
+@[reducible, nolint unusedArguments]
+def mkBiasedIIDParticleSource (seed p q : ℕ)
     (_h : p + q > 0) : IIDParticleSource Bool :=
 { stream := fun n =>
     let gen0 := mkStdGen seed

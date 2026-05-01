@@ -8,7 +8,6 @@ module
 public import Mathlib.InformationTheory.Entropy.Shannon
 public import Mathlib.InformationTheory.EntropyNumber.Int
 
-@[expose] public section
 
 
 /-!
@@ -42,6 +41,8 @@ bridge between programs and entropy.
 
 program, computational description, RECT, IRECT, entropy
 -/
+
+@[expose] public section
 
 open Finset Real
 

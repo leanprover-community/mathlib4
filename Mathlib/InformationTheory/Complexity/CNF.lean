@@ -10,7 +10,6 @@ public import Mathlib.Logic.Encodable.Basic
 public import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.Linarith
 
-@[expose] public section
 
 
 /-!
@@ -45,6 +44,8 @@ For prime-indexed atom encodings and clause composites, see
 * `encodeCNF_size_ge_k` -- the encoded size is at least `k`.
 -/
 
+@[expose] public section
+
 namespace InformationTheory
 
 open InformationTheory
@@ -64,7 +65,10 @@ A `Literal` represents a single literal (e.g., `xᵢ` or `¬xᵢ`).
 It pairs a particle/variable index with a polarity.
 -/
 structure Literal (k : ℕ) where
+  /-- The index of the particle/variable referenced by this literal. -/
   particle_idx : Fin k
+  /-- The polarity of the literal: `true` for positive (`xᵢ`), `false` for
+  negative (`¬xᵢ`). -/
   polarity     : Bool
 
 /-- Helper equivalence for `Literal` to a product type. -/
@@ -504,7 +508,7 @@ by
 /--
 **Helper Lemma:** Direct version using `List.append` instead of `++`.
 -/
-@[simp] lemma foldl_List_append_nil_eq_flatten {α : Type*} (l : List (List α)) :
+lemma foldl_List_append_nil_eq_flatten {α : Type*} (l : List (List α)) :
   List.foldl List.append [] l = l.flatten :=
 by
   rw [foldl_List_append_eq_foldl_append, foldl_append_nil_eq_flatten]
@@ -603,7 +607,7 @@ for a transformed `g y` (regardless of the accumulator), then folding over
 the original list `l` or the mapped list `l.map g` results in a list of
 the same final length.
 -/
-@[simp] lemma foldl_length_eq_of_invariant_length {α γ : Type}
+lemma foldl_length_eq_of_invariant_length {α γ : Type}
   (f : List γ → α → List γ) (g : α → α) (l : List α) (init : List γ)
   (h_len_inv : ∀ (acc : List γ) (y : α), (f acc (g y)).length = (f acc y).length)
   (h_f_len_ext : ∀ (acc1 acc2 : List γ) (y : α),

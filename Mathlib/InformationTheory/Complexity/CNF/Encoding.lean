@@ -9,7 +9,6 @@ public import Mathlib.Logic.Denumerable
 public import Mathlib.Logic.Equiv.List
 public import Mathlib.InformationTheory.EntropyNumber.Rat
 
-@[expose] public section
 
 
 /-!
@@ -33,6 +32,8 @@ between CNF types and entropy-number types (`EntropyNat`, `EntropyRat`).
 
 * All CNF types are encodable, denumerable, and (where applicable) infinite.
 -/
+
+@[expose] public section
 
 namespace InformationTheory
 

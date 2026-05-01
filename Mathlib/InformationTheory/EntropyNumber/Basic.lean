@@ -11,7 +11,6 @@ public import Mathlib.Logic.Equiv.Nat
 public import Mathlib.Data.Finset.Basic
 public import Mathlib.InformationTheory.Basic
 
-@[expose] public section
 
 
 /-!
@@ -35,6 +34,8 @@ The natural numbers viewed as compressed binary paths. An `EntropyNat` is a list
 * `EntropyNat.toNat_add` — `toNat` is additive.
 * `EntropyNat.toNat_mul` — `toNat` is multiplicative.
 -/
+
+@[expose] public section
 
 open List
 

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.InformationTheory.EntropyNumber.Real
 
-@[expose] public section
 
 
 /-!
@@ -38,6 +37,8 @@ the other types as aliases (`abbrev`) of `Nat_L`.
 * `cardinal_L0_operator` — the L0-to-L0 operator space has
   cardinality `ℶ₂`.
 -/
+
+@[expose] public section
 
 namespace InformationTheory
 

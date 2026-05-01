@@ -10,7 +10,6 @@ public import Mathlib.InformationTheory.Complexity.Decomposition
 public import Mathlib.InformationTheory.Complexity.UTM
 public import Mathlib.InformationTheory.Entropy.Concrete
 
-@[expose] public section
 
 
 /-!
@@ -85,6 +84,8 @@ The `ReadHead` model in UTM.lean makes this concrete: the tape is
 read sequentially, one bit per step, no loops, no revisits, no free
 jumps. The cost of reading IS the cost of deciding.
 -/
+
+@[expose] public section
 
 namespace InformationTheory
 

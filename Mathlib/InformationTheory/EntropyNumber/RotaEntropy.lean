@@ -9,7 +9,6 @@ public import Mathlib.InformationTheory.Entropy.Concrete
 public import Mathlib.InformationTheory.Entropy.SourceCoding
 public import Mathlib.InformationTheory.EntropyNumber.Hierarchy
 
-@[expose] public section
 
 
 open Real Finset
@@ -51,6 +50,8 @@ entropy machinery to concrete computations:
 * `total_entropy_from_classes_eq_shannon_formula` -- total entropy
   from irreducible Bernoulli classes equals `n * H(p)`.
 -/
+
+@[expose] public section
 
 namespace InformationTheory
 
@@ -426,7 +427,7 @@ lemma logb_two_pos : 1 < (2 : ℝ) := by norm_num
 lemma log_two_ne_zero : Real.log 2 ≠ 0 := by
   exact ne_of_gt (Real.log_pos logb_two_pos)
 
-@[simp] lemma logb_two_two : Real.logb 2 2 = 1 := by
+lemma logb_two_two : Real.logb 2 2 = 1 := by
   unfold Real.logb
   rw [div_self log_two_ne_zero]
 
@@ -515,9 +516,13 @@ entropy this class contributes to the system.
 -/
 @[ext]
 structure InfoIrreducibleClass where
+  /-- The number of `true` outcomes in the binomial pattern. -/
   num_ones : ℕ
+  /-- The number of microstates that share this pattern. -/
   multiplicity : ℕ
+  /-- The probability of any single outcome belonging to this class. -/
   prob : NNReal
+  /-- The contribution this class makes to the total entropy. -/
   entropy_contribution : ℝ
 
 /-!
@@ -537,6 +542,7 @@ Generates the list of all `n+1` informationally irreducible
 classes for a Bernoulli process of `n` trials with success
 probability `p`.
 -/
+@[nolint unusedArguments]
 noncomputable def generateIrreducibleClasses
     (n : ℕ) (p : NNReal)
     (_hp_pos : 0 < p) (_hp_lt_one : p < 1) :

@@ -7,7 +7,6 @@ module
 public import Mathlib.InformationTheory.Complexity.CNF
 public import Mathlib.InformationTheory.EntropyNumber.Basic
 
-@[expose] public section
 
 
 /-!
@@ -39,6 +38,8 @@ satisfies it.
 * `computeTableau_time_bounded` -- the computable tableau satisfies the
   same upper bound.
 -/
+
+@[expose] public section
 
 namespace InformationTheory
 
@@ -80,10 +81,18 @@ The `walk_paths` field is the physical record of the walk. Its sum
 (`complexity`) measures the total path length -- the information cost of the
 walk record. This is bounded by the CNF's structure alone.
 -/
+/-- A satisfying-tableau record bundles a CNF, a satisfying assignment, the
+walk paths the constructor produced clause by clause, and a proof that the
+assignment satisfies the CNF. The walk paths' total length measures the
+extracted information. -/
 structure SatisfyingTableau (k : ℕ) where
+  /-- The CNF formula being satisfied. -/
   cnf : SyntacticCNF k
+  /-- A satisfying assignment for `cnf`. -/
   assignment : Vector Bool k
+  /-- The walk record produced by the constructor: one path per clause. -/
   walk_paths : List EntropyNat
+  /-- Proof that `assignment` satisfies `cnf`. -/
   h_valid : evalCNF cnf assignment = true
 
 /--

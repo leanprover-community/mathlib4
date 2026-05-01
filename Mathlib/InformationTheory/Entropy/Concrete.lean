@@ -11,7 +11,6 @@ public import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 public import Mathlib.Analysis.SpecialFunctions.BinaryEntropy
 public import Mathlib.Algebra.Order.Ring.Basic
 
-@[expose] public section
 
 
 /-!
@@ -56,6 +55,8 @@ concrete Shannon entropy:
 
 entropy, shannon, information theory, rota
 -/
+
+@[expose] public section
 
 open Finset Real
 

@@ -8,7 +8,6 @@ public import Mathlib.InformationTheory.Bridge
 public import Mathlib.InformationTheory.Complexity.Core
 public import Mathlib.InformationTheory.EntropyNumber.Polynomial
 
-@[expose] public section
 
 
 /-!
@@ -53,6 +52,8 @@ showing full equivalence.
 * `L_SAT_in_P` -- `L_SAT_Canonical` is in P.
 * `P_eq_NP` -- the complexity classes `P_def` and `NP_def` are equal.
 -/
+
+@[expose] public section
 
 namespace InformationTheory
 

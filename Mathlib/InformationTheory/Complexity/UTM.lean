@@ -9,7 +9,6 @@ public import Mathlib.InformationTheory.Complexity.Tableau
 public import Mathlib.InformationTheory.Complexity.Decomposition
 public import Mathlib.InformationTheory.Entropy.SourceCoding
 
-@[expose] public section
 
 
 /-!
@@ -50,6 +49,8 @@ This file contains:
 * `ndmCircuit_sat_iff` — SAT iff exists assignment where circuit accepts.
 -/
 
+@[expose] public section
+
 open InformationTheory InformationTheory.EntropyNat
 
 namespace InformationTheory
@@ -71,7 +72,9 @@ The state of a sequential tape reader at any point during execution.
 many bits have been read so far.
 -/
 structure ReadHead where
+  /-- The portion of the tape still ahead of the read head. -/
   remaining : ComputerTape
+  /-- The number of bits already consumed by the read head. -/
   steps     : ℕ
 
 /--

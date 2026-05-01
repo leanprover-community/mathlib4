@@ -7,7 +7,6 @@ module
 
 public import Mathlib.InformationTheory.EntropyNumber.Basic
 
-@[expose] public section
 
 
 /-!
@@ -33,6 +32,8 @@ for polynomial-time functions and polynomial bounds.
 (No standalone theorems beyond the `IsPolynomial.id` instance; this file
 provides foundational definitions consumed by downstream complexity files.)
 -/
+
+@[expose] public section
 
 open List
 
@@ -76,7 +77,7 @@ def IsPolynomial (f : EntropyNat → EntropyNat) : Prop :=
   ∃ (P : Polynomial), f = P.eval
 
 /-- The identity function on `EntropyNat` is polynomial. -/
-instance IsPolynomial.id : IsPolynomial _root_.id := by
+theorem IsPolynomial.id : IsPolynomial _root_.id := by
   use Polynomial.id
   ext n
   simp [Polynomial.eval]

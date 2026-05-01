@@ -10,7 +10,6 @@ public import Mathlib.InformationTheory.Complexity.UTM
 public import Mathlib.InformationTheory.Complexity.Decomposition
 public import Mathlib.InformationTheory.Entropy.Program
 
-@[expose] public section
 
 
 /-!
@@ -47,6 +46,8 @@ has access to the information content and complexity class defs.
   evaluation, and entropy walk determine SAT equivalently.
 * `entropy_walk_completeness` -- SAT is equivalent to the existence of a zero-entropy walk.
 -/
+
+@[expose] public section
 
 namespace InformationTheory
 

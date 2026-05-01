@@ -14,7 +14,6 @@ public import Mathlib.InformationTheory.Physics.Common
 public import Mathlib.InformationTheory.Entropy.Uniqueness
 public import Mathlib.InformationTheory.Physics.UniformSystems
 
-@[expose] public section
 
 
 /-!
@@ -47,6 +46,8 @@ cardinalities, and shows that in each case the physical entropy equals
 Bose--Einstein, Fermi--Dirac, Maxwell--Boltzmann, statistical mechanics, entropy
 -/
 
+@[expose] public section
+
 namespace InformationTheory.Physics.StatisticalDistributions
 
 open Multiset NNReal Finset Function
@@ -66,6 +67,8 @@ Defines the standard BE state space to be uniform `OmegaUD` over
 the microstates (occupancy vectors summing to M) and shows it is
 equivalent to `SymFin N M` (multisets of size M over Fin N).
 -/
+/-- Bose-Einstein probability mass on `OmegaUD N M`: the uniform distribution
+on the occupancy-vector microstates. -/
 noncomputable def p_BE (N M : ℕ) :
     OmegaUD N M → NNReal :=
    p_UD N M
@@ -235,12 +238,14 @@ The uniform FD distribution assigns equal probability
 
 /-- The FD probability distribution over the original state
 space. -/
+@[nolint unusedArguments]
 noncomputable def p_FD (N M : ℕ) :
     OmegaFD N M → NNReal :=
   fun _q => uniformProb (Fintype.card (OmegaFD N M))
 
 /-- The FD probability distribution indexed over
 `Fin (Fintype.card (OmegaFD N M))`. -/
+@[nolint unusedArguments]
 noncomputable def p_FD_fin (N M : ℕ) :
     Fin (Fintype.card (OmegaFD N M)) → NNReal :=
   fun _i => uniformProb (Fintype.card (OmegaFD N M))
@@ -416,6 +421,7 @@ The uniform MB distribution assigns equal probability
 
 /-- The MB probability distribution over the original state
 space. -/
+@[nolint unusedArguments]
 noncomputable def p_MB (N M : ℕ) :
     OmegaMB N M → NNReal :=
   fun _q => uniformProb
@@ -423,6 +429,7 @@ noncomputable def p_MB (N M : ℕ) :
 
 /-- The MB probability distribution indexed over
 `Fin (Fintype.card (OmegaMB N M))`. -/
+@[nolint unusedArguments]
 noncomputable def p_MB_fin (N M : ℕ) :
     Fin (Fintype.card (OmegaMB N M)) → NNReal :=
   fun _i => uniformProb

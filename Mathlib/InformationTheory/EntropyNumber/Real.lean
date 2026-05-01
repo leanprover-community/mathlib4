@@ -9,7 +9,6 @@ public import Mathlib.Analysis.Real.Cardinality
 public import Mathlib.SetTheory.Cardinal.Aleph
 public import Mathlib.Analysis.SpecificLimits.Basic
 
-@[expose] public section
 
 
 /-!
@@ -33,6 +32,8 @@ cardinality arguments.
 * `cardinal_entropyReal_eq_two_pow_aleph0` — `#EntropyReal = 2 ^ ℵ₀`.
 * `cardinal_entropyReal` — `#EntropyReal = ℶ₁`.
 -/
+
+@[expose] public section
 
 namespace InformationTheory
 

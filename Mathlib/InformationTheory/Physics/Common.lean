@@ -17,7 +17,6 @@ public import Mathlib.InformationTheory.EntropyNumber.Basic
 public import Mathlib.InformationTheory.Entropy.Shannon
 public import Mathlib.InformationTheory.Entropy.Axioms
 
-@[expose] public section
 
 
 /-!
@@ -46,6 +45,8 @@ the three canonical statistical-mechanics distributions
 
 physics, statistical mechanics, entropy, uniform distribution
 -/
+
+@[expose] public section
 
 namespace InformationTheory.Physics.Common
 

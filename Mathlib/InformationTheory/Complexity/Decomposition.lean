@@ -11,7 +11,6 @@ public import Mathlib.InformationTheory.EntropyNumber.Basic
 public import Mathlib.Data.List.Prime
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
-@[expose] public section
 
 
 /-!
@@ -65,6 +64,8 @@ The criterion is grounded in a 2D walk view:
   entropy bridge.
 -/
 
+@[expose] public section
+
 namespace InformationTheory
 
 open InformationTheory
@@ -78,7 +79,9 @@ A decomposition record for a CNF.
 `factors` are atom codes derived from all clause literals.
 -/
 structure ConstructiveDecomposition (k : ℕ) where
+  /-- The CNF whose decomposition is recorded. -/
   cnf : SyntacticCNF k
+  /-- The atom codes derived from the literals occurring in `cnf`. -/
   factors : List ℕ
 
 /--
