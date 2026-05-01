@@ -1118,9 +1118,7 @@ theorem ofRealAm_coe : (ofRealAm : ℝ → K) = ofReal :=
 
 variable (K) in
 /-- The `ℝ → K` coercion, as a ⋆-algebra map. -/
-noncomputable def ofRealStarAlgHom : ℝ →⋆ₐ[ℝ] K where
-  __ := ofRealAm
-  map_star' _ := RCLike.conj_ofReal _ |>.symm
+noncomputable def ofRealStarAlgHom : ℝ →⋆ₐ[ℝ] K := .ofId ℝ K
 
 @[simp] theorem ofRealStarAlgHom_coe : (ofRealStarAlgHom K : ℝ → K) = ofReal := rfl
 @[simp] lemma toAlgHom_ofRealStarAlgHom : (ofRealStarAlgHom K).toAlgHom = ofRealAm := rfl
