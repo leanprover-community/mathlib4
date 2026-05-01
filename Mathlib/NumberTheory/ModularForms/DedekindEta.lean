@@ -108,35 +108,6 @@ lemma multipliableLocallyUniformlyOn_eta :
   multipliableLocallyUniformlyOn_one_sub_pow.comp (𝕢 1)
     (fun z hz ↦ by simpa using norm_qParam_lt_one 1 ⟨z, hz⟩) (by fun_prop)
 
-/-- The infinite product `q ↦ ∏' n, (1 - q^(n+1))` is differentiable on the open unit disc. -/
-lemma differentiableOn_tprod_one_sub_pow :
-    DifferentiableOn ℂ (fun q ↦ ∏' n, (1 - q ^ (n + 1))) (Metric.ball (0 : ℂ) 1) := by
-  apply multipliableLocallyUniformlyOn_one_sub_pow.hasProdLocallyUniformlyOn.differentiableOn
-    ?_ Metric.isOpen_ball
-  filter_upwards with n
-  simpa [Finset.prod_fn] using DifferentiableOn.finset_prod (fun _ _ ↦ by fun_prop)
-
-/-- For any `k`, the function `q ↦ ∏' n, (1 - q^(n+1))^k` is differentiable on the
-open unit disc. -/
-lemma differentiableOn_tprod_one_sub_pow_pow (k : ℕ) :
-    DifferentiableOn ℂ (fun q ↦ ∏' n, (1 - q ^ (n + 1)) ^ k) (Metric.ball (0 : ℂ) 1) := by
-  refine (differentiableOn_tprod_one_sub_pow.fun_pow k).congr fun q hq ↦ ?_
-  have hq_lt : ‖q‖ < 1 := by simpa [Metric.mem_ball, dist_zero_right] using hq
-  exact (multipliable_one_sub_pow hq_lt).tprod_pow k
-
-theorem summable_eta_q (z : ℍ) : Summable fun n ↦ ‖-eta_q n z‖ := by
-  have hq : ‖(𝕢 (1 : ℝ) ↑z : ℂ)‖ < 1 := by exact_mod_cast norm_qParam_lt_one 1 z
-  simpa only [norm_neg, eta_q, norm_pow] using
-    (summable_nat_add_iff 1).mpr (summable_geometric_of_lt_one (norm_nonneg _) hq)
-
-lemma multipliableLocallyUniformlyOn_eta :
-    MultipliableLocallyUniformlyOn (fun n a ↦ 1 - eta_q n a) ℍₒ :=
-  ⟨_, (multipliableLocallyUniformlyOn_one_sub_pow.hasProdLocallyUniformlyOn :
-      TendstoLocallyUniformlyOn _ _ _ _).comp (Periodic.qParam 1)
-    (fun z hz ↦ by simpa [Metric.mem_ball, dist_zero_right] using
-      (by exact_mod_cast norm_qParam_lt_one 1 ⟨z, hz⟩ : ‖(𝕢 (1 : ℝ) z : ℂ)‖ < 1))
-      (by fun_prop)⟩
-
 lemma eta_tprod_ne_zero {z : ℂ} (hz : z ∈ ℍₒ) : ∏' n, (1 - eta_q n z) ≠ 0 := by
   refine tprod_one_add_ne_zero_of_summable (f := fun n ↦ -eta_q n z) ?_ ?_
   · exact fun i ↦ by simpa using one_sub_eta_q_ne_zero i hz

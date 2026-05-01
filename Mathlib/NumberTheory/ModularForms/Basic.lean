@@ -395,18 +395,6 @@ lemma coe_intCast [Γ.HasDetPlusMinusOne] (z : ℤ) :
 lemma toSlashInvariantForm_intCast [Γ.HasDetPlusMinusOne] (z : ℤ) :
     (z : ModularForm Γ 0).toSlashInvariantForm = z := rfl
 
-/-- Transport a modular form along an equality of subgroups. -/
-def ofSubgroupEq {Γ' : Subgroup (GL (Fin 2) ℝ)} (h : Γ = Γ') (f : ModularForm Γ k) :
-    ModularForm Γ' k where
-  toFun := f
-  slash_action_eq' A hA := f.slash_action_eq' A (h ▸ hA)
-  holo' := f.holo'
-  bdd_at_cusps' hc := f.bdd_at_cusps' (h ▸ hc)
-
-@[simp]
-lemma ofSubgroupEq_apply {Γ' : Subgroup (GL (Fin 2) ℝ)} (h : Γ = Γ') (f : ModularForm Γ k)
-    (z : ℍ) : (f.ofSubgroupEq h) z = f z := rfl
-
 end ModularForm
 
 namespace CuspForm
