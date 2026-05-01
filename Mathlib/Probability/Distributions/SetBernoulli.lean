@@ -63,11 +63,9 @@ lemma setBernoulli_apply' (S : Set (Set ι)) :
     setBer(u, p) S = (infinitePi fun i ↦ toNNReal p • dirac (i ∈ u) + toNNReal (σ p) • dirac False)
       ((fun p ↦ {i | p i}) ⁻¹' S) := MeasurableEquiv.setOf.symm.comap_apply ..
 
-set_option backward.isDefEq.respectTransparency false in
 variable (u) in
 @[simp] lemma setBernoulli_zero : setBer(u, 0) = dirac ∅ := by simp [setBernoulli_eq_map]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (u) in
 @[simp] lemma setBernoulli_one : setBer(u, 1) = dirac u := by simp [setBernoulli_eq_map]
 
@@ -89,7 +87,18 @@ lemma setBernoulli_ae_subset : ∀ᵐ s ∂setBer(u, p), s ⊆ u := by
       rw [setBernoulli_apply']; congr!; ext; simp [funext_iff]
     _ = 0 := by simp [infinitePi_cylinder, hi]
 
-variable (u p) in
+@[simp]
+lemma setBernoulli_singleton_of_not_subset {s : Set ι} (p : I) (hs : ¬ s ⊆ u) :
+    setBer(u, p) {s} = 0 :=
+  Measure.mono_null (by simpa) setBernoulli_ae_subset
+
+/-- `setBer(u, p)` only gives mass to families of sets contained in `u`. -/
+lemma setBernoulli_apply_eq_apply_subsets (u : Set ι) (p : I) (S : Set (Set ι)) :
+    setBer(u, p) S = setBer(u, p) { s ∈ S | s ⊆ u} := by
+  apply (measure_eq_measure_of_null_diff (by grind) ?_).symm
+  exact Measure.mono_null (by grind) setBernoulli_ae_subset
+
+variable (p) in
 @[simp] lemma setBernoulli_singleton (hsu : s ⊆ u) (hu : u.Finite) :
     setBer(u, p) {s} = toNNReal p ^ s.ncard * toNNReal (σ p) ^ (u \ s).ncard := by
   classical
@@ -106,6 +115,22 @@ variable (u p) in
     _ = toNNReal p ^ s.ncard * toNNReal (σ p) ^ (↑u \ s).ncard := by
       simp [Finset.prod_ite, ← Set.ncard_coe_finset, Set.setOf_and,
         Set.inter_eq_right.2 hsu, ← Set.compl_setOf, Set.diff_eq_compl_inter, Set.inter_comm]
+
+@[simp]
+lemma setBernoulli_real_singleton (p : I) (hsu : s ⊆ u) (hu : u.Finite) :
+    setBer(u, p).real {s} = p ^ s.ncard * (1 - p : ℝ) ^ (u \ s).ncard := by
+  simp [measureReal_def, setBernoulli_singleton p hsu hu]
+
+@[simp]
+lemma setBernoulli_empty : setBer((∅ : Set ι), p) = dirac ∅ := by
+  ext s hs
+  rw [setBernoulli_apply_eq_apply_subsets]
+  by_cases h : ∅ ∈ s
+  · have : {t | t ∈ s ∧ t ⊆ ∅} = {∅} := by grind
+    simp_all
+  · have : {t | t ∈ s ∧ t ⊆ ∅} = ∅ := by grind
+    rw [this]
+    simp_all
 
 end Countable
 
