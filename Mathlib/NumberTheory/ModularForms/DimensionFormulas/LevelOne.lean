@@ -23,6 +23,8 @@ of even weight.
 * `ModularForm.rank_eq_one_add_rank_cuspForm`: `rank M_k = 1 + rank S_k` for even `k ≥ 3`.
 * `ModularForm.dimension_level_one`: the full dimension formula for all even `k : ℕ`.
 * `ModularForm.levelOne_odd_weight_rank_zero`: modular forms of odd weight are zero.
+* `ModularForm.discriminant_eq_E₄_cube_sub_E₆_sq`: the identity `Δ = (E₄³ - E₆²) / 1728`,
+  with a graded-ring version `ModularForm.discriminant_eq_E₄_cube_sub_E₆_sq_graded`.
 * A `FiniteDimensional ℂ (ModularForm 𝒮ℒ k)` instance for every `k : ℤ`.
 -/
 
@@ -215,6 +217,28 @@ theorem discriminant_eq_E₄_cube_sub_E₆_sq (z : ℍ) :
     rw [← hc_eq, show c * discriminant z = (c • CuspForm.discriminant) z from rfl, hc,
       congr_fun hgE z, E₄CubeSubE₆SqForm_apply]
   linear_combination h1728 / 1728
+
+/-- The modular discriminant equals `(E₄³ - E₆²) / 1728` in the graded ring
+`⨁ k, ModularForm 𝒮ℒ k`. -/
+theorem discriminant_eq_E₄_cube_sub_E₆_sq_graded :
+    DirectSum.of (ModularForm 𝒮ℒ) 12 (CuspForm.discriminant : ModularForm 𝒮ℒ 12) =
+      (1 / 1728 : ℂ) • (DirectSum.of (ModularForm 𝒮ℒ) 4 E₄ ^ 3 -
+        DirectSum.of (ModularForm 𝒮ℒ) 6 E₆ ^ 2) := by
+  have hE4 : DirectSum.of (ModularForm 𝒮ℒ) 4 E₄ ^ 3 = DirectSum.of (ModularForm 𝒮ℒ) 12
+      (ModularForm.mcast (by norm_num) ((E₄.mul E₄).mul E₄)) := by
+    rw [pow_succ (n := 2), pow_two, DirectSum.of_mul_of, DirectSum.of_mul_of]
+    rfl
+  have hE6 : DirectSum.of (ModularForm 𝒮ℒ) 6 E₆ ^ 2 =
+      DirectSum.of (ModularForm 𝒮ℒ) 12 (ModularForm.mcast (by norm_num) (E₆.mul E₆)) := by
+    rw [pow_two, DirectSum.of_mul_of]
+    rfl
+  rw [hE4, hE6, ← map_sub (DirectSum.of (ModularForm 𝒮ℒ) 12), ← DirectSum.of_smul]
+  congr 1
+  ext z
+  change ModularForm.discriminant z =
+    (1 / 1728 : ℂ) * (E₄ z * E₄ z * E₄ z - E₆ z * E₆ z)
+  rw [discriminant_eq_E₄_cube_sub_E₆_sq z]
+  ring
 
 /- Algebraic core of the weight-2 vanishing argument: if `p : PowerSeries ℂ`
 satisfies `c₄ • p₄ = p²` and `c₆ • p₆ = p³` for power series `p₄`, `p₆` with
