@@ -2145,6 +2145,7 @@ public import Mathlib.Analysis.Normed.Module.Dual
 public import Mathlib.Analysis.Normed.Module.ENormedSpace
 public import Mathlib.Analysis.Normed.Module.Extr
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.Analysis.Normed.Module.FiniteDimensionConnected
 public import Mathlib.Analysis.Normed.Module.HahnBanach
 public import Mathlib.Analysis.Normed.Module.MStructure
 public import Mathlib.Analysis.Normed.Module.Multilinear.Basic
