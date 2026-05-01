@@ -492,12 +492,15 @@ theorem IsRotated.dropLast_tail {α}
     simp only [head_cons, ne_eq, reduceCtorEq, not_false_eq_true, getLast_cons] at hL'
     simp [hL', IsRotated.cons_getLast_dropLast]
 
-lemma IsRotated.exists_of_sublist {l m m' : List α} (h : l <+ m) (hr : m ~r m') :
-    ∃ l' : List α, l' ~r l ∧ l' <+ m' := by
-  obtain ⟨n, hn, rfl⟩ := isRotated_iff_mod.mp hr
-  obtain ⟨lL, lR, rfl, hL, hR⟩ := sublist_append_iff.mp <| take_append_drop n m ▸ h
-  refine ⟨lR ++ lL, isRotated_append.symm, ?_⟩
-  simpa [rotate_eq_drop_append_take hn] using hR.append hL
+theorem exists_sublist_isRotated_iff (L L' : List α) :
+    (∃ L₁ : List α, L ~r L₁ ∧ L₁ <+ L') ↔ (∃ L₂ : List α, L <+ L₂ ∧ L₂ ~r L') := by
+  refine ⟨fun ⟨L₁, hLr, hL⟩ => ?_, fun ⟨L₂, hL, hLr⟩ => ?_⟩
+    <;> obtain ⟨n, hn, rfl⟩ := isRotated_iff_mod.mp hLr
+  · obtain ⟨L₂L, L₂R, rfl, hL₂L, hL₂R⟩ := append_sublist_iff.mp (rotate_eq_drop_append_take hn ▸ hL)
+    exact ⟨L₂R ++ L₂L, (by simpa using hL₂R.append hL₂L), isRotated_append⟩
+  · obtain ⟨lL, lR, rfl, hL, hR⟩ := sublist_append_iff.mp <| take_append_drop n L₂ ▸ hL
+    refine ⟨lR ++ lL, isRotated_append.symm, ?_⟩
+    simpa [rotate_eq_drop_append_take hn] using hR.append hL
 
 /-- List of all cyclic permutations of `l`.
 The `cyclicPermutations` of a nonempty list `l` will always contain `List.length l` elements.
