@@ -357,24 +357,25 @@ public def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
       withReducible do
       let some (_, lhs', rhs') := GCongr.getRel (← whnf hrelType) |
         throwTacticEx `grewrite goal m!"{hrelType} is not a valid relation"
-      let mut symm := symm
-      unless lhs' == lhs && rhs' == rhs do
-        if lhs' == rhs && rhs' == lhs then
-          symm := !symm
-        else
-          throwTacticEx `grewrite goal m!"{hrelType} is not a valid relation"
+      -- Support relations that flip their arguments when reduced, such as `≥`.
+      let symm' ←
+        if lhs' == lhs && rhs' == rhs then pure symm
+        else if lhs' == rhs && rhs' == lhs then pure !symm
+        else throwTacticEx `grewrite goal m!"{hrelType} is not a valid relation"
       let index := (pattern.toHeadIndex, pattern.headNumArgs)
       let mvarIds := mvarIds ++ newMVars.map (·.mvarId!, #[])
       if let (some (eNew, impProof), newGoals) ←
         grewriteCore `_Implies none e (!forwardImp) config |>.run
-          { symm, proof := hrel, type := hrelType, index, mvarIds }
+          { symm := symm', proof := hrel, type := hrelType, index, mvarIds }
           |>.run' {} |>.run then
         pure (eNew, impProof, newGoals)
       else
-        throwTacticEx `grewrite goal
-          m!"Did not find a suitable occurrence of {indentExpr pattern}\n\
-          in the target expression{indentExpr e}\n\n\
-          Use the command `set_option trace.Meta.grewrite true` to inspect this."
+        withLocalDeclD `_ (← inferType replacement) fun replacement' ↦ do
+          let hrelType := updateRel hrelType replacement' symm
+          throwTacticEx `grewrite goal
+            m!"Did not find a rewrite with{indentExpr hrelType}\n\
+            in the target expression{indentExpr e}\n\n\
+            Use the command `set_option trace.Meta.grewrite true` to inspect this."
     -- post-process the metavariables
     postprocessAppMVars `grewrite goal newMVars binderInfos
       (synthAssignedInstances := !tactic.skipAssignedInstances.get (← getOptions))

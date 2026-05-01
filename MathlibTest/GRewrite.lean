@@ -216,8 +216,8 @@ relation does not have its main goals proved by `gcongr` (in the two examples he
 the inequality goes in the wrong direction). -/
 
 /--
-error: Tactic `grewrite` failed: Did not find a suitable occurrence of ⏎
-  x
+error: Tactic `grewrite` failed: Did not find a rewrite with
+  x ≥ _
 in the target expression
   2 * x ≤ b
 
@@ -387,8 +387,8 @@ example (h : double (double 2) ≤ 10) : double 4 ≤ 20 := by
 
 -- `rw`/`grw` index based on the head constant, so the following fails.
 /--
-error: Tactic `grewrite` failed: Did not find a suitable occurrence of ⏎
-  double 2
+error: Tactic `grewrite` failed: Did not find a rewrite with
+  double 2 ≤ _
 in the target expression
   4 ≤ 20
 
