@@ -118,7 +118,6 @@ lemma toEuclideanCLM_toLp (A : Matrix n n 𝕜) (x : n → 𝕜) :
 lemma ofLp_toEuclideanCLM (A : Matrix n n 𝕜) (x : EuclideanSpace 𝕜 n) :
     ofLp (toEuclideanCLM (n := n) (𝕜 := 𝕜) A x) = A *ᵥ ofLp x := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped RealInnerProductSpace in
 lemma inner_toEuclideanCLM (A : Matrix n n ℝ) (x y : EuclideanSpace ℝ n) :
     ⟪x, toEuclideanCLM (𝕜 := ℝ) A y⟫ = x ⬝ᵥ A *ᵥ y := by
@@ -152,7 +151,6 @@ def l2OpNormedRingAux : NormedRing (Matrix n n 𝕜) :=
 open Bornology Filter
 open scoped Topology Uniformity
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The metric on `Matrix m n 𝕜` arising from the operator norm given by the identification with
 (continuous) linear maps of `EuclideanSpace`. -/
 @[instance_reducible]
@@ -250,9 +248,8 @@ lemma l2_opNorm_diagonal (v : n → 𝕜) : ‖(diagonal v : Matrix n n 𝕜)‖
 lemma l2_opNNNorm_diagonal (v : n → 𝕜) : ‖(diagonal v : Matrix n n 𝕜)‖₊ = ‖v‖₊ :=
   Subtype.ext <| l2_opNorm_diagonal (n := n) (𝕜 := 𝕜) v
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The normed algebra structure on `Matrix n n 𝕜` arising from the operator norm given by the
-identification with (continuous) linear endmorphisms of `EuclideanSpace 𝕜 n`. -/
+identification with (continuous) linear endomorphisms of `EuclideanSpace 𝕜 n`. -/
 @[instance_reducible]
 def instL2OpNormedSpace : NormedSpace 𝕜 (Matrix m n 𝕜) where
   norm_smul_le r x := by
@@ -262,7 +259,7 @@ def instL2OpNormedSpace : NormedSpace 𝕜 (Matrix m n 𝕜) where
 scoped[Matrix.Norms.L2Operator] attribute [instance] Matrix.instL2OpNormedSpace
 
 /-- The normed ring structure on `Matrix n n 𝕜` arising from the operator norm given by the
-identification with (continuous) linear endmorphisms of `EuclideanSpace 𝕜 n`. -/
+identification with (continuous) linear endomorphisms of `EuclideanSpace 𝕜 n`. -/
 @[instance_reducible]
 def instL2OpNormedRing : NormedRing (Matrix n n 𝕜) where
   dist_eq := l2OpNormedRingAux.dist_eq
@@ -277,18 +274,16 @@ lemma cstar_norm_def (A : Matrix n n 𝕜) : ‖A‖ = ‖toEuclideanCLM (n := n
 matrices. -/
 lemma cstar_nnnorm_def (A : Matrix n n 𝕜) : ‖A‖₊ = ‖toEuclideanCLM (n := n) (𝕜 := 𝕜) A‖₊ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The normed algebra structure on `Matrix n n 𝕜` arising from the operator norm given by the
-identification with (continuous) linear endmorphisms of `EuclideanSpace 𝕜 n`. -/
+identification with (continuous) linear endomorphisms of `EuclideanSpace 𝕜 n`. -/
 @[instance_reducible]
 def instL2OpNormedAlgebra : NormedAlgebra 𝕜 (Matrix n n 𝕜) where
   norm_smul_le := norm_smul_le
 
 scoped[Matrix.Norms.L2Operator] attribute [instance] Matrix.instL2OpNormedAlgebra
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The operator norm on `Matrix n n 𝕜` given by the identification with (continuous) linear
-endmorphisms of `EuclideanSpace 𝕜 n` makes it into a `L2OpRing`. -/
+endomorphisms of `EuclideanSpace 𝕜 n` makes it into a `L2OpRing`. -/
 lemma instCStarRing : CStarRing (Matrix n n 𝕜) where
   norm_mul_self_le M := le_of_eq <| Eq.symm <| l2_opNorm_conjTranspose_mul_self M
 

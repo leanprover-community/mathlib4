@@ -477,7 +477,7 @@ instance separableClosure.isPurelyInseparable [Algebra.IsAlgebraic F E] :
     fun h ↦ ?_⟩
   haveI := (isSeparable_adjoin_simple_iff_isSeparable L E).2 h
   haveI : Algebra.IsSeparable F (restrictScalars F L⟮x⟯) := Algebra.IsSeparable.trans F L L⟮x⟯
-  have hx : x ∈ restrictScalars F L⟮x⟯ := mem_adjoin_simple_self _ x
+  have hx : x ∈ L⟮x⟯.restrictScalars F := mem_adjoin_simple_self _ x
   exact ⟨⟨x, mem_separableClosure_iff.2 <| isSeparable_of_mem_isSeparable F E hx⟩, rfl⟩
 
 open Cardinal in

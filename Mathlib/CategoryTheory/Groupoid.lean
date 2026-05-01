@@ -214,4 +214,6 @@ lemma isGroupoid_iff_isomorphisms_eq_top (C : Type*) [Category* C] :
   · intro h
     exact ⟨of_eq_top h⟩
 
+instance {I : Type*} : IsGroupoid (Discrete I) where
+
 end CategoryTheory

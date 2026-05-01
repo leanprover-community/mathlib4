@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.PathObject
+public import Mathlib.AlgebraicTopology.ModelCategory.LeftHomotopy
 public import Mathlib.CategoryTheory.Localization.Quotient
 
 /-!
@@ -123,14 +124,8 @@ lemma weakEquivalence_iff [(weakEquivalences C).HasTwoOutOfThreeProperty]
     [(weakEquivalences C).ContainsIdentities]
     {f₀ f₁ : X ⟶ Y} (h : P.RightHomotopy f₀ f₁) :
     WeakEquivalence f₀ ↔ WeakEquivalence f₁ := by
-  revert P f₀ f₁
-  suffices ∀ (P : PathObject Y) {f₀ f₁ : X ⟶ Y} (h : P.RightHomotopy f₀ f₁),
-      WeakEquivalence f₀ → WeakEquivalence f₁
-    from fun _ _ _ h ↦ ⟨this _ h, this _ h.symm⟩
-  intro P f₀ f₁ h h₀
-  have := weakEquivalence_of_postcomp_of_fac h.h₀
-  rw [← h.h₁]
-  infer_instance
+  induction h
+  grind [weakEquivalence_postcomp_iff]
 
 end
 
@@ -312,5 +307,41 @@ lemma mk_eq_mk_iff [ModelCategory C] [IsFibrant Y] (f g : X ⟶ Y) :
   exact Quot.eq
 
 end RightHomotopyClass
+
+/-- The left homotopy in the opposite category that is deduced from a right homotopy. -/
+@[simps]
+protected def PrepathObject.RightHomotopy.op
+    {X Y : C} {P : PrepathObject Y} {f g : X ⟶ Y} (h : P.RightHomotopy f g) :
+    P.op.LeftHomotopy f.op g.op where
+  h := h.h.op
+  h₀ := Quiver.Hom.unop_inj (by simp)
+  h₁ := Quiver.Hom.unop_inj (by simp)
+
+/-- The left homotopy that is deduced from a right homotopy in the opposite category. -/
+@[simps]
+protected def PrepathObject.RightHomotopy.unop
+    {X Y : Cᵒᵖ} {P : PrepathObject Y} {f g : X ⟶ Y} (h : P.RightHomotopy f g) :
+    P.unop.LeftHomotopy f.unop g.unop where
+  h := h.h.unop
+  h₀ := Quiver.Hom.op_inj (by simp)
+  h₁ := Quiver.Hom.op_inj (by simp)
+
+/-- The right homotopy in the opposite category that is deduced from a left homotopy. -/
+@[simps]
+protected def Precylinder.LeftHomotopy.op
+    {X Y : C} {P : Precylinder X} {f g : X ⟶ Y} (h : P.LeftHomotopy f g) :
+    P.op.RightHomotopy f.op g.op where
+  h := h.h.op
+  h₀ := Quiver.Hom.unop_inj (by simp)
+  h₁ := Quiver.Hom.unop_inj (by simp)
+
+/-- The right homotopy that is deduced from a left homotopy in the opposite category. -/
+@[simps]
+protected def Precylinder.LeftHomotopy.unop
+    {X Y : Cᵒᵖ} {P : Precylinder X} {f g : X ⟶ Y} (h : P.LeftHomotopy f g) :
+    P.unop.RightHomotopy f.unop g.unop where
+  h := h.h.unop
+  h₀ := Quiver.Hom.op_inj (by simp)
+  h₁ := Quiver.Hom.op_inj (by simp)
 
 end HomotopicalAlgebra

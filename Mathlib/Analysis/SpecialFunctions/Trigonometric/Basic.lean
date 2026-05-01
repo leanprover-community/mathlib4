@@ -822,7 +822,7 @@ theorem quadratic_root_cos_pi_div_five :
   suffices 2 * c = 4 * c ^ 2 - 1 by simp [this]
   have hs : s ≠ 0 := by
     rw [ne_eq, sin_eq_zero_iff, hθ]
-    push_neg
+    push Not
     intro n hn
     replace hn : n * 5 = 1 := by field_simp at hn; norm_cast at hn
     lia
@@ -1208,6 +1208,10 @@ theorem exp_mul_I_periodic : Function.Periodic (fun x => exp (x * I)) (2 * π) :
 @[simp]
 theorem exp_pi_mul_I : exp (π * I) = -1 :=
   exp_zero ▸ exp_antiperiodic.eq
+
+@[simp]
+theorem exp_neg_pi_mul_I : exp (-(π * I)) = -1 := by
+  simp [Complex.exp_neg]
 
 @[simp]
 theorem exp_two_pi_mul_I : exp (2 * π * I) = 1 :=

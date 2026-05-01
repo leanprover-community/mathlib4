@@ -111,6 +111,10 @@ theorem isMax_top : IsMax (⊤ : α) :=
 theorem not_top_lt : ¬⊤ < a :=
   isMax_top.not_lt
 
+@[to_dual (attr := simp) not_covBy_bot]
+theorem not_top_covBy : ¬⊤ ⋖ a :=
+  fun h ↦ not_top_lt h.1
+
 @[to_dual ne_bot_of_gt]
 theorem ne_top_of_lt (h : a < b) : a ≠ ⊤ :=
   (h.trans_le le_top).ne
@@ -121,6 +125,15 @@ theorem ne_top_of_lt (h : a < b) : a ≠ ⊤ :=
   lt_of_lt_of_le h le_top
 
 @[to_dual bot_lt] alias LT.lt.lt_top := lt_top_of_lt
+
+@[to_dual bot_lt_iff_not_le_bot]
+theorem lt_top_iff_not_top_le : a < ⊤ ↔ ¬ ⊤ ≤ a := by
+  simp [lt_iff_le_not_ge]
+
+@[to_dual not_isMin_iff_bot_lt]
+theorem not_isMax_iff_lt_top : ¬ IsMax a ↔ a < ⊤ := by
+  rw [not_isMax_iff]
+  exact ⟨fun ⟨b, hb⟩ ↦ hb.trans_le le_top, fun h ↦ ⟨⊤, h⟩⟩
 
 attribute [aesop (rule_sets := [finiteness]) unsafe 20%] ne_top_of_lt
 -- would have been better to implement this as a "safe" "forward" rule, why doesn't this work?
@@ -219,13 +232,12 @@ namespace OrderDual
 variable (α)
 
 @[to_dual]
-instance instTop [Bot α] : Top αᵒᵈ :=
-  ⟨(⊥ : α)⟩
+instance [h : Bot α] : Top αᵒᵈ :=
+  ⟨h.bot⟩
 
 @[to_dual]
-instance instOrderTop [LE α] [OrderBot α] : OrderTop αᵒᵈ where
-  __ := inferInstanceAs (Top αᵒᵈ)
-  le_top := @bot_le α _ _
+instance [LE α] [h : OrderBot α] : OrderTop αᵒᵈ where
+  le_top := h.bot_le
 
 @[to_dual (attr := simp)] lemma ofDual_top [Bot α] : ofDual ⊤ = (⊥ : α) := rfl
 @[to_dual (attr := simp)] lemma toDual_top [Top α] : toDual (⊤ : α) = ⊥ := rfl
@@ -257,8 +269,6 @@ attribute [to_dual self (reorder := 3 4)] BoundedOrder.mk
 attribute [to_dual existing] BoundedOrder.toOrderTop
 
 instance OrderDual.instBoundedOrder (α : Type u) [LE α] [BoundedOrder α] : BoundedOrder αᵒᵈ where
-  __ := inferInstanceAs (OrderTop αᵒᵈ)
-  __ := inferInstanceAs (OrderBot αᵒᵈ)
 
 section PartialOrder
 variable [PartialOrder α]
@@ -300,8 +310,8 @@ instance instOrderBot [∀ i, LE (α' i)] [∀ i, OrderBot (α' i)] : OrderBot (
 
 instance instBoundedOrder [∀ i, LE (α' i)] [∀ i, BoundedOrder (α' i)] :
     BoundedOrder (∀ i, α' i) where
-  __ := inferInstanceAs (OrderTop (∀ i, α' i))
-  __ := inferInstanceAs (OrderBot (∀ i, α' i))
+  __ := (inferInstance : OrderTop (∀ i, α' i))
+  __ := (inferInstance : OrderBot (∀ i, α' i))
 
 end Pi
 
@@ -411,13 +421,13 @@ instance instTop [Top α] [Top β] : Top (α × β) :=
 
 @[to_dual]
 instance instOrderTop [LE α] [LE β] [OrderTop α] [OrderTop β] : OrderTop (α × β) where
-  __ := inferInstanceAs (Top (α × β))
+  __ := (inferInstance : Top (α × β))
   le_top _ := ⟨le_top, le_top⟩
 
 instance instBoundedOrder [LE α] [LE β] [BoundedOrder α] [BoundedOrder β] :
     BoundedOrder (α × β) where
-  __ := inferInstanceAs (OrderTop (α × β))
-  __ := inferInstanceAs (OrderBot (α × β))
+  __ := (inferInstance : OrderTop (α × β))
+  __ := (inferInstance : OrderBot (α × β))
 
 end Prod
 

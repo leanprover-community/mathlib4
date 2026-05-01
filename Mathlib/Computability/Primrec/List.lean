@@ -516,7 +516,7 @@ variable {α : Type*} [Primcodable α]
 open Primrec
 
 instance vector {n} : Primcodable (List.Vector α n) :=
-  subtype ((@Primrec.eq ℕ _).comp list_length (const _))
+  fast_instance% subtype ((@Primrec.eq ℕ _).comp list_length (const _))
 
 instance finArrow {n} : Primcodable (Fin n → α) :=
   ofEquiv _ (Equiv.vectorEquivFin _ _).symm
@@ -529,11 +529,11 @@ variable {α : Type*} {β : Type*} {σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
 theorem vector_toList {n} : Primrec (@List.Vector.toList α n) :=
-  subtype_val
+  subtype_val (hp := (@Primrec.eq ℕ _).comp list_length (const _))
 
 theorem vector_toList_iff {n} {f : α → List.Vector β n} :
     (Primrec fun a => (f a).toList) ↔ Primrec f :=
-  subtype_val_iff
+  subtype_val_iff (hp := (@Primrec.eq ℕ _).comp list_length (const _))
 
 theorem vector_cons {n} : Primrec₂ (@List.Vector.cons α n) :=
   vector_toList_iff.1 <| by simpa using list_cons.comp fst (vector_toList_iff.2 snd)
