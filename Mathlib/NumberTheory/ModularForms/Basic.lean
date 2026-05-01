@@ -549,10 +549,6 @@ def mcast {a b : ℤ} {Γ Γ' : Subgroup (GL (Fin 2) ℝ)} (h : a = b) (f : Cusp
   holo' := f.holo'
   zero_at_cusps' hc := h ▸ f.zero_at_cusps' (hΓ ▸ hc)
 
-@[simp]
-lemma mcast_apply {a b : ℤ} {Γ Γ' : Subgroup (GL (Fin 2) ℝ)} (h : a = b) (f : CuspForm Γ a)
-    (hΓ : Γ' = Γ := by rfl) (z : ℍ) : mcast h f hΓ z = f z := rfl
-
 end CuspForm
 
 namespace ModularForm
@@ -567,10 +563,6 @@ def mcast {a b : ℤ} {Γ Γ' : Subgroup (GL (Fin 2) ℝ)} (h : a = b) (f : Modu
   slash_action_eq' A hA := h ▸ f.slash_action_eq' A (hΓ ▸ hA)
   holo' := f.holo'
   bdd_at_cusps' hc := h ▸ f.bdd_at_cusps' (hΓ ▸ hc)
-
-@[simp]
-lemma mcast_apply {a b : ℤ} {Γ Γ' : Subgroup (GL (Fin 2) ℝ)} (h : a = b) (f : ModularForm Γ a)
-    (hΓ : Γ' = Γ := by rfl) (z : ℍ) : mcast h f hΓ z = f z := rfl
 
 @[ext (iff := false)]
 theorem gradedMonoid_eq_of_cast {Γ : Subgroup (GL (Fin 2) ℝ)} {a b : GradedMonoid (ModularForm Γ)}
