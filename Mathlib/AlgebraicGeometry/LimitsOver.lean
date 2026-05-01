@@ -6,7 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Basic
-public import Mathlib.CategoryTheory.MorphismProperty.Comma
+public import Mathlib.CategoryTheory.Limits.MorphismProperty
 
 /-!
 # (Co)limits in over categories
@@ -118,6 +118,24 @@ instance : HasFiniteCoproducts (P.Over ⊤ S) where
 
 noncomputable instance (J : Type*) [Small.{u} J] :
     CreatesColimitsOfShape (Discrete J) (MorphismProperty.Over.forget P ⊤ S) where
+
+variable {P : MorphismProperty Scheme.{u}} [IsZariskiLocalAtSource P]
+
+instance IsZariskiLocalAtSource.isClosedUnderColimitsOfShape_discrete {ι : Type*} [Small.{u} ι]
+    {C : Type*} [Category C] [HasColimitsOfShape (Discrete ι) C] (L : C ⥤ Scheme.{u})
+    [PreservesColimitsOfShape (Discrete ι) L] (X : Scheme.{u}) :
+    (P.costructuredArrowObj L (X := X)).IsClosedUnderColimitsOfShape (Discrete ι) :=
+  CostructuredArrow.isClosedUnderColimitsOfShape _ (fun _ ↦ coproductIsCoproduct' _)
+    (fun _ _ _ _ h ↦ IsZariskiLocalAtSource.sigmaDesc (h ⟨·⟩)) _
+
+variable [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P] [P.IsMultiplicative]
+
+instance : HasFiniteCoproducts (P.CostructuredArrow ⊤ Scheme.Spec S) where
+  out n := by
+    have : (MorphismProperty.commaObj Scheme.Spec (.fromPUnit S) P).IsClosedUnderColimitsOfShape
+        (Discrete (Fin n)) :=
+      IsZariskiLocalAtSource.isClosedUnderColimitsOfShape_discrete _ _
+    apply MorphismProperty.Comma.hasColimitsOfShape_of_closedUnderColimitsOfShape
 
 end OverProp
 
