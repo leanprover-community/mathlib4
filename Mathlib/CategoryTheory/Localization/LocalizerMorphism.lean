@@ -138,7 +138,7 @@ lemma isEquivalence_iff : G.IsEquivalence ↔ G'.IsEquivalence :=
 
 /-- If a localizer morphism induces a fully faithful functor on some choice of
 localized categories, it will be so for any choice of localized categories. -/
-noncomputable def fullyFaithfulImp (hG : G.FullyFaithful) : G'.FullyFaithful :=
+private noncomputable def fullyFaithfulImp (hG : G.FullyFaithful) : G'.FullyFaithful :=
   let E₁ := Localization.uniq L₁ L₁' W₁
   let E₂ := Localization.uniq L₂ L₂' W₂
   let e : L₁ ⋙ G ⋙ E₂.functor ≅ L₁ ⋙ E₁.functor ⋙ G' :=
