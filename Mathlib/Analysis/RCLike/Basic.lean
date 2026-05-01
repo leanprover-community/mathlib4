@@ -1120,7 +1120,7 @@ variable (K) in
 /-- The `ℝ → K` coercion, as a ⋆-algebra map. -/
 noncomputable def ofRealStarAlgHom : ℝ →⋆ₐ[ℝ] K := .ofId ℝ K
 
-@[simp] theorem ofRealStarAlgHom_coe : (ofRealStarAlgHom K : ℝ → K) = ofReal := rfl
+@[simp] theorem coe_ofRealStarAlgHom : (ofRealStarAlgHom K : ℝ → K) = ofReal := rfl
 @[simp] lemma toAlgHom_ofRealStarAlgHom : (ofRealStarAlgHom K).toAlgHom = ofRealAm := rfl
 
 /-- The ℝ → K coercion, as a linear isometry -/
