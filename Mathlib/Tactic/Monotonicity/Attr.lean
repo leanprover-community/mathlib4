@@ -8,7 +8,7 @@ module
 public import Mathlib.Init
 public meta import Lean.LabelAttribute
 
-/-! # The @[gcongr, mono] attribute -/
+/-! # The @[mono] attribute -/
 
 public meta section
 
@@ -24,7 +24,7 @@ syntax (name := mono) "mono" (ppSpace mono.side)? : attr
 
 -- The following is inlined from `register_label_attr`.
 /- TODO: currently `left`/`right`/`both` is ignored, and e.g. `@[mono left]` means the same as
-`@[gcongr, mono]`. No error is thrown by e.g. `@[mono left]`. -/
+`@[mono]`. No error is thrown by e.g. `@[mono left]`. -/
 -- TODO: possibly extend `register_label_attr` to handle trailing syntax
 
 open Lean in
