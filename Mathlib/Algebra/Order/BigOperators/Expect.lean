@@ -78,6 +78,14 @@ lemma le_expect_nonempty_of_subadditive_on_pred (h_add : ∀ a b, p a → p b �
   exact smul_le_smul_of_nonneg_left
     (le_sum_nonempty_of_subadditive_on_pred _ _ h_add hp_add _ _ hs_nonempty hs) <| by positivity
 
+/-- If `m : M → N` is a subadditive function (`m (a + b) ≤ m a + m b`) and `s` is a nonempty set,
+then `m (𝔼 i ∈ s, f i) ≤ 𝔼 i ∈ s, m (f i)`. -/
+lemma le_expect_nonempty_of_subadditive (m : M → N) (h_mul : ∀ a b, m (a + b) ≤ m a + m b)
+    (h_div : ∀ (n : ℕ) a, m (a /ℚ n) = m a /ℚ n) (hs : s.Nonempty) :
+    m (𝔼 i ∈ s, f i) ≤ 𝔼 i ∈ s, m (f i) :=
+  le_expect_nonempty_of_subadditive_on_pred (p := fun _ ↦ True) (by simpa) (by simp) (by simpa) hs
+    (by simp)
+
 /-- Let `{a | p a}` be a subsemigroup of a commutative monoid `M`. If `m` is a subadditive function
 (`m (x + y) ≤ m x + m y`, `m 0 = 0`) preserved under division by a natural and `f` is a function
 valued in that subsemigroup, then `m (𝔼 i ∈ s, f i) ≤ 𝔼 i ∈ s, m (f i)`. -/
@@ -90,12 +98,12 @@ lemma le_expect_of_subadditive_on_pred (h_zero : m 0 = 0)
   · exact le_expect_nonempty_of_subadditive_on_pred h_add hp_add h_div hs_nonempty hs
 
 -- TODO: Contribute back better docstring to `le_prod_of_submultiplicative`
-/-- If `m` is a subadditive function (`m (x + y) ≤ m x + m y`) preserved under division
+/-- If `m` is a subadditive function (`m (x + y) ≤ m x + m y`, `m 0 = 0`) preserved under division
 by a natural, then `m (𝔼 i ∈ s, f i) ≤ 𝔼 i ∈ s, m (f i)`. -/
-lemma le_expect_of_subadditive (h_add : ∀ a b, m (a + b) ≤ m a + m b)
+lemma le_expect_of_subadditive (h_zero : m 0 = 0) (h_add : ∀ a b, m (a + b) ≤ m a + m b)
     (h_div : ∀ (n : ℕ) a, m (a /ℚ n) = m a /ℚ n) : m (𝔼 i ∈ s, f i) ≤ 𝔼 i ∈ s, m (f i) :=
-  le_expect_of_subadditive_on_pred (p := fun _ ↦ True) (by convert h_div 0 0 <;> simp)
-    (by simpa) (by simp) (by simpa) (by simp)
+  le_expect_of_subadditive_on_pred (p := fun _ ↦ True) h_zero (by simpa) (by simp) (by simpa)
+    (by simp)
 
 end PosSMulMono
 end OrderedAddCommMonoid
@@ -167,7 +175,7 @@ section LinearOrderedAddCommGroup
 variable [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] [Module ℚ≥0 α] [PosSMulMono ℚ≥0 α]
 
 lemma abs_expect_le (s : Finset ι) (f : ι → α) : |𝔼 i ∈ s, f i| ≤ 𝔼 i ∈ s, |f i| :=
-  le_expect_of_subadditive abs_add_le (fun _ ↦ abs_nnqsmul _)
+  le_expect_of_subadditive abs_zero abs_add_le (fun _ ↦ abs_nnqsmul _)
 
 end LinearOrderedAddCommGroup
 
