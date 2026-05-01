@@ -462,7 +462,7 @@ theorem eq_biInf_of_mem_iff_exists_mem {f : ι → Filter α} {p : ι → Prop} 
   rw [iInf_subtype']
   exact eq_iInf_of_mem_iff_exists_mem fun {_} => by simp only [Subtype.exists, h, exists_prop]
 
-theorem iInf_sets_eq {f : ι → Filter α} (h : Directed (· ≥ ·) f) [ne : Nonempty ι] :
+theorem iInf_sets_eq {f : ι → Filter α} (h : Predirected (· ≥ ·) f) [ne : Nonempty ι] :
     (iInf f).sets = ⋃ i, (f i).sets :=
   let ⟨i⟩ := ne
   let u :=
@@ -479,7 +479,7 @@ theorem iInf_sets_eq {f : ι → Filter α} (h : Directed (· ≥ ·) f) [ne : N
   have : u = iInf f := eq_iInf_of_mem_iff_exists_mem mem_iUnion
   congr_arg Filter.sets this.symm
 
-theorem mem_iInf_of_directed {f : ι → Filter α} (h : Directed (· ≥ ·) f) [Nonempty ι] (s) :
+theorem mem_iInf_of_directed {f : ι → Filter α} (h : Predirected (· ≥ ·) f) [Nonempty ι] (s) :
     s ∈ iInf f ↔ ∃ i, s ∈ f i := by
   simp only [← Filter.mem_sets, iInf_sets_eq h, mem_iUnion]
 
@@ -514,14 +514,14 @@ instance instCoframe : Coframe (Filter α) where
 
 /-- If `f : ι → Filter α` is directed, `ι` is not empty, and `∀ i, f i ≠ ⊥`, then `iInf f ≠ ⊥`.
 See also `iInf_neBot_of_directed` for a version assuming `Nonempty α` instead of `Nonempty ι`. -/
-theorem iInf_neBot_of_directed' {f : ι → Filter α} [Nonempty ι] (hd : Directed (· ≥ ·) f) :
+theorem iInf_neBot_of_directed' {f : ι → Filter α} [Nonempty ι] (hd : Predirected (· ≥ ·) f) :
     (∀ i, NeBot (f i)) → NeBot (iInf f) :=
   not_imp_not.1 <| by simpa only [not_forall, not_neBot, ← empty_mem_iff_bot,
     mem_iInf_of_directed hd] using id
 
 /-- If `f : ι → Filter α` is directed, `α` is not empty, and `∀ i, f i ≠ ⊥`, then `iInf f ≠ ⊥`.
 See also `iInf_neBot_of_directed'` for a version assuming `Nonempty ι` instead of `Nonempty α`. -/
-theorem iInf_neBot_of_directed {f : ι → Filter α} [hn : Nonempty α] (hd : Directed (· ≥ ·) f)
+theorem iInf_neBot_of_directed {f : ι → Filter α} [hn : Nonempty α] (hd : Predirected (· ≥ ·) f)
     (hb : ∀ i, NeBot (f i)) : NeBot (iInf f) := by
   cases isEmpty_or_nonempty ι
   · constructor
@@ -539,11 +539,11 @@ theorem sInf_neBot_of_directed [Nonempty α] {s : Set (Filter α)} (hd : Directe
   (sInf_eq_iInf' s).symm ▸
     iInf_neBot_of_directed hd.directed_val fun ⟨_, hf⟩ => ⟨ne_of_mem_of_not_mem hf hbot⟩
 
-theorem iInf_neBot_iff_of_directed' {f : ι → Filter α} [Nonempty ι] (hd : Directed (· ≥ ·) f) :
+theorem iInf_neBot_iff_of_directed' {f : ι → Filter α} [Nonempty ι] (hd : Predirected (· ≥ ·) f) :
     NeBot (iInf f) ↔ ∀ i, NeBot (f i) :=
   ⟨fun H i => H.mono (iInf_le _ i), iInf_neBot_of_directed' hd⟩
 
-theorem iInf_neBot_iff_of_directed {f : ι → Filter α} [Nonempty α] (hd : Directed (· ≥ ·) f) :
+theorem iInf_neBot_iff_of_directed {f : ι → Filter α} [Nonempty α] (hd : Predirected (· ≥ ·) f) :
     NeBot (iInf f) ↔ ∀ i, NeBot (f i) :=
   ⟨fun H i => H.mono (iInf_le _ i), iInf_neBot_of_directed hd⟩
 

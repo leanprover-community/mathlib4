@@ -84,7 +84,7 @@ theorem partialSections.nonempty [IsCofilteredOrEmpty J] [h : ∀ j : J, Nonempt
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 theorem partialSections.directed :
-    Directed Superset fun G : FiniteDiagram J => partialSections F G.2 := by
+    Predirected Superset fun G : FiniteDiagram J => partialSections F G.2 := by
   classical
   intro A B
   let ιA : FiniteDiagramArrow A.1 → FiniteDiagramArrow (A.1 ⊔ B.1) := fun f =>

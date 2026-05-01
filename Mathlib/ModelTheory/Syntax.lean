@@ -881,7 +881,7 @@ theorem monotone_distinctConstantsTheory :
   L.distinctConstantsTheory_mono st
 
 theorem directed_distinctConstantsTheory :
-    Directed (· ⊆ ·) (L.distinctConstantsTheory : Set α → L[[α]].Theory) :=
+    Predirected (· ⊆ ·) (L.distinctConstantsTheory : Set α → L[[α]].Theory) :=
   Monotone.directed_le monotone_distinctConstantsTheory
 
 theorem distinctConstantsTheory_eq_iUnion (s : Set α) :

@@ -244,7 +244,7 @@ theorem image_iInter {f : α → β} (hf : Bijective f) (s : ι → Set α) :
 theorem image_iInter₂ {f : α → β} (hf : Bijective f) (s : ∀ i, κ i → Set α) :
     (f '' ⋂ (i) (j), s i j) = ⋂ (i) (j), f '' s i j := by simp_rw [image_iInter hf]
 
-theorem inj_on_iUnion_of_directed {s : ι → Set α} (hs : Directed (· ⊆ ·) s) {f : α → β}
+theorem inj_on_iUnion_of_directed {s : ι → Set α} (hs : Predirected (· ⊆ ·) s) {f : α → β}
     (hf : ∀ i, InjOn f (s i)) : InjOn f (⋃ i, s i) := by
   intro x hx y hy hxy
   rcases mem_iUnion.1 hx with ⟨i, hx⟩
@@ -297,11 +297,11 @@ theorem bijOn_iInter [hi : Nonempty ι] {s : ι → Set α} {t : ι → Set β} 
     hi.elim fun i => (H i).injOn.mono (iInter_subset _ _),
     surjOn_iInter_iInter (fun i => (H i).surjOn) Hinj⟩
 
-theorem bijOn_iUnion_of_directed {s : ι → Set α} (hs : Directed (· ⊆ ·) s) {t : ι → Set β}
+theorem bijOn_iUnion_of_directed {s : ι → Set α} (hs : Predirected (· ⊆ ·) s) {t : ι → Set β}
     {f : α → β} (H : ∀ i, BijOn f (s i) (t i)) : BijOn f (⋃ i, s i) (⋃ i, t i) :=
   bijOn_iUnion H <| inj_on_iUnion_of_directed hs fun i => (H i).injOn
 
-theorem bijOn_iInter_of_directed [Nonempty ι] {s : ι → Set α} (hs : Directed (· ⊆ ·) s)
+theorem bijOn_iInter_of_directed [Nonempty ι] {s : ι → Set α} (hs : Predirected (· ⊆ ·) s)
     {t : ι → Set β} {f : α → β} (H : ∀ i, BijOn f (s i) (t i)) : BijOn f (⋂ i, s i) (⋂ i, t i) :=
   bijOn_iInter H <| inj_on_iUnion_of_directed hs fun i => (H i).injOn
 

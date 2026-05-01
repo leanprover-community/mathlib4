@@ -608,7 +608,7 @@ lemma Pi.isCompact_closure_iff {ι : Type*} {X : ι → Type*} [∀ i, Topologic
 don't need to assume each `V i` closed because it follows from compactness since `X` is
 assumed to be Hausdorff. -/
 theorem exists_subset_nhds_of_isCompact [T2Space X] {ι : Type*} [Nonempty ι] {V : ι → Set X}
-    (hV : Directed (· ⊇ ·) V) (hV_cpct : ∀ i, IsCompact (V i)) {U : Set X}
+    (hV : Predirected (· ⊇ ·) V) (hV_cpct : ∀ i, IsCompact (V i)) {U : Set X}
     (hU : ∀ x ∈ ⋂ i, V i, U ∈ 𝓝 x) : ∃ i, V i ⊆ U :=
   exists_subset_nhds_of_isCompact' hV hV_cpct (fun i => (hV_cpct i).isClosed) hU
 

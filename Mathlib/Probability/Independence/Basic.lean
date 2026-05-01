@@ -513,7 +513,7 @@ theorem indep_iSup_of_disjoint
 
 theorem indep_iSup_of_directed_le
     [IsZeroOrProbabilityMeasure μ] (h_indep : ∀ i, Indep (m i) m1 μ)
-    (h_le : ∀ i, m i ≤ _mΩ) (h_le' : m1 ≤ _mΩ) (hm : Directed (· ≤ ·) m) :
+    (h_le : ∀ i, m i ≤ _mΩ) (h_le' : m1 ≤ _mΩ) (hm : Predirected (· ≤ ·) m) :
     Indep (⨆ i, m i) m1 μ :=
   Kernel.indep_iSup_of_directed_le h_indep h_le h_le' hm
 

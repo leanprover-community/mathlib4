@@ -120,7 +120,7 @@ lemma IsPiSystem.dissipate_mem {s : ℕ → Set α} {C : Set (Set α)}
     exact hC (dissipate s n) (hn h'.left) (s (n + 1)) (h (n + 1)) h'
 
 theorem isPiSystem_iUnion_of_directed_le {α ι} (p : ι → Set (Set α))
-    (hp_pi : ∀ n, IsPiSystem (p n)) (hp_directed : Directed (· ≤ ·) p) :
+    (hp_pi : ∀ n, IsPiSystem (p n)) (hp_directed : Predirected (· ≤ ·) p) :
     IsPiSystem (⋃ n, p n) := by
   intro t1 ht1 t2 ht2 h
   rw [Set.mem_iUnion] at ht1 ht2 ⊢

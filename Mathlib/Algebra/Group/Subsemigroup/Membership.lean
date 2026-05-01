@@ -61,14 +61,14 @@ theorem mem_biSup_of_directedOn {ι} {p : ι → Prop} {K : ι → Subsemigroup 
 -- TODO: this section can be generalized to `[MulMemClass B M] [CompleteLattice B]`
 -- such that `complete_lattice.le` coincides with `set_like.le`
 @[to_additive]
-theorem mem_iSup_of_directed {S : ι → Subsemigroup M} (hS : Directed (· ≤ ·) S) {x : M} :
+theorem mem_iSup_of_directed {S : ι → Subsemigroup M} (hS : Predirected (· ≤ ·) S) {x : M} :
     (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
   have : iSup S = ⨆ i : PLift ι, ⨆ (_ : True), S i.down := by simp [iSup_plift_down]
   rw [this, mem_biSup_of_directedOn]
   · simp
   · simp only [setOf_true]
     rw [directedOn_onFun_iff, Set.image_univ, ← directedOn_range]
-    -- `Directed.mono_comp` and much of the Set API requires `Type u` instead of `Sort u`
+    -- `Predirected.mono_comp` and much of the Set API requires `Type u` instead of `Sort u`
     intro i
     simp only [PLift.exists]
     intro j
@@ -83,7 +83,7 @@ theorem mem_iSup_prop {p : Prop} {S : p → Subsemigroup M} {x : M} :
   · simpa [h] using id
 
 @[to_additive]
-theorem coe_iSup_of_directed {S : ι → Subsemigroup M} (hS : Directed (· ≤ ·) S) :
+theorem coe_iSup_of_directed {S : ι → Subsemigroup M} (hS : Predirected (· ≤ ·) S) :
     ((⨆ i, S i : Subsemigroup M) : Set M) = ⋃ i, S i :=
   Set.ext fun x => by simp [mem_iSup_of_directed hS]
 

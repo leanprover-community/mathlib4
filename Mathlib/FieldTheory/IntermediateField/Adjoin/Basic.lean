@@ -111,7 +111,7 @@ theorem finrank_sup_le :
 
 variable {ι : Type*} {t : ι → IntermediateField K L}
 
-theorem coe_iSup_of_directed [Nonempty ι] (dir : Directed (· ≤ ·) t) :
+theorem coe_iSup_of_directed [Nonempty ι] (dir : Predirected (· ≤ ·) t) :
     ↑(iSup t) = ⋃ i, (t i : Set L) :=
   let M : IntermediateField K L :=
     { __ := Subalgebra.copy _ _ (Subalgebra.coe_iSup_of_directed dir).symm
@@ -121,7 +121,7 @@ theorem coe_iSup_of_directed [Nonempty ι] (dir : Directed (· ≤ ·) t) :
     (iSup_le fun i ↦ le_iSup (fun i ↦ (t i : Set L)) i) (Set.iUnion_subset fun _ ↦ le_iSup t _)
   this.symm ▸ rfl
 
-theorem toSubalgebra_iSup_of_directed (dir : Directed (· ≤ ·) t) :
+theorem toSubalgebra_iSup_of_directed (dir : Predirected (· ≤ ·) t) :
     (iSup t).toSubalgebra = ⨆ i, (t i).toSubalgebra := by
   cases isEmpty_or_nonempty ι
   · simp_rw [iSup_of_empty, bot_toSubalgebra]

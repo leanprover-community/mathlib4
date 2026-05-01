@@ -29,7 +29,7 @@ variable (S : Subalgebra R A)
 
 variable {ι : Type*} [Nonempty ι] {K : ι → Subalgebra R A}
 
-theorem coe_iSup_of_directed (dir : Directed (· ≤ ·) K) : ↑(iSup K) = ⋃ i, (K i : Set A) := by
+theorem coe_iSup_of_directed (dir : Predirected (· ≤ ·) K) : ↑(iSup K) = ⋃ i, (K i : Set A) := by
   let s : Subalgebra R A :=
     { __ := Subsemiring.copy _ _ (Subsemiring.coe_iSup_of_directed dir).symm
       algebraMap_mem' := fun _ ↦ Set.mem_iUnion.2
@@ -42,7 +42,7 @@ variable (K)
 
 /-- Define an algebra homomorphism on a directed supremum of subalgebras by defining
 it on each subalgebra, and proving that it agrees on the intersection of subalgebras. -/
-noncomputable def iSupLift (dir : Directed (· ≤ ·) K) (f : ∀ i, K i →ₐ[R] B)
+noncomputable def iSupLift (dir : Predirected (· ≤ ·) K) (f : ∀ i, K i →ₐ[R] B)
     (hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h))
     (T : Subalgebra R A) (hT : T ≤ iSup K) : ↥T →ₐ[R] B := by
   let compat :
@@ -78,7 +78,7 @@ noncomputable def iSupLift (dir : Directed (· ≤ ·) K) (f : ∀ i, K i →ₐ
 
 
 @[simp]
-theorem iSupLift_inclusion {dir : Directed (· ≤ ·) K} {f : ∀ i, K i →ₐ[R] B}
+theorem iSupLift_inclusion {dir : Predirected (· ≤ ·) K} {f : ∀ i, K i →ₐ[R] B}
     {hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h)}
     {T : Subalgebra R A} {hT : T ≤ iSup K} {i : ι} (x : K i) (h : K i ≤ T) :
     iSupLift K dir f hf T hT (inclusion h x) = f i x := by
@@ -87,20 +87,20 @@ theorem iSupLift_inclusion {dir : Directed (· ≤ ·) K} {f : ∀ i, K i →ₐ
   exact SetLike.coe_subset_coe.mpr <| h.trans hT
 
 @[simp]
-theorem iSupLift_comp_inclusion {dir : Directed (· ≤ ·) K} {f : ∀ i, K i →ₐ[R] B}
+theorem iSupLift_comp_inclusion {dir : Predirected (· ≤ ·) K} {f : ∀ i, K i →ₐ[R] B}
     {hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h)}
     {T : Subalgebra R A} {hT : T ≤ iSup K} {i : ι} (h : K i ≤ T) :
     (iSupLift K dir f hf T hT).comp (inclusion h) = f i := by ext; simp
 
 @[simp]
-theorem iSupLift_mk {dir : Directed (· ≤ ·) K} {f : ∀ i, K i →ₐ[R] B}
+theorem iSupLift_mk {dir : Predirected (· ≤ ·) K} {f : ∀ i, K i →ₐ[R] B}
     {hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h)}
     {T : Subalgebra R A} {hT : T ≤ iSup K} {i : ι} (x : K i) (hx : (x : A) ∈ T) :
     iSupLift K dir f hf T hT ⟨x, hx⟩ = f i x := by
   dsimp [iSupLift, inclusion]
   rw [Set.iUnionLift_mk]
 
-theorem iSupLift_of_mem {dir : Directed (· ≤ ·) K} {f : ∀ i, K i →ₐ[R] B}
+theorem iSupLift_of_mem {dir : Predirected (· ≤ ·) K} {f : ∀ i, K i →ₐ[R] B}
     {hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h)}
     {T : Subalgebra R A} {hT : T ≤ iSup K} {i : ι} (x : T) (hx : (x : A) ∈ K i) :
     iSupLift K dir f hf T hT x = f i ⟨x, hx⟩ := by

@@ -186,7 +186,7 @@ theorem lift_iInf [Nonempty ι] {f : ι → Filter α} {g : Set α → Filter β
   exact fun t ht hs => H t ht hs
 
 theorem lift_iInf_of_directed [Nonempty ι] {f : ι → Filter α} {g : Set α → Filter β}
-    (hf : Directed (· ≥ ·) f) (hg : Monotone g) : (iInf f).lift g = ⨅ i, (f i).lift g :=
+    (hf : Predirected (· ≥ ·) f) (hg : Monotone g) : (iInf f).lift g = ⨅ i, (f i).lift g :=
   lift_iInf_le.antisymm fun s => by
     simp only [mem_lift_sets hg, exists_imp, and_imp, mem_iInf_of_directed hf]
     exact fun t i ht hs => mem_iInf_of_mem i <| mem_lift ht hs

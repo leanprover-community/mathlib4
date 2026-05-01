@@ -204,7 +204,7 @@ theorem IsChain.directedOn (H : IsChain r s) : DirectedOn r s := fun x hx y hy =
   ((H.total hx hy).elim fun h => ⟨y, hy, h, refl _⟩) fun h => ⟨x, hx, refl _, h⟩
 
 protected theorem IsChain.directed {f : β → α} {c : Set β} (h : IsChain (f ⁻¹'o r) c) :
-    Directed r fun x : { a : β // a ∈ c } => f x :=
+    Predirected r fun x : { a : β // a ∈ c } => f x :=
   fun ⟨a, ha⟩ ⟨b, hb⟩ =>
     (by_cases fun hab : a = b => by
       simp only [hab, exists_prop, and_self_iff, Subtype.exists]

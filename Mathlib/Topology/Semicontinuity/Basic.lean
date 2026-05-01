@@ -84,8 +84,8 @@ theorem LowerSemicontinuousOn.exists_isMinOn {s : Set α} (ne_s : s.Nonempty)
   let ℱ : Filter α := ⨅ a : s, φ (f a)
   have : ℱ.NeBot := by
     apply iInf_neBot_of_directed _ _
-    · change Directed GE.ge (fun x ↦ (φ ∘ (fun (a : s) ↦ f ↑a)) x)
-      exact Directed.mono_comp GE.ge (fun x y hxy ↦
+    · change Predirected GE.ge (fun x ↦ (φ ∘ (fun (a : s) ↦ f ↑a)) x)
+      exact Predirected.mono_comp GE.ge (fun x y hxy ↦
         principal_mono.mpr (inter_subset_inter_right _ (preimage_mono <| Iic_subset_Iic.mpr hxy)))
         (Std.Total.directed _)
     · intro x

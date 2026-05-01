@@ -69,14 +69,14 @@ theorem mem_biSup_of_directedOn {ι} {p : ι → Prop} {K : ι → Submonoid M} 
 -- TODO: this section can be generalized to `[SubmonoidClass B M] [CompleteLattice B]`
 -- such that `CompleteLattice.LE` coincides with `SetLike.LE`
 @[to_additive]
-theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Submonoid M} (hS : Directed (· ≤ ·) S)
+theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Submonoid M} (hS : Predirected (· ≤ ·) S)
     {x : M} : (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
   have : iSup S = ⨆ i : PLift ι, ⨆ (_ : True), S i.down := by simp [iSup_plift_down]
   rw [this, mem_biSup_of_directedOn trivial]
   · simp
   · simp only [setOf_true]
     rw [directedOn_onFun_iff, Set.image_univ, ← directedOn_range]
-    -- `Directed.mono_comp` and much of the Set API requires `Type u` instead of `Sort u`
+    -- `Predirected.mono_comp` and much of the Set API requires `Type u` instead of `Sort u`
     intro i
     simp only [PLift.exists]
     intro j
@@ -91,7 +91,7 @@ theorem mem_iSup_prop {p : Prop} {S : p → Submonoid M} {x : M} :
   simp +contextual [h]
 
 @[to_additive]
-theorem coe_iSup_of_directed {ι} [Nonempty ι] {S : ι → Submonoid M} (hS : Directed (· ≤ ·) S) :
+theorem coe_iSup_of_directed {ι} [Nonempty ι] {S : ι → Submonoid M} (hS : Predirected (· ≤ ·) S) :
     ((⨆ i, S i : Submonoid M) : Set M) = ⋃ i, S i :=
   Set.ext fun x ↦ by simp [mem_iSup_of_directed hS]
 

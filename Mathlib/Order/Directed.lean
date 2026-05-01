@@ -44,7 +44,7 @@ local infixl:50 " ≼ " => r
 
 /-- A family of elements of `α` is directed (with respect to a relation `≼` on `α`)
   if there is a member of the family `≼`-above any pair in the family. -/
-def Directed (f : ι → α) :=
+def Predirected (f : ι → α) :=
   ∀ x y, ∃ z, f x ≼ f z ∧ f y ≼ f z
 
 /-- A subset of `α` is directed if there is an element of the set `≼`-above any
@@ -54,16 +54,16 @@ def DirectedOn (s : Set α) :=
 
 variable {r r'}
 
-theorem directedOn_iff_directed {s} : @DirectedOn α r s ↔ Directed r (Subtype.val : s → α) := by
-  simp only [DirectedOn, Directed, Subtype.exists, exists_and_left, exists_prop, Subtype.forall]
+theorem directedOn_iff_directed {s} : @DirectedOn α r s ↔ Predirected r (Subtype.val : s → α) := by
+  simp only [DirectedOn, Predirected, Subtype.exists, exists_and_left, exists_prop, Subtype.forall]
   exact forall₂_congr fun x _ => by simp [And.comm, and_assoc]
 
 alias ⟨DirectedOn.directed_val, _⟩ := directedOn_iff_directed
 
-theorem directedOn_range {f : ι → α} : Directed r f ↔ DirectedOn r (Set.range f) := by
-  simp_rw [Directed, DirectedOn, Set.forall_mem_range, Set.exists_range_iff]
+theorem directedOn_range {f : ι → α} : Predirected r f ↔ DirectedOn r (Set.range f) := by
+  simp_rw [Predirected, DirectedOn, Set.forall_mem_range, Set.exists_range_iff]
 
-protected alias ⟨Directed.directedOn_range, _⟩ := directedOn_range
+protected alias ⟨Predirected.directedOn_range, _⟩ := directedOn_range
 
 theorem directedOn_image {s : Set β} {f : β → α} :
     DirectedOn r (f '' s) ↔ DirectedOn (f ⁻¹'o r) s := by
@@ -79,16 +79,16 @@ theorem DirectedOn.mono {s : Set α} (h : DirectedOn r s) (H : ∀ ⦃a b⦄, r 
     DirectedOn r' s :=
   h.mono' fun _ _ _ _ h ↦ H h
 
-theorem directed_comp {ι} {f : ι → β} {g : β → α} : Directed r (g ∘ f) ↔ Directed (g ⁻¹'o r) f :=
+theorem directed_comp {ι} {f : ι → β} {g : β → α} : Predirected r (g ∘ f) ↔ Predirected (g ⁻¹'o r) f :=
   Iff.rfl
 
-theorem Directed.mono {s : α → α → Prop} {ι} {f : ι → α} (H : ∀ a b, r a b → s a b)
-    (h : Directed r f) : Directed s f := fun a b =>
+theorem Predirected.mono {s : α → α → Prop} {ι} {f : ι → α} (H : ∀ a b, r a b → s a b)
+    (h : Predirected r f) : Predirected s f := fun a b =>
   let ⟨c, h₁, h₂⟩ := h a b
   ⟨c, H _ _ h₁, H _ _ h₂⟩
 
-theorem Directed.mono_comp (r : α → α → Prop) {ι} {rb : β → β → Prop} {g : α → β} {f : ι → α}
-    (hg : ∀ ⦃x y⦄, r x y → rb (g x) (g y)) (hf : Directed r f) : Directed rb (g ∘ f) :=
+theorem Predirected.mono_comp (r : α → α → Prop) {ι} {rb : β → β → Prop} {g : α → β} {f : ι → α}
+    (hg : ∀ ⦃x y⦄, r x y → rb (g x) (g y)) (hf : Predirected r f) : Predirected rb (g ∘ f) :=
   directed_comp.2 <| hf.mono hg
 
 theorem DirectedOn.mono_comp {r : α → α → Prop} {rb : β → β → Prop} {g : α → β} {s : Set α}
@@ -107,9 +107,9 @@ theorem directedOn_of_sup_mem [SemilatticeSup α] {S : Set α}
     (H : ∀ ⦃i j⦄, i ∈ S → j ∈ S → i ⊔ j ∈ S) : DirectedOn (· ≤ ·) S := fun a ha b hb =>
   ⟨a ⊔ b, H ha hb, le_sup_left, le_sup_right⟩
 
-theorem Directed.extend_bot [Preorder α] [OrderBot α] {e : ι → β} {f : ι → α}
-    (hf : Directed (· ≤ ·) f) (he : Function.Injective e) :
-    Directed (· ≤ ·) (Function.extend e f ⊥) := by
+theorem Predirected.extend_bot [Preorder α] [OrderBot α] {e : ι → β} {f : ι → α}
+    (hf : Predirected (· ≤ ·) f) (he : Function.Injective e) :
+    Predirected (· ≤ ·) (Function.extend e f ⊥) := by
   intro a b
   rcases (em (∃ i, e i = a)).symm with (ha | ⟨i, rfl⟩)
   · use b
@@ -126,7 +126,7 @@ theorem directedOn_of_inf_mem [SemilatticeInf α] {S : Set α}
     (H : ∀ ⦃i j⦄, i ∈ S → j ∈ S → i ⊓ j ∈ S) : DirectedOn (· ≥ ·) S :=
   directedOn_of_sup_mem (α := αᵒᵈ) H
 
-theorem Std.Total.directed [Std.Total r] (f : ι → α) : Directed r f := fun i j =>
+theorem Std.Total.directed [Std.Total r] (f : ι → α) : Predirected r f := fun i j =>
   Or.casesOn (total_of r (f i) (f j)) (fun h => ⟨j, h, refl _⟩) fun h => ⟨i, refl _, h⟩
 
 theorem Std.Total.directedOn [Std.Total r] (s : Set α) : DirectedOn r s := fun a ha b hb =>
@@ -151,12 +151,12 @@ theorem directed_of₃ (r : α → α → Prop) [IsDirected α r] [IsTrans α r]
   have ⟨f, hef, hcf⟩ := directed_of r e c
   ⟨f, Trans.trans hae hef, Trans.trans hbe hef, hcf⟩
 
-theorem isDirected_onFun {f : ι → α} : IsDirected ι (r on f) ↔ Directed r f :=
+theorem isDirected_onFun {f : ι → α} : IsDirected ι (r on f) ↔ Predirected r f :=
   ⟨(·.directed), (⟨·⟩)⟩
 
-theorem directed_id [IsDirected α r] : Directed r id := directed_of r
+theorem directed_id [IsDirected α r] : Predirected r id := directed_of r
 
-theorem directed_id_iff : Directed r id ↔ IsDirected α r :=
+theorem directed_id_iff : Predirected r id ↔ IsDirected α r :=
   isDirected_onFun.symm
 
 theorem directedOn_univ [IsDirected α r] : DirectedOn r Set.univ := fun a _ b _ =>
@@ -191,17 +191,17 @@ instance OrderDual.isDirected_ge [LE α] [IsDirectedOrder α] : IsCodirectedOrde
 @[to_dual (reorder := H (i j)) directed_of_isDirected_ge
 /-- An antitone function on a downwards-directed type is directed. -/]
 theorem directed_of_isDirected_le [LE α] [IsDirectedOrder α] {f : α → β} {r : β → β → Prop}
-    (H : ∀ ⦃i j⦄, i ≤ j → r (f i) (f j)) : Directed r f :=
+    (H : ∀ ⦃i j⦄, i ≤ j → r (f i) (f j)) : Predirected r f :=
   directed_id.mono_comp _ H
 
 @[to_dual directed_ge]
 theorem Monotone.directed_le [Preorder α] [IsDirectedOrder α] [Preorder β] {f : α → β} :
-    Monotone f → Directed (· ≤ ·) f :=
+    Monotone f → Predirected (· ≤ ·) f :=
   directed_of_isDirected_le
 
 @[to_dual directed_ge]
 theorem Antitone.directed_le [Preorder α] [IsCodirectedOrder α] [Preorder β] {f : α → β}
-    (hf : Antitone f) : Directed (· ≤ ·) f :=
+    (hf : Antitone f) : Predirected (· ≤ ·) f :=
   directed_of_isDirected_ge hf
 
 @[to_dual]

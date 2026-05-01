@@ -91,11 +91,11 @@ protected lemma DirectedOn.csSup_le (hd : DirectedOn (· ≤ ·) s) (h_non : s.N
   (hd.isLUB_csSup h_non ⟨a, ha⟩).2 ha
 
 @[to_dual ciInf_le]
-protected lemma Directed.le_ciSup (hf : Directed (· ≤ ·) f)
+protected lemma Predirected.le_ciSup (hf : Predirected (· ≤ ·) f)
     (hf_bdd : BddAbove (Set.range f)) (i : ι) : f i ≤ ⨆ j, f j :=
   hf.directedOn_range.le_csSup hf_bdd <| Set.mem_range_self _
 
 @[to_dual le_ciInf]
-protected lemma Directed.ciSup_le [Nonempty ι] (hf : Directed (· ≤ ·) f)
+protected lemma Predirected.ciSup_le [Nonempty ι] (hf : Predirected (· ≤ ·) f)
     (ha : ∀ i, f i ≤ a) : ⨆ i, f i ≤ a :=
   hf.directedOn_range.csSup_le (Set.range_nonempty _) <| Set.forall_mem_range.2 ha

@@ -129,7 +129,7 @@ theorem condIndep_biSup_limsup [StandardBorelSpace Ω]
   Kernel.indep_biSup_limsup h_le h_indep hf ht
 
 theorem Kernel.indep_iSup_directed_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s κ μα)
-    (hf : ∀ t, p t → tᶜ ∈ f) (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) :
+    (hf : ∀ t, p t → tᶜ ∈ f) (hns : Predirected (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) :
     Indep (⨆ a, ⨆ n ∈ ns a, s n) (limsup s f) κ μα := by
   rcases eq_or_ne μα 0 with rfl | hμ
   · simp
@@ -149,20 +149,20 @@ theorem Kernel.indep_iSup_directed_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : 
 
 theorem indep_iSup_directed_limsup
     (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ)
-    (hf : ∀ t, p t → tᶜ ∈ f) (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) :
+    (hf : ∀ t, p t → tᶜ ∈ f) (hns : Predirected (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) :
     Indep (⨆ a, ⨆ n ∈ ns a, s n) (limsup s f) μ :=
   Kernel.indep_iSup_directed_limsup h_le h_indep hf hns hnsp
 
 theorem condIndep_iSup_directed_limsup [StandardBorelSpace Ω]
     (hm : m ≤ m0) [IsFiniteMeasure μ]
     (h_le : ∀ n, s n ≤ m0) (h_indep : iCondIndep m hm s μ)
-    (hf : ∀ t, p t → tᶜ ∈ f) (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) :
+    (hf : ∀ t, p t → tᶜ ∈ f) (hns : Predirected (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) :
     CondIndep m (⨆ a, ⨆ n ∈ ns a, s n) (limsup s f) hm μ :=
   Kernel.indep_iSup_directed_limsup h_le h_indep hf hns hnsp
 
 theorem Kernel.indep_iSup_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s κ μα)
     (hf : ∀ t, p t → tᶜ ∈ f)
-    (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) (hns_univ : ∀ n, ∃ a, n ∈ ns a) :
+    (hns : Predirected (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) (hns_univ : ∀ n, ∃ a, n ∈ ns a) :
     Indep (⨆ n, s n) (limsup s f) κ μα := by
   suffices (⨆ a, ⨆ n ∈ ns a, s n) = ⨆ n, s n by
     rw [← this]
@@ -175,39 +175,39 @@ theorem Kernel.indep_iSup_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s 
 
 theorem indep_iSup_limsup
     (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ) (hf : ∀ t, p t → tᶜ ∈ f)
-    (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) (hns_univ : ∀ n, ∃ a, n ∈ ns a) :
+    (hns : Predirected (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) (hns_univ : ∀ n, ∃ a, n ∈ ns a) :
     Indep (⨆ n, s n) (limsup s f) μ :=
   Kernel.indep_iSup_limsup h_le h_indep hf hns hnsp hns_univ
 
 theorem condIndep_iSup_limsup [StandardBorelSpace Ω]
     (hm : m ≤ m0) [IsFiniteMeasure μ]
     (h_le : ∀ n, s n ≤ m0) (h_indep : iCondIndep m hm s μ) (hf : ∀ t, p t → tᶜ ∈ f)
-    (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) (hns_univ : ∀ n, ∃ a, n ∈ ns a) :
+    (hns : Predirected (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) (hns_univ : ∀ n, ∃ a, n ∈ ns a) :
     CondIndep m (⨆ n, s n) (limsup s f) hm μ :=
   Kernel.indep_iSup_limsup h_le h_indep hf hns hnsp hns_univ
 
 theorem Kernel.indep_limsup_self (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s κ μα)
     (hf : ∀ t, p t → tᶜ ∈ f)
-    (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) (hns_univ : ∀ n, ∃ a, n ∈ ns a) :
+    (hns : Predirected (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) (hns_univ : ∀ n, ∃ a, n ∈ ns a) :
     Indep (limsup s f) (limsup s f) κ μα :=
   indep_of_indep_of_le_left (indep_iSup_limsup h_le h_indep hf hns hnsp hns_univ) limsup_le_iSup
 
 theorem indep_limsup_self
     (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ) (hf : ∀ t, p t → tᶜ ∈ f)
-    (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) (hns_univ : ∀ n, ∃ a, n ∈ ns a) :
+    (hns : Predirected (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) (hns_univ : ∀ n, ∃ a, n ∈ ns a) :
     Indep (limsup s f) (limsup s f) μ :=
   Kernel.indep_limsup_self h_le h_indep hf hns hnsp hns_univ
 
 theorem condIndep_limsup_self [StandardBorelSpace Ω]
     (hm : m ≤ m0) [IsFiniteMeasure μ]
     (h_le : ∀ n, s n ≤ m0) (h_indep : iCondIndep m hm s μ) (hf : ∀ t, p t → tᶜ ∈ f)
-    (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) (hns_univ : ∀ n, ∃ a, n ∈ ns a) :
+    (hns : Predirected (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) (hns_univ : ∀ n, ∃ a, n ∈ ns a) :
     CondIndep m (limsup s f) (limsup s f) hm μ :=
   Kernel.indep_limsup_self h_le h_indep hf hns hnsp hns_univ
 
 theorem Kernel.measure_zero_or_one_of_measurableSet_limsup (h_le : ∀ n, s n ≤ m0)
     (h_indep : iIndep s κ μα)
-    (hf : ∀ t, p t → tᶜ ∈ f) (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a))
+    (hf : ∀ t, p t → tᶜ ∈ f) (hns : Predirected (· ≤ ·) ns) (hnsp : ∀ a, p (ns a))
     (hns_univ : ∀ n, ∃ a, n ∈ ns a) {t : Set Ω} (ht_tail : MeasurableSet[limsup s f] t) :
     ∀ᵐ a ∂μα, κ a t = 0 ∨ κ a t = 1 := by
   apply measure_eq_zero_or_one_of_indepSet_self' ?_
@@ -217,7 +217,7 @@ theorem Kernel.measure_zero_or_one_of_measurableSet_limsup (h_le : ∀ n, s n �
 
 theorem measure_zero_or_one_of_measurableSet_limsup
     (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ)
-    (hf : ∀ t, p t → tᶜ ∈ f) (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a))
+    (hf : ∀ t, p t → tᶜ ∈ f) (hns : Predirected (· ≤ ·) ns) (hnsp : ∀ a, p (ns a))
     (hns_univ : ∀ n, ∃ a, n ∈ ns a) {t : Set Ω} (ht_tail : MeasurableSet[limsup s f] t) :
     μ t = 0 ∨ μ t = 1 := by
   simpa only [ae_dirac_eq, Filter.eventually_pure]
@@ -227,7 +227,7 @@ theorem measure_zero_or_one_of_measurableSet_limsup
 theorem condExp_zero_or_one_of_measurableSet_limsup [StandardBorelSpace Ω]
     (hm : m ≤ m0) [IsFiniteMeasure μ]
     (h_le : ∀ n, s n ≤ m0) (h_indep : iCondIndep m hm s μ)
-    (hf : ∀ t, p t → tᶜ ∈ f) (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a))
+    (hf : ∀ t, p t → tᶜ ∈ f) (hns : Predirected (· ≤ ·) ns) (hnsp : ∀ a, p (ns a))
     (hns_univ : ∀ n, ∃ a, n ∈ ns a) {t : Set Ω} (ht_tail : MeasurableSet[limsup s f] t) :
     ∀ᵐ ω ∂μ, (μ⟦t | m⟧) ω = 0 ∨ (μ⟦t | m⟧) ω = 1 := by
   have h := ae_of_ae_trim hm

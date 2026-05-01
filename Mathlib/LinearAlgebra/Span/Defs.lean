@@ -345,7 +345,7 @@ theorem subset_span_trans {U V W : Set M} (hUV : U ⊆ Submodule.span R V)
 
 @[simp]
 theorem coe_iSup_of_directed {ι} [Nonempty ι] (S : ι → Submodule R M)
-    (H : Directed (· ≤ ·) S) : ((iSup S : Submodule R M) : Set M) = ⋃ i, S i :=
+    (H : Predirected (· ≤ ·) S) : ((iSup S : Submodule R M) : Set M) = ⋃ i, S i :=
   let s : Submodule R M :=
     { __ := AddSubmonoid.copy _ _ (AddSubmonoid.coe_iSup_of_directed H).symm
       smul_mem' := fun r _ hx ↦ have ⟨i, hi⟩ := Set.mem_iUnion.mp hx
@@ -355,7 +355,7 @@ theorem coe_iSup_of_directed {ι} [Nonempty ι] (S : ι → Submodule R M)
   this.symm ▸ rfl
 
 @[simp]
-theorem mem_iSup_of_directed {ι} [Nonempty ι] (S : ι → Submodule R M) (H : Directed (· ≤ ·) S) {x} :
+theorem mem_iSup_of_directed {ι} [Nonempty ι] (S : ι → Submodule R M) (H : Predirected (· ≤ ·) S) {x} :
     x ∈ iSup S ↔ ∃ i, x ∈ S i := by
   rw [← SetLike.mem_coe, coe_iSup_of_directed S H, mem_iUnion]
   rfl

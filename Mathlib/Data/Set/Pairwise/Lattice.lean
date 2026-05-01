@@ -27,7 +27,7 @@ variable {f : ι → α} {s : Set α}
 namespace Set
 
 -- TODO: fix naming inconsistency with the iUnion₂ theorems below.
-theorem pairwise_iUnion {f : κ → Set α} (hd : Directed (· ⊆ ·) f) :
+theorem pairwise_iUnion {f : κ → Set α} (hd : Predirected (· ⊆ ·) f) :
     (⋃ n, f n).Pairwise r ↔ ∀ n, (f n).Pairwise r := by
   constructor
   · intro H n
@@ -64,7 +64,7 @@ section PartialOrderBot
 
 variable [PartialOrder α] [OrderBot α] {s : Set ι} {f : ι → α}
 
-theorem pairwiseDisjoint_iUnion {g : ι' → Set ι} (h : Directed (· ⊆ ·) g) :
+theorem pairwiseDisjoint_iUnion {g : ι' → Set ι} (h : Predirected (· ⊆ ·) g) :
     (⋃ n, g n).PairwiseDisjoint f ↔ ∀ ⦃n⦄, (g n).PairwiseDisjoint f :=
   pairwise_iUnion h
 

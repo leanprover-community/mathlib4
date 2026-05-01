@@ -1027,7 +1027,7 @@ section StarSubalgebraB
 variable [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B]
 
 theorem coe_iSup_of_directed [Nonempty ι] {S : ι → NonUnitalStarSubalgebra R A}
-    (dir : Directed (· ≤ ·) S) : ↑(iSup S) = ⋃ i, (S i : Set A) :=
+    (dir : Predirected (· ≤ ·) S) : ↑(iSup S) = ⋃ i, (S i : Set A) :=
   let K : NonUnitalStarSubalgebra R A :=
     { __ := NonUnitalSubalgebra.copy _ _ (NonUnitalSubalgebra.coe_iSup_of_directed dir).symm
       star_mem' := fun hx ↦
@@ -1041,7 +1041,7 @@ theorem coe_iSup_of_directed [Nonempty ι] {S : ι → NonUnitalStarSubalgebra R
 subalgebras by defining it on each non-unital star subalgebra, and proving that it agrees on the
 intersection of non-unital star subalgebras. -/
 noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalStarSubalgebra R A)
-    (dir : Directed (· ≤ ·) K) (f : ∀ i, K i →⋆ₙₐ[R] B)
+    (dir : Predirected (· ≤ ·) K) (f : ∀ i, K i →⋆ₙₐ[R] B)
     (hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h))
     (T : NonUnitalStarSubalgebra R A) (hT : T = iSup K) : ↥T →⋆ₙₐ[R] B := by
   subst hT
@@ -1087,7 +1087,7 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalStarSubalgebra R A
 
 end StarSubalgebraB
 
-variable [Nonempty ι] {K : ι → NonUnitalStarSubalgebra R A} {dir : Directed (· ≤ ·) K}
+variable [Nonempty ι] {K : ι → NonUnitalStarSubalgebra R A} {dir : Predirected (· ≤ ·) K}
   {f : ∀ i, K i →⋆ₙₐ[R] B} {hf : ∀ (i j : ι) (h : K i ≤ K j), f i = (f j).comp (inclusion h)}
   {T : NonUnitalStarSubalgebra R A} {hT : T = iSup K}
 

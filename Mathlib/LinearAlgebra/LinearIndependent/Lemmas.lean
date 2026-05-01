@@ -104,7 +104,7 @@ lemma LinearIndependent.eq_zero_of_pair {x y : M} (h : LinearIndependent R ![x, 
 
 section Indexed
 
-theorem linearIndepOn_iUnion_of_directed {η : Type*} {s : η → Set ι} (hs : Directed (· ⊆ ·) s)
+theorem linearIndepOn_iUnion_of_directed {η : Type*} {s : η → Set ι} (hs : Predirected (· ⊆ ·) s)
     (h : ∀ i, LinearIndepOn R v (s i)) : LinearIndepOn R v (⋃ i, s i) := by
   by_cases hη : Nonempty η
   · refine linearIndepOn_of_finite (⋃ i, s i) fun t ht ft => ?_

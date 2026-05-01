@@ -150,7 +150,7 @@ open Encodable in
 /-- **Monotone convergence theorem** for a supremum over a directed family and indexed by a
 countable type. -/
 theorem lintegral_iSup_directed_of_measurable [Countable β] {f : β → α → ℝ≥0∞}
-    (hf : ∀ b, Measurable (f b)) (h_directed : Directed (· ≤ ·) f) :
+    (hf : ∀ b, Measurable (f b)) (h_directed : Predirected (· ≤ ·) f) :
     ∫⁻ a, ⨆ b, f b a ∂μ = ⨆ b, ∫⁻ a, f b a ∂μ := by
   cases nonempty_encodable β
   cases isEmpty_or_nonempty β
@@ -172,14 +172,14 @@ theorem lintegral_iSup_directed_of_measurable [Countable β] {f : β → α → 
 /-- **Monotone convergence theorem** for a supremum over a directed family and indexed by a
 countable type. -/
 theorem lintegral_iSup_directed [Countable β] {f : β → α → ℝ≥0∞} (hf : ∀ b, AEMeasurable (f b) μ)
-    (h_directed : Directed (· ≤ ·) f) : ∫⁻ a, ⨆ b, f b a ∂μ = ⨆ b, ∫⁻ a, f b a ∂μ := by
+    (h_directed : Predirected (· ≤ ·) f) : ∫⁻ a, ⨆ b, f b a ∂μ = ⨆ b, ∫⁻ a, f b a ∂μ := by
   simp_rw [← iSup_apply]
-  let p : α → (β → ENNReal) → Prop := fun x f' => Directed LE.le f'
+  let p : α → (β → ENNReal) → Prop := fun x f' => Predirected LE.le f'
   have hp : ∀ᵐ x ∂μ, p x fun i => f i x := by
     filter_upwards [] with x i j
     obtain ⟨z, hz₁, hz₂⟩ := h_directed i j
     exact ⟨z, hz₁ x, hz₂ x⟩
-  have h_ae_seq_directed : Directed LE.le (aeSeq hf p) := by
+  have h_ae_seq_directed : Predirected LE.le (aeSeq hf p) := by
     intro b₁ b₂
     obtain ⟨z, hz₁, hz₂⟩ := h_directed b₁ b₂
     refine ⟨z, ?_, ?_⟩ <;>

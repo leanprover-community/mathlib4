@@ -77,7 +77,7 @@ protected theorem StrictConvex.inter {t : Set E} (hs : StrictConvex 𝕜 s) (ht 
   rw [interior_inter]
   exact ⟨hs hx.1 hy.1 hxy ha hb hab, ht hx.2 hy.2 hxy ha hb hab⟩
 
-theorem Directed.strictConvex_iUnion {ι : Sort*} {s : ι → Set E} (hdir : Directed (· ⊆ ·) s)
+theorem Predirected.strictConvex_iUnion {ι : Sort*} {s : ι → Set E} (hdir : Predirected (· ⊆ ·) s)
     (hs : ∀ ⦃i : ι⦄, StrictConvex 𝕜 (s i)) : StrictConvex 𝕜 (⋃ i, s i) := by
   rintro x hx y hy hxy a b ha hb hab
   rw [mem_iUnion] at hx hy

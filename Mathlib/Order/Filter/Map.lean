@@ -703,7 +703,7 @@ end Map
 theorem map_iInf_le {f : ι → Filter α} {m : α → β} : map m (iInf f) ≤ ⨅ i, map m (f i) :=
   le_iInf fun _ => map_mono <| iInf_le _ _
 
-theorem map_iInf_eq {f : ι → Filter α} {m : α → β} (hf : Directed (· ≥ ·) f) [Nonempty ι] :
+theorem map_iInf_eq {f : ι → Filter α} {m : α → β} (hf : Predirected (· ≥ ·) f) [Nonempty ι] :
     map m (iInf f) = ⨅ i, map m (f i) :=
   map_iInf_le.antisymm fun s (hs : m ⁻¹' s ∈ iInf f) =>
     let ⟨i, hi⟩ := (mem_iInf_of_directed hf _).1 hs

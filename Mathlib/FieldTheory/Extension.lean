@@ -111,7 +111,7 @@ variable (c : Set (Lifts F E K)) (hc : IsChain (· ≤ ·) c)
 noncomputable def union : Lifts F E K :=
   let t (i : ↑(insert ⊥ c)) := i.val.carrier
   have hc := hc.insert fun _ _ _ ↦ .inl bot_le
-  have dir : Directed (· ≤ ·) t := hc.directedOn.directed_val.mono_comp _ fun _ _ h ↦ h.1
+  have dir : Predirected (· ≤ ·) t := hc.directedOn.directed_val.mono_comp _ fun _ _ h ↦ h.1
   ⟨iSup t, (Subalgebra.iSupLift (toSubalgebra <| t ·) dir (·.val.emb) (fun i j h ↦
     AlgHom.ext fun x ↦ (hc.total i.2 j.2).elim (fun hij ↦ (hij.snd x).symm) fun hji ↦ by
       rw [AlgHom.comp_apply, ← inclusion]
