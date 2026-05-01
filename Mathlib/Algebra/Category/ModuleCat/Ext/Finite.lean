@@ -27,7 +27,11 @@ open CategoryTheory Abelian
 instance ModuleCat.finite_ext [Small.{v} R] [IsNoetherianRing R] (N M : ModuleCat.{v} R)
     [Module.Finite R N] [Module.Finite R M] (i : ℕ) : Module.Finite R (Ext N M i) := by
   induction i generalizing N with
-  | zero => exact Module.Finite.equiv (Ext.linearEquiv₀.trans ModuleCat.homLinearEquiv).symm
+  | zero =>
+    haveI : SMulCommClass R R (↑M) := smulCommClass_self R (↑M)
+    haveI : Module.Finite R (↑N →ₗ[R] ↑M) := inferInstance
+    exact Module.Finite.equiv ((Ext.linearEquiv₀ (R := R) (X := N) (Y := M)).trans
+      (ModuleCat.homLinearEquiv (S := R) (M := N) (N := M))).symm
   | succ n ih =>
     obtain ⟨N, _, _, _, _, f, surjf⟩ := Module.exists_finite_presentation R N
     let exac := LinearMap.shortExact_shortComplexKer surjf

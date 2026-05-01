@@ -119,7 +119,7 @@ theorem fourier_bilin_convolution_eq (B : F₁ →L[ℂ] F₂ →L[ℂ] F₃) {f
     ext y
     simp_rw [Circle.smul_def, map_smul, MeasureTheory.integral_smul]
     congr
-    rw [integral_apply ?_ (f₂ y)]
+    erw [integral_apply ?_ (f₂ y)]
     · simp
     have : MeasureTheory.Integrable (fun x ↦ ‖B‖ * ‖f₁ x‖) MeasureTheory.volume :=
       hf₁.norm.const_mul _

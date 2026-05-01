@@ -596,7 +596,7 @@ variable {k : Type u} {G : Type v} [CommRing k] [Monoid G]
 instance : Functor.Linear k (forget₂ (Rep.{w} k G) (ModuleCat.{w} k)) where
   map_smul {X Y} f r := by
     ext
-    simp [smul_hom]
+    rfl
 
 /-- The equivalence between `IntertwiningMap`s and morphism between `X Y : Rep k G` is linear. -/
 abbrev homLinearEquiv (X Y : Rep k G) : (X ⟶ Y) ≃ₗ[k] (X.ρ.IntertwiningMap Y.ρ) where

@@ -384,6 +384,14 @@ instance toPseudoMetricSpace : PseudoMetricSpace (E →SL[σ₁₂] F) := .repla
 /-- Continuous linear maps themselves form a seminormed space with respect to the operator norm. -/
 instance toSeminormedAddCommGroup : SeminormedAddCommGroup (E →SL[σ₁₂] F) where
 
+/-- The extended norm is continuous for the bounded-convergence topology on continuous linear
+maps. -/
+instance toContinuousENorm :
+    @ContinuousENorm (E →SL[σ₁₂] F) ContinuousLinearMap.topologicalSpace where
+  continuous_enorm := by
+    simpa [enorm] using ENNReal.continuous_coe.comp
+      (continuous_nnnorm : Continuous fun f : E →SL[σ₁₂] F ↦ ‖f‖₊)
+
 /-- If a normed space is (topologically) non-trivial, then the norm of the identity equals `1`. -/
 @[simp]
 theorem nnnorm_id [NontrivialTopology E] : ‖ContinuousLinearMap.id 𝕜 E‖₊ = 1 :=

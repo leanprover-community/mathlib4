@@ -81,8 +81,9 @@ instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower
 
 instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
     IsScalarTower R₀ P.Ring S := IsScalarTower.of_algebraMap_eq' <| by
+  haveI : IsScalarTower R P.Ring S := P.isScalarTower
   rw [IsScalarTower.algebraMap_eq R₀ R P.Ring, ← RingHom.comp_assoc,
-    ← IsScalarTower.algebraMap_eq, ← IsScalarTower.algebraMap_eq]
+    ← IsScalarTower.algebraMap_eq R P.Ring S, ← IsScalarTower.algebraMap_eq R₀ R S]
 
 @[simp]
 lemma σ_smul (x y) : P.σ x • y = x * y := by

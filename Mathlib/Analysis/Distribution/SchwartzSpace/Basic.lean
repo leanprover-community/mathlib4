@@ -672,11 +672,12 @@ section Multiplication
 variable [NontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜]
   [NormedAddCommGroup D] [NormedSpace ℝ D]
   [NormedAddCommGroup G] [NormedSpace ℝ G]
-  [NormedSpace 𝕜 F]
+  [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 section bilin
 
-variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 G]
+variable [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E] [NormedSpace 𝕜 G]
+  [SMulCommClass ℝ 𝕜 G]
 
 /-- The map `f ↦ (x ↦ B (f x) (g x))` as a continuous `𝕜`-linear map on Schwartz space,
 where `B` is a continuous `𝕜`-linear map and `g` is a function of temperate growth. -/
@@ -724,6 +725,7 @@ def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemp
   gcongr
   simp
 
+omit [SMulCommClass ℝ 𝕜 F] in
 @[simp]
 theorem bilinLeftCLM_apply (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemperateGrowth)
     (f : 𝓢(D, E)) : bilinLeftCLM B hg f = fun x => B (f x) (g x) := rfl
@@ -752,7 +754,8 @@ theorem smulLeftCLM_apply_apply {g : E → 𝕜} (hg : g.HasTemperateGrowth) (f 
 
 @[simp]
 theorem smulLeftCLM_const (c : 𝕜) :
-    smulLeftCLM F (fun (_ : E) ↦ c) = c • ContinuousLinearMap.id 𝕜 _ := by
+    smulLeftCLM F (fun (_ : E) ↦ c) =
+      (c • ContinuousLinearMap.id 𝕜 𝓢(E, F) : 𝓢(E, F) →L[𝕜] 𝓢(E, F)) := by
   ext f x
   have : (fun (_ : E) ↦ c).HasTemperateGrowth := by fun_prop
   simp [this]
@@ -771,7 +774,8 @@ theorem smulLeftCLM_compL_smulLeftCLM {g₁ g₂ : E → 𝕜} (hg₁ : g₁.Has
   exact smulLeftCLM_smulLeftCLM_apply hg₁ hg₂ f
 
 theorem smulLeftCLM_smul {g : E → 𝕜} (hg : g.HasTemperateGrowth) (c : 𝕜) :
-    smulLeftCLM F (c • g) = c • smulLeftCLM F g := by
+    smulLeftCLM F (c • g) =
+      (c • smulLeftCLM F g : 𝓢(E, F) →L[𝕜] 𝓢(E, F)) := by
   have : (fun (_ : E) ↦ c).HasTemperateGrowth := by fun_prop
   convert (smulLeftCLM_compL_smulLeftCLM this hg).symm using 1
   simp
@@ -802,7 +806,7 @@ theorem smulLeftCLM_sum {g : ι → E → 𝕜} {s : Finset ι} (hg : ∀ i ∈ 
   ext f x
   simp +contextual [Function.HasTemperateGrowth.sum hg, Finset.sum_smul, hg]
 
-variable {𝕜' : Type*} [RCLike 𝕜'] [NormedSpace 𝕜' F]
+variable {𝕜' : Type*} [RCLike 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F]
 
 variable (𝕜') in
 theorem smulLeftCLM_ofReal {g : E → ℝ} (hg : g.HasTemperateGrowth) (f : 𝓢(E, F)) :
@@ -812,7 +816,8 @@ theorem smulLeftCLM_ofReal {g : E → ℝ} (hg : g.HasTemperateGrowth) (f : 𝓢
     algebraMap_smul]
 
 theorem smulLeftCLM_real_smul {g : E → 𝕜'} (hg : g.HasTemperateGrowth) (c : ℝ) :
-    smulLeftCLM F (c • g) = c • smulLeftCLM F g := by
+    smulLeftCLM F (c • g) =
+      (c • smulLeftCLM F g : 𝓢(E, F) →L[𝕜'] 𝓢(E, F)) := by
   rw [RCLike.real_smul_eq_coe_smul (K := 𝕜') c, smulLeftCLM_smul hg,
     ← RCLike.real_smul_eq_coe_smul c]
 
@@ -827,13 +832,15 @@ end smul
 
 section pairing
 
-variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 G]
+variable [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E] [NormedSpace 𝕜 G]
+  [SMulCommClass ℝ 𝕜 G]
 
 /-- The bilinear pairing of Schwartz functions.
 
 The continuity in the left argument is provided in `SchwartzMap.pairing_continuous_left`. -/
-def pairing (B : E →L[𝕜] F →L[𝕜] G) : 𝓢(D, E) →ₗ[𝕜] 𝓢(D, F) →L[𝕜] 𝓢(D, G) where
-  toFun f := bilinLeftCLM B.flip f.hasTemperateGrowth
+def pairing (B : E →L[𝕜] F →L[𝕜] G) :
+    𝓢(D, E) →ₗ[𝕜] (𝓢(D, F) →L[𝕜] 𝓢(D, G)) where
+  toFun f := (bilinLeftCLM B.flip f.hasTemperateGrowth : 𝓢(D, F) →L[𝕜] 𝓢(D, G))
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
 
@@ -849,7 +856,8 @@ theorem pairing_apply_apply (B : E →L[𝕜] F →L[𝕜] G) (f : 𝓢(D, E)) (
 Note that since `𝓢(E, F)` is not a normed space, uncurried and curried continuity do not
 coincide. -/
 theorem pairing_continuous_left (B : E →L[𝕜] F →L[𝕜] G) (g : 𝓢(D, F)) :
-    Continuous (pairing B · g) := (pairing B.flip g).continuous
+    Continuous (fun f : 𝓢(D, E) ↦ pairing B f g) :=
+  ((pairing B.flip g : 𝓢(D, E) →L[𝕜] 𝓢(D, G))).continuous
 
 end pairing
 
@@ -901,6 +909,7 @@ def smulRightCLM (L : E →L[ℝ] G →L[ℝ] ℝ) : 𝓢(E, F) →L[𝕜] 𝓢(
             Seminorm.coe_sup, Pi.sup_apply]
           ring
 
+omit [NormedAlgebra ℝ 𝕜] in
 @[simp]
 theorem smulRightCLM_apply_apply (L : E →L[ℝ] G →L[ℝ] ℝ) (f : 𝓢(E, F)) (x : E) :
     smulRightCLM 𝕜 F L f x = (L x).smulRight (f x) := rfl

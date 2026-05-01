@@ -69,8 +69,13 @@ theorem monoidalClosed_uncurry
 should give a map `M ⊗ Hom(M, N) ⟶ N`, so we flip the order of the arguments in the identity map
 `Hom(M, N) ⟶ (M ⟶ N)` and uncurry the resulting map `M ⟶ Hom(M, N) ⟶ N.` -/
 theorem ihom_ev_app (M N : ModuleCat.{u} R) :
-    (ihom.ev M).app N = ModuleCat.ofHom (TensorProduct.uncurry (.id R) M ((ihom M).obj N) N
-      (LinearMap.lcomp _ _ homLinearEquiv.toLinearMap ∘ₗ LinearMap.id.flip)) := by
+    (ihom.ev M).app N =
+      ModuleCat.ofHom (by
+        letI : SMulCommClass R R (↑N) := smulCommClass_self R (↑N)
+        exact TensorProduct.uncurry (.id R) M ((ihom M).obj N) N
+          (LinearMap.lcomp _ _
+            (ModuleCat.homLinearEquiv (S := R) (M := M) (N := N)).toLinearMap ∘ₗ
+              LinearMap.id.flip)) := by
   rw [← MonoidalClosed.uncurry_id_eq_ev]
   ext : 1
   apply TensorProduct.ext'
@@ -85,8 +90,12 @@ theorem ihom_coev_app (M N : ModuleCat.{u} R) :
   rfl
 
 theorem monoidalClosed_pre_app {M N : ModuleCat.{u} R} (P : ModuleCat.{u} R) (f : N ⟶ M) :
-    (MonoidalClosed.pre f).app P = ofHom (homLinearEquiv.symm.toLinearMap ∘ₗ
-      LinearMap.lcomp _ _ f.hom ∘ₗ homLinearEquiv.toLinearMap) :=
+    (MonoidalClosed.pre f).app P =
+      ofHom (by
+        letI : SMulCommClass R R (↑P) := smulCommClass_self R (↑P)
+        exact (ModuleCat.homLinearEquiv (S := R) (M := N) (N := P)).symm.toLinearMap ∘ₗ
+          LinearMap.lcomp _ _ f.hom ∘ₗ
+            (ModuleCat.homLinearEquiv (S := R) (M := M) (N := P)).toLinearMap) :=
   rfl
 
 end ModuleCat

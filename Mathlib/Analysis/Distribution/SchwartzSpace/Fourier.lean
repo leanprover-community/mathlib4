@@ -37,7 +37,8 @@ namespace SchwartzMap
 
 variable
   (𝕜 : Type*) [RCLike 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+  [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E]
   {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [FiniteDimensional ℝ V]
   [MeasurableSpace V] [BorelSpace V]
 
@@ -156,11 +157,25 @@ alias fourierTransformCLE_symm_apply := FourierTransform.fourierCLE_symm_apply
 
 end definition
 
+section continuousLinearMap
+
+variable
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+  {G : Type*} [NormedAddCommGroup G] [NormedSpace ℂ G] [SMulCommClass ℝ ℂ G]
+
+/-- Fourier transform on Schwartz maps valued in real continuous linear maps. -/
+instance instFourierTransformContinuousLinearMapRealId :
+    FourierTransform (𝓢(V, F →L[ℝ] G)) (𝓢(V, F →L[ℝ] G)) :=
+  instFourierTransform
+
+end continuousLinearMap
+
 section eval
 
 variable {𝕜' : Type*} [NormedField 𝕜']
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-  {G : Type*} [NormedAddCommGroup G] [NormedSpace ℂ G] [NormedSpace 𝕜' G] [SMulCommClass ℝ 𝕜' G]
+  {G : Type*} [NormedAddCommGroup G] [NormedSpace ℂ G] [SMulCommClass ℝ ℂ G]
+  [NormedSpace 𝕜' G] [SMulCommClass ℝ 𝕜' G]
 
 variable (𝕜') in
 theorem fourier_evalCLM_eq (f : 𝓢(V, F →L[ℝ] G)) (m : F) :
@@ -171,6 +186,8 @@ theorem fourier_evalCLM_eq (f : 𝓢(V, F →L[ℝ] G)) (m : F) :
 end eval
 
 section deriv
+
+variable [SMulCommClass ℝ ℂ E]
 
 /-- The derivative of the Fourier transform is given by the Fourier transform of the multiplication
 with `-(2 * π * Complex.I) • innerSL ℝ`. -/

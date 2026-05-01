@@ -307,7 +307,8 @@ theorem fourierIntegral_continuousLinearMap_apply
     {f : V → (F →L[ℝ] E)} {a : F} {w : W} (he : Continuous e) (hf : Integrable f μ) :
     fourierIntegral e μ L.toLinearMap₁₂ f w a =
       fourierIntegral e μ L.toLinearMap₁₂ (fun x ↦ f x a) w := by
-  rw [fourierIntegral, ContinuousLinearMap.integral_apply]
+  rw [fourierIntegral]
+  erw [ContinuousLinearMap.integral_apply]
   · rfl
   · apply (fourierIntegral_convergent_iff he _ _).2 hf
     exact L.continuous₂
@@ -317,7 +318,8 @@ theorem fourierIntegral_continuousMultilinearMap_apply
     (hf : Integrable f μ) :
     fourierIntegral e μ L.toLinearMap₁₂ f w m =
       fourierIntegral e μ L.toLinearMap₁₂ (fun x ↦ f x m) w := by
-  rw [fourierIntegral, ContinuousMultilinearMap.integral_apply]
+  rw [fourierIntegral]
+  erw [ContinuousMultilinearMap.integral_apply]
   · rfl
   · apply (fourierIntegral_convergent_iff he _ _).2 hf
     exact L.continuous₂

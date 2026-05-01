@@ -493,6 +493,14 @@ the operator norm. -/
 instance seminormedAddCommGroup :
     SeminormedAddCommGroup (ContinuousMultilinearMap 𝕜 E G) := ⟨fun _ _ ↦ rfl⟩
 
+/-- The extended norm is continuous for the standard topology on continuous multilinear maps. -/
+instance toContinuousENorm :
+    @ContinuousENorm (ContinuousMultilinearMap 𝕜 E G) instTopologicalSpace where
+  continuous_enorm := by
+    simpa [enorm] using
+      ENNReal.continuous_coe.comp
+        (continuous_nnnorm : Continuous fun f : ContinuousMultilinearMap 𝕜 E G ↦ ‖f‖₊)
+
 /-- An alias of `ContinuousMultilinearMap.seminormedAddCommGroup` with non-dependent types to help
 typeclass search. -/
 instance seminormedAddCommGroup' :
