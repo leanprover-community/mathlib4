@@ -72,6 +72,8 @@ theorem ramificationIdx'_tower
     {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
     [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
     (q : Ideal S) [q.IsPrime] (r : Ideal T) [r.IsPrime] [r.LiesOver q]
+    [Algebra (Localization.AtPrime q) (Localization.AtPrime r)]
+    [Localization.AtPrime.IsLiesOverAlgebra q r]
     [Module.Flat (Localization.AtPrime q) (Localization.AtPrime r)] :
     r.ramificationIdx' R = q.ramificationIdx' R * r.ramificationIdx' S := by
   have : q.LiesOver (r.under R) := LiesOver.tower_bot r q (r.under R)
@@ -95,6 +97,7 @@ theorem ramificationIdx'_tower'
     r.ramificationIdx' R = q.ramificationIdx' R * r.ramificationIdx' S := by
   by_cases hr : r.IsPrime
   · have : q.IsPrime := by rw [h.over]; exact IsPrime.under S r -- should be lemma
+    let := Localization.AtPrime.algebraOfLiesOver q r
     apply ramificationIdx'_tower
   · rw [ramificationIdx'_of_not_isPrime r R hr, ramificationIdx'_of_not_isPrime r S hr, mul_zero]
 
@@ -105,20 +108,36 @@ section inertiaDeg
 open Classical in
 /-- An alternate definition of inertia degree. -/
 noncomputable def inertiaDeg' : ℕ :=
-  if _ : q.IsPrime then Module.finrank (q.under R).ResidueField q.ResidueField else 0
+  if _ : q.IsPrime then
+    letI := Localization.AtPrime.algebraOfLiesOver (q.under R) q
+    Module.finrank (q.under R).ResidueField q.ResidueField else 0
 
-theorem inertiaDeg'_def [q.IsPrime] :
-    q.inertiaDeg' R = Module.finrank (q.under R).ResidueField q.ResidueField :=
-  dif_pos _
+theorem inertiaDeg'_def [q.IsPrime]
+    [Algebra (Localization.AtPrime (q.under R)) (Localization.AtPrime q)]
+    [Localization.AtPrime.IsLiesOverAlgebra (q.under R) q] :
+    q.inertiaDeg' R = Module.finrank (q.under R).ResidueField q.ResidueField := by
+  convert dif_pos _
+  apply Algebra.algebra_ext
+  rw [← DFunLike.ext_iff]
+  exact Localization.AtPrime.IsLiesOverAlgebra.algebraMap_eq
 
 theorem inertiaDeg'_of_not_isPrime (hq : ¬ q.IsPrime) : q.inertiaDeg' R = 0 :=
   dif_neg hq
 
 theorem inertiaDeg'_eq {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-    (p : Ideal R) (q : Ideal S) [h : q.LiesOver p] [q.IsPrime] [p.IsPrime] :
+    (p : Ideal R) (q : Ideal S) [h : q.LiesOver p] [q.IsPrime] [p.IsPrime]
+    [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
+    [Localization.AtPrime.IsLiesOverAlgebra p q] :
     q.inertiaDeg' R = Module.finrank p.ResidueField q.ResidueField := by
+  let : Algebra (Localization.AtPrime (q.under R)) (Localization.AtPrime q) :=
+    Localization.AtPrime.algebraOfLiesOver (q.under R) q
   rw [inertiaDeg'_def]
-  convert rfl <;> exact LiesOver.over
+  have := Ideal.over_def q p
+  subst this
+  convert rfl
+  apply Algebra.algebra_ext
+  rw [← DFunLike.ext_iff]
+  exact Localization.AtPrime.IsLiesOverAlgebra.algebraMap_eq
 
 theorem inertiaDeg'_tower'
     {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
@@ -128,6 +147,9 @@ theorem inertiaDeg'_tower'
   by_cases hr : r.IsPrime
   · have : q.IsPrime := by rw [h.over]; exact IsPrime.under S r -- should be lemma
     have : q.LiesOver (r.under R) := LiesOver.tower_bot r q (r.under R)
+    let := Localization.AtPrime.algebraOfLiesOver (r.under R) r
+    let := Localization.AtPrime.algebraOfLiesOver (r.under R) q
+    let := Localization.AtPrime.algebraOfLiesOver q r
     rw [inertiaDeg'_eq (r.under R), inertiaDeg'_eq (r.under R), inertiaDeg'_eq q, eq_comm]
     apply Module.finrank_mul_finrank
   · rw [inertiaDeg'_of_not_isPrime r R hr, inertiaDeg'_of_not_isPrime r S hr, mul_zero]
@@ -167,18 +189,27 @@ noncomputable def Fiber.algEquivQuotient :
 
 open TensorProduct
 
+instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
+    (q : Ideal (p.Fiber S)) [q.IsPrime] : Localization.AtPrime.IsLiesOverAlgebra p q where
+  algebraMap_eq := (Localization.localRingHom_unique p q _ Ideal.LiesOver.over fun _ ↦ rfl).symm
+
 /-- The localization of the fiber `p.Fiber S` is isomorphic to a quotient of a localization. -/
-noncomputable def foo8 (q : Ideal (p.Fiber S)) [q.IsPrime] :
+noncomputable def foo8 (q : Ideal (p.Fiber S)) [q.IsPrime]
+    [h1 : Algebra (Localization.AtPrime p)
+      (Localization.AtPrime (q.comap Algebra.TensorProduct.includeRight))]
+    [h2 : Localization.AtPrime.IsLiesOverAlgebra p (q.comap Algebra.TensorProduct.includeRight)] :
     letI r := q.comap Algebra.TensorProduct.includeRight
     letI Sr := Localization.AtPrime r
-    Localization.AtPrime q ≃ₐ[Localization.AtPrime p] Sr ⧸ p.map (algebraMap R Sr) :=
+    Localization.AtPrime q ≃ₐ[Localization.AtPrime p] Sr ⧸ p.map (algebraMap R Sr) := by
   letI : Algebra S (p.Fiber S) := Algebra.TensorProduct.rightAlgebra
-  letI Rp := Localization p.primeCompl
+  letI Rp := Localization.AtPrime p
   letI Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
   letI pS := p.map (algebraMap R S)
   letI pSp := pS.map (algebraMap S Sp)
   letI r := q.under S
   letI Sr := Localization.AtPrime r
+  let : Algebra Rp Sr := h1
+  have : Localization.AtPrime.IsLiesOverAlgebra p r := h2
   letI e₁ : (Sp ⧸ pSp) ≃ₐ[S] p.Fiber S :=
     .symm <| (Fiber.algEquivQuotient p).trans <| quotientEquivAlgOfEq S <| by
       simp [Sp, pS, pSp, map_map, ← IsScalarTower.algebraMap_eq,
@@ -193,6 +224,12 @@ noncomputable def foo8 (q : Ideal (p.Fiber S)) [q.IsPrime] :
           (Localization.AtPrime q') q'
   haveI := IsScalarTower.to₁₃₄ R S (S ⧸ pS) (Localization.AtPrime q')
   haveI := IsScalarTower.to₁₃₄ R S (S ⧸ pS) (Sr ⧸ map (algebraMap S Sr) pS)
+  haveI : IsScalarTower R Rp (Sr ⧸ map (algebraMap S Sr) pS) := by
+    apply IsScalarTower.of_algebraMap_eq
+    intro x
+    rw [IsScalarTower.algebraMap_apply Rp Sr,
+      ← IsScalarTower.algebraMap_apply R Rp,
+      ← IsScalarTower.algebraMap_apply]
   letI e₂ := (IsLocalization.algEquiv (Algebra.algebraMapSubmonoid (S ⧸ pS) r.primeCompl)
     (Localization.AtPrime q') ((Sr ⧸ pS.map (algebraMap S Sr)))).restrictScalars R
   letI e₃ : Localization.AtPrime q' ≃ₐ[Rp] Sr ⧸ pS.map (algebraMap S Sr) :=
@@ -204,7 +241,7 @@ noncomputable def foo8 (q : Ideal (p.Fiber S)) [q.IsPrime] :
       suffices f = g by rwa [DFunLike.ext_iff] at this
       apply Localization.algHom_ext
       rwa [DFunLike.ext_iff] at this ⊢ }
-  let e₄ : Localization.AtPrime q' ≃ₐ[Rp] Localization.AtPrime q :=
+  letI e₄ : Localization.AtPrime q' ≃ₐ[Rp] Localization.AtPrime q :=
     { __ := Localization.localAlgEquiv q' q e₁ rfl
       commutes' := by
         let f := ((Localization.localAlgEquiv q' q e₁ rfl).toAlgHom.restrictScalars R).comp
@@ -214,31 +251,18 @@ noncomputable def foo8 (q : Ideal (p.Fiber S)) [q.IsPrime] :
         suffices f = g by rwa [DFunLike.ext_iff] at this
         apply Localization.algHom_ext
         rwa [DFunLike.ext_iff] at this ⊢ }
-  e₄.symm.trans <| e₃.trans <| quotientEquivAlgOfEq Rp (map_map _ _)
+  exact e₄.symm.trans <| e₃.trans <| quotientEquivAlgOfEq Rp (map_map _ _)
 
-/-- If `q` is a prime ideal of `p.Fiber S`, then `q` lies over `p`, so the localization
-`(p.Fiber S)_q` is an algebra the localization `R_p`. But `p.Fiber S = Rp ⊗[R] S` is itself an
-algebra over `Rp`, and this gives another instance of `(p.Fiber S)_q` as an `Rp`-algebra.
-
-This was discussed on Zulip here:
-https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/instance.20diamond.20with.20.60Ideal.2EFiber.60. -/
-theorem Fiber.localization_diamond
-    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.IsPrime]
-    (q : Ideal (p.Fiber S)) [q.IsPrime] :
-    Localization.AtPrime.instAlgebraOfLiesOver p q = OreLocalization.instAlgebra := by
-  apply Algebra.algebra_ext
-  rw [← DFunLike.ext_iff]
-  exact Localization.localRingHom_unique p q _ Ideal.LiesOver.over fun x ↦ rfl
-
-theorem foo3 (q : Ideal (p.Fiber S)) [q.IsPrime] :
+theorem foo3 (q : Ideal (p.Fiber S)) [q.IsPrime]
+    [Algebra (Localization.AtPrime p)
+      (Localization.AtPrime (q.comap Algebra.TensorProduct.includeRight))]
+    [Localization.AtPrime.IsLiesOverAlgebra p (q.comap Algebra.TensorProduct.includeRight)]:
     letI r := q.comap Algebra.TensorProduct.includeRight
     letI Sr := Localization.AtPrime r
     Module.length (Localization.AtPrime p) (Localization.AtPrime q) =
       Module.length (Localization.AtPrime p) (Sr ⧸ p.map (algebraMap R Sr)) := by
   apply LinearEquiv.length_eq
-  convert (foo8 p q).toLinearEquiv
-  rw [Fiber.localization_diamond]
-  rfl
+  exact (foo8 p q).toLinearEquiv
 
 noncomputable instance [Algebra.QuasiFinite R S] : Fintype (p.primesOver S) :=
   (Algebra.QuasiFinite.finite_primesOver p).fintype
@@ -254,12 +278,13 @@ theorem sum_ramification_inertia
   let r := q.1.comap Algebra.TensorProduct.includeRight
   let Sr := Localization.AtPrime r
   let A := Sr ⧸ p.map (algebraMap R Sr)
+  let := Localization.AtPrime.algebraOfLiesOver p r
   transitivity (Module.length (Localization.AtPrime p) A).toNat
   · rw [← foo3,
       Module.length_eq_of_surjective (IsLocalRing.residue_surjective (R := Localization.AtPrime p)),
       Module.length_eq_finrank, ENat.toNat_coe]
   · rw [IsLocalRing.length_restrictScalars (Localization.AtPrime p) (Localization.AtPrime r) A,
-      ENat.toNat_mul, Module.length_eq_finrank, ramificationIdx'_eq p, inertiaDeg'_eq p]
+      ENat.toNat_mul, Module.length_eq_finrank, ramificationIdx'_eq p, ← inertiaDeg'_eq p r]
     rfl
 
 -- check if we can PR this?
