@@ -284,7 +284,7 @@ private abbrev CustomOfHomData :=
 /-- Elaborate a term and beta-reduce it before storing it in a declaration type. -/
 syntax (name := mkConcreteCategoryBeta) "mk_concrete_category_beta% " term : term
 
-@[term_elab mkConcreteCategoryBeta]
+@[term_elab mkConcreteCategoryBeta, inherit_doc mkConcreteCategoryBeta]
 public meta def elabMkConcreteCategoryBeta : TermElab := fun stx expectedType => do
   Core.betaReduce (← instantiateMVars (← Term.elabTerm stx[1] expectedType))
 
