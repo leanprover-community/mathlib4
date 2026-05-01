@@ -62,6 +62,10 @@ instance : IsMonHom (toUnit M) where
 instance : IsMonHom η[M] where
   mul_hom := by simp [toUnit_unique (ρ_ (𝟙_ C)).hom (λ_ (𝟙_ C)).hom]
 
+-- The general `(f : 𝟙 C ⟶ X) : Mono f` instance has a bad discrimination tree key.
+@[to_additive]
+instance : Mono η[M] := Limits.IsTerminal.mono_from isTerminalTensorUnit _
+
 @[to_additive]
 theorem lift_lift_assoc {A : C} {B : C} [MonObj B] (f g h : A ⟶ B) :
     lift (lift f g ≫ μ) h ≫ μ = lift f (lift g h ≫ μ) ≫ μ := by
@@ -416,6 +420,22 @@ variable (M) in
 @[to_additive]
 lemma MonObj.mul_eq_mul : μ = fst M M * snd _ _ :=
   show _ = _ ≫ _ by rw [lift_fst_snd, Category.id_comp]
+
+/-- A monoid morphism `f : M ⟶ N` induces a monoid homomorphism `M(X) →* N(X)` for every `X`. -/
+@[to_additive (attr := simps!)
+/-- An additive monoid morphism `f : M ⟶ N` induces an additive monoid homomorphism
+`M(X) →+ N(X)` for every `X`. -/]
+def IsMonHom.monoidHom (f : M ⟶ N) [IsMonHom f] (X : C) : (X ⟶ M) →* (X ⟶ N) :=
+  ((yonedaMon.map (Mon.ofHom f)).app (.op X)).hom
+
+@[to_additive (attr := simp)]
+lemma IsMonHom.monoidHom_id : IsMonHom.monoidHom (𝟙 M) X = MonoidHom.id _ := by
+  cat_disch
+
+@[to_additive (attr := simp)]
+lemma IsMonHom.monoidHom_comp (f : M ⟶ N) (g : N ⟶ O) [IsMonHom f] [IsMonHom g] :
+    IsMonHom.monoidHom (f ≫ g) X = MonoidHom.comp (monoidHom g X) (monoidHom f X) := by
+  cat_disch
 
 namespace Hom
 
