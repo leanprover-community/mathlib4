@@ -202,7 +202,6 @@ private lemma monomial_qExpansion_coeff_zero_eq_one {n a b : ℕ} (hab : 4 * a +
   have hweight : (a • (4 : ℤ) + b • (6 : ℤ)) = (n : ℤ) := by
     change ((a : ℤ) * 4 + (b : ℤ) * 6) = (n : ℤ)
     push_cast [← hab]; ring
-  -- `prod` is concentrated at weight `n`.
   have hprod_eq : prod = DirectSum.of (ModularForm 𝒮ℒ) (n : ℤ) (prod (n : ℤ)) := by
     refine DFinsupp.ext (fun k : ℤ => ?_)
     by_cases hk : k = (n : ℤ)
@@ -212,7 +211,6 @@ private lemma monomial_qExpansion_coeff_zero_eq_one {n a b : ℕ} (hab : 4 * a +
       refine DirectSum.of_eq_of_ne _ _ _ ?_
       rw [← hweight] at hk
       exact hk
-  -- Compute `R prod` two ways.
   have hR_eval : R prod = qExpansion 1 E₄ ^ a * qExpansion 1 E₆ ^ b := by
     rw [hprod_def, hR_def, map_mul, map_pow, map_pow,
       ModularForm.qExpansionRingHom_apply (h := 1) one_pos one_mem_strictPeriods_SL,
@@ -405,12 +403,6 @@ graded ring of level-1 modular forms. -/
 private noncomputable def discriminantPoly : MvPolynomial (Fin 2) ℂ :=
   (1 / 1728 : ℂ) • (MvPolynomial.X 0 ^ 3 - MvPolynomial.X 1 ^ 2)
 
-private lemma X0_cubed_eq_smul_discriminantPoly :
-    (MvPolynomial.X (0 : Fin 2) : MvPolynomial (Fin 2) ℂ) ^ 3 =
-    MvPolynomial.X (1 : Fin 2) ^ 2 + (1728 : ℂ) • discriminantPoly := by
-  simp only [discriminantPoly, smul_smul]
-  norm_num
-
 private lemma weight_eq_4a_6b (d : Fin 2 →₀ ℕ) :
     Finsupp.weight E₄E₆Weight d = d 0 * 4 + d 1 * 6 := by
   change (Finsupp.linearCombination ℕ E₄E₆Weight).toAddMonoidHom d = d 0 * 4 + d 1 * 6
@@ -553,11 +545,11 @@ private lemma discriminantPoly_isWeightedHomogeneous :
   by_cases hd3 : MvPolynomial.coeff d
       (MvPolynomial.X (0 : Fin 2) ^ 3 : MvPolynomial (Fin 2) ℂ) ≠ 0
   · exact ((MvPolynomial.isWeightedHomogeneous_X ℂ E₄E₆Weight (0 : Fin 2)).pow 3) hd3
-  · push_neg at hd3
+  · push Not at hd3
     by_cases hd6 : MvPolynomial.coeff d
         (MvPolynomial.X (1 : Fin 2) ^ 2 : MvPolynomial (Fin 2) ℂ) ≠ 0
     · exact ((MvPolynomial.isWeightedHomogeneous_X ℂ E₄E₆Weight (1 : Fin 2)).pow 2) hd6
-    · push_neg at hd6; simp only [hd3, hd6, sub_self, mul_zero, ne_eq, not_true] at hd
+    · push Not at hd6; simp only [hd3, hd6, sub_self, mul_zero, ne_eq, not_true] at hd
 
 /-- `evalE₄E₆ discriminantPoly = DirectSum.of _ 12 Δ`. -/
 private lemma evalE₄E₆_discriminantPoly :
@@ -576,11 +568,8 @@ private lemma evalE₄E₆_discriminantPoly_mul_coeff_zero {n : ℕ} (hn12 : 12 
     evalE₄E₆_whc_eq_single (n - 12) s hs, DirectSum.of_mul_of]
   have hcast : (12 : ℤ) + ((n - 12 : ℕ) : ℤ) = (↑n : ℤ) := by omega
   rw [DirectSum.of_apply, dif_pos hcast]
-  -- The product evaluated at ↑n is a modular form of weight n with q-expansion Δ * s_eval.
-  -- Its 0th q-expansion coefficient vanishes since Δ is a cusp form.
   set f := ((CuspForm.discriminant : CuspForm 𝒮ℒ 12) : ModularForm 𝒮ℒ 12)
   set g := (evalE₄E₆ s) ((n - 12 : ℕ) : ℤ)
-  show (qExpansion 1 ((hcast ▸ GradedMonoid.GMul.mul f g : ModularForm 𝒮ℒ ↑n) : ℍ → ℂ)).coeff 0 = 0
   have hcoe : ((hcast ▸ GradedMonoid.GMul.mul f g : ModularForm 𝒮ℒ ↑n) : ℍ → ℂ) =
       ((f.mul g : ModularForm 𝒮ℒ (12 + ((n - 12 : ℕ) : ℤ))) : ℍ → ℂ) := by
     ext z
@@ -588,7 +577,10 @@ private lemma evalE₄E₆_discriminantPoly_mul_coeff_zero {n : ℕ} (hn12 : 12 
         (heq ▸ h : ModularForm 𝒮ℒ k₂) z = h z := by
       intros; subst_vars; rfl
     exact helper hcast _ z
-  rw [hcoe, ModularForm.qExpansion_mul one_pos one_mem_strictPeriods_SL f g,
+  rw [show
+      (qExpansion 1 ((hcast ▸ GradedMonoid.GMul.mul f g : ModularForm 𝒮ℒ ↑n) : ℍ → ℂ)).coeff 0 =
+      (qExpansion 1 ((f.mul g : ModularForm 𝒮ℒ (12 + ((n - 12 : ℕ) : ℤ))) : ℍ → ℂ)).coeff 0 from
+    by rw [hcoe], ModularForm.qExpansion_mul one_pos one_mem_strictPeriods_SL f g,
     PowerSeries.coeff_mul]
   have hΔ_coeff : (qExpansion 1 (f : ℍ → ℂ)).coeff 0 = 0 :=
     (ModularForm.isCuspForm_iff_coeffZero_eq_zero f).mp ⟨CuspForm.discriminant, rfl⟩
@@ -649,12 +641,6 @@ private lemma per_weight_injective_zero
   rcases smul_eq_zero.mp heval with hc | h1z
   · rw [hc, map_zero]
   · exact absurd h1z one_ne_zero_modularForm
-
-private lemma X0_pow_mul_X1_pow_isWeightedHomogeneous' {a b : ℕ} :
-    MvPolynomial.IsWeightedHomogeneous E₄E₆Weight
-      (MvPolynomial.X (0 : Fin 2) ^ a * MvPolynomial.X (1 : Fin 2) ^ b :
-        MvPolynomial (Fin 2) ℂ) (a * 4 + b * 6) :=
-  X0_pow_mul_X1_pow_isWeightedHomogeneous a b _ rfl
 
 private lemma discriminantPoly_piece_isWeightedHomogeneous {n : ℕ} (hn12 : 12 ≤ n)
     (d : Fin 2 →₀ ℕ) (hd_ge : 3 ≤ d 0) (hwd : d 0 * 4 + d 1 * 6 = n) (c : ℂ) :
@@ -859,7 +845,6 @@ private lemma reduced_part_eq_zero {n : ℕ} (hn12 : 12 ≤ n)
   · rwa [MvPolynomial.support_eq_empty] at hr_empty
   obtain ⟨d₀, hd₀⟩ := Finset.nonempty_of_ne_empty hr_empty
   have hwd₀ := hr (MvPolynomial.mem_support_iff.mp hd₀)
-  -- Reduced + weight n forces all monomials in r.support to have the same exponent vector d₀.
   have hr_mono : r = MvPolynomial.monomial d₀ (MvPolynomial.coeff d₀ r) := by
     ext d
     by_cases hd : d = d₀
@@ -875,14 +860,11 @@ private lemma reduced_part_eq_zero {n : ℕ} (hn12 : 12 ≤ n)
         (show d 0 * 4 + d 1 * 6 = d₀ 0 * 4 + d₀ 1 * 6 by omega)
       exact absurd (Finsupp.ext fun i => by fin_cases i <;> [exact ha; exact hb]) hd
     · rwa [MvPolynomial.mem_support_iff, not_not] at hd_supp
-  -- Now the goal: show MvPolynomial.coeff d₀ r = 0
   set c := MvPolynomial.coeff d₀ r
   suffices hc : c = 0 by rw [hr_mono, hc, MvPolynomial.monomial_zero]
-  -- Take q-expansion coeff 0 of evaluated polynomial.
   rw [hr_mono, map_add] at heval
   have hd₀_weight : 4 * d₀ 0 + 6 * d₀ 1 = n := by
     have := weight_eq_4a_6b d₀; rw [hwd₀] at this; omega
-  -- Define Q = qExpansionAddHom 1 ↑n : ModularForm 𝒮ℒ ↑n →+ PowerSeries ℂ.
   set Q := ModularForm.qExpansionAddHom (h := 1) one_pos one_mem_strictPeriods_SL (↑n : ℤ)
   have hQ_zero : Q ((evalE₄E₆ (MvPolynomial.monomial d₀ c)) (↑n : ℤ) +
       (evalE₄E₆ (discriminantPoly * s)) (↑n : ℤ)) = 0 := by
@@ -896,14 +878,11 @@ private lemma reduced_part_eq_zero {n : ℕ} (hn12 : 12 ≤ n)
       (Q ((evalE₄E₆ (discriminantPoly * s)) (↑n : ℤ))).coeff 0 = 0 := by
     have := congr_arg (fun (p : PowerSeries ℂ) => p.coeff 0) hQ_zero
     simpa using this
-  -- The Δ_poly * s term contributes 0.
-  have h_Δ_term : (Q ((evalE₄E₆ (discriminantPoly * s)) (↑n : ℤ))).coeff 0 = 0 := by
-    show (qExpansion 1 ↑((evalE₄E₆ (discriminantPoly * s)) (↑n : ℤ))).coeff 0 = 0
-    exact evalE₄E₆_discriminantPoly_mul_coeff_zero hn12 s hs
+  have h_Δ_term : (Q ((evalE₄E₆ (discriminantPoly * s)) (↑n : ℤ))).coeff 0 = 0 :=
+    evalE₄E₆_discriminantPoly_mul_coeff_zero hn12 s hs
   rw [h_Δ_term, add_zero] at h_coeff_sum
-  -- The monomial term contributes c.
   have h_mono_term : (Q ((evalE₄E₆ (MvPolynomial.monomial d₀ c)) (↑n : ℤ))).coeff 0 = c := by
-    show (qExpansion 1 ↑((evalE₄E₆ (MvPolynomial.monomial d₀ c)) (↑n : ℤ))).coeff 0 = c
+    change (qExpansion 1 ↑((evalE₄E₆ (MvPolynomial.monomial d₀ c)) (↑n : ℤ))).coeff 0 = c
     rw [monomial_fin2_eq, mul_assoc, map_mul, evalE₄E₆_C, Algebra.algebraMap_eq_smul_one,
       smul_mul_assoc, one_mul, evalE₄E₆_monomial, DirectSum.smul_apply,
       show (↑(c • ((DirectSum.of (ModularForm 𝒮ℒ) 4 E₄ ^ d₀ 0 *
@@ -937,7 +916,6 @@ private lemma eval_discriminantPoly_mul_zero_imp {n : ℕ} (hn12 : 12 ≤ n)
   have hpw := DFunLike.congr_fun hds z
   simp only [ModularForm.zero_apply] at hpw
   rw [helper hcast _ z] at hpw
-  -- hpw : (GMul.mul f g) z = 0, i.e., f z * g z = 0
   have hpw' : f z * g z = 0 := by
     have heq : (GradedMonoid.GMul.mul f g : ModularForm 𝒮ℒ (12 + ↑(n - 12))) z = f z * g z := rfl
     rw [← heq]; exact hpw
@@ -974,7 +952,7 @@ private lemma per_weight_injective : ∀ (n : ℕ) (p : MvPolynomial (Fin 2) ℂ
     rcases hn02 with rfl | rfl
     · exact per_weight_injective_zero p hp heval
     · exact whomog_eq_zero_of_no_monomials p hp (fun d => no_wt_monomial_of_two d)
-  push_neg at hn4
+  push Not at hn4
   by_cases hn12 : n < 12
   · have hn_cases : n = 4 ∨ n = 6 ∨ n = 8 ∨ n = 10 := by
       obtain ⟨m, rfl⟩ := hk_odd; omega
@@ -983,7 +961,7 @@ private lemma per_weight_injective : ∀ (n : ℕ) (p : MvPolynomial (Fin 2) ℂ
     · exact per_weight_injective_small 0 1 (by omega) (by omega) rfl p hp heval
     · exact per_weight_injective_small 2 0 (by omega) (by omega) rfl p hp heval
     · exact per_weight_injective_small 1 1 (by omega) (by omega) rfl p hp heval
-  push_neg at hn12
+  push Not at hn12
   exact per_weight_injective_inductive_step n ih p hp heval hn12
 
 /-- The evaluation homomorphism `evalE₄E₆` is injective: `E₄` and `E₆` are algebraically
