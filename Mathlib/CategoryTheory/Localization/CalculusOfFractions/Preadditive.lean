@@ -358,4 +358,16 @@ instance [HasZeroObject C] : HasZeroObject W.Localization' := W.Q'.hasZeroObject
 
 end Localization
 
+
+lemma Functor.faithful_of_comp_cancel_zero_of_hasLeftCalculusOfFractions
+    {E : Type*} [Category* E] (F : D ⥤ E)
+    [W.HasLeftCalculusOfFractions]
+    [Preadditive D] [Preadditive E] [L.Additive] [F.Additive]
+    (h : ∀ ⦃X₁ X₂ : C⦄ (f : X₁ ⟶ X₂), F.map (L.map f) = 0 → L.map f = 0) :
+    Faithful F :=
+  faithful_of_comp_of_hasLeftCalculusOfFractions L W F
+    (fun X₁ X₂ f g hfg => by
+      rw [← sub_eq_zero, ← L.map_sub]
+      exact h _ (by rw [L.map_sub, F.map_sub, hfg, sub_self]))
+
 end CategoryTheory
