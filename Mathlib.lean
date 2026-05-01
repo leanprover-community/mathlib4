@@ -232,6 +232,7 @@ public import Mathlib.Algebra.Category.Ring.FinitePresentation
 public import Mathlib.Algebra.Category.Ring.Instances
 public import Mathlib.Algebra.Category.Ring.Limits
 public import Mathlib.Algebra.Category.Ring.LinearAlgebra
+public import Mathlib.Algebra.Category.Ring.Small
 public import Mathlib.Algebra.Category.Ring.Topology
 public import Mathlib.Algebra.Category.Ring.Under.Basic
 public import Mathlib.Algebra.Category.Ring.Under.Limits
@@ -3485,6 +3486,7 @@ public import Mathlib.Combinatorics.Extremal.RuzsaSzemeredi
 public import Mathlib.Combinatorics.Graph.Basic
 public import Mathlib.Combinatorics.Graph.Delete
 public import Mathlib.Combinatorics.Graph.Lattice
+public import Mathlib.Combinatorics.Graph.Maps
 public import Mathlib.Combinatorics.Graph.Subgraph
 public import Mathlib.Combinatorics.HalesJewett
 public import Mathlib.Combinatorics.Hall.Basic
@@ -5653,6 +5655,7 @@ public import Mathlib.NumberTheory.ModularForms.Cusps
 public import Mathlib.NumberTheory.ModularForms.DedekindEta
 public import Mathlib.NumberTheory.ModularForms.Delta
 public import Mathlib.NumberTheory.ModularForms.Derivative
+public import Mathlib.NumberTheory.ModularForms.DimensionFormulas.LevelOne
 public import Mathlib.NumberTheory.ModularForms.Discriminant
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
@@ -6406,6 +6409,7 @@ public import Mathlib.RingTheory.Flat.EquationalCriterion
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Descent
+public import Mathlib.RingTheory.Flat.IsBaseChange
 public import Mathlib.RingTheory.Flat.Localization
 public import Mathlib.RingTheory.Flat.Rank
 public import Mathlib.RingTheory.Flat.Stability
@@ -6842,6 +6846,7 @@ public import Mathlib.RingTheory.TensorProduct.IncludeLeftSubRight
 public import Mathlib.RingTheory.TensorProduct.IsBaseChangeFree
 public import Mathlib.RingTheory.TensorProduct.IsBaseChangeHom
 public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
+public import Mathlib.RingTheory.TensorProduct.IsBaseChangeRightExact
 public import Mathlib.RingTheory.TensorProduct.Maps
 public import Mathlib.RingTheory.TensorProduct.MonoidAlgebra
 public import Mathlib.RingTheory.TensorProduct.MvPolynomial
@@ -7554,6 +7559,7 @@ public import Mathlib.Topology.Category.TopCat.Sphere
 public import Mathlib.Topology.Category.TopCat.ULift
 public import Mathlib.Topology.Category.TopCat.Yoneda
 public import Mathlib.Topology.Category.TopCommRingCat
+public import Mathlib.Topology.Category.TopPair
 public import Mathlib.Topology.Category.UniformSpace
 public import Mathlib.Topology.Clopen
 public import Mathlib.Topology.ClopenBox
