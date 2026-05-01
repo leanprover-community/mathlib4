@@ -221,6 +221,27 @@ theorem dirSupClosedOn_singleton (a : α) : DirSupClosedOn D {a} :=
 
 end PartialOrder
 
+namespace LinearOrder
+variable [LinearOrder α]
+
+theorem dirSupClosedOn_iff_of_linearOrder : DirSupClosedOn D s ↔
+    ∀ ⦃d⦄, d ∈ D → d ⊆ s → d.Nonempty → ∀ ⦃a⦄, IsLUB d a → a ∈ s := by
+  simp [DirSupClosedOn]
+
+theorem dirSupClosed_iff_of_linearOrder : DirSupClosed s ↔
+    ∀ ⦃d⦄, d ⊆ s → d.Nonempty → ∀ ⦃a⦄, IsLUB d a → a ∈ s := by
+  simp [DirSupClosed]
+
+theorem dirSupInaccOn_iff_of_linearOrder : DirSupInaccOn D s ↔
+    ∀ ⦃d⦄, d ∈ D → d.Nonempty → ∀ ⦃a⦄, IsLUB d a → a ∈ s → (d ∩ s).Nonempty := by
+  simp [DirSupInaccOn]
+
+theorem dirSupInacc_iff_of_linearOrder : DirSupInacc s ↔
+    ∀ ⦃d⦄, d.Nonempty → ∀ ⦃a⦄, IsLUB d a → a ∈ s → (d ∩ s).Nonempty := by
+  simp [DirSupInacc]
+
+end LinearOrder
+
 section CompleteLattice
 variable [CompleteLattice α]
 
