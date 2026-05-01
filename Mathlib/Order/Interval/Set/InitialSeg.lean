@@ -38,7 +38,7 @@ def principalSegIio (j : α) : Iio j <i α where
   mem_range_iff_rel' := by aesop
 
 @[simp]
-lemma principalSegIio_apply (k : Iio j) : (principalSegIio j).toRelEmbedding k = k.1 :=
+lemma principalSegIio_apply (k : Iio j) : principalSegIio j k = k.1 :=
   rfl
 
 @[deprecated (since := "2026-04-12")]
