@@ -131,6 +131,14 @@ lemma le_boundary_iff :
     · simp [← A.mem_nonDegenerate_iff ⟨x, h₂⟩,
         nonDegenerate_eq_empty_of_hasDimensionLT _ _ _ h₃] at h₁
 
+lemma eq_boundary_iff :
+    A = boundary n ↔ boundary n ≤ A ∧ A ≠ ⊤ := by
+  constructor
+  · rintro rfl
+    exact ⟨by rfl, (boundary_lt_top n).ne⟩
+  · rintro ⟨h₁, h₂⟩
+    exact le_antisymm (by rwa [le_boundary_iff]) h₁
+
 end stdSimplex
 
 end SSet
