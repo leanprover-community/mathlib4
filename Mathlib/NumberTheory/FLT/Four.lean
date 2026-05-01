@@ -183,9 +183,10 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
   -- Now use the fact that (b / 2) ^ 2 = m * r * s, and m, r and s are pairwise coprime to obtain
   -- i, j and k such that m = i ^ 2, r = j ^ 2 and s = k ^ 2.
   -- m and r * s are coprime because m = r ^ 2 + s ^ 2 and r and s are coprime.
-  have hcp : IsCoprime m (r * s) := by
+  have hcp : Int.gcd m (r * s) = 1 := by
     rw [htt3]
-    exact Int.isCoprime_of_sq_sum' (Int.isCoprime_iff_gcd_eq_one.mpr htt4)
+    exact Int.isCoprime_iff_gcd_eq_one.mp
+      (Int.isCoprime_of_sq_sum' (Int.isCoprime_iff_gcd_eq_one.mpr htt4))
   -- b is even because b ^ 2 = 2 * m * n.
   have hb2 : 2 ∣ b := by
     apply @Int.Prime.dvd_pow' _ 2 _ Nat.prime_two
@@ -197,20 +198,27 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
     linear_combination (-b - 2 * b') * hb2' + ht2 + 2 * m * htt2
   have hrsz : r * s ≠ 0 := by grind
   have h2b0 : b' ≠ 0 := by grind
-  obtain ⟨i, hi⟩ := Int.sq_of_isCoprime hcp hs.symm
+  obtain ⟨i, hi⟩ := Int.sq_of_gcd_eq_one hcp hs.symm
   -- use m is positive to exclude m = - i ^ 2
   have hi' : ¬m = -i ^ 2 := by
-    intro h1
-    nlinarith [sq_nonneg i, h4, h1]
+    by_contra h1
+    have hit : -i ^ 2 ≤ 0 := neg_nonpos.mpr (sq_nonneg i)
+    rw [← h1] at hit
+    apply absurd h4 (not_lt.mpr hit)
   replace hi : m = i ^ 2 := Or.resolve_right hi hi'
   rw [mul_comm] at hs
+  rw [Int.gcd_comm] at hcp
   -- obtain d such that r * s = d ^ 2
-  obtain ⟨d, hd⟩ := Int.sq_of_isCoprime hcp.symm hs.symm
+  obtain ⟨d, hd⟩ := Int.sq_of_gcd_eq_one hcp hs.symm
   -- (b / 2) ^ 2 and m are positive so r * s is positive
   have hd' : ¬r * s = -d ^ 2 := by
-    intro h1
+    by_contra h1
     rw [h1] at hs
-    nlinarith [sq_nonneg d, h4, hs, sq_pos_of_ne_zero h2b0]
+    have h2 : b' ^ 2 ≤ 0 := by
+      rw [hs, (by ring : -d ^ 2 * m = -(d ^ 2 * m))]
+      exact neg_nonpos.mpr ((mul_nonneg_iff_of_pos_right h4).mpr (sq_nonneg d))
+    have h2' : 0 ≤ b' ^ 2 := by apply sq_nonneg b'
+    exact absurd (lt_of_le_of_ne h2' (Ne.symm (pow_ne_zero _ h2b0))) (not_lt.mpr h2)
   replace hd : r * s = d ^ 2 := Or.resolve_right hd hd'
   -- r = +/- j ^ 2
   obtain ⟨j, hj⟩ := Int.sq_of_gcd_eq_one htt4 hd

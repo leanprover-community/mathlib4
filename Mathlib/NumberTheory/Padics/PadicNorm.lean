@@ -6,8 +6,8 @@ Authors: Robert Y. Lewis
 module
 
 public import Mathlib.Algebra.Order.AbsoluteValue.Basic
-public import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 public import Mathlib.NumberTheory.Padics.PadicVal.Basic
+import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 
 /-!
 # p-adic norm
@@ -207,10 +207,9 @@ instance : IsAbsoluteValue (padicNorm p) where
 /-- If the `p`-adic norms of `q` and `r` are different, then the norm of `q + r` is equal to the max
 of the norms of `q` and `r`. -/
 theorem add_eq_max_of_ne {q r : ℚ} (hne : padicNorm p q ≠ padicNorm p r) :
-    padicNorm p (q + r) = max (padicNorm p q) (padicNorm p r) := by
-  simpa using IsNonarchimedean.add_eq_max_of_ne
-    (f := IsAbsoluteValue.toAbsoluteValue (padicNorm p))
-    (fun q r => padicNorm.nonarchimedean (p := p) (q := q) (r := r)) hne
+    padicNorm p (q + r) = max (padicNorm p q) (padicNorm p r) :=
+  IsNonarchimedean.add_eq_max_of_ne (f := IsAbsoluteValue.toAbsoluteValue (padicNorm p))
+    (fun _ _ => padicNorm.nonarchimedean) hne
 
 theorem dvd_iff_norm_le {n : ℕ} {z : ℤ} : ↑(p ^ n) ∣ z ↔ padicNorm p z ≤ (p : ℚ) ^ (-n : ℤ) := by
   unfold padicNorm; split_ifs with hz
