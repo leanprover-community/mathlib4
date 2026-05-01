@@ -583,7 +583,6 @@ theorem differentIdeal_eq_differentIdeal_mul_differentIdeal (C : Type*) [IsDomai
 
 variable {B L}
 
-open Pointwise Polynomial in
 lemma traceForm_dualSubmodule_adjoin
     {x : L} (hx : Algebra.adjoin K {x} = ⊤) (hAx : IsIntegral A x) :
     (traceForm K L).dualSubmodule (Subalgebra.toSubmodule (Algebra.adjoin A {x})) =
