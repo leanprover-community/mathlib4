@@ -32,8 +32,9 @@ open Category
 universe v₁ u₁
 
 -- morphism levels before object levels. See note [category theory universes].
-variable (C : Type u₁) [Category.{v₁} C]
+variable {C : Type u₁} [Category.{v₁} C]
 
+variable (C) in
 /-- The data of a monad on C consists of an endofunctor T together with natural transformations
 `η : 𝟭 C ⟶ T` and `μ : T ⋙ T ⟶ T` satisfying three equations:
 - `T μ_X ≫ μ_X = μ_(TX) ≫ μ_X` (associativity)
@@ -59,6 +60,7 @@ lemma Monad.mu_naturality (T : Monad C) ⦃X Y : C⦄ (f : X ⟶ Y) :
     T.map (T.map f) ≫ T.μ.app Y = T.μ.app X ≫ T.map f :=
   T.μ.naturality _
 
+variable (C) in
 /-- The data of a comonad on C consists of an endofunctor G together with natural transformations
 `ε : G ⟶ 𝟭 C` and `δ : G ⟶ G ⋙ G` satisfying three equations:
 - `δ_X ≫ G δ_X = δ_X ≫ δ_(GX)` (coassociativity)
@@ -85,7 +87,6 @@ lemma Comonad.delta_naturality (T : Comonad C) ⦃X Y : C⦄ (f : X ⟶ Y) :
     T.map f ≫ T.δ.app Y = T.δ.app X ≫ T.map (T.map f) :=
   T.δ.naturality _
 
-variable {C}
 variable (T : Monad C) (G : Comonad C)
 
 instance coeMonad : Coe (Monad C) (C ⥤ C) :=
