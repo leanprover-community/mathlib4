@@ -61,13 +61,12 @@ namespace ProbabilityTheory.Kernel
 /-- A kernel is deterministic if copying then applying the kernel to the two copies is the same
 as first applying the kernel then copying. -/
 class IsDeterministic (κ : Kernel α β) : Prop where
-  deterministic_comp_copy' : (κ ∥ₖ κ) ∘ₖ copy α = copy β ∘ₖ κ
+  parallelComp_self_comp_copy : (κ ∥ₖ κ) ∘ₖ copy α = copy β ∘ₖ κ
 
-lemma deterministic_comp_copy (κ : Kernel α β) [IsDeterministic κ] :
-    (κ ∥ₖ κ) ∘ₖ copy α = copy β ∘ₖ κ := IsDeterministic.deterministic_comp_copy'
+export IsDeterministic (parallelComp_self_comp_copy)
 
 instance {f : α → β} (hf : Measurable f) : IsDeterministic (deterministic f hf) where
-  deterministic_comp_copy' := by
+  parallelComp_self_comp_copy := by
     simp_rw [parallelComp_comp_copy, deterministic_prod_deterministic, copy,
       deterministic_comp_deterministic, Function.comp_def]
 
@@ -214,7 +213,7 @@ lemma isDeterministic_iff_isZeroOneMeasure (κ : Kernel α β) [IsFiniteKernel �
   constructor
   · intro h a
     refine ⟨fun s hs ↦ ?_⟩
-    have := DFunLike.congr_fun κ.deterministic_comp_copy a |> DFunLike.congr_fun
+    have := DFunLike.congr_fun κ.parallelComp_self_comp_copy a |> DFunLike.congr_fun
       <| (s ×ˢ s)
     rw [parallelComp_comp_copy, prod_apply_prod, copy_comp_apply_prod, inter_self] at this
     · by_cases hκ : κ a s = 0
