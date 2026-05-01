@@ -397,9 +397,7 @@ theorem spectralNorm.eq_of_normalClosure' (x : E) :
     spectralNorm K (normalClosure K E (AlgebraicClosure E))
       (algebraMap E (normalClosure K E (AlgebraicClosure E)) x) =
     spectralNorm K L (algebraMap E L x) := by
-  rw [← spectralNorm.eq_of_tower (K := K) (E := E)
-      (L := normalClosure K E (AlgebraicClosure E)) x,
-    ← spectralNorm.eq_of_tower (K := K) (E := E) (L := L) x]
+  simp_rw [← spectralNorm.eq_of_tower]
 
 /-- If `L/E/K` is a tower of fields and `x = algebraMap E L g`, then the spectral norm
   of `g : E` when regarded as an element of the normal closure of `E` equals the spectral norm
