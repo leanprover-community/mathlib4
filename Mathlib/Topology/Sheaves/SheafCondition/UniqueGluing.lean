@@ -78,16 +78,6 @@ def IsSheafUniqueGluing : Prop :=
   ∀ ⦃ι : Type x⦄ (U : ι → Opens X) (sf : ∀ i : ι, ToType (F.obj (op (U i)))),
     IsCompatible F U sf → ∃! s : ToType (F.obj (op (iSup U))), IsGluing F U sf s
 
-/--
-A variant of the sheaf condition in terms of unique gluings which assumes that the
-cover `U` of the given open set is nontrivial, in the sense that the indexing type is nonempty
-and that for every `i` in the indexing type `ι`, `U i` is nonempty.
--/
-def IsSheafUniqueGluingNontrivial : Prop :=
-  ∀ ⦃ι : Type x⦄ [Nonempty ι] (U : ι → Opens X) (_ : ∀ i : ι, (U i).carrier.Nonempty)
-    (sf : ∀ i : ι, ToType (F.obj (op (U i)))),
-    IsCompatible F U sf → ∃! s : ToType (F.obj (op (iSup U))), IsGluing F U sf s
-
 end
 
 section TypeValued
@@ -148,9 +138,12 @@ For type-valued presheaves, it suffices to check the sheaf condition in terms of
 covers where no element of the cover is empty, and for which the indexing type for the cover is
 nonempty.
 -/
-lemma isSheafUniqueGluing_iff_isSheafUniqueGluingNontrivial_types
+lemma isSheafUniqueGluing_iff_isSheafUniqueGluing_nontrivial_types
     [Nonempty (ToType (F.obj (op ⊥)))] [Subsingleton (ToType (F.obj (op ⊥)))] :
-    IsSheafUniqueGluing F ↔ IsSheafUniqueGluingNontrivial F := by
+    IsSheafUniqueGluing F ↔ ∀ ⦃ι : Type x⦄ [Nonempty ι] (U : ι → Opens X)
+    (_ : ∀ i : ι, (U i).carrier.Nonempty)
+    (sf : ∀ i : ι, ToType (F.obj (op (U i)))),
+    IsCompatible F U sf → ∃! s : ToType (F.obj (op (iSup U))), IsGluing F U sf s := by
   refine ⟨fun h _ _ U _ sf ↦ h U sf, fun h ι U sf com ↦ ?_⟩
   have sub {V : Opens X} (hV : V = ⊥) : Subsingleton (ToType (F.obj (op V))) := by rwa [hV]
   have non {V : Opens X} (hV : V = ⊥) : Nonempty (ToType (F.obj (op V))) := by rwa [hV]
@@ -213,12 +206,14 @@ theorem isSheaf_iff_isSheafUniqueGluing : F.IsSheaf ↔ F.IsSheafUniqueGluing :=
 whose forgetful functor reflects isomorphisms and preserves limits, the sheaf condition in terms of
 unique gluings with covers that are nowhere empty is equivalent to the usual one.
 -/
-theorem isSheaf_iff_isSheafUniqueGluingNontrivial [Nonempty (ToType ((F ⋙ forget C).obj (op ⊥)))]
+theorem isSheaf_iff_isSheafUniqueGluing_nontrivial [Nonempty (ToType ((F ⋙ forget C).obj (op ⊥)))]
     [Subsingleton (ToType ((F ⋙ forget C).obj (op ⊥)))] :
-    F.IsSheaf ↔ F.IsSheafUniqueGluingNontrivial :=
+    F.IsSheaf ↔ ∀ ⦃ι : Type x⦄ [Nonempty ι] (U : ι → Opens X) (_ : ∀ i : ι, (U i).carrier.Nonempty)
+    (sf : ∀ i : ι, ToType (F.obj (op (U i)))),
+    IsCompatible F U sf → ∃! s : ToType (F.obj (op (iSup U))), IsGluing F U sf s :=
   (isSheaf_iff_isSheaf_comp' (forget C) F).trans
     ((isSheaf_iff_isSheafUniqueGluing_types (F ⋙ forget C)).trans
-      (isSheafUniqueGluing_iff_isSheafUniqueGluingNontrivial_types (F ⋙ forget C)))
+      (isSheafUniqueGluing_iff_isSheafUniqueGluing_nontrivial_types (F ⋙ forget C)))
 
 end
 
