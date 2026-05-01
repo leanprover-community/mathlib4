@@ -996,3 +996,7 @@ lemma isPosSemidef_inner : LinearMap.IsPosSemidef (innerₗ E) where
   isNonneg := isNonneg_inner
 
 end IsPosSemidef
+
+example : (instInnerProductSpaceRealComplex.toSMul : SMul ℝ ℂ) =
+    Complex.instRCLike.toSMul := by
+  with_reducible_and_instances rfl
