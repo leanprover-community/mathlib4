@@ -512,8 +512,29 @@ private lemma evalE₄E₆_whc_eq_single (n : ℕ) (p : MvPolynomial (Fin 2) ℂ
 private lemma evalE₄E₆_component_eq (p : MvPolynomial (Fin 2) ℂ) (n : ℕ) :
     (evalE₄E₆ (MvPolynomial.weightedHomogeneousComponent E₄E₆Weight n p)) (↑n : ℤ) =
     (evalE₄E₆ p) (↑n : ℤ) := by
-  -- TODO: complete proof using component decomposition.
-  sorry
+  set q := p - MvPolynomial.weightedHomogeneousComponent E₄E₆Weight n p with hq_def
+  have hdecomp : p = MvPolynomial.weightedHomogeneousComponent E₄E₆Weight n p + q := by
+    rw [hq_def]; ring
+  conv_rhs => rw [hdecomp, map_add]
+  rw [show (evalE₄E₆ (MvPolynomial.weightedHomogeneousComponent E₄E₆Weight n p) +
+        evalE₄E₆ q) (↑n : ℤ) =
+      (evalE₄E₆ (MvPolynomial.weightedHomogeneousComponent E₄E₆Weight n p)) (↑n : ℤ) +
+        (evalE₄E₆ q) (↑n : ℤ) from rfl]
+  suffices h : (evalE₄E₆ q) (↑n : ℤ) = 0 by rw [h, add_zero]
+  rw [← MvPolynomial.support_sum_monomial_coeff q, map_sum,
+    show (∑ x ∈ q.support, evalE₄E₆ ((MvPolynomial.monomial x) (MvPolynomial.coeff x q)))
+        (↑n : ℤ) =
+      ∑ x ∈ q.support,
+        (evalE₄E₆ ((MvPolynomial.monomial x) (MvPolynomial.coeff x q))) (↑n : ℤ) from
+      map_sum (DFinsupp.evalAddMonoidHom (↑n : ℤ)) _ _]
+  apply Finset.sum_eq_zero
+  intro d hd
+  apply evalE₄E₆_monomial_grade
+  intro heq
+  apply MvPolynomial.mem_support_iff.mp hd
+  rw [hq_def, MvPolynomial.coeff_sub, MvPolynomial.coeff_weightedHomogeneousComponent,
+    if_pos ?_, sub_self]
+  rw [weight_eq_4a_6b]; omega
 
 private lemma X0_pow_mul_X1_pow_isWeightedHomogeneous (a b n : ℕ) (hab : a * 4 + b * 6 = n) :
     MvPolynomial.IsWeightedHomogeneous E₄E₆Weight
@@ -584,9 +605,24 @@ private lemma per_weight_injective_zero
     (p : MvPolynomial (Fin 2) ℂ)
     (hp : MvPolynomial.IsWeightedHomogeneous E₄E₆Weight p 0)
     (heval : (evalE₄E₆ p) (0 : ℤ) = 0) : p = 0 := by
-  -- Weight-0 weighted-homogeneous polys are constants; constants map to scalar multiples of 1.
-  -- TODO: The full proof.
-  sorry
+  have hpc : p = MvPolynomial.C (MvPolynomial.coeff 0 p) := by
+    ext d'
+    simp only [MvPolynomial.coeff_C]
+    by_cases hd' : 0 = d'
+    · simp [hd']
+    · rw [if_neg hd']
+      exact hp.coeff_eq_zero d' (fun hw => hd' (by
+        have h46' := weight_eq_4a_6b d'; rw [hw] at h46'
+        symm; ext i; fin_cases i <;> simp [Finsupp.coe_zero] <;> omega))
+  rw [hpc] at heval ⊢
+  rw [evalE₄E₆_C, Algebra.algebraMap_eq_smul_one, DirectSum.smul_apply] at heval
+  have h1eq : (1 : DirectSum ℤ (ModularForm 𝒮ℒ)) (0 : ℤ) = (1 : ModularForm 𝒮ℒ 0) := by
+    conv_lhs => rw [← DirectSum.of_zero_one (ModularForm 𝒮ℒ)]
+    exact DirectSum.of_eq_same _ _
+  rw [h1eq] at heval
+  rcases smul_eq_zero.mp heval with hc | h1z
+  · rw [hc, map_zero]
+  · exact absurd h1z one_ne_zero_modularForm
 
 private lemma per_weight_injective_inductive_step (n : ℕ)
     (ih : ∀ m < n, ∀ (p : MvPolynomial (Fin 2) ℂ),
