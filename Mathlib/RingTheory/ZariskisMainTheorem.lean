@@ -338,7 +338,7 @@ private lemma not_isStronglyTranscendental_of_weaklyQuasiFiniteAt_of_isIntegrall
   ext
   simp [Ideal.mem_map_C_iff, coeff_C, apply_ite]
 
-/-- This asks for an explict `K = Frac(R)`, `L = Frac(S)`,
+/-- This asks for an explicit `K = Frac(R)`, `L = Frac(S)`,
 `R'` the integral closure of `R` in `K`, and `S' ⊆ L` the subalgebra spanned by `R'` and `S`,
 to aid typeclass synthesis.
 
@@ -515,7 +515,7 @@ private lemma ZariskisMainProperty.of_algHom_polynomial
     refine RingHom.Finite.of_comp_finite (f := mapRingHom (algebraMap R _)) ?_
     convert (show f.toRingHom.Finite from hf)
     ext <;> simp [show ∀ x, f (C x) = algebraMap _ _ x from f.commutes]
-  have : ¬ conductor R (f X) ≤ p := by
+  replace hf : ¬ conductor R (f X) ≤ p := by
     intro hp
     rw [← ‹p.IsPrime›.isRadical.radical_le_iff] at hp
     set J := (conductor R (f X)).radical
@@ -532,13 +532,14 @@ private lemma ZariskisMainProperty.of_algHom_polynomial
       (isStronglyTranscendental_mk_radical_conductor H (f X) (by convert hf; ext; simp))
     convert (RingHom.Finite.of_surjective _ (Ideal.Quotient.mk_surjective (I := J))).comp hf using 1
     ext <;> simp [show ∀ x, f (C x) = algebraMap _ _ x from f.commutes, J]
-  obtain ⟨x, hx, hxp⟩ := SetLike.not_le_iff_exists.mp this
+  obtain ⟨x, hx, hxp⟩ := SetLike.not_le_iff_exists.mp hf
   replace hx (a : _) : x * a ∈ f.range := by simpa [← AlgHom.map_adjoin_singleton f] using hx a
   refine ZariskisMainProperty.trans (S := f.range) _ ?_ ?_
   · have : Algebra.WeaklyQuasiFiniteAt R (p.under f.range) := by
+      let := Localization.AtPrime.algebraOfLiesOver (p.under f.range) p
       let e : Localization.AtPrime (p.under f.range) ≃ₐ[R] Localization.AtPrime p :=
         .ofBijective (IsScalarTower.toAlgHom _ _ _)
-          (Localization.localRingHom_bijective_of_not_conductor_le this
+          (Localization.localRingHom_bijective_of_not_conductor_le hf
             (by simp [← AlgHom.map_adjoin_singleton f]) _)
       exact .of_algHom_localization _ _ e.symm.toAlgHom e.symm.surjective
     refine .of_adjoin_eq_top _ ⟨f X, X, rfl⟩ ?_
@@ -579,6 +580,7 @@ private lemma ZariskisMainProperty.of_algHom_mvPolynomial
       Algebra.adjoin R ↑(Finset.univ.image (f ∘ .X ∘ Fin.succ) ∪ r ^ (s.sup m) • s ∪ {r})
     have hrR' : r ∈ R' := Algebra.subset_adjoin (by simp)
     have : Algebra.WeaklyQuasiFiniteAt R (p.under R') := by
+      let := Localization.AtPrime.algebraOfLiesOver (p.under R') p
       let e : Localization.AtPrime (p.under R') ≃ₐ[R] Localization.AtPrime p :=
         .ofBijective (IsScalarTower.toAlgHom _ _ _) <| by
           refine Localization.localRingHom_bijective_of_saturated_inf_eq_top _ ?_ _

@@ -523,12 +523,12 @@ lemma restrict_le_one_iff {x : R} : v.restrict x ≤ 1 ↔ v x ≤ 1 := by
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma restrict_eq_zero_iff {x : R} : v.restrict x = 0 ↔ v x = 0 := by
-  rw [restrict_def,restrict₀_eq_zero_iff]
+  rw [restrict_def, restrict₀_eq_zero_iff]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma restrict_eq_one_iff {x : R} : v.restrict x = 1 ↔ v x = 1 := by
-  rw [restrict_def,restrict₀_eq_one_iff]
+  rw [restrict_def, restrict₀_eq_one_iff]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -826,7 +826,7 @@ noncomputable def valueGroup₀Fun (h : v.IsEquiv w) (x : ValueGroup₀ v) : Val
 
 theorem valueGroup₀Fun_spec (h : v.IsEquiv w) {r s : R} (hr : v r ≠ 0) (hs : v s ≠ 0) :
     valueGroup₀Fun h (valueGroup.mk v r s hr hs) =
-      valueGroup.mk w r s ((h.eq_zero).ne.mp hr) ((h.eq_zero).ne.mp hs)  := by
+      valueGroup.mk w r s ((h.eq_zero).ne.mp hr) ((h.eq_zero).ne.mp hs) := by
   rw [valueGroup₀Fun, dif_neg (by simp)]
   generalize_proofs _ _ _ _ H _
   have c_spec := H.choose_spec

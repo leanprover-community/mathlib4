@@ -31,7 +31,7 @@ and is stable under compositions and base-changes.
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -53,10 +53,6 @@ class QuasiSeparated (f : X ⟶ Y) : Prop where
 
 attribute [instance] QuasiSeparated.quasiCompact_diagonal
 
-@[deprecated (since := "2025-10-15")]
-alias QuasiSeparated.diagonalQuasiCompact := QuasiSeparated.quasiCompact_diagonal
-
-set_option backward.isDefEq.respectTransparency false in
 theorem quasiSeparatedSpace_iff_forall_affineOpens {X : Scheme} :
     QuasiSeparatedSpace X ↔ ∀ U V : X.affineOpens, IsCompact (U ∩ V : Set X) := by
   rw [quasiSeparatedSpace_iff]
@@ -82,9 +78,6 @@ theorem quasiSeparatedSpace_iff_forall_affineOpens {X : Scheme} :
         rw [Set.union_inter_distrib_right]
         apply hW.union
         apply H
-
-@[deprecated (since := "2025-10-15")]
-alias quasiSeparatedSpace_iff_affine := quasiSeparatedSpace_iff_forall_affineOpens
 
 theorem quasiCompact_affineProperty_iff_quasiSeparatedSpace [IsAffine Y] (f : X ⟶ Y) :
     AffineTargetMorphismProperty.diagonal (fun X _ _ _ ↦ CompactSpace X) f ↔
@@ -236,9 +229,6 @@ theorem quasiSeparated_iff_quasiSeparatedSpace (f : X ⟶ Y) [QuasiSeparatedSpac
     QuasiSeparated f ↔ QuasiSeparatedSpace X :=
   ⟨fun _ ↦ quasiSeparatedSpace_of_quasiSeparated f, fun _ ↦ inferInstance⟩
 
-@[deprecated (since := "2025-10-15")]
-alias quasiSeparated_over_affine_iff := quasiSeparated_iff_quasiSeparatedSpace
-
 instance : MorphismProperty.HasOfPostcompProperty @QuasiSeparated ⊤ where
   of_postcomp f g _ _ := .of_comp f g
 
@@ -259,9 +249,6 @@ theorem quasiCompact_iff_compactSpace (f : X ⟶ Y) [QuasiSeparatedSpace Y] [Com
     QuasiCompact f ↔ CompactSpace X :=
   ⟨fun _ ↦ QuasiCompact.compactSpace_of_compactSpace f, fun _ ↦ inferInstance⟩
 
-@[deprecated (since := "2025-10-15")]
-alias quasiCompact_over_affine_iff := quasiCompact_iff_compactSpace
-
 theorem exists_eq_pow_mul_of_isAffineOpen (X : Scheme) (U : X.Opens) (hU : IsAffineOpen U)
     (f : Γ(X, U)) (x : Γ(X, X.basicOpen f)) :
     ∃ (n : ℕ) (y : Γ(X, U)), y |_ X.basicOpen f = (f |_ X.basicOpen f) ^ n * x := by
@@ -270,7 +257,7 @@ theorem exists_eq_pow_mul_of_isAffineOpen (X : Scheme) (U : X.Opens) (hU : IsAff
   use n, y
   simpa [mul_comm x] using d.symm
 
-theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux_aux {X : TopCat}
+theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux_aux {X : TopCat.{u}}
     (F : X.Presheaf CommRingCat) {U₁ U₂ U₃ U₄ U₅ U₆ U₇ : Opens X} {n₁ n₂ : ℕ}
     {y₁ : F.obj (op U₁)} {y₂ : F.obj (op U₂)} {f : F.obj (op <| U₁ ⊔ U₂)}
     {x : F.obj (op U₃)} (h₄₁ : U₄ ≤ U₁) (h₄₂ : U₄ ≤ U₂) (h₅₁ : U₅ ≤ U₁) (h₅₃ : U₅ ≤ U₃)

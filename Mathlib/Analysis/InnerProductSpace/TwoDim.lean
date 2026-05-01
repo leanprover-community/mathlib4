@@ -392,11 +392,7 @@ theorem nonneg_inner_and_areaForm_eq_zero_iff_sameRay (x y : E) :
         mul_zero, add_zero, zero_add, neg_zero, inner_rightAngleRotation_right,
         real_inner_self_eq_norm_sq]
       exact this
-    rintro ⟨ha, hb⟩
-    have hx' : 0 < ‖x‖ := by simpa using hx
-    have ha' : 0 ≤ a := nonneg_of_mul_nonneg_left ha (by positivity)
-    have hb' : b = 0 := eq_zero_of_ne_zero_of_mul_right_eq_zero (pow_ne_zero 2 hx'.ne') hb
-    exact (SameRay.sameRay_nonneg_smul_right x ha').add_right <| by simp [hb']
+    simp_all
   · intro h
     obtain ⟨r, hr, rfl⟩ := h.exists_nonneg_left hx
     simp only [inner_smul_right, real_inner_self_eq_norm_sq, map_smulₛₗ, areaForm_apply_self,
@@ -512,7 +508,6 @@ namespace Complex
 
 attribute [local instance] Complex.finrank_real_complex_fact
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected theorem areaForm (w z : ℂ) : Complex.orientation.areaForm w z = (conj w * z).im := by
   let o := Complex.orientation
