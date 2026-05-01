@@ -383,15 +383,6 @@ theorem intCast_strictMono : StrictMono (Int.cast : ℤ → α) := by
   refine strictMono_int_of_lt_succ fun n => (intCast_mono (Int.le_add_one (le_refl _))).lt_of_ne ?_
   grind
 
-theorem natCast_mono : Monotone (Nat.cast : ℕ → α) :=
-  FloorSemiring.natCast_mono
-
-theorem natCast_nonneg (n : ℕ) : 0 ≤ (n : α) :=
-  FloorSemiring.natCast_nonneg n
-
-theorem natCast_strictMono : StrictMono (Nat.cast : ℕ → α) :=
-  FloorSemiring.natCast_strictMono
-
 end FloorRing
 
 namespace Int
