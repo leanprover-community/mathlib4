@@ -15,8 +15,8 @@ import Mathlib.Algebra.Order.Interval.Set.Group
 
 This file defines and develops an API for the polynomial growth condition that appears in the
 statement of the Akra-Bazzi theorem: for the theorem to hold, the function `g` must
-satisfy the condition that `c₁ g(n) ≤ g(u) ≤ c₂ g(n)`, for u between b*n and n for any constant
-`b ∈ (0,1)`.
+satisfy the condition that `c₁ g(n) ≤ g(u) ≤ c₂ g(n)`, for `u` between `b*n` and `n` for any
+constant `b ∈ (0,1)`.
 
 ## Implementation notes
 

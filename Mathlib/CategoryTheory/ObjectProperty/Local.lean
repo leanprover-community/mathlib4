@@ -36,7 +36,7 @@ variable {C : Type u} [Category.{v} C]
 
 namespace MorphismProperty
 
-variable (W : MorphismProperty C)
+variable (W W' : MorphismProperty C)
 
 /-- Given `W : MorphismProperty C`, this is the property of `W`-local objects, i.e.
 the objects `Z` such that for any `f : X ⟶ Y` such that `W f` holds, the precomposition
@@ -101,6 +101,20 @@ instance (J : Type u') [Category.{v'} J] :
         naturality _ _ a := (p.prop_diag_obj _ g hg).1
           (by simp [h]) }),
       p.isColimit.hom_ext (fun j ↦ by simp [p.isColimit.fac_assoc, h])⟩
+
+variable {W W'} in
+attribute [local simp] isLocal_iff in
+lemma isLocal_antitone (h : W ≤ W') :
+    W'.isLocal ≤ W.isLocal := by
+  intro f hf
+  aesop
+
+variable {W W'} in
+attribute [local simp] isColocal_iff in
+lemma isColocal_antitone (h : W ≤ W') :
+    W'.isColocal ≤ W.isColocal := by
+  intro f hf
+  aesop
 
 attribute [local simp] isLocal_iff in
 @[simp]

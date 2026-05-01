@@ -214,14 +214,25 @@ lemma ofHoms_homFamily (P : MorphismProperty C) : ofHoms P.homFamily = P := by
   · intro hf
     exact ⟨(⟨f, hf⟩ : P.toSet)⟩
 
-/-- The class of morphisms containing a single morphism. -/
-abbrev single {X Y : C} (f : X ⟶ Y) : MorphismProperty C := .ofHoms (fun (_ : Unit) ↦ f)
-
 lemma iSup_ofHoms {α : Type*} {ι : α → Type*} {A B : ∀ a, ι a → C}
     (f : ∀ a, ∀ i, A a i ⟶ B a i) :
     ⨆ (a : α), ofHoms (f a) = ofHoms (fun (j : Σ (a : α), ι a) ↦ f j.1 j.2) := by
   ext f
   simp [ofHoms_iff]
+
+@[simp]
+lemma ofHoms_le_iff {ι : Type*} {X Y : ι → C} (f : ∀ i, X i ⟶ Y i) (P : MorphismProperty C) :
+    ofHoms f ≤ P ↔ ∀ i, P (f i) :=
+  ⟨fun h i ↦ h _ (ofHoms.mk i), fun h _ _ _⟨i⟩ ↦ h i⟩
+
+/-- The class of morphisms containing a single morphism. -/
+abbrev single {X Y : C} (f : X ⟶ Y) : MorphismProperty C := .ofHoms (fun (_ : Unit) ↦ f)
+
+lemma prop_single {X Y : C} (f : X ⟶ Y) : (single f) f := by tauto
+
+@[simp high]
+lemma single_le_iff (W : MorphismProperty C) {X Y : C} (f : X ⟶ Y) : single f ≤ W ↔ W f := by
+  simp
 
 end
 
