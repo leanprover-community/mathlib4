@@ -97,7 +97,7 @@ initialize_simps_projections Hom (hom' → hom)
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
 -/
 
-@[simp] lemma hom_id : AlgHomClass.toAlgHom (𝟙 A : A ⟶ A).hom = AlgHom.id R A := rfl
+@[simp] lemma hom_id : (𝟙 A : A ⟶ A).hom = .id R A := rfl
 @[simp] lemma hom_comp (f : A ⟶ B) (g : B ⟶ C) : (f ≫ g).hom = g.hom.comp f.hom := rfl
 
 lemma id_apply (A : CommBialgCat.{v} R) (a : A) : (𝟙 A : A ⟶ A) a = a := by simp
