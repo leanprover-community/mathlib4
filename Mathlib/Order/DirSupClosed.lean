@@ -259,7 +259,7 @@ lemma IsLowerSet.dirSupInacc (hs : IsLowerSet s) : DirSupInacc s :=
 lemma IsLowerSet.dirSupInaccOn (hs : IsLowerSet s) : DirSupInaccOn D s :=
   hs.compl.dirSupClosedOn.of_compl
 
-private theorem DirSupClosed.mem_imp_of_antisymmRel (hs : DirSupClosed s) {a b : α}
+theorem DirSupClosed.mem_imp_of_antisymmRel (hs : DirSupClosed s) {a b : α}
     (h : AntisymmRel (· ≤ ·) a b) (ha : a ∈ s) : b ∈ s := by
   apply hs (singleton_subset_iff.2 ha) ⟨a, rfl⟩ (directedOn_singleton a)
   rw [← isLUB_congr_of_antisymmRel h]
