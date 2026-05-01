@@ -9,6 +9,12 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.Acyclic
 public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 public import Mathlib.Algebra.Homology.HomotopyCategory.MappingCocone
 public import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
+--public import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
+--public import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
+--public import Mathlib.Algebra.Homology.HomotopyCategory.ShortExact
+--public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
+--public import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
+--public import Mathlib.Algebra.Homology.Localization
 
 /-! # The derived category of an abelian category
 
@@ -64,7 +70,7 @@ assert_not_exists TwoSidedIdeal
 
 universe w v u
 
-open CategoryTheory Limits Pretriangulated
+open CategoryTheory Category Limits Pretriangulated ZeroObject
 
 variable (C : Type u) [Category.{v} C] [Abelian C]
 
@@ -119,7 +125,7 @@ instance : Qh.IsLocalization (HomotopyCategory.quasiIso C (ComplexShape.up ℤ))
   infer_instance
 
 instance : Qh.IsLocalization (HomotopyCategory.subcategoryAcyclic C).trW := by
-  rw [← HomotopyCategory.quasiIso_eq_subcategoryAcyclic_W]
+  rw [← HomotopyCategory.quasiIso_eq_subcategoryAcyclic_trW]
   infer_instance
 
 instance : Preadditive (DerivedCategory C) :=
@@ -146,7 +152,7 @@ instance : (Q (C := C)).CommShift ℤ :=
 instance : NatTrans.CommShift (quotientCompQhIso C).hom ℤ :=
   Functor.CommShift.ofIso_compatibility (quotientCompQhIso C) ℤ
 
-instance (n : ℤ) : (shiftFunctor (DerivedCategory C) n).Additive := by
+instance shiftFunctor_additive (n : ℤ) : (shiftFunctor (DerivedCategory C) n).Additive := by
   rw [Localization.functor_additive_iff
     Qh (HomotopyCategory.subcategoryAcyclic C).trW]
   exact Functor.additive_of_iso (Qh.commShiftIso n)
@@ -163,6 +169,11 @@ instance : IsTriangulated (DerivedCategory C) :=
   Triangulated.Localization.isTriangulated
     Qh (HomotopyCategory.subcategoryAcyclic C).trW
 
+noncomputable instance (n : ℤ) :
+  Localization.Lifting Qh (HomotopyCategory.subcategoryAcyclic C).trW
+    (shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n ⋙ Qh)
+    (shiftFunctor (DerivedCategory C) n) := ⟨(Qh.commShiftIso n).symm⟩
+
 instance : (Qh (C := C)).mapArrow.EssSurj :=
   Localization.essSurj_mapArrow _ (HomotopyCategory.subcategoryAcyclic C).trW
 
@@ -173,6 +184,22 @@ instance {D : Type*} [Category* D] : ((Functor.whiskeringLeft _ _ D).obj (Qh (C 
 instance {D : Type*} [Category* D] : ((Functor.whiskeringLeft _ _ D).obj (Qh (C := C))).Faithful :=
   inferInstanceAs
     (Localization.whiskeringLeftFunctor' _ (HomotopyCategory.quasiIso _ _) D).Faithful
+
+instance : (Q : _ ⥤ DerivedCategory C).mapArrow.EssSurj where
+  mem_essImage φ := by
+    obtain ⟨⟨K⟩, ⟨L⟩, f, ⟨e⟩⟩ :
+        ∃ (K L : HomotopyCategory C (ComplexShape.up ℤ)) (f : K ⟶ L),
+          Nonempty (Arrow.mk (Qh.map f) ≅ φ) := ⟨_, _, _, ⟨Qh.mapArrow.objObjPreimageIso φ⟩⟩
+    obtain ⟨f, rfl⟩ := (HomotopyCategory.quotient C (ComplexShape.up ℤ)).map_surjective f
+    exact ⟨Arrow.mk f, ⟨e⟩⟩
+
+instance : (HomotopyCategory.quasiIso C (ComplexShape.up ℤ)).HasLeftCalculusOfFractions := by
+  rw [HomotopyCategory.quasiIso_eq_subcategoryAcyclic_trW]
+  infer_instance
+
+instance : (HomotopyCategory.quasiIso C (ComplexShape.up ℤ)).HasRightCalculusOfFractions := by
+  rw [HomotopyCategory.quasiIso_eq_subcategoryAcyclic_trW]
+  infer_instance
 
 instance : (Qh : _ ⥤ DerivedCategory C).EssSurj :=
   Localization.essSurj _ (HomotopyCategory.quasiIso _ _)
@@ -195,6 +222,12 @@ lemma mem_distTriang_iff (T : Triangle (DerivedCategory C)) :
       (e ≪≫ (Functor.mapTriangleIso (quotientCompQhIso C)).symm.app _ ≪≫
       (Functor.mapTriangleCompIso (HomotopyCategory.quotient C _) Qh).app _)
     exact ⟨_, _, f, ⟨Iso.refl _⟩⟩
+
+lemma induction_Q_obj (P : DerivedCategory C → Prop)
+    (hP₁ : ∀ (X : CochainComplex C ℤ), P (Q.obj X))
+    (hP₂ : ∀ ⦃X Y : DerivedCategory C⦄ (_ : X ≅ Y), P X → P Y)
+    (X : DerivedCategory C) : P X :=
+  hP₂ (Q.objObjPreimageIso X) (hP₁ _)
 
 section
 

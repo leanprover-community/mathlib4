@@ -162,4 +162,52 @@ lemma isKInjective_of_injective (L : CochainComplex C ℤ) (d : ℤ)
       limitSequence_eqUpTo φ hφ x₀ k₀ n (n - 1) (by lia) (by lia),
       limitSequence_eqUpTo φ hφ x₀ k₀ (n + 1) n (by lia) (by lia)]
 
+instance (K L : CochainComplex C ℤ) [hK : K.IsKInjective] [hL : L.IsKInjective] :
+    (K ⊞ L).IsKInjective := by
+  let S := (HomotopyCategory.subcategoryAcyclic C).rightOrthogonal
+  rw [isKInjective_iff_rightOrthogonal] at hK hL ⊢
+  have : PreservesBinaryBiproducts (HomotopyCategory.quotient C (.up ℤ)) :=
+    preservesBinaryBiproducts_of_preservesBiproducts _
+  refine ObjectProperty.prop_of_iso _
+    ((HomotopyCategory.quotient C (.up ℤ)).mapBiprod K L).symm ?_
+  apply ObjectProperty.prop_biprod_of_isClosedUnderBinaryProducts
+  all_goals assumption
+
+set_option backward.isDefEq.respectTransparency false in
+lemma IsKInjective.eq_δ_of_cocycle {K L : CochainComplex C ℤ} {n : ℤ}
+    (z : Cocycle K L n) [L.IsKInjective] (hK : K.Acyclic) (m : ℤ) (hm : m + 1 = n) :
+    ∃ (α : Cochain K L m), δ m n α = z.1 := by
+  obtain ⟨φ, hφ⟩ := (Cocycle.equivHom ..).surjective (z.rightShift n 0 (zero_add n))
+  rw [Subtype.ext_iff] at hφ
+  dsimp at hφ
+  obtain ⟨h⟩ := IsKInjective.nonempty_homotopy_zero φ hK
+  obtain ⟨f, hf⟩ := Cochain.equivHomotopy _ _ h
+  simp only [Int.reduceNeg, Cochain.ofHom_zero, add_zero] at hf
+  refine ⟨n.negOnePow • Cochain.rightUnshift f m (by lia), ?_⟩
+  apply (Cochain.rightShiftAddEquiv _ _ _ n 0 (by simp)).injective
+  dsimp
+  rw [← hφ, hf, δ_units_smul, Cochain.rightShift_units_smul,
+    Cochain.δ_rightUnshift _ _ _ _ 0 (by simp),
+    Cochain.rightShift_units_smul, Cochain.rightShift_rightUnshift,
+    smul_smul, Int.units_mul_self, one_smul]
+
+lemma IsKInjective.eq_δ_of_cocycle' {K L : CochainComplex C ℤ} {n : ℤ}
+    (z : Cocycle K L n) [L.IsKInjective] (hL : L.Acyclic) (m : ℤ) (hm : m + 1 = n) :
+    ∃ (α : Cochain K L m), δ m n α = z.1 := by
+  obtain ⟨β, hβ⟩ :=
+    IsKInjective.eq_δ_of_cocycle (Cocycle.ofHom (𝟙 L)) hL (-1) (by simp)
+  exact ⟨z.1.comp β (by lia), by simp [δ_comp z.1 β _ _ 0 _ hm rfl (by simp), hβ]⟩
+
+lemma IsKInjective.bijective_precomp
+    {K₁ K₂ : CochainComplex C ℤ} (f : K₁ ⟶ K₂) [QuasiIso f] (L : CochainComplex C ℤ)
+    [L.IsKInjective] :
+    Function.Bijective (fun g : ((HomotopyCategory.quotient _ _).obj K₂ ⟶
+      (HomotopyCategory.quotient _ _).obj L) ↦
+        (HomotopyCategory.quotient _ _).map f ≫ g) := by
+  have hL := IsKInjective.rightOrthogonal L
+  rw [← ObjectProperty.isLocal_trW] at hL
+  apply hL
+  rwa [← HomotopyCategory.quasiIso_eq_subcategoryAcyclic_trW,
+    HomotopyCategory.quotient_map_mem_quasiIso_iff]
+
 end CochainComplex

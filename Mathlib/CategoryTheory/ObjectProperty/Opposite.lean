@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
 public import Mathlib.CategoryTheory.Opposites
 
 /-!
@@ -136,6 +137,28 @@ lemma op_isoClosure (P : ObjectProperty C) :
 lemma unop_isoClosure (P : ObjectProperty Cᵒᵖ) :
     P.isoClosure.unop = P.unop.isoClosure := by
   rw [← op_injective_iff, P.unop.op_isoClosure, op_unop, op_unop]
+
+/-- Given `P : ObjectProperty C`, this is the equivalence between `P.op.FullSubcategory`
+and `P.FullSubcategoryᵒᵖ`. -/
+@[simps]
+def opEquivalence (P : ObjectProperty C) : P.op.FullSubcategory ≌ P.FullSubcategoryᵒᵖ where
+  functor := (P.lift P.op.ι.leftOp (fun X ↦ X.unop.property)).rightOp
+  inverse := P.op.lift P.ι.op (fun X ↦ X.unop.property)
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
+  functor_unitIso_comp X := Quiver.Hom.unop_inj (by cat_disch)
+
+@[simp]
+lemma op_inf (P Q : ObjectProperty C) : (P ⊓ Q).op = P.op ⊓ Q.op := rfl
+
+@[simp]
+lemma op_sup (P Q : ObjectProperty C) : (P ⊔ Q).op = P.op ⊔ Q.op := rfl
+
+@[simp]
+lemma unop_inf (P Q : ObjectProperty Cᵒᵖ) : (P ⊓ Q).unop = P.unop ⊓ Q.unop := rfl
+
+@[simp]
+lemma unop_sup (P Q : ObjectProperty Cᵒᵖ) : (P ⊔ Q).unop = P.unop ⊔ Q.unop := rfl
 
 end
 

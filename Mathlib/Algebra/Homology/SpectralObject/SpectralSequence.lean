@@ -563,24 +563,23 @@ section
 variable (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r)
   (pq pq' pq'' : κ) (hpq : (c r).prev pq' = pq) (hpq' : (c r).next pq' = pq'')
   (i₀' i₀ i₁ i₂ i₃ i₃' : ι)
-  (hi₀' : i₀' = data.i₀ r' pq')
-  (hi₀ : i₀ = data.i₀ r pq')
+  (hi₀' : i₀' = data.i₀ r' pq' (hr.trans (by rw [← hrr']; exact Int.le.intro 1 rfl)))
+  (hi₀ : i₀ = data.i₀ r pq' hr)
   (hi₁ : i₁ = data.i₁ pq')
   (hi₂ : i₂ = data.i₂ pq')
-  (hi₃ : i₃ = data.i₃ r pq')
-  (hi₃' : i₃' = data.i₃ r' pq')
+  (hi₃ : i₃ = data.i₃ r pq' hr)
+  (hi₃' : i₃' = data.i₃ r' pq' (hr.trans (by rw [← hrr']; exact Int.le.intro 1 rfl)))
   (n₀ n₁ n₂ : ℤ) (hn₁' : n₁ = data.deg pq')
-
 
 unseal spectralSequence in
 /-- The homology data for the short complexes given by the differentials
 of a spectral sequence attached to a spectral object in an abelian category. -/
-@[simps! left_K left_H left_π right_Q right_H right_ι iso_hom iso_inv]
+@[simps! left_K left_H left_π right_H right_Q right_ι iso_hom iso_inv]
 noncomputable def spectralSequenceHomologyData
     (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
     (((X.spectralSequence data).page r hr).sc' pq pq' pq'').HomologyData :=
   SpectralSequence.homologyData X data r r' hrr' hr
-    pq pq' pq'' hpq hpq' i₀' i₀ i₁ i₂ i₃ i₃' hi₀' hi₀ hi₁ hi₂ hi₃ hi₃' n₀ n₁ n₂ hn₁'
+    pq pq' pq'' hpq hpq' i₀' i₀ i₁ i₂ i₃ i₃' hi₀' hi₀ hi₁ hi₂ hi₃ hi₃' n₀ n₁ n₂ hn₁' hn₁ hn₂
 
 unseal spectralSequence in
 @[simp]
@@ -629,7 +628,32 @@ lemma spectralSequence_iso (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1
   simp [spectralSequencePageXIso, spectralSequence, spectralSequenceHomologyData,
     SpectralSequence.homologyIso, SpectralSequence.homologyIso']
 
+@[reassoc]
+lemma spectralSequence_iso_inv (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
+    ((X.spectralSequence data).iso r r' pq').inv =
+    (X.spectralSequencePageXIso data r'
+      (hr.trans (by rw [← hrr']; exact Int.le.intro 1 rfl)) _ _ _ _ _
+      hi₀' hi₁ hi₂ hi₃' _ _ _ hn₁').hom ≫
+    (X.spectralSequenceHomologyData data r r' hrr' hr pq pq' pq'' hpq hpq' i₀' i₀ i₁ i₂ i₃ i₃'
+      hi₀' hi₀ hi₁ hi₂ hi₃ hi₃' n₀ n₁ n₂ hn₁').left.homologyIso.inv ≫
+      (((X.spectralSequence data).page r).homologyIsoSc' pq pq' pq'' hpq hpq').inv := by
+  simp [X.spectralSequence_iso data r r' hrr' hr pq pq' pq'' hpq hpq' i₀' i₀ i₁ i₂ i₃ i₃'
+    hi₀' hi₀ hi₁ hi₂ hi₃ hi₃' n₀ n₁ n₂ hn₁' hn₁ hn₂]
+
+@[reassoc]
+lemma spectralSequence_iso_hom (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
+    ((X.spectralSequence data).iso r r' pq').hom =
+    (((X.spectralSequence data).page r).homologyIsoSc' pq pq' pq'' hpq hpq').hom ≫
+    (X.spectralSequenceHomologyData data r r' hrr' hr pq pq' pq'' hpq hpq' i₀' i₀ i₁ i₂ i₃ i₃'
+      hi₀' hi₀ hi₁ hi₂ hi₃ hi₃' n₀ n₁ n₂ hn₁').left.homologyIso.hom ≫
+    (X.spectralSequencePageXIso data r'
+      (hr.trans (by rw [← hrr']; exact Int.le.intro 1 rfl)) _ _ _ _ _
+      hi₀' hi₁ hi₂ hi₃' _ _ _ hn₁').inv := by
+  simp [X.spectralSequence_iso data r r' hrr' hr pq pq' pq'' hpq hpq' i₀' i₀ i₁ i₂ i₃ i₃'
+    hi₀' hi₀ hi₁ hi₂ hi₃ hi₃' n₀ n₁ n₂ hn₁' hn₁ hn₂]
+
 end
+
 
 end
 

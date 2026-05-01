@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Shift.Basic
+public import Mathlib.CategoryTheory.Shift.CommShift
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-! # Sequences of functors from a category equipped with a shift
@@ -31,8 +31,9 @@ in degree `n`.
 
 open CategoryTheory Category ZeroObject Limits
 
-variable {C A : Type*} [Category* C] [Category* A] (F : C ⥤ A)
-  (M : Type*) [AddMonoid M] [HasShift C M]
+variable {C D A : Type*} [Category* C] [Category* D] [Category* A] (F : C ⥤ A)
+  {π : C ⥤ D} {H : D ⥤ A} (e : π ⋙ H ≅ F)
+  (M : Type*) [AddMonoid M] [HasShift C M] [HasShift D M]
   {G : Type*} [AddGroup G] [HasShift C G]
 
 namespace CategoryTheory
@@ -272,6 +273,42 @@ instance (n : M) : (F.shift n).Additive := additive_of_iso (F.isoShift n)
 end
 
 end
+
+namespace ShiftSequence
+
+variable {M}
+
+@[simp]
+lemma tautological_sequence (n : M) :
+    @Functor.shift _ _ _ _ _ _ _ _ (tautological F M) n = shiftFunctor C n ⋙ F := rfl
+
+variable (M) {F}
+
+set_option backward.isDefEq.respectTransparency false in
+@[implicit_reducible]
+def leftcomp [π.CommShift M] [H.ShiftSequence M] : F.ShiftSequence M where
+  sequence n := π ⋙ H.shift n
+  isoZero := isoWhiskerLeft π (H.isoShiftZero M) ≪≫ e
+  shiftIso n a a' ha' := (Functor.associator _ _ _).symm ≪≫
+      isoWhiskerRight (π.commShiftIso n) _ ≪≫ Functor.associator _ _ _ ≪≫
+      isoWhiskerLeft π (H.shiftIso n a a' ha')
+  shiftIso_zero a := by
+    ext K
+    dsimp
+    simp only [shiftIso_zero_hom_app, id_obj, id_comp, comp_id, ← Functor.map_comp,
+      commShiftIso_zero, CommShift.isoZero_hom_app, assoc, Iso.inv_hom_id_app]
+  shiftIso_add n m a a' a'' ha' ha'':= by
+    ext K
+    dsimp
+    simp only [H.shiftIso_add_hom_app n m a a' a'' ha' ha'', assoc,
+      commShiftIso_add, CommShift.isoAdd_hom_app, ← Functor.map_comp_assoc,
+      id_comp, Iso.inv_hom_id_app, comp_obj, comp_id]
+    simp only [map_comp, assoc, shiftIso_hom_naturality_assoc]
+
+instance [π.CommShift M] [H.ShiftSequence M] : (π ⋙ H).ShiftSequence M :=
+  leftcomp (Iso.refl _) _
+
+end ShiftSequence
 
 end Functor
 

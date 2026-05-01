@@ -29,6 +29,8 @@ variable {C₁ C₂ : Type*} [Category* C₁] [Category* C₂]
 
 namespace LocalizerMorphism
 
+section right
+
 variable (Φ : LocalizerMorphism W₁ W₂)
   {ρ : C₂ ⥤ C₁} (i : 𝟭 C₂ ⟶ ρ ⋙ Φ.functor) (hi : ∀ X₂, W₂ (i.app X₂))
   (hW₁ : W₁ = W₂.inverseImage Φ.functor)
@@ -91,20 +93,18 @@ end functorialRightResolutions
 variable [Φ.functor.Full] [Φ.functor.Faithful] [W₂.HasTwoOutOfThreeProperty]
 
 open functorialRightResolutions
-include hi hW₁
 
+include hi
+
+include hW₁ in
 lemma isLocalizedEquivalence_of_functorial_right_resolutions :
     Φ.IsLocalizedEquivalence :=
   Φ.isLocalizedEquivalence_of_unit_of_unit (localizerMorphismInv hi hW₁) (ι i) i
     (W₁_ι_app hi hW₁) hi
 
-variable [W₂.IsMultiplicative]
-
 set_option backward.isDefEq.respectTransparency false in
 lemma isConnected_rightResolution_of_functorial_resolutions (X₂ : C₂) :
-    letI : W₁.IsMultiplicative := by rw [hW₁]; infer_instance
     IsConnected (Φ.RightResolution X₂) := by
-  have : W₁.IsMultiplicative := by rw [hW₁]; infer_instance
   have : Nonempty (Φ.RightResolution X₂) := ⟨{ hw := hi X₂, .. }⟩
   have : IsPreconnected (Φ.RightResolution X₂) :=
     zigzag_isPreconnected (fun R₀ R₄ ↦
@@ -122,13 +122,64 @@ lemma isConnected_rightResolution_of_functorial_resolutions (X₂ : C₂) :
         Zigzag _ R₄ := Zigzag.of_inv { f := (ι i).app R₄.X₁ })
   constructor
 
-lemma isRightDerivabilityStructure_of_functorial_resolutions :
+include hW₁ in
+lemma isRightDerivabilityStructure_of_functorial_resolutions
+    [W₂.ContainsIdentities] :
     Φ.IsRightDerivabilityStructure := by
-  have : W₁.IsMultiplicative := by rw [hW₁]; infer_instance
   have := Φ.isLocalizedEquivalence_of_functorial_right_resolutions i hi hW₁
   have := Φ.hasRightResolutions_arrow_of_functorial_resolutions i hi
-  have := Φ.isConnected_rightResolution_of_functorial_resolutions i hi hW₁
+  have := Φ.isConnected_rightResolution_of_functorial_resolutions i hi
   apply IsRightDerivabilityStructure.mk'
+
+end right
+
+section left
+
+variable (Φ : LocalizerMorphism W₁ W₂)
+  {ρ : C₂ ⥤ C₁} (p : ρ ⋙ Φ.functor ⟶ 𝟭 C₂) (hp : ∀ X₂, W₂ (p.app X₂))
+  (hW₁ : W₁ = W₂.inverseImage Φ.functor)
+
+include hp in
+lemma hasLeftResolutions_arrow_of_functorial_resolutions :
+    Φ.arrow.HasLeftResolutions :=
+  fun f ↦ ⟨{
+    X₁ := Arrow.mk (ρ.map f.hom)
+    w := Arrow.homMk (p.app _) (p.app _) ((p.naturality f.hom).symm)
+    hw := ⟨hp _, hp _⟩ }⟩
+
+variable [Φ.functor.Full] [Φ.functor.Faithful] [W₂.HasTwoOutOfThreeProperty]
+
+include hp
+lemma isConnected_leftResolution_of_functorial_resolutions (X₂ : C₂) :
+    IsConnected (Φ.LeftResolution X₂) := by
+  have : Φ.op.functor.Faithful := by dsimp; infer_instance
+  have : Φ.op.functor.Full := by dsimp; infer_instance
+  have : IsConnected (Φ.op.RightResolution (Opposite.op X₂)) :=
+    Φ.op.isConnected_rightResolution_of_functorial_resolutions (ρ := ρ.op)
+      (NatTrans.op p) (fun _ ↦ hp _) _
+  have := isConnected_of_equivalent (LeftResolution.opEquivalence Φ X₂).symm
+  exact isConnected_of_isConnected_op
+
+include hW₁ in
+lemma isLocalizedEquivalence_of_functorial_left_resolutions [Φ.IsInduced] :
+    Φ.IsLocalizedEquivalence := by
+  rw [← Φ.isLocalizedEquivalence_op_iff]
+  have : Φ.op.functor.Full := by dsimp; infer_instance
+  have : Φ.op.functor.Faithful := by dsimp; infer_instance
+  apply Φ.op.isLocalizedEquivalence_of_functorial_right_resolutions (ρ := ρ.op)
+    (NatTrans.op p) (fun _ ↦ hp _) (by simp only [hW₁]; rfl)
+
+include hW₁ in
+lemma isLeftDerivabilityStructure_of_functorial_resolutions [W₂.ContainsIdentities]
+    [Φ.IsInduced] :
+    Φ.IsLeftDerivabilityStructure := by
+  rw [isLeftDerivabilityStructure_iff_op]
+  have : Φ.op.functor.Full := by dsimp; infer_instance
+  have : Φ.op.functor.Faithful := by dsimp; infer_instance
+  exact Φ.op.isRightDerivabilityStructure_of_functorial_resolutions (ρ := ρ.op)
+    (NatTrans.op p) (fun _ ↦ hp _) (by simp only [hW₁]; rfl)
+
+end left
 
 end LocalizerMorphism
 

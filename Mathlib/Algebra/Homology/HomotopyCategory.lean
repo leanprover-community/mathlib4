@@ -49,6 +49,10 @@ def HomotopyCategory :=
 instance : Category (HomotopyCategory V c) :=
   inferInstanceAs <| Category (CategoryTheory.Quotient (homotopic V c))
 
+instance : Preadditive (HomotopyCategory V c) := Quotient.preadditive _ (by
+  rintro _ _ _ _ _ _ ⟨h⟩ ⟨h'⟩
+  exact ⟨Homotopy.add h h'⟩)
+
 namespace HomotopyCategory
 
 instance : Preadditive (CategoryTheory.Quotient (homotopic V c)) :=
@@ -67,7 +71,7 @@ instance : (quotient V c).Full := Quotient.full_functor _
 
 instance : (quotient V c).EssSurj := Quotient.essSurj_functor _
 
-instance : (quotient V c).Additive where
+instance quotient_additive : (quotient V c).Additive where
 
 instance : Functor.Additive (Quotient.functor (homotopic V c)) where
 
@@ -261,6 +265,51 @@ theorem NatTrans.mapHomotopyCategory_comp (c : ComplexShape ι) {F G H : V ⥤ W
     NatTrans.mapHomotopyCategory (α ≫ β) c =
       NatTrans.mapHomotopyCategory α c ≫ NatTrans.mapHomotopyCategory β c := by cat_disch
 
+instance (F : V ⥤ W) [F.Additive] [F.Full] [F.Faithful] : (F.mapHomotopyCategory c).Full where
+  map_surjective := by
+    rintro ⟨K⟩ ⟨L⟩ ⟨f⟩
+    obtain ⟨g : K ⟶ L, rfl⟩ := (F.mapHomologicalComplex c).map_surjective f
+    exact ⟨(HomotopyCategory.quotient V c).map g, rfl⟩
+
+def Functor.mapHomotopyCategoryCompIso {W' : Type*} [Category W'] [Preadditive W']
+    {F : V ⥤ W} {G : W ⥤ W'} {H : V ⥤ W'} (e : F ⋙ G ≅ H)
+    [F.Additive] [G.Additive] [H.Additive] (c : ComplexShape ι) :
+    H.mapHomotopyCategory c ≅ F.mapHomotopyCategory c ⋙ G.mapHomotopyCategory c :=
+  Quotient.natIsoLift _ (isoWhiskerRight (Functor.mapHomologicalComplexCompIso e c)
+    (HomotopyCategory.quotient W' c))
+
+section
+
+variable {c}
+variable (F : V ⥤ W) [F.Additive] [F.Full] [F.Faithful]
+
+set_option backward.isDefEq.respectTransparency false in
+def Functor.preimageHomotopy {K L : HomologicalComplex V c} (f₁ f₂ : K ⟶ L)
+    (H : Homotopy ((F.mapHomologicalComplex c).map f₁) ((F.mapHomologicalComplex c).map f₂)) :
+    Homotopy f₁ f₂ :=
+      { hom := fun i j => F.preimage (H.hom i j)
+        zero := fun i j hij => F.map_injective (by
+          simp only [map_preimage, Functor.map_zero]
+          rw [H.zero i j hij])
+        comm := fun i => F.map_injective (by
+          refine (H.comm i).trans ?_
+          rw [F.map_add, F.map_add]
+          congr 2
+          · dsimp [fromNext]
+            simp
+          · dsimp [toPrev]
+            simp) }
+
+instance : (F.mapHomotopyCategory c).Faithful where
+  map_injective := by
+    rintro ⟨K⟩ ⟨L⟩ f₁ f₂ h
+    obtain ⟨f₁, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective f₁
+    obtain ⟨f₂, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective f₂
+    exact HomotopyCategory.eq_of_homotopy _ _
+      (F.preimageHomotopy _ _ (HomotopyCategory.homotopyOfEq _ _ h))
+
+end
+
 instance (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) :
     (F.mapHomotopyCategory c).Additive :=
   have := Functor.additive_of_iso (F.mapHomotopyCategoryFactors c).symm
@@ -272,3 +321,23 @@ instance (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) [Linear R V] [Linear R
   (HomotopyCategory.quotient V c).linear_of_full_essSurj_comp (F.mapHomotopyCategory c)
 
 end CategoryTheory
+
+namespace HomologicalComplex
+
+variable {ι : Type*} {V : Type u} [Category.{v} V] [Preadditive V] {c : ComplexShape ι}
+
+open HomotopyCategory in
+lemma isIso_quotient_map_iff_homotopyEquivalences
+    {K L : HomologicalComplex V c} (f : K ⟶ L) :
+    IsIso ((quotient _ _).map f) ↔
+      homotopyEquivalences _ _ f := by
+  refine ⟨fun _ ↦ ?_, fun hf ↦ quotient_inverts_homotopyEquivalences V c f hf⟩
+  obtain ⟨g, hg⟩ := (quotient V c).map_surjective (inv ((quotient V c).map f))
+  let e : HomotopyEquiv K L :=
+    { hom := f
+      inv := g
+      homotopyHomInvId := HomotopyCategory.homotopyOfEq _ _ (by cat_disch)
+      homotopyInvHomId := HomotopyCategory.homotopyOfEq _ _ (by cat_disch) }
+  exact ⟨e, rfl⟩
+
+end HomologicalComplex

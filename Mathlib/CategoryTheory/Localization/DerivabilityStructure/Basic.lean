@@ -189,6 +189,32 @@ instance [W₁.ContainsIdentities] : (LocalizerMorphism.id W₁).IsLeftDerivabil
   dsimp
   exact TwoSquare.guitartExact_id' W₁.Q
 
+instance [Φ.IsLeftDerivabilityStructure] : Φ.op.IsRightDerivabilityStructure := by
+  rwa [← isLeftDerivabilityStructure_iff_op]
+
+set_option backward.isDefEq.respectTransparency false in
+lemma isRightDerivabilityStructure_iff_op :
+    Φ.IsRightDerivabilityStructure ↔
+      Φ.op.IsLeftDerivabilityStructure := by
+  let F := Φ.localizedFunctor W₁.Q W₂.Q
+  let e : Φ.functor ⋙ W₂.Q ≅ W₁.Q ⋙ F := (Φ.catCommSq W₁.Q W₂.Q).iso
+  let e' : Φ.functor.op ⋙ W₂.Q.op ≅ W₁.Q.op ⋙ F.op := NatIso.op e.symm
+  have eq : TwoSquare.GuitartExact e'.inv ↔ TwoSquare.GuitartExact e.hom :=
+    TwoSquare.guitartExact_op_iff _
+  constructor
+  · rintro ⟨_, _⟩
+    rwa [Φ.op.isLeftDerivabilityStructure_iff _ _ _ e', eq]
+  · intro
+    have : Φ.HasRightResolutions := by
+      rw [hasRightResolutions_iff_op]
+      infer_instance
+    refine ⟨inferInstance, ?_⟩
+    rw [← eq]
+    exact Φ.op.guitartExact_of_isLeftDerivabilityStructure' _ _ _ e'
+
+instance [Φ.IsRightDerivabilityStructure] : Φ.op.IsLeftDerivabilityStructure := by
+  rwa [← isRightDerivabilityStructure_iff_op]
+
 end LocalizerMorphism
 
 end CategoryTheory

@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Homology.Additive
 public import Mathlib.Algebra.Homology.ShortComplex.Exact
 public import Mathlib.Algebra.Homology.ShortComplex.Preadditive
+public import Mathlib.CategoryTheory.Abelian.Refinements
 public import Mathlib.Tactic.NormNum
 
 /-!
@@ -572,9 +573,79 @@ lemma isoHomologyι_inv_hom_id :
 
 end
 
+lemma isIso_liftCycles (i j : ι) (hj : c.next i = j) (h : K.d i j = 0) [K.HasHomology i] :
+    IsIso (K.liftCycles (𝟙 (K.X i)) j hj (by rw [h, comp_zero])) := by
+  have := K.isIso_iCycles i j hj h
+  exact IsIso.of_isIso_fac_right (K.liftCycles_i _ _ _ _)
+
+variable {K L}
+
+set_option backward.isDefEq.respectTransparency false in
+noncomputable def homologyMapArrowIso (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k)
+    [K.HasHomology j] [L.HasHomology j]
+    [((shortComplexFunctor' C _ i j k).obj K).HasHomology]
+    [((shortComplexFunctor' C _ i j k).obj L).HasHomology] :
+    Arrow.mk (homologyMap φ j) ≅
+      Arrow.mk (ShortComplex.homologyMap ((shortComplexFunctor' C _ i j k ).map φ)) := by
+  refine Arrow.isoMk
+    (ShortComplex.homologyMapIso ((natIsoSc' C c i j k hi hk).app K))
+    (ShortComplex.homologyMapIso ((natIsoSc' C c i j k hi hk).app L)) ?_
+  dsimp [homologyMap]
+  simp only [← ShortComplex.homologyMap_comp]
+  congr 1
+  exact ((natIsoSc' C c i j k hi hk).hom.naturality φ).symm
+
+/-- Condition for `IsIso (homologyMap φ j)`. -/
+lemma isIso_homologyMap_iff' (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k)
+    [K.HasHomology j] [L.HasHomology j]
+    [((shortComplexFunctor' C _ i j k).obj K).HasHomology]
+    [((shortComplexFunctor' C _ i j k).obj L).HasHomology] :
+  IsIso (homologyMap φ j) ↔
+    IsIso (ShortComplex.homologyMap ((shortComplexFunctor' C _ i j k ).map φ)) := by
+  exact MorphismProperty.arrow_mk_iso_iff
+    (MorphismProperty.isomorphisms C) (homologyMapArrowIso φ i j k hi hk)
+
+/-- Condition for `Mono (homologyMap φ j)`. -/
+lemma mono_homologyMap_iff' (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k)
+    [K.HasHomology j] [L.HasHomology j]
+    [((shortComplexFunctor' C _ i j k).obj K).HasHomology]
+    [((shortComplexFunctor' C _ i j k).obj L).HasHomology] :
+  Mono (homologyMap φ j) ↔
+    Mono (ShortComplex.homologyMap ((shortComplexFunctor' C _ i j k ).map φ)) := by
+  exact MorphismProperty.arrow_mk_iso_iff
+    (MorphismProperty.monomorphisms C) (homologyMapArrowIso φ i j k hi hk)
+
+/-- Condition for `Epi (homologyMap φ j)`. -/
+lemma epi_homologyMap_iff' (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k)
+    [K.HasHomology j] [L.HasHomology j]
+    [((shortComplexFunctor' C _ i j k).obj K).HasHomology]
+    [((shortComplexFunctor' C _ i j k).obj L).HasHomology] :
+  Epi (homologyMap φ j) ↔
+    Epi (ShortComplex.homologyMap ((shortComplexFunctor' C _ i j k ).map φ)) := by
+  exact MorphismProperty.arrow_mk_iso_iff
+    (MorphismProperty.epimorphisms C) (homologyMapArrowIso φ i j k hi hk)
+
+lemma isIso_homologyMap_of_isIso_cyclesMap_of_epi (i j : ι) (hi : c.prev j = i)
+    [K.HasHomology j] [L.HasHomology j]
+    (h₁ : IsIso (cyclesMap φ j)) (h₂ : Epi (φ.f i)) :
+    IsIso (homologyMap φ j) := by
+  subst hi
+  exact ShortComplex.isIso_homologyMap_of_isIso_cyclesMap_of_epi h₁ h₂
+
+lemma isIso_homologyMap_of_isIso_opcyclesMap_of_mono (i j : ι) (hj : c.next i = j)
+    [K.HasHomology i] [L.HasHomology i]
+    (h₁ : IsIso (opcyclesMap φ i)) (h₂ : Mono (φ.f j)) :
+    IsIso (homologyMap φ i) := by
+  subst hj
+  exact ShortComplex.isIso_homologyMap_of_isIso_opcyclesMap_of_mono h₁ h₂
+
+lemma isZero_homology_of_isZero (i : ι) (hi : IsZero (K.X i)) [K.HasHomology i] :
+    IsZero (K.homology i) :=
+  ShortComplex.isZero_homology_of_isZero_X₂ _ (by exact hi)
+
 section
 
-variable (hi : c.prev j = i) (h : K.d i j = 0) [K.HasHomology j]
+variable (K) (hi : c.prev j = i) (h : K.d i j = 0) [K.HasHomology j]
 include hi h
 
 lemma isIso_pOpcycles : IsIso (K.pOpcycles j) := by
@@ -619,9 +690,13 @@ lemma isoHomologyπ_inv_hom_id :
 
 end
 
-section
+variable (K) in
+lemma isIso_descOpcycles (i j : ι) (hi : c.prev j = i) (h : K.d i j = 0) [K.HasHomology j] :
+    IsIso (K.descOpcycles (𝟙 (K.X j)) i hi (by rw [h, zero_comp])) := by
+  have := K.isIso_pOpcycles i j hi h
+  exact IsIso.of_isIso_fac_left (K.p_descOpcycles _ _ _ _)
 
-variable {K L}
+section
 
 set_option backward.isDefEq.respectTransparency false in
 lemma epi_homologyMap_of_epi_of_not_rel (φ : K ⟶ L) (i : ι)
@@ -642,6 +717,8 @@ lemma mono_homologyMap_of_mono_of_not_rel (φ : K ⟶ L) (j : ι)
       (MorphismProperty.monomorphisms.infer_property (cyclesMap φ j))
 
 end
+
+variable (K)
 
 /-- A homological complex `K` is exact at `i` if the short complex `K.sc i` is exact. -/
 def ExactAt := (K.sc i).Exact
@@ -678,6 +755,12 @@ def Acyclic := ∀ i, K.ExactAt i
 
 lemma acyclic_iff :
     K.Acyclic ↔ ∀ i, K.ExactAt i := by rfl
+
+variable {K} in
+lemma Acyclic.of_iso (hK : K.Acyclic) {L : HomologicalComplex C c} (e : K ≅ L) :
+    L.Acyclic := by
+  rw [acyclic_iff]
+  exact fun n ↦ (hK n).of_iso e
 
 lemma acyclic_of_isZero (hK : IsZero K) :
     K.Acyclic := by
@@ -834,7 +917,7 @@ end ChainComplex
 
 namespace HomologicalComplex
 
-variable {C : Type*} [Category* C] [HasZeroMorphisms C] {ι : Type*} {c : ComplexShape ι}
+variable {C : Type*} [Category C] [HasZeroMorphisms C] {ι : Type*} {c : ComplexShape ι}
   (K : HomologicalComplex C c)
   (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k)
   [K.HasHomology j] [(K.sc' i j k).HasHomology]
@@ -933,5 +1016,20 @@ lemma homologyIsoSc'_inv_ι :
     (K.homologyIsoSc' i j k hi hk).inv ≫ K.homologyι j =
       (K.sc' i j k).homologyι ≫ (K.opcyclesIsoSc' i j k hi hk).inv := by
   apply ShortComplex.homologyι_naturality
+
+lemma homologyIsoSc'_eq_rfl [(K.sc' (c.prev j) j (c.next j)).HasHomology] :
+    K.homologyIsoSc' _ j _ rfl rfl = Iso.refl _ := by
+  ext1
+  apply ShortComplex.homologyMap_id
+
+lemma cyclesIsoSc'_eq_rfl [(K.sc' (c.prev j) j (c.next j)).HasHomology] :
+    K.cyclesIsoSc' _ j _ rfl rfl = Iso.refl _ := by
+  ext1
+  apply ShortComplex.cyclesMap_id
+
+lemma opcyclesIsoSc'_eq_rfl [(K.sc' (c.prev j) j (c.next j)).HasHomology] :
+    K.opcyclesIsoSc' _ j _ rfl rfl = Iso.refl _ := by
+  ext1
+  apply ShortComplex.opcyclesMap_id
 
 end HomologicalComplex

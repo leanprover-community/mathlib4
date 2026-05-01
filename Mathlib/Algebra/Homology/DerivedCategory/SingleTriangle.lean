@@ -27,9 +27,11 @@ assert_not_exists TwoSidedIdeal
 
 universe w v u
 
-namespace CategoryTheory
+open CategoryTheory
 
 variable {C : Type u} [Category.{v} C] [Abelian C] [HasDerivedCategory.{w} C]
+
+namespace CategoryTheory
 
 open Category DerivedCategory Pretriangulated
 

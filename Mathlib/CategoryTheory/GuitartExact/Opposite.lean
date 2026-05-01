@@ -110,6 +110,11 @@ instance guitartExact_id' (F : C₁ ⥤ C₂) :
   rw [← guitartExact_op_iff]
   apply guitartExact_id
 
+instance (priority := 100) guitartExact_of_isEquivalence_of_isIso'
+    [T.IsEquivalence] [B.IsEquivalence] [IsIso w.natTrans] : GuitartExact w := by
+  rw [← guitartExact_op_iff]
+  infer_instance
+
 end TwoSquare
 
 end CategoryTheory

@@ -42,6 +42,21 @@ open Category Limits Preadditive ZeroObject
 
 variable (C : Type*) [Category* C]
 
+section
+
+variable {C}
+variable {D : Type*} [Category D] {F G : C ⥤ D} (e : F ≅ G) (X : C)
+
+@[reassoc (attr := simp)]
+lemma Iso.op_hom_inv_id_app : (e.hom.app X).op ≫ (e.inv.app X).op = 𝟙 _ := by
+  rw [← op_comp, e.inv_hom_id_app, op_id]
+
+@[reassoc (attr := simp)]
+lemma Iso.op_inv_hom_id_app : (e.inv.app X).op ≫ (e.hom.app X).op = 𝟙 _ := by
+  rw [← op_comp, e.hom_inv_id_app, op_id]
+
+end
+
 namespace Pretriangulated
 
 variable [HasShift C ℤ]
@@ -295,27 +310,74 @@ lemma opShiftFunctorEquivalence_counitIso_inv_app_shift (X : Cᵒᵖ) (n : ℤ) 
 lemma opShiftFunctorEquivalence_counitIso_hom_app_shift (X : Cᵒᵖ) (n : ℤ) :
     (opShiftFunctorEquivalence C n).counitIso.hom.app (X⟦n⟧) =
       ((opShiftFunctorEquivalence C n).unitIso.inv.app X)⟦n⟧' :=
-  (opShiftFunctorEquivalence C n).counit_app_functor X
+  ((opShiftFunctorEquivalence C n).counit_app_functor X)
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma shiftFunctorCompIsoId_op_hom_app (X : Cᵒᵖ) (n m : ℤ) (hnm : n + m = 0 := by lia) :
     (shiftFunctorCompIsoId Cᵒᵖ n m hnm).hom.app X =
       ((shiftFunctorOpIso C n m hnm).hom.app X)⟦m⟧' ≫
-        (shiftFunctorOpIso C m n (by lia)).hom.app (Opposite.op (X.unop⟦m⟧)) ≫
-          ((shiftFunctorCompIsoId C m n (by lia)).inv.app X.unop).op := by
-  simp [shiftFunctorCompIsoId, shiftFunctorZero_op_hom_app X,
-    shiftFunctorAdd'_op_inv_app X n m 0 hnm m n 0 hnm (by lia) (add_zero 0)]
+        (shiftFunctorOpIso C m n (by omega)).hom.app (Opposite.op (X.unop⟦m⟧)) ≫
+          ((shiftFunctorCompIsoId C m n (by omega)).inv.app X.unop).op := by
+  dsimp [shiftFunctorCompIsoId]
+  simp only [shiftFunctorAdd'_op_inv_app X n m 0 hnm m n 0 hnm (by omega) (add_zero 0),
+    shiftFunctorZero_op_hom_app X]
+  simp only [Functor.op_obj, Opposite.unop_op, Functor.comp_obj,
+    NatTrans.naturality_assoc, Functor.op_map, Functor.id_obj,
+    Opposite.op_unop, assoc, Iso.inv_hom_id_app_assoc]
 
 set_option backward.isDefEq.respectTransparency false in
-@[reassoc]
-lemma shiftFunctorCompIsoId_op_inv_app (X : Cᵒᵖ) (n m : ℤ) (hnm : n + m = 0 := by lia) :
+lemma shiftFunctorCompIsoId_op_inv_app (X : Cᵒᵖ) (n m : ℤ) (hnm : n + m = 0) :
     (shiftFunctorCompIsoId Cᵒᵖ n m hnm).inv.app X =
       ((shiftFunctorCompIsoId C m n (by omega)).hom.app X.unop).op ≫
-        (shiftFunctorOpIso C m n (by omega)).inv.app (Opposite.op (X.unop⟦m⟧)) ≫
-          ((shiftFunctorOpIso C n m hnm).inv.app X)⟦m⟧' := by
-  simp [shiftFunctorCompIsoId, shiftFunctorZero_op_inv_app X,
-    shiftFunctorAdd'_op_hom_app X n m 0 hnm m n 0 hnm (by lia) (add_zero 0)]
+      (shiftFunctorOpIso C m n (by omega)).inv.app (Opposite.op (X.unop⟦m⟧)) ≫
+      ((shiftFunctorOpIso C n m hnm).inv.app X)⟦m⟧' := by
+  dsimp [shiftFunctorCompIsoId]
+  simp only [shiftFunctorAdd'_op_hom_app X n m 0 hnm m n 0 hnm (by omega) (add_zero 0),
+    shiftFunctorZero_op_inv_app X]
+  simp only [Functor.id_obj, Opposite.op_unop, Functor.op_obj, Functor.comp_obj, assoc,
+    Iso.inv_hom_id_app_assoc]
+
+set_option backward.isDefEq.respectTransparency false in
+lemma opShiftFunctorEquivalence_inv_app_shift (X : Cᵒᵖ) (n m : ℤ) (hnm : n + m = 0) :
+    ((opShiftFunctorEquivalence C m).unitIso.inv.app (X⟦n⟧)) =
+      ((shiftFunctorCompIsoId Cᵒᵖ n m hnm).hom.app X).unop⟦m⟧'.op ≫
+      ((shiftFunctorOpIso C n m hnm).inv.app X) := by
+  rw [shiftFunctorCompIsoId_op_hom_app _ _ _ hnm,
+    opShiftFunctorEquivalence_unitIso_inv_app _ m n (by omega)]
+  simp only [opShiftFunctorEquivalence_functor, opShiftFunctorEquivalence_inverse,
+    Functor.comp_obj, Functor.op_obj,
+    Functor.id_obj, Opposite.unop_op, Opposite.op_unop, NatTrans.naturality_assoc,
+    Functor.op_map, unop_comp,
+    Quiver.Hom.unop_op, assoc, Functor.map_comp, op_comp]
+  apply Quiver.Hom.unop_inj
+  simp only [Opposite.unop_op, Quiver.Hom.unop_op, unop_comp, assoc]
+  rw [shift_shiftFunctorCompIsoId_inv_app m n (by omega) X.unop]
+  erw [← NatTrans.naturality_assoc]
+  dsimp
+  rw [← unop_comp_assoc, Iso.hom_inv_id_app, unop_id, id_comp]
+
+set_option backward.isDefEq.respectTransparency false in
+lemma natTrans_app_op_shift {D : Type*} [Category D] {F G : Cᵒᵖ ⥤ D} (α : F ⟶ G)
+    (X : Cᵒᵖ) (n m : ℤ) (hnm : n + m = 0) : α.app (X⟦n⟧) =
+      F.map ((shiftFunctorOpIso C n m hnm).hom.app X) ≫ α.app (Opposite.op (X.unop⟦m⟧)) ≫
+        G.map ((shiftFunctorOpIso C n m hnm).inv.app X) := by
+  rw [← α.naturality, ← F.map_comp_assoc, Iso.hom_inv_id_app, F.map_id, id_comp]
+
+noncomputable def opShiftFunctorEquivalence_symm_homEquiv (n : ℤ) (X Y : Cᵒᵖ) :
+    (Opposite.op (X.unop⟦n⟧) ⟶ Y) ≃ (X ⟶ Y⟦n⟧) :=
+  (opShiftFunctorEquivalence C n).symm.toAdjunction.homEquiv X Y
+
+lemma opShiftFunctorEquivalence_symm_homEquiv_apply {n : ℤ} {X Y : Cᵒᵖ}
+    (f : Opposite.op (X.unop⟦n⟧) ⟶ Y) :
+    (opShiftFunctorEquivalence_symm_homEquiv n X Y f) =
+      (opShiftFunctorEquivalence C n).counitIso.inv.app X ≫ (shiftFunctor Cᵒᵖ n).map f := rfl
+
+lemma opShiftFunctorEquivalence_symm_homEquiv_left_inv
+    {n : ℤ} {X Y : Cᵒᵖ} (f : Opposite.op (X.unop⟦n⟧) ⟶ Y) :
+    ((opShiftFunctorEquivalence C n).unitIso.inv.app Y).unop ≫
+      (opShiftFunctorEquivalence_symm_homEquiv n X Y f).unop⟦n⟧' = f.unop :=
+  Quiver.Hom.op_inj ((opShiftFunctorEquivalence_symm_homEquiv n X Y).left_inv f)
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]

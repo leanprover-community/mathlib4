@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.MorphismProperty.Retract
 public import Mathlib.CategoryTheory.LiftingProperties.Limits
+public import Mathlib.CategoryTheory.LiftingProperties.Adjunction
 public import Mathlib.Order.GaloisConnection.Defs
 
 /-!
@@ -166,6 +167,38 @@ lemma rlp_retracts : T.retracts.rlp = T.rlp := by
   · rw [← le_llp_iff_le_rlp]
     exact T.retracts_le_llp_rlp
 
+lemma rlp_ofHoms_iff_hasLiftingProperty (ι : Type*) [Nonempty ι] {A B X Y : C}
+    (i : A ⟶ B) (p : X ⟶ Y) :
+    (MorphismProperty.ofHoms (fun (_ : ι) ↦ i)).rlp p ↔ HasLiftingProperty i p :=
+  ⟨fun hp ↦ hp _ ⟨Classical.arbitrary ι⟩,
+    by rintro _ _ _ _ ⟨⟩; assumption⟩
+
+lemma llp_ofHoms_iff_hasLiftingProperty (ι : Type*) [Nonempty ι] {A B X Y : C}
+    (i : A ⟶ B) (p : X ⟶ Y) :
+    (MorphismProperty.ofHoms (fun (_ : ι) ↦ p)).llp i ↔ HasLiftingProperty i p :=
+  ⟨fun hp ↦ hp _ ⟨Classical.arbitrary ι⟩,
+    by rintro _ _ _ _ ⟨⟩; assumption⟩
+
 end MorphismProperty
+
+namespace Functor
+
+variable {D : Type*} [Category* D] (G : C ⥤ D) [G.IsEquivalence]
+    {A B X Y : C} (i : A ⟶ B) (p : X ⟶ Y)
+
+lemma hasLiftingProperty_iff_of_isEquivalence :
+    HasLiftingProperty (G.map i) (G.map p) ↔
+      HasLiftingProperty i p := by
+  have h₁ := G.asEquivalence.toAdjunction.hasLiftingProperty_iff i (G.map p)
+  dsimp at h₁
+  rw [h₁, ← MorphismProperty.rlp_ofHoms_iff_hasLiftingProperty Unit,
+    ← MorphismProperty.rlp_ofHoms_iff_hasLiftingProperty Unit]
+  exact MorphismProperty.arrow_mk_iso_iff _
+    (Arrow.isoMk (G.asEquivalence.unitIso.symm.app _)
+      (G.asEquivalence.unitIso.symm.app _)
+      (G.asEquivalence.unitIso.inv.naturality p).symm)
+
+end Functor
+
 
 end CategoryTheory

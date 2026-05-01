@@ -95,6 +95,14 @@ instance [HasZeroMorphisms C] : IsClosedUnderSubobjects (IsZero (C := C)) where
 instance [HasZeroMorphisms C] : IsClosedUnderQuotients (IsZero (C := C)) where
   prop_of_epi f _ hX := IsZero.of_epi f hX
 
+instance : P.ι.ReflectsMonomorphisms where
+  reflects f _ := ⟨fun g₁ g₂ hg ↦ P.ι.map_injective (by
+    simp only [← cancel_mono (P.ι.map f), ← Functor.map_comp, hg])⟩
+
+instance : P.ι.ReflectsEpimorphisms where
+  reflects f _ := ⟨fun g₁ g₂ hg ↦ P.ι.map_injective (by
+    simp only [← cancel_epi (P.ι.map f), ← Functor.map_comp, hg])⟩
+
 end ObjectProperty
 
 end CategoryTheory

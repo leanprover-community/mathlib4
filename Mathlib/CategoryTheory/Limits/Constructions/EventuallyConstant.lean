@@ -271,6 +271,10 @@ instance [hF : IsEventuallyConstant F] [IsCofiltered J] : HasLimit F := by
   obtain ⟨j, h⟩ := hF.exists_isEventuallyConstantTo
   exact h.hasLimit
 
+/-- Constructor for `IsEventuallyConstant`. -/
+lemma IsEventuallyConstant.mk' (i : J) (hF : F.IsEventuallyConstantTo i) :
+    IsEventuallyConstant F := ⟨⟨i, hF⟩⟩
+
 end IsCofiltered
 
 namespace IsFiltered
@@ -284,6 +288,35 @@ instance [hF : IsEventuallyConstant F] [IsFiltered J] : HasColimit F := by
   obtain ⟨j, h⟩ := hF.exists_isEventuallyConstantFrom
   exact h.hasColimit
 
+/-- Constructor for `IsEventuallyConstant`. -/
+lemma IsEventuallyConstant.mk' (i : J) (hF : F.IsEventuallyConstantFrom i) :
+    IsEventuallyConstant F := ⟨⟨i, hF⟩⟩
+
 end IsFiltered
+
+namespace Limits
+
+open IsFiltered
+
+set_option backward.isDefEq.respectTransparency false in
+noncomputable def isColimitOfIsEventuallyConstant {F : J ⥤ C} [IsFiltered J] (c : Cocone F)
+    (i : J) (hi : ∀ ⦃j : J⦄ (_ : i ⟶ j), IsIso (c.ι.app j)) :
+    IsColimit c := by
+  have := hi (𝟙 i)
+  have hF : F.IsEventuallyConstantFrom i := fun j f ↦ by
+    have := hi f
+    exact IsIso.of_isIso_fac_right (c.w f)
+  exact IsColimit.ofIsoColimit hF.isColimitCocone
+    (Cocone.ext (asIso (c.ι.app i)) (fun j ↦ by
+      dsimp
+      have hα := hF.cocone.w (leftToMax i j)
+      have hβ := hF.cocone.w (rightToMax i j)
+      dsimp at hα hβ
+      have : hF.coconeιApp (IsFiltered.max i j) ≫ F.map (leftToMax i j) = 𝟙 _ := by
+        rw [hF.coconeιApp_eq (IsFiltered.max i j) _ (𝟙 _) (leftToMax i j)]
+        simp
+      rw [← c.w (rightToMax i j), ← hβ, assoc, ← c.w (leftToMax i j), reassoc_of% this]))
+
+end Limits
 
 end CategoryTheory

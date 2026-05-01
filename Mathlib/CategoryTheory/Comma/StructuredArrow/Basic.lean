@@ -778,6 +778,46 @@ end IsUniversal
 
 end CostructuredArrow
 
+section
+
+variable {C₁ C₂ C₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
+  (L₁ : C₁ ⥤ C₂) (L₂ : C₂ ⥤ C₃)
+
+namespace CostructuredArrowCostructuredArrowPreEquivalence
+
+set_option backward.isDefEq.respectTransparency false in
+@[simps]
+def inverse {X₃ : C₃} (f : CostructuredArrow L₂ X₃) :
+    CostructuredArrow L₁ f.left ⥤ CostructuredArrow (CostructuredArrow.pre L₁ L₂ X₃) f where
+  obj g := CostructuredArrow.mk (CostructuredArrow.homMk g.hom :
+    (CostructuredArrow.pre L₁ L₂ X₃).obj (CostructuredArrow.mk (L₂.map g.hom ≫ f.hom)) ⟶ _)
+  map {g₁ g₂} φ := CostructuredArrow.homMk (CostructuredArrow.homMk φ.left
+    (by dsimp; rw [← L₂.map_comp_assoc]; congr 1; simp))
+
+set_option backward.isDefEq.respectTransparency false in
+@[simps!]
+def functor {X₃ : C₃} (f : CostructuredArrow L₂ X₃) :
+    CostructuredArrow (CostructuredArrow.pre L₁ L₂ X₃) f ⥤
+      CostructuredArrow L₁ f.left where
+  obj g := CostructuredArrow.mk (g.hom.left)
+  map {g₁ g₂} φ := CostructuredArrow.homMk φ.left.left (by
+    simpa using dsimp% congr_arg (CostructuredArrow.Hom.left) φ.w)
+
+end CostructuredArrowCostructuredArrowPreEquivalence
+
+set_option backward.isDefEq.respectTransparency false in
+def costructuredArrowCostructuredArrowPreEquivalence {X₃ : C₃} (f : CostructuredArrow L₂ X₃) :
+    CostructuredArrow (CostructuredArrow.pre L₁ L₂ X₃) f ≌
+      CostructuredArrow L₁ f.left where
+  functor := CostructuredArrowCostructuredArrowPreEquivalence.functor L₁ L₂ f
+  inverse := CostructuredArrowCostructuredArrowPreEquivalence.inverse L₁ L₂ f
+  unitIso := NatIso.ofComponents
+    (fun g => CostructuredArrow.isoMk (CostructuredArrow.isoMk (Iso.refl _))) (by
+      aesop_cat)
+  counitIso := Iso.refl _
+
+end
+
 namespace Functor
 
 variable {E : Type u₃} [Category.{v₃} E]

@@ -1016,4 +1016,43 @@ theorem isIso_right_of_isIso_biprod_map {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z
     infer_instance
   isIso_left_of_isIso_biprod_map g f
 
+open Opposite
+
+namespace Limits
+
+variable {P Q : C}
+
+@[simps!]
+def BinaryBicone.op (b : BinaryBicone P Q) :
+    BinaryBicone (op P) (op Q) where
+  pt := Opposite.op b.pt
+  fst := b.inl.op
+  snd := b.inr.op
+  inl := b.fst.op
+  inr := b.snd.op
+  inl_fst := Quiver.Hom.unop_inj (by simp)
+  inr_fst := Quiver.Hom.unop_inj (by simp)
+  inl_snd := Quiver.Hom.unop_inj (by simp)
+  inr_snd := Quiver.Hom.unop_inj (by simp)
+
+def BinaryBicone.IsBilimit.op {b : BinaryBicone P Q} (h : b.IsBilimit) :
+    b.op.IsBilimit where
+  isLimit := BinaryCofan.IsColimit.op h.isColimit
+  isColimit := BinaryFan.IsLimit.op h.isLimit
+
+def BinaryBiproductData.op (d : BinaryBiproductData P Q) :
+    BinaryBiproductData (op P) (op Q) where
+  bicone := d.bicone.op
+  isBilimit := d.isBilimit.op
+
+instance [HasBinaryBiproduct P Q] :
+    HasBinaryBiproduct (op P) (op Q) where
+  exists_binary_biproduct := ⟨(getBinaryBiproductData P Q).op⟩
+
+instance [HasBinaryBiproducts C] : HasBinaryBiproducts Cᵒᵖ where
+  has_binary_biproduct X Y :=
+    inferInstanceAs (HasBinaryBiproduct (op X.unop) (op Y.unop))
+
+end Limits
+
 end CategoryTheory

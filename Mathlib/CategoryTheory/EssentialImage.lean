@@ -126,6 +126,9 @@ def objPreimage (Y : D) : C :=
 def objObjPreimageIso (Y : D) : F.obj (F.objPreimage Y) ≅ Y :=
   Functor.essImage.getIso _
 
+lemma exists_of_essSurj (Y : D) : ∃ (X : C), Nonempty (F.obj X ≅ Y) :=
+  ⟨_, ⟨F.objObjPreimageIso Y⟩⟩
+
 /-- The induced functor of a faithful functor is faithful. -/
 instance Faithful.toEssImage (F : C ⥤ D) [Faithful F] : Faithful F.toEssImage := by
   dsimp only [Functor.toEssImage]
@@ -164,6 +167,8 @@ lemma essImage_comp_apply_of_essSurj : (F ⋙ G).essImage X ↔ G.essImage X whe
 
 end EssSurj
 
+section
+
 variable {J C D : Type*} [Category* J] [Category* C] [Category* D]
   (G : J ⥤ D) (F : C ⥤ D) [F.Full] [F.Faithful] (hG : ∀ j, F.essImage (G.obj j))
 
@@ -186,6 +191,8 @@ factor through `essImage.liftFunctor G F hG`. -/
   NatIso.ofComponents
     (fun i ↦ F.essImage.ι.mapIso (F.toEssImage.objObjPreimageIso ⟨G.obj i, hG _⟩))
 
+end
+
 lemma essImage_ι_comp (F : C ⥤ D) (P : ObjectProperty C) :
     (P.ι ⋙ F).essImage = P.map F := by
   ext Y
@@ -195,6 +202,28 @@ lemma essImage_ι_comp (F : C ⥤ D) (P : ObjectProperty C) :
   · rintro ⟨X, hX, ⟨e⟩⟩
     exact ⟨⟨X, hX⟩, ⟨e⟩⟩
 
+lemma full_of_precomp_essSurj (F : D ⥤ E) (L : C ⥤ D) [EssSurj L]
+    (h : ∀ ⦃X₁ X₂ : C⦄ (φ : F.obj (L.obj X₁) ⟶ F.obj (L.obj X₂)),
+      ∃ (f : L.obj X₁ ⟶ L.obj X₂), F.map f = φ) :
+    Full F := ⟨by
+  intro X₁ X₂ ψ
+  obtain ⟨f, hf⟩ := h (F.map (L.objObjPreimageIso X₁).hom ≫ ψ ≫
+    F.map (L.objObjPreimageIso X₂).inv)
+  exact ⟨(L.objObjPreimageIso X₁).inv ≫ f ≫ (L.objObjPreimageIso X₂).hom, by simp [hf]⟩⟩
+
+lemma faithful_of_precomp_essSurj (F : D ⥤ E) (L : C ⥤ D) [EssSurj L]
+    (h : ∀ ⦃X₁ X₂ : C⦄ (f g : L.obj X₁ ⟶ L.obj X₂), F.map f = F.map g → f = g) :
+    Faithful F where
+  map_injective hfg := by
+    rw [← cancel_mono (L.objObjPreimageIso _).inv, ← cancel_epi (L.objObjPreimageIso _).hom]
+    exact h _ _ (by simp [hfg])
+
 end Functor
+
+@[simp]
+lemma ObjectProperty.essImage_ι (P : ObjectProperty C) [P.IsClosedUnderIsomorphisms] :
+    P.ι.essImage = P := by
+  ext X
+  exact ⟨fun ⟨⟨Y, hY⟩, ⟨e⟩⟩ ↦ P.prop_of_iso e hY, fun hX ↦ ⟨⟨X, hX⟩, ⟨Iso.refl _⟩⟩⟩
 
 end CategoryTheory

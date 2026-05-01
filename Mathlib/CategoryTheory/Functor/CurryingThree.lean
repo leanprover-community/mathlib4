@@ -92,6 +92,17 @@ lemma currying₃_unitIso_inv_app_app_app_app (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ E)
     (((currying₃.unitIso.inv.app F).app X₁).app X₂).app X₃ = 𝟙 _ := by
   simp [currying₃, Equivalence.unitInv]
 
+@[simp]
+lemma uncurry₃_obj_map (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ E) {X Y : C₁ × C₂ × C₃} (f : X ⟶ Y) :
+    (uncurry₃.obj F).map f = (((F.map f.1).app X.2.1).app X.2.2 ≫
+      ((F.obj Y.1).map f.2.1).app X.2.2) ≫ ((F.obj Y.1).obj Y.2.1).map f.2.2 :=
+  rfl
+
+@[simp]
+lemma uncurry₃_map_app {F G : C₁ ⥤ C₂ ⥤ C₃ ⥤ E} (f : F ⟶ G) (X : C₁ × C₂ × C₃) :
+    (uncurry₃.map f).app X = ((f.app X.1).app X.2.1).app X.2.2 :=
+  rfl
+
 set_option backward.isDefEq.respectTransparency false in
 /-- Given functors `F₁ : C₁ ⥤ D₁`, `F₂ : C₂ ⥤ D₂`, `F₃ : C₃ ⥤ D₃`
 and `G : D₁ × D₂ × D₃ ⥤ E`, this is the isomorphism between

@@ -316,10 +316,9 @@ theorem epi_of_pseudo_surjective {P Q : C} (f : P ⟶ Q) : Function.Surjective f
   have ⟨R, x, y, _, ey, comm⟩ := Quotient.exact this
   apply @epi_of_epi_fac _ _ _ _ _ (x ≫ p.hom) f y ey
   dsimp at comm
-  rw [Category.assoc, comm]
-  apply Category.comp_id
+  rw [Category.assoc, comm, Category.comp_id]
 
-section
+/- should be refactored using `ShortComplex.Exact`
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Two morphisms in an exact sequence are exact on pseudoelements. -/
@@ -357,7 +356,12 @@ theorem apply_eq_zero_of_comp_eq_zero {P Q R : C} (f : Q ⟶ R) (a : P ⟶ Q) : 
 
 section
 
+<<<<<<< HEAD
+/- should be refactored using `ShortComplex.Exact`
+
+=======
 set_option backward.isDefEq.respectTransparency false in
+>>>>>>> origin
 /-- If two morphisms are exact on pseudoelements, they are exact. -/
 theorem exact_of_pseudo_exact (S : ShortComplex C)
     (hS : ∀ b, S.g b = 0 → ∃ a, S.f a = b) : S.Exact :=
@@ -388,6 +392,8 @@ theorem exact_of_pseudo_exact (S : ShortComplex C)
       -- are done.
       rw [(Iso.eq_inv_comp (asIso j)).2 pullback.condition.symm]
       simp only [Category.assoc, kernel.condition, HasZeroMorphisms.comp_zero])
+
+-/
 
 end
 
@@ -457,6 +463,7 @@ theorem ModuleCat.eq_range_of_pseudoequal {R : Type*} [Ring R] {G : ModuleCat R}
 
 end Module
 
+-/
 end Pseudoelement
 
 end CategoryTheory.Abelian

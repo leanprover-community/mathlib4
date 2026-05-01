@@ -208,6 +208,10 @@ lemma Triangle.isIso_of_isIsos {A B : Triangle C} (f : A ⟶ B)
     (by simp) (by simp) (by simp)
   exact (inferInstance : IsIso e.hom)
 
+/-instance Triangle.instIsIso_of_isIso {A B : Triangle C} (f : A ⟶ B)
+    [IsIso f.hom₁] [IsIso f.hom₂] [IsIso f.hom₃] : IsIso f :=
+  Triangle.isIso_of_isIsos f inferInstance inferInstance inferInstance-/
+
 @[reassoc (attr := simp)]
 lemma _root_.CategoryTheory.Iso.hom_inv_id_triangle_hom₁ {A B : Triangle C} (e : A ≅ B) :
     e.hom.hom₁ ≫ e.inv.hom₁ = 𝟙 _ := by rw [← comp_hom₁, e.hom_inv_id, id_hom₁]
@@ -331,11 +335,9 @@ def binaryBiproductTriangle (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryBipro
     Triangle C :=
   Triangle.mk biprod.inl (Limits.biprod.snd : X₁ ⊞ X₂ ⟶ _) 0
 
-/-- The obvious triangle `X₁ ⟶ X₁ ⨯ X₂ ⟶ X₂ ⟶ X₁⟦1⟧`. -/
 @[simps!]
-def binaryProductTriangle (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryProduct X₁ X₂] :
-    Triangle C :=
-  Triangle.mk ((Limits.prod.lift (𝟙 X₁) 0)) (Limits.prod.snd : X₁ ⨯ X₂ ⟶ _) 0
+def binaryProductTriangle (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryProduct X₁ X₂] : Triangle C :=
+  Triangle.mk ((Limits.prod.lift (𝟙 X₁) 0 )) (Limits.prod.snd : X₁ ⨯ X₂ ⟶ _) 0
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism of triangles
@@ -393,7 +395,10 @@ def productTriangle.isLimitFan : IsLimit (productTriangle.fan T) :=
     intro s m hm
     ext1
     all_goals
-      exact Pi.hom_ext _ _ (fun j => (by simp [← hm])))
+    · dsimp
+      ext1 j
+      dsimp
+      simp [← hm])
 
 set_option backward.isDefEq.respectTransparency false in
 lemma productTriangle.zero₃₁ [HasZeroMorphisms C]

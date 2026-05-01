@@ -98,7 +98,8 @@ noncomputable def contractibleTriangleIso (X : Cᵒᵖ) :
       rw [IsZero.iff_id_eq_zero]
       change (𝟙 ((0 : C)⟦(-1 : ℤ)⟧)).op = 0
       rw [← Functor.map_id, id_zero, Functor.map_zero, op_zero]))
-    (by simp) (by simp) (by simp)
+    (by simp) (by simp [(shiftFunctor C (-1 : ℤ)).map_zero])
+    (by simp [(shiftFunctor Cᵒᵖ (1 : ℤ)).map_zero])
 
 lemma contractible_distinguished (X : Cᵒᵖ) :
     contractibleTriangle X ∈ distinguishedTriangles C := by
@@ -189,6 +190,19 @@ lemma op_distinguished (T : Triangle C) (hT : T ∈ distTriang C) :
 
 lemma unop_distinguished (T : Triangle Cᵒᵖ) (hT : T ∈ distTriang Cᵒᵖ) :
     ((triangleOpEquivalence C).inverse.obj T).unop ∈ distTriang C := hT
+
+lemma distinguished_iff_op (T : Triangle C) :
+    (T ∈ distTriang C) ↔
+      ((triangleOpEquivalence C).functor.obj (Opposite.op T)) ∈ distTriang Cᵒᵖ := by
+  constructor
+  · intro hT
+    exact op_distinguished _ hT
+  · intro hT'
+    exact isomorphic_distinguished _ (unop_distinguished _ hT') _
+      (((triangleOpEquivalence C).unitIso.app (Opposite.op T)).unop.symm)
+
+variable [HasZeroObject C] [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive]
+  [Pretriangulated C]
 
 end Pretriangulated
 

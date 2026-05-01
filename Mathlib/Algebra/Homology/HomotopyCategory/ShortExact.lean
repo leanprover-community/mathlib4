@@ -52,6 +52,8 @@ variable (S : ShortComplex (CochainComplex C ℤ)) (hS : S.ShortExact)
 of cochain complexes. -/
 noncomputable def descShortComplex : mappingCone S.f ⟶ S.X₃ := desc S.f 0 S.g (by simp)
 
+@[deprecated (since := "2024-12-01")] alias fromOfShortComplex := descShortComplex
+
 @[reassoc (attr := simp)]
 lemma inr_descShortComplex : inr S.f ≫ descShortComplex S = S.g := by
   simp [descShortComplex]

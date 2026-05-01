@@ -40,8 +40,8 @@ open Category Limits Functor
 
 namespace Functor
 
-variable {C C' H D D' : Type*}
-  [Category* C] [Category* C'] [Category* H] [Category* D] [Category* D']
+variable {C C' D D' H H' : Type*} [Category C] [Category D] [Category H] [Category H']
+  [Category D'] [Category C']
 
 /-- Given two functors `L : C ⥤ D` and `F : C ⥤ H`, this is the category of functors
 `F' : D ⥤ H` equipped with a natural transformation `L ⋙ F' ⟶ F`. -/
@@ -553,6 +553,42 @@ end
 
 section
 
+variable (L : C ⥤ H) (F : C ⥤ D)
+  (F' : H ⥤ D) (α : F ⟶ L ⋙ F')
+  (G : D ⥤ D') [IsEquivalence G]
+
+@[simps!]
+def LeftExtension.postcomp₂ : LeftExtension L F ⥤ LeftExtension L (F ⋙ G) :=
+  StructuredArrow.map₂ (F := (whiskeringRight H D D').obj G)
+    (G := (whiskeringRight C D D').obj G) (𝟙 _) (𝟙 _)
+
+set_option backward.isDefEq.respectTransparency false in
+noncomputable instance : IsEquivalence (LeftExtension.postcomp₂ L F G) := by
+  apply StructuredArrow.isEquivalenceMap₂
+
+noncomputable def LeftExtension.isUniversalPostcompEquiv (e : LeftExtension L F) :
+    e.IsUniversal ≃ ((LeftExtension.postcomp₂ L F G).obj e).IsUniversal := by
+  apply Limits.IsInitial.isInitialIffObj (LeftExtension.postcomp₂ L F G)
+
+variable {L F}
+
+lemma isLeftKanExtension_iff_postcomp₂ :
+    F'.IsLeftKanExtension α ↔
+      (F' ⋙ G).IsLeftKanExtension (whiskerRight α G ≫ (Functor.associator _ _ _).hom) := by
+  let e := LeftExtension.mk _ α
+  let e' := LeftExtension.mk _ (whiskerRight α G ≫ (Functor.associator _ _ _).hom)
+  have : e.IsUniversal ≃ e'.IsUniversal :=
+    (LeftExtension.isUniversalPostcompEquiv L F G e).trans
+    (IsInitial.equivOfIso (StructuredArrow.isoMk (Iso.refl _)))
+  constructor
+  · intro
+    exact ⟨⟨this (isUniversalOfIsLeftKanExtension _ _)⟩⟩
+  · intro
+    exact ⟨⟨this.symm (isUniversalOfIsLeftKanExtension _ _)⟩⟩
+
+end
+
+section
 variable {L : C ⥤ D} {F₁ F₂ : C ⥤ H}
 
 set_option backward.isDefEq.respectTransparency false in
@@ -594,6 +630,72 @@ lemma isRightKanExtension_iff_of_iso₂ {F₁' F₂' : D ⥤ H} (α₁ : L ⋙ F
     F₁'.IsRightKanExtension α₁ ↔ F₂'.IsRightKanExtension α₂ := by
   let eq := RightExtension.isUniversalEquivOfIso₂ (RightExtension.mk _ α₁)
     (RightExtension.mk _ α₂) e e' h
+  constructor
+  · exact fun _ => ⟨⟨eq.1 (isUniversalOfIsRightKanExtension F₁' α₁)⟩⟩
+  · exact fun _ => ⟨⟨eq.2 (isUniversalOfIsRightKanExtension F₂' α₂)⟩⟩
+
+end
+
+section
+
+variable {L₁ L₂ : C ⥤ H} {F₁ F₂ : C ⥤ D}
+
+set_option backward.isDefEq.respectTransparency false in
+/-- When two left extensions `α₁ : RightExtension L₁ F₁` and `α₂ : RightExtension L₂ F₂`
+are essentially the same via isomorphism of functors `F₁ ≅ F₂` and `L₁ ≅ L₂`,
+then `α₁` is universal iff `α₂` is. -/
+noncomputable def LeftExtension.isUniversalEquivOfIso₃
+    (α₁ : LeftExtension L₁ F₁) (α₂ : LeftExtension L₂ F₂)
+    (e : F₁ ≅ F₂) (e' : α₁.right ≅ α₂.right) (e'' : L₁ ≅ L₂)
+    (h : α₁.hom ≫ whiskerLeft L₁ e'.hom = e.hom ≫ α₂.hom ≫ whiskerRight e''.inv _) :
+    α₁.IsUniversal ≃ α₂.IsUniversal := by
+  apply (LeftExtension.isUniversalEquivOfIso₂ α₁
+    (LeftExtension.mk _ (e.inv ≫ α₁.hom ≫ whiskerLeft L₁ e'.hom)) e e' (by aesop_cat)).trans
+  apply (IsInitial.isInitialIffObj (leftExtensionEquivalenceOfIso₁ e'' F₂).functor _).trans
+  refine IsInitial.equivOfIso (StructuredArrow.isoMk (Iso.refl _) ?_)
+  dsimp [leftExtensionEquivalenceOfIso₁]
+  simp only [h, Iso.inv_hom_id_assoc, assoc, comp_id]
+  ext X
+  dsimp
+  rw [← Functor.map_comp, Iso.inv_hom_id_app, Functor.map_id, comp_id]
+
+lemma isLeftKanExtension_iff_of_iso₃
+    {F₁' F₂' : H ⥤ D} (α₁ : F₁ ⟶ L₁ ⋙ F₁') (α₂ : F₂ ⟶ L₂ ⋙ F₂')
+    (e : F₁ ≅ F₂) (e' : F₁' ≅ F₂') (e'' : L₁ ≅ L₂)
+    (h : α₁ ≫ whiskerLeft L₁ e'.hom = e.hom ≫ α₂ ≫ whiskerRight e''.inv _) :
+    F₁'.IsLeftKanExtension α₁ ↔ F₂'.IsLeftKanExtension α₂ := by
+  let eq := LeftExtension.isUniversalEquivOfIso₃ (LeftExtension.mk _ α₁)
+    (LeftExtension.mk _ α₂) e e' e'' h
+  constructor
+  · exact fun _ => ⟨⟨eq.1 (isUniversalOfIsLeftKanExtension F₁' α₁)⟩⟩
+  · exact fun _ => ⟨⟨eq.2 (isUniversalOfIsLeftKanExtension F₂' α₂)⟩⟩
+
+set_option backward.isDefEq.respectTransparency false in
+/-- When two right extensions `α₁ : RightExtension L₁ F₁` and `α₂ : RightExtension L₂ F₂`
+are essentially the same via isomorphism of functors `F₁ ≅ F₂` and `L₁ ≅ L₂`,
+then `α₁` is universal iff `α₂` is. -/
+noncomputable def RightExtension.isUniversalEquivOfIso₃
+    (α₁ : RightExtension L₁ F₁) (α₂ : RightExtension L₂ F₂)
+    (e : F₁ ≅ F₂) (e' : α₁.left ≅ α₂.left) (e'' : L₁ ≅ L₂)
+    (h : whiskerLeft L₂ e'.hom ≫ α₂.hom = whiskerRight e''.inv _ ≫ α₁.hom ≫ e.hom) :
+    α₁.IsUniversal ≃ α₂.IsUniversal := by
+  apply (RightExtension.isUniversalEquivOfIso₂ α₁
+    (RightExtension.mk _ (whiskerLeft L₁ e'.inv ≫ α₁.hom ≫ e.hom)) e e' (by aesop_cat)).trans
+  apply (IsTerminal.isTerminalIffObj (rightExtensionEquivalenceOfIso₁ e'' F₂).functor _).trans
+  refine IsTerminal.equivOfIso (CostructuredArrow.isoMk (Iso.refl _) ?_)
+  dsimp [rightExtensionEquivalenceOfIso₁]
+  rw [id_comp, ← cancel_epi (whiskerLeft L₂ e'.hom), h]
+  ext X
+  dsimp
+  rw [NatTrans.naturality_assoc, Iso.hom_inv_id_app_assoc]
+
+lemma isRightKanExtension_iff_of_iso₃
+    {F₁' F₂' : H ⥤ D} (α₁ : L₁ ⋙ F₁' ⟶ F₁) (α₂ : L₂ ⋙ F₂' ⟶ F₂)
+    (e : F₁ ≅ F₂) (e' : F₁' ≅ F₂') (e'' : L₁ ≅ L₂)
+    (h : whiskerLeft L₂ e'.hom ≫ α₂ = whiskerRight e''.inv _ ≫ α₁ ≫ e.hom) :
+    F₁'.IsRightKanExtension α₁ ↔ F₂'.IsRightKanExtension α₂ := by
+  let eq := RightExtension.isUniversalEquivOfIso₃ (RightExtension.mk _ α₁)
+    (RightExtension.mk _ α₂) e e' e'' h
   constructor
   · exact fun _ => ⟨⟨eq.1 (isUniversalOfIsRightKanExtension F₁' α₁)⟩⟩
   · exact fun _ => ⟨⟨eq.2 (isUniversalOfIsRightKanExtension F₂' α₂)⟩⟩
@@ -658,6 +760,7 @@ def LeftExtension.isUniversalPrecomp₂
     simp [← a_w_t, hb_fac_app, u, hα_fac_app]
   apply IsInitial.ofUnique
 
+--set_option backward.isDefEq.respectTransparency false in
 /-- If the left extension defined by `α : F₀ ⟶ L ⋙ F₁` is universal,
 then for every `L' : D ⥤ D'`, `F₁ : D ⥤ H`, if an extension
 `b : L'.LeftExtension F₁` is such that the "pasted" extension
@@ -682,10 +785,10 @@ def LeftExtension.isUniversalOfPrecomp₂
     ext1
     apply hb.hom_ext
     ext t
-    have := congr_app u.w t
-    dsimp at this
-    simp only [precomp₂_obj_hom_app, assoc] at this
-    simp [this, ← a.w]
+    dsimp
+    rw [dsimp% congr_app u.w t, precomp₂_obj_hom_app, precomp₂_obj_hom_app, assoc]
+    congr 1
+    exact congr_app a.w (L.obj t)
   apply IsInitial.ofUnique
 
 /-- If the left extension defined by `α : F₀ ⟶ L ⋙ F₁` is universal,
@@ -891,5 +994,21 @@ instance isRightKanExtensionAlongEquivalence' (L : C ⥤ D) (α : L ⋙ F₁ ⟶
 end
 
 end Functor
+
+namespace Equivalence
+
+variable {C D : Type*} [Category C] [Category D] (e : C ≌ D)
+
+def whiskeringLeft (E : Type _) [Category E] : (D ⥤ E) ≌ (C ⥤ E) where
+  functor := (Functor.whiskeringLeft C D E).obj e.functor
+  inverse := (Functor.whiskeringLeft D C E).obj e.inverse
+  unitIso := (Functor.whiskeringLeft D D E).mapIso e.counitIso.symm
+  counitIso := (Functor.whiskeringLeft C C E).mapIso e.unitIso.symm
+  functor_unitIso_comp F := by
+    ext Y
+    dsimp
+    rw [← F.map_id, ← F.map_comp, counitInv_functor_comp]
+
+end Equivalence
 
 end CategoryTheory

@@ -193,6 +193,13 @@ lemma uncurry_obj_curry_obj_flip_flip' (F₁ : B ⥤ C) (F₂ : D ⥤ E) (G : C 
     dsimp
     simp only [Category.id_comp, Category.comp_id, ← G.map_comp, prod_comp])
 
+variable {C₁ : Type u₁} {C₂ : Type u₂} {D : Type u₃}
+  [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} D]
+
+@[simps!]
+def curryObjUncurryObjIso (F : C₁ ⥤ C₂ ⥤ D) : curry.obj (uncurry.obj F) ≅ F :=
+  NatIso.ofComponents (fun X₁ => NatIso.ofComponents (fun X₂ => Iso.refl _))
+
 /-- Natural isomorphism witnessing `comp_flip_uncurry_eq`. -/
 @[simps!]
 def compFlipUncurryIso (F : B ⥤ D) (G : D ⥤ C ⥤ E) :

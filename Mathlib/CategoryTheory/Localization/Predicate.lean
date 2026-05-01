@@ -41,8 +41,10 @@ namespace CategoryTheory
 
 open Category Functor
 
-variable {C D : Type*} [Category* C] [Category* D] (L : C ⥤ D) (W : MorphismProperty C) (E : Type*)
-  [Category* E]
+universe v₁ v₂ v₃ u₁ u₂ u₃
+variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
+  (L : C ⥤ D) (W : MorphismProperty C) (E : Type u₃)
+  [Category.{v₃} E]
 
 namespace Functor
 
@@ -126,6 +128,9 @@ theorem IsLocalization.mk' (h₁ : Localization.StrictUniversalPropertyFixedTarg
 theorem IsLocalization.for_id (hW : W ≤ MorphismProperty.isomorphisms C) : (𝟭 C).IsLocalization W :=
   IsLocalization.mk' _ _ (Localization.strictUniversalPropertyFixedTargetId W _ hW)
     (Localization.strictUniversalPropertyFixedTargetId W _ hW)
+
+instance : (𝟭 C).IsLocalization (MorphismProperty.isomorphisms C) :=
+  IsLocalization.for_id _ (by rfl)
 
 end Functor
 
@@ -414,6 +419,10 @@ instance (F : D ⥤ E) [F.IsEquivalence] [L.IsLocalization W] :
     (L ⋙ F).IsLocalization W :=
   of_equivalence_target L W _ F.asEquivalence (Iso.refl _)
 
+instance {E : Type*} [Category E] (F : D ⥤ E) [IsEquivalence F]
+    [L.IsLocalization W] : (L ⋙ F).IsLocalization W :=
+  of_equivalence_target L W _ F.asEquivalence (Iso.refl _)
+
 lemma of_isEquivalence (L : C ⥤ D) (W : MorphismProperty C)
     (hW : W ≤ MorphismProperty.isomorphisms C) [IsEquivalence L] :
     L.IsLocalization W := by
@@ -459,9 +468,9 @@ instance : Lifting L₂ W' L₁ (uniq L₁ L₂ W').inverse := ⟨compUniqInvers
 same `MorphismProperty C`, any functor `F : D₁ ⥤ D₂` equipped with an isomorphism
 `L₁ ⋙ F ≅ L₂` is isomorphic to the functor of the equivalence given by `uniq`. -/
 def isoUniqFunctor (F : D₁ ⥤ D₂) (e : L₁ ⋙ F ≅ L₂) :
-    F ≅ (uniq L₁ L₂ W').functor :=
+    F ≅ (uniq L₁ L₂ W').functor := by
   letI : Lifting L₁ W' L₂ F := ⟨e⟩
-  liftNatIso L₁ W' L₂ L₂ F (uniq L₁ L₂ W').functor (Iso.refl L₂)
+  exact liftNatIso L₁ W' L₂ L₂ F (uniq L₁ L₂ W').functor (Iso.refl L₂)
 
 set_option backward.isDefEq.respectTransparency false in
 lemma morphismProperty_eq_top [L.IsLocalization W] (P : MorphismProperty D) [P.RespectsIso]
@@ -499,6 +508,29 @@ def groupoid : Groupoid (⊤ : MorphismProperty C).Localization :=
   Groupoid.ofIsGroupoid
 
 end Localization
+
+namespace Functor
+
+namespace IsEquivalence
+
+open Localization
+
+variable {D₁ D₂ : Type _} [Category D₁] [Category D₂] (L₁ : C ⥤ D₁) (L₂ : C ⥤ D₂)
+  (W : MorphismProperty C) [L₁.IsLocalization W] [L₂.IsLocalization W]
+  (F : D₁ ⥤ D₂) (e : L₁ ⋙ F ≅ L₂)
+
+/-- If `L₁ : C ⥤ D₁` and `L₂ : C ⥤ D₂` are two localization functors for the
+same `W : MorphismProperty C`, any functor `F : D₁ ⥤ D₂` equipped with an isomorphism
+`L₁ ⋙ F ≅ L₂` is an equivalence -/
+lemma of_localization_comparison
+    {D₁ D₂ : Type _} [Category D₁] [Category D₂] (L₁ : C ⥤ D₁) (L₂ : C ⥤ D₂)
+    (W : MorphismProperty C) [L₁.IsLocalization W] [L₂.IsLocalization W]
+    (F : D₁ ⥤ D₂) (e : L₁ ⋙ F ≅ L₂) : IsEquivalence F :=
+  isEquivalence_of_iso (isoUniqFunctor L₁ L₂ W F e).symm
+
+end IsEquivalence
+
+end Functor
 
 section
 

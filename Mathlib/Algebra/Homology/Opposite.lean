@@ -160,6 +160,9 @@ def opEquivalence : (HomologicalComplex V c)ᵒᵖ ≌ HomologicalComplex Vᵒ�
       opFunctor_map_f, Hom.isoOfComponents_hom_f]
     exact Category.comp_id _
 
+instance : (opFunctor V c).IsEquivalence := (opEquivalence V c).isEquivalence_functor
+instance : (opInverse V c).IsEquivalence := (opEquivalence V c).isEquivalence_inverse
+
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `unopEquivalence`. -/
 @[simps]

@@ -334,6 +334,8 @@ def eval (i : ι) : HomologicalComplex V c ⥤ V where
 
 instance (i : ι) : (eval V c i).PreservesZeroMorphisms where
 
+instance (i : ι) : (eval V c i).PreservesZeroMorphisms where
+
 /-- The functor forgetting the differential in a complex, obtaining a graded object. -/
 @[simps]
 def forget : HomologicalComplex V c ⥤ GradedObject ι V where
@@ -786,7 +788,6 @@ theorem mk'_X_0 : (mk' X₀ X₁ d₀ succ').X 0 = X₀ :=
 @[simp]
 theorem mk'_X_1 : (mk' X₀ X₁ d₀ succ').X 1 = X₁ :=
   rfl
-
 
 @[simp]
 theorem mk'_d_1_0 : (mk' X₀ X₁ d₀ succ').d 1 0 = d₀ := by

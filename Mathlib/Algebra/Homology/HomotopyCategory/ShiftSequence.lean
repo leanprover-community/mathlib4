@@ -11,6 +11,7 @@ public import Mathlib.CategoryTheory.Shift.ShiftedHom
 public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.Algebra.Homology.QuasiIso
+public import Mathlib.Algebra.Homology.PreservesQuasiIso
 
 /-! # Compatibilities of the homology functor with the shift
 
@@ -147,6 +148,13 @@ instance {K L : CochainComplex C ℤ} (φ : K ⟶ L) (n : ℤ) [QuasiIso φ] :
 
 instance : (HomologicalComplex.quasiIso C (ComplexShape.up ℤ)).IsCompatibleWithShift ℤ where
   condition n := by ext; apply quasiIso_shift_iff
+
+variable (C) in
+lemma preservesQuasiIso_shiftFunctor (n : ℤ) :
+    preservesQuasiIso (CategoryTheory.shiftFunctor (CochainComplex C ℤ) n) := by
+  rintro _ _ _ hf
+  simp only [mem_quasiIso_iff, MorphismProperty.inverseImage_iff] at hf ⊢
+  infer_instance
 
 variable (C) in
 lemma homologyFunctor_shift (n : ℤ) :

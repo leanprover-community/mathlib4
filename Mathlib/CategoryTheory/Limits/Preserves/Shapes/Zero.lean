@@ -113,6 +113,19 @@ lemma preservesZeroMorphisms_of_iso {F₁ F₂ : C ⥤ D} [F₁.PreservesZeroMor
   map_zero X Y := by simp only [← cancel_epi (e.hom.app X), ← e.hom.naturality,
     F₁.map_zero, zero_comp, comp_zero]
 
+open ZeroObject
+
+set_option backward.isDefEq.respectTransparency false in
+lemma preservesZeroMorphisms_of_fac_of_essSurj (F : C ⥤ D) (G : D ⥤ E) (H : C ⥤ E)
+   [H.PreservesZeroMorphisms] [HasZeroObject C] (e : F ⋙ G ≅ H) :
+    G.PreservesZeroMorphisms := ⟨by
+  have := preservesZeroMorphisms_of_iso e.symm
+  intro X Y
+  have h : (0 : X ⟶ Y) = 0 ≫ 𝟙 (F.obj 0) ≫ 0 := by simp only [comp_zero]
+  simp only [h, G.map_comp, ← F.map_id, id_zero]
+  erw [(F ⋙ G).map_zero]
+  simp only [zero_comp, comp_zero]⟩
+
 instance preservesZeroMorphisms_evaluation_obj (j : D) :
     PreservesZeroMorphisms ((evaluation D C).obj j) where
 
@@ -171,6 +184,16 @@ instance (priority := 100) preservesZeroMorphisms_of_preserves_terminal_object
   preservesZeroMorphisms_of_map_zero_object <|
     F.mapIso HasZeroObject.zeroIsoTerminal ≪≫
       PreservesTerminal.iso F ≪≫ HasZeroObject.zeroIsoTerminal.symm
+
+/-- Variant of `preservesZeroMorphisms_of_preserves_terminal_object` where we do not
+assume `D` has a zero object. -/
+instance preservesZeroMorphisms_of_preserves_terminal_object'
+    {C D : Type _} [Category C] [Category D] [HasZeroMorphisms C] [HasZeroMorphisms D] (F : C ⥤ D)
+    [HasTerminal C] [PreservesLimit (Functor.empty.{0} C) F] : F.PreservesZeroMorphisms := ⟨by
+  have : F.map (𝟙 (⊤_ C)) = 0 := (IsTerminal.isTerminalObj _ _ terminalIsTerminal).hom_ext _ _
+  intro X Y
+  have eq : (0 : X ⟶ Y) = 0 ≫ 𝟙 (⊤_ C) ≫ 0 := by simp
+  rw [eq, F.map_comp, F.map_comp, this, zero_comp, comp_zero]⟩
 
 variable (F)
 

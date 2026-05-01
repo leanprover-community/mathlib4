@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 public import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+public import Mathlib.Algebra.Homology.QuasiIso
 public import Mathlib.Algebra.Homology.HomologicalComplexLimits
 
 /-!
@@ -225,7 +226,7 @@ obtained by applying the functors `homologyFunctor C c i`, `opcyclesFunctor C c 
 `cyclesFunctor C c j`, `homologyFunctor C c j` to `S`. Applying the snake lemma to this
 gives the homology sequence of `S`. -/
 @[simps]
-noncomputable def snakeInput (hS : S.ShortExact) (i j : ι) (hij : c.Rel i j) :
+noncomputable def snakeInput :
     ShortComplex.SnakeInput C where
   L₀ := (homologyFunctor C c i).mapShortComplex.obj S
   L₁ := (opcyclesFunctor C c i).mapShortComplex.obj S
@@ -355,6 +356,46 @@ theorem isIso_δ (hi : IsZero (S.X₂.homology i)) (hj : IsZero (S.X₂.homology
 noncomputable def δIso (hi : IsZero (S.X₂.homology i)) (hj : IsZero (S.X₂.homology j)) :
     S.X₃.homology i ≅ S.X₁.homology j :=
   @asIso _ _ _ _ (hS.δ i j hij) (hS.isIso_δ i j hij hi hj)
+
+include hS in
+lemma acyclic_X₁ (hg : _root_.QuasiIso S.g) : S.X₁.Acyclic := by
+  intro j
+  rw [exactAt_iff_isZero_homology]
+  by_cases hj : ∃ i, c.Rel i j
+  · obtain ⟨i, hij⟩ := hj
+    apply (hS.homology_exact₁ i j hij).isZero_X₂
+    · simp [← cancel_epi (HomologicalComplex.homologyMap S.g i)]
+    · dsimp
+      rw [← cancel_mono (HomologicalComplex.homologyMap S.g j), zero_comp,
+        ← HomologicalComplex.homologyMap_comp, S.zero,
+        HomologicalComplex.homologyMap_zero]
+  · have := hS.mono_f
+    have := HomologicalComplex.mono_homologyMap_of_mono_of_not_rel S.f j (by tauto)
+    rw [IsZero.iff_id_eq_zero,
+      ← cancel_mono (HomologicalComplex.homologyMap S.f j),
+      ← cancel_mono (HomologicalComplex.homologyMap S.g j), zero_comp, zero_comp,
+      id_comp, ← HomologicalComplex.homologyMap_comp, S.zero,
+      HomologicalComplex.homologyMap_zero]
+
+include hS in
+lemma acyclic_X₃ (h : _root_.QuasiIso S.f) : S.X₃.Acyclic := by
+  intro i
+  rw [exactAt_iff_isZero_homology]
+  by_cases hi : ∃ j, c.Rel i j
+  · obtain ⟨j, hij⟩ := hi
+    apply (hS.homology_exact₃ i j hij).isZero_X₂
+    · dsimp
+      rw [← cancel_epi (HomologicalComplex.homologyMap S.f i), comp_zero,
+        ← HomologicalComplex.homologyMap_comp, S.zero,
+        HomologicalComplex.homologyMap_zero]
+    · simp [← cancel_mono (HomologicalComplex.homologyMap S.f j)]
+  · have := hS.epi_g
+    have pi := HomologicalComplex.epi_homologyMap_of_epi_of_not_rel S.g i (by tauto)
+    rw [IsZero.iff_id_eq_zero,
+      ← cancel_epi (HomologicalComplex.homologyMap S.g i),
+      ← cancel_epi (HomologicalComplex.homologyMap S.f i), comp_zero, comp_zero,
+      comp_id, ← HomologicalComplex.homologyMap_comp, S.zero,
+      HomologicalComplex.homologyMap_zero]
 
 end ShortExact
 

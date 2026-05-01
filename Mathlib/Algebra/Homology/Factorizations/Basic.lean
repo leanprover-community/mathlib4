@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.HomologicalComplex
+public import Mathlib.Algebra.Homology.CochainComplexOpposite
 public import Mathlib.CategoryTheory.Abelian.EpiWithInjectiveKernel
 
 /-!
@@ -36,8 +37,7 @@ of total derived functors (and a refactor of the sequence of derived functors).
 
 @[expose] public section
 
-
-open CategoryTheory Abelian
+open CategoryTheory Abelian Limits
 
 variable {C : Type*} [Category* C] [Abelian C]
 
@@ -52,5 +52,63 @@ def degreewiseEpiWithInjectiveKernel : MorphismProperty (CochainComplex C ℤ) :
 instance : (degreewiseEpiWithInjectiveKernel (C := C)).IsMultiplicative where
   id_mem _ _ := MorphismProperty.id_mem _ _
   comp_mem _ _ hf hg n := MorphismProperty.comp_mem _ _ _ (hf n) (hg n)
+
+instance : (degreewiseEpiWithInjectiveKernel (C := C)).IsStableUnderRetracts where
+  of_retract r h i :=
+    MorphismProperty.of_retract (r.map (HomologicalComplex.eval _ _ i)) (h i)
+
+variable {K L : CochainComplex C ℤ} (φ : K ⟶ L)
+
+def monoUpTo (n : ℤ) : Prop := ∀ (i : ℤ) (_ : i ≤ n), Mono (φ.f i)
+
+lemma degreewiseEpiWithInjectiveKernel.epi {K L : CochainComplex C ℤ} {f : K ⟶ L}
+    (hf : degreewiseEpiWithInjectiveKernel f) :
+    Epi f :=
+  HomologicalComplex.epi_of_epi_f f (fun n ↦ (hf n).1)
+
+/-- A morphism of cochain complexes `φ` in an abelian category satisfies
+`degreewiseMonoWithProjectiveKernel φ` if for any `i : ℤ`, the morphism
+`φ.f i` is a monomorphism with a projective kernel. -/
+def degreewiseMonoWithProjectiveCokernel : MorphismProperty (CochainComplex C ℤ) :=
+  fun _ _ φ => ∀ (i : ℤ), monoWithProjectiveCokernel (φ.f i)
+
+lemma degreewiseMonoWithProjectiveKernel.mono {K L : CochainComplex C ℤ} {f : K ⟶ L}
+    (hf : degreewiseMonoWithProjectiveCokernel f) :
+    Mono f :=
+  HomologicalComplex.mono_of_mono_f f (fun n ↦ (hf n).1)
+
+lemma degreewiseMonoWithProjectiveCokernel_eq_unop :
+    degreewiseMonoWithProjectiveCokernel (C := C) =
+      (degreewiseEpiWithInjectiveKernel (C := Cᵒᵖ)).op.inverseImage
+        (opEquivalence C).functor.rightOp := by
+  ext K L f
+  simp only [degreewiseMonoWithProjectiveCokernel, monoWithProjectiveCokernel_eq_unop,
+    MorphismProperty.unop, MorphismProperty.inverseImage_iff, MorphismProperty.op,
+    degreewiseEpiWithInjectiveKernel, Functor.rightOp_obj, Functor.rightOp_map]
+  refine ⟨fun h n ↦ h _, fun h n ↦ ?_⟩
+  obtain ⟨m, rfl⟩ : ∃ m, n = - m := ⟨-n, by simp⟩
+  apply h
+
+instance : (degreewiseMonoWithProjectiveCokernel (C := C)).IsMultiplicative := by
+  rw [degreewiseMonoWithProjectiveCokernel_eq_unop]
+  infer_instance
+
+instance : (degreewiseMonoWithProjectiveCokernel (C := C)).IsStableUnderRetracts := by
+  rw [degreewiseMonoWithProjectiveCokernel_eq_unop]
+  infer_instance
+
+lemma degreewiseMonoWithProjectiveCokernel_iff_of_isZero {K L : CochainComplex C ℤ}
+    (f : K ⟶ L) (hK : IsZero K) :
+    degreewiseMonoWithProjectiveCokernel f ↔ ∀ (n : ℤ), Projective (L.X n) :=
+  forall_congr' (fun n ↦ by
+    rw [monoWithProjectiveCokernel_iff_of_isZero]
+    exact Functor.map_isZero (HomologicalComplex.eval _ _ n) hK)
+
+lemma degreewiseEpiWithInjectiveKernel_iff_of_isZero {K L : CochainComplex C ℤ}
+    (f : K ⟶ L) (hL : IsZero L) :
+    degreewiseEpiWithInjectiveKernel f ↔ ∀ (n : ℤ), Injective (K.X n) :=
+  forall_congr' (fun n ↦ by
+    rw [epiWithInjectiveKernel_iff_of_isZero]
+    exact Functor.map_isZero (HomologicalComplex.eval _ _ n) hL)
 
 end CochainComplex

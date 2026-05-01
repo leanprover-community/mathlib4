@@ -346,6 +346,13 @@ lemma functor_additive_iff {E : Type*} [Category* E] [Preadditive E] [Preadditiv
       LeftFraction.map_comp_map_s, LeftFraction.map_comp_map_s, ← Functor.comp_map,
       Functor.map_add, Functor.comp_map, Functor.comp_map]
 
+/-- Variant of `functor_additive_iff`. -/
+lemma functor_additive_iff' {E : Type*} [Category E] [Preadditive E] [Preadditive D] [L.Additive]
+    (H : C ⥤ E) (G : D ⥤ E) [Localization.Lifting L W H G] :
+    G.Additive ↔ H.Additive := by
+  rw [functor_additive_iff L W G, Functor.additive_iff_of_iso (Lifting.iso L W H G)]
+
+
 noncomputable instance : Preadditive W.Localization := preadditive W.Q W
 instance : W.Q.Additive := functor_additive W.Q W
 instance [HasZeroObject C] : HasZeroObject W.Localization := W.Q.hasZeroObject_of_additive
@@ -357,5 +364,16 @@ instance : W.Q'.Additive := functor_additive W.Q' W
 instance [HasZeroObject C] : HasZeroObject W.Localization' := W.Q'.hasZeroObject_of_additive
 
 end Localization
+
+lemma Functor.faithful_of_precomp_cancel_zero_of_hasLeftCalculusOfFractions
+    {E : Type*} [Category* E] (F : D ⥤ E)
+    [W.HasLeftCalculusOfFractions]
+    [Preadditive D] [Preadditive E] [L.Additive] [F.Additive]
+    (h : ∀ ⦃X₁ X₂ : C⦄ (f : X₁ ⟶ X₂), F.map (L.map f) = 0 → L.map f = 0) :
+    Faithful F :=
+  faithful_of_precomp_of_hasLeftCalculusOfFractions L W F
+    (fun X₁ X₂ f g hfg => by
+      rw [← sub_eq_zero, ← L.map_sub]
+      exact h _ (by rw [L.map_sub, F.map_sub, hfg, sub_self]))
 
 end CategoryTheory

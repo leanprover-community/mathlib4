@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Homology.Linear
 public import Mathlib.Algebra.Homology.HomotopyCategory
 public import Mathlib.Algebra.Ring.NegOnePow
 public import Mathlib.CategoryTheory.Shift.Quotient
@@ -29,7 +30,7 @@ assert_not_exists TwoSidedIdeal
 
 universe v v' u u'
 
-open CategoryTheory
+open CategoryTheory Category Limits
 
 variable (C : Type u) [Category.{v} C] [Preadditive C]
   {D : Type u'} [Category.{v'} D] [Preadditive D]
@@ -131,10 +132,27 @@ lemma shiftFunctor_obj_X' (K : CochainComplex C ℤ) (n p : ℤ) :
 lemma shiftFunctor_map_f' {K L : CochainComplex C ℤ} (φ : K ⟶ L) (n p : ℤ) :
     ((CategoryTheory.shiftFunctor (CochainComplex C ℤ) n).map φ).f p = φ.f (p + n) := rfl
 
+/-- Variant of `shiftFunctor_map_f'`. -/
+lemma shiftFunctor_map_f'' {K L : CochainComplex C ℤ} (φ : K ⟶ L) (n p q : ℤ) (hpq : q = p + n) :
+  ((CategoryTheory.shiftFunctor (CochainComplex C ℤ) n).map φ).f p =
+    (shiftFunctorObjXIso K n p q hpq).hom ≫ φ.f q ≫ (shiftFunctorObjXIso L n p q hpq).inv := by
+  subst hpq
+  simp [shiftFunctor_map_f']
+
 @[simp]
 lemma shiftFunctor_obj_d' (K : CochainComplex C ℤ) (n i j : ℤ) :
     ((CategoryTheory.shiftFunctor (CochainComplex C ℤ) n).obj K).d i j =
       n.negOnePow • K.d _ _ := rfl
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Variant of `shiftFunctor_obj_d'`. -/
+lemma shiftFunctor_obj_d'' (K : CochainComplex C ℤ)
+    (n i j i' j' : ℤ) (hi' : i' = i + n) (hj' : j' = j + n) :
+    ((CategoryTheory.shiftFunctor (CochainComplex C ℤ) n).obj K).d i j =
+      n.negOnePow • (shiftFunctorObjXIso K n i i' hi').hom ≫ K.d i' j' ≫
+          (shiftFunctorObjXIso K n j j' hj').inv := by
+  subst hi' hj'
+  simp
 
 lemma shiftFunctorAdd_inv_app_f (K : CochainComplex C ℤ) (a b n : ℤ) :
     ((shiftFunctorAdd (CochainComplex C ℤ) a b).inv.app K).f n =
@@ -195,7 +213,8 @@ lemma shiftFunctorComm_hom_app_f (K : CochainComplex C ℤ) (a b p : ℤ) :
   rw [shiftFunctorComm_eq _ _ _ _ rfl]
   dsimp
   rw [shiftFunctorAdd'_inv_app_f', shiftFunctorAdd'_hom_app_f']
-  simp only [XIsoOfEq, eqToIso.hom, eqToHom_trans]
+  dsimp [XIsoOfEq]
+  apply eqToHom_trans
 
 variable (C)
 
@@ -215,14 +234,12 @@ end CochainComplex
 
 namespace CategoryTheory
 
-open Category
-
 namespace Functor
 
-variable {C}
-variable (F : C ⥤ D) [F.Additive]
+variable {C} {D : Type u'} [Category.{v'} D]
+variable (F : C ⥤ D) [Preadditive D] [F.Additive]
 
-attribute [local simp] Functor.map_zsmul
+attribute [local simp] Functor.map_zsmul HomologicalComplex.XIsoOfEq
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The commutation with the shift isomorphism for the functor on cochain complexes
@@ -253,9 +270,9 @@ instance commShiftMapCochainComplex :
       CochainComplex.shiftFunctorAdd_inv_app_f, HomologicalComplex.XIsoOfEq, eqToIso,
       eqToHom_map, eqToHom_trans, eqToHom_refl]
 
-lemma mapHomologicalComplex_commShiftIso_eq (n : ℤ) :
-    (F.mapHomologicalComplex (ComplexShape.up ℤ)).commShiftIso n =
-      F.mapCochainComplexShiftIso n := rfl
+--lemma mapHomologicalComplex_commShiftIso_eq (n : ℤ) :
+--    (F.mapHomologicalComplex (ComplexShape.up ℤ)).commShiftIso n =
+--      F.mapCochainComplexShiftIso n := rfl
 
 @[simp]
 lemma mapHomologicalComplex_commShiftIso_hom_app_f (K : CochainComplex C ℤ) (n i : ℤ) :
@@ -329,10 +346,22 @@ instance {R : Type*} [Ring R] [CategoryTheory.Linear R C] (n : ℤ) :
     rw [← Functor.map_smul, ← h₁, ← h₂]
     simp
 
+set_option backward.isDefEq.respectTransparency false in
+instance {R : Type _} [Ring R] [CategoryTheory.Linear R C] (n : ℤ) :
+    (CategoryTheory.shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n).Linear R where
+  map_smul := by
+    rintro ⟨X⟩ ⟨Y⟩ f r
+    obtain ⟨f, rfl⟩ := (HomotopyCategory.quotient C (ComplexShape.up ℤ)).map_surjective f
+    rw [← Functor.map_smul]
+    erw [← NatIso.naturality_1 ((HomotopyCategory.quotient _ _).commShiftIso n) f,
+      ← NatIso.naturality_1 ((HomotopyCategory.quotient _ _).commShiftIso n) (r • f)]
+    simp only [Functor.comp_obj, Functor.comp_map, Functor.map_smul,
+      Linear.smul_comp, Linear.comp_smul]
+
 section
 
 variable {C}
-variable (F : C ⥤ D) [F.Additive]
+variable {D : Type*} [Category D] [Preadditive D] (F : C ⥤ D) [F.Additive]
 
 noncomputable instance : (F.mapHomotopyCategory (ComplexShape.up ℤ)).CommShift ℤ :=
   Quotient.liftCommShift _ _ _ _

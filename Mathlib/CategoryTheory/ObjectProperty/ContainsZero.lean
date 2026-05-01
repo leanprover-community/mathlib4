@@ -30,6 +30,19 @@ open Limits ZeroObject Opposite
 
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
+-- to be moved
+lemma IsZero.of_full_of_faithful_of_isZero
+    (F : C ⥤ D) [F.Full] [F.Faithful] (X : C) (hX : IsZero (F.obj X)) :
+    IsZero X := by
+      have h : F.FullyFaithful := .ofFullyFaithful _
+      constructor
+      · intro Y
+        have := (hX.unique_to (F.obj Y)).some
+        exact ⟨h.homEquiv.unique⟩
+      · intro Y
+        have := (hX.unique_from (F.obj Y)).some
+        exact ⟨h.homEquiv.unique⟩
+
 namespace ObjectProperty
 
 variable (P Q : ObjectProperty C)
@@ -102,6 +115,12 @@ instance [P.ContainsZero] : HasZeroObject P.FullSubcategory where
   zero := by
     obtain ⟨X, h₁, h₂⟩ := P.exists_prop_of_containsZero
     exact ⟨_, IsZero.of_full_of_faithful_of_isZero P.ι ⟨X, h₂⟩ h₁⟩
+
+instance [P.ContainsZero] [Q.ContainsZero] [Q.IsClosedUnderIsomorphisms] :
+    (P ⊓ Q).ContainsZero where
+  exists_zero := by
+    obtain ⟨Z, hZ, hP⟩ := P.exists_prop_of_containsZero
+    exact ⟨Z, hZ, hP, Q.prop_of_isZero hZ⟩
 
 end ObjectProperty
 

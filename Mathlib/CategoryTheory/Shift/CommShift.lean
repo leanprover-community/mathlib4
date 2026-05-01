@@ -34,6 +34,15 @@ namespace CategoryTheory
 
 open Category
 
+instance {C D E : Type*} [Category C] [Category D] [Category E] (G : D ⥤ E)
+    [G.Full] [G.Faithful] : ((Functor.whiskeringRight C D E).obj G).Full where
+  map_surjective τ := ⟨
+    { app := fun X => G.preimage (τ.app X)
+      naturality := fun X Y f => by
+        apply G.map_injective
+        simpa only [Functor.whiskeringRight_obj_obj, Functor.map_comp, Functor.map_preimage]
+          using τ.naturality f }, by aesop_cat⟩
+
 namespace Functor
 
 variable {C D E : Type*} [Category* C] [Category* D] [Category* E]
@@ -173,15 +182,25 @@ variable [F.CommShift A]
 
 @[reassoc (attr := simp)]
 lemma commShiftIso_hom_naturality {X Y : C} (f : X ⟶ Y) (a : A) :
-    F.map (f⟦a⟧') ≫ (F.commShiftIso a).hom.app Y =
+    dsimp% F.map (f⟦a⟧') ≫ (F.commShiftIso a).hom.app Y =
       (F.commShiftIso a).hom.app X ≫ (F.map f)⟦a⟧' :=
   (F.commShiftIso a).hom.naturality f
 
 @[reassoc (attr := simp)]
 lemma commShiftIso_inv_naturality {X Y : C} (f : X ⟶ Y) (a : A) :
-    (F.map f)⟦a⟧' ≫ (F.commShiftIso a).inv.app Y =
+    dsimp% (F.map f)⟦a⟧' ≫ (F.commShiftIso a).inv.app Y =
       (F.commShiftIso a).inv.app X ≫ F.map (f⟦a⟧') :=
   (F.commShiftIso a).inv.naturality f
+
+@[reassoc (attr := simp)]
+lemma commShiftIso_hom_inv_id_apply (X : C) (a : A) :
+    dsimp% (F.commShiftIso a).hom.app X ≫ (F.commShiftIso a).inv.app X = 𝟙 _ :=
+  (F.commShiftIso a).hom_inv_id_app X
+
+@[reassoc (attr := simp)]
+lemma commShiftIso_inv_hom_id_apply (X : C) (a : A) :
+    dsimp% (F.commShiftIso a).inv.app X ≫ (F.commShiftIso a).hom.app X = 𝟙 _ :=
+  (F.commShiftIso a).inv_hom_id_app X
 
 variable (A) in
 set_option linter.docPrime false in
@@ -222,6 +241,20 @@ instance comp [F.CommShift A] [G.CommShift A] : (F ⋙ G).CommShift A where
     dsimp
     simp only [comp_id, id_comp, assoc, ← Functor.map_comp_assoc, Iso.inv_hom_id_app, comp_obj]
     simp only [map_comp, assoc, commShiftIso_hom_naturality_assoc]
+
+variable {F G}
+
+@[simp]
+lemma commShiftIso_id_hom_app (a : A) (X : C) :
+    ((𝟭 C).commShiftIso a).hom.app X = 𝟙 _ := by
+  dsimp [commShiftIso]
+  rw [id_comp]
+
+@[simp]
+lemma commShiftIso_id_inv_app (a : A) (X : C) :
+    ((𝟭 C).commShiftIso a).inv.app X = 𝟙 _ := by
+  dsimp [commShiftIso]
+  rw [id_comp]
 
 end CommShift
 

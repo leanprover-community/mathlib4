@@ -84,6 +84,11 @@ lemma acyclic_truncLE_iff_isSupportedOutside :
 
 variable {K L}
 
+lemma Acyclic.truncLE (hK : K.Acyclic) (e : c.Embedding c') [e.IsTruncLE] :
+    (K.truncLE e).Acyclic := by
+  rw [acyclic_truncLE_iff_isSupportedOutside]
+  exact ⟨fun _ ↦ hK _⟩
+
 lemma quasiIso_truncLEMap_iff :
     QuasiIso (truncLEMap φ e) ↔ ∀ (i : ι) (i' : ι') (_ : e.f i = i'), QuasiIsoAt φ i' := by
   rw [← quasiIso_opFunctor_map_iff]
@@ -162,6 +167,18 @@ lemma shortComplexTruncLE_X₃_isSupportedOutside :
       rw [IsZero.iff_id_eq_zero, ← cancel_epi (homologyMap (K.shortComplexTruncLE e).g (e.f i)),
         comp_id, comp_zero, ← cancel_epi (homologyMap (K.shortComplexTruncLE e).f (e.f i)),
         comp_zero, ← homologyMap_comp, ShortComplex.zero, homologyMap_zero]
+
+lemma acyclic_ιTruncLE_iff_isSupportedOutside :
+    (K.truncLE e).Acyclic ↔ K.IsSupportedOutside e := by
+  constructor
+  · intro hK
+    exact ⟨fun i =>
+      by simpa only [← exactAt_iff_of_quasiIsoAt (K.ιTruncLE e)] using hK (e.f i)⟩
+  · intro hK i'
+    by_cases hi' : ∃ i, e.f i = i'
+    · obtain ⟨i, rfl⟩ := hi'
+      simpa only [exactAt_iff_of_quasiIsoAt (K.ιTruncLE e)] using hK.exactAt i
+    · exact exactAt_of_isSupported _ e i' (by simpa using hi')
 
 end
 

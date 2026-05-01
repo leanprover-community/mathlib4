@@ -37,12 +37,14 @@ along the localization functor `L`.
 
 namespace CategoryTheory
 
+open Limits
+
 namespace Functor
 
 variable {C C' D D' H H' : Type _} [Category* C] [Category* C']
   [Category* D] [Category* D'] [Category* H] [Category* H']
   (LF'' LF' LF : D ⥤ H) {F F' F'' : C ⥤ H} (e : F ≅ F') {L : C ⥤ D}
-  (α'' : L ⋙ LF'' ⟶ F'') (α' : L ⋙ LF' ⟶ F') (α : L ⋙ LF ⟶ F) (α'₂ : L ⋙ LF' ⟶ F)
+  (α'' : L ⋙ LF'' ⟶ F'') (α' : L ⋙ LF' ⟶ F') (α'₂ : L ⋙ LF' ⟶ F) (α : L ⋙ LF ⟶ F)
   (W : MorphismProperty C)
 
 /-- A functor `LF : D ⥤ H` is a left derived functor of `F : C ⥤ H`
@@ -133,8 +135,8 @@ noncomputable def leftDerivedNatIso (τ : F' ≅ F) :
   inv := leftDerivedNatTrans LF LF' α α' W τ.inv
 
 /-- Uniqueness (up to a natural isomorphism) of the left derived functor. -/
-noncomputable abbrev leftDerivedUnique [LF'.IsLeftDerivedFunctor α'₂ W] : LF ≅ LF' :=
-  leftDerivedNatIso LF LF' α α'₂ W (Iso.refl F)
+noncomputable abbrev leftDerivedUnique [LF'.IsLeftDerivedFunctor α'₂ W] : LF' ≅ LF :=
+  leftDerivedNatIso LF' LF α'₂ α W (Iso.refl F)
 
 lemma isLeftDerivedFunctor_iff_isIso_leftDerivedLift (G : D ⥤ H) (β : L ⋙ G ⟶ F) :
     G.IsLeftDerivedFunctor β W ↔ IsIso (LF.leftDerivedLift α W G β) := by
@@ -178,6 +180,7 @@ lemma HasLeftDerivedFunctor.hasRightKanExtension [HasLeftDerivedFunctor F W] :
 
 variable {F L W}
 
+/-- Constructor for `HasLeftDerivedFunctor`. -/
 lemma HasLeftDerivedFunctor.mk' [LF.IsLeftDerivedFunctor α W] :
     HasLeftDerivedFunctor F W := by
   have := IsLeftDerivedFunctor.isRightKanExtension LF α W
@@ -206,6 +209,48 @@ instance : (F.totalLeftDerived L W).IsLeftDerivedFunctor
     infer_instance
 
 end
+
+instance [IsIso α] : LF.IsLeftDerivedFunctor α W where
+  isRightKanExtension :=
+    letI lifting : Localization.Lifting L W F LF := ⟨asIso α⟩
+    ⟨⟨IsTerminal.ofUniqueHom
+      (fun G => CostructuredArrow.homMk
+        (Localization.liftNatTrans L W (L ⋙ G.left) F G.left LF G.hom) (by
+          ext X
+          dsimp
+          simp only [Localization.liftNatTrans_app, comp_obj, Category.assoc]
+          dsimp [Localization.Lifting.iso, lifting]
+          simp only [NatIso.isIso_inv_app, comp_obj, IsIso.inv_hom_id,
+            Category.comp_id, Category.id_comp]))
+      (fun G φ => by
+        ext1
+        apply Localization.natTrans_ext L W
+        intro X
+        dsimp
+        simp only [Localization.liftNatTrans_app, comp_obj]
+        dsimp [Localization.Lifting.iso, lifting]
+        simpa using NatTrans.congr_app φ.w X)⟩⟩
+
+example (G : D ⥤ H) : G.IsLeftDerivedFunctor (𝟙 (L ⋙ G)) W := inferInstance
+
+instance (G : D ⥤ H) : (L ⋙ G).HasLeftDerivedFunctor W :=
+  HasLeftDerivedFunctor.mk' G (𝟙 _)
+
+lemma hasLeftDerivedFunctor_of_inverts (F : C ⥤ D) (hF : W.IsInvertedBy F) :
+    F.HasLeftDerivedFunctor W :=
+  HasLeftDerivedFunctor.mk' (Localization.lift F hF W.Q) (Localization.fac F hF W.Q).hom
+
+lemma isIso_leftDerivedFunctor_counit_iff_inverts [LF.IsLeftDerivedFunctor α W] :
+    IsIso α ↔ W.IsInvertedBy F := by
+  constructor
+  · intro
+    exact MorphismProperty.IsInvertedBy.of_iso W (asIso α)
+      (MorphismProperty.IsInvertedBy.of_comp W L (Localization.inverts L W) LF)
+  · intro hF
+    rw [show α = whiskerLeft L (leftDerivedUnique LF
+          (Localization.lift F hF L) α (Localization.fac F hF L).hom W).hom ≫
+        (Localization.fac F hF L).hom by simp]
+    infer_instance
 
 end Functor
 
