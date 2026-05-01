@@ -193,48 +193,30 @@ lemma exp_isBigO_discriminant : (fun τ ↦ Real.exp (-2 * π * τ.im)) =O[atImI
   linarith [norm_nonneg (𝕢 1 τ), mul_le_mul_of_nonneg_left hprod_bound (norm_nonneg (𝕢 1 τ))]
 
 /-- The cusp function of the discriminant equals `q * ∏' n, (1 - q^(n+1))^24`
-on `ball 0 (1/2)`. -/
+on the open unit disc. -/
 private lemma discriminant_cuspFunction_eqOn :
     Set.EqOn (cuspFunction 1 (Δ : ℍ → ℂ))
-      (fun q ↦ q * ∏' i, (1 - q ^ (i + 1)) ^ 24) (Metric.ball 0 (1 / 2)) := by
+      (fun q ↦ q * ∏' i, (1 - q ^ (i + 1)) ^ 24) (Metric.ball 0 1) := by
   intro q hq
   by_cases hq0 : q = 0
-  · simp only [hq0, zero_mul]
-    exact Periodic.cuspFunction_zero_of_zero_at_inf one_pos
+  · simpa [hq0] using Periodic.cuspFunction_zero_of_zero_at_inf one_pos
       discriminant_isZeroAtImInfty.zero_at_infty_comp_ofComplex
-  · have hqn : ‖q‖ < 1 := lt_trans (by simpa [dist_zero_right] using hq) (by norm_num)
-    have him := Periodic.im_invQParam_pos_of_norm_lt_one one_pos hqn hq0
-    rw [cuspFunction, Periodic.cuspFunction_eq_of_nonzero 1 _ hq0,
-      comp_apply, ofComplex_apply_of_im_pos him, discriminant_eq_q_prod ⟨_, him⟩]
-    have hqr := Periodic.qParam_right_inv one_ne_zero hq0
-    have heta : ∀ n : ℕ, eta_q n (Periodic.invQParam 1 q) = q ^ (n + 1) := fun n ↦ by
-      simp [eta_q, hqr]
-    simp only [hqr, heta]
-
-/-- The product `∏' i, (1 - q^(i+1))^24` is differentiable within `ball 0 (1/2)` at 0. -/
-private lemma differentiableWithinAt_eta_prod_pow :
-    DifferentiableWithinAt ℂ (fun q : ℂ ↦ ∏' i, (1 - q ^ (i + 1)) ^ 24)
-      (Metric.ball 0 (1 / 2)) 0 :=
-  (differentiableOn_tprod_one_sub_pow_pow 24 0
-    (by simp [Metric.mem_ball] : (0 : ℂ) ∈ Metric.ball 0 1)).mono
-    (Metric.ball_subset_ball (by norm_num))
+  · have him := Periodic.im_invQParam_pos_of_norm_lt_one one_pos
+      (by simpa [dist_zero_right] using hq) hq0
+    simp [cuspFunction, Periodic.cuspFunction_eq_of_nonzero 1 _ hq0,
+      comp_apply, ofComplex_apply_of_im_pos him, discriminant_eq_q_prod ⟨_, him⟩,
+      Periodic.qParam_right_inv one_ne_zero hq0, eta_q]
 
 /-- The first q-expansion coefficient of the modular discriminant is 1. -/
 lemma discriminant_qExpansion_coeff_one :
     (qExpansion 1 (Δ : ℍ → ℂ)).coeff 1 = 1 := by
-  rw [qExpansion_coeff]
-  simp only [Nat.factorial_one, Nat.cast_one, inv_one, one_mul, iteratedDeriv_succ,
-    iteratedDeriv_zero]
-  have hmem : (0 : ℂ) ∈ Metric.ball (0 : ℂ) (1 / 2 : ℝ) := Metric.mem_ball_self (by norm_num)
-  change deriv (cuspFunction 1 Δ) 0 = 1
-  rw [← derivWithin_of_isOpen Metric.isOpen_ball hmem]
-  rw [derivWithin_congr discriminant_cuspFunction_eqOn (discriminant_cuspFunction_eqOn hmem)]
-  have : derivWithin (fun q ↦ q * ∏' i, (1 - q ^ (i + 1)) ^ 24) (Metric.ball 0 (1 / 2)) 0 =
-      derivWithin id (Metric.ball 0 (1 / 2)) 0 * (∏' i, (1 - (0 : ℂ) ^ (i + 1)) ^ 24) +
-      id 0 * derivWithin (fun q ↦ ∏' i, (1 - q ^ (i + 1)) ^ 24) (Metric.ball 0 (1 / 2)) 0 :=
-    derivWithin_mul differentiableWithinAt_id' differentiableWithinAt_eta_prod_pow
-  rw [this, derivWithin_id _ _ (Metric.isOpen_ball.uniqueDiffWithinAt hmem)]
-  simp
+  have hmem : (0 : ℂ) ∈ Metric.ball (0 : ℂ) 1 := Metric.mem_ball_self one_pos
+  simp [qExpansion_coeff, iteratedDeriv_succ, iteratedDeriv_zero,
+    ← derivWithin_of_isOpen Metric.isOpen_ball hmem,
+    derivWithin_congr discriminant_cuspFunction_eqOn (discriminant_cuspFunction_eqOn hmem),
+    derivWithin_fun_mul (s := Metric.ball 0 1) differentiableWithinAt_id'
+      (differentiableOn_tprod_one_sub_pow_pow 24 _ hmem),
+    derivWithin_id' _ _ (Metric.isOpen_ball.uniqueDiffWithinAt hmem)]
 
 end
 
