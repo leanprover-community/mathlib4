@@ -28,7 +28,7 @@ So, for example, if the conclusion of `F` is `f ◁ η = θ` then the conclusion
 This is useful for automatically generating lemmas that can be applied to expressions of 1-morphisms
 in `Cat` which contain components of 2-morphisms.
 
-There are also term elaborators `to_app_of% t` and `to_app% t` for use within proofs.
+There is also a term elaborator `to_app_of% t` for use within proofs.
 -/
 
 public meta section
@@ -198,7 +198,7 @@ open Term in
 /--
 Given an equation `t` of the form `η = θ` between either natural transformations between functors or
 2-morphisms `f ⟶ g` with `f g : C ⟶ D` in the bicategory `Cat` (possibly after a `∀` binder),
-`to_app_of% t` and `to_app% t` produce the equation `∀ (X : C), η.app X = θ.app X` for an object
+`to_app_of% t` produces the equation `∀ (X : C), η.app X = θ.app X` for an object
 `X` in the relevant source category, and simplify it suitably using basic lemmas about
 `NatTrans.app`.
 -/
