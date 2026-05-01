@@ -247,42 +247,13 @@ theorem dirSupInacc_iff_inter_subset :
       ∀ ⦃a : α⦄, IsLUB d a → a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s := by
   simpa using dirSupInaccOn_iff_inter_subset isLowerSet_univ
 
-lemma IsUpperSet.dirSupClosedOn (hs : IsUpperSet s) : DirSupClosedOn D s :=
-  fun _d _ hds ⟨_b, hb⟩ _ _a ha ↦ hs (ha.1 hb) <| hds hb
-
 lemma IsUpperSet.dirSupClosed (hs : IsUpperSet s) : DirSupClosed s :=
-  .of_univ hs.dirSupClosedOn
-
-lemma IsLowerSet.dirSupInaccOn (hs : IsLowerSet s) : DirSupInaccOn D s :=
-  hs.compl.dirSupClosedOn.of_compl
+  fun _d hds ⟨_b, hb⟩ _ _a ha ↦ hs (ha.1 hb) <| hds hb
 
 lemma IsLowerSet.dirSupInacc (hs : IsLowerSet s) : DirSupInacc s :=
   hs.compl.dirSupClosed.of_compl
-
-theorem isLUB_congr_of_antisymmRel {a b : α} (h : AntisymmRel (· ≤ ·) a b) :
-    IsLUB s a ↔ IsLUB s b := by
-  simp [isLUB_iff_le_iff, h.le_congr_left]
 
 private theorem DirSupClosed.mem_imp_of_antisymmRel (hs : DirSupClosed s) {a b : α}
-    (h : AntisymmRel (· ≤ ·) a b) (ha : a ∈ s) : b ∈ s := by
-  apply hs (singleton_subset_iff.2 ha) ⟨a, rfl⟩ (directedOn_singleton Std.Refl.refl a)
-  rw [← isLUB_congr_of_antisymmRel h]
-  exact isLUB_singleton
-
-theorem DirSupClosed.mem_iff_of_antisymmRel (hs : DirSupClosed s) {a b : α}
-    (h : AntisymmRel (· ≤ ·) a b) : a ∈ s ↔ b ∈ s :=
-  ⟨hs.mem_imp_of_antisymmRel h, hs.mem_imp_of_antisymmRel h.symm⟩
-
-lemma IsUpperSet.dirSupClosedOn (hs : IsUpperSet s) : DirSupClosedOn D s :=
-  hs.dirSupClosed.dirSupClosedOn
-
-lemma IsLowerSet.dirSupInacc (hs : IsLowerSet s) : DirSupInacc s :=
-  hs.compl.dirSupClosed.of_compl
-
-lemma IsLowerSet.dirSupInaccOn (hs : IsLowerSet s) : DirSupInaccOn D s :=
-  hs.compl.dirSupClosedOn.of_compl
-
-theorem DirSupClosed.mem_imp_of_antisymmRel (hs : DirSupClosed s) {a b : α}
     (h : AntisymmRel (· ≤ ·) a b) (ha : a ∈ s) : b ∈ s := by
   apply hs (singleton_subset_iff.2 ha) ⟨a, rfl⟩ (directedOn_singleton a)
   rw [← isLUB_congr_of_antisymmRel h]
@@ -299,29 +270,22 @@ theorem DirSupInacc.mem_iff_of_antisymmRel (hs : DirSupInacc s) {a b : α}
 lemma dirSupClosed_Iic (a : α) : DirSupClosed (Iic a) :=
   fun _d h _ _ _a ha ↦ (isLUB_le_iff ha).2 h
 
-lemma dirSupClosedOn_Iic (a : α) : DirSupClosedOn D (Iic a) :=
-  (dirSupClosed_Iic a).dirSupClosedOn
-
 lemma dirSupInacc_Iic (a : α) : DirSupInacc (Iic a) :=
   (isLowerSet_Iic a).dirSupInacc
-
-lemma dirSupInaccOn_Iic (a : α) : DirSupInaccOn D (Iic a) :=
-  (isLowerSet_Iic a).dirSupInaccOn
 
 end Preorder
 
 namespace PartialOrder
 variable [PartialOrder α]
 
-theorem dirSupClosedOn_singleton (a : α) : DirSupClosedOn D {a} := by
-  intro d hD hdu hd₀ hd₁ b hb
-  rw [subset_singleton_iff_eq] at hdu
-  obtain rfl | rfl := hdu
-  · simp at hd₀
-  · exact hb.unique isLUB_singleton
+theorem dirSupClosed_singleton (a : α) : DirSupClosed {a} := by
+  intro d hda hdn _ b hb
+  rw [hdn.subset_singleton_iff] at hda
+  subst hda
+  exact mem_singleton_of_eq (hb.unique isLUB_singleton)
 
-theorem dirSupClosed_singleton (a : α) : DirSupClosed {a} :=
-  .of_univ (dirSupClosedOn_singleton a)
+theorem dirSupClosedOn_singleton (a : α) : DirSupClosedOn D {a} :=
+  (dirSupClosed_singleton a).dirSupClosedOn
 
 end PartialOrder
 
