@@ -529,37 +529,27 @@ theorem equivQuotMaximalIdeal_symm_apply_mk (x : R) (s : p.primeCompl) :
 /-- The isomorphism `R ⧸ p ^ n ≃ₐ[R] Rₚ ⧸ maximalIdeal Rₚ ^ n`, where `Rₚ` satisfies
 `IsLocalization.AtPrime Rₚ p`. -/
 noncomputable
-def equivQuotMaximalIdealPow (n : ℕ) : (R ⧸ p ^ n) ≃ₐ[R] Rₚ ⧸ IsLocalRing.maximalIdeal Rₚ ^ n where
-  __ : (R ⧸ p ^ n) ≃+* Rₚ ⧸ IsLocalRing.maximalIdeal Rₚ ^ n := by
-    refine Subring.topEquiv.symm.trans <| -- R ⧸ p ^ n ≃ (⊤ : Subring (R ⧸ p ^ n))
-      (RingEquiv.subringCongr ?_).trans <| -- ⊤ = (R ⧸ p ^ n ← Rₚ / ker).range
-      (IsLocalization.lift fun (u : p.primeCompl) ↦ -- (R ⧸ p ^ n ← Rₚ) => R ⧸ p ^ n ← Rₚ / ker
-        Ideal.Quotient.isUnit_mk_pow_of_notMem _
-        (mem_primeCompl_iff.mp u.prop)).quotientKerEquivRange.symm.trans <|
-      quotEquivOfEq ?_ -- ker = maximalIdeal ^ n
-    · symm
-      rw [RingHom.range_eq_top, IsLocalization.lift_surjective_iff]
-      intro u
-      obtain ⟨x, hx⟩ := Ideal.Quotient.mk_surjective u
-      exact ⟨⟨x, 1⟩, by simp [hx]⟩
-    · ext x
-      obtain ⟨a, b, rfl⟩ := IsLocalization.exists_mk'_eq p.primeCompl x
-      suffices a ∈ p ^ n ↔ algebraMap R Rₚ a ∈ IsLocalRing.maximalIdeal Rₚ ^ n by
-        simpa [Ideal.Quotient.eq_zero_iff_mem, IsLocalization.mk'_mem_iff]
-      rw [← map_eq_maximalIdeal p Rₚ, ← Ideal.map_pow,
-        algebraMap_mem_map_algebraMap_iff p.primeCompl Rₚ]
-      refine ⟨fun h ↦ ⟨1, by simp, by simp [h]⟩, fun ⟨m, hm, h⟩ ↦ ?_⟩
-      exact (IsMaximal.mul_mem_pow _ h).resolve_left (mem_primeCompl_iff.mp hm)
-  commutes' x := by
-    rw [IsScalarTower.algebraMap_apply R Rₚ (Rₚ ⧸ maximalIdeal Rₚ ^ n)]
-    simp only [Ideal.Quotient.algebraMap_eq, RingEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe,
-      EquivLike.coe_coe, RingEquiv.coe_trans, Function.comp_apply]
-    rw [← RingEquiv.eq_symm_apply, RingEquiv.symm_apply_eq]
-    simp only [RingHom.quotientKerEquivRange, Ideal.quotEquivOfEq_symm, Ideal.quotEquivOfEq_mk,
-      RingEquiv.coe_trans, Function.comp_apply, RingHom.quotientKerEquivOfSurjective_apply_mk]
-    rw [← RingEquiv.eq_symm_apply]
-    ext
-    simp
+def equivQuotMaximalIdealPow (n : ℕ) : (R ⧸ p ^ n) ≃ₐ[R] Rₚ ⧸ IsLocalRing.maximalIdeal Rₚ ^ n := by
+  refine Subalgebra.topEquiv.symm.trans <| -- R ⧸ p ^ n ≃ (⊤ : Subring (R ⧸ p ^ n))
+    (Subalgebra.equivOfEq ⊤ _ ?_).trans <| -- ⊤ = (R ⧸ p ^ n ← Rₚ / ker).range
+    (Ideal.quotientKerEquivRange ( -- Rₚ / ker ≃ R ⧸ p ^ n
+      -- Rₚ → R ⧸ p ^ n
+      IsLocalization.liftAlgHom (f := Ideal.Quotient.mkₐ R (p ^ n)) fun (u : p.primeCompl) ↦
+        Ideal.Quotient.isUnit_mk_pow_of_notMem _ <| mem_primeCompl_iff.mp u.prop)).symm.trans <|
+    quotientEquivAlgOfEq R ?_ -- ker = maximalIdeal ^ n
+  · symm
+    rw [AlgHom.range_eq_top, IsLocalization.coe_liftAlgHom, IsLocalization.lift_surjective_iff]
+    intro u
+    obtain ⟨x, hx⟩ := Ideal.Quotient.mk_surjective u
+    exact ⟨⟨x, 1⟩, by simp [hx]⟩
+  · ext x
+    obtain ⟨a, b, rfl⟩ := IsLocalization.exists_mk'_eq p.primeCompl x
+    suffices a ∈ p ^ n ↔ algebraMap R Rₚ a ∈ IsLocalRing.maximalIdeal Rₚ ^ n by
+      simpa [Ideal.Quotient.eq_zero_iff_mem, IsLocalization.mk'_mem_iff]
+    rw [← map_eq_maximalIdeal p Rₚ, ← Ideal.map_pow,
+      algebraMap_mem_map_algebraMap_iff p.primeCompl Rₚ]
+    refine ⟨fun h ↦ ⟨1, by simp, by simp [h]⟩, fun ⟨m, hm, h⟩ ↦ ?_⟩
+    exact (IsMaximal.mul_mem_pow _ h).resolve_left (mem_primeCompl_iff.mp hm)
 
 @[simp]
 theorem equivQuotMaximalIdealPow_apply_mk (n : ℕ) (x : R) :
