@@ -47,7 +47,7 @@ theorem IsClub.of_isEmpty [IsEmpty α] (s : Set α) : IsClub s :=
 theorem IsClub.univ : IsClub (.univ (α := α)) :=
   ⟨.univ, .univ⟩
 
--- Depends on #37304.
+-- Depends on #38807.
 proof_wanted IsClub.union (hs : IsClub s) (ht : IsClub t) : IsClub (s ∪ t)
 
 theorem IsClub.isLUB_mem (hs : IsClub s) (ht : t ⊆ s) (ht₀ : t.Nonempty) (hx : IsLUB t x) : x ∈ s :=
