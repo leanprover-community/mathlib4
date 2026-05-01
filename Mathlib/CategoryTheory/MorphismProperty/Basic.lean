@@ -82,26 +82,20 @@ lemma sSup_iff (S : Set (MorphismProperty C)) {X Y : C} (f : X ⟶ Y) :
 
 @[simp]
 lemma iSup_iff {ι : Sort*} (W : ι → MorphismProperty C) {X Y : C} (f : X ⟶ Y) :
-    iSup W f ↔ ∃ i, W i f := by
-  apply (sSup_iff (Set.range W) f).trans
-  constructor
-  · rintro ⟨⟨_, i, rfl⟩, hf⟩
-    exact ⟨i, hf⟩
-  · rintro ⟨i, hf⟩
-    exact ⟨⟨_, i, rfl⟩, hf⟩
+    iSup W f ↔ ∃ i, W i f :=
+  (sSup_iff (Set.range W) f).trans (by simp)
 
 @[simp]
-lemma sInf_iff {W : Set (MorphismProperty C)} {X Y : C} (f : X ⟶ Y) :
+lemma sInf_iff (W : Set (MorphismProperty C)) {X Y : C} (f : X ⟶ Y) :
     sInf W f ↔ ∀ W' ∈ W, W' f := by
   suffices h : ∀ {W : Set (∀ {X Y : C} (f : X ⟶ Y), Prop)} {X Y : C} {f : X ⟶ Y},
       sInf W f ↔ ∀ W' ∈ W, W' f from h
   simp
 
 @[simp]
-lemma iInf_iff {ι : Type*} {W : ι → MorphismProperty C} {X Y : C} (f : X ⟶ Y) :
-    iInf W f ↔ ∀ i, W i f := by
-  rw [← iInf_range]
-  exact (sInf_iff f).trans (by simp)
+lemma iInf_iff {ι : Type*} (W : ι → MorphismProperty C) {X Y : C} (f : X ⟶ Y) :
+    iInf W f ↔ ∀ i, W i f :=
+  (sInf_iff (Set.range W) f).trans (by simp)
 
 /-- The morphism property in `Cᵒᵖ` associated to a morphism property in `C` -/
 @[simp]
