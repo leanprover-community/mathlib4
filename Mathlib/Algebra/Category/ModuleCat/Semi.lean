@@ -259,7 +259,7 @@ instance : Zero (M ⟶ N) where
 instance : SMul ℕ (M ⟶ N) where
   smul n f := ofHom (n • f.hom)
 
-@[simp] lemma hom_nsmul (n : ℕ) (f : M ⟶ N) : (n • f).hom = n • f.hom := by
+lemma hom_nsmul (n : ℕ) (f : M ⟶ N) : (n • f).hom = n • f.hom := by
   change (ofHom (n • f.hom)).hom = n • f.hom
   simp
 

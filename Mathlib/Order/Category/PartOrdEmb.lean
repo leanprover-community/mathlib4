@@ -51,7 +51,6 @@ mk_concrete_category PartOrdEmb (· ↪o ·) (fun _ ↦ RelEmbedding.refl _) (fu
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
 -/
 
-@[simp]
 lemma coe_id {X : PartOrdEmb} : (𝟙 X : X → X) = id := rfl
 
 @[simp]
