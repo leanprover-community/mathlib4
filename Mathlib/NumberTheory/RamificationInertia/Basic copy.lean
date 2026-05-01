@@ -35,20 +35,38 @@ public import Mathlib.RingTheory.Flat.TorsionFree
 
 section
 
+-- PRed
 open TensorProduct in
-theorem foo17 (R S K : Type*) [CommRing R] [AddCommGroup S] [Module R S]
-    [CommRing K] [NoZeroDivisors K] [Algebra R K] [FaithfulSMul R K] :
-    Module.finrank R S = Module.finrank K (K ⊗[R] S) := by
-  symm
-  let h : S →ₗ[R] K ⊗[R] S :=
-  { toFun := tmul _ 1
-    map_add' := tmul_add 1
-    map_smul' x := tmul_smul x 1 }
-  apply IsBaseChange.finrank_eq (g := h)
-  have := IsBaseChange.of_equiv (f := h) (LinearEquiv.refl (R := K) (M := K ⊗[R] S))
+def TensorProduct.includeLeft (R S K : Type*) [CommSemiring R] [AddCommMonoid S] [Module R S]
+    [AddCommMonoid K] [One K] [Module R K] : S →ₗ[R] S ⊗[R] K where
+  toFun x := tmul _ x 1
+  map_add' x y := add_tmul x y 1
+  map_smul' x y := (smul_tmul' x y 1).symm
+
+-- PRed
+open TensorProduct in
+def TensorProduct.includeRight (R S K : Type*) [CommSemiring R] [AddCommMonoid S] [Module R S]
+    [AddCommMonoid K] [One K] [Module R K] : S →ₗ[R] K ⊗[R] S where
+  toFun := tmul _ 1
+  map_add' := tmul_add 1
+  map_smul' x := tmul_smul x 1
+
+-- PRed
+open TensorProduct in
+theorem foo (R S K : Type*) [CommSemiring R] [AddCommMonoid S] [Module R S]
+    [CommSemiring K] [Algebra R K] :
+    IsBaseChange K (TensorProduct.includeRight R S K) := by
+  have := IsBaseChange.of_equiv (f := TensorProduct.includeRight R S K)
+    (LinearEquiv.refl (R := K) (M := K ⊗[R] S))
   apply this
   intro x
   rfl
+
+open TensorProduct in
+theorem foo17 (R S K : Type*) [CommRing R] [AddCommGroup S] [Module R S]
+    [CommRing K] [NoZeroDivisors K] [Algebra R K] [FaithfulSMul R K] :
+    Module.finrank R S = Module.finrank K (K ⊗[R] S) :=
+  (IsBaseChange.finrank_eq (foo R S K)).symm
 
 open TensorProduct in
 /-- _ -/
