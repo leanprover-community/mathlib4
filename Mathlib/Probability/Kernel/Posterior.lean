@@ -152,7 +152,7 @@ lemma deterministic_comp_posterior [MeasurableSpace.CountablyGenerated 𝓧]
   _ = (Kernel.deterministic f hf ∥ₖ Kernel.deterministic f hf) ∘ₘ Kernel.copy Ω ∘ₘ μ := by
     rw [Measure.comp_assoc, Kernel.parallelComp_comp_parallelComp, Kernel.id_comp, Kernel.comp_id]
   _ = (Kernel.copy 𝓧 ∘ₖ Kernel.deterministic f hf) ∘ₘ μ := by -- `deterministic` is used here
-    rw [Measure.comp_assoc, Kernel.deterministic_comp_copy]
+    rw [Measure.comp_assoc, Kernel.parallelComp_self_comp_copy]
   _ = μ.map f ⊗ₘ Kernel.id := by
     rw [Measure.compProd_id_eq_copy_comp, ← Measure.comp_assoc,
       Measure.deterministic_comp_eq_map]
