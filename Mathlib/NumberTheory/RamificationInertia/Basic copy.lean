@@ -35,37 +35,19 @@ public import Mathlib.RingTheory.Flat.TorsionFree
 
 section
 
-open TensorProduct in
-/-- _ -/
-noncomputable def foo18 (R S K : Type*) [CommSemiring R] [AddCommMonoid S] [Module R S]
-    [Semiring K] [Algebra R K] (p : Ideal R) [p.IsPrime]
-    [Algebra (Localization.AtPrime p) K] [IsScalarTower R (Localization.AtPrime p) K] :
-    (K ⊗[Localization.AtPrime p] LocalizedModule.AtPrime p S) ≃ₗ[K] K ⊗[R] S :=
-  letI Rp := Localization.AtPrime p
-  letI Sp := LocalizedModule.AtPrime p S
-  ((LinearEquiv.baseChange Rp K Sp (Rp ⊗[R] S)
-    (LocalizedModule.equivTensorProduct p.primeCompl S)).trans
-      (AlgebraTensorModule.cancelBaseChange R Rp K K S))
-
-open TensorProduct in
-theorem finrank_fiber_eq_finrank
-    {R S : Type*} [CommRing R] [IsDomain R] [AddCommGroup S] [Module R S]
-    [Module.Finite R S] [Module.Flat R S] (p : Ideal R) [p.IsPrime] :
-    Module.finrank p.ResidueField (p.Fiber S) = Module.finrank R S := by
-  rw [Ideal.finrank_fiber_eq_rankAtStalk]
+-- PRed
+open Module TensorProduct in
+lemma _root_.Ideal.finrank_fiber_eq_finrank {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+    [Module.Flat R M] [Module.Finite R M] [IsDomain R] (p : Ideal R) [p.IsPrime] :
+    finrank p.ResidueField (p.Fiber M) = finrank R M := by
+  let K := FractionRing R
   let Rp := Localization.AtPrime p
-  let Sp := LocalizedModule.AtPrime p S
-  have : Module.Free Rp Sp := Module.free_of_flat_of_isLocalRing
-  transitivity Module.finrank Rp Sp
-  · simp only [Module.rankAtStalk_eq]
-    transitivity Module.finrank p.ResidueField (p.ResidueField ⊗[Rp] Sp)
-    · exact (foo18 R S p.ResidueField p).finrank_eq.symm
-    · exact Module.finrank_baseChange
-  · let K := FractionRing R
-    have : FaithfulSMul Rp K := IsFractionRing.instFaithfulSMul Rp K
-    rw [← (TensorProduct.isBaseChange R S K).finrank_eq,
-      ← (TensorProduct.isBaseChange Rp Sp K).finrank_eq]
-    exact (foo18 R S K p).finrank_eq
+  let Mp := LocalizedModule.AtPrime p M
+  rw [p.finrank_fiber_eq_rankAtStalk, rankAtStalk, ← (isBaseChange R M K).finrank_eq,
+    ← (AlgebraTensorModule.cancelBaseChange R Rp K K M).finrank_eq,
+    ← (((LocalizedModule.equivTensorProduct p.primeCompl M).baseChange Rp K Mp _)).finrank_eq]
+  symm
+  exact (isBaseChange Rp Mp K).finrank_eq
 
 open Ideal
 
