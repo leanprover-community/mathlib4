@@ -206,7 +206,7 @@ theorem integral_biUnion_eq_sum_powerset {ι : Type*} {t : Finset ι} {s : ι �
         (fun a ↦ (-1 : ℝ) ^ (#x + 1) • f a) a ∂μ := by
     apply Finset.sum_congr rfl (fun x hx ↦ ?_)
     rw [← integral_indicator (A x hx)]
-  rw [this, ← integral_finset_sum]; swap
+  rw [this, ← integral_finsetSum]; swap
   · intro u hu
     rw [integrable_indicator_iff (A u hu)]
     apply Integrable.smul
@@ -336,7 +336,7 @@ theorem setIntegral_eq_zero_of_ae_eq_zero (ht_eq : ∀ᵐ x ∂μ, x ∈ t → f
     ∫ x in t, f x ∂μ = 0 := by
   by_cases hf : AEStronglyMeasurable f (μ.restrict t); swap
   · rw [integral_undef]
-    contrapose! hf
+    contrapose hf
     exact hf.1
   have : ∫ x in t, hf.mk f x ∂μ = 0 := by
     refine integral_eq_zero_of_ae ?_
@@ -589,7 +589,7 @@ theorem norm_setIntegral_le_of_norm_le_const_ae' {C : ℝ} (hs : μ s < ∞)
   · rw [integral_non_aestronglyMeasurable hfm]
     have : ∃ᵐ (x : X) ∂μ, x ∈ s := by
       apply frequently_ae_mem_iff.mpr
-      contrapose! hfm
+      contrapose hfm
       simp [Measure.restrict_eq_zero.mpr hfm]
     rcases (this.and_eventually hC).exists with ⟨x, hx, h'x⟩
     have : 0 ≤ C := (norm_nonneg _).trans (h'x hx)
@@ -874,7 +874,6 @@ section IntegrableUnion
 
 variable {ι : Type*} [Countable ι] {μ : Measure X} [NormedAddCommGroup E]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem integrableOn_iUnion_of_summable_integral_norm {f : X → E} {s : ι → Set X}
     (hi : ∀ i : ι, IntegrableOn f (s i) μ)
     (h : Summable fun i : ι => ∫ x : X in s i, ‖f x‖ ∂μ) : IntegrableOn f (iUnion s) μ := by

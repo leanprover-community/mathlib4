@@ -47,7 +47,7 @@ variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
   {𝒢 : Subgroup (GL (Fin 2) K)} [𝒢.HasDetPlusMinusOne]
 
 lemma isParabolic_iff_of_upperTriangular {g} (hg : g ∈ 𝒢) (hg10 : g 1 0 = 0) :
-    g.IsParabolic ↔ (∃ x ≠ 0, g = upperRightHom x) ∨ (∃ x ≠ 0, g = -upperRightHom x) :=
+    g.IsParabolic ↔ (∃ x ≠ 0, g = upperRightHom x) ∨ (∃ x ≠ (0 : K), g = -upperRightHom x) :=
   isParabolic_iff_of_upperTriangular_of_det (HasDetPlusMinusOne.det_eq hg) hg10
 
 end Subgroup.HasDetPlusMinusOne
@@ -58,13 +58,13 @@ section IsCusp
 def IsCusp (c : OnePoint ℝ) (𝒢 : Subgroup (GL (Fin 2) ℝ)) : Prop :=
   ∃ g ∈ 𝒢, g.IsParabolic ∧ g • c = c
 
-open Pointwise in
+open scoped Pointwise in
 lemma IsCusp.smul {c : OnePoint ℝ} {𝒢 : Subgroup (GL (Fin 2) ℝ)} (hc : IsCusp c 𝒢)
     (g : GL (Fin 2) ℝ) : IsCusp (g • c) (ConjAct.toConjAct g • 𝒢) := by
   obtain ⟨p, hp𝒢, hpp, hpc⟩ := hc
   refine ⟨_, 𝒢.smul_mem_pointwise_smul _ _ hp𝒢, ?_, ?_⟩
   · simpa [ConjAct.toConjAct_smul] using hpp
-  · simp [ConjAct.toConjAct_smul, SemigroupAction.mul_smul, hpc]
+  · simp [ConjAct.toConjAct_smul, mul_smul, hpc]
 
 lemma IsCusp.smul_of_mem {c : OnePoint ℝ} {𝒢 : Subgroup (GL (Fin 2) ℝ)} (hc : IsCusp c 𝒢)
     {g : GL (Fin 2) ℝ} (hg : g ∈ 𝒢) : IsCusp (g • c) 𝒢 := by
@@ -101,7 +101,7 @@ lemma IsCusp.of_isFiniteRelIndex {𝒢 ℋ : Subgroup (GL (Fin 2) ℝ)} {c : One
   rw [← isCusp_iff_of_relIndex_ne_zero inf_le_right hGH] at hc
   exact hc.mono inf_le_left
 
-open Pointwise in
+open scoped Pointwise in
 /-- Variant version of `IsCusp.of_isFiniteRelIndex`. -/
 lemma IsCusp.of_isFiniteRelIndex_conj {𝒢 ℋ : Subgroup (GL (Fin 2) ℝ)} {c : OnePoint ℝ}
     [𝒢.IsFiniteRelIndex ℋ] (hc : IsCusp c ℋ) {h} (hh : h ∈ ℋ) :
@@ -126,7 +126,7 @@ lemma isCusp_SL2Z_iff {c : OnePoint ℝ} : IsCusp c 𝒮ℒ ↔ c ∈ Set.range 
       simp [discr_fin_two, trace_fin_two, det_fin_two, ModularGroup.T]
       norm_num
     · rw [← Rat.coe_castHom, ← (Rat.castHom ℝ).algebraMap_toAlgebra]
-      simp [OnePoint.map_smul, SemigroupAction.mul_smul, smul_infty_eq_self_iff, ModularGroup.T]
+      simp [OnePoint.map_smul, mul_smul, smul_infty_eq_self_iff, ModularGroup.T]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The cusps of `SL(2, ℤ)` are precisely the `SL(2, ℤ)` orbit of `∞`. -/
@@ -181,7 +181,7 @@ noncomputable def cosetToCuspOrbit (𝒢 : Subgroup (GL (Fin 2) ℝ)) [𝒢.IsAr
     (fun a b hab ↦ by
       rw [← Quotient.eq_iff_equiv, Quotient.eq, QuotientGroup.leftRel_apply] at hab
       refine Quotient.eq.mpr ⟨⟨_, hab⟩, ?_⟩
-      simp [SemigroupAction.mul_smul])
+      simp [mul_smul])
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]

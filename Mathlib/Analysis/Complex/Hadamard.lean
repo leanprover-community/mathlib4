@@ -18,7 +18,7 @@ In this file we present a proof of Hadamard's three-lines Theorem.
 - `norm_le_interp_of_mem_verticalClosedStrip` :
   Hadamard three-line theorem: If `f` is a bounded function, continuous on
   `re ⁻¹' [l, u]` and differentiable on `re ⁻¹' (l, u)`, then for
-  `M(x) := sup ((norm ∘ f) '' (re ⁻¹' {x}))`, that is `M(x)` is the supremum of the absolute value
+  `M(x) := sup ((norm ∘ f) '' re ⁻¹' {x})`, that is `M(x)` is the supremum of the absolute value
   of `f` along the vertical lines `re z = x`, we have that `∀ z ∈ re ⁻¹' [l, u]` the inequality
   `‖f(z)‖ ≤ M(0) ^ (1 - ((z.re - l) / (u - l))) * M(1) ^ ((z.re - l) / (u - l))` holds.
   This can be seen to be equivalent to the statement
@@ -76,7 +76,7 @@ def verticalClosedStrip (a : ℝ) (b : ℝ) : Set ℂ := re ⁻¹' Icc a b
 This is also known as the function `M` -/
 noncomputable def sSupNormIm {E : Type*} [NormedAddCommGroup E]
     (f : ℂ → E) (x : ℝ) : ℝ :=
-  sSup ((norm ∘ f) '' (re ⁻¹' {x}))
+  sSup ((norm ∘ f) '' re ⁻¹' {x})
 
 section invInterpStrip
 
@@ -227,8 +227,7 @@ theorem norm_mul_invInterpStrip_le_one_of_mem_verticalClosedStrip (f : ℂ → E
   rw [eventually_inf_principal]
   apply Eventually.of_forall
   intro x hx
-  norm_num
-  exact (hBF x ((preimage_mono Ioo_subset_Icc_self) hx)).trans
+  simpa using (hBF x ((preimage_mono Ioo_subset_Icc_self) hx)).trans
     ((le_of_lt (lt_add_one BF)).trans (Real.add_one_le_exp BF))
 
 end invInterpStrip
@@ -312,31 +311,16 @@ def scale (f : ℂ → E) (l u : ℝ) : ℂ → E := fun z ↦ f (l + z • (u -
 lemma scale_id_mem_verticalClosedStrip_of_mem_verticalClosedStrip {l u : ℝ} (hul : l < u) {z : ℂ}
     (hz : z ∈ verticalClosedStrip 0 1) : l + z * (u - l) ∈ verticalClosedStrip l u := by
   simp only [verticalClosedStrip, mem_preimage, add_re, ofReal_re, mul_re, sub_re, sub_im,
-    ofReal_im, sub_self, mul_zero, sub_zero, mem_Icc, le_add_iff_nonneg_right]
-  simp only [verticalClosedStrip, mem_preimage, mem_Icc] at hz
-  obtain ⟨hz₁, hz₂⟩ := hz
-  simp only [sub_pos, hul, mul_nonneg_iff_of_pos_right, hz₁, true_and]
-  rw [add_comm, ← sub_le_sub_iff_right l, add_sub_assoc, sub_self, add_zero]
-  nth_rewrite 2 [← one_mul (u - l)]
-  have := sub_nonneg.2 hul.le
-  gcongr
+    ofReal_im, sub_self, mul_zero, sub_zero, mem_Icc] at hz ⊢
+  constructor <;> nlinarith [hz.1, hz.2, hul]
 
 /-- The norm of the function `scale f l u` is bounded above on the closed strip `re⁻¹' [0, 1]`. -/
 lemma scale_bddAbove {f : ℂ → E} {l u : ℝ} (hul : l < u)
     (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip l u)) :
     BddAbove ((norm ∘ scale f l u) '' verticalClosedStrip 0 1) := by
-  obtain ⟨R, hR⟩ := bddAbove_def.mp hB
-  rw [bddAbove_def]
-  use R
-  intro r hr
-  obtain ⟨w, hw₁, hw₂, _⟩ := hr
-  simp only [comp_apply, scale, smul_eq_mul]
-  have : ‖f (↑l + w * (↑u - ↑l))‖ ∈ norm ∘ f '' verticalClosedStrip l u := by
-    simp only [comp_apply, mem_image]
-    use ↑l + w * (↑u - ↑l)
-    simp only [and_true]
-    exact scale_id_mem_verticalClosedStrip_of_mem_verticalClosedStrip hul hw₁
-  exact hR ‖f (↑l + w * (↑u - ↑l))‖ this
+  refine hB.mono ?_
+  rintro _ ⟨z, hz, rfl⟩
+  exact ⟨l + z * (u - l), scale_id_mem_verticalClosedStrip_of_mem_verticalClosedStrip hul hz, rfl⟩
 
 /-- A bound to the norm of `f` on the line `z.re = l` induces a bound to the norm of
   `scale f l u z` on the line `z.re = 0`. -/
@@ -359,7 +343,7 @@ lemma scale_bound_right {f : ℂ → E} {l u b : ℝ} (hb : ∀ z ∈ re ⁻¹' 
 lemma sSupNormIm_scale_left (f : ℂ → E) {l u : ℝ} (hul : l < u) :
     sSupNormIm (scale f l u) 0 = sSupNormIm f l := by
   simp_rw [sSupNormIm, image_comp]
-  have : scale f l u '' (re ⁻¹' {0}) = f '' (re ⁻¹' {l}) := by
+  have : scale f l u '' re ⁻¹' {0} = f '' re ⁻¹' {l} := by
     ext e
     simp only [scale, smul_eq_mul, mem_image, mem_preimage, mem_singleton_iff]
     constructor
@@ -383,7 +367,7 @@ lemma sSupNormIm_scale_left (f : ℂ → E) {l u : ℝ} (hul : l < u) :
 lemma sSupNormIm_scale_right (f : ℂ → E) {l u : ℝ} (hul : l < u) :
     sSupNormIm (scale f l u) 1 = sSupNormIm f u := by
   simp_rw [sSupNormIm, image_comp]
-  have : scale f l u '' (re ⁻¹' {1}) = f '' (re ⁻¹' {u}) := by
+  have : scale f l u '' re ⁻¹' {1} = f '' re ⁻¹' {u} := by
     ext e
     simp only [scale, smul_eq_mul, mem_image, mem_preimage, mem_singleton_iff]
     constructor
@@ -474,7 +458,7 @@ lemma norm_le_interpStrip_of_mem_verticalStrip_zero (z : ℂ)
 /--
 **Hadamard three-line theorem** on `re ⁻¹' [0, 1]`: If `f` is a bounded function, continuous on the
 closed strip `re ⁻¹' [0, 1]` and differentiable on open strip `re ⁻¹' (0, 1)`, then for
-`M(x) := sup ((norm ∘ f) '' (re ⁻¹' {x}))` we have that for all `z` in the closed strip
+`M(x) := sup ((norm ∘ f) '' re ⁻¹' {x})` we have that for all `z` in the closed strip
 `re ⁻¹' [0, 1]` the inequality `‖f(z)‖ ≤ M(0) ^ (1 - z.re) * M(1) ^ z.re` holds. -/
 lemma norm_le_interpStrip_of_mem_verticalClosedStrip₀₁ (f : ℂ → E) {z : ℂ}
     (hz : z ∈ verticalClosedStrip 0 1) (hd : DiffContOnCl ℂ f (verticalStrip 0 1))
@@ -515,13 +499,15 @@ lemma norm_le_interp_of_mem_verticalClosedStrip₀₁' (f : ℂ → E) {z : ℂ}
     specialize hb 1
     simp only [mem_preimage, one_re, mem_singleton_iff, forall_true_left] at hb
     exact (norm_nonneg _).trans hb
-  · apply Real.rpow_le_rpow (sSupNormIm_nonneg f _) _ (sub_nonneg.mpr hz.2)
-    · rw [sSupNormIm]
-      apply csSup_le _
-      · simpa [comp_apply, mem_image, forall_exists_index,
-          and_imp, forall_apply_eq_imp_iff₂] using ha
-      · use ‖(f 0)‖, 0
-        simp
+  · gcongr
+    · exact sSupNormIm_nonneg f _
+    · exact sub_nonneg.mpr hz.2
+    rw [sSupNormIm]
+    apply csSup_le _
+    · simpa [comp_apply, mem_image, forall_exists_index,
+        and_imp, forall_apply_eq_imp_iff₂] using ha
+    · use ‖(f 0)‖, 0
+      simp
   · apply Real.rpow_le_rpow (sSupNormIm_nonneg f _) _ hz.1
     · rw [sSupNormIm]
       apply csSup_le _
@@ -598,7 +584,7 @@ private lemma bound_exp_eq {l u : ℝ} (hul : l < u) (z : ℂ) :
 /--
 **Hadamard three-line theorem**: If `f` is a bounded function, continuous on the
 closed strip `re ⁻¹' [l, u]` and differentiable on open strip `re ⁻¹' (l, u)`, then for
-`M(x) := sup ((norm ∘ f) '' (re ⁻¹' {x}))` we have that for all `z` in the closed strip
+`M(x) := sup ((norm ∘ f) '' re ⁻¹' {x})` we have that for all `z` in the closed strip
 `re ⁻¹' [a,b]` the inequality
 `‖f(z)‖ ≤ M(0) ^ (1 - ((z.re - l) / (u - l))) * M(1) ^ ((z.re - l) / (u - l))`
 holds. -/

@@ -64,8 +64,7 @@ theorem coe_natLERec (m n : ℕ) (h : m ≤ n) :
   induction k with
   | zero => simp [natLERec, Nat.leRecOn_self]
   | succ k ih =>
-    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-    erw [Nat.leRecOn_succ le_self_add, natLERec, Nat.leRecOn_succ le_self_add, ← natLERec,
+    rw [Nat.leRecOn_succ le_self_add, natLERec, Nat.leRecOn_succ le_self_add, ← natLERec,
       Embedding.comp_apply, ih]
 
 instance natLERec.directedSystem : DirectedSystem G' fun i j h => natLERec f' i j h :=
@@ -227,7 +226,7 @@ noncomputable instance prestructure : L.Prestructure (DirectLimit.setoid G f) wh
 
 /-- The `L.Structure` on a direct limit of `L.Structure`s. -/
 noncomputable instance instStructureDirectLimit : L.Structure (DirectLimit G f) :=
-  Language.quotientStructure
+  inferInstanceAs <| L.Structure (Quotient (DirectLimit.setoid G f))
 
 @[simp]
 theorem funMap_quotient_mk'_sigma_mk' {n : ℕ} {F : L.Functions n} {i : ι} {x : Fin n → G i} :
