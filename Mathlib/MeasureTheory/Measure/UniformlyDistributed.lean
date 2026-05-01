@@ -24,8 +24,6 @@ application, we prove that the restriction of the `n - 1`-dimensional Hausdorff 
 * `UniformlyDistributed.eq_smul`: Uniformly distributed outer regular measures in a
   second countable pseudometric space are unique up to a finite constant. We follow the proof
   in chapter 3 of [*Geometry of sets and measures in {E}uclidean spaces*][mattila1995].
-* `hausdorff_eq_measure_toSphere` : The restriction of the `n - 1`-dimensional Hausdorff measure
-  onto an `n`-dimensional sphere coincides with the spherical measure.
 
 -/
 
