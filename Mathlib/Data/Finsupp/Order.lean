@@ -44,8 +44,7 @@ variable [Zero α]
 section OrderedAddCommMonoid
 variable [AddCommMonoid β] [Preorder β] [IsOrderedAddMonoid β] {f : ι →₀ α} {h₁ h₂ : ι → α → β}
 
-set_option linter.gcongr.grw false in
-@[gcongr]
+@[gcongr only]
 lemma sum_le_sum (h : ∀ i ∈ f.support, h₁ i (f i) ≤ h₂ i (f i)) : f.sum h₁ ≤ f.sum h₂ :=
   Finset.sum_le_sum h
 
