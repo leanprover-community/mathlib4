@@ -98,7 +98,6 @@ def fromKleisli : Kleisli T ⥤ C where
   map_comp {X} {Y} {Z} f g := by
     simp [← dsimp% T.μ.naturality_assoc g.of, dsimp% T.assoc Z.of]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Kleisli adjunction which gives rise to the monad `(T, η_ T, μ_ T)`.
 cf Lemma 5.2.11 of [Riehl][riehl2017]. -/
 def adj : toKleisli T ⊣ fromKleisli T :=
@@ -106,7 +105,8 @@ def adj : toKleisli T ⊣ fromKleisli T :=
     { homEquiv X Y := { toFun f := f.of, invFun f := .mk f }
       homEquiv_naturality_left_symm := fun {X} {Y} {Z} f g => by
         ext
-        simp [← T.η.naturality_assoc g] }
+        simp [← T.unit_naturality_assoc, dsimp% T.left_unit Z.of]
+        rfl }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The composition of the adjunction gives the original functor. -/
