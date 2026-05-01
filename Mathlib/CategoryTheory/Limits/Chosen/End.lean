@@ -22,29 +22,31 @@ open Opposite
 
 namespace CategoryTheory.Limits
 
-/-- The data of chosen coends in `C`. -/
-@[nolint checkUnivs, univ_out_params, pp_with_univ]
-class ChosenCoends (C : Type*) [Category* C] where
+/-- The data of chosen coends of shape `J` in `C`. -/
+class ChosenCoendsOfShape (J : Type*) [Category* J] (C : Type*) [Category* C] where
   /-- The chosen cowedge for each functor `Jᵒᵖ ⥤ J ⥤ C`. -/
-  cowedge {J : Type u} [Category.{v} J] (F : Jᵒᵖ ⥤ J ⥤ C) : Cowedge F
+  cowedge (F : Jᵒᵖ ⥤ J ⥤ C) : Cowedge F
   /-- The chosen cowedge is colimiting. -/
-  isCoend {J : Type u} [Category.{v} J] (F : Jᵒᵖ ⥤ J ⥤ C) : IsColimit (cowedge F)
+  isCoend (F : Jᵒᵖ ⥤ J ⥤ C) : IsColimit (cowedge F)
 
-variable {C : Type*} [Category* C] [ChosenCoends.{v, u} C]
+/-- The data of chosen coends in `C`. -/
+@[nolint checkUnivs, pp_with_univ]
+abbrev ChosenCoends (C : Type*) [Category* C] :=
+  ∀ {J : Type u} [Category.{v} J], ChosenCoendsOfShape J C
 
-variable {J : Type u} [Category.{v} J] (F : Jᵒᵖ ⥤ J ⥤ C)
+variable {J C : Type*} [Category* C] [Category* J] (F : Jᵒᵖ ⥤ J ⥤ C) [ChosenCoendsOfShape J C]
 
 /-- The chosen coend of a functor `Jᵒᵖ ⥤ J ⥤ C`. -/
-def chosenCoend : C := (ChosenCoends.cowedge F).pt
+def chosenCoend : C := (ChosenCoendsOfShape.cowedge F).pt
 
 /-- Given `F : Jᵒᵖ ⥤ J ⥤ C`, this is the inclusion `(F.obj (op j)).obj j ⟶ chosenCoend F`
 for any `j : J`. -/
 def chosenCoend.ι (j : J) : (F.obj (op j)).obj j ⟶ chosenCoend F :=
-  (ChosenCoends.cowedge F).π j
+  (ChosenCoendsOfShape.cowedge F).π j
 
 lemma chosenCoend.condition {i j : J} (f : i ⟶ j) :
     (F.map f.op).app _ ≫ chosenCoend.ι F i = (F.obj _).map f ≫ chosenCoend.ι F j :=
-  (ChosenCoends.cowedge F).condition f
+  (ChosenCoendsOfShape.cowedge F).condition f
 
 variable {F}
 
@@ -52,7 +54,7 @@ variable {F}
 @[ext]
 lemma chosenCoend.hom_ext {X : C} {f g : chosenCoend F ⟶ X}
     (h : ∀ j, chosenCoend.ι F j ≫ f = chosenCoend.ι F j ≫ g) : f = g := by
-  apply (ChosenCoends.isCoend F).hom_ext
+  apply (ChosenCoendsOfShape.isCoend F).hom_ext
   rintro (a | a)
   · simpa using _ ≫= h _
   · exact h _
@@ -62,7 +64,7 @@ variable {X : C} (f : ∀ j, (F.obj (op j)).obj j ⟶ X)
 
 /-- Constructor for morphisms out of the chosen coend of a functor. -/
 def chosenCoend.desc : chosenCoend F ⟶ X :=
-  Cowedge.IsColimit.desc (ChosenCoends.isCoend F) f hf
+  Cowedge.IsColimit.desc (ChosenCoendsOfShape.isCoend F) f hf
 
 @[reassoc (attr := simp)]
 lemma chosenCoend.ι_desc (j : J) : chosenCoend.ι F j ≫ chosenCoend.desc f hf = f j := by
@@ -89,7 +91,7 @@ lemma chosenCoend.map_comp {G H : Jᵒᵖ ⥤ J ⥤ C} (f : F ⟶ G) (g : G ⟶ 
 /-- The chosen coend construction as a functor out of the bifunctor category. -/
 @[simps]
 def chosenCoendFunctor : (Jᵒᵖ ⥤ J ⥤ C) ⥤ C where
-  obj := chosenCoend
-  map := chosenCoend.map
+  obj F := chosenCoend F
+  map f := chosenCoend.map f
 
 end CategoryTheory.Limits
