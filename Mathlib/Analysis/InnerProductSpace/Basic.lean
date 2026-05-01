@@ -892,7 +892,7 @@ abbrev InnerProductSpace.induced [SeminormedAddCommGroup E] [InnerProductSpace �
   { inner x y := inner 𝕜 (f x) (f y)
     add_left x y z := by simpa only [map_add] using inner_add_left (f x) (f y) (f z)
     smul_left x y r := by simpa only [map_smul] using inner_smul_left (f x) (f y) r
-    norm_sq_eq_re_inner x := norm_sq_eq_re_inner (𝕜 := 𝕜) (f x)
+    norm_sq_eq_re_inner x := norm_sq_eq_re_inner (f x)
     conj_inner_symm x y := inner_conj_symm (f x) (f y)
   }
 
