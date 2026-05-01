@@ -8,8 +8,6 @@ module
 public import Mathlib.Analysis.Normed.Module.Connected
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
-public section
-
 /-!
 # Connectedness of subsets of finite-dimensional vector spaces
 
@@ -21,6 +19,8 @@ public section
   statement for path components (`ZerothHomotopy _ ≃ Bool`).
 
 -/
+
+public section
 
 variable {F : Type*} [AddCommGroup F] [Module ℝ F] [TopologicalSpace F] [IsTopologicalAddGroup F]
   [ContinuousSMul ℝ F] {E : Submodule ℝ F} (hcodim : Module.rank ℝ (F ⧸ E) = 1)
