@@ -936,7 +936,7 @@ theorem annihilator_iSup (ι : Sort w) (f : ι → Submodule R M) :
 
 theorem annihilator_sup (N P : Submodule R M) :
     (N ⊔ P).annihilator = N.annihilator ⊓ P.annihilator := by
-  simpa [iSup_bool_eq, iInf_bool_eq] using annihilator_iSup Bool (Bool.rec P N)
+  rw [← sSup_pair, sSup_eq_iSup, iSup_subtype', annihilator_iSup, ← iInf_pair, iInf_subtype']
 
 theorem le_annihilator_iff {N : Submodule R M} {I : Ideal R} : I ≤ annihilator N ↔ I • N = ⊥ := by
   simp_rw [← le_bot_iff, smul_le, SetLike.le_def, mem_annihilator]; rfl
