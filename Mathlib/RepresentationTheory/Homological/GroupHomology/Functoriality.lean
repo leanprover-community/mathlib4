@@ -52,7 +52,6 @@ theorem congr {f₁ f₂ : G →* H} (h : f₁ = f₂) {φ : A ⟶ res f₁ B} {
   subst h
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : A ⟶ Res(f)(B)`,
 this is the chain map sending `∑ aᵢ·gᵢ : Gⁿ →₀ A` to `∑ φ(aᵢ)·(f ∘ gᵢ) : Hⁿ →₀ B`. -/
 @[simps! -isSimp f f_hom]
@@ -62,8 +61,8 @@ noncomputable def chainsMap :
   comm' i j (hij : _ = _) := by
     subst hij
     ext
-    simpa [Fin.comp_contractNth, map_add, inhomogeneousChains.d]
-      using congr(single _ $((hom_comm_apply φ (_)⁻¹ _).symm))
+    simp [Fin.comp_contractNth, map_add, inhomogeneousChains.d, Rep.hom_comm_apply φ]
+    rfl
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
@@ -809,6 +808,7 @@ noncomputable def chainsFunctor :
   map_comp φ ψ := chainsMap_comp (MonoidHom.id G) (MonoidHom.id G) φ ψ
 
 instance : (chainsFunctor k G).PreservesZeroMorphisms where
+  map_zero _ _ := chainsMap_zero (MonoidHom.id G)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The functor sending a `G`-representation `A` to `Hₙ(G, A)`. -/

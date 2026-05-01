@@ -243,7 +243,7 @@ instance is_sheafedSpace_iso {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) [IsIso
 /-- The restriction of a locally ringed space along an open embedding.
 -/
 @[simps!]
-def restrict {U : TopCat} (X : LocallyRingedSpace.{u}) {f : U ⟶ X.toTopCat}
+def restrict {U : TopCat.{u}} (X : LocallyRingedSpace.{u}) {f : U ⟶ X.toTopCat}
     (h : IsOpenEmbedding f) : LocallyRingedSpace where
   isLocalRing := by
     intro x
@@ -254,7 +254,7 @@ def restrict {U : TopCat} (X : LocallyRingedSpace.{u}) {f : U ⟶ X.toTopCat}
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The canonical map from the restriction to the subspace. -/
-def ofRestrict {U : TopCat} (X : LocallyRingedSpace.{u})
+def ofRestrict {U : TopCat.{u}} (X : LocallyRingedSpace.{u})
     {f : U ⟶ X.toTopCat} (h : IsOpenEmbedding f) : X.restrict h ⟶ X :=
   ⟨X.toPresheafedSpace.ofRestrict h, fun _ => inferInstance⟩
 
@@ -461,7 +461,7 @@ theorem preimage_basicOpen {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) {U : Ope
     rw [← stalkMap_germ_apply] at hx
     exact (isUnit_map_iff (f.stalkMap x).hom _).mp hx
 
-variable {U : TopCat} (X : LocallyRingedSpace.{u}) {f : U ⟶ X.toTopCat} (h : IsOpenEmbedding f)
+variable {U : TopCat.{u}} (X : LocallyRingedSpace.{u}) {f : U ⟶ X.toTopCat} (h : IsOpenEmbedding f)
   (V : Opens U) (x : U) (hx : x ∈ V)
 
 /-- For an open embedding `f : U ⟶ X` and a point `x : U`, we get an isomorphism between the stalk

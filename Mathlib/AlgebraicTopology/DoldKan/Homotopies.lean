@@ -136,12 +136,11 @@ theorem Hσ_eq_zero (q : ℕ) : (Hσ q : K[X] ⟶ K[X]).f 0 = 0 := by
   rw [nullHomotopicMap'_f_of_not_rel_left (c_mk 1 0 rfl) cs_down_0_not_rel_left]
   rcases q with (_ | q)
   · rw [hσ'_eq (show 0 = 0 + 0 by rfl) (c_mk 1 0 rfl)]
-    simp only [pow_zero, Fin.mk_zero, one_zsmul, eqToHom_refl, Category.comp_id]
-    -- This `erw` is needed to show `0 + 1 = 1`.
-    erw [ChainComplex.of_d]
-    rw [AlternatingFaceMapComplex.objD, Fin.sum_univ_two, Fin.val_zero, Fin.val_one, pow_zero,
-      pow_one, one_smul, neg_smul, one_smul, comp_add, comp_neg, add_neg_eq_zero,
-      ← Fin.succ_zero_eq_one, δ_comp_σ_succ, δ_comp_σ_self' X (by rw [Fin.castSucc_zero'])]
+    simp only [AlternatingFaceMapComplex.obj_X, Nat.reduceAdd, Int.reduceNeg, pow_zero,
+      Fin.zero_eta, Fin.isValue, one_smul, eqToHom_refl, comp_id,
+      AlternatingFaceMapComplex.obj_d_eq, Fin.sum_univ_two, Fin.coe_ofNat_eq_mod, Nat.zero_mod,
+      Nat.mod_succ, pow_one, neg_smul, comp_add, comp_neg]
+    simp [δ_comp_σ_self' X (by rw [Fin.castSucc_zero']), ← δ_comp_σ_succ X (i := 0)]
   · rw [hσ'_eq_zero (Nat.succ_pos q) (c_mk 1 0 rfl), zero_comp]
 
 set_option backward.isDefEq.respectTransparency false in
