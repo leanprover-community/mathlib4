@@ -192,9 +192,10 @@ end
 
 /- Not a `@[simp]` lemma since it will rewrite the (co)domain of maps and cause
 definitional equality issues. -/
-lemma forget_obj {M : SemimoduleCat.{v} R} : (forget (SemimoduleCat.{v} R)).obj M = M := rfl
+lemma forget_obj {M : SemimoduleCat.{v} R} : ((forget (SemimoduleCat.{v} R)).obj M : Type _) = M :=
+  rfl
 
-@[simp]
+@[deprecated ConcreteCategory.forget_map_eq_ofHom (since := "2026-02-25")]
 lemma forget_map {M N : SemimoduleCat.{v} R} (f : M ⟶ N) :
     (forget (SemimoduleCat.{v} R)).map f = (f : _ → _) :=
   rfl
@@ -270,9 +271,10 @@ end CategoryTheory.Iso
 in `SemimoduleCat` -/
 @[simps]
 def linearEquivIsoModuleIsoₛ {X Y : Type u} [AddCommMonoid X] [AddCommMonoid Y] [Module R X]
-    [Module R Y] : (X ≃ₗ[R] Y) ≅ SemimoduleCat.of R X ≅ SemimoduleCat.of R Y where
-  hom e := e.toModuleIsoₛ
-  inv i := i.toLinearEquivₛ
+    [Module R Y] : (X ≃ₗ[R] Y) ≅
+      ((SemimoduleCat.of R X) ≅ (SemimoduleCat.of R Y)) where
+  hom := ↾fun e ↦ e.toModuleIsoₛ
+  inv := ↾fun i ↦ i.toLinearEquivₛ
 
 end
 

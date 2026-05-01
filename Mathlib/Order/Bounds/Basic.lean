@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 module
 
+public import Mathlib.Order.Antisymmetrization
 public import Mathlib.Order.Bounds.Defs
 public import Mathlib.Order.Directed
 public import Mathlib.Order.BoundedOrder.Monotone
@@ -130,6 +131,65 @@ lemma DirectedOn.isCofinalFor_fst_image_prod_snd_image {β : Type*} [Preorder β
   rintro ⟨_, _⟩ ⟨⟨x, hx, rfl⟩, y, hy, rfl⟩
   obtain ⟨z, hz, hxz, hyz⟩ := hs _ hx _ hy
   exact ⟨z, hz, hxz.1, hyz.2⟩
+
+theorem IsCofinalFor.union_left (hc : IsCofinalFor s t) : IsCofinalFor (s ∪ t) t := by
+  rintro a (has | hat)
+  · exact hc has
+  · exact ⟨a, hat, le_rfl⟩
+
+theorem IsCofinalFor.union_right (hc : IsCofinalFor s t) : IsCofinalFor (t ∪ s) t := by
+  rw [union_comm]
+  exact hc.union_left
+
+theorem DirectedOn.of_isCofinalFor (hd : DirectedOn (· ≤ ·) t)
+    (hst : s ⊆ t) (hc : IsCofinalFor t s) : DirectedOn (· ≤ ·) s := by
+  intro x hx y hy
+  obtain ⟨z, hz, hxz, hyz⟩ := hd x (hst hx) y (hst hy)
+  obtain ⟨w, hw, hzw⟩ := hc hz
+  exact ⟨w, hw, hxz.trans hzw, hyz.trans hzw⟩
+
+theorem isCofinalFor_or_isCofinalFor_of_directedOn_union (h : DirectedOn (· ≤ ·) (s ∪ t)) :
+    IsCofinalFor t s ∨ IsCofinalFor s t := by
+  rw [or_iff_not_imp_left]
+  intro hts x hx
+  simp only [IsCofinalFor, not_forall, not_exists, not_and] at hts
+  obtain ⟨y, hy, hys⟩ := hts
+  obtain ⟨z, (hzs | hzt), hxz, hyz⟩ := h x (.inl hx) y (.inr hy)
+  · cases hys z hzs hyz
+  · exact ⟨z, hzt, hxz⟩
+
+theorem directedOn_union_iff :
+    DirectedOn (· ≤ ·) (s ∪ t) ↔
+      DirectedOn (· ≤ ·) s ∧ IsCofinalFor t s ∨ DirectedOn (· ≤ ·) t ∧ IsCofinalFor s t := by
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · rcases isCofinalFor_or_isCofinalFor_of_directedOn_union h with hts | hst
+    · exact .inl ⟨DirectedOn.of_isCofinalFor h subset_union_left hts.union_right, hts⟩
+    · exact .inr ⟨DirectedOn.of_isCofinalFor h subset_union_right hst.union_left, hst⟩
+  · rintro (⟨hs, hts⟩ | ⟨ht, hst⟩) x hx y hy
+    · obtain ⟨x', hx', hxx'⟩ := hts.union_right hx
+      obtain ⟨y', hy', hyy'⟩ := hts.union_right hy
+      obtain ⟨z, hz, hx'z, hy'z⟩ := hs x' hx' y' hy'
+      exact ⟨z, .inl hz, hxx'.trans hx'z, hyy'.trans hy'z⟩
+    · obtain ⟨x', hx', hxx'⟩ := hst.union_left hx
+      obtain ⟨y', hy', hyy'⟩ := hst.union_left hy
+      obtain ⟨z, hz, hx'z, hy'z⟩ := ht x' hx' y' hy'
+      exact ⟨z, .inr hz, hxx'.trans hx'z, hyy'.trans hy'z⟩
+
+theorem directedOn_or_directedOn_of_union (h : DirectedOn (· ≤ ·) (s ∪ t)) :
+    DirectedOn (· ≤ ·) s ∨ DirectedOn (· ≤ ·) t := by
+  rw [directedOn_union_iff] at h
+  tauto
+
+theorem directedOn_or_directedOn_of_union'
+    (hn : (s ∪ t).Nonempty) (h : DirectedOn (· ≤ ·) (s ∪ t)) :
+    DirectedOn (· ≤ ·) s ∧ s.Nonempty ∨ DirectedOn (· ≤ ·) t ∧ t.Nonempty := by
+  obtain h | h := directedOn_or_directedOn_of_union h
+  · obtain rfl | hs := s.eq_empty_or_nonempty
+    · aesop
+    · exact .inl ⟨h, hs⟩
+  · obtain rfl | ht := t.eq_empty_or_nonempty
+    · aesop
+    · exact .inr ⟨h, ht⟩
 
 /-!
 ### Monotonicity
@@ -701,6 +761,15 @@ theorem le_of_isLUB_le_isGLB {x y} (ha : IsGLB s a) (hb : IsLUB s b) (hab : b �
 @[to_dual]
 lemma IsLUB.prod {b : β} (hs : s.Nonempty) (ht : t.Nonempty) (ha : IsLUB s a) (hb : IsLUB t b) :
     IsLUB (s ×ˢ t) (a, b) := by simp_all +contextual [IsLUB, IsLeast, lowerBounds]
+
+theorem isLUB_congr_of_antisymmRel {a b : α} (h : AntisymmRel (· ≤ ·) a b) :
+    IsLUB s a ↔ IsLUB s b := by
+  simp [isLUB_iff_le_iff, h.le_congr_left]
+
+-- TODO: `to_dual` doesn't work with `AntisymmRel`.
+theorem isGLB_congr_of_antisymmRel {a b : α} (h : AntisymmRel (· ≤ ·) a b) :
+    IsGLB s a ↔ IsGLB s b := by
+  simp [isGLB_iff_le_iff, h.le_congr_right]
 
 end Preorder
 

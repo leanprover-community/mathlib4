@@ -109,7 +109,6 @@ open Filter ContinuousLinearMap
 
 attribute [local simp] ContinuousLinearMap.coe_smul
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The function `(c,d) → |cz+d|^2` is proper, that is, preimages of bounded-above sets are finite.
 -/
 theorem tendsto_normSq_coprime_pair :
@@ -482,8 +481,8 @@ theorem abs_c_le_one (hz : z ∈ 𝒟) (hg : g • z ∈ 𝒟) : |g 1 0| ≤ 1 :
 
 /-- Classify cases when `z ∈ 𝒟` and `g • z ∈ 𝒟` such that `c = 0`. -/
 private lemma cases_c_zero (hz : z ∈ 𝒟) (hg : g • z ∈ 𝒟) (hc : g 1 0 = 0) :
-    ((g = T ∨ g = -T) ∧ z.re = -1/2) ∨
-    ((g = T⁻¹ ∨ g = -T⁻¹) ∧ z.re = 1/2) ∨
+    ((g = T ∨ g = -T) ∧ z.re = -1 / 2) ∨
+    ((g = T⁻¹ ∨ g = -T⁻¹) ∧ z.re = 1 / 2) ∨
     (g = 1 ∨ g = -1) := by
   wlog hd : 0 ≤ g 1 1
   · specialize this hz (g := -g) (SL_neg_smul g z ▸ hg) (by simpa using hc) ?_
@@ -613,7 +612,7 @@ private lemma case_c_one_d_neg_one (hz : z ∈ 𝒟) (hg : g • z ∈ 𝒟) (hg
     rw [coe_mul, coe_mul, coe_T_zpow, coe_S, ← zpow_neg_one, coe_T_zpow, mul_fin_two, mul_fin_two]
     ring_nf
     ext i j
-    fin_cases i <;> fin_cases j <;> [tauto ; skip ; tauto ; tauto]
+    fin_cases i <;> fin_cases j <;> [tauto; skip; tauto; tauto]
     simp [this]
     ring_nf
   have hnorm : ‖(z : ℂ) - 1‖ ≤ 1 := by
@@ -624,7 +623,7 @@ private lemma case_c_one_d_neg_one (hz : z ∈ 𝒟) (hg : g • z ∈ 𝒟) (hg
     simp [normSq]
     ring
   rw [this] at hnorm
-  obtain ⟨h, h'⟩ : normSq z = 1 ∧ z.re = 1/2 := by
+  obtain ⟨h, h'⟩ : normSq z = 1 ∧ z.re = 1 / 2 := by
     have : 1 ≤ normSq z := hz.1
     have : 0 ≤ -2 * z.re + 1 := by linarith [(le_abs_self _).trans hz.2]
     constructor <;> linarith
@@ -728,7 +727,7 @@ lemma stabilizer_of_ne (hz : z ∈ 𝒟) (hg : g • z = z)
   have : T⁻¹ • z ≠ z := by rwa [ne_eq, inv_smul_eq_iff, eq_comm]
   have : (z : ℂ) ≠ -I := by grind [neg_im, coe_I, Complex.I_im, z.coe_im_pos]
   have : S • z ≠ z := by
-    contrapose! hzI
+    contrapose hzI
     rw [UpperHalfPlane.ext_iff, modular_S_smul, coe_mk, ← mul_one (_ : ℂ)⁻¹,
       inv_mul_eq_iff_eq_mul₀ (neg_ne_zero.mpr z.ne_zero), neg_mul, ← neg_eq_iff_eq_neg, ← I_sq,
       ← sq, sq_eq_sq_iff_eq_or_eq_neg, ← coe_I, ← UpperHalfPlane.ext_iff] at hzI
@@ -754,7 +753,7 @@ lemma stabilizer_ρ :
         rw [ne_eq, UpperHalfPlane.ext_iff, modular_S_smul, coe_mk, Complex.ext_iff]
         norm_num [ρ, ← pow_two, div_pow]
       grind [SL_neg_smul]
-    have neT : g ≠ T ∧ g ≠ -T ∧ g ≠ T⁻¹ ∧ g ≠ -T⁻¹:= by
+    have neT : g ≠ T ∧ g ≠ -T ∧ g ≠ T⁻¹ ∧ g ≠ -T⁻¹ := by
       have : T • ρ ≠ ρ := by
         rw [ne_eq, UpperHalfPlane.ext_iff, modular_T_smul, coe_vadd]
         norm_num
