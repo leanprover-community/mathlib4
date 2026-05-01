@@ -25,6 +25,11 @@ application, we prove that the restriction of the `n - 1`-dimensional Hausdorff 
   second countable pseudometric space are unique up to a finite constant. We follow the proof
   in chapter 3 of [*Geometry of sets and measures in {E}uclidean spaces*][mattila1995].
 
+## TODO
+
+Show that the restriction of the `n - 1`-dimensional Hausdorff measure onto an `n`-dimensional 
+sphere coincides with the spherical measure.
+
 -/
 
 @[expose] public section
