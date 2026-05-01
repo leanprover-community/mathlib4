@@ -5,6 +5,7 @@ Authors: Weiyi Wang
 -/
 module
 
+public import Mathlib.Algebra.Ring.NegOnePow
 public import Mathlib.Data.Int.SuccPred
 
 /-!
@@ -74,3 +75,23 @@ theorem pentagonal_strictMonoOn : StrictMonoOn pentagonal (Set.Ici 0) := by
 theorem pentagonal_strictAntiOn : StrictAntiOn pentagonal (Set.Iic 0) := by
   apply strictAntiOn_of_add_one_lt Set.ordConnected_Iic
   grind [natCast_pentagonal]
+
+variable (R : Type*) [Ring R]
+
+open Classical in
+/-- TODO -/
+noncomputable def pentagonalCoeff (n : ℕ) : R :=
+  if h : ∃ k, pentagonal k = n then
+    Int.negOnePow h.choose
+  else
+    0
+
+theorem pentagonalCoeff_eq_zero {n : ℕ} (h : n ∉ Set.range pentagonal) :
+    pentagonalCoeff R n = 0 := by
+  have h : ¬ ∃ k, pentagonal k = n := by simpa using h
+  simp [pentagonalCoeff, h]
+
+@[simp]
+theorem pentagonalCoeff_pentagonal (k : ℤ) :
+    pentagonalCoeff R (pentagonal k) = Int.negOnePow k := by
+  simp [pentagonalCoeff]

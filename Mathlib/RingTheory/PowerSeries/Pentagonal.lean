@@ -81,10 +81,6 @@ theorem tendsto_order_pow_pentagonal_sub :
   rw [Int.toNat_natCast, ← Nat.add_one_le_iff, Nat.le_div_iff_mul_le (by simp)]
   exact Nat.mul_le_mul hk (by linarith)
 
-end Pentagonal
-
-
-namespace Pentagonal
 variable [TopologicalSpace R]
 
 theorem summable_powMulProdOneSubPow_X (k : ℕ) : Summable (powMulProdOneSubPow k · (X : R⟦X⟧)) :=
@@ -98,22 +94,50 @@ end Pentagonal
 
 public section Public
 namespace PowerSeries
+
+/-- TODO -/
+noncomputable
+def pentagonalSeries : R⟦X⟧ := .mk (pentagonalCoeff R)
+
+@[simp]
+theorem coeff_pentagonalSeries (n : ℕ) : (pentagonalSeries R).coeff n = pentagonalCoeff R n := by
+  simp [pentagonalSeries]
+
 namespace WithPiTopology
 variable [TopologicalSpace R]
+
+theorem hasSum_pentagonalSeries :
+    HasSum (fun k ↦ (Int.negOnePow k : R⟦X⟧) * X ^ pentagonal k) (pentagonalSeries R) := by
+  suffices HasSum ((fun n ↦ C (pentagonalCoeff R n) * X ^ n) ∘ pentagonal)
+      (pentagonalSeries R) by
+    convert this
+    simp
+  rw [pentagonal_injective.hasSum_iff fun n hn ↦ by simp [pentagonalCoeff_eq_zero R hn]]
+  simpa [monomial_eq_C_mul_X_pow] using (pentagonalSeries R).hasSum_of_monomials_self
+
+theorem pentagonalSeries_eq_tsum [T2Space R] :
+    pentagonalSeries R = ∑' k, (Int.negOnePow k : R⟦X⟧) * X ^ pentagonal k :=
+  (hasSum_pentagonalSeries R).tsum_eq.symm
+
+theorem pentagonalSeries_eq_tsum_pow_pentagonal_sub [IsTopologicalRing R] [T2Space R] :
+    pentagonalSeries R = ∑' (k : ℕ), (-1) ^ k * (X ^ pentagonal (-k) - X ^ pentagonal (k + 1)) := by
+  rw [pentagonalSeries_eq_tsum, ← neg_injective.tsum_eq (by simp)]
+  rw [← tsum_nat_add_neg_add_one ?_]
+  · simp_rw [neg_neg, Int.negOnePow_add]
+    simp
+    ring_nf
+  rw [← neg_injective.summable_iff (fun x hx ↦ by absurd hx; use -x; simp)]
+  convert (hasSum_pentagonalSeries R).summable
+  simp
 
 theorem summable_pow_pentagonal_sub : Summable fun (k : ℕ) ↦
     ((-1) ^ k * (X ^ pentagonal (-k) - X ^ pentagonal (k + 1)) : R⟦X⟧) :=
   summable_of_tendsto_order_atTop_nhds_top R (Pentagonal.tendsto_order_pow_pentagonal_sub R)
 
-set_option backward.isDefEq.respectTransparency false in
-/-- **Pentagonal number theorem** for power series, summing over natural numbers:
-
-$$ \prod_{n = 0}^{\infty} (1 - x^{n + 1}) =
-\sum_{k=0}^{\infty} (-1)^k \left(x^{k(3k+1)/2} - x^{(k+1)(3k+2)/2}\right) $$ -/
-theorem tprod_one_sub_X_pow_eq_tsum_nat [IsTopologicalRing R] [T2Space R] :
-    ∏' n, (1 - X ^ (n + 1) : R⟦X⟧) =
-    ∑' (k : ℕ), (-1) ^ k * (X ^ pentagonal (-k) - X ^ pentagonal (k + 1)) := by
+private theorem tprod_one_sub_X_pow' [IsTopologicalRing R] [T2Space R] :
+    ∏' n, (1 - X ^ (n + 1) : R⟦X⟧) = pentagonalSeries R := by
   nontriviality R
+  rw [pentagonalSeries_eq_tsum_pow_pentagonal_sub]
   refine Pentagonal.tprod_one_sub_pow ?_ ?_ ?_ ?_ ?_
   · rw [IsTopologicallyNilpotent, tendsto_iff_coeff_tendsto]
     refine fun d ↦ tendsto_atTop_of_eventually_const fun i (hi : i ≥ d + 1) ↦ ?_
@@ -130,82 +154,30 @@ theorem tprod_one_sub_X_pow_eq_tsum_nat [IsTopologicalRing R] [T2Space R] :
     rw [order_X_pow, Nat.cast_lt, ← Nat.add_one_le_iff, Nat.le_div_iff_mul_le (by simp)]
     apply Nat.mul_le_mul <;> linarith
 
-theorem summable_pow_pentagonal' [IsTopologicalRing R] :
-    Summable fun k ↦ (Int.negOnePow k : R⟦X⟧) * X ^ pentagonal (-k) := by
-  nontriviality R
-  apply Summable.of_add_one_of_neg_add_one
-  all_goals
-  apply summable_of_tendsto_order_atTop_nhds_top
-  refine ENat.tendsto_nhds_top_iff_natCast_lt.mpr fun n ↦ eventually_atTop.mpr ⟨n, ?_⟩
-  intro k hk
-  grw [← le_order_mul, order_X_pow]
-  refine lt_add_of_nonneg_of_lt (by simp) ?_
-  rw [pentagonal_def]
-  norm_cast
-  grind
-
-/-- **Pentagonal number theorem** for power series, summing over integers written using the
-exponent $a_{-k}$ where $a_k = k(3k - 1)/2$ are the generalized pentagonal numbers.
-Note that $a_{-k} = (-k)(3(-k) - 1)/2 = k(3k + 1)/2$, which explains the exponent in the
-following formula:
-
-$$ \prod_{n = 0}^{\infty} (1 - x^{n + 1}) = \sum_{k=-\infty}^{\infty} (-1)^k x^{k(3k + 1)/2} $$ -/
-theorem tprod_one_sub_X_pow' [IsTopologicalRing R] [T2Space R] :
-    ∏' n, (1 - X ^ (n + 1)) = ∑' k, (Int.negOnePow k : R⟦X⟧) * X ^ pentagonal (-k) := by
-  rw [← tsum_nat_add_neg_add_one (summable_pow_pentagonal' R), tprod_one_sub_X_pow_eq_tsum_nat]
-  refine tsum_congr fun k ↦ ?_
-  rw [sub_eq_add_neg _ (X ^ _), mul_add, ← neg_mul_comm]
-  congrm ($(by norm_cast) * X ^ $(by norm_cast) + ?_ * X ^ $(by norm_cast))
-  trans (-1) ^ (k + 1)
-  · ring
-  · norm_cast
-
-theorem summable_pow_pentagonal [IsTopologicalRing R] :
-    Summable fun k ↦ (Int.negOnePow k : R⟦X⟧) * X ^ pentagonal k := by
-  rw [← neg_injective.summable_iff (fun x hx ↦ by absurd hx; use -x; simp)]
-  convert summable_pow_pentagonal' R
-  rw [Function.comp_apply]
-  congrm $(by simp) * X ^ _
-
-/-- **Pentagonal number theorem** for power series, summing over integers written using the
-exponent $a_k$ where $a_k = k(3k - 1)/2$ are the generalized pentagonal numbers:
-
-$$ \prod_{n = 0}^{\infty} (1 - x^{n + 1}) = \sum_{k=-\infty}^{\infty} (-1)^k x^{k(3k - 1)/2} $$ -/
-theorem tprod_one_sub_X_pow [IsTopologicalRing R] [T2Space R] :
-    ∏' n, (1 - X ^ (n + 1)) = ∑' k, (Int.negOnePow k : R⟦X⟧) * X ^ pentagonal k := by
-  rw [tprod_one_sub_X_pow', ← neg_injective.tsum_eq (by simp)]
-  congrm ∑' k, $(by simp) * X ^ pentagonal $(by simp)
-
 end WithPiTopology
 
 open WithPiTopology
 
-theorem coeff_prod_one_sub_X_eventually_eq_negOnePow (k : ℤ) :
-    ∀ᶠ s in atTop, (∏ n ∈ s, (1 - X ^ (n + 1) : R⟦X⟧)).coeff (pentagonal k) = Int.negOnePow k := by
+theorem coeff_prod_one_sub_X_eventually_eq (n : ℕ) :
+    ∀ᶠ s in atTop, (∏ n ∈ s, (1 - X ^ (n + 1) : R⟦X⟧)).coeff n = pentagonalCoeff R n := by
   let _ : TopologicalSpace R := ⊥
   have _ : DiscreteTopology R := ⟨rfl⟩
   obtain h := (multipliable_one_sub_X_pow R).hasProd
-  rw [tprod_one_sub_X_pow R, HasProd, tendsto_iff_coeff_tendsto] at h
-  specialize h (pentagonal k)
-  rw [(summable_pow_pentagonal R).map_tsum _ (WithPiTopology.continuous_coeff _ _),
-    SummationFilter.unconditional_filter, nhds_discrete, tendsto_pure] at h
-  have hpow (i : ℤ) : (i.negOnePow : R⟦X⟧) = C (i.negOnePow : R) := by simp
-  simp_rw [hpow, coeff_C_mul, coeff_X_pow] at h
-  rw [tsum_eq_single k fun i hi ↦ by simp [hi.symm]] at h
-  simpa using h
+  rw [tprod_one_sub_X_pow' R, HasProd, tendsto_iff_coeff_tendsto] at h
+  simpa using h n
 
-theorem coeff_prod_one_sub_X_eventually_eq_zero {n : ℕ} (hn : ∀ k : ℤ, n ≠ pentagonal k) :
-    ∀ᶠ s in atTop, (∏ n ∈ s, (1 - X ^ (n + 1) : R⟦X⟧)).coeff n = 0 := by
-  let _ : TopologicalSpace R := ⊥
-  have _ : DiscreteTopology R := ⟨rfl⟩
-  obtain h := (multipliable_one_sub_X_pow R).hasProd
-  rw [tprod_one_sub_X_pow R, HasProd, tendsto_iff_coeff_tendsto] at h
-  specialize h n
-  rw [(summable_pow_pentagonal R).map_tsum _ (WithPiTopology.continuous_coeff _ _),
-    SummationFilter.unconditional_filter, nhds_discrete, tendsto_pure] at h
-  have hpow (i : ℤ) : (i.negOnePow : R⟦X⟧) = C (i.negOnePow : R) := by simp
-  simp_rw [hpow, coeff_C_mul, coeff_X_pow] at h
-  simpa [hn] using h
+namespace WithPiTopology
+variable [TopologicalSpace R]
 
+theorem hasProd_one_sub_X : HasProd (fun n ↦ (1 - X ^ (n + 1) : R⟦X⟧)) (pentagonalSeries R) := by
+  rw [HasProd, tendsto_iff_coeff_tendsto]
+  intro n
+  apply tendsto_nhds_of_eventually_eq
+  simpa using coeff_prod_one_sub_X_eventually_eq R n
+
+theorem tprod_one_sub_X_pow [T2Space R] : ∏' n, (1 - X ^ (n + 1) : R⟦X⟧) = pentagonalSeries R :=
+  (hasProd_one_sub_X R).tprod_eq
+
+end WithPiTopology
 end PowerSeries
 end Public
