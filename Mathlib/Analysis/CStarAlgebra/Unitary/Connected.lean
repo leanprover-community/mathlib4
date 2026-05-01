@@ -139,7 +139,7 @@ lemma selfAdjoint.norm_sq_expUnitary_sub_one {x : selfAdjoint A} (hx : ‖x‖ �
     ‖(expUnitary x - 1 : A)‖ ^ 2 = 2 * (1 - Real.cos ‖x‖) := by
   nontriviality A
   apply norm_sub_one_sq_eq (expUnitary x).2
-  simp only [expUnitary_coe, AddSubgroupClass.coe_norm]
+  simp only [expUnitary_coe]
   rw [← CFC.exp_eq_normedSpace_exp (𝕜 := ℂ), ← cfc_comp_smul I _ (x : A), cfc_map_spectrum ..,
     ← x.2.spectrumRestricts.algebraMap_image]
   simp only [Set.image_image, coe_algebraMap, smul_eq_mul, mul_comm I, ← exp_eq_exp_ℂ,
