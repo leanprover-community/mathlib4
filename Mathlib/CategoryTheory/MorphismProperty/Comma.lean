@@ -6,6 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Comma.Over.Basic
+public import Mathlib.CategoryTheory.ObjectProperty.Opposite
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
 public import Mathlib.CategoryTheory.MorphismProperty.Factorization
 
@@ -51,7 +52,16 @@ lemma costructuredArrow_iso_iff (P : MorphismProperty T) [P.RespectsIso]
     P f.hom ↔ P g.hom :=
   P.comma_iso_iff e
 
+lemma structuredArrow_iso_iff (P : MorphismProperty T) [P.RespectsIso]
+    {L : A ⥤ T} {X : T} {f g : StructuredArrow X L} (e : f ≅ g) :
+    P f.hom ↔ P g.hom :=
+  P.comma_iso_iff e
+
 lemma over_iso_iff (P : MorphismProperty T) [P.RespectsIso] {X : T} {f g : Over X} (e : f ≅ g) :
+    P f.hom ↔ P g.hom :=
+  P.comma_iso_iff e
+
+lemma under_iso_iff (P : MorphismProperty T) [P.RespectsIso] {X : T} {f g : Under X} (e : f ≅ g) :
     P f.hom ↔ P g.hom :=
   P.comma_iso_iff e
 
@@ -121,6 +131,14 @@ def underObj (W : MorphismProperty T) {X : T} : ObjectProperty (Under X) := fun 
 
 instance [W.RespectsIso] : (W.underObj (X := X)).IsClosedUnderIsomorphisms :=
   inferInstanceAs <| (W.commaObj _ _).IsClosedUnderIsomorphisms
+
+@[simp]
+lemma inverseImage_op_overObj (W : MorphismProperty T) {X : T} :
+    W.overObj.op.inverseImage (Under.opEquivOpOver X).functor = W.op.underObj := rfl
+
+@[simp]
+lemma inverseImage_op_underObj (W : MorphismProperty T) {X : T} :
+    W.underObj.op.inverseImage (Over.opEquivOpUnder X).functor = W.op.overObj := rfl
 
 end
 
@@ -767,6 +785,17 @@ variable {P Q F X} in
 lemma CostructuredArrow.Hom.ext {A B : P.CostructuredArrow Q F X} {f g : A ⟶ B}
     (h : f.left = g.left) : f = g := by
   ext <;> simp [h]
+
+variable {P Q F X} in
+/-- Construct an morphism in `P.CostructuredArrow Q F X` by giving the isomorphism
+on the underlying objects of `C`. -/
+@[simps]
+def CostructuredArrow.isoMk {A B : P.CostructuredArrow Q F X} (f : A.left ≅ B.left) (hf : Q f.hom)
+    (hf' : Q f.inv)
+    (w : F.map f.hom ≫ B.hom = A.hom := by cat_disch) :
+    A ≅ B where
+  hom := MorphismProperty.CostructuredArrow.homMk _ hf
+  inv := MorphismProperty.CostructuredArrow.homMk _ hf' (by simp [← w])
 
 /-- The forgetful functor from the subcategory `P.CostructuredArrow Q F X`. -/
 protected abbrev CostructuredArrow.forget :
