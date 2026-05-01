@@ -262,12 +262,7 @@ theorem sum_ramification_inertia
       ENat.toNat_mul, Module.length_eq_finrank, ramificationIdx'_eq p, inertiaDeg'_eq p]
     rfl
 
--- PRed
-lemma finrank_fiber_eq_rankAtStalk (R S : Type*) [CommRing R] [AddCommGroup S] [Module R S]
-    [Module.Finite R S] [Module.Flat R S] (p : Ideal R) [hp : p.IsPrime] :
-    Module.finrank p.ResidueField (p.ResidueField ⊗[R] S) = Module.rankAtStalk S ⟨p, hp⟩ :=
-  (Module.rankAtStalk_eq ⟨p, hp⟩).symm
-
+-- check if we can PR this?
 theorem foo17 (R S K : Type*) [CommRing R] [AddCommGroup S] [Module R S]
     [CommRing K] [NoZeroDivisors K] [Algebra R K] [FaithfulSMul R K] :
     Module.finrank R S = Module.finrank K (K ⊗[R] S) := by
