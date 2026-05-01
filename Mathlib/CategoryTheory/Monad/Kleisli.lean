@@ -68,9 +68,7 @@ instance category : Category (Kleisli T) where
   comp {_} {_} {Z} f g := .mk <| f.of ≫ T.map g.of ≫ T.μ.app Z.of
   id_comp {X} {Y} f := by
     ext
-    dsimp
-    rw [← T.η.naturality_assoc f.of, T.left_unit]
-    apply Category.comp_id
+    simp [← T.η.naturality_assoc f.of]
   assoc f g h := by
     simp [Monad.assoc, T.mu_naturality_assoc]
 
@@ -82,7 +80,6 @@ lemma hom_ext {x y : Kleisli T} {f g : x ⟶ y} (h : f.of = g.of) : f = g :=
 
 namespace Adjunction
 
-attribute [local ext] Hom in
 /-- The left adjoint of the adjunction which induces the monad `(T, η_ T, μ_ T)`. -/
 @[simps]
 def toKleisli : C ⥤ Kleisli T where
@@ -99,12 +96,7 @@ def fromKleisli : Kleisli T ⥤ C where
   map {_} {Y} f := T.map f.of ≫ T.μ.app Y.of
   map_id _ := T.right_unit _
   map_comp {X} {Y} {Z} f g := by
-    simp only [category_comp_of, Functor.map_comp, Category.assoc]
-    congrm T.map f.of ≫ ?_
-    apply Iff.mp <| Eq.congr
-      (Eq.symm <| CategoryTheory.whisker_eq _ (T.assoc Z.of))
-      (T.μ.naturality_assoc g.of _)
-    rfl
+    simp [← dsimp% T.μ.naturality_assoc g.of, dsimp% T.assoc Z.of]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The Kleisli adjunction which gives rise to the monad `(T, η_ T, μ_ T)`.
