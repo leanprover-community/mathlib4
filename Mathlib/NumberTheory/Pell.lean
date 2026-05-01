@@ -596,8 +596,7 @@ theorem eq_pow_of_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : So
     refine ⟨0, ?_⟩
     rcases eq_one_or_neg_one_iff_y_eq_zero.2 hy.symm with rfl | rfl
     · simp
-    · exfalso
-      simp at hax'
+    · simp at hax'
   · -- case 2: `a ≥ a₁`
     have hx₁ : 1 < a.x := by nlinarith [a.prop, h.d_pos]
     have hxx₁ := h.mul_inv_x_pos hx₁ hy

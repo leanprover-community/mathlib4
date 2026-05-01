@@ -49,8 +49,7 @@ theorem Gamma_mem' {N} {γ : SL(2, ℤ)} : γ ∈ Gamma N ↔ SLMOD(N) γ = 1 :=
 @[simp]
 theorem Gamma_mem {N} {γ : SL(2, ℤ)} : γ ∈ Gamma N ↔ (γ 0 0 : ZMod N) = 1 ∧
     (γ 0 1 : ZMod N) = 0 ∧ (γ 1 0 : ZMod N) = 0 ∧ (γ 1 1 : ZMod N) = 1 := by
-  rw [Gamma_mem', Matrix.SpecialLinearGroup.ext_iff]
-  simp [SL_reduction_mod_hom_val, Fin.forall_fin_two, and_assoc]
+  simp [Gamma_mem', SpecialLinearGroup.ext_iff, and_assoc]
 
 theorem Gamma_normal : Subgroup.Normal (Gamma N) :=
   SLMOD(N).normal_ker
