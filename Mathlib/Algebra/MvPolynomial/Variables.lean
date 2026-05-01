@@ -90,13 +90,30 @@ theorem vars_C : (C r : MvPolynomial σ R).vars = ∅ := by
 theorem vars_X [Nontrivial R] : (X n : MvPolynomial σ R).vars = {n} := by
   rw [X, vars_monomial (one_ne_zero' R), Finsupp.support_single_ne_zero _ (one_ne_zero' ℕ)]
 
-theorem mem_vars (i : σ) : i ∈ p.vars ↔ ∃ d ∈ p.support, i ∈ d.support := by
+theorem mem_vars_iff_mem_support (i : σ) : i ∈ p.vars ↔ ∃ d ∈ p.support, i ∈ d.support := by
   classical simp only [vars_def, Multiset.mem_toFinset, mem_degrees, mem_support_iff]
+
+@[deprecated (since := "2026-04-24")] alias mem_vars := mem_vars_iff_mem_support
+
+theorem mem_vars_iff_degreeOf_ne_zero {i : σ} : i ∈ p.vars ↔ p.degreeOf i ≠ 0 := by
+  classical simp [degreeOf, vars_def]
 
 theorem mem_support_notMem_vars_zero {f : MvPolynomial σ R} {x : σ →₀ ℕ} (H : x ∈ f.support)
     {v : σ} (h : v ∉ vars f) : x v = 0 := by
   contrapose! h
-  exact (mem_vars v).mpr ⟨x, H, Finsupp.mem_support_iff.mpr h⟩
+  exact (mem_vars_iff_mem_support v).mpr ⟨x, H, Finsupp.mem_support_iff.mpr h⟩
+
+theorem support_subset_vars_of_mem_support {s : σ →₀ ℕ} (h : s ∈ p.support) :
+    s.support ⊆ p.vars := fun i hi ↦ by
+  contrapose! hi
+  simp [mem_support_notMem_vars_zero h hi]
+
+theorem vars_eq_empty_iff_eq_C : p.vars = ∅ ↔ p = C (p.coeff 0) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by rw [h]; simp⟩
+  rw [← totalDegree_eq_zero_iff_eq_C]
+  suffices p.degrees.card = 0 by grind [totalDegree_le_degrees_card p]
+  classical rw [vars_def, Multiset.toFinset_eq_empty] at h
+  simp_all
 
 theorem vars_add_subset [DecidableEq σ] (p q : MvPolynomial σ R) :
     (p + q).vars ⊆ p.vars ∪ q.vars := by
@@ -149,7 +166,7 @@ variable {A : Type*} [CommRing A] [NoZeroDivisors A]
 theorem vars_C_mul (a : A) (ha : a ≠ 0) (φ : MvPolynomial σ A) :
     (C a * φ : MvPolynomial σ A).vars = φ.vars := by
   ext1 i
-  simp only [mem_vars, mem_support_iff]
+  simp only [mem_vars_iff_mem_support, mem_support_iff]
   apply exists_congr
   intro d
   rw [coeff_C_mul, mul_ne_zero_iff, eq_true ha, true_and]
@@ -206,7 +223,7 @@ theorem vars_monomial_single (i : σ) {e : ℕ} {r : R} (he : e ≠ 0) (hr : r �
 theorem vars_eq_support_biUnion_support [DecidableEq σ] :
     p.vars = p.support.biUnion Finsupp.support := by
   ext i
-  rw [mem_vars, Finset.mem_biUnion]
+  rw [mem_vars_iff_mem_support, Finset.mem_biUnion]
 
 end Map
 
@@ -244,7 +261,7 @@ theorem eval₂Hom_eq_constantCoeff_of_vars (f : R →+* S) {g : σ → S} {p : 
       contradiction
     rw [Finsupp.prod, Finset.prod_eq_zero hi, mul_zero]
     rw [hp, zero_pow (Finsupp.mem_support_iff.1 hi)]
-    rw [mem_vars]
+    rw [mem_vars_iff_mem_support]
     exact ⟨d, hd, hi⟩
 
 theorem aeval_eq_constantCoeff_of_vars [Algebra R S] {g : σ → S} {p : MvPolynomial σ R}
@@ -265,7 +282,7 @@ theorem eval₂Hom_congr' {f₁ f₂ : R →+* S} {g₁ g₂ : σ → S} {p₁ p
   apply Finset.prod_congr rfl
   intro i hi
   have : i ∈ p₁.vars := by
-    rw [mem_vars]
+    rw [mem_vars_iff_mem_support]
     exact ⟨d, hd, hi⟩
   rw [h i this this]
 
@@ -312,7 +329,7 @@ lemma aeval_ite_mem_eq_self (q : MvPolynomial σ R) {s : Set σ} (hs : (q.vars :
   refine Finset.sum_congr rfl fun u hu ↦ ?_
   rw [MvPolynomial.aeval_monomial, MvPolynomial.monomial_eq]
   congr 1
-  exact Finsupp.prod_congr (fun i hi ↦ by simp [hs ((MvPolynomial.mem_vars _).mpr ⟨u, hu, hi⟩)])
+  exact Finsupp.prod_congr (fun i hi ↦ by simp [hs ((mem_vars_iff_mem_support _).mpr ⟨u, hu, hi⟩)])
 
 end EvalVars
 

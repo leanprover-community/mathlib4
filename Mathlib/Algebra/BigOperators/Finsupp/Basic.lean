@@ -475,7 +475,10 @@ theorem prod_finsetSum_index [AddCommMonoid M] [CommMonoid N] {s : Finset ι} {g
   Finset.cons_induction_on s rfl fun a s has ih => by
     rw [prod_cons, ih, sum_cons, prod_add_index' h_zero h_add]
 
-@[deprecated (since := "2026-04-08")] alias prod_finset_sum_index := prod_finsetSum_index
+@[deprecated (since := "2026-04-08")] alias sum_finset_sum_index := sum_finsetSum_index
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias prod_finset_sum_index := prod_finsetSum_index
 
 @[to_additive]
 theorem prod_sum_index [Zero M] [AddCommMonoid N] [CommMonoid P] {f : α →₀ M}

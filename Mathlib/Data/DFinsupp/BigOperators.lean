@@ -409,7 +409,10 @@ theorem prod_finsetSum_index {γ : Type w} {α : Type x} [∀ i, AddCommMonoid (
   exact Finset.induction_on s (by simp [prod_zero_index])
         (by simp +contextual [prod_add_index, h_zero, h_add])
 
-@[deprecated (since := "2026-04-08")] alias prod_finset_sum_index := prod_finsetSum_index
+@[deprecated (since := "2026-04-08")] alias sum_finset_sum_index := sum_finsetSum_index
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias prod_finset_sum_index := prod_finsetSum_index
 
 @[to_additive]
 theorem prod_sum_index {ι₁ : Type u₁} [DecidableEq ι₁] {β₁ : ι₁ → Type v₁} [∀ i₁, Zero (β₁ i₁)]

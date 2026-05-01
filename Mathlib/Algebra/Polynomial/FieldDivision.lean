@@ -162,8 +162,7 @@ theorem rootMultiplicity_sub_one_le_derivative_rootMultiplicity [CharZero R] (p 
     p.rootMultiplicity t - 1 ≤ p.derivative.rootMultiplicity t := by
   by_cases h : p.IsRoot t
   · exact (derivative_rootMultiplicity_of_root h).symm.le
-  · rw [rootMultiplicity_eq_zero h, zero_tsub]
-    exact zero_le _
+  · simp [rootMultiplicity_eq_zero h]
 
 theorem lt_rootMultiplicity_of_isRoot_iterate_derivative
     [CharZero R] {p : R[X]} {t : R} {n : ℕ} (h : p ≠ 0)
