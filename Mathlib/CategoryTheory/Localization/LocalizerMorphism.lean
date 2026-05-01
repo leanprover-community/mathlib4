@@ -258,7 +258,7 @@ instance IsLocalizedEquivalence.comp [Φ.IsLocalizedEquivalence]
   of_isLocalization_of_isLocalization _ W₃.Q
 
 /-- Condition that a `LocalizerMorphism` induces a fully faithful functor
-on the localized categories -/
+on the localized categories. -/
 class IsLocalizedFullyFaithful : Prop where
   /-- the induced functor on the constructed localized categories is fully faithful -/
   nonempty_fullyFaithful : Nonempty (Φ.localizedFunctor W₁.Q W₂.Q).FullyFaithful
