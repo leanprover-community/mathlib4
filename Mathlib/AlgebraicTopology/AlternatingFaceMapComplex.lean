@@ -251,16 +251,14 @@ variable {A : Type*} [Category* A] [Abelian A]
 
 /-- The inclusion map of the Moore complex in the alternating face map complex -/
 def inclusionOfMooreComplexMap (X : SimplicialObject A) :
-    (normalizedMooreComplex A).obj X ⟶ (alternatingFaceMapComplex A).obj X := by
-  dsimp only [normalizedMooreComplex, NormalizedMooreComplex.obj,
-    alternatingFaceMapComplex, AlternatingFaceMapComplex.obj]
-  apply ChainComplex.ofHom (fun n => (NormalizedMooreComplex.objX X n).arrow)
+    (normalizedMooreComplex A).obj X ⟶ (alternatingFaceMapComplex A).obj X :=
+  ChainComplex.ofHom (fun n => (NormalizedMooreComplex.objX X n).arrow) <| fun i ↦ by
   /- we have to show the compatibility of the differentials on the alternating
            face map complex with those defined on the normalized Moore complex:
            we first get rid of the terms of the alternating sum that are obviously
            zero on the normalized_Moore_complex -/
-  intro i
-  simp only [ChainComplex.of_d, AlternatingFaceMapComplex.objD, comp_sum]
+  simp only [normalizedMooreComplex, NormalizedMooreComplex.obj, alternatingFaceMapComplex,
+    AlternatingFaceMapComplex.obj, ChainComplex.of_d, AlternatingFaceMapComplex.objD, comp_sum]
   rw [Fin.sum_univ_succ, Fintype.sum_eq_zero]
   swap
   · intro j
