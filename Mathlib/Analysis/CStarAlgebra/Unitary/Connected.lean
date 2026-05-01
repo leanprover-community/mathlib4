@@ -135,7 +135,6 @@ noncomputable def Unitary.argSelfAdjoint (u : unitary A) : selfAdjoint A :=
 
 @[deprecated (since := "2025-10-29")] alias unitary.argSelfAdjoint := Unitary.argSelfAdjoint
 
-set_option backward.isDefEq.respectTransparency false in
 lemma selfAdjoint.norm_sq_expUnitary_sub_one {x : selfAdjoint A} (hx : ‖x‖ ≤ π) :
     ‖(expUnitary x - 1 : A)‖ ^ 2 = 2 * (1 - Real.cos ‖x‖) := by
   nontriviality A
@@ -153,7 +152,6 @@ lemma selfAdjoint.norm_sq_expUnitary_sub_one {x : selfAdjoint A} (hx : ‖x‖ �
     exact Real.cos_abs y ▸ Real.cos_le_cos_of_nonneg_of_le_pi (by positivity) hx <|
       spectrum.norm_le_norm_of_mem hy
 
-set_option backward.isDefEq.respectTransparency false in
 lemma argSelfAdjoint_expUnitary {x : selfAdjoint A} (hx : ‖x‖ < π) :
     argSelfAdjoint (expUnitary x) = x := by
   nontriviality A
