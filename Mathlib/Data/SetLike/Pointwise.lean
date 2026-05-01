@@ -26,6 +26,7 @@ open scoped Pointwise
 canonical injection between `A` and `Set B`.
 -/
 class IsConcreteNeg (α : Type*) (V : outParam Type*) [Neg V] [SetLike α V] where
+  /-- Mapping an instance of `α` to its pointwise negative. -/
   neg : α → α
   coe_set_neg' (p : α) : neg p = -(p : Set V)
 

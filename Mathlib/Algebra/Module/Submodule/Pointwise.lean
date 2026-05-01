@@ -70,6 +70,7 @@ instance : IsConcreteNeg (Submodule R M) M where
   coe_set_neg' p := by simp
 
 set_option linter.missingDocs false in
+/-- The submodule with every element negated. -/
 @[instance_reducible, deprecated SetLike.pointwiseNeg (since := "2026-04-30")]
 protected def pointwiseNeg : Neg (Submodule R M) where
   neg p :=
