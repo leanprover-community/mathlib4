@@ -95,6 +95,27 @@ theorem continuous_of_grid {E : Type*} [NoMaxOrder K] [NoMinOrder K]
   obtain ⟨h1, h2⟩ := gridIdx_mem_Ico h_atTop h_atBot t
   exact mem_iUnion.mpr ⟨gridIdx x t, h1, h2.le⟩
 
+/-- A function continuous on each cell `Icc (x n) (x (n + 1))` of a grid `x : ℤ → K`
+over `[a, b]` is continuous on `Icc (x a) (x b)`. -/
+theorem continuousOn_Icc_of_grid {E : Type*} [TopologicalSpace E] {x : ℤ → K} {f : K → E}
+    {a b : ℤ} (hab : a ≤ b)
+    (hf : ∀ n ∈ Ico a b, ContinuousOn f (Icc (x n) (x (n + 1)))) :
+    ContinuousOn f (Icc (x a) (x b)) := by
+  rcases eq_or_lt_of_le hab with rfl | hlt
+  · simp [continuousOn_singleton]
+  haveI : Finite (Ico a b : Set ℤ) := (finite_Ico a b).to_subtype
+  refine (LocallyFinite.continuousOn_iUnion (g := f) (locallyFinite_of_finite _)
+    (fun _ => isClosed_Icc) fun n : Ico a b => hf n.val n.2).mono
+    fun t ht => mem_iUnion.mpr ?_
+  set S := {n : ℤ | a ≤ n ∧ n + 1 ≤ b ∧ x n ≤ t}
+  have hbdd : BddAbove S := ⟨b - 1, fun _ hn => by have := hn.2.1; omega⟩
+  obtain ⟨h1, h2, h3⟩ := Int.csSup_mem (s := S) ⟨a, le_rfl, hlt, ht.1⟩ hbdd
+  refine ⟨⟨sSup S, h1, by omega⟩, h3, ?_⟩
+  rcases h2.lt_or_eq with _ | heq
+  · exact not_lt.mp fun hgt => by
+      have := le_csSup hbdd (show sSup S + 1 ∈ S from ⟨by omega, by omega, hgt.le⟩); omega
+  · rw [heq]; exact ht.2
+
 end Grid
 
 /-! ### Piecewise linear interpolation -/
@@ -108,7 +129,7 @@ variable {K : Type*} [Field K] [LinearOrder K]
 /-- The piecewise linear function: on the cell `[x n, x (n + 1))`,
 `piecewiseLinear x y c t = y n + (t - x n) • c n` where `n = gridIdx x t`. -/
 noncomputable def piecewiseLinear (x : ℤ → K) (y c : ℤ → E) (t : K) : E :=
-  let n := gridIdx x t
+  letI n := gridIdx x t
   y n + (t - x n) • c n
 
 /-- Closed form for `piecewiseLinear` on the `n`-th cell. -/
