@@ -114,7 +114,12 @@ lemma skeleton_succ (n : ℕ) :
 variable {X} {Y : SSet.{u}} (i : X ⟶ Y)
 
 /-- The skeleton of a monomorphism `i : X ⟶ Y` of simplicial sets.
-It sends `n : ℕ` to `Subcomplex.range i ⊔ Y.skeleton n`. -/
+It sends `n : ℕ` to `Subcomplex.range i ⊔ Y.skeleton n`.
+See `SSet.relativeCellComplexOfMono` for the main result regarding
+this definition.
+(Even though `[Mono i]` is technically not required in this definition,
+the intended use of this definition and the corresponding API is
+when `[Mono i]` holds.) -/
 def skeletonOfMono : ℕ →o Y.Subcomplex where
   toFun n := Subcomplex.range i ⊔ Y.skeleton n
   monotone' n m h := by
