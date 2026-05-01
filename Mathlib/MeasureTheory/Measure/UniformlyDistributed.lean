@@ -15,7 +15,7 @@ import Mathlib.Order.Filter.ENNReal
 /-!
 # Uniformly distributed measures
 
-In this file we define uniformly distributed measures and prove Christensen's Lemma. 
+In this file we define uniformly distributed measures and prove Christensen's Lemma.
 
 ## Main statements
 
@@ -25,7 +25,7 @@ In this file we define uniformly distributed measures and prove Christensen's Le
 
 ## TODO
 
-Show that the restriction of the `n - 1`-dimensional Hausdorff measure onto an `n`-dimensional 
+Show that the restriction of the `n - 1`-dimensional Hausdorff measure onto an `n`-dimensional
 sphere coincides with the spherical measure.
 
 -/
