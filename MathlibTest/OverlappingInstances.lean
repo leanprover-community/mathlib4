@@ -47,7 +47,7 @@ def foo [Add Nat] [Add Nat] : [Add Nat] → [Add Nat] → Bool := by
 @ +3:21...+4:12
 warning: Declaration `foo₁` has overlapping instances:
 
-`[FooBarBaz Nat]` and `[FooBarBaq Nat]` give different instances of `[SubBar Nat]`.
+`[FooBarBaz Nat]` and `[FooBarBaq Nat]` give conflicting instances of `[SubBar Nat]`.
 
 Consider choosing different instance hypotheses.
 
@@ -63,8 +63,8 @@ set_option linter.overlappingInstances true in
 warning: Declaration `foo₂` has overlapping instances:
 
 • There are 2 `[FooBarBaz Nat]` instances.
-• `[FooBarBaz Nat]`, `[FooBarBaz Nat]`, and `[FooBarBaq Nat]` give different instances of `[SubBar Nat]`.
-  Out of these, `[FooBarBaz Nat]` and `[FooBarBaz Nat]` are redundant.
+• `[FooBarBaz Nat]`, `[FooBarBaz Nat]`, and `[FooBarBaq Nat]` give conflicting instances of `[SubBar Nat]`.
+  Of these, `[FooBarBaz Nat]` and `[FooBarBaz Nat]` are redundant.
 
 Consider choosing different instance hypotheses.
 
@@ -89,8 +89,8 @@ def foo₃ [FooBarBaz Nat] [FooBarBaz Nat] : Bool := true
 warning: Declaration `foo₄` has overlapping instances:
 
 • There are 2 `[FooBarBaz Nat]` instances.
-• `[FooBarBaz Nat]`, `[FooBarBaz Nat]`, and `[Bar Nat]` give different instances of `[SubBar Nat]`.
-  Out of these, `[FooBarBaz Nat]`, `[FooBarBaz Nat]`, and `[Bar Nat]` are redundant.
+• `[FooBarBaz Nat]`, `[FooBarBaz Nat]`, and `[Bar Nat]` give conflicting instances of `[SubBar Nat]`.
+  Of these, `[FooBarBaz Nat]`, `[FooBarBaz Nat]`, and `[Bar Nat]` are redundant.
 
 Consider choosing different instance hypotheses.
 
@@ -102,7 +102,7 @@ theorem foo₄ [FooBarBaz Nat] [FooBarBaz Nat] [Bar Nat] : True := trivial
 /--
 warning: Declaration `foo₅` has overlapping instances:
 
-`[FooBarBaz Nat]` and `[FooBarBaz' Nat]` give different instances of `[Baz Nat]` and `[SubBar Nat]`.
+`[FooBarBaz Nat]` and `[FooBarBaz' Nat]` give conflicting instances of `[Baz Nat]` and `[SubBar Nat]`.
 
 Consider choosing different instance hypotheses.
 
@@ -114,8 +114,8 @@ lemma foo₅ [FooBarBaz Nat] [FooBarBaz' Nat] : True := trivial
 /--
 warning: Declaration `foo₆` has overlapping instances:
 
-• `[FooBarBaz Nat]` and `[FooBarBaz' Nat]` give different instances of `[Baz Nat]`.
-• `[FooBarBaz Nat]`, `[FooBarBaz' Nat]`, and `[FooBarBaq Nat]` give different instances of `[SubBar Nat]`.
+• `[FooBarBaz Nat]` and `[FooBarBaz' Nat]` give conflicting instances of `[Baz Nat]`.
+• `[FooBarBaz Nat]`, `[FooBarBaz' Nat]`, and `[FooBarBaq Nat]` give conflicting instances of `[SubBar Nat]`.
 
 Consider choosing different instance hypotheses.
 
@@ -153,8 +153,8 @@ class IsBaz : Prop extends IsBar
 /--
 warning: Declaration `_example` has overlapping instances:
 
-`[IsBar]` and `[IsBaz]` give different instances of `[IsFoo]`.
-Out of these, `[IsBar]` is redundant.
+`[IsBar]` and `[IsBaz]` each imply `[IsFoo]`.
+Of these, `[IsBar]` is redundant.
 
 Consider choosing different instance hypotheses.
 
@@ -259,8 +259,8 @@ class B (α : Type u) extends A α
 /--
 warning: Declaration `_example` has overlapping instances:
 
-`[B α]` and `[A α]` give different instances of `[A α]`.
-Out of these, `[A α]` is redundant.
+`[B α]` and `[A α]` give conflicting instances of `[A α]`.
+Of these, `[A α]` is redundant.
 
 Consider choosing different instance hypotheses.
 
@@ -286,8 +286,8 @@ class B' (α β : Type*) [A' α] extends B α β where
 /--
 warning: Declaration `_example` has overlapping instances:
 
-`[B α β]` and `[B' α β]` give different instances of `[B α β]`.
-Out of these, `[B α β]` is redundant.
+`[B α β]` and `[B' α β]` give conflicting instances of `[B α β]`.
+Of these, `[B α β]` is redundant.
 
 Consider choosing different instance hypotheses.
 

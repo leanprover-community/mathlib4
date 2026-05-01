@@ -154,25 +154,29 @@ def runLinter (ctx : ContextInfo) (lctx : LocalContext) (expectedType? : Option 
   let mut msgs := #[]
   for (fvars, overlaps) in sortedOverlaps do
     let fvarTypes ← fvars.mapM (do instantiateMVars <| ← ·.getType)
+    -- If the overlapping instances are the same, use a simple message.
     if fvarTypes.all (· == fvarTypes[0]!) then
       msgs := msgs.push <| m!"There are {fvarTypes.size} `{.sbracket fvarTypes[0]!}` instances."
     else
+      -- `fvarTypes` are either all propositions, or all non-propositions
+      let isProp ← isProp fvarTypes[0]!
       let localInsts := (← getLCtx).decls.toList.reduceOption
+      -- Otherwise, figure out which instances can be synthesized from the other instances
       let mut redundant := #[]
       for fvar in fvars, type in fvarTypes do
         let localInsts := localInsts.filter (·.fvarId != fvar)
         if (← withLocalInstances localInsts (trySynthInstance type)) matches .some _ then
           redundant := redundant.push type
-      if redundant.isEmpty then
-        if ← isProp fvarTypes[0]! then
-          continue
+      -- For `Prop` instances, only warn if there is an instance that can be removed.
+      if isProp && redundant.isEmpty then
+        continue
       let fvarTypes := .andList <| fvarTypes.toList.map (m!"`{.sbracket ·}`")
       let overlaps := .andList <| overlaps.toList.map (m!"`{.sbracket ·}`")
-      let mut msg := m!"{fvarTypes} give different instances of {overlaps}."
+      let mut msg :=
+        m!"{fvarTypes} {ite isProp "each imply" "give conflicting instances of"} {overlaps}."
       unless redundant.isEmpty do
         let redundant' := .andList <| redundant.toList.map (m!"`{.sbracket ·}`")
-        msg :=
-          m!"{msg}\nOut of these, {redundant'} {ite (redundant.size = 1) "is" "are"} redundant."
+        msg := m!"{msg}\nOf these, {redundant'} {ite (redundant.size = 1) "is" "are"} redundant."
       msgs := msgs.push msg
   if msgs.isEmpty then
     return none
