@@ -167,6 +167,86 @@ lemma DirSupInaccOn.union (hs : DirSupInaccOn D s) (ht : DirSupInaccOn D t) :
 lemma DirSupInacc.union (hs : DirSupInacc s) (ht : DirSupInacc t) : DirSupInacc (s ∪ t) := by
   simpa using hs.dirSupInaccOn.union ht.dirSupInaccOn (D := .univ)
 
+theorem DirSupClosedOn.union (hDL : IsLowerSet D)
+    (hs : DirSupClosedOn D s) (ht : DirSupClosedOn D t) : DirSupClosedOn D (s ∪ t) := by
+  intro d hD hdu hd₀ hd₁ a ha
+  have hdst : d ∩ s ∪ d ∩ t = d := by grind
+  rw [← hdst] at hd₀ hd₁
+  wlog h : DirectedOn (· ≤ ·) (d ∩ s) ∧ (d ∩ s).Nonempty
+  · rw [union_comm] at hdu hd₀ hd₁ hdst ⊢
+    exact this hDL ht hs hD hdu hd₀ hd₁ ha hdst <| (directedOn_union' hd₀ hd₁).resolve_right h
+  obtain ⟨hds, hn⟩ := h
+  by_cases had : a ∈ lowerBounds (upperBounds (d ∩ s))
+  · exact .inl <| hs (hDL inter_subset_left hD) inter_subset_right hn hds
+      ⟨fun b hb ↦ ha.1 hb.1, had⟩
+  · simp only [lowerBounds, mem_setOf_eq, not_forall] at had
+    obtain ⟨b, hb, hb'⟩ := had
+    have key : {x ∈ d | ¬ x ≤ b} ⊆ d ∩ t := fun a ⟨had, hab⟩ ↦
+      ⟨had, (hdu had).resolve_left fun has ↦ hab <| hb ⟨had, has⟩⟩
+    obtain ⟨w, hw⟩ : {x ∈ d | ¬ x ≤ b}.Nonempty := by
+      contrapose! hb'
+      apply ha.2
+      aesop
+    refine Or.inr <| ht (hDL inter_subset_left hD) (key.trans inter_subset_right)
+      ⟨w, hw⟩ (fun x hx y hy ↦ ?_) ?_
+    · obtain ⟨z, hz, hz'⟩ := hd₁ _ (.inr (key hx)) _ (.inr (key hy))
+      exact ⟨z, ⟨⟨hdst ▸ hz, mt hz'.1.trans hx.2⟩, hz'⟩⟩
+    · refine ⟨fun x hx ↦ ha.1 hx.1, fun x hx ↦ ha.2 fun y hy ↦ ?_⟩
+      by_cases hyb : y ≤ b
+      · obtain ⟨z, hz, hxz, hyz⟩ := hd₁ _ (hdst ▸ hy) _ (.inr (key hw))
+        exact hxz.trans (hx ⟨hdst ▸ hz, fun hzb ↦ hw.2 (hyz.trans hzb)⟩)
+      · exact hx ⟨hy, hyb⟩
+
+theorem DirSupInaccOn.inter (hDL : IsLowerSet D)
+    (hs : DirSupInaccOn D s) (ht : DirSupInaccOn D t) : DirSupInaccOn D (s ∩ t) := by
+  rw [← dirSupClosedOn_compl, compl_inter]; exact hs.compl.union hDL ht.compl
+
+theorem DirSupClosed.union (hs : DirSupClosed s) (ht : DirSupClosed t) : DirSupClosed (s ∪ t) :=
+  .of_univ (hs.to_univ.union isLowerSet_univ ht.to_univ)
+
+theorem DirSupInacc.inter (hs : DirSupInacc s) (ht : DirSupInacc t) : DirSupInacc (s ∩ t) :=
+  .of_univ (hs.to_univ.inter isLowerSet_univ ht.to_univ)
+
+theorem dirSupInaccOn_of_inter_subset
+    (h : ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d →
+      ∀ ⦃a : α⦄, IsLUB d a → a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s) : DirSupInaccOn D s := by
+  intro d hd₀ hd₁ hd₂ a hda hd₃
+  obtain ⟨b, hbd, hb⟩ := h hd₀ hd₁ hd₂ hda hd₃
+  exact ⟨b, hbd, hb ⟨le_rfl, hbd⟩⟩
+
+theorem dirSupInacc_of_inter_subset
+    (h : ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d →
+      ∀ ⦃a : α⦄, IsLUB d a → a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s) : DirSupInacc s :=
+  .of_univ (dirSupInaccOn_of_inter_subset (by simpa))
+
+/-- If `d` is a set whose LUB is contained in a `DirSupInaccOn` set, then it contains an entire tail
+of `d`. -/
+theorem dirSupInaccOn_iff_inter_subset (hDL : IsLowerSet D) :
+    DirSupInaccOn D s ↔ ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d →
+      ∀ ⦃a : α⦄, IsLUB d a → a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s where
+  mpr := dirSupInaccOn_of_inter_subset
+  mp h t hD ht₀ ht₁ a ha has := by
+    by_contra! H
+    have H : ∀ b : t, ∃ c, b.1 ≤ c ∧ c ∈ t ∧ c ∉ s := by simpa [not_subset, and_assoc] using H
+    choose f hf using H
+    have := ht₀.to_subtype
+    have hft : range f ⊆ t := by grind
+    apply (h (hDL hft hD) (range_nonempty f) _ _ has).ne_empty
+    · aesop
+    · intro a ha b hb
+      obtain ⟨c, hc, _, _⟩ := ht₁ _ (hft ha) _ (hft hb)
+      have := hf ⟨c, hc⟩
+      grind
+    · exact ⟨upperBounds_mono_set hft ha.1,
+        fun b hb ↦ ha.2 fun c hc ↦ (hf ⟨c, hc⟩).1.trans (hb <| by simp)⟩
+
+/-- If `d` is a set whose LUB is contained in a `DirSupInaccOn` set, then it contains an entire tail
+of `d`. -/
+theorem dirSupInacc_iff_inter_subset :
+    DirSupInacc s ↔ ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d →
+      ∀ ⦃a : α⦄, IsLUB d a → a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s := by
+  simpa using dirSupInaccOn_iff_inter_subset isLowerSet_univ
+
 lemma IsUpperSet.dirSupClosed (hs : IsUpperSet s) : DirSupClosed s :=
   fun _d hds ⟨_b, hb⟩ _ _a ha ↦ hs (ha.1 hb) <| hds hb
 
