@@ -251,8 +251,17 @@ private lemma surj_at_weight_inductive {n : ℕ} (hn12 : 12 ≤ n) (hk_even : Ev
   set c := (qExpansion 1 f).coeff 0
   have hmn_coeff : (qExpansion 1 mn).coeff 0 = 1 := monomial_qExpansion_coeff_zero_eq_one hab
   have hg_cusp : ModularForm.IsCuspForm (f - c • mn) := by
-    -- TODO: fill in via qExpansion linearity (subtraction + smul).
-    sorry
+    rw [ModularForm.isCuspForm_iff_coeffZero_eq_zero]
+    have hQsub := (ModularForm.qExpansionAddHom one_pos one_mem_strictPeriods_SL (↑n : ℤ)).map_sub
+      f (c • mn)
+    have hQsmul := ModularFormClass.qExpansion_smul (h := 1) (Γ := 𝒮ℒ) (k := (↑n : ℤ))
+      one_pos one_mem_strictPeriods_SL c mn
+    change (qExpansion 1 ⇑(f - c • mn : ModularForm 𝒮ℒ ↑n)).coeff 0 = 0
+    rw [show qExpansion 1 ⇑(f - c • mn : ModularForm 𝒮ℒ ↑n) =
+            qExpansion 1 ⇑f - qExpansion 1 ⇑(c • mn : ModularForm 𝒮ℒ ↑n) from hQsub]
+    rw [show qExpansion 1 ⇑(c • mn : ModularForm 𝒮ℒ ↑n) = c • qExpansion 1 ⇑mn from hQsmul]
+    rw [map_sub, PowerSeries.coeff_smul]
+    simp [hmn_coeff, c]
   have hcast : ((↑n : ℤ) - 12 : ℤ) = ((n - 12 : ℕ) : ℤ) := by omega
   set h' := CuspForm.discriminantEquiv
     (ModularForm.toCuspForm (f - c • mn)
