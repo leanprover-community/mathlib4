@@ -294,7 +294,6 @@ def adj : toTopCat.{v} (X := X) ⊣ TopCat.toGeneratedByTopCat where
 instance : IsIso (adj.{v} (X := X)).unit := by dsimp; infer_instance
 
 instance : (toTopCat.{v} (X := X)).IsLeftAdjoint := adj.isLeftAdjoint
-instance : (toTopCat.{v} (X := X)).IsLeftAdjoint := inferInstance
 
 instance : (TopCat.toGeneratedByTopCat.{v} (X := X)).IsRightAdjoint := adj.isRightAdjoint
 
