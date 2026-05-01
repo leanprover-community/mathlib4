@@ -391,12 +391,6 @@ theorem comp_appTop {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).appTop = g.appTop ≫ f.appTop :=
   rfl
 
-lemma bijective_appTop_of_isIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
-    Function.Bijective f.appTop :=
-  (Equiv.mk f.appTop (inv f).appTop
-    (fun x ↦ by simpa using ConcreteCategory.congr_hom (comp_appTop (inv f) f).symm x)
-    (fun x ↦ by simpa using ConcreteCategory.congr_hom (comp_appTop f (inv f)).symm x)).bijective
-
 @[reassoc]
 theorem appLE_comp_appLE {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U V W e₁ e₂) :
     g.appLE U V e₁ ≫ f.appLE V W e₂ =
