@@ -392,11 +392,6 @@ protected theorem IsRotated.forall (l : List α) (n : ℕ) : l.rotate n ~r l :=
 theorem IsRotated.trans : ∀ {l l' l'' : List α}, l ~r l' → l' ~r l'' → l ~r l''
   | _, _, _, ⟨n, rfl⟩, ⟨m, rfl⟩ => ⟨n + m, by rw [rotate_rotate]⟩
 
-instance : IsEquiv (List α) IsRotated where
-  refl := IsRotated.refl
-  symm _ _ := IsRotated.symm
-  trans _ _ _ := IsRotated.trans
-
 theorem IsRotated.eqv : Equivalence (@IsRotated α) :=
   Equivalence.mk IsRotated.refl IsRotated.symm IsRotated.trans
 
