@@ -173,7 +173,6 @@ lemma ProbabilityMeasure.tendsto_of_tight_of_separatesPoints (𝕜 : Type*) [RCL
 
 variable {ι : Type*} {𝓕 : Filter ι} {μ₀ : ProbabilityMeasure E}
 
-set_option backward.isDefEq.respectTransparency false in
 omit [FiniteDimensional ℝ E] in
 lemma ProbabilityMeasure.tendsto_charPoly_of_tendsto_charFun {μ : ι → ProbabilityMeasure E}
     (h : ∀ t : E, Tendsto (fun n ↦ charFun (μ n) t) 𝓕 (𝓝 (charFun μ₀ t)))
