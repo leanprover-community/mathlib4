@@ -25,7 +25,7 @@ to the class of inner fibrations.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -39,6 +39,7 @@ open MorphismProperty
 that has the left lifting property with respect to *inner* fibrations, where
 an inner fibration is a morphism that has the right lifting property with respect
 to inner horn inclusions. -/
+@[expose, kerodon 01BR]
 def innerAnodyneExtensions : MorphismProperty SSet.{u} := innerFibrations.llp
 deriving IsMultiplicative, RespectsIso, IsStableUnderCobaseChange,
   IsStableUnderRetracts, IsStableUnderTransfiniteComposition,
@@ -52,9 +53,9 @@ lemma innerAnodyneExtensions_eq_llp_rlp :
     innerAnodyneExtensions.{u} = innerHornInclusions.rlp.llp :=
   rfl
 
-lemma innerAnodyneExtensions.horn_ι {n : ℕ} {i : Fin (n + 3)}
-    (h0 : 0 < i) (hn : i < Fin.last (n + 2)) :
-    innerAnodyneExtensions.{u} Λ[n + 2, i].ι := by
+lemma innerAnodyneExtensions.horn_ι {n : ℕ} {i : Fin (n + 1)}
+    (h0 : 0 < i) (hn : i < Fin.last n) :
+    innerAnodyneExtensions.{u} Λ[n, i].ι := by
   rw [innerAnodyneExtensions_eq_llp_rlp]
   exact le_llp_rlp _ _ (horn_ι_mem_innerHornInclusions h0 hn)
 
@@ -66,14 +67,13 @@ lemma innerAnodyneExtensions_le : innerAnodyneExtensions ≤ anodyneExtensions.{
 attribute [local instance] Cardinal.fact_isRegular_aleph0
   Cardinal.orderBotAleph0OrdToType
 
-instance (n : ℕ) : MorphismProperty.IsSmall.{u}
-    (MorphismProperty.ofHoms.{u}
-      (fun p : {p : Fin (n + 3) // 0 < p ∧ p < Fin.last (n + 2)} ↦ Λ[n + 2, p].ι)) :=
-  isSmall_ofHoms ..
-
 instance : MorphismProperty.IsSmall.{u} innerHornInclusions.{u} := by
   rw [innerHornInclusions_eq_iSup]
-  exact isSmall_iSup ..
+  have (n : ℕ) : MorphismProperty.IsSmall.{u}
+    (MorphismProperty.ofHoms.{u}
+      fun p : {p : Fin (n + 3) // 0 < p ∧ p < Fin.last (n + 2)} ↦ Λ[n + 2, p].ι) :=
+    isSmall_ofHoms ..
+  exact isSmall_iSup _
 
 instance : IsCardinalForSmallObjectArgument innerHornInclusions.{u} Cardinal.aleph0.{u} where
   preservesColimit {A B X Y} i hi f hf := by
@@ -83,8 +83,8 @@ instance : IsCardinalForSmallObjectArgument innerHornInclusions.{u} Cardinal.ale
       infer_instance
     infer_instance
 
-instance : HasSmallObjectArgument.{u} innerHornInclusions.{u} :=
-  ⟨.aleph0, inferInstance, inferInstance, inferInstance⟩
+instance : HasSmallObjectArgument.{u} innerHornInclusions.{u} where
+  exists_cardinal := ⟨.aleph0, inferInstance, inferInstance, inferInstance⟩
 
 lemma innerAnodyneExtensions_eq_retracts_transfiniteCompositions :
     innerAnodyneExtensions = (transfiniteCompositions.{u}

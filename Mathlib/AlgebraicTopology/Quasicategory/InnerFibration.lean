@@ -19,7 +19,7 @@ formalized.
 -/
 
 
-@[expose] public section
+public section
 
 open CategoryTheory MorphismProperty Simplicial
 
@@ -49,7 +49,7 @@ lemma innerHornInclusions_eq_iSup :
     simp only [iSup_iff, ofHoms_iff, Subtype.exists, exists_prop]
     use n, i
   · simp only [iSup_iff, ofHoms_iff] at h
-    obtain ⟨n, ⟨⟨i, h0, hn⟩, _, _⟩⟩ := h
+    obtain ⟨n, ⟨i, h0, hn⟩, _, _⟩ := h
     exact horn_ι_mem_innerHornInclusions h0 hn
 
 lemma innerHornInclusions_le_J : innerHornInclusions.{u} ≤ modelCategoryQuillen.J :=
@@ -61,6 +61,7 @@ lemma innerHornInclusions_le_monomorphisms :
 
 /-- The inner fibrations are the morphisms which have the right lifting property
 with respect to inner horn inclusions. -/
+@[expose, kerodon 01BA]
 def innerFibrations : MorphismProperty SSet.{u} := innerHornInclusions.rlp
 deriving IsMultiplicative, RespectsIso, IsStableUnderBaseChange,
   IsStableUnderRetracts
