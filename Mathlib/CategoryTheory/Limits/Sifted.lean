@@ -12,6 +12,7 @@ public import Mathlib.CategoryTheory.Monoidal.Limits.Preserves
 public import Mathlib.CategoryTheory.Limits.Preserves.Bifunctor
 public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 public import Mathlib.CategoryTheory.Limits.IsConnected
+public import Mathlib.CategoryTheory.Products.Associator
 /-!
 # Sifted categories
 
@@ -123,15 +124,7 @@ variable {D : Type u₁} [Category.{v₁} D]
 
 instance [IsSiftedOrEmpty C] [IsSiftedOrEmpty D] :
     IsSiftedOrEmpty (C × D) :=
-  let e : (C × C) × (D × D) ≌ (C × D) × (C × D) :=
-    { functor :=
-        { obj := fun X => ((X.1.1, X.2.1), (X.1.2, X.2.2))
-          map := fun f => ((f.1.1, f.2.1), (f.1.2, f.2.2)) }
-      inverse :=
-        { obj := fun X => ((X.1.1, X.2.1), (X.1.2, X.2.2))
-          map := fun f => ((f.1.1, f.2.1), (f.1.2, f.2.2)) }
-      unitIso := Iso.refl _
-      counitIso := Iso.refl _ }
+  let e : (C × C) × (D × D) ≌ (C × D) × (C × D) := prod.prodμ ..
   have := Equivalence.isEquivalence_functor e
   have := final_comp_equivalence ((Functor.diag C).prod (Functor.diag D)) e.functor
   final_of_natIso (Iso.refl ((Functor.diag C).prod (Functor.diag D) ⋙ e.functor))
