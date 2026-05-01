@@ -97,6 +97,16 @@ that is, `Std.Trichotomous lt` and `IsStrictOrder X lt`. -/
 class IsStrictTotalOrder (α : Sort*) (lt : α → α → Prop) : Prop
     extends Std.Trichotomous lt, IsStrictOrder α lt
 
+theorem Equivalence.of_isEquiv {α : Sort*} (lt : α → α → Prop) [IsEquiv α lt] : Equivalence lt where
+  refl := Std.Refl.refl; symm := Std.Symm.symm _ _; trans := Trans.trans
+
+theorem IsEquiv.of_equivalence {α : Sort*} {lt : α → α → Prop} (h : Equivalence lt) :
+    IsEquiv α lt where
+  refl := h.refl; symm _ _ := h.symm; trans _ _ _ := h.trans
+
+theorem equivalence_iff_isEquiv {α : Sort*} (lt : α → α → Prop) : Equivalence lt ↔ IsEquiv α lt :=
+  ⟨.of_equivalence, fun _ => .of_isEquiv lt⟩
+
 /-- Equality is an equivalence relation. -/
 instance eq_isEquiv (α : Sort*) : IsEquiv α (· = ·) where
   symm := @Eq.symm _
