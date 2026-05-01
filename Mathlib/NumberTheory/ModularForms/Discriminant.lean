@@ -194,22 +194,20 @@ lemma exp_isBigO_discriminant : (fun τ ↦ Real.exp (-2 * π * τ.im)) =O[atImI
 
 /-- The cusp function of the discriminant equals `q * ∏' n, (1 - q^(n+1))^24`
 on the open unit disc. -/
-private lemma discriminant_cuspFunction_eqOn :
-    Set.EqOn (cuspFunction 1 (Δ : ℍ → ℂ))
-      (fun q ↦ q * ∏' i, (1 - q ^ (i + 1)) ^ 24) (Metric.ball 0 1) := by
+private lemma discriminant_cuspFunction_eqOn : Set.EqOn (cuspFunction 1 Δ)
+    (fun q ↦ q * ∏' i, (1 - q ^ (i + 1)) ^ 24) (Metric.ball 0 1) := by
   intro q hq
   by_cases hq0 : q = 0
   · simpa [hq0] using Periodic.cuspFunction_zero_of_zero_at_inf one_pos
       discriminant_isZeroAtImInfty.zero_at_infty_comp_ofComplex
   · have him := Periodic.im_invQParam_pos_of_norm_lt_one one_pos
       (by simpa [dist_zero_right] using hq) hq0
-    simp [cuspFunction, Periodic.cuspFunction_eq_of_nonzero 1 _ hq0,
-      comp_apply, ofComplex_apply_of_im_pos him, discriminant_eq_q_prod ⟨_, him⟩,
+    simp [cuspFunction, Periodic.cuspFunction_eq_of_nonzero 1 _ hq0, comp_apply,
+      ofComplex_apply_of_im_pos him, discriminant_eq_q_prod ⟨_, him⟩,
       Periodic.qParam_right_inv one_ne_zero hq0, eta_q]
 
 /-- The first q-expansion coefficient of the modular discriminant is 1. -/
-lemma discriminant_qExpansion_coeff_one :
-    (qExpansion 1 (Δ : ℍ → ℂ)).coeff 1 = 1 := by
+lemma discriminant_qExpansion_coeff_one : (qExpansion 1 Δ).coeff 1 = 1 := by
   have hmem : (0 : ℂ) ∈ Metric.ball (0 : ℂ) 1 := Metric.mem_ball_self one_pos
   simp [qExpansion_coeff, iteratedDeriv_succ, iteratedDeriv_zero,
     ← derivWithin_of_isOpen Metric.isOpen_ball hmem,

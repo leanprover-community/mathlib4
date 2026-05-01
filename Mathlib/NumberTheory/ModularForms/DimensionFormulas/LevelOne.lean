@@ -174,11 +174,10 @@ private lemma E₄CubeSubE₆SqForm_apply (z : ℍ) :
   ring
 
 private lemma E₄CubeSubE₆SqForm_qExpansion_eq :
-    qExpansion 1 (E₄CubeSubE₆SqForm : ℍ → ℂ) =
-      qExpansion 1 (E₄ : ℍ → ℂ) * qExpansion 1 E₄ * qExpansion 1 E₄ -
-        qExpansion 1 (E₆ : ℍ → ℂ) * qExpansion 1 E₆ := by
-  rw [show qExpansion 1 (E₄CubeSubE₆SqForm : ℍ → ℂ) =
-        qExpansion 1 ((E₄.mul E₄).mul E₄ : ℍ → ℂ) - qExpansion 1 (E₆.mul E₆ : ℍ → ℂ) from
+    qExpansion 1 E₄CubeSubE₆SqForm = qExpansion 1 E₄ * qExpansion 1 E₄ * qExpansion 1 E₄ -
+      qExpansion 1 E₆ * qExpansion 1 E₆ := by
+  rw [show qExpansion 1 E₄CubeSubE₆SqForm =
+        qExpansion 1 ((E₄.mul E₄).mul E₄) - qExpansion 1 (E₆.mul E₆) from
       ModularFormClass.qExpansion_sub one_pos one_mem_strictPeriods_SL
         (ModularForm.mcast (by norm_num) ((E₄.mul E₄).mul E₄))
         (ModularForm.mcast (by norm_num) (E₆.mul E₆)),
@@ -193,7 +192,7 @@ private lemma E₄CubeSubE₆SqForm_isCuspForm : IsCuspForm E₄CubeSubE₆SqFor
     E_qExpansion_coeff_zero _ ⟨2, rfl⟩, E_qExpansion_coeff_zero _ ⟨3, rfl⟩]
 
 private lemma E₄CubeSubE₆SqForm_qExpansion_coeff_one :
-    (qExpansion 1 (E₄CubeSubE₆SqForm : ℍ → ℂ)).coeff 1 = 1728 := by
+    (qExpansion 1 E₄CubeSubE₆SqForm).coeff 1 = 1728 := by
   rw [E₄CubeSubE₆SqForm_qExpansion_eq]
   norm_num [PowerSeries.coeff_mul, Finset.Nat.antidiagonal_succ, E₄_qExpansion_coeff_one,
     E₆_qExpansion_coeff_one, E_qExpansion_coeff_zero _ ⟨2, rfl⟩,
