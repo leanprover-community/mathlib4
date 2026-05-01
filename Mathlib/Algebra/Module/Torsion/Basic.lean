@@ -122,7 +122,7 @@ theorem annihilator_span_singleton_eq_torsionOf
 theorem _root_.Module.annihilator_eq_iInf_torsionOf :
     Module.annihilator R M = ⨅ x : M, torsionOf R M x := by
   ext r
-  simp [Module.mem_annihilator, mem_torsionOf_iff]
+  simp [Module.mem_annihilator]
 
 /-- See also `iSupIndep.linearIndependent` which provides the same conclusion
 but requires the stronger hypothesis `Module.IsTorsionFree R M`. -/
