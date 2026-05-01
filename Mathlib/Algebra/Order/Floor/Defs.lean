@@ -86,12 +86,17 @@ namespace FloorSemiring
 
 variable [Semiring α] [PartialOrder α] [FloorSemiring α]
 
+/-- A version of `Nat.mono_cast` for floor semirings, whose addition is not necessarily monotone. -/
 theorem natCast_mono : Monotone (Nat.cast : ℕ → α) :=
   fun _ _ h => (gc_ceil _ _).mp <| h.trans' <| (gc_ceil _ _).mpr (le_refl _)
 
+/-- A version of `Nat.cast_nonneg'` for floor semirings, whose addition is not necessarily
+  monotone. -/
 theorem natCast_nonneg (n : ℕ) : 0 ≤ (n : α) := by
   simpa using natCast_mono n.zero_le
 
+/-- A version of `Nat.strictMono_cast` for floor semirings, whose addition is not necessarily
+  monotone. -/
 theorem natCast_strictMono : StrictMono (Nat.cast : ℕ → α) := by
   refine strictMono_nat_of_lt_succ fun n => (natCast_mono (Nat.le_succ n)).lt_of_ne fun hn => ?_
   replace hn (k : ℕ) : ((n + k : ℕ) : α) = n := by
@@ -367,9 +372,12 @@ namespace FloorRing
 
 variable [Ring α] [LinearOrder α] [FloorRing α]
 
+/-- A version of `Int.cast_mono` for floor rings, whose addition is not necessarily monotone. -/
 theorem intCast_mono : Monotone (Int.cast : ℤ → α) :=
   fun _ _ h => (gc_ceil_coe _ _).mp <| h.trans' <| (gc_ceil_coe _ _).mpr (le_refl _)
 
+/-- A version of `Int.cast_strictMono` for floor rings, whose addition is not necessarily
+  monotone. -/
 theorem intCast_strictMono : StrictMono (Int.cast : ℤ → α) := by
   obtain ⟨h⟩ : NeZero (1 : α) := inferInstance
   refine strictMono_int_of_lt_succ fun n => (intCast_mono (Int.le_add_one (le_refl _))).lt_of_ne ?_
