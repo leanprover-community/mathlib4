@@ -8,6 +8,7 @@ module
 public import Mathlib.RingTheory.Flat.Stability
 public import Mathlib.RingTheory.LocalProperties.Projective
 public import Mathlib.RingTheory.LocalRing.Module
+public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 public import Mathlib.RingTheory.Localization.Free
 public import Mathlib.RingTheory.Localization.LocalizationLocalization
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
@@ -68,7 +69,7 @@ lemma mem_freeLocus_of_isLocalization (p : PrimeSpectrum R)
   obtain ⟨r, s, rfl⟩ := IsLocalization.exists_mk'_eq p.asIdeal.primeCompl r
   apply ((Module.End.isUnit_iff _).mp (IsLocalizedModule.map_units f s)).1
   simp only [e, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe,
-    algebraMap_end_apply, AlgEquiv.toRingEquiv_eq_coe,
+    algebraMap_end_apply,
     AlgEquiv.toRingEquiv_toRingHom, RingHom.coe_coe, IsLocalization.algEquiv_apply,
     IsLocalization.map_id_mk']
   simp only [← map_smul, ← smul_assoc, IsLocalization.smul_mk'_self, algebraMap_smul]
@@ -355,15 +356,19 @@ lemma rankAtStalk_tensorProduct_of_isScalarTower {S : Type*} [CommRing S] [Algeb
   simp [rankAtStalk_eq_of_equiv (AlgebraTensorModule.cancelBaseChange R S S N M).symm,
     rankAtStalk_tensorProduct, rankAtStalk_baseChange]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The rank of a module `M` at a prime `p` is equal to the dimension
 of `κ(p) ⊗[R] M` as a `κ(p)`-module. -/
 lemma rankAtStalk_eq (p : PrimeSpectrum R) :
-    rankAtStalk M p = finrank p.asIdeal.ResidueField (p.asIdeal.ResidueField ⊗[R] M) := by
+    rankAtStalk M p = finrank p.asIdeal.ResidueField (p.asIdeal.Fiber M) := by
   let k := p.asIdeal.ResidueField
   let e : k ⊗[Localization.AtPrime p.asIdeal] (Localization.AtPrime p.asIdeal ⊗[R] M) ≃ₗ[k]
       k ⊗[R] M :=
     AlgebraTensorModule.cancelBaseChange _ _ _ _ _
   rw [← e.finrank_eq, finrank_baseChange, rankAtStalk_eq_finrank_tensorProduct]
+
+/-- Variant of `Module.rankAtStalk_eq` for better rewriting. -/
+lemma _root_.Ideal.finrank_fiber_eq_rankAtStalk (p : Ideal R) [hp : p.IsPrime] :
+    finrank p.ResidueField (p.Fiber M) = rankAtStalk M ⟨p, hp⟩ :=
+  (rankAtStalk_eq ⟨p, hp⟩).symm
 
 end Module

@@ -531,7 +531,7 @@ include hm f_deg
 set_option backward.isDefEq.respectTransparency false in
 variable {𝒜} in
 lemma image_basicOpen_eq_basicOpen (a : A) (i : ℕ) :
-    toSpec 𝒜 f '' (Subtype.val ⁻¹' (pbo (decompose 𝒜 a i) : Set (ProjectiveSpectrum 𝒜))) =
+    toSpec 𝒜 f '' Subtype.val ⁻¹' (pbo (decompose 𝒜 a i) : Set (ProjectiveSpectrum 𝒜)) =
     (PrimeSpectrum.basicOpen (R := A⁰_ f) <|
       HomogeneousLocalization.mk
         ⟨m * i, ⟨decompose 𝒜 a i ^ m,
@@ -697,7 +697,6 @@ lemma toSpec_preimage_basicOpen {f}
   convert (ProjIsoSpecTopComponent.ToSpec.preimage_basicOpen f t)
   exact funext fun _ => toSpec_base_apply_eq _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma toOpen_toSpec_val_c_app (f) (U) :
     (Scheme.ΓSpecIso _).inv ≫ (Spec A⁰_ f).presheaf.map (homOfLE le_top).op ≫

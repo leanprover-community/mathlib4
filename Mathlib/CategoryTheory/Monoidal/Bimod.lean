@@ -6,7 +6,7 @@ Authors: Kim Morrison, Oleksandr Manzyuk
 module
 
 public import Mathlib.CategoryTheory.Bicategory.Basic
-public import Mathlib.CategoryTheory.Monoidal.Mon_
+public import Mathlib.CategoryTheory.Monoidal.Mon
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
 
 /-!
@@ -781,9 +781,17 @@ theorem id_whiskerLeft_bimod {X Y : Mon C} {M N : Bimod X Y} (f : M ⟶ N) :
   slice_rhs 5 7 => rw [← Category.assoc, ← coequalizer.condition]
   slice_rhs 3 4 => rw [associator_inv_naturality_left]
   slice_rhs 4 5 => rw [← comp_whiskerRight, MonObj.one_mul]
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
+  It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+  canonicalizer; a minimization would help. The original proof was:
+  ```
   have : (λ_ (X.X ⊗ N.X)).inv ≫ (α_ (𝟙_ C) X.X N.X).inv ≫ ((λ_ X.X).hom ▷ N.X) = 𝟙 _ := by
     monoidal
   grind
+  ```
+  -/
+  simp
 
 set_option backward.isDefEq.respectTransparency false in
 theorem comp_whiskerLeft_bimod {W X Y Z : Mon C} (M : Bimod W X) (N : Bimod X Y)

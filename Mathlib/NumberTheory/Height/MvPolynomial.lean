@@ -32,14 +32,14 @@ private lemma Height.iSup_fun_eq_max (f : Fin 2 → ℝ) : iSup f = max (f 0) (f
 
 namespace IsNonarchimedean
 
-variable {R α : Type*} [CommRing R]
+variable {R α β F : Type*} [CommRing R] [AddCommMonoid β] [FunLike F β ℝ] [NonnegHomClass F β ℝ]
+    [ZeroHomClass F β ℝ] {v : F} {l : α → β}
 
 -- NOTE: The following cannot be moved to Mathlib.Algebra.Order.Ring.IsNonarchimedean,
 --       because it needs the target to be the reals (to have the default value zero
---       for emtpy iSups), which are not known there.
+--       for empty iSups), which are not known there.
 /-- The ultrametric triangle inequality for finite sums. -/
-lemma apply_sum_le {α β F : Type*} [AddCommMonoid β] [FunLike F β ℝ] [NonnegHomClass F β ℝ]
-    [ZeroHomClass F β ℝ] {v : F} (hv : IsNonarchimedean v) {l : α → β} {s : Finset α} :
+lemma apply_sum_le (hv : IsNonarchimedean v) {s : Finset α} :
     v (∑ i ∈ s, l i) ≤ ⨆ i : s, v (l i) := by
   classical
   induction s using Finset.induction with
@@ -52,6 +52,12 @@ lemma apply_sum_le {α β F : Type*} [AddCommMonoid β] [FunLike F β ℝ] [Nonn
     · rcases isEmpty_or_nonempty s with hs | hs
       · simpa using Real.iSup_nonneg_of_nonnegHomClass v _
       exact ciSup_le fun i ↦ Finite.le_ciSup_of_le (⟨i.val, Finset.mem_insert_of_mem i.prop⟩) le_rfl
+
+/-- The ultrametric triangle inequality for finite sums. -/
+lemma apply_sum_univ_le [Fintype α] (hv : IsNonarchimedean v) :
+    v (∑ i, l i) ≤ ⨆ i, v (l i) := by
+  grw [hv.apply_sum_le, ← cbiSup_eq_of_forall (by grind)]
+  simp
 
 end IsNonarchimedean
 
@@ -391,8 +397,9 @@ If
 * `q : ι × ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `M`,
 * `x : ι → K` is such that for all `k : ι`,
   `∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)`,
+
 then the multiplicative height of `fun j ↦ (p j).eval x` is bounded below by an (explicit) positive
-constant depending only on `q` times the `N`th power of the mutiplicative height of `x`.
+constant depending only on `q` times the `N`th power of the multiplicative height of `x`.
 A similar statement holds for the logarithmic height.
 
 Note that we only require the polynomial relations `∑ j, q (k, j) * p j = X k ^ (M + N)`
@@ -428,8 +435,9 @@ open AdmissibleAbsValues
 * `q : ι × ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `M`,
 * `x : ι → K` is such that for all `k : ι`,
   `∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)`,
+
 then the multiplicative height of `fun j ↦ (p j).eval x` is bounded below by an (explicit) positive
-constant depending only on `q` times the `N`th power of the mutiplicative height of `x`. -/
+constant depending only on `q` times the `N`th power of the multiplicative height of `x`. -/
 theorem mulHeight_eval_ge {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
     (hq : ∀ a, (q a).IsHomogeneous M) (p : ι' → MvPolynomial ι K) {x : ι → K}
     (h : ∀ k, ∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)) :
@@ -458,8 +466,9 @@ theorem mulHeight_eval_ge {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
 * `q : ι × ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `M`,
 * `x : ι → K` is such that for all `k : ι`,
   `∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)`,
+
 then the multiplicative height of `fun j ↦ (p j).eval x` is bounded below by a positive
-constant depending only on `q` times the `N`th power of the mutiplicative height of `x`.
+constant depending only on `q` times the `N`th power of the multiplicative height of `x`.
 
 The difference to `mulHeight_eval_ge` is that the constant is not made explicit. -/
 theorem mulHeight_eval_ge' {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
@@ -479,6 +488,7 @@ open Real in
 * `q : ι × ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `M`,
 * `x : ι → K` is such that for all `k : ι`,
   `∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)`,
+
 then the logarithmic height of `fun j ↦ (p j).eval x` is bounded below by an (explicit)
 constant depending only on `q` plus `N` times the logarithmic height of `x`. -/
 theorem logHeight_eval_ge {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
@@ -500,6 +510,7 @@ theorem logHeight_eval_ge {M N : ℕ} {q : ι × ι' → MvPolynomial ι K}
 * `q : ι × ι' → MvPolynomial ι K` is a family of homogeneous polynomials of the same degree `M`,
 * `x : ι → K` is such that for all `k : ι`,
   `∑ j, (q (k, j)).eval x * (p j).eval x = (x k) ^ (M + N)`,
+
 then the logarithmic height of `fun j ↦ (p j).eval x` is bounded below by a
 constant plus `N` times the logarithmic height of `x`.
 
@@ -531,7 +542,7 @@ namespace Height
 variable [AdmissibleAbsValues K]
 
 lemma mulHeight_mul_mulHeight {a b c d : K} (hab : ![a, b] ≠ 0) (hcd : ![c, d] ≠ 0) :
-    mulHeight ![a, b]* mulHeight ![c, d] = mulHeight ![a * c, a * d, b * c, b * d] := by
+    mulHeight ![a, b] * mulHeight ![c, d] = mulHeight ![a * c, a * d, b * c, b * d] := by
   simp only [← mulHeight_fun_mul_eq hab hcd]
   convert mulHeight_comp_equiv finProdFinEquiv _ with i
   fin_cases i <;> simp [finProdFinEquiv]
@@ -578,7 +589,7 @@ lemma mulHeight_sym2_ge :
   simp only [pow_one] at hC
   refine ⟨C, hC₀, fun hab hcd ↦ ?_⟩
   rw [mul_assoc, mulHeight_mul_mulHeight hab hcd]
-  convert hC p fun j ↦ ?H  with i
+  convert hC p fun j ↦ ?H with i
   case H => fin_cases j <;> simp [p, q, Fin.sum_univ_three] <;> ring
   fin_cases i <;> simp [p]
 

@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Order.Ring.Defs
 # Lemmas about filters and ordered rings.
 -/
 
-@[expose] public section
+public section
 namespace Filter
 
 open Function Filter
