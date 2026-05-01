@@ -261,17 +261,9 @@ theorem succ_castAdd (i : Fin n) : succ (castAdd m i) =
 
 theorem succ_natAdd (i : Fin m) : succ (natAdd n i) = natAdd n (succ i) := rfl
 
-theorem val_sub_castAdd_of_le {n : ℕ} {a b : Fin n} (h : b ≤ a) :
-    (a.castAdd m - b.castAdd m).val = (a - b).val := by
-  grind [Fin.sub_val_of_le]
-
 theorem sub_castAdd_eq_castAdd_sub_of_le {n : ℕ} {a b : Fin n} (h : b ≤ a) :
     a.castAdd m - b.castAdd m = (a - b).castAdd m := by
-  rw [Fin.ext_iff]
-  exact val_sub_castAdd_of_le h
-
-theorem val_sub_castSucc_of_le {n : ℕ} {a b : Fin n} (h : b ≤ a) :
-    (a.castSucc - b.castSucc).val = (a - b).val := val_sub_castAdd_of_le h
+  grind [Fin.sub_val_of_le]
 
 theorem sub_castSucc_eq_castSucc_sub_of_le {n : ℕ} {a b : Fin n} (h : b ≤ a) :
     a.castSucc - b.castSucc = (a - b).castSucc := sub_castAdd_eq_castAdd_sub_of_le h
