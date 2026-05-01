@@ -276,7 +276,7 @@ instance [Φ.IsLocalizedEquivalence] : Φ.IsLocalizedFullyFaithful where
 functor between the localized categories is fully faithful. -/
 @[no_expose] noncomputable def fullyFaithful
     [h : Φ.IsLocalizedFullyFaithful] [CatCommSq Φ.functor L₁ L₂ G] :
-    G.FullyFaithful := 
+    G.FullyFaithful :=
   Nonempty.some (by
     rw [Φ.nonempty_fullyFaithful_iff L₁ L₂ G W₁.Q W₂.Q (Φ.localizedFunctor W₁.Q W₂.Q)]
     exact h.nonempty_fullyFaithful)
