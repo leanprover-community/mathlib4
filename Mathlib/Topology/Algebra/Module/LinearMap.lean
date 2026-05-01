@@ -729,33 +729,6 @@ theorem _root_.Submodule.ker_subtypeL (p : Submodule R₁ M₁) : ker (p.subtype
 
 section
 
-section Quotient
-
-variable {R : Type*} [Ring R] {M : Type*} [TopologicalSpace M] [AddCommGroup M] [Module R M]
-  (S : Submodule R M)
-
-/-- `Submodule.mkQ` as a `ContinuousLinearMap`. -/
-def _root_.Submodule.mkQL : M →L[R] M ⧸ S where
-  toLinearMap := S.mkQ
-  cont := continuous_quot_mk
-
-@[simp, norm_cast]
-theorem _root_.Submodule.coe_mkQL : (S.mkQL : M →ₗ[R] M ⧸ S) = S.mkQ := rfl
-
-@[simp]
-theorem _root_.Submodule.coe_mkQL' : ⇑S.mkQL = S.mkQ := rfl
-
-@[simp]
-theorem _root_.Submodule.mkQL_apply (x : M) : S.mkQL x = S.mkQ x := rfl
-
-theorem _root_.Submodule.range_mkQL : range (S.mkQL : M →ₗ[R] M ⧸ S) = ⊤ := Submodule.range_mkQ S
-
-theorem _root_.Submodule.ker_mkQL : ker (S.mkQL : M →ₗ[R] M ⧸ S) = S := Submodule.ker_mkQ S
-
-theorem _root_.Submodule.isQuotientMap_mkQL : IsQuotientMap S.mkQL := isQuotientMap_quot_mk
-
-end Quotient
-
 variable {R S : Type*} [Semiring R] [Semiring S] [Module R M₁] [Module R M₂] [Module R S]
   [Module S M₂] [IsScalarTower R S M₂] [TopologicalSpace S] [ContinuousSMul S M₂]
 
@@ -1251,9 +1224,25 @@ end ContinuousLinearMap
 
 namespace Submodule
 
-variable {R : Type*} [Ring R] {M : Type*} [TopologicalSpace M] [AddCommGroup M] [Module R M]
+section Ring
 
 open ContinuousLinearMap
+
+variable {R : Type*} [Ring R] {M : Type*} [TopologicalSpace M] [AddCommGroup M] [Module R M]
+  (S : Submodule R M)
+
+/-- `Submodule.mkQ` as a `ContinuousLinearMap`. -/
+def mkQL : M →L[R] M ⧸ S where
+  toLinearMap := S.mkQ
+  cont := continuous_quot_mk
+
+@[simp, norm_cast]
+theorem toLinearMap_mkQL : (S.mkQL : M →ₗ[R] M ⧸ S) = S.mkQ := rfl
+
+@[simp]
+theorem coe_mkQL : ⇑S.mkQL = S.mkQ := rfl
+
+theorem mkQL_apply (x : M) : S.mkQL x = S.mkQ x := by simp
 
 /-- A submodule `p` is called *complemented* if there exists a continuous projection `M →ₗ[R] p`. -/
 def ClosedComplemented (p : Submodule R M) : Prop :=
@@ -1296,6 +1285,8 @@ theorem closedComplemented_bot : ClosedComplemented (⊥ : Submodule R M) :=
 theorem closedComplemented_top : ClosedComplemented (⊤ : Submodule R M) :=
   ⟨(ContinuousLinearMap.id R M).codRestrict ⊤ fun _x => trivial,
     fun x => Subtype.ext_iff.2 <| by simp⟩
+
+end Ring
 
 end Submodule
 
