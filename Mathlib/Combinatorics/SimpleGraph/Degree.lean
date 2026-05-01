@@ -180,17 +180,19 @@ theorem edegree_le_maxEDegree : G.edegree v ≤ G.maxEDegree :=
 theorem minEDegree_le_edegree : G.minEDegree ≤ G.edegree v :=
   iInf_le G.edegree v
 
-variable {v} in
+variable {G v} in
 theorem maxEDegree_eq_top_of_edegree_eq_top (h : G.edegree v = ⊤) : G.maxEDegree = ⊤ :=
   eq_top_iff.mpr <| G.edegree_le_maxEDegree v |>.trans_eq' h
 
-variable {v} in
+variable {G v} in
 theorem minEDegree_eq_zero_of_edegree_eq_zero (h : G.edegree v = 0) : G.minEDegree = 0 :=
   nonpos_iff_eq_zero.mp <| G.minEDegree_le_edegree v |>.trans_eq h
 
+variable {G} in
 theorem maxEDegree_le_of_forall_edegree_le {n : ℕ∞} (h : ∀ v, G.edegree v ≤ n) : G.maxEDegree ≤ n :=
   iSup_le h
 
+variable {G} in
 theorem le_minEDegree_of_forall_le_edegree {n : ℕ∞} (h : ∀ v, n ≤ G.edegree v) : n ≤ G.minEDegree :=
   le_iInf h
 
@@ -323,7 +325,7 @@ theorem minEDegree_le_encard_edgeSet [Nonempty V] (G : SimpleGraph V) :
   exact hv ▸ G.edegree_le_encard_edgeSet v
 
 theorem maxEDegree_le_encard_edgeSet : G.maxEDegree ≤ G.edgeSet.encard :=
-  maxEDegree_le_of_forall_edegree_le _ G.edegree_le_encard_edgeSet
+  maxEDegree_le_of_forall_edegree_le G.edegree_le_encard_edgeSet
 
 theorem minEDegree_le_maxEDegree [Nonempty V] (G : SimpleGraph V) :
     G.minEDegree ≤ G.maxEDegree := by
@@ -357,5 +359,34 @@ variable {G} in
 theorem IsRegularOfDegree.minEDegree_eq [Nonempty V] [G.LocallyFinite] {d : ℕ}
     (h : G.IsRegularOfDegree d) : G.minEDegree = d := by
   simp [minEDegree_eq_iInf, h.edegree_eq]
+
+section Induce
+
+variable {s : Set V}
+
+variable {G} in
+theorem edegree_induce_of_neighborSet_subset {v : s} (h : G.neighborSet v ⊆ s) :
+    (G.induce s).edegree v = G.edegree v := by
+  rw [← encard_neighborSet, ← encard_neighborSet, neighborSet_induce,
+    Set.encard_preimage_of_injective_subset_range Subtype.val_injective <| by simpa]
+
+variable {G} in
+theorem maxEDegree_induce_of_support_subset (h : G.support ⊆ s) :
+    (G.induce s).maxEDegree = G.maxEDegree := by
+  apply le_antisymm <| Embedding.induce s |>.isContained.maxEDegree_le
+  refine G.maxEDegree_le_of_forall_edegree_le fun v ↦ ?_
+  by_cases hv : G.IsIsolated v
+  · simp [hv]
+  grw [← edegree_le_maxEDegree _ ⟨v, h <| G.mem_support_iff_not_isIsolated.mpr hv⟩,
+    edegree_induce_of_neighborSet_subset <| G.neighborSet_subset_support v |>.trans h]
+
+variable {G} in
+theorem le_minEDegree_induce_of_support_subset (h : G.support ⊆ s) :
+    G.minEDegree ≤ (G.induce s).minEDegree := by
+  refine le_minEDegree_of_forall_le_edegree fun v ↦ ?_
+  grw [G.minEDegree_le_edegree v, edegree_induce_of_neighborSet_subset]
+  grw [neighborSet_subset_support, h]
+
+end Induce
 
 end SimpleGraph

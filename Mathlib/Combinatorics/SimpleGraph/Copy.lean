@@ -345,6 +345,15 @@ theorem Hom.minDegree_le [Fintype V] [Fintype W] [DecidableRel G.Adj] [Decidable
     {f : G →g H} (hf : Function.Bijective f) : G.minDegree ≤ H.minDegree :=
   Copy.minDegree_le (f := ⟨f, hf.injective⟩) hf.surjective
 
+theorem maxDegree_induce_of_support_subset [Fintype V] [DecidableRel G.Adj] {s : Set V}
+    [DecidablePred (· ∈ s)] (h : G.support ⊆ s) : (G.induce s).maxDegree = G.maxDegree := by
+  apply le_antisymm <| Copy.max_degree_le <| Embedding.induce s |>.toCopy
+  refine G.maxDegree_le_of_forall_degree_le _ fun v ↦ ?_
+  by_cases hv : G.IsIsolated v
+  · simp [hv]
+  grw [← degree_le_maxDegree _ ⟨v, h <| G.mem_support_iff_not_isIsolated.mpr hv⟩,
+    degree_induce_of_neighborSet_subset <| G.neighborSet_subset_support v |>.trans h]
+
 end IsContained
 
 section Free

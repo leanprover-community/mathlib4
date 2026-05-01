@@ -652,6 +652,17 @@ theorem degree_induce_support (v : G.support) :
     (G.induce G.support).degree v = G.degree v :=
   degree_induce_of_support_subset subset_rfl v
 
+theorem le_minDegree_induce_of_support_subset (h : G.support ⊆ s) :
+    G.minDegree ≤ (G.induce s).minDegree := by
+  cases isEmpty_or_nonempty V
+  · simp
+  rcases s.eq_empty_or_nonempty with (rfl | hs)
+  · simp [minDegree_eq_zero_iff_support_ne, Set.subset_empty_iff.mp h, Set.empty_ne_univ]
+  have := hs.to_subtype
+  refine le_minDegree_of_forall_le_degree _ _ fun v ↦ ?_
+  grw [G.minDegree_le_degree v, degree_induce_of_neighborSet_subset]
+  grw [neighborSet_subset_support, h]
+
 end Support
 
 section Map
