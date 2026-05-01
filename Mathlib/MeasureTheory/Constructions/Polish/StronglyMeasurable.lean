@@ -6,7 +6,7 @@ Authors: Etienne Marion
 module
 
 public import Mathlib.MeasureTheory.Constructions.Polish.Basic
-public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
 
 /-!
 # Results about strongly measurable functions
@@ -86,3 +86,75 @@ protected theorem limUnder [hE : Nonempty E] [IsCompletelyMetrizableSpace E]
       exact subset_union_right (mem_singleton e)
 
 end MeasureTheory.StronglyMeasurable
+
+namespace MeasureTheory
+
+variable {X E ι : Type*} [MeasurableSpace X] [CommMonoid E] [TopologicalSpace E]
+
+section
+
+variable [IsCompletelyPseudoMetrizableSpace E] [ContinuousMul E]
+  [Countable ι] {L : SummationFilter ι} [L.NeBot] [L.filter.IsCountablyGenerated]
+
+/-- The product of strongly measurable functions is measurable. -/
+@[to_additive (attr := fun_prop)
+/-- The sum of strongly measurable functions is measurable. -/]
+theorem StronglyMeasurable.tprod {f : ι → X → E} (h : ∀ i : ι, StronglyMeasurable (f i)) :
+    StronglyMeasurable (fun x => ∏'[L] i : ι, f i x) := by
+  let E := { x | Multipliable (f · x) L }
+  have hE : MeasurableSet E := StronglyMeasurable.measurableSet_exists_tendsto (by fun_prop)
+  have h0 : (Eᶜ.restrict fun x => ∏'[L] i, f i x) = fun _ => 1 :=
+    funext fun ⟨x, hx⟩ => tprod_eq_one_of_not_multipliable hx
+  refine stronglyMeasurable_of_restrict_of_restrict_compl hE ?_ (h0 ▸ stronglyMeasurable_const)
+  refine stronglyMeasurable_of_tendsto L.filter ?_ (tendsto_pi_nhds.mpr fun e => e.2.hasProd)
+  fun_prop
+
+/-- The product of almost everywhere strongly measurable functions is measurable. -/
+@[to_additive (attr := fun_prop)
+/-- The sum of almost everywhere strongly measurable functions is measurable. -/]
+theorem AEStronglyMeasurable.tprod {μ : MeasureTheory.Measure X} {f : ι → X → E}
+    (h : ∀ i : ι, AEStronglyMeasurable (f i) μ) :
+    AEStronglyMeasurable (fun x => ∏'[L] i : ι, f i x) μ := by
+  choose g hg_meas hg_eq_f using h
+  use (fun x => ∏'[L] i, g i x), StronglyMeasurable.tprod hg_meas
+  filter_upwards [ae_all_iff.mpr hg_eq_f] with x h_eq using tprod_congr h_eq
+
+end
+
+section
+
+variable [PseudoMetrizableSpace E] [ContinuousMul E]
+  {L : SummationFilter ι} [L.NeBot] [L.filter.IsCountablyGenerated]
+
+/-- The product of strongly measurable functions is measurable. -/
+@[to_additive (attr := fun_prop)
+/-- The sum of strongly measurable functions is measurable. -/]
+theorem StronglyMeasurable.tprod' {f : ι → X → E} (h : ∀ i : ι, StronglyMeasurable (f i)) :
+    StronglyMeasurable (∏'[L] i : ι, f i) := by
+  rw [tprod_def, finprod_def']
+  split_ifs with hm
+  any_goals exact stronglyMeasurable_one
+  · refine Finset.stronglyMeasurable_prod _ (fun _ _ ↦ ?_)
+    rw [Set.mulIndicator]
+    split_ifs
+    · fun_prop
+    · exact stronglyMeasurable_one
+  · exact stronglyMeasurable_of_tendsto L.filter (by fun_prop) hm.choose_spec
+
+/-- The product of almost everywhere strongly measurable functions is measurable. -/
+@[to_additive (attr := fun_prop)
+/-- The sum of almost everywhere strongly measurable functions is measurable. -/]
+theorem AEStronglyMeasurable.tprod' {μ : MeasureTheory.Measure X} {f : ι → X → E}
+    (h : ∀ i : ι, AEStronglyMeasurable (f i) μ) : AEStronglyMeasurable (∏'[L] i : ι, f i) μ := by
+  rw [tprod_def, finprod_def']
+  split_ifs with hm
+  any_goals exact aestronglyMeasurable_one
+  · refine Finset.aestronglyMeasurable_prod _ (fun _ _ ↦ ?_)
+    rw [Set.mulIndicator]
+    split_ifs <;> fun_prop
+  · apply aestronglyMeasurable_of_tendsto_ae L.filter (f := fun s => ∏ i ∈ s, f i) (by fun_prop)
+    exact .of_forall fun x ↦ hm.choose_spec.apply_nhds x
+
+end
+
+end MeasureTheory
