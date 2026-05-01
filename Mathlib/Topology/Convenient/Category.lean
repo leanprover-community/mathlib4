@@ -42,7 +42,7 @@ open CategoryTheory Topology
 variable {ι : Type t} (X : ι → Type u) [∀ i, TopologicalSpace (X i)]
 
 /-- The property of objects of `TopCat` which is satisfied by `X`-generated spaces. -/
-def TopCat.generatedBy : ObjectProperty TopCat.{v} :=
+abbrev TopCat.generatedBy : ObjectProperty TopCat.{v} :=
   fun Y ↦ IsGeneratedBy X Y
 
 lemma TopCat.generatedBy_def (Y : TopCat.{v}) :
@@ -61,7 +61,7 @@ instance (Y : GeneratedByTopCat.{v} X) : IsGeneratedBy X (toTopCat.obj Y) := Y.p
 
 /-- The inclusion functor `toTopCat : GeneratedByTopCat X ⥤ TopCat`
 is fully faithful. -/
-def fullyFaithfulToTopCat : (toTopCat.{v} (X := X)).FullyFaithful :=
+abbrev fullyFaithfulToTopCat : (toTopCat.{v} (X := X)).FullyFaithful :=
   ObjectProperty.fullyFaithfulι _
 
 variable {X} in
@@ -104,37 +104,48 @@ lemma coe_of (Y : Type v) [TopologicalSpace Y] : (of (X := X) Y : Type v) = Y :=
 
 lemma of_carrier (Y : ContinuousGeneratedByCat.{v} X) : of (X := X) Y = Y := rfl
 
+/-- The type of morphisms in the category `ContinuousGeneratedByCat X` is
+a one-field structure containing a field of type `ContinuousMapGeneratedBy`,
+i.e. `X`-continuous maps. -/
+structure Hom (Y Z : ContinuousGeneratedByCat.{v} X) where
+  /-- the underlying `X`-continuous map of a morphism in `ContinuousGeneratedByCat X`. -/
+  hom : ContinuousMapGeneratedBy X Y Z
+
 instance : Category (ContinuousGeneratedByCat.{v} X) where
-  Hom Y Z := ContinuousMapGeneratedBy X Y Z
-  id X := .id
-  comp f g := g.comp f
+  Hom := Hom
+  id X := { hom := .id }
+  comp f g := {hom := g.hom.comp f.hom }
 
 instance : ConcreteCategory.{v} (ContinuousGeneratedByCat.{v} X)
     (fun Y Z ↦ ContinuousMapGeneratedBy X Y Z) where
-  hom := id
-  ofHom := id
+  hom := Hom.hom
+  ofHom := Hom.mk
+
+/-- Constructor for morphisms in `ContinuousGeneratedByCat X`. -/
+@[simps]
+def homMk {Y Z : ContinuousGeneratedByCat.{v} X} (f : Y → Z) (hf : ContinuousGeneratedBy X f) :
+    Y ⟶ Z where
+  hom.toFun := f
+  hom.prop := hf
+
+/-- Use the abbreviation `TopCat.toContinuousGeneratedByCat` for the faithful
+functor `TopCat ⥤ ContinuousGeneratedByCat X` which sends
+a topological space `Y` to the same type `Y`, with the same topology, but
+considered as an object of `ContinuousGeneratedByCat X`. -/
+@[simps! +dsimpLhs forget₂_obj forget₂_map_hom_apply]
+instance : HasForget₂ TopCat.{v} (ContinuousGeneratedByCat.{v} X) where
+  forget₂.obj Y := .of Y
+  forget₂.map f := ContinuousGeneratedByCat.homMk f (f.hom.continuous.continuousGeneratedBy)
 
 end ContinuousGeneratedByCat
 
 /-- The faithful functor `TopCat ⥤ ContinuousGeneratedByCat X` which sends
 a topological space `Y` to the same type `Y`, with the same topology, but
 considered as an object of `ContinuousGeneratedByCat X`. -/
-@[simps obj]
-def TopCat.toContinuousGeneratedByCat :
-    TopCat.{v} ⥤ ContinuousGeneratedByCat.{v} X where
-  obj Y := .of Y
-  map f :=
-    { toFun := f
-      prop := f.hom.continuous.continuousGeneratedBy }
+abbrev TopCat.toContinuousGeneratedByCat :
+    TopCat.{v} ⥤ ContinuousGeneratedByCat.{v} X := forget₂ _ _
 
-@[simp]
-lemma TopCat.toContinuousGeneratedByCat_map_apply {Y Z : TopCat.{v}} (f : Y ⟶ Z) (y : Y) :
-    dsimp% (TopCat.toContinuousGeneratedByCat X).map f y = f y := rfl
-
-instance : (TopCat.toContinuousGeneratedByCat.{v} X).Faithful where
-  map_injective {_ _ _ _ h} := by
-    ext x
-    apply ConcreteCategory.congr_hom h
+instance : (TopCat.toContinuousGeneratedByCat.{v} X).Faithful := inferInstance
 
 namespace ContinuousGeneratedByCat
 
@@ -144,7 +155,7 @@ the topological space `WithGeneratedByTopology X Y`. -/
 @[simps obj]
 def toTopCat : ContinuousGeneratedByCat.{v} X ⥤ TopCat where
   obj Y := TopCat.of (WithGeneratedByTopology X Y)
-  map f := TopCat.ofHom (f.prop.continuousMap)
+  map f := TopCat.ofHom (f.hom.prop.continuousMap)
 
 variable {X} in
 lemma toTopCat_map_apply {Y Z : ContinuousGeneratedByCat.{v} X}
@@ -158,11 +169,10 @@ lemma toTopCat_map_apply {Y Z : ContinuousGeneratedByCat.{v} X}
 is fully faithful. -/
 def fullyFaithfulToTopCat : (toTopCat.{v} X).FullyFaithful where
   preimage {Y Z} g :=
-    { toFun := WithGeneratedByTopology.equiv (X := X) ∘ g.hom ∘
-          (WithGeneratedByTopology.equiv (X := X)).symm
-      prop := by
-        rw [continuousGeneratedBy_iff]
-        exact g.hom.continuous }
+    homMk (WithGeneratedByTopology.equiv (X := X) ∘ g.hom ∘
+      (WithGeneratedByTopology.equiv (X := X)).symm) (by
+      rw [continuousGeneratedBy_iff]
+      exact g.hom.continuous)
 
 instance : (toTopCat.{v} X).Full := (fullyFaithfulToTopCat X).full
 
@@ -175,8 +185,8 @@ the categories `ContinuousGeneratedByCat X` and `TopCat`. -/
 def adjUnitIso :
     𝟭 (ContinuousGeneratedByCat.{v} X) ≅ toTopCat X ⋙ TopCat.toContinuousGeneratedByCat X :=
   NatIso.ofComponents (fun Y ↦
-    { hom := WithGeneratedByTopology.equivSymmAsContinuousMapGeneratedBy X Y
-      inv := WithGeneratedByTopology.equivAsContinuousMapGeneratedBy X Y })
+    { hom := { hom := WithGeneratedByTopology.equivSymmAsContinuousMapGeneratedBy X Y }
+      inv := { hom := WithGeneratedByTopology.equivAsContinuousMapGeneratedBy X Y }})
 
 /-- The counit of the adjunction `ContinuousGeneratedByCat.adj` between
 the categories `ContinuousGeneratedByCat X` and `TopCat`. -/
@@ -197,16 +207,12 @@ instance : IsIso (adj.{v} (X := X)).unit := by dsimp; infer_instance
 
 /-- The functor `GeneratedByTopCat X ⥤ ContinuousGeneratedByCat X` which is
 part of the equivalence `ContinuousGeneratedByCat.equivalence`. It sends
-a `X`-generated topological space `Y` to the topological space `Y`, considered as
+an `X`-generated topological space `Y` to the topological space `Y`, considered as
 an object of `ContinuousGeneratedByCat X`. -/
-@[simps obj]
+@[simps +dsimpLhs obj map_hom_apply]
 def fromGeneratedByTopCat : GeneratedByTopCat.{v} X ⥤ ContinuousGeneratedByCat.{v} X where
   obj Y := .of Y.obj
   map f := ⟨f, f.hom.hom.continuous.continuousGeneratedBy⟩
-
-@[simp]
-lemma fromGeneratedByTopCat_map_apply {Y Z : GeneratedByTopCat.{v} X} (f : Y ⟶ Z) (y : Y) :
-    dsimp% fromGeneratedByTopCat.map f y = f y := rfl
 
 /-- The isomorphism between
 `fromGeneratedByTopCat ⋙ toTopCat X ≅ GeneratedByTopCat.toTopCat`. -/
@@ -221,7 +227,8 @@ part of the equivalence `ContinuousGeneratedByCat.equivalence`. -/
 def toGeneratedByTopCat : ContinuousGeneratedByCat.{v} X ⥤ GeneratedByTopCat.{v} X :=
   ObjectProperty.lift _ (toTopCat X) (fun Y ↦ by
     rw [TopCat.generatedBy_def]
-    exact IsGeneratedBy.instWithGeneratedByTopology (Y := Y))
+    dsimp +instances
+    infer_instance)
 
 lemma toGeneratedByTopCat_map_apply {Y Z : ContinuousGeneratedByCat.{v} X} (f : Y ⟶ Z)
     (y : WithGeneratedByTopology X Y) :
@@ -287,6 +294,7 @@ def adj : toTopCat.{v} (X := X) ⊣ TopCat.toGeneratedByTopCat where
 instance : IsIso (adj.{v} (X := X)).unit := by dsimp; infer_instance
 
 instance : (toTopCat.{v} (X := X)).IsLeftAdjoint := adj.isLeftAdjoint
+instance : (toTopCat.{v} (X := X)).IsLeftAdjoint := inferInstance
 
 instance : (TopCat.toGeneratedByTopCat.{v} (X := X)).IsRightAdjoint := adj.isRightAdjoint
 

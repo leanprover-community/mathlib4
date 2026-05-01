@@ -17,7 +17,7 @@ In particular finitely generated field extensions over perfect fields are smooth
 
 -/
 
-@[expose] public section
+public section
 
 variable {K L ι : Type*} [Field L] [Field K] [Algebra K L]
 
