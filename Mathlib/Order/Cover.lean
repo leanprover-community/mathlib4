@@ -750,6 +750,16 @@ lemma coe_covBy_coe : (a : WithTop α) ⋖ b ↔ a ⋖ b :=
   Set.OrdConnected.apply_covBy_apply_iff WithTop.coeOrderHom <| by
     simp [WithTop.range_coe, ordConnected_Iio]
 
+@[to_dual]
+theorem covBy_top_iff {a : WithTop α} : a ⋖ ⊤ ↔ ∃ b : α, IsMax b ∧ a = b := by
+  cases a with
+  | coe a => simp [CovBy, WithTop.forall, isMax_iff_forall_not_lt]
+  | top => simp [CovBy]
+
+@[to_dual (attr := simp)]
+theorem not_covBy_top [NoMaxOrder α] {a : WithTop α} : ¬ a ⋖ ⊤ := by
+  simp [covBy_top_iff]
+
 @[to_dual (attr := simp) bot_covBy_coe]
 lemma coe_covBy_top : (a : WithTop α) ⋖ ⊤ ↔ IsMax a := by
   simp [covBy_iff_Ioo_eq, ← image_coe_Ioi]
