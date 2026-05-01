@@ -1226,8 +1226,6 @@ namespace Submodule
 
 section Ring
 
-open ContinuousLinearMap
-
 variable {R : Type*} [Ring R] {M : Type*} [TopologicalSpace M] [AddCommGroup M] [Module R M]
   (S : Submodule R M)
 
@@ -1243,6 +1241,14 @@ theorem toLinearMap_mkQL : (S.mkQL : M →ₗ[R] M ⧸ S) = S.mkQ := rfl
 theorem coe_mkQL : ⇑S.mkQL = S.mkQ := rfl
 
 theorem mkQL_apply (x : M) : S.mkQL x = S.mkQ x := by simp
+
+end Ring
+
+section
+
+variable {R : Type*} [Ring R] {M : Type*} [TopologicalSpace M] [AddCommGroup M] [Module R M]
+
+open ContinuousLinearMap
 
 /-- A submodule `p` is called *complemented* if there exists a continuous projection `M →ₗ[R] p`. -/
 def ClosedComplemented (p : Submodule R M) : Prop :=
@@ -1286,7 +1292,7 @@ theorem closedComplemented_top : ClosedComplemented (⊤ : Submodule R M) :=
   ⟨(ContinuousLinearMap.id R M).codRestrict ⊤ fun _x => trivial,
     fun x => Subtype.ext_iff.2 <| by simp⟩
 
-end Ring
+end
 
 end Submodule
 
