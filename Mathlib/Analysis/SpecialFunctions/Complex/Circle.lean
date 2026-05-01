@@ -56,38 +56,32 @@ theorem mem_centeredArc {r : ℝ} (hr : r ≤ π) {z : Circle} :
   have htπ : |t| < π := ht.trans_le hr
   rwa [arg_exp (neg_lt_of_abs_lt htπ) (lt_of_abs_lt htπ).le]
 
-/-- If all positive powers of a point on the circle lie in the right half centered arc,
-then the point is `1`. -/
-theorem eq_one_of_forall_pow_mem_centeredArc_pi_div_two {z : Circle}
-    (hz : ∀ n > 0, z ^ n ∈ centeredArc (π / 2)) : z = 1 := by
-  have exists_pos_cos_mul_nonpos_of_pos :
-      ∀ {θ : ℝ}, 0 < θ → θ ≤ π → ∃ n > (0 : ℕ), Real.cos ((n : ℝ) * θ) ≤ 0 := by
-    intro θ hθ0 hθπ
-    refine ⟨⌈π / 2 / θ⌉₊, by positivity, cos_nonpos_of_pi_div_two_le_of_le ?_ ?_⟩
-    · grw [← Nat.le_ceil]
-      simp [hθ0.ne']
-    · grw [Nat.ceil_lt_add_one (by positivity), add_one_mul]
-      simpa [hθ0.ne', add_comm]
-  have exists_pos_cos_mul_nonpos :
-      ∀ {θ : ℝ}, -π < θ → θ ≤ π → θ ≠ 0 →
-        ∃ n > (0 : ℕ), Real.cos ((n : ℝ) * θ) ≤ 0 := by
-    intro θ hθ₁ hθ₂ hθ
-    obtain (_hθ | hθ) := hθ.lt_or_gt
-    · simpa using exists_pos_cos_mul_nonpos_of_pos (θ := -θ) (by linarith) (by linarith)
-    · exact exists_pos_cos_mul_nonpos_of_pos hθ hθ₂
-  rw [← arg_eq_zero]
-  by_contra hθ
-  obtain ⟨n, hn, hcos⟩ := exists_pos_cos_mul_nonpos (neg_pi_lt_arg _) (arg_le_pi _) hθ
-  have hzarg : |arg (z ^ n)| < π / 2 :=
-    (mem_centeredArc (z := z ^ n) (by linarith [pi_pos])).1 (hz n hn)
-  have hpow : exp ((n : ℝ) * arg z) = exp (arg (z ^ n)) := by
-    rw [exp_natCast_mul, exp_arg]
-    exact (exp_arg (z ^ n)).symm
-  have : Real.cos ((n : ℝ) * arg z) = Real.cos (arg (z ^ n)) :=
-    cos_eq_cos_of_exp_eq_exp hpow
-  have hzargIoo : arg (z ^ n) ∈ Set.Ioo (-(π / 2)) (π / 2) := by
-    simpa [Set.mem_Ioo] using abs_lt.mp hzarg
-  linarith [cos_pos_of_mem_Ioo hzargIoo]
+theorem centeredArc_eq_empty {r : ℝ} (hr : r ≤ 0) : centeredArc r = ∅ := by
+  contrapose! hr
+  obtain ⟨-, x, hx, rfl⟩ := hr
+  exact (abs_nonneg x).trans_lt hx
+
+@[simp]
+theorem centeredArc_zero : centeredArc 0 = ∅ :=
+  centeredArc_eq_empty le_rfl
+
+theorem mem_centeredArc_div {z : Circle} {s : ℝ} {n : ℕ} (hs : s ≤ π)
+    (h1 : z ∈ centeredArc (π / n)) (h2 : z ^ n ∈ centeredArc s) :
+    z ∈ centeredArc (s / n) := by
+  have hs0 : 0 < s := by
+    contrapose! h2
+    simp [centeredArc_eq_empty h2]
+  have hn0 : n ≠ 0 := by
+    contrapose! h1
+    simp [h1]
+  have hn : 1 ≤ (n : ℝ) := by simpa [Nat.one_le_iff_ne_zero]
+  rw [mem_centeredArc ((div_le_self hs0.le hn).trans hs),
+    lt_div_iff₀' (one_pos.trans_le hn)]
+  rw [mem_centeredArc (div_le_self pi_nonneg hn)] at h1
+  rwa [mem_centeredArc hs, coe_pow, ← arg_coe_angle_toReal_eq_arg, arg_pow_coe_angle,
+    (Angle.nsmul_toReal_eq_mul hn0).mpr (mem_Ioc_of_Ioo ?_), abs_mul, Nat.abs_cast,
+    arg_coe_angle_toReal_eq_arg] at h2
+  rwa [neg_div, mem_Ioo, ← abs_lt, arg_coe_angle_toReal_eq_arg]
 
 /-- `Complex.arg ∘ (↑)` and `Circle.exp` define a partial equivalence between `Circle` and `ℝ`
 with `source = Set.univ` and `target = Set.Ioc (-π) π`. -/
@@ -451,8 +445,33 @@ theorem Circle.isCoveringMap_exp : IsCoveringMap exp := isAddQuotientCoveringMap
 lemma isLocalHomeomorph_circleExp : IsLocalHomeomorph Circle.exp :=
   Circle.isCoveringMap_exp.isLocalHomeomorph
 
+theorem Circle.hasBasis_centeredArc_div_two_pow :
+    (nhds (1 : Circle)).HasBasis (fun _ ↦ True) (fun n ↦ centeredArc (π / 2 ^ (n + 1))) := by
+  rw [← Circle.exp_zero, ← isLocalHomeomorph_circleExp.map_nhds_eq 0]
+  refine ((nhds_basis_zero_abs_lt ℝ).to_hasBasis
+      (fun x hx ↦ ⟨Nat.ceil (Real.pi / x), trivial, fun t ht ↦ ?_⟩)
+        fun k _ ↦ ⟨Real.pi / 2 ^ (k + 1), by positivity, le_rfl⟩).map Circle.exp
+  rw [Set.mem_setOf_eq] at ht ⊢
+  refine lt_of_lt_of_le ht ?_
+  rw [div_le_iff₀' (pow_pos two_pos _), ← div_le_iff₀ hx]
+  refine (Nat.le_ceil (Real.pi / x)).trans ?_
+  exact_mod_cast (Nat.le_succ _).trans Nat.lt_two_pow_self.le
+
 theorem Circle.isOpen_centeredArc (r : ℝ) : IsOpen (centeredArc r) := by
   simpa [centeredArc, abs_lt] using isLocalHomeomorph_circleExp.isOpenMap _ isOpen_Ioo
+
+/-- If all positive powers of a point on the circle lie in the right half centered arc,
+then the point is `1`. -/
+theorem Circle.eq_one_of_forall_pow_mem_centeredArc_pi_div_two {z : Circle}
+    (hz : ∀ n > 0, z ^ n ∈ centeredArc (π / 2)) : z = 1 := by
+  have hz1 : z ∈ centeredArc (π / 2) := by simpa using hz 1
+  have h (n : ℕ) : z ∈ centeredArc (π / 2 ^ (n + 1)) := by
+    induction n with
+    | zero => simpa using hz1
+    | succ n ih =>
+        simpa [div_div, ← pow_succ'] using mem_centeredArc_div
+          (div_le_self pi_nonneg one_le_two) (by simpa) (hz (2 ^ (n + 1)) (by positivity))
+  simpa [h] using Set.ext_iff.mp hasBasis_centeredArc_div_two_pow.ker z
 
 /- TODO: this generalizes to a large class of groups, but requires an open mapping theorem for
 topological groups to show the `n`th power map is open (see https://www.mathematik.tu-darmstadt.de/media/mathematik/forschung/preprint/preprints/2480.pdf

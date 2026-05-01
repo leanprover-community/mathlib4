@@ -52,15 +52,7 @@ instance [LocallyCompactSpace H] : LocallyCompactSpace (PontryaginDual H) := by
     refine h1.trans_le ?_
     gcongr
     exact le_self_pow₀ one_le_two n.succ_ne_zero
-  · rw [← Circle.exp_zero, ← isLocalHomeomorph_circleExp.map_nhds_eq 0]
-    refine ((nhds_basis_zero_abs_lt ℝ).to_hasBasis
-        (fun x hx ↦ ⟨Nat.ceil (Real.pi / x), trivial, fun t ht ↦ ?_⟩)
-          fun k _ ↦ ⟨Real.pi / 2 ^ (k + 1), by positivity, le_rfl⟩).map Circle.exp
-    rw [Set.mem_setOf_eq] at ht ⊢
-    refine lt_of_lt_of_le ht ?_
-    rw [div_le_iff₀' (pow_pos two_pos _), ← div_le_iff₀ hx]
-    refine (Nat.le_ceil (Real.pi / x)).trans ?_
-    exact_mod_cast (Nat.le_succ _).trans Nat.lt_two_pow_self.le
+  · simpa [Vn] using Circle.hasBasis_centeredArc_div_two_pow
 
 variable {A B C G}
 
