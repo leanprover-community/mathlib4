@@ -152,27 +152,33 @@ lemma isSheafUniqueGluing_iff_isSheafUniqueGluingNontrivial_types
     [Nonempty (ToType (F.obj (op ⊥)))] [Subsingleton (ToType (F.obj (op ⊥)))] :
     IsSheafUniqueGluing F ↔ IsSheafUniqueGluingNontrivial F := by
   refine ⟨fun h _ _ U _ sf ↦ h U sf, fun h ι U sf com ↦ ?_⟩
-  have empty {V : Opens X} (hV : V = ⊥) : Unique (ToType (F.obj (op V))) := by
-    rwa [hV]
-  by_cases h1 : ∃ i : ι, Nonempty (U i)
-  · let ι' := {i : ι | Nonempty (U i)}
+  have sub {V : Opens X} (hV : V = ⊥) : Subsingleton (ToType (F.obj (op V))) := by rwa [hV]
+  have non {V : Opens X} (hV : V = ⊥) : Nonempty (ToType (F.obj (op V))) := by rwa [hV]
+  by_cases h1 : ∃ i : ι, (U i).carrier.Nonempty
+  · let ι' := {i : ι | (U i).carrier.Nonempty}
     let U' : ι' → Opens X := fun i ↦ U i
     have : Nonempty ι' := nonempty_subtype.mpr h1
-    have eq : op (iSup U') = op (iSup U) := congrArg op (by aesop)
+    have : iSup U' = iSup U := by
+      simp only [iSup_mk, carrier_eq_coe, Set.iUnion_coe_set, U']
+      ext x
+      simp_all [ι']
+    have eq := congrArg op this
     obtain ⟨s, hs1, hs2⟩ := h U' (fun i ↦ i.2) (fun i ↦ sf i) (fun a b ↦ com a b)
     refine ⟨F.map (eqToHom eq) s, fun j ↦ ?_, fun y hy ↦ ?_⟩
-    · by_cases hj : Nonempty (U j)
+    · by_cases hj : (U j).carrier.Nonempty
       · rw [← ConcreteCategory.comp_apply, ← F.map_comp]
         exact hs1 ⟨j, hj⟩
-      · have := empty (show U j = ⊥ by aesop)
+      · have := sub <| (not_nonempty_iff_eq_bot (U j)).mp hj
         exact Subsingleton.elim _ _
     · have hy' : F.IsGluing U' (fun i ↦ sf i) (F.map (eqToHom eq.symm) y) := fun b ↦ by
         rw [← ConcreteCategory.comp_apply, ← F.map_comp]
         exact hy b.1
       simp [← hs2 _ hy', ← ConcreteCategory.comp_apply, ← F.map_comp]
-  · have := empty (show iSup U = ⊥ by aesop)
-    refine ⟨default, fun j ↦ ?_, fun _ _ ↦ Subsingleton.elim _ _⟩
-    have := empty (show U j = ⊥ by aesop)
+  · have : iSup U = ⊥ := by simp_all [not_nonempty_iff_eq_bot]
+    obtain ⟨t⟩ : Nonempty (ToType (F.obj (op (iSup U)))) := non this
+    have : Subsingleton (ToType (F.obj (op (iSup U)))) := sub this
+    refine ⟨t, fun j ↦ ?_, fun _ _ ↦ Subsingleton.elim _ _⟩
+    have := sub (show U j = ⊥ by simp_all)
     exact Subsingleton.elim _ _
 
 /-- The usual sheaf condition can be obtained from the sheaf condition
@@ -207,11 +213,12 @@ theorem isSheaf_iff_isSheafUniqueGluing : F.IsSheaf ↔ F.IsSheafUniqueGluing :=
 whose forgetful functor reflects isomorphisms and preserves limits, the sheaf condition in terms of
 unique gluings with covers that are nowhere empty is equivalent to the usual one.
 -/
-theorem isSheaf_iff_isSheafUniqueGluingNontrivial (k : Unique (ToType (F.obj (op ⊥)))) :
+theorem isSheaf_iff_isSheafUniqueGluingNontrivial [Nonempty (ToType ((F ⋙ forget C).obj (op ⊥)))]
+    [Subsingleton (ToType ((F ⋙ forget C).obj (op ⊥)))] :
     F.IsSheaf ↔ F.IsSheafUniqueGluingNontrivial :=
   (isSheaf_iff_isSheaf_comp' (forget C) F).trans
     ((isSheaf_iff_isSheafUniqueGluing_types (F ⋙ forget C)).trans
-      (isSheafUniqueGluing_iff_isSheafUniqueGluingNontrivial_types (F ⋙ forget C) k))
+      (isSheafUniqueGluing_iff_isSheafUniqueGluingNontrivial_types (F ⋙ forget C)))
 
 end
 
