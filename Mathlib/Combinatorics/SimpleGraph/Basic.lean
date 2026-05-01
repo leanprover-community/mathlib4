@@ -926,6 +926,7 @@ lemma mem_support_iff_not_isIsolated : v ∈ G.support ↔ ¬ G.IsIsolated v := 
   simp [mem_support, IsIsolated]
 
 -- #38747
+@[simp]
 theorem notMem_support_iff_isIsolated : v ∉ G.support ↔ G.IsIsolated v := by
   simp [mem_support_iff_not_isIsolated]
 

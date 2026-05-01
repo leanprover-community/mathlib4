@@ -39,6 +39,7 @@ variable {G v} in
 theorem edegree_eq_zero_iff_isIsolated : G.edegree v = 0 ↔ G.IsIsolated v := by
   simp [← encard_neighborSet]
 
+@[simp]
 alias ⟨_, IsIsolated.edegree_eq⟩ := edegree_eq_zero_iff_isIsolated
 
 variable {G u v} in
@@ -53,10 +54,9 @@ variable {G v} in
 theorem nontrivial_of_edegree_ne_zero (h : G.edegree v ≠ 0) : Nontrivial V :=
   nontrivial_of_not_isIsolated <| edegree_eq_zero_iff_isIsolated.not.mp h
 
-@[simp]
 theorem edegree_eq_zero_of_subsingleton [Subsingleton V] (G : SimpleGraph V) (v : V) :
-    G.edegree v = 0 :=
-  edegree_eq_zero_iff_isIsolated.mpr <| .of_subsingleton G v
+    G.edegree v = 0 := by
+  simp
 
 variable {G v} in
 theorem edegree_eq_one_iff_existsUnique_adj : G.edegree v = 1 ↔ ∃! u, G.Adj v u := by
@@ -119,9 +119,8 @@ theorem edegree_top : edegree ⊤ v = ENat.card V - 1 := by
   rw [← encard_neighborSet, neighborSet_top, ← Set.encard_ne_add_one v, ← Set.compl_singleton_eq]
   cases Set.encard {v}ᶜ <;> norm_cast
 
-@[simp]
 theorem edegree_bot : edegree ⊥ v = 0 := by
-  simp [← encard_neighborSet]
+  simp
 
 variable {G} in
 theorem IsRegularOfDegree.edegree_eq [G.LocallyFinite] {d : ℕ} (h : G.IsRegularOfDegree d) (v : V) :
@@ -146,6 +145,10 @@ variable {G} in
 @[simp]
 theorem maxEDegree_eq_zero_iff_eq_bot : G.maxEDegree = 0 ↔ G = ⊥ := by
   simp [maxEDegree_eq_iSup, eq_bot_iff_isIsolated]
+
+variable {G} in
+theorem minEDegree_eq_zero_iff_isIsolated : G.minEDegree = 0 ↔ ∃ v, G.IsIsolated v := by
+  simp [minEDegree_eq_iInf]
 
 variable {G} in
 theorem minEDegree_eq_zero_iff_support_ne : G.minEDegree = 0 ↔ G.support ≠ .univ := by

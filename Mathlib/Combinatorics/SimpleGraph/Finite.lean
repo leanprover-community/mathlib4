@@ -500,10 +500,15 @@ lemma minDegree_bot_eq_zero : (⊥ : SimpleGraph V).minDegree = 0 :=
 
 variable {G} in
 theorem minDegree_eq_zero_iff [DecidableRel G.Adj] [Nonempty V] :
-    G.minDegree = 0 ↔ ∃ v, G.degree v = 0 := by
+    G.minDegree = 0 ↔ ∃ v, G.IsIsolated v := by
   refine ⟨fun h ↦ ?_, fun ⟨v, hv⟩ ↦ ?_⟩
-  · grind [G.exists_minimal_degree_vertex]
-  · grind [G.minDegree_le_degree v]
+  · grind [G.exists_minimal_degree_vertex, degree_eq_zero]
+  · grind [G.minDegree_le_degree v, degree_eq_zero]
+
+variable {G} in
+theorem minDegree_eq_zero_iff_support_ne [DecidableRel G.Adj] [Nonempty V] :
+    G.minDegree = 0 ↔ G.support ≠ .univ := by
+  simp [Set.ne_univ_iff_exists_notMem, minDegree_eq_zero_iff]
 
 @[simp]
 lemma minDegree_top [DecidableEq V] : (⊤ : SimpleGraph V).minDegree = Fintype.card V - 1 := by
