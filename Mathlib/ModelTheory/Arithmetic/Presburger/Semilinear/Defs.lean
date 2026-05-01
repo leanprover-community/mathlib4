@@ -79,9 +79,9 @@ theorem IsLinearSet.closure_of_finite (hs : s.Finite) :
   ⟨0, s, hs, by simp⟩
 
 theorem isLinearSet_iff_exists_fg_eq_vadd :
-    IsLinearSet s ↔ ∃ (a : M) (P : AddSubmonoid M), P.FG ∧ s = a +ᵥ (P : Set M) :=
-  isLinearSet_iff.trans (exists_congr fun a =>
-    ⟨fun ⟨t, hs⟩ => ⟨_, ⟨t, rfl⟩, hs⟩, fun ⟨P, ⟨t, hP⟩, hs⟩ => ⟨t, by rwa [hP]⟩⟩)
+    IsLinearSet s ↔ ∃ (a : M) (P : AddSubmonoid M), P.FG ∧ s = a +ᵥ (P : Set M) := by
+  simp_rw [isLinearSet_iff, AddSubmonoid.fg_def]
+  grind
 
 theorem IsLinearSet.of_fg {P : AddSubmonoid M} (hP : P.FG) : IsLinearSet (P : Set M) := by
   rw [isLinearSet_iff_exists_fg_eq_vadd]
@@ -89,7 +89,7 @@ theorem IsLinearSet.of_fg {P : AddSubmonoid M} (hP : P.FG) : IsLinearSet (P : Se
 
 @[simp]
 protected theorem IsLinearSet.univ [AddMonoid.FG M] : IsLinearSet (univ : Set M) :=
-  of_fg AddMonoid.FG.fg_top
+  of_fg AddMonoid.fg_top
 
 theorem IsLinearSet.vadd (a : M) (hs : IsLinearSet s) : IsLinearSet (a +ᵥ s) := by
   rcases hs with ⟨b, t, ht, rfl⟩
