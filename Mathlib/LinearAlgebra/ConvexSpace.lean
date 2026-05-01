@@ -74,11 +74,6 @@ lemma nonempty [Nontrivial R] (f : StdSimplex R M) : Nonempty M := by
 theorem ext {f g : StdSimplex R M} (h : f.weights = g.weights) : f = g := by
   cases f; cases g; simp_all
 
-instance instFunLike : FunLike (StdSimplex R M) M R := {
-  coe s := s.weights.toFun
-  coe_injective' := fun _ _ h ↦ ext (Finsupp.ext fun i ↦ congrFun h i)
-}
-
 variable [IsStrictOrderedRing R]
 
 /-- The point mass distribution concentrated at `x`. -/
@@ -139,13 +134,12 @@ lemma map_map (f : StdSimplex R M) (g₁ : M → N) (g₂ : N → P) :
     (f.map g₁).map g₂ = f.map (fun x ↦ g₂ (g₁ x)) :=
   (map_comp ..).symm
 
-lemma sum_map {s : StdSimplex R M} {f : M → N} {g : N → R → R}
+lemma sum_map (s : StdSimplex R M) (f : M → N) {g : N → R → R}
     (hadd : ∀ (a : N) (b₁ b₂ : R), g a (b₁ + b₂) = g a b₁ + g a b₂) :
     (map f s).sum g = s.sum (fun m r ↦ g (f m) r) := by
   have hzero (n : N) : g n 0 = 0 := by simpa using hadd n 0 0
   simp only [map, Finsupp.mapDomain, Finsupp.sum_sum_index hzero hadd]
-  congr
-  ext m r
+  congr with m r
   rw [Finsupp.sum_single_index (hzero (f m))]
 
 /--
@@ -175,11 +169,10 @@ lemma bind_single (m : M) (g : M → StdSimplex R N) : bind (single m) g = g m :
 lemma bind_const (f : StdSimplex R M) (g : StdSimplex R N) : bind f (fun _ ↦ g) = g := by
   simp [bind, join]
 
-lemma weights_bind (f : StdSimplex R M) (g : M → StdSimplex R N) :
-  (bind f g).weights = fun n ↦ ∑ k ∈ f.support, f.weights k * (g k).weights n := by
-  ext n
+lemma weights_bind (f : StdSimplex R M) (g : M → StdSimplex R N) (n : N) :
+    (bind f g).weights n = ∑ k ∈ f.support, f.weights k * (g k).weights n := by
   simp only [bind, join, map, Finsupp.sum_apply]
-  rw [Finsupp.sum_mapDomain_index (fun _ => by simp) (fun _ _ _ => by simp [add_mul])]
+  rw [Finsupp.sum_mapDomain_index (by simp) (by simp [add_mul])]
   simp [Finsupp.sum]
 
 lemma support_subset_support_bind {f : StdSimplex R M} (g : M → StdSimplex R N) {m : M}
