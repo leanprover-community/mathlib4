@@ -896,20 +896,6 @@ abbrev InnerProductSpace.induced [SeminormedAddCommGroup E] [InnerProductSpace �
     conj_inner_symm x y := inner_conj_symm (f x) (f y)
   }
 
-/-- An injective linear map from a `Module` to an `InnerProductSpace` induces an `InnerProductSpace`
-structure on the domain using the `NormedAddCommGroup.induced` norm. -/
-abbrev InnerProductSpace.induced' [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-    [LinearMapClass H 𝕜 G E] (f : H) (_ : Function.Injective f) :
-    @InnerProductSpace 𝕜 G _ (SeminormedAddCommGroup.induced G E f) :=
-  letI := NormedAddCommGroup.induced G E f _
-  letI := NormedSpace.induced 𝕜 G E f
-  { inner x y := inner 𝕜 (f x) (f y)
-    add_left x y z := by simpa only [map_add] using inner_add_left (f x) (f y) (f z)
-    smul_left x y r := by simpa only [map_smul] using inner_smul_left (f x) (f y) r
-    norm_sq_eq_re_inner x := norm_sq_eq_re_inner (𝕜 := 𝕜) (f x)
-    conj_inner_symm x y := inner_conj_symm (f x) (f y)
-  }
-
 end induced
 
 section RCLike
