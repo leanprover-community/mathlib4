@@ -109,6 +109,15 @@ instance : StarModule ℝ ℂ :=
 theorem coe_algebraMap : (algebraMap ℝ ℂ : ℝ → ℂ) = ((↑) : ℝ → ℂ) :=
   rfl
 
+example : (Semiring.toNatAlgebra : Algebra ℕ ℂ) = Complex.instAlgebraOfReal := by
+  with_reducible_and_instances rfl
+
+example : (Ring.toIntAlgebra ℂ : Algebra ℤ ℂ) = Complex.instAlgebraOfReal := by
+  with_reducible_and_instances rfl
+
+example : Module.restrictScalars ℝ ℂ ℂ = Complex.instModule := by
+  with_reducible_and_instances rfl
+
 section
 
 variable {A : Type*} [Semiring A] [Algebra ℝ A]
