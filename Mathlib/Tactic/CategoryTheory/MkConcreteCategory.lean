@@ -12,40 +12,79 @@ public import Mathlib.Tactic.ToAdditive
 # The `mk_concrete_category` command
 
 `mk_concrete_category C FC id comp` generates the standard initial boilerplate for a concrete
-category whose morphisms are modeled by a bundled function type `FC`. The identity term is applied
-to an object, and the composition term is applied to the underlying morphism of the second
-categorical morphism and then to the underlying morphism of the first.
+category whose morphisms are modeled by a bundled function type `FC`. The identity term is expected
+to be of the form `(X : C) → FC X X` and the composition term is expected to be of the form
+`{X Y Z : C} → FC Y Z → FC X Y → FC X Z`.
 
 The command is intended to be run in the namespace of the category it is defining. It creates a
-wrapper morphism structure `Hom`, with private field `Hom.hom'`, and uses it as the
-categorical morphism type. It then creates:
+one-field structure `Hom` which wraps a term of `FC`, with private field `Hom.hom'`, and uses it as
+the type of morphisms in the category. It then creates:
 
 * `instCategory`, the `Category` instance with `id X = id X` and
   `comp f g = comp g.hom' f.hom'`;
 * `instConcreteCategory`, the `ConcreteCategory C FC` instance;
-* `Hom.hom`, an abbreviation for the `ConcreteCategory.hom` projection;
-* `Hom.Simps.hom`, so `simps` uses the public concrete morphism projection;
+* `Hom.hom`, an abbreviation for the `ConcreteCategory.hom` projection from morphisms to `FC`;
+* `Hom.Simps.hom`, so `simps` uses the public projection `hom` instead of the private `hom'`;
 * `ofHom`, a public abbreviation for `ConcreteCategory.ofHom`;
-* simp lemmas `hom_id`, `hom_comp`, `hom_ofHom`, and `ofHom_hom`.
+* dsimp lemmas `hom_id`, `hom_comp`, `hom_ofHom`, and `ofHom_hom`.
 
-For example, the plain command
+For example, the code
 
 ```lean
-mk_concrete_category TestCat Fun Fun.id (Fun.comp · ·)
+structure TestCat where
+  α : Type u
+
+namespace TestCat
+
+@[ext]
+structure Fun (X Y : TestCat.{u}) where
+  toFun : X.α → Y.α
+
+instance (X Y : TestCat.{u}) : FunLike (Fun X Y) X.α Y.α where
+  coe := Fun.toFun
+  coe_injective' _ _ _ := by aesop
+
+protected def Fun.id (X : TestCat.{u}) : Fun X X where
+  toFun := id
+
+protected def Fun.comp {X Y Z : TestCat.{u}} (g : Fun Y Z) (f : Fun X Y)  : Fun X Z where
+  toFun := g.toFun ∘ f.toFun
+
+mk_concrete_category TestCat Fun Fun.id Fun.comp
 ```
 
-where `Fun.comp : Y.Fun Z → X.Fun Y → X.Fun Z`, generates an API where
+generates an API where
 `Hom.hom : X.Hom Y → X.Fun Y`, `ofHom : X.Fun Y → (X ⟶ Y)`,
 `hom_id : Hom.hom (𝟙 X) = Fun.id X`, and
 `hom_comp : Hom.hom (f ≫ g) = Fun.comp (Hom.hom g) (Hom.hom f)`.
 
 For bundled categories whose public constructor should take unbundled objects, `with_of_hom`
-customizes only the generated `ofHom` signature. The underlying `ConcreteCategory.ofHom` lemma still
-uses bundled objects.
+customizes the generated `ofHom` and `hom_ofHom`.
 
 ```lean
-mk_concrete_category (ModuleTestCat R) (· →ₗ[R] ·)
-  (fun _ => LinearMap.id) (LinearMap.comp · ·)
+variable (R : Type u) [Ring R]
+
+structure ModuleTestCat where
+  carrier : Type v
+  [isAddCommGroup : AddCommGroup carrier]
+  [isModule : Module R carrier]
+
+attribute [instance] ModuleTestCat.isAddCommGroup
+attribute [instance 1100] ModuleTestCat.isModule
+
+namespace ModuleTestCat
+
+abbrev of (R : Type u) [Ring R] (M : Type v) [AddCommGroup M] [Module R M] :
+    ModuleTestCat R :=
+  ⟨M⟩
+
+instance : CoeSort (ModuleTestCat.{v} R) (Type v) :=
+  ⟨ModuleTestCat.carrier⟩
+
+attribute [coe] ModuleTestCat.carrier
+
+variable {R} in
+mk_concrete_category (ModuleTestCat R) (· →ₗ[R] ·) (@LinearMap.id R ·) LinearMap.comp
   with_of_hom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y]
   hom_type (X →ₗ[R] Y) from (of R X) to (of R Y)
 ```
@@ -65,10 +104,45 @@ corresponding additive category data in one command. The elaborator first enters
 namespace and generates the additive concrete category, then enters the multiplicative namespace and
 generates the multiplicative one. This is useful for commands such as the test case generating both
 `MultiplicativeTestCat` with homs `X →* Y` and `AdditiveTestCat` with homs `X →+ Y`, including their
-matching `ofHom`, `hom_id`, and `hom_comp` declarations.
+matching `ofHom`, `hom_id`, and `hom_comp` declarations:
+
+```lean
+structure AdditiveTestCat where
+  carrier : Type u
+  [str : AddMonoid carrier]
+
+@[to_additive AdditiveTestCat]
+structure MultiplicativeTestCat where
+  carrier : Type u
+  [str : Monoid carrier]
+
+attribute [instance] AdditiveTestCat.str MultiplicativeTestCat.str
+
+namespace MultiplicativeTestCat
+
+@[to_additive]
+abbrev of (M : Type u) [Monoid M] : MultiplicativeTestCat :=
+  ⟨M⟩
+
+@[to_additive instCoeSortAdditiveTestCat]
+instance instCoeSort : CoeSort MultiplicativeTestCat (Type u) :=
+  ⟨MultiplicativeTestCat.carrier⟩
+
+end MultiplicativeTestCat
+
+attribute [coe] AdditiveTestCat.carrier MultiplicativeTestCat.carrier
+
+@[to_additive AdditiveTestCat]
+mk_concrete_category MultiplicativeTestCat (· →* ·) MonoidHom.id MonoidHom.comp
+  with_of_hom {X Y : Type u} [Monoid X] [Monoid Y]
+  hom_type (X →* Y) from (MultiplicativeTestCat.of X) to (MultiplicativeTestCat.of Y)
+  to_additive AdditiveTestCat (· →+ ·) AddMonoidHom.id AddMonoidHom.comp
+  with_of_hom {X Y : Type u} [AddMonoid X] [AddMonoid Y]
+  hom_type (X →+ Y) from (AdditiveTestCat.of X) to (AdditiveTestCat.of Y)
+```
 -/
 
-open Lean Elab Command
+open Lean Elab Command Term Meta
 open CategoryTheory
 
 namespace Mathlib.Tactic.CategoryTheory
@@ -207,6 +281,13 @@ object, and target object. -/
 private abbrev CustomOfHomData :=
   TSyntaxArray `Lean.Parser.Term.bracketedBinder × TSyntax `term × TSyntax `term × TSyntax `term
 
+/-- Elaborate a term and beta-reduce it before storing it in a declaration type. -/
+syntax (name := mkConcreteCategoryBeta) "mk_concrete_category_beta% " term : term
+
+@[term_elab mkConcreteCategoryBeta]
+public meta def elabMkConcreteCategoryBeta : TermElab := fun stx expectedType => do
+  Core.betaReduce (← instantiateMVars (← Term.elabTerm stx[1] expectedType))
+
 /-!
 The core generator emits the declarations shared by all forms: `Hom`, the category and concrete
 category instances, projections and constructors, simps support, and the round-trip lemmas. Most
@@ -219,131 +300,83 @@ private meta def elabMkConcreteCategoryCore (mods : Syntax) (cat FC idTerm compT
     (customOfHom? : Option CustomOfHomData) : CommandElabM Unit := do
   let useToAdditive := hasToAdditiveAttr mods
   let addHom? := toAdditiveTarget? mods |>.map fun n => mkCIdent (n ++ `Hom)
-  if useToAdditive then
-    match addHom? with
-    | some addHom =>
-        elabCommand <| ← set_option hygiene false in `(command|
-          set_option backward.privateInPublic true in
-          /-- The type of morphisms in this concrete category. -/
-          @[to_additive $addHom:ident, ext]
-          structure Hom (X Y : $cat) where
-            private mk ::
-            /-- The underlying bundled morphism. -/
-            hom' : ($FC : $cat → $cat → Type _) X Y)
-    | none =>
-        elabCommand <| ← set_option hygiene false in `(command|
-          set_option backward.privateInPublic true in
-          /-- The type of morphisms in this concrete category. -/
-          @[to_additive, ext]
-          structure Hom (X Y : $cat) where
-            private mk ::
-            /-- The underlying bundled morphism. -/
-            hom' : ($FC : $cat → $cat → Type _) X Y)
-  else
-    elabCommand <| ← set_option hygiene false in `(command|
-      set_option backward.privateInPublic true in
-      /-- The type of morphisms in this concrete category. -/
-      @[ext]
-      structure Hom (X Y : $cat) where
-        private mk ::
-        /-- The underlying bundled morphism. -/
-        hom' : ($FC : $cat → $cat → Type _) X Y)
+  let addToAdditiveAttr (decl : Ident) : CommandElabM Unit := do
+    if useToAdditive then
+      elabCommand <| ← set_option hygiene false in
+        `(command| attribute [to_additive] $decl:ident)
+  let addSimpAttrs (decl : Ident) : CommandElabM Unit := do
+    if useToAdditive then
+      elabCommand <| ← set_option hygiene false in
+        `(command| attribute [to_additive (attr := simp), simp] $decl:ident)
+    else
+      elabCommand <| ← set_option hygiene false in
+        `(command| attribute [simp] $decl:ident)
 
-  if useToAdditive then
-    elabCommand <| ← set_option hygiene false in `(command|
-      set_option backward.privateInPublic true in
-      set_option backward.privateInPublic.warn false in
-      @[to_additive]
-      instance instCategory : CategoryTheory.Category $cat where
-        Hom X Y := Hom (X := X) (Y := Y)
-        id X := Hom.mk (X := X) (Y := X) (($idTerm) X)
-        comp {X Y Z} f g := Hom.mk (X := X) (Y := Z) (($compTerm) g.hom' f.hom'))
-  else
-    elabCommand <| ← set_option hygiene false in `(command|
-      set_option backward.privateInPublic true in
-      set_option backward.privateInPublic.warn false in
-      instance instCategory : CategoryTheory.Category $cat where
-        Hom X Y := Hom (X := X) (Y := Y)
-        id X := Hom.mk (X := X) (Y := X) (($idTerm) X)
-        comp {X Y Z} f g := Hom.mk (X := X) (Y := Z) (($compTerm) g.hom' f.hom'))
+  elabCommand <| ← set_option hygiene false in `(command|
+    set_option backward.privateInPublic true in
+    /-- The type of morphisms in this concrete category. -/
+    structure Hom (X Y : $cat) where
+      private mk ::
+      /-- The underlying bundled morphism. -/
+      hom' : ($FC : $cat → $cat → Type _) X Y)
+  match addHom? with
+  | some addHom =>
+      elabCommand <| ← set_option hygiene false in
+        `(command| attribute [to_additive $addHom:ident, ext] Hom)
+  | none =>
+      if useToAdditive then
+        elabCommand <| ← set_option hygiene false in
+          `(command| attribute [to_additive, ext] Hom)
+      else
+        elabCommand <| ← set_option hygiene false in
+          `(command| attribute [ext] Hom)
 
-  if useToAdditive then
-    elabCommand <| ← set_option hygiene false in `(command|
-      set_option backward.privateInPublic true in
-      set_option backward.privateInPublic.warn false in
-      @[to_additive]
-      instance instConcreteCategory :
-          CategoryTheory.ConcreteCategory $cat ($FC : $cat → $cat → Type _) where
-        hom := fun f => Hom.hom' f
-        ofHom := fun {X Y} f => Hom.mk (X := X) (Y := Y) f
-        id_apply := by intros; rfl
-        comp_apply := by intros; rfl)
-  else
-    elabCommand <| ← set_option hygiene false in `(command|
-      set_option backward.privateInPublic true in
-      set_option backward.privateInPublic.warn false in
-      instance instConcreteCategory :
-          CategoryTheory.ConcreteCategory $cat ($FC : $cat → $cat → Type _) where
-        hom := fun f => Hom.hom' f
-        ofHom := fun {X Y} f => Hom.mk (X := X) (Y := Y) f
-        id_apply := by intros; rfl
-        comp_apply := by intros; rfl)
+  elabCommand <| ← set_option hygiene false in `(command|
+    set_option backward.privateInPublic true in
+    set_option backward.privateInPublic.warn false in
+    instance instCategory : CategoryTheory.Category $cat where
+      Hom X Y := Hom (X := X) (Y := Y)
+      id X := Hom.mk (X := X) (Y := X) (($idTerm) X)
+      comp {X Y Z} f g := Hom.mk (X := X) (Y := Z) (($compTerm) g.hom' f.hom'))
+  addToAdditiveAttr (mkIdent `instCategory)
 
+  elabCommand <| ← set_option hygiene false in `(command|
+    set_option backward.privateInPublic true in
+    set_option backward.privateInPublic.warn false in
+    instance instConcreteCategory :
+        CategoryTheory.ConcreteCategory $cat ($FC : $cat → $cat → Type _) where
+      hom := fun f => Hom.hom' f
+      ofHom := fun {X Y} f => Hom.mk (X := X) (Y := Y) f
+      id_apply := by intros; rfl
+      comp_apply := by intros; rfl)
+  addToAdditiveAttr (mkIdent `instConcreteCategory)
 
-  if useToAdditive then
-    elabCommand <| ← set_option hygiene false in `(command|
-      /-- Turn a categorical morphism back into its underlying bundled morphism. -/
-      @[to_additive]
-      abbrev Hom.hom {X Y : $cat} (f : X ⟶ Y) :=
-        CategoryTheory.ConcreteCategory.hom (C := $cat) f)
-  else
-    elabCommand <| ← set_option hygiene false in `(command|
-      /-- Turn a categorical morphism back into its underlying bundled morphism. -/
-      abbrev Hom.hom {X Y : $cat} (f : X ⟶ Y) :=
-        CategoryTheory.ConcreteCategory.hom (C := $cat) f)
+  elabCommand <| ← set_option hygiene false in `(command|
+    /-- Turn a categorical morphism back into its underlying bundled morphism. -/
+    abbrev Hom.hom {X Y : $cat} (f : X ⟶ Y) :=
+      CategoryTheory.ConcreteCategory.hom (C := $cat) f)
+  addToAdditiveAttr (mkIdent `Hom.hom)
 
   match customOfHom? with
   | some (binders, homTy, source, target) =>
-      if useToAdditive then
-        elabCommand <| ← set_option hygiene false in `(command|
-          /-- Typecheck a bundled morphism as a morphism in this concrete category. -/
-          @[to_additive]
-          abbrev ofHom $binders:bracketedBinder*
-              (f : ($homTy)) : $source ⟶ $target :=
-            CategoryTheory.ConcreteCategory.ofHom (C := $cat) f)
-      else
-        elabCommand <| ← set_option hygiene false in `(command|
-          /-- Typecheck a bundled morphism as a morphism in this concrete category. -/
-          abbrev ofHom $binders:bracketedBinder*
-              (f : ($homTy)) : $source ⟶ $target :=
-            CategoryTheory.ConcreteCategory.ofHom (C := $cat) f)
+      elabCommand <| ← set_option hygiene false in `(command|
+        /-- Typecheck a bundled morphism as a morphism in this concrete category. -/
+        abbrev ofHom $binders:bracketedBinder*
+            (f : ($homTy)) : $source ⟶ $target :=
+          CategoryTheory.ConcreteCategory.ofHom (C := $cat) f)
   | none =>
-      if useToAdditive then
-        elabCommand <| ← set_option hygiene false in `(command|
-          /-- Typecheck a bundled morphism as a morphism in this concrete category. -/
-          @[to_additive]
-          abbrev ofHom {X Y : $cat} (f : ($FC : $cat → $cat → Type _) X Y) : X ⟶ Y :=
-            CategoryTheory.ConcreteCategory.ofHom (C := $cat) f)
-      else
-        elabCommand <| ← set_option hygiene false in `(command|
-          /-- Typecheck a bundled morphism as a morphism in this concrete category. -/
-          abbrev ofHom {X Y : $cat} (f : ($FC : $cat → $cat → Type _) X Y) : X ⟶ Y :=
-            CategoryTheory.ConcreteCategory.ofHom (C := $cat) f)
+      elabCommand <| ← set_option hygiene false in `(command|
+        /-- Typecheck a bundled morphism as a morphism in this concrete category. -/
+        abbrev ofHom {X Y : $cat} (f : ($FC : $cat → $cat → Type _) X Y) : X ⟶ Y :=
+          CategoryTheory.ConcreteCategory.ofHom (C := $cat) f)
+  addToAdditiveAttr (mkIdent `ofHom)
 
-
-  if useToAdditive then
-    elabCommand <| ← set_option hygiene false in `(command|
-      /-- Use the public `Hom.hom` projection for `@[simps]` lemmas. -/
-      @[to_additive]
-      def Hom.Simps.hom : (X : $cat) → (Y : $cat) → Hom (X := X) (Y := Y) →
-          ($FC : $cat → $cat → Type _) X Y :=
-        fun _ _ f => Hom.hom f)
-  else
-    elabCommand <| ← set_option hygiene false in `(command|
-      /-- Use the public `Hom.hom` projection for `@[simps]` lemmas. -/
-      def Hom.Simps.hom : (X : $cat) → (Y : $cat) → Hom (X := X) (Y := Y) →
-          ($FC : $cat → $cat → Type _) X Y :=
-        fun _ _ f => Hom.hom f)
+  elabCommand <| ← set_option hygiene false in `(command|
+    /-- Use the public `Hom.hom` projection for `@[simps]` lemmas. -/
+    def Hom.Simps.hom : (X : $cat) → (Y : $cat) → Hom (X := X) (Y := Y) →
+        ($FC : $cat → $cat → Type _) X Y :=
+      fun _ _ f => Hom.hom f)
+  addToAdditiveAttr (mkIdent `Hom.Simps.hom)
 
   elabCommand <| ← set_option hygiene false in `(command|
     initialize_simps_projections Hom (hom' → hom))
@@ -353,68 +386,35 @@ private meta def elabMkConcreteCategoryCore (mods : Syntax) (cat FC idTerm compT
         initialize_simps_projections $addHom:ident (hom' → hom))
   | none => pure ()
 
-  if useToAdditive then
-    elabCommand <| ← set_option hygiene false in `(command|
-      @[to_additive (attr := simp), simp]
-      lemma hom_id {X : $cat} : (𝟙 X : X ⟶ X).hom = dsimp'% (($idTerm) X) :=
-        rfl)
-  else
-    elabCommand <| ← set_option hygiene false in `(command|
-      @[simp]
-      lemma hom_id {X : $cat} : (𝟙 X : X ⟶ X).hom = dsimp'% (($idTerm) X) :=
-        rfl)
+  elabCommand <| ← set_option hygiene false in `(command|
+    lemma hom_id {X : $cat} :
+        (𝟙 X : X ⟶ X).hom = mk_concrete_category_beta% (($idTerm) X) :=
+      rfl)
+  addSimpAttrs (mkIdent `hom_id)
 
-  if useToAdditive then
-    elabCommand <| ← set_option hygiene false in `(command|
-      @[to_additive (attr := simp), simp]
-      lemma hom_comp {X Y Z : $cat} (f : X ⟶ Y) (g : Y ⟶ Z) :
-          (f ≫ g).hom = dsimp'% (($compTerm) g.hom f.hom) :=
-        rfl)
-  else
-    elabCommand <| ← set_option hygiene false in `(command|
-      @[simp]
-      lemma hom_comp {X Y Z : $cat} (f : X ⟶ Y) (g : Y ⟶ Z) :
-          (f ≫ g).hom = dsimp'% (($compTerm) g.hom f.hom) :=
-        rfl)
+  elabCommand <| ← set_option hygiene false in `(command|
+    lemma hom_comp {X Y Z : $cat} (f : X ⟶ Y) (g : Y ⟶ Z) :
+        (f ≫ g).hom = mk_concrete_category_beta% (($compTerm) g.hom f.hom) :=
+      rfl)
+  addSimpAttrs (mkIdent `hom_comp)
 
   match customOfHom? with
   | some (binders, homTy, _, _) =>
-      if useToAdditive then
-        elabCommand <| ← set_option hygiene false in `(command|
-          @[to_additive (attr := simp), simp]
-          lemma hom_ofHom $binders:bracketedBinder* (f : ($homTy)) : (ofHom f).hom = f :=
-            rfl)
-      else
-        elabCommand <| ← set_option hygiene false in `(command|
-          @[simp]
-          lemma hom_ofHom $binders:bracketedBinder* (f : ($homTy)) : (ofHom f).hom = f :=
-            rfl)
+      elabCommand <| ← set_option hygiene false in `(command|
+        lemma hom_ofHom $binders:bracketedBinder* (f : ($homTy)) : (ofHom f).hom = f :=
+          rfl)
   | none =>
-      if useToAdditive then
-        elabCommand <| ← set_option hygiene false in `(command|
-          @[to_additive (attr := simp), simp]
-          lemma hom_ofHom {X Y : $cat} (f : ($FC : $cat → $cat → Type _) X Y) :
-              (CategoryTheory.ConcreteCategory.ofHom (C := $cat) f).hom = f :=
-            rfl)
-      else
-        elabCommand <| ← set_option hygiene false in `(command|
-          @[simp]
-          lemma hom_ofHom {X Y : $cat} (f : ($FC : $cat → $cat → Type _) X Y) :
-              (CategoryTheory.ConcreteCategory.ofHom (C := $cat) f).hom = f :=
-            rfl)
+      elabCommand <| ← set_option hygiene false in `(command|
+        lemma hom_ofHom {X Y : $cat} (f : ($FC : $cat → $cat → Type _) X Y) :
+            (CategoryTheory.ConcreteCategory.ofHom (C := $cat) f).hom = f :=
+          rfl)
+  addSimpAttrs (mkIdent `hom_ofHom)
 
-  if useToAdditive then
-    elabCommand <| ← set_option hygiene false in `(command|
-      @[to_additive (attr := simp), simp]
-      lemma ofHom_hom {X Y : $cat} (f : X ⟶ Y) :
-          CategoryTheory.ConcreteCategory.ofHom (C := $cat) f.hom = f :=
-        rfl)
-  else
-    elabCommand <| ← set_option hygiene false in `(command|
-      @[simp]
-      lemma ofHom_hom {X Y : $cat} (f : X ⟶ Y) :
-          CategoryTheory.ConcreteCategory.ofHom (C := $cat) f.hom = f :=
-        rfl)
+  elabCommand <| ← set_option hygiene false in `(command|
+    lemma ofHom_hom {X Y : $cat} (f : X ⟶ Y) :
+        CategoryTheory.ConcreteCategory.ofHom (C := $cat) f.hom = f :=
+      rfl)
+  addSimpAttrs (mkIdent `ofHom_hom)
 
 /-!
 The remaining elaborators parse their surface syntax and delegate to the core generator. The

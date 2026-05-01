@@ -13,9 +13,7 @@ open CategoryTheory
 
 universe v u
 
-/-- A test category whose morphisms are wrappers around functions. -/
 structure TestCat where
-  /-- The underlying type. -/
   α : Type u
 
 namespace TestCat
@@ -136,7 +134,6 @@ attribute [instance 1100] ModuleTestCat.isModule
 
 namespace ModuleTestCat
 
-/-- Construct a bundled `ModuleTestCat` from the underlying type and typeclass. -/
 abbrev of (R : Type u) [Ring R] (M : Type v) [AddCommGroup M] [Module R M] :
     ModuleTestCat R :=
   ⟨M⟩
@@ -259,16 +256,12 @@ info: ModuleTestCat.morphism_hom.{v, u} (R : Type u) [Ring R] (X : ModuleTestCat
 
 end ModuleTestCat
 
-/-- Additive test category for the `to_additive` form of `mk_concrete_category`. -/
 structure AdditiveTestCat where
-  /-- The underlying type. -/
   carrier : Type u
   [str : AddMonoid carrier]
 
-/-- Multiplicative test category for the `to_additive` form of `mk_concrete_category`. -/
 @[to_additive AdditiveTestCat]
 structure MultiplicativeTestCat where
-  /-- The underlying type. -/
   carrier : Type u
   [str : Monoid carrier]
 
@@ -276,8 +269,7 @@ attribute [instance] AdditiveTestCat.str MultiplicativeTestCat.str
 
 namespace MultiplicativeTestCat
 
-/-- Construct a bundled `MultiplicativeTestCat` from the underlying type and typeclass. -/
-@[to_additive /-- Construct a bundled `AdditiveTestCat` from the underlying type and typeclass. -/]
+@[to_additive]
 abbrev of (M : Type u) [Monoid M] : MultiplicativeTestCat :=
   ⟨M⟩
 
