@@ -174,7 +174,8 @@ theorem DirSupClosedOn.union (hDL : IsLowerSet D)
   rw [← hdst] at hd₀ hd₁
   wlog h : DirectedOn (· ≤ ·) (d ∩ s) ∧ (d ∩ s).Nonempty
   · rw [union_comm] at hdu hd₀ hd₁ hdst ⊢
-    exact this hDL ht hs hD hdu hd₀ hd₁ ha hdst <| (directedOn_union' hd₀ hd₁).resolve_right h
+    exact this hDL ht hs hD hdu hd₀ hd₁ ha hdst <|
+      (directedOn_or_directedOn_of_union' hd₀ hd₁).resolve_right h
   obtain ⟨hds, hn⟩ := h
   by_cases had : a ∈ lowerBounds (upperBounds (d ∩ s))
   · exact .inl <| hs (hDL inter_subset_left hD) inter_subset_right hn hds
@@ -201,11 +202,11 @@ theorem DirSupInaccOn.inter (hDL : IsLowerSet D)
     (hs : DirSupInaccOn D s) (ht : DirSupInaccOn D t) : DirSupInaccOn D (s ∩ t) := by
   rw [← dirSupClosedOn_compl, compl_inter]; exact hs.compl.union hDL ht.compl
 
-theorem DirSupClosed.union (hs : DirSupClosed s) (ht : DirSupClosed t) : DirSupClosed (s ∪ t) :=
-  .of_univ (hs.to_univ.union isLowerSet_univ ht.to_univ)
+theorem DirSupClosed.union (hs : DirSupClosed s) (ht : DirSupClosed t) : DirSupClosed (s ∪ t) := by
+  simpa using hs.dirSupClosedOn.union isLowerSet_univ ht.dirSupClosedOn
 
-theorem DirSupInacc.inter (hs : DirSupInacc s) (ht : DirSupInacc t) : DirSupInacc (s ∩ t) :=
-  .of_univ (hs.to_univ.inter isLowerSet_univ ht.to_univ)
+theorem DirSupInacc.inter (hs : DirSupInacc s) (ht : DirSupInacc t) : DirSupInacc (s ∩ t) := by
+  simpa using hs.dirSupInaccOn.inter isLowerSet_univ ht.dirSupInaccOn
 
 theorem dirSupInaccOn_of_inter_subset
     (h : ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d →
@@ -217,7 +218,7 @@ theorem dirSupInaccOn_of_inter_subset
 theorem dirSupInacc_of_inter_subset
     (h : ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d →
       ∀ ⦃a : α⦄, IsLUB d a → a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s) : DirSupInacc s :=
-  .of_univ (dirSupInaccOn_of_inter_subset (by simpa))
+  dirSupInaccOn_univ.1 (dirSupInaccOn_of_inter_subset (by simpa))
 
 /-- If `d` is a set whose LUB is contained in a `DirSupInaccOn` set, then it contains an entire tail
 of `d`. -/
