@@ -119,15 +119,18 @@ instance comap_algEquiv (p : Ideal S) [p.IsPrime]
 
 /-- By `infer_instance` for `Algebra.QuasiFiniteAt R p`. -/
 lemma finite_residueField
-    [p.IsPrime] [q.LiesOver p] [WeaklyQuasiFiniteAt R q] :
+    [p.IsPrime] [q.LiesOver p] [WeaklyQuasiFiniteAt R q]
+    [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
+    [Localization.AtPrime.IsLiesOverAlgebra p q] :
     Module.Finite p.ResidueField q.ResidueField := by
-  have : (q.map (Ideal.Quotient.mk ((q.under R).map (algebraMap R S)))).LiesOver q :=
+  let r := q.map (Ideal.Quotient.mk ((q.under R).map (algebraMap R S)))
+  have : r.LiesOver q :=
     ⟨.trans (by simp [← RingHom.ker_eq_comap_bot, Ideal.map_comap_le])
     (Ideal.comap_map_of_surjective _ Ideal.Quotient.mk_surjective _).symm⟩
-  have : (q.map (Ideal.Quotient.mk ((q.under R).map (algebraMap R S)))).LiesOver p := .trans _ q _
-  exact .of_injective (IsScalarTower.toAlgHom _ _
-    (q.map (Ideal.Quotient.mk ((q.under R).map (algebraMap R S)))).ResidueField).toLinearMap
-    (RingHom.injective _)
+  let := Localization.AtPrime.algebraOfLiesOver q r
+  have : r.LiesOver p := .trans _ q _
+  let := Localization.AtPrime.algebraOfLiesOver p r
+  exact .of_injective (IsScalarTower.toAlgHom _ _ r.ResidueField).toLinearMap (RingHom.injective _)
 
 /-- By `infer_instance` for `Algebra.QuasiFiniteAt R p`. -/
 lemma finite_locoalization {K : Type*} [Field K] [Algebra K S] [WeaklyQuasiFiniteAt K q] :
@@ -230,6 +233,7 @@ lemma of_quasiFiniteAt_residueField [p.IsPrime] [q.LiesOver p]
     Algebra.WeaklyQuasiFiniteAt R q := by
   rw [Algebra.weaklyQuasiFiniteAt_iff]
   let Sq := Localization.AtPrime q
+  let := Localization.AtPrime.algebraOfLiesOver p q
   let φ₁ : p.ResidueField →ₐ[R] Sq ⧸ p.map (algebraMap R Sq) :=
     Ideal.quotientMapₐ _ (IsScalarTower.toAlgHom _ _ _) (by
     rw [← IsLocalization.AtPrime.map_eq_maximalIdeal p, Ideal.map_le_iff_le_comap,

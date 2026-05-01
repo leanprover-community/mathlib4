@@ -152,12 +152,12 @@ variable (X : T) [P.IsStableUnderComposition] [P.IsStableUnderBaseChange]
 
 noncomputable instance createsLimitsOfShape_walkingCospan :
     CreatesLimitsOfShape WalkingCospan (CostructuredArrow.forget P ⊤ L X) := by
-  apply (config := { allowSynthFailures := true }) forgetCreatesLimitsOfShapeOfClosed
+  apply +allowSynthFailures forgetCreatesLimitsOfShapeOfClosed
   · exact inferInstanceAs (HasLimitsOfShape WalkingCospan (CostructuredArrow L X))
   · exact CostructuredArrow.closedUnderLimitsOfShape_walkingCospan _ _
 
 instance hasPullbacks : HasPullbacks (P.CostructuredArrow ⊤ L X) := by
-  apply (config := { allowSynthFailures := true }) hasLimitsOfShape_of_closedUnderLimitsOfShape
+  apply +allowSynthFailures hasLimitsOfShape_of_closedUnderLimitsOfShape
   · exact inferInstanceAs (HasLimitsOfShape WalkingCospan (CostructuredArrow L X))
   · exact CostructuredArrow.closedUnderLimitsOfShape_walkingCospan _ _
 

@@ -108,7 +108,7 @@ end
 
 section
 
-variable {C : Type u} [Category.{v} C] {D : Type*} [Category* D]
+variable {C : Type u} [Category.{v} C] {D : Type*} [Category* D] {E : Type*} [Category* E]
 
 /-- The inverse image of a `MorphismProperty D` by a functor `C ⥤ D` -/
 def inverseImage (P : MorphismProperty D) (F : C ⥤ D) : MorphismProperty C := fun _ _ f =>
@@ -122,12 +122,118 @@ lemma inverseImage_iff (P : MorphismProperty D) (F : C ⥤ D) {X Y : C} (f : X �
 lemma op_inverseImage (P : MorphismProperty D) (F : C ⥤ D) :
     (P.inverseImage F).op = P.op.inverseImage F.op := rfl
 
+@[gcongr]
+lemma monotone_inverseImage (F : C ⥤ D) :
+    Monotone (fun P : MorphismProperty D ↦ P.inverseImage F) :=
+  fun _ _ h _ _ _ hf ↦ h _ hf
+
+@[simp]
+lemma inverseImage_id (P : MorphismProperty C) : P.inverseImage (𝟭 C) = P :=
+  rfl
+
+@[simp]
+lemma inverseImage_inverseImage (P : MorphismProperty E) (F : C ⥤ D) (G : D ⥤ E) :
+    (P.inverseImage G).inverseImage F = P.inverseImage (F ⋙ G) :=
+  rfl
+
 /-- The (strict) image of a `MorphismProperty C` by a functor `C ⥤ D` -/
 inductive strictMap (P : MorphismProperty C) (F : C ⥤ D) : MorphismProperty D where
   | map {X Y : C} {f : X ⟶ Y} (hf : P f) : strictMap _ _ (F.map f)
 
 lemma map_mem_strictMap (P : MorphismProperty C) (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) (hf : P f) :
     (P.strictMap F) (F.map f) := ⟨hf⟩
+
+@[gcongr]
+lemma monotone_strictMap (F : C ⥤ D) : Monotone (fun P : MorphismProperty C ↦ P.strictMap F) :=
+  fun _ _ h _ _ _ ⟨hf⟩ ↦ ⟨h _ hf⟩
+
+@[simp]
+lemma strictMap_id (P : MorphismProperty C) :
+    P.strictMap (𝟭 C) = P := by
+  ext
+  exact ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
+
+@[simp]
+lemma strictMap_strictMap (P : MorphismProperty C) (F : C ⥤ D) (G : D ⥤ E) :
+    (P.strictMap F).strictMap G = P.strictMap (F ⋙ G) := by
+  ext
+  exact ⟨fun ⟨⟨h⟩⟩ ↦ ⟨h⟩, fun ⟨h⟩ ↦ ⟨⟨h⟩⟩⟩
+
+@[simp]
+lemma strictMap_le_iff_le_inverseImage (F : C ⥤ D) (P : MorphismProperty C)
+    (P' : MorphismProperty D) : P.strictMap F ≤ P' ↔ P ≤ P'.inverseImage F :=
+  ⟨fun h _ _ _ hf ↦ h _ ⟨hf⟩, fun h _ _ _ ⟨hf⟩ ↦ h _ hf⟩
+
+lemma gc_strictMap (F : C ⥤ D) : GaloisConnection (strictMap · F) (inverseImage · F) :=
+  strictMap_le_iff_le_inverseImage F
+
+lemma le_inverseImage_strictMap (P : MorphismProperty C) (F : C ⥤ D) :
+    P ≤ (P.strictMap F).inverseImage F :=
+  (gc_strictMap F).le_u_l P
+
+lemma strictMap_inverseImage_le (P : MorphismProperty D) (F : C ⥤ D) :
+    (P.inverseImage F).strictMap F ≤ P :=
+  (gc_strictMap F).l_u_le P
+
+@[simp]
+lemma strictMap_inverseImage_strictMap (P : MorphismProperty C) (F : C ⥤ D) :
+    ((P.strictMap F).inverseImage F).strictMap F = P.strictMap F :=
+  (gc_strictMap F).l_u_l_eq_l P
+
+@[simp]
+lemma inverseImage_strictMap_inverseImage (P : MorphismProperty D) (F : C ⥤ D) :
+    ((P.inverseImage F).strictMap F).inverseImage F = P.inverseImage F :=
+  (gc_strictMap F).u_l_u_eq_u P
+
+@[simp]
+lemma strictMap_bot (F : C ⥤ D) :
+    strictMap ⊥ F = ⊥ :=
+  (gc_strictMap F).l_bot
+
+@[simp]
+lemma inverseImage_strictMap_top (F : C ⥤ D) :
+    (strictMap ⊤ F).inverseImage F = ⊤ :=
+  (gc_strictMap F).u_l_top
+
+@[simp]
+lemma inverseImage_bot (F : C ⥤ D) :
+    inverseImage ⊥ F = ⊥ :=
+  rfl
+
+@[simp]
+lemma inverseImage_top (F : C ⥤ D) :
+    inverseImage ⊤ F = ⊤ :=
+  rfl
+
+@[simp]
+lemma strictMap_sup (F : C ⥤ D) (P P' : MorphismProperty C) :
+    (P ⊔ P').strictMap F = P.strictMap F ⊔ P'.strictMap F :=
+  (gc_strictMap F).l_sup
+
+@[simp]
+lemma strictMap_iSup (F : C ⥤ D) {ι : Type*} (P : ι → MorphismProperty C) :
+    (⨆ i, P i).strictMap F = ⨆ i, (P i).strictMap F :=
+  (gc_strictMap F).l_iSup
+
+@[simp]
+lemma strictMap_sSup (F : C ⥤ D) (P : Set (MorphismProperty C)) :
+    (sSup P).strictMap F = ⨆ P' ∈ P, P'.strictMap F :=
+  (gc_strictMap F).l_sSup
+
+@[simp]
+lemma inverseImage_inf (F : C ⥤ D) (P P' : MorphismProperty D) :
+    (P ⊓ P').inverseImage F = P.inverseImage F ⊓ P'.inverseImage F :=
+  (gc_strictMap F).u_inf
+
+@[simp]
+lemma inverseImage_iInf (F : C ⥤ D) {ι : Type*} (P : ι → MorphismProperty D) :
+    (⨅ i, P i).inverseImage F = ⨅ i, (P i).inverseImage F :=
+  (gc_strictMap F).u_iInf
+
+@[simp]
+lemma inverseImage_sInf (F : C ⥤ D) (P : Set (MorphismProperty D)) :
+    (sInf P).inverseImage F = ⨅ P' ∈ P, P'.inverseImage F :=
+  (gc_strictMap F).u_sInf
 
 /-- The image (up to isomorphisms) of a `MorphismProperty C` by a functor `C ⥤ D` -/
 def map (P : MorphismProperty C) (F : C ⥤ D) : MorphismProperty D := fun _ _ f =>
@@ -136,6 +242,7 @@ def map (P : MorphismProperty C) (F : C ⥤ D) : MorphismProperty D := fun _ _ f
 lemma map_mem_map (P : MorphismProperty C) (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) (hf : P f) :
     (P.map F) (F.map f) := ⟨X, Y, f, hf, ⟨Iso.refl _⟩⟩
 
+@[gcongr]
 lemma monotone_map (F : C ⥤ D) :
     Monotone (map · F) := by
   intro P Q h X Y f ⟨X', Y', f', hf', ⟨e⟩⟩
@@ -213,6 +320,26 @@ lemma ofHoms_homFamily (P : MorphismProperty C) : ofHoms P.homFamily = P := by
     exact hf
   · intro hf
     exact ⟨(⟨f, hf⟩ : P.toSet)⟩
+
+lemma iSup_ofHoms {α : Type*} {ι : α → Type*} {A B : ∀ a, ι a → C}
+    (f : ∀ a, ∀ i, A a i ⟶ B a i) :
+    ⨆ (a : α), ofHoms (f a) = ofHoms (fun (j : Σ (a : α), ι a) ↦ f j.1 j.2) := by
+  ext f
+  simp [ofHoms_iff]
+
+@[simp]
+lemma ofHoms_le_iff {ι : Type*} {X Y : ι → C} (f : ∀ i, X i ⟶ Y i) (P : MorphismProperty C) :
+    ofHoms f ≤ P ↔ ∀ i, P (f i) :=
+  ⟨fun h i ↦ h _ (ofHoms.mk i), fun h _ _ _⟨i⟩ ↦ h i⟩
+
+/-- The class of morphisms containing a single morphism. -/
+abbrev single {X Y : C} (f : X ⟶ Y) : MorphismProperty C := .ofHoms (fun (_ : Unit) ↦ f)
+
+lemma prop_single {X Y : C} (f : X ⟶ Y) : (single f) f := by tauto
+
+@[simp high]
+lemma single_le_iff (W : MorphismProperty C) {X Y : C} (f : X ⟶ Y) : single f ≤ W ↔ W f := by
+  simp
 
 end
 
@@ -385,28 +512,32 @@ section
 
 variable {D : Type*} [Category* D]
 
+lemma isoClosure_strictMap_le (P : MorphismProperty C) (F : C ⥤ D) :
+    P.isoClosure.strictMap F ≤ (P.strictMap F).isoClosure :=
+  fun _ _ _ ⟨⟨_, _, _, hf, ⟨i⟩⟩⟩ ↦ ⟨_, _, _, ⟨hf⟩, ⟨F.mapArrow.mapIso i⟩⟩
+
+lemma map_eq_isoClosure (W : MorphismProperty C) (F : C ⥤ D) :
+    W.map F = (W.strictMap F).isoClosure := by
+  ext
+  refine ⟨fun ⟨_, _, f, hf, hf'⟩ ↦ ⟨_, _, _, ⟨hf⟩, hf'⟩, fun ⟨_, _, f, hf, hf'⟩ ↦ ?_⟩
+  obtain ⟨hf⟩ := hf
+  exact ⟨_, _, _, hf, hf'⟩
+
 instance map_respectsIso (P : MorphismProperty C) (F : C ⥤ D) :
     (P.map F).RespectsIso := by
-  apply RespectsIso.of_respects_arrow_iso
-  intro f g e ⟨X', Y', f', hf', ⟨e'⟩⟩
-  exact ⟨X', Y', f', hf', ⟨e' ≪≫ e⟩⟩
+  rw [map_eq_isoClosure]
+  infer_instance
 
-lemma map_le_iff (P : MorphismProperty C) {F : C ⥤ D} (Q : MorphismProperty D)
-    [RespectsIso Q] :
+lemma map_le_iff (P : MorphismProperty C) {F : C ⥤ D} (Q : MorphismProperty D) [RespectsIso Q] :
     P.map F ≤ Q ↔ P ≤ Q.inverseImage F := by
-  constructor
-  · intro h X Y f hf
-    exact h (F.map f) (map_mem_map P F f hf)
-  · intro h X Y f ⟨X', Y', f', hf', ⟨e⟩⟩
-    exact (Q.arrow_mk_iso_iff e).1 (h _ hf')
+  rw [map_eq_isoClosure, isoClosure_le_iff, strictMap_le_iff_le_inverseImage]
 
 @[simp]
 lemma map_isoClosure (P : MorphismProperty C) (F : C ⥤ D) :
     P.isoClosure.map F = P.map F := by
   apply le_antisymm
-  · rw [map_le_iff]
-    intro X Y f ⟨X', Y', f', hf', ⟨e⟩⟩
-    exact ⟨_, _, f', hf', ⟨F.mapArrow.mapIso e⟩⟩
+  · rw [map_eq_isoClosure, map_eq_isoClosure, isoClosure_le_iff]
+    exact isoClosure_strictMap_le _ _
   · exact monotone_map _ (le_isoClosure P)
 
 lemma map_id_eq_isoClosure (P : MorphismProperty C) :
