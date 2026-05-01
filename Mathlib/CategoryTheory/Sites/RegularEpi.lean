@@ -36,7 +36,7 @@ The first part of that proof, the result for presheaf categories, is proved in t
 `Mathlib.CategoryTheory.Functor.RegularEpi`.
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

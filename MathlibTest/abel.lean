@@ -99,9 +99,7 @@ error: `abel_nf` made no progress on the goal
 #guard_msgs in
 example : False := by abel_nf
 
-/--
-error: `abel_nf` made no progress at w
--/
+/-- error: `abel_nf` made no progress at `w` -/
 #guard_msgs in
 example [AddCommGroup α] (x y z : α) (w : x = y + z) : False := by
   abel_nf at w
@@ -141,9 +139,7 @@ example [AddCommGroup α] (x y z : α) (_w : x = y + z) : False := by
 example [AddCommGroup α] (x y z : α) (_w : x = y + z) : x - x = 0 := by
   abel_nf at *
 
-/--
-error: `abel_nf` made no progress at w
--/
+/-- error: `abel_nf` made no progress at `w` -/
 #guard_msgs in
 example [AddCommGroup α] (x y z : α) (w : x = y + z) : x - x = 0 := by
   abel_nf at w ⊢
@@ -175,14 +171,14 @@ trace: α : Type _
 a b : α
 x : ℤ
 R : ℤ → ℤ → Prop
-hR : Reflexive R
+inst✝ : Std.Refl R
 h : R (2 • myId x) (2 • myId x)
 ⊢ True
 -/
 #guard_msgs (trace) in
 set_option pp.mvars.anonymous false in
-example (x : ℤ) (R : ℤ → ℤ → Prop) (hR : Reflexive R) : True := by
-  have h : R (myId x + x) (x + myId x) := hR ..
+example (x : ℤ) (R : ℤ → ℤ → Prop) [Std.Refl R] : True := by
+  have h : R (myId x + x) (x + myId x) := refl _
   abel_nf at h
   trace_state
   trivial

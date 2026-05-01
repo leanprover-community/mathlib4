@@ -74,7 +74,7 @@ instance isProbabilityMeasure_stdGaussian : IsProbabilityMeasure (stdGaussian E)
 
 @[simp]
 lemma integral_id_stdGaussian : ∫ x, x ∂(stdGaussian E) = 0 := by
-  rw [stdGaussian, integral_map _ (by fun_prop), integral_finset_sum]
+  rw [stdGaussian, integral_map _ (by fun_prop), integral_finsetSum]
   · simp [integral_smul_const, integral_eval]
   · exact fun i _ ↦ Integrable.smul_const (integrable_eval IsGaussian.integrable_id) _
   · exact (Finset.measurable_sum _ (by fun_prop)).aemeasurable
