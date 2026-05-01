@@ -63,7 +63,7 @@ def principalSegIioIicOfLE (h : i ≤ j) : Iio i <i Iic j where
 
 @[simp]
 lemma principalSegIioIicOfLE_apply (h : i ≤ j) (k : Iio i) :
-    (principalSegIioIicOfLE h).toRelEmbedding k = ⟨k, k.2.le.trans h⟩ := rfl
+    principalSegIioIicOfLE h k = ⟨k, k.2.le.trans h⟩ := rfl
 
 @[deprecated (since := "2026-04-12")]
 alias principalSegIioIicOfLE_toRelEmbedding := principalSegIioIicOfLE_apply
