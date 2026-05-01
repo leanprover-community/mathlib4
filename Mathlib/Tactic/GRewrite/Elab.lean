@@ -27,16 +27,17 @@ namespace Mathlib.Tactic.GRewrite
 
 open Lean Meta Elab Parser Tactic
 
+/-- Analogous to `elabRewrite`. -/
 def elabGRewrite (mvarId : MVarId) (e : Expr) (stx : Syntax) (forwardImp symm : Bool)
     (config : GRewrite.Config) : TacticM GRewriteResult := do
   let mvarCounterSaved := (← getMCtx).mvarCounter
   let thm ← elabTerm stx none true
   if thm.hasSyntheticSorry then
     throwAbortTactic
-  let mvarIds ← getMVarsNoDelayed thm
-  if mvarIds.contains mvarId then
+  unless ← occursCheck mvarId thm do
     throwErrorAt stx
       "Occurs check failed: Expression{indentExpr thm}\ncontains the goal {Expr.mvar mvarId}"
+  let mvarIds ← getMVarsNoDelayed thm
   let mctx ← getMCtx
   let mvarIds := mvarIds.filter fun mvarId ↦ mvarCounterSaved ≤ (mctx.getDecl mvarId).index
   let lctx ← getLCtx
@@ -51,6 +52,7 @@ def elabGRewrite (mvarId : MVarId) (e : Expr) (stx : Syntax) (forwardImp symm : 
   let mvarIds := r.mvarIds.filter fun mvarId => mvarCounterSaved ≤ (mctx.getDecl mvarId).index
   return { r with mvarIds }
 
+/-- Analogous to `finishElabRewrite`. -/
 def finishElabGRewrite (r : GRewriteResult) : MetaM GRewriteResult := do
   let mvarIds ← r.mvarIds.filterM (not <$> ·.isAssigned)
   mvarIds.forM fun newMVarId => newMVarId.withContext do
@@ -65,7 +67,7 @@ def grewriteTarget (stx : Syntax) (symm : Bool) (config : GRewrite.Config) : Tac
     elabGRewrite goal (← goal.getType) stx (forwardImp := false) (symm := symm) (config := config)
   let r ← finishElabGRewrite r
   let mvarNew ← mkFreshExprSyntheticOpaqueMVar r.eNew (← goal.getTag)
-  goal.assign (mkApp r.impProof mvarNew)
+  goal.assign (r.impProof.app mvarNew)
   replaceMainGoal (mvarNew.mvarId! :: r.mvarIds)
 
 /-- Apply the `grewrite` tactic to a local hypothesis. -/

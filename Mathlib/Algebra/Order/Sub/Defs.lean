@@ -42,7 +42,7 @@ TODO: generalize `Nat.le_of_le_of_sub_le_sub_right`, `Nat.sub_le_sub_right_iff`,
   `Nat.mul_self_sub_mul_self_eq`
 -/
 
-@[expose] public section
+public section
 
 
 variable {α : Type*}

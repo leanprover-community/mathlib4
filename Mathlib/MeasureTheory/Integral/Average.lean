@@ -195,7 +195,7 @@ theorem laverage_union_mem_segment (hd : AEDisjoint μ s t) (ht : NullMeasurable
     rw [restrict_congr_set (hs₀.union EventuallyEq.rfl), empty_union]
     exact right_mem_segment _ _ _
   · refine
-      ⟨μ s / (μ s + μ t), μ t / (μ s + μ t), zero_le _, zero_le _, ?_, (laverage_union hd ht).symm⟩
+      ⟨μ s / (μ s + μ t), μ t / (μ s + μ t), zero_le, zero_le, ?_, (laverage_union hd ht).symm⟩
     rw [← ENNReal.add_div,
       ENNReal.div_self (add_eq_zero.not.2 fun h => hs₀ h.1) (add_ne_top.2 ⟨hsμ, htμ⟩)]
 
@@ -253,7 +253,7 @@ theorem setLAverage_le_essSup (s : Set α) (f : α → ℝ≥0∞) : ⨍⁻ x in
   · simp [laverage, not_isFiniteMeasure_iff.mp hμ]
   by_cases hμ0 : μ s = 0
   · rw [laverage, ← setLIntegral_univ]
-    exact le_of_eq_of_le (setLIntegral_measure_zero univ f <| by simp [hμ0]) (zero_le (essSup f μ))
+    exact le_of_eq_of_le (setLIntegral_measure_zero univ f <| by simp [hμ0]) zero_le
   apply le_of_le_of_eq (laverage_mono_ae <| Eventually.filter_mono ae_restrict_le ae_le_essSup)
   have : NeZero (μ.restrict s) :=
     have : NeZero (μ s) := { out := hμ0 }

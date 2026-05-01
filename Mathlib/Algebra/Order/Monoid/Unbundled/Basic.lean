@@ -73,10 +73,8 @@ theorem mul_le_mul_right [MulLeftMono α] {b c : α} (bc : b ≤ c) (a : α) : a
 alias mul_le_mul_left' := mul_le_mul_right
 
 @[to_additive le_of_add_le_add_left]
-theorem le_of_mul_le_mul_left' [MulLeftReflectLE α] {a b c : α}
-    (bc : a * b ≤ a * c) :
-    b ≤ c :=
-  ContravariantClass.elim _ bc
+theorem le_of_mul_le_mul_left' [MulLeftReflectLE α] {a b c : α} (bc : a * b ≤ a * c) : b ≤ c :=
+  MulLeftReflectLE.le_of_mul_le_mul_left' bc
 
 @[to_additive (attr := gcongr high - 1)]
 theorem mul_le_mul_left [i : MulRightMono α] {b c : α} (bc : b ≤ c) (a : α) : b * a ≤ c * a :=
@@ -86,22 +84,19 @@ theorem mul_le_mul_left [i : MulRightMono α] {b c : α} (bc : b ≤ c) (a : α)
 alias mul_le_mul_right' := mul_le_mul_left
 
 @[to_additive le_of_add_le_add_right]
-theorem le_of_mul_le_mul_right' [i : MulRightReflectLE α] {a b c : α}
-    (bc : b * a ≤ c * a) :
+theorem le_of_mul_le_mul_right' [MulRightReflectLE α] {a b c : α} (bc : b * a ≤ c * a) :
     b ≤ c :=
-  i.elim a bc
+  MulRightReflectLE.le_of_mul_le_mul_right' bc
 
 @[to_additive (attr := simp)]
-theorem mul_le_mul_iff_left [MulLeftMono α]
-    [MulLeftReflectLE α] (a : α) {b c : α} :
+theorem mul_le_mul_iff_left [MulLeftMono α] [MulLeftReflectLE α] (a : α) {b c : α} :
     a * b ≤ a * c ↔ b ≤ c :=
-  rel_iff_cov α α (· * ·) (· ≤ ·) a
+  rel_iff_cov' ‹MulLeftMono α›.elim fun _ ↦ MulLeftReflectLE.le_of_mul_le_mul_left'
 
 @[to_additive (attr := simp)]
-theorem mul_le_mul_iff_right [MulRightMono α]
-    [MulRightReflectLE α] (a : α) {b c : α} :
+theorem mul_le_mul_iff_right [MulRightMono α] [MulRightReflectLE α] (a : α) {b c : α} :
     b * a ≤ c * a ↔ b ≤ c :=
-  rel_iff_cov α α (swap (· * ·)) (· ≤ ·) a
+  rel_iff_cov' ‹MulRightMono α›.elim fun _ ↦ MulRightReflectLE.le_of_mul_le_mul_right'
 
 end LE
 
