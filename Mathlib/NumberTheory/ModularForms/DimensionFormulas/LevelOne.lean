@@ -221,24 +221,21 @@ theorem discriminant_eq_E₄_cube_sub_E₆_sq (z : ℍ) :
 /-- The modular discriminant equals `(E₄³ - E₆²) / 1728` in the graded ring
 `⨁ k, ModularForm 𝒮ℒ k`. -/
 theorem discriminant_eq_E₄_cube_sub_E₆_sq_graded :
-    DirectSum.of (ModularForm 𝒮ℒ) 12 (CuspForm.discriminant : ModularForm 𝒮ℒ 12) =
-      (1 / 1728 : ℂ) • (DirectSum.of (ModularForm 𝒮ℒ) 4 E₄ ^ 3 -
-        DirectSum.of (ModularForm 𝒮ℒ) 6 E₆ ^ 2) := by
+    DirectSum.of (ModularForm 𝒮ℒ) 12 CuspForm.discriminant =
+      (1 / 1728 : ℂ) • (.of (ModularForm 𝒮ℒ) 4 E₄ ^ 3 - .of (ModularForm 𝒮ℒ) 6 E₆ ^ 2) := by
   have hE4 : DirectSum.of (ModularForm 𝒮ℒ) 4 E₄ ^ 3 = DirectSum.of (ModularForm 𝒮ℒ) 12
-      (ModularForm.mcast (by norm_num) ((E₄.mul E₄).mul E₄)) := by
+      (ModularForm.mcast (by decide) ((E₄.mul E₄).mul E₄)) := by
     rw [pow_succ (n := 2), pow_two, DirectSum.of_mul_of, DirectSum.of_mul_of]
     rfl
   have hE6 : DirectSum.of (ModularForm 𝒮ℒ) 6 E₆ ^ 2 =
-      DirectSum.of (ModularForm 𝒮ℒ) 12 (ModularForm.mcast (by norm_num) (E₆.mul E₆)) := by
+      DirectSum.of (ModularForm 𝒮ℒ) 12 (ModularForm.mcast (by decide) (E₆.mul E₆)) := by
     rw [pow_two, DirectSum.of_mul_of]
     rfl
   rw [hE4, hE6, ← map_sub (DirectSum.of (ModularForm 𝒮ℒ) 12), ← DirectSum.of_smul]
   congr 1
   ext z
-  change ModularForm.discriminant z =
-    (1 / 1728 : ℂ) * (E₄ z * E₄ z * E₄ z - E₆ z * E₆ z)
-  rw [discriminant_eq_E₄_cube_sub_E₆_sq z]
-  ring
+  change ModularForm.discriminant z = (1 / 1728 : ℂ) * (E₄ z * E₄ z * E₄ z - E₆ z * E₆ z)
+  grind [discriminant_eq_E₄_cube_sub_E₆_sq z]
 
 /- Algebraic core of the weight-2 vanishing argument: if `p : PowerSeries ℂ`
 satisfies `c₄ • p₄ = p²` and `c₆ • p₆ = p³` for power series `p₄`, `p₆` with
