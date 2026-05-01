@@ -71,7 +71,7 @@ theorem bot_isCompleteMultipartite : (⊥ : SimpleGraph α).IsCompleteMultiparti
   simp [IsCompleteMultipartite]
 
 protected lemma IsCompleteMultipartite.induce (hG : G.IsCompleteMultipartite) :
-    (G.induce s).IsCompleteMultipartite where trans _u _v _w := hG.trans _ _ _
+    (G.induce s).IsCompleteMultipartite := fun _u _v _w ↦ @hG _ _ _
 
 /-- The setoid given by non-adjacency -/
 @[implicit_reducible]
