@@ -37,14 +37,15 @@ class IsStablyFree (R : Type u) [Ring R] (M : Type*) [AddCommGroup M] [Module R 
 variable (R : Type u) [Ring R] (M : Type v) [AddCommGroup M] [Module R M]
   (N : Type w) [AddCommGroup N] [Module R N]
 
-theorem IsStablyFree.exist_free_prod [IsStablyFree R M] : ∃ (N : Type u)
-    (_ : AddCommGroup N) (_ : Module R N) (_ : Module.Finite R N) (_ : Free R N), Free R (M × N) :=
+theorem IsStablyFree.exist_free_prod [IsStablyFree R M] :
+    ∃ (N : Type u) (_ : AddCommGroup N) (_ : Module R N) (_ : Module.Finite R N) (_ : Free R N),
+      Free R (M × N) :=
   IsStablyFree.exist_free_prod'
 
 variable {R M N} in
 theorem IsStablyFree.equiv (e : M ≃ₗ[R] N) [IsStablyFree R M] : IsStablyFree R N := by
   obtain ⟨P, hPc, hPm, hPfin, hPfree, _⟩ := IsStablyFree.exist_free_prod R M
-  exact ⟨P, hPc, hPm, hPfin, hPfree, Free.of_equiv ((e.prodCongr (LinearEquiv.refl R P)))⟩
+  exact ⟨P, hPc, hPm, hPfin, hPfree, Free.of_equiv (e.prodCongr (LinearEquiv.refl R P))⟩
 
 variable {R M N} in
 theorem IsStablyFree.equiv_iff (e : M ≃ₗ[R] N) : IsStablyFree R M ↔ IsStablyFree R N :=
@@ -67,13 +68,18 @@ instance [Free R M] : IsStablyFree R M :=
   ⟨PUnit, inferInstance, inferInstance, inferInstance, inferInstance, inferInstance⟩
 
 theorem IsStablyFree.of_free_prod [Module.Finite R N] [Free R N] [Free R (M × N)] :
-    IsStablyFree R M := by
+    IsStablyFree R M :=
   have : Small.{u} N := Module.Finite.small.{u} R N
   let +nondep eN : N ≃ₗ[R] Shrink.{u} N := (Shrink.linearEquiv R N).symm
-  exact ⟨Shrink.{u} N, inferInstance, inferInstance, Module.Finite.equiv eN,
+  ⟨Shrink.{u} N, inferInstance, inferInstance, Module.Finite.equiv eN,
     Free.of_equiv eN, Free.of_equiv ((LinearEquiv.refl R M).prodCongr eN)⟩
 
-instance (priority := low) IsStablyFree.projective [IsStablyFree R M] : Projective R M := by
+theorem IsStablyFree.of_free_prod' [Module.Finite R N] [Free R N] [Free R (N × M)] :
+    IsStablyFree R M :=
+  have : Free R (M × N) := Free.of_equiv (LinearEquiv.prodComm R N M)
+  .of_free_prod R M N
+
+instance (priority := low) [IsStablyFree R M] : Projective R M := by
   obtain ⟨N, _, _, _, _, _⟩ := IsStablyFree.exist_free_prod R M
   exact Projective.of_split (LinearMap.inl R M N) (LinearMap.fst R M N) (LinearMap.ext fun _ ↦ rfl)
 
