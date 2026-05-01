@@ -175,14 +175,15 @@ theorem directedOn_union_iff :
       obtain ⟨z, hz, hx'z, hy'z⟩ := ht x' hx' y' hy'
       exact ⟨z, .inr hz, hxx'.trans hx'z, hyy'.trans hy'z⟩
 
-theorem or_of_directedOn_union (h : DirectedOn (· ≤ ·) (s ∪ t)) :
+theorem directedOn_or_directedOn_of_union (h : DirectedOn (· ≤ ·) (s ∪ t)) :
     DirectedOn (· ≤ ·) s ∨ DirectedOn (· ≤ ·) t := by
   rw [directedOn_union_iff] at h
   tauto
 
-theorem or_of_directedOn_union' (hn : (s ∪ t).Nonempty) (h : DirectedOn (· ≤ ·) (s ∪ t)) :
+theorem directedOn_or_directedOn_of_union'
+    (hn : (s ∪ t).Nonempty) (h : DirectedOn (· ≤ ·) (s ∪ t)) :
     DirectedOn (· ≤ ·) s ∧ s.Nonempty ∨ DirectedOn (· ≤ ·) t ∧ t.Nonempty := by
-  obtain h | h := or_of_directedOn_union h
+  obtain h | h := directedOn_or_directedOn_of_union h
   · obtain rfl | hs := s.eq_empty_or_nonempty
     · aesop
     · exact .inl ⟨h, hs⟩
