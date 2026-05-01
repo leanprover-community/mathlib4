@@ -110,6 +110,12 @@ instance IsStableUnderComposition.inf {P Q : MorphismProperty C} [P.IsStableUnde
     (P ⊓ Q).IsStableUnderComposition where
   comp_mem f g hf hg := ⟨P.comp_mem f g hf.left hg.left, Q.comp_mem f g hf.right hg.right⟩
 
+lemma IsStableUnderComposition.sInf {W : Set (MorphismProperty C)}
+    (h : ∀ W' ∈ W, W'.IsStableUnderComposition) : (sInf W).IsStableUnderComposition where
+  comp_mem f g hf hg := by
+    rw [sInf_iff] at hf hg ⊢
+    exact fun W' hW' ↦ (h W' hW').comp_mem _ _ (hf _ hW') (hg _ hW')
+
 /-- A morphism property is `StableUnderInverse` if the inverse of a morphism satisfying
 the property still falls in the class. -/
 def StableUnderInverse (P : MorphismProperty C) : Prop :=

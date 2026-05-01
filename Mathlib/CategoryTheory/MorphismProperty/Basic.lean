@@ -90,6 +90,19 @@ lemma iSup_iff {ι : Sort*} (W : ι → MorphismProperty C) {X Y : C} (f : X ⟶
   · rintro ⟨i, hf⟩
     exact ⟨⟨_, i, rfl⟩, hf⟩
 
+@[simp]
+lemma sInf_iff {W : Set (MorphismProperty C)} {X Y : C} (f : X ⟶ Y) :
+    sInf W f ↔ ∀ W' ∈ W, W' f := by
+  suffices h : ∀ {W : Set (∀ {X Y : C} (f : X ⟶ Y), Prop)} {X Y : C} {f : X ⟶ Y},
+      sInf W f ↔ ∀ W' ∈ W, W' f from h
+  simp
+
+@[simp]
+lemma iInf_iff {ι : Type*} {W : ι → MorphismProperty C} {X Y : C} (f : X ⟶ Y) :
+    iInf W f ↔ ∀ i, W i f := by
+  rw [← iInf_range]
+  exact (sInf_iff f).trans (by simp)
+
 /-- The morphism property in `Cᵒᵖ` associated to a morphism property in `C` -/
 @[simp]
 def op (P : MorphismProperty C) : MorphismProperty Cᵒᵖ := fun _ _ f => P f.unop
