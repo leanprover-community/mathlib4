@@ -211,7 +211,7 @@ theorem lintegral_join {m : Measure (Measure α)} {f : α → ℝ≥0∞} (hf : 
   · fun_prop
   congr
   funext n
-  rw [lintegral_finset_sum (s n)]
+  rw [lintegral_finsetSum (s n)]
   · simp_rw [lintegral_const_mul _ (hf _ _)]
   · exact fun r _ => (hf _ _).const_mul _
 

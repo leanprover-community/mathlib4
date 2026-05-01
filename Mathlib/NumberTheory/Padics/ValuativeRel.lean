@@ -16,7 +16,7 @@ public import Mathlib.RingTheory.Valuation.RankOne
 p-adic, p adic, padic, norm, valuation, cauchy, completion, p-adic completion
 -/
 
-@[expose] public section
+public section
 
 variable {p : ℕ} [hp : Fact p.Prime] {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ₀]
     (v : Valuation ℚ_[p] Γ₀)

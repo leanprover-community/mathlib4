@@ -15,7 +15,7 @@ Given a group homomorphism `f : H →* G`, we have the restriction functor
 
 -/
 
-@[expose] public section
+public section
 
 universe t w u v v1 v2
 

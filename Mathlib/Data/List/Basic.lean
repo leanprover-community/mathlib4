@@ -20,7 +20,7 @@ public import Mathlib.Tactic.Attr.Core
 # Basic properties of lists
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Lattice
 assert_not_exists Monoid
@@ -929,17 +929,16 @@ theorem filter_eq_foldr (p : α → Bool) (l : List α) :
     filter p l = foldr (fun a out => bif p a then a :: out else out) [] l := by
   induction l <;> simp [*, filter]; rfl
 
-#adaptation_note /-- nightly-2024-07-27
-This has to be temporarily renamed to avoid an unintentional collision.
-The prime should be removed at nightly-2024-07-27. -/
 @[simp]
-theorem filter_subset' (l : List α) : filter p l ⊆ l :=
+theorem filter_subset_self (l : List α) : filter p l ⊆ l :=
   filter_sublist.subset
+
+@[deprecated (since := "2026-04-24")] alias filter_subset' := filter_subset_self
 
 theorem of_mem_filter {a : α} {l} (h : a ∈ filter p l) : p a := (mem_filter.1 h).2
 
 theorem mem_of_mem_filter {a : α} {l} (h : a ∈ filter p l) : a ∈ l :=
-  filter_subset' l h
+  filter_subset_self l h
 
 theorem mem_filter_of_mem {a : α} {l} (h₁ : a ∈ l) (h₂ : p a) : a ∈ filter p l :=
   mem_filter.2 ⟨h₁, h₂⟩

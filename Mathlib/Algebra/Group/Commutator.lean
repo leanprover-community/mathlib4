@@ -34,6 +34,12 @@ attribute [scoped instance] commutatorElement
 
 end commutatorElement
 
+namespace addCommutatorElement
+
+attribute [scoped instance] addCommutatorElement
+
+end addCommutatorElement
+
 open scoped commutatorElement
 
 @[to_additive]
