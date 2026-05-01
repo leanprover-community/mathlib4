@@ -119,13 +119,12 @@ def equiv : (WalkingIso.{w} ⥤ C) ≃ Σ (X : C) (Y : C), (X ≅ Y) where
   toFun F := ⟨F.obj zero, F.obj one, toIso F⟩
   invFun p := fromIso p.2.2
   right_inv := fun ⟨X, Y, e⟩ ↦ rfl
-  left_inv F := Functor.hext (by rintro (_ | _) <;> rfl) <| by
+  left_inv F := Functor.ext (by rintro (_ | _) <;> rfl) <| by
       intro X Y f
       induction X <;>
       induction Y <;>
-      ( dsimp
-        try rw [← F.map_id]
-        rfl )
+      simp [Codiscrete.eq_id] <;>
+      rfl
 
 end
 
