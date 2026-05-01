@@ -276,4 +276,22 @@ lemma tendsto_coe_atTop [NoMaxOrder ι] :
   filter_upwards [atTop_basis_Ioi.mem_of_mem (i := i) trivial]
   simp
 
+lemma tendsto_atTop_nhds_top_iff {α : Type*}
+    [Nonempty α] [inst : Preorder α] [IsDirected α fun x1 x2 ↦ x1 ≤ x2] (x : α → WithTop ι) :
+    Tendsto x atTop (𝓝 ⊤) ↔ ∀ (i : ι), ∃ N, ∀ n ≥ N, i < x n := by
+  rw [WithTop.tendsto_nhds_top_iff]
+  simp only [eventually_atTop, ge_iff_le]
+
+lemma tendsto_withTop_atTop_nhds_top {ι : Type*}
+    [LinearOrder ι] [TopologicalSpace ι] [OrderTopology ι] [NoMaxOrder ι]
+    {a : ℕ → ι} (ha : Tendsto a atTop atTop) :
+    Tendsto (fun n ↦ (a n : WithTop ι)) atTop (𝓝 ⊤) := by
+  rw [WithTop.tendsto_atTop_nhds_top_iff]
+  rw [tendsto_atTop_atTop] at ha
+  norm_cast
+  intro i
+  obtain ⟨i', hi'⟩ := NoMaxOrder.exists_gt i
+  obtain ⟨j, hj⟩ := ha i'
+  exact ⟨j, fun n hn ↦ lt_of_lt_of_le hi' <| hj _ hn⟩
+
 end WithTop
