@@ -142,7 +142,7 @@ private lemma le_smul (μ ν : Measure X) [OpensMeasurableSpace X]
 
 /-- **Christensen's Lemma**: Uniformly distributed outerregular measures are unique up to
 a finite constant. -/
-theorem eq_smul (μ ν : Measure X) [OpensMeasurableSpace X] [SecondCountableTopology X] 
+theorem eq_smul (μ ν : Measure X) [OpensMeasurableSpace X] [SecondCountableTopology X]
     [OuterRegular μ] [OuterRegular ν] [UniformlyDistributed μ] [UniformlyDistributed ν] :
     ∃ c : ℝ≥0, μ = c • ν := by
   by_cases! hX : IsEmpty X
