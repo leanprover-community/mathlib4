@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Convex.Topology
 public import Mathlib.Analysis.Normed.Module.Convex
 public import Mathlib.LinearAlgebra.Dimension.DivisionRing
 public import Mathlib.Topology.Algebra.Module.Cardinality
+public import Mathlib.Topology.Algebra.Module.Equiv
 
 /-!
 # Connectedness of subsets of vector spaces
@@ -24,6 +25,13 @@ We show several results related to the (path)-connectedness of subsets of real v
   of codimension `> 1` is path-connected.
 
 Statements with connectedness instead of path-connectedness are also given.
+
+* `ContinuousLinearMap.connectedComponents_compl_hyperplane_equiv_bool` shows that the complement
+  of a convex hyperplane defined by a surjective continuous linear functional `F →L[ℝ] ℝ` has
+  exactly two connected components (`ConnectedComponents _ ≃ Bool`); a version assuming `f ≠ 0` and
+  cardinality (`Nat.card _ = 2`) are also proved.
+* `ContinuousLinearMap.zerothHomotopy_compl_hyperplane_equiv_bool` is the corresponding
+  path-component statement (`ZerothHomotopy _ ≃ Bool`).
 -/
 
 public section
@@ -31,7 +39,7 @@ public section
 assert_not_exists Subgroup.index Nat.divisors
 -- TODO assert_not_exists Cardinal
 
-open Set Metric
+open Set Function Metric Topology
 open scoped Convex ENNReal
 
 section TopologicalVectorSpace
@@ -248,6 +256,82 @@ theorem isPreconnected_sphere (h : 1 < Module.rank ℝ E) (x : E) (r : ℝ) :
   · simpa [hr] using isPreconnected_empty
 
 end NormedSpace
+
+section CodimensionOne
+
+namespace ContinuousLinearMap
+
+variable {F : Type*} [AddCommGroup F] [Module ℝ F] [TopologicalSpace F] (f : F →L[ℝ] ℝ) (c : ℝ)
+
+private def boolConnectedComponents : Bool → Set ↥({x : F | f x = c}ᶜ)
+| true => {x | c < f x.val}
+| false => {x | f x.val < c}
+
+private lemma boolConnectedComponents_compl (i : Bool) :
+    (boolConnectedComponents f c i)ᶜ = boolConnectedComponents f c !i := by
+  ext x
+  simp only [boolConnectedComponents, mem_compl_iff]
+  grind
+
+private lemma boolConnectedComponents_clopen (i : Bool) :
+    IsClopen (boolConnectedComponents f c i) := by
+  have hopen : ∀ i, IsOpen (boolConnectedComponents f c i) := by
+    intro i
+    fin_cases i
+    · exact isOpen_Ioi.preimage (f.continuous.comp continuous_subtype_val)
+    · exact isOpen_Iio.preimage (f.continuous.comp continuous_subtype_val)
+  have := (hopen !i).isClosed_compl
+  rw [boolConnectedComponents_compl, Bool.not_not] at this
+  exact ⟨this, hopen i⟩
+
+private lemma boolConnectedComponents_disjoint :
+    Pairwise (Disjoint on f.boolConnectedComponents c) := by
+  intro i j _
+  fin_cases i <;> fin_cases j <;> (try contradiction) <;> simp +contextual [
+    disjoint_iff_inter_eq_empty, eq_empty_iff_forall_notMem, boolConnectedComponents, le_of_lt]
+
+private lemma boolConnectedComponents_iUnion : ⋃ i, f.boolConnectedComponents c i = univ := by
+  ext x
+  grind [boolConnectedComponents, mem_iUnion, Bool.exists_bool]
+
+variable [IsTopologicalAddGroup F] [ContinuousSMul ℝ F] {f}
+
+private lemma boolConnectedComponents_pathConnected (hf : Surjective f) (i : Bool) :
+    IsPathConnected (f.boolConnectedComponents c i) := by
+  fin_cases i
+  · haveI : PathConnectedSpace {x : F | c < f x} := isPathConnected_iff_pathConnectedSpace.mp <| by
+      obtain ⟨x, hx⟩ := hf (c + 1)
+      exact (convex_halfSpace_gt f.isLinear c).isPathConnected ⟨x, by simp [hx]⟩
+    have hAs : {x : F | c < f x} ⊆ {x : F | f x = c}ᶜ := fun x hx => ne_of_gt hx
+    have hU0 : boolConnectedComponents f c true = Set.range (Set.inclusion hAs) := by
+      ext x
+      grind [Subtype.exists, boolConnectedComponents]
+    exact hU0 ▸ isPathConnected_range (continuous_inclusion hAs)
+  · haveI : PathConnectedSpace {x : F | f x < c} := isPathConnected_iff_pathConnectedSpace.mp <| by
+      obtain ⟨x, hx⟩ := hf (c - 1)
+      exact (convex_halfSpace_lt f.isLinear c).isPathConnected ⟨x, by simp [hx]⟩
+    have hBs : {x : F | f x < c} ⊆ {x : F | f x = c}ᶜ := fun x hx => ne_of_lt hx
+    have hU1 : boolConnectedComponents f c false = Set.range (Set.inclusion hBs) := by
+      ext x
+      grind [Subtype.exists, boolConnectedComponents]
+    exact hU1 ▸ isPathConnected_range (continuous_inclusion hBs)
+
+theorem connectedComponents_compl_hyperplane_card_eq_two (hf : Surjective f) :
+    Nat.card (ConnectedComponents ↥({x : F | f x = c}ᶜ)) = 2 :=
+  (Nat.card_congr (ConnectedComponents.equivOfIsClopenOfIsConnected
+    (boolConnectedComponents_clopen f c) (boolConnectedComponents_disjoint f c)
+    (boolConnectedComponents_iUnion f c)
+    fun i ↦ (boolConnectedComponents_pathConnected c hf i).isConnected)).trans <| by simp
+
+theorem zerothHomotopy_compl_hyperplane_card_eq_two (hf : Surjective f) :
+    Nat.card (ZerothHomotopy ↥({x : F | f x = c}ᶜ)) = 2 :=
+  (Nat.card_congr (ZerothHomotopy.equivOfIsClopenOfIsPathConnected
+    (boolConnectedComponents_clopen f c) (boolConnectedComponents_disjoint f c)
+    (boolConnectedComponents_iUnion f c) (boolConnectedComponents_pathConnected c hf))).trans
+    <| by simp
+
+end ContinuousLinearMap
+end CodimensionOne
 
 section
 

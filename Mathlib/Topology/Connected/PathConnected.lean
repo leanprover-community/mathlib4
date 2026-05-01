@@ -639,12 +639,32 @@ theorem exists_path_through_family' {n : ℕ} (p : Fin (n + 1) → X) :
 
 end PathConnectedSpace
 
+namespace ZerothHomotopy
+
 /-- The preimage of a singleton in `ZerothHomotopy` is the path component of an element in the
 equivalence class. -/
-theorem ZerothHomotopy.preimage_singleton_eq_pathComponent (x : X) :
+theorem preimage_singleton_eq_pathComponent (x : X) :
     ZerothHomotopy.mk ⁻¹' {.mk x} = pathComponent x := by
   ext y
   rw [mem_preimage, mem_singleton_iff, eq_comm, mem_pathComponent_iff]
   exact Quotient.eq
 
 instance [CompactSpace X] : CompactSpace <| ZerothHomotopy X := Quotient.compactSpace
+
+open ConnectedComponents in
+/-- A pairwise disjoint clopen cover by path-connected sets partitions the path components.
+  Analogous to `ConnectedComponents.equivOfIsClopenOfIsConnected`. -/
+noncomputable def equivOfIsClopenOfIsPathConnected {U : ι → Set X} (hclopen : ∀ i, IsClopen (U i))
+    (hdisj : Pairwise (Disjoint on U)) (hunion : ⋃ i, U i = univ)
+    (hpath : ∀ i, IsPathConnected (U i)) : ZerothHomotopy X ≃ ι := by
+  let e : ConnectedComponents X ≃ ι := equivOfIsClopenOfIsConnected hclopen hdisj hunion
+    fun i ↦ (hpath i).isConnected
+  refine ⟨fun x ↦ e x.toConnectedComponents, fun i ↦ mk (hpath i).nonempty.some, fun x ↦ ?_,
+    fun i ↦ equivOfIsClopenOfIsConnected_mk hclopen hdisj hunion
+    (hpath · |>.isConnected) _ (hpath i).nonempty.some_mem⟩
+  obtain ⟨x, rfl⟩ := mk_surjective x
+  obtain ⟨i, hi⟩ := iUnion_eq_univ_iff.mp hunion x
+  have he := equivOfIsClopenOfIsConnected_mk hclopen hdisj hunion (hpath · |>.isConnected) x hi
+  exact Quotient.sound <| he ▸ (hpath i).joinedIn _ (hpath i).nonempty.some_mem _ hi |>.joined
+
+end ZerothHomotopy
