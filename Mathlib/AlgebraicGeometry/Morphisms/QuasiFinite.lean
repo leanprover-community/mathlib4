@@ -419,6 +419,7 @@ nonrec lemma Scheme.Hom.quasiFiniteAt_iff_isOpen_singleton_asFiber
   rw [HasRingHomProperty.Spec_iff (P := @LocallyOfFiniteType)] at ‹LocallyOfFiniteType (Spec.map φ)›
   algebraize [φ.hom]
   rw [← Algebra.quasiFiniteAt_iff_isOpen_singleton_fiber]
+  let := Localization.AtPrime.algebraOfLiesOver (x.asIdeal.under R) x.asIdeal
   trans Algebra.QuasiFinite (Localization.AtPrime (x.asIdeal.under R))
     (Localization.AtPrime x.asIdeal)
   · rw [← RingHom.quasiFinite_algebraMap]
