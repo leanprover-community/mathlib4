@@ -103,7 +103,8 @@ partial def makeFastInstance (inst expectedType : Expr) (trace : Array Name := #
       else
         -- For data fields, make sure that the lambda binders have the right type.
         mvarId.assign <| ← forallTelescopeReducing argExpectedType fun xs _ ↦ do
-          mkLambdaFVars xs (← whnfI (mkAppN arg xs))
+          mkLambdaFVars xs <| ← withReducibleAndInstances <|
+            transform (mkAppN arg xs) (pre := fun e ↦ return .continue (← whnf e))
     return mkAppN f (← mvars.mapM instantiateMVars)
 
 /--
