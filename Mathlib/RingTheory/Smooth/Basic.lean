@@ -276,7 +276,6 @@ section iff_split
 
 variable [Algebra.FormallySmooth R P]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma kerCotangentToTensor_injective_iff
     [Algebra P A] [IsScalarTower R P A] (hf : Function.Surjective (algebraMap P A)) :
     Function.Injective (kerCotangentToTensor R P A) ↔ Subsingleton (Algebra.H1Cotangent R A) :=
@@ -394,7 +393,7 @@ section Polynomial
 
 open scoped Polynomial in
 instance polynomial (R : Type*) [CommRing R] :
-  FormallySmooth R R[X] := .of_equiv (MvPolynomial.pUnitAlgEquiv.{_, 0} R)
+  FormallySmooth R R[X] := .of_equiv (MvPolynomial.uniqueAlgEquiv.{_, 0} R PUnit)
 
 instance : FormallySmooth R R := .of_equiv (MvPolynomial.isEmptyAlgEquiv R Empty)
 

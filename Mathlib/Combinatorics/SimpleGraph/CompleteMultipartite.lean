@@ -61,7 +61,7 @@ open Finset Fintype Function
 
 universe u
 namespace SimpleGraph
-variable {α : Type u}
+variable {α : Type u} {G : SimpleGraph α} {s : Set α}
 
 /-- `G` is `IsCompleteMultipartite` iff non-adjacency is transitive -/
 def IsCompleteMultipartite (G : SimpleGraph α) : Prop :=
@@ -70,7 +70,9 @@ def IsCompleteMultipartite (G : SimpleGraph α) : Prop :=
 theorem bot_isCompleteMultipartite : (⊥ : SimpleGraph α).IsCompleteMultipartite := by
   simp [IsCompleteMultipartite]
 
-variable {G : SimpleGraph α}
+protected lemma IsCompleteMultipartite.induce (hG : G.IsCompleteMultipartite) :
+    (G.induce s).IsCompleteMultipartite where trans _u _v _w := hG.trans _ _ _
+
 /-- The setoid given by non-adjacency -/
 @[implicit_reducible]
 def IsCompleteMultipartite.setoid (h : G.IsCompleteMultipartite) : Setoid α :=
@@ -437,7 +439,7 @@ def ofCopy (f : Copy (completeEquipartiteGraph r t) G) : G.CompleteEquipartiteSu
       rw [← h₁', ← h₂']
       apply f.toHom.map_adj
       simp_rw [completeEquipartiteGraph_adj]
-      contrapose! hne with heq
+      contrapose hne with heq
       simp_rw [← h₁, ← h₂, heq]
 
 end CompleteEquipartiteSubgraph

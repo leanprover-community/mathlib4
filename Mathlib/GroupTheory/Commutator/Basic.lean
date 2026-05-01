@@ -62,7 +62,7 @@ theorem commutatorElement_self : ⁅g, g⁆ = 1 :=
 theorem commutatorElement_inv : ⁅g₁, g₂⁆⁻¹ = ⁅g₂, g₁⁆ := by
   simp_rw [commutatorElement_def, mul_inv_rev, inv_inv, mul_assoc]
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem map_commutatorElement : (f ⁅g₁, g₂⁆ : G') = ⁅f g₁, f g₂⁆ := by
   simp_rw [commutatorElement_def, map_mul f, map_inv f]
 
@@ -306,6 +306,14 @@ theorem Subgroup.Normal.of_commutator_le {H : Subgroup G} (h : _root_.commutator
 @[to_additive]
 theorem commutator_eq_bot_iff_center_eq_top : commutator G = ⊥ ↔ Subgroup.center G = ⊤ := by
   simp [commutator, Subgroup.commutator_eq_bot_iff_le_centralizer]
+
+@[to_additive]
+theorem commutator_eq_bot_iff : commutator G = ⊥ ↔ IsMulCommutative G := by
+  rw [commutator_eq_bot_iff_center_eq_top, center_eq_top_iff]
+
+@[to_additive]
+theorem commutator_eq_bot [hG : IsMulCommutative G] : commutator G = ⊥ :=
+  (commutator_eq_bot_iff G).mpr hG
 
 @[to_additive]
 lemma commutator_centralizer_commutator_le_center :
