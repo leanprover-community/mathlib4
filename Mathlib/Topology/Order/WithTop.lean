@@ -277,7 +277,7 @@ lemma tendsto_coe_atTop [NoMaxOrder ι] :
   simp
 
 lemma tendsto_atTop_nhds_top_iff {α : Type*}
-    [Nonempty α] [inst : Preorder α] [IsDirected α fun x1 x2 ↦ x1 ≤ x2] (x : α → WithTop ι) :
+    [Nonempty α] [Preorder α] [IsDirectedOrder α] (x : α → WithTop ι) :
     Tendsto x atTop (𝓝 ⊤) ↔ ∀ (i : ι), ∃ N, ∀ n ≥ N, i < x n := by
   rw [WithTop.tendsto_nhds_top_iff]
   simp only [eventually_atTop, ge_iff_le]
