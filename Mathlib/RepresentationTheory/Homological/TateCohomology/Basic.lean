@@ -52,6 +52,9 @@ open CategoryTheory groupCohomology groupHomology
 def Rep.tateNorm (M : Rep R G) : (inhomogeneousChains M).X 0 ⟶ (inhomogeneousCochains M).X 0 :=
   (chainsIso₀ M).hom ≫ M.norm.toModuleCatHom ≫ (cochainsIso₀ M).inv
 
+lemma tateNorm_hom_apply (M : Rep R G) (x : (Fin 0 → G) →₀ ↑M.V) (y : Fin 0 → G) :
+    M.tateNorm.hom x y = (cochainsIso₀ M).inv.hom (M.ρ.norm <| (chainsIso₀ M).hom.hom x) y := rfl
+
 set_option backward.isDefEq.respectTransparency false in
 lemma Rep.tateNorm_eq (M : Rep R G) :
     M.tateNorm = ModuleCat.ofHom (Finsupp.lsum R fun _ ↦ LinearMap.pi fun _ ↦ M.ρ.norm) := by
@@ -83,8 +86,12 @@ lemma Rep.comp_eq_zero (M : Rep R G) : d₁₀ M ≫ M.norm.toModuleCatHom = 0 :
 
 set_option backward.isDefEq.respectTransparency false in
 lemma Rep.d_comp_tateNorm (M : Rep R G) : (inhomogeneousChains M).d 1 0 ≫ M.tateNorm = 0 := by
-  simp only [ChainComplex.of_X, CochainComplex.of_X, tateNorm, ← Category.assoc]
-  simp [← comp_d₁₀_eq]
+  simp only [ChainComplex.of.d, zero_add, ↓reduceDIte, Nat.reduceAdd, eqToHom_refl,
+    Category.id_comp, tateNorm, ← Category.assoc, Preadditive.IsIso.comp_right_eq_zero]
+  rw [← ChainComplex.of_d (X := (inhomogeneousChains M).X) (d := inhomogeneousChains.d M)]
+  simp only [Nat.reduceAdd]
+  rw [← comp_d₁₀_eq]
+  simp
 
 /-- The Tate norm connecting complexes of inhomogeneous chains and cochains. -/
 @[simps]
@@ -187,6 +194,14 @@ lemma map_tateComplexFunctor_shortExact {S : ShortComplex (Rep R G)} (hS : S.Sho
       <| map_chainsFunctor_eval_shortExact hS _
 
 instance : (tateComplexFunctor (R := R) (G := G)).Additive where
+  map_add {X Y f1 f2} := by
+    simp only [tateComplexFunctor_obj, tateComplexFunctor_map]
+    ext i x : 3
+    simp only [tateComplex, CochainComplex.ConnectData.cochainComplex_X,
+      CochainComplex.ConnectData.map_f]
+    cases i with
+    | ofNat _ => simp; rfl
+    | negSucc _ => simp only [CochainComplex.ConnectData.X_negSucc]; ext1; rfl
 
 /-
 The next two statements say that `tateComplexFunctor` is an exact functor.
