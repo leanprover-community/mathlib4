@@ -199,7 +199,8 @@ end CongruenceSubgroups
 
 section Conjugation
 
-open Pointwise ConjAct
+open scoped Pointwise
+open ConjAct
 
 /-- The subgroup `SL(2, ℤ) ∩ g⁻¹ Γ g`, for `Γ` a subgroup of `SL(2, ℤ)` and `g ∈ GL(2, ℝ)`. -/
 def conjGL (Γ : Subgroup SL(2, ℤ)) (g : GL (Fin 2) ℝ) : Subgroup SL(2, ℤ) :=

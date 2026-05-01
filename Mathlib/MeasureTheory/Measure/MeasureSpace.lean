@@ -695,7 +695,7 @@ theorem tendsto_measure_biInter_gt {ι : Type*} [LinearOrder ι] [TopologicalSpa
     · rwa [Subtype.forall]
     · exact fun i j h ↦ hm i j i.2 h
     · simpa only [Subtype.exists, exists_prop]
-  · rw [Order.not_isPredPrelimit_iff_exists_covBy] at ha
+  · rw [Order.not_isPredPrelimit_iff] at ha
     rcases ha with ⟨b, hab⟩
     simp [hab.nhdsGT]
 

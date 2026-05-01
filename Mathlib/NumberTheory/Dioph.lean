@@ -562,13 +562,18 @@ theorem ne_dioph : Dioph {v | f v ≠ g v} :=
 scoped infixl:50 " D≠ " => Dioph.ne_dioph
 
 /-- Diophantine functions are closed under subtraction. -/
-theorem sub_dioph : DiophFn fun v => f v - g v :=
+theorem sub_dioph : DiophFn fun v ↦ f v - g v :=
   diophFn_comp2 df dg <|
     (diophFn_vec _).2 <|
       ext (D&1 D= D&0 D+ D&2 D∨ D&1 D≤ D&2 D∧ D&0 D= D.0) <|
+<<<<<<< NT-golf
         (vectorAll_iff_forall _).1 fun x y z =>
           show y = x + z ∨ y ≤ z ∧ x = 0 ↔ y - z = x by
             grind
+=======
+        (vectorAll_iff_forall _).1 fun x y z ↦
+          show y = x + z ∨ y ≤ z ∧ x = 0 ↔ y - z = x by grind
+>>>>>>> master
 
 @[inherit_doc]
 scoped infixl:80 " D- " => Dioph.sub_dioph

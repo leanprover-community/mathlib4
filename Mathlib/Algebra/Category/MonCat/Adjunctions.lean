@@ -98,7 +98,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The free-forgetful adjunction for commutative monoids. -/
 noncomputable
 def adj : free ⊣ forget AddCommMonCat.{u} where
-  unit := { app X := TypeCat.ofHom fun i ↦ Finsupp.single i 1 }
+  unit := { app X := ↾fun i ↦ Finsupp.single i 1 }
   counit :=
   { app M := ofHom (Finsupp.liftAddHom (multiplesHom M))
     naturality {M N} f := by ext1; apply Finsupp.liftAddHom.symm.injective; cat_disch }
