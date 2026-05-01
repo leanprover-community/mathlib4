@@ -57,7 +57,6 @@ instance [Inhabited C] (T : Monad C) : Inhabited (Kleisli T) := ⟨.mk T default
 
 variable (T)
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local ext] Hom in
 /-- The Kleisli category on a monad `T`.
 cf Definition 5.2.9 in [Riehl][riehl2017]. -/
@@ -67,10 +66,11 @@ instance category : Category (Kleisli T) where
   id X := .mk <| T.η.app X.of
   comp {_} {_} {Z} f g := .mk <| f.of ≫ T.map g.of ≫ T.μ.app Z.of
   id_comp {X} {Y} f := by
-    ext
-    simp [← T.η.naturality_assoc f.of]
+    simp [dsimp% T.left_unit Y.of, ← dsimp% T.η.naturality_assoc f.of (T.μ.app Y.of)]
+  comp_id {X} {Y} f := by
+    simp [dsimp% T.right_unit Y.of]
   assoc f g h := by
-    simp [Monad.assoc, T.mu_naturality_assoc]
+    simp [dsimp% T.assoc, T.mu_naturality_assoc]
 
 variable {T} in
 attribute [local ext] Hom in
