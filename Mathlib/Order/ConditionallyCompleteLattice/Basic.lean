@@ -179,29 +179,21 @@ section ConditionallyCompleteLattice
 
 variable [ConditionallyCompleteLattice α] {s t : Set α} {a b : α}
 
+@[to_dual]
 theorem isLUB_csSup (hn : s.Nonempty) (hb : BddAbove s := by bddDefault) : IsLUB s (sSup s) :=
   ConditionallyCompleteLattice.isLUB_csSup _ hn hb
 
-theorem isGLB_csInf (hn : s.Nonempty) (hb : BddBelow s := by bddDefault) : IsGLB s (sInf s) :=
-  ConditionallyCompleteLattice.isGLB_csInf _ hn hb
-
+@[to_dual csInf_le]
 theorem le_csSup (h₁ : BddAbove s) (h₂ : a ∈ s) : a ≤ sSup s :=
   (isLUB_csSup (nonempty_of_mem h₂) h₁).1 h₂
 
+@[to_dual le_csInf]
 theorem csSup_le (h₁ : s.Nonempty) (h₂ : ∀ b ∈ s, b ≤ a) : sSup s ≤ a :=
   (isLUB_csSup h₁ ⟨a, h₂⟩).2 h₂
 
-theorem csInf_le (h₁ : BddBelow s) (h₂ : a ∈ s) : sInf s ≤ a :=
-  (isGLB_csInf (nonempty_of_mem h₂) h₁).1 h₂
-
-theorem le_csInf (h₁ : s.Nonempty) (h₂ : ∀ b ∈ s, a ≤ b) : a ≤ sInf s :=
-  (isGLB_csInf h₁ ⟨a, h₂⟩).2 h₂
-
+@[to_dual csInf_le_of_le]
 theorem le_csSup_of_le (hs : BddAbove s) (hb : b ∈ s) (h : a ≤ b) : a ≤ sSup s :=
   le_trans h (le_csSup hs hb)
-
-theorem csInf_le_of_le (hs : BddBelow s) (hb : b ∈ s) (h : b ≤ a) : sInf s ≤ a :=
-  le_trans (csInf_le hs hb) h
 
 @[gcongr low]
 theorem csSup_le_csSup (ht : BddAbove t) (hs : s.Nonempty) (h : s ⊆ t) : sSup s ≤ sSup t :=
@@ -218,11 +210,9 @@ theorem le_csSup_iff (h : BddAbove s) (hs : s.Nonempty) :
 theorem csInf_le_iff (h : BddBelow s) (hs : s.Nonempty) : sInf s ≤ a ↔ ∀ b ∈ lowerBounds s, b ≤ a :=
   ⟨fun h _ hb => le_trans (le_csInf hs hb) h, fun hb => hb _ fun _ => csInf_le h⟩
 
+@[to_dual]
 theorem IsLUB.csSup_eq (H : IsLUB s a) (ne : s.Nonempty) : sSup s = a :=
   (isLUB_csSup ne ⟨a, H.1⟩).unique H
-
-theorem IsGLB.csInf_eq (H : IsGLB s a) (ne : s.Nonempty) : sInf s = a :=
-  (isGLB_csInf ne ⟨a, H.1⟩).unique H
 
 instance (priority := 100) ConditionallyCompleteLattice.toConditionallyCompletePartialOrder :
     ConditionallyCompletePartialOrder α where
@@ -423,7 +413,7 @@ theorem csInf_lt_iff (hb : BddBelow s) (hs : s.Nonempty) : sInf s < a ↔ ∃ b 
 
 lemma csSup_eq_univ_of_not_bddAbove (hs : ¬BddAbove s) : sSup s = sSup univ := by
   rw [csSup_of_not_bddAbove hs, csSup_of_not_bddAbove (s := univ)]
-  contrapose! hs
+  contrapose hs
   exact hs.mono (subset_univ _)
 
 lemma ciSup_eq_univ_of_not_bddAbove (hf : ¬BddAbove (range f)) : ⨆ i, f i = sSup univ :=
