@@ -117,7 +117,8 @@ private lemma recursion' (n : ℕ) :
   · congr 1
     simp_rw [integral_const_mul]
     ring!
-  all_goals exact Continuous.intervalIntegrable (by fun_prop) _ _
+  · fun_prop
+  · fun_prop
 
 /--
 Auxiliary for the proof that `π` is irrational.
