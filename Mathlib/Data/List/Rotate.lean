@@ -392,6 +392,11 @@ protected theorem IsRotated.forall (l : List α) (n : ℕ) : l.rotate n ~r l :=
 theorem IsRotated.trans : ∀ {l l' l'' : List α}, l ~r l' → l' ~r l'' → l ~r l''
   | _, _, _, ⟨n, rfl⟩, ⟨m, rfl⟩ => ⟨n + m, by rw [rotate_rotate]⟩
 
+instance : IsEquiv (List α) IsRotated where
+  refl := IsRotated.refl
+  symm _ _ := IsRotated.symm
+  trans _ _ _ := IsRotated.trans
+
 theorem IsRotated.eqv : Equivalence (@IsRotated α) :=
   Equivalence.mk IsRotated.refl IsRotated.symm IsRotated.trans
 
@@ -486,6 +491,13 @@ theorem IsRotated.dropLast_tail {α}
   | a :: b :: L => by
     simp only [head_cons, ne_eq, reduceCtorEq, not_false_eq_true, getLast_cons] at hL'
     simp [hL', IsRotated.cons_getLast_dropLast]
+
+lemma IsRotated.exists_of_sublist {l m m' : List α} (h : l <+ m) (hr : m ~r m') :
+    ∃ l' : List α, l' ~r l ∧ l' <+ m' := by
+  obtain ⟨n, hn, rfl⟩ := isRotated_iff_mod.mp hr
+  obtain ⟨lL, lR, rfl, hL, hR⟩ := sublist_append_iff.mp <| take_append_drop n m ▸ h
+  refine ⟨lR ++ lL, isRotated_append.symm, ?_⟩
+  simpa [rotate_eq_drop_append_take hn] using hR.append hL
 
 /-- List of all cyclic permutations of `l`.
 The `cyclicPermutations` of a nonempty list `l` will always contain `List.length l` elements.
