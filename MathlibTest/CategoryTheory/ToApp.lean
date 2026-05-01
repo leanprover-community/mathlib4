@@ -40,4 +40,77 @@ example {B : Type u_1} [Bicategory B] (F : PrelaxFunctor B Cat)
     (F.map₂ η).toNatTrans.app X ≫ (F.map₂ (𝟙 g)).toNatTrans.app X = (F.map₂ η).toNatTrans.app X :=
   testThm_app F η X
 
+section UnbundledNatTrans
+
+variable {C : Type u} [Category.{v} C] {D : Type u_1} [Category.{v_1} D]
+variable {F G H K : C ⥤ D}
+
+@[to_app]
+theorem unbundled_eq_of_eq (η θ : F ⟶ G) (h : η = θ) : η = θ := h
+
+example (η θ : F ⟶ G) (h : η = θ) (X : C) : True := by
+  have hyp := unbundled_eq_of_eq_app η θ h X
+  guard_hyp hyp : η.app X = θ.app X
+  trivial
+
+example (η θ : F ⟶ G) (h : η = θ) (X : C) : True := by
+  have hyp := (to_app_of% h) X
+  guard_hyp hyp : η.app X = θ.app X
+  trivial
+
+@[to_app]
+theorem unbundled_comp_assoc (η : F ⟶ G) (θ : G ⟶ H) (κ : H ⟶ K) :
+    (η ≫ θ) ≫ κ = η ≫ θ ≫ κ := by
+  simp
+
+example (η : F ⟶ G) (θ : G ⟶ H) (κ : H ⟶ K) (X : C) : True := by
+  have hyp := unbundled_comp_assoc_app η θ κ X
+  guard_hyp hyp : (η.app X ≫ θ.app X) ≫ κ.app X = η.app X ≫ θ.app X ≫ κ.app X
+  trivial
+
+section
+
+def foo (η : F ⟶ G) (θ : G ⟶ F) : F ⟶ F := η ≫ θ
+
+@[to_app (attr := local simp)]
+theorem unbundled_eq (η : F ⟶ G) (θ : G ⟶ F) : η ≫ θ = foo η θ := rfl
+
+/--
+info: CategoryTheory.ToAppTest.unbundled_eq_app.{u_1, u_2, u_3, u_4} {C : Type u_1} [Category.{u_2, u_1} C] {D : Type u_3}
+  [Category.{u_4, u_3} D] {F G : C ⥤ D} (η : F ⟶ G) (θ : G ⟶ F) (X : C) : η.app X ≫ θ.app X = (foo η θ).app X
+-/
+#guard_msgs in
+#check unbundled_eq_app
+
+example (η : F ⟶ G) (θ : G ⟶ F) (X : C) : True := by
+  have hyp := unbundled_eq_app η θ X
+  guard_hyp hyp : η.app X ≫ θ.app X = (foo η θ).app X
+  trivial
+
+example (η : F ⟶ G) (θ : G ⟶ F) (X : C) : η.app X ≫ θ.app X = (foo η θ).app X := by
+  simp
+
+example (η : F ⟶ G) (θ : G ⟶ F) (X : C) : η.app X ≫ θ.app X = (foo η θ).app X := by
+  dsimp
+
+end
+
+attribute [-simp] Iso.inv_hom_id Iso.inv_hom_id_app
+
+@[to_app (attr := simp)]
+theorem inv_hom_id (i : F ≅ G) : i.inv ≫ i.hom = 𝟙 _ :=
+  i.inv_hom_id
+
+/--
+info: CategoryTheory.ToAppTest.inv_hom_id_app.{u_1, u_2, u_3, u_4} {C : Type u_1} [Category.{u_2, u_1} C] {D : Type u_3}
+  [Category.{u_4, u_3} D] {F G : C ⥤ D} (i : F ≅ G) (X : C) : i.inv.app X ≫ i.hom.app X = 𝟙 (G.obj X)
+-/
+#guard_msgs in
+#check inv_hom_id_app
+
+example (i : F ≅ G) (X : C) : i.inv.app X ≫ i.hom.app X = 𝟙 _ := by
+  simp
+
+end UnbundledNatTrans
+
 end CategoryTheory.ToAppTest
