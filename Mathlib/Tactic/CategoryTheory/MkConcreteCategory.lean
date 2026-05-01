@@ -294,12 +294,12 @@ private meta def elabMkConcreteCategoryCore (mods : Syntax) (cat FC idTerm compT
     elabCommand <| ← set_option hygiene false in `(command|
       /-- Turn a categorical morphism back into its underlying bundled morphism. -/
       @[to_additive]
-      abbrev Hom.hom {X Y : $cat} (f : Hom (X := X) (Y := Y)) :=
+      abbrev Hom.hom {X Y : $cat} (f : X ⟶ Y) :=
         CategoryTheory.ConcreteCategory.hom (C := $cat) f)
   else
     elabCommand <| ← set_option hygiene false in `(command|
       /-- Turn a categorical morphism back into its underlying bundled morphism. -/
-      abbrev Hom.hom {X Y : $cat} (f : Hom (X := X) (Y := Y)) :=
+      abbrev Hom.hom {X Y : $cat} (f : X ⟶ Y) :=
         CategoryTheory.ConcreteCategory.hom (C := $cat) f)
 
   match customOfHom? with
@@ -368,27 +368,40 @@ private meta def elabMkConcreteCategoryCore (mods : Syntax) (cat FC idTerm compT
     elabCommand <| ← set_option hygiene false in `(command|
       @[to_additive (attr := simp), simp]
       lemma hom_comp {X Y Z : $cat} (f : X ⟶ Y) (g : Y ⟶ Z) :
-          (f ≫ g).hom = (($compTerm) g.hom f.hom) :=
+          (f ≫ g).hom = dsimp'% (($compTerm) g.hom f.hom) :=
         rfl)
   else
     elabCommand <| ← set_option hygiene false in `(command|
       @[simp]
       lemma hom_comp {X Y Z : $cat} (f : X ⟶ Y) (g : Y ⟶ Z) :
-          (f ≫ g).hom = (($compTerm) g.hom f.hom) :=
+          (f ≫ g).hom = dsimp'% (($compTerm) g.hom f.hom) :=
         rfl)
 
-  if useToAdditive then
-    elabCommand <| ← set_option hygiene false in `(command|
-      @[to_additive (attr := simp), simp]
-      lemma hom_ofHom {X Y : $cat} (f : ($FC : $cat → $cat → Type _) X Y) :
-          (CategoryTheory.ConcreteCategory.ofHom (C := $cat) f).hom = f :=
-        rfl)
-  else
-    elabCommand <| ← set_option hygiene false in `(command|
-      @[simp]
-      lemma hom_ofHom {X Y : $cat} (f : ($FC : $cat → $cat → Type _) X Y) :
-          (CategoryTheory.ConcreteCategory.ofHom (C := $cat) f).hom = f :=
-        rfl)
+  match customOfHom? with
+  | some (binders, homTy, _, _) =>
+      if useToAdditive then
+        elabCommand <| ← set_option hygiene false in `(command|
+          @[to_additive (attr := simp), simp]
+          lemma hom_ofHom $binders:bracketedBinder* (f : ($homTy)) : (ofHom f).hom = f :=
+            rfl)
+      else
+        elabCommand <| ← set_option hygiene false in `(command|
+          @[simp]
+          lemma hom_ofHom $binders:bracketedBinder* (f : ($homTy)) : (ofHom f).hom = f :=
+            rfl)
+  | none =>
+      if useToAdditive then
+        elabCommand <| ← set_option hygiene false in `(command|
+          @[to_additive (attr := simp), simp]
+          lemma hom_ofHom {X Y : $cat} (f : ($FC : $cat → $cat → Type _) X Y) :
+              (CategoryTheory.ConcreteCategory.ofHom (C := $cat) f).hom = f :=
+            rfl)
+      else
+        elabCommand <| ← set_option hygiene false in `(command|
+          @[simp]
+          lemma hom_ofHom {X Y : $cat} (f : ($FC : $cat → $cat → Type _) X Y) :
+              (CategoryTheory.ConcreteCategory.ofHom (C := $cat) f).hom = f :=
+            rfl)
 
   if useToAdditive then
     elabCommand <| ← set_option hygiene false in `(command|

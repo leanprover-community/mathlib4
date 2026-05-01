@@ -60,7 +60,7 @@ mk_concrete_category TestCat Fun Fun.id Fun.comp
 #guard_msgs in
 #check TestCat.instConcreteCategory
 
-/-- info: TestCat.Hom.hom.{u_1} {X Y : TestCat} (f : X.Hom Y) : X.Fun Y -/
+/-- info: TestCat.Hom.hom.{u_1} {X Y : TestCat} (f : X ⟶ Y) : X.Fun Y -/
 #guard_msgs in
 #check Hom.hom
 
@@ -185,7 +185,7 @@ info: ModuleTestCat.Hom.ext.{u, u_1, u_2} {R : Type u} {inst✝ : Ring R} {X : M
 #guard_msgs in
 #check ModuleTestCat.instConcreteCategory
 
-/-- info: ModuleTestCat.Hom.hom.{u, u_1} {R : Type u} [Ring R] {X Y : ModuleTestCat R} (f : X.Hom Y) : ↑X →ₗ[R] ↑Y -/
+/-- info: ModuleTestCat.Hom.hom.{u, u_1} {R : Type u} [Ring R] {X Y : ModuleTestCat R} (f : X ⟶ Y) : ↑X →ₗ[R] ↑Y -/
 #guard_msgs in
 #check Hom.hom
 
@@ -208,8 +208,10 @@ info: ModuleTestCat.hom_comp.{u, u_1} {R : Type u} [Ring R] {X Y Z : ModuleTestC
 #guard_msgs in
 #check hom_comp
 
-/-- info: ModuleTestCat.hom_ofHom.{u, u_1} {R : Type u} [Ring R] {X Y : ModuleTestCat R} (f : ↑X →ₗ[R] ↑Y) :
-  Hom.hom (ConcreteCategory.ofHom f) = f -/
+/--
+info: ModuleTestCat.hom_ofHom.{v, u} {R : Type u} [Ring R] {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y]
+  [Module R Y] (f : X →ₗ[R] Y) : Hom.hom (ofHom f) = f
+-/
 #guard_msgs in
 #check hom_ofHom
 
@@ -309,7 +311,7 @@ namespace MultiplicativeTestCat
 #guard_msgs in
 #check MultiplicativeTestCat.instConcreteCategory
 
-/-- info: MultiplicativeTestCat.Hom.hom.{u_1} {X Y : MultiplicativeTestCat} (f : X.Hom Y) : ↑X →* ↑Y -/
+/-- info: MultiplicativeTestCat.Hom.hom.{u_1} {X Y : MultiplicativeTestCat} (f : X ⟶ Y) : ↑X →* ↑Y -/
 #guard_msgs in
 #check Hom.hom
 
@@ -326,8 +328,9 @@ namespace MultiplicativeTestCat
 #guard_msgs in
 #check hom_comp
 
-/-- info: MultiplicativeTestCat.hom_ofHom.{u_1} {X Y : MultiplicativeTestCat} (f : ↑X →* ↑Y) :
-  Hom.hom (ConcreteCategory.ofHom f) = f -/
+/--
+info: MultiplicativeTestCat.hom_ofHom.{u} {X Y : Type u} [Monoid X] [Monoid Y] (f : X →* Y) : Hom.hom (ofHom f) = f
+-/
 #guard_msgs in
 #check hom_ofHom
 
@@ -371,7 +374,7 @@ namespace AdditiveTestCat
 #guard_msgs in
 #check AdditiveTestCat.instConcreteCategory
 
-/-- info: AdditiveTestCat.Hom.hom.{u_1} {X Y : AdditiveTestCat} (f : X.Hom Y) : ↑X →+ ↑Y -/
+/-- info: AdditiveTestCat.Hom.hom.{u_1} {X Y : AdditiveTestCat} (f : X ⟶ Y) : ↑X →+ ↑Y -/
 #guard_msgs in
 #check Hom.hom
 
@@ -388,7 +391,7 @@ namespace AdditiveTestCat
 #guard_msgs in
 #check hom_comp
 
-/-- info: AdditiveTestCat.hom_ofHom.{u_1} {X Y : AdditiveTestCat} (f : ↑X →+ ↑Y) : Hom.hom (ConcreteCategory.ofHom f) = f -/
+/-- info: AdditiveTestCat.hom_ofHom.{u} {X Y : Type u} [AddMonoid X] [AddMonoid Y] (f : X →+ Y) : Hom.hom (ofHom f) = f -/
 #guard_msgs in
 #check hom_ofHom
 
