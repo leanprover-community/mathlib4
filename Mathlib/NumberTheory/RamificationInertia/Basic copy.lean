@@ -37,12 +37,10 @@ section
 
 open TensorProduct in
 /-- _ -/
-noncomputable def foo18 (R S K : Type*) [CommRing R] [AddCommGroup S] [Module R S]
-    [CommRing K] [Algebra R K] (p : Ideal R) [p.IsPrime]
+noncomputable def foo18 (R S K : Type*) [CommSemiring R] [AddCommMonoid S] [Module R S]
+    [Semiring K] [Algebra R K] (p : Ideal R) [p.IsPrime]
     [Algebra (Localization.AtPrime p) K] [IsScalarTower R (Localization.AtPrime p) K] :
-    letI Rp := Localization.AtPrime p
-    letI Sp := LocalizedModule.AtPrime p S
-    (K ⊗[Rp] Sp) ≃ₗ[K] K ⊗[R] S :=
+    (K ⊗[Localization.AtPrime p] LocalizedModule.AtPrime p S) ≃ₗ[K] K ⊗[R] S :=
   letI Rp := Localization.AtPrime p
   letI Sp := LocalizedModule.AtPrime p S
   ((LinearEquiv.baseChange Rp K Sp (Rp ⊗[R] S)
@@ -73,6 +71,7 @@ open Ideal
 
 namespace Ideal
 
+-- PRed
 section ramification_inertia
 
 variable {S : Type*} [CommRing S] (q : Ideal S) (R : Type*) [CommRing R] [Algebra R S]
