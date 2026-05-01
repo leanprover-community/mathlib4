@@ -132,7 +132,7 @@ instance [IsSiftedOrEmpty C] [IsSiftedOrEmpty D] :
           map := fun f => ((f.1.1, f.2.1), (f.1.2, f.2.2)) }
       unitIso := Iso.refl _
       counitIso := Iso.refl _ }
-  have : e.functor.IsEquivalence := Equivalence.isEquivalence_functor e
+  have := Equivalence.isEquivalence_functor e
   have := final_comp_equivalence ((Functor.diag C).prod (Functor.diag D)) e.functor
   final_of_natIso (Iso.refl ((Functor.diag C).prod (Functor.diag D) ⋙ e.functor))
 
