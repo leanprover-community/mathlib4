@@ -24,8 +24,6 @@ In this file we prove that tensoring with a flat module is an exact functor.
 
 ## TODO
 
-- Prove that tensoring with a flat module is an exact functor in the sense that it preserves both
-  finite limits and colimits.
 - Relate flatness with `Tor`
 
 -/
@@ -81,5 +79,18 @@ lemma iff_preservesFiniteLimits_tensorLeft :
 instance [Module.Flat R M] : PreservesFiniteLimits <| tensorLeft M := by
   rw [← iff_preservesFiniteLimits_tensorLeft]
   infer_instance
+
+lemma iff_preservesFiniteLimits_tensorRight :
+    Flat R M ↔ PreservesFiniteLimits (tensorRight M) :=
+  ⟨fun _ => preservesFiniteLimits_of_natIso (BraidedCategory.tensorLeftIsoTensorRight M),
+  fun _ => by
+    rw [iff_preservesFiniteLimits_tensorLeft]
+    exact preservesFiniteLimits_of_natIso (BraidedCategory.tensorLeftIsoTensorRight M).symm⟩
+
+instance [Module.Flat R M] : PreservesFiniteLimits (tensorRight M) :=
+  preservesFiniteLimits_of_natIso (BraidedCategory.tensorLeftIsoTensorRight M)
+
+instance : Functor.IsLeftAdjoint (tensorRight M) :=
+  Functor.isLeftAdjoint_of_iso (BraidedCategory.tensorLeftIsoTensorRight M)
 
 end Module.Flat
