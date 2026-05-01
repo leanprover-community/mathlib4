@@ -61,7 +61,7 @@ instance (Y : GeneratedByTopCat.{v} X) : IsGeneratedBy X (toTopCat.obj Y) := Y.p
 
 /-- The inclusion functor `toTopCat : GeneratedByTopCat X ⥤ TopCat`
 is fully faithful. -/
-def fullyFaithfulToTopCat : (toTopCat.{v} (X := X)).FullyFaithful :=
+abbrev fullyFaithfulToTopCat : (toTopCat.{v} (X := X)).FullyFaithful :=
   ObjectProperty.fullyFaithfulι _
 
 variable {X} in
@@ -226,7 +226,8 @@ part of the equivalence `ContinuousGeneratedByCat.equivalence`. -/
 def toGeneratedByTopCat : ContinuousGeneratedByCat.{v} X ⥤ GeneratedByTopCat.{v} X :=
   ObjectProperty.lift _ (toTopCat X) (fun Y ↦ by
     rw [TopCat.generatedBy_def]
-    exact IsGeneratedBy.instWithGeneratedByTopology (Y := Y))
+    dsimp +instances
+    infer_instance)
 
 lemma toGeneratedByTopCat_map_apply {Y Z : ContinuousGeneratedByCat.{v} X} (f : Y ⟶ Z)
     (y : WithGeneratedByTopology X Y) :

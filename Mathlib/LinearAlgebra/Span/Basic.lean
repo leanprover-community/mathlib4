@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Module.Submodule.Equiv
 public import Mathlib.Algebra.Module.Submodule.Pointwise
 public import Mathlib.LinearAlgebra.Span.Defs
 public import Mathlib.Order.CompactlyGenerated.Basic
-public import Mathlib.Order.OmegaCompletePartialOrder
+public import Mathlib.Order.BourbakiWitt
 
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Module.Submodule.EqLocus
@@ -38,7 +38,7 @@ namespace Submodule
 
 open Function Set
 
-open Pointwise
+open scoped Pointwise
 
 section AddCommMonoid
 
