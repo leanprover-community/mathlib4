@@ -40,7 +40,7 @@ The integral against vector measures is defined through the extension process de
 
 * `∫ᵛ x, f x ∂[B; μ]` : the `G`-valued integral of an `E`-valued function `f` against the
   vector measure `μ` paired through `B`.
-* `∫ x, f x ∂•μ` : the special case where `f` is a `F`-valued function and `μ` is an `F`-valued
+* `∫ x, f x ∂•μ` : the special case where `f` is a real-valued function and `μ` is an `F`-valued
   vector measure, with the pairing being the scalar multiplication by `ℝ`.
 
 ## Note
@@ -144,7 +144,7 @@ variable {μ : VectorMeasure X F} {B : E →L[ℝ] F →L[ℝ] G}
 
 @[integral_simps]
 theorem integral_fun_add {f g : X → E} (hf : μ.Integrable B f) (hg : μ.Integrable B g) :
-    ∫ᵛ x, (fun z ↦ f z + g z) x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] + ∫ᵛ x, g x ∂[B; μ] := by
+    ∫ᵛ x, f x + g x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] + ∫ᵛ x, g x ∂[B; μ] := by
   by_cases hG : CompleteSpace G
   · simp only [integral, hG]
     exact setToFun_add (dominatedFinMeasAdditive_cbmApplyMeasure μ B) hf hg
@@ -157,7 +157,7 @@ theorem integral_add {f g : X → E} (hf : μ.Integrable B f) (hg : μ.Integrabl
 variable (μ B) in
 @[integral_simps]
 theorem integral_fun_neg (f : X → E) :
-    ∫ᵛ x, (fun z ↦ -f z) x ∂[B; μ]= -∫ᵛ x, f x ∂[B; μ] := by
+    ∫ᵛ x, -f x ∂[B; μ]= -∫ᵛ x, f x ∂[B; μ] := by
   by_cases hG : CompleteSpace G
   · simp only [integral, hG, ↓reduceDIte, transpose_eq_cbmApplyMeasure]
     exact setToFun_neg (dominatedFinMeasAdditive_cbmApplyMeasure μ B) f
@@ -170,7 +170,7 @@ theorem integral_neg (f : X → E) :
 
 @[integral_simps]
 theorem integral_fun_sub {f g : X → E} (hf : μ.Integrable B f) (hg : μ.Integrable B g) :
-    ∫ᵛ x, (fun z ↦ f z - g z) x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] - ∫ᵛ x, g x ∂[B; μ] := by
+    ∫ᵛ x, f x - g x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] - ∫ᵛ x, g x ∂[B; μ] := by
   by_cases hG : CompleteSpace G
   · simp only [integral, hG]
     exact setToFun_sub (dominatedFinMeasAdditive_cbmApplyMeasure μ B) hf hg
@@ -183,11 +183,10 @@ theorem integral_sub (f g : X → E) (hf : μ.Integrable B f) (hg : μ.Integrabl
 variable (μ B) in
 @[integral_simps]
 theorem integral_fun_smul (c : ℝ) (f : X → E) :
-    ∫ᵛ x, (fun z ↦ c • f z) x ∂[B; μ] = c • ∫ᵛ x, f x ∂[B; μ] := by
+    ∫ᵛ x, c • f x ∂[B; μ] = c • ∫ᵛ x, f x ∂[B; μ] := by
   by_cases hG : CompleteSpace G
   · simp only [integral, hG]
-    exact setToFun_smul (dominatedFinMeasAdditive_cbmApplyMeasure μ B)
-      (by simp) c f
+    exact setToFun_smul (dominatedFinMeasAdditive_cbmApplyMeasure μ B) (by simp) c f
   · simp [integral, hG]
 
 variable (μ B) in
