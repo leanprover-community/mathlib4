@@ -418,46 +418,46 @@ section RestrictScalars
 
 section NormInstances
 
-variable [NonAssocSemiring 𝕜] [NonAssocSemiring 𝕜'] (f : 𝕜 →+* 𝕜')
+variable (f : 𝕜 → 𝕜')
 
 instance [I : SeminormedAddCommGroup E] :
-    SeminormedAddCommGroup (RestrictScalarsRingHom f E) :=
+    SeminormedAddCommGroup (RestrictScalarsMap f E) :=
   I
 
 instance [I : NormedAddCommGroup E] :
-    NormedAddCommGroup (RestrictScalarsRingHom f E) :=
+    NormedAddCommGroup (RestrictScalarsMap f E) :=
   I
 
 instance [I : NonUnitalSeminormedRing E] :
-    NonUnitalSeminormedRing (RestrictScalarsRingHom f E) :=
+    NonUnitalSeminormedRing (RestrictScalarsMap f E) :=
   I
 
 instance [I : NonUnitalNormedRing E] :
-    NonUnitalNormedRing (RestrictScalarsRingHom f E) :=
+    NonUnitalNormedRing (RestrictScalarsMap f E) :=
   I
 
 instance [I : SeminormedRing E] :
-    SeminormedRing (RestrictScalarsRingHom f E) :=
+    SeminormedRing (RestrictScalarsMap f E) :=
   I
 
 instance [I : NormedRing E] :
-    NormedRing (RestrictScalarsRingHom f E) :=
+    NormedRing (RestrictScalarsMap f E) :=
   I
 
 instance [I : NonUnitalSeminormedCommRing E] :
-    NonUnitalSeminormedCommRing (RestrictScalarsRingHom f E) :=
+    NonUnitalSeminormedCommRing (RestrictScalarsMap f E) :=
   I
 
 instance [I : NonUnitalNormedCommRing E] :
-    NonUnitalNormedCommRing (RestrictScalarsRingHom f E) :=
+    NonUnitalNormedCommRing (RestrictScalarsMap f E) :=
   I
 
 instance [I : SeminormedCommRing E] :
-    SeminormedCommRing (RestrictScalarsRingHom f E) :=
+    SeminormedCommRing (RestrictScalarsMap f E) :=
   I
 
 instance [I : NormedCommRing E] :
-    NormedCommRing (RestrictScalarsRingHom f E) :=
+    NormedCommRing (RestrictScalarsMap f E) :=
   I
 
 end NormInstances

@@ -152,9 +152,7 @@ open RestrictScalars
 
 variable [h : LieRing L]
 
-instance [NonAssocSemiring R] [NonAssocSemiring A] (f : R →+* A) :
-    LieRing (RestrictScalarsRingHom f L) :=
-  h
+instance (f : R → A) : LieRing (RestrictScalarsMap f L) := h
 
 variable [CommRing A] [LieAlgebra A L]
 

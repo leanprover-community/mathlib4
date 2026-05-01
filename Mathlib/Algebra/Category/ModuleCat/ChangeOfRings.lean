@@ -65,7 +65,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Any `S`-module M is also an `R`-module via a ring homomorphism `f : R ⟶ S` by defining
 `r • m := f r • m` (`Module.compHom`). This is called restriction of scalars. -/
 def obj' : ModuleCat R := by
-  exact of R (RestrictScalarsRingHom f M)
+  exact of R (RestrictScalarsMap f M)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given an `S`-linear map `g : M → M'` between `S`-modules, `g` is also `R`-linear between `M` and
