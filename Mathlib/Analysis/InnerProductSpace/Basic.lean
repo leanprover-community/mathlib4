@@ -884,7 +884,8 @@ structure on the domain using the `SeminormedAddCommGroup.induced` norm.
 See note [reducible non-instances]. -/
 abbrev InnerProductSpace.induced {F G : Type*} [AddCommGroup G] [Module 𝕜 G] [FunLike F G E]
     [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E] [LinearMapClass F 𝕜 G E] (f : F) :
-    letI := SeminormedAddCommGroup.induced G E f; InnerProductSpace 𝕜 G :=
+    letI := SeminormedAddCommGroup.induced G E f
+    InnerProductSpace 𝕜 G :=
   letI := SeminormedAddCommGroup.induced G E f
   letI := NormedSpace.induced 𝕜 G E f
   { inner x y := inner 𝕜 (f x) (f y)
