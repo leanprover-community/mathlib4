@@ -656,6 +656,130 @@ private lemma X0_pow_mul_X1_pow_isWeightedHomogeneous' {a b : ℕ} :
         MvPolynomial (Fin 2) ℂ) (a * 4 + b * 6) :=
   X0_pow_mul_X1_pow_isWeightedHomogeneous a b _ rfl
 
+private lemma discriminantPoly_piece_isWeightedHomogeneous {n : ℕ} (hn12 : 12 ≤ n)
+    (d : Fin 2 →₀ ℕ) (hd_ge : 3 ≤ d 0) (hwd : d 0 * 4 + d 1 * 6 = n) (c : ℂ) :
+    MvPolynomial.IsWeightedHomogeneous E₄E₆Weight
+      (MvPolynomial.C c * ((1728 : ℂ) • discriminantPoly *
+        (MvPolynomial.X (0 : Fin 2) ^ (d 0 - 3) *
+          MvPolynomial.X (1 : Fin 2) ^ (d 1)))) n := by
+  apply MvPolynomial.IsWeightedHomogeneous.C_mul
+  rw [MvPolynomial.smul_eq_C_mul,
+    show MvPolynomial.C (1728 : ℂ) * discriminantPoly *
+        (MvPolynomial.X (0 : Fin 2) ^ (d 0 - 3) * MvPolynomial.X (1 : Fin 2) ^ d 1) =
+        MvPolynomial.C (1728 : ℂ) * (discriminantPoly *
+          (MvPolynomial.X (0 : Fin 2) ^ (d 0 - 3) *
+            MvPolynomial.X (1 : Fin 2) ^ d 1)) from by ring]
+  apply MvPolynomial.IsWeightedHomogeneous.C_mul
+  convert discriminantPoly_isWeightedHomogeneous.mul
+    (X0_pow_mul_X1_pow_isWeightedHomogeneous (d 0 - 3) (d 1) (n - 12) (by omega))
+    using 1
+  omega
+
+private lemma discriminantPoly_piece_eq_monomial_sub
+    (d : Fin 2 →₀ ℕ) (hd_ge : 3 ≤ d 0) (c : ℂ)
+    (d' : Fin 2 →₀ ℕ) (hd' : d' = Finsupp.single (0 : Fin 2) (d 0 - 3) +
+      Finsupp.single (1 : Fin 2) (d 1 + 2)) :
+    MvPolynomial.C c * ((1728 : ℂ) • discriminantPoly *
+        (MvPolynomial.X (0 : Fin 2) ^ (d 0 - 3) * MvPolynomial.X (1 : Fin 2) ^ (d 1))) =
+    (MvPolynomial.monomial d) c - (MvPolynomial.monomial d') c := by
+  subst hd'
+  have h1728 : (1728 : ℂ) • discriminantPoly =
+      MvPolynomial.X (0 : Fin 2) ^ 3 - MvPolynomial.X (1 : Fin 2) ^ 2 := by
+    simp only [discriminantPoly, smul_smul]; norm_num
+  have hd_fin : d = Finsupp.single (0 : Fin 2) (d 0) +
+      Finsupp.single (1 : Fin 2) (d 1) := by
+    ext i; fin_cases i <;> simp [Finsupp.add_apply]
+  rw [show MvPolynomial.C c * ((1728 : ℂ) • discriminantPoly *
+        (MvPolynomial.X (0 : Fin 2) ^ (d 0 - 3) * MvPolynomial.X (1 : Fin 2) ^ (d 1))) =
+      MvPolynomial.C c *
+        (MvPolynomial.X (0 : Fin 2) ^ 3 - MvPolynomial.X (1 : Fin 2) ^ 2) *
+        (MvPolynomial.X (0 : Fin 2) ^ (d 0 - 3) *
+          MvPolynomial.X (1 : Fin 2) ^ (d 1)) from by rw [h1728]; ring]
+  have h3 : (MvPolynomial.X (0 : Fin 2) ^ 3 : MvPolynomial (Fin 2) ℂ) *
+      (MvPolynomial.X (0 : Fin 2) ^ (d 0 - 3) * MvPolynomial.X (1 : Fin 2) ^ d 1) =
+      MvPolynomial.X (0 : Fin 2) ^ d 0 * MvPolynomial.X (1 : Fin 2) ^ d 1 := by
+    rw [show (MvPolynomial.X (0 : Fin 2) : MvPolynomial (Fin 2) ℂ) ^ 3 *
+          (MvPolynomial.X (0 : Fin 2) ^ (d 0 - 3) * MvPolynomial.X (1 : Fin 2) ^ d 1)
+        = (MvPolynomial.X (0 : Fin 2) ^ 3 * MvPolynomial.X (0 : Fin 2) ^ (d 0 - 3)) *
+            MvPolynomial.X (1 : Fin 2) ^ d 1 from by ring,
+      ← pow_add, show 3 + (d 0 - 3) = d 0 from by omega]
+  have h2 : (MvPolynomial.X (1 : Fin 2) ^ 2 : MvPolynomial (Fin 2) ℂ) *
+      (MvPolynomial.X (0 : Fin 2) ^ (d 0 - 3) * MvPolynomial.X (1 : Fin 2) ^ d 1) =
+      MvPolynomial.X (0 : Fin 2) ^ (d 0 - 3) * MvPolynomial.X (1 : Fin 2) ^ (d 1 + 2) := by
+    rw [show (MvPolynomial.X (1 : Fin 2) : MvPolynomial (Fin 2) ℂ) ^ 2 *
+          (MvPolynomial.X (0 : Fin 2) ^ (d 0 - 3) * MvPolynomial.X (1 : Fin 2) ^ d 1)
+        = MvPolynomial.X (0 : Fin 2) ^ (d 0 - 3) *
+            (MvPolynomial.X (1 : Fin 2) ^ d 1 * MvPolynomial.X (1 : Fin 2) ^ 2) from by ring,
+      ← pow_add]
+  rw [show MvPolynomial.C c * (MvPolynomial.X (0 : Fin 2) ^ 3 -
+        MvPolynomial.X (1 : Fin 2) ^ 2) *
+        (MvPolynomial.X (0 : Fin 2) ^ (d 0 - 3) * MvPolynomial.X (1 : Fin 2) ^ d 1) =
+      MvPolynomial.C c * (MvPolynomial.X (0 : Fin 2) ^ 3 *
+        (MvPolynomial.X (0 : Fin 2) ^ (d 0 - 3) * MvPolynomial.X (1 : Fin 2) ^ d 1)) -
+      MvPolynomial.C c * (MvPolynomial.X (1 : Fin 2) ^ 2 *
+        (MvPolynomial.X (0 : Fin 2) ^ (d 0 - 3) *
+          MvPolynomial.X (1 : Fin 2) ^ d 1)) from by ring,
+    h3, h2]
+  congr 1
+  · rw [MvPolynomial.X_pow_eq_monomial, MvPolynomial.X_pow_eq_monomial,
+      MvPolynomial.monomial_mul, one_mul, MvPolynomial.C_mul_monomial, mul_one]
+    exact congrArg (· c) (congrArg MvPolynomial.monomial hd_fin.symm)
+  · rw [MvPolynomial.X_pow_eq_monomial, MvPolynomial.X_pow_eq_monomial,
+      MvPolynomial.monomial_mul, one_mul, MvPolynomial.C_mul_monomial, mul_one]
+
+private lemma sum_lt_sum_of_replace {α : Type*} [DecidableEq α]
+    (S S' : Finset α) (f : α → ℕ) (d d' : α)
+    (hd_mem : d ∈ S) (hd_not : d ∉ S')
+    (hS' : S' ⊆ S.erase d ∪ {d'})
+    (hlt : f d' < f d) :
+    ∑ x ∈ S', f x < ∑ x ∈ S, f x := by
+  by_cases hd'S : d' ∈ S
+  · calc ∑ x ∈ S', f x
+        ≤ ∑ x ∈ S.erase d, f x := Finset.sum_le_sum_of_subset (fun x hx =>
+          Finset.mem_erase.mpr ⟨fun h => hd_not (h ▸ hx),
+            match Finset.mem_union.mp (hS' hx) with
+            | .inl h => Finset.mem_of_mem_erase h
+            | .inr h => Finset.mem_singleton.mp h ▸ hd'S⟩)
+      _ < ∑ x ∈ S.erase d, f x + f d :=
+          Nat.lt_add_of_pos_right (Nat.pos_of_ne_zero (by omega))
+      _ = ∑ x ∈ S, f x := Finset.sum_erase_add S f hd_mem
+  · calc ∑ x ∈ S', f x
+        ≤ ∑ x ∈ S.erase d ∪ {d'}, f x := Finset.sum_le_sum_of_subset hS'
+      _ = ∑ x ∈ S.erase d, f x + f d' := by
+          rw [Finset.sum_union (Finset.disjoint_singleton_right.mpr
+            (fun h => hd'S (Finset.mem_of_mem_erase h))), Finset.sum_singleton]
+      _ < ∑ x ∈ S.erase d, f x + f d := Nat.add_lt_add_left hlt _
+      _ = ∑ x ∈ S, f x := Finset.sum_erase_add S f hd_mem
+
+open Classical in
+private lemma mvpoly_support_after_reduction {σ R : Type*} [CommRing R] [DecidableEq σ]
+    (p : MvPolynomial σ R) (d d' : σ →₀ ℕ) (c : R)
+    (hdd' : d ≠ d') (hc : MvPolynomial.coeff d p = c) :
+    let δ := MvPolynomial.monomial d c - MvPolynomial.monomial d' c
+    d ∉ (p - δ).support ∧ (p - δ).support ⊆ p.support.erase d ∪ {d'} := by
+  have hcoeff_d : MvPolynomial.coeff d
+      (p - (MvPolynomial.monomial d c - MvPolynomial.monomial d' c)) = 0 := by
+    rw [MvPolynomial.coeff_sub, MvPolynomial.coeff_sub,
+      MvPolynomial.coeff_monomial, MvPolynomial.coeff_monomial,
+      if_pos rfl, if_neg hdd'.symm, sub_zero, hc, sub_self]
+  have hd_not : d ∉ (p - (MvPolynomial.monomial d c -
+      MvPolynomial.monomial d' c)).support :=
+    MvPolynomial.notMem_support_iff.mpr hcoeff_d
+  refine ⟨hd_not, fun x hx => ?_⟩
+  rcases Finset.mem_union.mp (MvPolynomial.support_sub σ p _ hx) with hp | hdelta
+  · by_cases hxd : x = d
+    · exact absurd (hxd ▸ hx) hd_not
+    · exact Finset.mem_union_left _ (Finset.mem_erase.mpr ⟨hxd, hp⟩)
+  · rcases Finset.mem_union.mp (MvPolynomial.support_sub σ _ _ hdelta) with h1 | h2
+    · rw [MvPolynomial.support_monomial] at h1
+      split_ifs at h1
+      · exact absurd h1 (Finset.notMem_empty _)
+      · exact absurd ((Finset.mem_singleton.mp h1) ▸ hx) hd_not
+    · rw [MvPolynomial.support_monomial] at h2
+      split_ifs at h2
+      · exact absurd h2 (Finset.notMem_empty _)
+      · exact Finset.mem_union_right _ (by rwa [Finset.mem_singleton] at h2 ⊢)
+
 /-- Polynomial decomposition: any weighted-homogeneous polynomial `p` of weight `n ≥ 12` can
 be written as `r + Δ_poly * s` where `r` is weighted-homogeneous of weight `n` whose monomials
 all have `X₀`-degree `< 3`. -/
@@ -667,9 +791,61 @@ private lemma whomog_poly_Delta_decomp {n : ℕ} (hn12 : 12 ≤ n)
       MvPolynomial.IsWeightedHomogeneous E₄E₆Weight s (n - 12) ∧
       p = r + discriminantPoly * s ∧
       (∀ d ∈ r.support, d 0 < 3) := by
-  -- TODO: induction on `∑ d ∈ p.support, d 0`. Each step uses
-  -- `X₀³ = X₁² + 1728 • Δ_poly` to reduce a monomial with `d 0 ≥ 3`.
-  sorry
+  suffices key : ∀ (M : ℕ) (p : MvPolynomial (Fin 2) ℂ),
+      MvPolynomial.IsWeightedHomogeneous E₄E₆Weight p n →
+      (∑ d ∈ p.support, d 0) ≤ M →
+      ∃ r s : MvPolynomial (Fin 2) ℂ,
+        MvPolynomial.IsWeightedHomogeneous E₄E₆Weight r n ∧
+        MvPolynomial.IsWeightedHomogeneous E₄E₆Weight s (n - 12) ∧
+        p = r + discriminantPoly * s ∧
+        (∀ d ∈ r.support, d 0 < 3) from
+    key _ p hp le_rfl
+  intro M
+  induction M using Nat.strong_induction_on with | _ M ih => ?_
+  intro p hp _hM
+  by_cases hall : ∀ d ∈ p.support, d 0 < 3
+  · exact ⟨p, 0, hp, MvPolynomial.isWeightedHomogeneous_zero ℂ E₄E₆Weight (n - 12),
+      by simp only [mul_zero, add_zero], hall⟩
+  push Not at hall
+  obtain ⟨d, hd_mem, hd_ge⟩ := hall
+  have hwd : d 0 * 4 + d 1 * 6 = n := by
+    have := hp (MvPolynomial.mem_support_iff.mp hd_mem)
+    have := weight_eq_4a_6b d; omega
+  set c := MvPolynomial.coeff d p
+  set δ_piece := MvPolynomial.C c * ((1728 : ℂ) • discriminantPoly *
+    (MvPolynomial.X (0 : Fin 2) ^ (d 0 - 3) * MvPolynomial.X (1 : Fin 2) ^ (d 1)))
+  set p' := p - δ_piece with hp'_def
+  have hp_eq : p = p' + δ_piece := by simp only [p', sub_add_cancel]
+  have hp'_wh : MvPolynomial.IsWeightedHomogeneous E₄E₆Weight p' n := by
+    rw [hp'_def]
+    exact (MvPolynomial.mem_weightedHomogeneousSubmodule ℂ E₄E₆Weight n _).mp
+      (Submodule.sub_mem _
+        ((MvPolynomial.mem_weightedHomogeneousSubmodule ℂ E₄E₆Weight n p).mpr hp)
+        ((MvPolynomial.mem_weightedHomogeneousSubmodule ℂ E₄E₆Weight n
+          δ_piece).mpr (discriminantPoly_piece_isWeightedHomogeneous hn12 d hd_ge hwd c)))
+  set q₁ := MvPolynomial.C (c * 1728) *
+    (MvPolynomial.X (0 : Fin 2) ^ (d 0 - 3) * MvPolynomial.X (1 : Fin 2) ^ (d 1))
+  have hδ_eq : δ_piece = discriminantPoly * q₁ := by
+    simp only [δ_piece, q₁, MvPolynomial.smul_eq_C_mul, map_mul]; ring
+  have hM_lt : ∑ d' ∈ p'.support, d' 0 < ∑ d' ∈ p.support, d' 0 := by
+    set d' := Finsupp.single (0 : Fin 2) (d 0 - 3) + Finsupp.single (1 : Fin 2) (d 1 + 2)
+      with hd'_def
+    have hdd' : d ≠ d' := by
+      intro heq; have h0 := Finsupp.ext_iff.mp heq (0 : Fin 2)
+      simp only [Fin.isValue, hd'_def, Finsupp.add_apply, Finsupp.single_eq_same,
+        ne_eq, zero_ne_one, not_false_eq_true, Finsupp.single_eq_of_ne, add_zero] at h0
+      omega
+    have hdp_mono : δ_piece =
+        (MvPolynomial.monomial d) c - (MvPolynomial.monomial d') c :=
+      discriminantPoly_piece_eq_monomial_sub d hd_ge c d' hd'_def
+    obtain ⟨hd_not, hsupp⟩ := hdp_mono ▸ mvpoly_support_after_reduction p d d' c hdd' rfl
+    exact sum_lt_sum_of_replace p.support p'.support
+      (· 0) d d' hd_mem hd_not hsupp (by simp [hd'_def, Finsupp.add_apply]; omega)
+  obtain ⟨r, s', hr_wh, hs'_wh, hp'_eq, hr_red⟩ :=
+    ih (∑ d' ∈ p'.support, d' 0) (by omega) p' hp'_wh le_rfl
+  refine ⟨r, s' + q₁, hr_wh, hs'_wh.add (.C_mul
+    (X0_pow_mul_X1_pow_isWeightedHomogeneous (d 0 - 3) (d 1) (n - 12) (by omega)) _), ?_, hr_red⟩
+  rw [hp_eq, hδ_eq, hp'_eq, mul_add]; ring
 
 /-- If `eval (r + Δ_poly * s) ↑n = 0` and `r` is reduced, then `r = 0`. -/
 private lemma reduced_part_eq_zero {n : ℕ} (hn12 : 12 ≤ n)
