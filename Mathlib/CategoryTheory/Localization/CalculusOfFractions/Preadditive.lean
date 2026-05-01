@@ -150,8 +150,7 @@ lemma add'_zero (f : L.obj X ⟶ L.obj Y) :
     add' W f (L.map 0) = f := by
   obtain ⟨α, hα⟩ := exists_leftFraction L W f
   rw [add'_eq W f (L.map 0) (LeftFraction₂.mk α.f 0 α.s α.hs) hα, hα]; swap
-  · have := inverts L W _ α.hs
-    rw [← cancel_mono (L.map α.s), ← L.map_comp, Limits.zero_comp,
+  · rw [← cancel_mono (L.map α.s), ← L.map_comp, Limits.zero_comp,
       LeftFraction.map_comp_map_s]
   dsimp [LeftFraction₂.add]
   rw [add_zero]
@@ -163,7 +162,6 @@ lemma zero_add' (f : L.obj X ⟶ L.obj Y) :
 lemma neg'_add'_self (f : L.obj X ⟶ L.obj Y) :
     add' W (neg' W f) f = L.map 0 := by
   obtain ⟨α, rfl⟩ := exists_leftFraction L W f
-  have := inverts L W _ α.hs
   rw [add'_eq W _ _ (LeftFraction₂.mk (-α.f) α.f α.s α.hs) (neg'_eq W _ _ rfl) rfl]
   simp only [← cancel_mono (L.map α.s), LeftFraction.map_comp_map_s, ← L.map_comp,
     Limits.zero_comp, neg_add_cancel]
@@ -340,7 +338,6 @@ lemma functor_additive_iff {E : Type*} [Category* E] [Preadditive E] [Preadditiv
         ← cancel_epi (G.map (L.objObjPreimageIso X).hom), eq]
     intro X Y f g
     obtain ⟨φ, rfl, rfl⟩ := exists_leftFraction₂ L W f g
-    have := Localization.inverts L W φ.s φ.hs
     rw [← φ.map_add L (inverts L W), ← cancel_mono (G.map (L.map φ.s)), ← G.map_comp,
       add_comp, ← G.map_comp, ← G.map_comp, LeftFraction.map_comp_map_s,
       LeftFraction.map_comp_map_s, LeftFraction.map_comp_map_s, ← Functor.comp_map,
