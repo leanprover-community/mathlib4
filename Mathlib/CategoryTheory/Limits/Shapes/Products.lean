@@ -977,9 +977,25 @@ noncomputable def Pi.functor [HasProductsOfShape α C] : (α → C) ⥤ C where
   obj f := ∏ᶜ f
   map {f g} t := Pi.map t
 
-lemma piEquivalenceFunctorDiscrete_functor_comp_lim [HasProductsOfShape α C] :
-    (piEquivalenceFunctorDiscrete α C).functor ⋙ lim = Pi.functor _ :=
-  rfl
+/-- The natural transformation induced by `Pi.π`. -/
+@[simps]
+def Pi.functorπ [HasProductsOfShape α C] (a : α) :
+    Pi.functor α ⟶ Pi.eval (fun _ ↦ C) a where
+  app f := Pi.π f a
+
+variable (α) in
+/-- Up to pre-composing with an equivalence of categories, `Pi.functor` is isomorphic to `lim`. -/
+@[simps!]
+def piEquivalenceFunctorDiscreteCompLim [HasProductsOfShape α C] :
+    (piEquivalenceFunctorDiscrete α C).functor ⋙ lim ≅ Pi.functor _ :=
+  NatIso.ofComponents fun _ ↦ Iso.refl _
+
+@[reassoc]
+lemma piEquivalenceFunctorDiscreteCompLim_comp_functorπ [HasProductsOfShape α C] (a : α) :
+    (piEquivalenceFunctorDiscreteCompLim (C := C) α).hom ≫ Pi.functorπ a =
+      Functor.whiskerLeft _ (lim.π <| Discrete.mk a) ≫
+        (piEquivalenceFunctorDiscreteCompEvaluationIso _ _).hom := by
+  cat_disch
 
 attribute [local simp] Functor.pi in
 /-- The `∏ᶜ` functor composed with the pointwise constant functor `Π i, I i ⥤ (α → C)` is isomorphic
@@ -997,6 +1013,26 @@ variable (α) in
 noncomputable def Sigma.functor [HasCoproductsOfShape α C] : (α → C) ⥤ C where
   obj f := ∐ f
   map {f g} t := Sigma.map t
+
+/-- The natural transformation induced by `Sigma.ι`. -/
+@[simps]
+def Sigma.functorι [HasCoproductsOfShape α C] (a : α) :
+    Pi.eval (fun _ ↦ C) a ⟶ Sigma.functor α where
+  app f := Sigma.ι f a
+
+variable (α) in
+/-- Up to pre-composing with an equivalence of categories, `Sigma.functor` is isomorphic
+to `colim`. -/
+@[simps!]
+def piEquivalenceFunctorDiscreteCompColim [HasCoproductsOfShape α C] :
+    (piEquivalenceFunctorDiscrete α C).functor ⋙ colim ≅ Sigma.functor _ :=
+  NatIso.ofComponents fun _ ↦ Iso.refl _
+
+@[reassoc]
+lemma piEquivalenceFunctorDiscreteCompColim_comp_functorι [HasCoproductsOfShape α C] (a : α) :
+    Functor.whiskerLeft _ (colim.ι <| .mk a) ≫ (piEquivalenceFunctorDiscreteCompColim α).hom =
+      (piEquivalenceFunctorDiscreteCompEvaluationIso C _).hom ≫ Sigma.functorι a := by
+  cat_disch
 
 lemma piEquivalenceFunctorDiscrete_functor_comp_colim [HasCoproductsOfShape α C] :
     (piEquivalenceFunctorDiscrete α C).functor ⋙ colim = Sigma.functor _ :=
