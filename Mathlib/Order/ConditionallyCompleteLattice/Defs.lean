@@ -34,6 +34,53 @@ open Set
 
 variable {α β γ : Type*} {ι : Sort*}
 
+/-- A conditionally complete semilattice is a semilattice in which every nonempty subset which is
+  bounded above has a least upper bound.
+
+To differentiate the statements from the corresponding statements in (unconditional)
+complete lattices, we prefix `sSup` by a `c` everywhere. The same statements should
+hold in both worlds, sometimes with additional assumptions of nonemptiness or
+boundedness. -/
+class ConditionallyCompleteSemilatticeSup (α : Type*) extends SemilatticeSup α, SupSet α where
+  /-- Every nonempty subset which is bounded above has a least upper bound. -/
+  isLUB_csSup : ∀ s : Set α, s.Nonempty → BddAbove s → IsLUB s (sSup s)
+  /-- If the lattice has a bottom element, then `sSup ∅` is the bottom element. -/
+  csSup_empty : ∀ ⦃x⦄, IsBot x -> sSup ∅ = x
+
+/-- A conditionally complete semilattice is a semilattice in which every nonempty subset which is
+bounded below has a greatest lower bound.
+
+To differentiate the statements from the corresponding statements in (unconditional)
+complete lattices, we prefix `sInf` by a `c` everywhere. The same statements should
+hold in both worlds, sometimes with additional assumptions of nonemptiness or
+boundedness. -/
+@[to_dual existing]
+class ConditionallyCompleteSemilatticeInf (α : Type*) extends SemilatticeInf α, InfSet α where
+  /-- Every nonempty subset which is bounded below has a greatest lower bound. -/
+  isGLB_csInf : ∀ s : Set α, s.Nonempty → BddBelow s → IsGLB s (sInf s)
+  /-- If the lattice has a top element, then `sInf ∅` is the top element. -/
+  csInf_empty : ∀ ⦃x⦄, IsTop x -> sInf ∅ = x
+
+attribute [to_dual existing] ConditionallyCompleteSemilatticeInf.isGLB_csInf
+  ConditionallyCompleteSemilatticeInf.toSemilatticeInf
+  ConditionallyCompleteSemilatticeInf.toInfSet
+
+@[to_dual]
+instance OrderDual.instConditionallyCompleteSemilatticeSup (α)
+    [h : ConditionallyCompleteSemilatticeInf α] : ConditionallyCompleteSemilatticeSup αᵒᵈ where
+  sSup := sInf (α := α)
+  isLUB_csSup := h.isGLB_csInf (α := α)
+  csSup_empty := h.csInf_empty (α := α)
+
+@[to_dual]
+theorem isGLB_csInf [ConditionallyCompleteSemilatticeInf α] {s : Set α} (hn : s.Nonempty)
+    (hb : BddBelow s := by bddDefault) : IsGLB s (sInf s) :=
+  ConditionallyCompleteSemilatticeInf.isGLB_csInf s hn hb
+
+@[to_dual, simp]
+theorem csSup_empty [ConditionallyCompleteSemilatticeSup α] {x : α} (h : IsBot x) : sSup ∅ = x :=
+  ConditionallyCompleteSemilatticeSup.csSup_empty h
+
 /-- A conditionally complete lattice is a lattice in which
 every nonempty subset which is bounded above has a supremum, and
 every nonempty subset which is bounded below has an infimum.
@@ -43,15 +90,10 @@ To differentiate the statements from the corresponding statements in (unconditio
 complete lattices, we prefix `sInf` and `sSup` by a `c` everywhere. The same statements should
 hold in both worlds, sometimes with additional assumptions of nonemptiness or
 boundedness. -/
-class ConditionallyCompleteLattice (α : Type*) extends Lattice α, SupSet α, InfSet α where
-  /-- Every nonempty subset which is bounded above has a least upper bound. -/
-  isLUB_csSup : ∀ s : Set α, s.Nonempty → BddAbove s → IsLUB s (sSup s)
-  /-- Every nonempty subset which is bounded below has a greatest lower bound. -/
-  isGLB_csInf : ∀ s : Set α, s.Nonempty → BddBelow s → IsGLB s (sInf s)
+class ConditionallyCompleteLattice (α : Type*) extends
+  ConditionallyCompleteSemilatticeSup α, ConditionallyCompleteSemilatticeInf α
 
-attribute [to_dual self (reorder := 3 4, 5 6)] ConditionallyCompleteLattice.mk
-attribute [to_dual existing] ConditionallyCompleteLattice.toSupSet
-attribute [to_dual existing] ConditionallyCompleteLattice.isLUB_csSup
+attribute [to_dual existing] ConditionallyCompleteLattice.toConditionallyCompleteSemilatticeInf
 
 /-- A conditionally complete linear order is a linear order in which
 every nonempty subset which is bounded above has a supremum, and
@@ -91,13 +133,49 @@ hold in both worlds, sometimes with additional assumptions of nonemptiness or
 boundedness. -/
 class ConditionallyCompleteLinearOrderBot (α : Type*) extends ConditionallyCompleteLinearOrder α,
     OrderBot α where
-  /-- The supremum of the empty set is special-cased to `⊥` -/
-  csSup_empty : sSup ∅ = ⊥
 
 -- see Note [lower instance priority]
 attribute [instance 100] ConditionallyCompleteLinearOrderBot.toOrderBot
 
-/-- Create a `ConditionallyCompleteLattice` from a `PartialOrder` and `sup` function
+/-- Create a `ConditionallyCompleteSemilatticeInf` from a `PartialOrder` and `sInf` function
+that returns the greatest lower bound of a nonempty set which is bounded below. Usually this
+constructor provides poor definitional equalities.  If other fields are known explicitly, they
+should be provided. -/
+@[to_dual (attr := implicit_reducible)
+/-- Create a `ConditionallyCompleteSemilatticeSup` from a `PartialOrder` and `sSup` function
+that returns the least upper bound of a nonempty set which is bounded above. Usually this
+constructor provides poor definitional equalities.  If other fields are known explicitly, they
+should be provided. -/]
+def conditionallyCompleteSemilatticeInfOfsInf (α : Type*) [H1 : PartialOrder α] [H2 : InfSet α]
+    (bddBelow_pair : ∀ a b : α, BddBelow ({a, b} : Set α))
+    (isGLB_sInf : ∀ s : Set α, BddBelow s → s.Nonempty → IsGLB s (sInf s))
+    (csInf_empty : ∀ ⦃x : α⦄, IsTop x -> sInf ∅ = x):
+    ConditionallyCompleteSemilatticeInf α where
+  __ := H2
+  __ := SemilatticeInf.ofIsGLB (fun a b ↦ sInf {a, b})
+    (fun a b ↦ isGLB_sInf {a, b} (bddBelow_pair a b) (insert_nonempty _ _))
+  isGLB_csInf _ hn hb := isGLB_sInf _ hb hn
+  csInf_empty := csInf_empty
+
+/-- Create a `ConditionallyCompleteSemilatticeInfBot` from a `PartialOrder`, `OrderBot` and `sInf`
+function that returns the greatest lower bound of a nonempty set. Usually this constructor provides
+poor definitional equalities.  If other fields are known explicitly, they should be provided. -/
+@[to_dual (attr := implicit_reducible)
+/-- Create a `ConditionallyCompleteSemilatticeSupTop` from a `PartialOrder`, `OrderTop` and `sSup`
+function that returns the least upper bound of a nonempty set. Usually this constructor provides
+poor definitional equalities.  If other fields are known explicitly, they should be provided. -/]
+def conditionallyCompleteSemilatticeInfOfsInfTop (α : Type*) [PartialOrder α] [H1 : InfSet α]
+    [H2 : OrderTop α] (sInf_empty : sInf ∅ = (⊤ : α))
+    (isGLB_sInf : ∀ s : Set α, s.Nonempty → IsGLB s (sInf s)) :
+    ConditionallyCompleteSemilatticeInf α where
+  __ := H1
+  __ := H2
+  __ := SemilatticeInf.ofIsGLB (fun a b ↦ sInf {a, b})
+    (fun a b ↦ isGLB_sInf {a, b} (insert_nonempty _ _))
+  isGLB_csInf _ hn _ := isGLB_sInf _ hn
+  csInf_empty _ hx := hx.eq_top ▸ sInf_empty
+
+/-- Create a `ConditionallyCompleteLattice` from a `PartialOrder` and `sSup` function
 that returns the least upper bound of a nonempty set which is bounded above. Usually this
 constructor provides poor definitional equalities.  If other fields are known explicitly, they
 should be provided; for example, if `inf` is known explicitly, construct the
@@ -112,7 +190,7 @@ instance : ConditionallyCompleteLattice my_T where
   __ := conditionallyCompleteLatticeOfsSup my_T ...
 ```
 -/
-@[to_dual (attr := implicit_reducible) (reorder := 4 5)
+@[to_dual (attr := implicit_reducible)
 /-- Create a `ConditionallyCompleteLattice` from a `PartialOrder` and `sInf` function
 that returns the greatest lower bound of a nonempty set which is bounded below. Usually this
 constructor provides poor definitional equalities.  If other fields are known explicitly, they
@@ -131,7 +209,8 @@ instance : ConditionallyCompleteLattice my_T :=
 def conditionallyCompleteLatticeOfsSup (α : Type*) [H1 : PartialOrder α] [H2 : SupSet α]
     (bddAbove_pair : ∀ a b : α, BddAbove ({a, b} : Set α))
     (bddBelow_pair : ∀ a b : α, BddBelow ({a, b} : Set α))
-    (isLUB_sSup : ∀ s : Set α, BddAbove s → s.Nonempty → IsLUB s (sSup s)) :
+    (isLUB_sSup : ∀ s : Set α, BddAbove s → s.Nonempty → IsLUB s (sSup s))
+    (csSup_empty : ∀ ⦃x : α⦄, IsBot x -> sSup ∅ = x) :
     ConditionallyCompleteLattice α where
   __ := Lattice.ofIsLUBofIsGLB (fun a b ↦ sSup {a, b}) (fun a b ↦ sSup (lowerBounds {a, b}))
     (fun a b ↦ isLUB_sSup {a, b} (bddAbove_pair a b) (insert_nonempty _ _))
@@ -141,6 +220,11 @@ def conditionallyCompleteLatticeOfsSup (α : Type*) [H1 : PartialOrder α] [H2 :
   sInf s := sSup (lowerBounds s)
   isLUB_csSup _ hn hb := isLUB_sSup _ hb hn
   isGLB_csInf _ hn hb := isLUB_lowerBounds.mp (isLUB_sSup _ hn.bddAbove_lowerBounds hb)
+  csSup_empty := csSup_empty
+  csInf_empty x hx := by
+    rw [lowerBounds_empty]
+    exact isLUB_sSup univ ⟨x, fun ⦃a⦄ a_1 ↦ hx a⟩ ⟨x, mem_univ x⟩ |>.isLeast_iff_eq.mp
+      ⟨fun ⦃a⦄ a_1 ↦ hx a, fun y hy ↦ hy <| mem_univ x⟩
 
 /-- A version of `conditionallyCompleteLatticeOfsSup` when we already know that `α` is a lattice.
 
@@ -150,13 +234,13 @@ This should only be used when it is both hard and unnecessary to provide `sInf` 
 
 This should only be used when it is both hard and unnecessary to provide `sSup` explicitly. -/]
 def conditionallyCompleteLatticeOfLatticeOfsSup (α : Type*) [H1 : Lattice α] [SupSet α]
-    (isLUB_sSup : ∀ s : Set α, BddAbove s → s.Nonempty → IsLUB s (sSup s)) :
-    ConditionallyCompleteLattice α :=
-  { H1,
-    conditionallyCompleteLatticeOfsSup α
-      (fun a b => ⟨a ⊔ b, forall_insert_of_forall (forall_eq.mpr le_sup_right) le_sup_left⟩)
-      (fun a b => ⟨a ⊓ b, forall_insert_of_forall (forall_eq.mpr inf_le_right) inf_le_left⟩)
-      isLUB_sSup with }
+    (isLUB_sSup : ∀ s : Set α, BddAbove s → s.Nonempty → IsLUB s (sSup s))
+    (csSup_empty : ∀ ⦃x : α⦄, IsBot x -> sSup ∅ = x) : ConditionallyCompleteLattice α :=
+  {__ := H1,
+   __ := conditionallyCompleteLatticeOfsSup α
+    (fun a b => ⟨a ⊔ b, forall_insert_of_forall (forall_eq.mpr le_sup_right) le_sup_left⟩)
+    (fun a b => ⟨a ⊓ b, forall_insert_of_forall (forall_eq.mpr inf_le_right) inf_le_left⟩)
+    isLUB_sSup csSup_empty}
 
 open scoped Classical in
 /-- A well-founded linear order is conditionally complete, with a bottom element. -/

@@ -259,8 +259,8 @@ def ConditionallyCompleteLattice.copy (c : ConditionallyCompleteLattice α)
     (sSup : Set α → α) (eq_sSup : sSup = (by infer_instance : SupSet α).sSup)
     (sInf : Set α → α) (eq_sInf : sInf = (by infer_instance : InfSet α).sInf) :
     ConditionallyCompleteLattice α where
-  toLattice := Lattice.copy (@ConditionallyCompleteLattice.toLattice α c)
-    le eq_le sup eq_sup inf eq_inf
+  -- toLattice := Lattice.copy (@ConditionallyCompleteLattice.toLattice α c)
+  --   le eq_le sup eq_sup inf eq_inf
   sSup := sSup
   sInf := sInf
   isLUB_csSup := by subst_vars; exact c.isLUB_csSup

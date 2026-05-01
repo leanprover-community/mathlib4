@@ -163,8 +163,8 @@ namespace OrderDual
 
 instance instConditionallyCompleteLattice (α : Type*) [ConditionallyCompleteLattice α] :
     ConditionallyCompleteLattice αᵒᵈ where
-  isLUB_csSup := ConditionallyCompleteLattice.isGLB_csInf (α := α)
-  isGLB_csInf := ConditionallyCompleteLattice.isLUB_csSup (α := α)
+  isLUB_csSup _ hn hb := isGLB_csInf (α := α) hn hb
+  isGLB_csInf _ hn hb := isLUB_csSup (α := α) hn hb
 
 instance (α : Type*) [ConditionallyCompleteLinearOrder α] :
     ConditionallyCompleteLinearOrder αᵒᵈ where
@@ -178,10 +178,6 @@ end OrderDual
 section ConditionallyCompleteLattice
 
 variable [ConditionallyCompleteLattice α] {s t : Set α} {a b : α}
-
-@[to_dual]
-theorem isLUB_csSup (hn : s.Nonempty) (hb : BddAbove s := by bddDefault) : IsLUB s (sSup s) :=
-  ConditionallyCompleteLattice.isLUB_csSup _ hn hb
 
 theorem le_csSup (h₁ : BddAbove s) (h₂ : a ∈ s) : a ≤ sSup s :=
   (isLUB_csSup (nonempty_of_mem h₂) h₁).1 h₂
@@ -223,7 +219,7 @@ theorem IsLUB.csSup_eq (H : IsLUB s a) (ne : s.Nonempty) : sSup s = a :=
 instance (priority := 100) ConditionallyCompleteLattice.toConditionallyCompletePartialOrder :
     ConditionallyCompletePartialOrder α where
   isGLB_csInf_of_directed _ _ := isGLB_csInf _
-  isLUB_csSup_of_directed _ _ := isLUB_csSup _
+  isLUB_csSup_of_directed _ _ hn hb := isLUB_csSup (α := α) hn hb
 
 theorem subset_Icc_csInf_csSup (hb : BddBelow s) (ha : BddAbove s) : s ⊆ Icc (sInf s) (sSup s) :=
   fun _ hx => ⟨csInf_le hb hx, le_csSup ha hx⟩
@@ -543,10 +539,6 @@ theorem csInf_univ [ConditionallyCompleteLattice α] [OrderBot α] : sInf (univ 
   isLeast_univ.csInf_eq
 
 variable [ConditionallyCompleteLinearOrderBot α] {s : Set α} {a : α}
-
-@[simp]
-theorem csSup_empty : (sSup ∅ : α) = ⊥ :=
-  ConditionallyCompleteLinearOrderBot.csSup_empty
 
 theorem isLUB_csSup' {s : Set α} (hs : BddAbove s) : IsLUB s (sSup s) := by
   rcases eq_empty_or_nonempty s with (rfl | hne)
