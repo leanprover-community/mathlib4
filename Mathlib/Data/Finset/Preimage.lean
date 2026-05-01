@@ -193,14 +193,7 @@ def restrictPreimageFinset (e : α ≃ β) (s : Finset β) : (s.preimage e e.inj
 
 lemma image_symm_eq_preimage_of_finset [DecidableEq α] (e : α ≃ β) (s : Finset β) :
     s.image e.symm = s.preimage e e.injective.injOn := by
-  ext x
-  simp only [Finset.mem_image, Finset.mem_preimage]
-  constructor
-  · rintro ⟨y, hy, rfl⟩
-    simp [hy]
-  · intro hx
-    use (e x)
-    simp [hx]
+  grind [Finset.mem_preimage]
 
 lemma image_eq_preimage_symm_of_finset [DecidableEq β] (e : α ≃ β) (s : Finset α) :
     s.image e = s.preimage e.symm e.symm.injective.injOn :=
