@@ -110,14 +110,19 @@ end OrderedAddCommMonoid
 
 section OrderedCancelAddCommMonoid
 variable [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α] [Module ℚ≥0 α]
-  {s : Finset ι} {f : ι → α}
-section PosSMulStrictMono
-variable [PosSMulStrictMono ℚ≥0 α]
+  [PosSMulStrictMono ℚ≥0 α] {s : Finset ι} {f g : ι → α}
+
+lemma expect_lt_expect (hfg : ∀ i ∈ s, f i ≤ g i) (hfg' : ∃ i ∈ s, f i < g i) :
+    𝔼 i ∈ s, f i < 𝔼 i ∈ s, g i :=
+  smul_lt_smul_of_pos_left (sum_lt_sum hfg hfg')
+    (by obtain ⟨i, hi, -⟩ := hfg'; have : s.Nonempty := ⟨i, hi⟩; simpa)
+
+lemma expect_pos' (h : ∀ i ∈ s, 0 ≤ f i) (hs : ∃ i ∈ s, 0 < f i) : 0 < 𝔼 i ∈ s, f i :=
+  (expect_const_zero _).symm.trans_lt <| expect_lt_expect h hs
 
 lemma expect_pos (hf : ∀ i ∈ s, 0 < f i) (hs : s.Nonempty) : 0 < 𝔼 i ∈ s, f i :=
   smul_pos (inv_pos.2 <| mod_cast hs.card_pos) <| sum_pos hf hs
 
-end PosSMulStrictMono
 end OrderedCancelAddCommMonoid
 
 section LinearOrderedAddCommMonoid
@@ -197,7 +202,7 @@ meta def evalFinsetExpect : PositivityExt where eval {u α} zα pα e := do
       assumeInstancesCommute
       let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody
       return some
-        q(@expect_pos $ι $α $instα $pα $pα' $instmod $s $f $instαordsmul (fun i _ ↦ $pr i) $ps))
+        q(@expect_pos $ι $α $instα $pα $pα' $instmod $instαordsmul $s $f (fun i _ ↦ $pr i) $ps))
     -- Try to show that the sum is positive
     if let some p_pos := p_pos then
       return .positive p_pos
