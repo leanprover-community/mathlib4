@@ -164,6 +164,77 @@ lemma strictMap_le_iff_le_inverseImage (F : C ⥤ D) (P : MorphismProperty C)
     (P' : MorphismProperty D) : P.strictMap F ≤ P' ↔ P ≤ P'.inverseImage F :=
   ⟨fun h _ _ _ hf ↦ h _ ⟨hf⟩, fun h _ _ _ ⟨hf⟩ ↦ h _ hf⟩
 
+lemma gc_strictMap (F : C ⥤ D) : GaloisConnection (strictMap · F) (inverseImage · F) :=
+  strictMap_le_iff_le_inverseImage F
+
+lemma le_inverseImage_strictMap (P : MorphismProperty C) (F : C ⥤ D) :
+    P ≤ (P.strictMap F).inverseImage F :=
+  (gc_strictMap F).le_u_l P
+
+lemma strictMap_inverseImage_le (P : MorphismProperty D) (F : C ⥤ D) :
+    (P.inverseImage F).strictMap F ≤ P :=
+  (gc_strictMap F).l_u_le P
+
+@[simp]
+lemma strictMap_inverseImage_strictMap (P : MorphismProperty C) (F : C ⥤ D) :
+    ((P.strictMap F).inverseImage F).strictMap F = P.strictMap F :=
+  (gc_strictMap F).l_u_l_eq_l P
+
+@[simp]
+lemma inverseImage_strictMap_inverseImage (P : MorphismProperty D) (F : C ⥤ D) :
+    ((P.inverseImage F).strictMap F).inverseImage F = P.inverseImage F :=
+  (gc_strictMap F).u_l_u_eq_u P
+
+@[simp]
+lemma strictMap_bot (F : C ⥤ D) :
+    strictMap ⊥ F = ⊥ :=
+  (gc_strictMap F).l_bot
+
+@[simp]
+lemma inverseImage_strictMap_top (F : C ⥤ D) :
+    (strictMap ⊤ F).inverseImage F = ⊤ :=
+  (gc_strictMap F).u_l_top
+
+@[simp]
+lemma inverseImage_bot (F : C ⥤ D) :
+    inverseImage ⊥ F = ⊥ :=
+  rfl
+
+@[simp]
+lemma inverseImage_top (F : C ⥤ D) :
+    inverseImage ⊤ F = ⊤ :=
+  rfl
+
+@[simp]
+lemma strictMap_sup (F : C ⥤ D) (P P' : MorphismProperty C) :
+    (P ⊔ P').strictMap F = P.strictMap F ⊔ P'.strictMap F :=
+  (gc_strictMap F).l_sup
+
+@[simp]
+lemma strictMap_iSup (F : C ⥤ D) {ι : Type*} (P : ι → MorphismProperty C) :
+    (⨆ i, P i).strictMap F = ⨆ i, (P i).strictMap F :=
+  (gc_strictMap F).l_iSup
+
+@[simp]
+lemma strictMap_sSup (F : C ⥤ D) (P : Set (MorphismProperty C)) :
+    (sSup P).strictMap F = ⨆ P' ∈ P, P'.strictMap F :=
+  (gc_strictMap F).l_sSup
+
+@[simp]
+lemma inverseImage_inf (F : C ⥤ D) (P P' : MorphismProperty D) :
+    (P ⊓ P').inverseImage F = P.inverseImage F ⊓ P'.inverseImage F :=
+  (gc_strictMap F).u_inf
+
+@[simp]
+lemma inverseImage_iSup (F : C ⥤ D) {ι : Type*} (P : ι → MorphismProperty D) :
+    (⨅ i, P i).inverseImage F = ⨅ i, (P i).inverseImage F :=
+  (gc_strictMap F).u_iInf
+
+@[simp]
+lemma inverseImage_sSup (F : C ⥤ D) (P : Set (MorphismProperty D)) :
+    (sInf P).inverseImage F = ⨅ P' ∈ P, P'.inverseImage F :=
+  (gc_strictMap F).u_sInf
+
 /-- The image (up to isomorphisms) of a `MorphismProperty C` by a functor `C ⥤ D` -/
 def map (P : MorphismProperty C) (F : C ⥤ D) : MorphismProperty D := fun _ _ f =>
   ∃ (X' Y' : C) (f' : X' ⟶ Y') (_ : P f'), Nonempty (Arrow.mk (F.map f') ≅ Arrow.mk f)
