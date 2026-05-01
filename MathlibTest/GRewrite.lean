@@ -327,7 +327,7 @@ end apply
 -- previously, `grw` failed to rewrite in expressions with syntheticOpaque metavariables
 example : ∃ n, n < 2 := by
   refine ⟨?_, ?_⟩
-  on_goal 2 => grw [← one_le_two]
+  on_goal 2 => grw [← one_lt_two]
   exact 0
   refine zero_lt_one
 
