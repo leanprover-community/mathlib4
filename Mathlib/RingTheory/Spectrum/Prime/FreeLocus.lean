@@ -326,6 +326,7 @@ lemma rankAtStalk_prod (N : Type*) [AddCommGroup N] [Module R N]
 lemma rankAtStalk_baseChange {S : Type*} [CommRing S] [Algebra R S] (p : PrimeSpectrum S) :
     rankAtStalk (S ⊗[R] M) p = rankAtStalk M (p.comap (algebraMap R S)) := by
   let q : PrimeSpectrum R := p.comap (algebraMap R S)
+  let := Localization.AtPrime.algebraOfLiesOver q.asIdeal p.asIdeal
   let e : LocalizedModule p.asIdeal.primeCompl (S ⊗[R] M) ≃ₗ[Localization.AtPrime p.asIdeal]
       Localization.AtPrime p.asIdeal ⊗[Localization.AtPrime q.asIdeal]
         LocalizedModule q.asIdeal.primeCompl M :=
