@@ -31,29 +31,6 @@ open Finset Function
 
 namespace SimpleGraph
 
-section Perm
-
-open Equiv Equiv.Perm
-
-variable {α : Type*} [Fintype α]
-
-/-- For a cycle on `Finset.univ` with `Fintype.card α ≥ 3`, the edge `s((σ^k) x, (σ^(k+1)) x)`
-is distinct from `s(x, σ x)` when `1 ≤ k < Fintype.card α`. -/
-theorem edge_ne_of_isCycleOn {σ : Perm α} {x : α}
-    (hcycOn : σ.IsCycleOn (Finset.univ : Finset α))
-    {k : ℕ} (hk1 : 1 ≤ k) (hk2 : k < Fintype.card α)
-    (hn3 : 3 ≤ Fintype.card α) :
-    s((σ ^ k) x, (σ ^ (k + 1)) x) ≠ s(x, σ x) := by
-  have hinj := hcycOn.injOn_pow_apply (Finset.mem_univ x)
-  rw [Finset.card_univ] at hinj
-  have h0 : (σ ^ (0 : ℕ)) x = x := by simp
-  have h1 : (σ ^ (1 : ℕ)) x = σ x := by simp
-  intro heq
-  rw [Sym2.eq_iff] at heq
-  grind [Set.InjOn]
-
-end Perm
-
 variable {α : Type*} [DecidableEq α] {G : SimpleGraph α}
 variable {β : Type*} [DecidableEq β] {H : SimpleGraph β}
 variable {a b v : α} {p : G.Walk a b} {f : G →g H}
@@ -344,7 +321,8 @@ theorem IsHamiltonian.ofPerm {σ : Perm α}
     rintro ⟨i, hi, heq⟩
     rw [List.mem_range] at hi
     simp only [Equiv.Perm.iterate_eq_pow, ← mul_apply, ← pow_succ] at heq
-    exact edge_ne_of_isCycleOn hcycOn (by omega) (by omega) hcard3 heq
+    exact hcycOn.sym2_pow_apply_ne (Finset.mem_univ x) (by omega)
+      (by rw [Finset.card_univ]; omega) (by rwa [Finset.card_univ]) heq
   · simp only [Walk.length_cons, p, Walk.length_copy, Walk.length_iterate]
     omega
 
