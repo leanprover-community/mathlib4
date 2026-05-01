@@ -109,7 +109,7 @@ theorem support_subset_vars_of_mem_support {s : σ →₀ ℕ} (h : s ∈ p.supp
   simp [mem_support_notMem_vars_zero h hi]
 
 theorem vars_eq_empty_iff_eq_C : p.vars = ∅ ↔ p = C (p.coeff 0) := by
-  refine ⟨fun h ↦ ?_, fun h ↦ by rw [h]; simp⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
   rw [← totalDegree_eq_zero_iff_eq_C]
   suffices p.degrees.card = 0 by grind [totalDegree_le_degrees_card p]
   classical rw [vars_def, Multiset.toFinset_eq_empty] at h
