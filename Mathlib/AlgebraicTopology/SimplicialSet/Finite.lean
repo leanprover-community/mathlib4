@@ -17,7 +17,7 @@ many nondegenerate simplices.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 

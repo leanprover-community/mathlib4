@@ -24,7 +24,7 @@ In this file we show that localizations are flat, and flatness is a local proper
   over `Localization.Away s`, then `M` is flat over `R`.
 -/
 
-@[expose] public section
+public section
 
 open IsLocalizedModule LocalizedModule LinearMap TensorProduct
 

@@ -418,11 +418,20 @@ end Style.longFile
 
 /-! ### The "longLine linter" -/
 
-/-- The "longLine" linter emits a warning on lines longer than 100 characters.
+/-- The "longLine" linter emits a warning on lines longer than
+`linter.style.longLine.maxLineLength` (which defaults to 100) characters.
 We allow lines containing URLs to be longer, though. -/
 public register_option linter.style.longLine : Bool := {
   defValue := false
   descr := "enable the longLine linter"
+}
+
+/-- Configuration option for the "longLine" linter. This option determines the
+maximum allowed length of a line before the linter emits a warning.
+This defaults to 100. -/
+public register_option linter.style.longLine.maxLineLength : Nat := {
+  defValue := 100
+  descr := "maximum line length before the longLine linter emits a warning"
 }
 
 namespace Style.longLine
@@ -454,8 +463,9 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
       else return stx
     let sstr := stx.getSubstring?
     let fm ← getFileMap
+    let maxLineLength := linter.style.longLine.maxLineLength.get (← getOptions)
     let longLines := ((sstr.getD default).splitOn "\n").filter fun line ↦
-      (100 < (fm.toPosition line.stopPos).column)
+      (maxLineLength < (fm.toPosition line.stopPos).column)
     for line in longLines do
       if (line.splitOn "http").length ≤ 1 && !(isImport line.toString) then
         let stringMsg := if line.contains '"' then
@@ -463,8 +473,10 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
           using a '\\' at the end of a line allows you to continue the string on the following \
           line, removing all intervening whitespace."
         else ""
-        Linter.logLint linter.style.longLine (.ofRange ⟨(line.drop 100).startPos, line.stopPos⟩)
-          m!"This line exceeds the 100 character limit, please shorten it!{stringMsg}"
+        Linter.logLint linter.style.longLine
+          (.ofRange ⟨(line.drop maxLineLength).startPos, line.stopPos⟩)
+          m!"This line exceeds the {maxLineLength} character limit, please shorten it!{stringMsg}"
+
 initialize addLinter longLineLinter
 
 end Style.longLine

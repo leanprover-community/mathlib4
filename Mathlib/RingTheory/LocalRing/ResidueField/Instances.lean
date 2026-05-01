@@ -13,7 +13,7 @@ import Mathlib.RingTheory.Finiteness.Quotient
 
 /-! # Instances on residue fields -/
 
-@[expose] public section
+public section
 
 variable {R A B : Type*} [CommRing R] [CommRing A] [CommRing B] [Algebra R A] [Algebra A B]
     [Algebra R B] [IsScalarTower R A B]
