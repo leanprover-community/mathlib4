@@ -5,7 +5,6 @@ Authors: Yoh Tanimoto
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.MeasureTheory.Integral.SetToL1
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
 
@@ -38,9 +37,9 @@ The integral against vector measures is defined through the extension process de
 
 ## Notations
 
-* `∫ᵛ x, f x ∂[B; μ]` : the `G`-valued integral of an `E`-valued function `f` against the
+* `∫ᵛ x, f x ∂[B; μ]` : the `G`-valued integral of an `E`-valued function `f` against the `F`-valued
   vector measure `μ` paired through `B`.
-* `∫ x, f x ∂•μ` : the special case where `f` is a real-valued function and `μ` is an `F`-valued
+* `∫ᵛ x, f x ∂•μ` : the special case where `f` is a real-valued function and `μ` is an `F`-valued
   vector measure, with the pairing being the scalar multiplication by `ℝ`.
 
 ## Note
@@ -80,9 +79,9 @@ noncomputable def VectorMeasure.transpose (μ : VectorMeasure X F) (B : E →L[�
     VectorMeasure X (E →L[ℝ] G) := μ.mapRange B.flip.toAddMonoidHom B.flip.continuous
 
 /-- Given a set `s`, return the continuous linear map `fun x : E ↦ B x (μ s)` (actually defined
-using `mapRange`), where the `B` is a `G`-valued bilinear form on `E × F` and `μ` is an `F`-valued
-vector measure. The extension of that set function through `setToFun` gives the pairing integral of
-integrable functions. -/
+using `transpose` through `mapRange`), where the `B` is a `G`-valued bilinear form on `E × F` and
+`μ` is an `F`-valued vector measure. The extension of that set function through `setToFun` gives the
+pairing integral of `E`-valued integrable functions. -/
 noncomputable def cbmApplyMeasure (μ : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) (s : Set X) :
     E →L[ℝ] G where
   toFun x := μ.transpose B s x
@@ -121,29 +120,30 @@ namespace VectorMeasure
 
 /-- `f : X → E` is said to be integrable with respect to `μ` and `B` if it is integrable with
 respect to `(μ.transpose B).variation`. -/
-abbrev Integrable (μ : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) (f : X → E) : Prop :=
+protected abbrev Integrable (μ : VectorMeasure X F) (f : X → E) (B : E →L[ℝ] F →L[ℝ] G) : Prop :=
   MeasureTheory.Integrable f (μ.transpose B).variation
 
 open Classical in
 /-- The `G`-valued integral of `E`-valued function and the `F`-valued vector measure `μ` with linear
- paring `B : E →L[ℝ] F →L[ℝ] G` . -/
-noncomputable def integral (μ : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) (f : X → E) : G :=
+paring `B : E →L[ℝ] F →L[ℝ] G` . This is set to be `0` if `G` is not complete or if `f` is not
+integrable with respect to `(μ.transpose B).variation`. -/
+noncomputable def integral (μ : VectorMeasure X F) (f : X → E) (B : E →L[ℝ] F →L[ℝ] G) : G :=
   if _ : CompleteSpace G then
   setToFun (μ.transpose B).variation (μ.transpose B)
     (dominatedFinMeasAdditive_cbmApplyMeasure μ B) f
   else 0
 
 @[inherit_doc integral]
-notation3 "∫ᵛ "(...)", "r:60:(scoped f => f)" ∂["B:70"; "μ:70"]" => integral μ B r
+notation3 "∫ᵛ "(...)", "r:60:(scoped f => f)" ∂["B:70"; "μ:70"]" => integral μ r B
 
 /-- The special case of the pairing integral where the pairing is just the scalar multiplication by
-`ℝ` and the `F`-valued vector measure is denoted by `μ`, and the resulting integral is `F`-valued.-/
-local notation3 "∫ "(...)", "r:60:(scoped f => f)" ∂•"μ:70 => integral μ (lsmul (E := E) ℝ ℝ) r
+`ℝ` on `F` and `f` is real-valued. The resulting integral is `F`-valued.-/
+notation3 "∫ᵛ "(...)", "r:60:(scoped f => f)" ∂•"μ:70 => integral μ r (lsmul ℝ ℝ)
 
 variable {μ : VectorMeasure X F} {B : E →L[ℝ] F →L[ℝ] G}
 
 @[integral_simps]
-theorem integral_fun_add {f g : X → E} (hf : μ.Integrable B f) (hg : μ.Integrable B g) :
+theorem integral_fun_add {f g : X → E} (hf : μ.Integrable f B) (hg : μ.Integrable g B) :
     ∫ᵛ x, f x + g x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] + ∫ᵛ x, g x ∂[B; μ] := by
   by_cases hG : CompleteSpace G
   · simp only [integral, hG]
@@ -151,7 +151,7 @@ theorem integral_fun_add {f g : X → E} (hf : μ.Integrable B f) (hg : μ.Integ
   · simp [integral, hG]
 
 @[integral_simps]
-theorem integral_add {f g : X → E} (hf : μ.Integrable B f) (hg : μ.Integrable B g) :
+theorem integral_add {f g : X → E} (hf : μ.Integrable f B) (hg : μ.Integrable g B) :
     ∫ᵛ x, (f + g) x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] + ∫ᵛ x, g x ∂[B; μ] := integral_fun_add hf hg
 
 variable (μ B) in
@@ -169,7 +169,7 @@ theorem integral_neg (f : X → E) :
     ∫ᵛ x, (-f) x ∂[B; μ] = -∫ᵛ x, f x ∂[B; μ] := integral_fun_neg μ B f
 
 @[integral_simps]
-theorem integral_fun_sub {f g : X → E} (hf : μ.Integrable B f) (hg : μ.Integrable B g) :
+theorem integral_fun_sub {f g : X → E} (hf : μ.Integrable f B) (hg : μ.Integrable g B) :
     ∫ᵛ x, f x - g x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] - ∫ᵛ x, g x ∂[B; μ] := by
   by_cases hG : CompleteSpace G
   · simp only [integral, hG]
@@ -177,7 +177,7 @@ theorem integral_fun_sub {f g : X → E} (hf : μ.Integrable B f) (hg : μ.Integ
   · simp [integral, hG]
 
 @[integral_simps]
-theorem integral_sub (f g : X → E) (hf : μ.Integrable B f) (hg : μ.Integrable B g) :
+theorem integral_sub (f g : X → E) (hf : μ.Integrable f B) (hg : μ.Integrable g B) :
     ∫ᵛ x, (f - g) x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] - ∫ᵛ x, g x ∂[B; μ] := integral_fun_sub hf hg
 
 variable (μ B) in
