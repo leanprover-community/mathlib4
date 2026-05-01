@@ -81,9 +81,11 @@ theorem isCompl_iff [∀ i, BoundedOrder (α' i)] {f g : ∀ i, α' i} :
     IsCompl f g ↔ ∀ i, IsCompl (f i) (g i) := by
   simp_rw [_root_.isCompl_iff, disjoint_iff, codisjoint_iff, forall_and]
 
+@[nontriviality]
 theorem eq_top_iff_refl_of_subsingleton [Subsingleton α] {r : α → α → Prop} : r = ⊤ ↔ Std.Refl r :=
   ⟨fun h ↦ ⟨by simp [h]⟩, fun _ ↦ funext₂ <| by simp [rel_of_subsingleton]⟩
 
+@[nontriviality]
 theorem eq_bot_iff_irrefl_of_subsingleton [Subsingleton α] {r : α → α → Prop} :
     r = ⊥ ↔ Std.Irrefl r :=
   ⟨fun h ↦ ⟨by simp [h]⟩, fun _ ↦ funext₂ <| by simp [not_rel_of_subsingleton]⟩
