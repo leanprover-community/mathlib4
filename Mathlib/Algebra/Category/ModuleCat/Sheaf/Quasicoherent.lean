@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Abelian
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Generators
-public import Mathlib.CategoryTheory.Sites.CoversTopOver
+public import Mathlib.CategoryTheory.Sites.CoversTop.Over
 
 /-!
 # Quasicoherent sheaves

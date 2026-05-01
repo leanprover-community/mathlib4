@@ -5,7 +5,7 @@ Authors: Justus Springer
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.CoversTop
+public import Mathlib.CategoryTheory.Sites.CoversTop.Basic
 public import Mathlib.CategoryTheory.Sites.Over
 
 /-!
