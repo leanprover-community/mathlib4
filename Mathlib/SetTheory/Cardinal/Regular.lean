@@ -331,7 +331,7 @@ theorem isInaccessible_def {c : Cardinal} :
   mp h := ⟨h.aleph0_lt, h.isRegular, h.isStrongLimit⟩
   mpr := fun ⟨h₁, h₂, h₃⟩ ↦ ⟨h₁, h₂.2, h₃.two_power_lt⟩
 
-/-- Lean's foundations prove the existence of `u` inaccessibles in universe `u`. -/
+/-- Lean's foundations prove the existence of `v` inaccessibles in universe `v`. -/
 theorem IsInaccessible.univ : IsInaccessible univ.{u, v} :=
   ⟨aleph0_lt_univ, by simp, IsStrongLimit.univ.two_power_lt⟩
 
