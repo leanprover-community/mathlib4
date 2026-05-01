@@ -529,9 +529,8 @@ theorem morphismRestrict_ι {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) :
 
 theorem isPullback_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) :
     IsPullback (f ∣_ U) (f ⁻¹ᵁ U).ι U.ι f := by
-  apply IsOpenImmersion.isPullback
-  · rw [morphismRestrict_ι]
-  · simp
+  apply IsOpenImmersion.isPullback <;>
+  simp
 
 lemma isPullback_opens_inf_le {X : Scheme} {U V W : X.Opens} (hU : U ≤ W) (hV : V ≤ W) :
     IsPullback (X.homOfLE inf_le_left) (X.homOfLE inf_le_right) (X.homOfLE hU) (X.homOfLE hV) := by
