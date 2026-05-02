@@ -25,7 +25,7 @@ jobs:
         type: 'stream'
         topic: 'Mathlib status updates'
         content: |
-          ❌ The latest CI for Mathlib's [nightly-testing branch](https://github.com/leanprover-community/mathlib4-nightly-testing/tree/nightly-testing) has [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}) ([${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})).
+          ❌ The latest CI for Mathlib's [nightly-testing branch](https://github.com/leanprover-community/mathlib4-nightly-testing/tree/nightly-testing) has [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}) ([${{ github.event.workflow_run.head_sha }}](https://github.com/${{ github.repository }}/commit/${{ github.event.workflow_run.head_sha }})).
           You can `git fetch; git checkout nightly-testing` and push a fix.
 
   handle_success:
@@ -52,7 +52,10 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
-        ref: nightly-testing # checkout nightly-testing branch
+        # Pin to the SHA whose CI just succeeded, not the current tip of `nightly-testing`,
+        # which may have advanced while CI was running. Without this, the tag and
+        # `nightly-testing-{green,daily}` updates below can point to an untested commit.
+        ref: ${{ github.event.workflow_run.head_sha }}
         fetch-depth: 0 # checkout all branches so that we can push from `nightly-testing` to `nightly-testing-YYYY-MM-DD`
         token: ${{ steps.app-token.outputs.token }}
     - name: Update the nightly-testing-green branch
@@ -73,13 +76,26 @@ jobs:
           if git ls-remote --tags --exit-code origin "nightly-testing-$version" >/dev/null; then
               printf 'Tag nightly-testing-%s already exists on the remote.' "${version}"
           else
-              # If the tag does not exist, create and push the tag to remote
+              # If the tag does not exist, create and push the tag to remote.
+              # The `ls-remote` check above is racy: a concurrent run can push the
+              # tag between our check and our push. Tolerate that case.
               printf 'Creating tag %s from the current state of the nightly-testing branch.' "nightly-testing-${version}"
               git tag "nightly-testing-${version}"
-              git push origin "nightly-testing-${version}"
-              # Update the tracking branches. With `--force` in case history gets rewritten on the `nightly-testing` branch.
-              git push --force origin HEAD:nightly-testing-daily
-              git push --force origin HEAD:nightly-testing-green
+              if ! git push origin "nightly-testing-${version}"; then
+                if git ls-remote --tags --exit-code origin "nightly-testing-${version}" >/dev/null; then
+                  printf 'Tag nightly-testing-%s was created concurrently; continuing.' "${version}"
+                else
+                  exit 1
+                fi
+              fi
+              # Fast-forward `nightly-testing-daily` and `nightly-testing-green` to the tested SHA.
+              # Since we now pin to the SHA whose CI succeeded (which may be older than the current
+              # tip of `nightly-testing` if a CI run for an older commit finishes after a newer one),
+              # we must NOT force-push here, or we'd roll the tracking branches backwards.
+              # If the push isn't a fast-forward, leave the branch alone; the daily force-push
+              # job handles the rare case where `nightly-testing` history has been rewritten.
+              git push origin HEAD:nightly-testing-daily || echo "Skipping nightly-testing-daily update: not a fast-forward."
+              git push origin HEAD:nightly-testing-green || echo "Skipping nightly-testing-green update: not a fast-forward."
               hash="$(git rev-parse "nightly-testing-${version}")"
               curl -X POST "https://speed.lean-lang.org/mathlib4/api/queue/commit/e7b27246-a3e6-496a-b552-ff4b45c7236e/$hash" -u "admin:${{ secrets.SPEED }}"
           fi
