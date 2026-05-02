@@ -31,8 +31,8 @@ example (p q : Prop) (h : ¬(p ↔ q)) (h' : q) : ¬p := by itauto
 example (p q : Prop) (h : ¬(p ↔ q)) (h' : ¬q) (h'' : ¬p) : False := by itauto
 example (p q r : Prop) (h : p ↔ q) (h' : r ↔ q) (h'' : ¬r) : ¬p := by itauto
 example (p q r : Prop) (h : p ↔ q) (h' : r ↔ q) : p ↔ r := by itauto
-example (p q : Prop) : Xor' p q → (p ↔ ¬q) := by itauto
-example (p q : Prop) : Xor' p q → Xor' q p := by itauto
+example (p q : Prop) : Xor p q → (p ↔ ¬q) := by itauto
+example (p q : Prop) : Xor p q → Xor q p := by itauto
 
 example (p q r : Prop) (h : ¬(p ↔ q)) (h' : r ↔ q) : ¬(p ↔ r) := by itauto
 
