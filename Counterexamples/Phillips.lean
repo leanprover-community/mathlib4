@@ -284,8 +284,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
     intro n
     rw [div_le_iff₀' (show (0 : ℝ) < 2 by simp), hε]
     convert hF (s n) u using 2
-    · dsimp
-      ext x
+    · ext x
       simp only [u, not_exists, mem_iUnion, mem_diff]
       tauto
     · congr 1
