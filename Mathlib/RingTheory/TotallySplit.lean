@@ -31,7 +31,7 @@ locally totally split.
 
 universe u
 
-@[expose] public section
+public section
 
 open TensorProduct
 

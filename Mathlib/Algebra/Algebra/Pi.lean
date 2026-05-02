@@ -252,8 +252,8 @@ end
 end AlgEquiv
 
 /-- Apply an algebra map component-wise along a vector. -/
-def Pi.algebraMap (ι R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A] :
+protected def Pi.algebraMap (ι R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A] :
     (ι → R) →ₗ[R] (ι → A) where
-  toFun v := _root_.algebraMap R A ∘ v
+  toFun v := algebraMap R A ∘ v
   map_add' v w := by simp
   map_smul' t v := by ext; simp [Algebra.smul_def]
