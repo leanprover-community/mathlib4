@@ -171,7 +171,7 @@ theorem eq_smul (μ ν : Measure X) [OpensMeasurableSpace X] [SecondCountableTop
           · exact Or.inr (lt_top ha hX.some).ne
           · exact Or.inr (zero_lt ha hX.some).ne.symm
         congr
-      _ ≤ (μ U) := by
+      _ ≤ μ U := by
         nth_rw 2 [← one_mul (μ U)]
         rw [← mul_assoc]
         gcongr
