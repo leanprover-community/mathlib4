@@ -256,8 +256,7 @@ theorem card_type {α : Type u} [LinearOrder α] : card (type α) = #α := (rfl)
 theorem card_le_card {o₁ o₂ : OrderType} : o₁ ≤ o₂ → card o₁ ≤ card o₂ :=
   inductionOn o₁ fun _ ↦ inductionOn o₂ fun _ _ ⟨f⟩ ↦ ⟨f.toEmbedding⟩
 
-theorem card_mono : Monotone card := by
- rw [Monotone]; exact @card_le_card
+theorem card_mono : Monotone card := @card_le_card
 
 @[simp]
 theorem card_zero : card 0 = 0 := mk_eq_zero _
