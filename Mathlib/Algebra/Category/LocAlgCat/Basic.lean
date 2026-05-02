@@ -124,8 +124,8 @@ instance isScalarTower_algebraOfQuot (A : LocAlgCat.{w} Λ k) {I : Ideal A} [Non
 /-- Upgrades the canonical quotient map from `A` to `A ⧸ I` to a morphism in `LocAlgCat`. -/
 def toOfQuot (A : LocAlgCat.{w} Λ k) (I : Ideal A) [Nontrivial (A ⧸ I)] : A ⟶ A.ofQuot I :=
   letI : IsLocalRing (A ⧸ I) := .of_surjective' _ Ideal.Quotient.mk_surjective
-  ofHom (IsScalarTower.toAlgHom Λ A (A ⧸ I)) (eq_maximalIdeal (Ideal.comap_isMaximal_of_surjective
-    _ Ideal.Quotient.mk_surjective)) (by ext; simpa [residue] using residue_ofQuot_mk_apply ..)
+  ofHom (IsScalarTower.toAlgHom Λ A (A ⧸ I))
+    (by ext; simpa [residue] using residue_ofQuot_mk_apply ..)
 
 @[simp]
 lemma toAlgHom_toOfQuot_apply [Nontrivial (A ⧸ I)] (a : A) :
@@ -148,14 +148,7 @@ def mapOfQuot (f : A ⟶ B) {J : Ideal B} [Nontrivial (A ⧸ I)] [Nontrivial (B 
     (hf : I ≤ J.comap f.toAlgHom) : A.ofQuot I ⟶ B.ofQuot J :=
   haveI : IsLocalRing (A ⧸ I) := .of_surjective' _ Ideal.Quotient.mk_surjective
   haveI : IsLocalRing (B ⧸ J) := .of_surjective' _ Ideal.Quotient.mk_surjective
-  ofHom (Ideal.quotientMapₐ J f.toAlgHom hf) (by
-    rw [← (Ideal.comap_injective_of_surjective _ Ideal.Quotient.mk_surjective).eq_iff,
-      ← Ideal.comap_coe (Ideal.quotientMapₐ J f.toAlgHom hf), Ideal.quotientMapₐ,
-      AlgHom.coe_ringHom_mk, Ideal.comap_comap, Ideal.quotientMap_comp_mk,
-      ← Ideal.comap_comap, Ideal.comap_coe, eq_maximalIdeal
-        (Ideal.comap_isMaximal_of_surjective ((Ideal.Quotient.mk J)) Ideal.Quotient.mk_surjective),
-      f.comap_maximalIdeal_eq, eq_maximalIdeal (Ideal.comap_isMaximal_of_surjective
-        (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective)]) (AlgHom.ext fun x ↦ by
+  ofHom (Ideal.quotientMapₐ J f.toAlgHom hf) (AlgHom.ext fun x ↦ by
     rcases Ideal.Quotient.mk_surjective x with ⟨x, rfl⟩
     exact DFunLike.congr_fun f.residue_comp x)
 
@@ -175,10 +168,6 @@ def liftToOfQuot (I : Ideal A) [Nontrivial (A ⧸ I)] (f : A ⟶ B)
     (hI : ∀ a ∈ I, f.toAlgHom a = 0) : A.ofQuot I ⟶ B :=
   haveI : IsLocalRing (A ⧸ I) := .of_surjective' _ Ideal.Quotient.mk_surjective
   ofHom (Ideal.Quotient.liftₐ I f.toAlgHom hI) (by
-    rw [← (Ideal.comap_injective_of_surjective _ (Ideal.Quotient.mkₐ_surjective Λ I)).eq_iff,
-      Ideal.comap_comapₐ, Ideal.Quotient.liftₐ_comp, f.comap_maximalIdeal_eq, eq_comm]
-    exact eq_maximalIdeal <| Ideal.comap_isMaximal_of_surjective _
-      (Ideal.Quotient.mkₐ_surjective Λ I)) (by
     have : I ≤ RingHom.ker A.residue := by
       rw [ker_residue]
       exact le_maximalIdeal (Ideal.Quotient.nontrivial_iff.mp ‹_›)
@@ -290,8 +279,7 @@ abbrev pullbackFst (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.toAlgHom) :
     ofPullback f g hg ⟶ A :=
   letI : IsLocalRing ↥(f.toAlgHom.pullback g.toAlgHom) :=
     AlgHom.isLocalRing_pullback f.toAlgHom g.toAlgHom ⟨hg.isLocalHom.map_nonunit⟩
-  ⟨f.toAlgHom.pullbackFst g.toAlgHom, eq_maximalIdeal <| Ideal.comap_isMaximal_of_surjective _
-    (AlgHom.surjective_pullbackFst_of_surjective f.toAlgHom g.toAlgHom hg), rfl⟩
+  ⟨f.toAlgHom.pullbackFst g.toAlgHom, rfl⟩
 
 lemma surjective_pullbackFst (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.toAlgHom) :
     Surjective (pullbackFst f g hg).toAlgHom :=
@@ -314,8 +302,7 @@ abbrev pullbackSnd (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.toAlgHom) :
   haveI : IsLocalHom f.toAlgHom.toRingHom := ⟨f.isLocalHom_toAlgHom.map_nonunit⟩
   haveI : IsLocalHom (f.toAlgHom.pullbackSnd g.toAlgHom).toRingHom :=
     ⟨(RingHom.isLocalHom_pullbackSnd f.toAlgHom.toRingHom g.toAlgHom.toRingHom).map_nonunit⟩
-  ⟨f.toAlgHom.pullbackSnd g.toAlgHom, IsLocalRing.maximalIdeal_comap
-    (f.toAlgHom.pullbackSnd g.toAlgHom).toRingHom, (residue_comp_pullbackFst f g).symm⟩
+  ⟨f.toAlgHom.pullbackSnd g.toAlgHom, (residue_comp_pullbackFst f g).symm⟩
 
 lemma pullback_comm_sq (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.toAlgHom) :
     pullbackFst f g hg ≫ f = pullbackSnd f g hg ≫ g :=
