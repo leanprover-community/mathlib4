@@ -26,7 +26,7 @@ Similar results are given for `C^n` functions on domains.
 We use the notation `E [×n]→L[𝕜] F` for the space of continuous multilinear maps on `E^n` with
 values in `F`. This is the space in which the `n`-th derivative of a function from `E` to `F` lives.
 
-In this file, we denote `(⊤ : ℕ∞) : WithTop ℕ∞` with `∞` and `⊤ : WithTop ℕ∞` with `ω`.
+In this file, we denote `WithTop ℕ∞` with `ℕ∞ω`, `(⊤ : ℕ∞) : ℕ∞ω` with `∞` and `⊤ : ℕ∞ω` with `ω`.
 
 ## Tags
 
@@ -44,7 +44,7 @@ attribute [local instance 1001] NormedAddCommGroup.toAddCommGroup AddCommGroup.t
 variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
   {X : Type*} [NormedAddCommGroup X] [NormedSpace 𝕜 X] {s t : Set E} {f : E → F}
-  {g : F → G} {x x₀ : E} {m n : WithTop ℕ∞}
+  {g : F → G} {x x₀ : E} {m n : ℕ∞ω}
 
 section comp
 
@@ -545,7 +545,7 @@ theorem iteratedFDerivWithin_clm_apply_const_apply
   induction i generalizing x with
   | zero => simp
   | succ i ih =>
-    replace hi : (i : WithTop ℕ∞) < n := lt_of_lt_of_le (by norm_cast; simp) hi
+    replace hi : (i : ℕ∞ω) < n := lt_of_lt_of_le (by norm_cast; simp) hi
     have h_deriv_apply : DifferentiableOn 𝕜 (iteratedFDerivWithin 𝕜 i (fun y ↦ (c y) u) s) s :=
       (hc.clm_apply contDiffOn_const).differentiableOn_iteratedFDerivWithin hi hs
     have h_deriv : DifferentiableOn 𝕜 (iteratedFDerivWithin 𝕜 i c s) s :=

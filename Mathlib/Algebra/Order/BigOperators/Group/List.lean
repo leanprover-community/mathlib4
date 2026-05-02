@@ -47,7 +47,7 @@ lemma Sublist.prod_le_prod' [Preorder M] [MulRightMono M]
   | cons a _ ih' =>
     simp only [prod_cons, forall_mem_cons] at h₁ ⊢
     exact (ih' h₁.2).trans (le_mul_of_one_le_left' h₁.1)
-  | cons₂ a _ ih' =>
+  | cons_cons a _ ih' =>
     simp only [prod_cons, forall_mem_cons] at h₁ ⊢
     grw [ih' h₁.2]
 
@@ -251,7 +251,7 @@ lemma all_one_of_le_one_le_of_prod_eq_one [CommMonoid M] [PartialOrder M] [IsOrd
 
 @[to_additive] lemma prod_eq_one_iff [CommMonoid M] [PartialOrder M] [IsOrderedMonoid M]
      [CanonicallyOrderedMul M] {l : List M} : l.prod = 1 ↔ ∀ x ∈ l, x = (1 : M) :=
-  ⟨all_one_of_le_one_le_of_prod_eq_one fun _ _ => one_le _, fun h => by
+  ⟨all_one_of_le_one_le_of_prod_eq_one fun _ _ => one_le, fun h => by
     rw [List.eq_replicate_iff.2 ⟨_, h⟩, prod_replicate, one_pow]
     · exact (length l)
     · rfl⟩

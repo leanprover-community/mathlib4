@@ -5,7 +5,6 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Module.Submodule.Pointwise
 public import Mathlib.Geometry.Convex.Cone.Pointed
 
 /-!
