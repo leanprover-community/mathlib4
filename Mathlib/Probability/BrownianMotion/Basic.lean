@@ -101,19 +101,22 @@ lemma ProbabilityTheory.singleton_indepSets_comap_iff {Ω M : Type*} {mΩ : Meas
       (@MeasurableSpace.isPiSystem_measurableSet _ (m𝓧.comap X)) rfl (by simp)
   mpr h := IndepFun.singleton_indepSets_of_indicator' c h
 
-lemma IndepSets.setIntegral_eq_mul {Ω 𝓧 : Type*} {mΩ : MeasurableSpace Ω}
+lemma IndepSets.setIntegral_eq_mul {Ω 𝓧 E : Type*} {mΩ : MeasurableSpace Ω}
     {μ : Measure Ω} [m𝓧 : MeasurableSpace 𝓧] {X : Ω → 𝓧} [IsZeroOrProbabilityMeasure μ]
-    {f : 𝓧 → ℝ} {A : Set Ω} (hA1 : IndepSets {A} {s | MeasurableSet[m𝓧.comap X] s} μ)
+    [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {f : 𝓧 → E} {A : Set Ω} (hA1 : IndepSets {A} {s | MeasurableSet[m𝓧.comap X] s} μ)
     (hX : Measurable X) (hA2 : MeasurableSet A)
     (hf : AEStronglyMeasurable f (μ.map X)) :
-    ∫ ω in A, f (X ω) ∂μ = μ.real A * ∫ ω, f (X ω) ∂μ :=
+    ∫ ω in A, f (X ω) ∂μ = μ.real A • ∫ ω, f (X ω) ∂μ := by
+  by_cases hE : CompleteSpace E; swap
+  · simp [integral, hE]
   calc ∫ ω in A, f (X ω) ∂μ
-    = ∫ ω, id (A.indicator 1 ω) * f (X ω) ∂μ := by
+    = ∫ ω, id (A.indicator (1 : Ω → ℝ) ω) • f (X ω) ∂μ := by
         rw [← integral_indicator hA2]
         congr with ω
         by_cases hω : ω ∈ A <;> simp [hω]
-  _ = μ.real A * ∫ ω, f (X ω) ∂μ := by
-    rw [IndepFun.integral_fun_comp_mul_comp]
+  _ = μ.real A • ∫ ω, f (X ω) ∂μ := by
+    rw [IndepFun.integral_fun_comp_smul_comp]
     · simp [integral_indicator_one hA2]
     · exact (singleton_indepSets_comap_iff 1 hX hA2).1 hA1
     · exact (aemeasurable_indicator_const_iff 1).2 hA2.nullMeasurableSet
