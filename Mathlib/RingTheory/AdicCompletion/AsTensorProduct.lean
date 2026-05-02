@@ -52,33 +52,22 @@ open TensorProduct
 
 namespace AdicCompletion
 
-set_option backward.privateInPublic true in
-private
-def ofTensorProductBil : AdicCompletion I R →ₗ[AdicCompletion I R] M →ₗ[R] AdicCompletion I M where
-  toFun r := LinearMap.lsmul (AdicCompletion I R) (AdicCompletion I M) r ∘ₗ of I M
-  map_add' x y := by
-    apply LinearMap.ext
-    simp
-  map_smul' r x := by
-    apply LinearMap.ext
-    simp
-
-@[simp]
-private lemma ofTensorProductBil_apply_apply (r : AdicCompletion I R) (x : M) :
-    ((AdicCompletion.ofTensorProductBil I M) r) x = r • (of I M) x :=
-  rfl
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The natural `AdicCompletion I R`-linear map from `AdicCompletion I R ⊗[R] M` to
 the adic completion of `M`. -/
 def ofTensorProduct : AdicCompletion I R ⊗[R] M →ₗ[AdicCompletion I R] AdicCompletion I M :=
-  TensorProduct.AlgebraTensorModule.lift (ofTensorProductBil I M)
+  TensorProduct.AlgebraTensorModule.lift
+    { toFun r := LinearMap.lsmul (AdicCompletion I R) (AdicCompletion I M) r ∘ₗ of I M
+      map_add' x y := by
+        apply LinearMap.ext
+        simp
+      map_smul' r x := by
+        apply LinearMap.ext
+        simp }
 
 @[simp]
 lemma ofTensorProduct_tmul (r : AdicCompletion I R) (x : M) :
     ofTensorProduct I M (r ⊗ₜ x) = r • of I M x := by
-  simp [ofTensorProduct]
+  rfl
 
 set_option backward.isDefEq.respectTransparency false in
 variable {M} in
@@ -116,31 +105,27 @@ private lemma ofTensorProduct_eq :
   rw [← piEquivOfFintype_comp_ofTensorProduct_eq I ι, ← LinearMap.comp_assoc]
   simp
 
-set_option backward.privateInPublic true in
-/- If `M = R^ι` and `ι` is finite, we may construct an inverse to `ofTensorProduct I (ι → R)`. -/
-private def ofTensorProductInvOfPiFintype :
+/-- (Implementation): If `M = R^ι` and `ι` is finite, we may construct an inverse to
+`ofTensorProduct I (ι → R)`. -/
+def ofTensorProductInvOfPiFintype :
     AdicCompletion I (ι → R) ≃ₗ[AdicCompletion I R] AdicCompletion I R ⊗[R] (ι → R) :=
   letI f := piEquivOfFintype I (fun _ : ι ↦ R)
   letI g := (TensorProduct.piScalarRight R (AdicCompletion I R) (AdicCompletion I R) ι).symm
   f.trans g
 
-set_option backward.privateInPublic true in
-private lemma ofTensorProductInvOfPiFintype_comp_ofTensorProduct :
+lemma ofTensorProductInvOfPiFintype_comp_ofTensorProduct :
     ofTensorProductInvOfPiFintype I ι ∘ₗ ofTensorProduct I (ι → R) = LinearMap.id := by
   dsimp only [ofTensorProductInvOfPiFintype]
   rw [LinearEquiv.coe_trans, LinearMap.comp_assoc, piEquivOfFintype_comp_ofTensorProduct_eq]
   simp
 
-set_option backward.privateInPublic true in
-private lemma ofTensorProduct_comp_ofTensorProductInvOfPiFintype :
+lemma ofTensorProduct_comp_ofTensorProductInvOfPiFintype :
     ofTensorProduct I (ι → R) ∘ₗ ofTensorProductInvOfPiFintype I ι = LinearMap.id := by
   dsimp only [ofTensorProductInvOfPiFintype]
   rw [LinearEquiv.coe_trans, ofTensorProduct_eq, LinearMap.comp_assoc]
   nth_rw 2 [← LinearMap.comp_assoc]
   simp
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- `ofTensorProduct` as an equiv in the case of `M = R^ι` where `ι` is finite. -/
 def ofTensorProductEquivOfPiFintype :
     AdicCompletion I R ⊗[R] (ι → R) ≃ₗ[AdicCompletion I R] AdicCompletion I (ι → R) :=
