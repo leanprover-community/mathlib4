@@ -291,12 +291,6 @@ def _root_.Lean.DataValue.toSetOptionValueSyntax? : DataValue → Option Syntax
   | .ofString str => Syntax.mkStrLit str
   | _ => none
 
-/--
-info: [(Elab.async, true), (maxSynthPendingDepth, 3), (linter.style.header, true), (Elab.inServer, true), (pp.unicode.fun, true), (autoImplicit, false)]
--/
-#guard_msgs in
-run_cmd do
-  logInfo m!"{← getOptions}"
 
 /- Note: Ideally we would like to not include all the lake build options. But these are commingled
 with any `set_option`s in the base scope, so without doing something like "checking the lakefile"
@@ -314,15 +308,6 @@ def reifySetOptions? (opts : Options) : CommandElabM (Option (TSyntax ``reifiedS
     let some val := val.toSetOptionValueSyntax? | continue
     kvs := kvs.push <|← `(reifiedOptionKeyValue| $(mkIdent key) $(⟨val⟩))
   if kvs.isEmpty then pure none else some <$> `(reifiedSetOptionsStx| set_options $kvs,*)
-
--- def _root_.Lean.Options.toSyntax (opts : Options) :
---     CommandElabM (Array (TSyntax ``Parser.Command.set_option)) := do
---   let mut optStx := #[]
---   for (key, val) in opts do
---     let some valStx := val.toSetOptionValueSyntax? | continue
---     -- Note: this is a bit of a hack since it might be an `.atom`, and `TSyntax` only recognizes stra and num
---     optStx := optStx.push <|← `(Parser.Command.set_option| set_option $(mkIdent key) $(⟨valStx⟩))
---   return optStx
 
 end setOption
 
