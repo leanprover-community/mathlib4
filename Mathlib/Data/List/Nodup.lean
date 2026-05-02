@@ -121,6 +121,10 @@ theorem not_nodup_of_get_eq_of_ne (xs : List α) (n m : Fin xs.length)
   rw [nodup_iff_injective_get]
   exact fun hinj => hne (hinj h)
 
+lemma Nodup.head_eq_getLast_iff (hnd : l.Nodup) (hne : l ≠ []) :
+    l.head hne = l.getLast hne ↔ ∃ x, l = [x] :=
+  ⟨fun h => by cases l <;> grind, fun ⟨x, hx⟩ => by grind⟩
+
 @[deprecated Nodup.idxOf_getElem (since := "2025-11-10")]
 theorem idxOf_getElem [DecidableEq α] {l : List α} : Nodup l → (i : Nat) → (h : i < l.length) →
     idxOf l[i] l = i := Nodup.idxOf_getElem
@@ -254,6 +258,16 @@ lemma nodup_tail_reverse (l : List α) (h : l[0]? = l.getLast?) :
           simp [List.dropLast_eq_take],
         List.nodup_append_comm]
       simp [List.getLast_eq_getElem]
+
+lemma Nodup.head_suffix_mem (h : l₁.IsSuffix l₂) (hne : l₂ ≠ []) (hl : l₂.head hne ∈ l₁)
+    (hnd : l₂.Nodup) : l₁ = l₂ := by
+  cases h
+  grind
+
+lemma Nodup.getLast_prefix_mem (h : l₁.IsPrefix l₂) (hne : l₂ ≠ []) (hl : l₂.getLast hne ∈ l₁)
+    (hnd : l₂.Nodup) : l₁ = l₂ := by
+  cases h
+  grind
 
 theorem Nodup.erase_getElem [BEq α] [LawfulBEq α] {l : List α} (hl : l.Nodup)
     (i : Nat) (h : i < l.length) : l.erase l[i] = l.eraseIdx ↑i := by
