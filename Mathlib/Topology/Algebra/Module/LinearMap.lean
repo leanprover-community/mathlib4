@@ -1224,28 +1224,6 @@ end ContinuousLinearMap
 
 namespace Submodule
 
-section Ring
-
-variable {R : Type*} [Ring R] {M : Type*} [TopologicalSpace M] [AddCommGroup M] [Module R M]
-  (S : Submodule R M)
-
-/-- `Submodule.mkQ` as a `ContinuousLinearMap`. -/
-def mkQL : M →L[R] M ⧸ S where
-  toLinearMap := S.mkQ
-  cont := continuous_quot_mk
-
-@[simp, norm_cast]
-theorem toLinearMap_mkQL : (S.mkQL : M →ₗ[R] M ⧸ S) = S.mkQ := rfl
-
-@[simp]
-theorem coe_mkQL : ⇑S.mkQL = S.mkQ := rfl
-
-theorem mkQL_apply (x : M) : S.mkQL x = S.mkQ x := by simp
-
-end Ring
-
-section
-
 variable {R : Type*} [Ring R] {M : Type*} [TopologicalSpace M] [AddCommGroup M] [Module R M]
 
 open ContinuousLinearMap
@@ -1292,7 +1270,20 @@ theorem closedComplemented_top : ClosedComplemented (⊤ : Submodule R M) :=
   ⟨(ContinuousLinearMap.id R M).codRestrict ⊤ fun _x => trivial,
     fun x => Subtype.ext_iff.2 <| by simp⟩
 
-end
+variable (S : Submodule R M)
+
+/-- `Submodule.mkQ` as a `ContinuousLinearMap`. -/
+def mkQL : M →L[R] M ⧸ S where
+  toLinearMap := S.mkQ
+  cont := continuous_quot_mk
+
+@[simp, norm_cast]
+theorem toLinearMap_mkQL : (S.mkQL : M →ₗ[R] M ⧸ S) = S.mkQ := rfl
+
+@[simp]
+theorem coe_mkQL : ⇑S.mkQL = S.mkQ := rfl
+
+theorem mkQL_apply (x : M) : S.mkQL x = S.mkQ x := by simp
 
 end Submodule
 
