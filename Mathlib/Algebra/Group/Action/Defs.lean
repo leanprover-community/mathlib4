@@ -56,6 +56,8 @@ variable {M N G H α β γ δ : Type*}
 -- Note that https://github.com/leanprover/lean4/pull/13554
 -- also makes the instance priority change, so if that is merged then `instance 1100` can
 -- be removed here (we still want `to_additive` though).
+
+-- see Note [higher instance priority]
 /- See also `Monoid.toMulAction` and `MulZeroClass.toSMulWithZero`. -/
 attribute [instance 1100, to_additive /-- See also `AddMonoid.toAddAction` -/] instSMulOfMul
 
@@ -470,6 +472,7 @@ This is promoted to a module by `Semiring.toModule`. -/
 /-- The regular action of a monoid on itself by left addition.
 
 This is promoted to an `AddTorsor` by `addGroup_is_addTorsor`. -/]
+-- see Note [higher instance priority]
 instance (priority := 1100) Monoid.toMulAction : MulAction M M where
   smul := (· * ·)
   one_smul := one_mul

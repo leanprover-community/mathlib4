@@ -163,6 +163,7 @@ protected theorem Module.nontrivial (R M : Type*) [MonoidWithZero R] [Nontrivial
     [MulActionWithZero R M] : Nontrivial R :=
   MulActionWithZero.nontrivial R M
 
+-- see Note [higher instance priority]
 instance (priority := 1100) Semiring.toModule [Semiring R] : Module R R where
   smul_add := mul_add
   add_smul := add_mul
