@@ -63,6 +63,15 @@ instance inf {P Q : MorphismProperty C} [P.ContainsIdentities] [Q.ContainsIdenti
     (P ⊓ Q).ContainsIdentities where
   id_mem X := ⟨P.id_mem X, Q.id_mem X⟩
 
+lemma sInf {W : Set (MorphismProperty C)} (h : ∀ W' ∈ W, W'.ContainsIdentities) :
+    (sInf W).ContainsIdentities where
+  id_mem _ := (sInf_iff _ _).2 fun _ hW' ↦ (h _ hW').id_mem _
+
+instance iInf {ι : Type*} {W : ι → MorphismProperty C}
+    [∀ i, (W i).ContainsIdentities] : (⨅ i, W i).ContainsIdentities := by
+  rw [← sInf_range]
+  exact sInf (by simpa)
+
 end ContainsIdentities
 
 instance Prod.containsIdentities {C₁ C₂ : Type*} [Category* C₁] [Category* C₂]
@@ -115,6 +124,11 @@ lemma IsStableUnderComposition.sInf {W : Set (MorphismProperty C)}
   comp_mem f g hf hg := by
     rw [sInf_iff] at hf hg ⊢
     exact fun W' hW' ↦ (h W' hW').comp_mem _ _ (hf _ hW') (hg _ hW')
+
+instance IsStableUnderComposition.iInf {ι : Type*} {W : ι → MorphismProperty C}
+    [∀ i, (W i).IsStableUnderComposition] : (⨅ i, W i).IsStableUnderComposition := by
+  rw [← sInf_range]
+  exact sInf (by simpa)
 
 /-- A morphism property is `StableUnderInverse` if the inverse of a morphism satisfying
 the property still falls in the class. -/
@@ -211,6 +225,17 @@ instance {P : MorphismProperty D} [P.IsMultiplicative] (F : C ⥤ D) :
 
 instance inf {P Q : MorphismProperty C} [P.IsMultiplicative] [Q.IsMultiplicative] :
     (P ⊓ Q).IsMultiplicative where
+
+lemma sInf {W : Set (MorphismProperty C)} (h : ∀ W' ∈ W, W'.IsMultiplicative) :
+    (sInf W).IsMultiplicative := by
+  have := ContainsIdentities.sInf (fun W' hW' ↦ (h W' hW').toContainsIdentities)
+  have := IsStableUnderComposition.sInf (fun W' hW' ↦ (h W' hW').toIsStableUnderComposition)
+  constructor
+
+instance iInf {ι : Type*} {W : ι → MorphismProperty C}
+    [∀ i, (W i).IsMultiplicative] : (⨅ i, W i).IsMultiplicative := by
+  rw [← sInf_range]
+  exact sInf (by simpa)
 
 instance naturalityProperty {F₁ F₂ : C ⥤ D} (app : ∀ X, F₁.obj X ⟶ F₂.obj X) :
     (naturalityProperty app).IsMultiplicative where
