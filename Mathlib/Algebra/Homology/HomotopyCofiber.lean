@@ -377,6 +377,9 @@ section
 variable (K)
 variable [∀ i, HasBinaryBiproduct (K.X i) (K.X i)]
 
+/-- Given a homological complex `K`, this is the property that the morphism
+`K ⟶ K ⊞ K` induced by `𝟙 K` and `-𝟙 K` has a cofiber, which allows
+to define `K.cylinder` as this cofiber. -/
 abbrev HasCylinder : Prop := HasHomotopyCofiber (biprod.lift (𝟙 K) (-𝟙 K))
 
 variable [K.HasCylinder]
