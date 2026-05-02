@@ -44,10 +44,38 @@ section monogenic
 
 variable (S : Type u) [CommRing S] [Algebra S K]
 
-abbrev adjoinAlgebraic (x : K) : Type u := S[X] ⧸ Ideal.span {minpoly S x}
+set_option linter.unusedVariables false in
+abbrev adjoinAlgebraic (x : K) (int : IsIntegral S x) : Type u := S[X] ⧸ Ideal.span {minpoly S x}
 
-abbrev adjoinTranscendental [IsLocalRing S] : Type u :=
+instance (x : K) (int : IsIntegral S x) : Module.Finite S (adjoinAlgebraic K S x int) :=
+  (minpoly.monic int).finite_quotient
+
+instance (x : K) (int : IsIntegral S x) : Module.Free S (adjoinAlgebraic K S x int) :=
+  (minpoly.monic int).free_quotient
+
+variable [IsLocalRing S] [IsLocalHom (algebraMap S K)]
+
+variable {S K} in
+private lemma algebraMap_eq_zero (x : S) (mem : x ∈ maximalIdeal S) : algebraMap S K x = 0 := by
+  simp only [mem_maximalIdeal, mem_nonunits_iff] at mem
+  exact (iff_not_comm.mp isUnit_iff_ne_zero).mpr ((IsLocalHom.map_nonunit x).mt mem)
+
+private instance [IsLocalHom (algebraMap S K)] : Algebra (ResidueField S) K :=
+  (Ideal.Quotient.lift _ (algebraMap S K) (fun x hx ↦ algebraMap_eq_zero x hx)).toAlgebra
+
+private instance : IsScalarTower S (ResidueField S) K :=
+  IsScalarTower.of_algebraMap_eq' rfl
+
+set_option linter.unusedVariables false in
+abbrev adjoinTranscendental (x : K) (nint : ¬ IsIntegral S x) : Type u :=
   Localization.AtPrime ((maximalIdeal S).map Polynomial.C)
+
+omit [IsLocalHom (algebraMap S K)] in
+lemma adjoinTranscendental_maximalIdeal_eq_map (x : K) (nint : ¬ IsIntegral S x) :
+    maximalIdeal (adjoinTranscendental K S x nint) =
+    (maximalIdeal S).map (algebraMap S (adjoinTranscendental K S x nint)) := by
+  rw [IsScalarTower.algebraMap_eq S S[X], ← Ideal.map_map]
+  exact Localization.AtPrime.map_eq_maximalIdeal.symm
 
 end monogenic
 
