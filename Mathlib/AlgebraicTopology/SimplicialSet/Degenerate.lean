@@ -262,6 +262,7 @@ namespace Subcomplex
 
 variable {X} (A : X.Subcomplex)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma mem_degenerate_iff {n : ℕ} (x : A.obj (op ⦋n⦌)) :
     dsimp% x ∈ degenerate A n ↔ x.val ∈ X.degenerate n := by
@@ -276,6 +277,7 @@ lemma mem_degenerate_iff {n : ℕ} (x : A.obj (op ⦋n⦌)) :
     simpa [Set.mem_preimage, ← op_comp, ← comp_apply, ← Functor.map_comp] using
       A.map (section_ f).op hx
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma mem_nonDegenerate_iff {n : ℕ} (x : A.obj (op ⦋n⦌)) :
     dsimp% x ∈ nonDegenerate A n ↔ x.val ∈ X.nonDegenerate n := by

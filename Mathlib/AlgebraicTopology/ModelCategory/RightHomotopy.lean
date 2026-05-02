@@ -309,6 +309,7 @@ lemma mk_eq_mk_iff [ModelCategory C] [IsFibrant Y] (f g : X ⟶ Y) :
 
 end RightHomotopyClass
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The left homotopy in the opposite category that is deduced from a right homotopy. -/
 @[simps]
 protected def PrepathObject.RightHomotopy.op
@@ -318,6 +319,7 @@ protected def PrepathObject.RightHomotopy.op
   h₀ := Quiver.Hom.unop_inj (by simp)
   h₁ := Quiver.Hom.unop_inj (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The left homotopy that is deduced from a right homotopy in the opposite category. -/
 @[simps]
 protected def PrepathObject.RightHomotopy.unop
@@ -327,6 +329,7 @@ protected def PrepathObject.RightHomotopy.unop
   h₀ := Quiver.Hom.op_inj (by simp)
   h₁ := Quiver.Hom.op_inj (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The right homotopy in the opposite category that is deduced from a left homotopy. -/
 @[simps]
 protected def Precylinder.LeftHomotopy.op
@@ -336,6 +339,7 @@ protected def Precylinder.LeftHomotopy.op
   h₀ := Quiver.Hom.unop_inj (by simp)
   h₁ := Quiver.Hom.unop_inj (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The right homotopy that is deduced from a left homotopy in the opposite category. -/
 @[simps]
 protected def Precylinder.LeftHomotopy.unop
