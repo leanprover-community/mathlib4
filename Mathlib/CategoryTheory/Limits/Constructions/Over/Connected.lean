@@ -37,7 +37,6 @@ namespace CategoryTheory.CostructuredArrow
 
 namespace CreatesConnected
 
-set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation) Given a diagram in `CostructuredArrow K B`, produce a natural transformation
 from the diagram legs to the specific object.
 -/
@@ -144,16 +143,10 @@ instance createsLimitsOfShapeForgetOfIsConnected [IsConnected J] {B : C} :
     CreatesLimitsOfShape J (forget B) :=
   inferInstanceAs <| CreatesLimitsOfShape J (CostructuredArrow.proj _ _)
 
-@[deprecated (since := "2025-09-29")]
-noncomputable alias forgetCreatesConnectedLimits := createsLimitsOfShapeForgetOfIsConnected
-
 /-- The forgetful functor from the over category preserves any connected limit. -/
 instance preservesLimitsOfShape_forget_of_isConnected [IsConnected J] {B : C} :
     PreservesLimitsOfShape J (forget B) :=
   inferInstanceAs <| PreservesLimitsOfShape J (CostructuredArrow.proj _ _)
-
-@[deprecated (since := "2025-09-29")]
-alias forgetPreservesConnectedLimits := preservesLimitsOfShape_forget_of_isConnected
 
 /-- The over category has any connected limit which the original category has. -/
 instance hasLimitsOfShape_of_isConnected {B : C} [IsConnected J] [HasLimitsOfShape J C] :
@@ -184,6 +177,13 @@ def isLimitConePost [IsCofilteredOrEmpty J] {F : J ⥤ C} {c : Cone F} (i : J) (
 
 end Over
 
+instance {B : D} [IsConnected J] [HasLimitsOfShape J C] [PreservesLimitsOfShape J K] :
+    PreservesLimitsOfShape J (CostructuredArrow.toOver K B) where
+  preservesLimit {D} := by
+    have : PreservesLimit D (CostructuredArrow.toOver K B ⋙ Over.forget B) :=
+      inferInstanceAs <| PreservesLimit D (CostructuredArrow.proj K B ⋙ K)
+    exact Limits.preservesLimit_of_reflects_of_preserves _ (Over.forget B)
+
 namespace Under
 
 /-- The forgetful functor from the under category creates any connected limit. -/
@@ -201,4 +201,13 @@ instance hasColimitsOfShape_of_isConnected {B : C} [IsConnected J] [HasColimitsO
     HasColimitsOfShape J (Under B) where
   has_colimit F := hasColimit_of_created F (forget B)
 
-end CategoryTheory.Under
+end Under
+
+instance {B : D} [IsConnected J] [HasColimitsOfShape J C] [PreservesColimitsOfShape J K] :
+    PreservesColimitsOfShape J (StructuredArrow.toUnder B K) where
+  preservesColimit {D} := by
+    have : PreservesColimit D (StructuredArrow.toUnder B K ⋙ Under.forget B) :=
+      inferInstanceAs <| PreservesColimit D (StructuredArrow.proj B K ⋙ K)
+    exact Limits.preservesColimit_of_reflects_of_preserves _ (Under.forget B)
+
+end CategoryTheory
