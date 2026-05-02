@@ -4,12 +4,23 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Youheng Luo
 -/
 module
+
 public import Mathlib.Combinatorics.SimpleGraph.Basic
 public import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
 
 /-!
 # Isolate Vertices
+
 This file defines the operation of isolating a set of vertices in a simple graph.
+
+## Main definitions
+
+* `SimpleGraph.isolateVerts`: The graph obtained by isolating a set of vertices.
+
+## TODO
+
+* Once the `graph-on-a-set` refactor lands, replace `isolateVerts` with
+  `induce` and remove this file.
 -/
 
 @[expose] public section
