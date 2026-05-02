@@ -18,7 +18,7 @@ assert_not_exists RelIso
 namespace Set
 
 universe u
-variable {ι α : Type u} {a : α} {s t u v : Set α}
+variable {ι : Sort*} {α : Type u} {a : α} {s t u v : Set α}
 
 open scoped symmDiff
 
@@ -60,8 +60,31 @@ lemma symmDiff_union_subset : s ∆ (t ∪ u) ⊆ s ∆ t ∪ s ∆ u := by
 lemma union_symmDiff_union_subset : (s ∪ t) ∆ (u ∪ v) ⊆ s ∆ u ∪ t ∆ v := by
   grind
 
+lemma iUnion_symmDiff_subset [Nonempty ι] {f : ι → Set α} :
+    (⋃ n, f n) ∆ s ⊆ ⋃ n, f n ∆ s := by
+  intro; simp [symmDiff]; aesop
+
 lemma iUnion_symmDiff_iUnion_subset {f g : ι → Set α} :
     (⋃ n, f n) ∆ ⋃ n, g n ⊆ ⋃ n, f n ∆ g n := by
   intro; simp [symmDiff]; grind
+
+lemma sUnion_symmDiff_subset {S : Set (Set α)} (hS : S.Nonempty) :
+    (⋃₀ S) ∆ s ⊆ ⋃ t ∈ S, t ∆ s := by
+  obtain ⟨t₀, ht₀⟩ := hS
+  intro a ha
+  simp [symmDiff] at ha ⊢
+  rcases ha with ⟨⟨t, htS, ht⟩, hs⟩ | ⟨hs, ht⟩
+  · exact ⟨t, htS, Or.inl ⟨ht, hs⟩⟩
+  · exact ⟨t₀, ht₀, Or.inr ⟨hs, ht t₀ ht₀⟩⟩
+
+lemma sUnion_symmDiff_sUnion_subset {S T : Set (Set α)} (hS : S.Nonempty)
+    (hT : T.Nonempty) : (⋃₀ S) ∆ ⋃₀ T ⊆ ⋃ s ∈ S, ⋃ t ∈ T, s ∆ t := by
+  obtain ⟨s₀, hs₀⟩ := hS
+  obtain ⟨t₀, ht₀⟩ := hT
+  intro a ha
+  simp [symmDiff] at ha ⊢
+  rcases ha with ⟨⟨s, hsS, hs⟩, haT⟩ | ⟨⟨t, htT, ht⟩, haS⟩
+  · exact ⟨s, hsS, t₀, ht₀, Or.inl ⟨hs, haT t₀ ht₀⟩⟩
+  · exact ⟨s₀, hs₀, t, htT, Or.inr ⟨ht, haS s₀ hs₀⟩⟩
 
 end Set
