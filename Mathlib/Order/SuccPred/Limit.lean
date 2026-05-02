@@ -223,14 +223,12 @@ theorem _root_.WithTop.isSuccPrelimit_iff {α} [LT α] [NoMaxOrder α] {x : With
 @[to_dual]
 theorem _root_.WithTop.isSuccLimit_iff [Nonempty α] [NoMaxOrder α] {x : WithTop α} :
     IsSuccLimit x ↔ x = ⊤ ∨ ∃ y : α, x = y ∧ IsSuccLimit y := by
-  cases x with
-  | coe x => simp [IsSuccLimit, WithTop.isSuccPrelimit_iff, WithTop.exists]
-  | top => simp [IsSuccLimit, WithTop.exists]
+  cases x <;> simp [IsSuccLimit]
 
 @[to_dual (attr := simp)]
 theorem _root_.WithTop.isSuccLimit_coe_iff {x : α} :
     IsSuccLimit (x : WithTop α) ↔ IsSuccLimit x := by
-  simp [IsSuccLimit, WithTop.exists]
+  simp [IsSuccLimit]
 
 @[to_dual]
 theorem IsSuccLimit.withTopCoe {x : α} (h : IsSuccLimit x) :
