@@ -28,7 +28,7 @@ variable {α : Type*} {G : SimpleGraph α}
 /-- Build a walk of length `n` from `x` to `f^[n] x` following `f`,
 given that each step is adjacent in `G`. -/
 def iterate (f : α → α) (hadj : ∀ x, G.Adj x (f x)) (x : α) (n : ℕ) : G.Walk x (f^[n] x) :=
-  (Walk.ofSupport _ (by simp) (List.isChain_iterate x (n + 1) hadj)).copy rfl
+  (Walk.ofSupport _ (by simp) (List.isChain_iterate x hadj (n + 1))).copy rfl
     (List.getLast_iterate f x n (by simp))
 
 /-- The walk built by `Walk.iterate` has length `n`. -/
