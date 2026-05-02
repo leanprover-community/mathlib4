@@ -400,3 +400,55 @@ lemma ClosedComplemented.exists_submodule_equiv_prod [IsTopologicalAddGroup M]
 end ClosedComplemented
 
 end Submodule
+
+namespace ContinuousLinearMap
+
+variable {R : Type*} [Ring R] {E F : Type*}
+  [TopologicalSpace E] [AddCommGroup E] [Module R E] [IsTopologicalAddGroup E]
+  [TopologicalSpace F] [AddCommGroup F] [Module R F] [ContinuousAdd F]
+  {p q : Submodule R E}
+
+/-- Given continuous linear maps `φ : p →L[R] F` and `ψ : q →L[R] F` from topological complement
+submodules of `E`, the induced continuous linear map `E →L[R] F`. -/
+noncomputable def ofIsTopCompl (h : IsTopCompl p q) (φ : p →L[R] F) (ψ : q →L[R] F) : E →L[R] F :=
+  φ ∘L h.projectionOnto + ψ ∘L h.symm.projectionOnto
+
+@[simp]
+theorem coe_ofIsTopCompl (h : IsTopCompl p q) (φ : p →L[R] F) (ψ : q →L[R] F) :
+    (ofIsTopCompl h φ ψ : E →ₗ[R] F) = LinearMap.ofIsCompl h.isCompl φ ψ := by
+  rw [LinearMap.ofIsCompl_eq_add]
+  rfl
+
+@[simp]
+theorem ofIsTopCompl_apply_left (h : IsTopCompl p q) (φ : p →L[R] F) (ψ : q →L[R] F) (x : p) :
+    ofIsTopCompl h φ ψ (x : E) = φ x := by
+  simp [ofIsTopCompl]
+
+@[simp]
+theorem ofIsTopCompl_apply_right (h : IsTopCompl p q) (φ : p →L[R] F) (ψ : q →L[R] F) (x : q) :
+    ofIsTopCompl h φ ψ (x : E) = ψ x := by
+  simp [ofIsTopCompl]
+
+theorem ofIsTopCompl_eq (h : IsTopCompl p q) {φ : p →L[R] F} {ψ : q →L[R] F} {χ : E →L[R] F}
+    (hφ : ∀ u : p, φ u = χ u) (hψ : ∀ u : q, ψ u = χ u) : ofIsTopCompl h φ ψ = χ := by
+  ext x
+  obtain ⟨_, _, rfl, _⟩ := existsUnique_add_of_isCompl h.isCompl x
+  simp [hφ, hψ]
+
+@[simp]
+theorem ofIsTopCompl_zero (h : IsTopCompl p q) :
+    (ofIsTopCompl h 0 0 : E →L[R] F) = 0 := by
+  ext; simp [ofIsTopCompl]
+
+@[simp]
+theorem ofIsTopCompl_add (h : IsTopCompl p q) (φ₁ φ₂ : p →L[R] F) (ψ₁ ψ₂ : q →L[R] F) :
+    ofIsTopCompl h (φ₁ + φ₂) (ψ₁ + ψ₂) = ofIsTopCompl h φ₁ ψ₁ + ofIsTopCompl h φ₂ ψ₂ := by
+  ext; simp [ofIsTopCompl]; abel
+
+@[simp]
+theorem range_ofIsTopCompl (h : IsTopCompl p q) (φ : p →L[R] F) (ψ : q →L[R] F) :
+    LinearMap.range (ofIsTopCompl h φ ψ : E →ₗ[R] F) = φ.range ⊔ ψ.range := by
+  rw [coe_ofIsTopCompl]
+  exact LinearMap.range_ofIsCompl h.isCompl
+
+end ContinuousLinearMap
