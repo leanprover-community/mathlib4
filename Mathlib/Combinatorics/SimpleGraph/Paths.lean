@@ -693,46 +693,40 @@ variable {G} {u v : V}
 lemma IsPath.exists_of_edges {u v : V} {e} {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPath)
     (hep : e ∈ p.edges) (heq : e ∈ q.edges) (hl : 1 < p.length) :
     ∃ z, z ∈ p.support.tail ∧ z ∈ q.support.tail := by
-  obtain ⟨a, b, hab⟩ := Sym2.exists.mp ⟨e, rfl⟩
-  subst hab
+  rcases e with ⟨a, b⟩
   by_cases! h : a = v ∨ b = v
   · by_cases hh : a = v
     · use b
       grind [getVert_mem_tail_support, not_nil_iff_lt_length, q.mem_support_iff.mp,
         mem_support_of_mem_edges, getVert_eq_end_iff, eq_penultimate_of_mem_edges hp (hh ▸ hep)]
     · by_cases ha : a = u
-      · cases p.mem_support_iff (w := b) |>.mp (by grind [snd_mem_support_of_mem_edges])
-        · grind [p.adj_of_mem_edges hep, G.irrefl]
+      · cases p.mem_support_iff.mp <| p.snd_mem_support_of_mem_edges hep
+        · grind [p.adj_of_mem_edges hep |>.ne]
         · suffices p.length - 1 = 0 by lia
           refine hp.getVert_eq_start_iff (p.length.sub_le 1) |>.mp ?_
           exact eq_penultimate_of_mem_edges hp (by grind) |>.symm
       · use a
         grind [p.mem_support_iff.mp, q.mem_support_iff.mp, fst_mem_support_of_mem_edges]
   by_cases a = u
-  · use b
-    cases p.mem_support_iff (w := b) |>.mp (by grind [snd_mem_support_of_mem_edges])
-    · grind [p.adj_of_mem_edges hep, G.irrefl]
-    · grind [q.mem_support_iff (w := b), snd_mem_support_of_mem_edges]
+  · grind [p.mem_support_iff.mp <| p.snd_mem_support_of_mem_edges hep,
+      q.mem_support_iff.mp <| q.snd_mem_support_of_mem_edges heq, p.adj_of_mem_edges hep |>.ne]
   · use a
     grind [p.mem_support_iff.mp, q.mem_support_iff.mp, fst_mem_support_of_mem_edges]
 
 lemma isPath_append_isCycle {u v} {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPath) (hq : q.IsPath)
     (h : p.support.tail.Disjoint q.support.tail) (hn : 1 < p.length ⊔ q.length) :
     (p.append q).IsCycle := by
-  rw [Walk.isCycle_def]
-  refine ⟨(p.append_isTrail_iff_edges_disjoint q).mpr ⟨hp.isTrail, hq.isTrail, fun x h₁ h₂ ↦ ?_⟩,
-    ?_, ?_⟩
-  · cases x
+  rw [isCycle_def]
+  refine ⟨append_isTrail_iff_edges_disjoint .. |>.mpr ⟨hp.isTrail, hq.isTrail, ?_⟩, ?_, ?_⟩
+  · rintro ⟨⟩ h₁ h₂
     cases lt_sup_iff.mp hn
     · obtain ⟨z, hz₁, hz₂⟩ := hp.exists_of_edges h₁ h₂ ‹_›
       exact h hz₁ hz₂
     · obtain ⟨z, hz₁, hz₂⟩ := hq.exists_of_edges h₂ h₁ ‹_›
       exact h hz₂ hz₁
-  · rw [ne_eq, ← Walk.nil_iff_eq_nil, Walk.not_nil_iff_lt_length, Walk.length_append]
-    cases lt_sup_iff.mp hn <;> lia
-  · rw [Walk.tail_support_append, List.nodup_append]
-    exact ⟨(p.isPath_def.mp hp).tail, (q.isPath_def.mp hq).tail, fun _ x _ y ↦
-      ne_of_mem_of_not_mem x (h.symm y)⟩
+  · grind [nil_append_iff, nil_iff_length_eq]
+  · rw [tail_support_append, List.nodup_append']
+    exact ⟨hp.support_nodup.tail, hq.support_nodup.tail, h⟩
 
 theorem cycle_from_two_paths {u v : V} {p q : G.Walk u v} (hp : p.IsPath) (hq : q.IsPath)
     (h : p ≠ q) :
@@ -747,12 +741,12 @@ theorem cycle_from_two_paths {u v : V} {p q : G.Walk u v} (hp : p.IsPath) (hq : 
         (hs ▸ Nat.add_lt_add (length_takeUntil_lt hwp hwv) (length_takeUntil_lt hwq hwv))
         (hp.takeUntil hwp) (hq.takeUntil hwq) htake rfl
       refine ⟨x, ?_, ?_, c, hc₁, hc₂.trans <| List.Sublist.append ?_ ?_⟩ <;>
-        grind [support_takeUntil_isPrefix, List.IsPrefix.sublist, support_reverse]
+        grind [support_takeUntil_prefix, List.IsPrefix.sublist, support_reverse]
     · obtain ⟨x, hx₁, hx₂, c, hc₁, hc₂⟩ := ih ((p.dropUntil w _).length + (q.dropUntil w _).length)
         (hs ▸ Nat.add_lt_add (length_dropUntil_lt hwp hwu) (length_dropUntil_lt hwq hwu))
         (hp.dropUntil hwp) (hq.dropUntil hwq) (by grind [take_spec]) rfl
       refine ⟨x, ?_, ?_, c, hc₁, hc₂.trans <| List.Sublist.append ?_ ?_⟩ <;>
-        grind [support_tail_of_not_nil, dropUntil_support_isSuffix, List.IsSuffix.sublist]
+        grind [support_tail_of_not_nil, dropUntil_support_suffix, List.IsSuffix.sublist]
   · refine ⟨u, by simp, by simp, p.append q.reverse,
       isPath_append_isCycle hp ((isPath_reverse_iff q).mpr hq) ?_ ?_, by simp [support_append]⟩
     · intro
