@@ -259,13 +259,24 @@ lemma nodup_tail_reverse (l : List α) (h : l[0]? = l.getLast?) :
         List.nodup_append_comm]
       simp [List.getLast_eq_getElem]
 
-lemma Nodup.head_suffix_mem (h : l₁.IsSuffix l₂) (hne : l₂ ≠ []) (hl : l₂.head hne ∈ l₁)
+lemma Nodup.head_suffix_mem (h : l₁ <:+ l₂) (hne : l₂ ≠ []) (hl : l₂.head hne ∈ l₁)
     (hnd : l₂.Nodup) : l₁ = l₂ := by
   cases h
   grind
 
-lemma Nodup.getLast_prefix_mem (h : l₁.IsPrefix l₂) (hne : l₂ ≠ []) (hl : l₂.getLast hne ∈ l₁)
+lemma Nodup.getLast_prefix_mem (h : l₁ <+: l₂) (hne : l₂ ≠ []) (hl : l₂.getLast hne ∈ l₁)
     (hnd : l₂.Nodup) : l₁ = l₂ := by
+  cases h
+  grind
+
+lemma Nodup.head_infix_mem (h : l₁ <:+: l₂) (hne : l₂ ≠ []) (hl : l₂.head hne ∈ l₁)
+    (hnd : l₂.Nodup) : l₁ <+: l₂ := by
+  obtain ⟨l, h1, h2⟩ := infix_iff_suffix_prefix.mp h
+  rw [← h2.head (by grind)] at hl
+  exact (hnd.sublist h2.sublist).head_suffix_mem h1 (by grind) hl ▸ h2
+
+lemma Nodup.getLast_infix_mem (h : l₁ <:+: l₂) (hne : l₂ ≠ []) (hl : l₂.getLast hne ∈ l₁)
+    (hnd : l₂.Nodup) : l₁ <:+ l₂ := by
   cases h
   grind
 
