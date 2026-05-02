@@ -371,7 +371,7 @@ open UniformOnFun in
 /-- A family `f : X → α → β`, each of which is continuous on a compact set `s : Set α`, gives
 a continuous map in the topology `X → α →ᵤ[{s}] β` on a set `t` if and only if the family of
 continuous restrictions `X → C(s, β)` is continuous on `t` as well. -/
-theorem _root_.ContinuousOn.continuousOn_mkD_restrict_iff_continuousOn_uniformOnFun
+theorem continuousOn_mkD_restrict_iff_continuousOn_uniformOnFun
     {X : Type*} [TopologicalSpace X] {f : X → α → β} {t : Set X} {s : Set α}
     (g : C(s, β)) (hf : ∀ x ∈ t, ContinuousOn (f x) s) [CompactSpace s] :
     ContinuousOn (fun x => mkD (s.restrict (f x)) g) t ↔
@@ -388,7 +388,7 @@ theorem _root_.ContinuousOn.continuousOn_mkD_restrict_iff_continuousOn_uniformOn
   rw [← h₁, restrict_def]
 
 open UniformOnFun in
-theorem _root_.continuousOn_uniformOnFun_of_uncurry
+theorem _root_.ContinuousOn.continuousOn_uniformOnFun_of_uncurry
     {X : Type*} [TopologicalSpace X] {f : X → α → β} {t : Set X} {s : Set α}
     (hf : ContinuousOn f.uncurry (t ×ˢ s)) [CompactSpace s] :
     ContinuousOn (fun x => ofFun {s} (f x)) t := by
@@ -396,7 +396,7 @@ theorem _root_.continuousOn_uniformOnFun_of_uncurry
   let _ : Inhabited β := Classical.inhabited_of_nonempty Nontrivial.to_nonempty
   let g : C(s, β) := .const _ default
   have h₂ : ∀ x ∈ t, ContinuousOn (f x) s := fun x hx => ContinuousOn.uncurry_left x hx hf
-  rw [← ContinuousOn.continuousOn_mkD_restrict_iff_continuousOn_uniformOnFun g h₂]
+  rw [← ContinuousMap.continuousOn_mkD_restrict_iff_continuousOn_uniformOnFun g h₂]
   exact ContinuousMap.continuousOn_mkD_restrict_of_uncurry _ _ hf
 
 end ContinuousOnRestrict
