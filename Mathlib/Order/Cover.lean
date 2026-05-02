@@ -292,6 +292,10 @@ theorem wcovBy_iff_covBy_or_le_and_le : a ⩿ b ↔ a ⋖ b ∨ a ≤ b ∧ b �
 @[to_dual self]
 alias ⟨WCovBy.covBy_or_le_and_le, _⟩ := wcovBy_iff_covBy_or_le_and_le
 
+@[to_dual (attr := simp) wcovBy_bot_iff]
+theorem top_wcovBy_iff [OrderTop α] {a : α} : ⊤ ⩿ a ↔ ⊤ ≤ a := by
+  simp [wcovBy_iff_covBy_or_le_and_le]
+
 theorem AntisymmRel.trans_covBy (hab : AntisymmRel (· ≤ ·) a b) (hbc : b ⋖ c) : a ⋖ c :=
   ⟨hab.1.trans_lt hbc.lt, fun _ had hdc => hbc.2 (hab.2.trans_lt had) hdc⟩
 
@@ -741,24 +745,22 @@ namespace WithTop
 variable [Preorder α] {a b : α}
 
 @[to_dual (attr := simp, norm_cast)]
-lemma coe_wcovBy_coe : (a : WithTop α) ⩿ b ↔ a ⩿ b :=
-  Set.OrdConnected.apply_wcovBy_apply_iff WithTop.coeOrderHom <| by
-    simp [WithTop.range_coe, ordConnected_Iio]
+lemma coe_wcovBy_coe : (a : WithTop α) ⩿ b ↔ a ⩿ b := by
+  simp [WCovBy, WithTop.forall]
 
 @[to_dual (attr := simp, norm_cast)]
-lemma coe_covBy_coe : (a : WithTop α) ⋖ b ↔ a ⋖ b :=
-  Set.OrdConnected.apply_covBy_apply_iff WithTop.coeOrderHom <| by
-    simp [WithTop.range_coe, ordConnected_Iio]
+lemma coe_covBy_coe {α} [LT α] {a b : α} : (a : WithTop α) ⋖ b ↔ a ⋖ b := by
+  simp [CovBy, WithTop.forall]
 
-@[to_dual]
-theorem covBy_top_iff {a : WithTop α} : a ⋖ ⊤ ↔ ∃ b : α, IsMax b ∧ a = b := by
+@[to_dual bot_covBy_iff]
+theorem covBy_top_iff {a : WithTop α} : a ⋖ ⊤ ↔ ∃ b : α, a = b ∧ IsMax b := by
   cases a with
   | coe a => simp [CovBy, WithTop.forall, isMax_iff_forall_not_lt]
   | top => simp [CovBy]
 
-@[to_dual (attr := simp)]
-theorem not_covBy_top [NoMaxOrder α] {a : WithTop α} : ¬ a ⋖ ⊤ := by
-  simp [covBy_top_iff]
+@[to_dual bot_wcovBy_iff]
+theorem wcovBy_top_iff {a : WithTop α} : a ⩿ ⊤ ↔ a = ⊤ ∨ ∃ b : α, a = b ∧ IsMax b := by
+  simp [wcovBy_iff_covBy_or_le_and_le, covBy_top_iff, or_comm]
 
 @[to_dual (attr := simp) bot_covBy_coe]
 lemma coe_covBy_top : (a : WithTop α) ⋖ ⊤ ↔ IsMax a := by
@@ -767,6 +769,27 @@ lemma coe_covBy_top : (a : WithTop α) ⋖ ⊤ ↔ IsMax a := by
 @[to_dual (attr := simp) bot_wcovBy_coe]
 lemma coe_wcovBy_top : (a : WithTop α) ⩿ ⊤ ↔ IsMax a := by
   simp only [wcovBy_iff_Ioo_eq, ← image_coe_Ioi, le_top, image_eq_empty, true_and, Ioi_eq_empty_iff]
+
+@[to_dual (attr := simp) not_bot_covBy]
+theorem not_covBy_top {α} [LT α] [NoMaxOrder α] {a : WithTop α} : ¬ a ⋖ ⊤ := by
+  unfold CovBy
+  push Not
+  intro ha
+  obtain ⟨a, rfl⟩ := ne_top_iff_exists.mp <| WithTop.lt_top_iff_ne_top.mp ha
+  have ⟨b, hab⟩ := NoMaxOrder.exists_gt a
+  exact ⟨b, coe_lt_coe.mpr hab, coe_lt_top b⟩
+
+@[to_dual not_bot_wcovBy]
+theorem not_coe_wcovBy_top [NoMaxOrder α] {a : α} : ¬(a : WithTop α) ⩿ ⊤ := by
+  simp
+
+@[to_dual (attr := simp) not_covBy_bot]
+theorem not_top_covBy {α} [LT α] {a : WithTop α} : ¬⊤ ⋖ a :=
+  mt CovBy.lt a.not_top_lt
+
+@[to_dual not_wcovBy_bot]
+theorem not_top_wcovBy_coe {a : α} : ¬⊤ ⩿ (a : WithTop α) := by
+  simp
 
 end WithTop
 
