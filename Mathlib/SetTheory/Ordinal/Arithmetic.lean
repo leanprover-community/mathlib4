@@ -626,29 +626,9 @@ private theorem mul_le_of_limit_aux {α β r s} [IsWellOrder α r] [IsWellOrder 
   refine (RelEmbedding.ofMonotone (fun a => ?_) fun a b => ?_).ordinal_type_le.trans_lt this
   · rcases a with ⟨⟨b', a'⟩, h⟩
     by_cases e : b = b'
-    · refine Sum.inr ⟨a', ?_⟩
-      subst e
-      obtain ⟨-, -, h⟩ | ⟨-, h⟩ := h
-      · exact (irrefl _ h).elim
-      · exact h
-    · refine Sum.inl (⟨b', ?_⟩, a')
-      obtain ⟨-, -, h⟩ | ⟨e, h⟩ := h
-      · exact h
-      · exact (e rfl).elim
-  · rcases a with ⟨⟨b₁, a₁⟩, h₁⟩
-    rcases b with ⟨⟨b₂, a₂⟩, h₂⟩
-    intro h
-    by_cases e₁ : b = b₁ <;> by_cases e₂ : b = b₂
-    · substs b₁ b₂
-      simpa only [subrel_val, Prod.lex_def, @irrefl _ s _ b, true_and, false_or,
-        eq_self_iff_true, dif_pos, Sum.lex_inr_inr] using h
-    · subst b₁
-      simp only [subrel_val, Prod.lex_def, e₂, Prod.lex_def, dif_pos, subrel_val,
-        or_false, dif_neg, not_false_iff, Sum.lex_inr_inl, false_and] at h ⊢
-      obtain ⟨-, -, h₂_h⟩ | e₂ := h₂ <;> [exact asymm h h₂_h; exact e₂ rfl]
-    · simp [e₂, show b₂ ≠ b₁ from e₂ ▸ e₁]
-    · simpa only [dif_neg e₁, dif_neg e₂, Prod.lex_def, subrel_val, Subtype.mk_eq_mk,
-        Sum.lex_inl_inl] using h
+    · exact .inr ⟨a', by grind [asymm_of s]⟩
+    · exact .inl (⟨b', by grind⟩, a')
+  · grind [subrel_val, Sum.Lex.sep, asymm_of s]
 
 theorem mul_le_iff_of_isSuccLimit {a b c : Ordinal} (h : IsSuccLimit b) :
     a * b ≤ c ↔ ∀ b' < b, a * b' ≤ c := by
@@ -847,19 +827,11 @@ theorem mul_sub (a b c : Ordinal) : a * (b - c) = a * b - a * c := by
 
 theorem isSuccLimit_add_iff {a b : Ordinal} :
     IsSuccLimit (a + b) ↔ IsSuccLimit b ∨ b = 0 ∧ IsSuccLimit a := by
-  constructor <;> intro h
-  · by_cases h' : b = 0
-    · rw [h', add_zero] at h
-      right
-      exact ⟨h', h⟩
-    left
-    rw [← add_sub_cancel a b]
-    apply isSuccLimit_sub h.isSuccPrelimit
-    suffices a + 0 < a + b by simpa only [add_zero] using this
-    rwa [add_lt_add_iff_left, pos_iff_ne_zero]
-  rcases h with (h | ⟨rfl, h⟩)
-  · exact isSuccLimit_add a h
-  · simpa only [add_zero]
+  refine ⟨fun h ↦ ?_, by grind [isSuccLimit_add]⟩
+  rcases eq_or_ne b 0 with (rfl | h')
+  · grind
+  rw [← add_sub_cancel a b]
+  exact .inl <| isSuccLimit_sub h.isSuccPrelimit <| lt_add_of_pos_right a h'.pos
 
 theorem isSuccLimit_add_iff_of_isSuccLimit {a b : Ordinal} (h : IsSuccLimit a) :
     IsSuccLimit (a + b) ↔ IsSuccPrelimit b := by
