@@ -265,8 +265,7 @@ lemma Nodup.head_suffix_mem (h : l₁ <:+ l₂) {hne : l₂ ≠ []} (hl : l₂.h
 
 lemma Nodup.getLast_prefix_mem (h : l₁ <+: l₂) (hne : l₂ ≠ []) (hl : l₂.getLast hne ∈ l₁)
     (hnd : l₂.Nodup) : l₁ = l₂ := by
-  cases h
-  grind
+  grind [List.IsPrefix]
 
 lemma Nodup.head_infix_mem (h : l₁ <:+: l₂) (hne : l₂ ≠ []) (hl : l₂.head hne ∈ l₁)
     (hnd : l₂.Nodup) : l₁ <+: l₂ := by
@@ -274,8 +273,11 @@ lemma Nodup.head_infix_mem (h : l₁ <:+: l₂) (hne : l₂ ≠ []) (hl : l₂.h
 
 lemma Nodup.getLast_infix_mem (h : l₁ <:+: l₂) (hne : l₂ ≠ []) (hl : l₂.getLast hne ∈ l₁)
     (hnd : l₂.Nodup) : l₁ <:+ l₂ := by
-  cases h
-  grind
+  grind [List.IsInfix]
+
+lemma Nodup.head_getLast_infix_mem (h : l₁ <:+: l₂) {hne : l₂ ≠ []} (hl : l₂.head hne ∈ l₁)
+    (hl : l₂.getLast hne ∈ l₁) (hnd : l₂.Nodup) : l₁ = l₂ := by
+  grind [List.IsInfix]
 
 theorem Nodup.erase_getElem [BEq α] [LawfulBEq α] {l : List α} (hl : l.Nodup)
     (i : Nat) (h : i < l.length) : l.erase l[i] = l.eraseIdx ↑i := by
