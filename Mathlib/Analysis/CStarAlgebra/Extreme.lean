@@ -80,7 +80,7 @@ theorem isStarProjection_iff_mem_extremePoints_setOf_nonneg_inter_unitClosedBall
       _ = (((2 : ℝ) • e - e * e : A) : A⁺¹) := by simp [mul_sub, two_smul, mul_two]
     refine ⟨h3 _ (Commute.mul_nonneg h1 h1 rfl) ?_ ((2 : ℝ) • e - e * e) this.of_inr ?_
       ⟨2⁻¹, 2⁻¹, by simp [smul_sub, ← one_div, smul_smul]⟩, h1.isSelfAdjoint⟩
-    · grw [norm_mul_le, h2, one_mul]
+    · grw [norm_mul_le, h2, h2, one_mul]
     · rw [← norm_inr (𝕜 := ℂ), norm_le_one_iff_of_nonneg _ this, ← sub_nonneg]
       calc 0 ≤ star (1 - e : A⁺¹) * (1 - e) := star_mul_self_nonneg _
         _ = _ := by simp [LE.le.star_eq, h1, mul_sub, sub_mul, two_smul, sub_sub, add_sub]
