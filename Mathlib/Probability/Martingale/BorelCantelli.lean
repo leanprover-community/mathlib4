@@ -107,7 +107,7 @@ theorem Submartingale.eLpNorm_stoppedAbove_le [IsFiniteMeasure μ] (hf : Submart
   refine eLpNorm_one_le_of_le' ((hf.stoppedAbove r).integrable _) ?_
     (stoppedAbove_le hr hf0 hbdd i)
   rw [← setIntegral_univ]
-  refine le_trans ?_ ((hf.stoppedAbove r).setIntegral_le (zero_le _) MeasurableSet.univ)
+  refine le_trans ?_ ((hf.stoppedAbove r).setIntegral_le zero_le MeasurableSet.univ)
   simp [stoppedAbove, stoppedProcess, hf0]
 
 @[deprecated (since := "2025-10-25")] alias Submartingale.stoppedValue_leastGE_eLpNorm_le :=
