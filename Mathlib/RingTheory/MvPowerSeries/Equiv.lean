@@ -38,14 +38,14 @@ open Finsupp
 variable {σ R : Type*} {n : ℕ} [CommRing R] [Finite σ]
 
 lemma truncTotal_sub_truncTotal_mem_pow_idealOfVars {l m n : ℕ} (h : l ≤ m) (h' : l ≤ n)
-    (p : MvPowerSeries σ R) : (truncTotal R m) p - (truncTotal R n) p ∈
+    (p : MvPowerSeries σ R) : p.truncTotal m - p.truncTotal n ∈
       MvPolynomial.idealOfVars σ R ^ l := by
   refine (MvPolynomial.mem_pow_idealOfVars_iff' ..).mpr (fun x hx ↦ ?_)
   rw [MvPolynomial.coeff_sub, sub_eq_zero, coeff_truncTotal _ (by lia),
     coeff_truncTotal _ (by lia)]
 
 lemma truncTotal_mul_sub_mul_truncTotal_mem_pow_idealOfVars (p q : MvPowerSeries σ R) :
-    (truncTotal R n) (p * q) - (truncTotal R n) p * (truncTotal R n) q ∈
+    (p * q).truncTotal n - p.truncTotal n * q.truncTotal n ∈
       MvPolynomial.idealOfVars σ R ^ n := by
   refine (MvPolynomial.mem_pow_idealOfVars_iff' ..).mpr (fun x hx ↦ ?_)
   rw [MvPolynomial.coeff_sub, sub_eq_zero, coeff_truncTotal _ hx,
@@ -58,7 +58,7 @@ the ideal spanned by all variables. -/
 def truncTotalAlgHom (σ R : Type*) [Finite σ] [CommRing R] (n : ℕ) :
     MvPowerSeries σ R →ₐ[MvPolynomial σ R]
       MvPolynomial σ R ⧸ (MvPolynomial.idealOfVars σ R) ^ n where
-  toFun p := truncTotal R n p
+  toFun p := truncTotal n p
   map_one' := by
     by_cases! h : n = 0
     · have := Ideal.Quotient.subsingleton_iff.mpr
@@ -71,7 +71,7 @@ def truncTotalAlgHom (σ R : Type*) [Finite σ] [CommRing R] (n : ℕ) :
   map_zero' := by rw [map_zero, map_zero]
   map_add' _ _ := by simp
   commutes' p := by
-    change (Ideal.Quotient.mk (MvPolynomial.idealOfVars σ R ^ n)) (truncTotal R n p) =
+    change (Ideal.Quotient.mk (MvPolynomial.idealOfVars σ R ^ n)) (truncTotal n p) =
       (Ideal.Quotient.mk (MvPolynomial.idealOfVars σ R ^ n)) p
     rw [Ideal.Quotient.eq, MvPolynomial.mem_pow_idealOfVars_iff']
     intro x h
@@ -89,7 +89,7 @@ def toAdicCompletion (σ R : Type*) [Finite σ] [CommRing R] :
         truncTotal_sub_truncTotal_mem_pow_idealOfVars h (le_refl _) _)
 
 lemma toAdicCompletion_apply_eq_mk_truncTotal {n : ℕ} {p : MvPowerSeries σ R} :
-    (toAdicCompletion σ R p).val n = truncTotal R n p := by rfl
+    (toAdicCompletion σ R p).val n = truncTotal n p := by rfl
 
 theorem coeff_toAdicCompletion_val_apply_out {x : σ →₀ ℕ} {p : MvPowerSeries σ R} {n : ℕ}
     (hx : degree x < n) : (Quotient.out (((toAdicCompletion σ R) p).val n)).coeff x =
@@ -104,7 +104,7 @@ theorem coeff_toAdicCompletion_val_apply_out {x : σ →₀ ℕ} {p : MvPowerSer
 theorem toAdicCompletion_coe (p : MvPolynomial σ R) :
     toAdicCompletion σ R p = .of (MvPolynomial.idealOfVars σ R) (MvPolynomial σ R) p := by
   symm; ext n
-  suffices p - (truncTotal R n) p ∈ MvPolynomial.idealOfVars σ R ^ n by
+  suffices p - (truncTotal n) p ∈ MvPolynomial.idealOfVars σ R ^ n by
     simpa [toAdicCompletion, AdicCompletion.liftAlgHom, AdicCompletion.liftRingHom,
       Ideal.Quotient.mk_eq_mk_iff_sub_mem]
   exact (MvPolynomial.mem_pow_idealOfVars_iff' ..).mpr fun x hx ↦ by simp [coeff_truncTotal _ hx]
@@ -122,7 +122,7 @@ lemma coeff_toAdicCompletionInv {x : σ →₀ ℕ}
 theorem mk_truncTotal_toAdicCompletionInv {n : ℕ}
     {f : AdicCompletion (MvPolynomial.idealOfVars σ R) (MvPolynomial σ R)} :
       Ideal.Quotient.mk (MvPolynomial.idealOfVars σ R ^ n • ⊤)
-    ((truncTotal R n) (toAdicCompletionInv σ R f)) = f.val n := by
+    ((truncTotal n) (toAdicCompletionInv σ R f)) = f.val n := by
   rw [← Ideal.Quotient.mk_out (f.val n), Ideal.Quotient.mk_eq_mk_iff_sub_mem]
   simp only [smul_eq_mul, Ideal.mul_top, MvPolynomial.mem_pow_idealOfVars_iff',
     MvPolynomial.coeff_sub]
