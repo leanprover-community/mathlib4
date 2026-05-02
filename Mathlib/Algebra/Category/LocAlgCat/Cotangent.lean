@@ -7,10 +7,7 @@ Authors: Bingyu Xia
 module
 
 public import Mathlib.Algebra.Category.LocAlgCat.Basic
-public import Mathlib.RingTheory.Ideal.Cotangent
-public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 public import Mathlib.RingTheory.AdicCompletion.Functoriality
-public import Mathlib.RingTheory.Kaehler.Basic
 public import Mathlib.RingTheory.Extension.Cotangent.Basic
 
 /-!
@@ -28,7 +25,7 @@ induced linear maps, and exactness properties.
 * `LocAlgCat.surjective_mapCotangent_toOfQuot`: The cotangent map induced by a surjective morphism
   is surjective.
 
-* `LocAlgCat.baseCotangentMap`: The canonical `k`-linear map from the base-changed cotangent space
+* `LocAlgCat.baseCotangentMap`: The canonical linear map from the cotangent space
   of the base ring `Λ` to the cotangent space of `A`.
 
 * `LocAlgCat.exact_baseCotangentMap_mapCotangent_toSpecialFiber`: The exactness of

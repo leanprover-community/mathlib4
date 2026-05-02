@@ -353,14 +353,14 @@ theorem surjective_residue_comp_pullbackFst_of_isSeparable [IsLocalRing Λ] [Mod
   let p := minpoly (ResidueField Λ) x
   obtain ⟨q, map_q, deg_q, monic_q⟩ := lifts_and_natDegree_eq_and_monic
     (show p ∈ lifts (IsLocalRing.residue Λ) by
-      rw [lifts_iff_coeff_lifts]; intro; exact IsLocalRing.residue_surjective _)
+      rw [lifts_iff_coeff_lifts]; exact fun _ ↦ IsLocalRing.residue_surjective _)
     (minpoly.monic (Algebra.IsIntegral.isIntegral x))
   obtain ⟨a', ha⟩ := A.residue_surjective x
   obtain ⟨a, a_rt, a_sub⟩ := HenselianRing.is_henselian (R := A) (I := maximalIdeal A)
     (q.map (algebraMap Λ A)) (Monic.map _ monic_q) a' (by
       simpa using LocAlgCat.not_isUnit_aeval_of_aeval_eq_zero x (minpoly.aeval (ResidueField Λ) x)
         map_q ha)
-    (by change IsUnit ((IsLocalRing.residue A) _); simpa using
+    (by change IsUnit (IsLocalRing.residue A _); simpa using
       LocAlgCat.isUnit_aeval_derivative_of_isSeparable (Algebra.IsSeparable.isSeparable
         (ResidueField Λ) x) map_q ha)
   replace ha : A.residue a = x := by
@@ -370,11 +370,12 @@ theorem surjective_residue_comp_pullbackFst_of_isSeparable [IsLocalRing Λ] [Mod
     (q.map (algebraMap Λ B)) (Monic.map _ monic_q) b' (by
       simpa using LocAlgCat.not_isUnit_aeval_of_aeval_eq_zero x (minpoly.aeval (ResidueField Λ) x)
         map_q hb)
-    (by change IsUnit ((IsLocalRing.residue B) _); simpa using
+    (by change IsUnit (IsLocalRing.residue B _); simpa using
       LocAlgCat.isUnit_aeval_derivative_of_isSeparable (Algebra.IsSeparable.isSeparable
         (ResidueField Λ) x) map_q hb)
   replace hb : B.residue b = x := by
     rw [← sub_add_cancel b b', map_add, hb, LocAlgCat.residue_eq_zero_iff.mpr b_sub, zero_add]
+  clear a' a_sub b' b_sub
   have hab : f.toAlgHom a = g.toAlgHom b := by
     simp only [IsRoot.def, eval_map_algebraMap, aeval_def] at a_rt b_rt
     apply DFunLike.congr_arg f.toAlgHom at a_rt

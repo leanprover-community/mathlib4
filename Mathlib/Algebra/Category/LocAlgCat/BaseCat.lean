@@ -6,12 +6,8 @@ Authors: Bingyu Xia
 
 module
 
-public import Mathlib.Algebra.Category.LocAlgCat.Basic
-public import Mathlib.RingTheory.Length
+public import Mathlib.Algebra.Category.LocAlgCat.Cotangent
 public import Mathlib.RingTheory.AdicCompletion.Noetherian
-
-import Mathlib.RingTheory.HopkinsLevitzki
-import Mathlib.Algebra.Category.LocAlgCat.Cotangent
 
 /-!
 # The Base Category for Deformation Theory
