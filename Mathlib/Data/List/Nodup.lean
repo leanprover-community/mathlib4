@@ -122,8 +122,8 @@ theorem not_nodup_of_get_eq_of_ne (xs : List α) (n m : Fin xs.length)
   exact fun hinj => hne (hinj h)
 
 lemma Nodup.head_eq_getLast_iff (hnd : l.Nodup) (hne : l ≠ []) :
-    l.head hne = l.getLast hne ↔ ∃ x, l = [x] :=
-  ⟨fun h => by cases l <;> grind, fun ⟨x, hx⟩ => by grind⟩
+    l.head hne = l.getLast hne ↔ ∃ x, l = [x] := by
+  cases l <;> grind
 
 @[deprecated Nodup.idxOf_getElem (since := "2025-11-10")]
 theorem idxOf_getElem [DecidableEq α] {l : List α} : Nodup l → (i : Nat) → (h : i < l.length) →
@@ -259,10 +259,9 @@ lemma nodup_tail_reverse (l : List α) (h : l[0]? = l.getLast?) :
         List.nodup_append_comm]
       simp [List.getLast_eq_getElem]
 
-lemma Nodup.head_suffix_mem (h : l₁ <:+ l₂) (hne : l₂ ≠ []) (hl : l₂.head hne ∈ l₁)
+lemma Nodup.head_suffix_mem (h : l₁ <:+ l₂) {hne : l₂ ≠ []} (hl : l₂.head hne ∈ l₁)
     (hnd : l₂.Nodup) : l₁ = l₂ := by
-  cases h
-  grind
+  grind [List.IsSuffix]
 
 lemma Nodup.getLast_prefix_mem (h : l₁ <+: l₂) (hne : l₂ ≠ []) (hl : l₂.getLast hne ∈ l₁)
     (hnd : l₂.Nodup) : l₁ = l₂ := by
@@ -271,9 +270,7 @@ lemma Nodup.getLast_prefix_mem (h : l₁ <+: l₂) (hne : l₂ ≠ []) (hl : l�
 
 lemma Nodup.head_infix_mem (h : l₁ <:+: l₂) (hne : l₂ ≠ []) (hl : l₂.head hne ∈ l₁)
     (hnd : l₂.Nodup) : l₁ <+: l₂ := by
-  obtain ⟨l, h1, h2⟩ := infix_iff_suffix_prefix.mp h
-  rw [← h2.head (by grind)] at hl
-  exact (hnd.sublist h2.sublist).head_suffix_mem h1 (by grind) hl ▸ h2
+  grind [List.IsInfix]
 
 lemma Nodup.getLast_infix_mem (h : l₁ <:+: l₂) (hne : l₂ ≠ []) (hl : l₂.getLast hne ∈ l₁)
     (hnd : l₂.Nodup) : l₁ <:+ l₂ := by
