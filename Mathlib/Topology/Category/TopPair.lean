@@ -12,9 +12,9 @@ public import Mathlib.Topology.Homotopy.TopCat.Basic
 # Topological Pairs
 
 In this file we introduce `TopPair`, the category of topological pairs. It is defined as the
-category of arrows in `TopCat` which are topologically inducing.
+category of arrows in `TopCat` which are topological embeddings.
 
-We provide the inclusion and diagonal functors `TopCat` ⥤ `TopPair` and show that they are left and
+We provide the inclusion and diagonal functors `TopCat ⥤ TopPair` and show that they are left and
 right adjoint to the first projection functor, respectively.
 
 We also define for two morphisms of topological pairs `f, g : X ⟶ Y` the structure `Homotopy f g` of
@@ -23,40 +23,46 @@ homotopies between them.
 
 @[expose] public section
 
+universe u
+
 open TopologicalSpace TopCat CategoryTheory MonoidalCategory
 
 /-- A pair of topological spaces consists of an embedding `f : A ⟶ X` in `TopCat`. -/
 abbrev TopPair :=
-  MorphismProperty.Arrow (fun (A X : TopCat) (f : A ⟶ X) ↦ Topology.IsEmbedding f.hom) ⊤ ⊤
+  MorphismProperty.Arrow TopCat.isEmbedding ⊤ ⊤
 
 namespace TopPair
 
-variable {X Y : TopPair}
+variable {X Y : TopPair.{u}}
 
 /-- The first space of the pair -/
-abbrev fst : TopCat := X.right
+abbrev fst : TopCat.{u} := X.right
 
 /-- The second space of the pair -/
-abbrev snd : TopCat := X.left
+abbrev snd : TopCat.{u} := X.left
 
-/-- The map that induces the topology on A -/
+/-- The embedding of the second into the first space -/
 abbrev map : X.snd ⟶ X.fst := X.hom
 
-lemma isInducing_map (X : TopPair) : Topology.IsEmbedding X.map := X.prop
+lemma isEmbedding_map (X : TopPair.{u}) : Topology.IsEmbedding X.map := X.prop
 
 /-- Construct a topological pair from its components. -/
-abbrev of {A X : TopCat} (f : A ⟶ X) (h : Topology.IsEmbedding f) : TopPair :=
-  MorphismProperty.Arrow.mk (P := fun (A X : TopCat) (f : A ⟶ X) ↦ Topology.IsEmbedding f.hom) f h
+abbrev of {A X : TopCat.{u}} (f : A ⟶ X) (h : Topology.IsEmbedding f) : TopPair.{u} :=
+  MorphismProperty.Arrow.mk (P := TopCat.isEmbedding) f h
 
 /-- Constructor for a topological pair (X, A) where A ⊆ X. -/
-abbrev ofSubset {X : TopCat} (A : Set X) : TopPair :=
-  @TopPair.of (TopCat.of A) X ⟨{ toFun := Subtype.val }⟩ Topology.IsEmbedding.subtypeVal
+abbrev ofSubset {X : TopCat.{u}} (A : Set X) : TopPair.{u} := TopPair.of (A := (TopCat.of A))
+  (X := X) ⟨{ toFun := Subtype.val }⟩ Topology.IsEmbedding.subtypeVal
+
+/-- Constructs the topological pair `(X, ∅)` from `X : TopCat`. -/
+abbrev ofTopCat (X : TopCat.{u}) : TopPair.{u} :=
+  TopPair.of (TopCat.isInitialPEmpty.to X) (Topology.IsOpenEmbedding.of_isEmpty _).1
 
 /-- Construct a morphism in `TopPair` from its components. -/
 abbrev ofHom (f : X.fst ⟶ Y.fst) (g : X.snd ⟶ Y.snd) (w : g ≫ Y.map = X.map ≫ f := by cat_disch) :=
   MorphismProperty.Arrow.homMk g f w
 
-variable {X Y Z : TopPair}
+variable {X Y Z : TopPair.{u}}
 
 /-- The map between the first spaces -/
 abbrev Hom.fst (f : X ⟶ Y) : X.fst ⟶ Y.fst := f.hom.right
@@ -65,32 +71,32 @@ abbrev Hom.fst (f : X ⟶ Y) : X.fst ⟶ Y.fst := f.hom.right
 abbrev Hom.snd (f : X ⟶ Y) : X.snd ⟶ Y.snd := f.hom.left
 
 @[reassoc, elementwise]
-lemma Hom.w {X Y : TopPair} (f : X ⟶ Y) :
+lemma Hom.w {X Y : TopPair.{u}} (f : X ⟶ Y) :
     Hom.snd f ≫ Y.map = X.map ≫ Hom.fst f :=
   f.hom.w
 
 attribute [local simp] Hom.w_apply
 
-/-- The functor from topological pairs to topological spaces that forgets the second space, ie. the
+/-- The functor from topological pairs to topological spaces that forgets the second space, i.e. the
 projection to the first space. -/
-abbrev proj₁ : TopPair ⥤ TopCat :=
+abbrev proj₁ : TopPair.{u} ⥤ TopCat.{u} :=
   MorphismProperty.Arrow.forget _ _ _ ⋙ CategoryTheory.Arrow.rightFunc
 
-/-- The functor from topological pairs to topological spaces that forgets the first space, ie. the
+/-- The functor from topological pairs to topological spaces that forgets the first space, i.e. the
 projection to the second space. -/
-abbrev proj₂ : TopPair ⥤ TopCat :=
+abbrev proj₂ : TopPair.{u} ⥤ TopCat.{u} :=
   MorphismProperty.Arrow.forget _ _ _ ⋙ CategoryTheory.Arrow.leftFunc
 
 /-- The inclusion functor from topological spaces to topological pairs that sends a space X to
 (X, ∅). -/
 @[simps]
-def incl : TopCat ⥤ TopPair where
-  obj X := TopPair.of (TopCat.isInitialPEmpty.to X) (Topology.IsOpenEmbedding.of_isEmpty _).1
+def incl : TopCat.{u} ⥤ TopPair.{u} where
+  obj X := ofTopCat X
   map f := TopPair.ofHom f (𝟙 _) <| by ext x; induction x
 
 /-- The functor from topological spaces to topological pairs that sends a space X to the identity
 morphism on X. -/
-abbrev diag : TopCat ⥤ TopPair where
+abbrev diag : TopCat.{u} ⥤ TopPair.{u} where
   obj X := TopPair.of (𝟙 X) Topology.IsEmbedding.id
   map f := TopPair.ofHom f f
 
@@ -108,7 +114,7 @@ def proj₁AdjDiag : proj₁ ⊣ diag where
   counit.app X := 𝟙 X
 
 /-- The unique morphism (X, ∅) ⟶ (X, A) that is the identity on X. -/
-abbrev j (X : TopPair) : TopPair.incl.obj X.fst ⟶ X :=
+abbrev j (X : TopPair.{u}) : TopPair.incl.obj X.fst ⟶ X :=
   TopPair.ofHom (𝟙 _) (TopCat.isInitialPEmpty.to _)
 
 /-- A homotopy of maps between topological pairs is a homotopy on the first space and a homotopy on
@@ -131,8 +137,7 @@ namespace Homotopy
 lemma w_apply' {f g : X ⟶ Y} (H : Homotopy f g) (x : TopPair.snd) (t : unitInterval) :
     H.fst (t, X.map x) = Y.map (H.snd (t, x)) := by
   have := w_apply H (x, I.homeomorph.symm t)
-  simp only [Homeomorph.apply_symm_apply] at this
-  exact this
+  cat_disch
 
 /-- Given a morphism `f` of topological pairs, we can define a `Homotopy f f` by
 `TopCat.Homotopy.refl` on the first and second components.
@@ -155,7 +160,7 @@ def symm {f₀ f₁ : X ⟶ Y} (F : Homotopy f₀ f₁) : Homotopy f₁ f₀ whe
 
 @[simp]
 theorem symm_symm {f₀ f₁ : X ⟶ Y} (F : Homotopy f₀ f₁) : F.symm.symm = F := by
-  ext <;> simp
+  cat_disch
 
 theorem symm_bijective {f₀ f₁ : X ⟶ Y} :
     Function.Bijective (Homotopy.symm : Homotopy f₀ f₁ → Homotopy f₁ f₀) :=
@@ -172,9 +177,8 @@ noncomputable def trans {f₀ f₁ f₂ : X ⟶ Y} (F : Homotopy f₀ f₁) (G :
   snd := F.snd.trans G.snd
   w := by
     ext ⟨_, _⟩
-    simp only [TopCat.comp_app, whiskerRight_apply, Homotopy.h_hom_apply,
-      ContinuousMap.Homotopy.trans_apply, one_div]
-    split_ifs <;> simp
+    simp only [TopCat.comp_app, Homotopy.h_hom_apply, ContinuousMap.Homotopy.trans_apply]
+    cat_disch
 
 theorem symm_trans {f₀ f₁ f₂ : X ⟶ Y} (F : Homotopy f₀ f₁) (G : Homotopy f₁ f₂) :
     (F.trans G).symm = G.symm.trans F.symm := by
@@ -198,7 +202,7 @@ def Homotopic (f g : X ⟶ Y) := Nonempty (Homotopy f g)
 namespace Homotopic
 
 /-- Two maps of topological pairs being homotopic defines an equivalence relation. -/
-theorem equivalence : Equivalence (@Homotopic X Y) :=
+theorem equivalence : Equivalence (Homotopic (X := X) (Y := Y)) :=
   ⟨fun f ↦ ⟨Homotopy.refl f⟩, fun h ↦ h.map Homotopy.symm, fun h₀ h₁ ↦ h₀.map2 Homotopy.trans h₁⟩
 
 end Homotopic

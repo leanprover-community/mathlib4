@@ -76,7 +76,7 @@ abbrev comp {f₀ f₁ : X ⟶ Y} {g₀ g₁ : Y ⟶ Z} (G : Homotopy g₀ g₁)
 
 @[simp]
 lemma h_comp {f₀ f₁ : X ⟶ Y} {g₀ g₁ : Y ⟶ Z} (G : Homotopy g₀ g₁) (F : Homotopy f₀ f₁) :
-    (G.comp F).h = X ◁ diag ≫ (α_ _ _ _).inv ≫ F.h ▷ _ ≫ G.h := by
+    (G.comp F).h = X ◁ lift (𝟙 I) (𝟙 I) ≫ (α_ _ _ _).inv ≫ F.h ▷ _ ≫ G.h := by
   ext
   simp
 
