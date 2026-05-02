@@ -61,7 +61,7 @@ theorem inf_Prop_eq : (· ⊓ ·) = (· ∧ ·) :=
 
 namespace Pi
 
-variable {ι : Type*} {α' : ι → Type*} [∀ i, PartialOrder (α' i)]
+variable {ι α : Type*} {α' : ι → Type*} [∀ i, PartialOrder (α' i)]
 
 theorem disjoint_iff [∀ i, OrderBot (α' i)] {f g : ∀ i, α' i} :
     Disjoint f g ↔ ∀ i, Disjoint (f i) (g i) := by
@@ -86,6 +86,15 @@ instance (α : Type*) : @Std.Symm α ⊤ where
 
 instance (α : Type*) : @Std.Symm α ⊥ where
   symm _ _ := id
+
+@[nontriviality]
+theorem eq_top_iff_refl_of_subsingleton [Subsingleton α] {r : α → α → Prop} : r = ⊤ ↔ Std.Refl r :=
+  ⟨fun h ↦ ⟨by simp [h]⟩, fun _ ↦ funext₂ <| by simp [rel_of_subsingleton]⟩
+
+@[nontriviality]
+theorem eq_bot_iff_irrefl_of_subsingleton [Subsingleton α] {r : α → α → Prop} :
+    r = ⊥ ↔ Std.Irrefl r :=
+  ⟨fun h ↦ ⟨by simp [h]⟩, fun _ ↦ funext₂ <| by simp [not_rel_of_subsingleton]⟩
 
 end Pi
 
