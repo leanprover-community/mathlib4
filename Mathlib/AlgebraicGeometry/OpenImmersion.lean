@@ -31,7 +31,7 @@ universe v v₁ v₂ u
 
 variable {C : Type u} [Category.{v} C]
 
-@[simp] lemma Spec.map_eq_comap {R S : CommRingCat} (f : R ⟶ S) :
+lemma Spec.map_eq_comap {R S : CommRingCat} (f : R ⟶ S) :
     (Spec.map f : Spec S → Spec R) = PrimeSpectrum.comap f.hom := rfl
 
 /-- A morphism of Schemes is an open immersion if it is an open immersion as a morphism
