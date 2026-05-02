@@ -127,7 +127,7 @@ via the substitution operation $x +_F y = F(x, y)$. -/
 def Point (F : FormalGroup R) (σ : Type*) := {f : MvPowerSeries σ R // PowerSeries.HasSubst f}
 
 instance : Add (F.Point σ) where
-  add x y :=  ⟨(F : MvPowerSeries (Fin 2) R).subst ![x.val, y.val],
+  add x y := ⟨(F : MvPowerSeries (Fin 2) R).subst ![x.val, y.val],
     IsNilpotent_subst' (by simp [hasSubst_of_constantCoeff_nilpotent, x.prop, y.prop])
       (F.zero_constantCoeff ▸ IsNilpotent.zero)⟩
 
