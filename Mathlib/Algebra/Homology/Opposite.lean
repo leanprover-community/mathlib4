@@ -441,3 +441,36 @@ instance unopFunctor_additive : (@unopFunctor ι V _ c _).Additive where
 end
 
 end HomologicalComplex
+
+namespace Homotopy
+
+open HomologicalComplex
+
+variable {V : Type*} [Category* V] {ι : Type*} {c : ComplexShape ι} [Preadditive V]
+
+/-- The opposite of a homotopy between morphisms of homological complexes. -/
+@[simps]
+def op {F G : HomologicalComplex V c} {φ₁ φ₂ : F ⟶ G} (h : Homotopy φ₁ φ₂) :
+    Homotopy ((opFunctor V c).map φ₁.op) ((opFunctor V c).map φ₂.op) where
+  hom i j := (h.hom j i).op
+  zero i j hij := Quiver.Hom.unop_inj (h.zero _ _ hij)
+  comm n := Quiver.Hom.unop_inj (by
+    dsimp
+    rw [h.comm n]
+    nth_rw 2 [add_comm]
+    rfl)
+
+/-- The homotopy between morphisms of homological complexes that is deduced
+from a homotopy in the opposite category. -/
+@[simps]
+def unop {F G : HomologicalComplex Vᵒᵖ c} {φ₁ φ₂ : F ⟶ G} (h : Homotopy φ₁ φ₂) :
+    Homotopy ((unopFunctor V c).map φ₁.op) ((unopFunctor V c).map φ₂.op) where
+  hom i j := (h.hom j i).unop
+  zero i j hij := Quiver.Hom.op_inj (h.zero _ _ hij)
+  comm n := Quiver.Hom.op_inj (by
+    dsimp
+    rw [h.comm n]
+    nth_rw 2 [add_comm]
+    rfl)
+
+end Homotopy

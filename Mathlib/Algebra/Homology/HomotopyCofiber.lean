@@ -528,6 +528,7 @@ noncomputable def πCompι₀Homotopy : Homotopy (π K ≫ ι₀ K) (𝟙 K.cyli
       (πCompι₀Homotopy.nullHomotopy K))
 
 /-- The homotopy equivalence between `K.cylinder` and `K`. -/
+@[simps]
 noncomputable def homotopyEquiv : HomotopyEquiv K.cylinder K where
   hom := π K
   inv := ι₀ K

@@ -35,7 +35,7 @@ noncomputable section
 
 universe w w' v u
 
-open CategoryTheory Functor
+open CategoryTheory Functor Opposite
 
 namespace CategoryTheory.Limits
 
@@ -157,7 +157,7 @@ end BinaryBicones
 
 namespace BinaryBicone
 
-variable {P Q : C}
+variable {P P' Q Q' : C}
 
 /-- Extract the cone from a binary bicone. -/
 def toCone (c : BinaryBicone P Q) : Cone (pair P Q) :=
@@ -250,6 +250,30 @@ def toBiconeIsColimit {X Y : C} (b : BinaryBicone X Y) :
     IsColimit b.toBicone.toCocone ≃ IsColimit b.toCocone :=
   IsColimit.equivIsoColimit <| Cocone.ext (Iso.refl _) fun ⟨as⟩ => by cases as <;> simp
 
+/-- Transport a binary bicone via isomorphisms. -/
+@[simps]
+def ofIso (b : BinaryBicone P Q) (eP : P ≅ P') (eQ : Q ≅ Q') :
+    BinaryBicone P' Q' where
+  pt := b.pt
+  fst := b.fst ≫ eP.hom
+  snd := b.snd ≫ eQ.hom
+  inl := eP.inv ≫ b.inl
+  inr := eQ.inv ≫ b.inr
+
+/-- The opposite of a binary bicone. -/
+@[simps]
+protected def op (b : BinaryBicone P Q) :
+    BinaryBicone (op P) (op Q) where
+  pt := Opposite.op b.pt
+  fst := b.inl.op
+  snd := b.inr.op
+  inl := b.fst.op
+  inr := b.snd.op
+  inl_fst := Quiver.Hom.unop_inj (by simp)
+  inr_fst := Quiver.Hom.unop_inj (by simp)
+  inl_snd := Quiver.Hom.unop_inj (by simp)
+  inr_snd := Quiver.Hom.unop_inj (by simp)
+
 end BinaryBicone
 
 namespace Bicone
@@ -297,6 +321,26 @@ structure BinaryBicone.IsBilimit {P Q : C} (b : BinaryBicone P Q) where
 attribute [inherit_doc BinaryBicone.IsBilimit] BinaryBicone.IsBilimit.isLimit
   BinaryBicone.IsBilimit.isColimit
 
+/-- If a binary bicone for `P` and `Q` is bilimit, then the binary bicone for `P'` and `Q'`
+obtained using isomorphisms `P ≅ P'` and `Q ≅ Q'` is also bilimit. -/
+def BinaryBicone.IsBilimit.ofIso {P Q P' Q' : C} {b : BinaryBicone P Q} (hb : b.IsBilimit)
+    (eP : P ≅ P') (eQ : Q ≅ Q') :
+    (b.ofIso eP eQ).IsBilimit where
+  isLimit := by
+    refine (IsLimit.equivOfNatIsoOfIso (mapPairIso eP eQ) _ _ ?_).1 hb.isLimit
+    exact BinaryFan.ext (Iso.refl _) (by simp [BinaryFan.fst])
+      (by simp [BinaryFan.snd])
+  isColimit := by
+    refine (IsColimit.equivOfNatIsoOfIso (mapPairIso eP eQ) _ _ ?_).1 hb.isColimit
+    exact BinaryCofan.ext (Iso.refl _) (by simp [BinaryCofan.inl])
+      (by simp [BinaryCofan.inr])
+
+/-- The opposite of a bilimit binary bicone is bilimit. -/
+protected def BinaryBicone.IsBilimit.op {P Q : C} {b : BinaryBicone P Q} (h : b.IsBilimit) :
+    b.op.IsBilimit where
+  isLimit := BinaryCofan.IsColimit.op h.isColimit
+  isColimit := BinaryFan.IsLimit.op h.isLimit
+
 /-- A binary bicone is a bilimit bicone if and only if the corresponding bicone is a bilimit. -/
 def BinaryBicone.toBiconeIsBilimit {X Y : C} (b : BinaryBicone X Y) :
     b.toBicone.IsBilimit ≃ b.IsBilimit where
@@ -319,8 +363,25 @@ structure BinaryBiproductData (P Q : C) where
   bicone : BinaryBicone P Q
   isBilimit : bicone.IsBilimit
 
+initialize_simps_projections BinaryBiproductData (-isBilimit)
+
 attribute [inherit_doc BinaryBiproductData] BinaryBiproductData.bicone
   BinaryBiproductData.isBilimit
+
+/-- Transport a binary bicone data via isomorphisms. -/
+@[simps]
+def BinaryBiproductData.ofIso {P Q P' Q' : C} (d : BinaryBiproductData P Q)
+    (eP : P ≅ P') (eQ : Q ≅ Q') :
+    BinaryBiproductData P' Q' where
+  bicone := d.bicone.ofIso eP eQ
+  isBilimit := d.isBilimit.ofIso _ _
+
+/-- The opposite of a binary biproduct data. -/
+@[simps]
+protected def BinaryBiproductData.op {P Q : C} (d : BinaryBiproductData P Q) :
+    BinaryBiproductData (op P) (op Q) where
+  bicone := d.bicone.op
+  isBilimit := d.isBilimit.op
 
 /-- `HasBinaryBiproduct P Q` expresses the mere existence of a bicone which is
 simultaneously a limit and a colimit of the diagram `pair P Q`. -/
@@ -357,6 +418,15 @@ def BinaryBiproduct.isColimit (P Q : C) [HasBinaryBiproduct P Q] :
     IsColimit (BinaryBiproduct.bicone P Q).toCocone :=
   (getBinaryBiproductData P Q).isBilimit.isColimit
 
+lemma hasBinaryBiproduct_of_iso {P Q P' Q' : C} [HasBinaryBiproduct P Q]
+    (eP : P ≅ P') (eQ : Q ≅ Q') :
+    HasBinaryBiproduct P' Q' where
+  exists_binary_biproduct := ⟨(getBinaryBiproductData P Q).ofIso eP eQ⟩
+
+instance {P Q : C} [HasBinaryBiproduct P Q] :
+    HasBinaryBiproduct (op P) (op Q) where
+  exists_binary_biproduct := ⟨(getBinaryBiproductData P Q).op⟩
+
 section
 
 variable (C)
@@ -377,6 +447,10 @@ theorem hasBinaryBiproducts_of_finite_biproducts [HasFiniteBiproducts C] : HasBi
       HasBinaryBiproduct.mk
         { bicone := (biproduct.bicone (pairFunction P Q)).toBinaryBicone
           isBilimit := (Bicone.toBinaryBiconeIsBilimit _).symm (biproduct.isBilimit _) } }
+
+instance [HasBinaryBiproducts C] : HasBinaryBiproducts Cᵒᵖ where
+  has_binary_biproduct X Y :=
+    inferInstanceAs (HasBinaryBiproduct (op X.unop) (op Y.unop))
 
 end
 
@@ -826,6 +900,44 @@ theorem biprod.inrCokernelCofork_π : Cofork.π (biprod.inrCokernelCofork X Y) =
 def biprod.isCokernelInrCokernelFork : IsColimit (biprod.inrCokernelCofork X Y) :=
   BinaryBicone.isColimitInrCokernelCofork (BinaryBiproduct.isColimit _ _)
 
+section
+
+variable (P Q) [HasBinaryBiproduct P Q]
+
+/-- The isomorphism `op (P ⊞ Q) ≅ op P ⊞ op Q`. -/
+def biprod.opIso : op (P ⊞ Q) ≅ op P ⊞ op Q :=
+  biprod.uniqueUpToIso _ _ (getBinaryBiproductData P Q).op.isBilimit
+
+@[reassoc (attr := simp)]
+lemma biprod.opIso_hom_fst : (opIso P Q).hom ≫ fst = inl.op := lift_fst _ _
+
+@[reassoc (attr := simp)]
+lemma biprod.opIso_hom_snd : (opIso P Q).hom ≫ snd = inr.op := lift_snd _ _
+
+@[reassoc (attr := simp)]
+lemma biprod.inl_opIso_inv : inl ≫ (opIso P Q).inv = fst.op := inl_desc _ _
+
+@[reassoc (attr := simp)]
+lemma biprod.inr_opIso_inv : inr ≫ (opIso P Q).inv = snd.op := inr_desc _ _
+
+@[reassoc (attr := simp)]
+lemma biprod.fst_op_opIso_hom : fst.op ≫ (opIso P Q).hom = inl := by
+  ext <;> simp [← op_comp]
+
+@[reassoc (attr := simp)]
+lemma biprod.snd_op_opIso_hom : snd.op ≫ (opIso P Q).hom = inr := by
+  ext <;> simp [← op_comp]
+
+@[reassoc (attr := simp)]
+lemma biprod.opIso_inv_inl_op : (opIso P Q).inv ≫ inl.op = fst := by
+  ext <;> simp [← op_comp]
+
+@[reassoc (attr := simp)]
+lemma biprod.opIso_inv_inr_op : (opIso P Q).inv ≫ inr.op = snd := by
+  ext <;> simp [← op_comp]
+
+end
+
 end HasBinaryBiproduct
 
 variable {X Y : C} [HasBinaryBiproduct X Y]
@@ -1018,82 +1130,6 @@ theorem isIso_right_of_isIso_biprod_map {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z
     infer_instance
   isIso_left_of_isIso_biprod_map g f
 
-
 end
-
-open Opposite
-
-namespace Limits
-
-section
-variable {C : Type*} [Category* C] [HasZeroMorphisms C] {P P' Q Q' : C}
-
-@[simps]
-def BinaryBicone.op (b : BinaryBicone P Q) :
-    BinaryBicone (op P) (op Q) where
-  pt := Opposite.op b.pt
-  fst := b.inl.op
-  snd := b.inr.op
-  inl := b.fst.op
-  inr := b.snd.op
-  inl_fst := Quiver.Hom.unop_inj (by simp)
-  inr_fst := Quiver.Hom.unop_inj (by simp)
-  inl_snd := Quiver.Hom.unop_inj (by simp)
-  inr_snd := Quiver.Hom.unop_inj (by simp)
-
-def BinaryBicone.IsBilimit.op {b : BinaryBicone P Q} (h : b.IsBilimit) :
-    b.op.IsBilimit where
-  isLimit := BinaryCofan.IsColimit.op h.isColimit
-  isColimit := BinaryFan.IsLimit.op h.isLimit
-
-def BinaryBiproductData.op (d : BinaryBiproductData P Q) :
-    BinaryBiproductData (op P) (op Q) where
-  bicone := d.bicone.op
-  isBilimit := d.isBilimit.op
-
-instance [HasBinaryBiproduct P Q] :
-    HasBinaryBiproduct (op P) (op Q) where
-  exists_binary_biproduct := ⟨(getBinaryBiproductData P Q).op⟩
-
-instance [HasBinaryBiproducts C] : HasBinaryBiproducts Cᵒᵖ where
-  has_binary_biproduct X Y :=
-    inferInstanceAs (HasBinaryBiproduct (op X.unop) (op Y.unop))
-
-def biprod.opIso [HasBinaryBiproduct P Q] :
-    op (P ⊞ Q) ≅ op P ⊞ op Q := sorry
-
-@[simps]
-def BinaryBicone.ofIso (b : BinaryBicone P Q) (eP : P ≅ P') (eQ : Q ≅ Q') :
-    BinaryBicone P' Q' where
-  pt := b.pt
-  fst := b.fst ≫ eP.hom
-  snd := b.snd ≫ eQ.hom
-  inl := eP.inv ≫ b.inl
-  inr := eQ.inv ≫ b.inr
-
-def BinaryBicone.IsBilimit.ofIso {b : BinaryBicone P Q} (hb : b.IsBilimit)
-    (eP : P ≅ P') (eQ : Q ≅ Q') :
-    (b.ofIso eP eQ).IsBilimit where
-  isLimit := by
-    refine (IsLimit.equivOfNatIsoOfIso (mapPairIso eP eQ) _ _ ?_).1 hb.isLimit
-    exact BinaryFan.ext (Iso.refl _) (by simp [BinaryFan.fst])
-      (by simp [BinaryFan.snd])
-  isColimit := by
-    refine (IsColimit.equivOfNatIsoOfIso (mapPairIso eP eQ) _ _ ?_).1 hb.isColimit
-    exact BinaryCofan.ext (Iso.refl _) (by simp [BinaryCofan.inl])
-      (by simp [BinaryCofan.inr])
-
-def BinaryBiproductData.ofIso (d : BinaryBiproductData P Q) (eP : P ≅ P') (eQ : Q ≅ Q') :
-    BinaryBiproductData P' Q' where
-  bicone := d.bicone.ofIso eP eQ
-  isBilimit := d.isBilimit.ofIso _ _
-
-lemma hasBinaryBiproduct_of_iso [HasBinaryBiproduct P Q] (eP : P ≅ P') (eQ : Q ≅ Q') :
-    HasBinaryBiproduct P' Q' where
-  exists_binary_biproduct := ⟨(getBinaryBiproductData P Q).ofIso eP eQ⟩
-
-end
-
-end Limits
 
 end CategoryTheory
