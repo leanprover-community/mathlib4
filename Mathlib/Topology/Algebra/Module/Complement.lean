@@ -443,7 +443,7 @@ theorem ofIsTopCompl_zero (h : IsTopCompl p q) :
 @[simp]
 theorem ofIsTopCompl_add (h : IsTopCompl p q) (φ₁ φ₂ : p →L[R] F) (ψ₁ ψ₂ : q →L[R] F) :
     ofIsTopCompl h (φ₁ + φ₂) (ψ₁ + ψ₂) = ofIsTopCompl h φ₁ ψ₁ + ofIsTopCompl h φ₂ ψ₂ := by
-  ext; simp [ofIsTopCompl]; abel
+  ext; simp [ofIsTopCompl, add_add_add_comm]
 
 @[simp]
 theorem range_ofIsTopCompl (h : IsTopCompl p q) (φ : p →L[R] F) (ψ : q →L[R] F) :
