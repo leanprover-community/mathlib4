@@ -256,11 +256,9 @@ theorem card_le_card {o₁ o₂ : OrderType} : o₁ ≤ o₂ → card o₁ ≤ c
 
 theorem card_mono : Monotone card := @card_le_card
 
-@[simp]
-theorem card_zero : card 0 = 0 := mk_eq_zero _
+@[simp] theorem card_zero : card 0 = 0 := mk_eq_zero _
 
-@[simp]
-theorem card_one : card 1 = 1 := mk_eq_one _
+@[simp] theorem card_one : card 1 = 1 := mk_eq_one _
 
 end Cardinal
 
