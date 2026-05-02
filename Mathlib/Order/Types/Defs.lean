@@ -6,6 +6,8 @@ Authors: Yan Yablonovskiy
 module
 
 public import Mathlib.Order.Hom.Basic
+public import Mathlib.SetTheory.Cardinal.Defs
+public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # Order types
@@ -235,6 +237,35 @@ theorem pos_iff_ne_zero {o : OrderType} : 0 < o ↔ o ≠ 0 where
     have := nonempty_toType_iff.2 ho
     rw [← type_toType o]
     exact ⟨⟨Function.Embedding.ofIsEmpty, nofun⟩, fun ⟨f⟩ ↦ IsEmpty.elim inferInstance f.toFun⟩
+
+section Cardinal
+
+open Cardinal
+
+/-- The cardinal of an `OrderType` is the cardinality of any type on which a relation
+with that order type is defined. -/
+@[expose]
+def card : OrderType → Cardinal :=
+  fun o ↦ o.liftOn (fun α _ ↦ #α)
+    fun _ _ _ _ hab ↦ mk_congr (type_eq_type.mp hab).some.toEquiv
+
+@[simp]
+theorem card_type {α : Type u} [LinearOrder α] : card (type α) = #α := (rfl)
+
+@[gcongr]
+theorem card_le_card {o₁ o₂ : OrderType} : o₁ ≤ o₂ → card o₁ ≤ card o₂ :=
+  inductionOn o₁ fun _ ↦ inductionOn o₂ fun _ _ ⟨f⟩ ↦ ⟨f.toEmbedding⟩
+
+theorem card_mono : Monotone card := by
+ rw [Monotone]; exact @card_le_card
+
+@[simp]
+theorem card_zero : card 0 = 0 := mk_eq_zero _
+
+@[simp]
+theorem card_one : card 1 = 1 := mk_eq_one _
+
+end Cardinal
 
 /-- The universe lift operation on order types. You can specify the universes explicitly with
   `lift.{u, v} : OrderType.{v} → OrderType.{max v u}` -/
