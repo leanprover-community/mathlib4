@@ -65,7 +65,7 @@ def opEquiv : X.op.PtSimplex n (opObjEquiv.symm x) ≃ X.PtSimplex n x where
         · refine boundary.hom_ext (fun i ↦ ?_)
           simp [stdSimplex.δ_comp_yonedaEquiv_symm,
             δ_opObjEquiv, ← stdSimplex.yonedaEquiv_δ_comp,
-            opObjEquiv_yonedaEquiv_const]}
+            opObjEquiv_yonedaEquiv_const] }
   invFun g :=
     { map := yonedaEquiv.symm (opObjEquiv.symm (yonedaEquiv g.map))
       comm := by
