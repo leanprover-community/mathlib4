@@ -529,9 +529,8 @@ theorem morphismRestrict_ι {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) :
 
 theorem isPullback_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) :
     IsPullback (f ∣_ U) (f ⁻¹ᵁ U).ι U.ι f := by
-  apply IsOpenImmersion.isPullback
-  · rw [morphismRestrict_ι]
-  · simp
+  apply IsOpenImmersion.isPullback <;>
+  simp
 
 lemma isPullback_opens_inf_le {X : Scheme} {U V W : X.Opens} (hU : U ≤ W) (hV : V ≤ W) :
     IsPullback (X.homOfLE inf_le_left) (X.homOfLE inf_le_right) (X.homOfLE hU) (X.homOfLE hV) := by
@@ -657,7 +656,7 @@ def morphismRestrictRestrictBasicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Op
           U.toScheme.basicOpen (Y.presheaf.map (eqToHom U.isOpenEmbedding_obj_top).op r)) ≅
       Arrow.mk (f ∣_ Y.basicOpen r) := by
   refine morphismRestrictRestrict _ _ _ ≪≫ morphismRestrictEq _ ?_
-  rw [Scheme.Opens.ι_image_basicOpen, Scheme.basicOpen_res_eq]
+  simp [Scheme.Opens.ι_image_basicOpen]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The stalk map of a restriction of a morphism is isomorphic to the stalk map of the original map.

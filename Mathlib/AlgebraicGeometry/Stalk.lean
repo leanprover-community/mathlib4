@@ -42,7 +42,6 @@ noncomputable def IsAffineOpen.fromSpecStalk
     Spec (X.presheaf.stalk x) ⟶ X :=
   Spec.map (X.presheaf.germ _ x hxU) ≫ hU.fromSpec
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The morphism from `Spec(O_x)` to `X` given by `IsAffineOpen.fromSpec` does not depend on the affine
 open neighborhood of `x` we choose.
