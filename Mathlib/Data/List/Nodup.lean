@@ -121,7 +121,7 @@ theorem not_nodup_of_get_eq_of_ne (xs : List α) (n m : Fin xs.length)
   rw [nodup_iff_injective_get]
   exact fun hinj => hne (hinj h)
 
-lemma Nodup.head_eq_getLast_iff (hnd : l.Nodup) (hne : l ≠ []) :
+lemma Nodup.head_eq_getLast_iff (hne : l ≠ []) (hnd : l.Nodup) :
     l.head hne = l.getLast hne ↔ ∃ x, l = [x] := by
   cases l <;> grind
 
@@ -263,15 +263,15 @@ lemma Nodup.head_suffix_mem (h : l₁ <:+ l₂) {hne : l₂ ≠ []} (hl : l₂.h
     (hnd : l₂.Nodup) : l₁ = l₂ := by
   grind [List.IsSuffix]
 
-lemma Nodup.getLast_prefix_mem (h : l₁ <+: l₂) (hne : l₂ ≠ []) (hl : l₂.getLast hne ∈ l₁)
+lemma Nodup.getLast_prefix_mem (h : l₁ <+: l₂) {hne : l₂ ≠ []} (hl : l₂.getLast hne ∈ l₁)
     (hnd : l₂.Nodup) : l₁ = l₂ := by
   grind [List.IsPrefix]
 
-lemma Nodup.head_infix_mem (h : l₁ <:+: l₂) (hne : l₂ ≠ []) (hl : l₂.head hne ∈ l₁)
+lemma Nodup.head_infix_mem (h : l₁ <:+: l₂) {hne : l₂ ≠ []} (hl : l₂.head hne ∈ l₁)
     (hnd : l₂.Nodup) : l₁ <+: l₂ := by
   grind [List.IsInfix]
 
-lemma Nodup.getLast_infix_mem (h : l₁ <:+: l₂) (hne : l₂ ≠ []) (hl : l₂.getLast hne ∈ l₁)
+lemma Nodup.getLast_infix_mem (h : l₁ <:+: l₂) {hne : l₂ ≠ []} (hl : l₂.getLast hne ∈ l₁)
     (hnd : l₂.Nodup) : l₁ <:+ l₂ := by
   grind [List.IsInfix]
 
