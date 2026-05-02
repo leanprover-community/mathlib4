@@ -25,6 +25,7 @@ isomorphic to its double dual.
 @[expose] public section
 
 open scoped Pointwise
+open Real
 
 variable (A B C G H : Type*) [Monoid A] [Monoid B] [Monoid C] [CommGroup G] [Group H]
   [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C]
@@ -38,10 +39,10 @@ def PontryaginDual :=
 deriving TopologicalSpace
 
 instance [LocallyCompactSpace H] : LocallyCompactSpace (PontryaginDual H) := by
-  let Vn : ℕ → Set Circle := fun n ↦ Circle.centeredArc (Real.pi / 2 ^ (n + 1))
-  have hVn : ∀ n x, x ∈ Vn n ↔ |Complex.arg x| < Real.pi / 2 ^ (n + 1) :=
+  let Vn : ℕ → Set Circle := fun n ↦ Circle.centeredArc (π / 2 ^ (n + 1))
+  have hVn : ∀ n x, x ∈ Vn n ↔ |Complex.arg x| < π / 2 ^ (n + 1) :=
     fun n x ↦ Circle.mem_centeredArc (z := x)
-      (div_le_self Real.pi_nonneg (one_le_pow₀ one_le_two))
+      (div_le_self pi_nonneg (one_le_pow₀ one_le_two))
   refine ContinuousMonoidHom.locallyCompactSpace_of_hasBasis Vn ?_ ?_
   · intro n x h1 h2
     rw [hVn] at h1 h2 ⊢
@@ -59,7 +60,6 @@ variable {A B C G}
 namespace PontryaginDual
 
 open ContinuousMonoidHom
-open Real
 
 #adaptation_note /-- nightly-2026-03-31
 Without this `set_option` we get a PANIC!
