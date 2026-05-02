@@ -25,7 +25,7 @@ continuous functional calculus, rpow, sqrt
 
 public section
 
-open scoped NNReal
+open scoped NNReal UniformConvergence
 
 namespace CFC
 
@@ -59,6 +59,49 @@ lemma continuousOn_nnrpow (r : ℝ≥0) : ContinuousOn (· ^ r) {a : A | 0 ≤ a
   obtain (rfl | hr) := eq_zero_or_pos r
   · simpa using continuousOn_const
   · exact continuousOn_id.cfcₙ_nnreal_of_mem_nhdsSet _ Filter.univ_mem
+
+attribute [fun_prop] ContinuousAt.prodMap
+
+open UniformOnFun Set in
+lemma continuousWithinAt_nnrpow_setProd {a : A} {p : ℝ≥0} (hp : 0 < p) (ha : 0 ≤ a := by cfc_tac) :
+    ContinuousWithinAt (fun x : A × ℝ≥0 => x.1 ^ x.2) (Ici 0 ×ˢ Ioi 0) (a, p) := by
+  let s : Set ℝ≥0 := Icc 0 (sSup (quasispectrum ℝ≥0 a) + 1)
+  let s' := {f : ℝ≥0 →ᵤ[{s}] ℝ≥0 | ContinuousOn (toFun {s} f) s ∧ f 0 = 0}
+                ×ˢ {a : A | 0 ≤ a ∧ quasispectrum ℝ≥0 a ⊆ s}
+  let ssw := {a : A | 0 ≤ a ∧ quasispectrum ℝ≥0 a ⊆ s} ×ˢ Ioi (0 : ℝ≥0)
+  refine ContinuousWithinAt.mono_of_mem_nhdsWithin (t := ssw) ?_ (by sorry)
+  let f₁ : ℝ≥0 → ℝ≥0 →ᵤ[{s}] ℝ≥0 := fun q : ℝ≥0 => ofFun {s} (fun x : ℝ≥0 => x.nnrpow q)
+  let f₂ : (ℝ≥0 →ᵤ[{s}] ℝ≥0) × A → A := fun x => cfcₙ (toFun {s} x.1) x.2
+  have h₁ : ContinuousAt f₁ p := by
+    sorry
+  have h₁' : ∀ q ∈ Ioi 0, f₁ q 0 = 0 := by
+    intro q hq
+    simp only [ofFun, NNReal.nnrpow_def, Equiv.coe_fn_mk, NNReal.rpow_eq_left_iff, zero_ne_one,
+      NNReal.coe_eq_one, ne_eq, NNReal.coe_eq_zero, true_and, false_or, f₁]
+    grind only [= mem_Ioi]
+  have hcomp : (fun x : A × ℝ≥0 => x.1 ^ x.2) = f₂ ∘ (Prod.map f₁ id) ∘ Prod.swap := by
+    ext
+    simp [Prod.map, Prod.swap, f₁, f₂, ofFun, nnrpow_def, toFun]
+  rw [hcomp]
+  refine ContinuousWithinAt.comp (t := s') ?_ ?_ ?_
+  · apply continuousOn_cfcₙ_nnreal_setProd ?_
+    · simp only [Function.comp_apply, Prod.swap_prod_mk, Prod.map_apply, id_eq, mem_prod,
+        mem_setOf_eq]
+      refine ⟨⟨?_, ?_⟩, ha, ?_⟩
+      · sorry
+      · exact h₁' _ hp
+      · sorry
+    · exact ConditionallyCompleteLinearOrder.isCompact_Icc 0 (sSup (quasispectrum ℝ≥0 a) + 1)
+  · fun_prop (disch := grind)
+  · intro x hx
+    simp only [Function.comp_apply, mem_prod, Prod.map_fst, Prod.fst_swap, mem_setOf_eq,
+      Prod.map_snd, Prod.snd_swap, id_eq, s']
+    refine ⟨⟨?_, ?_⟩, ?_, ?_⟩
+    · sorry
+    · apply h₁'
+      grind
+    · grind
+    · grind
 
 end nonunital
 
