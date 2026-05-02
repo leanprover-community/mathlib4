@@ -299,7 +299,7 @@ variable {α : Type*} [Fintype α] [DecidableEq α] {G : SimpleGraph α}
 
 /-- Given a cyclic permutation with full support on at least 3 elements which
 sends each vertex to an adjacent one, then the graph is hamiltonian. -/
-theorem IsHamiltonian.ofPerm {σ : Perm α}
+theorem IsHamiltonian.of_perm {σ : Perm α}
     (hcycle : σ.IsCycle) (hsupport : σ.support = .univ)
     (hadj : ∀ x, G.Adj x (σ x))
     (hcard3 : 3 ≤ Fintype.card α) : G.IsHamiltonian := by
