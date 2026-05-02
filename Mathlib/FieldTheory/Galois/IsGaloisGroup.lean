@@ -416,17 +416,17 @@ theorem fixedPoints_eq_range_algebraMap [Finite G] (R : Type*)
 
 include K in
 /-- If `G` acts as a Galois group on `L/K` and the subgroup `H` acts as a Galois group on `L/R`,
-then the fixing subgroup of `algebraMap R L` inside `G` equals `H`. -/
-theorem fixingSubgroup_range_algebraMap [Finite G] (R : Type*) [CommSemiring R] [Algebra R L]
+then the fixing subgroup of `algebraMap R L` inside `G` equals `H`.
+See `fixingSubgroup_range_algebraMap` for a more general version. -/
+theorem fixingSubgroup_range_algebraMap' [Finite G] (R : Type*) [CommSemiring R] [Algebra R L]
     [IsGaloisGroup H R L] :
     fixingSubgroup G (Set.range (algebraMap R L)) = H := by
   rw [← fixedPoints_eq_range_algebraMap G K L H, fixingSubgroup_fixedPoints]
 
 attribute [local instance] FractionRing.liftAlgebra in
-/-- The ring analogue of `fixingSubgroup_range_algebraMap`: if `G` acts on a domain `T`
-with `IsGaloisGroup G R T`, and a subgroup `H` acts on `T` with `IsGaloisGroup H S T`,
-then the fixing subgroup of `algebraMap S T` equals `H`. -/
-theorem fixingSubgroup_range_algebraMap_of_isDomain [Finite G] (R S T : Type*) [CommRing R]
+/-- If `G` acts on a domain `T` with `IsGaloisGroup G R T`, and a subgroup `H` acts on `T` with
+`IsGaloisGroup H S T`, then the fixing subgroup of `algebraMap S T` equals `H`. -/
+theorem fixingSubgroup_range_algebraMap [Finite G] (R S T : Type*) [CommRing R]
     [CommRing T] [IsDomain T] [Algebra R T] [FaithfulSMul R T] [MulSemiringAction G T]
     (H : Subgroup G) [hGRT : IsGaloisGroup G R T] [CommRing S] [Algebra S T] [FaithfulSMul S T]
     [hH : IsGaloisGroup H S T] :
@@ -441,7 +441,7 @@ theorem fixingSubgroup_range_algebraMap_of_isDomain [Finite G] (R S T : Type*) [
   suffices h : fixingSubgroup G (Set.range (algebraMap S T)) =
                fixingSubgroup G (Set.range (algebraMap (FractionRing S) L)) by
     rw [h]
-    exact fixingSubgroup_range_algebraMap G K L H (FractionRing S)
+    exact fixingSubgroup_range_algebraMap' G K L H (FractionRing S)
   ext g
   simp only [mem_fixingSubgroup_iff, Set.mem_range]
   refine ⟨?_, ?_⟩
