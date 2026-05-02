@@ -583,7 +583,6 @@ theorem differentIdeal_eq_differentIdeal_mul_differentIdeal (C : Type*) [IsDomai
 
 variable {B L}
 
-open Pointwise Polynomial in
 lemma traceForm_dualSubmodule_adjoin
     {x : L} (hx : Algebra.adjoin K {x} = ⊤) (hAx : IsIntegral A x) :
     (traceForm K L).dualSubmodule (Subalgebra.toSubmodule (Algebra.adjoin A {x})) =
@@ -924,6 +923,7 @@ theorem not_dvd_differentIdeal_iff
   have hp' := (Ideal.map_eq_bot_iff_of_injective
     (FaithfulSMul.algebraMap_injective A B)).not.mpr hp
   have := Ideal.IsPrime.isMaximal inferInstance hPbot
+  let := Localization.AtPrime.algebraOfLiesOver (P.under A) P
   constructor
   · intro H
     · rw [Algebra.isUnramifiedAt_iff_map_eq (p := P.under A)]
