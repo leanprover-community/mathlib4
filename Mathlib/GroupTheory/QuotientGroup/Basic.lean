@@ -264,7 +264,7 @@ defines an isomorphism between `H/(H ∩ N)` and `(HN)/N`. -/
 subgroup `H` of the normalizer of `N` in `G`,
 defines an isomorphism between `H/(H ∩ N)` and `(H + N)/N` -/]
 noncomputable def quotientInfEquivProdNormalizerQuotient (H N : Subgroup G)
-    (hLE : H ≤ N.normalizer) :
+    (hLE : H ≤ normalizer N) :
     letI := Subgroup.normal_subgroupOf_of_le_normalizer hLE
     letI := Subgroup.normal_subgroupOf_sup_of_le_normalizer hLE
     H ⧸ N.subgroupOf H ≃* (H ⊔ N : Subgroup G) ⧸ N.subgroupOf (H ⊔ N) :=
@@ -390,6 +390,42 @@ theorem comap_comap_center {H₁ : Subgroup G} [H₁.Normal] {H₂ : Subgroup (G
   simp only [mk'_apply, Subgroup.mem_comap, Subgroup.mem_center_iff, forall_mk, ← mk_mul,
     eq_iff_div_mem, mk_div]
 
+open Subgroup in
+@[to_additive]
+theorem _root_.Subgroup.Characteristic.comap_quotient_mk {H : Subgroup G} [hH : H.Characteristic]
+    {K : Subgroup (G ⧸ H)} (hK : K.Characteristic) :
+    Characteristic (K.comap (mk' H)) :=
+  characteristic_iff_comap_eq.mpr fun φ ↦ congr_arg (comap (mk' H))
+    (characteristic_iff_comap_eq.mp hK (congr H H φ (characteristic_iff_map_eq.mp hH φ)))
+
+/--
+The `MulEquiv` between the kernel of the restriction map to a normal subgroup `H` of homomorphisms
+of type `G →* A` and the group of homomorphisms `G ⧸ H →* A`.
+-/
+@[to_additive
+/--
+The `AddEquiv` between the kernel of the restriction map to a normal subgroup `H` of homomorphisms
+of type `G →+ A` and the group of homomorphisms `G ⧸ H →+ A`.
+-/]
+def _root_.MonoidHom.restrictHomKerEquiv (A : Type*) [CommGroup A] (H : Subgroup G) [H.Normal] :
+    (MonoidHom.restrictHom H A).ker ≃* (G ⧸ H →* A) where
+  toFun := fun ⟨f, hf⟩ ↦ QuotientGroup.lift _ f
+    (by simpa [mem_ker, restrictHom_apply, restrict_eq_one_iff] using hf)
+  invFun f := ⟨f.comp (QuotientGroup.mk' H), restrict_eq_one_iff.mpr <| le_comap_mk' H f.ker⟩
+  map_mul' _ _ := by ext; simp
+  left_inv _ := by simp
+  right_inv _ := by ext; simp
+
+@[simp]
+theorem _root_.MonoidHom.restrictHomKerEquiv_apply_coe (A : Type*) [CommGroup A] (H : Subgroup G)
+    [H.Normal] (f : (MonoidHom.restrictHom H A).ker) (g : G) :
+    restrictHomKerEquiv A H f g = f.val g := rfl
+
+@[simp]
+theorem _root_.MonoidHom.restrictHomKerEquiv_symm_coe_apply (A : Type*) [CommGroup A]
+    (H : Subgroup G) [H.Normal] (f : G ⧸ H →* A) (g : G) :
+    ((restrictHomKerEquiv A H).symm f).val g = f g := rfl
+
 end QuotientGroup
 
 namespace QuotientAddGroup
@@ -405,3 +441,38 @@ theorem mk_int_mul (n : ℤ) (a : R) : ((n * a : R) : R ⧸ N) = n • ↑a := b
   rw [← zsmul_eq_mul, mk_zsmul N a n]
 
 end QuotientAddGroup
+
+namespace QuotientGroup
+
+section powMonoidHom
+
+-- TODO: Generalize to arbitrary products of homomorphisms
+
+variable {ι : Type*} (A : ι → Type*) [∀ i, CommGroup (A i)] (n : ℕ)
+
+/-- The isomorphism between the quotient of a product by the image of the `n`th power map
+and the product of the quotients by the images of the `n`th power maps on the factors. -/
+@[to_additive
+  /-- The isomorphism between the quotient of a product by the image of the multiplication-by-`n`
+  map and the product of the quotients by the images of the multiplication-by-`n` maps
+  on the factors. -/ ]
+noncomputable
+def mulEquivPiModRangePowMonoidHom :
+    ((i : ι) → A i) ⧸ (powMonoidHom n).range ≃* ((i : ι) → A i ⧸ (powMonoidHom n).range) :=
+  let φ : ((i : ι) → A i) →* (i : ι) → A i ⧸ (powMonoidHom n).range := {
+    toFun x := (x ·)
+    map_one' := by simp [Pi.one_def]
+    map_mul' x y := by simp [Pi.mul_def]
+  }
+  liftEquiv (φ := φ) _ (fun y ↦ ⟨fun i ↦ Quotient.out (y i), by simp [φ]⟩) <| by
+    ext x : 1
+    simpa [φ, funext_iff] using (Classical.skolem (p := fun i a ↦ a ^ n = x i)).symm
+
+@[to_additive (attr := simp)]
+lemma mulEquivPiModRangePowMonoidHom_apply (x : (i : ι) → A i) :
+    mulEquivPiModRangePowMonoidHom A n ↑x = fun i ↦ ↑(x i) :=
+  rfl
+
+end powMonoidHom
+
+end QuotientGroup

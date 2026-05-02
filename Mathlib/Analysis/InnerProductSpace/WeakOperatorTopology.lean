@@ -16,7 +16,7 @@ Hilbert spaces. This mostly involves using the Fréchet-Riesz representation to 
 applications of elements of the dual and inner products with vectors in the space.
 -/
 
-@[expose] public section
+public section
 
 open scoped Topology InnerProductSpace
 
@@ -27,7 +27,7 @@ variable {𝕜 : Type*} {E : Type*} {F : Type*} [RCLike 𝕜] [AddCommGroup E] [
 
 @[ext]
 lemma ext_inner {A B : E →WOT[𝕜] F} (h : ∀ x y, ⟪y, A x⟫_𝕜 = ⟪y, B x⟫_𝕜) : A = B := by
-  rw [ext_iff]
+  rw [ContinuousLinearMapWOT.ext_iff]
   exact fun x => ext_inner_left 𝕜 fun y => h x y
 
 open Filter in

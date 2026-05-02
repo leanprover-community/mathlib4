@@ -43,17 +43,17 @@ We use only the definition of the topological entropy using covers; the simplest
 
 ## Main results
 - `coverEntropy_image_of_comap`/`coverEntropyInf_image_of_comap`: the entropy of `φ '' F` equals
-the entropy of `F` if `X` is endowed with the pullback by `φ` of the uniform structure of `Y`.
+  the entropy of `F` if `X` is endowed with the pullback by `φ` of the uniform structure of `Y`.
 - `coverEntropy_image_le_of_uniformContinuous`/`coverEntropyInf_image_le_of_uniformContinuous`:
-the entropy of `φ '' F` is lower than the entropy of `F` if `φ` is uniformly continuous.
+  the entropy of `φ '' F` is lower than the entropy of `F` if `φ` is uniformly continuous.
 - `coverEntropy_restrict`: the entropy of the restriction of `S` to an invariant set `F` is
-`coverEntropy S F`.
+  `coverEntropy S F`.
 
 ## Tags
 entropy, semiconjugacy
 -/
 
-@[expose] public section
+public section
 
 open Function Prod Set Uniformity UniformSpace
 open scoped SetRel
@@ -74,7 +74,7 @@ lemma IsDynCoverOf.preimage (h : Semiconj φ S T) [V.IsSymm] {t : Finset Y}
     ∃ s : Finset X, IsDynCoverOf S F ((map φ φ) ⁻¹' (V ○ V)) n s ∧ s.card ≤ t.card := by
   classical
   rcases isEmpty_or_nonempty X with _ | _
-  · exact ⟨∅, eq_empty_of_isEmpty F ▸ ⟨isDynCoverOf_empty, Finset.card_empty ▸ zero_le t.card⟩⟩
+  · exact ⟨∅, eq_empty_of_isEmpty F ▸ ⟨isDynCoverOf_empty, Finset.card_empty ▸ zero_le⟩⟩
   -- If `t` is a dynamical cover of `φ '' F`, then we want to choose one preimage by `φ` for each
   -- element of `t`. This is complicated by the fact that `t` may not be a subset of `φ '' F`,
   -- and may not even be in the range of `φ`. Hence, we first modify `t` to make it a subset
@@ -184,20 +184,20 @@ lemma coverEntropyInf_restrict_subset [UniformSpace X] {T : X → X} {F G : Set 
   rw [← coverEntropyInf_image_of_comap _ hG.val_restrict_apply (val ⁻¹' F), image_preimage_coe G F,
     inter_eq_right.2 hF]
 
-/-- The entropy of the restriction of `T` to an invariant set `F` is `coverEntropy S F`. This
+/-- The entropy of the restriction of `T` to an invariant set `F` is `coverEntropy T F`. This
 theorem justifies our definition of `coverEntropy T F`. -/
 theorem coverEntropy_restrict [UniformSpace X] {T : X → X} {F : Set X} (h : MapsTo T F F) :
     coverEntropy (h.restrict T F F) univ = coverEntropy T F := by
   rw [← coverEntropy_restrict_subset Subset.rfl h, coe_preimage_self F]
 
-/-- The entropy of `φ '' F` is lower than entropy of `F` if  `φ` is uniformly continuous. -/
+/-- The entropy of `φ '' F` is at most the entropy of `F` if `φ` is uniformly continuous. -/
 theorem coverEntropy_image_le_of_uniformContinuous [UniformSpace X] [UniformSpace Y] {S : X → X}
     {T : Y → Y} {φ : X → Y} (h : Semiconj φ S T) (h' : UniformContinuous φ) (F : Set X) :
     coverEntropy T (φ '' F) ≤ coverEntropy S F := by
   rw [coverEntropy_image_of_comap _ h F]
   exact coverEntropy_antitone S F (uniformContinuous_iff.1 h')
 
-/-- The entropy of `φ '' F` is lower than entropy of `F` if  `φ` is uniformly continuous. This
+/-- The entropy of `φ '' F` is at most the entropy of `F` if `φ` is uniformly continuous. This
   version uses a `liminf`. -/
 theorem coverEntropyInf_image_le_of_uniformContinuous [UniformSpace X] [UniformSpace Y] {S : X → X}
     {T : Y → Y} {φ : X → Y} (h : Semiconj φ S T) (h' : UniformContinuous φ) (F : Set X) :

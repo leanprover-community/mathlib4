@@ -5,8 +5,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Floris van Doorn
 -/
 module
 
-public import Mathlib.Tactic.TypeStar
-public import Batteries.Tactic.Alias
+public import Mathlib.Init
 
 /-!
 # `ExistsUnique`

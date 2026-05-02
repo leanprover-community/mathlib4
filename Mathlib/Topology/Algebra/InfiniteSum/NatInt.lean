@@ -19,7 +19,7 @@ formula `∑ i ∈ range k, f i + ∑' i, f (i + k) = ∑' i, f i`, ∈ `sum_add
 several results relating sums and products on `ℕ` to sums and products on `ℤ`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -535,9 +535,6 @@ section PNat
 theorem multipliable_pnat_iff_multipliable_succ {f : ℕ → M} :
     Multipliable (fun x : ℕ+ ↦ f x) ↔ Multipliable fun x ↦ f (x + 1) :=
   Equiv.pnatEquivNat.symm.multipliable_iff.symm
-
-@[deprecated (since := "2025-09-31")]
-alias pnat_multipliable_iff_multipliable_succ := multipliable_pnat_iff_multipliable_succ
 
 @[to_additive]
 lemma multipliable_pnat_iff_multipliable_nat [TopologicalSpace G] [IsTopologicalGroup G]

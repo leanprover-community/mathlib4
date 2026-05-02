@@ -21,7 +21,7 @@ The Lebesgue integral of a measurable function against a kernel is measurable.
 
 -/
 
-@[expose] public section
+public section
 
 
 open MeasureTheory ProbabilityTheory Function Set Filter
@@ -73,7 +73,7 @@ theorem measurable_kernel_prodMk_left_of_finite {t : Set (α × β)} (ht : Measu
       rw [preimage_iUnion, measure_iUnion]
       · exact h_disj.mono fun _ _ ↦ .preimage _
       · exact fun i ↦ measurable_prodMk_left (hf_meas i)
-    simpa only [this] using Measurable.ennreal_tsum hf
+    simpa only [this] using Measurable.tsum hf
 
 theorem measurable_kernel_prodMk_left [IsSFiniteKernel κ] {t : Set (α × β)}
     (ht : MeasurableSet t) : Measurable fun a => κ a (Prod.mk a ⁻¹' t) := by
@@ -82,7 +82,7 @@ theorem measurable_kernel_prodMk_left [IsSFiniteKernel κ] {t : Set (α × β)}
       ∑' n, Kernel.seq κ n a (Prod.mk a ⁻¹' t) :=
     Kernel.sum_apply' _ _ (measurable_prodMk_left ht)
   simp_rw [this]
-  refine Measurable.ennreal_tsum fun n => ?_
+  refine Measurable.tsum fun n => ?_
   exact measurable_kernel_prodMk_left_of_finite ht inferInstance
 
 theorem measurable_kernel_prodMk_left' [IsSFiniteKernel η] {s : Set (β × γ)} (hs : MeasurableSet s)
@@ -140,7 +140,7 @@ theorem _root_.Measurable.lintegral_kernel_prod_right {f : α → β → ℝ≥0
       (fun a => ∫⁻ b, g₁ (a, b) + g₂ (a, b) ∂κ a) =
         (fun a => ∫⁻ b, g₁ (a, b) ∂κ a) + fun a => ∫⁻ b, g₂ (a, b) ∂κ a := by
       ext1 a
-      rw [Pi.add_apply, lintegral_add_left (g₁.measurable.comp' measurable_prodMk_left)]
+      rw [Pi.add_apply, lintegral_add_left (by fun_prop)]
     rw [h_add]
     exact Measurable.add hm₁ hm₂
 

@@ -77,7 +77,7 @@ theorem range_im : range im = univ :=
   im_surjective.range_eq
 
 /-- The natural inclusion of the real numbers into the complex numbers. -/
-@[coe]
+@[coe, implicit_reducible]
 def ofReal (r : ℝ) : ℂ :=
   ⟨r, 0⟩
 instance : Coe ℝ ℂ :=
@@ -172,14 +172,9 @@ theorem add_re (z w : ℂ) : (z + w).re = z.re + w.re :=
 theorem add_im (z w : ℂ) : (z + w).im = z.im + w.im :=
   rfl
 
--- replaced by `re_ofNat`
--- replaced by `im_ofNat`
-
 @[simp, norm_cast]
 theorem ofReal_add (r s : ℝ) : ((r + s : ℝ) : ℂ) = r + s :=
   Complex.ext_iff.2 <| by simp [ofReal]
-
--- replaced by `Complex.ofReal_ofNat`
 
 instance : Neg ℂ :=
   ⟨fun z => ⟨-z.re, -z.im⟩⟩
@@ -199,16 +194,28 @@ theorem ofReal_neg (r : ℝ) : ((-r : ℝ) : ℂ) = -r :=
 instance : Sub ℂ :=
   ⟨fun z w => ⟨z.re - w.re, z.im - w.im⟩⟩
 
+/--
+`mulAux` is an auxiliary definition for defining multiplication and scalar multiplication on `ℂ`
+in such a way that `real_smul {x : ℝ} {z : ℂ} : x • z = x * z` holds definitionally.
+This makes sure that `Module.restrictScalars ℝ ℂ ℂ = Complex.instModule` definitionally.
+-/
+@[no_expose]
+def mulAux {R : Type*} [SMul R ℝ] (re : R) (im : ℝ) (z : ℂ) : ℂ :=
+  ⟨re • z.re - im * z.im, re • z.im + im * z.re⟩
+
 instance : Mul ℂ :=
-  ⟨fun z w => ⟨z.re * w.re - z.im * w.im, z.re * w.im + z.im * w.re⟩⟩
+  ⟨fun z w => mulAux z.re z.im w⟩
+
+theorem mk_mul_mk (x₁ x₂ y₁ y₂ : ℝ) :
+    (⟨x₁, y₁⟩ : ℂ) * ⟨x₂, y₂⟩ = ⟨x₁ * x₂ - y₁ * y₂, x₁ * y₂ + y₁ * x₂⟩ := (rfl)
 
 @[simp]
 theorem mul_re (z w : ℂ) : (z * w).re = z.re * w.re - z.im * w.im :=
-  rfl
+  (rfl)
 
 @[simp]
 theorem mul_im (z w : ℂ) : (z * w).im = z.re * w.im + z.im * w.re :=
-  rfl
+  (rfl)
 
 @[simp, norm_cast]
 theorem ofReal_mul (r s : ℝ) : ((r * s : ℝ) : ℂ) = r * s :=
@@ -286,15 +293,13 @@ instance : Nontrivial ℂ :=
 
 namespace SMul
 
--- The useless `0` multiplication in `smul` is to make sure that
--- `RestrictScalars.module ℝ ℂ ℂ = Complex.module` definitionally.
 -- instance made scoped to avoid situations like instance synthesis
 -- of `SMul ℂ ℂ` trying to proceed via `SMul ℂ ℝ`.
 /-- Scalar multiplication by `R` on `ℝ` extends to `ℂ`. This is used here and in
 `Mathlib/LinearAlgebra/Complex/Module.lean` to transfer instances from `ℝ` to `ℂ`, but is not
 needed outside, so we make it scoped. -/
 scoped instance instSMulRealComplex {R : Type*} [SMul R ℝ] : SMul R ℂ where
-  smul r x := ⟨r • x.re - 0 * x.im, r • x.im + 0 * x.re⟩
+  smul r x := mulAux r 0 x
 
 end SMul
 
@@ -304,9 +309,11 @@ section SMul
 
 variable {R : Type*} [SMul R ℝ]
 
-theorem smul_re (r : R) (z : ℂ) : (r • z).re = r • z.re := by simp [(· • ·), SMul.smul]
+theorem smul_re (r : R) (z : ℂ) : (r • z).re = r • z.re :=
+  show r • z.re - 0 * z.im = r • z.re by simp
 
-theorem smul_im (r : R) (z : ℂ) : (r • z).im = r • z.im := by simp [(· • ·), SMul.smul]
+theorem smul_im (r : R) (z : ℂ) : (r • z).im = r • z.im :=
+  show r • z.im + 0 * z.re = r • z.im by simp
 
 @[simp]
 theorem real_smul {x : ℝ} {z : ℂ} : x • z = x * z :=
@@ -419,6 +426,7 @@ lemma im_zsmul (n : ℤ) (z : ℂ) : (n • z).im = n • z.im := smul_im ..
 @[simp] lemma im_qsmul (q : ℚ) (z : ℂ) : (q • z).im = q • z.im := smul_im ..
 
 @[norm_cast] lemma ofReal_nsmul (n : ℕ) (r : ℝ) : ↑(n • r) = n • (r : ℂ) := by simp
+
 @[norm_cast] lemma ofReal_zsmul (n : ℤ) (r : ℝ) : ↑(n • r) = n • (r : ℂ) := by simp
 
 /-! ### Complex conjugation -/
@@ -481,7 +489,7 @@ def normSq : ℂ →*₀ ℝ where
   map_zero' := by simp
   map_one' := by simp
   map_mul' z w := by
-    dsimp
+    simp only [mul_re, mul_im]
     ring
 
 theorem normSq_apply (z : ℂ) : normSq z = z.re * z.re + z.im * z.im :=
@@ -545,7 +553,7 @@ theorem normSq_mul (z w : ℂ) : normSq (z * w) = normSq z * normSq w :=
   normSq.map_mul z w
 
 theorem normSq_add (z w : ℂ) : normSq (z + w) = normSq z + normSq w + 2 * (z * conj w).re := by
-  dsimp [normSq]; ring
+  simp [normSq]; ring
 
 theorem re_sq_le_normSq (z : ℂ) : z.re * z.re ≤ normSq z :=
   le_add_of_nonneg_right (mul_self_nonneg _)
@@ -560,6 +568,7 @@ theorem add_conj (z : ℂ) : z + conj z = (2 * z.re : ℝ) :=
   Complex.ext_iff.2 <| by simp [two_mul, ofReal]
 
 /-- The coercion `ℝ → ℂ` as a `RingHom`. -/
+@[implicit_reducible]
 def ofRealHom : ℝ →+* ℂ where
   toFun x := (x : ℂ)
   map_one' := ofReal_one
@@ -632,11 +641,12 @@ theorem normSq_sub (z w : ℂ) : normSq (z - w) = normSq z + normSq w - 2 * (z *
 /-! ### Inversion -/
 
 
+@[no_expose]
 noncomputable instance : Inv ℂ :=
   ⟨fun z => conj z * ((normSq z)⁻¹ : ℝ)⟩
 
 theorem inv_def (z : ℂ) : z⁻¹ = conj z * ((normSq z)⁻¹ : ℝ) :=
-  rfl
+  (rfl)
 
 @[simp]
 theorem inv_re (z : ℂ) : z⁻¹.re = z.re / normSq z := by simp [inv_def, division_def, ofReal]
@@ -752,7 +762,7 @@ theorem im_eq_sub_conj (z : ℂ) : (z.im : ℂ) = (z - conj z) / (2 * I) := by
   simp only [sub_conj, ofReal_mul, ofReal_ofNat, mul_right_comm,
     mul_div_cancel_left₀ _ (mul_ne_zero two_ne_zero I_ne_zero : 2 * I ≠ 0)]
 
-/-- Show the imaginary number ⟨x, y⟩ as an "x + y*I" string
+/-- Show the imaginary number ⟨x, y⟩ as an `"x + y*I"` string
 
 Note that the Real numbers used for x and y will show as Cauchy sequences due to the way Real
 numbers are represented.

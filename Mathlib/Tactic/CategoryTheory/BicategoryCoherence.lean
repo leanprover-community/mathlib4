@@ -5,8 +5,9 @@ Authors: Yuma Mizuno
 -/
 module
 
-public meta import Mathlib.CategoryTheory.Bicategory.Coherence
-public meta import Mathlib.Tactic.CategoryTheory.BicategoricalComp
+public meta import Mathlib.CategoryTheory.Bicategory.Free
+public import Mathlib.CategoryTheory.Bicategory.Free
+public import Mathlib.Tactic.CategoryTheory.BicategoricalComp
 
 /-!
 # A `coherence` tactic for bicategories
@@ -130,10 +131,6 @@ def bicategory_coherence (g : MVarId) : TermElabM Unit := g.withContext do
     | exception g "congrArg failed in coherence"
   let [] ← g₂.applyConst ``Subsingleton.elim
     | exception g "This shouldn't happen; Subsingleton.elim does not create goals."
-
-/-- Coherence tactic for bicategories.
-Use `pure_coherence` instead, which is a frontend to this one. -/
-elab "bicategory_coherence" : tactic => do bicategory_coherence (← getMainGoal)
 
 open Lean.Parser.Tactic
 

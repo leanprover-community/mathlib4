@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.Regular
 public import Mathlib.Algebra.Polynomial.Coeff
-public import Mathlib.Algebra.Polynomial.Degree.Definitions
+public import Mathlib.Algebra.Polynomial.Degree.Defs
 
 /-!
 # Lemmas for calculating the degree of univariate polynomials
@@ -200,7 +200,7 @@ theorem natDegree_add_eq_right_of_natDegree_lt (h : natDegree p < natDegree q) :
 theorem degree_add_C (hp : 0 < degree p) : degree (p + C a) = degree p :=
   add_comm (C a) p ▸ degree_add_eq_right_of_degree_lt <| lt_of_le_of_lt degree_C_le hp
 
-@[simp] theorem natDegree_add_C {a : R} : (p + C a).natDegree = p.natDegree := by
+@[simp, grind =] theorem natDegree_add_C {a : R} : (p + C a).natDegree = p.natDegree := by
   rcases eq_or_ne p 0 with rfl | hp
   · simp
   by_cases! hpd : p.degree ≤ 0
@@ -335,6 +335,9 @@ theorem natDegree_mul' (h : leadingCoeff p * leadingCoeff q ≠ 0) :
 theorem leadingCoeff_mul' (h : leadingCoeff p * leadingCoeff q ≠ 0) :
     leadingCoeff (p * q) = leadingCoeff p * leadingCoeff q := by
   simp [← coeff_natDegree, natDegree_mul' h, coeff_mul_degree_add_degree]
+
+lemma Monic.leadingCoeff_C_mul (hp : p.Monic) (r : R) : (C r * p).leadingCoeff = r := by
+  by_cases hr : r = 0 <;> simp_all [leadingCoeff_mul']
 
 theorem leadingCoeff_pow' : leadingCoeff p ^ n ≠ 0 → leadingCoeff (p ^ n) = leadingCoeff p ^ n :=
   Nat.recOn n (by simp) fun n ih h => by

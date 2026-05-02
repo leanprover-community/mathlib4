@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.BigOperators.Finprod
 public import Mathlib.Data.Set.Card
 public import Mathlib.SetTheory.Cardinal.Arithmetic
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 /-!
 # Results using cardinal arithmetic
@@ -22,7 +23,7 @@ It has been separated out to not burden `Mathlib/Data/Set/Card.lean` with extra 
 - `exists_union_disjoint_cardinal_eq_iff` is the same, except using cardinal notation.
 -/
 
-@[expose] public section
+public section
 
 variable {α ι : Type*}
 
@@ -72,7 +73,7 @@ theorem Infinite.exists_union_disjoint_cardinal_eq_of_infinite (h : s.Infinite) 
   have := h.to_subtype
   obtain ⟨f⟩ : Nonempty (s ≃ s ⊕ s) := by
     rw [← Cardinal.eq, ← add_def, add_mk_eq_self]
-  refine ⟨Subtype.val '' (f ⁻¹' (range .inl)), Subtype.val '' (f ⁻¹' (range .inr)), ?_, ?_, ?_⟩
+  refine ⟨Subtype.val '' f ⁻¹' (range .inl), Subtype.val '' f ⁻¹' (range .inr), ?_, ?_, ?_⟩
   · simp [← image_union, ← preimage_union]
   · exact disjoint_image_of_injective Subtype.val_injective
       (isCompl_range_inl_range_inr.disjoint.preimage f)

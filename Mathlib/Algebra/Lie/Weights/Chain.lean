@@ -70,7 +70,7 @@ variable [LieRing.IsNilpotent L] (χ₁ χ₂ : L → R) (p q : ℤ)
 
 section
 
-variable [IsAddTorsionFree R] [NoZeroSMulDivisors R M] [IsNoetherian R M] (hχ₁ : χ₁ ≠ 0)
+variable [IsAddTorsionFree R] [IsDomain R] [IsTorsionFree R M] [IsNoetherian R M] (hχ₁ : χ₁ ≠ 0)
 include hχ₁
 
 lemma eventually_genWeightSpace_smul_add_eq_bot :
@@ -210,7 +210,7 @@ This is Proposition 4.4 from [carter2005] and is a key step in the proof that th
 semisimple Lie algebra form a root system. It shows that the restriction of `α` to `I` vanishes iff
 the restriction of every root to `I` vanishes (which cannot happen in a semisimple Lie algebra). -/
 lemma exists_forall_mem_corootSpace_smul_add_eq_zero
-    [IsDomain R] [IsPrincipalIdealRing R] [CharZero R] [NoZeroSMulDivisors R M] [IsNoetherian R M]
+    [IsDomain R] [IsPrincipalIdealRing R] [CharZero R] [Module.IsTorsionFree R M] [IsNoetherian R M]
     (hα : α ≠ 0) (hχ : genWeightSpace M χ ≠ ⊥) :
     ∃ a b : ℤ, 0 < b ∧ ∀ x ∈ corootSpace α, (a • α + b • χ) x = 0 := by
   obtain ⟨p, hp₀, q, hq₀, hp, hq⟩ := exists₂_genWeightSpace_smul_add_eq_bot M α χ hα
@@ -218,7 +218,7 @@ lemma exists_forall_mem_corootSpace_smul_add_eq_zero
   let b := ∑ i ∈ Finset.Ioo p q, finrank R (genWeightSpace M (i • α + χ))
   have hb : 0 < b := by
     replace hχ : Nontrivial (genWeightSpace M χ) := by rwa [LieSubmodule.nontrivial_iff_ne_bot]
-    refine Finset.sum_pos' (fun _ _ ↦ zero_le _) ⟨0, Finset.mem_Ioo.mpr ⟨hp₀, hq₀⟩, ?_⟩
+    refine Finset.sum_pos' (fun _ _ ↦ zero_le) ⟨0, Finset.mem_Ioo.mpr ⟨hp₀, hq₀⟩, ?_⟩
     rw [zero_smul, zero_add]
     exact finrank_pos
   refine ⟨a, b, Int.natCast_pos.mpr hb, fun x hx ↦ ?_⟩
@@ -253,7 +253,7 @@ section
 
 variable {M}
 variable [LieRing.IsNilpotent L]
-variable [IsAddTorsionFree R] [NoZeroSMulDivisors R M] [IsNoetherian R M]
+variable [IsAddTorsionFree R] [IsDomain R] [IsTorsionFree R M] [IsNoetherian R M]
 variable (α : L → R) (β : Weight R L M)
 
 /-- This is the largest `n : ℕ` such that `i • α + β` is a weight for all `0 ≤ i ≤ n`. -/

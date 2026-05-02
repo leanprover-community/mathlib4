@@ -53,7 +53,7 @@ We specialize these results to the cases where one of the families contains only
 bounded continuous function, product measure
 -/
 
-@[expose] public section
+public section
 
 open BoundedContinuousFunction MeasureTheory Topology Filter Set ENNReal NNReal MeasurableSpace
 open scoped Topology ENNReal NNReal
@@ -110,9 +110,9 @@ lemma ext_of_lintegral_prod_mul_prod_boundedContinuousFunction
   rintro - ⟨-, ⟨s, hs, rfl⟩, -, ⟨t, ht, rfl⟩, rfl⟩
   simp only [Set.mem_pi, mem_univ, mem_setOf_eq, forall_const] at hs ht
   have (p : (Π i, X i) × (Π j, Y j)) := ENNReal.continuous_coe.tendsto _ |>.comp <|
-    (tendsto_finset_prod Finset.univ (fun i _ ↦ tendsto_pi_nhds.1
+    (tendsto_finsetProd Finset.univ (fun i _ ↦ tendsto_pi_nhds.1
       (HasOuterApproxClosed.tendsto_apprSeq (hs i)) (p.1 i))).mul
-    (tendsto_finset_prod Finset.univ (fun j _ ↦ tendsto_pi_nhds.1
+    (tendsto_finsetProd Finset.univ (fun j _ ↦ tendsto_pi_nhds.1
       (HasOuterApproxClosed.tendsto_apprSeq (ht j)) (p.2 j)))
   have hp1 (x : Π i, X i) : ∏ i, (s i).indicator (fun _ ↦ (1 : ℝ≥0)) (x i) =
       (Set.univ.pi s).indicator 1 x := by
@@ -165,7 +165,7 @@ lemma ext_of_integral_prod_mul_prod_boundedContinuousFunction
     μ = ν := by
   refine ext_of_lintegral_prod_mul_prod_boundedContinuousFunction fun f g ↦ ?_
   rw [← toReal_eq_toReal_iff']
-  · simp only [coe_finset_prod]
+  · simp only [coe_finsetProd]
     have {μ : Measure ((Π i, X i) × Π j, Y j)} :
         (∫⁻ p, (∏ i, (f i (p.1 i) : ℝ≥0∞)) * ∏ j, (g j (p.2 j) : ℝ≥0∞) ∂μ).toReal =
           ∫ p, (∏ i, (f i (p.1 i)).toReal) * ∏ j, (g j (p.2 j)).toReal ∂μ := by
@@ -212,9 +212,7 @@ lemma ext_of_integral_prod_mul_boundedContinuousFunction {μ ν : Measure ((Π i
     { toFun p := ⟨fun i ↦ p.1 i, fun _ ↦ p.2⟩
       invFun p := ⟨fun i ↦ p.1 i, p.2 ()⟩
       left_inv p := by simp
-      right_inv p := by simp
-      measurable_toFun := by simp; fun_prop
-      measurable_invFun := by simp; fun_prop }
+      right_inv p := by simp }
   rw [← e.map_measurableEquiv_injective.eq_iff]
   refine ext_of_integral_prod_mul_prod_boundedContinuousFunction fun f g ↦ ?_
   rw [integral_map_equiv, integral_map_equiv]
@@ -233,10 +231,7 @@ lemma ext_of_integral_mul_prod_boundedContinuousFunction {μ ν : Measure (Z × 
     (h : ∀ (f : Z →ᵇ ℝ) (g : (j : κ) → Y j →ᵇ ℝ),
       ∫ p, f p.1 * ∏ j, g j (p.2 j) ∂μ = ∫ p, f p.1 * ∏ j, g j (p.2 j) ∂ν) :
     μ = ν := by
-  let e : (Z × (Π i, Y i)) ≃ᵐ ((Π i, Y i) × Z) :=
-    { toEquiv := Equiv.prodComm _ _
-      measurable_toFun := measurable_swap
-      measurable_invFun := measurable_swap }
+  let e : (Z × (Π i, Y i)) ≃ᵐ ((Π i, Y i) × Z) := .prodComm
   rw [← e.map_measurableEquiv_injective.eq_iff]
   refine ext_of_integral_prod_mul_boundedContinuousFunction fun f g ↦ ?_
   rw [integral_map_equiv, integral_map_equiv]
@@ -258,12 +253,7 @@ lemma ext_of_integral_mul_boundedContinuousFunction {μ ν : Measure (Z × T)}
     (h : ∀ (f : Z →ᵇ ℝ) (g : T →ᵇ ℝ), ∫ p, f p.1 * g p.2 ∂μ = ∫ p, f p.1 * g p.2 ∂ν) :
     μ = ν := by
   let e : (Z × T) ≃ᵐ ((Unit → Z) × (Unit → T)) :=
-    { toFun p := ⟨fun _ ↦ p.1, fun _ ↦ p.2⟩
-      invFun p := ⟨p.1 (), p.2 ()⟩
-      left_inv p := by simp
-      right_inv p := by simp
-      measurable_toFun := by simp; fun_prop
-      measurable_invFun := by simp; fun_prop }
+    .symm <| .prodCongr (.funUnique ..) (.funUnique ..)
   rw [← e.map_measurableEquiv_injective.eq_iff]
   refine ext_of_integral_prod_mul_prod_boundedContinuousFunction fun f g ↦ ?_
   rw [integral_map_equiv, integral_map_equiv]

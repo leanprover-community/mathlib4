@@ -13,12 +13,12 @@ public import Mathlib.Data.Fintype.Card
 # Results about pointwise operations on sets and big operators.
 -/
 
-@[expose] public section
-
+public section
 
 namespace Set
 
-open Pointwise Function
+open Function
+open scoped Pointwise
 
 variable {ι α β F : Type*} [FunLike F α β]
 
@@ -46,13 +46,18 @@ theorem image_multiset_prod (f : F) :
       image_list_prod f
 
 @[to_additive]
-theorem image_finset_prod (f : F) (m : Finset ι) (s : ι → Set α) :
+theorem image_finsetProd (f : F) (m : Finset ι) (s : ι → Set α) :
     ((f : α → β) '' ∏ i ∈ m, s i) = ∏ i ∈ m, f '' s i :=
   (image_multiset_prod f _).trans <| congr_arg Multiset.prod <| Multiset.map_map _ _ _
 
+@[deprecated (since := "2026-04-08")] alias image_finset_sum := image_finsetSum
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias image_finset_prod := image_finsetProd
+
 /-- The n-ary version of `Set.mem_mul`. -/
 @[to_additive /-- The n-ary version of `Set.mem_add`. -/]
-theorem mem_finset_prod (t : Finset ι) (f : ι → Set α) (a : α) :
+theorem mem_finsetProd (t : Finset ι) (f : ι → Set α) (a : α) :
     (a ∈ ∏ i ∈ t, f i) ↔ ∃ (g : ι → α) (_ : ∀ {i}, i ∈ t → g i ∈ f i), ∏ i ∈ t, g i = a := by
   classical
     induction t using Finset.induction_on generalizing a with
@@ -77,16 +82,21 @@ theorem mem_finset_prod (t : Finset ι) (f : ι → Set α) (a : α) :
       exact ⟨g i, hg (is.mem_insert_self _), is.prod g,
         ⟨⟨g, fun hi ↦ hg (Finset.mem_insert_of_mem hi), rfl⟩, rfl⟩⟩
 
+@[deprecated (since := "2026-04-08")] alias mem_finset_sum := mem_finsetSum
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias mem_finset_prod := mem_finsetProd
+
 @[to_additive]
 lemma mem_pow_iff_prod {n : ℕ} {s : Set α} {a : α} :
     a ∈ s ^ n ↔ ∃ f : Fin n → α, (∀ i, f i ∈ s) ∧ ∏ i, f i = a := by
-  simpa using mem_finset_prod (t := .univ) (f := fun _ : Fin n ↦ s) _
+  simpa using mem_finsetProd (t := .univ) (f := fun _ : Fin n ↦ s) _
 
-/-- A version of `Set.mem_finset_prod` with a simpler RHS for products over a Fintype. -/
-@[to_additive /-- A version of `Set.mem_finset_sum` with a simpler RHS for sums over a Fintype. -/]
+/-- A version of `Set.mem_finsetProd` with a simpler RHS for products over a Fintype. -/
+@[to_additive /-- A version of `Set.mem_finsetSum` with a simpler RHS for sums over a Fintype. -/]
 theorem mem_fintype_prod [Fintype ι] (f : ι → Set α) (a : α) :
     (a ∈ ∏ i, f i) ↔ ∃ (g : ι → α) (_ : ∀ i, g i ∈ f i), ∏ i, g i = a := by
-  rw [mem_finset_prod]
+  rw [mem_finsetProd]
   simp
 
 /-- An n-ary version of `Set.mul_mem_mul`. -/
@@ -139,37 +149,58 @@ theorem multiset_prod_singleton {M : Type*} [CommMonoid M] (s : Multiset M) :
 
 /-- An n-ary version of `Set.mul_mem_mul`. -/
 @[to_additive /-- An n-ary version of `Set.add_mem_add`. -/]
-theorem finset_prod_mem_finset_prod (t : Finset ι) (f : ι → Set α) (g : ι → α)
+theorem finsetProd_mem_finsetProd (t : Finset ι) (f : ι → Set α) (g : ι → α)
     (hg : ∀ i ∈ t, g i ∈ f i) : (∏ i ∈ t, g i) ∈ ∏ i ∈ t, f i :=
   multiset_prod_mem_multiset_prod _ _ _ hg
 
+@[deprecated (since := "2026-04-08")] alias finset_sum_mem_finset_sum := finsetSum_mem_finsetSum
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias finset_prod_mem_finset_prod := finsetProd_mem_finsetProd
+
 /-- An n-ary version of `Set.mul_subset_mul`. -/
 @[to_additive /-- An n-ary version of `Set.add_subset_add`. -/]
-theorem finset_prod_subset_finset_prod (t : Finset ι) (f₁ f₂ : ι → Set α)
+theorem finsetProd_subset_finsetProd (t : Finset ι) (f₁ f₂ : ι → Set α)
     (hf : ∀ i ∈ t, f₁ i ⊆ f₂ i) : ∏ i ∈ t, f₁ i ⊆ ∏ i ∈ t, f₂ i :=
   multiset_prod_subset_multiset_prod _ _ _ hf
 
+@[deprecated (since := "2026-04-08")]
+alias finset_sum_subset_finset_sum := finsetSum_subset_finsetSum
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias finset_prod_subset_finset_prod := finsetProd_subset_finsetProd
+
 @[to_additive]
-theorem finset_prod_singleton {M ι : Type*} [CommMonoid M] (s : Finset ι) (I : ι → M) :
+theorem finsetProd_singleton {M ι : Type*} [CommMonoid M] (s : Finset ι) (I : ι → M) :
     ∏ i ∈ s, ({I i} : Set M) = {∏ i ∈ s, I i} :=
   (map_prod (singletonMonoidHom : M →* Set M) _ _).symm
 
+@[deprecated (since := "2026-04-08")] alias finset_sum_singleton := finsetSum_singleton
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias finset_prod_singleton := finsetProd_singleton
+
 /-- The n-ary version of `Set.image_mul_prod`. -/
 @[to_additive /-- The n-ary version of `Set.add_image_prod`. -/]
-theorem image_finset_prod_pi (l : Finset ι) (S : ι → Set α) :
+theorem image_finsetProd_pi (l : Finset ι) (S : ι → Set α) :
     (fun f : ι → α => ∏ i ∈ l, f i) '' (l : Set ι).pi S = ∏ i ∈ l, S i := by
   ext
-  simp_rw [mem_finset_prod, mem_image, mem_pi, exists_prop, Finset.mem_coe]
+  simp_rw [mem_finsetProd, mem_image, mem_pi, exists_prop, Finset.mem_coe]
 
-/-- A special case of `Set.image_finset_prod_pi` for `Finset.univ`. -/
-@[to_additive /-- A special case of `Set.image_finset_sum_pi` for `Finset.univ`. -/]
+@[deprecated (since := "2026-04-08")] alias image_finset_sum_pi := image_finsetSum_pi
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias image_finset_prod_pi := image_finsetProd_pi
+
+/-- A special case of `Set.image_finsetProd_pi` for `Finset.univ`. -/
+@[to_additive /-- A special case of `Set.image_finsetSum_pi` for `Finset.univ`. -/]
 theorem image_fintype_prod_pi [Fintype ι] (S : ι → Set α) :
     (fun f : ι → α => ∏ i, f i) '' univ.pi S = ∏ i, S i := by
-  simpa only [Finset.coe_univ] using image_finset_prod_pi Finset.univ S
+  simpa only [Finset.coe_univ] using image_finsetProd_pi Finset.univ S
 
 end CommMonoid
 
-/-! TODO: define `decidable_mem_finset_prod` and `decidable_mem_finset_sum`. -/
+/-! TODO: define `decidable_mem_finsetProd` and `decidable_mem_finsetSum`. -/
 
 
 end Set

@@ -9,7 +9,7 @@ public import Mathlib.Order.Filter.Tendsto
 public import Mathlib.Order.Filter.Finite
 public import Mathlib.Order.Filter.CountableInter
 public import Mathlib.SetTheory.Cardinal.Regular
-public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Filters with a cardinal intersection property
@@ -68,14 +68,15 @@ theorem CardinalInterFilter.toCountableInterFilter (l : Filter α) [CardinalInte
 /-- Every CountableInterFilter is a CardinalInterFilter with c = ℵ₁ -/
 instance CountableInterFilter.toCardinalInterFilter (l : Filter α) [CountableInterFilter l] :
     CardinalInterFilter l ℵ₁ where
-  cardinal_sInter_mem S hS a :=
-    CountableInterFilter.countable_sInter_mem S ((countable_iff_lt_aleph_one S).mpr hS) a
+  cardinal_sInter_mem S hS a := by
+    apply CountableInterFilter.countable_sInter_mem S _ a
+    rwa [← le_aleph0_iff_set_countable, ← lt_aleph_one_iff]
 
-theorem cardinalInterFilter_aleph_one_iff :
-    CardinalInterFilter l ℵ₁ ↔ CountableInterFilter l :=
-  ⟨fun _ ↦ ⟨fun S h a ↦
-    CardinalInterFilter.cardinal_sInter_mem S ((countable_iff_lt_aleph_one S).1 h) a⟩,
-   fun _ ↦ CountableInterFilter.toCardinalInterFilter l⟩
+theorem cardinalInterFilter_aleph_one_iff : CardinalInterFilter l ℵ₁ ↔ CountableInterFilter l where
+  mpr _ := CountableInterFilter.toCardinalInterFilter l
+  mp _ := by
+    refine ⟨fun S h a ↦ CardinalInterFilter.cardinal_sInter_mem (c := ℵ₁) S ?_ a⟩
+    rwa [lt_aleph_one_iff, le_aleph0_iff_set_countable]
 
 /-- Every `CardinalInterFilter` for some `c` also is a `CardinalInterFilter` for any `a ≤ c`. -/
 theorem CardinalInterFilter.of_cardinalInterFilter_of_le (l : Filter α) [CardinalInterFilter l c]

@@ -113,10 +113,8 @@ theorem antideriv_bernoulliFun (k : ℕ) (x : ℝ) :
   simp [Nat.cast_add_one_ne_zero k]
 
 theorem integral_bernoulliFun : ∫ x : ℝ in 0..1, bernoulliFun k x = if k = 0 then 1 else 0 := by
-  simp +contextual [
-    integral_eq_sub_of_hasDerivAt (fun x _ => antideriv_bernoulliFun k x)
-      (intervalIntegrable_bernoulliFun k _ _),
-    bernoulliFun_eval_one, ← sub_div, ite_div]
+  simp +contextual [integral_eq_sub_of_hasDerivAt (fun x _ => antideriv_bernoulliFun k x)
+      (intervalIntegrable_bernoulliFun k _ _), bernoulliFun_eval_one, ← sub_div, ite_div]
 
 variable {k} in
 theorem integral_bernoulliFun_eq_zero (hk : k ≠ 0) :
@@ -177,7 +175,7 @@ theorem bernoulliFun_mul (k : ℕ) {m : ℕ} (m0 : m ≠ 0) (x : ℝ) :
         mul_inv_cancel₀ m0', integral_bernoulliFun_eq_zero (by lia), smul_zero, sub_eq_zero,
         intervalIntegral.integral_const_mul, eq_comm (a := 0), mul_eq_zero]
       · right
-        rw [intervalIntegral.integral_finset_sum]
+        rw [intervalIntegral.integral_finsetSum]
         · simp only [intervalIntegral.integral_comp_add_right, zero_add, ← one_div, ← add_div,
             add_comm (1 : ℝ), ← Nat.cast_add_one]
           rw [intervalIntegral.sum_integral_adjacent_intervals]
@@ -461,7 +459,8 @@ theorem hasSum_zeta_two : HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 2) (π 
   simp [Nat.factorial]; ring
 
 theorem hasSum_zeta_four : HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 4) (π ^ 4 / 90) := by
-  convert hasSum_zeta_nat two_ne_zero using 1; norm_num
+  convert hasSum_zeta_nat two_ne_zero using 1
+  simp only [Nat.reduceAdd, Nat.reduceMul, Nat.add_one_sub_one]
   rw [bernoulli_eq_bernoulli'_of_ne_one, bernoulli'_four]
   · simp [Nat.factorial]; ring
   · decide

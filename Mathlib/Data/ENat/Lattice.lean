@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
+Authors: Yury Kudryashov, Bhavik Mehta
 -/
 module
 
@@ -19,7 +19,7 @@ of `WithTop.some`.
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 
@@ -56,6 +56,12 @@ lemma coe_iSup : BddAbove (range f) → ↑(⨆ i, f i) = ⨆ i, (f i : ℕ∞) 
 @[simp]
 lemma iInf_eq_top_of_isEmpty [IsEmpty ι] : ⨅ i, (f i : ℕ∞) = ⊤ :=
   iInf_coe_eq_top.mpr ‹_›
+
+lemma iInf_eq_coe_iff {f : ι → ℕ∞} {n : ℕ} :
+    ⨅ i, f i = n ↔ (∃ i, f i = n) ∧ ∀ i, n ≤ f i := by
+  by_cases! hι : IsEmpty ι
+  · simp [iInf_of_isEmpty]
+  apply ciInf_eq_iff
 
 lemma iInf_toNat : (⨅ i, (f i : ℕ∞)).toNat = ⨅ i, f i := by
   cases isEmpty_or_nonempty ι
@@ -117,7 +123,7 @@ lemma exists_eq_iSup₂_of_lt_top {ι₁ ι₂ : Type*} {f : ι₁ → ι₂ →
 variable {ι κ : Sort*} {f g : ι → ℕ∞} {s : Set ℕ∞} {a : ℕ∞}
 
 lemma iSup_natCast : ⨆ n : ℕ, (n : ℕ∞) = ⊤ :=
-  (iSup_eq_top _).2 fun _b hb ↦ ENat.exists_nat_gt (lt_top_iff_ne_top.1 hb)
+  iSup_eq_top.2 fun _b hb ↦ ENat.exists_nat_gt (lt_top_iff_ne_top.1 hb)
 
 lemma mul_iSup (a : ℕ∞) (f : ι → ℕ∞) : a * ⨆ i, f i = ⨆ i, a * f i := by
   refine (iSup_le fun i ↦ mul_le_mul' rfl.le <| le_iSup_iff.2 fun _ a ↦ a i).antisymm' <|
@@ -242,7 +248,7 @@ lemma smul_sSup {R} [SMul R ℕ∞] [IsScalarTower R ℕ∞ ℕ∞] (s : Set ℕ
 
 lemma sub_iSup [Nonempty ι] (ha : a ≠ ⊤) : a - ⨆ i, f i = ⨅ i, a - f i := by
   obtain ⟨i, hi⟩ | h := em (∃ i, a < f i)
-  · rw [tsub_eq_zero_iff_le.2 <| le_iSup_of_le _ hi.le, (iInf_eq_bot _).2, bot_eq_zero]
+  · rw [tsub_eq_zero_iff_le.2 <| le_iSup_of_le _ hi.le, iInf_eq_bot.2, bot_eq_zero]
     exact fun x hx ↦ ⟨i, by simpa [hi.le, tsub_eq_zero_of_le]⟩
   simp_rw [not_exists, not_lt] at h
   refine le_antisymm (le_iInf fun i ↦ tsub_le_tsub_left (le_iSup ..) _) <|
@@ -251,5 +257,55 @@ lemma sub_iSup [Nonempty ι] (ha : a ≠ ⊤) : a - ⨆ i, f i = ⨅ i, a - f i 
     iSup_le fun i ↦ ?_
   rw [← ENat.sub_sub_cancel ha (h _)]
   exact tsub_le_tsub_left (iInf_le (a - f ·) i) _
+
+lemma iInf_add : iInf f + a = ⨅ i, f i + a :=
+  le_antisymm (le_iInf fun _ ↦ add_le_add (iInf_le _ _) le_rfl) <|
+    (tsub_le_iff_right.1 <| le_iInf fun _ ↦ tsub_le_iff_right.2 <| iInf_le _ _)
+
+theorem sub_iInf : (a - ⨅ i, f i) = ⨆ i, a - f i := by
+  refine eq_of_forall_ge_iff fun c => ?_
+  rw [tsub_le_iff_right, add_comm, iInf_add]
+  simp [tsub_le_iff_right, add_comm]
+
+theorem sInf_add {s : Set ℕ∞} : sInf s + a = ⨅ b ∈ s, b + a := by simp [sInf_eq_iInf, iInf_add]
+
+theorem add_iInf {a : ℕ∞} : a + iInf f = ⨅ b, a + f b := by
+  rw [add_comm, iInf_add]; simp [add_comm]
+
+theorem iInf_add_iInf (h : ∀ i j, ∃ k, f k + g k ≤ f i + g j) : iInf f + iInf g = ⨅ a, f a + g a :=
+  suffices ⨅ a, f a + g a ≤ iInf f + iInf g from
+    le_antisymm (le_iInf fun _ => add_le_add (iInf_le _ _) (iInf_le _ _)) this
+  calc
+    ⨅ a, f a + g a ≤ ⨅ (a) (a'), f a + g a' :=
+      le_iInf₂ fun a a' => let ⟨k, h⟩ := h a a'; iInf_le_of_le k h
+    _ = iInf f + iInf g := by simp_rw [iInf_add, add_iInf]
+
+lemma iInf_add_iInf_of_monotone {ι : Type*} [Preorder ι] [IsCodirectedOrder ι] {f g : ι → ℕ∞}
+    (hf : Monotone f) (hg : Monotone g) : iInf f + iInf g = ⨅ a, f a + g a :=
+  iInf_add_iInf fun i j ↦ (exists_le_le i j).imp fun _k ⟨hi, hj⟩ ↦ by gcongr <;> apply_rules
+
+lemma add_iInf₂ {κ : ι → Sort*} (f : (i : ι) → κ i → ℕ∞) :
+    a + ⨅ (i) (j), f i j = ⨅ (i) (j), a + f i j := by
+  simp [add_iInf]
+
+lemma iInf₂_add {κ : ι → Sort*} (f : (i : ι) → κ i → ℕ∞) :
+    (⨅ (i) (j), f i j) + a = ⨅ (i) (j), f i j + a := by
+  simp only [add_comm, add_iInf₂]
+
+lemma add_sInf {s : Set ℕ∞} : a + sInf s = ⨅ b ∈ s, a + b := by
+  rw [sInf_eq_iInf, add_iInf₂]
+
+variable {κ : Sort*}
+
+lemma le_iInf_add_iInf {g : κ → ℕ∞} (h : ∀ i j, a ≤ f i + g j) :
+    a ≤ iInf f + iInf g := by
+  simp_rw [iInf_add, add_iInf]; exact le_iInf₂ h
+
+lemma le_iInf₂_add_iInf₂ {q₁ : ι → Sort*} {q₂ : κ → Sort*}
+    {f : (i : ι) → q₁ i → ℕ∞} {g : (k : κ) → q₂ k → ℕ∞}
+    (h : ∀ i pi k qk, a ≤ f i pi + g k qk) :
+    a ≤ (⨅ (i) (qi), f i qi) + ⨅ (k) (qk), g k qk := by
+  simp_rw [iInf₂_add, add_iInf₂]
+  exact le_iInf₂ fun i hi => le_iInf₂ (h i hi)
 
 end ENat

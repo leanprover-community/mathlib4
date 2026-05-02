@@ -23,9 +23,9 @@ from `RCLike.innerProductSpace`.
   convention, similarly to `MeasureTheory.average`?
 -/
 
-@[expose] public section
+public section
 
-open Finset Function Real WithLp
+open Finset Function WithLp
 open scoped BigOperators ComplexConjugate ComplexOrder InnerProductSpace
 
 variable {ι κ 𝕜 : Type*} {E : ι → Type*} [Fintype ι]

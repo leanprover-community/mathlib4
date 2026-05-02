@@ -142,8 +142,11 @@ theorem isClopen_setOf_rel (x : X) : IsClopen (setOf (S.toSetoid x)) := by
 instance : Min (DiscreteQuotient X) :=
   ⟨fun S₁ S₂ => ⟨S₁.1 ⊓ S₂.1, fun x => (S₁.2 x).inter (S₂.2 x)⟩⟩
 
+instance : PartialOrder (DiscreteQuotient X) :=
+  PartialOrder.lift _ toSetoid_injective
+
 instance : SemilatticeInf (DiscreteQuotient X) :=
-  Injective.semilatticeInf toSetoid toSetoid_injective fun _ _ => rfl
+  toSetoid_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 instance : OrderTop (DiscreteQuotient X) where
   top := ⟨⊤, fun _ => isOpen_univ⟩
@@ -391,8 +394,6 @@ TODO: show that this is precisely those finsets of clopens which form a partitio
 -/
 noncomputable
 def equivFinsetClopens [CompactSpace X] := Equiv.ofInjective _ (finsetClopens_inj X)
-
-variable {X}
 
 end DiscreteQuotient
 

@@ -163,10 +163,12 @@ theorem sInf_def (s : Set (Filtration ι m)) (i : ι) :
     sInf s i = if Set.Nonempty s then sInf ((fun f : Filtration ι m => f i) '' s) else m :=
   rfl
 
-noncomputable instance instCompleteLattice : CompleteLattice (Filtration ι m) where
+noncomputable instance instPartialOrder : PartialOrder (Filtration ι m) where
   le_refl _ _ := le_rfl
   le_trans _ _ _ h_fg h_gh i := (h_fg i).trans (h_gh i)
   le_antisymm _ _ h_fg h_gf := Filtration.ext <| funext fun i => (h_fg i).antisymm (h_gf i)
+
+noncomputable instance instCompleteLattice : CompleteLattice (Filtration ι m) where
   sup := (· ⊔ ·)
   le_sup_left _ _ _ := le_sup_left
   le_sup_right _ _ _ := le_sup_right
@@ -175,22 +177,15 @@ noncomputable instance instCompleteLattice : CompleteLattice (Filtration ι m) w
   inf_le_left _ _ _ := inf_le_left
   inf_le_right _ _ _ := inf_le_right
   le_inf _ _ _ h_fg h_fh i := le_inf (h_fg i) (h_fh i)
-  le_sSup _ f hf_mem _ := le_sSup ⟨f, hf_mem, rfl⟩
-  sSup_le s f h_forall i :=
-    sSup_le fun m' hm' => by
-      obtain ⟨g, hg_mem, hfm'⟩ := hm'
-      rw [← hfm']
-      exact h_forall g hg_mem i
-  sInf_le s f hf_mem i := by
-    have hs : s.Nonempty := ⟨f, hf_mem⟩
-    simp only [sInf_def, hs, if_true]
-    exact sInf_le ⟨f, hf_mem, rfl⟩
-  le_sInf s f h_forall i := by
-    by_cases hs : s.Nonempty
-    swap; · simp only [sInf_def, hs, if_false]; exact f.le i
-    simp only [sInf_def, hs, if_true, le_sInf_iff, Set.mem_image, forall_exists_index, and_imp,
-      forall_apply_eq_imp_iff₂]
-    exact fun g hg_mem => h_forall g hg_mem i
+  isLUB_sSup _ :=
+    .of_image (f := seq) .rfl (by simpa only [isLUB_pi, Set.image_image] using fun _ ↦ isLUB_sSup _)
+  isGLB_sInf _ := by
+    dsimp +instances [instInfSet]
+    split_ifs with hn
+    · refine .of_image (f := seq) .rfl ?_
+      simpa only [isGLB_pi, Set.image_image] using fun _ ↦ isGLB_sInf _
+    · rw [Set.not_nonempty_iff_eq_empty] at hn
+      simpa [hn] using Filtration.le
   le_top f i := f.le' i
   bot_le _ _ := bot_le
 
@@ -217,13 +212,13 @@ instance (priority := 100) IsFiniteMeasure.sigmaFiniteFiltration [Preorder ι] (
 filtration is uniformly integrable. -/
 theorem Integrable.uniformIntegrable_condExp_filtration [Preorder ι] {μ : Measure Ω}
     [IsFiniteMeasure μ] {f : Filtration ι m} {g : Ω → ℝ} (hg : Integrable g μ) :
-    UniformIntegrable (fun i => μ[g|f i]) 1 μ :=
+    UniformIntegrable (fun i => μ[g | f i]) 1 μ :=
   hg.uniformIntegrable_condExp f.le
 
 theorem Filtration.condExp_condExp [Preorder ι] {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [CompleteSpace E] (f : Ω → E) {μ : Measure Ω} (ℱ : Filtration ι m)
     {i j : ι} (hij : i ≤ j) [SigmaFinite (μ.trim (ℱ.le j))] :
-    μ[μ[f|ℱ j]|ℱ i] =ᵐ[μ] μ[f|ℱ i] := condExp_condExp_of_le (ℱ.mono hij) (ℱ.le j)
+    μ[μ[f | ℱ j] | ℱ i] =ᵐ[μ] μ[f | ℱ i] := condExp_condExp_of_le (ℱ.mono hij) (ℱ.le j)
 
 section OfSet
 
@@ -254,6 +249,7 @@ open scoped Classical in
 /-- Given a filtration `𝓕`, its **right continuation** is the filtration `𝓕₊` defined as follows:
 - If `i` is isolated on the right, then `𝓕₊ i := 𝓕 i`;
 - Otherwise, `𝓕₊ i := ⨅ j > i, 𝓕 j`.
+
 It is sometimes simply defined as `𝓕₊ i := ⨅ j > i, 𝓕 j` when the index type is `ℝ`. In the
 general case this is not ideal however. If `i` is maximal for instance, then `𝓕₊ i = ⊤`, which
 is inconvenient because `𝓕₊` is not a `Filtration ι m` anymore. If the index type
@@ -293,7 +289,7 @@ open scoped Classical in
 lemma rightCont_apply [PartialOrder ι] [TopologicalSpace ι] [OrderTopology ι]
     (𝓕 : Filtration ι m) (i : ι) :
     𝓕₊ i = if (𝓝[>] i).NeBot then ⨅ j > i, 𝓕 j else 𝓕 i := by
-  simp only [rightCont, OrderTopology.topology_eq_generate_intervals]
+  simp +instances only [rightCont, OrderTopology.topology_eq_generate_intervals]
 
 lemma rightCont_eq_of_nhdsGT_eq_bot [PartialOrder ι] [TopologicalSpace ι] [OrderTopology ι]
     (𝓕 : Filtration ι m) {i : ι} (hi : 𝓝[>] i = ⊥) :
@@ -533,7 +529,7 @@ variable {α : Type*}
 def cylinderEventsCompl : Filtration (Finset α)ᵒᵈ (.pi (X := fun _ : α ↦ Ω)) where
   seq Λ := cylinderEvents (↑(OrderDual.ofDual Λ))ᶜ
   mono' _ _ h := cylinderEvents_mono <| Set.compl_subset_compl_of_subset h
-  le' _  := cylinderEvents_le_pi
+  le' _ := cylinderEvents_le_pi
 
 end Filtration
 

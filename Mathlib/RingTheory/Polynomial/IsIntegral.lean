@@ -25,7 +25,7 @@ public import Mathlib.RingTheory.IntegralClosure.IsIntegral.AlmostIntegral
 
 -/
 
-@[expose] public section
+public section
 
 variable {R S ι : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
@@ -143,7 +143,8 @@ protected lemma IsIntegral.coeff
   have hm₂ : p.natDegree < m := by grind
   have h₀ : algebraMap R[X] S[X] X = X := by simp
   have : (((taylor (X ^ m)) q).map (algebraMap R[X] S[X])).IsRoot (p - X ^ m) := by
-    simpa [-algebraMap_def, q, h₀] using ((q.map (algebraMap _ _)).taylor_eval (X ^ m) (p - X ^ m):)
+    simpa [-algebraMap_def, q, h₀] using
+      ((q.map (algebraMap _ _)).taylor_eval (X ^ m) (p - X ^ m) :)
   have : X ^ m - p ∣ (eval (X ^ m) q).map (algebraMap _ _) := by
     change X ^ m - p ∣ Algebra.ofId R[X] S[X] _
     rw [← coe_aeval_eq_eval, ← aeval_algHom_apply, ← neg_dvd, neg_sub]
@@ -214,7 +215,7 @@ theorem MvPolynomial.isIntegral_iff_isIntegral_coeff.{w} {σ : Type w} {f : MvPo
         convert H.map ((rename Subtype.val).comp
           (killCompl (f := ((↑) : f.vars → σ)) Subtype.val_injective)).toRingHom
         · exact RingHom.ext (by simp [MvPolynomial.killCompl_map])
-        · nth_rw 1 11 [← hg]; simp)) n (.of_fintype _)
+        · nth_rw 1 12 [← hg]; simp)) n (.of_fintype _)
     · rw [← hg, coeff_rename_eq_zero _ _ _ (by grind)]
       exact isIntegral_zero
   revert f n

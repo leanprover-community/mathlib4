@@ -14,11 +14,11 @@ public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 /-!
 # Injective objects in abelian categories
 
-* Objects in an abelian categories are injective if and only if the preadditive Yoneda functor
+* Objects in an abelian category are injective if and only if the preadditive Yoneda functor
   on them preserves finite colimits.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

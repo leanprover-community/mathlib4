@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.DualNumber
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 public import Mathlib.RingTheory.PrincipalIdealDomain
-public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
 # Algebraic properties of dual numbers
@@ -21,7 +20,7 @@ public import Mathlib.RingTheory.Nilpotent.Defs
 
 -/
 
-@[expose] public section
+public section
 
 namespace TrivSqZeroExt
 
@@ -99,7 +98,7 @@ variable {K : Type*}
 instance [DivisionRing K] : IsLocalRing K[ε] where
   isUnit_or_isUnit_of_add_one {a b} h := by
     rw [add_comm, ← eq_sub_iff_add_eq] at h
-    rcases eq_or_ne (fst a) 0 with ha|ha <;>
+    rcases eq_or_ne (fst a) 0 with ha | ha <;>
     simp [isUnit_iff_isUnit_fst, h, ha]
 
 lemma ideal_trichotomy [DivisionRing K] (I : Ideal K[ε]) :
@@ -117,7 +116,7 @@ lemma ideal_trichotomy [DivisionRing K] (I : Ideal K[ε]) :
     have : ε * r = (fst r) • ε := by ext <;> simp
     rw [this] at hxI hx0 ⊢
     have hr : fst r ≠ 0 := by
-      contrapose! hx0
+      contrapose hx0
       simp [hx0]
     refine ⟨r⁻¹, ?_⟩
     simp [TrivSqZeroExt.ext_iff, inv_mul_cancel₀ hr]

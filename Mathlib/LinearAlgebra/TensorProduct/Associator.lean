@@ -6,7 +6,7 @@ Authors: Kenny Lau, Mario Carneiro
 module
 
 public import Mathlib.Algebra.Algebra.Hom
-public import Mathlib.LinearAlgebra.TensorProduct.Basic
+public import Mathlib.LinearAlgebra.TensorProduct.Map
 
 /-!
 # Associators and unitors for tensor products of modules over a commutative ring.
@@ -52,6 +52,8 @@ theorem lid_tmul (m : M) (r : R) : (TensorProduct.lid R M : R ⊗ M → M) (r �
 theorem lid_symm_apply (m : M) : (TensorProduct.lid R M).symm m = 1 ⊗ₜ m :=
   rfl
 
+theorem toLinearMap_symm_lid : (TensorProduct.lid R M).symm.toLinearMap = mk R R M 1 := rfl
+
 lemma includeRight_lid {S : Type*} [Semiring S] [Algebra R S] (m : R ⊗[R] M) :
     (1 : S) ⊗ₜ[R] (TensorProduct.lid R M) m =
       (LinearMap.rTensor M (Algebra.algHom R R S).toLinearMap) m := by
@@ -83,6 +85,8 @@ theorem rid_tmul (m : M) (r : R) : (TensorProduct.rid R M) (m ⊗ₜ r) = r • 
 theorem rid_symm_apply (m : M) : (TensorProduct.rid R M).symm m = m ⊗ₜ 1 :=
   rfl
 
+theorem toLinearMap_symm_rid : (TensorProduct.rid R M).symm.toLinearMap = (mk R M R).flip 1 := rfl
+
 @[simp]
 theorem comm_trans_lid :
     TensorProduct.comm R M R ≪≫ₗ TensorProduct.lid R M = TensorProduct.rid R M :=
@@ -106,9 +110,18 @@ variable (R A M N) [CommSemiring A] [Module A M] [Module A N]
 /-- If the R- and A- action on A and M satisfy `CompatibleSMul` both ways,
 then `A ⊗[R] M` is canonically isomorphic to `M`. -/
 def lidOfCompatibleSMul : A ⊗[R] M ≃ₗ[A] M :=
-  (equivOfCompatibleSMul R A A M).symm ≪≫ₗ TensorProduct.lid _ _
+  (equivOfCompatibleSMul R A A A M).symm ≪≫ₗ TensorProduct.lid _ _
 
 theorem lidOfCompatibleSMul_tmul (a m) : lidOfCompatibleSMul R A M (a ⊗ₜ[R] m) = a • m := rfl
+
+variable {R} in
+lemma CompatibleSMul.of_algebraMap_surjective {A : Type*} [CommSemiring A] [Algebra R A]
+    [Module A M] [IsScalarTower R A M] [Module A N] [IsScalarTower R A N]
+    (h : Function.Surjective (algebraMap R A)) :
+    CompatibleSMul R A M N where
+  smul_tmul a m n := by
+    obtain ⟨r, rfl⟩ := h a
+    simp [smul_tmul]
 
 end CompatibleSMul
 
@@ -214,6 +227,12 @@ theorem leftComm_symm_tmul (m : M) (n : N) (p : P) :
     (leftComm R M N P).symm (n ⊗ₜ (m ⊗ₜ p)) = m ⊗ₜ (n ⊗ₜ p) :=
   rfl
 
+attribute [local ext high] TensorProduct.ext in
+lemma leftComm_def : leftComm R M N P =
+    (TensorProduct.assoc R _ _ _).symm ≪≫ₗ congr (TensorProduct.comm _ _ _) (.refl _ _) ≪≫ₗ
+      (TensorProduct.assoc R _ _ _) := by
+  apply LinearEquiv.toLinearMap_injective; ext; rfl
+
 variable (M N P) in
 attribute [local ext high] ext in
 /-- A tensor product analogue of `mul_right_comm`. -/
@@ -230,6 +249,12 @@ theorem rightComm_tmul (m : M) (n : N) (p : P) :
 
 @[simp]
 theorem rightComm_symm : (rightComm R M N P).symm = rightComm R M P N := rfl
+
+attribute [local ext high] TensorProduct.ext in
+lemma rightComm_def : rightComm R M N P =
+    TensorProduct.assoc R _ _ _ ≪≫ₗ congr (.refl _ _) (TensorProduct.comm _ _ _) ≪≫ₗ
+      (TensorProduct.assoc R _ _ _).symm := by
+  apply LinearEquiv.toLinearMap_injective; ext; rfl
 
 variable (M N P Q)
 

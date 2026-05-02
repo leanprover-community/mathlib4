@@ -1,10 +1,11 @@
 import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 import Mathlib.MeasureTheory.MeasurableSpace.Basic
-
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
-
+import Mathlib.Analysis.Complex.Trigonometric
+import Mathlib.Analysis.Meromorphic.Basic
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
 
 noncomputable
 def foo (x : ℝ) := x * (Real.log x) ^ 2 - Real.exp x / x
@@ -17,18 +18,17 @@ example (y : ℝ) (hy : y ≠ 0) : ContinuousAt (fun x => x * (Real.log x) ^ 2 -
 
 
 example : DifferentiableOn ℝ foo {0}ᶜ := by
-  unfold foo; fun_prop (disch:=aesop)
+  fun_prop (disch := aesop) [foo] -- equivalent to `unfold foo; fun_prop (disch := aesop)`
 
-example (y : ℝ) (hy : y ≠ 0) :
-    DifferentiableAt ℝ foo y := by
-  unfold foo; fun_prop (disch:=aesop)
+example (y : ℝ) (hy : y ≠ 0) : DifferentiableAt ℝ foo y := by
+  unfold foo; fun_prop (disch := aesop)
 
 example {n} : ContDiffOn ℝ n foo {0}ᶜ := by
-  unfold foo; fun_prop (disch:=aesop)
+  unfold foo; fun_prop (disch := aesop)
 
 example {n} (y : ℝ) (hy : y ≠ 0) :
     ContDiffAt ℝ n foo y := by
-  unfold foo; fun_prop (disch:=aesop)
+  unfold foo; fun_prop (disch := aesop)
 
 example : Continuous fun ((x, _, _) : ℝ × ℝ × ℝ) ↦ x := by fun_prop
 example : Continuous fun ((_, y, _) : ℝ × ℝ × ℝ) ↦ y := by fun_prop
@@ -39,12 +39,12 @@ example : Continuous fun ((_, _, z) : ℝ × ℝ × ℝ) ↦ z := by fun_prop
 @[fun_prop]
 theorem ContinuousOn.log' : ContinuousOn Real.log {0}ᶜ := ContinuousOn.log (by fun_prop) (by aesop)
 
--- Notice that no theorems about measuability of log are used. It is inferred from continuity.
-example : Measurable (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) := by
+-- Notice that no theorems about measurability of log are used. It is inferred from continuity.
+example : Measurable (fun x ↦ x * (Real.log x) ^ 2 - Real.exp x / x) := by
   fun_prop
 
--- Notice that no theorems about measuability of log are used. It is inferred from continuity.
-example : AEMeasurable (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) := by
+-- Notice that no theorems about measurability of log are used. It is inferred from continuity.
+example : AEMeasurable (fun x ↦ x * (Real.log x) ^ 2 - Real.exp x / x) := by
   fun_prop (maxTransitionDepth := 2)
 
 
@@ -57,16 +57,16 @@ private noncomputable def T (t : ℝ) : ℝ := S 1 (1 - t) t (t * (1 - t))
 
 example : ContinuousOn T (Set.Icc 0 1) := by
   unfold T S
-  fun_prop (disch:=(rintro x ⟨a,b⟩; nlinarith))
+  fun_prop (disch := (rintro x ⟨a,b⟩; nlinarith))
 
 
 example : DifferentiableOn ℝ T (Set.Icc 0 1) := by
   unfold T S
-  fun_prop (disch:=(rintro x ⟨a,b⟩; nlinarith))
+  fun_prop (disch := (rintro x ⟨a,b⟩; nlinarith))
 
 example {n}: ContDiffOn ℝ n T (Set.Icc 0 1) := by
   unfold T S
-  fun_prop (disch:=(rintro x ⟨a,b⟩; nlinarith))
+  fun_prop (disch := (rintro x ⟨a,b⟩; nlinarith))
 
 example : Measurable T := by
   unfold T S
@@ -76,6 +76,11 @@ example : AEMeasurable T := by
   unfold T S
   fun_prop
 
+example (z : ℂ) : MeromorphicAt (fun t ↦ Complex.cosh t) z := by
+  fun_prop
+
+example (z : ℂ) : MeromorphicAt (fun t ↦ Complex.cosh (2 * t)) z := by
+  fun_prop
 
 private theorem t1 : (5: ℕ) + (1 : ℕ∞) ≤ (12 : WithTop ℕ∞) := by norm_cast
 

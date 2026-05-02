@@ -6,7 +6,7 @@ Jovan Gerbscheid
 -/
 module
 
-public meta import Mathlib.Tactic.Translate.Core
+public import Mathlib.Tactic.Translate.Core
 
 /-!
 # The `@[to_additive]` attribute.
@@ -90,6 +90,10 @@ In the above example, the `simp` is added to all 3 lemmas. All other options to 
 (like the generated name or `(reorder := ...)`) are not passed down,
 and can be given manually to each individual `to_additive` call.
 
+The `(rename := ...)` syntax can be used for specifying the argument names of the generated
+declaration, overriding the automatic translation of names. For example, `(rename := x → a, y ↔ z)`
+will translate `lemma mul_foo (x y z : α) ...` to `lemma add_foo (a z y : α) ...`.
+
 ## Implementation notes
 
 The transport process generally works by taking all the names of
@@ -158,7 +162,7 @@ mismatch error.
   * If the fixed type has an additive counterpart (like `↥Semigroup`), give it the `@[to_additive]`
     attribute.
   * If the fixed type has nothing to do with algebraic operations (like `TopCat`), add the attribute
-    `@[to_additive self]` to the fixed type `Foo`.
+    `@[to_additive_do_translate]` to the fixed type `Foo`.
   * If the fixed type occurs inside the `k`-th argument of a declaration `d`, and the
     `k`-th argument is not connected to the multiplicative structure on `d`, consider adding
     attribute `[to_additive_ignore_args k]` to `d`.
@@ -257,13 +261,10 @@ initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
     descr :=
       "Auxiliary attribute for `to_additive` stating that certain arguments are not additivized."
     add := fun _ stx ↦ do
-        let ids ← match stx with
-          | `(attr| to_additive_ignore_args $[$ids:num]*) => pure <| ids.map (·.1.isNatLit?.get!)
-          | _ => throwUnsupportedSyntax
-        return ids.toList }
-
-@[inherit_doc TranslateData.argInfoAttr]
-initialize argInfoAttr : NameMapExtension ArgInfo ← registerNameMapExtension _
+      let ids ← match stx with
+        | `(attr| to_additive_ignore_args $[$ids:num]*) => pure <| ids.map (·.getNat - 1)
+        | _ => throwUnsupportedSyntax
+      return ids.toList }
 
 @[inherit_doc TranslateData.doTranslateAttr]
 initialize doTranslateAttr : NameMapExtension Bool ← registerNameMapExtension _
@@ -281,7 +282,7 @@ initialize
     add name _ _ := doTranslateAttr.add name false }
 
 /-- Maps multiplicative names to their additive counterparts. -/
-initialize translations : NameMapExtension Name ← registerNameMapExtension _
+initialize translations : NameMapExtension TranslationInfo ← registerNameMapExtension _
 
 @[inherit_doc GuessName.GuessNameData.nameDict]
 def nameDict : Std.HashMap String (List String) := .ofList [
@@ -316,6 +317,9 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("grp", ["Add", "Grp"]),
   ("commute", ["Add", "Commute"]),
   ("semiconj", ["Add", "Semiconj"]),
+  ("conjugates", ["Add", "Conjugates"]),
+  ("conj", ["Add", "Conj"]),
+  ("commutator", ["Add", "Commutator"]),
   ("rootable", ["Divisible"]),
   ("zpowers", ["ZMultiples"]),
   ("powers", ["Multiples"]),
@@ -348,6 +352,8 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("addSingle", "Single"),
   ("addSupport", "Support"),
   ("addTSupport", "TSupport"),
+  ("addPointed", "Pointed"),
+  ("addSpanning", "Spanning"),
   ("addIndicator", "Indicator"),
   ("isEven", "Even"),
   -- "Regular" is well-used in mathlib with various meanings (e.g. in
@@ -371,11 +377,16 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("divisionAddMonoid", "SubtractionMonoid"),
   ("subNegZeroAddMonoid", "SubNegZeroMonoid"),
   ("modularCharacter", "AddModularCharacter"),
-  ("isQuotientCoveringMap", "IsAddQuotientCoveringMap")]
+  ("isQuotientCoveringMap", "IsAddQuotientCoveringMap"),
+  ("addExact", "exact"),
+  ("isMonHom", "IsAddMonHom"),
+  ("mapMon", "MapAddMon"),
+  ("monObj", "AddMonObj"),
+  ("yonedaMon", "yonedaAddMon")]
 
 /-- The bundle of environment extensions for `to_additive` -/
 def data : TranslateData where
-  ignoreArgsAttr; argInfoAttr; doTranslateAttr; translations
+  ignoreArgsAttr; doTranslateAttr; translations
   attrName := `to_additive
   changeNumeral := true
   isDual := false
@@ -394,6 +405,6 @@ initialize registerBuiltinAttribute {
 into the `to_additive` dictionary. This is useful for translating namespaces that don't (yet)
 have a corresponding translated declaration. -/
 elab "insert_to_additive_translation" src:ident tgt:ident : command => do
-  translations.add src.getId tgt.getId
+  translations.add src.getId { translation := tgt.getId }
 
 end Mathlib.Tactic.ToAdditive

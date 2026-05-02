@@ -21,7 +21,7 @@ This file contains results about the continuous functional calculus on (indexed)
   `cfc f (a, b) = (cfc f a, cfc f b)` (and likewise for the non-unital version)
 -/
 
-@[expose] public section
+public section
 
 section nonunital_pi
 
@@ -42,15 +42,12 @@ lemma cfcₙ_map_pi (f : R → R) (a : ∀ i, A i)
     (hf : ContinuousOn f (⋃ i, quasispectrum R (a i)) := by cfc_cont_tac)
     (ha : p a := by cfc_tac) (ha' : ∀ i, q i (a i) := by cfc_tac) :
     cfcₙ f a = fun i => cfcₙ f (a i) := by
-  cases isEmpty_or_nonempty ι with
-  | inr h =>
-    by_cases hf₀ : f 0 = 0
-    · ext i
-      let φ := Pi.evalNonUnitalStarAlgHom S A i
-      exact φ.map_cfcₙ f a (by rwa [Pi.quasispectrum_eq]) hf₀ (continuous_apply i) ha (ha' i)
-    · simp only [cfcₙ_apply_of_not_map_zero _ hf₀, Pi.zero_def]
-  | inl h =>
-    exact Subsingleton.elim _ _
+  by_cases hf₀ : f 0 = 0
+  · ext i
+    have : Nonempty ι := ⟨i⟩
+    let φ := Pi.evalNonUnitalStarAlgHom S A i
+    exact φ.map_cfcₙ f a (by rwa [Pi.quasispectrum_eq]) hf₀ (continuous_apply i) ha (ha' i)
+  · simp only [cfcₙ_apply_of_not_map_zero _ hf₀, Pi.zero_def]
 
 end nonunital_pi
 

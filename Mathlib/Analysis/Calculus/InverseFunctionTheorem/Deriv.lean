@@ -16,7 +16,7 @@ We use `ContinuousLinearEquiv.unitsEquivAut` to translate `HasStrictDerivAt f f'
 `f' ≠ 0` into `HasStrictFDerivAt f (_ : 𝕜 ≃L[𝕜] 𝕜) a`.
 -/
 
-@[expose] public section
+public section
 
 open Filter
 open scoped Topology
@@ -34,6 +34,12 @@ abbrev localInverse : 𝕜 → 𝕜 :=
   (hf.hasStrictFDerivAt_equiv hf').localInverse _ _ _
 
 variable {f f' a}
+
+lemma eventually_left_inverse : ∀ᶠ x in 𝓝 a, localInverse f f' a hf hf' (f x) = x :=
+  HasStrictFDerivAt.eventually_left_inverse ..
+
+lemma eventually_right_inverse : ∀ᶠ x in 𝓝 (f a), f (localInverse f f' a hf hf' x) = x :=
+  HasStrictFDerivAt.eventually_right_inverse ..
 
 theorem map_nhds_eq : map f (𝓝 a) = 𝓝 (f a) :=
   (hf.hasStrictFDerivAt_equiv hf').map_nhds_eq_of_equiv

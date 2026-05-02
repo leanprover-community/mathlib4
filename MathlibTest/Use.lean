@@ -3,7 +3,7 @@ Copyright (c) 2022 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino
 -/
-
+module
 import Mathlib.Tactic.Use
 import Mathlib.Tactic.Basic
 import Mathlib.Logic.Equiv.Defs
@@ -237,8 +237,7 @@ set_option linter.style.longLine false in
 --   exact ⟨Nat.zero_lt_one, rfl⟩
 
 -- This feature might not be useful anymore since bounded `Exists` already uses a conjunction.
-example : ∃ n > 0, n = n :=
-by
+example : ∃ n > 0, n = n := by
   use (discharger := skip) 1
   guard_target = 1 > 0 ∧ 1 = 1
   decide

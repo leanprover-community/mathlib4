@@ -6,7 +6,7 @@ Authors: Jean Lo
 module
 
 public import Mathlib.Dynamics.Flow
-public import Mathlib.Tactic.Monotonicity
+public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 # ω-limits
@@ -134,10 +134,13 @@ theorem mem_omegaLimit_iff_frequently₂ (y : β) :
 
 /-- An element `y` is in the ω-limit of `x` w.r.t. `f` if the forward
 images of `x` frequently (w.r.t. `f`) falls within an arbitrary neighbourhood of `y`. -/
-theorem mem_omegaLimit_singleton_iff_map_cluster_point (x : α) (y : β) :
+theorem mem_omegaLimit_singleton_iff_mapClusterPt (x : α) (y : β) :
     y ∈ ω f ϕ {x} ↔ MapClusterPt y f fun t ↦ ϕ t x := by
   simp_rw [mem_omegaLimit_iff_frequently, mapClusterPt_iff_frequently, singleton_inter_nonempty,
     mem_preimage]
+
+@[deprecated (since := "2026-03-31")]
+alias mem_omegaLimit_singleton_iff_map_cluster_point := mem_omegaLimit_singleton_iff_mapClusterPt
 
 /-!
 ### Set operations and omega limits
@@ -187,12 +190,15 @@ theorem omegaLimit_eq_iInter_inter {v : Set τ} (hv : v ∈ f) :
   rw [omegaLimit_eq_biInter_inter _ _ _ hv]
   apply biInter_eq_iInter
 
-theorem omegaLimit_subset_closure_fw_image {u : Set τ} (hu : u ∈ f) :
+theorem omegaLimit_subset_closure_image2 {u : Set τ} (hu : u ∈ f) :
     ω f ϕ s ⊆ closure (image2 ϕ u s) := by
   rw [omegaLimit_eq_iInter]
   intro _ hx
   rw [mem_iInter] at hx
   exact hx ⟨u, hu⟩
+
+@[deprecated (since := "2026-03-31")]
+alias omegaLimit_subset_closure_fw_image := omegaLimit_subset_closure_image2
 
 -- An instance with better keys
 instance : Inhabited f.sets := Filter.inhabitedMem
@@ -334,7 +340,7 @@ open omegaLimit
 theorem omegaLimit_image_eq (hf : ∀ t, Tendsto (· + t) f f) (t : τ) : ω f ϕ (ϕ t '' s) = ω f ϕ s :=
   Subset.antisymm (omegaLimit_image_subset _ _ _ _ (hf t)) <|
     calc
-      ω f ϕ s = ω f ϕ (ϕ (-t) '' (ϕ t '' s)) := by simp [image_image, ← map_add]
+      ω f ϕ s = ω f ϕ (ϕ (-t) '' ϕ t '' s) := by simp [image_image, ← map_add]
       _ ⊆ ω f ϕ (ϕ t '' s) := omegaLimit_image_subset _ _ _ _ (hf _)
 
 theorem omegaLimit_omegaLimit (hf : ∀ t, Tendsto (t + ·) f f) : ω f ϕ (ω f ϕ s) ⊆ ω f ϕ s := by
@@ -348,7 +354,7 @@ theorem omegaLimit_omegaLimit (hf : ∀ t, Tendsto (t + ·) f f) : ω f ϕ (ω f
       (inter_subset_inter_left _
         ((isInvariant_iff_image _ _).mp (isInvariant_omegaLimit _ _ _ hf) _))
   have l₂ : (closure (image2 ϕ u s) ∩ o).Nonempty :=
-    l₁.mono fun b hb ↦ ⟨omegaLimit_subset_closure_fw_image _ _ _ hu hb.1, hb.2⟩
+    l₁.mono fun b hb ↦ ⟨omegaLimit_subset_closure_image2 _ _ _ hu hb.1, hb.2⟩
   have l₃ : (o ∩ image2 ϕ u s).Nonempty := by
     rcases l₂ with ⟨b, hb₁, hb₂⟩
     exact mem_closure_iff_nhds.mp hb₁ o (IsOpen.mem_nhds ho₂ hb₂)

@@ -28,7 +28,7 @@ The conclusion is then `f =ᵐ[μ] g`. The main lemmas are:
 
 -/
 
-@[expose] public section
+public section
 
 
 open Filter
@@ -42,35 +42,7 @@ variable {α : Type*} {m m0 : MeasurableSpace α} {μ : Measure α} {p : ℝ≥0
 theorem ae_const_le_iff_forall_lt_measure_zero {β} [LinearOrder β] [TopologicalSpace β]
     [OrderTopology β] [FirstCountableTopology β] (f : α → β) (c : β) :
     (∀ᵐ x ∂μ, c ≤ f x) ↔ ∀ b < c, μ {x | f x ≤ b} = 0 := by
-  rw [ae_iff]
-  push_neg
-  constructor
-  · intro h b hb
-    exact measure_mono_null (fun y hy => (lt_of_le_of_lt hy hb : _)) h
-  intro hc
-  by_cases! h : ∀ b, c ≤ b
-  · have : {a : α | f a < c} = ∅ := by
-      apply Set.eq_empty_iff_forall_notMem.2 fun x hx => ?_
-      exact (lt_irrefl _ (lt_of_lt_of_le hx (h (f x)))).elim
-    simp [this]
-  by_cases! H : ¬IsLUB (Set.Iio c) c
-  · have : c ∈ upperBounds (Set.Iio c) := fun y hy => le_of_lt hy
-    obtain ⟨b, b_up, bc⟩ : ∃ b : β, b ∈ upperBounds (Set.Iio c) ∧ b < c := by
-      simpa [IsLUB, IsLeast, this, lowerBounds] using H
-    exact measure_mono_null (fun x hx => b_up hx) (hc b bc)
-  obtain ⟨u, _, u_lt, u_lim, -⟩ :
-    ∃ u : ℕ → β,
-      StrictMono u ∧ (∀ n : ℕ, u n < c) ∧ Tendsto u atTop (𝓝 c) ∧ ∀ n : ℕ, u n ∈ Set.Iio c :=
-    H.exists_seq_strictMono_tendsto_of_notMem (lt_irrefl c) h
-  have h_Union : {x | f x < c} = ⋃ n : ℕ, {x | f x ≤ u n} := by
-    ext1 x
-    simp_rw [Set.mem_iUnion, Set.mem_setOf_eq]
-    constructor <;> intro h
-    · obtain ⟨n, hn⟩ := ((tendsto_order.1 u_lim).1 _ h).exists; exact ⟨n, hn.le⟩
-    · obtain ⟨n, hn⟩ := h; exact hn.trans_lt (u_lt _)
-  rw [h_Union, measure_iUnion_null_iff]
-  intro n
-  exact hc _ (u_lt n)
+  simp_rw [eventually_const_le_iff_forall_lt_eventually_const_lt, ae_iff, not_lt]
 
 lemma ae_le_const_iff_forall_gt_measure_zero {β} [LinearOrder β] [TopologicalSpace β]
     [OrderTopology β] [FirstCountableTopology β] {μ : Measure α} (f : α → β) (c : β) :

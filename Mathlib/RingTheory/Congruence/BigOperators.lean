@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.Congruence.Defs
 
 -/
 
-@[expose] public section
+public section
 
 namespace RingCon
 
@@ -33,6 +33,6 @@ protected lemma multisetSum {ι S : Type*} [AddCommMonoid S] [Mul S] (t : RingCo
 protected lemma finsetSum {ι S : Type*} [AddCommMonoid S] [Mul S] (t : RingCon S) (s : Finset ι)
     {f g : ι → S} (h : ∀ i ∈ s, t (f i) (g i)) :
     t (s.sum f) (s.sum g) :=
-  t.toAddCon.finset_sum s h
+  t.toAddCon.finsetSum s h
 
 end RingCon

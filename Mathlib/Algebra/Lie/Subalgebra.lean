@@ -36,6 +36,8 @@ universe u v w w₁ w₂
 
 section LieSubalgebra
 
+open Set
+
 variable (R : Type u) (L : Type v) [CommRing R] [LieRing L] [LieAlgebra R L]
 
 /-- A Lie subalgebra of a Lie algebra is submodule that is closed under the Lie bracket.
@@ -65,6 +67,8 @@ instance : SetLike (LieSubalgebra R L) L where
     rcases L'' with ⟨⟨⟩⟩
     congr
     exact SetLike.coe_injective' h
+
+instance : PartialOrder (LieSubalgebra R L) := .ofSetLike (LieSubalgebra R L) L
 
 instance : AddSubgroupClass (LieSubalgebra R L) L where
   add_mem := Submodule.add_mem _
@@ -288,8 +292,6 @@ def range : LieSubalgebra R L₂ :=
 theorem coe_range : (f.range : Set L₂) = Set.range f :=
   LinearMap.coe_range (f : L →ₗ[R] L₂)
 
-@[deprecated (since := "2025-08-31")] alias range_coe := coe_range
-
 @[simp]
 theorem mem_range (x : L₂) : x ∈ f.range ↔ ∃ y : L, f y = x :=
   LinearMap.mem_range
@@ -447,8 +449,6 @@ instance : InfSet (LieSubalgebra R L) :=
 theorem coe_inf : (↑(K ⊓ K') : Set L) = (K : Set L) ∩ (K' : Set L) :=
   rfl
 
-@[deprecated (since := "2025-08-31")] alias inf_coe := coe_inf
-
 @[simp]
 theorem sInf_toSubmodule (S : Set (LieSubalgebra R L)) :
     (↑(sInf S) : Submodule R L) = sInf {(s : Submodule R L) | s ∈ S} :=
@@ -459,8 +459,6 @@ theorem coe_sInf (S : Set (LieSubalgebra R L)) : (↑(sInf S) : Set L) = ⋂ s �
   rw [← coe_toSubmodule, sInf_toSubmodule, Submodule.coe_sInf]
   ext x
   simp
-
-@[deprecated (since := "2025-08-31")] alias sInf_coe := coe_sInf
 
 theorem sInf_glb (S : Set (LieSubalgebra R L)) : IsGLB S (sInf S) := by
   have h : ∀ K K' : LieSubalgebra R L, (K : Set L) ≤ K' ↔ K ≤ K' := by
@@ -533,6 +531,11 @@ instance subsingleton_of_bot : Subsingleton (LieSubalgebra R (⊥ : LieSubalgebr
 
 theorem subsingleton_bot : Subsingleton (⊥ : LieSubalgebra R L) :=
   show Subsingleton ((⊥ : LieSubalgebra R L) : Set L) by simp
+
+variable {K K'} in
+@[simp] lemma disjoint_toSubmodule :
+    Disjoint (K : Submodule R L) (K' : Submodule R L) ↔ Disjoint K K' := by
+  simp [disjoint_iff, ← toSubmodule_inj]
 
 variable (R L)
 
@@ -710,6 +713,48 @@ theorem lieSpan_induction {p : (x : L) → x ∈ lieSpan R L s → Prop}
       smul_mem' := fun r ↦ fun ⟨_, hpx⟩ ↦ ⟨_, smul r _ _ hpx⟩
       lie_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, lie _ _ _ _ hpx hpy⟩ }
   exact lieSpan_le (K := p) |>.mpr (fun y hy ↦ ⟨subset_lieSpan hy, mem y hy⟩) hx |>.elim fun _ ↦ id
+
+@[simp] lemma lieSpan_neg : lieSpan R L (-s) = lieSpan R L s := by
+  suffices ∀ s : Set L, lieSpan R L (-s) ≤ lieSpan R L s from
+    le_antisymm (this s) <| by simpa using (this (-s))
+  intro s x hx
+  induction hx using lieSpan_induction with
+  | mem y h => exact neg_mem_iff.mp <| subset_lieSpan <| Set.mem_neg.mp h
+  | zero => exact zero_mem _
+  | add _ _ _ _ hu hv => exact add_mem hu hv
+  | smul t _ _ hu => exact SMulMemClass.smul_mem t hu
+  | lie _ _ _ _ hu hv => exact lie_mem _ hu hv
+
+variable {R} in
+@[simp] lemma lieSpan_lieSpan_coe_preimage : lieSpan R _ (((↑) : lieSpan R L s → L) ⁻¹' s) = ⊤ := by
+  rw [eq_top_iff]
+  rintro ⟨x, hx⟩ -
+  induction hx using lieSpan_induction with
+  | mem u hu => exact subset_lieSpan <| by simpa
+  | zero => exact zero_mem _
+  | add u v _ _ hu hv => revert hu hv; exact add_mem
+  | smul t u _ hu => revert hu; exact LieSubalgebra.smul_mem _ _
+  | lie u v _ _ hu hv => revert hu hv; exact LieSubalgebra.lie_mem _
+
+lemma comap_lieSpan_range_eq {ι : Type*} (f : ι → K) :
+    (lieSpan R L (range ((↑) ∘ f))).comap K.incl = lieSpan R K (range f) := by
+  apply le_antisymm
+  · intro ⟨x, hx⟩ hx'
+    simp only [mem_comap, coe_incl] at hx'
+    suffices x ∈ (lieSpan R K (range f)).map K.incl by aesop
+    clear hx
+    induction hx' using lieSpan_induction with
+    | mem u hu =>
+      have (i : ι) : f i ∈ lieSpan R K (range f) := subset_lieSpan <| mem_range_self i
+      aesop
+    | zero => exact zero_mem _
+    | add u v _ _ hu hv => revert hu hv; exact add_mem
+    | smul t u _ hu => revert hu; exact LieSubalgebra.smul_mem _ _
+    | lie u v _ _ hu hv => revert hu hv; exact lie_mem _
+  · rw [lieSpan_le]
+    rintro - ⟨i, rfl⟩
+    simp only [SetLike.mem_coe, mem_comap, coe_incl]
+    exact subset_lieSpan <| by simp
 
 end LieSpan
 

@@ -42,6 +42,7 @@ open NumberField Units
 
 section Rat
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Rat.RingOfIntegers.isUnit_iff {x : 𝓞 ℚ} : IsUnit x ↔ (x : ℚ) = 1 ∨ (x : ℚ) = -1 := by
   simp_rw [(isUnit_map_iff (Rat.ringOfIntegersEquiv : 𝓞 ℚ →+* ℤ) x).symm, Int.isUnit_iff,
     RingEquiv.coe_toRingHom, RingEquiv.map_eq_one_iff, RingEquiv.map_eq_neg_one_iff, ←
@@ -164,12 +165,12 @@ instance : Fintype (torsion K) := by
     exact le_of_eq ((eq_iff_eq _ 1).mp ((mem_torsion K).mp h_tors) φ)
 
 /-- The torsion subgroup is cyclic. -/
-instance : IsCyclic (torsion K) := subgroup_units_cyclic _
+instance : IsCyclic (torsion K) := isCyclic_subgroup_units _
 
 /-- The order of the torsion subgroup. -/
-def torsionOrder [NumberField K] : ℕ := Fintype.card (torsion K)
+def torsionOrder : ℕ := Fintype.card (torsion K)
 
-instance [NumberField K] : NeZero (torsionOrder K) :=
+instance : NeZero (torsionOrder K) :=
   inferInstanceAs (NeZero (Fintype.card (torsion K)))
 
 theorem torsionOrder_ne_zero :
@@ -229,6 +230,7 @@ section odd
 
 variable {K}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem torsion_eq_one_or_neg_one_of_odd_finrank
     (h : Odd (Module.finrank ℚ K)) (x : torsion K) : (x : (𝓞 K)ˣ) = 1 ∨ (x : (𝓞 K)ˣ) = -1 := by
   by_cases! hc : 2 < orderOf (x : (𝓞 K)ˣ)

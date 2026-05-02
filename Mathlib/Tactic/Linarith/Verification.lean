@@ -5,8 +5,9 @@ Authors: Robert Y. Lewis
 -/
 module
 
-public meta import Mathlib.Tactic.Linarith.Parsing
 public meta import Mathlib.Util.Qq
+public meta import Mathlib.Tactic.Linarith.Datatypes
+public import Mathlib.Tactic.Linarith.Parsing
 
 /-!
 # Deriving a proof of false
@@ -213,7 +214,7 @@ def proveFalseByLinarith (transparency : TransparencyMode) (oracle : Certificate
       trace[linarith.detail] "comps:{indentD <| toMessageData comps}"
       -- perform the elimination and fail if no contradiction is found.
       let certificate : Std.HashMap Nat Nat ←
-        withTraceNode `linarith (return m!"{exceptEmoji ·} Invoking oracle") do
+        withTraceNode `linarith (fun _ => return m!" Invoking oracle") do
           let certificate ←
             try
               oracle.produceCertificate comps max_var
@@ -223,7 +224,7 @@ def proveFalseByLinarith (transparency : TransparencyMode) (oracle : Certificate
           trace[linarith] "found a contradiction: {certificate.toList}"
           return certificate
       let (sm, zip, idxs) ←
-        withTraceNode `linarith (return m!"{exceptEmoji ·} Building final expression") do
+        withTraceNode `linarith (fun _ => return m!" Building final expression") do
           let enum_inputs := inputsTagged.zipIdx
           -- construct a list pairing nonzero coeffs with the proof of their corresponding
           -- comparison and track the original index
@@ -253,8 +254,8 @@ def proveFalseByLinarith (transparency : TransparencyMode) (oracle : Certificate
         mkAppM ``Linarith.lt_irrefl #[pf']
       return (pf, idxs)
 where
-  /-- Log `f` under `linarith.detail`, with exception emojis and the provided name. -/
+  /-- Log `f` under `linarith.detail`, with the provided name. -/
   detailTrace {α} (s : String) (f : MetaM α) : MetaM α :=
-    withTraceNode `linarith.detail (return m!"{exceptEmoji ·} {s}") f
+    withTraceNode `linarith.detail (fun _ => return m!"{s}") f
 
 end Mathlib.Tactic.Linarith

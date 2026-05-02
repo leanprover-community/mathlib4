@@ -14,7 +14,9 @@ We introduce these relations:
 
 * `IsBigOWith c l f g` : "f is big O of g along l with constant c";
 * `f =O[l] g` : "f is big O of g along l";
-* `f =o[l] g` : "f is little o of g along l".
+* `f =Θ[l] g` : "f is big O of g along l and vice versa";
+* `f =o[l] g` : "f is little o of g along l";
+* `f ~[l] g` : `f` and `g` are equivalent, i.e., `f - g =o[l] g`.
 
 Here `l` is any filter on the domain of `f` and `g`, which are assumed to be the same. The codomains
 of `f` and `g` do not need to be the same; all that is needed is that there is a norm associated
@@ -41,7 +43,15 @@ nonzero, we have
 In fact, the right-to-left direction holds without the hypothesis on `g`, and in the other direction
 it suffices to assume that `f` is zero wherever `g` is. (This generalization is useful in defining
 the Fréchet derivative.)
+
+Sometimes Landau notation may be embedded in more complex expressions, such as
+$f(n) = n ^ {1 + O(g(n))}$. This can be expressed using the existential pattern, for example:
+
+  `∃ (e : ℕ → ℝ) (he : e =O[l] g), f =ᶠ[l] fun n ↦ n ^ (1 + e n)`.
+
 -/
+
+set_option linter.style.longFile 1600
 
 @[expose] public section
 
@@ -155,6 +165,21 @@ theorem IsBigO.of_norm_eventuallyLE {g : α → ℝ} (h : (‖f ·‖) ≤ᶠ[l]
 theorem IsBigO.of_norm_le {g : α → ℝ} (h : ∀ x, ‖f x‖ ≤ g x) : f =O[l] g :=
   .of_norm_eventuallyLE <| .of_forall h
 
+/-- We say that `f` is `Θ(g)` along a filter `l` (notation: `f =Θ[l] g`) if `f =O[l] g` and
+`g =O[l] f`. -/
+def IsTheta (l : Filter α) (f : α → E) (g : α → F) : Prop :=
+  IsBigO l f g ∧ IsBigO l g f
+
+@[inherit_doc]
+notation:100 f " =Θ[" l "] " g:100 => IsTheta l f g
+
+theorem IsBigO.antisymm (h₁ : f =O[l] g) (h₂ : g =O[l] f) : f =Θ[l] g :=
+  ⟨h₁, h₂⟩
+
+lemma IsTheta.isBigO (h : f =Θ[l] g) : f =O[l] g := h.1
+
+lemma IsTheta.isBigO_symm (h : f =Θ[l] g) : g =O[l] f := h.2
+
 /-- The Landau notation `f =o[l] g` where `f` and `g` are two functions on a type `α` and `l` is
 a filter on `α`, means that eventually for `l`, `‖f‖` is bounded by an arbitrarily small constant
 multiple of `‖g‖`. In other words, `‖f‖ / ‖g‖` tends to `0` along `l`, modulo division by zero
@@ -185,6 +210,20 @@ theorem IsLittleO.def' (h : f =o[l] g) (hc : 0 < c) : IsBigOWith c l f g :=
 
 theorem IsLittleO.eventuallyLE (h : f =o[l] g) : ∀ᶠ x in l, ‖f x‖ ≤ ‖g x‖ := by
   simpa using h.def zero_lt_one
+
+theorem IsLittleO.eventuallyLT_norm_of_eventually_pos (h : f =o[l] g) (hg : ∀ᶠ x in l, 0 < ‖g x‖) :
+    ∀ᶠ x in l, ‖f x‖ < ‖g x‖ := by
+  refine ((h.def (show 0 < 2⁻¹ by simp)).and hg).mono fun x ⟨hx₁, hx₂⟩ ↦ hx₁.trans_lt ?_
+  rw [mul_lt_iff_lt_one_left hx₂]
+  norm_num
+
+/-- Two functions `u` and `v` are said to be asymptotically equivalent along a filter `l`
+  (denoted as `u ~[l] v` in the `Asymptotics` namespace)
+  when `u x - v x = o(v x)` as `x` converges along `l`. -/
+def IsEquivalent (l : Filter α) (u v : α → E') :=
+  (u - v) =o[l] v
+
+@[inherit_doc] scoped notation:50 u " ~[" l:50 "] " v:50 => Asymptotics.IsEquivalent l u v
 
 end Defs
 
@@ -621,7 +660,7 @@ theorem isLittleO_insert [TopologicalSpace α] {x : α} {s : Set α} {g : α →
   refine forall_congr' fun c => forall_congr' fun hc => ?_
   rw [isBigOWith_insert]
   rw [h, norm_zero]
-  exact mul_nonneg hc.le (norm_nonneg _)
+  positivity
 
 protected theorem IsLittleO.insert [TopologicalSpace α] {x : α} {s : Set α} {g : α → E'}
     {g' : α → F'} (h1 : g =o[𝓝[s] x] g') (h2 : g x = 0) : g =o[𝓝[insert x s] x] g' :=
@@ -957,6 +996,24 @@ theorem IsLittleO.add (h₁ : f₁ =o[l] g) (h₂ : f₂ =o[l] g) : (fun x => f�
   IsLittleO.of_isBigOWith fun c cpos =>
     ((h₁.forall_isBigOWith <| half_pos cpos).add (h₂.forall_isBigOWith <|
       half_pos cpos)).congr_const (add_halves c)
+
+theorem IsBigOWith.add_add {g₁ g₂ : α → ℝ} (h₁ : IsBigOWith c₁ l f₁ g₁)
+    (h₂ : IsBigOWith c₂ l f₂ g₂) :
+    IsBigOWith (max c₁ c₂) l (fun x ↦ f₁ x + f₂ x) (fun x ↦ ‖g₁ x‖ + ‖g₂ x‖) := by
+  rw [IsBigOWith_def] at *
+  filter_upwards [h₁, h₂] with x hx₁ hx₂
+  calc
+    ‖f₁ x + f₂ x‖ ≤ c₁ * ‖g₁ x‖ + c₂ * ‖g₂ x‖ := norm_add_le_of_le hx₁ hx₂
+    _ ≤ (max c₁ c₂) * ‖g₁ x‖ + (max c₁ c₂) * ‖g₂ x‖ := by
+        gcongr <;> simp [le_max_left _ _, le_max_right _ _]
+    _ = (max c₁ c₂) * ‖‖g₁ x‖ + ‖g₂ x‖‖ := by
+        rw [Real.norm_of_nonneg (add_nonneg (norm_nonneg _) (norm_nonneg _)), mul_add]
+
+theorem IsBigO.add_add {g₁ g₂ : α → ℝ} (h₁ : f₁ =O[l] g₁) (h₂ : f₂ =O[l] g₂) :
+    (fun x ↦ f₁ x + f₂ x) =O[l] fun x ↦ ‖g₁ x‖ + ‖g₂ x‖ := by
+  obtain ⟨c₁, hc₁⟩ := h₁.isBigOWith
+  obtain ⟨c₂, hc₂⟩ := h₂.isBigOWith
+  exact (hc₁.add_add hc₂).isBigO
 
 theorem IsLittleO.add_add (h₁ : f₁ =o[l] g₁) (h₂ : f₂ =o[l] g₂) :
     (fun x => f₁ x + f₂ x) =o[l] fun x => ‖g₁ x‖ + ‖g₂ x‖ := by
@@ -1365,6 +1422,77 @@ theorem IsLittleO.sum (h : ∀ i ∈ s, A i =o[l] g') : (fun x => ∑ i ∈ s, A
   simp only [← Finset.sum_apply]
   exact Finset.sum_induction A (· =o[l] g') (fun _ _ ↦ .add) (isLittleO_zero ..) h
 
+variable {B : ι → α → ℝ}
+
+/-- If each term `A i` of a sum `IsBigO` of `B i`, then the sum of the `A i` `IsBigO` of the sum
+of the norms of the `B i`. -/
+theorem IsBigOWith.sum_congr
+    (hAB : ∀ i ∈ s, IsBigOWith (C i) l (A i) (B i)) :
+    IsBigOWith (sSup (C '' s)) l (fun H ↦ ∑ i ∈ s, A i H) (fun H ↦ ∑ i ∈ s, ‖B i H‖) := by
+  obtain rfl | hs := s.eq_empty_or_nonempty
+  · simp [isBigOWith_zero]
+  simp only [IsBigOWith_def] at *
+  filter_upwards [(eventually_all_finset s).mpr hAB]
+    with x hx
+  calc
+    ‖∑ i ∈ s, A i x‖ ≤ ∑ i ∈ s, ‖A i x‖ := norm_sum_le ..
+    _ ≤ ∑ i ∈ s, C i * ‖B i x‖ := Finset.sum_le_sum (fun j hj ↦ hx j hj)
+    _ ≤ ∑ i ∈ s, sSup (C '' s) * ‖B i x‖ := by
+        refine Finset.sum_le_sum ?_
+        intro j hj; gcongr
+        rw [← s.sup'_eq_csSup_image hs, Finset.le_sup'_iff]; use j
+    _ = sSup (C '' s) * ∑ i ∈ s, ‖B i x‖ := (Finset.mul_sum ..).symm
+    _ = sSup (C '' s) * ‖∑ i ∈ s, ‖B i x‖‖ := by
+      congr; rw [Real.norm_of_nonneg (Finset.sum_nonneg (fun _ _ ↦ norm_nonneg _))]
+
+theorem IsBigO.sum_congr (hAB : ∀ i ∈ s, A i =O[l] B i) :
+    (fun H => ∑ i ∈ s, A i H) =O[l] fun H => ∑ i ∈ s, ‖B i H‖ := by
+  simp only [IsBigO_def] at *
+  choose! C hC using hAB
+  exact ⟨_, IsBigOWith.sum_congr hC⟩
+
+theorem IsLittleO.sum_congr (hAB : ∀ i ∈ s, A i =o[l] B i) :
+    (fun H => ∑ i ∈ s, A i H) =o[l] fun H => ∑ i ∈ s, ‖B i H‖ := by
+  induction s using Finset.cons_induction with
+  | empty => simp [isLittleO_zero]
+  | cons i s his h =>
+  simp_rw [Finset.sum_cons]
+  calc (fun H => A i H + ∑ j ∈ s, A j H)
+      =o[l] fun H => ‖B i H‖ + ‖∑ j ∈ s, ‖B j H‖‖ :=
+          (hAB i (by simp)).add_add (h (fun j hj => hAB j (by simp [hj])))
+    _ =ᶠ[l] fun H => ‖B i H‖ + ∑ j ∈ s, ‖B j H‖ := by
+        refine Eventually.of_forall fun H ↦ congr_arg (‖B i H‖ + ·) ?_
+        exact Real.norm_of_nonneg (Finset.sum_nonneg fun _ _ => norm_nonneg _)
+
+/-- Similar to `IsBigOWith.sum_congr` except the index set can change in the sum. This requires the
+constant in `hAB` to be independent of the index `i` and also the big-O relationship to "kick in"
+at the same point along the running variable. Hence the `⊤` in `⊤ ×ˢ l`. -/
+theorem IsBigOWith.sum_congr' {C : ℝ} {i : α → Finset ι}
+    (hAB : IsBigOWith C (⊤ ×ˢ l) A.uncurry B.uncurry) :
+    IsBigOWith C l (fun H => ∑ j ∈ i H, A j H) (fun H => ∑ j ∈ i H, ‖B j H‖) := by
+  simp only [IsBigOWith_def] at *
+  obtain ⟨s₁, hs₁, s₂, hs₂, hbound⟩ := Filter.eventually_prod_iff.mp hAB
+  filter_upwards [hs₂] with H hH
+  calc
+    ‖∑ j ∈ i H, A j H‖ ≤ ∑ j ∈ i H, ‖A j H‖ := norm_sum_le ..
+    _ ≤ ∑ j ∈ i H, C * ‖B j H‖ :=
+        Finset.sum_le_sum fun j _ => hbound (Filter.eventually_top.mp hs₁ j) hH
+    _ = C * ∑ j ∈ i H, ‖B j H‖ := (Finset.mul_sum ..).symm
+    _ = C * ‖∑ j ∈ i H, ‖B j H‖‖ := by
+        congr; rw [Real.norm_of_nonneg (Finset.sum_nonneg (fun _ _ ↦ norm_nonneg _))]
+
+theorem IsBigO.sum_congr' {i : α → Finset ι} (hAB : A.uncurry =O[⊤ ×ˢ l] B.uncurry) :
+    (fun H => ∑ j ∈ i H, A j H) =O[l] (fun H => ∑ j ∈ i H, ‖B j H‖) := by
+  simp only [IsBigO_def]
+  obtain ⟨C, hC⟩ := hAB.isBigOWith
+  exact ⟨C, hC.sum_congr'⟩
+
+theorem IsLittleO.sum_congr' {i : α → Finset ι} (hAB : A.uncurry =o[⊤ ×ˢ l] B.uncurry) :
+    (fun H => ∑ j ∈ i H, A j H) =o[l] (fun H => ∑ j ∈ i H, ‖B j H‖) := by
+  rw [isLittleO_iff_forall_isBigOWith] at *
+  intro c hc
+  exact (hAB hc).sum_congr'
+
 end Sum
 
 /-!
@@ -1373,7 +1501,6 @@ end Sum
 If `u` and `v` are linked by an `IsBigOWith` relation, then we
 eventually have `(u / v) * v = u`, even if `v` vanishes.
 -/
-
 
 section EventuallyMulDivCancel
 

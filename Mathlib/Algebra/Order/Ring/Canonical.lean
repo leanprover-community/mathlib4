@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Ring.Parity
 # Canonically ordered rings and semirings.
 -/
 
-@[expose] public section
+public section
 
 
 open Function
@@ -26,7 +26,7 @@ variable {R : Type u}
 -- see Note [lower instance priority]
 instance (priority := 10) CanonicallyOrderedAdd.toZeroLEOneClass
     [AddZeroClass R] [One R] [LE R] [CanonicallyOrderedAdd R] : ZeroLEOneClass R where
-  zero_le_one := zero_le _
+  zero_le_one := zero_le
 
 -- this holds more generally if we refactor `Odd` to use
 -- either `2 • t` or `t + t` instead of `2 * t`.
@@ -79,8 +79,8 @@ protected lemma mul_lt_mul_of_lt_of_lt
   have := posMulStrictMono_iff_mulPosStrictMono.1 ‹_›
   obtain rfl | hc := eq_zero_or_pos c
   · rw [mul_zero]
-    exact mul_pos ((zero_le _).trans_lt hab) hcd
-  · exact mul_lt_mul_of_pos' hab hcd hc ((zero_le _).trans_lt hab)
+    exact mul_pos hab.pos hcd
+  · exact mul_lt_mul_of_pos' hab hcd hc hab.pos
 
 end CanonicallyOrderedAdd
 
@@ -89,7 +89,7 @@ section Sub
 section NonUnitalNonAssocSemiring
 
 variable [NonUnitalNonAssocSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R]
-  [Sub R] [OrderedSub R] [IsTotal R (· ≤ ·)]
+  [Sub R] [OrderedSub R] [@Std.Total R (· ≤ ·)]
 
 namespace AddLECancellable
 
@@ -123,7 +123,7 @@ end NonUnitalNonAssocSemiring
 section NonAssocSemiring
 
 variable [NonAssocSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R]
-  [Sub R] [OrderedSub R] [IsTotal R (· ≤ ·)]
+  [Sub R] [OrderedSub R] [@Std.Total R (· ≤ ·)]
 
 lemma mul_tsub_one [AddLeftReflectLE R] (a b : R) :
     a * (b - 1) = a * b - a := by rw [mul_tsub, mul_one]
@@ -135,7 +135,7 @@ end NonAssocSemiring
 section CommSemiring
 
 variable [CommSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R]
-  [Sub R] [OrderedSub R] [IsTotal R (· ≤ ·)] [AddLeftReflectLE R]
+  [Sub R] [OrderedSub R] [@Std.Total R (· ≤ ·)] [AddLeftReflectLE R]
 
 /-- The `tsub` version of `mul_self_sub_mul_self`. Notably, this holds for `Nat` and `NNReal`. -/
 theorem mul_self_tsub_mul_self (a b : R) :

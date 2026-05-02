@@ -17,7 +17,7 @@ effective epimorphic families, such that for every object `X` of `D` there exist
 `C` with an effective epi `π : F.obj W ⟶ X`, the category `C` is `Precoherent` whenever `D` is.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
@@ -26,6 +26,7 @@ variable {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
   [F.EffectivelyEnough]
   [Precoherent D] [F.Full] [F.Faithful]
 
+set_option backward.isDefEq.respectTransparency false in
 include F in
 lemma Functor.reflects_precoherent : Precoherent C where
   pullback {B₁ B₂} f α _ X₁ π₁ _ := by

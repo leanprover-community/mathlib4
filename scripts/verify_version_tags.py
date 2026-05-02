@@ -28,7 +28,6 @@ The script performs the following verification steps:
 - lean-toolchain file matches expected version (sans -patchM suffix)
 - Lean version (downloads toolchain via elan if needed, verifies Release build, checks commit SHA)
 - Elan toolchain directory structure sanity check
-- ProofWidgets toolchain consistency (warning only)
 - Cache download verification (lake exe cache get)
 - Build verification (lake build --no-build)
 """
@@ -231,12 +230,11 @@ def verify_local_remote_consistency(tag: str) -> VerificationResult:
     code, stdout, _ = run_cmd(['git', 'rev-parse', tag])
     if code != 0:
         # Tag not found locally - this is expected when running from release_checklist.py
-        # which doesn't have a local mathlib4 checkout with tags fetched.
-        # The GitHub check below will verify the tag exists remotely.
+        # which uses a shallow clone without tags. The GitHub check (verify_github_tag)
+        # verifies the tag exists remotely, so this is not an error or warning.
         return VerificationResult(
             True,
-            f"Tag {tag} not found locally (not in a mathlib4 checkout?)",
-            warning=True
+            f"Skipped (tag not in local checkout; GitHub check will verify)"
         )
     local_sha = stdout.strip()
 
@@ -556,34 +554,6 @@ def verify_lean_version_string(tag: str, checkout_dir: str) -> VerificationResul
     return VerificationResult(True, "")
 
 
-def has_proofwidgets_dependency(checkout_dir: str) -> bool:
-    """Check if proofwidgets is listed in lake-manifest.json."""
-    manifest_path = Path(checkout_dir) / 'lake-manifest.json'
-    if not manifest_path.exists():
-        return False
-
-    try:
-        with open(manifest_path) as f:
-            manifest = json.load(f)
-        packages = manifest.get('packages', [])
-        for pkg in packages:
-            # Handle different manifest formats:
-            # - Newer format: {"git": {"name": "proofwidgets", ...}}
-            # - Older format might have name at top level
-            name = pkg.get('name', '')
-            if not name:
-                # Check nested in git/path package types
-                for pkg_type in ['git', 'path']:
-                    if pkg_type in pkg:
-                        name = pkg[pkg_type].get('name', '')
-                        break
-            if name.lower() == 'proofwidgets':
-                return True
-        return False
-    except (json.JSONDecodeError, KeyError):
-        return False
-
-
 def get_packages_dir(checkout_dir: str) -> Path:
     """Get the packages directory from lake-manifest.json, with fallbacks.
 
@@ -610,42 +580,6 @@ def get_packages_dir(checkout_dir: str) -> Path:
         return old_path
     # Default to new path if neither exists yet
     return new_path
-
-
-def verify_proofwidgets_toolchain(checkout_dir: str) -> Optional[VerificationResult]:
-    """Verify ProofWidgets lean-toolchain matches root (WARNING only if mismatch).
-
-    Returns None if proofwidgets is not a dependency (skip this check).
-    """
-    # Skip if proofwidgets is not in lake-manifest.json
-    if not has_proofwidgets_dependency(checkout_dir):
-        return None
-
-    root_toolchain = Path(checkout_dir) / 'lean-toolchain'
-    packages_dir = get_packages_dir(checkout_dir)
-    pw_toolchain = packages_dir / 'proofwidgets' / 'lean-toolchain'
-
-    if not root_toolchain.exists():
-        return VerificationResult(True, "Root lean-toolchain not found", warning=True)
-
-    if not pw_toolchain.exists():
-        return VerificationResult(
-            True,
-            "ProofWidgets not yet downloaded (run cache get first)",
-            warning=True
-        )
-
-    root_content = root_toolchain.read_text().strip()
-    pw_content = pw_toolchain.read_text().strip()
-
-    if root_content != pw_content:
-        return VerificationResult(
-            True,  # Warning, not failure
-            f"ProofWidgets toolchain mismatch: {pw_content} vs {root_content}",
-            warning=True
-        )
-
-    return VerificationResult(True, "matches root")
 
 
 def verify_cache_download(checkout_dir: str) -> VerificationResult:
@@ -765,14 +699,6 @@ def verify_tag(tag: str) -> Tuple[bool, bool]:
             has_errors = True
         elif result.warning:
             has_warnings = True
-
-        result = verify_proofwidgets_toolchain(checkout_dir)
-        if result is not None:
-            print_result("ProofWidgets toolchain", result)
-            if not result.success:
-                has_errors = True
-            elif result.warning:
-                has_warnings = True
 
         result = verify_cache_download(checkout_dir)
         print_result("Cache download", result)

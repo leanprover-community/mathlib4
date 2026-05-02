@@ -6,12 +6,11 @@ Authors: Yury Kudryashov, Patrick Massot, Eric Wieser, Yaël Dillies
 module
 
 public import Mathlib.Analysis.Normed.Module.Basic
-public import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
 # Basic facts about real (semi)normed spaces
 
-In this file we prove some theorems about (semi)normed spaces over real numberes.
+In this file we prove some theorems about (semi)normed spaces over real numbers.
 
 ## Main results
 
@@ -23,7 +22,7 @@ In this file we prove some theorems about (semi)normed spaces over real numberes
   similar lemmas assuming that the ambient space is separated and nontrivial instead of `r ≠ 0`.
 -/
 
-@[expose] public section
+public section
 
 open Metric Set Function Filter
 open scoped NNReal Topology
@@ -59,8 +58,7 @@ theorem dist_smul_add_one_sub_smul_le {r : ℝ} {x y : E} (h : r ∈ Icc 0 1) :
 
 theorem closure_ball (x : E) {r : ℝ} (hr : r ≠ 0) : closure (ball x r) = closedBall x r := by
   refine Subset.antisymm closure_ball_subset_closedBall fun y hy => ?_
-  have : ContinuousWithinAt (fun c : ℝ => c • (y - x) + x) (Ico 0 1) 1 :=
-    ((continuous_id.smul continuous_const).add continuous_const).continuousWithinAt
+  have : ContinuousWithinAt (fun c : ℝ => c • (y - x) + x) (Ico 0 1) 1 := by fun_prop
   convert this.mem_closure _ _
   · rw [one_smul, sub_add_cancel]
   · simp [closure_Ico zero_ne_one, zero_le_one]
@@ -85,10 +83,8 @@ theorem interior_closedBall (x : E) {r : ℝ} (hr : r ≠ 0) :
   · exact hr
   set f : ℝ → E := fun c : ℝ => c • (y - x) + x
   suffices f ⁻¹' closedBall x (dist y x) ⊆ Icc (-1) 1 by
-    have hfc : Continuous f := (continuous_id.smul continuous_const).add continuous_const
-    have hf1 : (1 : ℝ) ∈ f ⁻¹' interior (closedBall x <| dist y x) := by simpa [f]
     have h1 : (1 : ℝ) ∈ interior (Icc (-1 : ℝ) 1) :=
-      interior_mono this (preimage_interior_subset_interior_preimage hfc hf1)
+      interior_mono this (preimage_interior_subset_interior_preimage (by fun_prop) (by simpa [f]))
     simp at h1
   intro c hc
   rw [mem_Icc, ← abs_le, ← Real.norm_eq_abs, ← mul_le_mul_iff_left₀ hr]
@@ -104,19 +100,13 @@ theorem interior_sphere (x : E) {r : ℝ} (hr : r ≠ 0) : interior (sphere x r)
 theorem frontier_sphere (x : E) {r : ℝ} (hr : r ≠ 0) : frontier (sphere x r) = sphere x r := by
   rw [isClosed_sphere.frontier_eq, interior_sphere x hr, diff_empty]
 
-end Seminormed
-
-section Normed
-
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [Nontrivial E]
+variable [NontrivialTopology E]
 
 section Surj
-
 variable (E)
 
 theorem exists_norm_eq {c : ℝ} (hc : 0 ≤ c) : ∃ x : E, ‖x‖ = c := by
-  rcases exists_ne (0 : E) with ⟨x, hx⟩
-  rw [← norm_ne_zero_iff] at hx
+  rcases exists_norm_ne_zero E with ⟨x, hx⟩
   use c • ‖x‖⁻¹ • x
   simp [norm_smul, Real.norm_of_nonneg hc, inv_mul_cancel₀ hx]
 
@@ -141,6 +131,12 @@ theorem NormedSpace.sphere_nonempty {x : E} {r : ℝ} : (sphere x r).Nonempty �
   exact ⟨x + y, by simpa using hy⟩
 
 end Surj
+
+end Seminormed
+
+section Normed
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [Nontrivial E]
 
 theorem interior_closedBall' (x : E) (r : ℝ) : interior (closedBall x r) = ball x r := by
   rcases eq_or_ne r 0 with (rfl | hr)

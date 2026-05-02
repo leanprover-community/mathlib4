@@ -15,9 +15,11 @@ public import Mathlib.Init
 
 variable {α β : Type}
 
-@[noinline]
+@[noinline, deprecated "deprecated without replacement" (since := "2026-01-24")]
 def injectIntoBaseIO {α : Type} (a : α) : BaseIO α := pure a
 
+set_option linter.deprecated false in
+@[deprecated "deprecated without replacement" (since := "2026-01-24")]
 unsafe def memoFixImpl [Nonempty β] (f : (α → β) → (α → β)) : α → β := unsafeBaseIO do
   let cache : IO.Ref (Lean.PtrMap α β) ← ST.mkRef Lean.mkPtrMap
   let rec fix (a) : β := unsafeBaseIO do
@@ -34,5 +36,6 @@ Hashing makes use of a pointer hash.
 This is useful for implementing tree traversal functions where
 subtrees may be referenced in multiple places.
 -/
-@[implemented_by memoFixImpl]
+@[implemented_by memoFixImpl,
+deprecated "use `MonadCacheT`  and `checkCache`" (since := "2026-01-24")]
 public opaque memoFix [Nonempty β] (f : (α → β) → (α → β)) : α → β

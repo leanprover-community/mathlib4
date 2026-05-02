@@ -16,7 +16,7 @@ about `Filter.atTop : Filter (Finset _)` and `∏ b ∈ s, f b`.
 These lemmas are useful to build the theory of absolutely convergent series.
 -/
 
-@[expose] public section
+public section
 
 open Filter Finset
 
@@ -30,7 +30,7 @@ condition for comparison of the filter `atTop.map (fun s ↦ ∏ b ∈ s, f b)` 
 gives a sufficient condition for comparison of the filter `atTop.map (fun s ↦ ∑ b ∈ s, f b)` with
 `atTop.map (fun s ↦ ∑ b ∈ s, g b)`. This is useful to compare the set of limit points of
 `∑ b ∈ s, f b` as `s → atTop` with the similar set for `g`. -/]
-theorem Filter.map_atTop_finset_prod_le_of_prod_eq {f : α → M} {g : β → M}
+theorem Filter.map_atTop_finsetProd_le_of_prod_eq {f : α → M} {g : β → M}
     (h_eq : ∀ u : Finset β,
       ∃ v : Finset α, ∀ v', v ⊆ v' → ∃ u', u ⊆ u' ∧ ∏ x ∈ u', g x = ∏ b ∈ v', f b) :
     (atTop.map fun s : Finset α => ∏ b ∈ s, f b) ≤
@@ -41,6 +41,12 @@ theorem Filter.map_atTop_finset_prod_le_of_prod_eq {f : α → M} {g : β → M}
     refine ⟨v, trivial, ?_⟩
     simpa [Finset.image_subset_iff] using hv
 
+@[deprecated (since := "2026-04-08")]
+alias Filter.map_atTop_finset_sum_le_of_sum_eq := Filter.map_atTop_finsetSum_le_of_sum_eq
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias Filter.map_atTop_finset_prod_le_of_prod_eq := Filter.map_atTop_finsetProd_le_of_prod_eq
+
 /-- Let `g : γ → β` be an injective function and `f : β → α` be a function from the codomain of `g`
 to a commutative monoid. Suppose that `f x = 1` outside of the range of `g`. Then the filters
 `atTop.map (fun s ↦ ∏ i ∈ s, f (g i))` and `atTop.map (fun s ↦ ∏ i ∈ s, f i)` coincide.
@@ -48,11 +54,11 @@ to a commutative monoid. Suppose that `f x = 1` outside of the range of `g`. The
 The additive version of this lemma is used to prove the equality `∑' x, f (g x) = ∑' y, f y` under
 the same assumptions. -/
 @[to_additive]
-theorem Function.Injective.map_atTop_finset_prod_eq {g : α → β}
+theorem Function.Injective.map_atTop_finsetProd_eq {g : α → β}
     (hg : Function.Injective g) {f : β → M} (hf : ∀ x, x ∉ Set.range g → f x = 1) :
     map (fun s => ∏ i ∈ s, f (g i)) atTop = map (fun s => ∏ i ∈ s, f i) atTop := by
   haveI := Classical.decEq β
-  apply le_antisymm <;> refine map_atTop_finset_prod_le_of_prod_eq fun s => ?_
+  apply le_antisymm <;> refine map_atTop_finsetProd_le_of_prod_eq fun s => ?_
   · refine ⟨s.preimage g hg.injOn, fun t ht => ?_⟩
     refine ⟨t.image g ∪ s, Finset.subset_union_right, ?_⟩
     rw [← Finset.prod_image hg.injOn]
@@ -65,10 +71,16 @@ theorem Function.Injective.map_atTop_finset_prod_eq {g : α → β}
     simp only [← prod_preimage _ _ hg.injOn _ fun x _ => hf x]
     exact ⟨_, (image_subset_iff_subset_preimage _).1 ht, rfl⟩
 
+@[deprecated (since := "2026-04-08")]
+alias Function.Injective.map_atTop_finset_sum_eq := Function.Injective.map_atTop_finsetSum_eq
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias Function.Injective.map_atTop_finset_prod_eq := Function.Injective.map_atTop_finsetProd_eq
+
 /-- Let `g : γ → β` be an injective function and `f : β → α` be a function from the codomain of `g`
 to an additive commutative monoid. Suppose that `f x = 0` outside of the range of `g`. Then the
 filters `atTop.map (fun s ↦ ∑ i ∈ s, f (g i))` and `atTop.map (fun s ↦ ∑ i ∈ s, f i)` coincide.
 
 This lemma is used to prove the equality `∑' x, f (g x) = ∑' y, f y` under
 the same assumptions. -/
-add_decl_doc Function.Injective.map_atTop_finset_sum_eq
+add_decl_doc Function.Injective.map_atTop_finsetSum_eq

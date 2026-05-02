@@ -20,7 +20,7 @@ finitely generated, and the semigroup ideals satisfy the ascending chain conditi
 * [Samuel Eilenberg and M. P. Schützenberger, *Rational Sets in Commutative Monoids*][eilenberg1969]
 -/
 
-@[expose] public section
+public section
 
 namespace SemigroupIdeal
 
@@ -65,7 +65,7 @@ instance : WellFoundedGT (SemigroupIdeal M) := by
   apply (f.mono hn).antisymm
   apply (le_iSup f n).trans
   intro x hx
-  rw [SetLike.mem_coe, hI, mem_closure''] at hx
+  rw [hI, mem_closure''] at hx
   rcases hx with ⟨y, z, hz, rfl⟩
   exact SemigroupIdeal.mul_mem _ _ (f.mono (Finset.le_sup hz) (hg _ hz))
 

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Init
 public import Lean.Elab.Tactic.Simp
+public import Lean.Meta.DiscrTree
 
 /-!
 # Helper functions for using the simplifier.
@@ -155,7 +156,7 @@ def getAllSimpDecls (simpAttr : Name) : CoreM (List Name) := do
 /-- Gets all simp-attributes given to declaration `decl`. -/
 def getAllSimpAttrs (decl : Name) : CoreM (Array Name) := do
   let mut simpAttrs := #[]
-  for (simpAttr, simpDecl) in (← simpExtensionMapRef.get).toList do
+  for (simpAttr, simpDecl) in ← simpExtensionMapRef.get do
     if (← simpDecl.getTheorems).contains decl then
       simpAttrs := simpAttrs.push simpAttr
   return simpAttrs

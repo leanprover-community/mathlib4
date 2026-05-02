@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Topology.Compactness.Lindelof
 public import Mathlib.Topology.Compactness.SigmaCompact
-public import Mathlib.Topology.Connected.TotallyDisconnected
 public import Mathlib.Topology.Inseparable
 public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.GDelta.Basic
@@ -26,7 +25,7 @@ occasionally the literature swaps definitions for e.g. T₃ and regular.
 
 -/
 
-@[expose] public section
+public section
 
 open Function Set Filter Topology TopologicalSpace
 

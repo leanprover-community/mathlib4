@@ -6,7 +6,6 @@ Authors: Junyan Xu
 module
 
 public import Mathlib.RingTheory.Jacobson.Radical
-public import Mathlib.RingTheory.Nilpotent.Defs
 public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
@@ -18,7 +17,7 @@ public import Mathlib.RingTheory.SimpleModule.Basic
   `Ring.jacobson R` is nilpotent and `R ⧸ Ring.jacobson R` is semisimple.
 -/
 
-@[expose] public section
+public section
 
 variable (R R₂ M M₂ : Type*) [Ring R] [Ring R₂]
 variable [AddCommGroup M] [Module R M] [AddCommGroup M₂] [Module R₂ M₂]

@@ -5,7 +5,6 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Tactic.LinearCombination
 public import Mathlib.Algebra.CharP.Invertible
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Data.Real.Sqrt
@@ -20,12 +19,12 @@ This is a foundational result which implies that
 quantum mechanics is not a local hidden variable theory.
 
 As usually stated the CHSH inequality requires substantial language from physics and probability,
-but it is possible to give a statement that is purely about ordered `*`-algebras.
+but it is possible to give a statement that is purely about ordered \*-algebras.
 We do that here, to avoid as many practical and logical dependencies as possible.
-Since the algebra of observables of any quantum system is an ordered `*`-algebra
+Since the algebra of observables of any quantum system is an ordered \*-algebra
 (in particular a von Neumann algebra) this is a strict generalization of the usual statement.
 
-Let `R` be a `*`-ring.
+Let `R` be a \*-ring.
 
 A CHSH tuple in `R` consists of
 * four elements `A₀ A₁ B₀ B₁ : R`, such that
@@ -36,12 +35,12 @@ The physical interpretation is that the four elements are observables (hence sel
 that take values ±1 (hence involutions), and that the `Aᵢ` are spacelike separated from the `Bⱼ`
 (and hence commute).
 
-The CHSH inequality says that when `R` is an ordered `*`-ring
-(that is, a `*`-ring which is ordered, and for every `r : R`, `0 ≤ star r * r`),
+The CHSH inequality says that when `R` is an ordered \*-ring
+(that is, a \*-ring which is ordered, and for every `r : R`, `0 ≤ star r * r`),
 which is moreover *commutative*, we have
 `A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ 2`
 
-On the other hand, Tsirelson's inequality says that for any ordered `*`-ring we have
+On the other hand, Tsirelson's inequality says that for any ordered \*-ring we have
 `A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ 2√2`
 
 (A caveat: in the commutative case we need 2⁻¹ in the ring,
@@ -50,9 +49,9 @@ To keep things simple we just assume our rings are ℝ-algebras.)
 
 The proofs I've seen in the literature either
 assume a significant framework for quantum mechanics,
-or assume the ring is a `C^*`-algebra.
-In the `C^*`-algebra case,
-the order structure is completely determined by the `*`-algebra structure:
+or assume the ring is a C⋆-algebra.
+In the C⋆-algebra case,
+the order structure is completely determined by the \*-algebra structure:
 `0 ≤ A` iff there exists some `B` so `A = star B * B`.
 There's a nice proof of both bounds in this setting at
 https://en.wikipedia.org/wiki/Tsirelson%27s_bound
@@ -61,7 +60,7 @@ The proof given here is purely algebraic.
 ## Future work
 
 One can show that Tsirelson's inequality is tight.
-In the `*`-ring of n-by-n complex matrices, if `A ≤ λ I` for some `λ : ℝ`,
+In the \*-ring of n-by-n complex matrices, if `A ≤ λ I` for some `λ : ℝ`,
 then every eigenvalue has absolute value at most `λ`.
 There is a CHSH tuple in 4-by-4 matrices such that
 `A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁` has `2√2` as an eigenvalue.
@@ -75,12 +74,12 @@ There is a CHSH tuple in 4-by-4 matrices such that
 
 -/
 
-@[expose] public section
+public section
 
 
 universe u
 
-/-- A CHSH tuple in a *-monoid consists of 4 self-adjoint involutions `A₀ A₁ B₀ B₁` such that
+/-- A CHSH tuple in a \*-monoid consists of 4 self-adjoint involutions `A₀ A₁ B₀ B₁` such that
 the `Aᵢ` commute with the `Bⱼ`.
 
 The physical interpretation is that `A₀` and `A₁` are a pair of Boolean observables which
@@ -108,7 +107,7 @@ theorem CHSH_id [CommRing R] {A₀ A₁ B₀ B₁ : R} (A₀_inv : A₀ ^ 2 = 1)
       4 * (2 - A₀ * B₀ - A₀ * B₁ - A₁ * B₀ + A₁ * B₁) := by
   grind
 
-/-- Given a CHSH tuple (A₀, A₁, B₀, B₁) in a *commutative* ordered `*`-algebra over ℝ,
+/-- Given a CHSH tuple (A₀, A₁, B₀, B₁) in a *commutative* ordered \*-algebra over ℝ,
 `A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ 2`.
 
 (We could work over ℤ[⅟2] if we wanted to!)
@@ -153,7 +152,7 @@ end TsirelsonInequality
 
 open TsirelsonInequality
 
-/-- In a noncommutative ordered `*`-algebra over ℝ,
+/-- In a noncommutative ordered \*-algebra over ℝ,
 Tsirelson's bound for a CHSH tuple (A₀, A₁, B₀, B₁) is
 `A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ 2^(3/2) • 1`.
 
@@ -187,7 +186,6 @@ theorem tsirelson_inequality [Ring R] [PartialOrder R] [StarRing R] [StarOrdered
     simp only [M]
     simp only [neg_mul, mul_inv_cancel_of_invertible, add_assoc, add_comm,
       add_left_comm, one_smul, Int.cast_neg, neg_smul, Int.cast_ofNat, ← add_smul]
-    have : √2 ^ 2 = 2 := by norm_num
     grind
   have pos : 0 ≤ (√2)⁻¹ • (P ^ 2 + Q ^ 2) := by
     have P_sa : star P = P := by

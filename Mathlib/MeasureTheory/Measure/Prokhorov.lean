@@ -5,7 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Algebra.Order.Disjointed
 public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 public import Mathlib.MeasureTheory.Measure.Tight
 import Mathlib.MeasureTheory.Integral.Regular
@@ -21,7 +20,7 @@ notably several versions of Prokhorov theorem on tight sets of probability measu
 ## Main statements
 
 * `instCompactSpaceProbabilityMeasure` proves that the space of probability measures on a compact
-space is itself compact
+  space is itself compact
 * `isCompact_setOf_probabilityMeasure_mass_eq_compl_isCompact_le`: Given a sequence of compact
   sets `Kₙ` and a sequence `uₙ` tending to zero, the probability measures giving mass at most `uₙ`
   to the complement of `Kₙ` form a compact set.
@@ -50,7 +49,7 @@ from the construction. In the second case, we modify the individual limits
 check the condition.
 -/
 
-@[expose] public section
+public section
 
 open scoped ENNReal NNReal CompactlySupported
 open Filter Function Set Topology TopologicalSpace MeasureTheory BoundedContinuousFunction
@@ -71,7 +70,7 @@ theorem isCompact_setOf_finiteMeasure_le_of_compactSpace [CompactSpace E] (C : �
   apply isCompact_iff_ultrafilter_le_nhds'.2 (fun f hf ↦ ?_)
   have L (g : C_c(E, ℝ)) :
       ∃ x ∈ Icc (-C * ‖g.toBoundedContinuousFunction‖) (C * ‖g.toBoundedContinuousFunction‖),
-      Tendsto (fun (μ : FiniteMeasure E) ↦ ∫ x, g x ∂ μ) f (𝓝 x) := by
+      Tendsto (fun (μ : FiniteMeasure E) ↦ ∫ x, g x ∂μ) f (𝓝 x) := by
     simp only [Tendsto, ← Ultrafilter.coe_map]
     apply IsCompact.ultrafilter_le_nhds' isCompact_Icc
     simp only [neg_mul, Ultrafilter.mem_map]
@@ -288,7 +287,7 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
         (∑ i ∈ Finset.range (n + 1), μ.restrict (disjointed K i)).mass) f
         (𝓝 ((∑ i ∈ Finset.range (n + 1), ν i).mass)) := by
       apply Tendsto.mass
-      exact tendsto_finset_sum _ (fun i hi ↦ hν i)
+      exact tendsto_finsetSum _ (fun i hi ↦ hν i)
     apply le_of_tendsto this
     filter_upwards [hf] with μ hμ
     rw [I, restrict_mass]
@@ -312,7 +311,7 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
       have : Tendsto (fun n ↦ ∫ x, g x ∂(∑ i ∈ Finset.range n, ν i)) atTop (𝓝 (∫ x, g x ∂μ)) := by
         simp only [FiniteMeasure.toMeasure_mk, μ]
         rw [integral_sum_measure (g.integrable (μ := μ))]
-        simp_rw [integral_finset_sum_measure (fun i hi ↦ g.integrable _)]
+        simp_rw [integral_finsetSum_measure (fun i hi ↦ g.integrable _)]
         apply Summable.tendsto_sum_tsum_nat
         apply (hasSum_integral_measure _).summable
         exact g.integrable (μ := μ)
@@ -331,7 +330,7 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
         ∫ x, g x ∂(∑ i ∈ Finset.range (n + 1), ρ.restrict (disjointed K i) : FiniteMeasure E)) f
         (𝓝 (∫ x, g x ∂(∑ i ∈ Finset.range (n + 1), ν i : FiniteMeasure E))) := by
       apply tendsto_iff_forall_integral_tendsto.1 _ g
-      apply tendsto_finset_sum _ (fun i hi ↦ hν i)
+      apply tendsto_finsetSum _ (fun i hi ↦ hν i)
     -- therefore, after some point the difference is bounded by `ε / 3`.
     filter_upwards [Metric.tendsto_nhds.1 this (ε / 3) (by positivity), hf] with ρ hρ h'ρ
     -- let us show that in this case the full integrals differ by at most `ε`.
@@ -428,20 +427,17 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
     filter_upwards [Ici_mem_atTop n] with m (hm : n ≤ m)
     have : ∑ i ∈ Finset.range (m + 1), (ν i : Measure E) (K n)ᶜ
         = ∑ i ∈ Finset.Ioc n m, (ν i : Measure E) (K n)ᶜ := by
-      apply (Finset.sum_subset _ _).symm
-      · intro i hi
-        simp only [Finset.mem_Ioc, Finset.mem_range_succ_iff] at hi ⊢
-        grind
-      · simp +contextual only [Finset.mem_range_succ_iff, Finset.mem_Ioc, not_and,
-          not_true_eq_false, imp_false, not_lt, ← null_iff_toMeasure_null]
-        intro i hi h'i
-        apply (ν i).mono_null _ (νK i)
-        rw [Monotone.partialSups_eq h]
-        exact compl_subset_compl.2 (h h'i)
+      apply (Finset.sum_subset (by grind) _).symm
+      simp +contextual only [Finset.mem_range_succ_iff, Finset.mem_Ioc, not_and,
+        not_true_eq_false, imp_false, not_lt, ← null_iff_toMeasure_null]
+      intro i hi h'i
+      apply (ν i).mono_null _ (νK i)
+      rw [Monotone.partialSups_eq h]
+      exact compl_subset_compl.2 (h h'i)
     rw [this]
     suffices (∑ i ∈ Finset.Ioc n m, ν i).toMeasure univ ≤ u n by
       apply le_trans _ this
-      simp only [toMeasure_sum, Measure.coe_finset_sum, Finset.sum_apply]
+      simp only [toMeasure_sum, Measure.coe_finsetSum, Finset.sum_apply]
       gcongr
       simp
     suffices (∑ i ∈ Finset.Ioc n m, ν i).mass ≤ u n by
@@ -451,7 +447,7 @@ lemma isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le
         (∑ i ∈ Finset.Ioc n m, μ.restrict (disjointed K i)).mass) f
         (𝓝 ((∑ i ∈ Finset.Ioc n m, ν i).mass)) := by
       apply Tendsto.mass
-      exact tendsto_finset_sum _ (fun i hi ↦ hν i)
+      exact tendsto_finsetSum _ (fun i hi ↦ hν i)
     apply le_of_tendsto this
     filter_upwards [hf] with μ hμ
     have : ∑ i ∈ Finset.Ioc n m, μ.restrict (disjointed K i) = μ.restrict (K m \ K n) := by
@@ -469,7 +465,7 @@ lemma isCompact_setOf_finiteMeasure_mass_eq_compl_isCompact_le {u : ℕ → ℝ�
     (h : NormalSpace E ∨ Monotone K) :
     IsCompact {μ : FiniteMeasure E | μ.mass = C ∧ ∀ n, μ (K n)ᶜ ≤ u n} := by
   have : {μ : FiniteMeasure E | μ.mass = C ∧ ∀ n, μ (K n)ᶜ ≤ u n} =
-    {μ | μ.mass ≤ C ∧ ∀ n, μ (K n)ᶜ ≤ u n} ∩  {μ | μ.mass = C} := by ext; grind
+    {μ | μ.mass ≤ C ∧ ∀ n, μ (K n)ᶜ ≤ u n} ∩ {μ | μ.mass = C} := by ext; grind
   rw [this]
   apply IsCompact.inter_right (isCompact_setOf_finiteMeasure_mass_le_compl_isCompact_le C hu hK h)
   exact isClosed_eq (by fun_prop) (by fun_prop)

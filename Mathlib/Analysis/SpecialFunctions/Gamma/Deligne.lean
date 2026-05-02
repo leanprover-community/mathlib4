@@ -11,7 +11,7 @@ public import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 # Deligne's archimedean Gamma-factors
 
 In the theory of L-series one frequently encounters the following functions (of a complex variable
-`s`) introduced in Deligne's landmark paper *Valeurs de fonctions L et periodes d'integrales*:
+`s`) introduced in Deligne's landmark paper *Valeurs de fonctions L et périodes d'intégrales*:
 
 $$ \Gamma_{\mathbb{R}}(s) = \pi ^ {-s / 2} \Gamma (s / 2) $$
 
@@ -38,7 +38,7 @@ namespace Complex
 
 /-- Deligne's archimedean Gamma factor for a real infinite place.
 
-See "Valeurs de fonctions L et periodes d'integrales" § 5.3. Note that this is not the same as
+See "Valeurs de fonctions L et périodes d'intégrales" § 5.3. Note that this is not the same as
 `Real.Gamma`; in particular it is a function `ℂ → ℂ`. -/
 noncomputable def Gammaℝ (s : ℂ) := π ^ (-s / 2) * Gamma (s / 2)
 
@@ -46,7 +46,7 @@ lemma Gammaℝ_def (s : ℂ) : Gammaℝ s = π ^ (-s / 2) * Gamma (s / 2) := rfl
 
 /-- Deligne's archimedean Gamma factor for a complex infinite place.
 
-See "Valeurs de fonctions L et periodes d'integrales" § 5.3. (Some authors omit the factor of 2).
+See "Valeurs de fonctions L et périodes d'intégrales" § 5.3. (Some authors omit the factor of 2).
 Note that this is not the same as `Complex.Gamma`. -/
 noncomputable def Gammaℂ (s : ℂ) := 2 * (2 * π) ^ (-s) * Gamma s
 
@@ -102,7 +102,7 @@ lemma Gammaℝ_residue_zero : Tendsto (fun s ↦ s * Gammaℝ s) (𝓝[≠] 0) (
     rw [(by simp : 𝓝 2 = 𝓝 (2 * (π : ℂ) ^ (-(0 : ℂ) / 2)))]
     refine Tendsto.mono_left (ContinuousAt.tendsto ?_) nhdsWithin_le_nhds
     exact continuousAt_const.mul ((continuousAt_const_cpow (ofReal_ne_zero.mpr pi_ne_zero)).comp
-      (continuousAt_id.neg.div_const _))
+      (by fun_prop))
   convert mul_one (2 : ℂ) ▸ (h'.mul h) using 2 with z
   rw [Gammaℝ]
   ring_nf

@@ -8,6 +8,7 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.Algebra.Module.Submodule.Map
+public import Mathlib.Algebra.Module.Submodule.RestrictScalars
 
 /-!
 # Kernel of a linear map
@@ -31,8 +32,7 @@ linear algebra, vector space, module
 @[expose] public section
 
 open Function
-
-open Pointwise
+open scoped Pointwise
 
 variable {R : Type*} {R₂ : Type*} {R₃ : Type*}
 variable {K : Type*}
@@ -272,6 +272,19 @@ theorem ker_comp_of_ker_eq_bot (f : M →ₛₗ[τ₁₂] M₂) {g : M₂ →ₛ
     ker (g.comp f : M →ₛₗ[τ₁₃] M₃) = ker f := by rw [ker_comp, hg, Submodule.comap_bot]
 
 end Semiring
+
+section RestrictScalars
+
+variable (R : Type*) {S M N : Type*} [Semiring R] [Semiring S] [SMul R S]
+variable [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M]
+variable [AddCommMonoid N] [Module R N] [Module S N] [IsScalarTower R S N]
+
+@[simp]
+theorem ker_restrictScalars (f : M →ₗ[S] N) :
+    ker (f.restrictScalars R) = (ker f).restrictScalars R :=
+  rfl
+
+end RestrictScalars
 
 end LinearMap
 

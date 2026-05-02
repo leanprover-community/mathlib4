@@ -7,10 +7,10 @@ module
 
 public meta import Lean.Elab.Tactic.Simp
 public meta import Lean.Elab.App
-public meta import Mathlib.Tactic.Simps.NotationClass
 public meta import Mathlib.Lean.Expr.Basic
-public meta import Mathlib.Tactic.Basic
 public import Mathlib.Util.AddRelatedDecl
+public import Mathlib.Tactic.Simps.NotationClass
+public import Mathlib.Tactic.Translate.Attributes
 
 /-!
 # Simps attribute
@@ -67,7 +67,6 @@ private structure NameStruct where
   /-- A list of pieces to be joined by `toName`. -/
   components : List String
 
-set_option backward.privateInPublic true in
 /-- Join the components with `_`, or append `_def` if there is only one component. -/
 private def NameStruct.toName (n : NameStruct) : Name :=
   Name.mkStr n.parent <|
@@ -76,9 +75,7 @@ private def NameStruct.toName (n : NameStruct) : Name :=
     | [x] => s!"{x}_def"
     | e => "_".intercalate e
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance : Coe NameStruct Name where coe := NameStruct.toName
+private instance : Coe NameStruct Name where coe := NameStruct.toName
 
 /-- `update nm s isPrefix` adds `s` to the last component of `nm`,
 either as prefix or as suffix (specified by `isPrefix`).
@@ -147,7 +144,7 @@ attribute [notation_class mod] HMod
 attribute [notation_class append] HAppend
 attribute [notation_class pow Simps.copyFirst] HPow
 attribute [notation_class andThen] HAndThen
-attribute [notation_class] Neg Dvd LE LT HasEquiv HasSubset HasSSubset Union Inter SDiff Insert
+attribute [notation_class] Neg Inv Dvd LE LT HasEquiv HasSubset HasSSubset Union Inter SDiff Insert
   Singleton Sep Membership
 attribute [notation_class one Simps.findOneArgs] OfNat
 attribute [notation_class zero Simps.findZeroArgs] OfNat
@@ -325,7 +322,7 @@ This default behavior is customisable as such:
 
 Here are a few extra pieces of information:
   * Run `initialize_simps_projections?` (or `set_option trace.simps.verbose true`)
-  to see the generated projections.
+    to see the generated projections.
 * Running `initialize_simps_projections MyStruct` without arguments is not necessary, it has the
   same effect if you just add `@[simps]` to a declaration.
 * It is recommended to call `@[simps]` or `initialize_simps_projections` in the same file as the
@@ -806,12 +803,12 @@ Optionally, this command accepts three optional arguments:
 def getRawProjections (stx : Syntax) (str : Name) (traceIfExists : Bool := false)
     (rules : Array ProjectionRule := #[]) (trc := false) :
     CoreM (List Name × Array ProjectionData) := do
-  withOptions (·.updateBool `trace.simps.verbose (trc || ·)) do
+  withOptions (fun o => if trc then o.set `trace.simps.verbose true else o) do
   let env ← getEnv
-  if let some data := (structureExt.getState env).find? str then
+  if let some data := structureExt.find? env str then
     -- We always print the projections when they already exists and are called by
     -- `initialize_simps_projections`.
-    withOptions (·.updateBool `trace.simps.verbose (traceIfExists || ·)) do
+    withOptions (fun o => if traceIfExists then o.set `trace.simps.verbose true else o) do
       trace[simps.verbose]
         projectionsInfo data.2.toList "The projections for this structure have already been \
         initialized by a previous invocation of `initialize_simps_projections` or `@[simps]`.\n\
@@ -838,7 +835,7 @@ def getRawProjections (stx : Syntax) (str : Name) (traceIfExists : Bool := false
   trace[simps.debug] "Generated raw projection data:{indentD <| toMessageData (rawLevels, projs)}"
   pure (rawLevels, projs)
 
-library_note2 «custom simps projection» /--
+library_note «custom simps projection» /--
 You can specify custom projections for the `@[simps]` attribute.
 To do this for the projection `MyStructure.originalProjection` by adding a declaration
 `MyStructure.Simps.myProjection` that is definitionally equal to
@@ -884,6 +881,8 @@ structure Config where
   attrs : Array Attribute := #[]
   /-- simplify the right-hand side of generated simp-lemmas using `dsimp, simp`. -/
   simpRhs := false
+  /-- simplify the left-hand side of the generated lemmas using `dsimp`. -/
+  dsimpLhs := false
   /-- TransparencyMode used to reduce the type in order to detect whether it is a structure. -/
   typeMd := TransparencyMode.instances
   /-- TransparencyMode used to reduce the right-hand side in order to detect whether it is a
@@ -987,6 +986,11 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
       trace[simps.debug] "`simp` failed to simplify rhs"
     rhs := result.expr
     prf := result.proof?.getD prf
+  -- dsimplify `lhs` if `cfg.dsimpLhs` is true
+  let mut lhs := lhs
+  if cfg.dsimpLhs then
+    let ctx ← mkSimpContext
+    (lhs, _) ← dsimp lhs ctx
   let eqAp := mkApp3 (mkConst `Eq [lvl]) type lhs rhs
   let declType ← mkForallFVars args eqAp
   let declValue ← mkLambdaFVars args prf
@@ -1040,8 +1044,6 @@ partial def headStructureEtaReduce (e : Expr) : MetaM Expr := do
   trace[simps.debug] "Structure-eta-reduce:{indentExpr e}\nto{indentExpr reduct}"
   headStructureEtaReduce reduct
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Derive lemmas specifying the projections of the declaration.
 `nm`: name of the lemma
 If `todo` is non-empty, it will generate exactly the names in `todo`.
@@ -1049,19 +1051,21 @@ If `todo` is non-empty, it will generate exactly the names in `todo`.
 was just used. In that case we need to apply these projections before we continue changing `lhs`.
 `simpLemmas`: names of the simp lemmas added so far.(simpLemmas : Array Name)
 -/
-partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
+private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
     (args : Array Expr) (mustBeStr : Bool) (cfg : Config)
     (todo : List (String × Syntax)) (toApply : List Nat) : MetaM (Array Name) := do
   -- we don't want to unfold non-reducible definitions (like `Set`) to apply more arguments
   trace[simps.debug] "Type of the Expression before normalizing: {type}"
   withTransparency cfg.typeMd <| forallTelescopeReducing type fun typeArgs tgt ↦ withDefault do
   trace[simps.debug] "Type after removing pi's: {tgt}"
-  let tgt ← whnfD tgt
-  trace[simps.debug] "Type after reduction: {tgt}"
+  -- TODO: consider reducing the type less aggressively.
+  -- See https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Simps.20and.20.60def.60/near/560586075
+  let tgtWhnf ← whnfD tgt
+  trace[simps.debug] "Type after reduction: {tgtWhnf}"
   let newArgs := args ++ typeArgs
   let lhsAp := lhs.instantiateLambdasOrApps typeArgs
   let rhsAp := rhs.instantiateLambdasOrApps typeArgs
-  let str := tgt.getAppFn.constName
+  let str := tgtWhnf.getAppFn.constName
   trace[simps.debug] "todo: {todo}, toApply: {toApply}"
   -- We want to generate the current projection if it is in `todo`
   let todoNext := todo.filter (·.1 ≠ "")
@@ -1147,7 +1151,7 @@ partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
     return #[nm.toName]
   -- if the value is a constructor application
   trace[simps.debug] "Generating raw projection information..."
-  let projInfo ← getProjectionExprs ref tgt rhsWhnf cfg
+  let projInfo ← getProjectionExprs ref tgtWhnf rhsWhnf cfg
   trace[simps.debug] "Raw projection information:{indentD m!"{projInfo}"}"
   -- If we are in the middle of a composite projection.
   if let idx :: rest := toApply then
@@ -1199,7 +1203,7 @@ If `shortNm` is true, the generated names will only use the last projection name
 If `trc` is true, trace as if `trace.simps.verbose` is true. -/
 def simpsTac (ref : Syntax) (nm : Name) (cfg : Config := {})
     (todo : List (String × Syntax) := []) (trc := false) : AttrM (Array Name) :=
-  withOptions (·.updateBool `trace.simps.verbose (trc || ·)) do
+  withOptions (fun o => if trc then o.set `trace.simps.verbose true else o) do
   -- We need access to theorem bodies
   let env ← withoutExporting getEnv
   let some d := env.find? nm | throwError "Declaration {nm} doesn't exist."
@@ -1215,7 +1219,7 @@ def simpsTac (ref : Syntax) (nm : Name) (cfg : Config := {})
           let s := nm.lastComponentAsString
           if (← isInstance nm) ∧ s.startsWith "inst" then [] else [s]}
   MetaM.run' <| addProjections ref d.levelParams
-    nm d.type lhs (d.value?.getD default) #[] (mustBeStr := true) cfg todo []
+    nm d.type lhs (d.value! (allowOpaque := true)) #[] (mustBeStr := true) cfg todo []
 
 /-- elaborate the syntax and run `simpsTac`. -/
 def simpsTacFromSyntax (nm : Name) (stx : Syntax) : AttrM (Array Name) :=
@@ -1239,3 +1243,7 @@ initialize simpsAttr : ParametricAttribute (Array Name) ←
     applicationTime := .afterCompilation
     descr := "Automatically derive lemmas specifying the projections of this declaration.",
     getParam := simpsTacFromSyntax }
+
+initialize Mathlib.Tactic.registerGeneratingAttr `simps fun decl stx kind => do
+  simpsAttr.attr.add decl stx kind
+  return (simpsAttr.getParam? (← getEnv) decl).get!

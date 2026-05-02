@@ -106,7 +106,7 @@ theorem ae_null_of_comp_null (h : (η ∘ₖ κ) a s = 0) : (η · s) =ᵐ[κ a]
   simp_rw [comp_null a mt] at ht
   rw [Filter.eventuallyLE_antisymm_iff]
   exact ⟨Filter.EventuallyLE.trans_eq (ae_of_all _ fun _ ↦ measure_mono hst) ht,
-    ae_of_all _ fun _ ↦ zero_le _⟩
+    ae_of_all _ fun _ ↦ zero_le⟩
 
 variable {p : γ → Prop}
 
@@ -147,7 +147,7 @@ theorem comp_assoc {δ : Type*} {mδ : MeasurableSpace δ} (ξ : Kernel γ δ)
 
 lemma comp_discard' (κ : Kernel α β) :
     discard β ∘ₖ κ =
-      { toFun a := κ a .univ • Measure.dirac ()
+      { toFun a := κ a .univ • Measure.dirac PUnit.unit
         measurable' := (κ.measurable_coe .univ).smul_measure _ } := by
   ext a s hs
   simp [comp_apply' _ _ _ hs, mul_comm]
