@@ -27,22 +27,22 @@ open Filter MeasureTheory Set TopologicalSpace
 
 open scoped Topology
 
-variable {ι X E : Type*} [MeasurableSpace X] [TopologicalSpace E] [IsCompletelyMetrizableSpace E]
-  [Countable ι] {l : Filter ι} [l.IsCountablyGenerated] {f : ι → X → E}
+variable {ι X E : Type*} [MeasurableSpace X] [TopologicalSpace E] [Countable ι] {l : Filter ι}
+  [l.IsCountablyGenerated] {f : ι → X → E}
 
 namespace MeasureTheory.StronglyMeasurable
 
-theorem measurableSet_exists_tendsto (hf : ∀ i, StronglyMeasurable (f i)) :
+theorem measurableSet_exists_tendsto [IsCompletelyPseudoMetrizableSpace E]
+    (hf : ∀ i, StronglyMeasurable (f i)) :
     MeasurableSet {x | ∃ c, Tendsto (f · x) l (𝓝 c)} := by
   obtain rfl | hl := eq_or_neBot l
   · simp_all
   borelize E
-  letI := upgradeIsCompletelyMetrizable E
+  letI := upgradeIsCompletelyPseudoMetrizable E
   let s := closure (⋃ i, range (f i))
-  have : PolishSpace s :=
-    { toSecondCountableTopology := @UniformSpace.secondCountable_of_separable s _ _
-        (IsSeparable.iUnion (fun i ↦ (hf i).isSeparable_range)).closure.separableSpace
-      toIsCompletelyMetrizableSpace := isClosed_closure.isCompletelyMetrizableSpace }
+  have : SecondCountableTopology s := @UniformSpace.secondCountable_of_separable s _ _
+    (IsSeparable.iUnion (fun i ↦ (hf i).isSeparable_range)).closure.separableSpace
+  have : IsCompletelyPseudoMetrizableSpace s := isClosed_closure.isCompletelyPseudoMetrizableSpace
   let g i x : s := ⟨f i x, subset_closure <| mem_iUnion.2 ⟨i, ⟨x, rfl⟩⟩⟩
   have mg i : Measurable (g i) := (hf i).measurable.subtype_mk
   convert MeasureTheory.measurableSet_exists_tendsto (l := l) mg with x
@@ -50,7 +50,8 @@ theorem measurableSet_exists_tendsto (hf : ∀ i, StronglyMeasurable (f i)) :
     fun ⟨c, hc⟩ ↦ ⟨c, tendsto_subtype_rng.1 hc⟩⟩
   exact mem_closure_of_tendsto hc (Eventually.of_forall fun i ↦ mem_iUnion.2 ⟨i, ⟨x, rfl⟩⟩)
 
-protected theorem limUnder [hE : Nonempty E] (hf : ∀ i, StronglyMeasurable (f i)) :
+protected theorem limUnder [hE : Nonempty E] [IsCompletelyMetrizableSpace E]
+    (hf : ∀ i, StronglyMeasurable (f i)) :
     StronglyMeasurable (fun x ↦ limUnder l (f · x)) := by
   obtain rfl | hl := eq_or_neBot l
   · simpa [limUnder, Filter.map_bot] using stronglyMeasurable_const

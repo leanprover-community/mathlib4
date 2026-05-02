@@ -76,9 +76,14 @@ lemma δ_liftOfKanComplex [KanComplex X] (hf : horn.IsCompatible f)
 end horn.IsCompatible
 
 open modelCategoryQuillen in
+/-- A simplicial set `X` is a Kan complex iff for any `n : ℕ`, `i : Fin (n + 2)`,
+and any family of morphisms `Δ[n] ⟶ Z` for all `j ≠ i` that is compatible
+(in the sense that it extends to a morphism `Λ[n + 1, i] ⟶ X`), there
+exists a morphism `Δ[n + 1] ⟶ Z` which induces the given family of morphisms
+on the faces `j ≠ i`. -/
 lemma KanComplex.iff {Z : SSet.{u}} :
     KanComplex Z ↔
-      ∀ ⦃n : ℕ⦄ ⦃i : Fin (n + 2)⦄ (f : ∀ (j : Fin (n + 2)) (_ : j ≠ i), (Δ[n] : SSet) ⟶ Z)
+      ∀ ⦃n : ℕ⦄ ⦃i : Fin (n + 2)⦄ (f : ∀ (j : Fin (n + 2)) (_ : j ≠ i), Δ[n] ⟶ Z)
         (_ : horn.IsCompatible f),
         ∃ (φ : Δ[n + 1] ⟶ Z),
           ∀ (j : Fin (n + 2)) (hj : j ≠ i), stdSimplex.δ j ≫ φ = f j hj := by
