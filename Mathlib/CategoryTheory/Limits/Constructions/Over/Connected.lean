@@ -182,6 +182,13 @@ def isLimitConePost [IsCofilteredOrEmpty J] {F : J ⥤ C} {c : Cone F} (i : J) (
 
 end Over
 
+instance {B : D} [IsConnected J] [HasLimitsOfShape J C] [PreservesLimitsOfShape J K] :
+    PreservesLimitsOfShape J (CostructuredArrow.toOver K B) where
+  preservesLimit {D} := by
+    have : PreservesLimit D (CostructuredArrow.toOver K B ⋙ Over.forget B) :=
+      inferInstanceAs <| PreservesLimit D (CostructuredArrow.proj K B ⋙ K)
+    exact Limits.preservesLimit_of_reflects_of_preserves _ (Over.forget B)
+
 namespace Under
 
 /-- The forgetful functor from the under category creates any connected limit. -/
@@ -199,4 +206,13 @@ instance hasColimitsOfShape_of_isConnected {B : C} [IsConnected J] [HasColimitsO
     HasColimitsOfShape J (Under B) where
   has_colimit F := hasColimit_of_created F (forget B)
 
-end CategoryTheory.Under
+end Under
+
+instance {B : D} [IsConnected J] [HasColimitsOfShape J C] [PreservesColimitsOfShape J K] :
+    PreservesColimitsOfShape J (StructuredArrow.toUnder B K) where
+  preservesColimit {D} := by
+    have : PreservesColimit D (StructuredArrow.toUnder B K ⋙ Under.forget B) :=
+      inferInstanceAs <| PreservesColimit D (StructuredArrow.proj B K ⋙ K)
+    exact Limits.preservesColimit_of_reflects_of_preserves _ (Under.forget B)
+
+end CategoryTheory

@@ -24,11 +24,14 @@ namespace Polynomial
 open scoped nonZeroDivisors TensorProduct
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-variable (I : Ideal R) [I.IsPrime] (J : Ideal R[X]) [J.IsPrime]
+variable (I : Ideal R) [I.IsPrime] (J : Ideal R[X]) [J.IsPrime] [J.LiesOver I]
+  [Algebra (Localization.AtPrime I) (Localization.AtPrime J)]
+  [Localization.AtPrime.IsLiesOverAlgebra I J]
+
 
 /-- `κ(I[X]) ≃ₐ[κ(I)] κ(I)(X)`. -/
 noncomputable
-def residueFieldMapCAlgEquiv [J.LiesOver I] (hJ : J = I.map C) :
+def residueFieldMapCAlgEquiv (hJ : J = I.map C) :
     J.ResidueField ≃ₐ[I.ResidueField] RatFunc I.ResidueField := by
   letI f : J.ResidueField →+* RatFunc I.ResidueField := by
     refine Ideal.ResidueField.lift _
@@ -77,18 +80,18 @@ def residueFieldMapCAlgEquiv [J.LiesOver I] (hJ : J = I.map C) :
     · simp [f, RatFunc.liftAlgHom]
 
 @[simp]
-lemma residueFieldMapCAlgEquiv_algebraMap [J.LiesOver I] (hJ : J = I.map C) (p : R[X]) :
+lemma residueFieldMapCAlgEquiv_algebraMap (hJ : J = I.map C) (p : R[X]) :
     residueFieldMapCAlgEquiv I J hJ (algebraMap _ _ p) =
       algebraMap _ _ (p.map (algebraMap R I.ResidueField)) := by
   simp [residueFieldMapCAlgEquiv]
 
 @[simp]
-lemma residueFieldMapCAlgEquiv_symm_C [J.LiesOver I] (hJ : J = I.map C) (r) :
+lemma residueFieldMapCAlgEquiv_symm_C (hJ : J = I.map C) (r) :
     (residueFieldMapCAlgEquiv I J hJ).symm (.C r) = algebraMap _ _ r :=
   (residueFieldMapCAlgEquiv I J hJ).symm.commutes r
 
 @[simp]
-lemma residueFieldMapCAlgEquiv_symm_X [J.LiesOver I] (hJ : J = I.map C) :
+lemma residueFieldMapCAlgEquiv_symm_X (hJ : J = I.map C) :
     (residueFieldMapCAlgEquiv I J hJ).symm .X = algebraMap R[X] _ .X :=
   (residueFieldMapCAlgEquiv I J hJ).injective (by simp)
 

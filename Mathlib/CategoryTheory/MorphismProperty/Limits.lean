@@ -746,6 +746,12 @@ lemma IsStableUnderCoproductsOfShape.mk (J : Type*) [W.RespectsIso]
     rintro ⟨j⟩
     simp [φ, hα]
 
+instance (J : Type*) [(monomorphisms C).IsStableUnderCoproductsOfShape J]
+    {X₁ X₂ : J → C} (f : ∀ j, X₁ j ⟶ X₂ j) [HasCoproduct X₁] [HasCoproduct X₂]
+    [∀ j, Mono (f j)] :
+    Mono (Limits.Sigma.map f) :=
+  MorphismProperty.colimMap _ (fun ⟨j⟩ ↦ by dsimp; infer_instance)
+
 /-- The condition that a property of morphisms is stable by finite products. -/
 class IsStableUnderFiniteProducts : Prop where
   isStableUnderProductsOfShape (J : Type) [Finite J] : W.IsStableUnderProductsOfShape J
