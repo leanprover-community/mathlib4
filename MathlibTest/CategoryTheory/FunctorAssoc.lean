@@ -14,7 +14,7 @@ variable (F : C₁ ⥤ C₂) (G : C₂ ⥤ C₃) (H : C₃ ⥤ C₄)
 The purpose of these tests is to prevent diamonds in the situation where
 we have a typeclass (e.g. `Functor.Monoidal` or `Functor.CommShift`)
 for functors such that an instance for a composition of functors
-can be inferred from an instance from each of the functors.
+can be inferred from an instance for each of the functors.
 Taking into account the placement of parentheses, we want to allow
 `(F ⋙ G) ⋙ H` and `F ⋙ (G ⋙ H)` to have their own instances
 (even though they are usually propositionally equal). The following
