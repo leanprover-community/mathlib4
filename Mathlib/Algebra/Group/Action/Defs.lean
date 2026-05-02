@@ -465,6 +465,7 @@ protected abbrev Function.Surjective.mulAction [SMul M β] (f : α → β) (hf :
 section
 variable (M)
 
+-- see Note [higher instance priority]
 /-- The regular action of a monoid on itself by left multiplication.
 
 This is promoted to a module by `Semiring.toModule`. -/
@@ -472,7 +473,6 @@ This is promoted to a module by `Semiring.toModule`. -/
 /-- The regular action of a monoid on itself by left addition.
 
 This is promoted to an `AddTorsor` by `addGroup_is_addTorsor`. -/]
--- see Note [higher instance priority]
 instance (priority := 1100) Monoid.toMulAction : MulAction M M where
   smul := (· * ·)
   one_smul := one_mul
