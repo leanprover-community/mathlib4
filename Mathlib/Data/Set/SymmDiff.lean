@@ -71,20 +71,12 @@ lemma iUnion_symmDiff_iUnion_subset {f g : ι → Set α} :
 lemma sUnion_symmDiff_subset {S : Set (Set α)} (hS : S.Nonempty) :
     (⋃₀ S) ∆ s ⊆ ⋃ t ∈ S, t ∆ s := by
   obtain ⟨t₀, ht₀⟩ := hS
-  intro a ha
-  simp [symmDiff] at ha ⊢
-  rcases ha with ⟨⟨t, htS, ht⟩, hs⟩ | ⟨hs, ht⟩
-  · exact ⟨t, htS, Or.inl ⟨ht, hs⟩⟩
-  · exact ⟨t₀, ht₀, Or.inr ⟨hs, ht t₀ ht₀⟩⟩
+  intro; simp [symmDiff]; aesop
 
 lemma sUnion_symmDiff_sUnion_subset {S T : Set (Set α)} (hS : S.Nonempty)
     (hT : T.Nonempty) : (⋃₀ S) ∆ ⋃₀ T ⊆ ⋃ s ∈ S, ⋃ t ∈ T, s ∆ t := by
   obtain ⟨s₀, hs₀⟩ := hS
   obtain ⟨t₀, ht₀⟩ := hT
-  intro a ha
-  simp [symmDiff] at ha ⊢
-  rcases ha with ⟨⟨s, hsS, hs⟩, haT⟩ | ⟨⟨t, htT, ht⟩, haS⟩
-  · exact ⟨s, hsS, t₀, ht₀, Or.inl ⟨hs, haT t₀ ht₀⟩⟩
-  · exact ⟨s₀, hs₀, t, htT, Or.inr ⟨ht, haS s₀ hs₀⟩⟩
+  intro; simp [symmDiff]; aesop
 
 end Set
