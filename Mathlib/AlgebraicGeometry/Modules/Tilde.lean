@@ -489,7 +489,7 @@ def pushforward_modulesSpecToSheaf_iso :
     Scheme.Modules.pushforward (Spec.map φ) ⋙ modulesSpecToSheaf ≅
     modulesSpecToSheaf ⋙ TopCat.Sheaf.pushforward (ModuleCat S) (Spec.map φ).base ⋙
     sheafCompose _ (ModuleCat.restrictScalars φ.hom) :=
-  Functor.isoWhiskerRight (_root_.SheafOfModules.pushforwardCompForgetToSheafModuleCat
+  Functor.isoWhiskerRight (SheafOfModules.pushforwardCompForgetToSheafModuleCat
     (Spec.map φ).toRingCatSheafHom _ _ _) (sheafCompose _ _) ≪≫
   (Functor.isoWhiskerLeft (SheafOfModules.forgetToSheafModuleCat (Spec S).ringCatSheaf _
     (initialOpOfTerminal isTerminalTop)) (sheafComposePushforwardComp φ))
