@@ -322,8 +322,8 @@ theorem isHamiltonianCycle_cons_iterate {σ : Perm α}
   · simp only [Walk.length_cons, Walk.length_copy, Walk.length_iterate]
     omega
 
-/-- If `σ` is a cycle with full support on at least 3 elements and every step is
-a graph edge, then `G` is Hamiltonian. -/
+/-- Given a cyclic permutation with full support on at least 3 elements which
+sends each vertex to an adjacent one, then the graph is hamiltonian. -/
 theorem IsHamiltonian.ofPerm {σ : Perm α}
     (hcycle : σ.IsCycle) (hsupport : σ.support = Finset.univ)
     (hadj : ∀ x, G.Adj x (σ x))
