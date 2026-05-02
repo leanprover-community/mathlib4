@@ -196,7 +196,7 @@ variable {R : Type*} [CommRing R] {f : PowerSeries R} (i : σ) (r : R) (p : R⟦
 theorem toMvPowerSeries_eq_subst : f.toMvPowerSeries i = f.subst (MvPowerSeries.X i) := by
   rw [toMvPowerSeries_apply, MvPowerSeries.rename_eq_subst, comp_def, subst]
 
-theorem HasSubst.toMvPowerSeries (hf : f.constantCoeff = 0) :
+theorem _root_.MvPowerSeries.HasSubst.toMvPowerSeries (hf : f.constantCoeff = 0) :
     MvPowerSeries.HasSubst (f.toMvPowerSeries · (σ := σ)) (S := R) where
   const_coeff := by simp_all [constantCoeff, toMvPowerSeries_apply]
   coeff_zero d := Set.Finite.subset (Finite.of_fintype d.support) fun s => by classical
