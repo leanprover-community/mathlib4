@@ -5,8 +5,6 @@ Authors: Yan Yablonovskiy
 -/
 module
 
-public import Mathlib.Order.Hom.Basic
-public import Mathlib.SetTheory.Cardinal.Defs
 public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
