@@ -620,7 +620,7 @@ lemma exists_norm_le_of_cauchySeq (h : CauchySeq fun n ↦ ∑ k ∈ range n, f 
     ∃ C, ∀ n, ‖f n‖ ≤ C := by
   obtain ⟨b, ⟨_, key, _⟩⟩ := cauchySeq_iff_le_tendsto_0.mp h
   refine ⟨b 0, fun n ↦ ?_⟩
-  simpa only [dist_partial_sum'] using key n (n + 1) 0 (_root_.zero_le _) (_root_.zero_le _)
+  simpa only [dist_partial_sum'] using key n (n + 1) 0 zero_le zero_le
 
 end SummableLeGeometric
 

@@ -500,7 +500,7 @@ theorem preimage_subset_source {s : Set B} (hb : s ⊆ e.baseSet) : proj ⁻¹' 
   fun _p hp => e.mem_source.mpr (hb hp)
 
 theorem image_preimage_eq_prod_univ {s : Set B} (hb : s ⊆ e.baseSet) :
-    e '' (proj ⁻¹' s) = s ×ˢ univ :=
+    e '' proj ⁻¹' s = s ×ˢ univ :=
   Subset.antisymm
     (image_subset_iff.mpr fun p hp =>
       ⟨(e.proj_toFun p (e.preimage_subset_source hb hp)).symm ▸ hp, trivial⟩)
