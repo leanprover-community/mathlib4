@@ -525,33 +525,13 @@ theorem isSuccLimit_sub {a b : Ordinal} (ha : IsSuccPrelimit a) (h : b < a) :
 `b × a`. -/
 instance monoid : Monoid Ordinal.{u} where
   mul a b :=
-    Quotient.liftOn₂ a b
-      (fun ⟨α, r, _⟩ ⟨β, s, _⟩ => ⟦⟨β × α, Prod.Lex s r, inferInstance⟩⟧ :
-        WellOrder → WellOrder → Ordinal)
-      fun ⟨_, _, _⟩ _ _ _ ⟨f⟩ ⟨g⟩ => Quot.sound ⟨RelIso.prodLexCongr g f⟩
+    Quotient.liftOn₂ a b (fun ⟨α, r, _⟩ ⟨β, s, _⟩ => ⟦⟨β × α, Prod.Lex s r, inferInstance⟩⟧)
+      fun _ _ _ _ ⟨f⟩ ⟨g⟩ ↦ Quot.sound ⟨RelIso.prodLexCongr g f⟩
   mul_assoc a b c :=
-    Quotient.inductionOn₃ a b c fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ =>
-      Eq.symm <|
-        Quotient.sound
-          ⟨⟨prodAssoc _ _ _, @fun a b => by
-              rcases a with ⟨⟨a₁, a₂⟩, a₃⟩
-              rcases b with ⟨⟨b₁, b₂⟩, b₃⟩
-              simp [Prod.lex_def, and_or_left, or_assoc, and_assoc]⟩⟩
-  mul_one a :=
-    inductionOn a fun α r _ =>
-      Quotient.sound
-        ⟨⟨punitProd _, @fun a b => by
-            rcases a with ⟨⟨⟨⟩⟩, a⟩; rcases b with ⟨⟨⟨⟩⟩, b⟩
-            simp only [Prod.lex_def, emptyRelation, false_or]
-            simp only [true_and]
-            rfl⟩⟩
-  one_mul a :=
-    inductionOn a fun α r _ =>
-      Quotient.sound
-        ⟨⟨prodPUnit _, @fun a b => by
-            rcases a with ⟨a, ⟨⟨⟩⟩⟩; rcases b with ⟨b, ⟨⟨⟩⟩⟩
-            simp only [Prod.lex_def, emptyRelation, and_false, or_false]
-            rfl⟩⟩
+    Quotient.inductionOn₃ a b c fun _ _ _ ↦
+      .symm <| Quotient.sound ⟨⟨prodAssoc .., by grind [Prod.mk.injEq]⟩⟩
+  mul_one a := inductionOn a fun α _ _ ↦ Quotient.sound ⟨⟨punitProd α, by simp [Prod.lex_def]⟩⟩
+  one_mul a := inductionOn a fun α _ _ ↦ Quotient.sound ⟨⟨prodPUnit α, by simp [Prod.lex_def]⟩⟩
 
 @[simp]
 theorem type_prod_lex {α β : Type u} (r : α → α → Prop) (s : β → β → Prop) [IsWellOrder α r]
