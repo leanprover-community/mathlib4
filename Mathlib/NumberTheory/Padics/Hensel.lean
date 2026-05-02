@@ -442,7 +442,7 @@ private theorem soln_unique (z : ℤ_[p]) (hev : F.aeval z = 0)
       _ ≤ max ‖z - a‖ ‖a - soln‖ := PadicInt.nonarchimedean _ _
       _ < ‖F.derivative.aeval a‖ :=
         max_lt hnlt ((norm_sub_rev soln a ▸ (soln_dist_to_a_lt_deriv hnorm)) hnsol)
-  exact a_soln_is_unique (a := soln) (eval_soln hnorm) z hev hsoln
+  exact a_soln_is_unique (eval_soln hnorm) z hev hsoln
 
 end Hensel
 
