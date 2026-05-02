@@ -569,6 +569,22 @@ instance IsLocalizedModule.of_linearEquiv_right (e : M'' ≃ₗ[R] M) [hf : IsLo
     exact ⟨c, by simpa only [Submonoid.smul_def, map_smul, e.symm_apply_apply]
       using congr(e.symm $hc)⟩
 
+lemma IsLocalizedModule.comp_iff_of_bijective_left {f : M →ₗ[R] M'} (e : M' →ₗ[R] M'')
+    (he : Function.Bijective e) :
+    IsLocalizedModule S (e ∘ₗ f) ↔ IsLocalizedModule S f := by
+  refine ⟨fun h ↦ ?_, fun h ↦ .of_linearEquiv _ _ (.ofBijective _ he)⟩
+  have : (LinearEquiv.ofBijective _ he).symm.toLinearMap ∘ₗ e ∘ₗ f = f := by ext; simp
+  rw [← this]
+  exact .of_linearEquiv _ _ _
+
+lemma IsLocalizedModule.comp_iff_of_bijective_right (e : M →ₗ[R] M') {f : M' →ₗ[R] M''}
+    (he : Function.Bijective e) :
+    IsLocalizedModule S (f ∘ₗ e) ↔ IsLocalizedModule S f := by
+  refine ⟨fun h ↦ ?_, fun h ↦ .of_linearEquiv_right _ _ (.ofBijective _ he)⟩
+  have : (f ∘ₗ e) ∘ₗ (LinearEquiv.ofBijective _ he).symm.toLinearMap = f := by ext; simp
+  rw [← this]
+  exact .of_linearEquiv_right _ _ _
+
 variable (M) in
 lemma isLocalizedModule_id (R') [CommSemiring R'] [Algebra R R'] [IsLocalization S R'] [Module R' M]
     [IsScalarTower R R' M] : IsLocalizedModule S (.id : M →ₗ[R] M) where
