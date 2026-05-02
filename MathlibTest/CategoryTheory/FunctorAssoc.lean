@@ -18,7 +18,7 @@ can be inferred from an instance for each of the functors.
 Taking into account the placement of parentheses, we want to allow
 `(F ⋙ G) ⋙ H` and `F ⋙ (G ⋙ H)` to have their own instances
 (even though they are usually propositionally equal). The following
-tests ensures that for the typeclass `Foo`, no instance
+tests ensure that for the typeclass `Foo`, no instance
 is inferred on `(F ⋙ G) ⋙ H` from an instance on `F ⋙ (G ⋙ H)`,
 and vice versa.
 -/
