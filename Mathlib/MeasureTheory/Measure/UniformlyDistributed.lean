@@ -30,7 +30,7 @@ sphere coincides with the spherical measure.
 
 -/
 
-@[expose] public section
+public section
 
 open Filter MeasureTheory Measure Metric Set
 
