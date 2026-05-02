@@ -225,6 +225,17 @@ instance (P : ObjectProperty C) [LocallySmall.{w} C]
   rw [← essentiallySmall_congr (ιOfLE h₁).asEquivalence]
   exact essentiallySmall_of_small_of_locallySmall _
 
+lemma EssentiallySmall.of_functor (P : ObjectProperty C) (F : C ⥤ D)
+    (H₁ : ObjectProperty.EssentiallySmall.{w} (P.map F))
+    (H₂ : ∀ Y : D, ObjectProperty.EssentiallySmall.{w} (P ⊓ (Nonempty <| F.obj · ≅ Y))) :
+    ObjectProperty.EssentiallySmall.{w} P := by
+  choose P₁ hP₁ x hP₁x hx using H₁.1
+  choose P₂ hP₂ y hP₂y hy using fun Y ↦ (H₂ Y).1
+  let f : Subtype P → Σ i : Subtype P₁, Subtype (P₂ i.1) := fun c ↦
+    ⟨⟨_, hP₁x _ _⟩, _, hP₂y _ c ⟨c.2, hx _ ⟨_, c.2, ⟨.refl _⟩⟩⟩⟩
+  let g : (Σ i : Subtype P₁, Subtype (P₂ i.1)) → C := fun i ↦ i.2.1
+  exact ⟨.ofObj g, inferInstance, fun X hX ↦ ⟨_, ⟨f ⟨X, hX⟩⟩, hy _ _ _⟩⟩
+
 lemma exists_equivalence_iff (P : ObjectProperty C) [LocallySmall.{w'} C] :
     (∃ (J : Type w) (_ : Category.{w'} J), Nonempty (P.FullSubcategory ≌ J)) ↔
       ObjectProperty.EssentiallySmall.{w} P := by
@@ -238,12 +249,28 @@ lemma exists_equivalence_iff (P : ObjectProperty C) [LocallySmall.{w'} C] :
 
 end ObjectProperty
 
-lemma exists_equivalence_iff_of_locallySmall
-    (C : Type u) [Category.{v} C] [LocallySmall.{w'} C] :
+variable {C D : Type*} [Category* C] [Category* D]
+
+lemma exists_equivalence_iff_of_locallySmall [LocallySmall.{w'} C] :
     (∃ (J : Type w) (_ : Category.{w'} J), Nonempty (C ≌ J)) ↔
       ObjectProperty.EssentiallySmall.{w} (C := C) ⊤ := by
   rw [← ObjectProperty.exists_equivalence_iff]
   exact ⟨fun ⟨J, _, ⟨e⟩⟩ ↦ ⟨J, _, ⟨(ObjectProperty.topEquivalence C).trans e⟩⟩,
     fun ⟨J, _, ⟨e⟩⟩ ↦ ⟨J, _, ⟨(ObjectProperty.topEquivalence C).symm.trans e⟩⟩⟩
+
+lemma essentiallySmall_iff_objectPropertyEssentiallySmall :
+    EssentiallySmall.{w} C ↔ LocallySmall.{w} C ∧
+      ObjectProperty.EssentiallySmall.{w} (C := C) ⊤ := by
+  wlog hC : LocallySmall.{w} C; · simp [essentiallySmall_iff, hC]
+  simp only [hC, ← exists_equivalence_iff_of_locallySmall, true_and]
+  refine ⟨fun H ↦ H.1, fun H ↦ ⟨H⟩⟩
+
+lemma EssentiallySmall.of_functor (F : C ⥤ D)
+    [LocallySmall.{w} C] (H₁ : ObjectProperty.EssentiallySmall.{w} F.essImage)
+    (H₂ : ∀ Y : D, ObjectProperty.EssentiallySmall.{w} (Nonempty <| F.obj · ≅ Y)) :
+    EssentiallySmall.{w} C := by
+  rw [essentiallySmall_iff_objectPropertyEssentiallySmall]
+  exact ⟨‹_›, .of_functor _ F (.of_le (Q := F.essImage)
+    fun Y ↦ by simp [ObjectProperty.map, Functor.essImage]) (by simpa)⟩
 
 end CategoryTheory
