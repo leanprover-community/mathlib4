@@ -44,15 +44,6 @@ section monogenic
 
 variable (S : Type u) [CommRing S] [Algebra S K]
 
-set_option linter.unusedVariables false in
-abbrev adjoinAlgebraic (x : K) (int : IsIntegral S x) : Type u := S[X] ⧸ Ideal.span {minpoly S x}
-
-instance (x : K) (int : IsIntegral S x) : Module.Finite S (adjoinAlgebraic K S x int) :=
-  (minpoly.monic int).finite_quotient
-
-instance (x : K) (int : IsIntegral S x) : Module.Free S (adjoinAlgebraic K S x int) :=
-  (minpoly.monic int).free_quotient
-
 variable [IsLocalRing S] [IsLocalHom (algebraMap S K)]
 
 variable {S K} in
@@ -65,6 +56,17 @@ private instance [IsLocalHom (algebraMap S K)] : Algebra (ResidueField S) K :=
 
 private instance : IsScalarTower S (ResidueField S) K :=
   IsScalarTower.of_algebraMap_eq' rfl
+
+-- add relation for `IsIntegral (ResidueField S) x` and `minpoly (ResidueField S) x`
+
+set_option linter.unusedVariables false in
+abbrev adjoinAlgebraic (x : K) (int : IsIntegral S x) : Type u := S[X] ⧸ Ideal.span {minpoly S x}
+
+instance (x : K) (int : IsIntegral S x) : Module.Finite S (adjoinAlgebraic K S x int) :=
+  (minpoly.monic int).finite_quotient
+
+instance (x : K) (int : IsIntegral S x) : Module.Free S (adjoinAlgebraic K S x int) :=
+  (minpoly.monic int).free_quotient
 
 set_option linter.unusedVariables false in
 abbrev adjoinTranscendental (x : K) (nint : ¬ IsIntegral S x) : Type u :=
