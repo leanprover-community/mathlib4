@@ -177,10 +177,8 @@ theorem toComplex_im_div (x y : ℤ[i]) : ((x / y : ℤ[i]) : ℂ).im = round (x
 
 theorem normSq_le_normSq_of_re_le_of_im_le {x y : ℂ} (hre : |x.re| ≤ |y.re|)
     (him : |x.im| ≤ |y.im|) : Complex.normSq x ≤ Complex.normSq y := by
-  rw [normSq_apply, normSq_apply, ← _root_.abs_mul_self, _root_.abs_mul, ←
-      _root_.abs_mul_self y.re, _root_.abs_mul y.re, ← _root_.abs_mul_self x.im,
-      _root_.abs_mul x.im, ← _root_.abs_mul_self y.im, _root_.abs_mul y.im]
-  gcongr
+  rw [Complex.normSq_apply, Complex.normSq_apply]
+  nlinarith [sq_le_sq.mpr hre, sq_le_sq.mpr him]
 
 theorem normSq_div_sub_div_lt_one (x y : ℤ[i]) :
     Complex.normSq ((x / y : ℂ) - ((x / y : ℤ[i]) : ℂ)) < 1 :=
