@@ -489,8 +489,8 @@ theorem IsRotated.dropLast_tail {α}
 
 theorem exists_sublist_isRotated_iff (L L' : List α) :
     (∃ L₁ : List α, L ~r L₁ ∧ L₁ <+ L') ↔ (∃ L₂ : List α, L <+ L₂ ∧ L₂ ~r L') := by
-  refine ⟨fun ⟨L₁, hLr, hL⟩ => ?_, fun ⟨L₂, hL, hLr⟩ => ?_⟩
-    <;> obtain ⟨n, hn, rfl⟩ := isRotated_iff_mod.mp hLr
+  refine ⟨fun ⟨L₁, hLr, hL⟩ => ?_, fun ⟨L₂, hL, hLr⟩ => ?_⟩ <;>
+    obtain ⟨n, hn, rfl⟩ := isRotated_iff_mod.mp hLr
   · obtain ⟨L₂L, L₂R, rfl, hL₂L, hL₂R⟩ := append_sublist_iff.mp (rotate_eq_drop_append_take hn ▸ hL)
     exact ⟨L₂R ++ L₂L, (by simpa using hL₂R.append hL₂L), isRotated_append⟩
   · obtain ⟨lL, lR, rfl, hL, hR⟩ := sublist_append_iff.mp <| take_append_drop n L₂ ▸ hL
