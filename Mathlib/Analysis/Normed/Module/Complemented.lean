@@ -108,6 +108,11 @@ theorem ClosedComplemented.of_isCompl_isClosed (h : IsCompl p q) (hp : IsClosed 
 
 alias IsCompl.closedComplemented_of_isClosed := ClosedComplemented.of_isCompl_isClosed
 
+theorem IsCompl.isTopCompl_of_isClosed (h : IsCompl p q) (hp : IsClosed (p : Set E))
+    (hq : IsClosed (q : Set E)) : IsTopCompl p q := by
+  rw [h.isTopCompl_iff_isHomeomorph_prodEquiv]
+  exact (Submodule.prodEquivOfClosedCompl p q h hp hq).toHomeomorph.isHomeomorph
+
 theorem closedComplemented_iff_isClosed_exists_isClosed_isCompl :
     p.ClosedComplemented ↔
       IsClosed (p : Set E) ∧ ∃ q : Submodule 𝕜 E, IsClosed (q : Set E) ∧ IsCompl p q :=
