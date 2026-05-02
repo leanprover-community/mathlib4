@@ -8,7 +8,6 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 public import Mathlib.Combinatorics.SimpleGraph.IsolateVerts
 public import Mathlib.Data.Set.Card
-public import Mathlib.Tactic.GRewrite
 
 /-!
 # Vertex Connectivity
@@ -20,7 +19,8 @@ This file defines `k`-vertex connectivity for simple graphs.
 * `SimpleGraph.IsVertexReachable`: Two vertices are `k`-vertex-reachable if they remain reachable
   after removing strictly fewer than `k` other vertices.
 * `SimpleGraph.IsVertexPreconnected`: A graph is `k`-vertex-preconnected if any two vertices
-  are `k`-vertex-reachable.
+  are `k`-vertex-reachable, meaning the removal of any set of strictly fewer than `k` vertices
+  leaves them reachable.
 * `SimpleGraph.IsVertexConnected`: A graph is `k`-vertex-connected if it is `k`-vertex-preconnected
   and it has more than `k` vertices.
 -/
@@ -146,8 +146,10 @@ lemma Preconnected.isVertexConnected_one [Nontrivial V] (h : G.Preconnected) :
 @[gcongr]
 lemma IsVertexConnected.anti (hkl : l ≤ k) (hc : G.IsVertexConnected k) :
     G.IsVertexConnected l := by
-  constructor <;> grw [hkl]
-  exacts [hc.left, hc.right]
+  refine ⟨?_, hc.right.anti hkl⟩
+  calc
+    l + 1 ≤ k + 1 := by gcongr
+    _     ≤ ENat.card V := hc.left
 
 /-- Vertex connectivity is monotonic in the graph. -/
 @[gcongr]
