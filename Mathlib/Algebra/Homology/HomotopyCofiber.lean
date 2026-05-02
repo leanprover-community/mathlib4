@@ -376,7 +376,10 @@ section
 
 variable (K)
 variable [∀ i, HasBinaryBiproduct (K.X i) (K.X i)]
-  [HasHomotopyCofiber (biprod.lift (𝟙 K) (-𝟙 K))]
+
+abbrev HasCylinder : Prop := HasHomotopyCofiber (biprod.lift (𝟙 K) (-𝟙 K))
+
+variable [K.HasCylinder]
 
 /-- The cylinder object of a homological complex `K` is the homotopy cofiber
 of the morphism  `biprod.lift (𝟙 K) (-𝟙 K) : K ⟶ K ⊞ K`. -/

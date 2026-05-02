@@ -972,6 +972,8 @@ end Limits
 
 open CategoryTheory.Limits
 
+section
+
 -- TODO:
 -- If someone is interested, they could provide the constructions:
 --   HasBinaryBiproducts ↔ HasFiniteBiproducts
@@ -1015,5 +1017,83 @@ theorem isIso_right_of_isIso_biprod_map {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z
     rw [← biprod.braiding_map_braiding]
     infer_instance
   isIso_left_of_isIso_biprod_map g f
+
+
+end
+
+open Opposite
+
+namespace Limits
+
+section
+variable {C : Type*} [Category* C] [HasZeroMorphisms C] {P P' Q Q' : C}
+
+@[simps]
+def BinaryBicone.op (b : BinaryBicone P Q) :
+    BinaryBicone (op P) (op Q) where
+  pt := Opposite.op b.pt
+  fst := b.inl.op
+  snd := b.inr.op
+  inl := b.fst.op
+  inr := b.snd.op
+  inl_fst := Quiver.Hom.unop_inj (by simp)
+  inr_fst := Quiver.Hom.unop_inj (by simp)
+  inl_snd := Quiver.Hom.unop_inj (by simp)
+  inr_snd := Quiver.Hom.unop_inj (by simp)
+
+def BinaryBicone.IsBilimit.op {b : BinaryBicone P Q} (h : b.IsBilimit) :
+    b.op.IsBilimit where
+  isLimit := BinaryCofan.IsColimit.op h.isColimit
+  isColimit := BinaryFan.IsLimit.op h.isLimit
+
+def BinaryBiproductData.op (d : BinaryBiproductData P Q) :
+    BinaryBiproductData (op P) (op Q) where
+  bicone := d.bicone.op
+  isBilimit := d.isBilimit.op
+
+instance [HasBinaryBiproduct P Q] :
+    HasBinaryBiproduct (op P) (op Q) where
+  exists_binary_biproduct := ⟨(getBinaryBiproductData P Q).op⟩
+
+instance [HasBinaryBiproducts C] : HasBinaryBiproducts Cᵒᵖ where
+  has_binary_biproduct X Y :=
+    inferInstanceAs (HasBinaryBiproduct (op X.unop) (op Y.unop))
+
+def biprod.opIso [HasBinaryBiproduct P Q] :
+    op (P ⊞ Q) ≅ op P ⊞ op Q := sorry
+
+@[simps]
+def BinaryBicone.ofIso (b : BinaryBicone P Q) (eP : P ≅ P') (eQ : Q ≅ Q') :
+    BinaryBicone P' Q' where
+  pt := b.pt
+  fst := b.fst ≫ eP.hom
+  snd := b.snd ≫ eQ.hom
+  inl := eP.inv ≫ b.inl
+  inr := eQ.inv ≫ b.inr
+
+def BinaryBicone.IsBilimit.ofIso {b : BinaryBicone P Q} (hb : b.IsBilimit)
+    (eP : P ≅ P') (eQ : Q ≅ Q') :
+    (b.ofIso eP eQ).IsBilimit where
+  isLimit := by
+    refine (IsLimit.equivOfNatIsoOfIso (mapPairIso eP eQ) _ _ ?_).1 hb.isLimit
+    exact BinaryFan.ext (Iso.refl _) (by simp [BinaryFan.fst])
+      (by simp [BinaryFan.snd])
+  isColimit := by
+    refine (IsColimit.equivOfNatIsoOfIso (mapPairIso eP eQ) _ _ ?_).1 hb.isColimit
+    exact BinaryCofan.ext (Iso.refl _) (by simp [BinaryCofan.inl])
+      (by simp [BinaryCofan.inr])
+
+def BinaryBiproductData.ofIso (d : BinaryBiproductData P Q) (eP : P ≅ P') (eQ : Q ≅ Q') :
+    BinaryBiproductData P' Q' where
+  bicone := d.bicone.ofIso eP eQ
+  isBilimit := d.isBilimit.ofIso _ _
+
+lemma hasBinaryBiproduct_of_iso [HasBinaryBiproduct P Q] (eP : P ≅ P') (eQ : Q ≅ Q') :
+    HasBinaryBiproduct P' Q' where
+  exists_binary_biproduct := ⟨(getBinaryBiproductData P Q).ofIso eP eQ⟩
+
+end
+
+end Limits
 
 end CategoryTheory
