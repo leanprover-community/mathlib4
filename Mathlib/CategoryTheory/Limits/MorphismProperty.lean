@@ -127,6 +127,7 @@ lemma CostructuredArrow.isClosedUnderColimitsOfShape {J : Type*} [Category* J]
       P.cancel_left_of_respectsIso]
     exact H _ _ d.prop_diag_obj
 
+set_option backward.defeqAttrib.useBackward true in
 lemma CostructuredArrow.closedUnderLimitsOfShape_walkingCospan [HasPullbacks A] [HasPullbacks T]
     [PreservesLimitsOfShape WalkingCospan L] (X : T)
     [P.IsStableUnderComposition] [P.IsStableUnderBaseChange]
