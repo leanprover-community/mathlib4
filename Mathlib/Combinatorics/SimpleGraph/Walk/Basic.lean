@@ -112,6 +112,10 @@ lemma exists_length_eq_one_iff {u v : V} : (∃ (p : G.Walk u v), p.length = 1) 
 @[simp]
 theorem length_eq_zero_iff {u : V} {p : G.Walk u u} : p.length = 0 ↔ p = nil := by cases p <;> simp
 
+attribute [local grind cases] Walk in
+theorem eq_of_length_le_one {p q : G.Walk u v} (hp : p.length ≤ 1) (hq : q.length ≤ 1) : p = q := by
+  grind [length_cons, Adj.ne]
+
 /-- The `support` of a walk is the list of vertices it visits in order. -/
 def support {u v : V} : G.Walk u v → List V
   | nil => [u]

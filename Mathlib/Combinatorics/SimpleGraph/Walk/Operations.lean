@@ -812,10 +812,6 @@ lemma ext_getVert {u v} {p q : G.Walk u v} (h : ∀ k, p.getVert k = q.getVert k
   by_contra!
   exact (q.adj_getVert_succ this).ne (by simp [← h, getVert_of_length_le])
 
-attribute [local grind cases] Walk in
-theorem eq_of_length_le_one {p q : G.Walk u v} (hp : p.length ≤ 1) (hq : q.length ≤ 1) : p = q := by
-  grind [length_cons, Adj.ne]
-
 end Walk
 
 end SimpleGraph
