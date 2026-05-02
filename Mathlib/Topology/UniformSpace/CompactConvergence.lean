@@ -367,6 +367,38 @@ theorem _root_.ContinuousOn.continuous_restrict_iff_continuous_uniformOnFun
   rw [ContinuousMap.continuous_iff_continuous_uniformFun, UniformOnFun.continuous_rng_iff]
   simp [Function.comp_def]
 
+open UniformOnFun in
+/-- A family `f : X → α → β`, each of which is continuous on a compact set `s : Set α`, gives
+a continuous map in the topology `X → α →ᵤ[{s}] β` on a set `t` if and only if the family of
+continuous restrictions `X → C(s, β)` is continuous on `t` as well. -/
+theorem _root_.ContinuousOn.continuousOn_mkD_restrict_iff_continuousOn_uniformOnFun
+    {X : Type*} [TopologicalSpace X] {f : X → α → β} {t : Set X} {s : Set α}
+    (g : C(s, β)) (hf : ∀ x ∈ t, ContinuousOn (f x) s) [CompactSpace s] :
+    ContinuousOn (fun x => mkD (s.restrict (f x)) g) t ↔
+      ContinuousOn (fun x => ofFun {s} (f x)) t := by
+  rw [continuousOn_iff_continuous_restrict, continuousOn_iff_continuous_restrict,
+      restrict_def, restrict_def, restrict_def,
+      ← ContinuousOn.continuous_restrict_iff_continuous_uniformOnFun (by grind)]
+  have h₀ : ∀ x : t, Continuous (s.restrict (f x)) := by
+    intro x
+    rw [← continuousOn_iff_continuous_restrict]
+    exact hf x.1 x.2
+  have h₁ : (fun x : t => mkD (s.restrict (f x)) g) = (fun x : t => ⟨s.restrict (f x), h₀ _⟩) := by
+    ext; simp [mkD, h₀]
+  rw [← h₁, restrict_def]
+
+open UniformOnFun in
+theorem _root_.continuousOn_uniformOnFun_of_uncurry
+    {X : Type*} [TopologicalSpace X] {f : X → α → β} {t : Set X} {s : Set α}
+    (hf : ContinuousOn f.uncurry (t ×ˢ s)) [CompactSpace s] :
+    ContinuousOn (fun x => ofFun {s} (f x)) t := by
+  nontriviality β
+  let _ : Inhabited β := Classical.inhabited_of_nonempty Nontrivial.to_nonempty
+  let g : C(s, β) := .const _ default
+  have h₂ : ∀ x ∈ t, ContinuousOn (f x) s := fun x hx => ContinuousOn.uncurry_left x hx hf
+  rw [← ContinuousOn.continuousOn_mkD_restrict_iff_continuousOn_uniformOnFun g h₂]
+  exact ContinuousMap.continuousOn_mkD_restrict_of_uncurry _ _ hf
+
 end ContinuousOnRestrict
 
 theorem uniformSpace_eq_inf_precomp_of_cover {δ₁ δ₂ : Type*} [TopologicalSpace δ₁]
