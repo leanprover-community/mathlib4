@@ -131,6 +131,10 @@ variable (U : Comonad C)
 @[simp] lemma mk_of (c : Cokleisli U) : Cokleisli.mk U c.of = c := rfl
 lemma of_mk (c : C) : (Cokleisli.mk U c).of = c := rfl
 
+theorem comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    U.δ.app X ≫ U.map (U.ε.app X ≫ f) ≫ (U.ε.app Y ≫ g) = U.ε.app X ≫ (f ≫ g) := by
+  simp [Comonad.counit_naturality_assoc]
+
 variable {U} in
 /-- For (U : Comonad C), morphisms `c ⟶ c'` in the Cokleisli category of `U` are
 morphisms ` U.obj c ⟶ c'` in `C`. -/
@@ -156,12 +160,15 @@ lemma hom_ext {x y : Cokleisli U} {f g : x ⟶ y} (h : f.of = g.of) : f = g :=
 
 namespace Adjunction
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The right adjoint of the adjunction which induces the comonad `(U, ε_ U, δ_ U)`. -/
 @[simps]
 def toCokleisli : C ⥤ Cokleisli U where
   obj X := .mk U X
   map {X} {_} f := .mk (U.ε.app X ≫ f)
+  map_comp {X} {Y} {Z} f g := by
+    unfold_projs
+    rw [comp]
+    simp
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The left adjoint of the adjunction which induces the comonad `(U, ε_ U, δ_ U)`. -/
