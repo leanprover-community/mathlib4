@@ -117,7 +117,7 @@ private lemma le_smul (μ ν : Measure X) [OpensMeasurableSpace X]
   -- apply Fubini
   _ = liminf (fun r => (ν (ball x r))⁻¹ * ∫⁻ a in U, μ (U ∩ ball a r) ∂ν) (𝓝[>] 0) := by
     congr with r
-    have : ∫⁻ a in U, ν (U ∩ ball a r) ∂μ =  ∫⁻ a in U, μ (U ∩ ball a r) ∂ν := calc
+    have : ∫⁻ a in U, ν (U ∩ ball a r) ∂μ = ∫⁻ a in U, μ (U ∩ ball a r) ∂ν := calc
       _ = ∫⁻ a in U, ∫⁻ b in U, (ball a r).indicator (fun b => 1) b ∂ν ∂μ := by
         refine lintegral_congr fun a => ?_
         simp [setLIntegral_indicator measurableSet_ball, inter_comm]
