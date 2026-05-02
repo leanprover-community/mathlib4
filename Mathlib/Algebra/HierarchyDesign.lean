@@ -243,6 +243,19 @@ Therefore, if we create an instance that always applies, we set the priority of 
 100 (or something similar, which is below the default value of 1000).
 -/
 
+library_note «higher instance priority» /--
+Certain instances only apply if the goal has a certain shape. For example
+`Semiring.toModule [Semiring R] : Module R R` or Int.instAddGroupInt : AddGroup ℤ`.
+Usually these instances will fail quickly, and when they apply, they are almost always
+the desired instance. For performance reasons it is sometimes useful to increase the
+priority of these instances, especially if they are defined very early on in mathlib
+(which would mean that they would be tried very late if they had the default priority).
+
+Therefore, if we create an instance that only applies in specific circumstances, and that
+is essentially always the right answer when it does apply, we may want to set the
+priority of these instances to 1100 (or something similar, which is above the default
+value of 1000).
+-/
 library_note «instance argument order» /--
 When type class inference applies an instance, it attempts to solve the sub-goals from left to
 right (it used to be from right to left in lean 3). For example in
