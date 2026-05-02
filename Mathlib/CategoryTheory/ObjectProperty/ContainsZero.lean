@@ -20,7 +20,7 @@ that `P` holds for all zero objects, as in some applications (e.g. triangulated 
 
 -/
 
-@[expose] public section
+public section
 
 universe v v' u u'
 

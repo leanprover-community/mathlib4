@@ -265,7 +265,7 @@ lemma map_op_inv (s : Finset α) : s⁻¹.map opEquiv.toEmbedding = (s.map opEqu
 
 end Inv
 
-open Pointwise
+open scoped Pointwise
 
 section InvolutiveInv
 variable [DecidableEq α] [InvolutiveInv α] {s : Finset α} {a : α}
@@ -1268,7 +1268,7 @@ lemma piFinset_inv [∀ i, Inv (α i)] (s : ∀ i, Finset (α i)) :
 
 end Fintype
 
-open Pointwise
+open scoped Pointwise
 
 namespace Set
 
