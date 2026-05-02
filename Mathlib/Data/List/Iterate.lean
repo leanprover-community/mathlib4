@@ -38,8 +38,8 @@ theorem getElem_iterate (f : α → α) (a : α) (n : ℕ) (i : Nat) (h : i < (i
     (iterate f a n)[i] = f^[i] a :=
   (getElem_eq_iff _).2 <| getElem?_iterate _ _ _ _ <| by rwa [length_iterate] at h
 
-theorem getLast_iterate (f : α → α) (a : α) (n : ℕ) (h : iterate f a (n + 1) ≠ []) :
-    (iterate f a (n + 1)).getLast h = f^[n] a := by
+theorem getLast_iterate (f : α → α) (a : α) (n : ℕ) (h : iterate f a n ≠ []) :
+    (iterate f a n).getLast h = f^[n - 1] a := by
   rw [getLast_eq_getElem, getElem_iterate]
   simp
 
