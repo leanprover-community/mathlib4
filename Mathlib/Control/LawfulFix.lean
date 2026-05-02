@@ -111,6 +111,17 @@ theorem le_f_of_mem_approx {x} : x ∈ approxChain f → x ≤ f x := by
 theorem approx_mem_approxChain {i} : approx f i ∈ approxChain f :=
   Stream'.mem_of_get_eq rfl
 
+/-- The `n`-th approximation `Fix.approx f n` is the `n`-th iterate of `f` from `⊥`. -/
+theorem approx_eq_iterate_bot (n : ℕ) : Fix.approx f n = f^[n] ⊥ := by
+  induction n with
+  | zero => rfl
+  | succ n ih => rw [Function.iterate_succ_apply', ← ih]; rfl
+
+/-- The chain `approxChain f` agrees with `iterateChain f ⊥ bot_le`. -/
+theorem approxChain_eq_iterateChain :
+    approxChain f = fixedPoints.iterateChain f ⊥ bot_le :=
+  Chain.ext (funext (approx_eq_iterate_bot f))
+
 end Fix
 
 open Fix
@@ -177,19 +188,7 @@ theorem fix_eq_of_ωScottContinuous (hc : ωScottContinuous g) :
 /-- `Part.fix g` is the least fixed point of the ω-Scott continuous functional `g`. -/
 theorem fix_eq_lfp (hc : ωScottContinuous g) :
     Part.fix g = ContinuousHom.lfp (.ofFun g hc) := by
-  have h : approxChain (⟨g, hc.monotone⟩ : (∀ a, Part (β a)) →o _) =
-      fixedPoints.iterateChain ⟨g, hc.monotone⟩ ⊥ bot_le := by
-    apply Chain.ext
-    funext n
-    change Fix.approx _ n = g^[n] ⊥
-    induction n with
-    | zero => rfl
-    | succ n ih =>
-      change g (Fix.approx _ n) = g^[n + 1] ⊥
-      rw [ih, ← Function.iterate_succ_apply' g n ⊥]
-  rw [fix_eq_ωSup_of_ωScottContinuous hc]
-  change _ = ωSup _
-  rw [h]
+  rw [fix_eq_ωSup_of_ωScottContinuous hc, Fix.approxChain_eq_iterateChain]
   rfl
 
 /-- **Scott induction** for `Part.fix`: for an ω-Scott continuous functional `g` and a
@@ -202,18 +201,23 @@ theorem fix_scott_induction {p : (∀ a, Part (β a)) → Prop} (hc : ωScottCon
   rw [fix_eq_lfp hc]
   exact ContinuousHom.lfp_induction _ h_bot h_step h_sup
 
-/-- Induction on membership in `Part.fix`: to prove `P x y` whenever `y ∈ Part.fix g x`,
-it suffices that for any approximation `f` on which `P` holds pointwise, `g f` still satisfies
-`P` pointwise. No continuity hypothesis is needed. -/
-theorem fix_induction_mem {P : ∀ a, β a → Prop}
+/-- Induction on membership in `Part.fix`, derived from `fix_scott_induction`: to prove `P x y`
+whenever `y ∈ Part.fix g x`, it suffices that for any approximation `f` on which `P` holds
+pointwise, `g f` still satisfies `P` pointwise. -/
+theorem fix_induction_mem {P : ∀ a, β a → Prop} (hc : ωScottContinuous g)
     (h_step : ∀ f, (∀ x y, y ∈ f x → P x y) → ∀ x y, y ∈ g f x → P x y)
     {x} {y : β x} (h : y ∈ Part.fix g x) : P x y := by
-  obtain ⟨n, hn⟩ := exists_mem_approx_of_mem_fix h
-  suffices key : ∀ n x (y : β x), y ∈ Fix.approx g n x → P x y from key _ _ _ hn
-  intro n
-  induction n with
-  | zero => intro _ _ hh; exact absurd hh (Part.notMem_none _)
-  | succ _ ih => exact h_step _ ih
+  have key : ∀ x y, y ∈ Part.fix g x → P x y := by
+    apply fix_scott_induction (p := fun f => ∀ x y, y ∈ f x → P x y) hc
+    · exact fun _ _ hy => absurd hy (Part.notMem_none _)
+    · exact h_step
+    · intro c ih x y hy
+      have hy' : y ∈ ωSup (c.map (Pi.evalOrderHom x)) := hy
+      rw [Part.mem_ωSup] at hy'
+      obtain ⟨n, hn⟩ := hy'
+      have hcn : c n x = Part.some y := hn.symm
+      exact ih n x y (hcn ▸ Part.mem_some y)
+  exact key x y h
 
 end Part
 
