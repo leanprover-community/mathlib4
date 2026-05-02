@@ -22,12 +22,8 @@ convention, but implicitly shows the monotonicity in `pentagonal_lt_pentagonal_n
 
 * `pentagonal`: pentagonal numbers as a function `ℤ → ℕ`.
 * `pentagonalCoeff`: coefficients of the power series $\sum_{k=-\infty}^{\infty}(-1)^k x^{f(k)}$,
-  where $f(k)$ are pentagonal numbers.
-
-## TODO
-
-Show the relation between pentagonal numbers and partitions, including the pentagonal number
-theorem.
+  where $f(k)$ are pentagonal numbers. See also `PowerSeries.WithPiTopology.hasProd_one_sub_X_pow`
+  for the pentagonal number theorem that relates this power series and an infinite product.
 
 ## References
 
