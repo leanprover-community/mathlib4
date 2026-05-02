@@ -205,37 +205,6 @@ lemma opObjEquiv_symm_yonedaEquiv_const {X : SSet.{u}} {n : SimplexCategory} (x 
 
 namespace stdSimplex
 
-set_option backward.isDefEq.respectTransparency false in
-lemma map_comp_yonedaEquiv_symm {X : SSet.{u}} {n m : SimplexCategory} (f : n ⟶ m)
-    (x : X.obj (op m)) :
-    stdSimplex.map f ≫ yonedaEquiv.symm x = yonedaEquiv.symm (X.map f.op x) := by
-  simp [yonedaEquiv, stdSimplex, ← dsimp% uliftYonedaEquiv_symm_map f.op]
-
-lemma δ_comp_yonedaEquiv_symm
-    {X : SSet.{u}} {n : ℕ} (x : X _⦋n + 1⦌) (i : Fin (n + 2)) :
-    stdSimplex.δ i ≫ yonedaEquiv.symm x = yonedaEquiv.symm (X.δ i x) :=
-  map_comp_yonedaEquiv_symm ..
-
-lemma σ_comp_yonedaEquiv_symm
-    {X : SSet.{u}} {n : ℕ} (x : X _⦋n⦌) (i : Fin (n + 1)) :
-    stdSimplex.σ i ≫ yonedaEquiv.symm x = yonedaEquiv.symm (X.σ i x) :=
-  map_comp_yonedaEquiv_symm ..
-
-lemma yonedaEquiv_map_comp
-    {X : SSet.{u}} {n m : SimplexCategory} (f : n ⟶ m) (g : stdSimplex.obj m ⟶ X) :
-    yonedaEquiv (stdSimplex.map f ≫ g) = X.map f.op (yonedaEquiv g) :=
-  yonedaEquiv.symm.injective (by simp [← map_comp_yonedaEquiv_symm])
-
-lemma yonedaEquiv_δ_comp
-    {X : SSet.{u}} {n : ℕ} (g : Δ[n + 1] ⟶ X) (i : Fin (n + 2)) :
-    yonedaEquiv (stdSimplex.δ i ≫ g) = X.δ i (yonedaEquiv g) :=
-  yonedaEquiv_map_comp ..
-
-lemma yonedaEquiv_σ_comp
-    {X : SSet.{u}} {n : ℕ} (g : Δ[n] ⟶ X) (i : Fin (n + 1)) :
-    yonedaEquiv (stdSimplex.σ i ≫ g) = X.σ i (yonedaEquiv g) :=
-  yonedaEquiv_map_comp ..
-
 @[simp]
 lemma objEquiv_yonedaEquiv_id (n : ℕ) :
     dsimp% objEquiv (yonedaEquiv.{u} (𝟙 Δ[n])) = 𝟙 _ := rfl
@@ -335,6 +304,39 @@ lemma yonedaEquiv_symm_app_id {X : SSet.{u}} {n : ℕ} (x : X _⦋n⦌) :
     (yonedaEquiv.symm x).app _ (yonedaEquiv (𝟙 _)) = x := by
   simp
 
+/-- `yonedaEquiv` is natural. -/
+lemma yonedaEquiv_naturality {X : SSet} {m n : SimplexCategory}
+    (f : m ⟶ n) (g : stdSimplex.obj n ⟶ X) :
+    X.map f.op (yonedaEquiv g) = yonedaEquiv (stdSimplex.map f ≫ g) :=
+  uliftYonedaEquiv_naturality _ _
+
+/-- `yonedaEquiv.symm` is natural under precomposition -/
+@[reassoc]
+lemma yonedaEquiv_symm_naturality_left {X : SSet} {m n : SimplexCategory}
+    (f : m ⟶ n) (g : X.obj (Opposite.op n)) :
+    stdSimplex.map f ≫ yonedaEquiv.symm g = yonedaEquiv.symm (X.map f.op g) := by
+  rw [← yonedaEquiv.apply_eq_iff_eq_symm_apply, ← yonedaEquiv_naturality,
+    yonedaEquiv.apply_symm_apply]
+
+lemma stdSimplex.δ_comp_yonedaEquiv_symm
+    {X : SSet.{u}} {n : ℕ} (x : X _⦋n + 1⦌) (i : Fin (n + 2)) :
+    stdSimplex.δ i ≫ yonedaEquiv.symm x = yonedaEquiv.symm (X.δ i x) :=
+  yonedaEquiv_symm_naturality_left ..
+
+lemma stdSimplex.σ_comp_yonedaEquiv_symm
+    {X : SSet.{u}} {n : ℕ} (x : X _⦋n⦌) (i : Fin (n + 1)) :
+    stdSimplex.σ i ≫ yonedaEquiv.symm x = yonedaEquiv.symm (X.σ i x) :=
+  yonedaEquiv_symm_naturality_left ..
+
+lemma stdSimplex.yonedaEquiv_δ_comp
+    {X : SSet.{u}} {n : ℕ} (g : Δ[n + 1] ⟶ X) (i : Fin (n + 2)) :
+    yonedaEquiv (stdSimplex.δ i ≫ g) = X.δ i (yonedaEquiv g) :=
+  (yonedaEquiv_naturality ..).symm
+
+lemma stdSimplex.yonedaEquiv_σ_comp
+    {X : SSet.{u}} {n : ℕ} (g : Δ[n] ⟶ X) (i : Fin (n + 1)) :
+    yonedaEquiv (stdSimplex.σ i ≫ g) = X.σ i (yonedaEquiv g) :=
+  (yonedaEquiv_naturality ..).symm
 
 namespace Subcomplex
 
