@@ -68,8 +68,11 @@ lemma h_symm : h F.symm = (X ◁ I.symm) ≫ F.h := rfl
 noncomputable abbrev trans := ContinuousMap.Homotopy.trans F G
 
 /-- The homotopy between compositions of morphisms in `TopCat`. -/
+@[simps!]
 abbrev comp {f₀ f₁ : X ⟶ Y} {g₀ g₁ : Y ⟶ Z} (G : Homotopy g₀ g₁) (F : Homotopy f₀ f₁) :
     Homotopy (f₀ ≫ g₀) (f₁ ≫ g₁) := ContinuousMap.Homotopy.comp G F
+
+attribute [nolint simpNF] comp_apply
 
 @[simp]
 lemma h_comp {f₀ f₁ : X ⟶ Y} {g₀ g₁ : Y ⟶ Z} (G : Homotopy g₀ g₁) (F : Homotopy f₀ f₁) :
