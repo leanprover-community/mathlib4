@@ -134,14 +134,13 @@ lemma IsVertexConnected.zero [Nonempty V] : G.IsVertexConnected 0 :=
 
 /-- 1-vertex-connectivity is equivalent to preconnectedness and `V` being nontrivial. -/
 @[simp]
-lemma isVertexConnected_one : G.IsVertexConnected 1 ↔ Nontrivial V ∧ G.Connected := by
-  rw [IsVertexConnected, ENat.add_one_le_iff ENat.one_ne_top, ENat.one_lt_card_iff_nontrivial]
-  refine ⟨fun ⟨h_nt, h_reach⟩ ↦ ⟨h_nt, ⟨fun u v ↦ ?_⟩⟩, fun ⟨h_nt, h_conn⟩ ↦ ⟨h_nt, fun u v ↦ ?_⟩⟩
-  exacts [isVertexReachable_one_iff.mp <| h_reach u v, isVertexReachable_one_iff.mpr <| h_conn u v]
+lemma isVertexConnected_one : G.IsVertexConnected 1 ↔ Nontrivial V ∧ G.Preconnected := by
+  rw [IsVertexConnected, isVertexPreconnected_one, ← ENat.one_lt_card_iff_nontrivial]
+  exact and_congr_left' <| ENat.add_one_le_iff ENat.one_ne_top
 
 lemma Preconnected.isVertexConnected_one [Nontrivial V] (h : G.Preconnected) :
     G.IsVertexConnected 1 :=
-  SimpleGraph.isVertexConnected_one.mpr ⟨‹_›, ⟨h⟩⟩
+  SimpleGraph.isVertexConnected_one.mpr ⟨‹_›, h⟩
 
 /-- Vertex connectivity is antitonic in `k`. -/
 @[gcongr]
