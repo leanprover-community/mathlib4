@@ -144,13 +144,16 @@ structure Hom (c c' : Cokleisli U) where
 
 instance [Inhabited C] (U : Comonad C) : Inhabited (Cokleisli U) := ⟨.mk U default⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The co-Kleisli category on a comonad `U`. -/
 @[simps!]
 instance category : Category (Cokleisli U) where
   Hom X Y := Hom X Y
   id X := .mk <| U.ε.app X.of
   comp f g := .mk <| U.δ.app _ ≫ (U : C ⥤ C).map f.of ≫ g.of
+  comp_id {X} {Y} f := by
+    simp [U.left_counit_assoc, dsimp% U.ε.naturality f.of]
+  assoc f g h := by
+    simp [U.delta_naturality_assoc]
 
 variable {T} in
 attribute [local ext] Hom in
