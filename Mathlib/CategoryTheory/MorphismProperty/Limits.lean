@@ -750,7 +750,7 @@ instance (J : Type*) [(monomorphisms C).IsStableUnderCoproductsOfShape J]
     {X₁ X₂ : J → C} (f : ∀ j, X₁ j ⟶ X₂ j) [HasCoproduct X₁] [HasCoproduct X₂]
     [∀ j, Mono (f j)] :
     Mono (Limits.Sigma.map f) :=
-  MorphismProperty.colimMap _ (fun ⟨j⟩ ↦ by dsimp; infer_instance)
+  MorphismProperty.colimMap _ (fun ⟨j⟩ ↦ inferInstanceAs (Mono (f j)))
 
 /-- The condition that a property of morphisms is stable by finite products. -/
 class IsStableUnderFiniteProducts : Prop where
