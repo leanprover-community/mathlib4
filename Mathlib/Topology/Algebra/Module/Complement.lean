@@ -16,7 +16,7 @@ Let `M` be a topological `R`-module. Two submodules `p, q` of `M` are said to be
 algebraic isomorphism `M ≃ p × q` is an homeomorphism.
 
 Not all submodules of `M` admit such a topological complements (even if they admit algebraic
-complements). In the litterature, such a submodule is called *topologically complemented*
+complements). In the literature, such a submodule is called *topologically complemented*
 or *direct*. One may also find the terminology *closed complemented* because,
 in a Banach space, a closed algebraic complement is automatically a topological complement.
 This is the terminology we use for now (`Submodule.ClosedComplemented`), but we should eventually
