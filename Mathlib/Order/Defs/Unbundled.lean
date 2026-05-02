@@ -98,7 +98,7 @@ class IsStrictTotalOrder (α : Sort*) (lt : α → α → Prop) : Prop
     extends Std.Trichotomous lt, IsStrictOrder α lt
 
 theorem Equivalence.of_isEquiv {α : Sort*} (lt : α → α → Prop) [IsEquiv α lt] : Equivalence lt where
-  refl := Std.Refl.refl; symm := Std.Symm.symm _ _; trans := Trans.trans
+  refl := Std.Refl.refl; symm := Std.Symm.symm _ _; trans := IsTrans.trans _ _ _
 
 theorem IsEquiv.of_equivalence {α : Sort*} {lt : α → α → Prop} (h : Equivalence lt) :
     IsEquiv α lt where
