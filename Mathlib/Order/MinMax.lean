@@ -18,7 +18,7 @@ This file proves basic properties about maxima and minima on a `LinearOrder`.
 min, max
 -/
 
-@[expose] public section
+public section
 
 
 universe u v

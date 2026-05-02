@@ -25,7 +25,7 @@ example {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] [CompleteSpace V
 ```
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

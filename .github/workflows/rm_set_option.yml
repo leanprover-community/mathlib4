@@ -127,7 +127,7 @@ jobs:
           base: master
           title: "chore: remove unnecessary set_option lines"
           body: ${{ steps.pr_body.outputs.body }}
-          labels: ${{ toJson(inputs.auto_merge) == 'true' && 'auto-merge-after-CI' || '' }}
+          labels: ${{ (github.event_name == 'schedule' || toJson(inputs.auto_merge) == 'true') && 'auto-merge-after-CI' || '' }}
 
       - name: Send Zulip message (success)
         if: steps.pr.outcome == 'success'

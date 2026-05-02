@@ -118,8 +118,8 @@ lemma partialTraj_self (a : ℕ) : partialTraj κ a a = Kernel.id := by rw [part
 
 @[simp]
 lemma partialTraj_zero :
-    partialTraj κ a 0 = deterministic (frestrictLe₂ (zero_le a)) (measurable_frestrictLe₂ _) := by
-  rw [partialTraj_le (zero_le a)]
+    partialTraj κ a 0 = deterministic (frestrictLe₂ zero_le) (measurable_frestrictLe₂ _) := by
+  rw [partialTraj_le zero_le]
 
 lemma partialTraj_le_def (hab : a ≤ b) : partialTraj κ a b =
     @Nat.leRec a (fun b _ ↦ Kernel (Π i : Iic a, X i) (Π i : Iic b, X i)) Kernel.id
