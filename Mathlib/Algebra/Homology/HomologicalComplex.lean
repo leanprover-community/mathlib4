@@ -633,6 +633,10 @@ section Of
 
 variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 
+/-- Auxiliary definition for differentials for `ChainComplex.of`. -/
+def of.d (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (i : α) (j : α) : X i ⟶ X j :=
+  if h : i = j + 1 then eqToHom (by rw [h]) ≫ d j else 0
+
 set_option backward.defeqAttrib.useBackward true in
 /-- Construct an `α`-indexed chain complex from a dependently-typed differential.
 -/
@@ -886,6 +890,10 @@ namespace CochainComplex
 section Of
 
 variable {V} {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
+
+/-- Auxiliary definition for differentials for `CochainComplex.of`. -/
+def of.d (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (i : α) (j : α) : X i ⟶ X j :=
+  if h : i + 1 = j then d _ ≫ eqToHom (by rw [h]) else 0
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Construct an `α`-indexed cochain complex from a dependently-typed differential.
