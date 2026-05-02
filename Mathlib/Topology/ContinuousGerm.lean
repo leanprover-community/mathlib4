@@ -9,7 +9,32 @@ public import Mathlib.Topology.Germ
 
 /-! # Germs of continuous maps
 
-In this file we define the type `ContinuousGerm x Y` of germs of continuous maps `X → Y` at `x`.
+In this file we introduce continuity of germs. For our purposes a germ at `x` is continuous if the
+functions representing it are continuous on a neighbourhood of `x`; note that this does not
+necessarily mean that it can be represented by a globally continuous function.
+
+We also provide types `ContinuousGerm x Y` and `PointedContinuousGerm x y` of bundled continuous
+germs, and show that these can be composed.
+
+## Main results & definitions
+* `Germ.ContinuousAt`: a germ `f` at `x` satisfies `f.ContinuousAt` if the functions representing it
+  are continuous at `x`.
+* `Germ.Continuous`: a germ `f` at `x` is continuous if the functions representing it are continuous
+  on some neighbourhood of `x`.
+* `ContinuousGerm x Y`: the type of continuous `Y`-valued germs at `x`.
+* `ContinuousGerm.comp f g h`: the composition of two continuous germs `f : ContinuousGerm y Z` and
+  `g : ContinuousGerm x Y`, provided `h : g.toGerm.value = y`.
+* `PointedContinuousGerm x y`: the type of continuous germs at `x` sending `x` to `y`.
+* `PointedContinuousGerm.comp f g`: the composition of two continuous germs
+  `f : PointedContinuousGerm y z` and `g : PointedContinuousGerm x y`.
+
+## TODOs
+* Equip `ContinuousGerm x Y` with the topology coinduced by all restriction maps from
+  `ContinuousMap u Y` for neighbourhoods `u` of `x`, and `PointedContinuousGerm x y` with the
+  induced topology.
+* Prove that `PointedContinuousGerm x x` is a topological monoid under multiplication.
+* Equip `ContinuousGerm x Y` with the corresponding pointwise operations when `Y` is a topological
+  group / ring / module etc.
 -/
 
 public section
