@@ -101,6 +101,30 @@ theorem limit_zero_of_norm_tendsto_zero : F.aeval ncs.lim = 0 := by
 
 end
 
+private theorem a_soln_is_unique {p : ℕ} [Fact p.Prime] {R : Type*} [CommSemiring R]
+    [Algebra R ℤ_[p]] {F : Polynomial R} {a : ℤ_[p]} (ha : F.aeval a = 0) (z' : ℤ_[p])
+    (hz' : F.aeval z' = 0) (hnormz' : ‖z' - a‖ < ‖F.derivative.aeval a‖) : z' = a := by
+  let h := z' - a
+  let ⟨q, hq⟩ := (F.map (algebraMap R ℤ_[p])).binomExpansion a h
+  simp only [Polynomial.eval_map_algebraMap, Polynomial.derivative_map] at hq
+  have : (F.derivative.aeval a + q * h) * h = 0 :=
+    Eq.symm
+      (calc
+        0 = F.aeval (a + h) := show 0 = F.aeval (a + (z' - a)) by simp [hz']
+        _ = F.derivative.aeval a * h + q * h ^ 2 := by rw [hq, ha, zero_add]
+        _ = (F.derivative.aeval a + q * h) * h := by rw [sq, right_distrib, mul_assoc])
+  have : h = 0 :=
+    by_contra fun hne =>
+      have : F.derivative.aeval a + q * h = 0 :=
+        (eq_zero_or_eq_zero_of_mul_eq_zero this).resolve_right hne
+      have : F.derivative.aeval a = -q * h := by simpa using eq_neg_of_add_eq_zero_left this
+      lt_irrefl ‖F.derivative.aeval a‖
+        (calc
+          ‖F.derivative.aeval a‖ = ‖q‖ * ‖h‖ := by simp [this]
+          _ ≤ 1 * ‖h‖ := by gcongr; apply PadicInt.norm_le_one
+          _ < ‖F.derivative.aeval a‖ := by simpa)
+  exact eq_of_sub_eq_zero (by rw [← this])
+
 section Hensel
 
 open Nat
@@ -411,63 +435,19 @@ private theorem soln_dist_to_a_lt_deriv : ‖soln - a‖ < ‖F.derivative.aeval
 
 private theorem soln_unique (z : ℤ_[p]) (hev : F.aeval z = 0)
     (hnlt : ‖z - a‖ < ‖F.derivative.aeval a‖) : z = soln := by
-  have soln_dist : ‖z - soln‖ < ‖F.derivative.aeval a‖ :=
+  have hsoln : ‖z - soln‖ < ‖F.derivative.aeval soln‖ := by
+    rw [soln_deriv_norm]
     calc
       ‖z - soln‖ = ‖z - a + (a - soln)‖ := by rw [sub_add_sub_cancel]
       _ ≤ max ‖z - a‖ ‖a - soln‖ := PadicInt.nonarchimedean _ _
       _ < ‖F.derivative.aeval a‖ :=
         max_lt hnlt ((norm_sub_rev soln a ▸ (soln_dist_to_a_lt_deriv hnorm)) hnsol)
-  let h := z - soln
-  let ⟨q, hq⟩ := (F.map (algebraMap R ℤ_[p])).binomExpansion soln h
-  simp only [Polynomial.eval_map_algebraMap, Polynomial.derivative_map] at hq
-  have : (F.derivative.aeval soln + q * h) * h = 0 :=
-    Eq.symm
-      (calc
-        0 = F.aeval (soln + h) := by simp [h, hev]
-        _ = F.derivative.aeval soln * h + q * h ^ 2 := by rw [hq, eval_soln, zero_add]
-        _ = (F.derivative.aeval soln + q * h) * h := by rw [sq, right_distrib, mul_assoc])
-  have : h = 0 :=
-    by_contra fun hne =>
-      have : F.derivative.aeval soln + q * h = 0 :=
-        (eq_zero_or_eq_zero_of_mul_eq_zero this).resolve_right hne
-      have : F.derivative.aeval soln = -q * h := by simpa using eq_neg_of_add_eq_zero_left this
-      lt_irrefl ‖F.derivative.aeval soln‖
-        (calc
-          ‖F.derivative.aeval soln‖ = ‖-q * h‖ := by rw [this]
-          _ ≤ 1 * ‖h‖ := by
-            rw [norm_mul]
-            exact mul_le_mul_of_nonneg_right (PadicInt.norm_le_one _) (norm_nonneg _)
-          _ = ‖z - soln‖ := by simp [h]
-          _ < ‖F.derivative.aeval soln‖ := by rw [soln_deriv_norm]; apply soln_dist)
-  exact eq_of_sub_eq_zero (by rw [← this])
+  exact a_soln_is_unique (a := soln) (eval_soln hnorm) z hev hsoln
 
 end Hensel
 
 variable {p : ℕ} [Fact p.Prime] {R : Type*} [CommSemiring R] [Algebra R ℤ_[p]]
   {F : Polynomial R} {a : ℤ_[p]}
-
-private theorem a_soln_is_unique (ha : F.aeval a = 0) (z' : ℤ_[p]) (hz' : F.aeval z' = 0)
-    (hnormz' : ‖z' - a‖ < ‖F.derivative.aeval a‖) : z' = a := by
-  let h := z' - a
-  let ⟨q, hq⟩ := (F.map (algebraMap R ℤ_[p])).binomExpansion a h
-  simp only [Polynomial.eval_map_algebraMap, Polynomial.derivative_map] at hq
-  have : (F.derivative.aeval a + q * h) * h = 0 :=
-    Eq.symm
-      (calc
-        0 = F.aeval (a + h) := show 0 = F.aeval (a + (z' - a)) by simp [hz']
-        _ = F.derivative.aeval a * h + q * h ^ 2 := by rw [hq, ha, zero_add]
-        _ = (F.derivative.aeval a + q * h) * h := by rw [sq, right_distrib, mul_assoc])
-  have : h = 0 :=
-    by_contra fun hne =>
-      have : F.derivative.aeval a + q * h = 0 :=
-        (eq_zero_or_eq_zero_of_mul_eq_zero this).resolve_right hne
-      have : F.derivative.aeval a = -q * h := by simpa using eq_neg_of_add_eq_zero_left this
-      lt_irrefl ‖F.derivative.aeval a‖
-        (calc
-          ‖F.derivative.aeval a‖ = ‖q‖ * ‖h‖ := by simp [this]
-          _ ≤ 1 * ‖h‖ := by gcongr; apply PadicInt.norm_le_one
-          _ < ‖F.derivative.aeval a‖ := by simpa)
-  exact eq_of_sub_eq_zero (by rw [← this])
 
 variable (hnorm : ‖F.aeval a‖ < ‖F.derivative.aeval a‖ ^ 2)
 include hnorm
