@@ -183,8 +183,8 @@ info: fun {α} [PartialOrder α] => of_eq_true (Eq.trans (forall_congr fun a => 
 -/
 #guard_msgs in
 run_meta
-  Lean.logInfo (← Lean.getConstInfo ``lt_le_trans).value!
-  Lean.logInfo (← Lean.getConstInfo ``le_refl').value!
+  Lean.logInfo ((← Lean.getConstInfo ``lt_le_trans).value! (allowOpaque := true))
+  Lean.logInfo ((← Lean.getConstInfo ``le_refl').value! (allowOpaque := true))
 
 -- Test that we do not translate the order on `Prop`
 instance Prop.le : LE Prop :=
@@ -382,3 +382,8 @@ info: eq_of_max_of_min {α : Type} [PartialOrder α] (a b : α) (hmin : ∀ (x :
 -/
 #guard_msgs in
 #check eq_of_max_of_min
+
+-- Test that the heuristic applies even when proofs are beta expanded
+@[to_dual (dont_translate := β) le_of_lt_and_le_of_lt']
+theorem le_of_lt_and_le_of_lt {β} [Preorder β] (a b : α) (c d : β) : (a < b → a ≤ b) ∧ (c < d → c ≤ d) :=
+  ⟨le_of_lt, (fun γ [Preorder γ] (c d : γ) ↦ @le_of_lt γ _ c d) β c d⟩

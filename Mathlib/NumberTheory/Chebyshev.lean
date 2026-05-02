@@ -223,10 +223,10 @@ theorem abs_psi_sub_theta_le_sqrt_mul_log {x : ℝ} (hx : 1 ≤ x) :
   apply le_trans <| abs_sum_le_sum_abs ..
   simp_rw [abs_of_nonneg <| theta_nonneg _]
   trans ∑ i ∈ Icc 2 ⌊log x / log 2⌋₊, log 4 * x.sqrt
-  · apply sum_le_sum fun i hi ↦ ?_
+  · gcongr with i hi
     apply le_trans (theta_le_log4_mul_x (rpow_nonneg (by linarith) _))
     rw [sqrt_eq_rpow]
-    gcongr <;> simp_all
+    gcongr; simp_all
   simp only [sum_const, card_Icc, reduceSubDiff, nsmul_eq_mul]
   calc
   _ ≤ (log x / log 2) * (log 4 * √x) := by
@@ -346,7 +346,7 @@ theorem theta_eq_primeCounting_mul_log_sub_integral {x : ℝ} (hx : 2 ≤ x) :
     split_ifs with h <;> simp [a, h]
   rw [sum_mul_eq_sub_integral_mul₁ a (by simp [a, Nat.not_prime_zero])
     (by simp [a, Nat.not_prime_one]) _ (fun z ⟨hz, _⟩ ↦ (by fun_prop (disch := linarith))) ?hint,
-    ←intervalIntegral.integral_of_le hx]
+    ← intervalIntegral.integral_of_le hx]
   case hint =>
     rw [deriv_log']
     refine ContinuousOn.integrableOn_Icc ?_
