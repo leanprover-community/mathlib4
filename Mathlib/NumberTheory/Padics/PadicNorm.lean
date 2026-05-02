@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.AbsoluteValue.Basic
 public import Mathlib.NumberTheory.Padics.PadicVal.Basic
+import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 
 /-!
 # p-adic norm
@@ -195,28 +196,6 @@ protected theorem sub {q r : ℚ} : padicNorm p (q - r) ≤ max (padicNorm p q) 
   rw [sub_eq_add_neg, ← padicNorm.neg r]
   exact padicNorm.nonarchimedean
 
-/-- If the `p`-adic norms of `q` and `r` are different, then the norm of `q + r` is equal to the max
-of the norms of `q` and `r`. -/
-theorem add_eq_max_of_ne {q r : ℚ} (hne : padicNorm p q ≠ padicNorm p r) :
-    padicNorm p (q + r) = max (padicNorm p q) (padicNorm p r) := by
-  wlog hlt : padicNorm p r < padicNorm p q
-  · rw [add_comm, max_comm]
-    exact this hne.symm (hne.lt_or_gt.resolve_right hlt)
-  have : padicNorm p q ≤ max (padicNorm p (q + r)) (padicNorm p r) :=
-    calc
-      padicNorm p q = padicNorm p (q + r + (-r)) := by ring_nf
-      _ ≤ max (padicNorm p (q + r)) (padicNorm p (-r)) := padicNorm.nonarchimedean
-      _ = max (padicNorm p (q + r)) (padicNorm p r) := by simp
-  have hnge : padicNorm p r ≤ padicNorm p (q + r) := by
-    apply le_of_not_gt
-    intro hgt
-    rw [max_eq_right_of_lt hgt] at this
-    exact not_lt_of_ge this hlt
-  have : padicNorm p q ≤ padicNorm p (q + r) := by rwa [max_eq_left hnge] at this
-  apply _root_.le_antisymm
-  · apply padicNorm.nonarchimedean
-  · rwa [max_eq_left_of_lt hlt]
-
 /-- The `p`-adic norm is an absolute value: positive-definite and multiplicative, satisfying the
 triangle inequality. -/
 instance : IsAbsoluteValue (padicNorm p) where
@@ -224,6 +203,13 @@ instance : IsAbsoluteValue (padicNorm p) where
   abv_eq_zero' := ⟨zero_of_padicNorm_eq_zero, fun hx ↦ by simp [hx]⟩
   abv_add' := padicNorm.triangle_ineq
   abv_mul' := padicNorm.mul
+
+/-- If the `p`-adic norms of `q` and `r` are different, then the norm of `q + r` is equal to the max
+of the norms of `q` and `r`. -/
+theorem add_eq_max_of_ne {q r : ℚ} (hne : padicNorm p q ≠ padicNorm p r) :
+    padicNorm p (q + r) = max (padicNorm p q) (padicNorm p r) :=
+  IsNonarchimedean.add_eq_max_of_ne (f := IsAbsoluteValue.toAbsoluteValue (padicNorm p))
+    (fun _ _ => padicNorm.nonarchimedean) hne
 
 theorem dvd_iff_norm_le {n : ℕ} {z : ℤ} : ↑(p ^ n) ∣ z ↔ padicNorm p z ≤ (p : ℚ) ^ (-n : ℤ) := by
   unfold padicNorm; split_ifs with hz
@@ -280,30 +266,14 @@ theorem not_int_of_not_padic_int (p : ℕ) {a : ℚ} [hp : Fact (Nat.Prime p)]
   apply padicNorm.of_int
 
 theorem sum_lt {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α} :
-    s.Nonempty → (∀ i ∈ s, padicNorm p (F i) < t) → padicNorm p (∑ i ∈ s, F i) < t := by
-  classical
-    refine s.induction_on (by rintro ⟨-, ⟨⟩⟩) ?_
-    rintro a S haS IH - ht
-    by_cases hs : S.Nonempty
-    · rw [Finset.sum_insert haS]
-      exact
-        lt_of_le_of_lt padicNorm.nonarchimedean
-          (max_lt (ht a (Finset.mem_insert_self a S))
-            (IH hs fun b hb ↦ ht b (Finset.mem_insert_of_mem hb)))
-    · simp_all
+    s.Nonempty → (∀ i ∈ s, padicNorm p (F i) < t) → padicNorm p (∑ i ∈ s, F i) < t := fun hs hF ↦
+  lt_of_le_of_lt (IsNonarchimedean.apply_sum_le_sup (fun _ _ ↦ padicNorm.nonarchimedean) hs) <|
+    (Finset.sup'_lt_iff hs).2 hF
 
 theorem sum_le {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α} :
-    s.Nonempty → (∀ i ∈ s, padicNorm p (F i) ≤ t) → padicNorm p (∑ i ∈ s, F i) ≤ t := by
-  classical
-    refine s.induction_on (by rintro ⟨-, ⟨⟩⟩) ?_
-    rintro a S haS IH - ht
-    by_cases hs : S.Nonempty
-    · rw [Finset.sum_insert haS]
-      exact
-        padicNorm.nonarchimedean.trans
-          (max_le (ht a (Finset.mem_insert_self a S))
-            (IH hs fun b hb ↦ ht b (Finset.mem_insert_of_mem hb)))
-    · simp_all
+    s.Nonempty → (∀ i ∈ s, padicNorm p (F i) ≤ t) → padicNorm p (∑ i ∈ s, F i) ≤ t := fun hs hF ↦
+  (IsNonarchimedean.apply_sum_le_sup (fun _ _ ↦ padicNorm.nonarchimedean) hs).trans <|
+    (Finset.sup'_le_iff hs (f := fun i ↦ padicNorm p (F i))).2 hF
 
 theorem sum_lt' {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α}
     (hF : ∀ i ∈ s, padicNorm p (F i) < t) (ht : 0 < t) : padicNorm p (∑ i ∈ s, F i) < t := by
