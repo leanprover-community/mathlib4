@@ -185,7 +185,7 @@ theorem IsTopCompl.projectionOnto_apply_right (h : IsTopCompl p q) (x : q) :
   h.projectionOnto_apply_eq_zero_of_mem_right x.2
 
 theorem IsTopCompl.ker_projectionOnto (h : IsTopCompl p q) :
-    ker (h.projectionOnto : M →ₗ[R] p) = q :=
+    h.projectionOnto.ker = q :=
   linearProjOfIsCompl_ker h.isCompl
 
 theorem IsTopCompl.isQuotientMap_projectionOnto (h : IsTopCompl p q) :
@@ -246,7 +246,7 @@ theorem IsTopCompl.projection_apply_right (h : IsTopCompl p q) (x : q) :
   h.projection_apply_eq_zero_of_mem_right x.2
 
 theorem IsTopCompl.ker_projection (h : IsTopCompl p q) :
-    ker (h.projection : M →ₗ[R] M) = q :=
+    h.projection.ker = q :=
   h.isCompl.projection_ker
 
 @[simp]
