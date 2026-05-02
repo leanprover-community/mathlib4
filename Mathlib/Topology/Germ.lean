@@ -49,6 +49,17 @@ shared by all representatives at the given point. -/
 def value {X α : Type*} [TopologicalSpace X] {x : X} (φ : Germ (𝓝 x) α) : α :=
   Quotient.liftOn' φ (fun f ↦ f x) fun f g h ↦ by dsimp only; rw [Eventually.self_of_nhds h]
 
+@[simp]
+lemma value_coe {X α : Type*} [TopologicalSpace X] {x : X} (φ : X → α) :
+    (φ : Germ (𝓝 x) α).value = φ x :=
+  rfl
+
+@[simp]
+lemma value_map {X α β : Type*} [TopologicalSpace X] {x : X} (φ : Germ (𝓝 x) α) (f : α → β) :
+    (φ.map f).value = f φ.value :=
+  φ.inductionOn (by simp)
+
+
 theorem value_smul {α β : Type*} [SMul α β] (φ : Germ (𝓝 x) α)
     (ψ : Germ (𝓝 x) β) : (φ • ψ).value = φ.value • ψ.value :=
   Germ.inductionOn φ fun _ ↦ Germ.inductionOn ψ fun _ ↦ rfl

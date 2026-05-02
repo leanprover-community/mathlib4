@@ -43,6 +43,10 @@ lemma Filter.Germ.continuousAt_iff_tendsto {x : X} {f : Germ (𝓝 x) Y} :
   obtain ⟨f, rfl⟩ := Quotient.exists_rep f
   rfl
 
+lemma Filter.Germ.ContinuousAt.tendsto {x : X} {f : Germ (𝓝 x) Y} (hf : f.ContinuousAt) :
+    f.Tendsto (𝓝 f.value) :=
+  continuousAt_iff_tendsto.1 hf
+
 /-- A germ `f` at `x` is called continuous if it is represented by functions that are continuous
 near (i.e. on some open neighbourhood of) `x`.
 
@@ -80,10 +84,18 @@ lemma Filter.Germ.continuous_coe_iff' {x : X} {f : X → Y} :
   simp [eventually_continuousAt_iff]
 
 /-- Every continuous germ at `x` is in particular continuous at `x`. -/
-lemma Filter.Germ.continuousAt {x : X} {f : Germ (𝓝 x) Y} (hf : f.Continuous) :
+lemma Filter.Germ.Continuous.continuousAt {x : X} {f : Germ (𝓝 x) Y} (hf : f.Continuous) :
     f.ContinuousAt := by
-  revert hf; refine f.inductionOn fun f hf ↦ ?_
-  exact (Filter.Eventually.self_of_nhds (Filter.Germ.continuous_coe_iff.1 hf):)
+  revert hf
+  exact f.inductionOn fun f hf ↦ (continuous_coe_iff.1 hf).self_of_nhds
+
+/-- If a germ `f` at `x` is continuous and `g : Y → Z` is continuous near `f.value`,
+`f.map g` is continuous. -/
+lemma Filter.Germ.Continuous.map {x : X} {f : Germ (𝓝 x) Y} (hf : f.Continuous) {g : Y → Z}
+    (hg : ∀ᶠ y in 𝓝 f.value, ContinuousAt g y) : (f.map g).Continuous := by
+  revert hf hg; refine f.inductionOn fun f hf hg ↦ ?_
+  simp only [continuous_coe_iff, value_coe, map_coe] at hf hg ⊢
+  exact (hf.and (hf.self_of_nhds.eventually hg)).mp <| .of_forall fun x h ↦ h.2.comp h.1
 
 /-- `ContinuousGerm x Y` is the type of all continuous germs of functions `f : X → Y` at `x : X`. -/
 structure ContinuousGerm (x : X) (Y : Type*) [TopologicalSpace Y] where
@@ -91,6 +103,31 @@ structure ContinuousGerm (x : X) (Y : Type*) [TopologicalSpace Y] where
   toGerm : Germ (𝓝 x) Y
   continuous : toGerm.Continuous
 
+@[elab_as_elim]
+lemma ContinuousGerm.inductionOn {x : X} (f : ContinuousGerm x Y) {p : ContinuousGerm x Y → Prop}
+    (h : ∀ (f : X → Y) (hf : (f : Germ (𝓝 x) Y).Continuous), p ⟨f, hf⟩) : p f := by
+  obtain ⟨f, hf⟩ := f
+  revert hf
+  exact f.inductionOn fun f hf ↦ h f hf
+
+/-- The composition of continuous germs `f` at `y` and `g` at `x`, provided that `g` sends `x` to
+`y`. -/
+def ContinuousGerm.comp {x : X} {y : Y} (f : ContinuousGerm y Z) (g : ContinuousGerm x Y)
+    (h : g.toGerm.value = y) : ContinuousGerm x Z where
+  toGerm := f.toGerm.compTendsto' g.toGerm (h ▸ g.continuous.continuousAt.tendsto)
+  continuous := f.inductionOn fun f hf ↦ g.continuous.map <| by simpa [h] using hf
+
+@[simp]
+lemma ContinuousGerm.comp_value {x : X} {y : Y} (f : ContinuousGerm y Z) (g : ContinuousGerm x Y)
+    (h : g.toGerm.value = y) : (f.comp g h).toGerm.value = f.toGerm.value :=
+  f.inductionOn fun f hf ↦ by simp [comp, h]
+
 /-- `PointedContinuousGerm x y` is the type of all continuous germs at `x` taking `x` to `y`. -/
 structure PointedContinuousGerm (x : X) (y : Y) extends ContinuousGerm x Y where
   value_eq : toGerm.value = y
+
+/-- The composition of continuous germs taking `x` to `y` and `y` to `z`. -/
+def PointedContinuousGerm.comp {x : X} {y : Y} {z : Z} (f : PointedContinuousGerm y z)
+    (g : PointedContinuousGerm x y) : PointedContinuousGerm x z where
+  toContinuousGerm := f.toContinuousGerm.comp g.toContinuousGerm g.value_eq
+  value_eq := by simp  [f.value_eq]
