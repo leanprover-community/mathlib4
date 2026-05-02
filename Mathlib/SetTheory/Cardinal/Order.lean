@@ -450,10 +450,6 @@ structure IsStrongLimit (c : Cardinal) : Prop where
 @[deprecated (since := "2026-03-31")]
 alias IsStrongLimit.two_power_lt := IsStrongLimit.isStrongPrelimit
 
-theorem IsStrongPrelimit.isStrongLimit_of_ne_zero {c} (hc : IsStrongPrelimit c) (hc' : c ≠ 0) :
-    IsStrongLimit c :=
-  ⟨hc', hc⟩
-
 protected theorem IsStrongPrelimit.isSuccPrelimit {c} (hc : IsStrongPrelimit c) :
     IsSuccPrelimit c :=
   isSuccPrelimit_of_succ_lt fun x hx ↦ (succ_le_of_lt <| cantor x).trans_lt (hc hx)
