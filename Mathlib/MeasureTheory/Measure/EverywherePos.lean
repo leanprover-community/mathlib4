@@ -207,7 +207,7 @@ variable {G : Type*} [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
   [LocallyCompactSpace G] [MeasurableSpace G] [BorelSpace G] {μ : Measure G}
   [IsMulLeftInvariant μ] [IsFiniteMeasureOnCompacts μ] [InnerRegularCompactLTTop μ]
 
-open Pointwise
+open scoped Pointwise
 
 /-- If a compact closed set is everywhere positive with respect to a left-invariant measure on a
 topological group, then it is a Gδ set. This is nontrivial, as there is no second-countability or

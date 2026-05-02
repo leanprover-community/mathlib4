@@ -245,7 +245,7 @@ noncomputable def localizedEquiv : M'.localized p ≃ₗ[Localization p] Localiz
   IsLocalizedModule.linearEquiv p (M'.toLocalized p) (LocalizedModule.mkLinearMap _ _)
     |>.restrictScalars _
 
-open Pointwise
+open scoped Pointwise
 
 lemma localized₀_le_localized₀_of_smul_le {P Q : Submodule R M} (x : p) (h : x • P ≤ Q) :
     P.localized₀ p f ≤ Q.localized₀ p f := by

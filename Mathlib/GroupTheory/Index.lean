@@ -164,7 +164,7 @@ theorem relIndex_dvd_of_le_left (hHK : H ≤ K) : K.relIndex L ∣ H.relIndex L 
 of `b * a` and `b` belong to `H`. -/
 @[to_additive /-- An additive subgroup has index two if and only if there exists `a` such that
 for all `b`, exactly one of `b + a` and `b` belong to `H`. -/]
-theorem index_eq_two_iff : H.index = 2 ↔ ∃ a, ∀ b, Xor' (b * a ∈ H) (b ∈ H) := by
+theorem index_eq_two_iff : H.index = 2 ↔ ∃ a, ∀ b, Xor (b * a ∈ H) (b ∈ H) := by
   simp only [index, Nat.card_eq_two_iff' ((1 : G) : G ⧸ H), ExistsUnique, inv_mem_iff,
     QuotientGroup.exists_mk, QuotientGroup.forall_mk, Ne, QuotientGroup.eq, mul_one,
     xor_iff_iff_not]
@@ -180,7 +180,7 @@ theorem index_eq_two_iff : H.index = 2 ↔ ∃ a, ∀ b, Xor' (b * a ∈ H) (b �
 of `a * b` and `b` belong to `H`. -/
 @[to_additive /-- An additive subgroup has index two if and only if there exists `a` such that
 for all `b`, exactly one of `a + b` and `b` belong to `H`. -/]
-theorem index_eq_two_iff' : H.index = 2 ↔ ∃ a, ∀ b, Xor' (a * b ∈ H) (b ∈ H) := by
+theorem index_eq_two_iff' : H.index = 2 ↔ ∃ a, ∀ b, Xor (a * b ∈ H) (b ∈ H) := by
   rw [index_eq_two_iff, (Equiv.inv G).exists_congr]
   refine fun a ↦ (Equiv.inv G).forall_congr fun b ↦ ?_
   simp only [Equiv.inv_apply, inv_mem_iff, ← mul_inv_rev]
@@ -207,12 +207,12 @@ lemma index_eq_two_iff_exists_notMem_and' :
 
 /-- Relative version of `Subgroup.index_eq_two_iff`. -/
 @[to_additive /-- Relative version of `AddSubgroup.index_eq_two_iff`. -/]
-theorem relIndex_eq_two_iff : H.relIndex K = 2 ↔ ∃ a ∈ K, ∀ b ∈ K, Xor' (b * a ∈ H) (b ∈ H) := by
+theorem relIndex_eq_two_iff : H.relIndex K = 2 ↔ ∃ a ∈ K, ∀ b ∈ K, Xor (b * a ∈ H) (b ∈ H) := by
   simp [Subgroup.relIndex, Subgroup.index_eq_two_iff, mem_subgroupOf]
 
 /-- Relative version of `Subgroup.index_eq_two_iff'`. -/
 @[to_additive /-- Relative version of `AddSubgroup.index_eq_two_iff'`. -/]
-theorem relIindex_eq_two_iff' : H.relIndex K = 2 ↔ ∃ a ∈ K, ∀ b ∈ K, Xor' (a * b ∈ H) (b ∈ H) := by
+theorem relIindex_eq_two_iff' : H.relIndex K = 2 ↔ ∃ a ∈ K, ∀ b ∈ K, Xor (a * b ∈ H) (b ∈ H) := by
   simp [Subgroup.relIndex, Subgroup.index_eq_two_iff', mem_subgroupOf]
 
 /-- Relative version of `Subgroup.index_eq_two_iff_exists_notMem_and`. -/
@@ -423,7 +423,7 @@ lemma relIndex_inter_ne_zero {J K : Subgroup G} (hJK : J.relIndex K ≠ 0) (L : 
 @[to_additive]
 theorem relIndex_inf_le : (H ⊓ K).relIndex L ≤ H.relIndex L * K.relIndex L := by
   by_cases h : H.relIndex L = 0
-  · exact (le_of_eq (relIndex_eq_zero_of_le_left inf_le_left h)).trans (zero_le _)
+  · simp [relIndex_eq_zero_of_le_left inf_le_left h]
   rw [← inf_relIndex_right, inf_assoc, ← relIndex_mul_relIndex _ _ L inf_le_right inf_le_right,
     inf_relIndex_right, inf_relIndex_right]
   grw [relIndex_le_of_le_right inf_le_right h]
@@ -811,7 +811,7 @@ end Subgroup
 
 section Pointwise
 
-open Pointwise
+open scoped Pointwise
 
 variable {G H : Type*} [Group H] (h : H)
 

@@ -542,7 +542,7 @@ theorem contMDiff_iff :
         ∀ (x : M) (y : M'),
           ContDiffOn 𝕜 n (extChartAt I' y ∘ f ∘ (extChartAt I x).symm)
             ((extChartAt I x).target ∩
-              (extChartAt I x).symm ⁻¹' (f ⁻¹' (extChartAt I' y).source)) := by
+              (extChartAt I x).symm ⁻¹' f ⁻¹' (extChartAt I' y).source) := by
   simp [← contMDiffOn_univ, contMDiffOn_iff, continuousOn_univ]
 
 /-- One can reformulate being `C^n` as continuity and being `C^n` in any extended chart in the

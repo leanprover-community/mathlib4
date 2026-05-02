@@ -348,7 +348,7 @@ theorem det_adjugate (A : Matrix n n α) : (adjugate A).det = A.det ^ (Fintype.c
   apply mul_left_cancel₀ (show A'.det ≠ 0 from det_mvPolynomialX_ne_zero n ℤ)
   calc
     A'.det * A'.adjugate.det = (A' * adjugate A').det := (det_mul _ _).symm
-    _ = A'.det ^ Fintype.card n := by erw [mul_adjugate A']; rw [det_smul, det_one, mul_one]
+    _ = A'.det ^ Fintype.card n := by rw [mul_adjugate A', det_smul, det_one, mul_one]
     _ = A'.det * A'.det ^ (Fintype.card n - 1) := by rw [← pow_succ', h_card]
 
 @[simp]

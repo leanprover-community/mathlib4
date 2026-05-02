@@ -69,8 +69,8 @@ theorem count_false_eq_count_true (hl : IsChain (· ≠ ·) l) (h2 : Even (lengt
 
 theorem count_not_le_count_add_one (hl : IsChain (· ≠ ·) l) (b : Bool) :
     count (!b) l ≤ count b l + 1 := by
-  rcases l with - | ⟨x, l⟩
-  · exact zero_le _
+  cases l
+  · exact zero_le
   grind [hl.count_not_cons]
 
 theorem count_false_le_count_true_add_one (hl : IsChain (· ≠ ·) l) :

@@ -170,7 +170,7 @@ theorem sInf_toSubfield (S : Set (IntermediateField F E)) :
 @[simp]
 theorem sSup_toSubfield (S : Set (IntermediateField F E)) (hS : S.Nonempty) :
     (sSup S).toSubfield = sSup (toSubfield '' S) := by
-  have h : toSubfield '' S = Subfield.closure '' (SetLike.coe '' S) := by
+  have h : toSubfield '' S = Subfield.closure '' SetLike.coe '' S := by
     rw [Set.image_image]
     congr! with x
     exact x.toSubfield.closure_eq.symm

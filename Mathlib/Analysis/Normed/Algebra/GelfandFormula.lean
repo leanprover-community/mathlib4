@@ -136,7 +136,7 @@ theorem pow_norm_pow_one_div_tendsto_nhds_spectralRadius (a : A) :
   convert pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius a using 1
   ext1
   rw [← ofReal_rpow_of_nonneg (norm_nonneg _) _, ← coe_nnnorm, coe_nnreal_eq]
-  exact one_div_nonneg.mpr (mod_cast zero_le _)
+  simp
 
 section Nontrivial
 

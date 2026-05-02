@@ -89,8 +89,8 @@ lemma epow_right_mono (h : x ≠ 0) : Monotone (fun y : ℕ∞ ↦ x ^ y) := by
     · simp only [epow_top x_2, le_top]
   · exact pow_right_mono₀ (one_le_iff_ne_zero.2 h) (Nat.cast_le.1 y_z)
 
-lemma one_le_epow (h : x ≠ 0) : 1 ≤ x ^ y :=
-  le_of_eq_of_le (by simp) (epow_right_mono h (zero_le y))
+lemma one_le_epow (h : x ≠ 0) : 1 ≤ x ^ y := by
+  simpa using epow_right_mono h zero_le
 
 lemma epow_left_mono : Monotone (fun x : ℕ∞ ↦ x ^ y) := by
   intro x z x_z

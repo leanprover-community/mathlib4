@@ -1,0 +1,53 @@
+# olean report (workflow_run)
+# Privileged counterpart of olean_report.yaml.
+#
+# Downloads the bridge artifact produced by olean_report.yaml and posts (or
+# updates) the olean diff as a comment on the PR.  This workflow runs with
+# pull-requests: write permission so it can post comments even when the
+# triggering workflow ran in an unprivileged fork context.
+name: olean report (workflow_run)
+
+on:
+  workflow_run:
+    workflows: ["olean report"]
+    types:
+      - completed
+
+permissions:
+  actions: read
+  contents: read
+  pull-requests: write
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    if: ${{ github.repository == 'leanprover-community/mathlib4' && github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Consume bridge artifact
+        id: bridge
+        uses: leanprover-community/privilege-escalation-bridge/consume@f5dfe313a79647c07315b451b2dc2a81a161a50d # v1.2.0
+        with:
+          token: ${{ github.token }}
+          artifact: workflow-data
+          source_workflow: olean report
+          fail_on_missing: false
+          extract: |
+            pr_number=outputs.pr_number
+
+      - name: Find existing olean-report comment
+        if: steps.bridge.outputs.pr_number != ''
+        uses: peter-evans/find-comment@b30e6a3c0ed37e7c023ccd3f1db5c6c0b0c23aad # v4
+        id: find-comment
+        with:
+          issue-number: ${{ steps.bridge.outputs.pr_number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: '## Olean diff'
+
+      - name: Post or update olean-report comment
+        if: steps.bridge.outputs.pr_number != ''
+        uses: peter-evans/create-or-update-comment@e8674b075228eee787fea43ef493e45ece1004c9 # v4
+        with:
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
+          issue-number: ${{ steps.bridge.outputs.pr_number }}
+          body-path: .bridge/comment_body.md
+          edit-mode: replace

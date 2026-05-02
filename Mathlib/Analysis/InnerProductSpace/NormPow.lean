@@ -56,7 +56,6 @@ theorem differentiable_norm_rpow {p : ℝ} (hp : 1 < p) :
     Differentiable ℝ (fun x : E ↦ ‖x‖ ^ p) :=
   fun x ↦ hasFDerivAt_norm_rpow x hp |>.differentiableAt
 
-set_option backward.isDefEq.respectTransparency false in
 theorem hasDerivAt_norm_rpow (x : ℝ) {p : ℝ} (hp : 1 < p) :
     HasDerivAt (fun x : ℝ ↦ ‖x‖ ^ p) (p * ‖x‖ ^ (p - 2) * x) x := by
   convert hasFDerivAt_norm_rpow x hp |>.hasDerivAt using 1; simp

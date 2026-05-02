@@ -457,7 +457,7 @@ theorem inseparable_iff_forall_isOpen : (x ~ᵢ y) ↔ ∀ s : Set X, IsOpen s �
     Iff.comm]
 
 theorem not_inseparable_iff_exists_open :
-    ¬(x ~ᵢ y) ↔ ∃ s : Set X, IsOpen s ∧ Xor' (x ∈ s) (y ∈ s) := by
+    ¬(x ~ᵢ y) ↔ ∃ s : Set X, IsOpen s ∧ Xor (x ∈ s) (y ∈ s) := by
   simp [inseparable_iff_forall_isOpen, ← xor_iff_not_iff]
 
 theorem inseparable_iff_forall_isClosed : (x ~ᵢ y) ↔ ∀ s : Set X, IsClosed s → (x ∈ s ↔ y ∈ s) := by
@@ -617,7 +617,7 @@ instance [TopologicalSpace α] [NontrivialTopology α] : Nontrivial (SeparationQ
 
 @[to_additive (attr := simp)] theorem mk_one [One X] : mk (1 : X) = 1 := rfl
 
-theorem preimage_image_mk_open (hs : IsOpen s) : mk ⁻¹' (mk '' s) = s := by
+theorem preimage_image_mk_open (hs : IsOpen s) : mk ⁻¹' mk '' s = s := by
   refine Subset.antisymm ?_ (subset_preimage_image _ _)
   rintro x ⟨y, hys, hxy⟩
   exact ((mk_eq_mk.1 hxy).mem_open_iff hs).1 hys
@@ -628,7 +628,7 @@ theorem isOpenMap_mk : IsOpenMap (mk : X → SeparationQuotient X) := fun s hs =
 theorem isOpenQuotientMap_mk : IsOpenQuotientMap (mk : X → SeparationQuotient X) :=
   ⟨surjective_mk, continuous_mk, isOpenMap_mk⟩
 
-theorem preimage_image_mk_closed (hs : IsClosed s) : mk ⁻¹' (mk '' s) = s := by
+theorem preimage_image_mk_closed (hs : IsClosed s) : mk ⁻¹' mk '' s = s := by
   refine Subset.antisymm ?_ (subset_preimage_image _ _)
   rintro x ⟨y, hys, hxy⟩
   exact ((mk_eq_mk.1 hxy).mem_closed_iff hs).1 hys

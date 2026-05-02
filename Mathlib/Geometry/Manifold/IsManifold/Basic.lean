@@ -389,7 +389,7 @@ protected theorem rightInvOn : RightInvOn I.symm I (range I) :=
 protected theorem right_inv {x : E} (hx : x ∈ range I) : I (I.symm x) = x :=
   I.rightInvOn hx
 
-theorem preimage_image (s : Set H) : I ⁻¹' (I '' s) = s :=
+theorem preimage_image (s : Set H) : I ⁻¹' I '' s = s :=
   I.injective.preimage_image s
 
 protected theorem image_eq (s : Set H) : I '' s = I.symm ⁻¹' s ∩ range I := by

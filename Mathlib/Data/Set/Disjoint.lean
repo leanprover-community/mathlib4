@@ -119,7 +119,7 @@ end Disjoint
 
 namespace Set
 
-theorem mem_union_of_disjoint (h : Disjoint s t) {x : α} : x ∈ s ∪ t ↔ Xor' (x ∈ s) (x ∈ t) := by
-  grind [Xor']
+theorem mem_union_of_disjoint (h : Disjoint s t) {x : α} : x ∈ s ∪ t ↔ Xor (x ∈ s) (x ∈ t) := by
+  grind [Xor]
 
 end Set

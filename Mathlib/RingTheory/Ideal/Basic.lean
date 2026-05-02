@@ -36,7 +36,7 @@ variable {ι α β F : Type*}
 
 open Set Function
 
-open Pointwise
+open scoped Pointwise
 
 section Semiring
 

@@ -34,7 +34,7 @@ variable {α : Type u} {β : Type v} {F : Type w}
 
 open Set Function
 
-open Pointwise
+open scoped Pointwise
 
 section Semiring
 

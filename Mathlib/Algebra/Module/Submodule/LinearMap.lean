@@ -110,7 +110,7 @@ variable {α β : Type*}
 
 /-- The action by a submodule is the action by the underlying module. -/
 instance [AddAction M α] : AddAction p α :=
-  fast_instance% AddAction.compHom _ p.subtype.toAddMonoidHom
+  AddSubmonoid.instAddActionSubtypeMem p
 
 end AddAction
 

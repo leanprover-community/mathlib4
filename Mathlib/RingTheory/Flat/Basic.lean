@@ -71,7 +71,7 @@ open TensorProduct
 
 namespace Module
 
-open Function (Surjective)
+open Function (Injective Surjective)
 
 open LinearMap Submodule DirectSum
 
@@ -242,11 +242,34 @@ instance {S} [CommSemiring S] [Algebra R S] [Module S M] [IsScalarTower R S M]
 
 example [Flat R M] [Flat R N] : Flat R (M ⊗[R] N) := inferInstance
 
-theorem linearIndependent_one_tmul {S} [Semiring S] [Algebra R S] [Flat R S] {ι} {v : ι → M}
+section Algebra
+
+variable {S : Type*} [Semiring S] [Algebra R S]
+
+theorem linearIndependent_one_tmul [Flat R S] {ι} {v : ι → M}
     (hv : LinearIndependent R v) : LinearIndependent S ((1 : S) ⊗ₜ[R] v ·) := by
   classical rw [LinearIndependent, ← LinearMap.coe_restrictScalars R,
     Finsupp.linearCombination_one_tmul]
   simpa using lTensor_preserves_injective_linearMap _ hv
+
+variable (R S M)
+
+/-- See also `Module.FaithfullyFlat.tensorProduct_mk_injective`. -/
+lemma tensorProduct_mk_injective [FaithfulSMul R S] [Flat R M] :
+    Injective (TensorProduct.mk R S M 1) := by
+  have : TensorProduct.mk R S M 1 =
+      (Algebra.linearMap R S).rTensor M ∘ (TensorProduct.lid R M).symm := by ext; simp
+  rw [this]
+  refine Injective.comp ?_ (LinearEquiv.injective _)
+  exact Flat.rTensor_preserves_injective_linearMap _ <| FaithfulSMul.algebraMap_injective R S
+
+lemma _root_.LinearMap.baseChangeHom_injective [FaithfulSMul R S] [Flat R N] :
+    Injective (LinearMap.baseChangeHom R S M N) := by
+  intro f g h
+  ext m
+  simpa using Flat.tensorProduct_mk_injective R N S <| LinearMap.congr_fun h (1 ⊗ₜ[R] m)
+
+end Algebra
 
 end Flat
 

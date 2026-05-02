@@ -587,7 +587,7 @@ but `E / E` does not contain a neighborhood of zero. On the other hand, it is al
 inner regular Haar measures (and in particular for any Haar measure on a second countable group).
 -/
 
-open Pointwise
+open scoped Pointwise
 
 @[to_additive]
 private lemma steinhaus_mul_aux (μ : Measure G) [IsHaarMeasure μ] [μ.InnerRegularCompactLTTop]

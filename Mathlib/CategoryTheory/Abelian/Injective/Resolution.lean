@@ -308,9 +308,8 @@ lemma ofCocomplex_d_0_1 :
 lemma ofCocomplex_exactAt_succ (n : ℕ) :
     (ofCocomplex Z).ExactAt (n + 1) := by
   rw [HomologicalComplex.exactAt_iff' _ n (n + 1) (n + 1 + 1) (by simp) (by simp)]
-  dsimp [ofCocomplex, CochainComplex.mk', CochainComplex.mk, HomologicalComplex.sc',
-      HomologicalComplex.shortComplexFunctor']
-  simp only [CochainComplex.of_d]
+  simp only [HomologicalComplex.sc', HomologicalComplex.shortComplexFunctor', ofCocomplex,
+    CochainComplex.mk', CochainComplex.mk, CochainComplex.of_d]
   match n with
   | 0 => apply exact_f_d ((CochainComplex.mkAux _ _ _
       (d (Injective.ι Z)) (d (d (Injective.ι Z))) _ _ 0).f)

@@ -20,7 +20,7 @@ given that `s` and `t` are well-ordered. -/
 
 namespace Set
 
-open Pointwise
+open scoped Pointwise
 
 variable {α : Type*} {s t : Set α}
 
@@ -48,7 +48,7 @@ end Set
 
 namespace Finset
 
-open Pointwise
+open scoped Pointwise
 
 variable {α : Type*}
 variable [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α]

@@ -44,6 +44,9 @@ lemma map_under_lt_comap_of_weaklyQuasiFiniteAt
   algebraize [f.toRingHom]
   refine lt_of_le_of_ne (Ideal.map_le_iff_le_comap.mpr ?_) fun e ↦ ?_
   · rw [Ideal.comap_comap, ← algebraMap_eq, f.comp_algebraMap]
+  let := Localization.AtPrime.algebraOfLiesOver (P.under R) (P.under R[X])
+  let := Localization.AtPrime.algebraOfLiesOver (P.under R[X]) P
+  let := Localization.AtPrime.algebraOfLiesOver (P.under R) P
   have : Module.Finite (Ideal.under R P).ResidueField P.ResidueField :=
     Algebra.WeaklyQuasiFiniteAt.finite_residueField ..
   have : Module.Finite (P.under R).ResidueField (P.under R[X]).ResidueField :=

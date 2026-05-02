@@ -164,6 +164,15 @@ protected noncomputable def ofSurjective {α β} (f : β → α) (hf : Surjectiv
 protected noncomputable def equivOfSurjective {α β} (f : α ↪ β) (hf : Surjective f) : α ≃ β :=
   Equiv.ofBijective f ⟨f.injective, hf⟩
 
+/-- Surjective embeddings are equivalent to equivalences. -/
+@[simps]
+noncomputable def _root_.Equiv.embeddingSurjectiveEquiv {α β} :
+    { f : α ↪ β // Surjective f } ≃ (α ≃ β) where
+  toFun f := f.val.equivOfSurjective f.prop
+  invFun f := ⟨f, f.surjective⟩
+  left_inv _ := rfl
+  right_inv _ := by ext; rfl
+
 /-- There is always an embedding from an empty type. -/
 protected def ofIsEmpty {α β} [IsEmpty α] : α ↪ β :=
   ⟨isEmptyElim, isEmptyElim⟩

@@ -161,7 +161,7 @@ theorem HasFTaylorSeriesUpToOn.congr (h : HasFTaylorSeriesUpToOn n f p s)
 theorem HasFTaylorSeriesUpToOn.congr_series {q} (hp : HasFTaylorSeriesUpToOn n f p s)
     (hpq : ∀ m : ℕ, m ≤ n → EqOn (p · m) (q · m) s) :
     HasFTaylorSeriesUpToOn n f q s where
-  zero_eq x hx := by simp only [← (hpq 0 (zero_le n) hx), hp.zero_eq x hx]
+  zero_eq x hx := by simp only [← hpq 0 zero_le hx, hp.zero_eq x hx]
   fderivWithin m hm x hx := by
     refine ((hp.fderivWithin m hm x hx).congr' (hpq m hm.le).symm hx).congr_fderiv ?_
     refine congrArg _ (hpq (m + 1) ?_ hx)
@@ -187,7 +187,7 @@ theorem hasFTaylorSeriesUpToOn_zero_iff :
     HasFTaylorSeriesUpToOn 0 f p s ↔ ContinuousOn f s ∧ ∀ x ∈ s, (p x 0).curry0 = f x := by
   refine ⟨fun H => ⟨H.continuousOn, H.zero_eq⟩, fun H =>
       ⟨H.2, fun m hm => False.elim (not_le.2 hm bot_le), fun m hm ↦ ?_⟩⟩
-  obtain rfl : m = 0 := mod_cast hm.antisymm (zero_le _)
+  obtain rfl : m = 0 := mod_cast hm.antisymm zero_le
   have : EqOn (p · 0) ((continuousMultilinearCurryFin0 𝕜 E F).symm ∘ f) s := fun x hx ↦
     (continuousMultilinearCurryFin0 𝕜 E F).eq_symm_apply.2 (H.2 x hx)
   rw [continuousOn_congr this, LinearIsometryEquiv.comp_continuousOn_iff]
@@ -788,7 +788,7 @@ lemma HasFTaylorSeriesUpTo.tsupport_mono {k m : ℕ} (h : k ≤ m) (h2 : m ≤ n
 lemma HasFTaylorSeriesUpTo.tsupport_subset {m : ℕ} (h : m ≤ n)
     (hf : HasFTaylorSeriesUpTo n f p) :
     tsupport (p · m) ⊆ tsupport f := by
-  refine (hf.tsupport_mono (zero_le _) h).trans_eq ?_
+  refine (hf.tsupport_mono zero_le h).trans_eq ?_
   rw [← funext hf.zero_eq]
   refine tsupport_comp_eq (g := ContinuousMultilinearMap.curry0) (fun {x} ↦ ?_) _ |>.symm
   exact (continuousMultilinearCurryFin0 _ _ _).map_eq_zero_iff (x := x)

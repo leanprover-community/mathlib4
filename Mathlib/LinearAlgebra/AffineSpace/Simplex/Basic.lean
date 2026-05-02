@@ -486,18 +486,16 @@ lemma interior_subset_closedInterior {n : ℕ} (s : Simplex k P n) :
 
 lemma point_notMem_interior {n : ℕ} (s : Simplex k P n) (i : Fin (n + 1)) :
     s.points i ∉ s.interior := by
-  rw [← Finset.univ.affineCombination_affineCombinationSingleWeights k s.points
-    (Finset.mem_univ i), affineCombination_mem_interior_iff
-      (sum_affineCombinationSingleWeights _ _ (Finset.mem_univ i)), not_forall]
+  rw [← Finset.univ.affineCombination_piSingle k s.points (Finset.mem_univ i),
+    affineCombination_mem_interior_iff (Fintype.sum_pi_single' _ _), not_forall]
   exact ⟨i, by simp⟩
 
 lemma point_mem_closedInterior [ZeroLEOneClass k] {n : ℕ} (s : Simplex k P n) (i : Fin (n + 1)) :
     s.points i ∈ s.closedInterior := by
-  rw [← Finset.univ.affineCombination_affineCombinationSingleWeights k s.points
-    (Finset.mem_univ i), affineCombination_mem_closedInterior_iff
-      (sum_affineCombinationSingleWeights _ _ (Finset.mem_univ i))]
+  rw [← Finset.univ.affineCombination_piSingle k s.points (Finset.mem_univ i),
+    affineCombination_mem_closedInterior_iff (Fintype.sum_pi_single' _ _)]
   intro j
-  by_cases hj : j = i <;> simp [hj]
+  obtain rfl | hj := eq_or_ne j i <;> simp_all
 
 lemma interior_ssubset_closedInterior [ZeroLEOneClass k] {n : ℕ} (s : Simplex k P n) :
     s.interior ⊂ s.closedInterior := by

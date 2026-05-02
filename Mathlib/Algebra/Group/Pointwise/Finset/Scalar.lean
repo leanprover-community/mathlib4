@@ -55,7 +55,7 @@ variable {F α β γ : Type*}
 
 namespace Finset
 
-open Pointwise
+open scoped Pointwise
 
 /-! ### Scalar addition/multiplication of finsets -/
 
@@ -221,7 +221,7 @@ open scoped Pointwise
 
 /-! ### Instances -/
 
-open Pointwise
+open scoped Pointwise
 
 /-! ### Scalar subtraction of finsets -/
 
@@ -351,7 +351,7 @@ theorem image_smul_comm [DecidableEq β] [DecidableEq γ] [SMul α β] [SMul α 
 
 end Finset
 
-open Pointwise
+open scoped Pointwise
 
 namespace Set
 

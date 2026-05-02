@@ -100,7 +100,6 @@ theorem integral_exp_mul_complex_Iic {a : ℂ} (ha : 0 < a.re) (c : ℝ) :
     integral_comp_neg_Ioi (f := fun x : ℝ ↦ Complex.exp (a * x))]
     using integral_exp_mul_complex_Ioi (a := -a) (by simpa) (-c)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem integral_exp_mul_Ioi {a : ℝ} (ha : a < 0) (c : ℝ) :
     ∫ x : ℝ in Set.Ioi c, Real.exp (a * x) = - Real.exp (a * c) / a := by
   simp_rw [Real.exp, ← RCLike.re_to_complex, Complex.ofReal_mul]

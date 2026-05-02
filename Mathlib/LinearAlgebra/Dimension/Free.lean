@@ -263,7 +263,7 @@ lemma finrank_top_le_finrank_of_isScalarTower_of_free [Semiring S] [StrongRankCo
   · have := Module.Finite.trans (R := R) S M
     exact finrank_top_le_finrank_of_isScalarTower R S M
   · rw [finrank, Cardinal.toNat_eq_zero.mpr (.inr _)]
-    · exact zero_le _
+    · exact zero_le
     · rwa [← not_lt, Module.rank_lt_aleph0_iff]
 
 variable (R) in
@@ -277,7 +277,7 @@ lemma finrank_bot_le_finrank_of_isScalarTower_of_free (S T : Type*) [Semiring S]
   · have := Module.Finite.trans (R := R) S T
     exact finrank_bot_le_finrank_of_isScalarTower R S T
   · rw [finrank, Cardinal.toNat_eq_zero.mpr (.inr _)]
-    · exact zero_le _
+    · exact zero_le
     · rwa [← not_lt, Module.rank_lt_aleph0_iff]
 
 variable (R M)

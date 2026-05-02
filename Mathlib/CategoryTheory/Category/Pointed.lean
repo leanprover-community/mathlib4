@@ -116,7 +116,7 @@ def typeToPointed : Type u ⥤ Pointed.{u} where
 def typeToPointedForgetAdjunction : typeToPointed ⊣ forget Pointed :=
   Adjunction.mkOfHomEquiv {
     homEquiv := fun X Y =>
-        { toFun := fun f => TypeCat.ofHom (f.toFun ∘ Option.some)
+        { toFun := fun f => ↾(f.toFun ∘ Option.some)
           invFun := fun f => ⟨fun o => o.elim Y.point f, rfl⟩
           left_inv := fun f => by
             apply Pointed.Hom.ext

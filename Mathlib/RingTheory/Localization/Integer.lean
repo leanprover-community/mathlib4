@@ -132,7 +132,7 @@ noncomputable def commonDenomOfFinset (s : Finset S) : M :=
 noncomputable def finsetIntegerMultiple [DecidableEq R] (s : Finset S) : Finset R :=
   s.attach.image fun t => integerMultiple M s id t
 
-open Pointwise
+open scoped Pointwise
 
 theorem finsetIntegerMultiple_image [DecidableEq R] (s : Finset S) :
     algebraMap R S '' finsetIntegerMultiple M s = commonDenomOfFinset M s • (s : Set S) := by

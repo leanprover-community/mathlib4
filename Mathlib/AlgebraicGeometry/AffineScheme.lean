@@ -576,7 +576,7 @@ theorem fromSpec_image_basicOpen :
     hU.fromSpec ''ᵁ PrimeSpectrum.basicOpen f = X.basicOpen f := by
   rw [← hU.fromSpec_preimage_basicOpen]
   ext1
-  change hU.fromSpec '' (hU.fromSpec ⁻¹' (X.basicOpen f : Set X)) = _
+  change hU.fromSpec '' hU.fromSpec ⁻¹' (X.basicOpen f : Set X) = _
   rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left, hU.range_fromSpec]
   exact Scheme.basicOpen_le _ _
 

@@ -59,7 +59,7 @@ with an upper estimate. -/
 theorem dist_le_range_sum_of_dist_le {f : ℕ → α} (n : ℕ) {d : ℕ → ℝ}
     (hd : ∀ {k}, k < n → dist (f k) (f (k + 1)) ≤ d k) :
     dist (f 0) (f n) ≤ ∑ i ∈ Finset.range n, d i :=
-  Nat.Ico_zero_eq_range n ▸ dist_le_Ico_sum_of_dist_le (zero_le n) fun _ => hd
+  Nat.Ico_zero_eq_range n ▸ dist_le_Ico_sum_of_dist_le zero_le fun _ => hd
 
 namespace Metric
 

@@ -7,29 +7,38 @@ module
 
 public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Algebra.Lie.AdjointAction.JordanChevalley
+public import Mathlib.Algebra.Lie.Killing
 public import Mathlib.Algebra.Lie.TraceForm
 public import Mathlib.LinearAlgebra.Eigenspace.Matrix
 public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 public import Mathlib.LinearAlgebra.Eigenspace.Semisimple
 public import Mathlib.LinearAlgebra.Lagrange
+public import Mathlib.RingTheory.Flat.Localization
 
 /-!
 # Cartan's criteria
 
-If the trace form of a finite-dimensional representation `M` of a Lie algebra `L` is zero,
-then the `⁅L, L⁆`-module `M` is nilpotent. This is the key technical lemma behind Cartan's
-criterion.
+The two **Cartan criteria** characterise solvability and semisimplicity of finite-dimensional
+Lie algebras over fields of characteristic zero in terms of the Killing form: solvability
+via its vanishing on `L × ⁅L, L⁆`, semisimplicity via its non-degeneracy.
 
 ## Main results
 
-* `LieModule.isNilpotent_derivedSeries_of_traceForm_eq_zero_algClosed`: over an algebraically
-  closed field of characteristic zero, if a finite-dimensional representation `M` of `L` has
-  trivial trace form, then `M` is nilpotent as a `⁅L, L⁆`-module.
+* `LieModule.isNilpotent_derivedSeries_of_traceForm_eq_zero`: over a field of characteristic zero,
+  if a finite-dimensional representation `M` of `L` has trivial trace form, then `M` is nilpotent
+  as a `⁅L, L⁆`-module.
+* `LieAlgebra.isSolvable_of_killingForm_apply_lie_eq_zero`: **Cartan's criterion for solvability**:
+  if the Killing form of a Lie algebra `L` vanishes on `L × ⁅L, L⁆`, then `L` is solvable.
+* `LieAlgebra.killingCompl_top_le_radical`: the Killing radical of a finite-dimensional Lie algebra
+  is contained in the solvable radical.
+* `LieAlgebra.HasTrivialRadical.instIsKilling`: **Cartan's criterion for semisimplicity**: if a
+  finite-dimensional Lie algebra has trivial solvable radical, then its Killing form is
+  non-degenerate.
 
 ## TODO
 
-* Add Cartan's criterion for solvability.
-* Add Cartan's criterion for semisimplicity.
+* Add the converse direction of `LieAlgebra.isSolvable_of_killingForm_apply_lie_eq_zero` by proving
+  `radical R L = (derivedSeries R L 1).killingCompl R L`.
 
 ## References
 
@@ -37,17 +46,12 @@ criterion.
 * [J. Humphreys, *Introduction to Lie Algebras and ...*](humphreys1972) Chapter II 4.3
 -/
 
+variable {R L M : Type*} [CommRing R] [CharZero R] [IsDomain R] [LieRing L] [LieAlgebra R L]
 
 namespace LieModule
 
-variable {K L M : Type*}
-  [Field K] [CharZero K] [IsAlgClosed K]
-  [LieRing L] [LieAlgebra K L]
-  [AddCommGroup M] [Module K M] [LieRingModule L M] [LieModule K L M] [FiniteDimensional K M]
-
-local notation "φ" => toEnd K L M
-
-open Algebra LieAlgebra LinearMap Module Module.End Polynomial
+open Algebra Function LieAlgebra LinearMap Module Module.End Polynomial
+open scoped TensorProduct
 
 lemma exists_polynomial_eval_sub_aux
     {ι R K : Type*} [Finite ι] [CommRing R] [Field K] [Algebra R K]
@@ -63,9 +67,16 @@ lemma exists_polynomial_eval_sub_aux
   have heq : (⟨a i, ha i⟩ - ⟨a j, ha j⟩ : E) = ⟨a k, ha k⟩ - ⟨a l, ha l⟩ := Subtype.ext hij
   rw [← (algebraMap R K).map_sub, ← (algebraMap R K).map_sub, ← map_sub, ← map_sub, heq]
 
-/-- If the trace form of `M` is zero, then the `⁅L, L⁆`-module `M` is nilpotent. -/
-public theorem isNilpotent_derivedSeries_of_traceForm_eq_zero_algClosed (h : traceForm K L M = 0) :
+variable [AddCommGroup M] [LieRingModule L M]
+
+/-- An auxiliary lemma used to prove `LieModule.isNilpotent_derivedSeries_of_traceForm_eq_zero`
+which proves the same result except without the algebraically closed assumption. -/
+theorem isNilpotent_derivedSeries_of_traceForm_eq_zero_aux {K : Type*}
+    [Field K] [CharZero K] [IsAlgClosed K]
+    [LieAlgebra K L] [Module K M] [LieModule K L M] [FiniteDimensional K M]
+    (h : traceForm K L M = 0) :
     IsNilpotent (derivedSeries K L 1) M := by
+  set φ := toEnd K L M
   /- By Engel's theorem it suffices to prove that `⁅L, L⁆` acts nilpotently on `M`. -/
   suffices ∀ x ∈ derivedSeries K L 1, _root_.IsNilpotent (φ x) from
     isNilpotent_iff_forall'.mpr fun ⟨x, hx⟩ ↦ this x hx
@@ -82,7 +93,7 @@ public theorem isNilpotent_derivedSeries_of_traceForm_eq_zero_algClosed (h : tra
     s.eigenspaces_iSupIndep hs_ss.iSup_eigenspace_eq_top
   let I := (ν : K) × Fin (finrank K (s.eigenspace ν))
   let v : Basis I K M := eigenDecomp.collectedBasis fun μ ↦ finBasis K (s.eigenspace μ)
-  have : Fintype I := v.fintypeIndexOfRankLtAleph0 (rank_lt_aleph0 K M)
+  have : Fintype I := FiniteDimensional.fintypeBasisIndex v
   let μ : I → K := Sigma.fst
   have hsv (i : I) : s (v i) = μ i • v i :=
     mem_eigenspace_iff.mp (eigenDecomp.collectedBasis_mem _ i)
@@ -160,4 +171,98 @@ public theorem isNilpotent_derivedSeries_of_traceForm_eq_zero_algClosed (h : tra
     exact Finset.sum_congr rfl <| by simp [toMatrix_apply, hyv, hsv]
   rw [hX_ns, add_mul, map_add, htr_n, htr_s, zero_add]
 
+/-- If the trace form of `M` is zero, then the `⁅L, L⁆`-module `M` is nilpotent. -/
+public theorem isNilpotent_derivedSeries_of_traceForm_eq_zero
+    [Module R M] [LieModule R L M] [IsNoetherian R M] [Module.Free R M]
+    (h : traceForm R L M = 0) :
+    IsNilpotent (derivedSeries R L 1) M := by
+  set A := AlgebraicClosure (FractionRing R)
+  have _i : FaithfulSMul R A := FaithfulSMul.trans R (FractionRing R) A
+  have nilp_ext : IsNilpotent (derivedSeries A (A ⊗[R] L) 1) (A ⊗[R] M) :=
+    isNilpotent_derivedSeries_of_traceForm_eq_zero_aux <| by simpa
+  rw [isNilpotent_iff_forall' (R := R)]
+  rw [isNilpotent_iff_forall' (R := A)] at nilp_ext
+  intro ⟨x, hx⟩
+  have hx_ext : 1 ⊗ₜ[R] x ∈ derivedSeries A (A ⊗[R] L) 1 := by
+    rw [derivedSeries_baseChange]
+    exact Submodule.tmul_mem_baseChange_of_mem 1 hx
+  have hbc_inj : Injective (End.baseChangeHom R A M) := LinearMap.baseChangeHom_injective R M A
+  have aux : (toEnd R (derivedSeries R L 1) M ⟨x, hx⟩).baseChangeHom R A M =
+      (toEnd R L M x).baseChange A := rfl
+  rw [← IsNilpotent.map_iff hbc_inj, aux, ← toEnd_baseChange]
+  exact nilp_ext ⟨_, hx_ext⟩
+
 end LieModule
+
+variable [IsNoetherian R L] [Module.Free R L]
+
+open LieAlgebra in
+/-- A convenience variation of `LieAlgebra.isSolvable_of_forall_derived_killingForm_eq_zero` for
+working with ideals.
+
+Over a principal ideal domain by `LieIdeal.killingForm_eq` this is just a specialisation of
+`LieAlgebra.isSolvable_of_killingForm_apply_lie_eq_zero` but since it does not require the PID
+assumption, it is a slightly stronger result. -/
+public theorem LieIdeal.isSolvable_of_killingForm_apply_lie_eq_zero (I : LieIdeal R L)
+    (h : ∀ x ∈ I, ∀ y ∈ ⁅I, I⁆, killingForm R L x y = 0) :
+    IsSolvable I := by
+  set DI : LieIdeal R L := ⁅I, I⁆
+  set DDI : LieIdeal R L := ⁅DI, DI⁆
+  have tf_eq_zero : LieModule.traceForm R DI L = 0 := by
+    ext ⟨x, hx⟩ ⟨y, hy⟩
+    change killingForm R L x y = 0
+    exact h x (LieSubmodule.lie_le_left I I hx) y hy
+  have module_nilp : LieModule.IsNilpotent (derivedSeries R DI 1) L :=
+    LieModule.isNilpotent_derivedSeries_of_traceForm_eq_zero tf_eq_zero
+  have ring_nilp : LieRing.IsNilpotent DDI := by
+    rw [LieAlgebra.isNilpotent_iff_forall (R := R)]
+    rintro ⟨x, hx⟩
+    apply LieSubalgebra.isNilpotent_ad_of_isNilpotent_ad (DDI : LieSubalgebra R L) (x := ⟨x, hx⟩)
+    refine (LieModule.isNilpotent_iff_forall' (R := R)).mp module_nilp
+      ⟨⟨x, LieSubmodule.lie_le_left DI DI hx⟩, ?_⟩
+    rwa [derivedSeries_eq_derivedSeriesOfIdeal_comap, mem_comap]
+  obtain ⟨k, hk⟩ := IsSolvable.solvable R DDI
+  rw [derivedSeries_eq_bot_iff] at hk
+  refine IsSolvable.mk (k := k + 2) ((derivedSeries_eq_bot_iff I (k + 2)).mpr ?_)
+  rwa [derivedSeriesOfIdeal_add, derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_succ,
+    derivedSeriesOfIdeal_zero]
+
+namespace LieAlgebra
+
+/-- **Cartan's criterion for solvability**: if the Killing form of `L` vanishes on `L × ⁅L, L⁆`,
+then `L` is solvable. -/
+lemma isSolvable_of_killingForm_apply_lie_eq_zero
+    (h : ∀ x, ∀ y ∈ derivedSeries R L 1, killingForm R L x y = 0) :
+    IsSolvable L := by
+  suffices IsSolvable (⊤ : LieIdeal R L) by
+    rwa [← solvable_iff_equiv_solvable LieSubalgebra.topEquiv (R := R)]
+  apply LieIdeal.isSolvable_of_killingForm_apply_lie_eq_zero
+  aesop
+
+variable (R L)
+
+/-- The Killing radical of a finite-dimensional Lie algebra is contained in the solvable radical. -/
+public lemma killingCompl_top_le_radical :
+    LieIdeal.killingCompl R L ⊤ ≤ radical R L := by
+  rw [← LieIdeal.solvable_iff_le_radical]
+  refine LieIdeal.isSolvable_of_killingForm_apply_lie_eq_zero _ ?_
+  intro x hx y _
+  rw [LieModule.traceForm_comm]
+  exact (LieIdeal.mem_killingCompl R L ⊤).mp hx y (LieSubmodule.mem_top y)
+
+/-- **Cartan's criterion for semisimplicity**: if a finite-dimensional Lie algebra has trivial
+solvable radical, then its Killing form is non-degenerate.
+
+See also `LieAlgebra.hasTrivialRadical_iff_isKilling`. -/
+public instance HasTrivialRadical.instIsKilling [HasTrivialRadical R L] : IsKilling R L where
+  killingCompl_top_eq_bot := by simpa using killingCompl_top_le_radical R L
+
+lemma hasTrivialRadical_iff_isKilling [IsPrincipalIdealRing R] :
+    HasTrivialRadical R L ↔ IsKilling R L :=
+  ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
+
+example (A : Type*) [LieRing A] [Module.Finite ℤ A] [Module.Free ℤ A] :
+    HasTrivialRadical ℤ A ↔ IsKilling ℤ A :=
+  hasTrivialRadical_iff_isKilling ℤ A
+
+end LieAlgebra

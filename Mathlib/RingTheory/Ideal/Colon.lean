@@ -21,7 +21,7 @@ The normal notation for this would be `N : P` which has already been taken by ty
 
 namespace Submodule
 
-open Pointwise
+open scoped Pointwise
 
 variable {R M : Type*}
 

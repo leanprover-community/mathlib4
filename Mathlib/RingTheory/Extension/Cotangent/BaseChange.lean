@@ -43,7 +43,6 @@ namespace Extension
 variable {R S} (P : Extension.{u} R S)
 variable (T : Type*) [CommRing T] [Algebra R T]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The cotangent space of an extension commutes with base change. -/
 noncomputable
 def tensorCotangentSpace (P : Extension.{u} R S) (T : Type*) [CommRing T] [Algebra R T] :

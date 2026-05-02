@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Homology.QuasiIso
 public import Mathlib.CategoryTheory.Localization.Composition
 public import Mathlib.CategoryTheory.Localization.HasLocalization
 
-/-! The category of homological complexes up to quasi-isomorphisms
+/-! # The category of homological complexes up to quasi-isomorphisms
 
 Given a category `C` with homology and any complex shape `c`, we define
 the category `HomologicalComplexUpToQuasiIso C c` which is the localized

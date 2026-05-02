@@ -111,6 +111,18 @@ theorem torsionOf_eq_bot_iff_of_noZeroSMulDivisors [IsDomain R] [Module.IsTorsio
   · rw [mem_torsionOf_iff, smul_eq_zero] at hr
     tauto
 
+@[simp]
+theorem annihilator_span_singleton_eq_torsionOf
+    {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] (x : M) :
+    (R ∙ x).annihilator = torsionOf R M x := by
+  simpa [torsionOf] using Submodule.annihilator_span_singleton x
+
+/-- The annihilator of a module is the intersection of the torsion ideals of its elements. -/
+theorem _root_.Module.annihilator_eq_iInf_torsionOf :
+    Module.annihilator R M = ⨅ x : M, torsionOf R M x := by
+  ext r
+  simp [Module.mem_annihilator]
+
 /-- See also `iSupIndep.linearIndependent` which provides the same conclusion
 but requires the stronger hypothesis `Module.IsTorsionFree R M`. -/
 theorem iSupIndep.linearIndependent' {ι R M : Type*} {v : ι → M} [Ring R]
@@ -645,7 +657,7 @@ namespace Module
 
 variable (M) [CommRing R] [AddCommGroup M] [Module R M] (s : Set R) (r : R)
 
-open Pointwise
+open scoped Pointwise
 
 lemma isTorsionBy_quotient_element_smul :
     IsTorsionBy R (M ⧸ r • (⊤ : Submodule R M)) r :=

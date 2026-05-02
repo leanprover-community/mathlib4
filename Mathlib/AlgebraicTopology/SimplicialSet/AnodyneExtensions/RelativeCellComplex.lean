@@ -320,10 +320,7 @@ of a simplicial set. -/
 noncomputable def m (j : ι) : f.sigmaHorn j ⟶ f.sigmaStdSimplex j :=
   Limits.Sigma.map (basicCell _ _)
 
-instance (j : ι) : Mono (f.m j) :=
-  MorphismProperty.colimitsOfShape_le (W := .monomorphisms _) _
-    (MorphismProperty.colimitsOfShape_colimMap _
-      (fun ⟨c⟩ ↦ by dsimp; infer_instance))
+instance (j : ι) : Mono (f.m j) := by dsimp [m]; infer_instance
 
 @[reassoc (attr := simp)]
 lemma Cell.ι_m {j : ι} (c : f.Cell j) :

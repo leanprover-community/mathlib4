@@ -250,7 +250,6 @@ theorem smulLeftCLM_apply_apply (g : E → ℂ) (f : 𝓢'(E, F)) (f' : 𝓢(E, 
 theorem smulLeftCLM_const (c : ℂ) (f : 𝓢'(E, F)) : smulLeftCLM F (fun _ : E ↦ c) f = c • f := by
   ext1; simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem smulLeftCLM_smulLeftCLM_apply {g₁ g₂ : E → ℂ} (hg₁ : g₁.HasTemperateGrowth)
     (hg₂ : g₂.HasTemperateGrowth) (f : 𝓢'(E, F)) :
@@ -295,7 +294,6 @@ open ENNReal MeasureTheory
 variable [MeasurableSpace E] [BorelSpace E] {μ : Measure E} [hμ : μ.HasTemperateGrowth]
   [CompleteSpace F]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Coercion of the product of two `Lp` functions to a tempered distribution is equal to the left
 multiplication if the left factor is a function of temperate growth. -/
 theorem _root_.MeasureTheory.Lp.toTemperedDistribution_smul_eq {p q r : ℝ≥0∞} [p.HolderTriple q r]
@@ -327,7 +325,6 @@ theorem derivCLM_apply_apply (f : 𝓢'(ℝ, F)) (g : 𝓢(ℝ, ℂ)) :
 
 variable [RCLike 𝕜] [NormedSpace 𝕜 F]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (𝕜) in
 theorem derivCLM_toTemperedDistributionCLM_eq (f : 𝓢(ℝ, F)) :
     derivCLM F (f : 𝓢'(ℝ, F)) = SchwartzMap.derivCLM 𝕜 F f := by
@@ -360,7 +357,6 @@ instance : LineDerivAdd E 𝓢'(E, F) 𝓢'(E, F) where
 instance : LineDerivSMul ℂ E 𝓢'(E, F) 𝓢'(E, F) where
   lineDerivOp_smul m := (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_smul
 
-set_option backward.isDefEq.respectTransparency false in
 instance : LineDerivSMul ℝ E 𝓢'(E, F) 𝓢'(E, F) where
   lineDerivOp_smul m :=
     (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_smul_of_tower
@@ -381,7 +377,6 @@ theorem lineDerivOpCLM_eq (m : E) : lineDerivOpCLM ℂ 𝓢'(E, F) m =
 variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E] [FiniteDimensional ℝ E]
   {μ : Measure E} [μ.IsAddHaarMeasure]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem lineDerivOp_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) (m : E) :
     ∂_{m} (toTemperedDistributionCLM E F μ f) = toTemperedDistributionCLM E F μ (∂_{m} f) := by
   ext1 g
@@ -399,7 +394,6 @@ open scoped SchwartzMap
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
   [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [NormedSpace ℂ F]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Laplacian 𝓢'(E, F) 𝓢'(E, F) where
   laplacian := LineDeriv.laplacianCLM ℝ E 𝓢'(E, F)
 
@@ -407,7 +401,6 @@ instance : Laplacian 𝓢'(E, F) 𝓢'(E, F) where
 theorem laplacianCLM_apply (f : 𝓢'(E, F)) : laplacianCLM ℂ E 𝓢'(E, F) f = Δ f := by
   simp [laplacianCLM, laplacian]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem laplacian_eq_sum [Fintype ι] (b : OrthonormalBasis ι ℝ E) (f : 𝓢'(E, F)) :
     Δ f = ∑ i, ∂_{b i} (∂_{b i} f) := LineDeriv.laplacianCLM_eq_sum b f
 
@@ -419,7 +412,6 @@ theorem laplacian_apply_apply (f : 𝓢'(E, F)) (u : 𝓢(E, ℂ)) : (Δ f) u = 
 
 variable [MeasurableSpace E] [BorelSpace E]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The distributional Laplacian and the classical Laplacian coincide on `𝓢(E, F)`. -/
 @[simp]
 theorem laplacian_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) :

@@ -214,4 +214,14 @@ theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [Noetherian
     ∃ o : Set α, IsOpen o ∧ o.Nonempty ∧ o ≤ Z := by
   simpa using exists_isOpen_nonempty_subset_irreducibleComponent Z H
 
+lemma NoetherianSpace.of_subset {W V : Set α} [NoetherianSpace W]
+    (h : V ⊆ W) : NoetherianSpace V :=
+  Topology.IsInducing.noetherianSpace (Topology.IsEmbedding.inclusion h).isInducing
+
+lemma NoetherianSpace.inter_of_left (W V : Set α) [NoetherianSpace W] :
+    NoetherianSpace (W ∩ V : Set α) := .of_subset Set.inter_subset_left
+
+lemma NoetherianSpace.inter_of_right (W V : Set α) [NoetherianSpace V] :
+    NoetherianSpace (W ∩ V : Set α) := .of_subset Set.inter_subset_right
+
 end TopologicalSpace

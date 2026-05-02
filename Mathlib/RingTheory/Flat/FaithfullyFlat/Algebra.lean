@@ -76,7 +76,9 @@ lemma Module.FaithfullyFlat.of_flat_of_isLocalHom [IsLocalRing A] [IsLocalRing B
 variable [Module.FaithfullyFlat A B]
 
 /-- If `B` is a faithfully flat `A`-module and `M` is any `A`-module, the canonical
-map `M →ₗ[A] B ⊗[A] M` is injective. -/
+map `M →ₗ[A] B ⊗[A] M` is injective.
+
+See also `Module.Flat.tensorProduct_mk_injective`. -/
 lemma Module.FaithfullyFlat.tensorProduct_mk_injective (M : Type*) [AddCommGroup M] [Module A M] :
     Function.Injective (TensorProduct.mk A B M 1) := by
   rw [← Module.FaithfullyFlat.lTensor_injective_iff_injective A B]

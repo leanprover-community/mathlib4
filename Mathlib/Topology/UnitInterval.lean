@@ -98,7 +98,7 @@ theorem coe_symm_eq (x : I) : (σ x : ℝ) = 1 - x :=
   rfl
 
 lemma image_coe_preimage_symm {s : Set I} :
-    Subtype.val '' (σ ⁻¹' s) = (1 - ·) ⁻¹' (Subtype.val '' s) := by
+    Subtype.val '' σ ⁻¹' s = (1 - ·) ⁻¹' Subtype.val '' s := by
   simp [symm_involutive, ← Function.Involutive.image_eq_preimage_symm, image_image]
 
 @[simp]

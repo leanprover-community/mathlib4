@@ -26,7 +26,7 @@ while the impact on writing code is minimal as `convexHull 𝕜 s` is automatica
 
 open Set
 
-open Pointwise
+open scoped Pointwise
 
 variable {𝕜 E F : Type*}
 

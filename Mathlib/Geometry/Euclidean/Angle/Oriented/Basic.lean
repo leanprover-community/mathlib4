@@ -248,7 +248,6 @@ negated, results in 0. -/
 theorem oangle_add_oangle_rev_neg_right (x y : V) : o.oangle x (-y) + o.oangle y (-x) = 0 := by
   rw [o.oangle_rev (-x), oangle_neg_left_eq_neg_right, add_neg_cancel]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Multiplying the first vector passed to `oangle` by a positive real does not change the
 angle. -/
 @[simp]

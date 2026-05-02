@@ -167,7 +167,7 @@ lemma toAut_surjective_isGalois_finite_family (t : Aut F) {ι : Type*} [Finite �
   rw [← hpx i, ← IsNaturalSMul.naturality, FunctorToFintypeCat.naturality,
     ← hfa, FunctorToFintypeCat.naturality, ← IsNaturalSMul.naturality, hg]
 
-open Pointwise
+open scoped Pointwise
 
 /-- If `G` is a compact, topological group that acts continuously and naturally on the
 fibers of `F`, `toAut F G` is surjective if and only if it acts transitively on the fibers

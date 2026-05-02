@@ -67,11 +67,11 @@ theorem symm_image_target_inter_eq (s : Set Y) :
   e.symm.image_source_inter_eq _
 
 theorem source_inter_preimage_inv_preimage (s : Set X) :
-    e.source ∩ e ⁻¹' (e.symm ⁻¹' s) = e.source ∩ s :=
+    e.source ∩ e ⁻¹' e.symm ⁻¹' s = e.source ∩ s :=
   e.toPartialEquiv.source_inter_preimage_inv_preimage s
 
 theorem target_inter_inv_preimage_preimage (s : Set Y) :
-    e.target ∩ e.symm ⁻¹' (e ⁻¹' s) = e.target ∩ s :=
+    e.target ∩ e.symm ⁻¹' e ⁻¹' s = e.target ∩ s :=
   e.symm.source_inter_preimage_inv_preimage _
 
 theorem source_inter_preimage_target_inter (s : Set Y) :

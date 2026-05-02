@@ -45,10 +45,8 @@ graded algebra, homogeneous
 
 @[expose] public section
 
-
 open SetLike DirectSum Set
-
-open Pointwise DirectSum
+open scoped Pointwise
 
 variable {ι σ A : Type*}
 

@@ -233,8 +233,11 @@ def map : WeierstrassCurve A :=
 
 variable (A) in
 /-- The Weierstrass curve base changed to an algebra `A` over `R`. -/
-abbrev baseChange [Algebra R A] : WeierstrassCurve A :=
+def baseChange [Algebra R A] : WeierstrassCurve A :=
   W.map <| algebraMap R A
+
+/-- The notation `\textf` for `WeierstrassCurve.baseChange W A`. -/
+scoped notation:max (priority := low) W:max "⁄" A:max => baseChange W A
 
 @[simp]
 lemma map_b₂ : (W.map f).b₂ = f W.b₂ := by
@@ -281,10 +284,11 @@ lemma map_map {B : Type w} [CommRing B] (g : A →+* B) : (W.map f).map g = W.ma
 @[simp]
 lemma map_baseChange {S : Type s} [CommRing S] [Algebra R S] {A : Type v} [CommRing A] [Algebra R A]
     [Algebra S A] [IsScalarTower R S A] {B : Type w} [CommRing B] [Algebra R B] [Algebra S B]
-    [IsScalarTower R S B] (g : A →ₐ[S] B) : (W.baseChange A).map g = W.baseChange B :=
-  congr_arg W.map <| g.comp_algebraMap_of_tower R
+    [IsScalarTower R S B] (g : A →ₐ[S] B) : (W⁄A).map g = W⁄B :=
+  congrArg W.map <| g.comp_algebraMap_of_tower R
 
-lemma map_injective {f : R →+* A} (hf : Function.Injective f) :
+variable {f} in
+lemma map_injective (hf : Function.Injective f) :
     Function.Injective <| map (f := f) := fun _ _ h => by
   rcases mk.inj h with ⟨_, _, _, _, _⟩
   ext <;> apply_fun _ using hf <;> assumption

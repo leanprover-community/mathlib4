@@ -171,7 +171,6 @@ def uncenteredCovarianceBilinDual (μ : Measure E) : StrongDual ℝ E →L[ℝ] 
   ContinuousLinearMap.bilinearComp (isBoundedBilinearMap_inner (𝕜 := ℝ)).toContinuousLinearMap
     (StrongDual.toLp μ 2) (StrongDual.toLp μ 2)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma uncenteredCovarianceBilinDual_apply (h : MemLp id 2 μ) (L₁ L₂ : StrongDual ℝ E) :
     uncenteredCovarianceBilinDual μ L₁ L₂ = ∫ x, L₁ x * L₂ x ∂μ := by
   simp only [uncenteredCovarianceBilinDual, ContinuousLinearMap.bilinearComp_apply,

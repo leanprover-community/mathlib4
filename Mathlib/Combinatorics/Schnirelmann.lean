@@ -269,7 +269,7 @@ lemma schnirelmannDensity_setOf_Odd : schnirelmannDensity (setOf Odd) = 2⁻¹ :
   simp only [h]
   rw [schnirelmannDensity_setOf_mod_eq_one (by norm_num1), Nat.cast_two]
 
-open Pointwise
+open scoped Pointwise
 
 /-- If two sets `A` and `B` have Schnirelmann densities with sum at least 1, and both sets
 contain zero, then every natural number is sum of an element of `A` and an element of `B`.

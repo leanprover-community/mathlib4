@@ -5,7 +5,9 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.Algebra.Category.Ring.Small
 public import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
+public import Mathlib.CategoryTheory.MorphismProperty.Comma
 public import Mathlib.RingTheory.RingHom.EssFiniteType
 public import Mathlib.RingTheory.RingHom.FiniteType
 public import Mathlib.RingTheory.Spectrum.Prime.Jacobson
@@ -135,5 +137,46 @@ nonrec lemma LocallyOfFiniteType.jacobsonSpace
   algebraize [φ.hom]
   have := PrimeSpectrum.isJacobsonRing_iff_jacobsonSpace.mpr ‹_›
   exact PrimeSpectrum.isJacobsonRing_iff_jacobsonSpace.mp (isJacobsonRing_of_finiteType (A := R))
+
+set_option backward.isDefEq.respectTransparency false in
+/--
+The category of affine schemes locally of finite type over a fixed base scheme is essentially small.
+TODO: extend this to (relatively) quasi-compact schemes.
+-/
+lemma essentiallySmall_costructuredArrow_Spec
+    (P : MorphismProperty Scheme.{u}) (hP : P ≤ @LocallyOfFiniteType) [P.RespectsIso] :
+    EssentiallySmall.{u} (P.CostructuredArrow ⊤ Scheme.Spec X) := by
+  let F := MorphismProperty.CostructuredArrow.forget P ⊤ Scheme.Spec X ⋙ CostructuredArrow.proj _ _
+  refine .of_functor F ?_ ?_
+  · let Q' : ObjectProperty CommRingCat.{u} := fun S ↦
+      ∃ R, (R ∈ Set.range fun U ↦ Γ(X, U)) ∧ ∃ (f : R ⟶ S), f.hom.FiniteType
+    have : Q'.EssentiallySmall := CommRingCat.essentiallySmall_of_finiteType fun S ↦ id
+    suffices ObjectProperty.EssentiallySmall.{u} (· ∈ Set.range (Opposite.unop ∘ F.obj)) by
+      rw [← ObjectProperty.essentiallySmall_unop_iff]
+      refine .of_le (Q := .isoClosure (· ∈ Set.range (Opposite.unop ∘ F.obj))) ?_
+      exact fun R ⟨S, e⟩ ↦ ⟨_, ⟨S, rfl⟩, ⟨e.some.unop⟩⟩
+    refine CommRingCat.essentiallySmall_of_localizationAway (Q := Q'.isoClosure) ?_
+    rintro _ ⟨S, rfl⟩
+    have (q : Spec (F.obj S).unop) : ∃ f, q ∈ PrimeSpectrum.basicOpen f ∧
+        Q' Γ(Spec (F.obj S).unop, PrimeSpectrum.basicOpen f) := by
+      obtain ⟨_, ⟨U, hU, rfl⟩, hqU, -⟩ :=
+        X.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ <| S.hom q) isOpen_univ
+      obtain ⟨_, ⟨_, ⟨f, rfl⟩, rfl⟩, hqf, hfU⟩ :=
+        PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open hqU (S.hom ⁻¹ᵁ U).isOpen
+      have : LocallyOfFiniteType S.hom := hP _ S.prop
+      exact ⟨f, hqf, _, ⟨U, rfl⟩, S.hom.appLE _ _ hfU,
+        (S.hom.finiteType_appLE hU (.Spec_basicOpen _)) _⟩
+    choose f hqf hf using this
+    refine ⟨Set.range f, PrimeSpectrum.iSup_basicOpen_eq_top_iff.mp ?_, Set.forall_mem_range.mpr ?_⟩
+    · exact top_le_iff.mp fun x _ ↦ TopologicalSpace.Opens.mem_iSup.mpr ⟨x, hqf _⟩
+    · dsimp
+      exact fun q ↦ ⟨_, hf q, ⟨(IsLocalization.algEquiv (.powers (f q)) _
+        ((Spec.structureSheaf _).obj.obj (op _))).toRingEquiv.toCommRingCatIso⟩⟩
+  · intro R
+    refine ⟨.ofObj fun f : { f : Spec R.unop ⟶ X // P f } ↦ .mk _ f.1 f.2, inferInstance, ?_⟩
+    refine fun S ⟨e⟩ ↦ ⟨_, .mk ⟨Spec.map e.inv.unop ≫ S.hom, ?_⟩,
+      ⟨MorphismProperty.CostructuredArrow.isoMk e trivial trivial ?_⟩⟩
+    · simp [← Spec.map_comp_assoc, F]
+    · exact (P.cancel_left_of_respectsIso _ _).mpr S.prop
 
 end AlgebraicGeometry

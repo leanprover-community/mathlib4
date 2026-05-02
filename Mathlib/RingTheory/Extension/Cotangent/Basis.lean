@@ -24,7 +24,9 @@ free on the images of the relations of `P'`.
 - https://stacks.math.columbia.edu/tag/07CF
 -/
 
-open Pointwise MvPolynomial TensorProduct
+open scoped Pointwise
+open MvPolynomial TensorProduct
+
 namespace Algebra.Generators
 
 variable {R : Type*} {S : Type*} [CommRing R] [CommRing S] [Algebra R S] {σ : Type*}

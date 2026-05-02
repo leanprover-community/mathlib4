@@ -508,7 +508,6 @@ namespace Complex
 
 attribute [local instance] Complex.finrank_real_complex_fact
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected theorem areaForm (w z : ℂ) : Complex.orientation.areaForm w z = (conj w * z).im := by
   let o := Complex.orientation

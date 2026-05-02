@@ -558,7 +558,7 @@ theorem medial_map {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [Affi
   ext i
   simp [medial_points]
 
-open Pointwise in
+open scoped Pointwise in
 @[simp]
 theorem affineSpan_range_medial [CharZero k] (s : Simplex k P n) :
     affineSpan k (Set.range (s.medial.points)) = affineSpan k (Set.range (s.points)) := by

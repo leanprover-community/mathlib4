@@ -417,7 +417,6 @@ monomials `fourier n` on the circle considered as elements of `L²`. -/
 theorem coe_fourierBasis : ⇑(@fourierBasis T hT) = @fourierLp T hT 2 _ :=
   HilbertBasis.coe_mk _ _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Under the isometric isomorphism `fourierBasis` from `Lp ℂ 2 haarAddCircle` to `ℓ²(ℤ, ℂ)`, the
 `i`-th coefficient is `fourierCoeff f i`, i.e., the integral over `AddCircle T` of
 `fun t => fourier (-i) t * f t` with respect to the Haar measure of total mass 1. -/
@@ -490,7 +489,6 @@ theorem fourierCoeff_toLp (n : ℤ) :
 
 variable {f}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the sequence of Fourier coefficients of `f` is summable, then the Fourier series converges
 uniformly to `f`. -/
 theorem hasSum_fourier_series_of_summable (h : Summable (fourierCoeff f)) :
@@ -556,7 +554,6 @@ theorem has_antideriv_at_fourier_neg (hT : Fact (0 < T)) {n : ℤ} (hn : n ≠ 0
   · ext1 y; rw [div_div_eq_mul_div]; ring
   · simp [mul_div_cancel_left₀, hn, (Fact.out : 0 < T).ne', Real.pi_pos.ne']
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Express Fourier coefficients of `f` on an interval in terms of those of its derivative. -/
 theorem fourierCoeffOn_of_hasDeriv_right {a b : ℝ} (hab : a < b) {f f' : ℝ → ℂ}
     {n : ℤ} (hn : n ≠ 0)
