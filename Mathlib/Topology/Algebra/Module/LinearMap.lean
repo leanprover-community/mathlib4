@@ -702,31 +702,6 @@ theorem coe_rangeRestrict [RingHomSurjective σ₁₂] (f : M₁ →SL[σ₁₂]
       (f : M₁ →ₛₗ[σ₁₂] M₂).rangeRestrict :=
   rfl
 
-/-- `Submodule.subtype` as a `ContinuousLinearMap`. -/
-def _root_.Submodule.subtypeL (p : Submodule R₁ M₁) : p →L[R₁] M₁ where
-  cont := continuous_subtype_val
-  toLinearMap := p.subtype
-
-@[simp, norm_cast]
-theorem _root_.Submodule.coe_subtypeL (p : Submodule R₁ M₁) :
-    (p.subtypeL : p →ₗ[R₁] M₁) = p.subtype :=
-  rfl
-
-@[simp]
-theorem _root_.Submodule.coe_subtypeL' (p : Submodule R₁ M₁) : ⇑p.subtypeL = p.subtype :=
-  rfl
-
-@[simp]
-theorem _root_.Submodule.subtypeL_apply (p : Submodule R₁ M₁) (x : p) : p.subtypeL x = x :=
-  rfl
-
-theorem _root_.Submodule.range_subtypeL (p : Submodule R₁ M₁) :
-    range (p.subtypeL : p →ₗ[R₁] M₁) = p :=
-  Submodule.range_subtype _
-
-theorem _root_.Submodule.ker_subtypeL (p : Submodule R₁ M₁) : ker (p.subtypeL : p →ₗ[R₁] M₁) = ⊥ :=
-  Submodule.ker_subtype _
-
 section
 
 variable {R S : Type*} [Semiring R] [Semiring S] [Module R M₁] [Module R M₂] [Module R S]
@@ -1258,6 +1233,27 @@ end ContinuousLinearMap
 
 namespace Submodule
 
+section Semiring
+
+variable {R : Type*} [Semiring R] {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [Module R M]
+
+/-- `Submodule.subtype` as a `ContinuousLinearMap`. -/
+def subtypeL (p : Submodule R M) : p →L[R] M where
+  cont := continuous_subtype_val
+  toLinearMap := p.subtype
+
+@[simp, norm_cast]
+theorem toLinearMap_subtypeL (p : Submodule R M) : (p.subtypeL : p →ₗ[R] M) = p.subtype := rfl
+
+@[simp]
+theorem coe_subtypeL (p : Submodule R M) : ⇑p.subtypeL = p.subtype := rfl
+
+theorem subtypeL_apply (p : Submodule R M) (x : p) : p.subtypeL x = x := by simp
+
+end Semiring
+
+section Ring
+
 variable {R : Type*} [Ring R] {M : Type*} [TopologicalSpace M] [AddCommGroup M] [Module R M]
   (S : Submodule R M)
 
@@ -1280,6 +1276,8 @@ theorem isQuotientMap_mkQL : IsQuotientMap S.mkQL := isQuotientMap_quot_mk
 
 theorem isOpenQuotientMap_mkQL [ContinuousAdd M] : IsOpenQuotientMap S.mkQL :=
   S.isOpenQuotientMap_mkQ
+
+end Ring
 
 end Submodule
 

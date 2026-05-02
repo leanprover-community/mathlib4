@@ -498,10 +498,10 @@ noncomputable def coprodSubtypeLEquivOfIsCompl {F : Type*} [NormedAddCommGroup F
   ContinuousLinearEquiv.ofBijective (f.coprod G.subtypeL)
     (by
       rw [ker_coprod_of_disjoint_range]
-      · rw [hker, Submodule.ker_subtypeL, Submodule.prod_bot]
-      · rw [Submodule.range_subtypeL]
-        exact h.disjoint)
-    (by simp only [range_coprod, Submodule.range_subtypeL, h.sup_eq_top])
+      · simp [hker, Submodule.ker_subtype]
+      · simp [Submodule.range_subtype, h.disjoint])
+    (by simp only [range_coprod, Submodule.toLinearMap_subtypeL, Submodule.range_subtype,
+      h.sup_eq_top])
 
 theorem range_eq_map_coprodSubtypeLEquivOfIsCompl {F : Type*} [NormedAddCommGroup F]
     [NormedSpace 𝕜 F] [CompleteSpace F] (f : E →L[𝕜] F) {G : Submodule 𝕜 F}
