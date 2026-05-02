@@ -108,10 +108,10 @@ def adj : toKleisli T ⊣ fromKleisli T :=
         simp [← T.unit_naturality_assoc, dsimp% T.left_unit Z.of]
         rfl }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The composition of the adjunction gives the original functor. -/
 def toKleisliCompFromKleisliIsoSelf : toKleisli T ⋙ fromKleisli T ≅ T :=
-  NatIso.ofComponents fun _ => Iso.refl _
+  NatIso.ofComponents (fun _ => (Iso.refl _))
+    (naturality := fun {X} {Y} f => by simp_all [dsimp% T.right_unit Y])
 
 end Adjunction
 
