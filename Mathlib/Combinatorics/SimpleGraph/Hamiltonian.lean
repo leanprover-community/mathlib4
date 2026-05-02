@@ -209,7 +209,7 @@ lemma isHamiltonianCycle_iff_isCycle_and_length_eq [Fintype α] :
   refine isHamiltonian_iff_isPath_and_length_eq.mpr ⟨h₁.isPath_tail, ?_⟩
   grind [length_tail_add_one, IsCycle.not_nil]
 
-/-- A Hamiltonian path closed into a cycle by an edge is a Hamiltonian cycle, and conversely. -/
+/-- A Hamiltonian path closed into a cycle by an edge outside its support is a Hamiltonian cycle, and conversely. -/
 theorem cons_isHamiltonianCycle_iff {x y : α} (h : G.Adj x y) (p : G.Walk y x) :
     (Walk.cons h p).IsHamiltonianCycle ↔ p.IsHamiltonian ∧ s(x, y) ∉ p.edges := by
   have htail : (cons h p).tail.IsHamiltonian ↔ p.IsHamiltonian := by
