@@ -222,13 +222,14 @@ theorem IndepFun.integrable_right_of_integrable_smul {α β : Type*}
 @[deprecated (since := "2026-04-30")] alias IndepFun.integrable_right_of_integrable_mul :=
   IndepFun.integrable_right_of_integrable_smul
 
-lemma IndepFun.integral_fun_comp_smul_comp {α β : Type*} [RCLike α] [MeasurableSpace β]
-    [NormedAddCommGroup β] [NormedSpace ℝ β] [NormedSpace α β] [BorelSpace β]
+lemma IndepFun.integral_fun_comp_smul_comp {α β : Type*} [RCLike α]
+    [NormedAddCommGroup β] [NormedSpace ℝ β] [NormedSpace α β]
     {𝓧 𝓨 : Type*} {m𝓧 : MeasurableSpace 𝓧}
     {m𝓨 : MeasurableSpace 𝓨} {X : Ω → 𝓧} {Y : Ω → 𝓨} {f : 𝓧 → α} {g : 𝓨 → β}
     (hXY : X ⟂ᵢ[μ] Y) (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ)
     (hf : AEStronglyMeasurable f (μ.map X)) (hg : AEStronglyMeasurable g (μ.map Y)) :
     ∫ ω, f (X ω) • g (Y ω) ∂μ = (∫ ω, f (X ω) ∂μ) • ∫ ω, g (Y ω) ∂μ := by
+  borelize β
   have hfXgY := (hXY.comp₀ hX hY hf.aemeasurable hg.aemeasurable)
   have hfX := (hf.comp_aemeasurable hX)
   have hgY := (hg.comp_aemeasurable hY)
@@ -265,8 +266,8 @@ lemma IndepFun.integral_fun_comp_mul_comp {𝓧 𝓨 : Type*} {m𝓧 : Measurabl
     ∫ ω, f (X ω) * g (Y ω) ∂μ = (∫ ω, f (X ω) ∂μ) * ∫ ω, g (Y ω) ∂μ :=
   hXY.integral_fun_comp_smul_comp hX hY hf hg
 
-lemma IndepFun.integral_comp_smul_comp {α β : Type*} [RCLike α] [MeasurableSpace β]
-    [NormedAddCommGroup β] [NormedSpace ℝ β] [NormedSpace α β] [BorelSpace β]
+lemma IndepFun.integral_comp_smul_comp {α β : Type*} [RCLike α]
+    [NormedAddCommGroup β] [NormedSpace ℝ β] [NormedSpace α β]
     {𝓧 𝓨 : Type*} {m𝓧 : MeasurableSpace 𝓧}
     {m𝓨 : MeasurableSpace 𝓨} {X : Ω → 𝓧} {Y : Ω → 𝓨} {f : 𝓧 → α} {g : 𝓨 → β}
     (hXY : X ⟂ᵢ[μ] Y) (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ)
