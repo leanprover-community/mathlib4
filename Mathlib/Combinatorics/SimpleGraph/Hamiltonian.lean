@@ -289,6 +289,39 @@ open Equiv Equiv.Perm
 
 variable {α : Type*} [Fintype α] [DecidableEq α] {G : SimpleGraph α}
 
+/-- If `σ` is a cycle with full support on at least 3 elements and every step is a graph edge,
+then for any `x` with `σ^[n-1] (σ x) = x`, the walk
+`x → σ x → σ² x → ⋯ → σ^(n-1) x → x` is a Hamiltonian cycle. -/
+theorem isHamiltonianCycle_cons_iterate {σ : Perm α}
+    (hcycle : σ.IsCycle) (hsupport : σ.support = Finset.univ)
+    (hadj : ∀ x, G.Adj x (σ x)) (hcard3 : 3 ≤ Fintype.card α) (x : α)
+    (h : (↑σ : α → α)^[Fintype.card α - 1] (σ x) = x) :
+    (Walk.cons (hadj x)
+      ((Walk.iterate (↑σ) hadj (σ x) (Fintype.card α - 1)).copy rfl h)).IsHamiltonianCycle := by
+  have hcycOn : σ.IsCycleOn (Finset.univ : Finset α) :=
+    hsupport ▸ σ.coe_support_eq_set_support ▸ hcycle.isCycleOn
+  have hx : σ x ≠ x := σ.mem_support.mp (hsupport ▸ Finset.mem_univ x)
+  rw [Walk.isHamiltonianCycle_iff_isCycle_and_length_eq, Walk.cons_isCycle_iff]
+  refine ⟨⟨?_, ?_⟩, ?_⟩
+  · rw [Walk.isPath_def]
+    simp only [Walk.support_copy, Walk.support_iterate,
+      show Fintype.card α - 1 + 1 = Fintype.card α by omega]
+    have hsx : σ (σ x) ≠ σ x := σ.injective.ne hx
+    have hcard : Fintype.card α = (σ.toList (σ x)).length := by
+      rw [Equiv.Perm.length_toList, hcycle.cycleOf_eq hsx, hsupport, Finset.card_univ]
+    rw [hcard, ← List.range_map_iterate]
+    simp only [Equiv.Perm.iterate_eq_pow, ← σ.toList_eq_range_map_pow]
+    exact σ.nodup_toList (σ x)
+  · simp only [Walk.edges_copy, Walk.edges_iterate]
+    rw [List.mem_map]
+    rintro ⟨i, hi, heq⟩
+    rw [List.mem_range] at hi
+    simp only [Equiv.Perm.iterate_eq_pow, ← mul_apply, ← pow_succ] at heq
+    exact hcycOn.sym2_pow_apply_ne (Finset.mem_univ x) (by omega)
+      (by rw [Finset.card_univ]; omega) (by rwa [Finset.card_univ]) heq
+  · simp only [Walk.length_cons, Walk.length_copy, Walk.length_iterate]
+    omega
+
 /-- If `σ` is a cycle with full support on at least 3 elements and every step is
 a graph edge, then `G` is Hamiltonian. -/
 theorem IsHamiltonian.ofPerm {σ : Perm α}
@@ -296,35 +329,13 @@ theorem IsHamiltonian.ofPerm {σ : Perm α}
     (hadj : ∀ x, G.Adj x (σ x))
     (hcard3 : 3 ≤ Fintype.card α) : G.IsHamiltonian := by
   intro _
-  obtain ⟨x, hx_mem⟩ := hcycle.nonempty_support
-  have hx : σ x ≠ x := σ.mem_support.mp hx_mem
-  set n := Fintype.card α with hn_def
+  obtain ⟨x, _⟩ := hcycle.nonempty_support
   have hcycOn : σ.IsCycleOn (Finset.univ : Finset α) :=
     hsupport ▸ σ.coe_support_eq_set_support ▸ hcycle.isCycleOn
-  set p := (Walk.iterate (↑σ) hadj (σ x) (n - 1)).copy rfl (by
-    change (↑σ)^[n - 1 + 1] x = x
-    rw [Nat.sub_add_cancel (by omega), Equiv.Perm.iterate_eq_pow,
-      hn_def, ← Finset.card_univ, hcycOn.pow_card_apply (Finset.mem_univ x)])
-  refine ⟨x, .cons (hadj x) p, ?_⟩
-  rw [Walk.isHamiltonianCycle_iff_isCycle_and_length_eq, Walk.cons_isCycle_iff]
-  refine ⟨⟨?_, ?_⟩, ?_⟩
-  · rw [Walk.isPath_def]
-    simp only [p, Walk.support_copy, Walk.support_iterate, show n - 1 + 1 = n by omega]
-    have hsx : σ (σ x) ≠ σ x := σ.injective.ne hx
-    have hcard : n = (σ.toList (σ x)).length := by
-      rw [Equiv.Perm.length_toList, hcycle.cycleOf_eq hsx, hsupport, Finset.card_univ]
-    rw [hcard, ← List.range_map_iterate]
-    simp only [Equiv.Perm.iterate_eq_pow, ← σ.toList_eq_range_map_pow]
-    exact σ.nodup_toList (σ x)
-  · simp only [p, Walk.edges_copy, Walk.edges_iterate]
-    rw [List.mem_map]
-    rintro ⟨i, hi, heq⟩
-    rw [List.mem_range] at hi
-    simp only [Equiv.Perm.iterate_eq_pow, ← mul_apply, ← pow_succ] at heq
-    exact hcycOn.sym2_pow_apply_ne (Finset.mem_univ x) (by omega)
-      (by rw [Finset.card_univ]; omega) (by rwa [Finset.card_univ]) heq
-  · simp only [Walk.length_cons, p, Walk.length_copy, Walk.length_iterate]
-    omega
+  refine ⟨x, _, isHamiltonianCycle_cons_iterate hcycle hsupport hadj hcard3 x ?_⟩
+  change (↑σ : α → α)^[Fintype.card α - 1 + 1] x = x
+  rw [Nat.sub_add_cancel (by omega), Equiv.Perm.iterate_eq_pow,
+    ← Finset.card_univ, hcycOn.pow_card_apply (Finset.mem_univ x)]
 
 end Perm
 
