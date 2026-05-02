@@ -35,7 +35,7 @@ In mathlib, we try to avoid this by only introducing new algebraic typeclasses e
 2. when there is a meaningful gain in simplicity by factoring out a common substructure.
 
 (As examples, at this point we don't have `Loop`, or `UnitalMagma`,
-but we do have `LieSubmodule` and `TopologicalField`!
+but we do have `LieSubmodule` and `NormedField`!
 We also have `GroupWithZero`, as an exemplar of point 2.)
 
 Generally in mathlib we use the extension mechanism (so `CommRing` extends `Ring`)
@@ -43,7 +43,7 @@ rather than mixins (e.g. with separate `Ring` and `CommMul` classes),
 in part because of the potential blow-up in term sizes described at
 https://www.ralfj.de/blog/2019/05/15/typeclasses-exponential-blowup.html
 However there is tension here, as it results in considerable duplication in the API,
-particularly in the interaction with order structures.
+particularly in the interaction with normed structures.
 
 This library note is not intended as a design document
 justifying and explaining the history of mathlib's algebraic hierarchy!
