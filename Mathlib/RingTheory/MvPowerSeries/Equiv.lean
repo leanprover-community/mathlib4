@@ -199,11 +199,10 @@ theorem toMvPowerSeries_eq_subst : f.toMvPowerSeries i = f.subst (MvPowerSeries.
 theorem HasSubst.toMvPowerSeries (hf : f.constantCoeff = 0) :
     MvPowerSeries.HasSubst (f.toMvPowerSeries · (σ := σ)) (S := R) where
   const_coeff := by simp_all [constantCoeff, toMvPowerSeries_apply]
-  coeff_zero d := Set.Finite.subset (Finite.of_fintype ↥d.support) fun s => by classical
+  coeff_zero d := Set.Finite.subset (Finite.of_fintype d.support) fun s => by classical
     contrapose
     simp only [SetLike.mem_coe, mem_support_iff, Decidable.not_not, Set.mem_setOf_eq]
-    have : (MvPowerSeries.subst (MvPowerSeries.X (R := R) ∘ fun x ↦ s) f)
-      = f.subst (MvPowerSeries.X s) := rfl
+    have : (.subst (.X (R := R) ∘ fun x ↦ s) f) = f.subst (.X s) := rfl
     intro hd
     rw [toMvPowerSeries_apply, MvPowerSeries.rename_eq_subst, this, coeff_subst (HasSubst.X _),
       finsum_eq_zero_of_forall_eq_zero]
