@@ -15,7 +15,7 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 This, and the dual result, are used in the development of abelian categories.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

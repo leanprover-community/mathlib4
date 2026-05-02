@@ -643,21 +643,15 @@ def Mathlib.TacticAnalysis.verifyTryThisSuggestions
                 if suggestedTac.raw[4]![1]![0]![1]!.getNumArgs == 0 then
                   continue
 
-            -- Get suggestion as string for analysis
-            let suggPP ← try
-              liftCoreM <| PrettyPrinter.ppTactic suggestedTac
-            catch _ => pure s!"{suggestedTac}"
-            let suggStr := suggPP.pretty
-
             -- Skip suggestions containing hexcode anchors (e.g., #962a, #8ef1)
             -- These are proof-context-specific references that aren't valid in a fresh goal
-            let containsHexcode := suggStr.splitOn "#" |>.drop 1 |>.any fun part =>
-              part.length >= 4 && (part.take 4).all fun c => c.isDigit || c ∈ ['a', 'b', 'c', 'd', 'e', 'f']
-            if containsHexcode then
+            if suggestedTac.raw.find? (·.isOfKind ``Lean.Parser.Tactic.anchor) |>.isSome then
               continue
 
             -- Skip suggestions containing `approx` - these are incomplete approximations
-            if suggStr.contains "approx" then
+            if suggestedTac.raw.find? (fun stx => stx.isOfKind ``Lean.Parser.Tactic.Grind.instantiate &&
+              (stx.find? (·.getAtomVal == "approx")).isSome) |>.isSome
+            then
               continue
 
             -- Verify suggestion works (suppress any messages from verification)
@@ -670,7 +664,7 @@ def Mathlib.TacticAnalysis.verifyTryThisSuggestions
 
             if !verifyGoals.isEmpty then
               logWarningAt i.tacI.stx
-                m!"`{label}` suggestion failed: `{suggPP}` did not close the goal"
+                m!"`{label}` suggestion failed: `{suggestedTac}` did not close the goal"
 
 /-- Verify that `grind?` suggestions actually work. -/
 register_option linter.tacticAnalysis.verifyGrind : Bool := {

@@ -301,15 +301,15 @@ theorem rename_eq_subst : rename f p = p.subst (X ∘ f) := by
   ext n
   rw [coeff_rename, coeff_subst (HasSubst.X_comp _) p n, finsum_eq_sum _
     (coeff_subst_finite (HasSubst.X_comp _) p n)]
-  have (d : σ →₀ ℕ) (hd : ¬(coeff d) p * (coeff n) (d.prod fun s e ↦ X (f s) ^ e) = 0) :
+  have (d : σ →₀ ℕ) (hd : (coeff d) p * (coeff n) (d.prod fun s e ↦ X (f s) ^ e) ≠ 0) :
       mapDomain f d = n := by
-    simp_rw [← monomial_mapDomain_eq_prod] at hd
+    simp_rw [← monomial_mapDomain_apply_one] at hd
     exact (eq_of_coeff_monomial_ne_zero (right_ne_zero_of_mul hd)).symm
   refine (Finset.sum_subset_zero_on_sdiff ?_ ?_ (fun x hx => ?_)).symm
   · exact Set.Finite.toFinset_mono this
-  · simp +contextual [← monomial_mapDomain_eq_prod]
+  · simp +contextual [← monomial_mapDomain_apply_one]
   · simp only [Set.Finite.mem_toFinset] at hx
-    simp [← this _ hx, ← monomial_mapDomain_eq_prod, coeff_monomial_same]
+    simp [← this _ hx, ← monomial_mapDomain_apply_one, coeff_monomial_same]
 
 end CommRing
 

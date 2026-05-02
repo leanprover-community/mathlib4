@@ -182,15 +182,19 @@ theorem le_inf_support_multiset_prod (degt0 : 0 ≤ degt 0)
   · exact degt0
   · exact degtm _ _
 
-theorem sup_support_finset_prod_le (degb0 : degb 0 ≤ 0)
+theorem sup_support_finsetProd_le (degb0 : degb 0 ≤ 0)
     (degbm : ∀ a b, degb (a + b) ≤ degb a + degb b) (s : Finset ι) (f : ι → R[A]) :
     (∏ i ∈ s, f i).support.sup degb ≤ ∑ i ∈ s, (f i).support.sup degb :=
   (sup_support_multiset_prod_le degb0 degbm _).trans_eq <| congr_arg _ <| Multiset.map_map _ _ _
 
-theorem le_inf_support_finset_prod (degt0 : 0 ≤ degt 0)
+@[deprecated (since := "2026-04-08")] alias sup_support_finset_prod_le := sup_support_finsetProd_le
+
+theorem le_inf_support_finsetProd (degt0 : 0 ≤ degt 0)
     (degtm : ∀ a b, degt a + degt b ≤ degt (a + b)) (s : Finset ι) (f : ι → R[A]) :
     (∑ i ∈ s, (f i).support.inf degt) ≤ (∏ i ∈ s, f i).support.inf degt :=
   le_of_eq_of_le (by rw [Multiset.map_map]; rfl) (le_inf_support_multiset_prod degt0 degtm _)
+
+@[deprecated (since := "2026-04-08")] alias le_inf_support_finset_prod := le_inf_support_finsetProd
 
 end CommutativeLemmas
 
@@ -246,7 +250,7 @@ theorem supDegree_sub_le {f g : R'[A]} :
 theorem supDegree_sum_le {ι} {s : Finset ι} {f : ι → R[A]} :
     (∑ i ∈ s, f i).supDegree D ≤ s.sup (fun i => (f i).supDegree D) := by
   classical
-  exact (Finset.sup_mono Finsupp.support_finset_sum).trans_eq (Finset.sup_biUnion _ _)
+  exact (Finset.sup_mono Finsupp.support_finsetSum).trans_eq (Finset.sup_biUnion _ _)
 
 theorem supDegree_single_ne_zero (a : A) {r : R} (hr : r ≠ 0) :
     (single a r).supDegree D = D a := by
