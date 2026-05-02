@@ -424,10 +424,10 @@ theorem isLocalizing_of_iso {M N : TopCat.Sheaf (ModuleCat R) (Spec R)} (φ : M 
     (hM : IsLocalizing M) :
     IsLocalizing N := by
   intro f
-  rw [← IsLocalizedModule.comp_iff_of_bijective_left _ <|
+  rw [← IsLocalizedModule.comp_iff_of_bijective_left _ _ <|
     ConcreteCategory.bijective_of_isIso (φ.inv.hom.app (op (basicOpen f))), ← ModuleCat.hom_comp,
     φ.inv.hom.naturality (basicOpen f).leTop.op, ModuleCat.hom_comp,
-    IsLocalizedModule.comp_iff_of_bijective_right _ <| ConcreteCategory.bijective_of_isIso _]
+    IsLocalizedModule.comp_iff_of_bijective_right _ _ <| ConcreteCategory.bijective_of_isIso _]
   exact hM f
 
 theorem isLocalizing_iff_of_iso {M N : TopCat.Sheaf (ModuleCat R) (Spec R)} (φ : M ≅ N) :
@@ -450,7 +450,7 @@ theorem isLocalizing_tilde (M : ModuleCat R) :
   have heq : tilde.toOpen M ⊤ ≫ (modulesSpecToSheaf.obj (tilde M)).obj.map (basicOpen f).leTop.op =
       tilde.toOpen M (basicOpen f) :=
     tilde.toOpen_res _ _ _ _
-  rw [← IsLocalizedModule.comp_iff_of_bijective_right _ <|
+  rw [← IsLocalizedModule.comp_iff_of_bijective_right _ _ <|
     ConcreteCategory.bijective_of_isIso (tilde.toOpen M ⊤), ← ModuleCat.hom_comp, heq]
   infer_instance
 
@@ -467,7 +467,7 @@ theorem isIso_fromTildeΓ_iff_isLocalizing (M : (Spec R).Modules) :
       Scheme.Modules.toOpen_fromTildeΓ_app]
     simpa using IsIso.id _
 
-/-- TBD -/
+/-- `sheafCompose` commutes with `pushforward` -/
 def sheafComposePushforwardComp :
     sheafCompose (Opens.grothendieckTopology (Spec S))
       (ModuleCat.restrictScalars (Spec.map φ).appTop.hom) ⋙
