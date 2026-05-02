@@ -353,7 +353,7 @@ private lemma mk_Nat_L_pow (n m : ℕ) :
     have h_succ_ord :
         (↑(m' + 1) : Ordinal) =
           Order.succ (↑m' : Ordinal) := by
-      rw [Order.succ_eq_add_one]; push_cast; ring
+      rw [Order.succ_eq_add_one]; push_cast; rfl
     rw [h_succ_ord, Cardinal.beth_succ]
     rw [← Cardinal.power_mul]
     -- beth m' * beth n = beth(max m' n) by mk_Nat_L_mul
