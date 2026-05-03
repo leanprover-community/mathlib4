@@ -211,19 +211,48 @@ end Monoid
 
 section Normed
 
-variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
+variable {𝕜' : Type*} [NormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
 
-/-- Scalar multiplication by a normed field on a normed space is C^n. -/
-instance NormedSpace.contDiffSMul {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+/-- Scalar multiplication by a normed ring on a normed module is C^n. -/
+instance NormedRing.contDiffSMul {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
     [Module 𝕜' F] [IsBoundedSMul 𝕜' F] [IsScalarTower 𝕜 𝕜' F] :
     ContDiffSMul 𝕜 𝕜' F n where
   contdiff_smul := contDiff_smul
-
 
 /-- Multiplication in a normed algebra is C^n as a scalar action on itself. -/
 instance NormedAlgebra.contDiffSMul_self {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A] :
     ContDiffSMul 𝕜 A A n where
   contdiff_smul := contDiff_mul
+
+section SMul
+
+variable {𝕜' : Type*} [NormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [Module 𝕜' F] [IsBoundedSMul 𝕜' F] [IsScalarTower 𝕜 𝕜' F]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {x : E} {s : Set E}
+
+theorem ContDiffWithinAt.smul {f : E → 𝕜'} {g : E → F}
+    (hf : ContDiffWithinAt 𝕜 n f s x) (hg : ContDiffWithinAt 𝕜 n g s x) :
+    ContDiffWithinAt 𝕜 n (f • g) s x :=
+  hf.contdiff_smul' hg
+
+theorem ContDiffAt.smul {f : E → 𝕜'} {g : E → F}
+    (hf : ContDiffAt 𝕜 n f x) (hg : ContDiffAt 𝕜 n g x) :
+    ContDiffAt 𝕜 n (f • g) x :=
+  hf.contdiff_smul hg
+
+theorem ContDiff.smul {f : E → 𝕜'} {g : E → F}
+    (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :
+    ContDiff 𝕜 n (f • g) :=
+  hf.contdiff_smul hg
+
+theorem ContDiffOn.smul {f : E → 𝕜'} {g : E → F}
+    (hf : ContDiffOn 𝕜 n f s) (hg : ContDiffOn 𝕜 n g s) :
+    ContDiffOn 𝕜 n (f • g) s :=
+  hf.contdiff_smul hg
+
+end SMul
 
 end Normed
 
