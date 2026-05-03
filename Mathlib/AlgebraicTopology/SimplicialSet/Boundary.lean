@@ -6,12 +6,17 @@ Authors: Johan Commelin, Kim Morrison, Adam Topaz
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+public import Mathlib.CategoryTheory.Limits.Types.Pushouts
 
 /-!
 # The boundary of the standard simplex
 
 We introduce the boundary `∂Δ[n]` of the standard simplex `Δ[n]`.
 (These notations become available by doing `open Simplicial`.)
+We show in `Subcomplex.exists_isPushout_of_ne_top` that every proper
+subcomplex `A < ⊤` of a simplicial set admits a strict extension obtained
+by attaching an `n`-cell along its boundary.
 
 ## Future work
 
@@ -20,14 +25,13 @@ As an example, we should have a function that constructs
 from a non-surjective order-preserving function `Fin n → Fin n`
 a morphism `Δ[n] ⟶ ∂Δ[n]`.
 
-
 -/
 
 @[expose] public section
 
 universe u
 
-open CategoryTheory Simplicial Opposite
+open CategoryTheory Limits Simplicial Opposite
 
 namespace SSet
 
@@ -140,5 +144,87 @@ lemma eq_boundary_iff :
     exact le_antisymm (by rwa [le_boundary_iff]) h₁
 
 end stdSimplex
+
+namespace Subcomplex
+
+/-- If every simplex of `X` of dimension less than `n` is in `A`, and
+`x : X _⦋n⦌` is not in `A`, then the preimage of `A` under the Yoneda map of
+`x` is exactly `∂Δ[n]`. -/
+private lemma preimage_yonedaEquivSymm_eq_boundary
+    {X : SSet.{u}} {n : ℕ} (A : X.Subcomplex) {x : X _⦋n⦌} (hxA : x ∉ A.obj _)
+    (hn : ∀ m < n, ∀ y : X _⦋m⦌, y ∈ A.obj _) :
+    A.preimage (yonedaEquiv.symm x) = (∂Δ[n] : (Δ[n] : SSet.{u}).Subcomplex) := by
+  rw [stdSimplex.eq_boundary_iff]
+  refine ⟨?_, fun heq ↦ hxA ?_⟩
+  · rw [Subcomplex.le_iff_contains_nonDegenerate]
+    intro d ⟨y, hy⟩ hy'
+    exact hn _ (dim_lt_of_nonDegenerate
+      (X := ((∂Δ[n] : (Δ[n] : SSet.{u}).Subcomplex) : SSet.{u}))
+      ⟨⟨y, hy'⟩, (Subcomplex.mem_nonDegenerate_iff _ _).2 hy⟩ _) _
+  · simpa using heq.symm.le _ (by simp : yonedaEquiv (𝟙 _) ∈ _)
+
+/-- A proper subcomplex `A < ⊤` of a simplicial set `X` admits a strict
+extension `B`, exhibited as a pushout of `∂Δ[n] ↪ Δ[n]` along an attaching map.
+The witness simplex is found by strong induction on simplex dimension. -/
+lemma exists_isPushout_of_ne_top {X : SSet.{u}} (A : X.Subcomplex) (hA : A ≠ ⊤) :
+    ∃ (B : X.Subcomplex) (lt : A < B) (n : ℕ)
+      (t : ((∂Δ[n] : (Δ[n] : SSet.{u}).Subcomplex) : SSet.{u}) ⟶ (A : SSet.{u}))
+      (b : (Δ[n] : SSet.{u}) ⟶ (B : SSet.{u})),
+      IsPushout t (∂Δ[n] : (Δ[n] : SSet.{u}).Subcomplex).ι (Subcomplex.homOfLE lt.le) b := by
+  -- Find a non-degenerate witness `x ∈ X _⦋n⦌ \ A` by strong induction on simplex dimension.
+  by_contra h
+  apply hA
+  ext ⟨n⟩ : 2
+  simp only [Subfunctor.top_obj, Set.top_eq_univ, Set.eq_univ_iff_forall]
+  induction n using SimplexCategory.rec with | _ n
+  induction n using Nat.strong_induction_on with | _ n hn
+  by_contra! H
+  obtain ⟨x, hxA⟩ := H
+  have hnd : x ∈ X.nonDegenerate _ := fun hxd ↦ by
+    rw [SSet.mem_degenerate_iff] at hxd
+    obtain ⟨m, hm, f, _, y, rfl⟩ := hxd
+    exact hxA (A.map _ (hn _ hm _))
+  apply h
+  set σ : (Δ[n] : SSet.{u}) ⟶ X := yonedaEquiv.symm x
+  let A' : X.Subcomplex := A ⊔ .ofSimplex x
+  have hxA' : x ∈ A'.obj _ := Or.inr (Subcomplex.mem_ofSimplex_obj x)
+  have lt : A < A' := lt_of_le_not_ge le_sup_left (fun hAle ↦ hxA (hAle _ hxA'))
+  have hpre : A.preimage σ = (∂Δ[n] : (Δ[n] : SSet.{u}).Subcomplex) :=
+    preimage_yonedaEquivSymm_eq_boundary A hxA hn
+  refine ⟨A', lt, n,
+    Subcomplex.lift ((∂Δ[n] : (Δ[n] : SSet.{u}).Subcomplex).ι ≫ σ)
+      (by rw [← image_eq_range, image_le_iff, hpre]),
+    yonedaEquiv.symm ⟨x, hxA'⟩, ?_⟩
+  refine IsPushout.of_forall_isPushout_app fun ⟨m⟩ ↦ ?_
+  -- Factor the right column through `X.obj m` so the pullback condition is `hpre` at `m`.
+  refine Types.isPushout_of_isPullback_of_mono (X₅ := X.obj ⟨m⟩)
+    (k := A'.ι.app ⟨m⟩) (r' := A.ι.app ⟨m⟩) (b' := σ.app ⟨m⟩)
+      ?_ ?_ ?_ ?_ ?_
+  · exact Types.isPullback_of_eq_setPreimage (σ.app ⟨m⟩) (A.obj ⟨m⟩) (by simp [← hpre])
+  · rw [← NatTrans.comp_app, Subfunctor.homOfLe_ι]
+  · rfl
+  · apply le_antisymm le_top
+    rintro ⟨y, hy⟩ _
+    simp only [Subfunctor.max_obj, Set.mem_union, A'] at hy
+    obtain hy | ⟨z, hz⟩ := hy
+    · exact Or.inl ⟨⟨y, hy⟩, rfl⟩
+    · exact Or.inr ⟨stdSimplex.objEquiv.symm z.unop, Subtype.ext hz⟩
+  -- Off-boundary simplices have surjective representing maps; apply `unique_nonDegenerate_map`.
+  · induction m using SimplexCategory.rec with | _ m
+    intro x₃ y₃ hx₃ hy₃ heq
+    obtain ⟨φ, rfl⟩ := stdSimplex.objEquiv.symm.surjective x₃
+    obtain ⟨ψ, rfl⟩ := stdSimplex.objEquiv.symm.surjective y₃
+    have hφs : Function.Surjective ⇑φ.toOrderHom := by
+      by_contra h
+      exact hx₃ ⟨⟨stdSimplex.objEquiv.symm φ, h⟩, rfl⟩
+    have hψs : Function.Surjective ⇑ψ.toOrderHom := by
+      by_contra h
+      exact hy₃ ⟨⟨stdSimplex.objEquiv.symm ψ, h⟩, rfl⟩
+    have hφ : Epi φ := SimplexCategory.epi_iff_surjective.mpr hφs
+    have hψ : Epi ψ := SimplexCategory.epi_iff_surjective.mpr hψs
+    obtain rfl := X.unique_nonDegenerate_map _ φ ⟨x, hnd⟩ rfl ψ ⟨x, hnd⟩ heq
+    rfl
+
+end Subcomplex
 
 end SSet
