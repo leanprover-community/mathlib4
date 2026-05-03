@@ -80,7 +80,7 @@ lemma Walk.IsTrail.isCycle_of_length_eq_egirth {a} {w : G.Walk a a} (hw : w.IsTr
   by_contra h
   have hn : ¬w.Nil := w.not_nil_of_length_eq_egirth hwg
   let w' := w.cycleBypass
-  have hw'c : w'.IsCycle := hw.isCycle_cycleBypass (not_nil_iff_ne_nil.mp hn)
+  have hw'c : w'.IsCycle := hw.isCycle_cycleBypass (nil_iff_eq_nil.not.mp hn)
   have hw' : w'.length < w.length :=
     hw.length_cycleBypass_lt_iff_not_isCycle_and_not_nil.mpr ⟨h, hn⟩
   have hwg' : w'.length < G.egirth := hwg ▸ ENat.coe_lt_coe.mpr hw'
