@@ -283,7 +283,7 @@ instance fintypeEmpty : Fintype (∅ : Set α) :=
   Fintype.ofFinset ∅ <| by simp
 
 instance fintypeSingleton (a : α) : Fintype ({a} : Set α) :=
-  Fintype.ofFinset {a} <| by simp
+  Unique.fintype
 
 /-- A `Fintype` instance for inserting an element into a `Set` using the
 corresponding `insert` function on `Finset`. This requires `DecidableEq α`.
