@@ -213,9 +213,9 @@ lemma ciInf_le_ciSup [Nonempty ι] {f : ι → α} (hf : BddBelow (range f)) (hf
 lemma ciSup_prod {f : β × γ → α} (hf : BddAbove (Set.range f)) :
     ⨆ p, f p = ⨆ b, ⨆ c, f (b, c) := by
   rcases isEmpty_or_nonempty β
-  · simp
+  · simp [iSup_of_empty']
   rcases isEmpty_or_nonempty γ
-  · simp
+  · simp [iSup_of_empty']
   have h₁ : BddAbove (Set.range fun b ↦ ⨆ c, f (b, c)) := by
     rw [bddAbove_def] at hf ⊢
     obtain ⟨B, hB⟩ := hf
@@ -367,13 +367,13 @@ theorem ciSup_exists_le {p : ι → Prop} {f : Exists p → α} : ⨆ ih, f ih �
     rintro _ ⟨_, ⟨j, rfl⟩, ⟨hj, rfl⟩⟩
     rfl
   · cases isEmpty_or_nonempty ι <;>
-      simp [h, ciSup_const]
+      simp [h, iSup_of_empty', ciSup_const]
 
 theorem le_ciInf_exists {p : ι → Prop} {f : Exists p → α} : ⨅ (i) (h), f ⟨i, h⟩ ≤ ⨅ ih, f ih :=
   ciSup_exists_le (α := αᵒᵈ)
 
 theorem ciSup_and {p q : Prop} {f : p ∧ q → α} : ⨆ ih, f ih = ⨆ (h₁) (h₂), f ⟨h₁, h₂⟩ := by
-  by_cases hp : p <;> by_cases hq : q <;> simp [hp, hq]
+  by_cases hp : p <;> by_cases hq : q <;> simp [hp, hq, iSup_of_empty']
 
 theorem ciInf_and {p q : Prop} {f : p ∧ q → α} : ⨅ ih, f ih = ⨅ (h₁) (h₂), f ⟨h₁, h₂⟩ :=
   ciSup_and (α := αᵒᵈ)
