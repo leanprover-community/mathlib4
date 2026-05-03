@@ -143,8 +143,7 @@ open Complex
 lemma charFun_map_cast_poissonMeasure (r : ℝ≥0) (t : ℝ) :
     charFun Po(ℝ, r) t = cexp (r * (cexp (t * I) - 1)) := by
   rw [charFun_apply, integral_map .of_discrete (by fun_prop), integral_poissonMeasure r]
-  simp_rw [show ∀ (a : ℕ), inner ℝ (a : ℝ) t = a * t from
-           fun a => by change t * a = a * t; ring]
+  simp_rw [Real.inner_apply]
   calc ∑' a, (rexp (-r) * r ^ a / a ! : ℝ) * cexp ((a * t : ℝ) * I)
   _ = ∑' a, (rexp (-r)) * ((r * cexp (t * I)) ^ a / a !) := by
       congr with a
