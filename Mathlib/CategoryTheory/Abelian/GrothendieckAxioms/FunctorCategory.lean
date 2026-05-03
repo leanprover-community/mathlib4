@@ -14,7 +14,7 @@ This file proves that, when the relevant limits and colimits exist, exactness of
 colimits carries over from `A` to the functor category `C ⥤ A`.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
