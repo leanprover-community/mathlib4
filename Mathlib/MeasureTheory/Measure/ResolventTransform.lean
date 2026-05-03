@@ -25,7 +25,7 @@ Cauchy transform.
 
 ## Main definitions
 
-* `MeasureTheory.resolventTransform μ a`: The resolvent transform of a measure `μ` at `a`
+* `resolventTransform μ a`: The resolvent transform of a measure `μ` at `a`
 
 ## Main statements
 
