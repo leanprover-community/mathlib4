@@ -76,13 +76,10 @@ lemma sup_iff (W W' : MorphismProperty C) {X Y : C} (f : X ⟶ Y) : (W ⊔ W') f
 
 @[simp]
 lemma sSup_iff (S : Set (MorphismProperty C)) {X Y : C} (f : X ⟶ Y) :
-    sSup S f ↔ ∃ (W : S), W.1 f := by
-  dsimp [sSup, iSup]
-  constructor
-  · rintro ⟨_, ⟨⟨_, ⟨⟨_, ⟨_, h⟩, rfl⟩, rfl⟩⟩, rfl⟩, hf⟩
-    exact ⟨⟨_, h⟩, hf⟩
-  · rintro ⟨⟨W, hW⟩, hf⟩
-    exact ⟨_, ⟨⟨_, ⟨_, ⟨⟨W, hW⟩, rfl⟩⟩, rfl⟩, rfl⟩, hf⟩
+    sSup S f ↔ ∃ W ∈ S, W f := by
+  suffices h : ∀ {S : Set (∀ {X Y : C} (f : X ⟶ Y), Prop)} {X Y : C} {f : X ⟶ Y},
+      sSup S f ↔ ∃ W ∈ S, W f from h
+  simp
 
 @[simp]
 lemma iSup_iff {ι : Sort*} (W : ι → MorphismProperty C) {X Y : C} (f : X ⟶ Y) :
@@ -94,10 +91,10 @@ lemma inf_iff (W W' : MorphismProperty C) {X Y : C} (f : X ⟶ Y) : (W ⊓ W') f
   Iff.rfl
 
 @[simp]
-lemma sInf_iff (W : Set (MorphismProperty C)) {X Y : C} (f : X ⟶ Y) :
-    sInf W f ↔ ∀ W' ∈ W, W' f := by
-  suffices h : ∀ {W : Set (∀ {X Y : C} (f : X ⟶ Y), Prop)} {X Y : C} {f : X ⟶ Y},
-      sInf W f ↔ ∀ W' ∈ W, W' f from h
+lemma sInf_iff (S : Set (MorphismProperty C)) {X Y : C} (f : X ⟶ Y) :
+    sInf S f ↔ ∀ W ∈ S, W f := by
+  suffices h : ∀ {S : Set (∀ {X Y : C} (f : X ⟶ Y), Prop)} {X Y : C} {f : X ⟶ Y},
+      sInf S f ↔ ∀ W ∈ S, W f from h
   simp
 
 @[simp]
