@@ -161,11 +161,11 @@ def GRewriteLemma.apply (lem : GRewriteLemma) (goal : MVarId) (symm : Bool)
 
 /-- Create the `gcongr` goal corresponding to rewriting `e` by relation `rel?`,
 so that we can apply `gcongr` lemmas to it. -/
-def makeGCongrGoal (rel? : Option Expr) (e : Expr) (inv : Bool) : MetaM (Expr × Expr) := do
+def makeGCongrGoal (rel? : Option Expr) (e : Expr) (forward : Bool) : MetaM (Expr × Expr) := do
   let mkRel := if let some rel := rel? then mkApp2 rel else (.forallE `_a · · .default)
   -- Assume that the two arguments of `rel` have the same type.
   let mvar ← mkFreshExprMVar (← inferType e)
-  let target := if inv then mkRel mvar e else mkRel e mvar
+  let target := if forward then mkRel e mvar else mkRel mvar e
   return (mvar, ← mkFreshExprMVar target)
 
 /-- Version of `getRel` that also returns the expression of the relation. -/
@@ -182,12 +182,12 @@ def getRel' (e : Expr) : Option (Name × Option Expr × Expr × Expr) :=
 mutual
 
 /-- Recursively call `grewriteCore` to process a subgoal of a `gcongr` lemma. -/
-partial def processGCongrHypothesisAux (goal : MVarId) (inv : Bool) (config : Config) :
+partial def processGCongrHypothesisAux (goal : MVarId) (forward : Bool) (config : Config) :
     GRewriteM Bool := do
   let some (relName, rel?, lhs, rhs) := getRel' (← whnf (← goal.getType)) |
     throwError "internal `grewrite` error: invalid `gcongr` goal {goal}"
-  let (target, mvarApp) := if inv then (rhs, lhs) else (lhs, rhs)
-  if let some (result, proof) ← grewriteCore relName rel? target inv config then
+  let (target, mvarApp) := if forward then (lhs, rhs) else (rhs, lhs)
+  if let some (result, proof) ← grewriteCore relName rel? target forward config then
     mvarApp.withApp fun mvar xs ↦ do
       mvar.mvarId!.assign (← mkLambdaFVars xs result)
       goal.assign proof
@@ -197,11 +197,11 @@ partial def processGCongrHypothesisAux (goal : MVarId) (inv : Bool) (config : Co
 
 /-- Update the local contexts of the metavariables to include the variables introduced by the
 `gcongr` lemma. This is a bit of a hack. -/
-partial def processGCongrHypothesis (goal : MVarId) (inv : Bool)
+partial def processGCongrHypothesis (goal : MVarId) (forward : Bool)
     (config : Config) : GRewriteM Bool := do
   -- If the local context was not changed, we don't need to modify the local contexts.
   if (← goal.getDecl).lctx.numIndices == (← getLCtx).numIndices then
-    processGCongrHypothesisAux goal inv config
+    processGCongrHypothesisAux goal forward config
   else
   let outerLCtx ← getLCtx
   goal.withContext do
@@ -213,7 +213,7 @@ partial def processGCongrHypothesis (goal : MVarId) (inv : Bool)
       -- Create a local context for `mvarId` by adding `decls` to the current local context.
       let lctx := decls.foldl (·.addDecl ·) lctx
       { mctx with decls := mctx.decls.insert mvarId { mctx.getDecl mvarId with lctx } }
-    let result ← processGCongrHypothesisAux goal inv config
+    let result ← processGCongrHypothesisAux goal forward config
     if (← get).progress matches .noMatch then
       -- If we still don't have a match, then revert the changes to the metavaraible local contexts.
       setMCtx mctx
@@ -227,12 +227,12 @@ partial def processGCongrHypothesis (goal : MVarId) (inv : Bool)
         modify ({ · with progress := .matchedOutOfScope })
     return result
   else
-    processGCongrHypothesisAux goal inv config
+    processGCongrHypothesisAux goal forward config
 
 /-- Apply the `gcongr` lemma to the goal. The main subgoals are visited for rewriting in,
 and otherwise closed `by rfl`. If at least one rewrite has happened, we commit to this lemma,
 and we try to discharge the side goals. -/
-partial def processGCongrLemma (goal : MVarId) (lem : GCongrLemma) (inv : Bool)
+partial def processGCongrLemma (goal : MVarId) (lem : GCongrLemma) (forward : Bool)
     (config : Config) : GRewriteM Bool :=
   withTraceNode `Meta.grewrite (fun _ ↦
     return m!"applying `gcongr` lemma {.ofConstName lem.declName}") do
@@ -243,7 +243,7 @@ partial def processGCongrLemma (goal : MVarId) (lem : GCongrLemma) (inv : Bool)
     -- Any of the rewrites in this loop could make a match that is out of scope here.
     -- In that case we should stop rewriting, and the remaining goals should be closed `by rfl`.
     unless (← get).progress matches .matchedOutOfScope do
-      if ← processGCongrHypothesis goal (inv != isContra) config then
+      if ← processGCongrHypothesis goal (forward != isContra) config then
         anyProgress := true
         continue
     try
@@ -268,20 +268,20 @@ partial def processGCongrLemma (goal : MVarId) (lem : GCongrLemma) (inv : Bool)
   return true
 
 /-- The core of the `grw` implementation. -/
-partial def grewriteCore (relName : Name) (rel? : Option Expr) (e : Expr) (inv : Bool)
+partial def grewriteCore (relName : Name) (rel? : Option Expr) (e : Expr) (forward : Bool)
     (config : Config) : GRewriteM (Option (Expr × Expr)) :=
   withTraceNodeBefore `Meta.grewrite (fun _ ↦ return m!"visiting `{e}` in the \
-    {if inv then "RHS" else "LHS"} of relation `{rel?.elim m!"→" (m!"{·}")}`") do
+    {if forward then "LHS" else "RHS"} of relation `{rel?.elim m!"→" (m!"{·}")}`") do
   let e ← instantiateMVars e; let rel? ← rel?.mapM instantiateMVars
-  let cacheKey := (rel?, e, inv)
+  let cacheKey := (rel?, e, forward)
   if (← get).cache.contains cacheKey then
     trace[Meta.grewrite] "cached: no rewrite"
     return none
-  let (mvar, goal) ← makeGCongrGoal rel? e inv
+  let (mvar, goal) ← makeGCongrGoal rel? e forward
   -- Try the given grewrite lemma.
   let lem ← read
   if (e.toHeadIndex, e.headNumArgs) == lem.index then
-    if ← lem.apply goal.mvarId! (inv != lem.symm) config then
+    if ← lem.apply goal.mvarId! (forward == lem.symm) config then
       modify ({ · with progress := .matched })
       return (mvar, goal)
   -- Try all applicable `@[gcongr]` lemmas.
@@ -291,7 +291,7 @@ partial def grewriteCore (relName : Name) (rel? : Option Expr) (e : Expr) (inv :
     let mctx ← getMCtx
     for gcongrLem in lemmas do
       if gcongrLem.forGrw then
-        if ← processGCongrLemma goal.mvarId! gcongrLem inv config then
+        if ← processGCongrLemma goal.mvarId! gcongrLem forward config then
           return (← instantiateMVars mvar, goal)
         setMCtx mctx
   -- Cache the fact that there was nothing to rewrite.
@@ -365,7 +365,7 @@ public def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
       let index := (pattern.toHeadIndex, pattern.headNumArgs)
       let mvarIds := mvarIds ++ newMVars.map (·.mvarId!, #[])
       if let (some (eNew, impProof), newGoals) ←
-        grewriteCore `_Implies none e (!forwardImp) config |>.run
+        grewriteCore `_Implies none e (forward := forwardImp) config |>.run
           { symm := symm', proof := hrel, type := hrelType, index, mvarIds }
           |>.run' {} |>.run then
         pure (eNew, impProof, newGoals)
