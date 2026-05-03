@@ -383,11 +383,15 @@ theorem evalE₄E₆_surjective : Function.Surjective evalE₄E₆ := by
     ← AlgHom.mem_range]
   exact Subalgebra.sum_mem _ fun k _ => surj_of_weight k (x k)
 
+private lemma weight_fin2 (w : Fin 2 → ℕ) (d : Fin 2 →₀ ℕ) :
+    Finsupp.weight w d = d 0 * w 0 + d 1 * w 1 := by
+  rw [Finsupp.weight_apply, d.sum_fintype (fun i c => c • w i) fun _ => zero_smul _ _]
+  simp [Fin.sum_univ_two, mul_comm]
+
 private lemma weight_eq_4a_6b (d : Fin 2 →₀ ℕ) :
     Finsupp.weight (![4, 6] : Fin 2 → ℕ) d = d 0 * 4 + d 1 * 6 := by
-  rw [Finsupp.weight_apply,
-    d.sum_fintype (fun i c => c • (![4, 6] : Fin 2 → ℕ) i) fun _ => zero_smul _ _]
-  simp [Fin.sum_univ_two, mul_comm]
+  rw [weight_fin2]
+  rfl
 
 private lemma weight_fin2_cast (d : Fin 2 →₀ ℕ) :
     (Finsupp.weight (![4, 6] : Fin 2 → ℕ) d : ℤ) = ↑(d 0) * 4 + ↑(d 1) * 6 := by
@@ -434,7 +438,7 @@ private lemma unique_small_weight_solution {a₁ b₁ a₂ b₂ : ℕ}
     (h : a₁ * 4 + b₁ * 6 = a₂ * 4 + b₂ * 6) : a₁ = a₂ ∧ b₁ = b₂ :=
   ⟨by interval_cases a₁ <;> interval_cases a₂ <;> omega, by omega⟩
 
-private lemma monomial_fin2_eq (d : Fin 2 →₀ ℕ) (c : ℂ) :
+private lemma monomial_fin2_eq {R : Type*} [CommSemiring R] (d : Fin 2 →₀ ℕ) (c : R) :
     MvPolynomial.monomial d c =
       MvPolynomial.C c * MvPolynomial.X 0 ^ d 0 * MvPolynomial.X 1 ^ d 1 := by
   rw [MvPolynomial.monomial_eq, mul_assoc, d.prod_fintype _ fun _ => pow_zero _]
