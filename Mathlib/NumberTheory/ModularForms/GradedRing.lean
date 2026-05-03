@@ -117,16 +117,19 @@ def E₄E₆Weight : Fin 2 → ℕ := ![4, 6]
 
 /-- Evaluation homomorphism sending `ℂ[X₀, X₁]` to the graded ring of level 1 modular forms
 via `X₀ ↦ E₄` and `X₁ ↦ E₆`. -/
-noncomputable def evalE₄E₆ : MvPolynomial (Fin 2) ℂ →ₐ[ℂ] DirectSum ℤ (ModularForm 𝒮ℒ) :=
+noncomputable def evalE₄E₆ :
+    MvPolynomial (Fin 2) ℂ →ₐ[ℂ] DirectSum ℤ (ModularForm 𝒮ℒ) :=
   MvPolynomial.aeval
     ![DirectSum.of (ModularForm 𝒮ℒ) 4 E₄, DirectSum.of (ModularForm 𝒮ℒ) 6 E₆]
 
 @[simp]
-lemma evalE₄E₆_X0 : evalE₄E₆ (MvPolynomial.X 0) = DirectSum.of (ModularForm 𝒮ℒ) 4 E₄ := by
+lemma evalE₄E₆_X0 :
+    evalE₄E₆ (MvPolynomial.X 0) = DirectSum.of (ModularForm 𝒮ℒ) 4 E₄ := by
   simp [evalE₄E₆]
 
 @[simp]
-lemma evalE₄E₆_X1 : evalE₄E₆ (MvPolynomial.X 1) = DirectSum.of (ModularForm 𝒮ℒ) 6 E₆ := by
+lemma evalE₄E₆_X1 :
+    evalE₄E₆ (MvPolynomial.X 1) = DirectSum.of (ModularForm 𝒮ℒ) 6 E₆ := by
   simp [evalE₄E₆]
 
 lemma evalE₄E₆_C (c : ℂ) :
@@ -165,9 +168,9 @@ private lemma surj_of_rank_one {k : ℤ}
     DirectSum.of _ k f ∈ Set.range evalE₄E₆ := by
   obtain ⟨c, rfl⟩ := (finrank_eq_one_iff_of_nonzero' g hg).mp
     (Module.rank_eq_one_iff_finrank_eq_one.mp hrank) f
-  exact ⟨MvPolynomial.C c * p, by
-    rw [map_mul, evalE₄E₆_C, hp, Algebra.algebraMap_eq_smul_one,
-      smul_mul_assoc, one_mul, ← DirectSum.of_smul]⟩
+  refine ⟨MvPolynomial.C c * p, ?_⟩
+  rw [map_mul, evalE₄E₆_C, hp, Algebra.algebraMap_eq_smul_one,
+    smul_mul_assoc, one_mul, ← DirectSum.of_smul]
 
 private lemma mul_ne_zero {k₁ k₂ : ℤ} (f : ModularForm 𝒮ℒ k₁) (g : ModularForm 𝒮ℒ k₂)
     (hf : f ≠ 0) (hg : g ≠ 0) : f.mul g ≠ 0 := by
@@ -351,17 +354,21 @@ private lemma surj_of_weight : ∀ (k : ℤ) (f : ModularForm 𝒮ℒ k),
       exact ⟨0, map_zero _⟩
     · exact absurd hk_odd (by decide)
     · exact surj_of_rank_one ModularForm.levelOne_weight_four_rank_one
-        (show E₄ ≠ 0 from E_ne_zero (by norm_num) ⟨2, rfl⟩) (MvPolynomial.X 0) evalE₄E₆_X0 f
+        (E_ne_zero (k := 4) (by norm_num) ⟨2, rfl⟩)
+        (MvPolynomial.X 0) evalE₄E₆_X0 f
     · exact absurd hk_odd (by decide)
     · exact surj_of_rank_one ModularForm.levelOne_weight_six_rank_one
-        (show E₆ ≠ 0 from E_ne_zero (by norm_num) ⟨3, rfl⟩) (MvPolynomial.X 1) evalE₄E₆_X1 f
+        (E_ne_zero (k := 6) (by norm_num) ⟨3, rfl⟩)
+        (MvPolynomial.X 1) evalE₄E₆_X1 f
     · exact absurd hk_odd (by decide)
     · exact surj_of_rank_one (rank_one_of_lt_twelve (by norm_num) ⟨4, rfl⟩ (by norm_num))
-        (mul_ne_zero E₄ E₄ (E_ne_zero (by norm_num) ⟨2, rfl⟩) (E_ne_zero (by norm_num) ⟨2, rfl⟩))
+        (mul_ne_zero E₄ E₄ (E_ne_zero (by norm_num) ⟨2, rfl⟩)
+          (E_ne_zero (by norm_num) ⟨2, rfl⟩))
         (MvPolynomial.X 0 ^ 2) evalE₄E₆_X_sq f
     · exact absurd hk_odd (by decide)
     · exact surj_of_rank_one (rank_one_of_lt_twelve (by norm_num) ⟨5, rfl⟩ (by norm_num))
-        (mul_ne_zero E₄ E₆ (E_ne_zero (by norm_num) ⟨2, rfl⟩) (E_ne_zero (by norm_num) ⟨3, rfl⟩))
+        (mul_ne_zero E₄ E₆ (E_ne_zero (by norm_num) ⟨2, rfl⟩)
+          (E_ne_zero (by norm_num) ⟨3, rfl⟩))
         (MvPolynomial.X 0 * MvPolynomial.X 1) evalE₄E₆_X0_X1 f
     · exact absurd hk_odd (by decide)
   · push Not at hn12
@@ -897,8 +904,10 @@ noncomputable def modularFormsEquivMvPolynomial :
 `ℂ`-algebra. -/
 theorem E₄E₆_generate :
     Algebra.adjoin ℂ ({DirectSum.of (ModularForm 𝒮ℒ) 4 E₄,
-        DirectSum.of (ModularForm 𝒮ℒ) 6 E₆} : Set (DirectSum ℤ (ModularForm 𝒮ℒ))) = ⊤ := by
-  rw [show ({DirectSum.of (ModularForm 𝒮ℒ) 4 E₄, DirectSum.of (ModularForm 𝒮ℒ) 6 E₆} : Set _) =
+        DirectSum.of (ModularForm 𝒮ℒ) 6 E₆} :
+      Set (DirectSum ℤ (ModularForm 𝒮ℒ))) = ⊤ := by
+  rw [show ({DirectSum.of (ModularForm 𝒮ℒ) 4 E₄,
+        DirectSum.of (ModularForm 𝒮ℒ) 6 E₆} : Set _) =
       Set.range (![DirectSum.of _ 4 E₄, DirectSum.of _ 6 E₆] : Fin 2 → _)
     from (Matrix.range_cons_cons_empty _ _ _).symm,
     Algebra.adjoin_range_eq_range_aeval]
