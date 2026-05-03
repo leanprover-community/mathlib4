@@ -1826,6 +1826,7 @@ public import Mathlib.Analysis.Complex.JensenFormula
 public import Mathlib.Analysis.Complex.Liouville
 public import Mathlib.Analysis.Complex.LocallyUniformLimit
 public import Mathlib.Analysis.Complex.MeanValue
+public import Mathlib.Analysis.Complex.Morera
 public import Mathlib.Analysis.Complex.Norm
 public import Mathlib.Analysis.Complex.OpenMapping
 public import Mathlib.Analysis.Complex.OperatorNorm
