@@ -1285,6 +1285,8 @@ theorem coe_mkQL : ⇑S.mkQL = S.mkQ := rfl
 
 theorem mkQL_apply (x : M) : S.mkQL x = S.mkQ x := by simp
 
+theorem isQuotientMap_mkQL : IsQuotientMap S.mkQL := isQuotientMap_quot_mk
+
 end Submodule
 
 theorem ContinuousLinearMap.closedComplemented_ker_of_rightInverse {R : Type*} [Ring R]
