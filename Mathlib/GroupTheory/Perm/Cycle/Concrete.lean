@@ -188,22 +188,17 @@ namespace Equiv.Perm
 /-- For a cycle `f` on a finset `s` of cardinality not equal to `2` and `a ∈ s`, the map
 `k ↦ s((f ^ k) a, (f ^ (k + 1)) a)` is injective on `[0, s.card)`. -/
 theorem IsCycleOn.injOn_sym2_pow_apply {f : Perm α} {a : α} {s : Finset α}
-    (hcycOn : f.IsCycleOn s) (ha : a ∈ s) (hs : s.card ≠ 2) :
+    (hf : f.IsCycleOn s) (ha : a ∈ s) (hs : s.card ≠ 2) :
     Set.InjOn (fun k ↦ s((f ^ k) a, (f ^ (k + 1)) a)) (Set.Iio s.card) := by
   intro j hj k hk heq
   rw [Sym2.eq_iff] at heq
   obtain ⟨h1, _⟩ | ⟨h1, h2⟩ := heq
-  · exact hcycOn.injOn_pow_apply ha hj hk h1
-  -- Swapped case: derive `s.card ∣ 2`, then since `s.card ≠ 2` and `0 < s.card`,
-  -- we have `s.card = 1`, and so `j = k = 0`.
-  have h1' : j ≡ k + 1 [MOD s.card] := (hcycOn.pow_apply_eq_pow_apply ha).mp h1
-  have h2' : j + 1 ≡ k [MOD s.card] := (hcycOn.pow_apply_eq_pow_apply ha).mp h2
-  have h12 : k + 2 ≡ k [MOD s.card] := (h1'.symm.add_right 1).trans h2'
-  have h_dvd : s.card ∣ 2 := by
-    have := (Nat.modEq_iff_dvd' (Nat.le_add_right k 2)).mp h12.symm
-    simpa using this
-  have h_pos : 0 < s.card := Finset.card_pos.mpr ⟨a, ha⟩
-  have h_le : s.card ≤ 2 := Nat.le_of_dvd (by omega) h_dvd
+  · exact hf.injOn_pow_apply ha hj hk h1
+  -- Swapped case: `j ≡ k + 1` and `j + 1 ≡ k` give `s.card ∣ 2`, forcing `s.card = 1`.
+  rw [hf.pow_apply_eq_pow_apply ha] at h1 h2
+  have h_le : s.card ≤ 2 := Nat.le_of_dvd (by omega) <| by
+    simpa using (Nat.modEq_iff_dvd' (Nat.le_add_right k 2)).mp
+      ((h1.symm.add_right 1).trans h2).symm
   have hj_lt : j < s.card := hj
   have hk_lt : k < s.card := hk
   omega
@@ -211,14 +206,10 @@ theorem IsCycleOn.injOn_sym2_pow_apply {f : Perm α} {a : α} {s : Finset α}
 /-- For a cycle `f` on a finset `s` of cardinality not equal to `2` and `a ∈ s`, the unordered
 pair `s((f ^ k) a, (f ^ (k + 1)) a)` differs from `s(a, f a)` when `k ≠ 0` and `k < s.card`. -/
 theorem IsCycleOn.sym2_pow_apply_ne {f : Perm α} {a : α} {s : Finset α}
-    (hcycOn : f.IsCycleOn s) (ha : a ∈ s)
+    (hf : f.IsCycleOn s) (ha : a ∈ s)
     {k : ℕ} (hk1 : k ≠ 0) (hk2 : k < s.card) (hs : s.card ≠ 2) :
-    s((f ^ k) a, (f ^ (k + 1)) a) ≠ s(a, f a) := by
-  intro heq
-  apply hk1
-  have h_pos : 0 < s.card := Finset.card_pos.mpr ⟨a, ha⟩
-  have hzero : (fun n ↦ s((f ^ n) a, (f ^ (n + 1)) a)) 0 = s(a, f a) := by simp
-  exact hcycOn.injOn_sym2_pow_apply ha hs hk2 (Set.mem_Iio.mpr h_pos) (heq.trans hzero.symm)
+    s((f ^ k) a, (f ^ (k + 1)) a) ≠ s(a, f a) := fun heq ↦ hk1 <|
+  hf.injOn_sym2_pow_apply ha hs hk2 (Finset.card_pos.mpr ⟨a, ha⟩) (by simpa using heq)
 
 section Fintype
 
