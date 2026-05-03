@@ -237,7 +237,7 @@ protected theorem div [Group β] [MeasurableDiv₂ β] (hu : IsProgressive f u)
     (hv : IsProgressive f v) : IsProgressive f fun i ω ↦ u i ω / v i ω :=
   fun i ↦ Measurable.div (hu i) (hv i)
 
-/-- The norm of a strongly progressive process is strongly progressive. -/
+/-- The norm of a progressive process is progressive. -/
 protected lemma norm {β : Type*} {u : ι → Ω → β} [MeasurableSpace β] [NormedAddCommGroup β]
     [OpensMeasurableSpace β] (hu : IsProgressive f u) :
     IsProgressive f fun t ω ↦ ‖u t ω‖ :=
