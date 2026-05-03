@@ -295,7 +295,6 @@ noncomputable def baseChangeToBaseChange :
     ext
     simp [RingHom.algebraMap_toAlgebra]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma baseChangeToBaseChange_apply (x : (baseChange T P).toExtension.Ring) :
     dsimp% (P.baseChangeToBaseChange T).toRingHom x =

@@ -14,7 +14,7 @@ public import Mathlib.CategoryTheory.WithTerminal.Basic
 These lemmas and instances need more imports.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

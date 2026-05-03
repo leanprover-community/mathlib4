@@ -711,15 +711,6 @@ theorem ringEquivOfRingEquiv_symm {j : R ≃+* P} (H : M.map j = T) :
 
 end Map
 
-section at_units
-lemma at_units (S : Submonoid R)
-    (hS : S ≤ IsUnit.submonoid R) : IsLocalization S R where
-  map_units y := hS y.prop
-  surj := fun s ↦ ⟨⟨s, 1⟩, by simp⟩
-  exists_of_eq := fun {x y} (e : x = y) ↦ ⟨1, e ▸ rfl⟩
-
-end at_units
-
 section
 
 variable (M S) (Q : Type*) [CommSemiring Q] [Algebra P Q]

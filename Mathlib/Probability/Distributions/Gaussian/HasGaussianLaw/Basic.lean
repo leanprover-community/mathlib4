@@ -15,7 +15,7 @@ import Mathlib.Probability.Distributions.Gaussian.Fernique
 
 In this file we prove basic properties of Gaussian random variables.
 
-# Implementation note
+## Implementation note
 
 Many lemmas are duplicated with an expanded form of some function. For instance there is
 `HasGaussianLaw.add` and `HasGaussianLaw.fun_add`. The reason is that if someone wants for instance
@@ -218,11 +218,12 @@ lemma prodMk [Finite ι] (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) (i j : �
   letI := Fintype.ofFinite ι
   hX.map (.prod (.proj i) (.proj j))
 
-variable [Fintype ι]
-
-lemma toLp_pi (p : ℝ≥0∞) [Fact (1 ≤ p)] (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) :
+lemma toLp_pi [Finite ι] (p : ℝ≥0∞) [Fact (1 ≤ p)] (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) :
     HasGaussianLaw (fun ω ↦ toLp p (X · ω)) P :=
+  have := Fintype.ofFinite ι
   hX.map_equiv (PiLp.continuousLinearEquiv p ℝ E).symm
+
+variable [Fintype ι]
 
 lemma sum {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E]
     [BorelSpace E] [SecondCountableTopology E]
