@@ -92,8 +92,9 @@ lemma mapCotangent_toCotangent (f : A ⟶ B) (a : maximalIdeal A) :
       by rw [← Ideal.mem_comap, f.comap_maximalIdeal_eq]; exact a.prop⟩ := by simp [mapCotangent]
 
 lemma mapCotangent_comp (f : A ⟶ B) (g : B ⟶ C) :
-    mapCotangent (f ≫ g) = mapCotangent g ∘ₗ mapCotangent f := LinearMap.ext fun _ ↦ by
-  simp [mapCotangent, ← LinearMap.comp_apply, ← Ideal.mapCotangent_comp]
+    mapCotangent (f ≫ g) = mapCotangent g ∘ₗ mapCotangent f := LinearMap.ext fun x ↦ by
+  obtain ⟨x, rfl⟩ := (maximalIdeal A).toCotangent_surjective x
+  simp [mapCotangent]
 
 @[simp]
 lemma mapCotangent_id (A : LocAlgCat Λ k) : mapCotangent (𝟙 A) = LinearMap.id := by
