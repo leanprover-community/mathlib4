@@ -36,7 +36,7 @@ Cauchy transform.
 
 ## Tags
 
-resolvent transform, stieljes transform, cauchy transform
+resolvent transform, Stieljes transform, Cauchy transform
 -/
 
 @[expose] public section
