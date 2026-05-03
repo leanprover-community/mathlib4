@@ -215,38 +215,6 @@ def reifyOpenDecls {m} [Monad m] [MonadQuotation m] (openDecls : List OpenDecl) 
   if reifiedOpens.isEmpty then return none else
     `(reifiedOpenStx| open $reifiedOpens.toArray*)
 
-/-- Activates scopes associated with an `OpenDecl` as `open` would when creating that `OpenDecl`. -/
-def _root_.Lean.OpenDecl.activate {m : Type → Type}
-    [Monad m] [MonadEnv m] [MonadLiftT (ST IO.RealWorld) m] :
-    OpenDecl → m Unit
-  | .simple ns _  => activateScoped ns
-  | .explicit _ _ => pure () -- `open` never activates scopes when creating these
-
-/-- Turns reified syntax for a single `open` such as `@foo.bar` into an `OpenDecl`, activating
-scopes as `open` would if `activateScopes := true` (the default). -/
-def unreifyOpenDecl (openDecl : TSyntax ``reifiedOpenDecl) (activateScopes := true) :
-    CommandElabM OpenDecl :=
-  match openDecl with
-  | `(reifiedOpenDecl| @$id) => do
-    if activateScopes then activateScoped id.getId
-    return .simple id.getId []
-  | `(reifiedOpenDecl| (@$id hiding $hidden*)) => do
-    if activateScopes then activateScoped id.getId
-    return .simple id.getId <| (hidden.map (·.getId)).toList
-  | `(reifiedOpenDecl| ($id → $decl)) =>
-    -- `open` never activates scopes in these cases. See `elabOpenDecl`.
-    return .explicit id.getId decl.getId
-  | _ => throwUnsupportedSyntax
-
-/-- Turns reified syntax for `open @id ...` such as `open @foo.bar ...` into `OpenDecl`s
-(activating scopes as appropriate) and modifies the current scope to use exactly those open
-declarations (erasing whatever open declarations were present before). Note that the resulting
-`openDecls` do not depend on the original `openDecls` or original scope in any way. -/
-def unreifyOpenDecls (openDeclsStx : TSyntaxArray ``reifiedOpenDecl) : CommandElabM Unit := do
-  let openDecls ← openDeclsStx.foldlM (init := []) fun openDecls openDeclStx =>
-    return (← unreifyOpenDecl openDeclStx) :: openDecls
-  modifyScope fun s => { s with openDecls }
-
 section openScoped
 
 def _root_.Lean.Name.foldrPrefix {α} (n : Name) (init : α) (f : Name → α → α) :=
