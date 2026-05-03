@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.Algebra.Order.Interval.Set.Instances
 
 /-!
 # Topological (sub)algebras
@@ -62,6 +63,22 @@ theorem continuousSMul_of_algebraMap [ContinuousMul A] (h : Continuous (algebraM
 instance Subalgebra.continuousSMul (S : Subalgebra R A) (X) [TopologicalSpace X] [MulAction A X]
     [ContinuousSMul A X] : ContinuousSMul S X :=
   Subsemiring.continuousSMul S.toSubsemiring X
+
+instance [PartialOrder A] [IsOrderedRing A] [ContinuousMul A] :
+    ContinuousMul (Icc (0 : A) 1) :=
+  Topology.IsInducing.subtypeVal.continuousMul Icc.coeMonoidWithZeroHom
+
+instance [PartialOrder A] [IsOrderedRing A] [ContinuousMul A] :
+    ContinuousMul (Ico (0 : A) 1) :=
+  Topology.IsInducing.subtypeVal.continuousMul Ico.coeMulHom
+
+instance [PartialOrder A] [IsStrictOrderedRing A] [ContinuousMul A] :
+    ContinuousMul (Ioc (0 : A) 1) :=
+  Topology.IsInducing.subtypeVal.continuousMul Ioc.coeMonoidHom
+
+instance [PartialOrder A] [IsStrictOrderedRing A] [ContinuousMul A] :
+    ContinuousMul (Ioo (0 : A) 1) :=
+  Topology.IsInducing.subtypeVal.continuousMul Ioo.coeMulHom
 
 section
 variable [ContinuousSMul R A]
@@ -241,7 +258,7 @@ def toContinuousLinearMap (e : A →A[R] B) : A →L[R] B where
 
 @[simp] theorem coe_toContinuousLinearMap (e : A →A[R] B) : ⇑e.toContinuousLinearMap = e := rfl
 
-variable [IsTopologicalSemiring A]
+variable [IsSemitopologicalSemiring A]
 
 /-- The topological closure of a subalgebra -/
 def _root_.Subalgebra.topologicalClosure (s : Subalgebra R A) : Subalgebra R A where
@@ -255,16 +272,16 @@ def _root_.Subalgebra.topologicalClosure (s : Subalgebra R A) : Subalgebra R A w
 /-- Under a continuous algebra map, the image of the `TopologicalClosure` of a subalgebra is
 contained in the `TopologicalClosure` of its image. -/
 theorem _root_.Subalgebra.map_topologicalClosure_le
-    [IsTopologicalSemiring B] (f : A →A[R] B) (s : Subalgebra R A) :
+    [IsSemitopologicalSemiring B] (f : A →A[R] B) (s : Subalgebra R A) :
     map f s.topologicalClosure ≤ (map f.toAlgHom s).topologicalClosure :=
   image_closure_subset_closure_image f.continuous
 
-lemma _root_.Subalgebra.topologicalClosure_map_le [IsTopologicalSemiring B]
+lemma _root_.Subalgebra.topologicalClosure_map_le [IsSemitopologicalSemiring B]
     (f : A →ₐ[R] B) (hf : IsClosedMap f) (s : Subalgebra R A) :
     (map f s).topologicalClosure ≤ map f s.topologicalClosure :=
   hf.closure_image_subset _
 
-lemma _root_.Subalgebra.topologicalClosure_map [IsTopologicalSemiring B]
+lemma _root_.Subalgebra.topologicalClosure_map [IsSemitopologicalSemiring B]
     (f : A →A[R] B) (hf : IsClosedMap f) (s : Subalgebra R A) :
     (map f.toAlgHom s).topologicalClosure = map f.toAlgHom s.topologicalClosure :=
   SetLike.coe_injective <| hf.closure_image_eq_of_continuous f.continuous _
@@ -278,7 +295,7 @@ whose `TopologicalClosure` is `⊤` is sent to another such submodule.
 That is, the image of a dense subalgebra under a map with dense range is dense.
 -/
 theorem _root_.DenseRange.topologicalClosure_map_subalgebra
-    [IsTopologicalSemiring B] {f : A →A[R] B} (hf' : DenseRange f) {s : Subalgebra R A}
+    [IsSemitopologicalSemiring B] {f : A →A[R] B} (hf' : DenseRange f) {s : Subalgebra R A}
     (hs : s.topologicalClosure = ⊤) : (s.map (f : A →ₐ[R] B)).topologicalClosure = ⊤ := by
   rw [SetLike.ext'_iff] at hs ⊢
   simp only [Subalgebra.topologicalClosure_coe, coe_top, ← dense_iff_closure_eq, Subalgebra.coe_map,
@@ -578,10 +595,14 @@ end
 variable {R : Type*} [CommSemiring R]
 variable {A : Type u} [TopologicalSpace A]
 variable [Semiring A] [Algebra R A]
-variable [IsTopologicalSemiring A]
 
-instance (s : Subalgebra R A) : IsTopologicalSemiring s :=
+instance [IsTopologicalSemiring A] (s : Subalgebra R A) : IsTopologicalSemiring s :=
   s.toSubsemiring.topologicalSemiring
+
+instance [IsSemitopologicalSemiring A] (s : Subalgebra R A) : IsSemitopologicalSemiring s :=
+  s.toSubsemiring.semitopologicalSemiring
+
+variable [IsSemitopologicalSemiring A]
 
 theorem Subalgebra.le_topologicalClosure (s : Subalgebra R A) : s ≤ s.topologicalClosure :=
   subset_closure
@@ -617,8 +638,9 @@ an algebra homomorphism, and a separate homeomorphism,
 along with a witness that as functions they are the same.
 -/
 theorem Subalgebra.topologicalClosure_comap_homeomorph (s : Subalgebra R A) {B : Type*}
-    [TopologicalSpace B] [Ring B] [IsTopologicalRing B] [Algebra R B] (f : B →ₐ[R] A) (f' : B ≃ₜ A)
-    (w : (f : B → A) = f') : s.topologicalClosure.comap f = (s.comap f).topologicalClosure := by
+    [TopologicalSpace B] [Ring B] [IsSemitopologicalRing B] [Algebra R B] (f : B →ₐ[R] A)
+    (f' : B ≃ₜ A) (w : (f : B → A) = f') :
+    s.topologicalClosure.comap f = (s.comap f).topologicalClosure := by
   apply SetLike.ext'
   simp only [Subalgebra.topologicalClosure_coe]
   simp only [Subalgebra.coe_comap]
@@ -652,16 +674,12 @@ theorem le_iff_mem {x : A} {s : Subalgebra R A} (hs : IsClosed (s : Set A)) :
 instance isClosed (x : A) : IsClosed (elemental R x : Set A) :=
   isClosed_topologicalClosure _
 
+open scoped IsMulCommutative in
 instance [T2Space A] {x : A} : CommSemiring (elemental R x) :=
-  commSemiringTopologicalClosure _
-    letI : CommSemiring (adjoin R {x}) :=
-      adjoinCommSemiringOfComm R fun y hy z hz => by
-        rw [mem_singleton_iff] at hy hz
-        rw [hy, hz]
-    fun _ _ => mul_comm _ _
+  fast_instance% commSemiringTopologicalClosure _ mul_comm
 
 instance {A : Type*} [UniformSpace A] [CompleteSpace A] [Semiring A]
-    [IsTopologicalSemiring A] [Algebra R A] (x : A) :
+    [IsSemitopologicalSemiring A] [Algebra R A] (x : A) :
     CompleteSpace (elemental R x) :=
   isClosed_closure.completeSpace_coe
 
@@ -684,7 +702,7 @@ section Ring
 variable {R : Type*} [CommRing R]
 variable {A : Type u} [TopologicalSpace A]
 variable [Ring A]
-variable [Algebra R A] [IsTopologicalRing A]
+variable [Algebra R A] [IsSemitopologicalRing A]
 
 /-- If a subalgebra of a topological algebra is commutative, then so is its topological closure.
 See note [reducible non-instances]. -/

@@ -54,12 +54,8 @@ assert_not_exists TrivialStar
 
 open Function
 
--- to ensure these instances are computable
 /-- Nonnegative real numbers, denoted as `ℝ≥0` within the NNReal namespace -/
-def NNReal := { r : ℝ // 0 ≤ r } deriving
-  Zero, One, Semiring, CommMonoidWithZero, CommSemiring, AddCancelCommMonoid,
-  PartialOrder, SemilatticeInf, SemilatticeSup, DistribLattice,
-  Nontrivial, Inhabited
+def NNReal := { r : ℝ // 0 ≤ r }
 
 namespace NNReal
 
@@ -70,34 +66,42 @@ namespace NNReal
 
 instance : Coe ℝ≥0 ℝ := ⟨toReal⟩
 
-instance : CanonicallyOrderedAdd ℝ≥0 := Nonneg.canonicallyOrderedAdd
-instance : NoZeroDivisors ℝ≥0 := Nonneg.noZeroDivisors
-instance instDenselyOrdered : DenselyOrdered ℝ≥0 := Nonneg.instDenselyOrdered
-instance : OrderBot ℝ≥0 := Nonneg.orderBot
-instance instArchimedean : Archimedean ℝ≥0 := Nonneg.instArchimedean
-instance instMulArchimedean : MulArchimedean ℝ≥0 := Nonneg.instMulArchimedean
-instance : Min ℝ≥0 := SemilatticeInf.toMin
-instance : Max ℝ≥0 := SemilatticeSup.toMax
-instance : Sub ℝ≥0 := Nonneg.sub
-instance : OrderedSub ℝ≥0 := Nonneg.orderedSub
+/-- Constructor of ℝ≥0 from a nonnegative real number -/
+protected def mk (x : ℝ) (hx : 0 ≤ x) : ℝ≥0 := ⟨x, hx⟩
+
+instance : Zero ℝ≥0 := ⟨.mk 0 le_rfl⟩
+instance : One ℝ≥0 := ⟨.mk 1 zero_le_one⟩
+instance : Bot ℝ≥0 := ⟨0⟩
+
+deriving instance
+  Nontrivial, Inhabited,
+  PartialOrder, SemilatticeSup, SemilatticeInf, DistribLattice,
+  Semiring, CommMonoidWithZero, CommSemiring, AddCancelCommMonoid,
+  Sub, OrderedSub, OrderBot,
+  CanonicallyOrderedAdd, NoZeroDivisors, DenselyOrdered,
+  Archimedean, MulArchimedean, IsOrderedRing, IsStrictOrderedRing
+  for NNReal
+
+noncomputable section
+deriving instance LinearOrder for NNReal
+end
+
+example : (0 : ℝ≥0) = ⊥ := by with_reducible_and_instances rfl
 
 -- a computable copy of `Nonneg.instNNRatCast`
 instance : NNRatCast ℝ≥0 where nnratCast r := ⟨r, r.cast_nonneg⟩
 
-noncomputable instance : LinearOrder ℝ≥0 :=
-  Subtype.instLinearOrder _
-
 noncomputable instance : Inv ℝ≥0 where
-  inv x := ⟨(x : ℝ)⁻¹, inv_nonneg.mpr x.2⟩
+  inv x := .mk (x : ℝ)⁻¹ (inv_nonneg.mpr x.2)
 
 noncomputable instance : Div ℝ≥0 where
-  div x y := ⟨(x : ℝ) / (y : ℝ), div_nonneg x.2 y.2⟩
+  div x y := .mk ((x : ℝ) / (y : ℝ)) (div_nonneg x.2 y.2)
 
 noncomputable instance : SMul ℚ≥0 ℝ≥0 where
-  smul x y := ⟨x • (y : ℝ), by rw [NNRat.smul_def]; exact mul_nonneg x.cast_nonneg y.2⟩
+  smul x y := .mk (x • (y : ℝ)) (by rw [NNRat.smul_def]; exact mul_nonneg x.cast_nonneg y.2)
 
 noncomputable instance zpow : Pow ℝ≥0 ℤ where
-  pow x n := ⟨(x : ℝ) ^ n, zpow_nonneg x.2 _⟩
+  pow x n := .mk ((x : ℝ) ^ n) (zpow_nonneg x.2 _)
 
 /-- Redo the `Nonneg.semifield` instance, because this will get unfolded a lot,
 and ends up inserting the non-reducible defeq `ℝ≥0 = { x // x ≥ 0 }` in places where
@@ -108,14 +112,9 @@ noncomputable instance : Semifield ℝ≥0 := fast_instance%
     rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl)
 
-instance : IsOrderedRing ℝ≥0 :=
-  Nonneg.isOrderedRing
-
-instance : IsStrictOrderedRing ℝ≥0 :=
-  Nonneg.isStrictOrderedRing
-
-noncomputable instance : LinearOrderedCommGroupWithZero ℝ≥0 :=
-  Nonneg.linearOrderedCommGroupWithZero
+noncomputable section
+deriving instance LinearOrderedCommGroupWithZero for NNReal
+end
 
 example {p q : ℝ≥0} (h1p : 0 < p) (h2p : p ≤ q) : q⁻¹ ≤ p⁻¹ := by
   with_reducible_and_instances exact inv_anti₀ h1p h2p
@@ -135,21 +134,21 @@ theorem ne_iff {x y : ℝ≥0} : (x : ℝ) ≠ (y : ℝ) ↔ x ≠ y :=
   not_congr <| NNReal.eq_iff.symm
 
 protected theorem «forall» {p : ℝ≥0 → Prop} :
-    (∀ x : ℝ≥0, p x) ↔ ∀ (x : ℝ) (hx : 0 ≤ x), p ⟨x, hx⟩ :=
+    (∀ x : ℝ≥0, p x) ↔ ∀ (x : ℝ) (hx : 0 ≤ x), p (.mk x hx) :=
   Subtype.forall
 
 protected theorem «exists» {p : ℝ≥0 → Prop} :
-    (∃ x : ℝ≥0, p x) ↔ ∃ (x : ℝ) (hx : 0 ≤ x), p ⟨x, hx⟩ :=
+    (∃ x : ℝ≥0, p x) ↔ ∃ (x : ℝ) (hx : 0 ≤ x), p (.mk x hx) :=
   Subtype.exists
 
 /-- Reinterpret a real number `r` as a non-negative real number. Returns `0` if `r < 0`. -/
 def _root_.Real.toNNReal (r : ℝ) : ℝ≥0 :=
-  ⟨max r 0, le_max_right _ _⟩
+  .mk (max r 0) (le_max_right _ _)
 
 theorem _root_.Real.coe_toNNReal (r : ℝ) (hr : 0 ≤ r) : (Real.toNNReal r : ℝ) = r :=
   max_eq_left hr
 
-theorem _root_.Real.toNNReal_of_nonneg {r : ℝ} (hr : 0 ≤ r) : r.toNNReal = ⟨r, hr⟩ := by
+theorem _root_.Real.toNNReal_of_nonneg {r : ℝ} (hr : 0 ≤ r) : r.toNNReal = .mk r hr := by
   simp_rw [Real.toNNReal, max_eq_left hr]
 
 theorem _root_.Real.le_coe_toNNReal (r : ℝ) : r ≤ Real.toNNReal r :=
@@ -157,7 +156,7 @@ theorem _root_.Real.le_coe_toNNReal (r : ℝ) : r ≤ Real.toNNReal r :=
 
 @[bound] theorem coe_nonneg (r : ℝ≥0) : (0 : ℝ) ≤ r := r.2
 
-@[simp, norm_cast] theorem coe_mk (a : ℝ) (ha) : toReal ⟨a, ha⟩ = a := rfl
+@[simp, norm_cast] theorem coe_mk (a : ℝ) (ha) : toReal (.mk a ha) = a := rfl
 
 example : Zero ℝ≥0 := by infer_instance
 
@@ -191,8 +190,8 @@ protected theorem coe_injective : Injective ((↑) : ℝ≥0 → ℝ) := Subtype
 
 @[simp, norm_cast] lemma coe_one : ((1 : ℝ≥0) : ℝ) = 1 := rfl
 
-@[simp] lemma mk_zero : (⟨0, le_rfl⟩ : ℝ≥0) = 0 := rfl
-@[simp] lemma mk_one : (⟨1, zero_le_one⟩ : ℝ≥0) = 1 := rfl
+@[simp] lemma mk_zero : NNReal.mk 0 le_rfl = 0 := rfl
+@[simp] lemma mk_one : NNReal.mk 1 zero_le_one = 1 := rfl
 
 @[simp, norm_cast]
 protected theorem coe_add (r₁ r₂ : ℝ≥0) : ((r₁ + r₂ : ℝ≥0) : ℝ) = r₁ + r₂ :=
@@ -242,11 +241,15 @@ def toRealHom : ℝ≥0 →+* ℝ where
 
 section Actions
 
+/-- A scalar multiplication over `ℝ` restricts to a scalar multiplication over `ℝ≥0`. -/
+instance {M : Type*} [SMul ℝ M] : SMul ℝ≥0 M :=
+  ⟨fun c m ↦ (c : ℝ) • m⟩
+
 /-- A `MulAction` over `ℝ` restricts to a `MulAction` over `ℝ≥0`. -/
 instance {M : Type*} [MulAction ℝ M] : MulAction ℝ≥0 M :=
-  MulAction.compHom M toRealHom.toMonoidHom
+  fast_instance% MulAction.compHom M toRealHom.toMonoidHom
 
-theorem smul_def {M : Type*} [MulAction ℝ M] (c : ℝ≥0) (x : M) : c • x = (c : ℝ) • x :=
+theorem smul_def {M : Type*} [SMul ℝ M] (c : ℝ≥0) (x : M) : c • x = (c : ℝ) • x :=
   rfl
 
 instance {M N : Type*} [MulAction ℝ M] [MulAction ℝ N] [SMul M N] [IsScalarTower ℝ M N] :
@@ -260,11 +263,11 @@ instance smulCommClass_right {M N : Type*} [MulAction ℝ N] [SMul M N] [SMulCom
 
 /-- A `DistribMulAction` over `ℝ` restricts to a `DistribMulAction` over `ℝ≥0`. -/
 instance {M : Type*} [AddMonoid M] [DistribMulAction ℝ M] : DistribMulAction ℝ≥0 M :=
-  DistribMulAction.compHom M toRealHom.toMonoidHom
+  fast_instance% DistribMulAction.compHom M toRealHom.toMonoidHom
 
 /-- A `Module` over `ℝ` restricts to a `Module` over `ℝ≥0`. -/
 instance {M : Type*} [AddCommMonoid M] [Module ℝ M] : Module ℝ≥0 M :=
-  Module.compHom M toRealHom
+  fast_instance% Module.compHom M toRealHom
 
 /-- An `Algebra` over `ℝ` restricts to an `Algebra` over `ℝ≥0`. -/
 instance {A : Type*} [Semiring A] [Algebra ℝ A] : Algebra ℝ≥0 A where
@@ -345,7 +348,7 @@ theorem _root_.Real.toNNReal_coe {r : ℝ≥0} : Real.toNNReal r = r :=
   NNReal.eq <| max_eq_left r.2
 
 @[simp]
-theorem mk_natCast (n : ℕ) : @Eq ℝ≥0 (⟨(n : ℝ), n.cast_nonneg⟩ : ℝ≥0) n :=
+theorem mk_natCast (n : ℕ) : NNReal.mk (n : ℝ) (n.cast_nonneg) = n :=
   NNReal.eq (NNReal.coe_natCast n).symm
 
 @[simp]
@@ -384,7 +387,6 @@ example : CommMonoid ℝ≥0 := by infer_instance
 
 example : IsOrderedMonoid ℝ≥0 := instLinearOrderedCommGroupWithZero.toIsOrderedMonoid
 
-
 noncomputable example : LinearOrderedCommMonoidWithZero ℝ≥0 := by infer_instance
 
 example : DenselyOrdered ℝ≥0 := by infer_instance
@@ -419,9 +421,8 @@ theorem orderIsoIccZeroCoe_symm_apply_coe (a : ℝ≥0) (b : Set.Iic a) :
     ((orderIsoIccZeroCoe a).symm b : ℝ) = b :=
   rfl
 
--- note we need the `@` to make the `Membership.mem` have a sensible type
 theorem coe_image {s : Set ℝ≥0} :
-    (↑) '' s = { x : ℝ | ∃ h : 0 ≤ x, @Membership.mem ℝ≥0 _ _ s ⟨x, h⟩ } :=
+    (↑) '' s = { x : ℝ | ∃ h : 0 ≤ x, .mk x h ∈ s } :=
   Subtype.coe_image
 
 theorem bddAbove_coe {s : Set ℝ≥0} : BddAbove (((↑) : ℝ≥0 → ℝ) '' s) ↔ BddAbove s :=
@@ -435,7 +436,7 @@ theorem bddBelow_coe (s : Set ℝ≥0) : BddBelow (((↑) : ℝ≥0 → ℝ) '' 
   ⟨0, fun _ ⟨q, _, eq⟩ => eq ▸ q.2⟩
 
 noncomputable instance : ConditionallyCompleteLinearOrderBot ℝ≥0 :=
-  Nonneg.conditionallyCompleteLinearOrderBot 0
+  fast_instance% Nonneg.conditionallyCompleteLinearOrderBot 0
 
 @[norm_cast]
 theorem coe_sSup (s : Set ℝ≥0) : (↑(sSup s) : ℝ) = sSup (((↑) : ℝ≥0 → ℝ) '' s) := by
@@ -449,7 +450,7 @@ theorem coe_sSup (s : Set ℝ≥0) : (↑(sSup s) : ℝ) = sSup (((↑) : ℝ≥
     exact (@subset_sSup_of_within ℝ (Set.Ici (0 : ℝ)) _ _ (_) s hs H A).symm
   · simp only [csSup_of_not_bddAbove H, csSup_empty, bot_eq_zero', NNReal.coe_zero]
     apply (Real.sSup_of_not_bddAbove ?_).symm
-    contrapose! H
+    contrapose H
     exact bddAbove_coe.1 H
 
 @[simp, norm_cast]
@@ -493,10 +494,10 @@ theorem lt_iff_exists_rat_btwn (a b : ℝ≥0) :
 theorem bot_eq_zero : (⊥ : ℝ≥0) = 0 := rfl
 
 theorem mul_sup (a b c : ℝ≥0) : a * (b ⊔ c) = a * b ⊔ a * c :=
-  mul_max_of_nonneg _ _ <| zero_le a
+  mul_max_of_nonneg _ _ zero_le
 
 theorem sup_mul (a b c : ℝ≥0) : (a ⊔ b) * c = a * c ⊔ b * c :=
-  max_mul_of_nonneg _ _ <| zero_le c
+  max_mul_of_nonneg _ _ zero_le
 
 @[simp, norm_cast]
 theorem coe_max (x y : ℝ≥0) : ((max x y : ℝ≥0) : ℝ) = max (x : ℝ) (y : ℝ) :=
@@ -512,7 +513,7 @@ theorem zero_le_coe {q : ℝ≥0} : 0 ≤ (q : ℝ) :=
 
 instance instIsStrictOrderedModule {M : Type*} [AddCommMonoid M] [PartialOrder M]
     [Module ℝ M] [IsStrictOrderedModule ℝ M] :
-    IsStrictOrderedModule ℝ≥0 M := Nonneg.instIsStrictOrderedModule
+    IsStrictOrderedModule ℝ≥0 M := inferInstanceAs <| IsStrictOrderedModule (Subtype _) M
 
 end NNReal
 
@@ -703,7 +704,7 @@ end Mul
 section Pow
 
 theorem pow_antitone_exp {a : ℝ≥0} (m n : ℕ) (mn : m ≤ n) (a1 : a ≤ 1) : a ^ n ≤ a ^ m :=
-  pow_le_pow_of_le_one (zero_le a) a1 mn
+  pow_le_pow_of_le_one zero_le a1 mn
 
 nonrec theorem exists_pow_lt_of_lt_one {a b : ℝ≥0} (ha : 0 < a) (hb : b < 1) :
     ∃ n : ℕ, b ^ n < a := by
@@ -743,6 +744,9 @@ end Sub
 section Inv
 
 @[simp]
+theorem inv_mk {r : ℝ} (hr : 0 ≤ r) : (NNReal.mk r hr)⁻¹ = .mk (r⁻¹) (inv_nonneg.2 hr) := rfl
+
+@[simp]
 theorem inv_le {r p : ℝ≥0} (h : r ≠ 0) : r⁻¹ ≤ p ↔ 1 ≤ r * p := by
   rw [← mul_le_mul_iff_right₀ (pos_iff_ne_zero.2 h), mul_inv_cancel₀ h]
 
@@ -768,7 +772,7 @@ theorem mul_lt_of_lt_div {a b r : ℝ≥0} (h : a < b / r) : a * r < b :=
 
 theorem le_of_forall_lt_one_mul_le {x y : ℝ≥0} (h : ∀ a < 1, a * x ≤ y) : x ≤ y :=
   le_of_forall_lt_imp_le_of_dense fun a ha => by
-    have hx : x ≠ 0 := pos_iff_ne_zero.1 (lt_of_le_of_lt (zero_le _) ha)
+    have hx : x ≠ 0 := ha.ne_zero
     have hx' : x⁻¹ ≠ 0 := by rwa [Ne, inv_eq_zero]
     have : a * x⁻¹ < 1 := by rwa [← lt_inv_iff_mul_lt hx', inv_inv]
     have : a * x⁻¹ * x ≤ y := h _ this
@@ -833,7 +837,6 @@ theorem iSup_empty [IsEmpty ι] (f : ι → ℝ≥0) : ⨆ i, f i = 0 := ciSup_o
 theorem iInf_empty [IsEmpty ι] (f : ι → ℝ≥0) : ⨅ i, f i = 0 := by
   rw [_root_.iInf_of_isEmpty, sInf_empty]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma iSup_eq_zero (hf : BddAbove (range f)) : ⨆ i, f i = 0 ↔ ∀ i, f i = 0 := by
   cases isEmpty_or_nonempty ι
   · simp
@@ -880,14 +883,13 @@ end Set
 
 namespace Real
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The absolute value on `ℝ` as a map to `ℝ≥0`. -/
 @[pp_nodot]
 def nnabs : ℝ →*₀ ℝ≥0 where
   toFun x := ⟨|x|, abs_nonneg x⟩
-  map_zero' := by ext; simp
-  map_one' := by ext; simp
-  map_mul' x y := by ext; simp [abs_mul]
+  map_zero' := by simp; rfl
+  map_one' := by simp; rfl
+  map_mul' x y := by simp [abs_mul]; rfl
 
 @[norm_cast, simp]
 theorem coe_nnabs (x : ℝ) : (nnabs x : ℝ) = |x| :=

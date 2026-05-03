@@ -31,8 +31,8 @@ These are printed for testing purposes.
 to the PR specified. This requires the **GitHub CLI** `gh` to be installed!
 Example: `lake exe autolabel 10402` for PR https://github.com/leanprover-community/mathlib4/pull/10402.
 
-For the time being, the script only adds a label if it finds a **single unique label**
-which would apply. If multiple labels are found, nothing happens.
+The script can add up to `MAX_LABELS` labels (defined below).
+If more than `MAX_LABELS` labels would be applicable, nothing happens.
 
 ## Workflow
 
@@ -54,6 +54,9 @@ Additionally, the script does a few consistency checks:
 open Lean System
 
 namespace AutoLabel
+
+/-- Maximal number of labels which can be added. If more are applicable, nothing will be added. -/
+def MAX_LABELS := 1
 
 /-- Mathlib's Github topic labels -/
 inductive Label where
@@ -141,7 +144,7 @@ run_cmd
     let mut out : List String := []
     for (a, b) in labelNames.zip constants do
       if a != b then
-        out := s!"expexcted {a} got {b}" :: out
+        out := s!"expected {a} got {b}" :: out
     logWarning m!"The available Labels is out of sync with the labels listed in \
     { .ofConstName ``mathlibLabels }.\n\
     Please keep them sorted and in sync!\n{"\n".intercalate out.reverse}"
@@ -188,12 +191,14 @@ def mathlibLabelData : (l : Label) → LabelData l
       dependencies := #[.«t-ring-theory»] }
   | .«t-algebraic-topology» => {}
   | .«t-analysis» => {}
-  | .«t-category-theory» => {}
+  | .«t-category-theory» => {
+    dependencies := #[.«t-data»] }
   | .«t-combinatorics» => {}
   | .«t-computability» => {}
   | .«t-condensed» => {}
   | .«t-convex-geometry» => {
-    dirs := #["Mathlib" / "Geometry" / "Convex"] }
+    dirs := #["Mathlib" / "Geometry" / "Convex"],
+    dependencies := #[.«t-algebra»] }
   | .«t-data» => {
     dirs := #[
       "Mathlib" / "Control",
@@ -226,7 +231,8 @@ def mathlibLabelData : (l : Label) → LabelData l
     dirs := #[
       "Mathlib" / "MeasureTheory",
       "Mathlib" / "Probability",
-      "Mathlib" / "InformationTheory"] }
+      "Mathlib" / "InformationTheory"]
+    dependencies := #[.«t-analysis», .«t-algebra»] }
   | .«t-meta» => {
     dirs := #[
       "Mathlib" / "Lean",
@@ -235,11 +241,13 @@ def mathlibLabelData : (l : Label) → LabelData l
       "Mathlib" / "Util"],
     exclusions := #["Mathlib" / "Tactic" / "Linter"] }
   | .«t-number-theory» => {}
-  | .«t-order» => {}
+  | .«t-order» => {
+    dependencies := #[.«t-data»] }
   | .«t-ring-theory» => {
     dependencies := #[.«t-algebra», .«t-group-theory»] }
   | .«t-set-theory» => {}
-  | .«t-topology» => {}
+  | .«t-topology» => {
+    dependencies := #[.«t-order», .«t-analysis»] }
   | .«CI» => {
     dirs := #[
       ".github",
@@ -291,7 +299,7 @@ def getMatchingLabels (files : Array FilePath) : Array Label :=
   -- return sorted list of labels
   applicable |>.qsort (·.toString < ·.toString)
 
-/-- Helper function: union of all labels an all their dependent labels -/
+/-- Helper function: union of all labels and all their dependent labels -/
 partial def collectLabelsAndDependentLabels (labels: Array Label) : Array Label :=
   labels.flatMap fun label ↦
     (collectLabelsAndDependentLabels (mathlibLabelData label).dependencies).push label
@@ -299,8 +307,8 @@ partial def collectLabelsAndDependentLabels (labels: Array Label) : Array Label 
 /-- Reduce a list of labels to not include any which are dependencies of other
 labels in the list -/
 def dropDependentLabels (labels: Array Label) : Array Label :=
-  let dependentLabels := labels.flatMap fun label ↦
-    (mathlibLabelData label).dependencies
+  let dependentLabels := collectLabelsAndDependentLabels <|
+    labels.flatMap fun label ↦ (mathlibLabelData label).dependencies
   labels.filter (!dependentLabels.contains ·)
 
 /-!
@@ -446,9 +454,12 @@ unsafe def main (args : List String): IO UInt32 := do
   match labels with
   | #[] =>
     println s!"::warning::no label to add"
-  | #[label] =>
+  | newLabels =>
     match prNumber? with
     | some n =>
+      if newLabels.size > MAX_LABELS then
+        println s!"::notice::not adding more than {MAX_LABELS} labels: {newLabels}"
+        return 0
       let labelsPresent ← IO.Process.run {
         cmd := "gh"
         args := #["pr", "view", n, "--json", "labels", "--jq", ".labels .[] .name"]}
@@ -458,14 +469,12 @@ unsafe def main (args : List String): IO UInt32 := do
       | [] => -- if the PR does not have a label that this script could add, then we add a label
         let _ ← IO.Process.run {
           cmd := "gh",
-          args := #["pr", "edit", n, "--add-label", label.toString] }
-        println s!"::notice::added label: {label}"
+          args := #["pr", "edit", n, "--add-label", s!"\"{",".intercalate <| newLabels.toList.map (·.toString)}\""] }
+        println s!"::notice::added labels: {newLabels}"
       | t_labels_already_present =>
-        println s!"::notice::Did not add label '{label}', since {t_labels_already_present} \
-                  were already present"
+        println s!"::notice::Did not add labels '{newLabels}', \
+                  since {t_labels_already_present} were already present"
     | none =>
       println s!"::warning::no PR-number provided, not adding labels. \
       (call `lake exe autolabel 150602` to add the labels to PR `150602`)"
-  | _ =>
-    println s!"::notice::not adding multiple labels: {labels}"
   return 0

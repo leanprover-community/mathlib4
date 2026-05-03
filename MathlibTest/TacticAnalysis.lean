@@ -128,7 +128,10 @@ example : 1 + 1 = 2 := by
   grind
 
 /--
-warning: 'have : 1 + 1 < 3 := by omega; grind' can be replaced with 'grind'
+info: 'have : 1 + 1 < 3 := by omega; grind' can be replaced with 'grind'
+
+Try this:
+  [apply] grind
 -/
 #guard_msgs in
 example : 1 + 1 = 2 := by
@@ -142,7 +145,11 @@ example : 1 + 1 = 2 := by
 
 set_option linter.unusedTactic false
 
-/-- warning: 'skip; grind' can be replaced with 'grind' -/
+/-- info: 'skip; grind' can be replaced with 'grind'
+
+Try this:
+  [apply] grind
+-/
 #guard_msgs in
 example : 0 = 0 := by
   intros
@@ -157,7 +164,11 @@ set_option linter.unusedTactic true
 -- This is a false positive. Before `convert_to`, there is an mvar for the `DecidableEq` instance
 -- used with `Finset.instInsert` that is not properly handled
 
-/-- warning: 'convert_to Associated (∏ i ∈ insert j s, f i) (∏ i ∈ insert j s, g i); grind' can be replaced with 'grind' -/
+/-- info: 'convert_to Associated (∏ i ∈ insert j s, f i) (∏ i ∈ insert j s, g i); grind' can be replaced with 'grind'
+
+Try this:
+  [apply] grind
+-/
 #guard_msgs in
 theorem Associated.prod' {M : Type*} [CommMonoid M] {ι : Type*} (s : Finset ι) (f : ι → M)
     (g : ι → M) (h : ∀ i, i ∈ s → Associated (f i) (g i)) : Associated (∏ i ∈ s, f i) (∏ i ∈ s, g i) := by
@@ -453,5 +464,33 @@ example : 1 + 1 = 2 := by
 set_option linter.tacticAnalysis.verifyGrindSuggestions true in
 example : 1 + 1 = 2 := by
   rfl
+
+-- Test: a failure of an applied try-this suggestion should print a warning
+section
+
+open Lean Meta Elab Tactic Mathlib.TacticAnalysis
+
+/-- Suggests to close a goal with `rfl`, but actually closes it with `trivial`. -/
+elab "fakeRfl?" : tactic => do
+  Lean.Meta.Tactic.TryThis.addSuggestion (← getRef) (← `(tactic| rfl))
+  evalTactic (← `(tactic| trivial))
+
+@[tacticAnalysis linter.tacticAnalysis.dummy]
+def verifyFakeRfl := verifyTryThisSuggestions
+  (fun _ _ => `(tactic| fakeRfl?))
+  "fakeRfl?"
+
+/--
+info: Try this:
+  [apply] rfl
+---
+warning: `fakeRfl?` suggestion failed: `rfl` did not close the goal
+-/
+#guard_msgs in
+set_option linter.tacticAnalysis.dummy true in
+example : True := by
+  fakeRfl?
+
+end
 
 end verifyGrindSuggestions

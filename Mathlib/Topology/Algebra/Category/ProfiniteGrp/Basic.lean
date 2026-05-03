@@ -73,12 +73,12 @@ attribute [instance] ProfiniteGrp.group ProfiniteGrp.topologicalGroup
 
 /-- Construct a term of `ProfiniteGrp` from a type endowed with the structure of a
 compact and totally disconnected topological group.
-(The condition of being Hausdorff can be omitted here because totally disconnected implies that {1}
-is a closed set, thus implying Hausdorff in a topological group.) -/
+(The condition of being Hausdorff can be omitted here because totally disconnected implies that
+`{1}` is a closed set, thus implying Hausdorff in a topological group.) -/
 @[to_additive /-- Construct a term of `ProfiniteAddGrp` from a type endowed with the structure of a
 compact and totally disconnected topological additive group.
-(The condition of being Hausdorff can be omitted here because totally disconnected implies that {0}
-is a closed set, thus implying Hausdorff in a topological additive group.) -/]
+(The condition of being Hausdorff can be omitted here because totally disconnected implies that
+`{0}` is a closed set, thus implying Hausdorff in a topological additive group.) -/]
 abbrev ProfiniteGrp.of (G : Type u) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
     [CompactSpace G] [TotallyDisconnectedSpace G] : ProfiniteGrp.{u} where
   toProfinite := .of G
@@ -319,6 +319,7 @@ def limitConePtAux : Subgroup (Π j : J, F.obj j) where
   one_mem' := by simp only [Set.mem_setOf_eq, Pi.one_apply, map_one, implies_true]
   inv_mem' h _ _ π := by simp only [Pi.inv_apply, map_inv, h π]
 
+set_option backward.inferInstanceAs.wrap false in
 @[to_additive]
 instance : Group (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt :=
   inferInstanceAs (Group (limitConePtAux F))
@@ -374,6 +375,7 @@ instance : Limits.PreservesLimits (forget₂ ProfiniteGrp Profinite) where
     preservesLimit := fun {F} ↦ CategoryTheory.Limits.preservesLimit_of_preserves_limit_cone
       (limitConeIsLimit F) (Profinite.limitConeIsLimit (F ⋙ (forget₂ ProfiniteGrp Profinite))) }
 
+set_option backward.inferInstanceAs.wrap false in
 @[to_additive]
 instance : CompactSpace (limitConePtAux F) :=
   inferInstanceAs (CompactSpace (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt)

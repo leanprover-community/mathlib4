@@ -331,7 +331,6 @@ lemma IsPointwiseLeftKanExtension.isLeftKanExtension :
     E.right.IsLeftKanExtension E.hom where
   nonempty_isUniversal := ⟨h.isUniversal⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsPointwiseLeftKanExtension.hasLeftKanExtension :
     HasLeftKanExtension L F :=
   have := h.isLeftKanExtension
@@ -349,7 +348,6 @@ namespace RightExtension
 variable {F L}
 variable (E E' : RightExtension L F)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The cone for `StructuredArrow.proj Y L ⋙ F` attached to `E : RightExtension L F`.
 The point of this cone is `E.left.obj Y` -/
 @[simps]
@@ -505,7 +503,6 @@ lemma IsPointwiseRightKanExtension.isRightKanExtension :
     E.left.IsRightKanExtension E.hom where
   nonempty_isUniversal := ⟨h.isUniversal⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsPointwiseRightKanExtension.hasRightKanExtension :
     HasRightKanExtension L F :=
   have := h.isRightKanExtension

@@ -98,10 +98,10 @@ def IsCompatible.sectionPairwise {sf} (h : IsCompatible F U sf) :
   refine ⟨objPairwiseOfFamily sf, ?_⟩
   let G := (Pairwise.diagram U).op ⋙ F
   rintro (i | ⟨i, j⟩) (i' | ⟨i', j'⟩) (_ | _ | _ | _)
-  · exact congr_fun (G.map_id <| op <| Pairwise.single i) _
+  · exact ConcreteCategory.congr_hom (G.map_id <| op <| Pairwise.single i) _
   · rfl
   · exact (h i' i).symm
-  · exact congr_fun (G.map_id <| op <| Pairwise.pair i j) _
+  · exact ConcreteCategory.congr_hom (G.map_id <| op <| Pairwise.pair i j) _
 
 theorem isGluing_iff_pairwise {sf s} : IsGluing F U sf s ↔
     ∀ i, (F.mapCone (Pairwise.cocone U).op).π.app i s = objPairwiseOfFamily sf i := by
@@ -234,7 +234,6 @@ theorem eq_of_locally_eq' (V : Opens X) (iUV : ∀ i : ι, U i ⟶ V) (hcover : 
   rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply, ← F.1.map_comp]
   exact h i
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eq_of_locally_eq₂ {U₁ U₂ V : Opens X} (i₁ : U₁ ⟶ V) (i₂ : U₂ ⟶ V) (hcover : V ≤ U₁ ⊔ U₂)
     (s t : ToType (F.1.obj (op V))) (h₁ : F.1.map i₁.op s = F.1.map i₁.op t)
     (h₂ : F.1.map i₂.op s = F.1.map i₂.op t) : s = t := by
@@ -249,6 +248,16 @@ theorem eq_of_locally_eq₂ {U₁ U₂ V : Opens X} (i₁ : U₁ ⟶ V) (i₂ : 
     · rintro ⟨_ | _⟩
       any_goals exact h₁
       any_goals exact h₂
+
+variable {F} {U} in
+theorem eq_app_of_locally_eq {V : Opens X} {G : Sheaf C X} {f : F ⟶ G}
+    {s : ToType (F.1.obj (op (iSup U)))} {t : ToType (G.1.obj (op V))}
+    {sf : ∀ i : ι, ToType (F.1.obj (op (U i)))} (h : IsGluing F.1 U sf s) (hV : ∀ i : ι, U i ≤ V)
+    (ht : ∀ i : ι, f.1.app (op (U i)) (sf i) = G.1.map (homOfLE (hV i)).op t) :
+    f.hom.app (op (iSup U)) s = G.obj.map (homOfLE (by aesop_cat)).op t := by
+  refine eq_of_locally_eq G U _ _ (fun _ ↦ ?_)
+  rw [← NatTrans.naturality_apply, h, ht, ← ConcreteCategory.comp_apply, ← Functor.map_comp]
+  rfl
 
 end
 

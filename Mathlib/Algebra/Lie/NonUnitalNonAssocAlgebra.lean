@@ -47,7 +47,9 @@ A `LieRing` can be regarded as a `NonUnitalNonAssocRing` by turning its
 `Bracket` (denoted `⁅, ⁆`) into a `Mul` (denoted `*`). -/
 def CommutatorRing (L : Type v) : Type v := L
 
-instance : NonUnitalNonAssocRing (CommutatorRing L) := LieRing.toNonUnitalNonAssocRing L
+instance : NonUnitalNonAssocRing (CommutatorRing L) :=
+  have := LieRing.toNonUnitalNonAssocRing L
+  inferInstanceAs <| NonUnitalNonAssocRing L
 
 namespace LieAlgebra
 
@@ -55,17 +57,14 @@ instance (L : Type v) [Nonempty L] : Nonempty (CommutatorRing L) := ‹Nonempty 
 
 instance (L : Type v) [Inhabited L] : Inhabited (CommutatorRing L) := ‹Inhabited L›
 
-instance : LieRing (CommutatorRing L) := show LieRing L by infer_instance
+instance : LieRing (CommutatorRing L) := inferInstanceAs <| LieRing L
 
-instance : LieAlgebra R (CommutatorRing L) := show LieAlgebra R L by infer_instance
-
-#adaptation_note /-- Needed after leanprover/lean4#12564 -/
-instance : SMul R (CommutatorRing L) := show SMul R L by infer_instance
+instance : LieAlgebra R (CommutatorRing L) := inferInstanceAs <| LieAlgebra R L
 
 /-- Regarding the `LieRing` of a `LieAlgebra` as a `NonUnitalNonAssocRing`, we can
 reinterpret the `smul_lie` law as an `IsScalarTower`. -/
 instance isScalarTower : IsScalarTower R (CommutatorRing L) (CommutatorRing L) :=
-  ⟨smul_lie⟩
+  ⟨smul_lie (L := L) (M := L)⟩
 
 /-- Regarding the `LieRing` of a `LieAlgebra` as a `NonUnitalNonAssocRing`, we can
 reinterpret the `lie_smul` law as an `SMulCommClass`. -/

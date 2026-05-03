@@ -39,34 +39,15 @@ variable {T : Type*} [AddCommGroup T] [Module (AdicCompletion I R) T]
 
 namespace LinearMap
 
-set_option backward.privateInPublic true in
-/-- `R`-linear version of `reduceModIdeal`. -/
-private def reduceModIdealAux (f : M →ₗ[R] N) :
-    M ⧸ (I • ⊤ : Submodule R M) →ₗ[R] N ⧸ (I • ⊤ : Submodule R N) :=
-  Submodule.mapQ (I • ⊤ : Submodule R M) (I • ⊤ : Submodule R N) f
-    (fun x hx ↦ by
-      refine Submodule.smul_induction_on hx (fun r hr x _ ↦ ?_) (fun x y hx hy ↦ ?_)
-      · simp [Submodule.smul_mem_smul hr Submodule.mem_top]
-      · simp [Submodule.add_mem _ hx hy])
-
-@[local simp]
-private theorem reduceModIdealAux_apply (f : M →ₗ[R] N) (x : M) :
-    (f.reduceModIdealAux I) (Submodule.Quotient.mk (p := (I • ⊤ : Submodule R M)) x) =
-      Submodule.Quotient.mk (p := (I • ⊤ : Submodule R N)) (f x) :=
-  rfl
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The induced linear map on the quotients mod `I • ⊤`. -/
 def reduceModIdeal (f : M →ₗ[R] N) :
-    M ⧸ (I • ⊤ : Submodule R M) →ₗ[R ⧸ I] N ⧸ (I • ⊤ : Submodule R N) where
-  toFun := f.reduceModIdealAux I
-  map_add' := by simp
-  map_smul' r x := by
-    induction r, x using Quotient.inductionOn₂ with | _ r x
-    simp only [Submodule.Quotient.mk''_eq_mk, Ideal.Quotient.mk_eq_mk, Module.Quotient.mk_smul_mk,
-      Submodule.Quotient.mk_smul, LinearMapClass.map_smul, reduceModIdealAux_apply,
-      RingHomCompTriple.comp_apply]
+    M ⧸ (I • ⊤ : Submodule R M) →ₗ[R ⧸ I] N ⧸ (I • ⊤ : Submodule R N) :=
+  LinearMap.extendScalarsOfSurjective Ideal.Quotient.mk_surjective <|
+    Submodule.mapQ (I • ⊤ : Submodule R M) (I • ⊤ : Submodule R N) f
+      (fun x hx ↦ by
+        refine Submodule.smul_induction_on hx (fun r hr x _ ↦ ?_) (fun x y hx hy ↦ ?_)
+        · simp [Submodule.smul_mem_smul hr Submodule.mem_top]
+        · simp [Submodule.add_mem _ hx hy])
 
 @[simp]
 theorem reduceModIdeal_apply (f : M →ₗ[R] N) (x : M) :
@@ -119,29 +100,15 @@ theorem map_zero : map I (0 : M →ₗ[R] N) = 0 :=
 
 end AdicCauchySequence
 
-set_option backward.privateInPublic true in
-/-- `R`-linear version of `adicCompletion`. -/
-private def adicCompletionAux (f : M →ₗ[R] N) :
-    AdicCompletion I M →ₗ[R] AdicCompletion I N :=
-  AdicCompletion.lift I (fun n ↦ reduceModIdeal (I ^ n) f ∘ₗ AdicCompletion.eval I M n)
-    (fun {m n} hmn ↦ by rw [← comp_assoc, AdicCompletion.transitionMap_comp_reduceModIdeal,
-        comp_assoc, transitionMap_comp_eval])
-
-@[local simp]
-private theorem adicCompletionAux_val_apply (f : M →ₗ[R] N) {n : ℕ} (x : AdicCompletion I M) :
-    (adicCompletionAux I f x).val n = f.reduceModIdeal (I ^ n) (x.val n) :=
-  rfl
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- A linear map induces a map on adic completions. -/
 def map (f : M →ₗ[R] N) :
     AdicCompletion I M →ₗ[AdicCompletion I R] AdicCompletion I N where
-  toFun := adicCompletionAux I f
-  map_add' := by simp
+  __ := AdicCompletion.lift I (fun n ↦ reduceModIdeal (I ^ n) f ∘ₗ AdicCompletion.eval I M n)
+    (fun {m n} hmn ↦ by rw [← comp_assoc, AdicCompletion.transitionMap_comp_reduceModIdeal,
+        comp_assoc, transitionMap_comp_eval])
   map_smul' r x := by
-    ext n
-    simp only [adicCompletionAux_val_apply, smul_eval, smul_eq_mul, RingHom.id_apply]
+    ext
+    dsimp
     rw [val_smul_eq_evalₐ_smul, val_smul_eq_evalₐ_smul, map_smul]
 
 @[simp]
@@ -255,7 +222,6 @@ section Sum
 
 open DirectSum
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The canonical map from the sum of the adic completions to the adic completion
 of the sum. -/
 def sum [DecidableEq ι] :
@@ -263,14 +229,12 @@ def sum [DecidableEq ι] :
   toModule (AdicCompletion I R) ι (AdicCompletion I (⨁ j, M j))
     (fun j ↦ map I (lof R ι M j))
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sum_lof [DecidableEq ι] (j : ι) (x : AdicCompletion I (M j)) :
     sum I M ((DirectSum.lof (AdicCompletion I R) ι (fun i ↦ AdicCompletion I (M i)) j) x) =
       map I (lof R ι M j) x := by
   simp [sum]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sum_of [DecidableEq ι] (j : ι) (x : AdicCompletion I (M j)) :
     sum I M ((DirectSum.of (fun i ↦ AdicCompletion I (M i)) j) x) =
@@ -280,7 +244,6 @@ theorem sum_of [DecidableEq ι] (j : ι) (x : AdicCompletion I (M j)) :
 
 variable [Fintype ι]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `ι` is finite, we use the equivalence of sum and product to obtain an inverse for
 `AdicCompletion.sum` from `AdicCompletion.pi`. -/
 def sumInv : AdicCompletion I (⨁ j, M j) →ₗ[AdicCompletion I R] (⨁ j, (AdicCompletion I (M j))) :=
@@ -288,7 +251,6 @@ def sumInv : AdicCompletion I (⨁ j, M j) →ₗ[AdicCompletion I R] (⨁ j, (A
   letI g := linearEquivFunOnFintype (AdicCompletion I R) ι (fun j ↦ AdicCompletion I (M j))
   g.symm.toLinearMap ∘ₗ pi I M ∘ₗ f
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem component_sumInv (x : AdicCompletion I (⨁ j, M j)) (j : ι) :
     component (AdicCompletion I R) ι _ j (sumInv I M x) =
@@ -296,7 +258,6 @@ theorem component_sumInv (x : AdicCompletion I (⨁ j, M j)) (j : ι) :
   apply induction_on I _ x (fun x ↦ ?_)
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sumInv_apply (x : AdicCompletion I (⨁ j, M j)) (j : ι) :
     (sumInv I M x) j = map I (component R ι _ j) x := by
@@ -305,7 +266,6 @@ theorem sumInv_apply (x : AdicCompletion I (⨁ j, M j)) (j : ι) :
 
 variable [DecidableEq ι]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sumInv_comp_sum : sumInv I M ∘ₗ sum I M = LinearMap.id := by
   ext j x : 2
   apply DirectSum.ext_component (AdicCompletion I R) (fun i ↦ ?_)
@@ -317,7 +277,6 @@ theorem sumInv_comp_sum : sumInv I M ∘ₗ sum I M = LinearMap.id := by
   · next h => subst h; simp
   · simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sum_comp_sumInv : sum I M ∘ₗ sumInv I M = LinearMap.id := by
   ext f n
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.id_coe, id_eq, mk_apply_coe,
@@ -328,7 +287,6 @@ theorem sum_comp_sumInv : sum I M ∘ₗ sumInv I M = LinearMap.id := by
   simp only [← Submodule.mkQ_apply, ← map_sum, ← apply_eq_component, lof_eq_of,
     DirectSum.sum_univ_of]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `ι` is finite, `sum` has `sumInv` as inverse. -/
 def sumEquivOfFintype :
     (⨁ j, (AdicCompletion I (M j))) ≃ₗ[AdicCompletion I R] AdicCompletion I (⨁ j, M j) :=
@@ -339,7 +297,6 @@ theorem sumEquivOfFintype_apply (x : ⨁ j, (AdicCompletion I (M j))) :
     sumEquivOfFintype I M x = sum I M x :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sumEquivOfFintype_symm_apply (x : AdicCompletion I (⨁ j, M j)) :
     (sumEquivOfFintype I M).symm x = sumInv I M x :=
@@ -353,7 +310,6 @@ open DirectSum
 
 variable [DecidableEq ι] [Fintype ι]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `ι` is finite, `pi` is a linear equiv. -/
 def piEquivOfFintype :
     AdicCompletion I (∀ j, M j) ≃ₗ[AdicCompletion I R] ∀ j, AdicCompletion I (M j) :=

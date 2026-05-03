@@ -8,8 +8,9 @@ module
 public import Mathlib.Algebra.Homology.Additive
 public import Mathlib.AlgebraicTopology.MooreComplex
 public import Mathlib.Algebra.BigOperators.Fin
-public import Mathlib.CategoryTheory.Preadditive.Opposite
 public import Mathlib.CategoryTheory.Idempotents.FunctorCategories
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+public import Mathlib.CategoryTheory.Preadditive.Opposite
 
 /-!
 
@@ -130,13 +131,13 @@ theorem obj_X (X : SimplicialObject C) (n : ℕ) : (AlternatingFaceMapComplex.ob
 theorem obj_d_eq (X : SimplicialObject C) (n : ℕ) :
     (AlternatingFaceMapComplex.obj X).d (n + 1) n
       = ∑ i : Fin (n + 2), (-1 : ℤ) ^ (i : ℕ) • X.δ i := by
-  apply ChainComplex.of_d
+  simp [obj]
 
 variable {X} {Y}
 
 /-- The alternating face map complex, on morphisms -/
 def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
-  ChainComplex.ofHom _ _ _ _ _ _ (fun n => f.app (op ⦋n⦌)) fun n => by
+  ChainComplex.ofHom _ _ (d_squared X) _ _ (d_squared Y) (fun n => f.app (op ⦋n⦌)) fun n => by
     dsimp
     rw [comp_sum, sum_comp]
     refine Finset.sum_congr rfl fun _ _ => ?_
@@ -168,8 +169,7 @@ theorem alternatingFaceMapComplex_obj_X (X : SimplicialObject C) (n : ℕ) :
 @[simp]
 theorem alternatingFaceMapComplex_obj_d (X : SimplicialObject C) (n : ℕ) :
     ((alternatingFaceMapComplex C).obj X).d (n + 1) n = AlternatingFaceMapComplex.objD X n := by
-  dsimp only [alternatingFaceMapComplex, AlternatingFaceMapComplex.obj]
-  apply ChainComplex.of_d
+  simp [alternatingFaceMapComplex]
 
 @[simp]
 theorem alternatingFaceMapComplex_map_f {X Y : SimplicialObject C} (f : X ⟶ Y) (n : ℕ) :
@@ -198,6 +198,11 @@ theorem map_alternatingFaceMapComplex {D : Type*} [Category* D] [Preadditive D] 
     · ext n
       rfl
 
+instance : (alternatingFaceMapComplex C).Additive where
+
+instance [Limits.HasPullbacks C] : (alternatingFaceMapComplex C).PreservesMonomorphisms where
+  preserves _ _ := HomologicalComplex.mono_of_mono_f _ fun _ ↦ by dsimp; infer_instance
+
 theorem karoubi_alternatingFaceMapComplex_d (P : Karoubi (SimplicialObject C)) (n : ℕ) :
     ((AlternatingFaceMapComplex.obj (KaroubiFunctorCategoryEmbedding.obj P)).d (n + 1) n).f =
       P.p.app (op ⦋n + 1⦌) ≫ (AlternatingFaceMapComplex.obj P.X).d (n + 1) n := by
@@ -225,10 +230,7 @@ def ε [Limits.HasZeroObject C] :
   naturality X Y f := by
     apply HomologicalComplex.to_single_hom_ext
     dsimp
-    erw [ChainComplex.toSingle₀Equiv_symm_apply_f_zero,
-      ChainComplex.toSingle₀Equiv_symm_apply_f_zero]
-    simp only [ChainComplex.single₀_map_f_zero]
-    exact congr_app f.w _
+    simp [ChainComplex.toSingle₀Equiv, SimplicialObject.Augmented.w₀]
 
 @[simp]
 lemma ε_app_f_zero [Limits.HasZeroObject C] (X : SimplicialObject.Augmented C) :
@@ -314,7 +316,7 @@ variable {X} {Y}
 /-- The alternating face map complex, on morphisms -/
 @[simp]
 def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
-  CochainComplex.ofHom _ _ _ _ _ _ (fun n => f.app ⦋n⦌) fun n => by
+  CochainComplex.ofHom _ _ (d_squared X) _ _ (d_squared Y) (fun n => f.app ⦋n⦌) fun n => by
     dsimp
     rw [comp_sum, sum_comp]
     refine Finset.sum_congr rfl fun x _ => ?_

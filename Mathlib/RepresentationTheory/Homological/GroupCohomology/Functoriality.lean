@@ -36,28 +36,27 @@ namespace groupCohomology
 open Rep CategoryTheory Representation
 
 variable {k G H : Type u} [CommRing k] [Group G] [Group H]
-  {A : Rep k H} {B : Rep k G} (f : G →* H) (φ : (Action.res _ f).obj A ⟶ B) (n : ℕ)
+  {A : Rep k H} {B : Rep k G} (f : G →* H) (φ : res f A ⟶ B) (n : ℕ)
 
 section
 
-theorem congr {f₁ f₂ : G →* H} (h : f₁ = f₂) {φ : (Action.res _ f₁).obj A ⟶ B} {T : Type*}
-    (F : (f : G →* H) → (φ : (Action.res _ f).obj A ⟶ B) → T) :
+theorem congr {f₁ f₂ : G →* H} (h : f₁ = f₂) {φ : res f₁ A ⟶ B} {T : Type*}
+    (F : (f : G →* H) → (φ : res f A ⟶ B) → T) :
     F f₁ φ = F f₂ (h ▸ φ) := by
   subst h
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is the chain map sending `x : Hⁿ → A` to `(g : Gⁿ) ↦ φ (x (f ∘ g))`. -/
 @[simps! -isSimp f f_hom]
 noncomputable def cochainsMap :
     inhomogeneousCochains A ⟶ inhomogeneousCochains B where
   f i := ModuleCat.ofHom <|
-    φ.hom.hom.compLeft (Fin i → G) ∘ₗ LinearMap.funLeft k A (fun x : Fin i → G => (f ∘ x))
+    φ.hom.toLinearMap.compLeft (Fin i → G) ∘ₗ LinearMap.funLeft k A (fun x : Fin i → G => (f ∘ x))
   comm' i j (hij : _ = _) := by
     subst hij
     ext
-    simpa [inhomogeneousCochains.d_hom_apply, Fin.comp_contractNth]
+    simpa [inhomogeneousCochains.d_hom_apply, Fin.comp_contractNth, CochainComplex.of.d]
       using (hom_comm_apply φ _ _).symm
 
 @[simp]
@@ -67,15 +66,13 @@ lemma cochainsMap_id :
 
 @[simp]
 lemma cochainsMap_id_f_hom_eq_compLeft {A B : Rep k G} (f : A ⟶ B) (i : ℕ) :
-    ((cochainsMap (MonoidHom.id G) f).f i).hom = f.hom.hom.compLeft _ := by
-  ext
-  rfl
+    ((cochainsMap (MonoidHom.id G) f).f i).hom = f.hom.toLinearMap.compLeft _ := rfl
 
 @[reassoc]
 lemma cochainsMap_comp {G H K : Type u} [Group G] [Group H]
     [Group K] {A : Rep k K} {B : Rep k H} {C : Rep k G} (f : H →* K) (g : G →* H)
-    (φ : (Action.res _ f).obj A ⟶ B) (ψ : (Action.res _ g).obj B ⟶ C) :
-    cochainsMap (f.comp g) ((Action.res _ g).map φ ≫ ψ) =
+    (φ : res f A ⟶ B) (ψ : res g B ⟶ C) :
+    cochainsMap (f.comp g) ((resFunctor g).map φ ≫ ψ) =
       cochainsMap f φ ≫ cochainsMap g ψ := by
   rfl
 
@@ -94,7 +91,6 @@ lemma cochainsMap_f_map_mono (hf : Function.Surjective f) [Mono φ] (i : ℕ) :
     ((Rep.mono_iff_injective φ).1 inferInstance).comp_left.comp <|
     LinearMap.funLeft_injective_of_surjective k A _ hf.comp_left
 
-set_option backward.isDefEq.respectTransparency false in
 instance cochainsMap_id_f_map_mono {A B : Rep k G} (φ : A ⟶ B) [Mono φ] (i : ℕ) :
     Mono ((cochainsMap (MonoidHom.id G) φ).f i) :=
   cochainsMap_f_map_mono (MonoidHom.id G) φ (fun x => ⟨x, rfl⟩) i
@@ -105,7 +101,6 @@ lemma cochainsMap_f_map_epi (hf : Function.Injective f) [Epi φ] (i : ℕ) :
     ((Rep.epi_iff_surjective φ).1 inferInstance).comp_left.comp <|
     LinearMap.funLeft_surjective_of_injective k A _ hf.comp_left
 
-set_option backward.isDefEq.respectTransparency false in
 instance cochainsMap_id_f_map_epi {A B : Rep k G} (φ : A ⟶ B) [Epi φ] (i : ℕ) :
     Epi ((cochainsMap (MonoidHom.id G) φ).f i) :=
   cochainsMap_f_map_epi (MonoidHom.id G) φ (fun _ _ h => h) i
@@ -124,8 +119,8 @@ lemma cocyclesMap_id : cocyclesMap (MonoidHom.id G) (𝟙 B) n = 𝟙 _ :=
 @[reassoc]
 lemma cocyclesMap_comp {G H K : Type u} [Group G] [Group H]
     [Group K] {A : Rep k K} {B : Rep k H} {C : Rep k G} (f : H →* K) (g : G →* H)
-    (φ : (Action.res _ f).obj A ⟶ B) (ψ : (Action.res _ g).obj B ⟶ C) (n : ℕ) :
-    cocyclesMap (f.comp g) ((Action.res _ g).map φ ≫ ψ) n =
+    (φ : res f A ⟶ B) (ψ : res g B ⟶ C) (n : ℕ) :
+    cocyclesMap (f.comp g) ((resFunctor g).map φ ≫ ψ) n =
       cocyclesMap f φ n ≫ cocyclesMap g ψ n := by
   simp [cocyclesMap, ← HomologicalComplex.cyclesMap_comp, ← cochainsMap_comp]
 
@@ -155,8 +150,8 @@ set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma map_comp {G H K : Type u} [Group G] [Group H]
     [Group K] {A : Rep k K} {B : Rep k H} {C : Rep k G} (f : H →* K) (g : G →* H)
-    (φ : (Action.res _ f).obj A ⟶ B) (ψ : (Action.res _ g).obj B ⟶ C) (n : ℕ) :
-    map (f.comp g) ((Action.res _ g).map φ ≫ ψ) n = map f φ n ≫ map g ψ n := by
+    (φ : res f A ⟶ B) (ψ : res g B ⟶ C) (n : ℕ) :
+    map (f.comp g) ((resFunctor g).map φ ≫ ψ) n = map f φ n ≫ map g ψ n := by
   simp [map, ← HomologicalComplex.homologyMap_comp, ← cochainsMap_comp]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -170,13 +165,13 @@ theorem map_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) (n : ℕ) :
 this is the induced map sending `x : H → A` to `(g : G) ↦ φ (x (f g))`. -/
 noncomputable abbrev cochainsMap₁ :
     ModuleCat.of k (H → A) ⟶ ModuleCat.of k (G → B) :=
-  ModuleCat.ofHom <| φ.hom.hom.compLeft G ∘ₗ LinearMap.funLeft k A f
+  ModuleCat.ofHom <| φ.hom.toLinearMap.compLeft G ∘ₗ LinearMap.funLeft k A f
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is the induced map sending `x : H × H → A` to `(g₁, g₂ : G × G) ↦ φ (x (f g₁, f g₂))`. -/
 noncomputable abbrev cochainsMap₂ :
     ModuleCat.of k (H × H → A) ⟶ ModuleCat.of k (G × G → B) :=
-  ModuleCat.ofHom <| φ.hom.hom.compLeft (G × G) ∘ₗ LinearMap.funLeft k A (Prod.map f f)
+  ModuleCat.ofHom <| φ.hom.toLinearMap.compLeft (G × G) ∘ₗ LinearMap.funLeft k A (Prod.map f f)
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is the induced map sending `x : H × H × H → A` to
@@ -184,11 +179,11 @@ this is the induced map sending `x : H × H × H → A` to
 noncomputable abbrev cochainsMap₃ :
     ModuleCat.of k (H × H × H → A) ⟶ ModuleCat.of k (G × G × G → B) :=
   ModuleCat.ofHom <|
-    φ.hom.hom.compLeft (G × G × G) ∘ₗ LinearMap.funLeft k A (Prod.map f (Prod.map f f))
+    φ.hom.toLinearMap.compLeft (G × G × G) ∘ₗ LinearMap.funLeft k A (Prod.map f (Prod.map f f))
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cochainsMap_f_0_comp_cochainsIso₀ :
-    (cochainsMap f φ).f 0 ≫ (cochainsIso₀ B).hom = (cochainsIso₀ A).hom ≫ φ.hom := by
+    (cochainsMap f φ).f 0 ≫ (cochainsIso₀ B).hom = (cochainsIso₀ A).hom ≫ φ.toModuleCatHom := by
   ext x
   simp only [cochainsMap_f, Unique.eq_default (f ∘ _)]
   rfl
@@ -223,7 +218,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem map_H0Iso_hom_f :
     map f φ 0 ≫ (H0Iso B).hom ≫ (shortComplexH0 B).f =
-      (H0Iso A).hom ≫ (shortComplexH0 A).f ≫ φ.hom := by
+      (H0Iso A).hom ≫ (shortComplexH0 A).f ≫ φ.toModuleCatHom := by
   simp [← cancel_epi (π _ _)]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -244,7 +239,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[reassoc, elementwise]
 theorem cocyclesMap_cocyclesIso₀_hom_f :
     cocyclesMap f φ 0 ≫ (cocyclesIso₀ B).hom ≫ (shortComplexH0 B).f =
-      (cocyclesIso₀ A).hom ≫ (shortComplexH0 A).f ≫ φ.hom := by
+      (cocyclesIso₀ A).hom ≫ (shortComplexH0 A).f ≫ φ.toModuleCatHom := by
   simp
 
 end H0
@@ -257,7 +252,7 @@ to `B --d₀₁--> Fun(G, B) --d₁₂--> Fun(G × G, B)`. -/
 @[simps]
 noncomputable def mapShortComplexH1 :
     shortComplexH1 A ⟶ shortComplexH1 B where
-  τ₁ := φ.hom
+  τ₁ := φ.toModuleCatHom
   τ₂ := cochainsMap₁ f φ
   τ₃ := cochainsMap₂ f φ
   comm₁₂ := by
@@ -282,8 +277,8 @@ theorem mapShortComplexH1_id :
 @[reassoc]
 theorem mapShortComplexH1_comp {G H K : Type u} [Group G] [Group H] [Group K]
     {A : Rep k K} {B : Rep k H} {C : Rep k G} (f : H →* K) (g : G →* H)
-    (φ : (Action.res _ f).obj A ⟶ B) (ψ : (Action.res _ g).obj B ⟶ C) :
-    mapShortComplexH1 (f.comp g) ((Action.res _ g).map φ ≫ ψ) =
+    (φ : res f A ⟶ B) (ψ : res g B ⟶ C) :
+    mapShortComplexH1 (f.comp g) ((resFunctor g).map φ ≫ ψ) =
       mapShortComplexH1 f φ ≫ mapShortComplexH1 g ψ := rfl
 
 @[reassoc]
@@ -312,13 +307,12 @@ lemma coe_mapCocycles₁ (x) :
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cocyclesMap_comp_isoCocycles₁_hom :
-    cocyclesMap f φ 1 ≫ (isoCocycles₁ B).hom = (isoCocycles₁ A).hom ≫ mapCocycles₁ f φ := by
-  simp [← cancel_mono (moduleCatLeftHomologyData (shortComplexH1 B)).i, mapShortComplexH1,
-    cochainsMap_f_1_comp_cochainsIso₁ f]
+    cocyclesMap f φ 1 ≫ (isoCocycles₁ B).hom = (isoCocycles₁ A).hom ≫ mapCocycles₁.{u, u} f φ := by
+  simp [← cancel_mono (moduleCatLeftHomologyData (shortComplexH1 B)).i]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem mapCocycles₁_one (φ : (Action.res _ 1).obj A ⟶ B) :
+theorem mapCocycles₁_one (φ : res 1 A ⟶ B) :
     mapCocycles₁ 1 φ = 0 := by
   rw [← cancel_mono (moduleCatLeftHomologyData (shortComplexH1 B)).i, cyclesMap'_i]
   refine ModuleCat.hom_ext (LinearMap.ext fun _ ↦ funext fun y => ?_)
@@ -334,7 +328,7 @@ lemma H1π_comp_map :
   simp [H1π, Iso.inv_comp_eq, ← cocyclesMap_comp_isoCocycles₁_hom_assoc]
 
 @[simp]
-theorem map₁_one (φ : (Action.res _ 1).obj A ⟶ B) :
+theorem map₁_one (φ : res 1 A ⟶ B) :
     map 1 φ 1 = 0 := by
   simp [← cancel_epi (H1π _)]
 
@@ -348,8 +342,8 @@ noncomputable def H1InfRes :
     ShortComplex (ModuleCat k) where
   X₁ := groupCohomology (A.quotientToInvariants S) 1
   X₂ := groupCohomology A 1
-  X₃ := groupCohomology ((Action.res _ S.subtype).obj A) 1
-  f := map (QuotientGroup.mk' S) (subtype _ _ <| le_comap_invariants A.ρ S) 1
+  X₃ := groupCohomology (res S.subtype A) 1
+  f := map (QuotientGroup.mk' S) (ofHom <| A.ρ.quotientToInvariants_lift S) 1
   g := map S.subtype (𝟙 _) 1
   zero := by rw [← map_comp, Category.comp_id, congr (QuotientGroup.mk'_comp_subtype S)
     (fun f φ => map f φ 1), map₁_one]
@@ -426,11 +420,11 @@ noncomputable def mapShortComplexH2 :
   comm₁₂ := by
     ext x
     funext g
-    simpa [shortComplexH2, d₁₂, cochainsMap₁, cochainsMap₂] using (hom_comm_apply φ _ _).symm
+    simp [shortComplexH2, ← hom_comm_apply φ]
   comm₂₃ := by
     ext x
     funext g
-    simpa [shortComplexH2, d₂₃, cochainsMap₂, cochainsMap₃] using (hom_comm_apply φ _ _).symm
+    simp [shortComplexH2, ← hom_comm_apply φ]
 
 @[simp]
 theorem mapShortComplexH2_zero :
@@ -444,8 +438,8 @@ theorem mapShortComplexH2_id :
 @[reassoc]
 theorem mapShortComplexH2_comp {G H K : Type u} [Group G] [Group H] [Group K]
     {A : Rep k K} {B : Rep k H} {C : Rep k G} (f : H →* K) (g : G →* H)
-    (φ : (Action.res _ f).obj A ⟶ B) (ψ : (Action.res _ g).obj B ⟶ C) :
-    mapShortComplexH2 (f.comp g) ((Action.res _ g).map φ ≫ ψ) =
+    (φ : res f A ⟶ B) (ψ : res g B ⟶ C) :
+    mapShortComplexH2 (f.comp g) ((resFunctor g).map φ ≫ ψ) =
       mapShortComplexH2 f φ ≫ mapShortComplexH2 g ψ := rfl
 
 @[reassoc]
@@ -521,12 +515,14 @@ set_option backward.isDefEq.respectTransparency false in
 sending `A : Rep k H` to `Hⁿ(H, A)` and to `Hⁿ(G, Res(f)(A))`. -/
 @[simps]
 noncomputable def resNatTrans (n : ℕ) :
-    functor k H n ⟶ Action.res (ModuleCat k) f ⋙ functor k G n where
+    functor k H n ⟶ resFunctor f ⋙ functor k G n where
   app X := map f (𝟙 _) n
-  naturality {X Y} φ := by simp [← cancel_epi (groupCohomology.π _ n),
-    ← HomologicalComplex.cyclesMap_comp_assoc, ← cochainsMap_comp, congr (MonoidHom.id_comp _)
-    cochainsMap, congr (MonoidHom.comp_id _) cochainsMap, Category.id_comp
-    (X := (Action.res _ _).obj _)]
+  naturality {X Y} φ := by
+    simp only [functor_obj, Functor.comp_obj, functor_map, Functor.comp_map,
+      ← cancel_epi (groupCohomology.π _ n), HomologicalComplex.homologyπ_naturality_assoc,
+      HomologicalComplex.homologyπ_naturality, ← HomologicalComplex.cyclesMap_comp_assoc,
+      ← cochainsMap_comp, res_obj_ρ, Category.comp_id, Rep.hom_id]
+    rfl
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a normal subgroup `S ≤ G`, this is a natural transformation between the functors
@@ -534,7 +530,7 @@ sending `A : Rep k G` to `Hⁿ(G ⧸ S, A^S)` and to `Hⁿ(G, A)`. -/
 @[simps]
 noncomputable def infNatTrans (S : Subgroup G) [S.Normal] (n : ℕ) :
     quotientToInvariantsFunctor k S ⋙ functor k (G ⧸ S) n ⟶ functor k G n where
-  app A := map (QuotientGroup.mk' S) (subtype _ _ <| le_comap_invariants A.ρ S) n
+  app A := map (QuotientGroup.mk' S) (ofHom <| A.ρ.quotientToInvariants_lift S) n
   naturality {X Y} φ := by
     simp only [Functor.comp_map, functor_map, ← cancel_epi (groupCohomology.π _ n),
       HomologicalComplex.homologyπ_naturality_assoc, HomologicalComplex.homologyπ_naturality,

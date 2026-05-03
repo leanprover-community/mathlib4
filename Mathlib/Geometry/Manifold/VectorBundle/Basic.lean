@@ -38,7 +38,7 @@ fields, etc.
 
 * `ContMDiffVectorBundle`: Mixin class stating that a (topological) `VectorBundle` is `C^n`, in the
   sense of having `C^n` transition functions, where the smoothness index `n`
-  belongs to `WithTop ℕ∞`.
+  belongs to `ℕ∞ω` (notation for `WithTop ℕ∞` in the `ContDiff` scope).
 
 * `ContMDiffFiberwiseLinear.hasGroupoid`: For a `C^n` vector bundle `E` over `B` with fiber
   modelled on `F`, the change-of-co-ordinates between two trivializations `e`, `e'` for `E`,
@@ -71,7 +71,7 @@ open Filter
 
 open scoped Manifold Bundle Topology ContDiff
 
-variable {n : WithTop ℕ∞} {𝕜 B B' F M : Type*} {E : B → Type*}
+variable {n : ℕ∞ω} {𝕜 B B' F M : Type*} {E : B → Type*}
 
 /-! ### Charted space structure on a fiber bundle -/
 
@@ -284,15 +284,15 @@ class ContMDiffVectorBundle : Prop where
         (e.baseSet ∩ e'.baseSet)
 
 variable {F E} in
-protected theorem ContMDiffVectorBundle.of_le {m n : WithTop ℕ∞} (hmn : m ≤ n)
+protected theorem ContMDiffVectorBundle.of_le {m n : ℕ∞ω} (hmn : m ≤ n)
     [h : ContMDiffVectorBundle n F E IB] : ContMDiffVectorBundle m F E IB :=
   ⟨fun e e' _ _ ↦ (h.contMDiffOn_coordChangeL e e').of_le hmn⟩
 
-instance {a : WithTop ℕ∞} [ContMDiffVectorBundle ∞ F E IB] [h : ENat.LEInfty a] :
+instance {a : ℕ∞ω} [ContMDiffVectorBundle ∞ F E IB] [h : ENat.LEInfty a] :
     ContMDiffVectorBundle a F E IB :=
   ContMDiffVectorBundle.of_le h.out
 
-instance {a : WithTop ℕ∞} [ContMDiffVectorBundle ω F E IB] : ContMDiffVectorBundle a F E IB :=
+instance {a : ℕ∞ω} [ContMDiffVectorBundle ω F E IB] : ContMDiffVectorBundle a F E IB :=
   ContMDiffVectorBundle.of_le le_top
 
 instance [ContMDiffVectorBundle 2 F E IB] : ContMDiffVectorBundle 1 F E IB :=
@@ -405,10 +405,9 @@ theorem ContMDiffWithinAt.change_section_trivialization {f : M → TotalSpace F 
     (he : f x ∈ e.source) (he' : f x ∈ e'.source) :
     ContMDiffWithinAt IM 𝓘(𝕜, F) n (fun y ↦ (e' (f y)).2) s x := by
   rw [Trivialization.mem_source] at he he'
-  refine (hp.coordChange hf he he').congr_of_eventuallyEq ?_ ?_
-  · filter_upwards [hp.continuousWithinAt (e.open_baseSet.mem_nhds he)] with y hy
-    rw [Function.comp_apply, e.coordChange_apply_snd _ hy]
-  · rw [Function.comp_apply, e.coordChange_apply_snd _ he]
+  refine (hp.coordChange hf he he').congr_of_eventuallyEq ?_ (by simp [he])
+  filter_upwards [hp.continuousWithinAt (e.open_baseSet.mem_nhds he)] with y hy
+  simp_all
 
 theorem Bundle.Trivialization.contMDiffWithinAt_snd_comp_iff₂ {f : M → TotalSpace F E}
     (hp : ContMDiffWithinAt IM IB n (π F E ∘ f) s x)
@@ -526,9 +525,6 @@ theorem contMDiffAt_section_iff {s : ∀ x, E x} {x₀ : B}
   simp_rw [← contMDiffWithinAt_univ]
   exact e.contMDiffWithinAt_section univ hx₀
 
-@[deprecated (since := "2025-09-15")]
-alias contMDiffAt_section_of_mem_baseSet := Trivialization.contMDiffAt_section_iff
-
 /-- Smoothness of a `C^n` section on `s` can be determined
 using any trivialisation whose `baseSet` contains `s`. -/
 theorem contMDiffOn_section_iff {s : ∀ x, E x} {a : Set B}
@@ -541,9 +537,6 @@ theorem contMDiffOn_section_iff {s : ∀ x, E x} {a : Set B}
   · exact ((e.contMDiffAt_section_iff (ha' hx)).mp this).contMDiffWithinAt
   · exact ((e.contMDiffAt_section_iff (ha' hx)).mpr this).contMDiffWithinAt
 
-@[deprecated (since := "2025-09-15")]
-alias contMDiffOn_section_of_mem_baseSet := Trivialization.contMDiffOn_section_iff
-
 /-- For any trivialization `e`, the smoothness of a `C^n` section on `e.baseSet`
 can be determined using `e`. -/
 theorem contMDiffOn_section_baseSet_iff {s : ∀ x, E x}
@@ -552,9 +545,6 @@ theorem contMDiffOn_section_baseSet_iff {s : ∀ x, E x}
     ContMDiffOn IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) e.baseSet ↔
       ContMDiffOn IB 𝓘(𝕜, F) n (fun x ↦ (e ⟨x, s x⟩).2) e.baseSet :=
   e.contMDiffOn_section_iff e.open_baseSet subset_rfl
-
-@[deprecated (since := "2025-09-15")]
-alias contMDiffOn_section_of_mem_baseSet₀ := Trivialization.contMDiffOn_section_baseSet_iff
 
 end Bundle.Trivialization
 
@@ -568,7 +558,7 @@ variable {F}
 variable {ι : Type*} (Z : VectorBundleCore 𝕜 B F ι)
 
 /-- Mixin for a `VectorBundleCore` stating that transition functions are `C^n`. -/
-class IsContMDiff (IB : ModelWithCorners 𝕜 EB HB) (n : WithTop ℕ∞) : Prop where
+class IsContMDiff (IB : ModelWithCorners 𝕜 EB HB) (n : ℕ∞ω) : Prop where
   contMDiffOn_coordChange :
     ∀ i j, ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (Z.coordChange i j) (Z.baseSet i ∩ Z.baseSet j)
 
@@ -643,7 +633,7 @@ variable [∀ x, TopologicalSpace (E x)]
 
 variable (IB) in
 /-- Mixin for a `VectorPrebundle` stating that coordinate changes are `C^n`. -/
-class IsContMDiff (a : VectorPrebundle 𝕜 F E) (n : WithTop ℕ∞) : Prop where
+class IsContMDiff (a : VectorPrebundle 𝕜 F E) (n : ℕ∞ω) : Prop where
   exists_contMDiffCoordChange :
     ∀ᵉ (e ∈ a.pretrivializationAtlas) (e' ∈ a.pretrivializationAtlas),
       ∃ f : B → F →L[𝕜] F,
@@ -657,7 +647,7 @@ variable (IB n) in
 /-- A randomly chosen coordinate change on a `VectorPrebundle` satisfying `IsContMDiff`, given by
   the field `exists_coordChange`. Note that `a.contMDiffCoordChange` need not be the same as
   `a.coordChange`. -/
-noncomputable def contMDiffCoordChange (he : e ∈ a.pretrivializationAtlas)
+@[no_expose] noncomputable def contMDiffCoordChange (he : e ∈ a.pretrivializationAtlas)
     (he' : e' ∈ a.pretrivializationAtlas) (b : B) : F →L[𝕜] F :=
   Classical.choose (ha.exists_contMDiffCoordChange e he e' he') b
 

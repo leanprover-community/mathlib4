@@ -15,7 +15,7 @@ In this file we prove that the space of continuous maps from a topological space
 to a locally convex topological vector space is a locally convex topological vector space.
 -/
 
-@[expose] public section
+public section
 
 open scoped Topology
 

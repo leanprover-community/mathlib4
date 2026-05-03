@@ -28,7 +28,7 @@ theorem acc_def {α} {r : α → α → Prop} {a : α} : Acc r a ↔ ∀ b, r b 
 
 theorem exists_not_acc_lt_of_not_acc {α} {a : α} {r} (h : ¬Acc r a) : ∃ b, ¬Acc r b ∧ r b a := by
   rw [acc_def] at h
-  push_neg at h
+  push Not at h
   simpa only [and_comm]
 
 theorem not_acc_iff_exists_descending_chain {α} {r : α → α → Prop} {x : α} :
@@ -77,6 +77,14 @@ open scoped Function in -- required for scoped `on` notation
 theorem onFun {α β : Sort*} {r : β → β → Prop} {f : α → β} :
     WellFounded r → WellFounded (r on f) :=
   InvImage.wf _
+
+instance (r : β → β → Prop) (f : α → β) [IsWellFounded β r] :
+    IsWellFounded α (r.onFun f) where
+  wf := IsWellFounded.wf.onFun
+
+theorem _root_.Function.Injective.isWellOrder (r : β → β → Prop) {f : α → β} (hf : f.Injective)
+    [IsWellOrder β r] : IsWellOrder α (r.onFun f) where
+  __ := hf.trichotomous_onFun r
 
 /-- If `r` is a well-founded relation, then any nonempty set has a minimal element
 with respect to `r`. -/
