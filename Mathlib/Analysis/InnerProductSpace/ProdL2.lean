@@ -164,7 +164,7 @@ def quot_linearEquiv_orthogonal : (E ⧸ K) ≃ₗᵢ[𝕜] ↥Kᗮ := {
       simp [Equiv.neg, sub_eq_add_neg]
 }
 
-noncomputable instance instQuotientInnerProductSpace [CompleteSpace E] :
+noncomputable instance instQuotientInnerProductSpace :
     InnerProductSpace 𝕜 (E ⧸ K) :=
   { inner x y := inner 𝕜 (quot_linearEquiv_orthogonal K x) (quot_linearEquiv_orthogonal K y)
     add_left x y z := by rw [map_add, inner_add_left]
