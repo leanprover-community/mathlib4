@@ -116,7 +116,7 @@ theorem prod_zero_index [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decid
 theorem prod_single_index [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMonoid γ]
     {i : ι} {b : β i} {h : ∀ i, β i → γ} (h_zero : h i 0 = 1) : (single i b).prod h = h i b := by
   by_cases h : b ≠ 0
-  · simp [DFinsupp.prod, support_single_ne_zero h]
+  · simp [DFinsupp.prod, support_single_of_ne_zero h]
   · rw [not_not] at h
     simp [h, h_zero]
     rfl

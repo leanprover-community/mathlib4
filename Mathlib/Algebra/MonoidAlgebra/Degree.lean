@@ -254,7 +254,7 @@ theorem supDegree_sum_le {ι} {s : Finset ι} {f : ι → R[A]} :
 
 theorem supDegree_single_ne_zero (a : A) {r : R} (hr : r ≠ 0) :
     (single a r).supDegree D = D a := by
-  rw [supDegree, Finsupp.support_single_ne_zero a hr, Finset.sup_singleton]
+  rw [supDegree, Finsupp.support_single_of_ne_zero a hr, Finset.sup_singleton]
 
 open Classical in
 theorem supDegree_single (a : A) (r : R) :

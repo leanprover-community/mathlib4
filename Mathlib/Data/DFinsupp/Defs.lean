@@ -879,7 +879,7 @@ instance decidableZero [∀ (i) (x : β i), Decidable (x = 0)] (f : Π₀ i, β 
 theorem support_subset_iff {s : Set ι} {f : Π₀ i, β i} : ↑f.support ⊆ s ↔ ∀ i ∉ s, f i = 0 := by
   simpa [Set.subset_def] using forall_congr' fun i => not_imp_comm
 
-theorem support_single_ne_zero {i : ι} {b : β i} (hb : b ≠ 0) : (single i b).support = {i} := by
+theorem support_single_of_ne_zero {i : ι} {b : β i} (hb : b ≠ 0) : (single i b).support = {i} := by
   grind
 
 theorem support_single_subset {i : ι} {b : β i} : (single i b).support ⊆ {i} :=
