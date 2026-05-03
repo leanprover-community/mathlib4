@@ -456,7 +456,20 @@ variable {C}
 it is stable under pre- and postcomposition with isomorphisms. -/
 abbrev RespectsIso (P : MorphismProperty C) : Prop := P.Respects (isomorphisms C)
 
-instance inf (P Q : MorphismProperty C) [P.RespectsIso] [Q.RespectsIso] : (P ⊓ Q).RespectsIso where
+instance RespectsIso.inf (P Q : MorphismProperty C) [P.RespectsIso] [Q.RespectsIso] :
+    (P ⊓ Q).RespectsIso where
+
+@[deprecated (since := "2026-05-04")] alias inf := RespectsIso.inf
+
+lemma RespectsIso.sInf {W : Set (MorphismProperty C)} (h : ∀ W' ∈ W, W'.RespectsIso) :
+    (sInf W).RespectsIso where
+  toRespectsLeft := RespectsLeft.sInf (fun W' hW' ↦ (h W' hW').toRespectsLeft)
+  toRespectsRight := RespectsRight.sInf (fun W' hW' ↦ (h W' hW').toRespectsRight)
+
+instance RespectsIso.iInf {ι : Type*} {W : ι → MorphismProperty C} [∀ i, (W i).RespectsIso] :
+    (⨅ i, W i).RespectsIso := by
+  rw [← sInf_range]
+  exact sInf (by simpa)
 
 lemma RespectsIso.mk (P : MorphismProperty C)
     (hprecomp : ∀ {X Y Z : C} (e : X ≅ Y) (f : Y ⟶ Z) (_ : P f), P (e.hom ≫ f))
