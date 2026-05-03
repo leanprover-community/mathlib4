@@ -66,9 +66,9 @@ instance category : Category (Kleisli T) where
   id X := .mk <| T.η.app X.of
   comp {_} {_} {Z} f g := .mk <| f.of ≫ T.map g.of ≫ T.μ.app Z.of
   id_comp {X} {Y} f := by
-    simp [dsimp% T.left_unit Y.of, ← dsimp% T.η.naturality_assoc f.of (T.μ.app Y.of)]
+    simp [dsimp% T.left_unit, ← dsimp% T.η.naturality_assoc]
   comp_id {X} {Y} f := by
-    simp [dsimp% T.right_unit Y.of]
+    simp [dsimp% T.right_unit]
   assoc f g h := by
     simp [dsimp% T.assoc, T.mu_naturality_assoc]
 
@@ -96,7 +96,7 @@ def fromKleisli : Kleisli T ⥤ C where
   map {_} {Y} f := T.map f.of ≫ T.μ.app Y.of
   map_id _ := T.right_unit _
   map_comp {X} {Y} {Z} f g := by
-    simp [← dsimp% T.μ.naturality_assoc g.of, dsimp% T.assoc Z.of]
+    simp [← dsimp% T.μ.naturality_assoc, dsimp% T.assoc]
 
 /-- The Kleisli adjunction which gives rise to the monad `(T, η_ T, μ_ T)`.
 cf Lemma 5.2.11 of [Riehl][riehl2017]. -/
@@ -105,13 +105,13 @@ def adj : toKleisli T ⊣ fromKleisli T :=
     { homEquiv X Y := { toFun f := f.of, invFun f := .mk f }
       homEquiv_naturality_left_symm := fun {X} {Y} {Z} f g => by
         ext
-        simp [← T.unit_naturality_assoc, dsimp% T.left_unit Z.of]
+        simp [← T.unit_naturality_assoc, dsimp% T.left_unit]
         rfl }
 
 /-- The composition of the adjunction gives the original functor. -/
 def toKleisliCompFromKleisliIsoSelf : toKleisli T ⋙ fromKleisli T ≅ T :=
   NatIso.ofComponents (fun _ => (Iso.refl _))
-    (naturality := fun {X} {Y} f => by simp_all [dsimp% T.right_unit Y])
+    (naturality := fun {X} {Y} f => by simp_all [dsimp% T.right_unit])
 
 end Adjunction
 
@@ -151,7 +151,7 @@ instance category : Category (Cokleisli U) where
   id X := .mk <| U.ε.app X.of
   comp f g := .mk <| U.δ.app _ ≫ (U : C ⥤ C).map f.of ≫ g.of
   comp_id {X} {Y} f := by
-    simp [U.left_counit_assoc, dsimp% U.ε.naturality f.of]
+    simp [U.left_counit_assoc, dsimp% U.ε.naturality]
   assoc f g h := by
     simp [U.delta_naturality_assoc]
 
