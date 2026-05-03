@@ -8,6 +8,7 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 public import Mathlib.CategoryTheory.Limits.Types.Pushouts
+public import Mathlib.CategoryTheory.Subobject.Types
 
 /-!
 # The boundary of the standard simplex
@@ -147,9 +148,8 @@ end stdSimplex
 
 namespace Subcomplex
 
-/-- If every simplex of `X` of dimension less than `n` is in `A`, and
-`x : X _⦋n⦌` is not in `A`, then the preimage of `A` under the Yoneda map of
-`x` is exactly `∂Δ[n]`. -/
+/-- If `A` contains every simplex of dimension `< n` but not `x : X _⦋n⦌`, then
+`A.preimage (yonedaEquiv.symm x) = ∂Δ[n]`. -/
 private lemma preimage_yonedaEquivSymm_eq_boundary
     {X : SSet.{u}} {n : ℕ} (A : X.Subcomplex) {x : X _⦋n⦌} (hxA : x ∉ A.obj _)
     (hn : ∀ m < n, ∀ y : X _⦋m⦌, y ∈ A.obj _) :
@@ -163,9 +163,9 @@ private lemma preimage_yonedaEquivSymm_eq_boundary
       ⟨⟨y, hy'⟩, (Subcomplex.mem_nonDegenerate_iff _ _).2 hy⟩ _) _
   · simpa using heq.symm.le _ (by simp : yonedaEquiv (𝟙 _) ∈ _)
 
-/-- A proper subcomplex `A < ⊤` of a simplicial set `X` admits a strict
-extension `B`, exhibited as a pushout of `∂Δ[n] ↪ Δ[n]` along an attaching map.
-The witness simplex is found by strong induction on simplex dimension. -/
+set_option backward.isDefEq.respectTransparency false in
+/-- Every proper subcomplex of a simplicial set extends by attaching a single
+cell along its boundary, exhibited as a pushout of `∂Δ[n] ↪ Δ[n]`. -/
 lemma exists_isPushout_of_ne_top {X : SSet.{u}} (A : X.Subcomplex) (hA : A ≠ ⊤) :
     ∃ (B : X.Subcomplex) (lt : A < B) (n : ℕ)
       (t : ((∂Δ[n] : (Δ[n] : SSet.{u}).Subcomplex) : SSet.{u}) ⟶ (A : SSet.{u}))
@@ -196,13 +196,13 @@ lemma exists_isPushout_of_ne_top {X : SSet.{u}} (A : X.Subcomplex) (hA : A ≠ �
       (by rw [← image_eq_range, image_le_iff, hpre]),
     yonedaEquiv.symm ⟨x, hxA'⟩, ?_⟩
   refine IsPushout.of_forall_isPushout_app fun ⟨m⟩ ↦ ?_
+  haveI := subtype_val_mono (A.obj ⟨m⟩)
+  haveI := subtype_val_mono (A'.obj ⟨m⟩)
   -- Factor the right column through `X.obj m` so the pullback condition is `hpre` at `m`.
   refine Types.isPushout_of_isPullback_of_mono (X₅ := X.obj ⟨m⟩)
-    (k := A'.ι.app ⟨m⟩) (r' := A.ι.app ⟨m⟩) (b' := σ.app ⟨m⟩)
-      ?_ ?_ ?_ ?_ ?_
+    (k := ↾Subtype.val) (r' := ↾Subtype.val) (b' := σ.app ⟨m⟩)
+      ?_ rfl rfl ?_ ?_
   · exact Types.isPullback_of_eq_setPreimage (σ.app ⟨m⟩) (A.obj ⟨m⟩) (by simp [← hpre])
-  · rw [← NatTrans.comp_app, Subfunctor.homOfLe_ι]
-  · rfl
   · apply le_antisymm le_top
     rintro ⟨y, hy⟩ _
     simp only [Subfunctor.max_obj, Set.mem_union, A'] at hy
