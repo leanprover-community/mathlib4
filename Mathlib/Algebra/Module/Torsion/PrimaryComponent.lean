@@ -200,13 +200,14 @@ theorem primaryComponent.map_surjective {M₁ M₂ : Type*}
   refine ⟨f P, Subtype.ext ?_⟩
   change φ (f P) = φ b
   rw [eq_comm, ← sub_eq_zero]
-  refine (Submodule.disjoint_def.mp (iSupIndep_primaryComponent A M₂ P)) _ ?mP ?muQ
+  refine (Submodule.disjoint_def.mp (iSupIndep_primaryComponent A M₂ P)) _ ?_ ?_
   · exact Submodule.sub_mem _ hy (primaryComponent_map_mem _ _ _)
-  · rw [(?diff : φ b - φ ↑(f P) = ∑ Q ∈ f.support \ {P}, φ ↑(f Q))]
-    · exact Submodule.sum_mem _ fun Q hQ ↦ Submodule.mem_iSup_of_mem Q <|
-        Submodule.mem_iSup_of_mem (by grind) (primaryComponent_map_mem _ _ _)
-    · rw [sub_eq_iff_eq_add', ← Finset.sum_eq_add_sum_diff_singleton P (fun P ↦ φ (f P)) (by aesop)]
+  · have hdiff : φ b - φ ↑(f P) = ∑ Q ∈ f.support \ {P}, φ ↑(f Q) := by
+      rw [sub_eq_iff_eq_add', ← Finset.sum_eq_add_sum_diff_singleton P (fun P ↦ φ (f P)) (by aesop)]
       simpa [DFinsupp.sumAddHom_apply, DFinsupp.sum] using congr(φ $hf).symm
+    rw [hdiff]
+    exact Submodule.sum_mem _ fun Q hQ ↦ Submodule.mem_iSup_of_mem Q <|
+        Submodule.mem_iSup_of_mem (by grind) (primaryComponent_map_mem _ _ _)
 
 end IsDedekindDomain
 
