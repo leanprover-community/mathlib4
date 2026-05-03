@@ -34,7 +34,7 @@ universe u v
 
 open IsLocalRing CategoryTheory SmallObject Limits
 
-open scoped Polynomial
+open Polynomial
 
 variable (R : Type u) [CommRing R]
 
@@ -67,7 +67,6 @@ lemma isIntegral_residueField_iff (x : K) : IsIntegral (ResidueField S) x ↔ Is
 
 lemma minpoly_residueField_eq_map (x : K) (int : IsIntegral S x) :
     minpoly (ResidueField S) x = Polynomial.map (residue S) (minpoly S x) := by
-  --Polynomial.aeval_map_algebraMap
   apply (minpoly.unique_of_degree_le_degree_minpoly _ _ ((minpoly.monic int).map _) _ _).symm
   · exact (Polynomial.aeval_map_algebraMap _ _ _).trans (minpoly.aeval S x)
   · apply Polynomial.degree_map_le.trans
@@ -87,6 +86,59 @@ instance (x : K) (int : IsIntegral S x) : Module.Finite S (adjoinAlgebraic K S x
 
 instance (x : K) (int : IsIntegral S x) : Module.Free S (adjoinAlgebraic K S x int) :=
   (minpoly.monic int).free_quotient
+
+lemma adjoinAlgebraic_maximalIdeal_map_isMaximal (x : K) (int : IsIntegral S x) :
+    ((maximalIdeal S).map (algebraMap S (adjoinAlgebraic K S x int))).IsMaximal := by
+  let f : adjoinAlgebraic K S x int →+*
+    (ResidueField S)[X] ⧸ Ideal.span {minpoly (ResidueField S) x} :=
+    Ideal.quotientMap _ (mapRingHom (residue S))
+      (by simp [← minpoly_residueField_eq_map K S x int])
+  have kerf : RingHom.ker f = (maximalIdeal S).map (algebraMap S (adjoinAlgebraic K S x int)) := by
+    apply Ideal.comap_injective_of_surjective _ Ideal.Quotient.mk_surjective
+    have eqmap : Ideal.span {minpoly (ResidueField S) x} =
+      (Ideal.span {minpoly S x}).map (mapRingHom (residue S)) := by
+      simp [minpoly_residueField_eq_map K S x int, Ideal.map_span]
+    rw [RingHom.comap_ker, IsScalarTower.algebraMap_eq S S[X], Ideal.quotientMap_comp_mk]
+    simp [← Ideal.map_map, ← RingHom.comap_ker, eqmap, ker_mapRingHom, ker_residue,
+      Ideal.comap_map_of_surjective' (mapRingHom _) (map_surjective _ residue_surjective)]
+  rw [← kerf]
+  let : Fact _ := ⟨minpoly.irreducible ((isIntegral_residueField_iff K S x).mpr int)⟩
+  let := Ideal.Quotient.field (Ideal.span {(minpoly (ResidueField S) x)})
+  exact RingHom.ker_isMaximal_of_surjective _
+    (Ideal.quotientMap_surjective (map_surjective _ residue_surjective))
+
+instance adjoinAlgebraic_isLocalRing (x : K) (int : IsIntegral S x) :
+    IsLocalRing (adjoinAlgebraic K S x int) := by
+  have := adjoinAlgebraic_maximalIdeal_map_isMaximal K S x int
+  apply IsLocalRing.of_unique_max_ideal
+  use (maximalIdeal S).map (algebraMap S (adjoinAlgebraic K S x int)), this
+  intro m hm
+  exact (this.eq_of_le hm.ne_top (Ideal.map_le_iff_le_comap.mpr (le_of_eq (eq_maximalIdeal
+    m.isMaximal_comap_of_isIntegral_of_isMaximal).symm))).symm
+
+omit [IsLocalRing S] [IsLocalHom (algebraMap S K)] in
+lemma span_minpoly_le_ker (x : K) : Ideal.span {minpoly S x} ≤
+    RingHom.ker (Polynomial.aeval x) := by
+  simp
+
+noncomputable abbrev adjoinAlgebraicToK (x : K) (int : IsIntegral S x) :
+    adjoinAlgebraic K S x int →+* K :=
+  Ideal.Quotient.lift _ (Polynomial.aeval x).toRingHom (fun _ h ↦ span_minpoly_le_ker K S x h)
+
+noncomputable instance (x : K) (int : IsIntegral S x) : Algebra (adjoinAlgebraic K S x int) K :=
+  (adjoinAlgebraicToK K S x int).toAlgebra
+
+noncomputable instance (x : K) (int : IsIntegral S x) :
+    IsScalarTower S (adjoinAlgebraic K S x int) K := by
+  apply IsScalarTower.of_algebraMap_eq (fun y ↦ ?_)
+  rw [IsScalarTower.algebraMap_eq S S[X] (adjoinAlgebraic K S x int)]
+  simp [RingHom.algebraMap_toAlgebra]
+
+omit [IsLocalRing S] [IsLocalHom (algebraMap S K)] in
+lemma adjoinAlgebraic_mem_range (x : K) (int : IsIntegral S x) :
+    x ∈ (algebraMap (adjoinAlgebraic K S x int) K).range := by
+  use Ideal.Quotient.mk _ Polynomial.X
+  simp [RingHom.algebraMap_toAlgebra]
 
 set_option linter.unusedVariables false in
 abbrev adjoinTranscendental (x : K) (nint : ¬ IsIntegral S x) : Type u :=
