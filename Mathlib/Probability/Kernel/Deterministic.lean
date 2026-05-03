@@ -231,7 +231,7 @@ lemma isDeterministic_iff_isZeroOneMeasure (κ : Kernel α β) [IsFiniteKernel �
 instance (κ : Kernel α β) [IsFiniteKernel κ] [IsDeterministic κ] : ∀ a, IsZeroOneMeasure (κ a) :=
   (isDeterministic_iff_isZeroOneMeasure κ).mp ‹_›
 
-/-- in a standard Borel space, a deterministic Markov kernel is a Dirac kernel of ome measurable
+/-- in a standard Borel space, a deterministic Markov kernel is a Dirac kernel of one measurable
 function. -/
 theorem IsDeterministic.exists_eq_deterministic [StandardBorelSpace β] (κ : Kernel α β)
     [IsMarkovKernel κ] [IsDeterministic κ] :
