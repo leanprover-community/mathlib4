@@ -116,6 +116,11 @@ instance adjoinAlgebraic_isLocalRing (x : K) (int : IsIntegral S x) :
   exact (this.eq_of_le hm.ne_top (Ideal.map_le_iff_le_comap.mpr (le_of_eq (eq_maximalIdeal
     m.isMaximal_comap_of_isIntegral_of_isMaximal).symm))).symm
 
+lemma adjoinAlgebraic_maximalIdeal_eq_map (x : K) (int : IsIntegral S x) :
+    maximalIdeal (adjoinAlgebraic K S x int) =
+    (maximalIdeal S).map (algebraMap S (adjoinAlgebraic K S x int)) :=
+  (eq_maximalIdeal (adjoinAlgebraic_maximalIdeal_map_isMaximal K S x int)).symm
+
 omit [IsLocalRing S] [IsLocalHom (algebraMap S K)] in
 lemma span_minpoly_le_ker (x : K) : Ideal.span {minpoly S x} ≤
     RingHom.ker (Polynomial.aeval x) := by
@@ -150,6 +155,39 @@ lemma adjoinTranscendental_maximalIdeal_eq_map (x : K) (nint : ¬ IsIntegral S x
     (maximalIdeal S).map (algebraMap S (adjoinTranscendental K S x nint)) := by
   rw [IsScalarTower.algebraMap_eq S S[X], ← Ideal.map_map]
   exact Localization.AtPrime.map_eq_maximalIdeal.symm
+
+lemma adjoinTranscendental_aeval_ker (x : K) (nint : ¬ IsIntegral S x) :
+    RingHom.ker (Polynomial.aeval x) = (maximalIdeal S).map Polynomial.C := by
+  have : (Polynomial.aeval x).toRingHom = (Polynomial.aeval x).toRingHom.comp
+    (Polynomial.mapRingHom (IsLocalRing.residue S)) :=
+    RingHom.ext (fun p ↦ (Polynomial.aeval_map_algebraMap (ResidueField S) _ _).symm)
+  have inj : Function.Injective (Polynomial.aeval (R := ResidueField S) x) := by
+    apply (iff_not_comm.mpr isAlgebraic_iff_not_injective).mpr
+    exact isAlgebraic_iff_isIntegral.not.mpr ((isIntegral_residueField_iff K S x).not.mpr nint)
+  change RingHom.ker (Polynomial.aeval x).toRingHom = _
+  rw [this, RingHom.ker_comp_of_injective _ inj, Polynomial.ker_mapRingHom, ker_residue]
+
+noncomputable abbrev adjoinTranscendentalToK (x : K) (nint : ¬ IsIntegral S x) :
+    adjoinTranscendental K S x nint →+* K :=
+  IsLocalization.lift (M := ((maximalIdeal S).map Polynomial.C).primeCompl)
+    (g := (Polynomial.aeval x).toRingHom) (fun y ↦ by
+      simpa [← RingHom.mem_ker, adjoinTranscendental_aeval_ker K S x nint] using
+        Ideal.mem_primeCompl_iff.mp y.2)
+
+noncomputable instance (x : K) (nint : ¬ IsIntegral S x) :
+    Algebra (adjoinTranscendental K S x nint) K :=
+  (adjoinTranscendentalToK K S x nint).toAlgebra
+
+noncomputable instance (x : K) (nint : ¬ IsIntegral S x) :
+    IsScalarTower S (adjoinTranscendental K S x nint) K := by
+  apply IsScalarTower.of_algebraMap_eq (fun y ↦ ?_)
+  rw [IsScalarTower.algebraMap_eq S S[X] (adjoinTranscendental K S x nint)]
+  simp [RingHom.algebraMap_toAlgebra]
+
+lemma adjoinTranscendental_mem_range (x : K) (nint : ¬ IsIntegral S x) :
+    x ∈ (algebraMap (adjoinTranscendental K S x nint) K).range := by
+  use algebraMap S[X] _ Polynomial.X
+  simp [RingHom.algebraMap_toAlgebra]
 
 end monogenic
 
