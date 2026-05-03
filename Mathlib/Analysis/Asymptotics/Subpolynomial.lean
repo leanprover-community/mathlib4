@@ -3,9 +3,11 @@ Copyright (c) 2025 Youheng Luo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Youheng Luo
 -/
-import Mathlib.Analysis.Asymptotics.Lemmas
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Tactic.Bound
+module
+
+public import Mathlib.Analysis.Asymptotics.Lemmas
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Tactic.Bound
 
 /-!
 # Subpolynomial Growth
@@ -31,7 +33,7 @@ This file defines the notion of subpolynomial growth for functions.
 * `isSubpolynomial_iff_one_add`: Equivalence with the growth condition `O(1 + ‖g‖^k)`.
 -/
 
-section
+public section
 open Filter Asymptotics
 open scoped Topology
 
