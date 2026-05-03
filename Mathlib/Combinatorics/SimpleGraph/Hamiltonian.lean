@@ -334,7 +334,7 @@ theorem IsHamiltonian.of_perm {σ : Perm α}
     rw [List.mem_range] at hi
     simp only [Equiv.Perm.iterate_eq_pow, ← mul_apply, ← pow_succ] at heq
     exact hcycOn.sym2_pow_apply_ne (Finset.mem_univ x) (by lia)
-      (by rw [Finset.card_univ]; lia) (by rwa [Finset.card_univ]) heq
+      (by rw [Finset.card_univ]; lia) (by rw [Finset.card_univ]; lia) heq
 
 end Perm
 
