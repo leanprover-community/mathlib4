@@ -83,6 +83,14 @@ noncomputable def pathObject := (unopFunctor C c.symm).obj (op K.op.cylinder)
 
 namespace pathObject
 
+lemma isZero_X (i : α) (h₁ : IsZero (K.X i)) (h₂ : ∀ (j : α), c.Rel j i → IsZero (K.X j)) :
+    IsZero (K.pathObject.X i) := by
+  apply IsZero.unop
+  dsimp [pathObject]
+  refine homotopyCofiber.isZero_X _ _ ?_ (fun j hj ↦ IsZero.op (h₂ _ hj))
+  exact IsZero.of_iso (by simpa using h₁.op)
+    ((eval Cᵒᵖ c.symm i).mapBiprod K.op K.op)
+
 /-- The first projection `K.pathObject ⟶ K`. -/
 @[no_expose]
 noncomputable def π₀ : K.pathObject ⟶ K :=

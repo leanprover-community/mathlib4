@@ -79,6 +79,16 @@ noncomputable def XIso (i : ι) (hi : ¬ c.Rel i (c.next i)) :
     X φ i ≅ G.X i :=
   eqToIso (dif_neg hi)
 
+lemma isZero_X (i : ι) (hG : IsZero (G.X i))
+    (hF : ∀ (j : ι), c.Rel i j → IsZero (F.X j)) :
+    IsZero (X φ i) := by
+  by_cases h : c.Rel i (c.next i)
+  · haveI := HasHomotopyCofiber.hasBinaryBiproduct φ _ _ h
+    refine IsZero.of_iso ?_ (XIsoBiprod φ _ _ h)
+    simp only [biprod_isZero_iff]
+    exact ⟨hF _ h, hG⟩
+  · exact hG.of_iso (XIso φ i h)
+
 /-- The second projection `(homotopyCofiber φ).X i ⟶ G.X i`. -/
 noncomputable def sndX (i : ι) : X φ i ⟶ G.X i :=
   if hi : c.Rel i (c.next i)

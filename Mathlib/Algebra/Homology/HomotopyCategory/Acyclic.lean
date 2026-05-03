@@ -64,9 +64,16 @@ lemma quotient_obj_mem_subcategoryAcyclic_iff_acyclic (K : CochainComplex C ℤ)
 
 variable (C)
 
-lemma quasiIso_eq_subcategoryAcyclic_W :
+lemma quasiIso_eq_subcategoryAcyclic_trW :
     quasiIso C (ComplexShape.up ℤ) = (subcategoryAcyclic C).trW := by
   ext K L f
   exact ((homologyFunctor C (ComplexShape.up ℤ) 0).mem_homologicalKernel_trW_iff f).symm
+
+@[deprecated (since := "2026-05-03")] alias quasiIso_eq_subcategoryAcyclic_W :=
+  quasiIso_eq_subcategoryAcyclic_trW
+
+instance : (quasiIso C (ComplexShape.up ℤ)).IsCompatibleWithShift ℤ := by
+  rw [quasiIso_eq_subcategoryAcyclic_trW]
+  infer_instance
 
 end HomotopyCategory

@@ -1,10 +1,11 @@
 /-
-Copyright (c) 2024 Joël Riou. All rights reserved.
+Copyright (c) 2026 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 module
 
+public import Mathlib.AlgebraicTopology.ModelCategory.Cylinder
 public import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 public import Mathlib.Algebra.Homology.DerivedCategory.Basic
@@ -23,14 +24,18 @@ public import Mathlib.CategoryTheory.Localization.OfQuotient
 @[expose] public section
 
 open CategoryTheory Category Limits Triangulated ZeroObject Pretriangulated
+  HomotopicalAlgebra
 
-variable (C : Type _) [Category C] [Preadditive C]
-  {D : Type _} [Category D] [Preadditive D] [HasZeroObject D] [HasBinaryBiproducts D]
-  (A : Type _) [Category A] [Abelian A]
+variable (C : Type*) [Category* C] [Preadditive C]
+  (A : Type*) [Category* A] [Abelian A]
 
-variable {C} [HasBinaryBiproducts C] in
-open HomologicalComplex in
-lemma CochainComplex.plus_cylinder (K : CochainComplex C ℤ) (hK : CochainComplex.plus C K) :
+namespace CochainComplex
+
+open HomologicalComplex
+
+variable {C} [HasBinaryBiproducts C]
+
+lemma plus_cylinder (K : CochainComplex C ℤ) (hK : CochainComplex.plus C K) :
     CochainComplex.plus C (cylinder K) := by
   obtain ⟨n, hn⟩ := hK
   refine ⟨n - 1, ?_⟩
@@ -43,76 +48,84 @@ lemma CochainComplex.plus_cylinder (K : CochainComplex C ℤ) (hK : CochainCompl
   · simp only [ComplexShape.up_Rel] at hj
     exact K.isZero_of_isStrictlyGE n _ (by lia)
 
-set_option backward.isDefEq.respectTransparency false in
-open HomologicalComplex in
-attribute [local instance] ComplexShape.decidableRelSymm in
-variable {C} [HasBinaryBiproducts C] in
-lemma CochainComplex.plus_pathObject (K : CochainComplex C ℤ) (hK : CochainComplex.plus C K) :
+lemma plus_pathObject (K : CochainComplex C ℤ) (hK : CochainComplex.plus C K) :
     CochainComplex.plus C (pathObject K) := by
   obtain ⟨n, hn⟩ := hK
   refine ⟨n - 1, ?_⟩
   rw [CochainComplex.isStrictlyGE_iff]
   intro i hi
-  apply IsZero.unop
-  dsimp [pathObject]
-  refine homotopyCofiber.isZero_X _ _ ?_ (fun j hj ↦ IsZero.op ?_)
-  · have : PreservesBinaryBiproduct (HomologicalComplex.op K) (HomologicalComplex.op K)
-        (eval Cᵒᵖ (ComplexShape.down ℤ) i) :=
-      instPreservesBinaryBiproductEval _ _ _
-    refine IsZero.of_iso ?_ ((HomologicalComplex.eval Cᵒᵖ (.down ℤ) i).mapBiprod K.op K.op)
-    simpa using (K.isZero_of_isStrictlyGE n i).op
-  · simp only [ComplexShape.symm_Rel, ComplexShape.up_Rel] at hj
-    exact K.isZero_of_isStrictlyGE n _ (by lia)
+  refine pathObject.isZero_X _ _ (K.isZero_of_isStrictlyGE n i)
+    (fun j hj ↦ ?_)
+  simp only [ComplexShape.up_Rel] at hj
+  exact K.isZero_of_isStrictlyGE n j
+
+lemma isStrictlyGE_mappingCone {K L : CochainComplex C ℤ} (f : K ⟶ L)
+    (n₁ n₂ n : ℤ) [K.IsStrictlyGE n₁] [L.IsStrictlyGE n₂] (hn₁ : n < n₁ := by lia)
+    (hn₂ : n ≤ n₂ := by lia) :
+    (mappingCone f).IsStrictlyGE n := by
+  rw [isStrictlyGE_iff]
+  intro i hi
+  simp at hi
+  simp only [mappingCone.isZero_X_iff]
+  exact ⟨K.isZero_of_isStrictlyGE n₁ _, L.isZero_of_isStrictlyGE n₂ _⟩
+
+-- better develop an `ObjectProperty` API for `Precylinder`...
+@[simps]
+noncomputable def Plus.precylinder (K : Plus C) : Precylinder K where
+  I := ⟨K.obj.cylinder, K.obj.plus_cylinder K.property⟩
+  i₀ := (CochainComplex.plus C).homMk (cylinder.ι₀ _)
+  i₁ := (CochainComplex.plus C).homMk (cylinder.ι₁ _)
+  π := (CochainComplex.plus C).homMk (cylinder.π _)
+
+end CochainComplex
 
 namespace HomotopyCategory
 
 def plus : ObjectProperty (HomotopyCategory C (ComplexShape.up ℤ)) :=
   fun K ↦ ∃ (n : ℤ), CochainComplex.IsStrictlyGE K.1 n
 
-set_option backward.isDefEq.respectTransparency false in
-variable [HasZeroObject C] [HasBinaryBiproducts C] in
-instance : (plus C).IsTriangulated where
+@[simp]
+lemma plus_functor_obj_iff (K : CochainComplex C ℤ) :
+    plus C ((quotient _ _).obj K) ↔ ∃ (n : ℤ), CochainComplex.IsStrictlyGE K n :=
+  Iff.rfl
+
+instance [HasZeroObject C] : (plus C).ContainsZero where
   exists_zero := by
-    refine ⟨⟨0⟩, ?_, ⟨0, ?_⟩⟩
-    · change IsZero ((quotient _ _).obj 0)
-      rw [IsZero.iff_id_eq_zero, ← (quotient _ _).map_id, id_zero, Functor.map_zero]
-    · dsimp
-      infer_instance
+    refine ⟨(HomotopyCategory.quotient _ _).obj 0,
+      Functor.map_isZero _ (isZero_zero _), ?_⟩
+    simp only [plus_functor_obj_iff]
+    exact ⟨0, inferInstance⟩
+
+instance : (plus C).IsStableUnderShift ℤ where
   isStableUnderShiftBy n :=
-    { le_shift := by
-        rintro ⟨X : CochainComplex C ℤ⟩ ⟨k, _ : X.IsStrictlyGE k⟩
-        refine ⟨k - n, ?_⟩
-        erw [Quotient.functor_obj_shift]
-        exact X.isStrictlyGE_shift k n (k - n) (by omega) }
-  ext₂' T hT := by
-    rintro ⟨n₁, _⟩ ⟨n₃, _⟩
-    obtain ⟨f : T.obj₃.as ⟶ T.obj₁.as⟦(1 : ℤ)⟧, hf⟩ := (quotient _ _ ).map_surjective
-      (T.mor₃ ≫ ((quotient C (ComplexShape.up ℤ)).commShiftIso (1 : ℤ)).inv.app T.obj₁.as)
-    let T₁ := T.rotate.rotate
-    have hT₁ : T₁ ∈ distTriang _ := rot_of_distTriang _ (rot_of_distTriang _ hT)
-    let T₂ := (HomotopyCategory.quotient C (ComplexShape.up ℤ)).mapTriangle.obj
-      (CochainComplex.mappingCone.triangle f)
-    have hT₂ : T₂ ∈ distTriang _ := by exact ⟨_, _, f, ⟨Iso.refl _⟩⟩
-    have e := isoTriangleOfIso₁₂ T₁ T₂ hT₁ hT₂ (Iso.refl _)
-      (((quotient C (ComplexShape.up ℤ)).commShiftIso (1 : ℤ)).symm.app T.obj₁.as)
-      (by dsimp [T₁, T₂]; rw [id_comp, hf])
-    refine ⟨(quotient C (ComplexShape.up ℤ)).obj ((shiftFunctor (CochainComplex C ℤ) (-1)).obj
-      (CochainComplex.mappingCone f)), ?_, ⟨?_⟩⟩
-    · let n₀ : ℤ := min n₁ n₃ - 1
-      have := min_le_left n₁ n₃
-      have := min_le_right n₁ n₃
-      have : (CochainComplex.mappingCone f).IsStrictlyGE n₀ := by
-        rw [CochainComplex.isStrictlyGE_iff]
-        intro i hi
-        simp only [CochainComplex.mappingCone.isZero_X_iff]
-        constructor
-        · exact CochainComplex.isZero_of_isStrictlyGE T.obj₃.as n₃ (i + 1) (by omega)
-        · exact CochainComplex.isZero_of_isStrictlyGE T.obj₁.as n₁ (i + 1) (by omega)
-      exact ⟨_,
-        (CochainComplex.mappingCone f).isStrictlyGE_shift n₀ (-1) (n₀ + 1) (by omega)⟩
-    · exact (shiftEquiv _ (1 : ℤ)).unitIso.app T.obj₂ ≪≫
-        (shiftFunctor _ (-1)).mapIso (Triangle.π₃.mapIso e) ≪≫
-        ((quotient _ _).commShiftIso (-1)).symm.app (CochainComplex.mappingCone f)
+    { le_shift K hK := by
+        obtain ⟨K : CochainComplex _ _, rfl⟩ := K.quotient_obj_surjective
+        simp only [plus_functor_obj_iff] at hK
+        obtain ⟨q, _⟩ := hK
+        refine ⟨q - n, ?_⟩
+        have : (((HomotopyCategory.quotient _ _).obj K)⟦n⟧).as =
+          ((HomotopyCategory.quotient _ _).obj (K⟦n⟧)).as := by
+          congr 1; apply Quotient.functor_obj_shift
+        rw [this]
+        exact K.isStrictlyGE_shift q n (q - n) (by lia) }
+
+instance [HasZeroObject C] [HasBinaryBiproducts C] :
+    (plus C).IsTriangulatedClosed₃ where
+  ext₃' T hT := by
+    rintro ⟨n₁, _⟩ ⟨n₂, _⟩
+    obtain ⟨f : T.obj₁.as ⟶ T.obj₂.as, hf⟩ := (quotient _ _).map_surjective T.mor₁
+    refine ⟨_, ?_,
+      ⟨Triangle.π₃.mapIso (isoTriangleOfIso₁₂ T _ hT (mappingCone_triangleh_distinguished f)
+        (Iso.refl _) (Iso.refl _) ?_)⟩⟩
+    · dsimp
+      simp only [plus_functor_obj_iff]
+      exact ⟨min (n₁ - 1) n₂, CochainComplex.isStrictlyGE_mappingCone f n₁ n₂ _
+        (by simp) (by simp)⟩
+    · change _ ≫ 𝟙 _ = 𝟙 _ ≫ _
+      simp [hf]
+
+instance [HasZeroObject C] [HasBinaryBiproducts C] : (plus C).IsTriangulated where
+  toIsTriangulatedClosed₂ := .of_isTriangulatedClosed₃
 
 abbrev Plus := (plus C).FullSubcategory
 
@@ -120,19 +133,19 @@ namespace Plus
 
 abbrev ι : Plus C ⥤ HomotopyCategory C (ComplexShape.up ℤ) := (plus C).ι
 
-def fullyFaithfulι : (ι C).FullyFaithful := ObjectProperty.fullyFaithfulι _
+abbrev fullyFaithfulι : (ι C).FullyFaithful := ObjectProperty.fullyFaithfulι _
 
 def quasiIso : MorphismProperty (Plus A) := (HomotopyCategory.quasiIso A _).inverseImage (ι A)
+  deriving MorphismProperty.IsMultiplicative
 
-instance : (quasiIso A).IsMultiplicative := by
-  dsimp only [quasiIso]
-  infer_instance
+lemma quasiIso_iff {K L : Plus A} (f : K ⟶ L) :
+    quasiIso A f ↔ (HomotopyCategory.quasiIso A _) f.hom := Iff.rfl
 
 instance : (quasiIso A).IsCompatibleWithShift ℤ where
   condition a := by
     ext X Y f
-    refine Iff.trans ?_ (MorphismProperty.IsCompatibleWithShift.iff
-      (HomotopyCategory.quasiIso A (ComplexShape.up ℤ)) ((ι A).map f) a)
+    simp only [quasiIso_iff, ← MorphismProperty.IsCompatibleWithShift.iff
+      (HomotopyCategory.quasiIso A (.up ℤ)) f.hom a]
     exact (HomotopyCategory.quasiIso A (ComplexShape.up ℤ)).arrow_mk_iso_iff
       (Arrow.isoOfNatIso ((ι A).commShiftIso a) (Arrow.mk f))
 
@@ -148,8 +161,7 @@ def quotient : CochainComplex.Plus C ⥤ Plus C :=
       exact ⟨n, hn⟩)
 
 variable {C} in
-lemma quotient_obj_surjective :
-    Function.Surjective (quotient C).obj :=
+lemma quotient_obj_surjective : Function.Surjective (quotient C).obj :=
   fun K ↦ ⟨⟨K.obj.as, K.property⟩, rfl⟩
 
 instance : (quotient C).EssSurj where
@@ -157,7 +169,6 @@ instance : (quotient C).EssSurj where
 
 instance : (quotient C).Full := by dsimp [quotient]; infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 variable [HasZeroObject C] [HasBinaryBiproducts C] in
 open HomologicalComplex in
 instance :
@@ -166,18 +177,22 @@ instance :
   Functor.isLocalization_of_essSurj_of_full_of_exists_cylinders _ _ (fun _ _ f hf ↦ by
     rw [← isIso_iff_of_reflects_iso _ (HomotopyCategory.Plus.ι C)]
     dsimp
-    rwa [isIso_quotient_map_iff_homotopyEquivalences]) (by
-    rintro ⟨K, hK⟩ ⟨L, hL⟩ f₀ f₁ hf
+    --rwa [isIso_quotient_map_iff_homotopyEquivalences]
+    sorry
+    ) (by
+    rintro K L f₀ f₁ hf
     obtain ⟨f₀, rfl⟩ := ObjectProperty.homMk_surjective f₀
     obtain ⟨f₁, rfl⟩ := ObjectProperty.homMk_surjective f₁
-    dsimp at f₀ f₁ hf
     replace hf := homotopyOfEq f₀ f₁ ((HomotopyCategory.Plus.ι _).congr_map hf)
-    refine ⟨⟨cylinder K, CochainComplex.plus_cylinder _ hK⟩,
-      ObjectProperty.homMk (cylinder.ι₀ _),
-      ObjectProperty.homMk (cylinder.ι₁ _),
-      ObjectProperty.homMk (cylinder.π _), ?_, by cat_disch, by cat_disch,
-      ObjectProperty.homMk (cylinder.desc f₀ f₁ hf), by cat_disch, by cat_disch⟩
-    exact ⟨cylinder.homotopyEquiv _ (fun n ↦ ⟨n - 1, by simp⟩), rfl⟩)
+    refine ⟨K.precylinder, ?_, sorry⟩
+    sorry
+    --refine ⟨⟨cylinder K, CochainComplex.plus_cylinder _ hK⟩,
+    --  ObjectProperty.homMk (cylinder.ι₀ _),
+    --  ObjectProperty.homMk (cylinder.ι₁ _),
+    --  ObjectProperty.homMk (cylinder.π _), ?_, by cat_disch, by cat_disch,
+    --  ObjectProperty.homMk (cylinder.desc f₀ f₁ hf), by cat_disch, by cat_disch⟩
+    --exact ⟨cylinder.homotopyEquiv _ (fun n ↦ ⟨n - 1, by simp⟩), rfl⟩
+    )
 
 def quotientCompι :
   quotient C ⋙ ι C ≅
@@ -206,53 +221,3 @@ instance (n : ℤ) : (singleFunctor C n).Additive := by
 end Plus
 
 end HomotopyCategory
-
-namespace CategoryTheory
-
-namespace Functor
-
-variable {C}
-variable (F : C ⥤ D) [F.Additive]
-
-def mapHomotopyCategoryPlus : HomotopyCategory.Plus C ⥤ HomotopyCategory.Plus D :=
-  (HomotopyCategory.plus D).lift
-    (HomotopyCategory.Plus.ι C ⋙ F.mapHomotopyCategory (ComplexShape.up ℤ)) (by
-      rintro ⟨X, ⟨n, _⟩⟩
-      refine ⟨n, ?_⟩
-      dsimp [HomotopyCategory.Plus.ι, HomotopyCategory.quotient, Quotient.functor]
-      infer_instance)
-
-variable [HasZeroObject C] [HasBinaryBiproducts C] in
-noncomputable instance : (F.mapHomotopyCategoryPlus).CommShift ℤ := by
-  dsimp only [mapHomotopyCategoryPlus]
-  infer_instance
-
-set_option backward.isDefEq.respectTransparency false in
-variable [HasZeroObject C] [HasBinaryBiproducts C] in
-instance : (F.mapHomotopyCategoryPlus).IsTriangulated := by
-  dsimp only [mapHomotopyCategoryPlus]
-  infer_instance
-
-noncomputable instance [Full F] [Faithful F] : Full F.mapHomotopyCategoryPlus where
-  map_surjective f :=
-    ⟨ObjectProperty.homMk ((F.mapHomotopyCategory _).preimage f.hom), by
-      ext : 1
-      exact (F.mapHomotopyCategory _).map_preimage f.hom⟩
-
-noncomputable instance [Full F] [Faithful F] : Faithful F.mapHomotopyCategoryPlus where
-  map_injective h := by
-    ext : 1
-    exact (F.mapHomotopyCategory _).map_injective ((ObjectProperty.ι _).congr_map h)
-
-def mapHomotopyCategoryPlusCompIso {E : Type*} [Category E] [Preadditive E] [HasZeroObject E]
-    [HasBinaryBiproducts E]
-    {F : C ⥤ D} {G : D ⥤ E} {H : C ⥤ E} (e : F ⋙ G ≅ H)
-    [F.Additive] [G.Additive] [H.Additive] :
-    H.mapHomotopyCategoryPlus ≅ F.mapHomotopyCategoryPlus ⋙ G.mapHomotopyCategoryPlus :=
-  ((HomotopyCategory.plus _).fullyFaithfulι.whiskeringRight _).preimageIso
-    (isoWhiskerLeft (HomotopyCategory.Plus.ι C)
-      (mapHomotopyCategoryCompIso e (ComplexShape.up ℤ)))
-
-end Functor
-
-end CategoryTheory

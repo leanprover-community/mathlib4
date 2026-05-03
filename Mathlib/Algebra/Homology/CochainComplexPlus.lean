@@ -20,7 +20,7 @@ in a category `C`.
 
 @[expose] public section
 
-open CategoryTheory Limits
+open CategoryTheory Limits HomologicalComplex
 
 namespace CochainComplex
 
