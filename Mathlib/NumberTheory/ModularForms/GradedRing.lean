@@ -741,6 +741,40 @@ private lemma whomog_poly_Delta_decomp {n : ℕ} (hn12 : 12 ≤ n)
   rw [hp_eq, hδ_eq, hp'_eq, mul_add]
   ring
 
+private lemma reduced_isWeightedHomogeneous_eq_monomial {n : ℕ}
+    (r : MvPolynomial (Fin 2) ℂ) (hr : MvPolynomial.IsWeightedHomogeneous E₄E₆Weight r n)
+    (hr_red : ∀ d ∈ r.support, d 0 < 3) {d₀ : Fin 2 →₀ ℕ} (hd₀ : d₀ ∈ r.support) :
+    r = MvPolynomial.monomial d₀ (MvPolynomial.coeff d₀ r) := by
+  have hwd₀ := hr (MvPolynomial.mem_support_iff.mp hd₀)
+  ext d
+  rw [MvPolynomial.coeff_monomial]
+  by_cases hd : d = d₀
+  · simp [hd]
+  rw [if_neg (Ne.symm hd)]
+  by_cases hd_supp : d ∈ r.support
+  · have h1 := weight_eq_4a_6b d
+    rw [hr (MvPolynomial.mem_support_iff.mp hd_supp)] at h1
+    have h2 := weight_eq_4a_6b d₀
+    rw [hwd₀] at h2
+    obtain ⟨ha, hb⟩ := unique_small_weight_soln (hr_red d hd_supp) (hr_red d₀ hd₀)
+      (show d 0 * 4 + d 1 * 6 = d₀ 0 * 4 + d₀ 1 * 6 by omega)
+    exact absurd (Finsupp.ext fun i => by fin_cases i <;> [exact ha; exact hb]) hd
+  · rwa [MvPolynomial.mem_support_iff, not_not] at hd_supp
+
+private lemma evalE₄E₆_monomial_qExpansion_coeff_zero {n : ℕ} {d₀ : Fin 2 →₀ ℕ}
+    (hd₀_weight : 4 * d₀ 0 + 6 * d₀ 1 = n) (c : ℂ) :
+    (qExpansion 1 ↑((evalE₄E₆ (MvPolynomial.monomial d₀ c)) (↑n : ℤ))).coeff 0 = c := by
+  rw [monomial_fin2_eq, mul_assoc, map_mul, evalE₄E₆_C, Algebra.algebraMap_eq_smul_one,
+    smul_mul_assoc, one_mul, evalE₄E₆_monomial, DirectSum.smul_apply,
+    show (↑(c • ((DirectSum.of (ModularForm 𝒮ℒ) 4 E₄ ^ d₀ 0 *
+        DirectSum.of (ModularForm 𝒮ℒ) 6 E₆ ^ d₀ 1) (↑n : ℤ))) : ℍ → ℂ) =
+      c • (↑((DirectSum.of (ModularForm 𝒮ℒ) 4 E₄ ^ d₀ 0 *
+        DirectSum.of (ModularForm 𝒮ℒ) 6 E₆ ^ d₀ 1) (↑n : ℤ)) : ℍ → ℂ) from rfl,
+    UpperHalfPlane.qExpansion_smul (ModularFormClass.analyticAt_cuspFunction_zero _
+      one_pos one_mem_strictPeriods_SL) c, PowerSeries.coeff_smul,
+    monomial_qExpansion_coeff_zero_eq_one hd₀_weight]
+  simp
+
 private lemma reduced_part_eq_zero {n : ℕ} (hn12 : 12 ≤ n)
     (r s : MvPolynomial (Fin 2) ℂ)
     (hr : MvPolynomial.IsWeightedHomogeneous E₄E₆Weight r n)
@@ -751,28 +785,13 @@ private lemma reduced_part_eq_zero {n : ℕ} (hn12 : 12 ≤ n)
   by_cases hr_empty : r.support = ∅
   · rwa [MvPolynomial.support_eq_empty] at hr_empty
   obtain ⟨d₀, hd₀⟩ := Finset.nonempty_of_ne_empty hr_empty
-  have hwd₀ := hr (MvPolynomial.mem_support_iff.mp hd₀)
-  have hr_mono : r = MvPolynomial.monomial d₀ (MvPolynomial.coeff d₀ r) := by
-    ext d
-    rw [MvPolynomial.coeff_monomial]
-    by_cases hd : d = d₀
-    · simp [hd]
-    rw [if_neg (Ne.symm hd)]
-    by_cases hd_supp : d ∈ r.support
-    · have h1 := weight_eq_4a_6b d
-      rw [hr (MvPolynomial.mem_support_iff.mp hd_supp)] at h1
-      have h2 := weight_eq_4a_6b d₀
-      rw [hwd₀] at h2
-      obtain ⟨ha, hb⟩ := unique_small_weight_soln (hr_red d hd_supp) (hr_red d₀ hd₀)
-        (show d 0 * 4 + d 1 * 6 = d₀ 0 * 4 + d₀ 1 * 6 by omega)
-      exact absurd (Finsupp.ext fun i => by fin_cases i <;> [exact ha; exact hb]) hd
-    · rwa [MvPolynomial.mem_support_iff, not_not] at hd_supp
+  have hr_mono := reduced_isWeightedHomogeneous_eq_monomial r hr hr_red hd₀
   set c := MvPolynomial.coeff d₀ r
   suffices hc : c = 0 by rw [hr_mono, hc, MvPolynomial.monomial_zero]
-  rw [hr_mono, map_add] at heval
   have hd₀_weight : 4 * d₀ 0 + 6 * d₀ 1 = n := by
-    have := (weight_eq_4a_6b d₀).symm.trans hwd₀
+    have := (weight_eq_4a_6b d₀).symm.trans (hr (MvPolynomial.mem_support_iff.mp hd₀))
     omega
+  rw [hr_mono, map_add] at heval
   set Q := ModularForm.qExpansionAddHom (h := 1) one_pos one_mem_strictPeriods_SL (↑n : ℤ)
   have hQ_zero : Q ((evalE₄E₆ (MvPolynomial.monomial d₀ c)) (↑n : ℤ) +
       (evalE₄E₆ (discriminantPoly * s)) (↑n : ℤ)) = 0 := by
@@ -782,26 +801,15 @@ private lemma reduced_part_eq_zero {n : ℕ} (hn12 : 12 ≤ n)
           evalE₄E₆ (discriminantPoly * s)) (↑n : ℤ) from rfl, heval]
     exact map_zero Q
   rw [map_add] at hQ_zero
-  have h_coeff_sum : (Q ((evalE₄E₆ (MvPolynomial.monomial d₀ c)) (↑n : ℤ))).coeff 0 +
+  have hQ : (Q ((evalE₄E₆ (MvPolynomial.monomial d₀ c)) (↑n : ℤ))).coeff 0 +
       (Q ((evalE₄E₆ (discriminantPoly * s)) (↑n : ℤ))).coeff 0 = 0 := by
     simpa using congr_arg (fun (p : PowerSeries ℂ) => p.coeff 0) hQ_zero
-  have h_Δ_term : (Q ((evalE₄E₆ (discriminantPoly * s)) (↑n : ℤ))).coeff 0 = 0 :=
-    evalE₄E₆_discriminantPoly_mul_coeff_zero hn12 s hs
-  rw [h_Δ_term, add_zero] at h_coeff_sum
-  have h_mono_term : (Q ((evalE₄E₆ (MvPolynomial.monomial d₀ c)) (↑n : ℤ))).coeff 0 = c := by
-    change (qExpansion 1 ↑((evalE₄E₆ (MvPolynomial.monomial d₀ c)) (↑n : ℤ))).coeff 0 = c
-    rw [monomial_fin2_eq, mul_assoc, map_mul, evalE₄E₆_C, Algebra.algebraMap_eq_smul_one,
-      smul_mul_assoc, one_mul, evalE₄E₆_monomial, DirectSum.smul_apply,
-      show (↑(c • ((DirectSum.of (ModularForm 𝒮ℒ) 4 E₄ ^ d₀ 0 *
-          DirectSum.of (ModularForm 𝒮ℒ) 6 E₆ ^ d₀ 1) (↑n : ℤ))) : ℍ → ℂ) =
-        c • (↑((DirectSum.of (ModularForm 𝒮ℒ) 4 E₄ ^ d₀ 0 *
-          DirectSum.of (ModularForm 𝒮ℒ) 6 E₆ ^ d₀ 1) (↑n : ℤ)) : ℍ → ℂ) from rfl,
-      UpperHalfPlane.qExpansion_smul (ModularFormClass.analyticAt_cuspFunction_zero _
-        one_pos one_mem_strictPeriods_SL) c, PowerSeries.coeff_smul]
-    rw [monomial_qExpansion_coeff_zero_eq_one hd₀_weight]
-    simp
-  rw [h_mono_term] at h_coeff_sum
-  exact h_coeff_sum
+  rw [show (Q ((evalE₄E₆ (discriminantPoly * s)) (↑n : ℤ))).coeff 0 = 0 from
+      evalE₄E₆_discriminantPoly_mul_coeff_zero hn12 s hs,
+    add_zero,
+    show (Q ((evalE₄E₆ (MvPolynomial.monomial d₀ c)) (↑n : ℤ))).coeff 0 = c from
+      evalE₄E₆_monomial_qExpansion_coeff_zero hd₀_weight c] at hQ
+  exact hQ
 
 private lemma eval_discriminantPoly_mul_zero_imp {n : ℕ} (hn12 : 12 ≤ n)
     (s : MvPolynomial (Fin 2) ℂ)
