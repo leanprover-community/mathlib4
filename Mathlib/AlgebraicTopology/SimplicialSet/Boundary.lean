@@ -6,18 +6,15 @@ Authors: Johan Commelin, Kim Morrison, Adam Topaz
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
-public import Mathlib.CategoryTheory.Limits.Types.Pushouts
-public import Mathlib.CategoryTheory.Subobject.Types
+
+import Mathlib.CategoryTheory.Limits.Types.Pushouts
+import Mathlib.CategoryTheory.Subobject.Types
 
 /-!
 # The boundary of the standard simplex
 
 We introduce the boundary `∂Δ[n]` of the standard simplex `Δ[n]`.
 (These notations become available by doing `open Simplicial`.)
-We show in `Subcomplex.exists_isPushout_of_ne_top` that every proper
-subcomplex `A < ⊤` of a simplicial set admits a strict extension obtained
-by attaching an `n`-cell along its boundary.
 
 ## Future work
 
@@ -164,14 +161,13 @@ private lemma preimage_yonedaEquivSymm_eq_boundary
   · simpa using heq.symm.le _ (by simp : yonedaEquiv (𝟙 _) ∈ _)
 
 set_option backward.isDefEq.respectTransparency false in
-/-- Every proper subcomplex of a simplicial set extends by attaching a single
-cell along its boundary, exhibited as a pushout of `∂Δ[n] ↪ Δ[n]`. -/
+/-- If `A` is a proper subcomplex, there is a strict extension `B` (i.e., `A < B`)
+exhibited as a pushout of `∂Δ[n] ↪ Δ[n]`. -/
 lemma exists_isPushout_of_ne_top {X : SSet.{u}} (A : X.Subcomplex) (hA : A ≠ ⊤) :
     ∃ (B : X.Subcomplex) (lt : A < B) (n : ℕ)
       (t : ((∂Δ[n] : (Δ[n] : SSet.{u}).Subcomplex) : SSet.{u}) ⟶ (A : SSet.{u}))
       (b : (Δ[n] : SSet.{u}) ⟶ (B : SSet.{u})),
       IsPushout t (∂Δ[n] : (Δ[n] : SSet.{u}).Subcomplex).ι (Subcomplex.homOfLE lt.le) b := by
-  -- Find a non-degenerate witness `x ∈ X _⦋n⦌ \ A` by strong induction on simplex dimension.
   by_contra h
   apply hA
   ext ⟨n⟩ : 2
@@ -198,7 +194,7 @@ lemma exists_isPushout_of_ne_top {X : SSet.{u}} (A : X.Subcomplex) (hA : A ≠ �
   refine IsPushout.of_forall_isPushout_app fun ⟨m⟩ ↦ ?_
   haveI := subtype_val_mono (A.obj ⟨m⟩)
   haveI := subtype_val_mono (A'.obj ⟨m⟩)
-  -- Factor the right column through `X.obj m` so the pullback condition is `hpre` at `m`.
+  -- Factor through `X.obj m` so the pullback obligation is `hpre` at `m`.
   refine Types.isPushout_of_isPullback_of_mono (X₅ := X.obj ⟨m⟩)
     (k := ↾Subtype.val) (r' := ↾Subtype.val) (b' := σ.app ⟨m⟩)
       ?_ rfl rfl ?_ ?_
