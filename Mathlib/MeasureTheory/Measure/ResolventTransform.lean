@@ -130,7 +130,7 @@ theorem hasDerivAt_resolventTransform [RCLike A] [NormedAlgebra 𝕜 A] (μ : Me
   · have : μ = 0 := by contrapose! h; exact nonempty_support h
     simp [this, hasDerivAt_zero]
   rw [resolventTransform_def]
-  have : 0 < (infDist a (algebraMap 𝕜 A '' μ.support)) := by
+  have : 0 < infDist a (algebraMap 𝕜 A '' μ.support) := by
     refine (IsClosed.notMem_iff_infDist_pos ?_ (h.image _)).mp ha
     refine (Topology.IsClosedEmbedding.isClosed_iff_image_isClosed ?_).mp isClosed_support
     exact (algebraMap_isometry 𝕜 A).isClosedEmbedding
