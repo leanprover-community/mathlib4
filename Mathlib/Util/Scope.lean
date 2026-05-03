@@ -191,13 +191,13 @@ end header
 section openDecls
 
 /-- Lean may duplicate open declarations occasionally due to leanprover/lean4#13353. This function
-deduplicates exactly-duplicated `OpenDecl`s. -/
+deduplicates exactly-duplicated `OpenDecl`s by removing the later occurrences. -/
 @[inline] private def deduplicateOpenDecls (openDecls : List OpenDecl) : List OpenDecl :=
-  -- Note that the innermost openDecls come first and affect name resolution first due to `eraseDups` affecting resolved ids by first occurrence (corresponding to later occurrences in openDecls)
+  /- Note that the innermost openDecls come first and affect name resolution first due to `eraseDups` affecting resolved ids by first occurrence (corresponding to later occurrences in openDecls) -/
   -- TODO: find something more efficient, which means basically just about anything else.
   openDecls.reverse.eraseDups.reverse
 
-/-- Convert `OpenDecl`s into reified `open @id₁ @id₂ ...` syntax for portability. -/
+/-- Convert `OpenDecl`s into reified `open @id₁ @id₂ ...` syntax. -/
 def reifyOpenDecls {m} [Monad m] [MonadQuotation m] (openDecls : List OpenDecl) (dedup := true) :
     m (Option (TSyntax ``reifiedOpenStx)) := do
   let openDecls := if dedup then deduplicateOpenDecls openDecls else openDecls
