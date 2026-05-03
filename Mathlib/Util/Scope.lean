@@ -8,6 +8,19 @@ import Batteries
 public meta import Mathlib.Lean.Elab.InfoTree
 public meta import Aesop.Util.Basic -- Name.ofComponents...
 
+/-!
+# Scope manipulation tools
+
+This module provides utilities for fully capturing the effectful parts of the current scope (namespaces, open declarations, options, etc.) and transporting it between modules. Specifically, it provides `#scope`, which reifies the semantically-relevant parts of the current scope into portable syntax capturing the current scope that may be moved between files.
+
+This is not intended to capture `section` behavior, nor is it intended to be used for user-friendly visibility into the current scope structure. The reified scope specification is primarily intended to be easy to act on with metaprogramming automation. In this sense it is not trying to replace `#where`.
+
+## TODO
+
+- `#scope! (<scope specification>)` for effecting the given scope specification
+- `#scope? (<scope specification>)` for producing appropriate Lean commands to integrate the given
+  full scope specification with the current scope
+-/
 
 open Lean Meta Elab Command
 
