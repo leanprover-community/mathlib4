@@ -141,4 +141,35 @@ theorem sndL_comp_coe_orthogonalDecomposition :
 
 end Submodule
 
+namespace Quotient
+
+variable (K : Submodule 𝕜 E) [K.HasOrthogonalProjection]
+
+def quot_linearEquiv_orthogonal : (E ⧸ K) ≃ₗᵢ[𝕜] ↥Kᗮ := {
+  K.quotientEquivOfIsCompl Kᗮ Submodule.isCompl_orthogonal_of_hasOrthogonalProjection with
+    norm_map' y := by
+      set f := K.quotientEquivOfIsCompl Kᗮ Submodule.isCompl_orthogonal_of_hasOrthogonalProjection
+      obtain ⟨x, hx, hfy⟩ : ∃ x : E, ∃ hx : x ∈ Kᗮ, f y = ⟨x, hx⟩ :=
+        ⟨(f y).1, (f y).2, (Subtype.eta (f y) (f y).2).symm⟩
+      have hy : y = Submodule.Quotient.mk x :=
+        f.injective (hfy.trans (K.quotientEquivOfIsCompl_apply_mk_coe Kᗮ
+          Submodule.isCompl_orthogonal_of_hasOrthogonalProjection ⟨x, hx⟩).symm)
+      rw [hfy, Submodule.coe_norm, ← Submodule.norm_orthogonalProjection_apply Kᗮ hx,
+          Submodule.orthogonalProjection_orthogonal, Submodule.coe_norm,
+          Submodule.starProjection_minimal, hy, eq_comm]
+      convert (quotient_norm_mk_eq K.toAddSubgroup x) using 2
+      rw [sInf_image', ← Equiv.iInf_comp (Equiv.neg K)]
+      simp [Equiv.neg, sub_eq_add_neg]
+}
+
+noncomputable instance instQuotientInnerProductSpace [CompleteSpace E] :
+    InnerProductSpace 𝕜 (E ⧸ K) :=
+  { inner x y := inner 𝕜 (quot_linearEquiv_orthogonal K x) (quot_linearEquiv_orthogonal K y)
+    add_left x y z := by rw [map_add, inner_add_left]
+    smul_left x y r := by rw [map_smul, inner_smul_left]
+    conj_inner_symm x y := inner_conj_symm _ _
+    norm_sq_eq_re_inner y := by rw [inner_self_eq_norm_sq, LinearIsometryEquiv.norm_map] }
+
+end Quotient
+
 end
