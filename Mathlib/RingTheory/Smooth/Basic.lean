@@ -115,7 +115,8 @@ instance mvPolynomial (σ : Type*) : FormallySmooth R (MvPolynomial σ R) := by
   let P : Generators R (MvPolynomial σ R) σ :=
     .ofSurjective X (by simp [aeval_X_left, Function.Surjective])
   have : Subsingleton ↥P.toExtension.ker :=
-    Submodule.subsingleton_iff_eq_bot.mpr (by simp [SetLike.ext_iff, map_id])
+    Submodule.subsingleton_iff_eq_bot.mpr <| by
+      simp [SetLike.ext_iff, P, Generators.ofSurjective, aeval_X_left]
   have : Subsingleton P.toExtension.Cotangent := Cotangent.mk_surjective.subsingleton
   have := P.toExtension.h1Cotangentι_injective.subsingleton
   exact ⟨inferInstance, P.equivH1Cotangent.symm.subsingleton⟩
@@ -275,7 +276,6 @@ section iff_split
 
 variable [Algebra.FormallySmooth R P]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma kerCotangentToTensor_injective_iff
     [Algebra P A] [IsScalarTower R P A] (hf : Function.Surjective (algebraMap P A)) :
     Function.Injective (kerCotangentToTensor R P A) ↔ Subsingleton (Algebra.H1Cotangent R A) :=
@@ -393,7 +393,7 @@ section Polynomial
 
 open scoped Polynomial in
 instance polynomial (R : Type*) [CommRing R] :
-  FormallySmooth R R[X] := .of_equiv (MvPolynomial.pUnitAlgEquiv.{_, 0} R)
+  FormallySmooth R R[X] := .of_equiv (MvPolynomial.uniqueAlgEquiv.{_, 0} R PUnit)
 
 instance : FormallySmooth R R := .of_equiv (MvPolynomial.isEmptyAlgEquiv R Empty)
 

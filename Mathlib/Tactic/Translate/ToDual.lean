@@ -189,6 +189,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("coheyting", ["Heyting"]),
   ("frame", ["Coframe"]),
   ("coframe", ["Frame"]),
+  ("epigraph", ["Hypograph"]),
+  ("hypograph", ["Epigraph"]),
 
   ("epi", ["Mono"]),
   /- `mono` can also refer to monotone, so we don't translate it. -/
@@ -237,12 +239,16 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("nhdsGT", "NhdsLT"),
   ("nhdsLE", "NhdsGE"),
   ("nhdsGE", "NhdsLE"),
+  ("relIsoLT", "RelIsoGT"),
+  ("relIsoGT", "RelIsoLT"),
   ("succColimit", "SuccLimit"),
   ("predColimit", "PredLimit"),
   ("codirectedOrder", "DirectedOrder"),
   ("directedOrder", "CodirectedOrder"),
   ("galoisInsertion", "GaloisCoinsertion"),
   ("galoisCoinsertion", "GaloisInsertion"),
+  ("leftOrdContinuous", "RightOrdContinuous"),
+  ("rightOrdContinuous", "LeftOrdContinuous"),
 
   ("neTop", "NeBot"),
   ("decidableSucc", "DecidablePred"),
@@ -273,7 +279,8 @@ initialize registerBuiltinAttribute {
     name := `to_dual
     descr := "Transport to dual"
     add := fun src stx kind ↦ discard do
-      addTranslationAttr data src (← elabTranslationAttr src stx) kind
+      profileitM Exception "to_dual" (← getOptions) do
+        addTranslationAttr data src (← elabTranslationAttr src stx) kind
     applicationTime := .afterCompilation
   }
 
