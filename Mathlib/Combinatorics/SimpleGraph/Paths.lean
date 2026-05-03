@@ -710,37 +710,6 @@ theorem bypass_isPath (p : G.Walk u v) : p.bypass.IsPath := by
     · exact ih.dropUntil hs
     · simp [*, cons_isPath_iff]
 
-theorem length_bypass_le (p : G.Walk u v) : p.bypass.length ≤ p.length := by
-  induction p with
-  | nil => rfl
-  | cons _ _ ih =>
-    simp only [bypass]
-    split_ifs
-    · trans
-      · apply length_dropUntil_le
-      rw [length_cons]
-      lia
-    · rw [length_cons, length_cons]
-      exact Nat.add_le_add_right ih 1
-
-lemma bypass_eq_self_of_length_le (p : G.Walk u v) (h : p.length ≤ p.bypass.length) :
-    p.bypass = p := by
-  induction p with
-  | nil => rfl
-  | cons h p ih =>
-    simp only [Walk.bypass]
-    split_ifs with hb
-    · exfalso
-      simp only [hb, Walk.bypass, Walk.length_cons, dif_pos] at h
-      apply Nat.not_succ_le_self p.length
-      calc p.length + 1
-        _ ≤ (p.bypass.dropUntil _ _).length := h
-        _ ≤ p.bypass.length := Walk.length_dropUntil_le p.bypass hb
-        _ ≤ p.length := Walk.length_bypass_le _
-    · simp only [hb, Walk.bypass, Walk.length_cons, not_false_iff, dif_neg,
-        Nat.add_le_add_iff_right] at h
-      rw [ih h]
-
 /-- Given a walk, produces a path with the same endpoints using `SimpleGraph.Walk.bypass`. -/
 def toPath (p : G.Walk u v) : G.Path u v :=
   ⟨p.bypass, p.bypass_isPath⟩
@@ -780,6 +749,13 @@ theorem edges_bypass_sublist (p : G.Walk u v) : p.bypass.edges <+ p.edges :=
 
 theorem edges_bypass_subset (p : G.Walk u v) : p.bypass.edges ⊆ p.edges :=
   p.edges_bypass_sublist.subset
+
+theorem length_bypass_le (p : G.Walk u v) : p.bypass.length ≤ p.length := by
+  simpa using p.darts_bypass_sublist.length_le
+
+lemma bypass_eq_self_of_length_le (p : G.Walk u v) (h : p.length ≤ p.bypass.length) :
+    p.bypass = p :=
+  ext_support <| p.support_bypass_sublist.eq_of_length_le <| by simpa using h
 
 theorem darts_toPath_subset (p : G.Walk u v) : (p.toPath : G.Walk u v).darts ⊆ p.darts :=
   p.darts_bypass_subset
