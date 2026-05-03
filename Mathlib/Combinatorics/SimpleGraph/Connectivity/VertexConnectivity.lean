@@ -8,7 +8,6 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 public import Mathlib.Combinatorics.SimpleGraph.IsolateVerts
 public import Mathlib.Data.Set.Card
-public import Mathlib.Tactic.GRewrite
 
 /-!
 # Vertex Connectivity
