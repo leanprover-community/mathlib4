@@ -344,33 +344,31 @@ private lemma surj_of_weight : ∀ (k : ℤ) (f : ModularForm 𝒮ℒ k),
     exact ⟨0, map_zero _⟩
   rw [Int.not_odd_iff_even] at hk_odd
   by_cases hn12 : n < 12
-  · interval_cases n
+  · obtain rfl | rfl | rfl | rfl | rfl | rfl :
+        n = 0 ∨ n = 2 ∨ n = 4 ∨ n = 6 ∨ n = 8 ∨ n = 10 := by
+      rcases hk_odd with ⟨m, hm⟩
+      omega
     · refine surj_of_rank_one ModularForm.levelOne_weight_zero_rank_one
         one_ne_zero_modularForm 1 ?_ f
       rw [map_one]
       rfl
-    · exact absurd hk_odd (by decide)
-    · rw [(rank_zero_iff_forall_zero.mp ModularForm.levelOne_weight_two_rank_zero) f, map_zero]
+    · rw [(rank_zero_iff_forall_zero.mp ModularForm.levelOne_weight_two_rank_zero) f,
+        map_zero]
       exact ⟨0, map_zero _⟩
-    · exact absurd hk_odd (by decide)
     · exact surj_of_rank_one ModularForm.levelOne_weight_four_rank_one
         (E_ne_zero (k := 4) (by norm_num) ⟨2, rfl⟩)
         (MvPolynomial.X 0) evalE₄E₆_X0 f
-    · exact absurd hk_odd (by decide)
     · exact surj_of_rank_one ModularForm.levelOne_weight_six_rank_one
         (E_ne_zero (k := 6) (by norm_num) ⟨3, rfl⟩)
         (MvPolynomial.X 1) evalE₄E₆_X1 f
-    · exact absurd hk_odd (by decide)
     · exact surj_of_rank_one (rank_one_of_lt_twelve (by norm_num) ⟨4, rfl⟩ (by norm_num))
         (mul_ne_zero E₄ E₄ (E_ne_zero (by norm_num) ⟨2, rfl⟩)
           (E_ne_zero (by norm_num) ⟨2, rfl⟩))
         (MvPolynomial.X 0 ^ 2) evalE₄E₆_X_sq f
-    · exact absurd hk_odd (by decide)
     · exact surj_of_rank_one (rank_one_of_lt_twelve (by norm_num) ⟨5, rfl⟩ (by norm_num))
         (mul_ne_zero E₄ E₆ (E_ne_zero (by norm_num) ⟨2, rfl⟩)
           (E_ne_zero (by norm_num) ⟨3, rfl⟩))
         (MvPolynomial.X 0 * MvPolynomial.X 1) evalE₄E₆_X0_X1 f
-    · exact absurd hk_odd (by decide)
   · push Not at hn12
     exact surj_at_weight_inductive hn12 hk_odd ih f
 
