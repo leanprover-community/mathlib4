@@ -545,6 +545,7 @@ variable {f} in
 theorem mem_fieldRange {y : L'} : y ∈ f.fieldRange ↔ ∃ x, f x = y :=
   Iff.rfl
 
+/-- The isomorphism from `L` to the field range of the `AlgHom` `f`, sending `x` to `f x`. -/
 noncomputable def equivFieldRange : L ≃ₐ[K] f.fieldRange :=
   (AlgEquiv.ofBijective
     (f.codRestrict f.range fun x ↦ AlgHom.mem_fieldRange.mpr ⟨x, rfl⟩)
