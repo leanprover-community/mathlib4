@@ -111,13 +111,12 @@ theorem measurable_limit_of_tendsto_metrizable_ae {ι} [Countable ι] [Nonempty 
   inhabit ι
   rcases eq_or_neBot L with (rfl | hL)
   · exact ⟨(hf default).mk _, (hf default).measurable_mk, Eventually.of_forall fun x => tendsto_bot⟩
-  letI := hL
-  let f_lim : α → β := fun x =>
-    if h : ∃ l : β, Tendsto (fun n => f n x) L (𝓝 l) then
+  set f_lim : α → β := fun x ↦
+    if h : ∃ l : β, Tendsto (fun n ↦ f n x) L (𝓝 l) then
       h.choose
     else
       (⟨f default x⟩ : Nonempty β).some
-  have h_ae_tendsto_f_lim : ∀ᵐ x ∂μ, Tendsto (fun n => f n x) L (𝓝 (f_lim x)) := by
+  have h_ae_tendsto_f_lim : ∀ᵐ x ∂μ, Tendsto (fun n ↦ f n x) L (𝓝 (f_lim x)) := by
     filter_upwards [h_ae_tendsto] with x hx
     simpa [f_lim, hx] using hx.choose_spec
   have hf_lim : AEMeasurable f_lim μ :=

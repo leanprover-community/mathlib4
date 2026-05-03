@@ -61,8 +61,7 @@ lemma toReal_rnDeriv_map [IsFiniteMeasure μ] (hμν : μ ≪ ν)
   have : SigmaFinite ν := SigmaFinite.of_map _ hg.aemeasurable hσ
   refine ae_eq_condExp_of_forall_setIntegral_eq _ (by fun_prop) ?_ ?_ ?_
   · rintro _ ⟨t, _, rfl⟩ _
-    exact Integrable.integrableOn <|
-      (Measure.integrable_toReal_rnDeriv (μ := μ.map g) (ν := ν.map g)).comp_measurable hg
+    exact Integrable.integrableOn (Measure.integrable_toReal_rnDeriv.comp_measurable hg)
   · rintro _ ⟨t, ht, rfl⟩ _
     calc ∫ x in g ⁻¹' t, ((μ.map g).rnDeriv (ν.map g) (g x)).toReal ∂ν
     _ = ∫ y in t, ((μ.map g).rnDeriv (ν.map g) y).toReal ∂(ν.map g) := by
@@ -88,10 +87,10 @@ lemma rnDeriv_map [IsFiniteMeasure μ] (hμν : μ ≪ ν)
   have h_ne_top1 : ∀ᵐ x ∂ν, (μ.map g).rnDeriv (ν.map g) (g x) ≠ ∞ :=
     ae_of_ae_map hg.aemeasurable (Measure.rnDeriv_ne_top (μ.map g) (ν.map g))
   have h_ne_top2 : ∀ᵐ x ∂ν, ν⁻[μ.rnDeriv ν|MeasurableSpace.comap g m𝓨] x ≠ ∞ := by
-    simpa [Measure.lintegral_rnDeriv hμν] using
-      (condLExp_ne_top (P := ν) (mΩ := m𝓨.comap g) (f := μ.rnDeriv ν))
-  have h_condExp := toReal_condLExp (m𝓨.comap g) (f := μ.rnDeriv ν) (μ := ν) (by fun_prop)
-    (by simp [Measure.lintegral_rnDeriv hμν])
+    refine condLExp_ne_top ?_
+    simp [Measure.lintegral_rnDeriv hμν]
+  have h_condExp := toReal_condLExp (m𝓨.comap g) (f := μ.rnDeriv ν) (μ := ν) (by fun_prop) ?_
+  swap; · simp [Measure.lintegral_rnDeriv hμν]
   filter_upwards [toReal_rnDeriv_map hμν hg, h_condExp, h_ne_top1, h_ne_top2]
     with x hx h_condExp h_ne_top1 h_ne_top2
   rwa [← h_condExp, ENNReal.toReal_eq_toReal_iff' h_ne_top1 h_ne_top2] at hx
@@ -123,10 +122,10 @@ lemma toReal_rnDeriv_map_ae_eq_trim [IsFiniteMeasure μ] (hμν : μ ≪ ν)
       ν[(fun a ↦ (μ.rnDeriv ν a).toReal) | m𝓨.comap g] := by
   rw [StronglyMeasurable.ae_eq_trim_iff]
   · exact toReal_rnDeriv_map hμν hg
-  · simpa [Function.comp] using
-      (((Measure.measurable_rnDeriv
-          (μ.map g) (ν.map g)).ennreal_toReal).stronglyMeasurable.comp_measurable
-        (measurable_iff_comap_le.mpr le_rfl))
+  · refine Measurable.stronglyMeasurable fun s hs ↦ ?_
+    refine ⟨(fun a ↦ ((μ.map g).rnDeriv (ν.map g) a).toReal) ⁻¹' s, hs.preimage (by fun_prop), ?_⟩
+    rw [← Set.preimage_comp]
+    rfl
   · fun_prop
 
 /-- The Radon-Nikodym derivative `∂(μ.trim hm)/∂(ν.trim hm)` of the trimmed measures

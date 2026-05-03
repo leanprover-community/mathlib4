@@ -512,9 +512,8 @@ private lemma measurable_const_mul (c : EReal) : Measurable fun (x : EReal) ↦ 
     intro x hx
     have hx0 : x ≠ 0 := by simpa using hx
     have hcont : ContinuousAt (fun x : EReal ↦ c * x) x :=
-      ContinuousAt.comp_of_eq (g := fun p : EReal × EReal ↦ p.1 * p.2) (f := fun x ↦ (c, x))
-        (y := (c, x))
-        (EReal.continuousAt_mul (p := (c, x)) (Or.inl hc) (Or.inl hc) (Or.inr hx0) (Or.inr hx0))
+      ContinuousAt.comp_of_eq (g := fun p : EReal × EReal ↦ p.1 * p.2)
+        (continuousAt_mul (Or.inl hc) (Or.inl hc) (Or.inr hx0) (Or.inr hx0))
         (continuousAt_const.prodMk continuousAt_id) rfl
     exact hcont.continuousWithinAt
 
