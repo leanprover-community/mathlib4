@@ -449,7 +449,7 @@ protected theorem IsChain.iterate {f : α → α} (a : α) (h : ∀ a, r a (f a)
     ∀ n, IsChain r (iterate f a n)
   | 0 => .nil
   | 1 => .singleton _
-  | n + 2 => .cons_cons (h a) (isChain_iterate (f a) h (n + 1))
+  | n + 2 => .cons_cons (h a) (IsChain.iterate (f a) h (n + 1))
 
 theorem isChain_eq_iff_eq_replicate {l : List α} :
     IsChain (· = ·) l ↔ ∀ a ∈ l.head?, l = replicate l.length a := by
