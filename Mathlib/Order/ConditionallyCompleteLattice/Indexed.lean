@@ -360,6 +360,11 @@ lemma ciInf_image {ι ι' : Type*} {s : Set ι} {f : ι → ι'} {g : ι' → α
     ⨅ i ∈ (f '' s), g i = ⨅ x ∈ s, g (f x) :=
   ciSup_image (α := αᵒᵈ) hf hg'
 
+@[to_dual le_ciInf_or]
+lemma ciSup_or_le (p q : Prop) (f : p ∨ q → α) :
+    ⨆ (h : p ∨ q), f h ≤ (⨆ h : p, f (.inl h)) ⊔ (⨆ h : q, f (.inr h)) := by
+  by_cases hp : p <;> simp [hp]
+
 end ConditionallyCompleteLattice
 
 section ConditionallyCompleteLinearOrder
@@ -495,11 +500,13 @@ theorem ciSup_mono' {ι'} {f : ι → α} {g : ι' → α} (hg : BddAbove (range
     (h : ∀ i, ∃ i', f i ≤ g i') : iSup f ≤ iSup g :=
   ciSup_le' fun i => Exists.elim (h i) (le_ciSup_of_le hg)
 
-lemma ciSup_or' (p q : Prop) (f : p ∨ q → α) :
+lemma ciSup_or (p q : Prop) (f : p ∨ q → α) :
     ⨆ (h : p ∨ q), f h = (⨆ h : p, f (.inl h)) ⊔ ⨆ h : q, f (.inr h) := by
   by_cases hp : p <;>
   by_cases hq : q <;>
   simp [hp, hq]
+
+@[deprecated (since := "2026-05-03")] alias ciSup_or' := ciSup_or
 
 end ConditionallyCompleteLinearOrderBot
 
