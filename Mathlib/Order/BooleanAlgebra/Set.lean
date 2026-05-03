@@ -91,18 +91,19 @@ theorem inter_compl_self (s : Set α) : s ∩ sᶜ = ∅ :=
 theorem compl_inter_self (s : Set α) : sᶜ ∩ s = ∅ :=
   compl_inf_eq_bot
 
-@[simp]
+@[simp, push]
 theorem compl_empty : (∅ : Set α)ᶜ = univ :=
   compl_bot
 
-@[simp]
+@[simp, push]
 theorem compl_union (s t : Set α) : (s ∪ t)ᶜ = sᶜ ∩ tᶜ :=
   compl_sup
 
+@[push]
 theorem compl_inter (s t : Set α) : (s ∩ t)ᶜ = sᶜ ∪ tᶜ :=
   compl_inf
 
-@[simp]
+@[simp, push]
 theorem compl_univ : (univ : Set α)ᶜ = ∅ :=
   compl_top
 
