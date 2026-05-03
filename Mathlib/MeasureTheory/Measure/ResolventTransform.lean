@@ -72,7 +72,7 @@ variable [CompleteSpace 𝕜] [NormedDivisionRing A] [NormedAlgebra 𝕜 A]
 theorem norm_resolvent_le_inv_infDist_support {μ : Measure 𝕜} {a : A}
     (hz : a ∉ algebraMap 𝕜 A '' μ.support) {x : 𝕜} (hx : x ∈ μ.support) :
     ‖resolvent a x‖ ≤ (infDist a (algebraMap 𝕜 A '' μ.support))⁻¹ := by
-  have : 0 < (infDist a (algebraMap 𝕜 A '' μ.support)) := by
+  have : 0 < infDist a (algebraMap 𝕜 A '' μ.support) := by
     refine (IsClosed.notMem_iff_infDist_pos ?_ ((Set.nonempty_of_mem hx).image _)).mp hz
     refine (Topology.IsClosedEmbedding.isClosed_iff_image_isClosed ?_).mp isClosed_support
     exact (algebraMap_isometry 𝕜 A).isClosedEmbedding
