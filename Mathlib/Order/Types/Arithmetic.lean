@@ -124,13 +124,9 @@ theorem card_mono {o₁ o₂ : OrderType} : o₁ ≤ o₂ → card o₁ ≤ card
 
 theorem card_monotone : Monotone card := @card_mono
 
-@[simp]
-theorem card_zero : card 0 = 0 := by
-  simpa using card_type (α := PEmpty)
+@[simp] theorem card_zero : card 0 = 0 := by simpa using card_type (α := PEmpty)
 
-@[simp]
-theorem card_one : card 1 = 1 := by
-  simpa using card_type (α := PUnit)
+@[simp] theorem card_one : card 1 = 1 := by simpa using card_type (α := PUnit)
 
 end Cardinal
 
