@@ -6,10 +6,6 @@ Authors: Yan Yablonovskiy
 module
 
 public import Mathlib.Data.Real.Basic
-public import Mathlib.Order.CompleteBooleanAlgebra
-public import Mathlib.Order.Fin.Basic
-public import Mathlib.Order.Hom.Lex
-public import Mathlib.Order.OmegaCompletePartialOrder
 public import Mathlib.Order.Types.Defs
 public import Mathlib.SetTheory.Cardinal.Order
 
