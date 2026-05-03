@@ -51,7 +51,7 @@ lemma Walk.IsCircuit.egirth_le_length {a} {w : G.Walk a a} (hwc : w.IsCircuit) :
   let w' : G.Walk a a := w.cycleBypass
   have hwc' : w'.IsCycle := hwc.isCycle_cycleBypass
   have hwlg' : w'.length < G.egirth :=
-    lt_of_le_of_lt (ENat.coe_le_coe.mpr length_cycleBypass_le) hlg
+    lt_of_le_of_lt (ENat.coe_le_coe.mpr w.length_cycleBypass_le) hlg
   exact not_le_of_gt hwlg' (SimpleGraph.egirth_le_length hwc')
 
 @[simp]
