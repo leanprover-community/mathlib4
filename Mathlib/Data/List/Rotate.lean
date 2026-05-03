@@ -5,6 +5,7 @@ Authors: Chris Hughes, Yakov Pechersky
 -/
 module
 
+public import Mathlib.Data.List.Fold
 public import Mathlib.Data.List.Nodup
 public import Mathlib.Data.List.Infix
 public import Mathlib.Data.Quot
@@ -353,6 +354,20 @@ theorem Nodup.rotate_eq_self_iff {l : List α} (hl : l.Nodup) {n : ℕ} :
     l.rotate n = l ↔ n % l.length = 0 ∨ l = [] := by
   rw [← zero_mod, ← hl.rotate_congr_iff, rotate_zero]
 
+@[simp]
+lemma foldl_rotate {β} (f : β → α → β) [RightCommutative f] (b : β) (n : ℕ) (l : List α) :
+    (l.rotate n).foldl f b = l.foldl f b := by
+  induction n generalizing l with | zero => simp | succ n ih => _
+  match l with | [] => simp | a :: as => _
+  simp only [rotate_cons_succ, foldl_cons_eq_apply_foldl, ih, foldl_concat]
+
+@[simp]
+lemma foldr_rotate {β} (f : α → β → β) [LeftCommutative f] (b : β) (n : ℕ) (l : List α) :
+    (l.rotate n).foldr f b = l.foldr f b := by
+  induction n generalizing l with | zero => simp | succ n ih => _
+  match l with | [] => simp | a :: as => _
+  simp only [rotate_cons_succ, foldr_cons_eq_foldr_apply, ih, foldr_concat]
+
 section IsRotated
 
 variable (l l' : List α)
@@ -486,6 +501,16 @@ theorem IsRotated.dropLast_tail {α}
   | a :: b :: L => by
     simp only [head_cons, ne_eq, reduceCtorEq, not_false_eq_true, getLast_cons] at hL'
     simp [hL', IsRotated.cons_getLast_dropLast]
+
+theorem IsRotated.foldl {β} (h : l ~r l') (f : β → α → β) [RightCommutative f] (b : β) :
+    l.foldl f b = l'.foldl f b := by
+  obtain ⟨n, rfl⟩ := h
+  rw [foldl_rotate]
+
+theorem IsRotated.foldr {β} (h : l ~r l') (f : α → β → β) [LeftCommutative f] (b : β) :
+    l.foldr f b = l'.foldr f b := by
+  obtain ⟨n, rfl⟩ := h
+  rw [foldr_rotate]
 
 /-- List of all cyclic permutations of `l`.
 The `cyclicPermutations` of a nonempty list `l` will always contain `List.length l` elements.
