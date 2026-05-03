@@ -59,6 +59,7 @@ theorem sInf_eq_zero {s : Set ℕ} : sInf s = 0 ↔ 0 ∈ s ∨ s = ∅ := by
   · simp [sInf]
   · simp [h, h.ne_empty, Nat.sInf_def]
 
+@[simp]
 theorem sInf_empty : sInf ∅ = 0 := by
   simp
 
