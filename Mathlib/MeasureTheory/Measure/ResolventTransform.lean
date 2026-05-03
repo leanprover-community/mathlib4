@@ -17,11 +17,13 @@ import Mathlib.Analysis.Complex.CauchyIntegral
 Given a normed algebra `A` over a normed field `𝕜`, and `μ : Measure 𝕜`, we define the
 resolvent transform of `μ` by the formula
 
-`resolventTransform μ a = ∫ x, resolvent a x ∂μ`
+`resolventTransform μ a = ∫ x, resolvent a x ∂μ = ∫ x, (↑ₐ x - a)⁻¹ʳ ∂μ`
 
 This is not a standard notion in the literature, but specializes to a few standard notions,
 namely the case `𝕜 = ℝ` and `A = ℂ` is the Stieltjes transform, and the case `𝕜 = A = ℂ` is the
-Cauchy transform.
+Cauchy transform, given by the formulas:
+
+`∫ (x : ℝ), (↑x - a)⁻¹ ∂μ` and `∫ (x : ℂ), (↑x - a)⁻¹ ∂μ` respectively.
 
 ## Main definitions
 
@@ -93,7 +95,8 @@ end resolvent
 
 section Definition
 
-variable [NormedField 𝕜] [NormedRing A] [NormedAlgebra ℝ A] [NormedAlgebra 𝕜 A] [MeasurableSpace 𝕜]
+variable [NormedField 𝕜] [NormedRing A] [NormedAlgebra ℝ A] [NormedAlgebra 𝕜 A]
+  {m𝕜 : MeasurableSpace 𝕜}
 
 /-- The resolvent transform of a measure of a measure `μ`. -/
 noncomputable
@@ -126,9 +129,8 @@ variable [NontriviallyNormedField 𝕜] [HereditarilyLindelofSpace 𝕜] [Comple
 theorem hasDerivAt_resolventTransform [RCLike A] [NormedAlgebra 𝕜 A] (μ : Measure 𝕜)
     [IsFiniteMeasure μ] (a : A) (ha : a ∉ algebraMap 𝕜 A '' μ.support) :
     HasDerivAt (resolventTransform μ) (∫ x, resolvent a x ^ 2 ∂μ) a := by
-  by_cases h : μ.support.Nonempty; swap
-  · have : μ = 0 := by contrapose! h; exact nonempty_support h
-    simp [this, hasDerivAt_zero]
+  by_cases! h : μ.support.Nonempty; swap
+  · simp [support_eq_empty_iff.mp h]
   rw [resolventTransform_def]
   have : 0 < infDist a (algebraMap 𝕜 A '' μ.support) := by
     refine (IsClosed.notMem_iff_infDist_pos ?_ (h.image _)).mp ha

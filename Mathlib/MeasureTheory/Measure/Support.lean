@@ -175,6 +175,9 @@ lemma nonempty_support_iff : μ.support.Nonempty ↔ μ ≠ 0 :=
   ⟨fun h e ↦ (not_nonempty_iff_eq_empty.mpr <| congrArg Measure.support e |>.trans
     <| support_zero) h, fun h ↦ nonempty_support h⟩
 
+lemma support_eq_empty_iff : μ.support = ∅ ↔ μ = 0 := by
+  simp [← Set.not_nonempty_iff_eq_empty, not_congr nonempty_support_iff]
+
 end Lindelof
 
 section Restrict

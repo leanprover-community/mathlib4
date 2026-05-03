@@ -763,6 +763,7 @@ theorem hasDerivWithinAt_ofNat (n : ℕ) [OfNat F n] : HasDerivWithinAt (ofNat(n
 theorem hasDerivAt_const : HasDerivAt (fun _ => c) 0 x :=
   hasDerivAtFilter_const _ _
 
+@[simp]
 theorem hasDerivAt_zero : HasDerivAt (0 : 𝕜 → F) 0 x :=
   hasDerivAtFilter_zero _
 
