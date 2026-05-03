@@ -143,8 +143,7 @@ theorem hasDerivAt_resolventTransform [RCLike A] [NormedAlgebra 𝕜 A] (μ : Me
   have resolvent_meas : ∀ᶠ w in nhds a, AEStronglyMeasurable (resolvent w) μ := by
     filter_upwards with _ using by fun_prop
   have resolvent'_bound : ∀ᵐ x ∂μ, ∀ w ∈ s,
-      ‖(fun z x ↦ (resolvent z x) ^ 2) w x‖ ≤
-      ((infDist a (algebraMap 𝕜 A '' μ.support)) / 2)⁻¹ ^ 2 := by
+      ‖(resolvent w x) ^ 2‖ ≤ ((infDist a (algebraMap 𝕜 A '' μ.support)) / 2)⁻¹ ^ 2 := by
     filter_upwards [support_mem_ae] with x hx w hw
     grw [resolvent, Ring.inverse_eq_inv, norm_pow, norm_inv]
     gcongr
