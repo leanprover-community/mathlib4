@@ -914,8 +914,20 @@ def IsUniversal (G : SimpleGraph V) (v : V) : Prop := ∀ ⦃w⦄, v ≠ w → G
   simp [IsUniversal, Set.ext_iff]
   grind
 
-@[simp] lemma neighborSet_eq_univ_diff : G.neighborSet v = Set.univ \ {v} ↔ G.IsUniversal v := by
+@[simp] lemma neighborSet_eq_compl : G.neighborSet v = {v}ᶜ ↔ G.IsUniversal v := by
   rw [← insert_neighborSet_eq_univ]
   grind [notMem_neighborSet_self]
+
+@[simp]
+theorem IsUniversal.of_subsingleton [Subsingleton V] (G : SimpleGraph V) (v : V) :
+    G.IsUniversal v :=
+  fun _ hne ↦ False.elim <| hne (of_decide_eq_true rfl)
+
+theorem eq_top_iff_forall_isUniversal : G = ⊤ ↔ ∀ v, G.IsUniversal v := by
+  simp [eq_top_iff_forall_ne_adj, IsUniversal]
+
+@[simp]
+theorem isUniversal_top : IsUniversal ⊤ v :=
+  (eq_top_iff_forall_isUniversal _).mp rfl _
 
 end SimpleGraph
