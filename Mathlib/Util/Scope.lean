@@ -1,6 +1,7 @@
 module
 
 public import Lean
+public meta import Mathlib.Lean.Elab.Options
 public meta import Lean.Elab.BuiltinCommand
 public meta import Lean.PrettyPrinter.Delaborator
 import Batteries
@@ -303,7 +304,7 @@ def reifySetOptions? (opts : Options) : CommandElabM (Option (TSyntax ``reifiedS
   let mut kvs := #[]
   for (key, val) in opts do
     let some val := val.toSetOptionValueSyntax? | continue
-    kvs := kvs.push <|← `(reifiedOptionKeyValue| $(mkIdent key) $(⟨val⟩))
+    kvs := kvs.push <|← `(reifiedOptionKeyValue| $(mkIdent key) $val)
   if kvs.isEmpty then pure none else some <$> `(reifiedSetOptionsStx| set_options $kvs,*)
 
 end setOption
