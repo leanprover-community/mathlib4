@@ -177,6 +177,19 @@ theorem alternatingFaceMapComplex_map_f {X Y : SimplicialObject C} (f : X ⟶ Y)
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
+/-- Taking the alternating face map complex commutes with the application
+of an additive functor. -/
+@[simps!]
+def alternatingFaceMapComplexCompMapHomologicalComplexIso
+    {D : Type*} [Category* D] [Preadditive D] (F : C ⥤ D) [F.Additive] :
+    alternatingFaceMapComplex C ⋙ F.mapHomologicalComplex _ ≅
+      (SimplicialObject.whiskering C D).obj F ⋙ alternatingFaceMapComplex D :=
+  NatIso.ofComponents (fun K ↦
+    HomologicalComplex.Hom.isoOfComponents (fun _ ↦ Iso.refl _) (by
+      rintro i j rfl
+      simp [Functor.map_zsmul, SimplicialObject.δ]))
+
+set_option backward.isDefEq.respectTransparency false in
 theorem map_alternatingFaceMapComplex {D : Type*} [Category* D] [Preadditive D] (F : C ⥤ D)
     [F.Additive] :
     alternatingFaceMapComplex C ⋙ F.mapHomologicalComplex _ =
@@ -240,6 +253,16 @@ lemma ε_app_f_zero [Limits.HasZeroObject C] (X : SimplicialObject.Augmented C) 
 @[simp]
 lemma ε_app_f_succ [Limits.HasZeroObject C] (X : SimplicialObject.Augmented C) (n : ℕ) :
     (ε.app X).f (n + 1) = 0 := rfl
+
+@[simps!]
+def arrowMkεAppWhiskeringObjIso [Limits.HasZeroObject C] (X : SimplicialObject.Augmented C)
+    {D : Type*} [Category D] [Preadditive D] [Limits.HasZeroObject D]
+    (F : C ⥤ D) [F.Additive] :
+    Arrow.mk ((F.mapHomologicalComplex _).map (ε.app X)) ≅
+    Arrow.mk (ε.app ((SimplicialObject.Augmented.whiskeringObj F).obj X)) :=
+  Arrow.isoMk
+    ((alternatingFaceMapComplexCompMapHomologicalComplexIso F).app _)
+      ((HomologicalComplex.singleMapHomologicalComplex _ _ _).app _)
 
 end AlternatingFaceMapComplex
 

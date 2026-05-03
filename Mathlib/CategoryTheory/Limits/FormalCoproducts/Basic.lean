@@ -412,4 +412,24 @@ end FormalCoproduct
 
 end Limits
 
+namespace Functor
+
+open Limits
+
+variable {C : Type u} [Category.{v} C] {D : Type u₂} [Category.{v₂} D]
+  (F : C ⥤ D)
+
+/-- The functor `FormalCoproduct C ⥤ FormalCoproduct D` that is induced
+by a functor `C ⥤ D`. -/
+@[simps]
+def mapFormalCoproduct : FormalCoproduct.{w} C ⥤ FormalCoproduct.{w} D where
+  obj X :=
+    { I := X.I
+      obj := F.obj ∘ X.obj }
+  map f :=
+    { f := f.f
+      φ i := F.map (f.φ i) }
+
+end Functor
+
 end CategoryTheory

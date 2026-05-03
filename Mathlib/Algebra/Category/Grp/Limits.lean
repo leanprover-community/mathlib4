@@ -485,4 +485,41 @@ def kernelIsoKerOver {G H : AddCommGrpCat.{u}} (f : G ⟶ H) :
       (ofHom (AddSubgroup.subtype f.hom.ker)) :=
   Over.isoMk (kernelIsoKer f)
 
+section
+
+variable {ι : Type u} (X : ι → AddCommGrpCat.{u})
+
+def fan : Fan X :=
+  Fan.mk (P := .of (∀ i, X i)) (fun i ↦ AddCommGrpCat.ofHom (Pi.evalAddMonoidHom _ i))
+
+def isLimitFan : IsLimit (fan X) :=
+  mkFanLimit _
+    (fun s ↦ AddCommGrpCat.ofHom
+      { toFun x i := s.proj i x
+        map_zero' := by aesop
+        map_add' := by aesop })
+    (fun s i ↦ rfl)
+    (fun s m hm ↦ by
+      ext x
+      funext i
+      exact congr_fun ((forget _).congr_map (hm i)) _)
+
+def piIso : ∏ᶜ X ≅ .of (∀ i, X i) :=
+  IsLimit.conePointUniqueUpToIso (limit.isLimit _) (isLimitFan X)
+
+variable {X} in
+@[simp]
+lemma piIso_hom_apply (x : (∏ᶜ X :)) (i : ι) :
+    (piIso X).hom x i = Pi.π X i x :=
+  congr_fun ((forget AddCommGrpCat).congr_map
+    (IsLimit.conePointUniqueUpToIso_hom_comp (limit.isLimit _) (isLimitFan X) ⟨i⟩)) x
+
+@[simp]
+lemma piIso_inv_π (x : ∀ i, X i) (i : ι) :
+    Pi.π X i ((piIso X).inv x) = x i :=
+  congr_fun ((forget AddCommGrpCat).congr_map
+    (IsLimit.conePointUniqueUpToIso_inv_comp (limit.isLimit _) (isLimitFan X) ⟨i⟩)) x
+
+end
+
 end AddCommGrpCat

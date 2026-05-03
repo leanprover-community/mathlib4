@@ -419,4 +419,9 @@ lemma Arrow.functor_ext {F G : C ⥤ D} (h : ∀ ⦃X Y : C⦄ (f : X ⟶ Y),
     simp only [Functor.mapArrow_obj, mk_eq_mk_iff] at this
     tauto)
 
+@[simps!]
+def NatTrans.arrowMkAppIso {F G : C ⥤ D} (φ : F ⟶ G) {X Y : C} (e : X ≅ Y) :
+    Arrow.mk (φ.app X) ≅ Arrow.mk (φ.app Y) :=
+  Arrow.isoMk (F.mapIso e) (G.mapIso e)
+
 end CategoryTheory
