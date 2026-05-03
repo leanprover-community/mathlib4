@@ -285,13 +285,6 @@ end openDecls
 
 section setOption
 
-def _root_.Lean.DataValue.toSetOptionValueSyntax? : DataValue → Option Syntax
-  | .ofNat n      => Syntax.mkNumLit (toString n)
-  | .ofBool b  => Syntax.atom .none (toString b)
-  | .ofString str => Syntax.mkStrLit str
-  | _ => none
-
-
 /- Note: Ideally we would like to not include all the lake build options. But these are commingled
 with any `set_option`s in the base scope, so without doing something like "checking the lakefile"
 or "recording the options at the top of the file via linter" we can't distinguish between options
