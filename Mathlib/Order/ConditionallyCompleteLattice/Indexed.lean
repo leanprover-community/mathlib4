@@ -387,7 +387,7 @@ theorem ciSup_sup_le {f g : ι → α} : ⨆ x, f x ⊔ g x ≤ (⨆ x, f x) ⊔
     exact le_sup_right
   exact ciSup_sup_eq hf hg |>.le
 
-theorem ciInf_le_inf {f g : ι → α} : (⨅ x, f x) ⊓ (⨅ x, g x) ≤ ⨅ x, f x ⊓ g x :=
+theorem ciInf_inf_le {f g : ι → α} : (⨅ x, f x) ⊓ (⨅ x, g x) ≤ ⨅ x, f x ⊓ g x :=
   ciSup_sup_le (α := αᵒᵈ)
 
 /-- Indexed version of `exists_lt_of_lt_csSup`.
