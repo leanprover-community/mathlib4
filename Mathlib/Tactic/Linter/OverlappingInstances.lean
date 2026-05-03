@@ -205,6 +205,7 @@ def overlappingInstances : Linter where
     unless getLinterValue linter.overlappingInstances (← getLinterOptions) do
       return
     -- Note: we don't break on errors; we want to lint even on partial declarations
+    profileitM Exception "overlappingInstancesLinter" (← getOptions) do
     withTraceNode `overlappingInstances (fun _ ↦ return "looking for a local context") do
     for t in ← getInfoTrees do
       for (ref, ctx, info) in t.getDeclBodyInfos do
