@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.GroupTheory.FreeGroup.Basic
 public import Mathlib.GroupTheory.QuotientGroup.Defs
+public import Mathlib.GroupTheory.Coprod.Basic
 
 /-!
 # Defining a group given by generators and relations
@@ -69,6 +70,20 @@ lemma mk_eq_mk_of_mul_inv_mem {rels : Set (FreeGroup α)} {x y : FreeGroup α}
 lemma mk_eq_mk_of_inv_mul_mem {rels : Set (FreeGroup α)} {x y : FreeGroup α}
     (hx : x⁻¹ * y ∈ rels) : mk rels x = mk rels y :=
   eq_of_inv_mul_eq_one <| one_of_mem hx
+
+lemma lift_of_eq_mk_map {γ : Type*} (i : γ → α) (rels : Set (FreeGroup α)) :
+      FreeGroup.lift (of (rels := rels) ∘ i) = (mk rels).comp (FreeGroup.map i) := by
+      refine FreeGroup.ext_hom _ _ (?_)
+      intro a
+      simp [of]
+
+/-- If a map `i : γ → α` sends every relation in `relsᵢ` to a relation in `rels`,
+then each such relation evaluates to `1` under the induced map to the quotient. -/
+lemma map_in_rels_eq_one {γ : Type*} (i : γ → α) (rels : Set (FreeGroup α))
+(relsᵢ : Set (FreeGroup γ)) (hmem : ∀ r ∈ relsᵢ, FreeGroup.map i r ∈ rels) :
+    ∀ r ∈ relsᵢ, FreeGroup.lift (of (rels := rels) ∘ i) r = 1 := by
+  intro r hr
+  simp [lift_of_eq_mk_map, one_of_mem (hmem r hr)]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The generators of a presented group generate the presented group. That is, the subgroup closure
@@ -161,4 +176,55 @@ end ToGroup
 instance (rels : Set (FreeGroup α)) : Inhabited (PresentedGroup rels) :=
   ⟨1⟩
 
+section Coprod
+
+variable {β : Type*}
+variable (rels₁ : Set (FreeGroup α)) (rels₂ : Set (FreeGroup β))
+
+def coprodOf : α ⊕ β → Monoid.Coprod (PresentedGroup rels₁) (PresentedGroup rels₂) :=
+    Sum.elim (Monoid.Coprod.inl ∘ .of) (Monoid.Coprod.inr ∘ .of)
+
+lemma lift_coprodOf_inl_eq_inl_mk :
+    (FreeGroup.lift (coprodOf rels₁ rels₂)).comp (FreeGroup.map Sum.inl) =
+    Monoid.Coprod.inl.comp (mk rels₁) := by
+      refine FreeGroup.ext_hom _ _ (?_)
+      intro a
+      simp [coprodOf, of]
+
+lemma lift_coprodOf_inr_eq_inr_mk :
+    (FreeGroup.lift (coprodOf rels₁ rels₂)).comp (FreeGroup.map Sum.inr) =
+    Monoid.Coprod.inr.comp (mk rels₂) := by
+    refine FreeGroup.ext_hom _ _ (?_)
+    intro a
+    simp [coprodOf, of]
+
+lemma coprodOf_kills_rels :
+    ∀ r ∈ FreeGroup.map Sum.inl '' rels₁ ∪ FreeGroup.map Sum.inr '' rels₂,
+      FreeGroup.lift (coprodOf rels₁ rels₂) r = 1 := by
+  rintro r (⟨r, hr, rfl⟩ | ⟨r, hr, rfl⟩) <;>
+  simp only [← MonoidHom.comp_apply]
+  · simp [lift_coprodOf_inl_eq_inl_mk, one_of_mem hr]
+  · simp [lift_coprodOf_inr_eq_inr_mk, one_of_mem hr]
+
+/-
+The free-product (Coproduct) of presentations is isomorphic to the presentation of the union over
+the `FreeGroup (α ⊕ β)`
+-/
+def coprodPresentations :
+    PresentedGroup (FreeGroup.map (Sum.inl) '' rels₁ ∪ FreeGroup.map (Sum.inr) '' rels₂) ≃*
+    Monoid.Coprod (PresentedGroup rels₁) (PresentedGroup rels₂) := by
+  let rels := FreeGroup.map (Sum.inl) '' rels₁ ∪ FreeGroup.map (Sum.inr) '' rels₂
+  refine MonoidHom.toMulEquiv
+    (toGroup (coprodOf_kills_rels rels₁ rels₂))
+    (Monoid.Coprod.lift
+      (toGroup
+        (map_in_rels_eq_one Sum.inl rels rels₁ (by intro r hr; exact Or.inl ⟨r, hr, rfl⟩)))
+      (toGroup
+        (map_in_rels_eq_one Sum.inr rels rels₂ (by intro r hr; exact Or.inr ⟨r, hr, rfl⟩))))
+    ?_ ?_
+  · apply ext
+    rintro (a | b) <;> simp [toGroup.of, coprodOf]
+  · apply Monoid.Coprod.hom_ext <;> ext x <;>
+    simp [toGroup.of, coprodOf]
+end Coprod
 end PresentedGroup
