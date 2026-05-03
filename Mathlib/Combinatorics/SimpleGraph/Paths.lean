@@ -759,7 +759,7 @@ theorem support_bypass_subset (p : G.Walk u v) : p.bypass.support ⊆ p.support 
   p.support_bypass_sublist.subset
 
 theorem support_toPath_subset (p : G.Walk u v) : (p.toPath : G.Walk u v).support ⊆ p.support :=
-  support_bypass_subset _
+  p.support_bypass_subset
 
 open List in
 theorem darts_bypass_sublist (p : G.Walk u v) : p.bypass.darts <+ p.darts := by
@@ -782,10 +782,10 @@ theorem edges_bypass_subset (p : G.Walk u v) : p.bypass.edges ⊆ p.edges :=
   p.edges_bypass_sublist.subset
 
 theorem darts_toPath_subset (p : G.Walk u v) : (p.toPath : G.Walk u v).darts ⊆ p.darts :=
-  darts_bypass_subset _
+  p.darts_bypass_subset
 
 theorem edges_toPath_subset (p : G.Walk u v) : (p.toPath : G.Walk u v).edges ⊆ p.edges :=
-  edges_bypass_subset _
+  p.edges_bypass_subset
 
 /-- Bypass repeated vertices like `Walk.bypass`, except the starting vertex.
 
@@ -798,25 +798,25 @@ def cycleBypass : G.Walk v v → G.Walk v v
 @[simp] lemma cycleBypass_nil : (.nil : G.Walk v v).cycleBypass = .nil := rfl
 
 open List in
-theorem support_cycleBypass_sublist : ∀ {w : G.Walk v v}, w.cycleBypass.support <+ w.support
+theorem support_cycleBypass_sublist : ∀ (w : G.Walk v v), w.cycleBypass.support <+ w.support
   | .nil => .refl _
   | .cons _ w => w.support_bypass_sublist.cons_cons _
 
 open List in
-theorem darts_cycleBypass_sublist : ∀ {w : G.Walk v v}, w.cycleBypass.darts <+ w.darts
+theorem darts_cycleBypass_sublist : ∀ (w : G.Walk v v), w.cycleBypass.darts <+ w.darts
   | .nil => .refl _
   | .cons _ w => w.darts_bypass_sublist.cons_cons _
 
 open List in
-theorem edges_cycleBypass_sublist : ∀ {w : G.Walk v v}, w.cycleBypass.edges <+ w.edges
+theorem edges_cycleBypass_sublist : ∀ (w : G.Walk v v), w.cycleBypass.edges <+ w.edges
   | .nil => .refl _
   | .cons _ w => w.edges_bypass_sublist.cons_cons _
 
-lemma edges_cycleBypass_subset {w : G.Walk v v} : w.cycleBypass.edges ⊆ w.edges :=
+lemma edges_cycleBypass_subset (w : G.Walk v v) : w.cycleBypass.edges ⊆ w.edges :=
   w.edges_cycleBypass_sublist.subset
 
-lemma length_cycleBypass_le {w : G.Walk v v} : w.cycleBypass.length ≤ w.length := by
-  simpa using darts_cycleBypass_sublist.length_le
+lemma length_cycleBypass_le (w : G.Walk v v) : w.cycleBypass.length ≤ w.length := by
+  simpa using w.darts_cycleBypass_sublist.length_le
 
 lemma IsCircuit.isCycle_cycleBypass : ∀ {w : G.Walk v v}, w.IsCircuit → w.cycleBypass.IsCycle
   | .cons (v := v') hvv' w, hw => by
