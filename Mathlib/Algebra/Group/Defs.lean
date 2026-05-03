@@ -737,7 +737,7 @@ lemma pow_right_comm (a : M) (m n : ℕ) : (a ^ m) ^ n = (a ^ n) ^ m := by
   reg <| by simp [← mul_assoc, eq]
 
 @[to_additive] protected lemma IsLeftRegular.mul_eq_of_comm {a b c : M} (reg : IsLeftRegular a)
-    (eq : a * b = c) (hc : c * a = a * c) : b * a = c :=
+    (eq : a * b = c) (hc : Commute c a) : b * a = c :=
   reg <| by
     change a * (b * a) = a * c
     rw [← mul_assoc, eq, hc]
