@@ -11,6 +11,7 @@ public import Mathlib.Order.Fin.Basic
 public import Mathlib.Order.Hom.Lex
 public import Mathlib.Order.OmegaCompletePartialOrder
 public import Mathlib.Order.Types.Defs
+public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 
@@ -100,6 +101,38 @@ instance : Monoid OrderType.{u} where
     inductionOn o (fun α _ ↦ by
       simp only [show 1 = type PUnit by rfl, ← type_lex_prod]
       exact (Prod.Lex.uniqueProd PUnit α).type_congr)
+
+section Cardinal
+
+open Cardinal
+
+/-- The cardinal of an `OrderType` is the cardinality of any type on which a relation
+with that order type is defined. -/
+@[expose]
+def card : OrderType → Cardinal :=
+  fun o ↦ o.liftOn (fun α _ ↦ #α)
+    fun _ _ _ _ hab ↦ mk_congr (type_eq_type.mp hab).some.toEquiv
+
+@[simp]
+theorem card_type {α : Type u} [LinearOrder α] : card (type α) = #α := by
+  rw [card, liftOn_type]
+
+@[gcongr]
+theorem card_mono {o₁ o₂ : OrderType} : o₁ ≤ o₂ → card o₁ ≤ card o₂ :=
+  inductionOn o₁ fun _ ↦ inductionOn o₂ fun _ _ hle ↦ by
+    simp [card, (type_le_type_iff.mp hle).some.cardinal_le]
+
+theorem card_monotone : Monotone card := @card_mono
+
+@[simp]
+theorem card_zero : card 0 = 0 := by
+  simpa using card_type (α := PEmpty)
+
+@[simp]
+theorem card_one : card 1 = 1 := by
+  simpa using card_type (α := PUnit)
+
+end Cardinal
 
 instance (n : Nat) : OfNat OrderType n where
   ofNat := Fin n |> type
