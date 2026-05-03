@@ -694,42 +694,17 @@ lemma mem_divisors_self (hz : z ≠ 0) : z ∈ divisors z :=
 @[simp]
 lemma mem_divisorsAntidiag :
     ∀ {z} {xy : ℤ × ℤ}, xy ∈ divisorsAntidiag z ↔ xy.fst * xy.snd = z ∧ z ≠ 0
-  | (n : ℕ), ((x : ℕ), (y : ℕ)) => by
-    simp [divisorsAntidiag]
-    norm_cast
-    simp +contextual [eq_comm]
-  | (n : ℕ), (negSucc x, negSucc y) => by
-    simp [divisorsAntidiag, negSucc_eq, -neg_add_rev]
-    norm_cast
-    simp +contextual [eq_comm]
-  | (n : ℕ), ((x : ℕ), negSucc y) => by
-    simp [divisorsAntidiag, negSucc_eq, -neg_add_rev]
-    norm_cast
-    aesop
-  | (n : ℕ), (negSucc x, (y : ℕ)) => by
-    suffices
-      (∃ a, (n = a * y ∧ ¬n = 0) ∧ (a : ℤ) = -1 + -↑x) ↔ (n : ℤ) = (-1 + -↑x) * ↑y ∧ ¬n = 0 by
-      simpa [divisorsAntidiag, eq_comm, negSucc_eq]
-    simp only [← Int.neg_add, Int.add_comm 1, Int.neg_mul, Int.add_mul]
-    norm_cast
-    match n with
-    | 0 => simp
-    | n + 1 => simp
-  | .negSucc n, ((x : ℕ), (y : ℕ)) => by
-    simp [divisorsAntidiag]
-    norm_cast
-  | .negSucc n, (negSucc x, negSucc y) => by
-    simp [divisorsAntidiag, negSucc_eq, -neg_add_rev]
-    norm_cast
-    simp +contextual
-  | .negSucc n, ((x : ℕ), negSucc y) => by
-    simp [divisorsAntidiag, negSucc_eq, -neg_add_rev]
-    norm_cast
-    aesop
+  | (n : ℕ), ((x : ℕ), (y : ℕ))
+  | (n : ℕ), (negSucc x, negSucc y)
+  | (n : ℕ), ((x : ℕ), negSucc y)
+  | (n : ℕ), (negSucc x, (y : ℕ))
+  | .negSucc n, ((x : ℕ), (y : ℕ))
+  | .negSucc n, (negSucc x, negSucc y)
+  | .negSucc n, ((x : ℕ), negSucc y)
   | .negSucc n, (negSucc x, (y : ℕ)) => by
     simp [divisorsAntidiag, negSucc_eq, -neg_add_rev]
     norm_cast
-    simp +contextual [eq_comm]
+    try simp +contextual [eq_comm]
 
 theorem image_fst_divisorsAntidiag : z.divisorsAntidiag.image Prod.fst = z.divisors := by
   ext
