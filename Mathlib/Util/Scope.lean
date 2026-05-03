@@ -46,7 +46,7 @@ syntax reifiedSetOptionsStx := withPosition("set_options " ppIndent(reifiedOptio
 /--
 A scope specification of the form
 ```
-(@[expose])? (public)? (noncomputable)? (section)? scope
+(@[expose])? (public)? (noncomputable)? (section)? (scope)?
   (universe ...)?
   (namespace ...)?
   (open @id₁ @id₂ ...)?
@@ -56,13 +56,16 @@ A scope specification of the form
   (include ...)?
   (omit ...)?
 ```
-Notice the differences from typical scope syntax.
+Notice the differences from typical scope-related syntax, especially in the usage of `@` in
+identifiers for `open` and the use of `set_options` instead of `set_option`.
 
-Note also that this is intended to reify semantic and instantaneous aspects of a given scope,
-and not the entire scope stack. This means that `section`s and local scopes are not
-accounted for here.
+Note also that this is intended to reify semantic and instantaneous aspects of a given scope for
+transportation purposes, and is *not* intended to reify the entire scope stack. This means that
+the effects of `section`s and local scopes are not accounted for here.
+
+This syntax is not a command itself, but is used within other commands, such as `#scope`.
 -/
-syntax scopeStx := Parser.Command.sectionHeader -- &"scope"
+syntax scopeStx := Parser.Command.sectionHeader &"scope"
   (ppLine colGt Parser.Command.universe)?
   (ppLine colGt Parser.Command.namespace)?
   atomic((ppLine colGt reifiedOpenStx)?)
@@ -370,13 +373,13 @@ def reifyScope : CommandElabM (TSyntax ``scopeStx) := do
 
   let setOptions ← reifySetOptions? (← getUserOptions)
 
-  `(scopeStx| $sectionHeader -- scope
+  `(scopeStx| $sectionHeader scope
     $[$universes]?
     $[$namespaceStx]?
     $[$opens]?
     $[$extraScoped]?
     $[$setOptions]?
-    $[$variables]?) -- TODO: technically the variable parsing could change if a scope is opened earlier. This is probably important...it'll mean (1) detecting if any variable syntax is scoped (2) writing a parser for `scope` that opens the named scopes!
+    $[$variables]?) -- TODO: technically the variable parsing could change if a scope is opened earlier. This is probably important...it'll mean (1) detecting if any variable syntax is scoped (2) writing a more detailed parser for `scopeStx` that opens the named scopes!
 
     -- We also could account for `open (scoped) ... in variable` but it would have to be ad-hoc.
 
