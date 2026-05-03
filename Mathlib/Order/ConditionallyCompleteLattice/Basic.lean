@@ -471,6 +471,14 @@ theorem csInf_eq_csInf_of_forall_exists_le {s t : Set α}
     sInf s = sInf t :=
   csSup_eq_csSup_of_forall_exists_le (α := αᵒᵈ) hs ht
 
+theorem csSup_union_le (s t : Set α) : sSup (s ∪ t) ≤ sSup s ⊔ sSup t := by
+  rcases s.eq_empty_or_nonempty with (rfl | hs)
+  · simp
+  rcases t.eq_empty_or_nonempty with (rfl | ht)
+  · simp
+  by_cases BddAbove (s ∪ t) <;>
+    grind [csSup_union, bddAbove_union, csSup_of_not_bddAbove]
+
 lemma sSup_iUnion_Iic (f : ι → α) : sSup (⋃ (i : ι), Iic (f i)) = ⨆ i, f i := by
   apply csSup_eq_csSup_of_forall_exists_le
   · rintro x ⟨-, ⟨i, rfl⟩, hi⟩
@@ -595,10 +603,6 @@ theorem csSup_union' (hs : BddAbove s := by bddDefault) (ht : BddAbove t := by b
   rcases s.eq_empty_or_nonempty with (rfl | hne)
   · simp
   exact (isLUB_csSup' hs |>.union <| isLUB_csSup' ht).csSup_eq hne.inl
-
-theorem csSup_union_le : sSup (s ∪ t) ≤ sSup s ⊔ sSup t := by
-  by_cases BddAbove (s ∪ t) <;>
-    grind [csSup_union', bddAbove_union, csSup_of_not_bddAbove]
 
 theorem csSup_inter_le' (hs : BddAbove s := by bddDefault) (ht : BddAbove t := by bddDefault) :
     sSup (s ∩ t) ≤ sSup s ⊓ sSup t :=
