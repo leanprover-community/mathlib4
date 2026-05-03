@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
+Authors: Kim Morrison, Thomas R. Murrills
 -/
 module
 
@@ -52,8 +52,27 @@ def allNamesByModule (p : Name → Bool) : CoreM (Std.HashMap Name (Array Name))
     else
       return names
 
+namespace Lean.Name
+
+/--
+Folds `f` over the prefixes of `Name`, starting with the longest. E.g.
+``(`a.b.c).foldrPrefix init f`` results in
+```
+let v₁ := f `a.b.c init
+let v₂ := f `a.b v₁
+let v₄ := f `a v₃
+f .anonymous v₄
+```
+This is useful for certain `namespace`-related operations.
+-/
+@[specialize f] def foldrPrefix {α} (n : Name) (init : α) (f : Name → α → α) :=
+  let val := f n init
+  match n with
+  | .anonymous => val
+  | .str pre _ | .num pre _ => pre.foldrPrefix val f
+
 /-- Decapitalize the last component of a name. -/
-def Lean.Name.decapitalize (n : Name) : Name :=
+def decapitalize (n : Name) : Name :=
   n.modifyBase fun
     | .str p s => .str p s.decapitalize
     | n       => n
@@ -70,7 +89,7 @@ the name will definitely round trip. (The converse is not guaranteed.) Any devia
 behavior is a bug which should be fixed.
 -/
 -- See also [Zulip](https://leanprover.zulipchat.com/#narrow/channel/239415-metaprogramming-.2F-tactics/topic/Check.20if.20a.20.60Lean.2EName.60.20is.20roundtrippable/with/565735560)
-meta def Lean.Name.willRoundTrip (n : Name) : Bool :=
+meta def willRoundTrip (n : Name) : Bool :=
   !n.isAnonymous -- anonymous names do not roundtrip
     && !n.hasMacroScopes -- names with macroscopes do not roundtrip
     && !maybePseudoSyntax -- names which might be "pseudo-syntax" do not roundtrip

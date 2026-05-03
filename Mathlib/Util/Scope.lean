@@ -2,6 +2,7 @@ module
 
 public import Lean
 public meta import Mathlib.Lean.Elab.Options
+public meta import Mathlib.Lean.Name
 public meta import Lean.Elab.BuiltinCommand
 public meta import Lean.PrettyPrinter.Delaborator
 import Batteries
@@ -217,12 +218,6 @@ def reifyOpenDecls {m} [Monad m] [MonadQuotation m] (openDecls : List OpenDecl) 
     `(reifiedOpenStx| open $reifiedOpens.toArray*)
 
 section openScoped
-
-def _root_.Lean.Name.foldrPrefix {α} (n : Name) (init : α) (f : Name → α → α) :=
-  let val := f n init
-  match n with
-  | .anonymous => val
-  | .str pre _ | .num pre _ => pre.foldrPrefix val f
 
 @[inline] def _root_.Lean.NameSet.minus (current minus : NameSet) : NameSet := Id.run do
   if minus.isEmpty then current else current.filter (!minus.contains ·)
