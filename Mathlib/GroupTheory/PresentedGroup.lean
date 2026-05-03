@@ -181,37 +181,37 @@ section Coprod
 variable {β : Type*}
 variable (rels₁ : Set (FreeGroup α)) (rels₂ : Set (FreeGroup β))
 
+/--
+The canonical inclusion map from the disjoint union of types to the free product of the relations
+-/
 def coprodOf : α ⊕ β → Monoid.Coprod (PresentedGroup rels₁) (PresentedGroup rels₂) :=
     Sum.elim (Monoid.Coprod.inl ∘ .of) (Monoid.Coprod.inr ∘ .of)
 
-lemma lift_coprodOf_inl_eq_inl_mk :
-    (FreeGroup.lift (coprodOf rels₁ rels₂)).comp (FreeGroup.map Sum.inl) =
-    Monoid.Coprod.inl.comp (mk rels₁) := by
+lemma lift_coprodOf_inl_eq_inl_mk : (FreeGroup.lift (coprodOf rels₁ rels₂)).comp
+(FreeGroup.map Sum.inl) = Monoid.Coprod.inl.comp (mk rels₁) := by
       refine FreeGroup.ext_hom _ _ (?_)
       intro a
       simp [coprodOf, of]
 
-lemma lift_coprodOf_inr_eq_inr_mk :
-    (FreeGroup.lift (coprodOf rels₁ rels₂)).comp (FreeGroup.map Sum.inr) =
-    Monoid.Coprod.inr.comp (mk rels₂) := by
+lemma lift_coprodOf_inr_eq_inr_mk : (FreeGroup.lift (coprodOf rels₁ rels₂)).comp
+(FreeGroup.map Sum.inr) = Monoid.Coprod.inr.comp (mk rels₂) := by
     refine FreeGroup.ext_hom _ _ (?_)
     intro a
     simp [coprodOf, of]
 
-lemma coprodOf_kills_rels :
-    ∀ r ∈ FreeGroup.map Sum.inl '' rels₁ ∪ FreeGroup.map Sum.inr '' rels₂,
+lemma coprodOf_kills_rels : ∀ r ∈ FreeGroup.map Sum.inl '' rels₁ ∪ FreeGroup.map Sum.inr '' rels₂,
       FreeGroup.lift (coprodOf rels₁ rels₂) r = 1 := by
   rintro r (⟨r, hr, rfl⟩ | ⟨r, hr, rfl⟩) <;>
   simp only [← MonoidHom.comp_apply]
   · simp [lift_coprodOf_inl_eq_inl_mk, one_of_mem hr]
   · simp [lift_coprodOf_inr_eq_inr_mk, one_of_mem hr]
 
-/-
-The free-product (Coproduct) of presentations is isomorphic to the presentation of the union over
+/--
+The free product (Coproduct) of presentations is isomorphic to the presentation of the union over
 the `FreeGroup (α ⊕ β)`
 -/
 def coprodPresentations :
-    PresentedGroup (FreeGroup.map (Sum.inl) '' rels₁ ∪ FreeGroup.map (Sum.inr) '' rels₂) ≃*
+PresentedGroup (FreeGroup.map (Sum.inl) '' rels₁ ∪ FreeGroup.map (Sum.inr) '' rels₂) ≃*
     Monoid.Coprod (PresentedGroup rels₁) (PresentedGroup rels₂) := by
   let rels := FreeGroup.map (Sum.inl) '' rels₁ ∪ FreeGroup.map (Sum.inr) '' rels₂
   refine MonoidHom.toMulEquiv
