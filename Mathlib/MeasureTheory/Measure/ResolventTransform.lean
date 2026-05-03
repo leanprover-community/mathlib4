@@ -45,7 +45,7 @@ variable {𝕜 A : Type*}
 
 open MeasureTheory Measure Metric Filter Complex spectrum
 
-open scoped NNReal Topology Ring ComplexConjugate
+open scoped Topology
 
 namespace MeasureTheory
 
