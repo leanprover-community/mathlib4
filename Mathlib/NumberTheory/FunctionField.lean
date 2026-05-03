@@ -258,8 +258,8 @@ section constantExtension
 
 open RatFunc
 
-variable {Fq}
-variable [Algebra Fq[X] F] [FaithfulSMul Fq[X] F] [FunctionField Fq F]
+variable {F}
+variable [Algebra F[X] K] [FaithfulSMul F[X] K] [FunctionField F K]
 
 attribute [local instance] Polynomial.algebra
 
@@ -267,34 +267,34 @@ section Unbundled
 
 open Polynomial
 
-variable {E : Type*} [Field E] [Algebra Fq E] [Algebra E[X] F] [FaithfulSMul E[X] F]
+variable {E : Type*} [Field E] [Algebra F E] [Algebra E[X] K] [FaithfulSMul E[X] K]
 
-theorem finiteDimensional_ratFunc_of_constantExtension [IsScalarTower Fq[X] E[X] F] :
-    FiniteDimensional (RatFunc Fq) (RatFunc E) :=
+theorem finiteDimensional_ratFunc_of_constantExtension [IsScalarTower F[X] E[X] K] :
+    FiniteDimensional (RatFunc F) (RatFunc E) :=
   .equiv (AlgEquiv.ofInjectiveField
-    (IsScalarTower.toAlgHom (RatFunc Fq) (RatFunc E) F)).toLinearEquiv.symm
+    (IsScalarTower.toAlgHom (RatFunc F) (RatFunc E) K)).toLinearEquiv.symm
 
-/-- Let `F` be a function field over `Fq`. If `E` is an algebraic extension of `Fq` which is
-contained in `F` then it is finite over `Fq`. -/
-theorem finiteDimensional_of_constantExtension [IsScalarTower Fq[X] E[X] F]
-    [Algebra.IsAlgebraic Fq E] : FiniteDimensional Fq E :=
-  letI := finiteDimensional_ratFunc_of_constantExtension (Fq := Fq) (E := E) F
-  Module.finite_of_finrank_pos ((finrank_ratFunc_ratFunc Fq E) ▸ Module.finrank_pos)
+/-- Let `K` be a function field over `F`. If `E` is an algebraic extension of `F` which is
+contained in `K` then it is finite over `F`. -/
+theorem finiteDimensional_of_constantExtension [IsScalarTower F[X] E[X] K]
+    [Algebra.IsAlgebraic F E] : FiniteDimensional F E :=
+  letI := finiteDimensional_ratFunc_of_constantExtension (F := F) (E := E) K
+  Module.finite_of_finrank_pos ((finrank_ratFunc_ratFunc F E) ▸ Module.finrank_pos)
 
 end Unbundled
 
 section IntermediateField
 
-variable [Algebra Fq F] (E : IntermediateField Fq F) [Algebra E[X] F] [FaithfulSMul E[X] F]
-  [IsScalarTower Fq[X] E[X] F]
+variable [Algebra F K] (E : IntermediateField F K) [Algebra E[X] K] [FaithfulSMul E[X] K]
+  [IsScalarTower F[X] E[X] K]
 
-instance : FiniteDimensional (RatFunc Fq) (RatFunc E) :=
-  FunctionField.finiteDimensional_ratFunc_of_constantExtension F
+instance : FiniteDimensional (RatFunc F) (RatFunc E) :=
+  FunctionField.finiteDimensional_ratFunc_of_constantExtension K
 
-/-- Let `F` be a function field over `Fq`. If `E` is an algebraic extension of `Fq` which is
-contained in `F` then it is finite over `Fq`. -/
-instance [Algebra.IsAlgebraic Fq E] : FiniteDimensional Fq E :=
-  FunctionField.finiteDimensional_of_constantExtension F
+/-- Let `K` be a function field over `F`. If `E` is an algebraic extension of `F` which is
+contained in `K` then it is finite over `F`. -/
+instance [Algebra.IsAlgebraic F E] : FiniteDimensional F E :=
+  FunctionField.finiteDimensional_of_constantExtension K
 
 end IntermediateField
 
