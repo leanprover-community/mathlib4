@@ -145,6 +145,8 @@ namespace Quotient
 
 variable (K : Submodule 𝕜 E) [K.HasOrthogonalProjection]
 
+/-- If a subspace `K` of an inner product space `E` admits an orthogonal projection, then the
+quotient `E ⧸ K` is isometrically isomorphic to the orthogonal complement `Kᗮ` of `K`. -/
 def quot_linearEquiv_orthogonal : (E ⧸ K) ≃ₗᵢ[𝕜] ↥Kᗮ := {
   K.quotientEquivOfIsCompl Kᗮ Submodule.isCompl_orthogonal_of_hasOrthogonalProjection with
     norm_map' y := by
