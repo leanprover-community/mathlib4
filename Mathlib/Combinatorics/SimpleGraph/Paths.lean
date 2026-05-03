@@ -798,7 +798,17 @@ def cycleBypass : G.Walk v v → G.Walk v v
 @[simp] lemma cycleBypass_nil : (.nil : G.Walk v v).cycleBypass = .nil := rfl
 
 open List in
-lemma edges_cycleBypass_sublist : ∀ {w : G.Walk v v}, w.cycleBypass.edges <+ w.edges
+theorem support_cycleBypass_sublist : ∀ {w : G.Walk v v}, w.cycleBypass.support <+ w.support
+  | .nil => .refl _
+  | .cons _ w => w.support_bypass_sublist.cons_cons _
+
+open List in
+theorem darts_cycleBypass_sublist : ∀ {w : G.Walk v v}, w.cycleBypass.darts <+ w.darts
+  | .nil => .refl _
+  | .cons _ w => w.darts_bypass_sublist.cons_cons _
+
+open List in
+theorem edges_cycleBypass_sublist : ∀ {w : G.Walk v v}, w.cycleBypass.edges <+ w.edges
   | .nil => .refl _
   | .cons _ w => w.edges_bypass_sublist.cons_cons _
 
