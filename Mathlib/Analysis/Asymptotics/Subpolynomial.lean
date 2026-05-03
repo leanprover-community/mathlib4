@@ -178,3 +178,4 @@ theorem IsSubpolynomial.uniform {ι : Type*} {s : Finset ι} {l : Filter α}
   use k, C
 
 end Asymptotics
+end
