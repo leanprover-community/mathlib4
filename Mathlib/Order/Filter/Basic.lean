@@ -525,7 +525,7 @@ theorem iInf_neBot_of_directed {f : ι → Filter α} [hn : Nonempty α] (hd : D
     (hb : ∀ i, NeBot (f i)) : NeBot (iInf f) := by
   cases isEmpty_or_nonempty ι
   · constructor
-    simp [iInf_of_empty f, top_ne_bot]
+    simp [top_ne_bot]
   · exact iInf_neBot_of_directed' hd hb
 
 theorem sInf_neBot_of_directed' {s : Set (Filter α)} (hne : s.Nonempty) (hd : DirectedOn (· ≥ ·) s)

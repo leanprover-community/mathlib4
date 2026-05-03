@@ -55,21 +55,15 @@ lemma iSup_of_not_bddAbove {ι : Sort*} {f : ι → ℕ} (h : ¬ BddAbove (Set.r
 
 @[simp]
 theorem sInf_eq_zero {s : Set ℕ} : sInf s = 0 ↔ 0 ∈ s ∨ s = ∅ := by
-  cases eq_empty_or_nonempty s with
-  | inl h => subst h
-             simp only [or_true, InfSet.sInf,
-                        mem_empty_iff_false, exists_false, dif_neg, not_false_iff]
-  | inr h => simp only [h.ne_empty, or_false, Nat.sInf_def, h, Nat.find_eq_zero]
+  rcases eq_empty_or_nonempty s with (rfl | h)
+  · simp [sInf]
+  · simp [h, h.ne_empty, Nat.sInf_def]
 
-@[simp]
 theorem sInf_empty : sInf ∅ = 0 := by
-  rw [sInf_eq_zero]
-  right
-  rfl
+  simp
 
-@[simp]
 theorem iInf_of_empty {ι : Sort*} [IsEmpty ι] (f : ι → ℕ) : iInf f = 0 := by
-  rw [iInf_of_isEmpty, sInf_empty]
+  simp
 
 /-- This combines `Nat.iInf_of_empty` with `ciInf_const`. -/
 @[simp]
