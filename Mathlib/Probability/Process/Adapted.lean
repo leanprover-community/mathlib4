@@ -219,29 +219,29 @@ section Arithmetic
 
 @[to_additive]
 protected theorem mul [Mul β] [MeasurableMul₂ β] (hu : IsProgressive f u)
-    (hv : IsProgressive f v) : IsProgressive f (u * v) :=
+    (hv : IsProgressive f v) : IsProgressive f fun i ω ↦  (u i ω * v i ω) :=
   fun i ↦ Measurable.mul (hu i) (hv i)
 
 @[to_additive]
 protected theorem finsetProd {γ} [CommMonoid β] [MeasurableMul₂ β] {U : γ → ι → Ω → β}
     {s : Finset γ} (h : ∀ c ∈ s, IsProgressive f (U c)) :
-    IsProgressive f (∏ c ∈ s, U c) := by
-  sorry
+    IsProgressive f fun i ω ↦ ∏ c ∈ s, U c i ω :=
+  fun i ↦ s.measurable_prod fun c hc ↦ h c hc i
 
 @[to_additive]
 protected theorem inv [Group β] [MeasurableInv β] (hu : IsProgressive f u) :
-    IsProgressive f fun i ω => (u i ω)⁻¹ := fun i => (hu i).inv
+    IsProgressive f fun i ω => (u i ω)⁻¹ := fun i ↦ (hu i).inv
 
 @[to_additive]
 protected theorem div [Group β] [MeasurableDiv₂ β] (hu : IsProgressive f u)
-    (hv : IsProgressive f v) : IsProgressive f (u / v) :=
+    (hv : IsProgressive f v) : IsProgressive f fun i ω ↦ u i ω / v i ω :=
   fun i ↦ Measurable.div (hu i) (hv i)
 
 /-- The norm of a strongly progressive process is strongly progressive. -/
 protected lemma norm {β : Type*} {u : ι → Ω → β} [MeasurableSpace β] [NormedAddCommGroup β]
     [OpensMeasurableSpace β] (hu : IsProgressive f u) :
     IsProgressive f fun t ω ↦ ‖u t ω‖ :=
-  fun s ↦ by apply @(hu s).norm; infer_instance
+  fun i ↦ by apply @(hu i).norm; infer_instance
 
 end Arithmetic
 
@@ -322,6 +322,15 @@ protected lemma norm {β : Type*} {u : ι → Ω → β} [SeminormedAddCommGroup
 end Arithmetic
 
 end IsStronglyProgressive
+
+lemma IsProgressive.isStronglyProgressive [MeasurableSpace ι] [MeasurableSpace β]
+    [PseudoMetrizableSpace β] [SecondCountableTopology β] [OpensMeasurableSpace β]
+  (h : IsProgressive f u) : IsStronglyProgressive f u :=
+  fun i ↦ (h i).stronglyMeasurable
+
+lemma IsStronglyProgressive.isProgressive [MeasurableSpace ι] [MeasurableSpace β]
+    [PseudoMetrizableSpace β] [BorelSpace β] (h : IsStronglyProgressive f u) : IsProgressive f u :=
+  fun i ↦ (h i).measurable
 
 theorem isProgressive_of_tendsto' {γ} [MeasurableSpace ι] [MeasurableSpace β]
     [PseudoMetrizableSpace β] [BorelSpace β]
