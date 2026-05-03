@@ -145,7 +145,7 @@ variable [HereditarilyLindelofSpace X]
 
 /-- In a hereditarily Lindelöf space, the support of a measure is conull. -/
 lemma support_mem_ae : μ.support ∈ ae μ :=
-  support_mem_ae_of_isLindelof <| HereditarilyLindelof_LindelofSets μ.supportᶜ
+  support_mem_ae_of_isLindelof <| HereditarilyLindelofSpace.isLindelof μ.supportᶜ
 
 @[simp]
 lemma measure_compl_support : μ μ.supportᶜ = 0 := support_mem_ae

@@ -154,6 +154,7 @@ theorem IsStableUnderBaseChange.mk (h₁ : RespectsIso @P)
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsStableUnderBaseChange.pushout_inl (hP : RingHom.IsStableUnderBaseChange @P)
     (hP' : RingHom.RespectsIso @P) {R S T : CommRingCat} (f : R ⟶ S) (g : R ⟶ T) (H : P g.hom) :
     P (pushout.inl _ _ : S ⟶ pushout f g).hom := by
@@ -267,5 +268,27 @@ lemma CodescendsAlong.and (hP : CodescendsAlong P Q) (hP' : CodescendsAlong P' Q
   fun _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ h₁ h₂ ↦ ⟨hP h₁ h₂.1, hP' h₁ h₂.2⟩
 
 end Descent
+
+/-- A property of ring homomorphisms `P` is said to have equalizers, if the equalizer of algebra
+maps between algebras satisfiying `P` also satisfies `P`. -/
+def HasEqualizers (P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop) : Prop :=
+  ∀ {R S T : Type u} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
+    (f g : S →ₐ[R] T), P (algebraMap R S) → P (algebraMap R T) →
+      P (algebraMap R (AlgHom.equalizer f g))
+
+lemma HasEqualizers.and (hP : HasEqualizers P) (hQ : HasEqualizers Q) :
+    HasEqualizers (fun f ↦ P f ∧ Q f) :=
+  fun f g hf hg ↦ ⟨hP f g hf.1 hg.1, hQ f g hf.2 hg.2⟩
+
+/-- A property of ring homomorphisms `P` is said to have finite products, if a finite product of
+algebras satisfiying `Q` also satisfies `P`. -/
+def HasFiniteProducts (P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop) : Prop :=
+  ∀ {R : Type u} [CommRing R] {ι : Type u} [_root_.Finite ι] (S : ι → Type u) [∀ i, CommRing (S i)]
+    [∀ i, Algebra R (S i)],
+    (∀ i, P (algebraMap R (S i))) → P (algebraMap R (Π i, S i))
+
+lemma HasFiniteProducts.and (hP : HasFiniteProducts P) (hQ : HasFiniteProducts Q) :
+    HasFiniteProducts (fun f ↦ P f ∧ Q f) :=
+  fun _ _ _ hS ↦ ⟨hP _ fun i ↦ (hS i).1, hQ _ fun i ↦ (hS i).2⟩
 
 end RingHom

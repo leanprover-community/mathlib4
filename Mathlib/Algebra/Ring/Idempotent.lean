@@ -19,7 +19,7 @@ This file proves result about idempotent elements of a ring, like:
   `1 - a` is an idempotent.
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*}
 
@@ -50,7 +50,7 @@ lemma _root_.isIdempotentElem_iff_one_sub_mul_self :
     IsIdempotentElem a ↔ (1 - a) * a = 0 := by
   rw [sub_mul, one_mul, sub_eq_zero, eq_comm, IsIdempotentElem]
 
-instance : HasCompl {a : R // IsIdempotentElem a} where compl a := ⟨1 - a, a.prop.one_sub⟩
+instance : Compl {a : R // IsIdempotentElem a} where compl a := ⟨1 - a, a.prop.one_sub⟩
 
 @[simp] lemma coe_compl (a : {a : R // IsIdempotentElem a}) : ↑aᶜ = (1 : R) - ↑a := rfl
 

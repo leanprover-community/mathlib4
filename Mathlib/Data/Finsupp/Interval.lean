@@ -67,6 +67,9 @@ def rangeIcc (f g : ι →₀ α) : ι →₀ Finset α where
     rw [mem_union, ← not_iff_not, not_or, notMem_support_iff, notMem_support_iff, not_ne_iff]
     exact Icc_eq_singleton_iff.symm
 
+@[deprecated (since := "2025-12-15")]
+alias rangeIcc_toFun := rangeIcc_apply
+
 lemma coe_rangeIcc (f g : ι →₀ α) : rangeIcc f g i = Icc (f i) (g i) := rfl
 
 @[simp]

@@ -6,7 +6,7 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.FreeAlgebra
-public import Mathlib.RingTheory.Adjoin.Polynomial
+public import Mathlib.RingTheory.Adjoin.Polynomial.Basic
 public import Mathlib.RingTheory.Adjoin.Tower
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Noetherian.Orzech
@@ -71,9 +71,6 @@ variable [AddCommMonoid N] [Module R N]
 
 namespace FiniteType
 
-@[deprecated inferInstance (since := "2025-07-12")]
-theorem self : FiniteType R R := inferInstance
-
 theorem of_restrictScalars_finiteType [Algebra S A] [IsScalarTower R S A] [hA : FiniteType R A] :
     FiniteType S A := by
   obtain ⟨s, hS⟩ := hA.out
@@ -107,9 +104,6 @@ instance [FiniteType R S] : FiniteType R S[X] := by
   rw [Finset.coe_singleton]
   exact Polynomial.adjoin_X
 
-@[deprecated inferInstance (since := "2025-07-12")]
-protected theorem polynomial : FiniteType R R[X] := inferInstance
-
 instance {ι : Type*} [Finite ι] [FiniteType R S] : FiniteType R (MvPolynomial ι S) := by
   classical
   cases nonempty_fintype ι
@@ -117,20 +111,12 @@ instance {ι : Type*} [Finite ι] [FiniteType R S] : FiniteType R (MvPolynomial 
   rw [Finset.coe_image, Finset.coe_univ, Set.image_univ]
   exact MvPolynomial.adjoin_range_X
 
-@[deprecated inferInstance (since := "2025-07-12")]
-protected theorem mvPolynomial (ι : Type*) [Finite ι] : FiniteType R (MvPolynomial ι R) :=
-  inferInstance
-
 instance {ι : Type*} [Finite ι] [FiniteType R S] : FiniteType R (FreeAlgebra S ι) := by
   classical
   cases nonempty_fintype ι
   refine .trans ‹_› ⟨Finset.univ.image (FreeAlgebra.ι _), ?_⟩
   rw [Finset.coe_image, Finset.coe_univ, Set.image_univ]
   exact FreeAlgebra.adjoin_range_ι ..
-
-@[deprecated inferInstance (since := "2025-07-12")]
-protected theorem freeAlgebra (ι : Type*) [Finite ι] : FiniteType R (FreeAlgebra R ι) :=
-  inferInstance
 
 /-- An algebra is finitely generated if and only if it is a quotient
 of a free algebra whose variables are indexed by a finset. -/
@@ -154,10 +140,8 @@ theorem iff_quotient_mvPolynomial :
   · rintro ⟨s, hs⟩
     use s, MvPolynomial.aeval (↑)
     intro x
-    have hrw : (↑s : Set S) = fun x : S => x ∈ s.val := rfl
-    rw [← Set.mem_range, ← AlgHom.coe_range, ← adjoin_eq_range]
-    simp_rw [← hrw, hs]
-    exact Set.mem_univ x
+    rw [← Set.mem_range, ← AlgHom.coe_range, ← adjoin_eq_range, SetLike.mem_coe, hs]
+    apply mem_top
   · rintro ⟨s, f, hsur⟩
     exact .of_surjective f hsur
 
@@ -328,9 +312,6 @@ theorem of_comp_finiteType {f : A →ₐ[R] B} {g : B →ₐ[R] C} (h : (g.comp 
 end FiniteType
 
 end AlgHom
-
-@[deprecated (since := "2025-08-12")] alias algebraMap_finiteType_iff_algebra_finiteType :=
-  RingHom.finiteType_algebraMap
 
 section MonoidAlgebra
 

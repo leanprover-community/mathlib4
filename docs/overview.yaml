@@ -5,6 +5,7 @@ General algebra:
     functor: 'CategoryTheory.Functor'
     natural transformation: 'CategoryTheory.NatTrans'
     Yoneda embedding: 'CategoryTheory.yoneda'
+    isomorphism: 'CategoryTheory.Iso'
     adjunction: 'CategoryTheory.Adjunction'
     monad: 'CategoryTheory.Monad'
     comma category: 'CategoryTheory.Comma'
@@ -12,8 +13,9 @@ General algebra:
     presheafed space: 'AlgebraicGeometry.PresheafedSpace'
     sheafed space: 'AlgebraicGeometry.SheafedSpace'
     monoidal category: 'CategoryTheory.MonoidalCategory'
-    Cartesian closed: 'CategoryTheory.CartesianClosed'
+    Cartesian closed: 'CategoryTheory.MonoidalClosed'
     abelian category: 'CategoryTheory.Abelian'
+    Grothendieck topology: 'CategoryTheory.GrothendieckTopology'
 
   Numbers:
     natural number: 'Nat'
@@ -51,7 +53,7 @@ General algebra:
     permutation group of a type: 'Equiv.Perm'
     Cayley's theorem: 'Equiv.Perm.subgroupOfMulAction'
     alternating group: 'alternatingGroup'
-    A5 is simple: 'alternatingGroup.isSimpleGroup_five'
+    alternating groups on 5 letters or more are simple: 'alternatingGroup.isSimpleGroup'
     classification of abelian simple groups: CommGroup.is_simple_iff_prime_card
     structure of finitely generated abelian groups: 'AddCommGroup.equiv_free_prod_directSum_zmod'
     Lagrange's theorem: 'Subgroup.card_subgroup_dvd_card'
@@ -116,6 +118,7 @@ General algebra:
 
   Field theory:
     field: 'Field'
+    subfield: 'Subfield'
     characteristic of a ring: 'ringChar'
     characteristic zero: 'CharZero'
     characteristic p: 'CharP'
@@ -129,7 +132,7 @@ General algebra:
     splitting field: 'Polynomial.SplittingField'
     perfect closure: 'PerfectClosure'
     Galois correspondence: 'IsGalois.intermediateFieldEquivSubgroup'
-    Abel-Ruffini theorem (one direction): 'solvableByRad.isSolvable'
+    Abel-Ruffini theorem (one direction): 'isSolvable_gal_minpoly'
 
   Homological algebra:
     chain complex: 'ChainComplex'
@@ -146,7 +149,7 @@ General algebra:
     Chevalley-Warning theorem: 'char_dvd_card_solutions'
     "Hensel's lemma (for $\\mathbb{Z}_p$)": 'hensels_lemma'
     ring of Witt vectors: 'WittVector'
-    perfection of a ring: 'Ring.Perfection'
+    perfection of a ring: 'Perfection'
   Transcendental numbers:
     Liouville's theorem on existence of transcendental numbers: 'transcendental_liouvilleNumber'
 
@@ -200,7 +203,7 @@ Linear algebra:
     bilinear form: 'LinearMap.BilinForm'
     alternating bilinear form: 'LinearMap.BilinForm.IsAlt'
     symmetric bilinear form: 'LinearMap.BilinForm.IsSymm'
-    matrix representation: 'BilinForm.toMatrix'
+    matrix representation: 'LinearMap.BilinForm.toMatrix'
     quadratic form: 'QuadraticForm'
     polar form of a quadratic: 'QuadraticMap.polar'
   Finite-dimensional inner product spaces (see also Hilbert spaces, below):
@@ -244,7 +247,7 @@ Topology:
     order topology: 'OrderTopology'
     intermediate value theorem: 'intermediate_value_Icc'
     extreme value theorem: 'IsCompact.exists_isMinOn'
-    limit infimum and supremum: 'order/liminf_limsup.html'
+    limit infimum and supremum: 'Mathlib/Order/LiminfLimsup.html'
     topological group: 'IsTopologicalGroup'
     completion of an abelian topological group: 'UniformSpace.Completion.instAddCommGroup'
     infinite sum: 'HasSum'
@@ -263,7 +266,7 @@ Topology:
     contraction mapping theorem: 'ContractingWith.exists_fixedPoint'
     Baire theorem: 'dense_iInter_of_isOpen'
     Arzela-Ascoli theorem: 'BoundedContinuousFunction.arzela_ascoli'
-    Hausdorff distance: 'EMetric.hausdorffEdist'
+    Hausdorff distance: 'Metric.hausdorffEDist'
     Gromov-Hausdorff space: 'GromovHausdorff.GHSpace'
 
 Analysis:
@@ -306,7 +309,7 @@ Analysis:
     derivative of the inverse of a function: 'HasFDerivAt.of_local_left_inverse'
     Rolle's theorem: 'exists_deriv_eq_zero'
     mean value theorem: 'exists_ratio_deriv_eq_ratio_slope'
-    Taylor's theorem: 'analysis/calculus/taylor.html'
+    Taylor's theorem: 'Mathlib/Analysis/Calculus/Taylor.html'
     $C^k$ function: 'ContDiff'
     Leibniz formula: 'fderiv_mul'
     local extrema: 'IsLocalMin.fderiv_eq_zero'
@@ -319,7 +322,7 @@ Analysis:
     characterization of convexity: 'convexOn_of_deriv2_nonneg'
     Jensen's inequality (finite sum version): 'ConvexOn.map_sum_le'
     Jensen's inequality (integral version): 'ConvexOn.map_integral_le'
-    convexity inequalities: 'analysis/mean_inequalities.html'
+    convexity inequalities: 'Mathlib/Analysis/MeanInequalities.html'
     Carathéodory's theorem: 'convexHull_eq_union'
 
   Special functions:
@@ -366,7 +369,7 @@ Analysis:
     principle of isolated zeros: 'AnalyticAt.eventually_eq_zero_or_eventually_ne_zero'
     principle of analytic continuation: 'AnalyticOnNhd.eqOn_of_preconnected_of_frequently_eq'
     analyticity of holomorphic functions: 'DifferentiableOn.analyticAt'
-    Schwarz lemma: 'Complex.norm_le_norm_of_mapsTo_ball_self'
+    Schwarz lemma: 'Complex.norm_le_norm_of_mapsTo_ball'
     removable singularity: 'Complex.differentiableOn_update_limUnder_insert_of_isLittleO'
     Phragmen-Lindelöf principle: 'PhragmenLindelof.horizontal_strip'
     fundamental theorem of algebra: 'Complex.isAlgClosed'
@@ -391,15 +394,22 @@ Probability Theory:
     independent sigma-algebras: 'ProbabilityTheory.iIndep'
     conditional probability: 'ProbabilityTheory.cond'
     conditional expectation: 'MeasureTheory.condExp'
+    characteristic function: 'MeasureTheory.charFun'
   Random variables and their laws:
     discrete law: 'PMF'
     probability density function: 'MeasureTheory.HasPDF'
     variance of a real-valued random variable: 'ProbabilityTheory.variance'
     independence of random variables: 'ProbabilityTheory.iIndepFun'
     Kolmogorov's $0$-$1$ law: 'ProbabilityTheory.measure_zero_or_one_of_measurableSet_limsup_atTop'
-    mean of product of independent random variables: 'ProbabilityTheory.IndepFun.integral_mul_of_integrable'
+    mean of product of independent random variables: 'ProbabilityTheory.IndepFun.integral_mul_eq_mul_integral'
     moment of a random variable: 'ProbabilityTheory.moment'
     Bernoulli law: 'PMF.bernoulli'
+    binomial law: 'ProbabilityTheory.binomial'
+    geometric law: 'ProbabilityTheory.geometricMeasure'
+    Poisson law: 'ProbabilityTheory.poissonMeasure'
+    exponential law: 'ProbabilityTheory.expMeasure'
+    Gaussian law: 'ProbabilityTheory.gaussianReal'
+    Gaussian measures: 'ProbabilityTheory.IsGaussian'
   Convergence of a sequence of random variables:
     convergence in probability: 'MeasureTheory.TendstoInMeasure'
     $\mathrm{L}^p$ convergence: 'MeasureTheory.Lp'
@@ -408,11 +418,13 @@ Probability Theory:
     Markov inequality: 'MeasureTheory.mul_meas_ge_le_lintegral'
     Chebyshev inequality: 'ProbabilityTheory.meas_ge_le_variance_div_sq'
     strong law of large numbers: 'ProbabilityTheory.strong_law_ae'
+    central limit theorem: 'ProbabilityTheory.tendstoInDistribution_inv_sqrt_mul_sum_sub'
   Stochastic Processes:
     martingale: 'MeasureTheory.Martingale'
     optional stopping theorem: 'MeasureTheory.submartingale_iff_expected_stoppedValue_mono'
     stopping time: 'MeasureTheory.IsStoppingTime'
-    hitting time: 'MeasureTheory.hitting'
+    hitting time: 'MeasureTheory.hittingBtwn'
+    Gaussian processes: 'ProbabilityTheory.IsGaussianProcess'
 
 Geometry:
   Affine and Euclidean geometry:
@@ -451,11 +463,6 @@ Geometry:
     discrete spaces are 0-manifolds: 'IsManifold.of_discreteTopology'
     0-manifolds are discrete spaces: 'ChartedSpace.discreteTopology'
 
-  Riemannian manifolds:
-    Riemannian/bundle metric: 'Bundle.RiemannianMetric'
-    Smooth bundle metric: 'Bundle.ContMDiffRiemannianMetric'
-    Riemannian manifold: 'IsRiemannianManifold'
-
   Smooth vector and fiber bundles:
     (topological) fiber bundle: 'FiberBundle'
     (smooth) vector bundle: 'ContMDiffVectorBundle'
@@ -463,6 +470,12 @@ Geometry:
     (smooth) direct sum of vector bundles: 'Bundle.Prod.contMDiffVectorBundle'
     (smooth) pullback vector bundle: 'ContMDiffVectorBundle.pullback'
     (smooth) Hom bundle: 'ContMDiffVectorBundle.continuousLinearMap'
+    covariant derivatives: 'CovariantDerivative'
+
+  Riemannian manifolds:
+    Riemannian/bundle metric: 'Bundle.RiemannianMetric'
+    Smooth bundle metric: 'Bundle.ContMDiffRiemannianMetric'
+    Riemannian manifold: 'IsRiemannianManifold'
 
   Algebraic geometry:
     prime spectrum: 'PrimeSpectrum'
@@ -591,7 +604,6 @@ Logic and computation:
     Turing machine: 'Turing.TM0.Machine'
     halting problem: 'ComputablePred.halting_problem'
     Rice theorem: 'ComputablePred.rice'
-    combinatorial game: 'SetTheory.Game'
     Turing degrees: 'TuringDegree'
   Complexity:
     polynomial-time computation: 'Turing.TM2ComputableInPolyTime'

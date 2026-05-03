@@ -76,6 +76,7 @@ class HasCoeffs (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S]
     [IsScalarTower R₀ R S] where
   coeffs_subset_range : P.coeffs ⊆ Set.range (algebraMap R₀ R)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : P.HasCoeffs P.Core where
   coeffs_subset_range := by
     refine subset_trans P.coeffs_subset_core ?_
@@ -171,8 +172,7 @@ lemma tensorModelOfHasCoeffsInv_aeval_val (x : MvPolynomial ι R₀) :
   rw [← MvPolynomial.aeval_map_algebraMap R, ← Generators.algebraMap_apply, ← quotientEquiv_mk]
   simp [tensorModelOfHasCoeffsInv, -quotientEquiv_symm, -quotientEquiv_mk]
 
-set_option backward.privateInPublic true in
-private lemma hom_comp_inv :
+lemma tensorModelOfHasCoeffsHom_comp :
     (P.tensorModelOfHasCoeffsHom R₀).comp (P.tensorModelOfHasCoeffsInv R₀) = AlgHom.id R S := by
   have h : Function.Surjective
       ((P.quotientEquiv.restrictScalars R).toAlgHom.comp (Ideal.Quotient.mkₐ _ _)) :=
@@ -184,19 +184,16 @@ private lemma hom_comp_inv :
   ext x
   simp
 
-set_option backward.privateInPublic true in
-private lemma inv_comp_hom :
+lemma tensorModelOfHasCoeffsInv_comp :
     (P.tensorModelOfHasCoeffsInv R₀).comp (P.tensorModelOfHasCoeffsHom R₀) = AlgHom.id R _ := by
   ext x
   obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
   simp
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The natural isomorphism `R ⊗[R₀] S₀ ≃ₐ[R] S`. -/
 noncomputable def tensorModelOfHasCoeffsEquiv : R ⊗[R₀] P.ModelOfHasCoeffs R₀ ≃ₐ[R] S :=
   AlgEquiv.ofAlgHom (P.tensorModelOfHasCoeffsHom R₀) (P.tensorModelOfHasCoeffsInv R₀)
-    (P.hom_comp_inv R₀) (P.inv_comp_hom R₀)
+    (P.tensorModelOfHasCoeffsHom_comp R₀) (P.tensorModelOfHasCoeffsInv_comp R₀)
 
 @[simp]
 lemma tensorModelOfHasCoeffsEquiv_tmul (x : R) (y : MvPolynomial ι R₀) :
@@ -230,6 +227,7 @@ namespace Algebra.SubmersivePresentation
 
 variable [Finite σ] (P : Algebra.SubmersivePresentation R S ι σ)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_sum_eq_σ_jacobian_mul_σ_jacobian_inv_sub_one
     [DecidableEq σ] [Fintype σ] :
     ∃ v : σ → MvPolynomial ι R, ∑ i, v i * P.relation i =
@@ -337,11 +335,12 @@ lemma map_jacobianRelationsOfHasCoeffs (i : σ) :
 
 lemma sum_jacobianRelationsOfHasCoeffs_mul_relationOfHasCoeffs [FaithfulSMul R₀ R] [Fintype σ] :
     ∑ i, P.jacobianRelationsOfHasCoeffs R₀ i * P.relationOfHasCoeffs R₀ i =
-        P.jacobianOfHasCoeffs R₀ * P.invJacobianOfHasCoeffs R₀ - 1 := by
+      P.jacobianOfHasCoeffs R₀ * P.invJacobianOfHasCoeffs R₀ - 1 := by
   classical
   apply MvPolynomial.map_injective _ (FaithfulSMul.algebraMap_injective R₀ R)
   simp [P.map_relationOfHasCoeffs, jacobianRelations_spec]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The submersive presentation on `P.ModelOfHasCoeffs R₀` provided `P.HasCoeffs R₀`. -/
 noncomputable
 def ofHasCoeffs [FaithfulSMul R₀ R] :
@@ -356,6 +355,6 @@ def ofHasCoeffs [FaithfulSMul R₀ R] :
       map_sub, map_one, @eq_comm (P.ModelOfHasCoeffs R₀) 0, sub_eq_zero] at this
     convert IsUnit.of_mul_eq_one _ this
     rw [PreSubmersivePresentation.jacobian_eq_jacobiMatrix_det]
-    rfl
+    simp [jacobianOfHasCoeffs]
 
 end Algebra.SubmersivePresentation

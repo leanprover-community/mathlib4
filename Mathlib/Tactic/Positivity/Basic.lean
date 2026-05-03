@@ -163,8 +163,8 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   let ra ← core zα pα a; let rb ← core zα pα b
   match ra, rb with
   | .positive pa, .positive pb =>
-    let _a ← synthInstanceQ q(AddLeftStrictMono $α)
-    pure (.positive q(add_pos $pa $pb))
+    let _a ← synthInstanceQ q(AddLeftMono $α)
+    pure (.positive q(add_pos' $pa $pb))
   | .positive pa, .nonnegative pb =>
     let _a ← synthInstanceQ q(AddLeftMono $α)
     pure (.positive q(add_pos_of_pos_of_nonneg $pa $pb))
@@ -331,7 +331,7 @@ meta def evalAbs : PositivityExt where eval {_u} (α zα pα) (e : Q($α)) := do
     | .nonzero pa =>
       let pa' ← mkAppM ``abs_pos_of_ne_zero #[pa]
       pure (.positive pa')
-    | _ => pure .none
+    | _ => throwError "goto catch"
   catch _ => do
     let pa' ← mkAppM ``abs_nonneg #[a]
     pure (.nonnegative pa')
@@ -376,8 +376,11 @@ meta def evalNatCast : PositivityExt where eval {u α} _zα _pα e := do
   assumeInstancesCommute
   match ← core zα' pα' a with
   | .positive pa =>
-    let _nz ← synthInstanceQ q(NeZero (1 : $α))
-    pure (.positive q(Nat.cast_pos'.2 $pa))
+    try
+      let _nz ← synthInstanceQ q(NeZero (1 : $α))
+      pure (.positive q(Nat.cast_pos'.2 $pa))
+    catch _ =>
+      pure (.nonnegative q(Nat.cast_nonneg' _))
   | _ =>
     pure (.nonnegative q(Nat.cast_nonneg' _))
 

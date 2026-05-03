@@ -159,6 +159,7 @@ protected abbrev Function.Surjective.smulWithZero (f : ZeroHom A A') (hf : Surje
 variable (A)
 
 /-- Compose a `SMulWithZero` with a `ZeroHom`, with action `f r' • m` -/
+@[implicit_reducible]
 def SMulWithZero.compHom (f : ZeroHom M₀' M₀) : SMulWithZero M₀' A where
   smul := (f · • ·)
   smul_zero m := smul_zero (f m)
@@ -237,6 +238,7 @@ protected abbrev Function.Surjective.mulActionWithZero (f : ZeroHom A A') (hf : 
 variable (A)
 
 /-- Compose a `MulActionWithZero` with a `MonoidWithZeroHom`, with action `f r' • m` -/
+@[implicit_reducible]
 def MulActionWithZero.compHom (f : M₀' →*₀ M₀) : MulActionWithZero M₀' A where
   __ := SMulWithZero.compHom A f.toZeroHom
   mul_smul r s m := by change f (r * s) • m = f r • f s • m; simp [mul_smul]
@@ -318,7 +320,7 @@ def DistribSMul.toAddMonoidHom (x : M) : A →+ A :=
 
 instance AddMonoid.nat_smulCommClass {M A : Type*} [AddMonoid A] [DistribSMul M A] :
     SMulCommClass ℕ M A where
-  smul_comm n x y := ((DistribSMul.toAddMonoidHom A x).map_nsmul y n).symm
+  smul_comm n x y := ((DistribSMul.toAddMonoidHom A x).map_nsmul n y).symm
 
 -- `SMulCommClass.symm` is not registered as an instance, as it would cause a loop
 instance AddMonoid.nat_smulCommClass' {M A : Type*} [AddMonoid A] [DistribSMul M A] :
@@ -344,6 +346,8 @@ class DistribMulAction (M A : Type*) [Monoid M] [AddMonoid A] extends MulAction 
   smul_zero : ∀ a : M, a • (0 : A) = 0
   /-- Scalar multiplication distributes across addition -/
   smul_add : ∀ (a : M) (x y : A), a • (x + y) = a • x + a • y
+
+attribute [to_additive existing (dont_translate := M) DistribMulAction] MulDistribMulAction
 
 section
 
@@ -377,7 +381,7 @@ protected abbrev Function.Surjective.distribMulAction [AddMonoid B] [SMul M B] (
 variable (A)
 
 /-- Each element of the monoid defines an additive monoid homomorphism. -/
-@[simps!]
+@[simps!, deprecated DistribSMul.toAddMonoidHom (since := "2026-01-07")]
 def DistribMulAction.toAddMonoidHom (x : M) : A →+ A :=
   DistribSMul.toAddMonoidHom A x
 
@@ -387,7 +391,7 @@ variable (M)
 @[simps]
 def DistribMulAction.toAddMonoidEnd :
     M →* AddMonoid.End A where
-  toFun := DistribMulAction.toAddMonoidHom A
+  toFun := DistribSMul.toAddMonoidHom A
   map_one' := AddMonoidHom.ext <| one_smul M
   map_mul' x y := AddMonoidHom.ext <| mul_smul x y
 
@@ -398,7 +402,7 @@ section
 variable [AddGroup A] [DistribSMul M A]
 
 instance AddGroup.int_smulCommClass : SMulCommClass ℤ M A where
-  smul_comm n x y := ((DistribSMul.toAddMonoidHom A x).map_zsmul y n).symm
+  smul_comm n x y := ((DistribSMul.toAddMonoidHom A x).map_zsmul n y).symm
 
 -- `SMulCommClass.symm` is not registered as an instance, as it would cause a loop
 instance AddGroup.int_smulCommClass' : SMulCommClass M ℤ A :=

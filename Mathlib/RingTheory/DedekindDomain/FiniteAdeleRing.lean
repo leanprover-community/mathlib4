@@ -98,10 +98,9 @@ instance : CommRing (FiniteAdeleRing R K) := inferInstanceAs <|
 instance : TopologicalSpace (FiniteAdeleRing R K) := inferInstanceAs <|
   TopologicalSpace <| Πʳ v : HeightOneSpectrum R, [v.adicCompletion K, v.adicCompletionIntegers K]
 
-instance : DFunLike (FiniteAdeleRing R K) (HeightOneSpectrum R) (fun v ↦ v.adicCompletion K) :=
-  inferInstanceAs <|
-  DFunLike (Πʳ v : HeightOneSpectrum R, [v.adicCompletion K, v.adicCompletionIntegers K])
-    (HeightOneSpectrum R) (fun v ↦ v.adicCompletion K)
+instance : DFunLike (FiniteAdeleRing R K) (HeightOneSpectrum R) (adicCompletion K) where
+  coe a := a.1
+  coe_injective' _ _ := Subtype.ext
 
 namespace FiniteAdeleRing
 
@@ -118,10 +117,10 @@ protected def algebraMap : K →+* FiniteAdeleRing R K where
     exact HeightOneSpectrum.Support.finite R k⟩
   map_one' := rfl
   map_mul' x y := Subtype.ext <| funext (fun v ↦
-    UniformSpace.Completion.coe_mul ((WithVal.equiv (valuation K v)).symm x) y)
+    UniformSpace.Completion.coe_mul ((WithVal.equiv (valuation K v)).symm x) _)
   map_zero' := rfl
   map_add' x y := Subtype.ext <| funext (fun v ↦
-    UniformSpace.Completion.coe_add ((WithVal.equiv (valuation K v)).symm x) y)
+    UniformSpace.Completion.coe_add ((WithVal.equiv (valuation K v)).symm x) _)
 
 instance : Algebra K (FiniteAdeleRing R K) := (FiniteAdeleRing.algebraMap R K).toAlgebra
 
@@ -134,10 +133,6 @@ variable {R} in
 @[ext]
 lemma ext {a₁ a₂ : FiniteAdeleRing R K} (h : ∀ v, a₁ v = a₂ v) : a₁ = a₂ :=
   Subtype.ext <| funext h
-
-instance : DFunLike (FiniteAdeleRing R K) (HeightOneSpectrum R) (adicCompletion K) where
-  coe a := a.1
-  coe_injective' _a _b h := ext K (congrFun h)
 
 section Topology
 

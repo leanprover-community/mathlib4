@@ -322,6 +322,12 @@ protected theorem Measure.isTopologicalBasis_isOpen_lt_top [TopologicalSpace α]
   refine ⟨v ∩ s, ⟨hv.inter hs, lt_of_le_of_lt ?_ μv⟩, ⟨xv, xs⟩, inter_subset_right⟩
   exact measure_mono inter_subset_left
 
+instance [TopologicalSpace α] (μ : Measure α) [hμ : IsLocallyFiniteMeasure μ] :
+    IsLocallyFiniteMeasure (μ.restrict s) where
+  finiteAtNhds x := by
+    obtain ⟨t, ht, hmus⟩ := hμ.finiteAtNhds x
+    exact ⟨t, ht, lt_of_le_of_lt (restrict_apply_le s t) hmus⟩
+
 /-- A measure `μ` is finite on compacts if any compact set `K` satisfies `μ K < ∞`. -/
 class IsFiniteMeasureOnCompacts [TopologicalSpace α] (μ : Measure α) : Prop where
   protected lt_top_of_isCompact : ∀ ⦃K : Set α⦄, IsCompact K → μ K < ∞

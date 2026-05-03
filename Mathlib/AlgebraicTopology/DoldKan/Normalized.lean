@@ -43,11 +43,12 @@ universe v
 
 variable {A : Type*} [Category* A] [Abelian A] {X : SimplicialObject A}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem HigherFacesVanish.inclusionOfMooreComplexMap (n : ℕ) :
     HigherFacesVanish (n + 1) ((inclusionOfMooreComplexMap X).f (n + 1)) := fun j _ => by
   dsimp [AlgebraicTopology.inclusionOfMooreComplexMap, NormalizedMooreComplex.objX]
   rw [← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ j
-    (by simp only [Finset.mem_univ])), assoc, kernelSubobject_arrow_comp, comp_zero]
+    (by simp)), assoc, kernelSubobject_arrow_comp, comp_zero]
 
 theorem factors_normalizedMooreComplex_PInfty (n : ℕ) :
     Subobject.Factors (NormalizedMooreComplex.objX X n) (PInfty.f n) := by
@@ -58,10 +59,12 @@ theorem factors_normalizedMooreComplex_PInfty (n : ℕ) :
     apply kernelSubobject_factors
     exact (HigherFacesVanish.of_P (n + 1) n) i le_add_self
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `PInfty` factors through the normalized Moore complex -/
 @[simps!]
 def PInftyToNormalizedMooreComplex (X : SimplicialObject A) : K[X] ⟶ N[X] :=
-  ChainComplex.ofHom _ _ _ _ _ _
+  ChainComplex.ofHom _ _ (AlternatingFaceMapComplex.d_squared X) _ _
+    (NormalizedMooreComplex.d_squared X)
     (fun n => factorThru _ _ (factors_normalizedMooreComplex_PInfty n)) fun n => by
     rw [← cancel_mono (NormalizedMooreComplex.objX X n).arrow, assoc, assoc, factorThru_arrow,
       ← inclusionOfMooreComplexMap_f, ← normalizedMooreComplex_objD,
@@ -73,12 +76,14 @@ def PInftyToNormalizedMooreComplex (X : SimplicialObject A) : K[X] ⟶ N[X] :=
 theorem PInftyToNormalizedMooreComplex_comp_inclusionOfMooreComplexMap (X : SimplicialObject A) :
     PInftyToNormalizedMooreComplex X ≫ inclusionOfMooreComplexMap X = PInfty := by cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem PInftyToNormalizedMooreComplex_naturality {X Y : SimplicialObject A} (f : X ⟶ Y) :
     AlternatingFaceMapComplex.map f ≫ PInftyToNormalizedMooreComplex Y =
       PInftyToNormalizedMooreComplex X ≫ NormalizedMooreComplex.map f := by
   cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem PInfty_comp_PInftyToNormalizedMooreComplex (X : SimplicialObject A) :
     PInfty ≫ PInftyToNormalizedMooreComplex X = PInftyToNormalizedMooreComplex X := by cat_disch
@@ -98,6 +103,7 @@ instance : Mono (inclusionOfMooreComplexMap X) :=
     ext
     exact HomologicalComplex.congr_hom hf n⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `inclusionOfMooreComplexMap X` is a split mono. -/
 def splitMonoInclusionOfMooreComplexMap (X : SimplicialObject A) :
     SplitMono (inclusionOfMooreComplexMap X) where
@@ -109,6 +115,7 @@ def splitMonoInclusionOfMooreComplexMap (X : SimplicialObject A) :
 
 variable (A)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When the category `A` is abelian,
 the functor `N₁ : SimplicialObject A ⥤ Karoubi (ChainComplex A ℕ)` defined
 using `PInfty` identifies to the composition of the normalized Moore complex functor

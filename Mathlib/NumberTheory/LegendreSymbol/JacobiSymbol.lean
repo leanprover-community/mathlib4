@@ -154,8 +154,8 @@ theorem one_left (b : ℕ) : J(1 | b) = 1 :=
 theorem mul_left (a₁ a₂ : ℤ) (b : ℕ) : J(a₁ * a₂ | b) = J(a₁ | b) * J(a₂ | b) := by
   simp_rw [jacobiSym, List.pmap_eq_map_attach, legendreSym.mul _ _ _]
   exact List.prod_map_mul (l := (primeFactorsList b).attach)
-    (f := fun x ↦ @legendreSym x {out := prime_of_mem_primeFactorsList x.2} a₁)
-    (g := fun x ↦ @legendreSym x {out := prime_of_mem_primeFactorsList x.2} a₂)
+    (f := fun x ↦ @legendreSym x { out := prime_of_mem_primeFactorsList x.2 } a₁)
+    (g := fun x ↦ @legendreSym x { out := prime_of_mem_primeFactorsList x.2 } a₂)
 
 /-- The symbol `J(a | b)` vanishes iff `a` and `b` are not coprime (assuming `b ≠ 0`). -/
 theorem eq_zero_iff_not_coprime {a : ℤ} {b : ℕ} [NeZero b] : J(a | b) = 0 ↔ a.gcd b ≠ 1 :=
@@ -335,6 +335,12 @@ theorem div_four_left {a : ℤ} {b : ℕ} (ha4 : a % 4 = 0) (hb2 : b % 2 = 1) :
       Nat.gcd_one_right]
   rw [Int.mul_ediv_cancel_left _ (by decide), jacobiSym.mul_left,
     (by decide : (4 : ℤ) = (2 : ℕ) ^ 2), jacobiSym.sq_one' this, one_mul]
+
+/-- If `b` is odd, then `J(4 | b) = 1`. -/
+theorem at_four {b : ℕ} (hb : Odd b) : J(4 | b) = 1 := by
+  have : J((4 : ℤ) | b) = J((4 : ℤ) / 4 | b) :=
+    (div_four_left (by decide) (Nat.odd_iff.mp hb)).symm
+  simpa [one_left]
 
 theorem even_odd {a : ℤ} {b : ℕ} (ha2 : a % 2 = 0) (hb2 : b % 2 = 1) :
     (if b % 8 = 3 ∨ b % 8 = 5 then -J(a / 2 | b) else J(a / 2 | b)) = J(a | b) := by

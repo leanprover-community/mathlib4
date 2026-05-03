@@ -85,7 +85,7 @@ abbrev M := StateRefT (Std.HashMap Lean.Syntax.Range Syntax) IO
   Lean.Parser.Tactic.failIfSuccess
 
 /--
-A list of blacklisted syntax kinds, which are expected to have subterms that contain
+A list of blocklisted syntax kinds, which are expected to have subterms that contain
 unevaluated tactics.
 -/
 initialize ignoreTacticKindsRef : IO.Ref NameHashSet ←
@@ -103,7 +103,7 @@ initialize ignoreTacticKindsRef : IO.Ref NameHashSet ←
     `Batteries.Tactic.seq_focus,
     `Mathlib.Tactic.Hint.registerHintStx,
     `Mathlib.Tactic.LinearCombination.linearCombination,
-    `Mathlib.Tactic.LinearCombination'.linearCombination',
+    `Mathlib.Tactic.LinearCombinationPrime.linearCombination',
     `Aesop.Frontend.Parser.addRules,
     `Aesop.Frontend.Parser.aesopTactic,
     `Aesop.Frontend.Parser.aesopTactic?,

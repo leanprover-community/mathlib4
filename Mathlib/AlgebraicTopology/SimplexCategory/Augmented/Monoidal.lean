@@ -56,8 +56,6 @@ def tensorObj (m n : AugmentedSimplexCategory) : AugmentedSimplexCategory :=
   | .star, x => x
   | x, .star => x
 
--- TODO: fix non-terminal simp: run on four different goals with different simp sets
-set_option linter.flexible false in
 /-- The action of the tensor product on maps coming from `SimplexCategory`. -/
 def tensorHomOf {x₁ y₁ x₂ y₂ : SimplexCategory} (f₁ : x₁ ⟶ y₁) (f₂ : x₂ ⟶ y₂) :
     tensorObjOf x₁ x₂ ⟶ tensorObjOf y₁ y₂ :=
@@ -72,11 +70,8 @@ def tensorHomOf {x₁ y₁ x₂ y₂ : SimplexCategory} (f₁ : x₁ ⟶ y₁) (
         cases i using Fin.addCases <;>
         cases j using Fin.addCases <;>
         rw [Fin.le_def] at h ⊢ <;>
-        simp [Fin.addCases_left, Fin.addCases_right] at h ⊢
-        · case left.left i j => exact f₁.toOrderHom.monotone h
-        · case left.right i j => lia
-        · case right.left i j => lia
-        · case right.right i j => exact f₂.toOrderHom.monotone h }
+        simp at h ⊢ <;>
+        grind only [OrderHom.apply_mono] }
   (eqToHom (congrArg _ (Nat.succ_add _ _)).symm ≫ (SimplexCategory.mkHom f₁) ≫
     eqToHom (congrArg _ (Nat.succ_add _ _)) : _ ⟶ ⦋y₁.len + y₂.len + 1⦌)
 
@@ -175,6 +170,7 @@ abbrev inl' (x y : SimplexCategory) : x ⟶ tensorObjOf x y := WithInitial.down 
 `SimplexCategory`. -/
 abbrev inr' (x y : SimplexCategory) : y ⟶ tensorObjOf x y := WithInitial.down <| inr (.of x) (.of y)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma inl'_eval (x y : SimplexCategory) (i : Fin (x.len + 1)) :
     (inl' x y).toOrderHom i = (i.castAdd _).cast (Nat.succ_add x.len (y.len + 1)) := by
   dsimp [inl', inl, MonoidalCategoryStruct.rightUnitor, MonoidalCategoryStruct.whiskerLeft,
@@ -182,6 +178,7 @@ lemma inl'_eval (x y : SimplexCategory) (i : Fin (x.len + 1)) :
   ext
   simp [OrderEmbedding.toOrderHom]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma inr'_eval (x y : SimplexCategory) (i : Fin (y.len + 1)) :
     (inr' x y).toOrderHom i = (i.natAdd _).cast (Nat.succ_add x.len (y.len + 1)) := by
   dsimp [inr', inr, MonoidalCategoryStruct.leftUnitor, MonoidalCategoryStruct.whiskerRight,
@@ -273,6 +270,7 @@ lemma inr_comp_tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory}
   | .star, _, _, _, f₁, f₂ => by cat_disch
   | _, _, .star, _, _, _ => rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inr_comp_associator (x y z : AugmentedSimplexCategory) :
     inr _ _ ≫ (α_ x y z).hom = inr _ _ ≫ inr _ _ :=
@@ -294,6 +292,7 @@ lemma inr_comp_associator (x y z : AugmentedSimplexCategory) :
   | _, .star, _ => by cat_disch
   | _, _, .star => by cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inl_comp_inl_comp_associator (x y z : AugmentedSimplexCategory) :
     inl _ _ ≫ inl _ _ ≫ (α_ x y z).hom = inl _ _ :=
@@ -312,6 +311,7 @@ lemma inl_comp_inl_comp_associator (x y z : AugmentedSimplexCategory) :
   | _, .star, _ => by cat_disch
   | _, _, .star => by cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inr_comp_inl_comp_associator (x y z : AugmentedSimplexCategory) :
     inr _ _ ≫ inl _ _ ≫ (α_ x y z).hom = inl _ _ ≫ inr _ _ :=

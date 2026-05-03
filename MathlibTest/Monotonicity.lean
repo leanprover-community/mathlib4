@@ -3,6 +3,7 @@ Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
+module
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.List.Defs
 import Mathlib.Tactic.Monotonicity
@@ -419,7 +420,7 @@ example {x y z w : ℕ} : true := by
 -- example : ∫ x in Icc 0 1, real.exp x ≤ ∫ x in Icc 0 1, real.exp (x+1) := by
 --   mono
 --   · exact real.continuous_exp.locally_integrable.integrable_on_is_compact is_compact_Icc
---   · exact (real.continuous_exp.comp <| continuous_add_right 1)
+--   · exact (real.continuous_exp.comp <| continuous_add_const 1)
 --       .locally_integrable.integrable_on_is_compact is_compact_Icc
 --   intro x
 --   dsimp only

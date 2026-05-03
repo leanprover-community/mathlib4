@@ -90,7 +90,7 @@ def functorToInterchangeIso : functorToInterchange A K ≅
 association because the type of `Presheaf.tautologicalCocone` is
 `Cocone (CostructuredArrow.proj yoneda P ⋙ yoneda)`, so this association will show up in the
 proof. -/
-@[simps!]
+@[simps! +dsimpLhs]
 def flipFunctorToInterchange : (functorToInterchange A K).flip ≅
     ((CostructuredArrow.proj yoneda A ⋙ yoneda) ⋙ (whiskeringLeft J Cᵒᵖ (Type u)).obj K) :=
   Iso.refl _
@@ -131,6 +131,7 @@ noncomputable def iso [IsFiltered (CostructuredArrow yoneda A)] :
         (IsColimit.coconePointUniqueUpToIso
           (colimit.isColimit _) (Presheaf.isColimitTautologicalCocone A)))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem iso_hom [IsFiltered (CostructuredArrow yoneda A)] : (iso A K).hom = limit.post K A := by
   -- We will have to use `ι_colimitLimitIso_limit_π` eventually, so let's start by
   -- transforming the goal into something from a colimit to a limit so that we can apply
@@ -160,7 +161,7 @@ theorem iso_hom [IsFiltered (CostructuredArrow yoneda A)] : (iso A K).hom = limi
   dsimp only [yoneda_obj_obj, Functor.const_obj_obj] at this
   rw [← this]
   ext
-  simp
+  simp [flipFunctorToInterchange, functorToInterchangeIso, functorToInterchange]
 
 theorem isIso_post [IsFiltered (CostructuredArrow yoneda A)] : IsIso (limit.post K A) :=
   iso_hom A K ▸ inferInstance

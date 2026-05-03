@@ -25,7 +25,7 @@ This file sets up a special class of linearly ordered commutative monoids
 that show up as the target of so-called “valuations” in algebraic number theory.
 
 Usually, in the informal literature, these objects are constructed
-by taking a linearly ordered commutative group Γ and formally adjoining a zero element: Γ ∪ {0}.
+by taking a linearly ordered commutative group Γ and formally adjoining a zero element: `Γ ∪ {0}`.
 
 The disadvantage is that a type such as `NNReal` is not of that form,
 whereas it is a very common target for valuations.
@@ -35,11 +35,6 @@ The solutions is to use a typeclass, and that is exactly what we do in this file
 @[expose] public section
 
 variable {α β : Type*}
-
--- TODO: This instance has nothing to do in this file
-instance (priority := 100) CanonicallyOrderedAdd.toZeroLeOneClass
-    [AddZeroClass α] [LE α] [CanonicallyOrderedAdd α] [One α] : ZeroLEOneClass α :=
-  ⟨zero_le 1⟩
 
 /-- A linearly ordered commutative monoid with a zero element. -/
 class LinearOrderedCommMonoidWithZero (α : Type*) extends CommMonoidWithZero α, LinearOrder α,
@@ -115,12 +110,12 @@ instance (priority := 100) LinearOrderedCommMonoidWithZero.toIsMulTorsionFree :
 instance instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual :
     LinearOrderedAddCommMonoidWithTop (Additive αᵒᵈ) where
   top_add' a := by ext; simp [bot_eq_zero'']
-  isAddLeftRegular_of_ne_top := by simp +contextual [isRegular_of_ne_zero, bot_eq_zero'']
+  isAddLeftRegular_of_ne_top := by simp +contextual [IsRegular.of_ne_zero, bot_eq_zero'']
 
 instance instLinearOrderedAddCommMonoidWithTopOrderDualAdditive :
     LinearOrderedAddCommMonoidWithTop (Additive α)ᵒᵈ where
   top_add' a := by ext; simp; simp [bot_eq_zero'' (α := α)]
-  isAddLeftRegular_of_ne_top := by simp; simp +contextual [bot_eq_zero'', isRegular_of_ne_zero]
+  isAddLeftRegular_of_ne_top := by simp; simp +contextual [bot_eq_zero'', IsRegular.of_ne_zero]
 
 variable [NoZeroDivisors α]
 
@@ -184,19 +179,19 @@ lemma denselyOrdered_iff_denselyOrdered_units_and_nontrivial_units :
       exact ⟨z, by simp [hz, hz']⟩
 
 -- Counterexample with monoid: `{ x : ℝ | 0 ≤ x ≤ 1 }`
-instance [DenselyOrdered α] : Nontrivial αˣ :=
+instance [DenselyOrdered α] : Nontrivial αˣ := by
   have := denselyOrdered_iff_denselyOrdered_units_and_nontrivial_units (α := α)
-  by tauto
+  tauto
 
 -- Counterexample with monoid:
 -- `{ x : ℝ | x = 0 ∨ ∃ (a : ℤ) (b c : ℕ), x = Real.exp (a + b * √2 - c * √3) }`
-instance [DenselyOrdered α] : DenselyOrdered αˣ :=
+instance [DenselyOrdered α] : DenselyOrdered αˣ := by
   have := denselyOrdered_iff_denselyOrdered_units_and_nontrivial_units (α := α)
-  by tauto
+  tauto
 
-lemma denselyOrdered_units_iff [Nontrivial αˣ] : DenselyOrdered αˣ ↔ DenselyOrdered α :=
+lemma denselyOrdered_units_iff [Nontrivial αˣ] : DenselyOrdered αˣ ↔ DenselyOrdered α := by
   have := denselyOrdered_iff_denselyOrdered_units_and_nontrivial_units (α := α)
-  by tauto
+  tauto
 
 end LinearOrderedCommGroupWithZero
 
@@ -247,7 +242,7 @@ end Bot
 section LE
 variable [LE α] {x y : WithZero α} {a b : α}
 
-instance (priority := 10) le : LE (WithZero α) := WithBot.instLE
+instance (priority := 10) le : LE (WithZero α) := inferInstanceAs <| LE (WithBot α)
 
 lemma le_def : x ≤ y ↔ ∀ a : α, x = ↑a → ∃ b : α, y = ↑b ∧ a ≤ b := WithBot.le_iff_forall
 
@@ -255,9 +250,10 @@ lemma le_def : x ≤ y ↔ ∀ a : α, x = ↑a → ∃ b : α, y = ↑b ∧ a �
 
 lemma not_coe_le_zero (a : α) : ¬(a : WithZero α) ≤ 0 := WithBot.not_coe_le_bot _
 
-instance instOrderBot : OrderBot (WithZero α) := WithBot.instOrderBot
+instance instOrderBot : OrderBot (WithZero α) := inferInstanceAs <| OrderBot (WithBot α)
 
-instance instBoundedOrder [OrderTop α] : BoundedOrder (WithBot α) := WithBot.instBoundedOrder
+instance instBoundedOrder [OrderTop α] : BoundedOrder (WithZero α) :=
+  inferInstanceAs <| BoundedOrder (WithBot α)
 
 @[simp] lemma zero_le (a : WithZero α) : 0 ≤ a := bot_le (a := a)
 
@@ -286,7 +282,7 @@ section LT
 variable [LT α] {x y : WithZero α} {a b : α}
 
 /-- The order on `WithZero α`, defined by `⊥ < ↑a` and `a < b → ↑a < ↑b`. -/
-instance (priority := 10) instLT : LT (WithZero α) := WithBot.instLT
+instance (priority := 10) instLT : LT (WithZero α) := inferInstanceAs <| LT (WithBot α)
 
 lemma lt_def : x < y ↔ x = 0 ∧ (∃ b : α, y = b) ∨ ∃ a b : α, a < b ∧ x = ↑a ∧ y = ↑b :=
   WithBot.lt_def
@@ -317,7 +313,7 @@ section Preorder
 
 variable [Preorder α] [Preorder β] {x y : WithZero α} {a b : α}
 
-instance instPreorder : Preorder (WithZero α) := WithBot.instPreorder
+instance instPreorder : Preorder (WithZero α) := inferInstanceAs <| Preorder (WithBot α)
 
 instance instMulLeftMono [Mul α] [MulLeftMono α] :
     MulLeftMono (WithZero α) := by
@@ -406,7 +402,8 @@ end Preorder
 section PartialOrder
 variable [PartialOrder α]
 
-instance instPartialOrder : PartialOrder (WithZero α) := WithBot.instPartialOrder
+instance instPartialOrder : PartialOrder (WithZero α) :=
+  inferInstanceAs <| PartialOrder (WithBot α)
 
 instance instMulLeftReflectLT [Mul α] [MulLeftReflectLT α] :
     MulLeftReflectLT (WithZero α) := by
@@ -447,8 +444,7 @@ instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithZero α) where
 theorem coe_inf [SemilatticeInf α] (a b : α) : ((a ⊓ b : α) : WithZero α) = (a : WithZero α) ⊓ b :=
   rfl
 
-instance instLattice [Lattice α] : Lattice (WithZero α) :=
-  { WithZero.semilatticeSup, WithZero.semilatticeInf with }
+instance instLattice [Lattice α] : Lattice (WithZero α) where
 
 end Lattice
 
@@ -465,8 +461,8 @@ instance decidableLT [Preorder α] [DecidableLT α] : DecidableLT (WithZero α)
   | 0, (a : α) => isTrue <| by simp
   | (a : α), (b : α) => decidable_of_iff' _ coe_lt_coe
 
-instance isTotal_le [Preorder α] [IsTotal α (· ≤ ·)] : IsTotal (WithZero α) (· ≤ ·) where
-  total x y := by cases x <;> cases y <;> simp; simpa using IsTotal.total ..
+instance total_le [Preorder α] [@Std.Total α (· ≤ ·)] : @Std.Total (WithZero α) (· ≤ ·) where
+  total x y := by cases x <;> cases y <;> simp; simpa using Std.Total.total ..
 
 section LinearOrder
 variable [LinearOrder α] {a b c : α} {x y : WithZero α}
@@ -492,7 +488,7 @@ theorem exists_ne_zero_and_lt_and_lt [NoMinOrder α] (hx : x ≠ 0) (hy : y ≠ 
 
 end LinearOrder
 
-instance isOrderedMonoid [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
+instance isOrderedMonoid [CommMonoid α] [Preorder α] [IsOrderedMonoid α] :
     IsOrderedMonoid (WithZero α) where
   mul_le_mul_left _ _ := mul_le_mul_left
 

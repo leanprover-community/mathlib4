@@ -41,7 +41,7 @@ open OuterMeasure
 
 section Extend
 
-variable {α : Type*} {P : α → Prop}
+variable {R α : Type*} {P : α → Prop}
 variable (m : ∀ s : α, P s → ℝ≥0∞)
 
 /-- We can trivially extend a function defined on a subclass of objects (with codomain `ℝ≥0∞`)
@@ -53,15 +53,14 @@ theorem extend_eq {s : α} (h : P s) : extend m s = m s h := by simp [extend, h]
 
 theorem extend_eq_top {s : α} (h : ¬P s) : extend m s = ∞ := by simp [extend, h]
 
-theorem smul_extend {R} [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
-    [NoZeroSMulDivisors R ℝ≥0∞] {c : R} (hc : c ≠ 0) :
+theorem smul_extend [Semiring R] [IsDomain R] [Module R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    [Module.IsTorsionFree R ℝ≥0∞] {c : R} (hc : c ≠ 0) :
     c • extend m = extend fun s h => c • m s h := by
   classical
-  ext1 s
-  dsimp [extend]
-  by_cases h : P s
-  · simp [h]
-  · simp [h, ENNReal.smul_top, hc]
+  ext s; by_cases h : P s <;> simp [extend, ENNReal.smul_top, *]
+
+lemma ennreal_smul_extend {c : ℝ≥0∞} (hc : c ≠ 0) : c • extend m = extend fun s h => c • m s h := by
+  ext s; by_cases h : P s <;> simp [extend, *]
 
 theorem le_extend {s : α} (h : P s) : m s h ≤ extend m s := by
   simp only [extend, le_iInf_iff]
@@ -202,6 +201,13 @@ theorem inducedOuterMeasure_eq_iInf (s : Set α) :
     refine le_iInf ?_
     intro h2f
     exact iInf_le_of_le _ (iInf_le_of_le h2f <| iInf_le _ hf)
+
+omit msU m_mono in
+theorem inducedOuterMeasure_zero (Pu : P univ) :
+    inducedOuterMeasure (fun _ _ => 0) P0 (by simp) = 0 := by
+  ext s
+  rw [inducedOuterMeasure_eq_iInf PU (fun _ _ => by simp) (fun _ _ => by simp)]
+  exact le_antisymm (iInf₂_le_of_le univ Pu (by simp)) zero_le
 
 theorem inducedOuterMeasure_preimage (f : α ≃ α) (Pm : ∀ s : Set α, P (f ⁻¹' s) ↔ P s)
     (mm : ∀ (s : Set α) (hs : P s), m (f ⁻¹' s) ((Pm _).mpr hs) = m s hs) {A : Set α} :
@@ -359,11 +365,9 @@ theorem trim_top : (⊤ : OuterMeasure α).trim = ⊤ :=
   top_unique <| le_trim _
 
 @[simp]
-theorem trim_zero : (0 : OuterMeasure α).trim = 0 :=
-  ext fun s =>
-    le_antisymm
-      ((measure_mono (subset_univ s)).trans_eq <| trim_eq _ MeasurableSet.univ)
-      (zero_le _)
+theorem trim_zero : (0 : OuterMeasure α).trim = 0 := by
+  ext s
+  exact nonpos_iff_eq_zero.1 <| (measure_mono (subset_univ s)).trans_eq <| trim_eq _ .univ
 
 theorem trim_sum_ge {ι} (m : ι → OuterMeasure α) : (sum fun i => (m i).trim) ≤ (sum m).trim :=
   fun s => by

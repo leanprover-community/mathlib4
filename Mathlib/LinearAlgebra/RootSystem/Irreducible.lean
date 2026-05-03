@@ -60,6 +60,69 @@ instance : BoundedOrder P.invtRootSubmodule where
 instance [Nontrivial M] : Nontrivial P.invtRootSubmodule where
   exists_pair_ne := ⟨⊥, ⊤, by rw [ne_eq, Subtype.ext_iff]; exact bot_ne_top⟩
 
+@[simp] lemma coe_bot : ((⊥ : P.invtRootSubmodule) : Submodule R M) = ⊥ := rfl
+
+@[simp] lemma coe_top : ((⊤ : P.invtRootSubmodule) : Submodule R M) = ⊤ := rfl
+
+lemma eq_zero_iff_forall_coroot'_eq_zero [P.IsRootSystem] {x : M} :
+    x = 0 ↔ ∀ i, P.coroot' i x = 0 := by
+  refine ⟨fun h ↦ by simp [h], fun h ↦ ?_⟩
+  replace h : x ∈ ⨅ i, ker (P.coroot' i) := by aesop
+  simpa [← P.corootSpan_dualAnnihilator_map_eq_iInf_ker_coroot'] using h
+
+lemma invtRootSubmodule.le_ker_coroot' {K : Type*} [Field K] [NeZero (2 : K)]
+    [Module K M] [Module K N] {P : RootPairing ι K M N}
+    (q : P.invtRootSubmodule) {k : ι} (hk : P.root k ∉ (q : Submodule K M)) :
+    (q : Submodule K M) ≤ LinearMap.ker (P.coroot' k) :=
+  (Submodule.mem_invtSubmodule_reflection_iff (P.flip.root_coroot_two k)
+    (Submodule.disjoint_span_singleton_of_notMem hk)).mp
+    (P.mem_invtRootSubmodule_iff.mp q.property k)
+
+lemma invtRootSubmodule.eq_bot_iff {K : Type*} [Field K] [NeZero (2 : K)]
+    [Module K M] [Module K N] {P : RootPairing ι K M N} [P.IsRootSystem]
+    (q : P.invtRootSubmodule) :
+    q = ⊥ ↔ ∀ i, P.root i ∉ (q : Submodule K M) := by
+  refine ⟨fun h ↦ by simp [h, P.ne_zero], fun h ↦ ?_⟩
+  simp_rw [Subtype.mk_eq_bot_iff (invtRootSubmodule.bot_mem P), Submodule.eq_bot_iff,
+    P.eq_zero_iff_forall_coroot'_eq_zero, ← LinearMap.mem_ker]
+  exact fun x hx i ↦ invtRootSubmodule.le_ker_coroot' q (h i) hx
+
+lemma invtRootSubmodule.eq_top_iff {K : Type*} [Field K] [Module K M] [Module K N]
+    {P : RootPairing ι K M N} [P.IsRootSystem] (q : P.invtRootSubmodule) :
+    q = ⊤ ↔ range P.root ⊆ q :=
+  ⟨fun h ↦ by simp [h], fun h ↦ by simpa using Submodule.span_mono h (R := K)⟩
+
+lemma invtRootSubmodule.eq_span_root {K : Type*} [Field K] [NeZero (2 : K)]
+    [Module K M] [Module K N] {P : RootPairing ι K M N} [P.IsRootSystem]
+    (q : P.invtRootSubmodule) :
+    (q : Submodule K M) = span K (P.root '' {i | P.root i ∈ (q : Submodule K M)}) := by
+  set Q := (q : Submodule K M)
+  have hSQ : span K (P.root '' {i | P.root i ∈ Q}) ≤ Q :=
+    span_le.mpr (Set.image_subset_iff.mpr fun _ h => h)
+  refine le_antisymm ?_ hSQ
+  set S := span K (P.root '' {i | P.root i ∈ Q})
+  set T := span K (P.root '' {i | P.root i ∉ Q})
+  have h_sup : S ⊔ T = ⊤ := by
+    rw [← Submodule.span_union, ← Set.image_union]
+    have : {i | P.root i ∈ Q} ∪ {i | P.root i ∉ Q} = Set.univ := by ext; simp [em]
+    rw [this, Set.image_univ]
+    simp
+  intro v hv
+  obtain ⟨s, hs, t, ht, rfl⟩ := Submodule.mem_sup.mp (h_sup ▸ Submodule.mem_top (x := v))
+  suffices t = 0 by rw [this, add_zero]; exact hs
+  have htQ : t ∈ Q := by simpa using Q.sub_mem hv (hSQ hs)
+  have h_ker : ∀ k, P.coroot' k t = 0 := by
+    intro k
+    by_cases hk : P.root k ∈ Q
+    · refine LinearMap.mem_ker.mp (span_le.mpr ?_ ht)
+      rintro _ ⟨j, hj, rfl⟩
+      rw [SetLike.mem_coe, LinearMap.mem_ker, P.root_coroot'_eq_pairing, P.pairing_eq_zero_iff',
+        ← P.root_coroot'_eq_pairing]
+      exact LinearMap.mem_ker.mp (invtRootSubmodule.le_ker_coroot' q hj hk)
+    · exact LinearMap.mem_ker.mp (invtRootSubmodule.le_ker_coroot' q hk htQ)
+  exact P.eq_zero_iff_forall_coroot'_eq_zero.mpr h_ker
+
+set_option backward.isDefEq.respectTransparency false in
 lemma isSimpleModule_weylGroupRootRep_iff [Nontrivial M] :
     IsSimpleModule R[P.weylGroup] P.weylGroupRootRep.asModule ↔
     ∀ (q : Submodule R M), (∀ i, q ∈ invtSubmodule (P.reflection i)) → q ≠ ⊥ → q = ⊤ := by
@@ -97,10 +160,16 @@ instance [P.IsIrreducible] : P.flip.IsIrreducible where
   eq_top_of_invtSubmodule_reflection := IsIrreducible.eq_top_of_invtSubmodule_coreflection (P := P)
   eq_top_of_invtSubmodule_coreflection := IsIrreducible.eq_top_of_invtSubmodule_reflection (P := P)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isSimpleModule_weylGroupRootRep [P.IsIrreducible] :
     IsSimpleModule R[P.weylGroup] P.weylGroupRootRep.asModule :=
   have := IsIrreducible.nontrivial P
   P.isSimpleModule_weylGroupRootRep_iff.mpr IsIrreducible.eq_top_of_invtSubmodule_reflection
+
+@[nontriviality]
+lemma not_isIrreducible_of_subsingleton [Subsingleton M] :
+    ¬ P.IsIrreducible :=
+  fun contra ↦ not_nontrivial _ contra.nontrivial
 
 /-- A nonempty irreducible root pairing is a root system. -/
 instance [Nonempty ι] [NeZero (2 : R)] [P.IsIrreducible] : P.IsRootSystem where
@@ -148,7 +217,7 @@ lemma isIrreducible_iff_invtRootSubmodule
     exact IsSimpleOrder.eq_top_of_lt hq'
 
 lemma exist_set_root_not_disjoint_and_le_ker_coroot'_of_invtSubmodule
-    [NeZero (2 : R)] [NoZeroSMulDivisors R M] (q : Submodule R M)
+    [NeZero (2 : R)] [IsDomain R] [Module.IsTorsionFree R M] (q : Submodule R M)
     (hq : ∀ i, q ∈ invtSubmodule (P.reflection i)) :
     ∃ Φ : Set ι, (∀ i ∈ Φ, ¬ Disjoint q (R ∙ P.root i)) ∧ (∀ i ∉ Φ, q ≤ ker (P.coroot' i)) := by
   refine ⟨{i | ¬ Disjoint q (R ∙ P.root i)}, by simp, fun i hi ↦ ?_⟩

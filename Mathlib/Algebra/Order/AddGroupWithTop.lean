@@ -11,8 +11,6 @@ public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Algebra.Order.Monoid.WithTop
 public import Mathlib.Algebra.Regular.Basic
 
-import Mathlib.Tactic.ByContra
-import Mathlib.Tactic.TermCongr
 
 /-!
 # Linearly ordered commutative additive groups and monoids with a top element adjoined
@@ -22,14 +20,14 @@ that show up as the target of so-called “valuations” in algebraic number the
 
 Usually, in the informal literature, these objects are constructed
 by taking a linearly ordered commutative additive group Γ and formally adjoining a
-top element: Γ ∪ {⊤}.
+top element: `Γ ∪ {⊤}`.
 
 The disadvantage is that a type such as `ENNReal` is not of that form,
 whereas it is a very common target for valuations.
 The solutions is to use a typeclass, and that is exactly what we do in this file.
 -/
 
-@[expose] public section
+public section
 
 variable {G α : Type*}
 
@@ -229,6 +227,20 @@ lemma sub_pos : 0 < a - b ↔ b < a ∨ b = ⊤ := by
   obtain rfl | hb := eq_or_ne b ⊤
   · simp
   · simp [← sub_self_eq_zero_of_ne_top hb, hb]
+
+@[simp]
+lemma neg_pos : 0 < -a ↔ a < 0 ∨ a = ⊤ := by
+  simpa using sub_pos (a := 0) (b := a)
+
+@[simp]
+lemma sub_self_nonneg : 0 ≤ a - a := by
+  obtain rfl | ha := eq_or_ne a ⊤
+  · simp
+  · rw [sub_self_eq_zero_of_ne_top ha]
+
+@[simp]
+lemma sub_eq_zero (ha : a ≠ ⊤) : b - a = 0 ↔ b = a := by
+  rw [← sub_self_eq_zero_of_ne_top ha, sub_left_inj_of_ne_top ha]
 
 end LinearOrderedAddCommGroupWithTop
 

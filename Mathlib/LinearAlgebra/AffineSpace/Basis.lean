@@ -30,7 +30,7 @@ barycentric coordinate of `q : P` is `1 - fᵢ (q -ᵥ p i)`.
 
 * `fintypeAffineCoords`: the `AffineSubspace` of `ι → k` (for `Fintype ι`) where coordinates sum
   to `1`.
-* `finsuppAffineCoords`: the `AffineSubspace of `ι →₀ k` where coordinates sum to `1`.
+* `finsuppAffineCoords`: the `AffineSubspace` of `ι →₀ k` where coordinates sum to `1`.
 * `AffineBasis`: a structure representing an affine basis of an affine space.
 * `AffineBasis.coord`: the map `P →ᵃ[k] k` corresponding to `i : ι`.
 * `AffineBasis.coord_apply_eq`: the behaviour of `AffineBasis.coord i` on `p i`.
@@ -71,7 +71,7 @@ lemma AffineIndependent.injOn_affineCombination_fintypeAffineCoords [Fintype ι]
 
 variable (ι k) in
 /-- The space of coordinates for affine combinations indexed by a general type. -/
-def finsuppAffineCoords : AffineSubspace k (ι →₀ k) :=
+noncomputable def finsuppAffineCoords : AffineSubspace k (ι →₀ k) :=
   (affineSpan k {(1 : k)}).comap (Finsupp.linearCombination k (1 : ι → k)).toAffineMap
 
 lemma mem_finsuppAffineCoords_iff_linearCombination {w : ι →₀ k} :

@@ -12,6 +12,8 @@ public import Mathlib.Control.Traversable.Basic
 public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Tactic.AdaptationNote
 
+import Mathlib.Tactic.Attr.Register
+
 /-!
 # Free constructions
 
@@ -520,10 +522,12 @@ homomorphism `FreeAddSemigroup α → β` given an additive semigroup `β`. -/]
 def lift : (α → β) ≃ (FreeSemigroup α →ₙ* β) where
   toFun f :=
     { toFun := fun x ↦ x.2.foldl (fun a b ↦ a * f b) (f x.1)
-      map_mul' := fun x y ↦ by
-        simp [head_mul, tail_mul, ← List.foldl_map, List.foldl_append, List.foldl_cons,
-          List.foldl_assoc] }
+      map_mul' := by simp [← List.foldl_map, List.foldl_assoc] }
   invFun f := f ∘ of
+
+@[to_additive]
+lemma lift_mk_eq_foldl {f : α → β} {x : α} {xs : List α} :
+    lift f ⟨x, xs⟩ = xs.foldl (· * f ·) (f x) := rfl
 
 @[to_additive (attr := simp)]
 theorem lift_of (x : α) : lift f (of x) = f x := rfl

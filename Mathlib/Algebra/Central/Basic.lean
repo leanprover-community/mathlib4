@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Central.Defs
 
+import Mathlib.Algebra.Module.Torsion.Field
+
 /-!
 # Central Algebras
 
@@ -20,7 +22,7 @@ In this file, we prove some basic results about central algebras over a commutat
   `K` and `k` are fields. If `D` is a nontrivial central algebra over `k`, `K` is isomorphic to `k`.
 -/
 
-@[expose] public section
+public section
 
 universe u v
 

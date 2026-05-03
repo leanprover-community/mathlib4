@@ -19,7 +19,7 @@ This file contains the commutative ring instance on `ℤ`.
 See note [foundational algebra order theory].
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists DenselyOrdered Set.Subsingleton
 
@@ -44,8 +44,9 @@ instance instCommRing : CommRing ℤ where
   intCast_ofNat _ := rfl
   intCast_negSucc _ := rfl
 
-instance instCancelCommMonoidWithZero : CancelCommMonoidWithZero ℤ where
+instance : IsCancelMulZero ℤ where
   mul_left_cancel_of_ne_zero ha _ _ := (mul_eq_mul_left_iff ha).1
+  mul_right_cancel_of_ne_zero ha _ _ := (mul_eq_mul_right_iff ha).1
 
 instance instIsDomain : IsDomain ℤ where
 

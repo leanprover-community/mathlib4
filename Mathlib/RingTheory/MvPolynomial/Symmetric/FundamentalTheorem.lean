@@ -223,6 +223,7 @@ lemma leadingCoeff_esymmAlgHomMonomial (t : Fin n →₀ ℕ) (hnm : n ≤ m) :
         ih]
     exacts [toLex.injective, toLex_add]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma supDegree_esymmAlgHomMonomial (hr : r ≠ 0) (t : Fin n →₀ ℕ) (hnm : n ≤ m) :
     ofLex (supDegree toLex <| esymmAlgHomMonomial (Fin m) t r) = accumulate n m t := by
   nontriviality R
@@ -239,6 +240,7 @@ lemma supDegree_esymmAlgHomMonomial (hr : r ≠ 0) (t : Fin n →₀ ℕ) (hnm :
     · exact (monic_esymm this).pow toLex_add toLex.injective
     · rwa [Ne, ← leadingCoeff_eq_zero toLex.injective, leadingCoeff_esymmAlgHomMonomial _ hnm]
 
+set_option backward.isDefEq.respectTransparency false in
 omit [Fintype σ] in
 lemma IsSymmetric.antitone_supDegree [LinearOrder σ] {p : MvPolynomial σ R} (hp : p.IsSymmetric) :
     Antitone ↑(ofLex <| p.supDegree toLex) := by
@@ -272,7 +274,7 @@ lemma esymmAlgHom_fin_injective (h : n ≤ m) :
   rw [injective_iff_map_eq_zero]
   refine fun p ↦ (fun hp ↦ ?_).mtr
   rw [p.as_sum, map_sum (esymmAlgHom (Fin m) R n), ← Subalgebra.coe_eq_zero,
-    AddSubmonoidClass.coe_finset_sum]
+    AddSubmonoidClass.coe_finsetSum]
   refine sum_ne_zero_of_injOn_supDegree (D := toLex) (support_nonempty.2 hp) (fun t ht ↦ ?_)
     (fun t ht s hs he ↦ DFunLike.ext' <| accumulate_injective h ?_)
   · rw [← esymmAlgHomMonomial, Ne, ← leadingCoeff_eq_zero toLex.injective,

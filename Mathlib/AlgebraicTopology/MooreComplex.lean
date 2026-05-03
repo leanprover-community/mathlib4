@@ -72,6 +72,7 @@ def objX : ∀ n : ℕ, Subobject (X.obj (op ⦋n⦌))
     objX X (n + 1) = Finset.univ.inf fun k : Fin (n + 1) => kernelSubobject (X.δ k.succ) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The differentials in the normalized Moore complex.
 -/
 @[simp]
@@ -94,6 +95,7 @@ def objD : ∀ n : ℕ, (objX X (n + 1) : C) ⟶ (objX X n : C)
     rw [← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ i.succ (by simp)),
       Category.assoc, kernelSubobject_arrow_comp_assoc, zero_comp, comp_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
   -- It's a pity we need to do a case split here;
     -- after the first rw the proofs are almost identical
@@ -122,7 +124,7 @@ variable {X} {Y : SimplicialObject C} (f : X ⟶ Y)
 -/
 @[simps!]
 def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
-  ChainComplex.ofHom _ _ _ _ _ _
+  ChainComplex.ofHom _ _ (d_squared X) _ _ (d_squared Y)
     (fun n => factorThru _ (arrow _ ≫ f.app (op ⦋n⦌)) (by
       cases n <;> dsimp
       · apply top_factors
@@ -130,8 +132,7 @@ def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
         rw [Category.assoc, SimplicialObject.δ, ← f.naturality,
           ← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ i (by simp)),
           Category.assoc]
-        erw [kernelSubobject_arrow_comp_assoc]
-        rw [zero_comp, comp_zero]))
+        rw [← SimplicialObject.δ_def, kernelSubobject_arrow_comp_assoc, zero_comp, comp_zero]))
     fun n => by
     cases n <;> dsimp [objD, objX] <;> cat_disch
 
@@ -155,7 +156,7 @@ def normalizedMooreComplex : SimplicialObject C ⥤ ChainComplex C ℕ where
 
 -- Not `@[simp]` as `simp` can prove this.
 theorem normalizedMooreComplex_objD (X : SimplicialObject C) (n : ℕ) :
-    ((normalizedMooreComplex C).obj X).d (n + 1) n = NormalizedMooreComplex.objD X n :=
-  ChainComplex.of_d _ _ (d_squared X) n
+    ((normalizedMooreComplex C).obj X).d (n + 1) n = NormalizedMooreComplex.objD X n := by
+  simp [-objD, -obj_X]
 
 end AlgebraicTopology

@@ -31,7 +31,7 @@ For most uses, typically `Submodule R M` is more powerful.
 
 ## Tags
 
-submodule, mul_action
+submodule, multiplicative action
 -/
 
 @[expose] public section
@@ -134,6 +134,21 @@ theorem forall_smul_mem_iff {R M S : Type*} [Monoid R] [MulAction R M] [SetLike 
     [SMulMemClass S R M] {N : S} {x : M} : (∀ a : R, a • x ∈ N) ↔ x ∈ N :=
   ⟨fun h => by simpa using h 1, fun h a => SMulMemClass.smul_mem a h⟩
 
+open scoped Pointwise in
+@[to_additive]
+theorem smul_subset_self {S R M : Type*} [SetLike S M] [SMul R M] [SMulMemClass S R M]
+    (r : R) (s : S) : (r • s : Set M) ⊆ s := by
+  rintro _ ⟨x, hx, rfl⟩
+  simpa using SMulMemClass.smul_mem (r : R) hx
+
+open scoped Pointwise in
+@[to_additive (attr := simp)]
+theorem units_smul {S R M : Type*} [SetLike S M] [Monoid R] [MulAction R M] [SMulMemClass S R M]
+    (s : S) (r : Rˣ) : r • s = (s : Set M) := by
+  apply subset_antisymm (smul_subset_self _ s)
+  rintro x hx
+  exact ⟨r⁻¹ • x, SMulMemClass.smul_mem (↑r⁻¹ : R) hx, by simp [← Units.smul_def]⟩
+
 end SMul
 
 section OfTower
@@ -197,6 +212,8 @@ variable [SMul R M]
 instance : SetLike (SubMulAction R M) M :=
   ⟨SubMulAction.carrier, fun p q h => by cases p; cases q; congr⟩
 
+@[to_additive] instance : PartialOrder (SubMulAction R M) := .ofSetLike (SubMulAction R M) M
+
 @[to_additive]
 instance : SMulMemClass (SubMulAction R M) R M where smul_mem := smul_mem' _
 
@@ -254,8 +271,8 @@ instance : InfSet (SubMulAction R M) :=
 
 @[to_additive]
 instance : CompleteLattice (SubMulAction R M) :=
-  SetLike.coe_injective.completeLattice _ (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ => rfl) rfl rfl
+  SetLike.coe_injective.completeLattice _ .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
+    (fun _ ↦ rfl) rfl rfl
 
 @[to_additive (attr := simp)]
 theorem mem_iSup {ι : Sort*} {p : ι → SubMulAction R M} {x : M} :
@@ -453,7 +470,7 @@ theorem stabilizer_of_subMul {p : SubMulAction R M} (m : p) :
 
 /-- SubMulAction on the complement of an invariant subset -/
 @[to_additive /-- SubAddAction on the complement of an invariant subset -/]
-instance : HasCompl (SubMulAction R M) where
+instance : Compl (SubMulAction R M) where
   compl s := ⟨sᶜ, by simp⟩
 
 @[to_additive]
@@ -562,7 +579,7 @@ def nonZeroSubMul : SubMulAction Rˣ M where
   smul_mem' := by simp [Units.smul_def]
 
 instance : MulAction Rˣ { x : M // x ≠ 0 } :=
-  SubMulAction.mulAction' (nonZeroSubMul R M)
+  inferInstanceAs <| MulAction Rˣ (nonZeroSubMul R M)
 
 @[simp]
 lemma smul_coe (a : Rˣ) (x : { x : M // x ≠ 0 }) :
@@ -594,7 +611,7 @@ def fixedPointsSubMulOfNormal [hH : H.Normal] : SubMulAction G α where
   smul_mem' := smul_mem_fixedPoints_of_normal
 
 instance [hH : H.Normal] : MulAction G (MulAction.fixedPoints H α) :=
-  SubMulAction.mulAction' fixedPointsSubMulOfNormal
+  inferInstanceAs <| MulAction G fixedPointsSubMulOfNormal
 
 @[simp]
 lemma coe_smul_fixedPoints_of_normal [hH : H.Normal]

@@ -36,7 +36,7 @@ equal, this often confuses the elaborator. Similar problems arise when doing cas
 The disadvantage is that we have to duplicate some instances about `Set.Ici` to this subtype.
 -/
 
-@[expose] public section
+public section
 
 open Set
 
@@ -97,7 +97,7 @@ instance noZeroDivisors [Semiring α] [PartialOrder α] [IsOrderedRing α] [NoZe
     NoZeroDivisors { x : α // 0 ≤ x } :=
   { eq_zero_or_eq_zero_of_mul_eq_zero := by
       rintro ⟨a, ha⟩ ⟨b, hb⟩
-      simp only [mk_mul_mk, mk_eq_zero, mul_eq_zero, imp_self]}
+      simp only [mk_mul_mk, mk_eq_zero, mul_eq_zero, imp_self] }
 
 instance orderedSub [Ring α] [LinearOrder α] [IsStrictOrderedRing α] :
     OrderedSub { x : α // 0 ≤ x } :=

@@ -215,7 +215,7 @@ private lemma exists_forall_lie_eq_smul_of_isSolvable_of_finite
   obtain H | ⟨A, hA, hAL⟩ := eq_top_or_exists_le_coatom (derivedSeries k L 1).toSubmodule
   · obtain _ | _ := subsingleton_or_nontrivial L
     · use 0
-      simpa [mem_weightSpace, nontrivial_iff] using exists_pair_ne V
+      simpa [trivial_lie_zero, mem_weightSpace, nontrivial_iff] using exists_pair_ne V
     · rw [LieSubmodule.toSubmodule_eq_top] at H
       exact ((derivedSeries_lt_top_of_solvable k L).ne H).elim
   lift A to LieIdeal k L
@@ -229,6 +229,7 @@ decreasing_by
   apply Submodule.finrank_lt_finrank_of_lt
   exact hA.lt_top
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Lie's theorem**: Lie modules of solvable Lie algebras over fields of characteristic 0
 have a common eigenvector for the action of all elements of the Lie algebra.
 

@@ -68,12 +68,14 @@ theorem epi_of_epi_map (F : C ⥤ D) [ReflectsEpimorphisms F] {X Y : C} {f : X �
     (h : Epi (F.map f)) : Epi f :=
   ReflectsEpimorphisms.reflects f h
 
+set_option backward.isDefEq.respectTransparency false in
 instance preservesMonomorphisms_comp (F : C ⥤ D) (G : D ⥤ E) [PreservesMonomorphisms F]
     [PreservesMonomorphisms G] : PreservesMonomorphisms (F ⋙ G) where
   preserves f h := by
     rw [comp_map]
     exact inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 instance preservesEpimorphisms_comp (F : C ⥤ D) (G : D ⥤ E) [PreservesEpimorphisms F]
     [PreservesEpimorphisms G] : PreservesEpimorphisms (F ⋙ G) where
   preserves f h := by
@@ -141,7 +143,7 @@ theorem reflectsMonomorphisms.of_iso {F G : C ⥤ D} [ReflectsMonomorphisms F] (
   { reflects := fun {X} {Y} f h => by
       apply F.mono_of_mono_map
       suffices F.map f = (α.app X).hom ≫ G.map f ≫ (α.app Y).inv from this ▸ mono_comp _ _
-      rw [← Category.assoc, Iso.eq_comp_inv, Iso.app_hom, Iso.app_hom, NatTrans.naturality] }
+      simp }
 
 theorem reflectsMonomorphisms.iso_iff {F G : C ⥤ D} (α : F ≅ G) :
     ReflectsMonomorphisms F ↔ ReflectsMonomorphisms G :=
@@ -152,7 +154,7 @@ theorem reflectsEpimorphisms.of_iso {F G : C ⥤ D} [ReflectsEpimorphisms F] (α
   { reflects := fun {X} {Y} f h => by
       apply F.epi_of_epi_map
       suffices F.map f = (α.app X).hom ≫ G.map f ≫ (α.app Y).inv from this ▸ epi_comp _ _
-      rw [← Category.assoc, Iso.eq_comp_inv, Iso.app_hom, Iso.app_hom, NatTrans.naturality] }
+      simp }
 
 theorem reflectsEpimorphisms.iso_iff {F G : C ⥤ D} (α : F ≅ G) :
     ReflectsEpimorphisms F ↔ ReflectsEpimorphisms G :=
@@ -166,9 +168,6 @@ theorem preservesEpimorphisms_of_adjunction {F : C ⥤ D} {G : D ⥤ C} (adj : F
         replace H := congr_arg (adj.homEquiv X Z) H
         rwa [adj.homEquiv_naturality_left, adj.homEquiv_naturality_left, cancel_epi,
           Equiv.apply_eq_iff_eq] at H⟩ }
-
-@[deprecated (since := "2025-07-27")]
-alias preservesEpimorphsisms_of_adjunction := preservesEpimorphisms_of_adjunction
 
 instance (priority := 100) preservesEpimorphisms_of_isLeftAdjoint (F : C ⥤ D) [IsLeftAdjoint F] :
     PreservesEpimorphisms F :=

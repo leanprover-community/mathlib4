@@ -65,7 +65,7 @@ open Matrix
 open scoped Matrix
 
 theorem Algebra.traceForm_toMatrix_powerBasis (h : PowerBasis R S) :
-    BilinForm.toMatrix h.basis (traceForm R S) = of fun i j => trace R S (h.gen ^ (i.1 + j.1)) := by
+    (traceForm R S).toMatrix h.basis = of fun i j => trace R S (h.gen ^ (i.1 + j.1)) := by
   ext; rw [traceForm_toMatrix, of_apply, pow_add, h.basis_eq_pow, h.basis_eq_pow]
 
 section EqSumRoots
@@ -101,7 +101,7 @@ open IntermediateField
 theorem trace_gen_eq_zero {x : L} (hx : ¬IsIntegral K x) :
     Algebra.trace K K⟮x⟯ (AdjoinSimple.gen K x) = 0 := by
   rw [trace_eq_zero_of_not_exists_basis, LinearMap.zero_apply]
-  contrapose! hx
+  contrapose hx
   obtain ⟨s, ⟨b⟩⟩ := hx
   refine .of_mem_of_fg K⟮x⟯.toSubalgebra ?_ x ?_
   · exact (Submodule.fg_iff_finiteDimensional _).mpr (b.finiteDimensional_of_finite)
@@ -175,8 +175,9 @@ lemma Algebra.trace_eq_of_algEquiv {A B C : Type*} [CommRing A] [CommRing B] [Co
     [Algebra A B] [Algebra A C] (e : B ≃ₐ[A] C) (x) :
     Algebra.trace A C (e x) = Algebra.trace A B x := by
   simp_rw [Algebra.trace_apply, ← LinearMap.trace_conj' _ e.toLinearEquiv]
-  congr; ext; simp [LinearEquiv.conj_apply]
+  congr; ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Algebra.trace_eq_of_ringEquiv {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
     [Algebra A C] [Algebra B C] (e : A ≃+* B) (he : (algebraMap B C).comp e = algebraMap A C) (x) :
     e (Algebra.trace A C x) = Algebra.trace B C x := by
@@ -298,7 +299,7 @@ lemma Algebra.trace_eq_zero_of_not_isSeparable (H : ¬ Algebra.IsSeparable K L) 
         rw [one_pow, IntermediateField.finrank_eq_one_iff_eq_top, separableClosure.eq_top_iff] at hn
         cases H hn
       | prime hprime =>
-        rw [hn, pow_succ', SemigroupAction.mul_smul, LinearMap.map_smul_of_tower, nsmul_eq_mul,
+        rw [hn, pow_succ', mul_smul, LinearMap.map_smul_of_tower, nsmul_eq_mul,
           CharP.cast_eq_zero, zero_mul, LinearMap.zero_apply]
   · rw [trace_eq_finrank_mul_minpoly_nextCoeff]
     obtain ⟨g, hg₁, m, hg₂⟩ :=
@@ -377,7 +378,7 @@ theorem traceMatrix_of_matrix_mulVec [Fintype κ] (b : κ → B) (P : Matrix κ 
     traceMatrix_of_matrix_vecMul, transpose_transpose]
 
 theorem traceMatrix_of_basis [Fintype κ] [DecidableEq κ] (b : Basis κ A B) :
-    traceMatrix A b = BilinForm.toMatrix b (traceForm A B) := by
+    traceMatrix A b = (traceForm A B).toMatrix b := by
   ext (i j)
   rw [traceMatrix_apply, traceForm_apply, traceForm_toMatrix]
 
@@ -475,10 +476,10 @@ theorem det_traceMatrix_ne_zero' [Algebra.IsSeparable K L] : det (traceMatrix K 
 
 theorem det_traceForm_ne_zero [Algebra.IsSeparable K L] [Fintype ι] [DecidableEq ι]
     (b : Basis ι K L) :
-    det (BilinForm.toMatrix b (traceForm K L)) ≠ 0 := by
+    det ((traceForm K L).toMatrix b) ≠ 0 := by
   haveI : FiniteDimensional K L := b.finiteDimensional_of_finite
   let pb : PowerBasis K L := Field.powerBasisOfFiniteOfSeparable _ _
-  rw [← BilinForm.toMatrix_mul_basis_toMatrix pb.basis b, ←
+  rw [← LinearMap.BilinForm.toMatrix_mul_basis_toMatrix pb.basis b, ←
     det_comm' (pb.basis.toMatrix_mul_toMatrix_flip b) _, ← Matrix.mul_assoc, det_mul]
   swap; · apply Basis.toMatrix_mul_toMatrix_flip
   refine
@@ -618,7 +619,7 @@ lemma Module.Basis.traceDual_powerBasis_eq (pb : PowerBasis K L) (i) :
   apply (algebraMap K (AlgebraicClosure K)).injective
   have := congr_arg (coeff · i) (sum_smul_minpolyDiv_eq_X_pow (AlgebraicClosure K)
     pb.adjoin_gen_eq_top (r := j) (pb.finrank.symm ▸ j.prop))
-  simp only [Polynomial.map_smul, map_div₀, map_pow, RingHom.coe_coe, finset_sum_coeff, coeff_smul,
+  simp only [Polynomial.map_smul, map_div₀, map_pow, RingHom.coe_coe, finsetSum_coeff, coeff_smul,
     coeff_map, smul_eq_mul, coeff_X_pow, ← Fin.ext_iff, @eq_comm _ i] at this
   rw [PowerBasis.coe_basis]
   simp only [traceForm_apply, MonoidWithZeroHom.map_ite_one_zero]

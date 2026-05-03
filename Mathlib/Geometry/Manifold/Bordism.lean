@@ -25,7 +25,7 @@ and is called the `n`-th (unoriented) bordism group.
 
 This construction can be generalised one step further, to produce an extraordinary homology theory.
 Given a topological space `X`, a **singular manifold** on `X` is a closed smooth manifold `M`
-together with a continuous map `M → F`. (The word *singular* does not refer to singularities,
+together with a continuous map `M → X`. (The word *singular* does not refer to singularities,
 but is by analogy to singular chains in the definition of singular homology.)
 
 Given two `n`-dimensional singular manifolds `s` and `t`, an (oriented) bordism between `s` and `t`
@@ -208,9 +208,8 @@ omit [CompactSpace M] [BoundarylessManifold I M] in
 @[simp, mfld_simps]
 lemma empty_M [IsEmpty M] : (empty X M I (k := k)).M = M := rfl
 
-instance [IsEmpty M] : IsEmpty (SingularManifold.empty X M I (k := k)).M := by
-  unfold SingularManifold.empty
-  infer_instance
+instance [IsEmpty M] : IsEmpty (SingularManifold.empty X M I (k := k)).M :=
+  inferInstanceAs <| IsEmpty M
 
 variable (M I) in
 /-- A smooth manifold induces a singular manifold on the one-point space. -/
