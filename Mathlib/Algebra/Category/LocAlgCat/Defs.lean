@@ -108,7 +108,7 @@ noncomputable def residueEquiv (A : LocAlgCat Λ k) : ResidueField A ≃ₐ[Λ] 
 lemma residueEquiv_residue_apply {x : A} :
     A.residueEquiv (IsLocalRing.residue A x) = A.residue x := rfl
 
-/-- The type of morphisms in `LocAlgCat`. A morphism consists of a local algebra map
+/-- The type of morphisms in `LocAlgCat`. A morphism consists of a algebra homomorphism
 compatible with the residue maps. -/
 @[ext]
 structure Hom (A B : LocAlgCat.{w} Λ k) : Type w where
@@ -138,7 +138,8 @@ lemma Hom.map_maximalIdeal_le (f : A ⟶ B) :
   rw [← this]; exact f.comap_maximalIdeal_eq
 
 /-- The relative algebra structure on `B` canonically induced by a morphism `f : A ⟶ B`. -/
-abbrev Hom.relativeAlgebra (f : A ⟶ B) : Algebra A B := f.toAlgHom.toRingHom.toAlgebra
+abbrev Hom.relativeAlgebra (f : A ⟶ B) : Algebra A B :=
+  fast_instance% f.toAlgHom.toRingHom.toAlgebra
 
 lemma Hom.isScalarTower_relativeAlgebra (f : A ⟶ B) :
     @IsScalarTower Λ A B _ f.relativeAlgebra.toSMul _ := .of_algHom f.toAlgHom

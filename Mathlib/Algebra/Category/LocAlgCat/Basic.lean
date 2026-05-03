@@ -90,17 +90,17 @@ section ofQuot
 variable {I : Ideal A}
 
 /-- The residue algebra structure on `ofQuot`. -/
-instance ofQuotResidueAlgebra [Nontrivial (A ⧸ I)] : Algebra (A ⧸ I) k :=
+instance [Nontrivial (A ⧸ I)] : Algebra (A ⧸ I) k :=
   fast_instance% (Ideal.Quotient.lift I (algebraMap A k) fun a a_in ↦ by
     rw [← residue_apply, residue_eq_zero_iff]
     exact le_maximalIdeal (by rwa [← Ideal.Quotient.nontrivial_iff]) a_in).toAlgebra
 
-instance isScalarTower_ofQuotResidueAlgebra [Nontrivial (A ⧸ I)] : IsScalarTower Λ (A ⧸ I) k :=
+instance [Nontrivial (A ⧸ I)] : IsScalarTower Λ (A ⧸ I) k :=
   .of_algebraMap_eq fun r ↦ by rw [IsScalarTower.algebraMap_apply Λ A (A ⧸ I),
     Ideal.Quotient.algebraMap_eq, RingHom.algebraMap_toAlgebra, Ideal.Quotient.lift_mk,
     IsScalarTower.algebraMap_apply Λ A]
 
-instance isScalarTower_ofQuotResidueAlgebra' [Nontrivial (A ⧸ I)] : IsScalarTower A (A ⧸ I) k :=
+instance [Nontrivial (A ⧸ I)] : IsScalarTower A (A ⧸ I) k :=
   .of_algebraMap_eq fun _ ↦ by rw [RingHom.algebraMap_toAlgebra, Ideal.Quotient.algebraMap_eq,
     Ideal.Quotient.lift_mk]
 
@@ -114,12 +114,6 @@ def ofQuot (A : LocAlgCat.{w} Λ k) (I : Ideal A) [Nontrivial (A ⧸ I)] : LocAl
 @[simp]
 lemma residue_ofQuot_mk_apply [Nontrivial (A ⧸ I)] (a : A) :
     (A.ofQuot I).residue (Ideal.Quotient.mk I a) = A.residue a := rfl
-
-instance algebraOfQuot (A : LocAlgCat.{w} Λ k) {I : Ideal A} [Nontrivial (A ⧸ I)] :
-    Algebra A (A.ofQuot I) := fast_instance% Ideal.Quotient.algebra _
-
-instance isScalarTower_algebraOfQuot (A : LocAlgCat.{w} Λ k) {I : Ideal A} [Nontrivial (A ⧸ I)] :
-    IsScalarTower Λ A (A.ofQuot I) := .of_algebraMap_eq fun _ ↦ rfl
 
 /-- Upgrades the canonical quotient map from `A` to `A ⧸ I` to a morphism in `LocAlgCat`. -/
 def toOfQuot (A : LocAlgCat.{w} Λ k) (I : Ideal A) [Nontrivial (A ⧸ I)] : A ⟶ A.ofQuot I :=
@@ -244,24 +238,16 @@ lemma toInfinitesimal_comp_mapInfinitesimal_toSpecialFiber [IsLocalRing Λ]
     A.toInfinitesimal n ≫ mapInfinitesimal n n le_rfl A.toSpecialFiber =
       A.toSpecialFiber ≫ (A.specialFiber).toInfinitesimal n := by simp
 
-@[simp]
-lemma algebraMap_specialFiber_apply_eq_zero [IsLocalRing Λ] [Algebra.IsIntegral Λ k]
-    (A : LocAlgCat.{w} Λ k) {y : Λ} (y_in : y ∈ maximalIdeal Λ) :
-    algebraMap Λ A.specialFiber y = 0 := by
-  rw [IsScalarTower.algebraMap_apply Λ A A.specialFiber]
-  exact Ideal.Quotient.eq_zero_iff_mem.mpr (Ideal.mem_map_of_mem _ y_in)
-
 end ofQuot
 
 section ofPullback
 
 variable {f : A ⟶ C} {g : B ⟶ C}
 
-instance ofPullbackResidueAlgebra : Algebra (f.toAlgHom.pullback g.toAlgHom) k :=
+instance : Algebra (f.toAlgHom.pullback g.toAlgHom) k :=
   fast_instance% (A.residue.comp (f.toAlgHom.pullbackFst g.toAlgHom)).toAlgebra
 
-instance isScalarTower_ofPullbackResidueAlgebra :
-    IsScalarTower Λ (f.toAlgHom.pullback g.toAlgHom) k := .of_algebraMap_eq (by
+instance : IsScalarTower Λ (f.toAlgHom.pullback g.toAlgHom) k := .of_algebraMap_eq (by
   simp [RingHom.algebraMap_toAlgebra])
 
 /-- Given morphisms `f : A ⟶ C` and `g : B ⟶ C` in `LocAlgCat` where `g.toAlgHom` is surjective,
