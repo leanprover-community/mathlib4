@@ -172,8 +172,7 @@ lemma quotient_inverts_homotopyEquivalences :
 
 lemma isIso_quotient_map_iff_homotopyEquivalences
     {K L : HomologicalComplex V c} (f : K ⟶ L) :
-    IsIso ((quotient _ _).map f) ↔
-      homotopyEquivalences _ _ f := by
+    IsIso ((quotient _ _).map f) ↔ homotopyEquivalences _ _ f := by
   refine ⟨fun _ ↦ ?_, fun hf ↦ quotient_inverts_homotopyEquivalences V c f hf⟩
   obtain ⟨g, hg⟩ := (quotient V c).map_surjective (inv ((quotient V c).map f))
   let e : HomotopyEquiv K L :=

@@ -82,22 +82,21 @@ def plus : ObjectProperty (HomotopyCategory C (.up ℤ)) :=
   fun K ↦ ∃ (n : ℤ), CochainComplex.IsStrictlyGE K.1 n
 
 @[simp]
-lemma plus_functor_obj_iff (K : CochainComplex C ℤ) :
+lemma plus_quotient_obj_iff (K : CochainComplex C ℤ) :
     plus C ((quotient _ _).obj K) ↔ ∃ (n : ℤ), CochainComplex.IsStrictlyGE K n :=
   Iff.rfl
 
 instance [HasZeroObject C] : (plus C).ContainsZero where
-  exists_zero := by
-    refine ⟨(HomotopyCategory.quotient _ _).obj 0,
-      Functor.map_isZero _ (isZero_zero _), ?_⟩
-    simp only [plus_functor_obj_iff]
-    exact ⟨0, inferInstance⟩
+  exists_zero :=
+    ⟨(HomotopyCategory.quotient _ _).obj 0, Functor.map_isZero _ (isZero_zero _), by
+      simp only [plus_quotient_obj_iff]
+      exact ⟨0, inferInstance⟩⟩
 
 instance : (plus C).IsStableUnderShift ℤ where
   isStableUnderShiftBy n :=
     { le_shift K hK := by
         obtain ⟨K : CochainComplex _ _, rfl⟩ := K.quotient_obj_surjective
-        simp only [plus_functor_obj_iff] at hK
+        simp only [plus_quotient_obj_iff] at hK
         obtain ⟨q, _⟩ := hK
         refine ⟨q - n, ?_⟩
         have : (((HomotopyCategory.quotient _ _).obj K)⟦n⟧).as =
@@ -115,7 +114,7 @@ instance [HasZeroObject C] [HasBinaryBiproducts C] :
       ⟨Triangle.π₃.mapIso (isoTriangleOfIso₁₂ T _ hT (mappingCone_triangleh_distinguished f)
         (Iso.refl _) (Iso.refl _) ?_)⟩⟩
     · dsimp
-      simp only [plus_functor_obj_iff]
+      simp only [plus_quotient_obj_iff]
       exact ⟨min (n₁ - 1) n₂, CochainComplex.isStrictlyGE_mappingCone f n₁ n₂ _
         (by simp) (by simp)⟩
     · change _ ≫ 𝟙 _ = 𝟙 _ ≫ _
@@ -139,8 +138,9 @@ abbrev fullyFaithfulι : (ι C).FullyFaithful := ObjectProperty.fullyFaithfulι 
 
 /-- The class of quasi-isomorphisms in the homotopy category of bounded below cochain
 complexes. -/
-def quasiIso : MorphismProperty (Plus A) := (HomotopyCategory.quasiIso A _).inverseImage (ι A)
-  deriving MorphismProperty.IsMultiplicative
+def quasiIso : MorphismProperty (Plus A) :=
+  (HomotopyCategory.quasiIso A _).inverseImage (ι A)
+deriving MorphismProperty.IsMultiplicative
 
 lemma quasiIso_iff {K L : Plus A} (f : K ⟶ L) :
     quasiIso A f ↔ (HomotopyCategory.quasiIso A _) f.hom := Iff.rfl
@@ -171,8 +171,7 @@ def quotient : CochainComplex.Plus C ⥤ Plus C :=
 is unduced by the functor `HomotopyCategory.quotient C (.up ℤ)` from `CochainComplex C ℤ`
 to `HomotopyCategory C (.up ℤ)`. -/
 def quotientCompι :
-    quotient C ⋙ ι C ≅
-      CochainComplex.Plus.ι C ⋙ HomotopyCategory.quotient C (.up ℤ) :=
+    quotient C ⋙ ι C ≅ CochainComplex.Plus.ι C ⋙ HomotopyCategory.quotient C (.up ℤ) :=
   ObjectProperty.liftCompιIso ..
 
 variable {C} in
@@ -202,7 +201,6 @@ instance :
     replace hf := homotopyOfEq f₀ f₁ ((HomotopyCategory.Plus.ι _).congr_map hf)
     exact ⟨K.precylinder, Precylinder.LeftHomotopy.fullSubcategoryEquiv.symm
       { h := cylinder.desc _ _ hf }, ⟨cylinder.homotopyEquiv _ (fun n ↦ ⟨n - 1, by simp⟩), rfl⟩⟩)
-
 
 /-- The collection of all single functors `C ⥤ HomotopyCategory.Plus C` for `n : ℤ`
 along with their compatibilities with shifts. -/

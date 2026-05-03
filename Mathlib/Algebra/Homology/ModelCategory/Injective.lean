@@ -94,7 +94,7 @@ lemma lifting {A B X Y : CochainComplex.Plus C} (i : A ⟶ B) (p : X ⟶ Y)
     [Mono i] [Fibration p] (hip : WeakEquivalence i ∨ WeakEquivalence p) :
     HasLiftingProperty i p where
   sq_hasLift {t b} sq := by
-    /- The proof is similar in both cases where `i` or `p` is a quasi-isomorphism.
+    /- The proof is similar in both cases (whether `i` or `p` is a quasi-isomorphism).
     We first transform the variables so as to get a commutative square in `CochainComplex C ℤ`
     instead of the full subcategory `CochainComplex.Plus C`. -/
     obtain ⟨A, hA⟩ := A
@@ -112,7 +112,7 @@ lemma lifting {A B X Y : CochainComplex.Plus C} (i : A ⟶ B) (p : X ⟶ Y)
     have : Mono i := by assumption
     have hip : QuasiIso i ∨ QuasiIso p := by
       simpa only [weakEquivalence_iff] using hip
-    replace sq : CommSq t i p b := ⟨(ObjectProperty.ι _).congr_map sq.w⟩
+    replace sq : CommSq t i p b := sq.map (ObjectProperty.ι _)
     suffices sq.HasLift from ⟨⟨{ l := ObjectProperty.homMk sq.lift }⟩⟩
     have sq' (n : ℤ) : CommSq (t.f n) (i.f n) (p.f n) (b.f n) :=
       (sq.map (HomologicalComplex.eval _ _ n))
