@@ -5,13 +5,13 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Homology.CochainComplexPlus
 public import Mathlib.Algebra.Homology.Factorizations.CM5a
-public import Mathlib.Algebra.Homology.ModelCategory.Lifting
-public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
 public import Mathlib.Algebra.Homology.HomologySequenceLemmas
-public import Mathlib.Algebra.Homology.HomotopyCategory.Plus
 public import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
+public import Mathlib.Algebra.Homology.ModelCategory.Lifting
 public import Mathlib.AlgebraicTopology.ModelCategory.Basic
+public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
 
 /-!
 # The model category structure on bounded below complexes
@@ -86,10 +86,17 @@ instance {A B : CochainComplex.Plus C} (i : A ⟶ B) [Cofibration i] :
   rwa [← cofibration_iff]
 
 open HomComplex in
+/-- Let `sq` be a commutative square in the category of bounded below cochain complexes
+in an abelian category. We assume that the left morphism `i` is a monomorphism,
+and `p` an epimorphism with a degreewise injective kernel. Then, there exists
+a lifting for `sq` if `i` or `p` is a quasi-isomorphism. -/
 lemma lifting {A B X Y : CochainComplex.Plus C} (i : A ⟶ B) (p : X ⟶ Y)
     [Mono i] [Fibration p] (hip : WeakEquivalence i ∨ WeakEquivalence p) :
     HasLiftingProperty i p where
   sq_hasLift {t b} sq := by
+    /- The proof is similar in both cases where `i` or `p` is a quasi-isomorphism.
+    We first transform the variables so as to get a commutative square in `CochainComplex C ℤ`
+    instead of the full subcategory `CochainComplex.Plus C`. -/
     obtain ⟨A, hA⟩ := A
     obtain ⟨B, hB⟩ := B
     obtain ⟨X, hX⟩ := X
@@ -109,11 +116,19 @@ lemma lifting {A B X Y : CochainComplex.Plus C} (i : A ⟶ B) (p : X ⟶ Y)
     suffices sq.HasLift from ⟨⟨{ l := ObjectProperty.homMk sq.lift }⟩⟩
     have sq' (n : ℤ) : CommSq (t.f n) (i.f n) (p.f n) (b.f n) :=
       (sq.map (HomologicalComplex.eval _ _ n))
+    /- The commutative square in `C` obtained by evaluating in a degree `n`
+    admits a lifting because `i.f n` is a monomorphism and `p.f n` is
+    an epimorphism with injective kernel. -/
     have (n : ℤ) : (sq' n).HasLift := by
       have := (hp n).hasLiftingProperty (i.f n)
       infer_instance
-    let β := Lifting.cocycle₁ sq (fun n ↦ { l := (sq' n).lift })
-      (cokernelIsCokernel i) (kernelIsKernel p) (hπ := by simp) (hι := by simp)
+    /- In order to obtain a lifting in the original square, the obstruction
+    lies in a cocycle `β : Cocycle (cokernel i) (kernel p) 1`. Thanks to the
+    lemma `CochainComplex.Lifting.hasLift`, it suffices to show that `β`
+    is a coboundary. -/
+    let β : Cocycle (cokernel i) (kernel p) 1 :=
+      Lifting.cocycle₁ sq (fun n ↦ { l := (sq' n).lift })
+        (cokernelIsCokernel i) (kernelIsKernel p) (hπ := by simp) (hι := by simp)
     have (n : ℤ) : Injective ((kernel p).X n) :=
       Injective.of_iso
         (asIso (kernelComparison p (HomologicalComplex.eval _ _ n))).symm (hp n).2
@@ -122,12 +137,12 @@ lemma lifting {A B X Y : CochainComplex.Plus C} (i : A ⟶ B) (p : X ⟶ Y)
       have : (kernel p).IsStrictlyGE d := by
         rw [isStrictlyGE_iff]
         intro i hi
-        rw [IsZero.iff_id_eq_zero]
-        rw [← cancel_mono ((kernel.ι p).f i)]
+        rw [IsZero.iff_id_eq_zero, ← cancel_mono ((kernel.ι p).f i)]
         apply (X.isZero_of_isStrictlyGE d i).eq_of_tgt
       exact isKInjective_of_injective _ d
+    /- The cocycle `β` is a coboundary when `i` or `p` is a quasi-isomorphism. -/
     obtain ⟨α, hα⟩ : ∃ (α : Cochain (cokernel i) (kernel p) 0), δ 0 1 α = β.1 := by
-      obtain hip | hip := hip
+      cases hip
       · refine IsKInjective.eq_δ_of_cocycle β ?_ 0 (by simp)
         have : (ShortComplex.mk _ _ (cokernel.condition i)).ShortExact :=
           { exact := ShortComplex.exact_cokernel i }
