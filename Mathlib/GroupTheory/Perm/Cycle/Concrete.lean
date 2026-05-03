@@ -186,10 +186,10 @@ end Cycle
 namespace Equiv.Perm
 
 /-- For a cycle `f` on a finset `s` of cardinality at least 3 and `a ∈ s`, the unordered
-pair `s((f ^ k) a, (f ^ (k + 1)) a)` differs from `s(a, f a)` when `1 ≤ k < s.card`. -/
+pair `s((f ^ k) a, (f ^ (k + 1)) a)` differs from `s(a, f a)` when `k ≠ 0` and `k < s.card`. -/
 theorem IsCycleOn.sym2_pow_apply_ne {f : Perm α} {a : α} {s : Finset α}
     (hcycOn : f.IsCycleOn s) (ha : a ∈ s)
-    {k : ℕ} (hk1 : 1 ≤ k) (hk2 : k < s.card) (hs : 3 ≤ s.card) :
+    {k : ℕ} (hk1 : k ≠ 0) (hk2 : k < s.card) (hs : 3 ≤ s.card) :
     s((f ^ k) a, (f ^ (k + 1)) a) ≠ s(a, f a) := by
   have hinj := hcycOn.injOn_pow_apply ha
   have h0 : (f ^ (0 : ℕ)) a = a := by simp
