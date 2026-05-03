@@ -240,16 +240,16 @@ lemma finiteDimensional_of_adjoin_transcendental (hy : Transcendental F y) :
   let : Algebra F⟮x⟯ Fxy := F⟮x⟯⟮y⟯.algebra
   let : Module F⟮x⟯ Fxy := Algebra.toModule
   let : SMul F⟮x⟯ Fxy := Algebra.toSMul
-  let : FiniteDimensional F⟮y⟯ Fyx :=
+  have : FiniteDimensional F⟮y⟯ Fyx :=
     adjoin.finiteDimensional
       (isAlgebraic_iff_isIntegral.mp (isAlgebraic_X_over_adjoin_transcendental hy))
-  let : FiniteDimensional Fyx K := by
-    let := FiniteDimensional.adjoin_algebraMap_X (F := F) (K := K)
+  have : FiniteDimensional Fyx K := by
+    have := FiniteDimensional.adjoin_algebraMap_X (F := F) (K := K)
     unfold Fyx
     rw [adjoin_simple_comm]
-    let : IsScalarTower F⟮x⟯ Fxy K := isScalarTower_mid' F⟮x⟯⟮y⟯
+    have : IsScalarTower F⟮x⟯ Fxy K := isScalarTower_mid' F⟮x⟯⟮y⟯
     exact .right F⟮x⟯ Fxy K
-  let : IsScalarTower F⟮y⟯ Fyx K := isScalarTower_mid' F⟮y⟯⟮x⟯
+  have : IsScalarTower F⟮y⟯ Fyx K := isScalarTower_mid' F⟮y⟯⟮x⟯
   .trans F⟮y⟯ Fyx K
 
 end AdjoinTranscendental
@@ -277,7 +277,7 @@ theorem finiteDimensional_ratFunc_of_constantExtension [IsScalarTower F[X] E[X] 
 contained in `K` then it is finite over `F`. -/
 theorem finiteDimensional_of_constantExtension [IsScalarTower F[X] E[X] K]
     [Algebra.IsAlgebraic F E] : FiniteDimensional F E :=
-  let := finiteDimensional_ratFunc_of_constantExtension (F := F) (E := E) K
+  have := finiteDimensional_ratFunc_of_constantExtension (F := F) (E := E) K
   Module.finite_of_finrank_pos ((finrank_ratFunc_ratFunc F E) ▸ Module.finrank_pos)
 
 end Unbundled
