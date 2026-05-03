@@ -269,7 +269,7 @@ private lemma sub_smul_qExpansion_coeff_zero_isCuspForm {k : ℤ} (f g : Modular
           qExpansion 1 ⇑f - qExpansion 1 ⇑(c • g : ModularForm 𝒮ℒ k) from
         (ModularForm.qExpansionAddHom one_pos one_mem_strictPeriods_SL k).map_sub f (c • g),
     show qExpansion 1 ⇑(c • g : ModularForm 𝒮ℒ k) = c • qExpansion 1 ⇑g from
-      ModularFormClass.qExpansion_smul (h := 1) (Γ := 𝒮ℒ) (k := k)
+      ModularForm.qExpansion_smul (h := 1) (Γ := 𝒮ℒ) (k := k)
         one_pos one_mem_strictPeriods_SL c g,
     map_sub, PowerSeries.coeff_smul]
   simp [hg, c]
