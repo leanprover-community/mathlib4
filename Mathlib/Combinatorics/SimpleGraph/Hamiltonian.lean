@@ -320,10 +320,11 @@ theorem IsHamiltonian.of_perm {σ : Perm α}
     simp only [p, Walk.support_copy, Walk.support_iterate,
       show Fintype.card α - 1 + 1 = Fintype.card α by lia]
     have hsx : σ (σ x) ≠ σ x := σ.injective.ne hx
-    have hcard : Fintype.card α = (σ.toList (σ x)).length := by
-      rw [Equiv.Perm.length_toList, hcycle.cycleOf_eq hsx, hsupport, Finset.card_univ]
+    have hcard : Fintype.card α = (cycleOf σ (σ x)).support.card := by
+      rw [hcycle.cycleOf_eq hsx, hsupport, Finset.card_univ]
     rw [hcard, ← List.range_map_iterate]
-    simp only [Equiv.Perm.iterate_eq_pow, ← σ.toList_eq_range_map_pow]
+    simp only [Equiv.Perm.iterate_eq_pow]
+    rw [← σ.toList_eq_range_map_pow]
     exact σ.nodup_toList (σ x)
   · -- The closure edge `s(x, σ x)` is not already used in `p`.
     simp only [p, Walk.edges_copy, Walk.edges_iterate]
