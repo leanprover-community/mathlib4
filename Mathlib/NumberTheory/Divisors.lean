@@ -695,13 +695,13 @@ lemma mem_divisors_self (hz : z ≠ 0) : z ∈ divisors z :=
 lemma mem_divisorsAntidiag :
     ∀ {z} {xy : ℤ × ℤ}, xy ∈ divisorsAntidiag z ↔ xy.fst * xy.snd = z ∧ z ≠ 0
   | (n : ℕ), ((x : ℕ), (y : ℕ))
-  | (n : ℕ), (negSucc x, negSucc y)
-  | (n : ℕ), ((x : ℕ), negSucc y)
-  | (n : ℕ), (negSucc x, (y : ℕ))
-  | .negSucc n, ((x : ℕ), (y : ℕ))
-  | .negSucc n, (negSucc x, negSucc y)
-  | .negSucc n, ((x : ℕ), negSucc y)
-  | .negSucc n, (negSucc x, (y : ℕ)) => by
+  | (n : ℕ), (-[x+1], -[y+1])
+  | (n : ℕ), ((x : ℕ), -[y+1])
+  | (n : ℕ), (-[x+1], (y : ℕ))
+  | -[n+1], ((x : ℕ), (y : ℕ))
+  | -[n+1], (-[x+1], -[y+1])
+  | -[n+1], ((x : ℕ), -[y+1])
+  | -[n+1], (-[x+1], (y : ℕ)) => by
     simp [divisorsAntidiag, negSucc_eq, -neg_add_rev]
     norm_cast
     try simp +contextual [eq_comm]
