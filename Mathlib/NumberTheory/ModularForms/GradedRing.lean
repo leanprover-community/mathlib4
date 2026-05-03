@@ -141,6 +141,19 @@ lemma evalE₄E₆_monomial (a b : ℕ) :
         DirectSum.of (ModularForm 𝒮ℒ) 6 E₆ ^ b := by
   simp [map_mul, map_pow]
 
+private lemma evalE₄E₆_X_sq :
+    evalE₄E₆ (MvPolynomial.X 0 ^ 2) = DirectSum.of (ModularForm 𝒮ℒ) 8 (E₄.mul E₄) := by
+  rw [map_pow, evalE₄E₆_X0, pow_two, DirectSum.of_mul_of]
+  exact DirectSum.of_eq_of_gradedMonoid_eq
+    (ModularForm.gradedMonoid_eq_of_cast (show ((4 : ℤ) + 4 : ℤ) = 8 by norm_num).symm rfl)
+
+private lemma evalE₄E₆_X0_X1 :
+    evalE₄E₆ (MvPolynomial.X 0 * MvPolynomial.X 1) =
+      DirectSum.of (ModularForm 𝒮ℒ) 10 (E₄.mul E₆) := by
+  rw [map_mul, evalE₄E₆_X0, evalE₄E₆_X1, DirectSum.of_mul_of]
+  exact DirectSum.of_eq_of_gradedMonoid_eq
+    (ModularForm.gradedMonoid_eq_of_cast (show ((4 : ℤ) + 6 : ℤ) = 10 by norm_num).symm rfl)
+
 private lemma exists_monomial_weight {k : ℕ} (hk : 4 ≤ k) (hkeven : Even k) :
     ∃ a b : ℕ, 4 * a + 6 * b = k := by
   obtain ⟨m, rfl⟩ := hkeven
@@ -344,19 +357,13 @@ private lemma surj_of_weight : ∀ (k : ℤ) (f : ModularForm 𝒮ℒ k),
     · exact surj_of_rank_one ModularForm.levelOne_weight_six_rank_one
         (show E₆ ≠ 0 from E_ne_zero (by norm_num) ⟨3, rfl⟩) (MvPolynomial.X 1) evalE₄E₆_X1 f
     · exact absurd hk_odd (by decide)
-    · refine surj_of_rank_one (rank_one_of_lt_twelve (by norm_num) ⟨4, rfl⟩ (by norm_num))
+    · exact surj_of_rank_one (rank_one_of_lt_twelve (by norm_num) ⟨4, rfl⟩ (by norm_num))
         (mul_ne_zero E₄ E₄ (E_ne_zero (by norm_num) ⟨2, rfl⟩) (E_ne_zero (by norm_num) ⟨2, rfl⟩))
-        (MvPolynomial.X 0 ^ 2) ?_ f
-      rw [map_pow, evalE₄E₆_X0, pow_two, DirectSum.of_mul_of]
-      apply DirectSum.of_eq_of_gradedMonoid_eq
-      exact ModularForm.gradedMonoid_eq_of_cast (show ((4 : ℤ) + 4 : ℤ) = 8 by norm_num).symm rfl
+        (MvPolynomial.X 0 ^ 2) evalE₄E₆_X_sq f
     · exact absurd hk_odd (by decide)
-    · refine surj_of_rank_one (rank_one_of_lt_twelve (by norm_num) ⟨5, rfl⟩ (by norm_num))
+    · exact surj_of_rank_one (rank_one_of_lt_twelve (by norm_num) ⟨5, rfl⟩ (by norm_num))
         (mul_ne_zero E₄ E₆ (E_ne_zero (by norm_num) ⟨2, rfl⟩) (E_ne_zero (by norm_num) ⟨3, rfl⟩))
-        (MvPolynomial.X 0 * MvPolynomial.X 1) ?_ f
-      rw [map_mul, evalE₄E₆_X0, evalE₄E₆_X1, DirectSum.of_mul_of]
-      apply DirectSum.of_eq_of_gradedMonoid_eq
-      exact ModularForm.gradedMonoid_eq_of_cast (show ((4 : ℤ) + 6 : ℤ) = 10 by norm_num).symm rfl
+        (MvPolynomial.X 0 * MvPolynomial.X 1) evalE₄E₆_X0_X1 f
     · exact absurd hk_odd (by decide)
   · push Not at hn12
     exact surj_at_weight_inductive hn12 hk_odd ih f
@@ -674,6 +681,24 @@ private lemma mvpoly_support_after_reduction {σ R : Type*} [CommRing R] [Decida
   · exact absurd h2 (Finset.notMem_empty _)
   exact Finset.mem_union_right _ (by rwa [Finset.mem_singleton] at h2 ⊢)
 
+private lemma support_sum_lt_after_sub_δ_piece (p : MvPolynomial (Fin 2) ℂ)
+    {d : Fin 2 →₀ ℕ} (hd_mem : d ∈ p.support) (hd_ge : 3 ≤ d 0) :
+    ∑ d' ∈ (p - MvPolynomial.C (MvPolynomial.coeff d p) * ((1728 : ℂ) • discriminantPoly *
+          (MvPolynomial.X (0 : Fin 2) ^ (d 0 - 3) *
+            MvPolynomial.X (1 : Fin 2) ^ d 1))).support, d' 0 <
+      ∑ d' ∈ p.support, d' 0 := by
+  set d' := Finsupp.single (0 : Fin 2) (d 0 - 3) + Finsupp.single (1 : Fin 2) (d 1 + 2)
+  have hdd' : d ≠ d' := fun heq => by
+    have h0 := Finsupp.ext_iff.mp heq (0 : Fin 2)
+    simp only [Fin.isValue, d', Finsupp.add_apply, Finsupp.single_eq_same,
+      ne_eq, zero_ne_one, not_false_eq_true, Finsupp.single_eq_of_ne, add_zero] at h0
+    omega
+  obtain ⟨hd_not, hsupp⟩ := (discriminantPoly_piece_eq_monomial_sub d hd_ge _ : _ = _) ▸
+    mvpoly_support_after_reduction p d d' _ hdd' rfl
+  refine sum_lt_sum_of_replace p.support _ (· 0) d d' hd_mem hd_not hsupp ?_
+  simp [d', Finsupp.add_apply]
+  omega
+
 private lemma whomog_poly_Delta_decomp {n : ℕ} (hn12 : 12 ≤ n)
     (p : MvPolynomial (Fin 2) ℂ)
     (hp : MvPolynomial.IsWeightedHomogeneous E₄E₆Weight p n) :
@@ -704,7 +729,7 @@ private lemma whomog_poly_Delta_decomp {n : ℕ} (hn12 : 12 ≤ n)
     omega
   set c := MvPolynomial.coeff d p
   set δ_piece := MvPolynomial.C c * ((1728 : ℂ) • discriminantPoly *
-    (MvPolynomial.X (0 : Fin 2) ^ (d 0 - 3) * MvPolynomial.X (1 : Fin 2) ^ (d 1)))
+    (MvPolynomial.X (0 : Fin 2) ^ (d 0 - 3) * MvPolynomial.X (1 : Fin 2) ^ d 1)) with hδ_def
   set p' := p - δ_piece with hp'_def
   have hp_eq : p = p' + δ_piece := by simp [p']
   have hp'_wh : MvPolynomial.IsWeightedHomogeneous E₄E₆Weight p' n :=
@@ -714,28 +739,13 @@ private lemma whomog_poly_Delta_decomp {n : ℕ} (hn12 : 12 ≤ n)
         ((MvPolynomial.mem_weightedHomogeneousSubmodule ℂ E₄E₆Weight n
           δ_piece).mpr (discriminantPoly_piece_isWeightedHomogeneous hn12 d hd_ge hwd c)))
   set q₁ := MvPolynomial.C (c * 1728) *
-    (MvPolynomial.X (0 : Fin 2) ^ (d 0 - 3) * MvPolynomial.X (1 : Fin 2) ^ (d 1))
+    (MvPolynomial.X (0 : Fin 2) ^ (d 0 - 3) * MvPolynomial.X (1 : Fin 2) ^ d 1)
   have hδ_eq : δ_piece = discriminantPoly * q₁ := by
     simp only [δ_piece, q₁, MvPolynomial.smul_eq_C_mul, map_mul]
     ring
-  have hM_lt : ∑ d' ∈ p'.support, d' 0 < ∑ d' ∈ p.support, d' 0 := by
-    set d' := Finsupp.single (0 : Fin 2) (d 0 - 3) + Finsupp.single (1 : Fin 2) (d 1 + 2)
-      with hd'_def
-    have hdd' : d ≠ d' := fun heq => by
-      have h0 := Finsupp.ext_iff.mp heq (0 : Fin 2)
-      simp only [Fin.isValue, hd'_def, Finsupp.add_apply, Finsupp.single_eq_same,
-        ne_eq, zero_ne_one, not_false_eq_true, Finsupp.single_eq_of_ne, add_zero] at h0
-      omega
-    have hdp_mono : δ_piece =
-        (MvPolynomial.monomial d) c - (MvPolynomial.monomial d') c := by
-      rw [hd'_def]
-      exact discriminantPoly_piece_eq_monomial_sub d hd_ge c
-    obtain ⟨hd_not, hsupp⟩ := hdp_mono ▸ mvpoly_support_after_reduction p d d' c hdd' rfl
-    refine sum_lt_sum_of_replace p.support p'.support (· 0) d d' hd_mem hd_not hsupp ?_
-    simp [hd'_def, Finsupp.add_apply]
-    omega
   obtain ⟨r, s', hr_wh, hs'_wh, hp'_eq, hr_red⟩ :=
-    ih (∑ d' ∈ p'.support, d' 0) (by omega) p' hp'_wh le_rfl
+    ih (∑ d' ∈ p'.support, d' 0)
+      ((support_sum_lt_after_sub_δ_piece p hd_mem hd_ge).trans_le _hM) p' hp'_wh le_rfl
   refine ⟨r, s' + q₁, hr_wh, hs'_wh.add (.C_mul
     (X0_pow_mul_X1_pow_isWeightedHomogeneous (d 0 - 3) (d 1) (n - 12) (by omega)) _), ?_, hr_red⟩
   rw [hp_eq, hδ_eq, hp'_eq, mul_add]
