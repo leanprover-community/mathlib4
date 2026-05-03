@@ -257,10 +257,7 @@ Q242045:
 
 Q245098:
   title: Intermediate value theorem
-  decls:
-    - intermediate_value_Icc
-    - intermediate_value_Icc'
-    - intermediate_value_uIcc
+  decl: intermediate_value_Icc
   authors: Rob Lewis and Chris Hughes
 
 Q245098X:
