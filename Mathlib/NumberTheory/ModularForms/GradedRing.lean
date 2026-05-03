@@ -172,15 +172,17 @@ private lemma surj_of_rank_one {k : ℤ}
   rw [map_mul, evalE₄E₆_C, hp, Algebra.algebraMap_eq_smul_one,
     smul_mul_assoc, one_mul, ← DirectSum.of_smul]
 
-private lemma mul_ne_zero {k₁ k₂ : ℤ} (f : ModularForm 𝒮ℒ k₁) (g : ModularForm 𝒮ℒ k₂)
-    (hf : f ≠ 0) (hg : g ≠ 0) : f.mul g ≠ 0 := by
+private lemma mul_ne_zero {k₁ k₂ : ℤ}
+    (f : ModularForm 𝒮ℒ k₁) (g : ModularForm 𝒮ℒ k₂) (hf : f ≠ 0) (hg : g ≠ 0) :
+    f.mul g ≠ 0 := by
   rw [Ne, ← ModularForm.qExpansion_eq_zero_iff one_pos one_mem_strictPeriods_SL,
     ModularForm.qExpansion_mul one_pos one_mem_strictPeriods_SL, mul_eq_zero, not_or]
   exact ⟨(ModularForm.qExpansion_eq_zero_iff one_pos one_mem_strictPeriods_SL _).not.mpr hf,
     (ModularForm.qExpansion_eq_zero_iff one_pos one_mem_strictPeriods_SL _).not.mpr hg⟩
 
 private lemma directSumOf_cast_eq {k₁ k₂ : ℤ} (hk : k₁ = k₂) (x : ModularForm 𝒮ℒ k₁) :
-    DirectSum.of (ModularForm 𝒮ℒ) k₁ x = DirectSum.of (ModularForm 𝒮ℒ) k₂ (hk ▸ x) := by
+    DirectSum.of (ModularForm 𝒮ℒ) k₁ x =
+      DirectSum.of (ModularForm 𝒮ℒ) k₂ (hk ▸ x) := by
   subst hk
   rfl
 
@@ -194,7 +196,8 @@ private lemma monomial_qExpansion_coeff_zero_eq_one {n a b : ℕ} (hab : 4 * a +
       ((DirectSum.of (ModularForm 𝒮ℒ) 4 E₄ ^ a *
         DirectSum.of (ModularForm 𝒮ℒ) 6 E₆ ^ b) (n : ℤ))).coeff 0 = 1 := by
   set R := ModularForm.qExpansionRingHom (1 : ℝ) one_pos one_mem_strictPeriods_SL with hR_def
-  set prod := DirectSum.of (ModularForm 𝒮ℒ) 4 E₄ ^ a * DirectSum.of (ModularForm 𝒮ℒ) 6 E₆ ^ b
+  set prod :=
+    DirectSum.of (ModularForm 𝒮ℒ) 4 E₄ ^ a * DirectSum.of (ModularForm 𝒮ℒ) 6 E₆ ^ b
     with hprod_def
   have hweight : (a • (4 : ℤ) + b • (6 : ℤ)) = (n : ℤ) := by
     simp only [Int.nsmul_eq_mul]
@@ -229,19 +232,16 @@ private lemma cuspForm_eq_discriminant_mul {n : ℕ} (g : ModularForm 𝒮ℒ �
           ((CuspForm.discriminant : CuspForm 𝒮ℒ 12) : ModularForm 𝒮ℒ 12) := by
   rw [DirectSum.of_mul_of]
   symm
-  apply DirectSum.of_eq_of_gradedMonoid_eq
-  refine ModularForm.gradedMonoid_eq_of_cast ?_ ?_
-  · change (↑n - 12 + 12 : ℤ) = ↑n
-    ring
+  refine DirectSum.of_eq_of_gradedMonoid_eq <|
+    ModularForm.gradedMonoid_eq_of_cast (by change (↑n - 12 + 12 : ℤ) = ↑n; ring) ?_
   ext z
   set hcusp := (ModularForm.isCuspForm_iff_coeffZero_eq_zero g).mp hg
   change ((CuspForm.discriminantEquiv (ModularForm.toCuspForm g hcusp)).mul
       ((CuspForm.discriminant : CuspForm 𝒮ℒ 12) : ModularForm 𝒮ℒ 12)) z = g z
-  have hdiv : (CuspForm.discriminantEquiv (ModularForm.toCuspForm g hcusp)) z =
-      g z / ModularForm.discriminant z :=
-    CuspForm.divDiscriminant_apply (ModularForm.toCuspForm g hcusp) z
-  rw [ModularForm.coe_mul, Pi.mul_apply, hdiv]
-  change g z / ModularForm.discriminant z * ModularForm.discriminant z = g z
+  rw [ModularForm.coe_mul, Pi.mul_apply,
+    show (CuspForm.discriminantEquiv (ModularForm.toCuspForm g hcusp)) z =
+        g z / ModularForm.discriminant z from
+      CuspForm.divDiscriminant_apply (ModularForm.toCuspForm g hcusp) z]
   exact div_mul_cancel₀ _ (discriminant_ne_zero z)
 
 private noncomputable def discriminantPoly : MvPolynomial (Fin 2) ℂ :=
@@ -256,7 +256,8 @@ private lemma evalE₄E₆_discriminantPoly :
 
 private lemma discriminant_mem_range_evalE₄E₆ :
     DirectSum.of (ModularForm 𝒮ℒ) 12
-        ((CuspForm.discriminant : CuspForm 𝒮ℒ 12) : ModularForm 𝒮ℒ 12) ∈ Set.range evalE₄E₆ :=
+        ((CuspForm.discriminant : CuspForm 𝒮ℒ 12) : ModularForm 𝒮ℒ 12) ∈
+      Set.range evalE₄E₆ :=
   ⟨_, evalE₄E₆_discriminantPoly⟩
 
 private lemma sub_smul_qExpansion_coeff_zero_isCuspForm {k : ℤ} (f g : ModularForm 𝒮ℒ k)
@@ -273,11 +274,13 @@ private lemma sub_smul_qExpansion_coeff_zero_isCuspForm {k : ℤ} (f g : Modular
     map_sub, PowerSeries.coeff_smul]
   simp [hg, c]
 
-private lemma directSumOf_evalE₄E₆_monomial_apply {a b n : ℕ} (hab : 4 * a + 6 * b = n) :
+private lemma directSumOf_evalE₄E₆_monomial_apply {a b n : ℕ}
+    (hab : 4 * a + 6 * b = n) :
     DirectSum.of (ModularForm 𝒮ℒ) (↑n : ℤ)
         ((DirectSum.of (ModularForm 𝒮ℒ) 4 E₄ ^ a *
           DirectSum.of (ModularForm 𝒮ℒ) 6 E₆ ^ b) (↑n : ℤ)) =
-      DirectSum.of (ModularForm 𝒮ℒ) 4 E₄ ^ a * DirectSum.of (ModularForm 𝒮ℒ) 6 E₆ ^ b := by
+      DirectSum.of (ModularForm 𝒮ℒ) 4 E₄ ^ a *
+        DirectSum.of (ModularForm 𝒮ℒ) 6 E₆ ^ b := by
   rw [DirectSum.ofPow, DirectSum.ofPow, DirectSum.of_mul_of,
     show (↑n : ℤ) = a • (4 : ℤ) + b • (6 : ℤ) by
       simp only [Int.nsmul_eq_mul]
@@ -452,10 +455,13 @@ private lemma evalE₄E₆_whc_grade {n : ℕ} (p : MvPolynomial (Fin 2) ℂ)
     (hp : MvPolynomial.IsWeightedHomogeneous E₄E₆Weight p n) (k : ℤ) (hk : k ≠ ↑n) :
     (evalE₄E₆ p) k = 0 := by
   rw [← MvPolynomial.support_sum_monomial_coeff p, map_sum,
-    show (∑ x ∈ p.support, evalE₄E₆ ((MvPolynomial.monomial x) (MvPolynomial.coeff x p))) k =
-      ∑ x ∈ p.support, (evalE₄E₆ ((MvPolynomial.monomial x) (MvPolynomial.coeff x p))) k from
+    show (∑ x ∈ p.support,
+        evalE₄E₆ ((MvPolynomial.monomial x) (MvPolynomial.coeff x p))) k =
+      ∑ x ∈ p.support,
+        (evalE₄E₆ ((MvPolynomial.monomial x) (MvPolynomial.coeff x p))) k from
       map_sum (DFinsupp.evalAddMonoidHom k) _ _]
-  refine Finset.sum_eq_zero fun d hd => evalE₄E₆_monomial_grade _ _ _ fun heq => hk ?_
+  refine Finset.sum_eq_zero fun d hd =>
+    evalE₄E₆_monomial_grade _ _ _ fun heq => hk ?_
   rw [heq, ← weight_fin2_cast d, hp (MvPolynomial.mem_support_iff.mp hd)]
 
 private lemma evalE₄E₆_whc_eq_single (n : ℕ) (p : MvPolynomial (Fin 2) ℂ)
