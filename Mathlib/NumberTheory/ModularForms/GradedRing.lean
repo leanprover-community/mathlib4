@@ -114,12 +114,7 @@ theorem discriminant_eq_E₄_cube_sub_E₆_sq_graded :
   change ModularForm.discriminant z = (1 / 1728 : ℂ) * (E₄ z * E₄ z * E₄ z - E₆ z * E₆ z)
   grind [discriminant_eq_E₄_cube_sub_E₆_sq z]
 
-/-! ### Generators of the graded ring
-
-The remainder of this file establishes that `E₄, E₆` generate the graded ring of level-1
-modular forms freely as an `ℂ`-algebra: the evaluation homomorphism `evalE₄E₆` is an
-isomorphism. The proofs are ported from
-<https://github.com/CBirkbeck/LeanModularForms> (`Modularforms/Generators/`). -/
+/-! ### Generators of the graded ring -/
 
 /-- Weight function assigning weight 4 to E₄ (variable 0) and weight 6 to E₆ (variable 1). -/
 def E₄E₆Weight : Fin 2 → ℕ := ![4, 6]
@@ -142,14 +137,12 @@ lemma evalE₄E₆_C (c : ℂ) :
     evalE₄E₆ (MvPolynomial.C c) = algebraMap ℂ (DirectSum ℤ (ModularForm 𝒮ℒ)) c :=
   MvPolynomial.aeval_C _ c
 
-/-- `evalE₄E₆` maps the monomial `X₀^a * X₁^b` to `(of _ 4 E₄)^a * (of _ 6 E₆)^b`. -/
 lemma evalE₄E₆_monomial (a b : ℕ) :
     evalE₄E₆ (MvPolynomial.X 0 ^ a * MvPolynomial.X 1 ^ b) =
       DirectSum.of (ModularForm 𝒮ℒ) 4 E₄ ^ a *
         DirectSum.of (ModularForm 𝒮ℒ) 6 E₆ ^ b := by
   simp [map_mul, map_pow]
 
-/-- For even `k ≥ 4`, there exist `a, b ∈ ℕ` with `4a + 6b = k`. -/
 private lemma exists_monomial_weight {k : ℕ} (hk : 4 ≤ k) (hkeven : Even k) :
     ∃ a b : ℕ, 4 * a + 6 * b = k := by
   obtain ⟨m, rfl⟩ := hkeven
@@ -158,8 +151,6 @@ private lemma exists_monomial_weight {k : ℕ} (hk : 4 ≤ k) (hkeven : Even k) 
 
 /-! ### Surjectivity of `evalE₄E₆` -/
 
-/-- In a 1-dimensional weight space, if `g ≠ 0` is in the image of `evalE₄E₆`,
-then every element of that weight is in the image. -/
 private lemma surj_of_rank_one {k : ℤ}
     (hrank : Module.rank ℂ (ModularForm 𝒮ℒ k) = 1) {g : ModularForm 𝒮ℒ k} (hg : g ≠ 0)
     (p : MvPolynomial (Fin 2) ℂ) (hp : evalE₄E₆ p = DirectSum.of _ k g)
@@ -171,7 +162,6 @@ private lemma surj_of_rank_one {k : ℤ}
     rw [map_mul, evalE₄E₆_C, hp, Algebra.algebraMap_eq_smul_one,
       smul_mul_assoc, one_mul, ← DirectSum.of_smul]⟩
 
-/-- The product `f * g` of two modular forms with constant-term-1 q-expansions is nonzero. -/
 private lemma mul_modularForm_ne_zero_of_qExpansion_coeff_zero_eq_one {k₁ k₂ : ℤ}
     (f : ModularForm 𝒮ℒ k₁) (g : ModularForm 𝒮ℒ k₂)
     (hf : (qExpansion 1 f).coeff 0 = 1) (hg : (qExpansion 1 g).coeff 0 = 1) :
@@ -184,7 +174,6 @@ private lemma mul_modularForm_ne_zero_of_qExpansion_coeff_zero_eq_one {k₁ k₂
     PowerSeries.coeff_mul] at this
   simp [hf, hg] at this
 
-/-- Weight casting: rewriting the index of `DirectSum.of` along an equality of weights. -/
 private lemma directSumOf_cast_eq {k₁ k₂ : ℤ} (hk : k₁ = k₂) (x : ModularForm 𝒮ℒ k₁) :
     DirectSum.of (ModularForm 𝒮ℒ) k₁ x = DirectSum.of (ModularForm 𝒮ℒ) k₂ (hk ▸ x) := by
   subst hk
@@ -195,8 +184,6 @@ private lemma cast_modularForm_apply {k₁ k₂ : ℤ} (heq : k₁ = k₂) (h : 
   subst heq
   rfl
 
-/-- The 0th q-expansion coefficient of `(of _ 4 E₄)^a * (of _ 6 E₆)^b` evaluated at
-weight `n = 4a + 6b` equals `1`. -/
 private lemma monomial_qExpansion_coeff_zero_eq_one {n a b : ℕ} (hab : 4 * a + 6 * b = n) :
     (qExpansion 1
       ((DirectSum.of (ModularForm 𝒮ℒ) 4 E₄ ^ a *
@@ -227,8 +214,6 @@ private lemma monomial_qExpansion_coeff_zero_eq_one {n a b : ℕ} (hab : 4 * a +
   simp [Finset.antidiagonal_zero, PowerSeries.coeff_pow,
     E_qExpansion_coeff_zero _ ⟨2, rfl⟩, E_qExpansion_coeff_zero _ ⟨3, rfl⟩]
 
-/-- For weight 12 ≤ n, every cusp form of weight n is `Δ * h` for some modular form
-`h` of weight `n - 12`. Lifted to the graded ring. -/
 private lemma cuspForm_eq_discriminant_mul {n : ℕ} (g : ModularForm 𝒮ℒ ↑n)
     (hg : ModularForm.IsCuspForm g) :
     DirectSum.of (ModularForm 𝒮ℒ) (↑n : ℤ) g =
@@ -254,12 +239,9 @@ private lemma cuspForm_eq_discriminant_mul {n : ℕ} (g : ModularForm 𝒮ℒ �
   change g z / ModularForm.discriminant z * ModularForm.discriminant z = g z
   exact div_mul_cancel₀ _ (discriminant_ne_zero z)
 
-/-- The polynomial `Δ_poly = (1/1728) (X₀³ - X₁²)`, which `evalE₄E₆` sends to `Δ` in the
-graded ring of level-1 modular forms. -/
 private noncomputable def discriminantPoly : MvPolynomial (Fin 2) ℂ :=
   (1 / 1728 : ℂ) • (MvPolynomial.X 0 ^ 3 - MvPolynomial.X 1 ^ 2)
 
-/-- `evalE₄E₆ discriminantPoly = DirectSum.of _ 12 Δ`. -/
 private lemma evalE₄E₆_discriminantPoly :
     evalE₄E₆ discriminantPoly =
       DirectSum.of (ModularForm 𝒮ℒ) 12
@@ -267,15 +249,11 @@ private lemma evalE₄E₆_discriminantPoly :
   rw [discriminantPoly, map_smul, map_sub, map_pow, map_pow, evalE₄E₆_X0, evalE₄E₆_X1,
     ← discriminant_eq_E₄_cube_sub_E₆_sq_graded]
 
-/-- The discriminant `Δ`, viewed as a modular form of weight 12, lies in the range of
-`evalE₄E₆`. -/
 private lemma discriminant_mem_range_evalE₄E₆ :
     DirectSum.of (ModularForm 𝒮ℒ) 12
         ((CuspForm.discriminant : CuspForm 𝒮ℒ 12) : ModularForm 𝒮ℒ 12) ∈ Set.range evalE₄E₆ :=
   ⟨discriminantPoly, evalE₄E₆_discriminantPoly⟩
 
-/-- Inductive step: for `n ≥ 12` even, surjectivity at weight `n` follows from surjectivity
-at all lower weights via the cusp-form / `Δ` decomposition. -/
 private lemma surj_at_weight_inductive {n : ℕ} (hn12 : 12 ≤ n) (hk_even : Even (n : ℤ))
     (ih : ∀ m < n, ∀ (f : ModularForm 𝒮ℒ ↑m),
       DirectSum.of _ (↑m : ℤ) f ∈ Set.range evalE₄E₆)
@@ -333,7 +311,6 @@ private lemma one_ne_zero_modularForm : (1 : ModularForm 𝒮ℒ 0) ≠ 0 := fun
   one_ne_zero (α := ℂ) (congr_fun (congr_arg (DFunLike.coe (F := ModularForm 𝒮ℒ 0)) h)
     UpperHalfPlane.I)
 
-/-- For each weight `k`, every element of weight `k` lies in the range of `evalE₄E₆`. -/
 private lemma surj_of_weight : ∀ (k : ℤ) (f : ModularForm 𝒮ℒ k),
     DirectSum.of (ModularForm 𝒮ℒ) k f ∈ Set.range evalE₄E₆ := by
   intro k f
@@ -467,7 +444,6 @@ private lemma evalE₄E₆_monomial_grade (d : Fin 2 →₀ ℕ) (c : ℂ) (k : 
     smul_mul_assoc, one_mul, DirectSum.smul_apply,
     evalE₄E₆_mono_grade (d 0) (d 1) k hk, smul_zero]
 
-/-- A weighted-homogeneous polynomial of weight `n` evaluates (at any other weight) to `0`. -/
 private lemma evalE₄E₆_whc_grade {n : ℕ} (p : MvPolynomial (Fin 2) ℂ)
     (hp : MvPolynomial.IsWeightedHomogeneous E₄E₆Weight p n) (k : ℤ) (hk : k ≠ ↑n) :
     (evalE₄E₆ p) k = 0 := by
@@ -536,7 +512,6 @@ private lemma discriminantPoly_isWeightedHomogeneous :
   push Not at hd6
   simp [hd3, hd6] at hd
 
-/-- The 0th q-expansion coefficient of a `Δ_poly * s` term in the graded ring vanishes. -/
 private lemma evalE₄E₆_discriminantPoly_mul_coeff_zero {n : ℕ} (hn12 : 12 ≤ n)
     (s : MvPolynomial (Fin 2) ℂ)
     (hs : MvPolynomial.IsWeightedHomogeneous E₄E₆Weight s (n - 12)) :
@@ -718,9 +693,6 @@ private lemma mvpoly_support_after_reduction {σ R : Type*} [CommRing R] [Decida
   · exact absurd h2 (Finset.notMem_empty _)
   exact Finset.mem_union_right _ (by rwa [Finset.mem_singleton] at h2 ⊢)
 
-/-- Polynomial decomposition: any weighted-homogeneous polynomial `p` of weight `n ≥ 12` can
-be written as `r + Δ_poly * s` where `r` is weighted-homogeneous of weight `n` whose monomials
-all have `X₀`-degree `< 3`. -/
 private lemma whomog_poly_Delta_decomp {n : ℕ} (hn12 : 12 ≤ n)
     (p : MvPolynomial (Fin 2) ℂ)
     (hp : MvPolynomial.IsWeightedHomogeneous E₄E₆Weight p n) :
@@ -787,7 +759,6 @@ private lemma whomog_poly_Delta_decomp {n : ℕ} (hn12 : 12 ≤ n)
   rw [hp_eq, hδ_eq, hp'_eq, mul_add]
   ring
 
-/-- If `eval (r + Δ_poly * s) ↑n = 0` and `r` is reduced, then `r = 0`. -/
 private lemma reduced_part_eq_zero {n : ℕ} (hn12 : 12 ≤ n)
     (r s : MvPolynomial (Fin 2) ℂ)
     (hr : MvPolynomial.IsWeightedHomogeneous E₄E₆Weight r n)
@@ -850,8 +821,6 @@ private lemma reduced_part_eq_zero {n : ℕ} (hn12 : 12 ≤ n)
   rw [h_mono_term] at h_coeff_sum
   exact h_coeff_sum
 
-/-- If `eval (Δ_poly * s) ↑n = 0` (with `s` weighted-homog of weight `n - 12`),
-then `eval s ↑(n - 12) = 0`. -/
 private lemma eval_discriminantPoly_mul_zero_imp {n : ℕ} (hn12 : 12 ≤ n)
     (s : MvPolynomial (Fin 2) ℂ)
     (hs : MvPolynomial.IsWeightedHomogeneous E₄E₆Weight s (n - 12))
