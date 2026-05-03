@@ -168,24 +168,24 @@ private lemma surj_of_rank_one {k : ℤ}
   rw [map_mul, evalE₄E₆_C, hp, Algebra.algebraMap_eq_smul_one,
     smul_mul_assoc, one_mul, ← DirectSum.of_smul]
 
-private lemma mul_ne_zero {k₁ k₂ : ℤ}
-    (f : ModularForm 𝒮ℒ k₁) (g : ModularForm 𝒮ℒ k₂) (hf : f ≠ 0) (hg : g ≠ 0) :
+private lemma modularForm_mul_ne_zero {Γ : Subgroup (GL (Fin 2) ℝ)}
+    [Γ.HasDetPlusMinusOne] {h : ℝ} (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) {k₁ k₂ : ℤ}
+    (f : ModularForm Γ k₁) (g : ModularForm Γ k₂) (hf : f ≠ 0) (hg : g ≠ 0) :
     f.mul g ≠ 0 := by
-  rw [Ne, ← ModularForm.qExpansion_eq_zero_iff one_pos one_mem_strictPeriods_SL,
-    ModularForm.qExpansion_mul one_pos one_mem_strictPeriods_SL, mul_eq_zero, not_or]
-  exact ⟨(ModularForm.qExpansion_eq_zero_iff one_pos one_mem_strictPeriods_SL _).not.mpr hf,
-    (ModularForm.qExpansion_eq_zero_iff one_pos one_mem_strictPeriods_SL _).not.mpr hg⟩
+  rw [Ne, ← ModularForm.qExpansion_eq_zero_iff hh hΓ,
+    ModularForm.qExpansion_mul hh hΓ, mul_eq_zero, not_or]
+  exact ⟨(ModularForm.qExpansion_eq_zero_iff hh hΓ _).not.mpr hf,
+    (ModularForm.qExpansion_eq_zero_iff hh hΓ _).not.mpr hg⟩
 
-private lemma directSumOf_cast_eq {k₁ k₂ : ℤ} (hk : k₁ = k₂)
-    (x : ModularForm 𝒮ℒ k₁) :
-    DirectSum.of (ModularForm 𝒮ℒ) k₁ x =
-      DirectSum.of (ModularForm 𝒮ℒ) k₂ (hk ▸ x) := by
+private lemma directSum_of_eq_cast {ι : Type*} [DecidableEq ι]
+    {β : ι → Type*} [(i : ι) → AddCommMonoid (β i)] {i j : ι} (hk : i = j) (x : β i) :
+    DirectSum.of β i x = DirectSum.of β j (hk ▸ x) := by
   subst hk
   rfl
 
-private lemma cast_modularForm_apply {k₁ k₂ : ℤ} (heq : k₁ = k₂)
-    (h : ModularForm 𝒮ℒ k₁) (z : ℍ) :
-    (heq ▸ h : ModularForm 𝒮ℒ k₂) z = h z := by
+private lemma modularForm_cast_apply {Γ : Subgroup (GL (Fin 2) ℝ)} {k₁ k₂ : ℤ}
+    (heq : k₁ = k₂) (h : ModularForm Γ k₁) (z : ℍ) :
+    (heq ▸ h : ModularForm Γ k₂) z = h z := by
   subst heq
   rfl
 
@@ -307,7 +307,7 @@ private lemma surj_at_weight_inductive {n : ℕ} (hn12 : 12 ≤ n) (hk_even : Ev
       ((ModularForm.isCuspForm_iff_coeffZero_eq_zero _).mp hg_cusp))
   obtain ⟨p1, hp1⟩ :
       DirectSum.of (ModularForm 𝒮ℒ) ((↑n : ℤ) - 12) h' ∈ Set.range evalE₄E₆ := by
-    rw [directSumOf_cast_eq hcast]
+    rw [directSum_of_eq_cast hcast]
     exact ih _ (by omega) (hcast ▸ h')
   rw [show DirectSum.of _ (↑n : ℤ) f =
       DirectSum.of _ (↑n : ℤ) (f - c • mn) + c • DirectSum.of _ (↑n : ℤ) mn by
@@ -352,10 +352,9 @@ private lemma surj_of_weight : ∀ (k : ℤ) (f : ModularForm 𝒮ℒ k),
         n = 0 ∨ n = 2 ∨ n = 4 ∨ n = 6 ∨ n = 8 ∨ n = 10 := by
       rcases hk_odd with ⟨m, hm⟩
       omega
-    · refine surj_of_rank_one ModularForm.levelOne_weight_zero_rank_one
-        one_ne_zero_modularForm 1 ?_ f
-      rw [map_one]
-      rfl
+    · exact surj_of_rank_one ModularForm.levelOne_weight_zero_rank_one
+        one_ne_zero_modularForm 1
+        ((map_one _).trans (DirectSum.of_zero_one _).symm) f
     · rw [(rank_zero_iff_forall_zero.mp ModularForm.levelOne_weight_two_rank_zero) f,
         map_zero]
       exact ⟨0, map_zero _⟩
@@ -366,12 +365,12 @@ private lemma surj_of_weight : ∀ (k : ℤ) (f : ModularForm 𝒮ℒ k),
         (E_ne_zero (k := 6) (by norm_num) ⟨3, rfl⟩)
         (MvPolynomial.X 1) evalE₄E₆_X1 f
     · exact surj_of_rank_one (rank_one_of_lt_twelve (by norm_num) ⟨4, rfl⟩ (by norm_num))
-        (mul_ne_zero E₄ E₄ (E_ne_zero (by norm_num) ⟨2, rfl⟩)
-          (E_ne_zero (by norm_num) ⟨2, rfl⟩))
+        (modularForm_mul_ne_zero one_pos one_mem_strictPeriods_SL E₄ E₄
+          (E_ne_zero (by norm_num) ⟨2, rfl⟩) (E_ne_zero (by norm_num) ⟨2, rfl⟩))
         (MvPolynomial.X 0 ^ 2) evalE₄E₆_X_sq f
     · exact surj_of_rank_one (rank_one_of_lt_twelve (by norm_num) ⟨5, rfl⟩ (by norm_num))
-        (mul_ne_zero E₄ E₆ (E_ne_zero (by norm_num) ⟨2, rfl⟩)
-          (E_ne_zero (by norm_num) ⟨3, rfl⟩))
+        (modularForm_mul_ne_zero one_pos one_mem_strictPeriods_SL E₄ E₆
+          (E_ne_zero (by norm_num) ⟨2, rfl⟩) (E_ne_zero (by norm_num) ⟨3, rfl⟩))
         (MvPolynomial.X 0 * MvPolynomial.X 1) evalE₄E₆_X0_X1 f
   · push Not at hn12
     exact surj_at_weight_inductive hn12 hk_odd ih f
@@ -408,19 +407,21 @@ private lemma no_weight_monomial_of_two (d : Fin 2 →₀ ℕ) :
   rw [weight_eq_4a_6b] at h
   omega
 
-private lemma weightedHomogeneous_eq_zero_of_no_monomials {n : ℕ} (p : MvPolynomial (Fin 2) ℂ)
-    (hp : MvPolynomial.IsWeightedHomogeneous (![4, 6] : Fin 2 → ℕ) p n)
-    (hno : ∀ d : Fin 2 →₀ ℕ, Finsupp.weight (![4, 6] : Fin 2 → ℕ) d ≠ n) : p = 0 := by
+private lemma weightedHomogeneous_eq_zero_of_no_monomials
+    {σ R : Type*} [CommSemiring R] {M : Type*} [AddCommMonoid M] {w : σ → M} {n : M}
+    (p : MvPolynomial σ R) (hp : MvPolynomial.IsWeightedHomogeneous w p n)
+    (hno : ∀ d : σ →₀ ℕ, Finsupp.weight w d ≠ n) : p = 0 := by
   rw [← MvPolynomial.support_eq_empty, ← Finset.not_nonempty_iff_eq_empty]
   rintro ⟨d, hd⟩
   exact hno _ (hp (MvPolynomial.mem_support_iff.mp hd))
 
-private lemma weightedHomogeneous_unique_monomial {n : ℕ} (p : MvPolynomial (Fin 2) ℂ)
-    (hp : MvPolynomial.IsWeightedHomogeneous (![4, 6] : Fin 2 → ℕ) p n)
-    (d₀ : Fin 2 →₀ ℕ)
-    (huniq : ∀ d : Fin 2 →₀ ℕ,
-      Finsupp.weight (![4, 6] : Fin 2 → ℕ) d = n → d = d₀) :
+private lemma weightedHomogeneous_unique_monomial
+    {σ R : Type*} [CommSemiring R] {M : Type*} [AddCommMonoid M]
+    {w : σ → M} {n : M}
+    (p : MvPolynomial σ R) (hp : MvPolynomial.IsWeightedHomogeneous w p n)
+    (d₀ : σ →₀ ℕ) (huniq : ∀ d, Finsupp.weight w d = n → d = d₀) :
     p = MvPolynomial.monomial d₀ (MvPolynomial.coeff d₀ p) := by
+  classical
   ext d
   rw [MvPolynomial.coeff_monomial]
   by_cases hd : d = d₀
@@ -547,7 +548,7 @@ private lemma evalE₄E₆_discriminantPoly_mul_coeff_zero {n : ℕ} (hn12 : 12 
   set g := (evalE₄E₆ s) ((n - 12 : ℕ) : ℤ)
   rw [show ((hcast ▸ GradedMonoid.GMul.mul f g : ModularForm 𝒮ℒ ↑n) : ℍ → ℂ) =
       ((f.mul g : ModularForm 𝒮ℒ (12 + ((n - 12 : ℕ) : ℤ))) : ℍ → ℂ) from
-        funext fun z => cast_modularForm_apply hcast _ z,
+        funext fun z => modularForm_cast_apply hcast _ z,
     ModularForm.qExpansion_mul one_pos one_mem_strictPeriods_SL f g, PowerSeries.coeff_mul]
   simp [Finset.antidiagonal_zero,
     (ModularForm.isCuspForm_iff_coeffZero_eq_zero f).mp ⟨CuspForm.discriminant, rfl⟩]
@@ -857,7 +858,7 @@ private lemma eval_discriminantPoly_mul_eq_zero_imp_eval_eq_zero {n : ℕ} (hn12
   rw [DirectSum.of_apply, dif_pos hcast] at hds
   ext z
   have hpw := DFunLike.congr_fun hds z
-  simp only [ModularForm.zero_apply, cast_modularForm_apply hcast] at hpw ⊢
+  simp only [ModularForm.zero_apply, modularForm_cast_apply hcast] at hpw ⊢
   exact (mul_eq_zero.mp hpw).resolve_left (discriminant_ne_zero z)
 
 private lemma per_weight_injective_inductive_step (n : ℕ)
