@@ -170,6 +170,19 @@ lemma quotient_inverts_homotopyEquivalences :
   change IsIso (isoOfHomotopyEquiv e).hom
   infer_instance
 
+lemma isIso_quotient_map_iff_homotopyEquivalences
+    {K L : HomologicalComplex V c} (f : K ⟶ L) :
+    IsIso ((quotient _ _).map f) ↔
+      homotopyEquivalences _ _ f := by
+  refine ⟨fun _ ↦ ?_, fun hf ↦ quotient_inverts_homotopyEquivalences V c f hf⟩
+  obtain ⟨g, hg⟩ := (quotient V c).map_surjective (inv ((quotient V c).map f))
+  let e : HomotopyEquiv K L :=
+    { hom := f
+      inv := g
+      homotopyHomInvId := HomotopyCategory.homotopyOfEq _ _ (by cat_disch)
+      homotopyInvHomId := HomotopyCategory.homotopyOfEq _ _ (by cat_disch) }
+  exact ⟨e, rfl⟩
+
 lemma isZero_quotient_obj_iff (C : HomologicalComplex V c) :
     IsZero ((quotient _ _).obj C) ↔ Nonempty (Homotopy (𝟙 C) 0) := by
   rw [IsZero.iff_id_eq_zero]

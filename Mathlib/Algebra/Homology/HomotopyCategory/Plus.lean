@@ -10,14 +10,14 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 public import Mathlib.Algebra.Homology.DerivedCategory.Basic
 public import Mathlib.Algebra.Homology.CochainComplexPlus
-public import Mathlib.Algebra.Homology.HomotopyFiber
+public import Mathlib.Algebra.Homology.Precylinder
 public import Mathlib.Algebra.Homology.Embedding.CochainComplex
 public import Mathlib.CategoryTheory.Triangulated.Subcategory
 public import Mathlib.CategoryTheory.Shift.SingleFunctorsLift
 public import Mathlib.CategoryTheory.Localization.OfQuotient
 
 /-!
-# The triangulated subcategory K^+
+# The triangulated subcategory of bounded below cochain complexes up to homotopy
 
 -/
 
@@ -69,13 +69,11 @@ lemma isStrictlyGE_mappingCone {K L : CochainComplex C ℤ} (f : K ⟶ L)
   simp only [mappingCone.isZero_X_iff]
   exact ⟨K.isZero_of_isStrictlyGE n₁ _, L.isZero_of_isStrictlyGE n₂ _⟩
 
--- better develop an `ObjectProperty` API for `Precylinder`...
-@[simps]
-noncomputable def Plus.precylinder (K : Plus C) : Precylinder K where
-  I := ⟨K.obj.cylinder, K.obj.plus_cylinder K.property⟩
-  i₀ := (CochainComplex.plus C).homMk (cylinder.ι₀ _)
-  i₁ := (CochainComplex.plus C).homMk (cylinder.ι₁ _)
-  π := (CochainComplex.plus C).homMk (cylinder.π _)
+noncomputable abbrev Plus.precylinder (K : Plus C) : Precylinder K :=
+  K.obj.precylinder.toFullSubcategory (K.obj.plus_cylinder K.property)
+
+noncomputable abbrev Plus.prepathObject (K : Plus C) : PrepathObject K :=
+  K.obj.prepathObject.toFullSubcategory (K.obj.plus_pathObject K.property)
 
 end CochainComplex
 
@@ -169,30 +167,20 @@ instance : (quotient C).EssSurj where
 
 instance : (quotient C).Full := by dsimp [quotient]; infer_instance
 
-variable [HasZeroObject C] [HasBinaryBiproducts C] in
 open HomologicalComplex in
-instance :
+instance [HasZeroObject C] [HasBinaryBiproducts C] :
     (quotient C).IsLocalization
       ((homotopyEquivalences C (.up ℤ)).inverseImage (CochainComplex.Plus.ι C)) :=
-  Functor.isLocalization_of_essSurj_of_full_of_exists_cylinders _ _ (fun _ _ f hf ↦ by
-    rw [← isIso_iff_of_reflects_iso _ (HomotopyCategory.Plus.ι C)]
-    dsimp
-    --rwa [isIso_quotient_map_iff_homotopyEquivalences]
-    sorry
-    ) (by
+  Functor.isLocalization_of_essSurj_of_full_of_exists_cylinders _ _
+    (fun _ _ f hf ↦ by
+      simpa [← isIso_iff_of_reflects_iso _ (HomotopyCategory.Plus.ι C),
+        ← isIso_quotient_map_iff_homotopyEquivalences] using hf) (by
     rintro K L f₀ f₁ hf
     obtain ⟨f₀, rfl⟩ := ObjectProperty.homMk_surjective f₀
     obtain ⟨f₁, rfl⟩ := ObjectProperty.homMk_surjective f₁
     replace hf := homotopyOfEq f₀ f₁ ((HomotopyCategory.Plus.ι _).congr_map hf)
-    refine ⟨K.precylinder, ?_, sorry⟩
-    sorry
-    --refine ⟨⟨cylinder K, CochainComplex.plus_cylinder _ hK⟩,
-    --  ObjectProperty.homMk (cylinder.ι₀ _),
-    --  ObjectProperty.homMk (cylinder.ι₁ _),
-    --  ObjectProperty.homMk (cylinder.π _), ?_, by cat_disch, by cat_disch,
-    --  ObjectProperty.homMk (cylinder.desc f₀ f₁ hf), by cat_disch, by cat_disch⟩
-    --exact ⟨cylinder.homotopyEquiv _ (fun n ↦ ⟨n - 1, by simp⟩), rfl⟩
-    )
+    exact ⟨K.precylinder, Precylinder.LeftHomotopy.fullSubcategoryEquiv.symm
+      { h := cylinder.desc _ _ hf }, ⟨cylinder.homotopyEquiv _ (fun n ↦ ⟨n - 1, by simp⟩), rfl⟩⟩)
 
 def quotientCompι :
   quotient C ⋙ ι C ≅
