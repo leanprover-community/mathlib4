@@ -28,6 +28,8 @@ public meta section
 
 namespace Mathlib.Tactic.Scope
 
+section parsers
+
 /-! The "inlinable" parsers in this section exist to enable syntax quotations, which help with
 constructing and processing these later. -/
 
@@ -83,9 +85,11 @@ syntax scopeStx := Parser.Command.sectionHeader &"scope"
   (ppLine colGt Parser.Command.universe)?
   (ppLine colGt Parser.Command.namespace)?
   atomic((ppLine colGt reifiedOpenStx)?)
-  (ppLine colGt reifiedOpenScopedStx)? -- TODO: local?
+  (ppLine colGt reifiedOpenScopedStx)?
   (ppLine colGt reifiedSetOptionsStx)?
   (ppLine colGt reifiedVarStx)?
+
+end parsers
 
 section header
 
