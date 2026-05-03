@@ -8,6 +8,7 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 public import Mathlib.Combinatorics.SimpleGraph.IsolateVerts
 public import Mathlib.Data.Set.Card
+public import Mathlib.Tactic.GRewrite
 
 /-!
 # Vertex Connectivity
@@ -20,7 +21,7 @@ This file defines `k`-vertex connectivity for simple graphs.
   after removing strictly fewer than `k` other vertices.
 * `SimpleGraph.IsVertexPreconnected`: A graph is `k`-vertex-preconnected if any two vertices
   are `k`-vertex-reachable, meaning the removal of any set of strictly fewer than `k` vertices
-  leaves them reachable.
+  leaves any pair of vertices outside that set reachable.
 * `SimpleGraph.IsVertexConnected`: A graph is `k`-vertex-connected if it is `k`-vertex-preconnected
   and it has more than `k` vertices.
 -/
@@ -110,9 +111,8 @@ lemma IsVertexPreconnected.mono (hGH : G ≤ H) (hc : G.IsVertexPreconnected k) 
     H.IsVertexPreconnected k :=
   fun u v ↦ (hc u v).mono hGH
 
-/-- The complete graph on `n` vertices is `(n-1)`-vertex-preconnected. -/
-lemma isVertexPreconnected_top [Fintype V] [Nonempty V] :
-    (⊤ : SimpleGraph V).IsVertexPreconnected (Fintype.card V - 1) := by
+/-- The complete graph on `n` vertices is `k`-vertex-preconnected for any `k`. -/
+lemma IsVertexPreconnected.top : (⊤ : SimpleGraph V).IsVertexPreconnected k := by
   intro u v
   by_cases h : u = v
   exacts [h ▸ .refl _, .of_adj _ h]
@@ -147,9 +147,7 @@ lemma Preconnected.isVertexConnected_one [Nontrivial V] (h : G.Preconnected) :
 lemma IsVertexConnected.anti (hkl : l ≤ k) (hc : G.IsVertexConnected k) :
     G.IsVertexConnected l := by
   refine ⟨?_, hc.right.anti hkl⟩
-  calc
-    l + 1 ≤ k + 1 := by gcongr
-    _     ≤ ENat.card V := hc.left
+  grw [hkl, hc.left]
 
 /-- Vertex connectivity is monotonic in the graph. -/
 @[gcongr]
@@ -157,10 +155,9 @@ lemma IsVertexConnected.mono (hGH : G ≤ H) (hc : G.IsVertexConnected k) : H.Is
   ⟨hc.left, hc.right.mono hGH⟩
 
 /-- The complete graph on `n` vertices is `(n-1)`-vertex-connected. -/
-lemma isVertexConnected_top [Fintype V] [Nonempty V] :
-    (⊤ : SimpleGraph V).IsVertexConnected (Fintype.card V - 1) := by
-  refine ⟨?_, isVertexPreconnected_top⟩
-  rw [ENat.card_eq_coe_fintype_card]
-  exact_mod_cast Nat.sub_add_cancel Fintype.card_pos |>.le
+lemma isVertexConnected_top [Nonempty V] :
+    (⊤ : SimpleGraph V).IsVertexConnected (ENat.card V - 1) := by
+  refine ⟨?_, .top⟩
+  simp [← tsub_le_tsub_iff_right <| Order.one_le_iff_pos.mpr ENat.card_pos]
 
 end SimpleGraph

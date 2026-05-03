@@ -19,7 +19,7 @@ This file defines the operation of isolating a set of vertices in a simple graph
 
 ## TODO
 
-* Once the `graph-on-a-set` refactor lands, replace `isolateVerts` with
+* Once the "graph-on-a-set" refactor lands, replace `isolateVerts` with
   `induce` and remove this file.
 -/
 
