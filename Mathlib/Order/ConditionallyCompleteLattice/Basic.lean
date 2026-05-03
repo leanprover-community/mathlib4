@@ -596,6 +596,10 @@ theorem csSup_union' (hs : BddAbove s := by bddDefault) (ht : BddAbove t := by b
   · simp
   exact (isLUB_csSup' hs |>.union <| isLUB_csSup' ht).csSup_eq hne.inl
 
+theorem csSup_union_le : sSup (s ∪ t) ≤ sSup s ⊔ sSup t := by
+  by_cases BddAbove (s ∪ t) <;>
+    grind [csSup_union', bddAbove_union, csSup_of_not_bddAbove]
+
 theorem csSup_inter_le' (hs : BddAbove s := by bddDefault) (ht : BddAbove t := by bddDefault) :
     sSup (s ∩ t) ≤ sSup s ⊓ sSup t :=
   csSup_le' fun _ hx ↦ le_inf (le_csSup hs hx.left) (le_csSup ht hx.right)
