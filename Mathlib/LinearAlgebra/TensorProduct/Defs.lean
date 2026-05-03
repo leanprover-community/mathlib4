@@ -211,8 +211,8 @@ theorem SMul.aux_of {R' : Type*} [SMul R' M] (r : R') (m : M) (n : N) :
 
 variable [SMulCommClass R R' M] [SMulCommClass R R'' M]
 
-def leftHasSMul.sMul (r : R') (x : M ⊗[R] N) : M ⊗[R] N :=
-  ((addConGen (TensorProduct.Eqv R M N)).lift (SMul.aux r : _ →+ M ⊗[R] N) <|
+def leftHasSMul.smul (r : R') (x : M ⊗[R] N) : M ⊗[R] N :=
+  ((addConGen (TensorProduct.Eqv R M N)).lift (SMul.aux r) <|
     AddCon.addConGen_le fun x y hxy =>
       match x, y, hxy with
       | _, _, .of_zero_left n =>
@@ -241,16 +241,16 @@ Note that in the special case that `R = R'`, since `R` is commutative, we just g
 action on a tensor product of two modules. This special case is important enough that, for
 performance reasons, we define it explicitly below. -/
 instance leftHasSMul : SMul R' (M ⊗[R] N) :=
-  ⟨leftHasSMul.sMul⟩
+  ⟨leftHasSMul.smul⟩
 
 instance : SMul R (M ⊗[R] N) :=
   TensorProduct.leftHasSMul
 
 protected theorem smul_zero (r : R') : r • (0 : M ⊗[R] N) = 0 :=
-  map_zero (SMul.aux r : _ →+ M ⊗[R] N)
+  map_zero (SMul.aux r)
 
 protected theorem smul_add (r : R') (x y : M ⊗[R] N) : r • (x + y) = r • x + r • y := by
-  simp only [HSMul.hSMul, SMul.smul, leftHasSMul.sMul]
+  simp only [HSMul.hSMul, SMul.smul, leftHasSMul.smul]
   exact map_add _ _ _
 
 protected theorem zero_smul (x : M ⊗[R] N) : (0 : R'') • x = 0 :=
