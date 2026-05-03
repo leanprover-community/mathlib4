@@ -40,8 +40,6 @@ open UpperHalfPlane ModularForm ModularFormClass MatrixGroups EisensteinSeries
 
 namespace ModularForm
 
-/-! ### `Δ = (E₄³ - E₆²) / 1728` -/
-
 /-- The combination `E₄³ - E₆²` viewed as a level-1 modular form of weight 12. -/
 private noncomputable def E₄CubeSubE₆SqForm : ModularForm 𝒮ℒ 12 :=
   ModularForm.mcast (by norm_num) ((E₄.mul E₄).mul E₄) -
@@ -183,8 +181,8 @@ private lemma directSumOf_cast_eq {k₁ k₂ : ℤ} (hk : k₁ = k₂) (x : Modu
   subst hk
   rfl
 
-private lemma cast_modularForm_apply {k₁ k₂ : ℤ} (heq : k₁ = k₂) (h : ModularForm 𝒮ℒ k₁) (z : ℍ) :
-    (heq ▸ h : ModularForm 𝒮ℒ k₂) z = h z := by
+private lemma cast_modularForm_apply {k₁ k₂ : ℤ} (heq : k₁ = k₂) (h : ModularForm 𝒮ℒ k₁)
+    (z : ℍ) : (heq ▸ h : ModularForm 𝒮ℒ k₂) z = h z := by
   subst heq
   rfl
 
@@ -256,7 +254,7 @@ private lemma evalE₄E₆_discriminantPoly :
 private lemma discriminant_mem_range_evalE₄E₆ :
     DirectSum.of (ModularForm 𝒮ℒ) 12
         ((CuspForm.discriminant : CuspForm 𝒮ℒ 12) : ModularForm 𝒮ℒ 12) ∈ Set.range evalE₄E₆ :=
-  ⟨discriminantPoly, evalE₄E₆_discriminantPoly⟩
+  ⟨_, evalE₄E₆_discriminantPoly⟩
 
 private lemma sub_smul_qExpansion_coeff_zero_isCuspForm {k : ℤ} (f g : ModularForm 𝒮ℒ k)
     (hg : (qExpansion 1 g).coeff 0 = 1) :
@@ -300,9 +298,10 @@ private lemma surj_at_weight_inductive {n : ℕ} (hn12 : 12 ≤ n) (hk_even : Ev
   set h' := CuspForm.discriminantEquiv
     (ModularForm.toCuspForm (f - c • mn)
       ((ModularForm.isCuspForm_iff_coeffZero_eq_zero _).mp hg_cusp))
-  obtain ⟨p1, hp1⟩ : DirectSum.of (ModularForm 𝒮ℒ) ((↑n : ℤ) - 12) h' ∈ Set.range evalE₄E₆ := by
+  obtain ⟨p1, hp1⟩ :
+      DirectSum.of (ModularForm 𝒮ℒ) ((↑n : ℤ) - 12) h' ∈ Set.range evalE₄E₆ := by
     rw [directSumOf_cast_eq hcast]
-    exact ih (n - 12) (by omega) (hcast ▸ h')
+    exact ih _ (by omega) (hcast ▸ h')
   rw [show DirectSum.of _ (↑n : ℤ) f =
       DirectSum.of _ (↑n : ℤ) (f - c • mn) + c • DirectSum.of _ (↑n : ℤ) mn by
     rw [← DirectSum.of_smul, ← map_add]
@@ -388,28 +387,28 @@ private lemma weight_fin2_cast (d : Fin 2 →₀ ℕ) :
   push_cast
   ring
 
-private lemma no_wt_monomial_of_odd {n : ℕ} (hn : Odd n) (d : Fin 2 →₀ ℕ) :
+private lemma no_weight_monomial_of_odd {n : ℕ} (hn : Odd n) (d : Fin 2 →₀ ℕ) :
     Finsupp.weight E₄E₆Weight d ≠ n := by
   intro h
   rw [weight_eq_4a_6b] at h
   exact Nat.not_odd_iff_even.mpr ⟨d 0 * 2 + d 1 * 3, by omega⟩ hn
 
-private lemma no_wt_monomial_of_two (d : Fin 2 →₀ ℕ) :
+private lemma no_weight_monomial_of_two (d : Fin 2 →₀ ℕ) :
     Finsupp.weight E₄E₆Weight d ≠ 2 := by
   intro h
   rw [weight_eq_4a_6b] at h
   omega
 
-private lemma whomog_eq_zero_of_no_monomials {n : ℕ} (p : MvPolynomial (Fin 2) ℂ)
+private lemma weightedHomogeneous_eq_zero_of_no_monomials {n : ℕ} (p : MvPolynomial (Fin 2) ℂ)
     (hp : MvPolynomial.IsWeightedHomogeneous E₄E₆Weight p n)
     (hno : ∀ d : Fin 2 →₀ ℕ, Finsupp.weight E₄E₆Weight d ≠ n) : p = 0 := by
   rw [← MvPolynomial.support_eq_empty, ← Finset.not_nonempty_iff_eq_empty]
   rintro ⟨d, hd⟩
   exact hno _ (hp (MvPolynomial.mem_support_iff.mp hd))
 
-private lemma whomog_unique_monomial {n : ℕ} (p : MvPolynomial (Fin 2) ℂ)
-    (hp : MvPolynomial.IsWeightedHomogeneous E₄E₆Weight p n)
-    (d₀ : Fin 2 →₀ ℕ) (huniq : ∀ d : Fin 2 →₀ ℕ, Finsupp.weight E₄E₆Weight d = n → d = d₀) :
+private lemma weightedHomogeneous_unique_monomial {n : ℕ} (p : MvPolynomial (Fin 2) ℂ)
+    (hp : MvPolynomial.IsWeightedHomogeneous E₄E₆Weight p n) (d₀ : Fin 2 →₀ ℕ)
+    (huniq : ∀ d : Fin 2 →₀ ℕ, Finsupp.weight E₄E₆Weight d = n → d = d₀) :
     p = MvPolynomial.monomial d₀ (MvPolynomial.coeff d₀ p) := by
   ext d
   rw [MvPolynomial.coeff_monomial]
@@ -418,7 +417,7 @@ private lemma whomog_unique_monomial {n : ℕ} (p : MvPolynomial (Fin 2) ℂ)
   rw [if_neg (Ne.symm hd)]
   exact hp.coeff_eq_zero d (fun h => hd (huniq d h))
 
-private lemma unique_small_weight_soln {a₁ b₁ a₂ b₂ : ℕ}
+private lemma unique_small_weight_solution {a₁ b₁ a₂ b₂ : ℕ}
     (ha₁ : a₁ < 3) (ha₂ : a₂ < 3)
     (h : a₁ * 4 + b₁ * 6 = a₂ * 4 + b₂ * 6) : a₁ = a₂ ∧ b₁ = b₂ :=
   ⟨by interval_cases a₁ <;> interval_cases a₂ <;> omega, by omega⟩
@@ -536,7 +535,7 @@ private lemma per_weight_injective_unique_monomial {n : ℕ} (p : MvPolynomial (
     (huniq : ∀ d : Fin 2 →₀ ℕ, Finsupp.weight E₄E₆Weight d = n → d = d₀)
     (hmf_ne : (DirectSum.of (ModularForm 𝒮ℒ) 4 E₄ ^ d₀ 0 *
         DirectSum.of (ModularForm 𝒮ℒ) 6 E₆ ^ d₀ 1) (↑n : ℤ) ≠ 0) : p = 0 := by
-  have hpc := whomog_unique_monomial p hp d₀ huniq
+  have hpc := weightedHomogeneous_unique_monomial p hp d₀ huniq
   rw [hpc] at heval ⊢
   rw [monomial_fin2_eq, mul_assoc, map_mul, evalE₄E₆_C, Algebra.algebraMap_eq_smul_one,
     smul_mul_assoc, one_mul, evalE₄E₆_monomial, DirectSum.smul_apply] at heval
@@ -555,7 +554,7 @@ private lemma per_weight_injective_small {n : ℕ} (a b : ℕ) (ha : a < 3) (hn 
   · intro d hd
     have h46 := weight_eq_4a_6b d
     rw [hd] at h46
-    obtain ⟨hda, hdb⟩ := unique_small_weight_soln (by omega : d 0 < 3) ha
+    obtain ⟨hda, hdb⟩ := unique_small_weight_solution (by omega : d 0 < 3) ha
       (show d 0 * 4 + d 1 * 6 = a * 4 + b * 6 by omega)
     ext i
     fin_cases i <;> [exact hda ▸ hd0a.symm; exact hdb ▸ hd0b.symm]
@@ -656,7 +655,7 @@ private lemma sum_lt_sum_of_replace {α : Type*} [DecidableEq α]
       _ = ∑ x ∈ S, f x := Finset.sum_erase_add S f hd_mem
 
 open Classical in
-private lemma mvpoly_support_after_reduction {σ R : Type*} [CommRing R] [DecidableEq σ]
+private lemma mvPolynomial_support_after_reduction {σ R : Type*} [CommRing R] [DecidableEq σ]
     (p : MvPolynomial σ R) (d d' : σ →₀ ℕ) (c : R)
     (hdd' : d ≠ d') (hc : MvPolynomial.coeff d p = c) :
     let δ := MvPolynomial.monomial d c - MvPolynomial.monomial d' c
@@ -694,12 +693,12 @@ private lemma support_sum_lt_after_sub_δ_piece (p : MvPolynomial (Fin 2) ℂ)
       ne_eq, zero_ne_one, not_false_eq_true, Finsupp.single_eq_of_ne, add_zero] at h0
     omega
   obtain ⟨hd_not, hsupp⟩ := (discriminantPoly_piece_eq_monomial_sub d hd_ge _ : _ = _) ▸
-    mvpoly_support_after_reduction p d d' _ hdd' rfl
+    mvPolynomial_support_after_reduction p d d' _ hdd' rfl
   refine sum_lt_sum_of_replace p.support _ (· 0) d d' hd_mem hd_not hsupp ?_
   simp [d', Finsupp.add_apply]
   omega
 
-private lemma whomog_poly_Delta_decomp {n : ℕ} (hn12 : 12 ≤ n)
+private lemma weightedHomogeneous_poly_Delta_decomp {n : ℕ} (hn12 : 12 ≤ n)
     (p : MvPolynomial (Fin 2) ℂ)
     (hp : MvPolynomial.IsWeightedHomogeneous E₄E₆Weight p n) :
     ∃ r s : MvPolynomial (Fin 2) ℂ,
@@ -766,7 +765,7 @@ private lemma reduced_isWeightedHomogeneous_eq_monomial {n : ℕ}
     rw [hr (MvPolynomial.mem_support_iff.mp hd_supp)] at h1
     have h2 := weight_eq_4a_6b d₀
     rw [hwd₀] at h2
-    obtain ⟨ha, hb⟩ := unique_small_weight_soln (hr_red d hd_supp) (hr_red d₀ hd₀)
+    obtain ⟨ha, hb⟩ := unique_small_weight_solution (hr_red d hd_supp) (hr_red d₀ hd₀)
       (show d 0 * 4 + d 1 * 6 = d₀ 0 * 4 + d₀ 1 * 6 by omega)
     exact absurd (Finsupp.ext fun i => by fin_cases i <;> [exact ha; exact hb]) hd
   · rwa [MvPolynomial.mem_support_iff, not_not] at hd_supp
@@ -821,7 +820,7 @@ private lemma reduced_part_eq_zero {n : ℕ} (hn12 : 12 ≤ n)
       evalE₄E₆_monomial_qExpansion_coeff_zero hd₀_weight c] at hQ
   exact hQ
 
-private lemma eval_discriminantPoly_mul_zero_imp {n : ℕ} (hn12 : 12 ≤ n)
+private lemma eval_discriminantPoly_mul_eq_zero_imp_eval_eq_zero {n : ℕ} (hn12 : 12 ≤ n)
     (s : MvPolynomial (Fin 2) ℂ)
     (hs : MvPolynomial.IsWeightedHomogeneous E₄E₆Weight s (n - 12))
     (hds : (evalE₄E₆ (discriminantPoly * s)) (↑n : ℤ) = 0) :
@@ -843,11 +842,11 @@ private lemma per_weight_injective_inductive_step (n : ℕ)
     (hp : MvPolynomial.IsWeightedHomogeneous E₄E₆Weight p n)
     (heval : (evalE₄E₆ p) (↑n : ℤ) = 0)
     (hn12 : 12 ≤ n) : p = 0 := by
-  obtain ⟨r, s, hr_wh, hs_wh, hp_eq, hr_red⟩ := whomog_poly_Delta_decomp hn12 p hp
+  obtain ⟨r, s, hr_wh, hs_wh, hp_eq, hr_red⟩ := weightedHomogeneous_poly_Delta_decomp hn12 p hp
   have hr0 : r = 0 := reduced_part_eq_zero hn12 r s hr_wh hs_wh hr_red (hp_eq ▸ heval)
   rw [hp_eq, hr0, zero_add] at heval ⊢
   rw [ih (n - 12) (by omega) s hs_wh
-    (eval_discriminantPoly_mul_zero_imp hn12 s hs_wh heval), mul_zero]
+    (eval_discriminantPoly_mul_eq_zero_imp_eval_eq_zero hn12 s hs_wh heval), mul_zero]
 
 private lemma per_weight_injective : ∀ (n : ℕ) (p : MvPolynomial (Fin 2) ℂ),
     MvPolynomial.IsWeightedHomogeneous E₄E₆Weight p n →
@@ -856,7 +855,7 @@ private lemma per_weight_injective : ∀ (n : ℕ) (p : MvPolynomial (Fin 2) ℂ
   induction n using Nat.strong_induction_on with | _ n ih => ?_
   intro p hp heval
   by_cases hk_odd : Odd n
-  · exact whomog_eq_zero_of_no_monomials p hp (no_wt_monomial_of_odd hk_odd)
+  · exact weightedHomogeneous_eq_zero_of_no_monomials p hp (no_weight_monomial_of_odd hk_odd)
   rw [Nat.not_odd_iff_even] at hk_odd
   by_cases hn4 : n < 4
   · have hn02 : n = 0 ∨ n = 2 := by
@@ -864,7 +863,7 @@ private lemma per_weight_injective : ∀ (n : ℕ) (p : MvPolynomial (Fin 2) ℂ
       omega
     rcases hn02 with rfl | rfl
     · exact per_weight_injective_zero p hp heval
-    · exact whomog_eq_zero_of_no_monomials p hp no_wt_monomial_of_two
+    · exact weightedHomogeneous_eq_zero_of_no_monomials p hp no_weight_monomial_of_two
   push Not at hn4
   by_cases hn12 : n < 12
   · have hn_cases : n = 4 ∨ n = 6 ∨ n = 8 ∨ n = 10 := by
