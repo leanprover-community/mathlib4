@@ -102,10 +102,14 @@ lemma ciSup_neg {p : Prop} {f : p → α} (hp : ¬ p) :
   congr
   rwa [range_eq_empty_iff, isEmpty_Prop]
 
+@[to_dual (attr := simp)]
+theorem ciSup_empty [IsEmpty ι] {f : ι → α} : ⨆ h, f h = sSup (∅ : Set α) := by
+  rw [iSup, Set.range_eq_empty]
+
 @[to_dual]
 lemma ciSup_eq_ite {p : Prop} [Decidable p] {f : p → α} :
     (⨆ h : p, f h) = if h : p then f h else sSup (∅ : Set α) := by
-  by_cases H : p <;> simp [ciSup_neg, H]
+  by_cases H : p <;> simp [H]
 
 @[to_dual]
 theorem cbiSup_eq_of_forall {p : ι → Prop} {f : Subtype p → α} (hp : ∀ i, p i) :

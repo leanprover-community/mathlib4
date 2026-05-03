@@ -213,9 +213,9 @@ lemma ciInf_le_ciSup [Nonempty ι] {f : ι → α} (hf : BddBelow (range f)) (hf
 lemma ciSup_prod {f : β × γ → α} (hf : BddAbove (Set.range f)) :
     ⨆ p, f p = ⨆ b, ⨆ c, f (b, c) := by
   rcases isEmpty_or_nonempty β
-  · simp [iSup_of_empty']
+  · simp
   rcases isEmpty_or_nonempty γ
-  · simp [iSup_of_empty']
+  · simp
   have h₁ : BddAbove (Set.range fun b ↦ ⨆ c, f (b, c)) := by
     rw [bddAbove_def] at hf ⊢
     obtain ⟨B, hB⟩ := hf
@@ -360,6 +360,24 @@ lemma ciInf_image {ι ι' : Type*} {s : Set ι} {f : ι → ι'} {g : ι' → α
     ⨅ i ∈ (f '' s), g i = ⨅ x ∈ s, g (f x) :=
   ciSup_image (α := αᵒᵈ) hf hg'
 
+theorem ciSup_exists_le {p : ι → Prop} {f : Exists p → α} : ⨆ ih, f ih ≤ ⨆ (i) (h), f ⟨i, h⟩ := by
+  by_cases! h : Exists p
+  · have : Nonempty <| Exists p := ⟨h⟩
+    refine ciSup_le fun ⟨i, hi⟩ ↦ le_ciSup₂ (f := fun _ _ ↦ _) ⟨f ⟨i, hi⟩, ?_⟩ i hi
+    rintro _ ⟨_, ⟨j, rfl⟩, ⟨hj, rfl⟩⟩
+    rfl
+  · cases isEmpty_or_nonempty ι <;>
+      simp [h, ciSup_const]
+
+theorem le_ciInf_exists {p : ι → Prop} {f : Exists p → α} : ⨅ (i) (h), f ⟨i, h⟩ ≤ ⨅ ih, f ih :=
+  ciSup_exists_le (α := αᵒᵈ)
+
+theorem ciSup_and {p q : Prop} {f : p ∧ q → α} : ⨆ ih, f ih = ⨆ (h₁) (h₂), f ⟨h₁, h₂⟩ := by
+  by_cases hp : p <;> by_cases hq : q <;> simp [hp, hq]
+
+theorem ciInf_and {p q : Prop} {f : p ∧ q → α} : ⨅ ih, f ih = ⨅ (h₁) (h₂), f ⟨h₁, h₂⟩ :=
+  ciSup_and (α := αᵒᵈ)
+
 end ConditionallyCompleteLattice
 
 section ConditionallyCompleteLinearOrder
@@ -494,6 +512,10 @@ theorem exists_lt_of_lt_ciSup' {f : ι → α} {a : α} (h : a < ⨆ i, f i) : �
 theorem ciSup_mono' {ι'} {f : ι → α} {g : ι' → α} (hg : BddAbove (range g))
     (h : ∀ i, ∃ i', f i ≤ g i') : iSup f ≤ iSup g :=
   ciSup_le' fun i => Exists.elim (h i) (le_ciSup_of_le hg)
+
+theorem ciSup_exists {p : ι → Prop} {f : Exists p → α} : ⨆ ih, f ih = ⨆ (i) (h), f ⟨i, h⟩ := by
+  refine le_antisymm ciSup_exists_le <| ciSup_le' fun i ↦ ciSup_le' fun hi ↦ ?_
+  simp [show Exists p from ⟨i, hi⟩]
 
 lemma ciSup_or' (p q : Prop) (f : p ∨ q → α) :
     ⨆ (h : p ∨ q), f h = (⨆ h : p, f (.inl h)) ⊔ ⨆ h : q, f (.inr h) := by
