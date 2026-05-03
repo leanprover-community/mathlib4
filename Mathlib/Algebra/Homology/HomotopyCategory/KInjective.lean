@@ -162,4 +162,29 @@ lemma isKInjective_of_injective (L : CochainComplex C ℤ) (d : ℤ)
       limitSequence_eqUpTo φ hφ x₀ k₀ n (n - 1) (by lia) (by lia),
       limitSequence_eqUpTo φ hφ x₀ k₀ (n + 1) n (by lia) (by lia)]
 
+set_option backward.isDefEq.respectTransparency false in
+lemma IsKInjective.eq_δ_of_cocycle {K L : CochainComplex C ℤ} {n : ℤ}
+    (z : Cocycle K L n) [L.IsKInjective] (hK : K.Acyclic) (m : ℤ) (hm : m + 1 = n) :
+    ∃ (α : Cochain K L m), δ m n α = z.1 := by
+  obtain ⟨φ, hφ⟩ := (Cocycle.equivHom ..).surjective (z.rightShift n 0 (zero_add n))
+  rw [Cocycle.ext_iff] at hφ
+  dsimp at hφ
+  obtain ⟨h⟩ := IsKInjective.nonempty_homotopy_zero φ hK
+  obtain ⟨f, hf⟩ := Cochain.equivHomotopy _ _ h
+  simp only [Int.reduceNeg, Cochain.ofHom_zero, add_zero] at hf
+  refine ⟨n.negOnePow • Cochain.rightUnshift f m (by lia), ?_⟩
+  apply (Cochain.rightShiftAddEquiv _ _ _ n 0 (by simp)).injective
+  dsimp
+  rw [← hφ, hf, δ_units_smul, Cochain.rightShift_units_smul,
+    Cochain.δ_rightUnshift _ _ _ _ 0 (by simp),
+    Cochain.rightShift_units_smul, Cochain.rightShift_rightUnshift,
+    smul_smul, Int.units_mul_self, one_smul]
+
+lemma IsKInjective.eq_δ_of_cocycle' {K L : CochainComplex C ℤ} {n : ℤ}
+    (z : Cocycle K L n) [L.IsKInjective] (hL : L.Acyclic) (m : ℤ) (hm : m + 1 = n) :
+    ∃ (α : Cochain K L m), δ m n α = z.1 := by
+  obtain ⟨β, hβ⟩ :=
+    IsKInjective.eq_δ_of_cocycle (Cocycle.ofHom (𝟙 L)) hL (-1) (by simp)
+  exact ⟨z.1.comp β (by lia), by simp [δ_comp z.1 β _ _ 0 _ hm rfl (by simp), hβ]⟩
+
 end CochainComplex

@@ -5,16 +5,11 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.ModelCategory.Cylinder
-public import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
-public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
-public import Mathlib.Algebra.Homology.DerivedCategory.Basic
 public import Mathlib.Algebra.Homology.CochainComplexPlus
+public import Mathlib.Algebra.Homology.HomotopyCategory.Acyclic
 public import Mathlib.Algebra.Homology.Precylinder
-public import Mathlib.Algebra.Homology.Embedding.CochainComplex
-public import Mathlib.CategoryTheory.Triangulated.Subcategory
-public import Mathlib.CategoryTheory.Shift.SingleFunctorsLift
 public import Mathlib.CategoryTheory.Localization.OfQuotient
+public import Mathlib.CategoryTheory.Shift.SingleFunctorsLift
 
 /-!
 # The triangulated subcategory of bounded below cochain complexes up to homotopy
