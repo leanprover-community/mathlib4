@@ -332,17 +332,6 @@ lemma IsStronglyProgressive.isProgressive [MeasurableSpace ι] [MeasurableSpace 
     [PseudoMetrizableSpace β] [BorelSpace β] (h : IsStronglyProgressive f u) : IsProgressive f u :=
   fun i ↦ (h i).measurable
 
-theorem isProgressive_of_tendsto' {γ} [MeasurableSpace ι] [MeasurableSpace β]
-    [PseudoMetrizableSpace β] [BorelSpace β]
-    (fltr : Filter γ) [fltr.NeBot] [fltr.IsCountablyGenerated] {U : γ → ι → Ω → β}
-    (h : ∀ l, IsProgressive f (U l)) (h_tendsto : Tendsto U fltr (𝓝 u)) :
-    IsProgressive f u := by
-  intro i
-  letI : MeasurableSpace (Set.Iic i × Ω) := .prod inferInstance (f i)
-  apply measurable_of_tendsto_metrizable' fltr _ (hf := fun l ↦ h l i)
-  rw [tendsto_pi_nhds] at h_tendsto ⊢
-  exact fun _ ↦ Tendsto.apply_nhds (h_tendsto _) _
-
 theorem isStronglyProgressive_of_tendsto' {γ} [MeasurableSpace ι] [PseudoMetrizableSpace β]
     (fltr : Filter γ) [fltr.NeBot] [fltr.IsCountablyGenerated] {U : γ → ι → Ω → β}
     (h : ∀ l, IsStronglyProgressive f (U l)) (h_tendsto : Tendsto U fltr (𝓝 u)) :
@@ -352,11 +341,6 @@ theorem isStronglyProgressive_of_tendsto' {γ} [MeasurableSpace ι] [PseudoMetri
     (MeasurableSpace.prod _ (f i)) _ _ fltr _ _ _ _ fun l => h l i
   rw [tendsto_pi_nhds] at h_tendsto ⊢
   exact fun _ ↦ Tendsto.apply_nhds (h_tendsto _) _
-
-theorem isProgressive_of_tendsto [MeasurableSpace ι] [MeasurableSpace β] [PseudoMetrizableSpace β]
-    [BorelSpace β] {U : ℕ → ι → Ω → β} (h : ∀ l, IsProgressive f (U l))
-    (h_tendsto : Tendsto U atTop (𝓝 u)) : IsProgressive f u :=
-  isProgressive_of_tendsto' atTop h h_tendsto
 
 theorem isStronglyProgressive_of_tendsto [MeasurableSpace ι] [PseudoMetrizableSpace β]
     {U : ℕ → ι → Ω → β} (h : ∀ l, IsStronglyProgressive f (U l))
