@@ -54,6 +54,11 @@ variable [NontriviallyNormedField 𝕜]
 def toSchwartzMap (f : ContDiffMapSupportedIn E F ⊤ K) : 𝓢(E, F) :=
   f.hasCompactSupport.toSchwartzMap f.contDiff
 
+@[simp]
+theorem toSchwartzMap_apply (f : ContDiffMapSupportedIn E F ⊤ K) (x : E) :
+    toSchwartzMap f x = f x :=
+  rfl
+
 /-- A nonnegative bound for `‖x‖^k` on the compact set `K`. -/
 private def powNormBound (K : Compacts E) (k : ℕ) : ℝ :=
   let A : Set ℝ := (fun x : E => ‖x‖ ^ k) '' (K : Set E)
@@ -64,11 +69,6 @@ private theorem norm_pow_le_bound_on_compact (k : ℕ) {x : E} (hx : x ∈ K) :
     ‖x‖ ^ k ≤ powNormBound K k := by
   grw [powNormBound, ← le_max_of_le_left]
   exact le_csSup (K.isCompact.image (by fun_prop)).bddAbove ⟨x, hx, rfl⟩
-
-@[simp]
-theorem toSchwartzMap_apply (f : ContDiffMapSupportedIn E F ⊤ K) (x : E) :
-    toSchwartzMap f x = f x :=
-  rfl
 
 /-- Main continuity estimate: each Schwartz seminorm is bounded by a defining seminorm on `𝓓_K`. -/
 private theorem schwartzSeminorm_le_localSeminorm (k n : ℕ) (f : ContDiffMapSupportedIn E F ⊤ K) :
@@ -154,6 +154,10 @@ theorem toComplexSchwartzMapCLM_apply (f : TestFunction Ω ℝ ⊤) (x : E) :
     toComplexSchwartzMapCLM f x = Complex.ofReal (f x) :=
   rfl
 
+private theorem toComplexSchwartzMapCLM_real_smul (c : ℝ) (φ : TestFunction Ω ℝ ⊤) :
+    toComplexSchwartzMapCLM (c • φ) = (c : ℂ) • toComplexSchwartzMapCLM φ := by
+  simp
+
 end ToComplexSchwartzMap
 
 end TestFunction
@@ -164,10 +168,6 @@ section ToDistribution
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
   [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace ℂ F] [IsScalarTower ℝ ℂ F]
-
-private theorem toComplexSchwartzMapCLM_real_smul (c : ℝ) (φ : TestFunction Ω ℝ ⊤) :
-    toComplexSchwartzMapCLM (c • φ) = (c : ℂ) • toComplexSchwartzMapCLM φ := by
-  simp
 
 /--
 A tempered distribution defines a continuous ℝ-linear map on ℝ-valued test functions.
