@@ -169,8 +169,9 @@ theorem tendstoUniformlyOn_diff_iUnionNotConvergentSeq (hε : 0 < ε)
   rw [eventually_atTop]
   refine ⟨Egorov.notConvergentSeqLTIndex (half_pos hε) hf hsm hs hfg N, fun n hn x hx => ?_⟩
   refine lt_of_le_of_lt ?_ hN
-  simpa [edist_comm] using not_lt.mp (show ¬ (N : ℝ≥0∞)⁻¹ < edist (f n x) (g x) from
-    fun h ↦ hx.2 <| Set.mem_iUnion.2 ⟨N, hx.1, Egorov.mem_notConvergentSeq_iff.2 ⟨n, hn, h⟩⟩)
+  have : edist (f n x) (g x) ≤ (N : ℝ≥0∞)⁻¹ :=
+    not_lt.mp fun h ↦ hx.2 <| Set.mem_iUnion.2 ⟨N, hx.1, mem_notConvergentSeq_iff.2 ⟨n, hn, h⟩⟩
+  simpa [edist_comm]
 
 end Egorov
 
