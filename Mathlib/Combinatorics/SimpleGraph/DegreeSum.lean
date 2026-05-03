@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kyle Miller
+Authors: Kyle Miller, Youheng Luo
 -/
 module
 
@@ -25,6 +25,10 @@ a corollary, is that the number of odd-degree vertices is even.
   vertices different from a given odd-degree vertex is odd.
 - `SimpleGraph.exists_ne_odd_degree_of_exists_odd_degree` is that the existence of an
   odd-degree vertex implies the existence of another one.
+- `SimpleGraph.sum_degrees_option_zmod_two` is the handshaking lemma for `Option I` over `ZMod 2`.
+- `SimpleGraph.degree_none_zmod_two_eq_sum` is the `simp`-normal form of the above.
+- `SimpleGraph.card_degree_one_option_eq_outer_zmod_two` relates the count of degree-1 inner
+  vertices to the outer vertex degree modulo 2.
 
 ## Implementation notes
 
@@ -104,7 +108,8 @@ theorem sum_degrees_eq_twice_card_edges : ∑ v, G.degree v = 2 * #G.edgeFinset 
 
 lemma two_mul_card_edgeFinset : 2 * #G.edgeFinset = #(univ.filter fun (x, y) ↦ G.Adj x y) := by
   rw [← dart_card_eq_twice_card_edges, ← card_univ]
-  refine card_bij' (fun d _ ↦ (d.fst, d.snd)) (fun xy h ↦ ⟨xy, (mem_filter.1 h).2⟩) ?_ ?_ ?_ ?_
+  refine card_bij' (fun d _ ↦ (d.fst, d.snd)) (fun xy h ↦ ⟨xy, (mem_filter.1 h).2⟩)
+    ?_ ?_ ?_ ?_
     <;> simp
 
 /-- The degree-sum formula only counting over the vertices that form edges.
@@ -149,7 +154,8 @@ theorem odd_card_odd_degree_vertices_ne [Fintype V] [DecidableEq V] [DecidableRe
       exact h
     rwa [← card_pos, hg, ← two_mul, mul_pos_iff_of_pos_left] at hh
     exact zero_lt_two
-  have hc : (fun w : V => w ≠ v ∧ Odd (G.degree w)) = fun w : V => Odd (G.degree w) ∧ w ≠ v := by
+  have hc : (fun w : V => w ≠ v ∧ Odd (G.degree w)) =
+      fun w : V => Odd (G.degree w) ∧ w ≠ v := by
     ext w
     rw [and_comm]
   simp only [hc]
@@ -168,5 +174,61 @@ theorem exists_ne_odd_degree_of_exists_odd_degree [Fintype V] [DecidableRel G.Ad
   rcases card_pos.mp hg' with ⟨w, hw⟩
   rw [mem_filter_univ] at hw
   exact ⟨w, hw⟩
+
+/-- For a graph on `Option I`, the degree of the outer vertex `none` plus the
+sum of degrees of all inner vertices `some i` is 0 modulo 2.
+
+This is the handshaking lemma applied to `Option I`. -/
+theorem sum_degrees_option_zmod_two {I : Type*} [Fintype I]
+    (G : SimpleGraph (Option I)) [DecidableRel G.Adj] :
+    (G.degree none : ZMod 2) + ∑ i : I, (G.degree (some i) : ZMod 2) = 0 := by
+  have h : (∑ v : Option I, (G.degree v : ZMod 2)) = 0 := by
+    have := congr_arg (Nat.cast : ℕ → ZMod 2) G.sum_degrees_eq_twice_card_edges
+    simp only [Nat.cast_mul, CharP.cast_eq_zero, zero_mul] at this
+    rw [← this, Nat.cast_sum]
+  rw [Fintype.sum_option] at h
+  exact h
+
+/-- The degree of the outer vertex `none` equals the sum of degrees of all inner vertices
+modulo 2. -/
+@[simp]
+theorem degree_none_zmod_two_eq_sum {I : Type*} [Fintype I]
+    (G : SimpleGraph (Option I)) [DecidableRel G.Adj] :
+    (G.degree none : ZMod 2) = ∑ i : I, (G.degree (some i) : ZMod 2) := by
+  have h := sum_degrees_option_zmod_two G
+  exact (by decide : ∀ a b : ZMod 2, a + b = 0 → a = b) _ _ h
+
+/-- In a graph with an outer vertex `none` and inner vertices `some i`,
+if every inner vertex has degree at most 2, then the number of inner vertices with
+degree exactly 1 is congruent to the degree of the outer vertex modulo 2.
+
+The bound `≤ 2` ensures that `(G.degree (some i) : ZMod 2) = 1` is equivalent
+to `G.degree (some i) = 1` (since `(0 : ZMod 2) = 0` and `(2 : ZMod 2) = 0`).
+While a more general formulation could require `Odd (G.degree (some i))` instead,
+the `≤ 2` bound is chosen as it naturally fits geometric applications like dual graphs
+of triangulations where edges are shared by at most 2 faces. -/
+@[simp]
+theorem card_degree_one_option_eq_outer_zmod_two {I : Type*} [Fintype I]
+    (G : SimpleGraph (Option I)) [DecidableRel G.Adj]
+    (h_le : ∀ i : I, G.degree (some i) ≤ 2) :
+    (#{i : I | G.degree (some i) = 1} : ZMod 2) = (G.degree none : ZMod 2) := by
+  simp only [degree_none_zmod_two_eq_sum]
+  symm
+  rw [← Finset.sum_boole]
+  apply Finset.sum_congr rfl
+  intro x _
+  have hz : (G.degree (some x) : ZMod 2) = 1 ↔ G.degree (some x) = 1 := by
+    have hx := h_le x
+    have : G.degree (some x) = 0 ∨ G.degree (some x) = 1 ∨ G.degree (some x) = 2 := by omega
+    rcases this with h | h | h <;> simp only [h] <;> decide
+  split_ifs with heq
+  · exact hz.mpr heq
+  · have h_not : (G.degree (some x) : ZMod 2) ≠ 1 := (not_congr hz).mpr heq
+    revert h_not
+    generalize (G.degree (some x) : ZMod 2) = z
+    intro h
+    fin_cases z
+    · rfl
+    · exact absurd rfl h
 
 end SimpleGraph
