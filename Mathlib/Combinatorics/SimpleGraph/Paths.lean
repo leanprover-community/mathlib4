@@ -815,6 +815,9 @@ theorem edges_cycleBypass_sublist : ∀ {w : G.Walk v v}, w.cycleBypass.edges <+
 lemma edges_cycleBypass_subset {w : G.Walk v v} : w.cycleBypass.edges ⊆ w.edges :=
   w.edges_cycleBypass_sublist.subset
 
+lemma length_cycleBypass_le {w : G.Walk v v} : w.cycleBypass.length ≤ w.length := by
+  simpa using darts_cycleBypass_sublist.length_le
+
 lemma IsCircuit.isCycle_cycleBypass : ∀ {w : G.Walk v v}, w.IsCircuit → w.cycleBypass.IsCycle
   | .cons (v := v') hvv' w, hw => by
     dsimp [cycleBypass]
