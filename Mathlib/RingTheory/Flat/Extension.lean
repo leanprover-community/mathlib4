@@ -47,17 +47,37 @@ variable (S : Type u) [CommRing S] [Algebra S K]
 variable [IsLocalRing S] [IsLocalHom (algebraMap S K)]
 
 variable {S K} in
-private lemma algebraMap_eq_zero (x : S) (mem : x ∈ maximalIdeal S) : algebraMap S K x = 0 := by
+lemma algebraMap_eq_zero (x : S) (mem : x ∈ maximalIdeal S) : algebraMap S K x = 0 := by
   simp only [mem_maximalIdeal, mem_nonunits_iff] at mem
   exact (iff_not_comm.mp isUnit_iff_ne_zero).mpr ((IsLocalHom.map_nonunit x).mt mem)
 
-private instance [IsLocalHom (algebraMap S K)] : Algebra (ResidueField S) K :=
+instance [IsLocalHom (algebraMap S K)] : Algebra (ResidueField S) K :=
   (Ideal.Quotient.lift _ (algebraMap S K) (fun x hx ↦ algebraMap_eq_zero x hx)).toAlgebra
 
-private instance : IsScalarTower S (ResidueField S) K :=
+instance : IsScalarTower S (ResidueField S) K :=
   IsScalarTower.of_algebraMap_eq' rfl
 
--- add relation for `IsIntegral (ResidueField S) x` and `minpoly (ResidueField S) x`
+lemma isIntegral_residueField_iff (x : K) : IsIntegral (ResidueField S) x ↔ IsIntegral S x := by
+  refine ⟨fun ⟨f, hf, eval⟩ ↦ ?_, fun h ↦ IsIntegral.tower_top h⟩
+  rcases Polynomial.lifts_and_degree_eq_and_monic
+    (Polynomial.map_surjective (residue S) residue_surjective f) hf with ⟨g, hg, deg, mon⟩
+  use g, mon
+  rw [← eval, ← hg]
+  exact (Polynomial.aeval_map_algebraMap _ x g).symm
+
+lemma minpoly_residueField_eq_map (x : K) (int : IsIntegral S x) :
+    minpoly (ResidueField S) x = Polynomial.map (residue S) (minpoly S x) := by
+  --Polynomial.aeval_map_algebraMap
+  apply (minpoly.unique_of_degree_le_degree_minpoly _ _ ((minpoly.monic int).map _) _ _).symm
+  · exact (Polynomial.aeval_map_algebraMap _ _ _).trans (minpoly.aeval S x)
+  · apply Polynomial.degree_map_le.trans
+    have mon : (minpoly (ResidueField S) x).Monic := minpoly.monic (IsIntegral.tower_top int)
+    rcases Polynomial.lifts_and_degree_eq_and_monic
+      (Polynomial.map_surjective (residue S) residue_surjective _) mon with ⟨g, hg, deg, mon⟩
+    rw [← deg]
+    apply minpoly.min _ _ mon
+    rw [← minpoly.aeval (ResidueField S) x, ← hg]
+    exact (Polynomial.aeval_map_algebraMap _ x g).symm
 
 set_option linter.unusedVariables false in
 abbrev adjoinAlgebraic (x : K) (int : IsIntegral S x) : Type u := S[X] ⧸ Ideal.span {minpoly S x}
