@@ -671,14 +671,14 @@ variable (X : α → V) (d_X : ∀ n, X (n + 1) ⟶ X n) (sq_X : ∀ n, d_X (n +
 /-- A constructor for chain maps between `α`-indexed chain complexes built using `ChainComplex.of`,
 from a dependently typed collection of morphisms.
 -/
-@[simps]
-def ofHom (f : ∀ i : α, X i ⟶ Y i) (comm : ∀ i : α, f (i + 1) ≫ d_Y i = d_X i ≫ f i) :
-    of X d_X sq_X ⟶ of Y d_Y sq_Y :=
-  { f
-    comm' := fun n m => by
-      simp only [of.d, ComplexShape.down_Rel]
-      rintro rfl
-      simpa using comm m }
+abbrev ofHom {X Y : ChainComplex V α} (f : ∀ i : α, X.X i ⟶ Y.X i)
+    (comm : ∀ i : α, f (i + 1) ≫ Y.d (i + 1) i = X.d (i + 1) i ≫ f i) :
+    X ⟶ Y where
+  f := f
+  comm' n m := by
+    simp only [ComplexShape.down_Rel]
+    rintro rfl
+    simpa using comm m
 
 end OfHom
 
@@ -931,14 +931,14 @@ variable (X : α → V) (d_X : ∀ n, X n ⟶ X (n + 1)) (sq_X : ∀ n, d_X n �
 A constructor for chain maps between `α`-indexed cochain complexes built using `CochainComplex.of`,
 from a dependently typed collection of morphisms.
 -/
-@[simps]
-def ofHom (f : ∀ i : α, X i ⟶ Y i) (comm : ∀ i : α, f i ≫ d_Y i = d_X i ≫ f (i + 1)) :
-    of X d_X sq_X ⟶ of Y d_Y sq_Y :=
-  { f
-    comm' := fun n m => by
-      simp only [of.d, ComplexShape.up_Rel]
-      rintro rfl
-      simpa using comm n }
+abbrev ofHom {X Y : CochainComplex V α} (f : ∀ i : α, X.X i ⟶ Y.X i)
+    (comm : ∀ i : α, f i ≫ Y.d i (i + 1) = X.d i (i + 1) ≫ f (i + 1)) :
+    X ⟶ Y where
+  f := f
+  comm' n m := by
+    simp only [ComplexShape.up_Rel]
+    rintro rfl
+    simpa using comm n
 
 end OfHom
 
