@@ -439,3 +439,13 @@ example {a b c d e f g h i j k : Rat} : a * b * c * d * e * f * g * h * i * j * 
   exact test_sorry
 
 end cache
+
+section strict
+
+variable {α : Type u} [Preorder α] {a b c : α}
+
+example (h : a < b) (h' : b ≤ c) : a < c := by
+  grw [h]
+  exact h'
+
+end strict

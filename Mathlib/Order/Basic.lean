@@ -186,6 +186,8 @@ theorem ge_imp_ge_of_le_of_le (h₁ : a ≤ c) (h₂ : d ≤ b) : a ≥ b → c 
 theorem gt_imp_gt_of_le_of_le (h₁ : a ≤ c) (h₂ : d ≤ b) : a > b → c > d :=
   fun hab ↦ (h₂.trans_lt hab).trans_le h₁
 
+attribute [gcongr strict] lt_of_lt_of_le lt_of_lt_of_le'
+
 namespace Mathlib.Tactic.GCongr
 open Lean Meta
 

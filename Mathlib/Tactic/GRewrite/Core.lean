@@ -286,8 +286,9 @@ partial def grewriteCore (relName : Name) (rel? : Option Expr) (e : Expr) (forwa
       return (mvar, goal)
   -- Try all applicable `@[gcongr]` lemmas.
   if let some (head, args) := getCongrAppFnArgs e then
-    let key := { relName, head, arity := args.size }
-    let lemmas := ((gcongrExt.getState (← getEnv)).get? key).getD (relImpRelLemma args.size)
+    let mut lemmas ← findGCongrLemmas?' relName head forward args.size
+    if lemmas.isEmpty then
+      lemmas := relImpRelLemma args.size
     let mctx ← getMCtx
     for gcongrLem in lemmas do
       if gcongrLem.forGrw then

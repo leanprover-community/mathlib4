@@ -176,8 +176,9 @@ structure GCongrHyp where
 
 /-- Structure recording the data for a "generalized congruence" (`gcongr`) lemma. -/
 structure GCongrLemma where
-  /-- The key under which the lemma is stored. -/
-  key : GCongrKey
+  /-- The keys under which the lemma is stored. This is usually one key,
+  but for strict `gcongr` lemmas, this stores the LHS and RHS key respectively. -/
+  keys : List GCongrKey
   /-- The name of the lemma. -/
   declName : Name
   /-- `mainSubgoals` are the subgoals on which `gcongr` will be recursively called. -/
@@ -204,9 +205,9 @@ def GCongrLemma.prioLE (a b : GCongrLemma) : Bool :=
 
 /-- Insert a `GCongrLemma` in a collection of lemmas, making sure that the lemmas are sorted. -/
 def addGCongrLemmaEntry (m : GCongrLemmas) (l : GCongrLemma) : GCongrLemmas :=
-  m.alter l.key fun
-  | none    => [l]
-  | some es => insert l es
+  l.keys.foldl (init := m) (·.alter · fun
+    | none    => [l]
+    | some es => insert l es)
 where
   /--- Insert a `GCongrLemma` in the correct place in a list of lemmas. -/
   insert (l : GCongrLemma) : List GCongrLemma → List GCongrLemma
@@ -219,6 +220,25 @@ initialize gcongrExt : SimpleScopedEnvExtension GCongrLemma GCongrLemmas ←
     addEntry := addGCongrLemmaEntry
     initial := {}
   }
+
+/-- Get the `gcongr` lemmas whose conclusion has the shape `rel (lhs ..) (rhs ..)`.
+`arity` is the number of arguments in `..`. -/
+def findGCongrLemmas? (relName lhs rhs : Name) (arity : Nat) : CoreM (List GCongrLemma) := do
+  let lemmas := gcongrExt.getState (← getEnv)
+  let some lemmas := lemmas.get? { relName, head := rhs, arity } | return []
+  return lemmas.filter (·.keys.head!.head == lhs)
+
+/-- Get the `gcongr` lemmas whose conclusion has the shape
+`rel (head ..) _` (if `forward := true`) or `rel _ (head ..)` (if `forward := false`).
+`arity` is the number of arguments in `..`. -/
+def findGCongrLemmas?' (relName head : Name) (forward : Bool) (arity : Nat) :
+    CoreM (List GCongrLemma) := do
+  let lemmas := gcongrExt.getState (← getEnv)
+  let some lemmas := lemmas.get? { relName, head, arity } | return []
+  if forward then
+    return lemmas.filter (·.keys.head!.head == head)
+  else
+    return lemmas.filter (·.keys.getLast!.head == head)
 
 /-- Given an application `f a₁ .. aₙ`, return the name of `f`, and the array of arguments `aᵢ`. -/
 def getCongrAppFnArgs (e : Expr) : Option (Name × Array Expr) :=
@@ -254,17 +274,23 @@ def updateRel (r e : Expr) (isLhs : Bool) : Expr :=
 /-- Try to construct the `GCongrLemma` for a lemma with hypotheses `hyps` and
 conclusion `target`. -/
 def makeGCongrLemma (hyps : Array Expr) (target : Expr) (declName : Name) (prio : Nat)
-    (forGrw : Bool) : MetaM GCongrLemma := do
+    (strict forGrw : Bool) : MetaM GCongrLemma := do
   let fail {α} (m : MessageData) : MetaM α := throwError "\
     @[gcongr] attribute only applies to lemmas proving f x₁ ... xₙ ∼ f x₁' ... xₙ'.\n \
     {m} in {target}"
   -- verify that conclusion of the lemma is of the form `f x₁ ... xₙ ∼ f x₁' ... xₙ'`
   let some (relName, lhs, rhs) := getRel (← whnf target) | fail "No relation found"
   let lhs := lhs.headBeta; let rhs := rhs.headBeta -- this is required for `Monotone fun x => ⋯`
-  let some (head, lhsArgs) := getCongrAppFnArgs lhs | fail "LHS is not suitable for congruence"
-  let some (head', rhsArgs) := getCongrAppFnArgs rhs | fail "RHS is not suitable for congruence"
-  unless head == head' && lhsArgs.size == rhsArgs.size do
-    fail "LHS and RHS do not have the same head function and arity"
+  let some (lhsHead, lhsArgs) := getCongrAppFnArgs lhs | fail "LHS is not suitable for congruence"
+  let some (rhsHead, rhsArgs) := getCongrAppFnArgs rhs | fail "RHS is not suitable for congruence"
+  if strict then
+    if lhsHead == rhsHead then
+      fail "LHS and RHS have the same head function."
+  else
+    if lhsHead != rhsHead then
+      fail "LHS and RHS do not have the same head function."
+  if lhsArgs.size != rhsArgs.size then
+    fail "LHS and RHS do not have the same number of arguments."
   let mut pairs := #[]
   -- iterate through each pair of corresponding (LHS/RHS) inputs to the head function `head` in
   -- the conclusion of the lemma
@@ -274,7 +300,9 @@ def makeGCongrLemma (hyps : Array Expr) (target : Expr) (declName : Name) (prio 
     if ← isDefEq lhs rhs <||> (isProof lhs <&&> isProof rhs) then continue
     let lhs := lhs.eta; let rhs := rhs.eta
     -- verify that the "varying argument" pairs are free variables (after eta-reduction)
-    unless lhs.isFVar && rhs.isFVar do fail "Not all varying arguments are free variables"
+    unless lhs.isFVar && rhs.isFVar do
+      if strict then continue
+      fail "Not all varying arguments are free variables"
     -- Instance implicit arguments should be synthesized, rather than solved by congruence
     if (← lhs.fvarId!.getBinderInfo).isInstImplicit &&
       (← rhs.fvarId!.getBinderInfo).isInstImplicit then
@@ -320,8 +348,10 @@ def makeGCongrLemma (hyps : Array Expr) (target : Expr) (declName : Name) (prio 
       This means that the `@[gcongr]` lemma cannot be used in the `grw` tactic. \
       Please use `@[gcongr only]` instead."
   -- store all the information from this parse of the lemma's structure in a `GCongrLemma`
-  let key := { relName, head, arity := lhsArgs.size }
-  return { key, declName, mainSubgoals, numHyps := hyps.size, prio, numVarying, forGrw }
+  let mut keys := [{ relName, head := rhsHead, arity := lhsArgs.size }]
+  if strict then
+    keys := { relName, head := lhsHead, arity := lhsArgs.size } :: keys
+  return { keys, declName, mainSubgoals, numHyps := hyps.size, prio, numVarying, forGrw }
 
 
 /-- Attribute marking "generalized congruence" (`gcongr`) lemmas.  Such lemmas must have a
@@ -342,15 +372,16 @@ However, if a more specific lemma has fewer side conditions, it should also be t
 For example, `mul_le_mul_of_nonneg_right` and `mul_le_mul_of_nonneg_left` are both tagged.
 
 Lemmas involving `<` or `≤` can also be marked `@[bound]` for use in the related `bound` tactic. -/
-syntax (name := gcongrAttr) "gcongr" (&" only")? (prio)? : attr
+syntax (name := gcongrAttr) "gcongr" (&" strict")? (&" only")? (prio)? : attr
 
 @[inherit_doc gcongrAttr]
 initialize registerBuiltinAttribute {
   name := `gcongrAttr
   descr := "generalized congruence"
   add := fun declName stx kind ↦ MetaM.run' do withReducible do
-    let forGrw := stx[1].isNone
-    let prio ← getAttrParamOptPrio stx[2]
+    let strict := !stx[1].isNone
+    let forGrw := stx[2].isNone
+    let prio ← getAttrParamOptPrio stx[3]
     let cinfo ← getConstInfo declName
     let type := cinfo.type
     forallTelescope type fun xs type => do
@@ -359,17 +390,17 @@ initialize registerBuiltinAttribute {
         `Monotone | `Antitone | `StrictMono | `StrictAnti |
         `MonotoneOn | `AntitoneOn | `StrictMonoOn | `StrictAntiOn then
       forallTelescope (← withDefault <| unfoldDefinition type) fun xs' type => do
-        gcongrExt.add (← makeGCongrLemma (xs ++ xs') type declName prio forGrw) kind
+        gcongrExt.add (← makeGCongrLemma (xs ++ xs') type declName prio strict forGrw) kind
       return
     -- If the conclusion is a free variable, it is a lemma like `imp_imp_imp` or `forall_imp`,
     -- so we revert the last two variables.
     if type.getAppFn.isFVar then
       let type ← mkForallFVars xs[(xs.size-2)...xs.size] type
-      gcongrExt.add (← makeGCongrLemma xs.pop.pop type declName prio forGrw) kind
+      gcongrExt.add (← makeGCongrLemma xs.pop.pop type declName prio strict forGrw) kind
       return
     try
       -- Add a `gcongr` lemma in the "normal" way.
-      gcongrExt.add (← makeGCongrLemma xs type declName prio forGrw) kind
+      gcongrExt.add (← makeGCongrLemma xs type declName prio strict forGrw) kind
     catch e => try
       match_expr type with
       | Iff lhs rhs =>
@@ -377,7 +408,7 @@ initialize registerBuiltinAttribute {
         try
           -- Try using the `←` implication.
           withLocalDeclD `_a rhs fun x => do
-            let gcongrLemma ← makeGCongrLemma (xs.push x) lhs declName prio forGrw
+            let gcongrLemma ← makeGCongrLemma (xs.push x) lhs declName prio strict forGrw
             let auxType ← mkForallFVars (xs.push x) lhs
             let auxValue ← mkLambdaFVars xs <| mkApp3 (.const ``Iff.mpr []) lhs rhs <|
               mkAppN (.const declName (cinfo.levelParams.map .param)) xs
@@ -386,41 +417,47 @@ initialize registerBuiltinAttribute {
         catch _ =>
           -- Try using the `→` implication.
           withLocalDeclD `_a lhs fun x => do
-            let gcongrLemma ← makeGCongrLemma (xs.push x) rhs declName prio forGrw
+            let gcongrLemma ← makeGCongrLemma (xs.push x) rhs declName prio strict forGrw
             let auxType ← mkForallFVars (xs.push x) rhs
             let auxValue ← mkLambdaFVars xs <| mkApp3 (.const ``Iff.mp []) lhs rhs <|
               mkAppN (.const declName (cinfo.levelParams.map .param)) xs
             let auxDeclName ← mkAuxLemma cinfo.levelParams auxType auxValue (kind? := `_gcongr)
             gcongrExt.add { gcongrLemma with declName := auxDeclName } kind
       | _ =>
-        -- Try to interpret the lemma as an implicational `gcongr` lemma,
-        -- such as `Or.imp : (a → c) → (b → d) → a ∨ b → c ∨ d`.
-        -- We want to support such lemmas even if the hypotheses are given in a different order.
-        -- So, we find the last hypothesis whose head matches that of the conclusion,
-        -- and move it to the end.
-        let .const c _ := type.getAppFn | failure
-        let rec findIdx (i : Nat) (h : i ≤ xs.size) : MetaM (Fin xs.size) :=
-          match i with
-          | 0 => failure
-          | i + 1 => do
-            if (← inferType xs[i]).getAppFn.isConstOf c then
-              return ⟨i, by lia⟩
-            else
-              findIdx i (by lia)
-        let i ← findIdx xs.size xs.size.le_refl
-        let type ← mkForallFVars #[xs[i]] type
-        let xs' :=  xs.eraseIdx i i.isLt
-        let gcongrLemma ← makeGCongrLemma xs' type declName prio forGrw
-        if i == xs.size - 1 then
-          -- The argument order is already correct.
+        if strict then
+          let some x := xs.back? | failure
+          let type ← mkForallFVars #[x] type
+          let gcongrLemma ← makeGCongrLemma xs.pop type declName prio strict forGrw
           gcongrExt.add gcongrLemma kind
         else
-          -- We need to make an auxiliary theorem with the correct argument order.
-          let auxType ← mkForallFVars xs' type
-          let auxValue ← mkLambdaFVars (xs'.push xs[i]) <|
-            mkAppN (.const declName (cinfo.levelParams.map .param)) xs
-          let auxDeclName ← mkAuxLemma cinfo.levelParams auxType auxValue (kind? := `_gcongr)
-          gcongrExt.add { gcongrLemma with declName := auxDeclName } kind
+          -- Try to interpret the lemma as an implicational `gcongr` lemma,
+          -- such as `Or.imp : (a → c) → (b → d) → a ∨ b → c ∨ d`.
+          -- We want to support such lemmas even if the hypotheses are given in a different order.
+          -- So, we find the last hypothesis whose head matches that of the conclusion,
+          -- and move it to the end.
+          let .const c _ := type.getAppFn | failure
+          let rec findIdx (i : Nat) (h : i ≤ xs.size) : MetaM (Fin xs.size) :=
+            match i with
+            | 0 => failure
+            | i + 1 => do
+              if (← inferType xs[i]).getAppFn.isConstOf c then
+                return ⟨i, by lia⟩
+              else
+                findIdx i (by lia)
+          let i ← findIdx xs.size xs.size.le_refl
+          let type ← mkForallFVars #[xs[i]] type
+          let xs' :=  xs.eraseIdx i i.isLt
+          let gcongrLemma ← makeGCongrLemma xs' type declName prio strict forGrw
+          if i == xs.size - 1 then
+            -- The argument order is already correct.
+            gcongrExt.add gcongrLemma kind
+          else
+            -- We need to make an auxiliary theorem with the correct argument order.
+            let auxType ← mkForallFVars xs' type
+            let auxValue ← mkLambdaFVars (xs'.push xs[i]) <|
+              mkAppN (.const declName (cinfo.levelParams.map .param)) xs
+            let auxDeclName ← mkAuxLemma cinfo.levelParams auxType auxValue (kind? := `_gcongr)
+            gcongrExt.add { gcongrLemma with declName := auxDeclName } kind
     catch _ =>
       -- If none of the methods work, we throw the error thrown by the "normal" attempt.
       throw e
@@ -552,7 +589,7 @@ def relImpRelLemma (arity : Nat) : List GCongrLemma :=
     declName := ``rel_imp_rel
     mainSubgoals := #[⟨5, 3, 7, [], true⟩, ⟨4, 6, 8, [], false⟩]
     numHyps := 9
-    key := default, prio := default, numVarying := default, forGrw := true
+    keys := default, prio := default, numVarying := default, forGrw := true
   }]
 
 end Trans
@@ -707,14 +744,15 @@ partial def _root_.Lean.MVarId.gcongr
   let some (rhsHead, rhsArgs) := getCongrAppFnArgs rhs |
     if mdataLhs?.isNone then pushNewGoal g; return false
     throwTacticEx `gcongr g m!"the head of {rhs} is not a constant"
-  unless lhsHead == rhsHead && lhsArgs.size == rhsArgs.size do
+  unless lhsArgs.size == rhsArgs.size do
     if mdataLhs?.isNone then pushNewGoal g; return false
-    throwTacticEx `gcongr g m!"{lhs} and {rhs} are not of the same shape"
+    throwTacticEx `gcongr g m!"{lhs} and {rhs} have a different number of arguments"
   let mctx ← getMCtx
   -- Look up the `@[gcongr]` lemmas whose conclusion has the same relation and head function as
   -- the goal
-  let key := { relName, head := lhsHead, arity := lhsArgs.size }
-  let lemmas := ((gcongrExt.getState (← getEnv)).get? key).getD (relImpRelLemma lhsArgs.size)
+  let mut lemmas ← findGCongrLemmas? relName lhsHead rhsHead lhsArgs.size
+  if lemmas.isEmpty then
+    lemmas := relImpRelLemma lhsArgs.size
   for lem in lemmas do
     let (mainGoals, sideGoals) ← try
       withReducible <| applyGCongrLemma g lem
