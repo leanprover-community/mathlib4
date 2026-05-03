@@ -265,7 +265,6 @@ section constantExtension
 open RatFunc
 
 variable {Fq}
-variable (F : Type*) [Field F]
 variable [Algebra Fq[X] F] [FaithfulSMul Fq[X] F] [FunctionField Fq F]
 
 attribute [local instance] Polynomial.algebra
@@ -281,17 +280,12 @@ theorem finiteDimensional_ratFunc_of_constantExtension [IsScalarTower Fq[X] E[X]
   .equiv (AlgEquiv.ofInjectiveField
     (IsScalarTower.toAlgHom (RatFunc Fq) (RatFunc E) F)).toLinearEquiv.symm
 
--- TODO: Fix competing instances
-attribute [-instance] RatFunc.instSMulOfFractionRingPolynomial
-
-/--
-Let `F` be a function field over `Fq`. If `E` is an algebraic extension of `Fq` which is
+/-- Let `F` be a function field over `Fq`. If `E` is an algebraic extension of `Fq` which is
 contained in `F` then it is finite over `Fq`. -/
 theorem finiteDimensional_of_constantExtension [IsScalarTower Fq[X] E[X] F]
     [Algebra.IsAlgebraic Fq E] : FiniteDimensional Fq E :=
   letI := finiteDimensional_ratFunc_of_constantExtension (Fq := Fq) (E := E) F
-  have finrank_FracRing_FracRing := RatFunc.finrank_ratFunc_ratFunc Fq E
-  Module.finite_of_finrank_pos (finrank_FracRing_FracRing ▸ Module.finrank_pos)
+  Module.finite_of_finrank_pos ((finrank_ratFunc_ratFunc Fq E) ▸ Module.finrank_pos)
 
 end Unbundled
 
@@ -303,8 +297,7 @@ variable [Algebra Fq F] (E : IntermediateField Fq F) [Algebra E[X] F] [FaithfulS
 instance : FiniteDimensional (RatFunc Fq) (RatFunc E) :=
   FunctionField.finiteDimensional_ratFunc_of_constantExtension F
 
-/--
-Let `F` be a function field over `Fq`. If `E` is an algebraic extension of `Fq` which is
+/-- Let `F` be a function field over `Fq`. If `E` is an algebraic extension of `Fq` which is
 contained in `F` then it is finite over `Fq`. -/
 instance [Algebra.IsAlgebraic Fq E] : FiniteDimensional Fq E :=
   FunctionField.finiteDimensional_of_constantExtension F
