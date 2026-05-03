@@ -823,13 +823,7 @@ instance addMonoidWithOne : AddMonoidWithOne Ordinal.{u} where
   zero_add o := inductionOn o fun α _ _ => (RelIso.emptySumLex _ _).ordinal_type_eq
   add_zero o := inductionOn o fun α _ _ => (RelIso.sumLexEmpty _ _).ordinal_type_eq
   add_assoc o₁ o₂ o₃ :=
-    Quotient.inductionOn₃ o₁ o₂ o₃ fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ =>
-      Quot.sound
-        ⟨⟨sumAssoc _ _ _, by
-          intro a b
-          rcases a with (⟨a | a⟩ | a) <;> rcases b with (⟨b | b⟩ | b) <;>
-            simp only [sumAssoc_apply_inl_inl, sumAssoc_apply_inl_inr, sumAssoc_apply_inr,
-              Sum.lex_inl_inl, Sum.lex_inr_inr, Sum.Lex.sep, Sum.lex_inr_inl]⟩⟩
+    Quotient.inductionOn₃ o₁ o₂ o₃ fun _ _ _ ↦ Quot.sound ⟨⟨sumAssoc .., by simp⟩⟩
   nsmul := nsmulRec
 
 @[simp]
@@ -998,7 +992,8 @@ theorem type_lt_mem_range_succ [LinearOrder α] [WellFoundedLT α] [OrderTop α]
 
 theorem isSuccPrelimit_type_lt_iff [LinearOrder α] [WellFoundedLT α] :
     IsSuccPrelimit (typeLT α) ↔ NoMaxOrder α := by
-  rw [← not_iff_not, noMaxOrder_iff, not_isSuccPrelimit_iff', type_lt_mem_range_succ_iff]
+  rw [← not_iff_not, noMaxOrder_iff, not_isSuccPrelimit_iff_mem_range_succ,
+    type_lt_mem_range_succ_iff]
   simp [IsMax]
 
 theorem isSuccPrelimit_type_lt [LinearOrder α] [WellFoundedLT α] [h : NoMaxOrder α] :
