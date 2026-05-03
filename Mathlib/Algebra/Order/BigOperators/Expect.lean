@@ -110,7 +110,7 @@ end OrderedAddCommMonoid
 
 section OrderedCancelAddCommMonoid
 variable [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α] [Module ℚ≥0 α]
-  [PosSMulStrictMono ℚ≥0 α] {s : Finset ι} {f g : ι → α}
+  [PosSMulStrictMono ℚ≥0 α] {s : Finset ι} {f g : ι → α} {a : α}
 
 lemma expect_lt_expect (hfg : ∀ i ∈ s, f i ≤ g i) (hfg' : ∃ i ∈ s, f i < g i) :
     𝔼 i ∈ s, f i < 𝔼 i ∈ s, g i :=
