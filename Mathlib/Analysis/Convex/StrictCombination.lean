@@ -56,9 +56,7 @@ lemma StrictConvex.centerMass_mem_interior {s : Set V} {t : Finset ι} {w : ι �
     · have hwi : w i + ∑ j ∈ t, w j ≠ 0 := by
         refine LT.lt.ne' ?_
         have hwi : 0 < w i := by grind
-        grw [hwi]
-        simp only [lt_add_iff_pos_right]
-        exact (sum_nonneg hs₀).lt_of_ne' hsum_t
+        grw [← hwi, ← sum_nonneg hs₀, add_zero]
       simp only [hzi, ← add_smul, ← add_div, ne_eq, hwi, not_false_eq_true, div_self, one_smul]
       by_cases! hijt : ∃ i'' j'', i'' ∈ t ∧ j'' ∈ t ∧ z i'' ≠ z j'' ∧ w i'' ≠ 0 ∧ w j'' ≠ 0
       · grind
