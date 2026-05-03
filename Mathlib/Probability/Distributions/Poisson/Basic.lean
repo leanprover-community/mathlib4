@@ -130,7 +130,7 @@ lemma integral_map_cast_poissonMeasure [FiniteDimensional ℝ E] (r : ℝ≥0) [
   [MeasurableSingletonClass R] (f : R → E) :
     ∫ x, f x ∂Po(R, r) = ∑' n, (exp (-r) * r ^ n / (n)!) • f n := by
   rw [integral_map (measurable_of_countable _).aemeasurable AEStronglyMeasurable.of_discrete,
-      integral_poissonMeasure]
+    integral_poissonMeasure]
 
 end Integral
 
@@ -142,35 +142,37 @@ open Complex
 `t ↦ exp(r(exp(it) - 1))`. -/
 lemma charFun_map_cast_poissonMeasure (r : ℝ≥0) (t : ℝ) :
     charFun Po(ℝ, r) t = cexp (r * (cexp (t * I) - 1)) := by
-  rw [charFun_apply,
-      integral_map (measurable_of_countable _).aemeasurable (by fun_prop),
-      integral_poissonMeasure r]
+  rw [charFun_apply, integral_map .of_discrete (by fun_prop), integral_poissonMeasure r]
   simp_rw [show ∀ (a : ℕ), inner ℝ (a : ℝ) t = a * t from
            fun a => by change t * a = a * t; ring]
-  calc ∑' a, ((rexp (-r) * r ^ a / a ! : ℝ) : ℂ) * cexp (↑(a * t) * I)
+  calc ∑' a, (rexp (-r) * r ^ a / a ! : ℝ) * cexp ((a * t : ℝ) * I)
   _ = ∑' a, (rexp (-r)) * ((r * cexp (t * I)) ^ a / a !) := by
-      congr 1 with a; push_cast; rw [mul_pow, ← Complex.exp_nat_mul]; ring_nf
+      congr with a
+      push_cast
+      rw [mul_pow, ← Complex.exp_nat_mul]
+      ring_nf
   _ = (rexp (-r)) * ∑' a, ((r * cexp (t * I)) ^ a / a !) := tsum_mul_left
   _ = (rexp (-r)) * cexp (r * cexp (t * I)) := by
       rw [(NormedSpace.expSeries_div_hasSum_exp (r * cexp (t * I))).tsum_eq, exp_eq_exp_ℂ]
   _ = cexp (r * (cexp (t * I) - 1)) := by
-      rw [ofReal_exp, exp_eq_exp_ℂ, ← NormedSpace.exp_add]; congr 1; push_cast; ring
+      rw [ofReal_exp, ← Complex.exp_add]
+      push_cast
+      ring_nf
 
-/-- Convolution of Poisson distributions on `ℝ`. -/
+end CharFun
+
+/-! ### Convolution of Poisson measures -/
+
+section Convolution
+
+variable {R : Type*} [AddMonoidWithOne R] {mR : MeasurableSpace R}
+
 private theorem map_cast_poissonMeasure_conv_real (r₁ r₂ : ℝ≥0) :
     Po(ℝ, r₁) ∗ Po(ℝ, r₂) = Po(ℝ, r₁ + r₂) := by
   apply Measure.ext_of_charFun
   ext t
   simp only [charFun_conv, charFun_map_cast_poissonMeasure, ← Complex.exp_add]
-  congr 1; push_cast; ring
-
-end CharFun
-
-/-! ## Convolution of Poisson measures on ℕ -/
-
-section Convolution
-
-variable {R : Type*} [AddMonoidWithOne R] [MeasurableSpace R]
+  congr; push_cast; ring
 
 theorem poissonMeasure_conv_poissonMeasure (r₁ r₂ : ℝ≥0) :
     Po(r₁) ∗ Po(r₂) = Po(r₁ + r₂) := by
@@ -180,10 +182,8 @@ theorem poissonMeasure_conv_poissonMeasure (r₁ r₂ : ℝ≥0) :
 
 theorem map_cast_poissonMeasure_conv [MeasurableAdd₂ R] (r₁ r₂ : ℝ≥0) :
     Po(R, r₁) ∗ Po(R, r₂) = Po(R, r₁ + r₂) := by
-  have h : ∀ (μ ν : Measure ℕ), (μ.map Nat.cast : Measure R) ∗ (ν.map Nat.cast) =
-      (μ ∗ ν).map Nat.cast := fun μ ν ↦ by
-    rw [← Nat.coe_castAddMonoidHom, Measure.map_conv_addMonoidHom _ (by fun_prop)]
-  rw [h, poissonMeasure_conv_poissonMeasure]
+  rw [← Nat.coe_castAddMonoidHom, ← Measure.map_conv_addMonoidHom _ (by fun_prop),
+    poissonMeasure_conv_poissonMeasure]
 
 /-- The sum of two independent Poisson random variables with rates `r₁, r₂` is a Poisson
 random variable with rate `r₁ + r₂`. -/
