@@ -47,7 +47,7 @@ function field, ring of integers
 
 noncomputable section
 
-open scoped nonZeroDivisors Polynomial WithZero
+open scoped nonZeroDivisors Polynomial WithZero RatFunc
 
 variable (F K : Type*) [Field F] [Field K]
 
@@ -56,15 +56,15 @@ extension of the field of rational functions in one variable over `F`.
 
 Note that `K` can be a function field over multiple, non-isomorphic, `F`.
 -/
-abbrev FunctionField [Algebra (RatFunc F) K] : Prop :=
-  FiniteDimensional (RatFunc F) K
+abbrev FunctionField [Algebra F⟮X⟯ K] : Prop :=
+  FiniteDimensional F⟮X⟯ K
 
 /-- `K` is a function field over `F` iff it is a finite extension of `F(t)`. -/
 theorem functionField_iff (Ft : Type*) [Field Ft] [Algebra F[X] Ft]
-    [IsFractionRing F[X] Ft] [Algebra (RatFunc F) K] [Algebra Ft K] [Algebra F[X] K]
-    [IsScalarTower F[X] Ft K] [IsScalarTower F[X] (RatFunc F) K] :
+    [IsFractionRing F[X] Ft] [Algebra F⟮X⟯ K] [Algebra Ft K] [Algebra F[X] K]
+    [IsScalarTower F[X] Ft K] [IsScalarTower F[X] F⟮X⟯ K] :
     FunctionField F K ↔ FiniteDimensional Ft K := by
-  let e := IsLocalization.algEquiv F[X]⁰ (RatFunc F) Ft
+  let e := IsLocalization.algEquiv F[X]⁰ F⟮X⟯ Ft
   have : ∀ (c) (x : K), e c • x = c • x := by
     intro c x
     rw [Algebra.smul_def, Algebra.smul_def]
@@ -73,7 +73,7 @@ theorem functionField_iff (Ft : Type*) [Field Ft] [Algebra F[X] Ft]
     refine IsLocalization.ext (nonZeroDivisors F[X]) _ _ ?_ ?_ ?_ ?_ ?_ <;> intros <;>
       simp only [map_one, map_mul, AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
   constructor <;> intro h
-  · let b := Module.finBasis (RatFunc F) K
+  · let b := Module.finBasis F⟮X⟯ K
     exact (b.mapCoeffs e this).finiteDimensional_of_finite
   · let b := Module.finBasis Ft K
     refine (b.mapCoeffs e.symm ?_).finiteDimensional_of_finite
@@ -81,10 +81,10 @@ theorem functionField_iff (Ft : Type*) [Field Ft] [Algebra F[X] Ft]
 
 namespace FunctionField
 
-theorem algebraMap_injective [Algebra F[X] K] [Algebra (RatFunc F) K]
-    [IsScalarTower F[X] (RatFunc F) K] : Function.Injective (⇑(algebraMap F[X] K)) := by
-  rw [IsScalarTower.algebraMap_eq F[X] (RatFunc F) K]
-  exact (algebraMap (RatFunc F) K).injective.comp (IsFractionRing.injective F[X] (RatFunc F))
+theorem algebraMap_injective [Algebra F[X] K] [Algebra F⟮X⟯ K]
+    [IsScalarTower F[X] F⟮X⟯ K] : Function.Injective (algebraMap F[X] K) := by
+  rw [IsScalarTower.algebraMap_eq F[X] F⟮X⟯ K]
+  exact (algebraMap F⟮X⟯ K).injective.comp (IsFractionRing.injective F[X] F⟮X⟯)
 
 /-- The function field analogue of `NumberField.ringOfIntegers`:
 `FunctionField.ringOfIntegers F K` is the integral closure of `F[X]` in `K`.
@@ -105,12 +105,12 @@ instance : IsDomain (ringOfIntegers F K) :=
 instance : IsIntegralClosure (ringOfIntegers F K) F[X] K :=
   integralClosure.isIntegralClosure _ _
 
-variable [Algebra (RatFunc F) K] [IsScalarTower F[X] (RatFunc F) K]
+variable [Algebra F⟮X⟯ K] [IsScalarTower F[X] F⟮X⟯ K]
 
-theorem algebraMap_injective : Function.Injective (⇑(algebraMap F[X] (ringOfIntegers F K))) := by
-  have hinj : Function.Injective (⇑(algebraMap F[X] K)) := by
-    rw [IsScalarTower.algebraMap_eq F[X] (RatFunc F) K]
-    exact (algebraMap (RatFunc F) K).injective.comp (IsFractionRing.injective F[X] (RatFunc F))
+theorem algebraMap_injective : Function.Injective (algebraMap F[X] (ringOfIntegers F K)) := by
+  have hinj : Function.Injective (algebraMap F[X] K) := by
+    rw [IsScalarTower.algebraMap_eq F[X] F⟮X⟯ K]
+    exact (algebraMap F⟮X⟯ K).injective.comp (IsFractionRing.injective F[X] F⟮X⟯)
   rw [injective_iff_map_eq_zero (algebraMap F[X] (↥(ringOfIntegers F K)))]
   intro p hp
   rw [← Subtype.coe_inj, Subalgebra.coe_zero] at hp
@@ -125,16 +125,16 @@ theorem not_isField : ¬IsField (ringOfIntegers F K) := by
 variable [FunctionField F K]
 
 instance : IsFractionRing (ringOfIntegers F K) K :=
-  integralClosure.isFractionRing_of_finite_extension (RatFunc F) K
+  integralClosure.isFractionRing_of_finite_extension F⟮X⟯ K
 
 instance : IsIntegrallyClosed (ringOfIntegers F K) :=
-  integralClosure.isIntegrallyClosedOfFiniteExtension (RatFunc F)
+  integralClosure.isIntegrallyClosedOfFiniteExtension F⟮X⟯
 
-instance [Algebra.IsSeparable (RatFunc F) K] : IsNoetherian F[X] (ringOfIntegers F K) :=
-  IsIntegralClosure.isNoetherian _ (RatFunc F) K _
+instance [Algebra.IsSeparable F⟮X⟯ K] : IsNoetherian F[X] (ringOfIntegers F K) :=
+  IsIntegralClosure.isNoetherian _ F⟮X⟯ K _
 
-instance [Algebra.IsSeparable (RatFunc F) K] : IsDedekindDomain (ringOfIntegers F K) :=
-  IsIntegralClosure.isDedekindDomain F[X] (RatFunc F) K _
+instance [Algebra.IsSeparable F⟮X⟯ K] : IsDedekindDomain (ringOfIntegers F K) :=
+  IsIntegralClosure.isDedekindDomain F[X] F⟮X⟯ K _
 
 end ringOfIntegers
 
@@ -190,7 +190,7 @@ alias FtInfty := RatFunc.CompletionAtInfty
 
 @[deprecated "Use the anonymous `Valued` instance on `RatFunc.CompletionAtInfty`"
 (since := "2026-04-14")]
-instance valuedFtInfty [DecidableEq (RatFunc F)] :
+instance valuedFtInfty [DecidableEq F⟮X⟯] :
     Valued (RatFunc.CompletionAtInfty F) ℤᵐ⁰ :=
   inferInstance
 
@@ -270,15 +270,14 @@ open Polynomial
 variable {E : Type*} [Field E] [Algebra F E] [Algebra E[X] K] [FaithfulSMul E[X] K]
 
 theorem finiteDimensional_ratFunc_of_constantExtension [IsScalarTower F[X] E[X] K] :
-    FiniteDimensional (RatFunc F) (RatFunc E) :=
-  .equiv (AlgEquiv.ofInjectiveField
-    (IsScalarTower.toAlgHom (RatFunc F) (RatFunc E) K)).toLinearEquiv.symm
+    FiniteDimensional F⟮X⟯ E⟮X⟯ :=
+  .equiv (AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F⟮X⟯ E⟮X⟯ K)).toLinearEquiv.symm
 
 /-- Let `K` be a function field over `F`. If `E` is an algebraic extension of `F` which is
 contained in `K` then it is finite over `F`. -/
 theorem finiteDimensional_of_constantExtension [IsScalarTower F[X] E[X] K]
     [Algebra.IsAlgebraic F E] : FiniteDimensional F E :=
-  letI := finiteDimensional_ratFunc_of_constantExtension (F := F) (E := E) K
+  let := finiteDimensional_ratFunc_of_constantExtension (F := F) (E := E) K
   Module.finite_of_finrank_pos ((finrank_ratFunc_ratFunc F E) ▸ Module.finrank_pos)
 
 end Unbundled
@@ -288,13 +287,13 @@ section IntermediateField
 variable [Algebra F K] (E : IntermediateField F K) [Algebra E[X] K] [FaithfulSMul E[X] K]
   [IsScalarTower F[X] E[X] K]
 
-instance : FiniteDimensional (RatFunc F) (RatFunc E) :=
-  FunctionField.finiteDimensional_ratFunc_of_constantExtension K
+instance : FiniteDimensional F⟮X⟯ E⟮X⟯ :=
+  finiteDimensional_ratFunc_of_constantExtension K
 
 /-- Let `K` be a function field over `F`. If `E` is an algebraic extension of `F` which is
 contained in `K` then it is finite over `F`. -/
 instance [Algebra.IsAlgebraic F E] : FiniteDimensional F E :=
-  FunctionField.finiteDimensional_of_constantExtension K
+  finiteDimensional_of_constantExtension K
 
 end IntermediateField
 
