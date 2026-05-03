@@ -166,6 +166,15 @@ def quotient : CochainComplex.Plus C ⥤ Plus C :=
       rintro ⟨K, n, hn⟩
       exact ⟨n, hn⟩)
 
+/-- The functor
+`HomotopyCategory.Plus.quotient C : CochainComplex.Plus C ⥤ HomotopyCategory.Plus C`
+is unduced by the functor `HomotopyCategory.quotient C (.up ℤ)` from `CochainComplex C ℤ`
+to `HomotopyCategory C (.up ℤ)`. -/
+def quotientCompι :
+    quotient C ⋙ ι C ≅
+      CochainComplex.Plus.ι C ⋙ HomotopyCategory.quotient C (.up ℤ) :=
+  ObjectProperty.liftCompιIso ..
+
 variable {C} in
 lemma quotient_obj_surjective : Function.Surjective (quotient C).obj :=
   fun K ↦ ⟨⟨K.obj.as, K.property⟩, rfl⟩
@@ -175,8 +184,12 @@ instance : (quotient C).EssSurj where
 
 instance : (quotient C).Full := by dsimp [quotient]; infer_instance
 
+section
+
+variable [HasZeroObject C] [HasBinaryBiproducts C]
+
 open HomologicalComplex in
-instance [HasZeroObject C] [HasBinaryBiproducts C] :
+instance :
     (quotient C).IsLocalization
       ((homotopyEquivalences C (.up ℤ)).inverseImage (CochainComplex.Plus.ι C)) :=
   Functor.isLocalization_of_essSurj_of_full_of_exists_cylinders _ _
@@ -190,18 +203,6 @@ instance [HasZeroObject C] [HasBinaryBiproducts C] :
     exact ⟨K.precylinder, Precylinder.LeftHomotopy.fullSubcategoryEquiv.symm
       { h := cylinder.desc _ _ hf }, ⟨cylinder.homotopyEquiv _ (fun n ↦ ⟨n - 1, by simp⟩), rfl⟩⟩)
 
-/-- The functor
-`HomotopyCategory.Plus.quotient C : CochainComplex.Plus C ⥤ HomotopyCategory.Plus C`
-is unduced by the functor `HomotopyCategory.quotient C (.up ℤ)` from `CochainComplex C ℤ`
-to `HomotopyCategory C (.up ℤ)`. -/
-def quotientCompι :
-    quotient C ⋙ ι C ≅
-      CochainComplex.Plus.ι C ⋙ HomotopyCategory.quotient C (.up ℤ) :=
-  ObjectProperty.liftCompιIso ..
-
-section
-
-variable [HasZeroObject C] [HasBinaryBiproducts C]
 
 /-- The collection of all single functors `C ⥤ HomotopyCategory.Plus C` for `n : ℤ`
 along with their compatibilities with shifts. -/
