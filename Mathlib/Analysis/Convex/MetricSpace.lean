@@ -35,6 +35,8 @@ that has little to do with this definition.
   convex combinations.
 - Tidy up the imports with `Mathlib.LinearAlgebra.ConvexSpace.AffineSpace` etc once those files
   are moved to proper places.
+- Define convex functions with domain a convex space, and redefine `IsConvexDist` as saying that
+  `dist : X × X → ℝ` is convex.
 -/
 
 public section
@@ -46,7 +48,7 @@ open ConvexSpace
 variable {I X : Type*} [ConvexSpace ℝ X] [MetricSpace X]
 
 variable (X) in
-/-- A convex metric space is a real convex space with a compatible metric structure.
+/-- Typeclass for a A convex metric space is a real convex space with a compatible metric structure.
 Concretely, we ask for `dist(∑ tᵢ xᵢ, ∑ tᵢ yᵢ) ≤ ∑ tᵢ dist(xᵢ, yᵢ)`,
 which is what one would expect from the triangle inequality.
 
