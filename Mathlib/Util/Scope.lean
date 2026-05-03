@@ -14,7 +14,8 @@ public meta section
 
 namespace Mathlib.Tactic.Scope
 
--- The "inlinable" parsers in this section exist to enable syntax quotations.
+/-! The "inlinable" parsers in this section exist to enable syntax quotations, which help with
+constructing and processing these later. -/
 
 /-- An unambiguous rendering of the result of `open ns renaming from → to, ...` and
 `open ns (id₁ id₂ ...)`, which both do not record `ns`, but only the mapping from unresolved
