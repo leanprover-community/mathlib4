@@ -717,19 +717,22 @@ alias isDedekindFiniteMonoid_of_injective := IsDedekindFiniteMonoid.of_injective
 end MonoidHom
 
 /-- The identity map from a type with 1 to itself. -/
-@[to_additive (attr := simps) /-- The identity map from a type with zero to itself. -/]
+@[to_additive (attr := simps, implicit_reducible)
+/-- The identity map from a type with zero to itself. -/]
 def OneHom.id (M : Type*) [One M] : OneHom M M where
   toFun x := x
   map_one' := rfl
 
 /-- The identity map from a type with multiplication to itself. -/
-@[to_additive (attr := simps) /-- The identity map from a type with addition to itself. -/]
+@[to_additive (attr := simps, implicit_reducible)
+/-- The identity map from a type with addition to itself. -/]
 def MulHom.id (M : Type*) [Mul M] : M →ₙ* M where
   toFun x := x
   map_mul' _ _ := rfl
 
 /-- The identity map from a monoid to itself. -/
-@[to_additive (attr := simps) /-- The identity map from an additive monoid to itself. -/]
+@[to_additive (attr := simps, implicit_reducible)
+/-- The identity map from an additive monoid to itself. -/]
 def MonoidHom.id (M : Type*) [MulOne M] : M →* M where
   toFun x := x
   map_one' := rfl
@@ -745,22 +748,23 @@ lemma MulHom.coe_id {M : Type*} [Mul M] : (MulHom.id M : M → M) = _root_.id :=
 lemma MonoidHom.coe_id {M : Type*} [MulOne M] : (MonoidHom.id M : M → M) = _root_.id := rfl
 
 /-- Composition of `OneHom`s as a `OneHom`. -/
-@[to_additive /-- Composition of `ZeroHom`s as a `ZeroHom`. -/]
+@[to_additive (attr := implicit_reducible) /-- Composition of `ZeroHom`s as a `ZeroHom`. -/]
 def OneHom.comp [One M] [One N] [One P] (hnp : OneHom N P) (hmn : OneHom M N) : OneHom M P where
-  toFun := hnp ∘ hmn
+  toFun x := hnp (hmn x)
   map_one' := by simp
 
 /-- Composition of `MulHom`s as a `MulHom`. -/
-@[to_additive /-- Composition of `AddHom`s as an `AddHom`. -/]
+@[to_additive (attr := implicit_reducible) /-- Composition of `AddHom`s as an `AddHom`. -/]
 def MulHom.comp [Mul M] [Mul N] [Mul P] (hnp : N →ₙ* P) (hmn : M →ₙ* N) : M →ₙ* P where
-  toFun := hnp ∘ hmn
+  toFun x := hnp (hmn x)
   map_mul' x y := by simp
 
 /-- Composition of monoid morphisms as a monoid morphism. -/
-@[to_additive /-- Composition of additive monoid morphisms as an additive monoid morphism. -/]
+@[to_additive (attr := implicit_reducible)
+/-- Composition of additive monoid morphisms as an additive monoid morphism. -/]
 def MonoidHom.comp [MulOne M] [MulOne N] [MulOne P] (hnp : N →* P) (hmn : M →* N) :
     M →* P where
-  toFun := hnp ∘ hmn
+  toFun x := hnp (hmn x)
   map_one' := by simp
   map_mul' := by simp
 
