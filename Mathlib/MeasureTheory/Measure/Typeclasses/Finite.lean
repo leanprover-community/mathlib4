@@ -107,7 +107,6 @@ instance IsFiniteMeasure.average : IsFiniteMeasure ((μ univ)⁻¹ • μ) where
     rw [smul_apply, smul_eq_mul, ← ENNReal.div_eq_inv_mul]
     exact ENNReal.div_self_le_one.trans_lt ENNReal.one_lt_top
 
-set_option backward.isDefEq.respectTransparency false in
 instance isFiniteMeasureSMulOfNNRealTower {R} [SMul R ℝ≥0] [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0 ℝ≥0∞]
     [IsScalarTower R ℝ≥0∞ ℝ≥0∞] [IsFiniteMeasure μ] {r : R} : IsFiniteMeasure (r • μ) := by
   rw [← smul_one_smul ℝ≥0 r μ]

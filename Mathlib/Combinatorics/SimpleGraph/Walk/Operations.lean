@@ -375,20 +375,31 @@ theorem mem_support_append_iff {t u v w : V} (p : G.Walk u v) (p' : G.Walk v w) 
     -- this `have` triggers the unusedHavesSuffices linter:
     (try have := h'.symm) <;> simp [*]
 
+theorem support_prefix_support_concat {u v w : V} (p : G.Walk u v) (hadj : G.Adj v w) :
+    p.support <+: (p.concat hadj).support := by
+  simp
+
 theorem support_subset_support_concat {u v w : V} (p : G.Walk u v) (hadj : G.Adj v w) :
     p.support ⊆ (p.concat hadj).support := by
   simp
 
-@[simp]
-theorem subset_support_append_left {V : Type u} {G : SimpleGraph V} {u v w : V}
-    (p : G.Walk u v) (q : G.Walk v w) : p.support ⊆ (p.append q).support := by
+theorem support_prefix_support_append {V : Type u} {G : SimpleGraph V} {u v w : V}
+    (p : G.Walk u v) (q : G.Walk v w) : p.support <+: (p.append q).support := by
   simp [support_append]
 
 @[simp]
+theorem subset_support_append_left {V : Type u} {G : SimpleGraph V} {u v w : V}
+    (p : G.Walk u v) (q : G.Walk v w) : p.support ⊆ (p.append q).support :=
+  support_prefix_support_append p q |>.subset
+
+theorem support_suffix_support_append {V : Type u} {G : SimpleGraph V} {u v w : V}
+    (p : G.Walk u v) (q : G.Walk v w) : q.support <:+ (p.append q).support := by
+  simp [support_append_eq_support_dropLast_append]
+
+@[simp]
 theorem subset_support_append_right {V : Type u} {G : SimpleGraph V} {u v w : V}
-    (p : G.Walk u v) (q : G.Walk v w) : q.support ⊆ (p.append q).support := by
-  intro
-  simp +contextual [mem_support_append_iff]
+    (p : G.Walk u v) (q : G.Walk v w) : q.support ⊆ (p.append q).support :=
+  support_suffix_support_append p q |>.subset
 
 theorem coe_support_append {u v w : V} (p : G.Walk u v) (p' : G.Walk v w) :
     ((p.append p').support : Multiset V) = {u} + p.support.tail + p'.support.tail := by
@@ -398,6 +409,17 @@ theorem coe_support_append' [DecidableEq V] {u v w : V} (p : G.Walk u v) (p' : G
     ((p.append p').support : Multiset V) = p.support + p'.support - {v} := by
   simp_rw [support_append, ← Multiset.coe_add, coe_support, add_comm ({v} : Multiset V),
     ← add_assoc, add_tsub_cancel_right]
+
+@[simp]
+theorem ofSupport_support {u v : V} (p : G.Walk u v) :
+    ofSupport _ p.support_ne_nil p.isChain_adj_support = p.copy (by simp) (by simp) := by
+  match p with
+  | nil => rfl
+  | cons (v := w) h .nil => rfl
+  | cons (v := u') h₁ (.cons (v := v') h₂ p) =>
+    have := p.cons h₂ |>.ofSupport_support
+    simp at this
+    simp [this]
 
 @[simp]
 theorem darts_concat {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
@@ -422,6 +444,17 @@ theorem darts_reverse {u v : V} (p : G.Walk u v) :
 
 theorem mem_darts_reverse {u v : V} {d : G.Dart} {p : G.Walk u v} :
     d ∈ p.reverse.darts ↔ d.symm ∈ p.darts := by simp
+
+@[simp]
+theorem ofDarts_darts {u v : V} {p : G.Walk u v} (hp : ¬p.Nil) :
+    ofDarts _ (darts_eq_nil.not.mpr hp) p.isChain_dartAdj_darts = p.copy (by simp) (by simp) := by
+  match p, hp with
+  | nil, hp => simp at hp
+  | cons (v := w) h .nil, _ => rfl
+  | cons (v := u') h₁ (.cons (v := v') h₂ p), _ =>
+    have := p.cons h₂ |>.ofDarts_darts not_nil_cons
+    simp at this
+    simp [this]
 
 @[simp]
 theorem edges_concat {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :

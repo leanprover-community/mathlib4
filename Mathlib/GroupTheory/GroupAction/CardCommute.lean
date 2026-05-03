@@ -24,7 +24,7 @@ prove these cardinality properties.
 These lemmas are separate because they require the development of cardinals.
 -/
 
-@[expose] public section
+public section
 
 variable {α β : Type*}
 

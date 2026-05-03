@@ -19,7 +19,7 @@ We scope this instance to the `CategoryTheory.Pseudofunctor.StrongTrans` namespa
 potential future conflicts with other bicategory instances on `Pseudofunctor B C`.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.Pseudofunctor
 
