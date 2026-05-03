@@ -10,116 +10,224 @@ namespace IntervalArithmetic
 
 open Lean Expr Meta Elab Command
 
+section IntervalM
+
+/-- Custom settings for `IntervalOps` -/
+structure OpConfig where
+  /-- If `ignore` then do not match on this operation. -/
+  ignore : Bool
+  /-- If `approxParam = some n` then use `n` as approximation parameter for this operation. -/
+  approxParam : Option Expr
+
+/-- A (static) context for the `IntervalM` monad. -/
+structure Context where
+  /-- The `IntervalArithmeticDecl` name. -/
+  declName : Name
+  /-- The expression for the type of interval. -/
+  intervalTypeExpr : Expr
+  /-- The expression for the target type. -/
+  targetTypeExpr : Expr
+  /-- The expression for the embedding -/
+  embeddingExpr : Expr
+  /-- The expression for the strict mono theorem -/
+  strictMonoExpr : Expr
+  /-- Global approximation parameter. -/
+  approxParam : Expr
+  /-- Custom approximation parameters. -/
+  opsConfig : NameMap OpConfig
+
+/-- Make a `Context` for the `IntervalM` monad -/
+def mkContext (declName : Name) (approxParam : Expr)
+    (opsConfig : NameMap OpConfig) : MetaM Context := do
+  let some decl ← getIntervalArithmeticDecl? declName
+    | throwError m!"Unknown interval arithmetic declaration `{declName}`."
+  return {
+    declName := declName
+    intervalTypeExpr := ← mkConstWithFreshMVarLevels decl.intervalTypeName,
+    targetTypeExpr := ← mkConstWithFreshMVarLevels decl.targetTypeName,
+    embeddingExpr := ← mkConstWithFreshMVarLevels decl.embeddingName,
+    strictMonoExpr := ← mkConstWithFreshMVarLevels decl.strictMonoName,
+    approxParam := approxParam,
+    opsConfig := opsConfig
+    }
+
+/- A (mutable) state for the `IntervalM` monad. -/
+structure State where
+  /-- Given a goal `g` and a free variable `x : α` in its context, the entry at `g × x` will
+  contain the interval hypothesis for `x` in the context of `g`. -/
+  hyps : Std.HashMap (MVarId × FVarId) (Expr × Expr) := {}
+  deriving Inhabited
+
+/-- Monad to run interval arithmetic computations in. -/
+abbrev IntervalM := ReaderT Context <| StateT State MetaM
+
+end IntervalM
+
 section Certificate
 
 structure Certificate where
   /- `fvars` is the array `#[r₁, ..., rₙ]` of fvarIds that appear in the expression. -/
   fvars : Array FVarId
   /- `comp` is an expression of the form
-    `∀ (n : ℕ) (x₁ : Interval α) ... (xₙ : Interval α), f n x₁ ... xₙ` -/
+    `∀ (approxParam : ℕ) (x₁ : Interval α) ... (xₙ : Interval α), f n x₁ ... xₙ` -/
   comp : Expr
   /-- `proof` is a proof of:
-  `∀ (n : ℕ) (x₁ : Interval α) ... (xₙ : Interval α),`
+  `∀ (approxParam : ℕ) (x₁ : Interval α) ... (xₙ : Interval α),`
     `(h₁ : r₁ ∈ x₁.toSet φ) ... (hₙ : rₙ ∈ xₙ.toSet φ) : e ∈ (f n x₁ .. xₙ).toSet φ` -/
   proof : Expr
   deriving Inhabited
 
-partial def _root_.Lean.Expr.toIntervalArithmeticCertificateAux (decl : IntervalArithmeticDecl)
-    (hyps : FVarIdMap (Expr × Expr)) (e φ n : Expr) : MetaM (Expr × Expr) := do
-  if let some r_id := e.fvarId? then
-    return hyps.get! r_id
+partial def _root_.Lean.Expr.toIntervalArithmeticCertificateAux
+    (hyps : FVarIdMap (Expr × Expr)) (e : Expr) :
+    IntervalM (Expr × Expr × Expr) := do
+  let ctx ← read
+  if let some rId := e.fvarId? then
+    let ⟨x, proof⟩ := hyps.get! rId
+    let thm ← mkMemInterval e x (← read).embeddingExpr
+    return ⟨x, thm, proof⟩
   else
-    let some ref_name := e.getAppFn.constName?
+    let e ← whnfR e
+    let some headName := e.getAppFn.constName?
     | throwError m!"`{e}` does not have a constant head"
-    let some op ← getIntervalOp? decl.name ref_name
-    | throwError m!"`{ref_name}` is not a supported interval operation"
-    let mut xs ← e.getExplicitAppArgs
-    let inc ← mkConstWithFreshMVarLevels op.incName
-    let (ms, _, conc) ← forallMetaTelescopeReducing (← inferType inc)
-    for (i, j) in op.args do
-      let (interval, proof) ← xs[i]!.toIntervalArithmeticCertificateAux decl hyps φ n
-      xs := xs.set! i interval
-      let m ← instantiateMVars ms[j]!
-      if m.isMVar then
-        let m_id := m.mvarId!
-        m_id.assign proof
-    let interval ← if op.isApprox then mkAppM op.opName (#[n] ++ xs) else mkAppM op.opName xs
-    let thm ← mkMemInterval e interval φ
-    unless ← isDefEq conc thm do
-      throwError m!"{conc} is not definitionally equal to {thm}"
-    let proof ← instantiateMVars (mkAppN inc ms)
-    if proof.hasMVar then
-      throwError m!"{proof} contains a metavariable"
-    else
-      return ⟨interval, proof⟩
+    let some opNames ← getIntervalOpNames? ctx.declName headName
+    | throwError m!"There is no interval operation with head `{headName}` registered for \
+        the `{ctx.declName}` interval arithmetic declaration."
+    for opName in opNames do
+      let mut approxParam := ctx.approxParam
+      if let some opConfig := ctx.opsConfig.get? opName then
+        if opConfig.ignore then
+          continue
+        if let some n := opConfig.approxParam then
+          approxParam := n
+      let some op ← getIntervalOp? ctx.declName opName | unreachable!
+      let s ← liftM Lean.Meta.saveState
+      let inc ← mkConstWithFreshMVarLevels op.incName
+      let (ms, _, conc) ← forallMetaTelescopeReducing (← inferType inc)
+      let some (e', x, _) := memIntervaltoSet? (← instantiateMVars conc) | unreachable!
+      -- check that `e` matches the lhs of the conclusion of `inc` (and assign non interval
+      -- hypothesis metavariables)
+      unless ← isDefEq e' e do
+        s.restore
+        continue
+      if let some n := op.approxParam? then
+        let n_id := ms[n]!.mvarId!
+        n_id.assign approxParam
+      for (i, j) in op.hyps do
+        let r ← instantiateMVars ms[i]!
+        let (_, thm, proof) ← r.toIntervalArithmeticCertificateAux hyps
+        let hyp ← instantiateMVars ms[j]!
+        if hyp.isMVar then
+          let hypId := hyp.mvarId!
+          let expected ← instantiateMVars (← hypId.getType)
+          unless ← isDefEq expected thm do
+            throwError m!"{expected} is not definitionally equal to {thm}"
+          hypId.assign proof
+      let proof ← instantiateMVars (mkAppN inc ms)
+      let thm ← instantiateMVars conc
+      if proof.hasMVar then
+        throwError m!"{proof} contains a metavariable"
+      if thm.hasMVar then
+        throwError m!"{thm} contains a metavariable"
+      else
+        return ⟨x, thm, proof⟩
+    throwError "No interval operation with head `{headName}` matched"
 
-def _root_.Lean.Expr.toIntervalArithmeticCertificate (decl : IntervalArithmeticDecl) (e : Expr) :
-    MetaM Certificate := do
-  let α ← mkConstWithFreshMVarLevels decl.intervalType
-  let φ ← mkConstWithFreshMVarLevels decl.embedding
+def _root_.Lean.Expr.toIntervalArithmeticCertificate (e : Expr) :
+    IntervalM Certificate := do
+  let ctx ← read
   let r_ids := Lean.collectFVars {} e |>.fvarIds
-  withLocalDeclD Name.anonymous (.const ``Nat []) fun n => do
-    let x_t ← mkAppM ``Interval #[α]
+  withLocalDeclD Name.anonymous (mkConst ``Nat) fun approx_param => do
+    let x_t ← mkAppM ``Interval #[ctx.intervalTypeExpr]
     let x_binders := Array.replicate r_ids.size (Name.anonymous, fun _ ↦ pure x_t)
     withLocalDeclsD x_binders fun xs => do
       let hrx_binders := Array.range r_ids.size |>.map fun i ↦
         (Name.anonymous,
-          fun _ => do return ← mkMemInterval (mkFVar r_ids[i]!) xs[i]! φ)
+          fun _ => do return ← mkMemInterval (mkFVar r_ids[i]!) xs[i]! ctx.embeddingExpr)
       withLocalDeclsD hrx_binders fun hrxs => do
         let mut hyps : FVarIdMap (Expr × Expr) := {}
         for i in [:r_ids.size] do
           hyps := hyps.insert r_ids[i]! (xs[i]!, hrxs[i]!)
-        let (interval, proof) ← e.toIntervalArithmeticCertificateAux decl hyps φ n
+        let (interval, _, proof) ← e.toIntervalArithmeticCertificateAux hyps
         return {
           fvars := r_ids,
-          comp := (← mkLambdaFVars (#[n] ++ xs) interval),
-          proof := (← mkLambdaFVars (#[n] ++ xs ++ hrxs) proof)
+          comp := (← mkLambdaFVars (#[approx_param] ++ xs) interval),
+          proof := (← mkLambdaFVars (#[approx_param] ++ xs ++ hrxs) proof)
         }
 
 end Certificate
 
-def _root_.Lean.Expr.ineqToIntervalHyp? (decl : IntervalArithmeticDecl) (e n : Expr) :
-    MetaM (Option (FVarId × Expr × Expr)) := do
-  let α ← mkConstWithFreshMVarLevels decl.intervalType
-  let some ⟨ineq, _, r, s⟩ := IntervalArithmetic.ineq? (← inferType e) | return none
+def _root_.Lean.Expr.ineqToIntervalHyp? (e : Expr) :
+    IntervalM (Option (FVarId × Expr × Expr)) := do
+  let ctx ← read
+  let ⟨ineq, _, r, s⟩ ← try Expr.ineq? (← whnfR (← inferType e)) catch _ => return none
   if r.isFVar then
-    let cert ← s.toIntervalArithmeticCertificate decl
+    let cert ← s.toIntervalArithmeticCertificate
     if cert.fvars.isEmpty then
       match ineq with
+      | .eq =>
+        let x := app cert.comp ctx.approxParam
+        let h ← mkAppM ``mem_toSet_of_eq_mem_toSet #[e, app cert.proof ctx.approxParam]
+        return some ⟨r.fvarId!, x, h⟩
       | .le =>
-        let ub := proj ``Interval 1 (app cert.comp n)
-        let bot ← mkAppOptM ``Option.none #[some (← mkAppM ``FiniteLowerBound #[α])]
+        let ub := proj ``Interval 1 (app cert.comp ctx.approxParam)
+        let bot ←
+          mkAppOptM ``Option.none #[some (← mkAppM ``FiniteLowerBound #[ctx.intervalTypeExpr])]
         let x ← mkAppM ``Interval.mk #[bot, ub]
-        let h ← mkAppM ``mem_toSet_of_le_mem_toSet #[e, app cert.proof n]
+        let h ← mkAppM ``mem_toSet_of_le_mem_toSet #[e, app cert.proof ctx.approxParam]
         return some (r.fvarId!, x, h)
       | .lt =>
-        let ub ← mkAppM ``UpperBound.open #[proj ``Interval 1 (app cert.comp n)]
-        let bot ← mkAppOptM ``Option.none #[some (← mkAppM ``FiniteLowerBound #[α])]
+        let ub ← mkAppM ``UpperBound.open #[proj ``Interval 1 (app cert.comp ctx.approxParam)]
+        let bot ←
+          mkAppOptM ``Option.none #[some (← mkAppM ``FiniteLowerBound #[ctx.intervalTypeExpr])]
         let x ← mkAppM ``Interval.mk #[bot, ub]
-        let h ← mkAppM ``mem_toSet_of_lt_mem_toSet #[e, app cert.proof n]
+        let h ← mkAppM ``mem_toSet_of_lt_mem_toSet #[e, app cert.proof ctx.approxParam]
         return some (r.fvarId!, x, h)
     else
       return none
   else if s.isFVar then
-    let cert ← r.toIntervalArithmeticCertificate decl
+    let cert ← r.toIntervalArithmeticCertificate
     if cert.fvars.isEmpty then
       match ineq with
+      | .eq =>
+        let x := app cert.comp ctx.approxParam
+        let h ← mkAppM ``mem_toSet_of_mem_toSet_eq #[e, app cert.proof ctx.approxParam]
+        return some ⟨r.fvarId!, x, h⟩
       | .le =>
-        let lb := proj ``Interval 0 (app cert.comp n)
-        let top ← mkAppOptM ``Option.none #[some (← mkAppM ``FiniteUpperBound #[α])]
+        let lb := proj ``Interval 0 (app cert.comp ctx.approxParam)
+        let top ←
+          mkAppOptM ``Option.none #[some (← mkAppM ``FiniteUpperBound #[ctx.intervalTypeExpr])]
         let x ← mkAppM ``Interval.mk #[lb, top]
-        let h ← mkAppM ``mem_toSet_of_mem_toSet_le #[e, app cert.proof n]
+        let h ← mkAppM ``mem_toSet_of_mem_toSet_le #[e, app cert.proof ctx.approxParam]
         return some (s.fvarId!, x, h)
       | .lt =>
-        let lb ← mkAppM ``LowerBound.open #[proj ``Interval 0 (app cert.comp n)]
-        let top ← mkAppOptM ``Option.none #[some (← mkAppM ``FiniteUpperBound #[α])]
+        let lb ← mkAppM ``LowerBound.open #[proj ``Interval 0 (app cert.comp ctx.approxParam)]
+        let top ←
+          mkAppOptM ``Option.none #[some (← mkAppM ``FiniteUpperBound #[ctx.intervalTypeExpr])]
         let x ← mkAppM ``Interval.mk #[lb, top]
-        let h ← mkAppM ``mem_toSet_of_mem_toSet_lt #[e, app cert.proof n]
+        let h ← mkAppM ``mem_toSet_of_mem_toSet_lt #[e, app cert.proof ctx.approxParam]
         return some (s.fvarId!, x, h)
     else
       return none
   else
     return none
+section Compile
 
+def Certificate.compile (α : Type) (cert : Certificate) :
+    IntervalM (ℕ → Array (Interval α) → Interval α) := do
+  lambdaTelescope cert.comp fun vars body => do
+    let IsType := ← mkAppM ``Array #[← mkAppM ``Interval #[(← read).intervalTypeExpr]]
+    let approx_param := vars[0]!
+    let intervals := vars.extract 1 vars.size
+    withLocalDeclD `Is IsType fun Is => do
+      let indexed_intervals ← intervals.mapIdxM fun i _ => do
+        mkAppM ``getElem! #[Is, mkNatLit i]
+      let body' := body.replaceFVars intervals indexed_intervals
+      let lambda ← mkLambdaFVars #[approx_param, Is] body'
+      -- probably just construct this explicitly
+      let lambda_type ← inferType lambda
+      let compiled ← unsafe (evalExpr (ℕ → Array (Interval α) → Interval α) lambda_type lambda)
+      return compiled
+
+end Compile
 
 end IntervalArithmetic

@@ -6,22 +6,30 @@ set_option linter.style.header false
 public meta section
 namespace IntervalArithmetic
 
-open Lean Expr Meta Elab Command
+open Lean Expr Meta Elab Command Std
 
 section IntervalArithmeticDecl
 
+/-- The data of an Interval Arithmetic Declaration. -/
 structure IntervalArithmeticDecl where
+  /-- Name of the declaration. -/
   name : Name
-  intervalType : Name
-  setType : Name
-  embedding : Name
-  strictMono : Name
+  /-- Name of `α` where `Interval α` is the type of intervals used for computation. -/
+  intervalTypeName : Name
+  /-- Name of the type that the tactic proves inequalities or interval containment statements in. -/
+  targetTypeName : Name
+  /-- Name of the embedding from the interval type to the target type. -/
+  embeddingName : Name
+  /-- Name of the theorem which states that the embedding is `StrictMono`. -/
+  strictMonoName : Name
   deriving Inhabited
 
+/-- Structure storing all `IntervalArithmeticDecl` indexed by their names. -/
 structure IntervalArithmeticDecls where
   decls : NameMap IntervalArithmeticDecl := {}
   deriving Inhabited
 
+/-- Environment extension for storing `IntervalArithmeticDecls` -/
 abbrev IntervalArithmeticDeclsExt :=
   SimpleScopedEnvExtension IntervalArithmeticDecl IntervalArithmeticDecls
 
@@ -33,47 +41,58 @@ initialize intervalArithmeticDeclsExt : IntervalArithmeticDeclsExt ←
       {d with decls := d.decls.insert e.name e}
   }
 
-
+/-- Get a `IntervalArithmeticDecl` from the environment. -/
 def getIntervalArithmeticDecl? (declName : Name) : MetaM (Option IntervalArithmeticDecl) := do
   let s := intervalArithmeticDeclsExt.getState (← getEnv)
   return s.decls.find? declName
 
-def addIntervalArithmeticDecl (declName strictMono : Name) (kind : AttributeKind := .global) :
+/-- Register a new `IntervalArithmeticDecl`. This function takes in the name `declName` of the
+new `IntervalArithmeticDecl` and the name `strictMonoName` of a theorem proving that an embedding
+from an interval type to a target type is `StrictMono`. Using the theorem it extracts the data
+necessary to register the `IntervalArithmeticDecl` and checks whether its a valid declaration. -/
+def addIntervalArithmeticDecl (declName strictMonoName : Name) (kind : AttributeKind := .global) :
     MetaM Unit := do
   if (← getIntervalArithmeticDecl? declName).isSome then
     throwError m!"Interval arithmetic declaration `{declName}` is already registered."
-  let thm ← mkConstWithFreshMVarLevels strictMono
-  let thm_type ← inferType thm
-  match thm_type.getAppFnArgs with
+  let thm ← mkConstWithFreshMVarLevels strictMonoName
+  let thmType ← inferType thm
+  match thmType.getAppFnArgs with
   | (`StrictMono, #[α, β, dα, dβ, φ]) =>
-    let some intervalType := α.constName? | throwError m! "{α} is not a constant"
-    let some setType := β.constName? | throwError m! "{β} is not a constant"
-    let some embedding := φ.constName? | throwError m! "{φ} is not a constant"
-    -- check that `dα` and `dβ` are the instances you get from inference and `dα` comes from a
-    -- partial order.
-    let dα_partial ← synthInstance (← mkAppM ``PartialOrder #[α])
-    let dα' ← mkAppOptM ``PartialOrder.toPreorder #[none, dα_partial]
-    let dβ' ← synthInstance (← mkAppM ``Preorder #[β])
+    let some intervalTypeName := α.constName? | throwError m! "{α} is not a constant"
+    let some targetTypeName := β.constName? | throwError m! "{β} is not a constant"
+    let some embeddingName := φ.constName? | throwError m! "{φ} is not a constant"
+    -- check that `α` has type `Type`
+    unless ← isDefEq (← inferType α) (sort 1) do
+      throwError m!"{α} does not have type `Type`."
+    -- check that `dα` and `dβ` match the preorders you get from inferring linear orders
+    -- on `α` and `β` respectively.
+    let dαLinear ← synthInstance (← mkAppM ``LinearOrder #[α])
+    let dαPartial ← mkAppOptM ``LinearOrder.toPartialOrder #[α, dαLinear]
+    let dα' ← mkAppOptM ``PartialOrder.toPreorder #[α, dαPartial]
+    let dβLinear ← synthInstance (← mkAppM ``LinearOrder #[β])
+    let dβPartial ← mkAppOptM ``LinearOrder.toPartialOrder #[β, dβLinear]
+    let dβ' ← mkAppOptM ``PartialOrder.toPreorder #[β, dβPartial]
     unless ← withNewMCtxDepth <| isDefEq dα dα' do
       throwError m!"{dα} does not match inferred {dα'}"
     unless ← withNewMCtxDepth <| isDefEq dβ dβ' do
       throwError m!"{dβ} does not match inferred {dβ'}"
     let decl : IntervalArithmeticDecl := {
       name := declName
-      intervalType := intervalType
-      setType := setType
-      embedding := embedding
-      strictMono := strictMono
+      intervalTypeName := intervalTypeName
+      targetTypeName := targetTypeName
+      embeddingName := embeddingName
+      strictMonoName := strictMonoName
     }
     intervalArithmeticDeclsExt.add decl kind
-  | _ => throwError m!"Type of `{strictMono}` must be of the form: `StrictMono _`"
+  | _ => throwError m!"Type of `{strictMonoName}` is not of the form: `StrictMono _`"
 
 syntax (name := interval_arithmetic_decl) "interval_arithmetic_decl" ident :  attr
 
+/-- Intialization of `interval_arithmetic_decl` attribute. -/
 initialize
   registerBuiltinAttribute {
     name  := `interval_arithmetic_decl
-    descr := "TODO"
+    descr := "Registers an `IntervalArithmeticDecl`"
     applicationTime := .afterTypeChecking
     add := fun thm stx kind => do
       match stx with
@@ -87,24 +106,31 @@ end IntervalArithmeticDecl
 section IntervalOps
 
 structure IntervalOp where
-  /-- The interval arithmetic declaration that the `IntervalOp` belongs to -/
-  declName : Name
-  /-- Name of the `Interval` operation -/
+  /-- Name of the interval operation declaration. -/
   opName : Name
-  /-- Name of the reference operation -/
-  refName : Name
+  /-- The interval arithmetic declaration that the `IntervalOp` belongs to. -/
+  declName : Name
+  /-- Name of the head of the expression to match on. -/
+  headName : Name
   /-- Name of the inclusion theorem -/
   incName : Name
-  /-- The position of the interval arguments in `refName` and their hypotheses in `incName` -/
-  args : Array (Nat × Nat)
-  /-- If the interval operation has an approximation parameter than `isApprox = true`. -/
-  isApprox : Bool
+  /-- The position of each set fvar and its corresponding interval hypothesis in `incName` -/
+  hyps : Array (Nat × Nat)
+  /-- If the interval operation has an approximation parameter than `approxParam?` is the
+    position of the parameter (otherwise `none`). -/
+  approxParam? : Option Nat
   deriving Inhabited
 
+/-- Structure storing all `IntervalOps`. -/
 structure IntervalOps where
-  ops : Std.HashMap (Name × Name) IntervalOp := {}
+  /-- Map from `(declName, headName)` to the Array of `Names` registered for `declName` that
+  match `headname`. -/
+  map : HashMap (Name × Name) (Array Name) := {}
+  /-- Map from `(declName, opName)` to the `IntervalOp`. -/
+  ops : HashMap (Name × Name) IntervalOp := {}
   deriving Inhabited
 
+/-- Environment extension for storing `IntervalOps` -/
 abbrev IntervalOpsExt := SimpleScopedEnvExtension IntervalOp IntervalOps
 
 initialize intervalOpsExt : IntervalOpsExt ←
@@ -112,99 +138,121 @@ initialize intervalOpsExt : IntervalOpsExt ←
     name := by exact decl_name%
     initial := {}
     addEntry := fun os o =>
-      {os with ops := os.ops.insert (o.declName, o.refName) o}
-  }
+      {os with
+        map := os.map.alter (o.declName, o.headName) fun
+        | none => some #[o.opName]
+        | some arr => some (arr.push o.opName),
+        ops := os.ops.insert (o.declName, o.opName) o}}
 
-def getIntervalOp? (declName : Name) (refName : Name) : MetaM (Option IntervalOp) := do
+/- Returns the Array of `opName`s matching the given `declName` and `refName`. -/
+def getIntervalOpNames? (declName : Name) (refName : Name) : MetaM (Option (Array Name)) := do
   let s := intervalOpsExt.getState (← getEnv)
-  return s.ops.get? (declName, refName)
+  return s.map.get? (declName, refName)
 
-def addIntervalOp (declName : Name) (incName : Name) (isApprox : Bool)
-    (kind : AttributeKind := .global) : MetaM Unit := do
+/- Returns the `IntervalOp` with name `opName`. -/
+def getIntervalOp? (declName opName : Name) : MetaM (Option IntervalOp) := do
+  let s := intervalOpsExt.getState (← getEnv)
+  return s.ops.get? (declName, opName)
+
+/-- Register a new `IntervalOp`. This function takes in the name `declName` of the
+`IntervalArithmeticDecl` the operation is being added to and the name `incName` of a theorem
+proving that an expression of `targetType` is contained in the set computed by the interval
+operation. Using the theorem it extracts the data necessary to register the `IntervalOp`
+and check whether its valid. -/
+def addIntervalOp (declName opName incName : Name) (kind : AttributeKind := .global) :
+    MetaM Unit := do
   let some decl ← getIntervalArithmeticDecl? declName
     | throwError m!"Unknown interval arithmetic declaration `{declName}`."
-  let φ ← mkConstWithFreshMVarLevels decl.embedding
+  unless (← getIntervalOp? declName opName).isNone do
+    throwError m!"Interval operation with name: {opName} already registered for decl: {declName}."
+  let φ ← mkConstWithFreshMVarLevels decl.embeddingName
   forallTelescope (← getConstInfo incName).type fun hs conc => do
     -- check that the conclusion is of the form `_ ∈ _.toSet _`
-    let some ⟨f_rs, f'_xs, φ'⟩ := conc.memIntervaltoSet?
+    let some ⟨r₀, x₀, φ'⟩ := conc.memIntervaltoSet?
       | throwError m!"The conclusion of `{incName}` is not of the form `_ ∈ _.toSet _."
     -- check that the embedding in the conclusion matches the embedding in the declaration
     if !(← withNewMCtxDepth <| isDefEq φ φ') then
-      throwError m!"{φ'} is not definitionally equal to `{decl.embedding}`."
-    -- `hyps` is an `FVarIdMap` which keeps track of interval hypothesis in the `IntervalOp`
-    -- declaration. For each hypotheses of the form `r ∈ x.toSet φ` with `r, x` free variables
-    -- we have an entry in `hyps` with key `r` and value `(x, pos)` where `pos` is the position of
-    -- the interval hypothesis in the inclusion theorem.
-    let mut hyps : FVarIdMap (FVarId × Nat) := {}
+      throwError m!"{φ'} is not definitionally equal to `{decl.embeddingName}`."
+    let some headName := r₀.getAppFn.constName?
+      | throwError m!"`{r₀}` is not an application of a constant"
+    let r₀Ids := Lean.collectFVars {} r₀ |>.fvarSet
+    let x₀Ids := Lean.collectFVars {} x₀ |>.fvarSet
+    let mut setFVars : FVarIdMap Nat := {}
+    let mut intervalFVars : HashSet FVarId := {}
+    let mut hypIds : HashSet FVarId := {}
     for i in [:hs.size] do
       let h := hs[i]!
       if let some (r, x, φ') := intervalHyp? (← inferType h) then
         if (← withNewMCtxDepth <| isDefEq φ φ') then
-          if hyps.contains r then
+          if x₀Ids.contains r then
+            throwError m!"{mkFVar r} appears as a variable in an interval hypothesis but also \
+              in the interval formula: {indentExpr x₀}"
+          unless r₀Ids.contains r do
+            throwError m!"{mkFVar r} appears as a variable in an interval hypothesis but not in \
+              the target expression: {indentExpr r₀}"
+          if setFVars.contains r then
             throwError m!"{mkFVar r} appears in more than one interval hypothesis."
           else
-            hyps := hyps.insert r (x, i)
-    let some f_name := f_rs.getAppFn.constName?
-      | throwError m!"`{f_rs}` is not an application of a constant"
-    let some f'_name := f'_xs.getAppFn.constName?
-      | throwError m!"`{f'_xs}` is not an application of a constant"
-    let rs ← f_rs.getExplicitAppArgs
-    let xs ← f'_xs.getExplicitAppArgs
-    if isApprox then
-      unless xs.size = rs.size + 1 do
-        throwError m!"{f'_name} does not have exactly one more explicit argument than {f_name}."
-      let some n := xs[0]? | throwError m!"`{f'_name}` has no explicit arguments."
-      let nat := const ``Nat []
-      if !(← withNewMCtxDepth <| isDefEq nat (← inferType n)) then
-        throwError m!"The first argument of `{f'_name}` (the approximation parameter) must have
-          type {nat}"
-      if ! n.isFVar then
-        throwError m!"The first argument of `{f'_name}` (the approximation parameter) must be a
-          free variable."
-    else
-      unless xs.size = rs.size do
-        throwError m!"{f'_name} does not have the same number of explicit arguments as {f_name}"
-    let c := if isApprox then 1 else 0
-    let mut args : Array (Nat × Nat) := #[]
-    for i in [:rs.size] do
-      let r := rs[i]!
-      let x := xs[i + c]!
-      -- check if `r` is a `fvar` from an interval hypotheses in `hyps`
-      if let some (x_id, pos) := r.fvarId? >>= hyps.get?
-      then
-        -- if `x` is an `fvar` in an interval hypothesis we need to check its replaced by its
-        -- corresponding interval `fvar` in `xs`
-        let some x'_id := x.fvarId?
-          | throwError m!"`{x}` does not replace `{r}` in `{f'_name}`."
-        if !(x_id == x'_id) then
-          throwError m!"`{x}` does not replace `{r}` in `{f'_name}`."
-        args := args.push (i, pos)
-      else
-        -- if `r` is not an `fvar` in an interval hypothesis it should be identical in its
-        -- corresponding position in `xs`
-        if !(← withNewMCtxDepth <| isDefEq r x) then
-          throwError m!"`{r}` is not definitionally equal to `{x}`."
+            setFVars := setFVars.insert r i
+          if r₀Ids.contains x then
+            throwError m!"{mkFVar x} appears as an interval in an interval hypothesis but also \
+              in target expression: {indentExpr r₀}."
+          unless x₀Ids.contains x do
+            throwError m!"{mkFVar x} appears as an interval in an interval hypothesis but not in \
+              the interval formula: {indentExpr x₀}"
+          if intervalFVars.contains x then
+            throwError m!"{mkFVar x} appears in more than one interval hypothesis."
+          else
+            intervalFVars := intervalFVars.insert x
+          hypIds := hypIds.insert h.fvarId!
+    let mut hyps := #[]
+    let mut approxParam? : Option Nat := none
+    for i in [:hs.size] do
+      let h := hs[i]!
+      if let some hId := h.fvarId? then
+        if let some j := setFVars.get? hId then
+          hyps := hyps.push (i, j)
+        else if hypIds.contains hId then
+          if r₀Ids.contains hId then
+            throwError m!"{mkFVar hId} appears in the target expression: {indentExpr r₀}"
+          if x₀Ids.contains hId then
+            throwError m!"{mkFVar hId} appears in the interval formula: {indentExpr x₀}"
+        else if (← hId.getDecl).userName == `approx_param then
+          if r₀Ids.contains hId then
+            throwError m!"`approx_param` appears in the target expression: {indentExpr r₀}"
+          unless x₀Ids.contains hId do
+            throwError m!"`approx_param` does not appear in the interval formula: {indentExpr x₀}"
+          unless approxParam?.isNone do
+            throwError "The theorem contains more than one `approx_param`"
+          let approx_param_type ← inferType h
+          let nat := mkConst ``Nat
+          unless ← isDefEq nat approx_param_type do
+            throwError m!"`approx_param` has type: {indentExpr approx_param_type}
+              but expected: {indentExpr nat}"
+          approxParam? := some i
+        else unless r₀Ids.contains hId || x₀Ids.contains hId do
+          throwError m!"{mkFVar hId} does not appear in the target expression or interval formula"
     let op : IntervalOp := {
+      opName := opName
       declName := declName
-      opName := f'_name
-      refName := f_name
-      args := args
+      headName := headName
       incName := incName
-      isApprox := isApprox
+      hyps := hyps
+      approxParam? := approxParam?
     }
     intervalOpsExt.add op kind
 
-syntax (name := interval_op) ("approx_interval_op " <|> "exact_interval_op") ident : attr
+syntax (name := interval_op) "interval_op " ident ident : attr
 
 initialize
   registerBuiltinAttribute {
     name  := `interval_op
-    descr := "TODO"
+    descr := "Registers an `IntervalOp`"
     applicationTime := .afterTypeChecking
     add := fun op stx kind => do
       match stx with
-      | `(attr | approx_interval_op $decl:ident) => (addIntervalOp decl.getId op true kind).run'
-      | `(attr | exact_interval_op $decl:ident) => (addIntervalOp decl.getId op false kind).run'
+      | `(attr | interval_op $decl:ident $name:ident) =>
+        (addIntervalOp decl.getId name.getId op kind).run'
       | _ => throwUnsupportedSyntax
   }
 
