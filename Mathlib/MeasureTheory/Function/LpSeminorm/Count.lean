@@ -11,7 +11,7 @@ public import Mathlib.MeasureTheory.Function.LpSeminorm.Indicator
 # `L^p`-seminorms on `count` and `dirac`
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Measure ENNReal Set Filter
 variable {α ε : Type*} [MeasurableSpace α] [MeasurableSingletonClass α]

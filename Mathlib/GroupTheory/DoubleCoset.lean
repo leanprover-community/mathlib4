@@ -148,7 +148,7 @@ lemma mem_quotToDoubleCoset_iff {H K : Subgroup G} (i : Quotient (H : Set G) K) 
 
 lemma disjoint_out {H K : Subgroup G} {a b : Quotient H K} :
     a ≠ b → Disjoint (doubleCoset a.out H K) (doubleCoset b.out (H : Set G) K) := by
-  contrapose!
+  contrapose
   intro h
   simpa [out_eq'] using mk_eq_of_doubleCoset_eq (eq_of_not_disjoint h)
 
@@ -226,7 +226,7 @@ lemma iUnion_image_mk_leftRel {H K : Subgroup G} :
   rw [Set.iUnion_eq_univ_iff]
   intro x
   obtain ⟨y, hy⟩ := exists_rep x
-  have ⟨i, hi⟩ : ∃ i : Quotient H K, y ∈ doubleCoset (out i) H K  := by
+  have ⟨i, hi⟩ : ∃ i : Quotient H K, y ∈ doubleCoset (out i) H K := by
     contrapose cover
     exact (Set.ne_univ_iff_exists_notMem _).mpr ⟨y, by simpa using cover⟩
   exact ⟨i, y, hi, hy⟩
@@ -237,7 +237,7 @@ lemma iUnion_image_mk_rightRel {H K : Subgroup G} :
   rw [Set.iUnion_eq_univ_iff]
   intro x
   obtain ⟨y, hy⟩ := exists_rep x
-  have ⟨i, hi⟩ : ∃ i : Quotient H K, y ∈ doubleCoset (out i) H K  := by
+  have ⟨i, hi⟩ : ∃ i : Quotient H K, y ∈ doubleCoset (out i) H K := by
     contrapose cover
     exact (Set.ne_univ_iff_exists_notMem _).mpr ⟨y, by simpa using cover⟩
   exact ⟨i, y, hi, hy⟩
@@ -251,10 +251,10 @@ lemma iUnion_finset_leftRel_eq_univ_of_leftRel {H K : Subgroup G} {t : Finset (Q
   refine (Set.ne_univ_iff_exists_notMem _).mpr ⟨Quot.mk (leftRel K) x, ?_⟩
   simp only [Set.mem_iUnion, Set.mem_image, exists_prop, not_exists, not_and]
   intro y hy q hq
-  contrapose! hx
+  contrapose hx
   simp only [Set.mem_iUnion, exists_prop]
   refine ⟨y, hy, ?_⟩
-  rw [← doubleCoset_eq_of_mem hq,  mem_doubleCoset]
+  rw [← doubleCoset_eq_of_mem hq, mem_doubleCoset]
   obtain ⟨a', ha'⟩ := Quotient.eq.mp hx
   exact ⟨1, one_mem H, MulOpposite.unop a'⁻¹, Subgroup.mem_op.mp (by simp), by simpa
     using (eq_mul_inv_of_mul_eq ha')⟩
@@ -268,7 +268,7 @@ lemma iUnion_finset_rightRel_eq_univ_of_rightRel {H K : Subgroup G} {t : Finset 
   refine (Set.ne_univ_iff_exists_notMem _).mpr ⟨Quot.mk (rightRel H) x, ?_⟩
   simp only [Set.mem_iUnion, Set.mem_image, exists_prop, not_exists, not_and]
   intro y hy q hq
-  contrapose! hx
+  contrapose hx
   simp only [Set.mem_iUnion, exists_prop]
   refine ⟨y, hy, ?_⟩
   rw [← doubleCoset_eq_of_mem hq, mem_doubleCoset]
