@@ -571,6 +571,23 @@ theorem gradedMonoid_eq_of_cast {Γ : Subgroup (GL (Fin 2) ℝ)} {a b : GradedMo
   cases h
   exact congr_arg _ h2
 
+/-- The `n`-th power of a modular form, as a modular form of weight `n * k`. -/
+def pow {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne] {k : ℤ} (f : ModularForm Γ k) :
+    ∀ (n : ℕ), ModularForm Γ ((n : ℤ) * k)
+  | 0 => mcast (by simp) (1 : ModularForm Γ 0)
+  | n + 1 => mcast (by push_cast; ring) ((f.pow n).mul f)
+
+@[simp]
+lemma coe_pow {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne] {k : ℤ}
+    (f : ModularForm Γ k) (n : ℕ) : ⇑(f.pow n) = (⇑f) ^ n := by
+  induction n with
+  | zero =>
+    change (1 : ℍ → ℂ) = _
+    rw [pow_zero]
+  | succ n ih =>
+    change ((f.pow n).mul f : ℍ → ℂ) = _
+    rw [coe_mul, ih, pow_succ]
+
 instance (Γ : Subgroup (GL (Fin 2) ℝ)) [Γ.HasDetPlusMinusOne] :
     GradedMonoid.GOne (ModularForm Γ) where
   one := 1

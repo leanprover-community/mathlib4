@@ -41,25 +41,25 @@ namespace ModularForm
 
 /-- The combination `E₄³ - E₆²` viewed as a level-1 modular form of weight 12. -/
 private noncomputable def E₄CubeSubE₆SqForm : ModularForm 𝒮ℒ 12 :=
-  ModularForm.mcast (by norm_num) ((E₄.mul E₄).mul E₄) -
-    ModularForm.mcast (by norm_num) (E₆.mul E₆)
+  ModularForm.mcast (by decide) (E₄.pow 3) - ModularForm.mcast (by decide) (E₆.pow 2)
 
 private lemma E₄CubeSubE₆SqForm_apply (z : ℍ) :
     E₄CubeSubE₆SqForm z = E₄ z ^ 3 - E₆ z ^ 2 := by
-  change E₄ z * E₄ z * E₄ z - E₆ z * E₆ z = _
-  ring
+  change ⇑(E₄.pow 3) z - ⇑(E₆.pow 2) z = _
+  rw [coe_pow, coe_pow]
+  rfl
 
 private lemma E₄CubeSubE₆SqForm_qExpansion_eq :
     qExpansion 1 E₄CubeSubE₆SqForm = qExpansion 1 E₄ * qExpansion 1 E₄ * qExpansion 1 E₄ -
       qExpansion 1 E₆ * qExpansion 1 E₆ := by
   rw [show qExpansion 1 E₄CubeSubE₆SqForm =
-        qExpansion 1 ((E₄.mul E₄).mul E₄) - qExpansion 1 (E₆.mul E₆) from
-      ModularFormClass.qExpansion_sub one_pos one_mem_strictPeriods_SL
-        (ModularForm.mcast (by norm_num) ((E₄.mul E₄).mul E₄))
-        (ModularForm.mcast (by norm_num) (E₆.mul E₆)),
-    ModularForm.qExpansion_mul one_pos one_mem_strictPeriods_SL (E₄.mul E₄) E₄,
-    ModularForm.qExpansion_mul one_pos one_mem_strictPeriods_SL E₄ E₄,
-    ModularForm.qExpansion_mul one_pos one_mem_strictPeriods_SL E₆ E₆]
+        qExpansion 1 (E₄.pow 3) - qExpansion 1 (E₆.pow 2) from
+      ModularForm.qExpansion_sub one_pos one_mem_strictPeriods_SL
+        (ModularForm.mcast (by decide) (E₄.pow 3))
+        (ModularForm.mcast (by decide) (E₆.pow 2)),
+    ModularForm.qExpansion_pow one_pos one_mem_strictPeriods_SL E₄ 3,
+    ModularForm.qExpansion_pow one_pos one_mem_strictPeriods_SL E₆ 2]
+  ring
 
 private lemma E₄CubeSubE₆SqForm_isCuspForm : IsCuspForm E₄CubeSubE₆SqForm := by
   refine (isCuspForm_iff_coeffZero_eq_zero _).mpr ?_
@@ -82,7 +82,7 @@ theorem discriminant_eq_E₄_cube_sub_E₆_sq (z : ℍ) :
   have hgE : (g : ℍ → ℂ) = E₄CubeSubE₆SqForm := congrArg DFunLike.coe hg
   have hc_eq : c = 1728 := by
     have hcΔ : (c • CuspForm.discriminant : ℍ → ℂ) = g := congrArg DFunLike.coe hc
-    have hgΔ := ModularFormClass.qExpansion_smul one_pos one_mem_strictPeriods_SL c
+    have hgΔ := ModularForm.qExpansion_smul one_pos one_mem_strictPeriods_SL c
       CuspForm.discriminant
     rw [hcΔ, hgE] at hgΔ
     simpa [PowerSeries.coeff_smul, discriminant_qExpansion_coeff_one,
