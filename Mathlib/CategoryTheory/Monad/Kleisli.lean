@@ -173,13 +173,14 @@ def toCokleisli : C ⥤ Cokleisli U where
     rw [comp]
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The left adjoint of the adjunction which induces the comonad `(U, ε_ U, δ_ U)`. -/
 @[simps]
 def fromCokleisli : Cokleisli U ⥤ C where
   obj X := U.obj X.of
   map {X} {_} f := U.δ.app X.of ≫ U.map f.of
   map_id _ := U.right_counit _
+  map_comp {X} {Y} {Z} f g := by
+    simp [dsimp% U.δ.naturality_assoc]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The co-Kleisli adjunction which gives rise to the comonad `(U, ε_ U, δ_ U)`. -/
