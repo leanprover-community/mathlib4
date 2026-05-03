@@ -310,7 +310,7 @@ theorem IsHamiltonian.of_perm {σ : Perm α}
     hsupport ▸ σ.coe_support_eq_set_support ▸ hcycle.isCycleOn
   set p : G.Walk (σ x) x := (Walk.iterate (↑σ) hadj (σ x) (Fintype.card α - 1)).copy rfl (by
     change (↑σ : α → α)^[Fintype.card α - 1 + 1] x = x
-    rw [Nat.sub_add_cancel (by omega), Equiv.Perm.iterate_eq_pow,
+    rw [Nat.sub_add_cancel (by lia), Equiv.Perm.iterate_eq_pow,
       ← Finset.card_univ, hcycOn.pow_card_apply (Finset.mem_univ x)])
   refine ⟨x, .cons (hadj x) p, Walk.cons_isHamiltonianCycle_iff (hadj x) p |>.mpr ⟨?_, ?_⟩⟩
   · -- p is a Hamiltonian path: visits every vertex exactly once.
@@ -318,7 +318,7 @@ theorem IsHamiltonian.of_perm {σ : Perm α}
     refine ⟨?_, by simp [p]⟩
     rw [Walk.isPath_def]
     simp only [p, Walk.support_copy, Walk.support_iterate,
-      show Fintype.card α - 1 + 1 = Fintype.card α by omega]
+      show Fintype.card α - 1 + 1 = Fintype.card α by lia]
     have hsx : σ (σ x) ≠ σ x := σ.injective.ne hx
     have hcard : Fintype.card α = (σ.toList (σ x)).length := by
       rw [Equiv.Perm.length_toList, hcycle.cycleOf_eq hsx, hsupport, Finset.card_univ]
@@ -331,8 +331,8 @@ theorem IsHamiltonian.of_perm {σ : Perm α}
     rintro ⟨i, hi, heq⟩
     rw [List.mem_range] at hi
     simp only [Equiv.Perm.iterate_eq_pow, ← mul_apply, ← pow_succ] at heq
-    exact hcycOn.sym2_pow_apply_ne (Finset.mem_univ x) (by omega)
-      (by rw [Finset.card_univ]; omega) (by rwa [Finset.card_univ]) heq
+    exact hcycOn.sym2_pow_apply_ne (Finset.mem_univ x) (by lia)
+      (by rw [Finset.card_univ]; lia) (by rwa [Finset.card_univ]) heq
 
 end Perm
 
