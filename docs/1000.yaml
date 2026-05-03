@@ -265,9 +265,7 @@ Q245098:
 
 Q245098X:
   title: Bolzano's theorem
-  decls:
-    - exists_mem_uIcc_eq_zero
-    - exists_mem_Icc_eq_zero
+  # variant of the intermediate value theorem above, TODO should exist in mathlib, add decl
 
 Q245902:
   title: Riesz–Thorin theorem
