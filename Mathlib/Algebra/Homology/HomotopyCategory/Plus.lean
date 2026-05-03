@@ -217,7 +217,7 @@ noncomputable abbrev singleFunctor (n : ℤ) : C ⥤ Plus C :=
 
 /-- The single functor `C ⥤ HomotopyCategory.Plus C` is induced by
 `HomotopyCategory.singleFunctor C n : C ⥤ HomotopyCategory C (.up ℤ)`. -/
-noncomputable def singleFunctorιIso (n : ℤ) :
+noncomputable def singleFunctorCompιIso (n : ℤ) :
     singleFunctor C n ⋙ ι C ≅ HomotopyCategory.singleFunctor C n :=
   Iso.refl _
 
