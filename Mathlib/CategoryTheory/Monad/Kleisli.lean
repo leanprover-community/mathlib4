@@ -182,12 +182,13 @@ def fromCokleisli : Cokleisli U ⥤ C where
   map_comp {X} {Y} {Z} f g := by
     simp [dsimp% U.δ.naturality_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The co-Kleisli adjunction which gives rise to the comonad `(U, ε_ U, δ_ U)`. -/
 def adj : fromCokleisli U ⊣ toCokleisli U :=
   Adjunction.mkOfHomEquiv
     { homEquiv X Y := { toFun f := .mk f, invFun f := f.of }
-      homEquiv_naturality_right := fun {X} {Y} {_} f g => by cat_disch }
+      homEquiv_naturality_right := fun {X} {Y} {_} f g => by
+        unfold_projs
+        simp [dsimp% U.ε.naturality_assoc, U.left_counit_assoc] }
 
 /-- The composition of the adjunction gives the original functor. -/
 def toCokleisliCompFromCokleisliIsoSelf : toCokleisli U ⋙ fromCokleisli U ≅ U :=
