@@ -33,9 +33,8 @@ Extension of `iSup` and `iInf` from a preorder `α` to `WithTop α` and `WithBot
 
 variable [Preorder α]
 
-@[simp]
-theorem WithTop.iInf_empty [IsEmpty ι] [InfSet α] (f : ι → WithTop α) :
-    ⨅ i, f i = ⊤ := by rw [iInf, range_eq_empty, WithTop.sInf_empty]
+theorem WithTop.iInf_empty [IsEmpty ι] [InfSet α] (f : ι → WithTop α) : ⨅ i, f i = ⊤ := by
+  simp
 
 @[norm_cast]
 theorem WithTop.coe_iInf [Nonempty ι] [InfSet α] {f : ι → α} (hf : BddBelow (range f)) :
@@ -47,9 +46,7 @@ theorem WithTop.coe_iSup [SupSet α] (f : ι → α) (h : BddAbove (Set.range f)
     ↑(⨆ i, f i) = (⨆ i, f i : WithTop α) := by
   rw [iSup, iSup, WithTop.coe_sSup' h, ← range_comp, Function.comp_def]
 
-@[simp]
-theorem WithBot.ciSup_empty [IsEmpty ι] [SupSet α] (f : ι → WithBot α) :
-    ⨆ i, f i = ⊥ :=
+theorem WithBot.ciSup_empty [IsEmpty ι] [SupSet α] (f : ι → WithBot α) : ⨆ i, f i = ⊥ :=
   WithTop.iInf_empty (α := αᵒᵈ) _
 
 @[norm_cast]
@@ -453,9 +450,8 @@ section ConditionallyCompleteLinearOrderBot
 
 variable [ConditionallyCompleteLinearOrderBot α] {f : ι → α} {a : α}
 
-@[simp]
 theorem ciSup_of_empty [IsEmpty ι] (f : ι → α) : ⨆ i, f i = ⊥ := by
-  rw [iSup_of_empty', csSup_empty]
+  simp
 
 theorem ciSup_false (f : False → α) : ⨆ i, f i = ⊥ :=
   ciSup_of_empty f
