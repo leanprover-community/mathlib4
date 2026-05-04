@@ -73,6 +73,10 @@ syntax reifiedOptionKeyValue := ppSpace colGt ident ppSpace optionValue
 /-- `set_options key₁ val₁, key₂ val₂, ...` renders the options set in a single line. -/
 syntax reifiedSetOptionsStx := withPosition("set_options " ppIndent(reifiedOptionKeyValue,*))
 
+-- We don't want docstrings on these parsers, since they would clutter hovers.
+attribute [nolint docBlame] reifiedSimpleOpenIdent reifiedSimpleOpenHidingStx reifiedOpenDecl
+  reifiedVarStx reifiedOptionKeyValue
+
 /--
 A scope specification of the form
 ```
