@@ -19,7 +19,7 @@ in the literature but it is useful for generalizing results on immersions to oth
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 
