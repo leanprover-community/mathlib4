@@ -56,27 +56,8 @@ variable (F : Sheaf J AddCommGrpCat.{w})
   [HasSheafify J AddCommGrpCat.{w}] [HasExt.{w'} (Sheaf J AddCommGrpCat.{w})]
 
 /-- The cohomology of an abelian sheaf in degree `n`. -/
-def H (n : ℕ) : Type w' :=
+abbrev H (n : ℕ) : Type w' :=
   Ext ((constantSheaf J AddCommGrpCat.{w}).obj (AddCommGrpCat.of (ULift ℤ))) F n
-deriving AddCommGroup
-
-variable (J) in
-/-- Cohomology of an abelian sheaf in degree `n` as a functor. -/
-def cohomologyFunctor (n : ℕ) :
-    Sheaf J AddCommGrpCat.{w} ⥤ AddCommGrpCat.{w'} :=
-  (extFunctor.{w'} n).obj <|
-    .op <| ((constantSheaf J AddCommGrpCat.{w}).obj (AddCommGrpCat.of (ULift ℤ)))
-deriving Functor.Additive
-
-lemma cohomologyFunctor_obj (n : ℕ) (F : Sheaf J AddCommGrpCat.{w}) :
-    (cohomologyFunctor J n).obj F = F.H n :=
-  rfl
-
-lemma subsingleton_H_of_isZero {F : Sheaf J AddCommGrpCat.{w}} (h : Limits.IsZero F) (n : ℕ) :
-    Subsingleton (F.H n) := by
-  rw [← cohomologyFunctor_obj]
-  apply AddCommGrpCat.subsingleton_of_isZero
-  exact Functor.map_isZero (cohomologyFunctor J n) h
 
 end
 
@@ -135,7 +116,7 @@ noncomputable def H.map (n : ℕ) : H F n →+ H G n :=
 
 @[reassoc]
 lemma H.addEquiv₀_map (x : H F 0) : Ext.addEquiv₀ (H.map f 0 x) = Ext.addEquiv₀ x ≫ f := by
-  delta Ext.addEquiv₀ H.map
+  delta Ext.addEquiv₀
   apply (Ext.mk₀_bijective _ G).injective
   simp only [AddEquiv.coe_mk, Ext.mk₀_homEquiv₀_apply, Ext.mk₀_homEquiv₀_apply, ← Ext.mk₀_comp_mk₀]
   rfl
@@ -143,8 +124,7 @@ lemma H.addEquiv₀_map (x : H F 0) : Ext.addEquiv₀ (H.map f 0 x) = Ext.addEqu
 /-- `H.equiv₀` is natural -/
 theorem H.equiv₀_naturality (x : H F 0) :
     f.hom.app (op T) (H.equiv₀ F hT x) = H.equiv₀ G hT (H.map f 0 x) := by
-  simp only [equiv₀, AddEquiv.trans_apply]
-  erw [addEquiv₀_map f x]
+  simp only [equiv₀, AddEquiv.trans_apply, addEquiv₀_map f x]
   rfl
 
 theorem H.equiv₀_symm_naturality (x : F.obj.obj (op T)) :
@@ -174,6 +154,12 @@ noncomputable def functorH (n : ℕ) : Sheaf J AddCommGrpCat.{w} ⥤ AddCommGrpC
 set_option backward.isDefEq.respectTransparency false in
 instance (n : ℕ) : (functorH J n).Additive where
   map_add {_ _ f g} := by ext; simp [H.map_apply, Ext.mk₀_add];
+
+lemma subsingleton_H_of_isZero {F : Sheaf J AddCommGrpCat.{w}} (h : Limits.IsZero F) (n : ℕ) :
+    Subsingleton (F.H n) := by
+  rw [← functorH_obj_coe]
+  apply AddCommGrpCat.subsingleton_of_isZero
+  exact Functor.map_isZero (functorH J n) h
 
 end
 
