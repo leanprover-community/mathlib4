@@ -324,7 +324,7 @@ lemma outerKernel_def (f : X → V) (x y) :
 omit [CompleteSpace V] in
 variable (𝕜) in
 lemma outerKernel_apply (f : X → V) (xv₁ xv₂ : X × V) :
-    ⟪ (outerKernel 𝕜 f xv₂.1 xv₁.1) xv₁.2, xv₂.2 ⟫_𝕜
+    ⟪(outerKernel 𝕜 f xv₂.1 xv₁.1) xv₁.2, xv₂.2⟫_𝕜
     = (starRingEnd 𝕜) ⟪ f xv₁.1, xv₁.2⟫_𝕜 * ⟪ f xv₂.1, xv₂.2⟫_𝕜 := by
   simp_rw [outerKernel_def, rankOne_apply, inner_smul_left]
 
@@ -400,13 +400,10 @@ lemma mem_of_posSemidef (f : X → V) {c : ℝ}
       Finsupp.lhom_ext fun ⟨a, v⟩ r ↦ by
         simp [toSpan, toSpan', Finsupp.linearCombination_single]
     have hξ : toSpan' y = ξ := Subtype.ext (LinearMap.congr_fun hcomp y |>.trans hy)
-    calc ‖L_lin ξ‖
-        = ‖Laux y‖          := by
-          rw [← hξ, ← LinearMap.comp_apply, LinearMap.congr_fun hL _]
-      _ ≤ ‖c‖ * ‖toSpan y‖  := by
-          rw [← sq_le_sq₀ (norm_nonneg _) (by positivity), mul_pow, Real.norm_eq_abs, sq_abs]
-          exact h_ineq y
-      _ = ‖c‖ * ‖ξ‖         := by rw [hy, ← hξ, Submodule.norm_coe]
+    rw [← hξ, ← LinearMap.comp_apply, LinearMap.congr_fun hL _,
+      ← sq_le_sq₀ (norm_nonneg _) (by positivity), mul_pow, Real.norm_eq_abs, sq_abs, hξ,
+      ← Submodule.norm_coe, ← hy]
+    exact h_ineq y
   )
   let K := (span 𝕜 {kerFun H x v | (x : X) (v : V)}).subtypeL
   refine ⟨(InnerProductSpace.toDual 𝕜 H).symm (L.extend K), ?_⟩
