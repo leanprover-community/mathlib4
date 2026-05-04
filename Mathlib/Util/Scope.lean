@@ -419,36 +419,33 @@ def unreifyScope (stx : TSyntax ``scopeStx)
     CommandElabM Unit :=
   match stx with
   | `(scopeStx| $sectionHeader scope
-      $[universe $[$levelNames:ident]*]?
-      $[$namespaceStx]?
+      $[$universeStx:universe]?
+      $[$namespaceStx:namespace]?
       $[open $openDecls:reifiedOpenDecl*]?
       $[open scoped $openScopedDecls:reifiedSimpleOpenIdent*]?
       $[set_options $keyVals:reifiedOptionKeyValue,*]?
       $[$vars]?) => do
     resetScopes resetEnvExtensionsTo
     unreifySectionHeader sectionHeader
-    if let some levelNames := levelNames then
-      modifyScope fun s => { s with levelNames := levelNames.reverse.map (·.getId) |>.toList }
-    if let some ns := namespaceStx then
-      elabNamespace ns
-    if let some openDecls := openDecls then
-      unreifyOpenDecls openDecls
-    if let some openScopedDecls := openScopedDecls then
+    universeStx.forM (elabUniverse ·)
+    namespaceStx.forM (elabNamespace ·)
+    openDecls.forM unreifyOpenDecls
+    openScopedDecls.forM fun openScopedDecls => do
       for openScoped in openScopedDecls do
         let `(reifiedSimpleOpenIdent| @$id) := openScoped | throwUnsupportedSyntax
         activateScoped id.getId
-    if let some keyVals := keyVals then
+    keyVals.forM fun keyVals => do
       for keyVal in keyVals.getElems do
         let `(reifiedOptionKeyValue| $id $val) := keyVal | throwUnsupportedSyntax
         -- Gets us info.
         let opts ← Elab.elabSetOption id val
         modifyScope fun s => { s with opts }
-    if let some vars := vars then
+    vars.forM fun vars => do
       let `(reifiedVarStx| $vars $[$included]? $[$omitted]?) := vars | throwUnsupportedSyntax
       elabVariable vars
       -- Note: we assume these are disjoint, and order of elaboration is irrelevant.
-      if let some included := included then elabInclude included
-      if let some omitted  := omitted  then elabOmit omitted
+      included.forM (elabInclude ·)
+      omitted.forM (elabOmit ·)
   | _ => throwUnsupportedSyntax
 
 /-- Reifies aspects of the current scope into a `scopeStx` scope specification. See `scopeStx`. -/
