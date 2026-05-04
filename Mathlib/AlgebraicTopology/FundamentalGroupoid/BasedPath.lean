@@ -101,12 +101,12 @@ right endpoint cast to `endpoint (ofPath γ)` (`ofPath_toPath`). -/
   ⟨γ.toContinuousMap, γ.source⟩
 
 @[simp] public theorem ofPath_toPath {y : X} (γ : Path x₀ y) :
-    (ofPath γ).toPath = γ.cast rfl (by simp [endpoint, ofPath]) := by
+    (ofPath γ).toPath = γ.cast rfl γ.target := by
   ext t
   rfl
 
-public theorem endpoint_ofPath {y : X} (γ : Path x₀ y) : endpoint (ofPath γ) = y := by
-  simp [endpoint, ofPath, γ.target]
+public theorem endpoint_ofPath {y : X} (γ : Path x₀ y) : endpoint (ofPath γ) = y :=
+  γ.target
 
 /-- The round-trip `ofPath ∘ toPath` is the identity on `BasedPath x₀`. -/
 @[simp] public theorem ofPath_toPath_self (γ : BasedPath x₀) : ofPath γ.toPath = γ := rfl
@@ -153,7 +153,7 @@ by `deformTerminal` to splice a new endpoint path onto `γ` while preserving its
     (hu : endpoint γ = u) (a : ℝ) (ha1 : a ≤ 1) :
     Path (γ.toPath.extend a) u :=
   (γ.toPath.truncateOfLE (t₀ := a) (t₁ := 1) ha1).cast rfl
-    (by simpa [BasedPath.endpoint] using hu.symm)
+    (by simpa using hu.symm)
 
 public theorem terminalTail_source {u : X} (γ : BasedPath x₀) (hu : endpoint γ = u) (a : ℝ)
     (ha1 : a ≤ 1) :
@@ -321,7 +321,7 @@ theorem exists_endpointNeighborhood_of_basicNeighborhood [LocPathConnectedSpace 
   let N : Set I := γ.toPath ⁻¹' W ∩ ⋂ KU ∈ Tbad, KU.1ᶜ
   have hNnhds : N ∈ 𝓝 (1 : I) := by
     refine Filter.inter_mem
-      ((hWopen.preimage γ.toPath.continuous).mem_nhds (by simpa [endpoint] using huW)) ?_
+      ((hWopen.preimage γ.toPath.continuous).mem_nhds (by simpa using huW)) ?_
     refine (isOpen_biInter_finset ?_).mem_nhds ?_
     · exact fun KU hKU ↦ (hTbad_closed KU hKU).isOpen_compl
     · simp only [Set.mem_iInter]
@@ -477,10 +477,10 @@ public theorem joined_of_homotopic (x₀ : X) {y : X} {p q : Path x₀ y} (h : P
         exact H.continuous)
     source' := by
       ext s
-      simp [ofPath]
+      simp
     target' := by
       ext s
-      simp [ofPath]
+      simp
   }⟩
 
 public theorem joinedIn_preimage_singleton_of_homotopic (x₀ : X) {y : X} {U : Set X}
@@ -496,10 +496,10 @@ public theorem joinedIn_preimage_singleton_of_homotopic (x₀ : X) {y : X} {U : 
           exact H.continuous)
       source' := by
         ext s
-        simp [ofPath]
+        simp
       target' := by
         ext s
-        simp [ofPath] }
+        simp }
   refine ⟨γ, ?_⟩
   intro t
   -- Unfold `γ t = ofPath (H.eval t)` and apply `endpoint_ofPath`.
@@ -515,7 +515,7 @@ public theorem joinedIn_preimage_of_append {U : Set X} {z : X} (γ : BasedPath x
   let γrefl : Path (endpoint γ) (endpoint γ) := Path.refl (endpoint γ)
   have h_start :
       JoinedIn (endpoint (x₀ := x₀) ⁻¹' U) γ (append γ γrefl) := by
-    simpa [γrefl, BasedPath.append] using
+    simpa [γrefl] using
       (joinedIn_preimage_singleton_of_homotopic (x₀ := x₀) (U := U) hγU
         (p := γ.toPath.trans (Path.refl (endpoint γ))) (q := γ.toPath)
         (Path.Homotopic.trans_refl γ.toPath)).symm
@@ -526,15 +526,15 @@ public theorem joinedIn_preimage_of_append {U : Set X} {z : X} (γ : BasedPath x
       continuous_toFun := by
         apply Continuous.subtype_mk
         refine ContinuousMap.continuous_of_continuous_uncurry _ ?_
-        simpa [BasedPath.append, BasedPath.ofPath] using
+        simpa using
           Path.trans_continuous_family (fun _ : I ↦ γ.toPath)
             (Path.continuous_uncurry_iff.mpr continuous_const) (Path.initialSegmentFamily δ)
             (Path.continuous_initialSegmentFamily_uncurry δ)
       source' := by
-        simpa [BasedPath.append, BasedPath.ofPath, γrefl] using
+        simpa [γrefl] using
           congrArg (append γ) (Path.initialSegmentFamily_zero δ)
       target' := by
-        simpa [BasedPath.append, BasedPath.ofPath] using
+        simpa using
           congrArg (append γ) (Path.initialSegmentFamily_one δ) }
     refine ⟨η, ?_⟩
     intro t
@@ -676,7 +676,7 @@ public theorem exists_open_nhd_pathComponent_preimage
     have hβ_end_U : endpoint β ∈ U := by
       have h1 : β.1 (part.t (Fin.last (n' + 1))) ∈ V' (Fin.last (n' + 1)) := hβ_passes _
       rw [hV'_last_eq] at h1
-      exact hV'_sub_U (by simpa [BasedPath.endpoint, part.h_end] using h1)
+      exact hV'_sub_U (by simpa [part.h_end] using h1)
     -- Rung paths in `V' j`.
     choose ρ hρ_range using fun j : Fin (n' + 2) ↦
       (hV'_pathConn_all j).exists_path (hα_passes_V' j) (hβ_passes j)

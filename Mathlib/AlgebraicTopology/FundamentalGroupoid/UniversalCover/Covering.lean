@@ -97,40 +97,40 @@ theorem liftPath_apply_one_eq_ofBasedPath_append
     [SemilocallySimplyConnectedSpace X] {α : BasedPath x₀} {y : X}
     (γ : Path (BasedPath.endpoint α) y) :
     (isCoveringMap x₀).liftPath γ (ofBasedPath x₀ α)
-      (by simpa [BasedPath.endpoint] using γ.source) 1 =
+      (by simpa using γ.source) 1 =
       ofBasedPath x₀ (BasedPath.append α γ) := by
   let Γ : C(I, UniversalCover x₀) := by
     refine ⟨fun t ↦ ofBasedPath x₀ (BasedPath.append α (Path.initialSegmentFamily γ t)),
       ?_⟩
     exact (continuous_ofBasedPath x₀).comp <| Continuous.subtype_mk (by
       refine ContinuousMap.continuous_of_continuous_uncurry _ ?_
-      simpa [BasedPath.append, BasedPath.ofPath] using
+      simpa using
         Path.trans_continuous_family (fun _ : I ↦ α.toPath)
           (Path.continuous_uncurry_iff.mpr continuous_const) (Path.initialSegmentFamily γ)
           (Path.continuous_initialSegmentFamily_uncurry γ)) _
   have hΓ_lifts : proj (x₀ := x₀) ∘ Γ = γ := by
     ext t
-    simpa [Γ, BasedPath.endpoint] using
+    simpa [Γ] using
       (BasedPath.endpoint_append α (Path.initialSegmentFamily γ t))
   have hΓ_zero : Γ 0 = ofBasedPath x₀ α := by
     have h0_hom :
         Path.Homotopic
           ((α.toPath.trans (Path.initialSegmentFamily γ 0)).cast rfl
-            (by simpa [BasedPath.endpoint] using γ.source.symm))
+            (by simpa using γ.source.symm))
           α.toPath := by
       rw [Path.initialSegmentFamily_zero]
       simpa using Path.Homotopic.trans_refl_cast α.toPath rfl
         (by simp)
     have h0_end : BasedPath.endpoint (BasedPath.append α (Path.initialSegmentFamily γ 0)) =
         BasedPath.endpoint α := by
-      rw [BasedPath.endpoint_append]; simpa [BasedPath.endpoint] using γ.source
+      rw [BasedPath.endpoint_append]; simpa using γ.source
     exact ofBasedPath_eq_of_homotopic_toPath (x₀ := x₀) h0_end h0_hom
   have hΓ_eq_lift :
       Γ = (isCoveringMap x₀).liftPath γ (ofBasedPath x₀ α)
-        (by simpa [BasedPath.endpoint] using γ.source) :=
+        (by simpa using γ.source) :=
     ((isCoveringMap x₀).eq_liftPath_iff' (γ := γ)
       (e := ofBasedPath x₀ α)
-      (γ_0 := by simpa [BasedPath.endpoint] using γ.source) (Γ := Γ)).2
+      (γ_0 := by simpa using γ.source) (Γ := Γ)).2
       ⟨hΓ_lifts, hΓ_zero⟩
   rw [← hΓ_eq_lift]
   simpa [Γ] using
