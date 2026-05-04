@@ -384,8 +384,8 @@ lemma exact_hCotangentι_cotangentComplex : Function.Exact h1Cotangentι P.cotan
   exact (Submodule.range_subtype _).symm
 
 open Function in
-lemma h1cotangentι_surjective_of_subsingleton {P : Extension R S}
-    [Subsingleton Ω[P.Ring⁄R]] : Surjective P.h1Cotangentι := by
+lemma h1Cotangentι_surjective_of_subsingleton {P : Extension R S} [Subsingleton Ω[P.Ring⁄R]] :
+    Surjective P.h1Cotangentι := by
   rw [← LinearMap.range_eq_top, ← P.exact_hCotangentι_cotangentComplex.linearMap_ker_eq,
     LinearMap.ker_eq_top]
   exact Subsingleton.eq_zero P.cotangentComplex
@@ -645,27 +645,26 @@ noncomputable def h1CotangentEquivOfSurjective (h : Surjective (algebraMap R S))
   let e : P.toExtension.H1Cotangent ≃ₗ[S] E.H1Cotangent :=
     Extension.H1Cotangent.equiv aux (.ofAlgHom (Algebra.ofId R P.toExtension.Ring) (by ext))
   let f := LinearEquiv.ofBijective E.h1Cotangentι
-    ⟨E.h1Cotangentι_injective, h1cotangentι_surjective_of_subsingleton⟩
+    ⟨E.h1Cotangentι_injective, h1Cotangentι_surjective_of_subsingleton⟩
   ((Generators.equivH1Cotangent P).symm ≪≫ₗ e ≪≫ₗ f).restrictScalars R ≪≫ₗ
     E.cotangentEquivCotangentKer
 
-lemma h1CotangentEquivOfSurjective_symm_toCotangent (h : Surjective (algebraMap R S))
-    (x : RingHom.ker (algebraMap R S)) :
-      ((h1CotangentEquivOfSurjective h).symm ((RingHom.ker (algebraMap R S)).toCotangent x)).1 =
+lemma val_h1CotangentEquivOfSurjective_symm_toCotangent (h : Surjective (algebraMap R S))
+    (x : RingHom.ker (algebraMap R S)) : ((h1CotangentEquivOfSurjective h).symm
+      ((RingHom.ker (algebraMap R S)).toCotangent x)).1 =
         Cotangent.mk ⟨algebraMap R (MvPolynomial S R) x.val, by
           change MvPolynomial.aeval _ _ = 0; simp [← RingHom.mem_ker]⟩ := by
   let E := ofSurjective (Algebra.ofId R S) h
   have : Subsingleton Ω[E.Ring⁄R] := subsingleton_of_surjective _ _ fun _ ↦ ⟨_, rfl⟩
   dsimp [h1CotangentEquivOfSurjective]
   let f := LinearEquiv.ofBijective E.h1Cotangentι
-    ⟨E.h1Cotangentι_injective, h1cotangentι_surjective_of_subsingleton⟩
+    ⟨E.h1Cotangentι_injective, h1Cotangentι_surjective_of_subsingleton⟩
   change Cotangent.map _ (Cotangent.map _ (f.symm (E.cotangentEquivCotangentKer.symm
     ((RingHom.ker (algebraMap R S)).toCotangent x))).val) = _
-  have heq : f.symm (E.cotangentEquivCotangentKer.symm
-    ((RingHom.ker (algebraMap R S)).toCotangent x)) = ⟨Cotangent.mk x, Subsingleton.elim _ _⟩ := by
-    rw [LinearEquiv.symm_apply_eq]; rfl
-  rw [heq, Subtype.coe_mk, Cotangent.map_mk, Cotangent.map_mk]
+  have : f.symm (E.cotangentEquivCotangentKer.symm ((RingHom.ker (algebraMap R S)).toCotangent x))
+    = ⟨Cotangent.mk x, Subsingleton.elim ..⟩ := f.symm_apply_eq.mpr rfl
+  rw [this, Subtype.coe_mk, Cotangent.map_mk, Cotangent.map_mk]
   congr 1; ext
-  exact AlgHom.commutes _ x.1
+  exact AlgHom.commutes ..
 
 end Algebra
