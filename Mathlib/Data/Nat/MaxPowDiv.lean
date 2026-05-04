@@ -209,8 +209,8 @@ theorem _root_.padicValNat_base_mul {p n : ℕ} (hp : 1 < p) (hn : n ≠ 0) :
   simp [padicValNat, *]
 
 /-- If `p ^ k ∣ n`, and `¬p ^ (k + 1) ∣ n`, then `padicValNat p n = k`. -/
-theorem padicValNat_eq_of_dvd_of_not_dvd {p n k : ℕ} (hk : p ^ k ∣ n) (hsucc : ¬p ^ (k + 1) ∣ n) :
-    padicValNat p n = k := by
+theorem _root_.padicValNat_eq_of_dvd_of_not_dvd {p n k : ℕ} (hk : p ^ k ∣ n)
+    (hsucc : ¬p ^ (k + 1) ∣ n) : padicValNat p n = k := by
   have hp : p ≠ 1 := fun _ => by simp_all
   have hn : n ≠ 0 := fun _ => by simp_all
   exact Nat.eq_of_le_of_lt_succ
@@ -219,8 +219,8 @@ theorem padicValNat_eq_of_dvd_of_not_dvd {p n k : ℕ} (hk : p ^ k ∣ n) (hsucc
 
 /-- If `m ≠ 0` and `padicValNat p m < padicValNat p n`, then `padicValNat p (n + m) =
 padicValNat p m`. -/
-theorem padicValNat_add_of_gt {p n m : ℕ} (hm : m ≠ 0) (h : padicValNat p m < padicValNat p n) :
-    padicValNat p (n + m) = padicValNat p m := by
+theorem _root_.padicValNat_add_of_gt {p n m : ℕ} (hm : m ≠ 0)
+    (h : padicValNat p m < padicValNat p n) : padicValNat p (n + m) = padicValNat p m := by
   have hp : p ≠ 1 := fun this => by simp_all
   have hn : n ≠ 0 := fun this => by simp_all
   apply padicValNat_eq_of_dvd_of_not_dvd
@@ -235,7 +235,7 @@ theorem padicValNat_add_of_gt {p n m : ℕ} (hm : m ≠ 0) (h : padicValNat p m 
 
 /-- If `n ≠ 0`, `m ≠ 0`, and `padicValNat p m` and `padicValNat p n` are distinct, then
 `padicValNat p (n + m)` is the minimum of the two. -/
-theorem padicValNat_add_eq_min {p n m : ℕ} (hn : n ≠ 0) (hm : m ≠ 0)
+theorem _root_.padicValNat_add_eq_min {p n m : ℕ} (hn : n ≠ 0) (hm : m ≠ 0)
     (hpnm : padicValNat p n ≠ padicValNat p m) :
     padicValNat p (n + m) = min (padicValNat p n) (padicValNat p m) := by
   rcases Nat.lt_or_gt.mp hpnm with h | h
