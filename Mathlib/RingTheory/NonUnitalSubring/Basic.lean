@@ -645,7 +645,7 @@ theorem mem_prod {s : NonUnitalSubring R} {t : NonUnitalSubring S} {p : R × S} 
     p ∈ s.prod t ↔ p.1 ∈ s ∧ p.2 ∈ t :=
   Iff.rfl
 
-@[mono]
+@[gcongr, mono]
 theorem prod_mono ⦃s₁ s₂ : NonUnitalSubring R⦄ (hs : s₁ ≤ s₂) ⦃t₁ t₂ : NonUnitalSubring S⦄
     (ht : t₁ ≤ t₂) : s₁.prod t₁ ≤ s₂.prod t₂ :=
   Set.prod_mono hs ht

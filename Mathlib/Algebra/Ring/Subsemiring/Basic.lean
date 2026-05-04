@@ -47,19 +47,19 @@ namespace Subsemiring
 
 variable (s : Subsemiring R)
 
-@[mono]
+@[gcongr, mono]
 theorem toSubmonoid_strictMono : StrictMono (toSubmonoid : Subsemiring R → Submonoid R) :=
   fun _ _ => id
 
-@[mono]
+@[gcongr, mono]
 theorem toSubmonoid_mono : Monotone (toSubmonoid : Subsemiring R → Submonoid R) :=
   toSubmonoid_strictMono.monotone
 
-@[mono]
+@[gcongr, mono]
 theorem toAddSubmonoid_strictMono : StrictMono (toAddSubmonoid : Subsemiring R → AddSubmonoid R) :=
   fun _ _ => id
 
-@[mono]
+@[gcongr, mono]
 theorem toAddSubmonoid_mono : Monotone (toAddSubmonoid : Subsemiring R → AddSubmonoid R) :=
   toAddSubmonoid_strictMono.monotone
 
