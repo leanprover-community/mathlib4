@@ -31,7 +31,7 @@ open Set
 
 namespace MeasureTheory
 
-variable {α : Type*} [MeasurableSpace α]
+variable {α : Type*} {mα : MeasurableSpace α}
 
 /-- A measure is a zero-one measure if it only takes the values `0` or `1`. -/
 class IsZeroOneMeasure (μ : Measure α) : Prop where
