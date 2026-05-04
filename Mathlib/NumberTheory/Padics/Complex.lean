@@ -210,7 +210,11 @@ theorem norm_eq_norm' : (‖·‖ : ℂ_[p] → ℝ) = Valued.v.norm := by
     letI := S.toNonUnitalSeminormedRing.toSeminormedAddCommGroup.toSeminormedAddGroup
     exact @uniformContinuous_norm ℂ_[p] this
   · intro x
-    simp [Valued.v.norm_def, restrict_def]
+    #adaptation_note /-- prior to nightly-2026-05-04 this was just
+    `simp [Valued.v.norm_def, restrict_def]` -/
+    simp only [Valued.v.norm_def, RankOne.hom_eq_embedding, restrict_def, embedding_restrict₀,
+      Valued.valuedCompletion_apply]
+    rfl
 
 /-- The norm on `ℂ_[p]` is compatible with the valuation. -/
 theorem norm_eq_norm (x : ℂ_[p]) : ‖x‖ = Valued.v.norm x := by
