@@ -134,6 +134,9 @@ This is an isomorphism when `f` is homogeneous of positive degree. See `basicOpe
 def awayToSection : CommRingCat.of (Away 𝒜 f) ⟶ Γ(Proj 𝒜, basicOpen 𝒜 f) :=
   ProjectiveSpectrum.Proj.awayToSection ..
 
+lemma app_top_eq_appTop {X Y : Scheme} (f : X ⟶ Y) :
+    f.app ⊤ = f.appTop := rfl
+
 /-- The canonical map `Proj A |_ D₊(f) ⟶ Spec (A_f)₀`.
 This is an isomorphism when `f` is homogeneous of positive degree. See `basicOpenIsoSpec` below. -/
 noncomputable
@@ -143,10 +146,7 @@ def basicOpenToSpec : (basicOpen 𝒜 f).toScheme ⟶ Spec (.of <| Away 𝒜 f) 
 lemma basicOpenToSpec_app_top :
     (basicOpenToSpec 𝒜 f).app ⊤ = (Scheme.ΓSpecIso _).hom ≫ awayToSection 𝒜 f ≫
       (basicOpen 𝒜 f).topIso.inv := by
-  rw [basicOpenToSpec]
-  simp only [Scheme.Hom.comp_base, TopologicalSpace.Opens.map_comp_obj,
-    TopologicalSpace.Opens.map_top, Scheme.Hom.comp_app, Scheme.Opens.topIso_inv, eqToHom_op]
-  erw [Scheme.Hom.comp_app]
+  rw [basicOpenToSpec, app_top_eq_appTop, Scheme.Hom.comp_appTop, Scheme.Opens.toSpecΓ_appTop]
   simp
 
 /-- The structure map `Proj A ⟶ Spec A₀`. -/
