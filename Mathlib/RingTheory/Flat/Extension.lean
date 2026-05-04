@@ -377,7 +377,7 @@ end FlatExtension
 /-- In this version the universe levels of `R` and `K` are assumed to be the same, see
   `exists_isLocalHom_flat` for a version where they have different universe levels. -/
 lemma exists_isLocalHom_flat' : ∃ (R' : Type u) (_ : CommRing R') (_ : IsLocalRing R')
-    (_ : Algebra R R') (_ : IsLocalHom (algebraMap R R')), Module.Flat R R' ∧
+    (_ : Algebra R R'), Module.Flat R R' ∧
     maximalIdeal R' = (maximalIdeal R).map (algebraMap R R') ∧
     Nonempty (K ≃ₐ[R] (ResidueField R')) := by
   obtain ⟨setK, ⟨e⟩⟩ : ∃ S : Type u, Nonempty (S ≃ Set K) := ⟨ULift (Set K), ⟨Equiv.ulift⟩⟩
@@ -397,7 +397,7 @@ lemma exists_isLocalHom_flat' : ∃ (R' : Type u) (_ : CommRing R') (_ : IsLocal
     have : Function.Bijective f := ⟨RingHom.injective f,
       Ideal.Quotient.lift_surjective_of_surjective _ _ (RingHom.range_eq_top.mp h)⟩
     let f' := RingEquiv.ofBijective f this
-    refine ⟨φtop.Ring, inferInstance, inferInstance, inferInstance, inferInstance, inferInstance,
+    refine ⟨φtop.Ring, inferInstance, inferInstance, inferInstance, inferInstance,
       φtop.eqmap, ⟨AlgEquiv.ofRingEquiv (f := f'.symm) fun x ↦ f'.injective ?_⟩⟩
     simp only [RingEquiv.apply_symm_apply, RingEquiv.coe_ofBijective, f', f]
     rw [IsScalarTower.algebraMap_apply R φtop (ResidueField φtop)]
@@ -430,19 +430,34 @@ lemma exists_isLocalHom_flat' : ∃ (R' : Type u) (_ : CommRing R') (_ : IsLocal
   absurd Cardinal.lift_mk_le_lift_mk_of_injective (hu.comp e.symm.injective)
   simpa using Cardinal.cantor (Cardinal.mk K)
 
-lemma exists_isLocalHom_flat (K : Type v) [Field K] [Algebra R K] :
+lemma exists_isLocalHom_flat (K : Type v) [Field K] [Algebra R K] [IsLocalHom (algebraMap R K)] :
     ∃ (R' : Type (max u v)) (_ : CommRing R') (_ : IsLocalRing R')
-    (_ : Algebra R R') (_ : IsLocalHom (algebraMap R R')), Module.Flat R R' ∧
+    (_ : Algebra R R'), Module.Flat R R' ∧
     maximalIdeal R' = (maximalIdeal R).map (algebraMap R R') ∧
     Nonempty (K ≃ₐ[R] (ResidueField R')) := by
-  let R' := ULift.{v, u} R
+  obtain ⟨R', _, ⟨eR⟩⟩ : ∃ (R' : Type (max u v)) (_ : CommRing R'), Nonempty (R ≃+* R') :=
+    ⟨ULift.{v, u} R, inferInstance, ⟨ULift.ringEquiv.symm⟩⟩
   let K' := ULift.{u, v} K
-  let eR : R ≃+* R' := ULift.ringEquiv.symm
   let eK : K ≃+* K' := ULift.ringEquiv.symm
   have : IsLocalRing R' := eR.isLocalRing
+  let : Algebra R R' := eR.toRingHom.toAlgebra
   let : Algebra R K' := ULift.algebra
-  let : Algebra R' K' := ULift.algebra' _ _
-  let : IsLocalHom (algebraMap R' K') := sorry
-  obtain ⟨S, _, _, _, _, h⟩ := exists_isLocalHom_flat' R' K'
-
-  sorry
+  let : Algebra R' K := ((algebraMap R K).comp eR.symm.toRingHom).toAlgebra
+  let : Algebra R' K' := ULift.algebra
+  let : IsScalarTower R R' K :=
+    IsScalarTower.of_algebraMap_eq (fun x ↦ by simp [RingHom.algebraMap_toAlgebra])
+  have : IsLocalHom (algebraMap R' K') := by
+    have : IsLocalHom eR.symm.toRingHom := IsLocalHom.of_surjective _ eR.symm.surjective
+    have := RingHom.isLocalHom_comp (algebraMap R K) eR.symm.toRingHom
+    exact RingHom.isLocalHom_comp eK.toRingHom ((algebraMap R K).comp eR.symm.toRingHom)
+  obtain ⟨S, _, _, _, _, eqmap, ⟨e⟩⟩ := exists_isLocalHom_flat' R' K'
+  let : Algebra R S := ((algebraMap R' S).comp eR.toRingHom).toAlgebra
+  let : Module.Flat R R' := RingHom.Flat.of_bijective eR.bijective
+  let : IsScalarTower R R' S := IsScalarTower.of_algebraMap_eq (fun x ↦ rfl)
+  refine ⟨S, inferInstance, inferInstance, inferInstance, Module.Flat.trans R R' S, ?_, ?_⟩
+  · rw [eqmap, ← map_maximalIdeal_of_surjective eR.toRingHom eR.surjective, Ideal.map_map]
+    simp [RingHom.algebraMap_toAlgebra]
+  · let eK' : K ≃ₐ[R] K' := {
+      __ := eK
+      commutes' r := rfl }
+    exact ⟨eK'.trans (e.restrictScalars R)⟩
