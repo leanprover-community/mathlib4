@@ -7,8 +7,8 @@ public import Mathlib.Data.Real.Sqrt
 public import Mathlib.Data.Nat.Factorial.Basic
 public import Mathlib.Analysis.Complex.Exponential
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
-public import Mathlib.Tactic.IntervalArithmetic.Definitions
-public meta import Mathlib.Tactic.IntervalArithmetic.Definitions
+public import Mathlib.Tactic.IntervalArithmetic.Interval
+public meta import Mathlib.Tactic.IntervalArithmetic.Interval
 
 set_option linter.style.header false
 

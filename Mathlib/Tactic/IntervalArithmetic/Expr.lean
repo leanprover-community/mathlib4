@@ -50,6 +50,8 @@ def mkMemInterval (r x φ : Expr) : MetaM Expr := do
 
 end Lean.Expr
 
+section IntervalArithmetic
+
 section
 
 variable {α : Type*} [Preorder α]
@@ -96,7 +98,7 @@ lemma mem_Ioo_of_lt_lt {x a b : α} (hax : a < x) (hxb : x < b) : x ∈ Set.Ioo 
 
 end
 
-inductive IntervalClass
+inductive IntervalArithmetic.IntervalClass
   | Ici : Expr → IntervalClass
   | Ioi : Expr → IntervalClass
   | Iic : Expr → IntervalClass
@@ -163,8 +165,6 @@ def _root_.Lean.Expr.memSetIntervalToIneqs? (e : Expr) : MetaM (Option Expr × O
       let h₁ ← mkAppM ``fst_lt_of_mem_Ioo #[e]
       let h₂ ← mkAppM ``lt_snd_of_mem_Ioo #[e]
       return (some h₁, some h₂)
-
-namespace IntervalArithmetic
 
 /- `Option` version of `ineq?` -/
 def _root_.Lean.Expr.ineq?? (e : Expr) : Option (Mathlib.Ineq × Expr × Expr × Expr) := do
