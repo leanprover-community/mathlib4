@@ -3,7 +3,7 @@ name: shake
 on:
   schedule:
     # Run several hours before the technical debt report which runs Mondays at 04:00 UTC
-    - cron: "10 20 * * 0" # At 20:21 UTC on Sunday.
+    - cron: "10 20 * * 0" # At 20:10 UTC on Sunday.
   workflow_dispatch:
     inputs:
       dry_run:
