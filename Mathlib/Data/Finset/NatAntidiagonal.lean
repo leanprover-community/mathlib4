@@ -142,14 +142,7 @@ theorem antidiagonal.snd_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagon
 @[simp] lemma antidiagonal_filter_le_snd_of_le {n k : ℕ} (h : k ≤ n) :
     {a ∈ antidiagonal n | k ≤ a.snd} = (antidiagonal (n - k)).map
       (Embedding.prodMap (Embedding.refl ℕ) ⟨_, add_left_injective k⟩) := by
-  have aux₁ : fun a ↦ k ≤ a.snd = (fun a ↦ k ≤ a.fst) ∘ (Equiv.prodComm ℕ ℕ).symm := rfl
-  have aux₂ : ∀ i j, (∃ a b, a + b = n - k ∧ b = i ∧ a + k = j) ↔
-                      ∃ a b, a + b = n - k ∧ a = i ∧ b + k = j :=
-    fun i j ↦ by rw [exists_comm]; exact exists₂_congr (fun a b ↦ by rw [add_comm])
-  rw [← map_prodComm_antidiagonal]
-  simp_rw [aux₁, ← map_filter, antidiagonal_filter_le_fst_of_le h, map_map]
-  ext ⟨i, j⟩
-  simpa using aux₂ i j
+  grind [antidiagonal_filter_fst_le_of_le, mem_antidiagonal]
 
 /-- The set `antidiagonal n` is equivalent to `Fin (n+1)`, via the first projection. -/
 @[simps]

@@ -738,11 +738,7 @@ protected theorem induction {p : (Π₀ i, β i) → Prop} (f : Π₀ i, β i) (
     rw [H3]
     apply ih
   have H3 : single i _ + _ = (⟨f, Trunc.mk ⟨i ::ₘ s, H⟩⟩ : Π₀ i, β i) := single_add_erase _ _
-  rw [← H3]
-  change p (single i (f i) + _)
-  rcases Classical.em (f i = 0) with h | h
-  · rw [h, single_zero, zero_add]
-    exact H2
+  apply exists_eq_right'.mp
   grind
 
 theorem induction₂ {p : (Π₀ i, β i) → Prop} (f : Π₀ i, β i) (h0 : p 0)
