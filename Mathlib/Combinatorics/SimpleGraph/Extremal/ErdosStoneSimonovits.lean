@@ -119,8 +119,8 @@ lemma card_edgeFinset_between_verts_le (hr_pos : 0 < r) (ht'_pos : 0 < t') :
 
 /-- `#ErdosStone.filter` is arbitrarily large with respect to `n`.
 
-This is an auxiliary theorem for the Erdős-Stone theorem. -/
-theorem mul_le_card_filter_mul (hr_pos : 0 < r) (ht'_pos : 0 < t')
+This is an auxiliary lemma for the Erdős-Stone theorem. -/
+lemma mul_le_card_filter_mul (hr_pos : 0 < r) (ht'_pos : 0 < t')
     (hδ : G.minDegree ≥ (1 - 1 / r + ε) * n)
     {N : ℕ} (hN : (N + r * t') * (t' - t) ≤ n * (r * t' * ε - t)) :
     (N * (t' - t) : ℝ) ≤ (#(filter K t) * (t' - t) : ℝ) :=
