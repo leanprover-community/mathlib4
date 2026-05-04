@@ -99,14 +99,10 @@ noncomputable def continuousBilinearMap_of_continuousMultilinearMap
 -- Aristotle start
 
 def QuadraticMap.toMultilinearMap {V : Type*} [AddCommGroup V] [Module ℝ V]
-  (Q : QuadraticMap ℝ V ℝ) :
-  MultilinearMap ℝ (fun _ : Fin 2 => V) ℝ :=
-  let B := Q.polarBilin
-  { toFun := fun v => B (v 0) (v 1)
-    map_update_add' := by
-      simp +zetaDelta at *
-    map_update_smul' := by
-      simp +decide [ Function.update_apply ] }
+  (Q : QuadraticMap ℝ V ℝ) : MultilinearMap ℝ (fun _ : Fin 2 => V) ℝ := {
+    toFun := fun v => Q.polarBilin (v 0) (v 1)
+    map_update_add' := by simp
+    map_update_smul' := by simp}
 
 noncomputable def QuadraticMap.toMultilinearMapHALF {V : Type*} [AddCommGroup V] [Module ℝ V]
   (Q : QuadraticMap ℝ V ℝ) :
