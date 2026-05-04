@@ -330,6 +330,16 @@ theorem lift_eval_of (f : α → M) (x : α) : lift f (of x) = f x := rfl
 @[to_additive (attr := simp)]
 theorem lift_restrict (f : FreeMonoid α →* M) : lift (f ∘ of) = f := lift.apply_symm_apply f
 
+/-- If a monoid homomorphism `g : FreeMonoid α →* M` agrees with `lift f` on generators,
+then `g` equals `lift f`. This is the uniqueness part of the universal property of
+`FreeMonoid`. -/
+@[to_additive /-- If an additive monoid homomorphism `g : FreeAddMonoid α →+ M` agrees with
+`lift f` on generators, then `g` equals `lift f`. This is the uniqueness part of the
+universal property of `FreeAddMonoid`. -/]
+theorem lift_unique (f : α → M) (g : FreeMonoid α →* M) (hg : ∀ x, g (of x) = f x) :
+    g = lift f :=
+  hom_eq (fun x => (hg x).trans (lift_eval_of f x).symm)
+
 @[to_additive]
 theorem comp_lift (g : M →* N) (f : α → M) : g.comp (lift f) = lift (g ∘ f) := by
   ext
