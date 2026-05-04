@@ -562,13 +562,7 @@ theorem equivQuotMaximalIdealPow_apply_mk (n : ℕ) (x : R) :
 theorem equivQuotMaximalIdealPow_symm_apply_mk_mul (n : ℕ) (x : R) (s : p.primeCompl) :
     (equivQuotMaximalIdealPow p Rₚ n).symm (Ideal.Quotient.mk _ (IsLocalization.mk' Rₚ x s)) *
       Ideal.Quotient.mk (p ^ n) s = Ideal.Quotient.mk (p ^ n) x := by
-  have hu (u : p.primeCompl) : IsUnit (Ideal.Quotient.mk (p ^ n) u) :=
-    Ideal.Quotient.isUnit_mk_pow_of_notMem _ <| mem_primeCompl_iff.mp u.prop
-  suffices (IsUnit.liftRight ((Ideal.Quotient.mkₐ R (p ^ n) : R →* R ⧸ p ^ n).restrict p.primeCompl)
-      hu s)⁻¹ * Ideal.Quotient.mk (p ^ n) s = 1 by
-    simp [equivQuotMaximalIdealPow, lift_mk', mul_assoc, this]
-  rw [Units.inv_mul_eq_one]
-  rfl
+  simp [equivQuotMaximalIdealPow, lift_mk', IsUnit.liftRight_apply, mul_assoc]
 
 variable {Sₚ : Type*} [CommRing S] [Algebra R S] [CommRing Sₚ] [Algebra S Sₚ] [Algebra R Sₚ]
 variable [Algebra Rₚ Sₚ] [IsLocalization (Algebra.algebraMapSubmonoid S p.primeCompl) Sₚ]
