@@ -5,14 +5,6 @@ universal-cover construction (PR #38292) against `mathlib-standards.md`,
 deferred to a follow-up PR. The corresponding "fix-now" items have already
 been addressed on this branch.
 
-## Modularise long proofs
-
-- **`BasedPath.toPath_homotopic_of_joinedIn_slsc`** (`BasedPath.lean`,
-  ≈l. 748–859). Single ≈110-line proof. The four boundary-evaluation
-  sub-`have`s (`hK_zero`, `hK_one`, `hK_at_zero`, `hK_at_one`) deserve to
-  be top-level lemmas about the reparametrisations
-  `joinedInSLSC_uFn` / `joinedInSLSC_vFn`.
-
 ## API gaps for new definitions
 
 - `BasedPath` (`BasedPath.lean`): no `mk` simp lemma, no `BasedPath.refl`.

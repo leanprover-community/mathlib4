@@ -754,6 +754,31 @@ theorem joinedInSLSC_vFn_zero_right (t : I) : joinedInSLSC_vFn (t, 0) = 0 :=
 theorem joinedInSLSC_vFn_one_right (t : I) : joinedInSLSC_vFn (t, 1) = 1 :=
   Subtype.ext (by simp [joinedInSLSC_vFn, joinedInSLSC_vReal])
 
+theorem joinedInSLSC_uFn_zero_left_eq_zero_of_le_half {s : I}
+    (hs : (s : ℝ) ≤ 1 / 2) : joinedInSLSC_uFn (0, s) = 0 :=
+  Subtype.ext <| by
+    rw [joinedInSLSC_uFn_zero_left, max_eq_left (by linarith)]; rfl
+
+theorem joinedInSLSC_uFn_zero_left_eq_two_mul_sub_one_of_half_le
+    {s : I} (hs : 1 / 2 ≤ (s : ℝ)) :
+    joinedInSLSC_uFn (0, s) =
+      ⟨2 * (s : ℝ) - 1,
+        unitInterval.two_mul_sub_one_mem_iff.2 ⟨hs, s.2.2⟩⟩ :=
+  Subtype.ext <| by
+    rw [joinedInSLSC_uFn_zero_left, max_eq_right (by linarith)]
+
+theorem joinedInSLSC_vFn_eq_two_mul_of_le_half {t s : I}
+    (hs : (s : ℝ) ≤ 1 / 2) :
+    joinedInSLSC_vFn (t, s) =
+      ⟨2 * (s : ℝ),
+        (unitInterval.mul_pos_mem_iff zero_lt_two).2 ⟨s.2.1, hs⟩⟩ :=
+  Subtype.ext <| by rw [joinedInSLSC_vFn_left, min_eq_left (by linarith)]
+
+theorem joinedInSLSC_vFn_eq_one_of_half_le {t s : I}
+    (hs : 1 / 2 ≤ (s : ℝ)) : joinedInSLSC_vFn (t, s) = 1 :=
+  Subtype.ext <| by
+    rw [joinedInSLSC_vFn_left, min_eq_right (by linarith)]; rfl
+
 /-- If `α` and `β` are based paths with the same endpoint `v ∈ U`, joined inside
 `endpoint ⁻¹' U`, and `U` has the SLSC uniqueness property, then their associated paths
 `α.toPath` and `β.toPath` are homotopic (after casting to a common endpoint).
@@ -824,40 +849,19 @@ public theorem toPath_homotopic_of_joinedIn_slsc
     intro s
     rw [K_fn_apply, Path.trans_apply]
     by_cases hs : (s : ℝ) ≤ 1 / 2
-    · rw [dif_pos hs]
-      have h2s : 2 * (s : ℝ) - 1 ≤ 0 := by linarith
-      have hu_subt : joinedInSLSC_uFn (0, s) = (0 : I) :=
-        Subtype.ext (by rw [joinedInSLSC_uFn_zero_left, max_eq_left h2s]; rfl)
-      have hv_subt : joinedInSLSC_vFn (0, s) =
-          ⟨2 * (s : ℝ), (unitInterval.mul_pos_mem_iff zero_lt_two).2 ⟨s.2.1, hs⟩⟩ :=
-        Subtype.ext (by rw [joinedInSLSC_vFn_left, min_eq_left (by linarith)])
-      rw [hu_subt, hv_subt, hF0_eq]
-      rfl
-    · rw [dif_neg hs]
-      have h2s : 0 ≤ 2 * (s : ℝ) - 1 := by linarith [not_le.mp hs]
-      have hu_subt : joinedInSLSC_uFn (0, s) =
-          ⟨2 * (s : ℝ) - 1,
-            unitInterval.two_mul_sub_one_mem_iff.2 ⟨(not_le.mp hs).le, s.2.2⟩⟩ :=
-        Subtype.ext (by rw [joinedInSLSC_uFn_zero_left, max_eq_right h2s])
-      have hv_subt : joinedInSLSC_vFn (0, s) = (1 : I) :=
-        Subtype.ext (by rw [joinedInSLSC_vFn_left, min_eq_right (by linarith)]; rfl)
-      rw [hu_subt, hv_subt]
-      rfl
+    · rw [dif_pos hs,
+        joinedInSLSC_uFn_zero_left_eq_zero_of_le_half hs,
+        joinedInSLSC_vFn_eq_two_mul_of_le_half hs, hF0_eq]; rfl
+    · rw [dif_neg hs,
+        joinedInSLSC_uFn_zero_left_eq_two_mul_sub_one_of_half_le (not_le.mp hs).le,
+        joinedInSLSC_vFn_eq_one_of_half_le (not_le.mp hs).le]; rfl
   have hK_one : ∀ s : I, K_fn (1, s) = (β.toPath.trans (Path.refl v)) s := by
     intro s
     rw [K_fn_apply, Path.trans_apply, joinedInSLSC_uFn_one_left]
     by_cases hs : (s : ℝ) ≤ 1 / 2
-    · rw [dif_pos hs]
-      have hv_subt : joinedInSLSC_vFn (1, s) =
-          ⟨2 * (s : ℝ), (unitInterval.mul_pos_mem_iff zero_lt_two).2 ⟨s.2.1, hs⟩⟩ :=
-        Subtype.ext (by rw [joinedInSLSC_vFn_left, min_eq_left (by linarith)])
-      rw [hv_subt, hF1_eq]
-      rfl
-    · rw [dif_neg hs]
-      have hv_subt : joinedInSLSC_vFn (1, s) = (1 : I) :=
-        Subtype.ext (by rw [joinedInSLSC_vFn_left, min_eq_right (by linarith [not_le.mp hs])]; rfl)
-      rw [hv_subt, hF1_eq]
-      rfl
+    · rw [dif_pos hs, joinedInSLSC_vFn_eq_two_mul_of_le_half hs, hF1_eq]; rfl
+    · rw [dif_neg hs,
+        joinedInSLSC_vFn_eq_one_of_half_le (not_le.mp hs).le, hF1_eq]; rfl
   have hK_at_zero : ∀ t : I, K_fn (t, 0) = x₀ := fun t ↦ by
     rw [K_fn_apply, joinedInSLSC_vFn_zero_right]
     exact (F (joinedInSLSC_uFn (t, 0))).2
