@@ -692,19 +692,15 @@ lemma mem_divisors_self (hz : z ≠ 0) : z ∈ divisors z :=
   simp
 
 @[simp]
-lemma mem_divisorsAntidiag :
-    ∀ {z} {xy : ℤ × ℤ}, xy ∈ divisorsAntidiag z ↔ xy.fst * xy.snd = z ∧ z ≠ 0
-  | (n : ℕ), ((x : ℕ), (y : ℕ))
-  | (n : ℕ), (-[x+1], -[y+1])
-  | (n : ℕ), ((x : ℕ), -[y+1])
-  | (n : ℕ), (-[x+1], (y : ℕ))
-  | -[n+1], ((x : ℕ), (y : ℕ))
-  | -[n+1], (-[x+1], -[y+1])
-  | -[n+1], ((x : ℕ), -[y+1])
-  | -[n+1], (-[x+1], (y : ℕ)) => by
-    simp [divisorsAntidiag, negSucc_eq, -neg_add_rev]
-    norm_cast
-    try simp +contextual [eq_comm]
+lemma mem_divisorsAntidiag {z} {xy : ℤ × ℤ} :
+    xy ∈ divisorsAntidiag z ↔ xy.fst * xy.snd = z ∧ z ≠ 0 := by
+  rcases z, xy with ⟨_ | _, ⟨_ | _, _ | _⟩⟩
+  case ofNat.negSucc.negSucc =>
+    simp [divisorsAntidiag]
+    grind [Nat.cast_inj]
+  all_goals
+    simp [divisorsAntidiag]
+    grind only
 
 theorem image_fst_divisorsAntidiag : z.divisorsAntidiag.image Prod.fst = z.divisors := by
   ext
