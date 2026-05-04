@@ -170,8 +170,9 @@ theorem induction_on_isSmallExtension (hf : Surjective f.hom.toAlgHom)
     intro A f hf hlen
     have hn : n ≠ 0 := by
       intro hn; revert hlen
-      have : Nontrivial A := inferInstance
-      simpa [eq_comm, hn, Module.length_eq_zero_iff, ← not_nontrivial_iff_subsingleton]
+      rw [imp_false, hn, Nat.cast_zero, eq_comm, Module.length_eq_zero_iff,
+        ← not_nontrivial_iff_subsingleton, not_not]
+      infer_instance
     let I := RingHom.ker f.hom.toAlgHom
     by_cases hI : I = ⊥
     · rw [← RingHom.injective_iff_ker_eq_bot] at hI
@@ -261,8 +262,7 @@ abbrev pullbackSnd (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.hom.toAlgHom) 
 
 lemma pullback_comm_sq (f : A ⟶ C) (g : B ⟶ C) (hg : Surjective g.hom.toAlgHom) :
     pullbackFst f g hg ≫ f = pullbackSnd f g hg ≫ g := by
-  ext
-  simpa using LocAlgCat.pullback_comm_sq f.hom g.hom hg
+  ext; simpa using LocAlgCat.pullback_comm_sq f.hom g.hom hg
 
 @[stacks 06GH "(2)"]
 instance pullbackFst_isSmallExtension (f : A ⟶ C) (g : B ⟶ C) [IsSmallExtension g] :

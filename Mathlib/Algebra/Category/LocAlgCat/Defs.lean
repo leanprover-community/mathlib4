@@ -95,9 +95,6 @@ lemma residue_surjective : Surjective (residue A) := A.isSurjective
 lemma residue_eq_zero_iff {x : A} : residue A x = 0 ↔ x ∈ maximalIdeal A := by
   rw [← RingHom.mem_ker, ker_residue]
 
-@[simp]
-lemma residue_of_apply {x : (of Λ k X hX)} : (of Λ k X hX).residue x = algebraMap X k x := rfl
-
 /-- The canonical equivalence between the residue field of an object and `k`. -/
 noncomputable def residueEquiv (A : LocAlgCat Λ k) : ResidueField A ≃ₐ[Λ] k where
   __ := (Ideal.quotEquivOfEq (ker_residue (A := A)).symm).trans
@@ -217,10 +214,9 @@ def isoEquivSubtypeAlgEquiv : (of Λ k X hX ≅ of Λ k Y hY) ≃
   toFun i := ⟨ofIso i, residue_comp_coe_ofIso i⟩
   invFun f := isoMk f.val f.prop
 
-instance uliftResidueAlgebra : Algebra (ULift.{w'} A) k := ULift.algebra' ..
+instance : Algebra (ULift.{w'} A) k := ULift.algebra' ..
 
-instance isScalarTower_uliftResidueAlgebra : IsScalarTower Λ (ULift.{w'} A) k :=
-  ULift.isScalarTower' ..
+instance : IsScalarTower Λ (ULift.{w'} A) k := ULift.isScalarTower' ..
 
 variable (Λ k) in
 /-- Universe lift functor for `LocAlgCat`. -/
@@ -228,7 +224,7 @@ def uliftFunctor : LocAlgCat.{w} Λ k ⥤ LocAlgCat.{max w w'} Λ k where
   obj A := of Λ k (ULift.{w'} A) (fun r ↦ by simpa using A.isSurjective r)
   map {A B} f := ofHom (ULift.algEquiv.symm.toAlgHom.comp
     (f.toAlgHom.comp ULift.algEquiv.toAlgHom))
-      (by ext x; simpa using DFunLike.congr_fun f.residue_comp x.down)
+    (by ext x; simpa using DFunLike.congr_fun f.residue_comp x.down)
 
 variable (Λ k) in
 /-- The universe lift functor for `LocAlgCat` is fully faithful. -/

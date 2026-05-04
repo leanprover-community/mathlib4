@@ -233,6 +233,15 @@ abbrev mapSpecialFiber [IsLocalRing Λ] [Algebra.IsIntegral Λ k] (f : A ⟶ B) 
   mapOfQuot f (by rw [Ideal.map_le_iff_le_comap, ← Ideal.comap_coe f.toAlgHom,
     Ideal.comap_comap, AlgHom.comp_algebraMap, ← Ideal.map_le_iff_le_comap])
 
+@[simp]
+lemma algebraMap_specialFiber_apply_eq_zero [IsLocalRing Λ] [Algebra.IsIntegral Λ k] (y : Λ)
+    (h : y ∈ maximalIdeal Λ) :
+    (algebraMap Λ A.specialFiber) y = 0 := by
+  change algebraMap Λ (A ⧸ (maximalIdeal Λ).map (algebraMap Λ A)) y = 0
+  rw [IsScalarTower.algebraMap_apply Λ A, Ideal.Quotient.algebraMap_eq, ← RingHom.mem_ker,
+    Ideal.mk_ker]
+  exact Ideal.mem_map_of_mem _ h
+
 lemma toInfinitesimal_comp_mapInfinitesimal_toSpecialFiber [IsLocalRing Λ]
     [Algebra.IsIntegral Λ k] (n : ℕ) [NeZero n] (A : LocAlgCat.{w} Λ k) :
     A.toInfinitesimal n ≫ mapInfinitesimal n n le_rfl A.toSpecialFiber =

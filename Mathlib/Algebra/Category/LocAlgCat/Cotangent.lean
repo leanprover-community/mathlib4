@@ -395,12 +395,7 @@ theorem range_liftBaseChange_baseCotangentMap :
     | zero => simp
     | tmul x y =>
       rcases (maximalIdeal Λ).toCotangent_surjective y with ⟨y, rfl⟩
-      have : (algebraMap Λ A.specialFiber) y = 0 := by
-        change algebraMap Λ (A ⧸ (maximalIdeal Λ).map (algebraMap Λ A)) y = 0
-        rw [IsScalarTower.algebraMap_apply Λ A, Ideal.Quotient.algebraMap_eq, ← RingHom.mem_ker,
-          Ideal.mk_ker]
-        exact Ideal.mem_map_of_mem _ y.prop
-      simp [Ideal.toCotangent_eq_zero, this]
+      simp [Ideal.toCotangent_eq_zero]
     | add x y hx hy => rw [map_add]; exact add_mem hx hy
   · rcases (maximalIdeal A).toCotangent_surjective x with ⟨⟨x, x_in⟩, rfl⟩
     simp only [LinearMap.mem_ker, mapCotangent_toCotangent, toAlgHom_toOfQuot_apply,
