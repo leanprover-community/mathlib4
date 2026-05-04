@@ -65,9 +65,10 @@ This is the matrix form of [deLauneyFlannery2011, Theorem 2.3.6]. -/
 theorem IsHadamard.conjTranspose [Fintype n] [DecidableEq n] [CommRing R] [StarRing R]
     [IsDomain R] {A : Matrix n n R} (hA : A.IsHadamard) (hcard : (Fintype.card n : R) ≠ 0) :
     Aᴴ.IsHadamard := by
-  refine ⟨fun i j => by simpa [Matrix.conjTranspose_apply, mul_comm] using hA.1 j i, ?_⟩
+  refine ⟨fun i j => by simpa [mul_comm] using hA.1 j i, ?_⟩
   simpa [conjTranspose_conjTranspose] using
-      mul_eq_smul_one_symm hA.2 (hA.det_ne_zero hcard)
+    mul_eq_smul_one_symm
+      (isRegular_of_isLeftRegular_det (IsRegular.of_ne_zero (hA.det_ne_zero hcard)).left).left hA.2
 
 /-- A Hadamard matrix with constant row sum `s` has order `s ^ 2`, provided the order is
 nonzero in `R` and the star is trivial.
