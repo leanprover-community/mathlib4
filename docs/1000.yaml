@@ -577,8 +577,10 @@ Q579515:
 
 Q583147:
   title: Sard's theorem
-  # exists a statement in Lean, WIP formalisations in https://github.com/urkud/SardMoreira
-  # and https://github.com/fpvandoorn/sard (manifold version)
+  url: https://github.com/urkud/SardMoreira
+  authors: Yury Kudryashov
+  date: 2025-12-16
+  comment: the manifold version is in progress by Michael Rothgang at https://github.com/fpvandoorn/sard
 
 Q586051:
   title: Haag–Łopuszański–Sohnius theorem
@@ -588,6 +590,9 @@ Q587081:
 
 Q588218:
   title: Koebe 1/4 theorem
+  url: https://github.com/girving/ray/blob/main/Ray/Koebe/Koebe.lean
+  authors: Geoffrey Irving
+  date: 2025-09-02
 
 Q594571:
   title: Van Aubel's theorem
@@ -1675,7 +1680,7 @@ Q1455794:
 
 Q1457052:
   title: Well-ordering theorem
-  decl: exists_wellOrder
+  decl: exists_wellFoundedLT
   authors: Mario Carneiro, Chris Hughes, Violeta Hernández Palacios
   date: 2017
 
@@ -3506,7 +3511,7 @@ Q6799039:
 
 Q6813106:
   title: Mellin inversion theorem
-  decl: mellin_inversion
+  decl: mellinInv_mellin_eq
 
 Q6859627:
   title: Milliken's tree theorem
@@ -3623,7 +3628,6 @@ Q7208500:
   title: Poisson limit theorem
   decls:
     - ProbabilityTheory.tendsto_choose_mul_pow_of_tendsto_mul_atTop
-    - ProbabilityTheory.binomial_tendsto_poissonPMFReal_atTop
   authors: Yi Yuan
   date: 2026
 

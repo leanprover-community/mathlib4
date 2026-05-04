@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.Data.Finsupp.MonomialOrder
 public import Mathlib.Data.Finsupp.Weight
 
-/-! Homogeneous lexicographic monomial ordering
+/-! # Homogeneous lexicographic monomial ordering
 
 * `MonomialOrder.degLex`: a variant of the lexicographic ordering that first compares degrees.
 For this, `σ` needs to be embedded with an ordering relation which satisfies `WellFoundedGT σ`.
@@ -127,11 +127,10 @@ instance isStrictOrder : IsStrictOrder (DegLex (α →₀ ℕ)) (· < ·) where
 
 /-- The linear order on `Finsupp`s obtained by the homogeneous lexicographic ordering. -/
 noncomputable instance : LinearOrder (DegLex (α →₀ ℕ)) :=
-  LinearOrder.lift'
+  fast_instance% LinearOrder.lift'
     (fun (f : DegLex (α →₀ ℕ)) ↦ toLex ((ofDegLex f).degree, toLex (ofDegLex f)))
     (fun f g ↦ by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem le_iff {x y : DegLex (α →₀ ℕ)} :
     x ≤ y ↔ (ofDegLex x).degree < (ofDegLex y).degree ∨
       (ofDegLex x).degree = (ofDegLex y).degree ∧ toLex (ofDegLex x) ≤ toLex (ofDegLex y) := by
@@ -151,7 +150,6 @@ instance : IsOrderedCancelAddMonoid (DegLex (α →₀ ℕ)) where
     rw [le_iff] at h ⊢
     simpa [ofDegLex_add, map_add] using h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem single_strictAnti : StrictAnti (fun (a : α) ↦ toDegLex (single a 1)) := by
   intro _ _ h
   simp only [lt_iff, ofDegLex_toDegLex, degree_single, lt_self_iff_false, Lex.single_lt_iff, h,
@@ -185,9 +183,8 @@ noncomputable instance orderBot : OrderBot (DegLex (α →₀ ℕ)) where
       exact bot_le
     · simp [h]
 
-instance wellFoundedLT [WellFoundedGT α] :
-    WellFoundedLT (DegLex (α →₀ ℕ)) :=
-  ⟨wellFounded wellFounded_gt wellFounded_lt fun n ↦ (zero_le n).not_gt⟩
+instance wellFoundedLT [WellFoundedGT α] : WellFoundedLT (DegLex (α →₀ ℕ)) :=
+  ⟨wellFounded wellFounded_gt wellFounded_lt fun _ ↦ not_lt_zero⟩
 
 end DegLex
 
@@ -199,7 +196,6 @@ open Finsupp
 
 variable {σ : Type*} [LinearOrder σ] [WellFoundedGT σ]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The deg-lexicographic order on `σ →₀ ℕ`, as a `MonomialOrder` -/
 noncomputable def degLex :
     MonomialOrder σ where

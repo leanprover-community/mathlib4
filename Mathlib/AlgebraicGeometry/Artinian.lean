@@ -37,7 +37,7 @@ We define and prove basic properties about Artinian and locally Artinian Schemes
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

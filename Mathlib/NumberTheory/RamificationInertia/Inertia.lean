@@ -104,8 +104,8 @@ lemma inertiaDeg_comap_eq (e : S ≃ₐ[R] S₁) (P : Ideal S₁) :
 lemma inertiaDeg_map_eq (P : Ideal S)
     {E : Type*} [EquivLike E S S₁] [AlgEquivClass E R S S₁] (e : E) :
     inertiaDeg p (P.map e) = inertiaDeg p P := by
-  rw [show P.map e = _ from map_comap_of_equiv (e : S ≃+* S₁)]
-  exact p.inertiaDeg_comap_eq (e : S ≃ₐ[R] S₁).symm P
+  rw [show P.map e = _ from map_comap_of_equiv (RingEquivClass.toRingEquiv e : S ≃+* S₁)]
+  exact p.inertiaDeg_comap_eq (AlgEquivClass.toAlgEquiv e).symm P
 
 theorem inertiaDeg_bot [Nontrivial R] [IsDomain S] [Algebra.IsIntegral R S]
     [hP : P.LiesOver (⊥ : Ideal R)] :
@@ -115,6 +115,16 @@ theorem inertiaDeg_bot [Nontrivial R] [IsDomain S] [Algebra.IsIntegral R S]
   rw [Algebra.finrank_eq_of_equiv_equiv (RingEquiv.quotientBot R).symm
     ((quotEquivOfEq hP).trans (RingEquiv.quotientBot S)).symm]
   rfl
+
+theorem inertiaDeg_le_inertiaDeg {T : Type*} [CommRing T] [Algebra R T] [Algebra S T]
+    [IsScalarTower R S T] [Module.Finite R T] (Q : Ideal T) [P.LiesOver p] [Q.LiesOver P]
+    [p.IsPrime] : inertiaDeg P Q ≤ inertiaDeg p Q := by
+  have : Q.LiesOver p := LiesOver.trans Q P p
+  rw [inertiaDeg_algebraMap, inertiaDeg_algebraMap]
+  have : IsScalarTower (R ⧸ p) (S ⧸ P) (T ⧸ Q) := IsScalarTower.of_algebraMap_eq <| by
+    rintro ⟨x⟩
+    simp [Submodule.Quotient.quot_mk_eq_mk, IsScalarTower.algebraMap_apply R (S ⧸ P) (T ⧸ Q)]
+  exact finrank_top_le_finrank_of_isScalarTower ..
 
 end DecEq
 
@@ -128,7 +138,6 @@ lemma absNorm_eq_pow_inertiaDeg_of_liesOver {S : Type*} [CommRing S] [IsDedekind
   let _ : Field (S ⧸ p) := Quotient.field p
   simpa [absNorm_apply, Submodule.cardQuot_apply] using Module.natCard_eq_pow_finrank (K := S ⧸ p)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The absolute norm of an ideal `P` above a rational prime `p` is
 `|p| ^ ((span {p}).inertiaDeg P)`.
 See `absNorm_eq_pow_inertiaDeg'` for a version with `p` of type `ℕ`. -/

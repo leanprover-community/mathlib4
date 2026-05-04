@@ -253,8 +253,7 @@ variable [Semiring T] [Module R T] (v : AbsoluteValue T S)
 variable (R) in
 /-- The canonical `R`-linear isomorphism between `WithAbs v` and `T`, when
 `v : AbsoluteValue T S`. -/
-def linearEquiv [Semiring T] [Module R T] (v : AbsoluteValue T S) :
-    WithAbs v ≃ₗ[R] T := (equiv v).linearEquiv R
+def linearEquiv : WithAbs v ≃ₗ[R] T := (equiv v).linearEquiv R
 
 variable {v}
 
@@ -283,7 +282,7 @@ instance (v : AbsoluteValue T S) : Algebra R (WithAbs v) :=
   fast_instance% (equiv v).algebra R
 
 theorem algebraMap_right_apply {v : AbsoluteValue T S} (x : R) :
-    algebraMap R (WithAbs v) x = toAbs v (algebraMap R T x):= rfl
+    algebraMap R (WithAbs v) x = toAbs v (algebraMap R T x) := rfl
 
 theorem algebraMap_right_injective (v : AbsoluteValue T S)
     (h : Function.Injective (algebraMap R T)) : Function.Injective (algebraMap R (WithAbs v)) :=
