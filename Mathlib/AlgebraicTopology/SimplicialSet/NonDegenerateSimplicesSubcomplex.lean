@@ -98,6 +98,15 @@ lemma cast_eq_self : s.cast hd = s := by
 
 end
 
+/-- The bijection `A.op.N ≃ A.N` for a subcomplex `A` of a simplicial set.. -/
+@[simps -isSimp apply symm_apply]
+def opEquiv : A.op.N ≃o A.N where
+  toFun x := N.mk' (SSet.N.opEquiv x.toN) x.notMem
+  invFun y := N.mk' (SSet.N.opEquiv.symm y.toN) y.notMem
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_rel_iff' := SSet.N.opEquiv.map_rel_iff
+
 /-- The bijection `A.N ≃ B.N` on nondegenerate simplices not belonging
 to a certain subcomplex that is induced by an isomorphism `X ≅ Y` of
 simplicial sets which maps `A : X.Subcomplex` to `B : Y.Subcomplex`. -/

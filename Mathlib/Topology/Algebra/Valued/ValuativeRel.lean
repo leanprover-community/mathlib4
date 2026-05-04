@@ -18,7 +18,7 @@ to facilitate a refactor.
 
 -/
 
-@[expose] public section
+public section
 
 namespace IsValuativeTopology
 

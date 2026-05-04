@@ -106,7 +106,7 @@ theorem ae_null_of_comp_null (h : (η ∘ₖ κ) a s = 0) : (η · s) =ᵐ[κ a]
   simp_rw [comp_null a mt] at ht
   rw [Filter.eventuallyLE_antisymm_iff]
   exact ⟨Filter.EventuallyLE.trans_eq (ae_of_all _ fun _ ↦ measure_mono hst) ht,
-    ae_of_all _ fun _ ↦ zero_le _⟩
+    ae_of_all _ fun _ ↦ zero_le⟩
 
 variable {p : γ → Prop}
 
