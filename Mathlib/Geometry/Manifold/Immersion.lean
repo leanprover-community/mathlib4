@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 public import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
-public import Mathlib.Analysis.Normed.Module.Shrink
+public import Mathlib.Analysis.Normed.Module.Shrink  -- shake: keep (NormedAddCommGroup (Shrink ...)), cf. lean#13417
 public import Mathlib.Topology.Algebra.Module.TransferInstance
 
 /-! # Smooth immersions
@@ -92,11 +92,9 @@ This shortens the overall argument, as the definition of submersions has the sam
 -/
 
 open scoped Topology ContDiff
-open Function Set Manifold
+open Function Set
 
-@[expose] public section
-
-noncomputable section
+@[expose] public noncomputable section
 
 namespace Manifold
 
@@ -116,7 +114,7 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
   {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N']
-  {n : WithTop ℕ∞}
+  {n : ℕ∞ω}
 
 variable (F I J M N) in
 /-- The local property of being an immersion at a point: `f : M → N` is an immersion at `x` if
@@ -135,11 +133,9 @@ omit [ChartedSpace H M] [ChartedSpace G N] in
 /-- Being an immersion at `x` is a local property. -/
 lemma isLocalSourceTargetProperty_immersionAtProp :
     IsLocalSourceTargetProperty (ImmersionAtProp F I J M N) where
-  mono_source {f φ ψ s} hs hf := by
-    obtain ⟨equiv, hf⟩ := hf
-    exact ⟨equiv, hf.mono (by simp; grind)⟩
-  congr {f g φ ψ} hfg hf := by
-    obtain ⟨equiv, hf⟩ := hf
+  mono_source {f φ ψ s} hs := fun ⟨equiv, hf⟩ ↦ ⟨equiv, hf.mono (by simp; grind)⟩
+  congr {f g φ ψ} hfg := by
+    intro ⟨equiv, hf⟩
     refine ⟨equiv, EqOn.trans (fun x hx ↦ ?_) (hf.mono (by simp))⟩
     have : ((φ.extend I).symm) x ∈ φ.source := by simp_all
     grind
@@ -256,7 +252,7 @@ lemma source_subset_preimage_source (h : IsImmersionAtOfComplement F I J n f x) 
 /-- A linear equivalence `E × F ≃L[𝕜] E''` which belongs to the data of an immersion `f` at `x`:
 the particular equivalence is arbitrary, but this choice matches the witnesses given by
 `h.domChart` and `h.codChart`. -/
-def equiv (h : IsImmersionAtOfComplement F I J n f x) : (E × F) ≃L[𝕜] E'' := by
+@[no_expose] def equiv (h : IsImmersionAtOfComplement F I J n f x) : (E × F) ≃L[𝕜] E'' := by
   rw [IsImmersionAtOfComplement_def] at h
   exact Classical.choose <| LiftSourceTargetPropertyAt.property h
 
@@ -447,11 +443,11 @@ def complement (h : IsImmersionAt I J n f x) : Type u := by
   rw [IsImmersionAt_def] at h
   exact Classical.choose h
 
-noncomputable instance (h : IsImmersionAt I J n f x) : NormedAddCommGroup h.complement := by
+instance (h : IsImmersionAt I J n f x) : NormedAddCommGroup h.complement := by
   rw [IsImmersionAt_def] at h
   exact Classical.choose <| Classical.choose_spec h
 
-noncomputable instance (h : IsImmersionAt I J n f x) : NormedSpace 𝕜 h.complement := by
+instance (h : IsImmersionAt I J n f x) : NormedSpace 𝕜 h.complement := by
   rw [IsImmersionAt_def] at h
   exact Classical.choose <| Classical.choose_spec <| Classical.choose_spec h
 
@@ -684,10 +680,10 @@ variable {f g : M → N}
 `E'` of `N` -/
 def complement (h : IsImmersion I J n f) : Type u := Classical.choose h
 
-noncomputable instance (h : IsImmersion I J n f) : NormedAddCommGroup h.complement :=
+instance (h : IsImmersion I J n f) : NormedAddCommGroup h.complement :=
   Classical.choose <| Classical.choose_spec h
 
-noncomputable instance (h : IsImmersion I J n f) : NormedSpace 𝕜 h.complement :=
+instance (h : IsImmersion I J n f) : NormedSpace 𝕜 h.complement :=
   Classical.choose <| Classical.choose_spec <| Classical.choose_spec h
 
 lemma isImmersionOfComplement_complement (h : IsImmersion I J n f) :
