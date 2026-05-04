@@ -303,50 +303,9 @@ theorem le_of_toZ_le {j : ι} (h_le : toZ i0 i ≤ toZ i0 j) : i ≤ j := by
     exact Int.neg_le_neg h_le
 
 theorem toZ_mono {i j : ι} (h_le : i ≤ j) : toZ i0 i ≤ toZ i0 j := by
-  by_cases hi_max : IsMax i
-  · rw [le_antisymm h_le (hi_max h_le)]
-  by_cases hj_min : IsMin j
-  · rw [le_antisymm h_le (hj_min h_le)]
-  rcases le_or_gt i0 i with hi | hi <;> rcases le_or_gt i0 j with hj | hj
-  · let m := Nat.find (exists_succ_iterate_of_le h_le)
-    have hm : succ^[m] i = j := Nat.find_spec (exists_succ_iterate_of_le h_le)
-    have hj_eq : j = succ^[(toZ i0 i).toNat + m] i0 := by
-      rw [← hm, add_comm]
-      nth_rw 1 [← iterate_succ_toZ i hi]
-      rw [Function.iterate_add]
-      rfl
-    by_contra h
-    obtain hm0 | hm0 : m = 0 ∨ 1 ≤ m := by lia
-    · rw [hm0, Function.iterate_zero, id] at hm
-      rw [hm] at h
-      exact h (le_of_eq rfl)
-    refine hi_max (max_of_succ_le (le_trans ?_ (@le_of_toZ_le _ _ _ _ _ i0 j i ?_)))
-    · have h_succ_le : succ^[(toZ i0 i).toNat + 1] i0 ≤ j := by
-        rw [hj_eq]
-        exact Monotone.monotone_iterate_of_le_map succ_mono (le_succ i0) (by gcongr)
-      rwa [Function.iterate_succ', Function.comp_apply, iterate_succ_toZ i hi] at h_succ_le
-    · exact le_of_not_ge h
-  · exact absurd h_le (not_le.mpr (hj.trans_le hi))
-  · exact (toZ_neg hi).le.trans (toZ_nonneg hj)
-  · let m := Nat.find (exists_pred_iterate_of_le (α := ι) h_le)
-    have hm : pred^[m] j = i := Nat.find_spec (exists_pred_iterate_of_le (α := ι) h_le)
-    have hj_eq : i = pred^[(-toZ i0 j).toNat + m] i0 := by
-      rw [← hm, add_comm]
-      nth_rw 1 [← iterate_pred_toZ j hj]
-      rw [Function.iterate_add]
-      rfl
-    by_contra h
-    obtain hm0 | hm0 : m = 0 ∨ 1 ≤ m := by lia
-    · rw [hm0, Function.iterate_zero, id] at hm
-      rw [hm] at h
-      exact h (le_of_eq rfl)
-    refine hj_min (min_of_le_pred ?_)
-    refine (@le_of_toZ_le _ _ _ _ _ i0 j i ?_).trans ?_
-    · exact le_of_not_ge h
-    · have h_le_pred : i ≤ pred^[(-toZ i0 j).toNat + 1] i0 := by
-        rw [hj_eq]
-        exact Monotone.antitone_iterate_of_map_le pred_mono (pred_le i0) (by gcongr)
-      rwa [Function.iterate_succ', Function.comp_apply, iterate_pred_toZ j hj] at h_le_pred
+  by_contra h
+  push Not at h
+  exact lt_irrefl _ (le_antisymm h_le (le_of_toZ_le h.le) ▸ h)
 
 theorem toZ_le_iff (i j : ι) : toZ i0 i ≤ toZ i0 j ↔ i ≤ j :=
   ⟨le_of_toZ_le, toZ_mono⟩
