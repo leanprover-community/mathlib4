@@ -221,6 +221,13 @@ the homotopy classes `q : Path.Homotopic.Quotient x₀ x`. -/
 def basedPathComponent (U : Set X) {y : X} (p : Path x₀ y) : Set (BasedPath x₀) :=
   pathComponentIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) (BasedPath.ofPath p)
 
+/-- Membership in `basedPathComponent U p` is exactly being joined to `ofPath p`
+inside `endpoint ⁻¹' U`. -/
+theorem mem_basedPathComponent_iff (U : Set X) {y : X} (p : Path x₀ y) (α : BasedPath x₀) :
+    α ∈ basedPathComponent U p ↔
+      JoinedIn (BasedPath.endpoint (x₀ := x₀) ⁻¹' U) (BasedPath.ofPath p) α :=
+  Iff.rfl
+
 /-- The sheet over `U` (with `x ∈ U`) corresponding to a homotopy class
 `q : Path.Homotopic.Quotient x₀ x`, expressed as a set of based paths. -/
 noncomputable def basedPathSheet (U : Set X) (hxU : x ∈ U)
@@ -304,6 +311,30 @@ theorem ofBasedPath_preimage_sheet (U : Set X) (hxU : x ∈ U)
       exact mem_basedPathComponent_of_ofBasedPath_eq hβ hαβ.symm
   · intro α hα
     exact ⟨α, hα, rfl⟩
+
+/-- Saturated membership criterion: a based path's image lies in a sheet iff the based path
+itself lies in the corresponding `basedPathSheet`. -/
+theorem ofBasedPath_mem_sheet_iff {U : Set X} {hxU : x ∈ U}
+    {q : Path.Homotopic.Quotient x₀ x} {α : BasedPath x₀} :
+    ofBasedPath x₀ α ∈ sheet U hxU q ↔ α ∈ basedPathSheet U hxU q := by
+  rw [← ofBasedPath_preimage_sheet U hxU q]; rfl
+
+/-- The sheet over `U` is the `ofBasedPath` image of the corresponding `basedPathSheet`. -/
+theorem sheet_eq_image (U : Set X) (hxU : x ∈ U) (q : Path.Homotopic.Quotient x₀ x) :
+    sheet U hxU q = ofBasedPath x₀ '' basedPathSheet U hxU q := by
+  ext e
+  refine ⟨?_, ?_⟩
+  · intro he
+    obtain ⟨α, rfl⟩ := surjective_ofBasedPath x₀ e
+    exact ⟨α, ofBasedPath_mem_sheet_iff.mp he, rfl⟩
+  · rintro ⟨α, hα, rfl⟩
+    exact ofBasedPath_mem_sheet_iff.mpr hα
+
+/-- Sheet decomposition in terms of `basedPathComponent`: the sheet over `U` indexed by the
+class of `p` is the `ofBasedPath` image of the path component of `ofPath p`. -/
+theorem sheet_eq_image_of_basedPathComponent (U : Set X) (hxU : x ∈ U) (p : Path x₀ x) :
+    sheet U hxU (Path.Homotopic.Quotient.mk p) = ofBasedPath x₀ '' basedPathComponent U p := by
+  rw [sheet_eq_image, basedPathSheet_mk]
 
 theorem isOpen_sheet [LocPathConnectedSpace X] [SemilocallySimplyConnectedSpace X]
     (U : Set X) (hU_open : IsOpen U) (hxU : x ∈ U)
