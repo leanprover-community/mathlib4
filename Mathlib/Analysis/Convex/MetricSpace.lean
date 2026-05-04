@@ -60,6 +60,8 @@ class IsConvexDist : Prop where
   dist_iConvexCombo_fst_snd_le (f : StdSimplex ℝ (X × X)) :
     dist (f.iConvexCombo Prod.fst) (f.iConvexCombo Prod.snd) ≤ f.iConvexCombo fun x ↦ dist x.1 x.2
 
+@[deprecated (since := "2026-05-04")] alias IsConvexMetricSpace := IsConvexDist
+
 variable [IsConvexDist X]
 
 /-- `dist(∑ tᵢ xᵢ, ∑ tᵢ yᵢ) ≤ ∑ tᵢ dist(xᵢ, yᵢ)` -/
@@ -67,6 +69,8 @@ lemma dist_iConvexCombo_le {ι : Type*} (f : StdSimplex ℝ ι) (x y : ι → X)
     dist (f.iConvexCombo x) (f.iConvexCombo y) ≤ f.iConvexCombo fun i ↦ dist (x i) (y i) := by
   simpa [iConvexCombo_map, Function.comp_def]
     using IsConvexDist.dist_iConvexCombo_fst_snd_le (f.map fun i ↦ (x i, y i))
+
+@[deprecated (since := "2026-05-04")] alias dist_convexCombination_right_le := dist_iConvexCombo_le
 
 lemma dist_iConvexCombo_left_le (f : StdSimplex ℝ I) (g : I → X) (x : X) :
     dist (f.iConvexCombo g) x ≤ f.iConvexCombo fun i ↦ dist (g i) x := by

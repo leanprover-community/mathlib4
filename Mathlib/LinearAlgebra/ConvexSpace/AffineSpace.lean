@@ -103,12 +103,12 @@ instance instConvexSpace : ConvexSpace R P where
   sConvexCombo_single := convexCombination_single
   assoc := convexCombination_assoc
 
-/-- `ConvexSpace.convexCombination` in an affine space is the affine combination. -/
+/-- `ConvexSpace.sConvexCombo` in an affine space is the affine combination. -/
 theorem sConvexCombo_eq_affineCombination (s : StdSimplex R P) :
     s.sConvexCombo = s.weights.support.affineCombination R id s.weights := by
   rfl
 
-@[deprecated (since := "2026-04-03")]
+@[deprecated (since := "2026-05-04")]
 alias convexCombination_eq_affineCombination := sConvexCombo_eq_affineCombination
 
 theorem iConvexCombo_eq_affineCombination (s : StdSimplex R I) (f : I → P) :
