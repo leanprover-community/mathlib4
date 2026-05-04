@@ -267,6 +267,21 @@ lemma RelCWComplex.map_zero_mem_closedCell [RelCWComplex C D] (n : ℕ) (i : cel
     map n i 0 ∈ closedCell n i :=
   openCell_subset_closedCell _ _ (map_zero_mem_openCell _ _)
 
+lemma RelCWComplex.openCell_nonempty [RelCWComplex C D] {n : ℕ} (j : cell C n) :
+    (openCell n j).Nonempty :=
+  ⟨(map n j) 0, map_zero_mem_openCell n j⟩
+
+lemma RelCWComplex.closedCell_nonempty [RelCWComplex C D] {n : ℕ} (j : cell C n) :
+    (closedCell n j).Nonempty :=
+  ⟨(map n j) 0, map_zero_mem_closedCell n j⟩
+
+lemma RelCWComplex.Cell.openCell_congr [RelCWComplex C D] {n : ℕ} {s t : cell C n}
+    (st : openCell n s = openCell n t) : s = t := by
+  contrapose! st
+  refine (disjoint_openCell_of_ne ?_).ne ?_
+  · simpa
+  exact (openCell_nonempty s).ne_empty
+
 /-- This is an auxiliary lemma used to prove `RelCWComplex.eq_of_eq_union_iUnion`. -/
 private lemma RelCWComplex.subset_of_eq_union_iUnion [RelCWComplex C D] (I J : Π n, Set (cell C n))
     (hIJ : D ∪ ⋃ (n : ℕ) (j : I n), openCell (C := C) n j =
@@ -995,6 +1010,80 @@ lemma RelCWComplex.disjoint_interior_base_iUnion_closedCell [T2Space X] [RelCWCo
     Disjoint (interior D) (⋃ (n : ℕ) (j : cell C n), closedCell n j) := by
   simp_rw [disjoint_iff_inter_eq_empty, inter_iUnion, disjoint_interior_base_closedCell.inter_eq,
     iUnion_empty]
+
+/-- In a relative CW complex, the 0-skeleton minus the base is discrete. -/
+theorem RelCWComplex.zero_skeleton_diff_base_discrete [T2Space X] (C D : Set X) [RelCWComplex C D] :
+    IsDiscrete ((skeleton C 0).carrier \ D) := by
+  refine isDiscrete_iff_forall_exists_isOpen.mpr (fun y hy ↦ ?_)
+  refine ⟨((⋃ j : cell C 0, openCell 0 j) \ {y})ᶜ, ?_, ?_⟩
+  swap
+  · ext
+    simp only [mem_inter_iff, mem_compl_iff, mem_diff, mem_iUnion, mem_singleton_iff, not_and,
+      not_not, forall_exists_index]
+    refine ⟨fun ⟨h, h0⟩ ↦ ?_, fun h ↦ by simpa [h]⟩
+    simp only [skeleton, zero_add, skeletonLT, Subcomplex.mk', mem_union, mem_iUnion,
+      exists_prop] at h0
+    rcases h0.1 with h1 | h1
+    · exact (h0.2 h1).elim
+    obtain ⟨n, n0, hn⟩ := h1
+    have : n = 0 := by
+      contrapose! n0
+      exact ENat.one_le_iff_ne_zero.mpr <| ENat.ne_coe_of_ne n0
+    rw [this] at hn
+    exact hn.elim fun i hi =>
+      h i (by rwa [openCell_zero_eq_singleton, ← closedCell_zero_eq_singleton])
+  apply isClosed_compl_iff.mp
+  rw [closed C]
+  swap
+  · rw [compl_compl]
+    exact diff_subset.trans <| iUnion_subset (fun i ↦ openCell_subset_complex 0 i)
+  simp only [compl_compl]
+  refine ⟨?_, ?_⟩
+  · intro n j
+    rcases eq_or_ne n 0 with rfl | n0
+    · apply Subsingleton.isClosed
+      exact (subsingleton_inter_of_subsingleton_right _ (by simp [closedCell_zero_eq_singleton]))
+    apply Finite.isClosed
+    obtain ⟨I, hI⟩ := cellFrontier_subset_finite_openCell n j
+    simp_rw [openCell_zero_eq_singleton]
+    apply Finite.subset (s := {(↑(map 0 j) : (Fin 0 → ℝ) → X) ![] | j ∈ I 0})
+    · exact (Finset.finite_toSet (I 0)).image _
+    intro r ⟨⟨⟨l, ⟨hl, l0⟩⟩, red⟩, rnj⟩
+    obtain ⟨s, hs⟩ := mem_range.mp hl
+    rw [hs.symm] at l0
+    rw [mem_singleton_iff.mp l0] at rnj ⊢
+    have hs : (↑(map 0 s) : (Fin 0 → ℝ) → X) ![] ∈ openCell 0 s := by
+      simp [openCell_zero_eq_singleton]
+    refine ⟨s, ?_, rfl⟩
+    · by_cases rf : (↑(map 0 s) : (Fin 0 → ℝ) → X) ![] ∈ cellFrontier n j
+      · replace hI := hI rf
+        simp only [mem_union, mem_iUnion, exists_prop] at hI
+        rcases hI with hI | hI
+        · exact ((RelCWComplex.disjointBase 0 s).notMem_of_mem_left hs hI).elim
+        obtain ⟨f, fn, fe⟩ := hI
+        have f0 : f = 0 := by
+          obtain ⟨l, lI, lf⟩ := fe
+          by_contra f0
+          exact ((disjoint_openCell_of_ne (by simp [f0])).notMem_of_mem_left lf hs).elim
+        obtain ⟨u, u0, hu⟩ := f0 ▸ fe
+        convert u0
+        apply Cell.openCell_congr
+        simpa [openCell_zero_eq_singleton, singleton_eq_singleton_iff] using hu
+      rw [← cellFrontier_union_openCell_eq_closedCell, mem_union] at rnj
+      simp only [rf, false_or] at rnj
+      have h0 : (⟨n, j⟩ : Σ n, cell C n) ≠ ⟨0, s⟩ := fun h ↦ n0 (congrArg Sigma.fst h)
+      exact ((disjoint_openCell_of_ne h0).notMem_of_mem_left rnj hs).elim
+  convert isClosed_empty
+  ext
+  simp only [mem_inter_iff, mem_diff, mem_iUnion, mem_singleton_iff, mem_empty_iff_false, iff_false,
+    not_and, and_imp, forall_exists_index]
+  exact fun j rj _ ↦  (RelCWComplex.disjointBase 0 j).notMem_of_mem_left rj
+
+/-- The 0-skeleton of a CW complex is discrete. -/
+theorem CWComplex.zero_skeleton_discrete [T2Space X] (C : Set X) [CWComplex C] :
+    IsDiscrete (skeleton C 0).carrier := by
+  rw [← diff_empty (s := (skeleton C 0).carrier)]
+  exact RelCWComplex.zero_skeleton_diff_base_discrete C ∅
 
 namespace CWComplex
 

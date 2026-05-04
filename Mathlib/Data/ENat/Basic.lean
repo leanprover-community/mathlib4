@@ -60,6 +60,9 @@ variable {a b c d m n : ℕ∞}
 
 theorem coe_inj {a b : ℕ} : (a : ℕ∞) = b ↔ a = b := WithTop.coe_inj
 
+theorem ne_coe_of_ne {n m : ℕ} (hn : n ≠ m) : (↑n : ENat) ≠ m :=
+  mt ENat.coe_inj.mp hn
+
 @[simp] theorem succ_coe (n : ℕ) : SuccOrder.succ (n : ℕ∞) = (n + 1 : ℕ) := WithTop.succ_coe
 
 @[simp] theorem succ_top : SuccOrder.succ (⊤ : ℕ∞) = ⊤ := rfl

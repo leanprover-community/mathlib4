@@ -292,6 +292,19 @@ theorem not_subsingleton_iff : ¬s.Subsingleton ↔ s.Nontrivial := by
 theorem not_nontrivial_iff : ¬s.Nontrivial ↔ s.Subsingleton :=
   Iff.not_left not_subsingleton_iff.symm
 
+theorem subsingleton_of_subset_subsingleton {α : Type*} {s t : Set α}
+    (h : t ⊆ s) (hs : s.Subsingleton) : t.Subsingleton := by
+  contrapose! hs
+  exact hs.mono h
+
+theorem subsingleton_inter_of_subsingleton_left {α : Type*} {s : Set α} (t : Set α)
+    (h : s.Subsingleton) : (s ∩ t).Subsingleton :=
+  subsingleton_of_subset_subsingleton inter_subset_left h
+
+theorem subsingleton_inter_of_subsingleton_right {α : Type*} {t : Set α} (s : Set α)
+    (h : t.Subsingleton) : (s ∩ t).Subsingleton :=
+  subsingleton_of_subset_subsingleton inter_subset_right h
+
 alias ⟨_, Subsingleton.not_nontrivial⟩ := not_nontrivial_iff
 
 alias ⟨_, Nontrivial.not_subsingleton⟩ := not_subsingleton_iff
