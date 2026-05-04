@@ -511,9 +511,20 @@ theorem setIntegral_const [CompleteSpace E] (c : E) : ∫ _ in s, c ∂μ = μ.r
   rw [integral_const, measureReal_restrict_apply_univ]
 
 @[simp]
+theorem integral_indicator_const₀ [CompleteSpace E] (e : E) ⦃s : Set X⦄
+    (s_meas : NullMeasurableSet s μ) :
+    ∫ x : X, s.indicator (fun _ : X => e) x ∂μ = μ.real s • e := by
+  rw [integral_indicator₀ s_meas, ← setIntegral_const]
+
+@[simp]
 theorem integral_indicator_const [CompleteSpace E] (e : E) ⦃s : Set X⦄ (s_meas : MeasurableSet s) :
     ∫ x : X, s.indicator (fun _ : X => e) x ∂μ = μ.real s • e := by
   rw [integral_indicator s_meas, ← setIntegral_const]
+
+@[simp]
+theorem integral_indicator_one₀ ⦃s : Set X⦄ (hs : NullMeasurableSet s μ) :
+    ∫ x, s.indicator 1 x ∂μ = μ.real s :=
+  (integral_indicator_const₀ 1 hs).trans ((smul_eq_mul ..).trans (mul_one _))
 
 @[simp]
 theorem integral_indicator_one ⦃s : Set X⦄ (hs : MeasurableSet s) :

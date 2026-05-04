@@ -101,7 +101,7 @@ lemma ProbabilityTheory.singleton_indepSets_comap_iff {Ω M : Type*} {mΩ : Meas
       (@MeasurableSpace.isPiSystem_measurableSet _ (m𝓧.comap X)) rfl (by simp)
   mpr h := IndepFun.singleton_indepSets_of_indicator' c h
 
-lemma IndepSets.setIntegral_eq_mul {Ω 𝓧 E : Type*} {mΩ : MeasurableSpace Ω}
+lemma IndepSets.setIntegral_eq_smul {Ω 𝓧 E : Type*} {mΩ : MeasurableSpace Ω}
     {μ : Measure Ω} [m𝓧 : MeasurableSpace 𝓧] {X : Ω → 𝓧} [IsZeroOrProbabilityMeasure μ]
     [NormedAddCommGroup E] [NormedSpace ℝ E]
     {f : 𝓧 → E} {A : Set Ω} (hA1 : IndepSets {A} {s | MeasurableSet[m𝓧.comap X] s} μ)
@@ -124,6 +124,14 @@ lemma IndepSets.setIntegral_eq_mul {Ω 𝓧 E : Type*} {mΩ : MeasurableSpace Ω
     · fun_prop
     · exact hf
 
+lemma IndepSets.setIntegral_eq_mul {Ω 𝓧 : Type*} {mΩ : MeasurableSpace Ω}
+    {μ : Measure Ω} [m𝓧 : MeasurableSpace 𝓧] {X : Ω → 𝓧} [IsZeroOrProbabilityMeasure μ]
+    {f : 𝓧 → ℝ} {A : Set Ω} (hA1 : IndepSets {A} {s | MeasurableSet[m𝓧.comap X] s} μ)
+    (hX : Measurable X) (hA2 : MeasurableSet A)
+    (hf : AEStronglyMeasurable f (μ.map X)) :
+    ∫ ω in A, f (X ω) ∂μ = μ.real A * ∫ ω, f (X ω) ∂μ :=
+  IndepSets.setIntegral_eq_smul hA1 hX hA2 hf
+
 lemma Indep.singleton_indepSets {Ω : Type*} {m1 m2 mΩ : MeasurableSpace Ω}
     {P : Measure Ω} (h : Indep m1 m2 P) {A : Set Ω}
     (hA : MeasurableSet[m1] A) : IndepSets {A} {s | MeasurableSet[m2] s} P := by
@@ -132,7 +140,7 @@ lemma Indep.singleton_indepSets {Ω : Type*} {m1 m2 mΩ : MeasurableSpace Ω}
   simpa
 
 lemma measurableSpace_le_iff {Ω : Type*} {m1 m2 : MeasurableSpace Ω} :
-    m1 ≤ m2 ↔ ∀ s, MeasurableSet[m1] s → MeasurableSet[m2] s := by aesop
+    m1 ≤ m2 ↔ ∀ s, MeasurableSet[m1] s → MeasurableSet[m2] s := by rfl
 
 end Aux
 
