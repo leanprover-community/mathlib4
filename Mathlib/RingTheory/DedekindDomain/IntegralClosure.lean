@@ -35,7 +35,7 @@ to add a `(h : ¬IsField A)` assumption whenever this is explicitly needed.
 dedekind domain, dedekind ring
 -/
 
-@[expose] public section
+public section
 
 open Algebra Module
 open scoped nonZeroDivisors Polynomial

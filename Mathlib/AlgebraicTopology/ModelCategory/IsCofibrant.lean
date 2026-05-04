@@ -18,7 +18,7 @@ any `X : C` as an abbreviation for `Cofibration (initial.to X : ⊥_ C ⟶ X)`.
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Limits
 

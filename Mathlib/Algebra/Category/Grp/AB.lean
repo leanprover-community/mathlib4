@@ -18,7 +18,7 @@ This file proves that the category of abelian groups satisfies Grothendieck's ax
 AB4\*.
 -/
 
-@[expose] public section
+public section
 
 universe u
 

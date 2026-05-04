@@ -18,6 +18,15 @@ tests for these can be found in `MathlibTest/ImportHeavyFlexibleLinter.lean`
 
 -/
 
+def n : Nat := 1
+def m : Nat := 1
+
+-- Two consecutive occurrences of flexible tactics are fine.
+#guard_msgs in
+example : n = m := by
+  simp [n]
+  simp [m]
+
 /--
 warning: 'simp at h' is a flexible tactic modifying 'h'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.
 
@@ -84,7 +93,6 @@ info: 'assumption' uses '⊢'!
 example {a b : Nat} (h : a = b) : a + 0 = b := by
   simp
   induction a <;> assumption
-
 
 /--
 warning: 'simp at h' is a flexible tactic modifying 'h'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.

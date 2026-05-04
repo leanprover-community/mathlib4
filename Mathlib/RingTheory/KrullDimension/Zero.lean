@@ -17,7 +17,7 @@ Basic definitions and lemmas are provided in `Mathlib/RingTheory/KrullDimension/
 
 -/
 
-@[expose] public section
+public section
 
 section CommSemiring
 

@@ -20,7 +20,7 @@ In this file, we show that `Complex.exp` and `(· ^ n)` (for `n ≠ 0`) are a co
 We also show that any complex polynomial is a covering map on the set of regular values.
 -/
 
-@[expose] public section
+public section
 
 open Topology
 

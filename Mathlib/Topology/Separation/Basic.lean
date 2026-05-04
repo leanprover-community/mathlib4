@@ -132,14 +132,19 @@ theorem TopologicalSpace.IsTopologicalBasis.eq_iff [T0Space X] {b : Set (Set X)}
     (hb : IsTopologicalBasis b) {x y : X} : x = y ↔ ∀ s ∈ b, (x ∈ s ↔ y ∈ s) :=
   inseparable_iff_eq.symm.trans hb.inseparable_iff
 
-theorem t0Space_iff_exists_isOpen_xor'_mem (X : Type u) [TopologicalSpace X] :
-    T0Space X ↔ Pairwise fun x y => ∃ U : Set X, IsOpen U ∧ Xor' (x ∈ U) (y ∈ U) := by
+theorem t0Space_iff_exists_isOpen_xor_mem (X : Type u) [TopologicalSpace X] :
+    T0Space X ↔ Pairwise fun x y => ∃ U : Set X, IsOpen U ∧ Xor (x ∈ U) (y ∈ U) := by
   simp only [t0Space_iff_not_inseparable, xor_iff_not_iff, not_forall, exists_prop,
     inseparable_iff_forall_isOpen, Pairwise]
 
-theorem exists_isOpen_xor'_mem [T0Space X] {x y : X} (h : x ≠ y) :
-    ∃ U : Set X, IsOpen U ∧ Xor' (x ∈ U) (y ∈ U) :=
-  (t0Space_iff_exists_isOpen_xor'_mem X).1 ‹_› h
+@[deprecated (since := "2026-04-04")]
+alias t0Space_iff_exists_isOpen_xor'_mem := t0Space_iff_exists_isOpen_xor_mem
+
+theorem exists_isOpen_xor_mem [T0Space X] {x y : X} (h : x ≠ y) :
+    ∃ U : Set X, IsOpen U ∧ Xor (x ∈ U) (y ∈ U) :=
+  (t0Space_iff_exists_isOpen_xor_mem X).1 ‹_› h
+
+@[deprecated (since := "2026-04-04")] alias exists_isOpen_xor'_mem := exists_isOpen_xor_mem
 
 /-- Specialization forms a partial order on a t0 topological space. -/
 @[instance_reducible]
@@ -153,7 +158,7 @@ instance SeparationQuotient.instT0Space : T0Space (SeparationQuotient X) :=
 theorem minimal_nonempty_closed_subsingleton [T0Space X] {s : Set X} (hs : IsClosed s)
     (hmin : ∀ t, t ⊆ s → t.Nonempty → IsClosed t → t = s) : s.Subsingleton := by
   refine fun x hx y hy => of_not_not fun hxy => ?_
-  rcases exists_isOpen_xor'_mem hxy with ⟨U, hUo, hU⟩
+  rcases exists_isOpen_xor_mem hxy with ⟨U, hUo, hU⟩
   wlog h : x ∈ U ∧ y ∉ U
   · refine this hs hmin y hy x hx (Ne.symm hxy) U hUo hU.symm (hU.resolve_left h)
   obtain ⟨hxU, hyU⟩ := h
@@ -176,7 +181,7 @@ theorem IsClosed.exists_closed_singleton [T0Space X] [CompactSpace X] {S : Set X
 theorem minimal_nonempty_open_subsingleton [T0Space X] {s : Set X} (hs : IsOpen s)
     (hmin : ∀ t, t ⊆ s → t.Nonempty → IsOpen t → t = s) : s.Subsingleton := by
   refine fun x hx y hy => of_not_not fun hxy => ?_
-  rcases exists_isOpen_xor'_mem hxy with ⟨U, hUo, hU⟩
+  rcases exists_isOpen_xor_mem hxy with ⟨U, hUo, hU⟩
   wlog h : x ∈ U ∧ y ∉ U
   · exact this hs hmin y hy x hx (Ne.symm hxy) U hUo hU.symm (hU.resolve_left h)
   obtain ⟨hxU, hyU⟩ := h

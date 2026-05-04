@@ -268,6 +268,9 @@ theorem encard_strictMono [Finite α] : StrictMono (encard : Set α → ℕ∞) 
 theorem Finite.encard_strictMonoOn : StrictMonoOn (α := Set α) encard (setOf Set.Finite) :=
   fun _ hs _ _ hlt ↦ hs.encard_lt_encard hlt.ssubset
 
+theorem Finite.encard_lt_card (hfin : s.Finite) (hne : s ≠ univ) : s.encard < ENat.card α :=
+  encard_univ α ▸ hfin.encard_lt_encard (ssubset_univ_iff.mpr hne)
+
 theorem encard_diff_add_encard (s t : Set α) : (s \ t).encard + t.encard = (s ∪ t).encard := by
   rw [← encard_union_eq disjoint_sdiff_left, diff_union_self]
 
@@ -722,8 +725,8 @@ theorem ncard_diff_singleton_lt_of_mem {a : α} (h : a ∈ s) (hs : s.Finite := 
 theorem ncard_diff_singleton_le (s : Set α) (a : α) : (s \ {a}).ncard ≤ s.ncard := by
   obtain hs | hs := s.finite_or_infinite
   · apply ncard_le_ncard diff_subset hs
-  convert zero_le (α := ℕ) _
-  exact (hs.diff (by simp : Set.Finite {a})).ncard
+  convert Nat.zero_le _
+  exact (hs.diff (by simp)).ncard
 
 theorem pred_ncard_le_ncard_diff_singleton (s : Set α) (a : α) : s.ncard - 1 ≤ (s \ {a}).ncard := by
   by_cases h : a ∈ s

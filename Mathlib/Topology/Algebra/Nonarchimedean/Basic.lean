@@ -27,7 +27,7 @@ group is nonarchimedean.
 
 -/
 
-@[expose] public section
+public section
 
 open Topology
 open scoped Pointwise

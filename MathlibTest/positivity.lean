@@ -126,6 +126,12 @@ https://leanprover.zulipchat.com/#narrow/stream/239415-metaprogramming-.2F-tacti
 
 example : 0 ≤ 0 := by apply le_trans _ (le_refl _); positivity
 
+-- Test for a bug in the Nat.cast extension: if a natural number is positive
+-- and applying `cast_pos'` fails (e.g., because our ring could be trivial),
+-- we still prove non-negativity.
+example [Ring α] [PartialOrder α] [AddLeftMono α] [ZeroLEOneClass α] (b : ℕ) (_hb : 0 < b) :
+    (0 : α) ≤ ↑b := by
+  positivity
 
 /- ## Tests of the @[positivity] plugin tactics (addition, multiplication, division) -/
 

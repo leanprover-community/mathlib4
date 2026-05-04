@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Order.Ring.Star
 public import Mathlib.Analysis.Normed.Module.RieszLemma
 public import Mathlib.Analysis.Normed.Operator.Banach
 public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
-public import Mathlib.Analysis.Normed.Operator.Compact
+public import Mathlib.Analysis.Normed.Operator.Compact.Basic
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 
 /-!
@@ -36,7 +36,7 @@ rescale vectors to have norm exactly `1`, so we have to work with vectors in a s
 the unit sphere, and this makes some of the intermediate statements more complicated.
 -/
 
-@[expose] public section
+public section
 
 namespace IsCompactOperator
 

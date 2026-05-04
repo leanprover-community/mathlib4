@@ -106,6 +106,21 @@ file used by the library's own linters.
 These scripts help with testing Lean PRs that change backward-compatibility option
 behaviour. They share a common DAG traversal library that parallelises work in import-graph order.
 
+***Using these scripts in a downstream project.***  Each script depends on sibling
+files in the same directory.  Minimally:
+
+1. Copy the script you want plus `dag_traversal.py` and `set_option_utils.py` into
+   a `scripts/` directory in your project.  `fix_nonlocal_set_option.py` additionally
+   requires `add_module_set_option.py` and `rm_module_set_option.py`.
+2. From the project root, run e.g. `python3 scripts/rm_set_option.py --dry-run --option <name>`.
+3. If you see "warning: no .lean files found", pass `--directories <your-source-dir>`
+   (e.g. `--directories FLT`).
+4. If you have a `lakefile.toml` and have configured the option in `leanOptions`,
+   remove the entry manually — these scripts only edit `lakefile.lean`.
+
+Module-name derivation assumes a Mathlib-style layout where `Foo/Bar.lean` corresponds
+to module `Foo.Bar` (no `srcDir` indirection).
+
 - `dag_traversal.py`
   Reusable parallel DAG traversal for Lean import graphs. Parses the import DAG from `.lean`
   source files and parallelises an action over a forward or backward traversal. Each module is
@@ -145,6 +160,31 @@ behaviour. They share a common DAG traversal library that parallelises work in i
   cached builds of downstream files. Tries removing all occurrences at once; if that fails,
   falls back to one-at-a-time removal.
   Usage: `python3 scripts/rm_set_option.py [--option NAME] [--dry-run] [--max-workers N] [--files FILE ...] [--resume]`
+
+- `add_module_set_option.py`, `rm_module_set_option.py`
+  File-level variants of `add_set_option.py` / `rm_set_option.py`: they insert or remove a
+  `set_option ...` at the top of the file rather than scoped to individual declarations.
+  Both accept `--directories <root>` for downstream projects whose source files aren't
+  directly under the project root.
+
+- `fix_nonlocal_set_option.py`
+  Helper that bisects the import DAG to find the upstream file whose missing
+  `set_option ...` is causing a downstream failure — useful when the direct fix is in a
+  different module than the one reporting the error.  Accepts `--directories <root>` for
+  downstream projects.
+
+- `fix_unused_simp_args.py`
+  Parses `lake build` warnings of the form `This simp argument is unused: X` and removes `X`
+  from the corresponding `simp`/`simp only` call. For `← X` arguments it rewrites to `- X`
+  instead, because the `←` form has side effects on the simp set even when the rewrite itself
+  is unused.
+  Usage: `lake build 2>&1 | scripts/fix_unused_simp_args.py`
+
+- `fix_long_lines.py`
+  Breaks a too-long line at the last comma before column 100 and indents the continuation.
+  Takes `path:line` pairs as arguments; intended as a follow-up to scripts that rewrite simp
+  lists (which occasionally leave lines over the 100-char limit).
+  Usage: `scripts/fix_long_lines.py path:line ...`
 
 **CI workflow**
 - `lake-build-with-retry.sh`

@@ -23,7 +23,7 @@ finite and calculates the cardinality of its finite intervals.
 
 open DFinsupp Finset
 
-open Pointwise
+open scoped Pointwise
 
 variable {ι : Type*} {α : ι → Type*}
 

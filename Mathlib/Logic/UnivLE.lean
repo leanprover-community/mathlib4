@@ -19,7 +19,7 @@ directly due to https://github.com/leanprover/lean4/issues/2297.
 See the doc-string for the comparison with an alternative stronger definition.
 -/
 
-@[expose] public section
+public section
 
 universe u v w
 

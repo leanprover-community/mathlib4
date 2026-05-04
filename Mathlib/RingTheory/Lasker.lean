@@ -263,7 +263,7 @@ namespace Submodule
 
 section Noetherian
 
-open Pointwise
+open scoped Pointwise
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] [IsNoetherian R M]
 

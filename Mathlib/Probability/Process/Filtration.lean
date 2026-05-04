@@ -249,6 +249,7 @@ open scoped Classical in
 /-- Given a filtration `𝓕`, its **right continuation** is the filtration `𝓕₊` defined as follows:
 - If `i` is isolated on the right, then `𝓕₊ i := 𝓕 i`;
 - Otherwise, `𝓕₊ i := ⨅ j > i, 𝓕 j`.
+
 It is sometimes simply defined as `𝓕₊ i := ⨅ j > i, 𝓕 j` when the index type is `ℝ`. In the
 general case this is not ideal however. If `i` is maximal for instance, then `𝓕₊ i = ⊤`, which
 is inconvenient because `𝓕₊` is not a `Filtration ι m` anymore. If the index type

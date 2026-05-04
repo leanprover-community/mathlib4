@@ -32,7 +32,7 @@ The canonical way to introduce the topological structure from a chosen valuation
 2. Then define the `UniformSpace` structure using `ValuativeRel.uniformSpace`.
 -/
 
-@[expose] public section
+public section
 
 open scoped Topology Uniformity
 open Set Filter Valuation ValuativeRel MonoidWithZeroHom ValueGroup₀ ValueGroupWithZero

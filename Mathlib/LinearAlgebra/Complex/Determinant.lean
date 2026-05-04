@@ -16,12 +16,11 @@ space over `ℝ`.
 
 -/
 
-@[expose] public section
+public section
 
 
 namespace Complex
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The determinant of `conjAe`, as a linear map. -/
 @[simp]
 theorem det_conjAe : LinearMap.det conjAe.toLinearMap = -1 := by

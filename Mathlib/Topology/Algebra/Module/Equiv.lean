@@ -536,11 +536,11 @@ theorem symm_trans_apply (e₁ : M₂ ≃SL[σ₂₁] M₁) (e₂ : M₃ ≃SL[�
   rfl
 
 @[simp]
-theorem symm_image_image (e : M₁ ≃SL[σ₁₂] M₂) (s : Set M₁) : e.symm '' (e '' s) = s :=
+theorem symm_image_image (e : M₁ ≃SL[σ₁₂] M₂) (s : Set M₁) : e.symm '' e '' s = s :=
   e.toLinearEquiv.toEquiv.symm_image_image s
 
 @[simp]
-theorem image_symm_image (e : M₁ ≃SL[σ₁₂] M₂) (s : Set M₂) : e '' (e.symm '' s) = s :=
+theorem image_symm_image (e : M₁ ≃SL[σ₁₂] M₂) (s : Set M₂) : e '' e.symm '' s = s :=
   e.symm.symm_image_image s
 
 @[simp, norm_cast]
@@ -597,12 +597,12 @@ protected theorem image_symm_eq_preimage (e : M₁ ≃SL[σ₁₂] M₂) (s : Se
 
 @[simp]
 protected theorem symm_preimage_preimage (e : M₁ ≃SL[σ₁₂] M₂) (s : Set M₂) :
-    e.symm ⁻¹' (e ⁻¹' s) = s :=
+    e.symm ⁻¹' e ⁻¹' s = s :=
   e.toLinearEquiv.toEquiv.symm_preimage_preimage s
 
 @[simp]
 protected theorem preimage_symm_preimage (e : M₁ ≃SL[σ₁₂] M₂) (s : Set M₁) :
-    e ⁻¹' (e.symm ⁻¹' s) = s :=
+    e ⁻¹' e.symm ⁻¹' s = s :=
   e.symm.symm_preimage_preimage s
 
 lemma isUniformEmbedding {E₁ E₂ : Type*} [UniformSpace E₁] [UniformSpace E₂]
@@ -707,6 +707,17 @@ def arrowCongrEquiv (e₁₂ : M₁ ≃SL[σ₁₂] M₂) (e₄₃ : M₄ ≃SL[
   right_inv f :=
     ContinuousLinearMap.ext fun x => by
       simp only [ContinuousLinearMap.comp_apply, apply_symm_apply, coe_coe]
+
+/-- A pair of continuous (semi)linear equivalences generates a linear equivalence between the spaces
+of continuous linear maps. See also `ContinuousLinearEquiv.arrowCongr`. -/
+@[simps]
+def arrowCongrEquivₛₗ [SMulCommClass R₃ R₃ M₃] [SMulCommClass R₄ R₄ M₄]
+    [ContinuousAdd M₃] [ContinuousConstSMul R₃ M₃] [ContinuousAdd M₄] [ContinuousConstSMul R₄ M₄]
+    (e₁₂ : M₁ ≃SL[σ₁₂] M₂) (e₄₃ : M₄ ≃SL[σ₄₃] M₃) :
+    (M₁ →SL[σ₁₄] M₄) ≃ₛₗ[σ₄₃] (M₂ →SL[σ₂₃] M₃) where
+  toEquiv := arrowCongrEquiv e₁₂ e₄₃
+  map_add' := by simp
+  map_smul' := by simp
 
 section Pi
 
@@ -1445,4 +1456,14 @@ theorem trans_smul [IsScalarTower S R G] (α : Sˣ) (e : G ≃L[R] V) (f : V ≃
     e.trans (α • f) = α • (e.trans f) := by ext; simp
 
 end ContinuousLinearEquiv
+
+/-- A linear equivalence between topological modules is a homeomorphism if and only if it is
+continuous in both directions. -/
+theorem LinearEquiv.isHomeomorph_iff {R S : Type*} [Semiring R] [Semiring S]
+    {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+    {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [Module R M]
+    {N : Type*} [TopologicalSpace N] [AddCommMonoid N] [Module S N]
+    (e : M ≃ₛₗ[σ] N) : IsHomeomorph e ↔ Continuous e ∧ Continuous e.symm :=
+  e.toEquiv.isHomeomorph_iff
+
 end

@@ -84,7 +84,7 @@ theorem primorial_add_le {m n : ℕ} (h : n ≤ m) : (m + n)# ≤ m# * choose (m
 lemma Nat.Prime.dvd_primorial_iff {p n : ℕ} (hp : Prime p) : p ∣ n# ↔ p ≤ n := by
   refine ⟨?_, fun h ↦ dvd_prod_of_mem _ (by grind)⟩
   intro h
-  simp only [primorial, hp.prime.dvd_finset_prod_iff, mem_filter, mem_range_succ_iff] at h
+  simp only [primorial, hp.prime.dvd_finsetProd_iff, mem_filter, mem_range_succ_iff] at h
   obtain ⟨q, ⟨hqn, hq⟩, hpq⟩ := h
   exact (Nat.le_of_dvd hq.pos hpq).trans hqn
 

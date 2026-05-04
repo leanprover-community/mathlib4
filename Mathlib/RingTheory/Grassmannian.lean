@@ -49,7 +49,7 @@ to `G(n - k, V; F)` and also to `G(k, V →ₗ[F] F; F)`, where `n` is the dimen
 - Representability of `Module.Grassmannian.functor R M k`.
 -/
 
-@[expose] public section
+public section
 
 universe u v w
 

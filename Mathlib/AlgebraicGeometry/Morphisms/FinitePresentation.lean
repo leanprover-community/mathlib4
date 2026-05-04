@@ -26,7 +26,7 @@ We show that these properties are local, and are stable under compositions.
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

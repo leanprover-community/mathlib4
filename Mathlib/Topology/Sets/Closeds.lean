@@ -518,6 +518,30 @@ lemma map_strictMono_of_isInducing {f : β → α} (hf : IsInducing f) :
     StrictMono (map f hf.continuous) :=
   Monotone.strictMono_of_injective (map_mono hf.continuous) (map_injective_of_isInducing hf)
 
+set_option backward.isDefEq.respectTransparency false in
+/--
+Given `f : U → X` a continuous open embedding, the irreducible closeds of `U` are order isomorphic
+to the irreducible closeds of `X` nontrivially intersecting the range of `f`.
+-/
+noncomputable
+def orderIsoOfIsOpenEmbedding (f : β → α) (h : IsOpenEmbedding f) :
+    IrreducibleCloseds β ≃o {V : IrreducibleCloseds α | (f ⁻¹' V).Nonempty} where
+  toFun T := ⟨map f h.continuous T, nonempty_preimage_closure_image h.continuous T T.2.nonempty⟩
+  invFun V :=
+    { carrier := f ⁻¹' V
+      isIrreducible' := ⟨V.2, V.1.2.isPreirreducible.preimage h⟩
+      isClosed' := V.1.3.preimage h.continuous }
+  left_inv V := by
+    ext
+    simp [h.isOpenMap.preimage_closure_image h.injective h.continuous _ V.isClosed]
+  right_inv V := by
+    ext
+    simp [closure_image_preimage_of_isPreirreducible f h.isOpenMap V V.2 V.1.2.2 V.1.3]
+  map_rel_iff' {a b} := by
+    refine ⟨fun hle ↦ ?_, fun hle ↦ map_mono h.continuous hle⟩
+    simpa [← h.isEmbedding.closure_eq_preimage_closure_image, a.isClosed.closure_eq,
+      b.isClosed.closure_eq] using Set.preimage_mono (f := f) hle
+
 end IrreducibleCloseds
 
 end TopologicalSpace

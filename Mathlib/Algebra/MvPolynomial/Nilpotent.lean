@@ -19,7 +19,7 @@ We prove that
   and its other coefficients are nilpotent.
 -/
 
-@[expose] public section
+public section
 
 namespace MvPolynomial
 

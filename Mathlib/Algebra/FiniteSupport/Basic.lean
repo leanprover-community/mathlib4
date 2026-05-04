@@ -20,7 +20,7 @@ We provide API lemmas for the predicate `HasFiniteMulSupport` (and its additiviz
 built from other functions with finite multiplicative support.
 -/
 
-@[expose] public section
+public section
 
 namespace Function
 

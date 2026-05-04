@@ -24,7 +24,7 @@ Also see `AlgebraicGeometry.IsFinite.finite_preimage_singleton` in
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

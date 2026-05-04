@@ -245,8 +245,7 @@ section BaseChange
 
 variable (T) [CommRing T] [Algebra R T] (P : Presentation R S ι σ)
 
-set_option backward.privateInPublic true in
-private lemma span_range_relation_eq_ker_baseChange :
+lemma span_range_relation_eq_ker_baseChange :
     Ideal.span (Set.range fun i ↦ (MvPolynomial.map (algebraMap R T)) (P.relation i)) =
       RingHom.ker (aeval (S₁ := T ⊗[R] S) (P.baseChange T).val) := by
   apply le_antisymm
@@ -290,8 +289,6 @@ private lemma span_range_relation_eq_ker_baseChange :
     convert H'
     simp [e]
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- If `P` is a presentation of `S` over `R` and `T` is an `R`-algebra, we
 obtain a natural presentation of `T ⊗[R] S` over `T`. -/
 @[simps relation]
@@ -419,8 +416,7 @@ private lemma aeval_comp_val_eq :
   simp only [AlgHom.coe_comp, Function.comp_apply]
   cases i <;> simp
 
-set_option backward.privateInPublic true in
-private lemma span_range_relation_eq_ker_comp : Ideal.span
+lemma span_range_relation_eq_ker_comp : Ideal.span
     (Set.range (Sum.elim (Algebra.Presentation.compRelationAux Q P)
       fun rp ↦ (rename Sum.inr) (P.relation rp))) = (Q.comp P.toGenerators).ker := by
   rw [Generators.ker_eq_ker_aeval_val, Q.aeval_comp_val_eq, ← AlgHom.comap_ker]
@@ -433,8 +429,6 @@ private lemma span_range_relation_eq_ker_comp : Ideal.span
   ext
   simp
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Given presentations of `T` over `S` and of `S` over `R`,
 we may construct a presentation of `T` over `R`. -/
 @[simps -isSimp relation]
@@ -505,9 +499,8 @@ lemma dimension_reindex (P : Presentation R S ι σ) {ι' σ' : Type*} (e : ι' 
 section
 
 variable {v : ι → MvPolynomial σ R}
-  (s : MvPolynomial σ R ⧸ (Ideal.span <| Set.range v) → MvPolynomial σ R :=
-    Function.surjInv Ideal.Quotient.mk_surjective)
-  (hs : ∀ x, Ideal.Quotient.mk _ (s x) = x := by apply Function.surjInv_eq)
+  (s : MvPolynomial σ R ⧸ (Ideal.span <| Set.range v) → MvPolynomial σ R)
+  (hs : ∀ x, Ideal.Quotient.mk _ (s x) = x)
 
 /--
 The naive presentation of a quotient `R[Xᵢ] ⧸ (vⱼ)`.
@@ -524,16 +517,10 @@ def naive {v : ι → MvPolynomial σ R}
   relation := v
   span_range_relation_eq_ker := (Generators.ker_naive s hs).symm
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-lemma naive_relation : (naive s hs).relation = v := rfl
+lemma naive_relation : (naive s hs).relation = v := by rfl
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[simp] lemma naive_relation_apply (i : ι) : (naive s hs).relation i = v i := rfl
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 lemma mem_ker_naive (i : ι) : v i ∈ (naive s hs).ker := relation_mem_ker _ i
 
 end

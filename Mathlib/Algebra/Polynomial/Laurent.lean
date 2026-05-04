@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Polynomial.Reverse
 public import Mathlib.Algebra.Polynomial.Inductions
 public import Mathlib.RingTheory.Localization.Away.Basic
 
-/-!  # Laurent polynomials
+/-! # Laurent polynomials
 
 We introduce Laurent polynomials over a semiring `R`.  Mathematically, they are expressions of the
 form

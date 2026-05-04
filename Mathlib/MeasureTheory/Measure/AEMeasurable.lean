@@ -16,7 +16,7 @@ function. This property, called `AEMeasurable f μ`, is defined in the file `Mea
 We discuss several of its properties that are analogous to properties of measurable functions.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory MeasureTheory.Measure Filter Set Function ENNReal
 
@@ -25,7 +25,7 @@ variable {ι α β γ δ R : Type*} {m0 : MeasurableSpace α} [MeasurableSpace �
 
 section
 
-@[nontriviality, measurability]
+@[nontriviality]
 theorem Subsingleton.aemeasurable [Subsingleton α] : AEMeasurable f μ :=
   Subsingleton.measurable.aemeasurable
 

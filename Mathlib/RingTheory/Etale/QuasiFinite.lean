@@ -39,6 +39,7 @@ noncomputable
 def Ideal.fiberIsoOfBijectiveResidueField
     (H : Function.Bijective (Ideal.ResidueField.mapₐ p q (Algebra.ofId _ _) (q.over_def p))) :
     q.primesOver (R' ⊗[R] S) ≃o p.primesOver S :=
+  let := Localization.AtPrime.algebraOfLiesOver p q
   let e : q.Fiber (R' ⊗[R] S) ≃ₐ[p.ResidueField] p.Fiber S :=
     ((Algebra.TensorProduct.cancelBaseChange _ _ q.ResidueField _ _).restrictScalars _).trans
       (Algebra.TensorProduct.congr (.symm <| .ofBijective (Algebra.ofId _ _) H) .refl)
@@ -251,6 +252,7 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux
     simp only [e₀, ← aeval_algHom_apply]; rfl
   have he : IsIdempotentElem e := he₀e ▸ he₀.map _
   let P' := (Ideal.fiberIsoOfBijectiveResidueField hP).symm ⟨q, ‹_›, ‹_›⟩
+  let := Localization.AtPrime.algebraOfLiesOver P P'.1
   have hP'q : P'.1.comap Algebra.TensorProduct.includeRight.toRingHom = q :=
     Ideal.comap_fiberIsoOfBijectiveResidueField_symm ..
   have hs'P' : s' ∉ P'.1 := mt (fun h ↦ hP'q.le h) hsq

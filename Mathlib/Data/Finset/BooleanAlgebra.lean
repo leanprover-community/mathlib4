@@ -21,7 +21,7 @@ This file provides the `BooleanAlgebra (Finset α)` instance, under the assumpti
 * `Finset.booleanAlgebra`: `Finset α` is a Boolean algebra if `α` is finite
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Monoid
 

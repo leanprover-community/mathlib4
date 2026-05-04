@@ -168,11 +168,11 @@ theorem adicAbv_add_le_max (x y : K) :
 
 /-- The `v`-adic absolute value of a natural number is `≤ 1`. -/
 theorem adicAbv_natCast_le_one (n : ℕ) : adicAbv K v n ≤ 1 :=
-  (isNonarchimedean_adicAbv K v).apply_natCast_le_one_of_isNonarchimedean
+  (isNonarchimedean_adicAbv K v).apply_natCast_le_one
 
 /-- The `v`-adic absolute value of an integer is `≤ 1`. -/
 theorem adicAbv_intCast_le_one (n : ℤ) : adicAbv K v n ≤ 1 :=
-  (isNonarchimedean_adicAbv K v).apply_intCast_le_one_of_isNonarchimedean
+  (isNonarchimedean_adicAbv K v).apply_intCast_le_one
 
 @[deprecated (since := "2026-03-11")]
 alias NumberField.RingOfIntegers.HeightOneSpectrum.one_lt_absNorm := one_lt_absNorm
@@ -314,6 +314,11 @@ instance : NonnegHomClass (FinitePlace K) K ℝ where
 theorem mk_apply (v : HeightOneSpectrum (𝓞 K)) (x : K) : mk v x = ‖embedding v x‖ := rfl
 
 lemma coe_apply (v : FinitePlace K) (x : K) : v x = v.val x := rfl
+
+instance : MulRingNormClass (FinitePlace K) K ℝ where
+  map_add_le_add v x y := by simpa [coe_apply] using IsAbsoluteValue.abv_add' x y
+  map_neg_eq_map v x := by simp [coe_apply]
+  eq_zero_of_map_eq_zero v := by simp
 
 /-- For a finite place `w`, return a maximal ideal `v` such that `w = finite_place v` . -/
 noncomputable def maximalIdeal (w : FinitePlace K) : HeightOneSpectrum (𝓞 K) := w.2.choose

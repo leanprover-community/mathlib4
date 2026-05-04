@@ -14,7 +14,7 @@ public import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Formula
 Let `W` be a Weierstrass curve over a field `F`. The nonsingular Jacobian points of `W` can be
 endowed with a group law, which is uniquely determined by the formulae in
 `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian/Formula.lean` and follows from an equivalence with
-the nonsingular points `W⟮F⟯` in affine coordinates.
+the nonsingular points in affine coordinates.
 
 This file defines the group law on nonsingular Jacobian points.
 
@@ -28,7 +28,7 @@ This file defines the group law on nonsingular Jacobian points.
 * `WeierstrassCurve.Jacobian.Point.neg`: the negation of a nonsingular Jacobian point.
 * `WeierstrassCurve.Jacobian.Point.add`: the addition of two nonsingular Jacobian points.
 * `WeierstrassCurve.Jacobian.Point.toAffineAddEquiv`: the equivalence between the type of
-  nonsingular Jacobian points with the type of nonsingular points `W⟮F⟯` in affine coordinates.
+  nonsingular Jacobian points with the type of nonsingular points in affine coordinates.
 
 ## Main statements
 
@@ -565,7 +565,7 @@ lemma toAffineLift_add [DecidableEq F] (P Q : W.Point) :
 set_option backward.isDefEq.respectTransparency false in
 variable (W) in
 /-- The addition-preserving equivalence between the type of nonsingular Jacobian points on a
-Weierstrass curve `W` and the type of nonsingular points `W⟮F⟯` in affine coordinates. -/
+Weierstrass curve `W` and the type of nonsingular points in affine coordinates. -/
 @[simps]
 noncomputable def toAffineAddEquiv [DecidableEq F] : W.Point ≃+ W.toAffine.Point where
   toFun := toAffineLift
@@ -612,29 +612,26 @@ end Point
 /-! ## Maps and base changes -/
 
 @[simp]
-protected lemma map_neg (f : R →+* S) (P : Fin 3 → R) :
-    (W'.map f).toJacobian.neg (f ∘ P) = f ∘ W'.neg P := by
+protected lemma map_neg (f : R →+* S) (P : Fin 3 → R) : (W'.map f).neg (f ∘ P) = f ∘ W'.neg P := by
   simp only [neg, map_negY, comp_fin3]
   map_simp
 
 @[simp]
 protected lemma map_add (f : F →+* K) {P Q : Fin 3 → F} (hP : W.Nonsingular P)
-    (hQ : W.Nonsingular Q) : (W.map f).toJacobian.add (f ∘ P) (f ∘ Q) = f ∘ W.add P Q := by
+    (hQ : W.Nonsingular Q) : (W.map f).add (f ∘ P) (f ∘ Q) = f ∘ W.add P Q := by
   by_cases h : P ≈ Q
   · rw [add_of_equiv <| (comp_equiv_comp f hP hQ).mpr h, add_of_equiv h, map_dblXYZ]
   · rw [add_of_not_equiv <| h.comp (comp_equiv_comp f hP hQ).mp, add_of_not_equiv h, map_addXYZ]
 
 lemma baseChange_neg [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Algebra R B]
     [Algebra S B] [IsScalarTower R S B] (f : A →ₐ[S] B) (P : Fin 3 → A) :
-    (W'.baseChange B).toJacobian.neg (f ∘ P) = f ∘ (W'.baseChange A).toJacobian.neg P := by
+    (W'⁄B).neg (f ∘ P) = f ∘ (W'⁄A).neg P := by
   rw [← RingHom.coe_coe, ← WeierstrassCurve.Jacobian.map_neg, map_baseChange]
 
 lemma baseChange_add [Algebra R S] [Algebra R F] [Algebra S F] [IsScalarTower R S F] [Algebra R K]
     [Algebra S K] [IsScalarTower R S K] (f : F →ₐ[S] K) {P Q : Fin 3 → F}
-    (hP : (W'.baseChange F).toJacobian.Nonsingular P)
-    (hQ : (W'.baseChange F).toJacobian.Nonsingular Q) :
-    (W'.baseChange K).toJacobian.add (f ∘ P) (f ∘ Q) =
-      f ∘ (W'.baseChange F).toJacobian.add P Q := by
+    (hP : (W'⁄F).Nonsingular P) (hQ : (W'⁄F).Nonsingular Q) :
+    (W'⁄K).add (f ∘ P) (f ∘ Q) = f ∘ (W'⁄F).add P Q := by
   rw [← RingHom.coe_coe, ← WeierstrassCurve.Jacobian.map_add _ hP hQ, map_baseChange]
 
 end Jacobian

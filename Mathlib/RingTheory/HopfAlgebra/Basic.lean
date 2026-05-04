@@ -47,7 +47,7 @@ so we could deduce the facts here from an equivalence `HopfAlgCat R ≌ Hopf (Mo
 
 -/
 
-@[expose] public section
+public section
 
 open Bialgebra
 

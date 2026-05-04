@@ -25,7 +25,7 @@ An important definition is `toAlgHom R S A`, the canonical `R`-algebra homomorph
 @[expose] public section
 
 
-open Pointwise
+open scoped Pointwise
 
 universe u v w u₁ v₁
 
@@ -132,20 +132,6 @@ theorem Algebra.ext {S : Type u} {A : Type v} [CommSemiring S] [Semiring A] (h1 
     (h : ∀ (r : S) (x : A), (by have I := h1; exact r • x) = r • x) : h1 = h2 :=
   Algebra.algebra_ext _ _ fun r => by
     simpa only [@Algebra.smul_def _ _ _ _ h1, @Algebra.smul_def _ _ _ _ h2, mul_one] using h r 1
-
-/-- In a tower, the canonical map from the middle element to the top element is an
-algebra homomorphism over the bottom element. -/
-def toAlgHom : S →ₐ[R] A :=
-  { algebraMap S A with commutes' := fun _ => (algebraMap_apply _ _ _ _).symm }
-
-theorem toAlgHom_apply (y : S) : toAlgHom R S A y = algebraMap S A y := rfl
-
-@[simp]
-theorem coe_toAlgHom : ↑(toAlgHom R S A) = algebraMap S A :=
-  RingHom.ext fun _ => rfl
-
-@[simp]
-theorem coe_toAlgHom' : (toAlgHom R S A : S → A) = algebraMap S A := rfl
 
 variable {R S A B}
 

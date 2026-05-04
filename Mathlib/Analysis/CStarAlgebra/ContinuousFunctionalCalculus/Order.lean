@@ -39,7 +39,7 @@ the spectral order.
 continuous functional calculus, normal, selfadjoint
 -/
 
-@[expose] public section
+public section
 
 open scoped NNReal CStarAlgebra
 
@@ -91,7 +91,6 @@ noncomputable instance instPartialOrder : PartialOrder A⁺¹ :=
 instance instStarOrderedRing : StarOrderedRing A⁺¹ :=
     CStarAlgebra.spectralOrderedRing _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma inr_le_iff (a b : A) (ha : IsSelfAdjoint a := by cfc_tac)
     (hb : IsSelfAdjoint b := by cfc_tac) :
     (a : A⁺¹) ≤ (b : A⁺¹) ↔ a ≤ b := by
@@ -109,9 +108,24 @@ lemma inr_nonneg_iff {a : A} : 0 ≤ (a : A⁺¹) ↔ 0 ≤ a := by
     · exact isSelfAdjoint_inr (R := ℂ) |>.mp <| .of_nonneg h
     · exact .of_nonneg h
 
+lemma convexOn_of_convexOn_inr_comp {f : A → A} {s : Set A}
+    (hf : ∀ x, IsSelfAdjoint (f x))
+    (hf₂ : ConvexOn ℝ s (Unitization.inr (R := ℂ) ∘ f)) : ConvexOn ℝ s f := by
+  refine ⟨hf₂.1, ?_⟩
+  intro x hx y hy a b ha hb hab
+  rw [← Unitization.inr_le_iff _ _]
+  simpa using hf₂.2 hx hy ha hb hab
+
+lemma concaveOn_of_concaveOn_inr_comp {f : A → A} {s : Set A}
+    (hf : ∀ x, IsSelfAdjoint (f x))
+    (hf₂ : ConcaveOn ℝ s (Unitization.inr (R := ℂ) ∘ f)) : ConcaveOn ℝ s f := by
+  refine ⟨hf₂.1, ?_⟩
+  intro x hx y hy a b ha hb hab
+  rw [← Unitization.inr_le_iff _ _]
+  simpa using hf₂.2 hx hy ha hb hab
+
 alias ⟨LE.le.of_inr, LE.le.inr⟩ := inr_nonneg_iff
 
-set_option backward.isDefEq.respectTransparency false in
 lemma nnreal_cfcₙ_eq_cfc_inr (a : A) (f : ℝ≥0 → ℝ≥0)
     (hf₀ : f 0 = 0 := by cfc_zero_tac) : cfcₙ f a = cfc f (a : A⁺¹) :=
   cfcₙ_eq_cfc_inr inr_nonneg_iff ..
@@ -190,14 +204,12 @@ lemma CStarAlgebra.star_mul_le_algebraMap_norm_sq {a : A} :
 
 end StarOrderedRing
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsSelfAdjoint.toReal_spectralRadius_eq_norm {a : A} (ha : IsSelfAdjoint a) :
     (spectralRadius ℝ a).toReal = ‖a‖ := by
   simp [ha.spectrumRestricts.spectralRadius_eq, ha.spectralRadius_eq_nnnorm]
 
 namespace CStarAlgebra
 
-set_option backward.isDefEq.respectTransparency false in
 lemma norm_or_neg_norm_mem_spectrum [Nontrivial A] {a : A}
     (ha : IsSelfAdjoint a := by cfc_tac) : ‖a‖ ∈ spectrum ℝ a ∨ -‖a‖ ∈ spectrum ℝ a := by
   have ha' : SpectrumRestricts a Complex.reCLM := ha.spectrumRestricts
@@ -206,7 +218,6 @@ lemma norm_or_neg_norm_mem_spectrum [Nontrivial A] {a : A}
 
 variable [PartialOrder A] [StarOrderedRing A]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma nnnorm_mem_spectrum_of_nonneg [Nontrivial A] {a : A} (ha : 0 ≤ a := by cfc_tac) :
     ‖a‖₊ ∈ spectrum ℝ≥0 a := by
   have : IsSelfAdjoint a := .of_nonneg ha
@@ -450,7 +461,6 @@ theorem nnnorm_le_nnnorm_of_nonneg_of_le {a : A} {b : A} (ha : 0 ≤ a := by cfc
     ‖a‖₊ ≤ ‖b‖₊ :=
   norm_le_norm_of_nonneg_of_le ha hab
 
-set_option backward.isDefEq.respectTransparency false in
 lemma star_left_conjugate_le_norm_smul {a b : A} (hb : IsSelfAdjoint b := by cfc_tac) :
     star a * b * a ≤ ‖b‖ • (star a * a) := by
   suffices ∀ a b : A⁺¹, IsSelfAdjoint b → star a * b * a ≤ ‖b‖ • (star a * a) by
@@ -489,6 +499,38 @@ lemma isClosed_nonneg : IsClosed {a : A | 0 ≤ a} := by
 instance : OrderClosedTopology A where
   isClosed_le' := isClosed_le_of_isClosed_nonneg isClosed_nonneg
 
+open Unitization in
+lemma convexOn_cfcₙ_of_convexOn_cfc {f : ℝ → ℝ} {s : Set A}
+    (hf : ConvexOn ℝ (inr (R := ℂ) '' s) (cfc f)) : ConvexOn ℝ s (cfcₙ f) := by
+  let inrl : A →ₗ[ℝ] A⁺¹ := inrHom ℝ ℂ A
+  by_cases hf₀ : f 0 = 0
+  case neg =>
+    have : (cfcₙ f : A → A) = fun _ => 0 := by
+      ext x
+      simp [cfcₙ_apply_of_not_map_zero _ hf₀]
+    rw [this]
+    refine convexOn_const _ ?_
+    have : Convex ℝ (inrl ⁻¹' inrl '' s) := Convex.linear_preimage hf.1 _
+    rwa [Set.preimage_image_eq _ inrHom_injective] at this
+  refine convexOn_of_convexOn_inr_comp (fun _ => IsSelfAdjoint.cfcₙ) ?_
+  have h₁ : inr (R := ℂ) ∘ (cfcₙ f) = fun x : A => ((cfcₙ f x : A) : A⁺¹) := rfl
+  have h₂ : (fun x : A => ((cfcₙ f x : A) : A⁺¹))
+      = fun x : A => cfc f (x : A⁺¹) := by ext1; rw [real_cfcₙ_eq_cfc_inr ..]
+  rw [h₁, h₂]
+  have h₃ : ConvexOn ℝ (inrl ⁻¹' inrl '' s) ((cfc f) ∘ inrl) :=
+    ConvexOn.comp_linearMap (g := inrl) hf
+  rwa [Set.preimage_image_eq _ inrHom_injective] at h₃
+
+open Unitization in
+lemma concaveOn_cfcₙ_of_concaveOn_cfc {f : ℝ → ℝ} {s : Set A}
+    (hf : ConcaveOn ℝ (inr (R := ℂ) '' s) (cfc f)) : ConcaveOn ℝ s (cfcₙ f) := by
+  have : ConcaveOn ℝ s (- -cfcₙ f) := by
+    rw [← cfcₙ_neg' f]
+    refine (convexOn_cfcₙ_of_convexOn_cfc ?_).neg
+    rw [cfc_neg']
+    exact hf.neg
+  simpa using this
+
 section Icc
 
 open Unitization Set Metric
@@ -507,6 +549,10 @@ lemma preimage_inr_Icc_zero_one :
     ((↑) : A → A⁺¹) ⁻¹' Icc 0 1 = {x : A | 0 ≤ x} ∩ closedBall 0 1 := by
   ext
   simp [-mem_Icc, inr_mem_Icc_iff_norm_le]
+
+lemma inr_map_Ici_zero : inr '' (Ici (0 : A)) ⊆ Ici (0 : A⁺¹) := by
+  rintro - ⟨a, ha, rfl⟩
+  exact Unitization.inr_nonneg_iff.mpr ha
 
 end Icc
 

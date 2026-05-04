@@ -36,7 +36,7 @@ powers are considered.
 
 -/
 
-@[expose] public section
+public section
 
 -- TODO:
 -- assert_not_exists MonoidWithZero

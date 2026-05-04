@@ -197,27 +197,63 @@ private def matchEverything (root : Std.HashMap Key TrieIndex) : TreeM α (Match
     let { values, .. } ← evalNode pMatch.trie
     return result.push (score := 0) values
 
+/--
+Types are counted less towards the total matching score.
+The reason is that types are usually implicit arguments. For example
+
+- If the goal is `(1 : ℕ) = 1`, we could find
+  - `rfl (a : α) : a = a`.
+    This gets extra points for matching `1`
+  - `Nat.succ.inj (n m : ℕ) (h : n.succ = m.succ) : n = m`.
+    This gets extra points for matching `ℕ`
+  Clearly, `rfl` is better.
+- If we rewrite `|(0 : ℝ)|`, we could find
+  - `abs_zero : |(0 : α)| = 0`
+    This gets extra points for matching `0`
+  - `Real.norm_eq_abs : ∀ (r : ℝ), ‖r‖ = |r|`
+    This gets extra points for matching `ℝ`
+  Clearly, `abs_zero` is better
+
+In both examples, matching the type (`ℕ` or `ℝ`) was not very important for how good
+the match actually was.
+-/
+private def Key.score (key : Key) : MetaM Nat := do
+  match key with
+  | .const n _ =>
+    if (← getConstInfo n).type.getForallBody.isSort then
+      return 1
+    else
+      return 10
+  | .fvar fvarId _ =>
+    if (← fvarId.getType).getForallBody.isSort then
+      return 1
+    else
+      return 10
+  | _ => return 10
+
 /-- Add to the `todo` stack all matches that result from a `.star _` in the discrimination tree. -/
 private partial def matchTreeStars (key : Key) (node : Trie α) (pMatch : PartialMatch)
-    (todo : Array PartialMatch) (unify : Bool) : Array PartialMatch := Id.run do
+    (todo : Array PartialMatch) (unify : Bool) : MetaM (Array PartialMatch) := do
   let { star, labelledStars, .. } := node
   if labelledStars.isEmpty && star.isNone then
-    todo
+    return todo
   else
     let (dropped, keys) := drop [key] pMatch.keys key.arity
     let mut todo := todo
     if let some trie := star then
       todo := todo.push { pMatch with keys, trie }
-    todo := node.labelledStars.fold (init := todo) fun todo id trie =>
+    todo ← node.labelledStars.foldM (init := todo) fun todo id trie => do
       if let some assignment := pMatch.treeStars[id]? then
         let eq lhs rhs := if unify then (isEq lhs.reverse rhs.reverse).isSome else lhs == rhs
         if eq dropped assignment then
-          todo.push { pMatch with keys, trie, score := pMatch.score + dropped.length }
+          return todo.push { pMatch with
+            keys, trie
+            score := (← dropped.mapM (·.score)).foldl (· + ·) pMatch.score }
         else
-          todo
+          return todo
       else
         let treeStars := pMatch.treeStars.insert id dropped
-        todo.push { pMatch with keys, trie, treeStars }
+        return todo.push { pMatch with keys, trie, treeStars }
     return todo
 where
   /-- Drop the keys corresponding to the next `n` expressions. -/
@@ -273,10 +309,10 @@ private partial def getMatchLoop (todo : Array PartialMatch) (result : MatchResu
           let todo ← matchQueryStar pMatch.trie pMatch todo
           getMatchLoop todo result unify
         else
-          let todo := matchTreeStars key node pMatch todo unify
+          let todo ← matchTreeStars key node pMatch todo unify
           getMatchLoop todo result unify
       | _ =>
-        let todo := matchTreeStars key node pMatch todo unify
+        let todo ← matchTreeStars key node pMatch todo unify
         let todo := matchKey key node.children pMatch todo
         getMatchLoop todo result unify
 

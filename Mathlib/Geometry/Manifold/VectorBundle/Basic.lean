@@ -405,10 +405,9 @@ theorem ContMDiffWithinAt.change_section_trivialization {f : M → TotalSpace F 
     (he : f x ∈ e.source) (he' : f x ∈ e'.source) :
     ContMDiffWithinAt IM 𝓘(𝕜, F) n (fun y ↦ (e' (f y)).2) s x := by
   rw [Trivialization.mem_source] at he he'
-  refine (hp.coordChange hf he he').congr_of_eventuallyEq ?_ ?_
-  · filter_upwards [hp.continuousWithinAt (e.open_baseSet.mem_nhds he)] with y hy
-    rw [Function.comp_apply, e.coordChange_apply_snd _ hy]
-  · rw [Function.comp_apply, e.coordChange_apply_snd _ he]
+  refine (hp.coordChange hf he he').congr_of_eventuallyEq ?_ (by simp [he])
+  filter_upwards [hp.continuousWithinAt (e.open_baseSet.mem_nhds he)] with y hy
+  simp_all
 
 theorem Bundle.Trivialization.contMDiffWithinAt_snd_comp_iff₂ {f : M → TotalSpace F E}
     (hp : ContMDiffWithinAt IM IB n (π F E ∘ f) s x)

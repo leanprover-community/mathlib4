@@ -19,7 +19,7 @@ This file contains the basic results on `Submodule.FG` and `Module.Finite` that 
 further imports.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Module.Basis Ideal.radical Matrix Subalgebra
 

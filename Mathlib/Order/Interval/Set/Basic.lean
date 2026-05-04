@@ -37,7 +37,7 @@ theorem Ico_subset_Ici (h : a₂ ≤ a₁) : Ico a₁ b₁ ⊆ Ici a₂ :=
 Logical equivalences, such as `Icc_subset_Ici_iff`, are however stated.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists RelIso
 

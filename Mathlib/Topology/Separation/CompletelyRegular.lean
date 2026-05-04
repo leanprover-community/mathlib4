@@ -54,7 +54,7 @@ space.
 * [Russell C. Walker, *The Stone-Čech Compactification*][russell1974]
 -/
 
-@[expose] public section
+public section
 
 universe u v
 

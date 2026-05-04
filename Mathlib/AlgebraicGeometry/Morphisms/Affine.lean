@@ -31,7 +31,7 @@ We also provide the instance `HasAffineProperty @IsAffineHom fun X _ _ _ ↦ IsA
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

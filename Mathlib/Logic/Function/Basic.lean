@@ -50,8 +50,65 @@ theorem const_injective [Nonempty α] : Injective (const α : β → α → β) 
 theorem const_inj [Nonempty α] {y₁ y₂ : β} : const α y₁ = const α y₂ ↔ y₁ = y₂ :=
   ⟨fun h ↦ const_injective h, fun h ↦ h ▸ rfl⟩
 
+section onFun
+
 theorem onFun_apply (f : β → β → γ) (g : α → β) (a b : α) : onFun f g a b = f (g a) (g b) :=
   rfl
+
+variable (r : β → β → Prop) (f : α → β)
+
+instance [Std.Refl r] : Std.Refl (r on f) where
+  refl _ := refl_of r _
+
+instance [Std.Irrefl r] : Std.Irrefl (r on f) where
+  irrefl _ := irrefl_of r _
+
+instance [Std.Symm r] : Std.Symm (r on f) where
+  symm _ _ := symm_of r
+
+variable {f} in
+theorem Injective.antisymm_onFun (hinj : f.Injective) [Std.Antisymm r] : Std.Antisymm (r on f) where
+  antisymm _ _ hab hba := hinj <| antisymm_of r hab hba
+
+instance [Std.Asymm r] : Std.Asymm (r on f) where
+  asymm _ _ := asymm_of r
+
+instance [IsTrans β r] : IsTrans α (r on f) where
+  trans _ _ _ := trans_of r
+
+instance [Std.Total r] : Std.Total (r on f) where
+  total _ _ := total_of r _ _
+
+variable {f} in
+theorem Injective.trichotomous_onFun (hinj : f.Injective) [Std.Trichotomous r] :
+    Std.Trichotomous (r on f) where
+  trichotomous a b hab hba := hinj <| Std.Trichotomous.trichotomous (f a) (f b) hab hba
+
+instance [IsEquiv β r] : IsEquiv α (r on f) where
+
+instance [IsPreorder β r] : IsPreorder α (r on f) where
+
+variable {f} in
+theorem Injective.isPartialOrder_onFun (hinj : f.Injective) [IsPartialOrder β r] :
+    IsPartialOrder α (r on f) :=
+  { hinj.antisymm_onFun r with }
+
+variable {f} in
+theorem Injective.isLinearOrder_onFun (hinj : f.Injective) [IsLinearOrder β r] :
+    IsLinearOrder α (r on f) :=
+  { hinj.isPartialOrder_onFun r with }
+
+instance [IsStrictOrder β r] : IsStrictOrder α (r on f) where
+
+instance [IsStrictWeakOrder β r] : IsStrictWeakOrder α (r on f) where
+  incomp_trans _ _ _ := IsStrictWeakOrder.incomp_trans (lt := r) _ _ _
+
+variable {f} in
+theorem Injective.isStrictTotalOrder_onFun (hinj : f.Injective) [IsStrictTotalOrder β r] :
+    IsStrictTotalOrder α (r on f) :=
+  { hinj.trichotomous_onFun r with }
+
+end onFun
 
 lemma hfunext {α α' : Sort u} {β : α → Sort v} {β' : α' → Sort v} {f : ∀ a, β a} {f' : ∀ a, β' a}
     (hα : α = α') (h : ∀ a a', a ≍ a' → f a ≍ f' a') : f ≍ f' := by
@@ -70,10 +127,55 @@ lemma funext_iff_of_subsingleton [Subsingleton α] {g : α → β} (x y : α) :
   · rwa [Subsingleton.elim x z, Subsingleton.elim y z] at h
   · rw [h, Subsingleton.elim x y]
 
+section swap
+
 theorem swap_lt {α} [LT α] : swap (· < · : α → α → _) = (· > ·) := rfl
 theorem swap_le {α} [LE α] : swap (· ≤ · : α → α → _) = (· ≥ ·) := rfl
 theorem swap_gt {α} [LT α] : swap (· > · : α → α → _) = (· < ·) := rfl
 theorem swap_ge {α} [LE α] : swap (· ≥ · : α → α → _) = (· ≤ ·) := rfl
+
+variable (r : α → α → Prop)
+
+instance [Std.Refl r] : Std.Refl (swap r) where
+  refl := refl_of r
+
+instance [Std.Irrefl r] : Std.Irrefl (swap r) where
+  irrefl := irrefl_of r
+
+instance [Std.Symm r] : Std.Symm (swap r) where
+  symm _ _ := symm_of r
+
+instance [Std.Antisymm r] : Std.Antisymm (swap r) where
+  antisymm _ _ hab hba := antisymm_of r hab hba |>.symm
+
+instance [Std.Asymm r] : Std.Asymm (swap r) where
+  asymm _ _ := asymm_of r
+
+instance [IsTrans α r] : IsTrans α (swap r) where
+  trans _ _ _ hab hbc := trans_of r hbc hab
+
+instance [Std.Total r] : Std.Total (swap r) where
+  total _ _ := total_of r _ _
+
+instance [Std.Trichotomous r] : Std.Trichotomous (swap r) where
+  trichotomous a b hab hba := Std.Trichotomous.trichotomous a b hba hab
+
+instance [IsEquiv α r] : IsEquiv α (swap r) where
+
+instance [IsPreorder α r] : IsPreorder α (swap r) where
+
+instance [IsPartialOrder α r] : IsPartialOrder α (swap r) where
+
+instance [IsLinearOrder α r] : IsLinearOrder α (swap r) where
+
+instance [IsStrictOrder α r] : IsStrictOrder α (swap r) where
+
+instance [IsStrictWeakOrder α r] : IsStrictWeakOrder α (swap r) where
+  incomp_trans a b c hab hbc := IsStrictWeakOrder.incomp_trans a b c hab.symm hbc.symm |>.symm
+
+instance [IsStrictTotalOrder α r] : IsStrictTotalOrder α (swap r) where
+
+end swap
 
 protected theorem Bijective.injective {f : α → β} (hf : Bijective f) : Injective f := hf.1
 protected theorem Bijective.surjective {f : α → β} (hf : Bijective f) : Surjective f := hf.2
@@ -858,31 +960,6 @@ theorem uncurry_update_update {α α' β : Type*} [DecidableEq α] [DecidableEq 
   simp [curry_update]
 
 end CurryAndUncurry
-
-section Bicomp
-
-variable {α β γ δ ε : Type*}
-
-/-- Compose a binary function `f` with a pair of unary functions `g` and `h`.
-If both arguments of `f` have the same type and `g = h`, then `bicompl f g g = f on g`. -/
-def bicompl (f : γ → δ → ε) (g : α → γ) (h : β → δ) (a b) :=
-  f (g a) (h b)
-
-/-- Compose a unary function `f` with a binary function `g`. -/
-def bicompr (f : γ → δ) (g : α → β → γ) (a b) :=
-  f (g a b)
-
--- Suggested local notation:
-local notation f " ∘₂ " g => bicompr f g
-
-theorem uncurry_bicompr (f : α → β → γ) (g : γ → δ) : uncurry (g ∘₂ f) = g ∘ uncurry f :=
-  rfl
-
-theorem uncurry_bicompl (f : γ → δ → ε) (g : α → γ) (h : β → δ) :
-    uncurry (bicompl f g h) = uncurry f ∘ Prod.map g h :=
-  rfl
-
-end Bicomp
 
 section Uncurry
 

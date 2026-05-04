@@ -41,7 +41,7 @@ and convergence in distribution.
 
 -/
 
-@[expose] public section
+public section
 
 open Filter ProbabilityTheory
 open scoped Topology

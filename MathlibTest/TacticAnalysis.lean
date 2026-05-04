@@ -465,4 +465,32 @@ set_option linter.tacticAnalysis.verifyGrindSuggestions true in
 example : 1 + 1 = 2 := by
   rfl
 
+-- Test: a failure of an applied try-this suggestion should print a warning
+section
+
+open Lean Meta Elab Tactic Mathlib.TacticAnalysis
+
+/-- Suggests to close a goal with `rfl`, but actually closes it with `trivial`. -/
+elab "fakeRfl?" : tactic => do
+  Lean.Meta.Tactic.TryThis.addSuggestion (← getRef) (← `(tactic| rfl))
+  evalTactic (← `(tactic| trivial))
+
+@[tacticAnalysis linter.tacticAnalysis.dummy]
+def verifyFakeRfl := verifyTryThisSuggestions
+  (fun _ _ => `(tactic| fakeRfl?))
+  "fakeRfl?"
+
+/--
+info: Try this:
+  [apply] rfl
+---
+warning: `fakeRfl?` suggestion failed: `rfl` did not close the goal
+-/
+#guard_msgs in
+set_option linter.tacticAnalysis.dummy true in
+example : True := by
+  fakeRfl?
+
+end
+
 end verifyGrindSuggestions

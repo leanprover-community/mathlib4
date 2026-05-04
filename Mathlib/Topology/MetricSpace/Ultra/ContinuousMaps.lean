@@ -12,7 +12,7 @@ public import Mathlib.Topology.MetricSpace.Ultra.Basic
 # Ultrametric structure on continuous maps
 -/
 
-@[expose] public section
+public section
 
 /-- Continuous maps from a compact space to an ultrametric space are an ultrametric space. -/
 instance ContinuousMap.isUltrametricDist {X Y : Type*}

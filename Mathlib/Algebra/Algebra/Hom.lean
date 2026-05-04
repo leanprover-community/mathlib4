@@ -40,14 +40,6 @@ infixr:25 " →ₐ " => AlgHom _
 @[inherit_doc]
 notation:25 A " →ₐ[" R "] " B => AlgHom R A B
 
-/-- The algebra morphism underlying `algebraMap` -/
-def Algebra.algHom (R A B : Type*)
-    [CommSemiring R] [CommSemiring A] [Semiring B] [Algebra R A] [Algebra R B]
-    [Algebra A B] [IsScalarTower R A B] :
-    A →ₐ[R] B where
-  toRingHom := algebraMap A B
-  commutes' r := by simpa [Algebra.smul_def] using smul_assoc r (1 : A) (1 : B)
-
 /-- `AlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B`. -/
 class AlgHomClass (F : Type*) (R A B : outParam Type*)
@@ -106,10 +98,6 @@ instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
   map_mul f := f.map_mul'
   map_one f := f.map_one'
   commutes f := f.commutes'
-
-lemma _root_.Algebra.algHom_apply (R A B : Type*) [CommSemiring R] [CommSemiring A] [Semiring B]
-    [Algebra R A] [Algebra A B] [Algebra R B] [IsScalarTower R A B] (x : A) :
-    Algebra.algHom R A B x = algebraMap A B x := rfl
 
 @[simp] lemma _root_.AlgHomClass.toLinearMap_toAlgHom {R A B F : Type*} [CommSemiring R]
     [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] [FunLike F A B] [AlgHomClass F R A B]
@@ -383,6 +371,33 @@ lemma cancel_left {g₁ g₂ : A →ₐ[R] B} {f : B →ₐ[R] C} (hf : Function
 
 end Semiring
 end AlgHom
+
+namespace IsScalarTower
+
+variable (R S A : Type*) [CommSemiring R] [CommSemiring S] [Semiring A]
+  [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A]
+
+/-- In a tower, the canonical map from the middle element to the top element is an
+algebra homomorphism over the bottom element. -/
+def toAlgHom : S →ₐ[R] A where
+  toRingHom := algebraMap S A
+  commutes' r := by simpa [Algebra.smul_def] using smul_assoc r (1 : S) (1 : A)
+
+theorem toAlgHom_apply (y : S) : toAlgHom R S A y = algebraMap S A y := rfl
+
+@[simp]
+theorem coe_toAlgHom : ↑(toAlgHom R S A) = algebraMap S A :=
+  RingHom.ext fun _ => rfl
+
+@[simp]
+theorem coe_toAlgHom' : (toAlgHom R S A : S → A) = algebraMap S A := rfl
+
+end IsScalarTower
+
+/-- The algebra morphism underlying `algebraMap`. -/
+alias Algebra.algHom := IsScalarTower.toAlgHom
+
+alias Algebra.algHom_apply := IsScalarTower.toAlgHom_apply
 
 namespace AlgHomClass
 

@@ -20,7 +20,7 @@ This file builds on `Data.Int.Init` by adding basic lemmas on integers.
 depending on Mathlib definitions.
 -/
 
-@[expose] public section
+public section
 
 open Nat
 

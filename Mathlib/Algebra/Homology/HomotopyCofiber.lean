@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Homology.HomologicalComplexBiprod
 public import Mathlib.Algebra.Homology.Homotopy
 public import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
 
-/-! The homotopy cofiber of a morphism of homological complexes
+/-! # The homotopy cofiber of a morphism of homological complexes
 
 In this file, we construct the homotopy cofiber of a morphism `φ : F ⟶ G`
 between homological complexes in `HomologicalComplex C c`. In degree `i`,

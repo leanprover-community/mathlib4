@@ -16,7 +16,7 @@ import Mathlib.CategoryTheory.WithTerminal.Cone
 
 /-! # Functors equifibered over a fixed functor is closed under limits -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.NatTrans
 

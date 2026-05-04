@@ -14,15 +14,14 @@ public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 # Free modules and localization
 
 ## Main result
+
 - `Module.FinitePresentation.exists_free_localizedModule_powers`:
   If `M` is a finitely presented `R`-module
   such that `Mₛ` is free over `Rₛ` for some `S : Submonoid R`,
   then `Mᵣ` is already free over `Rᵣ` for some `r ∈ S`.
 
-## Future projects
-- Show that a finitely presented flat module has locally constant dimension.
-- Show that the flat locus of a finitely presented module is open.
-
+In the file `Mathlib.RingTheory.Spectrum.Prime.FreeLocus`, we deduce that the free
+locus of a finitely presented module is open and its rank is locally constant.
 -/
 
 public section

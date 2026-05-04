@@ -29,7 +29,7 @@ some properties of such ideals.
   `I = J`.
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*} [CommRing R]
 
