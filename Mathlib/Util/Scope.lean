@@ -259,6 +259,13 @@ def reifyExtraOpenScopes : CommandElabM (Option (TSyntax ``reifiedOpenScopedStx)
   let extraScoped ← extra.toArray.mapM fun n => `(reifiedSimpleOpenIdent| @$(mkIdent n))
   `(reifiedOpenScopedStx| open scoped $extraScoped*)
 
+/-- Directly activates the scopes in reified `open scoped @id₁ @id₂ ...` syntax. -/
+def unreifyOpenScopedDecls : TSyntax ``reifiedOpenScopedStx → CommandElabM Unit
+  | `(reifiedOpenScopedStx| open scoped $[@$openScopedDecls:ident]*) => do
+    for openScoped in openScopedDecls do
+      activateScoped openScoped.getId.eraseMacroScopes
+  | _ => throwUnsupportedSyntax
+
 end openScoped
 
 end openDecls
@@ -420,7 +427,7 @@ def unreifyScope (stx : TSyntax ``scopeStx)
       $[$universeStx:universe]?
       $[$namespaceStx:namespace]?
       $[open $openDecls:reifiedOpenDecl*]?
-      $[open scoped $openScopedDecls:reifiedSimpleOpenIdent*]?
+      $[$openScoped:reifiedOpenScopedStx]?
       $[set_options $keyVals:reifiedOptionKeyValue,*]?
       $[$vars]?) => do
     resetScopes resetEnvExtensionsTo
@@ -428,10 +435,7 @@ def unreifyScope (stx : TSyntax ``scopeStx)
     universeStx.forM (elabUniverse ·)
     namespaceStx.forM (elabNamespace ·)
     openDecls.forM unreifyOpenDecls
-    openScopedDecls.forM fun openScopedDecls => do
-      for openScoped in openScopedDecls do
-        let `(reifiedSimpleOpenIdent| @$id) := openScoped | throwUnsupportedSyntax
-        activateScoped id.getId
+    openScoped.forM unreifyOpenScopedDecls
     keyVals.forM fun keyVals => do
       for keyVal in keyVals.getElems do
         let `(reifiedOptionKeyValue| $id $val) := keyVal | throwUnsupportedSyntax
