@@ -1222,3 +1222,5 @@ theorem IsClosed.exists_minimal_nonempty_closed_subset [CompactSpace X] {S : Set
   rw [← this, compl_compl]
 
 end Compact
+
+abbrev HasCompactFibers (f : X → Y) : Prop := ∀ y, IsCompact (f ⁻¹' {y})

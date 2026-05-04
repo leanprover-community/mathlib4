@@ -59,7 +59,7 @@ lemma inter_preimageSupport_nonempty_finite (hf : IsSpectralMap f) (hW : IsCompa
 
 variable {N : Type*} [PrespectralSpace Y]
 
-lemma map_locally_finite (hf : IsSpectralMap f) (hf' : ∀ y : Y, IsCompact <| f ⁻¹' {y}) (y : Y) :
+lemma map_locally_finite (hf : IsSpectralMap f) (hf' : HasCompactFibers f) (y : Y) :
     ∃ t ∈ 𝓝 y, (t ∩ Function.support fun z ↦
     ∑ x ∈ (c.locallyFiniteSupport.finite_inter_support_of_isCompact <| hf' z).toFinset,
     (c x) * w x).Finite := by
@@ -90,7 +90,7 @@ if the dimensions of the points correspond, and is zero otherwise).
 -/
 @[simps]
 noncomputable
-def map (hf : IsSpectralMap f) (hf' : ∀ y : Y, IsCompact <| f ⁻¹' {y}) :
+def map (hf : IsSpectralMap f) (hf' : HasCompactFibers f) :
     Function.locallyFinsupp Y R where
   toFun z := ∑ x ∈ (c.locallyFiniteSupport.finite_inter_support_of_isCompact <| hf' z).toFinset,
     (c x) * w x
@@ -100,8 +100,7 @@ def map (hf : IsSpectralMap f) (hf' : ∀ y : Y, IsCompact <| f ⁻¹' {y}) :
 /--
 Pushforward preserves cycles of pure dimension `d` in the dimension grading.
 -/
-lemma map_homogeneous (s : Set X) (t : Set Y) (hc : c.support ⊆ s)
-    (hf' : ∀ y : Y, IsCompact <| f ⁻¹' {y})
+lemma map_homogeneous (s : Set X) (t : Set Y) (hc : c.support ⊆ s) (hf' : HasCompactFibers f)
     (h : ∀ x : X, x ∈ s → w x ≠ 0 → f x ∈ t) :
     (map f w c hf hf').support ⊆ t := by
   intro y hy
@@ -117,7 +116,7 @@ The pushforward of `c` along the identity morphism is `c`.
 -/
 @[simp]
 lemma map_id [PrespectralSpace X] (hw : ∀ z : X, w z = 1) :
-    map id w c isSpectralMap_id (by simp) = c := by
+    map id w c isSpectralMap_id (by simp [HasCompactFibers]) = c := by
   classical
   ext z
   change ∑ x ∈ _, c x * w x = c z
