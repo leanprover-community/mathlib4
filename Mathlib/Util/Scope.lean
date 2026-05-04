@@ -327,12 +327,12 @@ syntax "#scope" (ppLine scopeStx)? : command
 
 elab_rules : command
 | `(#scope%$tk) => do
-  let stx ← `(command|#scope%$tk $(← reifyScope))
+  let stx ← `(command| #scope%$tk $(← reifyScope))
   liftCoreM <| Meta.Tactic.TryThis.addSuggestion tk stx
 | `(#scope%$tk $scopeStx) => do
   let scopeStx' ← withRef scopeStx reifyScope
   unless scopeStx.raw.structEq scopeStx' do
-    let stx ← `(command|#scope%$tk $scopeStx')
+    let stx ← `(command| #scope%$tk $scopeStx')
     liftCoreM <| Meta.Tactic.TryThis.addSuggestion tk (origSpan? := (← getRef)) stx
       (diffGranularity := .word)
 
