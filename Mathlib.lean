@@ -3547,6 +3547,7 @@ public import Mathlib.Combinatorics.SetFamily.KruskalKatona
 public import Mathlib.Combinatorics.SetFamily.LYM
 public import Mathlib.Combinatorics.SetFamily.Shadow
 public import Mathlib.Combinatorics.SetFamily.Shatter
+public import Mathlib.Combinatorics.SetFamily.Sperner1D
 public import Mathlib.Combinatorics.SimpleGraph.Acyclic
 public import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 public import Mathlib.Combinatorics.SimpleGraph.Basic
