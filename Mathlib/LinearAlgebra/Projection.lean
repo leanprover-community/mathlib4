@@ -237,12 +237,9 @@ theorem linearProjOfIsCompl_isCompl_projection (h : IsCompl p q) (x : E) :
 
 /-- The linear projection onto a subspace along its complement is an idempotent. -/
 @[simp]
-theorem IsCompl.isIdempotentElem_projection (hpq : IsCompl p q) :
+theorem IsCompl.projection_isIdempotentElem (hpq : IsCompl p q) :
     IsIdempotentElem hpq.projection :=
   LinearMap.ext fun _ ↦ congr($(linearProjOfIsCompl_isCompl_projection hpq _))
-
-@[deprecated (since := "2026-04-29")]
-alias IsCompl.projection_isIdempotentElem := IsCompl.isIdempotentElem_projection
 
 theorem existsUnique_add_of_isCompl_prod (hc : IsCompl p q) (x : E) :
     ∃! u : p × q, (u.fst : E) + u.snd = x :=
@@ -260,18 +257,16 @@ theorem IsCompl.projection_add_projection_eq_self (hpq : IsCompl p q) (x : E) :
   exact (prodEquivOfIsCompl _ _ hpq).apply_symm_apply x
 
 theorem IsCompl.projection_add_projection_eq_id (hpq : IsCompl p q) :
-    hpq.projection + hpq.symm.projection = .id := by
-  ext
-  apply IsCompl.projection_add_projection_eq_self hpq
+    hpq.projection + hpq.symm.projection = .id :=
+  LinearMap.ext hpq.projection_add_projection_eq_self
 
 lemma IsCompl.projection_eq_self_sub_projection (hpq : IsCompl p q) (x : E) :
     hpq.symm.projection x = x - hpq.projection x := by
   rw [eq_sub_iff_add_eq, projection_add_projection_eq_self]
 
 lemma IsCompl.projection_eq_id_sub_projection (hpq : IsCompl p q) :
-    hpq.symm.projection = .id - hpq.projection := by
-  ext
-  apply IsCompl.projection_eq_self_sub_projection hpq
+    hpq.symm.projection = .id - hpq.projection :=
+  LinearMap.ext hpq.projection_eq_self_sub_projection
 
 /-- The projection to `p` along `q` of `x` equals `x` if and only if `x ∈ p`. -/
 @[simp] lemma IsCompl.projection_eq_self_iff (hpq : IsCompl p q) (x : E) :
@@ -632,7 +627,7 @@ onto its range along its kernel. -/
 theorem isIdempotentElem_iff_eq_isCompl_projection_range_ker {T : E →ₗ[R] E} :
     IsIdempotentElem T ↔ ∃ (h : IsCompl (range T) (ker T)), T = h.projection :=
   ⟨fun hT => ⟨hT.isProj_range.isCompl, hT.eq_isCompl_projection⟩,
-   fun ⟨hT, h⟩ => h.symm ▸ hT.isIdempotentElem_projection⟩
+   fun ⟨hT, h⟩ => h.symm ▸ hT.projection_isIdempotentElem⟩
 
 open LinearMap in
 /-- Given an idempotent linear operator `q`,
