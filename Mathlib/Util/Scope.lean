@@ -259,8 +259,8 @@ def reifyExtraOpenScopes : CommandElabM (Option (TSyntax ``reifiedOpenScopedStx)
   let extraScoped ← extra.toArray.mapM fun n => `(reifiedSimpleOpenIdent| @$(mkIdent n))
   `(reifiedOpenScopedStx| open scoped $extraScoped*)
 
-/-- Directly activates the scopes in reified `open scoped @id₁ @id₂ ...` syntax. Unlike other
-`unreify` declarations, does *not* reset the scopes first. -/
+/-- Directly activates the scopes in reified `open scoped @id₁ @id₂ ...` syntax. Does *not* reset
+the scopes first. -/
 def unreifyOpenScoped : TSyntax ``reifiedOpenScopedStx → CommandElabM Unit
   | `(reifiedOpenScopedStx| open scoped $[@$openScopedDecls:ident]*) => do
     for openScoped in openScopedDecls do
@@ -354,6 +354,16 @@ def reifyOmit? : CommandElabM (Option (TSyntax ``Parser.Command.omit)) := do
           omittedIdentOrBinder := omittedIdentOrBinder.push (mkIdent uid.eraseMacroScopes)
         break
   `(Parser.Command.omit| omit $(omittedIdentOrBinder)*)
+
+/-- Elaborates the `variable`, `include`, and `omit` syntax in the reified variable syntax. Does
+*not* reset the scopes first. -/
+def unreifyVariables : TSyntax ``reifiedVarStx → CommandElabM Unit
+  | `(reifiedVarStx| $vars $[$included]? $[$omitted]?) => do
+      elabVariable vars
+      -- Note: we assume these are disjoint, and order of elaboration is irrelevant.
+      included.forM (elabInclude ·)
+      omitted.forM (elabOmit ·)
+  | _ => throwUnsupportedSyntax
 
 end variables
 
@@ -449,12 +459,7 @@ def unreifyScope (stx : TSyntax ``scopeStx)
     openDecls.forM unreifyOpenDecls
     openScoped.forM unreifyOpenScoped
     setOptions.forM unreifySetOptions
-    vars.forM fun vars => do
-      let `(reifiedVarStx| $vars $[$included]? $[$omitted]?) := vars | throwUnsupportedSyntax
-      elabVariable vars
-      -- Note: we assume these are disjoint, and order of elaboration is irrelevant.
-      included.forM (elabInclude ·)
-      omitted.forM (elabOmit ·)
+    vars.forM unreifyVariables
   | _ => throwUnsupportedSyntax
 
 /-- Reifies aspects of the current scope into a `scopeStx` scope specification. See `scopeStx`. -/
