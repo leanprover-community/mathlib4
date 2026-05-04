@@ -260,7 +260,7 @@ def reifyExtraOpenScopes : CommandElabM (Option (TSyntax ``reifiedOpenScopedStx)
   `(reifiedOpenScopedStx| open scoped $extraScoped*)
 
 /-- Directly activates the scopes in reified `open scoped @id₁ @id₂ ...` syntax. -/
-def unreifyOpenScopedDecls : TSyntax ``reifiedOpenScopedStx → CommandElabM Unit
+def unreifyOpenScoped : TSyntax ``reifiedOpenScopedStx → CommandElabM Unit
   | `(reifiedOpenScopedStx| open scoped $[@$openScopedDecls:ident]*) => do
     for openScoped in openScopedDecls do
       activateScoped openScoped.getId.eraseMacroScopes
@@ -435,7 +435,7 @@ def unreifyScope (stx : TSyntax ``scopeStx)
     universeStx.forM (elabUniverse ·)
     namespaceStx.forM (elabNamespace ·)
     openDecls.forM unreifyOpenDecls
-    openScoped.forM unreifyOpenScopedDecls
+    openScoped.forM unreifyOpenScoped
     keyVals.forM fun keyVals => do
       for keyVal in keyVals.getElems do
         let `(reifiedOptionKeyValue| $id $val) := keyVal | throwUnsupportedSyntax
