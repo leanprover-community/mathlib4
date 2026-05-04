@@ -82,10 +82,10 @@ theorem equiv (iso : G ≃* H) (h : IsFinitelyPresented G) : IsFinitelyPresented
   refine ⟨n, (iso : G →* H).comp φ, iso.surjective.comp hφsurj, ?_⟩
   rwa [MonoidHom.ker_mulEquiv_comp φ iso]
 
-/-- The quotient of a finitely presented group by a finitely generated normal subgroup `N` is finitely
-presented. -/
-@[to_additive /-- The quotient of a finitely presented additive group by a finitely generated normal
-additive subgroup `N` is finitely presented. -/]
+/-- The quotient of a finitely presented group by a finitely generated normal subgroup `N`
+is finitely presented. -/
+@[to_additive /-- The quotient of a finitely presented additive group by
+a finitely generated normal additive subgroup `N` is finitely presented. -/]
 theorem quotient (N : Subgroup G) [N.Normal] (hN : N.IsNormalClosureFG) :
     IsFinitelyPresented (G ⧸ N) := by
   sorry
