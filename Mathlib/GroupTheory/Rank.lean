@@ -42,7 +42,7 @@ lemma rank_le [h : FG G] {S : Finset G} (hS : .closure S = (⊤ : Subgroup G)) :
   @Nat.find_le _ _ (Classical.decPred _) (fg_iff'.mp h) ⟨S, rfl, hS⟩
 
 variable (G) in
-@[to_additive]
+@[to_additive (attr := nontriviality)]
 theorem rank_eq_zero [Subsingleton G] : rank G = 0 := by
   rw [← le_zero_iff, ← Finset.card_empty]
   exact rank_le (Subsingleton.elim _ _)
