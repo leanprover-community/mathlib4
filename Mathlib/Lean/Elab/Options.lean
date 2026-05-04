@@ -5,6 +5,7 @@ Authors: Thomas R. Murrills
 -/
 module
 
+import Mathlib.Init
 public import Lean.Data.KVMap
 
 /-! # Additional utilities for managing `Options` -/
@@ -31,3 +32,5 @@ def DataValue.toSetOptionValueSyntax? : DataValue → Option (TSyntax [`str, `nu
   | .ofBool b     => some ⟨Syntax.atom .none (toString b)⟩
   | .ofString str => some ⟨Syntax.mkStrLit str⟩
   | _ => none
+
+end Lean
