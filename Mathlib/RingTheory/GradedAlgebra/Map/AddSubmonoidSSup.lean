@@ -19,21 +19,33 @@ Given, in addition `[AddCommMonoid M] [AddSubmonoidClass σ M]`, this map factor
 special case of `coe`.)
 
 Given, in addition `[CompleteLattice σ]`, we can make various assumptions about the behaviour of
-these maps with respect to the complete lattice structures on each of `σ`, `AddSubmonoid M`,
-`Set M`.
+these maps with respect to the complete lattice structures on each of `σ`, `AddSubmonoid M`, `Set
+M`.
 
 - Mathlib's `[IsConcreteLE σ M]` asserts that `coe` is order-preserving and also order-reflecting.
   (In functor language, `coe` *is* a functor, automatically faithful, and also full.)
 - The map `AddSubmonoid M → Set M` (a special case of `coe`) has the property `IsConcreteLE`. It
-  moreover preserves arbitrary meets/infimas = intersections, but not joins/supremas. (In functor
-  language, it is a full and faithful functor that preserves limits. It is right adjoint
-  `AddSubmonoid.closure`.  Together, `coe` and the closure operatior define a "GaloisInsertion".)
+  moreover preserves arbitrary meets/infimas/limits = intersections, but not joins/supremas/
+  colimits. (In functor  language, it is a full and faithful functor that preserves limits. It is
+  right adjoint to `AddSubmonoid.closure`.  Together, these functors define a  "GaloisInsertion",
+  i.e. a Galois adjunction such that `closure ∘ coe = id`.)
 - The assumption `[AddSubmonoidSSup σ M]` defined here asserts that the factorization
-  `σ → AddSubmonoid M` preserves joins/supremas.  This implies that the map is order-preserving,
-  but we do not need this. But perhaps there should be an additional typeclass for
-  "order-preserving" anyway. (From the functorial viewpoint, we're asking for a functor to
-  preserve colimits.)
--/
+  `ofClass : σ → AddSubmonoid M` preserves joins/supremas/colimits.
+  This implies that the map is order-preserving, but we do not need this.
+  It also implies that there is a right adjoint, but again, we do not need this.
+  Perhaps there should be an additional typeclass for  "order-preserving" anyway, which
+  `AddSubmonoidSSup` extends.
+- Could perhaps put even stronger assumptions on the factorization `ofClass : σ → AddSubmonoid M`.
+   hink about the case `σ = Submodules R M`.  Here, the map `ofClass : σ → AddSubmonoid M` is
+  - order preserving, and
+  - preserves limits, and
+  - preserves colimits.
+  Its left adjoint sends a submonoid `A` to the smallest R-submodule containing `A`,
+  its right adjoint sends a submonoid `A` the largest R-submodule contained in `A`.
+  (There is always some  such R-submodule; in the worst case, it's the submodule {0}.)
+  Precomposing either of these with `ofClass` is the identity on `σ`, so these two Galois
+  adjunctions are a Galois insertion and a Galois coinsertion, respectively.
+  -/
 
 
 class AddSubmonoidSSup (σ : Type*) [CompleteLattice σ]
