@@ -504,9 +504,8 @@ allows quickly jumping back and forth between different states.
 or else remain silent. If the reified scope syntax no longer matches the current scope, `#scope`
 suggests an updated replacement.
 
-NOTE: `#scope` is currently in development. Soon, `#scope!` and `#scope?` will provide more
-features for (1) replacing the current scope with the recorded scope (2) suggesting new ordinary
-scope syntax to merge the two scopes.
+NOTE: `#scope` is currently in development. Soon, `#scope?` will provide more
+features for suggesting new ordinary scope syntax to merge the two scopes.
 -/
 syntax "#scope" (ppLine scopeStx)? : command
 
