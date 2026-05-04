@@ -782,7 +782,6 @@ lemma cocyclesIso₀_inv_comp_iCocycles :
       (shortComplexH0 A).f ≫ (cochainsIso₀ A).inv := by
   rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, cocyclesIso₀_hom_comp_f]
 
-set_option backward.isDefEq.respectTransparency false in
 variable {A} in
 lemma cocyclesMk₀_eq (x : A.ρ.invariants) :
     cocyclesMk ((cochainsIso₀ A).inv x.1) (by ext g; simp [cochainsIso₀, x.2 (g 0),
@@ -882,7 +881,6 @@ lemma toCocycles_comp_isoCocycles₂_hom :
   simp [← cancel_mono (shortComplexH2 A).moduleCatLeftHomologyData.i, comp_d₁₂_eq,
     shortComplexH2_f]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma cocyclesMk₂_eq (x : cocycles₂ A) :
     cocyclesMk ((cochainsIso₂ A).inv x) (by
       rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, ← inhomogeneousCochains.d_def,
@@ -1000,7 +998,6 @@ section IsTrivial
 
 variable [A.IsTrivial]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- When `A : Rep k G` is a trivial representation of `G`, `H¹(G, A)` is isomorphic to the
 group homs `G → A`. -/
 def H1IsoOfIsTrivial :

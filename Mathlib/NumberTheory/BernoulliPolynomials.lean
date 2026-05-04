@@ -80,12 +80,8 @@ theorem bernoulli_one : bernoulli 1 = X - C 2⁻¹ := by
 
 @[simp]
 theorem bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = _root_.bernoulli n := by
-  rw [bernoulli, eval_finsetSum, sum_range_succ]
-  have : ∑ x ∈ range n, _root_.bernoulli x * n.choose x * 0 ^ (n - x) = 0 := by
-    apply sum_eq_zero fun x hx => _
-    intro x hx
-    simp [tsub_eq_zero_iff_le, mem_range.1 hx]
-  simp [this]
+  rw [← coeff_zero_eq_eval_zero, coeff_bernoulli, if_pos (Nat.zero_le n), Nat.sub_zero,
+    Nat.choose_zero_right, Nat.cast_one, mul_one]
 
 @[simp]
 theorem bernoulli_eval_one (n : ℕ) : (bernoulli n).eval 1 = bernoulli' n := by
@@ -147,15 +143,10 @@ nonrec theorem sum_bernoulli (n : ℕ) :
   simp only [add_eq_left, mul_one, cast_one, cast_add, add_tsub_cancel_left,
     choose_succ_self_right, one_smul, _root_.bernoulli_zero, sum_singleton, zero_add,
     map_add, range_one, mul_one]
-  apply sum_eq_zero fun x hx => _
-  have f : ∀ x ∈ range n, ¬n + 1 - x = 1 := by grind
+  refine sum_eq_zero ?_
   intro x hx
-  rw [sum_bernoulli]
-  have g : ite (n + 1 - x = 1) (1 : ℚ) 0 = 0 := by
-    simp only [ite_eq_right_iff, one_ne_zero]
-    intro h₁
-    exact (f x hx) h₁
-  rw [g, zero_smul]
+  have hx1 : n + 1 - x ≠ 1 := by grind
+  simp [_root_.sum_bernoulli, hx1]
 
 /-- Another version of `Polynomial.sum_bernoulli`. -/
 theorem bernoulli_eq_sub_sum (n : ℕ) :
