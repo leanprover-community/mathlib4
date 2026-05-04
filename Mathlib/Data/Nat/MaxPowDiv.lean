@@ -238,10 +238,9 @@ theorem padicValNat_add_of_gt {p n m : ℕ} (hm : m ≠ 0) (h : padicValNat p m 
 theorem padicValNat_add_eq_min {p n m : ℕ} (hn : n ≠ 0) (hm : m ≠ 0)
     (hpnm : padicValNat p n ≠ padicValNat p m) :
     padicValNat p (n + m) = min (padicValNat p n) (padicValNat p m) := by
-  rcases (padicValNat p n).lt_trichotomy (padicValNat p m) with h | h | h
+  rcases Nat.lt_or_gt.mp hpnm with h | h
   · rw [Nat.min_eq_left (Nat.le_of_lt h), Nat.add_comm]
     apply padicValNat_add_of_gt hn h
-  · exact False.elim (hpnm h)
   · rw [Nat.min_eq_right (Nat.le_of_lt h)]
     apply padicValNat_add_of_gt hm h
 
