@@ -215,7 +215,7 @@ lemma Ideal.height_bot [Nontrivial R] : (⊥ : Ideal R).height = 0 := by
 
 lemma Ideal.height_eq_zero_iff_eq_bot [IsDomain R] {I : Ideal R} : I.height = 0 ↔ I = ⊥ := by
   refine ⟨fun hI ↦ ?_, fun hI0 ↦ by simp [hI0]⟩
-  rcases exists_prime_height_eq hI with ⟨p, _, hIp, hp0⟩
+  rcases exists_isPrime_height_eq hI with ⟨p, _, hIp, hp0⟩
   rw [height_eq_primeHeight, CharP.cast_eq_zero, primeHeight_eq_zero_iff,
     IsDomain.minimalPrimes_eq_singleton_bot, Set.mem_singleton_iff] at hp0
   exact bot_unique (hIp.trans_eq hp0)
