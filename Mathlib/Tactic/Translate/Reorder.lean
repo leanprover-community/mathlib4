@@ -10,9 +10,9 @@ public import Mathlib.Init
 /-!
 # Reordering arguments in a translation
 
-This module defines reorders, which are used by `to_dual (reorder := ...)` and
-`to_additive (reorder := ...)` to deal with definitions and theorems that need to have their
-arguments reordered.
+This module defines reorders, which can be specified with `to_dual (reorder := ...)` or
+`to_additive (reorder := ...)`, to deal with definitions and theorems that need to have their
+arguments and/or universe parameters reordered.
 
 A reordering is specified using disjoint cycle notation. For example, `1 2 3, 4 5` will
 move the 1st argument to the 2nd, move the 2nd to the 3rd, and the 3rd to the 1st, and it will
@@ -23,6 +23,12 @@ Instead of using numbers to refer to argument, you can also refer to them by nam
 
 To specify reordering arguments of arguments, the syntax is recursive. For example,
 `4 (1 2)` will reorder the first two arguments of the fourth argument.
+
+If the declaration is translated to itself or to an existing declaration,
+the heuristic in `guessReorder` tries to predict the argument reorder.
+This is done with a syntactic comparison of which variable is moved where.
+
+The universe reordering is always inferred automatically, using `guessUnivReorder`.
 
 ## Examples
 
@@ -35,13 +41,13 @@ To specify reordering arguments of arguments, the syntax is recursive. For examp
 
 - Some theorems are dual to themselves only after reordering some arguments.
   For example, `le_total : ∀ a b : α, a ≤ b ∨ b ≤ a` is dual to itself after swapping `a` and `b`.
-  Thanks to the heuristic in `guessReorder`, this reordering can often be found automatically,
-  so it suffices to write `@[to_dual self]`.
+  Thanks to the heuristic in `guessReorder`, it suffices to write `@[to_dual self]`.
 
-## TODO
+## Implementation details
 
-We need better support for reordering of universes for `to_dual` in category theory,
-for example to dualize `CategoryTheory.Comma` to itself.
+Permutation are stored as their disjoint cycle representation (`Permutation`).
+This allows efficiently permuting an array/list of arguments/universes
+(`Permutation.permute!`/`Permutation.permuteList!`).
 
 -/
 
@@ -117,7 +123,7 @@ def reverse (r : ArgReorder) : ArgReorder := {
 decreasing_by
   cases r; grind [→ Array.sizeOf_lt_of_mem]
 where
-  /-- Compute where `Reorder.permute!` sends the `n`-th element in an array. -/
+  /-- Compute where `ArgReorder.permute!` sends the `n`-th element in an array. -/
   permuteSingle (r : ArgReorder) (n : Nat) : Nat :=
     r.perm.findSome? (fun cycle ↦ getCycleSuccessor n (cycle.1.head (by grind)) cycle.1) |>.getD n
   /-- Return the successor of `n` in a cycle, where `head` is the head of the cycle list. -/
@@ -138,7 +144,7 @@ partial def beq (r₁ r₂ : ArgReorder) : Bool :=
 
 instance : BEq ArgReorder := ⟨beq⟩
 
-/-- Print a `ArgReorder`, representing the arguments by their index. -/
+/-- Print an `ArgReorder`, representing the arguments by their index. -/
 def toString (r : ArgReorder) : String :=
   let perm := r.perm.map (" ".intercalate <| ·.1.map (s!"{· + 1}"))
   let argReorders := r.argReorders.map (fun x ↦ s!"{x.1 + 1} ({x.2.toString})")
@@ -222,29 +228,30 @@ end
 /-! ### Guessing the reorder given the reordered expression -/
 
 /-- Decompose the permutation `map` into its disjoint cycle representation. -/
- private def decomposePerm {n} (map : Vector (Option (Fin n)) n) : Permutation := Id.run do
-    let mut map := map
-    let mut perm := []
-    for h : i in *...n do
-      let mut some j := map[i] | continue
-      if i = j then continue
-      let mut cycle := ⟨[i, j], by grind⟩
-      repeat do
-        let some j' := map[j] | return [] -- If the permutation is malformed, return `[]`.
-        -- To avoid computing the same cycle multiple times, and to avoid infinite loops,
-        -- we erase visited elements from `map`.
-        map := map.set! j none
-        if j' = i then break
-        j := j'
-        cycle := ⟨cycle.1 ++ [↑j], by grind⟩
-      perm := cycle :: perm
-    return perm
+private def decomposePerm {n} (map : Vector (Option (Fin n)) n) : Permutation := Id.run do
+  let mut map := map
+  let mut perm := []
+  for h : i in *...n do
+    let mut some j := map[i] | continue
+    if i = j then continue
+    let mut cycle := ⟨[i, j], by grind⟩
+    repeat do
+      let some j' := map[j] | return [] -- If the permutation is malformed, return `[]`.
+      -- To avoid computing the same cycle multiple times, and to avoid infinite loops,
+      -- we erase visited elements from `map`.
+      map := map.set! j none
+      if j' = i then break
+      j := j'
+      cycle := ⟨cycle.1 ++ [↑j], by grind⟩
+    perm := cycle :: perm
+  return perm
 
-/-- Determine the universe level reorder for `decl` given the argument reorder. -/
-def guessUnivReorder (reorder : ArgReorder) (decl : ConstantInfo) : Permutation :=
-  Id.run do
+/-- Determine the universe level reorder for `decl`, given the argument reorder.
+For each reordering in `reorder`, we find any corresponding universe reorderings,
+which are then combined to get the result. -/
+def guessUnivReorder (reorder : ArgReorder) (decl : ConstantInfo) : Permutation := Id.run do
   let mut map := .replicate decl.levelParams.length none
-  for ⟨cycle, _⟩ in show List _ from reorder.perm do
+  for ⟨cycle, _⟩ in reorder.perm do
     for i in cycle, i' in cycle.tail ++ [cycle.head (by grind)] do
       for (u, u') in matchingUnivs (getNthHyp i decl.type) (getNthHyp i' decl.type) do
         let some p := getParam? u | pure ()
