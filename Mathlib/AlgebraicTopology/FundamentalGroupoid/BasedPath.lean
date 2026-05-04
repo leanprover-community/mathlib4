@@ -106,6 +106,13 @@ def ofPath {y : X} (γ : Path x₀ y) : BasedPath x₀ :=
 theorem endpoint_ofPath {y : X} (γ : Path x₀ y) : endpoint (ofPath γ) = y := by
   simp [endpoint, ofPath, γ.target]
 
+/-- The round-trip `ofPath ∘ toPath` is the identity on `BasedPath x₀`. -/
+@[simp] theorem ofPath_toPath_self (γ : BasedPath x₀) : ofPath γ.toPath = γ := rfl
+
+/-- `ofPath` is invariant under reindexing the right endpoint via `Path.cast`. -/
+@[simp] theorem ofPath_cast {y y' : X} (γ : Path x₀ y) (h : y' = y) :
+    ofPath (γ.cast rfl h) = ofPath γ := rfl
+
 /-- Append a path at the endpoint of a based path. -/
 noncomputable def append {y : X} (γ : BasedPath x₀) (δ : Path (endpoint γ) y) :
     BasedPath x₀ :=
@@ -230,6 +237,26 @@ theorem initialSegmentFamily_one {a b : X} (γ : Path a b) :
 end Path
 
 namespace BasedPath
+
+/-- The family of initial segments of a based path, as a family of based paths. At `t = 0`
+this is the constant based path at `x₀`; at `t = 1` it is `γ` itself. -/
+noncomputable def initialSegmentFamily {x₀ : X} (γ : BasedPath x₀) (t : I) : BasedPath x₀ :=
+  ofPath (γ.toPath.initialSegmentFamily t)
+
+@[simp] theorem initialSegmentFamily_zero {x₀ : X} (γ : BasedPath x₀) :
+    γ.initialSegmentFamily 0 = ofPath (Path.refl x₀) := by
+  simp [initialSegmentFamily, Path.initialSegmentFamily_zero]
+
+@[simp] theorem initialSegmentFamily_one {x₀ : X} (γ : BasedPath x₀) :
+    γ.initialSegmentFamily 1 = γ := by
+  rw [initialSegmentFamily, Path.initialSegmentFamily_one, ofPath_cast, ofPath_toPath_self]
+
+theorem continuous_initialSegmentFamily {x₀ : X} (γ : BasedPath x₀) :
+    Continuous γ.initialSegmentFamily := by
+  refine Continuous.subtype_mk ?_ _
+  refine ContinuousMap.continuous_of_continuous_uncurry _ ?_
+  simpa [initialSegmentFamily, ofPath] using
+    γ.toPath.continuous_initialSegmentFamily_uncurry
 
 /-- Extract an open path-connected endpoint neighborhood and a terminal interval avoiding the
 subbasic compact sets that do not contain `1`. -/

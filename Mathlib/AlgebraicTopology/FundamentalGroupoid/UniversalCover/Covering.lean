@@ -71,56 +71,15 @@ public theorem isCoveringMap [LocPathConnectedSpace X] [PathConnectedSpace X]
   rw [IsOpen.trivializationDiscrete_baseSet]
   exact hxU
 
-/-- Helper: every point of `UniversalCover x₀` is joined to the basepoint. -/
+/-- Helper: every point of `UniversalCover x₀` is joined to the basepoint. The connecting
+path is the family of initial segments `t ↦ α |_[0, t]`, lifted through `ofBasedPath`. -/
 theorem joined_basepoint_of_ofBasedPath (α : BasedPath x₀) :
-    Joined (ofBasedPath x₀ (BasedPath.ofPath (Path.refl x₀))) (ofBasedPath x₀ α) := by
-  -- Family of based paths: `F t s = α ⟨s * t, _⟩` — at `t = 0` constant at `x₀`, at `t = 1` `α`.
-  have hst_mem : ∀ s t : I, (s : ℝ) * (t : ℝ) ∈ I := fun s t ↦
-    ⟨mul_nonneg s.2.1 t.2.1, mul_le_one₀ s.2.2 t.2.1 t.2.2⟩
-  -- Subtype reductions at the three boundary values of `s * t`.
-  have hst_zero_left : ∀ t : I, (⟨((0 : I) : ℝ) * (t : ℝ), hst_mem 0 t⟩ : I) = 0 :=
-    fun _ ↦ Subtype.ext (by simp)
-  have hst_zero_right : ∀ s : I, (⟨(s : ℝ) * ((0 : I) : ℝ), hst_mem s 0⟩ : I) = 0 :=
-    fun _ ↦ Subtype.ext (by simp)
-  have hst_one : ∀ s : I, (⟨(s : ℝ) * ((1 : I) : ℝ), hst_mem s 1⟩ : I) = s :=
-    fun _ ↦ Subtype.ext (by simp)
-  let F_cm : I → C(I, X) := fun t ↦
-    ⟨fun s ↦ α.1 ⟨(s : ℝ) * (t : ℝ), hst_mem s t⟩, by
-      refine α.1.continuous.comp ?_
-      exact Continuous.subtype_mk (by fun_prop) _⟩
-  have F_cm_apply : ∀ t s : I, (F_cm t) s = α.1 ⟨(s : ℝ) * (t : ℝ), hst_mem s t⟩ :=
-    fun _ _ ↦ rfl
-  have hF_cont : Continuous F_cm := by
-    refine ContinuousMap.continuous_of_continuous_uncurry _ ?_
-    exact α.1.continuous.comp <| Continuous.subtype_mk
-      ((continuous_induced_dom.comp continuous_snd).mul
-        (continuous_induced_dom.comp continuous_fst)) _
-  let F : I → BasedPath x₀ := fun t ↦
-    ⟨F_cm t, by rw [F_cm_apply, hst_zero_left]; exact α.2⟩
-  have F_apply : ∀ t s : I, (F t).1 s = α.1 ⟨(s : ℝ) * (t : ℝ), hst_mem s t⟩ := fun _ _ ↦ rfl
-  have hF_bp_cont : Continuous F := Continuous.subtype_mk hF_cont _
-  -- `F 0` has endpoint `x₀`; at `t = 1` the family is `α` pointwise.
-  have h_F0_end :
-      BasedPath.endpoint (F 0) = BasedPath.endpoint (BasedPath.ofPath (Path.refl x₀)) := by
-    rw [BasedPath.endpoint_def, F_apply, hst_zero_right]
-    simpa [BasedPath.ofPath] using α.2
-  have h_start :
-      ofBasedPath x₀ (F 0) = ofBasedPath x₀ (BasedPath.ofPath (Path.refl x₀)) := by
-    refine ofBasedPath_eq_of_homotopic_toPath h_F0_end ?_
-    have : (F 0).toPath.cast rfl h_F0_end.symm = (BasedPath.ofPath (Path.refl x₀)).toPath := by
-      ext s
-      change (F 0).1 s = (BasedPath.ofPath (Path.refl x₀)).toPath s
-      rw [F_apply, hst_zero_right]
-      simpa [BasedPath.ofPath] using α.2
-    rw [this]
-  have h_end : ofBasedPath x₀ (F 1) = ofBasedPath x₀ α := by
-    congr 1
-    ext s
-    rw [F_apply, hst_one]
-  refine ⟨⟨⟨fun t ↦ ofBasedPath x₀ (F t), ?_⟩, ?_, ?_⟩⟩
-  · exact (continuous_ofBasedPath x₀).comp hF_bp_cont
-  · exact h_start
-  · exact h_end
+    Joined (ofBasedPath x₀ (BasedPath.ofPath (Path.refl x₀))) (ofBasedPath x₀ α) :=
+  ⟨{  toFun t := ofBasedPath x₀ (α.initialSegmentFamily t)
+      continuous_toFun :=
+        (continuous_ofBasedPath x₀).comp α.continuous_initialSegmentFamily
+      source' := by simp
+      target' := by simp }⟩
 
 /-- The universal cover is path-connected. -/
 public theorem pathConnectedSpace [PathConnectedSpace X] (x₀ : X) :

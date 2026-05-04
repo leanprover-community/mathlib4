@@ -12,15 +12,12 @@ been addressed on this branch.
   sub-`have`s (`hK_zero`, `hK_one`, `hK_at_zero`, `hK_at_one`) deserve to
   be top-level lemmas about the reparametrisations
   `joinedInSLSC_uFn` / `joinedInSLSC_vFn`.
-- **`UniversalCover.joined_basepoint_of_ofBasedPath`** (`Covering.lean`,
-  ≈l. 73–121). ≈50 lines of `Subtype.ext` / `unitInterval` arithmetic
-  boilerplate, a symptom of missing API on `unitInterval` multiplication.
 
 ## API gaps for new definitions
 
-- `BasedPath` (`BasedPath.lean`): no `mk` simp lemma, no `BasedPath.refl`,
-  no characterisation of the round-trip
-  `(γ : BasedPath x₀) ↔ (Path x₀ (endpoint γ))` via `toPath` / `ofPath`.
+- `BasedPath` (`BasedPath.lean`): no `mk` simp lemma, no `BasedPath.refl`.
+  (Round-trip `ofPath_toPath_self` and the `ofPath_cast` simp lemma are
+  now in place.)
 - `BasedPath.deformTerminal`: missing `endpoint`, missing
   continuity-in-parameters lemma, and no specialisation when the
   deforming path is `refl`.
