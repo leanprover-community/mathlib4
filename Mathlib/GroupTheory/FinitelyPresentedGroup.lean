@@ -9,6 +9,7 @@ module
 public import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.GroupTheory.FreeGroup.Basic
+public import Mathlib.GroupTheory.QuotientGroup.Basic
 
 /-!
 # Finitely Presented Groups
@@ -80,6 +81,14 @@ theorem equiv (iso : G ≃* H) (h : IsFinitelyPresented G) : IsFinitelyPresented
   obtain ⟨n, φ, hφsurj, hNC⟩ := h
   refine ⟨n, (iso : G →* H).comp φ, iso.surjective.comp hφsurj, ?_⟩
   rwa [MonoidHom.ker_mulEquiv_comp φ iso]
+
+/-- The quotient of a finitely presented group by a finitely generated normal subgroup is finitely
+presented. -/
+@[to_additive /-- The quotient of a finitely presented additive group by a finitely generated normal
+additive subgroup is finitely presented. -/]
+theorem quotient (N : Subgroup G) [N.Normal] (hN : N.IsNormalClosureFG) :
+    IsFinitelyPresented (G ⧸ N) := by
+  sorry
 
 /-- A free group with a finite number of generators is finitely presented. -/
 @[to_additive /-- A free additive group with a finite number of generators is finitely presented. -/
