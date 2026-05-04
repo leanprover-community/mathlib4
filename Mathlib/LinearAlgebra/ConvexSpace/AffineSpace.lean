@@ -98,7 +98,7 @@ theorem convexCombination_assoc (f : StdSimplex R (StdSimplex R P)) :
       simp only [Finsupp.coe_smul, Pi.smul_apply, smul_eq_mul, hp', mul_zero,
         not_true_eq_false] at hp
 
-instance rtinstConvexSpace : ConvexSpace R P where
+instance instConvexSpace : ConvexSpace R P where
   sConvexCombo := convexCombination
   sConvexCombo_single := convexCombination_single
   assoc := convexCombination_assoc
