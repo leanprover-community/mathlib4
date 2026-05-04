@@ -18,8 +18,6 @@ We also define the corresponding typeclass and prove some basic properties.
 
 @[expose] public section
 
-assert_not_exists Finset
-
 open Function
 open scoped AddConstMap
 

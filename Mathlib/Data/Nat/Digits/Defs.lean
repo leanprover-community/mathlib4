@@ -31,8 +31,6 @@ are numerals is not yet ported.
 
 @[expose] public section
 
-assert_not_exists Finset
-
 namespace Nat
 
 variable {n : ℕ}

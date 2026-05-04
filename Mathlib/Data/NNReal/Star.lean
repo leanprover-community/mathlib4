@@ -14,8 +14,6 @@ public import Mathlib.Data.Real.Star
 
 public section
 
-assert_not_exists Finset
-
 open scoped NNReal
 
 instance : StarRing ℝ≥0 := starRingOfComm

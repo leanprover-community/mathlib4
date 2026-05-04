@@ -26,8 +26,6 @@ nnrat, rationals, ℚ≥0, floor
 
 @[expose] public section
 
-assert_not_exists Finset
-
 namespace NNRat
 
 instance : FloorSemiring ℚ≥0 where

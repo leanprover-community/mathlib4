@@ -15,8 +15,6 @@ public import Mathlib.Logic.Equiv.Fin.Rotate
 
 @[expose] public section
 
-assert_not_exists LinearMap
-
 open Equiv
 
 /-- Permutations of `Fin (n + 1)` are equivalent to fixing a single
