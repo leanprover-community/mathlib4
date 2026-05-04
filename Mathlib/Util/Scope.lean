@@ -260,14 +260,14 @@ section variables
 def reifyVariables? : CommandElabM (Option (TSyntax ``Parser.Command.variable)) := do
   let { varDecls .. } ← getScope
   if varDecls.isEmpty then return none
+  let varDecls := varDecls.map (⟨·.raw.unsetTrailing⟩)
   `(Parser.Command.variable| variable $varDecls*)
 
 /-- Reifies current `include`d section variables into `include ...` syntax if there are any. -/
 def reifyInclude? : CommandElabM (Option (TSyntax ``Parser.Command.include)) := do
   let { includedVars .. } ← getScope
   if includedVars.isEmpty then return none
-  -- TODO: the `Name`s are `varUIDs` with hygiene, but should we strip that in making the idents?
-  `(Parser.Command.include| include $(includedVars.toArray.map mkIdent)*)
+  `(Parser.Command.include| include $(includedVars.toArray.map (mkIdent ·.eraseMacroScopes))*)
 
 /-- Reifies current `omit`ted section variables into `omit ...` syntax if there are any. -/
 def reifyOmit? : CommandElabM (Option (TSyntax ``Parser.Command.omit)) := do
@@ -278,12 +278,10 @@ def reifyOmit? : CommandElabM (Option (TSyntax ``Parser.Command.omit)) := do
     for uid in varUIds, stx in varDecls do
       if uid = var then
         if stx.raw.isOfKind ``Parser.Term.instBinder then
-          omittedIdentOrBinder := omittedIdentOrBinder.push ⟨stx.raw⟩
+          omittedIdentOrBinder := omittedIdentOrBinder.push ⟨stx.raw.unsetTrailing⟩
         else
-          -- TODO: remove scopes?
-          omittedIdentOrBinder := omittedIdentOrBinder.push (mkIdent uid)
+          omittedIdentOrBinder := omittedIdentOrBinder.push (mkIdent uid.eraseMacroScopes)
         break
-  -- TODO: the `Name`s are `varUIDs` with hygiene, but should we strip that in making the idents?
   `(Parser.Command.omit| omit $(omittedIdentOrBinder)*)
 
 end variables
