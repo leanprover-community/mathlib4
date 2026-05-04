@@ -8,6 +8,7 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.GroupTheory.Finiteness
 public import Mathlib.GroupTheory.FreeGroup.Basic
 
 /-!
@@ -32,6 +33,7 @@ finitely presented group, finitely generated normal closure
 @[expose] public section
 
 variable {G H α β : Type*} [Group G] [Group H]
+variable {N : Subgroup G}
 
 /-- `IsNormalClosureFG N` says that the subgroup `N` is the normal closure of a finitely-generated
 subgroup. -/
@@ -42,19 +44,27 @@ def Subgroup.IsNormalClosureFG (N : Subgroup G) : Prop :=
 
 namespace Subgroup.IsNormalClosureFG
 
-/-- Being the normal closure of a finite set is invariant under surjective homomorphism. -/
-@[to_additive /-- Being the additive normal closure of a finite set is invariant under
-surjective homomorphism. -/]
-protected theorem map {N : Subgroup G} (hN : IsNormalClosureFG N)
-    {f : G →* H} (hf : Function.Surjective f) : (N.map f).IsNormalClosureFG := by
-  obtain ⟨S, hSfinite, hSclosure⟩ := hN
-  refine ⟨f '' S, hSfinite.image _, ?_⟩
-  rw [← hSclosure, Subgroup.map_normalClosure _ _ hf]
-
 /-- The trivial group is the normal closure of a finite set of relations. -/
 @[to_additive /-- The trivial additive group is the normal closure of a finite set of relations. -/]
 protected theorem bot : IsNormalClosureFG (⊥ : Subgroup G) :=
   ⟨∅, Finite.of_subsingleton, normalClosure_empty⟩
+
+/-- A finitely generated normal subgroup is the normal closure of a finite set. -/
+@[to_additive /-- A finitely generated normal additive subgroup is the additive normal closure of a
+finite set. -/]
+protected theorem of_fg [N.Normal] (hN : N.FG) : IsNormalClosureFG N := by
+  obtain ⟨S, hS, hSfinite⟩ := (Subgroup.fg_iff N).mp hN
+  refine ⟨S, hSfinite, ?_⟩
+  rw [← Subgroup.normalClosure_closure_eq_normalClosure, hS, Subgroup.normalClosure_eq_self]
+
+/-- Being the normal closure of a finite set is invariant under surjective homomorphism. -/
+@[to_additive /-- Being the additive normal closure of a finite set is invariant under
+surjective homomorphism. -/]
+protected theorem map (hN : IsNormalClosureFG N)
+    {f : G →* H} (hf : Function.Surjective f) : (N.map f).IsNormalClosureFG := by
+  obtain ⟨S, hSfinite, hSclosure⟩ := hN
+  refine ⟨f '' S, hSfinite.image _, ?_⟩
+  rw [← hSclosure, Subgroup.map_normalClosure _ _ hf]
 
 end Subgroup.IsNormalClosureFG
 
