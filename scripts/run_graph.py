@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Minimal reference executor for build graphs emitted by lake_graph_extract.py.
+"""Minimal reference executor for Lake v2 graph manifests.
 
-Intentionally simple: load the JSON, topo-order the requested target's
-subgraph, and invoke each node's ``command`` in sequence. No CAS, no caching,
+Intentionally simple: load the v2 JSON, topo-order the requested target's
+subgraph, and invoke each node's `command` in sequence. No CAS, no caching,
 no scheduler, no parallelism. The whole point is that a passing
-``--validate-outputs`` diff attributes correctness to the *graph extractor*,
+`validate-outputs` diff attributes correctness to the *graph extractor*,
 not to executor cleverness.
 
 If you want a real scheduler, this file is the wrong abstraction — use the
@@ -12,16 +12,15 @@ graph JSON as input to Bazel, BuildBuddy, or your own queue.
 
 Usage
 -----
-    run_graph.py <build_graph.json> [--target <module>] [--clean]
+    run_graph.py <manifest.json> [--target <module>] [--only|--missing]
 
 Options
 -------
     --target <module>   Only execute the subgraph reachable from <module>.
                         Default: all nodes (target field of the graph).
-    --clean             ``rm -rf`` every output directory under the workspace
-                        before running. Required for the ``validate-outputs``
-                        sanity check to be meaningful (so we know nothing was
-                        already on disk).
+    --only              Execute only the target node (skip deps).
+    --missing           Execute only nodes whose outputs don't exist.
+    --clean             rm -rf every output directory before running.
 """
 
 from __future__ import annotations
@@ -37,7 +36,7 @@ from typing import Iterable
 
 
 def _absolutize(s: str, ctx: list[tuple[str, str]]) -> str:
-    """Inverse of lake_graph_extract.relativize. Same prefix-priority order."""
+    """Inverse of lake_graph_extract's relativization."""
     for var, value in ctx:
         token = f"${var}"
         if s == token:
@@ -47,24 +46,8 @@ def _absolutize(s: str, ctx: list[tuple[str, str]]) -> str:
     return s
 
 
-def _absolutize_list(seq: Iterable[str], ctx: list[tuple[str, str]]) -> list[str]:
-    return [_absolutize(s, ctx) for s in seq]
-
-
-def _absolutize_obj(obj, ctx: list[tuple[str, str]]):
-    if isinstance(obj, str):
-        if obj.startswith("@"):
-            return "@" + _absolutize(obj[1:], ctx)
-        return _absolutize(obj, ctx)
-    if isinstance(obj, list):
-        return [_absolutize_obj(x, ctx) for x in obj]
-    if isinstance(obj, dict):
-        return {k: _absolutize_obj(v, ctx) for k, v in obj.items()}
-    return obj
-
-
 def _absolutize_argv(argv: list[str], ctx: list[tuple[str, str]]) -> list[str]:
-    """Like _absolutize_list but supports ``@<path>`` rsp args."""
+    """Like _absolutize but supports @<path> rsp args."""
     out: list[str] = []
     for s in argv:
         if s.startswith("@"):
@@ -78,190 +61,175 @@ def _topo_subgraph_order(
     nodes_by_id: dict[str, dict],
     target_id: str | None,
 ) -> list[str]:
-    """Return node IDs in topo order; if ``target_id`` is set, restrict to its
-    transitive build dependencies (plus the target itself)."""
-    pkg_module_to_id: dict[str, str] = {}
-    exe_name_to_id: dict[str, str] = {}
+    """Return node IDs in topo order; restrict to target's transitive deps if set."""
+    mod_to_id: dict[str, str] = {}
     for nid, n in nodes_by_id.items():
         if n.get("kind") == "lean_module":
-            pkg_module_to_id[n["module"]] = nid
-        if n.get("kind") == "cc_link":
-            # cc_link is the ultimate root of an exe build; prefer it over
-            # the lean_module of the same name when resolving an exe target.
-            exe_name_to_id[n["exe_name"]] = nid
-
+            mod_to_id[n["module"]] = nid
+    
     if target_id is None:
+        # All nodes in manifest order (already topo-sorted by Lake)
         return list(nodes_by_id.keys())
-
+    
     if target_id in nodes_by_id:
         seed_id = target_id
-    elif target_id in exe_name_to_id:
-        seed_id = exe_name_to_id[target_id]
-    elif target_id in pkg_module_to_id:
-        seed_id = pkg_module_to_id[target_id]
+    elif target_id in mod_to_id:
+        seed_id = mod_to_id[target_id]
     else:
-        raise KeyError(
-            f"target {target_id!r} is not a node id, exe name, or known module"
-        )
-
-    # BFS over graph_deps. graph_deps may be either node ids (cc_compile /
-    # cc_link emit them as ids) OR module names (lean_module emits the
-    # module-name list from setup_json.importArts). Look up both.
-    closure_ids: set[str] = set()
-    queue = [seed_id]
+        raise ValueError(f"Target {target_id!r} not found in graph")
+    
+    # BFS from seed to collect transitive deps
+    visited: set[str] = set()
+    queue: list[str] = [seed_id]
     while queue:
-        nid = queue.pop()
-        if nid in closure_ids:
+        nid = queue.pop(0)
+        if nid in visited:
             continue
-        closure_ids.add(nid)
+        visited.add(nid)
         node = nodes_by_id[nid]
-        for dep in node.get("graph_deps", []):
-            dep_id = (
-                dep if dep in nodes_by_id
-                else pkg_module_to_id.get(dep)
-            )
-            if dep_id is not None and dep_id not in closure_ids:
-                queue.append(dep_id)
-
-    return [nid for nid in nodes_by_id.keys() if nid in closure_ids]
-
-
-def execute_node(node: dict, ctx: list[tuple[str, str]]) -> None:
-    """Run one graph node's command after writing any side-input files.
-
-    Side-inputs handled by the executor (vs the node's command):
-      * setup.json — for ``lean_module`` nodes, written from
-        ``node['setup_json']``. ``lean --setup`` reads it before compiling.
-      * .rsp — for ``cc_link`` nodes, written from ``node['rsp_args']`` in
-        Lake's quoted-line format.
-    """
-    abs_command = _absolutize_argv(node["command"], ctx)
-    abs_env = {k: _absolutize(v, ctx) for k, v in node["env"].items()}
-
-    # 1. setup.json side-input for lean_module nodes.
-    setup_path_rel = _find_setup_path_in_outputs(node)
-    if setup_path_rel is not None and "setup_json" in node:
-        setup_path = _absolutize(setup_path_rel, ctx)
-        setup_content = _absolutize_obj(node["setup_json"], ctx)
-        Path(setup_path).parent.mkdir(parents=True, exist_ok=True)
-        # Lake writes setup.json with `(toJson setup).pretty`; the exact
-        # whitespace differs from Python's, but the JSON content is what
-        # `lean --setup` reads, so semantic equivalence suffices.
-        Path(setup_path).write_text(json.dumps(setup_content, indent=1))
-
-    # 2. .rsp side-input for cc_link nodes. Lake's mkArgs writes one quoted
-    #    arg per line, with backslash-escaping of '\' and '"'.
-    if node.get("kind") == "cc_link":
-        rsp_path = _absolutize(node["rsp_path"], ctx)
-        rsp_args_abs = _absolutize_list(node["rsp_args"], ctx)
-        Path(rsp_path).parent.mkdir(parents=True, exist_ok=True)
-        with open(rsp_path, "w") as f:
-            for arg in rsp_args_abs:
-                escaped = arg.replace("\\", "\\\\").replace('"', '\\"')
-                f.write(f'"{escaped}"\n')
-
-    # Pre-create output directories the command itself doesn't auto-create.
-    for out_rel in node["outputs"]:
-        Path(_absolutize(out_rel, ctx)).parent.mkdir(parents=True, exist_ok=True)
-
-    env = os.environ.copy()
-    env.update(abs_env)
-
-    res = subprocess.run(abs_command, env=env, capture_output=True, text=True)
-    if res.returncode != 0:
-        sys.stderr.write(
-            f"[run_graph] node {node['id']} failed (exit {res.returncode})\n"
-        )
-        sys.stderr.write(res.stdout)
-        sys.stderr.write(res.stderr)
-        raise SystemExit(res.returncode)
+        # Collect deps (import_arts for lean_module nodes list modules)
+        for (dep_mod, _) in node.get("import_arts", []):
+            if dep_mod in mod_to_id:
+                dep_id = mod_to_id[dep_mod]
+                if dep_id not in visited:
+                    queue.append(dep_id)
+    
+    # Return in manifest order (preserves topo order)
+    return [nid for nid in nodes_by_id.keys() if nid in visited]
 
 
-def _find_setup_path_in_outputs(node: dict) -> str | None:
-    for out in node["outputs"]:
-        if out.endswith(".setup.json"):
-            return out
-    return None
-
-
-def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("graph_json", type=Path)
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("manifest", help="Path to v2 manifest JSON")
     parser.add_argument("--target", default=None,
-                        help="restrict execution to this target's transitive closure")
-    parser.add_argument(
-        "--clean", action="store_true",
-        help="rm -rf .lake/build trees before executing (required for validate-outputs)",
-    )
-    parser.add_argument(
-        "--only", action="store_true",
-        help="execute only the target node, not its transitive build deps "
-             "(assumes deps are already built on disk; useful for single-node "
-             "validation)",
-    )
-    parser.add_argument(
-        "--missing", action="store_true",
-        help="execute only nodes whose declared outputs aren't all already on "
-             "disk (incremental mode; useful for partial-rebuild validation)",
-    )
-    args = parser.parse_args(argv)
-
-    graph = json.loads(args.graph_json.read_text())
-    ws = graph["workspace"]
-    # Order matters: most-specific prefix first for absolutize. TOOLCHAIN
-    # (= <root>/bin) must come before TOOLCHAIN_ROOT.
+                        help="Target module/exe name (default: graph's target field)")
+    parser.add_argument("--only", action="store_true",
+                        help="Execute only the target node, skip deps")
+    parser.add_argument("--missing", action="store_true",
+                        help="Execute only nodes with missing outputs")
+    parser.add_argument("--clean", action="store_true",
+                        help="rm -rf all output directories before running")
+    
+    args = parser.parse_args()
+    
+    manifest_path = Path(args.manifest)
+    if not manifest_path.exists():
+        print(f"Manifest not found: {manifest_path}", file=sys.stderr)
+        return 1
+    
+    manifest = json.loads(manifest_path.read_text())
+    
+    # Build indices
+    nodes = manifest["nodes"]
+    nodes_by_id: dict[str, dict] = {n["id"]: n for n in nodes}
+    mod_to_node_id: dict[str, str] = {}
+    for n in nodes:
+        if n.get("kind") == "lean_module":
+            mod_to_node_id[n["module"]] = n["id"]
+    
+    # Determine target
+    target_id = args.target or manifest.get("target")
+    if target_id and target_id in mod_to_node_id:
+        target_id = mod_to_node_id[target_id]
+    
+    # Get execution order
+    if args.only:
+        exec_ids = [target_id] if target_id and target_id in nodes_by_id else []
+    else:
+        exec_ids = _topo_subgraph_order(nodes_by_id, target_id)
+    
+    # Build context for absolutization
+    ws = manifest["workspace"]
     ctx = [
         ("LAKE_HOME", ws["LAKE_HOME"]),
         ("WORKSPACE", ws["WORKSPACE"]),
         ("TOOLCHAIN", ws["TOOLCHAIN"]),
         ("TOOLCHAIN_ROOT", ws.get("TOOLCHAIN_ROOT", str(Path(ws["TOOLCHAIN"]).parent))),
     ]
-
-    nodes_by_id = {n["id"]: n for n in graph["nodes"]}
-
-    target = args.target if args.target is not None else graph.get("target")
-    order = _topo_subgraph_order(nodes_by_id, target)
-
-    if args.only:
-        # Strip back to just the target node. The closure-walk above gives us
-        # the right node id even if `target` was supplied as a module name.
-        target_id = order[-1] if order else None
-        order = [target_id] if target_id is not None else []
-
-    if args.missing:
-        order = [
-            nid for nid in order
-            if not all(
-                Path(_absolutize(o, ctx)).exists() for o in nodes_by_id[nid]["outputs"]
-            )
-        ]
-        sys.stderr.write(f"[run_graph] --missing: {len(order)} nodes need rebuild\n")
-
+    
+    # Clean if requested
     if args.clean:
-        # Wipe .lake/build for every package referenced by these nodes — that
-        # is, every output's parent .lake/build/ tree. Detect by walking up
-        # from each output path until we hit ``.lake/build``.
-        cleaned: set[Path] = set()
-        for nid in order:
-            for out in nodes_by_id[nid]["outputs"]:
-                abs_out = Path(_absolutize(out, ctx))
-                cur = abs_out
-                while cur.parent != cur:
-                    if cur.name == "build" and cur.parent.name == ".lake":
-                        if cur not in cleaned:
-                            cleaned.add(cur)
-                            if cur.exists():
-                                shutil.rmtree(cur)
-                        break
-                    cur = cur.parent
-        sys.stderr.write(f"[run_graph] cleaned: {len(cleaned)} build trees\n")
-
-    sys.stderr.write(f"[run_graph] executing {len(order)} nodes\n")
-    for i, nid in enumerate(order, 1):
+        for nid in exec_ids:
+            node = nodes_by_id[nid]
+            for out in node["outputs"]:
+                p = Path(_absolutize(out, ctx))
+                if p.exists():
+                    if p.is_dir():
+                        shutil.rmtree(p)
+                    else:
+                        p.unlink()
+    
+    # Execute
+    print(f"Executing {len(exec_ids)} nodes")
+    for i, nid in enumerate(exec_ids):
         node = nodes_by_id[nid]
-        sys.stderr.write(f"[run_graph] [{i}/{len(order)}] {nid}\n")
-        execute_node(node, ctx)
-    sys.stderr.write("[run_graph] done\n")
+        
+        # Skip if outputs exist and --missing is set
+        if args.missing:
+            all_exist = all(Path(_absolutize(out, ctx)).exists() for out in node["outputs"])
+            if all_exist:
+                print(f"  [{i+1}/{len(exec_ids)}] SKIP {nid} (outputs exist)")
+                continue
+        
+        print(f"  [{i+1}/{len(exec_ids)}] RUN {nid}")
+        
+        cmd = _absolutize_argv(node["command"], ctx)
+        env = os.environ.copy()
+        if "env" in node:
+            node_env = {k: _absolutize(v, ctx) for k, v in node["env"].items()}
+            env.update(node_env)
+        
+        # For lean_module nodes with setup.json, write it first
+        if node.get("kind") == "lean_module" and "import_arts" in node:
+            # Reconstruct setup.json from import_arts
+            setup_path_rel = None
+            for out in node["outputs"]:
+                if out.endswith(".setup.json"):
+                    setup_path_rel = out
+                    break
+            
+            if setup_path_rel:
+                setup_path = Path(_absolutize(setup_path_rel, ctx))
+                setup_path.parent.mkdir(parents=True, exist_ok=True)
+                
+                # Build setup.json content
+                modules = manifest.get("modules", {})
+                importArts_dict = {}
+                for (mname, importAll) in node["import_arts"]:
+                    if mname in modules:
+                        me = modules[mname]
+                        if not me.get("isModule", False):
+                            arts = [me["olean"]]
+                        elif importAll:
+                            arts = [me["olean"], me["ir"], me.get("oleanServer", ""), me.get("oleanPrivate", "")]
+                        else:
+                            arts = [me["olean"], me["ir"], me.get("oleanServer", "")]
+                        importArts_dict[mname] = arts
+                
+                setup_json = {
+                    "name": node["module"],
+                    "package": modules.get(node["module"], {}).get("package", ""),
+                    "isModule": modules.get(node["module"], {}).get("isModule", True),
+                    "importArts": importArts_dict,
+                    "dynlibs": [],
+                    "plugins": [],
+                    "options": modules.get(node["module"], {}).get("leanOptions", {}),
+                }
+                
+                setup_path.write_text(json.dumps(setup_json))
+        
+        # Ensure output directories exist
+        for out in node["outputs"]:
+            p = Path(_absolutize(out, ctx))
+            p.parent.mkdir(parents=True, exist_ok=True)
+        
+        # Run command
+        res = subprocess.run(cmd, env=env, cwd=Path(ws["WORKSPACE"]))
+        if res.returncode != 0:
+            print(f"  FAILED with exit code {res.returncode}", file=sys.stderr)
+            return 1
+    
+    print(f"All {len(exec_ids)} nodes executed successfully")
     return 0
 
 
