@@ -72,15 +72,13 @@ lemma mk_eq_mk_of_inv_mul_mem {rels : Set (FreeGroup α)} {x y : FreeGroup α}
   eq_of_inv_mul_eq_one <| one_of_mem hx
 
 lemma lift_of_eq_mk_map {γ : Type*} (i : γ → α) (rels : Set (FreeGroup α)) :
-      FreeGroup.lift (of (rels := rels) ∘ i) = (mk rels).comp (FreeGroup.map i) := by
-      refine FreeGroup.ext_hom _ _ (?_)
-      intro a
-      simp [of]
+    FreeGroup.lift (of (rels := rels) ∘ i) = (mk rels).comp (FreeGroup.map i) :=
+  FreeGroup.ext_hom _ _ (by simp [of])
 
 /-- If a map `i : γ → α` sends every relation in `relsᵢ` to a relation in `rels`,
 then each such relation evaluates to `1` under the induced map to the quotient. -/
 lemma map_in_rels_eq_one {γ : Type*} (i : γ → α) (rels : Set (FreeGroup α))
-(relsᵢ : Set (FreeGroup γ)) (hmem : ∀ r ∈ relsᵢ, FreeGroup.map i r ∈ rels) :
+    (relsᵢ : Set (FreeGroup γ)) (hmem : ∀ r ∈ relsᵢ, FreeGroup.map i r ∈ rels) :
     ∀ r ∈ relsᵢ, FreeGroup.lift (of (rels := rels) ∘ i) r = 1 := by
   intro r hr
   simp [lift_of_eq_mk_map, one_of_mem (hmem r hr)]
@@ -185,19 +183,15 @@ variable (rels₁ : Set (FreeGroup α)) (rels₂ : Set (FreeGroup β))
 The canonical inclusion map from the disjoint union of types to the free product of the relations
 -/
 def coprodOf : α ⊕ β → Monoid.Coprod (PresentedGroup rels₁) (PresentedGroup rels₂) :=
-    Sum.elim (Monoid.Coprod.inl ∘ .of) (Monoid.Coprod.inr ∘ .of)
+  Sum.elim (Monoid.Coprod.inl ∘ .of) (Monoid.Coprod.inr ∘ .of)
 
 lemma lift_coprodOf_inl_eq_inl_mk : (FreeGroup.lift (coprodOf rels₁ rels₂)).comp
-(FreeGroup.map Sum.inl) = Monoid.Coprod.inl.comp (mk rels₁) := by
-      refine FreeGroup.ext_hom _ _ (?_)
-      intro a
-      simp [coprodOf, of]
+    (FreeGroup.map Sum.inl) = Monoid.Coprod.inl.comp (mk rels₁) :=
+  FreeGroup.ext_hom _ _ (by simp [coprodOf, of])
 
 lemma lift_coprodOf_inr_eq_inr_mk : (FreeGroup.lift (coprodOf rels₁ rels₂)).comp
-(FreeGroup.map Sum.inr) = Monoid.Coprod.inr.comp (mk rels₂) := by
-    refine FreeGroup.ext_hom _ _ (?_)
-    intro a
-    simp [coprodOf, of]
+    (FreeGroup.map Sum.inr) = Monoid.Coprod.inr.comp (mk rels₂) :=
+  FreeGroup.ext_hom _ _ (by simp [coprodOf, of])
 
 lemma coprodOf_kills_rels : ∀ r ∈ FreeGroup.map Sum.inl '' rels₁ ∪ FreeGroup.map Sum.inr '' rels₂,
       FreeGroup.lift (coprodOf rels₁ rels₂) r = 1 := by
