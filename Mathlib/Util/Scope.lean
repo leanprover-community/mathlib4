@@ -159,21 +159,29 @@ def reifyOpenDecls {m} [Monad m] [MonadQuotation m] (openDecls : List OpenDecl) 
 
 section openScoped
 
-@[inline] def _root_.Lean.NameSet.minus (current minus : NameSet) : NameSet := Id.run do
-  if minus.isEmpty then current else current.filter (!minus.contains ·)
+/-- `current.minus without` yields a `NameSet` containing the elements of `current` not present in
+`without`. -/
+@[inline] private def _root_.Lean.NameSet.minus (current without : NameSet) : NameSet :=
+  if without.isEmpty then current else current.filter (!without.contains ·)
 
 /-- An extension we can trust to always be present, whose active scopes reflect the result of
-`open`s. -/
-@[inline] def scopeTestExt := Parser.parserExtension.ext
+`open`s and are likely not altered separately from the rest of the scoped environment extensions by
+some metaprogram. -/
+@[inline] private def referenceScopedExt := Parser.parserExtension.ext
 
+/-- The active scopes in scoped environment extensions, as determined by a reference
+extension. Does not account for alterations to individual environment extensions that may
+be performed by some metaprograms. -/
 def _root_.Lean.Environment.activeScopes (env : Environment) : NameSet :=
-  match scopeTestExt.getState (asyncMode := .local) env |>.stateStack with
+  match referenceScopedExt.getState (asyncMode := .local) env |>.stateStack with
   | s :: _ => s.activeScopes
   | _ => {}
 
-/-- Gets the activated scopes in a (standard) scoped env extension that are *not* implied by the
-current namespace and open decls. I.e., the extra `open scoped` that exist somewhere. -/
-protected def _root_.Lean.Environment.extraScoped (env : Environment)
+/-- The active scopes in scoped env extensions that are *not* implied by the
+given namespace and open decls (as determined by the active scopes in a reference environment
+extension). These extra active scopes are typically produced by `open scoped`. See also
+`Lean.Elab.Command.extraScoped : CommandElabM NameSet`. -/
+protected def _root_.Lean.Environment.extraActiveScopes (env : Environment)
     (currNamespace : Name) (openDecls : List OpenDecl) : NameSet := Id.run do
   -- Note that each `open` that adds `.simple` activates the corresponding scopes.
   let impliedScopes : NameSet := openDecls.foldl (init := {}) fun
@@ -186,14 +194,22 @@ protected def _root_.Lean.Environment.extraScoped (env : Environment)
     if n.isAnonymous then acc else acc.insert n
   return env.activeScopes.minus impliedScopes
 
-def extraScoped : CommandElabM NameSet := do
-  return (← getEnv).extraScoped (← getCurrNamespace) (← getScope).openDecls
+/-- The active scopes in scoped env extensions that are *not* implied by the current namespace and
+open decls (as determined by the active scopes in a reference environment extension). These extra
+active scopes are typically produced by `open scoped`. -/
+def _root_.Lean.Elab.Command.extraActiveScopes : CommandElabM NameSet :=
+  return (← getEnv).extraActiveScopes (← getCurrNamespace) (← getOpenDecls)
+
+/-- Converts the extra active scopes into reified `open scoped` syntax. -/
+def reifyExtraOpenScopes : CommandElabM (Option (TSyntax ``reifiedOpenScopedStx)) := do
+  let extra ← extraActiveScopes
+  if extra.isEmpty then return none
+  let extraScoped ← extra.toArray.mapM fun n => `(reifiedSimpleOpenIdent| @$(mkIdent n))
+  `(reifiedOpenScopedStx| open scoped $extraScoped*)
 
 end openScoped
 
 end openDecls
-
--- TODO: `reify*` instead of `mk*Stx`
 
 section setOption
 
