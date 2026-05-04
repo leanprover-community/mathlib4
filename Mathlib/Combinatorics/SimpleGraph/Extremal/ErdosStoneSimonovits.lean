@@ -21,7 +21,6 @@ This file proves the **Erdős-Stone-Simonovits theorem** for simple graphs.
   minimal degree version of the **Erdős-Stone theorem** for simple graphs.
 -/
 
-
 open Filter Finset Fintype Real Topology
 
 namespace SimpleGraph
@@ -39,7 +38,7 @@ variable {ε : ℝ} {r t t' : ℕ} (K : G.CompleteEquipartiteSubgraph r t')
 subgraph, in `r` parts each of size `t'`, adjacent to at least `t` vertices in each part of the
 complete equipartite subgraph.
 
-This is an auxiliary definition for the **Erdős-Stone theorem**. -/
+This is an auxiliary definition for the Erdős-Stone theorem. -/
 def filter (t : ℕ) : Finset (Fin n) :=
   { v ∈ K.vertsᶜ | ∀ p ∈ K.parts, ∃ s ∈ p.powersetCard t, ∀ w ∈ s, G.Adj v w }
 
@@ -63,7 +62,7 @@ lemma le_card_edgeFinset_between_verts :
 vertices in at least one part of the complete equipartite subgraph, it follows that `v` is
 adjacent to fewer than `#K.verts - (t' - t)` vertices in `K.verts`.
 
-This is an auxiliary definition for the **Erdős-Stone theorem**. -/
+This is an auxiliary lemma for the Erdős-Stone theorem. -/
 lemma degree_between_verts_lt_of_mem_sdiff
     {v : Fin n} (hv : v ∈ K.vertsᶜ \ filter K t) (ht'_pos : 0 < t') :
     (G.between K.verts K.vertsᶜ).degree v < #K.verts - t' + t := by
@@ -120,7 +119,7 @@ lemma card_edgeFinset_between_verts_le (hr_pos : 0 < r) (ht'_pos : 0 < t') :
 
 /-- `#ErdosStone.filter` is arbitrarily large with respect to `n`.
 
-This is an auxiliary definition for the **Erdős-Stone theorem**. -/
+This is an auxiliary theorem for the Erdős-Stone theorem. -/
 theorem mul_le_card_filter_mul (hr_pos : 0 < r) (ht'_pos : 0 < t')
     (hδ : G.minDegree ≥ (1 - 1 / r + ε) * n)
     {N : ℕ} (hN : (N + r * t') * (t' - t) ≤ n * (r * t' * ε - t)) :
@@ -146,7 +145,7 @@ theorem mul_le_card_filter_mul (hr_pos : 0 < r) (ht'_pos : 0 < t')
 /-- For `w ∈ ErdosStone.filter`, there exists a `r` subets of vertices of size `t < t'`
 adjacent to `w`.
 
-This is an auxiliary definition for the **Erdős-Stone theorem**. -/
+This is an auxiliary definition for the Erdős-Stone theorem. -/
 noncomputable def filter.pi :
     filter K t → K.parts.pi (·.powersetCard t) :=
   fun ⟨_, h⟩ ↦
@@ -161,7 +160,7 @@ theorem filter.pi.mem_val {p} (hp : p ∈ K.parts) (w : filter K t) :
 /-- If `#ErdosStone.filter` is sufficiently large, then there exist a `y` such that there
 are least `t` vertices in the fiber `ErdosStone.filter.pi A · = y`.
 
-This is an auxiliary definition for the **Erdős-Stone theorem**. -/
+This is an auxiliary theorem for the Erdős-Stone theorem. -/
 theorem filter.pi.exists_le_card_fiber (hr_pos : 0 < r) (ht'_pos : 0 < t')
     (ht_lt_t' : t < t') (hδ : G.minDegree ≥ (1 - 1 / r + ε) * n)
     (hN : (t'.choose t ^ r * t + r * t') * (t' - t) ≤ n * (r * t' * ε - t)) :
