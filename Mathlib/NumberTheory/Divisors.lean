@@ -693,24 +693,14 @@ lemma mem_divisors_self (hz : z ≠ 0) : z ∈ divisors z :=
 
 @[simp]
 lemma mem_divisorsAntidiag : xy ∈ divisorsAntidiag z ↔ xy.fst * xy.snd = z ∧ z ≠ 0 := by
-  rcases z with z | z
-  · suffices
-        (∃ x y, (x * y = z ∧ ¬z = 0) ∧ ((↑x, ↑y) = xy ∨ (-↑x, -↑y) = xy)) ↔
-          xy.1 * xy.2 = ↑z ∧ ¬z = 0 by
-      simpa [divisorsAntidiag, ← exists_or, ← and_or_left]
-    constructor
-    · rintro ⟨x, y, ⟨⟨hdvd, hz⟩, rfl | rfl⟩⟩ <;> simp only [neg_mul_neg] <;> norm_cast
-    · rintro ⟨hdvd, hz⟩
-      use xy.1.natAbs, xy.2.natAbs
-      rcases xy with ⟨x | x, y | y⟩ <;> simp at hdvd ⊢ <;> norm_cast at hdvd <;> grind
-  · suffices (∃ x y, x * y = z + 1 ∧ ((↑x, -↑y) = xy ∨ (-↑x, ↑y) = xy)) ↔ xy.1 * xy.2 = -[z+1] by
-      simpa [divisorsAntidiag, ← exists_or, ← and_or_left]
-    constructor
-    · rintro ⟨x, y, ⟨hdvd, rfl | rfl⟩⟩ <;>
-      simp only [mul_neg, neg_mul, negSucc_eq, neg_inj] <;> norm_cast
-    · rintro hdvd
-      use xy.1.natAbs, xy.2.natAbs
-      rcases xy with ⟨x | x, y | y⟩ <;> simp at hdvd ⊢ <;> norm_cast at hdvd <;> grind
+  rcases z, xy with ⟨_ | _, ⟨_ | _, _ | _⟩⟩
+  --  splitting this case takes about 1770 heartbeats less i.e. 12.5% faster
+  case ofNat.negSucc.negSucc =>
+    simp [divisorsAntidiag]
+    grind [Nat.cast_inj]
+  all_goals
+    simp [divisorsAntidiag]
+    grind
 
 theorem image_fst_divisorsAntidiag : z.divisorsAntidiag.image Prod.fst = z.divisors := by
   ext
