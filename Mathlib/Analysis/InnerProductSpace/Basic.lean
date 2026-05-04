@@ -878,7 +878,7 @@ theorem norm_add_eq_iff_real {x y : F} : ‖x + y‖ = ‖x‖ + ‖y‖ ↔ ‖
 
 end Norm
 
-/-- A linear map from a `Module` to an `InnerProductSpace` induces an `SemiInnerProductSpace`
+/-- A linear map from a `Module` to an `InnerProductSpace` induces an `InnerProductSpace`
 structure on the domain using the `SeminormedAddCommGroup.induced` norm.
 
 See note [reducible non-instances]. -/
