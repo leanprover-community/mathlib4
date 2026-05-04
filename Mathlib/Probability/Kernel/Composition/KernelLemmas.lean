@@ -18,9 +18,6 @@ compositions/products.
 
 * `comp_eq_snd_compProd`: `η ∘ₖ κ = snd (κ ⊗ₖ prodMkLeft X η)`
 * `parallelComp_comp_parallelComp`: `(η ∥ₖ η') ∘ₖ (κ ∥ₖ κ') = (η ∘ₖ κ) ∥ₖ (η' ∘ₖ κ')`
-* `deterministic_comp_copy`: for a deterministic kernel, copying then applying the kernel to
-  the two copies is the same as first applying the kernel then copying. That is, if `κ` is
-  a deterministic kernel, `(κ ∥ₖ κ) ∘ₖ copy X = copy Y ∘ₖ κ`.
 
 -/
 
@@ -74,13 +71,6 @@ lemma swap_parallelComp : swap Y T ∘ₖ (κ ∥ₖ η) = η ∥ₖ κ ∘ₖ s
   simp_rw [Prod.swap_prod_mk, Measure.dirac_apply' _ hs, ← Set.indicator_comp_right,
     lintegral_indicator (measurable_prodMk_left hs)]
   simp
-
-/-- For a deterministic kernel, copying then applying the kernel to the two copies is the same
-as first applying the kernel then copying. -/
-lemma deterministic_comp_copy {f : X → Y} (hf : Measurable f) :
-    (deterministic f hf ∥ₖ deterministic f hf) ∘ₖ copy X = copy Y ∘ₖ deterministic f hf := by
-  simp_rw [parallelComp_comp_copy, deterministic_prod_deterministic, copy,
-    deterministic_comp_deterministic, Function.comp_def]
 
 section ParallelComp
 
