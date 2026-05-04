@@ -9,9 +9,10 @@ public import Mathlib.Algebra.Order.Floor.Semiring
 public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.Extremal.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Maps
-public import Mathlib.Data.Real.Archimedean
-public import Mathlib.Logic.Equiv.Fin.Basic
-public import Mathlib.Tactic.Rify
+
+import Mathlib.Data.Real.Archimedean
+import Mathlib.Logic.Equiv.Fin.Basic
+import Mathlib.Tactic.Rify
 
 /-!
 # The Zarankiewicz function
