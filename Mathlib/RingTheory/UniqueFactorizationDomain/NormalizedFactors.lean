@@ -406,7 +406,7 @@ end UniqueFactorizationMonoid
 
 namespace UniqueFactorizationMonoid
 
-open  Multiset
+open Multiset
 
 variable {α : Type*} [CommMonoidWithZero α] [UniqueFactorizationMonoid α] [DecidableEq α]
 

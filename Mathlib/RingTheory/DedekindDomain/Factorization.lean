@@ -902,6 +902,11 @@ These are phrased in terms of `multiplicity p.asIdeal I`.
 
 section multiplicity
 
+@[simp]
+lemma emultiplicity_bot {R : Type*} [CommSemiring R] (I : Ideal R) :
+    emultiplicity I (⊥ : Ideal R) = ⊤ :=
+  Submodule.zero_eq_bot (R := R) (M := R) ▸ emultiplicity_zero I
+
 variable {R : Type*} [CommRing R] [IsDedekindDomain R]
 
 lemma Ideal.finprod_heightOneSpectrum_pow_multiplicity {I : Ideal R} (hI : I ≠ ⊥) :
@@ -932,11 +937,9 @@ variable (I J) in
 lemma emultiplicity_sup :
     emultiplicity p.asIdeal (I ⊔ J) = emultiplicity p.asIdeal I ⊓ emultiplicity p.asIdeal J := by
   rcases eq_or_ne I ⊥ with rfl | hI
-  · rw [bot_eq_zero, emultiplicity_zero]
-    simp
+  · simp
   rcases eq_or_ne J ⊥ with rfl | hJ
-  · rw [bot_eq_zero, emultiplicity_zero]
-    simp
+  · simp
   have : I ⊔ J ≠ ⊥ := by grind
   have H {I' : Ideal R} (h : I' ≠ ⊥) : FiniteMultiplicity p.asIdeal I' :=
     FiniteMultiplicity.of_prime_left (prime p) h
