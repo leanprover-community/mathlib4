@@ -326,4 +326,22 @@ lemma algebraMap_range_lt_of_not_surjective (S : FlatExtension R K)
           Monogenic.adjoinTranscendental_mem_range K S.Ring _ int,
             Classical.choose_spec (Decidable.not_forall.mp nsurj)⟩
 
+instance (S₁ S₂ : FlatExtension R K) :
+    FunLike {f : S₁ →ₐ[R] S₂ //
+      (IsScalarTower.toAlgHom R S₂ K).comp f = IsScalarTower.toAlgHom R S₁ K} S₁ S₂ where
+  coe f := f
+  coe_injective' _ _ h := Subtype.ext (AlgHom.ext fun x ↦ congr($h x))
+
+instance : ConcreteCategory (FlatExtension R K)
+    fun S₁ S₂ ↦ {f : S₁ →ₐ[R] S₂ //
+      (IsScalarTower.toAlgHom R S₂ K).comp f = IsScalarTower.toAlgHom R S₁ K} where
+  hom {S₁ S₂} f := ⟨f.algHom, f.comm⟩
+  ofHom {S₁ S₂} f := ⟨f.1, f.2⟩
+
+namespace FilteredColimit
+
+variable {R K} {J : Type u} [SmallCategory J] [IsFiltered J] {F : J ⥤ FlatExtension R K}
+
+end FilteredColimit
+
 end FlatExtension
