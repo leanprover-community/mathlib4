@@ -94,8 +94,7 @@ lemma MeasureTheory.QuotientMeasureEqMeasurePreimage.smulInvariantMeasure_quotie
     have meas_π : Measurable π := continuous_quotient_mk'.measurable
     obtain ⟨𝓕, h𝓕⟩ := hasFun.ExistsIsFundamentalDomain
     have h𝓕_translate_fundom : IsFundamentalDomain Γ.op (g • 𝓕) ν := h𝓕.smul_of_comm g
-    -- TODO: why `rw` fails with both of these rewrites?
-    erw [h𝓕.projection_respects_measure_apply (μ := μ)
+    rw [h𝓕.projection_respects_measure_apply (μ := μ)
       (meas_π (measurableSet_preimage (measurable_const_smul g) hA)),
       h𝓕_translate_fundom.projection_respects_measure_apply (μ := μ) hA]
     change ν ((π ⁻¹' _) ∩ _) = ν ((π ⁻¹' _) ∩ _)
@@ -233,8 +232,7 @@ theorem MeasureTheory.QuotientMeasureEqMeasurePreimage.haarMeasure_quotient [Loc
     ne_top_of_lt <| QuotientMeasureEqMeasurePreimage.covolume_ne_top μ (ν := ν)
   obtain ⟨s, fund_dom_s⟩ := i
   rw [fund_dom_s.covolume_eq_volume] at finiteCovol
-  -- TODO: why `rw` fails?
-  erw [fund_dom_s.projection_respects_measure_apply μ K'.isCompact.measurableSet]
+  rw [fund_dom_s.projection_respects_measure_apply μ K'.isCompact.measurableSet]
   apply IsHaarMeasure.smul
   · intro h
     have i' : IsOpenPosMeasure (ν : Measure G) := inferInstance
@@ -244,7 +242,7 @@ theorem MeasureTheory.QuotientMeasureEqMeasurePreimage.haarMeasure_quotient [Loc
     refine measure_mono_null (interior_subset.trans ?_) <|
       fund_dom_s.measure_zero_of_invariant _ (fun g ↦ QuotientGroup.sound _ _ g) h
     rw [QuotientGroup.coe_mk']
-    change (K : Set G) ⊆ π ⁻¹' (π '' K)
+    change (K : Set G) ⊆ π ⁻¹' π '' K
     exact subset_preimage_image π K
   · change ν (π ⁻¹' (π '' K) ∩ s) ≠ ⊤
     apply ne_of_lt

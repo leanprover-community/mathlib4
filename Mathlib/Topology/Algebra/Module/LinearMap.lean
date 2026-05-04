@@ -1099,8 +1099,8 @@ section lcomp
 variable {R U V : Type*} (W : Type*) [CommSemiring R]
     [AddCommMonoid U] [Module R U] [TopologicalSpace U]
     [AddCommMonoid V] [Module R V] [TopologicalSpace V]
-    [AddCommGroup W] [Module R W] [TopologicalSpace W]
-    [IsTopologicalAddGroup W] [ContinuousConstSMul R W]
+    [AddCommMonoid W] [Module R W] [TopologicalSpace W]
+    [ContinuousAdd W] [ContinuousConstSMul R W]
 
 /-- Composition of continuous linear maps, as a linear map. Compare `LinearMap.lcomp`. -/
 @[simps]
@@ -1114,11 +1114,11 @@ end lcomp
 section llcomp
 
 variable (R U V W : Type*) [CommSemiring R]
-  [AddCommGroup U] [Module R U] [TopologicalSpace U]
-  [AddCommGroup V] [Module R V] [TopologicalSpace V]
-  [IsTopologicalAddGroup V] [ContinuousConstSMul R V]
-  [AddCommGroup W] [Module R W] [TopologicalSpace W]
-  [IsTopologicalAddGroup W] [ContinuousConstSMul R W]
+  [AddCommMonoid U] [Module R U] [TopologicalSpace U]
+  [AddCommMonoid V] [Module R V] [TopologicalSpace V]
+  [ContinuousAdd V] [ContinuousConstSMul R V]
+  [AddCommMonoid W] [Module R W] [TopologicalSpace W]
+  [ContinuousAdd W] [ContinuousConstSMul R W]
 
 /-- Composition of continuous linear maps, as a bilinear map. Compare `LinearMap.llcomp`. -/
 @[simps]
@@ -1304,6 +1304,26 @@ theorem closedComplemented_bot : ClosedComplemented (⊥ : Submodule R M) :=
 theorem closedComplemented_top : ClosedComplemented (⊤ : Submodule R M) :=
   ⟨(ContinuousLinearMap.id R M).codRestrict ⊤ fun _x => trivial,
     fun x => Subtype.ext_iff.2 <| by simp⟩
+
+variable (S : Submodule R M)
+
+/-- `Submodule.mkQ` as a `ContinuousLinearMap`. -/
+def mkQL : M →L[R] M ⧸ S where
+  toLinearMap := S.mkQ
+  cont := continuous_quot_mk
+
+@[simp, norm_cast]
+theorem toLinearMap_mkQL : (S.mkQL : M →ₗ[R] M ⧸ S) = S.mkQ := rfl
+
+@[simp]
+theorem coe_mkQL : ⇑S.mkQL = S.mkQ := rfl
+
+theorem mkQL_apply (x : M) : S.mkQL x = S.mkQ x := by simp
+
+theorem isQuotientMap_mkQL : IsQuotientMap S.mkQL := isQuotientMap_quot_mk
+
+theorem isOpenQuotientMap_mkQL [ContinuousAdd M] : IsOpenQuotientMap S.mkQL :=
+  S.isOpenQuotientMap_mkQ
 
 end Submodule
 

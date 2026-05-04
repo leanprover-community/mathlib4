@@ -95,7 +95,7 @@ theorem pow_idealOfVars (n : ℕ) :
 
 /-- The `n`th power of `idealOfVars` is spanned by all monic monomials of total degree `n`. -/
 theorem pow_idealOfVars_eq_span (n) : idealOfVars σ R ^ n =
-    .span ((monomial · 1) '' (degree ⁻¹' {n})) := by
+    .span ((monomial · 1) '' degree ⁻¹' {n}) := by
   rw [idealOfVars, Ideal.span, Submodule.span_pow, ← Set.image_univ,
     image_pow_eq_finsuppProd_image]
   simp [monomial_eq, Set.preimage, degree]
