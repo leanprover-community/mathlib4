@@ -58,3 +58,30 @@ omit y [Nonempty False] -- other comment
   variable (x : Nat := by exact (Nat.add 0 0)) (y : Nat) [Nonempty False]
   include x
   omit y [Nonempty False]
+
+/- Note: depending on your font, the `#guard_msgs` rendering may actually look slightly wrong here,
+with underlines extending past the end of what is visible as colored according to the "added" part
+of the diff in the infoview. This is due to issues with using combining marks on spaces. -/
+/--
+info: Try this:
+  #scope
+    @̲[̲e̲x̲p̲o̲s̲e̲]̲ ̲public noncomputable m̲e̲t̲a̲ ̲scope
+    universe u v̲ ̲w
+    namespace B̵a̵z̵F̲o̲o̲.̲B̲a̲r̲
+    open @Bool @Lean @̲L̲e̲a̲n̲.̲E̲l̲a̲b̲ ̲@Lean.Parser @Lean.Parser.Command @Lean.Elab.Command
+    open scoped @Nat
+    set_options pp.mvars.anonymous f̲a̲l̲s̲e̲,̲ ̲p̲p̲.̲m̲v̲a̲r̲s̲.̲d̲e̲l̲a̲y̲e̲d̲ ̲false
+    variable (x : Nat := by exact (Nat.add 0 0)) (̲y̲ ̲:̲ ̲N̲a̲t̲)̲ ̲[Nonempty False]
+    o̵m̵i̵t̵ ̵y̵i̲n̲c̲l̲u̲d̲e̲ ̲x̲
+  ̲ ̲ ̲o̲m̲i̲t̲ ̲y̲ ̲[̲N̲o̲n̲e̲m̲p̲t̲y̲ ̲F̲a̲l̲s̲e̲]̲
+-/
+#guard_msgs in
+#scope
+  public noncomputable scope
+  universe u w
+  namespace Baz
+  open @Bool @Lean @Lean.Parser @Lean.Parser.Command @Lean.Elab.Command
+  open scoped @Nat
+  set_options pp.mvars.anonymous false
+  variable (x : Nat := by exact (Nat.add 0 0)) [Nonempty False]
+  omit y
