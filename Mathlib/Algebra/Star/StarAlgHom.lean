@@ -351,7 +351,7 @@ instance : Coe (A →⋆ₐ[R] B) (A →ₐ[R] B) :=
   ⟨toAlgHom⟩
 
 @[simp]
-theorem coe_toAlgHom {f : A →⋆ₐ[R] B} : (f.toAlgHom : A → B)= f :=
+theorem coe_toAlgHom {f : A →⋆ₐ[R] B} : (f.toAlgHom : A → B) = f :=
   rfl
 
 @[ext]
