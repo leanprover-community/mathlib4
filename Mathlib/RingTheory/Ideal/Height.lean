@@ -46,7 +46,7 @@ lemma Ideal.height_eq_primeHeight [I.IsPrime] : I.height = I.primeHeight := by
   simp_rw [Ideal.minimalPrimes_eq_subsingleton_self]
   simp
 
-lemma Ideal.exists_prime_height_eq {I : Ideal R} {n : ℕ} (hI : I.height = n) :
+lemma Ideal.exists_isPrime_height_eq {I : Ideal R} {n : ℕ} (hI : I.height = n) :
     ∃ (p : Ideal R) (_ : p.IsPrime) (_  : I ≤ p), p.height = n := by
   simp only [Ideal.height, ENat.iInf_eq_coe_iff] at hI
   rcases hI with ⟨⟨p, ⟨⟨⟨hpp, hIp⟩, _⟩, _⟩, _⟩, _⟩
@@ -216,10 +216,9 @@ lemma Ideal.height_bot [Nontrivial R] : (⊥ : Ideal R).height = 0 := by
 lemma Ideal.height_eq_zero_iff_eq_bot [IsDomain R] {I : Ideal R} : I.height = 0 ↔ I = ⊥ := by
   refine ⟨fun hI ↦ ?_, fun hI0 ↦ by simp [hI0]⟩
   rcases exists_prime_height_eq hI with ⟨p, _, hIp, hp0⟩
-  have hpbot : p = ⊥ := by
-    rwa [height_eq_primeHeight, CharP.cast_eq_zero, primeHeight_eq_zero_iff,
-      IsDomain.minimalPrimes_eq_singleton_bot] at hp0
-  exact bot_unique (hIp.trans_eq hpbot)
+  rw [height_eq_primeHeight, CharP.cast_eq_zero, primeHeight_eq_zero_iff,
+    IsDomain.minimalPrimes_eq_singleton_bot, Set.mem_singleton_iff] at hp0
+  exact bot_unique (hIp.trans_eq hp0)
 
 /-- In a trivial commutative ring, the height of any ideal is `∞`. -/
 @[simp, nontriviality]
