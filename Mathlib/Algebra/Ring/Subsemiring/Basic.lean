@@ -788,7 +788,7 @@ theorem map_closureS (f : R →+* S) (s : Set R) : (closure s).map f = closure (
     fun _ ↦ coe_comap _ _
 
 @[simp]
-theorem rangeSRestrict_comp_codRestrict (g : S →+* T) (f : R →+* S) :
+theorem domRestrict_comp_rangeSRestrict (g : S →+* T) (f : R →+* S) :
     (g.domRestrict f.rangeS).comp (f.rangeSRestrict) = g.comp f :=
   rfl
 
