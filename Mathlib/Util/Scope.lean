@@ -15,7 +15,9 @@ public meta import Lean.Elab.BuiltinCommand
 This module provides utilities for fully capturing the effectful parts of the current scope
 (namespaces, open declarations, options, etc.) and transporting it between modules. Specifically,
 it provides `#scope`, which reifies the semantically-relevant parts of the current scope into
-portable syntax capturing the current scope that may be moved between files.
+portable syntax capturing the current scope that may be moved between files. After copying and
+pasting, `#scope! <scope specification>` then allows the user to reset the scope to the one
+described by the given scope specification.
 
 This is not intended to capture `section` behavior, nor is it intended to be used for user-friendly
 visibility into the current scope structure. The reified scope specification is primarily intended
@@ -24,7 +26,6 @@ to be easy to act on with metaprogramming automation. In this sense it is not tr
 
 ## TODO
 
-- `#scope! (<scope specification>)` for effecting the given scope specification
 - `#scope? (<scope specification>)` for producing appropriate Lean commands to integrate the given
   full scope specification with the current scope
 -/
@@ -490,6 +491,10 @@ public section
 /--
 `#scope` reifies the current scope into syntax so that it can be transported into another file,
 e.g. along with a following declaration that depends on this scope. (No use of `in` is needed.)
+
+Copy-pasting `#scope <scope specification>` into another file, then changing `#scope` to `#scope!`,
+will have the effect of resetting the scope to the given scope specification at that point. This
+allows quickly jumping back and forth between different states.
 
 `#scope` will log a try-this suggestion suggesting reified syntax that matches the current scope,
 or else remain silent. If the reified scope syntax no longer matches the current scope, `#scope`
