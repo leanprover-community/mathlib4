@@ -655,7 +655,7 @@ private lemma not_dvd_den_vonStaudt_sum {k p : ℕ} (hk : k > 0) [Fact p.Prime] 
   rw [sum_one_div_prime_eq_indicator_div_add (p := p) hk, ← add_assoc]
   have hcop_ind := ((Nat.Prime.coprime_iff_not_dvd Fact.out).mpr
     (not_dvd_den_bernoulli_add_indicator (p := p) hk)).symm
-  have hcop_rest := Nat.Coprime.of_dvd_left (den_sum_dvd_prod_den _ _)
+  have hcop_rest := Nat.Coprime.of_dvd_left (Rat.den_sum_dvd_prod_den _ _)
     (prod_one_div_prime_den_coprime k (p := p))
   have hcop := (Nat.Coprime.of_dvd_left (Rat.add_den_dvd _ _) (hcop_ind.mul_left hcop_rest)).symm
   exact (Nat.Prime.coprime_iff_not_dvd Fact.out).1 hcop
