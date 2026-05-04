@@ -1224,7 +1224,7 @@ end ContinuousLinearMap
 namespace Submodule
 
 variable {R : Type*} [Ring R] {M : Type*} [TopologicalSpace M] [AddCommGroup M] [Module R M]
-  {p : Submodule R M} (S : Submodule R M)
+  (S : Submodule R M)
 
 open ContinuousLinearMap
 
