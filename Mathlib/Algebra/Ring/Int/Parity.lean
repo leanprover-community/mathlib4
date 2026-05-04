@@ -15,7 +15,7 @@ public import Mathlib.Algebra.Group.Int.Even
 See note [foundational algebra order theory].
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists DenselyOrdered Set.Subsingleton
 
@@ -42,13 +42,17 @@ lemma even_or_odd (n : ℤ) : Even n ∨ Odd n := by grind
 lemma even_or_odd' (n : ℤ) : ∃ k, n = 2 * k ∨ n = 2 * k + 1 := by
   simpa only [two_mul, exists_or, Odd, Even] using even_or_odd n
 
-lemma even_xor'_odd (n : ℤ) : Xor' (Even n) (Odd n) := by
+lemma even_xor_odd (n : ℤ) : Xor (Even n) (Odd n) := by
   grind
 
-lemma even_xor'_odd' (n : ℤ) : ∃ k, Xor' (n = 2 * k) (n = 2 * k + 1) := by
+@[deprecated (since := "2026-04-27")] alias even_xor'_odd := even_xor_odd
+
+lemma even_xor_odd' (n : ℤ) : ∃ k, Xor (n = 2 * k) (n = 2 * k + 1) := by
   rcases even_or_odd n with (⟨k, rfl⟩ | ⟨k, rfl⟩) <;>
   · use k
     grind
+
+@[deprecated (since := "2026-04-27")] alias even_xor'_odd' := even_xor_odd'
 
 instance : DecidablePred (Odd : ℤ → Prop) := fun _ => decidable_of_iff _ not_even_iff_odd
 
@@ -132,3 +136,23 @@ theorem coe_nat_two_pow_pred (p : ℕ) : ((2 ^ p - 1 : ℕ) : ℤ) = (2 ^ p - 1 
   natCast_pow_pred 2 p (by decide)
 
 end Int
+
+section DivisionMonoid
+
+variable {α : Type*} [DivisionMonoid α] [HasDistribNeg α] {n : ℤ}
+
+theorem Odd.neg_zpow (h : Odd n) (a : α) : (-a) ^ n = -a ^ n := by
+  obtain ⟨k, rfl⟩ := h
+  cases k with
+  | ofNat k =>
+    rw [Int.ofNat_eq_natCast]
+    norm_cast
+    simp [pow_add]
+  | negSucc k =>
+    simp_rw [Int.negSucc_eq, show 2 * -(↑k + 1) + (1 : ℤ) = - (1 + k*2) by grind, _root_.zpow_neg]
+    norm_cast
+    simp [pow_add]
+
+theorem Odd.neg_one_zpow (h : Odd n) : (-1 : α) ^ n = -1 := by rw [h.neg_zpow, one_zpow]
+
+end DivisionMonoid

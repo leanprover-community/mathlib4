@@ -39,7 +39,6 @@ variable {E : Type v} [Field E] {L : Type w} [Field L]
 
 variable (A B C : Subfield E)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `Subfield.relrank A B` is defined to be `[B : A ⊓ B]` as a `Cardinal`, in particular,
 when `A ≤ B` it is `[B : A]`, the degree of the field extension `B / A`.
 This is similar to `Subgroup.relIndex` but it is `Cardinal` valued. -/
@@ -60,7 +59,6 @@ theorem relrank_eq_of_inf_eq (h : A ⊓ C = B ⊓ C) : relrank A C = relrank B C
 theorem relfinrank_eq_of_inf_eq (h : A ⊓ C = B ⊓ C) : relfinrank A C = relfinrank B C :=
   congr(toNat $(relrank_eq_of_inf_eq h))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `A ≤ B`, then `Subfield.relrank A B` is `[B : A]`. -/
 theorem relrank_eq_rank_of_le (h : A ≤ B) : relrank A B = Module.rank A (extendScalars h) := by
   rw [relrank]
@@ -85,7 +83,6 @@ theorem inf_relrank_left : relrank (A ⊓ B) A = relrank B A := by
 theorem inf_relfinrank_left : relfinrank (A ⊓ B) A = relfinrank B A :=
   congr(toNat $(inf_relrank_left A B))
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem relrank_self : relrank A A = 1 := by
   rw [relrank_eq_rank_of_le (le_refl A), extendScalars_self, IntermediateField.rank_bot]
@@ -96,7 +93,6 @@ theorem relfinrank_self : relfinrank A A = 1 := by
 
 variable {A B}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem relrank_eq_one_iff : relrank A B = 1 ↔ B ≤ A := by
   rw [relrank, IntermediateField.rank_eq_one_iff, ← IntermediateField.toSubfield_inj,
     extendScalars_toSubfield, IntermediateField.bot_toSubfield, algebraMap_ofSubfield,
@@ -126,7 +122,6 @@ theorem relrank_top_left : relrank ⊤ A = 1 := relrank_eq_one_of_le le_top
 @[simp]
 theorem relfinrank_top_left : relfinrank ⊤ A = 1 := relfinrank_eq_one_of_le le_top
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem relrank_top_right : relrank A ⊤ = Module.rank A E := by
   let _ : AddCommMonoid (⊤ : IntermediateField A E) := inferInstance

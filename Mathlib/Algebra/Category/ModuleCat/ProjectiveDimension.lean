@@ -16,19 +16,19 @@ public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
 
 -/
 
-@[expose] public section
+public section
 
 universe v v' u u'
 
-variable {R : Type u} [CommRing R] [Small.{v} R]
+variable {R : Type u} [CommRing R]
 
 open CategoryTheory Abelian Module
 
-namespace CategoryTheory
+namespace ModuleCat
 
 section
 
-variable {R' : Type u'} [CommRing R'] [Small.{v'} R'] (e : R ≃+* R')
+variable [Small.{v} R] {R' : Type u'} [CommRing R'] [Small.{v'} R'] (e : R ≃+* R')
 
 variable {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R'}
 
@@ -61,6 +61,10 @@ lemma hasProjectiveDimensionLE_of_semiLinearEquiv (e' : M ≃ₛₗ[RingHomClass
     have := (S_exact.hasProjectiveDimensionLT_X₃_iff n inferInstance).mp ‹_›
     exact (S'_exact.hasProjectiveDimensionLT_X₃_iff n inferInstance).mpr (ih eker)
 
+@[deprecated (since := "2026-04-04")]
+alias _root_.CategoryTheory.hasProjectiveDimensionLE_of_semiLinearEquiv :=
+  hasProjectiveDimensionLE_of_semiLinearEquiv
+
 attribute [local instance] RingHomInvPair.of_ringEquiv in
 lemma projectiveDimension_eq_of_semiLinearEquiv (e' : M ≃ₛₗ[RingHomClass.toRingHom e] N) :
     projectiveDimension M = projectiveDimension N := by
@@ -77,20 +81,37 @@ lemma projectiveDimension_eq_of_semiLinearEquiv (e' : M ≃ₛₗ[RingHomClass.t
       exact ⟨fun h ↦ hasProjectiveDimensionLE_of_semiLinearEquiv e e' n,
         fun h ↦ hasProjectiveDimensionLE_of_semiLinearEquiv e.symm e'.symm n⟩
 
+@[deprecated (since := "2026-04-04")]
+alias _root_.CategoryTheory.projectiveDimension_eq_of_semiLinearEquiv :=
+  projectiveDimension_eq_of_semiLinearEquiv
+
 end
 
 section
 
-variable [Small.{v'} R] {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R}
+variable [Small.{v} R] [Small.{v'} R] {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R}
 
 lemma hasProjectiveDimensionLE_of_linearEquiv (e : M ≃ₗ[R] N)
     (n : ℕ) [HasProjectiveDimensionLE M n] : HasProjectiveDimensionLE N n :=
   hasProjectiveDimensionLE_of_semiLinearEquiv (RingEquiv.refl R) e n
 
+@[deprecated (since := "2026-04-04")]
+alias _root_.CategoryTheory.hasProjectiveDimensionLE_of_linearEquiv :=
+  hasProjectiveDimensionLE_of_linearEquiv
+
 lemma projectiveDimension_eq_of_linearEquiv (e : M ≃ₗ[R] N) :
     projectiveDimension M = projectiveDimension N :=
   projectiveDimension_eq_of_semiLinearEquiv (M := M) (N := N) (RingEquiv.refl R) e
 
+@[deprecated (since := "2026-04-04")]
+alias _root_.CategoryTheory.projectiveDimension_eq_of_linearEquiv :=
+  projectiveDimension_eq_of_linearEquiv
+
 end
 
-end CategoryTheory
+lemma projectiveDimension_eq_zero_of_projective (M : ModuleCat.{v} R) [Nontrivial M]
+    [Projective M] : projectiveDimension M = 0 := by
+  simpa [projectiveDimension_eq_zero_iff, ModuleCat.isZero_iff_subsingleton,
+    not_subsingleton_iff_nontrivial] using ⟨‹_›, ‹_›⟩
+
+end ModuleCat

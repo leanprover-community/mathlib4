@@ -408,8 +408,8 @@ lemma strictMono_div_right_of_pos (h : 0 < b) (h' : b ≠ ⊤) : StrictMono fun 
   apply lt_of_le_of_ne <| div_le_div_right_of_nonneg (le_of_lt h) (le_of_lt a_lt_a')
   intro hyp
   apply ne_of_lt a_lt_a'
-  rw [← @EReal.mul_div_cancel a b (ne_bot_of_gt h) h' (ne_of_gt h), hyp,
-    @EReal.mul_div_cancel a' b (ne_bot_of_gt h) h' (ne_of_gt h)]
+  rw [← @EReal.mul_div_cancel a b (ne_bot_of_gt h) h' h.ne', hyp,
+    @EReal.mul_div_cancel a' b (ne_bot_of_gt h) h' h.ne']
 
 @[gcongr]
 lemma div_lt_div_right_of_pos (h₁ : 0 < c) (h₂ : c ≠ ⊤) (h₃ : a < b) : a / c < b / c :=
@@ -439,22 +439,22 @@ lemma div_lt_div_right_of_neg (h₁ : c < 0) (h₂ : c ≠ ⊥) (h₃ : a < b) :
   strictAnti_div_right_of_neg h₁ h₂ h₃
 
 lemma le_div_iff_mul_le (h : b > 0) (h' : b ≠ ⊤) : a ≤ c / b ↔ a * b ≤ c := by
-  nth_rw 1 [← @mul_div_cancel a b (ne_bot_of_gt h) h' (ne_of_gt h)]
+  nth_rw 1 [← @mul_div_cancel a b (ne_bot_of_gt h) h' h.ne']
   rw [mul_div b a b, mul_comm a b]
   exact StrictMono.le_iff_le (strictMono_div_right_of_pos h h')
 
 lemma div_le_iff_le_mul (h : 0 < b) (h' : b ≠ ⊤) : a / b ≤ c ↔ a ≤ b * c := by
-  nth_rw 1 [← @mul_div_cancel c b (ne_bot_of_gt h) h' (ne_of_gt h)]
+  nth_rw 1 [← @mul_div_cancel c b (ne_bot_of_gt h) h' h.ne']
   rw [mul_div b c b, mul_comm b]
   exact StrictMono.le_iff_le (strictMono_div_right_of_pos h h')
 
 lemma lt_div_iff (h : 0 < b) (h' : b ≠ ⊤) : a < c / b ↔ a * b < c := by
-  nth_rw 1 [← @mul_div_cancel a b (ne_bot_of_gt h) h' (ne_of_gt h)]
+  nth_rw 1 [← @mul_div_cancel a b (ne_bot_of_gt h) h' h.ne']
   rw [EReal.mul_div b a b, mul_comm a b]
   exact (strictMono_div_right_of_pos h h').lt_iff_lt
 
 lemma div_lt_iff (h : 0 < c) (h' : c ≠ ⊤) : b / c < a ↔ b < a * c := by
-  nth_rw 1 [← @mul_div_cancel a c (ne_bot_of_gt h) h' (ne_of_gt h)]
+  nth_rw 1 [← @mul_div_cancel a c (ne_bot_of_gt h) h' h.ne']
   rw [EReal.mul_div c a c, mul_comm a c]
   exact (strictMono_div_right_of_pos h h').lt_iff_lt
 
