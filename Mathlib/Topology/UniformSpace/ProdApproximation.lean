@@ -87,8 +87,13 @@ lemma prodMul_def (f : C(X, R)) (g : C(Y, R)) :
   (rfl)
 
 /-- Tensor product version of `ContinuousMap.prodMul`. -/
-@[expose] def tensorHom : C(X, R) ⊗[R] C(Y, R) →ₗ[R] C(X × Y, R) :=
+def tensorHom : C(X, R) ⊗[R] C(Y, R) →ₗ[R] C(X × Y, R) :=
   TensorProduct.lift prodMul
+
+@[simp]
+lemma tensorHom_tmul (f : C(X, R)) (g : C(Y, R)) :
+    tensorHom (f ⊗ₜ g) = prodMul f g := by
+  rw [tensorHom, TensorProduct.lift.tmul]
 
 lemma denseRange_tensorHom [CompactSpace X] [T2Space X] [CompactSpace Y] [T2Space Y]
     [TotallyDisconnectedSpace X] :

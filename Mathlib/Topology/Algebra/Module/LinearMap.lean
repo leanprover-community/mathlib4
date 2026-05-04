@@ -1099,8 +1099,8 @@ section lcomp
 variable {R U V : Type*} (W : Type*) [CommSemiring R]
     [AddCommMonoid U] [Module R U] [TopologicalSpace U]
     [AddCommMonoid V] [Module R V] [TopologicalSpace V]
-    [AddCommGroup W] [Module R W] [TopologicalSpace W]
-    [IsTopologicalAddGroup W] [ContinuousConstSMul R W]
+    [AddCommMonoid W] [Module R W] [TopologicalSpace W]
+    [ContinuousAdd W] [ContinuousConstSMul R W]
 
 /-- Composition of continuous linear maps, as a linear map. Compare `LinearMap.lcomp`. -/
 @[simps]
@@ -1114,11 +1114,11 @@ end lcomp
 section llcomp
 
 variable (R U V W : Type*) [CommSemiring R]
-  [AddCommGroup U] [Module R U] [TopologicalSpace U]
-  [AddCommGroup V] [Module R V] [TopologicalSpace V]
-  [IsTopologicalAddGroup V] [ContinuousConstSMul R V]
-  [AddCommGroup W] [Module R W] [TopologicalSpace W]
-  [IsTopologicalAddGroup W] [ContinuousConstSMul R W]
+  [AddCommMonoid U] [Module R U] [TopologicalSpace U]
+  [AddCommMonoid V] [Module R V] [TopologicalSpace V]
+  [ContinuousAdd V] [ContinuousConstSMul R V]
+  [AddCommMonoid W] [Module R W] [TopologicalSpace W]
+  [ContinuousAdd W] [ContinuousConstSMul R W]
 
 /-- Composition of continuous linear maps, as a bilinear map. Compare `LinearMap.llcomp`. -/
 @[simps]
