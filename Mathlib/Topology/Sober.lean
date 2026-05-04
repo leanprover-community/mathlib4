@@ -175,6 +175,10 @@ noncomputable def irreducibleSetEquivPoints [QuasiSober α] [T0Space α] :
     simp
     rfl
 
+@[simp]
+lemma coe_irreducibleEquivPoints_symm_apply [QuasiSober α] [T0Space α] (x : α) :
+    (irreducibleSetEquivPoints.symm x : Set α) = closure {x} := rfl
+
 lemma Topology.IsClosedEmbedding.quasiSober {f : α → β} (hf : IsClosedEmbedding f) [QuasiSober β] :
     QuasiSober α where
   sober hS hS' := by
@@ -311,6 +315,20 @@ lemma QuasiSober.coheight_eq_zero_subset_of_coheight_eq_one {p : Set α}
   simp only [Subtype.preorder, Preorder.lift, specializationPreorder]
   ext a b
   exact (subtype_specializes_iff b a).symm
+open scoped Set.Notation in
+lemma QuasiSober.of_subset {V W : Set α} [QuasiSober W] (hV : IsClosed (W ↓∩ V)) (h : V ⊆ W) :
+    QuasiSober V := Topology.IsClosedEmbedding.quasiSober <| .inclusion h hV
+
+lemma QuasiSober.inter_of_isClosed_of_quasiSober_left {V : Set α} (W : Set α) [QuasiSober W]
+    (hV : IsClosed V) : QuasiSober (W ∩ V : Set α) := by
+  refine QuasiSober.of_subset ?_ (Set.inter_subset_left : W ∩ V ⊆ W)
+  rw [Subtype.preimage_coe_self_inter W V]
+  exact IsClosed.preimage_val hV
+
+lemma QuasiSober.inter_of_isClosed_of_quasiSober_right {V : Set α} (W : Set α) [QuasiSober V]
+    (hW : IsClosed W) : QuasiSober (W ∩ V : Set α) := by
+  rw [inter_comm]
+  exact .inter_of_isClosed_of_quasiSober_left V hW
 
 end Sober
 

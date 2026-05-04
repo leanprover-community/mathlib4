@@ -37,7 +37,7 @@ quotients in the sense that `Φ.quotient ⋙ Ψ.r` is the zero object.
 
 ## Tags
 
-category_theory, preradical, colon, pullback, torsion theory
+category theory, preradical, colon, pullback, torsion theory
 -/
 
 @[expose] public section
