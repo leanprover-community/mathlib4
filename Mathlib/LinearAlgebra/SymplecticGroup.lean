@@ -39,7 +39,6 @@ section JMatrixLemmas
 def J : Matrix (l ⊕ l) (l ⊕ l) R :=
   Matrix.fromBlocks 0 (-1) 1 0
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem J_transpose : (J l R)ᵀ = -J l R := by
   rw [J, fromBlocks_transpose, ← neg_one_smul R (fromBlocks _ _ _ _ : Matrix (l ⊕ l) (l ⊕ l) R),
@@ -98,7 +97,6 @@ section SymplecticJ
 
 variable (l) (R)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem J_mem : J l R ∈ symplecticGroup l R := by
   rw [mem_iff, J, fromBlocks_multiply, fromBlocks_transpose, fromBlocks_multiply]
   simp
@@ -116,7 +114,6 @@ end SymplecticJ
 
 variable {A : Matrix (l ⊕ l) (l ⊕ l) R}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem neg_mem (h : A ∈ symplecticGroup l R) : -A ∈ symplecticGroup l R := by
   rw [mem_iff] at h ⊢
   simp [h]
@@ -132,7 +129,6 @@ theorem symplectic_det (hA : A ∈ symplecticGroup l R) : IsUnit <| det A := by
   rw [mul_comm A.det, mul_assoc] at hA
   exact hA
 
-set_option backward.isDefEq.respectTransparency false in
 theorem transpose_mem (hA : A ∈ symplecticGroup l R) : Aᵀ ∈ symplecticGroup l R := by
   rw [mem_iff] at hA ⊢
   rw [transpose_transpose]

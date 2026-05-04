@@ -57,7 +57,7 @@ lemma triangleOfSESδ_naturality {S₁ S₂ : ShortComplex (CochainComplex C ℤ
   simp only [triangleOfSESδ, CochainComplex.mappingCone.triangle_obj₁, Category.assoc,
     IsIso.inv_comp_eq]
   rw [← Functor.comp_map, ← (Q.commShiftIso (1 : ℤ)).hom.naturality, ← Category.assoc,
-    ← Category.assoc, ← Category.assoc, ← Category.assoc , ← Iso.app_hom,
+    ← Category.assoc, ← Category.assoc, ← Category.assoc, ← Iso.app_hom,
     Iso.cancel_iso_hom_right, ← Q.map_comp]
   simp only [Functor.comp_obj, Functor.comp_map,
     ← CochainComplex.mappingCone.descShortComplex_naturality f,
