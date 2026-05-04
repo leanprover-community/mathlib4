@@ -107,96 +107,23 @@ section header
 
 open Parser.Command
 
-/--
-Encodes scope section headers: `(@[expose])? (public)? (noncomputable)? (meta)?`.
--/
-structure SectionHeader where
-  /-- Whether the scope uses `@[expose]`. -/
-  expose : Bool := false -- TODO: `Option Syntax`?
-  /-- Whether the scope uses `public`. -/
-  isPublic : Bool := false
-  /-- Whether the scope uses `noncomputable`. -/
-  isNoncomputable : Bool := false
-  /-- Whether the scope uses `meta`. -/
-  isMeta : Bool := false
-deriving BEq, Inhabited, Repr
-
-/-- Encodes scope section headers, and associates syntax position information to them. -/
-structure SectionHeaderRef where
-  /-- The full ref of the whole section header. -/
-  ref : Syntax := .missing
-  /-- The token `expose`. Does not include brackets. -/
-  exposeTk : Option Syntax := none
-  /-- The token `public`. -/
-  publicTk : Option Syntax := none
-  /-- The token `noncomputable`. -/
-  noncomputableTk : Option Syntax := none
-  /-- The token `meta`. -/
-  metaTk : Option Syntax := none
-
-/-- Converts syntax representing a section header ref to a `SectionHeader`. -/
-@[inline] def SectionHeaderRef.toSectionHeader : SectionHeaderRef → SectionHeader
-  | { exposeTk, publicTk, noncomputableTk, metaTk, .. } => {
-    expose := exposeTk.isSome
-    isPublic := publicTk.isSome
-    isNoncomputable := noncomputableTk.isSome
-    isMeta := metaTk.isSome
-  }
-
-/-- Recreates `(@[expose])? (public)? (noncomputable)? (meta)?` syntax from the given
-`SectionHeaderRef`. -/
-def SectionHeaderRef.toSyntax {m} [Monad m] [MonadQuotation m] :
-    SectionHeaderRef → m (TSyntax ``sectionHeader)
-  | { exposeTk, publicTk, noncomputableTk, metaTk, ref } => withRef ref `(sectionHeader|
-      $[@[expose%$exposeTk]]?
-      $[public%$publicTk]?
-      $[noncomputable%$noncomputableTk]?
-      $[meta%$metaTk]?)
-
-/-- Organizes `sectionHeader` syntax into a `SectionHeaderRef`. -/
-def SectionHeaderRef.ofSyntax? : TSyntax ``sectionHeader → Option SectionHeaderRef
-  | ref@`(sectionHeader|
-      $[@[expose%$exposeTk]]?
-      $[public%$publicTk]?
-      $[noncomputable%$noncomputableTk]?
-      $[meta%$metaTk]?) =>
-    some { ref, exposeTk, publicTk, noncomputableTk, metaTk }
-  | _ => none
-
-/-- Creates `(@[expose])? (public)? (noncomputable)? (meta)?` syntax from the given
-`SectionHeader`. Uses the current ref for position information on each token. -/
-def SectionHeader.toSyntax {m} [Monad m] [MonadQuotation m] :
-    SectionHeader → m (TSyntax ``sectionHeader)
-  | { expose, isPublic, isNoncomputable, isMeta } => do
+/-- Isolates the part of a `Scope` that contains `SectionHeader` information. -/
+@[inline] def reifySectionHeader {m} [Monad m] [MonadQuotation m] :
+    Scope → m (TSyntax ``sectionHeader)
+  | { isPublic, isMeta, isNoncomputable, attrs .. } => do
+    -- Currently `attrs` holds at most `expose`, but we match for future-proofing.
+    let exposeTk? := attrs.find? fun stx => match stx.raw with
+      | `(Parser.Term.attrInstance| expose) => true
+      | _ => false
     -- This is a hack to exploit antiquotations. `$[$foo%$tk]?` yields `foo` iff `tk.isSome`.
     let r ← getRef
     letI toDummyOptional? (b : Bool) : Option Syntax :=
       if b then some r else none
     let pubTk    := toDummyOptional? isPublic
     let metaTk   := toDummyOptional? isMeta
-    let exposeTk := toDummyOptional? expose
     let ncTk     := toDummyOptional? isNoncomputable
     `(sectionHeader|
-      $[@[expose%$exposeTk]]? $[public%$pubTk]? $[noncomputable%$ncTk]? $[meta%$metaTk]?)
-
-/-- Extracts a `SectionHeader` structure from `(@[expose])? (public)? (noncomputable)? (meta)?`
-syntax. -/
-@[inline] def SectionHeader.ofSyntax? : TSyntax ``sectionHeader → Option SectionHeader
-  | `(sectionHeader|
-      $[@[expose%$exposeTk]]? $[public%$pubTk]? $[noncomputable%$ncTk]? $[meta%$metaTk]?) =>
-    some {
-      expose := exposeTk.isSome
-      isPublic := pubTk.isSome
-      isNoncomputable := ncTk.isSome
-      isMeta := metaTk.isSome
-    }
-  | _ => none
-
-/-- Isolates the part of a `Scope` that contains `SectionHeader` information. -/
-@[inline] def _root_.Lean.Elab.Command.Scope.toSectionHeader : Scope → SectionHeader
-  | { isPublic, isMeta, isNoncomputable, attrs .. } =>
-    -- Currently, `attrs` only ever holds `@[expose]`.
-    { isPublic, isMeta, isNoncomputable, expose := !attrs.isEmpty }
+      $[@[expose%$exposeTk?]]? $[public%$pubTk]? $[noncomputable%$ncTk]? $[meta%$metaTk]?)
 
 end header
 
