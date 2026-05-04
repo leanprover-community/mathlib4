@@ -10,27 +10,30 @@ public import Mathlib.Algebra.Group.Action.Defs
 /-!
 # Torsors of additive group actions
 
-This file defines torsors of additive group actions.
+This file defines torsors of additive and multiplicative group actions.
 
 ## Notation
 
 The group elements are referred to as acting on points.  This file
-defines the notation `+ᵥ` for adding a group element to a point and
-`-ᵥ` for subtracting two points to produce a group element.
+uses the notation `+ᵥ` for adding a group element to a point and
+`-ᵥ` for subtracting two points to produce a group element, as well as `•` and `/ₛ` for the
+corresponding operations in multiplicative torsors.
 
 ## Implementation notes
 
-Affine spaces are the motivating example of torsors of additive group actions. It may be appropriate
-to refactor in terms of the general definition of group actions, via `to_additive`, when there is a
-use for multiplicative torsors (currently mathlib only develops the theory of group actions for
-multiplicative group actions).
+Affine spaces are the motivating example of torsors of additive group actions. Multiplicative
+torsors are not used much yet, but will play a central role in e.g. the development of the theory
+of principal bundles. Most API is written multiplicatively and then also provided in additive form
+via `to_additive`.
 
 ## Notation
 
 * `v +ᵥ p` is a notation for `VAdd.vadd`, the left action of an additive monoid;
-
-* `p₁ -ᵥ p₂` is a notation for `VSub.vsub`, difference between two points in an additive torsor
+* `p₁ -ᵥ p₂` is a notation for `VSub.vsub`, the difference between two points in an additive torsor
   as an element of the corresponding additive group;
+* `v • p` is a notation for `SMul.smul`, the left action of a multiplicative monoid;
+* `p₁ /ₛ p₂` is a notation for `SDiv.sdiv`, the quotient of two points in a multiplicative
+  torsor as an element of the corresponding multiplicative group;
 
 ## References
 

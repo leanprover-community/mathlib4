@@ -20,6 +20,8 @@ This file defines pointwise scalar-flavored algebraic operations on sets.
 For sets `s` and `t` and scalar `a`:
 
 * `s • t`: Scalar multiplication, set of all `x • y` where `x ∈ s` and `y ∈ t`.
+* `s /ₛ t`: Scalar division, set of all `x /ₛ y` where `x ∈ s` and `y ∈ t`. Available in
+  multiplicative torsors.
 * `s +ᵥ t`: Scalar addition, set of all `x +ᵥ y` where `x ∈ s` and `y ∈ t`.
 * `s -ᵥ t`: Scalar subtraction, set of all `x -ᵥ y` where `x ∈ s` and `y ∈ t`.
 * `a • s`: Scaling, set of all `a • x` where `x ∈ s`.
