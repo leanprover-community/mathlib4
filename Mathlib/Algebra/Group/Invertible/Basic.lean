@@ -125,7 +125,7 @@ lemma invOf_pow (m : α) [Invertible m] (n : ℕ) [Invertible (m ^ n)] : ⅟(m ^
 /-- If `x ^ n = 1` then `x` has an inverse, `x^(n - 1)`. -/
 @[implicit_reducible]
 def invertibleOfPowEqOne (x : α) (n : ℕ) (hx : x ^ n = 1) (hn : n ≠ 0) : Invertible x :=
-  (Units.ofPowEqOne x n hx hn).invertible
+  inferInstanceAs <| Invertible (Units.ofPowEqOne x n hx hn : α)
 
 end Monoid
 

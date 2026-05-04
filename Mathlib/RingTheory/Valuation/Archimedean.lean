@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.Valuation.ValuationRing
 
 -/
 
-@[expose] public section
+public section
 
 section Field
 

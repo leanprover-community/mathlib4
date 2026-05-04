@@ -19,7 +19,7 @@ operations on the codomain of `X`.
 See for instance `HasLaw.comp`, `IndepFun.hasLaw_mul` and `IndepFun.hasLaw_add`.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Measure
 
@@ -41,6 +41,29 @@ structure HasLaw (P : Measure Ω := by volume_tac) : Prop where
   protected map_eq : P.map X = μ
 
 attribute [fun_prop] HasLaw.aemeasurable
+
+lemma HasLaw.measure_eq (hX : HasLaw X μ P) {p : 𝓧 → Prop} (hp : MeasurableSet {x | p x}) :
+    P {ω | p (X ω)} = μ {x | p x} := by
+  rw [← hX.map_eq, map_apply_of_aemeasurable hX.aemeasurable hp]
+  simp
+
+lemma HasLaw.measureReal_eq (hX : HasLaw X μ P) {p : 𝓧 → Prop} (hp : MeasurableSet {x | p x}) :
+    P.real {ω | p (X ω)} = μ.real {x | p x} := by
+  rw [← hX.map_eq, map_measureReal_apply_of_aemeasurable hX.aemeasurable hp]
+  simp
+
+/-- If there is a random variable `X` with law `μ` such that `f(X)` has law `ν`, then
+for any random variable `Y` with law `μ`, `f(Y)` has law `ν`. -/
+lemma HasLaw.comp_of_hasLaw_comp {Ω' 𝓨 : Type*} {m' : MeasurableSpace Ω'} {m𝓨 : MeasurableSpace 𝓨}
+    {P' : Measure Ω'} {ν : Measure 𝓨} {f : 𝓧 → 𝓨} {Y : Ω' → 𝓧} (hf : AEMeasurable f μ)
+    (hX : HasLaw X μ P) (hY : HasLaw Y μ P') (h : HasLaw (fun ω ↦ f (X ω)) ν P) :
+    HasLaw (fun ω ↦ f (Y ω)) ν P' where
+  aemeasurable := (hY.map_eq ▸ hf).comp_aemeasurable hY.aemeasurable
+  map_eq := by
+    rw [← Function.comp_def,
+      ← AEMeasurable.map_map_of_aemeasurable (hY.map_eq ▸ hf) hY.aemeasurable,
+      hY.map_eq, ← hX.map_eq, AEMeasurable.map_map_of_aemeasurable (hX.map_eq ▸ hf) hX.aemeasurable,
+      Function.comp_def, h.map_eq]
 
 lemma HasLaw.congr (hX : HasLaw X μ P) (hY : Y =ᵐ[P] X) : HasLaw Y μ P where
   aemeasurable := hX.aemeasurable.congr hY.symm
@@ -82,7 +105,7 @@ lemma HasLaw.isProbabilityMeasure [IsProbabilityMeasure μ] (hX : HasLaw X μ P)
     IsProbabilityMeasure P := hX.isProbabilityMeasure_iff.2 ‹_›
 
 @[fun_prop]
-lemma HasLaw.comp {𝒴 : Type*} {m𝒴 : MeasurableSpace 𝒴} {ν : Measure 𝒴} {Y : 𝓧 → 𝒴}
+lemma HasLaw.comp {𝓨 : Type*} {m𝓨 : MeasurableSpace 𝓨} {ν : Measure 𝓨} {Y : 𝓧 → 𝓨}
     (hY : HasLaw Y ν μ) (hX : HasLaw X μ P) : HasLaw (Y ∘ X) ν P where
   aemeasurable := (hX.map_eq ▸ hY.aemeasurable).comp_aemeasurable hX.aemeasurable
   map_eq := by
@@ -90,9 +113,19 @@ lemma HasLaw.comp {𝒴 : Type*} {m𝒴 : MeasurableSpace 𝒴} {ν : Measure �
     rw [hX.map_eq]; exact hY.aemeasurable
 
 @[fun_prop]
-lemma HasLaw.fun_comp {𝒴 : Type*} {m𝒴 : MeasurableSpace 𝒴} {ν : Measure 𝒴} {Y : 𝓧 → 𝒴}
+lemma HasLaw.fun_comp {𝓨 : Type*} {m𝓨 : MeasurableSpace 𝓨} {ν : Measure 𝓨} {Y : 𝓧 → 𝓨}
     (hY : HasLaw Y ν μ) (hX : HasLaw X μ P) : HasLaw (fun ω ↦ Y (X ω)) ν P :=
   hY.comp hX
+
+lemma _root_.MeasureTheory.MeasurePreserving.comp_hasLaw {𝓨 : Type*} {m𝓨 : MeasurableSpace 𝓨}
+    {ν : Measure 𝓨} {Y : 𝓧 → 𝓨} (hY : MeasurePreserving Y μ ν) (hX : HasLaw X μ P) :
+    HasLaw (Y ∘ X) ν P :=
+  hY.hasLaw.comp hX
+
+lemma _root_.MeasureTheory.MeasurePreserving.fun_comp_hasLaw {𝓨 : Type*} {m𝓨 : MeasurableSpace 𝓨}
+    {ν : Measure 𝓨} {Y : 𝓧 → 𝓨} (hY : MeasurePreserving Y μ ν) (hX : HasLaw X μ P) :
+    HasLaw (fun ω ↦ Y (X ω)) ν P :=
+  hY.comp_hasLaw hX
 
 @[to_additive]
 lemma IndepFun.hasLaw_mul {M : Type*} [Monoid M] {mM : MeasurableSpace M} [MeasurableMul₂ M]
@@ -149,5 +182,36 @@ lemma HasLaw.variance_eq {μ : Measure ℝ} {X : Ω → ℝ} (hX : HasLaw X μ P
 lemma HasPDF.hasLaw [h : HasPDF X P μ] : HasLaw X (μ.withDensity (pdf X P μ)) P where
   aemeasurable := h.aemeasurable
   map_eq := map_eq_withDensity_pdf X P μ
+
+lemma indepFun_iff_hasLaw_prodMk_prod [IsFiniteMeasure P] {𝓨 : Type*} {m𝓨 : MeasurableSpace 𝓨}
+    {ν : Measure 𝓨} {Y : Ω → 𝓨} (hX : HasLaw X μ P) (hY : HasLaw Y ν P) :
+    X ⟂ᵢ[P] Y ↔ HasLaw (fun ω ↦ (X ω, Y ω)) (μ.prod ν) P where
+  mp h :=
+    { map_eq := by
+        rw [(indepFun_iff_map_prod_eq_prod_map_map (by fun_prop) (by fun_prop)).1 h, hX.map_eq,
+          hY.map_eq] }
+  mpr h := by
+    rw [indepFun_iff_map_prod_eq_prod_map_map (by fun_prop) (by fun_prop),
+      h.map_eq, hX.map_eq, hY.map_eq]
+
+alias ⟨IndepFun.hasLaw_prod, _⟩ := indepFun_iff_hasLaw_prodMk_prod
+
+lemma iIndepFun.hasLaw_pi {ι : Type*} [Fintype ι] {𝓧 : ι → Type*} {m𝓧 : ∀ i, MeasurableSpace (𝓧 i)}
+    {μ : (i : ι) → Measure (𝓧 i)} {X : (i : ι) → Ω → 𝓧 i} (hX : ∀ i, HasLaw (X i) (μ i) P)
+    (h : iIndepFun X P) :
+    HasLaw (fun ω i ↦ X i ω) (Measure.pi μ) P where
+  map_eq := by
+    have := h.isProbabilityMeasure
+    rw [(iIndepFun_iff_map_fun_eq_pi_map (by fun_prop)).1 h]
+    simp_rw [fun i ↦ (hX i).map_eq]
+
+lemma iIndepFun_iff_hasLaw_pi_pi [IsProbabilityMeasure P] {ι : Type*} [Fintype ι] {𝓧 : ι → Type*}
+    {m𝓧 : ∀ i, MeasurableSpace (𝓧 i)} {μ : (i : ι) → Measure (𝓧 i)}
+    {X : (i : ι) → Ω → 𝓧 i} (hX : ∀ i, HasLaw (X i) (μ i) P) :
+    iIndepFun X P ↔ HasLaw (fun ω i ↦ X i ω) (Measure.pi μ) P where
+  mp h := h.hasLaw_pi hX
+  mpr h := by
+    rw [iIndepFun_iff_map_fun_eq_pi_map (by fun_prop), h.map_eq]
+    simp_rw [fun i ↦ (hX i).map_eq]
 
 end ProbabilityTheory

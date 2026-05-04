@@ -5,9 +5,8 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.LinearAlgebra.Finsupp.Defs
+public import Mathlib.LinearAlgebra.Finsupp.LSum
 public import Mathlib.LinearAlgebra.Span.Basic
-public import Mathlib.Algebra.Module.Submodule.Pointwise
 
 /-!
 # Finitely supported functions and spans
