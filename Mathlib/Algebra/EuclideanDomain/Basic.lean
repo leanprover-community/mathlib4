@@ -412,31 +412,29 @@ theorem div_eq_div_iff_mul_eq_mul_of_dvd {x y z t : R} (h1 : y ≠ 0) (h2 : t �
 
 end Div
 
+end EuclideanDomain
+
 section RingEquiv
 
-variable (S : Type*) [CommRing S] [Nontrivial S]
+variable {R S : Type*} [EuclideanDomain R] [CommRing S]
 
 /-- If `S` is a nontrivial commutative ring isomorphic to a Euclidean domain
  `R` then it is also a Euclidean domain. -/
 protected abbrev RingEquiv.euclideanDomain (e : S ≃+* R) : EuclideanDomain S where
-  quotient a b := RingEquiv.symm e (e a / e b)
+  toNontrivial := e.nontrivial
+  quotient a b := e.symm (e a / e b)
   remainder a b := e.symm (e a % e b)
   r a b := EuclideanDomain.r (e a) (e b)
   r_wellFounded := InvImage.wf e EuclideanDomain.r_wellFounded
   quotient_zero a := by simp
   quotient_mul_add_remainder_eq a b := by
     apply e.injective
-    simp only [map_add, map_mul, RingEquiv.apply_symm_apply]
-    exact EuclideanDomain.quotient_mul_add_remainder_eq (e a) (e b)
+    simpa using EuclideanDomain.quotient_mul_add_remainder_eq (e a) (e b)
   remainder_lt a b hb := by
-    have hb' : e b ≠ 0 := by simp_all
-    simp only [RingEquiv.apply_symm_apply]
-    exact EuclideanDomain.remainder_lt (e a) hb'
+    have hb' : e b ≠ 0 := by simpa using hb
+    simpa using EuclideanDomain.remainder_lt (e a) hb'
   mul_left_not_lt a b hb := by
-    have hb' : e b ≠ 0 := by simp_all
-    simp only [map_mul]
-    exact EuclideanDomain.mul_left_not_lt (e a) hb'
+    have hb' : e b ≠ 0 := by simpa using hb
+    simpa using EuclideanDomain.mul_left_not_lt (e a) hb'
 
 end RingEquiv
-
-end EuclideanDomain
