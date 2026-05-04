@@ -76,7 +76,7 @@ syntax reifiedSetOptionsStx := withPosition("set_options " ppIndent(reifiedOptio
 /--
 A scope specification of the form
 ```
-(@[expose])? (public)? (noncomputable)? (section)? (scope)?
+(@[expose])? (public)? (noncomputable)? (section)? scope
   (universe ...)?
   (namespace ...)?
   (open @id₁ @id₂ ...)?
