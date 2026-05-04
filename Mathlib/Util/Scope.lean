@@ -1,13 +1,7 @@
 module
 
-public import Lean
 public meta import Mathlib.Lean.Elab.Options
 public meta import Mathlib.Lean.Name
-public meta import Lean.Elab.BuiltinCommand
-public meta import Lean.PrettyPrinter.Delaborator
-import Batteries
-public meta import Mathlib.Lean.Elab.InfoTree
-public meta import Aesop.Util.Basic -- Name.ofComponents...
 
 /-!
 # Scope manipulation tools
