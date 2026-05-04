@@ -408,8 +408,6 @@ def resetScopes (resetEnvExtensionsTo : ScopedEnvExtension.ResetTo := .initialSt
 
 end reset
 
-#check elabUniverse
-
 /-- Resets the scopes, then creates the scope described in the syntactic scope specification. By
 default, this resets scoped environment extensions by reconstructing their initial state from
 imported entries, but does *not* clear the exported entries. See `ScopedEnvExtension.ResetTo` for
