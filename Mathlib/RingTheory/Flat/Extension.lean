@@ -38,9 +38,20 @@ open Polynomial
 
 variable (R : Type u) [CommRing R]
 
+section preliminaries
+
+lemma IsScalarTower.algebraMap_range_le (S T : Type*) [CommRing S] [Ring T] [Algebra R S]
+    [Algebra R T] [Algebra S T] [IsScalarTower R S T] :
+    (algebraMap R T).range ≤ (algebraMap S T).range := by
+  rintro x ⟨y, hy⟩
+  use algebraMap R S y
+  rw [← hy, IsScalarTower.algebraMap_apply R S T]
+
+end preliminaries
+
 variable [IsLocalRing R] (K : Type u) [Field K] [Algebra R K] [IsLocalHom (algebraMap R K)]
 
-section monogenic
+namespace Monogenic
 
 variable (S : Type u) [CommRing S] [Algebra S K]
 
@@ -51,10 +62,10 @@ lemma algebraMap_eq_zero (x : S) (mem : x ∈ maximalIdeal S) : algebraMap S K x
   simp only [mem_maximalIdeal, mem_nonunits_iff] at mem
   exact (iff_not_comm.mp isUnit_iff_ne_zero).mpr ((IsLocalHom.map_nonunit x).mt mem)
 
-instance [IsLocalHom (algebraMap S K)] : Algebra (ResidueField S) K :=
+local instance [IsLocalHom (algebraMap S K)] : Algebra (ResidueField S) K :=
   (Ideal.Quotient.lift _ (algebraMap S K) (fun x hx ↦ algebraMap_eq_zero x hx)).toAlgebra
 
-instance : IsScalarTower S (ResidueField S) K :=
+local instance : IsScalarTower S (ResidueField S) K :=
   IsScalarTower.of_algebraMap_eq' rfl
 
 lemma isIntegral_residueField_iff (x : K) : IsIntegral (ResidueField S) x ↔ IsIntegral S x := by
@@ -189,7 +200,7 @@ lemma adjoinTranscendental_mem_range (x : K) (nint : ¬ IsIntegral S x) :
   use algebraMap S[X] _ Polynomial.X
   simp [RingHom.algebraMap_toAlgebra]
 
-end monogenic
+end Monogenic
 
 structure FlatExtension where
   Ring : Type u
@@ -227,7 +238,11 @@ structure Hom (S₁ S₂ : FlatExtension R K) where
   algHom : S₁.Ring →ₐ[R] S₂.Ring
   comm : (IsScalarTower.toAlgHom R S₂ K).comp algHom = IsScalarTower.toAlgHom R S₁ K
 
---prove it is indeed local hom
+instance (S₁ S₂ : FlatExtension R K) (f : S₁.Hom S₂) : IsLocalHom f.algHom.toRingHom := by
+  apply ((IsLocalRing.local_hom_TFAE f.algHom.toRingHom).out 0 2).mpr
+  have : f.algHom.toRingHom.comp (algebraMap R S₁) = (algebraMap R S₂) :=
+    AlgHom.comp_algebraMap_of_tower _ _
+  rw [S₁.eqmap, Ideal.map_map, this, ← S₂.eqmap]
 
 variable {R K}
 
@@ -240,5 +255,75 @@ instance : Category (FlatExtension R K) where
   Hom S₁ S₂ := Hom S₁ S₂
   id S := Hom.id S
   comp f g := f.comp g
+
+noncomputable abbrev adjoinAlgebraic (S : FlatExtension R K) (x : K)
+    (int : IsIntegral S x) : FlatExtension R K where
+  Ring := Monogenic.adjoinAlgebraic K S x int
+  isScalarTower := IsScalarTower.to₁₃₄ R S _ K
+  flat := Module.Flat.trans R S _
+  eqmap := by
+    rw [Monogenic.adjoinAlgebraic_maximalIdeal_eq_map K S x int,
+      IsScalarTower.algebraMap_eq R S, ← Ideal.map_map, S.eqmap]
+
+noncomputable abbrev toAdjoinAlgebraic (S : FlatExtension R K) (x : K)
+    (int : IsIntegral S x) : S ⟶ S.adjoinAlgebraic x int where
+  algHom := IsScalarTower.toAlgHom R S.Ring _
+  comm := by
+    ext y
+    simp [← IsScalarTower.algebraMap_apply S _ K y]
+
+noncomputable abbrev adjoinTranscendental (S : FlatExtension R K) (x : K)
+    (nint : ¬ IsIntegral S x) : FlatExtension R K where
+  Ring := Monogenic.adjoinTranscendental K S x nint
+  isScalarTower := IsScalarTower.to₁₃₄ R S _ K
+  flat := Module.Flat.trans R S _
+  eqmap := by
+    rw [Monogenic.adjoinTranscendental_maximalIdeal_eq_map K S x nint,
+      IsScalarTower.algebraMap_eq R S, ← Ideal.map_map, ← S.eqmap]
+
+noncomputable abbrev toAdjoinTranscendental (S : FlatExtension R K) (x : K)
+    (nint : ¬ IsIntegral S x) : S ⟶ S.adjoinTranscendental x nint where
+  algHom := IsScalarTower.toAlgHom R S.Ring _
+  comm := by
+    ext y
+    simp [← IsScalarTower.algebraMap_apply S _ K y]
+
+variable (R K)
+
+open Classical in
+noncomputable def SuccStruct : SuccStruct (FlatExtension R K) where
+  X₀ := trivial R K
+  succ S := if surj : Function.Surjective (algebraMap S K) then S else
+      if int : IsIntegral S (Classical.choose (Decidable.not_forall.mp surj))
+        then adjoinAlgebraic S _ int
+        else adjoinTranscendental S _ int
+  toSucc S := if surj : Function.Surjective (algebraMap S K) then by
+        simpa only [surj, ↓reduceDIte] using 𝟙 S else
+      if int : IsIntegral S (Classical.choose (Decidable.not_forall.mp surj))
+        then by simpa only [surj, int, ↓reduceDIte] using toAdjoinAlgebraic S _ int
+        else by simpa only [surj, int, ↓reduceDIte] using toAdjoinTranscendental S _ int
+
+lemma algebraMap_range_lt_of_not_surjective (S : FlatExtension R K)
+    (nsurj : ¬ Function.Surjective (algebraMap S K)) :
+    (algebraMap S K).range <
+    (algebraMap ((FlatExtension.SuccStruct R K).succ S) K).range := by
+  classical
+  by_cases int : IsIntegral S (Classical.choose (Decidable.not_forall.mp nsurj))
+  · have : (FlatExtension.SuccStruct R K).succ S = adjoinAlgebraic S _ int := by
+      simp only [↓reduceDIte, SuccStruct, nsurj, int]
+    rw [this]
+    exact Set.ssubset_iff_exists.mpr
+      ⟨IsScalarTower.algebraMap_range_le S (Monogenic.adjoinAlgebraic K S _ int) K,
+        Classical.choose (Decidable.not_forall.mp nsurj),
+          Monogenic.adjoinAlgebraic_mem_range K S.Ring _ int,
+            Classical.choose_spec (Decidable.not_forall.mp nsurj)⟩
+  · have : (FlatExtension.SuccStruct R K).succ S = adjoinTranscendental S _ int := by
+      simp only [↓reduceDIte, SuccStruct, nsurj, int]
+    rw [this]
+    exact Set.ssubset_iff_exists.mpr
+      ⟨IsScalarTower.algebraMap_range_le S (Monogenic.adjoinTranscendental K S _ int) K,
+        Classical.choose (Decidable.not_forall.mp nsurj),
+          Monogenic.adjoinTranscendental_mem_range K S.Ring _ int,
+            Classical.choose_spec (Decidable.not_forall.mp nsurj)⟩
 
 end FlatExtension
