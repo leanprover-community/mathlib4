@@ -23,7 +23,10 @@ Any functor `F` from a groupoid `G` into `C` factors through `CategoryTheory.Cor
 but this is not functorial with respect to `F`.
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
+
 
 namespace CategoryTheory
 
@@ -47,7 +50,7 @@ structure CoreHom (X Y : Core C) where
   /-- The isomorphism of objects of `C` underlying a morphism in `Core C`. -/
   iso : X.of ≅ Y.of
 
-@[simps!]
+@[simps! id_iso inv_iso]
 instance coreCategory : Groupoid.{v₁} (Core C) where
   Hom (X Y : Core C) := CoreHom X Y
   id (X : Core C) := .mk <| Iso.refl X.of

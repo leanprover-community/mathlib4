@@ -98,6 +98,7 @@ def fromKleisli : Kleisli T ⥤ C where
   map_comp {X} {Y} {Z} f g := by
     simp [← T.μ.naturality_assoc g.of, T.assoc]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The Kleisli adjunction which gives rise to the monad `(T, η_ T, μ_ T)`.
 cf Lemma 5.2.11 of [Riehl][riehl2017]. -/
@@ -108,6 +109,7 @@ def adj : toKleisli T ⊣ fromKleisli T :=
         ext
         simp [← T.η.naturality_assoc g] }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The composition of the adjunction gives the original functor. -/
 def toKleisliCompFromKleisliIsoSelf : toKleisli T ⋙ fromKleisli T ≅ T :=
@@ -171,6 +173,7 @@ def fromCokleisli : Cokleisli U ⥤ C where
   map {X} {_} f := U.δ.app X.of ≫ U.map f.of
   map_id _ := U.right_counit _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The co-Kleisli adjunction which gives rise to the comonad `(U, ε_ U, δ_ U)`. -/
 def adj : fromCokleisli U ⊣ toCokleisli U :=
@@ -178,6 +181,7 @@ def adj : fromCokleisli U ⊣ toCokleisli U :=
     { homEquiv X Y := { toFun f := .mk f, invFun f := f.of }
       homEquiv_naturality_right := fun {X} {Y} {_} f g => by cat_disch }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The composition of the adjunction gives the original functor. -/
 def toCokleisliCompFromCokleisliIsoSelf : toCokleisli U ⋙ fromCokleisli U ≅ U :=
   NatIso.ofComponents fun _ => Iso.refl _

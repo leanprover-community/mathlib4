@@ -95,12 +95,14 @@ def shortComplexMap (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂
   comm₁₂ := δ_naturality ..
   comm₂₃ := δ_naturality ..
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma shortComplexMap_id (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
     X.shortComplexMap f₁ f₂ f₃ f₁ f₂ f₃ (𝟙 _) n₀ n₁ n₂ hn₁ hn₂ = 𝟙 _ := by
   ext
   all_goals dsimp; convert (X.H _).map_id _; cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc, simp]
 lemma shortComplexMap_comp (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
     X.shortComplexMap f₁ f₂ f₃ f₁'' f₂'' f₃'' (α ≫ β) n₀ n₁ n₂ hn₁ hn₂ =
@@ -159,6 +161,7 @@ lemma δ_eq_zero_of_isIso₂ (hg : IsIso g) (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isZero_H_obj_of_isIso {i j : ι} (f : i ⟶ j) (hf : IsIso f) (n : ℤ) :
     IsZero ((X.H n).obj (mk₁ f)) := by
@@ -276,6 +279,7 @@ lemma cokernelSequenceCyclesE_exact (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ :
   ShortComplex.exact_of_iso (X.cokernelSequenceCyclesEIso f₁ f₂ f₃ n₀ n₁ n₂ hn₁ hn₂).symm
     (ShortComplex.exact_of_g_is_cokernel _ (ShortComplex.homologyIsCokernel _))
 
+set_option backward.defeqAttrib.useBackward true in
 instance (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) :
     Epi (X.cokernelSequenceCyclesE f₁ f₂ f₃ n₀ n₁ n₂ hn₁ hn₂).g := by
   dsimp; infer_instance
@@ -386,6 +390,7 @@ lemma kernelSequenceOpcyclesE_exact (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ :
   ShortComplex.exact_of_iso (X.kernelSequenceOpcyclesEIso f₁ f₂ f₃ n₀ n₁ n₂ hn₁ hn₂).symm
     (ShortComplex.exact_of_f_is_kernel _ (ShortComplex.homologyIsKernel _))
 
+set_option backward.defeqAttrib.useBackward true in
 instance (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) :
     Mono (X.kernelSequenceOpcyclesE f₁ f₂ f₃ n₀ n₁ n₂ hn₁ hn₂).f := by
   dsimp; infer_instance
@@ -400,10 +405,12 @@ noncomputable def cokernelSequenceE (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ :
   f := biprod.desc ((X.H n₁).map (twoδ₂Toδ₁ f₁ f₂ f₁₂ h₁₂)) (X.δ f₁₂ f₃ n₀ n₁)
   g := X.toCycles f₁ f₂ f₁₂ h₁₂ n₁ ≫ X.πE f₁ f₂ f₃ n₀ n₁ n₂
 
+set_option backward.defeqAttrib.useBackward true in
 instance (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) :
     Epi (X.cokernelSequenceE f₁ f₂ f₃ f₁₂ h₁₂ n₀ n₁ n₂ hn₁ hn₂).g := by
   dsimp; infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 lemma cokernelSequenceE_exact (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
     (X.cokernelSequenceE f₁ f₂ f₃ f₁₂ h₁₂ n₀ n₁ n₂ hn₁ hn₂).Exact := by
   rw [ShortComplex.exact_iff_exact_up_to_refinements]
@@ -426,6 +433,7 @@ variable {A : C} (x : (X.H n₁).obj (mk₁ f₁₂) ⟶ A)
   (h : (X.H n₁).map (twoδ₂Toδ₁ f₁ f₂ f₁₂ h₁₂) ≫ x = 0)
   (hn₁ : n₀ + 1 = n₁) (h' : X.δ f₁₂ f₃ n₀ n₁ hn₁ ≫ x = 0)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Constructor for morphisms for `E^{n₁}(f₁, f₂, f₃)`. -/
 noncomputable def descE (hn₂ : n₁ + 1 = n₂ := by lia) :
@@ -453,10 +461,12 @@ noncomputable def kernelSequenceE (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n
   g := biprod.lift ((X.H n₁).map (twoδ₁Toδ₀ f₂ f₃ f₂₃ h₂₃)) (X.δ f₁ f₂₃ n₁ n₂)
   zero := by ext <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 instance (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) :
     Mono (X.kernelSequenceE f₁ f₂ f₃ f₂₃ h₂₃ n₀ n₁ n₂ hn₁ hn₂).f := by
   dsimp; infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma kernelSequenceE_exact (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
     (X.kernelSequenceE f₁ f₂ f₃ f₂₃ h₂₃ n₀ n₁ n₂ hn₁ hn₂).Exact := by
@@ -482,6 +492,7 @@ variable {A : C} (x : A ⟶ (X.H n₁).obj (mk₁ f₂₃))
   (hn₂ : n₁ + 1 = n₂)
   (h' : x ≫ X.δ f₁ f₂₃ n₁ n₂ hn₂ = 0)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Constructor for morphisms to `E^{n₁}(f₁, f₂, f₃)`. -/
 noncomputable def liftE (hn₁ : n₀ + 1 = n₁ := by lia) :
@@ -595,10 +606,12 @@ noncomputable def cokernelSequenceOpcyclesE
   f := (X.H n₁).map (twoδ₂Toδ₁ f₁ f₂ f₁₂ h₁₂) ≫ X.pOpcycles f₁₂ f₃ n₁
   g := X.opcyclesToE f₁ f₂ f₃ f₁₂ h₁₂ n₀ n₁ n₂ hn₁ hn₂
 
+set_option backward.defeqAttrib.useBackward true in
 instance (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) :
     Epi (X.cokernelSequenceOpcyclesE f₁ f₂ f₃ f₁₂ h₁₂ n₀ n₁ n₂ hn₁ hn₂).g := by
   dsimp; infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma cokernelSequenceOpcyclesE_exact
     (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
@@ -655,10 +668,12 @@ noncomputable def kernelSequenceCyclesE
   f := X.EToCycles f₁ f₂ f₃ f₂₃ h₂₃ n₀ n₁ n₂ hn₁ hn₂
   g := X.iCycles f₁ f₂₃ n₁ ≫ (X.H n₁).map (twoδ₁Toδ₀ f₂ f₃ f₂₃ h₂₃)
 
+set_option backward.defeqAttrib.useBackward true in
 instance (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) :
     Mono (X.kernelSequenceCyclesE f₁ f₂ f₃ f₂₃ h₂₃ n₀ n₁ n₂ hn₁ hn₂).f := by
   dsimp; infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma kernelSequenceCyclesE_exact (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
     (X.kernelSequenceCyclesE f₁ f₂ f₃ f₂₃ h₂₃ n₀ n₁ n₂ hn₁ hn₂).Exact := by
@@ -694,6 +709,7 @@ noncomputable def EIsoH (n₀ n₁ n₂ : ℤ)
     X.E (𝟙 i) f (𝟙 j) n₀ n₁ n₂ hn₁ hn₂ ≅ (X.H n₁).obj (mk₁ f) :=
   (X.homologyDataIdId ..).left.homologyIso
 
+set_option backward.defeqAttrib.useBackward true in
 lemma EIsoH_hom_naturality
     (α : mk₁ f ⟶ mk₁ f') (β : mk₃ (𝟙 _) f (𝟙 _) ⟶ mk₃ (𝟙 _) f' (𝟙 _))
     (n₀ n₁ n₂ : ℤ)
@@ -721,6 +737,7 @@ noncomputable def cyclesIsoH (hn₁ : n₀ + 1 = n₁ := by lia) :
   (X.cyclesIso (𝟙 i₀) f (𝟙 i₁) (n₀ - 1) n₀ n₁ (by lia) hn₁).symm ≪≫
     (X.homologyDataIdId ..).left.cyclesIso
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma cyclesIsoH_inv (hn₁ : n₀ + 1 = n₁ := by lia) :
@@ -750,6 +767,7 @@ noncomputable def opcyclesIsoH (hn₁ : n₀ + 1 = n₁ := by lia) :
   (X.opcyclesIso (𝟙 i₀) f (𝟙 i₁) n₀ n₁ (n₁ + 1) hn₁ (by lia)).symm ≪≫
     (X.homologyDataIdId ..).right.opcyclesIso
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma opcyclesIsoH_hom (hn₁ : n₀ + 1 = n₁ := by lia) :
@@ -779,6 +797,7 @@ section
 
 variable (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) {i j : ι} (f : i ⟶ j)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma cyclesIsoH_hom_EIsoH_inv :
@@ -803,6 +822,7 @@ lemma cyclesIsoH_hom_EIsoH_inv :
   rw [← cancel_epi h.π, h.π_comp_homologyIso_inv]
   simp [πE, h, this]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma EIsoH_hom_opcyclesIsoH_inv :
@@ -854,6 +874,7 @@ noncomputable def shortComplexOpcyclesThreeδ₂Toδ₁
   ShortComplex.mk _ _
     (X.opcyclesMap_threeδ₂Toδ₁_opcyclesToE f₁ f₂ f₃ f₁₂ f₂₃ h₁₂ h₂₃ n₀ n₁ n₂ hn₁ hn₂)
 
+set_option backward.defeqAttrib.useBackward true in
 instance (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) :
     Mono (X.shortComplexOpcyclesThreeδ₂Toδ₁ f₁ f₂ f₃ f₁₂ f₂₃ h₁₂ h₂₃ n₀ n₁ n₂ hn₁ hn₂).f := by
   dsimp
@@ -865,10 +886,12 @@ instance (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n�
       (by simp) (by cat_disch), Functor.map_id, Category.comp_id] at hx
   rw [← cancel_mono (X.fromOpcycles f₁ f₂₃ (f₁₂ ≫ f₃) (by cat_disch) n₁), hx, zero_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 instance (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) :
     Epi (X.shortComplexOpcyclesThreeδ₂Toδ₁ f₁ f₂ f₃ f₁₂ f₂₃ h₁₂ h₂₃ n₀ n₁ n₂ hn₁ hn₂).g := by
   dsimp; infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma shortComplexOpcyclesThreeδ₂Toδ₁_exact
     (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
@@ -896,6 +919,7 @@ variable {i₀ i₁ i₂ i₃ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂
   {i₀' i₁' i₂' i₃' : ι} (f₁' : i₀' ⟶ i₁') (f₂' : i₁' ⟶ i₂') (f₃' : i₂' ⟶ i₃')
   (f₁₂' : i₀' ⟶ i₂') (h₁₂' : f₁' ≫ f₂' = f₁₂')
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma opcyclesToE_map (α : mk₃ f₁ f₂ f₃ ⟶ mk₃ f₁' f₂' f₃') (β : mk₂ f₁₂ f₃ ⟶ mk₂ f₁₂' f₃')

@@ -482,13 +482,11 @@ variable (W') (f : R →+* S)
 
 /-- The Weierstrass curve in projective coordinates mapped over a ring homomorphism `f : R →+* S`.
 -/
-@[simps!]
 abbrev map : Projective S :=
   WeierstrassCurve.map W' f
 
 variable (S) in
 /-- The Weierstrass curve in projective coordinates base changed to an algebra `S` over `R`. -/
-@[simps!]
 abbrev baseChange [Algebra R S] : Projective S :=
   WeierstrassCurve.baseChange W' S
 

@@ -348,7 +348,7 @@ variable (R A B)
 variable [DistribMulAction R B]
 
 /-- The first projection of a product is a non-unital algebra homomorphism. -/
-@[simps]
+@[simps toFun]
 def fst : A × B →ₙₐ[R] A where
   toFun := Prod.fst
   map_zero' := rfl
@@ -357,7 +357,7 @@ def fst : A × B →ₙₐ[R] A where
   map_mul' _ _ := rfl
 
 /-- The second projection of a product is a non-unital algebra homomorphism. -/
-@[simps]
+@[simps toFun]
 def snd : A × B →ₙₐ[R] B where
   toFun := Prod.snd
   map_zero' := rfl
@@ -369,7 +369,7 @@ variable {R A B}
 variable [DistribMulAction R C]
 
 /-- The prod of two morphisms is a morphism. -/
-@[simps]
+@[simps toFun]
 def prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : A →ₙₐ[R] B × C where
   toFun := Pi.prod f g
   map_zero' := by simp only [Pi.prod, Prod.mk_zero_zero, map_zero]

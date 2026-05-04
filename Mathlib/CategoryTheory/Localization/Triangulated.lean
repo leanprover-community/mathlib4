@@ -64,6 +64,7 @@ lemma essImageDistTriang_mem_of_iso {T₁ T₂ : Triangle D} (e : T₂ ≅ T₁)
   obtain ⟨T', e', hT'⟩ := h
   exact ⟨T', e ≪≫ e', hT'⟩
 
+set_option backward.defeqAttrib.useBackward true in
 lemma contractible_mem_essImageDistTriang [EssSurj L] [HasZeroObject D]
     [HasZeroMorphisms D] [L.PreservesZeroMorphisms] (X : D) :
     contractibleTriangle X ∈ L.essImageDistTriang := by
@@ -82,6 +83,7 @@ lemma rotate_essImageDistTriang [Preadditive D] [L.Additive]
     exact ⟨T'.invRotate, (triangleRotation D).unitIso.app T ≪≫ (invRotate D).mapIso e' ≪≫
       L.mapTriangleInvRotateIso.app T', inv_rot_of_distTriang T' hT'⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma complete_distinguished_essImageDistTriang_morphism
     (H : ∀ (T₁' T₂' : Triangle C) (_ : T₁' ∈ distTriang C) (_ : T₂' ∈ distTriang C)
@@ -127,6 +129,7 @@ namespace Localization
 variable (W : MorphismProperty C) [L.IsLocalization W]
   [W.HasLeftCalculusOfFractions]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include W in
 lemma distinguished_cocone_triangle {X Y : D} (f : X ⟶ Y) :
@@ -147,6 +150,7 @@ lemma distinguished_cocone_triangle {X Y : D} (f : X ⟶ Y) :
 section
 variable [W.IsCompatibleWithTriangulation]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include W in
 lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)

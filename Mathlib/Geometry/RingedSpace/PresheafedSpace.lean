@@ -177,6 +177,7 @@ theorem comp_c_app {X Y Z : PresheafedSpace C} (α : X ⟶ Y) (β : Y ⟶ Z) (U)
     (α ≫ β).c.app U = β.c.app U ≫ α.c.app (op ((Opens.map β.base).obj (unop U))) :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 theorem congr_app {X Y : PresheafedSpace C} {α β : X ⟶ Y} (h : α = β) (U) :
     α.c.app U = β.c.app U ≫ X.presheaf.map (eqToHom (by subst h; rfl)) := by
   subst h
@@ -198,6 +199,7 @@ section Iso
 
 variable {X Y : PresheafedSpace C}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- An isomorphism of `PresheafedSpace`s is a homeomorphism of the underlying space, and a
 natural transformation between the sheaves.
@@ -220,6 +222,7 @@ def isoOfComponents (H : X.1 ≅ Y.1) (α : H.hom _* X.2 ≅ Y.2) : X ≅ Y wher
     simp only [eqToHom_map, eqToHom_app, eqToHom_trans_assoc, eqToHom_refl, id_comp]
     apply Iso.inv_hom_id_app
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Isomorphic `PresheafedSpace`s have naturally isomorphic presheaves. -/
 @[simps]
@@ -309,6 +312,7 @@ instance ofRestrict_mono {U : TopCat} (X : PresheafedSpace C) (f : U ⟶ X.1)
       ← IsIso.comp_inv_eq, inv_eqToHom, Category.assoc] at h
     simpa using h
 
+set_option backward.defeqAttrib.useBackward true in
 theorem restrict_top_presheaf (X : PresheafedSpace C) :
     (X.restrict (Opens.isOpenEmbedding ⊤)).presheaf =
       (Opens.inclusionTopIso X.carrier).inv _* X.presheaf := by
@@ -387,6 +391,7 @@ variable {D : Type*} [Category* D]
 
 namespace Functor
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- We can apply a functor `F : C ⥤ D` to the values of the presheaf in any `PresheafedSpace C`,
 giving a functor `PresheafedSpace C ⥤ PresheafedSpace D` -/
@@ -425,6 +430,7 @@ end Functor
 
 namespace NatTrans
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A natural transformation induces a natural transformation between the `map_presheaf` functors.
 -/

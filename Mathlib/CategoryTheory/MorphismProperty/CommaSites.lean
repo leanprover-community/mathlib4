@@ -39,6 +39,8 @@ variable {C : Type*} [Category* C]
 
 variable {P : MorphismProperty C} {S : C} [P.IsStableUnderComposition]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_map_eq_of_presieve (K : Precoverage C) (H : K ≤ P.precoverage)
     {X : P.Over ⊤ S} {R : Presieve ((MorphismProperty.Over.forget P ⊤ S).obj X)}
     (hR : R ∈ (K.comap <| CategoryTheory.Over.forget S) _) :

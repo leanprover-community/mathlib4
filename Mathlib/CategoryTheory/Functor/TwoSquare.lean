@@ -34,6 +34,7 @@ Generalize all of this to double categories.
 
 @[expose] public section
 
+
 universe v₁ v₂ v₃ v₄ v₅ v₆ v₇ v₈ v₉ u₁ u₂ u₃ u₄ u₅ u₆ u₇ u₈ u₉
 
 namespace CategoryTheory
@@ -146,6 +147,7 @@ section Interchange
 
 variable {C₉ : Type u₉} [Category.{v₉} C₉] {R₃ : C₆ ⥤ C₉} {B₃ : C₈ ⥤ C₉}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- When composing 2-squares which form a diagram of grid, composing horizontally first yields the
 same result as composing vertically first. -/

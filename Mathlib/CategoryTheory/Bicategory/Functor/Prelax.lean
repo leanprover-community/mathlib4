@@ -41,6 +41,7 @@ corresponding hom types.
 
 @[expose] public section
 
+
 namespace CategoryTheory
 
 open Category Bicategory
@@ -163,7 +164,7 @@ variable {a b : B}
 
 /-- A prelax functor `F` sends 2-isomorphisms `η : f ≅ g` to 2-isomorphisms
 `F.map f ≅ F.map g`. -/
-@[simps!]
+@[simps! -isSimp]
 abbrev map₂Iso {f g : a ⟶ b} (η : f ≅ g) : F.map f ≅ F.map g :=
   (F.mapFunctor a b).mapIso η
 
@@ -202,6 +203,7 @@ lemma map₂_eqToHom {x y : B} (f g : x ⟶ y) (hfg : f = g) :
   subst hfg
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 lemma map₂Iso_eqToIso {x y : B} (f g : x ⟶ y) (hfg : f = g) :
     F.map₂Iso (eqToIso hfg) = eqToIso (by rw [← hfg]) := by
   subst hfg

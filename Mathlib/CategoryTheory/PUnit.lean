@@ -20,6 +20,7 @@ and construct the equivalence `(Discrete PUnit ⥤ C) ≌ C`.
 @[expose] public section
 
 
+
 universe w v u
 
 -- morphism levels before object levels. See note [category theory universes].
@@ -49,6 +50,7 @@ theorem punit_ext' (F G : C ⥤ Discrete PUnit.{w + 1}) : F = G :=
 abbrev fromPUnit (X : C) : Discrete PUnit.{w + 1} ⥤ C :=
   (Functor.const _).obj X
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Functors from `Discrete PUnit` are equivalent to the category itself. -/
 @[simps]
 def equiv : Discrete PUnit.{w + 1} ⥤ C ≌ C where
@@ -61,6 +63,7 @@ def equiv : Discrete PUnit.{w + 1} ⥤ C ≌ C where
 
 end Functor
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A category being equivalent to `PUnit` is equivalent to it having a unique morphism between
   any two objects. (In fact, such a category is also a groupoid;
   see `CategoryTheory.Groupoid.ofHomUnique`) -/

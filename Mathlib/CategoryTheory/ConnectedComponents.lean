@@ -24,6 +24,7 @@ components of `J`, and it is shown that this is equivalent to `J`.
 
 @[expose] public section
 
+
 universe v₁ v₂ v₃ u₁ u₂
 
 noncomputable section
@@ -153,6 +154,7 @@ theorem inclusion_comp_decomposedTo (j : ConnectedComponents J) :
     inclusion j ⋙ decomposedTo J = ConnectedComponents.ι j :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance : (decomposedTo J).Full where
   map_surjective := by

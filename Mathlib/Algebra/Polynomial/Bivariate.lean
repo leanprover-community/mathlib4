@@ -218,7 +218,7 @@ variable {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
 variable (R A) in
 /-- Given valuations `x` and `y` of the variables in an `R`-algebra `A`, the bijection induced by
 the unique `R`-algebra homomorphism from `R[X][Y]` to `A` sending `X` to `x` and `Y` to `y`. -/
-@[simps! apply_apply symm_apply symm_apply_fst symm_apply_snd]
+@[simps! apply_apply symm_apply]
 def aevalAevalEquiv : A × A ≃ (R[X][Y] →ₐ[R] A) where
   toFun xy := aeval xy.fst |>.restrictScalars R |>.comp <|
     let := Polynomial.algebra; aeval (R := R[X]) (C xy.snd) |>.restrictScalars R

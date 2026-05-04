@@ -254,6 +254,7 @@ variable [HasZeroMorphisms C] [HasShift C S]
 
 noncomputable section
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The shift functor on `DifferentialObject S C`. -/
 @[simps]
 def shiftFunctor (n : S) : DifferentialObject S C ⥤ DifferentialObject S C where
@@ -274,6 +275,7 @@ def shiftFunctor (n : S) : DifferentialObject S C ⥤ DifferentialObject S C whe
   map_id X := by ext1; dsimp; rw [Functor.map_id]
   map_comp f g := by ext1; dsimp; rw [Functor.map_comp]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The shift functor on `DifferentialObject S C` is additive. -/
 @[simps!]
@@ -292,6 +294,7 @@ nonrec def shiftFunctorAdd (m n : S) :
 
 section
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The shift by zero is naturally isomorphic to the identity. -/
 @[simps!]
@@ -304,6 +307,7 @@ def shiftZero : shiftFunctor C (0 : S) ≅ 𝟭 (DifferentialObject S C) := by
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 instance : HasShift (DifferentialObject S C) S :=
   hasShiftMk _ _
     { F := shiftFunctor C

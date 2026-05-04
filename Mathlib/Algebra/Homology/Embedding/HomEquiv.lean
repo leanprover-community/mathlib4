@@ -68,6 +68,7 @@ lemma f_eq {i' : ι'} {i : ι} (hi : e.f i = i') :
   have : hi'.choose = i := e.injective_f (by rw [hi'.choose_spec, hi])
   grind [f]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma comm (hφ : e.HasLift φ) (i' j' : ι') :
@@ -114,6 +115,7 @@ lemma liftExtend_f :
       (L.extendXIso e hi).inv := by
   apply liftExtend.f_eq
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given `φ : K.restriction e ⟶ L` such that `hφ : e.HasLift φ`, this is
 the isomorphisms in the category of arrows between the maps
 `(e.liftExtend φ hφ).f i'` and `φ.f i` when `e.f i = i'`. -/
@@ -145,11 +147,13 @@ variable (ψ : K ⟶ L.extend e)
 noncomputable def f (i : ι) : (K.restriction e).X i ⟶ L.X i :=
   ψ.f (e.f i) ≫ (L.extendXIso e rfl).hom
 
+set_option backward.defeqAttrib.useBackward true in
 lemma f_eq {i : ι} {i' : ι'} (h : e.f i = i') :
     f ψ i = (K.restrictionXIso e h).hom ≫ ψ.f i' ≫ (L.extendXIso e h).hom := by
   subst h
   simp [f, restrictionXIso]
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma comm (i j : ι) :
     f ψ i ≫ L.d i j = K.d (e.f i) (e.f j) ≫ f ψ j := by
@@ -192,6 +196,7 @@ lemma homRestrict_liftExtend (φ : K.restriction e ⟶ L) (hφ : e.HasLift φ) :
   ext i
   simp [e.homRestrict_f _ rfl, e.liftExtend_f _ _ rfl]
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma homRestrict_precomp (α : K' ⟶ K) (ψ : K ⟶ L.extend e) :
     e.homRestrict (α ≫ ψ) = restrictionMap α e ≫ e.homRestrict ψ := by

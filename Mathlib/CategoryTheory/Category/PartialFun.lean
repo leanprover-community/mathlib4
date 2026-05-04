@@ -99,6 +99,7 @@ def pointedToPartialFun : Pointed.{u} ⥤ PartialFun where
     rintro rfl
     refine ⟨fun h => hc.symm <| g.map_point ▸ congr_arg g.toFun h, hc.symm⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The functor which maps undefined values to a new point. This makes the maps total and creates
 pointed types. This is the noncomputable part of the equivalence `PartialFunEquivPointed`. It can't
@@ -135,7 +136,7 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
           refine (Part.mem_bind_iff.trans ?_).trans PFun.mem_toSubtype_iff.symm
           obtain ⟨b | b, hb⟩ := b
           · exact (hb rfl).elim
-          · simp only [partialFunToPointed_obj, ne_eq, Part.mem_some_iff, elim'_some]
+          · simp only [ ne_eq, Part.mem_some_iff]
             classical
             refine ⟨fun ⟨w, hw, h⟩ ↦ ?_, fun h ↦ ⟨b, Part.mem_toOption.mp h.symm, rfl⟩⟩
             rw [Subtype.ext_iff] at h
@@ -157,6 +158,7 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
     · simp
       rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Forgetting that maps are total and making them total again by adding a point is the same as just
 adding a point. -/

@@ -279,6 +279,7 @@ def includeLeftRingHom : A →+* A ⊗[R] B where
 
 variable [CommSemiring S] [Algebra S A]
 
+set_option backward.defeqAttrib.useBackward true in
 instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
   { commutes' := fun r x => by
       dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply, includeLeftRingHom_apply]

@@ -76,6 +76,7 @@ noncomputable def presentationFinsupp (G : Type w₀) :
   toSolution := Relations.solutionFinsupp _
   toIsPresentation := by exact Relations.solutionFinsupp_isPresentation _
 
+set_option backward.defeqAttrib.useBackward true in
 lemma free_iff_exists_presentation :
     Free A M ↔ ∃ (p : Presentation.{v, w₁} A M), IsEmpty p.R := by
   constructor

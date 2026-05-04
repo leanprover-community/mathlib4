@@ -41,6 +41,7 @@ instance : (singularChainComplexFunctor C).Additive := by
   delta singularChainComplexFunctor
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance [Limits.HasPullbacks C] {X : C} :
     ((singularChainComplexFunctor C).obj X).PreservesMonomorphisms where
   preserves f _ := by
@@ -67,6 +68,7 @@ def singularChainComplexFunctorAdjunction : (Functor.postcompose₂.obj (eval _ 
   ((SSet.chainComplexFunctorAdjunction C n).comp (sSetTopAdj.whiskerLeft _)).ofNatIsoRight
     ((evaluation TopCat C).mapIso (SSet.toTopSimplex.app _))
 
+set_option backward.defeqAttrib.useBackward true in
 lemma singularChainComplexFunctorAdjunction_unit_app (R : C) :
     (singularChainComplexFunctorAdjunction C n).unit.app R =
       Sigma.ι (fun _ ↦ R) ((stdSimplexToTop.app ⦋n⦌).app (.op ⦋n⦌)
@@ -78,6 +80,7 @@ lemma singularChainComplexFunctorAdjunction_unit_app (R : C) :
   simp [stdSimplexToTop]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma ι_singularChainComplexFunctorAdjunction_counit_app_app (F : TopCat ⥤ C) (X : TopCat) (i) :
     Sigma.ι _ i ≫ ((singularChainComplexFunctorAdjunction C n).counit.app F).app X =

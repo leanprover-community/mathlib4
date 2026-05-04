@@ -81,7 +81,7 @@ variable {L₂ : Type w} [LieRing L₂] [LieAlgebra R L₂]
 set_option backward.isDefEq.respectTransparency false in
 /-- Regarding the `LieRing` of a `LieAlgebra` as a `NonUnitalNonAssocRing`, we can
 regard a `LieHom` as a `NonUnitalAlgHom`. -/
-@[simps]
+@[simps toFun]
 def toNonUnitalAlgHom (f : L →ₗ⁅R⁆ L₂) : CommutatorRing L →ₙₐ[R] CommutatorRing L₂ :=
   { f with
     toFun := f

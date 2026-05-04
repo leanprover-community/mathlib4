@@ -362,6 +362,7 @@ lemma finSuccEquiv_coeff_isHomogeneous {N : ℕ} {φ : MvPolynomial (Fin (N + 1)
     add_right_inj] at h' ⊢
   exact h'
 
+set_option backward.defeqAttrib.useBackward true in
 -- TODO: develop API for `optionEquivLeft` and get rid of the `[Fintype σ]` assumption
 lemma coeff_isHomogeneous_of_optionEquivLeft_symm
     [hσ : Finite σ] {p : Polynomial (MvPolynomial σ R)}

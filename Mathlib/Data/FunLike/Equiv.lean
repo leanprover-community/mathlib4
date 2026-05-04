@@ -34,6 +34,7 @@ instance instEquivLike : EquivLike (MyIso A B) A B where
 
 /-- Copy of a `MyIso` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
+
 protected def copy (f : MyIso A B) (f' : A → B) (f_inv : B → A)
     (h₁ : f' = f) (h₂ : f_inv = f.invFun) : MyIso A B where
   toFun := f'

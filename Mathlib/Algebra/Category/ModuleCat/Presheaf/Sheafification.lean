@@ -95,6 +95,7 @@ lemma toPresheaf_map_sheafificationHomEquiv_def
     (toPresheaf R₀).map (sheafificationHomEquiv α f) =
       CategoryTheory.toSheafify J P.presheaf ≫ (toPresheaf R.obj).map f.val := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma toPresheaf_map_sheafificationHomEquiv
     {P : PresheafOfModules.{v} R₀} {F : SheafOfModules.{v} R}
@@ -161,7 +162,7 @@ instance : IsIso (sheafificationAdjunction α).counit := by
   rw [NatTrans.isIso_iff_isIso_app]
   intro F
   rw [← isIso_iff_of_reflects_iso _ (SheafOfModules.toSheaf.{v} R)]
-  simp only [Functor.comp_obj, SheafOfModules.forget_obj, restrictScalars_obj, Functor.id_obj,
+  simp only [ Functor.id_obj,
     toSheaf_map_sheafificationAdjunction_counit_app]
   infer_instance
 

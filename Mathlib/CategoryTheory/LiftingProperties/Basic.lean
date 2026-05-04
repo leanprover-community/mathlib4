@@ -28,6 +28,7 @@ lifting property
 @[expose] public section
 
 
+
 universe v
 
 namespace CategoryTheory
@@ -127,6 +128,7 @@ theorem iff_of_arrow_iso_right {A B X Y X' Y' : C} (i : A ⟶ B) {p : X ⟶ Y} {
 
 end HasLiftingProperty
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma RetractArrow.leftLiftingProperty
     {X Y Z W Z' W' : C} {g : Z ⟶ W} {g' : Z' ⟶ W'}

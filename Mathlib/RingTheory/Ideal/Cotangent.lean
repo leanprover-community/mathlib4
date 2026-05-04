@@ -263,7 +263,6 @@ lemma lift_surjective_iff (f : I →ₗ[R] M) (hf : ∀ (x y : I), f (x * y) = 0
 end Lift
 
 /-- A linear isomorphism between cotangent spaces induced by an equality of ideals. -/
-@[expose]
 def equivOfEq (I J : Ideal R) (hIJ : I = J) :
     I.Cotangent ≃ₗ[R] J.Cotangent where
   __ := Cotangent.lift (J.toCotangent ∘ₗ LinearEquiv.ofEq I J hIJ) <| fun x y ↦ by

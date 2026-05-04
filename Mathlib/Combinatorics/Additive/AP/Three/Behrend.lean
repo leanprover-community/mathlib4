@@ -144,6 +144,7 @@ theorem map_succ (a : Fin (n + 1) → ℕ) :
 theorem map_succ' (a : Fin (n + 1) → ℕ) : map d a = a 0 + map d (a ∘ Fin.succ) * d :=
   map_succ _
 
+set_option backward.defeqAttrib.useBackward true in
 theorem map_monotone (d : ℕ) : Monotone (map d : (Fin n → ℕ) → ℕ) := fun x y h => by
   dsimp; exact sum_le_sum fun i _ => Nat.mul_le_mul_right _ <| h i
 

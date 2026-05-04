@@ -145,6 +145,7 @@ def imageMonoFactorisation {X Y : C} (f : X ⟶ Y) : MonoFactorisation f where
   e := kernel.lift _ f (cokernel.condition _)
   fac := kernel.lift_ι _ _ _
 
+set_option backward.defeqAttrib.useBackward true in
 theorem imageMonoFactorisation_e' {X Y : C} (f : X ⟶ Y) :
     (imageMonoFactorisation f).e = cokernel.π _ ≫ Abelian.coimageImageComparison f := by
   dsimp
@@ -173,6 +174,7 @@ instance [HasZeroObject C] {X Y : C} (f : X ⟶ Y) [Mono f]
   rw [imageMonoFactorisation_e']
   exact IsIso.comp_isIso
 
+set_option backward.defeqAttrib.useBackward true in
 instance [HasZeroObject C] {X Y : C} (f : X ⟶ Y) [Epi f] : IsIso (imageMonoFactorisation f).m := by
   dsimp
   infer_instance
@@ -438,6 +440,7 @@ def coim : Arrow C ⥤ C where
 
 @[deprecated (since := "2025-10-31")] noncomputable alias coimageFunctor := coim
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The image and coimage of an arrow are naturally isomorphic. -/
 @[simps!]
 def coimIsoIm : coim (C := C) ≅ im :=

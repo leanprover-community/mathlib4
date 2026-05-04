@@ -46,6 +46,7 @@ category is preserved by the functor `(X × -)`. This appears in `CategoryTheory
 @[expose] public section
 
 
+
 universe w₁ w₂ v₁ v₂ u₁ u₂
 
 noncomputable section
@@ -99,6 +100,7 @@ private def factorThroughDiscrete {α : Type u₂} (F : J ⥤ Discrete α) :
 
 end IsPreconnected.IsoConstantAux
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- If `J` is connected, any functor `F : J ⥤ Discrete α` is isomorphic to
@@ -466,6 +468,7 @@ def discreteIsConnectedEquivPUnit {α : Type u₁} [IsConnected (Discrete α)] :
 
 variable {C : Type w₂} [Category.{w₁} C]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- For objects `X Y : C`, any natural transformation `α : const X ⟶ const Y` from a connected
 category must be constant.
 This is the key property of connected categories which we use to establish properties about limits.

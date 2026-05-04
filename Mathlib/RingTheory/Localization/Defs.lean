@@ -669,7 +669,7 @@ variable (S Q)
 /-- If `S`, `Q` are localizations of `R` and `P` at submonoids `M, T` respectively, an
 isomorphism `j : R ≃+* P` such that `j(M) = T` induces an isomorphism of localizations
 `S ≃+* Q`. -/
-@[simps]
+@[simps apply]
 noncomputable def ringEquivOfRingEquiv (h : R ≃+* P) (H : M.map h.toMonoidHom = T) : S ≃+* Q :=
   have H' : T.map h.symm.toMonoidHom = M := by
     rw [← M.map_id, ← H, Submonoid.map_map]

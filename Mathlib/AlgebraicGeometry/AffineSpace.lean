@@ -73,6 +73,7 @@ def toSpecMvPoly : 𝔸(n; S) ⟶ Spec ℤ[n].{u, v} := pullback.snd _ _
 
 variable {X : Scheme.{max u v}}
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 Morphisms into `Spec ℤ[n]` are equivalent the choice of `n` global sections.
 Use `homOverEquiv` instead.
@@ -306,6 +307,7 @@ lemma map_SpecMap {R S : CommRingCat.{max u v}} (φ : R ⟶ S) :
     rw [SpecIso_inv_appTop_coord, ← CommRingCat.comp_apply, ← Scheme.ΓSpecIso_inv_naturality,
         CommRingCat.comp_apply, ConcreteCategory.hom_ofHom, map_X]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The map between affine spaces over affine bases is
 isomorphic to the natural map between polynomial rings. -/
 def mapSpecMap {R S : CommRingCat.{max u v}} (φ : R ⟶ S) :

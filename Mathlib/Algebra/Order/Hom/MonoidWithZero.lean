@@ -265,7 +265,7 @@ end LinearOrderedCommMonoidWithZero
 end OrderMonoidWithZeroHom
 
 /-- Any ordered group is isomorphic to the units of itself adjoined with `0`. -/
-@[simps!]
+@[simps! -isSimp]
 def OrderMonoidIso.unitsWithZero {α : Type*} [Group α] [Preorder α] : (WithZero α)ˣ ≃*o α where
   toMulEquiv := WithZero.unitsWithZeroEquiv
   map_le_map_iff' {a b} := by simp [WithZero.unitsWithZeroEquiv]

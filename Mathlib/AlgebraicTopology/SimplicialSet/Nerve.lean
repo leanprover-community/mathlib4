@@ -58,6 +58,7 @@ lemma nerveMap_app_mk₀ (x : C) :
       ComposableArrows.mk₀ (F.obj x) :=
   ComposableArrows.ext₀ rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma nerveMap_app_mk₁ {x y : C} (f : x ⟶ y) :
     (nerveMap F).app (op ⦋1⦌) (ComposableArrows.mk₁ f) =
@@ -102,6 +103,7 @@ lemma σ_obj {n : ℕ} (i : Fin (n + 1)) (x : ComposableArrows C n) (j : Fin (n 
 
 lemma δ₀_eq {x : ComposableArrows C (n + 1)} : (nerve C).δ (0 : Fin (n + 2)) x = x.δ₀ := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 lemma σ₀_mk₀_eq (x : C) : (nerve C).σ (0 : Fin 1) (.mk₀ x) = .mk₁ (𝟙 x) :=
   ComposableArrows.ext₁ rfl rfl (by simp; rfl)
 
@@ -157,6 +159,7 @@ section
 
 attribute [local ext (iff := false)] ComposableArrows.ext₀ ComposableArrows.ext₁
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Bijection between edges in the nerve of category and morphisms in the category. -/
 @[simps -isSimp]
 def homEquiv {x y : ComposableArrows C 0} :
@@ -170,6 +173,7 @@ lemma mk₁_homEquiv_apply {x y : ComposableArrows C 0} (e : (nerve C).Edge x y)
     ComposableArrows.mk₁ (homEquiv e) = ComposableArrows.mk₁ e.edge.hom := by
   simp [homEquiv, ComposableArrows.mk₁_eqToHom_comp, ComposableArrows.mk₁_comp_eqToHom]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Constructor for edges in the nerve of a category. (See also `homEquiv`.) -/
 def edgeMk {x y : C} (f : x ⟶ y) : (nerve C).Edge (nerveEquiv.symm x) (nerveEquiv.symm y) :=
   Edge.mk (ComposableArrows.mk₁ f)
@@ -177,10 +181,12 @@ def edgeMk {x y : C} (f : x ⟶ y) : (nerve C).Edge (nerveEquiv.symm x) (nerveEq
 @[simp]
 lemma edgeMk_edge {x y : C} (f : x ⟶ y) : (edgeMk f).edge = ComposableArrows.mk₁ f := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma edgeMk_id (x : C) : edgeMk (𝟙 x) = .id _ := by cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma edgeMk_surjective {x y : C} :
     Function.Surjective (edgeMk : (x ⟶ y) → _) :=
@@ -198,6 +204,7 @@ lemma homEquiv_id (x : ComposableArrows C 0) :
   dsimp [homEquiv]
   cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma nonempty_compStruct_iff {x₀ x₁ x₂ : C}
     (f₀₁ : x₀ ⟶ x₁) (f₁₂ : x₁ ⟶ x₂) (f₀₂ : x₀ ⟶ x₂) :
@@ -236,11 +243,13 @@ lemma homEquiv_comp {x₀ x₁ x₂ : ComposableArrows C 0}
   obtain ⟨f₀₂, rfl⟩ := edgeMk_surjective e₀₂
   convert (nerve.nonempty_compStruct_iff _ _ _).1 ⟨h⟩ <;> apply homEquiv_edgeMk
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma σ_zero_nerveEquiv_symm (x : C) :
     (nerve C).σ 0 (nerveEquiv.symm x) = ComposableArrows.mk₁ (𝟙 x) := by
   cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma homEquiv_edgeMk_map_nerveMap {D : Type u} [Category.{v} D] {x y : C}

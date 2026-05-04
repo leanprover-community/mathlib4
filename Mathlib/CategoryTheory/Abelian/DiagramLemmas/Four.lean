@@ -61,6 +61,7 @@ section Four
 
 variable {R₁ R₂ : ComposableArrows C 3} (φ : R₁ ⟶ R₂)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem mono_of_epi_of_mono_of_mono' (hR₁ : R₁.map' 0 2 = 0)
     (hR₁' : (mk₂ (R₁.map' 1 2) (R₁.map' 2 3)).Exact)
@@ -92,6 +93,7 @@ theorem mono_of_epi_of_mono_of_mono (hR₁ : R₁.Exact) (hR₂ : R₂.Exact)
     (by simpa only [R₁.map'_comp 0 1 2] using hR₁.toIsComplex.zero 0)
     (hR₁.exact 1).exact_toComposableArrows (hR₂.exact 0).exact_toComposableArrows h₀ h₁ h₃
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem epi_of_epi_of_epi_of_mono'
     (hR₁ : (mk₂ (R₁.map' 1 2) (R₁.map' 2 3)).Exact)
@@ -134,6 +136,7 @@ section Five
 variable {R₁ R₂ : ComposableArrows C 4} (hR₁ : R₁.Exact) (hR₂ : R₂.Exact) (φ : R₁ ⟶ R₂)
 include hR₁ hR₂
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The five lemma. -/
 theorem isIso_of_epi_of_isIso_of_isIso_of_mono (h₀ : Epi (app' φ 0)) (h₁ : IsIso (app' φ 1))
     (h₂ : IsIso (app' φ 3)) (h₃ : Mono (app' φ 4)) : IsIso (app' φ 2) := by
@@ -158,6 +161,7 @@ variable {R₁ R₂ : ComposableArrows C 2} (φ : R₁ ⟶ R₂)
 
 attribute [local simp] Precomp.map
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem mono_of_epi_of_epi_mono' (hR₁ : R₁.map' 0 2 = 0) (hR₁' : Epi (R₁.map' 1 2))
     (hR₂ : R₂.Exact) (h₀ : Epi (app' φ 0)) (h₁ : Mono (app' φ 1)) :
@@ -179,6 +183,7 @@ theorem mono_of_epi_of_epi_of_mono (hR₁ : R₁.Exact) (hR₂ : R₂.Exact)
   mono_of_epi_of_epi_mono' φ (by simpa only [map'_comp R₁ 0 1 2] using hR₁.toIsComplex.zero 0)
     hR₁' hR₂ h₀ h₁
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem epi_of_mono_of_epi_of_mono' (hR₁ : R₁.Exact) (hR₂ : R₂.map' 0 2 = 0)
     (hR₂' : Mono (R₂.map' 0 1)) (h₀ : Epi (app' φ 1)) (h₁ : Mono (app' φ 2)) :

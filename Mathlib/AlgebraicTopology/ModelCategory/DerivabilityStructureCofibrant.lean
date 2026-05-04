@@ -37,6 +37,7 @@ instance {X : C} (R : (localizerMorphism C).LeftResolution X) :
     WeakEquivalence R.w := by
   simpa only [weakEquivalence_iff] using R.hw
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance (X : C) : IsConnected ((localizerMorphism C).LeftResolution X) := by
   let R₀ : (localizerMorphism C).LeftResolution X :=

@@ -209,6 +209,7 @@ variable [CommRing R]
 variable [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup P]
 variable [Module R M₁] [Module R M₂] [Module R P]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp] theorem polar_prod (Q₁ : QuadraticMap R M₁ P) (Q₂ : QuadraticMap R M₂ P) (x y : M₁ × M₂) :
     polar (Q₁.prod Q₂) x y = polar Q₁ x.1 y.1 + polar Q₂ x.2 y.2 := by
   dsimp [polar]

@@ -59,6 +59,7 @@ instance [P.IsStableUnderComposition] : P.precoverage.IsStableUnderComposition w
     intro ⟨i⟩
     exact P.comp_mem _ _ (hg _ ⟨i.2⟩) (hf ⟨i.1⟩)
 
+set_option backward.defeqAttrib.useBackward true in
 instance : Precoverage.Small.{w} P.precoverage where
   zeroHypercoverSmall E := by
     constructor

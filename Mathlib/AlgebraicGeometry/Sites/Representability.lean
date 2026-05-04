@@ -90,6 +90,7 @@ noncomputable def toGlued (i : ι) : X i ⟶ (glueData hf).glued :=
 instance : IsOpenImmersion (toGlued hf i) :=
   inferInstanceAs (IsOpenImmersion ((glueData hf).ι i))
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The map from the glued scheme `(glueData hf).glued`, treated as a sheaf, to `F`. -/
 noncomputable def yonedaGluedToSheaf :
@@ -114,6 +115,7 @@ lemma yoneda_toGlued_yonedaGluedToSheaf (i : ι) :
     NatTrans.comp_app_apply, yoneda_map_app]
   simpa using GlueData.sheafValGluedMk_val _ _ _ _
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma yonedaGluedToSheaf_app_toGlued {i : ι} :
     dsimp% (yonedaGluedToSheaf hf).hom.app _ (toGlued hf i) = yonedaEquiv (f i) := by
@@ -121,6 +123,7 @@ lemma yonedaGluedToSheaf_app_toGlued {i : ι} :
     yonedaEquiv_yoneda_map]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma yonedaGluedToSheaf_app_comp {V U : Scheme.{u}} (γ : V ⟶ U) (α : U ⟶ (glueData hf).glued) :
     dsimp% (yonedaGluedToSheaf hf).hom.app (op V) (γ ≫ α) =
@@ -134,6 +137,7 @@ instance [Presheaf.IsLocallySurjective Scheme.zariskiTopology (Sigma.desc f)] :
     (show Sigma.desc (fun i ↦ yoneda.map (toGlued hf i)) ≫
       (yonedaGluedToSheaf hf).hom = Sigma.desc f by cat_disch)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma comp_toGlued_eq {U : Scheme} {i j : ι} (a : U ⟶ X i) (b : U ⟶ X j)
     (h : yoneda.map a ≫ f i = yoneda.map b ≫ f j) :
     a ≫ toGlued hf i = b ≫ toGlued hf j := by
@@ -145,6 +149,7 @@ lemma comp_toGlued_eq {U : Scheme} {i j : ι} (a : U ⟶ X i) (b : U ⟶ X j)
 @[simp]
 lemma glueData_openCover_map : (glueData hf).openCover.f j = toGlued hf j := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 instance : Sheaf.IsLocallyInjective (yonedaGluedToSheaf hf) where
   equalizerSieve_mem := by
     rintro ⟨U⟩ (α β : U ⟶ _) h

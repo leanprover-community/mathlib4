@@ -30,6 +30,7 @@ namespace FunctorEquivalence
 
 attribute [local simp] ShortComplex.Hom.comm₁₂ ShortComplex.Hom.comm₂₃
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The obvious functor `ShortComplex (J ⥤ C) ⥤ J ⥤ ShortComplex C`. -/
 @[simps]
 def functor : ShortComplex (J ⥤ C) ⥤ J ⥤ ShortComplex C where
@@ -39,6 +40,7 @@ def functor : ShortComplex (J ⥤ C) ⥤ J ⥤ ShortComplex C where
   map φ :=
     { app := fun j => ((evaluation J C).obj j).mapShortComplex.map φ }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The obvious functor `(J ⥤ ShortComplex C) ⥤ ShortComplex (J ⥤ C)`. -/
 @[simps]
 def inverse : (J ⥤ ShortComplex C) ⥤ ShortComplex (J ⥤ C) where
@@ -49,6 +51,7 @@ def inverse : (J ⥤ ShortComplex C) ⥤ ShortComplex (J ⥤ C) where
   map φ := Hom.mk (whiskerRight φ π₁) (whiskerRight φ π₂) (whiskerRight φ π₃)
     (by cat_disch) (by cat_disch)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The unit isomorphism of the equivalence
 `ShortComplex.functorEquivalence : ShortComplex (J ⥤ C) ≌ J ⥤ ShortComplex C`. -/
 @[simps!]
@@ -59,6 +62,7 @@ def unitIso : 𝟭 _ ≅ functor J C ⋙ inverse J C :=
     (NatIso.ofComponents (fun _ => Iso.refl _) (by simp))
     (by cat_disch) (by cat_disch)) (by cat_disch)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The counit isomorphism of the equivalence
 `ShortComplex.functorEquivalence : ShortComplex (J ⥤ C) ≌ J ⥤ ShortComplex C`. -/
 @[simps!]
@@ -69,6 +73,7 @@ def counitIso : inverse J C ⋙ functor J C ≅ 𝟭 _ :=
 
 end FunctorEquivalence
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The obvious equivalence `ShortComplex (J ⥤ C) ≌ J ⥤ ShortComplex C`. -/
 @[simps]
 def functorEquivalence : ShortComplex (J ⥤ C) ≌ J ⥤ ShortComplex C where

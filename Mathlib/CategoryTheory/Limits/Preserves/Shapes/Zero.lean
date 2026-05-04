@@ -94,7 +94,7 @@ instance (priority := 100) preservesZeroMorphisms_of_isRightAdjoint (G : C ⥤ D
       _ = 0 := ?_
     · rw [Adjunction.right_triangle_components_assoc]
     · simp only [← G.map_comp, comp_zero]
-    · simp only [id_obj, comp_obj, Adjunction.unit_naturality_assoc, zero_comp]
+    · simp only [id_obj, Adjunction.unit_naturality_assoc, zero_comp]
 
 instance (priority := 100) preservesZeroMorphisms_of_full (F : C ⥤ D) [Full F] :
     PreservesZeroMorphisms F where

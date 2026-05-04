@@ -40,11 +40,13 @@ def postcomposingCat (a b c : B) : (b ⟶ c) ⥤ (Cat.of (a ⟶ b) ⟶ Cat.of (a
   obj f := (postcomp a f).toCatHom
   map η := NatTrans.toCatHom₂ ((postcomposing a b c).map η)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Left unitor as a 2-isomorphism in `Cat`. -/
 @[simps!]
 def leftUnitorNatIsoCat (a b : B) : (precomposingCat _ _ b).obj (𝟙 a) ≅ 𝟙 (Cat.of (a ⟶ b)) :=
   Cat.Hom.isoMk <| NatIso.ofComponents (λ_ ·)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Right component of the associator as a 2-isomorphism in `Cat`. -/
 @[simps!]
 def associatorNatIsoRightCat {a b c : B} (f : a ⟶ b) (g : b ⟶ c) (d : B) :
@@ -52,6 +54,7 @@ def associatorNatIsoRightCat {a b c : B} (f : a ⟶ b) (g : b ⟶ c) (d : B) :
       (precomposingCat ..).obj g ≫ (precomposingCat ..).obj f :=
   Cat.Hom.isoMk <| NatIso.ofComponents (α_ f g ·)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Middle component of the associator as a 2-isomorphism in `Cat`. -/
 @[simps!]
@@ -60,6 +63,7 @@ def associatorNatIsoMiddleCat {a b c d : B} (f : a ⟶ b) (h : c ⟶ d) :
       (postcomposingCat ..).obj h ≫ (precomposingCat ..).obj f :=
   Cat.Hom.isoMk <| NatIso.ofComponents (α_ f · h)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Right unitor as a 2-isomorphism in `Cat`. -/
 @[simps!]
 def rightUnitorNatIsoCat (a b : B) : (postcomposingCat a _ _).obj (𝟙 b) ≅ 𝟙 (Cat.of (a ⟶ b)) :=
@@ -73,6 +77,7 @@ def associatorNatIsoLeftCat (a : B) {b c d : B} (g : b ⟶ c) (h : c ⟶ d) :
       (postcomposingCat ..).obj (g ≫ h) :=
   Cat.Hom.isoMk <| NatIso.ofComponents (α_ · g h)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The map on objects underlying the Yoneda embedding. It sends an object `x` to
 the pseudofunctor defined by:
@@ -87,6 +92,7 @@ def yoneda₀ (x : B) : Pseudofunctor Bᵒᵖ Cat.{w, v} where
   mapId a := leftUnitorNatIsoCat (unop a) x
   mapComp f g := associatorNatIsoRightCat g.unop f.unop x
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Postcomposing of a 1-morphism seen as a strong transformation between pseudofunctors. -/
 @[simps!]
@@ -94,6 +100,7 @@ def postcomp₂ {a b : B} (f : a ⟶ b) : yoneda₀ a ⟶ yoneda₀ b where
   app x := (postcomposingCat (unop x) a b).obj f
   naturality g := associatorNatIsoMiddleCat g.unop f
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Postcomposing of `1`-morphisms seen as a functor from `a ⟶ b` to the hom-category of the
 corresponding pseudofunctors.
@@ -104,6 +111,7 @@ def postcomposing₂ (a b : B) : (a ⟶ b) ⥤ (yoneda₀ a ⟶ yoneda₀ b) whe
   obj := postcomp₂
   map η := { as := { app x := (postcomposingCat (unop x) a b).map η } }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The Yoneda pseudofunctor from `B` to `Bᵒᵖ ⥤ᵖ Cat`.
 

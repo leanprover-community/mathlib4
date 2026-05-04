@@ -298,6 +298,7 @@ lemma reverse_injective : Injective (reverse : ContextFreeGrammar T → ContextF
 lemma reverse_surjective : Surjective (reverse : ContextFreeGrammar T → ContextFreeGrammar T) :=
   reverse_bijective.surjective
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma produces_reverse : g.reverse.Produces u.reverse v.reverse ↔ g.Produces u v :=
   (Equiv.ofBijective _ ContextFreeRule.reverse_bijective).exists_congr
@@ -305,6 +306,7 @@ lemma produces_reverse : g.reverse.Produces u.reverse v.reverse ↔ g.Produces u
 
 alias ⟨_, Produces.reverse⟩ := produces_reverse
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma produces_reverse_comm : g.reverse.Produces u v ↔ g.Produces u.reverse v.reverse :=
   (Equiv.ofBijective _ ContextFreeRule.reverse_bijective).exists_congr
@@ -315,19 +317,23 @@ protected lemma Derives.reverse (hg : g.Derives u v) : g.reverse.Derives u.rever
   | refl => rfl
   | tail _ orig ih => exact ih.trans_produces orig.reverse
 
+set_option backward.defeqAttrib.useBackward true in
 lemma derives_reverse : g.reverse.Derives u.reverse v.reverse ↔ g.Derives u v :=
   ⟨fun h ↦ by convert h.reverse <;> simp, .reverse⟩
 
 @[simp] lemma derives_reverse_comm : g.reverse.Derives u v ↔ g.Derives u.reverse v.reverse := by
   rw [iff_comm, ← derives_reverse, List.reverse_reverse, List.reverse_reverse]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma generates_reverse : g.reverse.Generates u.reverse ↔ g.Generates u := by simp [Generates]
 
 alias ⟨_, Generates.reverse⟩ := generates_reverse
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp] lemma generates_reverse_comm : g.reverse.Generates u ↔ g.Generates u.reverse := by
   simp [Generates]
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp] lemma language_reverse : g.reverse.language = g.language.reverse := by ext; simp
 
 end ContextFreeGrammar

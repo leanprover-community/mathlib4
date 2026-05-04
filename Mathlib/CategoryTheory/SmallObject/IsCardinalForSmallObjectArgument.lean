@@ -154,6 +154,7 @@ isomorphisms on the right side. -/
 def propArrow : MorphismProperty (Arrow C) := fun _ _ f ↦
   (coproducts.{w} I).pushouts f.left ∧ (isomorphisms C) f.right
 
+set_option backward.defeqAttrib.useBackward true in
 lemma succStruct_prop_le_propArrow :
     (succStruct I κ).prop ≤ (propArrow.{w} I).functorCategory (Arrow C) := by
   haveI := locallySmall I κ
@@ -232,6 +233,7 @@ noncomputable def iterationFunctorObjObjRightIso (f : Arrow C) (j : κ.ord.ToTyp
   asIso ((transfiniteCompositionOfShapeιIterationAppRight I κ f).incl.app j) ≪≫
     (iterationObjRightIso I κ f).symm
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma iterationFunctorObjObjRightIso_ιIteration_app_right (f : Arrow C) (j : κ.ord.ToType) :
     (iterationFunctorObjObjRightIso I κ f j).hom ≫ ((ιIteration I κ).app f).right =
@@ -244,6 +246,7 @@ lemma prop_iterationFunctor_map_succ (j : κ.ord.ToType) :
   have := Cardinal.noMaxOrder (Fact.elim inferInstance : κ.IsRegular).aleph0_le
   exact (succStruct I κ).prop_iterationFunctor_map_succ j (not_isMax j)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- For any `f : Arrow C` and `j : κ.ord.ToType`, the morphism
 `((iterationFunctor I κ).map (homOfLE (Order.le_succ j))).app f` identifies
@@ -268,6 +271,7 @@ noncomputable def iterationFunctorMapSuccAppArrowIso (f : Arrow C) (j : κ.ord.T
 lemma iterationFunctorMapSuccAppArrowIso_hom_left (f : Arrow C) (j : κ.ord.ToType) :
     (iterationFunctorMapSuccAppArrowIso I κ f j).hom.left = 𝟙 _ := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in -- Needed below
 @[reassoc (attr := simp)]
 lemma iterationFunctorMapSuccAppArrowIso_hom_right_right_comp
@@ -340,6 +344,7 @@ noncomputable def relativeCellComplexιObjFObjSuccIso (j : κ.ord.ToType) :
   (Arrow.rightFunc ⋙ Arrow.leftFunc).mapIso
     (iterationFunctorMapSuccAppArrowIso I κ f j)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma ιFunctorObj_eq (j : κ.ord.ToType) :
     letI := hasColimitsOfShape_discrete I κ
     letI := hasPushouts I κ
@@ -348,6 +353,7 @@ lemma ιFunctorObj_eq (j : κ.ord.ToType) :
         (relativeCellComplexιObjFObjSuccIso I κ f j).hom := by
   simpa using Arrow.leftFunc.congr_map (iterationFunctorMapSuccAppArrowIso I κ f j).hom.w
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma πFunctorObj_eq (j : κ.ord.ToType) :
     letI := hasColimitsOfShape_discrete I κ
@@ -372,6 +378,7 @@ lemma πFunctorObj_eq (j : κ.ord.ToType) :
     NatTrans.comp_app, Arrow.comp_right,
     iterationFunctorMapSuccAppArrowIso_hom_right_right_comp_assoc]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma hasRightLiftingProperty_πObj {A B : C} (i : A ⟶ B) (hi : I i) (f : X ⟶ Y) :
     HasLiftingProperty i (πObj I κ f) := ⟨by
@@ -442,6 +449,7 @@ lemma πObj_naturality {f g : Arrow C} (φ : f ⟶ g) :
   rw [← assoc]
   apply comp_id
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The functorial factorization `ιObj I κ f ≫ πObj I κ f.hom = f`
 with `ιObj I κ f` in `I.rlp.llp` and `πObj I κ f.hom` in `I.rlp`. -/
 @[simps]
@@ -460,6 +468,7 @@ lemma hasFunctorialFactorization :
   nonempty_functorialFactorizationData :=
     ⟨functorialFactorizationData I κ⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `κ` is a suitable cardinal for the small object argument for `I : MorphismProperty C`,
 then the class `I.rlp.llp` is exactly the class of morphisms that are retracts
 of transfinite compositions (of shape `κ.ord.ToType`) of pushouts of coproducts

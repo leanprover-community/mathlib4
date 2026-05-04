@@ -43,6 +43,7 @@ section LeftExtension
 
 open LeftExtension
 
+set_option backward.defeqAttrib.useBackward true in
 /-- For an adjunction `f ⊣ u`, `u` is an absolute left Kan extension of the identity along `f`.
 The unit of this Kan extension is given by the unit of the adjunction. -/
 def Adjunction.isAbsoluteLeftKan {f : a ⟶ b} {u : b ⟶ a} (adj : f ⊣ u) :
@@ -124,6 +125,7 @@ section LeftLift
 
 open LeftLift
 
+set_option backward.defeqAttrib.useBackward true in
 /-- For an adjunction `f ⊣ u`, `f` is an absolute left Kan lift of the identity along `u`.
 The unit of this Kan lift is given by the unit of the adjunction. -/
 def Adjunction.isAbsoluteLeftKanLift {f : a ⟶ b} {u : b ⟶ a} (adj : f ⊣ u) :
@@ -202,6 +204,7 @@ end LeftLift
 
 namespace LeftExtension
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- A left adjoint commutes with a left Kan extension. -/
 def isKanOfWhiskerLeftAdjoint

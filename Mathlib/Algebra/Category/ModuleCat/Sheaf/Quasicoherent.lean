@@ -127,6 +127,7 @@ def Presentation.isColimit {M : SheafOfModules.{u} R} (P : Presentation M) :
   isCokernelEpiComp (c := CokernelCofork.ofπ _ (kernel.condition P.generators.π))
       (Abelian.epiIsCokernelOfKernel _ <| limit.isLimit _) _ rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Mapping a presentation under an isomorphism. -/
 @[simps]
 noncomputable def Presentation.ofIsIso {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f]
@@ -172,6 +173,7 @@ theorem Presentation.mapRelations_mapGenerators :
   simp only [mapRelations, mapGenerators, Category.assoc, Iso.inv_hom_id_assoc,
     ← Functor.map_comp, kernel.condition, Functor.map_zero, comp_zero]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will get a
 `Presentation (F.obj M)`. -/
@@ -238,6 +240,7 @@ class IsFinitePresentation {M : SheafOfModules.{u} R} (q : M.QuasicoherentData) 
 
 attribute [instance] IsFinitePresentation.isFinite_presentation
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance {M : SheafOfModules.{u} R} (q : M.QuasicoherentData) [q.IsFinitePresentation] :
     q.localGeneratorsData.IsFiniteType where
@@ -333,6 +336,7 @@ instance : (isQuasicoherent R).IsClosedUnderIsomorphisms where
     intro ⟨⟨q⟩⟩
     exact ⟨⟨q.ofIsIso e.hom⟩⟩
 
+set_option backward.defeqAttrib.useBackward true in
 instance {M N : SheafOfModules.{u} R} (f : M ⟶ N) [IsIso f] (σ : M.QuasicoherentData)
     [σ.IsFinitePresentation] : (σ.ofIsIso f).IsFinitePresentation where
   isFinite_presentation i := by

@@ -203,7 +203,7 @@ an affine open cover of `Proj ℬ` consisting of `D(f(s))` for `s ∈ A` positiv
 set_option backward.isDefEq.respectTransparency false in
 theorem map_comp : map (g.comp f) (irrelevant_le_map_comp hf hg) = map g hg ≫ map f hf := by
   refine (mapAffineOpenCover _ <| irrelevant_le_map_comp hf hg).openCover.hom_ext _ _ fun s ↦ ?_
-  simp only [Scheme.AffineOpenCover.openCover_X, Scheme.AffineOpenCover.openCover_f,
+  simp only [ Scheme.AffineOpenCover.openCover_f,
     mapAffineOpenCover_f, awayι_comp_map (g.comp f) _ s.1.2 _ s.2.2]
   simp [awayι_comp_map_assoc _ _ _ _ (map_mem f s.2.2), awayι_comp_map _ _ _ _ s.2.2]
 

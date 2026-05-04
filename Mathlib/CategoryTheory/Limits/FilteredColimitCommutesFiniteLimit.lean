@@ -28,6 +28,8 @@ colimit (over `K`) of the limits (over `J`) with the limit of the colimits is an
 * [Stacks: Filtered colimits](https://stacks.math.columbia.edu/tag/002W)
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 -- Various pieces of algebra that have previously been spuriously imported here:
@@ -65,6 +67,7 @@ only that there are finitely many objects.
 
 variable [Finite J]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- This follows the proof from
 * Borceux, Handbook of categorical algebra 1, Theorem 2.13.4
@@ -87,7 +90,7 @@ theorem colimitLimitToLimitColimit_injective :
           ((limit.π ((curry.obj (swap K J ⋙ F)).obj kx) j) x) =
         (colimit.ι ((curry.obj F).obj j) ky)
           ((limit.π ((curry.obj (swap K J ⋙ F)).obj ky) j) y) := by
-      simpa using ConcreteCategory.congr_arg (limit.π (curry.obj F ⋙ colim) j) h
+      simpa [-comp_obj] using ConcreteCategory.congr_arg (limit.π (curry.obj F ⋙ colim) j) h
     -- and they are equations in a filtered colimit,
     -- so for each `j` we have some place `k j` to the right of both `kx` and `ky`
     simp only [colimit_eq_iff] at h
@@ -199,7 +202,7 @@ theorem colimitLimitToLimitColimit_surjective :
       nth_rw 2 [← Bifunctor.diagonal']
       simp only [← curry_obj_obj_map, ← curry_obj_obj_obj, comp_apply, colimit.w_apply]
       rw [e, ← limit.w_apply _ f, ← e]
-      simp [-curry_obj_obj_obj]
+      simp [← comp_apply, -types_comp_apply]
     -- Because `K` is filtered, we can restate this as saying that
     -- for each such `f`, there is some place to the right of `k'`
     -- where these images of `y j` and `y j'` become equal.
@@ -308,9 +311,11 @@ theorem colimitLimitToLimitColimit_surjective :
       intro j
       -- and as each component is an equation in a colimit, we can verify it by
       -- pointing out the morphism which carries one representative to the other:
-      simp only [comp_obj, colim_obj, lim_obj, Bifunctor.map_id_comp, comp_apply, id_eq,
-        ι_colimitLimitToLimitColimit_π_apply]
-      generalize_proofs _ _ _ _ _ h
+      -- `simp? [← comp_apply, -types_comp_apply]` says:
+      simp only [comp_obj, colim_obj, lim_obj, Bifunctor.map_id_comp, id_eq, ← comp_apply, assoc,
+        ι_colimitLimitToLimitColimit_π, curry_obj_obj_obj, swap_obj]
+      generalize_proofs _ _ _ _ h
+      dsimp
       rw [← dsimp% e j, dsimp% Limit.π_mk _ _ h]
       dsimp only [comp_obj, colim_obj, ← curry_obj_obj_obj]
       rw [colimit_eq_iff]

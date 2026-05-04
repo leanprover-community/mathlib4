@@ -126,6 +126,7 @@ section
 
 variable {A : C} [CategoryWithWeakEquivalences C] (P : PathObject A)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The path object obtained by switching the two projections. -/
 @[simps!]
 def symm : PathObject A where
@@ -199,6 +200,7 @@ variable [CategoryWithFibrations C] [CategoryWithCofibrations C]
 instance [HasBinaryProduct A A] [HasInitial C] [IsCofibrant A] [P.IsVeryGood] : IsCofibrant P.P :=
   isCofibrant_of_cofibration P.ι
 
+set_option backward.defeqAttrib.useBackward true in
 instance [(fibrations C).RespectsIso] [HasBinaryProducts C] [P.IsVeryGood] :
     P.symm.IsVeryGood where
   cofibration_ι := by dsimp; infer_instance
@@ -228,6 +230,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma ofFactorizationData_p : (ofFactorizationData h).p = h.p := by aesop_cat
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (ofFactorizationData h).IsVeryGood where
   fibration_p := by simpa using inferInstanceAs (Fibration h.p)
   cofibration_ι := by dsimp; infer_instance
@@ -246,6 +249,7 @@ lemma exists_very_good :
 
 instance : Nonempty (PathObject A) := ⟨(exists_very_good A).choose⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The gluing of two good path objects. -/
 @[simps!]
 noncomputable def trans [IsFibrant A] (P P' : PathObject A) [P'.IsGood] :

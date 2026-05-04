@@ -75,6 +75,7 @@ private noncomputable def preimageDiagram (X : C) (y : (F.obj ⟨0⟩).obj.obj �
 
 variable [HasLimitsOfShape ℕᵒᵖ C]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 private noncomputable def cone (X : C) (y : (F.obj ⟨0⟩).obj.obj ⟨X⟩) : Cone F where
   pt := ((coherentTopology C).yoneda).obj (limit (preimageDiagram hF X y))
@@ -103,7 +104,7 @@ lemma isLocallySurjective_π_app_zero_of_isLocallySurjective_map :
   refine ⟨limit (preimageDiagram hF X y), limit.π (preimageDiagram hF X y) ⟨0⟩, hh,
     (coherentTopology C).yonedaEquiv (hc.lift (cone hF X y )),
     (?_ : (c.π.app (op 0)).hom.app _ _ = _)⟩
-  simp only [← (coherentTopology C).yonedaEquiv_comp, Functor.const_obj_obj, cone,
+  simp only [← (coherentTopology C).yonedaEquiv_comp, cone,
     IsLimit.fac, NatTrans.ofOpSequence_app, (coherentTopology C).yonedaEquiv_comp,
     (coherentTopology C).yonedaEquiv_yoneda_map]
   rfl

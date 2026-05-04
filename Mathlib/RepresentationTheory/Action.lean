@@ -237,7 +237,7 @@ lemma linearizeTrivial_def (X : Type w) (g : G) :
     linearize k G (Action.trivial _ X) g = LinearMap.id := by
   ext (x : X) : 2
   rw [LinearMap.comp_apply, LinearMap.id_comp, Finsupp.lsingle_apply, linearize_single]
-  simp only [Action.trivial_V, Action.trivial_ρ]
+  simp only [ Action.trivial_ρ]
   rfl
 
 variable (k G) in

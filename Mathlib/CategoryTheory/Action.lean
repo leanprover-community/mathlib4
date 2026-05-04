@@ -162,6 +162,7 @@ protected def cases {P : ∀ ⦃a b : ActionCategory G X⦄, (a ⟶ b) → Sort*
 
 variable {H : Type*} [Group H]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given `G` acting on `X`, a functor from the corresponding action groupoid to a group `H`
 can be curried to a group homomorphism `G →* (X → H) ⋊ G`. -/
 @[simps]

@@ -463,6 +463,7 @@ def diagramIsoReflexivePair :
 
 end NatIso
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A `reflexivePair` composed with a functor is isomorphic to the `reflexivePair` obtained by
 applying the functor at each map. -/
 @[simps!]
@@ -473,6 +474,7 @@ def compRightIso {D : Type u₂} [Category.{v₂} D] {A B : C}
       (by simp only [← Functor.map_comp, sr, Functor.map_id]) :=
   mkNatIso (Iso.refl _) (Iso.refl _)
 
+set_option backward.defeqAttrib.useBackward true in
 lemma whiskerRightMkNatTrans {F G : WalkingReflexivePair ⥤ C}
     (e₀ : F.obj zero ⟶ G.obj zero) (e₁ : F.obj one ⟶ G.obj one)
     {h₁ : F.map left ≫ e₀ = e₁ ≫ G.map left}
@@ -507,6 +509,7 @@ variable {F : WalkingReflexivePair ⥤ C}
 /-- The tail morphism of a reflexive cofork. -/
 abbrev π (G : ReflexiveCofork F) : F.obj zero ⟶ G.pt := G.ι.app zero
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Constructor for `ReflexiveCofork` -/
 @[simps pt]
 def mk {X : C} (π : F.obj zero ⟶ X) (h : F.map left ≫ π = F.map right ≫ π) :
@@ -543,6 +546,7 @@ def reflexiveCoforkEquivCofork :
   (Functor.Final.coconesEquiv _ F).symm.trans (Cocone.precomposeEquivalence
     (diagramIsoParallelPair (WalkingParallelPair.inclusionWalkingReflexivePair ⋙ F)))
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma reflexiveCoforkEquivCofork_functor_obj_π (G : ReflexiveCofork F) :
     ((reflexiveCoforkEquivCofork F).functor.obj G).π = G.π := by
@@ -550,6 +554,7 @@ lemma reflexiveCoforkEquivCofork_functor_obj_π (G : ReflexiveCofork F) :
   rw [ReflexiveCofork.π, Cofork.π]
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma reflexiveCoforkEquivCofork_inverse_obj_π
     (G : Cofork (F.map left) (F.map right)) :
@@ -560,6 +565,7 @@ lemma reflexiveCoforkEquivCofork_inverse_obj_π
   rw [Functor.Final.extendCocone_obj_ι_app' (Y := .one) (f := 𝟙 zero)]
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence between reflexive coforks and coforks sends a reflexive cofork to its underlying
 cofork. -/
 def reflexiveCoforkEquivCoforkObjIso (G : ReflexiveCofork F) :
@@ -606,7 +612,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma π_reflexiveCoequalizerIsoCoequalizer_inv :
     coequalizer.π _ _ ≫ (reflexiveCoequalizerIsoCoequalizer F).inv = colimit.ι F _ := by
   rw [reflexiveCoequalizerIsoCoequalizer]
-  simp only [colimit.comp_coconePointUniqueUpToIso_inv, Cofork.ofπ_pt, colimit.cocone_x,
+  simp only [colimit.comp_coconePointUniqueUpToIso_inv,
     Cofork.ofπ_ι_app, colimit.cocone_ι]
 
 end

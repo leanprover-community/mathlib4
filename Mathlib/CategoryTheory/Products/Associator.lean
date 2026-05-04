@@ -14,6 +14,7 @@ The associator functor `((C × D) × E) ⥤ (C × (D × E))` and its inverse for
 @[expose] public section
 
 
+
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 open CategoryTheory
@@ -39,6 +40,7 @@ def inverseAssociator : C × D × E ⥤ (C × D) × E where
   obj X := ((X.1, X.2.1), X.2.2)
   map := @fun _ _ f => (f.1 ×ₘ f.2.1) ×ₘ f.2.2
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of categories expressing associativity of products of categories.
 -/
 @[simps]

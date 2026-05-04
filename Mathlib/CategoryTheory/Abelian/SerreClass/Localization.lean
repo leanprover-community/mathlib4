@@ -517,6 +517,7 @@ lemma exactFunctor_comp_iff :
 
 variable (E)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- When `L : C ⥤ D` is a localization functor with respect to a Serre class
 in the abelian category `C`, this is the functor `(D ⥤ₑ E) ⥤ C ⥤ₑ E`
 obtained by precomposition with `L`. -/

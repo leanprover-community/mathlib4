@@ -40,7 +40,10 @@ TODO (@joelriou):
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
+
 
 set_option backward.privateInPublic true
 
@@ -303,10 +306,12 @@ lemma mk₁_comp_eqToHom {X₀ X₁ X₁' : C} (f : X₀ ⟶ X₁) (h : X₁ = X
     ComposableArrows.mk₁ (f ≫ eqToHom h) = ComposableArrows.mk₁ f := by
   cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 lemma mk₁_hom (X : ComposableArrows C 1) :
     mk₁ X.hom = X :=
   ext₁ rfl rfl (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The bijection between `ComposableArrows C 1` and `Arrow C`. -/
 @[simps]
 def arrowEquiv : ComposableArrows C 1 ≃ Arrow C where
@@ -436,6 +441,7 @@ variable {X₀ X₁ X₂ X₃ X₄ : C} (f : X₀ ⟶ X₁) (g : X₁ ⟶ X₂) 
 /-! These examples are meant to test the good definitional properties of `precomp`,
 and that `dsimp` can see through. -/
 
+set_option backward.defeqAttrib.useBackward true in
 example : map' (mk₂ f g) 0 1 = f := by dsimp
 example : map' (mk₂ f g) 1 2 = g := by dsimp
 example : map' (mk₂ f g) 0 2 = f ≫ g := by dsimp

@@ -131,6 +131,7 @@ section
 
 variable [HasZeroMorphisms C] [HasZeroMorphisms D] [F.PreservesZeroMorphisms]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The functor on categories of bounded below cochain complexes that
 is induced by a functor (which preserves zero morphisms). -/
 @[simps!]

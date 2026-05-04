@@ -259,7 +259,7 @@ theorem liftIsometry_apply_apply (f : ContinuousMultilinearMap 𝕜 E F) (x : �
 
 variable (𝕜) in
 /-- The canonical continuous multilinear map from `E = Πᵢ Eᵢ` to `⨂[𝕜] i, Eᵢ`. -/
-@[simps!]
+@[simps! toFun]
 noncomputable def tprodL : ContinuousMultilinearMap 𝕜 E (⨂[𝕜] i, E i) :=
   (liftIsometry 𝕜 E _).symm (ContinuousLinearMap.id 𝕜 _)
 
@@ -376,7 +376,7 @@ variable (𝕜 E E')
 
 /-- The tensor of a family of linear maps from `Eᵢ` to `E'ᵢ`, as a continuous multilinear map of
 the family. -/
-@[simps!]
+@[simps! toFun_apply]
 noncomputable def mapLMultilinear : ContinuousMultilinearMap 𝕜 (fun (i : ι) ↦ E i →L[𝕜] E' i)
     ((⨂[𝕜] i, E i) →L[𝕜] ⨂[𝕜] i, E' i) :=
   MultilinearMap.mkContinuous

@@ -32,6 +32,7 @@ variable (R : CommRingCat.{u}) (F : J ⥤ CommRingCat.{u}) (α : (Functor.const 
 variable {S : CommRingCat.{u}} (f : R ⟶ S) (c : Cocone F) (hc : IsColimit c)
 variable [PreservesColimit F (forget CommRingCat)]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hc in
 /--
@@ -68,6 +69,7 @@ lemma RingHom.EssFiniteType.exists_comp_map_eq_of_isColimit (hf : f.hom.EssFinit
     have (x : _) : F.map (f₁ x) (a x) = F.map (f₂ x) (b x) := h x
     simp [D, this]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hc in
 /--
@@ -137,6 +139,7 @@ lemma RingHom.EssFiniteType.exists_eq_comp_ι_app_of_isColimit (hf : f.hom.Finit
     rw [c.w, hg']
     rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `S` is a finitely presented `R`-algebra, then `Hom_R(S, -)` preserves filtered colimits. -/
 lemma CommRingCat.preservesColimit_coyoneda_of_finitePresentation
     (S : Under R) (hS : S.hom.hom.FinitePresentation) (F : J ⥤ Under R)

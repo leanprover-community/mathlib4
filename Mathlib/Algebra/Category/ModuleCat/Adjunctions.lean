@@ -333,18 +333,21 @@ def lift (F : C ⥤ D) : Free R C ⥤ D where
 theorem lift_map_single (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) (r : R) :
     (lift R F).map (single f r) = r • F.map f := by simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance lift_additive (F : C ⥤ D) : (lift R F).Additive where
   map_add {X Y} f g := by
     dsimp
     rw [Finsupp.sum_add_index'] <;> simp [add_smul]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance lift_linear (F : C ⥤ D) : (lift R F).Linear R where
   map_smul {X Y} f r := by
     dsimp
     rw [Finsupp.sum_smul_index] <;> simp [Finsupp.smul_sum, mul_smul]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The embedding into the `R`-linear completion, followed by the lift,
 is isomorphic to the original functor.
 -/

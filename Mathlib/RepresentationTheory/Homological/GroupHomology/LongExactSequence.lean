@@ -39,6 +39,7 @@ variable {k G : Type u} [CommRing k] [Group G] {X : ShortComplex (Rep k G)} (hX 
 
 include hX
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma map_chainsFunctor_shortExact :
     ShortExact (X.map (chainsFunctor k G)) :=

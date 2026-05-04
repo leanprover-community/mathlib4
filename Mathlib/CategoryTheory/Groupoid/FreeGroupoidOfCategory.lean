@@ -119,6 +119,7 @@ theorem lift_spec (φ : C ⥤ G) : of C ⋙ lift φ = φ :=
 lemma lift_obj_mk {E : Type u₂} [Groupoid.{v₂} E] (φ : C ⥤ E) (X : C) :
     (lift φ).obj (mk X) = φ.obj X := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma lift_map_homMk {E : Type u₂} [Groupoid.{v₂} E] (φ : C ⥤ E) {X Y : C} (f : X ⟶ Y) :
     (lift φ).map (homMk f) = φ.map f := by

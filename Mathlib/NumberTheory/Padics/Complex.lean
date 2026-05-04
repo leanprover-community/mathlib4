@@ -92,7 +92,7 @@ instance valued : Valued (PadicAlgCl p) ℝ≥0 := NormedField.toValued
 theorem valuation_def (x : PadicAlgCl p) : Valued.v x = ‖x‖₊ := rfl
 
 /-- The coercion of the valuation of `x : PadicAlgCl p` to `ℝ` agrees with its norm. -/
-@[simp] theorem valuation_coe (x : PadicAlgCl p) : ((Valued.v x : ℝ≥0) : ℝ) = ‖x‖ := rfl
+theorem valuation_coe (x : PadicAlgCl p) : ((Valued.v x : ℝ≥0) : ℝ) = ‖x‖ := rfl
 
 /-- The valuation of `p : PadicAlgCl p` is `1/p`. -/
 theorem valuation_p (p : ℕ) [Fact p.Prime] : Valued.v (p : PadicAlgCl p) = 1 / (p : ℝ≥0) := by

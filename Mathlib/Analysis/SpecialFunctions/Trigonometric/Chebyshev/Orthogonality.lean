@@ -37,6 +37,7 @@ Chebyshev T polynomials are orthogonal with respect to `√(1 - x ^ 2)⁻¹`.
 * Bundle Chebyshev T polynomials into a HilbertBasis for MeasureTheory.Lp ℝ 2 measureT
 
 -/
+
 public section
 
 namespace Polynomial.Chebyshev

@@ -19,6 +19,8 @@ Can we use this to show coherence results, e.g. a cheap proof that `λ_ (𝟙_ C
 I suspect this is harder than is usually made out.
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 
@@ -30,6 +32,7 @@ open Functor.LaxMonoidal Functor.OplaxMonoidal Functor.Monoidal
 
 variable (C : Type u) [Category.{v} C]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The category of endofunctors of any category is a monoidal category,
 with tensor product given by composition of functors
 (and horizontal composition of natural transformations).
@@ -99,6 +102,7 @@ namespace MonoidalCategory
 
 variable [MonoidalCategory C]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Tensoring on the right gives a monoidal functor from `C` into endofunctors of `C`.
 -/
 instance : (tensoringRight C).Monoidal :=

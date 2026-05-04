@@ -109,7 +109,7 @@ lemma subcomplex_hasDimensionLT_of_neq_top (h : A ≠ ⊤) :
   degenerate_eq_top i hi := by
     ext ⟨a, ha⟩
     rw [A.mem_degenerate_iff]
-    simp only [Subfunctor.toFunctor_obj, Set.top_eq_univ, Set.mem_univ, iff_true]
+    simp only [ Set.top_eq_univ, Set.mem_univ, iff_true]
     obtain hi | rfl := hi.lt_or_eq
     · simp [Δ[n].degenerate_eq_univ_of_hasDimensionLT (n + 1) i]
     · rw [mem_degenerate_iff_notMem_nonDegenerate, nonDegenerate_top_dim]

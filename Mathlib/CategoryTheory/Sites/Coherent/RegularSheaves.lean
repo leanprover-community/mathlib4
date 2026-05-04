@@ -64,6 +64,7 @@ epimorphisms to equalizer diagrams.
 def EqualizerCondition (P : Cᵒᵖ ⥤ D) : Prop :=
   ∀ ⦃X B : C⦄ (π : X ⟶ B) [EffectiveEpi π], SingleEqualizerCondition P π
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The equalizer condition is preserved by natural isomorphism. -/
 theorem equalizerCondition_of_natIso {P P' : Cᵒᵖ ⥤ D} (i : P ≅ P')
     (hP : EqualizerCondition P) : EqualizerCondition P' := fun X B π _ c hc ↦
@@ -214,6 +215,7 @@ theorem parallelPair_pullback_initial {X B : C} (π : X ⟶ B)
     refine ⟨Quiver.Hom.op (ObjectProperty.homMk (Over.homMk ij)), ?_, ?_⟩
     all_goals congr; aesop
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 Given a limiting pullback cone, the fork in `SingleEqualizerCondition` is limiting iff the diagram
 in `Presheaf.isSheaf_iff_isLimit_coverage` is limiting.

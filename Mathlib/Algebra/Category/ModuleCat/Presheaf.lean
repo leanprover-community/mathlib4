@@ -270,6 +270,7 @@ def evaluation (X : Cᵒᵖ) : PresheafOfModules.{v} R ⥤ ModuleCat (R.obj X) w
 
 instance (X : Cᵒᵖ) : (evaluation.{v} R X).Additive where
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The restriction natural transformation on presheaves of modules, considered as linear maps
 to restriction of scalars. -/
 @[simps]
@@ -331,6 +332,7 @@ lemma sectionsMap_comp {M N P : PresheafOfModules.{v} R} (f : M ⟶ N) (g : N �
 lemma sectionsMap_id {M : PresheafOfModules.{v} R} (s : M.sections) :
     sectionsMap (𝟙 M) s = s := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The bijection `(unit R ⟶ M) ≃ M.sections` for `M : PresheafOfModules R`. -/
 @[simps! apply_coe]

@@ -26,6 +26,7 @@ open CategoryTheory Limits CompleteLattice
 
 namespace Set
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open CompleteLattice in
 instance {J : Type w} [Category.{w'} J] {X : Type u} [IsFilteredOrEmpty J] :

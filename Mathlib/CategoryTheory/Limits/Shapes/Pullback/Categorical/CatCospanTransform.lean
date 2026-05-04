@@ -30,6 +30,7 @@ transformations are used to encode 2-functoriality of categorical pullback squar
 
 @[expose] public section
 
+
 namespace CategoryTheory.Limits
 
 universe v₁ v₂ v₃ v₄ v₅ v₆ v₇ v₈ v₉ v₁₀ v₁₁ v₁₂ v₁₃ v₁₄ v₁₅
@@ -176,6 +177,7 @@ lemma right_coherence_app {ψ ψ' : CatCospanTransform F G F' G'}
     α.base.app (G.obj x) ≫ ψ'.squareRight.iso.hom.app x :=
   congr_app α.right_coherence x
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Whiskering left of a `CatCospanTransformMorphism` by a `CatCospanTransform`. -/
 @[simps]
@@ -186,6 +188,7 @@ def whiskerLeft (φ : CatCospanTransform F G F' G')
   right := Functor.whiskerLeft φ.right α.right
   base := Functor.whiskerLeft φ.base α.base
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Whiskering right of a `CatCospanTransformMorphism` by a `CatCospanTransform`. -/
 @[simps]
@@ -313,6 +316,7 @@ lemma isIso_iff : IsIso f ↔ IsIso f.left ∧ IsIso f.base ∧ IsIso f.right wh
 
 end Iso
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The left unitor isomorphism for categorical cospan transformations. -/
 @[simps!]
@@ -320,6 +324,7 @@ def leftUnitor (φ : CatCospanTransform F G F' G') :
     (CatCospanTransform.id F G).comp φ ≅ φ :=
   mkIso φ.left.leftUnitor φ.right.leftUnitor φ.base.leftUnitor
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The right unitor isomorphism for categorical cospan transformations. -/
 @[simps!]
@@ -327,6 +332,7 @@ def rightUnitor (φ : CatCospanTransform F G F' G') :
     φ.comp (.id F' G') ≅ φ :=
   mkIso φ.left.rightUnitor φ.right.rightUnitor φ.base.rightUnitor
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The associator isomorphism for categorical cospan transformations. -/
 @[simps!]
@@ -364,18 +370,21 @@ variable
     {τ τ' : CatCospanTransform F'' G'' F''' G'''}
     (γ : τ ⟶ τ')
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma whisker_exchange : ψ ◁ θ ≫ η ▷ φ' = η ▷ φ ≫ ψ' ◁ θ := by cat_disch
 
 @[simp]
 lemma id_whiskerRight : 𝟙 ψ ▷ φ = 𝟙 _ := by cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma whiskerRight_id : η ▷ (.id _ _) = (ρ_ _).hom ≫ η ≫ (ρ_ _).inv := by cat_disch
 
 @[simp, reassoc]
 lemma comp_whiskerRight : (η ≫ η') ▷ φ = η ▷ φ ≫ η' ▷ φ := by cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma whiskerRight_comp :
     η ▷ (φ.comp τ) = (α_ _ _ _).inv ≫ (η ▷ φ) ▷ τ ≫ (α_ _ _ _).hom := by
@@ -384,17 +393,20 @@ lemma whiskerRight_comp :
 @[simp]
 lemma whiskerleft_id : ψ ◁ 𝟙 φ = 𝟙 _ := by cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma id_whiskerLeft : (.id _ _) ◁ η = (λ_ _).hom ≫ η ≫ (λ_ _).inv := by cat_disch
 
 @[simp, reassoc]
 lemma whiskerLeft_comp : ψ ◁ (θ ≫ θ') = (ψ ◁ θ) ≫ (ψ ◁ θ') := by cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma comp_whiskerLeft :
     (ψ.comp φ) ◁ γ = (α_ _ _ _).hom ≫ (ψ ◁ (φ ◁ γ)) ≫ (α_ _ _ _).inv := by
   cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma pentagon
     {A'''' : Type u₁₃} {B'''' : Type u₁₄} {C'''' : Type u₁₅}
@@ -405,11 +417,13 @@ lemma pentagon
       (α_ (ψ.comp φ) τ σ).hom ≫ (α_ ψ φ (τ.comp σ)).hom := by
   cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma triangle :
     (α_ ψ (.id _ _) φ).hom ≫ ψ ◁ (λ_ φ).hom = (ρ_ ψ).hom ▷ φ := by
   cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma triangle_inv :
      (α_ ψ (.id _ _) φ).inv ≫ (ρ_ ψ).hom ▷ φ = ψ ◁ (λ_ φ).hom := by

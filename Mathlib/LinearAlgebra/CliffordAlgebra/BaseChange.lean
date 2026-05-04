@@ -34,6 +34,7 @@ We show the additional results:
 
 @[expose] public section
 
+
 variable {R A V : Type*}
 variable [CommRing R] [CommRing A] [AddCommGroup V]
 variable [Algebra R A] [Module R V]
@@ -78,6 +79,7 @@ def ofBaseChange (Q : QuadraticForm R V) :
   change algebraMap _ _ z * ofBaseChangeAux A Q 1 = _
   rw [map_one, mul_one]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Convert from the clifford algebra over a base-changed module to the base-changed clifford
 algebra. -/
 def toBaseChange (Q : QuadraticForm R V) :

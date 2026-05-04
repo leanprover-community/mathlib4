@@ -66,6 +66,7 @@ lemma hasLiftingProperty_mk_iff' [HasPushouts C] [HasPullbacks C]
   rw [← hasLiftingProperty_mk_iff]
   exact HasLiftingProperty.iff_of_arrow_iso_left (braiding _ _) h
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `(∅ ⟶ B) □ g` lifts against `X ⟶ Y` if and only if `g` lifts against `B ⟹ X ⟶ B ⟹ Y`. -/
 lemma hasLiftingProperty_mk_isInitial_iff [HasPushouts C] [HasPullbacks C]
     [CartesianMonoidalCategory C] [MonoidalClosed C] [BraidedCategory C]

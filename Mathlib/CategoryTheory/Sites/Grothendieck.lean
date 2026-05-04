@@ -515,6 +515,7 @@ def pullback (S : J.Cover X) (f : Y ⟶ X) : J.Cover Y :=
 def Arrow.base {f : Y ⟶ X} {S : J.Cover X} (I : (S.pullback f).Arrow) : S.Arrow :=
   ⟨I.Y, I.f ≫ f, I.hf⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A relation of `S.pullback f` gives rise to a relation of `S`. -/
 def Arrow.Relation.base
     {f : Y ⟶ X} {S : J.Cover X} {I₁ I₂ : (S.pullback f).Arrow}
@@ -629,6 +630,7 @@ def index {D : Type u₁} [Category.{v₁} D] (S : J.Cover X) (P : Cᵒᵖ ⥤ D
   fst I := P.map I.r.g₁.op
   snd I := P.map I.r.g₂.op
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural multifork associated to `S : J.Cover X` for a presheaf `P`.
 Saying that this multifork is a limit is essentially equivalent to the sheaf condition at the
 given object for the given covering sieve. See `Sheaf.lean` for an equivalent sheaf condition

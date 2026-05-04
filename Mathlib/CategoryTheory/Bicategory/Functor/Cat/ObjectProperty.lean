@@ -133,6 +133,7 @@ def fullsubcategory : Pseudofunctor B Cat where
   mapId X := Cat.Hom.isoMk (P.mapId X)
   mapComp f g := Cat.Hom.isoMk (P.mapComp f g)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The inclusion of `P.fullsubcategory` in `F`. -/
 @[simps]

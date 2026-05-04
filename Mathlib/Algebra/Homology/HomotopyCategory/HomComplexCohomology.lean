@@ -173,6 +173,7 @@ noncomputable def homAddEquiv :
 
 end CohomologyClass
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `CohomologyClass K L m` identifies to the cohomology of the complex `HomComplex K L`
 in degree `m`. -/

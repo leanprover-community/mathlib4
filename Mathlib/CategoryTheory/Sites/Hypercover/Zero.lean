@@ -284,6 +284,7 @@ def Hom.comp (f : E.Hom F) (g : F.Hom G) : E.Hom G where
   s₀ := g.s₀ ∘ f.s₀
   h₀ i := f.h₀ i ≫ g.h₀ _
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps! id_s₀ id_h₀ comp_s₀ comp_h₀]
 instance : Category (PreZeroHypercover S) where
   Hom := Hom
@@ -303,6 +304,7 @@ lemma Hom.ext'_iff {E : PreZeroHypercover.{w} S} {F : PreZeroHypercover.{w'} S}
     f = g ↔ ∃ (hs : f.s₀ = g.s₀), ∀ i, f.h₀ i = g.h₀ i ≫ eqToHom (by rw [hs]) :=
   ⟨fun h ↦ h ▸ by simp, fun ⟨hs, hh⟩ ↦ Hom.ext' hs hh⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Constructor for isomorphisms of pre-`0`-hypercovers. -/
 @[simps]
 def isoMk {S : C} {E F : PreZeroHypercover.{w} S}
@@ -332,12 +334,14 @@ lemma inv_hom_s₀_apply {E F : PreZeroHypercover.{w} S} (e : E ≅ F) (i : F.I�
     e.hom.s₀ (e.inv.s₀ i) = i :=
   congr($(e.inv_hom_id).s₀ i)
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma hom_inv_h₀ {E F : PreZeroHypercover.{w} S} (e : E ≅ F) (i : E.I₀) :
     e.hom.h₀ i ≫ e.inv.h₀ (e.hom.s₀ i) = eqToHom (by simp) := by
   obtain ⟨hs, hh⟩ := Hom.ext'_iff.mp e.hom_inv_id
   simpa using hh i
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma inv_hom_h₀ {E F : PreZeroHypercover.{w} S} (e : E ≅ F) (i : F.I₀) :
     e.inv.h₀ i ≫ e.hom.h₀ (e.inv.s₀ i) = eqToHom (by simp) := by
@@ -450,6 +454,7 @@ def interFst : Hom (inter E F) E where
   s₀ i := i.1
   h₀ _ := pullback.fst _ _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Second projection from the intersection of two pre-`0`-hypercovers. -/
 @[simps]
@@ -459,6 +464,7 @@ def interSnd : Hom (inter E F) F where
   h₀ _ := pullback.snd _ _
   w₀ i := by simp [← pullback.condition]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {E F} in
 /-- Universal property of the intersection of two pre-`0`-hypercovers. -/
@@ -469,6 +475,7 @@ def interLift (f : G.Hom E) (g : G.Hom F) :
   s₀ i := ⟨f.s₀ i, g.s₀ i⟩
   h₀ i := pullback.lift (f.h₀ i) (g.h₀ i) (by simp)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The refinement given by restricting the indexing type. -/
 @[simps]
 def restrictIndexHom {ι : Type w'} (f : ι → E.I₀) : (E.restrictIndex f).Hom E where
@@ -477,6 +484,7 @@ def restrictIndexHom {ι : Type w'} (f : ι → E.I₀) : (E.restrictIndex f).Ho
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `{Uᵢ}` covers `X`, the pre-`0`-hypercover `{Uᵢ ×[Z] Y}` of `X ×[Z] Y` is isomorphic
 to the pullback of `{Uᵢ}` along the first projection. -/
@@ -488,6 +496,7 @@ def pullbackCoverOfLeftIsoPullback₁ {X : C} (E : PreZeroHypercover X) {Y Z : C
   PreZeroHypercover.isoMk (.refl _)
     (fun _ ↦ (pullbackRightPullbackFstIso _ _ _).symm ≪≫ pullbackSymmetry _ _)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `{Uᵢ}` covers `Y`, the pre-`0`-hypercover `{X ×[Z] Uᵢ}` of `X ×[Z] Y` is isomorphic
 to the pullback of `{Uᵢ}` along the second projection. -/
@@ -736,6 +745,7 @@ variable (J) in
 abbrev Hom (E : ZeroHypercover.{w} J S) (F : ZeroHypercover.{w'} J S) :=
   E.toPreZeroHypercover.Hom F.toPreZeroHypercover
 
+set_option backward.defeqAttrib.useBackward true in
 @[simps! id_s₀ id_h₀ comp_s₀ comp_h₀]
 instance : Category (ZeroHypercover.{w} J S) where
   Hom := Hom J
@@ -818,6 +828,7 @@ def restrictIndexOfSmall (E : ZeroHypercover.{w} J S) [ZeroHypercover.Small.{w'}
   __ := E.toPreZeroHypercover.restrictIndex (Small.restrictFun E)
   mem₀ := Small.mem₀ E
 
+set_option backward.defeqAttrib.useBackward true in
 instance (E : ZeroHypercover.{w} J S) [ZeroHypercover.Small.{w'} E] {T : C} (f : T ⟶ S)
     [IsStableUnderBaseChange J] [∀ (i : E.I₀), HasPullback f (E.f i)] :
     ZeroHypercover.Small.{w'} (E.pullback₁ f) := by

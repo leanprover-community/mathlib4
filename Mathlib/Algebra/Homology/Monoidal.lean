@@ -181,6 +181,7 @@ noncomputable def leftUnitor' :
   GradedObject.Monoidal.tensorIso ((tensorUnitIso C c).symm) (Iso.refl _) ≪≫
     GradedObject.Monoidal.leftUnitor K.X
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma leftUnitor'_inv (i : I) :
     (leftUnitor' K).inv i = (λ_ (K.X i)).inv ≫ ((singleObjXSelf c 0 (𝟙_ C)).inv ▷ (K.X i)) ≫
@@ -196,6 +197,7 @@ lemma leftUnitor'_inv (i : I) :
   rw [dif_pos rfl]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma leftUnitor'_inv_comm (i j : I) :
@@ -229,6 +231,7 @@ noncomputable def rightUnitor' :
   GradedObject.Monoidal.tensorIso (Iso.refl _) ((tensorUnitIso C c).symm) ≪≫
     GradedObject.Monoidal.rightUnitor K.X
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma rightUnitor'_inv (i : I) :
     (rightUnitor' K).inv i = (ρ_ (K.X i)).inv ≫ ((K.X i) ◁ (singleObjXSelf c 0 (𝟙_ C)).inv) ≫
@@ -244,6 +247,7 @@ lemma rightUnitor'_inv (i : I) :
   rw [dif_pos rfl]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma rightUnitor'_inv_comm (i j : I) :
     (rightUnitor' K).inv i ≫ (tensorObj K (tensorUnit C c)).d i j =
@@ -286,6 +290,7 @@ noncomputable instance monoidalCategoryStruct :
   leftUnitor K := leftUnitor K
   rightUnitor K := rightUnitor K
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The structure which allows to construct the monoidal category structure
 on `HomologicalComplex C c` from the monoidal category structure on

@@ -29,6 +29,7 @@ variable {F G H I : B ⥤ᵒᵖᴸ C}
 
 open Oplax.OplaxTrans
 
+set_option backward.defeqAttrib.useBackward true in
 /-- error: expression contains metavariables:
 (F.map f ≫ η.app b) ≫ ?_ -/
 #guard_msgs in

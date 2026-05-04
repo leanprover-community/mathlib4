@@ -45,6 +45,8 @@ general $R$-algebras.
 -/
 
 @[expose] public section
+
+
 universe u v w w'
 
 namespace DirectSum

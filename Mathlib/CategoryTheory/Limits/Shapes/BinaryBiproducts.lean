@@ -239,11 +239,13 @@ def toBiconeFunctor {X Y : C} : BinaryBicone X Y ⥤ Bicone (pairFunction X Y) w
 abbrev toBicone {X Y : C} (b : BinaryBicone X Y) : Bicone (pairFunction X Y) :=
   toBiconeFunctor.obj b
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A binary bicone is a limit cone if and only if the corresponding bicone is a limit cone. -/
 def toBiconeIsLimit {X Y : C} (b : BinaryBicone X Y) :
     IsLimit b.toBicone.toCone ≃ IsLimit b.toCone :=
   IsLimit.equivIsoLimit <| Cone.ext (Iso.refl _) fun ⟨as⟩ => by cases as <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A binary bicone is a colimit cocone if and only if the corresponding bicone is a colimit
 cocone. -/
 def toBiconeIsColimit {X Y : C} (b : BinaryBicone X Y) :
@@ -275,12 +277,14 @@ def toBinaryBiconeFunctor {X Y : C} : Bicone (pairFunction X Y) ⥤ BinaryBicone
 abbrev toBinaryBicone {X Y : C} (b : Bicone (pairFunction X Y)) : BinaryBicone X Y :=
   toBinaryBiconeFunctor.obj b
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A bicone over a pair is a limit cone if and only if the corresponding binary bicone is a limit
 cone. -/
 def toBinaryBiconeIsLimit {X Y : C} (b : Bicone (pairFunction X Y)) :
     IsLimit b.toBinaryBicone.toCone ≃ IsLimit b.toCone :=
   IsLimit.equivIsoLimit <| Cone.ext (Iso.refl _) fun j => by rcases j with ⟨⟨⟩⟩ <;> simp
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A bicone over a pair is a colimit cocone if and only if the corresponding binary bicone is a
 colimit cocone. -/
 def toBinaryBiconeIsColimit {X Y : C} (b : Bicone (pairFunction X Y)) :

@@ -80,6 +80,7 @@ noncomputable def truncGTIsoTruncGE (a b : ℤ) (h : a + 1 = b) :
 on a category `C` and `n : ℤ`. -/
 noncomputable def truncLEι (n : ℤ) : t.truncLE n ⟶ 𝟭 C := t.truncLTι (n + 1)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma truncLEIsoTruncLT_hom_ι (a b : ℤ) (h : a + 1 = b) :
@@ -93,6 +94,7 @@ lemma truncLEIsoTruncLT_hom_ι_app (a b : ℤ) (h : a + 1 = b) (X : C) :
     (t.truncLEIsoTruncLT a b h).hom.app X ≫ (t.truncLTι b).app X = (t.truncLEι a).app X :=
   congr_app (t.truncLEIsoTruncLT_hom_ι a b h) X
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma truncLEIsoTruncLT_inv_ι (a b : ℤ) (h : a + 1 = b) :
     (t.truncLEIsoTruncLT a b h).inv ≫ t.truncLEι a = t.truncLTι b := by
@@ -146,6 +148,7 @@ lemma natTransTruncLEOfLE_trans_app (a b c : ℤ) (hab : a ≤ b) (hbc : b ≤ c
 on a category `C` and `n : ℤ`. -/
 noncomputable def truncGTπ (n : ℤ) : 𝟭 C ⟶ t.truncGT n := t.truncGEπ (n + 1)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma π_truncGTIsoTruncGE_hom (a b : ℤ) (h : a + 1 = b) :
@@ -159,6 +162,7 @@ lemma π_truncGTIsoTruncGE_hom_ι_app (a b : ℤ) (h : a + 1 = b) (X : C) :
     (t.truncGTπ a).app X ≫ (t.truncGTIsoTruncGE a b h).hom.app X = (t.truncGEπ b).app X :=
   congr_app (t.π_truncGTIsoTruncGE_hom a b h) X
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma π_truncGTIsoTruncGE_inv (a b : ℤ) (h : a + 1 = b) :
     t.truncGEπ b ≫ (t.truncGTIsoTruncGE a b h).inv = t.truncGTπ a := by
@@ -184,6 +188,7 @@ category `C` and `a + 1 = b`. -/
 noncomputable def triangleLEGE (a b : ℤ) (h : a + 1 = b) : C ⥤ Triangle C :=
   Triangle.functorMk (t.truncLEι a) (t.truncGEπ b) (t.truncGEδLE a b h)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism of triangles `t.triangleLEGE a b h ≅ t.triangleLTGE b`
 when `a + 1 = b`. -/
@@ -215,6 +220,7 @@ category `C` and `n : ℤ`. -/
 noncomputable def triangleLEGT (n : ℤ) : C ⥤ Triangle C :=
   Triangle.functorMk (t.truncLEι n) (t.truncGTπ n) (t.truncGTδLE n)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism `t.triangleLEGT a ≅ t.triangleLEGE a b h`
 when `a + 1 = b`. -/
@@ -275,6 +281,7 @@ section
 
 variable {X Y : C} (f : X ⟶ Y) (n : ℤ) [t.IsLE X n]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma liftTruncLE_aux :
     ∃ (f' : X ⟶ (t.truncLE n).obj Y), f = f' ≫ (t.truncLEι n).app Y :=
   Triangle.coyoneda_exact₂ _ (t.triangleLEGT_distinguished n Y) f
@@ -295,6 +302,7 @@ section
 
 variable {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) [t.IsGE Y n₁]
 
+set_option backward.defeqAttrib.useBackward true in
 include h in
 lemma descTruncGT_aux :
   ∃ (f' : (t.truncGT n₀).obj X ⟶ Y), f = (t.truncGTπ n₀).app X ≫ f' :=
@@ -340,6 +348,7 @@ noncomputable abbrev truncLEGE (a b : ℤ) : C ⥤ C := t.truncGE a ⋙ t.truncL
 /-- The composition `t.truncLE b ⋙ t.truncGE a`. -/
 noncomputable abbrev truncGELE (a b : ℤ) : C ⥤ C := t.truncLE b ⋙ t.truncGE a
 
+set_option backward.defeqAttrib.useBackward true in
 instance (X : C) (a b : ℤ) : t.IsGE ((t.truncGELE a b).obj X) a := by
   dsimp; infer_instance
 
@@ -375,6 +384,7 @@ instance (X : C) (a b : ℤ) [t.IsGE X a] :
     t.IsGE ((t.truncLE b).obj X) a := by
   dsimp [truncLE]; infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 instance (X : C) (a b : ℤ) :
     t.IsLE ((t.truncGELE a b).obj X) b := by
   dsimp; infer_instance

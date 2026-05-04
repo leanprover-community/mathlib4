@@ -40,6 +40,9 @@ unit and counit isomorphisms of `equivalence`.
 
 -/
 
+
+set_option backward.defeqAttrib.useBackward true
+
 @[expose] public section
 
 
@@ -83,6 +86,7 @@ def equivalence₁CounitIso : (e'.inverse ⋙ eA.inverse) ⋙ F ≅ 𝟭 B' :=
     _ ≅ e'.inverse ⋙ e'.functor := isoWhiskerLeft _ (leftUnitor _)
     _ ≅ 𝟭 B' := e'.counitIso
 
+set_option backward.defeqAttrib.useBackward true in
 theorem equivalence₁CounitIso_eq : (equivalence₁ hF).counitIso = equivalence₁CounitIso hF := by
   ext Y
   simp [equivalence₁, equivalence₀]
@@ -100,6 +104,7 @@ def equivalence₁UnitIso : 𝟭 A ≅ F ⋙ e'.inverse ⋙ eA.inverse :=
     _ ≅ (eA.functor ⋙ e'.functor) ⋙ e'.inverse ⋙ eA.inverse := (associator _ _ _).symm
     _ ≅ F ⋙ e'.inverse ⋙ eA.inverse := isoWhiskerRight hF _
 
+set_option backward.defeqAttrib.useBackward true in
 theorem equivalence₁UnitIso_eq : (equivalence₁ hF).unitIso = equivalence₁UnitIso hF := by
   ext X
   simp [equivalence₁]
@@ -127,6 +132,7 @@ def equivalence₂CounitIso : (eB.functor ⋙ e'.inverse ⋙ eA.inverse) ⋙ F �
     _ ≅ eB.functor ⋙ eB.inverse := isoWhiskerLeft _ (leftUnitor _)
     _ ≅ 𝟭 B := eB.unitIso.symm
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem equivalence₂CounitIso_eq :
     (equivalence₂ eB hF).counitIso = equivalence₂CounitIso eB hF := by
@@ -149,6 +155,7 @@ def equivalence₂UnitIso : 𝟭 A ≅ (F ⋙ eB.inverse) ⋙ eB.functor ⋙ e'.
     _ ≅ (F ⋙ eB.inverse) ⋙ eB.functor ⋙ e'.inverse ⋙ eA.inverse :=
       associator _ _ _
 
+set_option backward.defeqAttrib.useBackward true in
 theorem equivalence₂UnitIso_eq : (equivalence₂ eB hF).unitIso = equivalence₂UnitIso eB hF := by
   ext X
   simp [equivalence₂, equivalence₁]
@@ -204,6 +211,7 @@ def equivalenceCounitIso : G ⋙ F ⋙ eB.inverse ≅ 𝟭 B :=
 
 variable {η hF hG}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem equivalenceCounitIso_eq (hη : τ₀ = τ₁ hF hG η) :
     (equivalence hF hG).counitIso = equivalenceCounitIso η := by

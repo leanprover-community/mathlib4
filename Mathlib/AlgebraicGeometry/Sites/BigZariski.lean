@@ -53,6 +53,7 @@ abbrev zariskiTopology : GrothendieckTopology Scheme.{u} :=
 lemma zariskiTopology_eq : zariskiTopology.{u} = zariskiPretopology.toGrothendieck :=
   Precoverage.toGrothendieck_toPretopology_eq_toGrothendieck.symm
 
+set_option backward.defeqAttrib.useBackward true in
 instance subcanonical_zariskiTopology : zariskiTopology.Subcanonical := by
   apply GrothendieckTopology.Subcanonical.of_isSheaf_yoneda_obj
   intro X

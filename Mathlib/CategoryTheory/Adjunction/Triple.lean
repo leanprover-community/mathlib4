@@ -126,6 +126,7 @@ lemma map_rightToLeft_app (X : C) :
     G.map (t.rightToLeft.app X) = t.adj₂.counit.app X ≫ t.adj₁.unit.app X :=
   congr_app t.whiskerRight_rightToLeft X
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation `H ⟶ F` for an adjoint triple `F ⊣ G ⊣ H` with `G` fully faithful
 is also equal to the whiskered unit `H ⟶ F ⋙ G ⋙ H` of the first adjunction followed by the
@@ -135,6 +136,7 @@ lemma rightToLeft_eq_units :
     inv (whiskerLeft F t.adj₂.unit) ≫ F.rightUnitor.hom := by
   ext X; apply G.map_injective; simp [rightToLeft]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation `H ⟶ F` for an adjoint triple `F ⊣ G ⊣ H` with `G` fully faithful
 is also equal to the inverse of the whiskered counit `H ⋙ G ⋙ F ⟶ H` of the first adjunction
@@ -156,6 +158,7 @@ lemma rightToLeft_app_adj₂_unit_app (X : C) :
     t.rightToLeft.app X ≫ t.adj₂.unit.app (F.obj X) = H.map (t.adj₁.unit.app X) :=
   G.map_injective (by simp [← cancel_mono (t.adj₂.counit.app _)])
 
+set_option backward.defeqAttrib.useBackward true in
 /-- For an adjoint triple `F ⊣ G ⊣ H` where `G` is fully faithful, the natural transformation
 `F.op ⟶ H.op` obtained from the dual adjoint triple `H.op ⊣ G.op ⊣ F.op` is dual to the natural
 transformation `H ⟶ F`. -/
@@ -204,12 +207,14 @@ noncomputable def leftToRight : F ⟶ H :=
   F.rightUnitor.inv ≫ whiskerLeft F t.adj₂.unit ≫ (Functor.associator _ _ _).inv ≫
   inv (whiskerRight t.adj₁.unit H) ≫ H.leftUnitor.hom
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 omit [H.Full] [H.Faithful] in
 lemma leftToRight_app {X : C} :
     t.leftToRight.app X = t.adj₂.unit.app (F.obj X) ≫ inv (H.map (t.adj₁.unit.app X)) := by
   simp [leftToRight]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation `F ⟶ H` for an adjoint triple `F ⊣ G ⊣ H` with `F` and `H`
 fully faithful is also equal to the inverse of the whiskered counit `H ⋙ G ⋙ F ⟶ F` of the second
@@ -247,17 +252,20 @@ the unit of the second adjunction. -/
 lemma whiskerLeft_leftToRight : whiskerLeft G t.leftToRight = t.adj₁.counit ≫ t.adj₂.unit := by
   ext X; exact t.leftToRight_app_obj
 
+set_option backward.defeqAttrib.useBackward true in
 omit [H.Full] [H.Faithful] in
 lemma map_adj₂_counit_app_leftToRight_app (X : C) :
     F.map (t.adj₂.counit.app X) ≫ t.leftToRight.app X = t.adj₁.counit.app (H.obj X) := by
   simp
 
+set_option backward.defeqAttrib.useBackward true in
 omit [H.Full] [H.Faithful] in
 @[reassoc (attr := simp)]
 lemma leftToRight_app_map_adj₁_unit_app (X : C) :
     t.leftToRight.app X ≫ H.map (t.adj₁.unit.app X) = t.adj₂.unit.app (F.obj X) := by
   simp [leftToRight_app]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- For an adjoint triple `F ⊣ G ⊣ H` where `F` and `H` are fully faithful, the natural
 transformation `H.op ⟶ F.op` obtained from the dual adjoint triple `H.op ⊣ G.op ⊣ F.op` is
 dual to the natural transformation `F ⟶ H`. -/

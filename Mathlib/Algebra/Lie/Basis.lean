@@ -326,7 +326,7 @@ lemma linearIndependent_baseSupp [IsDomain R] [CharZero R] :
     b.baseSupp i x • b.f i = -⁅x, b.f i⁆ := by
   rw [← neg_eq_iff_eq_neg, ← neg_smul, ← LinearMap.neg_apply]
   have := b.symm.baseSupp_apply_smul_e i x
-  simp only [symm_cartan, symm_baseSupp, Pi.neg_apply, symm_e] at this
+  simp only [ symm_baseSupp, Pi.neg_apply, symm_e] at this
   exact this
 
 variable [IsDomain R] [CharZero R]

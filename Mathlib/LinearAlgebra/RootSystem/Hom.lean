@@ -316,7 +316,6 @@ def id (P : RootPairing ι R M N) : RootPairing.Equiv P P :=
     bijective_coweightMap := _root_.id bijective_id }
 
 /-- Composition of equivalences -/
-@[simps!]
 def comp {ι₁ M₁ N₁ ι₂ M₂ N₂ : Type*} [AddCommGroup M₁] [Module R M₁] [AddCommGroup N₁]
     [Module R N₁] [AddCommGroup M₂] [Module R M₂] [AddCommGroup N₂] [Module R N₂]
     {P : RootPairing ι R M N} {P₁ : RootPairing ι₁ R M₁ N₁} {P₂ : RootPairing ι₂ R M₂ N₂}

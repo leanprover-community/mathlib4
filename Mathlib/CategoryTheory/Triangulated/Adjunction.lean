@@ -51,6 +51,7 @@ namespace Adjunction
 variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) [F.CommShift ℤ] [G.CommShift ℤ]
   [adj.CommShift ℤ]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include adj in
 /--

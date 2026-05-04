@@ -121,6 +121,7 @@ section
 
 variable {A : C} [CategoryWithWeakEquivalences C] (P : Cylinder A)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The cylinder object obtained by switching the two inclusions. -/
 @[simps!]
 def symm : Cylinder A where
@@ -177,6 +178,7 @@ instance : IsCofibrant P.I :=
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 instance [HasBinaryCoproducts C] [CategoryWithCofibrations C] [P.IsGood]
     [(cofibrations C).RespectsIso] : P.symm.IsGood where
   cofibration_i := by
@@ -193,6 +195,7 @@ variable [CategoryWithCofibrations C] [CategoryWithFibrations C]
 instance [HasBinaryCoproduct A A] [HasTerminal C] [IsFibrant A] [P.IsVeryGood] : IsFibrant P.I :=
   isFibrant_of_fibration P.π
 
+set_option backward.defeqAttrib.useBackward true in
 instance [(cofibrations C).RespectsIso] [HasBinaryCoproducts C] [P.IsVeryGood] :
     P.symm.IsVeryGood where
   fibration_π := by dsimp; infer_instance
@@ -222,6 +225,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma ofFactorizationData_i : (ofFactorizationData h).i = h.i := by cat_disch
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (ofFactorizationData h).IsVeryGood where
   cofibration_i := by simpa using inferInstanceAs (Cofibration h.i)
   fibration_π := by dsimp; infer_instance
@@ -240,6 +244,7 @@ lemma exists_very_good :
 
 instance : Nonempty (Cylinder A) := ⟨(exists_very_good A).choose⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The gluing of two good cylinders. -/
 @[simps!]

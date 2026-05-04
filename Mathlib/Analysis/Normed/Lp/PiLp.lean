@@ -947,6 +947,7 @@ variable {ι : Type*} {κ : ι → Type*} (p : ℝ≥0∞) [Fact (1 ≤ p)]
   [Fintype ι] [∀ i, Fintype (κ i)]
   (α : ∀ i, κ i → Type*) [∀ i k, SeminormedAddCommGroup (α i k)] [∀ i k, Module 𝕜 (α i k)]
 
+set_option backward.defeqAttrib.useBackward true in
 variable (𝕜) in
 /-- `LinearEquiv.piCurry` for `PiLp`, as an isometry. -/
 def _root_.LinearIsometryEquiv.piLpCurry :

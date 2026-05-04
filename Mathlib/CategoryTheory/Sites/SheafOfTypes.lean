@@ -169,6 +169,8 @@ theorem isSheaf_comp_uliftFunctor_iff : IsSheaf J (P ⋙ uliftFunctor.{w'}) ↔ 
 theorem isSheaf_comp_uliftFunctor (h : IsSheaf J P) : IsSheaf J (P ⋙ uliftFunctor.{w'}) := by
   rwa [isSheaf_comp_uliftFunctor_iff]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /--
 For a presheaf of the form `yoneda.obj W`, a compatible family of elements on a sieve
 is the same as a co-cone over the sieve. Constructing a co-cone from a compatible family works for
@@ -201,6 +203,7 @@ open Presieve
 variable {C : Type u} [Category.{v} C]
 variable {X : C}
 
+set_option backward.defeqAttrib.useBackward true in
 theorem yonedaFamily_fromCocone_compatible (S : Sieve X) (s : Cocone (diagram S.arrows)) :
     FamilyOfElements.Compatible <| yonedaFamilyOfElements_fromCocone S.arrows s := by
   intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ hf₁ hf₂ hgf

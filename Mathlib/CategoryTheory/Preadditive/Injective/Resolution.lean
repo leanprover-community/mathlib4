@@ -110,6 +110,7 @@ theorem complex_d_comp (n : ℕ) :
 def kernelFork : KernelFork (I.cocomplex.d 0 1) :=
   KernelFork.ofι _ I.ι_f_zero_comp_complex_d
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- `Z` is the kernel of `I.cocomplex.X 0 ⟶ I.cocomplex.X 1` when `I : InjectiveResolution Z`. -/
 def isLimitKernelFork : IsLimit (I.kernelFork) := by

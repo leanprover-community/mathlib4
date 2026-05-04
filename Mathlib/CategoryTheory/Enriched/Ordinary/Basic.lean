@@ -197,6 +197,7 @@ def ForgetEnrichment.equivFunctor (D : Type u'') [Category.{v''} D] [EnrichedOrd
     (eHomEquiv V (X := ForgetEnrichment.to V X) (Y := ForgetEnrichment.to V Z))
     (by simp [eHomEquiv_comp])
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `D` is already an enriched ordinary category, it is equivalent to `ForgetEnrichment V D`. -/
 @[simps]
@@ -299,6 +300,7 @@ def TransportEnrichment.forgetEnrichmentEquivInverse :
         tensorHom_comp_tensorHom_assoc]
     simp [← h]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `D` is a `V`-enriched category, then forgetting the enrichment and transporting the resulting
 enriched ordinary category along a functor `F : V ⥤ W`, for which

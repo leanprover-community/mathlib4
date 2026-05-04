@@ -153,6 +153,7 @@ theorem comp_continuousWithinAt_iff (h : X ≃ₜ Y) (f : Z → X) (s : Set Z) (
     ContinuousWithinAt f s z ↔ ContinuousWithinAt (h ∘ f) s z :=
   h.isInducing.continuousWithinAt_iff
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A homeomorphism `h : X ≃ₜ Y` lifts to a homeomorphism between subtypes corresponding to
 predicates `p : X → Prop` and `q : Y → Prop` so long as `p = q ∘ h`. -/
 @[simps!]
@@ -170,6 +171,7 @@ whenever `h` maps `s` onto `t`. -/
 abbrev sets {s : Set X} {t : Set Y} (h : X ≃ₜ Y) (h_eq : s = h ⁻¹' t) : s ≃ₜ t :=
   h.subtype <| Set.ext_iff.mp h_eq
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If two sets are equal, then they are homeomorphic. -/
 def setCongr {s t : Set X} (h : s = t) : s ≃ₜ t where
   toEquiv := Equiv.setCongr h
@@ -194,6 +196,7 @@ def uniqueProd (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y] [Unique X
 
 @[simp] theorem coe_uniqueProd [Unique X] : ⇑(uniqueProd X Y) = Prod.snd := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The product over `S ⊕ T` of a family of topological spaces
 is homeomorphic to the product of (the product over `S`) and (the product over `T`).
 
@@ -242,6 +245,7 @@ lemma piCongrLeft_apply_apply {ι ι' : Type*} {Y : ι' → Type*} [∀ j, Topol
     (e : ι ≃ ι') (x : ∀ i, Y (e i)) (i : ι) : piCongrLeft e x (e i) = x i :=
   Equiv.piCongrLeft_apply_apply ..
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `Equiv.piCongrRight` as a homeomorphism: this is the natural homeomorphism
 `Π i, Y₁ i ≃ₜ Π j, Y₂ i` obtained from homeomorphisms `Y₁ i ≃ₜ Y₂ i` for each `i`. -/
 @[simps! apply toEquiv]
@@ -318,6 +322,7 @@ def sigmaProdDistrib : (Σ i, X i) × Y ≃ₜ Σ i, X i × Y :=
 
 end Distrib
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `ι` has a unique element, then `ι → X` is homeomorphic to `X`. -/
 @[simps! -fullyApplied]
 def funUnique (ι X : Type*) [Unique ι] [TopologicalSpace X] : (ι → X) ≃ₜ X where

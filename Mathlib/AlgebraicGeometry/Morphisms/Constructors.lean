@@ -64,6 +64,7 @@ instance AffineTargetMorphismProperty.diagonal_respectsIso (P : AffineTargetMorp
     rw [pullback.mapDesc_comp, P.cancel_right_of_respectsIso]
     apply H
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem HasAffineProperty.diagonal_of_openCover (P) {Q} [HasAffineProperty P Q]
     {X Y : Scheme.{u}} (f : X ⟶ Y) (𝒰 : Scheme.OpenCover.{v} Y) [∀ i, IsAffine (𝒰.X i)]
@@ -113,6 +114,7 @@ theorem HasAffineProperty.diagonal_of_diagonal_of_isPullback
   · infer_instance
   · infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 theorem HasAffineProperty.diagonal_iff
     (P) {Q} [HasAffineProperty P Q] {X Y : Scheme.{u}} {f : X ⟶ Y} [IsAffine Y] :
     Q.diagonal f ↔ P.diagonal f := by
@@ -125,6 +127,7 @@ theorem HasAffineProperty.diagonal_iff
   exact HasAffineProperty.diagonal_of_openCover.{u, u, u} P f (Scheme.coverOfIsIso (𝟙 _))
     (fun _ ↦ 𝒰) (fun _ _ _ ↦ hf _ _)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem AffineTargetMorphismProperty.diagonal_of_openCover_source
     {Q : AffineTargetMorphismProperty} [Q.IsLocal]
@@ -145,6 +148,7 @@ theorem AffineTargetMorphismProperty.diagonal_of_openCover_source
   rw [← Q.cancel_left_of_respectsIso this.isoPullback.hom, IsPullback.isoPullback_hom_snd]
   exact h𝒰 _ _
 
+set_option backward.defeqAttrib.useBackward true in
 instance HasAffineProperty.diagonal_affineProperty_isLocal
     {Q : AffineTargetMorphismProperty} [Q.IsLocal] :
     Q.diagonal.IsLocal where
@@ -219,6 +223,7 @@ theorem universally_isZariskiLocalAtTarget (P : MorphismProperty Scheme)
         · rw [← cancel_mono (Scheme.Opens.ι _)]
           simp [morphismRestrict_ι_assoc, h.1.1]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma universally_isZariskiLocalAtSource (P : MorphismProperty Scheme)
     [IsZariskiLocalAtSource P] : IsZariskiLocalAtSource P.universally := by
   refine .mk_of_iff ?_

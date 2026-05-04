@@ -133,6 +133,7 @@ noncomputable def coindFunctor : Rep.{t} k G ⥤ Rep k H where
   obj A := coind φ A
   map f := coindMap φ f
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance {G : Type v'} [Group G] (S : Subgroup G) :
     (coindFunctor k S.subtype).PreservesEpimorphisms where
@@ -227,6 +228,7 @@ noncomputable def coindVEquiv :
 noncomputable def coindIso : coind φ A ≅ coind' φ A :=
   Rep.mkIso <| .mk (coindVEquiv φ A) fun h => by ext; simp [homEquiv]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a monoid homomorphism `φ : G →* H`, the coinduction functors `Rep k G ⥤ Rep k H` given by
 `coindFunctor k φ` and `coindFunctor' k φ` are naturally isomorphic, with isomorphism on objects

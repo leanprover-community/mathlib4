@@ -123,6 +123,7 @@ theorem colimitMulAux_eq_of_rel_left {x x' y : Σ j, F.obj j}
   simp_rw [map_mul, ← ConcreteCategory.comp_apply, ← F.map_comp, h₁, h₂, h₃, F.map_comp,
     ConcreteCategory.comp_apply, hfg]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Multiplication in the colimit is well-defined in the right argument. -/
 @[to_additive /-- Addition in the colimit is well-defined in the right argument. -/]
@@ -227,12 +228,14 @@ theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
   MonCat.ext fun x =>
     ConcreteCategory.congr_hom ((Types.TypeMax.colimitCocone (F ⋙ forget MonCat)).ι.naturality f) x
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The cocone over the proposed colimit monoid. -/
 @[to_additive /-- The cocone over the proposed colimit additive monoid. -/]
 noncomputable def colimitCocone : Cocone F where
   pt := colimit.{v, u} F
   ι := { app := coconeMorphism F }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a cocone `t` of `F`, the induced monoid homomorphism from the colimit to the cocone point.
 As a function, this is simply given by the induced map of the corresponding cocone in `Type`.
@@ -295,6 +298,7 @@ In the following, we will show that this has the structure of a _commutative_ mo
 noncomputable abbrev M : MonCat.{max v u} :=
   MonCat.FilteredColimits.colimit.{v, u} (F ⋙ forget₂ CommMonCat MonCat.{max v u})
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 noncomputable instance colimitCommMonoid : CommMonoid.{max v u} (M.{v, u} F) :=

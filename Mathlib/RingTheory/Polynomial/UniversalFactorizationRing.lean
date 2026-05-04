@@ -124,6 +124,7 @@ lemma mapEquivMonic_symm_map_algebraMap
       (IsScalarTower.toAlgHom R S T).comp ((mapEquivMonic R S n).symm p) := by
   rw [← mapEquivMonic_symm_map, IsScalarTower.coe_toAlgHom]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- In light of the fact that `MonicDegreeEq · n` is representable by `R[X₁,...,Xₙ]`,
 this is the map `R[X₁,...,Xₘ₊ₖ] → R[X₁,...,Xₘ] ⊗ R[X₁,...,Xₖ]` corresponding to the multiplication
 `MonicDegreeEq · m × MonicDegreeEq · k → MonicDegreeEq · (m + k)`. -/
@@ -148,6 +149,7 @@ lemma universalFactorizationMap_freeMonic :
   simp [universalFactorizationMap]
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 lemma universalFactorizationMap_comp_map :
     (universalFactorizationMap S n m k hn).toRingHom.comp (map (algebraMap R S)) =
     .comp (Algebra.TensorProduct.lift (S := R)
@@ -479,9 +481,8 @@ def UniversalFactorizationRing.homEquiv :
     letI := (MvPolynomial.universalFactorizationMap R n m k hn).toAlgebra
     letI := ((MvPolynomial.mapEquivMonic R _ n).symm p).toAlgebra
     simp only [UniversalFactorizationRing, MvPolynomial.mapEquivMonic, AlgHom.toRingHom_eq_coe,
-      Equiv.coe_fn_symm_mk, MvPolynomial.coe_aeval_eq_eval, factor₁, monicDegreeEq_coe,
-      MvPolynomial.universalFactorizationMapLiftEquiv, Equiv.coe_fn_mk, fromTensor,
-      MonicDegreeEq.map_coe, factor₂]
+      Equiv.coe_fn_symm_mk, MvPolynomial.coe_aeval_eq_eval, factor₁,
+      MvPolynomial.universalFactorizationMapLiftEquiv, Equiv.coe_fn_mk, fromTensor, factor₂]
     ext <;> simp +contextual [coeff_freeMonic, apply_dite, MonicDegreeEq.coeff_of_ge]
 
 attribute [-instance] leftModule in

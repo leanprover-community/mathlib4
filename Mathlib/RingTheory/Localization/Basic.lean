@@ -224,6 +224,7 @@ variable {A : Type*} [CommSemiring A]
 
 include H
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `S`, `Q` are localizations of `R` and `P` at submonoids `M`, `T` respectively,
 an isomorphism `h : R ≃ₐ[A] P` such that `h(M) = T` induces an isomorphism of localizations
 `S ≃ₐ[A] Q`. -/

@@ -32,6 +32,8 @@ that are part of `J`.
 
 -/
 
+set_option backward.defeqAttrib.useBackward true
+
 universe t t' v' v u' u
 
 namespace CategoryTheory
@@ -52,6 +54,7 @@ variable {J : GrothendieckTopology C} [F.IsPrestack J]
   {α : ι' → ι} {p' : ∀ j, X' j ⟶ X (α j)} (w : ∀ j, p' j ≫ f (α j) = f' j)
   (hf' : Sieve.ofArrows _ f' ∈ J S)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hf' in
 public lemma faithful_pullFunctor :
@@ -103,6 +106,7 @@ variable (f) in
 lemma sieve_mem (i : ι) : sieve f f' i ∈ J.over _ _ := by
   simpa only [J.mem_over_iff, Equiv.apply_symm_apply] using J.pullback_stable (f i) hf'
 
+set_option backward.defeqAttrib.useBackward true in
 lemma mem_sieve {i : ι} {Z : C} (q : Z ⟶ X i) ⦃j : ι'⦄ (a : Z ⟶ X' j)
     (fac : a ≫ f' j = q ≫ f i := by cat_disch) :
     sieve f f' i (Over.homMk q : Over.mk q ⟶ Over.mk (𝟙 (X i))) :=
@@ -113,6 +117,7 @@ namespace sieve
 variable {i : ι} {Z : C} {q : Z ⟶ X i}
   (hq : sieve f f' i (Over.homMk q : Over.mk q ⟶ Over.mk (𝟙 X i)))
 
+set_option backward.defeqAttrib.useBackward true in
 include hq in
 lemma exists_fac : ∃ (j : ι') (a : Z ⟶ X' j), a ≫ f' j = q ≫ f i := by
   obtain ⟨_, q, _, ⟨j⟩, fac⟩ := hq

@@ -196,6 +196,7 @@ def comapEquiv {β γ : Type w} (e : β ≃ γ) : GradedObject β C ≌ GradedOb
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 instance hasShift {β : Type*} [AddCommGroup β] (s : β) : HasShift (GradedObjectWithShift s C) ℤ :=
   hasShiftMk _ _
     { F := fun n => comap C fun b : β => b + n • s
@@ -441,6 +442,7 @@ def cofanMapObjComp : X.CofanMapObjFun r k :=
     (c (p i) (by rw [hpqr, hi])).inj ⟨i, rfl⟩ ≫ c'.inj (⟨p i, by
       rw [Set.mem_preimage, Set.mem_singleton_iff, hpqr, hi]⟩))
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given maps `p : I → J`, `q : J → K` and `r : I → K` such that `q.comp p = r`,
 `X : GradedObject I C`, `k : K`, the cofan constructed by `cofanMapObjComp` is a colimit.
 In other words, if we have, for all `j : J` such that `hj : q j = k`,

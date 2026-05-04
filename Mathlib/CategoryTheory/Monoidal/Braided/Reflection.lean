@@ -61,9 +61,9 @@ private lemma adjRetraction_is_retraction (c : C) (d : D)
     [IsIso (L.map (adj.unit.app ((ihom d).obj (R.obj c)) ⊗ₘ adj.unit.app d))] :
     adj.unit.app ((ihom d).obj (R.obj c)) ≫ adjRetraction adj c d = 𝟙 _ := by
   suffices (_ ◁ adj.unit.app _) ≫ adjRetractionAux adj c d = (ihom.ev _).app _ by
-    simp only [id_obj, comp_obj, adjRetraction, ← curry_natural_left, this]
+    simp only [id_obj, adjRetraction, ← curry_natural_left, this]
     simp [curry_eq]
-  simp only [id_obj, comp_obj, adjRetractionAux, Functor.map_inv, Functor.comp_map,
+  simp only [id_obj, adjRetractionAux, Functor.map_inv, Functor.comp_map,
     braiding_naturality_right_assoc]
   slice_lhs 2 3 =>
     simp only [← id_tensorHom, ← tensorHom_id, tensorHom_comp_tensorHom, Category.id_comp,
@@ -74,6 +74,7 @@ private lemma adjRetraction_is_retraction (c : C) (d : D)
 
 attribute [local simp] Adjunction.homEquiv_unit Adjunction.homEquiv_counit
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 Day's reflection theorem.
@@ -216,6 +217,7 @@ instance (c : C) (d : D) : IsIso (adj.unit.app ((ihom d).obj (R.obj c))) := by
   intro d d'
   infer_instance
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `monoidalClosed`. -/
 @[implicit_reducible]

@@ -35,6 +35,7 @@ namespace CategoryTheory.Limits
 
 variable {J : Type w} (f : J → C)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The map of a fan is a limit iff the fan consisting of the mapped morphisms is a limit. This
 essentially lets us commute `Fan.mk` with `Functor.mapCone`.
 -/
@@ -109,6 +110,7 @@ instance {I : Type*} [Category* I] [IsGroupoid I] (F : C ⥤ D) [PreservesLimits
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The map of a cofan is a colimit iff the cofan consisting of the mapped morphisms is a colimit.
 This essentially lets us commute `Cofan.mk` with `Functor.mapCocone`.
 -/

@@ -382,6 +382,7 @@ variable (k G)
 instance : (coinvariantsFunctor k G).Additive where
 instance : (coinvariantsFunctor k G).Linear k where
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction between the functor sending a representation to its coinvariants and the functor
 equipping a module with the trivial representation. -/
@@ -397,6 +398,7 @@ theorem coinvariantsAdjunction_homEquiv_apply_hom {X : Rep.{w} k G} {Y : ModuleC
     ((coinvariantsMk k G).app X ≫ f).hom := by
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coinvariantsAdjunction_homEquiv_symm_apply_hom {X : Rep.{w} k G} {Y : ModuleCat k}
@@ -489,6 +491,7 @@ noncomputable def finsuppToCoinvariantsTensorFree :
 
 variable {A α}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma finsuppToCoinvariantsTensorFree_single (i : α) (x : A) :
