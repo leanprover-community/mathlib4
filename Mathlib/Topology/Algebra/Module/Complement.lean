@@ -83,6 +83,7 @@ open ContinuousLinearMap
 
 /-- Two submodules `p` and `q` are *topological complements* if they are algebraic complements and
 the projection on `p` along `q` is continuous. -/
+@[pp_nodot]
 structure IsTopCompl (p q : Submodule R M) : Prop where
   isCompl : IsCompl p q
   continuous_projection : Continuous isCompl.projection
