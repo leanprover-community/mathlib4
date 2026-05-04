@@ -787,6 +787,11 @@ theorem map_closureS (f : R →+* S) (s : Set R) : (closure s).map f = closure (
   Set.image_preimage.l_comm_of_u_comm (gc_map_comap f) (Subsemiring.gi S).gc (Subsemiring.gi R).gc
     fun _ ↦ coe_comap _ _
 
+@[simp]
+theorem rangeSRestrict_comp_codRestrict (g : S →+* T) (f : R →+* S) :
+    (g.domRestrict f.rangeS).comp (f.rangeSRestrict) = g.comp f :=
+  rfl
+
 end RingHom
 
 namespace Subsemiring
