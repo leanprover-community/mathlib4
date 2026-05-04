@@ -7,6 +7,7 @@ module
 
 public meta import Mathlib.Lean.Elab.Options
 public meta import Mathlib.Lean.Name
+public meta import Lean.Elab.BuiltinCommand
 
 /-!
 # Scope manipulation tools
@@ -130,7 +131,7 @@ open Parser.Command
 /-- Applies a `sectionHeader` syntax of the form `(@[expose])? (public)? (noncomputable)? (meta)?`
 to the current scope, overwriting the values (rather than merging them). For instance, if `public`
 is absent, the resulting scope now has `isPublic := false`, even if it was `true` before. -/
-def unreifySectionHeaderStx : TSyntax ``Parser.Command.sectionHeader → CommandElabM Unit
+def unreifySectionHeader : TSyntax ``Parser.Command.sectionHeader → CommandElabM Unit
   | `(Parser.Command.sectionHeader|
       $[@[expose%$exposeTk]]? $[public%$pubTk]? $[noncomputable%$ncTk]? $[meta%$metaTk]?) => do
       let isPublic := pubTk.isSome
@@ -182,6 +183,7 @@ def _root_.Lean.OpenDecl.activate {m : Type → Type}
   | .simple ns _  => activateScoped ns
   | .explicit _ _ => pure () -- `open` never activates scopes when creating these
 
+-- TODO: it's possible we should register namespaces if they don't exist.
 /-- Turns reified syntax for a single `open` such as `@foo.bar` into an `OpenDecl`, activating
 scopes as `open` would if `activateScopes := true` (the default). -/
 def unreifyOpenDecl (openDecl : TSyntax ``reifiedOpenDecl) (activateScopes := true) :
@@ -336,6 +338,119 @@ def reifyOmit? : CommandElabM (Option (TSyntax ``Parser.Command.omit)) := do
 
 end variables
 
+section reset
+
+/-- Pops all but the base scope from the `stateStack`. Note that the base scope may still be
+modified. -/
+def _root_.Lean.ScopedEnvExtension.popAllScopes {α β σ} (ext : ScopedEnvExtension α β σ)
+    (env : Environment) : Environment :=
+  ext.ext.modifyState (asyncMode := .local) env fun s =>
+    { s with stateStack := s.stateStack.getLast?.toList }
+
+@[inherit_doc ScopedEnvExtension.popAllScopes]
+def popAllScopes {m : Type → Type} [Monad m] [MonadEnv m] [MonadLiftT (ST IO.RealWorld) m] :
+    m Unit :=
+  for ext in ← scopedEnvExtensionsRef.get do
+    modifyEnv ext.popAllScopes
+
+/-- Reconstructs the initial state stack of the given `ScopedEnvExtension` from the imported
+entries. -/
+def _root_.Lean.ScopedEnvExtension.reconstructInitialStateStack {α β σ}
+    (ext : ScopedEnvExtension α β σ) (env : Environment) (opts : Options) :
+    IO (ScopedEnvExtension.StateStack α β σ) :=
+  ReaderT.run (m := IO) (r := { env, opts }) <|
+    ext.ext.addImportedFn (ext.ext.toEnvExtension.getState env .sync).importedEntries
+
+/-- Resets the full state of all scoped env extensions by rebuilding it from the imported entries.
+
+Note that this means that scoped entries added earlier in the current file will no longer be
+activatable.
+
+If `clearNewEntries := true` (the default), resets all the to-be-exported entries as well. -/
+def resetScopedEnvExtensions {m : Type → Type} [Monad m] [MonadEnv m]
+    [MonadLiftT (ST IO.RealWorld) m] [MonadLiftT IO m]
+    (opts : Options) (clearNewEntries := true) : m Unit := do
+  for ext in ← scopedEnvExtensionsRef.get do
+    let env ← getEnv
+    let init ← ext.reconstructInitialStateStack env opts
+    let init := if clearNewEntries then init else
+      { init with newEntries := (ext.ext.getState env .sync).newEntries }
+    modifyEnv fun env => ext.ext.setState env init
+
+/-- Creates a base scope with the same header and options as the base scope. (Discards other fields
+of the base scope.) -/
+def mkFreshBaseScope (scopes : List Scope) : Scope := Id.run do
+  let some { header, opts .. } := scopes.getLast? | pure { header := "", opts := {} }
+  { header, opts }
+
+/-- A setting determining how far to reset `ScopedEnvExtension`s. -/
+inductive _root_.Lean.ScopedEnvExtension.ResetTo where
+| /-- Does not reset at all. -/ current
+| /-- Resets to the base scope in the `StateStack`, which may be polluted. -/ baseScope
+| /-- Reconstructs the initial state from the imported entries. If `clearNewEntries := false` (the
+  default), preserves the new entries that will be exported at the end of the file. Otherwise,
+  clears them. -/ initialState (clearNewEntries := false)
+
+/-- Resets the scopes. Preserves the options and header in the base scope. Note, however, that this
+may include user-set options at the top of the file in addition to the lakefile options.
+
+If `resetEnvExtensions : Option Bool` is `some false` (the default), resets scoped environment
+extensions but does not clear the entries that will be exported at the end of the file. If
+`some true`, these new entries are cleared as well. If `none`, all scopes are popped, but the base
+scope is not reconstructed from imports and therefore may be polluted. -/
+def resetScopes (resetEnvExtensionsTo : ScopedEnvExtension.ResetTo := .initialState) :
+    CommandElabM Unit := do
+  modify fun s => { s with scopes := [mkFreshBaseScope s.scopes] }
+  match resetEnvExtensionsTo with
+  | .current => pure ()
+  | .baseScope => popAllScopes
+  | .initialState clearNewEntries => resetScopedEnvExtensions (← getOptions) clearNewEntries
+
+end reset
+
+#check elabUniverse
+
+/-- Resets the scopes, then creates the scope described in the syntactic scope specification. By
+default, this resets scoped environment extensions by reconstructing their initial state from
+imported entries, but does *not* clear the exported entries. See `ScopedEnvExtension.ResetTo` for
+other possibilities. -/
+def unreifyScope (stx : TSyntax ``scopeStx)
+    (resetEnvExtensionsTo : ScopedEnvExtension.ResetTo := .initialState) :
+    CommandElabM Unit :=
+  match stx with
+  | `(scopeStx| $sectionHeader scope
+      $[universe $[$levelNames:ident]*]?
+      $[$namespaceStx]?
+      $[open $openDecls:reifiedOpenDecl*]?
+      $[open scoped $openScopedDecls:reifiedSimpleOpenIdent*]?
+      $[set_options $keyVals:reifiedOptionKeyValue,*]?
+      $[$vars]?) => do
+    resetScopes resetEnvExtensionsTo
+    unreifySectionHeader sectionHeader
+    if let some levelNames := levelNames then
+      modifyScope fun s => { s with levelNames := levelNames.reverse.map (·.getId) |>.toList }
+    if let some ns := namespaceStx then
+      elabNamespace ns
+    if let some openDecls := openDecls then
+      unreifyOpenDecls openDecls
+    if let some openScopedDecls := openScopedDecls then
+      for openScoped in openScopedDecls do
+        let `(reifiedSimpleOpenIdent| @$id) := openScoped | throwUnsupportedSyntax
+        activateScoped id.getId
+    if let some keyVals := keyVals then
+      for keyVal in keyVals.getElems do
+        let `(reifiedOptionKeyValue| $id $val) := keyVal | throwUnsupportedSyntax
+        -- Gets us info.
+        let opts ← Elab.elabSetOption id val
+        modifyScope fun s => { s with opts }
+    if let some vars := vars then
+      let `(reifiedVarStx| $vars $[$included]? $[$omitted]?) := vars | throwUnsupportedSyntax
+      elabVariable vars
+      -- Note: we assume these are disjoint, and order of elaboration is irrelevant.
+      if let some included := included then elabInclude included
+      if let some omitted  := omitted  then elabOmit omitted
+  | _ => throwUnsupportedSyntax
+
 /-- Reifies aspects of the current scope into a `scopeStx` scope specification. See `scopeStx`. -/
 def reifyScope : CommandElabM (TSyntax ``scopeStx) := do
   let sectionHeader ← reifySectionHeader (← getScope)
@@ -386,6 +501,9 @@ elab_rules : command
     let stx ← `(command| #scope%$tk $scopeStx')
     liftCoreM <| Meta.Tactic.TryThis.addSuggestion (← getRef) (origSpan? := (← getRef)) stx
       (diffGranularity := .word)
+
+/-- -/
+syntax "#scope!" ppLine scopeStx : command
 
 end
 
