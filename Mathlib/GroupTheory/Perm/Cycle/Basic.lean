@@ -396,7 +396,7 @@ theorem isCycle_swap_mul_aux₂ {α : Type*} [DecidableEq α] :
       rw [mul_apply, swap_apply_def]
       split_ifs <;> simp [symm_apply_eq, eq_symm_apply] at * <;> tauto
     obtain ⟨i, hi⟩ := isCycle_swap_mul_aux₁ n hb <| by
-      rw [← mul_apply, ← pow_succ]; simpa [pow_succ', eq_symm_apply (x := x)] using h
+      rw [← mul_apply, ← pow_succ]; simpa [pow_succ', eq_symm_apply] using h
     refine ⟨-i, (swap x (f⁻¹ x) * f⁻¹).injective ?_⟩
     convert hi using 1
     · rw [zpow_neg, ← inv_zpow, ← mul_apply, mul_inv_rev, swap_inv, mul_swap_eq_swap_mul]

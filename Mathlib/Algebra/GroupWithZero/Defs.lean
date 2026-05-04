@@ -325,7 +325,7 @@ theorem mul_ne_zero_comm : a * b ≠ 0 ↔ b * a ≠ 0 := mul_eq_zero_comm.not
 
 theorem mul_self_eq_zero : a * a = 0 ↔ a = 0 := by simp
 
-theorem zero_eq_mul_self : 0 = a * a ↔ a = 0 := by simp [eq_comm]
+theorem zero_eq_mul_self : 0 = a * a ↔ a = 0 := by simp
 
 theorem mul_self_ne_zero : a * a ≠ 0 ↔ a ≠ 0 := mul_self_eq_zero.not
 

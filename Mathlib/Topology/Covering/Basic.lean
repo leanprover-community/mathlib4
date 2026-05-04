@@ -430,9 +430,9 @@ open Function in
 `V` be an open subset of `X`. Suppose that there is a family `U` of disjoint subsets of `E`
 that covers `f⁻¹(V)` such that for every `i`,
 
- 1. `f` is injective on `Uᵢ`,
- 2. `V` is contained in the image `f(Uᵢ)`,
- 3. the open sets in `V` are determined by their preimages in `Uᵢ`.
+1. `f` is injective on `Uᵢ`,
+2. `V` is contained in the image `f(Uᵢ)`,
+3. the open sets in `V` are determined by their preimages in `Uᵢ`.
 
 Then `f` admits a `Bundle.Trivialization` over the base set `V`. -/
 @[simps source target baseSet] noncomputable def IsOpen.trivializationDiscrete [Nonempty (X → E)]
