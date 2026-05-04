@@ -127,6 +127,22 @@ open Parser.Command
     `(sectionHeader|
       $[@[expose%$exposeTk?]]? $[public%$pubTk]? $[noncomputable%$ncTk]? $[meta%$metaTk]?)
 
+/-- Applies a `sectionHeader` syntax of the form `(@[expose])? (public)? (noncomputable)? (meta)?`
+to the current scope, overwriting the values (rather than merging them). For instance, if `public`
+is absent, the resulting scope now has `isPublic := false`, even if it was `true` before. -/
+def unreifySectionHeaderStx : TSyntax ``Parser.Command.sectionHeader → CommandElabM Unit
+  | `(Parser.Command.sectionHeader|
+      $[@[expose%$exposeTk]]? $[public%$pubTk]? $[noncomputable%$ncTk]? $[meta%$metaTk]?) => do
+      let isPublic := pubTk.isSome
+      let isMeta := metaTk.isSome
+      -- `sectionHeader` parses `expose` directly, not as an `attrInstance`.
+      let attrs : List (TSyntax ``Parser.Term.attrInstance) ←
+        if let some exposeTk := exposeTk then
+          pure [← withRef exposeTk `(Parser.Term.attrInstance| expose)] else pure []
+      let isNoncomputable := ncTk.isSome
+      modifyScope fun s => { s with isPublic, isMeta, isNoncomputable, attrs }
+  | _ => throwUnsupportedSyntax
+
 end header
 
 section openDecls
