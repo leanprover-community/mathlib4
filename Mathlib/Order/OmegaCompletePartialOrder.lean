@@ -135,7 +135,7 @@ theorem mem_map_iff {b : β} : b ∈ c.map f ↔ ∃ a, a ∈ c ∧ f a = b :=
 theorem map_comp : (c.map f).map g = c.map (g.comp f) :=
   rfl
 
-@[mono]
+@[gcongr, mono]
 theorem map_le_map {g : α →o β} (h : f ≤ g) : c.map f ≤ c.map g := fun _ ↦ ⟨_, h _⟩
 
 /-- `OmegaCompletePartialOrder.Chain.zip` pairs up the elements of two chains
@@ -210,7 +210,7 @@ theorem ωSup_total {c : Chain α} {x : α} (h : ∀ i, c i ≤ x ∨ x ≤ c i)
       have : x ≤ c i := (h i).resolve_left hx
       Or.inr <| le_ωSup_of_le _ this)
 
-@[mono]
+@[gcongr, mono]
 theorem ωSup_le_ωSup_of_le {c₀ c₁ : Chain α} (h : c₀ ≤ c₁) : ωSup c₀ ≤ ωSup c₁ :=
   (ωSup_le _ _) fun i => by
     obtain ⟨_, h⟩ := h i
@@ -540,7 +540,7 @@ protected theorem congr_arg (f : α →𝒄 β) {x y : α} (h : x = y) : f x = f
 protected theorem monotone (f : α →𝒄 β) : Monotone f :=
   f.monotone'
 
-@[mono]
+@[gcongr, mono]
 theorem apply_mono {f g : α →𝒄 β} {x y : α} (h₁ : f ≤ g) (h₂ : x ≤ y) : f x ≤ g y :=
   OrderHom.apply_mono (show (f : α →o β) ≤ g from h₁) h₂
 
