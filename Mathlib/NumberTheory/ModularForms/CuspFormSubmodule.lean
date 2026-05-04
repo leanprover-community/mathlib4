@@ -136,6 +136,22 @@ lemma isCuspForm_iff_coeffZero_eq_zero (f : ModularForm 𝒮ℒ k) :
     (periodic_comp_ofComplex _ one_mem_strictPeriods_SL)]
   exact (CuspFormClass.zero_at_infty g).valueAtInfty_eq_zero
 
+/-- Subtracting `(qExpansion 1 f).coeff 0 • g` from `f` (where `g` has constant qExpansion 1)
+gives a cusp form. -/
+lemma sub_smul_isCuspForm (f g : ModularForm 𝒮ℒ k)
+    (hg : (qExpansion 1 g).coeff 0 = 1) :
+    ModularForm.IsCuspForm (f - (qExpansion 1 f).coeff 0 • g) := by
+  set c := (qExpansion 1 f).coeff 0
+  rw [ModularForm.isCuspForm_iff_coeffZero_eq_zero,
+    show qExpansion 1 ⇑(f - c • g : ModularForm 𝒮ℒ k) =
+          qExpansion 1 ⇑f - qExpansion 1 ⇑(c • g : ModularForm 𝒮ℒ k) from
+        (ModularForm.qExpansionAddHom one_pos one_mem_strictPeriods_SL k).map_sub f (c • g),
+    show qExpansion 1 ⇑(c • g : ModularForm 𝒮ℒ k) = c • qExpansion 1 ⇑g from
+      ModularForm.qExpansion_smul (h := 1) (Γ := 𝒮ℒ) (k := k)
+        one_pos one_mem_strictPeriods_SL c g,
+    map_sub, PowerSeries.coeff_smul]
+  simp [hg, c]
+
 end SL2Z
 
 end ModularForm

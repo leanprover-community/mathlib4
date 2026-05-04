@@ -93,6 +93,13 @@ theorem mk_smul (s : Finset ι) (c : R) (x) : mk M s (c • x) = c • mk M s x 
 theorem of_smul (i : ι) (c : R) (x) : of M i (c • x) = c • of M i x :=
   (lof R ι M i).map_smul c x
 
+theorem of_eq_sub_add_smul {M : ι → Type*} [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
+    {i : ι} (f g : M i) (c : R) :
+    of M i f = of M i (f - c • g) + c • of M i g := by
+  rw [← of_smul, ← map_add]
+  congr 1
+  abel
+
 variable {R}
 
 theorem support_smul [∀ (i : ι) (x : M i), Decidable (x ≠ 0)] (c : R) (v : ⨁ i, M i) :
