@@ -213,9 +213,9 @@ theorem padicValNat_eq_of_dvd_of_not_dvd {p n k : ℕ} (hk : p ^ k ∣ n) (hsucc
     padicValNat p n = k := by
   have hp : p ≠ 1 := fun _ => by simp_all
   have hn : n ≠ 0 := fun _ => by simp_all
-  exact Nat.eq_iff_le_and_ge.mpr
-    ⟨Nat.le_of_not_gt <| (pow_dvd_iff_le_padicValNat hp hn).not.mp hsucc,
-    (pow_dvd_iff_le_padicValNat hp hn).mp hk⟩
+  exact Nat.eq_of_le_of_lt_succ
+    ((pow_dvd_iff_le_padicValNat hp hn).mp hk)
+    (Nat.lt_of_not_le ((pow_dvd_iff_le_padicValNat hp hn).not.mp hsucc))
 
 /-- If `m ≠ 0` and `padicValNat p m < padicValNat p n`, then `padicValNat p (n + m) =
 padicValNat p m`. -/
