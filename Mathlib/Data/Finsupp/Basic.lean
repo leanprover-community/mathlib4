@@ -705,6 +705,8 @@ variable [AddCommMonoid M]
 lemma filter_add_filter_not (f : α →₀ M) (p : α → Prop) [DecidablePred p] :
     f.filter p + f.filter (¬ p ·) = f := by ext; simp [filter_apply]; split <;> simp
 
+@[deprecated (since := "2026-05-04")] alias filter_pos_add_filter_neg := filter_add_filter_not
+
 end AddCommMonoid
 end Filter
 
