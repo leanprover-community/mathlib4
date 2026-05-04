@@ -114,7 +114,7 @@ theorem card_type {α : Type u} [LinearOrder α] : card (type α) = #α := by
 
 @[gcongr]
 theorem card_mono {o₁ o₂ : OrderType} : o₁ ≤ o₂ → card o₁ ≤ card o₂ :=
-  inductionOn o₁ fun _ ↦ inductionOn o₂ fun _ _ hle ↦ by
+  inductionOn₂ o₁ o₂ fun _ _ _ _ hle ↦ by
     simp [card, (type_le_type_iff.mp hle).some.cardinal_le]
 
 theorem card_monotone : Monotone card := @card_mono
