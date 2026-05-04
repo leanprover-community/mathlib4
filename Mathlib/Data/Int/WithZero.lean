@@ -45,9 +45,7 @@ namespace WithZeroMulInt
 def toNNReal {e : ℝ≥0} (he : e ≠ 0) : ℤᵐ⁰ →*₀ ℝ≥0 where
   toFun := fun x ↦ if hx : x = 0 then 0 else e ^ (WithZero.unzero hx).toAdd
   map_zero' := rfl
-  map_one' := by
-    simp only [dif_neg one_ne_zero]
-    erw [toAdd_one, zpow_zero]
+  map_one' := by rw [dif_neg one_ne_zero, unzero_coe (x := 1), toAdd_one, zpow_zero]
   map_mul' x y := by
     by_cases hxy : x * y = 0
     · rcases mul_eq_zero.mp hxy with hx | hy
@@ -94,7 +92,7 @@ theorem toNNReal_eq_one_iff {e : ℝ≥0} (m : ℤᵐ⁰) (he0 : e ≠ 0) (he1 :
   by_cases hm : m = 0
   · simp only [hm, map_zero, zero_ne_one]
   · refine ⟨fun h1 ↦ ?_, fun h1 ↦ h1 ▸ map_one _⟩
-    rw [toNNReal_neg_apply he0 hm, zpow_eq_one_iff_right₀ (zero_le e) he1, toAdd_eq_zero] at h1
+    rw [toNNReal_neg_apply he0 hm, zpow_eq_one_iff_right₀ _root_.zero_le he1, toAdd_eq_zero] at h1
     rw [← WithZero.coe_unzero hm, h1, coe_one]
 
 theorem toNNReal_lt_one_iff {e : ℝ≥0} {m : ℤᵐ⁰} (he : 1 < e) :

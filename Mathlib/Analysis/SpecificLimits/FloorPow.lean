@@ -46,7 +46,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
       tendsto_const_nhds.div_atTop (tendsto_natCast_atTop_iff.2 ctop)
     apply le_of_tendsto_of_tendsto' this clim fun n => ?_
     gcongr
-    exact hmono (zero_le _)
+    exact hmono zero_le
   have A : ∀ ε : ℝ, 0 < ε → ∀ᶠ n in atTop, u n - n * l ≤ ε * (1 + ε + l) * n := by
     intro ε εpos
     rcases hlim (1 + ε) ((lt_add_iff_pos_right _).2 εpos) with ⟨c, cgrowth, ctop, clim⟩
