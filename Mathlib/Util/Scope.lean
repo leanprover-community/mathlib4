@@ -213,16 +213,19 @@ end openDecls
 
 section setOption
 
-/- Note: Ideally we would like to not include all the lake build options. But these are commingled
-with any `set_option`s in the base scope, so without doing something like "checking the lakefile"
-or "recording the options at the top of the file via linter" we can't distinguish between options
-set by lake and options set in the file. -/
-/-- Erases the options set by Lean itself, and `Elab.async` if it has not been changed by the user.
-However, still includes the options set in the lakefile. -/
+/- Note: lakefile options are commingled in the base scope with options set in the module, so it is
+not easy to split them up. Further, including the lakefile options is arguably better for
+transportation between libraries. -/
+/-- Gets the current options after erasing the options set by Lean itself, including `Elab.async`
+if it has not been changed by the user from the default of `true`. Note that this includes the
+options set in the lakefile.
+
+The result should be the same in both the language server and `lake build`. -/
 def getUserOptions : CommandElabM Options := do
   let opts := (← getOptions).erase `internal.cmdlineSnapshots |>.erase `Elab.inServer
   if opts.get? `Elab.async |>.isEqSome true then return opts.erase `Elab.async else return opts
 
+/-- Reifies the given `Options` into `set_options ...` syntax if there are any. -/
 def reifySetOptions? (opts : Options) : CommandElabM (Option (TSyntax ``reifiedSetOptionsStx)) := do
   let mut kvs := #[]
   for (key, val) in opts do
@@ -234,8 +237,9 @@ end setOption
 
 section universes
 
-def reifyUniverses? : CommandElabM (Option <| TSyntax ``Parser.Command.universe) := do
-  let levelNames := (← getScope).levelNames
+/-- Reifies the current level names into `universe ...` syntax if there are any. -/
+def reifyLevelNames? : CommandElabM (Option (TSyntax ``Parser.Command.universe)) := do
+  let levelNames ← getLevelNames
   if levelNames.isEmpty then pure none else
     some <$> `(Parser.Command.universe| universe $(levelNames.toArray.map mkIdent)*)
 
@@ -243,6 +247,7 @@ end universes
 
 section namespaces
 
+/-- Reifies the current namespace into `namespace ...` syntax if not in the root namespace. -/
 def reifyCurrNamespace? : CommandElabM (Option (TSyntax ``Parser.Command.namespace)) := do
   let ns ← getCurrNamespace
   if ns.isAnonymous then pure none else `(Parser.Command.namespace| namespace $(mkIdent ns))
@@ -251,17 +256,20 @@ end namespaces
 
 section variables
 
+/-- Reifies current section variables into `variable ...` syntax if there are any. -/
 def reifyVariables? : CommandElabM (Option (TSyntax ``Parser.Command.variable)) := do
   let { varDecls .. } ← getScope
   if varDecls.isEmpty then return none
   `(Parser.Command.variable| variable $varDecls*)
 
+/-- Reifies current `include`d section variables into `include ...` syntax if there are any. -/
 def reifyInclude? : CommandElabM (Option (TSyntax ``Parser.Command.include)) := do
   let { includedVars .. } ← getScope
   if includedVars.isEmpty then return none
   -- TODO: the `Name`s are `varUIDs` with hygiene, but should we strip that in making the idents?
   `(Parser.Command.include| include $(includedVars.toArray.map mkIdent)*)
 
+/-- Reifies current `omit`ted section variables into `omit ...` syntax if there are any. -/
 def reifyOmit? : CommandElabM (Option (TSyntax ``Parser.Command.omit)) := do
   let { omittedVars, varUIds, varDecls .. } ← getScope
   if omittedVars.isEmpty then return none
@@ -280,28 +288,21 @@ def reifyOmit? : CommandElabM (Option (TSyntax ``Parser.Command.omit)) := do
 
 end variables
 
+/-- Reifies aspects of the current scope into a `scopeStx` scope specification. See `scopeStx`. -/
 def reifyScope : CommandElabM (TSyntax ``scopeStx) := do
-  let sectionHeader ← (← getScope).toSectionHeader.toSyntax
-  let universes ← reifyUniverses?
+  let sectionHeader ← reifySectionHeader (← getScope)
+  let universes ← reifyLevelNames?
   let namespaceStx ← reifyCurrNamespace?
-  let opens ← reifyOpenDecls (← getScope).openDecls
-
+  let opens ← reifyOpenDecls (← getOpenDecls)
+  let extraOpenScoped ← reifyExtraOpenScopes
+  let setOptions ← reifySetOptions? (← getUserOptions)
   let variables ← (← reifyVariables?).mapM fun vars => do
     `(reifiedVarStx| $vars $(← reifyInclude?)? $(← reifyOmit?)?)
-
-  let extraScopedNames ← extraScoped
-  let extraScoped ← if extraScopedNames.isEmpty then pure none else
-    let extraScoped ← extraScopedNames.toArray.mapM fun n =>
-      `(reifiedSimpleOpenIdent| @$(mkIdent n))
-    some <$> `(reifiedOpenScopedStx| open scoped $extraScoped*)
-
-  let setOptions ← reifySetOptions? (← getUserOptions)
-
   `(scopeStx| $sectionHeader scope
     $[$universes]?
     $[$namespaceStx]?
     $[$opens]?
-    $[$extraScoped]?
+    $[$extraOpenScoped]?
     $[$setOptions]?
     $[$variables]?)
     /- TODO: technically the variable parsing could change if a scope is opened earlier. This is
