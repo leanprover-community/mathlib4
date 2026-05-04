@@ -259,7 +259,8 @@ def reifyExtraOpenScopes : CommandElabM (Option (TSyntax ``reifiedOpenScopedStx)
   let extraScoped ← extra.toArray.mapM fun n => `(reifiedSimpleOpenIdent| @$(mkIdent n))
   `(reifiedOpenScopedStx| open scoped $extraScoped*)
 
-/-- Directly activates the scopes in reified `open scoped @id₁ @id₂ ...` syntax. -/
+/-- Directly activates the scopes in reified `open scoped @id₁ @id₂ ...` syntax. Unlike other
+`unreify` declarations, does *not* reset the scopes first. -/
 def unreifyOpenScoped : TSyntax ``reifiedOpenScopedStx → CommandElabM Unit
   | `(reifiedOpenScopedStx| open scoped $[@$openScopedDecls:ident]*) => do
     for openScoped in openScopedDecls do
@@ -291,6 +292,17 @@ def reifySetOptions? (opts : Options) : CommandElabM (Option (TSyntax ``reifiedS
     let some val := val.toSetOptionValueSyntax? | continue
     kvs := kvs.push <|← `(reifiedOptionKeyValue| $(mkIdent key) $val)
   if kvs.isEmpty then pure none else some <$> `(reifiedSetOptionsStx| set_options $kvs,*)
+
+/-- Overwrites the current options with those given in the `set_options ...` syntax. Elaborates the
+option values normally, populating the infotrees for hovers. -/
+def unreifySetOptions : TSyntax ``reifiedSetOptionsStx → CommandElabM Unit
+  | `(reifiedSetOptionsStx| set_options $keyVals:reifiedOptionKeyValue,*) => do
+  for keyVal in keyVals.getElems do
+    let `(reifiedOptionKeyValue| $id $val) := keyVal | throwUnsupportedSyntax
+    -- Note that `elabSetOption` adds to the current options.
+    let opts ← Elab.elabSetOption id val
+    modifyScope fun s => { s with opts }
+  | _ => throwUnsupportedSyntax
 
 end setOption
 
@@ -428,7 +440,7 @@ def unreifyScope (stx : TSyntax ``scopeStx)
       $[$namespaceStx:namespace]?
       $[open $openDecls:reifiedOpenDecl*]?
       $[$openScoped:reifiedOpenScopedStx]?
-      $[set_options $keyVals:reifiedOptionKeyValue,*]?
+      $[$setOptions:reifiedSetOptionsStx]?
       $[$vars]?) => do
     resetScopes resetEnvExtensionsTo
     unreifySectionHeader sectionHeader
@@ -436,12 +448,7 @@ def unreifyScope (stx : TSyntax ``scopeStx)
     namespaceStx.forM (elabNamespace ·)
     openDecls.forM unreifyOpenDecls
     openScoped.forM unreifyOpenScoped
-    keyVals.forM fun keyVals => do
-      for keyVal in keyVals.getElems do
-        let `(reifiedOptionKeyValue| $id $val) := keyVal | throwUnsupportedSyntax
-        -- Gets us info.
-        let opts ← Elab.elabSetOption id val
-        modifyScope fun s => { s with opts }
+    setOptions.forM unreifySetOptions
     vars.forM fun vars => do
       let `(reifiedVarStx| $vars $[$included]? $[$omitted]?) := vars | throwUnsupportedSyntax
       elabVariable vars
