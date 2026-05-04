@@ -96,6 +96,11 @@ notation:25 E' " →Lᵤ[" R ", " 𝔖 "] " F => UniformConvergenceCLM (RingHom.
 
 namespace UniformConvergenceCLM
 
+/-- Reinterpret `f : E →SL[σ] F` as an element of `E →SLᵤ[σ, 𝔖] F`. -/
+@[implicit_reducible]
+def ofFun [TopologicalSpace F] (𝔖 : Set (Set E)) : (E →SL[σ] F) ≃ (E →SLᵤ[σ, 𝔖] F) :=
+  ⟨fun x => x, fun x => x, fun _ => rfl, fun _ => rfl⟩
+
 instance instFunLike [TopologicalSpace F] (𝔖 : Set (Set E)) :
     FunLike (E →SLᵤ[σ, 𝔖] F) E F :=
   inferInstanceAs <| FunLike (E →SL[σ] F) E F
@@ -215,8 +220,9 @@ theorem t2Space [TopologicalSpace F] [IsTopologicalAddGroup F] [T2Space F]
 
 instance instDistribMulAction (M : Type*) [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
     [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul M F] (𝔖 : Set (Set E)) :
-    DistribMulAction M (E →SLᵤ[σ, 𝔖] F) :=
-  inferInstanceAs <| DistribMulAction M (E →SL[σ] F)
+    DistribMulAction M (E →SLᵤ[σ, 𝔖] F) where
+  smul c f := (ofFun σ F 𝔖) (c • (ofFun σ F 𝔖).symm f)
+  __ : DistribMulAction M (E →SLᵤ[σ, 𝔖] F) := inferInstanceAs <| DistribMulAction M (E →SL[σ] F)
 
 @[simp]
 theorem smul_apply {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
