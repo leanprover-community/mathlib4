@@ -11,20 +11,22 @@ public import Mathlib.Topology.Instances.Discrete
 /-!
 # Adapted and progressively measurable processes
 
-This file defines the related notions of a process `u` being `Adapted`, `StronglyAdapted`
-or `StronglyProgressive` (progressively measurable) with respect to a filter `f`, and proves
-some basic facts about them.
+This file defines the related notions of a process `u` being (strongly) `Adapted` or
+`Progressive` (progressively measurable) with respect to a filtration `f`, and proves some
+basic facts about them.
 
 ## Main definitions
 
 * `MeasureTheory.Adapted`: a sequence of functions `u` is said to be adapted to a
   filtration `f` if at each point in time `i`, `u i` is `f i`-measurable
-* `MeasureTheory.StronglyAdapted`: a sequence of functions `u` is said to be strongly adapted to a
-  filtration `f` if at each point in time `i`, `u i` is `f i`-strongly measurable
-* `MeasureTheory.IsStronglyProgressive`: a sequence of functions `u` is said to be strongly
-  progressive with respect to a filtration `f` if at each point in time `i`, `u` restricted to
-  `Set.Iic i × Ω` is strongly measurable with respect to the product `MeasurableSpace` structure
-  where the σ-algebra used for `Ω` is `f i`.
+* `MeasureTheory.IsProgressive`: a sequence of functions `u` is said to be progressive with respect
+  to a filtration `f` if at each point in time `i`, `u` restricted to `Set.Iic i × Ω` is strongly
+  measurable with respect to the product `MeasurableSpace` structure where the σ-algebra used for
+  `Ω` is `f i`.
+We also provide the following variants, which use `MeasureTheory.StronglyMeasurable` instead
+of `Measurable`:
+* `MeasureTheory.StronglyAdapted`
+* `MeasureTheory.IsStronglyProgressive`
 
 ## Main results
 
