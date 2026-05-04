@@ -714,7 +714,9 @@ partial def _root_.Lean.MVarId.gcongr
   -- Look up the `@[gcongr]` lemmas whose conclusion has the same relation and head function as
   -- the goal
   let key := { relName, head := lhsHead, arity := lhsArgs.size }
-  let lemmas := ((gcongrExt.getState (← getEnv)).get? key).getD (relImpRelLemma lhsArgs.size)
+  let mut lemmas := (gcongrExt.getState (← getEnv)).getD key []
+  if relName == `_Implies then
+    lemmas := lemmas ++ relImpRelLemma lhsArgs.size
   for lem in lemmas do
     let (mainGoals, sideGoals) ← try
       withReducible <| applyGCongrLemma g lem
