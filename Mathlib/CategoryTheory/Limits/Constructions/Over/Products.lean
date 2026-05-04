@@ -179,7 +179,6 @@ variable {X : C} {Y Z : Over X}
 
 open Limits
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isPullback_of_binaryFan_isLimit (c : BinaryFan Y Z) (hc : IsLimit c) :
     IsPullback c.fst.left c.snd.left Y.hom Z.hom :=
   ⟨by simp, ⟨hc.pullbackConeEquivBinaryFanInverse⟩⟩
@@ -236,7 +235,6 @@ abbrev widePullbackDiagramOfDiagramOver (B : C) {J : Type w} (F : Discrete J ⥤
     WidePullbackShape J ⥤ C :=
   WidePullbackShape.wideCospan B (fun j => (F.obj ⟨j⟩).left) fun j => (F.obj ⟨j⟩).hom
 
-set_option backward.isDefEq.respectTransparency false in
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simps]
 def conesEquivInverseObj (B : C) {J : Type w} (F : Discrete J ⥤ Over B) (c : Cone F) :
@@ -251,7 +249,6 @@ def conesEquivInverseObj (B : C) {J : Type w} (F : Discrete J ⥤ Over B) (c : C
         · rw [Over.w, Category.id_comp]
         · rw [Category.id_comp, Category.comp_id] }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simps]
 def conesEquivInverse (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :

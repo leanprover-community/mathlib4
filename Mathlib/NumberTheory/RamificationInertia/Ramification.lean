@@ -368,7 +368,7 @@ theorem ramificationIdx_algebra_tower' [IsDedekindDomain S] [IsDedekindDomain T]
       ramificationIdx p P * ramificationIdx P Q := by
   obtain rfl | hp := eq_or_ne p ⊥
   · simp
-  have : P.IsPrime := Ideal.over_def Q P ▸ Ideal.IsPrime.under S Q
+  have : P.IsPrime := isPrime_of_liesOver Q P
   have : Module.IsTorsionFree R T := by
     refine Module.IsTorsionFree.of_smul_eq_zero fun r m h ↦ ?_
     rwa [algebra_compatible_smul S, smul_eq_zero, FaithfulSMul.algebraMap_eq_zero_iff] at h

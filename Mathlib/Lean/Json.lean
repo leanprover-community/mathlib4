@@ -11,7 +11,7 @@ public import Mathlib.Init
 # Json serialization typeclass for `PUnit` & `Fin n` & `Subtype p`
 -/
 
-@[expose] public section
+public section
 
 universe u
 
