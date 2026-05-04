@@ -345,8 +345,7 @@ theorem mulHeight_eval_le {N : ℕ} {p : ι' → MvPolynomial ι K} (hp : ∀ i,
     · grw [(isNonarchimedean _ v.prop).eval_mvPolynomial_le (hp j) x]
       gcongr
       · exact HH₁ v.val
-      · grw [le_max_left (iSup ..) 1]
-        exact HH₂ (fun j ↦ max (⨆ s : (p j).support, v.val (coeff s.val (p j))) 1) j
+      · grw [← HH₂, ← le_max_left]
     · exact mul_nonneg (iSup_nonneg fun _ ↦ by positivity) <| by simp only [HH₁]
 
 /-- Let `K` be a field with an admissible family of absolute values (giving rise
