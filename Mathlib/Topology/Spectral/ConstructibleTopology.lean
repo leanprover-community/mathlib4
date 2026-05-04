@@ -154,3 +154,34 @@ instance compactSpace_withConstructibleTopology [CompactSpace X] [QuasiSober X]
     · rw [← Set.sInter_union]
       refine hB.prop.2.1 (_ ∪ F) ?_ <| (hA₁'.diff.union hA₂'.diff).union hF
       grind [Set.diff_singleton_subset_iff, Set.union_subset_iff]
+
+variable {Y : Type*} [TopologicalSpace Y]
+
+abbrev HasCompactFibers (f : X → Y) : Prop := ∀ y, IsCompact (f ⁻¹' {y})
+
+lemma IsProperMap.hasCompactFibers {f : X → Y} (hf : IsProperMap f) : HasCompactFibers f := sorry
+
+lemma fdsujb [PrespectralSpace X] [T0Space X] [QuasiSober X] :
+    T2Space <| WithConstructibleTopology X := by
+  constructor
+  intro x y hxy
+  #check t0Space_iff_not_inseparable
+  --#check exists_isOpen_xor_mem
+  --have := exists_isOpen_xor_mem
+  sorry
+
+/--
+A spectral map between *quasi-separated* quasispectral, sober spaces has compact fibers.
+Somewhat strangely, this is the strongest such statement we can figure out how to show.
+This is a bit strange because compactness of fibers is a purely topological property,
+and yet there is an analogous theorem in algebraic geometry saying that the fibers of a quasicompact
+morphism are quasicompact. The underlying space of a scheme is precisely a topological space which
+is locally a spectral space, which notably does not necessarily have any global quasi-separatedness
+assumptions. However, the proof of this fact is very algebraic (utilizing the fact that
+quasi-compactness of morphisms is closed under base change). So, we have that this purely
+topological property of quasicompact morphisms of schemes seems to be entirely a consequence of
+algebra.
+-/
+lemma IsSpectralMap.hasCompactFibers [PrespectralSpace X] [T0Space X] [QuasiSeparatedSpace X]
+    [PrespectralSpace Y] [T0Space Y] [QuasiSeparatedSpace Y] {f : X → Y} (hf : IsSpectralMap f) :
+    HasCompactFibers f := sorry
