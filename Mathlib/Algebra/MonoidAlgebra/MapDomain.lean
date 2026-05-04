@@ -81,7 +81,7 @@ protected lemma map_add (f : R →+ S) (x y : R[M]) : map f (x + y) = map f x + 
 
 @[to_additive]
 protected lemma map_sum (f : R →+ S) (s : Finset ι) (x : ι → R[M]) :
-    map f (∑ i ∈ s, x i) = ∑ i ∈ s, map f (x i) := mapRange_finset_sum ..
+    map f (∑ i ∈ s, x i) = ∑ i ∈ s, map f (x i) := mapRange_finsetSum ..
 
 @[to_additive (attr := simp)]
 lemma map_single (f : R →+ S) (r : R) (m : M) : map f (single m r) = single m (f r) :=
@@ -120,8 +120,8 @@ lemma comapDomain_add (f : M → N) (hf) (x y : R[N]) :
 lemma comapDomain_single_of_not_mem_range {r : R} {n : N} (hn : n ∉ Set.range f) (hf) :
     comapDomain f hf (single n r) = 0 := by simp [comapDomain, coeff, single, *]
 
-/-- `comapDomain` as an `AddMonoidHom. -/
-@[to_additive (attr := simps) comapDomainAddMonoidHom /-- `comapDomain` as an `AddMonoidHom. -/]
+/-- `comapDomain` as an `AddMonoidHom`. -/
+@[to_additive (attr := simps) comapDomainAddMonoidHom /-- `comapDomain` as an `AddMonoidHom`. -/]
 def comapDomainAddMonoidHom (f : M → N) (hf : Injective f) : R[N] →+ R[M] where
   toFun := comapDomain f hf
   map_zero' := by simp

@@ -33,16 +33,13 @@ principle on `Hyperreal`.
 
 open ArchimedeanClass Filter Germ Topology
 
+noncomputable section
+
 /-- Hyperreal numbers on the ultrafilter extending the cofinite filter. -/
 def Hyperreal : Type :=
   Germ (hyperfilter ℕ : Filter ℕ) ℝ
+deriving Inhabited
 
-noncomputable section
-
-#adaptation_note
-/-- After nightly-2025-05-07 we had to remove `deriving Inhabited` on `Hyperreal` above,
-as there is a new error about this instance having to be noncomputable, and `deriving` doesn't allow
-for adding this! -/
 namespace Hyperreal
 
 @[inherit_doc] notation "ℝ*" => Hyperreal
