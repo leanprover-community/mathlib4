@@ -13,7 +13,7 @@ public import Mathlib.Topology.UniformSpace.UniformEmbedding
 # Constructions of new uniform groups from old ones
 -/
 
-@[expose] public section
+public section
 
 variable {G H hom : Type*} [Group G] [Group H]
 

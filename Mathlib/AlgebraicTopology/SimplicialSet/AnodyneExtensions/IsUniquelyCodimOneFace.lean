@@ -61,8 +61,7 @@ section
 
 variable {d : ℕ} (hd : x.dim = d)
 
-set_option backward.proofsInPublic true in
-lemma cast : IsUniquelyCodimOneFace (x.cast hd) (y.cast (by rw [hxy.dim_eq, hd])) := by
+lemma cast : IsUniquelyCodimOneFace (x.cast hd) (y.cast (d := d + 1) (by rw [hxy.dim_eq, hd])) := by
   simpa only [cast_eq_self]
 
 lemma existsUnique_δ_cast_simplex :
