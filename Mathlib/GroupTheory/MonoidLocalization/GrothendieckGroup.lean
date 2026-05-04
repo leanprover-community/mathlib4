@@ -89,4 +89,17 @@ lemma lift_apply (f : M →* G) (x : GrothendieckGroup M) :
     lift f x = f ((monoidOf ⊤).sec x).1 / f ((monoidOf ⊤).sec x).2 := by
   simp [lift, (monoidOf ⊤).lift_apply, div_eq_mul_inv]; congr
 
+/-- The map from the Grothendieck group is unique given its values on the base monoid. -/
+@[to_additive /-- The map from the Grothendieck group is unique given its values on the
+base additive monoid. -/]
+theorem lift_unique {f : GrothendieckGroup M →* G} {g : M →* G}
+    (h : f.comp of = g) : f = lift g :=
+  lift.apply_symm_apply f ▸ congrArg lift h
+
+/-- Variant of `lift_unique` with pointwise hypothesis. -/
+@[to_additive /-- Variant of `lift_unique` with pointwise hypothesis. -/]
+theorem lift_unique' {f : GrothendieckGroup M →* G} {g : M →* G}
+    (h : ∀ m, f (of m) = g m) : f = lift g :=
+  lift_unique (MonoidHom.ext h)
+
 end Algebra.GrothendieckGroup

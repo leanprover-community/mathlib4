@@ -171,6 +171,17 @@ theorem lift_comp_of' {N} [Monoid N] (f : CoprodI M →* N) :
 theorem lift_of' : lift (fun i ↦ (of : M i →* CoprodI M)) = .id (CoprodI M) :=
   lift_comp_of' (.id _)
 
+/-- The map from the indexed coproduct is unique given its values on the summands.
+This is the uniqueness part of the universal property of `CoprodI`. -/
+theorem lift_unique {N} [Monoid N] {f : CoprodI M →* N} {fi : ∀ i, M i →* N}
+    (h : ∀ i, f.comp of = fi i) : f = lift fi :=
+  (lift_comp_of' f) ▸ congrArg lift (funext h)
+
+/-- Variant of `lift_unique` with pointwise hypothesis. -/
+theorem lift_unique' {N} [Monoid N] {f : CoprodI M →* N} {fi : ∀ i, M i →* N}
+    (h : ∀ i (m : M i), f (of m) = fi i m) : f = lift fi :=
+  lift_unique fun i => MonoidHom.ext (h i)
+
 theorem of_leftInverse [DecidableEq ι] (i : ι) :
     Function.LeftInverse (lift <| Pi.mulSingle i (MonoidHom.id (M i))) of := fun x => by
   simp only [lift_of, Pi.mulSingle_eq_same, MonoidHom.id_apply]

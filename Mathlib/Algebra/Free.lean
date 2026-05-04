@@ -144,6 +144,18 @@ theorem lift_comp_of : lift f ∘ of = f := rfl
 @[to_additive (attr := simp)]
 theorem lift_comp_of' (f : FreeMagma α →ₙ* β) : lift (f ∘ of) = f := lift.apply_symm_apply f
 
+/-- The map from the free magma is unique given its values on generators. -/
+@[to_additive /-- The map from the free additive magma is unique given its values on generators. -/]
+theorem lift_unique {f : FreeMagma α →ₙ* β} {g : α → β}
+    (h : f ∘ of = g) : f = lift g :=
+  lift.apply_symm_apply f ▸ congrArg lift h
+
+/-- Variant of `lift_unique` with pointwise hypothesis. -/
+@[to_additive /-- Variant of `lift_unique` with pointwise hypothesis. -/]
+theorem lift_unique' {f : FreeMagma α →ₙ* β} {g : α → β}
+    (h : ∀ x, f (of x) = g x) : f = lift g :=
+  lift_unique (funext h)
+
 end lift
 
 section Map
@@ -537,6 +549,19 @@ theorem lift_comp_of : lift f ∘ of = f := rfl
 
 @[to_additive (attr := simp)]
 theorem lift_comp_of' (f : FreeSemigroup α →ₙ* β) : lift (f ∘ of) = f := hom_ext rfl
+
+/-- The map from the free semigroup is unique given its values on generators. -/
+@[to_additive /-- The map from the free additive semigroup is unique given its values on
+generators. -/]
+theorem lift_unique {f : FreeSemigroup α →ₙ* β} {g : α → β}
+    (h : f ∘ of = g) : f = lift g :=
+  lift.apply_symm_apply f ▸ congrArg lift h
+
+/-- Variant of `lift_unique` with pointwise hypothesis. -/
+@[to_additive /-- Variant of `lift_unique` with pointwise hypothesis. -/]
+theorem lift_unique' {f : FreeSemigroup α →ₙ* β} {g : α → β}
+    (h : ∀ x, f (of x) = g x) : f = lift g :=
+  lift_unique (funext h)
 
 @[to_additive]
 theorem lift_of_mul (x y) : lift f (of x * y) = f x * lift f y := by rw [map_mul, lift_of]
