@@ -15,7 +15,7 @@ Given a function `f : α → α` such that `G.Adj x (f x)` for all `x`,
 we construct a walk of length `n` from `x` to `f^[n] x`.
 -/
 
-@[expose] public section
+public section
 
 open Function
 
