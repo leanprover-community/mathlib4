@@ -545,10 +545,8 @@ def equivQuotMaximalIdealPow (n : ℕ) : (R ⧸ p ^ n) ≃ₐ[R] Rₚ ⧸ IsLoca
       (IsLocalization.liftAlgHom (f := Ideal.Quotient.mkₐ R (p ^ n)) fun (u : p.primeCompl) ↦
         Ideal.Quotient.isUnit_mk_pow_of_notMem _ <| mem_primeCompl_iff.mp u.prop) fun x hx ↦ ?_
     obtain ⟨a, b, rfl⟩ := IsLocalization.exists_mk'_eq p.primeCompl x
-    rw [coe_liftAlgHom, lift_mk']
-    dsimp
     rw [IsLocalization.mk'_mem_iff, ← Ideal.mem_comap, comap_maximalIdeal_pow p] at hx
-    rwa [Units.mul_left_eq_zero, Quotient.eq_zero_iff_mem]
+    simpa [lift_mk', Quotient.eq_zero_iff_mem] using hx
   · rw [← AlgHom.cancel_right (Ideal.Quotient.mkₐ_surjective _ _)]
     exact IsLocalization.algHom_ext (W := p.primeCompl) (A := R) (by ext)
   · rw [← AlgHom.cancel_right (Ideal.Quotient.mkₐ_surjective _ _)]
