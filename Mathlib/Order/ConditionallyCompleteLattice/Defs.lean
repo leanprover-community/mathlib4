@@ -81,6 +81,8 @@ class ConditionallyCompleteLinearOrder (α : Type*)
   compare_eq_compareOfLessAndEq : ∀ a b, compare a b = compareOfLessAndEq a b := by
     compareOfLessAndEq_rfl
 
+attribute [to_dual existing] ConditionallyCompleteLinearOrder.csSup_of_not_bddAbove
+
 /-- A conditionally complete linear order with `Bot` is a linear order with least element, in which
 every nonempty subset which is bounded above has a supremum, and every nonempty subset (necessarily
 bounded below) has an infimum.  A typical example is the natural numbers.
