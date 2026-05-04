@@ -10,6 +10,8 @@ public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 public import Mathlib.Topology.Algebra.Valued.ValuedField
 public import Mathlib.Topology.Algebra.InfiniteSum.Defs
+public import Mathlib.FieldTheory.RatFunc.IntermediateField
+public import Mathlib.RingTheory.Adjoin.Polynomial.Bivariate
 public import Mathlib.FieldTheory.RatFunc.Valuation -- for deprecation to `RatFunc.inftyValuation` and `RatFunc.CompletionAtInfty`
 
 /-!
@@ -195,5 +197,60 @@ instance valuedFtInfty [DecidableEq (RatFunc F)] :
 alias valuedFtInfty.def := RatFunc.valuedCompletionAtInfty.def
 
 end deprecated
+
+section AdjoinTranscendental
+
+open IntermediateField RatFunc
+
+variable {F K : Type*} [Field F] [Field K] [Algebra F⟮X⟯ K] [FunctionField F K]
+
+instance FiniteDimensional.adjoin_X : FiniteDimensional F⟮(X : F⟮X⟯)⟯ K :=
+  have : Module.Finite (⊤ : IntermediateField F F⟮X⟯) F⟮X⟯ :=
+    .top_left F⟮X⟯ F⟮X⟯
+  RatFunc.adjoin_X (K := F) ▸ Module.Finite.trans F⟮X⟯ _
+
+variable [Algebra F K] [IsScalarTower F F⟮X⟯ K]
+
+theorem FiniteDimensional.adjoin_algebraMap_X :
+    FiniteDimensional F⟮algebraMap _ K (X : F⟮X⟯)⟯ K :=
+  .of_restrictScalars_finite F⟮(X : F⟮X⟯)⟯ _ _
+
+theorem Algebra.IsAlgebraic.adjoin_algebraMap_X :
+    Algebra.IsAlgebraic F⟮algebraMap _ K (X : F⟮X⟯)⟯ K := by
+  exact .tower_top (K := F⟮(X : F⟮X⟯)⟯) _
+
+variable {y : K}
+
+theorem isAlgebraic_X_over_adjoin_transcendental (hy : Transcendental F y) :
+    IsAlgebraic F⟮y⟯ (algebraMap _ K (X : F⟮X⟯)) :=
+  isAlgebraic_adjoin_iff.mpr (.adjoin_singleton transcendental_X hy
+    (isAlgebraic_adjoin_iff.mp (Algebra.IsAlgebraic.isAlgebraic y)))
+
+lemma finiteDimensional_of_adjoin_transcendental (hy : Transcendental F y) :
+    FiniteDimensional F⟮y⟯ K :=
+  -- Local definitions for convenience
+  let x := algebraMap _ K (X : F⟮X⟯)
+  let Fyx := restrictScalars F F⟮y⟯⟮x⟯
+  let Fxy := restrictScalars F F⟮x⟯⟮y⟯
+  -- Recalling instance to speed up search
+  let : Algebra F⟮y⟯ Fyx := F⟮y⟯⟮x⟯.algebra
+  let : Module F⟮y⟯ Fyx := Algebra.toModule
+  let : SMul F⟮y⟯ Fyx := Algebra.toSMul
+  let : Algebra F⟮x⟯ Fxy := F⟮x⟯⟮y⟯.algebra
+  let : Module F⟮x⟯ Fxy := Algebra.toModule
+  let : SMul F⟮x⟯ Fxy := Algebra.toSMul
+  let : FiniteDimensional F⟮y⟯ Fyx :=
+    adjoin.finiteDimensional
+      (isAlgebraic_iff_isIntegral.mp (isAlgebraic_X_over_adjoin_transcendental hy))
+  let : FiniteDimensional Fyx K := by
+    let := FiniteDimensional.adjoin_algebraMap_X (F := F) (K := K)
+    unfold Fyx
+    rw [adjoin_simple_comm]
+    let : IsScalarTower F⟮x⟯ Fxy K := isScalarTower_mid' F⟮x⟯⟮y⟯
+    exact .right F⟮x⟯ Fxy K
+  let : IsScalarTower F⟮y⟯ Fyx K := isScalarTower_mid' F⟮y⟯⟮x⟯
+  .trans F⟮y⟯ Fyx K
+
+end AdjoinTranscendental
 
 end FunctionField

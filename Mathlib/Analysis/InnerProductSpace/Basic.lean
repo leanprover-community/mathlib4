@@ -668,8 +668,7 @@ theorem dist_div_norm_sq_smul {x y : F} (hx : x ≠ 0) (hy : y ≠ 0) (R : ℝ) 
       rw [sqrt_mul, sqrt_sq, sqrt_sq, dist_eq_norm] <;> positivity
 
 /-- The inner product of a nonzero vector with a nonzero multiple of
-itself, divided by the product of their norms, has absolute value
-1. -/
+itself, divided by the product of their norms, has absolute value 1. -/
 theorem norm_inner_div_norm_mul_norm_eq_one_of_ne_zero_of_ne_zero_mul {x : E} {r : 𝕜} (hx : x ≠ 0)
     (hr : r ≠ 0) : ‖⟪x, r • x⟫‖ / (‖x‖ * ‖r • x‖) = 1 := by
   have hx' : ‖x‖ ≠ 0 := by simp [hx]
@@ -679,8 +678,7 @@ theorem norm_inner_div_norm_mul_norm_eq_one_of_ne_zero_of_ne_zero_mul {x : E} {r
     mul_div_cancel_right₀ _ hr', div_self hx']
 
 /-- The inner product of a nonzero vector with a nonzero multiple of
-itself, divided by the product of their norms, has absolute value
-1. -/
+itself, divided by the product of their norms, has absolute value 1. -/
 theorem abs_real_inner_div_norm_mul_norm_eq_one_of_ne_zero_of_ne_zero_mul {x : F} {r : ℝ}
     (hx : x ≠ 0) (hr : r ≠ 0) : |⟪x, r • x⟫_ℝ| / (‖x‖ * ‖r • x‖) = 1 :=
   norm_inner_div_norm_mul_norm_eq_one_of_ne_zero_of_ne_zero_mul hx hr
@@ -998,3 +996,7 @@ lemma isPosSemidef_inner : LinearMap.IsPosSemidef (innerₗ E) where
   isNonneg := isNonneg_inner
 
 end IsPosSemidef
+
+example : (instInnerProductSpaceRealComplex.toSMul : SMul ℝ ℂ) =
+    Complex.instRCLike.toSMul := by
+  with_reducible_and_instances rfl

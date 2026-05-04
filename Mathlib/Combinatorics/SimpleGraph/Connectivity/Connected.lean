@@ -238,7 +238,7 @@ lemma preconnected_iff_reachable_eq_top : G.Preconnected ↔ G.Reachable = ⊤ :
   aesop (add simp Preconnected)
 
 lemma preconnected_bot_iff_subsingleton : (⊥ : SimpleGraph V).Preconnected ↔ Subsingleton V := by
-  refine ⟨fun h ↦ ?_, fun h ↦ by simpa [subsingleton_iff, ← reachable_bot] using h⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ by simp [Preconnected]⟩
   contrapose! h
   simp [nontrivial_iff.mp h, Preconnected, reachable_bot]
 
