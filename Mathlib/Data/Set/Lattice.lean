@@ -1267,15 +1267,12 @@ end Disjoint
 
 namespace Set
 
+@[to_dual]
 lemma nonempty_iInter_Iic_iff [Preorder α] {f : ι → α} :
     (⋂ i, Iic (f i)).Nonempty ↔ BddBelow (range f) := by
   have : (⋂ (i : ι), Iic (f i)) = lowerBounds (range f) := by
     ext c; simp [lowerBounds]
   simp [this, BddBelow]
-
-lemma nonempty_iInter_Ici_iff [Preorder α] {f : ι → α} :
-    (⋂ i, Ici (f i)).Nonempty ↔ BddAbove (range f) :=
-  nonempty_iInter_Iic_iff (α := αᵒᵈ)
 
 variable [CompleteLattice α]
 
@@ -1395,29 +1392,23 @@ open Set
 
 variable [CompleteLattice β]
 
+@[to_dual]
 theorem iSup_iUnion (s : ι → Set α) (f : α → β) : ⨆ a ∈ ⋃ i, s i, f a = ⨆ (i) (a ∈ s i), f a := by
   rw [iSup_comm]
   simp_rw [mem_iUnion, iSup_exists]
 
-theorem iInf_iUnion (s : ι → Set α) (f : α → β) : ⨅ a ∈ ⋃ i, s i, f a = ⨅ (i) (a ∈ s i), f a :=
-  iSup_iUnion (β := βᵒᵈ) s f
-
+@[to_dual]
 theorem sSup_iUnion (t : ι → Set β) : sSup (⋃ i, t i) = ⨆ i, sSup (t i) := by
   simp_rw [sSup_eq_iSup, iSup_iUnion]
 
+@[to_dual]
 theorem sSup_sUnion (s : Set (Set β)) : sSup (⋃₀ s) = ⨆ t ∈ s, sSup t := by
   simp only [sUnion_eq_biUnion, sSup_eq_iSup, iSup_iUnion]
 
-theorem sInf_sUnion (s : Set (Set β)) : sInf (⋃₀ s) = ⨅ t ∈ s, sInf t :=
-  sSup_sUnion (β := βᵒᵈ) s
-
+@[to_dual]
 lemma iSup_sUnion (S : Set (Set α)) (f : α → β) :
     (⨆ x ∈ ⋃₀ S, f x) = ⨆ (s ∈ S) (x ∈ s), f x := by
   rw [sUnion_eq_iUnion, iSup_iUnion, ← iSup_subtype'']
-
-lemma iInf_sUnion (S : Set (Set α)) (f : α → β) :
-    (⨅ x ∈ ⋃₀ S, f x) = ⨅ (s ∈ S) (x ∈ s), f x := by
-  rw [sUnion_eq_iUnion, iInf_iUnion, ← iInf_subtype'']
 
 lemma forall_sUnion {S : Set (Set α)} {p : α → Prop} :
     (∀ x ∈ ⋃₀ S, p x) ↔ ∀ s ∈ S, ∀ x ∈ s, p x := by
