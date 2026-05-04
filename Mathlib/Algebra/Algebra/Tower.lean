@@ -133,20 +133,6 @@ theorem Algebra.ext {S : Type u} {A : Type v} [CommSemiring S] [Semiring A] (h1 
   Algebra.algebra_ext _ _ fun r => by
     simpa only [@Algebra.smul_def _ _ _ _ h1, @Algebra.smul_def _ _ _ _ h2, mul_one] using h r 1
 
-/-- In a tower, the canonical map from the middle element to the top element is an
-algebra homomorphism over the bottom element. -/
-def toAlgHom : S →ₐ[R] A :=
-  { algebraMap S A with commutes' := fun _ => (algebraMap_apply _ _ _ _).symm }
-
-theorem toAlgHom_apply (y : S) : toAlgHom R S A y = algebraMap S A y := rfl
-
-@[simp]
-theorem coe_toAlgHom : ↑(toAlgHom R S A) = algebraMap S A :=
-  RingHom.ext fun _ => rfl
-
-@[simp]
-theorem coe_toAlgHom' : (toAlgHom R S A : S → A) = algebraMap S A := rfl
-
 variable {R S A B}
 
 @[simp]
