@@ -268,6 +268,7 @@ lemma QuasiSober.inter_of_isClosed_of_quasiSober_right {V : Set α} (W : Set α)
     (hW : IsClosed W) : QuasiSober (W ∩ V : Set α) := by
   rw [inter_comm]
   exact .inter_of_isClosed_of_quasiSober_left V hW
+
 open Order in
 /--
 In a sober space `α` set of points with coheight `0` in the specialization order is order iso to
