@@ -259,8 +259,6 @@ theorem eq_of_factors_eq_factors {a b : Associates α} (h : a.factors = b.factor
   have : a.factors.prod = b.factors.prod := by rw [h]
   rwa [factors_prod, factors_prod] at this
 
-@[deprecated (since := "2025-10-06")] alias eq_of_prod_eq_prod := FactorSet.unique
-
 @[simp]
 theorem factors_mul (a b : Associates α) : (a * b).factors = a.factors + b.factors := by
   nontriviality α

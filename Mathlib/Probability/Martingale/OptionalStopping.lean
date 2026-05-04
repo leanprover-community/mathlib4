@@ -53,7 +53,7 @@ theorem Submartingale.expected_stoppedValue_mono {E : Type*} [NormedAddCommGroup
       convert (hπ i).compl using 1
       ext x
       simp; rfl
-    rw [integral_finset_sum]
+    rw [integral_finsetSum]
     · refine Finset.sum_nonneg fun i _ => ?_
       rw [integral_indicator (𝒢.le _ _ (this _)), integral_sub', sub_nonneg]
       · exact hf.setIntegral_le (Nat.le_succ i) (this _)

@@ -98,7 +98,7 @@ These instances work particularly well in conjunction with `AddGroup.toAddAction
 variable {α β : Type*}
 
 instance [VAdd M α] : VAdd p α :=
-  p.toAddSubmonoid.vadd
+  AddSubmonoid.instVAddSubtypeMem p
 
 instance vaddCommClass [VAdd M β] [VAdd α β] [VAddCommClass M α β] : VAddCommClass p α β :=
   ⟨fun a => vadd_comm (a : M)⟩

@@ -41,7 +41,7 @@ In this file, we prove **Krull's principal ideal theorem** (also known as
   by no more than `n` elements.
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*} [CommRing R] [IsNoetherianRing R]
 
@@ -260,7 +260,7 @@ instance Ideal.finiteHeight_of_isNoetherianRing (I : Ideal R) :
     I.FiniteHeight := finiteHeight_iff_lt.mpr <| Or.elim (em (I = ⊤)) Or.inl
   fun h ↦ Or.inr <| (I.height_le_spanFinrank h).trans_lt (ENat.coe_lt_top _)
 
-instance [IsNoetherianRing R] [IsLocalRing R] : FiniteRingKrullDim R := by
+instance [IsLocalRing R] : FiniteRingKrullDim R := by
   apply finiteRingKrullDim_iff_ne_bot_and_top.mpr
   rw [← IsLocalRing.maximalIdeal_height_eq_ringKrullDim]
   constructor
@@ -435,7 +435,7 @@ lemma Ideal.height_le_height_add_of_liesOver [IsNoetherianRing S] (p : Ideal R) 
     rw [← himgo, Finset.card_image_of_injOn hinj]
   refine Ideal.height_le_card_of_mem_minimalPrimes_span_finset ?_
   have : Ideal.span t = Ideal.map (algebraMap R S) (.span s) ⊔ .span o := by
-    simp [t, Ideal.span_union, Ideal.map_span]
+    simp [t, Ideal.map_span]
   refine this ▸ map_sup_mem_minimalPrimes_of_map_quotientMk_mem_minimalPrimes hp (span_le.mpr ho) ?_
   convert hP'
   simp [Ideal.map_span, ← himgo]
@@ -481,3 +481,15 @@ lemma ringKrullDim_le_spanFinrank_maximalIdeal [IsLocalRing R] :
       Ideal.IsPrime.ne_top'))
 
 end Algebra
+
+/-- In a Noetherian local ring of positive Krull dimension,
+the square of the maximal ideal is strictly contained in the maximal ideal. -/
+lemma IsLocalRing.maximalIdeal_sq_lt [IsLocalRing R] (h : 0 < ringKrullDim R) :
+    (IsLocalRing.maximalIdeal R) ^ 2 < IsLocalRing.maximalIdeal R := by
+  refine lt_of_le_of_ne (Ideal.pow_le_self two_ne_zero) fun h_eq => h.ne' ?_
+  have : IsLocalRing.maximalIdeal R = ⊥ :=
+    Submodule.eq_bot_of_le_smul_of_le_jacobson_bot _ _
+      (IsNoetherian.noetherian _)
+      (by rw [Ideal.smul_eq_mul, ← sq]; exact h_eq.symm.le)
+      (IsLocalRing.maximalIdeal_le_jacobson ⊥)
+  rw [← IsLocalRing.maximalIdeal_height_eq_ringKrullDim, this, Ideal.height_bot, WithBot.coe_zero]
