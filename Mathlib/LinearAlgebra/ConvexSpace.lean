@@ -202,7 +202,7 @@ attribute [simp] sConvexCombo_single
 @[deprecated (since := "2026-05-04")] alias ConvexSpace.convexCombination := sConvexCombo
 
 @[deprecated (since := "2026-05-04")]
-alias ConvexSpace.convexCombinationsConvexCombo_single := sConvexCombo_single
+alias ConvexSpace.convexCombination_single := sConvexCombo_single
 
 /-- Take a convex combination with the given weight distribution of an indexed family of points. -/
 def iConvexCombo (s : StdSimplex R I) (f : I → M) : M := sConvexCombo (s.map f)
