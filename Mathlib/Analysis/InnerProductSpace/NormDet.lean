@@ -98,10 +98,8 @@ theorem normDet_eq_norm_det_toMatrix_rangeRestrict {ι : Type*} [Fintype ι] [De
   rw [← Matrix.det_comm' h1 h2, ← Matrix.mul_assoc, Matrix.det_mul, norm_mul]
   suffices ‖(bu.toBasis.toMatrix (stdOrthonormalBasis 𝕜 U).toBasis *
       h.some.toBasis.toMatrix ⇑bv.toBasis).det‖ = 1 by
-    rw [this]
-    simp
-  apply CStarRing.norm_of_mem_unitary
-  apply Matrix.det_of_mem_unitary
+    rw [this, one_mul]
+  refine CStarRing.norm_of_mem_unitary <| Matrix.det_of_mem_unitary ?_
   rw [Matrix.mem_unitaryGroup_iff, Matrix.star_eq_conjTranspose, Matrix.conjTranspose_mul,
     ← Matrix.mul_assoc, Matrix.mul_assoc (bu.toBasis.toMatrix (stdOrthonormalBasis 𝕜 U).toBasis)]
   simp
@@ -275,17 +273,16 @@ theorem _root_.ContinuousLinearMap.normDet_sq [CompleteSpace V] (f : U →L[𝕜
   · obtain ⟨b⟩ := (f.normDet_ne_zero_tfae.out 1 3).mp h
     have hf : f = f.range.subtypeₗᵢ.toContinuousLinearMap ∘L f.rangeRestrict := rfl
     conv_rhs => rw [hf]
+    have h : f.range.subtypeₗᵢ.toContinuousLinearMap.adjoint ∘L
+        f.range.subtypeₗᵢ.toContinuousLinearMap = ContinuousLinearMap.id 𝕜 _ :=
+      f.range.subtypeₗᵢ.adjoint_comp_self
     rw [ContinuousLinearMap.adjoint_comp, ← ContinuousLinearMap.comp_assoc,
-      ContinuousLinearMap.comp_assoc (ContinuousLinearMap.adjoint _)]
-    suffices f.range.subtypeₗᵢ.toContinuousLinearMap.adjoint ∘L
-        f.range.subtypeₗᵢ.toContinuousLinearMap = ContinuousLinearMap.id 𝕜 _ by
-      rw [this, ContinuousLinearMap.comp_id, ContinuousLinearMap.det, ContinuousLinearMap.coe_comp,
-        ← det_toMatrix bu.toBasis, toMatrix_comp bu.toBasis b.toBasis bu.toBasis]
-      rw [show (ContinuousLinearMap.adjoint f.rangeRestrict).toLinearMap =
-        f.rangeRestrict.toLinearMap.adjoint by rfl]
-      rw [toMatrix_adjoint]
-      simp [f.toLinearMap.normDet_eq_norm_det_toMatrix_rangeRestrict bu b, RCLike.conj_mul]
-    exact f.range.subtypeₗᵢ.adjoint_comp_self
+      ContinuousLinearMap.comp_assoc (ContinuousLinearMap.adjoint _), h,
+      ContinuousLinearMap.comp_id, ContinuousLinearMap.det, ContinuousLinearMap.coe_comp,
+      ← det_toMatrix bu.toBasis, toMatrix_comp bu.toBasis b.toBasis bu.toBasis,
+      ← ContinuousLinearMap.adjoint_toLinearMap, toMatrix_adjoint,
+      f.toLinearMap.normDet_eq_norm_det_toMatrix_rangeRestrict bu b]
+    simp [RCLike.conj_mul]
   · trans 0
     · simp [show f.normDet = 0 from (f.normDet_eq_zero_tfae.out 1 0).mp h]
     symm

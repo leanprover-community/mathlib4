@@ -541,6 +541,12 @@ theorem adjoint_eq_toCLM_adjoint (A : E →ₗ[𝕜] F) :
     A.adjoint = A.toContinuousLinearMap.adjoint :=
   rfl
 
+theorem _root_.ContinuousLinearMap.adjoint_toLinearMap (A : E →L[𝕜] F) :
+    haveI := FiniteDimensional.complete 𝕜 E
+    haveI := FiniteDimensional.complete 𝕜 F
+    A.toLinearMap.adjoint = A.adjoint.toLinearMap :=
+  rfl
+
 /-- The fundamental property of the adjoint. -/
 theorem adjoint_inner_left (A : E →ₗ[𝕜] F) (x : E) (y : F) : ⟪adjoint A y, x⟫ = ⟪y, A x⟫ := by
   have := FiniteDimensional.complete 𝕜 E
