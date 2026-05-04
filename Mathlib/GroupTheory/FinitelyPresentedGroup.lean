@@ -51,8 +51,8 @@ protected theorem bot : IsNormalClosureFG (⊥ : Subgroup G) :=
 
 /-- `of_fg N` says that a finitely generated normal subgroup `N` is the normal closure of a finite
 set. -/
-@[to_additive /-- `of_fg N` says that a finitely generated normal additive subgroup `N` is the additive normal closure
-of a finite set. -/]
+@[to_additive /-- `of_fg N` says that a finitely generated normal additive subgroup `N` is the
+additive normal closure of a finite set. -/]
 protected theorem of_fg [N.Normal] (hN : N.FG) : IsNormalClosureFG N := by
   obtain ⟨S, hS, hSfinite⟩ := (Subgroup.fg_iff N).mp hN
   refine ⟨S, hSfinite, ?_⟩
