@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Kaplansky
 # Localization of a UFD
 
 ## Main results
-* `localization_ufd` : The localization of a UFD is still a UFD.
+* `UniqueFactorizationMonoid.localization` : The localization of a UFD is still a UFD.
 -/
 
 public section
@@ -20,8 +20,8 @@ public section
 variable {R : Type*} [CommRing R] [UniqueFactorizationMonoid R] [IsDomain R]
 
 /-- If `S` is the localization of a UFD `R`, then `S` is also a UFD. -/
-theorem UniqueFactorizationMonoid.of_isLocalization {M : Submonoid R} (hM : M ≤ nonZeroDivisors R) (S : Type*) [CommRing S]
-    [Algebra R S] [IsLocalization M S] : UniqueFactorizationMonoid S := by
+theorem UniqueFactorizationMonoid.of_isLocalization {M : Submonoid R} (hM : M ≤ nonZeroDivisors R)
+    (S : Type*) [CommRing S] [Algebra R S] [IsLocalization M S] : UniqueFactorizationMonoid S := by
   have : IsDomain S := IsLocalization.isDomain_of_le_nonZeroDivisors S hM
   rw [UniqueFactorizationMonoid.iff_exists_prime_mem_of_isPrime]
   intro p hpb _
@@ -40,4 +40,4 @@ theorem UniqueFactorizationMonoid.of_isLocalization {M : Submonoid R} (hM : M �
 /-- The localization of a UFD is still a UFD. -/
 theorem UniqueFactorizationMonoid.localization {M : Submonoid R} (hM : M ≤ nonZeroDivisors R) :
     UniqueFactorizationMonoid (Localization M) :=
-  isLocalization_ufd hM (Localization M)
+  of_isLocalization hM (Localization M)

@@ -12,24 +12,24 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Localization
 # UFD criteria via height `1` prime ideals and localization
 
 ## Main results
-* `ufd_iff_height_one_primes_principal` : Let `R` be a Noetherian domain. Then `R` is a UFD
-  if and only if every height `1` prime ideal is principal.
+* `UniqueFactorizationMonoid.iff_height_one_primes_principal` : Let `R` be a Noetherian domain. Then
+  `R` is a UFD if and only if every height `1` prime ideal is principal.
 
-* `ufd_iff_ufd_localization_away_of_prime` : Let `R` be a Noetherian domain, `x ∈ R` be a prime
-  element. Then `R` is a UFD if and only if `Rₓ` is a UFD.
+* `UniqueFactorizationMonoid.iff_localization_away_of_prime` : Let `R` be a Noetherian domain,
+  `x ∈ R` be a prime element. Then `R` is a UFD if and only if `Rₓ` is a UFD.
 -/
 
 public section
 
 variable {R : Type*} [CommRing R] [IsDomain R]
 
-theorem Ideal.height_one_primes_principal_of_ufd [UniqueFactorizationMonoid R]
+theorem UniqueFactorizationMonoid.height_one_primes_principal [UniqueFactorizationMonoid R]
     {p : Ideal R} [p.IsPrime] (hph : p.height = 1) : p.IsPrincipal := by
   have hpn : p ≠ ⊥ := p.height_eq_zero_iff_eq_bot.not.1 (ne_zero_of_eq_one hph)
-  obtain ⟨x, hxmem, hxp⟩ := IsPrime.exists_mem_prime_of_ne_bot ‹_› hpn
+  obtain ⟨x, hxmem, hxp⟩ := Ideal.IsPrime.exists_mem_prime_of_ne_bot ‹_› hpn
   exact ⟨x, p.eq_span_singleton_of_height_eq_one hph hxmem hxp⟩
 
-theorem ufd_of_ideal_height_one_primes_principal [IsNoetherianRing R]
+theorem UniqueFactorizationMonoid.of_height_one_primes_principal [IsNoetherianRing R]
     (h : ∀ (p : Ideal R) [p.IsPrime] (_ : p.height = 1), p.IsPrincipal) :
     UniqueFactorizationMonoid R := by
   rw [UniqueFactorizationMonoid.iff_exists_prime_mem_of_isPrime]
@@ -47,10 +47,9 @@ theorem ufd_of_ideal_height_one_primes_principal [IsNoetherianRing R]
 /-- Let `R` be a Noetherian domain. Then `R` is a UFD if and only if every height `1` prime ideal is
   principal. -/
 @[stacks 0AFT]
-theorem ufd_iff_height_one_primes_principal [IsNoetherianRing R] :
-    UniqueFactorizationMonoid R ↔
-    ∀ (p : Ideal R) [p.IsPrime], p.height = 1 → p.IsPrincipal :=
-  ⟨fun _ p _ ↦ p.height_one_primes_principal_of_ufd, ufd_of_ideal_height_one_primes_principal⟩
+theorem UniqueFactorizationMonoid.iff_height_one_primes_principal [IsNoetherianRing R] :
+    UniqueFactorizationMonoid R ↔ ∀ (p : Ideal R) [p.IsPrime], p.height = 1 → p.IsPrincipal :=
+  ⟨fun _ _ _ ↦ height_one_primes_principal, of_height_one_primes_principal⟩
 
 theorem Ideal.isPrincipal_of_isPrincipal_isLocalization_away_of_prime
     [WfDvdMonoid R] {x : R} (hx : Prime x) {p : Ideal R} [p.IsPrime] (hxp : x ∉ p)
@@ -69,44 +68,45 @@ theorem Ideal.isPrincipal_of_isPrincipal_isLocalization_away_of_prime
       IsUnit.of_mul_eq_one (selfZPow x S (- n)) (selfZPow_mul_neg x S n)
     have : algebraMap R S a ∈ map (algebraMap R S) p := by
       rw [← Ideal.unit_mul_mem_iff_mem (map (algebraMap R S) p) hu, hag, hg]
-      exact Ideal.mem_span_singleton_self g
+      simp
     have haeq : map (algebraMap R S) p = map (algebraMap R S) (span {a}) := by
-      simpa [hg, map_span, hag] using span_singleton_mul_left_unit hu (algebraMap R S a)
+      simp [hg, map_span, ← span_singleton_mul_left_unit hu (algebraMap R S a), hag]
     refine ⟨a, le_antisymm (fun z hz ↦ ?_) (p.span_singleton_le_iff_mem.2 <| by
       rwa [← IsLocalization.comap_map_of_isPrime_disjoint (Submonoid.powers x) S ‹_› hd])⟩
     have hzmap := mem_map_of_mem (algebraMap R S) hz
     rw [haeq, IsLocalization.algebraMap_mem_map_algebraMap_iff (Submonoid.powers x)] at hzmap
     rcases hzmap with ⟨s, ⟨n, rfl⟩, hsz⟩
-    rcases mem_span_singleton.mp hsz with ⟨a, ha⟩
+    rw [mem_span_singleton] at hsz ⊢
+    rcases hsz with ⟨a, ha⟩
     rcases hx.pow_dvd_of_dvd_mul_right n hxa ⟨z, by rw [mul_comm, ← ha]⟩ with ⟨b, hb⟩
-    exact mem_span_singleton.2 ⟨b, mul_left_cancel₀ (pow_ne_zero n hx.ne_zero) <| by
-      simp [ha, hb, mul_assoc, mul_comm]⟩
+    exact ⟨b, mul_left_cancel₀ (pow_ne_zero n hx.ne_zero) <| by simp [ha, hb, mul_assoc, mul_comm]⟩
 
 theorem Ideal.isPrincipal_of_isPrincipal_localization_away_of_prime
     [WfDvdMonoid R] {x : R} (hx : Prime x) {p : Ideal R} [p.IsPrime] (hxp : x ∉ p)
     (hp : (map (algebraMap R (Localization.Away x)) p).IsPrincipal) : p.IsPrincipal :=
   p.isPrincipal_of_isPrincipal_isLocalization_away_of_prime hx hxp (Localization.Away x) hp
 
-theorem ufd_iff_ufd_isLocalization_away_of_prime [IsNoetherianRing R] {x : R} (hx : Prime x)
-    (S : Type*) [CommRing S] [Algebra R S] [IsLocalization.Away x S] :
-    UniqueFactorizationMonoid R ↔ UniqueFactorizationMonoid S := by
+theorem UniqueFactorizationMonoid.iff_isLocalization_away_of_prime
+    [IsNoetherianRing R] {x : R} (hx : Prime x) (S : Type*) [CommRing S] [Algebra R S]
+    [IsLocalization.Away x S] : UniqueFactorizationMonoid R ↔ UniqueFactorizationMonoid S := by
   have : IsDomain S := IsLocalization.Away.isDomain S hx.ne_zero
-  refine ⟨fun _ ↦ isLocalization_ufd (powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero) S, ?_⟩
+  refine ⟨fun _ ↦ of_isLocalization (powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero) S, ?_⟩
   intro
   have : IsNoetherianRing S := IsLocalization.isNoetherianRing (Submonoid.powers x) S inferInstance
-  rw [ufd_iff_height_one_primes_principal]
+  rw [iff_height_one_primes_principal]
   intro p hp h1
   by_cases hxp : x ∈ p
   · exact ⟨x, p.eq_span_singleton_of_height_eq_one h1 hxp hx⟩
   · have hd := by rwa [← Ideal.disjoint_powers_iff_notMem_of_isPrime x] at hxp
     have := IsLocalization.isPrime_of_isPrime_disjoint (Submonoid.powers x) S p hp hd
     exact p.isPrincipal_of_isPrincipal_isLocalization_away_of_prime hx hxp S <|
-      (Ideal.map (algebraMap R S) p).height_one_primes_principal_of_ufd <| by
+      height_one_primes_principal <| by
         rw [← IsLocalization.height_comap (Submonoid.powers x),
           IsLocalization.comap_map_of_isPrime_disjoint (Submonoid.powers x) S hp hd, h1]
 
 /-- Let `R` be a Noetherian domain, `x ∈ R` be a prime element. Then `R` is a UFD if and only if
   `Rₓ` is a UFD. -/
-theorem ufd_iff_ufd_localization_away_of_prime [IsNoetherianRing R] {x : R} (hx : Prime x) :
+theorem UniqueFactorizationMonoid.iff_localization_away_of_prime
+    [IsNoetherianRing R] {x : R} (hx : Prime x) :
     UniqueFactorizationMonoid R ↔ UniqueFactorizationMonoid (Localization.Away x) :=
-  ufd_iff_ufd_isLocalization_away_of_prime hx (Localization.Away x)
+  UniqueFactorizationMonoid.iff_isLocalization_away_of_prime hx (Localization.Away x)
