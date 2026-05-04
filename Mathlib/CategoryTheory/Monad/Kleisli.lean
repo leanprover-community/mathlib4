@@ -66,7 +66,7 @@ instance category : Category (Kleisli T) where
   id X := .mk <| T.η.app X.of
   comp {_} {_} {Z} f g := .mk <| f.of ≫ T.map g.of ≫ T.μ.app Z.of
   id_comp {X} {Y} f := by
-    simp [dsimp% T.left_unit, ← dsimp% T.η.naturality_assoc]
+    simp [dsimp% T.left_unit, ← T.unit_naturality_assoc]
   comp_id {X} {Y} f := by
     simp [dsimp% T.right_unit]
   assoc f g h := by
@@ -96,7 +96,7 @@ def fromKleisli : Kleisli T ⥤ C where
   map {_} {Y} f := T.map f.of ≫ T.μ.app Y.of
   map_id _ := T.right_unit _
   map_comp {X} {Y} {Z} f g := by
-    simp [← dsimp% T.μ.naturality_assoc, dsimp% T.assoc]
+    simp [← T.mu_naturality_assoc, dsimp% T.assoc]
 
 /-- The Kleisli adjunction which gives rise to the monad `(T, η_ T, μ_ T)`.
 cf Lemma 5.2.11 of [Riehl][riehl2017]. -/
@@ -151,7 +151,7 @@ instance category : Category (Cokleisli U) where
   id X := .mk <| U.ε.app X.of
   comp f g := .mk <| U.δ.app _ ≫ (U : C ⥤ C).map f.of ≫ g.of
   comp_id {X} {Y} f := by
-    simp [U.left_counit_assoc, dsimp% U.ε.naturality]
+    simp [U.left_counit_assoc, dsimp% U.counit_naturality]
   assoc f g h := by
     simp [U.delta_naturality_assoc]
 
@@ -180,7 +180,7 @@ def fromCokleisli : Cokleisli U ⥤ C where
   map {X} {_} f := U.δ.app X.of ≫ U.map f.of
   map_id _ := U.right_counit _
   map_comp {X} {Y} {Z} f g := by
-    simp [dsimp% U.δ.naturality_assoc]
+    simp [U.delta_naturality_assoc]
 
 /-- The co-Kleisli adjunction which gives rise to the comonad `(U, ε_ U, δ_ U)`. -/
 def adj : fromCokleisli U ⊣ toCokleisli U :=
@@ -188,7 +188,7 @@ def adj : fromCokleisli U ⊣ toCokleisli U :=
     { homEquiv X Y := { toFun f := .mk f, invFun f := f.of }
       homEquiv_naturality_right := fun {X} {Y} {_} f g => by
         unfold_projs
-        simp [dsimp% U.ε.naturality_assoc, U.left_counit_assoc] }
+        simp [U.counit_naturality_assoc, U.left_counit_assoc] }
 
 /-- The composition of the adjunction gives the original functor. -/
 def toCokleisliCompFromCokleisliIsoSelf : toCokleisli U ⋙ fromCokleisli U ≅ U :=
