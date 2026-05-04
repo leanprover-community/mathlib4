@@ -22,6 +22,7 @@ import hashlib
 import json
 import os
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -188,45 +189,73 @@ def validate_commands(target: str) -> int:
                 if sp.exists():
                     sp.unlink()
         
-        # Capture lake build -v trace
-        env = os.environ.copy()
-        env.update(extracted_env)
+        # Capture lake build -v trace. Use elan's stock lake (PATH) to get the canonical
+        # build invocation; we're verifying that our extracted command matches what Lake
+        # itself runs.
         res = subprocess.run(
             ["lake", "build", "-v", target],
-            cwd=WORKSPACE, capture_output=True, text=True, env=env,
+            cwd=WORKSPACE, capture_output=True, text=True,
         )
-        
-        # Extract argv from trace (look for "lean" command line)
-        # Lake's trace format: [#...] <command> <args...>
-        trace_lines = res.stderr.split("\n")
+
+        # Lake's verbose trace format for spawned subprocesses (see Lake.Util.Proc):
+        #   trace: .> [ENV1=val1 ENV2=val2 ...] <cmd> <arg1> <arg2> ...
+        # The leading env assignments are present when env vars are set; the cmd path is
+        # the first token without an `=` sign.
+        # The target's source path (e.g. `Mathlib/Init.lean`) — used to identify which
+        # `trace: .>` line is for *this* module's compilation when Lake is rebuilding
+        # multiple modules in the same call.
+        target_src_abs = absolutize(me["src"], ctx)
+
+        trace_lines = (res.stdout + "\n" + res.stderr).split("\n")
         lake_cmd = None
+        lake_env: dict = {}
         for line in trace_lines:
-            if "lean" in line and "-o" in line:
-                # Parse the bracketed command
-                m = re.search(r'\[\#\d+\]\s+(.+)', line)
-                if m:
-                    # This is a simplified extraction; full version would use shlex
-                    parts = m.group(1).split()
-                    if parts[0].endswith("lean"):
-                        lake_cmd = parts
-                        break
-        
+            m = re.match(r"^\s*trace:\s+\.>\s+(.+)$", line)
+            if not m:
+                continue
+            tokens = shlex.split(m.group(1))
+            # Split env-assignments (KEY=val) from the rest.
+            i = 0
+            line_env = {}
+            while i < len(tokens) and "=" in tokens[i] and not tokens[i].startswith("/") \
+                    and re.match(r"^[A-Za-z_][A-Za-z0-9_]*=", tokens[i]):
+                k, _, v = tokens[i].partition("=")
+                line_env[k] = v
+                i += 1
+            argv = tokens[i:]
+            if not argv:
+                continue
+            # Filter to *this* target's lean invocation: source path must match.
+            if argv[0].endswith("/lean") and "-o" in argv and target_src_abs in argv:
+                lake_cmd = argv
+                lake_env = line_env
+                break
+
         if not lake_cmd:
-            print(f"Could not extract lean command from lake build -v", file=sys.stderr)
+            print("Could not extract lean command from lake build -v", file=sys.stderr)
+            print("First few trace lines:", file=sys.stderr)
+            for line in trace_lines:
+                if "trace:" in line:
+                    print(f"  {line}", file=sys.stderr)
+                    break
             return 1
-        
-        # Byte-diff extracted vs lake
+
+        # Byte-diff extracted vs lake (env first, then argv).
         print(f"=== validate-commands: {target} ===")
-        extracted_str = " ".join(extracted_cmd)
-        lake_str = " ".join(lake_cmd)
-        
-        if extracted_str == lake_str:
-            print("PASS: command matches")
+        env_match = lake_env == extracted_env
+        argv_match = lake_cmd == extracted_cmd
+        if env_match and argv_match:
+            print("PASS: command + env match")
             return 0
         else:
-            print("FAIL: command mismatch")
-            print(f"Extracted: {extracted_str}")
-            print(f"Lake:      {lake_str}")
+            if not env_match:
+                print("FAIL: env mismatch")
+                print(f"  Extracted: {extracted_env}")
+                print(f"  Lake:      {lake_env}")
+            if not argv_match:
+                print("FAIL: argv mismatch")
+                print(f"  Extracted: {extracted_cmd}")
+                print(f"  Lake:      {lake_cmd}")
             return 1
     finally:
         if manifest_path.exists():
@@ -252,6 +281,15 @@ def validate_setup(target: str) -> int:
             print(f"Module {target} not found in manifest", file=sys.stderr)
             return 1
         
+        # Resolve placeholder paths (same context as validate-commands).
+        ctx = [
+            ("LAKE_HOME", loader.workspace["LAKE_HOME"]),
+            ("WORKSPACE", loader.workspace["WORKSPACE"]),
+            ("TOOLCHAIN", loader.workspace["TOOLCHAIN"]),
+            ("TOOLCHAIN_ROOT", loader.workspace.get("TOOLCHAIN_ROOT",
+                str(Path(loader.workspace["TOOLCHAIN"]).parent))),
+        ]
+
         # Reconstruct setup.json from v2
         me = loader.modules[target]
         me_imported = []
@@ -269,7 +307,8 @@ def validate_setup(target: str) -> int:
                 arts = [ime["olean"], ime["ir"], ime["oleanServer"], ime["oleanPrivate"]]
             else:
                 arts = [ime["olean"], ime["ir"], ime["oleanServer"]]
-            importArts_dict[mname] = arts
+            # Absolutize paths to match `lake setup-file` output format.
+            importArts_dict[mname] = [absolutize(p, ctx) for p in arts]
         
         reconstructed = {
             "name": target,
@@ -281,15 +320,17 @@ def validate_setup(target: str) -> int:
             "options": me.get("leanOptions", {}),
         }
         
-        # Get lake's setup.json
+        # Get lake's setup.json. `lake setup-file` takes a *file path* (relative to the
+        # workspace root), not a module name — translate via the v2 manifest's `src` field.
+        target_src_rel = absolutize(me["src"], ctx)
         res = subprocess.run(
-            ["lake", "setup-file", target],
+            ["lake", "setup-file", target_src_rel],
             cwd=WORKSPACE, capture_output=True, text=True,
         )
         if res.returncode != 0:
             print(f"lake setup-file failed: {res.stderr}", file=sys.stderr)
             return 1
-        
+
         lake_setup = json.loads(res.stdout)
         
         print(f"=== validate-setup: {target} ===")
@@ -404,6 +445,10 @@ def validate_outputs(target: str, full: bool = False) -> int:
         print(f"=== validate-outputs ({mode}): {target} ===")
         print(f"nodes: {len(nodes_to_check)} outputs: {len(outputs_abs)} "
               f"golden: {len(golden)} missing: {len(missing_pre)}")
+        if not golden:
+            print("SKIPPED: no pre-existing artifacts to compare against; "
+                  "run `lake build {0}` first.".format(target))
+            return 1
         
         # Delete outputs
         deleted = sum(_delete_node_outputs(nid, loader, ctx) for nid in nodes_to_check)

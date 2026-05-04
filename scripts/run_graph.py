@@ -204,7 +204,9 @@ def main():
                             arts = [me["olean"], me["ir"], me.get("oleanServer", ""), me.get("oleanPrivate", "")]
                         else:
                             arts = [me["olean"], me["ir"], me.get("oleanServer", "")]
-                        importArts_dict[mname] = arts
+                        # Absolutize paths — `lean --setup` reads the on-disk setup.json
+                        # literally and won't substitute $LAKE_HOME placeholders.
+                        importArts_dict[mname] = [_absolutize(p, ctx) for p in arts]
                 
                 setup_json = {
                     "name": node["module"],
