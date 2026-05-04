@@ -311,6 +311,8 @@ def reifyScope : CommandElabM (TSyntax ``scopeStx) := do
 
     -- We also could account for `open (scoped) ... in variable` but it would have to be ad-hoc.
 
+public section
+
 /--
 `#scope` reifies the current scope into syntax so that it can be transported into another file,
 e.g. along with a following declaration that depends on this scope. (No use of `in` is needed.)
@@ -336,5 +338,7 @@ elab_rules : command
     let stx ← `(command| #scope%$tk $scopeStx')
     liftCoreM <| Meta.Tactic.TryThis.addSuggestion (← getRef) (origSpan? := (← getRef)) stx
       (diffGranularity := .word)
+
+end
 
 end Mathlib.Tactic.Scope
