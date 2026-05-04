@@ -357,7 +357,7 @@ def preprocess (mvarId : MVarId) : MetaM MVarId := do
   -- collect the available `push_cast` lemmas
   let thms : SimpTheorems := {}
   let thms ← [``Nat.cast_eq_algebraMap, ``Int.cast_eq_algebraMap, ``Rat.cast_eq_algebraMap,
-    ``Algebra.algebraMap_eq_smul_one].foldlM (·.addConst ·) thms
+    ``Algebra.algebraMap_eq_smul_one, ``_root_.smul_eq_mul].foldlM (·.addConst ·) thms
   let ctx ← Simp.mkContext { failIfUnchanged := false, zetaDelta := true } (simpTheorems := #[thms])
   let simprocs : Simp.Simprocs := {}
   let simprocs ← simprocs.add ``guard (post := false)
@@ -494,10 +494,10 @@ def proveEq (base : Option (Σ u : Lean.Level, Q(Type u))) (g : MVarId) : AtomM 
   we inferred the base ring from the typeclass assumptions and `A` is one of `ℕ`, `ℤ` or `ℚ` -/
   /- TODO: Decide if we want to warn the user if this case fires and tell them to either pass the
   base ring explicitly or use ring directly. -/
-  if ← isDefEq R A then
-    trace[algebra.debug] m!"Both rings are the same, using `ring` instead."
-    Ring.proveEq g
-    return
+  -- if ← isDefEq R A then
+  --   trace[algebra.debug] m!"Both rings are the same, using `ring` instead."
+  --   Ring.proveEq g
+  --   return
   let sR ← synthInstanceQ q(CommSemiring $R)
   let sAlg ← synthInstanceQ q(Algebra $R $A)
   let cR ← Algebra.mkCache sR
