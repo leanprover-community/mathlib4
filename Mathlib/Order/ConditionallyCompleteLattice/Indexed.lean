@@ -141,7 +141,11 @@ theorem ciSup_le [Nonempty ι] {f : ι → α} {c : α} (H : ∀ x, f x ≤ c) :
 
 theorem ciSup₂_le [Nonempty ι] [∀ i, Nonempty (κ i)] {f : ∀ i, κ i → α}
     (h : ∀ i j, f i j ≤ a) : ⨆ (i) (j), f i j ≤ a :=
-  ciSup_le fun i => ciSup_le <| h i
+  ciSup_le fun i ↦ ciSup_le <| h i
+
+theorem le_ciInf₂ [Nonempty ι] [∀ i, Nonempty (κ i)] {f : ∀ i, κ i → α} (h : ∀ i j, a ≤ f i j) :
+    a ≤ ⨅ (i) (j), f i j :=
+  ciSup₂_le (α := αᵒᵈ) h
 
 /-- The indexed supremum of a function is bounded below by the value taken at one point -/
 theorem le_ciSup {f : ι → α} (H : BddAbove (range f)) (c : ι) : f c ≤ iSup f :=
@@ -184,10 +188,6 @@ theorem ciInf_mono {f g : ι → α} (B : BddBelow (range f)) (H : ∀ x, f x �
 /-- The indexed minimum of a function is bounded below by a uniform lower bound -/
 theorem le_ciInf [Nonempty ι] {f : ι → α} {c : α} (H : ∀ x, c ≤ f x) : c ≤ iInf f :=
   ciSup_le (α := αᵒᵈ) H
-
-theorem le_ciInf₂ [Nonempty ι] [∀ i, Nonempty (κ i)] {f : ∀ i, κ i → α} (h : ∀ i j, a ≤ f i j) :
-    a ≤ ⨅ (i) (j), f i j :=
-  le_ciInf fun i => le_ciInf <| h i
 
 /-- The indexed infimum of a function is bounded above by the value taken at one point -/
 theorem ciInf_le {f : ι → α} (H : BddBelow (range f)) (c : ι) : iInf f ≤ f c :=
@@ -381,16 +381,20 @@ theorem exists_lt_of_lt_ciSup [Nonempty ι] {f : ι → α} (h : b < iSup f) : �
   let ⟨_, ⟨i, rfl⟩, h⟩ := exists_lt_of_lt_csSup (range_nonempty f) h
   ⟨i, h⟩
 
-theorem exists_lt_of_lt_ciSup₂ [Nonempty ι] [∀ i, Nonempty (κ i)]
-    {f : ∀ i, κ i → α} (h : a < ⨆ (i) (j), f i j) : ∃ i j, a < f i j := by
-  contrapose! h
-  exact ciSup₂_le h
-
 /-- Indexed version of `exists_lt_of_csInf_lt`.
 When `iInf f < a`, there is an element `i` such that `f i < a`.
 -/
 theorem exists_lt_of_ciInf_lt [Nonempty ι] {f : ι → α} (h : iInf f < a) : ∃ i, f i < a :=
   exists_lt_of_lt_ciSup (α := αᵒᵈ) h
+
+theorem exists_lt_of_lt_ciSup₂ [Nonempty ι] [∀ i, Nonempty (κ i)]
+    {f : ∀ i, κ i → α} (h : a < ⨆ (i) (j), f i j) : ∃ i j, a < f i j := by
+  contrapose! h
+  exact ciSup₂_le h
+
+theorem exists_lt_of_ciInf₂_lt [Nonempty ι] [∀ i, Nonempty (κ i)]
+    {f : ∀ i, κ i → α} (h : ⨅ (i) (j), f i j < a) : ∃ i j, f i j < a :=
+  exists_lt_of_lt_ciSup₂ (α := αᵒᵈ) h
 
 theorem lt_ciSup_iff [Nonempty ι] {f : ι → α} (hb : BddAbove (range f)) :
     a < iSup f ↔ ∃ i, a < f i := by
@@ -493,7 +497,7 @@ theorem ciSup_le' {f : ι → α} {a : α} (h : ∀ i, f i ≤ a) : ⨆ i, f i �
   csSup_le' <| forall_mem_range.2 h
 
 theorem ciSup₂_le' {f : ∀ i, κ i → α} (h : ∀ i j, f i j ≤ a) : ⨆ (i) (j), f i j ≤ a :=
-  ciSup_le' fun i => ciSup_le' <| h i
+  ciSup_le' fun i ↦ ciSup_le' <| h i
 
 @[simp]
 theorem ciSup_bot : ⨆ _ : ι, (⊥ : α) = ⊥ := le_bot_iff.mp (ciSup_le' fun _ ↦ bot_le)
