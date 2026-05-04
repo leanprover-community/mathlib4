@@ -16,7 +16,7 @@ as well as the interaction of `List.Pairwise Disjoint` and the condition of
 `Disjoint` on `List.toFinset`, in `Set` form.
 -/
 
-@[expose] public section
+public section
 
 
 open Finset

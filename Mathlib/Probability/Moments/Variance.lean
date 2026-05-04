@@ -288,8 +288,8 @@ lemma variance_sum' [IsFiniteMeasure μ] (hX : ∀ i ∈ s, MemLp (X i) 2 μ) :
   rw [← covariance_self, covariance_sum_left' (by simpa)]
   · refine Finset.sum_congr rfl fun i hi ↦ ?_
     rw [covariance_sum_right' (by simpa) (hX i hi)]
-  · exact memLp_finset_sum' _ (by simpa)
-  · exact (memLp_finset_sum' _ (by simpa)).aemeasurable
+  · exact memLp_finsetSum' _ (by simpa)
+  · exact (memLp_finsetSum' _ (by simpa)).aemeasurable
 
 lemma variance_sum [IsFiniteMeasure μ] [Fintype ι] (hX : ∀ i, MemLp (X i) 2 μ) :
     Var[∑ i, X i; μ] = ∑ i, ∑ j, cov[X i, X j; μ] :=

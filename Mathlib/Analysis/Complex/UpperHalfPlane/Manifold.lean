@@ -83,10 +83,10 @@ lemma mdifferentiable_iff {f : ℍ → ℂ} :
      <| isOpen_upperHalfPlaneSet.mem_nhds hz⟩
 
 lemma contMDiff_num (g : GL (Fin 2) ℝ) : CMDiff n (fun τ : ℍ ↦ num g τ) :=
-  (contMDiff_const.smul contMDiff_coe).add contMDiff_const
+  (contMDiff_const.mul contMDiff_coe).add contMDiff_const
 
 lemma contMDiff_denom (g : GL (Fin 2) ℝ) : CMDiff n (fun τ : ℍ ↦ denom g τ) :=
-  (contMDiff_const.smul contMDiff_coe).add contMDiff_const
+  (contMDiff_const.mul contMDiff_coe).add contMDiff_const
 
 lemma contMDiff_denom_zpow (g : GL (Fin 2) ℝ) (k : ℤ) : CMDiff n (denom g · ^ k : ℍ → ℂ) := by
   intro τ
@@ -201,13 +201,11 @@ end Complex
 
 section Real
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `ℝ`-linear map from `ℂ` to itself, which we shall show is the real derivative of the
 `GL(2, ℝ)`-action on `ℍ`. -/
 noncomputable def smulFDeriv (g : GL (Fin 2) ℝ) (z : ℂ) : ℂ →L[ℝ] ℂ :=
   (σ g) ∘L (ContinuousLinearMap.toSpanSingleton ℂ (g.det.val / denom g z ^ 2)).restrictScalars ℝ
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem smulFDeriv_J_mul (g : GL (Fin 2) ℝ) (z : ℂ) :
     smulFDeriv (J * g) z = -Complex.conjCLE ∘L smulFDeriv g z := by
@@ -216,7 +214,6 @@ theorem smulFDeriv_J_mul (g : GL (Fin 2) ℝ) (z : ℂ) :
   · simp [smulFDeriv, σ, hg, hg.not_gt, neg_div]
   · simp [smulFDeriv, σ, hg, g.det_ne_zero.lt_or_gt.resolve_right hg, neg_div]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Determinant of the derivative of `g : ℍ → ℍ` considered as an `ℝ`-linear map. This is used in
 the proof that the action is measure-preserving. Note this formula applies for both orientation-
 preserving and orientation-reserving isometries. -/
@@ -230,7 +227,6 @@ lemma det_smulFDeriv (g : GL (Fin 2) ℝ) (z : ℂ) :
   · simp [ContinuousLinearMap.det, h, LinearMap.det_restrictScalars,
       Algebra.norm_complex_eq, Complex.normSq_eq_norm_sq, ← pow_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasStrictFDerivAt_smul (g : GL (Fin 2) ℝ) (τ : ℍ) :
     HasStrictFDerivAt (fun z ↦ ↑(g • ofComplex z) : ℂ → ℂ) (smulFDeriv g τ) τ := by
   wlog hg : 0 < g.det.val generalizing g

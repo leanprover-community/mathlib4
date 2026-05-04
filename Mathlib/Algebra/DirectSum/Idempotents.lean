@@ -51,7 +51,7 @@ theorem completeOrthogonalIdempotents_idempotent [Fintype I] :
   complete := by
     apply (decompose V).injective
     refine DFunLike.ext _ _ fun i ↦ ?_
-    rw [decompose_sum, DFinsupp.finset_sum_apply]
+    rw [decompose_sum, DFinsupp.finsetSum_apply]
     simp [idempotent, of_apply]
 
 end OrthogonalIdempotents
