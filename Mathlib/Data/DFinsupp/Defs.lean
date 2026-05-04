@@ -295,7 +295,7 @@ theorem filter_apply_pos [∀ i, Zero (β i)] {p : ι → Prop} [DecidablePred p
 theorem filter_apply_neg [∀ i, Zero (β i)] {p : ι → Prop} [DecidablePred p] (f : Π₀ i, β i) {i : ι}
     (h : ¬p i) : f.filter p i = 0 := by grind
 
-theorem filter_pos_add_filter_neg [∀ i, AddZeroClass (β i)] (f : Π₀ i, β i) (p : ι → Prop)
+@[simp] theorem filter_add_filter_not [∀ i, AddZeroClass (β i)] (f : Π₀ i, β i) (p : ι → Prop)
     [DecidablePred p] : (f.filter p + f.filter fun i => ¬p i) = f :=
   ext fun i => by
     simp only [add_apply, filter_apply]; split_ifs <;> simp only [add_zero, zero_add]
