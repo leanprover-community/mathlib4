@@ -69,11 +69,12 @@ jobs:
         run: |
           pr_json=$(gh pr view "${{ github.event.issue.number }}" \
             --repo "${{ github.repository }}" \
-            --json headRefOid,baseRefOid,baseRefName)
+            --json headRefOid,baseRefOid,baseRefName,headRepository)
           {
             echo "head_sha=$(echo "$pr_json" | jq -r '.headRefOid')"
             echo "base_sha=$(echo "$pr_json" | jq -r '.baseRefOid')"
             echo "base_ref=$(echo "$pr_json" | jq -r '.baseRefName')"
+            echo "head_repo=$(echo "$pr_json" | jq -r '.headRepository.nameWithOwner')"
           } >> "$GITHUB_OUTPUT"
 
       # Using refs/pull/N/head works for both same-repo and fork PRs, since
@@ -175,6 +176,9 @@ jobs:
         run: |
           cd pr-branch
           lake env "$CACHE_BIN" get
+          # Run again with --repo in case this is a fork PR: fork PRs upload
+          # their oleans to the fork's Azure container, not the upstream one.
+          lake env "$CACHE_BIN" --repo="${{ steps.pr_info.outputs.head_repo }}" get
 
       - name: Check PR head oleans
         id: pr_oleans_check

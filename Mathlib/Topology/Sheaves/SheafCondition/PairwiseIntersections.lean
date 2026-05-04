@@ -371,8 +371,7 @@ def interUnionPullbackConeLift : s.pt ⟶ F.1.obj (op (U ⊔ V)) := by
 set_option backward.isDefEq.respectTransparency false in
 theorem interUnionPullbackConeLift_left :
     interUnionPullbackConeLift F U V s ≫ F.1.map (homOfLE le_sup_left).op = s.fst := by
-  rw [interUnionPullbackConeLift, Category.assoc]
-  simp_rw [← F.1.map_comp]
+  rw [interUnionPullbackConeLift, Category.assoc, ← F.1.map_comp]
   exact
     (F.presheaf.isSheaf_iff_isSheafPairwiseIntersections.mp F.2 _).some.fac _ <|
       op <| Pairwise.single <| ULift.up WalkingPair.left
@@ -380,8 +379,7 @@ theorem interUnionPullbackConeLift_left :
 set_option backward.isDefEq.respectTransparency false in
 theorem interUnionPullbackConeLift_right :
     interUnionPullbackConeLift F U V s ≫ F.1.map (homOfLE le_sup_right).op = s.snd := by
-  rw [interUnionPullbackConeLift, Category.assoc]
-  simp_rw [← F.1.map_comp]
+  rw [interUnionPullbackConeLift, Category.assoc, ← F.1.map_comp]
   exact
     (F.presheaf.isSheaf_iff_isSheafPairwiseIntersections.mp F.2 _).some.fac _ <|
       op <| Pairwise.single <| ULift.up WalkingPair.right
@@ -408,12 +406,10 @@ def isLimitPullbackCone : IsLimit (interUnionPullbackCone F U V) := by
     rw [← cancel_mono (F.1.map (eqToHom hι.symm).op)]
     apply (F.presheaf.isSheaf_iff_isSheafPairwiseIntersections.mp F.2 ι).some.hom_ext
     rintro ((_ | _) | (_ | _)) <;>
-    rw [Category.assoc, Category.assoc]
-    · rw [Functor.mapCone_π_app, ← F.1.map_comp]
-      convert h₁
+    rw [Category.assoc, Category.assoc, Functor.mapCone_π_app, ← F.1.map_comp]
+    · convert h₁
       apply interUnionPullbackConeLift_left
-    · rw [Functor.mapCone_π_app, ← F.1.map_comp]
-      convert h₂
+    · convert h₂
       apply interUnionPullbackConeLift_right
     all_goals
       dsimp only [Functor.op, Pairwise.cocone_ι_app, Functor.mapCone_π_app, Cocone.op,

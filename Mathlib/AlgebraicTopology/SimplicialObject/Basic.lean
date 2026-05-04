@@ -422,7 +422,6 @@ lemma w_app {X Y : Augmented C} (f : X ⟶ Y) (n : SimplexCategoryᵒᵖ) :
     dsimp% f.left.app n ≫ Y.hom.app n = X.hom.app n ≫ f.right :=
   congr_app f.w n
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor from augmented objects to arrows. -/
 @[simps]
 def toArrow : Augmented C ⥤ Arrow C where
@@ -444,7 +443,6 @@ theorem w₀ {X Y : Augmented C} (f : X ⟶ Y) :
 
 variable (C)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Functor composition induces a functor on augmented simplicial objects. -/
 @[simp]
 def whiskeringObj (D : Type*) [Category* D] (F : C ⥤ D) : Augmented C ⥤ Augmented D where
@@ -791,7 +789,6 @@ lemma w_app {X Y : Augmented C} {η : X ⟶ Y} {n : SimplexCategory} :
     dsimp% η.left ≫ Y.hom.app n = X.hom.app n ≫ η.right.app n :=
   NatTrans.congr_app η.w n
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor from augmented objects to arrows. -/
 @[simps!]
 def toArrow : Augmented C ⥤ Arrow C where
@@ -806,7 +803,6 @@ def toArrow : Augmented C ⥤ Arrow C where
 
 variable (C)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Functor composition induces a functor on augmented cosimplicial objects. -/
 @[simp]
 def whiskeringObj (D : Type*) [Category* D] (F : C ⥤ D) : Augmented C ⥤ Augmented D where
