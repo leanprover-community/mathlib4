@@ -90,8 +90,7 @@ if the dimensions of the points correspond, and is zero otherwise).
 -/
 @[simps]
 noncomputable
-def map (hf : IsSpectralMap f) (hf' : HasCompactFibers f) :
-    Function.locallyFinsupp Y R where
+def map (hf : IsSpectralMap f) (hf' : HasCompactFibers f) : Function.locallyFinsupp Y R where
   toFun z := ∑ x ∈ (c.locallyFiniteSupport.finite_inter_support_of_isCompact <| hf' z).toFinset,
     (c x) * w x
   supportWithinDomain' := by simp
@@ -112,7 +111,9 @@ lemma map_homogeneous (s : Set X) (t : Set Y) (hc : c.support ⊆ s) (hf' : HasC
   grind
 
 /--
-The pushforward of `c` along the identity morphism is `c`.
+The pushforward of `c` along the identity morphism is `c` as long as the weight function is `1`
+everywhere. One should note that typically this weight function depends on the map, so this
+condition that the weight function must be trivial here is less strange than it may appear at first.
 -/
 @[simp]
 lemma map_id [PrespectralSpace X] (hw : ∀ z : X, w z = 1) :
