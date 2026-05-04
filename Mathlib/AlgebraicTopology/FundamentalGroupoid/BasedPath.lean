@@ -92,7 +92,11 @@ public instance : TopologicalSpace (BasedPath x₀) :=
       subst hfun
       simp
 
-/-- View an ordinary path out of `x₀` as a based path. -/
+/-- The canonical inclusion `Path x₀ y → BasedPath x₀`: package an ordinary path out of `x₀` as a
+based path, forgetting `y` at the type level. The endpoint is recovered as
+`endpoint (ofPath γ) = y` via `endpoint_ofPath`. The map `toPath` is a partial inverse:
+`ofPath γ.toPath = γ` (`ofPath_toPath_self`), and conversely `(ofPath γ).toPath` is `γ` with its
+right endpoint cast to `endpoint (ofPath γ)` (`ofPath_toPath`). -/
 @[expose] public def ofPath {y : X} (γ : Path x₀ y) : BasedPath x₀ :=
   ⟨γ.toContinuousMap, γ.source⟩
 
@@ -111,7 +115,25 @@ public theorem endpoint_ofPath {y : X} (γ : Path x₀ y) : endpoint (ofPath γ)
 @[simp] public theorem ofPath_cast {y y' : X} (γ : Path x₀ y) (h : y' = y) :
     ofPath (γ.cast rfl h) = ofPath γ := rfl
 
-/-- Append a path at the endpoint of a based path. -/
+/-- The constant based path at `x₀`. -/
+@[expose] public def refl (x₀ : X) : BasedPath x₀ :=
+  ofPath (Path.refl x₀)
+
+@[simp] public theorem endpoint_refl (x₀ : X) : endpoint (refl x₀) = x₀ :=
+  endpoint_ofPath _
+
+@[simp] public theorem toPath_refl (x₀ : X) :
+    (refl x₀).toPath = Path.refl x₀ := by
+  apply Path.ext; funext t; rfl
+
+@[simp] public theorem ofPath_refl (x₀ : X) :
+    ofPath (Path.refl x₀) = refl x₀ := rfl
+
+/-- Append a path `δ` at the endpoint of a based path `γ`, defined as
+`ofPath (γ.toPath.trans δ)`: the half `s ∈ [0, ½]` traverses `γ` at double speed and the half
+`s ∈ [½, 1]` traverses `δ` at double speed (`Path.trans_apply`). The new endpoint is the endpoint
+of `δ` (`endpoint_append`). This is the move used by `joinedIn_preimage_of_append` to slide a
+based path within a path component of `endpoint ⁻¹' U`. -/
 @[expose] public noncomputable def append {y : X} (γ : BasedPath x₀)
     (δ : Path (endpoint γ) y) : BasedPath x₀ :=
   ofPath (γ.toPath.trans δ)
@@ -119,7 +141,14 @@ public theorem endpoint_ofPath {y : X} (γ : Path x₀ y) : endpoint (ofPath γ)
 public theorem endpoint_append {y : X} (γ : BasedPath x₀) (δ : Path (endpoint γ) y) :
     endpoint (append γ δ) = y := endpoint_ofPath _
 
-/-- The tail of a based path from time `a` to the endpoint. -/
+/-- The tail of a based path past time `a`, viewed as a `Path (γ.toPath.extend a) u` where
+`u = endpoint γ`. Concretely it is `γ.toPath.truncateOfLE` between `a` and `1`, cast on the right
+to land at `u`; the only hypothesis required is `a ≤ 1` (for `a < 0` the source is clamped
+through `Path.extend`). The endpoint identities are
+`terminalTail_source : terminalTail γ hu a ha1 0 = γ.toPath.extend a` and
+`terminalTail_target : terminalTail γ hu a ha1 1 = u`. This is the "compressed tail" piece used
+by `deformTerminal` to splice a new endpoint path onto `γ` while preserving its image on
+`[0, a]`. -/
 @[expose] public noncomputable def terminalTail {u : X} (γ : BasedPath x₀)
     (hu : endpoint γ = u) (a : ℝ) (ha1 : a ≤ 1) :
     Path (γ.toPath.extend a) u :=
@@ -211,7 +240,12 @@ public theorem truncateOfLE_range_subset_preimage {a b : X} (γ : Path a b) {t�
   · exact le_min (le_max_right _ _) h
   · exact min_le_right _ _
 
-/-- The initial segment of a path up to time `t`. -/
+/-- The family of initial segments of `γ : Path a b`: at parameter `t : I`, the path
+`s ↦ γ.extend (min s t)` from `a` to `γ t` (`initialSegmentFamily_apply`). At `t = 0` this is
+the constant path at `a` (`initialSegmentFamily_zero`); at `t = 1` it is `γ` itself, up to a
+trivial right-endpoint cast (`initialSegmentFamily_one`). The property consumers actually need
+is joint continuity in `(t, s)`, recorded as `continuous_initialSegmentFamily_uncurry` and used
+to build the rung homotopy in `joinedIn_preimage_of_append`. -/
 @[expose] public noncomputable def initialSegmentFamily {a b : X} (γ : Path a b) (t : I) :
     Path a (γ t) :=
   (γ.truncate 0 t).cast (by rw [min_eq_left t.2.1, γ.extend_zero]) (γ.extend_apply t.2).symm
@@ -224,22 +258,27 @@ public theorem continuous_initialSegmentFamily_uncurry {a b : X} (γ : Path a b)
     simpa [key] using γ.truncate_continuous_family.comp hkey
   simpa [initialSegmentFamily] using htrunc
 
+@[simp] public theorem initialSegmentFamily_apply {a b : X} (γ : Path a b) (t s : I) :
+    initialSegmentFamily γ t s = γ.extend (min (s : ℝ) t) := by
+  simp [initialSegmentFamily, Path.truncate, max_eq_left s.2.1]
+
 public theorem initialSegmentFamily_zero {a b : X} (γ : Path a b) :
     initialSegmentFamily γ 0 = (Path.refl a).cast rfl (by simp) := by
   ext s
-  simp [initialSegmentFamily, Path.refl]
+  simp [initialSegmentFamily_apply, γ.extend_zero, Path.refl, min_eq_right s.2.1]
 
 public theorem initialSegmentFamily_one {a b : X} (γ : Path a b) :
     initialSegmentFamily γ 1 = γ.cast rfl (by simp) := by
   ext s
-  simp [initialSegmentFamily, Path.truncate_zero_one]
+  simp [initialSegmentFamily_apply, min_eq_left s.2.2, γ.extend_apply s.2]
 
 end Path
 
 namespace BasedPath
 
-/-- The family of initial segments of a based path, as a family of based paths. At `t = 0`
-this is the constant based path at `x₀`; at `t = 1` it is `γ` itself. -/
+/-- The family of initial segments of a based path, defined as
+`ofPath (γ.toPath.initialSegmentFamily t)`. At `t = 0` this is the constant based path at `x₀`;
+at `t = 1` it is `γ` itself. Joint continuity in `t` is `continuous_initialSegmentFamily`. -/
 @[expose] public noncomputable def initialSegmentFamily {x₀ : X} (γ : BasedPath x₀) (t : I) :
     BasedPath x₀ :=
   ofPath (γ.toPath.initialSegmentFamily t)
@@ -256,8 +295,8 @@ public theorem continuous_initialSegmentFamily {x₀ : X} (γ : BasedPath x₀) 
     Continuous γ.initialSegmentFamily := by
   refine Continuous.subtype_mk ?_ _
   refine ContinuousMap.continuous_of_continuous_uncurry _ ?_
-  simpa [initialSegmentFamily, ofPath] using
-    γ.toPath.continuous_initialSegmentFamily_uncurry
+  change Continuous fun ts : I × I => (Path.initialSegmentFamily γ.toPath ts.1) ts.2
+  simpa only using γ.toPath.continuous_initialSegmentFamily_uncurry
 
 /-- Extract an open path-connected endpoint neighborhood and a terminal interval avoiding the
 subbasic compact sets that do not contain `1`. -/

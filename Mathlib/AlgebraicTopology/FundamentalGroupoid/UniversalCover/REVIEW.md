@@ -5,22 +5,6 @@ universal-cover construction (PR #38292) against `mathlib-standards.md`,
 deferred to a follow-up PR. The corresponding "fix-now" items have already
 been addressed on this branch.
 
-## API gaps for new definitions
-
-- `BasedPath` (`BasedPath.lean`): no `mk` simp lemma, no `BasedPath.refl`.
-  (Round-trip `ofPath_toPath_self` and the `ofPath_cast` simp lemma are
-  now in place.)
-- `BasedPath.deformTerminal`: missing `endpoint`, missing
-  continuity-in-parameters lemma, and no specialisation when the
-  deforming path is `refl`.
-- `Path.initialSegmentFamily` (`BasedPath.lean`): only zero/one
-  evaluation lemmas. Missing a general `apply` lemma giving the value at
-  arbitrary `(t, s)`.
-- `UniversalCover.basedPathComponent` / `basedPathSheet` / `sheet`
-  (`UniversalCover/Basic.lean`): no `mem_iff` characterisations, no
-  `sheet_self` lemma, no
-  `sheet_eq_image_of_pathComponent`.
-
 ## `endpoint` abstraction (tentative)
 
 The original review item here proposed dropping `@[simp]` from
@@ -76,7 +60,3 @@ deleted.
   `simpa [endpoint, ofPath, …]`-style invocations with explicit unfold
   lists. These break under minor refactor. Replace with a small dedicated
   `@[simp]` set characterising `endpoint` and `ofPath`.
-- **Weak doc strings.** Several BasedPath defs around l. 95–200
-  (`ofPath`, `append`, `terminalTail`, `initialSegmentFamily`) have
-  one-line doc strings that just restate the type. Expand to explain the
-  intent (and, where applicable, the formula).
