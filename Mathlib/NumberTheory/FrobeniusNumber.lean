@@ -72,8 +72,8 @@ theorem frobeniusNumber_pair (cop : Coprime m n) (hm : 1 < m) (hn : 1 < n) :
   · intro k hk
     dsimp at hk
     contrapose! hk
-    obtain ⟨a, b, h⟩ := Nat.exists_add_mul_eq_of_gcd_dvd_of_mul_pred_le m n k
-      (by simp [cop.gcd_eq_one]) (by grind [Nat.pred_mul, Nat.mul_pred, Nat.pred_eq_sub_one])
+    obtain ⟨a, b, h⟩ := exists_add_mul_eq_of_gcd_dvd_of_mul_pred_le m n k
+      (by simp [cop.gcd_eq_one]) (by grind [pred_mul, mul_pred, pred_eq_sub_one])
     exact ⟨a, b, succ_inj.mp (congrArg succ h)⟩
 
 namespace Nat
