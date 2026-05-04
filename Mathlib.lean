@@ -3278,6 +3278,7 @@ public import Mathlib.CategoryTheory.Sites.CoproductSheafCondition
 public import Mathlib.CategoryTheory.Sites.CoverLifting
 public import Mathlib.CategoryTheory.Sites.CoverPreserving
 public import Mathlib.CategoryTheory.Sites.Coverage
+public import Mathlib.CategoryTheory.Sites.CoversTop
 public import Mathlib.CategoryTheory.Sites.CoversTop.Basic
 public import Mathlib.CategoryTheory.Sites.CoversTop.Over
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
@@ -5487,6 +5488,7 @@ public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
 public import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 public import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
+public import Mathlib.MeasureTheory.Measure.Typeclasses.ZeroOne
 public import Mathlib.MeasureTheory.Measure.WithDensity
 public import Mathlib.MeasureTheory.Measure.WithDensityFinite
 public import Mathlib.MeasureTheory.Order.Group.Lattice
@@ -6164,6 +6166,7 @@ public import Mathlib.Probability.Kernel.Composition.RadonNikodym
 public import Mathlib.Probability.Kernel.CondDistrib
 public import Mathlib.Probability.Kernel.Condexp
 public import Mathlib.Probability.Kernel.Defs
+public import Mathlib.Probability.Kernel.Deterministic
 public import Mathlib.Probability.Kernel.Disintegration.Basic
 public import Mathlib.Probability.Kernel.Disintegration.CDFToKernel
 public import Mathlib.Probability.Kernel.Disintegration.CondCDF
@@ -6756,6 +6759,8 @@ public import Mathlib.RingTheory.QuotSMulTop
 public import Mathlib.RingTheory.Radical
 public import Mathlib.RingTheory.Radical.Basic
 public import Mathlib.RingTheory.Radical.NatInt
+public import Mathlib.RingTheory.RamificationInertia.Inertia
+public import Mathlib.RingTheory.RamificationInertia.Ramification
 public import Mathlib.RingTheory.ReesAlgebra
 public import Mathlib.RingTheory.Regular.Category
 public import Mathlib.RingTheory.Regular.Depth
