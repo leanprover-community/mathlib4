@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.CommAlgCat.Basic
 public import Mathlib.Algebra.Algebra.Shrink
+public import Mathlib.Algebra.Field.ULift
 public import Mathlib.Algebra.Polynomial.Lifts
 public import Mathlib.CategoryTheory.Limits.Filtered
 public import Mathlib.CategoryTheory.ObjectProperty.Ind
@@ -48,6 +49,26 @@ lemma IsScalarTower.algebraMap_range_le (S T : Type*) [CommRing S] [Ring T] [Alg
   rw [← hy, IsScalarTower.algebraMap_apply R S T]
 
 end preliminaries
+
+section from_proetale
+
+open CategoryTheory Limits IsLocalRing
+
+variable {J : Type u} [SmallCategory J] [IsFiltered J] (F : J ⥤ CommRingCat.{u}) {c : Cocone F}
+  [h_obj : ∀ (j : J), IsLocalRing (F.obj j)]
+  [h_hom : ∀ (j j' : J) (f : j ⟶ j'), IsLocalHom (F.map f).hom]
+
+namespace CommRingCat.FilteredColimit
+
+theorem isLocalRing_of_isColimit (hc : IsColimit c) : IsLocalRing c.pt := by sorry
+
+lemma maximalIdeal_eq_iUnion_of_isColimit (hc : IsColimit c) :
+    (isLocalRing_of_isColimit F hc).maximalIdeal =
+    ⋃ (j : J), ((c.ι.app j) '' (maximalIdeal (F.obj j)) : Set c.pt) := sorry
+
+end CommRingCat.FilteredColimit
+
+end from_proetale
 
 variable [IsLocalRing R] (K : Type u) [Field K] [Algebra R K] [IsLocalHom (algebraMap R K)]
 
@@ -342,6 +363,86 @@ namespace FilteredColimit
 
 variable {R K} {J : Type u} [SmallCategory J] [IsFiltered J] {F : J ⥤ FlatExtension R K}
 
+instance : HasColimitsOfShape J (FlatExtension R K) where
+  has_colimit F := by
+    sorry
+
+instance : HasFilteredColimitsOfSize.{u, u} (FlatExtension R K) where
+  HasColimitsOfShape _ _ _ := inferInstance
+
 end FilteredColimit
 
 end FlatExtension
+
+/-- In this version the universe levels of `R` and `K` are assumed to be the same, see
+  `exists_isLocalHom_flat` for a version where they have different universe levels. -/
+lemma exists_isLocalHom_flat' : ∃ (R' : Type u) (_ : CommRing R') (_ : IsLocalRing R')
+    (_ : Algebra R R') (_ : IsLocalHom (algebraMap R R')), Module.Flat R R' ∧
+    maximalIdeal R' = (maximalIdeal R).map (algebraMap R R') ∧
+    Nonempty (K ≃ₐ[R] (ResidueField R')) := by
+  obtain ⟨setK, ⟨e⟩⟩ : ∃ S : Type u, Nonempty (S ≃ Set K) := ⟨ULift (Set K), ⟨Equiv.ulift⟩⟩
+  let ⟨lin, wf⟩ := exists_wellFoundedLT setK
+  let : WellFoundedLT (WithTop setK) := WithTop.instWellFoundedLT
+  let : SuccOrder (WithTop setK) := SuccOrder.ofLinearWellFoundedLT _
+  let : OrderBot (WithTop setK) := WellFoundedLT.toOrderBot _
+  let : HasIterationOfShape (WithTop setK) (FlatExtension R K) := sorry
+  obtain ⟨φ⟩ : Nonempty ((FlatExtension.SuccStruct R K).Iteration (⊤ : WithTop setK)) :=
+    inferInstance
+  let fi : WithTop setK ≃o Set.Iic (⊤ : WithTop setK) := OrderIso.IicTop.symm
+  let φobj := fun i ↦ (algebraMap (φ.F.obj (fi i)) K).range
+  let φtop := φ.F.obj (fi ⊤)
+  suffices h : (algebraMap φtop K).range = ⊤ by
+    let f : (ResidueField φtop) →+* K :=
+      (Ideal.Quotient.lift _ (algebraMap φtop K) (fun x hx ↦ Monogenic.algebraMap_eq_zero x hx))
+    have : Function.Bijective f := ⟨RingHom.injective f,
+      Ideal.Quotient.lift_surjective_of_surjective _ _ (RingHom.range_eq_top.mp h)⟩
+    let f' := RingEquiv.ofBijective f this
+    refine ⟨φtop.Ring, inferInstance, inferInstance, inferInstance, inferInstance, inferInstance,
+      φtop.eqmap, ⟨AlgEquiv.ofRingEquiv (f := f'.symm) fun x ↦ f'.injective ?_⟩⟩
+    simp only [RingEquiv.apply_symm_apply, RingEquiv.coe_ofBijective, f', f]
+    rw [IsScalarTower.algebraMap_apply R φtop (ResidueField φtop)]
+    exact IsScalarTower.algebraMap_apply R φtop K x
+  have mono : Monotone φobj := fun a b hab ↦ by
+    let mapab := φ.F.map (homOfLE (fi.monotone hab))
+    rintro _ ⟨x, rfl⟩
+    exact ⟨mapab.algHom.toRingHom x, congr($mapab.comm x)⟩
+  by_contra hne
+  have hlt : ∀ i, i < ⊤ → ∃ u, u ∈ φobj (Order.succ i) ∧ ¬ u ∈ φobj i := by
+    rintro i h
+    have := FlatExtension.algebraMap_range_lt_of_not_surjective R K (φ.F.obj (fi i)) <|
+      fun H ↦ hne (eq_top_iff.mpr (le_of_eq_of_le (RingHom.range_eq_top.mpr H).symm (mono le_top)))
+    obtain ⟨x, hx⟩ := Set.exists_of_ssubset this
+    have : φ.F.obj (fi (Order.succ i)) = (FlatExtension.SuccStruct R K).succ (φ.F.obj (fi i)) := by
+      rw [← φ.obj_succ]
+      · rfl
+      · exact h
+    unfold φobj
+    exact ⟨x, this ▸ hx⟩
+  let uh := fun i : setK ↦ hlt (fi i) (WithTop.coe_lt_top _)
+  let u : setK → K := fun i ↦ Classical.choose (uh i)
+  have hu : Function.Injective u := by
+    refine Function.Injective.of_lt_imp_ne fun x y hxy heq ↦ ?_
+    absurd (Classical.choose_spec (uh x)).1
+    change u x ∉ _
+    rw [heq]
+    refine fun h ↦ (Classical.choose_spec (uh y)).2 ((mono ?_) h)
+    exact Order.succ_le_of_lt <| Subtype.mk_lt_mk.mpr (WithTop.coe_lt_coe.mpr hxy)
+  absurd Cardinal.lift_mk_le_lift_mk_of_injective (hu.comp e.symm.injective)
+  simpa using Cardinal.cantor (Cardinal.mk K)
+
+lemma exists_isLocalHom_flat (K : Type v) [Field K] [Algebra R K] :
+    ∃ (R' : Type (max u v)) (_ : CommRing R') (_ : IsLocalRing R')
+    (_ : Algebra R R') (_ : IsLocalHom (algebraMap R R')), Module.Flat R R' ∧
+    maximalIdeal R' = (maximalIdeal R).map (algebraMap R R') ∧
+    Nonempty (K ≃ₐ[R] (ResidueField R')) := by
+  let R' := ULift.{v, u} R
+  let K' := ULift.{u, v} K
+  let eR : R ≃+* R' := ULift.ringEquiv.symm
+  let eK : K ≃+* K' := ULift.ringEquiv.symm
+  have : IsLocalRing R' := eR.isLocalRing
+  let : Algebra R K' := ULift.algebra
+  let : Algebra R' K' := ULift.algebra' _ _
+  let : IsLocalHom (algebraMap R' K') := sorry
+  obtain ⟨S, _, _, _, _, h⟩ := exists_isLocalHom_flat' R' K'
+
+  sorry
