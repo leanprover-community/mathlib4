@@ -311,6 +311,18 @@ def reifyScope : CommandElabM (TSyntax ``scopeStx) := do
 
     -- We also could account for `open (scoped) ... in variable` but it would have to be ad-hoc.
 
+/--
+`#scope` reifies the current scope into syntax so that it can be transported into another file,
+e.g. along with a following declaration that depends on this scope. (No use of `in` is needed.)
+
+`#scope` will log a try-this suggestion suggesting reified syntax that matches the current scope,
+or else remain silent. If the reified scope syntax no longer matches the current scope, `#scope`
+suggests an updated replacement.
+
+NOTE: `#scope` is currently in development. Soon, `#scope!` and `#scope?` will provide more
+features for (1) replacing the current scope with the recorded scope (2) suggesting new ordinary
+scope syntax to merge the two scopes.
+-/
 syntax "#scope" (ppLine scopeStx)? : command
 
 elab_rules : command
