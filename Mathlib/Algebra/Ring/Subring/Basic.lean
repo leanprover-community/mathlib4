@@ -836,7 +836,7 @@ theorem range_eq_top_of_surjective (f : R →+* S) (hf : Function.Surjective f) 
   range_eq_top.2 hf
 
 @[simp]
-theorem rangeRestrict_comp_codRestrict (g : S →+* T) (f : R →+* S) :
+theorem domRestrict_comp_rangeRestrict (g : S →+* T) (f : R →+* S) :
     (g.domRestrict f.range).comp (f.rangeRestrict) = g.comp f :=
   rfl
 
