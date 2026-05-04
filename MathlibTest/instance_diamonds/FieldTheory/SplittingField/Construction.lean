@@ -19,7 +19,6 @@ example :
       @Algebra.toModule _ _ _ _ (SplittingField.instAlgebra f) := by
   with_reducible_and_instances rfl
 
-set_option backward.isDefEq.respectTransparency false in
 example :
     (AddCommGroup.toIntModule _ : Module ℤ (SplittingField f)) =
       @Algebra.toModule _ _ _ _ (SplittingField.instAlgebra f) := by
