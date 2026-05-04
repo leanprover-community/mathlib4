@@ -219,12 +219,11 @@ variable [CompactSpace X] [CompactSpace Y] [T2Space X] [T2Space Y] [TotallyDisco
 /-- For profinite spaces, the two product structures on measures agree. -/
 lemma prodMk_eq_prodMk' : prodMk μ ν = prodMk' μ ν := by
   apply DFunLike.coe_injective
-  apply ContinuousMap.denseRange_tensorHom.equalizer (by fun_prop) (by fun_prop)
-  ext h
+  apply denseRange_tensorHom.equalizer (by fun_prop) (by fun_prop) (funext fun h ↦ ?_)
   induction h with
-  | zero => grind
+  | zero => simp
   | add => grind
-  | tmul f g => simp [tensorHom, prodMul_def, prodMk_prod_apply μ ν f g, prodMk'_prod_apply μ ν f g]
+  | tmul f g => simp [prodMul_def, prodMk_prod_apply μ, prodMk'_prod_apply μ]
 
 end Profinite
 
