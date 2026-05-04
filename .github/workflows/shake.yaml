@@ -38,7 +38,7 @@ jobs:
       - name: lake shake
         id: shake
         run: |
-          lake shake --add-public --keep-implied --keep-prefix --fix --explain > explain.txt
+          lake shake --add-public --keep-implied --keep-prefix --fix --explain > explain.txt 2>&1
           if git diff --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
@@ -49,28 +49,7 @@ jobs:
         id: stats
         if: steps.shake.outputs.changed == 'true'
         run: |
-          python3 - <<'EOF'
-          import re, os
-          suggestions = added = removed = 0
-          with open("explain.txt") as f:
-              for line in f:
-                  m = re.search(r'Successfully applied (\d+) suggestions', line)
-                  if m:
-                      suggestions = int(m.group(1))
-                  m = re.match(r'^  (add|remove) #\[(.+)\]', line)
-                  if m:
-                      action, items = m.group(1), m.group(2)
-                      count = len([x for x in items.split(',') if x.strip()])
-                      if action == 'add':
-                          added += count
-                      else:
-                          removed += count
-          print(f'{suggestions} files changed · +{added} imports added · -{removed} imports removed')
-          with open(os.environ['GITHUB_OUTPUT'], 'a') as out:
-              out.write(f'suggestions={suggestions}\n')
-              out.write(f'added={added}\n')
-              out.write(f'removed={removed}\n')
-          EOF
+          scripts/parse_shake_output.py explain.txt "$GITHUB_OUTPUT"
 
       - name: Upload explain.txt
         id: upload-artifact
@@ -87,7 +66,7 @@ jobs:
         env:
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           ARTIFACT_ID: ${{ steps.upload-artifact.outputs.artifact-id }}
-          SUGGESTIONS: ${{ steps.stats.outputs.suggestions }}
+          CHANGED_FILES: ${{ steps.stats.outputs.changed_files }}
           ADDED: ${{ steps.stats.outputs.added }}
           REMOVED: ${{ steps.stats.outputs.removed }}
         run: |
@@ -95,7 +74,7 @@ jobs:
             echo "body<<EOF"
             echo "I am happy to shake some imports for you!"
             echo ""
-            echo "**${SUGGESTIONS} files changed** · +${ADDED} imports added · -${REMOVED} imports removed"
+            echo "**${CHANGED_FILES} files changed** · +${ADDED} imports added · -${REMOVED} imports removed"
             echo ""
             echo "---"
             echo ""
@@ -106,7 +85,7 @@ jobs:
 
       - name: Generate app token
         id: app-token
-        if: steps.shake.outputs.changed == 'true'
+        if: steps.shake.outputs.changed == 'true' && toJson(inputs.dry_run) != 'true'
         uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@3bb576208589a435eeaeac9b144a1b7c3e948760
         with:
           app-id: ${{ secrets.MATHLIB_NOLINTS_APP_ID }}
@@ -125,7 +104,7 @@ jobs:
           commit-message: |
             chore: lake shake --add-public --keep-implied --keep-prefix --fix
 
-            ${{ steps.stats.outputs.suggestions }} files changed · +${{ steps.stats.outputs.added }} imports added · -${{ steps.stats.outputs.removed }} imports removed
+            ${{ steps.stats.outputs.changed_files }} files changed · +${{ steps.stats.outputs.added }} imports added · -${{ steps.stats.outputs.removed }} imports removed
           branch: "shake"
           base: master
           title: "chore: lake shake --add-public --keep-implied --keep-prefix --fix"
@@ -143,8 +122,8 @@ jobs:
           type: 'stream'
           topic: 'Mathlib `shake --fix`'
           content: |
-            Please review #${{ steps.pr.outputs.pull-request-number }} which applies
-            ${{ steps.stats.outputs.suggestions }} suggestions:
+            Please review #${{ steps.pr.outputs.pull-request-number }} which changes
+            ${{ steps.stats.outputs.changed_files }} files:
             - +${{ steps.stats.outputs.added }} imports added
             - -${{ steps.stats.outputs.removed }} imports removed
 
