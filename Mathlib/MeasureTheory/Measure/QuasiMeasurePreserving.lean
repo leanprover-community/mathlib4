@@ -23,7 +23,7 @@ absolutely continuous with respect to `μb`).
 
 -/
 
-@[expose] public section
+public section
 
 variable {α β γ δ : Type*}
 
@@ -183,7 +183,7 @@ theorem exists_preimage_eq_of_preimage_ae {f : α → α} (h : QuasiMeasurePrese
   · simp only [Set.preimage_iterate_eq]
     exact CompleteLatticeHom.apply_limsup_iterate (CompleteLatticeHom.setPreimage f) t
 
-open Pointwise
+open scoped Pointwise
 
 @[to_additive]
 theorem smul_ae_eq_of_ae_eq {G α : Type*} [Group G] [MulAction G α] {_ : MeasurableSpace α}
@@ -196,7 +196,7 @@ end QuasiMeasurePreserving
 
 section Pointwise
 
-open Pointwise
+open scoped Pointwise
 
 @[to_additive]
 theorem pairwise_aedisjoint_of_aedisjoint_forall_ne_one {G α : Type*} [Group G] [MulAction G α]

@@ -174,13 +174,11 @@ theorem _root_.LinearMap.IsSymmetric.clm_adjoint_eq {A : E →L[𝕜] E} (hA : A
 theorem adjoint_id : (ContinuousLinearMap.id 𝕜 E)† = ContinuousLinearMap.id 𝕜 E := by
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem _root_.Submodule.adjoint_subtypeL (U : Submodule 𝕜 E) [CompleteSpace U] :
     U.subtypeL† = U.orthogonalProjection := by
   symm
   simp [eq_adjoint_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem _root_.Submodule.adjoint_orthogonalProjection (U : Submodule 𝕜 E) [CompleteSpace U] :
     (U.orthogonalProjection : E →L[𝕜] U)† = U.subtypeL := by
   rw [← U.adjoint_subtypeL, adjoint_adjoint]
@@ -964,8 +962,6 @@ lemma coe_symm_linearIsometryEquiv_apply (e : H ≃ₗᵢ[𝕜] H) :
 theorem conjStarAlgEquiv_unitaryLinearIsometryEquiv (u : unitary (H →L[𝕜] H)) :
     (linearIsometryEquiv u).conjStarAlgEquiv = conjStarAlgAut 𝕜 _ u := rfl
 
-#adaptation_note /-- The maxHeartbeats bump is required after leanprover/lean4#12564. -/
-set_option maxHeartbeats 400000 in -- see adaptation note
 theorem conjStarAlgAut_symm_unitaryLinearIsometryEquiv (u : H ≃ₗᵢ[𝕜] H) :
     conjStarAlgAut 𝕜 (H →L[𝕜] H) (linearIsometryEquiv.symm u) = u.conjStarAlgEquiv := by
   simp [← conjStarAlgEquiv_unitaryLinearIsometryEquiv]

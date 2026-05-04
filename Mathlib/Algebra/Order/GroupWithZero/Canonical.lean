@@ -25,7 +25,7 @@ This file sets up a special class of linearly ordered commutative monoids
 that show up as the target of so-called “valuations” in algebraic number theory.
 
 Usually, in the informal literature, these objects are constructed
-by taking a linearly ordered commutative group Γ and formally adjoining a zero element: Γ ∪ {0}.
+by taking a linearly ordered commutative group Γ and formally adjoining a zero element: `Γ ∪ {0}`.
 
 The disadvantage is that a type such as `NNReal` is not of that form,
 whereas it is a very common target for valuations.

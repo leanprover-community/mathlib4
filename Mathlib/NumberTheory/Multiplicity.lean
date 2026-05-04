@@ -22,8 +22,7 @@ This file contains results in number theory relating to multiplicity.
 
 ## References
 
-* [Wikipedia, *Lifting-the-exponent lemma*]
-  (https://en.wikipedia.org/wiki/Lifting-the-exponent_lemma)
+* [Wikipedia, *Lifting-the-exponent lemma*](https://en.wikipedia.org/wiki/Lifting-the-exponent_lemma)
 -/
 
 public section

@@ -302,7 +302,7 @@ instance isOrderedRing : IsOrderedRing Cardinal.{u} :=
 
 instance orderBot : OrderBot Cardinal.{u} where
   bot := 0
-  bot_le := zero_le
+  bot_le _ := zero_le
 
 instance noZeroDivisors : NoZeroDivisors Cardinal.{u} where
   eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} =>
@@ -330,7 +330,7 @@ theorem power_le_power_left : ∀ {a b c : Cardinal}, a ≠ 0 → b ≤ c → a 
 
 theorem self_le_power (a : Cardinal) {b : Cardinal} (hb : 1 ≤ b) : a ≤ a ^ b := by
   rcases eq_or_ne a 0 with (rfl | ha)
-  · exact zero_le _
+  · exact zero_le
   · convert power_le_power_left ha hb
     exact (power_one a).symm
 
@@ -529,7 +529,6 @@ variable (α) in
 every type has a linear order which satisfies `WellFoundedGT` -/
 lemma exists_wellFoundedGT : ∃ (_ : LinearOrder α), WellFoundedGT α := by
   classical
-  have : IsStrictTotalOrder α _ := IsStrictTotalOrder.swap WellOrderingRel
   exact ⟨linearOrderOfSTO (Function.swap WellOrderingRel),
     by simpa [isWellFounded_iff] using WellOrderingRel.isWellOrder.wf⟩
 

@@ -254,6 +254,24 @@ instance (s : A) [Algebra.Etale R A] : Algebra.Etale R (Localization.Away s) whe
 
 @[deprecated (since := "2025-11-03")] alias of_isLocalization_Away := of_isLocalizationAway
 
+instance (R S : Type u) [CommRing R] [CommRing S] :
+    letI : Algebra (R × S) S := (RingHom.snd R S).toAlgebra
+    Algebra.Etale (R × S) S := by
+  algebraize [RingHom.snd R S]
+  exact Algebra.Etale.of_isLocalizationAway (0, 1)
+
+instance (S : Type*) [CommRing S] :
+    letI : Algebra (R × S) R := (RingHom.fst R S).toAlgebra
+    Algebra.Etale (R × S) R := by
+  algebraize [RingHom.fst R S]
+  exact Algebra.Etale.of_isLocalizationAway (1, 0)
+
+instance (S : Type*) [CommRing S] :
+    letI : Algebra (R × S) S := (RingHom.snd R S).toAlgebra
+    Algebra.Etale (R × S) S := by
+  algebraize [RingHom.snd R S]
+  exact Algebra.Etale.of_isLocalizationAway (0, 1)
+
 end Etale
 
 end Algebra
