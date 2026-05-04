@@ -41,7 +41,7 @@ universe u v w u₁ u₂
 open Finsupp
 
 namespace Convexity
-
+variable {R X M N P I J K : Type*}
 
 /--
 A finitely supported probability distribution over elements of `M` with coefficients in `R`.
@@ -62,35 +62,50 @@ grind_pattern StdSimplex.total => self.weights
 initialize_simps_projections StdSimplex (as_prefix weights)
 
 namespace StdSimplex
+variable {R : Type u} [PartialOrder R] [Semiring R] {M N P : Type*} {w : StdSimplex R M} {x : M}
 
-variable {R : Type u} [PartialOrder R] [Semiring R] {M N P : Type*}
+@[simp] lemma weights_nonneg {w : StdSimplex R M} (i : M) : 0 ≤ w.weights i := w.nonneg i
 
-@[simp] lemma weights_nonneg {f : StdSimplex R M} (i : M) : 0 ≤ f.weights i := f.nonneg i
+@[simp] lemma weights_ne_zero [Nontrivial R] : ∀ w : StdSimplex R M, w.weights ≠ 0 := by
+  rintro ⟨_, -, total⟩ rfl; simp at total
 
-lemma nonempty [Nontrivial R] (f : StdSimplex R M) : Nonempty M := by
-  by_contra!
-  simpa [Subsingleton.elim f.weights 0, -total] using f.total
+lemma support_weights_nonempty [Nontrivial R] (w : StdSimplex R M) :
+    w.weights.support.Nonempty := by simp
 
-@[ext]
-theorem ext {f g : StdSimplex R M} (h : f.weights = g.weights) : f = g := by
-  cases f; cases g; simp_all
+lemma nonempty [Nontrivial R] (w : StdSimplex R M) : Nonempty M :=
+  w.support_weights_nonempty.to_type
+
+@[simp] lemma weights_inj {f g : StdSimplex R M} : f.weights = g.weights ↔ f = g := by
+  cases f; cases g; simp
+
+@[ext] alias ⟨ext, _⟩ := weights_inj
 
 variable [IsStrictOrderedRing R]
 
 /-- The point mass distribution concentrated at `x`. -/
 @[simps weights]
 def single (x : M) : StdSimplex R M where
-  weights := Finsupp.single x 1
+  weights := .single x 1
   nonneg := by simp
   total := by simp
 
-theorem mk_single (x : M) {nonneg total} :
-    (StdSimplex.mk (Finsupp.single x (1 : R)) nonneg total) = single x := rfl
+theorem mk_single (x : M) {nonneg total} : (mk (.single x (1 : R)) nonneg total) = single x := rfl
+
+@[simp] lemma support_weights_eq_singleton : w.weights.support = {x} ↔ w = single x where
+  mp := by
+    classical
+    rw [support_eq_singleton']
+    rintro ⟨a, ha, hwa⟩
+    ext : 1
+    simp only [hwa, weights_single]
+    congr
+    simpa [hwa] using w.total
+  mpr := by rintro rfl; simp [support_single_ne_zero]
 
 /-- A probability distribution with weight `s` on `x` and weight `t` on `y`. -/
 @[simps weights]
 def duple (x y : M) {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) : StdSimplex R M where
-  weights := Finsupp.single x s + Finsupp.single y t
+  weights := .single x s + .single y t
   nonneg := add_nonneg (by simpa) (by simpa)
   total := by classical simpa [sum_add_index]
 
@@ -123,7 +138,7 @@ lemma map_id (f : StdSimplex R M) : f.map id = f := by
 
 lemma map_comp (f : StdSimplex R M) (g₁ : M → N) (g₂ : N → P) :
     f.map (g₂ ∘ g₁) = (f.map g₁).map g₂ := by
-  ext; simp [Finsupp.mapDomain_comp]
+  ext; simp [mapDomain_comp]
 
 lemma map_map (f : StdSimplex R M) (g₁ : M → N) (g₂ : N → P) :
     (f.map g₁).map g₂ = f.map (fun x ↦ g₂ (g₁ x)) :=
@@ -151,6 +166,7 @@ private lemma map_join (f : StdSimplex R (StdSimplex R M)) (g : M → N) :
 
 @[simp] private lemma join_single (x : StdSimplex R M) : join (.single x) = x := by
   ext; simp [join, ← mk_single]
+
 end StdSimplex
 
 /--
@@ -166,28 +182,35 @@ class ConvexSpace (R : Type u) (M : Type v)
   unusable. Why is this so? Shouldn't typeclass arguments to a `structure` also be typeclass
   arguments to its fields? -/
   sConvexCombo [inst₁] [inst₂] [inst₃] (f : StdSimplex R M) : M
+  /-- A convex combination of a single point is that point. -/
+  sConvexCombo_single (x : M) : sConvexCombo (.single x) = x
   /-- Associativity of convex combination (monadic join law).
 
   Use `sConvexCombo_sConvexCombo` instead. -/
   assoc (f : StdSimplex R (StdSimplex R M)) :
     sConvexCombo (f.map sConvexCombo) = sConvexCombo f.join
-  /-- A convex combination of a single point is that point. -/
-  sConvexCombo_single (x : M) : sConvexCombo (.single x) = x
 
 open ConvexSpace StdSimplex
 
-variable {R M N P I J K : Type*} [PartialOrder R] [Semiring R] [IsStrictOrderedRing R]
+variable [PartialOrder R] [Semiring R] [IsStrictOrderedRing R]
   [ConvexSpace R M] [ConvexSpace R N] [ConvexSpace R P]
-
-section sConvexCombo
 
 export ConvexSpace (sConvexCombo sConvexCombo_single)
 
 attribute [simp] sConvexCombo_single
 
+/-- Take a convex combination with the given weight distribution of an indexed family of points. -/
+def iConvexCombo (s : StdSimplex R I) (f : I → M) : M := sConvexCombo (s.map f)
+
+/-- Take a convex combination of two points. -/
+def convexComboPair (s t : R) (hs : 0 ≤ s) (ht : 0 ≤ t) (hst : s + t = 1) (x y : M) : M :=
+  sConvexCombo (.duple x y hs ht hst)
+
 namespace StdSimplex
 
+-- We export `sConvexCombo` and `iConvexCombo` to allow dot notation on the `StdSimplex` argument.
 export ConvexSpace (sConvexCombo)
+export Convexity (iConvexCombo)
 
 instance : ConvexSpace R (StdSimplex R I) where
   sConvexCombo σ := σ.join
@@ -197,6 +220,14 @@ instance : ConvexSpace R (StdSimplex R I) where
 @[simp] lemma weights_sConvexCombo (f : StdSimplex R (StdSimplex R I)) :
     f.sConvexCombo.weights = f.weights.sum (fun d r => r • d.weights) :=
   StdSimplex.weights_join _
+
+@[simp] lemma weights_iConvexCombo (w : StdSimplex R I) (f : I → StdSimplex R I) :
+    (iConvexCombo w f).weights = w.weights.sum (fun i r => r • (f i).weights) := by
+  simp [iConvexCombo, sum_mapDomain_index, add_smul]
+
+@[simp] lemma weights_convexComboPair (w w' : StdSimplex R I) (s t : R) (hs ht hst) :
+    (convexComboPair s t hs ht hst w w').weights = s • w.weights + t • w'.weights := by
+  classical simp [convexComboPair, sum_add_index, add_smul]
 
 lemma map_sConvexCombo (s : StdSimplex R (StdSimplex R I)) (f : I → J) :
     s.sConvexCombo.map f = (s.map (map f)).sConvexCombo :=
@@ -208,14 +239,17 @@ lemma sConvexCombo_sConvexCombo (f : StdSimplex R (StdSimplex R M)) :
     f.sConvexCombo.sConvexCombo = (f.map sConvexCombo).sConvexCombo :=
   (ConvexSpace.assoc f).symm
 
+lemma sConvexCombo_convexComboPair (s t : R) (hs ht hst) (w w' : StdSimplex R M) :
+    (convexComboPair s t hs ht hst w w').sConvexCombo =
+      convexComboPair s t hs ht hst w.sConvexCombo w'.sConvexCombo := by
+  simp [convexComboPair, sConvexCombo_sConvexCombo]
+
 /-- The public constructor for `ConvexSpace`. -/
 abbrev ConvexSpace.mk {M : Type*} (sConvexCombo : StdSimplex R M → M)
+    (single : ∀ x : M, sConvexCombo (.single x) = x)
     (assoc : ∀ f : StdSimplex R (StdSimplex R M),
-      sConvexCombo (f.map sConvexCombo) = sConvexCombo f.sConvexCombo)
-    (single : ∀ x : M, sConvexCombo (.single x) = x) : ConvexSpace R M :=
-  ⟨sConvexCombo, assoc, single⟩
-
-end sConvexCombo
+      sConvexCombo (f.map sConvexCombo) = sConvexCombo f.sConvexCombo) : ConvexSpace R M :=
+  ⟨sConvexCombo, single, assoc⟩
 
 variable (R) in
 /-- A map between convex spaces is affine if it preserves convex combinations. -/
@@ -240,16 +274,6 @@ lemma StdSimplex.isAffineMap_map (f : I → J) : IsAffineMap R (StdSimplex.map (
 
 section iConvexCombo
 
-/-- Take a convex combination with the given weight distribution of an indexed family of points. -/
-def iConvexCombo (s : StdSimplex R I) (f : I → M) : M := (s.map f).sConvexCombo
-
-namespace StdSimplex
-
--- We export `iConvexCombo` to allow dot notation on the `StdSimplex` argument.
-export Convexity (iConvexCombo)
-
-end StdSimplex
-
 @[simp] lemma iConvexCombo_const (s : StdSimplex R I) (m : M) :
     s.iConvexCombo (fun _ ↦ m) = m := by simp [iConvexCombo]
 
@@ -262,7 +286,7 @@ end StdSimplex
 @[simp] lemma iConvexCombo_id' (s : StdSimplex R M) :
     s.iConvexCombo (fun x ↦ x) = s.sConvexCombo := iConvexCombo_id s
 
-lemma iConvexCombo_map (s : StdSimplex R I) (f : I → J) (g : J → M) :
+@[simp] lemma iConvexCombo_map (s : StdSimplex R I) (f : I → J) (g : J → M) :
     (s.map f).iConvexCombo g = s.iConvexCombo (g ∘ f) := by
   simp only [iConvexCombo, map_comp]
 
@@ -310,10 +334,6 @@ variable {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1)
 variable {s' t' : R} (hs' : 0 ≤ s') (ht' : 0 ≤ t') (h' : s' + t' = 1)
 variable {s'' t'' : R} (hs'' : 0 ≤ s'') (ht'' : 0 ≤ t'') (h'' : s'' + t'' = 1)
 
-/-- Take a convex combination of two points. -/
-def convexComboPair (s t : R) (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) (x y : M) : M :=
-  sConvexCombo (.duple x y hs ht h)
-
 lemma convexComboPair_def (p q : M) :
     convexComboPair s t hs ht h p q = (StdSimplex.duple 0 1 hs ht h).iConvexCombo ![p, q] := by
   simp [StdSimplex.iConvexCombo, convexComboPair]
@@ -335,8 +355,8 @@ theorem convexComboPair_one {x y : M} :
 theorem convexComboPair_same {x : M} :
     convexComboPair s t hs ht h x x = x := by
   unfold convexComboPair
-  convert ConvexSpace.sConvexCombo_single x
-  simp only [StdSimplex.duple, StdSimplex.single, ← Finsupp.single_add, h]
+  convert sConvexCombo_single x
+  simp only [StdSimplex.duple, StdSimplex.single, ← single_add, h]
 
 theorem convexComboPair_symm {x y : M} :
     convexComboPair s t hs ht h x y = convexComboPair t s ht hs ((add_comm _ _).trans h) y x := by
@@ -409,8 +429,8 @@ lemma convexComboPair_convexComboPair_assoc_left (H : t * s'' = s * t' * t'') (m
   congr 1
   ext1
   have : s * (t' * t'') + t * t'' = t := by rw [← mul_assoc, ← H, ← mul_add, h'', mul_one]
-  simp [convexComboPair, Finsupp.sum_add_index, add_smul, ← Finsupp.single_add,
-    H, mul_assoc, ← mul_add, h'', add_assoc, this]
+  simp [convexComboPair, sum_add_index, add_smul, ← single_add, H, mul_assoc, ← mul_add, h'',
+    add_assoc, this]
 
 lemma convexComboPair_convexComboPair_assoc_right (H : s * t'' = t * s' * s'') (m₁ m₂ m₃ : M) :
     convexComboPair s t hs ht h m₁ (convexComboPair s' t' hs' ht' h' m₂ m₃) =
