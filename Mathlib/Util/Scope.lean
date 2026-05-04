@@ -23,13 +23,16 @@ to be easy to act on with metaprogramming automation. In this sense it is not tr
   full scope specification with the current scope
 -/
 
+/- Note: some declarations are marked `private` despite already living in private sections. These
+should stay private or be carefully considered even if the API becomes public. -/
+
 open Lean Meta Elab Command
 
-public meta section
+meta section
 
 namespace Mathlib.Tactic.Scope
 
-section parsers
+public section parsers
 
 /-! The "inlinable" parsers in this section exist to enable syntax quotations, which help with
 constructing and processing these later. -/
