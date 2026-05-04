@@ -100,7 +100,8 @@ nonrec theorem exists_gcf_pair_rat_eq_of_nth_contsAux :
 
 theorem exists_gcf_pair_rat_eq_nth_conts :
     ∃ conts : Pair ℚ, (of v).conts n = (conts.map (↑) : Pair K) := by
-  rw [nth_cont_eq_succ_nth_contAux]; exact exists_gcf_pair_rat_eq_of_nth_contsAux v <| n + 1
+  rw [nth_cont_eq_succ_nth_contAux]
+  exact exists_gcf_pair_rat_eq_of_nth_contsAux v <| n + 1
 
 theorem exists_rat_eq_nth_num : ∃ q : ℚ, (of v).nums n = (q : K) := by
   rcases exists_gcf_pair_rat_eq_nth_conts v n with ⟨⟨a, _⟩, nth_cont_eq⟩
@@ -176,9 +177,7 @@ theorem coe_stream_nth_rat_eq (v_eq_q : v = (↑q : K)) (n : ℕ) :
       obtain ⟨b, fr⟩ := ifp_n
       rcases Decidable.em (fr = 0) with fr_zero | fr_ne_zero
       · simp [IntFractPair.stream, IH.symm, v_eq_q, stream_q_nth_eq, fr_zero]
-      · replace IH : some (IntFractPair.mk b (fr : K)) = IntFractPair.stream (↑q) n := by
-          rwa [stream_q_nth_eq] at IH
-        have : (fr : K)⁻¹ = ((fr⁻¹ : ℚ) : K) := by norm_cast
+      · have : (fr : K)⁻¹ = ((fr⁻¹ : ℚ) : K) := by norm_cast
         have coe_of_fr := coe_of_rat_eq this
         simpa [IntFractPair.stream, IH.symm, v_eq_q, stream_q_nth_eq, fr_ne_zero]
 
@@ -216,11 +215,8 @@ theorem coe_of_rat_eq (v_eq_q : v = (↑q : K)) :
 
 theorem of_terminates_iff_of_rat_terminates {v : K} {q : ℚ} (v_eq_q : v = (q : K)) :
     (of v).Terminates ↔ (of q).Terminates := by
-  constructor <;> intro h <;> obtain ⟨n, h⟩ := h <;> use n <;>
-    simp only [Stream'.Seq.TerminatedAt, (coe_of_s_get?_rat_eq v_eq_q n).symm] at h ⊢ <;>
-    cases h' : (of q).s.get? n <;>
-    simp only [h'] at h <;>
-    trivial
+  refine exists_congr fun n => ?_
+  rcases h : (of q).s.get? n <;> grind [Stream'.Seq.TerminatedAt, coe_of_s_get?_rat_eq v_eq_q n]
 
 end RatTranslation
 
@@ -314,9 +310,7 @@ end TerminatesOfRat
 
 /-- The continued fraction `GenContFract.of v` terminates if and only if `v ∈ ℚ`. -/
 theorem terminates_iff_rat (v : K) : (of v).Terminates ↔ ∃ q : ℚ, v = (q : K) :=
-  Iff.intro
-    (fun terminates_v : (of v).Terminates =>
-      show ∃ q : ℚ, v = (q : K) from exists_rat_eq_of_terminates terminates_v)
+  Iff.intro exists_rat_eq_of_terminates
     fun exists_q_eq_v : ∃ q : ℚ, v = (↑q : K) =>
     Exists.elim exists_q_eq_v fun q => fun v_eq_q : v = ↑q =>
       have : (of q).Terminates := terminates_of_rat q

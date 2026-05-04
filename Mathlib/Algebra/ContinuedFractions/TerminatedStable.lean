@@ -52,9 +52,7 @@ theorem convs'Aux_stable_step_of_terminated {s : Stream'.Seq <| Pair K}
     | some gp_head =>
       have : s.tail.TerminatedAt n := by
         simp only [Stream'.Seq.TerminatedAt, s.get?_tail, terminatedAt_n]
-      have := IH this
-      rw [convs'Aux] at this
-      simp [this, convs'Aux, s_head_eq]
+      grind [convs'Aux, IH this]
 
 theorem convs'Aux_stable_of_terminated {s : Stream'.Seq <| Pair K} (n_le_m : n ≤ m)
     (terminatedAt_n : s.TerminatedAt n) : convs'Aux s m = convs'Aux s n := by
