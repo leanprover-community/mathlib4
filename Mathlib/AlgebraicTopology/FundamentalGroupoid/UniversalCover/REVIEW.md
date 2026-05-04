@@ -38,16 +38,6 @@ this is bad — but it is currently relied on by at least
 introduces a `sorry` there. Cleanup requires adding intermediate
 `endpoint`-aware simp lemmas to those proofs first.
 
-## Module-system migration
-
-`BasedPath.lean` and `SemilocallySimplyConnected.lean` both still open with
-`@[expose] public section`. A prior commit on this branch (`4adb0d0e`)
-removed the same line from `Covering.lean` by individually tagging each
-public-facing declaration with `public` (and dropping `private` from helpers
-that became public-by-default). The same migration should happen here, but
-both files are large and the change is mechanical-but-not-trivial; defer to
-a follow-up.
-
 ## Style and abstraction
 
 - **Brittle `simpa` chains.** `BasedPath.lean` contains roughly twenty
