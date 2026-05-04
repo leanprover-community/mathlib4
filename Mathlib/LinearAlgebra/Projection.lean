@@ -82,7 +82,7 @@ theorem quotientEquivOfIsCompl_symm_apply (h : IsCompl p q) (x : q) :
     -- Porting note: type ascriptions needed on the RHS
     (quotientEquivOfIsCompl p q h).symm x = (Quotient.mk x : E ⧸ p) := rfl
 
-theorem quotientEquivOfIsCompl_apply_mk_coe (h : IsCompl p q) (x : q) :
+theorem quotientEquivOfIsCompl_apply_mk_right (h : IsCompl p q) (x : q) :
     quotientEquivOfIsCompl p q h (Quotient.mk x) = x :=
   (quotientEquivOfIsCompl p q h).apply_symm_apply x
 
@@ -274,7 +274,7 @@ theorem IsCompl.sub_projection_mem (h : IsCompl p q) (x : E) : x - h.projection 
 theorem quotientEquivOfIsCompl_apply_mk (h : IsCompl p q) (x : E) :
     quotientEquivOfIsCompl p q h (Submodule.Quotient.mk x) = q.linearProjOfIsCompl p h.symm x := by
   rw [(Quotient.eq _).mpr (h.symm.sub_projection_mem x)]
-  exact quotientEquivOfIsCompl_apply_mk_coe p q h _
+  exact quotientEquivOfIsCompl_apply_mk_right p q h _
 
 end Submodule
 
