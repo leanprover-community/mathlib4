@@ -421,6 +421,11 @@ def drop : Augmented C ⥤ SimplicialObject C :=
 def point : Augmented C ⥤ C :=
   Comma.snd _ _
 
+@[reassoc]
+lemma w_app {X Y : Augmented C} (f : X ⟶ Y) (n : SimplexCategoryᵒᵖ) :
+    dsimp% f.left.app n ≫ Y.hom.app n = X.hom.app n ≫ f.right :=
+  congr_app f.w n
+
 set_option backward.isDefEq.respectTransparency false in
 /-- The functor from augmented objects to arrows. -/
 @[simps]
@@ -432,11 +437,7 @@ def toArrow : Augmented C ⥤ Arrow C where
   map η :=
     { left := (drop.map η).app _
       right := point.map η
-      w := by
-        dsimp
-        rw [← NatTrans.comp_app]
-        erw [η.w]
-        rfl }
+      w := by simp [w_app] }
 
 /-- The compatibility of a morphism with the augmentation, on 0-simplices -/
 @[reassoc]
@@ -459,12 +460,7 @@ def whiskeringObj (D : Type*) [Category* D] (F : C ⥤ D) : Augmented C ⥤ Augm
   map η :=
     { left := whiskerRight η.left _
       right := F.map η.right
-      w := by
-        ext
-        dsimp [whiskerRight]
-        simp only [Category.comp_id, ← F.map_comp, ← NatTrans.comp_app]
-        erw [η.w]
-        rfl }
+      w := by ext; simp [← Functor.map_comp, w_app] }
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Functor composition induces a functor on augmented simplicial objects. -/
@@ -798,6 +794,11 @@ def drop : Augmented C ⥤ CosimplicialObject C :=
 def point : Augmented C ⥤ C :=
   Comma.fst _ _
 
+@[reassoc]
+lemma w_app {X Y : Augmented C} {η : X ⟶ Y} {n : SimplexCategory} :
+    dsimp% η.left ≫ Y.hom.app n = X.hom.app n ≫ η.right.app n :=
+  NatTrans.congr_app η.w n
+
 set_option backward.isDefEq.respectTransparency false in
 /-- The functor from augmented objects to arrows. -/
 @[simps!]
@@ -809,11 +810,7 @@ def toArrow : Augmented C ⥤ Arrow C where
   map η :=
     { left := point.map η
       right := (drop.map η).app _
-      w := by
-        dsimp
-        rw [← NatTrans.comp_app]
-        erw [← η.w]
-        rfl }
+      w := by simp [w_app]}
 
 variable (C)
 
@@ -832,9 +829,8 @@ def whiskeringObj (D : Type*) [Category* D] (F : C ⥤ D) : Augmented C ⥤ Augm
       w := by
         ext
         dsimp
-        rw [Category.id_comp, Category.id_comp, ← F.map_comp, ← F.map_comp, ← NatTrans.comp_app]
-        erw [← η.w]
-        rfl }
+        rw [Category.id_comp, Category.id_comp, ← F.map_comp, ← F.map_comp]
+        simp [w_app, map_comp] }
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Functor composition induces a functor on augmented cosimplicial objects. -/
