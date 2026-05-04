@@ -903,7 +903,7 @@ These are phrased in terms of `multiplicity p.asIdeal I`.
 section multiplicity
 
 @[simp]
-lemma emultiplicity_bot {R : Type*} [CommSemiring R] (I : Ideal R) :
+lemma Ideal.emultiplicity_bot {R : Type*} [CommSemiring R] (I : Ideal R) :
     emultiplicity I (⊥ : Ideal R) = ⊤ :=
   Submodule.zero_eq_bot (R := R) (M := R) ▸ emultiplicity_zero I
 
