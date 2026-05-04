@@ -82,8 +82,9 @@ info: Try this:
     @̲[̲e̲x̲p̲o̲s̲e̲]̲ ̲public noncomputable m̲e̲t̲a̲ ̲scope
     universe u v̲ ̲w
     namespace B̵a̵z̵F̲o̲o̲.̲B̲a̲r̲
-    open @Bool @Lean @̲L̲e̲a̲n̲.̲E̲l̲a̲b̲ ̲@Lean.Parser @Lean.Parser.Command @Lean.Elab.Command
-    open scoped @Nat
+    open @Bool @Lean @̲L̲e̲a̲n̲.̲E̲l̲a̲b̲ ̲@Lean.Parser @Lean.Parser.Command @Lean.Elab.Command (̲f̲o̲l̲d̲L̲e̲f̲t̲ ̲→̲
+  ̲ ̲ ̲ ̲ ̲A̲r̲r̲a̲y̲.̲f̲o̲l̲d̲l̲)̲ ̲(̲@̲A̲r̲r̲a̲y̲ ̲h̲i̲d̲i̲n̲g̲ ̲f̲o̲l̲d̲r̲)̲
+  ̲ ̲ ̲open scoped @̲L̲i̲s̲t̲ ̲@Nat
     set_options pp.mvars.anonymous f̲a̲l̲s̲e̲,̲ ̲p̲p̲.̲m̲v̲a̲r̲s̲.̲d̲e̲l̲a̲y̲e̲d̲ ̲false
     variable (x : Nat := by exact (Nat.add 0 0)) (̲y̲ ̲:̲ ̲N̲a̲t̲)̲ ̲[Nonempty False]
     o̵m̵i̵t̵ ̵y̵i̲n̲c̲l̲u̲d̲e̲ ̲x̲
