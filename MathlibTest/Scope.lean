@@ -33,6 +33,15 @@ namespace Bar
 
 @[expose] noncomputable section
 
+open scoped List
+
+#scope
+  @[expose] public noncomputable meta scope
+  universe u v w
+  namespace Foo.Bar
+  open scoped @List
+  set_options pp.mvars.anonymous false, pp.mvars.delayed false
+
 section
 
 open Bool
@@ -40,6 +49,10 @@ open Bool
 open scoped Nat
 
 open Lean Elab Parser Command
+
+open Array renaming foldl → foldLeft
+
+open Array hiding foldr
 
 /- Ignores whitespace: -/
 variable (x : Nat := by exact (Nat.add /- hmm -/ 0 0)) (y : Nat) [Nonempty False] -- some comment
@@ -52,8 +65,9 @@ omit y [Nonempty False] -- other comment
   @[expose] public noncomputable meta scope
   universe u v w
   namespace Foo.Bar
-  open @Bool @Lean @Lean.Elab @Lean.Parser @Lean.Parser.Command @Lean.Elab.Command
-  open scoped @Nat
+  open @Bool @Lean @Lean.Elab @Lean.Parser @Lean.Parser.Command @Lean.Elab.Command (foldLeft →
+    Array.foldl) (@Array hiding foldr)
+  open scoped @List @Nat
   set_options pp.mvars.anonymous false, pp.mvars.delayed false
   variable (x : Nat := by exact (Nat.add 0 0)) (y : Nat) [Nonempty False]
   include x
