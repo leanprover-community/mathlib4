@@ -627,7 +627,7 @@ onto its range along its kernel. -/
 theorem isIdempotentElem_iff_eq_isCompl_projection_range_ker {T : E →ₗ[R] E} :
     IsIdempotentElem T ↔ ∃ (h : IsCompl (range T) (ker T)), T = h.projection :=
   ⟨fun hT => ⟨hT.isProj_range.isCompl, hT.eq_isCompl_projection⟩,
-   fun ⟨hT, h⟩ => h.symm ▸ hT.isIdempotentElem_projection⟩
+   fun ⟨hT, h⟩ => h.symm ▸ hT.projection_isIdempotentElem⟩
 
 open LinearMap in
 /-- Given an idempotent linear operator `q`,
