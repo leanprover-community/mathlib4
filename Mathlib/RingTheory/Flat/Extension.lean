@@ -385,7 +385,9 @@ lemma exists_isLocalHom_flat' : ∃ (R' : Type u) (_ : CommRing R') (_ : IsLocal
   let : WellFoundedLT (WithTop setK) := WithTop.instWellFoundedLT
   let : SuccOrder (WithTop setK) := SuccOrder.ofLinearWellFoundedLT _
   let : OrderBot (WithTop setK) := WellFoundedLT.toOrderBot _
-  let : HasIterationOfShape (WithTop setK) (FlatExtension R K) := sorry
+  let : HasIterationOfShape (WithTop setK) (FlatExtension R K) := {
+    hasColimitsOfShape_of_isSuccLimit j hj := inferInstance
+    hasColimitsOfShape := inferInstance }
   obtain ⟨φ⟩ : Nonempty ((FlatExtension.SuccStruct R K).Iteration (⊤ : WithTop setK)) :=
     inferInstance
   let fi : WithTop setK ≃o Set.Iic (⊤ : WithTop setK) := OrderIso.IicTop.symm
