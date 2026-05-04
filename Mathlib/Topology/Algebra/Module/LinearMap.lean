@@ -1287,6 +1287,9 @@ theorem mkQL_apply (x : M) : S.mkQL x = S.mkQ x := by simp
 
 theorem isQuotientMap_mkQL : IsQuotientMap S.mkQL := isQuotientMap_quot_mk
 
+theorem isOpenQuotientMap_mkQL [ContinuousAdd M] : IsOpenQuotientMap S.mkQL :=
+  S.isOpenQuotientMap_mkQ
+
 end Submodule
 
 theorem ContinuousLinearMap.closedComplemented_ker_of_rightInverse {R : Type*} [Ring R]
