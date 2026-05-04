@@ -35,7 +35,7 @@ the present file is about their interaction.
 `Semiring`, `CommSemiring`, `Ring`, `CommRing`, domain, `IsDomain`, nonzero, units
 -/
 
-@[expose] public section
+public section
 
 
 /-!
@@ -359,6 +359,9 @@ theorem mul_sub_one (a b : α) : a * (b - 1) = a * b - a := by rw [mul_sub, mul_
 theorem one_sub_mul (a b : α) : (1 - a) * b = b - a * b := by rw [sub_mul, one_mul]
 
 theorem mul_one_sub (a b : α) : a * (1 - b) = a - a * b := by rw [mul_sub, mul_one]
+
+lemma mul_one_sub_mul (a b c : α) : a * (1 - b) * c = a * c - a * b * c := by
+  rw [mul_one_sub, sub_mul]
 
 end NonAssocRing
 
