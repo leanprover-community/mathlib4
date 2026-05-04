@@ -245,6 +245,32 @@ theorem add {w : σ → M} (hφ : IsWeightedHomogeneous w φ n) (hψ : IsWeighte
     IsWeightedHomogeneous w (φ + ψ) n :=
   (weightedHomogeneousSubmodule R w n).add_mem hφ hψ
 
+/-- The difference of two weighted homogeneous polynomials of degree `n` is weighted homogeneous
+  of weighted degree `n`. -/
+theorem sub {R : Type*} [CommRing R] {w : σ → M} {φ ψ : MvPolynomial σ R}
+    (hφ : IsWeightedHomogeneous w φ n) (hψ : IsWeightedHomogeneous w ψ n) :
+    IsWeightedHomogeneous w (φ - ψ) n :=
+  (weightedHomogeneousSubmodule R w n).sub_mem hφ hψ
+
+/-- A weighted homogeneous polynomial of degree `n` is zero if no monomial has weight `n`. -/
+theorem eq_zero_of_no_monomials {w : σ → M} (hφ : IsWeightedHomogeneous w φ n)
+    (hno : ∀ d : σ →₀ ℕ, weight w d ≠ n) : φ = 0 := by
+  rw [← support_eq_empty, ← Finset.not_nonempty_iff_eq_empty]
+  rintro ⟨d, hd⟩
+  exact hno _ (hφ (mem_support_iff.mp hd))
+
+/-- A weighted homogeneous polynomial of degree `n` whose support degrees are all equal to a
+fixed `d₀` is a single monomial. -/
+theorem eq_monomial_of_unique_weight {w : σ → M} (hφ : IsWeightedHomogeneous w φ n) (d₀ : σ →₀ ℕ)
+    (huniq : ∀ d, weight w d = n → d = d₀) : φ = monomial d₀ (coeff d₀ φ) := by
+  classical
+  ext d
+  rw [coeff_monomial]
+  by_cases hd : d = d₀
+  · simp [hd]
+  rw [if_neg (Ne.symm hd)]
+  exact hφ.coeff_eq_zero d (fun h => hd (huniq d h))
+
 /-- The sum of weighted homogeneous polynomials of degree `n` is weighted homogeneous of
   weighted degree `n`. -/
 theorem sum {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : M) {w : σ → M}
