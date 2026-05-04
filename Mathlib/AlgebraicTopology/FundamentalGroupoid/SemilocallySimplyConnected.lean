@@ -668,6 +668,21 @@ theorem Path.segment_rung_homotopy {a b c d : X} (U : Set X)
 
 /-! ### Pasting lemma: telescoping cancellation of rungs -/
 
+/-- The cast'd quotient class of `p.subpathOn` over the endpoints of an `IntervalPartition`
+equals the class of `p` itself. This packages `Path.Homotopic.Quotient.subpathOn_zero_one`
+together with `part.h_start` / `part.h_end`, sidestepping the dependent-type "motive"
+obstruction one hits when rewriting `part.t 0 = 0` / `part.t (Fin.last n) = 1` directly
+through `subpathOn`. -/
+private theorem Path.Homotopic.Quotient.cast_mk_subpathOn_part_endpoints
+    {x y : X} (p : Path x y) {n : ℕ} (part : IntervalPartition n)
+    (h₁ : x = p (part.t 0)) (h₂ : y = p (part.t (Fin.last n))) :
+    (Path.Homotopic.Quotient.mk (p.subpathOn (part.t 0) (part.t (Fin.last n)))).cast h₁ h₂ =
+      Path.Homotopic.Quotient.mk p := by
+  convert congrArg (fun q ↦ q.cast p.source.symm p.target.symm)
+    (Path.Homotopic.Quotient.subpathOn_zero_one p)
+  · simp [part.h_start]
+  · simp [part.h_end]
+
 /-- The pasting lemma for segment homotopies. Works directly with path restrictions.
 
 Given:
@@ -710,31 +725,9 @@ theorem Path.paste_segment_homotopies {x y y' : X} {n : ℕ} (γ : Path x y) (γ
                    (show x = γ' (part.t 0) by rw [part.h_start, γ'.source])).trans γ') := by
     apply Path.Homotopic.Quotient.exact
     dsimp [γ_aux]
-    rw [Path.Homotopic.Quotient.subpathOn_self]
-    let A :=
-      (Path.Homotopic.Quotient.mk (α 0)).cast
-        (show x = γ (part.t 0) by rw [part.h_start, γ.source])
-        (show x = γ' (part.t 0) by rw [part.h_start, γ'.source])
-    let B :=
-      ((Path.Homotopic.Quotient.mk
-          (γ'.subpathOn (part.t 0) (part.t (Fin.last n)))).cast
-        (show x = γ' (part.t 0) by rw [part.h_start, γ'.source])
-      (show y' = γ' (part.t (Fin.last n)) by rw [part.h_end, γ'.target]))
-    -- `convert` handles the motive issue of replacing `part.t 0`/`part.t (Fin.last n)` with
-    -- `0`/`1` inside the dependent `subpathOn` application.
-    have hsub : B = Path.Homotopic.Quotient.mk γ' := by
-      dsimp [B]
-      convert congrArg (fun q ↦ q.cast γ'.source.symm γ'.target.symm)
-        (Path.Homotopic.Quotient.subpathOn_zero_one γ')
-      · simp [part.h_start]
-      · simp
-    calc
-      (((Path.Homotopic.Quotient.refl (γ (part.t 0))).cast
-          (show x = γ (part.t 0) by rw [part.h_start, γ.source])
-          (show x = γ (part.t 0) by rw [part.h_start, γ.source])).trans A).trans B
-          = A.trans B := by simp [A]
-      _ = A.trans (Path.Homotopic.Quotient.mk γ') := by
-        exact congrArg (fun q ↦ A.trans q) hsub
+    rw [Path.Homotopic.Quotient.subpathOn_self,
+        Path.Homotopic.Quotient.cast_mk_subpathOn_part_endpoints γ' part]
+    simp
   -- Final case: γ_aux (Fin.last n) ≃ γ · α_n
   -- At i=n, γ|[0,1] is all of γ, and γ'|[1,1] is constant, so this simplifies to γ · α_n
   have h_final : Path.Homotopic (γ_aux (Fin.last n))
@@ -743,32 +736,9 @@ theorem Path.paste_segment_homotopies {x y y' : X} {n : ℕ} (γ : Path x y) (γ
         (show y' = γ' (part.t (Fin.last n)) by rw [part.h_end, γ'.target]))) := by
     apply Path.Homotopic.Quotient.exact
     dsimp [γ_aux]
-    rw [Path.Homotopic.Quotient.subpathOn_self]
-    let A :=
-      (Path.Homotopic.Quotient.mk (α (Fin.last n))).cast
-        (show y = γ (part.t (Fin.last n)) by rw [part.h_end, γ.target])
-        (show y' = γ' (part.t (Fin.last n)) by rw [part.h_end, γ'.target])
-    let B :=
-      ((Path.Homotopic.Quotient.mk
-          (γ.subpathOn (part.t 0) (part.t (Fin.last n)))).cast
-        (show x = γ (part.t 0) by rw [part.h_start, γ.source])
-        (show y = γ (part.t (Fin.last n)) by rw [part.h_end, γ.target]))
-    -- `convert` handles the motive issue of replacing `part.t 0`/`part.t (Fin.last n)` with
-    -- `0`/`1` inside the dependent `subpathOn` application.
-    have hsub : B = Path.Homotopic.Quotient.mk γ := by
-      dsimp [B]
-      convert congrArg (fun q ↦ q.cast γ.source.symm γ.target.symm)
-        (Path.Homotopic.Quotient.subpathOn_zero_one γ)
-      · simp [part.h_start]
-      · simp
-    calc
-      (B.trans A).trans
-          ((Path.Homotopic.Quotient.refl (γ' (part.t (Fin.last n)))).cast
-            (show y' = γ' (part.t (Fin.last n)) by rw [part.h_end, γ'.target])
-            (show y' = γ' (part.t (Fin.last n)) by rw [part.h_end, γ'.target]))
-          = B.trans A := by simp [A, B]
-      _ = (Path.Homotopic.Quotient.mk γ).trans A := by
-        exact congrArg (fun q ↦ q.trans A) hsub
+    rw [Path.Homotopic.Quotient.subpathOn_self,
+        Path.Homotopic.Quotient.cast_mk_subpathOn_part_endpoints γ part]
+    simp
   -- Lift h_rectangles to the quotient with an arbitrary suffix
   -- This allows simp to apply the rectangle homotopy in context
   have rectangle_with_suffix : ∀ (i : Fin n) {w : X}

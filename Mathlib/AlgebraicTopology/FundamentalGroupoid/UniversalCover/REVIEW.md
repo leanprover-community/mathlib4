@@ -7,10 +7,6 @@ been addressed on this branch.
 
 ## Modularise long proofs
 
-- **`Path.paste_segment_homotopies`** (`SemilocallySimplyConnected.lean`,
-  ≈l. 679–810). Single ≈130-line proof with two opaque `convert` blocks
-  used to dodge "motive is not type correct" errors. Extract the auxiliary
-  paths and the base / step lemmas as named `private` lemmas.
 - **`BasedPath.toPath_homotopic_of_joinedIn_slsc`** (`BasedPath.lean`,
   ≈l. 748–859). Single ≈110-line proof. The four boundary-evaluation
   sub-`have`s (`hK_zero`, `hK_one`, `hK_at_zero`, `hK_at_one`) deserve to
