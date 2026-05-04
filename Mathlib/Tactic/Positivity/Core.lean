@@ -325,7 +325,7 @@ def positivityCanon (pα : Q(PartialOrder $α)) (e : Q($α)) : MetaM (Strictness
   let _le ← synthInstanceQ q(PartialOrder $α)
   let _i ← synthInstanceQ q(CanonicallyOrderedAdd $α)
   assumeInstancesCommute
-  pure (.nonnegative q(zero_le $e))
+  pure (.nonnegative q(zero_le (a := $e)))
 
 /-- A variation on `assumption` when the hypothesis is `lo ≤ e` where `lo` is a numeral. -/
 def compareHypLE (pα : Q(PartialOrder $α)) (lo e : Q($α)) (p₂ : Q($lo ≤ $e))
