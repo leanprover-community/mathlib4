@@ -1018,9 +1018,7 @@ instance [PolynormableSpace 𝕜₂ F] {S : Submodule 𝕜₂ F} :
 
 section NontriviallyNormedField
 
-variable {𝕜 𝕜₂ E F : Type*}
-variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
-variable [NormedField 𝕜₂] [AddCommGroup F] [Module 𝕜₂ F] [TopologicalSpace F]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [Module 𝕜 E] [TopologicalSpace E]
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 
 theorem Topology.IsInducing.exists_continuous_seminorm_le {p : Seminorm 𝕜 E} (hp : Continuous p)
