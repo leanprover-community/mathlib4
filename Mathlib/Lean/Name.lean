@@ -117,3 +117,5 @@ where
       "#".isPrefixOf s || "?".isPrefixOf s
     else
       false
+
+end Lean.Name
