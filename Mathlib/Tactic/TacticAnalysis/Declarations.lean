@@ -555,7 +555,7 @@ private def introMergeArgOfRCasesPat? (pat : TSyntax `rcasesPat) : Option Term :
   match pat with
   | `(rcasesPat| _%$x) => some ⟨mkHole x⟩
   | `(rcasesPat| $h:ident) =>
-      if h.getId == Name.mkSimple "rfl" then none else some ⟨h.raw⟩
+      if h.getId == `rfl then none else some ⟨h.raw⟩
   | _ => none
 
 /-- Convert an `rintro` pattern to an equivalent `intro` argument, if possible. -/
@@ -571,8 +571,8 @@ private def introMergeArgs? (stx : TSyntax `tactic) : Option (Array Term) :=
       some <| if args.size = 0 then #[⟨mkHole x⟩] else args
   | `(tactic| intros $ids*) =>
       if ids.size = 0 then none else some <| ids.map fun stx => ⟨stx.raw⟩
-  | `(tactic| rintro $pats* $[: $ty?]?) =>
-      if ty?.isSome then none else pats.mapM introMergeArgOfRIntroPat?
+  | `(tactic| rintro $pats*) =>
+      pats.mapM introMergeArgOfRIntroPat?
   | _ => none
 
 /-- Suggest merging adjacent `intro`-like tactics whose effect is equivalent to a single `intro`. -/

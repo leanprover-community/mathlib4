@@ -321,6 +321,12 @@ example : ∀ a : Unit, a = () → True := by
   rintro a rfl
   trivial
 
+#guard_msgs in
+example : ∀ a : Unit, a = () → True := by
+  intro a
+  rintro rfl
+  trivial
+
 -- Intros separated by an intervening tactic should NOT be merged.
 -- Regression test for a bug where tactics were incorrectly grouped across intervening tactics.
 #guard_msgs in
