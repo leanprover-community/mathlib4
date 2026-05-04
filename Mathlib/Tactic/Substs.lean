@@ -10,21 +10,25 @@ public import Mathlib.Init
 /-!
 # The `substs` macro
 
-The `substs` macro applies the `subst` tactic to a list of hypothesis, in left to right order.
+The `substs` macro is a deprecated version of the `subst` tactic that allowed for more than one
+hypothesis. Since `subst` now also supports multiple hypotheses, `substs` is deprecated.
 -/
 
 public meta section
 
 namespace Mathlib.Tactic.Substs
 
-
-/--
-Applies the `subst` tactic to all given hypotheses from left to right.
--/
+/-- Deprecated: this functionality exists in `subst` now. -/
 syntax (name := substs) "substs" (colGt ppSpace ident)* : tactic
 
-macro_rules
-| `(tactic| substs $xs:ident*) => `(tactic| ($[subst $xs]*))
+open Lean Meta Elab.Tactic Meta.Tactic.TryThis in
+elab_rules : tactic
+| `(tactic| substs%$tk $xs:ident*) => withMainContext do
+  let stx ← getRef
+  let tac ← `(tactic| subst $[$xs]*)
+  Lean.logWarningAt tk m!"Deprecation warning: `substs` can be replaced with `subst`."
+  Lean.Meta.Tactic.TryThis.addSuggestion tk tac (origSpan? := stx)
+  evalTactic tac
 
 end Substs
 

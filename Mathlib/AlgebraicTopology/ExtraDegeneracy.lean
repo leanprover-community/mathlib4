@@ -179,7 +179,7 @@ def shift {n : ℕ} {Δ : SimplexCategory} (f : ⦋n⦌ ⟶ Δ) : ⦋n + 1⦌ �
             exact h₁ (le_antisymm hi (Fin.zero_le _))
           obtain ⟨j₁, hj₁⟩ := Fin.eq_succ_of_ne_zero h₁
           obtain ⟨j₂, hj₂⟩ := Fin.eq_succ_of_ne_zero h₂
-          substs hj₁ hj₂
+          subst hj₁ hj₂
           simpa only [shiftFun_succ] using f.toOrderHom.monotone (Fin.succ_le_succ_iff.mp hi) }
 
 set_option backward.isDefEq.respectTransparency false in

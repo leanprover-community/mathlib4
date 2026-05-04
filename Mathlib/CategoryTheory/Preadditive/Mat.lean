@@ -180,14 +180,14 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
               refine if h : x.1 = j then ?_ else 0
               refine if h' : @Eq.ndrec (Fin n) x.1 (fun j => (f j).ι) x.2 _ h = y then ?_ else 0
               apply eqToHom
-              substs h h'
+              subst h h'
               rfl
             -- Notice we were careful not to use `subst` until we had a goal in `Prop`.
             ι := fun j x y => by
               refine if h : y.1 = j then ?_ else 0
               refine if h' : @Eq.ndrec _ y.1 (fun j => (f j).ι) y.2 _ h = x then ?_ else 0
               apply eqToHom
-              substs h h'
+              subst h h'
               rfl
             ι_π := fun j j' => by
               ext x y
@@ -200,7 +200,7 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
               simp only [if_true, Finset.sum_dite_irrel, Finset.mem_univ,
                 Finset.sum_const_zero, Finset.sum_dite_eq']
               split_ifs with h h'
-              · substs h h'
+              · subst h h'
                 simp only [CategoryTheory.eqToHom_refl, CategoryTheory.Mat_.id_apply_self]
               · subst h
                 rw [eqToHom_refl, id_apply_of_ne _ _ _ h']
