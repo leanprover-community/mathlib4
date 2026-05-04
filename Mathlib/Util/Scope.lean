@@ -241,7 +241,7 @@ section universes
 def reifyLevelNames? : CommandElabM (Option (TSyntax ``Parser.Command.universe)) := do
   let levelNames ← getLevelNames
   if levelNames.isEmpty then pure none else
-    some <$> `(Parser.Command.universe| universe $(levelNames.toArray.map mkIdent)*)
+    some <$> `(Parser.Command.universe| universe $(levelNames.toArray.reverse.map mkIdent)*)
 
 end universes
 
