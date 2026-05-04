@@ -199,9 +199,7 @@ theorem IsCycleOn.injOn_sym2_pow_apply {f : Perm α} {a : α} {s : Finset α}
   have h_le : s.card ≤ 2 := Nat.le_of_dvd (by lia) <| by
     simpa using (Nat.modEq_iff_dvd' (Nat.le_add_right k 2)).mp
       ((h1.symm.add_right 1).trans h2).symm
-  have hj_lt : j < s.card := hj
-  have hk_lt : k < s.card := hk
-  lia
+  grind
 
 /-- For a cycle `f` on a finset `s` of cardinality not equal to `2` and `a ∈ s`, the unordered
 pair `s((f ^ k) a, (f ^ (k + 1)) a)` differs from `s(a, f a)` when `k ≠ 0` and `k < s.card`. -/
