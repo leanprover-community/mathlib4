@@ -209,10 +209,9 @@ lemma Ideal.one_le_height_span_singleton_of_mem_nonZeroDivisors
   refine le_iInf₂ fun q hq => ?_
   have : q.IsPrime := minimalPrimes_isPrime hq
   rw [ENat.one_le_iff_ne_zero, Ne, primeHeight_eq_zero_iff]
-  by_contra! hmin
-  suffices h : x ∉ nonZeroDivisors R by grind
-  have hxq : x ∈ q := hq.1.2 <| Ideal.mem_span_singleton.mpr <| dvd_refl x
-  exact notMem_nonZeroDivisors_of_mem_mem_minimalPrimes hxq hmin
+  intro hmin
+  exact absurd hx <| notMem_nonZeroDivisors_of_mem_mem_minimalPrimes
+    (hq.1.2 <| Ideal.mem_span_singleton.mpr <| dvd_refl x) hmin
 
 @[simp]
 lemma Ideal.height_bot [Nontrivial R] : (⊥ : Ideal R).height = 0 := by
