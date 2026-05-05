@@ -112,7 +112,7 @@ lemma Normal.of_isPullback_η [IsMonHom φ] {P : C} (p : G ⟶ P) [GrpObj P] [Is
   mono := h.mono_fst_of_mono
   exists_comp_eq_conj := by
     refine ⟨h.lift (G ◁ φ ≫ conj G) (toUnit _) ?_, ?_⟩
-    · simp [conj, mul_comp, comp_mul, inv_comp, mul_comp, h.w, comp_inv, ← Hom.one_def]
+    · simp [conj, comp_mul, inv_comp, mul_comp, h.w, comp_inv, ← Hom.one_def]
     · simp
 
 end CategoryTheory.IsMonHom
