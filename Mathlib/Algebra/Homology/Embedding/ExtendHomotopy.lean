@@ -222,7 +222,7 @@ lemma HomologicalComplex.homotopyEquivalences_extendMap_iff
     (e : ComplexShape.Embedding c c') [e.IsRelIff] :
     homotopyEquivalences C c' (extendMap f e) ↔
       homotopyEquivalences C c f := by
-  simp only [← HomotopyCategory.inverseImage_quotient_isomorphisms,
+  simp [← HomotopyCategory.inverseImage_quotient_isomorphisms,
     MorphismProperty.inverseImage_iff, MorphismProperty.isomorphisms.iff,
     ← isIso_iff_of_reflects_iso _ (e.extendHomotopyFunctor C),
     dsimp% NatIso.isIso_map_iff (e.extendHomotopyFunctorFactors C) f]
