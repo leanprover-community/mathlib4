@@ -281,6 +281,9 @@ lemma StdSimplex.isAffineMap_map (f : I → J) : IsAffineMap R (StdSimplex.map (
 
 section iConvexCombo
 
+lemma sConvexCombo_map (w : StdSimplex R I) (f : I → M) :
+    sConvexCombo (w.map f) = iConvexCombo w f := rfl
+
 @[simp] lemma iConvexCombo_const (s : StdSimplex R I) (m : M) :
     s.iConvexCombo (fun _ ↦ m) = m := by simp [iConvexCombo]
 
@@ -301,8 +304,10 @@ lemma iConvexCombo_congr (s : StdSimplex R I) (f : I ≃ J) (g : I → M) :
     s.iConvexCombo g = (s.map f).iConvexCombo (g ∘ f.symm) := by
   simp [iConvexCombo_map, Function.comp_def]
 
-/-- Flattening nested `iConvexCombo`s. -/
-lemma iConvexCombo_iConvexCombo
+/-- Flattening nested `iConvexCombo`s.
+
+See `iConvexCombo_assoc'` and `iConvexCombo_assoc` for non-dependent versions. -/
+lemma iConvexCombo_assoc''
     {J : I → Type*} (s : StdSimplex R I) (f : Π i, StdSimplex R (J i)) (g : Π i, J i → M) :
     s.iConvexCombo (fun i ↦ (f i).iConvexCombo (g i)) =
       (s.iConvexCombo fun i ↦ (f i).map (⟨i, ·⟩)).iConvexCombo (Sigma.uncurry g) := by
@@ -311,17 +316,39 @@ lemma iConvexCombo_iConvexCombo
   congr 1
   simp [map_sConvexCombo, map_map, Sigma.uncurry]
 
+/-- Flattening nested `iConvexCombo`s.
+
+See `iConvexCombo_assoc''` for a more dependent version, and `iConvexCombo_assoc`
+for a less dependent one. -/
+lemma iConvexCombo_assoc' {J : Type*} (s : StdSimplex R I) (f : I → StdSimplex R J)
+    (g : I → J → M) :
+    s.iConvexCombo (fun i ↦ (f i).iConvexCombo (g i)) =
+      (s.iConvexCombo fun i ↦ (f i).map (⟨i, ·⟩)).iConvexCombo g.uncurry := by
+  simp only [iConvexCombo]
+  rw [← map_map, ← sConvexCombo_sConvexCombo]
+  congr 1
+  simp [map_sConvexCombo, map_map, Function.uncurry]
+
+/-- Flattening nested `iConvexCombo`s.
+
+See `iConvexCombo_assoc'`, `iConvexCombo_assoc''` for more dependent versions. -/
+lemma iConvexCombo_assoc {J : Type*} (s : StdSimplex R I) (f : I → StdSimplex R J)
+    (g : J → M) :
+    s.iConvexCombo (fun i ↦ (f i).iConvexCombo g) = (s.iConvexCombo f).iConvexCombo g := by
+  simp only [iConvexCombo]
+  rw [← map_map, ← sConvexCombo_sConvexCombo]
+  simp [map_sConvexCombo, map_map]
+
 variable {R M I J : Type*} [PartialOrder R] [CommSemiring R] [IsStrictOrderedRing R]
   [ConvexSpace R M] in
 lemma iConvexCombo_comm (f : StdSimplex R I) (g : StdSimplex R J)
     (e : I → J → M) :
-    f.iConvexCombo (fun x ↦ g.iConvexCombo (e x)) =
-      g.iConvexCombo fun x ↦ f.iConvexCombo fun y ↦ e y x := by
-  rw [iConvexCombo_iConvexCombo, iConvexCombo_iConvexCombo, iConvexCombo_congr _
-    (((Equiv.sigmaEquivProd I J).trans (Equiv.prodComm _ _)).trans (Equiv.sigmaEquivProd _ _).symm)]
+    f.iConvexCombo (fun i ↦ g.iConvexCombo (e i)) =
+      g.iConvexCombo fun j ↦ f.iConvexCombo fun i ↦ e i j := by
+  rw [iConvexCombo_assoc', iConvexCombo_assoc', iConvexCombo_congr _ (.prodComm ..)]
   congr
-  suffices (f.map fun x ↦ g.map (Sigma.mk · x)).sConvexCombo =
-      (g.map (f.map ∘ Sigma.mk)).sConvexCombo by
+  suffices (f.map fun x ↦ g.map (Prod.mk · x)).sConvexCombo =
+      (g.map (f.map ∘ Prod.mk)).sConvexCombo by
     simpa [iConvexCombo, map_sConvexCombo, map_map, Function.comp_def]
   ext1
   simp [mapDomain, sum_sum_index, add_smul, smul_sum, mul_comm, sum_comm f.weights g.weights]
@@ -383,7 +410,7 @@ lemma convexComboPair_iConvexCombo_iConvexCombo {J₁ : Type u₁} {J₂ : Type 
     (m₁ : J₁ → M) (m₂ : J₂ → M) :
     convexComboPair s t hs ht h (g₁.iConvexCombo m₁) (g₂.iConvexCombo m₂) =
       (convexComboPair s t hs ht h (g₁.map m₁) (g₂.map m₂)).sConvexCombo := by
-  have := iConvexCombo_iConvexCombo (I := Fin 2) (.duple 0 1 hs ht h)
+  have := iConvexCombo_assoc'' (I := Fin 2) (.duple 0 1 hs ht h)
     (J := ![ULift.{max u₁ u₂} J₁, ULift.{max u₁ u₂} J₂])
     (M := M) (Fin.cons (g₁.map ULift.up) (Fin.cons (g₂.map ULift.up) nofun))
     (Fin.cons (m₁ ∘ ULift.down) (Fin.cons (m₂ ∘ ULift.down) nofun))
@@ -396,9 +423,9 @@ lemma iConvexCombo_convexComboPair
     (f : StdSimplex R I) (m₁ m₂ : I → M) :
     f.iConvexCombo (fun i ↦ convexComboPair (s i) (t i) (hs i) (ht i) (h i) (m₁ i) (m₂ i)) =
     (f.iConvexCombo fun i ↦ duple (m₁ i) (m₂ i) (hs i) (ht i) (h i)).sConvexCombo := by
-  have := iConvexCombo_iConvexCombo (I := I) (J := fun _ ↦ Fin 2) (R := R) (M := M) f
+  have := iConvexCombo_assoc' (I := I) (J := Fin 2) (R := R) (M := M) f
     (fun i ↦ .duple 0 1 (hs i) (ht i) (h i)) (fun i ↦ ![m₁ i, m₂ i])
-  simp [iConvexCombo, map_sConvexCombo, map_map, Sigma.uncurry] at this
+  simp [iConvexCombo, map_sConvexCombo, map_map] at this
   simp only [← convexComboPair.eq_def] at this
   simp only [← iConvexCombo.eq_def] at this
   simpa [convexComboPair, ← convexComboPair_def]
