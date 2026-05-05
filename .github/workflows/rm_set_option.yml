@@ -34,7 +34,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Configure Lean
-        uses: leanprover/lean-action@c544e89643240c6b398f14a431bcdc6309e36b3e # v1.4.0
+        uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0
         with:
           auto-config: false
           use-github-cache: false
@@ -42,7 +42,7 @@ jobs:
 
       - name: Restore progress cache
         if: toJson(inputs.dry_run) != 'true'
-        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: scripts/.rm_set_option_progress.jsonl
           # Use run_id in restore-keys so we always pick up the most recent cache
@@ -75,7 +75,7 @@ jobs:
         # Skip on dry-run (no files are modified) and if the progress file was
         # cleaned up (meaning the run completed fully).
         if: always() && toJson(inputs.dry_run) != 'true' && hashFiles('scripts/.rm_set_option_progress.jsonl') != ''
-        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: scripts/.rm_set_option_progress.jsonl
           key: rm-set-option-progress-${{ hashFiles('lean-toolchain') }}-${{ github.run_id }}
@@ -118,7 +118,7 @@ jobs:
       - name: Create Pull Request
         id: pr
         if: steps.rm_set_option.outputs.changed == 'true' && toJson(inputs.dry_run) != 'true'
-        uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v8.1.0
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
           author: "mathlib-nolints[bot] <258989889+mathlib-nolints[bot]@users.noreply.github.com>"
           token: "${{ steps.app-token.outputs.token }}"
