@@ -66,7 +66,8 @@ theorem Ideal.iUnion_minimalPrimes :
     obtain ⟨p, hp, hyp⟩ : ∃ p ∈ I.minimalPrimes, y ∉ p := by
       simpa [← Ideal.sInf_minimalPrimes] using hy
     refine ⟨p, hp, ((Ideal.IsPrime.of_mem_minimalPrimes hp).mem_or_mem ?_).resolve_right hyp⟩
-    exact (Ideal.IsPrime.of_mem_minimalPrimes hp).radical_le_iff.mpr (Ideal.le_of_mem_minimalPrimes hp) hx
+    exact (Ideal.IsPrime.of_mem_minimalPrimes hp).radical_le_iff.mpr
+      (Ideal.le_of_mem_minimalPrimes hp) hx
 
 theorem Ideal.exists_mul_mem_of_mem_minimalPrimes
     {p : Ideal R} (hp : p ∈ I.minimalPrimes) {x : R} (hx : x ∈ p) :
@@ -184,7 +185,8 @@ theorem IsLocalization.minimalPrimes_map [IsLocalization S A] (J : Ideal R) :
       Ideal.map_le_iff_le_comap.mp (Ideal.le_of_mem_minimalPrimes hp)⟩, ?_⟩
     rintro I hI e
     have hI' : Disjoint (S : Set R) I := Set.disjoint_of_subset_right e
-      ((IsLocalization.isPrime_iff_isPrime_disjoint S A _).mp (Ideal.IsPrime.of_mem_minimalPrimes hp)).2
+      ((IsLocalization.isPrime_iff_isPrime_disjoint S A _).mp
+        (Ideal.IsPrime.of_mem_minimalPrimes hp)).2
     refine (Ideal.comap_mono <|
       hp.2 ⟨?_, Ideal.map_mono hI.2⟩ (Ideal.map_le_iff_le_comap.mpr e)).trans_eq ?_
     · exact IsLocalization.isPrime_of_isPrime_disjoint S A I hI.1 hI'
