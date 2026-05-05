@@ -51,7 +51,7 @@ lemma Ideal.height_eq_order_height_of_isPrime [I.IsPrime] : I.height =
 
 lemma Ideal.height_eq_inf_minimalPrimes : I.height = ⨅ J ∈ I.minimalPrimes, J.height := by
   apply iInf_congr (fun p ↦ iInf_congr fun hp ↦ ?_)
-  have := I.IsPrime.of_mem_minimalPrimes hp
+  have := Ideal.IsPrime.of_mem_minimalPrimes hp
   exact (Ideal.height_eq_primeHeight _).symm
 
 /-- An ideal has finite height if it is either the unit ideal or its height is finite.
