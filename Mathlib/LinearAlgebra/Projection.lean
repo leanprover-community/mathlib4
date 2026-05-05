@@ -139,10 +139,10 @@ theorem prodComm_trans_prodEquivOfIsCompl (h : IsCompl p q) :
 /-- Projection to a submodule along a complement. It is the unique
 linear map `f : E → p` such that `f x = x` for `x ∈ p` and `f x = 0` for `x ∈ q`.
 
-For the projection from `E` to `E`, see `Submodule.projection`.
-Also see `Submodule.projectionOntoL` and `Submodule.projectionL` for the continuous versions.
-And `Submodule.orthogonalProjection` and `Submodule.orthogonalProjectionOnto` for the projections
-along the orthogonal subspace.
+For the projection from `E` to `E`, see `Submodule.projection`. See also:
+* `Submodule.projectionOntoL` and `Submodule.projectionL` for the continuous versions.
+* `Submodule.orthogonalProjection` and `Submodule.orthogonalProjectionOnto` for the projections
+  along the orthogonal subspace.
 
 See also `LinearMap.linearProjOfIsCompl`. -/
 def projectionOnto (h : IsCompl p q) : E →ₗ[R] p :=
