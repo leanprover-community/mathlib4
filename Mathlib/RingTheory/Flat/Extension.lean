@@ -419,7 +419,13 @@ noncomputable def coconeOfCoconeForgetPt (hc : IsColimit c) : FlatExtension R K 
   refine @FlatExtension.mk R _ _ K _ _ c.pt _ ?_
     ((c.ι.app j).hom.comp (algebraMap R (F.obj j))).toAlgebra
     (hc.desc (algebraMapKCocone F)).hom.toAlgebra ?_ ?_ ?_
-  all_goals sorry
+  · refine @CommRingCat.FilteredColimit.isLocalRing_of_isColimit _ _ _ _ _
+      (fun j ↦ inferInstanceAs (IsLocalRing (F.obj j)))
+      (fun _ _ f ↦ inferInstanceAs (IsLocalHom (F.map f).algHom.toRingHom)) hc
+  · sorry
+  · change CommRingCat.flat <| CommRingCat.ofHom ((c.ι.app j).hom.comp (algebraMap R (F.obj j)))
+    sorry
+  · sorry
 
 noncomputable def coconeOfCoconeForget (hc : IsColimit c) : Cocone F where
   pt := coconeOfCoconeForgetPt c hc
