@@ -176,8 +176,8 @@ theorem epi_of_epi_of_epi_of_mono'' (k₀ k₁ k₂ k₃ : ℕ)
   subst_vars
   change Epi (app' φ (k₀ + 0)) at h₀
   rw [← natAddLEFunctor_app' h] at h₀ h₂ h₃ ⊢
-  exact epi_of_epi_of_epi_of_mono _ (natAddLEFunctor_obj_exact h hR₁) (natAddLEFunctor_obj_exact h hR₂)
-    h₀ h₂ h₃
+  exact epi_of_epi_of_epi_of_mono _ (natAddLEFunctor_obj_exact h hR₁)
+    (natAddLEFunctor_obj_exact h hR₂) h₀ h₂ h₃
 
 end Four
 
