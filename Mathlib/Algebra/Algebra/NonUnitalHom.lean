@@ -351,7 +351,7 @@ variable [DistribMulAction R B]
 @[simps]
 def fst : A × B →ₙₐ[R] A where
   toFun := Prod.fst
-  map_zero' := rfl
+  map_zero' := rfl 
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
   map_mul' _ _ := rfl
@@ -390,7 +390,7 @@ theorem snd_prod (f : A →ₙₐ[R] B) (g : A →ₙₐ[R] C) : (snd R B C).com
 
 @[simp]
 theorem prod_fst_snd : prod (fst R A B) (snd R A B) = 1 :=
-  coe_injective Function.fst_prod_snd
+  coe_injective Function.prod_fst_snd
 
 /-- Taking the product of two maps with the same domain is equivalent to taking the product of
 their codomains. -/

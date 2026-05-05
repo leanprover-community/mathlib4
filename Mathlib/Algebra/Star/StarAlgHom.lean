@@ -507,7 +507,7 @@ theorem snd_prod (f : A →⋆ₙₐ[R] B) (g : A →⋆ₙₐ[R] C) : (snd R B 
 
 @[simp]
 theorem prod_fst_snd : prod (fst R A B) (snd R A B) = 1 :=
-  DFunLike.coe_injective Function.fst_prod_snd
+  DFunLike.coe_injective Function.prod_fst_snd
 
 /-- Taking the product of two maps with the same domain is equivalent to taking the product of
 their codomains. -/
@@ -611,7 +611,7 @@ theorem snd_prod (f : A →⋆ₐ[R] B) (g : A →⋆ₐ[R] C) : (snd R B C).com
 
 @[simp]
 theorem prod_fst_snd : prod (fst R A B) (snd R A B) = 1 :=
-  DFunLike.coe_injective Function.fst_prod_snd
+  DFunLike.coe_injective Function.prod_fst_snd
 
 /-- Taking the product of two maps with the same domain is equivalent to taking the product of
 their codomains. -/

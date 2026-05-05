@@ -31,8 +31,11 @@ def dcomp {β : α → Sort u₂} {φ : ∀ {x : α}, β x → Sort u₃} (f : �
 
 @[inherit_doc] infixr:80 " ∘' " => Function.dcomp
 
-@[simp] protected def prod {ι} {α β : ι → Type*} (f : ∀ i, α i) (g : ∀ i, β i) (i : ι) :
+protected def prod {ι} {α β : ι → Type*} (f : ∀ i, α i) (g : ∀ i, β i) (i : ι) :
     α i × β i := (f i, g i)
+
+@[simp] lemma prod_apply {ι} {α β : ι → Type*} (f : ∀ i, α i) (g : ∀ i, β i) (i : ι) :
+    Function.prod f g i = (f i , g i) := rfl
 
 lemma prod_fst_snd {α β} : Function.prod (Prod.fst : α × β → α) (Prod.snd : α × β → β) = id :=
   rfl
