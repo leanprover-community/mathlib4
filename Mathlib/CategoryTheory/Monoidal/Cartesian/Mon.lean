@@ -40,7 +40,7 @@ instance (M : D) [MonObj M] : IsMonHom η[M] where
 
 -- The general `(f : 𝟙_ C ⟶ X) : Mono f` instance has a bad discrimination tree key.
 @[to_additive]
-instance : Mono η[M] := Limits.IsTerminal.mono_from isTerminalTensorUnit _
+instance (M : D) [MonObj M] : Mono η[M] := Limits.IsTerminal.mono_from isTerminalTensorUnit _
 
 end MonObj
 
