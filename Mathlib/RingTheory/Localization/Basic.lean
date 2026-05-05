@@ -230,8 +230,8 @@ an isomorphism `h : R ≃ₐ[A] P` such that `h(M) = T` induces an isomorphism o
 @[simps!]
 noncomputable def algEquivOfAlgEquiv : S ≃ₐ[A] Q where
   __ := ringEquivOfRingEquiv S Q h.toRingEquiv H
-  commutes' _ := by simp [IsScalarTower.algebraMap_apply A R S,
-    IsScalarTower.algebraMap_apply A P Q]
+  commutes' _ := by dsimp; rw [IsScalarTower.algebraMap_apply A R S, map_eq,
+    RingHom.coe_coe, AlgEquiv.commutes, IsScalarTower.algebraMap_apply A P Q]
 
 variable {S Q h}
 
@@ -335,7 +335,9 @@ theorem isLocalization_of_algEquiv [Algebra R P] [IsLocalization M S] (h : S ≃
     simp only [map_mul, h.apply_symm_apply, h.commutes] at e
     exact ⟨⟨x, s⟩, e⟩
   · intro x y
-    simp [← h.symm.injective.eq_iff, ← IsLocalization.eq_iff_exists M S]
+    rw [← h.symm.toEquiv.injective.eq_iff, ← IsLocalization.eq_iff_exists M S, ← h.symm.commutes, ←
+      h.symm.commutes]
+    exact id
 
 variable {M} in
 protected theorem self (H : M ≤ IsUnit.submonoid R) : IsLocalization M R :=

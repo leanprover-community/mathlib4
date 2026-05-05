@@ -156,14 +156,14 @@ theorem Algebra.isIntegral_iSup {ι} (S : ι → Subalgebra R A) :
 
 /-- Mapping an integral closure along an `AlgEquiv` gives the integral closure. -/
 theorem integralClosure_map_algEquiv [Algebra R S] (f : A ≃ₐ[R] S) :
-    (integralClosure R A).map f.toAlgHom = integralClosure R S := by
+    (integralClosure R A).map (f : A →ₐ[R] S) = integralClosure R S := by
   ext y
   rw [Subalgebra.mem_map]
   constructor
   · rintro ⟨x, hx, rfl⟩
     exact hx.map f
   · intro hy
-    use f.symm y, hy.map f.symm.toAlgHom
+    use f.symm y, hy.map (f.symm : S →ₐ[R] A)
     simp
 
 /-- An `AlgHom` between two rings restrict to an `AlgHom` between the integral closures inside

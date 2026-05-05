@@ -307,7 +307,7 @@ noncomputable def aeval (ha : HasEval a) : MvPowerSeries σ R →ₐ[R] S where
   toRingHom := MvPowerSeries.eval₂Hom (continuous_algebraMap R S) ha
   commutes' r := by
     simp only [toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, MonoidHom.coe_coe]
-    simp [← c_eq_algebraMap, coe_eval₂Hom, eval₂_C]
+    rw [← c_eq_algebraMap, coe_eval₂Hom, eval₂_C, RingHom.id_apply]
 
 theorem coe_aeval (ha : HasEval a) :
     ↑(aeval ha) = eval₂ (algebraMap R S) a := by

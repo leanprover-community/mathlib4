@@ -472,7 +472,9 @@ def Quotient.liftₐ (I : Ideal A) [I.IsTwoSided] (f : A →ₐ[R₁] B) (hI : �
       I (f : A →+* B) hI with
     commutes' := fun r => by
       have : algebraMap R₁ (A ⧸ I) r = Ideal.Quotient.mk I (algebraMap R₁ A r) := rfl
-      simp [this, Ideal.Quotient.lift_mk, Algebra.algebraMap_eq_smul_one, map_smul, map_one] }
+      rw [this, RingHom.toFun_eq_coe, Ideal.Quotient.lift_mk,
+        AlgHom.coe_toRingHom, Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_eq_smul_one,
+        map_smul, map_one, RingHom.id_apply] }
 
 @[simp]
 theorem Quotient.liftₐ_apply (I : Ideal A) [I.IsTwoSided]
@@ -689,8 +691,9 @@ variable [Ring B] [Algebra R₁ B] {I : Ideal A} (J : Ideal B) [I.IsTwoSided] [J
 /-- The algebra hom `A/I →+* B/J` induced by an algebra hom `f : A →ₐ[R₁] B` with `I ≤ f⁻¹(J)`. -/
 def quotientMapₐ (f : A →ₐ[R₁] B) (hIJ : I ≤ J.comap f) :
     A ⧸ I →ₐ[R₁] B ⧸ J :=
-  { quotientMap J (f : A →+* B) hIJ with commutes' := fun r => by simp [
-    quotientMap_algebraMap, Quotient.mk_algebraMap] }
+  { quotientMap J (f : A →+* B) hIJ with commutes' := fun r => by simp only [RingHom.toFun_eq_coe,
+    quotientMap_algebraMap, AlgHom.coe_toRingHom, AlgHom.commutes, Quotient.mk_algebraMap,
+    RingHom.id_apply]  }
 
 @[simp]
 theorem quotient_map_mkₐ (f : A →ₐ[R₁] B) (H : I ≤ J.comap f) {x : A} :
@@ -765,7 +768,7 @@ theorem quotientEquivAlgOfEq_mk {I J : Ideal A} [I.IsTwoSided] [J.IsTwoSided] (h
 @[simp]
 theorem quotientEquivAlgOfEq_coe_eq_factorₐ
     {I J : Ideal A} [I.IsTwoSided] [J.IsTwoSided] (h : I = J) :
-    (quotientEquivAlgOfEq R₁ h).toAlgHom = Quotient.factorₐ R₁ (le_of_eq h) := rfl
+    (quotientEquivAlgOfEq R₁ h : A ⧸ I →ₐ[R₁] A ⧸ J) = Quotient.factorₐ R₁ (le_of_eq h) := rfl
 
 @[simp]
 theorem quotientEquivAlgOfEq_coe_eq_factor
