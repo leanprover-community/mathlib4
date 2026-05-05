@@ -62,7 +62,7 @@ instance : IsMonHom (toUnit M) where
 instance : IsMonHom η[M] where
   mul_hom := by simp [toUnit_unique (ρ_ (𝟙_ C)).hom (λ_ (𝟙_ C)).hom]
 
--- The general `(f : 𝟙 C ⟶ X) : Mono f` instance has a bad discrimination tree key.
+-- The general `(f : 𝟙_ C ⟶ X) : Mono f` instance has a bad discrimination tree key.
 @[to_additive]
 instance : Mono η[M] := Limits.IsTerminal.mono_from isTerminalTensorUnit _
 
