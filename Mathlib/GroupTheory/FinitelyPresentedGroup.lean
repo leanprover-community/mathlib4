@@ -62,7 +62,7 @@ protected theorem of_fg [N.Normal] (hN : N.FG) : N.IsNormalClosureFG := by
 @[to_additive /-- Being the additive normal closure of a finite set is invariant under
 surjective homomorphism. -/]
 protected theorem map (hN : IsNormalClosureFG N)
-{f : G →* H} (hf : Function.Surjective f) : (N.map f).IsNormalClosureFG := by
+    {f : G →* H} (hf : Function.Surjective f) : (N.map f).IsNormalClosureFG := by
   obtain ⟨S, hSfinite, hSclosure⟩ := hN
   refine ⟨f '' S, hSfinite.image _, ?_⟩
   rw [← hSclosure, Subgroup.map_normalClosure _ _ hf]
