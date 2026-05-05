@@ -582,21 +582,18 @@ variable [∀ i, Algebra R (G i)] [∀ i j h, AlgHomClass (T h) R (G i) (G j)]
 
 /-- The algebra map for the DirectLimit of a directed system of algebras -/
 def algebraMapAux : R →+* DirectLimit G f where
-  toFun r := ⟦⟨Classical.arbitrary ι, algebraMap R (G (Classical.arbitrary ι)) r⟩⟧
-  map_one' := by rw [map_one, one_def]
-  map_mul' r s := by rw [mul_def, map_mul]
-  map_add' r s := by rw [add_def, map_add]
-  map_zero' := by rw [map_zero, zero_def]
+  toFun r := map₀ _ fun _ ↦ algebraMap R _ r
+  map_one' := by rw [map₀, map_one, one_def]
+  map_mul' r s := by simp_rw [map₀, mul_def, map_mul]
+  map_add' r s :=  by simp_rw [map₀, add_def, map_add]
+  map_zero' := by rw [map₀, map_zero, zero_def]
 
 lemma algebraMapAux_at (i : ι) (r : R) :
-    algebraMapAux (R:=R) r
-      = (⟦⟨i, algebraMap R (G i) r⟩⟧ : DirectLimit G f) := by
-  let j := Classical.arbitrary ι
-  change ⟦⟨j, (algebraMap R (G j)) r⟩⟧ = (⟦⟨i, (algebraMap R (G i)) r⟩⟧ : DirectLimit G f)
-  obtain ⟨k, hik, hjk⟩ := directed_of (α := ι) (· ≤ ·) i j
-  rw [eq_of_le (f := f) ⟨j, (algebraMap R (G j) r)⟩ k hjk]
-  rw [eq_of_le (f := f) ⟨i, (algebraMap R (G i) r)⟩ k hik]
-  simp_rw [AlgHomClass.commutes]
+    algebraMapAux (R:=R) r = (⟦⟨i, algebraMap R (G i) r⟩⟧ : DirectLimit G f) := by
+  simp only [algebraMapAux, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
+  apply map₀_def
+  intro i j hij
+  rw [AlgHomClass.commutes]
 
 instance : Algebra R (DirectLimit G f) where
   algebraMap := algebraMapAux
