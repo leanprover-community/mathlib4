@@ -146,7 +146,8 @@ theorem coe_mul_apply [AddMonoid ι] [SetLike.GradedMonoid A]
     ((r * r') n : R) =
       ∑ ij ∈ r.support ×ˢ r'.support with ij.1 + ij.2 = n, (r ij.1 * r' ij.2 : R) := by
   rw [mul_eq_sum_support_ghas_mul, DFinsupp.finsetSum_apply, AddSubmonoidClass.coe_finsetSum]
-  simp_rw [coe_of_apply, apply_ite, ZeroMemClass.coe_zero, ← Finset.sum_filter, SetLike.coe_gMul]
+  simp_rw [funLike_eq, coe_of_apply, apply_ite, ZeroMemClass.coe_zero, ← Finset.sum_filter,
+    SetLike.coe_gMul]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem coe_mul_apply_eq_dfinsuppSum [AddMonoid ι] [SetLike.GradedMonoid A]
@@ -184,7 +185,7 @@ theorem coe_of_mul_apply_aux [AddMonoid ι] [SetLike.GradedMonoid A] {i : ι} (r
     simp_rw [DFinsupp.sum, H, Finset.sum_ite_eq']
     split_ifs with h
     · rfl
-    rw [DFinsupp.notMem_support_iff.mp h, ZeroMemClass.coe_zero, mul_zero]
+    rw [← funLike_eq, DFinsupp.notMem_support_iff.mp h, ZeroMemClass.coe_zero, mul_zero]
 
 theorem coe_mul_of_apply_aux [AddMonoid ι] [SetLike.GradedMonoid A] (r : ⨁ i, A i) {i : ι}
     (r' : A i) {j n : ι} (H : ∀ x : ι, x + i = n ↔ x = j) :
@@ -198,7 +199,7 @@ theorem coe_mul_of_apply_aux [AddMonoid ι] [SetLike.GradedMonoid A] (r : ⨁ i,
     simp_rw [DFinsupp.sum, H, Finset.sum_ite_eq']
     split_ifs with h
     · rfl
-    rw [DFinsupp.notMem_support_iff.mp h, ZeroMemClass.coe_zero, zero_mul]
+    rw [← funLike_eq, DFinsupp.notMem_support_iff.mp h, ZeroMemClass.coe_zero, zero_mul]
 
 theorem coe_of_mul_apply_add [AddLeftCancelMonoid ι] [SetLike.GradedMonoid A] {i : ι} (r : A i)
     (r' : ⨁ i, A i) (j : ι) : ((of (fun i => A i) i r * r') (i + j) : R) = r * r' j :=
