@@ -414,10 +414,23 @@ def algebraMapKCocone : Cocone (F ⋙ (forget₂ _ CommRingCat)) where
     naturality _ _ f := CommRingCat.hom_ext (RingHom.ext fun x ↦ congr($((F.map f).comm) x))
   }
 
+omit [IsLocalHom (algebraMap R K)] in
 lemma algebraMap_comp_ι_eq (j j' : J) :
     (c.ι.app j).hom.comp (algebraMap R (F.obj j)) =
     (c.ι.app j').hom.comp (algebraMap R (F.obj j')) := by
-  sorry
+  suffices h : ∀ (j1 j2 : J) (f : j1 ⟶ j2), (c.ι.app j1).hom.comp (algebraMap R (F.obj j1)) =
+    (c.ι.app j2).hom.comp (algebraMap R (F.obj j2)) by
+    obtain ⟨j'', f, g, _⟩ := IsFilteredOrEmpty.cocone_objs j j'
+    exact (h _ _ f).trans (h _ _ g).symm
+  intro j1 j2 f
+  have heq1 := c.ι.naturality f
+  simp only [Functor.comp_obj, Functor.const_obj_obj, Functor.comp_map, Functor.const_obj_map,
+    Category.comp_id] at heq1
+  have heq2 :  ((forget₂ (FlatExtension R K) CommRingCat).map (F.map f)).hom.comp
+    (algebraMap R (F.obj j1)) = algebraMap R (F.obj j2) := (RingHom.ext fun x ↦
+      congr($(AlgHom.comp_algebraMap (F.map f).algHom) x))
+  simp only [Functor.const_obj_obj, Functor.comp_obj, ← heq1, CommRingCat.hom_comp, ← heq2]
+  exact RingHom.comp_assoc ..
 
 noncomputable def coconeOfCoconeForgetPt (hc : IsColimit c) : FlatExtension R K := by
   let j := Classical.choice ‹IsFiltered J›.2
