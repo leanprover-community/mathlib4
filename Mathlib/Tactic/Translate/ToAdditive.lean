@@ -382,6 +382,9 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("isMonHom", "IsAddMonHom"),
   ("mapMon", "MapAddMon"),
   ("monObj", "AddMonObj"),
+  ("isModHom", "IsAddModHom"),
+  ("mapMod", "MapAddMod"),
+  ("modObj", "AddModObj"),
   ("yonedaMon", "yonedaAddMon")]
 
 /-- The bundle of environment extensions for `to_additive` -/
