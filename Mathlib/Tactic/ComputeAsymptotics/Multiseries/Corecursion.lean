@@ -73,11 +73,12 @@ variable {α β γ γ' : Type*}
 
 /-- Metric space structure on `Stream' α` considering `α` as a discrete metric space. -/
 noncomputable local instance : MetricSpace (Stream' α) :=
-  @PiNat.metricSpace (fun _ ↦ α) (fun _ ↦ ⊥) (fun _ ↦ discreteTopology_bot _)
+  letI := @PiNat.metricSpace (fun _ ↦ α) (fun _ ↦ ⊥) (fun _ ↦ discreteTopology_bot _)
+  inferInstanceAs <| MetricSpace (ℕ → α)
 
 /-- Metric space structure on `Seq α` considering `α` as a discrete metric space. -/
 noncomputable local instance : MetricSpace (Seq α) :=
-  Subtype.metricSpace
+  inferInstanceAs <| MetricSpace (Subtype _)
 
 local instance : CompleteSpace (Stream' α) :=
   @PiNat.completeSpace _ (fun _ ↦ ⊥) (fun _ ↦ discreteTopology_bot _)
@@ -150,7 +151,7 @@ theorem dist_eq_one_of_head {s t : Seq α} (h : s.head ≠ t.head) : dist s t = 
     intro h'
     simpa [Stream'.cons]
   · rw [Subtype.coe_ne_coe]
-    contrapose! h
+    contrapose h
     simp [h]
 
 theorem dist_cons_cons_eq_one {x y : α} {s t : Seq α} (h : x ≠ y) :
