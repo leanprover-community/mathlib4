@@ -162,7 +162,7 @@ lemma Scheme.Hom.rank_SpecMap_algebraMap (R S : Type u) [CommRing R] [CommRing S
     finrank (Spec.map (CommRingCat.ofHom <| algebraMap R S)) x = Module.rankAtStalk S x := by
   rw [finrank_SpecMap_eq_finrank]
   · simp
-  · simpa [RingHom.finite_algebraMap, ]
+  · simpa [RingHom.finite_algebraMap]
   · simpa [RingHom.flat_algebraMap_iff]
 
 variable (f : X ⟶ Y) [Flat f] [IsFinite f] [LocallyOfFinitePresentation f]
