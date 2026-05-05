@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Sites.DenseSubsite.OneHypercoverDense
 # Small affine site induced by a morphism property
 
 Let `P` be a morphism property of schemes and `S` be a scheme. In this file we study the small
-affine `P`-site of `S`: Its objects are rings `R` with a structure morphism `Spec R ⟶ S` that
+affine `P`-site of `S`: its objects are rings `R` with a structure morphism `Spec R ⟶ S` that
 satisfies `P`.
 -/
 
