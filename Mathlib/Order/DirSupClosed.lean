@@ -233,7 +233,8 @@ theorem dirSupClosed_iff_of_linearOrder :
   simp [DirSupClosed]
 
 theorem dirSupInaccOn_iff_of_linearOrder :
-    DirSupInaccOn D s ↔ ∀ ⦃d⦄, d ∈ D → d.Nonempty → ∀ ⦃a⦄, IsLUB d a → a ∈ s → (d ∩ s).Nonempty := by
+    DirSupInaccOn D s ↔
+      ∀ ⦃d⦄, d ∈ D → d.Nonempty → ∀ ⦃a⦄, IsLUB d a → a ∈ s → (d ∩ s).Nonempty := by
   simp [DirSupInaccOn]
 
 theorem dirSupInacc_iff_of_linearOrder :
