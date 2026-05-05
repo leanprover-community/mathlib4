@@ -122,7 +122,7 @@ noncomputable instance (J : Type*) [Small.{u} J] :
 variable {P : MorphismProperty Scheme.{u}} [IsZariskiLocalAtSource P]
 
 instance IsZariskiLocalAtSource.isClosedUnderColimitsOfShape_discrete {ι : Type*} [Small.{u} ι]
-    {C : Type*} [Category C] [HasColimitsOfShape (Discrete ι) C] (L : C ⥤ Scheme.{u})
+    {C : Type*} [Category* C] [HasColimitsOfShape (Discrete ι) C] (L : C ⥤ Scheme.{u})
     [PreservesColimitsOfShape (Discrete ι) L] (X : Scheme.{u}) :
     (P.costructuredArrowObj L (X := X)).IsClosedUnderColimitsOfShape (Discrete ι) :=
   CostructuredArrow.isClosedUnderColimitsOfShape _ (fun _ ↦ coproductIsCoproduct' _)
