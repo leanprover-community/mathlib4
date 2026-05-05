@@ -146,11 +146,6 @@ def toAlgHom {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) : A →�
   toFun := f
   commutes' := AlgHomClass.commutes f
 
-@[simp]
-lemma toRingHom_toAlgHom {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
-    [Algebra R B] {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
-    RingHomClass.toRingHom (AlgHomClass.toAlgHom f) = RingHomClass.toRingHom f := rfl
-
 end AlgHomClass
 
 namespace AlgHom
@@ -173,7 +168,7 @@ initialize_simps_projections AlgHom (toFun → apply)
 
 @[simp]
 protected theorem coe_coe [Algebra R B] {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
-    ⇑(AlgHomClass.toAlgHom f : A →ₐ[R] B) = f :=
+    ⇑(f : A →ₐ[R] B) = f :=
   rfl
 
 @[simp]

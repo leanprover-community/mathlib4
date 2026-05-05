@@ -346,8 +346,9 @@ lemma Algebra.adjoin_root_eq_top_of_isSplittingField :
     (f := (adjoinRootXPowSubCEquiv hζ H hα).symm.toAlgHom)
     (adjoinRootXPowSubCEquiv hζ H hα).symm.injective
   rw [Algebra.map_top, (AlgHom.range_eq_top _).mpr
-    (adjoinRootXPowSubCEquiv hζ H hα).symm.surjective, AlgHom.map_adjoin, Set.image_singleton,
-    AlgEquiv.coe_algHom, adjoinRootXPowSubCEquiv_symm_eq_root, adjoinRoot_eq_top]
+    (adjoinRootXPowSubCEquiv hζ H hα).symm.surjective, AlgHom.map_adjoin,
+    Set.image_singleton, AlgEquiv.coe_algHom, adjoinRootXPowSubCEquiv_symm_eq_root,
+      adjoinRoot_eq_top]
 
 include hζ H hα in
 lemma IntermediateField.adjoin_root_eq_top_of_isSplittingField :
