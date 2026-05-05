@@ -1000,8 +1000,7 @@ noncomputable def quotientEquivQuotientMinpolyMap (pb : PowerBasis R S) (I : Ide
                   rw [← Ideal.Quotient.mk_algebraMap, Ideal.quotientEquiv_apply,
                     RingHom.toFun_eq_coe, Ideal.quotientMap_mk,
                     RingEquiv.coe_toRingHom, AlgEquiv.coe_ringEquiv, AlgEquiv.commutes,
-                    Quotient.mk_algebraMap])).trans
-                      (AdjoinRoot.quotEquivQuotMap _ _)
+                    Quotient.mk_algebraMap])).trans (AdjoinRoot.quotEquivQuotMap _ _)
 
 -- This lemma should have the simp tag but this causes a lint issue.
 theorem quotientEquivQuotientMinpolyMap_apply_mk (pb : PowerBasis R S) (I : Ideal R) (g : R[X]) :

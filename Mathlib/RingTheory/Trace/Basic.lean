@@ -244,7 +244,7 @@ theorem sum_embeddings_eq_finrank_mul [FiniteDimensional K F] [Algebra.IsSeparab
     ← Finset.univ_sigma_univ, Finset.sum_sigma, ← Finset.sum_nsmul]
   · refine Finset.sum_congr rfl fun σ _ => ?_
     letI : Algebra L E := σ.toRingHom.toAlgebra
-    simp
+    simp_rw [Finset.sum_const, Finset.card_univ, AlgHom.card]
   · intro σ
     simp only [algHomEquivSigma, Equiv.coe_fn_mk, AlgHom.restrictDomain, AlgHom.comp_apply,
       IsScalarTower.coe_toAlgHom']

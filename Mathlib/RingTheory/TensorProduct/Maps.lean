@@ -548,7 +548,7 @@ noncomputable abbrev rTensor (f : A →ₐ[S] C) : A ⊗[R] B →ₐ[S] C ⊗[R]
 from S- and R- isomorphisms between the tensor factors.
 -/
 def congr (f : A ≃ₐ[S] C) (g : B ≃ₐ[R] D) : A ⊗[R] B ≃ₐ[S] C ⊗[R] D :=
-  AlgEquiv.ofAlgHom (map f.toAlgHom g.toAlgHom) (map f.symm.toAlgHom g.symm.toAlgHom)
+  AlgEquiv.ofAlgHom (map f g) (map f.symm g.symm)
     (ext' fun b d => by simp) (ext' fun a c => by simp)
 
 @[simp] theorem congr_toLinearEquiv (f : A ≃ₐ[S] C) (g : B ≃ₐ[R] D) :
@@ -557,12 +557,12 @@ def congr (f : A ≃ₐ[S] C) (g : B ≃ₐ[R] D) : A ⊗[R] B ≃ₐ[S] C ⊗[R
 
 @[simp]
 theorem congr_apply (f : A ≃ₐ[S] C) (g : B ≃ₐ[R] D) (x) :
-    congr f g x = (map f.toAlgHom g.toAlgHom) x :=
+    congr f g x = (map (f : A →ₐ[S] C) (g : B →ₐ[R] D)) x :=
   rfl
 
 @[simp]
 theorem congr_symm_apply (f : A ≃ₐ[S] C) (g : B ≃ₐ[R] D) (x) :
-    (congr f g).symm x = (map f.symm.toAlgHom g.symm.toAlgHom) x :=
+    (congr f g).symm x = (map (f.symm : C →ₐ[S] A) (g.symm : D →ₐ[R] B)) x :=
   rfl
 
 @[simp]
