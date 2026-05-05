@@ -64,6 +64,8 @@ We do not assume `P` lies over `p` in the definition; we return `0` instead.
 
 See `inertiaDeg_algebraMap` for the common case where `f = algebraMap R S`
 and there is an algebra structure `R / p → S / P`.
+
+Note: This definition of inertia degree will eventually be replaced by `Ideal.inertiaDeg'`.
 -/
 noncomputable def inertiaDeg : ℕ :=
   if hPp : comap f P = p then
