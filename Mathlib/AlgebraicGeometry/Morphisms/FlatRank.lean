@@ -165,7 +165,7 @@ lemma Scheme.Hom.rank_SpecMap_algebraMap (R S : Type u) [CommRing R] [CommRing S
   · simpa [RingHom.finite_algebraMap]
   · simpa [RingHom.flat_algebraMap_iff]
 
-variable (f : X ⟶ Y) [Flat f] [IsFinite f] [LocallyOfFinitePresentation f]
+variable (f : X ⟶ Y) [Flat f] [IsFinite f]
 
 @[simp]
 lemma Scheme.Hom.finrank_comp_left_of_isIso (f : X ⟶ Y) (g : Y ⟶ S)
