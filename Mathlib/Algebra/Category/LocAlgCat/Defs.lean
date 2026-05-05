@@ -234,7 +234,7 @@ def fullyFaithfulUliftFunctor : (uliftFunctor Λ k).FullyFaithful where
     ofHom (ULift.algEquiv.toAlgHom.comp <| F.comp ULift.algEquiv.symm.toAlgHom) (by
       ext x
       have := DFunLike.congr_fun f.residue_comp
-      simp only [uliftFunctor, AlgEquiv.toAlgHom_eq_coe, coe_of, ULift.forall] at this
+      simp only [uliftFunctor, ULift.forall] at this
       exact this x)
 
 instance : (uliftFunctor Λ k).Full := (fullyFaithfulUliftFunctor Λ k).full

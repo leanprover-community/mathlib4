@@ -235,8 +235,7 @@ abbrev mapSpecialFiber [IsLocalRing Λ] [Algebra.IsIntegral Λ k] (f : A ⟶ B) 
 
 @[simp]
 lemma algebraMap_specialFiber_apply_eq_zero [IsLocalRing Λ] [Algebra.IsIntegral Λ k] (y : Λ)
-    (h : y ∈ maximalIdeal Λ) :
-    (algebraMap Λ A.specialFiber) y = 0 := by
+    (h : y ∈ maximalIdeal Λ) : (algebraMap Λ A.specialFiber) y = 0 := by
   change algebraMap Λ (A ⧸ (maximalIdeal Λ).map (algebraMap Λ A)) y = 0
   rw [IsScalarTower.algebraMap_apply Λ A, Ideal.Quotient.algebraMap_eq, ← RingHom.mem_ker,
     Ideal.mk_ker]
