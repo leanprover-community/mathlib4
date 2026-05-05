@@ -108,11 +108,11 @@ instance : Inhabited (Grp C) where
 instance : Category (Grp C) :=
   inferInstanceAs (Category (InducedCategory _ Grp.toMon))
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem id_hom_hom (A : Grp C) : Mon.Hom.hom (InducedCategory.Hom.hom (𝟙 A)) = 𝟙 A.X :=
   rfl
 
-@[to_additive (attr := simp, reassoc)]
+@[to_additive (attr := reassoc)]
 theorem comp_hom_hom {R S T : Grp C} (f : R ⟶ S) (g : S ⟶ T) :
     Mon.Hom.hom (f ≫ g).hom = f.hom.hom ≫ g.hom.hom :=
   rfl
