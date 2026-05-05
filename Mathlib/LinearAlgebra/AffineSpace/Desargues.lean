@@ -38,12 +38,6 @@ For mathematical background on Desargues's theorem, see for example:
 * <https://en.wikipedia.org/wiki/Desargues%27s_theorem>
 * <https://www.britannica.com/science/Desarguess-theorem>
 * <https://planetmath.org/desarguestheorem>
-
-For context, Desargues's theorem is entry `#87` on the Lean community's "100
-theorems" pages:
-
-* <https://leanprover-community.github.io/100.html>
-* <https://leanprover-community.github.io/100-missing.html>
 -/
 
 @[expose] public section
@@ -54,7 +48,12 @@ open AffineSubspace
 variable {k V P : Type*} [DivisionRing k] [AddCommGroup V] [Module k V] [AffineSpace V P]
 
 /-- The parallel form of Desargues's theorem: if two triangles are in perspective from a point and
-two corresponding sides are parallel, then the third pair of corresponding sides are parallel. -/
+two corresponding sides are parallel, then the third pair of corresponding sides are parallel.
+
+The noncollinearity hypotheses exclude degenerate cases where `B` or `C` lies on the perspective
+line through `A`, `S`, and `A'`; in such cases the corresponding parallel-side assumption is just
+a comparison of two lines on the same perspective line, so it does not force the same scaling ratio
+as the nondegenerate side. -/
 theorem parallel_third_side_of_perspective {A A' B B' C C' S : P}
     (hASA' : Collinear k ({A, S, A'} : Set P))
     (hBSB' : Collinear k ({B, S, B'} : Set P))
