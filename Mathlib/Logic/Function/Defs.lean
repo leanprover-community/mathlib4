@@ -31,6 +31,8 @@ def dcomp {β : α → Sort u₂} {φ : ∀ {x : α}, β x → Sort u₃} (f : �
 
 @[inherit_doc] infixr:80 " ∘' " => Function.dcomp
 
+/-- Product of functions: `Function.prod f g i = (f i, g i)`, where the types of `f i` and
+`g i` may depend on `i`. -/
 protected def prod {ι} {α β : ι → Type*} (f : ∀ i, α i) (g : ∀ i, β i) (i : ι) :
     α i × β i := (f i, g i)
 
