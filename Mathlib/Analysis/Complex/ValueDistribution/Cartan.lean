@@ -17,7 +17,7 @@ function `characteristic f ⊤ r` as a sum of two circle averages,
 - `circleAverage (logCounting f · r) 0 1` and
 - `circleAverage (fun a ↦ log ‖meromorphicTrailingCoeffAt (f · - a) 0‖) 0 1`.
 
-As a corollary, Cartan's formula implies the (surprising non-trival) fact that the characteristic
+As a corollary, Cartan's formula implies the (surprising, non-trival) fact that the characteristic
 function is monotone.
 
 At present, this file establishes circle integrability of the function
