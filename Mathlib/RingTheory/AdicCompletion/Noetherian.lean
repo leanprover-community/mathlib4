@@ -18,7 +18,7 @@ public import Mathlib.RingTheory.KrullDimension.Basic
 # Hausdorff-ness for Noetherian rings
 -/
 
-@[expose] public section
+public section
 
 open IsLocalRing Module
 

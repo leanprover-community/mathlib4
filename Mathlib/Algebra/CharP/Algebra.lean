@@ -30,7 +30,7 @@ Instances constructed from this result:
 
 -/
 
-@[expose] public section
+public section
 
 variable {R A : Type*}
 

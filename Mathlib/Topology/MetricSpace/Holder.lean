@@ -63,9 +63,7 @@ theorem holderOnWith_empty (C r : ℝ≥0) (f : X → Y) : HolderOnWith C r f �
 
 @[simp]
 theorem holderOnWith_singleton (C r : ℝ≥0) (f : X → Y) (x : X) : HolderOnWith C r f {x} := by
-  rintro a (rfl : a = x) b (rfl : b = a)
-  rw [edist_self]
-  exact zero_le _
+  simp [HolderOnWith]
 
 theorem Set.Subsingleton.holderOnWith {s : Set X} (hs : s.Subsingleton) (C r : ℝ≥0) (f : X → Y) :
     HolderOnWith C r f s :=

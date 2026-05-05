@@ -81,7 +81,7 @@ protected lemma map_add (f : R →+ S) (x y : R[M]) : map f (x + y) = map f x + 
 
 @[to_additive]
 protected lemma map_sum (f : R →+ S) (s : Finset ι) (x : ι → R[M]) :
-    map f (∑ i ∈ s, x i) = ∑ i ∈ s, map f (x i) := mapRange_finset_sum ..
+    map f (∑ i ∈ s, x i) = ∑ i ∈ s, map f (x i) := mapRange_finsetSum ..
 
 @[to_additive (attr := simp)]
 lemma map_single (f : R →+ S) (r : R) (m : M) : map f (single m r) = single m (f r) :=

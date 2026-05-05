@@ -16,7 +16,7 @@ See `Mathlib/CategoryTheory/Comma/Over/Pullback.lean`
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.Limits
 
