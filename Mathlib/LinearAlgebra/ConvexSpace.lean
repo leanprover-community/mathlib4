@@ -257,7 +257,9 @@ abbrev ConvexSpace.mk {M : Type*} (sConvexCombo : StdSimplex R M → M)
   ⟨sConvexCombo, single, assoc⟩
 
 variable (R) in
-/-- A map between convex spaces is affine if it preserves convex combinations. -/
+/-- A map between convex spaces is affine if it preserves convex combinations.
+
+TODO: Show that this generalises affine maps between affine spaces, see `AffineMap`. -/
 @[fun_prop]
 structure IsAffineMap (f : M → N) : Prop where
   map_sConvexCombo (s : StdSimplex R M) : f s.sConvexCombo = (s.map f).sConvexCombo
