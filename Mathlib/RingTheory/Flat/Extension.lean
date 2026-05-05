@@ -31,7 +31,7 @@ public import Mathlib.RingTheory.RingHom.Flat
 
 @[expose] public section
 
-universe u v
+universe u v w
 
 open IsLocalRing CategoryTheory SmallObject Limits
 
@@ -47,6 +47,12 @@ lemma IsScalarTower.algebraMap_range_le (S T : Type*) [CommRing S] [Ring T] [Alg
   rintro x ⟨y, hy⟩
   use algebraMap R S y
   rw [← hy, IsScalarTower.algebraMap_apply R S T]
+
+instance hello (J : Type u) [LinearOrder J] [Nonempty J] (C : Type w) [Category.{v} C]
+    [HasFilteredColimitsOfSize.{u, u} C] : HasIterationOfShape J C where
+  hasColimitsOfShape_of_isSuccLimit j hj := by
+    have : Nonempty (Set.Iio j) := Set.Nonempty.coe_sort (Set.Iio_nonempty.mpr hj.not_isMin)
+    infer_instance
 
 end preliminaries
 
@@ -458,26 +464,51 @@ namespace FilteredColimit
 variable {R K} {J : Type u} [SmallCategory J] [IsFiltered J] {F : J ⥤ FlatExtension R K}
   (c : Cocone (F ⋙ (forget₂ _ CommRingCat)))
 
-def coconeOfCoconeForgetPt (hc : IsColimit c) : FlatExtension R K := by
-  refine @FlatExtension.mk R _ _ K _ _ c.pt _ ?_ ?_ ?_ ?_ ?_ ?_
+variable (F) in
+def algebraMapKCocone : Cocone (F ⋙ (forget₂ _ CommRingCat)) where
+  pt := .of K
+  ι := {
+    app j := CommRingCat.ofHom (algebraMap (F.obj j) K)
+    naturality _ _ f := CommRingCat.hom_ext (RingHom.ext fun x ↦ congr($((F.map f).comm) x))
+  }
+
+lemma algebraMap_comp_ι_eq (j j' : J) :
+    (c.ι.app j).hom.comp (algebraMap R (F.obj j)) =
+    (c.ι.app j').hom.comp (algebraMap R (F.obj j')) := sorry
+
+noncomputable def coconeOfCoconeForgetPt (hc : IsColimit c) : FlatExtension R K := by
+  let j := Classical.choice ‹IsFiltered J›.2
+  refine @FlatExtension.mk R _ _ K _ _ c.pt _ ?_
+    ((c.ι.app j).hom.comp (algebraMap R (F.obj j))).toAlgebra
+    (hc.desc (algebraMapKCocone F)).hom.toAlgebra ?_ ?_ ?_
   all_goals sorry
 
-def coconeOfCoconeForget (hc : IsColimit c) : Cocone F where
+noncomputable def coconeOfCoconeForget (hc : IsColimit c) : Cocone F where
   pt := coconeOfCoconeForgetPt c hc
   ι := {
     app j := by
       refine .mk' R K (c.ι.app j).hom ?_ ?_
-      all_goals sorry
+      · let j' := Classical.choice ‹IsFiltered J›.2
+        change _ = (c.ι.app j').hom.comp (algebraMap R (F.obj j'))
+        exact algebraMap_comp_ι_eq c j j'
+      · ext x
+        exact congr($(hc.fac (algebraMapKCocone F) j) x)
+    naturality _ _ f := by
+      ext x
+      exact congr($(c.ι.naturality f) x)
   }
 
-def isColimitCoconeOfCoconeForget (hc : IsColimit c) : IsColimit (coconeOfCoconeForget c hc) := by
+noncomputable def isColimitCoconeOfCoconeForget (hc : IsColimit c) : IsColimit (coconeOfCoconeForget c hc) := by
   refine IsColimit.ofFaithful (forget₂ _ CommRingCat.{u}) hc
     (fun s ↦ .mk' R K (hc.desc ((forget₂ _ CommRingCat).mapCocone s)).hom ?_ ?_) fun s ↦ rfl
-  all_goals sorry
+  · sorry
+  · change _ = (hc.desc (algebraMapKCocone F)).hom
+    sorry
 
 instance : HasColimitsOfShape J (FlatExtension R K) where
   has_colimit F := by
-    sorry
+    obtain ⟨⟨c, hc⟩⟩ : HasColimit (F ⋙ (forget₂ _ CommRingCat)) := inferInstance
+    exact ⟨⟨⟨coconeOfCoconeForget c hc, isColimitCoconeOfCoconeForget c hc⟩⟩⟩
 
 instance : HasFilteredColimitsOfSize.{u, u} (FlatExtension R K) where
   HasColimitsOfShape _ _ _ := inferInstance
@@ -497,7 +528,6 @@ lemma exists_isLocalHom_flat' : ∃ (R' : Type u) (_ : CommRing R') (_ : IsLocal
   let : WellFoundedLT (WithTop setK) := WithTop.instWellFoundedLT
   let : SuccOrder (WithTop setK) := SuccOrder.ofLinearWellFoundedLT _
   let : OrderBot (WithTop setK) := WellFoundedLT.toOrderBot _
-  have : HasIterationOfShape (WithTop setK) (FlatExtension R K) := { }
   obtain ⟨φ⟩ : Nonempty ((FlatExtension.SuccStruct R K).Iteration (⊤ : WithTop setK)) :=
     inferInstance
   let fi : WithTop setK ≃o Set.Iic (⊤ : WithTop setK) := OrderIso.IicTop.symm
