@@ -112,6 +112,7 @@ instance baseChange [QuasiFinite R S] {A : Type*} [CommRing A] [Algebra R A] :
     QuasiFinite A (A ⊗[R] S) := by
   refine ⟨fun P hP ↦ ?_⟩
   let p := P.under R
+  let := Localization.AtPrime.algebraOfLiesOver p P
   let e : P.Fiber (A ⊗[R] S) ≃ₐ[P.ResidueField] P.ResidueField ⊗[p.ResidueField] (p.Fiber S) :=
     (Algebra.TensorProduct.cancelBaseChange _ _ _ _ _).trans
       (Algebra.TensorProduct.cancelBaseChange _ _ _ _ _).symm
@@ -271,7 +272,9 @@ lemma eq_of_le_of_under_eq [QuasiFinite R S] (P Q : Ideal S) [P.IsPrime] [Q.IsPr
     (a := ⟨P, ‹_›⟩) (b := ⟨Q, ‹_›⟩) (by simpa [← PrimeSpectrum.le_iff_specializes]) rfl
     (PrimeSpectrum.ext h₂.symm)).1)
 
-instance [QuasiFinite R S] (P : Ideal R) [P.IsPrime] (Q : Ideal S) [Q.IsPrime] [Q.LiesOver P] :
+instance [QuasiFinite R S] (P : Ideal R) [P.IsPrime] (Q : Ideal S) [Q.IsPrime] [Q.LiesOver P]
+    [Algebra (Localization.AtPrime P) (Localization.AtPrime Q)]
+    [Localization.AtPrime.IsLiesOverAlgebra P Q] :
     Module.Finite P.ResidueField Q.ResidueField :=
   have : QuasiFinite P.ResidueField Q.ResidueField := .of_restrictScalars R _ _
   .of_quasiFinite
@@ -417,10 +420,14 @@ lemma QuasiFiniteAt.eq_of_le_of_under_eq {P Q : Ideal S} [P.IsPrime] [Q.IsPrime]
   rw [← Localization.AtPrime.comap_maximalIdeal (I := Q), ← H,
     IsLocalization.comap_map_of_isPrime_disjoint Q.primeCompl _ ‹P.IsPrime› this]
 
-instance (p : Ideal R) [p.IsPrime] (P : Ideal S) [P.IsPrime] [P.LiesOver p] [QuasiFiniteAt R P] :
+instance (p : Ideal R) [p.IsPrime] (P : Ideal S) [P.IsPrime] [P.LiesOver p] [QuasiFiniteAt R P]
+    [Algebra (Localization.AtPrime p) (Localization.AtPrime P)]
+    [Localization.AtPrime.IsLiesOverAlgebra p P] :
     Module.Finite p.ResidueField P.ResidueField := by
   let m := IsLocalRing.maximalIdeal (Localization.AtPrime P)
   let : m.LiesOver p := .trans _ P _
+  let := Localization.AtPrime.algebraOfLiesOver p m
+  let := Localization.AtPrime.algebraOfLiesOver P m
   let e := AlgEquiv.ofBijective (IsScalarTower.toAlgHom p.ResidueField P.ResidueField
     m.ResidueField) ((RingHom.surjectiveOnStalks_of_isLocalization
         P.primeCompl _).residueFieldMap_bijective P m (m.over_def P))
@@ -540,7 +547,9 @@ lemma _root_.Ideal.exists_not_mem_forall_mem_of_ne_of_liesOver
   · simpa [IsScalarTower.algebraMap_apply R S q'.ResidueField, ← Ideal.mem_comap, ← q'.over_def p]
 
 lemma _root_.Ideal.Fiber.lift_residueField_surjective [Algebra.FiniteType R S]
-    (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p] [Algebra.QuasiFiniteAt R q] :
+    (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p] [Algebra.QuasiFiniteAt R q]
+    [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
+    [Localization.AtPrime.IsLiesOverAlgebra p q] :
     Function.Surjective (Algebra.TensorProduct.lift (Algebra.ofId _ _)
       (IsScalarTower.toAlgHom _ _ _) fun _ _ ↦ .all _ _ :
       p.Fiber S →ₐ[p.ResidueField] q.ResidueField) := by

@@ -134,11 +134,11 @@ open unitInterval (uhpath01)
 section Casts
 
 /-- Abbreviation for `eqToHom` that accepts points in a topological space -/
-abbrev hcast {X : TopCat} {x₀ x₁ : X} (hx : x₀ = x₁) : fromTop x₀ ⟶ fromTop x₁ :=
+abbrev hcast {X : TopCat.{u}} {x₀ x₁ : X} (hx : x₀ = x₁) : fromTop x₀ ⟶ fromTop x₁ :=
   eqToHom <| FundamentalGroupoid.ext hx
 
 @[simp]
-theorem hcast_def {X : TopCat} {x₀ x₁ : X} (hx₀ : x₀ = x₁) :
+theorem hcast_def {X : TopCat.{u}} {x₀ x₁ : X} (hx₀ : x₀ = x₁) :
     hcast hx₀ = eqToHom (FundamentalGroupoid.ext hx₀) :=
   rfl
 

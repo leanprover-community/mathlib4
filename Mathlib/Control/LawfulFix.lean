@@ -140,7 +140,7 @@ theorem fix_le {X : (a : _) → Part <| β a} (hX : f X ≤ X) : Part.fix f ≤ 
   simp only [Fix.approxChain]
   intro i
   induction i with
-  | zero => dsimp [Fix.approx]; apply bot_le
+  | zero => apply bot_le
   | succ _ i_ih =>
     trans f X
     · apply f.monotone i_ih

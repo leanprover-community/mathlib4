@@ -368,14 +368,13 @@ theorem germ_stalkSpecializes (F : X.Presheaf C)
   colimit.ι_desc _ _
 
 @[simp]
-theorem stalkSpecializes_refl {C : Type*} [Category* C] [Limits.HasColimits C] {X : TopCat}
-    (F : X.Presheaf C) (x : X) : F.stalkSpecializes (specializes_refl x) = 𝟙 _ := by
+theorem stalkSpecializes_refl (F : X.Presheaf C) (x : X) :
+    F.stalkSpecializes (specializes_refl x) = 𝟙 _ := by
   ext
   simp
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-theorem stalkSpecializes_comp {C : Type*} [Category* C] [Limits.HasColimits C] {X : TopCat}
-    (F : X.Presheaf C) {x y z : X} (h : x ⤳ y) (h' : y ⤳ z) :
+theorem stalkSpecializes_comp (F : X.Presheaf C) {x y z : X} (h : x ⤳ y) (h' : y ⤳ z) :
     F.stalkSpecializes h' ≫ F.stalkSpecializes h = F.stalkSpecializes (h.trans h') := by
   ext
   simp
@@ -398,7 +397,7 @@ theorem stalkSpecializes_stalkPushforward (f : X ⟶ Y) (F : X.Presheaf C) {x y 
 
 /-- The stalks are isomorphic on inseparable points -/
 @[simps]
-def stalkCongr {X : TopCat} {C : Type*} [Category* C] [HasColimits C] (F : X.Presheaf C) {x y : X}
+def stalkCongr (F : X.Presheaf C) {x y : X}
     (e : Inseparable x y) : F.stalk x ≅ F.stalk y :=
   ⟨F.stalkSpecializes e.ge, F.stalkSpecializes e.le, by simp, by simp⟩
 
@@ -594,7 +593,6 @@ theorem app_surjective_of_injective_of_locally_surjective {F G : Sheaf C X} (f :
   intro z hz
   -- Here, we need to use injectivity of the stalk maps.
   apply hinj z ((iVU x).le ((inf_le_left : V x ⊓ V y ≤ V x) hz))
-  dsimp only
   rw [stalkFunctor_map_germ_apply, stalkFunctor_map_germ_apply]
   simp_rw [← ConcreteCategory.comp_apply, f.1.naturality, ConcreteCategory.comp_apply, heq,
     ← ConcreteCategory.comp_apply, ← G.1.map_comp]

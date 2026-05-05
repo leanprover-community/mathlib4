@@ -573,7 +573,6 @@ instance : LieGroup (𝓡 1) ω Circle where
     simp only [← Circle.coe_inv, Circle.coe_inv_eq_conj]
     exact Complex.conjCLE.contDiff.contMDiff.comp contMDiff_coe_sphere
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The map `fun t ↦ exp (t * I)` from `ℝ` to the unit circle in `ℂ` is analytic. -/
 theorem contMDiff_circleExp {m : ℕ∞ω} : CMDiff m Circle.exp :=
   (contDiff_exp.comp (contDiff_id.smul contDiff_const)).contMDiff.codRestrict_sphere _

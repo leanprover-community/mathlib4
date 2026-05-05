@@ -1046,7 +1046,6 @@ lemma extendScalars_assoc :
   erw [h₂]
   rw [h₃, ExtendScalars.map_tmul, h₄]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The associativity compatibility for the extension of scalars, in the exact form
 that is needed in the definition `CommRingCat.moduleCatExtendScalarsPseudofunctor`
 in the file `Mathlib/Algebra/Category/ModuleCat/Pseudofunctor.lean` -/

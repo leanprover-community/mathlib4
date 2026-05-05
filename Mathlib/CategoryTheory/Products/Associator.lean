@@ -78,4 +78,13 @@ def functorProdToProdFunctorAssociator :
           (associativity _ _ _).functor :=
   Iso.refl _
 
+/-- The equivalence swapping the second and third categories in `(A × C) × (D × E)`. This follows
+the definition of `MonoidalCategory.tensorμ`. -/
+@[simps!]
+def prodμ : (A × C) × (D × E) ≌ (A × D) × (C × E) :=
+  (associativity ..).trans <|
+    (Equivalence.refl.prod (associativity ..).symm).trans <|
+      (Equivalence.refl.prod <| (Prod.braiding C D).prod (Equivalence.refl)).trans <|
+        (Equivalence.refl.prod (associativity ..)).trans <| (associativity ..).symm
+
 end CategoryTheory.prod

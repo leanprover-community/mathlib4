@@ -34,7 +34,6 @@ theorem TietzeExtension.of_tvs (𝕜 : Type v) [NontriviallyNormedField 𝕜] {E
     [TietzeExtension.{u, v} 𝕜] : TietzeExtension.{u, w} E :=
   Module.Basis.ofVectorSpace 𝕜 E |>.equivFun.toContinuousLinearEquiv.toHomeomorph |> .of_homeo
 
-set_option backward.isDefEq.respectTransparency false in
 instance Complex.instTietzeExtension : TietzeExtension ℂ :=
   TietzeExtension.of_tvs ℝ
 
@@ -87,8 +86,7 @@ theorem Metric.instTietzeExtensionBall {𝕜 : Type v} [RCLike 𝕜] {E : Type w
 theorem Metric.instTietzeExtensionClosedBall (𝕜 : Type v) [RCLike 𝕜] {E : Type w}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E] (y : E) {r : ℝ} (hr : 0 < r) :
     TietzeExtension.{u, w} (Metric.closedBall y r) :=
-  .of_homeo <| by
-    change (Metric.closedBall y r) ≃ₜ (Metric.closedBall (0 : E) 1)
+  .of_homeo (Z := Metric.closedBall (0 : E) 1) <| by
     symm
     apply (DilationEquiv.smulTorsor y (k := (r : 𝕜)) <| by exact_mod_cast hr.ne').toHomeomorph.sets
     ext x

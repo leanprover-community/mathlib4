@@ -56,7 +56,6 @@ theorem antideriv_sin_comp_const_mul (hz : z ≠ 0) (x : ℝ) :
   simp at c ⊢; field_simp at c ⊢; simp only [mul_rotate _ 2 z] at c
   exact c
 
-set_option backward.isDefEq.respectTransparency false in
 theorem integral_cos_mul_cos_pow_aux (hn : 2 ≤ n) (hz : z ≠ 0) :
     (∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ n) =
       n / (2 * z) *
@@ -81,7 +80,6 @@ theorem integral_cos_mul_cos_pow_aux (hn : 2 ≤ n) (hz : z ≠ 0) :
   · apply Continuous.intervalIntegrable (by fun_prop)
   · apply Continuous.intervalIntegrable <| by fun_prop
 
-set_option backward.isDefEq.respectTransparency false in
 theorem integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) (hz : z ≠ 0) :
     (∫ x in (0 : ℝ)..π / 2, Complex.sin (2 * z * x) * sin x * (cos x : ℂ) ^ (n - 1)) =
       (n / (2 * z) * ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ n) -
@@ -118,7 +116,6 @@ theorem integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) (hz : z ≠ 0) :
     · apply Continuous.intervalIntegrable <| by fun_prop
     · exact Nat.sub_ne_zero_of_lt hn
     refine integral_congr fun x _ => ?_
-    dsimp only
     -- get rid of real trig functions and divisions by 2 * z:
     rw [Complex.ofReal_cos, Complex.ofReal_sin, Complex.sin_sq, ← mul_div_right_comm, ←
       mul_div_right_comm, ← sub_div, mul_div, ← neg_div]

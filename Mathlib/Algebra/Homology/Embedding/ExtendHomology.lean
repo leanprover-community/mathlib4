@@ -102,7 +102,6 @@ lemma lift_d_comp_eq_zero_iff' ⦃W : C⦄ (f' : K.X i ⟶ cone.pt)
       simp only [zero_comp, hf', K.shape _ _ hij]
     have h₂ : f'' = 0 := by
       apply Fork.IsLimit.hom_ext hcone
-      dsimp
       rw [← cancel_mono (extendXIso K e hj').inv, assoc, hf'', zero_comp, zero_comp,
         K.extend_d_to_eq_zero e i' j' j hj']
       rw [hi]

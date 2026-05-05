@@ -262,9 +262,10 @@ namespace Subcomplex
 
 variable {X} (A : X.Subcomplex)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma mem_degenerate_iff {n : ℕ} (x : A.obj (op ⦋n⦌)) :
-    x ∈ degenerate A n ↔ x.val ∈ X.degenerate n := by
+    dsimp% x ∈ degenerate A n ↔ x.val ∈ X.degenerate n := by
   rw [SSet.mem_degenerate_iff, SSet.mem_degenerate_iff]
   constructor
   · rintro ⟨m, hm, f, _, y, rfl⟩
@@ -276,9 +277,10 @@ lemma mem_degenerate_iff {n : ℕ} (x : A.obj (op ⦋n⦌)) :
     simpa [Set.mem_preimage, ← op_comp, ← comp_apply, ← Functor.map_comp] using
       A.map (section_ f).op hx
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma mem_nonDegenerate_iff {n : ℕ} (x : A.obj (op ⦋n⦌)) :
-    x ∈ nonDegenerate A n ↔ x.val ∈ X.nonDegenerate n := by
+    dsimp% x ∈ nonDegenerate A n ↔ x.val ∈ X.nonDegenerate n := by
   rw [mem_nonDegenerate_iff_notMem_degenerate,
     mem_nonDegenerate_iff_notMem_degenerate, mem_degenerate_iff]
 

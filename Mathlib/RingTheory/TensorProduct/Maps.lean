@@ -210,6 +210,14 @@ def liftEquiv : {fg : (A →ₐ[S] C) × (B →ₐ[R] C) // ∀ x y, Commute (fg
   left_inv fg := by ext <;> simp
   right_inv f' := by ext <;> simp
 
+theorem restrictScalars_lift [CommSemiring R'] [Algebra R R'] [Algebra R' S]
+    [Algebra R' A] [IsScalarTower R R' A] [IsScalarTower R' S A]
+    [Algebra R' C] [IsScalarTower R R' C] [IsScalarTower R' S C]
+    (f : A →ₐ[S] C) (g : B →ₐ[R] C) (hfg : ∀ (x : A) (y : B), Commute (f x) (g y)) :
+    (Algebra.TensorProduct.lift f g hfg).restrictScalars R' =
+      Algebra.TensorProduct.lift (f.restrictScalars R') g hfg :=
+  rfl
+
 end lift
 
 end

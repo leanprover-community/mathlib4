@@ -50,7 +50,6 @@ open Unitization NNReal CStarAlgebra
 
 variable [PartialOrder A] [StarOrderedRing A]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma CFC.monotoneOn_one_sub_one_add_inv :
     MonotoneOn (cfcₙ (fun x : ℝ≥0 ↦ 1 - (1 + x)⁻¹)) (Set.Ici (0 : A)) := by
   intro a ha b hb hab
@@ -169,9 +168,8 @@ open Submodule in
 lemma tendsto_mul_right_of_forall_nonneg_tendsto {l : Filter A}
     (h : ∀ m, 0 ≤ m → ‖m‖ < 1 → Tendsto (· * m) l (𝓝 m)) (m : A) :
     Tendsto (· * m) l (𝓝 m) := by
-  obtain ⟨n, c, x, rfl⟩ := mem_span_set'.mp <| by
-    change m ∈ span ℂ ({x | 0 ≤ x} ∩ ball 0 1)
-    simp [span_nonneg_inter_unitBall]
+  have : m ∈ span ℂ ({x | 0 ≤ x} ∩ ball 0 1) := by simp [span_nonneg_inter_unitBall]
+  obtain ⟨n, c, x, rfl⟩ := mem_span_set'.mp this
   simp_rw [Finset.mul_sum]
   refine tendsto_finsetSum _ fun i _ ↦ ?_
   simp_rw [mul_smul_comm]
@@ -251,7 +249,6 @@ lemma norm_sub_mul_self_le_of_inr {x y : A} (z : A) (hx₀ : 0 ≤ x) (hxy : x �
       ← norm_le_one_iff_of_nonneg _, norm_inr]
     exact ⟨hxy, hy₁⟩
 
-set_option backward.isDefEq.respectTransparency false in
 variable {A} in
 /-- This shows `CStarAlgebra.approximateUnit` is a one-sided approximate unit, but this is marked
 `private` because it is only used to prove `CStarAlgebra.increasingApproximateUnit`. -/

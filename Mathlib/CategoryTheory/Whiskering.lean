@@ -124,7 +124,6 @@ def FullyFaithful.whiskeringRight {F : D ⥤ E} (hF : F.FullyFaithful)
     { app := fun X => hF.preimage (f.app X)
       naturality := fun _ _ g => by
         apply hF.map_injective
-        dsimp
         simp only [map_comp, map_preimage]
         apply f.naturality }
 

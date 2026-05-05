@@ -98,6 +98,8 @@ instance : FunLike (ContinuousMapGeneratedBy X Y Z) Y Z where
   coe f := f.toFun
   coe_injective' _ _ _ := by aesop
 
+initialize_simps_projections ContinuousMapGeneratedBy (toFun → apply)
+
 /-- The identity, as a `X`-continous map. -/
 @[simps]
 def ContinuousMapGeneratedBy.id : ContinuousMapGeneratedBy X Y Y where

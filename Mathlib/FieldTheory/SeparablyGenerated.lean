@@ -126,7 +126,7 @@ theorem coeff_toPolynomialAdjoinImageCompl_ne_zero
 theorem isAlgebraic_of_mem_vars_of_forall_totalDegree_le (hFa : F.aeval a = 0) (i : ι)
     (hi : i ∈ F.vars) : IsAlgebraic (Algebra.adjoin k (a '' {i}ᶜ)) (a i) := by
   classical
-  have ⟨σ, hσ, hσi⟩ := (mem_vars i).mp hi
+  have ⟨σ, hσ, hσi⟩ := (mem_vars_iff_mem_support i).mp hi
   refine ⟨toPolynomialAdjoinImageCompl F a i,
     fun h ↦ coeff_toPolynomialAdjoinImageCompl_ne_zero HF σ hσ i
       (Finsupp.mem_support_iff.mp hσi) ?_, aeval_toPolynomialAdjoinImageCompl_eq_zero hFa ..⟩
@@ -213,7 +213,7 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow
   obtain ⟨i, σ, hσ, hi⟩ := exists_mem_support_not_dvd_of_forall_totalDegree_le p hp H hFmin hF₀ hFa
   have hσi : σ i ≠ 0 := by aesop
   have alg := isAlgebraic_of_mem_vars_of_forall_totalDegree_le hFmin hFa i <|
-    (mem_vars i).mpr ⟨σ, hσ, by simpa⟩
+    (mem_vars_iff_mem_support i).mpr ⟨σ, hσ, by simpa⟩
   have Hi := ha'.of_isAlgebraic_adjoin_image_compl _ i _ alg
   refine ⟨i, Hi, ?_⟩
   let k' := adjoin k (a '' {i}ᶜ)

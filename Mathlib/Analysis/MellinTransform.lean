@@ -77,7 +77,6 @@ theorem MellinConvergent.comp_rpow {f : ℝ → E} {s : ℂ} {a : ℝ} (ha : a �
   refine Iff.trans ?_ (integrableOn_Ioi_comp_rpow_iff' _ ha)
   rw [MellinConvergent]
   refine integrableOn_congr_fun (fun t ht => ?_) measurableSet_Ioi
-  dsimp only [Pi.smul_apply]
   rw [← Complex.coe_smul (t ^ (a - 1)), ← mul_smul, ← cpow_mul_ofReal_nonneg (le_of_lt ht),
     ofReal_cpow (le_of_lt ht), ← cpow_add _ _ (ofReal_ne_zero.mpr (ne_of_gt ht)), ofReal_sub,
     ofReal_one, mul_sub, mul_div_cancel₀ _ (ofReal_ne_zero.mpr ha), mul_one, add_comm, ←
@@ -111,11 +110,9 @@ theorem mellin_const_smul (f : ℝ → E) (s : ℂ) {𝕜 : Type*}
     mellin (fun t => c • f t) s = c • mellin f s := by
   simp only [mellin, smul_comm, integral_smul]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mellin_div_const (f : ℝ → ℂ) (s a : ℂ) : mellin (fun t => f t / a) s = mellin f s / a := by
   simp_rw [mellin, smul_eq_mul, ← mul_div_assoc, integral_div]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mellin_comp_rpow (f : ℝ → E) (s : ℂ) (a : ℝ) :
     mellin (fun t => f (t ^ a)) s = |a|⁻¹ • mellin f (s / a) := by
   /- This is true for `a = 0` as all sides are undefined but turn out to vanish thanks to our
@@ -127,7 +124,6 @@ theorem mellin_comp_rpow (f : ℝ → E) (s : ℂ) (a : ℝ) :
   simp_rw [mellin]
   conv_rhs => rw [← integral_comp_rpow_Ioi _ ha, ← integral_smul]
   refine setIntegral_congr_fun measurableSet_Ioi fun t ht => ?_
-  dsimp only
   rw [← mul_smul, ← mul_assoc, inv_mul_cancel₀ (mt abs_eq_zero.1 ha), one_mul, ← smul_assoc,
     real_smul]
   rw [ofReal_cpow (le_of_lt ht), ← cpow_mul_ofReal_nonneg (le_of_lt ht), ←
@@ -241,9 +237,8 @@ theorem mellin_convergent_zero_of_isBigO {b : ℝ} {f : ℝ → ℝ}
     refine (continuousOn_of_forall_continuousAt fun t ht => ?_).aestronglyMeasurable
       measurableSet_Ioo
     exact continuousAt_rpow_const _ _ (Or.inl ht.1.ne')
-  · apply HasFiniteIntegral.mono'
-    · change HasFiniteIntegral (fun t => d * t ^ (s - b - 1)) _
-      refine (Integrable.hasFiniteIntegral ?_).const_mul _
+  · apply HasFiniteIntegral.mono' (g := fun t => d * t ^ (s - b - 1))
+    · refine (Integrable.hasFiniteIntegral ?_).const_mul _
       rw [← IntegrableOn, ← integrableOn_Ioc_iff_integrableOn_Ioo, ←
         intervalIntegrable_iff_integrableOn_Ioc_of_le hε.le]
       exact intervalIntegral.intervalIntegrable_rpow' (by linarith)
