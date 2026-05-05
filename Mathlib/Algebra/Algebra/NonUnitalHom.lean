@@ -351,7 +351,7 @@ variable [DistribMulAction R B]
 @[simps]
 def fst : A × B →ₙₐ[R] A where
   toFun := Prod.fst
-  map_zero' := rfl 
+  map_zero' := rfl
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
   map_mul' _ _ := rfl
