@@ -1,8 +1,12 @@
-import Lean.LabelAttribute
+/-
+Copyright (c) 2026 Edwin Park. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Edwin Park
+-/
 import Lean
 register_label_attr cp
-register_simp_attr evp_simps
-register_simp_attr ev_simps
+
+/-! # Tactics/macros for computability arguments -/
 
 open Lean
 

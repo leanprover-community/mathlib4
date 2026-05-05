@@ -23,8 +23,6 @@ open scoped Computability
 protected theorem TuringReducible.refl (f : ℕ → ℕ) : f ≤ᵀᶠ f := Oracle.Single.RecursiveIn.oracle
 protected theorem TuringReducible.rfl {f} : f ≤ᵀᶠ f := .refl _
 
-instance : IsRefl (ℕ → ℕ) TuringReducible where refl _ := .rfl
-
 theorem TuringReducible.trans {f g h} (hg : f ≤ᵀᶠ g) (hh : g ≤ᵀᶠ h) : f ≤ᵀᶠ h := by
   generalize z : (↑f : ℕ →. ℕ)=x at hg
   simp only [TuringReducible,z] at *

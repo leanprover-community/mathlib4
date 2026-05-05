@@ -32,7 +32,7 @@ Suppose we want to construct a primitive recursive function `f : ℕ → ℕ`.
   `rw [← evalp_eq_eval c_f_prim]; simp only [c_f_evp]`
   · theorem which asserts that the code `c_f` implements `f` upon evaluation with `eval`.
     This follows "for free" once you have `c_f_evp `.
-  
+
 `theorem PrimrecIn.f : PrimrecIn O f := by rw [←c_f_evp]; exact code_prim_prop`
   · theorem asserting that the function `f` is primitive recursive. This again follows
     immediately from `c_f_evp`.

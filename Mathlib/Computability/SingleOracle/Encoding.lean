@@ -6,7 +6,8 @@ Authors: Mario Carneiro
 Modifications:
 Copyright (c) 2026 Edwin Park.
 -/
-import Mathlib.Computability.SingleOracle.Label
+-- import Mathlib.Computability.SingleOracle.Label
+import Mathlib.Tactic.Computability.Basic
 import Mathlib.Computability.SingleOracle.Oracle
 import Mathlib.Data.Option.Basic
 import Mathlib.Logic.Encodable.Pi
@@ -370,7 +371,7 @@ theorem evaln_mono {O : ℕ → ℕ} : ∀ {k₁ k₂ c n x}, k₁ ≤ k₂ → 
       by_cases x0 : x = 0 <;> simp [x0]
       exact evaln_mono hl'
 
-set_option linter.flexible false in 
+set_option linter.flexible false in
 theorem evaln_sound {O : ℕ → ℕ} : ∀ {k c n x}, x ∈ evaln O k c n → x ∈ eval O c n
   | 0, _, n, x, h => by simp [evaln] at h
   | k + 1, c, n, x, h => by
@@ -410,7 +411,7 @@ theorem evaln_sound {O : ℕ → ℕ} : ∀ {k c n x}, x ∈ evaln O k c n → x
           exact ⟨z, by simpa [add_comm, add_left_comm] using hz, z0⟩
 
 
-set_option linter.flexible false in 
+set_option linter.flexible false in
 theorem evaln_complete {O : ℕ → ℕ} {c n x} : x ∈ eval O c n ↔ ∃ k, x ∈ evaln O k c n := by
   refine ⟨fun h => ?_, fun ⟨k, h⟩ => evaln_sound h⟩
   rsuffices ⟨k, h⟩ : ∃ k, x ∈ evaln O (k + 1) c n
