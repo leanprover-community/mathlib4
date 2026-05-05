@@ -101,7 +101,7 @@ variable {A : Type u'} [Category.{u} A]
   [PreservesFilteredColimitsOfSize.{u, u} (CategoryTheory.forget A)]
 
 instance : HasSheafify (AffineEtale.topology S) A :=
-    hasSheafifyEssentiallySmallSite.{u} _ _
+  hasSheafifyEssentiallySmallSite.{u} _ _
 
 instance : ((AffineEtale.Spec S).sheafPushforwardContinuous A
     (AffineEtale.topology S) S.smallEtaleTopology).IsEquivalence :=
