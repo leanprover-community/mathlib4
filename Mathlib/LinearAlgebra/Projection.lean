@@ -197,14 +197,26 @@ theorem IsCompl.projection_apply_eq_zero_iff (hpq : IsCompl p q) {x : E} :
     hpq.projection x = 0 ↔ x ∈ q := by
   simp [projection, -coe_linearProjOfIsCompl_apply]
 
+alias ⟨_, linearProjOfIsCompl_apply_of_mem_right⟩ :=
+  linearProjOfIsCompl_apply_eq_zero_iff
+
+alias ⟨_, IsCompl.projection_apply_of_mem_right⟩ :=
+  IsCompl.projection_apply_eq_zero_iff
+
+@[deprecated linearProjOfIsCompl_apply_of_mem_right (since := "2026-04-27")]
 theorem linearProjOfIsCompl_apply_right' (h : IsCompl p q) (x : E) (hx : x ∈ q) :
     linearProjOfIsCompl p q h x = 0 :=
-  (linearProjOfIsCompl_apply_eq_zero_iff h).2 hx
+  linearProjOfIsCompl_apply_of_mem_right h hx
 
 @[simp]
 theorem linearProjOfIsCompl_apply_right (h : IsCompl p q) (x : q) :
     linearProjOfIsCompl p q h x = 0 :=
-  linearProjOfIsCompl_apply_right' h x x.2
+  linearProjOfIsCompl_apply_of_mem_right h x.2
+
+@[simp]
+theorem IsCompl.projection_apply_right (h : IsCompl p q) (x : q) :
+    h.projection x = 0 :=
+  h.projection_apply_of_mem_right x.2
 
 @[simp]
 theorem linearProjOfIsCompl_ker (h : IsCompl p q) : ker (linearProjOfIsCompl p q h) = q :=
@@ -244,9 +256,17 @@ theorem IsCompl.projection_add_projection_eq_self (hpq : IsCompl p q) (x : E) :
   rw [← prodComm_trans_prodEquivOfIsCompl _ _ hpq]
   exact (prodEquivOfIsCompl _ _ hpq).apply_symm_apply x
 
+theorem IsCompl.projection_add_projection_eq_id (hpq : IsCompl p q) :
+    hpq.projection + hpq.symm.projection = .id :=
+  LinearMap.ext hpq.projection_add_projection_eq_self
+
 lemma IsCompl.projection_eq_self_sub_projection (hpq : IsCompl p q) (x : E) :
     hpq.symm.projection x = x - hpq.projection x := by
   rw [eq_sub_iff_add_eq, projection_add_projection_eq_self]
+
+lemma IsCompl.projection_eq_id_sub_projection (hpq : IsCompl p q) :
+    hpq.symm.projection = .id - hpq.projection :=
+  LinearMap.ext hpq.projection_eq_self_sub_projection
 
 /-- The projection to `p` along `q` of `x` equals `x` if and only if `x ∈ p`. -/
 @[simp] lemma IsCompl.projection_eq_self_iff (hpq : IsCompl p q) (x : E) :
