@@ -108,6 +108,7 @@ private lemma IsAffine.finrank_comp_left_of_isIso [IsAffine S]
 /-- The rank of a morphism `f : X ⟶ S` of schemes at a point `s : S`. When `f` is finite,
 flat and locally of finite presentation, this is a locally constant function (see
 `AlgebraicGeometry.isLocallyConstant_finrank`). -/
+@[stacks 02KA "second part"]
 def Scheme.Hom.finrank {X S : Scheme.{u}} (f : X ⟶ S) (s : S) : ℕ :=
   IsAffine.finrank (pullback.snd f (S.affineOpenCover.f <| S.affineOpenCover.idx s))
     (S.affineOpenCover.covers s).choose
