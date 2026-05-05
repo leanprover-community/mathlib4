@@ -49,6 +49,11 @@ instance {X : Scheme.{u}} [IsIntegral X] : IsIntegralInCodimensionOne X := ⟨in
 We define a scheme to be regular in codimension one if all its stalks at codimension one are DVRs.
 This is equivalent to being regular since a ring is a DVR iff it is a regular local ring of
 dimension one.
+
+NOTE: This definition and the surrounding lemmas will not be in the final PR - this will soon be
+replaced with a definition of Serre's `Rₖ`, and this DVR characterisation will be proven as a lemma.
+This requires that regular local rings are domains, which is not yet in Mathlib but will be merged
+in soon.
 -/
 class IsRegularInCodimensionOne (X : Scheme.{u}) extends IsIntegralInCodimensionOne X where
   dvr : ∀ (x : X) (hx : coheight x = 1),
@@ -124,11 +129,9 @@ def neg_mem' (D : AlgebraicCycle X ℤ) (U : X.Opens) {f : X.functionField} (hf 
     (- f) ∈ carrier D U := by simp_all [carrier]
 
 /--
-TODO: Rename this
-
 On a nonempty set `U`, `Γ(𝒪ₓ(D), U)` is closed scalar multiplication by elements of `Γ(X, U)`.
 -/
-def smul_mem' (D : AlgebraicCycle X ℤ) (U : X.Opens) [Nonempty U] (a : Γ(X, U))
+def smul_mem_nonempty (D : AlgebraicCycle X ℤ) (U : X.Opens) [Nonempty U] (a : Γ(X, U))
     {f : X.functionField} (hf : f ∈ carrier D U) : a • f ∈ carrier D U := by
     simp_all only [carrier, true_and]
     intro nez z
@@ -164,6 +167,7 @@ def smul_mem' (D : AlgebraicCycle X ℤ) (U : X.Opens) [Nonempty U] (a : Γ(X, U
       · simp [restrict_eq_zero_of_not_mem _ _ _ o]
 
 variable [IsRegularInCodimensionOne X]
+
 def addSubgroup (D : AlgebraicCycle X ℤ) (U : X.Opens) : AddSubgroup X.functionField where
   carrier := carrier D U
   add_mem' := add_mem' D U
@@ -230,21 +234,21 @@ because users shouldn't be unfolding this, but that comparing the action on diff
 to be really annoying if we always need to carry around some if then else.
 -/
 private noncomputable def smulVal (a : Γ(X, U)) (v : X.functionField) : X.functionField := by
-  by_cases h : Nonempty U
-  · haveI := h; exact a • v
-  · exact v
+  classical
+  exact if h : Nonempty U then haveI := h; a • v else v
 
-
+omit [IsRegularInCodimensionOne X] in
 private lemma smulVal_mem_carrier (a : Γ(X, U)) (f : carrier D U) :
     smulVal a f.val ∈ carrier D U := by
   simp only [smulVal]
   split_ifs with hU
-  · exact smul_mem' D U a f.prop
+  · exact smul_mem_nonempty D U a f.prop
   · exact f.prop
 
 noncomputable instance : SMul Γ(X, U) (carrier D U) where
   smul a f := ⟨smulVal a f.val, smulVal_mem_carrier a f⟩
 
+omit [IsRegularInCodimensionOne X] in
 @[simp] lemma coe_smul [hU : Nonempty U] (a : Γ(X, U)) (f : carrier D U) :
     (↑(a • f) : X.functionField) = a • (f : X.functionField) := by
   change smulVal a f.val = a • (f : X.functionField)
@@ -299,6 +303,7 @@ noncomputable
 def obj (D : AlgebraicCycle X ℤ) (U : (TopologicalSpace.Opens ↥X)ᵒᵖ) :
     ModuleCat (X.ringCatSheaf.obj.obj U) := .of Γ(X, unop U) <| carrier D (unop U)
 
+omit [IsRegularInCodimensionOne X] in
 /--
 TODO rename
 -/
@@ -321,23 +326,13 @@ noncomputable
 def mapFun (D : AlgebraicCycle X ℤ) {U V : X.Opens} (r : V ≤ U) : carrier D U → carrier D V :=
   fun ⟨f, hf⟩ ↦ if hV : Nonempty V then ⟨f, mapFunProof D r f hf⟩ else ⟨0, by simp [carrier]⟩
 
+omit [IsRegularInCodimensionOne X] in
 @[simp]
 lemma mapFunApplyNonempty (D : AlgebraicCycle X ℤ) {U V : X.Opens} (r : V ≤ U) [h : Nonempty V]
-    (s : carrier D U) : (mapFun D r s).1 = s := by
-  simp [mapFun, h]
-
+    (s : carrier D U) : (mapFun D r s).1 = s := by simp [mapFun, h]
 
 instance algebra_restrict {U V : X.Opens} (k : V ≤ U) :
     Algebra Γ(X, U) Γ(X, V) := (X.presheaf.map (homOfLE k).op).hom.toAlgebra
-
-/--
-TODO: Put in a more sensible file
--/
-lemma _root_.Nonempty_le {U V : X.Opens} (k : V ≤ U) [Nonempty V] : Nonempty U := by
-  rename_i hV
-  obtain ⟨⟨a, b⟩⟩ := hV
-  use a
-  exact k b
 
 /--
 TODO: Make this statement less cursed and put it in its own? PR (or at the very least in a
@@ -406,13 +401,13 @@ def map_id (D : AlgebraicCycle X ℤ) (U : (TopologicalSpace.Opens ↥X)ᵒᵖ) 
     (congrArg RingCat.Hom.hom (X.ringCatSheaf.obj.map_id U))).inv.app (obj D U) := by
   by_cases h : Nonempty U.unop
   · apply ModuleCat.hom_ext
-    rw [@LinearMap.ext_iff]
+    rw [LinearMap.ext_iff]
     intro x
     apply Subtype.ext
     simp [map]
     rfl
   · apply ModuleCat.hom_ext
-    rw [@LinearMap.ext_iff]
+    rw [LinearMap.ext_iff]
     intro x
     exact Subsingleton.elim (h := instSubsingleTonOfEmpty h) _ _
 
@@ -426,11 +421,12 @@ def map_comp (D : AlgebraicCycle X ℤ)
     (RingCat.Hom.hom (X.ringCatSheaf.obj.map (f ≫ g)))
     (congrArg RingCat.Hom.hom (X.ringCatSheaf.obj.map_comp f g))).inv.app (obj D W) := by
   apply ModuleCat.hom_ext
-  rw [@LinearMap.ext_iff]
+  rw [LinearMap.ext_iff]
   intro x
   dsimp [map]
   by_cases h : Nonempty W.unop
-  · have hV : Nonempty V.unop := Nonempty_le <| leOfHom g.unop
+  · have hV : Nonempty V.unop :=
+      (Opens.nonempty_iff (unop V)).mpr <| Exists.imp (leOfHom g.unop) (nonempty_subtype.mp h)
     apply Subtype.ext
     simp only [mapFunApplyNonempty, op_unop, sheafCompose_obj_obj, Functor.comp_obj,
       CommRingCat.forgetToRingCat_obj, Functor.comp_map, CommRingCat.forgetToRingCat_map_hom]
@@ -438,10 +434,10 @@ def map_comp (D : AlgebraicCycle X ℤ)
     simp
   · exact Subsingleton.elim (h := instSubsingleTonOfEmpty h) _ _
 
-
 open Classical in
 noncomputable
-def presheaf (D : AlgebraicCycle X ℤ) : PresheafOfModules X.ringCatSheaf.obj where
+def _root_.AlgebraicCycle.presheaf (D : AlgebraicCycle X ℤ) :
+    PresheafOfModules X.ringCatSheaf.obj where
   obj := obj D
   map := map D
   map_id := map_id D
@@ -460,7 +456,7 @@ lemma presheaf.map_eq (D : AlgebraicCycle X ℤ) {U V : (TopologicalSpace.Opens 
 Given a family of sets indexed by `I`, `i` and `j` are `ConnectedByCover` if there is a series of
 indices `i = i₀, i_1, ..., iₙ = j` such that `iₖ ∩ iₗ` is nonempty for `l = k + 1`.
 -/
-def connectedByCover {I : Type*} (𝒰 : I → X.Opens) :
+def ConnectedByCover {I : Type*} (𝒰 : I → X.Opens) :
   Rel I I := Relation.TransGen <| fun a b ↦ Nonempty (𝒰 a ⊓ 𝒰 b : X.Opens)
 
 /--
@@ -487,7 +483,7 @@ lemma sections_equal_of_nonempty_intersection {D : AlgebraicCycle X ℤ} {I : Ty
   simpa [h] using hs
 
 lemma sections_equal_of_connected_by_cover {D : AlgebraicCycle X ℤ} {I : Type*} {𝒰 : I → X.Opens}
-    {i j : I} (h : connectedByCover 𝒰 i j)
+    {i j : I} (h : ConnectedByCover 𝒰 i j)
     (s : (i : I) → ToType ((presheaf D).presheaf.obj (op (𝒰 i))))
     (hs : TopCat.Presheaf.IsCompatible (presheaf D).presheaf 𝒰 s) : (s i).1 = (s j).1 := by
   induction h with
@@ -502,9 +498,9 @@ sequence of sets in the cover which intersect nontrivially pairwise.
 -/
 lemma connectedByCover_of_connected {I : Type*} {𝒰 : I → X.Opens}
     (h𝒰 : _root_.IsConnected (iSup 𝒰).1) (i j : I) (hi : (𝒰 i).1.Nonempty)
-    (hj : (𝒰 j).1.Nonempty) : connectedByCover 𝒰 i j := by
+    (hj : (𝒰 j).1.Nonempty) : ConnectedByCover 𝒰 i j := by
   by_contra hij
-  let S : Set I := {k | connectedByCover 𝒰 i k}
+  let S : Set I := {k | ConnectedByCover 𝒰 i k}
   let U : X.Opens := ⨆ k ∈ S, 𝒰 k
   let V : X.Opens := ⨆ k ∈ Sᶜ, 𝒰 k
   have hsplit : iSup 𝒰 = U ⊔ V := iSup_split 𝒰 (· ∈ S)
@@ -590,9 +586,9 @@ codimension one, this is a construction of `𝒪ₓ(D)`. Note that the definitio
 this definition is unlikely to give interesting results when `D` is not a Weil divisor.
 -/
 noncomputable
-def sheafOfModules {X : Scheme} [AlgebraicGeometry.IsIntegral X] [IsLocallyNoetherian X]
+def sheaf {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
   [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) : X.Modules where
-  val := AlgebraicCycle.Sheaf.presheaf D
+  val := D.presheaf
   isSheaf := AlgebraicCycle.Sheaf.isSheaf D
 
 end AlgebraicCycle
