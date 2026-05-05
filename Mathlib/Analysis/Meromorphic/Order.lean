@@ -384,6 +384,21 @@ The order of a constant function is `⊤` if the constant is zero and `0` otherw
 We establish additivity of the order under multiplication and taking powers.
 -/
 
+/-- The order of a function `f` equals the order of `-f`. -/
+@[to_fun] theorem meromorphicOrderAt_neg {f : 𝕜 → E} :
+    meromorphicOrderAt f x = meromorphicOrderAt (-f) x := by
+  by_cases h₁ : ¬MeromorphicAt f x
+  · aesop
+  rw [not_not] at h₁
+  by_cases h₂ : meromorphicOrderAt f x = ⊤
+  · rw [h₂, eq_comm]
+    simp_all [meromorphicOrderAt_eq_top_iff]
+  lift meromorphicOrderAt f x to ℤ using h₂ with n hn
+  rw [eq_comm, meromorphicOrderAt_eq_int_iff (by fun_prop)] at *
+  obtain ⟨g, hg⟩ := hn
+  use -g
+  simp_all
+
 /-- The order is additive when multiplying scalar-valued and vector-valued meromorphic functions. -/
 @[to_fun] theorem meromorphicOrderAt_smul {f : 𝕜 → 𝕜} {g : 𝕜 → E}
     (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :

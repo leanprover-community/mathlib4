@@ -50,9 +50,9 @@ namespace ValueDistribution
 private lemma log_trailingCoeff_eq_zero_on_unitSphere {a : ℂ} (h : 0 < meromorphicOrderAt f 0)
     (ha : a ∈ sphere 0 |1|) :
     log ‖meromorphicTrailingCoeffAt (f · - a) 0‖ = 0 := by
-  rw [(by rfl : (f · - a) = f + (fun _ ↦ -a)), add_comm,
-    (meromorphicAt_of_meromorphicOrderAt_ne_zero
-      h.ne').meromorphicTrailingCoeffAt_add_eq_left_of_lt]
+  simp_rw [sub_eq_neg_add]
+  rw [(meromorphicAt_of_meromorphicOrderAt_ne_zero
+    h.ne').meromorphicTrailingCoeffAt_fun_add_eq_left_of_lt]
   · aesop
   · rw [meromorphicOrderAt_const]
     aesop
@@ -64,9 +64,9 @@ private lemma eventuallyEq_log_trailingCoeff_of_meromorphicOrderAt_eq_zero (h₁
   filter_upwards [self_mem_codiscreteWithin (sphere 0 |1|), compl_singleton_mem_codiscreteWithin
     (meromorphicTrailingCoeffAt f 0)] with a ha_sphere ha_ne
   congr
-  rw [(by rfl :  (f · - a) = f + (fun _ ↦ -a)), h₁.meromorphicTrailingCoeffAt_add_eq_add
+  rw [h₁.meromorphicTrailingCoeffAt_fun_sub_eq_sub
     (by fun_prop), meromorphicTrailingCoeffAt_const, sub_eq_add_neg]
-  · simp only [meromorphicOrderAt_const, neg_eq_zero]
+  · simp only [meromorphicOrderAt_const]
     aesop
   · simp only [meromorphicTrailingCoeffAt_const, ne_eq]
     grind
@@ -79,16 +79,14 @@ theorem circleIntegrable_log_meromorphicTrailingCoeffAt :
     CircleIntegrable (fun a ↦ log ‖meromorphicTrailingCoeffAt (f · - a) 0‖) 0 1 := by
   by_cases h: ¬MeromorphicAt f 0
   · have {a : ℂ} : ¬MeromorphicAt (fun x ↦ f x - a) 0 := by
-      rwa [(by rfl : (f · - a) = f - (fun _ ↦ a)),
-        MeromorphicAt.meromorphicAt_sub_iff_meromorphicAt₂ (by fun_prop)]
+      rwa [MeromorphicAt.meromorphicAt_fun_sub_iff_meromorphicAt₂ (by fun_prop)]
     simp_all
   rcases lt_trichotomy (meromorphicOrderAt f 0) 0 with hneg | hzero | hpos
   · apply (circleIntegrable_congr _).2 (circleIntegrable_const
       (log ‖meromorphicTrailingCoeffAt f 0‖) 0 1)
     intro a ha
     simp only
-    rw [(by rfl : (f · - a) = f + (fun _ ↦ -a)),
-      (MeromorphicAt.const (-a) 0).meromorphicTrailingCoeffAt_add_eq_left_of_lt]
+    rw [(MeromorphicAt.const a 0).meromorphicTrailingCoeffAt_fun_sub_eq_left_of_lt]
     rw [meromorphicOrderAt_const]
     aesop
   · apply CircleIntegrable.congr_codiscreteWithin
@@ -122,8 +120,7 @@ theorem circleAverage_log_norm_meromorphicTrailingCoeffAt_of_meromorphicOrderAt_
     rw [circleAverage_log_norm_sub_const_eq_posLog]
   simp_all
   have {a : ℂ} : ¬MeromorphicAt (fun x ↦ f x - a) 0 := by
-    rwa [(by rfl : (f · - a) = f - (fun _ ↦ a)),
-      MeromorphicAt.meromorphicAt_sub_iff_meromorphicAt₂ (by fun_prop)]
+    rwa [MeromorphicAt.meromorphicAt_fun_sub_iff_meromorphicAt₂ (by fun_prop)]
   simp_all [circleAverage_const]
 
 /--
@@ -139,8 +136,7 @@ theorem circleAverage_log_norm_meromorphicTrailingCoeffAt_of_meromorphicOrderAt_
   intro a ha
   simp only
   congr 2
-  rw [(by rfl : (f · - a) = f + (fun _ ↦ -a)),
-    (MeromorphicAt.const (-a) 0).meromorphicTrailingCoeffAt_add_eq_left_of_lt]
+  rw [(MeromorphicAt.const a 0).meromorphicTrailingCoeffAt_fun_sub_eq_left_of_lt]
   rw [meromorphicOrderAt_const]
   aesop
 
