@@ -406,7 +406,7 @@ lemma singleton_indepSets_comap_iff {Ω M : Type*} {mΩ : MeasurableSpace Ω}
     IndepSets {A} {s | MeasurableSet[m𝓧.comap X] s} P ↔
       (A.indicator (fun _ ↦ c)) ⟂ᵢ[P] X where
   mp h := by
-    rw [IndepFun_iff_Indep, ← MeasurableSpace.generateFrom_singleton_eq_comap_indicator_one c]
+    rw [IndepFun_iff_Indep, ← MeasurableSpace.generateFrom_singleton_eq_comap_indicator_const c]
     exact h.indep (MeasurableSpace.generateFrom_le (by simpa)) hX.comap_le (by simp [IsPiSystem])
       (@MeasurableSpace.isPiSystem_measurableSet _ (m𝓧.comap X)) rfl (by simp)
   mpr h := h.singleton_indepSets_of_indicator' c
@@ -416,10 +416,8 @@ lemma Indep.indicator_indepFun {Ω M : Type*} {m mΩ : MeasurableSpace Ω}
     [NeZero c] {m𝓧 : MeasurableSpace 𝓧} {A : Set Ω} {X : Ω → 𝓧}
     (hA : MeasurableSet[m] A) (h : Indep m (m𝓧.comap X) P) :
     (A.indicator (fun _ ↦ c)) ⟂ᵢ[P] X := by
-  rw [IndepFun_iff_Indep, ← MeasurableSpace.generateFrom_singleton_eq_comap_indicator_one c]
-  apply indep_of_indep_of_le_left h
-  apply MeasurableSpace.generateFrom_le
-  simpa
+  rw [IndepFun_iff_Indep, ← MeasurableSpace.generateFrom_singleton_eq_comap_indicator_const c]
+  exact indep_of_indep_of_le_left h (MeasurableSpace.generateFrom_le (by simpa))
 
 lemma singleton_indepSets_comap_iff₀ {Ω M : Type*} {mΩ : MeasurableSpace Ω}
     {P : Measure Ω} [IsZeroOrProbabilityMeasure P] {𝓧 : Type*}
@@ -435,6 +433,24 @@ lemma singleton_indepSets_comap_iff₀ {Ω M : Type*} {mΩ : MeasurableSpace Ω}
     · simp [hA.toMeasurable_ae_eq]
     · simpa using fun t ht ↦ ⟨t, ht, .rfl⟩
   mpr h := h.singleton_indepSets_of_indicator' c
+
+lemma Indep.setIntegral_eq_smul {Ω 𝓧 E : Type*} {m mΩ : MeasurableSpace Ω} (hm : m ≤ mΩ)
+    {μ : Measure Ω} [m𝓧 : MeasurableSpace 𝓧] {X : Ω → 𝓧}
+    [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {f : 𝓧 → E} {A : Set Ω} (hA1 : Indep m (m𝓧.comap X) μ)
+    (hX : AEMeasurable X μ) (hA2 : MeasurableSet[m] A)
+    (hf : AEStronglyMeasurable f (μ.map X)) :
+    ∫ ω in A, f (X ω) ∂μ = μ.real A • ∫ ω, f (X ω) ∂μ :=
+  calc ∫ ω in A, f (X ω) ∂μ
+    = ∫ ω, id (A.indicator (1 : Ω → ℝ) ω) • f (X ω) ∂μ := by
+        rw [← integral_indicator (hm A hA2)]
+        congr with ω
+        by_cases hω : ω ∈ A <;> simp [hω]
+  _ = μ.real A • ∫ ω, f (X ω) ∂μ := by
+    rw [IndepFun.integral_fun_comp_smul_comp _ _ hX (by fun_prop) hf]
+    · simp [hm A hA2]
+    · exact hA1.indicator_indepFun 1 hA2
+    · exact (aemeasurable_indicator_const_iff 1).2 (hm A hA2).nullMeasurableSet
 
 lemma IndepSets.setIntegral_eq_smul {Ω 𝓧 E : Type*} {mΩ : MeasurableSpace Ω}
     {μ : Measure Ω} [m𝓧 : MeasurableSpace 𝓧] {X : Ω → 𝓧} [IsZeroOrProbabilityMeasure μ]
@@ -453,6 +469,14 @@ lemma IndepSets.setIntegral_eq_smul {Ω 𝓧 E : Type*} {mΩ : MeasurableSpace �
     · simp_all
     · exact (singleton_indepSets_comap_iff₀ 1 hX hA2).1 hA1
     · exact (aemeasurable_indicator_const_iff 1).2 hA2
+
+lemma Indep.setIntegral_eq_mul {Ω 𝓧 : Type*} {m mΩ : MeasurableSpace Ω} (hm : m ≤ mΩ)
+    {μ : Measure Ω} [m𝓧 : MeasurableSpace 𝓧] {X : Ω → 𝓧}
+    {f : 𝓧 → ℝ} {A : Set Ω} (hA1 : Indep m (m𝓧.comap X) μ)
+    (hX : AEMeasurable X μ) (hA2 : MeasurableSet[m] A)
+    (hf : AEStronglyMeasurable f (μ.map X)) :
+    ∫ ω in A, f (X ω) ∂μ = μ.real A * ∫ ω, f (X ω) ∂μ :=
+  hA1.setIntegral_eq_smul hm hX hA2 hf
 
 lemma IndepSets.setIntegral_eq_mul {Ω 𝓧 : Type*} {mΩ : MeasurableSpace Ω}
     {μ : Measure Ω} [m𝓧 : MeasurableSpace 𝓧] {X : Ω → 𝓧} [IsZeroOrProbabilityMeasure μ]
