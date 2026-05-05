@@ -712,7 +712,7 @@ open Submodule
 
 /-- If `p` is a closed subspace with finite codimension, then any algebraic complement `q` to `p`
 is a topological complement. -/
-theorem IsCompl.isTopCompl_of_quotient_finiteDimensional {p q : Submodule 𝕜 E}
+theorem Submodule.IsCompl.isTopCompl_of_quotient_finiteDimensional {p q : Submodule 𝕜 E}
     (h : IsCompl p q) (hp : IsClosed (p : Set E)) [FiniteDimensional 𝕜 (E ⧸ p)] :
     IsTopCompl p q := by
   let φ : E ⧸ p →L[𝕜] q := (p.quotientEquivOfIsCompl q h).toLinearMap.toContinuousLinearMap
@@ -725,7 +725,7 @@ has finite dimension, then they are in fact topological complements.
 Note that this theorem is not useful at all if you start from the finite dimensional subspace `q`,
 because building a closed complement requires the Hahn-Banach theorem (and you don't get control
 over what the complement is). See `Submodule.ClosedComplemented.of_finiteDimensional`. -/
-theorem IsCompl.isTopCompl_of_isClosed_of_finiteDimensional {p q : Submodule 𝕜 E}
+theorem Submodule.IsCompl.isTopCompl_of_isClosed_of_finiteDimensional {p q : Submodule 𝕜 E}
     (h : IsCompl p q) (hp : IsClosed (p : Set E)) [hq : FiniteDimensional 𝕜 q] :
     IsTopCompl p q := by
   suffices FiniteDimensional 𝕜 (E ⧸ p) from h.isTopCompl_of_quotient_finiteDimensional hp
