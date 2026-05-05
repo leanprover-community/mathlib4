@@ -270,6 +270,39 @@ lemma SetLike.isDiscrete_iff_discreteTopology {S : Type*} [SetLike S X] {s : S} 
 
 lemma DiscreteTopology.isDiscrete [DiscreteTopology s] : IsDiscrete s := ⟨inferInstance⟩
 
+theorem isDiscrete_iff_forall_exists_isOpen' {S : Set X} :
+    IsDiscrete S ↔ ∀ s ⊆ S, ∃ U, IsOpen U ∧ U ∩ S = s := by
+  rw [isDiscrete_iff_discreteTopology, discreteTopology_iff_forall_isOpen]
+  refine ⟨fun h s sS ↦ ?_, fun h s ↦ ?_⟩
+  · apply bex_def.mp
+    have ⟨t, tp, ht⟩ := h (S ↓∩ s)
+    refine ⟨t, tp, ?_⟩
+    simp_all only [Set.ext_iff, mem_preimage, Subtype.forall, mem_inter_iff]
+    exact fun x ↦ ⟨fun h ↦ (ht x h.2).mp h.1, fun h ↦ ⟨(ht x (sS h)).mpr h, sS h⟩⟩
+  obtain ⟨U, Uo, Us⟩ := h _ (Subtype.coe_image_subset S s)
+  refine isOpen_mk.mpr ⟨U, Uo, ?_⟩
+  rw [Set.ext_iff] at Us ⊢
+  simp_all only [mem_inter_iff, mem_image, Subtype.exists, exists_and_right, exists_eq_right,
+    mem_preimage, Subtype.forall]
+  intro a
+  specialize Us a
+  tauto
+
+theorem isDiscrete_iff_forall_exists_isClosed' {S : Set X} :
+    IsDiscrete S ↔ ∀ s ⊆ S, ∃ U, IsClosed U ∧ U ∩ S = s := by
+  rw [isDiscrete_iff_forall_exists_isOpen']
+  constructor <;> intro h s sS
+  · obtain ⟨U, Uo, Us⟩ := h (sᶜ ∩ S) inter_subset_right
+    exact ⟨Uᶜ, isClosed_compl_iff.mpr Uo, by rw [left_eq_inter.mpr sS]; simp_all [Set.ext_iff]⟩
+  obtain ⟨U, Uo, Us⟩ := h (sᶜ ∩ S) inter_subset_right
+  exact ⟨Uᶜ, isOpen_compl_iff.mpr Uo, by rw [left_eq_inter.mpr sS]; simp_all [Set.ext_iff]⟩
+
+theorem isClosed_subset_discrete_closed {D s : Set X} (sd : s ⊆ D)
+    (hD : IsDiscrete D) (Dc : IsClosed D) : IsClosed s := by
+  obtain ⟨_, tp, tD⟩ := isDiscrete_iff_forall_exists_isClosed'.mp hD s sd
+  rw [← tD]
+  exact tp.inter Dc
+
 end IsDiscrete
 
 /-- A type synonym equipped with the topology whose open sets are the empty set and the sets with

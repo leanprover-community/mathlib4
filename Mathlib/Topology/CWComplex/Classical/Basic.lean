@@ -267,6 +267,20 @@ lemma RelCWComplex.map_zero_mem_closedCell [RelCWComplex C D] (n : ℕ) (i : cel
     map n i 0 ∈ closedCell n i :=
   openCell_subset_closedCell _ _ (map_zero_mem_openCell _ _)
 
+lemma RelCWComplex.openCell_nonempty [RelCWComplex C D] {n : ℕ} (j : cell C n) :
+    (openCell n j).Nonempty :=
+  ⟨(map n j) 0, map_zero_mem_openCell n j⟩
+
+lemma RelCWComplex.closedCell_nonempty [RelCWComplex C D] {n : ℕ} (j : cell C n) :
+    (closedCell n j).Nonempty :=
+  ⟨(map n j) 0, map_zero_mem_closedCell n j⟩
+
+/-- If two open cells are equal, so are the underlying cells. -/
+lemma RelCWComplex.Cell.openCell_congr [RelCWComplex C D] {n : ℕ} {s t : cell C n}
+    (st : openCell n s = openCell n t) : s = t := by
+  contrapose! st
+  exact (disjoint_openCell_of_ne (by simpa)).ne (openCell_nonempty s).ne_empty
+
 /-- This is an auxiliary lemma used to prove `RelCWComplex.eq_of_eq_union_iUnion`. -/
 private lemma RelCWComplex.subset_of_eq_union_iUnion [RelCWComplex C D] (I J : Π n, Set (cell C n))
     (hIJ : D ∪ ⋃ (n : ℕ) (j : I n), openCell (C := C) n j =
@@ -995,6 +1009,54 @@ lemma RelCWComplex.disjoint_interior_base_iUnion_closedCell [T2Space X] [RelCWCo
     Disjoint (interior D) (⋃ (n : ℕ) (j : cell C n), closedCell n j) := by
   simp_rw [disjoint_iff_inter_eq_empty, inter_iUnion, disjoint_interior_base_closedCell.inter_eq,
     iUnion_empty]
+
+/-- A closed discrete subset of a space is a CW complex. -/
+abbrev CWComplex.of_discrete_closed (hD : IsDiscrete D) (Dc : IsClosed D) : CWComplex D where
+  cell n := match n with
+    | 0 => D
+    | (_ + 1) => PEmpty
+  map n i := match n with
+    | 0 => PartialEquiv.single ![] i
+    | (_ + 1) => i.elim
+  source_eq n i := match n with
+    | 0 => by simp [ball, Matrix.empty_eq, eq_univ_iff_forall]
+    | (_ + 1) => i.elim
+  continuousOn n i := match n with
+    | 0 => continuousOn_const
+    | (_ + 1) => i.elim
+  continuousOn_symm n i := match n with
+    | 0 => continuousOn_const
+    | (_ + 1) => i.elim
+  pairwiseDisjoint' := by
+    simp_rw [PairwiseDisjoint, Set.Pairwise, Function.onFun]
+    exact fun ⟨n, j⟩ _ ⟨m, i⟩ _ ne ↦  match n with
+      | 0 => match m with
+        | 0 => by
+          simp_all only [mem_univ, ne_eq, Sigma.mk.injEq, heq_eq_eq, true_and,
+            PartialEquiv.single_apply, const_apply, nonempty_ball, zero_lt_one,
+            Nonempty.image_const, disjoint_singleton_left, mem_singleton_iff]
+          exact Subtype.coe_injective.ne ne
+        | (_ + 1) => i.elim
+      | (_ + 1) => match m with
+        | 0 => by tauto
+        | (_ + 1) => i.elim
+  mapsTo' n i := match n with
+    | 0 => by simp [Matrix.zero_empty, sphere_eq_empty_of_subsingleton]
+    | (_ + 1) => i.elim
+  closed' A AD _ := isClosed_subset_discrete_closed AD hD Dc
+  union' := by
+    apply subset_antisymm (iUnion₂_subset_iff.mpr fun n ↦ by cases n <;> simp)
+    intro x xD
+    simp only [mem_iUnion, mem_image, mem_closedBall, dist_zero_right]
+    refine ⟨0, ?_⟩
+    simp only [PartialEquiv.single_apply, const_apply, exists_and_right, Fin.exists_fin_zero_pi,
+      exists_and_left, Subtype.exists, exists_prop, exists_eq_right, xD, and_true]
+    exact zero_le_one
+
+/-- A discrete space is a CW complex. -/
+instance CWComplex.of_discreteTopology {X : Type*} [TopologicalSpace X] [DiscreteTopology X] :
+    CWComplex (@univ X) :=
+  CWComplex.of_discrete_closed IsDiscrete.univ isClosed_univ
 
 namespace CWComplex
 
