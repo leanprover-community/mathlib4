@@ -162,9 +162,9 @@ theorem mono_of_epi_of_mono_of_mono'' (k₀ k₁ k₂ k₃ : ℕ)
     (h₃ : Mono (app' φ k₃)) : Mono (app' φ k₂) := by
   subst_vars
   change Epi (app' φ (k₀ + 0)) at h₀
-  rw [← streakFunctor_app' h] at h₀ h₁ h₃ ⊢
-  exact mono_of_epi_of_mono_of_mono _ (streakFunctor_obj_exact h hR₁)
-    (streakFunctor_obj_exact h hR₂) h₀ h₁ h₃
+  rw [← natAddLEFunctor_app' h] at h₀ h₁ h₃ ⊢
+  exact mono_of_epi_of_mono_of_mono _ (natAddLEFunctor_obj_exact h hR₁)
+    (natAddLEFunctor_obj_exact h hR₂) h₀ h₁ h₃
 
 include hR₁ hR₂ in
 /-- Variant of the second 4-lemma for complexes of any size -/
@@ -175,8 +175,8 @@ theorem epi_of_epi_of_epi_of_mono'' (k₀ k₁ k₂ k₃ : ℕ)
     (h₃ : Mono (app' φ k₃)) : Epi (app' φ k₁) := by
   subst_vars
   change Epi (app' φ (k₀ + 0)) at h₀
-  rw [← streakFunctor_app' h] at h₀ h₂ h₃ ⊢
-  exact epi_of_epi_of_epi_of_mono _ (streakFunctor_obj_exact h hR₁) (streakFunctor_obj_exact h hR₂)
+  rw [← natAddLEFunctor_app' h] at h₀ h₂ h₃ ⊢
+  exact epi_of_epi_of_epi_of_mono _ (natAddLEFunctor_obj_exact h hR₁) (natAddLEFunctor_obj_exact h hR₂)
     h₀ h₂ h₃
 
 end Four
@@ -196,9 +196,9 @@ theorem isIso_of_epi_of_isIso_of_isIso_of_mono' (k₀ k₁ k₂ k₃ k₄ : ℕ)
     IsIso (app' φ k₂) := by
   subst_vars
   change Epi (app' φ (k₀ + 0)) at h₀
-  rw [← streakFunctor_app' h] at h₀ h₁ h₃ h₄ ⊢
-  exact isIso_of_epi_of_isIso_of_isIso_of_mono (streakFunctor_obj_exact h hR₁)
-    (streakFunctor_obj_exact h hR₂) _ h₀ h₁ h₃ h₄
+  rw [← natAddLEFunctor_app' h] at h₀ h₁ h₃ h₄ ⊢
+  exact isIso_of_epi_of_isIso_of_isIso_of_mono (natAddLEFunctor_obj_exact h hR₁)
+    (natAddLEFunctor_obj_exact h hR₂) _ h₀ h₁ h₃ h₄
 
 end Five
 
