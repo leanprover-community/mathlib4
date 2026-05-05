@@ -29,7 +29,7 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 function taking values in the unit interval. -/
 theorem perfectlyNormalSpace_iff_forall_isClosed_preimage_zero :
     PerfectlyNormalSpace X ↔ ∀ s, IsClosed s → ∃ f : C(X, ℝ), s = f ⁻¹' {0} ∧
-      range f ⊆ Icc 0 1 where
+      ∀ x, f x ∈ Icc (0 : ℝ) 1 where
   mp h s hs := by
     -- write `s` as the intersection of a sequence of open sets `U n`
     obtain ⟨U, ho, hu⟩ := isGδ_iff_eq_iInter_nat.1 hs.isGδ
@@ -49,7 +49,7 @@ theorem perfectlyNormalSpace_iff_forall_isClosed_preimage_zero :
       { toFun x := ∑' n, f n x * (1 / 2 / 2 ^ n)
         continuous_toFun :=
           continuous_tsum (fun n => by fun_prop) (summable_geometric_two' 1) fun n x => hsb x n }
-    refine ⟨h, ?_, fun r ⟨x, hx⟩ => ⟨?_, ?_⟩⟩
+    refine ⟨h, ?_, fun x => ⟨?_, ?_⟩⟩
     · ext x
       refine ⟨fun hp => ?_, fun hp => ?_⟩
       · suffices ∀ n, f n x = 0 from by simp [h, this]
@@ -62,9 +62,9 @@ theorem perfectlyNormalSpace_iff_forall_isClosed_preimage_zero :
         _ < 1 / 2 / 2 ^ i := by positivity
         _ = f i x * (1 / 2 / 2 ^ i) := by simp [hfu i hi]
         _ ≤ _ := (hsx x).le_tsum i fun j hj => by positivity [(hfr j x).1]
-    · exact hx ▸ tsum_nonneg fun n => by simp [(hfr n x).1]
+    · exact tsum_nonneg fun n => by simp [(hfr n x).1]
     · calc
-      _ = ∑' n, f n x * (1 / 2 / 2 ^ n) := by simp [← hx, h]
+      _ = ∑' n, f n x * (1 / 2 / 2 ^ n) := by simp [h]
       _ ≤ ∑' n, 1 / 2 / 2 ^ n :=
         (hsx x).tsum_le_tsum (fun n => by simp [(hfr n x).2]) (summable_geometric_two' 1)
       _ = _ := tsum_geometric_two' 1
@@ -81,9 +81,7 @@ theorem perfectlyNormalSpace_iff_forall_isClosed_preimage_zero :
           simp_all only [preimage, mem_singleton_iff]
           by_cases! hfx : f x = 0
           · simpa [hfx] using hst.notMem_of_mem_left hfx
-          · simp only [range, Icc, setOf_subset_setOf, forall_exists_index,
-              forall_apply_eq_imp_iff] at hfr hgr
-            positivity [(hgr x).1, (hfr x).1]
+          · positivity [(hgr x).1, (hfr x).1]
         have hp : s = (fun a => f a / (f a + g a)) ⁻¹' {0} := by simp_all [preimage]
         have : t = (fun a => f a / (f a + g a)) ⁻¹' {1} := by simp_all [preimage, div_eq_one_iff_eq]
         rw [hp, this]
@@ -105,7 +103,8 @@ theorem perfectlyNormalSpace_iff_forall_isClosed_preimage_zero :
           · apply le_antisymm
             · simp only [mem_iInter, mem_inter_iff, mem_Ioo] at h
               exact ge_of_tendsto' tendsto_one_div_add_atTop_nhds_zero_nat (fun n => (h n).2.2.le)
-            · exact (hfr (mem_iInter.1 h 0).1).1 }
+            · rcases (mem_iInter.1 h 0).1 with ⟨x, rfl⟩
+              exact (hfr x).1 }
 
 theorem Topology.IsEmbedding.perfectlyNormalSpace {e : X → Y} (he : IsEmbedding e)
     [PerfectlyNormalSpace Y] : PerfectlyNormalSpace X := by
@@ -114,7 +113,7 @@ theorem Topology.IsEmbedding.perfectlyNormalSpace {e : X → Y} (he : IsEmbeddin
   obtain ⟨c, hc⟩ : ∃ c, IsClosed c ∧ e '' t = c ∩ range e := he.image_eq_isClosed_inter_range ht
   obtain ⟨f, rfl, hf⟩ :=
     perfectlyNormalSpace_iff_forall_isClosed_preimage_zero.1 inferInstance c hc.1
-  refine ⟨⟨f ∘ e, f.continuous.comp he.continuous⟩, ?_, (range_comp_subset_range e f).trans hf⟩
+  refine ⟨⟨f ∘ e, f.continuous.comp he.continuous⟩, ?_, fun x => hf (e x)⟩
   ext x
   refine ⟨fun hx => ?_, fun hx => ?_⟩
   · have hx' : e x ∈ e '' t := mem_image_of_mem e hx
