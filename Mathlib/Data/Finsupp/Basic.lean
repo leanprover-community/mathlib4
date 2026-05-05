@@ -641,6 +641,12 @@ def filter (p : α → Prop) [DecidablePred p] (f : α →₀ M) : α →₀ M w
 
 theorem filter_apply (a : α) : f.filter p a = if p a then f a else 0 := rfl
 
+@[simp] lemma filter_eq [DecidableEq α] (f : α →₀ M) (a : α) :
+    f.filter (a = ·) = single a (f a) := by ext; rw [filter_apply, single_apply]; congr!; simp_all
+
+@[simp] lemma filter_eq' [DecidableEq α] (f : α →₀ M) (a : α) :
+    f.filter (· = a) = single a (f a) := by simp [eq_comm]
+
 theorem filter_eq_indicator : ⇑(f.filter p) = Set.indicator { x | p x } f := by
   ext
   simp [filter_apply, Set.indicator_apply]
@@ -692,12 +698,16 @@ theorem prod_div_prod_filter [CommGroup G] (g : α → M → G) :
 
 end Zero
 
-theorem filter_pos_add_filter_neg [AddZeroClass M] (f : α →₀ M) (p : α → Prop) [DecidablePred p] :
-    (f.filter p + f.filter fun a => ¬p a) = f :=
-  DFunLike.coe_injective <| by
-    simp only [coe_add, filter_eq_indicator]
-    exact Set.indicator_self_add_compl { x | p x } f
+section AddCommMonoid
+variable [AddCommMonoid M]
 
+@[simp]
+lemma filter_add_filter_not (f : α →₀ M) (p : α → Prop) [DecidablePred p] :
+    f.filter p + f.filter (¬ p ·) = f := by ext; simp [filter_apply]; split <;> simp
+
+@[deprecated (since := "2026-05-04")] alias filter_pos_add_filter_neg := filter_add_filter_not
+
+end AddCommMonoid
 end Filter
 
 /-! ### Declarations about `frange` -/
