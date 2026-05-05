@@ -86,6 +86,9 @@ theorem quotientEquivOfIsCompl_apply_mk_right (h : IsCompl p q) (x : q) :
     quotientEquivOfIsCompl p q h (Quotient.mk x) = x :=
   (quotientEquivOfIsCompl p q h).apply_symm_apply x
 
+@[deprecated (since := "2026-05-06")]
+alias quotientEquivOfIsCompl_apply_mk_coe := quotientEquivOfIsCompl_apply_mk_right
+
 @[simp]
 theorem mk_quotientEquivOfIsCompl_apply (h : IsCompl p q) (x : E ⧸ p) :
     (Quotient.mk (quotientEquivOfIsCompl p q h x) : E ⧸ p) = x :=
