@@ -25,7 +25,9 @@ At present, this file establishes circle integrability of the function
 
 ## References
 
-* [S. Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677]
+See Section VI.2 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677] for a detailed
+discussion.
+
 
 ## TODO
 
