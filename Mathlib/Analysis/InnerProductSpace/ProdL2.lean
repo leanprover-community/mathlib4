@@ -146,17 +146,16 @@ def quotLinearEquivOrthogonal : (E ⧸ K) ≃ₗᵢ[𝕜] ↥Kᗮ where
   __ := K.quotientEquivOfIsCompl Kᗮ Submodule.isCompl_orthogonal_of_hasOrthogonalProjection
   norm_map' y := by
     set f := K.quotientEquivOfIsCompl Kᗮ Submodule.isCompl_orthogonal_of_hasOrthogonalProjection
-    obtain ⟨x, hx, hfy⟩ : ∃ x : E, ∃ hx : x ∈ Kᗮ, f y = ⟨x, hx⟩ :=
-      ⟨(f y).1, (f y).2, (Subtype.eta (f y) (f y).2).symm⟩
-    have hy : y = Submodule.Quotient.mk x :=
-      f.injective (hfy.trans (K.quotientEquivOfIsCompl_apply_mk_coe Kᗮ
-        Submodule.isCompl_orthogonal_of_hasOrthogonalProjection ⟨x, hx⟩).symm)
-    rw [hfy, Submodule.coe_norm, ← Submodule.norm_orthogonalProjection_apply Kᗮ hx,
-        Submodule.orthogonalProjection_orthogonal, Submodule.coe_norm,
-        Submodule.starProjection_minimal, hy, eq_comm]
-    convert (quotient_norm_mk_eq K.toAddSubgroup x) using 2
-    rw [sInf_image', ← Equiv.iInf_comp (Equiv.neg K)]
-    simp [Equiv.neg, sub_eq_add_neg]
+    rw [Submodule.coe_norm, ← Submodule.norm_orthogonalProjection_apply Kᗮ (f y).2,
+      Submodule.orthogonalProjection_orthogonal, Submodule.coe_norm,
+      Submodule.starProjection_minimal, eq_comm]
+    have h : ‖Submodule.Quotient.mk (f y).val‖ =
+        sInf ((fun (x : E) ↦ ‖(f y).val + x‖) '' K.toAddSubgroup) :=
+      quotient_norm_mk_eq K.toAddSubgroup (f y).1
+    convert h using 2
+    · simp [f]
+    · rw [sInf_image', ← Equiv.iInf_comp (Equiv.neg K)]
+      simp
 
 @[simp]
 theorem coe_quotLinearEquivOrthogonal :
