@@ -54,6 +54,8 @@ instance [F.Foo] [G.Foo] : (F ⋙ G).Foo where
 /- This must succeed with `Nat.add_assoc` as a proof. It would be problematic
 if `rfl` worked. -/
 example [F.Foo] [G.Foo] [H.Foo] :
-    Foo.data ((F ⋙ G) ⋙ H) = Foo.data (F ⋙ (G ⋙ H)) := Nat.add_assoc _ _ _
+    Foo.data ((F ⋙ G) ⋙ H) = Foo.data (F ⋙ (G ⋙ H)) := by
+  fail_if_success rfl
+  exact Nat.add_assoc _ _ _
 
 end CategoryTheory.Functor
