@@ -22,7 +22,7 @@ Theorems about the adjoint action `LieAlgebra.ad` on associative algebras.
 * `LieAlgebra.ad_isSemisimple_of_isSemisimple`: the adjoint of a semisimple element is semisimple.
 -/
 
-@[expose] public section
+public section
 
 section CommRing
 

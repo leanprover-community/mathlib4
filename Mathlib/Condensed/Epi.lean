@@ -33,7 +33,6 @@ variable [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory.{v'} A FA]
 
 variable {X Y : Condensed.{u} A} (f : X ⟶ Y)
 
-set_option backward.isDefEq.respectTransparency false in
 set_option Elab.async false in  -- TODO: universe levels from type are unified in proof
 variable
   [(coherentTopology CompHaus).WEqualsLocallyBijective A]

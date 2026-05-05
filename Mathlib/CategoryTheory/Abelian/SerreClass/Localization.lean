@@ -324,7 +324,7 @@ lemma preservesCokernel {X Y : C} (f : X ⟶ Y) :
   have := preservesEpimorphisms L P
   have := Localization.essSurj L P.isoModSerre
   suffices ∀ (W : D) (z : L.obj Y ⟶ W) (hz : L.map f ≫ z = 0),
-      ∃ (l : L.obj (cokernel f) ⟶ W), L.map (cokernel.π  f) ≫ l = z from
+      ∃ (l : L.obj (cokernel f) ⟶ W), L.map (cokernel.π f) ≫ l = z from
     preservesColimit_of_preserves_colimit_cocone (cokernelIsCokernel f)
       ((CokernelCofork.isColimitMapCoconeEquiv _ L).2
         (Cofork.IsColimit.ofExistsUnique
@@ -444,13 +444,13 @@ def abelian : Abelian D := by
 
 lemma preservesFiniteLimits : PreservesFiniteLimits L := by
   letI := abelian L P
-  rw [((Functor.preservesFiniteLimits_tfae L).out 3 2:)]
+  rw [((Functor.preservesFiniteLimits_tfae L).out 3 2 :)]
   intro _ _ f
   exact preservesKernel L P f
 
 lemma preservesFiniteColimits : PreservesFiniteColimits L := by
   letI := abelian L P
-  rw [((Functor.preservesFiniteColimits_tfae L).out 3 2:)]
+  rw [((Functor.preservesFiniteColimits_tfae L).out 3 2 :)]
   intro _ _ f
   exact preservesCokernel L P f
 
@@ -557,7 +557,7 @@ lemma essImage_whiskeringLeft :
   refine ⟨?_, fun hF ↦ ?_⟩
   · rintro ⟨G, ⟨e⟩⟩
     rw [← MorphismProperty.IsInvertedBy.iff_of_iso _
-      (show  L ⋙ G.obj ≅ F.obj from (ObjectProperty.ι _).mapIso e)]
+      (show L ⋙ G.obj ≅ F.obj from (ObjectProperty.ι _).mapIso e)]
     exact MorphismProperty.IsInvertedBy.of_comp _ _ (Localization.inverts L _) _
   · refine ⟨⟨Localization.lift F.obj hF L, ?_⟩,
       ⟨ObjectProperty.isoMk _ (Localization.fac F.obj hF L)⟩⟩

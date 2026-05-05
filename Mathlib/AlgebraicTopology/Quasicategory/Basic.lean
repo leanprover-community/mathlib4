@@ -25,7 +25,7 @@ we show that the nerve of a category is a quasicategory.
 
 -/
 
-@[expose] public section
+public section
 
 namespace SSet
 

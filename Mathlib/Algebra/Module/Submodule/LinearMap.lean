@@ -100,7 +100,7 @@ theorem coe_subtype : (Submodule.subtype p : p → M) = Subtype.val :=
 theorem injective_subtype : Injective p.subtype :=
   Subtype.coe_injective
 
-/-- Note the `AddSubmonoid` version of this lemma is called `AddSubmonoid.coe_finset_sum`. -/
+/-- Note the `AddSubmonoid` version of this lemma is called `AddSubmonoid.coe_finsetSum`. -/
 theorem coe_sum (x : ι → p) (s : Finset ι) : ↑(∑ i ∈ s, x i) = ∑ i ∈ s, (x i : M) :=
   map_sum p.subtype _ _
 
@@ -110,7 +110,7 @@ variable {α β : Type*}
 
 /-- The action by a submodule is the action by the underlying module. -/
 instance [AddAction M α] : AddAction p α :=
-  AddAction.compHom _ p.subtype.toAddMonoidHom
+  AddSubmonoid.instAddActionSubtypeMem p
 
 end AddAction
 
