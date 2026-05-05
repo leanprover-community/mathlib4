@@ -240,12 +240,9 @@ alias ⟨_, projection_apply_of_mem_right⟩ :=
   projection_apply_eq_zero_iff
 
 @[deprecated projectionOnto_apply_of_mem_right (since := "2026-04-27")]
-theorem projectionOnto_apply_right' (h : IsCompl p q) (x : E) (hx : x ∈ q) :
+theorem linearProjOfIsCompl_apply_right' (h : IsCompl p q) (x : E) (hx : x ∈ q) :
     projectionOnto p q h x = 0 :=
   projectionOnto_apply_of_mem_right h hx
-
-@[deprecated (since := "2026-05-04")]
-alias linearProjOfIsCompl_apply_right' := projectionOnto_apply_right'
 
 @[simp]
 theorem projectionOnto_apply_right (h : IsCompl p q) (x : q) :
