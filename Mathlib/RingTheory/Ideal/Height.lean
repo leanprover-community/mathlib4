@@ -51,7 +51,7 @@ lemma Ideal.height_eq_order_height_of_isPrime [I.IsPrime] : I.height =
 
 lemma Ideal.height_eq_inf_minimalPrimes : I.height = ⨅ J ∈ I.minimalPrimes, J.height := by
   apply iInf_congr (fun p ↦ iInf_congr fun hp ↦ ?_)
-  have := I.minimalPrimes_isPrime hp
+  have := I.IsPrime.of_mem_minimalPrimes hp
   exact (Ideal.height_eq_primeHeight _).symm
 
 /-- An ideal has finite height if it is either the unit ideal or its height is finite.
@@ -383,7 +383,7 @@ theorem IsLocalization.height_comap (S : Submonoid R) {A : Type*} [CommRing A] [
   rw [(J.comap _).height_eq_inf_minimalPrimes, J.height_eq_inf_minimalPrimes]
   simp only [IsLocalization.minimalPrimes_comap S A, iInf_image]
   apply iInf_congr (fun p ↦ iInf_congr fun hp ↦ ?_)
-  have := Ideal.minimalPrimes_isPrime hp
+  have := Ideal.IsPrime.of_mem_minimalPrimes hp
   exact IsLocalization.height_comap_eq_of_isPrime S _
 
 theorem IsLocalization.AtPrime.ringKrullDim_eq_height (I : Ideal R) [I.IsPrime] (A : Type*)
