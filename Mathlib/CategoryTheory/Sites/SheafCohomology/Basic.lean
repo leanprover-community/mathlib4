@@ -143,6 +143,11 @@ lemma H.map_comp_apply {n : ℕ} {G' : Sheaf J AddCommGrpCat.{w}} (g : G ⟶ G')
     H.map (f ≫ g) n x = H.map g n (H.map f n x) := by
   simp [H.map_apply]
 
+@[simp]
+lemma H.map_add_apply {n : ℕ} (f g : F ⟶ G) (x : H F n) :
+    H.map (f + g) n x = H.map f n x + H.map g n x := by
+  simp [map, Ext.mk₀_add]
+
 attribute [local simp] H.map_comp_apply in
 variable (J) in
 /-- `H` as a functor. -/
@@ -151,9 +156,7 @@ noncomputable def functorH (n : ℕ) : Sheaf J AddCommGrpCat.{w} ⥤ AddCommGrpC
   obj F := .of (H F n)
   map f := AddCommGrpCat.ofHom (H.map f n)
 
-set_option backward.isDefEq.respectTransparency false in
 instance (n : ℕ) : (functorH J n).Additive where
-  map_add {_ _ f g} := by ext; simp [H.map_apply, Ext.mk₀_add];
 
 lemma subsingleton_H_of_isZero {F : Sheaf J AddCommGrpCat.{w}} (h : Limits.IsZero F) (n : ℕ) :
     Subsingleton (F.H n) := by
