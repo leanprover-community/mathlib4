@@ -61,9 +61,8 @@ private lemma eventuallyEq_log_trailingCoeff_of_meromorphicOrderAt_eq_zero (h₁
     (h₂ : meromorphicOrderAt f 0 = 0) :
     (log ‖meromorphicTrailingCoeffAt f 0 - ·‖) =ᶠ[codiscreteWithin (sphere 0 |1|)]
       fun a ↦ log ‖meromorphicTrailingCoeffAt (f · - a) 0‖ := by
-  filter_upwards [self_mem_codiscreteWithin (sphere 0 |1|),
-    compl_subsingleton_mem_codiscreteWithin (subsingleton_singleton
-      (a := meromorphicTrailingCoeffAt f 0))] with a ha_sphere ha_ne
+  filter_upwards [self_mem_codiscreteWithin (sphere 0 |1|), compl_singleton_mem_codiscreteWithin
+    (x := meromorphicTrailingCoeffAt f 0)] with a ha_sphere ha_ne
   congr
   rw [(by rfl :  (f · - a) = f + (fun _ ↦ -a)), h₁.meromorphicTrailingCoeffAt_add_eq_add
     (by fun_prop), meromorphicTrailingCoeffAt_const, sub_eq_add_neg]
