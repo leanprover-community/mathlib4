@@ -43,7 +43,7 @@ presheaf `U ↦ C(U, T)`. For universe reasons, we implement it by hand.
 @[simps]
 def continuousMapPresheaf (T : Type v) [TopologicalSpace T] : Scheme.{u}ᵒᵖ ⥤ Type (max v u) where
   obj U := C(U.unop, T)
-  map {U V} f := TypeCat.ofHom fun g ↦ ContinuousMap.comp g f.unop.base.hom
+  map {U V} f := ↾fun g ↦ ContinuousMap.comp g f.unop.base.hom
 
 /-- `continuousMapPresheaf` is isomorphic to the composition of the forgetful
 functor to `TopCat` and the yoneda embedding. -/

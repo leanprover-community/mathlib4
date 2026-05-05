@@ -62,7 +62,7 @@ with an upper estimate. -/
 theorem edist_le_range_sum_of_edist_le {f : ℕ → α} (n : ℕ) {d : ℕ → ℝ≥0∞}
     (hd : ∀ {k}, k < n → edist (f k) (f (k + 1)) ≤ d k) :
     edist (f 0) (f n) ≤ ∑ i ∈ Finset.range n, d i :=
-  Nat.Ico_zero_eq_range n ▸ edist_le_Ico_sum_of_edist_le (zero_le n) fun _ => hd
+  Nat.Ico_zero_eq_range n ▸ edist_le_Ico_sum_of_edist_le zero_le fun _ => hd
 
 namespace EMetric
 

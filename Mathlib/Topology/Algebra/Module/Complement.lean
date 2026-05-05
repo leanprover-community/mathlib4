@@ -276,7 +276,7 @@ lemma projectionL_eq_id_sub_projectionL [IsTopologicalAddGroup M] (h : IsTopComp
   ContinuousLinearMap.ext <| projectionL_eq_self_sub_projectionL h
 
 /-- The projection to `p` along `q` of `x` equals `x` if and only if `x ∈ p`. -/
-@[simp] lemma projection_eq_self_iff [ContinuousSub M] (h : IsTopCompl p q) (x : M) :
+@[simp] lemma projectionL_eq_self_iff [ContinuousSub M] (h : IsTopCompl p q) (x : M) :
     p.projectionL q h x = x ↔ x ∈ p :=
   h.isCompl.projection_eq_self_iff x
 
