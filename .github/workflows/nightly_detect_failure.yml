@@ -21,7 +21,7 @@ jobs:
         api-key: ${{ secrets.ZULIP_API_KEY }}
         email: 'github-mathlib4-bot@leanprover.zulipchat.com'
         organization-url: 'https://leanprover.zulipchat.com'
-        to: 'nightly-testing'
+        to: 'nightly-testing-mathlib'
         type: 'stream'
         topic: 'Mathlib status updates'
         content: |
@@ -159,7 +159,7 @@ jobs:
           'num_before': 1,
           'num_after': 0,
           'narrow': [
-            {'operator': 'stream', 'operand': 'nightly-testing'},
+            {'operator': 'stream', 'operand': 'nightly-testing-mathlib'},
             {'operator': 'topic', 'operand': 'Mathlib status updates'},
             {'operator': 'sender', 'operand': bot_email}
           ],
@@ -171,7 +171,7 @@ jobs:
             # Post the success message
             request = {
                 'type': 'stream',
-                'to': 'nightly-testing',
+                'to': 'nightly-testing-mathlib',
                 'topic': 'Mathlib status updates',
                 'content': f"✅ The latest CI for Mathlib's [nightly-testing branch](https://github.com/leanprover-community/mathlib4-nightly-testing/tree/nightly-testing) has succeeded! ([{os.getenv('SHA')}](https://github.com/${{ github.repository }}/commit/{os.getenv('SHA')}))"
             }
@@ -310,7 +310,7 @@ jobs:
         api-key: ${{ secrets.ZULIP_API_KEY }}
         email: 'github-mathlib4-bot@leanprover.zulipchat.com'
         organization-url: 'https://leanprover.zulipchat.com'
-        to: 'nightly-testing'
+        to: 'nightly-testing-mathlib'
         type: 'stream'
         topic: 'Mathlib status updates'
         content: |
@@ -435,7 +435,7 @@ jobs:
               'num_before': 1,
               'num_after': 0,
               'narrow': [
-                {'operator': 'stream', 'operand': 'nightly-testing'},
+                {'operator': 'stream', 'operand': 'nightly-testing-mathlib'},
                 {'operator': 'topic', 'operand': 'Mathlib bump branch reminders'},
                 {'operator': 'sender', 'operand': bot_email}
               ],
@@ -473,7 +473,7 @@ jobs:
                 # Post the reminder message
                 request = {
                     'type': 'stream',
-                    'to': 'nightly-testing',
+                    'to': 'nightly-testing-mathlib',
                     'topic': 'Mathlib bump branch reminders',
                     'content': payload
                 }
