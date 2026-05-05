@@ -114,16 +114,6 @@ def quotientCompQhIso : HomotopyCategory.quotient C (ComplexShape.up ℤ) ⋙ Qh
   HomologicalComplexUpToQuasiIso.quotientCompQhIso C (ComplexShape.up ℤ)
 
 @[reassoc (attr := simp)]
-lemma quotientCompQhIso_hom_inv_id_app (K : CochainComplex C ℤ) :
-    dsimp% (quotientCompQhIso C).hom.app K ≫ (quotientCompQhIso C).inv.app K = 𝟙 _ :=
-  (quotientCompQhIso C).hom_inv_id_app K
-
-@[reassoc (attr := simp)]
-lemma quotientCompQhIso_inv_hom_id_app (K : CochainComplex C ℤ) :
-    dsimp% (quotientCompQhIso C).inv.app K ≫ (quotientCompQhIso C).hom.app K = 𝟙 _ :=
-  (quotientCompQhIso C).inv_hom_id_app K
-
-@[reassoc (attr := simp)]
 lemma quotientCompQhIso_hom_naturality {K L : CochainComplex C ℤ} (f : K ⟶ L) :
     dsimp% Qh.map ((HomotopyCategory.quotient _ _).map f) ≫ (quotientCompQhIso C).hom.app L =
       (quotientCompQhIso C).hom.app K ≫ Q.map f :=

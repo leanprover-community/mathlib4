@@ -47,6 +47,7 @@ lemma Qh_map_bijective [HasDerivedCategory C]
       ((HomotopyCategory.quotient _ _).obj K ⟶ L) → _) :=
   (CochainComplex.IsKProjective.leftOrthogonal K).map_bijective_of_isTriangulated _ _
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] HasDerivedCategory.standard in
 lemma quasiIso_iff {K L : CochainComplex C ℤ} [K.IsKProjective] [L.IsKProjective] (f : K ⟶ L) :
     QuasiIso f ↔ homotopyEquivalences C (.up ℤ) f := by
@@ -57,7 +58,7 @@ lemma quasiIso_iff {K L : CochainComplex C ℤ} [K.IsKProjective] [L.IsKProjecti
     ((quotientCompQhIso C).hom.app L ≫ inv (Q.map f) ≫ (quotientCompQhIso C).inv.app K)
   refine ⟨g, (Qh_map_bijective _ _).injective ?_, (Qh_map_bijective _ _).injective ?_⟩
   · simp [hg]
-  · simp [hg, ← quotientCompQhIso_inv_naturality]
+  · simp [hg, ← quotientCompQhIso_inv_naturality f, -NatTrans.naturality]
 
 end IsKProjective
 
