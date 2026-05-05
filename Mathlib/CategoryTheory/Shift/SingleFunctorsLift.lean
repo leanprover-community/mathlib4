@@ -54,6 +54,7 @@ private lemma map_shiftIso_hom_app (n a a' : A) (h : n + a = a') (X : C) :
 
 end lift
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `C`, `D` and `E` be categories. Let `A` be an additive monoid.
 Assume that `D` and `E` have shifts by `A` and that we have
 a fully faithful functor `G : D ⥤ A` which commutes with shifts.
@@ -68,11 +69,7 @@ noncomputable def lift : SingleFunctors C D A where
   shiftIso_zero a := by
     ext X
     apply G.map_injective
-    dsimp
-    rw [lift.map_shiftIso_hom_app, Functor.commShiftIso_zero,
-      CommShift.isoZero_hom_app, shiftIso_zero_hom_app, assoc,
-      dsimp% NatIso.naturality_1_assoc (shiftFunctorZero E A) ((hΦ a).hom.app X),
-      dsimp% (hΦ a).hom_inv_id_app X, comp_id]
+    simp [lift.map_shiftIso_hom_app, Functor.commShiftIso_zero]
   shiftIso_add n m a a' a'' ha' ha'' := by
     ext X
     apply G.map_injective
@@ -86,8 +83,7 @@ noncomputable def lift : SingleFunctors C D A where
     dsimp
     rw [id_comp, assoc, assoc,
       dsimp% NatIso.naturality_1_assoc (shiftFunctorAdd E m n) ((hΦ a'').hom.app X)]
-    rw [← dsimp% (shiftFunctor E n).map_comp_assoc ((hΦ a').inv.app X),
-      dsimp% (hΦ a').inv_hom_id_app X]
+    rw [← (shiftFunctor E n).map_comp_assoc ((hΦ a').inv.app X)]
     simp
 
 @[reassoc]
@@ -97,6 +93,7 @@ lemma map_lift_shiftIso_hom_app (n a a' : A) (h : n + a = a') (X : C) :
         (F.shiftIso n a a' h).hom.app X ≫ (hΦ a).inv.app X :=
   lift.map_shiftIso_hom_app ..
 
+set_option backward.isDefEq.respectTransparency false in
 /-- After postcomposition with the fully faithful functor `G`,
 `lift F G Φ hΦ` becomes isomorphic to `F`. -/
 @[simps!]
