@@ -29,6 +29,17 @@ section SemiCartesianMonoidalCategory
 
 variable {D : Type*} [Category* D] [SemiCartesianMonoidalCategory D]
 
+namespace MonObj
+
+@[to_additive]
+instance (M : D) [MonObj M] : IsMonHom (toUnit M) where
+
+@[to_additive]
+instance (M : D) [MonObj M] : IsMonHom η[M] where
+  mul_hom := by simp [toUnit_unique (ρ_ (𝟙_ D)).hom (λ_ (𝟙_ D)).hom]
+
+end MonObj
+
 @[to_additive (attr := simps)]
 instance Mon.uniqueHomToTrivial (A : Mon D) : Unique (A ⟶ Mon.trivial D) where
   default.hom := toUnit A.X
@@ -37,14 +48,29 @@ instance Mon.uniqueHomToTrivial (A : Mon D) : Unique (A ⟶ Mon.trivial D) where
 
 @[deprecated (since := "2026-03-20")] alias uniqueHomToTrivial := Mon.uniqueHomToTrivial
 
-@[to_additive instHasZeroObjectAddMon]
-instance : HasZeroObject (Mon D) where
-  zero := ⟨Mon.trivial D,
-    fun A ↦ nonempty_unique (Mon.trivial D ⟶ A),
-    fun A ↦ nonempty_unique (A ⟶ Mon.trivial D)⟩
+namespace Mon
 
-@[to_additive instHasZeroMorphismsAddMon]
-noncomputable instance : HasZeroMorphisms (Mon D) := HasZeroObject.zeroMorphismsOfZeroObject
+variable (D) in
+@[to_additive]
+lemma isZero_trivial : IsZero (Mon.trivial D) where
+  unique_to A := nonempty_unique (Mon.trivial D ⟶ A)
+  unique_from A := nonempty_unique (A ⟶ Mon.trivial D)
+
+@[to_additive]
+instance : HasZeroObject (Mon D) where
+  zero := ⟨Mon.trivial D, Mon.isZero_trivial D⟩
+
+@[to_additive]
+instance (M N : Mon D) : Zero (M ⟶ N) where
+  zero := ⟨toUnit _ ≫ η⟩
+
+@[to_additive (attr := simp)]
+lemma zero_hom (M N : Mon D) : (0 : M ⟶ N).hom = toUnit _ ≫ η := rfl
+
+@[to_additive]
+noncomputable instance : HasZeroMorphisms (Mon D) where
+
+end Mon
 
 end SemiCartesianMonoidalCategory
 
@@ -54,13 +80,6 @@ variable {C D : Type*} [Category.{v} C] [CartesianMonoidalCategory C]
   {M N O X Y : C} [MonObj M] [MonObj N] [MonObj O]
 
 namespace MonObj
-
-@[to_additive]
-instance : IsMonHom (toUnit M) where
-
-@[to_additive]
-instance : IsMonHom η[M] where
-  mul_hom := by simp [toUnit_unique (ρ_ (𝟙_ C)).hom (λ_ (𝟙_ C)).hom]
 
 @[to_additive]
 theorem lift_lift_assoc {A : C} {B : C} [MonObj B] (f g h : A ⟶ B) :
