@@ -127,6 +127,10 @@ protected theorem hasCompactSupport (f : 𝓓^{n}(Ω, F)) : HasCompactSupport f 
   map_hasCompactSupport f
 protected theorem tsupport_subset (f : 𝓓^{n}(Ω, F)) : tsupport f ⊆ Ω := tsupport_map_subset f
 
+@[fun_prop]
+protected theorem continuous (f : 𝓓^{n}(Ω, F)) : Continuous f :=
+  f.contDiff.continuous
+
 @[simp]
 theorem toFun_eq_coe {f : 𝓓^{n}(Ω, F)} : f.toFun = (f : E → F) :=
   rfl
@@ -626,5 +630,106 @@ lemma lineDerivOpCLM_eq_lineDerivCLM {v : E} :
   rfl
 
 end LineDerivCLM
+
+section Integral
+
+open MeasureTheory
+
+variable {m : MeasurableSpace E} [OpensMeasurableSpace E] {F₁ F₂ F₃ : Type*}
+  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] [NormedSpace ℝ F₁]
+  [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
+  [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃]
+
+@[fun_prop]
+protected theorem stronglyMeasurable (f : 𝓓^{n}(Ω, F)) :
+    StronglyMeasurable f := by
+  exact f.continuous.stronglyMeasurable_of_hasCompactSupport f.hasCompactSupport
+
+@[fun_prop]
+protected theorem aestronglyMeasurable {μ : Measure E} (f : 𝓓^{n}(Ω, F)) :
+    AEStronglyMeasurable f μ :=
+  f.stronglyMeasurable.aestronglyMeasurable
+
+protected theorem memLp_top {μ : Measure E} (f : 𝓓^{n}(Ω, F)) :
+    MemLp f ⊤ μ :=
+  f.continuous.memLp_top_of_hasCompactSupport f.hasCompactSupport μ
+
+protected theorem integrable_bilin (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {μ : Measure E} {φ : E → F₂}
+    (hφ : LocallyIntegrableOn φ Ω μ) (f : 𝓓^{n}(Ω, F₁)) :
+    Integrable (fun x ↦ B (f x) (φ x)) μ := by
+  suffices IntegrableOn (fun x ↦ B (f x) (φ x)) (tsupport f) μ by
+    rwa [integrableOn_iff_integrable_of_support_subset] at this
+    refine subset_trans ?_ (subset_tsupport f)
+    exact fun x hx hfx ↦ hx (by simp [hfx])
+  replace hφ := hφ.integrableOn_compact_subset f.tsupport_subset f.hasCompactSupport
+  rw [IntegrableOn, ← memLp_one_iff_integrable] at hφ ⊢
+  exact B.memLp_of_bilin 1 f.memLp_top hφ
+
+/-- A test function on `Ω` is `μ`-integrable for any measure `μ` on `E` satisfying
+`LocallyIntegrableOn 1 Ω μ`. Note that this is a weaker assumption than both
+- `IsLocallyFiniteMeasure (μ.restrict Ω)` (because we say nothing about points outside of `Ω`)
+- `IsFiniteMeasureOnCompacts (μ.restrict Ω)` (because we say nothing about compacts not
+  contained in `Ω`)
+
+For example, if `μ` is the measure with density `fun (x : ℝ) ↦ x⁻¹` with respect to the Lebesgue
+measure and `Ω` is the open set `Ioo 0 1`, we have `LocallyIntegrableOn 1 Ω μ` (hence `μ` defines
+a distribution on `Ω`) but the other two conditions are not satisfied.
+-/
+protected theorem integrable {μ : Measure E}
+    (H : LocallyIntegrableOn (fun (_ : E) ↦ (1 : ℝ)) Ω μ)
+    (f : 𝓓^{n}(Ω, F)) : Integrable f μ := by
+  rw [← integrableOn_iff_integrable_of_support_subset (subset_tsupport f)]
+  replace H := H.integrableOn_compact_subset f.tsupport_subset f.hasCompactSupport
+  suffices IntegrableOn ((1 : ℝ) • f) (tsupport f) μ by simpa
+  rw [IntegrableOn, ← memLp_one_iff_integrable] at H ⊢
+  exact f.memLp_top.smul H
+
+variable [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F₁] [NormedSpace ℝ F₃] [IsScalarTower ℝ 𝕜 F₃]
+
+-- TODO: semilinearize
+/-- Given a continuous `𝕜`-bilinear map `B : F₁ →L[𝕜] F₂ →L[𝕜] F₃`, a measure `μ` on `E`,
+and a function `φ : E → F₂` which is locally `μ`-integrable, this is the *continuous* `𝕜`-linear map
+`f ↦ ∫ x, B (f x) (φ x) ∂μ` from `𝓓^{n}(E, F₁)` to `F₃`. Otherwise, this is the zero map. -/
+noncomputable def integralAgainstBilinCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (μ : Measure E) (φ : E → F₂) :
+    𝓓^{n}(Ω, F₁) →L[𝕜] F₃ := open scoped Classical in
+  TestFunction.limitCLM 𝕜
+    (fun f ↦ if LocallyIntegrableOn φ Ω μ then ∫ x, B (f x) (φ x) ∂μ else 0)
+    (fun K K_sub_Ω ↦
+      if LocallyIntegrableOn φ Ω μ
+      then ContDiffMapSupportedIn.integralAgainstBilinCLM B μ φ
+      else 0)
+    (fun K K_sub_Ω f ↦ by
+      split_ifs with h
+      · simp [h.integrableOn_compact_subset K_sub_Ω K.2]
+      · simp)
+
+open scoped Classical in
+@[simp]
+lemma integralAgainstBilinCLM_apply {B : F₁ →L[𝕜] F₂ →L[𝕜] F₃} {μ : Measure E} {φ : E → F₂}
+    {f : 𝓓^{n}(Ω, F₁)} :
+    integralAgainstBilinCLM B μ φ f =
+      if LocallyIntegrableOn φ Ω μ then ∫ x, B (f x) (φ x) ∂μ else 0 :=
+  rfl
+
+lemma integralAgainstBilinCLM_eq_integral {B : F₁ →L[𝕜] F₂ →L[𝕜] F₃} {μ : Measure E} {φ : E → F₂}
+    (hφ : LocallyIntegrableOn φ Ω μ) {f : 𝓓^{n}(Ω, F₁)} :
+    integralAgainstBilinCLM B μ φ f = ∫ x, B (f x) (φ x) ∂μ := by
+  simp [hφ]
+
+lemma integralAgainstBilinCLM_eq_zero {B : F₁ →L[𝕜] F₂ →L[𝕜] F₃} {μ : Measure E} {φ : E → F₂}
+    (hφ : ¬ LocallyIntegrableOn φ Ω μ) :
+    (integralAgainstBilinCLM B μ φ : 𝓓^{n}(Ω, F₁) →L[𝕜] F₃) = 0 := by
+  ext
+  simp [hφ]
+
+lemma integralAgainstBilinCLM_ofSupportedIn {B : F₁ →L[𝕜] F₂ →L[𝕜] F₃} {μ : Measure E} {φ : E → F₂}
+    (hφ : LocallyIntegrableOn φ Ω μ) {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω)
+    {f : 𝓓^{n}_{K}(E, F₁)} :
+    integralAgainstBilinCLM B μ φ (ofSupportedIn K_sub_Ω f) =
+      ContDiffMapSupportedIn.integralAgainstBilinCLM B μ φ f := by
+  have hφ' := hφ.integrableOn_compact_subset K_sub_Ω K.isCompact
+  simp [hφ, hφ']
+
+end Integral
 
 end TestFunction
