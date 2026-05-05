@@ -240,6 +240,7 @@ lemma toKaroubiNondegComplexIsoN₁_hom_inv_id_f :
 /-- Given a splitting `s` of a simplicial object `X` in a preadditive category,
 this is the split epimorphism from the alternating face map complex of `X` to the chain
 complex `s.nondegComplex`. -/
+@[no_expose]
 noncomputable def toNondegComplex : K[X] ⟶ s.nondegComplex :=
   (fullyFaithfulToKaroubi _).preimage
     ({ f := by exact PInfty } ≫ s.toKaroubiNondegComplexIsoN₁.inv)
@@ -247,6 +248,7 @@ noncomputable def toNondegComplex : K[X] ⟶ s.nondegComplex :=
 /-- Given a splitting `s` of a simplicial object `X` in a preadditive category,
 this is the split monomormphism from the chain complex `s.nondegComplex` to
 the alternating face map complex fo `X`. -/
+@[no_expose]
 noncomputable def fromNondegComplex : s.nondegComplex ⟶ K[X] :=
   (fullyFaithfulToKaroubi _).preimage
     (s.toKaroubiNondegComplexIsoN₁.hom ≫ { f := PInfty })
@@ -259,6 +261,11 @@ lemma PInfty_toNondegComplex : PInfty ≫ s.toNondegComplex = s.toNondegComplex 
 lemma fromNondegComplex_toNondegComplex :
     s.fromNondegComplex ≫ s.toNondegComplex = 𝟙 _ :=
   (toKaroubi _).map_injective (by simp [toNondegComplex, fromNondegComplex])
+
+@[reassoc]
+lemma toNondegComplex_f (n : ℕ) :
+    s.toNondegComplex.f n = PInfty.f n ≫ s.toKaroubiNondegComplexIsoN₁.inv.f.f n := by
+  simp [toNondegComplex, fullyFaithfulToKaroubi]
 
 @[reassoc]
 lemma fromNondegComplex_f (n : ℕ) :
