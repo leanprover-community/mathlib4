@@ -679,7 +679,7 @@ def prodEquiv (s : NonUnitalSubring R) (t : NonUnitalSubring S) : s.prod t ≃+*
 `NonUnitalSubring`s. Note that this fails without the directedness assumption (the union of two
 `NonUnitalSubring`s is typically not a `NonUnitalSubring`) -/
 theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → NonUnitalSubring R}
-    (hS : Directed (· ≤ ·) S) {x : R} : (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
+    (hS : Predirected (· ≤ ·) S) {x : R} : (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
   refine ⟨?_, fun ⟨i, hi⟩ ↦ le_iSup S i hi⟩
   let U : NonUnitalSubring R :=
     NonUnitalSubring.mk' (⋃ i, (S i : Set R)) (⨆ i, (S i).toSubsemigroup) (⨆ i, (S i).toAddSubgroup)
@@ -688,7 +688,7 @@ theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → NonUnitalSubri
   exact iSup_le fun i x hx ↦ Set.mem_iUnion.2 ⟨i, hx⟩
 
 theorem coe_iSup_of_directed {ι} [Nonempty ι] {S : ι → NonUnitalSubring R}
-    (hS : Directed (· ≤ ·) S) : ((⨆ i, S i : NonUnitalSubring R) : Set R) = ⋃ i, S i :=
+    (hS : Predirected (· ≤ ·) S) : ((⨆ i, S i : NonUnitalSubring R) : Set R) = ⋃ i, S i :=
   Set.ext fun x ↦ by simp [mem_iSup_of_directed hS]
 
 theorem mem_sSup_of_directedOn {S : Set (NonUnitalSubring R)} (Sne : S.Nonempty)

@@ -613,7 +613,7 @@ def prodEquiv (s : NonUnitalSubsemiring R) (t : NonUnitalSubsemiring S) : s.prod
     map_add' := fun _ _ => rfl }
 
 theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → NonUnitalSubsemiring R}
-    (hS : Directed (· ≤ ·) S) {x : R} : (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
+    (hS : Predirected (· ≤ ·) S) {x : R} : (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
   refine ⟨?_, fun ⟨i, hi⟩ ↦ le_iSup S i hi⟩
   let U : NonUnitalSubsemiring R :=
     NonUnitalSubsemiring.mk' (⋃ i, (S i : Set R))
@@ -623,7 +623,7 @@ theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → NonUnitalSubse
   exact iSup_le fun i x hx => Set.mem_iUnion.2 ⟨i, hx⟩
 
 theorem coe_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → NonUnitalSubsemiring R}
-    (hS : Directed (· ≤ ·) S) : ((⨆ i, S i : NonUnitalSubsemiring R) : Set R) = ⋃ i, S i :=
+    (hS : Predirected (· ≤ ·) S) : ((⨆ i, S i : NonUnitalSubsemiring R) : Set R) = ⋃ i, S i :=
   Set.ext fun x ↦ by simp [mem_iSup_of_directed hS]
 
 theorem mem_sSup_of_directedOn {S : Set (NonUnitalSubsemiring R)} (Sne : S.Nonempty)

@@ -130,7 +130,7 @@ lemma isCompactSystem_insert_univ_iff : IsCompactSystem (insert univ S) ↔ IsCo
 sets. -/
 theorem isCompactSystem_iff_of_directed (hpi : IsPiSystem S) :
     IsCompactSystem S ↔
-      ∀ (C : ℕ → Set α), Directed (· ⊇ ·) C → (∀ i, C i ∈ S) → ⋂ i, C i = ∅ → ∃ n, C n = ∅ := by
+      ∀ (C : ℕ → Set α), Predirected (· ⊇ ·) C → (∀ i, C i ∈ S) → ⋂ i, C i = ∅ → ∃ n, C n = ∅ := by
   rw [← isCompactSystem_insert_empty_iff]
   refine ⟨fun h ↦ fun C hdi hi ↦ ?_, fun h C h1 h2 ↦ ?_⟩
   · rw [← exists_dissipate_eq_empty_iff_of_directed hdi]
@@ -150,7 +150,7 @@ theorem isCompactSystem_iff_of_directed (hpi : IsPiSystem S) :
 sets. -/
 theorem isCompactSystem_iff_nonempty_iInter_of_directed (hpi : IsPiSystem S) :
     IsCompactSystem S ↔
-    ∀ (C : ℕ → Set α), (Directed (· ⊇ ·) C) → (∀ i, C i ∈ S) → (∀ n, (C n).Nonempty) →
+    ∀ (C : ℕ → Set α), (Predirected (· ⊇ ·) C) → (∀ i, C i ∈ S) → (∀ n, (C n).Nonempty) →
       (⋂ i, C i).Nonempty := by
   rw [isCompactSystem_iff_of_directed hpi]
   refine ⟨fun h1 C h3 h4 ↦ ?_, fun h1 C h3 s ↦ ?_⟩ <;> contrapose!

@@ -242,7 +242,7 @@ theorem orthonormal_empty : Orthonormal 𝕜 (fun x => x : (∅ : Set E) → E) 
 
 variable {𝕜 E}
 
-theorem orthonormal_iUnion_of_directed {η : Type*} {s : η → Set E} (hs : Directed (· ⊆ ·) s)
+theorem orthonormal_iUnion_of_directed {η : Type*} {s : η → Set E} (hs : Predirected (· ⊆ ·) s)
     (h : ∀ i, Orthonormal 𝕜 (fun x => x : s i → E)) :
     Orthonormal 𝕜 (fun x => x : (⋃ i, s i) → E) := by
   classical

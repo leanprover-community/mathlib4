@@ -618,7 +618,7 @@ theorem indep_iSup_of_disjoint {m : ι → MeasurableSpace Ω}
 
 theorem indep_iSup_of_directed_le {Ω} {m : ι → MeasurableSpace Ω} {m' m0 : MeasurableSpace Ω}
     {κ : Kernel α Ω} {μ : Measure α} [IsZeroOrMarkovKernel κ] (h_indep : ∀ i, Indep (m i) m' κ μ)
-    (h_le : ∀ i, m i ≤ m0) (h_le' : m' ≤ m0) (hm : Directed (· ≤ ·) m) :
+    (h_le : ∀ i, m i ≤ m0) (h_le' : m' ≤ m0) (hm : Predirected (· ≤ ·) m) :
     Indep (⨆ i, m i) m' κ μ := by
   let p : ι → Set (Set Ω) := fun n => { t | MeasurableSet[m n] t }
   have hp : ∀ n, IsPiSystem (p n) := fun n => @isPiSystem_measurableSet Ω (m n)

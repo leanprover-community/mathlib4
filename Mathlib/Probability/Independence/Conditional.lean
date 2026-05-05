@@ -573,7 +573,7 @@ theorem condIndep_iSup_of_disjoint {m : ι → MeasurableSpace Ω}
 
 theorem condIndep_iSup_of_directed_le {m : ι → MeasurableSpace Ω}
     (h_indep : ∀ i, CondIndep m' (m i) m₁ hm' μ)
-    (h_le : ∀ i, m i ≤ mΩ) (h_le' : m₁ ≤ mΩ) (hm : Directed (· ≤ ·) m) :
+    (h_le : ∀ i, m i ≤ mΩ) (h_le' : m₁ ≤ mΩ) (hm : Predirected (· ≤ ·) m) :
     CondIndep m' (⨆ i, m i) m₁ hm' μ :=
   Kernel.indep_iSup_of_directed_le h_indep h_le h_le' hm
 

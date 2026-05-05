@@ -639,7 +639,7 @@ theorem setLIntegral_compl {f : α → ℝ≥0∞} {s : Set α} (hsm : Measurabl
   rw [← lintegral_add_compl (μ := μ) f hsm, ENNReal.add_sub_cancel_left hfs]
 
 theorem setLIntegral_iUnion_of_directed {ι : Type*} [Countable ι]
-    (f : α → ℝ≥0∞) {s : ι → Set α} (hd : Directed (· ⊆ ·) s) :
+    (f : α → ℝ≥0∞) {s : ι → Set α} (hd : Predirected (· ⊆ ·) s) :
     ∫⁻ x in ⋃ i, s i, f x ∂μ = ⨆ i, ∫⁻ x in s i, f x ∂μ := by
   simp only [lintegral_def, iSup_comm (ι := ι),
     SimpleFunc.lintegral_restrict_iUnion_of_directed _ hd]

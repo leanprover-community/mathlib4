@@ -34,7 +34,7 @@ section ConditionallyCompletePartialOrderSup
 variable [ConditionallyCompletePartialOrderSup α] {a b : α}
 
 @[to_dual]
-theorem Directed.isLUB_ciSup [Nonempty ι] {f : ι → α} (hd : Directed (· ≤ ·) f)
+theorem Predirected.isLUB_ciSup [Nonempty ι] {f : ι → α} (hd : Predirected (· ≤ ·) f)
     (H : BddAbove (range f)) : IsLUB (range f) (⨆ i, f i) :=
   hd.directedOn_range.isLUB_csSup (range_nonempty f) H
 
@@ -45,9 +45,9 @@ theorem DirectedOn.isLUB_ciSup_set {f : β → α} {s : Set β} (hd : DirectedOn
   rw [← sSup_image']
   exact hd.isLUB_csSup (Hne.image _) H
 
-@[to_dual Directed.le_ciInf_iff]
-theorem Directed.ciSup_le_iff [Nonempty ι] {f : ι → α} {a : α}
-    (hd : Directed (· ≤ ·) f) (hf : BddAbove (range f)) :
+@[to_dual Predirected.le_ciInf_iff]
+theorem Predirected.ciSup_le_iff [Nonempty ι] {f : ι → α} {a : α}
+    (hd : Predirected (· ≤ ·) f) (hf : BddAbove (range f)) :
     iSup f ≤ a ↔ ∀ i, f i ≤ a :=
   (isLUB_le_iff <| hd.isLUB_ciSup hf).trans forall_mem_range
 
@@ -57,8 +57,8 @@ theorem DirectedOn.ciSup_set_le_iff {ι : Type*} {s : Set ι} {f : ι → α} {a
     ⨆ i : s, f i ≤ a ↔ ∀ i ∈ s, f i ≤ a :=
   (isLUB_le_iff <| hd.isLUB_ciSup_set hf hs).trans forall_mem_image
 
-@[to_dual Directed.ciInf_le_of_le]
-theorem Directed.le_ciSup_of_le {f : ι → α} (hd : Directed (· ≤ ·) f)
+@[to_dual Predirected.ciInf_le_of_le]
+theorem Predirected.le_ciSup_of_le {f : ι → α} (hd : Predirected (· ≤ ·) f)
     (H : BddAbove (range f)) (c : ι) (h : a ≤ f c) : a ≤ iSup f :=
   le_trans h (hd.le_ciSup H c)
 
@@ -66,8 +66,8 @@ theorem Directed.le_ciSup_of_le {f : ι → α} (hd : Directed (· ≤ ·) f)
 @[to_dual (attr := gcongr low)
 /-- The indexed infimum of two functions are comparable if the functions are pointwise
 comparable -/]
-theorem Directed.ciSup_mono {f g : ι → α} (hdf : Directed (· ≤ ·) f)
-    (hdg : Directed (· ≤ ·) g) (B : BddAbove (range g)) (H : ∀ x, f x ≤ g x) :
+theorem Predirected.ciSup_mono {f g : ι → α} (hdf : Predirected (· ≤ ·) f)
+    (hdg : Predirected (· ≤ ·) g) (B : BddAbove (range g)) (H : ∀ x, f x ≤ g x) :
     iSup f ≤ iSup g := by
   cases isEmpty_or_nonempty ι
   · rw [iSup_of_empty', iSup_of_empty']
@@ -134,12 +134,12 @@ theorem cbiSup_empty {f : β → α} : ⨆ i ∈ (∅ : Set β), f i = sSup ∅ 
 /-- Introduction rule to prove that `b` is the supremum of `f`: it suffices to check that `b`
 is larger than `f i` for all `i`, and that this is not the case of any `w<b`.
 See `iSup_eq_of_forall_le_of_forall_lt_exists_gt` for a version in complete lattices. -/
-@[to_dual Directed.ciInf_eq_of_forall_ge_of_forall_gt_exists_lt
+@[to_dual Predirected.ciInf_eq_of_forall_ge_of_forall_gt_exists_lt
 /-- Introduction rule to prove that `b` is the infimum of `f`: it suffices to check that `b`
 is smaller than `f i` for all `i`, and that this is not the case of any `w>b`.
 See `iInf_eq_of_forall_ge_of_forall_gt_exists_lt` for a version in complete lattices. -/]
-theorem Directed.ciSup_eq_of_forall_le_of_forall_lt_exists_gt [Nonempty ι] {f : ι → α}
-    (hd : Directed (· ≤ ·) f) (h₁ : ∀ i, f i ≤ b) (h₂ : ∀ w, w < b → ∃ i, w < f i) :
+theorem Predirected.ciSup_eq_of_forall_le_of_forall_lt_exists_gt [Nonempty ι] {f : ι → α}
+    (hd : Predirected (· ≤ ·) f) (h₁ : ∀ i, f i ≤ b) (h₂ : ∀ w, w < b → ∃ i, w < f i) :
     ⨆ i : ι, f i = b :=
   hd.directedOn_range.csSup_eq_of_forall_le_of_forall_lt_exists_gt (range_nonempty f)
     (forall_mem_range.mpr h₁) fun w hw => exists_range_iff.mpr <| h₂ w hw
@@ -152,7 +152,7 @@ theorem Monotone.ciSup_mem_iInter_Icc_of_antitone [Preorder β] [IsDirectedOrder
   refine mem_iInter.2 fun n => ?_
   haveI : Nonempty β := ⟨n⟩
   have h₁ : ∀ m, f m ≤ g n := fun m => hf.forall_le_of_antitone hg h m n
-  have h₂ : Directed (· ≤ ·) f := hf.directed_le
+  have h₂ : Predirected (· ≤ ·) f := hf.directed_le
   exact ⟨h₂.le_ciSup ⟨g <| n, forall_mem_range.2 h₁⟩ _, h₂.ciSup_le h₁⟩
 
 /-- Nested intervals lemma: if `[f n, g n]` is an antitone sequence of nonempty
@@ -165,7 +165,7 @@ theorem ciSup_mem_iInter_Icc_of_antitone_Icc [Preorder β] [IsDirectedOrder β] 
     (fun _ n hmn => ((Icc_subset_Icc_iff (h' n)).1 (h hmn)).2) h'
 
 @[to_dual]
-lemma Directed.Ici_ciSup [Nonempty ι] {f : ι → α} (hd : Directed (· ≤ ·) f)
+lemma Predirected.Ici_ciSup [Nonempty ι] {f : ι → α} (hd : Predirected (· ≤ ·) f)
     (hf : BddAbove (range f)) : Ici (⨆ i, f i) = ⋂ i, Ici (f i) := by
   ext
   simpa using hd.ciSup_le_iff hf
@@ -173,7 +173,7 @@ lemma Directed.Ici_ciSup [Nonempty ι] {f : ι → α} (hd : Directed (· ≤ ·
 @[to_dual]
 theorem ciSup_Iic [Preorder β] {f : β → α} (a : β) (hf : Monotone f) :
     ⨆ x : Iic a, f x = f a := by
-  have hd : Directed (· ≤ ·) (fun x : Iic a ↦ f x) := fun x y ↦ ⟨⟨a, le_refl a⟩, ⟨hf x.2, hf y.2⟩⟩
+  have hd : Predirected (· ≤ ·) (fun x : Iic a ↦ f x) := fun x y ↦ ⟨⟨a, le_refl a⟩, ⟨hf x.2, hf y.2⟩⟩
   have H : BddAbove (range fun x : Iic a ↦ f x) := ⟨f a, fun _ ↦ by aesop⟩
   apply (hd.le_ciSup H (⟨a, le_refl a⟩ : Iic a)).antisymm'
   rw [hd.ciSup_le_iff H]
@@ -182,9 +182,9 @@ theorem ciSup_Iic [Preorder β] {f : β → α} (a : β) (hf : Monotone f) :
 
 end ConditionallyCompletePartialOrderSup
 
-lemma Directed.ciInf_le_ciSup [ConditionallyCompletePartialOrder α] [Nonempty ι] {f : ι → α}
-    (hd : Directed (· ≥ ·) f) (hf : BddBelow (range f))
-    (hd' : Directed (· ≤ ·) f) (hf' : BddAbove (range f)) :
+lemma Predirected.ciInf_le_ciSup [ConditionallyCompletePartialOrder α] [Nonempty ι] {f : ι → α}
+    (hd : Predirected (· ≥ ·) f) (hf : BddBelow (range f))
+    (hd' : Predirected (· ≤ ·) f) (hf' : BddAbove (range f)) :
     ⨅ i, f i ≤ ⨆ i, f i :=
   (hd.ciInf_le hf (Classical.arbitrary _)).trans <| hd'.le_ciSup hf' (Classical.arbitrary _)
 
@@ -206,7 +206,7 @@ theorem l_csSup_of_directedOn (gc : GaloisConnection l u) {s : Set α} (hd : Dir
   simpa only [← comp_def, ← sSup_range, range_comp, Subtype.range_coe_subtype, setOf_mem_eq]
     using gc.l_csSup_of_directedOn' hd hne hbdd
 
-theorem l_ciSup_of_directed (gc : GaloisConnection l u) {f : ι → α} (hd : Directed (· ≤ ·) f)
+theorem l_ciSup_of_directed (gc : GaloisConnection l u) {f : ι → α} (hd : Predirected (· ≤ ·) f)
     (hf : BddAbove (range f)) : l (⨆ i, f i) = ⨆ i, l (f i) := by
   rw [iSup, gc.l_csSup_of_directedOn hd.directedOn_range (range_nonempty _) hf, iSup_range']
 
@@ -235,7 +235,7 @@ theorem u_csInf_of_directedOn' (gc : GaloisConnection l u) {s : Set β} (hd : Di
     u (sInf s) = sInf (u '' s) :=
   gc.dual.l_csSup_of_directedOn' hd hne hbdd
 
-theorem u_ciInf_of_directed (gc : GaloisConnection l u) {f : ι → β} (hd : Directed (· ≥ ·) f)
+theorem u_ciInf_of_directed (gc : GaloisConnection l u) {f : ι → β} (hd : Predirected (· ≥ ·) f)
     (hf : BddBelow (range f)) :
     u (⨅ i, f i) = ⨅ i, u (f i) :=
   gc.dual.l_ciSup_of_directed hd hf
@@ -265,7 +265,7 @@ theorem map_csSup_of_directedOn' (e : α ≃o β) {s : Set α} (hd : DirectedOn 
     (hne : s.Nonempty) (hbdd : BddAbove s) : e (sSup s) = sSup (e '' s) :=
   e.to_galoisConnection.l_csSup_of_directedOn' hd hne hbdd
 
-theorem map_ciSup_of_directed (e : α ≃o β) {f : ι → α} (hd : Directed (· ≤ ·) f)
+theorem map_ciSup_of_directed (e : α ≃o β) {f : ι → α} (hd : Predirected (· ≤ ·) f)
     (hf : BddAbove (range f)) : e (⨆ i, f i) = ⨆ i, e (f i) :=
   e.to_galoisConnection.l_ciSup_of_directed hd hf
 
@@ -291,7 +291,7 @@ theorem map_csInf_of_directedOn' (e : α ≃o β) {s : Set α} (hd : DirectedOn 
     e (sInf s) = sInf (e '' s) :=
   e.dual.map_csSup_of_directedOn' hd hne hbdd
 
-theorem map_ciInf_of_directed (e : α ≃o β) {f : ι → α} (hd : Directed (· ≥ ·) f)
+theorem map_ciInf_of_directed (e : α ≃o β) {f : ι → α} (hd : Predirected (· ≥ ·) f)
     (hf : BddBelow (range f)) :
     e (⨅ i, f i) = ⨅ i, e (f i) :=
   e.dual.map_ciSup_of_directed hd hf

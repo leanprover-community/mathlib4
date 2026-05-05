@@ -392,11 +392,11 @@ protected theorem DirectedOn.sSup_inf_eq (h : DirectedOn (· ≤ ·) s) :
     sSup s ⊓ a = ⨆ b ∈ s, b ⊓ a := by
   simp_rw [inf_comm _ a, h.inf_sSup_eq]
 
-protected theorem Directed.inf_iSup_eq (h : Directed (· ≤ ·) f) :
+protected theorem Predirected.inf_iSup_eq (h : Predirected (· ≤ ·) f) :
     (a ⊓ ⨆ i, f i) = ⨆ i, a ⊓ f i := by
   rw [iSup, h.directedOn_range.inf_sSup_eq, iSup_range]
 
-protected theorem Directed.iSup_inf_eq (h : Directed (· ≤ ·) f) :
+protected theorem Predirected.iSup_inf_eq (h : Predirected (· ≤ ·) f) :
     (⨆ i, f i) ⊓ a = ⨆ i, f i ⊓ a := by
   rw [iSup, h.directedOn_range.sSup_inf_eq, iSup_range]
 
@@ -408,11 +408,11 @@ protected theorem DirectedOn.disjoint_sSup_left (h : DirectedOn (· ≤ ·) s) :
     Disjoint (sSup s) a ↔ ∀ ⦃b⦄, b ∈ s → Disjoint b a := by
   simp_rw [disjoint_iff, h.sSup_inf_eq, iSup_eq_bot]
 
-protected theorem Directed.disjoint_iSup_right (h : Directed (· ≤ ·) f) :
+protected theorem Predirected.disjoint_iSup_right (h : Predirected (· ≤ ·) f) :
     Disjoint a (⨆ i, f i) ↔ ∀ i, Disjoint a (f i) := by
   simp_rw [disjoint_iff, h.inf_iSup_eq, iSup_eq_bot]
 
-protected theorem Directed.disjoint_iSup_left (h : Directed (· ≤ ·) f) :
+protected theorem Predirected.disjoint_iSup_left (h : Predirected (· ≤ ·) f) :
     Disjoint (⨆ i, f i) a ↔ ∀ i, Disjoint (f i) a := by
   simp_rw [disjoint_iff, h.iSup_inf_eq, iSup_eq_bot]
 
@@ -500,7 +500,7 @@ lemma iSupIndep_iff_supIndep_of_injOn {ι : Type*} {f : ι → α}
   exact h i (Finset.mem_insert_self i _)
 
 theorem sSupIndep_iUnion_of_directed {η : Type*} {s : η → Set α}
-    (hs : Directed (· ⊆ ·) s) (h : ∀ i, sSupIndep (s i)) :
+    (hs : Predirected (· ⊆ ·) s) (h : ∀ i, sSupIndep (s i)) :
     sSupIndep (⋃ i, s i) := by
   by_cases hη : Nonempty η
   · rw [sSupIndep_iff_finite]

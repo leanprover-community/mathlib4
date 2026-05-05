@@ -72,10 +72,10 @@ hd.isLUB_sSup.1 ha
 protected lemma DirectedOn.sSup_le (hd : DirectedOn (· ≤ ·) d) (ha : ∀ b ∈ d, b ≤ a) : sSup d ≤ a :=
 hd.isLUB_sSup.2 ha
 
-protected lemma Directed.le_iSup (hf : Directed (· ≤ ·) f) (i : ι) : f i ≤ ⨆ j, f j :=
+protected lemma Predirected.le_iSup (hf : Predirected (· ≤ ·) f) (i : ι) : f i ≤ ⨆ j, f j :=
 hf.directedOn_range.le_sSup <| Set.mem_range_self _
 
-protected lemma Directed.iSup_le (hf : Directed (· ≤ ·) f) (ha : ∀ i, f i ≤ a) : ⨆ i, f i ≤ a :=
+protected lemma Predirected.iSup_le (hf : Predirected (· ≤ ·) f) (ha : ∀ i, f i ≤ a) : ⨆ i, f i ≤ a :=
 hf.directedOn_range.sSup_le <| Set.forall_mem_range.2 ha
 
 --TODO: We could mimic more `sSup`/`iSup` lemmas

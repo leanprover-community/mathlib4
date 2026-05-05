@@ -386,7 +386,7 @@ theorem iSup_eq_closure {ι : Sort*} (S : ι → L.Substructure M) :
 
 -- This proof uses the fact that `Substructure.closure` is finitary.
 theorem mem_iSup_of_directed {ι : Type*} [hι : Nonempty ι] {S : ι → L.Substructure M}
-    (hS : Directed (· ≤ ·) S) {x : M} :
+    (hS : Predirected (· ≤ ·) S) {x : M} :
     x ∈ ⨆ i, S i ↔ ∃ i, x ∈ S i := by
   refine ⟨?_, fun ⟨i, hi⟩ ↦ le_iSup S i hi⟩
   suffices x ∈ closure L (⋃ i, (S i : Set M)) → ∃ i, x ∈ S i by

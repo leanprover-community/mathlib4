@@ -548,14 +548,14 @@ theorem mem_biSup_of_directedOn {ι} {p : ι → Prop} {K : ι → Subgroup G} {
     simp [hi, hi']
 
 @[to_additive]
-theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {K : ι → Subgroup G} (hK : Directed (· ≤ ·) K)
+theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {K : ι → Subgroup G} (hK : Predirected (· ≤ ·) K)
     {x : G} : x ∈ (iSup K : Subgroup G) ↔ ∃ i, x ∈ K i := by
   have : iSup K = ⨆ i : PLift ι, ⨆ (_ : True), K i.down := by simp [iSup_plift_down]
   rw [this, mem_biSup_of_directedOn trivial]
   · simp
   · simp only [setOf_true]
     rw [directedOn_onFun_iff, Set.image_univ, ← directedOn_range]
-    -- `Directed.mono_comp` and much of the Set API requires `Type u` instead of `Sort u`
+    -- `Predirected.mono_comp` and much of the Set API requires `Type u` instead of `Sort u`
     intro i
     simp only [PLift.exists]
     intro j
@@ -570,7 +570,7 @@ theorem mem_iSup_prop {p : Prop} {K : p → Subgroup G} {x : G} :
   simp +contextual [h]
 
 @[to_additive]
-theorem coe_iSup_of_directed {ι} [Nonempty ι] {S : ι → Subgroup G} (hS : Directed (· ≤ ·) S) :
+theorem coe_iSup_of_directed {ι} [Nonempty ι] {S : ι → Subgroup G} (hS : Predirected (· ≤ ·) S) :
     ((⨆ i, S i : Subgroup G) : Set G) = ⋃ i, S i :=
   Set.ext fun x ↦ by simp [mem_iSup_of_directed hS]
 

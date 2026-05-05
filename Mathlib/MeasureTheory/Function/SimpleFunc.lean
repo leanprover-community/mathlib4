@@ -1056,7 +1056,7 @@ theorem restrict_lintegral_eq_lintegral_restrict (f : α →ₛ ℝ≥0∞) {s :
   rw [f.restrict_lintegral hs, lintegral_restrict]
 
 theorem lintegral_restrict_iUnion_of_directed {ι : Type*} [Countable ι]
-    (f : α →ₛ ℝ≥0∞) {s : ι → Set α} (hd : Directed (· ⊆ ·) s) (μ : Measure α) :
+    (f : α →ₛ ℝ≥0∞) {s : ι → Set α} (hd : Predirected (· ⊆ ·) s) (μ : Measure α) :
     f.lintegral (μ.restrict (⋃ i, s i)) = ⨆ i, f.lintegral (μ.restrict (s i)) := by
   simp only [lintegral, Measure.restrict_iUnion_apply_eq_iSup hd (measurableSet_preimage ..),
     ENNReal.mul_iSup]

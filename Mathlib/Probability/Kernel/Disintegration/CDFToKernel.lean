@@ -483,10 +483,10 @@ lemma setLIntegral_toKernel_univ [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ 
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     ∫⁻ b in s, hf.toKernel f (a, b) univ ∂(ν a) = κ a (s ×ˢ univ) := by
   rw [← Real.iUnion_Iic_rat, prod_iUnion]
-  have h_dir : Directed (fun x y ↦ x ⊆ y) fun q : ℚ ↦ Iic (q : ℝ) := by
+  have h_dir : Predirected (fun x y ↦ x ⊆ y) fun q : ℚ ↦ Iic (q : ℝ) := by
     refine Monotone.directed_le fun r r' hrr' ↦ Iic_subset_Iic.mpr ?_
     exact mod_cast hrr'
-  have h_dir_prod : Directed (fun x y ↦ x ⊆ y) fun q : ℚ ↦ s ×ˢ Iic (q : ℝ) := by
+  have h_dir_prod : Predirected (fun x y ↦ x ⊆ y) fun q : ℚ ↦ s ×ˢ Iic (q : ℝ) := by
     refine Monotone.directed_le fun i j hij ↦ ?_
     refine prod_subset_prod_iff.mpr (Or.inl ⟨subset_rfl, Iic_subset_Iic.mpr ?_⟩)
     exact mod_cast hij

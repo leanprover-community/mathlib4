@@ -670,7 +670,7 @@ Let `V` bounded by `p` be a basis of entourages of `β`.
 Then `UniformOnFun.gen 𝔖 (t i) (V j)` bounded by `p j` is a basis of entourages of `α →ᵤ[𝔖] β`. -/
 protected theorem hasBasis_uniformity_of_covering_of_basis {ι ι' : Type*} [Nonempty ι]
     {t : ι → Set α} {p : ι' → Prop} {V : ι' → Set (β × β)} (ht : ∀ i, t i ∈ 𝔖)
-    (hdir : Directed (· ⊆ ·) t) (hex : ∀ s ∈ 𝔖, ∃ i, s ⊆ t i) (hb : HasBasis (𝓤 β) p V) :
+    (hdir : Predirected (· ⊆ ·) t) (hex : ∀ s ∈ 𝔖, ∃ i, s ⊆ t i) (hb : HasBasis (𝓤 β) p V) :
     (𝓤 (α →ᵤ[𝔖] β)).HasBasis (fun i : ι × ι' ↦ p i.2) fun i ↦
       UniformOnFun.gen 𝔖 (t i.1) (V i.2) := by
   have hne : 𝔖.Nonempty := (range_nonempty t).mono (range_subset_iff.2 ht)

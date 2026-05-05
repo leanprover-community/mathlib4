@@ -408,7 +408,7 @@ theorem comap_top (f : K →+* L) : (⊤ : Subfield L).comap f = ⊤ :=
 /-- The underlying set of a non-empty directed sSup of subfields is just a union of the subfields.
   Note that this fails without the directedness assumption (the union of two subfields is
   typically not a subfield) -/
-theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subfield K} (hS : Directed (· ≤ ·) S)
+theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subfield K} (hS : Predirected (· ≤ ·) S)
     {x : K} : (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
   let s : Subfield K :=
     { __ := Subring.copy _ _ (Subring.coe_iSup_of_directed hS).symm
@@ -418,7 +418,7 @@ theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subfield K} (h
     (iSup_le fun i ↦ le_iSup (fun i ↦ (S i : Set K)) i) (Set.iUnion_subset fun _ ↦ le_iSup S _)
   exact this ▸ Set.mem_iUnion
 
-theorem coe_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subfield K} (hS : Directed (· ≤ ·) S) :
+theorem coe_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subfield K} (hS : Predirected (· ≤ ·) S) :
     ((⨆ i, S i : Subfield K) : Set K) = ⋃ i, ↑(S i) :=
   Set.ext fun x => by simp [mem_iSup_of_directed hS]
 

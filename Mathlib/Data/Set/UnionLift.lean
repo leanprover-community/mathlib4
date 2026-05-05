@@ -119,7 +119,7 @@ theorem iUnionLift_unary (u : T → T) (ui : ∀ i, S i → S i)
   of algebraic structures when defined on the Union of algebraic subobjects.
   For example, it could be used to prove that the lift of a collection
   of group homomorphisms on a union of subgroups preserves `*`. -/
-theorem iUnionLift_binary (dir : Directed (· ≤ ·) S) (op : T → T → T) (opi : ∀ i, S i → S i → S i)
+theorem iUnionLift_binary (dir : Predirected (· ≤ ·) S) (op : T → T → T) (opi : ∀ i, S i → S i → S i)
     (hopi :
       ∀ i x y,
         Set.inclusion (show S i ⊆ T from hT'.symm ▸ Set.subset_iUnion S i) (opi i x y) =

@@ -119,7 +119,7 @@ theorem isSatisfiable_iff_isFinitelySatisfiable {T : L.Theory} :
       exact ⟨ModelType.of T M'⟩⟩
 
 theorem isSatisfiable_directed_union_iff {ι : Type*} [Nonempty ι] {T : ι → L.Theory}
-    (h : Directed (· ⊆ ·) T) : Theory.IsSatisfiable (⋃ i, T i) ↔ ∀ i, (T i).IsSatisfiable := by
+    (h : Predirected (· ⊆ ·) T) : Theory.IsSatisfiable (⋃ i, T i) ↔ ∀ i, (T i).IsSatisfiable := by
   refine ⟨fun h' i => h'.mono (Set.subset_iUnion _ _), fun h' => ?_⟩
   rw [isSatisfiable_iff_isFinitelySatisfiable, IsFinitelySatisfiable]
   intro T0 hT0
@@ -183,7 +183,7 @@ theorem isSatisfiable_iUnion_iff_isSatisfiable_iUnion_finset {ι : Type*} (T : �
     rw [isSatisfiable_iff_isFinitelySatisfiable]
     intro s hs
     rw [Set.iUnion_eq_iUnion_finset] at hs
-    obtain ⟨t, ht⟩ := Directed.exists_mem_subset_of_finset_subset_biUnion (by
+    obtain ⟨t, ht⟩ := Predirected.exists_mem_subset_of_finset_subset_biUnion (by
       exact Monotone.directed_le fun t1 t2 (h : ∀ ⦃x⦄, x ∈ t1 → x ∈ t2) =>
         Set.iUnion_mono fun _ => Set.iUnion_mono' fun h1 => ⟨h h1, refl _⟩) hs
     exact (h t).mono ht

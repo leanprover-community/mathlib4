@@ -402,7 +402,7 @@ theorem AlgebraicIndependent.image {ι} {s : Set ι} {f : ι → A}
   convert AlgebraicIndependent.image_of_comp s f id hs
 
 theorem algebraicIndependent_iUnion_of_directed {η : Type*} [Nonempty η] {s : η → Set A}
-    (hs : Directed (· ⊆ ·) s) (h : ∀ i, AlgebraicIndependent R ((↑) : s i → A)) :
+    (hs : Predirected (· ⊆ ·) s) (h : ∀ i, AlgebraicIndependent R ((↑) : s i → A)) :
     AlgebraicIndependent R ((↑) : (⋃ i, s i) → A) := by
   refine algebraicIndependent_of_finite (⋃ i, s i) fun t ht ft => ?_
   rcases finite_subset_iUnion ft ht with ⟨I, fi, hI⟩

@@ -97,7 +97,7 @@ lemma partialSups_eq_accumulate (f : ℕ → Set α) :
 /-- For a directed set of sets `s : ℕ → Set α` and `n : ℕ`, there exists `m : ℕ` (maybe
 larger than `n`) such that `accumulate s n ⊆ s m`. -/
 lemma exists_subset_accumulate_of_directed {s : ℕ → Set α}
-  (hd : Directed (· ⊆ ·) s) (n : ℕ) : ∃ m, accumulate s n ⊆ s m := by
+  (hd : Predirected (· ⊆ ·) s) (n : ℕ) : ∃ m, accumulate s n ⊆ s m := by
   induction n with
   | zero => use 0; simp [accumulate_def]
   | succ n hn =>
@@ -106,10 +106,10 @@ lemma exists_subset_accumulate_of_directed {s : ℕ → Set α}
     simp at hk
     exact ⟨k, by simp; grind⟩
 
-lemma directed_accumulate {s : ℕ → Set α} : Directed (· ⊆ ·) (accumulate s) :=
+lemma directed_accumulate {s : ℕ → Set α} : Predirected (· ⊆ ·) (accumulate s) :=
   monotone_accumulate.directed_le
 
-lemma exists_accumulate_eq_univ_iff_of_directed {s : ℕ → Set α} (hd : Directed (· ⊆ ·) s) :
+lemma exists_accumulate_eq_univ_iff_of_directed {s : ℕ → Set α} (hd : Predirected (· ⊆ ·) s) :
     (∃ n, accumulate s n = univ) ↔ ∃ n, s n = univ := by
   refine ⟨?_, fun ⟨n, hn⟩ ↦ ⟨n,
     subset_antisymm (subset_univ _) (hn.symm.le.trans subset_accumulate)⟩⟩

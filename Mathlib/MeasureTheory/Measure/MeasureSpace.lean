@@ -447,12 +447,12 @@ theorem nonempty_inter_of_measure_lt_add' {m : MeasurableSpace α} (μ : Measure
 /-- Continuity from below:
 the measure of the union of a directed sequence of (not necessarily measurable) sets
 is the supremum of the measures. -/
-theorem _root_.Directed.measure_iUnion [Countable ι] {s : ι → Set α} (hd : Directed (· ⊆ ·) s) :
+theorem _root_.Predirected.measure_iUnion [Countable ι] {s : ι → Set α} (hd : Predirected (· ⊆ ·) s) :
     μ (⋃ i, s i) = ⨆ i, μ (s i) := by
   -- WLOG, `ι = ℕ`
   rcases Countable.exists_injective_nat ι with ⟨e, he⟩
   generalize ht : Function.extend e s ⊥ = t
-  replace hd : Directed (· ⊆ ·) t := ht ▸ hd.extend_bot he
+  replace hd : Predirected (· ⊆ ·) t := ht ▸ hd.extend_bot he
   suffices μ (⋃ n, t n) = ⨆ n, μ (t n) by
     simp only [← ht, Function.apply_extend μ, ← iSup_eq_iUnion, iSup_extend_bot he,
       Function.comp_def, Pi.bot_apply, bot_eq_empty, measure_empty] at this
@@ -513,15 +513,15 @@ theorem measure_biUnion_eq_iSup {s : ι → Set α} {t : Set ι} (ht : t.Countab
 /-- **Continuity from above**:
 the measure of the intersection of a directed downwards countable family of measurable sets
 is the infimum of the measures. -/
-theorem _root_.Directed.measure_iInter [Countable ι] {s : ι → Set α}
-    (h : ∀ i, NullMeasurableSet (s i) μ) (hd : Directed (· ⊇ ·) s) (hfin : ∃ i, μ (s i) ≠ ∞) :
+theorem _root_.Predirected.measure_iInter [Countable ι] {s : ι → Set α}
+    (h : ∀ i, NullMeasurableSet (s i) μ) (hd : Predirected (· ⊇ ·) s) (hfin : ∃ i, μ (s i) ≠ ∞) :
     μ (⋂ i, s i) = ⨅ i, μ (s i) := by
   rcases hfin with ⟨k, hk⟩
   have : ∀ t ⊆ s k, μ t ≠ ∞ := fun t ht => ne_top_of_le_ne_top hk (measure_mono ht)
   rw [← ENNReal.sub_sub_cancel hk (iInf_le (fun i => μ (s i)) k), ENNReal.sub_iInf, ←
     ENNReal.sub_sub_cancel hk (measure_mono (iInter_subset _ k)), ←
     measure_diff (iInter_subset _ k) (.iInter h) (this _ (iInter_subset _ k)),
-    diff_iInter, Directed.measure_iUnion]
+    diff_iInter, Predirected.measure_iUnion]
   · congr 1
     refine le_antisymm (iSup_mono' fun i => ?_) (iSup_mono fun i => le_measure_diff)
     rcases hd i k with ⟨j, hji, hjk⟩

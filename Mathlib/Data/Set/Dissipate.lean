@@ -86,7 +86,7 @@ theorem dissipate_succ (s : ℕ → Set α) (n : ℕ) :
 /-- For a directed set of sets `s : ℕ → Set α` and `n : ℕ`, there exists `m : ℕ` (maybe
 larger than `n`) such that `s m ⊆ dissipate s n`. -/
 lemma exists_subset_dissipate_of_directed {s : ℕ → Set α}
-  (hd : Directed (· ⊇ ·) s) (n : ℕ) : ∃ m, s m ⊆ dissipate s n := by
+  (hd : Predirected (· ⊇ ·) s) (n : ℕ) : ∃ m, s m ⊆ dissipate s n := by
   induction n with
   | zero => use 0; simp [dissipate_def]
   | succ n hn =>
@@ -94,10 +94,10 @@ lemma exists_subset_dissipate_of_directed {s : ℕ → Set α}
     obtain ⟨k, hk⟩ := hd m (n + 1)
     exact ⟨k, by simp; grind⟩
 
-lemma directed_dissipate {s : ℕ → Set α} : Directed (· ⊇ ·) (dissipate s) :=
+lemma directed_dissipate {s : ℕ → Set α} : Predirected (· ⊇ ·) (dissipate s) :=
   antitone_dissipate.directed_ge
 
-lemma exists_dissipate_eq_empty_iff_of_directed {s : ℕ → Set α} (hd : Directed (· ⊇ ·) s) :
+lemma exists_dissipate_eq_empty_iff_of_directed {s : ℕ → Set α} (hd : Predirected (· ⊇ ·) s) :
     (∃ n, dissipate s n = ∅) ↔ ∃ n, s n = ∅ := by
   refine ⟨?_, fun ⟨n, hn⟩ ↦ ⟨n, subset_eq_empty (dissipate_subset le_rfl) hn⟩⟩
   contrapose!

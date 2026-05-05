@@ -1174,7 +1174,7 @@ end Pi
 
 section Directed
 
-theorem directedOn_iUnion {r} {f : ι → Set α} (hd : Directed (· ⊆ ·) f)
+theorem directedOn_iUnion {r} {f : ι → Set α} (hd : Predirected (· ⊆ ·) f)
     (h : ∀ x, DirectedOn r (f x)) : DirectedOn r (⋃ x, f x) := by
   simp only [DirectedOn, mem_iUnion, exists_imp]
   exact fun a₁ b₁ fb₁ a₂ b₂ fb₂ =>
