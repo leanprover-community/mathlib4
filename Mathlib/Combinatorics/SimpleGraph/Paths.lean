@@ -687,30 +687,25 @@ namespace Walk
 
 variable {G} {u v : V}
 
-lemma IsPath.disjoint_edges_of_disjoint_support {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPath)
-    (hd : p.support.tail.Disjoint q.support.tail) (hl : 1 < p.length) :
+theorem IsPath.length_eq_one_of_mem_edges {p : G.Walk u v} (hp : p.IsPath) (h : s(u, v) ∈ p.edges) :
+    p.length = 1 := by
+  suffices p.length - 1 = 0 by grind [length_edges]
+  rw [← hp.getVert_eq_start_iff <| p.length.sub_le 1]
+  exact (hp.eq_penultimate_of_mem_edges <| Sym2.eq_swap ▸ h).symm
+
+theorem IsPath.disjoint_edges_of_disjoint_support {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPath)
+    (hd : p.support.tail.Disjoint q.support.tail) (hl : p.length ≠ 1) :
     p.edges.Disjoint q.edges := by
-  dsimp only [List.Disjoint] at hd ⊢
+  dsimp [List.Disjoint] at hd ⊢
   contrapose! hd
   obtain ⟨⟨a, b⟩, hep, heq, _⟩ := hd
-  by_cases! h : a = v ∨ b = v
-  · by_cases hh : a = v
-    · use b
-      grind [getVert_mem_tail_support, not_nil_iff_lt_length, q.mem_support_iff.mp,
-        mem_support_of_mem_edges, getVert_eq_end_iff, eq_penultimate_of_mem_edges hp (hh ▸ hep)]
-    · by_cases ha : a = u
-      · cases p.mem_support_iff.mp <| p.snd_mem_support_of_mem_edges hep
-        · grind [p.adj_of_mem_edges hep |>.ne]
-        · suffices p.length - 1 = 0 by lia
-          refine hp.getVert_eq_start_iff (p.length.sub_le 1) |>.mp ?_
-          exact eq_penultimate_of_mem_edges hp (by grind) |>.symm
-      · use a
-        grind [p.mem_support_iff.mp, q.mem_support_iff.mp, fst_mem_support_of_mem_edges]
-  by_cases a = u
-  · grind [p.mem_support_iff.mp <| p.snd_mem_support_of_mem_edges hep,
-      q.mem_support_iff.mp <| q.snd_mem_support_of_mem_edges heq, p.adj_of_mem_edges hep |>.ne]
-  · use a
-    grind [p.mem_support_iff.mp, q.mem_support_iff.mp, fst_mem_support_of_mem_edges]
+  have := p.mem_support_iff.mp <| p.fst_mem_support_of_mem_edges hep
+  have := p.mem_support_iff.mp <| p.snd_mem_support_of_mem_edges hep
+  have := q.mem_support_iff.mp <| q.fst_mem_support_of_mem_edges heq
+  have := q.mem_support_iff.mp <| q.snd_mem_support_of_mem_edges heq
+  by_cases s(a, b) = s(u, v)
+  · grind [length_eq_one_of_mem_edges]
+  · grind [p.adj_of_mem_edges hep |>.ne]
 
 lemma isPath_append_isCycle {u v} {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPath) (hq : q.IsPath)
     (h : p.support.tail.Disjoint q.support.tail) (hn : 1 < p.length ⊔ q.length) :
@@ -719,8 +714,8 @@ lemma isPath_append_isCycle {u v} {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPa
   refine ⟨isTrail_append_iff_disjoint_edges .. |>.mpr ⟨hp.isTrail, hq.isTrail, ?_⟩, ?_, ?_⟩
   · rintro ⟨⟩ h₁ h₂
     cases lt_sup_iff.mp hn
-    · exact hp.disjoint_edges_of_disjoint_support h ‹_› h₁ h₂
-    · exact hq.disjoint_edges_of_disjoint_support h.symm ‹_› h₂ h₁
+    · exact hp.disjoint_edges_of_disjoint_support h (Nat.ne_of_gt ‹_›) h₁ h₂
+    · exact hq.disjoint_edges_of_disjoint_support h.symm (Nat.ne_of_gt ‹_›) h₂ h₁
   · grind [nil_append_iff, nil_iff_length_eq]
   · rw [tail_support_append, List.nodup_append']
     exact ⟨hp.support_nodup.tail, hq.support_nodup.tail, h⟩
