@@ -305,6 +305,13 @@ abbrev comp (g : N → M) : SMul N α where smul := SMul.comp.smul g
 
 variable {α}
 
+/-- The action from `SMul.comp` is the original action after applying the function. -/
+@[to_additive
+/-- The additive action from `VAdd.comp` is the original action after applying the function. -/]
+theorem comp_smul_def (g : N → M) (n : N) (a : α) :
+    letI := SMul.comp α g; n • a = g n • a :=
+  rfl
+
 /-- Given a tower of scalar actions `M → α → β`, if we use `SMul.comp`
 to pull back both of `M`'s actions by a map `g : N → M`, then we obtain a new
 tower of scalar actions `N → α → β`.
