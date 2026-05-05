@@ -458,15 +458,22 @@ namespace FilteredColimit
 variable {R K} {J : Type u} [SmallCategory J] [IsFiltered J] {F : J ⥤ FlatExtension R K}
   (c : Cocone (F ⋙ (forget₂ _ CommRingCat)))
 
-def coconeOfCoconeForgetPt (hc : IsColimit c) : FlatExtension R K := sorry
+def coconeOfCoconeForgetPt (hc : IsColimit c) : FlatExtension R K := by
+  refine @FlatExtension.mk R _ _ K _ _ c.pt _ ?_ ?_ ?_ ?_ ?_ ?_
+  all_goals sorry
 
 def coconeOfCoconeForget (hc : IsColimit c) : Cocone F where
   pt := coconeOfCoconeForgetPt c hc
-  ι := sorry
+  ι := {
+    app j := by
+      refine .mk' R K (c.ι.app j).hom ?_ ?_
+      all_goals sorry
+  }
 
 def isColimitCoconeOfCoconeForget (hc : IsColimit c) : IsColimit (coconeOfCoconeForget c hc) := by
-  -- refine IsColimit.ofFaithful (forget₂ _ CommRingCat.{u}) hc ?_ ?_
-  sorry
+  refine IsColimit.ofFaithful (forget₂ _ CommRingCat.{u}) hc
+    (fun s ↦ .mk' R K (hc.desc ((forget₂ _ CommRingCat).mapCocone s)).hom ?_ ?_) fun s ↦ rfl
+  all_goals sorry
 
 instance : HasColimitsOfShape J (FlatExtension R K) where
   has_colimit F := by
