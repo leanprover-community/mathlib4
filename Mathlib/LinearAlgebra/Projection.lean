@@ -162,8 +162,6 @@ See also:
 noncomputable def projection (hpq : IsCompl p q) :=
   p.subtype ∘ₗ p.projectionOnto q hpq
 
-@[deprecated (since := "2026-05-04")] alias IsCompl.projection := projection
-
 variable {p q}
 
 open Submodule
@@ -172,140 +170,85 @@ theorem projection_apply (hpq : IsCompl p q) (x : E) :
     p.projection q hpq x = p.projectionOnto q hpq x :=
   rfl
 
-@[deprecated (since := "2026-05-04")] alias IsCompl.projection_apply := projection_apply
-
 @[simp]
 theorem coe_projectionOnto_apply (hpq : IsCompl p q) (x : E) :
     (p.projectionOnto q hpq x : E) = p.projection q hpq x :=
   rfl
-
-@[deprecated (since := "2026-05-04")]
-alias coe_linearProjOfIsCompl_apply := coe_projectionOnto_apply
 
 @[simp]
 theorem projection_apply_mem (hpq : IsCompl p q) (x : E) :
     p.projection q hpq x ∈ p :=
   SetLike.coe_mem _
 
-@[deprecated (since := "2026-05-04")] alias IsCompl.projection_apply_mem := projection_apply_mem
-
 @[simp]
 theorem projectionOnto_apply_left (h : IsCompl p q) (x : p) :
     projectionOnto p q h x = x := by
   simp [projectionOnto, prodEquivOfIsCompl_symm_apply_left]
 
-@[deprecated (since := "2026-05-04")]
-alias linearProjOfIsCompl_apply_left := projectionOnto_apply_left
-
 @[simp]
 theorem projection_apply_left (hpq : IsCompl p q) (x : p) :
     p.projection q hpq x = x := by simp [projection]
-
-@[deprecated (since := "2026-05-04")] alias IsCompl.projection_apply_left := projection_apply_left
 
 @[simp]
 theorem range_projectionOnto (h : IsCompl p q) : range (projectionOnto p q h) = ⊤ :=
   range_eq_of_proj (projectionOnto_apply_left h)
 
-@[deprecated (since := "2026-05-04")] alias linearProjOfIsCompl_range := range_projectionOnto
-
 @[simp]
 theorem range_projection (hpq : IsCompl p q) : range (p.projection q hpq) = p := by
   simp [projection, range_comp]
 
-@[deprecated (since := "2026-05-04")] alias IsCompl.projection_range := range_projection
-
 theorem projectionOnto_surjective (h : IsCompl p q) :
     Function.Surjective (projectionOnto p q h) :=
   range_eq_top.mp (range_projectionOnto h)
-
-@[deprecated (since := "2026-05-04")]
-alias linearProjOfIsCompl_surjective := projectionOnto_surjective
 
 @[simp]
 theorem projectionOnto_apply_eq_zero_iff (h : IsCompl p q) {x : E} :
     projectionOnto p q h x = 0 ↔ x ∈ q := by
   simp [projectionOnto, prodEquivOfIsCompl_symm_apply_fst_eq_zero]
 
-@[deprecated (since := "2026-05-04")]
-alias linearProjOfIsCompl_apply_eq_zero_iff := projectionOnto_apply_eq_zero_iff
-
 @[simp]
 theorem projection_apply_eq_zero_iff (hpq : IsCompl p q) {x : E} :
     p.projection q hpq x = 0 ↔ x ∈ q := by
   simp [projection, -coe_projectionOnto_apply]
 
-@[deprecated (since := "2026-05-04")]
-alias IsCompl.projection_apply_eq_zero_iff := projection_apply_eq_zero_iff
-
 alias ⟨_, projectionOnto_apply_of_mem_right⟩ :=
   projectionOnto_apply_eq_zero_iff
 
-@[deprecated (since := "2026-05-05")] alias linearProjOfIsCompl_apply_of_mem_right :=
-  projectionOnto_apply_of_mem_right
-
 alias ⟨_, projection_apply_of_mem_right⟩ :=
   projection_apply_eq_zero_iff
-
-@[deprecated (since := "2026-05-05")] alias IsCompl.projection_apply_of_mem_right :=
-  projection_apply_of_mem_right
-
-@[deprecated projectionOnto_apply_of_mem_right (since := "2026-04-27")]
-theorem linearProjOfIsCompl_apply_right' (h : IsCompl p q) (x : E) (hx : x ∈ q) :
-    projectionOnto p q h x = 0 :=
-  projectionOnto_apply_of_mem_right h hx
 
 @[simp]
 theorem projectionOnto_apply_right (h : IsCompl p q) (x : q) :
     projectionOnto p q h x = 0 :=
   projectionOnto_apply_of_mem_right h x.2
 
-@[deprecated (since := "2026-05-04")]
-alias linearProjOfIsCompl_apply_right := projectionOnto_apply_right
-
 @[simp]
 theorem projection_apply_right (h : IsCompl p q) (x : q) :
     p.projection q h x = 0 :=
   projection_apply_of_mem_right h x.2
 
-@[deprecated (since := "2026-05-05")] alias IsCompl.projection_apply_right :=
-  projection_apply_right
-
 @[simp]
 theorem ker_projectionOnto (h : IsCompl p q) : ker (projectionOnto p q h) = q :=
   ext fun _ => mem_ker.trans (projectionOnto_apply_eq_zero_iff h)
-
-@[deprecated (since := "2026-05-04")] alias linearProjOfIsCompl_ker := ker_projectionOnto
 
 @[simp]
 theorem ker_projection (hpq : IsCompl p q) :
     ker (p.projection q hpq) = q := by
   simp [projection, ker_comp]
 
-@[deprecated (since := "2026-05-04")] alias IsCompl.projection_ker := ker_projection
-
 theorem projectionOnto_comp_subtype (h : IsCompl p q) :
     (projectionOnto p q h).comp p.subtype = LinearMap.id :=
   LinearMap.ext <| projectionOnto_apply_left h
 
-@[deprecated (since := "2026-05-04")]
-alias linearProjOfIsCompl_comp_subtype := projectionOnto_comp_subtype
-
 theorem projectionOnto_projection (h : IsCompl p q) (x : E) :
     projectionOnto p q h (p.projection q h x) = projectionOnto p q h x :=
   projectionOnto_apply_left h _
-
-@[deprecated (since := "2026-05-04")]
-alias linearProjOfIsCompl_isCompl_projection := projectionOnto_projection
 
 /-- The linear projection onto a subspace along its complement is an idempotent. -/
 @[simp]
 theorem isIdempotentElem_projection (hpq : IsCompl p q) :
     IsIdempotentElem (p.projection q hpq) :=
   LinearMap.ext fun _ ↦ congr($(projectionOnto_projection hpq _))
-
-@[deprecated (since := "2026-05-04")]
-alias IsCompl.projection_isIdempotentElem := isIdempotentElem_projection
 
 theorem existsUnique_add_of_isCompl_prod (hc : IsCompl p q) (x : E) :
     ∃! u : p × q, (u.fst : E) + u.snd = x :=
@@ -322,36 +265,22 @@ theorem projection_add_projection_eq_self (hpq : IsCompl p q) (x : E) :
   rw [← prodComm_trans_prodEquivOfIsCompl _ _ hpq]
   exact (prodEquivOfIsCompl _ _ hpq).apply_symm_apply x
 
-@[deprecated (since := "2026-05-04")]
-alias IsCompl.projection_add_projection_eq_self := projection_add_projection_eq_self
-
 theorem projection_add_projection_eq_id (hpq : IsCompl p q) :
     p.projection q hpq + q.projection p hpq.symm = .id :=
   LinearMap.ext (projection_add_projection_eq_self hpq)
-
-@[deprecated (since := "2026-05-04")]
-alias IsCompl.projection_add_projection_eq_id := projection_add_projection_eq_id
 
 lemma projection_eq_self_sub_projection (hpq : IsCompl p q) (x : E) :
     q.projection p hpq.symm x = x - p.projection q hpq x := by
   rw [eq_sub_iff_add_eq, projection_add_projection_eq_self]
 
-@[deprecated (since := "2026-05-05")] alias IsCompl.projection_eq_self_sub_projection :=
-  projection_eq_self_sub_projection
-
 lemma projection_eq_id_sub_projection (hpq : IsCompl p q) :
     q.projection p hpq.symm = .id - p.projection q hpq :=
   LinearMap.ext (projection_eq_self_sub_projection hpq)
-
-@[deprecated (since := "2026-05-05")] alias IsCompl.projection_eq_id_sub_projection :=
-  projection_eq_id_sub_projection
 
 /-- The projection to `p` along `q` of `x` equals `x` if and only if `x ∈ p`. -/
 @[simp] lemma projection_eq_self_iff (hpq : IsCompl p q) (x : E) :
     p.projection q hpq x = x ↔ x ∈ p := by
   rw [eq_comm, ← sub_eq_zero, ← projection_eq_self_sub_projection, projection_apply_eq_zero_iff]
-
-@[deprecated (since := "2026-05-04")] alias IsCompl.projection_eq_self_iff := projection_eq_self_iff
 
 @[simp]
 theorem prodEquivOfIsCompl_symm_apply (hpq : IsCompl p q) (x : E) :
@@ -519,8 +448,6 @@ theorem projectionOnto_of_proj (f : E →ₗ[R] p) (hf : ∀ x : p, f x = x) :
   have : x ∈ p ⊔ (ker f) := by simp only [(isCompl_of_proj hf).sup_eq_top, mem_top]
   rcases mem_sup'.1 this with ⟨x, y, rfl⟩
   simp [hf]
-
-@[deprecated (since := "2026-05-04")] alias linearProjOfIsCompl_of_proj := projectionOnto_of_proj
 
 /-- If `f : E →ₗ[R] F` and `g : E →ₗ[R] G` are two surjective linear maps and
 their kernels are complement of each other, then `x ↦ (f x, g x)` defines
@@ -705,9 +632,6 @@ theorem IsIdempotentElem.eq_projection {T : E →ₗ[R] E} (hT : IsIdempotentEle
   convert ofIsCompl_subtype_zero_eq hT.isCompl
   exact ofIsCompl_eq _ (by simp [hT.isProj_range.map_id]) (by simp) |>.symm
 
-@[deprecated (since := "2026-05-04")] alias IsIdempotentElem.eq_isCompl_projection :=
-  IsIdempotentElem.eq_projection
-
 open LinearMap in
 /-- A linear map is an idempotent if and only if it equals the projection
 onto its range along its kernel. -/
@@ -715,9 +639,6 @@ theorem isIdempotentElem_iff_eq_projection_range_ker {T : E →ₗ[R] E} :
     IsIdempotentElem T ↔ ∃ (h : IsCompl (range T) (ker T)), T = T.range.projection T.ker h :=
   ⟨fun hT => ⟨hT.isProj_range.isCompl, hT.eq_projection⟩,
    fun ⟨hT, h⟩ => h.symm ▸ isIdempotentElem_projection hT⟩
-
-@[deprecated (since := "2026-05-04")] alias isIdempotentElem_iff_eq_isCompl_projection_range_ker :=
-  isIdempotentElem_iff_eq_projection_range_ker
 
 open LinearMap in
 /-- Given an idempotent linear operator `q`,
@@ -831,3 +752,63 @@ theorem commute_iff_of_isUnit (hT : IsUnit T) (hf : IsIdempotentElem f) :
   exact Commute.units_inv_right
 
 end LinearMap.IsIdempotentElem
+
+/-! ## Deprecated -/
+
+namespace Submodule
+
+@[deprecated (since := "2026-05-04")] alias IsCompl.projection := projection
+@[deprecated (since := "2026-05-04")] alias IsCompl.projection_apply := projection_apply
+@[deprecated (since := "2026-05-04")] alias coe_linearProjOfIsCompl_apply :=
+  coe_projectionOnto_apply
+@[deprecated (since := "2026-05-04")] alias IsCompl.projection_apply_mem := projection_apply_mem
+@[deprecated (since := "2026-05-04")] alias linearProjOfIsCompl_apply_left :=
+  projectionOnto_apply_left
+@[deprecated (since := "2026-05-04")] alias IsCompl.projection_apply_left := projection_apply_left
+@[deprecated (since := "2026-05-04")] alias linearProjOfIsCompl_range := range_projectionOnto
+@[deprecated (since := "2026-05-04")] alias IsCompl.projection_range := range_projection
+@[deprecated (since := "2026-05-04")] alias linearProjOfIsCompl_surjective :=
+  projectionOnto_surjective
+@[deprecated (since := "2026-05-04")] alias linearProjOfIsCompl_apply_eq_zero_iff :=
+  projectionOnto_apply_eq_zero_iff
+@[deprecated (since := "2026-05-04")] alias IsCompl.projection_apply_eq_zero_iff :=
+  projection_apply_eq_zero_iff
+@[deprecated (since := "2026-05-05")] alias linearProjOfIsCompl_apply_of_mem_right :=
+  projectionOnto_apply_of_mem_right
+@[deprecated (since := "2026-04-27")] alias linearProjOfIsCompl_apply_right' :=
+  projectionOnto_apply_of_mem_right
+@[deprecated (since := "2026-05-05")] alias IsCompl.projection_apply_of_mem_right :=
+  projection_apply_of_mem_right
+@[deprecated (since := "2026-05-04")] alias linearProjOfIsCompl_apply_right :=
+  projectionOnto_apply_right
+@[deprecated (since := "2026-05-05")] alias IsCompl.projection_apply_right :=
+  projection_apply_right
+@[deprecated (since := "2026-05-04")] alias linearProjOfIsCompl_ker := ker_projectionOnto
+@[deprecated (since := "2026-05-04")] alias IsCompl.projection_ker := ker_projection
+@[deprecated (since := "2026-05-04")] alias linearProjOfIsCompl_comp_subtype :=
+  projectionOnto_comp_subtype
+@[deprecated (since := "2026-05-04")] alias linearProjOfIsCompl_isCompl_projection :=
+  projectionOnto_projection
+@[deprecated (since := "2026-05-04")] alias IsCompl.projection_isIdempotentElem :=
+  isIdempotentElem_projection
+@[deprecated (since := "2026-05-04")] alias IsCompl.projection_add_projection_eq_self :=
+  projection_add_projection_eq_self
+@[deprecated (since := "2026-05-04")] alias IsCompl.projection_add_projection_eq_id :=
+  projection_add_projection_eq_id
+@[deprecated (since := "2026-05-05")] alias IsCompl.projection_eq_self_sub_projection :=
+  projection_eq_self_sub_projection
+@[deprecated (since := "2026-05-05")] alias IsCompl.projection_eq_id_sub_projection :=
+  projection_eq_id_sub_projection
+@[deprecated (since := "2026-05-04")] alias IsCompl.projection_eq_self_iff := projection_eq_self_iff
+
+end Submodule
+
+namespace LinearMap
+
+@[deprecated (since := "2026-05-04")] alias linearProjOfIsCompl_of_proj := projectionOnto_of_proj
+@[deprecated (since := "2026-05-04")] alias IsIdempotentElem.eq_isCompl_projection :=
+  IsIdempotentElem.eq_projection
+@[deprecated (since := "2026-05-04")] alias isIdempotentElem_iff_eq_isCompl_projection_range_ker :=
+  isIdempotentElem_iff_eq_projection_range_ker
+
+end LinearMap
