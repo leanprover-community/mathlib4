@@ -361,8 +361,7 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux₂
   refine RingHom.finite_algebraMap.mp ?_
   convert equiv.symm.toRingEquiv.finite.comp hf
   apply IsLocalization.ringHom_ext (.powers f)
-  dsimp [-AlgEquiv.symm_toRingEquiv,
-    ← AlgEquiv.toAlgHom_toRingHom, -AlgHomClass.toRingHom_toAlgHom]
+  dsimp [-AlgEquiv.symm_toRingEquiv, ← AlgEquiv.toAlgHom_toRingHom]
   simp only [← IsScalarTower.algebraMap_eq, RingHom.comp_assoc, AlgHom.comp_algebraMap_of_tower]
 
 /--
