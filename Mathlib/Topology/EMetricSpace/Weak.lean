@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Topology.Bornology.Real
 public import Mathlib.Topology.Compactification.OnePoint.Basic
-public import Mathlib.Topology.MetricSpace.Basic
+public import Mathlib.Topology.Instances.ENat
+public import Mathlib.Topology.Instances.Nat
 public import Mathlib.Topology.Order.Real
 
 /-!
@@ -42,11 +43,11 @@ universe u
 variable {α : Type u} [t : TopologicalSpace α]
 
 @[to_dual]
-instance [Preorder α] [OrderTopology α] : TopologicalSpace (WithTop α) :=
+instance instTopologicalSpaceWithTopOfPreorder [Preorder α] : TopologicalSpace (WithTop α) :=
   Preorder.topology (WithTop α)
 
 @[to_dual]
-instance [Preorder α] [OrderTopology α] : OrderTopology (WithTop α) where
+instance instOrderTopologyWithTop [Preorder α] [OrderTopology α] : OrderTopology (WithTop α) where
   topology_eq_generate_intervals := rfl
 
 section
@@ -197,14 +198,14 @@ so if `WithTop α` -/
 @[to_dual]
 instance instWeakPseudoEMetricSpaceWithTop [m : WeakPseudoEMetricSpace α] :
     WeakPseudoEMetricSpace (WithTop α) :=
-  let : TopologicalSpace (Option α) := instTopologicalSpaceWithTopOfOrderTopology
+  let : TopologicalSpace (Option α) := instTopologicalSpaceWithTopOfPreorder
   Option.weakPseudoEMetricSpace_of_isOpenEmbedding WithTop.isOpenEmbedding_some
 
 /-- If `α` has a topology induced by a linear order in is a weak extended metric space,
 so if `WithTop α` -/
 @[to_dual]
 instance instWeakEMetricSpaceWithTop [m : WeakEMetricSpace α] : WeakEMetricSpace (WithTop α) :=
-  let : TopologicalSpace (Option α) := instTopologicalSpaceWithTopOfOrderTopology
+  let : TopologicalSpace (Option α) := instTopologicalSpaceWithTopOfPreorder
   Option.weakEMetricSpace_of_isOpenEmbedding WithTop.isOpenEmbedding_some
 
 /-- The one point compactification of a weak pseudo extended metric space is again a weak pseudo
@@ -229,6 +230,10 @@ noncomputable instance instWeakEMetricSpaceENNReal : WeakEMetricSpace ℝ≥0∞
 noncomputable instance instWeakEMetricSpaceEReal : WeakEMetricSpace EReal :=
   instWeakEMetricSpaceWithBot
 
+/-- `ℕ∞` is a weak extended metric space with its usual distance function. -/
+noncomputable instance instWeakEMetricSpaceENat : WeakEMetricSpace ℕ∞ :=
+  instWeakEMetricSpaceWithTop
+
 theorem ENNReal.edist_eq_top_iff (a b : ℝ≥0∞) : edist a b = ⊤ ↔ a ≠ b ∧ (a = ⊤ ∨ b = ⊤) := by
   cases a <;> cases b <;> simp only [ne_eq, not_true_eq_false, or_self, and_true, iff_false,
     top_ne_coe, not_false_eq_true, coe_ne_top, or_false, and_self, or_true, and_self, iff_true,
@@ -238,4 +243,4 @@ theorem ENNReal.edist_eq_top_iff (a b : ℝ≥0∞) : edist a b = ⊤ ↔ a ≠ 
   · rfl
   · exact edist_ne_top _ _
 
---TODO: Many more lemmas around `edist` on `ℝ≥0∞` to add
+--TODO: Many more lemmas around `edist` on `ℝ≥0∞` etc. to add
