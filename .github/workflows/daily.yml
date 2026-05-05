@@ -127,7 +127,7 @@ jobs:
           api-key: ${{ secrets.ZULIP_API_KEY }}
           email: 'github-mathlib4-bot@leanprover.zulipchat.com'
           organization-url: 'https://leanprover.zulipchat.com'
-          to: 'nightly-testing'
+          to: 'nightly-testing-mathlib'
           type: 'stream'
           topic: 'leanchecker'
           content: |
@@ -140,7 +140,7 @@ jobs:
           api-key: ${{ secrets.ZULIP_API_KEY }}
           email: 'github-mathlib4-bot@leanprover.zulipchat.com'
           organization-url: 'https://leanprover.zulipchat.com'
-          to: 'nightly-testing'
+          to: 'nightly-testing-mathlib'
           type: 'stream'
           topic: 'leanchecker failure'
           content: |
@@ -250,7 +250,7 @@ jobs:
           api-key: ${{ secrets.ZULIP_API_KEY }}
           email: 'github-mathlib4-bot@leanprover.zulipchat.com'
           organization-url: 'https://leanprover.zulipchat.com'
-          to: 'nightly-testing'
+          to: 'nightly-testing-mathlib'
           type: 'stream'
           topic: 'mathlib test executable'
           content: |
@@ -263,7 +263,7 @@ jobs:
           api-key: ${{ secrets.ZULIP_API_KEY }}
           email: 'github-mathlib4-bot@leanprover.zulipchat.com'
           organization-url: 'https://leanprover.zulipchat.com'
-          to: 'nightly-testing'
+          to: 'nightly-testing-mathlib'
           type: 'stream'
           topic: 'mathlib test executable failure'
           content: |
@@ -415,7 +415,7 @@ jobs:
           api-key: ${{ secrets.ZULIP_API_KEY }}
           email: 'github-mathlib4-bot@leanprover.zulipchat.com'
           organization-url: 'https://leanprover.zulipchat.com'
-          to: 'nightly-testing'
+          to: 'nightly-testing-mathlib'
           type: 'stream'
           topic: 'nanoda'
           content: |
@@ -428,7 +428,7 @@ jobs:
           api-key: ${{ secrets.ZULIP_API_KEY }}
           email: 'github-mathlib4-bot@leanprover.zulipchat.com'
           organization-url: 'https://leanprover.zulipchat.com'
-          to: 'nightly-testing'
+          to: 'nightly-testing-mathlib'
           type: 'stream'
           topic: 'nanoda failure'
           content: |
