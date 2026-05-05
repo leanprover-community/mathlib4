@@ -64,24 +64,21 @@ Recall that when `R` is the semiring corresponding to the nonnegative elements o
 `Submodule R' M` is the type of cones of `M`. This instance reflects such cones about `0`.
 
 This is available as an instance in the `Pointwise` locale. -/
-instance : IsConcreteNeg (Submodule R M) M where
-  neg p := { -p.toAddSubmonoid with
-    smul_mem' := fun r m hm => Set.mem_neg.2 <| smul_neg r m ▸ p.smul_mem r <| Set.mem_neg.1 hm }
-  coe_set_neg' p := by simp
-
-set_option linter.missingDocs false in
-/-- The submodule with every element negated. -/
-@[instance_reducible, deprecated SetLike.pointwiseNeg (since := "2026-04-30")]
+@[instance_reducible]
 protected def pointwiseNeg : Neg (Submodule R M) where
   neg p :=
     { -p.toAddSubmonoid with
       smul_mem' := fun r m hm => Set.mem_neg.2 <| smul_neg r m ▸ p.smul_mem r <| Set.mem_neg.1 hm }
+
+scoped[Pointwise] attribute [instance] Submodule.pointwiseNeg
 
 open scoped Pointwise
 
 @[deprecated SetLike.coe_set_neg (since := "2026-04-30")]
 theorem coe_set_neg (S : Submodule R M) : ↑(-S) = -(S : Set M) :=
   rfl
+
+instance : IsConcreteNeg (Submodule R M) M := ⟨fun _ => rfl⟩
 
 @[simp]
 theorem neg_toAddSubmonoid (S : Submodule R M) : (-S).toAddSubmonoid = -S.toAddSubmonoid :=
@@ -95,8 +92,7 @@ theorem mem_neg {g : M} {S : Submodule R M} : g ∈ -S ↔ -g ∈ S :=
 
 This is available as an instance in the `Pointwise` locale. -/
 @[instance_reducible, deprecated SetLike.involutivePointwiseNeg (since := "2026-04-30")]
-protected def involutivePointwiseNeg : InvolutiveNeg (Submodule R M) where
-  neg_neg _S := SetLike.coe_injective <| neg_neg _
+protected def involutivePointwiseNeg : InvolutiveNeg (Submodule R M) := inferInstance
 
 @[deprecated SetLike.neg_le_neg (since := "2026-04-30")]
 theorem neg_le_neg {S T : Submodule R M} : -S ≤ -T ↔ S ≤ T :=

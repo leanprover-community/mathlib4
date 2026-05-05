@@ -25,33 +25,28 @@ open scoped Pointwise
 /-- A class to indicate that the instance of `Neg` on the type is compatible with the
 canonical injection between `A` and `Set B`.
 -/
-class IsConcreteNeg (α : Type*) (V : outParam Type*) [Neg V] [SetLike α V] where
-  /-- Mapping an instance of `α` to its pointwise negative. -/
-  neg : α → α
-  coe_set_neg' (p : α) : neg p = -(p : Set V)
+class IsConcreteNeg (α : Type*) (V : outParam Type*) [Neg V] [Neg α] [SetLike α V] where
+  coe_set_neg (p : α) : ↑(-p) = -(p : Set V)
 
 namespace SetLike
 
 variable {α : Type*} {V : Type*}
-variable [Neg V] [SetLike α V] [IsConcreteNeg α V]
 
-/-- A `SetLike` with every element negated.
+section Neg
 
-This is available as an instance in the `Pointwise` locale. -/
-@[instance_reducible]
-protected def pointwiseNeg : Neg α := ⟨IsConcreteNeg.neg⟩
-
-scoped[Pointwise] attribute [instance] SetLike.pointwiseNeg
+variable [Neg V] [Neg α] [SetLike α V] [IsConcreteNeg α V]
 
 open scoped Pointwise
 
-@[simp] theorem coe_set_neg (p : α) : ↑(-p) = -(p : Set V) :=
-  IsConcreteNeg.coe_set_neg' p
+@[simp] theorem coe_set_neg (p : α) : ↑(-p) = -(p : Set V) := IsConcreteNeg.coe_set_neg p
 
 @[simp] theorem mem_neg {p : α} {g : V} : g ∈ -p ↔ -g ∈ p := by simp [← SetLike.mem_coe]
 
-variable {α : Type*} {V : Type*}
-variable [InvolutiveNeg V] [SetLike α V] [IsConcreteNeg α V]
+end Neg
+
+section InvolutiveNeg
+
+variable [InvolutiveNeg V] [Neg α] [instSL : SetLike α V] [IsConcreteNeg α V]
 
 /-- `SetLike.pointwiseNeg` is involutive.
 
@@ -62,7 +57,11 @@ protected def involutivePointwiseNeg : InvolutiveNeg α where
 
 scoped[Pointwise] attribute [instance] SetLike.involutivePointwiseNeg
 
+section LE
+
 variable [LE α] [IsConcreteLE α V]
+
+include instSL
 
 @[simp] theorem neg_le_neg {p q : α} : -p ≤ -q ↔ p ≤ q := by
   simp [← SetLike.coe_subset_coe]
@@ -70,9 +69,13 @@ variable [LE α] [IsConcreteLE α V]
 theorem neg_le {p q : α} : -p ≤ q ↔ p ≤ -q := by
   simp [← SetLike.coe_subset_coe, Set.neg_subset]
 
-variable {α : Type*} {V : Type*}
-variable [InvolutiveNeg V] [SetLike α V] [IsConcreteNeg α V]
+end LE
+
+section PartialOrder
+
 variable [PartialOrder α] [IsConcreteLE α V]
+
+include instSL
 
 theorem neg_eq_self_iff_neg_le {p : α} : -p = p ↔ -p ≤ p :=
   ⟨le_of_eq, fun h => antisymm h <| neg_le.mp h⟩
@@ -81,5 +84,9 @@ theorem neg_eq_self_iff_neg_le {p : α} : -p = p ↔ -p ≤ p :=
 def negOrderIso : α ≃o α where
   toEquiv := Equiv.neg _
   map_rel_iff' := neg_le_neg
+
+end PartialOrder
+
+end InvolutiveNeg
 
 end SetLike
