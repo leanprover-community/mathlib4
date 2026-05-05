@@ -58,7 +58,7 @@ instance isOneHypercoverDense_toOver_Spec :
     Functor.IsOneHypercoverDense.{u} (CostructuredArrow.toOver P Scheme.Spec S)
       ((CostructuredArrow.toOver P Scheme.Spec S).inducedTopology (smallGrothendieckTopology P))
       (smallGrothendieckTopology P) :=
-  Functor.IsOneHypercoverDense.of_hasPullbacks (fun X ↦ by
+  Functor.IsOneHypercoverDense.of_hasPullbacks fun X ↦ by
     let 𝒰 := affineOpenCover X.left
     let 𝒱 : Cover (precoverage P) X.left :=
       𝒰.openCover.changeProp (fun _ ↦ IsZariskiLocalAtSource.of_isOpenImmersion _)
@@ -69,6 +69,6 @@ instance isOneHypercoverDense_toOver_Spec :
       fun i ↦ CostructuredArrow.homMk (𝒰.f i) (by simp), ?_⟩
     rw [Scheme.mem_smallGrothendieckTopology]
     exact ⟨𝒱, inferInstance, fun i ↦ P.comp_mem _ _ (𝒱.map_prop i) X.prop,
-      fun _ _ ⟨i⟩ ↦ (Sieve.mem_ofArrows_iff ..).2 ⟨i, 𝟙 _, by cat_disch⟩⟩)
+      fun _ _ ⟨i⟩ ↦ (Sieve.mem_ofArrows_iff ..).2 ⟨i, 𝟙 _, by cat_disch⟩⟩
 
 end AlgebraicGeometry.Scheme
