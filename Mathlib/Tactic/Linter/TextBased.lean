@@ -289,9 +289,9 @@ def adaptationNoteLinter : TextbasedLinter := fun opts lines ↦ Id.run do
     -- (e.g. "-- Adaptation note:" or "-- adaptation note:"), but not lines that
     -- merely reference the concept (e.g. "-- see adaptation note") or that
     -- use the correct #adaptation_note command.
-    if line.containsSubstr "daptation note" &&
-        !line.containsSubstr "#adaptation_note" &&
-        !line.containsSubstr "see adaptation note" then
+    if line.contains "daptation note" &&
+        !line.contains "#adaptation_note" &&
+        !line.contains "see adaptation note" then
       errors := errors.push (StyleError.adaptationNote, idx + 1)
   return (errors, none)
 
