@@ -454,6 +454,8 @@ theorem toJordanDecomposition_eq {s : SignedMeasure α} {j : JordanDecomposition
 def totalVariation (s : SignedMeasure α) : Measure α :=
   s.toJordanDecomposition.posPart + s.toJordanDecomposition.negPart
 
+instance (s : SignedMeasure α) : IsFiniteMeasure s.totalVariation := isFiniteMeasureAdd
+
 theorem totalVariation_zero : (0 : SignedMeasure α).totalVariation = 0 := by
   simp [totalVariation, toJordanDecomposition_zero]
 
