@@ -52,6 +52,37 @@ def ExtendsAlong
     (e : N ↪ₑ[L] N') (f : M ≃ₚ[L] N) (g : M ≃ₚ[L] N') : Prop :=
   codMap f e.toEmbedding ≤ g
 
+def ExtendsAlong'
+    {L : Language} {M N N' : Type*}
+    [L.Structure M] [L.Structure N] [L.Structure N']
+    (e : N ↪ₑ[L] N') (f : M ≃ₚ[L] N) (g : M ≃ₚ[L] N') : Prop :=
+  ∃ hdom : f.dom ≤ g.dom, ∀ x : f.dom,
+    e (f.toEquiv x : N) = (g.toEquiv (Substructure.inclusion hdom x) : N')
+
+theorem extendsAlong_iff_extendsAlong'
+    {L : Language} {M N N' : Type*}
+    [L.Structure M] [L.Structure N] [L.Structure N']
+    (e : N ↪ₑ[L] N') (f : M ≃ₚ[L] N) (g : M ≃ₚ[L] N') :
+    f.ExtendsAlong e g ↔ ExtendsAlong' e f g := by
+  constructor
+  · intro h
+    refine ⟨dom_le_dom h, ?_⟩
+    intro x
+    have hx := congrArg (fun y : g.cod => (y : N')) (toEquiv_inclusion_apply h x)
+    have hxmap :
+        ((Substructure.inclusion (cod_le_cod h) ((codMap f e.toEmbedding).toEquiv x) :
+          g.cod) : N') = e (f.toEquiv x : N) := by
+      change ((((e.toEmbedding.substructureEquivMap f.cod).comp f.toEquiv) x) : N') =
+        e (f.toEquiv x : N)
+      rw [Equiv.comp_apply]
+      exact Embedding.substructureEquivMap_apply e.toEmbedding f.cod (f.toEquiv x)
+    exact hxmap.symm.trans hx.symm
+  · rintro ⟨hdom, hmap⟩
+    rw [ExtendsAlong, le_def]
+    refine ⟨hdom, ?_⟩
+    ext x
+    simpa [codMap] using (hmap x).symm
+
 end PartialEquiv
 
 namespace Theory
