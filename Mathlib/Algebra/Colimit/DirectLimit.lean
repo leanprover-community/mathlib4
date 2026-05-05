@@ -588,7 +588,7 @@ def algebraMapAux : R →+* DirectLimit G f where
   map_add' r s :=  by simp_rw [map₀, add_def, map_add]
   map_zero' := by rw [map₀, map_zero, zero_def]
 
-lemma algebraMapAux_at (i : ι) (r : R) :
+lemma algebraMapAux_def (i : ι) (r : R) :
     algebraMapAux (R:=R) r = (⟦⟨i, algebraMap R (G i) r⟩⟧ : DirectLimit G f) := by
   simp only [algebraMapAux, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
   apply map₀_def
@@ -598,13 +598,13 @@ lemma algebraMapAux_at (i : ι) (r : R) :
 instance : Algebra R (DirectLimit G f) where
   algebraMap := algebraMapAux
   commutes' r := DirectLimit.induction f fun i _ ↦ by
-    rw [algebraMapAux_at i, mul_def, mul_def, Algebra.commutes]
+    rw [algebraMapAux_def i, mul_def, mul_def, Algebra.commutes]
   smul_def' r := DirectLimit.induction _ fun i _ => by
-    rw [smul_def, algebraMapAux_at i, mul_def, Algebra.smul_def']
+    rw [smul_def, algebraMapAux_def i, mul_def, Algebra.smul_def']
 
-lemma algebraMap_at (i : ι) (r : R) :
-    algebraMap R (DirectLimit G f) r = (⟦⟨i, algebraMap R (G i) r⟩⟧ : DirectLimit G f) :=
-  algebraMapAux_at i r
+lemma algebraMap_def (i : ι) (r : R) :
+    algebraMap R (DirectLimit G f) r = ⟦⟨i, algebraMap R (G i) r⟩⟧:=
+  algebraMapAux_def i r
 
 end Algebra
 
@@ -807,7 +807,7 @@ variable (G f) in
 def of (i) : G i →ₐ[R] DirectLimit G f where
   toFun x := ⟦⟨i, x⟩⟧
   __ := (DirectLimit.Ring.of G f i)
-  commutes' r := by rw [algebraMap_at i]
+  commutes' r := by rw [algebraMap_def i]
 
 @[simp] lemma of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x := .symm <| eq_of_le ..
 
@@ -824,7 +824,7 @@ def lift (g : ∀ i, G i →ₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g
   __ := DirectLimit.Ring.lift G f P (g:= fun i => (g i).toRingHom) (Hg:=Hg)
   commutes' r := by
     let i := Classical.arbitrary ι
-    rw [algebraMap_at i r, lift_def, AlgHom.commutes]
+    rw [algebraMap_def i r, lift_def, AlgHom.commutes]
 
 variable (g : ∀ i, G i →ₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 
