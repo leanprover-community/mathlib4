@@ -456,6 +456,17 @@ instance : HasForget₂ (FlatExtension R K) CommRingCat.{u} where
 namespace FilteredColimit
 
 variable {R K} {J : Type u} [SmallCategory J] [IsFiltered J] {F : J ⥤ FlatExtension R K}
+  (c : Cocone (F ⋙ (forget₂ _ CommRingCat)))
+
+def coconeOfCoconeForgetPt (hc : IsColimit c) : FlatExtension R K := sorry
+
+def coconeOfCoconeForget (hc : IsColimit c) : Cocone F where
+  pt := coconeOfCoconeForgetPt c hc
+  ι := sorry
+
+def isColimitCoconeOfCoconeForget (hc : IsColimit c) : IsColimit (coconeOfCoconeForget c hc) := by
+  -- refine IsColimit.ofFaithful (forget₂ _ CommRingCat.{u}) hc ?_ ?_
+  sorry
 
 instance : HasColimitsOfShape J (FlatExtension R K) where
   has_colimit F := by
