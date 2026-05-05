@@ -103,9 +103,9 @@ end
 
 lemma localization_minimal_isField {S : Type*} [CommRing S] [IsReduced S]
     (p : Ideal S) (min : p ∈ minimalPrimes S) :
-    letI := Ideal.minimalPrimes_isPrime min
+    letI := Ideal.IsPrime.of_mem_minimalPrimes min
     IsField (Localization.AtPrime p) := by
-  let := Ideal.minimalPrimes_isPrime min
+  let := Ideal.IsPrime.of_mem_minimalPrimes min
   rw [IsLocalRing.isField_iff_maximalIdeal_eq, eq_bot_iff]
   intro x hx
   apply IsReduced.eq_zero x (nilpotent_iff_mem_prime.mpr (fun q hq ↦ ?_))
@@ -119,7 +119,7 @@ lemma localization_minimal_isField {S : Type*} [CommRing S] [IsReduced S]
 /-- The map of a ring to product of its localizations at minimal primes. -/
 def toLocalizationMinimal (S : Type*) [CommRing S] :=
   (Pi.ringHom (fun (p : minimalPrimes S) ↦
-    letI := Ideal.minimalPrimes_isPrime p.2
+    letI := Ideal.IsPrime.of_mem_minimalPrimes p.2
     algebraMap S (Localization.AtPrime p.1)))
 
 /-- The map of a reduced ring to product of its localizations at minimal primes is injective. -/
@@ -129,7 +129,7 @@ lemma isReduced_injective_to_prod_localizations (S : Type*) [CommRing S] [IsRedu
   intro x hx
   apply IsReduced.eq_zero x (nilpotent_iff_mem_prime.mpr (fun q hq ↦ ?_))
   rcases Ideal.exists_minimalPrimes_le (bot_le (a := q)) with ⟨p, min, hp⟩
-  let := Ideal.minimalPrimes_isPrime min
+  let := Ideal.IsPrime.of_mem_minimalPrimes min
   apply hp
   rw [← IsLocalization.AtPrime.comap_maximalIdeal (Localization.AtPrime p) p, Ideal.mem_comap]
   have : (toLocalizationMinimal S) x ⟨p, min⟩ = 0 := by simp [hx]
@@ -298,16 +298,16 @@ lemma tensorProduct_isReduced_of_isTranscendentalBasis_of_isReduced [IsReduced S
       (isReduced_injective_to_prod_localizations S)
   let : Fintype (minimalPrimes S) := (minimalPrimes.finite_of_isNoetherianRing S).fintype
   have (p : minimalPrimes S) :
-    letI := Ideal.minimalPrimes_isPrime p.2
+    letI := Ideal.IsPrime.of_mem_minimalPrimes p.2
     IsReduced (K ⊗[k] Localization.AtPrime p.1) := by
     let := (localization_minimal_isField p.1 p.2).toField
     exact tensorProduct_isReduced_of_isTranscendentalBasis_of_isDomain k K _ f isT
   have : IsReduced (K ⊗[k] ((p : (minimalPrimes S)) →
-    letI := Ideal.minimalPrimes_isPrime p.2
+    letI := Ideal.IsPrime.of_mem_minimalPrimes p.2
     Localization.AtPrime p.1)) := by
     apply isReduced_of_injective _ (Algebra.TensorProduct.piRight k k K
       (fun (p : (minimalPrimes S)) ↦
-        letI := Ideal.minimalPrimes_isPrime p.2
+        letI := Ideal.IsPrime.of_mem_minimalPrimes p.2
         Localization.AtPrime p.1)).injective
   exact isReduced_of_injective _ inj
 

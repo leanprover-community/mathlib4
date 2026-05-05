@@ -213,7 +213,8 @@ end CongruenceSubgroups
 
 section Conjugation
 
-open Pointwise ConjAct
+open scoped Pointwise
+open ConjAct
 
 /-- The subgroup `SL(2, ℤ) ∩ g⁻¹ Γ g`, for `Γ` a subgroup of `SL(2, ℤ)` and `g ∈ GL(2, ℝ)`. -/
 def conjGL (Γ : Subgroup SL(2, ℤ)) (g : GL (Fin 2) ℝ) : Subgroup SL(2, ℤ) :=
@@ -277,7 +278,7 @@ theorem exists_Gamma_le_conj (g : GL (Fin 2) ℚ) (M : ℕ) [NeZero M] :
     conv_rhs => rw [← A₁.inv_denom_smul_num, ← A₂.inv_denom_smul_num, Matrix.map_smul _ _ (by simp)]
     simp only [Matrix.smul_mul, Matrix.mul_smul, Matrix.map_smul (Int.cast : ℤ → ℚ) M (by simp),
       Matrix.map_mul_intCast]
-    rw [← Nat.cast_smul_eq_nsmul ℚ (_ * M), ← SemigroupAction.mul_smul, ← SemigroupAction.mul_smul,
+    rw [← Nat.cast_smul_eq_nsmul ℚ (_ * M), ← mul_smul, ← mul_smul,
       mul_comm a₁ a₂, Nat.cast_mul, Nat.cast_mul, mul_assoc _ _ (M : ℚ), mul_comm _ (M : ℚ),
       inv_mul_cancel_left₀ (mod_cast A₂.den_ne_zero),
       mul_inv_cancel_right₀ (mod_cast A₁.den_ne_zero), Nat.cast_smul_eq_nsmul]

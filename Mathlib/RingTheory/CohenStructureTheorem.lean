@@ -74,8 +74,11 @@ lemma exists_isCohenRing_of_not_charZero (k : Type u) [Field k] (charpos : ¬ Ch
   simp only [charpos, false_or] at char
   rcases char with ⟨p, _, char⟩
   let := ZMod.algebra k p
-  let := ((algebraMap (ZMod p) k).comp PadicInt.residueField.toRingHom).toAlgebra
-  rcases exists_isLocalHom_flat (PadicInt p) k with ⟨R, _, _, _, _, flat, maxeq, ⟨iso⟩⟩
+  let := ((algebraMap (ZMod p) k).comp PadicInt.toZMod).toAlgebra
+  let : IsLocalHom (algebraMap ℤ_[p] k) := by
+    apply ((local_hom_TFAE _).out 0 3).mpr
+    simp [PadicInt.maximalIdeal_eq_span_p]
+  rcases exists_isLocalHom_flat (PadicInt p) k with ⟨R, _, _, _, flat, maxeq, ⟨iso⟩⟩
   simp only [PadicInt.maximalIdeal_eq_span_p, Ideal.map_span, Set.image_singleton,
     map_natCast] at maxeq
   have maxfg : (maximalIdeal R).FG := by

@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.Data.Finsupp.MonomialOrder
 public import Mathlib.Data.Finsupp.Weight
 
-/-! Homogeneous lexicographic monomial ordering
+/-! # Homogeneous lexicographic monomial ordering
 
 * `MonomialOrder.degLex`: a variant of the lexicographic ordering that first compares degrees.
 For this, `σ` needs to be embedded with an ordering relation which satisfies `WellFoundedGT σ`.
@@ -183,9 +183,8 @@ noncomputable instance orderBot : OrderBot (DegLex (α →₀ ℕ)) where
       exact bot_le
     · simp [h]
 
-instance wellFoundedLT [WellFoundedGT α] :
-    WellFoundedLT (DegLex (α →₀ ℕ)) :=
-  ⟨wellFounded wellFounded_gt wellFounded_lt fun n ↦ (zero_le n).not_gt⟩
+instance wellFoundedLT [WellFoundedGT α] : WellFoundedLT (DegLex (α →₀ ℕ)) :=
+  ⟨wellFounded wellFounded_gt wellFounded_lt fun _ ↦ not_lt_zero⟩
 
 end DegLex
 
@@ -197,7 +196,6 @@ open Finsupp
 
 variable {σ : Type*} [LinearOrder σ] [WellFoundedGT σ]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The deg-lexicographic order on `σ →₀ ℕ`, as a `MonomialOrder` -/
 noncomputable def degLex :
     MonomialOrder σ where

@@ -18,7 +18,7 @@ public import Mathlib.RingTheory.KrullDimension.Basic
 # Hausdorff-ness for Noetherian rings
 -/
 
-@[expose] public section
+public section
 
 open IsLocalRing Module
 
@@ -166,7 +166,7 @@ lemma exists_monomial_span_of_fg (J : Ideal R) (fg : (J.toAssociatedGraded I).FG
     have : g ⟨x, hx⟩ =
       ∑ j, ⟨monomial (deg ⟨⟨x, hx⟩, j⟩) (coeff ⟨⟨x, hx⟩, j⟩), monomial_mem ⟨⟨x, hx⟩, j⟩⟩ := by
       apply SetCoe.ext
-      simp only [Finset.univ_eq_attach, AddSubmonoidClass.coe_finset_sum, deg, coeff]
+      simp only [Finset.univ_eq_attach, AddSubmonoidClass.coe_finsetSum, deg, coeff]
       rw [(g ⟨x, hx⟩).1.support.sum_attach (fun n ↦ (monomial n) ((g ⟨x, hx⟩).1.coeff n))]
       exact (sum_monomial_eq (g ⟨x, hx⟩).1).symm
     rw [this]
@@ -197,8 +197,8 @@ lemma exists_coeffs_sub_mem (n : ℕ) (J : Ideal R) (ι : Type u) [Fintype ι] (
     (reesAlgebraToAssociatedGraded I) (∑ i, c' i * f i) := by simp [← hc, c'_spec]
   rw [Ideal.Quotient.mk_eq_mk_iff_sub_mem, mem_map_algebraMap_reesAlgebra_iff] at this
   have coeff_eq := this n
-  simp only [AddSubgroupClass.coe_sub, AddSubmonoidClass.coe_finset_sum, MulMemClass.coe_mul, eq,
-    coeff_sub, coeff_monomial_same, finset_sum_coeff] at coeff_eq
+  simp only [AddSubgroupClass.coe_sub, AddSubmonoidClass.coe_finsetSum, MulMemClass.coe_mul, eq,
+    coeff_sub, coeff_monomial_same, finsetSum_coeff] at coeff_eq
   let coeff' : ι → R := fun i ↦ if deg i ≤ n then (c' i).1.coeff (n - (deg i)) else 0
   have : ∑ i, ((c' i).1 * (monomial (deg i)) (coeff i)).coeff n =
     ∑ i, (coeff' i) * (coeff i) := by

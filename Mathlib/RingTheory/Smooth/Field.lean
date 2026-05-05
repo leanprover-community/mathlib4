@@ -18,7 +18,7 @@ In particular finitely generated field extensions over perfect fields are smooth
 
 -/
 
-@[expose] public section
+public section
 
 section
 
@@ -36,7 +36,7 @@ noncomputable def Algebra.Generators.HomOfComm [Algebra S T] (f : ιS → ιT)
 
 lemma Algebra.Generators.homOfComm_toAlgHom [Algebra S T] [IsScalarTower R S T]
     (f : ιS → ιT) (comm : GT.val ∘ f = algebraMap S T ∘ GS.val) :
-    (GS.HomOfComm GT f comm).toExtensionHom.toAlgHom = MvPolynomial.rename f :=
+    (GS.HomOfComm GT f comm).toExtensionHom.toAlgHom = MvPolynomial.rename f := by
   rfl
 
 lemma Algebra.Generators.homOfComm_toExtensionHom_toAlgHom [Algebra S T] [IsScalarTower R S T]
