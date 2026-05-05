@@ -203,7 +203,7 @@ theorem AbsolutelyContinuousOnInterval.const_of_ae_hasDerivAt_zero {f : ℝ → 
       have slope_bound := hu₁ z (by simp) |>.right |>.le
       have : 0 < z.val.2 - z.val.1 := by linarith [hu₁ z (by simp)]
       grw [← slope_bound]
-      simp only [dist_eq_norm, slope, vsub_eq_sub, sub_zero, ge_iff_le, g, mul_comm]
+      simp only [dist_eq_norm, slope, vsub_eq_sub, sub_zero, g, mul_comm]
       nth_rw 1 [← Real.norm_of_nonneg this.le]
       simp only [norm_smul, Real.norm_eq_abs, norm_inv]
       field_simp

@@ -25,3 +25,9 @@ example (h : c → b) : (a → b → c) → (a → b → b) := by
 example (h : ∀ n : Nat, 0 ≤ n) : ∀ n : Int, 0 ≤ n := by
   revert h
   gcongr
+
+-- Binder names are inferred, using the binder names in the LHS.
+example (f g : Nat → Nat → Prop) (h : ∀ i j, f i j → g i j) :
+    (∃ ε > 0, ∃ δ > 0, f ε δ) → (∃ ε' > 0, ∃ δ' > 0, g ε' δ') := by
+  gcongr
+  exact h ε δ

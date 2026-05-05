@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2023 Sebastian Zimmer. All rights reserved.
+Copyright (c) 2025 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sebastian Zimmer, Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
+Authors: Jovan Gerbscheid, Sebastian Zimmer, Mario Carneiro, Heather Macbeth
 -/
 module
 
@@ -23,7 +23,7 @@ This file defines the tactics that use the backend defined in `Mathlib.Tactic.GR
 
 meta section
 
-namespace Mathlib.Tactic
+namespace Mathlib.Tactic.GRewrite
 
 open Lean Meta Elab Parser Tactic
 
@@ -37,7 +37,17 @@ def elabGRewrite (mvarId : MVarId) (e : Expr) (stx : Syntax) (forwardImp symm : 
   unless ← occursCheck mvarId thm do
     throwErrorAt stx
       "Occurs check failed: Expression{indentExpr thm}\ncontains the goal {Expr.mvar mvarId}"
-  let r ← mvarId.grewrite e thm (forwardImp := forwardImp) (symm := symm) (config := config)
+  let mvarIds ← getMVarsNoDelayed thm
+  let mctx ← getMCtx
+  let mvarIds := mvarIds.filter fun mvarId ↦ mvarCounterSaved ≤ (mctx.getDecl mvarId).index
+  let lctx ← getLCtx
+  let mvarIds ← mvarIds.mapM fun mvarId ↦ do
+    let mut fvarIds := #[]
+    for decl in (← mvarId.getDecl).lctx do
+      unless lctx.contains decl.fvarId do
+        fvarIds := fvarIds.push decl
+    return (mvarId, fvarIds)
+  let r ← mvarId.grewrite e thm mvarIds (forwardImp := forwardImp) (symm := symm) (config := config)
   let mctx ← getMCtx
   let mvarIds := r.mvarIds.filter fun mvarId => mvarCounterSaved ≤ (mctx.getDecl mvarId).index
   return { r with mvarIds }
@@ -197,7 +207,7 @@ used. This provides a convenient way to unfold `e`.
   `apply_rewrite (transparency := default) [e₁, ..., eₙ]`.
 * `apply_rewrite [e₁, ..., eₙ] at l` rewrites at the location(s) `l`.
 -/
-macro "apply_rewrite" c:optConfig s:rwRuleSeq loc:(location)? : tactic => do
+macro "apply_rewrite" c:optConfig s:rwRuleSeq loc:(location)? : tactic =>
   `(tactic| grewrite $[$(getConfigItems c)]* +implicationHyp $s:rwRuleSeq $(loc)?)
 
 /--
@@ -216,7 +226,7 @@ used. This provides a convenient way to unfold `e`.
   `apply_rw (transparency := default) [e₁, ..., eₙ]`.
 * `apply_rw [e₁, ..., eₙ] at l` rewrites at the location(s) `l`.
 -/
-macro (name := applyRwSeq) "apply_rw " c:optConfig s:rwRuleSeq loc:(location)? : tactic => do
+macro (name := applyRwSeq) "apply_rw " c:optConfig s:rwRuleSeq loc:(location)? : tactic =>
   `(tactic| grw $[$(getConfigItems c)]* +implicationHyp $s:rwRuleSeq $(loc)?)
 
 /--
@@ -247,8 +257,9 @@ inequalities.
   * `nth_grewrite +implicationHyp n₁ ... nₖ [e₁, ..., eₙ]` interprets `· → ·` as a relation.
 * `nth_grewrite n₁ ... nₖ [e₁, ..., eₙ] at l` rewrites at the location(s) `l`.
 -/
-macro "nth_grewrite" c:optConfig ppSpace nums:(num)+ s:rwRuleSeq loc:(location)? : tactic => do
-  `(tactic| grewrite $[$(getConfigItems c)]* (occs := .pos [$[$nums],*]) $s:rwRuleSeq $(loc)?)
+macro "nth_grewrite" c:optConfig ppSpace nums:(num)+ s:rwRuleSeq loc:(location)? : tactic =>
+  `(tactic|
+    grewrite $[$(getConfigItems c)]* +useKAbstract (occs := .pos [$[$nums],*]) $s:rwRuleSeq $(loc)?)
 
 /--
 `nth_grw n₁ ... nₖ [e₁, ..., eₙ]` is a variant of `grw` that for each expression `eᵢ : R aᵢ bᵢ` only
@@ -277,7 +288,8 @@ inequalities.
   * `nth_grw +implicationHyp n₁ ... nₖ [e₁, ..., eₙ]` interprets `· → ·` as a relation.
 * `nth_grw n₁ ... nₖ [e₁, ..., eₙ] at l` rewrites at the location(s) `l`.
 -/
-macro "nth_grw" c:optConfig ppSpace nums:(num)+ s:rwRuleSeq loc:(location)? : tactic => do
-  `(tactic| grw $[$(getConfigItems c)]* (occs := .pos [$[$nums],*]) $s:rwRuleSeq $(loc)?)
+macro "nth_grw" c:optConfig ppSpace nums:(num)+ s:rwRuleSeq loc:(location)? : tactic =>
+  `(tactic|
+    grw $[$(getConfigItems c)]* +useKAbstract (occs := .pos [$[$nums],*]) $s:rwRuleSeq $(loc)?)
 
-end Mathlib.Tactic
+end Mathlib.Tactic.GRewrite
