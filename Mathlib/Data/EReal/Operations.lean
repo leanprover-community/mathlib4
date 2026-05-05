@@ -77,7 +77,6 @@ theorem top_add_of_ne_bot {x : EReal} (h : x ≠ ⊥) : ⊤ + x = ⊤ := by
   · exact top_add_coe _
   · exact top_add_top
 
-
 @[simp]
 lemma one_add_top : (1 : EReal) + ⊤ = ⊤ := rfl
 
