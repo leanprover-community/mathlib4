@@ -804,6 +804,7 @@ variable [Nonempty ι]
 
 variable (G f) in
 /-- The canonical map from a component to the direct limit. -/
+@[simps]
 def of (i) : G i →ₐ[R] DirectLimit G f where
   toFun x := ⟦⟨i, x⟩⟧
   __ := (DirectLimit.Ring.of G f i)
@@ -818,6 +819,7 @@ variable (G f) in
 that respect the directed system structure (i.e. make some diagram commute) give rise
 to a unique map out of the direct limit.
 -/
+@[simps]
 def lift (g : ∀ i, G i →ₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
     DirectLimit G f →ₐ[R] P where
   toFun := _root_.DirectLimit.lift _ (g · ·) fun i j h x ↦ (Hg i j h x).symm
