@@ -161,6 +161,8 @@ lemma subsingleton_H_of_isZero {F : Sheaf J AddCommGrpCat.{w}} (h : Limits.IsZer
   apply AddCommGrpCat.subsingleton_of_isZero
   exact Functor.map_isZero (functorH J n) h
 
+@[deprecated (since := "2026-05-05")] noncomputable alias cohomologyFunctor := functorH
+
 end
 
 end Sheaf
