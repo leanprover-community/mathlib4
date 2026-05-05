@@ -6,6 +6,7 @@ Authors: Johan Commelin, Kim Morrison, Adam Topaz, Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
+public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexOp
 public import Mathlib.CategoryTheory.Subfunctor.Equalizer
 
 /-!
@@ -42,7 +43,6 @@ scoped[Simplicial] notation3 "Λ[" n ", " i "]" => SSet.horn (n : ℕ) i
 lemma mem_horn_iff {n : ℕ} (i : Fin (n + 1)) {m : SimplexCategoryᵒᵖ} (x : Δ[n].obj m) :
     x ∈ (horn n i).obj m ↔ Set.range (stdSimplex.asOrderHom x) ∪ {i} ≠ Set.univ := Iff.rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma horn_eq_iSup (n : ℕ) (i : Fin (n + 1)) :
     horn.{u} n i =
       ⨆ (j : ({i}ᶜ : Set (Fin (n + 1)))), stdSimplex.face {j.1}ᶜ := by
@@ -54,6 +54,10 @@ instance {n : ℕ} (i : Fin (n + 1)) : HasDimensionLT (horn.{u} n i) n := by
   rw [horn_eq_iSup, hasDimensionLT_iSup_iff]
   intro i
   exact stdSimplex.hasDimensionLT_face _ _ (by simp [Finset.card_compl])
+
+lemma mem_horn_iff_notMem_range {n d : ℕ} (s : Δ[n] _⦋d⦌) (i : Fin (n + 1)) :
+    s ∈ (horn.{u} n i).obj _ ↔ ∃ (j : Fin (n + 1)) (_ : j ≠ i), j ∉ Set.range s := by
+  simp [horn_eq_iSup]
 
 lemma face_le_horn {n : ℕ} (i j : Fin (n + 1)) (h : i ≠ j) :
     stdSimplex.face.{u} {i}ᶜ ≤ horn n j := by
@@ -156,6 +160,18 @@ lemma objEquiv_symm_δ_notMem_horn_iff {n : ℕ} (i j : Fin (n + 2)) :
     (stdSimplex.objEquiv (m := op ⦋n⦌)).symm
       (SimplexCategory.δ i) ∉ (horn.{u} _ j).obj (op ⦋n⦌) ↔ i = j := by
   simp [objEquiv_symm_δ_mem_horn_iff.{u}]
+
+lemma op_horn {n : ℕ} (i : Fin (n + 1)) :
+    Λ[n, i].op.preimage (stdSimplex.opIso.{u} ⦋n⦌).inv = Λ[n, i.rev] := by
+  ext ⟨⟨d⟩⟩ j
+  simp only [Subcomplex.preimage_obj, Set.mem_preimage, stdSimplex.opIso_inv_app_hom_apply,
+    Subcomplex.mem_op_obj_iff, mem_horn_iff_notMem_range, Set.mem_range, not_exists, ne_eq,
+    exists_prop, stdSimplex.opObjEquiv_opObjEquiv_symm_apply]
+  constructor
+  · rintro ⟨k, h₁, h₂⟩
+    exact ⟨k.rev, by simpa, fun l hl ↦ by grind [h₂ l.rev]⟩
+  · rintro ⟨k, h₁, h₂⟩
+    exact ⟨k.rev, by grind⟩
 
 namespace horn
 

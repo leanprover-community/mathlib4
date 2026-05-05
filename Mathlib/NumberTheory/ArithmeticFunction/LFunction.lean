@@ -6,6 +6,7 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
+public import Mathlib.NumberTheory.Height.Northcott
 public import Mathlib.RingTheory.PowerSeries.Basic
 public import Mathlib.RingTheory.PowerSeries.PiTopology
 public import Mathlib.RingTheory.PowerSeries.Substitution
@@ -323,6 +324,23 @@ theorem isMultiplicative_eulerProduct (f : ι → ArithmeticFunction R)
       exact eventually_const.mp (EventuallyEq.trans (.symm h2) (.mul (key m) (key n)))
   · rw [eulerProduct, tprod_eq_one_of_not_multipliable hf']
     exact isMultiplicative_one
+
+/-- Given arithmetic functions `f(q⁻ˢ)` with `q → ∞`, the partial products `∏ i ∈ s, f i` converge
+to the Euler product pointwise. -/
+theorem tendsTo_eulerProduct_ofPowerSeries (q : ι → ℕ) [hq : Northcott q]
+    (f : ι → PowerSeries R) (hf : ∀ i, (f i).constantCoeff = 1) (n : ℕ) :
+    ∀ᶠ s in atTop, (∏ i ∈ s, ofPowerSeries (q i) (f i)) n =
+      eulerProduct (fun i ↦ ofPowerSeries (q i) (f i)) n := by
+  apply tendsTo_eulerProduct_of_tendsTo
+  refine fun n ↦ (tendsto_atTop.mp ((northcott_iff_tendsto q).mp hq) (n + 1)).mono fun i hi ↦ ?_
+  rcases n with rfl | rfl | n
+  · simp
+  · simp [hf]
+  · have hqi : 1 < q i := by lia
+    rw [ofPowerSeries_apply hqi, Function.extend_apply', Pi.zero_apply, one_apply_ne (by lia)]
+    rintro ⟨k, hk⟩
+    have h : k ≠ 0 := fun h ↦ by simp_all
+    grind [Nat.le_pow h.pos (a := q i)]
 
 end EulerProduct
 
