@@ -425,7 +425,7 @@ theorem conGen_mono {r s : M → M → Prop} (h : ∀ x y, r x y → s x y) : co
   conGen_le fun x y hr => ConGen.Rel.of _ _ <| h x y hr
 
 /-- Congruence relations equal the smallest congruence relation in which they are contained. -/
-@[to_additive (attr := simp) /-- Additive congruence relations equal the
+@[to_additive (attr := simp) addConGen_of_addCon /-- Additive congruence relations equal the
 smallest additive congruence relation in which they are contained. -/]
 theorem conGen_of_con (c : Con M) : conGen c = c :=
   le_antisymm (by rw [conGen_eq]; exact sInf_le fun _ _ => id) ConGen.Rel.of
