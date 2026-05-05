@@ -609,11 +609,13 @@ open AddSubmonoid Set in
 lemma irrelevant_eq_closure : 𝒜₊.toAddSubmonoid = .closure (⋃ i > 0, 𝒜 i) := by
   rw [irrelevant_eq_iSup]
   exact le_antisymm (iSup_le fun i ↦ iSup_le fun hi _ hx ↦ subset_closure <| mem_biUnion hi hx) <|
-    closure_le.mpr <| iUnion_subset fun i ↦ iUnion_subset fun hi ↦ le_biSup (ofClass <| 𝒜 ·) hi
+    AddSubmonoid.closure_le.mpr <| iUnion_subset fun i ↦ iUnion_subset
+      fun hi ↦ le_biSup (ofClass <| 𝒜 ·) hi
 
 open AddSubmonoid Set in
 lemma irrelevant_eq_span : 𝒜₊.toIdeal = .span (⋃ i > 0, 𝒜 i) :=
-  le_antisymm ((irrelevant_eq_closure 𝒜).trans_le <| closure_le.mpr Ideal.subset_span) <|
+  le_antisymm ((irrelevant_eq_closure 𝒜).trans_le <|
+      AddSubmonoid.closure_le.mpr Ideal.subset_span) <|
     Ideal.span_le.mpr <| iUnion_subset fun _ ↦ iUnion_subset fun hi _ hx ↦
     mem_irrelevant_of_mem _ hi hx
 

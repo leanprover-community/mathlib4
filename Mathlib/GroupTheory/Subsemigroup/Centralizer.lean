@@ -75,7 +75,7 @@ variable {M} in
 @[to_additive]
 lemma closure_le_centralizer_centralizer (s : Set M) :
     closure s ≤ centralizer (centralizer s) :=
-  closure_le.mpr Set.subset_centralizer_centralizer
+  SetLike.closure_le.mpr Set.subset_centralizer_centralizer
 
 /-- If all the elements of a set `s` commute, then `closure s` is commutative. -/
 @[to_additive
