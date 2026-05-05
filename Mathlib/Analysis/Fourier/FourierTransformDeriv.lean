@@ -111,7 +111,6 @@ lemma deriv_fourierChar (x : ℝ) : deriv (𝐞 · : ℝ → ℂ) x = 2 * π * I
 variable {V W : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
   [NormedAddCommGroup W] [NormedSpace ℝ W] (L : V →L[ℝ] W →L[ℝ] ℝ)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasFDerivAt_fourierChar_neg_bilinear_right (v : V) (w : W) :
     HasFDerivAt (fun w ↦ (𝐞 (-L v w) : ℂ))
       ((-2 * π * I * 𝐞 (-L v w)) • (ofRealCLM ∘L (L v))) w := by
@@ -252,7 +251,6 @@ lemma differentiable_fourierIntegral
     Differentiable ℝ (fourierIntegral 𝐞 μ L.toLinearMap₁₂ f) :=
   fun w ↦ (hasFDerivAt_fourierIntegral L hf hf' w).differentiableAt
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Fourier integral of the derivative of a function is obtained by multiplying the Fourier
 integral of the original function by `-L w v`. -/
 theorem fourierIntegral_fderiv [MeasurableSpace V] [BorelSpace V] [FiniteDimensional ℝ V]
