@@ -385,9 +385,7 @@ lemma exists_isLocalHom_flat' : ∃ (R' : Type u) (_ : CommRing R') (_ : IsLocal
   let : WellFoundedLT (WithTop setK) := WithTop.instWellFoundedLT
   let : SuccOrder (WithTop setK) := SuccOrder.ofLinearWellFoundedLT _
   let : OrderBot (WithTop setK) := WellFoundedLT.toOrderBot _
-  let : HasIterationOfShape (WithTop setK) (FlatExtension R K) := {
-    hasColimitsOfShape_of_isSuccLimit j hj := inferInstance
-    hasColimitsOfShape := inferInstance }
+  have : HasIterationOfShape (WithTop setK) (FlatExtension R K) := { }
   obtain ⟨φ⟩ : Nonempty ((FlatExtension.SuccStruct R K).Iteration (⊤ : WithTop setK)) :=
     inferInstance
   let fi : WithTop setK ≃o Set.Iic (⊤ : WithTop setK) := OrderIso.IicTop.symm
@@ -446,7 +444,7 @@ lemma exists_isLocalHom_flat (K : Type v) [Field K] [Algebra R K] [IsLocalHom (a
   let : Algebra R K' := ULift.algebra
   let : Algebra R' K := ((algebraMap R K).comp eR.symm.toRingHom).toAlgebra
   let : Algebra R' K' := ULift.algebra
-  let : IsScalarTower R R' K :=
+  have : IsScalarTower R R' K :=
     IsScalarTower.of_algebraMap_eq (fun x ↦ by simp [RingHom.algebraMap_toAlgebra])
   have : IsLocalHom (algebraMap R' K') := by
     have : IsLocalHom eR.symm.toRingHom := IsLocalHom.of_surjective _ eR.symm.surjective
@@ -454,8 +452,8 @@ lemma exists_isLocalHom_flat (K : Type v) [Field K] [Algebra R K] [IsLocalHom (a
     exact RingHom.isLocalHom_comp eK.toRingHom ((algebraMap R K).comp eR.symm.toRingHom)
   obtain ⟨S, _, _, _, _, eqmap, ⟨e⟩⟩ := exists_isLocalHom_flat' R' K'
   let : Algebra R S := ((algebraMap R' S).comp eR.toRingHom).toAlgebra
-  let : Module.Flat R R' := RingHom.Flat.of_bijective eR.bijective
-  let : IsScalarTower R R' S := IsScalarTower.of_algebraMap_eq (fun x ↦ rfl)
+  have : Module.Flat R R' := RingHom.Flat.of_bijective eR.bijective
+  have : IsScalarTower R R' S := IsScalarTower.of_algebraMap_eq (fun x ↦ rfl)
   refine ⟨S, inferInstance, inferInstance, inferInstance, Module.Flat.trans R R' S, ?_, ?_⟩
   · rw [eqmap, ← map_maximalIdeal_of_surjective eR.toRingHom eR.surjective, Ideal.map_map]
     simp [RingHom.algebraMap_toAlgebra]
