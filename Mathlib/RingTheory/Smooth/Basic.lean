@@ -488,7 +488,7 @@ theorem of_isLocalization : FormallySmooth R Rₘ := by
   let this : Rₘ →ₐ[R] Q :=
     { IsLocalization.lift this with commutes' := IsLocalization.lift_eq this }
   use this
-  apply AlgHom.coe_ringHom_injective
+  apply AlgHom.coe_toRingHom_injective
   refine IsLocalization.ringHom_ext M ?_
   ext
   simp

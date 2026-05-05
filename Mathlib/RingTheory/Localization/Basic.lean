@@ -154,7 +154,7 @@ include M in
 -- This is not an instance since the submonoid `M` would become a metavariable in typeclass search.
 theorem algHom_subsingleton [Algebra R P] : Subsingleton (S →ₐ[R] P) :=
   ⟨fun f g =>
-    AlgHom.coe_ringHom_injective <|
+    AlgHom.coe_toRingHom_injective <|
       IsLocalization.ringHom_ext M <| by rw [f.comp_algebraMap, g.comp_algebraMap]⟩
 
 section AlgEquiv
@@ -664,7 +664,8 @@ theorem IsLocalization.algHom_ext {R A L B : Type*}
     [Algebra R A] [Algebra R L] [IsScalarTower R A L] [Algebra R B]
     {f g : L →ₐ[R] B} (h : f.comp (Algebra.algHom R A L) = g.comp (Algebra.algHom R A L)) :
     f = g :=
-  AlgHom.coe_ringHom_injective <| IsLocalization.ringHom_ext W <| RingHom.ext <| AlgHom.ext_iff.mp h
+  AlgHom.coe_toRingHom_injective <| IsLocalization.ringHom_ext W <| RingHom.ext <|
+    AlgHom.ext_iff.mp h
 
 -- This is a more specific case where the domain is `Localization W`, so this is tagged
 -- `@[ext high]` so that it will be automatically applied before the default extensionality lemmas

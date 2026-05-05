@@ -126,8 +126,10 @@ theorem toGradedRingHom_injective : Function.Injective (toGradedRingHom (𝒜 :=
 theorem coe_linearMap_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →ₗ[R] B) :=
   AlgHom.toLinearMap_injective.comp coe_toAlgHom_injective
 
-theorem coe_ringHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →+* B) :=
-  AlgHom.coe_ringHom_injective.comp coe_toAlgHom_injective
+theorem coe_toRingHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →+* B) :=
+  AlgHom.coe_toRingHom_injective.comp coe_toAlgHom_injective
+
+@[deprecated (since := "2026-05-05")] alias coe_ringHom_injective := coe_toRingHom_injective
 
 theorem coe_monoidHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →* B) :=
   AlgHom.coe_monoidHom_injective.comp coe_toAlgHom_injective
