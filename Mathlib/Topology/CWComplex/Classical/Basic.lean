@@ -1032,10 +1032,7 @@ abbrev CWComplex.of_discrete_closed (hD : IsDiscrete D) (Dc : IsClosed D) : CWCo
     exact fun ⟨n, j⟩ _ ⟨m, i⟩ _ ne ↦  match n with
       | 0 => match m with
         | 0 => by
-          simp_all only [mem_univ, ne_eq, Sigma.mk.injEq, heq_eq_eq, true_and,
-            PartialEquiv.single_apply, const_apply, nonempty_ball, zero_lt_one,
-            Nonempty.image_const, disjoint_singleton_left, mem_singleton_iff]
-          exact Subtype.coe_injective.ne ne
+          simp_all [Subtype.coe_injective.ne]
         | (_ + 1) => i.elim
       | (_ + 1) => match m with
         | 0 => by tauto
@@ -1055,8 +1052,8 @@ abbrev CWComplex.of_discrete_closed (hD : IsDiscrete D) (Dc : IsClosed D) : CWCo
 
 /-- A discrete space is a CW complex. -/
 instance CWComplex.of_discreteTopology {X : Type*} [TopologicalSpace X] [DiscreteTopology X] :
-    CWComplex (@univ X) :=
-  CWComplex.of_discrete_closed IsDiscrete.univ isClosed_univ
+    CWComplex (univ : Set X) :=
+  of_discrete_closed IsDiscrete.univ isClosed_univ
 
 namespace CWComplex
 

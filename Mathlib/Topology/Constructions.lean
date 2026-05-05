@@ -272,21 +272,9 @@ lemma DiscreteTopology.isDiscrete [DiscreteTopology s] : IsDiscrete s := ⟨infe
 
 theorem isDiscrete_iff_forall_exists_isOpen' {S : Set X} :
     IsDiscrete S ↔ ∀ s ⊆ S, ∃ U, IsOpen U ∧ U ∩ S = s := by
-  rw [isDiscrete_iff_discreteTopology, discreteTopology_iff_forall_isOpen]
-  refine ⟨fun h s sS ↦ ?_, fun h s ↦ ?_⟩
-  · apply bex_def.mp
-    have ⟨t, tp, ht⟩ := h (S ↓∩ s)
-    refine ⟨t, tp, ?_⟩
-    simp_all only [Set.ext_iff, mem_preimage, Subtype.forall, mem_inter_iff]
-    exact fun x ↦ ⟨fun h ↦ (ht x h.2).mp h.1, fun h ↦ ⟨(ht x (sS h)).mpr h, sS h⟩⟩
-  obtain ⟨U, Uo, Us⟩ := h _ (Subtype.coe_image_subset S s)
-  refine isOpen_mk.mpr ⟨U, Uo, ?_⟩
-  rw [Set.ext_iff] at Us ⊢
-  simp_all only [mem_inter_iff, mem_image, Subtype.exists, exists_and_right, exists_eq_right,
-    mem_preimage, Subtype.forall]
-  intro a
-  specialize Us a
-  tauto
+  simp_rw [isDiscrete_iff_discreteTopology, discreteTopology_iff_forall_isOpen,
+    isOpen_induced_iff, ← image_eq_image (Subtype.val_injective), Subtype.image_preimage_coe,
+    Subtype.forall_set_subtype (p := fun s ↦ ∃ t, IsOpen t ∧ S ∩ t = s), inter_comm]
 
 theorem isDiscrete_iff_forall_exists_isClosed' {S : Set X} :
     IsDiscrete S ↔ ∀ s ⊆ S, ∃ U, IsClosed U ∧ U ∩ S = s := by
@@ -297,7 +285,7 @@ theorem isDiscrete_iff_forall_exists_isClosed' {S : Set X} :
   obtain ⟨U, Uo, Us⟩ := h (sᶜ ∩ S) inter_subset_right
   exact ⟨Uᶜ, isOpen_compl_iff.mpr Uo, by rw [left_eq_inter.mpr sS]; simp_all [Set.ext_iff]⟩
 
-theorem isClosed_subset_discrete_closed {D s : Set X} (sd : s ⊆ D)
+theorem isClosed_of_subset_discrete_closed {D s : Set X} (sd : s ⊆ D)
     (hD : IsDiscrete D) (Dc : IsClosed D) : IsClosed s := by
   obtain ⟨_, tp, tD⟩ := isDiscrete_iff_forall_exists_isClosed'.mp hD s sd
   rw [← tD]
