@@ -148,8 +148,6 @@ See also `LinearMap.linearProjOfIsCompl`. -/
 def projectionOnto (h : IsCompl p q) : E →ₗ[R] p :=
   LinearMap.fst R p q ∘ₗ ↑(prodEquivOfIsCompl p q h).symm
 
-@[deprecated (since := "2026-05-04")] alias linearProjOfIsCompl := projectionOnto
-
 /-- The linear projection onto a subspace along its complement
 as a map from the full space to itself, as opposed to `Submodule.projectionOnto`,
 which maps into the subtype.
@@ -754,6 +752,7 @@ end LinearMap.IsIdempotentElem
 
 namespace Submodule
 
+@[deprecated (since := "2026-05-04")] alias linearProjOfIsCompl := projectionOnto
 @[deprecated (since := "2026-05-04")] alias IsCompl.projection := projection
 @[deprecated (since := "2026-05-04")] alias IsCompl.projection_apply := projection_apply
 @[deprecated (since := "2026-05-04")] alias coe_linearProjOfIsCompl_apply :=
