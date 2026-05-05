@@ -145,11 +145,11 @@ theorem subset_toFinset {s : Finset α} : s ⊆ ht.toFinset ↔ ↑s ⊆ t := by
 theorem ssubset_toFinset {s : Finset α} : s ⊂ ht.toFinset ↔ ↑s ⊂ t := by
   rw [← Finset.coe_ssubset, Finite.coe_toFinset]
 
-@[mono]
+@[gcongr, mono]
 protected theorem toFinset_subset_toFinset : hs.toFinset ⊆ ht.toFinset ↔ s ⊆ t := by
   simp only [← Finset.coe_subset, Finite.coe_toFinset]
 
-@[mono]
+@[gcongr, mono]
 protected theorem toFinset_ssubset_toFinset : hs.toFinset ⊂ ht.toFinset ↔ s ⊂ t := by
   simp only [← Finset.coe_ssubset, Finite.coe_toFinset]
 
