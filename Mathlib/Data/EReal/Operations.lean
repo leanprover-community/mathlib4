@@ -79,16 +79,16 @@ theorem top_add_of_ne_bot {x : EReal} (h : x ≠ ⊥) : ⊤ + x = ⊤ := by
 
 
 @[simp]
-theorem one_add_top : (1 : EReal) + ⊤ = ⊤ := rfl
+lemma one_add_top : (1 : EReal) + ⊤ = ⊤ := rfl
 
 @[simp]
-theorem top_add_one : (⊤ : EReal) + 1 = ⊤ := rfl
+lemma top_add_one : (⊤ : EReal) + 1 = ⊤ := rfl
 
 @[simp]
-theorem nat_add_top {n : ℕ} [n.AtLeastTwo] : (ofNat(n) : EReal) + ⊤ = ⊤ := rfl
+lemma ofNat_add_top {n : ℕ} [n.AtLeastTwo] : (ofNat(n) : EReal) + ⊤ = ⊤ := rfl
 
 @[simp]
-theorem top_add_nat {n : ℕ} [n.AtLeastTwo] : (⊤ : EReal) + ofNat(n) = ⊤ := rfl
+lemma top_add_ofNat {n : ℕ} [n.AtLeastTwo] : (⊤ : EReal) + ofNat(n) = ⊤ := rfl
 
 /-- For any extended real number `x`, the sum of `⊤` and `x` is equal to `⊤`
 if and only if `x` is not `⊥`. -/
