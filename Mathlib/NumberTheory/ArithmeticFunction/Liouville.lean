@@ -21,8 +21,6 @@ even number of prime factors (counting multiplicity) and `-1` otherwise.
 
 @[expose] public section
 
-open Finset Nat
-
 namespace ArithmeticFunction
 
 /-- The Liouville function `λ(n)` defined to be `1` is `n` has an even number of prime factors
@@ -47,7 +45,7 @@ theorem liouville_apply_mul (m n : ℕ) : liouville (m * n) = liouville m * liou
   · simp [hn]
   simp [liouville_apply, cardFactors_mul, hm, hn, pow_add]
 
-theorem isMultiplicative_liouville : IsMultiplicative liouville := by
-  refine ⟨liouville_apply_one, fun {m n} _ ↦ liouville_apply_mul m n⟩
+theorem isMultiplicative_liouville : IsMultiplicative liouville :=
+  ⟨liouville_apply_one, fun {m n} _ ↦ liouville_apply_mul m n⟩
 
 end ArithmeticFunction
