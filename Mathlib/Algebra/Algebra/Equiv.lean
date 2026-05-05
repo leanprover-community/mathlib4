@@ -155,12 +155,21 @@ lemma toRingEquiv_toRingHom : ((e : A₁ ≃+* A₂) : A₁ →+* A₂) = e :=
   rfl
 
 @[simp]
+theorem coe_toRingEquiv : ((e : A₁ ≃+* A₂) : A₁ → A₂) = e :=
+  rfl
+
+@[deprecated coe_toRingEquiv (since := "2026-05-05")]
 theorem coe_ringEquiv : ((e : A₁ ≃+* A₂) : A₁ → A₂) = e :=
   rfl
 
+@[deprecated coe_toRingEquiv (since := "2026-05-05")]
 theorem coe_ringEquiv' : (e.toRingEquiv : A₁ → A₂) = e :=
   rfl
 
+theorem coe_toRingEquiv_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A₂) → A₁ ≃+* A₂) :=
+  fun _ _ h => ext <| RingEquiv.congr_fun h
+
+@[deprecated coe_toRingEquiv_injective (since := "2026-05-05")]
 theorem coe_ringEquiv_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A₂) → A₁ ≃+* A₂) :=
   fun _ _ h => ext <| RingEquiv.congr_fun h
 
@@ -202,6 +211,10 @@ lemma toAlgHom_toRingHom : ((e : A₁ →ₐ[R] A₂) : A₁ →+* A₂) = e :=
   rfl
 
 /-- The two paths coercion can take to a `RingHom` are equivalent -/
+theorem coe_toRingHom_commutes : ((e : A₁ →ₐ[R] A₂) : A₁ →+* A₂) = ((e : A₁ ≃+* A₂) : A₁ →+* A₂) :=
+  rfl
+
+@[deprecated coe_toRingHom_commutes (since := "2026-05-05")]
 theorem coe_ringHom_commutes : ((e : A₁ →ₐ[R] A₂) : A₁ →+* A₂) = ((e : A₁ ≃+* A₂) : A₁ →+* A₂) :=
   rfl
 
