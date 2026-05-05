@@ -393,7 +393,7 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq
   let Pf := P.map (algebraMap _ (Localization.Away f))
   have : Pf.IsPrime := IsLocalization.isPrime_of_isPrime_disjoint (.powers f) _ _ ‹_› (by
     rwa [Ideal.disjoint_powers_iff_notMem_of_isPrime])
-  have : Pf.LiesOver P := ⟨(IsLocalization.comap_map_of_isPrime_disjoint (.powers f) _ ‹_› (by
+  have : Pf.LiesOver P := ⟨(IsLocalization.under_map_of_isPrime_disjoint (.powers f) _ ‹_› (by
     rwa [Ideal.disjoint_powers_iff_notMem _ (Ideal.IsPrime.isRadical ‹_›)])).symm⟩
   let φ : R' ⊗[R] S →ₐ[R'] Localization.Away f ⊗[R] S :=
     Algebra.TensorProduct.map (Algebra.ofId _ _) (.id _ _)
