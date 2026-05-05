@@ -86,8 +86,7 @@ theorem normal_iff_normal_monoidHom [IsMonHom φ] [Mono φ] :
   · intro ⟨ψ, hψ⟩ X
     constructor
     rintro - ⟨x, rfl⟩ z
-    use lift z x ≫ ψ
-    simp [hψ]
+    exact ⟨lift z x ≫ ψ, by simp [hψ]⟩
   · intro hnormal
     have (X : C) (g : X ⟶ G) (h : X ⟶ H) : ∃ (h' : X ⟶ H), h' ≫ φ = g * h ≫ φ * g⁻¹ :=
       (hnormal X).conj_mem (h ≫ φ) (by simp) g
