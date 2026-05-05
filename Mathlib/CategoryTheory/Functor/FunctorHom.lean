@@ -47,10 +47,10 @@ structure HomObj (A : C ⥤ Type w) where
 bijection with `F ⊗ A ⟶ G`. -/
 @[simps]
 def homObjEquiv (F G A : C ⥤ Type w) : (HomObj F G A) ≃ (F ⊗ A ⟶ G) where
-  toFun a := ⟨fun X ↦ TypeCat.ofHom fun ⟨x, y⟩ ↦ a.app X y x, fun X Y f ↦ by
+  toFun a := ⟨fun X ↦ ↾fun ⟨x, y⟩ ↦ a.app X y x, fun X Y f ↦ by
     ext ⟨x, y⟩
     simpa using ConcreteCategory.congr_hom (a.naturality f y) x⟩
-  invFun a := ⟨fun X y ↦ TypeCat.ofHom (fun x ↦ a.app X (x, y)), fun φ y ↦ by
+  invFun a := ⟨fun X y ↦ ↾fun x ↦ a.app X (x, y), fun φ y ↦ by
     ext x
     simpa using (a.naturality_apply φ) (x, y)⟩
   left_inv _ := by aesop
@@ -92,7 +92,7 @@ end HomObj
 @[simps obj map]
 def homObjFunctor : (C ⥤ Type w)ᵒᵖ ⥤ Type (max w v' u) where
   obj A := HomObj F G A.unop
-  map {A A'} f := TypeCat.ofHom fun x ↦
+  map {A A'} f := ↾fun x ↦
     { app := fun X a ↦ x.app X (f.unop.app _ a)
       naturality := fun {X Y} φ a ↦ by
         rw [← HomObj.naturality]
@@ -122,7 +122,7 @@ def functorHomEquiv (A : C ⥤ Type (max u v v')) : (A ⟶ F.functorHom G) ≃ H
         have := HomObj.congr_app (ConcreteCategory.congr_hom (φ.naturality f) a) Y (𝟙 _)
         simp_all [-NatTrans.naturality, functorHom, homObjFunctor] }
   invFun x :=
-    { app X := TypeCat.ofHom (fun a ↦ { app := fun Y f => x.app Y (A.map f a) })
+    { app X := ↾fun a ↦ { app := fun Y f => x.app Y (A.map f a) }
       naturality X Y f := by
         ext
         simp [functorHom, homObjFunctor] }
@@ -145,7 +145,7 @@ def natTransEquiv : (𝟙_ (C ⥤ Type (max v' v u)) ⟶ F.functorHom G) ≃ (F 
     have := HomObj.congr_app (ConcreteCategory.congr_hom (f.naturality φ) PUnit.unit) Y (𝟙 Y)
     dsimp [functorHom, homObjFunctor] at this
     aesop ⟩
-  invFun f := { app _ := TypeCat.ofHom (fun _ ↦ HomObj.ofNatTrans f) }
+  invFun f := { app _ := ↾fun _ ↦ HomObj.ofNatTrans f }
   left_inv f := by
     ext X a Y φ
     have := HomObj.congr_app (ConcreteCategory.congr_hom (f.naturality φ) PUnit.unit) Y (𝟙 Y)
@@ -203,6 +203,6 @@ attribute [local simp] functorHom types_tensorObj_def in
 instance : EnrichedCategory (C ⥤ Type (max v' v u)) (C ⥤ D) where
   Hom := functorHom
   id F := natTransEquiv.symm (𝟙 F)
-  comp F G H := { app _ := TypeCat.ofHom (fun f ↦ f.1.comp f.2) }
+  comp F G H := { app _ := ↾fun f ↦ f.1.comp f.2 }
 
 end CategoryTheory.Enriched.Functor

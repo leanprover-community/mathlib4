@@ -39,9 +39,9 @@ lemma div_locally_finite [IsIntegral X] [IsLocallyNoetherian X] (f : X.functionF
   have : NoetherianSpace W.1 := noetherianSpace_of_isAffineOpen W hWa
   have : QuasiSober W.1 := W.isOpenEmbedding'.quasiSober
   have : QuasiSober (W.1 ∩ (U : Set X)ᶜ : Set X) :=
-    quasiSober_of_quasisober_inter_isClosed_right W.1 U.2.isClosed_compl
+    QuasiSober.inter_of_isClosed_of_quasiSober_left W.1 U.2.isClosed_compl
   have : NoetherianSpace (W.1 ∩ (U : Set X)ᶜ : Set X) :=
-    NoetherianSpace.noetherian_inter_left W.1 _
+    NoetherianSpace.inter_of_left W.1 _
   have hne : closure (W.1 ∩ (U : Set X)ᶜ) ≠ univ := by
     intro h
     have := (closure_mono (inter_subset_right (s := W.carrier) (t := (↑U)ᶜ))).trans
