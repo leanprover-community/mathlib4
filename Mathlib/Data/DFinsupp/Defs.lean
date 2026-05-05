@@ -534,6 +534,17 @@ theorem equivFunOnFintype_symm_single [Fintype ι] (i : ι) (m : β i) :
     (@DFinsupp.equivFunOnFintype ι β _ _).symm (Pi.single i m) = DFinsupp.single i m := by
   simp only [← single_eq_pi_single, equivFunOnFintype_symm_coe]
 
+@[simp] lemma filter_eq (f : Π₀ i, β i) (i : ι) : f.filter (i = ·) = single i (f i) := by
+  ext
+  rw [filter_apply, single_apply]
+  split
+  · subst i
+    simp
+  · simp
+
+@[simp] lemma filter_eq' (f : Π₀ i, β i) (i : ι) : f.filter (· = i) = single i (f i) := by
+  simp [eq_comm]
+
 section SingleAndZipWith
 
 variable [∀ i, Zero (β₁ i)] [∀ i, Zero (β₂ i)]
