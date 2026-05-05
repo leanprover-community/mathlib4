@@ -828,6 +828,9 @@ def lift (g : ∀ i, G i →ₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g
 
 variable (g : ∀ i, G i →ₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 
+@[simp]
+theorem lift_comp_of {i} : (lift G f P g Hg).comp (of G f i) = g i := rfl
+
 @[simp] theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x := rfl
 
 @[ext]
