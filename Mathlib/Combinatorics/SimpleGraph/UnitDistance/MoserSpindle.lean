@@ -14,7 +14,6 @@ public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.NormNum
 public import Mathlib.Tactic.Positivity
 public import Mathlib.Tactic.Ring
-public meta import Mathlib.Data.Fintype.Pi
 
 /-!
 # The Moser spindle: a $7$-vertex unit-distance graph with chromatic number $4$
@@ -86,34 +85,45 @@ def adj : Fin 7 → Fin 7 → Bool
   | 4, 6 => true | 6, 4 => true | 5, 6 => true | 6, 5 => true
   | 3, 6 => true | 6, 3 => true | _, _ => false
 
-/-- A function `Fin 7 → Fin k` is a *proper* colouring of the Moser spindle iff it assigns
-distinct colours to every adjacent pair of vertices. -/
-def isProperColoring {k : ℕ} (f : Fin 7 → Fin k) : Bool :=
-  decide (∀ i j : Fin 7, adj i j = true → f i ≠ f j)
-
-/-- The Moser spindle has no proper $3$-colouring. Verified by exhaustive search over
-$3^7 = 2187$ candidate functions `Fin 7 → Fin 3`. -/
-theorem no_three_coloring : ¬ ∃ f : Fin 7 → Fin 3, isProperColoring f = true := by
-  native_decide
-
 /-- The Moser spindle as a `SimpleGraph (Fin 7)`. -/
 def graph : SimpleGraph (Fin 7) where
   Adj i j := adj i j = true
-  symm := by intro i j h; fin_cases i <;> fin_cases j <;> simp_all [adj]
+  symm := by intro i j h; fin_cases i <;> fin_cases j <;> simp_all only [adj]
   loopless := ⟨by intro i h; fin_cases i <;> simp [adj] at h⟩
 
 instance : DecidableRel graph.Adj := fun i j => by unfold graph; exact inferInstance
 
-/-- The abstract Moser spindle is not $3$-colourable as a `SimpleGraph`. -/
+/-- In `Fin 3`, three pairwise-distinct values together with a fourth value distinct from
+two of them forces the fourth to equal the first. -/
+private lemma fin3_three_eq (c0 c1 c2 c3 : Fin 3)
+    (h01 : c0 ≠ c1) (h02 : c0 ≠ c2) (h12 : c1 ≠ c2)
+    (h13 : c1 ≠ c3) (h23 : c2 ≠ c3) : c3 = c0 := by
+  fin_cases c0 <;> fin_cases c1 <;> fin_cases c2 <;> fin_cases c3 <;> simp_all
+
+/-- The abstract Moser spindle is not $3$-colourable.
+
+The proof follows the textbook structural argument: any proper $3$-colouring `c` must have
+`c 3 = c 0` (since the triangle `{0, 1, 2}` exhausts all three colours and `c 3` differs
+from `c 1` and `c 2`), and similarly `c 6 = c 0`, contradicting the edge `{3, 6}`. -/
 theorem not_colorable_three : ¬ graph.Colorable 3 := by
-  intro h
-  obtain ⟨c⟩ := h
-  apply no_three_coloring
-  refine ⟨fun i => c i, ?_⟩
-  unfold isProperColoring
-  simp only [decide_eq_true_eq]
-  intro i j hadj
-  exact c.valid hadj
+  rintro ⟨c⟩
+  have h01 : c 0 ≠ c 1 := c.valid (show graph.Adj 0 1 from by decide)
+  have h02 : c 0 ≠ c 2 := c.valid (show graph.Adj 0 2 from by decide)
+  have h12 : c 1 ≠ c 2 := c.valid (show graph.Adj 1 2 from by decide)
+  have h13 : c 1 ≠ c 3 := c.valid (show graph.Adj 1 3 from by decide)
+  have h23 : c 2 ≠ c 3 := c.valid (show graph.Adj 2 3 from by decide)
+  have h04 : c 0 ≠ c 4 := c.valid (show graph.Adj 0 4 from by decide)
+  have h05 : c 0 ≠ c 5 := c.valid (show graph.Adj 0 5 from by decide)
+  have h45 : c 4 ≠ c 5 := c.valid (show graph.Adj 4 5 from by decide)
+  have h46 : c 4 ≠ c 6 := c.valid (show graph.Adj 4 6 from by decide)
+  have h56 : c 5 ≠ c 6 := c.valid (show graph.Adj 5 6 from by decide)
+  have h36 : c 3 ≠ c 6 := c.valid (show graph.Adj 3 6 from by decide)
+  -- Triangle {0,1,2} together with the {1,3}, {2,3} edges forces c 3 = c 0.
+  have c3eq : c 3 = c 0 := fin3_three_eq _ _ _ _ h01 h02 h12 h13 h23
+  -- Triangle {0,4,5} together with the {4,6}, {5,6} edges forces c 6 = c 0.
+  have c6eq : c 6 = c 0 := fin3_three_eq _ _ _ _ h04 h05 h45 h46 h56
+  -- Edge {3, 6} contradicts c 3 = c 0 = c 6.
+  exact h36 (c3eq.trans c6eq.symm)
 
 /-- The Moser spindle's chromatic number is at least $4$. -/
 theorem chromaticNumber_ge_four : 4 ≤ graph.chromaticNumber := by
@@ -137,9 +147,9 @@ between Mathlib's `dist` and the squared-distance form used in our proofs is pro
 /-- Notation for the Euclidean plane. -/
 local notation "Plane" => EuclideanSpace ℝ (Fin 2)
 
-/-- The unit-distance condition in the Euclidean plane, expressed as a squared-coordinate
-equation. -/
-private lemma dist_eq_one_iff {x₀ y₀ x₁ y₁ : ℝ} :
+/-- Two points in `EuclideanSpace ℝ (Fin 2)` are at distance one iff their squared coordinate
+differences sum to one. -/
+lemma dist_eq_one_iff {x₀ y₀ x₁ y₁ : ℝ} :
     dist (!₂[x₀, y₀] : Plane) (!₂[x₁, y₁] : Plane) = 1
       ↔ (x₀ - x₁) ^ 2 + (y₀ - y₁) ^ 2 = 1 := by
   simp [dist_eq_norm_sub, PiLp.norm_eq_of_L2]
@@ -246,7 +256,7 @@ private theorem dist_embed_3_6 : dist (embed 3) (embed 6) = 1 := by
 at unit distance in the Euclidean plane. -/
 private theorem dist_embed_eq_one (i j : Fin 7) (hadj : adj i j = true) :
     dist (embed i) (embed j) = 1 := by
-  fin_cases i <;> fin_cases j <;> simp_all [adj] <;> first
+  fin_cases i <;> fin_cases j <;> simp_all only [adj, reduceCtorEq] <;> first
     | exact dist_embed_0_1 | (rw [dist_comm]; exact dist_embed_0_1)
     | exact dist_embed_0_2 | (rw [dist_comm]; exact dist_embed_0_2)
     | exact dist_embed_1_2 | (rw [dist_comm]; exact dist_embed_1_2)
