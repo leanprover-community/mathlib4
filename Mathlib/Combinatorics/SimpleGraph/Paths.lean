@@ -687,10 +687,12 @@ namespace Walk
 
 variable {G} {u v : V}
 
-lemma IsPath.exists_of_edges {u v : V} {e} {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPath)
-    (hep : e ∈ p.edges) (heq : e ∈ q.edges) (hl : 1 < p.length) :
-    ∃ z, z ∈ p.support.tail ∧ z ∈ q.support.tail := by
-  rcases e with ⟨a, b⟩
+lemma IsPath.disjoint_edges_of_disjoint_support {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPath)
+    (hd : p.support.tail.Disjoint q.support.tail) (hl : 1 < p.length) :
+    p.edges.Disjoint q.edges := by
+  dsimp only [List.Disjoint] at hd ⊢
+  contrapose! hd
+  obtain ⟨⟨a, b⟩, hep, heq, _⟩ := hd
   by_cases! h : a = v ∨ b = v
   · by_cases hh : a = v
     · use b
@@ -717,10 +719,8 @@ lemma isPath_append_isCycle {u v} {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPa
   refine ⟨isTrail_append_iff_disjoint_edges .. |>.mpr ⟨hp.isTrail, hq.isTrail, ?_⟩, ?_, ?_⟩
   · rintro ⟨⟩ h₁ h₂
     cases lt_sup_iff.mp hn
-    · obtain ⟨z, hz₁, hz₂⟩ := hp.exists_of_edges h₁ h₂ ‹_›
-      exact h hz₁ hz₂
-    · obtain ⟨z, hz₁, hz₂⟩ := hq.exists_of_edges h₂ h₁ ‹_›
-      exact h hz₂ hz₁
+    · exact hp.disjoint_edges_of_disjoint_support h ‹_› h₁ h₂
+    · exact hq.disjoint_edges_of_disjoint_support h.symm ‹_› h₂ h₁
   · grind [nil_append_iff, nil_iff_length_eq]
   · rw [tail_support_append, List.nodup_append']
     exact ⟨hp.support_nodup.tail, hq.support_nodup.tail, h⟩
