@@ -74,7 +74,7 @@ private lemma eventuallyEq_log_trailingCoeff_of_meromorphicOrderAt_eq_zero (h₁
 Circle integrability of the term `fun a ↦ log ‖meromorphicTrailingCoeffAt (f · - a) 0‖` that
 appears in Cartan's formula.
 -/
-theorem circleIntegrable_log_trailingCoeff_of_meromorphic :
+theorem circleIntegrable_log_meromorphicTrailingCoeffAt :
     CircleIntegrable (fun a ↦ log ‖meromorphicTrailingCoeffAt (f · - a) 0‖) 0 1 := by
   by_cases h: ¬MeromorphicAt f 0
   · have {a : ℂ} : ¬MeromorphicAt (fun x ↦ f x - a) 0 := by
@@ -101,7 +101,7 @@ theorem circleIntegrable_log_trailingCoeff_of_meromorphic :
 Circle average of the function `fun a ↦ log ‖meromorphicTrailingCoeffAt (f · - a) 0‖` that appears
 in Cartan's formula, in case where `f` has a zero at the origin.
 -/
-theorem circleAverage_log_norm_trailingCoeff_of_pos_meromorphicOrderAt
+theorem circleAverage_log_norm_meromorphicTrailingCoeffAt_of_meromorphicOrderAt_pos
     (h : 0 < meromorphicOrderAt f 0) :
     circleAverage (fun a ↦ log ‖meromorphicTrailingCoeffAt (f · - a) 0‖) 0 1 = 0 :=
   circleAverage_const_on_circle (fun _ hx ↦ log_trailingCoeff_eq_zero_on_unitSphere h hx)
@@ -110,7 +110,7 @@ theorem circleAverage_log_norm_trailingCoeff_of_pos_meromorphicOrderAt
 Circle average of the function `fun a ↦ log ‖meromorphicTrailingCoeffAt (f · - a) 0‖` that appears
 in Cartan's formula, in case where  `f` has order zero at the origin.
 -/
-theorem circleAverage_log_norm_trailingCoeff_of_zero_meromorphicOrderAt
+theorem circleAverage_log_norm_meromorphicTrailingCoeffAt_of_meromorphicOrderAt_eq_zero
     (h : meromorphicOrderAt f 0 = 0) :
     circleAverage (fun a ↦ log ‖meromorphicTrailingCoeffAt (f · - a) 0‖) 0 1
       = log⁺ ‖meromorphicTrailingCoeffAt f 0‖ := by
@@ -129,7 +129,7 @@ theorem circleAverage_log_norm_trailingCoeff_of_zero_meromorphicOrderAt
 Circle average of the function `fun a ↦ log ‖meromorphicTrailingCoeffAt (f · - a) 0‖` that appears
 in Cartan's formula, in case where `f` has a pole at the origin.
 -/
-theorem circleAverage_log_norm_trailingCoeff_of_neg_meromorphicOrderAt
+theorem circleAverage_log_norm_meromorphicTrailingCoeffAt_of_meromorphicOrderAt_lt_zero
     (h : meromorphicOrderAt f 0 < 0) :
     circleAverage (fun a ↦ log ‖meromorphicTrailingCoeffAt (f · - a) 0‖) 0 1
       = log ‖meromorphicTrailingCoeffAt f 0‖ := by
