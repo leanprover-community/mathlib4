@@ -37,9 +37,9 @@ The integral against vector measures is defined through the extension process de
 
 ## Notations
 
-* `∫ᵛ x, f x ∂[B; μ]` : the `G`-valued integral of an `E`-valued function `f` against the `F`-valued
+* `∫ᵛ x, f x ∂[B; μ]`: the `G`-valued integral of an `E`-valued function `f` against the `F`-valued
   vector measure `μ` paired through `B`.
-* `∫ᵛ x, f x ∂•μ` : the special case where `f` is a real-valued function and `μ` is an `F`-valued
+* `∫ᵛ x, f x ∂•μ`: the special case where `f` is a real-valued function and `μ` is an `F`-valued
   vector measure, with the pairing being the scalar multiplication by `ℝ`.
 
 ## Note
@@ -61,7 +61,7 @@ unconditionally convergent.
 
 public section
 
-open ENNReal Set MeasureTheory VectorMeasure ContinuousLinearMap
+open Set MeasureTheory VectorMeasure ContinuousLinearMap
 
 variable {X E F G : Type*} {mX : MeasurableSpace X}
   [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -177,7 +177,7 @@ theorem integral_fun_sub {f g : X → E} (hf : μ.Integrable f B) (hg : μ.Integ
   · simp [integral, hG]
 
 @[integral_simps]
-theorem integral_sub (f g : X → E) (hf : μ.Integrable f B) (hg : μ.Integrable g B) :
+theorem integral_sub {f g : X → E} (hf : μ.Integrable f B) (hg : μ.Integrable g B) :
     ∫ᵛ x, (f - g) x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] - ∫ᵛ x, g x ∂[B; μ] := integral_fun_sub hf hg
 
 variable (μ B) in
