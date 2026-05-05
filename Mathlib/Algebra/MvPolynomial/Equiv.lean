@@ -489,7 +489,7 @@ theorem optionEquivLeft_elim_eval (s : S₁ → R) (y : R) (f : MvPolynomial (Op
   apply MvPolynomial.algHom_ext
   rw [Option.forall]
   simp only [aeval_X, Option.elim_none, AlgHom.coe_comp, Polynomial.coe_aeval_eq_eval,
-    AlgHom.coe_mk, Polynomial.coe_mapRingHom, AlgEquiv.coe_algHom, comp_apply,
+    AlgHom.coe_mk, Polynomial.coe_mapRingHom, AlgEquiv.coe_toAlgHom, comp_apply,
     optionEquivLeft_apply, Polynomial.map_X, Polynomial.eval_X, Option.elim_some,
     Polynomial.map_C, eval_X, Polynomial.eval_C, implies_true, and_self, φ]
 
@@ -671,7 +671,7 @@ theorem eval_eq_eval_mv_eval' (s : Fin n → R) (y : R) (f : MvPolynomial (Fin (
   apply MvPolynomial.algHom_ext
   rw [Fin.forall_iff_succ]
   simp only [aeval_X, Fin.cons_zero, AlgHom.coe_comp, Polynomial.coe_aeval_eq_eval,
-    AlgHom.coe_mk, Polynomial.coe_mapRingHom, AlgEquiv.coe_algHom,
+    AlgHom.coe_mk, Polynomial.coe_mapRingHom, AlgEquiv.coe_toAlgHom,
     comp_apply, finSuccEquiv_apply, eval₂Hom_X', Fin.cases_zero, Polynomial.map_X,
     Polynomial.eval_X, Fin.cons_succ, Fin.cases_succ, Polynomial.map_C, eval_X, Polynomial.eval_C,
     implies_true, and_self, φ]
@@ -851,7 +851,7 @@ lemma Polynomial.toMvPolynomial_eq_rename_comp (i : σ) :
 
 lemma Polynomial.toMvPolynomial_injective (i : σ) :
     Function.Injective (toMvPolynomial (R := R) i) := by
-  simp only [toMvPolynomial_eq_rename_comp, AlgHom.coe_comp, AlgEquiv.coe_algHom,
+  simp only [toMvPolynomial_eq_rename_comp, AlgHom.coe_comp, AlgEquiv.coe_toAlgHom,
     EquivLike.injective_comp]
   exact MvPolynomial.rename_injective (fun x ↦ i) fun _ _ _ ↦ rfl
 

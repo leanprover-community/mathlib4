@@ -183,11 +183,18 @@ theorem toAlgHom_eq_coe : e.toAlgHom = e :=
 theorem toAlgHom_apply (x : A₁) : e.toAlgHom x = e x :=
   rfl
 
-@[simp, norm_cast]
+@[deprecated "Now `AlgEquiv.coe_toAlgHom`" (since := "2026-05-05")]
 theorem coe_algHom : DFunLike.coe e.toAlgHom = DFunLike.coe e :=
   rfl
 
+@[simp, norm_cast]
+theorem coe_toAlgHom :  DFunLike.coe e.toAlgHom = e := rfl
+
+@[deprecated "Now `AlgEquiv.coe_toAlgHom_injective`" (since := "2026-05-05")]
 theorem coe_algHom_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A₂) → A₁ →ₐ[R] A₂) :=
+  fun _ _ h => ext <| AlgHom.congr_fun h
+
+theorem coe_toAlgHom_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A₂) → A₁ →ₐ[R] A₂) :=
   fun _ _ h => ext <| AlgHom.congr_fun h
 
 @[simp, norm_cast]
@@ -475,7 +482,12 @@ def ofAlgHom (f : A₁ →ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ : f.comp 
     left_inv := AlgHom.ext_iff.1 h₂
     right_inv := AlgHom.ext_iff.1 h₁ }
 
+@[deprecated "Now `AlgEquiv.coe_toAlgHom_ofAlgHom`" (since := "2026-05-05")]
 theorem coe_algHom_ofAlgHom (f : A₁ →ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ h₂) :
+    ↑(ofAlgHom f g h₁ h₂) = f :=
+  rfl
+
+theorem coe_toAlgHom_ofAlgHom (f : A₁ →ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ h₂) :
     ↑(ofAlgHom f g h₁ h₂) = f :=
   rfl
 
@@ -770,7 +782,7 @@ def algHomUnitsEquiv (R S : Type*) [CommSemiring R] [Semiring S] [Algebra R S] :
 
 /-- See also `Finite.algHom` -/
 instance _root_.Finite.algEquiv [Finite (A₁ →ₐ[R] A₂)] : Finite (A₁ ≃ₐ[R] A₂) :=
-  Finite.of_injective _ AlgEquiv.coe_algHom_injective
+  Finite.of_injective _ AlgEquiv.coe_toAlgHom_injective
 
 end Semiring
 
