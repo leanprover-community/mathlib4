@@ -9,10 +9,26 @@ set_option linter.style.header false
 
 /- # Interval Arithmetic Tactic (Prototype) -/
 
+@[expose] public section
+
 -- Proves goals like:
 
+open Lean Elab Command
 
 open IntervalArithmetic
+
+set_option trace.profiler true
+
+-- with duplicating sides: 3.693192
+theorem test_mem_share_hard (x : ℝ) (hx₁ : 2 ≤ x) (hx₂ : x ≤ 3) :
+    x ^ 2 + Real.sqrt (x + Real.sqrt 2) ∈
+      Set.Icc (x + Real.sqrt 2) (Real.exp x + x ^ 3) := by
+  dyadic_interval [approx := 8000]
+
+theorem test (x : ℝ)
+    (hx : x ∈ Set.Icc (Real.exp 1) (Real.exp 2)) :
+    x ≤ x + 100 := by
+  dyadic_interval [approx := 100]
 
 example : √(√ 3 - √ 2) ≤ 0.6 := by
   dyadic_interval [approx := 1000 for Sqrt, approx := 5 for OfScientific]
@@ -29,6 +45,7 @@ example :
   dyadic_interval [approx := 200]
 
 example (x : ℝ) (hx : 1 < x) : 0 ≤ x ^ 3 + x - 1  := by dyadic_interval
+
 
 example (x : ℝ) (hx : 2 ≤ x) : Real.exp (- x ^ 2) ≤ x := by dyadic_interval [approx := 600]
 

@@ -6,12 +6,14 @@ Authors: David Ledvinka
 module
 
 public import Mathlib.Order.WithBot
+public import Mathlib.Order.Interval.Set.Defs
 
 /-!
 ## Interval Type for Interval Arithmetic Tactics
 
-This file defines the `Interval` type used in the interval arithmetic tactics defined in ths folder
-and develops the API necessary to support the tactic.
+This file defines the `Interval` type used in the interval arithmetic tactics and develops the
+necessary API.
+
 -/
 
 @[expose] public section
@@ -174,28 +176,6 @@ def UpperBound.Bounds [Preorder β] (φ : α → β) (ub : UpperBound α) (b : �
   | ⊤ => True
   | (⟨isClosed, a⟩ : FiniteUpperBound α) => if isClosed then b ≤ φ a else b < φ a
 
-lemma LowerBound.bounds_of_bounds [PartialOrder α] [Preorder β] {φ : α → β} (hf : StrictMono φ)
-    {lb₁ lb₂ : LowerBound α} (h_le : lb₁ ≤ lb₂) {b : β} (hb : lb₂.Bounds φ b) :
-    lb₁.Bounds φ b := by
-  match lb₁, lb₂ with
-  | ⊥, _ => simp [Bounds]
-  | _, ⊥ => simp [Bounds, WithBot.le_bot_iff.mp h_le]
-  | (⟨c₁, a₁⟩ : FiniteLowerBound α), (⟨c₂, a₂⟩ : FiniteLowerBound α) =>
-    cases c₁ <;> cases c₂ <;> simp only [Bounds, Bool.false_eq_true, ↓reduceIte] at hb ⊢
-    case false.true => have : φ a₁ < φ a₂ := hf (by simpa using h_le); grind
-    all_goals (have : φ a₁ ≤ φ a₂ := hf.monotone (by simpa using h_le); grind)
-
-lemma UpperBound.bounds_of_bounds [PartialOrder α] [Preorder β] {φ : α → β} (hf : StrictMono φ)
-    {ub₁ ub₂ : UpperBound α} (h_le : ub₁ ≤ ub₂) {b : β} (hb : ub₁.Bounds φ b) :
-    ub₂.Bounds φ b := by
-  match ub₁, ub₂ with
-  | _, ⊤ => simp [Bounds]
-  | ⊤, _ => simp [Bounds, WithTop.top_le_iff.mp h_le]
-  | (⟨c₁, a₁⟩ : FiniteUpperBound α), (⟨c₂, a₂⟩ : FiniteUpperBound α) =>
-    cases c₁ <;> cases c₂ <;> simp only [Bounds, Bool.false_eq_true, ↓reduceIte] at hb ⊢
-    case true.false => have : φ a₁ < φ a₂ := hf (by simpa using h_le); grind
-    all_goals (have : φ a₁ ≤ φ a₂ := hf.monotone (by simpa using h_le); grind)
-
 /-- Converts a lower bound to an open lower bound. -/
 def LowerBound.open (lb : LowerBound α) : LowerBound α :=
   match lb with
@@ -244,7 +224,6 @@ structure Interval (α : Type*) where
   ub : UpperBound α
   deriving Inhabited, DecidableEq
 
-
 /-- Interval representing `Set.univ` -/
 def Interval.univ (α : Type*) : Interval α := ⟨⊥, ⊤⟩
 
@@ -261,13 +240,6 @@ lemma Interval.univ_eq_univ [Preorder β] (φ : α → β) : (univ α).toSet φ 
 
 lemma Interval.mem_toSet_univ [Preorder β] (φ : α → β) (b : β) : b ∈ (univ α).toSet φ := by
   simp [univ_eq_univ]
-
-/-- (Computable) definition of the subset relation on intervals. -/
-def Interval.subset [Preorder α] (x y : Interval α) : Prop := y.lb ≤ x.lb ∧ x.ub ≤ y.ub
-
-lemma Interval.subset_def [Preorder α] (x y : Interval α) :
-    x.subset y ↔ y.lb ≤ x.lb ∧ x.ub ≤ y.ub := by
-  simp [subset]
 
 lemma mem_toSet_of_mem_toSet_le [Preorder β] {φ : α → β} {r s : β}
     {x : Interval α} (hrs : r ≤ s) (hr : r ∈ x.toSet φ) :
@@ -289,13 +261,6 @@ lemma mem_toSet_of_lt_mem_toSet [Preorder β] {φ : α → β} {r s : β}
   r ∈ (⟨⊥, x.ub.open⟩ : Interval α).toSet φ := by
   simp [Interval.mem_toSet, LowerBound.Bounds, UpperBound.open_bounds_of_lt hrs hs.2]
 
-lemma Interval.subset_of_subset [PartialOrder α] [Preorder β] (φ : α → β) (hφ : StrictMono φ)
-    {x y : Interval α} (hxy : x.subset y) :
-    x.toSet φ ⊆ y.toSet φ := by
-  intro b hb
-  rw [mem_toSet] at hb ⊢
-  exact ⟨LowerBound.bounds_of_bounds hφ hxy.1 hb.1, UpperBound.bounds_of_bounds hφ hxy.2 hb.2⟩
-
 lemma mem_toSet_of_mem_toSet_eq [Preorder β] {φ : α → β} {r s : β}
     {x : Interval α} (hrs : r = s) (hr : r ∈ x.toSet φ) : s ∈ x.toSet φ := by
   simp [← hrs, hr]
@@ -304,8 +269,12 @@ lemma mem_toSet_of_eq_mem_toSet [Preorder β] {φ : α → β} {r s : β}
     {x : Interval α} (hrs : r = s) (hs : s ∈ x.toSet φ) : r ∈ x.toSet φ := by
   simp [hrs, hs]
 
+lemma mem_toSet_of_mem_toSet_interval_eq [Preorder β] {φ : α → β} {r : β} {x y : Interval α}
+    (hxy : x = y) (hs : r ∈ y.toSet φ) : r ∈ x.toSet φ := by simp [hxy, hs]
+
 section Inter
 
+/- (Dedicable/Computable) definition of the intersection of two intervals. -/
 def Interval.inter [LinearOrder α] (x y : Interval α) : Interval α :=
   ⟨max x.lb y.lb, min x.ub y.ub⟩
 
@@ -318,7 +287,9 @@ end Inter
 
 section Order
 
-/- (Computable) definition of the eq relation on Intervals. If `x.eq y` this means that
+open Set
+
+/- (Decidable/Computable) definition of the eq relation on Intervals. If `x.eq y` this means that
 all elements of `x` are less than or equal to all elements of `y`. -/
 def Interval.le [Preorder α] : Interval α → Interval α → Prop
   | ⟨_, _⟩, ⟨⊥, _⟩ => False
@@ -332,7 +303,7 @@ instance [Preorder α] [DecidableLE α]
   | ⟨_, ⊤⟩, ⟨some _, _⟩ => isFalse id
   | ⟨_, some ⟨_, x_ub⟩⟩, ⟨some ⟨_, y_lb⟩, _⟩ => inferInstanceAs (Decidable (x_ub ≤ y_lb))
 
-/- (Computable) definition of the lt relation on Intervals. If `x.lt y` this means that
+/- (Decidble/Computable) definition of the lt relation on Intervals. If `x.lt y` this means that
 all elements of `x` are less than all elements of `y`. -/
 def Interval.lt [Preorder α] : Interval α → Interval α → Prop
   | ⟨_, _⟩, ⟨⊥, _⟩ => False
@@ -351,7 +322,6 @@ instance [Preorder α] [DecidableLE α] [DecidableLT α]
   | ⟨_, some ⟨true,  x_ub⟩⟩, ⟨some ⟨false, y_lb⟩, _⟩ => inferInstanceAs (Decidable (x_ub ≤ y_lb))
   | ⟨_, some ⟨false, x_ub⟩⟩, ⟨some ⟨true,  y_lb⟩, _⟩ => inferInstanceAs (Decidable (x_ub ≤ y_lb))
   | ⟨_, some ⟨false, x_ub⟩⟩, ⟨some ⟨false, y_lb⟩, _⟩ => inferInstanceAs (Decidable (x_ub ≤ y_lb))
-
 
 lemma Interval.le_of_le [PartialOrder α] [Preorder β] {φ : α → β} (hφ : StrictMono φ) {r s : β}
     {x y : Interval α} (hrx : r ∈ x.toSet φ) (hsy : s ∈ y.toSet φ) (hxy : x.le y) :
@@ -375,8 +345,8 @@ lemma Interval.lt_of_lt [PartialOrder α] [Preorder β] {φ : α → β} (hφ : 
     case true.true => grind [hφ hxy]
     all_goals grind [hφ.monotone hxy]
 
-/- (Computable) definition of a "strict" `eq` relation on Intervals. If `x.strict_eq y` this means
-that `x` and `y` both contain exactly one equal element. -/
+/- (Decidable/Computable) definition of a "strict" `eq` relation on Intervals. If `x.strict_eq y`
+this means that `x` and `y` both contain exactly one equal element. -/
 def Interval.strict_eq [DecidableEq α] (x y : Interval α) : Prop :=
   match x, y with
   | ⟨⊥, _⟩, _ => False
@@ -407,6 +377,51 @@ lemma Interval.eq_of_strict_eq [LinearOrder α] [PartialOrder β] {φ : α → �
       all_goals simp [strict_eq, toSet, LowerBound.Bounds, UpperBound.Bounds,
         hx_lc, hx_uc, hy_lc, hy_uc] at hrx hsy hxy
       all_goals grind
+
+lemma mem_Ici_of_interval_le [LinearOrder α] [PartialOrder β]
+    {φ : α → β} (hφ : StrictMono φ) {a r : β} {x y : Interval α}
+    (ha : a ∈ x.toSet φ) (hr : r ∈ y.toSet φ)
+    (hxy : x.le y) : r ∈ Set.Ici a :=
+  Interval.le_of_le hφ ha hr hxy
+
+lemma mem_Ioi_of_interval_lt [LinearOrder α] [PartialOrder β]
+    {φ : α → β} (hφ : StrictMono φ) {a r : β} {x y : Interval α}
+    (ha : a ∈ x.toSet φ) (hr : r ∈ y.toSet φ)
+    (hxy : x.lt y) : r ∈ Set.Ioi a := Interval.lt_of_lt hφ ha hr hxy
+
+lemma mem_Iic_of_interval_le [LinearOrder α] [PartialOrder β]
+    {φ : α → β} (hφ : StrictMono φ) {r b : β} {y z : Interval α}
+    (hr : r ∈ y.toSet φ) (hb : b ∈ z.toSet φ)
+    (hyz : y.le z) : r ∈ Set.Iic b := Interval.le_of_le hφ hr hb hyz
+
+lemma mem_Iio_of_interval_lt [LinearOrder α] [PartialOrder β]
+    {φ : α → β} (hφ : StrictMono φ) {r b : β} {y z : Interval α}
+    (hr : r ∈ y.toSet φ) (hb : b ∈ z.toSet φ)
+    (hyz : y.lt z) : r ∈ Set.Iio b := Interval.lt_of_lt hφ hr hb hyz
+
+lemma mem_Icc_of_interval_le_le [LinearOrder α] [PartialOrder β]
+    {φ : α → β} (hφ : StrictMono φ) {a r b : β} {x y z : Interval α}
+    (ha : a ∈ x.toSet φ) (hr : r ∈ y.toSet φ) (hb : b ∈ z.toSet φ)
+    (hxy : x.le y) (hyz : y.le z) : r ∈ Set.Icc a b :=
+  ⟨Interval.le_of_le hφ ha hr hxy, Interval.le_of_le hφ hr hb hyz⟩
+
+lemma mem_Ico_of_interval_le_lt [LinearOrder α] [PartialOrder β]
+    {φ : α → β} (hφ : StrictMono φ) {a r b : β} {x y z : Interval α}
+    (ha : a ∈ x.toSet φ) (hr : r ∈ y.toSet φ) (hb : b ∈ z.toSet φ)
+    (hxy : x.le y) (hyz : y.lt z) : r ∈ Set.Ico a b :=
+  ⟨Interval.le_of_le hφ ha hr hxy, Interval.lt_of_lt hφ hr hb hyz⟩
+
+lemma mem_Ioc_of_interval_lt_le [LinearOrder α] [PartialOrder β]
+    {φ : α → β} (hφ : StrictMono φ) {a r b : β} {x y z : Interval α}
+    (ha : a ∈ x.toSet φ) (hr : r ∈ y.toSet φ) (hb : b ∈ z.toSet φ)
+    (hxy : x.lt y) (hyz : y.le z) : r ∈ Set.Ioc a b :=
+  ⟨Interval.lt_of_lt hφ ha hr hxy, Interval.le_of_le hφ hr hb hyz⟩
+
+lemma mem_Ioo_of_interval_lt_lt [LinearOrder α] [PartialOrder β]
+    {φ : α → β} (hφ : StrictMono φ) {a r b : β} {x y z : Interval α}
+    (ha : a ∈ x.toSet φ) (hr : r ∈ y.toSet φ) (hb : b ∈ z.toSet φ)
+    (hxy : x.lt y) (hyz : y.lt z) : r ∈ Set.Ioo a b :=
+  ⟨Interval.lt_of_lt hφ ha hr hxy, Interval.lt_of_lt hφ hr hb hyz⟩
 
 end Order
 

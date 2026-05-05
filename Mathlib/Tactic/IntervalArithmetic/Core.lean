@@ -1,5 +1,6 @@
 module
-public meta import Mathlib.Tactic.IntervalArithmetic.Certificate
+
+public meta import Mathlib.Tactic.IntervalArithmetic.IntervalHyps
 public meta import Lean.AddDecl
 
 set_option linter.style.header false
@@ -10,65 +11,9 @@ namespace IntervalArithmetic
 
 open Lean Expr Meta Elab Command Tactic
 
-def mkIntervalHyps (α : Type) (g : MVarId) : IntervalM α Unit := g.withContext do
-  let ctx ← read
-  let lctx ← getLCtx
-  let mut rs : Array FVarId := #[]
-  let mut hs : FVarIdMap (Array (Expr × Expr)) := {}
-  for ldecl in lctx do
-    let t ← instantiateMVars ldecl.type
-    if ← isDefEq t ctx.targetTypeExpr then
-      let rId := ldecl.fvarId
-      rs := rs.push rId
-    else if let some ⟨r, x, φ⟩ := memIntervaltoSet? t then
-      if let some rId := r.fvarId? then
-        if ! x.hasFVar && (← withNewMCtxDepth <| isDefEq ctx.embeddingExpr φ) then
-        hs := hs.alter rId fun
-          | some xs => xs.push (x, ldecl.toExpr)
-          | none => #[(x, ldecl.toExpr)]
-    else
-      let mut trys := #[]
-      let (h₁?, h₂?) ← ldecl.toExpr.memSetIntervalToIneqs?
-      if let some h₁ := h₁? then
-        trys := trys.push h₁
-      if let some h₂ := h₂? then
-        trys := trys.push h₂
-      if trys.isEmpty then
-        trys := trys.push ldecl.toExpr
-      for e in trys do
-        if let some ⟨rId, x, hrx⟩ ← e.ineqToIntervalHyp? α then
-        hs := hs.alter rId fun
-          | some xs => xs.push (x, hrx)
-          | none => #[(x, hrx)]
-  for rId in rs do
-    let mut x ← mkAppM ``Interval.univ #[ctx.intervalTypeExpr]
-    let mut h ← mkAppM ``Interval.mem_toSet_univ #[ctx.embeddingExpr, mkFVar rId]
-    if hc : hs.contains rId then
-      for (y, hry) in hs.get rId hc do
-        x := ← mkAppM ``Interval.inter #[x, y]
-        h := ← mkAppM ``Interval.inter_inclusion #[h, hry]
-    -- temp fix, we will come up with better solutions
-    let x' ← unsafe (evalExpr (Interval α) (← mkAppM ``Interval #[ctx.intervalTypeExpr]) x)
-    modify fun s => {s with hyps := s.hyps.insert (g, rId) ⟨x', x, h⟩}
-
--- def mkMemIntervalProof {α : Type} (g : MVarId) (certGen : CertificateGenerator α) :
---     IntervalM α (Expr × Expr) := g.withContext do
---   let ctx ← read
---   let mut xs := #[]
---   let mut hrxs := #[]
---   for rId in cert.fvars do
---     let (x, hrx) := (← get).hyps.get! (g, rId)
---     xs := xs.push x
---     hrxs := hrxs.push hrx
---   let x ← instantiateMVars <| mkAppN cert.comp (#[ctx.approxParam] ++ xs)
---   let hrx ← instantiateMVars <| mkAppN cert.proof (#[ctx.approxParam] ++ xs ++ hrxs)
---   return ⟨x, hrx⟩
-
-section Core
-
 inductive IntervalGoal
   | ineq : Mathlib.Ineq → Expr → Expr → IntervalGoal
-  | mem : Expr → Option Expr → Option Expr → IntervalGoal
+  | mem :  Expr → IntervalClass →  IntervalGoal
 
 def _root_.Lean.Expr.intervalGoal? (α : Type) (e : Expr) : IntervalM α IntervalGoal := do
   let ctx ← read
@@ -76,15 +21,22 @@ def _root_.Lean.Expr.intervalGoal? (α : Type) (e : Expr) : IntervalM α Interva
     unless ← isDefEq ctx.targetTypeExpr β do
       throwError m!"Goal is an (in)equality in type: `{β}`, but expected: `{ctx.targetTypeExpr}`."
     return .ineq ineq e₁ e₂
+  else if let some (r, Ixx) := e.memSetInterval? then
+    let β ← inferType r
+    unless ← isDefEq ctx.targetTypeExpr β do
+      throwError m!"Goal is an interval containment in type: `{β}`, but expected:
+        `{ctx.targetTypeExpr}`."
+    return .mem r Ixx
   else
       throwError m!"{e} is not a supported interval arithmetic goal."
 
-def intervalIneqCore (α : Type) [LinearOrder α] [Repr α] [DecidableLE α] [DecidableLT α]
-    (g : MVarId) (ineq : Mathlib.Ineq) (lhs : Expr) (rhs : Expr) : IntervalM α Expr := do
+
+def intervalIneqCore (α : Type) [LinearOrder α] [DecidableLE α] [DecidableLT α]
+    (ineq : Mathlib.Ineq) (lhs : Expr) (rhs : Expr) : IntervalM α Expr := do
   let ctx ← read
-  mkIntervalHyps α g
-  let lcert ← (← lhs.toIntervalArithmeticCertificateGenerator α).toCertificate g
-  let rcert ← (← rhs.toIntervalArithmeticCertificateGenerator α).toCertificate g
+  mkIntervalHyps α
+  let lcert ← (← lhs.toIntervalArithmeticCertificateGenerator α).toCertificate
+  let rcert ← (← rhs.toIntervalArithmeticCertificateGenerator α).toCertificate
   match ineq with
   | .eq =>
     unless lcert.interval.strict_eq rcert.interval do
@@ -110,52 +62,92 @@ def intervalIneqCore (α : Type) [LinearOrder α] [Repr α] [DecidableLE α] [De
       #[ctx.strictMonoExpr, lcert.proof, rcert.proof, h]
     return g_proof
 
--- def intervalMemSetCore (α : Type) [LinearOrder α] [Repr α] [DecidableLE α] [DecidableLT α]
---     (g : MVarId) (r : Expr) (Ixx : IntervalClass) : IntervalM Expr := do
---   let ctx ← read
---   mkIntervalHyps g
---   let rcert ← r.toIntervalArithmeticCertificate
---   let ⟨x, hrx⟩ ← mkMemIntervalProof g rcert
---   let x_eval ← unsafe (evalExpr (Interval α) (← mkAppM ``Interval #[ctx.intervalTypeExpr]) x)
---   match Ixx with
---   | .Ici a =>
---     let acert ← a.toIntervalArithmeticCertificate
---     let ⟨y, hay⟩ ← mkMemIntervalProof g acert
---     let y_eval ← unsafe (evalExpr (Interval α) (← mkAppM ``Interval #[ctx.intervalTypeExpr]) y)
---     unless y_eval.le x_eval do
---       throwError m!"TODO"
---     let y_le_x ← mkAppM ``Interval.le #[y, x]
---     let hxy ← mkDecideProof y_le_x
---     let g_proof ← mkAppM ``Interval.me
---   | .Ioi a =>
---     sorry
---   | .Iic b =>
---     sorry
---   | .Iio b =>
---     sorry
---   | .Ico a b =>
---     sorry
---   | .Ioc a b =>
---     sorry
---   | .Icc a b =>
---     sorry
---   | .Ioo a b =>
---     sorry
+def intervalMemSetCore (α : Type) [LinearOrder α] [Repr α] [ToExpr α] [DecidableLE α]
+    [DecidableLT α] (r : Expr) (Ixx : IntervalClass) : IntervalM α Expr := do
+  let ctx ← read
+  mkIntervalHyps α
 
-def intervalCore (α : Type) [LinearOrder α] [Repr α] [DecidableLE α] [DecidableLT α] (g : MVarId) :
-    IntervalM α Expr := do
-  let t ← whnfR (← instantiateMVars (← g.getType))
+  let mkCert : Expr → IntervalM α (IntervalCertificate α) := fun e => do
+    (← e.toIntervalArithmeticCertificateGenerator α).toCertificate
+
+  let mkLe : IntervalCertificate α → IntervalCertificate α → IntervalM α Expr :=
+    fun x y => do
+      unless x.interval.le y.interval do
+        throwError m!"TODO"
+      let x_le_y ← mkAppM ``Interval.le #[x.intervalExpr, y.intervalExpr]
+      mkDecideProof x_le_y
+
+  let mkLt : IntervalCertificate α → IntervalCertificate α → IntervalM α Expr :=
+    fun x y => do
+      unless x.interval.lt y.interval do
+        throwError m!"TODO"
+      let x_lt_y ← mkAppM ``Interval.lt #[x.intervalExpr, y.intervalExpr]
+      mkDecideProof x_lt_y
+
+  let rcert ← mkCert r
+
+  match Ixx with
+  | .Ici a =>
+      let acert ← mkCert a
+      let har ← mkLe acert rcert
+      mkAppM ``mem_Ici_of_interval_le
+        #[ctx.strictMonoExpr, acert.proof, rcert.proof, har]
+  | .Ioi a =>
+      let acert ← mkCert a
+      let har ← mkLt acert rcert
+      mkAppM ``mem_Ioi_of_interval_lt
+        #[ctx.strictMonoExpr, acert.proof, rcert.proof, har]
+  | .Iic b =>
+      let bcert ← mkCert b
+      let hrb ← mkLe rcert bcert
+      mkAppM ``mem_Iic_of_interval_le
+        #[ctx.strictMonoExpr, rcert.proof, bcert.proof, hrb]
+  | .Iio b =>
+      let bcert ← mkCert b
+      let hrb ← mkLt rcert bcert
+      mkAppM ``mem_Iio_of_interval_lt
+        #[ctx.strictMonoExpr, rcert.proof, bcert.proof, hrb]
+  | .Ico a b =>
+      let acert ← mkCert a
+      let bcert ← mkCert b
+      let har ← mkLe acert rcert
+      let hrb ← mkLt rcert bcert
+      mkAppM ``mem_Ico_of_interval_le_lt
+        #[ctx.strictMonoExpr, acert.proof, rcert.proof, bcert.proof, har, hrb]
+  | .Ioc a b =>
+      let acert ← mkCert a
+      let bcert ← mkCert b
+      let har ← mkLt acert rcert
+      let hrb ← mkLe rcert bcert
+      mkAppM ``mem_Ioc_of_interval_lt_le
+        #[ctx.strictMonoExpr, acert.proof, rcert.proof, bcert.proof, har, hrb]
+  | .Icc a b =>
+      let acert ← mkCert a
+      let bcert ← mkCert b
+      let har ← mkLe acert rcert
+      let hrb ← mkLe rcert bcert
+      mkAppM ``mem_Icc_of_interval_le_le
+        #[ctx.strictMonoExpr, acert.proof, rcert.proof, bcert.proof, har, hrb]
+  | .Ioo a b =>
+      let acert ← mkCert a
+      let bcert ← mkCert b
+      let har ← mkLt acert rcert
+      let hrb ← mkLt rcert bcert
+      mkAppM ``mem_Ioo_of_interval_lt_lt
+        #[ctx.strictMonoExpr, acert.proof, rcert.proof, bcert.proof, har, hrb]
+
+def intervalCore (α : Type) [LinearOrder α] [Repr α] [ToExpr α] [DecidableLE α] [DecidableLT α]
+    (g : MVarId) : IntervalM α Expr := do
+  let t ← whnfR (← g.getType)
   match ← t.intervalGoal? α with
-    | .ineq ineq lhs rhs => intervalIneqCore α g ineq lhs rhs
-    | .mem _ _ _ => unreachable!
-
-end Core
+    | .ineq ineq lhs rhs => intervalIneqCore α ineq lhs rhs
+    | .mem r Ixx => intervalMemSetCore α r Ixx
 section Tactic
 
-def intervalTactic (α : Type) [LinearOrder α] [Repr α] [DecidableLE α] [DecidableLT α]
+def intervalTactic (α : Type) [LinearOrder α] [Repr α] [ToExpr α] [DecidableLE α] [DecidableLT α]
   (declName : Name) (opConfig : NameMap OpConfig) (n : ℕ) : TacticM Unit := withMainContext do
-  let g ← getMainGoal
   let ctx ← mkContext declName n opConfig
+  let g ← getMainGoal
   let ⟨g_proof, _⟩ ← intervalCore α g ctx |>.run {}
   g.assign g_proof
   replaceMainGoal []

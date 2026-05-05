@@ -7130,6 +7130,7 @@ public import Mathlib.Tactic.IntervalArithmetic.DyadicReal
 public import Mathlib.Tactic.IntervalArithmetic.Environment
 public import Mathlib.Tactic.IntervalArithmetic.Expr
 public import Mathlib.Tactic.IntervalArithmetic.Interval
+public import Mathlib.Tactic.IntervalArithmetic.IntervalHyps
 public import Mathlib.Tactic.IntervalArithmetic.RatReal
 public import Mathlib.Tactic.IntervalArithmetic.TEST
 public import Mathlib.Tactic.IntervalArithmetic.dyadic_slop

@@ -26,6 +26,13 @@ instance : Repr Dyadic where
   reprPrec d := reprPrec d.toRat
 open Lean Expr Meta Elab Command Tactic
 
+
+instance instToExprDyadic : ToExpr Dyadic where
+  toTypeExpr := mkConst ``Dyadic
+  toExpr
+    | .zero => mkConst ``Dyadic.zero
+    | .ofOdd n k _ => mkAppN (mkConst ``Dyadic.ofIntWithPrec) #[ToExpr.toExpr n, ToExpr.toExpr k]
+
 syntax (name := dyadic_interval) "dyadic_interval" ("[" interval_setting,*"]")? : tactic
 
 @[tactic dyadic_interval]

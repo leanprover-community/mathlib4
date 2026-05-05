@@ -1,8 +1,20 @@
+/-
+Copyright (c) 2026 David Ledvinka. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: David Ledvinka
+-/
 module
 
 public import Mathlib.Tactic.IntervalArithmetic.Expr
 
-set_option linter.style.header false
+/-!
+## Environment Setup for Interval Arithmetic Tactics
+
+This file declares an initialzes the environments that carry interval arithmetic declarations
+and interval arithmetic operations.
+
+-/
+
 public meta section
 namespace IntervalArithmetic
 

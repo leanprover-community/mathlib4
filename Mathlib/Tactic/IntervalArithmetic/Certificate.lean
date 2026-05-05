@@ -8,7 +8,7 @@ public meta section
 
 namespace IntervalArithmetic
 
-open Lean Expr Meta Elab Command
+open Lean Expr Meta Elab Command Tactic
 
 section IntervalM
 
@@ -52,15 +52,17 @@ def mkContext (declName : Name) (approxParam : ℕ)
     }
 
 structure IntervalCertificate (α : Type) where
+  /- The interval that the expression is verified to be contained in. -/
   interval : Interval α
+  /- `interval` as an `Expr`. -/
   intervalExpr : Expr
+  /- proof that `e ∈ interval.toSet φ` in the context of the goal. -/
   proof : Expr
   deriving Inhabited
 
 /- A (mutable) state for the `IntervalM` monad. -/
 structure State (α : Type) where
-  hyps : Std.HashMap (MVarId × FVarId) (IntervalCertificate α) := {}
-  certs : Std.HashMap (MVarId × Expr) (IntervalCertificate α) := {}
+  hyps : FVarIdMap (IntervalCertificate α) := {}
   deriving Inhabited
 
 /-- Monad to run interval arithmetic computations in. -/
@@ -84,6 +86,24 @@ structure CertificateGenerator (α : Type) where
   proof : Expr
   deriving Inhabited
 
+def CertificateGenerator.toCertificate {α : Type} (certGen : CertificateGenerator α)
+    : IntervalM α (IntervalCertificate α) := do
+  let ctx ← read
+  let mut xs := #[]
+  let mut xExprs := #[]
+  let mut hrxs := #[]
+  for rId in certGen.fvars do
+    let cert := (← get).hyps.get! rId
+    xs := xs.push cert.interval
+    xExprs := xExprs.push cert.intervalExpr
+    hrxs := hrxs.push cert.proof
+  let eval_interval := certGen.comp ctx.approxParam xs
+  let intervalExpr ←
+    instantiateMVars <| mkAppN certGen.compExpr (#[mkNatLit ctx.approxParam] ++ xExprs)
+  let proof ←
+    instantiateMVars <| mkAppN certGen.proof (#[mkNatLit ctx.approxParam] ++ xExprs ++ hrxs)
+  return ⟨eval_interval, intervalExpr, proof⟩
+
 def Interval.toExpr {α : Type} [ToExpr α] (x : Interval α) : IntervalM α Expr := do
   let ctx ← read
   let lb ← match x.lb with
@@ -96,35 +116,6 @@ def Interval.toExpr {α : Type} [ToExpr α] (x : Interval α) : IntervalM α Exp
         mkAppM ``Option.some #[← mkAppM ``FiniteUpperBound.mk #[ToExpr.toExpr c, ToExpr.toExpr a]]
   mkAppM ``Interval.mk #[lb, ub]
 
-def CertificateGenerator.toCertificate {α : Type} (certGen : CertificateGenerator α) (g : MVarId) :
-    IntervalM α (IntervalCertificate α) := do
-  let ctx ← read
-  let mut xs := #[]
-  let mut xExprs := #[]
-  let mut hrxs := #[]
-  for rId in certGen.fvars do
-    let cert := (← get).hyps.get! (g, rId)
-    xs := xs.push cert.interval
-    xExprs := xExprs.push cert.intervalExpr
-    hrxs := hrxs.push cert.proof
-  let interval := certGen.comp ctx.approxParam xs
-  let intervalExpr ←
-    instantiateMVars <| mkAppN certGen.compExpr (#[mkNatLit ctx.approxParam] ++ xExprs)
-  let proof ←
-    instantiateMVars <| mkAppN certGen.proof (#[mkNatLit ctx.approxParam] ++ xExprs ++ hrxs)
-  return {interval := interval, intervalExpr := intervalExpr, proof := proof}
-
-def CertificateGenerator.toHypCertificate? {α : Type} (certGen : CertificateGenerator α) :
-    IntervalM α (Option (IntervalCertificate α)) := do
-  let ctx ← read
-  if certGen.fvars.isEmpty then
-    let interval := certGen.comp ctx.approxParam #[]
-    let intervalExpr ← instantiateMVars <| mkAppN certGen.compExpr #[mkNatLit ctx.approxParam]
-    let proof ← instantiateMVars <| mkAppN certGen.proof #[mkNatLit ctx.approxParam]
-    return some {interval := interval, intervalExpr := intervalExpr, proof := proof}
-  else
-    return none
-
 private def compile (α : Type) (compExpr : Expr) :
     IntervalM α (ℕ → Array (Interval α) → Interval α) := do
   lambdaTelescope compExpr fun vars body => do
@@ -136,7 +127,7 @@ private def compile (α : Type) (compExpr : Expr) :
         mkAppM ``getElem! #[Is, mkNatLit i]
       let body' := body.replaceFVars intervals indexed_intervals
       let lambda ← mkLambdaFVars #[approx_param, Is] body'
-      -- probably just construct this explicitly
+      -- **TODO** probably just construct this explicitly
       let lambda_type ← inferType lambda
       let compiled ← unsafe (evalExpr (ℕ → Array (Interval α) → Interval α) lambda_type lambda)
       return compiled
@@ -218,59 +209,5 @@ def _root_.Lean.Expr.toIntervalArithmeticCertificateGenerator (α : Type) (e : E
         return {fvars := r_ids, compExpr := compExpr, comp := comp, proof := proof}
 
 end Certificate
-
-def _root_.Lean.Expr.ineqToIntervalHyp? (α : Type) (e : Expr) :
-    IntervalM α (Option (FVarId × Expr × Expr)) := do
-  let ctx ← read
-  let ⟨ineq, _, r, s⟩ ← try Expr.ineq? (← whnfR (← inferType e)) catch _ => return none
-  if r.isFVar then
-    let certGen ← s.toIntervalArithmeticCertificateGenerator α
-    if let some cert ← certGen.toHypCertificate? then
-      match ineq with
-      | .eq =>
-        let x := cert.intervalExpr
-        let h ← mkAppM ``mem_toSet_of_eq_mem_toSet #[e, cert.proof]
-        return some ⟨r.fvarId!, x, h⟩
-      | .le =>
-        let ub := proj ``Interval 1 cert.intervalExpr
-        let bot ←
-          mkAppOptM ``Option.none #[some (← mkAppM ``FiniteLowerBound #[ctx.intervalTypeExpr])]
-        let x ← mkAppM ``Interval.mk #[bot, ub]
-        let h ← mkAppM ``mem_toSet_of_le_mem_toSet #[e, cert.proof]
-        return some (r.fvarId!, x, h)
-      | .lt =>
-        let ub ← mkAppM ``UpperBound.open #[proj ``Interval 1 cert.intervalExpr]
-        let bot ←
-          mkAppOptM ``Option.none #[some (← mkAppM ``FiniteLowerBound #[ctx.intervalTypeExpr])]
-        let x ← mkAppM ``Interval.mk #[bot, ub]
-        let h ← mkAppM ``mem_toSet_of_lt_mem_toSet #[e, cert.proof]
-        return some (r.fvarId!, x, h)
-    else
-      return none
-  else if s.isFVar then
-    let certGen ← r.toIntervalArithmeticCertificateGenerator α
-    if let some cert ← certGen.toHypCertificate? then
-      match ineq with
-      | .eq =>
-        let h ← mkAppM ``mem_toSet_of_mem_toSet_eq #[e, cert.proof]
-        return some ⟨s.fvarId!, cert.intervalExpr, h⟩
-      | .le =>
-        let lb := proj ``Interval 0 cert.intervalExpr
-        let top ←
-          mkAppOptM ``Option.none #[some (← mkAppM ``FiniteUpperBound #[ctx.intervalTypeExpr])]
-        let x ← mkAppM ``Interval.mk #[lb, top]
-        let h ← mkAppM ``mem_toSet_of_mem_toSet_le #[e, cert.proof]
-        return some (s.fvarId!, x, h)
-      | .lt =>
-        let lb ← mkAppM ``LowerBound.open #[proj ``Interval 0 cert.intervalExpr]
-        let top ←
-          mkAppOptM ``Option.none #[some (← mkAppM ``FiniteUpperBound #[ctx.intervalTypeExpr])]
-        let x ← mkAppM ``Interval.mk #[lb, top]
-        let h ← mkAppM ``mem_toSet_of_mem_toSet_lt #[e, cert.proof]
-        return some (s.fvarId!, x, h)
-    else
-      return none
-  else
-    return none
 
 end IntervalArithmetic

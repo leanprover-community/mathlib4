@@ -6,7 +6,6 @@ Authors: David Ledvinka
 module
 
 public import Mathlib.Tactic.IntervalArithmetic.Interval
-public import Mathlib.Order.Interval.Set.Defs
 public meta import Mathlib.Data.Ineq
 
 /-!
@@ -50,7 +49,7 @@ def mkMemInterval (r x φ : Expr) : MetaM Expr := do
 
 end Lean.Expr
 
-section IntervalArithmetic
+namespace IntervalArithmetic
 
 section
 
@@ -76,29 +75,9 @@ lemma le_snd_of_mem_Icc {x a b : α} (hx : x ∈ Set.Icc a b) : x ≤ b := Set.m
 lemma fst_lt_of_mem_Ioo {x a b : α} (hx : x ∈ Set.Ioo a b) : a < x := Set.mem_Ioo.mp hx |>.1
 lemma lt_snd_of_mem_Ioo {x a b : α} (hx : x ∈ Set.Ioo a b) : x < b := Set.mem_Ioo.mp hx |>.2
 
-lemma mem_Ici_of_le {x a : α} (hax : a ≤ x) : x ∈ Set.Ici a := Set.mem_Ici.mpr hax
-
-lemma mem_Ioi_of_lt {x a : α} (hax : a < x) : x ∈ Set.Ioi a := Set.mem_Ioi.mpr hax
-
-lemma mem_Iic_of_le {x b : α} (hxb : x ≤ b) : x ∈ Set.Iic b := Set.mem_Iic.mpr hxb
-
-lemma mem_Iio_of_lt {x b : α} (hxb : x < b) : x ∈ Set.Iio b := Set.mem_Iio.mpr hxb
-
-lemma mem_Ico_of_le_lt {x a b : α} (hax : a ≤ x) (hxb : x < b) : x ∈ Set.Ico a b :=
-  Set.mem_Ico.mpr ⟨hax, hxb⟩
-
-lemma mem_Ioc_of_lt_le {x a b : α} (hax : a < x) (hxb : x ≤ b) : x ∈ Set.Ioc a b :=
-  Set.mem_Ioc.mpr ⟨hax, hxb⟩
-
-lemma mem_Icc_of_le_le {x a b : α} (hax : a ≤ x) (hxb : x ≤ b) : x ∈ Set.Icc a b :=
-  Set.mem_Icc.mpr ⟨hax, hxb⟩
-
-lemma mem_Ioo_of_lt_lt {x a b : α} (hax : a < x) (hxb : x < b) : x ∈ Set.Ioo a b :=
-  Set.mem_Ioo.mpr ⟨hax, hxb⟩
-
 end
 
-inductive IntervalArithmetic.IntervalClass
+inductive IntervalClass
   | Ici : Expr → IntervalClass
   | Ioi : Expr → IntervalClass
   | Iic : Expr → IntervalClass
