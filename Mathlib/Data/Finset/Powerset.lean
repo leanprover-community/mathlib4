@@ -115,7 +115,7 @@ theorem filter_powerset_subset [DecidableEq α] (s t : Finset α) (hst : s ⊆ t
     exact ⟨union_subset (hyt.trans sdiff_subset) hst, subset_union_right⟩
 
 theorem card_filter_powerset_subset [DecidableEq α] (s t : Finset α) (hst : s ⊆ t) :
-    (t.powerset.filter (s ⊆ ·)).card = 2 ^ (t.card - s.card) := by
+    #(t.powerset.filter (s ⊆ ·)) = 2 ^ (#t - #s) := by
   have hinj : Set.InjOn (· ∪ s) ↑(t \ s).powerset := fun a ha b hb hab =>
     (union_sdiff_cancel_right (disjoint_sdiff_self_left.mono_left (mem_powerset.mp ha))).symm.trans
     ((congrArg (· \ s) hab).trans
