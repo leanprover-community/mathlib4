@@ -97,6 +97,9 @@ abbrev under : Ideal A := Ideal.comap (algebraMap A B) P
 
 theorem under_def : P.under A = Ideal.comap (algebraMap A B) P := rfl
 
+@[simp]
+theorem mem_under {x : A} : x ∈ P.under A ↔ algebraMap A B x ∈ P := mem_comap
+
 instance IsPrime.under [hP : P.IsPrime] : (P.under A).IsPrime :=
   hP.comap (algebraMap A B)
 

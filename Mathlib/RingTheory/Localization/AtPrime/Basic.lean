@@ -532,11 +532,11 @@ def equivQuotMaximalIdeal : R ⧸ p ≃+* Rₚ ⧸ maximalIdeal Rₚ := by
     use x * s'
     rw [← sub_eq_zero, ← map_sub, Ideal.Quotient.eq_zero_iff_mem]
     have : algebraMap R Rₚ s ∉ maximalIdeal Rₚ := by
-      rw [← Ideal.mem_comap, ← under_def, IsLocalization.AtPrime.under_maximalIdeal Rₚ p]
+      rw [← Ideal.mem_under, IsLocalization.AtPrime.under_maximalIdeal Rₚ p]
       exact s.prop
     refine ((inferInstance : (maximalIdeal Rₚ).IsPrime).mem_or_mem ?_).resolve_left this
     rw [mul_sub, IsLocalization.mul_mk'_eq_mk'_of_mul, IsLocalization.mk'_mul_cancel_left,
-      ← map_mul, ← map_sub, ← Ideal.mem_comap, ← under_def, under_maximalIdeal Rₚ p,
+      ← map_mul, ← map_sub, ← Ideal.mem_under, under_maximalIdeal Rₚ p,
       mul_left_comm, ← Ideal.Quotient.eq_zero_iff_mem, map_sub, map_mul, map_mul, hs,
       mul_inv_cancel₀, mul_one, sub_self]
     rw [Ne, Ideal.Quotient.eq_zero_iff_mem]
@@ -575,7 +575,7 @@ def equivQuotMaximalIdealPow (n : ℕ) : (R ⧸ p ^ n) ≃ₐ[R] Rₚ ⧸ IsLoca
       (IsLocalization.liftAlgHom (f := Ideal.Quotient.mkₐ R (p ^ n)) fun (u : p.primeCompl) ↦
         Ideal.Quotient.isUnit_mk_pow_of_notMem _ <| mem_primeCompl_iff.mp u.prop) fun x hx ↦ ?_
     obtain ⟨a, b, rfl⟩ := IsLocalization.exists_mk'_eq p.primeCompl x
-    rw [IsLocalization.mk'_mem_iff, ← Ideal.mem_comap, ← under_def, under_maximalIdeal_pow p] at hx
+    rw [IsLocalization.mk'_mem_iff, ← Ideal.mem_under, under_maximalIdeal_pow p] at hx
     simpa [lift_mk', Quotient.eq_zero_iff_mem] using hx
   · rw [← AlgHom.cancel_right (Ideal.Quotient.mkₐ_surjective _ _)]
     exact IsLocalization.algHom_ext (W := p.primeCompl) (A := R) (by ext)
