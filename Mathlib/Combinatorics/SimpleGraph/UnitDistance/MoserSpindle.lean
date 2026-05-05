@@ -14,6 +14,7 @@ public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.NormNum
 public import Mathlib.Tactic.Positivity
 public import Mathlib.Tactic.Ring
+public meta import Mathlib.Data.Fintype.Pi
 
 /-!
 # The Moser spindle: a $7$-vertex unit-distance graph with chromatic number $4$
@@ -259,9 +260,9 @@ private theorem dist_embed_eq_one (i j : Fin 7) (hadj : adj i j = true) :
     | exact dist_embed_3_6 | (rw [dist_comm]; exact dist_embed_3_6)
 
 /-- The first (x-) coordinate of the embedding, used to prove injectivity. -/
-private noncomputable def embedX (i : Fin 7) : ℝ := (embed i).ofLp 0
+noncomputable def embedX (i : Fin 7) : ℝ := (embed i).ofLp 0
 
-private lemma embedX_eq : ∀ i : Fin 7, embedX i =
+theorem embedX_eq : ∀ i : Fin 7, embedX i =
     match i with
     | 0 => 0
     | 1 => 1
@@ -274,7 +275,7 @@ private lemma embedX_eq : ∀ i : Fin 7, embedX i =
   fin_cases i <;> rfl
 
 /-- The embedding `embed` is injective: all seven vertices have distinct first coordinates. -/
-private theorem embed_injective : embed.Injective := by
+theorem embed_injective : embed.Injective := by
   -- Strategy: distinct first-coordinates suffice.
   have hxinj : Function.Injective embedX := by
     -- 33 is between 25 and 36, so 5 < √33 < 6.
