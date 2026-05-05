@@ -145,11 +145,11 @@ theorem subset_toFinset {s : Finset α} : s ⊆ ht.toFinset ↔ ↑s ⊆ t := by
 theorem ssubset_toFinset {s : Finset α} : s ⊂ ht.toFinset ↔ ↑s ⊂ t := by
   rw [← Finset.coe_ssubset, Finite.coe_toFinset]
 
-@[mono]
+@[gcongr, mono]
 protected theorem toFinset_subset_toFinset : hs.toFinset ⊆ ht.toFinset ↔ s ⊆ t := by
   simp only [← Finset.coe_subset, Finite.coe_toFinset]
 
-@[mono]
+@[gcongr, mono]
 protected theorem toFinset_ssubset_toFinset : hs.toFinset ⊂ ht.toFinset ↔ s ⊂ t := by
   simp only [← Finset.coe_ssubset, Finite.coe_toFinset]
 
@@ -897,7 +897,7 @@ theorem not_injOn_infinite_finite_image {f : α → β} {s : Set α} (h_inf : s.
   have : Infinite s := infinite_coe_iff.mpr h_inf
   have h := not_injective_infinite_finite
             ((f '' s).codRestrict (s.restrict f) fun x => ⟨x, x.property, rfl⟩)
-  contrapose! h
+  contrapose h
   rwa [injective_codRestrict, ← injOn_iff_injective]
 
 theorem finite_range_findGreatest {P : α → ℕ → Prop} [∀ x, DecidablePred (P x)] {b : ℕ} :

@@ -405,16 +405,13 @@ theorem coe_add' (f g : M₁ →SL[σ₁₂] M₂) : ⇑(f + g) = f + g :=
 theorem toContinuousAddMonoidHom_add (f g : M₁ →SL[σ₁₂] M₂) :
     ↑(f + g) = (f + g : ContinuousAddMonoidHom M₁ M₂) := rfl
 
-instance addCommMonoid : AddCommMonoid (M₁ →SL[σ₁₂] M₂) where
+-- The `AddMonoid` instance exists to help speedup unification
+instance : AddMonoid (M₁ →SL[σ₁₂] M₂) where
   zero_add := by
     intros
     ext
     apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
   add_zero := by
-    intros
-    ext
-    apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
-  add_comm := by
     intros
     ext
     apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
@@ -429,6 +426,12 @@ instance addCommMonoid : AddCommMonoid (M₁ →SL[σ₁₂] M₂) where
   nsmul_succ n f := by
     ext
     simp [add_smul]
+
+instance addCommMonoid : AddCommMonoid (M₁ →SL[σ₁₂] M₂) where
+  add_comm := by
+    intros
+    ext
+    apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
 
 @[simp, norm_cast]
 theorem coe_sum {ι : Type*} (t : Finset ι) (f : ι → M₁ →SL[σ₁₂] M₂) :
@@ -519,17 +522,21 @@ theorem add_comp [ContinuousAdd M₃] (g₁ g₂ : M₂ →SL[σ₂₃] M₃) (f
   ext
   simp
 
-theorem comp_finset_sum {ι : Type*} {s : Finset ι}
+theorem comp_finsetSum {ι : Type*} {s : Finset ι}
     [ContinuousAdd M₂] [ContinuousAdd M₃] (g : M₂ →SL[σ₂₃] M₃)
     (f : ι → M₁ →SL[σ₁₂] M₂) : g.comp (∑ i ∈ s, f i) = ∑ i ∈ s, g.comp (f i) := by
   ext
   simp
 
-theorem finset_sum_comp {ι : Type*} {s : Finset ι}
+@[deprecated (since := "2026-04-08")] alias comp_finset_sum := comp_finsetSum
+
+theorem finsetSum_comp {ι : Type*} {s : Finset ι}
     [ContinuousAdd M₃] (g : ι → M₂ →SL[σ₂₃] M₃)
     (f : M₁ →SL[σ₁₂] M₂) : (∑ i ∈ s, g i).comp f = ∑ i ∈ s, (g i).comp f := by
   ext
   simp only [coe_comp', coe_sum', Function.comp_apply, Finset.sum_apply]
+
+@[deprecated (since := "2026-04-08")] alias finset_sum_comp := finsetSum_comp
 
 theorem comp_assoc {R₄ : Type*} [Semiring R₄] [Module R₄ M₄] {σ₁₄ : R₁ →+* R₄} {σ₂₄ : R₂ →+* R₄}
     {σ₃₄ : R₃ →+* R₄} [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄] [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄]
@@ -1087,6 +1094,41 @@ def coeLMₛₗ : (M →SL[σ₁₃] M₃) →ₗ[S₃] M →ₛₗ[σ₁₃] M�
 
 end SMul
 
+section lcomp
+
+variable {R U V : Type*} (W : Type*) [CommSemiring R]
+    [AddCommMonoid U] [Module R U] [TopologicalSpace U]
+    [AddCommMonoid V] [Module R V] [TopologicalSpace V]
+    [AddCommMonoid W] [Module R W] [TopologicalSpace W]
+    [ContinuousAdd W] [ContinuousConstSMul R W]
+
+/-- Composition of continuous linear maps, as a linear map. Compare `LinearMap.lcomp`. -/
+@[simps]
+def lcomp (f : U →L[R] V) : (V →L[R] W) →ₗ[R] (U →L[R] W) where
+  toFun l := l.comp f
+  map_add' _ _ := by simp
+  map_smul' _ _ := by simp
+
+end lcomp
+
+section llcomp
+
+variable (R U V W : Type*) [CommSemiring R]
+  [AddCommMonoid U] [Module R U] [TopologicalSpace U]
+  [AddCommMonoid V] [Module R V] [TopologicalSpace V]
+  [ContinuousAdd V] [ContinuousConstSMul R V]
+  [AddCommMonoid W] [Module R W] [TopologicalSpace W]
+  [ContinuousAdd W] [ContinuousConstSMul R W]
+
+/-- Composition of continuous linear maps, as a bilinear map. Compare `LinearMap.llcomp`. -/
+@[simps]
+def llcomp : (U →L[R] V) →ₗ[R] (V →L[R] W) →ₗ[R] (U →L[R] W) where
+  toFun l := l.lcomp W
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
+
+end llcomp
+
 section toSpanSingletonLE
 
 variable (R S M : Type*) [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M] [Module S M]
@@ -1262,6 +1304,26 @@ theorem closedComplemented_bot : ClosedComplemented (⊥ : Submodule R M) :=
 theorem closedComplemented_top : ClosedComplemented (⊤ : Submodule R M) :=
   ⟨(ContinuousLinearMap.id R M).codRestrict ⊤ fun _x => trivial,
     fun x => Subtype.ext_iff.2 <| by simp⟩
+
+variable (S : Submodule R M)
+
+/-- `Submodule.mkQ` as a `ContinuousLinearMap`. -/
+def mkQL : M →L[R] M ⧸ S where
+  toLinearMap := S.mkQ
+  cont := continuous_quot_mk
+
+@[simp, norm_cast]
+theorem toLinearMap_mkQL : (S.mkQL : M →ₗ[R] M ⧸ S) = S.mkQ := rfl
+
+@[simp]
+theorem coe_mkQL : ⇑S.mkQL = S.mkQ := rfl
+
+theorem mkQL_apply (x : M) : S.mkQL x = S.mkQ x := by simp
+
+theorem isQuotientMap_mkQL : IsQuotientMap S.mkQL := isQuotientMap_quot_mk
+
+theorem isOpenQuotientMap_mkQL [ContinuousAdd M] : IsOpenQuotientMap S.mkQL :=
+  S.isOpenQuotientMap_mkQ
 
 end Submodule
 
