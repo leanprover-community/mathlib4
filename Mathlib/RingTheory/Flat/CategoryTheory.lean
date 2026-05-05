@@ -81,16 +81,13 @@ instance [Module.Flat R M] : PreservesFiniteLimits <| tensorLeft M := by
   infer_instance
 
 lemma iff_preservesFiniteLimits_tensorRight :
-    Flat R M ↔ PreservesFiniteLimits (tensorRight M) :=
-  ⟨fun _ => preservesFiniteLimits_of_natIso (BraidedCategory.tensorLeftIsoTensorRight M),
-  fun _ => by
+    Flat R M ↔ PreservesFiniteLimits (tensorRight M) where
+  mp _ := preservesFiniteLimits_of_natIso (BraidedCategory.tensorLeftIsoTensorRight M)
+  mpr _ := by
     rw [iff_preservesFiniteLimits_tensorLeft]
-    exact preservesFiniteLimits_of_natIso (BraidedCategory.tensorLeftIsoTensorRight M).symm⟩
+    exact preservesFiniteLimits_of_natIso (BraidedCategory.tensorLeftIsoTensorRight M).symm
 
 instance [Module.Flat R M] : PreservesFiniteLimits (tensorRight M) :=
   preservesFiniteLimits_of_natIso (BraidedCategory.tensorLeftIsoTensorRight M)
-
-instance : Functor.IsLeftAdjoint (tensorRight M) :=
-  Functor.isLeftAdjoint_of_iso (BraidedCategory.tensorLeftIsoTensorRight M)
 
 end Module.Flat
