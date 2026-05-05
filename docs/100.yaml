@@ -374,9 +374,6 @@
   authors: Johannes Hölzl
 87:
   title  : Desargues’s Theorem
-  note   : "Parallel (affine) form: if two triangles are in perspective from a point and two corresponding sides are parallel, then the third pair is parallel."
-  decl   : parallel_third_side_of_perspective
-  authors: Robert Joseph George
 88:
   title  : Derangements Formula
   decls  :
