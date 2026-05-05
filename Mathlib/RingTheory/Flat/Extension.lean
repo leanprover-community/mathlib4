@@ -436,12 +436,35 @@ noncomputable def coconeOfCoconeForget (hc : IsColimit c) : Cocone F where
       exact congr($(c.ι.naturality f) x)
   }
 
-noncomputable def isColimitCoconeOfCoconeForget (hc : IsColimit c) : IsColimit (coconeOfCoconeForget c hc) := by
+noncomputable def isColimitCoconeOfCoconeForget (hc : IsColimit c) :
+    IsColimit (coconeOfCoconeForget c hc) := by
+  let pt (s : Cocone F) := CommRingCat.of s.pt
+  let desc (s : Cocone F) : c.pt ⟶ pt s := (hc.desc ((forget₂ _ CommRingCat).mapCocone s))
+  let algK : c.pt ⟶ .of K := hc.desc (algebraMapKCocone F)
+  let i' (s : Cocone F) (j : J) : _ ⟶ pt s :=
+    c.ι.app j ≫ hc.desc ((forget₂ (FlatExtension R K) CommRingCat).mapCocone s)
+  let i (s : Cocone F) (j : J) : _ ⟶ pt s :=
+    ((forget₂ (FlatExtension R K) CommRingCat).mapCocone s).ι.app j
+  have (s : Cocone F) (j : J) : i' s j = i s j :=
+    hc.fac ((forget₂ (FlatExtension R K) CommRingCat).mapCocone s) j
   refine IsColimit.ofFaithful (forget₂ _ CommRingCat.{u}) hc
     (fun s ↦ .mk' R K (hc.desc ((forget₂ _ CommRingCat).mapCocone s)).hom ?_ ?_) fun s ↦ rfl
-  · sorry
-  · change _ = (hc.desc (algebraMapKCocone F)).hom
-    sorry
+  · let j := Classical.choice ‹IsFiltered J›.2
+    let c_ι_app : _ ⟶ c.pt := c.ι.app j
+    change RingHom.comp (desc s).hom (c_ι_app.hom.comp (algebraMap R (F.obj j))) = _
+    simp only [← RingHom.comp_assoc, ← CommRingCat.hom_comp, desc, c_ι_app]
+    change (i' s j).hom.comp _ = _
+    simp only [this]
+    exact RingHom.ext fun x ↦ congr($(AlgHom.comp_algebraMap (s.ι.app j).algHom) x)
+  · change RingHom.comp _ (desc s).hom = algK.hom
+    rw [← CommRingCat.hom_ofHom (algebraMap _ _), ← CommRingCat.hom_comp]
+    refine congrArg _ <| hc.uniq (algebraMapKCocone F) _ fun j ↦ ?_
+    let algSK : pt s ⟶ .of K := CommRingCat.ofHom (algebraMap _ _)
+    change _ ≫ _ ≫ algSK = _
+    simp only [← Category.assoc, desc]
+    change i' s j ≫ _ = _
+    simp only [this]
+    exact CommRingCat.hom_ext (RingHom.ext fun x ↦ congr($((s.ι.app j).comm) x))
 
 instance : HasColimitsOfShape J (FlatExtension R K) where
   has_colimit F := by
