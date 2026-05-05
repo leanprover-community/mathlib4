@@ -157,7 +157,10 @@ theorem of_partNum_eq_one_and_exists_int_partDen_eq {gp : GenContFract.Pair K}
 /-- Shows that the partial numerators `aᵢ` are equal to one. -/
 theorem of_partNum_eq_one {a : K} (nth_partNum_eq : (of v).partNums.get? n = some a) :
     a = 1 := by
-  grind [of_partNum_eq_one_and_exists_int_partDen_eq, exists_s_a_of_partNum nth_partNum_eq]
+  obtain ⟨gp, nth_s_eq, gp_a_eq_a_n⟩ : ∃ gp, (of v).s.get? n = some gp ∧ gp.a = a :=
+    exists_s_a_of_partNum nth_partNum_eq
+  have : gp.a = 1 := (of_partNum_eq_one_and_exists_int_partDen_eq nth_s_eq).left
+  rwa [gp_a_eq_a_n] at this
 
 /-- Shows that the partial denominators `bᵢ` correspond to an integer. -/
 theorem exists_int_eq_of_partDen {b : K}

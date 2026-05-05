@@ -113,7 +113,9 @@ theorem compExactValue_correctness_of_stream_eq_some :
       -- Int.fract v = 0; we must then have `v = ⌊v⌋`
       suffices v = ⌊v⌋ by
         simpa [compExactValue, IntFractPair.of, fract_eq_zero]
-      grind [Int.fract]
+      calc
+        v = Int.fract v + ⌊v⌋ := by rw [Int.fract_add_floor]
+        _ = ⌊v⌋ := by simp [fract_eq_zero]
     | inr fract_ne_zero =>
       -- Int.fract v ≠ 0; the claim then easily follows by unfolding a single computation step
       simp [field, contsAux, nextConts, nextNum, nextDen, of_h_eq_floor, compExactValue,
