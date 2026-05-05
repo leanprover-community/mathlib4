@@ -280,4 +280,41 @@ theorem isTopologicalBasis (hf : IsLocalHomeomorph f) : IsTopologicalBasis
       rw [Set.preimage_inter, ← Set.inter_assoc, Set.inter_eq_self_of_subset_left
         f.source_preimage_target, f.source_inter_preimage_inv_preimage]
 
+variable (hf : IsLocalHomeomorph f) {x : X}
+
+variable (x) in
+/-- A chosen local inverse for a local homeomorphism `f` at a point `x`. -/
+noncomputable def localInverseAt : OpenPartialHomeomorph Y X := (hf x).choose.symm
+
+/-- The point `x` lies in the target of `localInverseAt x`. -/
+@[grind =>, simp] lemma self_mem_localInverseAt_target : x ∈ (hf.localInverseAt x).target :=
+  (hf x).choose_spec.1
+
+variable (x) in
+/-- The inverse function of `localInverseAt x` coincides with `f`. -/
+@[simp] lemma localInverseAt_symm : (hf.localInverseAt x).symm = f :=
+  (hf x).choose_spec.2.symm
+
+/-- The point `f x` lies in the source of `localInverseAt x`. -/
+@[grind =>, simp] lemma apply_self_mem_localInverseAt_source :
+    f x ∈ (hf.localInverseAt x).source := by
+  rw [← congrFun (hf.localInverseAt_symm x)]
+  exact (hf.localInverseAt x).map_target hf.self_mem_localInverseAt_target
+
+/-- The function `f` is injective on the target of `localInverseAt x`. -/
+lemma injOn_localInverseAt_target : (hf.localInverseAt x).target.InjOn f := by
+  rw [Set.EqOn.injOn_iff (f₂ := (hf.localInverseAt x).symm) (fun y _ ↦ by simp)]
+  exact (hf.localInverseAt x).symm.injOn
+
+/-- If `y` lies in the source of `localInverseAt x`, then `f (localInverseAt x y) = y`. -/
+@[grind .] lemma apply_localInverseAt_of_mem {y : Y} (hx : y ∈ (hf.localInverseAt x).source) :
+    f (hf.localInverseAt x y) = y := by
+  rw [← congrFun (hf.localInverseAt_symm x)]
+  exact (hf.localInverseAt x).left_inv hx
+
+/-- The function `localInverseAt x` sends `f x` back to `x`. -/
+@[simp] lemma localInverseAt_apply_self : hf.localInverseAt x (f x) = x :=
+  hf.injOn_localInverseAt_target (by simp) hf.self_mem_localInverseAt_target <|
+    hf.apply_localInverseAt_of_mem hf.apply_self_mem_localInverseAt_source
+
 end IsLocalHomeomorph
