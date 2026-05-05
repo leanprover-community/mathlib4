@@ -45,7 +45,7 @@ vertices is also at unit distance.
 ## Main results
 
 * `SimpleGraph.MoserSpindle.not_colorable_three` : the abstract Moser spindle has no proper
-  $3$-colouring (verified by `native_decide`).
+  $3$-colouring.
 * `SimpleGraph.MoserSpindle.chromaticNumber_ge_four` : the abstract Moser spindle's chromatic
   number is at least $4$.
 
@@ -145,18 +145,18 @@ between Mathlib's `dist` and the squared-distance form used in our proofs is pro
 `dist_eq_one_iff` below. -/
 
 /-- Notation for the Euclidean plane. -/
-local notation "Plane" => EuclideanSpace ℝ (Fin 2)
+local notation "ℝ²" => EuclideanSpace ℝ (Fin 2)
 
 /-- Two points in `EuclideanSpace ℝ (Fin 2)` are at distance one iff their squared coordinate
 differences sum to one. -/
 lemma dist_eq_one_iff {x₀ y₀ x₁ y₁ : ℝ} :
-    dist (!₂[x₀, y₀] : Plane) (!₂[x₁, y₁] : Plane) = 1
+    dist (!₂[x₀, y₀] : ℝ²) (!₂[x₁, y₁] : ℝ²) = 1
       ↔ (x₀ - x₁) ^ 2 + (y₀ - y₁) ^ 2 = 1 := by
   simp [dist_eq_norm_sub, PiLp.norm_eq_of_L2]
 
 /-- The standard embedding of the Moser spindle's $7$ vertices into the Euclidean plane.
 The rotation angle for the second rhombus has $\cos = 5/6$, $\sin = \sqrt{11}/6$. -/
-noncomputable def embed : Fin 7 → Plane
+noncomputable def embed : Fin 7 → ℝ²
   | 0 => !₂[0, 0]
   | 1 => !₂[1, 0]
   | 2 => !₂[1/2, Real.sqrt 3 / 2]
@@ -312,7 +312,7 @@ theorem embed_injective : embed.Injective := by
   rw [heq]
 
 /-- The standard unit-distance embedding of the Moser spindle into the Euclidean plane. -/
-noncomputable def unitDistEmbedding : graph.UnitDistEmbedding Plane where
+noncomputable def unitDistEmbedding : graph.UnitDistEmbedding ℝ² where
   p := ⟨embed, embed_injective⟩
   unit_dist {i j} h := by
     simp only [Function.Embedding.coeFn_mk]
