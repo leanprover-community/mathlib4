@@ -142,7 +142,7 @@ linear map `f : E → p` such that `f x = x` for `x ∈ p` and `f x = 0` for `x 
 For the projection from `E` to `E`, see `Submodule.projection`.
 Also see `Submodule.projectionOntoL` and `Submodule.projectionL` for the continuous versions.
 And `Submodule.orthogonalProjection` and `Submodule.orthogonalProjectionOnto` for the projections
-onto their orthogonal space.
+along the orthogonal subspace.
 
 See also `LinearMap.linearProjOfIsCompl`. -/
 def projectionOnto (h : IsCompl p q) : E →ₗ[R] p :=
