@@ -71,20 +71,9 @@ abbrev Stoch := WideSubcategory StochHom
 
 variable {X Y : Stoch} (κ : X ⟶ Y)
 
-instance : IsMarkovKernel κ.hom.hom := κ.2
-
-instance [Deterministic κ] : Deterministic κ.hom where
-  hom_comul := WideSubcategory.hom_ext_iff.mp <| Deterministic.copy_natural κ
-
-instance [Deterministic κ] : IsDeterministicKernel κ.hom.hom where
-  comp_natural' := by
-    have := Deterministic.copy_natural κ.hom
-    rw [SFinKer.Hom.ext_iff] at this
-    dsimp at this
-    rw [id_parallelComp_comp_parallelComp_id] at this
-    exact this.symm
-
 instance [Deterministic κ.hom] : Deterministic κ where
+
+instance : Deterministic (Δ[X]) where
 
 instance : Deterministic (ε[X]) where
   hom_comul := by
@@ -92,7 +81,26 @@ instance : Deterministic (ε[X]) where
     simp only [WideSubcategory.comp_def, MorphismProperty.counit_hom]
     cat_disch
 
-instance : Deterministic (Δ[X]) where
+instance (X Y : Stoch) (κ : Kernel X.obj Y.obj) [IsDeterministic κ] [IsMarkovKernel κ] :
+    Deterministic (X := X) (Y := Y) (⟨⟨κ, inferInstance⟩, inferInstance⟩ : X ⟶ Y) where
+  hom_comul := by
+    ext : 1; dsimp
+    exact Deterministic.copy_natural _
+
+section PositiveCategory
+
+instance : IsMarkovKernel κ.hom.hom := κ.2
+
+instance [Deterministic κ] : Deterministic κ.hom where
+  hom_comul := WideSubcategory.hom_ext_iff.mp <| Deterministic.copy_natural κ
+
+instance [Deterministic κ] : IsDeterministic κ.hom.hom where
+  parallelComp_self_comp_copy' := by
+    have := Deterministic.copy_natural κ.hom
+    rw [SFinKer.Hom.ext_iff] at this
+    dsimp at this
+    rw [id_parallelComp_comp_parallelComp_id] at this
+    exact this.symm
 
 noncomputable instance : PositiveCategory Stoch.{u} where
   discard_natural κ := by ext : 2; simp
@@ -100,5 +108,7 @@ noncomputable instance : PositiveCategory Stoch.{u} where
     ext : 2
     dsimp
     simp only [id_parallelComp_id, id_comp, id_parallelComp_comp_parallelComp_id]
-    have : IsDeterministicKernel (κ ≫ η).hom.hom := inferInstance
-    exact (parallelComp_id_comp_copy_comp).symm
+    have : IsDeterministic (κ ≫ η).hom.hom := inferInstance
+    exact (comp_parallelComp_comp_copy).symm
+
+end PositiveCategory

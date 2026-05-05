@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.CopyDiscardCategory.Deterministic
 public import Mathlib.Probability.Kernel.Composition.KernelLemmas
+public import Mathlib.Probability.Kernel.Deterministic
 
 /-!
 # SFinKer
@@ -242,13 +243,13 @@ instance : CopyDiscardCategory SFinKer.{u} where
     rw [Kernel.id_map (by fun_prop)]
     simp [Kernel.copy_apply, Kernel.deterministic_apply]
 
-instance deterministic_deterministic (X Y : SFinKer) (f : X.carrier → Y.carrier)
-    (hf : Measurable f) :
-    Deterministic (X := X) (Y := Y) (⟨Kernel.deterministic f hf, inferInstance⟩ : X ⟶ Y) where
+instance deterministic_deterministic (X Y : SFinKer) (κ : Kernel X Y)
+    [IsDeterministic κ] [IsMarkovKernel κ] :
+    Deterministic (X := X) (Y := Y) (⟨κ, inferInstance⟩ : X ⟶ Y) where
   hom_comul := by
     ext : 1; dsimp
     rw [Kernel.id_parallelComp_comp_parallelComp_id]
-    exact (Kernel.deterministic_comp_copy hf).symm
+    exact (Kernel.parallelComp_self_comp_copy).symm
 
 lemma deterministic_id_map (X Y : SFinKer) (f : X.carrier → Y.carrier) (hf : Measurable f) :
     Deterministic (X := X) (Y := Y) (⟨Kernel.id.map f, inferInstance⟩ : X ⟶ Y) where
@@ -258,7 +259,7 @@ variable {X Y Z : SFinKer}
 
 instance : Deterministic (α_ X Y Z).hom :=
   deterministic_deterministic ((X ⊗ Y) ⊗ Z)
-      (X ⊗ Y ⊗ Z) (MeasurableEquiv.prodAssoc) (MeasurableEquiv.measurable _)
+    (X ⊗ Y ⊗ Z) (Kernel.deterministic MeasurableEquiv.prodAssoc (MeasurableEquiv.measurable _))
 
 instance : Deterministic (λ_ X ).hom :=
   deterministic_id_map (𝟙_ SFinKer ⊗ X) X Prod.snd (by fun_prop)
@@ -267,13 +268,14 @@ instance : Deterministic (ρ_ X ).hom :=
   deterministic_id_map (X ⊗ 𝟙_ SFinKer) X Prod.fst (by fun_prop)
 
 instance : Deterministic (β_ X Y).hom :=
-  deterministic_deterministic (X ⊗ Y) (Y ⊗ X) Prod.swap (by fun_prop)
+  deterministic_deterministic (X ⊗ Y) (Y ⊗ X) (Kernel.deterministic Prod.swap (by fun_prop))
 
 instance : Deterministic (ε[X]) :=
-  deterministic_deterministic X (𝟙_ SFinKer) (fun (x : X) ↦ PUnit.unit) (by fun_prop)
+  deterministic_deterministic X (𝟙_ SFinKer)
+    (Kernel.deterministic (fun (x : X) ↦ PUnit.unit) (by fun_prop))
 
 instance : Deterministic (Δ[X]) :=
-  deterministic_deterministic X (X ⊗ X) (fun (x : X) ↦ (x, x)) (by fun_prop)
+  deterministic_deterministic X (X ⊗ X) (Kernel.deterministic (fun (x : X) ↦ (x, x)) (by fun_prop))
 
 end
 
