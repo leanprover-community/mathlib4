@@ -308,7 +308,7 @@ variable [StarHomClass F A B]
 actual `StarAlgHom`. This is declared as the default coercion from `F` to `A →⋆ₐ[R] B`. -/
 @[coe]
 def toStarAlgHom (f : F) : A →⋆ₐ[R] B :=
-  { (f : A →ₐ[R] B) with
+  { (AlgHomClass.toAlgHom f) with
     map_star' := map_star f }
 
 instance : CoeTC F (A →⋆ₐ[R] B) :=
@@ -342,6 +342,11 @@ protected theorem coe_coe {F : Type*} [FunLike F A B] [AlgHomClass F R A B]
   rfl
 
 initialize_simps_projections StarAlgHom (toFun → apply)
+
+attribute [coe] StarAlgHom.toAlgHom
+
+instance : Coe (A →⋆ₐ[R] B) (A →ₐ[R] B) :=
+  ⟨toAlgHom⟩
 
 @[simp]
 theorem coe_toAlgHom {f : A →⋆ₐ[R] B} : (f.toAlgHom : A → B) = f :=
