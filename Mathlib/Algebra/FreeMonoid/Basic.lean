@@ -331,7 +331,8 @@ theorem lift_eval_of (f : α → M) (x : α) : lift f (of x) = f x := rfl
 theorem lift_restrict (f : FreeMonoid α →* M) : lift (f ∘ of) = f := lift.apply_symm_apply f
 
 /-- The map from the free monoid is unique given its values on generators. -/
-@[to_additive /-- The map from the free additive monoid is unique given its values on generators. -/]
+@[to_additive
+  /-- The map from the free additive monoid is unique given its values on generators. -/]
 theorem lift_unique {f : FreeMonoid α →* M} {g : α → M}
     (h : f ∘ of = g) : f = lift g := by
   conv_lhs => rw [← lift_restrict f]
