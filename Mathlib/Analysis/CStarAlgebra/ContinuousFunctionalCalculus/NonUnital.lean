@@ -393,7 +393,7 @@ lemma cfcₙ_sum {ι : Type*} (f : ι → R → R) (a : A) (s : Finset ι)
   · have hsum : s.sum f = fun z => ∑ i ∈ s, f i z := by ext; simp
     have hf' : ContinuousOn (∑ i : s, f i) (σₙ R a) := by
       rw [sum_coe_sort s, hsum]
-      exact continuousOn_finset_sum s fun i hi => hf i hi
+      exact continuousOn_finsetSum s fun i hi => hf i hi
     rw [← sum_coe_sort s, ← sum_coe_sort s]
     rw [cfcₙ_apply_pi _ a ha (fun ⟨i, hi⟩ => hf i hi), ← map_sum, cfcₙ_apply _ a hf']
     congr 1
@@ -584,6 +584,8 @@ lemma cfcₙ_neg : cfcₙ (fun x ↦ -(f x)) a = -(cfcₙ f a) := by
       exact fun hf_neg ↦ hf <| by simpa using hf_neg.neg
     · rw [cfcₙ_apply_of_not_map_zero a h0, cfcₙ_apply_of_not_map_zero, neg_zero]
       exact (h0 <| neg_eq_zero.mp ·)
+
+lemma cfcₙ_neg' : cfcₙ (-f) = (-cfcₙ f : A → A) := by ext1 a; exact (cfcₙ_neg f a)
 
 lemma cfcₙ_neg_id (ha : p a := by cfc_tac) :
     cfcₙ (- · : R → R) a = -a := by

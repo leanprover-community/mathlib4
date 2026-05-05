@@ -102,8 +102,6 @@ lemma isZeroAtImInfty_of_valueAtInfty_eq_zero {F : Type*} [FunLike F ℍ ℂ]
 
 section SL2Z
 
-open EisensteinSeries
-
 variable {k : ℤ}
 
 /-- An `𝒮ℒ` modular form with vanishing q-expansion constant term vanishes at every cusp. -/

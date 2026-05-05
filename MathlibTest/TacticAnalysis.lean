@@ -229,6 +229,7 @@ end replaceWithGrind
 section introMerge
 
 set_option linter.tacticAnalysis.introMerge true
+set_option linter.unusedVariables false
 
 /-- warning: Try this: intro a b -/
 #guard_msgs in
@@ -251,11 +252,80 @@ example : ∀ a b : Unit, a = b := by
   intro _
   rfl
 
+/-- warning: Try this: intro a b -/
+#guard_msgs in
+example : ∀ a b : Unit, a = b := by
+  intros a
+  intros b
+  rfl
+
+/-- warning: Try this: intro a b c -/
+#guard_msgs in
+example : ∀ a b c : Unit, True := by
+  intro a
+  intros b c
+  trivial
+
+/-- warning: Try this: intro a b -/
+#guard_msgs in
+example : ∀ a b : Unit, a = b := by
+  rintro a
+  rintro b
+  rfl
+
+/-- warning: Try this: intro a _ c -/
+#guard_msgs in
+example : ∀ a b c : Unit, True := by
+  intro a
+  rintro _ c
+  trivial
 
 #guard_msgs in
 example : ∀ a b : Unit, a = b := by
   intro a b
   rfl
+
+#guard_msgs in
+example : ∀ a b : Unit, a = b := by
+  intros a b
+  rfl
+
+#guard_msgs in
+example : ∀ a b : Unit, a = b := by
+  rintro a b
+  rfl
+
+#guard_msgs in
+example : ∀ a b c : Unit, True := by
+  intro a
+  intros
+  trivial
+
+#guard_msgs in
+example : (Unit × Unit) → True := by
+  rintro ⟨a, b⟩
+  trivial
+
+#guard_msgs in
+example : Unit ⊕ Unit → True := by
+  rintro (a | b)
+  all_goals trivial
+
+#guard_msgs in
+example : True → True := by
+  rintro (h : True)
+  trivial
+
+#guard_msgs in
+example : ∀ a : Unit, a = () → True := by
+  rintro a rfl
+  trivial
+
+#guard_msgs in
+example : ∀ a : Unit, a = () → True := by
+  intro a
+  rintro rfl
+  trivial
 
 -- Intros separated by an intervening tactic should NOT be merged.
 -- Regression test for a bug where tactics were incorrectly grouped across intervening tactics.
@@ -264,6 +334,13 @@ example : True → ∀ n > 0, True := by
   intro h
   have := 0
   intro n hn
+  trivial
+
+#guard_msgs in
+example : True → ∀ a b : Unit, True := by
+  intros h
+  have := 0
+  rintro a b
   trivial
 
 end introMerge
@@ -464,5 +541,33 @@ example : 1 + 1 = 2 := by
 set_option linter.tacticAnalysis.verifyGrindSuggestions true in
 example : 1 + 1 = 2 := by
   rfl
+
+-- Test: a failure of an applied try-this suggestion should print a warning
+section
+
+open Lean Meta Elab Tactic Mathlib.TacticAnalysis
+
+/-- Suggests to close a goal with `rfl`, but actually closes it with `trivial`. -/
+elab "fakeRfl?" : tactic => do
+  Lean.Meta.Tactic.TryThis.addSuggestion (← getRef) (← `(tactic| rfl))
+  evalTactic (← `(tactic| trivial))
+
+@[tacticAnalysis linter.tacticAnalysis.dummy]
+def verifyFakeRfl := verifyTryThisSuggestions
+  (fun _ _ => `(tactic| fakeRfl?))
+  "fakeRfl?"
+
+/--
+info: Try this:
+  [apply] rfl
+---
+warning: `fakeRfl?` suggestion failed: `rfl` did not close the goal
+-/
+#guard_msgs in
+set_option linter.tacticAnalysis.dummy true in
+example : True := by
+  fakeRfl?
+
+end
 
 end verifyGrindSuggestions
