@@ -10,7 +10,7 @@ public import Mathlib.Algebra.GroupWithZero.Subgroup
 public import Mathlib.Algebra.Order.Group.Action
 public import Mathlib.Algebra.Module.Submodule.Range
 
-/-! # Pointwise instances on `Submodule`s
+/-! # Pointwise instances on `Submodule`
 
 This file provides:
 
