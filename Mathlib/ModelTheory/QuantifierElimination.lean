@@ -40,7 +40,7 @@ namespace PartialEquiv
 noncomputable def codMap
     {L : Language} {M N N' : Type*}
     [L.Structure M] [L.Structure N] [L.Structure N']
-    (f : M ≃ₚ[L] N) (e : N ↪[L] N') : M ≃ₚ[L] N' where
+    (f : L.Sub M N) (e : N ↪[L] N') : M ≃ₚ[L] N' where
   dom := f.dom
   cod := f.cod.map e.toHom
   toEquiv := (e.substructureEquivMap f.cod).comp f.toEquiv
@@ -607,15 +607,56 @@ theorem marker_315
 
 -----------------------------------------------------------------------------------------
 
-theorem marker_316 {L : Language} {T : L.Theory} :
-  (∀ {m : ℕ} (φ : L.Formula (Fin m.succ)) (hQF : φ.IsQF)
-    {M N A : Type*} [L.Structure M] [L.Structure N] [L.Structure A]
-    [T.Model M] [T.Model N]
+theorem marker_316 {T : L.Theory} :
+  (∀ {m : ℕ} (φ : L.Formula (Fin m.succ)) (_ : φ.IsQF)
+    {M N A : Type (max u v)} [L.Structure M] [L.Structure N] [L.Structure A]
+    [T.Model M] [T.Model N] [Nonempty M] [Nonempty N]
     (f : A ↪[L] M) (g : A ↪[L] N) (a : Fin m → A),
     (∃ (b : M), φ.Realize (Fin.snoc (f ∘ a) b)) →
     (∃ (c : N), φ.Realize (Fin.snoc (g ∘ a) c))) →
   T.HasQuantifierElimination := by
-  sorry
+  intro h
+  apply marker_315
+  intro m θ hθ
+  refine (marker_314 (T := T) (φ := θ.ex)).2 ?_
+  intro M N A _ _ _ _ _ _ _ f g a
+  let φ : L.Formula (Fin m.succ) := θ.toFormula.relabel finSumFinEquiv
+  have hφQF : φ.IsQF := by
+    exact (isQF_toFormula hθ).relabel _
+  have hreal :
+      ∀ {X : Type (max u v)} [L.Structure X] (x : Fin m → X) (b : X),
+        φ.Realize (Fin.snoc x b) ↔ θ.Realize x (Fin.snoc default b) := by
+    intro X _ x b
+    rw [Formula.realize_relabel, BoundedFormula.realize_toFormula]
+    have hfree : ((Fin.snoc x b ∘ ⇑finSumFinEquiv) ∘ Sum.inl) = x := by
+      funext i
+      change (Fin.snoc x b : Fin (m + 1) → X) i.castSucc = x i
+      rw [Fin.snoc_castSucc]
+    have hbound : ((Fin.snoc x b ∘ ⇑finSumFinEquiv) ∘ Sum.inr) = Fin.snoc default b := by
+      funext i
+      have hi : i = 0 := Subsingleton.elim i 0
+      rw [hi]
+      change (Fin.snoc x b : Fin (m + 1) → X) (Fin.last m) =
+        (Fin.snoc default b : Fin 1 → X) (Fin.last 0)
+      rw [Fin.snoc_last, Fin.snoc_last]
+    rw [hfree, hbound]
+  constructor
+  · intro hM
+    rw [Formula.Realize, BoundedFormula.realize_ex] at hM
+    rw [Formula.Realize, BoundedFormula.realize_ex]
+    rcases hM with ⟨b, hb⟩
+    obtain ⟨c, hc⟩ :=
+      h (m := m) φ hφQF (M := M) (N := N) (A := A) f g a
+        ⟨b, (hreal (f ∘ a) b).2 hb⟩
+    exact ⟨c, (hreal (g ∘ a) c).1 hc⟩
+  · intro hN
+    rw [Formula.Realize, BoundedFormula.realize_ex] at hN
+    rw [Formula.Realize, BoundedFormula.realize_ex]
+    rcases hN with ⟨c, hc⟩
+    obtain ⟨b, hb⟩ :=
+      h (m := m) φ hφQF (M := N) (N := M) (A := A) g f a
+        ⟨c, (hreal (g ∘ a) c).2 hc⟩
+    exact ⟨b, (hreal (f ∘ a) b).1 hb⟩
 
 /-- Henson, Theorem 7.11, direction `(2) → (1)`: if every partial isomorphism between
 substructures of models of `T` can be extended, after passing to an elementary extension of the
@@ -627,7 +668,7 @@ theorem henson_711
       ∀ {M N : Type (max u v)} [L.Structure M] [L.Structure N]
         [T.Model M] [T.Model N] [Nonempty M] [Nonempty N]
         (f : L.Sub M N) (a : M),
-        ∃ (N' : Type (max u v)) (_ : L.Structure N') (_ : Nonempty N')
+        ∃ (N' : Type (max u v)) (_ : L.Structure N')
           (e : N ↪ₑ[L] N') (g : L.Sub M N'),
           a ∈ g.dom ∧ f.ExtendsAlong e g) :
     T.HasQuantifierElimination := by
