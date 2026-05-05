@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 public import Mathlib.CategoryTheory.Limits.Types.Coproducts
@@ -26,7 +26,7 @@ universe w v' v u' u
 
 namespace CategoryTheory.Limits
 
-variable {C : Type u} [Category.{v} C]
+variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
 set_option backward.isDefEq.respectTransparency false in
 /- If the morphisms in `C` were in `Type w`, the functor
@@ -55,11 +55,9 @@ instance [HasCoproducts.{w} C] (R : C) :
         simp [coconeTypes, ← hm, dsimp% hc.fac_apply,
           dsimp% Sigma.ι_desc (hc.desc (coconeTypes s))] }⟩⟩⟩
 
-variable [HasZeroMorphisms C] (R : C)
-
 section
 
-variable {α β : Type*} (f : α → β)
+variable [HasZeroMorphisms C] (R : C) {α β : Type*} (f : α → β)
   [HasCoproduct (fun (_ : α) ↦ R)] [HasCoproduct (fun (_ : β) ↦ R)]
   [HasCoproduct (fun (_ : ((Set.range f)ᶜ : Set _)) ↦ R)]
 
@@ -115,8 +113,36 @@ instance :
 
 end
 
-instance [HasCoproducts.{w} C] {α β : Type w} (f : α ⟶ β) :
+instance [HasZeroMorphisms C] (R : C) [HasCoproducts.{w} C] {α β : Type w} (f : α ⟶ β) :
     HasCokernel ((sigmaConst.obj R).map f) := by
   dsimp; infer_instance
+
+section
+
+variable [HasCoproducts.{w} C] [HasCoproducts.{w} D]
+  (F : C ⥤ D) [∀ (T : Type w), PreservesColimitsOfShape (Discrete T) F] (X : C)
+
+/-- The isomophism `sigmaConst.obj X ⋙ F ≅ sigmaConst.obj (F.obj X)` when `F`
+preserves coproducts. -/
+noncomputable def sigmaConstObjCompIso : sigmaConst.obj X ⋙ F ≅ sigmaConst.obj (F.obj X) :=
+  NatIso.ofComponents (fun _ ↦ PreservesCoproduct.iso _ _) (fun {T₁ T₂} f ↦ by
+    dsimp [Sigma.map']
+    rw [← cancel_epi (PreservesCoproduct.iso F (fun (_ : T₁) ↦ X)).inv,
+      ← cancel_mono (PreservesCoproduct.iso F (fun (_ : T₂) ↦ X)).inv,
+      Iso.inv_hom_id_assoc, Category.assoc, Category.assoc, Iso.hom_inv_id, Category.comp_id,
+      PreservesCoproduct.inv_hom, PreservesCoproduct.inv_hom, sigmaComparison_map_desc]
+    ext
+    simp [Sigma.ι_desc, Sigma.ι_desc_assoc])
+
+@[reassoc (attr := simp)]
+lemma map_ι_sigmaConstObjCompIso_hom_app {T : Type w} (t : T) :
+    F.map (Sigma.ι (fun (_ : T) ↦ X) t) ≫ (sigmaConstObjCompIso F X).hom.app T =
+      Sigma.ι (fun (_ : T) ↦ F.obj X) t := by
+  dsimp [sigmaConstObjCompIso]
+  rw [← cancel_mono (PreservesCoproduct.iso F (fun (_ : T) ↦ X)).inv,
+    Category.assoc, Iso.hom_inv_id]
+  simp
+
+end
 
 end CategoryTheory.Limits

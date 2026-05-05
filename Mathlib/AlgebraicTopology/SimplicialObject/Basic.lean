@@ -217,8 +217,7 @@ variable {D : Type*} [Category* D]
 
 variable (D) in
 /-- Functor composition induces a functor on simplicial objects. -/
-@[simps!]
-def whiskering : (C ⥤ D) ⥤ SimplicialObject C ⥤ SimplicialObject D :=
+abbrev whiskering : (C ⥤ D) ⥤ SimplicialObject C ⥤ SimplicialObject D :=
   whiskeringRight _ _ _
 
 @[simp]
@@ -240,8 +239,7 @@ namespace Truncated
 
 variable (C) in
 /-- Functor composition induces a functor on truncated simplicial objects. -/
-@[simps!]
-def whiskering {n} (D : Type*) [Category* D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
+abbrev whiskering {n} (D : Type*) [Category* D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
   whiskeringRight _ _ _
 
 open Mathlib.Tactic (subscriptTerm) in
@@ -678,8 +676,8 @@ theorem σ_naturality {X' X : CosimplicialObject C} (f : X ⟶ X') {n : ℕ} (i 
 variable (C)
 
 /-- Functor composition induces a functor on cosimplicial objects. -/
-@[simps!]
-def whiskering (D : Type*) [Category* D] : (C ⥤ D) ⥤ CosimplicialObject C ⥤ CosimplicialObject D :=
+abbrev whiskering (D : Type*) [Category* D] :
+    (C ⥤ D) ⥤ CosimplicialObject C ⥤ CosimplicialObject D :=
   whiskeringRight _ _ _
 
 /-- Truncated cosimplicial objects. -/
@@ -711,8 +709,7 @@ instance {n} [HasColimits C] : HasColimits (CosimplicialObject.Truncated C n) :=
 
 variable (C) in
 /-- Functor composition induces a functor on truncated cosimplicial objects. -/
-@[simps!]
-def whiskering {n} (D : Type*) [Category* D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
+abbrev whiskering {n} (D : Type*) [Category* D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
   whiskeringRight _ _ _
 
 open Mathlib.Tactic (subscriptTerm) in

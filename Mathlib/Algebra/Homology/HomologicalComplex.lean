@@ -271,6 +271,10 @@ theorem eqToHom_f {C₁ C₂ : HomologicalComplex V c} (h : C₁ = C₂) (n : ι
   subst h
   rfl
 
+lemma ext_of_iso {C₁ C₂ : HomologicalComplex V c} (e : C₁ ≅ C₂) (h₁ : ∀ i, C₁.X i = C₂.X i)
+    (h₂ : ∀ i, e.hom.f i = eqToHom (h₁ i) := by cat_disch) : C₁ = C₂ :=
+  HomologicalComplex.ext (by cat_disch) (fun _ _ _ ↦ by simp [← h₂])
+
 -- We'll use this later to show that `HomologicalComplex V c` is preadditive when `V` is.
 theorem hom_f_injective {C₁ C₂ : HomologicalComplex V c} :
     Function.Injective fun f : Hom C₁ C₂ => f.f := by cat_disch
