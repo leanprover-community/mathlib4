@@ -898,8 +898,7 @@ abbrev InnerProductSpace.induced {F : Type*} [FunLike F G E] [LinearMapClass F �
     norm_sq_eq_re_inner x := norm_sq_eq_re_inner (f x)
     conj_inner_symm x y := inner_conj_symm (f x) (f y) }
 
-@[simp]
-theorem inner_eq (g₁ g₂ : G) (f : G →ₗ[𝕜] E) :
+theorem inner_induced_eq (g₁ g₂ : G) (f : G →ₗ[𝕜] E) :
     letI := InnerProductSpace.induced f
     inner 𝕜 g₁ g₂ = inner 𝕜 (f g₁) (f g₂) := rfl
 
