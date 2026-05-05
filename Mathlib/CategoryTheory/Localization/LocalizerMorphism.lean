@@ -291,7 +291,7 @@ lemma full [Φ.IsLocalizedFullyFaithful] [CatCommSq Φ.functor L₁ L₂ G] :
 
 /-- If a `LocalizerMorphism` becomes fully faithful after localization,
 then the induced functor on the localized categories is fully faithful. -/
-noncomputable irreducible_def fullyFaithfulLocalizedFunctor [Φ.IsLocalizedFullyFaithful] :
+@[no_expose] noncomputable def fullyFaithfulLocalizedFunctor [Φ.IsLocalizedFullyFaithful] :
     (Φ.localizedFunctor L₁ L₂).FullyFaithful :=
   Φ.fullyFaithful L₁ L₂ _
 
