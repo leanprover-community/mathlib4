@@ -82,19 +82,6 @@ namespace CommRingCat
 
 variable {R : Type u} [CommRing R]
 
--- [NOTE]: This is currently in mathlib.
-def flat : MorphismProperty CommRingCat.{u} :=
-  RingHom.toMorphismProperty fun f ↦ f.Flat
-
-@[simp]
--- [NOTE]: This is currently in mathlib.
-lemma flat_iff {R S : CommRingCat.{u}} (f : R ⟶ S) :
-    flat f ↔ f.hom.Flat := .rfl
-
--- [NOTE]: This is currently in mathlib.
-lemma flat_ofHom_iff {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) :
-    flat (ofHom f) ↔ f.Flat := .rfl
-
 lemma ind_flat_eq_flat : MorphismProperty.ind.{u} flat.{u} = flat := by sorry
 
 end CommRingCat
