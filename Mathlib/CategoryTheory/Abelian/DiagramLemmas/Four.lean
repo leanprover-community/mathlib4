@@ -158,8 +158,8 @@ include hR₁ hR₂ in
 theorem mono_of_epi_of_mono_of_mono'' (k₀ k₁ k₂ k₃ : ℕ)
     (hk₀ : k₀ = k := by lia) (hk₁ : k₁ = k + 1 := by lia)
     (hk₂ : k₂ = k + 2 := by lia) (hk₃ : k₃ = k + 3 := by lia)
-    (h₀ : Epi (app' φ k₀)) (h₁ : Mono (app' φ k₁))
-    (h₃ : Mono (app' φ k₃)) : Mono (app' φ k₂) := by
+    (h₀ : Epi (app' φ k₀) := by infer_instance) (h₁ : Mono (app' φ k₁) := by infer_instance)
+    (h₃ : Mono (app' φ k₃) := by infer_instance) : Mono (app' φ k₂) := by
   subst_vars
   change Epi (app' φ (k₀ + 0)) at h₀
   rw [← natAddLEFunctor_app' h] at h₀ h₁ h₃ ⊢
@@ -171,13 +171,13 @@ include hR₁ hR₂ in
 theorem epi_of_epi_of_epi_of_mono'' (k₀ k₁ k₂ k₃ : ℕ)
     (hk₀ : k₀ = k := by lia) (hk₁ : k₁ = k + 1 := by lia)
     (hk₂ : k₂ = k + 2 := by lia) (hk₃ : k₃ = k + 3 := by lia)
-    (h₀ : Epi (app' φ k₀)) (h₂ : Epi (app' φ k₂))
-    (h₃ : Mono (app' φ k₃)) : Epi (app' φ k₁) := by
+    (h₀ : Epi (app' φ k₀) := by infer_instance) (h₂ : Epi (app' φ k₂) := by infer_instance)
+    (h₃ : Mono (app' φ k₃) := by infer_instance) : Epi (app' φ k₁) := by
   subst_vars
   change Epi (app' φ (k₀ + 0)) at h₀
   rw [← natAddLEFunctor_app' h] at h₀ h₂ h₃ ⊢
-  exact epi_of_epi_of_epi_of_mono _ (natAddLEFunctor_obj_exact h hR₁)
-    (natAddLEFunctor_obj_exact h hR₂) h₀ h₂ h₃
+  exact epi_of_epi_of_epi_of_mono _ (natAddLEFunctor_obj_exact h hR₁) (natAddLEFunctor_obj_exact h hR₂)
+    h₀ h₂ h₃
 
 end Four
 
@@ -192,7 +192,8 @@ theorem isIso_of_epi_of_isIso_of_isIso_of_mono' (k₀ k₁ k₂ k₃ k₄ : ℕ)
     (hk₀ : k₀ = k := by lia) (hk₁ : k₁ = k + 1 := by lia)
     (hk₂ : k₂ = k + 2 := by lia) (hk₃ : k₃ = k + 3 := by lia)
     (hk₄ : k₄ = k + 4 := by lia) (h₀ : Epi (app' φ k₀))
-    (h₁ : IsIso (app' φ k₁)) (h₃ : IsIso (app' φ k₃)) (h₄ : Mono (app' φ k₄)) :
+    (h₁ : IsIso (app' φ k₁) := by infer_instance) (h₃ : IsIso (app' φ k₃) := by infer_instance)
+    (h₄ : Mono (app' φ k₄) := by infer_instance) :
     IsIso (app' φ k₂) := by
   subst_vars
   change Epi (app' φ (k₀ + 0)) at h₀
