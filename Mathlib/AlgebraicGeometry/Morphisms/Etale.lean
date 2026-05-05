@@ -155,9 +155,6 @@ variable (X : Scheme.{u})
 
 instance (Y : X.Etale) : Etale Y.hom := Y.prop
 
-instance : Category X.Etale :=
-  inferInstanceAs <| Category (MorphismProperty.Over @Etale ⊤ X)
-
 /-- The forgetful functor from schemes étale over `X` to schemes over `X`. -/
 def Etale.forget : X.Etale ⥤ Over X :=
   MorphismProperty.Over.forget @Etale ⊤ X

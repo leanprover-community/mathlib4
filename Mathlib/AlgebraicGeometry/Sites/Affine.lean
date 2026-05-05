@@ -14,6 +14,15 @@ public import Mathlib.CategoryTheory.Sites.DenseSubsite.OneHypercoverDense
 Let `P` be a morphism property of schemes and `S` be a scheme. In this file we study the small
 affine `P`-site of `S`: its objects are rings `R` with a structure morphism `Spec R ⟶ S` that
 satisfies `P`.
+
+We don't make a separate definition for this site, but use
+`CategoryTheory.MorphismProperty.CostructuredArrow P ⊤ Scheme.Spec S`.
+
+Under suitable assumptions on `P`, the lemmas here can be used to show that the small affine
+`P`-site has the same category of sheaves as the general small `P`-site. If `P` implies
+finitely generated, the small affine `P`-site is essentially small, so in particular
+this can be used to show that the `P`-site admits sheafification. For an example,
+see the file `Mathlib.AlgebraicGeometry.Sites.AffineEtale`.
 -/
 
 @[expose] public section

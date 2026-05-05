@@ -29,7 +29,7 @@ dense, which allows to show that if `S : Scheme.{u}`, then we can sheafify
   sheaves on the étale site with values in a Grothendieck abelian category is Grothendieck abelian.
 -/
 
-@[expose] public section
+@[expose] public noncomputable section
 
 universe u v u'
 
@@ -43,20 +43,18 @@ variable {S : Scheme.{u}}
 commutative rings `R` with an étale structure morphism `Spec R ⟶ S`. -/
 def AffineEtale (S : Scheme.{u}) : Type (u + 1) :=
   MorphismProperty.CostructuredArrow @Etale.{u} ⊤ Scheme.Spec.{u} S
+deriving Category, HasPullbacks
 
 namespace AffineEtale
 
 /-- Construct an object of the small affine étale site. -/
 @[simps!]
-protected noncomputable def mk {R : CommRingCat.{u}} (f : Spec R ⟶ S) [Etale f] : AffineEtale S :=
+protected def mk {R : CommRingCat.{u}} (f : Spec R ⟶ S) [Etale f] : AffineEtale S :=
   MorphismProperty.CostructuredArrow.mk ⊤ f ‹_›
-
-noncomputable instance : Category S.AffineEtale :=
-  inferInstanceAs <| Category (MorphismProperty.CostructuredArrow _ _ _ _)
 
 /-- The `Spec` functor from the small affine étale site of `S` to the small étale site of `S`. -/
 @[simps! obj_left obj_hom map_left]
-protected noncomputable def Spec (S : Scheme.{u}) : S.AffineEtale ⥤ S.Etale :=
+protected def Spec (S : Scheme.{u}) : S.AffineEtale ⥤ S.Etale :=
   MorphismProperty.CostructuredArrow.toOver _ _ _
 
 instance : (AffineEtale.Spec S).Faithful :=
@@ -69,13 +67,10 @@ instance : (AffineEtale.Spec S).IsCoverDense S.smallEtaleTopology :=
   inferInstanceAs <| (MorphismProperty.CostructuredArrow.toOver _ _ _).IsCoverDense
     (smallGrothendieckTopology _)
 
-instance : HasPullbacks S.AffineEtale :=
-  inferInstanceAs <| HasPullbacks (MorphismProperty.CostructuredArrow _ _ _ _)
-
 variable (S) in
 /-- The topology on the small affine étale site is the topology induced by `Spec` from
 the small étale site. -/
-noncomputable def topology : GrothendieckTopology S.AffineEtale :=
+def topology : GrothendieckTopology S.AffineEtale :=
   (AffineEtale.Spec S).inducedTopology S.smallEtaleTopology
 
 instance : Functor.IsDenseSubsite (topology S) S.smallEtaleTopology (AffineEtale.Spec S) := by
@@ -129,8 +124,7 @@ variable (S A)
 /-- The category of sheaves on the small affine étale site is equivalent to the category of
 sheaves on the small étale site. -/
 @[simps! inverse]
-noncomputable def AffineEtale.sheafEquiv :
-    Sheaf (AffineEtale.topology S) A ≌ Sheaf S.smallEtaleTopology A :=
+def AffineEtale.sheafEquiv : Sheaf (AffineEtale.topology S) A ≌ Sheaf S.smallEtaleTopology A :=
   ((AffineEtale.Spec S).sheafPushforwardContinuous A
       (topology S) S.smallEtaleTopology).asEquivalence.symm
 
