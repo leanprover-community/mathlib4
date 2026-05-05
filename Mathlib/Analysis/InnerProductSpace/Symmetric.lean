@@ -314,12 +314,12 @@ theorem _root_.Submodule.isSymmetricProjection_projection_iff
   _root_.Submodule.IsCompl.projection_isSymmetricProjection_iff :=
   _root_.Submodule.isSymmetricProjection_projection_iff
 
-alias ⟨_, _root_.Submodule.projection_isSymmetricProjection_of_isOrtho⟩ :=
+alias ⟨_, _root_.Submodule.isSymmetricProjection_projection_of_isOrtho⟩ :=
   _root_.Submodule.isSymmetricProjection_projection_iff
 
-@[deprecated (since := "2026-05-05")]
-alias ⟨_, _root_.Submodule.IsCompl.projection_isSymmetricProjection_of_isOrtho⟩ :=
-  _root_.Submodule.isSymmetricProjection_projection_iff
+@[deprecated (since := "2026-05-05")] alias
+  _root_.Submodule.IsCompl.projection_isSymmetricProjection_of_isOrtho :=
+  _root_.Submodule.isSymmetricProjection_projection_of_isOrtho
 
 open Submodule LinearMap in
 /-- An idempotent operator is symmetric if and only if its range is
