@@ -24,7 +24,7 @@ We prove versions of the first mean value theorem for set integrals.
 first mean value theorem, set integral
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory
 

@@ -31,7 +31,7 @@ preserving condition is relaxed to quasi-measure-preserving.
 
 -/
 
-@[expose] public section
+public section
 
 
 open Set Function Filter MeasureTheory MeasureTheory.Measure
