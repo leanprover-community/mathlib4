@@ -582,11 +582,11 @@ variable [∀ i, Algebra R (G i)] [∀ i j h, AlgHomClass (T h) R (G i) (G j)]
 
 /-- The algebra map for the DirectLimit of a directed system of algebras -/
 def algebraMapAux : R →+* DirectLimit G f where
-  toFun := fun r => ⟦⟨Classical.arbitrary ι, algebraMap R (G (Classical.arbitrary ι)) r⟩⟧
-  map_one' := by rw [algebraMap, RingHom.map_one, one_def]
-  map_mul' := fun r s => by rw [algebraMap, mul_def, map_mul]
-  map_add' := fun r s => by simp only [add_def, map_add]
-  map_zero' := by rw [algebraMap, map_zero, zero_def]
+  toFun r := ⟦⟨Classical.arbitrary ι, algebraMap R (G (Classical.arbitrary ι)) r⟩⟧
+  map_one' := by rw [map_one, one_def]
+  map_mul' r s := by rw [mul_def, map_mul]
+  map_add' r s := by rw [add_def, map_add]
+  map_zero' := by rw [map_zero, zero_def]
 
 lemma algebraMapAux_at (i : ι) (r : R) :
     algebraMapAux (R:=R) r
@@ -606,8 +606,8 @@ instance : Algebra R (DirectLimit G f) where
     rw [smul_def, algebraMapAux_at i, mul_def, Algebra.smul_def']
 
 lemma algebraMap_at (i : ι) (r : R) :
-    algebraMap R (DirectLimit G f) r = (⟦⟨i, algebraMap R (G i) r⟩⟧ : DirectLimit G f) := by
-  rw [← algebraMapAux_at i]; rfl
+    algebraMap R (DirectLimit G f) r = (⟦⟨i, algebraMap R (G i) r⟩⟧ : DirectLimit G f) :=
+  algebraMapAux_at i r
 
 end Algebra
 
