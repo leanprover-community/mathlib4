@@ -53,16 +53,16 @@ protected theorem bot : IsNormalClosureFG (⊥ : Subgroup G) :=
 set. -/
 @[to_additive /-- `of_fg N` says that a finitely generated normal additive subgroup `N` is the
 additive normal closure of a finite set. -/]
-protected theorem of_fg [N.Normal] (hN : N.FG) : IsNormalClosureFG N := by
-  obtain ⟨S, hS, hSfinite⟩ := (Subgroup.fg_iff N).mp hN
-  refine ⟨S, hSfinite, ?_⟩
-  rw [← Subgroup.normalClosure_closure_eq_normalClosure, hS, Subgroup.normalClosure_eq_self]
+protected theorem of_fg [N.Normal] (hN : N.FG) : N.IsNormalClosureFG := by
+  rw [fg_iff] at hN
+  obtain ⟨S, hS, hSfinite⟩ := hN
+  exact ⟨S, hSfinite, normalClosure_eq_of_closure_eq hS⟩
 
 /-- Being the normal closure of a finite set is invariant under surjective homomorphism. -/
 @[to_additive /-- Being the additive normal closure of a finite set is invariant under
 surjective homomorphism. -/]
-protected theorem map (hN : IsNormalClosureFG N)
-    {f : G →* H} (hf : Function.Surjective f) : (N.map f).IsNormalClosureFG := by
+protected theorem map (hN : N.IsNormalClosureFG)
+{f : G →* H} (hf : Function.Surjective f) : (N.map f).IsNormalClosureFG := by
   obtain ⟨S, hSfinite, hSclosure⟩ := hN
   refine ⟨f '' S, hSfinite.image _, ?_⟩
   rw [← hSclosure, Subgroup.map_normalClosure _ _ hf]
