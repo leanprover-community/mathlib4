@@ -14,11 +14,18 @@ In this file we define normal subgroups of group objects in a cartesian monoidal
 a predicate on morphisms. A morphism `φ : H ⟶ G` of group objects is normal if it is mono, a
 monoid morphism and the conjugation map `(g, h) ↦ g * h * g⁻¹` factors through `φ`.
 
+This is applied in the study of group schemes.
+
 ## Main declarations
 
 - `CategoryTheory.IsMonHom.Normal`: The predicate on morphisms to be a normal monoid morphism.
 - `CategoryTheory.IsMonHom.normal_iff_normal_monoidHom`: A monoid morphism `H ⟶ G` that is mono
   is normal if and only if for every `X`, the image of `H(X)` in `G(X)` is a normal subgroup.
+
+## References
+
+- In the context of group schemes:
+  [Görtz, Wedhorn, Algebraic Geometry II, Definition 27.3][goertz-wedhorn-2]
 -/
 
 @[expose] public section
