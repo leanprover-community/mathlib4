@@ -106,7 +106,7 @@ lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing
   has height at most 1. -/
 lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes
     (I : Ideal R) [I.IsPrincipal] (p : Ideal R) (hp : p ∈ I.minimalPrimes) : p.height ≤ 1 := by
-  have := Ideal.minimalPrimes_isPrime hp
+  have := Ideal.IsPrime.of_mem_minimalPrimes hp
   let f := algebraMap R (Localization.AtPrime p)
   have := Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing (I.map f) ?_
   · rwa [← IsLocalization.height_comap p.primeCompl,
@@ -117,7 +117,7 @@ lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes
 theorem Ideal.map_height_le_one_of_mem_minimalPrimes {I p : Ideal R} {x : R}
     (hp : p ∈ (I ⊔ span {x}).minimalPrimes) : (p.map (Ideal.Quotient.mk I)).height ≤ 1 :=
   let f := Ideal.Quotient.mk I
-  have : p.IsPrime := Ideal.minimalPrimes_isPrime hp
+  have : p.IsPrime := Ideal.IsPrime.of_mem_minimalPrimes hp
   have hfp : RingHom.ker f ≤ p :=
     I.mk_ker.trans_le (le_sup_left.trans (Ideal.le_of_mem_minimalPrimes hp))
   height_le_one_of_isPrincipal_of_mem_minimalPrimes ((span {x}).map f) (p.map f)
@@ -139,7 +139,7 @@ theorem Ideal.mem_minimalPrimes_span_of_mem_minimalPrimes_span_insert {q p : Ide
   have hf : Function.Surjective f := Quotient.mk_surjective
   have hI'q : span t ≤ q := span_le.mpr htq
   have hI'p : span t ≤ p := hI'q.trans hqp.le
-  have := minimalPrimes_isPrime hp
+  have := IsPrime.of_mem_minimalPrimes hp
   have : (p.map f).IsPrime := map_isPrime_of_surjective hf (by rwa [mk_ker])
   suffices h : (p.map f).height ≤ 1 by
     have h_lt : q.map f < p.map f := (map_mono hqp.le).lt_of_not_ge fun e ↦ hqp.not_ge <| by
@@ -179,7 +179,7 @@ nonrec lemma Ideal.height_le_spanRank_toENat_of_mem_minimalPrimes
   induction hn : s.card using Nat.strong_induction_on generalizing R with
   | h n H =>
     replace hn : s.card ≤ n := hn.le
-    have := Ideal.minimalPrimes_isPrime hp
+    have := Ideal.IsPrime.of_mem_minimalPrimes hp
     cases n with
     | zero =>
       rw [ENat.coe_zero, nonpos_iff_eq_zero, height_eq_primeHeight p,

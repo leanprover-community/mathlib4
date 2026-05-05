@@ -39,7 +39,7 @@ noncomputable def Ideal.primeHeight [hI : I.IsPrime] : ℕ∞ :=
 
 /-- The height of an ideal is defined as the infimum of the heights of its minimal prime ideals. -/
 noncomputable def Ideal.height : ℕ∞ :=
-  ⨅ J ∈ I.minimalPrimes, @Ideal.primeHeight _ _ J (minimalPrimes_isPrime (I := I) ‹_›)
+  ⨅ J ∈ I.minimalPrimes, @Ideal.primeHeight _ _ J (IsPrime.of_mem_minimalPrimes (I := I) ‹_›)
 
 /-- For a prime ideal, its height equals its prime height. -/
 lemma Ideal.height_eq_primeHeight [I.IsPrime] : I.height = I.primeHeight := by
@@ -116,9 +116,9 @@ lemma Ideal.primeHeight_strict_mono {I J : Ideal R} [I.IsPrime] [J.IsPrime]
 theorem Ideal.height_mono {I J : Ideal R} (h : I ≤ J) : I.height ≤ J.height := by
   simp only [height]
   refine le_iInf₂ (fun p hp ↦ ?_)
-  have := Ideal.minimalPrimes_isPrime hp
+  have := Ideal.IsPrime.of_mem_minimalPrimes hp
   obtain ⟨q, hq, e⟩ := Ideal.exists_minimalPrimes_le (h.trans (Ideal.le_of_mem_minimalPrimes hp))
-  haveI := Ideal.minimalPrimes_isPrime hq
+  haveI := Ideal.IsPrime.of_mem_minimalPrimes hq
   exact (iInf₂_le q hq).trans (Ideal.primeHeight_mono e)
 
 @[gcongr]
@@ -130,7 +130,7 @@ lemma Ideal.height_strict_mono_of_is_prime {I J : Ideal R} [I.IsPrime]
     exact I.primeHeight_lt_top
   · rw [← ENat.add_one_le_iff I.primeHeight_ne_top, Ideal.height]
     refine le_iInf₂ (fun K hK ↦ ?_)
-    have := Ideal.minimalPrimes_isPrime hK
+    have := Ideal.IsPrime.of_mem_minimalPrimes hK
     have : I < K := lt_of_lt_of_le h (Ideal.le_of_mem_minimalPrimes hK)
     exact Ideal.primeHeight_add_one_le_of_lt this
 
@@ -146,7 +146,7 @@ lemma Ideal.height_le_ringKrullDim_of_ne_top {I : Ideal R} (h : I ≠ ⊤) :
     I.height ≤ ringKrullDim R := by
   rw [Ideal.height]
   obtain ⟨P, hP⟩ : Nonempty (I.minimalPrimes) := Ideal.nonempty_minimalPrimes h
-  have := Ideal.minimalPrimes_isPrime hP
+  have := Ideal.IsPrime.of_mem_minimalPrimes hP
   refine le_trans ?_ (Ideal.primeHeight_le_ringKrullDim (I := P))
   simpa using iInf₂_le _ hP
 
@@ -184,7 +184,7 @@ lemma Ideal.mem_minimalPrimes_of_height_eq {I J : Ideal R} (e : I ≤ J) [J.IsPr
   obtain ⟨p, h₁, h₂⟩ := Ideal.exists_minimalPrimes_le e
   convert h₁
   refine (eq_of_le_of_not_lt h₂ fun h₃ ↦ ?_).symm
-  have := Ideal.minimalPrimes_isPrime h₁
+  have := Ideal.IsPrime.of_mem_minimalPrimes h₁
   have := finiteHeight_of_le h₂ IsPrime.ne_top'
   exact lt_irrefl _ ((height_strict_mono_of_is_prime h₃).trans_le
     (e'.trans <| height_mono (Ideal.le_of_mem_minimalPrimes h₁)))
@@ -207,7 +207,7 @@ lemma Ideal.height_bot [Nontrivial R] : (⊥ : Ideal R).height = 0 := by
   obtain ⟨p, hp⟩ := Ideal.nonempty_minimalPrimes (R := R) (I := ⊥) top_ne_bot.symm
   simp only [Ideal.height, ENat.iInf_eq_zero]
   refine ⟨p, hp, ?_⟩
-  have := Ideal.minimalPrimes_isPrime hp
+  have := Ideal.IsPrime.of_mem_minimalPrimes hp
   rw [primeHeight_eq_zero_iff.mpr hp]
 
 /-- In a trivial commutative ring, the height of any ideal is `∞`. -/
@@ -288,7 +288,7 @@ lemma RingEquiv.height_comap {S : Type*} [CommRing S] (e : R ≃+* S) (I : Ideal
     rw [← Ideal.comap_coe,
       Ideal.comap_minimalPrimes_eq_of_surjective (f := (↑e : R →+* S)) e.surjective]
     exact e.idealComapOrderIso.injective.mem_set_image.symm
-  · have : J.IsPrime := Ideal.minimalPrimes_isPrime h
+  · have : J.IsPrime := Ideal.IsPrime.of_mem_minimalPrimes h
     simp only [EquivLike.coe_coe, RingEquiv.idealComapOrderIso_apply,
       ← Ideal.height_eq_primeHeight, RingEquiv.height_comap_of_isPrime]
 
@@ -379,7 +379,7 @@ lemma exists_spanRank_le_and_le_height_of_le_height [IsNoetherianRing R] (I : Id
       refine (Ideal.subset_union_prime ⊥ ⊥ ?_).not.mpr ?_
       · rintro K hK - -
         rw [Set.Finite.mem_toFinset] at hK
-        exact Ideal.minimalPrimes_isPrime hK.1
+        exact Ideal.IsPrime.of_mem_minimalPrimes hK.1
       · push Not
         intro K hK e
         have := hr.trans (Ideal.height_mono e)
@@ -395,7 +395,7 @@ lemma exists_spanRank_le_and_le_height_of_le_height [IsNoetherianRing R] (I : Id
       push_cast
       exact add_le_add h₂ ((Submodule.spanRank_span_le_card _).trans (by simp))
     · refine le_iInf₂ (fun p hp ↦ ?_)
-      have := Ideal.minimalPrimes_isPrime hp
+      have := Ideal.IsPrime.of_mem_minimalPrimes hp
       by_cases h : p.height = ⊤
       · rw [← p.height_eq_primeHeight, h]
         exact le_top
