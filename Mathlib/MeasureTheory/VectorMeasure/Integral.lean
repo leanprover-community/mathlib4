@@ -142,7 +142,6 @@ notation3 "∫ᵛ "(...)", "r:60:(scoped f => f)" ∂•"μ:70 => integral μ r 
 
 variable {μ : VectorMeasure X F} {B : E →L[ℝ] F →L[ℝ] G}
 
-@[integral_simps]
 theorem integral_fun_add {f g : X → E} (hf : μ.Integrable f B) (hg : μ.Integrable g B) :
     ∫ᵛ x, f x + g x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] + ∫ᵛ x, g x ∂[B; μ] := by
   by_cases hG : CompleteSpace G
@@ -150,7 +149,6 @@ theorem integral_fun_add {f g : X → E} (hf : μ.Integrable f B) (hg : μ.Integ
     exact setToFun_add (dominatedFinMeasAdditive_cbmApplyMeasure μ B) hf hg
   · simp [integral, hG]
 
-@[integral_simps]
 theorem integral_add {f g : X → E} (hf : μ.Integrable f B) (hg : μ.Integrable g B) :
     ∫ᵛ x, (f + g) x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] + ∫ᵛ x, g x ∂[B; μ] := integral_fun_add hf hg
 
@@ -168,7 +166,6 @@ variable (μ B) in
 theorem integral_neg (f : X → E) :
     ∫ᵛ x, (-f) x ∂[B; μ] = -∫ᵛ x, f x ∂[B; μ] := integral_fun_neg μ B f
 
-@[integral_simps]
 theorem integral_fun_sub {f g : X → E} (hf : μ.Integrable f B) (hg : μ.Integrable g B) :
     ∫ᵛ x, f x - g x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] - ∫ᵛ x, g x ∂[B; μ] := by
   by_cases hG : CompleteSpace G
@@ -176,7 +173,6 @@ theorem integral_fun_sub {f g : X → E} (hf : μ.Integrable f B) (hg : μ.Integ
     exact setToFun_sub (dominatedFinMeasAdditive_cbmApplyMeasure μ B) hf hg
   · simp [integral, hG]
 
-@[integral_simps]
 theorem integral_sub {f g : X → E} (hf : μ.Integrable f B) (hg : μ.Integrable g B) :
     ∫ᵛ x, (f - g) x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] - ∫ᵛ x, g x ∂[B; μ] := integral_fun_sub hf hg
 
