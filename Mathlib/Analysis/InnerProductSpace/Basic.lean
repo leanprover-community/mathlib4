@@ -878,12 +878,16 @@ theorem norm_add_eq_iff_real {x y : F} : ‖x + y‖ = ‖x‖ + ‖y‖ ↔ ‖
 
 end Norm
 
+section Induced
+
+variable {G : Type*} [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E] [AddCommGroup G]
+    [Module 𝕜 G]
+
 /-- A linear map from a `Module` to an `InnerProductSpace` induces an `InnerProductSpace`
 structure on the domain using the `SeminormedAddCommGroup.induced` norm.
 
 See note [reducible non-instances]. -/
-abbrev InnerProductSpace.induced {F G : Type*} [AddCommGroup G] [Module 𝕜 G] [FunLike F G E]
-    [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E] [LinearMapClass F 𝕜 G E] (f : F) :
+abbrev InnerProductSpace.induced {F : Type*} [FunLike F G E] [LinearMapClass F 𝕜 G E] (f : F) :
     letI := SeminormedAddCommGroup.induced G E f
     InnerProductSpace 𝕜 G :=
   letI := SeminormedAddCommGroup.induced G E f
@@ -893,6 +897,13 @@ abbrev InnerProductSpace.induced {F G : Type*} [AddCommGroup G] [Module 𝕜 G] 
     smul_left x y r := by rw [map_smul, inner_smul_left]
     norm_sq_eq_re_inner x := norm_sq_eq_re_inner (f x)
     conj_inner_symm x y := inner_conj_symm (f x) (f y) }
+
+@[simp]
+theorem inner_eq (g₁ g₂ : G) (f : G →ₗ[𝕜] E) :
+    letI := InnerProductSpace.induced f
+    inner 𝕜 g₁ g₂ = inner 𝕜 (f g₁) (f g₂) := rfl
+
+end Induced
 
 section RCLike
 
