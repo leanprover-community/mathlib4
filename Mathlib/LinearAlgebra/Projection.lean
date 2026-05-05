@@ -236,8 +236,14 @@ alias IsCompl.projection_apply_eq_zero_iff := projection_apply_eq_zero_iff
 alias ⟨_, projectionOnto_apply_of_mem_right⟩ :=
   projectionOnto_apply_eq_zero_iff
 
+@[deprecated (since := "2026-05-05")] alias linearProjOfIsCompl_apply_of_mem_right :=
+  projectionOnto_apply_of_mem_right
+
 alias ⟨_, projection_apply_of_mem_right⟩ :=
   projection_apply_eq_zero_iff
+
+@[deprecated (since := "2026-05-05")] alias IsCompl.projection_apply_of_mem_right :=
+  projection_apply_of_mem_right
 
 @[deprecated projectionOnto_apply_of_mem_right (since := "2026-04-27")]
 theorem linearProjOfIsCompl_apply_right' (h : IsCompl p q) (x : E) (hx : x ∈ q) :
@@ -319,15 +325,21 @@ theorem projection_add_projection_eq_id (hpq : IsCompl p q) :
   LinearMap.ext (projection_add_projection_eq_self hpq)
 
 @[deprecated (since := "2026-05-04")]
-alias IsCompl.projection_eq_self_sub_projection := projection_add_projection_eq_id
+alias IsCompl.projection_add_projection_eq_id := projection_add_projection_eq_id
 
 lemma projection_eq_self_sub_projection (hpq : IsCompl p q) (x : E) :
     q.projection p hpq.symm x = x - p.projection q hpq x := by
   rw [eq_sub_iff_add_eq, projection_add_projection_eq_self]
 
+@[deprecated (since := "2026-05-05")] alias IsCompl.projection_eq_self_sub_projection :=
+  projection_eq_self_sub_projection
+
 lemma projection_eq_id_sub_projection (hpq : IsCompl p q) :
     q.projection p hpq.symm = .id - p.projection q hpq :=
   LinearMap.ext (projection_eq_self_sub_projection hpq)
+
+@[deprecated (since := "2026-05-05")] alias IsCompl.projection_eq_id_sub_projection :=
+  projection_eq_id_sub_projection
 
 /-- The projection to `p` along `q` of `x` equals `x` if and only if `x ∈ p`. -/
 @[simp] lemma projection_eq_self_iff (hpq : IsCompl p q) (x : E) :
