@@ -101,7 +101,7 @@ theorem coe_mks {f : A → B} (h₁ h₂ h₃ h₄ h₅ h₆) :
 theorem coe_toAlgHom_mk {f : A →ₐ[R] B} (h) : ((⟨f, h⟩ : 𝒜 →ₐᵍ[R] ℬ) : A →ₐ[R] B) = f := by
   dsimp only
 
-@[deprecated coe_toAlgHom_mk (since := "2026-05-05")]]
+@[deprecated coe_toAlgHom_mk (since := "2026-05-05")]
 theorem coe_algHom_mk {f : A →ₐ[R] B} (h) : ((⟨f, h⟩ : 𝒜 →ₐᵍ[R] ℬ) : A →ₐ[R] B) = f := by
   dsimp only
 
@@ -116,7 +116,7 @@ theorem coe_fn_inj {f₁ f₂ : 𝒜 →ₐᵍ[R] ℬ} : (f₁ : A → B) = f₂
 theorem coe_toAlgHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →ₐ[R] B) :=
   fun _ _ h ↦ coe_fn_injective congr($h)
 
-@[deprecated coe_toAlgHom_injective (since := "2026-05-05")]]
+@[deprecated coe_toAlgHom_injective (since := "2026-05-05")]
 theorem coe_algHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →ₐ[R] B) :=
   fun _ _ h ↦ coe_fn_injective congr($h)
 
