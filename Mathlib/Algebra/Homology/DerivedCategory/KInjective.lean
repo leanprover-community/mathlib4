@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.SmallShiftedHom
 public import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
+public import Mathlib.Algebra.Homology.Embedding.ExtendHomotopy
 
 /-!
 # Morphisms to K-injective complexes in the derived category
@@ -16,6 +17,10 @@ then for any `K : HomotopyCategory C (.up ℤ)`, the functor `DerivedCategory.Qh
 induces a bijection from the type of morphisms `K ⟶ (HomotopyCategory.quotient _ _).obj L)`
 (i.e. homotopy classes of morphisms of cochain complexes) to the type of
 morphisms in the derived category.
+We obtain that a morphism between `K`-injective cochain complexes is a quasi-isomorphism
+iff it is a homotopy equivalence. In particular, a morphism between cochain complexes
+indexed by `ℕ` which consist of injective objects is a quasi-isomorphism iff
+it is a homotopy equivalence.
 
 -/
 
@@ -31,12 +36,29 @@ open CategoryTheory Localization DerivedCategory
 
 namespace CochainComplex
 
-lemma IsKInjective.Qh_map_bijective [HasDerivedCategory C]
+namespace IsKInjective
+
+lemma Qh_map_bijective [HasDerivedCategory C]
     (K : HomotopyCategory C (ComplexShape.up ℤ))
     (L : CochainComplex C ℤ) [L.IsKInjective] :
     Function.Bijective (DerivedCategory.Qh.map :
       (K ⟶ (HomotopyCategory.quotient _ _).obj L) → _) :=
   (CochainComplex.IsKInjective.rightOrthogonal L).map_bijective_of_isTriangulated _ _
+
+open HomologicalComplex in
+attribute [local instance] HasDerivedCategory.standard in
+lemma quasiIso_iff {K L : CochainComplex C ℤ} [K.IsKInjective] [L.IsKInjective] (f : K ⟶ L) :
+    QuasiIso f ↔ homotopyEquivalences C (.up ℤ) f := by
+  refine ⟨fun _ ↦ ?_, fun hf ↦ homotopyEquivalences_le_quasiIso _ _ _ hf⟩
+  rw [← HomotopyCategory.inverseImage_quotient_isomorphisms,
+    MorphismProperty.inverseImage_iff, MorphismProperty.isomorphisms.iff]
+  obtain ⟨g, hg⟩ := (Qh_map_bijective _ _).2
+    ((quotientCompQhIso C).hom.app L ≫ inv (Q.map f) ≫ (quotientCompQhIso C).inv.app K)
+  refine ⟨g, (Qh_map_bijective _ _).1 ?_, (Qh_map_bijective _ _).1 ?_⟩
+  · simp [hg]
+  · simp [hg, ← quotientCompQhIso_inv_naturality]
+
+end IsKInjective
 
 namespace HomComplex.CohomologyClass
 
@@ -67,5 +89,15 @@ noncomputable def equivOfIsKInjective [L.IsKInjective] :
   Equiv.ofBijective _ (bijective_toSmallShiftedHom_of_isKInjective _ _ _)
 
 end HomComplex.CohomologyClass
+
+open HomologicalComplex
+
+lemma quasiIso_iff_of_injective {K L : CochainComplex C ℕ}
+    [∀ n, Injective (K.X n)] [∀ n, Injective (L.X n)]
+    (f : K ⟶ L) :
+    QuasiIso f ↔ homotopyEquivalences C (.up ℕ) f := by
+  rw [← quasiIso_extendMap_iff _ ComplexShape.embeddingUpNat,
+    CochainComplex.IsKInjective.quasiIso_iff,
+    homotopyEquivalences_extendMap_iff]
 
 end CochainComplex

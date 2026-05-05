@@ -214,3 +214,15 @@ instance : (e.extendHomotopyFunctor C).Faithful where
       (.ofExtend (HomotopyCategory.homotopyOfEq _ _ hφ))
 
 end ComplexShape.Embedding
+
+@[simp]
+lemma HomologicalComplex.homotopyEquivalences_extendMap_iff
+    {C : Type*} [Category* C] [HasZeroObject C] [Preadditive C]
+    {K L : HomologicalComplex C c} (f : K ⟶ L)
+    (e : ComplexShape.Embedding c c') [e.IsRelIff] :
+    homotopyEquivalences C c' (extendMap f e) ↔
+      homotopyEquivalences C c f := by
+  simp only [← HomotopyCategory.inverseImage_quotient_isomorphisms,
+    MorphismProperty.inverseImage_iff, MorphismProperty.isomorphisms.iff,
+    ← isIso_iff_of_reflects_iso _ (e.extendHomotopyFunctor C),
+    dsimp% NatIso.isIso_map_iff (e.extendHomotopyFunctorFactors C) f]
