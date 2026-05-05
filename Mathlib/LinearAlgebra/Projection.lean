@@ -383,9 +383,6 @@ theorem surjective_comp_projectionOnto (h : IsCompl p q) [Module R M] :
     Function.Surjective (comp (p.projectionOnto q h) : (M →ₗ[R] E) → _) :=
   fun f ↦ ⟨p.subtype ∘ₗ f, by ext; simp⟩
 
-@[deprecated (since := "2026-05-04")]
-alias surjective_comp_linearProjOfIsCompl := surjective_comp_projectionOnto
-
 theorem surjective_comp_subtype_of_isComplemented (h : IsComplemented p) [Module R M] :
     Function.Surjective fun f : E →ₗ[R] M ↦ f ∘ₗ p.subtype :=
   have ⟨q, h⟩ := h; fun f ↦ ⟨f ∘ₗ p.projectionOnto q h, by ext; simp⟩
@@ -808,6 +805,8 @@ namespace LinearMap
 @[deprecated (since := "2026-05-04")] alias linearProjOfIsCompl_of_proj := projectionOnto_of_proj
 @[deprecated (since := "2026-05-04")] alias IsIdempotentElem.eq_isCompl_projection :=
   IsIdempotentElem.eq_projection
+@[deprecated (since := "2026-05-04")] alias surjective_comp_linearProjOfIsCompl :=
+  surjective_comp_projectionOnto
 @[deprecated (since := "2026-05-04")] alias isIdempotentElem_iff_eq_isCompl_projection_range_ker :=
   isIdempotentElem_iff_eq_projection_range_ker
 
