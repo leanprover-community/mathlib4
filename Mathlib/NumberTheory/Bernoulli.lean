@@ -53,7 +53,7 @@ for positive Bernoulli numbers, which we call `bernoulli'`. The negative Bernoul
 then defined as `bernoulli := (-1)^n * bernoulli'`.
 
 The proof of von Staudt-Clausen's theorem follows Rado's JLMS 1934 paper
-"A New Proof of a Theorem of v. Staudt"
+"A New Proof of a Theorem of v. Staudt".
 
 ## Main theorems
 
