@@ -356,9 +356,10 @@ theorem center_toNonUnitalSubsemiring :
   rfl
 
 /-- The center is commutative and associative. -/
-instance center.instNonUnitalCommRing : NonUnitalCommRing (center R) :=
-  { NonUnitalSubsemiring.center.instNonUnitalCommSemiring R,
-    (inferInstance : NonUnitalNonAssocRing (center R)) with }
+instance center.instNonUnitalCommRing : NonUnitalCommRing (center R) where
+  __ : NonUnitalCommSemiring (center R) :=
+    inferInstanceAs <| NonUnitalCommSemiring (NonUnitalSubsemiring.center R)
+  __ := (inferInstance : NonUnitalNonAssocRing (center R))
 
 variable {R}
 
@@ -376,7 +377,6 @@ end NonUnitalNonAssocRing
 section NonUnitalRing
 variable [NonUnitalRing R]
 
-set_option backward.isDefEq.respectTransparency false in
 -- no instance diamond, unlike the unital version
 example : (center.instNonUnitalCommRing _).toNonUnitalRing =
       NonUnitalSubringClass.toNonUnitalRing (center R) := by
@@ -645,7 +645,7 @@ theorem mem_prod {s : NonUnitalSubring R} {t : NonUnitalSubring S} {p : R × S} 
     p ∈ s.prod t ↔ p.1 ∈ s ∧ p.2 ∈ t :=
   Iff.rfl
 
-@[mono]
+@[gcongr, mono]
 theorem prod_mono ⦃s₁ s₂ : NonUnitalSubring R⦄ (hs : s₁ ≤ s₂) ⦃t₁ t₂ : NonUnitalSubring S⦄
     (ht : t₁ ≤ t₂) : s₁.prod t₁ ≤ s₂.prod t₂ :=
   Set.prod_mono hs ht

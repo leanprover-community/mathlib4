@@ -15,7 +15,7 @@ This file is meant to contain results about the ends of (locally finite connecte
 
 -/
 
-@[expose] public section
+public section
 
 
 variable {V : Type} (G : SimpleGraph V)

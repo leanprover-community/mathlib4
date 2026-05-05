@@ -154,9 +154,6 @@ it. -/
 theorem Pairwise.insertionSort_eq {l : List α} : Pairwise r l → insertionSort r l = l := by
   induction l <;> grind [cases List]
 
-@[deprecated (since := "2025-10-11")]
-alias Sorted.insertionSort_eq := Pairwise.insertionSort_eq
-
 /-- For a reflexive relation, insert then erasing is the identity. -/
 theorem erase_orderedInsert [DecidableEq α] [Std.Refl r] (x : α) (xs : List α) :
     (xs.orderedInsert r x).erase x = xs := by
@@ -219,18 +216,12 @@ theorem Pairwise.orderedInsert (a : α) : ∀ l, Pairwise r l → Pairwise r (or
       · exact (total_of r _ _).resolve_left h'
       · exact rel_of_pairwise_cons h bm
 
-@[deprecated (since := "2025-10-11")]
-alias Sorted.orderedInsert := Pairwise.orderedInsert
-
 variable (r)
 
 /-- The list `List.insertionSort r l` is `List.Pairwise` with respect to `r`. -/
 theorem pairwise_insertionSort : ∀ l, Pairwise r (insertionSort r l)
   | [] => Pairwise.nil
   | a :: l => (pairwise_insertionSort l).orderedInsert a _
-
-@[deprecated (since := "2025-10-11")]
-alias sorted_insertionSort := pairwise_insertionSort
 
 end TotalAndTransitive
 
@@ -317,16 +308,10 @@ theorem Perm.eq_of_pairwise' {l₁ l₂ : List α} :
     Pairwise r l₁ → Pairwise r l₂ → (hl : l₁ ~ l₂) → l₁ = l₂ :=
   eq_of_pairwise (fun _ _ _ _ => antisymm)
 
-@[deprecated (since := "2025-10-11")]
-alias eq_of_perm_of_sorted := Perm.eq_of_pairwise
-
 theorem sublist_of_subperm_of_pairwise {l₁ l₂ : List α} (hp : l₁ <+~ l₂)
     (hs₁ : l₁.Pairwise r) (hs₂ : l₂.Pairwise r) : l₁ <+ l₂ := by
   let ⟨_, h, h'⟩ := hp
   exact Sublist.trans (h.eq_of_pairwise' (hs₂.sublist h') hs₁ ▸ Sublist.refl _) h'
-
-@[deprecated (since := "2025-10-11")]
-alias sublist_of_subperm_of_sorted := sublist_of_subperm_of_pairwise
 
 theorem Subset.antisymm_of_pairwise [Std.Irrefl r] {l₁ l₂ : List α}
     (h₁ : Pairwise r l₁) (h₂ : Pairwise r l₂) (hl₁₂ : l₁ ⊆ l₂) (hl₁₂' : l₂ ⊆ l₁) : l₁ = l₂ :=
@@ -336,9 +321,6 @@ theorem Subset.antisymm_of_pairwise [Std.Irrefl r] {l₁ l₂ : List α}
 theorem Pairwise.eq_of_mem_iff [Std.Irrefl r] {l₁ l₂ : List α}
     (h₁ : Pairwise r l₁) (h₂ : Pairwise r l₂) (h : ∀ a : α, a ∈ l₁ ↔ a ∈ l₂) : l₁ = l₂ :=
   Subset.antisymm_of_pairwise h₁ h₂ (by grind) (by grind)
-
-@[deprecated (since := "2025-10-11")]
-alias Sorted.eq_of_mem_iff := Pairwise.eq_of_mem_iff
 
 end Antisymm
 
@@ -589,11 +571,6 @@ protected alias ⟨SortedGE.antitone, _root_.Antitone.sortedGE_ofFn⟩ := sorted
 protected alias ⟨SortedLT.strictMono, _root_.StrictMono.sortedLT_ofFn⟩ := sortedLT_ofFn_iff
 /-- The list obtained from a strictly antitone tuple is sorted. -/
 protected alias ⟨SortedGT.strictAnti, _root_.StrictAnti.sortedGT_ofFn⟩ := sortedGT_ofFn_iff
-
-@[deprecated (since := "2025-10-13")]
-alias _root_.Antitone.ofFn_sorted := Antitone.sortedGE_ofFn
-@[deprecated (since := "2025-10-13")]
-alias _root_.Monotone.ofFn_sorted := Monotone.sortedLE_ofFn
 
 end OfFn
 
