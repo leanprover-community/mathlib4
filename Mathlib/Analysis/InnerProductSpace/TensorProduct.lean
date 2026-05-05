@@ -8,6 +8,8 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 public import Mathlib.RingTheory.TensorProduct.Finite
+import Mathlib.Analysis.InnerProductSpace.GramMatrix
+import Mathlib.Analysis.InnerProductSpace.Positive
 
 /-!
 
@@ -413,6 +415,53 @@ noncomputable def assocIsometry : E ⊗[𝕜] F ⊗[𝕜] G ≃ₗᵢ[𝕜] E �
     ‖TensorProduct.assoc 𝕜 E F G x‖ₑ = ‖x‖ₑ := assocIsometry 𝕜 E F G |>.toLinearIsometry.enorm_map x
 
 end isometry
+
+lemma exists_repr (x : E ⊗[𝕜] F) :
+    ∃ (n : ℕ) (e : Fin n → E) (g : Fin n → F),
+      x = ∑ i, e i ⊗ₜ[𝕜] g i := by
+  induction x using TensorProduct.induction_on with
+  | zero =>
+      exact ⟨0, Fin.elim0, Fin.elim0, by simp⟩
+  | tmul m n =>
+      exact ⟨1, fun _ => m, fun _ => n, by simp⟩
+  | add x y hx hy =>
+      obtain ⟨nx, ex, gx, hx ⟩ := hx
+      obtain ⟨ny, ey, gy, hy ⟩ := hy
+      refine ⟨nx + ny, Fin.append ex ey, Fin.append gx gy, ?_⟩
+      rw [hx, hy, Fin.sum_univ_add]
+      simp [Fin.append]
+
+noncomputable def mapL_id (f : E →L[𝕜] F) : (E ⊗[𝕜] G) →L[𝕜] (F ⊗[𝕜] G) :=
+  (TensorProduct.map f.toLinearMap LinearMap.id).mkContinuous ‖f‖ (fun x => by
+    obtain ⟨n, e, g, hx ⟩ := exists_repr x
+    obtain ⟨m, A, hA⟩  := Matrix.posSemidef_iff_eq_sum_vecMulVec.mp (Matrix.posSemidef_of_mapL e f)
+    apply (sq_le_sq₀ (norm_nonneg _) (by positivity)).mp
+    simp_rw [sub_eq_iff_eq_add', ← sub_eq_iff_eq_add, ← Matrix.ext_iff, Matrix.sub_apply,
+      Matrix.smul_apply, Matrix.gram_apply, Function.comp_apply] at hA
+    simp_rw [mul_pow, hx, map_sum, map_tmul, ContinuousLinearMap.coe_coe, LinearMap.id_coe,
+      id_eq, ← inner_self_eq_norm_sq (𝕜:=𝕜), inner_sum, sum_inner, inner_tmul, ← hA,
+      sub_mul, Finset.sum_sub_distrib, map_sub, ← RCLike.smul_re, Finset.smul_sum,
+      smul_mul_assoc, sub_le_self_iff, Matrix.sum_apply, mul_comm, Finset.mul_sum]
+    rw [Finset.sum_comm_cycle]
+    simp_rw [Matrix.vecMulVec, Matrix.of_apply, Pi.star_apply, ← mul_left_comm, ← mul_assoc]
+    simp_rw (config := { singlePass := true }) [← starRingEnd_self_apply (A _ _)]
+    simp_rw [← inner_smul_left, mul_comm (inner 𝕜 _ _) _, ← starRingEnd_apply, ← inner_smul_right,
+      starRingEnd_self_apply, ← sum_inner, ← inner_sum, map_sum,
+      ← InnerProductSpace.norm_sq_eq_re_inner]
+    exact Finset.sum_nonneg (fun x _ => by simp)
+  )
+
+noncomputable def map_idL (g : G →L[𝕜] H) : (E ⊗[𝕜] G) →L[𝕜] (E ⊗[𝕜] H) :=
+  (commIsometry 𝕜 H E) ∘L (mapL_id g) ∘L
+    (commIsometry 𝕜 E G).toContinuousLinearEquiv.toContinuousLinearMap
+
+noncomputable def mapL (f : E →L[𝕜] F) (g : G →L[𝕜] H) : (E ⊗[𝕜] G) →L[𝕜] (F ⊗[𝕜] H) :=
+  mapL_id f ∘L map_idL g
+
+@[simp]
+theorem mapL_tmul (f : E →L[𝕜] F) (g : G →L[𝕜] H) (m : E) (n : G) :
+    mapL f g (m ⊗ₜ n) = f m ⊗ₜ g n :=
+  rfl
 
 -- TODO: upgrade `map` to a `ContinuousLinearMap`
 @[simp] theorem adjoint_map [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F] [FiniteDimensional 𝕜 G]
