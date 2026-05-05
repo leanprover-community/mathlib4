@@ -149,6 +149,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("sup", ["Inf"]),
   ("inf₂", ["Sup₂"]),
   ("sup₂", ["Inf₂"]),
+  ("sinf", ["SSup"]),
+  ("ssup", ["SInf"]),
   ("min", ["Max"]),
   ("max", ["Min"]),
   ("untop", ["Unbot"]),
@@ -187,6 +189,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("coheyting", ["Heyting"]),
   ("frame", ["Coframe"]),
   ("coframe", ["Frame"]),
+  ("epigraph", ["Hypograph"]),
+  ("hypograph", ["Epigraph"]),
 
   ("epi", ["Mono"]),
   /- `mono` can also refer to monotone, so we don't translate it. -/
@@ -231,15 +235,23 @@ def nameDict : Std.HashMap String (List String) := .ofList [
 def abbreviationDict : Std.HashMap String String := .ofList [
   ("wellFoundedLT", "WellFoundedGT"),
   ("wellFoundedGT", "WellFoundedLT"),
-  ("succColimit", "SuccLimit"),
-  ("predColimit", "PredLimit"),
-  ("codirectedOrder", "DirectedOrder"),
-  ("directedOrder", "CodirectedOrder"),
   ("nhdsLT", "NhdsGT"),
   ("nhdsGT", "NhdsLT"),
   ("nhdsLE", "NhdsGE"),
   ("nhdsGE", "NhdsLE"),
-  ("neTop", "NeBot")
+  ("relIsoLT", "RelIsoGT"),
+  ("relIsoGT", "RelIsoLT"),
+  ("succColimit", "SuccLimit"),
+  ("predColimit", "PredLimit"),
+  ("codirectedOrder", "DirectedOrder"),
+  ("directedOrder", "CodirectedOrder"),
+  ("galoisInsertion", "GaloisCoinsertion"),
+  ("galoisCoinsertion", "GaloisInsertion"),
+  ("leftOrdContinuous", "RightOrdContinuous"),
+  ("rightOrdContinuous", "LeftOrdContinuous"),
+
+  ("neTop", "NeBot"),
+  ("decidableSucc", "DecidablePred"),
 ]
 
 /-- The bundle of environment extensions for `to_dual` -/
@@ -267,7 +279,8 @@ initialize registerBuiltinAttribute {
     name := `to_dual
     descr := "Transport to dual"
     add := fun src stx kind ↦ discard do
-      addTranslationAttr data src (← elabTranslationAttr src stx) kind
+      profileitM Exception "to_dual" (← getOptions) do
+        addTranslationAttr data src (← elabTranslationAttr src stx) kind
     applicationTime := .afterCompilation
   }
 

@@ -58,7 +58,7 @@ open scoped Classical in
   maximal ideal `p` of `A` are the same, which we define as `Ideal.ramificationIdxIn`. -/
 noncomputable def ramificationIdxIn {A : Type*} [CommRing A] (p : Ideal A)
     (B : Type*) [CommRing B] [Algebra A B] : ℕ :=
-  if h : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p then p.ramificationIdx (algebraMap A B) h.choose
+  if h : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p then p.ramificationIdx h.choose
   else 0
 
 open scoped Classical in
@@ -144,7 +144,7 @@ alias isPretransitive_of_isGalois := isPretransitive_of_isGaloisGroup
 include G in
 /-- All the `Ideal.ramificationIdx` over a fixed maximal ideal are the same. -/
 theorem ramificationIdx_eq_of_isGaloisGroup :
-    ramificationIdx (algebraMap A B) p P = ramificationIdx (algebraMap A B) p Q := by
+    ramificationIdx p P = ramificationIdx p Q := by
   rcases exists_smul_eq_of_isGaloisGroup p P Q G with ⟨σ, rfl⟩
   exact (ramificationIdx_map_eq p P (MulSemiringAction.toAlgEquiv A B σ)).symm
 
@@ -164,7 +164,7 @@ alias inertiaDeg_eq_of_isGalois := inertiaDeg_eq_of_isGaloisGroup
 include G in
 /-- The `ramificationIdxIn` is equal to any ramification index over the same ideal. -/
 theorem ramificationIdxIn_eq_ramificationIdx :
-    ramificationIdxIn p B = ramificationIdx (algebraMap A B) p P := by
+    ramificationIdxIn p B = ramificationIdx p P := by
   have h : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p := ⟨P, hPp, hp⟩
   obtain ⟨_, _⟩ := h.choose_spec
   rw [ramificationIdxIn, dif_pos h]
@@ -250,11 +250,12 @@ theorem ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn :
   let K := FractionRing A
   let L := FractionRing B
   let _ := FractionRing.mulSemiringAction_of_isGaloisGroup G A B
-  rw [← smul_eq_mul, ← coe_primesOverFinset hpb B, Set.ncard_coe_finset, ← Finset.sum_const]
+  rw [← smul_eq_mul, ← IsDedekindDomain.coe_primesOverFinset hpb B, Set.ncard_coe_finset,
+    ← Finset.sum_const]
   rw [(IsGaloisGroup.toFractionRing G A B).card_eq_finrank, ← sum_ramification_inertia B K L hpb]
   apply Finset.sum_congr rfl
   intro P hp
-  rw [← Finset.mem_coe, coe_primesOverFinset hpb B] at hp
+  rw [← Finset.mem_coe, IsDedekindDomain.coe_primesOverFinset hpb B] at hp
   obtain ⟨_, _⟩ := hp
   rw [ramificationIdxIn_eq_ramificationIdx p P G, inertiaDegIn_eq_inertiaDeg p P G]
 
@@ -335,7 +336,7 @@ lemma card_inertia_eq_ramificationIdxIn
     Nat.card (P.inertia G) = Ideal.ramificationIdxIn p S := by
   have := (show p.IsPrime from P.over_def p ▸ inferInstance).isMaximal hp
   have H := ncard_primesOver_mul_card_inertia_mul_finrank (G := G) p P
-  refine mul_right_injective₀ (primesOver_ncard_ne_zero p S) ?_
+  refine mul_right_injective₀ (IsDedekindDomain.primesOver_ncard_ne_zero p S) ?_
   refine mul_left_injective₀ (b := Module.finrank (R ⧸ p) (S ⧸ P)) ?_ ?_
   · intro e; simp [e, eq_comm, Nat.card_eq_zero, ‹Finite G›.not_infinite] at H
   dsimp only

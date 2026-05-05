@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Polynomial.Reverse
 public import Mathlib.Algebra.Polynomial.Inductions
 public import Mathlib.RingTheory.Localization.Away.Basic
 
-/-!  # Laurent polynomials
+/-! # Laurent polynomials
 
 We introduce Laurent polynomials over a semiring `R`.  Mathematically, they are expressions of the
 form
@@ -368,6 +368,7 @@ theorem induction_on_mul_T {motive : R[T;T⁻¹] → Prop} (f : R[T;T⁻¹])
 /-- Suppose that `Q` is a statement about Laurent polynomials such that
 * `Q` is true on *ordinary* polynomials;
 * `Q (f * T)` implies `Q f`;
+
 it follow that `Q` is true on all Laurent polynomials. -/
 theorem reduce_to_polynomial_of_mul_T (f : R[T;T⁻¹]) {Q : R[T;T⁻¹] → Prop}
     (Qf : ∀ f : R[X], Q (toLaurent f)) (QT : ∀ f, Q (f * T 1) → Q f) : Q f := by

@@ -43,11 +43,11 @@ We use only the definition of the topological entropy using covers; the simplest
 
 ## Main results
 - `coverEntropy_image_of_comap`/`coverEntropyInf_image_of_comap`: the entropy of `φ '' F` equals
-the entropy of `F` if `X` is endowed with the pullback by `φ` of the uniform structure of `Y`.
+  the entropy of `F` if `X` is endowed with the pullback by `φ` of the uniform structure of `Y`.
 - `coverEntropy_image_le_of_uniformContinuous`/`coverEntropyInf_image_le_of_uniformContinuous`:
-the entropy of `φ '' F` is lower than the entropy of `F` if `φ` is uniformly continuous.
+  the entropy of `φ '' F` is lower than the entropy of `F` if `φ` is uniformly continuous.
 - `coverEntropy_restrict`: the entropy of the restriction of `S` to an invariant set `F` is
-`coverEntropy S F`.
+  `coverEntropy S F`.
 
 ## Tags
 entropy, semiconjugacy
@@ -74,7 +74,7 @@ lemma IsDynCoverOf.preimage (h : Semiconj φ S T) [V.IsSymm] {t : Finset Y}
     ∃ s : Finset X, IsDynCoverOf S F ((map φ φ) ⁻¹' (V ○ V)) n s ∧ s.card ≤ t.card := by
   classical
   rcases isEmpty_or_nonempty X with _ | _
-  · exact ⟨∅, eq_empty_of_isEmpty F ▸ ⟨isDynCoverOf_empty, Finset.card_empty ▸ zero_le t.card⟩⟩
+  · exact ⟨∅, eq_empty_of_isEmpty F ▸ ⟨isDynCoverOf_empty, Finset.card_empty ▸ zero_le⟩⟩
   -- If `t` is a dynamical cover of `φ '' F`, then we want to choose one preimage by `φ` for each
   -- element of `t`. This is complicated by the fact that `t` may not be a subset of `φ '' F`,
   -- and may not even be in the range of `φ`. Hence, we first modify `t` to make it a subset

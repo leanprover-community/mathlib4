@@ -179,29 +179,21 @@ section ConditionallyCompleteLattice
 
 variable [ConditionallyCompleteLattice α] {s t : Set α} {a b : α}
 
-theorem isLUB_csSup (hn : s.Nonempty) (hb : BddAbove s) : IsLUB s (sSup s) :=
+@[to_dual]
+theorem isLUB_csSup (hn : s.Nonempty) (hb : BddAbove s := by bddDefault) : IsLUB s (sSup s) :=
   ConditionallyCompleteLattice.isLUB_csSup _ hn hb
 
-theorem isGLB_csInf (hn : s.Nonempty) (hb : BddBelow s) : IsGLB s (sInf s) :=
-  ConditionallyCompleteLattice.isGLB_csInf _ hn hb
-
+@[to_dual csInf_le]
 theorem le_csSup (h₁ : BddAbove s) (h₂ : a ∈ s) : a ≤ sSup s :=
   (isLUB_csSup (nonempty_of_mem h₂) h₁).1 h₂
 
+@[to_dual le_csInf]
 theorem csSup_le (h₁ : s.Nonempty) (h₂ : ∀ b ∈ s, b ≤ a) : sSup s ≤ a :=
   (isLUB_csSup h₁ ⟨a, h₂⟩).2 h₂
 
-theorem csInf_le (h₁ : BddBelow s) (h₂ : a ∈ s) : sInf s ≤ a :=
-  (isGLB_csInf (nonempty_of_mem h₂) h₁).1 h₂
-
-theorem le_csInf (h₁ : s.Nonempty) (h₂ : ∀ b ∈ s, a ≤ b) : a ≤ sInf s :=
-  (isGLB_csInf h₁ ⟨a, h₂⟩).2 h₂
-
+@[to_dual csInf_le_of_le]
 theorem le_csSup_of_le (hs : BddAbove s) (hb : b ∈ s) (h : a ≤ b) : a ≤ sSup s :=
   le_trans h (le_csSup hs hb)
-
-theorem csInf_le_of_le (hs : BddBelow s) (hb : b ∈ s) (h : b ≤ a) : sInf s ≤ a :=
-  le_trans (csInf_le hs hb) h
 
 @[gcongr low]
 theorem csSup_le_csSup (ht : BddAbove t) (hs : s.Nonempty) (h : s ⊆ t) : sSup s ≤ sSup t :=
@@ -218,11 +210,9 @@ theorem le_csSup_iff (h : BddAbove s) (hs : s.Nonempty) :
 theorem csInf_le_iff (h : BddBelow s) (hs : s.Nonempty) : sInf s ≤ a ↔ ∀ b ∈ lowerBounds s, b ≤ a :=
   ⟨fun h _ hb => le_trans (le_csInf hs hb) h, fun hb => hb _ fun _ => csInf_le h⟩
 
+@[to_dual]
 theorem IsLUB.csSup_eq (H : IsLUB s a) (ne : s.Nonempty) : sSup s = a :=
   (isLUB_csSup ne ⟨a, H.1⟩).unique H
-
-theorem IsGLB.csInf_eq (H : IsGLB s a) (ne : s.Nonempty) : sInf s = a :=
-  (isGLB_csInf ne ⟨a, H.1⟩).unique H
 
 instance (priority := 100) ConditionallyCompleteLattice.toConditionallyCompletePartialOrder :
     ConditionallyCompletePartialOrder α where
@@ -306,8 +296,13 @@ theorem csInf_pair (a b : α) : sInf {a, b} = a ⊓ b :=
 
 /-- If a set is bounded below and above, and nonempty, its infimum is less than or equal to
 its supremum. -/
-theorem csInf_le_csSup (hb : BddBelow s) (ha : BddAbove s) (ne : s.Nonempty) : sInf s ≤ sSup s :=
+theorem csInf_le_csSup (ne : s.Nonempty) (hb : BddBelow s := by bddDefault)
+    (ha : BddAbove s := by bddDefault) : sInf s ≤ sSup s :=
   isGLB_le_isLUB (isGLB_csInf ne hb) (isLUB_csSup ne ha) ne
+
+theorem csInf_le_csSup_of_nonempty_inter (h : (s ∩ t).Nonempty) (hs : BddBelow s := by bddDefault)
+    (ht : BddAbove t := by bddDefault) : sInf s ≤ sSup t :=
+  isGLB_le_isLUB_of_nonempty_inter h (isGLB_csInf h.left hs) (isLUB_csSup h.right ht)
 
 /-- The `sSup` of a union of two sets is the max of the suprema of each subset, under the
 assumptions that all sets are bounded above and nonempty. -/
@@ -418,7 +413,7 @@ theorem csInf_lt_iff (hb : BddBelow s) (hs : s.Nonempty) : sInf s < a ↔ ∃ b 
 
 lemma csSup_eq_univ_of_not_bddAbove (hs : ¬BddAbove s) : sSup s = sSup univ := by
   rw [csSup_of_not_bddAbove hs, csSup_of_not_bddAbove (s := univ)]
-  contrapose! hs
+  contrapose hs
   exact hs.mono (subset_univ _)
 
 lemma ciSup_eq_univ_of_not_bddAbove (hf : ¬BddAbove (range f)) : ⨆ i, f i = sSup univ :=
@@ -508,6 +503,15 @@ theorem le_csInf_iff' (hs : s.Nonempty) : b ≤ sInf s ↔ b ∈ lowerBounds s :
 
 theorem csInf_mem (hs : s.Nonempty) : sInf s ∈ s :=
   (isLeast_csInf hs).1
+
+lemma csInf_eq_iff (hs : s.Nonempty) (n : α) :
+     sInf s = n ↔ n ∈ s ∧ ∀ a ∈ s, n ≤ a := by
+  have : OrderBot α := WellFoundedLT.toOrderBot α
+  constructor
+  · intro rfl
+    exact ⟨csInf_mem hs, fun _ ↦ csInf_le (OrderBot.bddBelow s)⟩
+  · intro ⟨hn, hle⟩
+    exact le_antisymm (csInf_le (OrderBot.bddBelow s) hn) (le_csInf hs hle)
 
 theorem MonotoneOn.map_csInf {β : Type*} [ConditionallyCompleteLattice β] {f : α → β}
     (hf : MonotoneOn f s) (hs : s.Nonempty) : f (sInf s) = sInf (f '' s) :=
@@ -678,11 +682,7 @@ theorem isGLB_sInf' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (Wit
 theorem isGLB_sInf (s : Set (WithTop α)) : IsGLB s (sInf s) := by
   by_cases hs : BddBelow s
   · exact isGLB_sInf' hs
-  · exfalso
-    apply hs
-    use ⊥
-    intro _ _
-    exact bot_le
+  · exact isGLB_sInf' (OrderBot.bddBelow _)
 
 noncomputable instance : CompleteLinearOrder (WithTop α) where
   __ := linearOrder

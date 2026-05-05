@@ -13,7 +13,7 @@ public import Mathlib.Topology.Maps.Proper.Basic
 
 -/
 
-@[expose] public section
+public section
 
 open Set Filter TopologicalSpace Function Topology Pointwise MulOpposite
 
@@ -68,7 +68,7 @@ theorem IsClosed.smul_left_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
     invFun := fun gx ↦ (gx.1, (gx.1 : α)⁻¹ • gx.2)
     left_inv := fun _ ↦ by simp
     right_inv := fun _ ↦ by simp }
-  have : s • t = (snd ∘ Φ) '' (snd ⁻¹' t) :=
+  have : s • t = (snd ∘ Φ) '' snd ⁻¹' t :=
     subset_antisymm
       (smul_subset_iff.mpr fun g hg x hx ↦ mem_image_of_mem (snd ∘ Φ) (x := ⟨⟨g, hg⟩, x⟩) hx)
       (image_subset_iff.mpr fun ⟨⟨g, hg⟩, x⟩ hx ↦ smul_mem_smul hg hx)
@@ -358,7 +358,7 @@ theorem eq_zero_or_locallyCompactSpace_of_support_subset_isCompact_of_group
     f = 0 ∨ LocallyCompactSpace G := by
   refine or_iff_not_imp_left.mpr fun h => ?_
   simp_rw [funext_iff, Pi.zero_apply] at h
-  push_neg at h
+  push Not at h
   obtain ⟨x, hx⟩ : ∃ x, f x ≠ 0 := h
   have : k ∈ 𝓝 x :=
     mem_of_superset (h'f.isOpen_support.mem_nhds hx) hf

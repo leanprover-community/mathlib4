@@ -57,13 +57,13 @@ instance : Inhabited FinBoolAlg :=
   ⟨of PUnit⟩
 
 instance largeCategory : LargeCategory FinBoolAlg :=
-  inferInstanceAs (Category (InducedCategory _ FinBoolAlg.toBoolAlg))
+  inferInstanceAs <| Category (InducedCategory _ toBoolAlg)
 
 instance concreteCategory : ConcreteCategory FinBoolAlg (BoundedLatticeHom · ·) :=
-  InducedCategory.concreteCategory FinBoolAlg.toBoolAlg
+  inferInstanceAs <| ConcreteCategory (InducedCategory _ toBoolAlg) _
 
 instance hasForgetToBoolAlg : HasForget₂ FinBoolAlg BoolAlg :=
-  InducedCategory.hasForget₂ FinBoolAlg.toBoolAlg
+  inferInstanceAs <| HasForget₂ (InducedCategory _ toBoolAlg) _
 
 instance hasForgetToFinBddDistLat : HasForget₂ FinBoolAlg FinBddDistLat where
   forget₂.obj X := .of X
@@ -85,7 +85,6 @@ instance forgetToFinPartOrdFaithful : (forget₂ FinBoolAlg FinPartOrd).Faithful
     ext x
     exact CategoryTheory.congr_fun h x
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Constructs an equivalence between finite Boolean algebras from an order isomorphism between
 them. -/
 @[simps]

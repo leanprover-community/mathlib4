@@ -108,7 +108,8 @@ lemma irreducible_of_disjoint_support [IsDomain R]
   apply irreducible_mul_X_add
   · grind only [monomial_eq_zero]
   · simp [φ, hfd, d₀, hdi]
-  · suffices ∀ x, d ≠ x → x ∈ f.support → i ∉ x.support by simpa [mem_vars, hdψ] using this
+  · suffices ∀ x, d ≠ x → x ∈ f.support → i ∉ x.support by
+      simpa [mem_vars_iff_mem_support, hdψ] using this
     exact fun x hxd hx hix ↦
       Finset.disjoint_iff_ne.mp (disjoint hd hx hxd) i (by simp [hdi]) _ hix rfl
   · rintro p hpφ ⟨q, hq⟩
@@ -160,7 +161,6 @@ noncomputable def sumSMulX :
     (n →₀ R) →ₗ[R] MvPolynomial n R :=
   Finsupp.linearCombination R X
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coeff_sumSMulX (i : n) :
     (sumSMulX c).coeff (Finsupp.single i 1) = c i := by
   classical

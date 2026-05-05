@@ -44,8 +44,9 @@ Also the instances finite + free => f.p. => finite are also provided
 Suppose `S` is an `R`-algebra, `M` is an `S`-module. Then
 1. If `S` is f.p., then `M` is `R`-f.p. implies `M` is `S`-f.p.
 2. If `S` is both f.p. (as an algebra) and finite (as a module),
-  then `M` is `S`-fp implies that `M` is `R`-f.p.
+   then `M` is `S`-fp implies that `M` is `R`-f.p.
 3. If `S` is f.p. as a module, then `S` is f.p. as an algebra.
+
 In particular,
 4. `S` is f.p. as an `R`-module iff it is f.p. as an algebra and is finite as a module.
 
@@ -174,13 +175,12 @@ lemma Module.finitePresentation_of_surjective [h : Module.FinitePresentation R M
   apply Module.finitePresentation_of_free_of_surjective (l ∘ₗ linearCombination R Subtype.val)
     (hl.comp H)
   choose σ hσ using (show _ from H)
-  have : Finsupp.linearCombination R Subtype.val '' (σ '' t) = t := by
+  have : Finsupp.linearCombination R Subtype.val '' σ '' t = t := by
     simp only [Set.image_image, hσ, Set.image_id']
   rw [LinearMap.ker_comp, ← ht, ← this, ← Submodule.map_span, Submodule.comap_map_eq,
     ← Finset.coe_image]
   exact Submodule.FG.sup ⟨_, rfl⟩ hs'
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Module.FinitePresentation.fg_ker [Module.Finite R M]
     [h : Module.FinitePresentation R N] (l : M →ₗ[R] N) (hl : Function.Surjective l) :
     (LinearMap.ker l).FG := by

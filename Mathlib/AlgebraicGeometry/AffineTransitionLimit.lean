@@ -192,7 +192,6 @@ lemma exists_map_eq_top
 
 attribute [local simp] Scheme.Hom.resLE_comp_resLE
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a diagram `{ Dᵢ }` of schemes and an open `U ⊆ Dᵢ`,
 this is the diagram of `{ Dⱼᵢ⁻¹ U }_{j ≤ i}`. -/
 @[simps] noncomputable
@@ -218,7 +217,7 @@ This is the underlying cone, and it is limiting as witnessed by `isLimitOpensCon
 @[simps] noncomputable
 def opensCone (i : I) (U : (D.obj i).Opens) : Cone (opensDiagram D i U) where
   pt := c.π.app i ⁻¹ᵁ U
-  π.app j := (c.π.app j.left).resLE _ _ (by rw [← Scheme.Hom.comp_preimage, c.w]; rfl)
+  π.app j := (c.π.app j.left).resLE _ _ (by rw [← Scheme.Hom.comp_preimage, c.w])
 
 attribute [local instance] CategoryTheory.isConnected_of_hasTerminal
 
@@ -251,8 +250,7 @@ instance [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] {i : I}
     · rintro ⟨⟨_, hU⟩, hV, rfl⟩
       convert hV
       exact Subtype.ext (by simp)
-  · simp only [Functor.id_obj, opensDiagram_obj, Functor.const_obj_obj,
-      Scheme.Opens.opensRange_ι]
+  · simp only [opensDiagram_obj, Scheme.Opens.opensRange_ι]
     rintro x ⟨⟨y, h₁ : (D.map k.hom).base y ∈ U⟩, h₂, e⟩
     obtain rfl : y = (D.map f.left).base x := congr($e)
     dsimp at h₁
@@ -320,7 +318,7 @@ lemma isBasis_preimage_isAffineOpen [IsCofiltered I] [∀ {i j} (f : i ⟶ j), I
       from (c.π.app i ⁻¹ᵁ V).topIso.commRingCatIsoToRingEquiv.symm_apply_eq.mp hs.symm using 3
     simp [Scheme.Hom.app_eq_appLE, Scheme.Hom.resLE_appLE]
   refine ⟨_, ⟨j.left, _, (hV.preimage _).basicOpen s, rfl⟩, ?_⟩
-  simp only [Functor.const_obj_obj, Functor.id_obj, Scheme.preimage_basicOpen] at this ⊢
+  simp only [Functor.const_obj_obj, Scheme.preimage_basicOpen] at this ⊢
   rw [← c.pt.basicOpen_res_eq _ (eqToHom h.symm).op, ← CommRingCat.comp_apply,
     Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map, ← this]
   exact ⟨hxr, hrU⟩
@@ -347,7 +345,6 @@ lemma exists_preimage_eq
 
 end Opens
 
-set_option backward.isDefEq.respectTransparency false in
 include hc in
 lemma isAffineHom_π_app [IsCofiltered I] [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] (i : I) :
     IsAffineHom (c.π.app i) where
@@ -633,7 +630,7 @@ lemma Scheme.exists_hom_comp_eq_comp_of_locallyOfFiniteType
   rcases isEmpty_or_nonempty (D.obj A.i') with h | h
   · exact ⟨A.i', A.hii', isInitialOfIsEmpty.hom_ext _ _⟩
   let O : Finset I := {A.i'} ∪ Finset.univ.image (fun i : 𝒰Df.I₀ ↦ k <| A.𝒰D.idx i.1)
-  let o := Nonempty.some (inferInstanceAs <| Nonempty 𝒰Df.I₀)
+  let o := Nonempty.some (inferInstance : Nonempty 𝒰Df.I₀)
   have ho : k (A.𝒰D.idx o.1) ∈ O := by
     simp [O]
   obtain ⟨l, hl1, hl2⟩ := IsCofiltered.inf_exists O
@@ -708,6 +705,7 @@ section sections
 
 variable [IsCofiltered I]
 
+set_option backward.isDefEq.respectTransparency false in
 include hc in
 lemma exists_appTop_map_eq_zero_of_isAffine_of_isLimit
     [∀ i, IsAffine (D.obj i)]
@@ -715,7 +713,9 @@ lemma exists_appTop_map_eq_zero_of_isAffine_of_isLimit
     ∃ (j : I) (f : j ⟶ i), (D.map f).appTop s = 0 := by
   have : ∀ i, IsAffine (D.op.obj i).unop := by dsimp; infer_instance
   obtain ⟨j, f, hj⟩ := (Types.FilteredColimit.isColimit_eq_iff'
-    (isColimitOfPreserves (Scheme.Γ ⋙ forget _) hc.op) s (0 : Γ(D.obj i, ⊤))).mp (by simpa)
+    (isColimitOfPreserves (Scheme.Γ ⋙ forget _) hc.op) s (0 : Γ(D.obj i, ⊤))).mp
+    (by dsimp at hs ⊢; simpa)
+  dsimp at hj
   exact ⟨j.unop, f.unop, by simpa using hj⟩
 
 set_option backward.isDefEq.respectTransparency false in
@@ -1186,7 +1186,7 @@ lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
     let t𝒱 (j : _) : opensDiagram D i' (𝒱' j) ⟶ (Functor.const (Over i')).obj j.1.1.2.1.2 :=
     { app k := (t.app k.left).resLE _ _ <| by
         refine (Hom.preimage_mono _ (hi' _)).trans ?_
-        simp only [Functor.id_obj, Functor.const_obj_obj, ← Hom.comp_preimage, t.naturality,
+        simp only [Functor.const_obj_obj, ← Hom.comp_preimage, t.naturality,
           Functor.const_obj_map, Category.comp_id, le_refl]
       naturality {k₁ k₂} f₁₂ := by simp [Hom.resLE_comp_resLE] }
     have (j : s) : IsAffine j.1.1.2.1.1 := j.1.1.2.prop.1

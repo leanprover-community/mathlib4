@@ -119,7 +119,6 @@ lemma aeval_val_relationOfHasCoeffs (r : σ) :
     MvPolynomial.aeval P.val (P.relationOfHasCoeffs R₀ r) = 0 := by
   rw [← MvPolynomial.aeval_map_algebraMap R, map_relationOfHasCoeffs, aeval_val_relation]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma algebraTensorAlgEquiv_symm_relation (r : σ) :
     (MvPolynomial.algebraTensorAlgEquiv R₀ R).symm (P.relation r) =
@@ -151,7 +150,6 @@ lemma tensorModelOfHasCoeffsHom_tmul (x : R) (y : MvPolynomial ι R₀) :
     P.tensorModelOfHasCoeffsHom R₀ (x ⊗ₜ y) = algebraMap R S x * MvPolynomial.aeval P.val y :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 variable (P) in
 /-- (Implementation detail): The inverse of `tensorModelOfHasCoeffsHom`. -/
 noncomputable def tensorModelOfHasCoeffsInv : S →ₐ[R] R ⊗[R₀] P.ModelOfHasCoeffs R₀ :=
@@ -167,7 +165,6 @@ noncomputable def tensorModelOfHasCoeffsInv : S →ₐ[R] R ⊗[R₀] P.ModelOfH
       Ideal.Quotient.mk_span_range, tmul_zero]).comp
     (P.quotientEquiv.restrictScalars R).symm.toAlgHom
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma tensorModelOfHasCoeffsInv_aeval_val (x : MvPolynomial ι R₀) :
     P.tensorModelOfHasCoeffsInv R₀ (MvPolynomial.aeval P.val x) =
@@ -175,9 +172,7 @@ lemma tensorModelOfHasCoeffsInv_aeval_val (x : MvPolynomial ι R₀) :
   rw [← MvPolynomial.aeval_map_algebraMap R, ← Generators.algebraMap_apply, ← quotientEquiv_mk]
   simp [tensorModelOfHasCoeffsInv, -quotientEquiv_symm, -quotientEquiv_mk]
 
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.privateInPublic true in
-private lemma hom_comp_inv :
+lemma tensorModelOfHasCoeffsHom_comp :
     (P.tensorModelOfHasCoeffsHom R₀).comp (P.tensorModelOfHasCoeffsInv R₀) = AlgHom.id R S := by
   have h : Function.Surjective
       ((P.quotientEquiv.restrictScalars R).toAlgHom.comp (Ideal.Quotient.mkₐ _ _)) :=
@@ -189,19 +184,16 @@ private lemma hom_comp_inv :
   ext x
   simp
 
-set_option backward.privateInPublic true in
-private lemma inv_comp_hom :
+lemma tensorModelOfHasCoeffsInv_comp :
     (P.tensorModelOfHasCoeffsInv R₀).comp (P.tensorModelOfHasCoeffsHom R₀) = AlgHom.id R _ := by
   ext x
   obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
   simp
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The natural isomorphism `R ⊗[R₀] S₀ ≃ₐ[R] S`. -/
 noncomputable def tensorModelOfHasCoeffsEquiv : R ⊗[R₀] P.ModelOfHasCoeffs R₀ ≃ₐ[R] S :=
   AlgEquiv.ofAlgHom (P.tensorModelOfHasCoeffsHom R₀) (P.tensorModelOfHasCoeffsInv R₀)
-    (P.hom_comp_inv R₀) (P.inv_comp_hom R₀)
+    (P.tensorModelOfHasCoeffsHom_comp R₀) (P.tensorModelOfHasCoeffsInv_comp R₀)
 
 @[simp]
 lemma tensorModelOfHasCoeffsEquiv_tmul (x : R) (y : MvPolynomial ι R₀) :
