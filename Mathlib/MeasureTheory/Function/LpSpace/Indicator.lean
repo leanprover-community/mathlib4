@@ -38,8 +38,19 @@ for any `p < ∞`. Given here as an existential `∀ ε > 0, ∃ η > 0, ...` to
 management of `ℝ≥0∞`-arithmetic. -/
 theorem exists_eLpNorm_indicator_le (hp : p ≠ ∞) (c : E) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ η : ℝ≥0, 0 < η ∧ ∀ s : Set α, μ s ≤ η → eLpNorm (s.indicator fun _ => c) p μ ≤ ε := by
+  rcases eq_or_ne c 0 with (rfl | hc)
+  · use 1
+    simp
+  rcases eq_or_ne ε ⊤ with (rfl | ε_top)
+  · use 1
+    simp
   rcases eq_or_ne p 0 with (rfl | h'p)
-  · exact ⟨1, zero_lt_one, fun s _ => by simp⟩
+  · refine ⟨ε.toNNReal, ENNReal.toNNReal_pos hε ε_top, fun s hs ↦ ?_⟩
+    rw [eLpNorm_exponent_zero]
+    convert hs
+    · ext
+      simp [hc]
+    · exact (ENNReal.coe_toNNReal ε_top).symm
   have hp₀ : 0 < p := bot_lt_iff_ne_bot.2 h'p
   have hp₀' : 0 ≤ 1 / p.toReal := div_nonneg zero_le_one ENNReal.toReal_nonneg
   have hp₀'' : 0 < p.toReal := ENNReal.toReal_pos hp₀.ne' hp
@@ -56,7 +67,7 @@ theorem exists_eLpNorm_indicator_le (hp : p ≠ ∞) (c : E) {ε : ℝ≥0∞} (
     refine ⟨η, hη, ?_⟩
     simpa only [← ENNReal.coe_rpow_of_nonneg _ hp₀', enorm, ← ENNReal.coe_mul] using hδε' hηδ
   refine ⟨η, hη_pos, fun s hs => ?_⟩
-  grw [eLpNorm_indicator_const_le, ← hη_le, hs]
+  grw [eLpNorm_indicator_const_le (hp := h'p), ← hη_le, hs]
 
 section Topology
 variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
@@ -140,23 +151,23 @@ theorem norm_indicatorConstLp' (hp_pos : p ≠ 0) (hμs_pos : μ s ≠ 0) :
     exact norm_indicatorConstLp_top hμs_pos
   · exact norm_indicatorConstLp hp_pos hp_top
 
-theorem norm_indicatorConstLp_le :
+theorem norm_indicatorConstLp_le (hp : p ≠ 0) :
     ‖indicatorConstLp p hs hμs c‖ ≤ ‖c‖ * μ.real s ^ (1 / p.toReal) := by
   rw [indicatorConstLp, Lp.norm_toLp]
   refine ENNReal.toReal_le_of_le_ofReal (by positivity) ?_
-  refine (eLpNorm_indicator_const_le _ _).trans_eq ?_
+  refine (eLpNorm_indicator_const_le _ hp).trans_eq ?_
   rw [ENNReal.ofReal_mul (norm_nonneg _), ofReal_norm, measureReal_def,
     ENNReal.toReal_rpow, ENNReal.ofReal_toReal]
   finiteness
 
-theorem nnnorm_indicatorConstLp_le :
+theorem nnnorm_indicatorConstLp_le (hp : p ≠ 0) :
     ‖indicatorConstLp p hs hμs c‖₊ ≤ ‖c‖₊ * (μ s).toNNReal ^ (1 / p.toReal) :=
-  norm_indicatorConstLp_le
+  norm_indicatorConstLp_le hp
 
-theorem enorm_indicatorConstLp_le :
+theorem enorm_indicatorConstLp_le (hp : p ≠ 0) :
     ‖indicatorConstLp p hs hμs c‖ₑ ≤ ‖c‖ₑ * μ s ^ (1 / p.toReal) := by
   simpa [ENNReal.coe_rpow_of_nonneg, ENNReal.coe_toNNReal hμs, Lp.enorm_def, ← enorm_eq_nnnorm]
-    using ENNReal.coe_le_coe.2 <| nnnorm_indicatorConstLp_le (c := c) (hμs := hμs)
+    using ENNReal.coe_le_coe.2 <| nnnorm_indicatorConstLp_le (c := c) (hμs := hμs) hp
 
 theorem edist_indicatorConstLp_eq_enorm {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞} :
     edist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
@@ -261,9 +272,10 @@ theorem Lp.norm_const' (hp_zero : p ≠ 0) (hp_top : p ≠ ∞) :
   rw [← MemLp.toLp_const, Lp.norm_toLp, eLpNorm_const'] <;> try assumption
   rw [measureReal_def, ENNReal.toReal_mul, toReal_enorm, ← ENNReal.toReal_rpow]
 
-theorem Lp.norm_const_le : ‖Lp.const p μ c‖ ≤ ‖c‖ * μ.real Set.univ ^ (1 / p.toReal) := by
+theorem Lp.norm_const_le (hp : p ≠ 0) :
+    ‖Lp.const p μ c‖ ≤ ‖c‖ * μ.real Set.univ ^ (1 / p.toReal) := by
   rw [← indicatorConstLp_univ]
-  exact norm_indicatorConstLp_le
+  exact norm_indicatorConstLp_le hp
 
 /-- `MeasureTheory.Lp.const` as a `LinearMap`. -/
 @[simps] protected def Lp.constₗ (𝕜 : Type*) [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] :
@@ -274,10 +286,10 @@ theorem Lp.norm_const_le : ‖Lp.const p μ c‖ ≤ ‖c‖ * μ.real Set.univ 
 
 /-- `MeasureTheory.Lp.const` as a `ContinuousLinearMap`. -/
 @[simps! apply]
-protected def Lp.constL (𝕜 : Type*) [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] [Fact (1 ≤ p)] :
-    E →L[𝕜] Lp E p μ :=
+protected def Lp.constL (𝕜 : Type*) [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
+    [hp : Fact (1 ≤ p)] : E →L[𝕜] Lp E p μ :=
   (Lp.constₗ p μ 𝕜).mkContinuous (μ.real Set.univ ^ (1 / p.toReal)) fun _ ↦
-    (Lp.norm_const_le _ _ _).trans_eq (mul_comm _ _)
+    (Lp.norm_const_le _ _ _ (ENNReal.ne_zero_of_ge_one hp.out)).trans_eq (mul_comm _ _)
 
 theorem Lp.norm_constL_le (𝕜 : Type*) [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
     [Fact (1 ≤ p)] :

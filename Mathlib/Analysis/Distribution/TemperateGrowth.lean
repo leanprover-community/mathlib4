@@ -505,30 +505,27 @@ lemma _root_.integral_pow_mul_le_of_le_of_pow_mul_le
 /-- For any `HasTemperateGrowth` measure and `p`, there exists an integer power `k` such that
 `(1 + ‖x‖) ^ (-k)` is in `L^p`. -/
 theorem HasTemperateGrowth.exists_eLpNorm_lt_top (p : ℝ≥0∞)
-    {μ : Measure E} (hμ : μ.HasTemperateGrowth) :
+    {μ : Measure E} (hμ : μ.HasTemperateGrowth) (hp : p ≠ 0) :
     ∃ k : ℕ, eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ < ⊤ := by
   cases p with
   | top => exact ⟨0, eLpNormEssSup_lt_top_of_ae_bound (C := 1) (by simp)⟩
   | coe p =>
-    cases eq_or_ne (p : ℝ≥0∞) 0 with
-    | inl hp => exact ⟨0, by simp [hp]⟩
-    | inr hp =>
-      have h_one_add (x : E) : 0 < 1 + ‖x‖ := lt_add_of_pos_of_le zero_lt_one (norm_nonneg x)
-      have hp_pos : 0 < (p : ℝ) := by simpa [zero_lt_iff] using hp
-      rcases hμ.exists_integrable with ⟨l, hl⟩
-      let k := ⌈(l / p : ℝ)⌉₊
-      have hlk : l ≤ k * (p : ℝ) := by simpa [div_le_iff₀ hp_pos] using Nat.le_ceil (l / p : ℝ)
-      use k
-      suffices HasFiniteIntegral (fun x ↦ ((1 + ‖x‖) ^ (-(k * p) : ℝ))) μ by
-        rw [hasFiniteIntegral_iff_enorm] at this
-        rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top hp ENNReal.coe_ne_top]
-        simp only [ENNReal.coe_toReal]
-        refine Eq.subst (motive := (∫⁻ x, · x ∂μ < ⊤)) (funext fun x ↦ ?_) this
-        rw [← neg_mul, Real.rpow_mul (h_one_add x).le]
-        exact Real.enorm_rpow_of_nonneg (by positivity) NNReal.zero_le_coe
-      refine hl.hasFiniteIntegral.mono' (ae_of_all μ fun x ↦ ?_)
-      rw [Real.norm_of_nonneg (Real.rpow_nonneg (h_one_add x).le _)]
-      gcongr
-      simp
+    have h_one_add (x : E) : 0 < 1 + ‖x‖ := lt_add_of_pos_of_le zero_lt_one (norm_nonneg x)
+    have hp_pos : 0 < (p : ℝ) := by simpa [zero_lt_iff] using hp
+    rcases hμ.exists_integrable with ⟨l, hl⟩
+    let k := ⌈(l / p : ℝ)⌉₊
+    have hlk : l ≤ k * (p : ℝ) := by simpa [div_le_iff₀ hp_pos] using Nat.le_ceil (l / p : ℝ)
+    use k
+    suffices HasFiniteIntegral (fun x ↦ ((1 + ‖x‖) ^ (-(k * p) : ℝ))) μ by
+      rw [hasFiniteIntegral_iff_enorm] at this
+      rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top hp ENNReal.coe_ne_top]
+      simp only [ENNReal.coe_toReal]
+      refine Eq.subst (motive := (∫⁻ x, · x ∂μ < ⊤)) (funext fun x ↦ ?_) this
+      rw [← neg_mul, Real.rpow_mul (h_one_add x).le]
+      exact Real.enorm_rpow_of_nonneg (by positivity) NNReal.zero_le_coe
+    refine hl.hasFiniteIntegral.mono' (ae_of_all μ fun x ↦ ?_)
+    rw [Real.norm_of_nonneg (Real.rpow_nonneg (h_one_add x).le _)]
+    gcongr
+    simp
 
 end MeasureTheory.Measure

@@ -470,14 +470,12 @@ Note: The codomain of `u` needs to be a Hilbert space.
 theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
     (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u)
     {p p' : ℝ≥0} (hp : 1 ≤ p) (hn : 0 < finrank ℝ E)
-    (hp' : (p' : ℝ)⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹) :
+    (hp' : (p' : ℝ)⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹) (hp'0 : p' ≠ 0) :
     eLpNorm u p' μ ≤ eLpNormLESNormFDerivOfEqInnerConst μ p * eLpNorm (fderiv ℝ u) p μ := by
   /- Here we derive the GNS-inequality for `p ≥ 1` from the version with `p = 1`.
   For `p > 1` we apply the previous version to the function `|u|^γ` for a suitably chosen `γ`.
   The proof requires that `x ↦ |x|^p` is smooth in the codomain, so we require that it is a
   Hilbert space. -/
-  by_cases hp'0 : p' = 0
-  · simp [hp'0]
   set n := finrank ℝ E
   let n' := NNReal.conjExponent n
   have h2p : (p : ℝ) < n := by
@@ -600,7 +598,7 @@ This is the version where the codomain of `u` is a finite-dimensional normed spa
 theorem eLpNorm_le_eLpNorm_fderiv_of_eq [FiniteDimensional ℝ F]
     {u : E → F} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u)
     {p p' : ℝ≥0} (hp : 1 ≤ p) (hn : 0 < finrank ℝ E)
-    (hp' : (p' : ℝ)⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹) :
+    (hp' : (p' : ℝ)⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹) (hp'0 : p' ≠ 0) :
     eLpNorm u p' μ ≤ SNormLESNormFDerivOfEqConst F μ p * eLpNorm (fderiv ℝ u) p μ := by
   /- Here we reduce the GNS-inequality with a Hilbert space as codomain to the case with a
   finite-dimensional normed space as codomain, by transferring the result along the equivalence
@@ -613,7 +611,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq [FiniteDimensional ℝ F]
   let v := e ∘ u
   have hv : ContDiff ℝ 1 v := e.contDiff.comp hu
   have h2v : HasCompactSupport v := h2u.comp_left e.map_zero
-  have := eLpNorm_le_eLpNorm_fderiv_of_eq_inner μ hv h2v hp hn hp'
+  have := eLpNorm_le_eLpNorm_fderiv_of_eq_inner μ hv h2v hp hn hp' hp'0
   have h4v : ∀ x, ‖fderiv ℝ v x‖ ≤ C₂ * ‖fderiv ℝ u x‖ := fun x ↦ calc
     ‖fderiv ℝ v x‖
       = ‖(fderiv ℝ e (u x)).comp (fderiv ℝ u x)‖ := by
@@ -624,12 +622,17 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq [FiniteDimensional ℝ F]
   calc eLpNorm u p' μ
       = eLpNorm (e.symm ∘ v) p' μ := by simp_rw [v, Function.comp_def, e.symm_apply_apply]
     _ ≤ C₁ • eLpNorm v p' μ := by
-      apply eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul
+      apply eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul (hp := ENNReal.coe_ne_zero.mpr hp'0)
       exact Eventually.of_forall (fun x ↦ (e.symm : F' →L[ℝ] F).le_opNNNorm _)
     _ = C₁ * eLpNorm v p' μ := rfl
     _ ≤ C₁ * C * eLpNorm (fderiv ℝ v) p μ := by rw [mul_assoc]; gcongr
     _ ≤ C₁ * C * (C₂ * eLpNorm (fderiv ℝ u) p μ) := by
-      gcongr; exact eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul (Eventually.of_forall h4v) p
+      gcongr
+      apply eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul (Eventually.of_forall h4v)
+      norm_cast
+      contrapose! hp
+      rw [hp]
+      exact zero_lt_one
     _ = SNormLESNormFDerivOfEqConst F μ p * eLpNorm (fderiv ℝ u) p μ := by
       simp_rw [C₂, C₁, C, e, SNormLESNormFDerivOfEqConst]
       push_cast
@@ -655,12 +658,10 @@ Note: The codomain of `u` needs to be a finite-dimensional normed space.
 -/
 theorem eLpNorm_le_eLpNorm_fderiv_of_le [FiniteDimensional ℝ F]
     {u : E → F} {s : Set E} (hu : ContDiff ℝ 1 u) (h2u : u.support ⊆ s)
-    {p q : ℝ≥0} (hp : 1 ≤ p) (h2p : p < finrank ℝ E)
+    {p q : ℝ≥0} (hp : 1 ≤ p) (h2p : p < finrank ℝ E) (hq0 : q ≠ 0)
     (hpq : p⁻¹ - (finrank ℝ E : ℝ)⁻¹ ≤ (q : ℝ)⁻¹)
     (hs : Bornology.IsBounded s) :
     eLpNorm u q μ ≤ eLpNormLESNormFDerivOfLeConst F μ s p q * eLpNorm (fderiv ℝ u) p μ := by
-  by_cases hq0 : q = 0
-  · simp [hq0]
   let p' : ℝ≥0 := (p⁻¹ - (finrank ℝ E : ℝ≥0)⁻¹)⁻¹
   have hp' : p'⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹ := by
     rw [inv_inv, NNReal.coe_sub]
@@ -681,7 +682,8 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_le [FiniteDimensional ℝ F]
   calc eLpNorm u q μ
       = eLpNorm u q (μ.restrict s) := by rw [eLpNorm_restrict_eq_of_support_subset h2u]
     _ ≤ eLpNorm u p' (μ.restrict s) * t := by
-        convert eLpNorm_le_eLpNorm_mul_rpow_measure_univ this hu.continuous.aestronglyMeasurable
+        convert eLpNorm_le_eLpNorm_mul_rpow_measure_univ (ENNReal.coe_ne_zero.mpr hq0) this
+          hu.continuous.aestronglyMeasurable
         rw [ENNReal.coe_rpow_of_nonneg]
         · simp [ENNReal.coe_toNNReal hs.measure_lt_top.ne]
         · rw [one_div, one_div]
@@ -693,7 +695,17 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_le [FiniteDimensional ℝ F]
         have h2u' : HasCompactSupport u := by
           apply HasCompactSupport.of_support_subset_isCompact hs.isCompact_closure
           exact h2u.trans subset_closure
-        rel [eLpNorm_le_eLpNorm_fderiv_of_eq μ hu h2u' hp (mod_cast (zero_le p).trans_lt h2p) hp']
+        have : p' ≠ 0 := by
+          intro hp'0
+          rw [hp'0] at hp'
+          simp only [inv_zero, NNReal.coe_zero, NNReal.coe_inv] at hp'
+          symm at hp'
+          rw [sub_eq_zero, inv_inj] at hp'
+          contrapose! h2p
+          norm_cast at hp'
+          rw [hp']
+        rel [eLpNorm_le_eLpNorm_fderiv_of_eq μ hu h2u' hp (mod_cast (zero_le p).trans_lt h2p) hp'
+          this]
     _ = eLpNormLESNormFDerivOfLeConst F μ s p q * eLpNorm (fderiv ℝ u) p μ := by
       simp_rw [eLpNormLESNormFDerivOfLeConst, ENNReal.coe_mul]; ring
 
@@ -709,7 +721,10 @@ theorem eLpNorm_le_eLpNorm_fderiv [FiniteDimensional ℝ F]
     {u : E → F} {s : Set E} (hu : ContDiff ℝ 1 u) (h2u : u.support ⊆ s)
     {p : ℝ≥0} (hp : 1 ≤ p) (h2p : p < finrank ℝ E) (hs : Bornology.IsBounded s) :
     eLpNorm u p μ ≤ eLpNormLESNormFDerivOfLeConst F μ s p p * eLpNorm (fderiv ℝ u) p μ := by
-  refine eLpNorm_le_eLpNorm_fderiv_of_le μ hu h2u hp h2p ?_ hs
+  refine eLpNorm_le_eLpNorm_fderiv_of_le μ hu h2u hp h2p ?_ ?_ hs
+  · contrapose! hp
+    rw [hp]
+    exact zero_lt_one
   norm_cast
   simp only [tsub_le_iff_right, le_add_iff_nonneg_right]
   positivity

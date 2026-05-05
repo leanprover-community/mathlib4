@@ -218,7 +218,7 @@ lemma MemLp.integrable_norm_pow' [IsFiniteMeasure μ] {f : α → β} {p : ℕ} 
 lemma integrable_enorm_rpow_iff {f : α → ε} {p : ℝ≥0∞}
     (hf : AEStronglyMeasurable f μ) (p_zero : p ≠ 0) (p_top : p ≠ ∞) :
     Integrable (fun x : α => ‖f x‖ₑ ^ p.toReal) μ ↔ MemLp f p μ := by
-  rw [← memLp_enorm_rpow_iff (q := p) hf p_zero p_top, ← memLp_one_iff_integrable,
+  rw [← memLp_enorm_rpow_iff (q := p) hf p_zero p_top p_zero, ← memLp_one_iff_integrable,
     ENNReal.div_self p_zero p_top]
 
 lemma integrable_norm_rpow_iff {f : α → β} {p : ℝ≥0∞}
@@ -582,8 +582,8 @@ theorem Integrable.essSup_smul {R : Type*} [NormedRing R] [Module R β] [IsBound
   have hg' : eLpNorm g ∞ μ ≠ ∞ := by rwa [eLpNorm_exponent_top]
   calc
     eLpNorm (fun x : α => g x • f x) 1 μ ≤ _ := by
-      simpa using MeasureTheory.eLpNorm_smul_le_mul_eLpNorm hf.1 g_aestronglyMeasurable
-        (p := ∞) (q := 1)
+      simpa using MeasureTheory.eLpNorm_smul_le_mul_eLpNorm top_ne_zero one_ne_zero hf.1
+        g_aestronglyMeasurable (p := ∞) (q := 1)
     _ < ∞ := ENNReal.mul_lt_top hg'.lt_top hf.2
 
 /-- Hölder's inequality for integrable functions: the scalar multiplication of an integrable
@@ -597,8 +597,8 @@ theorem Integrable.smul_essSup {𝕜 : Type*} [NormedRing 𝕜] [MulActionWithZe
   have hg' : eLpNorm g ∞ μ ≠ ∞ := by rwa [eLpNorm_exponent_top]
   calc
     eLpNorm (fun x : α => f x • g x) 1 μ ≤ _ := by
-      simpa using MeasureTheory.eLpNorm_smul_le_mul_eLpNorm g_aestronglyMeasurable hf.1
-        (p := 1) (q := ∞)
+      simpa using MeasureTheory.eLpNorm_smul_le_mul_eLpNorm one_ne_zero top_ne_zero
+        g_aestronglyMeasurable hf.1 (p := 1) (q := ∞)
     _ < ∞ := ENNReal.mul_lt_top hf.2 hg'.lt_top
 
 theorem integrable_enorm_iff {f : α → ε} (hf : AEStronglyMeasurable f μ) :

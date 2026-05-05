@@ -121,8 +121,13 @@ theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠
   have gc_mem : MemLp (fun x => g x • c) p μ := by
     refine MemLp.smul (memLp_top_const _) ?_ (p := p) (q := ∞)
     refine ⟨g.continuous.aestronglyMeasurable, ?_⟩
-    have : eLpNorm (v.indicator fun _x => (1 : ℝ)) p μ < ⊤ :=
-      (eLpNorm_indicator_const_le _ _).trans_lt <| by simp [lt_top_iff_ne_top, hμv.ne]
+    have : eLpNorm (v.indicator fun _x => (1 : ℝ)) p μ < ⊤ := by
+      by_cases hp : p = 0
+      · simp only [hp, eLpNorm_exponent_zero]
+        convert hμv
+        ext
+        simp
+      exact (eLpNorm_indicator_const_le _ hp).trans_lt <| by simp [lt_top_iff_ne_top, hμv.ne]
     refine (eLpNorm_mono fun x => ?_).trans_lt this
     by_cases hx : x ∈ v
     · simp only [hx, abs_of_nonneg (hg_range x).1, (hg_range x).2, Real.norm_eq_abs,
@@ -135,7 +140,7 @@ theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠
 /-- In a locally compact space, any function in `ℒp` can be approximated by compactly supported
 continuous functions when `p < ∞`, version in terms of `eLpNorm`. -/
 theorem MemLp.exists_hasCompactSupport_eLpNorm_sub_le
-    [R1Space α] [WeaklyLocallyCompactSpace α] [μ.Regular]
+    [R1Space α] [WeaklyLocallyCompactSpace α] [μ.Regular] (hp' : p ≠ 0)
     (hp : p ≠ ∞) {f : α → E} (hf : MemLp f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ g : α → E, HasCompactSupport g ∧ eLpNorm (f - g) p μ ≤ ε ∧ Continuous g ∧ MemLp g p μ := by
   suffices H :
@@ -145,7 +150,7 @@ theorem MemLp.exists_hasCompactSupport_eLpNorm_sub_le
   -- It suffices to check that the set of functions we consider approximates characteristic
   -- functions, is stable under addition and consists of ae strongly measurable functions.
   -- First check the latter easy facts.
-  apply hf.induction_dense hp _ _ _ _ hε
+  apply hf.induction_dense hp' hp _ _ _ _ hε
   rotate_left
   -- stability under addition
   · rintro f g ⟨f_cont, f_mem, hf⟩ ⟨g_cont, g_mem, hg⟩
@@ -199,7 +204,7 @@ theorem MemLp.exists_hasCompactSupport_integral_rpow_sub_le
   have A : ENNReal.ofReal (ε ^ (1 / p)) ≠ 0 := by
     simp only [Ne, ENNReal.ofReal_eq_zero, not_le, I]
   have B : ENNReal.ofReal p ≠ 0 := by simpa only [Ne, ENNReal.ofReal_eq_zero, not_le] using hp
-  rcases hf.exists_hasCompactSupport_eLpNorm_sub_le ENNReal.coe_ne_top A with
+  rcases hf.exists_hasCompactSupport_eLpNorm_sub_le (by simpa) ENNReal.ofReal_ne_top A with
     ⟨g, g_support, hg, g_cont, g_mem⟩
   change eLpNorm _ (ENNReal.ofReal p) _ ≤ _ at hg
   refine ⟨g, g_support, ?_, g_cont, g_mem⟩
@@ -217,7 +222,7 @@ theorem Integrable.exists_hasCompactSupport_lintegral_sub_le
     ∃ g : α → E,
       HasCompactSupport g ∧ ∫⁻ x, ‖f x - g x‖ₑ ∂μ ≤ ε ∧ Continuous g ∧ Integrable g μ := by
   simp only [← memLp_one_iff_integrable, ← eLpNorm_one_eq_lintegral_enorm] at hf ⊢
-  exact hf.exists_hasCompactSupport_eLpNorm_sub_le ENNReal.one_ne_top hε
+  exact hf.exists_hasCompactSupport_eLpNorm_sub_le one_ne_zero ENNReal.one_ne_top hε
 
 /-- In a locally compact space, any integrable function can be approximated by compactly supported
 continuous functions, version in terms of `∫`. -/
@@ -232,8 +237,8 @@ theorem Integrable.exists_hasCompactSupport_integral_sub_le
 
 /-- Any function in `ℒp` can be approximated by bounded continuous functions when `p < ∞`,
 version in terms of `eLpNorm`. -/
-theorem MemLp.exists_boundedContinuous_eLpNorm_sub_le [μ.WeaklyRegular] (hp : p ≠ ∞) {f : α → E}
-    (hf : MemLp f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
+theorem MemLp.exists_boundedContinuous_eLpNorm_sub_le [μ.WeaklyRegular] (hp' : p ≠ 0) (hp : p ≠ ∞)
+    {f : α → E} (hf : MemLp f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ g : α →ᵇ E, eLpNorm (f - (g : α → E)) p μ ≤ ε ∧ MemLp g p μ := by
   suffices H :
       ∃ g : α → E, eLpNorm (f - g) p μ ≤ ε ∧ Continuous g ∧ MemLp g p μ ∧ IsBounded (range g) by
@@ -242,7 +247,7 @@ theorem MemLp.exists_boundedContinuous_eLpNorm_sub_le [μ.WeaklyRegular] (hp : p
   -- It suffices to check that the set of functions we consider approximates characteristic
   -- functions, is stable under addition and made of ae strongly measurable functions.
   -- First check the latter easy facts.
-  apply hf.induction_dense hp _ _ _ _ hε
+  apply hf.induction_dense hp' hp _ _ _ _ hε
   rotate_left
   -- stability under addition
   · rintro f g ⟨f_cont, f_mem, f_bd⟩ ⟨g_cont, g_mem, g_bd⟩
@@ -290,7 +295,8 @@ theorem MemLp.exists_boundedContinuous_integral_rpow_sub_le [μ.WeaklyRegular] {
   have A : ENNReal.ofReal (ε ^ (1 / p)) ≠ 0 := by
     simp only [Ne, ENNReal.ofReal_eq_zero, not_le, I]
   have B : ENNReal.ofReal p ≠ 0 := by simpa only [Ne, ENNReal.ofReal_eq_zero, not_le] using hp
-  rcases hf.exists_boundedContinuous_eLpNorm_sub_le ENNReal.coe_ne_top A with ⟨g, hg, g_mem⟩
+  rcases hf.exists_boundedContinuous_eLpNorm_sub_le (by simpa) ENNReal.coe_ne_top A with
+    ⟨g, hg, g_mem⟩
   change eLpNorm _ (ENNReal.ofReal p) _ ≤ _ at hg
   refine ⟨g, ?_, g_mem⟩
   rwa [(hf.sub g_mem).eLpNorm_eq_integral_rpow_norm B ENNReal.coe_ne_top,
@@ -304,7 +310,7 @@ theorem Integrable.exists_boundedContinuous_lintegral_sub_le [μ.WeaklyRegular] 
     (hf : Integrable f μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ g : α →ᵇ E, ∫⁻ x, ‖f x - g x‖ₑ ∂μ ≤ ε ∧ Integrable g μ := by
   simp only [← memLp_one_iff_integrable, ← eLpNorm_one_eq_lintegral_enorm] at hf ⊢
-  exact hf.exists_boundedContinuous_eLpNorm_sub_le ENNReal.one_ne_top hε
+  exact hf.exists_boundedContinuous_eLpNorm_sub_le one_ne_zero ENNReal.one_ne_top hε
 
 /-- Any integrable function can be approximated by bounded continuous functions,
 version in terms of `∫`. -/
@@ -320,14 +326,15 @@ namespace Lp
 variable (E μ)
 
 /-- A function in `Lp` can be approximated in `Lp` by continuous functions. -/
-theorem boundedContinuousFunction_dense [SecondCountableTopologyEither α E] [Fact (1 ≤ p)]
+theorem boundedContinuousFunction_dense [SecondCountableTopologyEither α E] [hp' : Fact (1 ≤ p)]
     (hp : p ≠ ∞) [μ.WeaklyRegular] :
     Dense (boundedContinuousFunction E p μ : Set (Lp E p μ)) := by
   intro f
   refine (mem_closure_iff_nhds_basis Metric.nhds_basis_closedEBall).2 fun ε hε ↦ ?_
   obtain ⟨g, hg, g_mem⟩ :
       ∃ g : α →ᵇ E, eLpNorm ((f : α → E) - (g : α → E)) p μ ≤ ε ∧ MemLp g p μ :=
-    (Lp.memLp f).exists_boundedContinuous_eLpNorm_sub_le hp hε.ne'
+    (Lp.memLp f).exists_boundedContinuous_eLpNorm_sub_le
+      (ENNReal.ne_zero_of_ge_one hp'.out) hp hε.ne'
   refine ⟨g_mem.toLp _, ⟨g, rfl⟩, ?_⟩
   rwa [Metric.mem_closedEBall', ← Lp.toLp_coeFn f (Lp.memLp f), Lp.edist_toLp_toLp]
 

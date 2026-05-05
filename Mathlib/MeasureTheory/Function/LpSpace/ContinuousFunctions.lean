@@ -57,10 +57,10 @@ theorem mem_Lp (f : α →ᵇ E) : f.toContinuousMap.toAEEqFun μ ∈ Lp E p μ 
 
 /-- The `Lp`-norm of a bounded continuous function is at most a constant (depending on the measure
 of the whole space) times its sup-norm. -/
-theorem Lp_nnnorm_le (f : α →ᵇ E) :
+theorem Lp_nnnorm_le (f : α →ᵇ E) (hp : p ≠ 0) :
     ‖(⟨f.toContinuousMap.toAEEqFun μ, mem_Lp f⟩ : Lp E p μ)‖₊ ≤
       measureUnivNNReal μ ^ p.toReal⁻¹ * ‖f‖₊ := by
-  apply Lp.nnnorm_le_of_ae_bound
+  apply Lp.nnnorm_le_of_ae_bound (hp := hp)
   refine (f.toContinuousMap.coeFn_toAEEqFun μ).mono ?_
   intro x hx
   rw [← NNReal.coe_le_coe, coe_nnnorm, coe_nnnorm]
@@ -68,19 +68,19 @@ theorem Lp_nnnorm_le (f : α →ᵇ E) :
 
 /-- The `Lp`-norm of a bounded continuous function is at most a constant (depending on the measure
 of the whole space) times its sup-norm. -/
-theorem Lp_norm_le (f : α →ᵇ E) :
+theorem Lp_norm_le (f : α →ᵇ E) (hp : p ≠ 0) :
     ‖(⟨f.toContinuousMap.toAEEqFun μ, mem_Lp f⟩ : Lp E p μ)‖ ≤
       measureUnivNNReal μ ^ p.toReal⁻¹ * ‖f‖ :=
-  Lp_nnnorm_le f
+  Lp_nnnorm_le f hp
 
 variable (p μ)
 
 /-- The normed group homomorphism of considering a bounded continuous function on a finite-measure
 space as an element of `Lp`. -/
-def toLpHom [Fact (1 ≤ p)] : NormedAddGroupHom (α →ᵇ E) (Lp E p μ) :=
+def toLpHom [hp : Fact (1 ≤ p)] : NormedAddGroupHom (α →ᵇ E) (Lp E p μ) :=
   { AddMonoidHom.codRestrict ((ContinuousMap.toAEEqFunAddHom μ).comp
     (toContinuousMapAddMonoidHom α E)) (Lp E p μ) mem_Lp with
-    bound' := ⟨_, Lp_norm_le⟩ }
+    bound' := ⟨_, Lp_norm_le (hp := ENNReal.ne_zero_of_ge_one hp.out)⟩ }
 
 theorem range_toLpHom [Fact (1 ≤ p)] :
     ((toLpHom p μ).range : AddSubgroup (Lp E p μ)) =
@@ -90,7 +90,7 @@ theorem range_toLpHom [Fact (1 ≤ p)] :
       ((ContinuousMap.toAEEqFunAddHom μ).comp (toContinuousMapAddMonoidHom α E))
       (by rintro - ⟨f, rfl⟩; exact mem_Lp f : _ ≤ Lp E p μ)
 
-variable (𝕜 : Type*) [Fact (1 ≤ p)] [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
+variable (𝕜 : Type*) [hp : Fact (1 ≤ p)] [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 /-- The bounded linear map of considering a bounded continuous function on a finite-measure space
 as an element of `Lp`. -/
@@ -98,7 +98,7 @@ noncomputable def toLp : (α →ᵇ E) →L[𝕜] Lp E p μ :=
   LinearMap.mkContinuous
     (LinearMap.codRestrict (Lp.LpSubmodule 𝕜 E p μ)
       ((ContinuousMap.toAEEqFunLinearMap μ).comp (toContinuousMapLinearMap α E 𝕜)) mem_Lp)
-    _ Lp_norm_le
+    _ <| Lp_norm_le (hp := ENNReal.ne_zero_of_ge_one hp.out)
 
 theorem coeFn_toLp (f : α →ᵇ E) :
     toLp (E := E) p μ 𝕜 f =ᵐ[μ] f :=

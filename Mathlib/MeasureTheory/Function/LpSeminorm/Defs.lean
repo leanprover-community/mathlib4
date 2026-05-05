@@ -14,8 +14,9 @@ public import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
 # ℒp space
 
 This file describes properties of almost everywhere strongly measurable functions with finite
-`p`-seminorm, denoted by `eLpNorm f p μ` and defined for `p:ℝ≥0∞` as `0` if `p=0`,
-`(∫ ‖f a‖^p ∂μ) ^ (1/p)` for `0 < p < ∞` and `essSup ‖f‖ μ` for `p=∞`.
+`p`-seminorm, denoted by `eLpNorm f p μ` and defined for `p:ℝ≥0∞` as
+`μ (Function.support (fun x ↦ ‖f x‖ₑ))` if `p=0`, `(∫ ‖f a‖^p ∂μ) ^ (1/p)` for `0 < p < ∞` and
+`essSup ‖f‖ μ` for `p=∞`.
 
 The Prop-valued `MemLp f p μ` states that a function `f : α → E` has finite `p`-seminorm
 and is almost everywhere strongly measurable.
@@ -81,8 +82,8 @@ def eLpNormEssSup (f : α → ε) (μ : Measure α) :=
 lemma eLpNormEssSup_eq_essSup_enorm (f : α → ε) (μ : Measure α) :
     eLpNormEssSup f μ = essSup (‖f ·‖ₑ) μ := rfl
 
-/-- `ℒp` seminorm, equal to `0` for `p=0`, to `(∫ ‖f a‖^p ∂μ) ^ (1/p)` for `0 < p < ∞` and to
-`essSup ‖f‖ μ` for `p = ∞`. -/
+/-- `ℒp` seminorm, equal to `μ (Function.support (fun x ↦ ‖f x‖ₑ))` for `p=0`,
+to `(∫ ‖f a‖^p ∂μ) ^ (1/p)` for `0 < p < ∞` and to `essSup ‖f‖ μ` for `p = ∞`. -/
 def eLpNorm {_ : MeasurableSpace α}
     (f : α → ε) (p : ℝ≥0∞) (μ : Measure α := by volume_tac) : ℝ≥0∞ :=
   if p = 0 then μ (Function.support (fun x ↦ ‖f x‖ₑ)) else
