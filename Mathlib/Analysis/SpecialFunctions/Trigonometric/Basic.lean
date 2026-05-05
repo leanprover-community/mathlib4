@@ -1264,7 +1264,7 @@ theorem sinh_antiperiodic : Function.Antiperiodic sinh (π * I) := by
   simp [Complex.sinh_add, sinh_mul_I, cosh_mul_I]
 
 @[simp]
-public theorem sinh_add_pi_I (z : ℂ) : sinh (z + π * I) = -sinh z :=
+theorem sinh_add_pi_mul_I (z : ℂ) : sinh (z + π * I) = -sinh z :=
   sinh_antiperiodic z
 
 theorem sinh_periodic : Function.Periodic sinh (2 * π * I) := by
@@ -1272,14 +1272,14 @@ theorem sinh_periodic : Function.Periodic sinh (2 * π * I) := by
   ring
 
 @[simp]
-public theorem sinh_sub_pi_I (z : ℂ) : sinh (z - π * I) = -sinh z :=
+theorem sinh_sub_pi_mul_I (z : ℂ) : sinh (z - π * I) = -sinh z :=
   sinh_antiperiodic.sub_eq z
 
 theorem cosh_antiperiodic : Function.Antiperiodic cosh (π * I) := by
   simp [Complex.cosh_add, cosh_mul_I, sinh_mul_I]
 
 @[simp]
-public theorem cosh_add_pi_I (z : ℂ) : cosh (z + π * I) = -cosh z :=
+theorem cosh_add_pi_mul_I (z : ℂ) : cosh (z + π * I) = -cosh z :=
   cosh_antiperiodic z
 
 theorem cosh_periodic : Function.Periodic cosh (2 * π * I) := by
@@ -1287,18 +1287,18 @@ theorem cosh_periodic : Function.Periodic cosh (2 * π * I) := by
   ring
 
 @[simp]
-public theorem cosh_sub_pi_I (z : ℂ) : cosh (z - π * I) = -cosh z :=
+theorem cosh_sub_pi_mul_I (z : ℂ) : cosh (z - π * I) = -cosh z :=
   cosh_antiperiodic.sub_eq z
 
 theorem tanh_periodic : Function.Periodic tanh (π * I) := by
   simp [tanh_eq_sinh_div_cosh]
 
 @[simp]
-public theorem tanh_add_pi_I (z : ℂ) : tanh (z + π * I) = tanh z :=
+theorem tanh_add_pi_mul_I (z : ℂ) : tanh (z + π * I) = tanh z :=
   tanh_periodic z
 
 @[simp]
-public theorem tanh_sub_pi_I (z : ℂ) : tanh (z - π * I) = tanh z :=
+theorem tanh_sub_pi_mul_I (z : ℂ) : tanh (z - π * I) = tanh z :=
   tanh_periodic.sub_eq z
 
 end Complex
