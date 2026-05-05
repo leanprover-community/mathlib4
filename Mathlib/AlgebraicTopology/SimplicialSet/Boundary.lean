@@ -143,11 +143,11 @@ lemma eq_boundary_iff :
 
 end stdSimplex
 
-namespace Subcomplex
+namespace boundary
 
 /-- If `x : X _⦋n⦌` is missing from `A` and every lower-dimensional simplex lies in `A`,
 then `A.preimage (yonedaEquiv.symm x) = ∂Δ[n]`. -/
-private lemma preimage_eq_boundary_of_minimal_notMem
+lemma preimage_eq_boundary_of_minimal_notMem
     {X : SSet.{u}} {n : ℕ} (A : X.Subcomplex) {x : X _⦋n⦌} (hxA : x ∉ A.obj _)
     (hn : ∀ m < n, ∀ y : X _⦋m⦌, y ∈ A.obj _) :
     A.preimage (yonedaEquiv.symm x) = (∂Δ[n] : (Δ[n] : SSet.{u}).Subcomplex) := by
@@ -162,7 +162,7 @@ private lemma preimage_eq_boundary_of_minimal_notMem
   · simpa using heq.symm.le _ (by simp : yonedaEquiv (𝟙 _) ∈ _)
 
 /-- If `A.preimage (yonedaEquiv.symm x) = ∂Δ[n]`, then `x` is non-degenerate. -/
-private lemma nonDegenerate_of_preimage_eq_boundary
+lemma nonDegenerate_of_preimage_eq_boundary
     {X : SSet.{u}} {n : ℕ} (A : X.Subcomplex) (x : X _⦋n⦌)
     (h : A.preimage (yonedaEquiv.symm x) = ∂Δ[n]) :
     x ∈ X.nonDegenerate n := by
@@ -195,7 +195,7 @@ private lemma nonDegenerate_of_preimage_eq_boundary
 set_option backward.isDefEq.respectTransparency false in
 /-- If the preimage of `A` along the simplex classified by `x : X _⦋n⦌` is `∂Δ[n]`,
 then adjoining `x` to `A` is a pushout of `∂Δ[n] ↪ Δ[n]`. -/
-lemma boundary.isPushout {X : SSet.{u}} {n : ℕ} (A : X.Subcomplex) (x : X _⦋n⦌)
+lemma isPushout {X : SSet.{u}} {n : ℕ} (A : X.Subcomplex) (x : X _⦋n⦌)
     (h : A.preimage (yonedaEquiv.symm x) = ∂Δ[n]) :
     IsPushout (A.lift (∂Δ[n].ι ≫ yonedaEquiv.symm x)
         (by simp [Subcomplex.range_comp, Subcomplex.image_le_iff, h]))
@@ -251,8 +251,8 @@ lemma exists_isPushout_of_ne_top {X : SSet.{u}} (A : X.Subcomplex) (hA : A ≠ �
     (fun hAle ↦ hxA (hAle _ (Or.inr (Subcomplex.mem_ofSimplex_obj x))))
   have hpre : A.preimage (yonedaEquiv.symm x) = (∂Δ[n] : (Δ[n] : SSet.{u}).Subcomplex) :=
     preimage_eq_boundary_of_minimal_notMem A hxA hn
-  exact ⟨A', lt, n, _, _, boundary.isPushout A x hpre⟩
+  exact ⟨A', lt, n, _, _, isPushout A x hpre⟩
 
-end Subcomplex
+end boundary
 
 end SSet
