@@ -94,8 +94,7 @@ theorem normal_iff_normal_monoidHom [IsMonHom φ] [Mono φ] :
     refine ⟨Yoneda.fullyFaithful.preimage ?_, ?_⟩
     · refine ⟨fun X ↦ ↾fun x ↦ h' _ (x ≫ fst _ _) (x ≫ snd _ _), fun X Y f ↦ ?_⟩
       ext
-      rw [← cancel_mono φ]
-      simp [hh', comp_mul, comp_inv]
+      simp [← cancel_mono φ, hh', comp_mul, comp_inv]
     · refine yoneda.map_injective ?_
       ext
       simp [hh', conj, comp_mul, comp_inv]
