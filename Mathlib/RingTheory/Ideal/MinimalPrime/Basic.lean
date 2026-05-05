@@ -51,13 +51,13 @@ lemma minimalPrimes_eq_minimals : minimalPrimes R = {x | Minimal Ideal.IsPrime x
 
 variable {I J}
 
-theorem Ideal.minimalPrimes_isPrime {p : Ideal R} (h : p ∈ I.minimalPrimes) : p.IsPrime :=
+theorem Ideal.IsPrime.of_mem_minimalPrimes {p : Ideal R} (h : p ∈ I.minimalPrimes) : p.IsPrime :=
   h.1.1
 
 theorem Ideal.le_of_mem_minimalPrimes {p : Ideal R} (h : p ∈ I.minimalPrimes) : I ≤ p :=
   h.1.2
 
-theorem Ideal.IsPrime.of_mem_minimalPrimes {p : Ideal R} (h : p ∈ minimalPrimes R) : p.IsPrime :=
+theorem Ideal.IsPrime.of_mem_minimalPrimes' {p : Ideal R} (h : p ∈ minimalPrimes R) : p.IsPrime :=
   h.1.1
 
 theorem Ideal.exists_minimalPrimes_le [J.IsPrime] (e : I ≤ J) : ∃ p ∈ I.minimalPrimes, p ≤ J := by
@@ -123,7 +123,7 @@ theorem Ideal.minimalPrimes_eq_subsingleton (hI : I.IsPrimary) : I.minimalPrimes
   ext J
   constructor
   · exact fun H =>
-      let e := (Ideal.minimalPrimes_isPrime H).radical_le_iff.mpr (Ideal.le_of_mem_minimalPrimes H)
+      let e := (Ideal.IsPrime.of_mem_minimalPrimes H).radical_le_iff.mpr (Ideal.le_of_mem_minimalPrimes H)
       (H.2 ⟨Ideal.isPrime_radical hI, Ideal.le_radical⟩ e).antisymm e
   · rintro (rfl : J = I.radical)
     exact ⟨⟨Ideal.isPrime_radical hI, Ideal.le_radical⟩, fun _ H _ => H.1.radical_le_iff.mpr H.2⟩
@@ -150,7 +150,7 @@ theorem Ideal.minimalPrimes_top : (⊤ : Ideal R).minimalPrimes = ∅ := by
   ext p
   simp only [Set.notMem_empty, iff_false]
   intro h
-  exact (Ideal.minimalPrimes_isPrime h).ne_top (top_le_iff.mp (Ideal.le_of_mem_minimalPrimes h))
+  exact (Ideal.IsPrime.of_mem_minimalPrimes h).ne_top (top_le_iff.mp (Ideal.le_of_mem_minimalPrimes h))
 
 theorem Ideal.minimalPrimes_eq_empty_iff (I : Ideal R) :
     I.minimalPrimes = ∅ ↔ I = ⊤ := by
