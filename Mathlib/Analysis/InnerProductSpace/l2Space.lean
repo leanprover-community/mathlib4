@@ -279,7 +279,6 @@ theorem IsHilbertSum.mk [∀ i, CompleteSpace <| G i] (hVortho : OrthogonalFamil
       exact LinearMap.range_eq_top.mp
         (eq_top_iff.mpr <| hVtotal.trans_eq hVortho.range_linearIsometry.symm) }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This is `Orthonormal.isHilbertSum` in the case of actual inclusions from subspaces. -/
 theorem IsHilbertSum.mkInternal [∀ i, CompleteSpace <| F i]
     (hFortho : OrthogonalFamily 𝕜 (fun i => F i) fun i => (F i).subtypeₗᵢ)

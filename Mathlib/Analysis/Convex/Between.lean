@@ -797,16 +797,15 @@ theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [IsTorsionFree R V]
   have h₂s :=
     sign_eq_of_affineCombination_mem_affineSpan_single_lineMap t.independent hw (Finset.mem_univ _)
       (Finset.mem_univ _) (Finset.mem_univ _) h₁₂.symm h₂₃ h₁₃ hr₂0 hr₂1 h₂'
-  rw [← Finset.univ.affineCombination_affineCombinationSingleWeights R t.points
+  rw [← Finset.univ.affineCombination_piSingle R t.points
       (Finset.mem_univ i₁),
     ← Finset.univ.affineCombination_affineCombinationLineMapWeights t.points (Finset.mem_univ _)
       (Finset.mem_univ _)] at h₁' ⊢
   refine
-    Sbtw.affineCombination_of_mem_affineSpan_pair t.independent hw
-      (Finset.univ.sum_affineCombinationSingleWeights R (Finset.mem_univ _))
+    Sbtw.affineCombination_of_mem_affineSpan_pair t.independent hw (Fintype.sum_pi_single' _ _)
       (Finset.univ.sum_affineCombinationLineMapWeights (Finset.mem_univ _) (Finset.mem_univ _) _)
       h₁' (Finset.mem_univ i₁) ?_
-  rw [Finset.affineCombinationSingleWeights_apply_self,
+  rw [Pi.single_eq_same,
     Finset.affineCombinationLineMapWeights_apply_of_ne h₁₂ h₁₃, sbtw_one_zero_iff]
   have hs : ∀ i : Fin 3, SignType.sign (w i) = SignType.sign (w i₃) := by
     intro i
@@ -1118,7 +1117,7 @@ theorem AffineIndependent.not_wbtw_of_injective {ι} (i j k : ι)
     ¬ Wbtw R (T i) (T j) (T k) := by
   replace hT := hT.comp_embedding ⟨_, h⟩
   rw [affineIndependent_iff_not_collinear] at hT
-  contrapose! hT
+  contrapose hT
   simp [Set.range_comp, Set.image_insert_eq, hT.symm.collinear]
 
 variable (R)

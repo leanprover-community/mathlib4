@@ -38,7 +38,8 @@ deterministic process.
 ## References
 
 * [Fritz, *A synthetic approach to Markov kernels, conditional independence
-  and theorems on sufficient statistics*][fritz2020]
+  and theorems on sufficient statistics*, Def. 11.22][fritz2020]
+* [Moss and Perrone, *A category-theoretic proof of the ergodic decomposition theorem*][moss2023]
 -/
 
 @[expose] public section
@@ -50,37 +51,34 @@ namespace CategoryTheory
 open MonoidalCategory CopyDiscardCategory ComonObj
 
 /-- Markov category where copy is natural given deterministic composition of morphisms. -/
-class PositiveCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] extends
+class PositiveCategory (C : Type u) [Category.{v} C] [MonoidalCategory C] extends
     MarkovCategory C where
   /-- Given morphisms `f : X ⟶ Y` and `g : Y ⟶ Z`, if their composition is deterministic, then
   process `f`, copy and then process `g` equals copy and process `f` and `g` independently. -/
-  copy_comp_natural {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : Deterministic (f ≫ g)) :
+  copy_comp_natural {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [h : Deterministic (f ≫ g)] :
       f ≫ Δ ≫ (g ⊗ₘ 𝟙 Y) = Δ ≫ (f ≫ g ⊗ₘ f)
 
-variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C]
+variable {C : Type u} [Category.{v} C] [MonoidalCategory C]
 
 namespace PositiveCategory
 
-variable [PositiveCategory C] {X Y : C} {e : X ≅ Y}
+variable [PositiveCategory C]
 
-instance : Deterministic (e.hom ≫ e.inv) where
-
-instance : Deterministic (e.inv ≫ e.hom) where
-
-instance {X Y : C} {e : X ≅ Y} : Deterministic e.hom where
+instance {X Y : C} (f : X ⟶ Y) [IsIso f] : Deterministic f where
   hom_comul := by
     calc
-    _ = e.hom ≫ Δ ≫ (e.inv ⊗ₘ 𝟙 Y) ≫ (e.hom ⊗ₘ 𝟙 Y) := by
+    _ = f ≫ Δ ≫ (inv f ⊗ₘ 𝟙 Y) ≫ (f ⊗ₘ 𝟙 Y) := by
       cat_disch
-    _ = (e.hom ≫ Δ ≫ (e.inv ⊗ₘ 𝟙 Y)) ≫ (e.hom ⊗ₘ 𝟙 Y) := by
+    _ = (f ≫ Δ ≫ (inv f ⊗ₘ 𝟙 Y)) ≫ (f ⊗ₘ 𝟙 Y) := by
       simp
-    _ = (Δ ≫ (𝟙 X ⊗ₘ e.hom)) ≫ (e.hom ⊗ₘ 𝟙 Y) := by
-      simp only [copy_comp_natural, Iso.hom_inv_id]
-    _ = Δ ≫ (𝟙 X ⊗ₘ e.hom) ≫ (e.hom ⊗ₘ 𝟙 Y) := by
+    _ = (Δ ≫ (𝟙 X ⊗ₘ f)) ≫ (f ⊗ₘ 𝟙 Y) := by
+      rw [copy_comp_natural (h := by rw [IsIso.hom_inv_id]; infer_instance)]
       simp
-    _ = Δ ≫ ((𝟙 X ≫ e.hom) ⊗ₘ (e.hom ≫ 𝟙 Y)) := by
+    _ = Δ ≫ (𝟙 X ⊗ₘ f) ≫ (f ⊗ₘ 𝟙 Y) := by
+      simp
+    _ = Δ ≫ ((𝟙 X ≫ f) ⊗ₘ (f ≫ 𝟙 Y)) := by
       rw [MonoidalCategory.tensorHom_comp_tensorHom]
-    _ = Δ ≫ (e.hom ⊗ₘ e.hom) := by cat_disch
+    _ = Δ ≫ (f ⊗ₘ f) := by cat_disch
 
 end PositiveCategory
 

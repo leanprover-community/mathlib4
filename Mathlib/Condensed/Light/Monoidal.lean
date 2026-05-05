@@ -25,7 +25,7 @@ monoidal structure on the presheaf category. By Day's reflection theorem, we obt
 structure.
 -/
 
-@[expose] public section
+public section
 
 universe u
 

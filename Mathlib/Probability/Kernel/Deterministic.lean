@@ -6,140 +6,83 @@ Authors: Gaëtan Serré
 
 module
 
-public import Mathlib.Analysis.Normed.Group.Real
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
-public import Mathlib.Probability.Kernel.Composition.KernelLemmas
+public import Mathlib.MeasureTheory.Measure.Typeclasses.ZeroOne
+public import Mathlib.Probability.Kernel.Composition.Prod
 
 /-!
-# IsDeterministicKernel
+# Class `IsDeterministic` of deterministic kernels
 
-This file defines the class `IsDeterministicKernel` of deterministic kernels, and proves some
+This file defines the class `IsDeterministic` of deterministic kernels, and proves some
 properties about them.
 
 ## Main definitions
 
-* `IsZeroOneMeasure`: a measure is a zero-one measure if it only takes the values `0`
-  and `1`.
-* `Kernel.IsDeterministicKernel`: a kernel is deterministic if it commutes with
-  the copy kernel, i.e. sampling and then copying the output is the same as running the kernel twice
-  independently.
+* `Kernel.IsDeterministic`: a kernel is deterministic if copying then applying the kernel to the
+  two copies is the same as first applying the kernel then copying.
 
 ## Main statements
 
-* `is_deterministic_iff_zero_one`: a finite kernel is deterministic if and
+* `isDeterministic_iff_isZeroOneMeasure`: a finite kernel is deterministic if and
   only if it is a zero-one measure for every input.
+* `IsDeterministic.exists_eq_deterministic`: in a standard Borel space, a deterministic Markov
+  kernel is a Dirac kernel of some measurable function.
+* `comp_parallelComp_comp_copy`: if the composition of two Markov kernels `η ∘ₖ κ` is
+  deterministic, the distribution over both `η ∘ₖ κ` and `κ` can be obtained by computing `η ∘ₖ κ`
+  and `κ` independently. This corresponds to the equation of a Positive Markov category.
+  See Example 11.25 of [fritz2020].
 
-* `parallelComp_id_comp_copy_comp`: if the composition of two Markov kernels `η ∘ₖ κ` is
- deterministic, the distribution over both `η ∘ₖ κ` and `κ` can be obtained by computing `η ∘ₖ κ`
-and `κ` independently.
+## Implementation notes
+
+`comp_parallelComp_comp_copy` is true only when considering Markov kernels. To see why, consider
+the counterexample with $X = Y = \{\varnothing\}$, kernels $\kappa(\cdot | \varnothing) = 2\delta_
+{\varnothing}$ and $\eta(\cdot | \varnothing) = (1/2)\delta_{\varnothing}$: although their
+composition is deterministic, the equation fails.
 
 ## References
 
 * [A synthetic approach to
-  Markov kernels, conditional independence and theorems on sufficient statistics][fritz2020].
+  Markov kernels, conditional independence and theorems on sufficient statistics][fritz2020]
+* [Moss and Perrone, *A category-theoretic proof of the ergodic decomposition theorem*][moss2023]
 -/
 
 @[expose] public section
 
 open MeasureTheory ProbabilityTheory Set
 
-variable {α : Type*} [MeasurableSpace α]
-
-namespace MeasureTheory
-
-/-- A measure is a zero-one measure if it only takes the values `0` and `1`. -/
-class IsZeroOneMeasure (μ : Measure α) : Prop where
-  zero_one' : ∀ ⦃s⦄, MeasurableSet s → μ s = 0 ∨ μ s = 1
-
-lemma Measure.zero_one (μ : Measure α) [IsZeroOneMeasure μ] :
-    ∀ ⦃s⦄, MeasurableSet s → μ s = 0 ∨ μ s = 1 :=
-  IsZeroOneMeasure.zero_one'
-
-variable {μ : Measure α} [IsZeroOneMeasure μ]
-
-instance : IsFiniteMeasure μ where
-  measure_univ_lt_top := by
-    cases μ.zero_one MeasurableSet.univ with
-    | inr h => simp [h]
-    | inl h => simp [h]
-
-lemma exists_one_iff_univ_one : (∃ s, MeasurableSet s ∧ μ s = 1) ↔ μ univ = 1 := by
-  constructor
-  · rintro ⟨s, hs, h⟩
-    cases μ.zero_one MeasurableSet.univ with
-    | inr h₁ => exact h₁
-    | inl h₀ =>
-      have := measure_mono (μ := μ) <| subset_univ s
-      rw [h] at this
-      simp_all
-  · intro h
-    exact ⟨univ, MeasurableSet.univ, h⟩
-
-lemma univ_one {s : Set α} (hs : MeasurableSet s) (hμs : μ s = 1) : μ univ = 1 :=
-  (exists_one_iff_univ_one).mp ⟨s, hs, hμs⟩
-
-lemma compl_eq_zero {s : Set α} (hs : MeasurableSet s) (hμs : μ s = 1) : μ sᶜ = 0 := by
-  rw [measure_compl hs (by simp), univ_one hs hμs, hμs, tsub_self]
-
-lemma inter_eq_one {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
-    (hμs : μ s = 1) (hμt : μ t = 1) : μ (s ∩ t) = 1 := by
-  have : μ (s ∩ t) ≤ μ s := measure_mono inter_subset_left
-  have : μ (s ∩ t) ≤ μ t := measure_mono inter_subset_right
-  cases μ.zero_one hs <;> cases μ.zero_one ht <;> cases μ.zero_one (hs.inter ht)
-  all_goals try simp_all only [zero_le, zero_ne_one]
-  suffices μ (s ∩ t)ᶜ ≤ 0 by
-    rw [measure_compl (hs.inter ht) (by simp), univ_one hs ‹_›] at this
-    simp_all
-  calc
-  _ = μ (sᶜ ∪ tᶜ) := by simp [compl_inter]
-  _ ≤ μ sᶜ + μ tᶜ := measure_union_le _ _
-  _ ≤ 0 := by
-    rw [compl_eq_zero hs ‹_›, compl_eq_zero ht ‹_›]
-    simp
-
-lemma inter_eq_prod {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t) :
-    μ (s ∩ t) = μ s * μ t := by
-  have : μ (s ∩ t) ≤ μ s := measure_mono inter_subset_left
-  have : μ (s ∩ t) ≤ μ t := measure_mono inter_subset_right
-  cases μ.zero_one hs <;> cases μ.zero_one ht <;> cases μ.zero_one (hs.inter ht)
-  all_goals try simp_all [inter_eq_one]
-
-end MeasureTheory
-
-variable {β : Type*} [MeasurableSpace β]
+variable {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
 namespace ProbabilityTheory.Kernel
 
-lemma copy_comp_apply_prod (κ : Kernel α β) (a : α) {s t : Set β} (hs : MeasurableSet s)
-    (ht : MeasurableSet t) : (copy β ∘ₖ κ) a (s ×ˢ t) = κ a (s ∩ t) := by
-  rw [comp_apply' _ _ _ <| hs.prod ht]
-  simp_rw [copy_apply, Measure.dirac_apply' _ <| hs.prod ht, indicator_prod_one]
-  calc
-  _ = ∫⁻ b, (s ∩ t).indicator 1 b ∂κ a := by
-    congr with b
-    simp [inter_indicator_one]
-  _ = κ a (s ∩ t) := lintegral_indicator_one <| hs.inter ht
+/-- A kernel is deterministic if copying then applying the kernel to the two copies is the same
+as first applying the kernel then copying. -/
+class IsDeterministic (κ : Kernel α β) : Prop where
+  parallelComp_self_comp_copy : (κ ∥ₖ κ) ∘ₖ copy α = copy β ∘ₖ κ
 
-/-- A kernel is deterministic if it satisfies the naturality condition with respect to the copy
-kernel. -/
-class IsDeterministicKernel (κ : Kernel α β) : Prop where
-  comp_natural' : (κ ∥ₖ κ) ∘ₖ copy α = copy β ∘ₖ κ
+export IsDeterministic (parallelComp_self_comp_copy)
 
-lemma comp_natural (κ : Kernel α β) [IsDeterministicKernel κ] :
-    (κ ∥ₖ κ) ∘ₖ copy α = copy β ∘ₖ κ := IsDeterministicKernel.comp_natural'
+instance {f : α → β} (hf : Measurable f) : IsDeterministic (deterministic f hf) where
+  parallelComp_self_comp_copy := by
+    simp_rw [parallelComp_comp_copy, deterministic_prod_deterministic, copy,
+      deterministic_comp_deterministic, Function.comp_def]
 
-lemma deterministic_is_deterministic {f : α → β} (hf : Measurable f) :
-    IsDeterministicKernel <| deterministic f hf := ⟨deterministic_comp_copy hf⟩
+instance : IsDeterministic (mβ := mα) (Kernel.id (α := α)) := by unfold Kernel.id; infer_instance
 
-instance : IsDeterministicKernel (Kernel.id (α := α)) :=
-    deterministic_is_deterministic (measurable_id)
+instance : IsDeterministic (copy α) := by unfold copy; infer_instance
 
-lemma is_deterministic_iff_zero_one (κ : Kernel α β) [IsFiniteKernel κ] :
-    IsDeterministicKernel κ ↔ ∀ a, IsZeroOneMeasure (κ a) := by
+instance : IsDeterministic (discard α) := by unfold discard; infer_instance
+
+instance : IsDeterministic (swap α β) := by unfold swap; infer_instance
+
+open IsZeroOneMeasure
+
+lemma isDeterministic_iff_isZeroOneMeasure (κ : Kernel α β) [IsFiniteKernel κ] :
+    IsDeterministic κ ↔ ∀ a, IsZeroOneMeasure (κ a) := by
   constructor
   · intro h a
     refine ⟨fun s hs ↦ ?_⟩
-    have := DFunLike.congr_fun κ.comp_natural a |> DFunLike.congr_fun <| (s ×ˢ s)
+    have := DFunLike.congr_fun κ.parallelComp_self_comp_copy a |> DFunLike.congr_fun
+      <| (s ×ˢ s)
     rw [parallelComp_comp_copy, prod_apply_prod, copy_comp_apply_prod, inter_self] at this
     · by_cases hκ : κ a s = 0
       · simp [hκ]
@@ -151,13 +94,34 @@ lemma is_deterministic_iff_zero_one (κ : Kernel α β) [IsFiniteKernel κ] :
     rw [parallelComp_comp_copy, prod_apply]
     refine Measure.prod_eq fun s t hs ht ↦ ?_
     rw [copy_comp_apply_prod _ _ hs ht]
-    exact inter_eq_prod hs ht
+    exact measure_inter_eq_prod hs ht
 
-lemma zero_one (κ : Kernel α β) [IsFiniteKernel κ] [IsDeterministicKernel κ] :
-    ∀ a, IsZeroOneMeasure (κ a) := (is_deterministic_iff_zero_one κ).mp ‹_›
+instance (κ : Kernel α β) [IsFiniteKernel κ] [IsDeterministic κ] : ∀ a, IsZeroOneMeasure (κ a) :=
+  (isDeterministic_iff_isZeroOneMeasure κ).mp ‹_›
 
-lemma parallelComp_id_comp_copy_comp {γ : Type*} [MeasurableSpace γ] {κ : Kernel α β}
-    {η : Kernel β γ} [IsMarkovKernel κ] [IsMarkovKernel η] [IsDeterministicKernel (η ∘ₖ κ)] :
+/-- in a standard Borel space, a deterministic Markov kernel is a Dirac kernel of one measurable
+function. -/
+theorem IsDeterministic.exists_eq_deterministic [StandardBorelSpace β] (κ : Kernel α β)
+    [IsMarkovKernel κ] [IsDeterministic κ] :
+    ∃ (f : α → β) (hf : Measurable f), κ = deterministic f hf := by
+  choose f hf using fun a ↦ exists_eq_dirac (μ := κ a)
+  refine ⟨f, ?_, ?_⟩
+  · intro s hs
+    have : f ⁻¹' s = (fun a => κ a s) ⁻¹' {1} := by
+      simp only [preimage, mem_singleton_iff]
+      simp_rw [hf, Measure.dirac_apply' _ hs]
+      ext x
+      exact (indicator_eq_one_iff_mem ENNReal).symm
+    rw [this]
+    exact κ.measurable_coe hs <| measurableSet_singleton 1
+  · ext a : 1
+    exact hf a
+
+/-- The equation of a Positive Markov category: if the composition of two Markov kernels `η ∘ₖ κ` is
+ deterministic, the distribution over both `η ∘ₖ κ` and `κ` can be obtained by computing `η ∘ₖ κ`
+and `κ` independently. -/
+lemma comp_parallelComp_comp_copy {γ : Type*} [MeasurableSpace γ] {κ : Kernel α β}
+    {η : Kernel β γ} [IsMarkovKernel κ] [IsMarkovKernel η] [IsDeterministic (η ∘ₖ κ)] :
     η ∘ₖ κ ∥ₖ κ ∘ₖ copy α = η ∥ₖ Kernel.id ∘ₖ copy β ∘ₖ κ := by
   simp only [parallelComp_comp_copy]
   ext a : 1
@@ -171,13 +135,13 @@ lemma parallelComp_id_comp_copy_comp {γ : Type*} [MeasurableSpace γ] {κ : Ker
     all_goals simp_all
   simp_rw [this]
   rw [lintegral_indicator ht]
-  have := ((η ∘ₖ κ).zero_one a)
-  cases ((η ∘ₖ κ) a).zero_one hs with
-  | inl h₀ =>
-    rw [h₀, zero_mul, setLIntegral_eq_zero_iff ht <| η.measurable_coe hs]
+  rcases ((η ∘ₖ κ) a).zero_one s with (h₀ | h₁)
+  · rw [h₀, zero_mul, setLIntegral_eq_zero_iff ht <| η.measurable_coe hs]
     rw [comp_apply' _ _ _ hs, lintegral_eq_zero_iff <| η.measurable_coe hs] at h₀
     filter_upwards [h₀] with x hx _ using hx
-  | inr h₁ =>
+  · /- In Example 11.25 of [gritz2020], the case where `((η ∘ₖ κ) a) s = 1` is not explicitly
+    treated. We prove it here by using the fact that the hypothesis implies that
+    `((η ∘ₖ κ) a) sᶜ = 0`, and thus that the integral of `1 - (η b) s` over `κ a` is zero. -/
     rw [h₁, one_mul]
     have integral_le_kernel : ∫⁻ b in t, (η b) s ∂κ a ≤ κ a t := by
       calc
@@ -206,6 +170,7 @@ lemma parallelComp_id_comp_copy_comp {γ : Type*} [MeasurableSpace γ] {κ : Ker
         simp
     _ = (η ∘ₖ κ) a sᶜ := by
         rw [η.comp_apply' _ _ hs.compl]
-    _ = 0 := compl_eq_zero hs h₁
+    _ = 0 := by
+      rw [measure_compl hs (by simp), measure_univ h₁, h₁, tsub_self]
 
 end ProbabilityTheory.Kernel
