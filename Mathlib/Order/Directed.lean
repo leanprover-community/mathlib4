@@ -133,7 +133,7 @@ theorem Std.Total.directedOn [Std.Total r] (s : Set α) : DirectedOn r s := fun 
   Or.casesOn (total_of r a b) (fun h => ⟨b, hb, h, refl _⟩) fun h => ⟨a, ha, refl _, h⟩
 
 @[simp]
-theorem directedOn_of_linearOrder [LinearOrder α] (s : Set α) : DirectedOn (· ≤ ·) s :=
+theorem DirectedOn.of_linearOrder [LinearOrder α] (s : Set α) : DirectedOn (· ≤ ·) s :=
   Std.Total.directedOn s
 
 /-- `IsDirected α r` states that for any elements `a`, `b` there exists an element `c` such that
