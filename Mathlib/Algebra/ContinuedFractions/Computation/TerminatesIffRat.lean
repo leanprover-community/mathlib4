@@ -100,8 +100,7 @@ nonrec theorem exists_gcf_pair_rat_eq_of_nth_contsAux :
 
 theorem exists_gcf_pair_rat_eq_nth_conts :
     ∃ conts : Pair ℚ, (of v).conts n = (conts.map (↑) : Pair K) := by
-  rw [nth_cont_eq_succ_nth_contAux]
-  exact exists_gcf_pair_rat_eq_of_nth_contsAux v <| n + 1
+  rw [nth_cont_eq_succ_nth_contAux]; exact exists_gcf_pair_rat_eq_of_nth_contsAux v <| n + 1
 
 theorem exists_rat_eq_nth_num : ∃ q : ℚ, (of v).nums n = (q : K) := by
   rcases exists_gcf_pair_rat_eq_nth_conts v n with ⟨⟨a, _⟩, nth_cont_eq⟩

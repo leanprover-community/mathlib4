@@ -115,9 +115,9 @@ theorem succ_nth_stream_b_le_nth_stream_fr_inv {ifp_n ifp_succ_n : IntFractPair 
     have : ifp_n_fr ≠ 0 := by
       intro h
       simp [h, IntFractPair.stream, nth_stream_eq] at succ_nth_stream_eq
-    obtain rfl : IntFractPair.of ifp_n_fr⁻¹ = ifp_succ_n := by
+    have : IntFractPair.of ifp_n_fr⁻¹ = ifp_succ_n := by
       simpa [this, IntFractPair.stream, nth_stream_eq, Option.coe_def] using succ_nth_stream_eq
-    assumption
+    rwa [← this]
   exact floor_le ifp_n.fr⁻¹
 
 end IntFractPair
