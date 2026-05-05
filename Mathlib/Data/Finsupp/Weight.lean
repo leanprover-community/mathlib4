@@ -270,7 +270,7 @@ lemma range_single_one :
 theorem degree_mapDomain {τ : Type*} (f : σ → τ) [AddCommMonoid M] (x : σ →₀ M) :
     degree (x.mapDomain f) = degree x := by
   simp [mapDomain, sum]
-  rfl
+  dsimp [degree_apply]
 
 @[deprecated (since := "2026-04-27")]
 alias degree_mapDomain_eq_of_subsingletonAddUnits := degree_mapDomain
