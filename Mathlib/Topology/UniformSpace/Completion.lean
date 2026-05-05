@@ -124,8 +124,8 @@ instance : UniformSpace (CauchyFilter α) :=
     { uniformity := (𝓤 α).lift' gen
       refl := principal_le_lift'.2 fun _s hs ⟨a, b⟩ =>
         fun (a_eq_b : a = b) => a_eq_b ▸ a.property.right hs
-      symm := (by exact symm_gen)
-      comp := (by exact comp_gen) }
+      symm := by exact symm_gen
+      comp := by exact comp_gen }
 
 theorem mem_uniformity {s : Set (CauchyFilter α × CauchyFilter α)} :
     s ∈ 𝓤 (CauchyFilter α) ↔ ∃ t ∈ 𝓤 α, gen t ⊆ s :=
