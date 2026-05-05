@@ -621,7 +621,7 @@ theorem isStrongPrelimit_preBeth {o : Ordinal} :
     IsStrongPrelimit (preBeth o) ↔ IsSuccPrelimit o := by
   refine ⟨?_, fun ho x hx ↦ ?_⟩
   · contrapose!
-    rw [not_isSuccPrelimit_iff', not_isStrongPrelimit_iff]
+    rw [not_isSuccPrelimit_iff_mem_range_succ, not_isStrongPrelimit_iff]
     rintro ⟨a, rfl⟩
     refine ⟨preBeth a, ?_, ?_⟩
     · rw [preBeth_lt_preBeth, lt_succ_iff]
