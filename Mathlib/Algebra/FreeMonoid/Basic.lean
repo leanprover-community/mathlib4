@@ -334,7 +334,8 @@ theorem lift_restrict (f : FreeMonoid α →* M) : lift (f ∘ of) = f := lift.a
 @[to_additive /-- The map from the free additive monoid is unique given its values on generators. -/]
 theorem lift_unique {f : FreeMonoid α →* M} {g : α → M}
     (h : f ∘ of = g) : f = lift g := by
-  rw [← lift_restrict f, h]
+  conv_lhs => rw [← lift_restrict f]
+  rw [h]
 
 /-- Variant of `lift_unique` with pointwise hypothesis. -/
 @[to_additive /-- Variant of `lift_unique` with pointwise hypothesis. -/]
