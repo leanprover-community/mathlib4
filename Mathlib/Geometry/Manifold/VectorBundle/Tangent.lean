@@ -497,15 +497,10 @@ section inTangentCoordinates
 
 variable {N : Type*}
 
-/-- Reducible bridge from `TangentSpace` fibers to `tangentBundleCore` fibers on model spaces. -/
-theorem inCoordinates_tangentSpace_eq (x₀ x : H) (y₀ y : H') (ϕ : E →L[𝕜] E') :
-    inCoordinates E (TangentSpace I) E' (TangentSpace I') x₀ x y₀ y ϕ =
-      inCoordinates E (tangentBundleCore I H).Fiber E' (tangentBundleCore I' H').Fiber x₀ x y₀ y ϕ := rfl
-
 /-- The map `inCoordinates` for the tangent bundle is trivial on the model spaces -/
 theorem inCoordinates_tangent_bundle_core_model_space (x₀ x : H) (y₀ y : H') (ϕ : E →L[𝕜] E') :
     inCoordinates E (TangentSpace I) E' (TangentSpace I') x₀ x y₀ y ϕ = ϕ := by
-  rw [inCoordinates_tangentSpace_eq, VectorBundleCore.inCoordinates_eq] <;> try trivial
+  erw [VectorBundleCore.inCoordinates_eq] <;> try trivial
   simp_rw [tangentBundleCore_indexAt, tangentBundleCore_coordChange_model_space,
     ContinuousLinearMap.id_comp, ContinuousLinearMap.comp_id]
 
