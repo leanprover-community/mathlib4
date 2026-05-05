@@ -199,20 +199,20 @@ theorem projection_apply_left (hpq : IsCompl p q) (x : p) :
 @[deprecated (since := "2026-05-04")] alias IsCompl.projection_apply_left := projection_apply_left
 
 @[simp]
-theorem projectionOnto_range (h : IsCompl p q) : range (projectionOnto p q h) = ⊤ :=
+theorem range_projectionOnto (h : IsCompl p q) : range (projectionOnto p q h) = ⊤ :=
   range_eq_of_proj (projectionOnto_apply_left h)
 
-@[deprecated (since := "2026-05-04")] alias linearProjOfIsCompl_range := projectionOnto_range
+@[deprecated (since := "2026-05-04")] alias linearProjOfIsCompl_range := range_projectionOnto
 
 @[simp]
-theorem projection_range (hpq : IsCompl p q) : range (p.projection q hpq) = p := by
+theorem range_projection (hpq : IsCompl p q) : range (p.projection q hpq) = p := by
   simp [projection, range_comp]
 
-@[deprecated (since := "2026-05-04")] alias IsCompl.projection_range := projection_range
+@[deprecated (since := "2026-05-04")] alias IsCompl.projection_range := range_projection
 
 theorem projectionOnto_surjective (h : IsCompl p q) :
     Function.Surjective (projectionOnto p q h) :=
-  range_eq_top.mp (projectionOnto_range h)
+  range_eq_top.mp (range_projectionOnto h)
 
 @[deprecated (since := "2026-05-04")]
 alias linearProjOfIsCompl_surjective := projectionOnto_surjective
@@ -261,17 +261,17 @@ theorem projection_apply_right (h : IsCompl p q) (x : q) :
 alias linearProjOfIsCompl_apply_right := projection_apply_right
 
 @[simp]
-theorem projectionOnto_ker (h : IsCompl p q) : ker (projectionOnto p q h) = q :=
+theorem ker_projectionOnto (h : IsCompl p q) : ker (projectionOnto p q h) = q :=
   ext fun _ => mem_ker.trans (projectionOnto_apply_eq_zero_iff h)
 
-@[deprecated (since := "2026-05-04")] alias linearProjOfIsCompl_ker := projectionOnto_ker
+@[deprecated (since := "2026-05-04")] alias linearProjOfIsCompl_ker := ker_projectionOnto
 
 @[simp]
-theorem projection_ker (hpq : IsCompl p q) :
+theorem ker_projection (hpq : IsCompl p q) :
     ker (p.projection q hpq) = q := by
   simp [projection, ker_comp]
 
-@[deprecated (since := "2026-05-04")] alias IsCompl.projection_ker := projection_ker
+@[deprecated (since := "2026-05-04")] alias IsCompl.projection_ker := ker_projection
 
 theorem projectionOnto_comp_subtype (h : IsCompl p q) :
     (projectionOnto p q h).comp p.subtype = LinearMap.id :=
@@ -536,7 +536,7 @@ such that `∀ x : p, f x = x`. -/
 def isComplEquivProj : { q // IsCompl p q } ≃ { f : E →ₗ[R] p // ∀ x : p, f x = x } where
   toFun q := ⟨projectionOnto p q q.2, projectionOnto_apply_left q.2⟩
   invFun f := ⟨ker (f : E →ₗ[R] p), isCompl_of_proj f.2⟩
-  left_inv := fun ⟨q, hq⟩ => by simp only [projectionOnto_ker]
+  left_inv := fun ⟨q, hq⟩ => by simp only [ker_projectionOnto]
   right_inv := fun ⟨f, hf⟩ => Subtype.ext <| f.projectionOnto_of_proj hf
 
 @[simp]
