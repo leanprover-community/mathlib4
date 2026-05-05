@@ -715,10 +715,9 @@ is a topological complement. -/
 theorem IsCompl.isTopCompl_of_quotient_finiteDimensional {p q : Submodule 𝕜 E}
     (h : IsCompl p q) (hp : IsClosed (p : Set E)) [FiniteDimensional 𝕜 (E ⧸ p)] :
     IsTopCompl p q := by
-  let mkQ : E →L[𝕜] E ⧸ p := ⟨p.mkQ, continuous_quot_mk⟩ -- I can't believe we don't have this...
   let φ : E ⧸ p →L[𝕜] q := (p.quotientEquivOfIsCompl q h).toLinearMap.toContinuousLinearMap
-  have := (φ ∘L mkQ).isTopCompl_of_proj fun x ↦ by simp [mkQ, φ]
-  simpa [φ, mkQ] using this.symm
+  have := (φ ∘L p.mkQL).isTopCompl_of_proj fun x ↦ by simp [φ]
+  simpa [φ] using this.symm
 
 /-- Assume that `p q : Submodule 𝕜 E` are algebraic complements. If `p` is closed and `q`
 has finite dimension, then they are in fact topological complements.
