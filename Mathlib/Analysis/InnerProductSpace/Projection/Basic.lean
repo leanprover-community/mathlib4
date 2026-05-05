@@ -140,7 +140,7 @@ theorem orthogonalProjectionFn_norm_sq (v : E) :
   convert norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero (v - p) p h' using 2 <;> simp
 
 /-- The orthogonal projection onto a complete subspace. -/
-def orthogonalProjection : E →L[𝕜] K :=
+def orthogonalProjectionOnto : E →L[𝕜] K :=
   LinearMap.mkContinuous
     { toFun := fun v => ⟨K.orthogonalProjectionFn v, orthogonalProjectionFn_mem v⟩
       map_add' := fun x y => by
@@ -167,6 +167,8 @@ def orthogonalProjection : E →L[𝕜] K :=
     refine le_of_pow_le_pow_left₀ two_ne_zero (norm_nonneg _) ?_
     change ‖K.orthogonalProjectionFn x‖ ^ 2 ≤ ‖x‖ ^ 2
     nlinarith [K.orthogonalProjectionFn_norm_sq x]
+
+@[deprecated (since := "2026-05-05")] alias orthogonalProjection := orthogonalProjectionOnto
 
 variable {K}
 
