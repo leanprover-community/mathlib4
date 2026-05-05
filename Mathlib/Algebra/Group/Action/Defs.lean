@@ -289,8 +289,15 @@ namespace SMul
 variable [SMul M α]
 
 /-- Auxiliary definition for `SMul.comp`, `MulAction.compHom`,
-`DistribMulAction.compHom`, `Module.compHom`, etc. -/
-@[to_additive (attr := simp) /-- Auxiliary definition for `VAdd.comp`, `AddAction.compHom`, etc. -/]
+`DistribMulAction.compHom`, `Module.compHom`, etc.
+
+We do not make this `reducible`, as we want to prevent `rw` seeing through it.
+However, it must be instance-reducible to avoid diamond downstream when `g := (·)`. -/
+@[to_additive (attr := simp, implicit_reducible)
+/-- Auxiliary definition for `VAdd.comp`, `AddAction.compHom`, etc.
+
+We do not make this `reducible`, as we want to prevent `rw` seeing through it.
+However, it must be instance-reducible to avoid diamond downstream when `g := (·)`. -/]
 def comp.smul (g : N → M) (n : N) (a : α) : α := g n • a
 
 variable (α)
