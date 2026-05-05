@@ -442,6 +442,17 @@ instance : ConcreteCategory (FlatExtension R K)
   hom {S₁ S₂} f := ⟨f.algHom, f.comm⟩
   ofHom {S₁ S₂} f := ⟨f.1, f.2⟩
 
+def Hom.mk' {S₁ S₂ : FlatExtension R K} (f : S₁ →+* S₂)
+    (h_algHom : f.comp (algebraMap R S₁) = algebraMap R S₂)
+    (h_comm : (algebraMap S₂ K).comp f = algebraMap S₁ K) : Hom S₁ S₂ where
+  algHom := AlgHom.mk' f fun c x ↦ by simpa [Algebra.smul_def] using congr(($h_algHom c) * (f x))
+  comm := AlgHom.ext fun x ↦ congr($h_comm x)
+
+instance : HasForget₂ (FlatExtension R K) CommRingCat.{u} where
+  forget₂ := {
+    obj S := CommRingCat.of S.Ring
+    map f := CommRingCat.ofHom f.1 }
+
 namespace FilteredColimit
 
 variable {R K} {J : Type u} [SmallCategory J] [IsFiltered J] {F : J ⥤ FlatExtension R K}
