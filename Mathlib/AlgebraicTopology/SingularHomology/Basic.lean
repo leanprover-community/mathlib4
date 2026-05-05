@@ -45,9 +45,6 @@ instance [Limits.HasPullbacks C] {X : C} :
     ((singularChainComplexFunctor C).obj X).PreservesMonomorphisms where
   preserves f _ := by
     dsimp [singularChainComplexFunctor, SSet.chainComplexFunctor]
-    apply +allowSynthFailures Functor.map_mono
-    apply +allowSynthFailures Functor.map_mono
-    dsimp [SSet, SimplicialObject.whiskering, SimplicialObject]
     infer_instance
 
 /-- The `n`-th singular homology functor with coefficients in `C`. -/
