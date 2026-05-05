@@ -18,7 +18,6 @@ formalized.
 
 -/
 
-
 public section
 
 open CategoryTheory MorphismProperty Simplicial
