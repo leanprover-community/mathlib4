@@ -416,7 +416,8 @@ def algebraMapKCocone : Cocone (F ⋙ (forget₂ _ CommRingCat)) where
 
 lemma algebraMap_comp_ι_eq (j j' : J) :
     (c.ι.app j).hom.comp (algebraMap R (F.obj j)) =
-    (c.ι.app j').hom.comp (algebraMap R (F.obj j')) := sorry
+    (c.ι.app j').hom.comp (algebraMap R (F.obj j')) := by
+  sorry
 
 noncomputable def coconeOfCoconeForgetPt (hc : IsColimit c) : FlatExtension R K := by
   let j := Classical.choice ‹IsFiltered J›.2
@@ -424,12 +425,32 @@ noncomputable def coconeOfCoconeForgetPt (hc : IsColimit c) : FlatExtension R K 
       (fun j ↦ inferInstanceAs (IsLocalRing (F.obj j)))
       (fun _ _ f ↦ inferInstanceAs (IsLocalHom (F.map f).algHom.toRingHom)) hc
   let : Algebra R c.pt := ((c.ι.app j).hom.comp (algebraMap R (F.obj j))).toAlgebra
-  refine @FlatExtension.mk R _ _ K _ _ c.pt _ inferInstance inferInstance
-    (hc.desc (algebraMapKCocone F)).hom.toAlgebra ?_ ?_ ?_
-  · sorry
+  let : Algebra c.pt K := (hc.desc (algebraMapKCocone F)).hom.toAlgebra
+  refine @FlatExtension.mk R _ _ K _ _ c.pt _ _ _ _ ?_ ?_ ?_
+  · refine IsScalarTower.of_algebraMap_eq' ?_
+    let c_ι : CommRingCat.of (F.obj j) ⟶ CommRingCat.of c.pt := c.ι.app j
+    let c_ι_desc : CommRingCat.of (F.obj j) →+* CommRingCat.of K :=
+      (hc.desc (algebraMapKCocone F)).hom.comp c_ι.hom
+    have : c_ι_desc = algebraMap (F.obj j) K := by
+      change RingHom.comp _ _ = _
+      rw [← CommRingCat.hom_ofHom (algebraMap _ _), ← CommRingCat.hom_comp]
+      exact congr($(hc.fac (algebraMapKCocone F) j).hom)
+    change _ = c_ι_desc.comp _
+    rw [this]
+    exact IsScalarTower.algebraMap_eq _ _ _
   · change CommRingCat.flat <| CommRingCat.ofHom ((c.ι.app j).hom.comp (algebraMap R (F.obj j)))
     rw [← CommRingCat.ind_flat_eq_flat]
-    sorry
+    refine ⟨J, inferInstance, inferInstance, _, {
+      app j := CommRingCat.ofHom (algebraMap R (F.obj j))
+      naturality j j' f := by
+        exact CommRingCat.hom_ext (RingHom.ext fun x ↦
+          congr($(AlgHom.comp_algebraMap (F.map f).algHom) x).symm)
+    }, c.ι, hc, fun j' ↦ ⟨?_, ?_⟩⟩
+    · simp only [Functor.const_obj_obj, Functor.comp_obj, CommRingCat.flat_iff]
+      change (algebraMap R (F.obj j')).Flat
+      exact RingHom.flat_algebraMap_iff.mpr (F.obj j').flat
+    · ext x
+      simpa using congr($(algebraMap_comp_ι_eq c j' j) x)
   · refine le_antisymm (fun x hx ↦ ?_) (((local_hom_TFAE (algebraMap R c.pt)).out 0 2).mp ?_)
     · obtain ⟨j, x, hx', rfl⟩ := Set.mem_iUnion.mp <| (le_of_eq <|
         @CommRingCat.FilteredColimit.maximalIdeal_eq_iUnion_of_isColimit _ _ _ _
