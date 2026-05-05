@@ -447,7 +447,7 @@ lemma Ideal.sup_height_isPrime_eq_ringKrullDim [Nontrivial R] :
     · exact ⟨⊥, by simp [I_top]⟩
     · obtain ⟨P, hP⟩ := Set.nonempty_coe_sort.mp (nonempty_minimalPrimes I_top)
       refine ⟨P, iSup_pos (α := ℕ∞) I_top ▸ le_iSup_of_le (hP.left.left) ?_⟩
-      have := Ideal.minimalPrimes_isPrime hP
+      have := Ideal.IsPrime.of_mem_minimalPrimes hP
       exact iInf_le_of_le P (iInf_le_of_le hP (ge_of_eq (Ideal.height_eq_primeHeight P)))
 
 @[deprecated "Use `Ideal.sup_height_isPrime_eq_ringKrullDim` instead." (since := "2026-04-02")]
