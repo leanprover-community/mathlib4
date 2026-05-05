@@ -5,7 +5,8 @@ Authors: Thomas Browning, Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.GrpLimits
 
 /-!
 # Normal subgroup objects
@@ -100,8 +101,19 @@ theorem normal_iff_normal_monoidHom [IsMonHom φ] [Mono φ] :
       ext
       simp [hh', conj, comp_mul, comp_inv]
 
+@[to_additive]
 instance (priority := low) [BraidedCategory C] [IsCommMonObj G] [IsMonHom φ] [Mono φ] :
     Normal φ := by
   simp [isNormalHom_iff, conj_eq_snd_of_isCommMonObj]
+
+@[to_additive]
+lemma Normal.of_isPullback_η [IsMonHom φ] {P : C} (p : G ⟶ P) [GrpObj P] [IsMonHom p]
+    (h : IsPullback φ (toUnit _) p η) :
+    Normal φ where
+  mono := h.mono_fst_of_mono
+  exists_comp_eq_conj := by
+    refine ⟨h.lift (G ◁ φ ≫ conj G) (toUnit _) ?_, ?_⟩
+    · simp [conj, mul_comp, comp_mul, inv_comp, mul_comp, h.w, comp_inv, ← Hom.one_def]
+    · simp
 
 end CategoryTheory.IsMonHom
