@@ -162,7 +162,7 @@ theorem IsTrail.of_append_right {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
   rw [isTrail_def, edges_append, List.nodup_append] at h
   exact ⟨h.2.1⟩
 
-theorem append_isTrail_iff_edges_disjoint {u v w : V} (p : G.Walk u v) (q : G.Walk v w) :
+theorem isTrail_append_iff_disjoint_edges {u v w : V} (p : G.Walk u v) (q : G.Walk v w) :
     (p.append q).IsTrail ↔ p.IsTrail ∧ q.IsTrail ∧ p.edges.Disjoint q.edges := by
   simp [Walk.isTrail_def, List.nodup_append']
 
@@ -714,7 +714,7 @@ lemma isPath_append_isCycle {u v} {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPa
     (h : p.support.tail.Disjoint q.support.tail) (hn : 1 < p.length ⊔ q.length) :
     (p.append q).IsCycle := by
   rw [isCycle_def]
-  refine ⟨append_isTrail_iff_edges_disjoint .. |>.mpr ⟨hp.isTrail, hq.isTrail, ?_⟩, ?_, ?_⟩
+  refine ⟨isTrail_append_iff_disjoint_edges .. |>.mpr ⟨hp.isTrail, hq.isTrail, ?_⟩, ?_, ?_⟩
   · rintro ⟨⟩ h₁ h₂
     cases lt_sup_iff.mp hn
     · obtain ⟨z, hz₁, hz₂⟩ := hp.exists_of_edges h₁ h₂ ‹_›
