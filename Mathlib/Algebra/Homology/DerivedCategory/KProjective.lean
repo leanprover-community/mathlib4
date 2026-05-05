@@ -53,9 +53,9 @@ lemma quasiIso_iff {K L : CochainComplex C ℤ} [K.IsKProjective] [L.IsKProjecti
   refine ⟨fun _ ↦ ?_, fun hf ↦ homotopyEquivalences_le_quasiIso _ _ _ hf⟩
   rw [← HomotopyCategory.inverseImage_quotient_isomorphisms,
     MorphismProperty.inverseImage_iff, MorphismProperty.isomorphisms.iff]
-  obtain ⟨g, hg⟩ := (Qh_map_bijective _ _).2
+  obtain ⟨g, hg⟩ := (Qh_map_bijective _ _).surjective
     ((quotientCompQhIso C).hom.app L ≫ inv (Q.map f) ≫ (quotientCompQhIso C).inv.app K)
-  refine ⟨g, (Qh_map_bijective _ _).1 ?_, (Qh_map_bijective _ _).1 ?_⟩
+  refine ⟨g, (Qh_map_bijective _ _).injective ?_, (Qh_map_bijective _ _).injective ?_⟩
   · simp [hg]
   · simp [hg, ← quotientCompQhIso_inv_naturality]
 
