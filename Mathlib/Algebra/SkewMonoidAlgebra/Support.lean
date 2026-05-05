@@ -31,6 +31,8 @@ variable [AddCommMonoid k] {a : G} {b : k}
 theorem support_single_of_ne_zero (a : G) (h : b ≠ 0) : (single a b).support = {a} :=
   Finsupp.support_single_of_ne_zero _ h
 
+@[deprecated (since := "2026-05-05")] alias support_single_ne_zero := support_single_of_ne_zero
+
 theorem support_single_subset : (single a b).support ⊆ {a} := Finsupp.support_single_subset
 
 theorem support_sum {k' G' : Type*} [DecidableEq G'] [AddCommMonoid k'] {f : SkewMonoidAlgebra k G}

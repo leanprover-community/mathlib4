@@ -101,6 +101,8 @@ theorem single_of_single_apply (a a' : α) (b : M) :
 @[simp] lemma support_single_of_ne_zero (a : α) (hb : b ≠ 0) : (single a b).support = {a} :=
   if_neg hb
 
+@[deprecated (since := "2026-05-05")] alias support_single_ne_zero := support_single_of_ne_zero
+
 theorem support_single_subset : (single a b).support ⊆ {a} := by
   classical
   grind

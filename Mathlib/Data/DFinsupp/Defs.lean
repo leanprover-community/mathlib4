@@ -883,6 +883,8 @@ theorem support_subset_iff {s : Set ι} {f : Π₀ i, β i} : ↑f.support ⊆ s
 theorem support_single_of_ne_zero {i : ι} {b : β i} (hb : b ≠ 0) : (single i b).support = {i} := by
   grind
 
+@[deprecated (since := "2026-05-05")] alias support_single_ne_zero := support_single_of_ne_zero
+
 theorem support_single_subset {i : ι} {b : β i} : (single i b).support ⊆ {i} :=
   support_mk'_subset
 
