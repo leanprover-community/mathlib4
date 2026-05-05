@@ -434,7 +434,8 @@ lemma exists_repr (x : E ⊗[𝕜] F) :
 noncomputable def mapL_id (f : E →L[𝕜] F) : (E ⊗[𝕜] G) →L[𝕜] (F ⊗[𝕜] G) :=
   (TensorProduct.map f.toLinearMap LinearMap.id).mkContinuous ‖f‖ (fun x => by
     obtain ⟨n, e, g, hx ⟩ := exists_repr x
-    obtain ⟨m, A, hA⟩  := Matrix.posSemidef_iff_eq_sum_vecMulVec.mp (Matrix.posSemidef_of_mapL e f)
+    obtain ⟨m, A, hA⟩  := Matrix.posSemidef_iff_eq_sum_vecMulVec.mp
+      (Matrix.posSemidef_opNorm_smul_gram_sub_gram e f)
     apply (sq_le_sq₀ (norm_nonneg _) (by positivity)).mp
     simp_rw [sub_eq_iff_eq_add', ← sub_eq_iff_eq_add, ← Matrix.ext_iff, Matrix.sub_apply,
       Matrix.smul_apply, Matrix.gram_apply, Function.comp_apply] at hA
