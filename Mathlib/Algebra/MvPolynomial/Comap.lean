@@ -96,12 +96,14 @@ noncomputable def comapEquiv (f : MvPolynomial σ R ≃ₐ[R] MvPolynomial τ R)
     intro x
     rw [← comap_comp_apply]
     apply comap_eq_id_of_eq_id
-    simp
+    intro
+    simp only [AlgHom.id_apply, AlgEquiv.comp_symm]
   right_inv := by
     intro x
     rw [← comap_comp_apply]
     apply comap_eq_id_of_eq_id
-    simp
+    intro
+    simp only [AlgHom.id_apply, AlgEquiv.symm_comp]
 
 @[simp]
 theorem comapEquiv_coe (f : MvPolynomial σ R ≃ₐ[R] MvPolynomial τ R) :

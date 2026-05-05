@@ -137,7 +137,7 @@ initialize_simps_projections BialgHom (toFun → apply)
 
 @[simp]
 protected theorem coe_coe {F : Type*} [FunLike F A B] [BialgHomClass F R A B] (f : F) :
-    ⇑(BialgHomClass.toBialgHom f) = f :=
+    ⇑(f : A →ₐc[R] B) = f :=
   rfl
 
 @[simp]

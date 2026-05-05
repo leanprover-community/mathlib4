@@ -634,7 +634,7 @@ def mapAlgHom (φ : K[X] →ₐ[S] R[X]) (hφ : K[X]⁰ ≤ R[X]⁰.comap φ) : 
   { mapRingHom φ hφ with
     commutes' := fun r => by
       simp_rw [RingHom.toFun_eq_coe, coe_mapRingHom_eq_coe_map, algebraMap_apply r, map_apply_div,
-        map_one, AlgHom.commutesₛₐ, RingHom.id_apply, div_one, ← IsScalarTower.algebraMap_apply] }
+        map_one, AlgHom.commutes, RingHom.id_apply, div_one, ← IsScalarTower.algebraMap_apply] }
 
 theorem coe_mapAlgHom_eq_coe_map (φ : K[X] →ₐ[S] R[X]) (hφ : K[X]⁰ ≤ R[X]⁰.comap φ) :
     (mapAlgHom φ hφ : K⟮X⟯ → R⟮X⟯) = map φ hφ :=

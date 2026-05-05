@@ -151,7 +151,7 @@ lemma of_isSeparable [Algebra.IsSeparable K L] : FormallyEtale K L := by
     rfl
   · intro r
     change g _ (algebraMap K _ r) = _
-    simp
+    rw [AlgHom.commutesₛₐ]
   · ext x
     simpa using AlgHom.congr_fun (hg₁ x) (IntermediateField.AdjoinSimple.gen K x)
 

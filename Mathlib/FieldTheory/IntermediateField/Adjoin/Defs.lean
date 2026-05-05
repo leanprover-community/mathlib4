@@ -305,7 +305,7 @@ theorem _root_.AlgHom.fieldRange_eq_top {f : E →ₐ[F] K} :
 
 @[simp]
 theorem _root_.AlgEquiv.fieldRange_eq_top (f : E ≃ₐ[F] K) :
-    f.toAlgHom.fieldRange = ⊤ :=
+    (f : E →ₐ[F] K).fieldRange = ⊤ :=
   AlgHom.fieldRange_eq_top.mpr f.surjective
 
 end Lattice

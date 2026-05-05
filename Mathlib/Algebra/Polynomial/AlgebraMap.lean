@@ -428,7 +428,7 @@ lemma coe_aeval_mk_apply {S : Subalgebra R A} (h : x ∈ S) :
     (aeval (⟨x, h⟩ : S) p : A) = aeval x p :=
   (aeval_algHom_apply S.val (⟨x, h⟩ : S) p).symm
 
-theorem aeval_algEquiv (f : A ≃ₐ[R] B) (x : A) : aeval (f x) = f.toAlgHom.comp (aeval x) :=
+theorem aeval_algEquiv (f : A ≃ₐ[R] B) (x : A) : aeval (f x) = (f : A →ₐ[R] B).comp (aeval x) :=
   aeval_algHom (f : A →ₐ[R] B) x
 
 theorem aeval_algebraMap_apply_eq_algebraMap_eval (x : R) (p : R[X]) :

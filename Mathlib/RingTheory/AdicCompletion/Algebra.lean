@@ -132,7 +132,7 @@ This is `AdicCompletion.eval` postcomposed with the algebra isomorphism
 def evalₐ (n : ℕ) : AdicCompletion I R →ₐ[R] R ⧸ I ^ n :=
   have h : (I ^ n • ⊤ : Ideal R) = I ^ n := by ext x; simp
   AlgHom.comp
-    (Ideal.quotientEquivAlgOfEq R h).toAlgHom
+    (Ideal.quotientEquivAlgOfEq R h)
     (AlgHom.ofLinearMap (eval I R n) rfl (fun _ _ ↦ rfl))
 
 theorem factor_evalₐ_eq_eval {n : ℕ} (x : AdicCompletion I R) (h : I ^ n ≤ I ^ n • ⊤) :
