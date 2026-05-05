@@ -162,7 +162,7 @@ theorem sum_subgroup_units_eq_zero [Ring K] [NoZeroDivisors K]
   have hzero : (((a : Kˣ) : K) - 1) = 0 ∨ ∑ x : ↥G, ((x : Kˣ) : K) = 0 := by
     rw [← mul_eq_zero, sub_mul, ← h_sum_map, one_mul, sub_self]
   apply Or.resolve_left hzero
-  contrapose! ha
+  contrapose ha
   ext
   rwa [← sub_eq_zero]
 

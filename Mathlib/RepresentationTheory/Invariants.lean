@@ -115,7 +115,7 @@ def invariantsEquivIntertwiningMap : (linHom ρ σ).invariants ≃ₗ[k] Intertw
   invFun g :=
     { val := g.toLinearMap
       property := (mem_linHom_invariants_iff_isIntertwining g.toLinearMap).mpr
-        {isIntertwining := g.isIntertwining} }
+        { isIntertwining := g.isIntertwining } }
 
 section
 

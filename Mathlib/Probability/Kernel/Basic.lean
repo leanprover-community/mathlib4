@@ -411,7 +411,7 @@ lemma exists_ae_eq_isMarkovKernel {μ : Measure α}
     refine ⟨toMeasurable μ {a | ¬ IsProbabilityMeasure (κ a)}, measurableSet_toMeasurable _ _,
       by simpa [measure_toMeasurable] using h, ?_⟩
     intro a ha
-    contrapose! ha
+    contrapose ha
     exact subset_toMeasurable _ _ ha
   obtain ⟨a, ha⟩ : sᶜ.Nonempty := by
     contrapose! h'; simpa [μs, h'] using measure_univ_le_add_compl s (μ := μ)

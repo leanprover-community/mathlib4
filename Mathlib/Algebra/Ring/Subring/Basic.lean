@@ -395,8 +395,9 @@ theorem center_eq_top (R) [CommRing R] : center R = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ R)
 
 /-- The center is commutative. -/
-instance {R} [Ring R] : CommRing (center R) :=
-  { (inferInstance : CommSemiring (Subsemiring.center R)), (center R).toRing with }
+instance {R} [Ring R] : CommRing (center R) where
+  __ := (center R).toRing
+  __ : CommSemiring (center R) := inferInstanceAs <| CommSemiring (Subsemiring.center R)
 
 /-- The center of isomorphic (not necessarily associative) rings are isomorphic. -/
 @[simps!] def centerCongr (e : R ≃+* S) : center R ≃+* center S :=
@@ -833,6 +834,11 @@ theorem range_eq_top {f : R →+* S} :
 theorem range_eq_top_of_surjective (f : R →+* S) (hf : Function.Surjective f) :
     f.range = (⊤ : Subring S) :=
   range_eq_top.2 hf
+
+@[simp]
+theorem domRestrict_comp_rangeRestrict (g : S →+* T) (f : R →+* S) :
+    (g.domRestrict f.range).comp (f.rangeRestrict) = g.comp f :=
+  rfl
 
 section eqLocus
 
