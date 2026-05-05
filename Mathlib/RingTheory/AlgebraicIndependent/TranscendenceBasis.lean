@@ -246,6 +246,38 @@ theorem IsTranscendenceBasis.isAlgebraic_field {F E : Type*} {x : ι → E}
     IsScalarTower.of_algebraMap_eq (congrFun rfl)
   exact Algebra.IsAlgebraic.extendScalars (R := adjoin F S) (Subalgebra.inclusion_injective _)
 
+theorem Algebra.EssFiniteType.of_isScalarTower
+    (F K L : Type*) [Field F] [Field K] [Field L] [Algebra F K] [Algebra K L]
+    [Algebra F L] [IsScalarTower F K L] [Algebra.EssFiniteType F L] :
+    Algebra.EssFiniteType F K := by
+  obtain ⟨bFK, hbFK⟩ := exists_isTranscendenceBasis F K
+  obtain ⟨bKL, hbKL⟩ := exists_isTranscendenceBasis K L
+  have := hbFK.sumElim_comp hbKL
+  -- idea: L is finite over F adjoin hbFK ∪ hbKL
+  -- K adjoin hbKL is finite over F adjoin hbFK ∪ hbKL
+  -- K is algebraic over F adjoin hbFK
+  -- but adjoining transcendental elements won't affect the degree
+  -- so K is finite over F adjoin hbFK
+  -- so K is finitely generated over F
+  sorry
+
+theorem Algebra.EssFiniteType.of_algHom
+    {F K L : Type*} [Field F] [Field K] [Field L] [Algebra F K] [Algebra F L]
+    (f : K →ₐ[F] L) [Algebra.EssFiniteType F L] : Algebra.EssFiniteType F K := by
+  let := RingHom.toAlgebra f.toRingHom
+  exact Algebra.EssFiniteType.of_isScalarTower F K L
+
+theorem IntermediateField.fg_of_le
+    {K L : Type*} [Field K] [Field L] [Algebra K L] (F E : IntermediateField K L)
+    (hFE : F ≤ E) (hE : E.FG) : F.FG := by
+  rw [← IntermediateField.essFiniteType_iff] at hE ⊢
+  exact Algebra.EssFiniteType.of_algHom (IntermediateField.inclusion hFE)
+
+theorem Field.fg_of_algebra (K L : Type*) [Field K] [Field L] [Algebra K L] [Field.FG L] :
+    Field.FG K := by
+  rw [Field.fg_iff_fg_top_bot] at *
+  sorry
+
 namespace AlgebraicIndependent
 
 variable (R A) [FaithfulSMul R A]

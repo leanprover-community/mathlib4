@@ -433,6 +433,12 @@ theorem coe_sSup_of_directedOn {S : Set (Subfield K)} (Sne : S.Nonempty)
 
 end Subfield
 
+variable (L) in
+/-- A field is finitely generated if it is the closure of a finite subset. -/
+@[mk_iff fg_iff]
+protected class Field.FG : Prop where
+  finitely_generated : ∃ S : Finset L, Subfield.closure (S : Set L) = ⊤
+
 namespace RingHom
 
 variable {s : Subfield K}
