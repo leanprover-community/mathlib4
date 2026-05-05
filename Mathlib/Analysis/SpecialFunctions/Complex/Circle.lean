@@ -45,44 +45,6 @@ theorem arg_exp {x : ℝ} (h₁ : -π < x) (h₂ : x ≤ π) : arg (exp x) = x :
 theorem exp_arg (z : Circle) : exp (arg z) = z :=
   injective_arg <| arg_exp (neg_pi_lt_arg _) (arg_le_pi _)
 
-/-- The image under `Circle.exp` of the interval of angles `(-r, r)`. -/
-def centeredArc (r : ℝ) : Set Circle :=
-  exp '' {x | |x| < r}
-
-theorem mem_centeredArc {r : ℝ} (hr : r ≤ π) {z : Circle} :
-    z ∈ centeredArc r ↔ |arg z| < r := by
-  refine ⟨?_, fun hz ↦ ⟨arg z, hz, exp_arg z⟩⟩
-  rintro ⟨t, ht, rfl⟩
-  have htπ : |t| < π := ht.trans_le hr
-  rwa [arg_exp (neg_lt_of_abs_lt htπ) (lt_of_abs_lt htπ).le]
-
-theorem centeredArc_eq_empty {r : ℝ} (hr : r ≤ 0) : centeredArc r = ∅ := by
-  contrapose! hr
-  obtain ⟨-, x, hx, rfl⟩ := hr
-  exact (abs_nonneg x).trans_lt hx
-
-@[simp]
-theorem centeredArc_zero : centeredArc 0 = ∅ :=
-  centeredArc_eq_empty le_rfl
-
-theorem mem_centeredArc_div {z : Circle} {s : ℝ} {n : ℕ} (hs : s ≤ π)
-    (h1 : z ∈ centeredArc (π / n)) (h2 : z ^ n ∈ centeredArc s) :
-    z ∈ centeredArc (s / n) := by
-  have hs0 : 0 < s := by
-    contrapose! h2
-    simp [centeredArc_eq_empty h2]
-  have hn0 : n ≠ 0 := by
-    contrapose! h1
-    simp [h1]
-  have hn : 1 ≤ (n : ℝ) := by simpa [Nat.one_le_iff_ne_zero]
-  rw [mem_centeredArc ((div_le_self hs0.le hn).trans hs),
-    lt_div_iff₀' (one_pos.trans_le hn)]
-  rw [mem_centeredArc (div_le_self pi_nonneg hn)] at h1
-  rwa [mem_centeredArc hs, coe_pow, ← arg_coe_angle_toReal_eq_arg, arg_pow_coe_angle,
-    (Angle.nsmul_toReal_eq_mul hn0).mpr (mem_Ioc_of_Ioo ?_), abs_mul, Nat.abs_cast,
-    arg_coe_angle_toReal_eq_arg] at h2
-  rwa [neg_div, mem_Ioo, ← abs_lt, arg_coe_angle_toReal_eq_arg]
-
 /-- `Complex.arg ∘ (↑)` and `Circle.exp` define a partial equivalence between `Circle` and `ℝ`
 with `source = Set.univ` and `target = Set.Ioc (-π) π`. -/
 @[simps -fullyApplied]
@@ -153,6 +115,54 @@ lemma exp_injOn_Ico {a b : ℝ} (h : b - a ≤ 2 * π) : InjOn exp (Ico a b) :=
 
 lemma exp_injOn_Ioc {a b : ℝ} (h : b - a ≤ 2 * π) : InjOn exp (Ioc a b) :=
   exp_injOn_of_forall_sub_mem_Ioo <| fun x ⟨hx1, hx2⟩ y ⟨hy1, hy2⟩ ↦ by constructor <;> linarith
+
+/-- The image under `Circle.exp` of the interval of angles `(-r, r)`. -/
+def centeredArc (r : ℝ) : Set Circle :=
+  exp '' {x | |x| < r}
+
+theorem bijOn_exp_Ioo_centeredArc {r : ℝ} (hr : r ≤ π) :
+    BijOn Circle.exp (Ioo (-r) r) (centeredArc r) := by
+  simp_rw [centeredArc, abs_lt, Set.Ioo_def]
+  refine exp_injOn_Ico ?_ |>.mono Ioo_subset_Ico_self |>.bijOn_image
+  grind
+
+theorem centeredArc_mono {r s : ℝ} (h : r ≤ s) : centeredArc r ⊆ centeredArc s := by
+  rintro _ ⟨x, hx, rfl⟩
+  exact ⟨x, hx.trans_le h, rfl⟩
+
+theorem mem_centeredArc {r : ℝ} (hr : r ≤ π) {z : Circle} :
+    z ∈ centeredArc r ↔ |arg z| < r := by
+  refine ⟨?_, fun hz ↦ ⟨arg z, hz, exp_arg z⟩⟩
+  rintro ⟨t, ht, rfl⟩
+  have htπ : |t| < π := ht.trans_le hr
+  rwa [arg_exp (neg_lt_of_abs_lt htπ) (lt_of_abs_lt htπ).le]
+
+theorem centeredArc_eq_empty {r : ℝ} (hr : r ≤ 0) : centeredArc r = ∅ := by
+  contrapose! hr
+  obtain ⟨-, x, hx, rfl⟩ := hr
+  exact (abs_nonneg x).trans_lt hx
+
+@[simp]
+theorem centeredArc_zero : centeredArc 0 = ∅ :=
+  centeredArc_eq_empty le_rfl
+
+theorem mem_centeredArc_div {z : Circle} {s : ℝ} {n : ℕ} (hs : s ≤ π)
+    (h1 : z ∈ centeredArc (π / n)) (h2 : z ^ n ∈ centeredArc s) :
+    z ∈ centeredArc (s / n) := by
+  have hs0 : 0 < s := by
+    contrapose! h2
+    simp [centeredArc_eq_empty h2]
+  have hn0 : n ≠ 0 := by
+    contrapose! h1
+    simp [h1]
+  have hn : 1 ≤ (n : ℝ) := by simpa [Nat.one_le_iff_ne_zero]
+  rw [mem_centeredArc ((div_le_self hs0.le hn).trans hs),
+    lt_div_iff₀' (one_pos.trans_le hn)]
+  rw [mem_centeredArc (div_le_self pi_nonneg hn)] at h1
+  rwa [mem_centeredArc hs, coe_pow, ← arg_coe_angle_toReal_eq_arg, arg_pow_coe_angle,
+    (Angle.nsmul_toReal_eq_mul hn0).mpr (mem_Ioc_of_Ioo ?_), abs_mul, Nat.abs_cast,
+    arg_coe_angle_toReal_eq_arg] at h2
+  rwa [neg_div, mem_Ioo, ← abs_lt, arg_coe_angle_toReal_eq_arg]
 
 lemma exp_surjective : Surjective exp := fun z => ⟨z.val.arg, exp_arg z⟩
 
@@ -445,17 +455,19 @@ theorem Circle.isCoveringMap_exp : IsCoveringMap exp := isAddQuotientCoveringMap
 lemma isLocalHomeomorph_circleExp : IsLocalHomeomorph Circle.exp :=
   Circle.isCoveringMap_exp.isLocalHomeomorph
 
+/-- The centered arcs `centeredArc (π / 2 ^ (n + 1))` form a neighborhood basis at `1`.
+This basis is useful because multiplying two sufficiently small arcs stays inside an earlier arc. -/
 theorem Circle.hasBasis_centeredArc_div_two_pow :
     (nhds (1 : Circle)).HasBasis (fun _ ↦ True) (fun n ↦ centeredArc (π / 2 ^ (n + 1))) := by
   rw [← Circle.exp_zero, ← isLocalHomeomorph_circleExp.map_nhds_eq 0]
-  refine ((nhds_basis_zero_abs_lt ℝ).to_hasBasis
-      (fun x hx ↦ ⟨Nat.ceil (Real.pi / x), trivial, fun t ht ↦ ?_⟩)
-        fun k _ ↦ ⟨Real.pi / 2 ^ (k + 1), by positivity, le_rfl⟩).map Circle.exp
-  rw [Set.mem_setOf_eq] at ht ⊢
-  refine lt_of_lt_of_le ht ?_
-  rw [div_le_iff₀' (pow_pos two_pos _), ← div_le_iff₀ hx]
-  refine (Nat.le_ceil (Real.pi / x)).trans ?_
-  exact_mod_cast (Nat.le_succ _).trans Nat.lt_two_pow_self.le
+  simp_rw [centeredArc, abs_lt, Set.Ioo_def, ← Real.ball_zero_eq_Ioo]
+  apply Filter.HasBasis.map
+  refine nhds_basis_uniformity <| Metric.mk_uniformity_basis_of_tendsto (l := Filter.atTop)
+    (fun _ _ ↦ by positivity) (by simp) ?_
+  simp_rw [div_eq_mul_inv, pow_succ, mul_inv_rev, ← mul_assoc]
+  rw [← mul_zero (π * 2⁻¹)]
+  exact tendsto_inv_atTop_zero.comp (tendsto_pow_atTop_atTop_of_one_lt (by norm_num))
+    |>.const_mul _
 
 theorem Circle.isOpen_centeredArc (r : ℝ) : IsOpen (centeredArc r) := by
   simpa [centeredArc, abs_lt] using isLocalHomeomorph_circleExp.isOpenMap _ isOpen_Ioo
