@@ -427,12 +427,9 @@ noncomputable def valueGroup₀_hom_extensionValuation :
   toFun x := hv.extensionValuation.restrict (restrict₀_surjective hv.v x).choose
   map_zero' := by simp [Valuation.restrict_def]
   map_one' := by
-    rw [← embedding_strictMono.injective.eq_iff, Valuation.restrict_def, map_one]
-    erw [embedding_restrict₀] -- Should disappear when `ValueGroup₀` takes a `MonoidWithZeroHom`.
-    simp only [Valuation.toMonoidWithZeroHom_coe_eq_coe,
-      extensionValuation_toFun, extension_extends, ← map_one (embedding (f := hv.v))]
-    rw [embedding_strictMono.injective.eq_iff]
-    exact (restrict₀_surjective hv.v 1).choose_spec
+    rw [Valuation.restrict_eq_one_iff, extensionValuation_apply_coe,
+      ← Valuation.restrict_eq_one_iff, Valuation.restrict_def,
+      (restrict₀_surjective hv.v 1).choose_spec]
   map_mul' a b := by
     simp only [restrict₀_apply, map_eq_zero, Valuation.restrict_def, extensionValuation_apply_coe,
       mul_dite, mul_zero, dite_mul, zero_mul]
@@ -507,7 +504,8 @@ noncomputable def valueGroup₀_equiv_extensionValuation :
         rw [← hy_def] at hy
         simpa [← hy] using hb0
       simp only [h0, ↓reduceDIte, h0', WithZero.coe_inj, Subtype.mk.injEq, Units.mk0_inj] at this
-      erw [embedding_strictMono.injective.eq_iff, extension_extends, extension_extends] at this
+      rw [embedding_strictMono.injective.eq_iff, Completion.algebraMap_def,
+        Completion.algebraMap_def, extension_extends, extension_extends] at this
       simp only [Valuation.restrict_def, Algebra.algebraMap_self, RingHom.id_apply] at this
       rw [hx, hy] at this
       exact this
