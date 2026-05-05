@@ -249,13 +249,16 @@ theorem projectionOnto_apply_right (h : IsCompl p q) (x : q) :
     projectionOnto p q h x = 0 :=
   projectionOnto_apply_of_mem_right h x.2
 
+@[deprecated (since := "2026-05-04")]
+alias linearProjOfIsCompl_apply_right := projectionOnto_apply_right
+
 @[simp]
 theorem projection_apply_right (h : IsCompl p q) (x : q) :
     p.projection q h x = 0 :=
   projection_apply_of_mem_right h x.2
 
-@[deprecated (since := "2026-05-04")]
-alias linearProjOfIsCompl_apply_right := projection_apply_right
+@[deprecated (since := "2026-05-05")] alias IsCompl.projection_apply_right :=
+  projection_apply_right
 
 @[simp]
 theorem ker_projectionOnto (h : IsCompl p q) : ker (projectionOnto p q h) = q :=
