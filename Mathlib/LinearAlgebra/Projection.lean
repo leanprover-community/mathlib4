@@ -153,7 +153,12 @@ def projectionOnto (h : IsCompl p q) : E →ₗ[R] p :=
 /-- The linear projection onto a subspace along its complement
 as a map from the full space to itself, as opposed to `Submodule.projectionOnto`,
 which maps into the subtype.
-This version is important as it satisfies `IsIdempotentElem`. -/
+This version is important as it satisfies `IsIdempotentElem`.
+
+See also:
+* `Submodule.projectionOntoL` and `Submodule.projectionL` for the continuous versions.
+* `Submodule.orthogonalProjection` and `Submodule.orthogonalProjectionOnto` for the projections
+  along the orthogonal subspace. -/
 noncomputable def projection (hpq : IsCompl p q) :=
   p.subtype ∘ₗ p.projectionOnto q hpq
 
