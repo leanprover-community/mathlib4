@@ -28,11 +28,11 @@ the literature while the compact coherentification is often called the k-ificati
 * `CompactlyCoherentSpace.of_weaklyLocallyCompactSpace`: every weakly locally compact space is a
   compactly coherent space.
 * `CompactlyCoherentSpace.of_sequentialSpace`: every sequential space is a compactly coherent space.
-* `CompactlyCoherentSpace.isCompact_iff_isCompact_in_compactCoherentification`: The compact sets of
+* `CompactCoherentification.isCompact_iff`: The compact sets of
   a topological space and its compact coherentification agree.
 * `CompactCoherentification.instCompactlyCoherentSpace`: The compact
   coherentification makes any space into a compactly coherent space.
-* `CompactCoherentification.mk_homeo`: The compact coherentification of a compactly coherent space
+* `CompactCoherentification.homeo`: The compact coherentification of a compactly coherent space
   `X` preserves the topology on `X`.
 * `CompactCoherentification.continuous_map_of_continuousOn`: If a map `f : X → Y` is continuous on
   every compact subset of `X` then it is continuous when viewed as a map from
