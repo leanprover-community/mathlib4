@@ -294,16 +294,16 @@ theorem toLinearMap_prodEquivOfIsCompl_symm (hpq : IsCompl p q) :
       (p.projectionOnto q hpq).prod (q.projectionOnto p hpq.symm) :=
   LinearMap.ext <| by simp
 
-theorem IsCompl.sub_projection_mem (h : IsCompl p q) (x : E) : x - h.projection x ∈ q := by
-  rw [← h.projection_eq_self_sub_projection]
-  exact h.symm.projection_apply_mem x
+theorem sub_projection_mem (h : IsCompl p q) (x : E) : x - p.projection q h x ∈ q := by
+  rw [← projection_eq_self_sub_projection h]
+  exact projection_apply_mem h.symm x
 
 /-- The composition of `quotientEquivOfIsCompl` with `mkQ` agrees with the projection
 `linearProjOfIsCompl` onto `q` parallel to `p`. -/
 @[simp]
 theorem quotientEquivOfIsCompl_apply_mk (h : IsCompl p q) (x : E) :
-    quotientEquivOfIsCompl p q h (Submodule.Quotient.mk x) = q.linearProjOfIsCompl p h.symm x := by
-  rw [(Quotient.eq _).mpr (h.symm.sub_projection_mem x)]
+    quotientEquivOfIsCompl p q h (Submodule.Quotient.mk x) = q.projectionOnto p h.symm x := by
+  rw [(Quotient.eq _).mpr (sub_projection_mem h.symm x)]
   exact quotientEquivOfIsCompl_apply_mk_right p q h _
 
 end Submodule
