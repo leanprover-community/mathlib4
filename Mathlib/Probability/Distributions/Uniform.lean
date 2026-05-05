@@ -98,9 +98,8 @@ theorem toMeasurable_iff {X : Ω → E} {s : Set E} :
   rw [ProbabilityTheory.cond_toMeasurable_eq]
 
 protected theorem toMeasurable {X : Ω → E} {s : Set E} (hu : IsUniform X s ℙ μ) :
-    IsUniform X (toMeasurable μ s) ℙ μ := by
-  unfold IsUniform at *
-  rwa [ProbabilityTheory.cond_toMeasurable_eq]
+    IsUniform X (toMeasurable μ s) ℙ μ :=
+  toMeasurable_iff.mpr hu
 
 theorem hasPDF {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞)
     (hu : IsUniform X s ℙ μ) : HasPDF X ℙ μ := by
@@ -181,9 +180,8 @@ end IsUniform
 variable {X : Ω → E}
 
 lemma IsUniform.cond {s : Set E} :
-    IsUniform (id : E → E) s (ProbabilityTheory.cond μ s) μ := by
-  unfold IsUniform
-  rw [Measure.map_id]
+    IsUniform (id : E → E) s (ProbabilityTheory.cond μ s) μ :=
+  map_id
 
 /-- The density of the uniform measure on a set with respect to itself. This allows us to abstract
 away the choice of random variable and probability space. -/
@@ -192,17 +190,14 @@ def uniformPDF (s : Set E) (x : E) (μ : Measure E := by volume_tac) : ℝ≥0�
 
 /-- Check that indeed any uniform random variable has the uniformPDF. -/
 lemma uniformPDF_eq_pdf {s : Set E} (hs : MeasurableSet s) (hu : pdf.IsUniform X s ℙ μ) :
-    (fun x ↦ uniformPDF s x μ) =ᵐ[μ] pdf X ℙ μ := by
-  unfold uniformPDF
-  exact Filter.EventuallyEq.trans (pdf.IsUniform.pdf_eq hs hu).symm (ae_eq_refl _)
+    (fun x ↦ uniformPDF s x μ) =ᵐ[μ] pdf X ℙ μ :=
+  (hu.pdf_eq hs).symm.trans (ae_eq_refl _)
 
 open scoped Classical in
 /-- Alternative way of writing the uniformPDF. -/
 lemma uniformPDF_ite {s : Set E} {x : E} :
     uniformPDF s x μ = if x ∈ s then (μ s)⁻¹ else 0 := by
-  unfold uniformPDF
-  unfold Set.indicator
-  simp only [Pi.smul_apply, Pi.one_apply, smul_eq_mul, mul_one]
+  norm_num [uniformPDF, Set.indicator]
 
 end pdf
 

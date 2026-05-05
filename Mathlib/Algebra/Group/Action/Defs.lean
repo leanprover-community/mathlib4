@@ -53,12 +53,19 @@ open Function (Injective Surjective)
 
 variable {M N G H α β γ δ : Type*}
 
-attribute [to_additive Add.toVAdd /-- See also `AddMonoid.toAddAction` -/] instSMulOfMul
+-- Note that https://github.com/leanprover/lean4/pull/13554
+-- also makes the instance priority change, so if that is merged then `instance 1100` can
+-- be removed here (we still want `to_additive` though).
+/- See also `Monoid.toMulAction` and `MulZeroClass.toSMulWithZero`. -/
+attribute [instance 1100, to_additive /-- See also `AddMonoid.toAddAction` -/] instSMulOfMul
 
--- see Note [lower instance priority]
 /-- See also `Monoid.toMulAction` and `MulZeroClass.toSMulWithZero`. -/
 @[deprecated instSMulOfMul (since := "2025-10-18"), implicit_reducible]
 def Mul.toSMul (α : Type*) [Mul α] : SMul α α := ⟨(· * ·)⟩
+
+/-- See also `AddMonoid.toAddAction` -/
+@[deprecated instVAddOfAdd (since := "2025-10-18"), implicit_reducible]
+def Add.toVAdd (α : Type*) [Add α] : VAdd α α := ⟨(· + ·)⟩
 
 /-- Like `Mul.toSMul`, but multiplies on the right.
 
@@ -459,12 +466,11 @@ variable (M)
 /-- The regular action of a monoid on itself by left multiplication.
 
 This is promoted to a module by `Semiring.toModule`. -/
--- see Note [lower instance priority]
 @[to_additive
 /-- The regular action of a monoid on itself by left addition.
 
 This is promoted to an `AddTorsor` by `addGroup_is_addTorsor`. -/]
-instance (priority := 910) Monoid.toMulAction : MulAction M M where
+instance (priority := 1100) Monoid.toMulAction : MulAction M M where
   smul := (· * ·)
   one_smul := one_mul
   mul_smul := mul_assoc
