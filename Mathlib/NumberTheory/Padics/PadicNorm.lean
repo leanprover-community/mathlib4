@@ -209,7 +209,7 @@ of the norms of `q` and `r`. -/
 theorem add_eq_max_of_ne {q r : ℚ} (hne : padicNorm p q ≠ padicNorm p r) :
     padicNorm p (q + r) = max (padicNorm p q) (padicNorm p r) :=
   IsNonarchimedean.add_eq_max_of_ne (f := IsAbsoluteValue.toAbsoluteValue (padicNorm p))
-    (fun _ _ => padicNorm.nonarchimedean) hne
+    (fun _ _ ↦ padicNorm.nonarchimedean) hne
 
 theorem dvd_iff_norm_le {n : ℕ} {z : ℤ} : ↑(p ^ n) ∣ z ↔ padicNorm p z ≤ (p : ℚ) ^ (-n : ℤ) := by
   unfold padicNorm; split_ifs with hz
@@ -265,15 +265,15 @@ theorem not_int_of_not_padic_int (p : ℕ) {a : ℚ} [hp : Fact (Nat.Prime p)]
   rw [Rat.eq_num_of_isInt H]
   apply padicNorm.of_int
 
-theorem sum_lt {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α} :
-    s.Nonempty → (∀ i ∈ s, padicNorm p (F i) < t) → padicNorm p (∑ i ∈ s, F i) < t := fun hs hF ↦
+theorem sum_lt {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α} (hs : s.Nonempty)
+    (hF : ∀ i ∈ s, padicNorm p (F i) < t) : padicNorm p (∑ i ∈ s, F i) < t :=
   lt_of_le_of_lt (IsNonarchimedean.apply_sum_le_sup (fun _ _ ↦ padicNorm.nonarchimedean) hs) <|
     (Finset.sup'_lt_iff hs).2 hF
 
-theorem sum_le {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α} :
-    s.Nonempty → (∀ i ∈ s, padicNorm p (F i) ≤ t) → padicNorm p (∑ i ∈ s, F i) ≤ t := fun hs hF ↦
+theorem sum_le {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α} (hs : s.Nonempty)
+    (hF : ∀ i ∈ s, padicNorm p (F i) ≤ t) : padicNorm p (∑ i ∈ s, F i) ≤ t :=
   (IsNonarchimedean.apply_sum_le_sup (fun _ _ ↦ padicNorm.nonarchimedean) hs).trans <|
-    (Finset.sup'_le_iff hs (f := fun i ↦ padicNorm p (F i))).2 hF
+    (Finset.sup'_le_iff hs (fun i ↦ padicNorm p (F i))).2 hF
 
 theorem sum_lt' {α : Type*} {F : α → ℚ} {t : ℚ} {s : Finset α}
     (hF : ∀ i ∈ s, padicNorm p (F i) < t) (ht : 0 < t) : padicNorm p (∑ i ∈ s, F i) < t := by
