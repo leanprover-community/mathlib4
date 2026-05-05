@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Dynamics.FixedPoints.Basic
 public import Mathlib.Order.Hom.Order
-public import Mathlib.Order.OmegaCompletePartialOrder
+public import Mathlib.Order.BourbakiWitt
 
 /-!
 # Fixed point construction on complete lattices

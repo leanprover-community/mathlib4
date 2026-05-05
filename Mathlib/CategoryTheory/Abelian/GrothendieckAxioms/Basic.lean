@@ -49,7 +49,7 @@ individual axioms. An `AB4` category is an _abelian_ category satisfying `AB4`, 
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
