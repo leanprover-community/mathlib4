@@ -70,11 +70,11 @@ public theorem convexCombination_assoc (f : StdSimplex R (StdSimplex R P)) :
         _ _ d.total b, vadd_vsub, Finset.weightedVSubOfPoint_apply]
     simp only [id]
   simp_rw [Finset.smul_sum, smul_smul]
-  -- Expand RHS using sum_finset_sum_index
+  -- Expand RHS using sum_finsetSum_index
   let h : P → R → V := fun x w => w • (x -ᵥ b)
   have h_rhs : (∑ d ∈ f.weights.support, f.weights d • d.weights).sum h
       = ∑ d ∈ f.weights.support, (f.weights d • d.weights).sum h :=
-    (Finsupp.sum_finset_sum_index (h := h) (fun _ => zero_smul _ _)
+    (Finsupp.sum_finsetSum_index (h := h) (fun _ => zero_smul _ _)
       (fun _ _ _ => add_smul _ _ _)).symm
   simp only [Finsupp.sum] at h_rhs ⊢
   rw [h_rhs]
