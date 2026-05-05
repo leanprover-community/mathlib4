@@ -445,7 +445,7 @@ noncomputable def coconeOfCoconeForgetPt (hc : IsColimit c) : FlatExtension R K 
     let c_ι_desc : CommRingCat.of (F.obj j) →+* CommRingCat.of K :=
       (hc.desc (algebraMapKCocone F)).hom.comp c_ι.hom
     have : c_ι_desc = algebraMap (F.obj j) K := by
-      change RingHom.comp _ _ = _
+      dsimp only [c_ι_desc]
       rw [← CommRingCat.hom_ofHom (algebraMap _ _), ← CommRingCat.hom_comp]
       exact congr($(hc.fac (algebraMapKCocone F) j).hom)
     change _ = c_ι_desc.comp _
@@ -453,15 +453,14 @@ noncomputable def coconeOfCoconeForgetPt (hc : IsColimit c) : FlatExtension R K 
     exact IsScalarTower.algebraMap_eq _ _ _
   · change CommRingCat.flat <| CommRingCat.ofHom ((c.ι.app j).hom.comp (algebraMap R (F.obj j)))
     rw [← CommRingCat.ind_flat_eq_flat]
-    refine ⟨J, inferInstance, inferInstance, _, {
+    let G : NatTrans ((Functor.const J).obj (CommRingCat.of R))
+      (F ⋙ forget₂ (FlatExtension R K) CommRingCat):= {
       app j := CommRingCat.ofHom (algebraMap R (F.obj j))
       naturality j j' f := by
         exact CommRingCat.hom_ext (RingHom.ext fun x ↦
-          congr($(AlgHom.comp_algebraMap (F.map f).algHom) x).symm)
-    }, c.ι, hc, fun j' ↦ ⟨?_, ?_⟩⟩
-    · simp only [Functor.const_obj_obj, Functor.comp_obj, CommRingCat.flat_iff]
-      change (algebraMap R (F.obj j')).Flat
-      exact RingHom.flat_algebraMap_iff.mpr (F.obj j').flat
+          congr($(AlgHom.comp_algebraMap (F.map f).algHom) x).symm) }
+    refine ⟨J, inferInstance, inferInstance, _, G, c.ι, hc, fun j' ↦ ⟨?_, ?_⟩⟩
+    · simpa [CommRingCat.flat_iff] using RingHom.flat_algebraMap_iff.mpr (F.obj j').flat
     · ext x
       simpa using congr($(algebraMap_comp_ι_eq c j' j) x)
   · refine le_antisymm (fun x hx ↦ ?_) (((local_hom_TFAE (algebraMap R c.pt)).out 0 2).mp ?_)
@@ -486,15 +485,12 @@ noncomputable def coconeOfCoconeForget (hc : IsColimit c) : Cocone F where
   ι := {
     app j := by
       refine .mk' R K (c.ι.app j).hom ?_ ?_
-      · let j' := Classical.choice ‹IsFiltered J›.2
-        change _ = (c.ι.app j').hom.comp (algebraMap R (F.obj j'))
-        exact algebraMap_comp_ι_eq c j j'
+      · exact algebraMap_comp_ι_eq c j (Classical.choice ‹IsFiltered J›.2)
       · ext x
         exact congr($(hc.fac (algebraMapKCocone F) j) x)
     naturality _ _ f := by
       ext x
-      exact congr($(c.ι.naturality f) x)
-  }
+      exact congr($(c.ι.naturality f) x) }
 
 noncomputable def isColimitCoconeOfCoconeForget (hc : IsColimit c) :
     IsColimit (coconeOfCoconeForget c hc) := by
@@ -510,7 +506,7 @@ noncomputable def isColimitCoconeOfCoconeForget (hc : IsColimit c) :
   refine IsColimit.ofFaithful (forget₂ _ CommRingCat.{u}) hc
     (fun s ↦ .mk' R K (hc.desc ((forget₂ _ CommRingCat).mapCocone s)).hom ?_ ?_) fun s ↦ rfl
   · let j := Classical.choice ‹IsFiltered J›.2
-    let c_ι_app : _ ⟶ c.pt := c.ι.app j
+    set c_ι_app : _ ⟶ c.pt := c.ι.app j
     change RingHom.comp (desc s).hom (c_ι_app.hom.comp (algebraMap R (F.obj j))) = _
     simp only [← RingHom.comp_assoc, ← CommRingCat.hom_comp, desc, c_ι_app]
     change (i' s j).hom.comp _ = _
@@ -519,9 +515,7 @@ noncomputable def isColimitCoconeOfCoconeForget (hc : IsColimit c) :
   · change RingHom.comp _ (desc s).hom = algK.hom
     rw [← CommRingCat.hom_ofHom (algebraMap _ _), ← CommRingCat.hom_comp]
     refine congrArg _ <| hc.uniq (algebraMapKCocone F) _ fun j ↦ ?_
-    let algSK : pt s ⟶ .of K := CommRingCat.ofHom (algebraMap _ _)
-    change _ ≫ _ ≫ algSK = _
-    simp only [← Category.assoc, desc]
+    simp only [desc]
     change i' s j ≫ _ = _
     simp only [this]
     exact CommRingCat.hom_ext (RingHom.ext fun x ↦ congr($((s.ι.app j).comm) x))
