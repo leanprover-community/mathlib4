@@ -204,7 +204,7 @@ theorem iteratedDerivWithin_comp_const_smul (hf : ContDiffOn 𝕜 n f s) (c : �
       derivWithin_const_mul _ differentiableWithinAt_id', derivWithin_id' _ _ (h _ hx),
       smul_smul, mul_one, pow_succ]
 
-open Pointwise
+open scoped Pointwise
 
 omit hx h in
 lemma iteratedDerivWithin_comp_neg (a : 𝕜) : iteratedDerivWithin n (fun x ↦ f (-x)) s a
