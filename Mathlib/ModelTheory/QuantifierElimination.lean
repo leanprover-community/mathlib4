@@ -8,6 +8,7 @@ module
 public import Mathlib.ModelTheory.Complexity
 public import Mathlib.ModelTheory.Satisfiability
 public import Mathlib.ModelTheory.PartialEquiv
+public import Mathlib.ModelTheory.Order
 
 /-!
 # Quantifier Elimination
@@ -658,6 +659,25 @@ theorem marker_316 {T : L.Theory} :
         ⟨c, (hreal (g ∘ a) c).2 hc⟩
     exact ⟨b, (hreal (f ∘ a) b).1 hb⟩
 
+private theorem isQF_realize_partialEquiv
+    {α : Type*} {M N : Type*} [L.Structure M] [L.Structure N]
+    {φ : L.Formula α} (hφ : φ.IsQF) (p : L.Sub M N)
+    {v : α → M} (hv : ∀ i, v i ∈ p.dom) :
+    φ.Realize (fun i => (p.toEquiv ⟨v i, hv i⟩ : N)) ↔ φ.Realize v := by
+  let vdom : α → p.dom := fun i => ⟨v i, hv i⟩
+  change φ.Realize (fun i => (p.toEquiv ⟨v i, hv i⟩ : N)) ↔ φ.Realize (fun i => v i)
+  have hdom : φ.Realize (fun i => v i) ↔ φ.Realize vdom := by
+    simpa [Formula.Realize, vdom, Function.comp_def,
+      Unique.eq_default (fun x : Fin 0 => (((default : Fin 0 → p.dom) x : p.dom) : M))] using
+      (hφ.realize_embedding (f := (p.dom.subtype : p.dom ↪[L] M))
+        (v := vdom) (xs := default))
+  have hcod :
+      φ.Realize (fun i => (p.toEquiv ⟨v i, hv i⟩ : N)) ↔ φ.Realize vdom := by
+    simpa [Formula.Realize, vdom, Function.comp_def, PartialEquiv.toEmbedding,
+      Unique.eq_default (fun x : Fin 0 => (p.toEquiv ((default : Fin 0 → p.dom) x) : N))] using
+      (hφ.realize_embedding (f := p.toEmbedding) (v := vdom) (xs := default))
+  exact hcod.trans hdom.symm
+
 /-- Henson, Theorem 7.11, direction `(2) → (1)`: if every partial isomorphism between
 substructures of models of `T` can be extended, after passing to an elementary extension of the
 codomain model, to include any prescribed element of the domain model, then `T` has quantifier
@@ -672,7 +692,234 @@ theorem henson_711
           (e : N ↪ₑ[L] N') (g : L.Sub M N'),
           a ∈ g.dom ∧ f.ExtendsAlong e g) :
     T.HasQuantifierElimination := by
-  sorry
+  classical
+  refine marker_316 (T := T) ?_
+  intro m φ hφ M N A _ _ _ _ _ _ _ f g a hM
+  rcases hM with ⟨b, hb⟩
+  let p : L.Sub M N := {
+    dom := f.toHom.range
+    cod := g.toHom.range
+    toEquiv := g.equivRange.comp f.equivRange.symm
+  }
+  have hp_dom (x : A) : f x ∈ p.dom := by
+    change f x ∈ f.toHom.range
+    exact f.toHom.mem_range_self x
+  have hp_apply (x : A) : (p.toEquiv ⟨f x, hp_dom x⟩ : N) = g x := by
+    change g (f.equivRange.symm ⟨f x, f.toHom.mem_range_self x⟩) = g x
+    congr 1
+    apply f.equivRange.injective
+    apply Subtype.ext
+    simp
+  rcases h p b with ⟨N', hN', e, q, hbq, hpq⟩
+  letI : L.Structure N' := hN'
+  let r : L.Sub M N' := PartialEquiv.codMap p e.toEmbedding
+  have hrq : r ≤ q := by
+    simpa [PartialEquiv.ExtendsAlong, r] using hpq
+  have hqa_dom (i : Fin m) : f (a i) ∈ q.dom :=
+    PartialEquiv.dom_le_dom hrq (hp_dom (a i))
+  have hqa_apply (i : Fin m) :
+      (q.toEquiv ⟨f (a i), hqa_dom i⟩ : N') = e (g (a i)) := by
+    let x : r.dom := ⟨f (a i), hp_dom (a i)⟩
+    have hx := PartialEquiv.toEquiv_inclusion_apply hrq x
+    have hx' := congr_arg (fun y : q.cod => (y : N')) hx
+    change (q.toEquiv ⟨f (a i), hqa_dom i⟩ : N') = (r.toEquiv x : N') at hx'
+    calc
+      (q.toEquiv ⟨f (a i), hqa_dom i⟩ : N') = (r.toEquiv x : N') := hx'
+      _ = e (g (a i)) := by
+        change e ((p.toEquiv ⟨f (a i), hp_dom (a i)⟩ : N)) = e (g (a i))
+        rw [hp_apply]
+  let vM : Fin m.succ → M := Fin.snoc (f ∘ a) b
+  have hvM (i : Fin m.succ) : vM i ∈ q.dom := by
+    refine Fin.lastCases ?_ ?_ i
+    · simpa [vM] using hbq
+    · intro i
+      simpa [vM, Function.comp_def] using hqa_dom i
+  let b' : N' := q.toEquiv ⟨b, hbq⟩
+  have hqreal :
+      φ.Realize (fun i : Fin m.succ => (q.toEquiv ⟨vM i, hvM i⟩ : N')) := by
+    exact (isQF_realize_partialEquiv hφ q hvM).2 (by simpa [vM] using hb)
+  have htarget :
+      φ.Realize (Fin.snoc ((e.toEmbedding ∘ g) ∘ a) b') := by
+    convert hqreal using 1
+    funext i
+    refine Fin.lastCases ?_ ?_ i
+    · simp [vM, b']
+    · intro i
+      simpa [vM, b', Function.comp_def] using (hqa_apply i).symm
+  let θ : L.BoundedFormula (Fin m) 1 :=
+    BoundedFormula.relabel (L := L) (β := Fin m) (n := 1) finSumFinEquiv.symm φ
+  have hθ_realize :
+      ∀ {X : Type (max u v)} [L.Structure X] (x : Fin m → X) (y : X),
+        θ.Realize x (Fin.snoc default y) ↔ φ.Realize (Fin.snoc x y) := by
+    intro X _ x y
+    rw [BoundedFormula.realize_relabel]
+    have hfree :
+        (Sum.elim x (Fin.snoc default y ∘ Fin.castAdd 0) ∘
+            ((@finSumFinEquiv m 1).symm : Fin m.succ → Fin m ⊕ Fin 1)) =
+          Fin.snoc x y := by
+      funext i
+      refine Fin.addCases ?_ ?_ i
+      · intro i
+        simp only [Function.comp_apply, finSumFinEquiv_symm_apply_castAdd, Sum.elim_inl]
+        change x i = (@Fin.snoc m (fun _ => X) x y) i.castSucc
+        rw [Fin.snoc_castSucc]
+      · intro j
+        have hj : j = 0 := Subsingleton.elim j 0
+        subst j
+        simp only [Function.comp_apply, finSumFinEquiv_symm_apply_natAdd, Sum.elim_inr]
+        rw [Fin.snoc_zero]
+        change y = (@Fin.snoc m (fun _ => X) x y) (Fin.last m)
+        rw [Fin.snoc_last]
+    have hbound : (Fin.snoc default y ∘ Fin.natAdd 1 : Fin 0 → X) = default := by
+      funext i
+      exact i.elim0
+    rw [hfree]
+    rw [hbound]
+    rfl
+  have hθN' : θ.ex.Realize ((e.toEmbedding ∘ g) ∘ a) default := by
+    rw [BoundedFormula.realize_ex]
+    exact ⟨b', (hθ_realize (((e.toEmbedding ∘ g) ∘ a)) b').2 htarget⟩
+  have hθN : θ.ex.Realize (g ∘ a) default := by
+    have he := e.map_boundedFormula θ.ex (g ∘ a) default
+    exact he.1 (by simpa [Function.comp_def] using hθN')
+  rw [BoundedFormula.realize_ex] at hθN
+  rcases hθN with ⟨c, hc⟩
+  exact ⟨c, (hθ_realize (g ∘ a) c).1 hc⟩
+
+/-- Henson, Theorem 7.11, finite-generated version of `(2) → (1)`: it suffices to extend
+finitely generated partial isomorphisms, after passing to an elementary extension of the codomain,
+to include any prescribed element of the domain model. -/
+theorem henson_711_prime
+    {T : L.Theory}
+    (h :
+      ∀ {M N : Type (max u v)} [L.Structure M] [L.Structure N]
+        [T.Model M] [T.Model N] [Nonempty M] [Nonempty N]
+        (f : L.Sub₀ M N) (a : M),
+        ∃ (N' : Type (max u v)) (_ : L.Structure N')
+          (e : N ↪ₑ[L] N') (g : L.Sub₀ M N'),
+          a ∈ (g : L.Sub M N').dom ∧
+            (f : L.Sub M N).ExtendsAlong e (g : L.Sub M N')) :
+    T.HasQuantifierElimination := by
+  classical
+  refine marker_316 (T := T) ?_
+  intro m φ hφ M N A _ _ _ _ _ _ _ f g a hM
+  rcases hM with ⟨b, hb⟩
+  let S : L.Substructure M := Substructure.closure L (Set.range (f ∘ a))
+  have hSrange : S ≤ f.toHom.range := by
+    rw [Substructure.closure_le]
+    intro x hx
+    rcases hx with ⟨i, rfl⟩
+    exact f.toHom.mem_range_self (a i)
+  let k : S ↪[L] N :=
+    g.comp (f.equivRange.symm.toEmbedding.comp (Substructure.inclusion hSrange))
+  let p : L.Sub M N := {
+    dom := S
+    cod := k.toHom.range
+    toEquiv := k.equivRange
+  }
+  let p₀ : L.Sub₀ M N :=
+    ⟨p, by
+      change S.FG
+      exact Substructure.fg_closure (Set.finite_range (f ∘ a))⟩
+  have hp_dom (i : Fin m) : f (a i) ∈ (p₀ : L.Sub M N).dom := by
+    change f (a i) ∈ S
+    exact Substructure.subset_closure ⟨i, rfl⟩
+  have hp_apply (i : Fin m) :
+      ((p₀ : L.Sub M N).toEquiv ⟨f (a i), hp_dom i⟩ : N) = g (a i) := by
+    change (k.equivRange ⟨f (a i), hp_dom i⟩ : N) = g (a i)
+    change g (f.equivRange.symm (Substructure.inclusion hSrange ⟨f (a i), hp_dom i⟩)) =
+      g (a i)
+    congr 1
+    apply f.equivRange.injective
+    apply Subtype.ext
+    simp
+  rcases h p₀ b with ⟨N', hN', e, q₀, hbq, hpq⟩
+  letI : L.Structure N' := hN'
+  let q : L.Sub M N' := q₀
+  let r : L.Sub M N' := PartialEquiv.codMap (p₀ : L.Sub M N) e.toEmbedding
+  have hrq : r ≤ q := by
+    simpa [PartialEquiv.ExtendsAlong, r, q] using hpq
+  have hqa_dom (i : Fin m) : f (a i) ∈ q.dom :=
+    PartialEquiv.dom_le_dom hrq (hp_dom i)
+  have hqa_apply (i : Fin m) :
+      (q.toEquiv ⟨f (a i), hqa_dom i⟩ : N') = e (g (a i)) := by
+    let x : r.dom := ⟨f (a i), hp_dom i⟩
+    have hx := PartialEquiv.toEquiv_inclusion_apply hrq x
+    have hx' := congr_arg (fun y : q.cod => (y : N')) hx
+    change (q.toEquiv ⟨f (a i), hqa_dom i⟩ : N') = (r.toEquiv x : N') at hx'
+    calc
+      (q.toEquiv ⟨f (a i), hqa_dom i⟩ : N') = (r.toEquiv x : N') := hx'
+      _ = e (g (a i)) := by
+        change e (((p₀ : L.Sub M N).toEquiv ⟨f (a i), hp_dom i⟩ : N)) =
+          e (g (a i))
+        rw [hp_apply]
+  let vM : Fin m.succ → M := Fin.snoc (f ∘ a) b
+  have hvM (i : Fin m.succ) : vM i ∈ q.dom := by
+    refine Fin.lastCases ?_ ?_ i
+    · simpa [vM, q] using hbq
+    · intro i
+      simpa [vM, Function.comp_def] using hqa_dom i
+  let b' : N' := q.toEquiv ⟨b, by simpa [q] using hbq⟩
+  have hqreal :
+      φ.Realize (fun i : Fin m.succ => (q.toEquiv ⟨vM i, hvM i⟩ : N')) := by
+    exact (isQF_realize_partialEquiv hφ q hvM).2 (by simpa [vM] using hb)
+  have htarget :
+      φ.Realize (Fin.snoc ((e.toEmbedding ∘ g) ∘ a) b') := by
+    convert hqreal using 1
+    funext i
+    refine Fin.lastCases ?_ ?_ i
+    · simp [vM, b']
+    · intro i
+      simpa [vM, b', Function.comp_def] using (hqa_apply i).symm
+  let θ : L.BoundedFormula (Fin m) 1 :=
+    BoundedFormula.relabel (L := L) (β := Fin m) (n := 1) finSumFinEquiv.symm φ
+  have hθ_realize :
+      ∀ {X : Type (max u v)} [L.Structure X] (x : Fin m → X) (y : X),
+        θ.Realize x (Fin.snoc default y) ↔ φ.Realize (Fin.snoc x y) := by
+    intro X _ x y
+    rw [BoundedFormula.realize_relabel]
+    have hfree :
+        (Sum.elim x (Fin.snoc default y ∘ Fin.castAdd 0) ∘
+            ((@finSumFinEquiv m 1).symm : Fin m.succ → Fin m ⊕ Fin 1)) =
+          Fin.snoc x y := by
+      funext i
+      refine Fin.addCases ?_ ?_ i
+      · intro i
+        simp only [Function.comp_apply, finSumFinEquiv_symm_apply_castAdd, Sum.elim_inl]
+        change x i = (@Fin.snoc m (fun _ => X) x y) i.castSucc
+        rw [Fin.snoc_castSucc]
+      · intro j
+        have hj : j = 0 := Subsingleton.elim j 0
+        subst j
+        simp only [Function.comp_apply, finSumFinEquiv_symm_apply_natAdd, Sum.elim_inr]
+        rw [Fin.snoc_zero]
+        change y = (@Fin.snoc m (fun _ => X) x y) (Fin.last m)
+        rw [Fin.snoc_last]
+    have hbound : (Fin.snoc default y ∘ Fin.natAdd 1 : Fin 0 → X) = default := by
+      funext i
+      exact i.elim0
+    rw [hfree]
+    rw [hbound]
+    rfl
+  have hθN' : θ.ex.Realize ((e.toEmbedding ∘ g) ∘ a) default := by
+    rw [BoundedFormula.realize_ex]
+    exact ⟨b', (hθ_realize (((e.toEmbedding ∘ g) ∘ a)) b').2 htarget⟩
+  have hθN : θ.ex.Realize (g ∘ a) default := by
+    have he := e.map_boundedFormula θ.ex (g ∘ a) default
+    exact he.1 (by simpa [Function.comp_def] using hθN')
+  rw [BoundedFormula.realize_ex] at hθN
+  rcases hθN with ⟨c, hc⟩
+  exact ⟨c, (hθ_realize (g ∘ a) c).1 hc⟩
+
+/-- The theory of dense linear orders without endpoints has quantifier elimination. -/
+theorem order_dlo_hasQuantifierElimination :
+    Language.order.dlo.HasQuantifierElimination := by
+  classical
+  refine henson_711_prime ?_
+  intro M N _ _ _ _ _ _ f a
+  obtain ⟨g, ha, hfg⟩ := Language.dlo_isExtensionPair M N f a
+  refine ⟨N, inferInstance, ElementaryEmbedding.refl Language.order N, g, ha, ?_⟩
+  simpa [PartialEquiv.ExtendsAlong, PartialEquiv.codMap] using hfg
 
 
 -----------------------------------------------------------------------------------------
