@@ -49,7 +49,7 @@ theorem den_sum_dvd_lcm_den {ι : Type*} (s : Finset ι) (f : ι → ℚ) :
 
 theorem den_sum_dvd_prod_den {ι : Type*} (s : Finset ι) (f : ι → ℚ) :
     (∑ i ∈ s, f i).den ∣ ∏ i ∈ s, (f i).den :=
-  (den_sum_dvd_lcm_den s f).trans <|s.lcm_dvd_prod _
+  (den_sum_dvd_lcm_den s f).trans <| s.lcm_dvd_prod _
 
 theorem den_prod_dvd_prod_den {ι : Type*} (s : Finset ι) (f : ι → ℚ) :
     (∏ i ∈ s, f i).den ∣ ∏ i ∈ s, (f i).den := by
