@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.Extension.Cotangent.BaseChange
 /-!
 # Etale descends along faithfully flat ring maps
 
-In this file we show that smooth, unramified and étale descends along faithfully flat
+In this file we show that smooth, unramified and étale algebras descend along faithfully flat
 base change.
 
 ## Main results
@@ -42,24 +42,6 @@ namespace Algebra
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 variable (T : Type*) [CommRing T] [Algebra R T] [Module.FaithfullyFlat R T]
 
-/-- The `FinitePresentation` assumption is not necessary (see the TODO in the module docstring). -/
-lemma FormallySmooth.of_formallySmooth_tensorProduct_of_faithfullyFlat
-    [FinitePresentation R S] [FormallySmooth T (T ⊗[R] S)] :
-    FormallySmooth R S := by
-  rw [formallySmooth_iff]
-  constructor
-  · let _ : Algebra T (S ⊗[R] T) := TensorProduct.rightAlgebra
-    let e : S ⊗[R] T ≃ₐ[T] T ⊗[R] S :=
-      .ofRingEquiv (f := TensorProduct.comm R S T) <| by simp [RingHom.algebraMap_toAlgebra]
-    have : FormallySmooth T (S ⊗[R] T) := .of_equiv e.symm
-    let e' : (S ⊗[R] T) ⊗[S] Ω[S⁄R] ≃ₗ[S ⊗[R] T] Ω[S ⊗[R] T⁄T] :=
-      KaehlerDifferential.tensorKaehlerEquiv R T S (S ⊗[R] T)
-    have : Module.Flat (S ⊗[R] T) ((S ⊗[R] T) ⊗[S] Ω[S⁄R]) := .of_linearEquiv e'
-    have : Module.Flat S (Ω[S⁄R]) := Module.Flat.of_flat_tensorProduct _ _ (S ⊗[R] T)
-    exact Module.Flat.projective_of_finitePresentation
-  · have : Subsingleton (T ⊗[R] H1Cotangent R S) := (tensorH1CotangentOfFlat R S T).subsingleton
-    exact Module.FaithfullyFlat.lTensor_reflects_triviality R T (H1Cotangent R S)
-
 lemma FormallyUnramified.of_formallyUnramified_tensorProduct_of_faithfullyFlat
     [FormallyUnramified T (T ⊗[R] S)] :
     FormallyUnramified R S := by
@@ -69,11 +51,31 @@ lemma FormallyUnramified.of_formallyUnramified_tensorProduct_of_faithfullyFlat
     (KaehlerDifferential.tensorKaehlerEquivBase R T S (T ⊗[R] S)).subsingleton
   exact Module.FaithfullyFlat.lTensor_reflects_triviality R T _
 
+/-- Formally smooth algebras descend along faithfully flat base change. See the TODO
+in the module docstring. -/
+proof_wanted FormallySmooth.of_formallySmooth_tensorProduct_of_faithfullyFlat
+    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+    (T : Type*) [CommRing T] [Algebra R T] [Module.FaithfullyFlat R T]
+    [FormallySmooth T (T ⊗[R] S)] :
+    FormallySmooth R S
+
 lemma Smooth.of_smooth_tensorProduct_of_faithfullyFlat [Smooth T (T ⊗[R] S)] :
     Smooth R S := by
   have : Algebra.FinitePresentation R S := .of_finitePresentation_tensorProduct_of_faithfullyFlat T
-  exact ⟨.of_formallySmooth_tensorProduct_of_faithfullyFlat T,
-    .of_finitePresentation_tensorProduct_of_faithfullyFlat T⟩
+  refine ⟨?_, .of_finitePresentation_tensorProduct_of_faithfullyFlat T⟩
+  rw [formallySmooth_iff]
+  constructor
+  · let _ : Algebra T (S ⊗[R] T) := TensorProduct.rightAlgebra
+    let e : S ⊗[R] T ≃ₐ[T] T ⊗[R] S :=
+      .ofRingEquiv (f := TensorProduct.comm R S T) <| by simp [RingHom.algebraMap_toAlgebra]
+    have : FormallySmooth T (S ⊗[R] T) := .of_equiv e.symm
+    let e' : (S ⊗[R] T) ⊗[S] Ω[S⁄R] ≃ₗ[S ⊗[R] T] Ω[S ⊗[R] T⁄T] :=
+      KaehlerDifferential.tensorKaehlerEquiv R T S (S ⊗[R] T)
+    have : Module.Flat (S ⊗[R] T) ((S ⊗[R] T) ⊗[S] Ω[S⁄R]) := .of_linearEquiv e'
+    have : Module.Flat S Ω[S⁄R] := Module.Flat.of_flat_tensorProduct _ _ (S ⊗[R] T)
+    exact Module.Flat.projective_of_finitePresentation
+  · have : Subsingleton (T ⊗[R] H1Cotangent R S) := (tensorH1CotangentOfFlat R S T).subsingleton
+    exact Module.FaithfullyFlat.lTensor_reflects_triviality R T (H1Cotangent R S)
 
 lemma Unramified.of_unramified_tensorProduct_of_faithfullyFlat [Unramified T (T ⊗[R] S)] :
     Unramified R S :=
