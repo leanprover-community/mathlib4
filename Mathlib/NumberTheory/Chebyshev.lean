@@ -291,11 +291,10 @@ theorem psi_eq_sum_mul_log_prime (n : ℕ) : ψ n = ∑ p ∈ primesLE n, p.log 
 theorem psi_le_primeCounting_mul_log (n : ℕ) : ψ n ≤ (π n) * log n := calc
   _ ≤ ∑ p ∈ primesLE n, log n := by
     rw [psi_eq_sum_mul_log_prime n]
-    apply sum_le_sum; intro p hp; simp only [mem_filter, mem_range, Order.lt_add_one_iff] at hp
-    rw [← natFloor_logb_natCast, ← log_div_log]
-    grw [floor_le]
-    · have : log p ≠ 0 := log_prime_ne hp.2
-      field_simp; simp
+    gcongr with p hp
+    grw [← natFloor_logb_natCast, ← log_div_log, floor_le]
+    · simp only [mem_filter, mem_range, Order.lt_add_one_iff] at hp
+      simp [field, log_prime_ne hp.2]
     positivity
   _ = _ := by
     simp [primesLE_card_eq_primeCounting]
