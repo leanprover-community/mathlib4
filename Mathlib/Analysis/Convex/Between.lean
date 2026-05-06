@@ -1034,7 +1034,8 @@ theorem Sbtw.trans_expand_right {w x y z : P} (h₁ : Sbtw R w x y) (h₂ : Sbtw
 
 omit [IsStrictOrderedRing R] in
 theorem Wbtw.collinear {x y z : P} (h : Wbtw R x y z) : Collinear R ({x, y, z} : Set P) := by
-  simpa [Set.insert_comm] using collinear_insert_of_mem_affineSpan_pair h.mem_affineSpan
+  have : {y, x, z} = {x, y, z} := Set.insert_comm y x {z}
+  simpa [this] using collinear_insert_of_mem_affineSpan_pair (mem_affineSpan h)
 
 theorem Collinear.wbtw_or_wbtw_or_wbtw {x y z : P} (h : Collinear R ({x, y, z} : Set P)) :
     Wbtw R x y z ∨ Wbtw R y z x ∨ Wbtw R z x y := by
