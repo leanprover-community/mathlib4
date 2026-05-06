@@ -438,8 +438,8 @@ theorem finprod_eq_prod (f : α → M) (hf : HasFiniteMulSupport f) :
 theorem finprod_eq_prod_of_fintype [Fintype α] (f : α → M) : ∏ᶠ i : α, f i = ∏ i, f i :=
   finprod_eq_prod_of_mulSupport_toFinset_subset _ (Set.toFinite _) <| Finset.subset_univ _
 
-theorem finprod_ne_zero {ι : Type*} {M₀ : Type*} [CommMonoidWithZero M₀] [Nontrivial M₀]
-    [NoZeroDivisors M₀] {f : ι → M₀} (h : ∀ i, f i ≠ 0) :
+theorem finprod_ne_zero {M₀ : Type*} [CommMonoidWithZero M₀] [Nontrivial M₀] [NoZeroDivisors M₀]
+    {f : α → M₀} (h : ∀ i, f i ≠ 0) :
     ∏ᶠ i, f i ≠ 0 := by
   by_cases h₂ : Set.Finite f.mulSupport
   · grind [finprod_eq_prod f h₂, Finset.prod_ne_zero_iff]
