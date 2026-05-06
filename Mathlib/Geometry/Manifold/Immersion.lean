@@ -94,7 +94,7 @@ This shortens the overall argument, as the definition of submersions has the sam
 open scoped Topology ContDiff
 open Function Set
 
-@[expose] public noncomputable section
+public noncomputable section
 
 namespace Manifold
 
@@ -124,7 +124,7 @@ charts, `f` looks like the inclusion `u ↦ (u, 0)`.
 This definition has a fixed parameter `F`, which is a choice of complement of `E` in the model
 normed space `E'` of `N`: being an immersion at `x` includes a choice of linear isomorphism
 between `E × F` and `E'`. -/
-@[no_expose] def ImmersionAtProp : (M → N) → OpenPartialHomeomorph M H → OpenPartialHomeomorph N G → Prop :=
+def ImmersionAtProp : (M → N) → OpenPartialHomeomorph M H → OpenPartialHomeomorph N G → Prop :=
   fun f domChart codChart ↦ ∃ equiv : (E × F) ≃L[𝕜] E'',
     EqOn ((codChart.extend J) ∘ f ∘ (domChart.extend I).symm) (equiv ∘ (·, 0))
       (domChart.extend I).target
@@ -155,7 +155,7 @@ in some settings, such as proving that embedded submanifolds are locally given e
 immersion or a submersion.
 Unless you have a particular reason, prefer to use `IsImmersionAt` instead.
 -/
-@[no_expose] def IsImmersionAtOfComplement (f : M → N) (x : M) : Prop :=
+def IsImmersionAtOfComplement (f : M → N) (x : M) : Prop :=
   LiftSourceTargetPropertyAt I J n f x (ImmersionAtProp F I J M N)
 
 -- Lift the universe from `E''`, to avoid a free universe parameter.
@@ -172,7 +172,7 @@ immersion at `x` includes a choice of linear isomorphism between `E × F` and `E
 where the choice of `F` enters.
 If you need stronger control over the complement `F`, use `IsImmersionAtOfComplement` instead.
 -/
-@[no_expose] def IsImmersionAt (f : M → N) (x : M) : Prop :=
+def IsImmersionAt (f : M → N) (x : M) : Prop :=
   ∃ (F : Type u) (_ : NormedAddCommGroup F) (_ : NormedSpace 𝕜 F),
     IsImmersionAtOfComplement F I J n f x
 
@@ -201,8 +201,8 @@ lemma mk_of_continuousAt {f : M → N} {x : M} (hf : ContinuousAt f x) (equiv : 
     (hdomChart : domChart ∈ IsManifold.maximalAtlas I n M)
     (hcodChart : codChart ∈ IsManifold.maximalAtlas J n N)
     (hwrittenInExtend : EqOn ((codChart.extend J) ∘ f ∘ (domChart.extend I).symm) (equiv ∘ (·, 0))
-      (domChart.extend I).target) : IsImmersionAtOfComplement F I J n f x := by
-  exact LiftSourceTargetPropertyAt.mk_of_continuousAt hf isLocalSourceTargetProperty_immersionAtProp
+      (domChart.extend I).target) : IsImmersionAtOfComplement F I J n f x :=
+  LiftSourceTargetPropertyAt.mk_of_continuousAt hf isLocalSourceTargetProperty_immersionAtProp
     _ _ hx hfx hdomChart hcodChart ⟨equiv, hwrittenInExtend⟩
 
 /-- A choice of chart on the domain `M` of an immersion `f` at `x`:
@@ -210,7 +210,7 @@ w.r.t. this chart and the data `h.codChart` and `h.equiv`,
 `f` will look like an inclusion `u ↦ (u, 0)` in these extended charts.
 The particular chart is arbitrary, but this choice matches the witnesses given by
 `h.codChart` and `h.codChart`. -/
-@[no_expose] def domChart (h : IsImmersionAtOfComplement F I J n f x) : OpenPartialHomeomorph M H :=
+def domChart (h : IsImmersionAtOfComplement F I J n f x) : OpenPartialHomeomorph M H :=
   LiftSourceTargetPropertyAt.domChart h
 
 /-- A choice of chart on the co-domain `N` of an immersion `f` at `x`:
@@ -218,7 +218,7 @@ w.r.t. this chart and the data `h.domChart` and `h.equiv`,
 `f` will look like an inclusion `u ↦ (u, 0)` in these extended charts.
 The particular chart is arbitrary, but this choice matches the witnesses given by
 `h.equiv` and `h.domChart`. -/
-@[no_expose] def codChart (h : IsImmersionAtOfComplement F I J n f x) : OpenPartialHomeomorph N G :=
+def codChart (h : IsImmersionAtOfComplement F I J n f x) : OpenPartialHomeomorph N G :=
   LiftSourceTargetPropertyAt.codChart h
 
 lemma mem_domChart_source (h : IsImmersionAtOfComplement F I J n f x) : x ∈ h.domChart.source :=
@@ -232,23 +232,23 @@ lemma domChart_mem_maximalAtlas (h : IsImmersionAtOfComplement F I J n f x) :
   LiftSourceTargetPropertyAt.domChart_mem_maximalAtlas h
 
 lemma codChart_mem_maximalAtlas (h : IsImmersionAtOfComplement F I J n f x) :
-    h.codChart ∈ IsManifold.maximalAtlas J n N := by
-  exact LiftSourceTargetPropertyAt.codChart_mem_maximalAtlas h
+    h.codChart ∈ IsManifold.maximalAtlas J n N :=
+  LiftSourceTargetPropertyAt.codChart_mem_maximalAtlas h
 
 lemma source_subset_preimage_source (h : IsImmersionAtOfComplement F I J n f x) :
-    h.domChart.source ⊆ f ⁻¹' h.codChart.source := by
-  exact LiftSourceTargetPropertyAt.source_subset_preimage_source h
+    h.domChart.source ⊆ f ⁻¹' h.codChart.source :=
+  LiftSourceTargetPropertyAt.source_subset_preimage_source h
 
 /-- A linear equivalence `E × F ≃L[𝕜] E''` which belongs to the data of an immersion `f` at `x`:
 the particular equivalence is arbitrary, but this choice matches the witnesses given by
 `h.domChart` and `h.codChart`. -/
-@[no_expose] def equiv (h : IsImmersionAtOfComplement F I J n f x) : (E × F) ≃L[𝕜] E'' := by
-  exact Classical.choose <| LiftSourceTargetPropertyAt.property h
+def equiv (h : IsImmersionAtOfComplement F I J n f x) : (E × F) ≃L[𝕜] E'' :=
+  Classical.choose <| LiftSourceTargetPropertyAt.property h
 
 lemma writtenInCharts (h : IsImmersionAtOfComplement F I J n f x) :
     EqOn ((h.codChart.extend J) ∘ f ∘ (h.domChart.extend I).symm) (h.equiv ∘ (·, 0))
-      (h.domChart.extend I).target := by
-  exact Classical.choose_spec <| LiftSourceTargetPropertyAt.property h
+      (h.domChart.extend I).target :=
+  Classical.choose_spec <| LiftSourceTargetPropertyAt.property h
 
 lemma property (h : IsImmersionAtOfComplement F I J n f x) :
     LiftSourceTargetPropertyAt I J n f x (ImmersionAtProp F I J M N) := h
@@ -291,15 +291,15 @@ lemma target_subset_preimage_target (h : IsImmersionAtOfComplement F I J n f x) 
 /-- If `f` is an immersion at `x` and `g = f` on some neighbourhood of `x`,
 then `g` is an immersion at `x`. -/
 lemma congr_of_eventuallyEq (hf : IsImmersionAtOfComplement F I J n f x) (hfg : f =ᶠ[𝓝 x] g) :
-    IsImmersionAtOfComplement F I J n g x := by
-  exact LiftSourceTargetPropertyAt.congr_of_eventuallyEq
+    IsImmersionAtOfComplement F I J n g x :=
+  LiftSourceTargetPropertyAt.congr_of_eventuallyEq
     isLocalSourceTargetProperty_immersionAtProp hf.property hfg
 
 /-- If `f = g` on some neighbourhood of `x`,
 then `f` is an immersion at `x` if and only if `g` is an immersion at `x`. -/
 lemma congr_iff_of_eventuallyEq (hfg : f =ᶠ[𝓝 x] g) :
-    IsImmersionAtOfComplement F I J n f x ↔ IsImmersionAtOfComplement F I J n g x := by
-  exact LiftSourceTargetPropertyAt.congr_iff_of_eventuallyEq
+    IsImmersionAtOfComplement F I J n f x ↔ IsImmersionAtOfComplement F I J n g x :=
+  LiftSourceTargetPropertyAt.congr_iff_of_eventuallyEq
       isLocalSourceTargetProperty_immersionAtProp hfg
 
 lemma small (hf : IsImmersionAtOfComplement F I J n f x) : Small.{u} F :=
@@ -418,15 +418,13 @@ lemma mk_of_continuousAt {f : M → N} {x : M} (hf : ContinuousAt f x) (equiv : 
 
 /-- A choice of complement of the model normed space `E` of `M` in the model normed space
 `E'` of `N` -/
-@[no_expose] def complement (h : IsImmersionAt I J n f x) : Type u := by
-  exact Classical.choose h
+def complement (h : IsImmersionAt I J n f x) : Type u := Classical.choose h
 
-@[no_expose] instance (h : IsImmersionAt I J n f x) : NormedAddCommGroup h.complement := by
-  exact Classical.choose <| Classical.choose_spec h
+@[no_expose] instance (h : IsImmersionAt I J n f x) : NormedAddCommGroup h.complement :=
+  Classical.choose <| Classical.choose_spec h
 
-@[no_expose]
-instance (h : IsImmersionAt I J n f x) : NormedSpace 𝕜 h.complement := by
-  exact Classical.choose <| Classical.choose_spec <| Classical.choose_spec h
+@[no_expose] instance (h : IsImmersionAt I J n f x) : NormedSpace 𝕜 h.complement :=
+  Classical.choose <| Classical.choose_spec <| Classical.choose_spec h
 
 lemma isImmersionAtOfComplement_complement (h : IsImmersionAt I J n f x) :
     IsImmersionAtOfComplement h.complement I J n f x :=
@@ -654,10 +652,10 @@ variable {f g : M → N}
 `E'` of `N` -/
 def complement (h : IsImmersion I J n f) : Type u := Classical.choose h
 
-instance (h : IsImmersion I J n f) : NormedAddCommGroup h.complement :=
+@[no_expose] instance (h : IsImmersion I J n f) : NormedAddCommGroup h.complement :=
   Classical.choose <| Classical.choose_spec h
 
-instance (h : IsImmersion I J n f) : NormedSpace 𝕜 h.complement :=
+@[no_expose] instance (h : IsImmersion I J n f) : NormedSpace 𝕜 h.complement :=
   Classical.choose <| Classical.choose_spec <| Classical.choose_spec h
 
 lemma isImmersionOfComplement_complement (h : IsImmersion I J n f) :
