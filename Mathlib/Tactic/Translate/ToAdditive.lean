@@ -384,7 +384,7 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("monObj", "AddMonObj"),
   ("isModHom", "IsAddModHom"),
   ("mapMod", "MapAddMod"),
-  ("modObj", "AddModObj")
+  ("modObj", "AddModObj"),
   ("yonedaMon", "YonedaAddMon"),
   ("conGen", "AddConGen")]
 
