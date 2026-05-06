@@ -203,6 +203,11 @@ lemma exactAt_X₁ (hS : S.ShortExact) (j : ι)
       Category.id_comp, ← HomologicalComplex.homologyMap_comp, S.zero,
       HomologicalComplex.homologyMap_zero]
 
+lemma exactAt_X₂ (hS : S.ShortExact) (i : ι) (h₁ : S.X₁.ExactAt i) (h₃ : S.X₃.ExactAt i) :
+    S.X₂.ExactAt i := by
+  rw [exactAt_iff_isZero_homology] at h₁ h₃ ⊢
+  exact (hS.homology_exact₂ i).isZero_X₂ (h₁.eq_of_src _ _) (h₃.eq_of_tgt _ _)
+
 lemma exactAt_X₃ (hS : S.ShortExact) (i : ι)
     (h₁ : Epi (HomologicalComplex.homologyMap S.f i) := by infer_instance)
     (h₂ : ∀ (j : ι), c.Rel i j → Mono (HomologicalComplex.homologyMap S.f j) := by infer_instance) :
@@ -227,6 +232,10 @@ lemma exactAt_X₃ (hS : S.ShortExact) (i : ι)
 
 lemma acyclic_X₁ (hS : S.ShortExact) (hg : _root_.QuasiIso S.g) : S.X₁.Acyclic :=
   fun j ↦ hS.exactAt_X₁ j
+
+lemma acyclic_X₂ (hS : S.ShortExact) (h₁ : S.X₁.Acyclic) (h₃ : S.X₃.Acyclic) :
+    S.X₂.Acyclic :=
+  fun i ↦ hS.exactAt_X₂ i (h₁ _) (h₃ _)
 
 lemma acyclic_X₃ (hS : S.ShortExact) (h : _root_.QuasiIso S.f) : S.X₃.Acyclic :=
   fun i ↦ hS.exactAt_X₃ i
