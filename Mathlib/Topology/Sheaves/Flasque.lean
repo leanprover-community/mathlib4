@@ -76,6 +76,9 @@ namespace Sheaf
 /-- A sheaf is flasque if it is flasque as a presheaf. -/
 abbrev IsFlasque {C : Type v} [Category.{w} C] (F : Sheaf C X) := Presheaf.IsFlasque F.obj
 
+instance (priority := low) IsFlasque.epi' {C : Type v} [Category.{w} C] (F : Sheaf C X)
+    [h : F.IsFlasque] {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) : Epi (F.obj.map i) := h.epi i
+
 namespace IsFlasque
 
 theorem pushforward_isFlasque {C : Type v} [Category.{w} C] {Y : TopCat.{u}} (F : Sheaf C X)

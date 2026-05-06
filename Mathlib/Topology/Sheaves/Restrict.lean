@@ -27,13 +27,15 @@ variable (C : Type*) [Category* C] {X : TopCat.{u}} {Y : TopCat.{u}} {f : Y ⟶ 
 
 namespace TopCat.Sheaf
 
-abbrev restrict : Sheaf C X ⥤ Sheaf C Y := by
+abbrev restrict : Sheaf C X ⥤ Sheaf C Y :=
   haveI := hf.functor_isContinuous
-  exact hf.functor.sheafPushforwardContinuous C ..
+  hf.functor.sheafPushforwardContinuous C ..
 
-abbrev restrictPushforwardAdjunction : restrict C hf ⊣ pushforward C f := by
+abbrev restrictPushforwardAdjunction : restrict C hf ⊣ pushforward C f :=
   haveI := hf.functor_isContinuous
-  exact Adjunction.sheafPushforwardContinuous hf.isOpenMap.adjunction ..
+  Adjunction.sheafPushforwardContinuous hf.isOpenMap.adjunction ..
+
+instance : (restrict C hf).IsLeftAdjoint := (restrictPushforwardAdjunction C hf).isLeftAdjoint
 
 variable (F : Sheaf C X) (U V : Opens X)
 
