@@ -20,7 +20,7 @@ public section
 
 namespace Real
 
-/-- `Real.equivCauchy` as a ring equivalence. -/
+/-- The ring isomorphism from real numbers to Cauchy sequences of rationals. -/
 def ringEquivCauchy : ℝ ≃+* CauSeq.Completion.Cauchy (abs : ℚ → ℚ) :=
   { equivCauchy with
     map_add' := Real.cauchy_add
