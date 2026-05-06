@@ -1248,7 +1248,20 @@ theorem toLinearMap_subtypeL (p : Submodule R M) : (p.subtypeL : p →ₗ[R] M) 
 @[simp]
 theorem coe_subtypeL (p : Submodule R M) : ⇑p.subtypeL = p.subtype := rfl
 
+@[deprecated (since := "2026-05-06")]
+alias coe_subtypeL' := coe_subtypeL
+
 theorem subtypeL_apply (p : Submodule R M) (x : p) : p.subtypeL x = x := by simp
+
+@[deprecated "This theorem is deprecated in favor of using simp with range_subtype"
+  (since := "2026-05-06")]
+theorem range_subtypeL (p : Submodule R M) : (p.subtypeL : p →ₗ[R] M).range = p :=
+  Submodule.range_subtype _
+
+@[deprecated "This theorem is deprecated in favor of using simp with ker_subtype"
+  (since := "2026-05-06")]
+theorem ker_subtypeL (p : Submodule R M) : (p.subtypeL : p →ₗ[R] M).ker = ⊥ :=
+  Submodule.ker_subtype _
 
 end Semiring
 
