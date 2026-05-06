@@ -102,27 +102,6 @@ theorem powerset_insert [DecidableEq α] (s : Finset α) (a : α) :
   simp only [mem_powerset, mem_image, mem_union, subset_insert_iff]
   grind
 
-/-- The subsets of `t` containing `s` are exactly the subsets of `t \ s`, unioned with `s`. -/
-theorem filter_powerset_subset [DecidableEq α] (s t : Finset α) (hst : s ⊆ t) :
-    t.powerset.filter (s ⊆ ·) = (t \ s).powerset.image (· ∪ s) := by
-  ext x
-  simp only [mem_filter, mem_powerset, mem_image]
-  constructor
-  · intro ⟨hxt, hsx⟩
-    exact ⟨x \ s, fun y hy => mem_sdiff.mpr ⟨hxt (mem_sdiff.mp hy).1, (mem_sdiff.mp hy).2⟩,
-           sdiff_union_of_subset hsx⟩
-  · rintro ⟨y, hyt, rfl⟩
-    exact ⟨union_subset (hyt.trans sdiff_subset) hst, subset_union_right⟩
-
-theorem card_filter_powerset_subset [DecidableEq α] (s t : Finset α) (hst : s ⊆ t) :
-    #(t.powerset.filter (s ⊆ ·)) = 2 ^ (#t - #s) := by
-  have hinj : Set.InjOn (· ∪ s) ↑(t \ s).powerset := fun a ha b hb hab =>
-    (union_sdiff_cancel_right (disjoint_sdiff_self_left.mono_left (mem_powerset.mp ha))).symm.trans
-    ((congrArg (· \ s) hab).trans
-      (union_sdiff_cancel_right (disjoint_sdiff_self_left.mono_left (mem_powerset.mp hb))))
-  simp only [filter_powerset_subset s t hst, card_image_of_injOn hinj,
-             card_powerset, card_sdiff_of_subset hst]
-
 lemma pairwiseDisjoint_pair_insert [DecidableEq α] {a : α} (ha : a ∉ s) :
     (s.powerset : Set (Finset α)).PairwiseDisjoint fun t ↦ ({t, insert a t} : Set (Finset α)) := by
   simp_rw [Set.pairwiseDisjoint_iff, mem_coe, mem_powerset]
