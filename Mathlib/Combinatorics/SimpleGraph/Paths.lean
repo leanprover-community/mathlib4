@@ -162,7 +162,7 @@ theorem IsTrail.of_append_right {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
   rw [isTrail_def, edges_append, List.nodup_append] at h
   exact ⟨h.2.1⟩
 
-theorem isTrail_append_iff_disjoint_edges {u v w : V} (p : G.Walk u v) (q : G.Walk v w) :
+@[simp] theorem isTrail_append {u v w : V} (p : G.Walk u v) (q : G.Walk v w) :
     (p.append q).IsTrail ↔ p.IsTrail ∧ q.IsTrail ∧ p.edges.Disjoint q.edges := by
   simp [Walk.isTrail_def, List.nodup_append']
 
