@@ -181,13 +181,13 @@ lemma expGrowthInf_pow : expGrowthInf (fun n ↦ b ^ n) = log b := by
   rw [expGrowthInf, ← liminf_const (f := atTop (α := ℕ)) (log b)]
   refine liminf_congr (eventually_atTop.2 ⟨1, fun n n_1 ↦ ?_⟩)
   rw [EReal.div_eq_iff (natCast_ne_bot n) (natCast_ne_top n)
-    (zero_lt_one.trans_le (Nat.one_le_cast.2 n_1)).ne.symm, log_pow, mul_comm]
+    (zero_lt_one.trans_le (Nat.one_le_cast.2 n_1)).ne', log_pow, mul_comm]
 
 lemma expGrowthSup_pow : expGrowthSup (fun n ↦ b ^ n) = log b := by
   rw [expGrowthSup, ← limsup_const (f := atTop (α := ℕ)) (log b)]
   refine limsup_congr (eventually_atTop.2 ⟨1, fun n n_1 ↦ ?_⟩)
   rw [EReal.div_eq_iff (natCast_ne_bot n) (natCast_ne_top n)
-    (zero_lt_one.trans_le (Nat.one_le_cast.2 n_1)).ne.symm, log_pow, mul_comm]
+    (zero_lt_one.trans_le (Nat.one_le_cast.2 n_1)).ne', log_pow, mul_comm]
 
 lemma expGrowthInf_exp : expGrowthInf (fun n ↦ exp (a * n)) = a :=
   le_antisymm (Frequently.expGrowthInf_le (Frequently.of_forall fun _ ↦ le_refl _))

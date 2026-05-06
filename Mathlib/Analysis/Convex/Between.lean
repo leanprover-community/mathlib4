@@ -485,7 +485,7 @@ theorem sbtw_iff_mem_image_Ioo_and_ne :
   refine ⟨⟨t, Set.mem_Icc_of_Ioo ht, rfl⟩, ?_⟩
   rw [lineMap_apply, ← @vsub_ne_zero V, ← @vsub_ne_zero V _ _ _ _ z, vadd_vsub_assoc, vsub_self,
     vadd_vsub_assoc, ← neg_vsub_eq_vsub_rev z x, ← @neg_one_smul R, ← add_smul, ← sub_eq_add_neg]
-  simp [sub_eq_zero, ht.1.ne.symm, ht.2.ne, hxz.symm]
+  simp [sub_eq_zero, ht.1.ne', ht.2.ne, hxz.symm]
 
 variable (R z) in
 theorem wbtw_swap_left_iff : Wbtw R x y z ∧ Wbtw R y x z ↔ x = y := by

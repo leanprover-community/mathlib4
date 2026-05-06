@@ -141,10 +141,10 @@ theorem weierstrass_partial {a : ℝ} (ha : 0 < a) {b : ℕ} (hab : 1 < a * b) (
     simp_rw [← mul_sub, abs_mul, abs_pow, mul_pow]
     rw [abs_of_nonneg pi_nonneg, abs_of_nonneg b.cast_nonneg]
     ring
-  simp_rw [this, ← Finset.sum_mul, geom_sum_eq hab.ne.symm]
+  simp_rw [this, ← Finset.sum_mul, geom_sum_eq hab.ne']
   field_simp
-  refine div_le_div_of_nonneg_right ?_ (sub_nonneg.mpr hab.le)
-  simp [sub_one_mul]
+  gcongr
+  simp
 
 /-- The remainder has lower bound in absolute value $|B| \ge |x_m - x| 2 (ab)^m / 3$ -/
 theorem weierstrass_remainder {a : ℝ} (ha : 0 < a) {b : ℕ} (hb : Odd b) {x : ℝ} {m : ℕ}
@@ -162,7 +162,7 @@ theorem weierstrass_remainder {a : ℝ} (ha : 0 < a) {b : ℕ} (hb : Odd b) {x :
         a ^ m * (1 + cos ((b ^ m * x - ⌊b ^ m * x + 2⁻¹⌋) * π)) by
       convert this using 1
       ring
-    refine mul_le_mul_of_nonneg_left ?_ (pow_nonneg ha.le _)
+    gcongr
     trans 1
     · rw [abs_of_nonneg (by simpa using (lt_seq hb0' _ _).le), seq]
       grw [Int.floor_le]
@@ -270,7 +270,7 @@ theorem not_differentiableAt_weierstrass
   suffices Tendsto ((2 / 3 - π / (a * b - 1)) * (a * b) ^ ·) atTop atTop by
     refine tendsto_atTop_mono (fun m ↦ ?_) this
     rw [Function.comp_apply, abs_mul, abs_inv]
-    rw [le_inv_mul_iff₀ (by simpa [sub_eq_zero] using (lt_seq hb0' x _).ne.symm)]
+    rw [le_inv_mul_iff₀ (by simpa [sub_eq_zero] using (lt_seq hb0' x _).ne')]
     exact weierstrass_slope ha hb hab' x m
   have hpos : 0 < 2 / 3 - π / (a * b - 1) := by
     rw [sub_pos, div_lt_iff₀ (by simpa using hab'), ← div_lt_iff₀' (by norm_num), lt_sub_iff_add_lt]

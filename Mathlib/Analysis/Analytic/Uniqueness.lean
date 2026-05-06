@@ -62,7 +62,7 @@ theorem Asymptotics.IsBigO.continuousMultilinearMap_apply_eq_zero {n : ℕ} {p :
       (lt_min (mul_pos δ_pos (inv_pos.mpr hy)) (mul_pos ε_pos (inv_pos.mpr h₀)))
     have h₁ : ‖k • y‖ < δ := by
       rw [norm_smul]
-      exact inv_mul_cancel_right₀ hy.ne.symm δ ▸
+      exact inv_mul_cancel_right₀ hy.ne' δ ▸
         mul_lt_mul_of_pos_right (lt_of_lt_of_le k_norm (min_le_left _ _)) hy
     have h₂ :=
       calc
@@ -72,7 +72,7 @@ theorem Asymptotics.IsBigO.continuousMultilinearMap_apply_eq_zero {n : ℕ} {p :
           simp only [norm_smul, mul_pow]
           ring
     have h₃ : ‖k‖ * (c * ‖y‖ ^ (n.succ + 1)) < ε :=
-      inv_mul_cancel_right₀ h₀.ne.symm ε ▸
+      inv_mul_cancel_right₀ h₀.ne' ε ▸
         mul_lt_mul_of_pos_right (lt_of_lt_of_le k_norm (min_le_right _ _)) h₀
     calc
       ‖p fun _ => y‖ = ‖k⁻¹ ^ n.succ‖ * ‖p fun _ => k • y‖ := by

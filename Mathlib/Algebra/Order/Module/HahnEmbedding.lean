@@ -278,7 +278,7 @@ theorem baseEmbedding_pos {x : seed.baseEmbedding.domain} (hx : 0 < x) :
     rw [hf]
     simpa using hx
   have hsupport : f.support.Nonempty := by
-    obtain hne := hfpos.ne.symm
+    obtain hne := hfpos.ne'
     contrapose! hne with hempty
     apply DFinsupp.sum_eq_zero
     intro c
@@ -720,7 +720,7 @@ theorem eval_lt [IsOrderedAddMonoid R] [Archimedean R] {x : M} (hx : x ∉ f.val
   -- Expand the definition of `HahnSeries`' order. We need to find the first coefficient that
   -- dictates the < relation. This coefficient is exactly at the Archimedean class of `y - x`
   rw [HahnSeries.lt_iff]
-  have hxy0 : y.val - x ≠ 0 := sub_ne_zero_of_ne h.ne.symm
+  have hxy0 : y.val - x ≠ 0 := sub_ne_zero_of_ne h.ne'
   refine ⟨mk (y.val - x) hxy0, ?_, ?_⟩
   · -- All coefficients before the dictating term are the same
     intro j hj
