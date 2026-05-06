@@ -199,18 +199,18 @@ lemma essImage_ι_comp (F : C ⥤ D) (P : ObjectProperty C) :
   · rintro ⟨X, hX, ⟨e⟩⟩
     exact ⟨⟨X, hX⟩, ⟨e⟩⟩
 
-lemma full_of_precomp_essSurj (F : D ⥤ E) (L : C ⥤ D) [EssSurj L]
+lemma full_of_comp_essSurj (F : D ⥤ E) (L : C ⥤ D) [EssSurj L]
     (h : ∀ ⦃X₁ X₂ : C⦄ (φ : F.obj (L.obj X₁) ⟶ F.obj (L.obj X₂)),
       ∃ (f : L.obj X₁ ⟶ L.obj X₂), F.map f = φ) :
-    Full F := ⟨by
+    F.Full := ⟨by
   intro X₁ X₂ ψ
   obtain ⟨f, hf⟩ := h (F.map (L.objObjPreimageIso X₁).hom ≫ ψ ≫
     F.map (L.objObjPreimageIso X₂).inv)
   exact ⟨(L.objObjPreimageIso X₁).inv ≫ f ≫ (L.objObjPreimageIso X₂).hom, by simp [hf]⟩⟩
 
-lemma faithful_of_precomp_essSurj (F : D ⥤ E) (L : C ⥤ D) [EssSurj L]
+lemma faithful_of_comp_essSurj (F : D ⥤ E) (L : C ⥤ D) [EssSurj L]
     (h : ∀ ⦃X₁ X₂ : C⦄ (f g : L.obj X₁ ⟶ L.obj X₂), F.map f = F.map g → f = g) :
-    Faithful F where
+    F.Faithful where
   map_injective hfg := by
     rw [← cancel_mono (L.objObjPreimageIso _).inv, ← cancel_epi (L.objObjPreimageIso _).hom]
     exact h _ _ (by simp [hfg])

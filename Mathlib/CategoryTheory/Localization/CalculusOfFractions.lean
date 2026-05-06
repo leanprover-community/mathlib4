@@ -66,7 +66,7 @@ variable {W}
 def ofInv (s : Y ⟶ X) (hs : W s) :
     W.LeftFraction X Y := mk (𝟙 X) s hs
 
-instance {X Y : C} {L : C ⥤ D} [L.IsLocalization W] (z : W.LeftFraction X Y) :
+instance {L : C ⥤ D} [L.IsLocalization W] (z : W.LeftFraction X Y) :
     IsIso (L.map z.s) :=
   Localization.inverts L W _ z.hs
 
@@ -138,7 +138,7 @@ variable {W}
 def ofInv (s : Y ⟶ X) (hs : W s) :
     W.RightFraction X Y := mk s hs (𝟙 Y)
 
-instance {X Y : C} {L : C ⥤ D} [L.IsLocalization W] (z : W.RightFraction X Y) :
+instance {L : C ⥤ D} [L.IsLocalization W] (z : W.RightFraction X Y) :
     IsIso (L.map z.s) :=
   Localization.inverts L W _ z.hs
 
