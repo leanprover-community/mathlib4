@@ -33,9 +33,9 @@ def iterate (f : V → V) (hadj : ∀ v, G.Adj v (f v)) (v : α) (n : ℕ) : G.W
 
 /-- The walk built by `Walk.iterate` has length `n`. -/
 @[simp]
-theorem length_iterate (f : α → α) (hadj : ∀ x, G.Adj x (f x)) (x : α) (n : ℕ) :
-    (iterate f hadj x n).length = n := by
-  simp only [iterate, length_copy, length_ofSupport, List.length_iterate, Nat.add_sub_cancel]
+theorem length_iterate (f : V → V) (hadj : ∀ v, G.Adj v (f v)) (v : V) (n : ℕ) :
+    (iterate f hadj v n).length = n := by
+  simp [iterate, -List.iterate]
 
 /-- The support of `Walk.iterate` is `[x, f x, f^[2] x, ..., f^[n] x]`. -/
 @[simp]
