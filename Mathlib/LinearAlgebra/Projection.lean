@@ -278,7 +278,7 @@ variable (p q) in
 /-- If `q` is a complement of `p`, then `M ⧸ p ≃ q`. The forward direction sends a quotient class
 to its projection onto `q` along `p`; the backward direction sends an element of `q` to its class
 in `M ⧸ p`. -/
-@[simps!]
+@[simps! symm_apply]
 def quotientEquivOfIsCompl (h : IsCompl p q) : (E ⧸ p) ≃ₗ[R] q :=
   .ofLinear
     (p.liftQ (q.projectionOnto p h.symm) (by simp))
