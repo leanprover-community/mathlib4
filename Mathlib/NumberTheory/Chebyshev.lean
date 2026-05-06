@@ -59,6 +59,17 @@ Parts of this file were upstreamed from the PrimeNumberTheoremAnd project by Kon
 -/
 @[expose] public section
 
+namespace Nat.Prime
+
+theorem log_pos {p : ℕ} (hp : p.Prime) : 0 < Real.log p := by
+  rw [Real.log_pos_iff (mod_cast p.zero_le)]
+  exact_mod_cast hp.one_lt
+
+theorem log_ne {p : ℕ} (hp : p.Prime) : Real.log p ≠ 0 := hp.log_pos.ne'
+
+end Nat.Prime
+
+
 open Nat hiding log
 open Finset Real
 open ArithmeticFunction hiding log
@@ -141,12 +152,6 @@ theorem psi_mono : Monotone ψ := by
   apply sum_le_sum_of_subset_of_nonneg
   · exact Ioc_subset_Ioc (by rfl) (by gcongr)
   · simp
-
-theorem _root_.Nat.Prime.log_pos {p : ℕ} (hp : p.Prime) : 0 < log p := by
-  rw [Real.log_pos_iff (mod_cast p.zero_le)]
-  exact_mod_cast hp.one_lt
-
-theorem _root_.Nat.Prime.log_ne {p : ℕ} (hp : p.Prime) : log p ≠ 0 := hp.log_pos.ne'
 
 @[gcongr]
 theorem theta_mono : Monotone θ := by
@@ -471,7 +476,7 @@ theorem psi_ge (n : ℕ) : n * log 2 - log (n + 1) ≤ psi n := by
   rwa [Real.log_pow, Real.log_mul (by positivity) (by simp [lcmUpto_ne_zero]), ← psi_eq_log_lcmUpto,
    ← sub_le_iff_le_add'] at this
 
-theorem psi_ge' {x : ℝ} (hx : 0 ≤ x) : (x-1) * log 2 - log (x + 2) ≤ psi x := by
+theorem psi_ge' {x : ℝ} (hx : 0 ≤ x) : (x - 1) * log 2 - log (x + 2) ≤ psi x := by
   grw [psi_eq_psi_coe_floor, ←psi_ge]
   gcongr
   · linarith [abs_le.mp (abs_sub_floor_le hx)]
@@ -489,7 +494,7 @@ theorem theta_ge (n : ℕ) : n * log 2 - log (n + 1) - 2 * √n * log n ≤ thet
   linarith [psi_ge n, psi_sub_theta_le (x := n) (mod_cast (one_le_of_lt hn))]
 
 theorem theta_ge' {x : ℝ} (hx : 1 ≤ x) :
-  (x-1) * log 2 - log (x + 2) - 2 * √x * log x ≤ theta x := by
+  (x - 1) * log 2 - log (x + 2) - 2 * √x * log x ≤ theta x := by
   grw [psi_ge' (by linarith)]
   linarith [psi_sub_theta_le hx]
 
@@ -688,14 +693,14 @@ theorem eventually_primeCounting_le {ε : ℝ} (εpos : 0 < ε) :
   grw [theta_le_log4_mul_x (by linarith), ← hx2]
   grind [le_norm_self]
 
-theorem pi_ge (n : ℕ) : (n * log 2 - log (n + 1))/ log n ≤ π n := by
+theorem pi_ge (n : ℕ) : (n * log 2 - log (n + 1)) / log n ≤ π n := by
   rcases (show n = 0 ∨ n = 1 ∨ 1 < n by omega) with rfl | rfl | h
   · simp
   · simp
   grw [div_le_iff₀ (log_pos (mod_cast h)), ←psi_le_primeCounting_mul_log, psi_ge]
 
 theorem pi_ge' {x : ℝ} (hx : 1 < x) :
-    ((x-1) * log 2 - log (x + 2))/ log x ≤ π ⌊x⌋₊ := by
+    ((x - 1) * log 2 - log (x + 2)) / log x ≤ π ⌊x⌋₊ := by
   grw [div_le_iff₀ (log_pos hx), ←psi_le_primeCounting_mul_log', psi_ge']
   positivity
 
