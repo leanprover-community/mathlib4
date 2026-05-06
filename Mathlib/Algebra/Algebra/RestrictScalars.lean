@@ -83,33 +83,156 @@ Note that this means we almost always want to state definitions and lemmas in th
 When `R` is a commutative semiring and `[Algebra R S]`, `RestrictScalars R S M` is an abbreviation
 for `RestrictScalarsMap (algebraMap R S) M`. -/
 @[nolint unusedArguments]
-def RestrictScalarsMap {R S : Type*} (f : R → S) (M : Type*) : Type _ := M
+structure RestrictScalarsMap {R S : Type*} (f : R → S) (M : Type*) where res' ::
+  unres' : M
 
-section Instances
-
-variable {R S : Type*} (f : R → S)
-
-variable (M A : Type*)
-
-instance [I : Inhabited M] : Inhabited (RestrictScalarsMap f M) := I
-
-instance [I : AddCommMonoid M] : AddCommMonoid (RestrictScalarsMap f M) := I
-
-instance [I : AddCommGroup M] : AddCommGroup (RestrictScalarsMap f M) := I
-
-instance [I : Semiring A] : Semiring (RestrictScalarsMap f A) := I
-
-instance [I : Ring A] : Ring (RestrictScalarsMap f A) := I
-
-instance [I : CommSemiring A] : CommSemiring (RestrictScalarsMap f A) := I
-
-instance [I : CommRing A] : CommRing (RestrictScalarsMap f A) := I
-
-end Instances
+variable {R S M A : Type*} (f : R → S)
 
 namespace RestrictScalarsMap
 
+def res : M → RestrictScalarsMap f M := res'
+
+variable {f} in
+def unres : RestrictScalarsMap f M → M := unres'
+
+@[simp] lemma res_unres (m : RestrictScalarsMap f M) : res f (unres m) = m := rfl
+
+@[simp] lemma unres_res (m : M) : unres (res f m) = m := rfl
+
+def equiv : RestrictScalarsMap f M ≃ M :=
+  ⟨unres, res f, res_unres f, unres_res f⟩
+
+instance [Inhabited M] : Inhabited (RestrictScalarsMap f M) := ⟨res f default⟩
+
+@[to_additive]
+instance [One M] : One (RestrictScalarsMap f M) where
+  one := res f 1
+
+@[to_additive (attr := simp)]
+lemma res_one [One M] : res f (1 : M) = 1 := rfl
+
+@[to_additive (attr := simp)]
+lemma unres_one [One M] : unres (1 : RestrictScalarsMap f M) = 1 := rfl
+
+@[to_additive]
+instance [Mul M] : Mul (RestrictScalarsMap f M) where
+  mul x y := res f (x.unres * y.unres)
+
+@[to_additive (attr := simp)]
+lemma res_mul [Mul M] (x y : M) :
+    res f (x * y) = res f x * res f y := rfl
+
+@[to_additive (attr := simp)]
+lemma unres_mul [Mul M] (x y : RestrictScalarsMap f M) :
+    unres (x * y) = unres x * unres y := rfl
+
+/-- The additive equivalence between `RestrictScalarsMap f M` and the original module `M`. -/
+@[to_additive]
+def mulEquiv [Mul M] : RestrictScalarsMap f M ≃* M where
+  map_mul' := unres_mul f
+  __ := equiv f
+
+@[to_additive]
+instance [Semigroup M] : Semigroup (RestrictScalarsMap f M) where
+  mul_assoc _ _ _ := congr(res f $(mul_assoc _ _ _))
+
+@[to_additive]
+instance [MulOneClass M] : MulOneClass (RestrictScalarsMap f M) where
+  one_mul _ := congr(res f $(one_mul _))
+  mul_one _ := congr(res f $(mul_one _))
+
+@[to_additive]
+instance [Monoid M] : Monoid (RestrictScalarsMap f M) where
+
+@[to_additive]
+instance [CommMonoid M] : CommMonoid (RestrictScalarsMap f M) where
+  mul_comm _ _ := congr(res f $(mul_comm _ _))
+
+instance [Sub M] : Sub (RestrictScalarsMap f M) where
+  sub x y := res f (x.unres - y.unres)
+
+@[simp] lemma res_sub [Sub M] (x y : M) :
+    res f (x - y) = res f x - res f y := rfl
+
+@[simp] lemma unres_sub [Sub M] (x y : RestrictScalarsMap f M) :
+    unres (x - y) = unres x - unres y := rfl
+
+instance [Neg M] : Neg (RestrictScalarsMap f M) where
+  neg x := res f (-x.unres)
+
+@[simp] lemma res_neg [Neg M] (x : M) :
+    res f (-x) = -(res f x) := rfl
+
+@[simp] lemma unres_neg [Neg M] (x : RestrictScalarsMap f M) :
+    (-x).unres = -x.unres := rfl
+
+instance [SubNegMonoid M] : SubNegMonoid (RestrictScalarsMap f M) where
+  sub_eq_add_neg _ _ := congr(res f $(sub_eq_add_neg _ _))
+
+instance [AddGroup M] : AddGroup (RestrictScalarsMap f M) where
+  neg_add_cancel _ := congr(res f $(neg_add_cancel _))
+  sub_eq_add_neg _ _ := congr(res f $(sub_eq_add_neg _ _))
+  zsmul := zsmulRec
+
+instance [AddCommGroup M] : AddCommGroup (RestrictScalarsMap f M) where
+
+instance [I : Semiring A] : Semiring (RestrictScalarsMap f A) := sorry
+
+instance [I : Ring A] : Ring (RestrictScalarsMap f A) := sorry
+
+instance [I : CommSemiring A] : CommSemiring (RestrictScalarsMap f A) := sorry
+
+instance [I : CommRing A] : CommRing (RestrictScalarsMap f A) := sorry
+
+section Action
+
+instance smul [SMul S M] : SMul R (RestrictScalarsMap f M) where
+  smul r m := res f (f r • m.unres)
+
+theorem smul_def [SMul S M] (r : R) (m : RestrictScalarsMap f M) :
+    r • m = res f (f r • m.unres) := rfl
+
+theorem smul_def' [SMul S M] (r : R) (m : M) :
+    (r • res f m).unres = f r • m := rfl
+
+instance semigroupAction [Semigroup R] [Semigroup S] (f : R →ₙ* S) [SemigroupAction S M] :
+    SemigroupAction R (RestrictScalarsMap f M) where
+  mul_smul a b m := by simp [smul_def, mul_smul]
+
+instance mulAction [Monoid R] [Monoid S] (f : R →* S) [MulAction S M] :
+    MulAction R (RestrictScalarsMap f M) where
+  one_smul m := by simp [smul_def]
+  __ := semigroupAction f.toMulHom
+
+instance distribMulAction [Monoid R] [Monoid S] (f : R →* S) [AddMonoid M] [DistribMulAction S M] :
+    DistribMulAction R (RestrictScalarsMap f M) where
+  smul_zero _ := by simp [smul_def]
+  smul_add _ _ _ := by simp [smul_def]
+
+instance module [Semiring R] [Semiring S] (f : R →+* S) [AddCommMonoid M] [Module S M] :
+    Module R (RestrictScalarsMap f M) where
+  add_smul a b m := by simp [smul_def, add_smul]
+  zero_smul m := by simp [smul_def]
+  __ := distribMulAction f.toMonoidHom
+
+-- todo
+/-- We temporarily install the action of the original ring `S` on `RestrictScalarsMap f M`. -/
+@[implicit_reducible]
+def moduleOrig [Semiring S] [AddCommMonoid M] [Module S M] :
+    Module S (RestrictScalarsMap f M) where
+  smul s m := res f (s • m.unres)
+  mul_smul := sorry
+  one_smul := sorry
+  smul_zero := sorry
+  smul_add := sorry
+  add_smul := sorry
+  zero_smul := sorry
+
+
+end Action
+
 section Map
+
 
 variable {R S : Type*} (f : R → S)
 
@@ -117,14 +240,8 @@ variable (M : Type*) [AddCommMonoid M]
 variable (A : Type*) [Semiring A]
 
 /-- We temporarily install the action of the original ring `S` on `RestrictScalarsMap f M`. -/
-@[instance_reducible]
-def moduleOrig [Semiring S] [I : Module S M] : Module S (RestrictScalarsMap f M) := I
-
-/-- The additive equivalence between `RestrictScalarsMap f M` and the original module `M`.
-In fact they are definitionally equal, but sometimes it is helpful to avoid using this fact,
-to keep instances from leaking. -/
-def addEquiv : RestrictScalarsMap f M ≃+ M :=
-  AddEquiv.refl M
+/- @[instance_reducible] -/
+/- def moduleOrig [Semiring S] [I : Module S M] : Module S (RestrictScalarsMap f M) := I -/
 
 /-- Tautological ring isomorphism `RestrictScalarsMap f A ≃+* A`. -/
 def ringEquiv : RestrictScalarsMap f A ≃+* A :=
