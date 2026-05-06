@@ -54,7 +54,7 @@ https://gist.github.com/jcommelin/47d94e4af092641017a97f7f02bf9598
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -144,7 +144,7 @@ theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [IsLocalRing R] :
     have H := HenselianLocalRing.is_henselian f hf a₀
     simp only [← ker_eq_maximalIdeal φ hφ, eval₂_at_apply, RingHom.mem_ker] at H h₁ h₂
     obtain ⟨a, ha₁, ha₂⟩ := H h₁ (by
-      contrapose! h₂
+      contrapose h₂
       rwa [← mem_nonunits_iff, ← mem_maximalIdeal, ← ker_eq_maximalIdeal φ hφ,
         RingHom.mem_ker] at h₂)
     refine ⟨a, ha₁, ?_⟩
@@ -160,7 +160,7 @@ instance (R : Type*) [CommRing R] [hR : HenselianLocalRing R] :
   is_henselian := by
     intro f hf a₀ h₁ h₂
     refine HenselianLocalRing.is_henselian f hf a₀ h₁ ?_
-    contrapose! h₂
+    contrapose h₂
     rw [← mem_nonunits_iff, ← IsLocalRing.mem_maximalIdeal, ← Ideal.Quotient.eq_zero_iff_mem] at h₂
     rw [h₂]
     exact not_isUnit_zero

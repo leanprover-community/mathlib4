@@ -85,7 +85,7 @@ theorem HasProd.hasProd_of_prod_eq {g : γ → α}
     (h_eq : ∀ u : Finset γ, ∃ v : Finset β, ∀ v', v ⊆ v' →
       ∃ u', u ⊆ u' ∧ ∏ x ∈ u', g x = ∏ b ∈ v', f b)
     (hf : HasProd g a) : HasProd f a :=
-  le_trans (map_atTop_finset_prod_le_of_prod_eq h_eq) hf
+  le_trans (map_atTop_finsetProd_le_of_prod_eq h_eq) hf
 
 @[to_additive]
 theorem hasProd_iff_hasProd {g : γ → α}
@@ -256,7 +256,7 @@ lemma Topology.IsClosedEmbedding.map_tprod {ι α α' G : Type*}
   · by_cases h : Multipliable f L
     · exact h.map_tprod g hge.continuous
     · rw [tprod_eq_one_of_not_multipliable h, tprod_eq_one_of_not_multipliable, map_one]
-      contrapose! h
+      contrapose h
       -- need to show `g ∘ f` multipliable implies `g` multipliable
       simp only [Multipliable, HasProd] at h ⊢
       obtain ⟨b, hb⟩ := h
@@ -338,7 +338,7 @@ lemma Multipliable.pow (hf : Multipliable f L) (n : ℕ) : Multipliable (f · ^ 
 theorem hasProd_prod {f : γ → β → α} {a : γ → α} {s : Finset γ} :
     (∀ i ∈ s, HasProd (f i) (a i) L) → HasProd (fun b ↦ ∏ i ∈ s, f i b) (∏ i ∈ s, a i) L := by
   classical
-  exact Finset.induction_on s (by simp only [hasProd_one, prod_empty, forall_true_iff]) <| by
+  exact Finset.induction_on s (by simp) <| by
     simp +contextual only [mem_insert, forall_eq_or_imp, not_false_iff,
       prod_insert, and_imp]
     exact fun x s _ IH hx h ↦ hx.mul (IH h)

@@ -24,7 +24,7 @@ properties of its epimorphisms and monomorphisms.
 
 @[expose] public section
 
-universe v
+universe u
 
 open Simplicial CategoryTheory Limits
 
@@ -666,13 +666,11 @@ instance : (forget SimplexCategory).ReflectsIsomorphisms :=
                       (asIso ((forget SimplexCategory).map f))) _).symm
                 · rw [eq_of_le_of_not_lt h h'] }
         hom_inv_id := by
-          ext1
-          ext1
-          exact Iso.hom_inv_id (asIso ((forget _).map f))
+          ext x : 3
+          exact Iso.hom_inv_id_apply (asIso ((forget _).map f)) x
         inv_hom_id := by
-          ext1
-          ext1
-          exact Iso.inv_hom_id (asIso ((forget _).map f)) }⟩
+          ext x : 3
+          exact Iso.inv_hom_id_apply (asIso ((forget _).map f)) x }⟩
 
 theorem isIso_of_bijective {x y : SimplexCategory} {f : x ⟶ y}
     (hf : Function.Bijective f.toOrderHom.toFun) : IsIso f :=
@@ -858,6 +856,20 @@ theorem factorThruImage_eq {Δ Δ'' : SimplexCategory} {φ : Δ ⟶ Δ''} {e : �
   rw [← cancel_mono i, fac, ← image_ι_eq fac, image.fac]
 
 end EpiMono
+
+/-- The functor which sends `⦋n⦌ : SimplexCategory` to the partially ordered
+type `{0, 1, ..., n}` (ulifted to `Type u`). -/
+def toPartOrd : SimplexCategory ⥤ PartOrd.{u} :=
+  skeletalFunctor ⋙ forget₂ NonemptyFinLinOrd FinPartOrd ⋙
+    forget₂ FinPartOrd PartOrd ⋙ PartOrd.uliftFunctor
+
+@[simp]
+lemma toPartOrd_obj (n : SimplexCategory) :
+    toPartOrd.{u}.obj n = .of (ULift.{u} (Fin (n.len + 1))) := rfl
+
+@[simp]
+lemma toPartOrd_map_apply {n m : SimplexCategory} (f : n ⟶ m) (i : (Fin (n.len + 1))) :
+    dsimp% toPartOrd.{u}.map f (ULift.up i) = ULift.up (f i) := rfl
 
 /-- This functor `SimplexCategory ⥤ Cat` sends `⦋n⦌` (for `n : ℕ`)
 to the category attached to the ordered set `{0, 1, ..., n}` -/

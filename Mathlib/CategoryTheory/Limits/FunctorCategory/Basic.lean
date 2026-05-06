@@ -199,8 +199,8 @@ instance functorCategoryHasColimitsOfSize [HasColimitsOfSize.{v₁, u₁} C] :
     HasColimitsOfSize.{v₁, u₁} (K ⥤ C) where
   has_colimits_of_shape := inferInstance
 
-instance hasLimitCompEvaluation (F : J ⥤ K ⥤ C) (k : K) [HasLimit (F.flip.obj k)] :
-    HasLimit (F ⋙ (evaluation _ _).obj k) :=
+instance (priority := low) hasLimitCompEvaluation (F : J ⥤ K ⥤ C) (k : K)
+    [HasLimit (F.flip.obj k)] : HasLimit (F ⋙ (evaluation _ _).obj k) :=
   hasLimit_of_iso (F := F.flip.obj k) (Iso.refl _)
 
 instance evaluation_preservesLimit (F : J ⥤ K ⥤ C) [∀ k, HasLimit (F.flip.obj k)] (k : K) :

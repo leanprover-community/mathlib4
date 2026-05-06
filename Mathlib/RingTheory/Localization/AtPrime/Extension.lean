@@ -103,7 +103,7 @@ the complement of `p` and `P` is a maximal ideal of `S` above `p`.
 Note that this isomorphism makes the obvious diagram involving `R ⧸ p ≃+* Rₚ ⧸ maximalIdeal Rₚ`
 commute, see `IsLocalization.AtPrime.algebraMap_equivQuotMaximalIdeal_symm_apply`.
 -/
-noncomputable def equivQuotientMapOfIsMaximal [p.IsPrime] [P.IsMaximal] :
+noncomputable def equivQuotientMapOfIsMaximal [P.IsMaximal] :
     S ⧸ P ≃+* Sₚ ⧸ P.map (algebraMap S Sₚ) :=
   .trans
     (Ideal.quotEquivOfEq (by

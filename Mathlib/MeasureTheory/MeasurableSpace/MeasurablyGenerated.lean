@@ -19,7 +19,7 @@ We say that a filter `f` is measurably generated if every set `s ∈ f` includes
 set `t ∈ f`. This property is useful, e.g., to extract a measurable witness of `Filter.Eventually`.
 -/
 
-@[expose] public section
+public section
 
 open Set Filter
 

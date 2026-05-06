@@ -57,11 +57,7 @@ theorem cardinalMk_le_of_le' {κ : Cardinal.{max u v}}
 is at most the maximum of the cardinality of `α` and `ℵ₀` -/
 theorem cardinalMk_le_max_aleph0_of_finite' [∀ a, Finite (β a)] :
     #(WType β) ≤ max (lift.{v} #α) ℵ₀ :=
-  (isEmpty_or_nonempty α).elim
-    (by
-      intro h
-      rw [Cardinal.mk_eq_zero (WType β)]
-      exact zero_le _)
+  (isEmpty_or_nonempty α).elim (fun _ ↦ by simp)
     fun hn =>
     let m := max (lift.{v} #α) ℵ₀
     cardinalMk_le_of_le' <|
@@ -77,11 +73,11 @@ theorem cardinalMk_le_max_aleph0_of_finite' [∀ a, Finite (β a)] :
                 (by
                   rw [succ_zero]
                   obtain ⟨a⟩ : Nonempty α := hn
-                  refine le_trans ?_ (le_ciSup (bddAbove_range _) a)
+                  refine le_trans ?_ (le_ciSup bddAbove_of_small a)
                   rw [← power_zero]
                   exact
                     power_le_power_left
-                      (pos_iff_ne_zero.1 (aleph0_pos.trans_le (le_max_right _ _))) (zero_le _))
+                      (pos_iff_ne_zero.1 (aleph0_pos.trans_le (le_max_right _ _))) zero_le)
 
 variable {β : α → Type u}
 

@@ -415,7 +415,7 @@ lemma AnalyticAt.exists_eq_sum_add_pow_mul [CharZero 𝕜] [CompleteSpace E]
     · simp only [if_neg hz]
       rw [smul_inv_smul₀]
       · module
-      · contrapose! hz
+      · contrapose hz
         exact (pow_eq_zero_iff'.mp hz).1 ▸ mem_of_mem_nhds hU0
 
 end NormedSpace
