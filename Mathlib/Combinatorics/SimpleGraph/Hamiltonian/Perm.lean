@@ -36,11 +36,11 @@ theorem IsHamiltonian.of_perm {σ : Perm α}
   have hx : σ x ≠ x := σ.mem_support.mp hx_mem
   have hcycOn : σ.IsCycleOn (Finset.univ : Finset α) :=
     hsupport ▸ σ.coe_support_eq_set_support ▸ hcycle.isCycleOn
-  set p : G.Walk (σ x) x := (Walk.iterate (↑σ) hadj (σ x) (Fintype.card α - 1)).copy rfl (by
+  set p : G.Walk (σ x) x := (Walk.iterate (↑σ) (σ x) (Fintype.card α - 1) hadj).copy rfl (by
     change (↑σ : α → α)^[Fintype.card α - 1 + 1] x = x
     rw [Nat.sub_add_cancel (by lia), Equiv.Perm.iterate_eq_pow,
       ← Finset.card_univ, hcycOn.pow_card_apply (Finset.mem_univ x)])
-  refine ⟨x, .cons (hadj x) p, Walk.cons_isHamiltonianCycle_iff (hadj x) p |>.mpr ⟨?_, ?_⟩⟩
+  refine ⟨x, .cons (hadj x) p, Walk.isHamiltonianCycle_cons_iff (hadj x) p |>.mpr ⟨?_, ?_⟩⟩
   · -- p is a Hamiltonian path: visits every vertex exactly once.
     rw [Walk.isHamiltonian_iff_isPath_and_length_eq]
     refine ⟨?_, by simp [p]⟩
