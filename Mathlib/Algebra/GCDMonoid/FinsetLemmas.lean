@@ -47,7 +47,7 @@ theorem factorization_lcm {β : Type*} {f : β → ℕ} {s : Finset β}
     simp [lcm, fold_empty, factorization_one, Finsupp.coe_zero, sup_empty]
   | insert _ _ _ _ =>
     simp_all [lcm_eq_nat_lcm, Nat.factorization_lcm]
-    
+
 namespace Rat
 
 theorem den_sum_dvd_lcm_den {ι : Type*} (s : Finset ι) (f : ι → ℚ) :
