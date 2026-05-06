@@ -367,6 +367,17 @@ theorem MeromorphicNFOn.div {f : 𝕜 → 𝕜} {g : 𝕜 → 𝕜} {x : 𝕜} (
     rwa [← meromorphicNFAt_mul_iff_left hgInvAnalytic (inv_ne_zero hgne)] at hf
   · grind [meromorphicNFAt_mul_iff_right, hg.inv]
 
+/--
+A function is meromorphic in normal form at a point iff it is meromorphic in normal form after
+composition with an analytic function of nonvanishing derivative, such as translation.
+-/
+theorem meromorphicNFAt_comp_iff_of_deriv_ne_zero [CompleteSpace 𝕜] [CharZero 𝕜] {x : 𝕜}
+    {g : 𝕜 → 𝕜} (hg : AnalyticAt 𝕜 g x) (hg' : deriv g x ≠ 0) :
+    MeromorphicNFAt (f ∘ g) x ↔ MeromorphicNFAt f (g x) := by
+  simp [meromorphicNFAt_iff_analyticAt_or, analyticAt_comp_iff_of_deriv_ne_zero hg hg',
+    meromorphicAt_comp_iff_of_deriv_ne_zero hg hg',
+    meromorphicOrderAt_comp_of_deriv_ne_zero hg hg']
+
 /-!
 ### Continuous extension and conversion to normal form
 -/
