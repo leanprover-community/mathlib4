@@ -32,11 +32,11 @@ for `φ.τ₁` and `φ.τ₂` shall also be obtained (TODO).
 
 open CategoryTheory ComposableArrows Abelian
 
-namespace HomologicalComplex
-
 variable {C ι : Type*} [Category* C] [Abelian C] {c : ComplexShape ι}
   {S S₁ S₂ : ShortComplex (HomologicalComplex C c)} (φ : S₁ ⟶ S₂)
   (hS₁ : S₁.ShortExact) (hS₂ : S₂.ShortExact)
+
+namespace HomologicalComplex
 
 namespace HomologySequence
 
@@ -176,3 +176,47 @@ lemma quasiIso_τ₃ (h₁ : QuasiIso φ.τ₁) (h₂ : QuasiIso φ.τ₂) :
 end HomologySequence
 
 end HomologicalComplex
+
+namespace CategoryTheory.ShortComplex.ShortExact
+
+open HomologicalComplex Limits
+
+lemma acyclic_X₁ (hS : S.ShortExact) (hg : _root_.QuasiIso S.g) : S.X₁.Acyclic := by
+  intro j
+  rw [exactAt_iff_isZero_homology]
+  by_cases hj : ∃ i, c.Rel i j
+  · obtain ⟨i, hij⟩ := hj
+    apply (hS.homology_exact₁ i j hij).isZero_X₂
+    · simp [← cancel_epi (HomologicalComplex.homologyMap S.g i)]
+    · dsimp
+      rw [← cancel_mono (HomologicalComplex.homologyMap S.g j), zero_comp,
+        ← HomologicalComplex.homologyMap_comp, S.zero,
+        HomologicalComplex.homologyMap_zero]
+  · have := hS.mono_f
+    have := HomologicalComplex.mono_homologyMap_of_mono_of_not_rel S.f j (by tauto)
+    rw [IsZero.iff_id_eq_zero,
+      ← cancel_mono (HomologicalComplex.homologyMap S.f j),
+      ← cancel_mono (HomologicalComplex.homologyMap S.g j), zero_comp, zero_comp,
+      Category.id_comp, ← HomologicalComplex.homologyMap_comp, S.zero,
+      HomologicalComplex.homologyMap_zero]
+
+lemma acyclic_X₃ (hS : S.ShortExact) (h : _root_.QuasiIso S.f) : S.X₃.Acyclic := by
+  intro i
+  rw [exactAt_iff_isZero_homology]
+  by_cases hi : ∃ j, c.Rel i j
+  · obtain ⟨j, hij⟩ := hi
+    apply (hS.homology_exact₃ i j hij).isZero_X₂
+    · dsimp
+      rw [← cancel_epi (HomologicalComplex.homologyMap S.f i), comp_zero,
+        ← HomologicalComplex.homologyMap_comp, S.zero,
+        HomologicalComplex.homologyMap_zero]
+    · simp [← cancel_mono (HomologicalComplex.homologyMap S.f j)]
+  · have := hS.epi_g
+    have pi := HomologicalComplex.epi_homologyMap_of_epi_of_not_rel S.g i (by tauto)
+    rw [IsZero.iff_id_eq_zero,
+      ← cancel_epi (HomologicalComplex.homologyMap S.g i),
+      ← cancel_epi (HomologicalComplex.homologyMap S.f i), comp_zero, comp_zero,
+      Category.comp_id, ← HomologicalComplex.homologyMap_comp, S.zero,
+      HomologicalComplex.homologyMap_zero]
+
+end CategoryTheory.ShortComplex.ShortExact
