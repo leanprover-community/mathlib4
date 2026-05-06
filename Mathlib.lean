@@ -5668,7 +5668,6 @@ public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.MDifferentiable
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.QExpansion
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.UniformConvergence
-public import Mathlib.NumberTheory.ModularForms.GradedRing
 public import Mathlib.NumberTheory.ModularForms.Identities
 public import Mathlib.NumberTheory.ModularForms.JacobiTheta.Bounds
 public import Mathlib.NumberTheory.ModularForms.JacobiTheta.Manifold
