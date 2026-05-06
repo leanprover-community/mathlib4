@@ -271,7 +271,7 @@ theorem clog_one_left (r : R) : clog 1 r = 0 := by
 theorem clog_zpow {b : ℕ} (hb : 1 < b) (z : ℤ) : clog b (b ^ z : R) = z := by
   rw [← neg_log_inv_eq_clog, ← zpow_neg, log_zpow hb, neg_neg]
 
-@[mono]
+@[gcongr, mono]
 theorem clog_mono_right {b : ℕ} {r₁ r₂ : R} (h₀ : 0 < r₁) (h : r₁ ≤ r₂) :
     clog b r₁ ≤ clog b r₂ := by
   have h₀' : 0 < r₂ := lt_of_lt_of_le h₀ h

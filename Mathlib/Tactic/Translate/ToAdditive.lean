@@ -378,7 +378,14 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("subNegZeroAddMonoid", "SubNegZeroMonoid"),
   ("modularCharacter", "AddModularCharacter"),
   ("isQuotientCoveringMap", "IsAddQuotientCoveringMap"),
-  ("addExact", "exact")]
+  ("addExact", "exact"),
+  ("isMonHom", "IsAddMonHom"),
+  ("mapMon", "MapAddMon"),
+  ("monObj", "AddMonObj"),
+  ("isModHom", "IsAddModHom"),
+  ("mapMod", "MapAddMod"),
+  ("modObj", "AddModObj"),
+  ("yonedaMon", "yonedaAddMon")]
 
 /-- The bundle of environment extensions for `to_additive` -/
 def data : TranslateData where
@@ -392,7 +399,8 @@ initialize registerBuiltinAttribute {
     name := `to_additive
     descr := "Transport multiplicative to additive"
     add := fun src stx kind ↦ discard do
-      addTranslationAttr data src (← elabTranslationAttr src stx) kind
+      profileitM Exception "to_additive" (← getOptions) do
+        addTranslationAttr data src (← elabTranslationAttr src stx) kind
     -- we (presumably) need to run after compilation to properly add the `simp` attribute
     applicationTime := .afterCompilation
   }

@@ -143,7 +143,7 @@ Other instances could be added when needed (in that case, one also needs to add 
 integral, fundamental theorem of calculus, FTC-1, FTC-2
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists HasDerivAt.mul -- guard against import creep
 
@@ -1117,7 +1117,7 @@ variable [CompleteSpace E] {f f' : ℝ → E}
 theorem integral_eq_sub_of_hasDeriv_right_of_le (hab : a ≤ b) (hcont : ContinuousOn f (Icc a b))
     (hderiv : ∀ x ∈ Ioo a b, HasDerivWithinAt f (f' x) (Ioi x) x)
     (f'int : IntervalIntegrable f' volume a b) : ∫ y in a..b, f' y = f b - f a := by
-  refine (NormedSpace.eq_iff_forall_dual_eq ℝ).2 fun g => ?_
+  refine (SeparatingDual.eq_iff_forall_dual_eq (R := ℝ)).2 fun g => ?_
   rw [← g.intervalIntegral_comp_comm f'int, g.map_sub]
   exact integral_eq_sub_of_hasDeriv_right_of_le_real hab (g.continuous.comp_continuousOn hcont)
     (fun x hx => g.hasFDerivAt.comp_hasDerivWithinAt x (hderiv x hx))

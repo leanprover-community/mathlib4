@@ -32,8 +32,6 @@ continuous functional calculus, normal, selfadjoint
 
 @[expose] public section
 
-set_option backward.isDefEq.respectTransparency false
-
 open Topology
 
 noncomputable section
@@ -125,7 +123,6 @@ lemma cfcₙAux_mem_range_inr (f : C(σₙ 𝕜 a, 𝕜)₀) :
 
 variable [CStarRing A]
 
-#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
 include hp₁ in
 open Unitization NonUnitalStarAlgHom in
 theorem RCLike.nonUnitalContinuousFunctionalCalculus :
@@ -397,7 +394,7 @@ section NNRealEqReal
 open NNReal
 
 variable {A : Type*} [TopologicalSpace A] [Ring A] [PartialOrder A] [StarRing A]
-  [StarOrderedRing A] [Algebra ℝ A] [IsTopologicalRing A] [T2Space A]
+  [StarOrderedRing A] [Algebra ℝ A] [IsSemitopologicalRing A] [T2Space A]
   [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
   [NonnegSpectrumClass ℝ A]
 
@@ -424,8 +421,8 @@ section NNRealEqRealNonUnital
 open NNReal
 
 variable {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [PartialOrder A] [StarRing A]
-  [StarOrderedRing A] [Module ℝ A] [IsTopologicalRing A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A]
-  [T2Space A] [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
+  [StarOrderedRing A] [Module ℝ A] [IsSemitopologicalRing A] [IsScalarTower ℝ A A]
+  [SMulCommClass ℝ A A] [T2Space A] [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
   [NonnegSpectrumClass ℝ A]
 
 lemma cfcₙHom_nnreal_eq_restrict {a : A} (ha : 0 ≤ a) :

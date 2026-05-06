@@ -159,7 +159,7 @@ def embEquivOfEquiv (i : E ≃ₐ[F] K) :
     intro x
     have h := isAlgebraic_algebraMap (R := E) (A := K) (i.symm.toAlgHom x)
     rw [show ∀ y : E, (algebraMap E K) y = i.toAlgHom y from fun y ↦ rfl] at h
-    simpa only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_coe, AlgEquiv.apply_symm_apply] using h
+    simpa only [AlgEquiv.coe_algHom, AlgEquiv.apply_symm_apply] using h
   apply AlgEquiv.restrictScalars (R := F) (S := E)
   exact IsAlgClosure.equivOfAlgebraic E K (AlgebraicClosure K) (AlgebraicClosure E)
 
@@ -248,7 +248,6 @@ def embProdEmbOfIsAlgebraic [Algebra E K] [IsScalarTower F E K] [Algebra.IsAlgeb
         (IsAlgClosure.equivOfAlgebraic E K (AlgebraicClosure K)
           (AlgebraicClosure E)).restrictScalars F).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the field extension `E / F` is transcendental, then `Field.Emb F E` is infinite. -/
 instance infinite_emb_of_transcendental [H : Algebra.Transcendental F E] : Infinite (Emb F E) := by
   obtain ⟨ι, x, hx⟩ := exists_isTranscendenceBasis' F E

@@ -471,7 +471,7 @@ lemma epi_inl_of_epi (h : IsPushout f g inl inr) (inst : Epi g := by infer_insta
     Epi inl := by
   constructor
   intro W fst' snd' heq
-  exact h.hom_ext heq (by simp [← cancel_epi g, ← h.w_assoc,heq])
+  exact h.hom_ext heq (by simp [← cancel_epi g, ← h.w_assoc, heq])
 
 lemma epi_inr_of_epi (h : IsPushout f g inl inr) (inst : Epi f := by infer_instance) :
     Epi inr := h.flip.epi_inl_of_epi

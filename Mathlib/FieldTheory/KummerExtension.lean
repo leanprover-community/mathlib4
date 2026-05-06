@@ -16,21 +16,21 @@ public import Mathlib.RingTheory.Norm.Basic
 
 ## Main result
 - `isCyclic_tfae`:
-Suppose `L/K` is a finite extension of dimension `n`, and `K` contains all `n`-th roots of unity.
-Then `L/K` is cyclic iff
-`L` is a splitting field of some irreducible polynomial of the form `Xⁿ - a : K[X]` iff
-`L = K[α]` for some `αⁿ ∈ K`.
+  Suppose `L/K` is a finite extension of dimension `n`, and `K` contains all `n`-th roots of unity.
+  Then `L/K` is cyclic iff
+  `L` is a splitting field of some irreducible polynomial of the form `Xⁿ - a : K[X]` iff
+  `L = K[α]` for some `αⁿ ∈ K`.
 
 - `autEquivRootsOfUnity`:
-Given an instance `IsSplittingField K L (X ^ n - C a)`
-(perhaps via `isSplittingField_X_pow_sub_C_of_root_adjoin_eq_top`),
-then the Galois group is isomorphic to `rootsOfUnity n K`, by sending
-`σ ↦ σ α / α` for `α ^ n = a`, and the inverse is given by `μ ↦ (α ↦ μ • α)`.
+  Given an instance `IsSplittingField K L (X ^ n - C a)`
+  (perhaps via `isSplittingField_X_pow_sub_C_of_root_adjoin_eq_top`),
+  then the Galois group is isomorphic to `rootsOfUnity n K`, by sending
+  `σ ↦ σ α / α` for `α ^ n = a`, and the inverse is given by `μ ↦ (α ↦ μ • α)`.
 
 - `autEquivZmod`:
-Furthermore, given an explicit choice `ζ` of a primitive `n`-th root of unity, the Galois group is
-then isomorphic to `Multiplicative (ZMod n)` whose inverse is given by
-`i ↦ (α ↦ ζⁱ • α)`.
+  Furthermore, given an explicit choice `ζ` of a primitive `n`-th root of unity, the Galois group is
+  then isomorphic to `Multiplicative (ZMod n)` whose inverse is given by
+  `i ↦ (α ↦ ζⁱ • α)`.
 
 ## Other results
 Criteria for `X ^ n - C a` to be irreducible is given:
@@ -233,7 +233,6 @@ def AdjoinRootXPowSubCEquivToRootsOfUnity [NeZero n] (σ : K[n√a] ≃ₐ[K] K[
     rw [div_self]
     rwa [Ne, map_eq_zero_iff _ (algebraMap K _).injective]))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence between the roots of unity of `K` and `Gal(K[ⁿ√a]/K)`. -/
 noncomputable
 def autAdjoinRootXPowSubCEquiv [NeZero n] :
@@ -263,7 +262,7 @@ def autAdjoinRootXPowSubCEquiv [NeZero n] :
     apply AlgEquiv.coe_algHom_injective
     apply AdjoinRoot.algHom_ext
     simp only [AdjoinRootXPowSubCEquivToRootsOfUnity, AdjoinRoot.algebraMap_eq, OneHom.toFun_eq_coe,
-      MonoidHom.toOneHom_coe, AlgHom.coe_coe, autAdjoinRootXPowSubC_root, Algebra.smul_def]
+      MonoidHom.toOneHom_coe, AlgEquiv.coe_algHom, autAdjoinRootXPowSubC_root, Algebra.smul_def]
     rw [rootsOfUnityEquivOfPrimitiveRoots_symm_apply, rootsOfUnity.val_mkOfPowEq_coe]
     split_ifs with h
     · obtain rfl := not_imp_not.mp (fun hn ↦ ne_zero_of_irreducible_X_pow_sub_C' hn H) h
@@ -347,7 +346,8 @@ lemma Algebra.adjoin_root_eq_top_of_isSplittingField :
     (adjoinRootXPowSubCEquiv hζ H hα).symm.injective
   rw [Algebra.map_top, (AlgHom.range_eq_top _).mpr
     (adjoinRootXPowSubCEquiv hζ H hα).symm.surjective, AlgHom.map_adjoin,
-    Set.image_singleton, AlgHom.coe_coe, adjoinRootXPowSubCEquiv_symm_eq_root, adjoinRoot_eq_top]
+    Set.image_singleton, AlgEquiv.coe_algHom, adjoinRootXPowSubCEquiv_symm_eq_root,
+      adjoinRoot_eq_top]
 
 include hζ H hα in
 lemma IntermediateField.adjoin_root_eq_top_of_isSplittingField :

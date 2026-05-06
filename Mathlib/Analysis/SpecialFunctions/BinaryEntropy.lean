@@ -197,17 +197,17 @@ lemma deriv_binEntropy (p : ℝ) : deriv binEntropy p = log (1 - p) - log p := b
     all_goals fun_prop (disch := assumption)
   -- pathological case where `deriv = 0` since `binEntropy` is not differentiable there
   · rw [deriv_zero_of_not_differentiableAt (differentiableAt_binEntropy_iff_ne_zero_one.not.2 hp)]
-    push_neg +distrib at hp
+    push +distrib Not at hp
     obtain rfl | rfl := hp <;> simp
 
 /-! ### `q`-ary entropy -/
 
 /-- Shannon q-ary Entropy function (measured in Nats, i.e., using natural logs).
 
-It's the Shannon entropy of a random variable with possible outcomes {1, ..., q}
+It's the Shannon entropy of a random variable with possible outcomes `{1, ..., q}`
 where outcome `1` has probability `1 - p` and all other outcomes are equally likely.
 
-The usual domain of definition is p ∈ [0,1], i.e., input is a probability.
+The usual domain of definition is `p ∈ [0,1]`, i.e., input is a probability.
 
 This is a generalization of the binary entropy function `binEntropy`. -/
 @[pp_nodot] noncomputable def qaryEntropy (q : ℕ) (p : ℝ) : ℝ := p * log (q - 1 : ℤ) + binEntropy p
@@ -411,7 +411,6 @@ lemma qaryEntropy_strictAntiOn (qLe2 : 2 ≤ q) :
         linarith
       · have qpos : 0 < (q : ℝ) := by positivity
         ring_nf
-        simp only [add_lt_iff_neg_right, neg_add_lt_iff_lt_add, add_zero, gt_iff_lt]
         have : (q : ℝ) - 1 < p * q := by
           have h1 := mul_lt_mul_of_pos_right hp.1 qpos
           have h2 : (1 - (q : ℝ)⁻¹) * ↑q = q - 1 := by calc (1 - (q : ℝ)⁻¹) * ↑q
