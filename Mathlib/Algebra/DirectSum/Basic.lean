@@ -108,7 +108,7 @@ theorem add_apply (g₁ g₂ : ⨁ i, β i) (i : ι) : (g₁ + g₂) i = g₁ i 
 @[simp]
 theorem sum_apply {α} (s : Finset α) (g : α → ⨁ i, β i) (i : ι) :
     (∑ a ∈ s, g a) i = ∑ a ∈ s, g a i :=
-  DFinsupp.finset_sum_apply s g i
+  DFinsupp.finsetSum_apply s g i
 
 section DecidableEq
 
