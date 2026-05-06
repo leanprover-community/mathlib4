@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Init
 public meta import Lean.Meta.Tactic.Symm
+public import Qq
 
 /-!
 # `relSidesIfSymm?`
@@ -14,7 +15,7 @@ public meta import Lean.Meta.Tactic.Symm
 
 public meta section
 
-open Lean Meta Symm
+open Lean Meta Symm Qq
 
 namespace Mathlib.Tactic
 
@@ -38,3 +39,24 @@ def _root_.Lean.Expr.relSidesIfSymm? (e : Expr) : MetaM (Option (Name × Expr ×
   return none
 
 end Mathlib.Tactic
+
+/-- Given a term `e : Prop` of the form `a ~ b`, use `@[symm]` lemmas to construct a `Simp.Result`
+proving the equivalence of `e` with `b ~ a` . -/
+def Lean.Expr.eqSymm (e : Expr) : MetaM Simp.Result := do
+  have e : Q(Prop) := e
+  let .app (.app rel lhs) rhs := e | failure
+  let lemmas ← (Symm.symmExt.getState (← getEnv)).getMatch rel
+  guard !lemmas.isEmpty <|> throwError "no appropriate symmetry lemma found"
+  have e' : Q(Prop) := .app (.app rel rhs) lhs
+  let ((pf1 : Q($e → $e')), (pf2 : Q($e' → $e))) : Q($e → $e') × Q($e' → $e) := ← do
+    let m1 ← mkFreshExprMVarQ q($e → $e')
+    let m2 ← mkFreshExprMVarQ q($e' → $e)
+    let s ← saveState
+    for lem in lemmas do
+      restoreState s
+      let [] ← m1.mvarId!.applyConst lem | failure
+      let [] ← m2.mvarId!.applyConst lem | failure
+      return (← instantiateMVars m1, ← instantiateMVars m2)
+    throwError "no appropriate symmetry lemma found"
+  let pf : Q($e = $e') := q(propext ⟨$pf1, $pf2⟩)
+  pure { expr := e', proof? := some pf }
