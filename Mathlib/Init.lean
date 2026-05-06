@@ -79,10 +79,10 @@ section test
 open Lean Elab Command
 
 /-- Does nothing. -/
-def test : Linter where
+def Mathlib.Init.nullLinter : Linter where
   run cmd := pure ()
 
-initialize addLinter test
+initialize addLinter Mathlib.Init.nullLinter
 
 end test
 
