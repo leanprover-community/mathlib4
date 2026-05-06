@@ -3243,6 +3243,7 @@ public import Mathlib.CategoryTheory.Shift.ShiftSequence
 public import Mathlib.CategoryTheory.Shift.ShiftedHom
 public import Mathlib.CategoryTheory.Shift.ShiftedHomOpposite
 public import Mathlib.CategoryTheory.Shift.SingleFunctors
+public import Mathlib.CategoryTheory.Shift.SingleFunctorsLift
 public import Mathlib.CategoryTheory.Shift.Twist
 public import Mathlib.CategoryTheory.ShrinkYoneda
 public import Mathlib.CategoryTheory.Sigma.Basic
