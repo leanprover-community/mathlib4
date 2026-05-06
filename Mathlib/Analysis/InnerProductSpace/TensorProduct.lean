@@ -464,6 +464,19 @@ theorem mapL_tmul (f : E →L[𝕜] F) (g : G →L[𝕜] H) (m : E) (n : G) :
     mapL f g (m ⊗ₜ n) = f m ⊗ₜ g n :=
   rfl
 
+theorem adjoint_mapL [CompleteSpace E] [CompleteSpace G] [CompleteSpace (E ⊗[𝕜] G)]
+    [CompleteSpace F] [CompleteSpace H] [CompleteSpace (F ⊗[𝕜] H)]
+    (f : E →L[𝕜] F) (g : G →L[𝕜] H) : (mapL f g).adjoint = mapL f.adjoint g.adjoint := by
+  ext v
+  induction v using TensorProduct.induction_on with
+  | zero => simp
+  | tmul =>
+      rw [TensorProduct.ext_iff_inner_right]
+      intro e₁ e₂
+      simp_rw [ContinuousLinearMap.adjoint_inner_left, mapL_tmul, inner_tmul,
+        ContinuousLinearMap.adjoint_inner_left]
+  | add x y hx hy => simp_rw [ContinuousLinearMap.map_add, hx, hy]
+
 -- TODO: upgrade `map` to a `ContinuousLinearMap`
 @[simp] theorem adjoint_map [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F] [FiniteDimensional 𝕜 G]
     [FiniteDimensional 𝕜 H] (f : E →ₗ[𝕜] F) (g : G →ₗ[𝕜] H) :
