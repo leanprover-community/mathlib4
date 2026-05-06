@@ -153,7 +153,6 @@ irreducible_def IsSubmersionAtOfComplement (f : M → N) (x : M) : Prop :=
   LiftSourceTargetPropertyAt I J n f x (SubmersionAtProp F I J M N)
 
 -- Lift the universe from `E`, to avoid a free universe parameter.
-
 variable (I J n) in
 /-- `f : M → N` is a `C^n` submersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
 around `x` and `f x`, respectively such that in these charts, `f` looks like `(u, v) ↦ u`.
