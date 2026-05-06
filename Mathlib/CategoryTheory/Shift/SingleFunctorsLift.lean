@@ -54,6 +54,7 @@ private lemma map_shiftIso_hom_app (n a a' : A) (h : n + a = a') (X : C) :
 
 end lift
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `C`, `D` and `E` be categories. Let `A` be an additive monoid.
 Assume that `D` and `E` have shifts by `A` and that we have
 a fully faithful functor `G : D ⥤ A` which commutes with shifts.
@@ -68,27 +69,14 @@ noncomputable def lift : SingleFunctors C D A where
   shiftIso_zero a := by
     ext X
     apply G.map_injective
-    dsimp
-    rw [lift.map_shiftIso_hom_app, Functor.commShiftIso_zero,
-      CommShift.isoZero_hom_app, shiftIso_zero_hom_app, assoc,
-      dsimp% NatIso.naturality_1_assoc (shiftFunctorZero E A) ((hΦ a).hom.app X),
-      dsimp% (hΦ a).hom_inv_id_app X, comp_id]
+    simp [lift.map_shiftIso_hom_app, Functor.commShiftIso_zero]
   shiftIso_add n m a a' a'' ha' ha'' := by
     ext X
     apply G.map_injective
     dsimp
-    rw [lift.map_shiftIso_hom_app, Functor.commShiftIso_add,
-      Functor.CommShift.isoAdd_hom_app, assoc, assoc, assoc,
-      id_comp, Functor.map_comp, Functor.map_comp, lift.map_shiftIso_hom_app,
-      Functor.commShiftIso_hom_naturality_assoc,
-      lift.map_shiftIso_hom_app, Functor.map_comp, Functor.map_comp,
-      Functor.map_comp, F.shiftIso_add n m a a' a'' ha' ha'', assoc, assoc, assoc]
-    dsimp
-    rw [id_comp, assoc, assoc,
-      dsimp% NatIso.naturality_1_assoc (shiftFunctorAdd E m n) ((hΦ a'').hom.app X)]
-    rw [← dsimp% (shiftFunctor E n).map_comp_assoc ((hΦ a').inv.app X),
-      dsimp% (hΦ a').inv_hom_id_app X]
-    simp
+    simp only [lift.map_shiftIso_hom_app, map_comp, commShiftIso_hom_naturality_assoc]
+    rw [F.shiftIso_add n m a a' a'' ha' ha'']
+    simp [commShiftIso_add, ← Functor.map_comp_assoc, -Functor.map_comp]
 
 @[reassoc]
 lemma map_lift_shiftIso_hom_app (n a a' : A) (h : n + a = a') (X : C) :
@@ -97,6 +85,7 @@ lemma map_lift_shiftIso_hom_app (n a a' : A) (h : n + a = a') (X : C) :
         (F.shiftIso n a a' h).hom.app X ≫ (hΦ a).inv.app X :=
   lift.map_shiftIso_hom_app ..
 
+set_option backward.isDefEq.respectTransparency false in
 /-- After postcomposition with the fully faithful functor `G`,
 `lift F G Φ hΦ` becomes isomorphic to `F`. -/
 @[simps!]

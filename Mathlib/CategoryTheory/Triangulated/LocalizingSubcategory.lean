@@ -6,14 +6,17 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Subcategory
-public import Mathlib.CategoryTheory.Triangulated.Opposite.Functor
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Triangulated
-public import Mathlib.CategoryTheory.Localization.Triangulated
 
 /-!
 # Localizing subcategories
 
-
+Let `C` be a pretriangulated category. If `A` and `B` are triangulated
+subcategories of `C`, we define predicates (typeclasses
+`IsTriangulatedRightLocalizing` and `IsTriangulatedLeftLocalizing`)
+saying that `A` is right `B`-localizing (or left `B`-localizing).
+When `B` is closed under isomorphisms, we show that the functor
+from the Verdier quotient `A/(A ⊓ B)` to `C/B` is fully faithful.
 
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
@@ -190,7 +193,7 @@ instance [A.IsTriangulatedRightLocalizing B] :
     let e : A.ι ⋙ L₂ ≅ L₁ ⋙ F :=
       CatCommSq.iso (A.triangulatedLocalizedMorphism B).functor L₁ L₂ F
     have : F.Full :=
-      Functor.full_of_precomp_essSurj _ L₁ (fun X₁ X₂ φ ↦ by
+      Functor.full_of_comp_essSurj _ L₁ (fun X₁ X₂ φ ↦ by
         obtain ⟨φ', hφ'⟩ : ∃ φ', φ = e.inv.app X₁ ≫ φ' ≫ e.hom.app X₂ :=
           ⟨e.hom.app X₁ ≫ φ ≫ e.inv.app X₂, by
             simp [dsimp% e.inv_hom_id_app_assoc, dsimp% e.inv_hom_id_app]⟩
@@ -215,7 +218,7 @@ instance [A.IsTriangulatedRightLocalizing B] :
       rw [Localization.functor_additive_iff L₁ (B.inverseImage A.ι).trW]
       exact Functor.additive_of_iso e
     have : F.Faithful :=
-      Functor.faithful_of_precomp_cancel_zero_of_hasLeftCalculusOfFractions L₁
+      Functor.faithful_of_comp_cancel_zero_of_hasLeftCalculusOfFractions L₁
         (B.inverseImage A.ι).trW _ (fun X₁ X₂ f hf ↦ by
           replace hf : L₂.map f.hom = L₂.map 0 := by
             simp [← dsimp% NatIso.naturality_2 e f, hf]

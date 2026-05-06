@@ -81,16 +81,12 @@ noncomputable def iso (a : A) :
     Functor.associator _ _ _ ≪≫ Functor.isoWhiskerLeft _ (lift.isLift r F hF) ≪≫ F.commShiftIso a ≪≫
     Functor.isoWhiskerRight (lift.isLift r F hF).symm _ ≪≫ Functor.associator _ _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma iso_hom_app (a : A) (X : C) :
     (iso F r hF a).hom.app ((functor r).obj X) =
       (lift r F hF).map (((functor r).commShiftIso a).inv.app X) ≫
       (F.commShiftIso a).hom.app X := by
-  dsimp only [iso, natIsoLift]
-  rw [natTransLift_app]
-  dsimp
-  erw [comp_id, id_comp, id_comp, id_comp, Functor.map_id, comp_id]
+  simp [iso, lift_obj_functor_obj]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -98,10 +94,7 @@ lemma iso_inv_app (a : A) (X : C) :
     (iso F r hF a).inv.app ((functor r).obj X) =
       (F.commShiftIso a).inv.app X ≫
       (lift r F hF).map (((functor r).commShiftIso a).hom.app X) := by
-  dsimp only [iso, natIsoLift]
-  rw [natTransLift_app]
-  dsimp
-  erw [id_comp, comp_id, comp_id, comp_id, Functor.map_id, id_comp]
+  simp [iso, lift_obj_functor_obj]
 
 attribute [irreducible] iso
 
@@ -138,12 +131,11 @@ noncomputable instance liftCommShift :
     congr 1
     rw [← cancel_epi ((shiftFunctor (Quotient r) b ⋙ lift r F hF).map
       (NatTrans.app (Functor.commShiftIso (functor r) a).hom X))]
-    erw [(LiftCommShift.iso F r hF b).hom.naturality_assoc
-      (((functor r).commShiftIso a).hom.app X), LiftCommShift.iso_hom_app,
-      ← Functor.map_comp_assoc, Iso.hom_inv_id_app]
-    dsimp
-    simp only [Functor.comp_obj, assoc, ← Functor.map_comp_assoc, Iso.inv_hom_id_app,
-      Functor.map_id, id_comp, Iso.hom_inv_id_app, lift_obj_functor_obj]
+    simp only [← Functor.comp_map, ← Functor.comp_obj]
+    rw [(LiftCommShift.iso F r hF b).hom.naturality_assoc (((functor r).commShiftIso a).hom.app X)]
+    simp only [Functor.comp_obj, LiftCommShift.iso_hom_app, Iso.hom_inv_id_app,
+      Functor.comp_map, assoc, ← Functor.map_comp_assoc, Iso.inv_hom_id_app,
+      Functor.map_id, id_comp, lift_obj_functor_obj]
 
 set_option backward.isDefEq.respectTransparency false in
 instance liftCommShift_compatibility :
