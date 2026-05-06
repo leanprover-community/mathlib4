@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Algebra.Star.StarRingHom
 public import Mathlib.Algebra.Algebra.Hom
+public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.Data.Rat.Cast.Defs
 public import Mathlib.Order.DirectedInverseSystem
 public import Mathlib.Tactic.SuppressCompilation
@@ -214,20 +215,12 @@ theorem lift_npow (g : ∀ i, H i) (h) (x : DirectLimit G f) (n : ℕ) :
     DirectLimit.lift f (g ·) h (x ^ n) = DirectLimit.lift f (g ·) h x ^ n :=
   x.induction _ fun i x ↦ by simp_rw [npow_def, lift_def, map_pow (g i)]
 
-/-- A monoid hom into the direct limit obtained by picking an arbitrary stage from a
-family of monoid homs to the stages of the directed system. No compatibility condition is assumed.
-If the family of maps into the directed system is compatible with the maps of the directed system,
-then more can be done.
--/
-@[simps, to_additive /-- An additive monoid hom into the direct limit obtained by picking an
-arbitrary stage from a family of additive monoid homs to the stages of the directed system.
-No compatibility condition is assumed.
-If the family of maps into the directed system is compatible with the maps of the directed system,
-then more can be done. -/]
-def map₀MonoidHom (x : ∀ i, C →* G i) : C →* DirectLimit G f where
-  toFun r := map₀ _ fun _ ↦ x _ r
-  map_one' := by rw [map₀, map_one, one_def]
-  map_mul' r s := by simp_rw [map₀, mul_def, map_mul]
+/-- `map₀` as a `MonoidHom`. -/
+@[to_additive (attr := simps) /-- `map₀` as an `AddMonoidHom`. -/]
+def map₀MonoidHom : (∀ i, G i) →* DirectLimit G f where
+  toFun x := map₀ _ x
+  map_one' := by rw [map₀, Pi.one_apply, one_def]
+  map_mul' r s := by simp_rw [map₀, Pi.mul_apply, mul_def]
 
 end Monoid
 
@@ -453,26 +446,13 @@ instance [∀ i, Semiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
 repeat the definitions for map_one' and map_mul' from map₀MonoidHom,
 or maybe define map₀MulHom and map₀OneHom.
 -/
-/-- A ring hom into the direct limit obtained by picking an arbitrary stage from a
-family of ring homs to the stages of the directed system. No compatibility condition is assumed.
-If the family of maps into the directed system is compatible with the maps of the directed system,
-then more can be done.
--/
+/-- `map₀` as a `RingHom`. -/
 @[simps]
-def map₀RingHom [Semiring R] [∀ i, Semiring (G i)]
-    [∀ i j h, RingHomClass (T h) (G i) (G j)]
-    (x : ∀ i, R →+* G i) : R →+* DirectLimit G f where
-  toFun r := map₀ _ fun _ ↦ x _ r
-  __ := map₀AddMonoidHom (f := f) (fun i => (x i).toAddMonoidHom)
-  __ := map₀MonoidHom (f := f) (fun i => (x i).toMonoidHom)
-
-lemma map₀RingHom_def [Semiring R] [∀ i, Semiring (G i)]
-    [∀ i j h, RingHomClass (T h) (G i) (G j)]
-    (x : ∀ i, R →+* G i) (compat : ∀ r i j h, (f i j h) ((x i) r) = (x j) r) (i : ι) (r : R) :
-    map₀RingHom x r
-    = (⟦⟨i, x i r⟩⟧ : DirectLimit G f) := by
-  rw [map₀RingHom_apply]
-  apply map₀_def (compat := compat r)
+def map₀RingHom [∀ i, Semiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
+    (∀ i, G i) →+* DirectLimit G f where
+  toFun r := map₀ _ r
+  __ := map₀AddMonoidHom (f := f)
+  __ := map₀MonoidHom (f := f)
 
 instance [∀ i, NonUnitalNonAssocCommSemiring (G i)]
     [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
@@ -618,24 +598,25 @@ instance [∀ i, Field (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
 section Algebra
 
 variable [CommSemiring R]
-variable [∀ i, Semiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)]
+variable [∀ i, Semiring (G i)] -- [∀ i j h, RingHomClass (T h) (G i) (G j)]
 variable [∀ i, Algebra R (G i)] [∀ i j h, AlgHomClass (T h) R (G i) (G j)]
 
-private lemma map₀RingHom_algebraMap_def (i : ι) (r : R) :
-    map₀RingHom (fun i ↦ algebraMap R (G i)) r
-    = (⟦⟨i, algebraMap R (G i) r⟩⟧ : DirectLimit G f) :=
-  map₀RingHom_def _ (fun r i j hij => by rw[AlgHomClass.commutes]) i r
+lemma map₀_algebraMap (i : ι) (r : R) :
+    map₀ f (fun i ↦ algebraMap R (G i) r) = ⟦⟨i, algebraMap R (G i) r⟩⟧ :=
+  map₀_def _ _ (fun _ _ _ => AlgHomClass.commutes _ _) i
 
 instance : Algebra R (DirectLimit G f) where
-  algebraMap := map₀RingHom (fun i ↦ algebraMap R (G i))
+  algebraMap := map₀RingHom (f := f).comp (algebraMap R (∀ i, G i))
   commutes' r := DirectLimit.induction f fun i _ ↦ by
-    rw [map₀RingHom_algebraMap_def i, mul_def, mul_def, Algebra.commutes]
+    dsimp [Pi.algebraMap_def]
+    rw [map₀_algebraMap i, mul_def, mul_def, Algebra.commutes]
   smul_def' r := DirectLimit.induction _ fun i _ => by
-    rw [smul_def, map₀RingHom_algebraMap_def i, mul_def, Algebra.smul_def']
+    dsimp [Pi.algebraMap_def]
+    rw [smul_def, map₀_algebraMap i, mul_def, Algebra.smul_def']
 
 lemma algebraMap_def (i : ι) (r : R) :
     algebraMap R (DirectLimit G f) r = ⟦⟨i, algebraMap R (G i) r⟩⟧:=
-  map₀RingHom_algebraMap_def i r
+  map₀_algebraMap i r
 
 end Algebra
 
