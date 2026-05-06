@@ -278,13 +278,10 @@ theorem mk_coe' (e : A₁ ≃ₐ[R] A₂) (f h₁ h₂ h₃ h₄ h₅) :
     (⟨⟨f, e, h₁, h₂⟩, h₃, h₄, h₅⟩ : A₂ ≃ₐ[R] A₁) = e.symm :=
   symm_bijective.injective <| ext fun _ => rfl
 
-/-- Auxiliary definition to avoid looping in `dsimp` with `AlgEquiv.symm_mk`. -/
-protected def symm_mk.aux (e : A₁ ≃ A₂) (h₁ h₂ h₃) := (mk e h₁ h₂ h₃ : A₁ ≃ₐ[R] A₂).symm
-
 @[simp]
-theorem symm_mk (e : A₁ ≃ A₂) (h₁ h₂ h₃) :
+theorem symm_mk (e : A₁ ≃ A₂) (h₁ h₂ h₃) : dsimp%
     (mk e h₁ h₂ h₃ : A₁ ≃ₐ[R] A₂).symm =
-      { symm_mk.aux e h₁ h₂ h₃ with
+      { (mk e h₁ h₂ h₃ : A₁ ≃ₐ[R] A₂).symm with
         toEquiv := e.symm } :=
   rfl
 

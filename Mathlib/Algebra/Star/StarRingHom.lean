@@ -369,13 +369,10 @@ theorem symm_bijective : Function.Bijective (symm : (A ≃⋆+* B) → B ≃⋆+
 theorem mk_coe (e : A ≃⋆+* B) (e' h₁ h₂ h₃ h₄ h₅) :
     (⟨⟨⟨e, e', h₁, h₂⟩, h₃, h₄⟩, h₅⟩ : A ≃⋆+* B) = e := ext fun _ => rfl
 
-/-- Auxiliary definition to avoid looping in `dsimp` with `StarRingEquiv.symm_mk`. -/
-protected def symm_mk.aux (e : A ≃+* B) (h₁) := (⟨e, h₁⟩ : A ≃⋆+* B).symm
-
 @[simp]
-theorem symm_mk (e : A ≃+* B) (h₁) :
+theorem symm_mk (e : A ≃+* B) (h₁) : dsimp%
     (⟨e, h₁⟩ : A ≃⋆+* B).symm =
-      { symm_mk.aux e h₁ with
+      { (⟨e, h₁⟩ : A ≃⋆+* B).symm with
         toRingEquiv := e.symm } :=
   rfl
 

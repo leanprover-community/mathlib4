@@ -528,15 +528,10 @@ theorem mk_coe' (f h₁ h₂ h₃ h₄) :
     (LinearEquiv.mk ⟨⟨f, h₁⟩, h₂⟩ (⇑e) h₃ h₄ : M₂ ≃ₛₗ[σ'] M) = e.symm :=
   symm_bijective.injective <| ext fun _ ↦ rfl
 
-variable [re₁] [re₂] in
-/-- Auxiliary definition to avoid looping in `dsimp` with `LinearEquiv.symm_mk`. -/
-protected def symm_mk.aux (toLinearMap invFun h₁ h₂) :=
-   (mk toLinearMap invFun h₁ h₂ : M ≃ₛₗ[σ] M₂).symm
-
 @[simp]
-theorem symm_mk (toLinearMap invFun h₁ h₂) :
+theorem symm_mk (toLinearMap invFun h₁ h₂) : dsimp%
     (mk toLinearMap invFun h₁ h₂ : M ≃ₛₗ[σ] M₂).symm =
-      { symm_mk.aux toLinearMap invFun h₁ h₂ with
+      { (mk toLinearMap invFun h₁ h₂ : M ≃ₛₗ[σ] M₂).symm with
         toFun := invFun
         invFun := toLinearMap } :=
   rfl
