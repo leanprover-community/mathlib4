@@ -134,6 +134,7 @@ section
 
 /-- The rank of a ring homomorphism `f : R →+* S` at a prime `x` of `R` is the rank of
 `S` as an `R`-module at the stalk of `x`. -/
+@[expose]
 noncomputable def RingHom.finrank {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S)
     (x : PrimeSpectrum R) : ℕ :=
   letI : Algebra R S := f.toAlgebra
