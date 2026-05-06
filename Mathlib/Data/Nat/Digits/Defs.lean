@@ -533,7 +533,7 @@ lemma toDigitsCore_length (b f n e : Nat) (h_e_pos : 0 < e) (hlt : n < b ^ e) :
       | succ e =>
         specialize ih (n / b) _ (add_one_pos e) (Nat.div_lt_of_lt_mul <| by rwa [← pow_add_one'])
         split_ifs
-        · simp only [List.length_singleton, _root_.zero_le, succ_le_succ]
+        · simp
         · simp only [toDigitsCore_lens_eq b f (n / b) (Nat.digitChar <| n % b),
             Nat.succ_le_succ_iff, ih]
 
