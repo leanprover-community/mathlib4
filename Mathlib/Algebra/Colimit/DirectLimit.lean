@@ -228,7 +228,7 @@ variable (f) in
 def map₀MonoidHom : (∀ i, G i) →* DirectLimit G f where
   toFun x := map₀ _ x
   map_one' := map₀_one
-  map_mul' r s := map₀_mul r s
+  map_mul' := map₀_mul
 
 end Monoid
 
