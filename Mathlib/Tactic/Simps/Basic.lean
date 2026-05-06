@@ -669,46 +669,10 @@ def findProjection (str : Name) (proj : ParsedProjectionData)
         throwError "Invalid custom projection:{indentExpr customProj}\n\
           Expression is not definitionally equal to {indentExpr rawExpr}"
       else
-        -- `simps` usually insists that a custom projection has exactly the same type as the raw
-        -- projection. This is too strict when the raw projection has implicit arguments in a
-        -- different order from the public projection we want to use.  Accept this case if, after
-        -- opening both `forall` telescopes, the argument domains and final bodies match.
-        let compatibleType ← MetaM.run' do
-          try
-            let (customArgs, _, customBody) ← forallMetaTelescopeReducing customProjType
-            let (rawArgs, _, rawBody) ← forallMetaTelescopeReducing rawExprType
-            if customArgs.size != rawArgs.size then
-              pure false
-            else
-              let domainsCompatible ← customArgs.zip rawArgs |>.allM fun (customArg, rawArg) => do
-                isDefEq (← inferType customArg) (← inferType rawArg)
-              if !domainsCompatible then
-                pure false
-              else
-                isDefEq customBody rawBody
-          catch _ =>
-            pure false
-        -- In some cases the raw and custom projections are definitionally equal only after they
-        -- are applied to their arguments, while the comparison of their unapplied types above is
-        -- too rigid. We allow the custom projection through when the number of arguments agrees;
-        -- the generated projection theorem is elaborated with `customProj`, so an invalid
-        -- replacement will still be rejected later.
-        let isRenameWithMatchingArity ← MetaM.run' do
-          try
-            let (customArgs, _, _) ← forallMetaTelescopeReducing customProjType
-            let (rawArgs, _, _) ← forallMetaTelescopeReducing rawExprType
-            pure <| proj.strName == `hom' && proj.newName == `hom && customArgs.size == rawArgs.size
-          catch _ =>
-            pure false
-        if compatibleType || isRenameWithMatchingArity then
-          _ ← MetaM.run' <| TermElabM.run' <| addTermInfo proj.newStx <|
-            ← mkConstWithLevelParams customName
-          pure { proj with expr? := some customProj, projNrs := nrs, isCustom := true }
-        else
-          throwError "Invalid custom projection:{indentExpr customProj}\n\
-            Expression has different type than {str ++ proj.strName}. Given type:\
-            {indentExpr customProjType}\nExpected type:{indentExpr rawExprType}\n\
-            Note: make sure order of implicit arguments is exactly the same."
+        throwError "Invalid custom projection:{indentExpr customProj}\n\
+          Expression has different type than {str ++ proj.strName}. Given type:\
+          {indentExpr customProjType}\nExpected type:{indentExpr rawExprType}\n\
+          Note: make sure order of implicit arguments is exactly the same."
   | _ =>
     _ ← MetaM.run' <| TermElabM.run' <| addTermInfo proj.newStx rawExpr
     pure {proj with expr? := some rawExpr, projNrs := nrs}

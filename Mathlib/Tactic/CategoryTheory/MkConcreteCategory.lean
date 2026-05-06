@@ -220,11 +220,24 @@ running the same core generator there. These helpers keep the namespace checks a
 commands in one place.
 -/
 
+/-- The head identifier of a term, allowing explicit universe syntax such as `C.{u}`. -/
+private meta partial def headTermIdent? (stx : Syntax) : Option Name :=
+  if stx.isIdent then
+    some stx.getId
+  else
+    match stx with
+    | .node _ k args =>
+        if k == ``Lean.Parser.Term.explicitUniv then
+          args[0]?.bind headTermIdent?
+        else
+          none
+    | _ => none
+
 /-- Turn a category term from a `to_additive` form into the namespace identifier to generate in. -/
 private meta def categoryNamespaceIdent (cat : TSyntax `term) (message : String) :
     CommandElabM Ident := do
-  if cat.raw.isIdent then
-    pure <| mkIdent cat.raw.getId
+  if let some n := headTermIdent? cat.raw then
+    pure <| mkIdent n
   else
     throwErrorAt cat message
 
