@@ -790,6 +790,7 @@ theorem apply_eq_of_line_eq (f : SpinalMap C) {n : ℕ} (hC : IsChain (· ≤ ·
   have hy : y ∈ level n := ordConnected_level.out hlo.2 hhi.2 ⟨h₂l, h₂h⟩
   induction hx using induction_on_level with | h x₁ y₁ =>
   induction hy using induction_on_level with | h x₂ y₂ =>
+  simp only [] at hxy
   simp only [line_toHollom] at h
   obtain ⟨k, rfl⟩ := exists_add_of_le hxy
   obtain rfl : y₂ = y₁ + k := by lia

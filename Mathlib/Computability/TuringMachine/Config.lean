@@ -631,6 +631,7 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
       · obtain ⟨k₀, v₀, e₀⟩ := stepNormal.is_ret f Cont.halt v'.tail
         have e₁ := stepNormal_then f Cont.halt (Cont.fix f k) v'.tail
         rw [e₀, Cont.then, Cfg.then] at e₁
+        simp only [] at e₁
         obtain ⟨v₁, hv₁, v₂, hv₂, h₃⟩ :=
           IH (stepRet (k₀.then (Cont.fix f k)) v₀) (by rw [stepRet, if_neg he, e₁]; rfl)
             v'.tail _ stepRet_then (by apply ReflTransGen.single; rw [e₀]; rfl)

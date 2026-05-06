@@ -810,6 +810,7 @@ theorem MeasurableSet.nullMeasurableSet_subtype_coe {t : Set s} (hs : NullMeasur
     simp only [← range_diff_image Subtype.coe_injective, Subtype.range_coe_subtype, setOf_mem_eq]
     exact hs.diff ht'
   | iUnion f _ hf =>
+    dsimp only []
     rw [image_iUnion]
     exact .iUnion hf
 
