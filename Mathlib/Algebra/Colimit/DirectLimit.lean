@@ -620,7 +620,7 @@ variable [CommSemiring R]
 variable [∀ i, Semiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)]
 variable [∀ i, Algebra R (G i)] [∀ i j h, AlgHomClass (T h) R (G i) (G j)]
 
-lemma algebraMapAux_def (i : ι) (r : R) :
+private lemma map₀RingHom_algebraMap_def (i : ι) (r : R) :
     map₀RingHom (fun i ↦ algebraMap R (G i)) r
     = (⟦⟨i, algebraMap R (G i) r⟩⟧ : DirectLimit G f) :=
   map₀RingHom_def _ (fun r i j hij => by rw[AlgHomClass.commutes]) i r
@@ -628,13 +628,13 @@ lemma algebraMapAux_def (i : ι) (r : R) :
 instance : Algebra R (DirectLimit G f) where
   algebraMap := map₀RingHom (fun i ↦ algebraMap R (G i))
   commutes' r := DirectLimit.induction f fun i _ ↦ by
-    rw [algebraMapAux_def i, mul_def, mul_def, Algebra.commutes]
+    rw [map₀RingHom_algebraMap_def i, mul_def, mul_def, Algebra.commutes]
   smul_def' r := DirectLimit.induction _ fun i _ => by
-    rw [smul_def, algebraMapAux_def i, mul_def, Algebra.smul_def']
+    rw [smul_def, map₀RingHom_algebraMap_def i, mul_def, Algebra.smul_def']
 
 lemma algebraMap_def (i : ι) (r : R) :
     algebraMap R (DirectLimit G f) r = ⟦⟨i, algebraMap R (G i) r⟩⟧:=
-  algebraMapAux_def i r
+  map₀RingHom_algebraMap_def i r
 
 end Algebra
 
