@@ -51,7 +51,7 @@ theorem coe_of (α : Type*) [BooleanRing α] : ↥(of α) = α :=
 instance : Inhabited BoolRing :=
   ⟨of PUnit⟩
 
-mk_concrete_category BoolRing (· →+* ·) RingHom.id RingHom.comp
+mk_concrete_category BoolRing.{u} (· →+* ·) RingHom.id RingHom.comp
   with_of_hom {R S : Type u} [BooleanRing R] [BooleanRing S]
   hom_type (R →+* S) from (of R) to (of S)
 

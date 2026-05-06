@@ -42,7 +42,7 @@ instance : CoeSort BddOrd Type* :=
 abbrev of (X : Type*) [PartialOrder X] [BoundedOrder X] : BddOrd where
   carrier := X
 
-mk_concrete_category BddOrd (BoundedOrderHom · ·) (fun (X : BddOrd) ↦ BoundedOrderHom.id X)
+mk_concrete_category BddOrd.{u} (BoundedOrderHom · ·) (fun (X : BddOrd) ↦ BoundedOrderHom.id X)
   BoundedOrderHom.comp
   with_of_hom {X Y : Type u} [PartialOrder X] [BoundedOrder X] [PartialOrder Y]
   [BoundedOrder Y] hom_type (BoundedOrderHom X Y) from (of X) to (of Y)

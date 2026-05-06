@@ -48,7 +48,7 @@ attribute [coe] Lat.carrier
 /-- Construct a bundled `Lat` from the underlying type and typeclass. -/
 abbrev of (X : Type*) [Lattice X] : Lat := ⟨X⟩
 
-mk_concrete_category Lat (LatticeHom · ·) (fun (X : Lat) ↦ LatticeHom.id X) LatticeHom.comp
+mk_concrete_category Lat.{u} (LatticeHom · ·) (fun (X : Lat) ↦ LatticeHom.id X) LatticeHom.comp
   with_of_hom {X Y : Type u} [Lattice X] [Lattice Y]
   hom_type (LatticeHom X Y) from (of X) to (of Y)
 

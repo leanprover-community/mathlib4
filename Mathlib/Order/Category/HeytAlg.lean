@@ -41,7 +41,7 @@ attribute [coe] HeytAlg.carrier
 /-- Construct a bundled `HeytAlg` from the underlying type and typeclass. -/
 abbrev of (X : Type*) [HeytingAlgebra X] : HeytAlg := ⟨X⟩
 
-mk_concrete_category HeytAlg (HeytingHom · ·) (fun (X : HeytAlg) ↦ HeytingHom.id X)
+mk_concrete_category HeytAlg.{u} (HeytingHom · ·) (fun (X : HeytAlg) ↦ HeytingHom.id X)
   HeytingHom.comp
   with_of_hom {X Y : Type u} [HeytingAlgebra X] [HeytingAlgebra Y]
   hom_type (HeytingHom X Y) from (of X) to (of Y)

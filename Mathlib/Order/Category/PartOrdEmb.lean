@@ -43,7 +43,7 @@ instance : CoeSort PartOrdEmb (Type _) :=
 
 attribute [coe] PartOrdEmb.carrier
 
-mk_concrete_category PartOrdEmb (· ↪o ·) (fun _ ↦ RelEmbedding.refl _) (fun g f ↦ f.trans g)
+mk_concrete_category PartOrdEmb.{u} (· ↪o ·) (fun _ ↦ RelEmbedding.refl _) (fun g f ↦ f.trans g)
   with_of_hom {X Y : Type u} [PartialOrder X] [PartialOrder Y]
   hom_type (X ↪o Y) from (of X) to (of Y)
 

@@ -91,12 +91,12 @@ lemma ProfiniteGrp.coe_of (G : Type u) [Group G] [TopologicalSpace G] [IsTopolog
   rfl
 
 @[to_additive ProfiniteAddGrp]
-mk_concrete_category ProfiniteGrp (· →ₜ* ·) ContinuousMonoidHom.id ContinuousMonoidHom.comp
+mk_concrete_category ProfiniteGrp.{u} (· →ₜ* ·) ContinuousMonoidHom.id ContinuousMonoidHom.comp
   with_of_hom {X Y : Type u} [Group X] [TopologicalSpace X] [IsTopologicalGroup X]
   [CompactSpace X] [TotallyDisconnectedSpace X] [Group Y] [TopologicalSpace Y]
   [IsTopologicalGroup Y] [CompactSpace Y] [TotallyDisconnectedSpace Y]
   hom_type (X →ₜ* Y) from (ProfiniteGrp.of X) to (ProfiniteGrp.of Y)
-  to_additive ProfiniteAddGrp (· →ₜ+ ·) ContinuousAddMonoidHom.id ContinuousAddMonoidHom.comp
+  to_additive ProfiniteAddGrp.{u} (· →ₜ+ ·) ContinuousAddMonoidHom.id ContinuousAddMonoidHom.comp
   with_of_hom {X Y : Type u} [AddGroup X] [TopologicalSpace X] [IsTopologicalAddGroup X]
   [CompactSpace X] [TotallyDisconnectedSpace X] [AddGroup Y] [TopologicalSpace Y]
   [IsTopologicalAddGroup Y] [CompactSpace Y] [TotallyDisconnectedSpace Y]

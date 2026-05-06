@@ -47,7 +47,7 @@ instance instFunLike (X Y : UniformSpaceCat) :
   coe := Subtype.val
   coe_injective' _ _ h := Subtype.ext h
 
-mk_concrete_category UniformSpaceCat ({ f : · → · // UniformContinuous f })
+mk_concrete_category UniformSpaceCat.{u} ({ f : · → · // UniformContinuous f })
   (fun _ ↦ ⟨id, uniformContinuous_id⟩) (fun g f ↦ ⟨g ∘ f, g.property.comp f.property⟩)
   with_of_hom {X Y : Type u} [UniformSpace X] [UniformSpace Y]
   hom_type { f : X → Y // UniformContinuous f } from (of X) to (of Y)

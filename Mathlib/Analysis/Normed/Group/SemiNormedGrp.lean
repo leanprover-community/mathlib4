@@ -42,7 +42,7 @@ namespace SemiNormedGrp
 instance : CoeSort SemiNormedGrp Type* where
   coe X := X.carrier
 
-mk_concrete_category SemiNormedGrp (NormedAddGroupHom · ·)
+mk_concrete_category SemiNormedGrp.{u} (NormedAddGroupHom · ·)
   NormedAddGroupHom.id NormedAddGroupHom.comp
   with_of_hom {M N : Type u} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
   hom_type (NormedAddGroupHom M N) from (of M) to (of N)

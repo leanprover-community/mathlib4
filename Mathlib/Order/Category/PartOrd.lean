@@ -40,7 +40,7 @@ instance : CoeSort PartOrd (Type _) :=
 
 attribute [coe] PartOrd.carrier
 
-mk_concrete_category PartOrd (· →o ·) (fun _ ↦ OrderHom.id) OrderHom.comp
+mk_concrete_category PartOrd.{u} (· →o ·) (fun _ ↦ OrderHom.id) OrderHom.comp
   with_of_hom {X Y : Type u} [PartialOrder X] [PartialOrder Y]
   hom_type (X →o Y) from (of X) to (of Y)
 

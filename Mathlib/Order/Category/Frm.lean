@@ -45,7 +45,7 @@ instance : CoeSort Frm (Type _) :=
 
 attribute [coe] Frm.carrier
 
-mk_concrete_category Frm (FrameHom · ·) (fun (X : Frm) ↦ FrameHom.id X) FrameHom.comp
+mk_concrete_category Frm.{u} (FrameHom · ·) (fun (X : Frm) ↦ FrameHom.id X) FrameHom.comp
   with_of_hom {X Y : Type u} [Frame X] [Frame Y]
   hom_type (FrameHom X Y) from (of X) to (of Y)
 

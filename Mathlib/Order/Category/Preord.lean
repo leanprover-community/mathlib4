@@ -44,7 +44,7 @@ instance : CoeSort Preord (Type u) :=
 
 attribute [coe] Preord.carrier
 
-mk_concrete_category Preord (· →o ·) (fun _ ↦ OrderHom.id) OrderHom.comp
+mk_concrete_category Preord.{u} (· →o ·) (fun _ ↦ OrderHom.id) OrderHom.comp
   with_of_hom {X Y : Type u} [Preorder X] [Preorder Y]
   hom_type (X →o Y) from (of X) to (of Y)
 

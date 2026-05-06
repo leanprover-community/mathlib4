@@ -51,7 +51,7 @@ theorem coe_of (α : Type*) [Lattice α] [BoundedOrder α] : ↥(of α) = α :=
 instance : Inhabited BddLat :=
   ⟨of PUnit⟩
 
-mk_concrete_category BddLat (BoundedLatticeHom · ·) (fun (X : BddLat) ↦ BoundedLatticeHom.id X)
+mk_concrete_category BddLat.{u} (BoundedLatticeHom · ·) (fun (X : BddLat) ↦ BoundedLatticeHom.id X)
   BoundedLatticeHom.comp
   with_of_hom {X Y : Type u} [Lattice X] [BoundedOrder X] [Lattice Y] [BoundedOrder Y]
   hom_type (BoundedLatticeHom X Y) from (of X) to (of Y)

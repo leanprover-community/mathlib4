@@ -48,7 +48,7 @@ abbrev of (α : Type*) [DistribLattice α] [BoundedOrder α] : BddDistLat where
 theorem coe_of (α : Type*) [DistribLattice α] [BoundedOrder α] : ↥(of α) = α :=
   rfl
 
-mk_concrete_category BddDistLat (BoundedLatticeHom · ·)
+mk_concrete_category BddDistLat.{u} (BoundedLatticeHom · ·)
   (fun (X : BddDistLat) ↦ BoundedLatticeHom.id X)
   BoundedLatticeHom.comp
   with_of_hom {X Y : Type u} [DistribLattice X] [BoundedOrder X] [DistribLattice Y]

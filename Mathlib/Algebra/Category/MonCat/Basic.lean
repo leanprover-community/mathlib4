@@ -65,10 +65,10 @@ abbrev of (M : Type u) [Monoid M] : MonCat := ⟨M⟩
 end MonCat
 
 @[to_additive AddMonCat]
-mk_concrete_category MonCat (· →* ·) MonoidHom.id MonoidHom.comp
+mk_concrete_category MonCat.{u} (· →* ·) MonoidHom.id MonoidHom.comp
   with_of_hom {X Y : Type u} [Monoid X] [Monoid Y]
   hom_type (X →* Y) from (MonCat.of X) to (MonCat.of Y)
-  to_additive AddMonCat (· →+ ·) AddMonoidHom.id AddMonoidHom.comp
+  to_additive AddMonCat.{u} (· →+ ·) AddMonoidHom.id AddMonoidHom.comp
   with_of_hom {X Y : Type u} [AddMonoid X] [AddMonoid Y]
   hom_type (X →+ Y) from (AddMonCat.of X) to (AddMonCat.of Y)
 
@@ -198,10 +198,10 @@ abbrev of (M : Type u) [CommMonoid M] : CommMonCat := ⟨M⟩
 end CommMonCat
 
 @[to_additive AddCommMonCat]
-mk_concrete_category CommMonCat (· →* ·) MonoidHom.id MonoidHom.comp
+mk_concrete_category CommMonCat.{u} (· →* ·) MonoidHom.id MonoidHom.comp
   with_of_hom {X Y : Type u} [CommMonoid X] [CommMonoid Y]
   hom_type (X →* Y) from (CommMonCat.of X) to (CommMonCat.of Y)
-  to_additive AddCommMonCat (· →+ ·) AddMonoidHom.id AddMonoidHom.comp
+  to_additive AddCommMonCat.{u} (· →+ ·) AddMonoidHom.id AddMonoidHom.comp
   with_of_hom {X Y : Type u} [AddCommMonoid X] [AddCommMonoid Y]
   hom_type (X →+ Y) from (AddCommMonCat.of X) to (AddCommMonCat.of Y)
 

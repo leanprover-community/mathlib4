@@ -42,8 +42,7 @@ instance : CoeSort BoolAlg (Type _) :=
 
 attribute [coe] BoolAlg.carrier
 
-mk_concrete_category BoolAlg (BoundedLatticeHom · ·) (fun (X : BoolAlg) ↦ BoundedLatticeHom.id X)
-  BoundedLatticeHom.comp
+mk_concrete_category BoolAlg.{u} (BoundedLatticeHom · ·) BoundedLatticeHom.id BoundedLatticeHom.comp
   with_of_hom {X Y : Type u} [BooleanAlgebra X] [BooleanAlgebra Y]
   hom_type (BoundedLatticeHom X Y) from (of X) to (of Y)
 
