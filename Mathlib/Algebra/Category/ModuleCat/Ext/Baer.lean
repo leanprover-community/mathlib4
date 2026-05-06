@@ -7,14 +7,11 @@ module
 
 public import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
-public import Mathlib.Algebra.Category.ModuleCat.Ext.DimensionShifting
-public import Mathlib.Algebra.Category.ModuleCat.Projective
-public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
-public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
+public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
 public import Mathlib.CategoryTheory.Abelian.Injective.Resolution
-public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!
 # Category Language Baer Criterion
