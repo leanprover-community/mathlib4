@@ -1239,7 +1239,6 @@ variable {R : Type*} [Semiring R] {M : Type*} [TopologicalSpace M] [AddCommMonoi
 
 /-- `Submodule.subtype` as a `ContinuousLinearMap`. -/
 def subtypeL (p : Submodule R M) : p →L[R] M where
-  cont := continuous_subtype_val
   toLinearMap := p.subtype
 
 @[simp, norm_cast]
@@ -1253,13 +1252,11 @@ alias coe_subtypeL' := coe_subtypeL
 
 theorem subtypeL_apply (p : Submodule R M) (x : p) : p.subtypeL x = x := by simp
 
-@[deprecated "This theorem is deprecated in favor of using simp with range_subtype"
-  (since := "2026-05-06")]
+@[deprecated range_subtype (since := "2026-05-06")]
 theorem range_subtypeL (p : Submodule R M) : (p.subtypeL : p →ₗ[R] M).range = p :=
   Submodule.range_subtype _
 
-@[deprecated "This theorem is deprecated in favor of using simp with ker_subtype"
-  (since := "2026-05-06")]
+@[deprecated ker_subtype (since := "2026-05-06")]
 theorem ker_subtypeL (p : Submodule R M) : (p.subtypeL : p →ₗ[R] M).ker = ⊥ :=
   Submodule.ker_subtype _
 
