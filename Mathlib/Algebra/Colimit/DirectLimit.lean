@@ -810,7 +810,7 @@ def of (i) : G i →ₐ[R] DirectLimit G f where
   __ := (DirectLimit.Ring.of G f i)
   commutes' r := by rw [algebraMap_def i]
 
-@[simp] lemma of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x := .symm <| eq_of_le ..
+lemma of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x := .symm <| eq_of_le ..
 
 variable (P : Type*) [Semiring P] [Algebra R P]
 
