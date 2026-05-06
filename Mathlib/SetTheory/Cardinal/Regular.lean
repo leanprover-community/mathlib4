@@ -361,6 +361,12 @@ theorem lt_aleph0_or_isRegular_or_isSingular : c < ℵ₀ ∨ c.IsRegular ∨ c.
   rw [← not_le]
   tauto
 
+theorem IsSingular.of_not_isRegular (h₀ : ℵ₀ ≤ c) (hc : ¬ IsRegular c) : IsSingular c :=
+  (isRegular_or_isSingular h₀).resolve_left hc
+
+theorem IsRegular.of_not_isSingular (h₀ : ℵ₀ ≤ c) (hc : ¬ IsSingular c) : IsRegular c :=
+  (isRegular_or_isSingular h₀).resolve_right hc
+
 theorem isSingular_aleph_iff {o : Ordinal} : (ℵ_ o).IsSingular ↔ IsSuccLimit o ∧ o.cof < ℵ_ o := by
   obtain rfl | ⟨a, rfl⟩ | ho := zero_or_succ_or_isSuccLimit o
   · simp
