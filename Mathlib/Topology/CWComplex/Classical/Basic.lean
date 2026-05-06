@@ -1011,6 +1011,7 @@ lemma RelCWComplex.disjoint_interior_base_iUnion_closedCell [T2Space X] [RelCWCo
     iUnion_empty]
 
 /-- A closed discrete subset of a space is a CW complex. -/
+@[reducible, simps -isSimp]
 def CWComplex.of_discrete_closed (hD : IsDiscrete D) (Dc : IsClosed D) : CWComplex D where
   cell n := match n with
     | 0 => D
