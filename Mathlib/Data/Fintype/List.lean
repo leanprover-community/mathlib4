@@ -62,14 +62,12 @@ instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } := b
     let allPerms := Multiset.bind univSubsets (fun s => (Multiset.lists s.1))
     refine ⟨allPerms, Multiset.nodup_bind.mpr ?_⟩
     simp only [Multiset.lists_nodup_finset, implies_true, true_and]
-    unfold Multiset.Pairwise
     use ((Finset.univ : Finset α).powerset.toList : (List (Finset α)))
     constructor
     · simp only [Finset.coe_toList]
       rfl
     · convert Finset.nodup_toList (Finset.univ.powerset : Finset (Finset α))
       ext l
-      unfold Nodup
       refine Pairwise.iff ?_
       intro m n
       simp only [_root_.Disjoint]

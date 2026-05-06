@@ -71,8 +71,7 @@ theorem integrable_measureT {f : ℝ → ℝ} (hf : ContinuousOn f (Set.Icc (-1)
   rw [intervalIntegrable_iff, Set.uIoc_of_le (by norm_num)] at this
   rw [measureT, restrict_withDensity (by measurability),
     integrable_withDensity_iff (by fun_prop) (by simp)]
-  unfold IntegrableOn at this
-  convert this
+  exact this
 
 open Set in
 theorem integral_measureT_eq_integral_cos {f : ℝ → ℝ} :

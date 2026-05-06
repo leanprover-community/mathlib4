@@ -227,7 +227,7 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     unfold Cone.extend
     congr 1
     ext x
-    apply this
+    exact this x
   -- And thus they are equal as `c` is the limit.
   have : g₁.right = g₂.right := calc
     g₁.right = hc.lift (c.extend g₁.right) := by

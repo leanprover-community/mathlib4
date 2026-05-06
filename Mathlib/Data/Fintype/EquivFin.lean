@@ -61,15 +61,13 @@ for an equiv `α ≃ Fin n` given `Fintype.card α = n`.
 
 See `Fintype.truncFinBijection` for a version without `[DecidableEq α]`.
 -/
-def truncEquivFin (α) [DecidableEq α] [Fintype α] : Trunc (α ≃ Fin (card α)) := by
-  unfold card Finset.card
-  exact
-    Quot.recOnSubsingleton
-      (motive := fun s : Multiset α =>
-        (∀ x : α, x ∈ s) → s.Nodup → Trunc (α ≃ Fin (Multiset.card s)))
-      univ.val
-      (fun l (h : ∀ x : α, x ∈ l) (nd : l.Nodup) => Trunc.mk (nd.getEquivOfForallMemList _ h).symm)
-      mem_univ_val univ.2
+def truncEquivFin (α) [DecidableEq α] [Fintype α] : Trunc (α ≃ Fin (card α)) :=
+  Quot.recOnSubsingleton
+    (motive := fun s : Multiset α =>
+      (∀ x : α, x ∈ s) → s.Nodup → Trunc (α ≃ Fin (Multiset.card s)))
+    univ.val
+    (fun l (h : ∀ x : α, x ∈ l) (nd : l.Nodup) => Trunc.mk (nd.getEquivOfForallMemList _ h).symm)
+    mem_univ_val univ.2
 
 /-- There is (noncomputably) an equivalence between `α` and `Fin (card α)`.
 
@@ -90,15 +88,13 @@ preserve computability.
 See `Fintype.truncEquivFin` for a version that gives an equivalence
 given `[DecidableEq α]`.
 -/
-def truncFinBijection (α) [Fintype α] : Trunc { f : Fin (card α) → α // Bijective f } := by
-  unfold card Finset.card
-  refine
-    Quot.recOnSubsingleton
-      (motive := fun s : Multiset α =>
-        (∀ x : α, x ∈ s) → s.Nodup → Trunc {f : Fin (Multiset.card s) → α // Bijective f})
-      univ.val
-      (fun l (h : ∀ x : α, x ∈ l) (nd : l.Nodup) => Trunc.mk (nd.getBijectionOfForallMemList _ h))
-      mem_univ_val univ.2
+def truncFinBijection (α) [Fintype α] : Trunc { f : Fin (card α) → α // Bijective f } :=
+  Quot.recOnSubsingleton
+    (motive := fun s : Multiset α =>
+      (∀ x : α, x ∈ s) → s.Nodup → Trunc {f : Fin (Multiset.card s) → α // Bijective f})
+    univ.val
+    (fun l (h : ∀ x : α, x ∈ l) (nd : l.Nodup) => Trunc.mk (nd.getBijectionOfForallMemList _ h))
+    mem_univ_val univ.2
 
 end Fintype
 
