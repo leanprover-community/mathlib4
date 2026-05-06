@@ -22,8 +22,8 @@ variable {α : Type*} [Semifield α] [LinearOrder α] [CanonicallyOrderedAdd α]
 abbrev CanonicallyOrderedAdd.toLinearOrderedCommGroupWithZero :
     LinearOrderedCommGroupWithZero α where
   bot := 0
-  bot_le := zero_le
-  zero_le := zero_le
+  bot_le _ := zero_le
+  zero_le _ := zero_le
   mul_lt_mul_of_pos_left _a ha _b _c hbc :=
     have : PosMulStrictMono α := PosMulReflectLT.toPosMulStrictMono _
     mul_lt_mul_of_pos_left hbc ha
