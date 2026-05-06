@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy
 -/
 module
 
+public import Mathlib.Algebra.Order.IsBotOne
 public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Order.BooleanAlgebra.Set
 public import Mathlib.Order.Interval.Set.Defs
@@ -186,6 +187,10 @@ theorem nonempty_Ioc_subtype (h : a < b) : Nonempty (Ioc a b) :=
 @[to_dual self]
 theorem nonempty_Ioo_subtype [DenselyOrdered α] (h : a < b) : Nonempty (Ioo a b) :=
   Nonempty.to_subtype (nonempty_Ioo.mpr h)
+
+@[to_additive]
+instance isEmpty_Iio_one [One α] [IsBotOneClass α] : IsEmpty (Set.Iio (1 : α)) :=
+  ⟨fun a ↦ not_lt_one a.2⟩
 
 @[to_dual]
 instance [NoMinOrder α] : NoMinOrder (Iio a) :=
