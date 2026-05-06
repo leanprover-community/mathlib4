@@ -88,6 +88,9 @@ theorem lift_one (g : ∀ i, H i) (h) :
   let ⟨i⟩ := ‹Nonempty ι›
   rw [one_def, lift_def, map_one (g i)]
 
+@[to_additive]
+lemma map₀_one : map₀ f (1 : ∀ i, G i) = 1 := by rw [map₀, Pi.one_apply, one_def]
+
 end ZeroOne
 
 section Star
@@ -135,6 +138,10 @@ theorem lift_mul (g : ∀ i, H i) (h) (x y : DirectLimit G f) :
     DirectLimit.lift f (g ·) h (x * y) =
       DirectLimit.lift f (g ·) h x * DirectLimit.lift f (g ·) h y :=
   DirectLimit.induction₂ _ (fun i x y ↦ by simp_rw [mul_def, lift_def, map_mul (g i)]) x y
+
+@[to_additive]
+lemma map₀_mul [Nonempty ι] (r s : ∀ i, G i) : map₀ f (r * s) = map₀ f r * map₀ f s := by
+  simp_rw [map₀, Pi.mul_apply, mul_def]
 
 end AddMul
 
@@ -220,8 +227,8 @@ variable (f) in
 @[to_additive (attr := simps) /-- `map₀` as an `AddMonoidHom`. -/]
 def map₀MonoidHom : (∀ i, G i) →* DirectLimit G f where
   toFun x := map₀ _ x
-  map_one' := by rw [map₀, Pi.one_apply, one_def]
-  map_mul' r s := by simp_rw [map₀, Pi.mul_apply, mul_def]
+  map_one' := map₀_one
+  map_mul' r s := map₀_mul r s
 
 end Monoid
 
