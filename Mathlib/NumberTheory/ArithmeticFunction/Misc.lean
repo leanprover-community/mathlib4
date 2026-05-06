@@ -460,14 +460,11 @@ meta def evalArithmeticFunctionSigma : PositivityExt where eval {u α} z p? e :=
   let some p := p? | throwError "no PartialOrder instance"
   match u, α, e with
   | 0, ~q(ℕ), ~q(ArithmeticFunction.sigma $k $n) =>
+    assumeInstancesCommute
     let rn ← core z p n
     match rn with
-    | .positive pn =>
-      assumeInstancesCommute
-      return .positive q(Iff.mpr ArithmeticFunction.sigma_pos_iff $pn)
-    | _ =>
-      assumeInstancesCommute
-      return .nonnegative q(Nat.zero_le _)
+    | .positive pn => return .positive q(Iff.mpr ArithmeticFunction.sigma_pos_iff $pn)
+    | _ => return .nonnegative q(Nat.zero_le _)
   | _, _, _ => throwError "not ArithmeticFunction.sigma"
 
 

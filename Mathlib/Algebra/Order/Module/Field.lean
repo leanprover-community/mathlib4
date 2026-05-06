@@ -104,7 +104,7 @@ end Module.IsTorsionFree
 /-- Positivity extension for scalar multiplication. -/
 @[positivity HSMul.hSMul _ _]
 meta def evalSMul : PositivityExt where eval {_u α} zα pα? (e : Q($α)) := do
-  let some _ := pα? | pure .none
+  let some pα := pα? | pure .none
   let .app (.app (.app (.app (.app (.app
         (.const ``HSMul.hSMul [u1, _, _]) (β : Q(Type u1))) _) _) _)
           (a : Q($β))) (b : Q($α)) ← whnfR e | throwError "failed to match hSMul"
@@ -112,7 +112,7 @@ meta def evalSMul : PositivityExt where eval {_u α} zα pα? (e : Q($α)) := do
   let pM : Q(PartialOrder $β) ← synthInstanceQ q(PartialOrder $β)
   -- Using `q()` here would be impractical, as we would have to manually `synthInstanceQ` all the
   -- required typeclasses. Ideally we could tell `q()` to do this automatically.
-  match ← core zM pM a, ← core zα pα? b with
+  match ← core zM pM a, ← core zα pα b with
   | .positive pa, .positive pb =>
       try {
         let _hαβ : Q(SMul $β $α) ← synthInstanceQ q(SMul $β $α)

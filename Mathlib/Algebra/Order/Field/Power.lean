@@ -182,7 +182,6 @@ meta def evalZPow : PositivityExt where eval {u α} zα pα? e := do
         let sα ← synthInstanceQ q(Semifield $α)
         let oα ← synthInstanceQ q(LinearOrder $α)
         let iα ← synthInstanceQ q(IsStrictOrderedRing $α)
-        assumeInstancesCommute
         orElse (← catchNone (ofNonneg q(le_of_lt $pa) sα oα iα))
           (ofNonzero q(ne_of_gt $pa) q(inferInstance))
     | .nonnegative pa =>

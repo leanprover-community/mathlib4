@@ -551,26 +551,26 @@ open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: inverse of an `EReal`. -/
 @[positivity (_⁻¹ : EReal)]
-meta def evalERealInv : PositivityExt where eval {u α} _ pα? e := do
+meta def evalERealInv : PositivityExt where eval {u α} zα pα? e := do
+  let some pα := pα? | throwError "no PartialOrder instance"
   match u, α, e with
   | 0, ~q(EReal), ~q($a⁻¹) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
     assertInstancesCommute
-    match (← core q(inferInstance) (some q(inferInstance)) a).toNonneg with
+    match (← core zα pα a).toNonneg with
     | some pa => pure (.nonnegative q(EReal.inv_nonneg_of_nonneg <| $pa))
     | none => pure .none
   | _, _, _ => throwError "not an inverse of an `EReal`"
 
 /-- Extension for the `positivity` tactic: ratio of two `EReal`s. -/
 @[positivity (_ / _ : EReal)]
-meta def evalERealDiv : PositivityExt where eval {u α} _ pα? e := do
+meta def evalERealDiv : PositivityExt where eval {u α} zα pα? e := do
+  let some pα := pα? | throwError "no PartialOrder instance"
   match u, α, e with
   | 0, ~q(EReal), ~q($a / $b) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
     assertInstancesCommute
-    match (← core q(inferInstance) (some q(inferInstance)) a).toNonneg with
+    match (← core zα pα a).toNonneg with
     | some pa =>
-      match (← core q(inferInstance) (some q(inferInstance)) b).toNonneg with
+      match (← core zα pα b).toNonneg with
       | some pb => pure (.nonnegative q(EReal.div_nonneg $pa $pb))
       | none => pure .none
     | _ => pure .none

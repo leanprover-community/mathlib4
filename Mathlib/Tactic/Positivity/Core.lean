@@ -231,7 +231,6 @@ def throwNone {e pα?} (t : MetaM (Strictness zα e pα?)) : MetaM (Strictness z
 /-- Attempts to prove a `Strictness` result when `e` evaluates to a literal number. -/
 def normNumPositivity (pα : Q(PartialOrder $α)) (e : Q($α))
     : MetaM (Strictness zα e (some pα)) := catchNone do
-  trace[Tactic.positivity] "Is {e} rawNatLit? : {e.isRawNatLit}"
   match ← NormNum.derive e with
   | .isBool .. => failure
   | .isNat _ lit p =>
@@ -441,8 +440,8 @@ def core (pα? : Option Q(PartialOrder $α)) (e : Q($α)) : MetaM (Strictness z�
     try
       result ← orElse result <| ext.eval zα pα? e
     catch err =>
-      trace[Tactic.positivity] "{e} ext failed: {err.toMessageData}"
-  trace[Tactic.positivity] "current result from ext: {result.toString}"
+      trace[Tactic.positivity] "{e} failed: {err.toMessageData}"
+  trace[Tactic.positivity] "current result from positivity extensions: {result.toString}"
   match pα? with
   | some pα =>
     trace[Tactic.positivity] "{α} has some {pα}"

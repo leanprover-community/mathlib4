@@ -738,7 +738,7 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   trace[Tactic.positivity.zeroness] "evalDiv: {a} divided by {b}"
   let _a ← synthInstanceQ q(Semifield $α)
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ q($f) q(HDiv.hDiv)
-  let some _ := pα? |
+  let some pα := pα? |
     match ← core zα pα? a, ← core zα pα? b with
     | .nonzero pa, .nonzero pb =>
       let _a ← synthInstanceQ q(GroupWithZero $α)
@@ -748,26 +748,14 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   let _a ← synthInstanceQ q(GroupWithZero $α)
   let _a ← synthInstanceQ q(PosMulReflectLT $α)
   assumeInstancesCommute
-  let ra ← core zα pα? a; let rb ← core zα pα? b
+  let ra ← core zα pα a; let rb ← core zα pα b
   match ra, rb with
-  | .positive pa, .positive pb =>
-    assumeInstancesCommute
-    pure (.positive q(div_pos $pa $pb))
-  | .positive pa, .nonnegative pb =>
-    assumeInstancesCommute
-    pure (.nonnegative q(div_nonneg_of_pos_of_nonneg $pa $pb))
-  | .nonnegative pa, .positive pb =>
-    assumeInstancesCommute
-    pure (.nonnegative q(div_nonneg_of_nonneg_of_pos $pa $pb))
-  | .nonnegative pa, .nonnegative pb =>
-    assumeInstancesCommute
-    pure (.nonnegative q(div_nonneg $pa $pb))
-  | .positive pa, .nonzero pb =>
-    assumeInstancesCommute
-    pure (.nonzero q(div_ne_zero_of_pos_of_ne_zero $pa $pb))
-  | .nonzero pa, .positive pb =>
-    assumeInstancesCommute
-    pure (.nonzero q(div_ne_zero_of_ne_zero_of_pos $pa $pb))
+  | .positive pa, .positive pb => pure (.positive q(div_pos $pa $pb))
+  | .positive pa, .nonnegative pb => pure (.nonnegative q(div_nonneg_of_pos_of_nonneg $pa $pb))
+  | .nonnegative pa, .positive pb => pure (.nonnegative q(div_nonneg_of_nonneg_of_pos $pa $pb))
+  | .nonnegative pa, .nonnegative pb => pure (.nonnegative q(div_nonneg $pa $pb))
+  | .positive pa, .nonzero pb => pure (.nonzero q(div_ne_zero_of_pos_of_ne_zero $pa $pb))
+  | .nonzero pa, .positive pb => pure (.nonzero q(div_ne_zero_of_ne_zero_of_pos $pa $pb))
   | .nonzero pa, .nonzero pb => pure (.nonzero q(div_ne_zero $pa $pb))
   | _, _ => pure .none
 

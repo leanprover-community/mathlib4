@@ -1126,20 +1126,18 @@ the base is nonnegative and positive when the base is positive.
 This is the `NNReal` analogue of `evalRpow` for `Real`. -/
 @[positivity (_ : ℝ≥0) ^ (_ : ℝ)]
 meta def evalNNRealRpow : PositivityExt where eval {u α} _ pα? e := do
+  let some _ := pα? | throwError "no PartialOrder instance"
   match u, α, e with
   | 0, ~q(ℝ≥0), ~q($a ^ (0 : ℝ)) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
     assertInstancesCommute
     pure (.positive q(NNReal.rpow_zero_pos $a))
   | 0, ~q(ℝ≥0), ~q($a ^ ($b : ℝ)) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
+    assertInstancesCommute
     let ra ← core q(inferInstance) (some q(inferInstance)) a
     match ra with
     | .positive pa =>
-      assertInstancesCommute
       pure (.positive q(NNReal.rpow_pos $pa))
     | _ =>
-      assertInstancesCommute
       pure (.nonnegative q(zero_le (a := $e)))
   | _, _, _ => throwError "not NNReal.rpow"
 
@@ -1158,28 +1156,24 @@ the base is nonnegative and positive when the base is positive.
 This is the `ENNReal` analogue of `evalRpow` for `Real`. -/
 @[positivity (_ : ℝ≥0∞) ^ (_ : ℝ)]
 meta def evalENNRealRpow : PositivityExt where eval {u α} _ pα? e := do
+  let some _ := pα? | throwError "no PartialOrder instance"
   match u, α, e with
   | 0, ~q(ℝ≥0∞), ~q($a ^ (0 : ℝ)) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
     assertInstancesCommute
     pure (.positive q(ENNReal.rpow_zero_pos $a))
   | 0, ~q(ℝ≥0∞), ~q($a ^ ($b : ℝ)) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
+    assertInstancesCommute
     let ra ← core q(inferInstance) (some q(inferInstance)) a
     let rb ← catchNone <| core q(inferInstance) (some q(inferInstance)) b
     match ra, rb with
     | .positive pa, .positive pb =>
-      assertInstancesCommute
       pure (.positive q(ENNReal.rpow_pos_of_nonneg $pa <| le_of_lt $pb))
     | .positive pa, .nonnegative pb =>
-      assertInstancesCommute
       pure (.positive q(ENNReal.rpow_pos_of_nonneg $pa $pb))
     | .positive pa, _ =>
-      assertInstancesCommute
       let some ha ← isFiniteM? a | pure <| .nonnegative q(zero_le (a := $e))
       pure <| .positive q(ENNReal.rpow_pos $pa $ha)
     | _, _ =>
-      assertInstancesCommute
       pure <| .nonnegative q(zero_le (a := $e))
   | _, _, _ => throwError "not ENNReal.rpow"
 

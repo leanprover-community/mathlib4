@@ -226,14 +226,11 @@ meta def evalArithmeticFunctionZeta : PositivityExt where eval {u α} z p? e := 
   let some p := p? | throwError "no PartialOrder instance"
   match u, α, e with
   | 0, ~q(ℕ), ~q(ArithmeticFunction.zeta $n) =>
+    assumeInstancesCommute
     let rn ← core z p n
     match rn with
-    | .positive pn =>
-      assumeInstancesCommute
-      return .positive q(Iff.mpr ArithmeticFunction.zeta_pos $pn)
-    | _ =>
-      assumeInstancesCommute
-      return .nonnegative q(Nat.zero_le _)
+    | .positive pn => return .positive q(Iff.mpr ArithmeticFunction.zeta_pos $pn)
+    | _ => return .nonnegative q(Nat.zero_le _)
   | _, _, _ => throwError "not ArithmeticFunction.zeta"
 
 end Mathlib.Meta.Positivity

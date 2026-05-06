@@ -143,32 +143,17 @@ alias ⟨_, ofReal_ne_zero_of_ne_zero⟩ := ofReal_ne_zero
 input is. -/
 @[positivity Complex.ofReal _, Complex.ofReal _]
 meta def evalComplexOfReal : PositivityExt where eval {u α} _ pα? e := do
-  -- TODO: Can we avoid duplicating the code?
   match u, α, e with
-  | 0, ~q(ℂ), ~q(Complex.ofReal $a) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
-    match ← core q(inferInstance) (some q(inferInstance)) a with
-    | .positive pa =>
-      assumeInstancesCommute
-      return .positive q(ofReal_pos $pa)
-    | .nonnegative pa =>
-      assumeInstancesCommute
-      return .nonnegative q(ofReal_nonneg $pa)
-    | .nonzero pa =>
-      assumeInstancesCommute
-      return .nonzero q(ofReal_ne_zero_of_ne_zero $pa)
-    | _ => return .none
   | 0, ~q(ℂ), ~q(Complex.ofReal $a) =>
     let some _ := pα? | throwError "no PartialOrder instance"
     assumeInstancesCommute
     match ← core q(inferInstance) (some q(inferInstance)) a with
     | .positive pa =>
-      assumeInstancesCommute
       return .positive q(ofReal_pos $pa)
     | .nonnegative pa =>
-      assumeInstancesCommute
       return .nonnegative q(ofReal_nonneg $pa)
-    | .nonzero pa => return .nonzero q(ofReal_ne_zero_of_ne_zero $pa)
+    | .nonzero pa =>
+      return .nonzero q(ofReal_ne_zero_of_ne_zero $pa)
     | _ => return .none
   | _, _ => throwError "not Complex.ofReal"
 

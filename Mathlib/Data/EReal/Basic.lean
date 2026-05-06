@@ -850,19 +850,17 @@ open Lean Meta Qq Function
 /-- Extension for the `positivity` tactic: cast from `ℝ` to `EReal`. -/
 @[positivity Real.toEReal _]
 meta def evalRealToEReal : PositivityExt where eval {u α} _zα pα? e := do
+  let some _ := pα? | throwError "no PartialOrder instance"
   match u, α, e with
   | 0, ~q(EReal), ~q(Real.toEReal $a) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
+    assertInstancesCommute
     let ra ← core q(inferInstance) (some q(inferInstance)) a
     match ra with
     | .positive pa =>
-      assertInstancesCommute
       pure (.positive q(EReal.coe_pos.2 $pa))
     | .nonnegative pa =>
-      assertInstancesCommute
       pure (.nonnegative q(EReal.coe_nonneg.2 $pa))
     | .nonzero pa =>
-      assertInstancesCommute
       pure (.nonzero q(EReal.coe_ne_zero.2 $pa))
     | _ => pure .none
   | _, _, _ => throwError "not Real.toEReal"
@@ -870,19 +868,17 @@ meta def evalRealToEReal : PositivityExt where eval {u α} _zα pα? e := do
 /-- Extension for the `positivity` tactic: cast from `ℝ≥0∞` to `EReal`. -/
 @[positivity ENNReal.toEReal _]
 meta def evalENNRealToEReal : PositivityExt where eval {u α} _zα pα? e := do
+  let some _ := pα? | throwError "no PartialOrder instance"
   match u, α, e with
   | 0, ~q(EReal), ~q(ENNReal.toEReal $a) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
+    assertInstancesCommute
     let ra ← core q(inferInstance) (some q(inferInstance)) a
     match ra with
     | .positive pa =>
-      assertInstancesCommute
       pure (.positive q(EReal.coe_ennreal_pos.2 $pa))
     | .nonzero pa =>
-      assertInstancesCommute
       pure (.positive q(EReal.coe_ennreal_pos_iff_ne_zero.2 $pa))
     | _ =>
-      assertInstancesCommute
       pure (.nonnegative q(EReal.coe_ennreal_nonneg $a))
   | _, _, _ => throwError "not ENNReal.toEReal"
 
@@ -893,9 +889,9 @@ Since `EReal.toReal ⊤ = 0`, we cannot prove a stronger statement,
 at least without relying on a tactic like `finiteness`. -/
 @[positivity EReal.toReal _]
 meta def evalERealToReal : PositivityExt where eval {u α} _zα pα? e := do
+  let some _ := pα? | throwError "no PartialOrder instance"
   match u, α, e with
   | 0, ~q(Real), ~q(EReal.toReal $a) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
     assertInstancesCommute
     match (← core q(inferInstance) (some q(inferInstance)) a).toNonneg with
     | .some pa => pure (.nonnegative q(EReal.toReal_nonneg $pa))
@@ -910,16 +906,13 @@ We cannot deduce any corollaries from `x ≠ 0`, since `EReal.toENNReal x = 0` f
 -/
 @[positivity EReal.toENNReal _]
 meta def evalERealToENNReal : PositivityExt where eval {u α} _zα pα? e := do
+  let some _ := pα? | throwError "no PartialOrder instance"
   match u, α, e with
   | 0, ~q(ENNReal), ~q(EReal.toENNReal $a) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
+    assertInstancesCommute
     match ← core q(inferInstance) (some q(inferInstance)) a with
-    | .positive pa =>
-      assertInstancesCommute
-      pure (.positive q(EReal.toENNReal_pos_iff.2 $pa))
-    | _ =>
-      assertInstancesCommute
-      pure (.nonnegative q(zero_le (a := $e)))
+    | .positive pa => pure (.positive q(EReal.toENNReal_pos_iff.2 $pa))
+    | _ => pure (.nonnegative q(zero_le (a := $e)))
   | _, _, _ => throwError "not EReal.toENNReal"
 
 end Mathlib.Meta.Positivity

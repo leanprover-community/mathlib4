@@ -376,9 +376,9 @@ open Lean Meta Qq
 when the exponent is zero. The other cases are done in `evalRpow`. -/
 @[positivity (_ : ℝ) ^ (0 : ℝ)]
 meta def evalRpowZero : PositivityExt where eval {u α} _ pα? e := do
+  let some _ := pα? | throwError "no PartialOrder instance"
   match u, α, e with
   | 0, ~q(ℝ), ~q($a ^ (0 : ℝ)) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
     assertInstancesCommute
     pure (.positive q(Real.rpow_zero_pos $a))
   | _, _, _ => throwError "not Real.rpow"
@@ -387,16 +387,15 @@ meta def evalRpowZero : PositivityExt where eval {u α} _ pα? e := do
 the base is nonnegative and positive when the base is positive. -/
 @[positivity (_ : ℝ) ^ (_ : ℝ)]
 meta def evalRpow : PositivityExt where eval {u α} _zα pα? e := do
+  let some _ := pα? | throwError "no PartialOrder instance"
   match u, α, e with
   | 0, ~q(ℝ), ~q($a ^ ($b : ℝ)) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
+    assertInstancesCommute
     let ra ← core q(inferInstance) (some q(inferInstance)) a
     match ra with
     | .positive pa =>
-      assertInstancesCommute
       pure (.positive q(Real.rpow_pos_of_pos $pa $b))
     | .nonnegative pa =>
-      assertInstancesCommute
       pure (.nonnegative q(Real.rpow_nonneg $pa $b))
     | _ => pure .none
   | _, _, _ => throwError "not Real.rpow"

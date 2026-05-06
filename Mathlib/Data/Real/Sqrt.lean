@@ -313,14 +313,13 @@ open Lean Meta Qq Function
 positive. -/
 @[positivity NNReal.sqrt _]
 meta def evalNNRealSqrt : PositivityExt where eval {u α} _zα pα? e := do
+  let some _ := pα? | throwError "no PartialOrder instance"
   match u, α, e with
   | 0, ~q(NNReal), ~q(NNReal.sqrt $a) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
+    assertInstancesCommute
     let ra ← core q(inferInstance) (some q(inferInstance)) a
     match ra with
-    | .positive pa =>
-      assertInstancesCommute
-      pure (.positive q(NNReal.sqrt_pos_of_pos $pa))
+    | .positive pa => pure (.positive q(NNReal.sqrt_pos_of_pos $pa))
     | _ => failure -- this case is dealt with by generic nonnegativity of nnreals
   | _, _, _ => throwError "not NNReal.sqrt"
 
@@ -328,17 +327,14 @@ meta def evalNNRealSqrt : PositivityExt where eval {u α} _zα pα? e := do
 its input is. -/
 @[positivity √_]
 meta def evalSqrt : PositivityExt where eval {u α} _zα pα? e := do
+  let some _ := pα? | throwError "no PartialOrder instance"
   match u, α, e with
   | 0, ~q(ℝ), ~q(√$a) =>
-    let some _ := pα? | throwError "no PartialOrder instance"
+    assertInstancesCommute
     let ra ← catchNone <| core q(inferInstance) (some q(inferInstance)) a
     match ra with
-    | .positive pa =>
-      assertInstancesCommute
-      pure (.positive q(Real.sqrt_pos_of_pos $pa))
-    | _ =>
-      assertInstancesCommute
-      pure (.nonnegative q(Real.sqrt_nonneg $a))
+    | .positive pa => pure (.positive q(Real.sqrt_pos_of_pos $pa))
+    | _ => pure (.nonnegative q(Real.sqrt_nonneg $a))
   | _, _, _ => throwError "not Real.sqrt"
 
 end Mathlib.Meta.Positivity

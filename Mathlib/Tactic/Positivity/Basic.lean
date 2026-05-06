@@ -65,30 +65,13 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   let ra ← core zα pα? a; let rb ← core zα pα? b
   guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(ite (α := $α))
   match ra, rb with
-  | .positive pa, .positive pb =>
-    assumeInstancesCommute
-    pure (.positive q(ite_pos $p $pa $pb))
-  | .positive pa, .nonnegative pb =>
-    let _b ← synthInstanceQ q(Preorder $α)
-    assumeInstancesCommute
-    pure (.nonnegative q(ite_nonneg_of_pos_of_nonneg $p $pa $pb))
-  | .nonnegative pa, .positive pb =>
-    let _b ← synthInstanceQ q(Preorder $α)
-    assumeInstancesCommute
-    pure (.nonnegative q(ite_nonneg_of_nonneg_of_pos $p $pa $pb))
-  | .nonnegative pa, .nonnegative pb =>
-    assumeInstancesCommute
-    pure (.nonnegative q(ite_nonneg $p $pa $pb))
-  | .positive pa, .nonzero pb =>
-    let _b ← synthInstanceQ q(Preorder $α)
-    assumeInstancesCommute
-    pure (.nonzero q(ite_ne_zero_of_pos_of_ne_zero $p $pa $pb))
-  | .nonzero pa, .positive pb =>
-    let _b ← synthInstanceQ q(Preorder $α)
-    assumeInstancesCommute
-    pure (.nonzero q(ite_ne_zero_of_ne_zero_of_pos $p $pa $pb))
-  | .nonzero pa, .nonzero pb =>
-    pure (.nonzero q(ite_ne_zero $p $pa $pb))
+  | .positive pa, .positive pb => pure (.positive q(ite_pos $p $pa $pb))
+  | .positive pa, .nonnegative pb => pure (.nonnegative q(ite_nonneg_of_pos_of_nonneg $p $pa $pb))
+  | .nonnegative pa, .positive pb => pure (.nonnegative q(ite_nonneg_of_nonneg_of_pos $p $pa $pb))
+  | .nonnegative pa, .nonnegative pb => pure (.nonnegative q(ite_nonneg $p $pa $pb))
+  | .positive pa, .nonzero pb => pure (.nonzero q(ite_ne_zero_of_pos_of_ne_zero $p $pa $pb))
+  | .nonzero pa, .positive pb => pure (.nonzero q(ite_ne_zero_of_ne_zero_of_pos $p $pa $pb))
+  | .nonzero pa, .nonzero pb => pure (.nonzero q(ite_ne_zero $p $pa $pb))
   | _, _ => pure .none
 
 section LinearOrder
@@ -110,24 +93,20 @@ such that `positivity` successfully recognises both `a` and `b`. -/
 @[positivity min _ _] def evalMin : PositivityExt where eval {u α} zα pα? e := do
   let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← whnfR e | throwError "not min"
   let _e_eq : $e =Q $f $a $b := ⟨⟩
-  let lα ← synthInstanceQ q(LinearOrder $α)
-  assumeInstancesCommute
+  let _a ← synthInstanceQ q(LinearOrder $α)
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ q($f) q(min)
+  assumeInstancesCommute
   match ← core zα pα? a, ← core zα pα? b with
   | .positive (pα := pα') pa, .positive pb =>
-    haveI' : $pα' =Q ($lα).toPartialOrder := ⟨⟩
     assumeInstancesCommute
     pure (.positive q(lt_min $pa $pb))
   | .positive (pα := pα') pa, .nonnegative pb =>
-    haveI' : $pα' =Q ($lα).toPartialOrder := ⟨⟩
     assumeInstancesCommute
     pure (.nonnegative q(le_min_of_lt_of_le $pa $pb))
   | .nonnegative (pα := pα') pa, .positive pb =>
-    haveI' : $pα' =Q ($lα).toPartialOrder := ⟨⟩
     assumeInstancesCommute
     pure (.nonnegative q(le_min_of_le_of_lt $pa $pb))
   | .nonnegative pa (pα := pα'), .nonnegative pb =>
-    haveI' : $pα' =Q ($lα).toPartialOrder := ⟨⟩
     assumeInstancesCommute
     pure (.nonnegative q(le_min $pa $pb))
   | .positive pa, .nonzero pb =>
@@ -137,7 +116,6 @@ such that `positivity` successfully recognises both `a` and `b`. -/
     assumeInstancesCommute
     pure (.nonzero q(min_ne_of_ne_of_lt $pa $pb))
   | .nonzero pa, .nonzero pb => do
-    assumeInstancesCommute
     pure (.nonzero q(min_ne $pa $pb))
   | _, _ => pure .none
 
@@ -147,7 +125,6 @@ is nonnegative, strictly positive if at least one is positive, and nonzero if bo
   let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← whnfR e | throwError "not max"
   let _e_eq : $e =Q $f $a $b := ⟨⟩
   let _a ← synthInstanceQ q(LinearOrder $α)
-  assumeInstancesCommute
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ q($f) q(max)
   let result : Strictness zα e pα? ← catchNone do
     let ra ← core zα pα? a
@@ -190,63 +167,80 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   match ra, rb with
   | .positive pa, .positive pb =>
     let _a ← synthInstanceQ q(AddLeftMono $α)
-    assumeInstancesCommute
     pure (.positive q(add_pos' $pa $pb))
   | .positive pa, .nonnegative pb =>
     let _a ← synthInstanceQ q(AddLeftMono $α)
-    assumeInstancesCommute
     pure (.positive q(add_pos_of_pos_of_nonneg $pa $pb))
   | .nonnegative pa, .positive pb =>
     let _a ← synthInstanceQ q(AddRightMono $α)
-    assumeInstancesCommute
     pure (.positive q(Right.add_pos_of_nonneg_of_pos $pa $pb))
   | .nonnegative pa, .nonnegative pb =>
     let _a ← synthInstanceQ q(AddLeftMono $α)
-    assumeInstancesCommute
     pure (.nonnegative q(add_nonneg $pa $pb))
   | _, _ => failure
 
 /-- The `positivity` extension which identifies expressions of the form `a - b`,
 such that there is a local hypothesis `b < a`, `b ≤ a`, `a ≠ b` or `b ≠ a`. -/
-@[positivity _ - _] def evalSub : PositivityExt where eval {u α} _zα pα e := do
+@[positivity _ - _] def evalSub : PositivityExt where eval {u α} _zα pα? e := do
   let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← whnfR e | throwError "not -"
   let _e_eq : $e =Q $f $a $b := ⟨⟩
   let _a ← synthInstanceQ q(AddGroup $α)
   assumeInstancesCommute
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ q($f) q(HSub.hSub)
-  let mut result := .none
-  for decl in ← getLCtx do
-    unless decl.isImplementationDetail do
-      have e' : Q(Prop) := decl.type
-      have p : Q($e') := .fvar decl.fvarId
-      result ← orElse result do
-        match e' with
-        | ~q(@LE.le.{u} $β $le $lo $hi) =>
-          let .defEq (_ : $α =Q $β) ← isDefEqQ α β | return .none
-          let .defEq _ ← isDefEqQ q($le) q(($pα).toLE) | return .none
-          let .defEq (_ : $a =Q $hi) ← isDefEqQ a hi | return .none
-          let .defEq (_ : $b =Q $lo) ← isDefEqQ b lo | return .none
-          let _ ← synthInstanceQ q(AddRightMono $α)
-          return .nonnegative q(sub_nonneg_of_le $p)
-        | ~q(@LT.lt.{u} $β $lt $lo $hi) =>
-          let .defEq (_ : $α =Q $β) ← isDefEqQ α β | return .none
-          let .defEq _ ← isDefEqQ q($lt) q(($pα).toLT) | return .none
-          let .defEq (_ : $a =Q $hi) ← isDefEqQ a hi | return .none
-          let .defEq (_ : $b =Q $lo) ← isDefEqQ b lo | return .none
-          let _i ← synthInstanceQ q(AddRightStrictMono $α)
-          assumeInstancesCommute
-          return .positive (q(sub_pos_of_lt $p):)
-        | ~q(@Ne.{u + 1} $β $lhs $rhs) =>
-          let .defEq (_ : $α =Q $β) ← isDefEqQ α β | return .none
-          if let .defEq (_ : $a =Q $lhs) ← isDefEqQ a lhs then
-            let .defEq (_ : $b =Q $rhs) ← isDefEqQ b rhs | return .none
-            return .nonzero (q(sub_ne_zero_of_ne $p):)
-          if let .defEq _ ← isDefEqQ a rhs then
-            let .defEq _ ← isDefEqQ b lhs | return .none
-            return .nonzero (q(sub_ne_zero_of_ne ($p).symm):)
-          return .none
-        | _ => return .none
-  return result
+  match pα? with
+  | .some pα =>
+    let mut result := .none
+    for decl in ← getLCtx do
+      unless decl.isImplementationDetail do
+        have e' : Q(Prop) := decl.type
+        have p : Q($e') := .fvar decl.fvarId
+        result ← orElse result do
+          match e' with
+          | ~q(@LE.le.{u} $β $le $lo $hi) =>
+            let .defEq (_ : $α =Q $β) ← isDefEqQ α β | return .none
+            let .defEq _ ← isDefEqQ q($le) q(($pα).toLE) | return .none
+            let .defEq (_ : $a =Q $hi) ← isDefEqQ a hi | return .none
+            let .defEq (_ : $b =Q $lo) ← isDefEqQ b lo | return .none
+            let _ ← synthInstanceQ q(AddRightMono $α)
+            return .nonnegative q(sub_nonneg_of_le $p)
+          | ~q(@LT.lt.{u} $β $lt $lo $hi) =>
+            let .defEq (_ : $α =Q $β) ← isDefEqQ α β | return .none
+            let .defEq _ ← isDefEqQ q($lt) q(($pα).toLT) | return .none
+            let .defEq (_ : $a =Q $hi) ← isDefEqQ a hi | return .none
+            let .defEq (_ : $b =Q $lo) ← isDefEqQ b lo | return .none
+            let _i ← synthInstanceQ q(AddRightStrictMono $α)
+            assumeInstancesCommute
+            return .positive (q(sub_pos_of_lt $p):)
+          | ~q(@Ne.{u + 1} $β $lhs $rhs) =>
+            let .defEq (_ : $α =Q $β) ← isDefEqQ α β | return .none
+            if let .defEq (_ : $a =Q $lhs) ← isDefEqQ a lhs then
+              let .defEq (_ : $b =Q $rhs) ← isDefEqQ b rhs | return .none
+              return .nonzero (q(sub_ne_zero_of_ne $p):)
+            if let .defEq _ ← isDefEqQ a rhs then
+              let .defEq _ ← isDefEqQ b lhs | return .none
+              return .nonzero (q(sub_ne_zero_of_ne ($p).symm):)
+            return .none
+          | _ => return .none
+    return result
+  | .none =>
+    let mut result := .none
+    for decl in ← getLCtx do
+      unless decl.isImplementationDetail do
+        have e' : Q(Prop) := decl.type
+        have p : Q($e') := .fvar decl.fvarId
+        result ← orElse result do
+          match e' with
+          | ~q(@Ne.{u + 1} $β $lhs $rhs) =>
+            let .defEq (_ : $α =Q $β) ← isDefEqQ α β | return .none
+            if let .defEq (_ : $a =Q $lhs) ← isDefEqQ a lhs then
+              let .defEq (_ : $b =Q $rhs) ← isDefEqQ b rhs | return .none
+              return .nonzero (q(sub_ne_zero_of_ne $p):)
+            if let .defEq _ ← isDefEqQ a rhs then
+              let .defEq _ ← isDefEqQ b lhs | return .none
+              return .nonzero (q(sub_ne_zero_of_ne ($p).symm):)
+            return .none
+          | _ => return .none
+    return result
 
 /-- The `positivity` extension which identifies expressions of the form `a * b`,
 such that `positivity` successfully recognises both `a` and `b`. -/
@@ -303,7 +297,7 @@ lemma int_div_nonneg_of_pos_of_pos {a b : ℤ} (ha : 0 < a) (hb : 0 < b) : 0 ≤
 /-- The `positivity` extension which identifies expressions of the form `a / b`,
 where `a` and `b` are integers. -/
 @[positivity (_ : ℤ) / (_ : ℤ)] def evalIntDiv : PositivityExt where eval {u α} _ pα? e := do
-  let some _ := pα? | throwError "not PartialOrder ℤ" --?
+  let some _ := pα? | throwError "not PartialOrder ℤ"
   match u, α, e with
   | 0, ~q(ℤ), ~q($a / $b) =>
     let ra ← core q(inferInstance) (some q(inferInstance)) a
@@ -329,7 +323,7 @@ theorem pow_zero_pos [Semiring α] [PartialOrder α] [IsOrderedRing α] [Nontriv
     (a : α) : 0 < a ^ 0 :=
   zero_lt_one.trans_le (pow_zero a).ge
 
-private theorem pow_zero_ne_zero [Semiring α] [Nontrivial α] (a : α) : a ^ 0 ≠ 0 :=
+theorem pow_zero_ne_zero [Semiring α] [Nontrivial α] (a : α) : a ^ 0 ≠ 0 :=
   pow_zero a ▸ one_ne_zero
 
 /-- The `positivity` extension which identifies expressions of the form `a ^ (0 : ℕ)`.
@@ -394,12 +388,10 @@ meta def evalPow : PositivityExt where eval {u α} zα pα? e := do
         trace[Tactic.positivity.failure] "{e.toMessageData}"
         let rα ← synthInstanceQ q(Semiring $α)
         let oα ← synthInstanceQ q(IsOrderedRing $α)
-        assumeInstancesCommute
         orElse (← catchNone (ofNonneg q(le_of_lt $pa) rα oα)) (ofNonzero q(ne_of_gt $pa) rα oα)
     | .nonnegative pa =>
         let sα ← synthInstanceQ q(Semiring $α)
         let oα ← synthInstanceQ q(IsOrderedRing $α)
-        assumeInstancesCommute
         ofNonneg q($pa) q($sα) q($oα)
     | .nonzero pa =>
         let sα ← synthInstanceQ q(Semiring $α)
@@ -442,13 +434,12 @@ meta def evalNatAbs : PositivityExt where eval {u α} _zα pα? e := do
   | 0, ~q(ℕ), ~q(Int.natAbs $a) =>
     let zα' : Q(Zero Int) := q(inferInstance)
     let pα' : Q(PartialOrder Int) := q(inferInstance)
+    assertInstancesCommute
     let ra ← core zα' pα' a
     match ra with
     | .positive pa =>
-      assertInstancesCommute
       pure (.positive q(int_natAbs_pos $pa))
     | .nonzero pa =>
-      assertInstancesCommute
       pure (.positive q(Int.natAbs_pos.mpr $pa))
     | .nonnegative _pa =>
       pure .none
@@ -578,7 +569,6 @@ meta def evalNatGCD : PositivityExt where eval {u α} z p e := do
 meta def evalNatLCM : PositivityExt where eval {u α} z p e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Nat.lcm $a $b) =>
-    assertInstancesCommute
     match ← core z p a with
     | .positive pa =>
       assertInstancesCommute
@@ -595,7 +585,6 @@ meta def evalNatLCM : PositivityExt where eval {u α} z p e := do
 meta def evalNatSqrt : PositivityExt where eval {u α} z p e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Nat.sqrt $n) =>
-    assumeInstancesCommute
     match ← core z p n with
     | .positive pa =>
       assumeInstancesCommute
@@ -657,7 +646,6 @@ meta def evalNNRatNum : PositivityExt where eval {u α} _ pα? e := do
     assumeInstancesCommute
     match ← core zα pα a with
     | .positive pa =>
-      assumeInstancesCommute
       return .positive q(NNRat.num_pos_of_pos $pa)
     | .nonzero pa => return .nonzero q(NNRat.num_ne_zero_of_ne_zero $pa)
     | _ => return .none
@@ -699,10 +687,8 @@ meta def evalRatNum : PositivityExt where eval {u α} _ pα? e := do
     assumeInstancesCommute
     match ← core zα pα a with
     | .positive pa =>
-      assumeInstancesCommute
       pure <| .positive q(num_pos_of_pos $pa)
     | .nonnegative pa =>
-      assumeInstancesCommute
       pure <| .nonnegative q(num_nonneg_of_nonneg $pa)
     | .nonzero pa => pure <| .nonzero q(num_ne_zero_of_ne_zero $pa)
     | .none => pure .none
@@ -732,7 +718,6 @@ meta def evalPosPart : PositivityExt where eval {u α} zα pα? e := do
     -- `catchNone`
     match ← catchNone (core zα pα a) with
     | .positive pf =>
-      assumeInstancesCommute
       return .positive q(posPart_pos $pf)
     | _ => return .nonnegative q(posPart_nonneg $a)
   | _ => throwError "not `posPart`"
@@ -752,11 +737,11 @@ meta def evalNegPart : PositivityExt where eval {u α} _ pα? e := do
 /-- Extension for the `positivity` tactic: nonnegative maps take nonnegative values. -/
 @[positivity DFunLike.coe _ _]
 meta def evalMap : PositivityExt where eval {_ β} _ pβ? e := do
-  let some pβ := pβ? | pure .none
+  let some _ := pβ? | pure .none
   let .app (.app _ f) a ← whnfR e
     | throwError "not ↑f · where f is of NonnegHomClass"
   let pa ← mkAppOptM ``apply_nonneg #[none, none, β, none, none, none, none, f, a]
-  pure (.nonnegative (pα := pβ) pa)
+  pure (.nonnegative pa)
 
 end Positivity
 
