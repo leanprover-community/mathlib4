@@ -35,7 +35,7 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
   have h2 : ∑ i ∈ range n, i < k := by
     suffices emultiplicity 2 (k ! : ℤ) = ↑(∑ i ∈ range n, i : ℕ) by
       rw [← Nat.cast_lt (α := ℕ∞), ← this]; change emultiplicity ((2 : ℕ) : ℤ) _ < _
-      simp_rw [Int.natCast_emultiplicity, emultiplicity_two_factorial_lt hk.lt.ne.symm]
+      simp_rw [Int.natCast_emultiplicity, emultiplicity_two_factorial_lt hk.ne']
     rw [h, Finset.emultiplicity_prod Int.prime_two, Nat.cast_sum]
     apply sum_congr rfl; intro i hi
     rw [emultiplicity_sub_of_gt, emultiplicity_pow_self_of_prime Int.prime_two]
