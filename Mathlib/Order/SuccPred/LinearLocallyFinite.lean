@@ -55,8 +55,7 @@ About `toZ`:
 
 -/
 
-@[expose] public section
-
+public section
 
 open Order
 
