@@ -91,11 +91,11 @@ theorem isNat_intOfNat : {n n' : ℕ} → IsNat n n' → IsNat (Int.ofNat n) n'
 `norm_num` successfully recognizes `n`, returning `n`. -/
 @[norm_num Int.ofNat _] def evalIntOfNat : NormNumExt where eval {u α} e := do
   let .app (.const ``Int.ofNat _) (n : Q(ℕ)) ← whnfR e | failure
-  haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q Int := ⟨⟩
+  have : u =QL 0 := ⟨⟩; have : $α =Q Int := ⟨⟩
   let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   let sℤ : Q(AddMonoidWithOne ℤ) := q(instAddMonoidWithOne)
   let ⟨n', p⟩ ← deriveNat n sℕ
-  haveI' x : $e =Q Int.ofNat $n := ⟨⟩
+  have x : $e =Q Int.ofNat $n := ⟨⟩
   return .isNat sℤ n' q(isNat_intOfNat $p)
 
 theorem isInt_negOfNat (m n : ℕ) (h : IsNat m n) : IsInt (Int.negOfNat m) (.negOfNat n) :=
@@ -122,8 +122,8 @@ theorem isNat_natAbs_neg : {n : ℤ} → {a : ℕ} → IsInt n (.negOfNat a) →
 `norm_num` successfully recognizes `n`. -/
 @[norm_num Int.natAbs (_ : ℤ)] def evalIntNatAbs : NormNumExt where eval {u α} e := do
   let .app (.const ``Int.natAbs _) (x : Q(ℤ)) ← whnfR e | failure
-  haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℕ := ⟨⟩
-  haveI' : $e =Q Int.natAbs $x := ⟨⟩
+  have : u =QL 0 := ⟨⟩; have : $α =Q ℕ := ⟨⟩
+  have : $e =Q Int.natAbs $x := ⟨⟩
   let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   match ← derive (u := .zero) x with
   | .isNat    _ a p => assumeInstancesCommute; return .isNat sℕ a q(isNat_natAbs_pos $p)
@@ -141,7 +141,7 @@ theorem isNat_natCast {R} [AddMonoidWithOne R] (n m : ℕ) :
   let .app n (a : Q(ℕ)) ← whnfR e | failure
   guard <|← withNewMCtxDepth <| isDefEq n q(Nat.cast (R := $α))
   let ⟨na, pa⟩ ← deriveNat a q(Nat.instAddMonoidWithOne)
-  haveI' : $e =Q $a := ⟨⟩
+  have : $e =Q $a := ⟨⟩
   return .isNat sα na q(isNat_natCast $a $na $pa)
 
 theorem isNat_intCast {R} [Ring R] (n : ℤ) (m : ℕ) :
@@ -158,11 +158,11 @@ theorem isintCast {R} [Ring R] (n m : ℤ) :
   match ← derive (α := q(ℤ)) a with
   | .isNat _ na pa =>
     assumeInstancesCommute
-    haveI' : $e =Q Int.cast $a := ⟨⟩
+    have : $e =Q Int.cast $a := ⟨⟩
     return .isNat _ na q(isNat_intCast $a $na $pa)
   | .isNegNat _ na pa =>
     assumeInstancesCommute
-    haveI' : $e =Q Int.cast $a := ⟨⟩
+    have : $e =Q Int.cast $a := ⟨⟩
     return .isNegNat _ na q(isintCast $a (.negOfNat $na) $pa)
   | _ => failure
 
@@ -252,7 +252,7 @@ def Result.add {u : Level} {α : Q(Type u)} {a b : Q($α)} (ra : Result q($a)) (
     let ⟨za, na, pa⟩ ← ra.toInt _; let ⟨zb, nb, pb⟩ ← rb.toInt _
     let zc := za + zb
     have c := mkRawIntLit zc
-    haveI' : Int.add $na $nb =Q $c := ⟨⟩
+    have : Int.add $na $nb =Q $c := ⟨⟩
     return .isInt rα c zc q(isInt_add (.refl _) $pa $pb (.refl $c))
   let rec nnratArm (dsα : Q(DivisionSemiring $α)) : MetaM (Result _) := do
     assumeInstancesCommute
@@ -299,7 +299,7 @@ def Result.add {u : Level} {α : Q(Type u)} {a b : Q($α)} (ra : Result q($a)) (
   | .isNat _ na pa, .isNat sα nb pb =>
     assumeInstancesCommute
     have c : Q(ℕ) := mkRawNatLit (na.natLit! + nb.natLit!)
-    haveI' : Nat.add $na $nb =Q $c := ⟨⟩
+    have : Nat.add $na $nb =Q $c := ⟨⟩
     return .isNat sα c q(isNat_add (.refl _) $pa $pb (.refl $c))
 
 attribute [local instance] monadLiftOptionMetaM in
@@ -341,14 +341,14 @@ def Result.neg {u : Level} {α : Q(Type u)} {a : Q($α)} (ra : Result q($a))
     let ⟨za, na, pa⟩ ← ra.toInt rα
     let zb := -za
     have b := mkRawIntLit zb
-    haveI' : Int.neg $na =Q $b := ⟨⟩
+    have : Int.neg $na =Q $b := ⟨⟩
     return .isInt rα b zb q(isInt_neg (.refl _) $pa (.refl $b))
   let ratArm (dα : Q(DivisionRing $α)) : Option (Result _) := do
     assumeInstancesCommute
     let ⟨qa, na, da, pa⟩ ← ra.toRat' dα
     let qb := -qa
     have nb := mkRawIntLit qb.num
-    haveI' : Int.neg $na =Q $nb := ⟨⟩
+    have : Int.neg $na =Q $nb := ⟨⟩
     return .isRat dα qb nb da q(isRat_neg (.refl _) $pa (.refl $nb))
   match ra with
   | .isBool _ .. => failure
@@ -365,7 +365,7 @@ such that `norm_num` successfully recognises `a`. -/
   let ra ← derive a
   let rα ← inferRing α
   let ⟨(_f_eq : $f =Q Neg.neg)⟩ ← withNewMCtxDepth <| assertDefEqQ _ _
-  haveI' _e_eq : $e =Q -$a := ⟨⟩
+  have _e_eq : $e =Q -$a := ⟨⟩
   ra.neg
 
 -- see note [norm_num lemma function equality]
@@ -393,7 +393,7 @@ def Result.sub {u : Level} {α : Q(Type u)} {a b : Q($α)} (ra : Result q($a)) (
     let ⟨za, na, pa⟩ ← ra.toInt rα; let ⟨zb, nb, pb⟩ ← rb.toInt rα
     let zc := za - zb
     have c := mkRawIntLit zc
-    haveI' : Int.sub $na $nb =Q $c := ⟨⟩
+    have : Int.sub $na $nb =Q $c := ⟨⟩
     return Result.isInt rα c zc q(isInt_sub (.refl _) $pa $pb (.refl $c))
   let ratArm (dα : Q(DivisionRing $α)) : MetaM (Result _) := do
     assumeInstancesCommute
@@ -428,7 +428,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   let rα ← inferRing α
   let ⟨(_f_eq : $f =Q HSub.hSub)⟩ ← withNewMCtxDepth <| assertDefEqQ _ _
   let ra ← derive a; let rb ← derive b
-  haveI' _e_eq : $e =Q $a - $b := ⟨⟩
+  have _e_eq : $e =Q $a - $b := ⟨⟩
   ra.sub rb
 
 -- see note [norm_num lemma function equality]
@@ -491,7 +491,7 @@ def Result.mul {u : Level} {α : Q(Type u)} {a b : Q($α)} (ra : Result q($a)) (
     let ⟨za, na, pa⟩ ← ra.toInt rα; let ⟨zb, nb, pb⟩ ← rb.toInt rα
     let zc := za * zb
     have c := mkRawIntLit zc
-    haveI' : Int.mul $na $nb =Q $c := ⟨⟩
+    have : Int.mul $na $nb =Q $c := ⟨⟩
     return .isInt rα c zc q(isInt_mul (.refl _) $pa $pb (.refl $c))
   let nnratArm (dsα : Q(DivisionSemiring $α)) : Option (Result _) := do
     assumeInstancesCommute
@@ -534,10 +534,10 @@ def Result.mul {u : Level} {α : Q(Type u)} {a b : Q($α)} (ra : Result q($a)) (
     nnratArm dsα
   | .isNegNat rα .., _ | _, .isNegNat rα .. => intArm rα
   | .isNat mα' na pa, .isNat mα nb pb => do
-    haveI' : $mα =Q by clear! $mα $mα'; apply AddCommMonoidWithOne.toAddMonoidWithOne := ⟨⟩
+    have : $mα =Q by clear! $mα $mα'; apply AddCommMonoidWithOne.toAddMonoidWithOne := ⟨⟩
     assumeInstancesCommute
     have c : Q(ℕ) := mkRawNatLit (na.natLit! * nb.natLit!)
-    haveI' : Nat.mul $na $nb =Q $c := ⟨⟩
+    have : Nat.mul $na $nb =Q $c := ⟨⟩
     return .isNat mα c q(isNat_mul (.refl _) $pa $pb (.refl $c))
 
 /-- The `norm_num` extension which identifies expressions of the form `a * b`,
@@ -547,8 +547,8 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   let sα ← inferSemiring α
   let ra ← derive a; let rb ← derive b
   guard <|← withNewMCtxDepth <| isDefEq f q(HMul.hMul (α := $α))
-  haveI' : $f =Q HMul.hMul := ⟨⟩
-  haveI' : $e =Q $a * $b := ⟨⟩
+  have : $f =Q HMul.hMul := ⟨⟩
+  have : $e =Q $a * $b := ⟨⟩
   ra.mul rb
 
 theorem isNNRat_div {α : Type u} [DivisionSemiring α] : {a b : α} → {cn : ℕ} → {cd : ℕ} →
@@ -573,7 +573,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ / _] def evalDiv : NormNumExt where eval {u α} e := do
   let .app (.app f (a : Q($α))) (b : Q($α)) ← whnfR e | failure
   let dsα ← inferDivisionSemiring α
-  haveI' : $e =Q $a / $b := ⟨⟩
+  have : $e =Q $a / $b := ⟨⟩
   guard <| ← withNewMCtxDepth <| isDefEq f q(HDiv.hDiv (α := $α))
   let rab ← derive (q($a * $b⁻¹) : Q($α))
   if let some ⟨qa, na, da, pa⟩ := rab.toNNRat' dsα then
@@ -643,12 +643,12 @@ such that `norm_num` successfully recognises `a`. -/
 @[norm_num Nat.succ _] def evalNatSucc : NormNumExt where eval {u α} e := do
   let .app f (a : Q(ℕ)) ← whnfR e | failure
   guard <|← withNewMCtxDepth <| isDefEq f q(Nat.succ)
-  haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℕ := ⟨⟩
-  haveI' : $e =Q Nat.succ $a := ⟨⟩
+  have : u =QL 0 := ⟨⟩; have : $α =Q ℕ := ⟨⟩
+  have : $e =Q Nat.succ $a := ⟨⟩
   let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   let ⟨na, pa⟩ ← deriveNat a sℕ
   have nc : Q(ℕ) := mkRawNatLit (na.natLit!.succ)
-  haveI' : $nc =Q ($na).succ := ⟨⟩
+  have : $nc =Q ($na).succ := ⟨⟩
   return .isNat sℕ nc q(isNat_natSucc $pa (.refl $nc))
 
 theorem isNat_natSub : {a b : ℕ} → {a' b' c : ℕ} →
@@ -662,12 +662,12 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   let .app (.app f (a : Q(ℕ))) (b : Q(ℕ)) ← whnfR e | failure
   -- We assert that the default instance for `HSub` is `Nat.sub` when the first parameter is `ℕ`.
   guard <|← withNewMCtxDepth <| isDefEq f q(HSub.hSub (α := ℕ))
-  haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℕ := ⟨⟩
-  haveI' : $e =Q $a - $b := ⟨⟩
+  have : u =QL 0 := ⟨⟩; have : $α =Q ℕ := ⟨⟩
+  have : $e =Q $a - $b := ⟨⟩
   let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   let ⟨na, pa⟩ ← deriveNat a sℕ; let ⟨nb, pb⟩ ← deriveNat b sℕ
   have nc : Q(ℕ) := mkRawNatLit (na.natLit! - nb.natLit!)
-  haveI' : Nat.sub $na $nb =Q $nc := ⟨⟩
+  have : Nat.sub $na $nb =Q $nc := ⟨⟩
   return .isNat sℕ nc q(isNat_natSub $pa $pb (.refl $nc))
 
 theorem isNat_natMod : {a b : ℕ} → {a' b' c : ℕ} →
@@ -679,14 +679,14 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num (_ : ℕ) % _] def evalNatMod :
     NormNumExt where eval {u α} e := do
   let .app (.app f (a : Q(ℕ))) (b : Q(ℕ)) ← whnfR e | failure
-  haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℕ := ⟨⟩
-  haveI' : $e =Q $a % $b := ⟨⟩
+  have : u =QL 0 := ⟨⟩; have : $α =Q ℕ := ⟨⟩
+  have : $e =Q $a % $b := ⟨⟩
   -- We assert that the default instance for `HMod` is `Nat.mod` when the first parameter is `ℕ`.
   guard <|← withNewMCtxDepth <| isDefEq f q(HMod.hMod (α := ℕ))
   let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   let ⟨na, pa⟩ ← deriveNat a sℕ; let ⟨nb, pb⟩ ← deriveNat b sℕ
   have nc : Q(ℕ) := mkRawNatLit (na.natLit! % nb.natLit!)
-  haveI' : Nat.mod $na $nb =Q $nc := ⟨⟩
+  have : Nat.mod $na $nb =Q $nc := ⟨⟩
   return .isNat sℕ nc q(isNat_natMod $pa $pb (.refl $nc))
 
 theorem isNat_natDiv : {a b : ℕ} → {a' b' c : ℕ} →
@@ -698,14 +698,14 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num (_ : ℕ) / _]
 def evalNatDiv : NormNumExt where eval {u α} e := do
   let .app (.app f (a : Q(ℕ))) (b : Q(ℕ)) ← whnfR e | failure
-  haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℕ := ⟨⟩
-  haveI' : $e =Q $a / $b := ⟨⟩
+  have : u =QL 0 := ⟨⟩; have : $α =Q ℕ := ⟨⟩
+  have : $e =Q $a / $b := ⟨⟩
   -- We assert that the default instance for `HDiv` is `Nat.div` when the first parameter is `ℕ`.
   guard <|← withNewMCtxDepth <| isDefEq f q(HDiv.hDiv (α := ℕ))
   let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   let ⟨na, pa⟩ ← deriveNat a sℕ; let ⟨nb, pb⟩ ← deriveNat b sℕ
   have nc : Q(ℕ) := mkRawNatLit (na.natLit! / nb.natLit!)
-  haveI' : Nat.div $na $nb =Q $nc := ⟨⟩
+  have : Nat.div $na $nb =Q $nc := ⟨⟩
   return .isNat sℕ nc q(isNat_natDiv $pa $pb (.refl $nc))
 
 theorem isNat_dvd_true : {a b : ℕ} → {a' b' : ℕ} →

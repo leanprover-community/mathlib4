@@ -48,7 +48,7 @@ to rat casts if the scientific notation is inherited from the one for rationals.
   let dα ← inferDivisionRing α
   guard <|← withNewMCtxDepth <| isDefEq f q(OfScientific.ofScientific (α := $α))
   assumeInstancesCommute
-  haveI' : $e =Q OfScientific.ofScientific $m $b $exp := ⟨⟩
+  have : $e =Q OfScientific.ofScientific $m $b $exp := ⟨⟩
   match b with
   | ~q(true) =>
     let rme ← derive (q(mkRat $m (10 ^ $exp)) : Q($α))

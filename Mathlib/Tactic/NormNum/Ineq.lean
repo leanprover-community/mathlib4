@@ -182,7 +182,7 @@ attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `a ≤ b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ ≤ _] def evalLE : NormNumExt where eval {v β} e := do
-  haveI' : v =QL 0 := ⟨⟩; haveI' : $β =Q Prop := ⟨⟩
+  have : v =QL 0 := ⟨⟩; have : $β =Q Prop := ⟨⟩
   let .app (.app f a) b ← whnfR e | failure
   let ⟨u, α, a⟩ ← inferTypeQ' a
   have b : Q($α) := b
@@ -198,7 +198,7 @@ where
   let e := q($a ≤ $b)
   let rec intArm : MetaM (Result e) := do
     let ⟨_ir, _, _i⟩ ← inferOrderedRing α
-    haveI' : $e =Q ($a ≤ $b) := ⟨⟩
+    have : $e =Q ($a ≤ $b) := ⟨⟩
     let ⟨za, na, pa⟩ ← ra.toInt q($_ir)
     let ⟨zb, nb, pb⟩ ← rb.toInt q($_ir)
     assumeInstancesCommute
@@ -212,7 +212,7 @@ where
       failure
   let rec ratArm : MetaM (Result e) := do
     let ⟨_if, _, _i⟩ ← inferLinearOrderedField α
-    haveI' : $e =Q ($a ≤ $b) := ⟨⟩
+    have : $e =Q ($a ≤ $b) := ⟨⟩
     let ⟨qa, na, da, pa⟩ ← ra.toRat' q(Field.toDivisionRing)
     let ⟨qb, nb, db, pb⟩ ← rb.toRat' q(Field.toDivisionRing)
     assumeInstancesCommute
@@ -230,9 +230,9 @@ where
   | .isNegNat _ .., _ | _, .isNegNat _ .. => intArm
   | .isNat ra na pa, .isNat rb nb pb =>
     let ⟨_, _, _i⟩ ← inferOrderedSemiring α
-    haveI' : $ra =Q by clear! $ra $rb; infer_instance := ⟨⟩
-    haveI' : $rb =Q by clear! $ra $rb; infer_instance := ⟨⟩
-    haveI' : $e =Q ($a ≤ $b) := ⟨⟩
+    have : $ra =Q by clear! $ra $rb; infer_instance := ⟨⟩
+    have : $rb =Q by clear! $ra $rb; infer_instance := ⟨⟩
+    have : $e =Q ($a ≤ $b) := ⟨⟩
     assumeInstancesCommute
     if na.natLit! ≤ nb.natLit! then
       let r : Q(Nat.ble $na $nb = true) := (q(Eq.refl true) : Expr)
@@ -247,7 +247,7 @@ attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `a < b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ < _] def evalLT : NormNumExt where eval {v β} e := do
-  haveI' : v =QL 0 := ⟨⟩; haveI' : $β =Q Prop := ⟨⟩
+  have : v =QL 0 := ⟨⟩; have : $β =Q Prop := ⟨⟩
   let .app (.app f a) b ← whnfR e | failure
   let ⟨u, α, a⟩ ← inferTypeQ' a
   have b : Q($α) := b
@@ -263,7 +263,7 @@ where
   let e := q($a < $b)
   let rec intArm : MetaM (Result e) := do
     let ⟨_ir, _, _i⟩ ← inferOrderedRing α
-    haveI' : $e =Q ($a < $b) := ⟨⟩
+    have : $e =Q ($a < $b) := ⟨⟩
     let ⟨za, na, pa⟩ ← ra.toInt q($_ir)
     let ⟨zb, nb, pb⟩ ← rb.toInt q($_ir)
     assumeInstancesCommute
@@ -284,7 +284,7 @@ where
     -/
     let ⟨_, _, _⟩ ← inferLinearOrderedSemifield α
     assumeInstancesCommute
-    haveI' : $e =Q ($a < $b) := ⟨⟩
+    have : $e =Q ($a < $b) := ⟨⟩
     let ⟨qa, na, da, pa⟩ ← ra.toNNRat' q(Semifield.toDivisionSemiring)
     let ⟨qb, nb, db, pb⟩ ← rb.toNNRat' q(Semifield.toDivisionSemiring)
     if qa < qb then
@@ -301,7 +301,7 @@ where
     -/
     let ⟨_, _, _i⟩ ← inferLinearOrderedField α
     assumeInstancesCommute
-    haveI' : $e =Q ($a < $b) := ⟨⟩
+    have : $e =Q ($a < $b) := ⟨⟩
     let ⟨qa, na, da, pa⟩ ← ra.toRat' q(Field.toDivisionRing)
     let ⟨qb, nb, db, pb⟩ ← rb.toRat' q(Field.toDivisionRing)
     if qa < qb then
@@ -319,9 +319,9 @@ where
   | .isNegNat _ .., _ | _, .isNegNat _ .. => intArm
   | .isNat ra na pa, .isNat rb nb pb =>
     let ⟨_, _, _i⟩ ← inferOrderedSemiring α
-    haveI' : $ra =Q by clear! $ra $rb; infer_instance := ⟨⟩
-    haveI' : $rb =Q by clear! $ra $rb; infer_instance := ⟨⟩
-    haveI' : $e =Q ($a < $b) := ⟨⟩
+    have : $ra =Q by clear! $ra $rb; infer_instance := ⟨⟩
+    have : $rb =Q by clear! $ra $rb; infer_instance := ⟨⟩
+    have : $e =Q ($a < $b) := ⟨⟩
     assumeInstancesCommute
     if na.natLit! < nb.natLit! then
       if let .some _i ← trySynthInstanceQ q(CharZero $α) then

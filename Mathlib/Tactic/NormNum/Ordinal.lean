@@ -39,7 +39,7 @@ lemma isNat_ordinalMul.{u} : ∀ {a b : Ordinal.{u}} {an bn rn : ℕ},
 def evalOrdinalMul : NormNumExt where
   eval {u α} e := do
     let some u' := u.dec | throwError "level is not succ"
-    haveI' : u =QL u' + 1 := ⟨⟩
+    have : u =QL u' + 1 := ⟨⟩
     match α, e with
     | ~q(Ordinal.{u'}), ~q(($a : Ordinal) * ($b : Ordinal)) =>
       let i : Q(AddMonoidWithOne Ordinal.{u'}) := q(inferInstance)
@@ -123,7 +123,7 @@ lemma isNat_ordinalSub.{u} : ∀ {a b : Ordinal.{u}} {an bn rn : ℕ},
 def evalOrdinalSub : NormNumExt where
   eval {u α} e := do
     let some u' := u.dec | throwError "level is not succ"
-    haveI' : u =QL u' + 1 := ⟨⟩
+    have : u =QL u' + 1 := ⟨⟩
     match α, e with
     | ~q(Ordinal.{u'}), ~q(($a : Ordinal) - ($b : Ordinal)) =>
       let i : Q(AddMonoidWithOne Ordinal.{u'}) := q(inferInstance)
@@ -147,7 +147,7 @@ lemma isNat_ordinalDiv.{u} : ∀ {a b : Ordinal.{u}} {an bn rn : ℕ},
 def evalOrdinalDiv : NormNumExt where
   eval {u α} e := do
     let some u' := u.dec | throwError "level is not succ"
-    haveI' : u =QL u' + 1 := ⟨⟩
+    have : u =QL u' + 1 := ⟨⟩
     match α, e with
     | ~q(Ordinal.{u'}), ~q(($a : Ordinal) / ($b : Ordinal)) =>
       let i : Q(AddMonoidWithOne Ordinal.{u'}) := q(inferInstance)
@@ -171,7 +171,7 @@ lemma isNat_ordinalMod.{u} : ∀ {a b : Ordinal.{u}} {an bn rn : ℕ},
 def evalOrdinalMod : NormNumExt where
   eval {u α} e := do
     let some u' := u.dec | throwError "level is not succ"
-    haveI' : u =QL u' + 1 := ⟨⟩
+    have : u =QL u' + 1 := ⟨⟩
     match α, e with
     | ~q(Ordinal.{u'}), ~q(($a : Ordinal) % ($b : Ordinal)) =>
       let i : Q(AddMonoidWithOne Ordinal.{u'}) := q(inferInstance)
@@ -191,7 +191,7 @@ lemma isNat_ordinalOPow.{u} : ∀ {a b : Ordinal.{u}} {an bn rn : ℕ},
 def evalOrdinalOPow : NormNumExt where
   eval {u α} e := do
     let some u' := u.dec | throwError "level is not succ"
-    haveI' : u =QL u' + 1 := ⟨⟩
+    have : u =QL u' + 1 := ⟨⟩
     match α, e with
     | ~q(Ordinal.{u'}), ~q(($a : Ordinal) ^ ($b : Ordinal)) =>
       let i : Q(AddMonoidWithOne Ordinal.{u'}) := q(inferInstance)
@@ -215,7 +215,7 @@ lemma isNat_ordinalNPow.{u} : ∀ {a : Ordinal.{u}} {b an bn rn : ℕ},
 def evalOrdinalNPow : NormNumExt where
   eval {u α} e := do
     let some u' := u.dec | throwError "level is not succ"
-    haveI' : u =QL u' + 1 := ⟨⟩
+    have : u =QL u' + 1 := ⟨⟩
     match α, e with
     | ~q(Ordinal.{u'}), ~q(($a : Ordinal) ^ ($b : ℕ)) =>
       let i : Q(AddMonoidWithOne Ordinal.{u'}) := q(inferInstance)

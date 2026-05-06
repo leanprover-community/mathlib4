@@ -69,13 +69,13 @@ and `b ≤ n`. Returns the list of subgoals `?gi : a ≡ i [ZMOD n] → p`.
 partial def proveOnModCases {u : Level} (n : Q(ℕ)) (a : Q(ℤ)) (b : Q(ℕ)) (p : Q(Sort u)) :
     MetaM (Q(OnModCases $n $a $b $p) × List MVarId) := do
   if n.natLit! ≤ b.natLit! then
-    haveI' : $b =Q $n := ⟨⟩
+    have : $b =Q $n := ⟨⟩
     pure (q(onModCases_stop $p $n $a), [])
   else
     let ty := q($a ≡ OfNat.ofNat $b [ZMOD OfNat.ofNat $n] → $p)
     let g ← mkFreshExprMVarQ ty
     have b1 : Q(ℕ) := mkRawNatLit (b.natLit! + 1)
-    haveI' : $b1 =Q ($b).succ := ⟨⟩
+    have : $b1 =Q ($b).succ := ⟨⟩
     let (pr, acc) ← proveOnModCases n a b1 p
     pure (q(onModCases_succ $b $g $pr), g.mvarId! :: acc)
 

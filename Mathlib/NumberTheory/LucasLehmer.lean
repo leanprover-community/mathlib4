@@ -706,14 +706,14 @@ meta def evalLucasLehmerTest : NormNumExt where eval {_ _} e := do
   let np := ep.natLit!
   unless 1 < np do
     failure
-  haveI' h1ltp : Nat.blt 1 $ep =Q true := ⟨⟩
+  have h1ltp : Nat.blt 1 $ep =Q true := ⟨⟩
   if sModNatTR (2 ^ np - 1) (np - 2) = 0 then
-    haveI' hs : sModNatTR (2 ^ $ep - 1) ($ep - 2) =Q 0 := ⟨⟩
+    have hs : sModNatTR (2 ^ $ep - 1) ($ep - 2) =Q 0 := ⟨⟩
     have pf : Q(LucasLehmerTest $ep) := q(testTrueHelper $ep $h1ltp $hs)
     have pf' : Q(LucasLehmerTest $p) := q(isNat_lucasLehmerTest $hp $pf)
     return .isTrue pf'
   else
-    haveI' hs : Nat.ble 1 (sModNatTR (2 ^ $ep - 1) ($ep - 2)) =Q true := ⟨⟩
+    have hs : Nat.ble 1 (sModNatTR (2 ^ $ep - 1) ($ep - 2)) =Q true := ⟨⟩
     have pf : Q(¬ LucasLehmerTest $ep) := q(testFalseHelper $ep $h1ltp $hs)
     have pf' : Q(¬ LucasLehmerTest $p) := q(isNat_not_lucasLehmerTest $hp $pf)
     return .isFalse pf'

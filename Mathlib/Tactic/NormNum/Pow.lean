@@ -183,8 +183,8 @@ theorem isNNRat_pow {α} [Semiring α] {f : α → ℕ → α} {a : α} {an cn :
 def evalPow.core {u : Level} {α : Q(Type u)} (e : Q(«$α»)) (f : Q(«$α» → ℕ → «$α»)) (a : Q(«$α»))
     (b nb : Q(ℕ)) (pb : Q(IsNat «$b» «$nb»)) (sα : Q(Semiring «$α»)) (ra : Result a) :
     OptionT CoreM (Result e) := do
-  haveI' : $e =Q $a ^ $b := ⟨⟩
-  haveI' : $f =Q HPow.hPow := ⟨⟩
+  have : $e =Q $a ^ $b := ⟨⟩
+  have : $f =Q HPow.hPow := ⟨⟩
   match ra with
   | .isBool .. => failure
   | .isNat sα na pa =>
@@ -218,8 +218,8 @@ def evalPow : NormNumExt where eval {u α} e := do
   let sα ← inferSemiring α
   let ra ← derive a
   guard <|← withDefault <| withNewMCtxDepth <| isDefEq f q(HPow.hPow (α := $α))
-  haveI' : $e =Q $a ^ $b := ⟨⟩
-  haveI' : $f =Q HPow.hPow := ⟨⟩
+  have : $e =Q $a ^ $b := ⟨⟩
+  have : $f =Q HPow.hPow := ⟨⟩
   let .some r ←
     liftM <| OptionT.run (evalPow.core q($e) q($f) q($a) q($b) q($nb) q($pb) q($sα) ra) | failure
   return r
