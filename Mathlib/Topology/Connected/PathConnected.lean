@@ -139,6 +139,8 @@ lemma isQuotientMap_mk : IsQuotientMap (ZerothHomotopy.mk (X := X)) :=
 instance inhabited : Inhabited (ZerothHomotopy ℝ) :=
   ⟨@Quotient.mk' ℝ (pathSetoid ℝ) 0⟩
 
+instance [Nonempty X] : Nonempty (ZerothHomotopy X) := ⟨.mk (Classical.arbitrary _)⟩
+
 section
 
 variable {T : Type*} (f : X → T) (hf : ∀ ⦃x y : X⦄ (_ : Path x y), f x = f y)
@@ -562,6 +564,9 @@ variable [PathConnectedSpace X]
 /-- Use path-connectedness to build a path between two points. -/
 def somePath (x y : X) : Path x y :=
   Nonempty.some (joined x y)
+
+instance [PathConnectedSpace X] : Subsingleton (ZerothHomotopy X) :=
+  (pathConnectedSpace_iff_zerothHomotopy.1 inferInstance).2
 
 end PathConnectedSpace
 
