@@ -213,6 +213,17 @@ theorem lift_npow (g : ∀ i, H i) (h) (x : DirectLimit G f) (n : ℕ) :
     DirectLimit.lift f (g ·) h (x ^ n) = DirectLimit.lift f (g ·) h x ^ n :=
   x.induction _ fun i x ↦ by simp_rw [npow_def, lift_def, map_pow (g i)]
 
+/-- A monoid hom into the direct limit obtained by picking an arbitrary stage from a
+family of monoid homs to the stages of the directed system. No compatibility condition is assumed.
+If the family of maps into the directed system is compatible with the maps of the directed system,
+then more can be done.
+-/
+@[simps, to_additive]
+def map₀MonoidHom (x : ∀ i, MonoidHom C (G i)) : MonoidHom C (DirectLimit G f) where
+  toFun r := map₀ _ fun _ ↦ x _ r
+  map_one' := by rw [map₀, map_one, one_def]
+  map_mul' r s := by simp_rw [map₀, mul_def, map_mul]
+
 end Monoid
 
 @[to_additive] instance [∀ i, CommMonoid (G i)] [∀ i j h, MonoidHomClass (T h) (G i) (G j)] :
@@ -433,6 +444,31 @@ instance [∀ i, NonAssocSemiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G
 instance [∀ i, Semiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)] :
     Semiring (DirectLimit G f) where
 
+/-TODO: this could more generally be done for non-associative semirings, but would need to either
+repeat the definitions for map_one' and map_mul' from map₀MonoidHom,
+or maybe define map₀MulHom and map₀OneHom.
+-/
+/-- A ring hom into the direct limit obtained by picking an arbitrary stage from a
+family of ring homs to the stages of the directed system. No compatibility condition is assumed.
+If the family of maps into the directed system is compatible with the maps of the directed system,
+then more can be done.
+-/
+@[simps]
+def map₀RingHom [Semiring R] [∀ i, Semiring (G i)]
+    [∀ i j h, RingHomClass (T h) (G i) (G j)]
+    (x : ∀ i, R →+* G i) : R →+* DirectLimit G f where
+  toFun r := map₀ _ fun _ ↦ x _ r
+  __ := map₀AddMonoidHom (f := f) (fun i => (x i).toAddMonoidHom)
+  __ := map₀MonoidHom (f := f) (fun i => (x i).toMonoidHom)
+
+lemma map₀RingHom_def [Semiring R] [∀ i, Semiring (G i)]
+    [∀ i j h, RingHomClass (T h) (G i) (G j)]
+    (x : ∀ i, R →+* G i) (compat : ∀ r i j h, (f i j h) ((x i) r) = (x j) r) (i : ι) (r : R) :
+    map₀RingHom x r
+    = (⟦⟨i, x i r⟩⟧ : DirectLimit G f) := by
+  rw [map₀RingHom_apply]
+  apply map₀_def (compat := compat r)
+
 instance [∀ i, NonUnitalNonAssocCommSemiring (G i)]
     [∀ i j h, NonUnitalRingHomClass (T h) (G i) (G j)] :
     NonUnitalNonAssocCommSemiring (DirectLimit G f) where
@@ -580,23 +616,13 @@ variable [CommSemiring R]
 variable [∀ i, Semiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)]
 variable [∀ i, Algebra R (G i)] [∀ i j h, AlgHomClass (T h) R (G i) (G j)]
 
-/-- The algebra map for the DirectLimit of a directed system of algebras -/
-def algebraMapAux : R →+* DirectLimit G f where
-  toFun r := map₀ _ fun _ ↦ algebraMap R _ r
-  map_one' := by rw [map₀, map_one, one_def]
-  map_mul' r s := by simp_rw [map₀, mul_def, map_mul]
-  map_add' r s :=  by simp_rw [map₀, add_def, map_add]
-  map_zero' := by rw [map₀, map_zero, zero_def]
-
 lemma algebraMapAux_def (i : ι) (r : R) :
-    algebraMapAux (R:=R) r = (⟦⟨i, algebraMap R (G i) r⟩⟧ : DirectLimit G f) := by
-  simp only [algebraMapAux, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
-  apply map₀_def
-  intro i j hij
-  rw [AlgHomClass.commutes]
+    map₀RingHom (fun i ↦ algebraMap R (G i)) r
+    = (⟦⟨i, algebraMap R (G i) r⟩⟧ : DirectLimit G f) :=
+  map₀RingHom_def _ (fun r i j hij => by rw[AlgHomClass.commutes]) i r
 
 instance : Algebra R (DirectLimit G f) where
-  algebraMap := algebraMapAux
+  algebraMap := map₀RingHom (fun i ↦ algebraMap R (G i))
   commutes' r := DirectLimit.induction f fun i _ ↦ by
     rw [algebraMapAux_def i, mul_def, mul_def, Algebra.commutes]
   smul_def' r := DirectLimit.induction _ fun i _ => by
