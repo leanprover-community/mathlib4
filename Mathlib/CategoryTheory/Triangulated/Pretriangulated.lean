@@ -470,8 +470,9 @@ lemma isIso₂_of_isIso₁₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ di
       have eq := ((invRotate C).map φ).comm₁
       dsimp only [invRotate] at eq
       rw [← cancel_mono φ.hom₁, assoc, assoc, eq, IsIso.inv_hom_id_assoc, hh]
-    rw [← Triangle.invRotate_mor₂ T, assoc,
-      comp_distTriang_mor_zero₁₂ _ (inv_rot_of_distTriang _ hT), comp_zero]
+    dsimp
+    rw [assoc, dsimp% comp_distTriang_mor_zero₁₂ _ (inv_rot_of_distTriang _ hT),
+      comp_zero]
   refine isIso_of_yoneda_map_bijective _ (fun A => ⟨?_, ?_⟩)
   · intro f₁ f₂ h
     simpa only [← cancel_mono φ.hom₂] using h
