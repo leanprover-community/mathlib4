@@ -20,15 +20,9 @@ living in the `Function` namespace so that dot notation is available.
   `fun i ↦ (f i, g i)`.
 * `Function.fstComp`, `Function.sndComp`: the two components of a function `h : ∀ i, α i × β i`,
   inverse to `Function.prod`.
-* `Function.diag` (notation `△ᶠ`): the diagonal `a ↦ (a, a)`, i.e. `id ×ᶠ id`.
+* `Function.diag` with notation `△`, so that the diagonal `△(a) = (a, a)`.
 * `Function.prodMap`: `Prod.map` re-exposed under `Function` so that `f.prodMap g` works via dot
   notation.
-
-## Notation
-
-The infix notation `×ᶠ` for `Function.prod` pairs two functions.
-The prefix `△ᶠ` notation for `Function.diag` depicts the fan-out
-shape of `a ↦ (a, a)`: apex-up for one-to-two.
 
 This file should not depend on anything defined in Mathlib (other than notation), so that it can
 be upstreamed to Batteries or the Lean standard library easily.
@@ -189,13 +183,13 @@ end
 /-- The diagonal map into `Prod`. -/
 @[inline] def diag {α} : α → α × α := id ×ᶠ id
 
-@[inherit_doc] prefix:max "△ᶠ" => diag
+@[inherit_doc] notation:max "△(" x:max ")" => diag x
 
 section
 
 variable {α β γ} (f : α → β) (g : α → γ) (a b : α)
 
-@[simp, grind =] theorem diag_apply : △ᶠa = (a, a) := rfl
+@[simp, grind =] theorem diag_apply : △(a) = (a, a) := rfl
 
 @[simp] theorem id_prod_id : id ×ᶠ id = diag (α := α) := rfl
 @[simp] theorem fstComp_diag : fstComp (diag (α := α)) = id := rfl
@@ -207,12 +201,12 @@ variable {α β γ} (f : α → β) (g : α → γ) (a b : α)
 
 theorem injective_diag : Injective (α := α) diag := fun _ _ => congrArg Prod.fst
 
-theorem fst_diag_eq_snd_diag : (△ᶠa).1 = (△ᶠa).2 := rfl
+theorem fst_diag_eq_snd_diag : △(a).1 = △(a).2 := rfl
 
-theorem eq_diag_fst_of_fst_eq_snd {p : α × α} (hp : p.1 = p.2) : p = △ᶠp.1 := by
+theorem eq_diag_fst_of_fst_eq_snd {p : α × α} (hp : p.1 = p.2) : p = △(p.1) := by
   simp [Prod.ext_iff, hp]
 
-theorem eq_diag_snd_of_fst_eq_snd {p : α × α} (hp : p.1 = p.2) : p = △ᶠp.2 := by
+theorem eq_diag_snd_of_fst_eq_snd {p : α × α} (hp : p.1 = p.2) : p = △(p.2) := by
   simp [Prod.ext_iff, hp]
 
 @[simp] theorem swap_comp_diag : Prod.swap ∘ diag = diag (α := α) := rfl
