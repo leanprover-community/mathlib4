@@ -220,7 +220,8 @@ theorem primeFactors_lcmUpto (n : ℕ) : primeFactors (lcmUpto n) = primesLE n :
   simp_all only [mem_filter, mem_range, Order.lt_add_one_iff, lcmUpto, mem_primeFactors, ne_eq,
     Finset.lcm_eq_zero_iff, mem_Icc, id_eq, exists_eq_right, nonpos_iff_eq_zero, one_ne_zero,
     _root_.zero_le, and_true, not_false_eq_true, true_and]
-  convert dvd_lcm (b := p) ?_ <;> simp_all [h.2.one_le]
+  apply dvd_lcm (b := p) 
+  simp_all [h.2.one_le]
 
 theorem primorial_dvd_lcmUpto (n : ℕ) : primorial n ∣ lcmUpto n := by
   simp only [primorial]
