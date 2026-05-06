@@ -933,6 +933,14 @@ def subringCongr (h : s = t) : s ≃+* t :=
     map_mul' := fun _ _ => rfl
     map_add' := fun _ _ => rfl }
 
+@[simp]
+theorem subringCongr_symm (h : s = t) :
+    (subringCongr h).symm = subringCongr h.symm := rfl
+
+@[simp]
+theorem coe_subringCongr_apply (h : s = t) (x : s) :
+    (subringCongr h x).val = x.val := rfl
+
 /-- Restrict a ring homomorphism with a left inverse to a ring isomorphism to its
 `RingHom.range`. -/
 def ofLeftInverse {g : S → R} {f : R →+* S} (h : Function.LeftInverse g f) : R ≃+* f.range :=
