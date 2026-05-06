@@ -32,7 +32,9 @@ assert_not_exists Finset Module Submonoid FloorRing
 
 /-- The type `ℝ` of real numbers.
 It is constructed as equivalence classes of Cauchy sequences of rational numbers. -/
-def Real := CauSeq.Completion.Cauchy (abs : ℚ → ℚ)
+structure Real where private ofCauchy ::
+  /-- The underlying Cauchy completion -/
+  private cauchy : CauSeq.Completion.Cauchy (abs : ℚ → ℚ)
 
 @[inherit_doc]
 notation "ℝ" => Real
@@ -45,16 +47,10 @@ variable {x : ℝ}
 
 /-- The real numbers are isomorphic to the quotient of Cauchy sequences on the rationals. -/
 private def equivCauchy : ℝ ≃ CauSeq.Completion.Cauchy (abs : ℚ → ℚ) :=
-  Equiv.refl _
+  ⟨Real.cauchy, Real.ofCauchy, fun _ ↦ rfl, fun _ ↦ rfl⟩
 
-private def ofCauchy : CauSeq.Completion.Cauchy (abs : ℚ → ℚ) → ℝ :=
-  equivCauchy.symm
-
-private def cauchy : ℝ → CauSeq.Completion.Cauchy (abs : ℚ → ℚ) :=
-  equivCauchy
-
-private theorem ext_cauchy_iff {x y : Real} : x = y ↔ x.cauchy = y.cauchy := by
-  rw [cauchy, equivCauchy.injective.eq_iff]
+private theorem ext_cauchy_iff {x y : Real} : x = y ↔ x.cauchy = y.cauchy :=
+  equivCauchy.injective.eq_iff.symm
 
 private theorem ext_cauchy {x y : Real} : x.cauchy = y.cauchy → x = y :=
   ext_cauchy_iff.2
@@ -213,14 +209,14 @@ instance : Inhabited ℝ :=
 
 /-- Make a real number from a Cauchy sequence of rationals (by taking the equivalence class). -/
 private def mk (x : CauSeq ℚ abs) : ℝ :=
-  CauSeq.Completion.mk x
+  ⟨CauSeq.Completion.mk x⟩
 
 private theorem mk_eq {f g : CauSeq ℚ abs} : mk f = mk g ↔ f ≈ g :=
   ext_cauchy_iff.trans CauSeq.Completion.mk_eq
 
 /-- The less-than relation on real numbers. -/
 protected def lt (x y : ℝ) : Prop :=
-  (Quotient.liftOn₂ x y (· < ·)) fun _ _ _ _ hf hg ↦
+  (Quotient.liftOn₂ x.cauchy y.cauchy (· < ·)) fun _ _ _ _ hf hg ↦
     propext <|
       ⟨fun h => lt_of_eq_of_lt (Setoid.symm hf) (lt_of_lt_of_eq h hg), fun h =>
         lt_of_eq_of_lt hf (lt_of_lt_of_eq h (Setoid.symm hg))⟩
@@ -266,6 +262,7 @@ private theorem mk_le {f g : CauSeq ℚ abs} : mk f ≤ mk g ↔ f ≤ g := by
 
 @[elab_as_elim]
 private theorem ind_mk {C : ℝ → Prop} (x : ℝ) (h : ∀ y, C (mk y)) : C x := by
+  obtain ⟨x⟩ := x
   induction x using Quot.induction_on
   exact h _
 
@@ -329,7 +326,7 @@ instance instIsOrderedCancelAddMonoid : IsOrderedCancelAddMonoid ℝ :=
 
 /-- The supremum of two real numbers. -/
 protected def sup (x y : ℝ) : ℝ :=
-  Quotient.map₂ (· ⊔ ·) (fun _ _ hx _ _ hy ↦ sup_equiv_sup hx hy) x y
+  ⟨Quotient.map₂ (· ⊔ ·) (fun _ _ hx _ _ hy ↦ sup_equiv_sup hx hy) x.cauchy y.cauchy⟩
 
 instance : Max ℝ := ⟨Real.sup⟩
 
@@ -339,7 +336,7 @@ private theorem mk_sup (a b) : (mk (a ⊔ b) : ℝ) = mk a ⊔ mk b :=
 
 /-- The infimum of two real numbers. -/
 protected def inf (x y : ℝ) : ℝ :=
-  Quotient.map₂ (· ⊓ ·) (fun _ _ hx _ _ hy ↦ inf_equiv_inf hx hy) x y
+  ⟨Quotient.map₂ (· ⊓ ·) (fun _ _ hx _ _ hy ↦ inf_equiv_inf hx hy) x.cauchy y.cauchy⟩
 
 instance : Min ℝ := ⟨Real.inf⟩
 
