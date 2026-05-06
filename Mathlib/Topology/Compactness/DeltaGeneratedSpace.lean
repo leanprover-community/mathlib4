@@ -18,7 +18,11 @@ locally path-connected, sequential and in particular compactly generated.
 
 See https://ncatlab.org/nlab/show/Delta-generated+topological+space.
 
-Adapted from `Mathlib/Topology/Compactness/CompactlyGeneratedSpace.lean`.
+The notions defined in this file (see also the file
+`Mathlib/Topology/Category/DeltaGenerated.lean` for the category `DeltaGenerated`)
+are a particular case of the notion of `X`-generated topological spaces where
+`X` is a family of topological spaces (see the file
+`Mathlib/Topology/Convenient/GeneratedBy.lean`.)
 
 ## TODO
 * All locally path-connected first-countable spaces are delta-generated - in particular, all normed
@@ -46,8 +50,8 @@ abbrev of : Type _ := WithGeneratedByTopology (fun n ↦ Fin n → ℝ) Y
 /-- Delta-generated spaces are locally path-connected. -/
 instance [DeltaGeneratedSpace X] :
     LocPathConnectedSpace X := by
-  rw [← IsGeneratedBy.generatedBy_eq (X := fun n ↦ Fin n → ℝ) (Y := X)]
-  rw [generatedBy_eq_coinduced]
+  rw [← IsGeneratedBy.generatedBy_eq (X := fun n ↦ Fin n → ℝ) (Y := X),
+    generatedBy_eq_coinduced]
   exact LocPathConnectedSpace.coinduced _
 
 /-- Delta-generated spaces are sequential. -/

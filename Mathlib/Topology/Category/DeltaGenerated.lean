@@ -17,10 +17,12 @@ The category of delta-generated spaces.
 
 See https://ncatlab.org/nlab/show/Delta-generated+topological+space.
 
-Adapted from `Mathlib/Topology/Category/CompactlyGenerated.lean`.
+This is a particular case of the construction in the file
+`Mathlib/Topology/Convenient/Category.Lean` for categories of `X`-generated
+spaces where `X` is a family of topological spaces.
 
 ## TODO
-* `DeltaGenerated` is Cartesian closed.
+* `DeltaGenerated` is Cartesian closed (@joelriou).
 -/
 
 @[expose] public section
@@ -48,7 +50,7 @@ abbrev deltaGeneratedToTop : DeltaGenerated.{u} ⥤ TopCat.{u} :=
   GeneratedByTopCat.toTopCat
 
 /-- `deltaGeneratedToTop` is fully faithful. -/
-def fullyFaithfulDeltaGeneratedToTop : deltaGeneratedToTop.{u}.FullyFaithful :=
+abbrev fullyFaithfulDeltaGeneratedToTop : deltaGeneratedToTop.{u}.FullyFaithful :=
   GeneratedByTopCat.fullyFaithfulToTopCat _
 
 @[deprecated (since := "2026-04-23")] alias topToDeltaGenerated := TopCat.toDeltaGenerated
