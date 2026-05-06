@@ -1,50 +1,399 @@
 name: ci dev
 
+# This branch overrides ci_dev.yml's normal "delegate to build_template" logic.
+# Instead it runs a one-shot dispatchable lakeprof capture for the build-time
+# experiments that need data not derivable from the existing 18-core Apple-Silicon
+# clean trace (mathlib-clean.log):
+#
+#   - experiment 06 stage 1     (scheduler runner-trace; recalibrate self-times Apple-Silicon → Xeon+KVM)
+#   - experiment 04             (Analysis-CP self-times under Xeon + KVM)
+#   - experiment 05             (weekly clean-build CI — this workflow IS the capture)
+#   - experiment 02 (optional)  (rebuild cost after foundational edit, via incremental run)
+#
+# Restoring the original behavior is a `git revert` of the commit that introduced this.
+#
+# Concurrency control is intentionally NOT exposed: Lake 5.0.0-src has no `-j`
+# flag, no LAKE_NUM_JOBS env var, and Lake's outer parallelism IS Lean's task
+# scheduler (Lake is itself a Lean program). The runtime env var
+# LEAN_NUM_THREADS *can* be used to cap that pool, but for CPU-bound builds
+# oversubscription is essentially kernel-scheduler noise — the wall-clock
+# captured at runner default is the right input for off-runner re-simulation
+# at any p (scheduler_sim.py / cache_hit_sweep.py both take a target p).
+
 on:
   workflow_dispatch:
     inputs:
-      tools_branch_ref:
-        description: ref for tools checkout (defaults to 'this commit')
-        required: false
-        type: string
-        default: ''
       pr_branch_ref:
-        description: ref for building-branch checkout (defaults to 'this commit')
+        description: ref for mathlib4 checkout (defaults to 'this commit')
         required: false
         type: string
         default: ''
-      run_post_ci:
-        description: Run the post-CI job?
+      record_incremental:
+        description: After the clean build, touch a module and rebuild under lakeprof? (validates cache-hit sweep + gives experiment 02 a real data point)
         required: false
         type: boolean
-        default: false # We shouldn't need this job in typical experiments
-      mathlib_ci_ref:
-        description: ref for mathlib-ci checkout (defaults to 'master')
+        default: false
+      incremental_target:
+        description: file to touch for the incremental run (high-leverage module preferred)
         required: false
         type: string
-        default: 'master'
+        default: 'Mathlib/Order/Lattice.lean'
+      lakeprof_ref:
+        description: lakeprof commit ref to fetch (default main)
+        required: false
+        type: string
+        default: 'main'
 
-# Limit permissions for GITHUB_TOKEN for the entire workflow
+# Same minimal-permission posture as the original ci_dev.yml.
 permissions:
   contents: read
   id-token: write
-  # By default let's remove this permission (which is present in the other build pipelines)
-  # from the CI experimentation runs to avoid unwitting side effects
-  # pull-requests: write
+
+env:
+  # Inherit build_template's stance: don't let Lake fetch from its cache; we want a clean build.
+  LAKE_NO_CACHE: 'true'
+  LAKEPROF_VENV: '/home/lean/.lakeprof-venv'
 
 jobs:
-  build:
-    name: ci (dev branch)
-    # For sanity and intentionality, let's only trigger this from branches ci-dev/*
+  capture:
+    name: ci (dev branch) — lakeprof capture
+    # Same gating as the original ci_dev.yml.
     if: ${{ github.repository == 'leanprover-community/mathlib4' && github.ref_type == 'branch' && startsWith(github.ref_name, 'ci-dev/') }}
-    uses: ./.github/workflows/build_template.yml
-    with:
-      concurrency_group: ${{ github.workflow }}-${{ github.ref }}
-      # Use the tools from 'this branch', as our changes in the tools might be relevant for experiments
-      tools_branch_ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || github.sha }}
-      pr_branch_ref: ${{ inputs.pr_branch_ref != '' && inputs.pr_branch_ref || github.sha }}
-      run_post_ci: ${{ inputs.run_post_ci }}
-      mathlib_ci_ref: ${{ inputs.mathlib_ci_ref }}
-      cache_application_id: ${{ vars.CACHE_NON_MASTER_WRITER_AZURE_APP_ID }}
-      runs_on: pr
-    secrets: inherit
+    runs-on: pr
+    timeout-minutes: 240  # clean Mathlib build is ~30 min on Xeon+KVM; +25 min if incremental
+    defaults:
+      run:
+        # We deliberately do NOT use landrun here for the build step. Reasoning:
+        #  - Same trust model as the original ci_dev.yml: the dispatching user is restricted via
+        #    the ci-dev/* gate, and the original ci_dev.yml only fronts build_template.yml whose
+        #    landrun is for the PR build's untrusted Lean elaboration. Here we are intentionally
+        #    instrumenting the build pipeline.
+        #  - lakeprof.record needs to write its log to the workspace; under build_template's landrun
+        #    invocation only pr-branch/.lake/ is RW, which would force log-shuffling steps.
+        # If you want strict landrun parity, see build_template.yml's `defaults` block — wrap the
+        # `lake build` step there and copy logs out afterwards.
+        shell: bash -euxo pipefail {0}
+
+    steps:
+      # --------------------------------------------------------------------- #
+      # Setup
+      # --------------------------------------------------------------------- #
+
+      - name: cleanup workspace
+        run: |
+          if ! find . -mindepth 1 -exec rm -rf -- {} +; then
+            sleep 5
+            find . -mindepth 1 -exec rm -rf -- {} +
+          fi
+          mkdir -p artifact
+
+      - name: Setup jq
+        uses: dcarbone/install-jq-action@b7ef57d46ece78760b4019dbc4080a1ba2a40b45 # v3.2.0
+
+      - name: Checkout mathlib4 (pr-branch)
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ inputs.pr_branch_ref != '' && inputs.pr_branch_ref || github.sha }}
+          fetch-depth: 1
+          path: pr-branch
+
+      # Mirror build_template.yml's elan installation. We avoid `leanprover/lean-action`
+      # for the same reason the canonical workflow does: no Lean execution outside
+      # our control.
+      - name: Install elan
+        run: |
+          set -o pipefail
+          curl -o elan-init.sh -sSfL https://elan.lean-lang.org/elan-init.sh
+          chmod +x elan-init.sh
+          ./elan-init.sh -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+
+      - name: Pin Lean toolchain
+        id: toolchain
+        run: |
+          cd pr-branch
+          # Reading lean-toolchain triggers elan to download the toolchain.
+          elan show
+          echo "lean_toolchain=$(cat lean-toolchain)" >> "$GITHUB_OUTPUT"
+
+      - name: Install Python venv with lakeprof
+        env:
+          LAKEPROF_REF: ${{ inputs.lakeprof_ref }}
+        run: |
+          python3 -m venv "$LAKEPROF_VENV"
+          "$LAKEPROF_VENV/bin/pip" install --quiet click networkx tabulate
+          curl -fsSL -o "$LAKEPROF_VENV/lakeprof.py" \
+            "https://raw.githubusercontent.com/Kha/lakeprof/${LAKEPROF_REF}/lakeprof.py"
+          chmod +x "$LAKEPROF_VENV/lakeprof.py"
+          "$LAKEPROF_VENV/bin/python" "$LAKEPROF_VENV/lakeprof.py" --help | head -5
+
+      - name: Resolve Mathlib dependencies (network)
+        # `lake env` resolves the manifest. Rest of the workflow doesn't need network.
+        run: |
+          cd pr-branch
+          lake env
+          # Sanity: where is .lake/build today?
+          mkdir -p .lake/build
+          find .lake -maxdepth 1 -mindepth 1 -printf '%f\n' | head
+
+      # --------------------------------------------------------------------- #
+      # Pre-build helpers
+      # --------------------------------------------------------------------- #
+
+      # Tiny inline helper that lakeprof-parses a log on the runner and serializes
+      # the resulting networkx graph to JSON, so that downstream analysis off-runner
+      # doesn't need to re-resolve `lake query` against this same SHA.
+      - name: Stage parse helper script
+        run: |
+          cat > "$LAKEPROF_VENV/parse_log.py" <<'PY'
+          """Parse a lakeprof log into a serialized graph.json + summary.json.
+
+          Usage: parse_log.py <input.log> <out.graph.json> <out.summary.json>
+          Run from inside the mathlib4 checkout (lakeprof.parse calls `lake query`).
+          """
+          import json, sys, os, networkx
+          sys.path.insert(0, os.environ["LAKEPROF_VENV"])
+          import lakeprof
+          src, gout, sout = sys.argv[1], sys.argv[2], sys.argv[3]
+          with open(src) as f:
+              g = lakeprof.parse(f)
+          # Add edge["time"] = nodes[u]["time"] (lakeprof convention).
+          for u, _, d in g.edges(data=True):
+              d["time"] = g.nodes[u]["time"]
+          # Serialize graph.
+          payload = networkx.node_link_data(g, edges="edges")
+          with open(gout, "w") as f:
+              json.dump(payload, f)
+          # Summary stats.
+          total_work = sum(d["time"] for _, d in g.nodes(data=True))
+          path = networkx.dag_longest_path(g, weight="time")
+          cp = sum(g.nodes[u]["time"] for u in path)
+          summary = {
+              "nodes": g.number_of_nodes(),
+              "edges": g.number_of_edges(),
+              "total_work_s": total_work,
+              "critical_path_s": cp,
+              "log_input": src,
+          }
+          with open(sout, "w") as f:
+              json.dump(summary, f, indent=2)
+          print(json.dumps(summary, indent=2))
+          PY
+
+      # --------------------------------------------------------------------- #
+      # Capture environment metadata (cheap, useful, deterministic)
+      # --------------------------------------------------------------------- #
+
+      - name: Capture environment metadata
+        env:
+          GH_REF: ${{ github.ref }}
+          GH_SHA: ${{ github.sha }}
+          RUNNER_NAME: ${{ runner.name }}
+          RUNNER_OS_NAME: ${{ runner.os }}
+          RUNNER_ARCH_NAME: ${{ runner.arch }}
+          LEAN_TOOLCHAIN: ${{ steps.toolchain.outputs.lean_toolchain }}
+          RECORD_INCREMENTAL: ${{ inputs.record_incremental }}
+          INCREMENTAL_TARGET: ${{ inputs.incremental_target }}
+        run: |
+          {
+            echo "# lakeprof_capture metadata"
+            echo "commit: $(cd pr-branch && git rev-parse HEAD)"
+            echo "branch: $GH_REF"
+            echo "ref: $GH_SHA"
+            echo "runner_name: $RUNNER_NAME"
+            echo "runner_os: $RUNNER_OS_NAME"
+            echo "runner_arch: $RUNNER_ARCH_NAME"
+            echo "nproc: $(nproc 2>/dev/null || sysctl -n hw.ncpu)"
+            echo "cpu_model: $(grep -m1 'model name' /proc/cpuinfo 2>/dev/null | sed 's/^[^:]*: //' || true)"
+            echo "memory_kb: $(grep MemTotal /proc/meminfo 2>/dev/null | awk '{print $2}' || true)"
+            echo "kernel: $(uname -srm)"
+            echo "lean_toolchain: $LEAN_TOOLCHAIN"
+            echo "lake_version: $(lake --version | head -1)"
+            echo "date_utc: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo "record_incremental: $RECORD_INCREMENTAL"
+            echo "incremental_target: $INCREMENTAL_TARGET"
+            echo "concurrency_note: Lake 5.0 has no -j flag; build runs at runner default (LEAN_NUM_THREADS unset → hardware concurrency)"
+          } | tee artifact/metadata.txt
+
+      # --------------------------------------------------------------------- #
+      # Clean build at runner default concurrency.
+      # Stage 1 of experiment 06 (Apple-Silicon → Xeon+KVM self-time recalibration).
+      # --------------------------------------------------------------------- #
+
+      - name: Record clean build
+        run: |
+          STAMP="clean"
+          LOG="$GITHUB_WORKSPACE/artifact/lakeprof-${STAMP}.log"
+          TIME_OUT="$GITHUB_WORKSPACE/artifact/lakeprof-${STAMP}.time.txt"
+          BUILD_SUMMARY_DST="$GITHUB_WORKSPACE/artifact/lakeprof-${STAMP}.summary.json"
+          OLEAN_DU_DST="$GITHUB_WORKSPACE/artifact/lakeprof-${STAMP}.olean-sizes.txt"
+          GRAPH_OUT="$GITHUB_WORKSPACE/artifact/lakeprof-${STAMP}.graph.json"
+          PARSE_SUMMARY="$GITHUB_WORKSPACE/artifact/lakeprof-${STAMP}.parse-summary.json"
+
+          # Fresh .lake/build — we want a true clean build.
+          rm -rf pr-branch/.lake/build
+
+          cd pr-branch
+          # /usr/bin/time -v -o FILE writes the resource summary to FILE instead of
+          # stderr, leaving lakeprof's mirrored build progress visible in the workflow log.
+          # `if !` captures the exit status without tripping `set -e`.
+          START_TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          BUILD_OK=1
+          if ! /usr/bin/time -v -o "$TIME_OUT" \
+              "$LAKEPROF_VENV/bin/python" "$LAKEPROF_VENV/lakeprof.py" record \
+                -o "$LOG" \
+                -- lake build Mathlib; then
+            BUILD_OK=0
+            echo "::warning::clean build failed; will still capture log + skip parse"
+          fi
+          END_TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          {
+            echo "start_utc: $START_TS"
+            echo "end_utc: $END_TS"
+            echo "build_ok: $BUILD_OK"
+          } >> "$TIME_OUT"
+
+          # Capture lake's own build summary if present.
+          if [[ -f .lake/build_summary_Mathlib.json ]]; then
+            cp .lake/build_summary_Mathlib.json "$BUILD_SUMMARY_DST"
+          else
+            echo '{"note":"build_summary_Mathlib.json not produced this run"}' > "$BUILD_SUMMARY_DST"
+          fi
+          # Olean sizes.
+          (du -sh .lake/build/lib/lean/Mathlib 2>/dev/null \
+            && du -sb .lake/build/lib/lean/Mathlib 2>/dev/null \
+            && find .lake/build/lib/lean/Mathlib -name '*.olean' -printf '%s %p\n' 2>/dev/null | head -200
+          ) > "$OLEAN_DU_DST" || true
+
+          # Parse log → serialized graph (uses `lake query`, no network).
+          # Skip if the build didn't succeed: an empty log makes lakeprof.parse()
+          # call `lake query --no-build --json` with no module args, which the
+          # Lake parser interprets as "query everything" and floods stderr with
+          # "out-of-date" errors for unbuilt targets.
+          if [[ "$BUILD_OK" == "1" ]]; then
+            "$LAKEPROF_VENV/bin/python" "$LAKEPROF_VENV/parse_log.py" \
+              "$LOG" "$GRAPH_OUT" "$PARSE_SUMMARY"
+          else
+            echo '{"note":"build failed; parse skipped"}' > "$PARSE_SUMMARY"
+          fi
+
+      # --------------------------------------------------------------------- #
+      # Optional incremental run — touch a module, rebuild, record.
+      # State carries over from the clean build above; we touch one file and let
+      # Lake decide what to rebuild (modulo Mathlib's content-hash cache).
+      # --------------------------------------------------------------------- #
+
+      - name: Record incremental rebuild (touch + lake build)
+        if: ${{ inputs.record_incremental }}
+        env:
+          INCREMENTAL_TARGET: ${{ inputs.incremental_target }}
+          GH_RUN_ID: ${{ github.run_id }}
+        run: |
+          TARGET="$INCREMENTAL_TARGET"
+          STAMP="incremental"
+          LOG="$GITHUB_WORKSPACE/artifact/lakeprof-${STAMP}.log"
+          TIME_OUT="$GITHUB_WORKSPACE/artifact/lakeprof-${STAMP}.time.txt"
+          BUILD_SUMMARY_DST="$GITHUB_WORKSPACE/artifact/lakeprof-${STAMP}.summary.json"
+          GRAPH_OUT="$GITHUB_WORKSPACE/artifact/lakeprof-${STAMP}.graph.json"
+          PARSE_SUMMARY="$GITHUB_WORKSPACE/artifact/lakeprof-${STAMP}.parse-summary.json"
+          INCR_META="$GITHUB_WORKSPACE/artifact/lakeprof-${STAMP}.target.txt"
+
+          cd pr-branch
+
+          # Sanity-check the target exists, then touch it. We append an
+          # innocuous comment so the file's mtime AND content hash both change
+          # (the latter ensures Mathlib's content-hash cache invalidates it).
+          if [[ ! -f "$TARGET" ]]; then
+            echo "incremental_target $TARGET does not exist; skipping" | tee "$INCR_META"
+            exit 0
+          fi
+          {
+            echo "target: $TARGET"
+            echo "before_sha: $(sha256sum "$TARGET" | awk '{print $1}')"
+          } > "$INCR_META"
+          # Append a unique comment line so content hash is guaranteed to change.
+          echo "" >> "$TARGET"
+          echo "-- lakeprof_capture incremental marker $(date -u +%s) $GH_RUN_ID" >> "$TARGET"
+          {
+            echo "after_sha:  $(sha256sum "$TARGET" | awk '{print $1}')"
+          } >> "$INCR_META"
+
+          START_TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          BUILD_OK=1
+          if ! /usr/bin/time -v -o "$TIME_OUT" \
+              "$LAKEPROF_VENV/bin/python" "$LAKEPROF_VENV/lakeprof.py" record \
+                -o "$LOG" \
+                -- lake build Mathlib; then
+            BUILD_OK=0
+            echo "::warning::incremental build failed; will capture log + skip parse"
+          fi
+          END_TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          {
+            echo "start_utc: $START_TS"
+            echo "end_utc: $END_TS"
+            echo "build_ok: $BUILD_OK"
+          } >> "$TIME_OUT"
+
+          if [[ -f .lake/build_summary_Mathlib.json ]]; then
+            cp .lake/build_summary_Mathlib.json "$BUILD_SUMMARY_DST"
+          else
+            echo '{"note":"build_summary_Mathlib.json not produced this run"}' > "$BUILD_SUMMARY_DST"
+          fi
+
+          # Parse the incremental log into a graph too. Many entries will be
+          # empty (cache hits with ~0 build time) — kept for fidelity with
+          # what the simulator's cache-hit sweep would project.
+          if [[ "$BUILD_OK" == "1" ]]; then
+            "$LAKEPROF_VENV/bin/python" "$LAKEPROF_VENV/parse_log.py" \
+              "$LOG" "$GRAPH_OUT" "$PARSE_SUMMARY"
+          else
+            echo '{"note":"build failed; parse skipped"}' > "$PARSE_SUMMARY"
+          fi
+
+          # Revert the file so the workspace is clean (defensive — workspace
+          # is wiped on the next dispatch anyway, but be tidy).
+          cd "$GITHUB_WORKSPACE"
+          (cd pr-branch && git checkout -- "$TARGET") || true
+
+      # --------------------------------------------------------------------- #
+      # Headline numbers: print them in the workflow log so they're visible
+      # without downloading the artifact.
+      # --------------------------------------------------------------------- #
+
+      - name: Headline simulator numbers
+        run: |
+          GRAPH="$GITHUB_WORKSPACE/artifact/lakeprof-clean.graph.json"
+          [[ -f "$GRAPH" ]] || { echo "no graph produced (build may have failed)"; exit 0; }
+          NPROC=$(nproc 2>/dev/null || echo 12)
+          "$LAKEPROF_VENV/bin/python" - <<PY
+          import json, networkx
+          g = networkx.node_link_graph(json.load(open("$GRAPH")), edges="edges")
+          for u,_,d in g.edges(data=True):
+              d["time"] = g.nodes[u]["time"]
+          work = sum(d["time"] for _, d in g.nodes(data=True))
+          path = networkx.dag_longest_path(g, weight="time")
+          cp = sum(g.nodes[u]["time"] for u in path)
+          for P in (8, 12, 16, $NPROC):
+              lb = max(cp, work / P)
+              print(f"=== p={P} ===  LB={lb:>7.0f} s   (CP={cp:.0f}, work/p={work/P:.0f})")
+          print(f"\ngraph: {g.number_of_nodes()} nodes, {g.number_of_edges()} edges, total work {work:,.0f} s, CP {cp:.0f} s")
+          print(f"(re-run scheduler_sim.py / cache_hit_sweep.py off-runner with --graph-json $GRAPH)")
+          PY
+
+      # --------------------------------------------------------------------- #
+      # Bundle everything as a single artifact.
+      # --------------------------------------------------------------------- #
+
+      - name: List artifact contents
+        run: |
+          ls -lh artifact/
+          echo "---"
+          du -sh artifact/
+
+      - name: Upload artifact bundle
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: lakeprof-runner-${{ github.run_id }}
+          path: artifact/
+          retention-days: 30
+          compression-level: 9
