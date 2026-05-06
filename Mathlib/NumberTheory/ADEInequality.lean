@@ -28,12 +28,12 @@ in the classification of Dynkin diagrams, root systems, and semisimple Lie algeb
 
 ## Main declarations
 
-* `pqr.A' q r`, the multiset `{1,q,r}`
-* `pqr.D' r`, the multiset `{2,2,r}`
-* `pqr.E6`, the multiset `{2,3,3}`
-* `pqr.E7`, the multiset `{2,3,4}`
-* `pqr.E8`, the multiset `{2,3,5}`
-* `pqr.classification`, the classification of solutions to `p⁻¹ + q⁻¹ + r⁻¹ > 1`
+* `ADEInequality.A' q r`, the multiset `{1,q,r}`
+* `ADEInequality.D' r`, the multiset `{2,2,r}`
+* `ADEInequality.E6`, the multiset `{2,3,3}`
+* `ADEInequality.E7`, the multiset `{2,3,4}`
+* `ADEInequality.E8`, the multiset `{2,3,5}`
+* `ADEInequality.classification`, the classification of solutions to `p⁻¹ + q⁻¹ + r⁻¹ > 1`
 
 -/
 
