@@ -97,7 +97,6 @@ lemma AnalyticAt.analyticOrderAt_eq_natCast (hf : AnalyticAt 𝕜 f z₀) :
     refine ⟨fun hn ↦ (WithTop.coe_inj.mp hn : h.choose = n) ▸ h.choose_spec, fun h' ↦ ?_⟩
     rw [AnalyticAt.unique_eventuallyEq_pow_smul_nonzero h.choose_spec h']
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The order of an analytic function `f` at `z₀` equals a natural number `n` iff `f` can locally
 be written as `f z = (z - z₀) ^ n • g z`, where `g` is analytic and does not vanish at `z₀`. -/
 lemma AnalyticAt.analyticOrderNatAt_eq_iff (hf : AnalyticAt 𝕜 f z₀) (hf' : analyticOrderAt f z₀ ≠ ⊤)
@@ -303,7 +302,6 @@ theorem AnalyticAt.analyticOrderAt_deriv_add_one {x : 𝕜} (hf : AnalyticAt �
       ENat.succ_def, ← Nat.cast_add_one, natCast_le_analyticOrderAt (by fun_prop)]
     exact ⟨deriv F, hFa.deriv, by simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem AnalyticAt.analyticOrderAt_sub_eq_one_of_deriv_ne_zero {x : 𝕜} (hf : AnalyticAt 𝕜 f x)
     (hf' : deriv f x ≠ 0) : analyticOrderAt (f · - f x) x = 1 := by
   generalize h : analyticOrderAt (f · - f x) x = r
@@ -325,6 +323,14 @@ theorem AnalyticAt.analyticOrderAt_sub_eq_one_of_deriv_ne_zero {x : 𝕜} (hf : 
         deriv_fun_pow (by fun_prop), sub_self, zero_pow (by lia), zero_pow (by lia),
         mul_zero, zero_mul, zero_smul, zero_smul, add_zero]
 
+/-- At a zero with nonvanishing derivative, the analytic order is 1.
+This is a variant of `analyticOrderAt_sub_eq_one_of_deriv_ne_zero` with `f z₀ = 0`
+replacing the subtraction. -/
+theorem AnalyticAt.analyticOrderAt_eq_one_of_zero_deriv_ne_zero {x : 𝕜}
+    (hf : AnalyticAt 𝕜 f x) (hfx : f x = 0) (hf' : deriv f x ≠ 0) :
+    analyticOrderAt f x = 1 := by
+  simpa [hfx] using hf.analyticOrderAt_sub_eq_one_of_deriv_ne_zero hf'
+
 lemma natCast_le_analyticOrderAt_iff_iteratedDeriv_eq_zero [CharZero 𝕜] [CompleteSpace E]
     (hf : AnalyticAt 𝕜 f z₀) :
     n ≤ analyticOrderAt f z₀ ↔ ∀ i < n, iteratedDeriv i f z₀ = 0 := by
@@ -337,6 +343,32 @@ lemma natCast_le_analyticOrderAt_iff_iteratedDeriv_eq_zero [CharZero 𝕜] [Comp
       simpa [hfz] using hf.analyticOrderAt_deriv_add_one
     simp [← this, IH hf.deriv, iteratedDeriv_succ',
       -Order.lt_add_one_iff, Nat.forall_lt_succ_left, hfz]
+
+lemma analyticOrderAt_deriv_of_pos {𝕜 : Type*} {E : Type*} [NontriviallyNormedField 𝕜] [CharZero 𝕜]
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] {f : 𝕜 → E} {z₀ : 𝕜}
+    (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} (horder : analyticOrderAt f z₀ = n + 1) :
+    analyticOrderAt (deriv f) z₀ = n := by
+  have ⟨g, hg, hg₀, hfg⟩ := (AnalyticAt.analyticOrderAt_eq_natCast hf).1 horder
+  have hz₀ : f z₀ = 0 := by
+    simpa [sub_self, zero_pow, zero_smul] using Filter.Eventually.self_of_nhds hfg
+  simpa [hz₀, sub_zero, horder] using hf.analyticOrderAt_deriv_add_one
+
+lemma analyticOrderAt_iterated_deriv {𝕜 : Type*} {E : Type*} [NontriviallyNormedField 𝕜]
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] {f : 𝕜 → E} {z₀ : 𝕜}
+    (hf : AnalyticAt 𝕜 f z₀) {k n : ℕ} [CharZero 𝕜] :
+    n = analyticOrderAt f z₀ → n ≠ 0 → k ≤ n → analyticOrderAt (deriv^[k] f) z₀ = (n - k : ℕ) := by
+  induction k generalizing n with
+  | zero => exact fun Hn Hpos Hk ↦ Hn.symm
+  | succ n' hk =>
+    intro Hn Hpos Hk
+    rw [Function.iterate_succ']
+    have horder : analyticOrderAt (deriv^[n'] f) z₀ = (n - n'.succ) + 1 := by
+      refine (hk Hn Hpos (by lia)).trans ?_
+      have : (n - n'.succ) + 1 = n - n' := by grind
+      rw [← this]
+      simp
+    simpa using (analyticOrderAt_deriv_of_pos (hf := AnalyticAt.iterated_deriv hf n')
+      (n := n - n'.succ) horder)
 
 attribute [local simp] Nat.factorial_ne_zero in
 /-- A version of **Taylor's theorem** for analytic functions in one variable, with the error
@@ -383,7 +415,7 @@ lemma AnalyticAt.exists_eq_sum_add_pow_mul [CharZero 𝕜] [CompleteSpace E]
     · simp only [if_neg hz]
       rw [smul_inv_smul₀]
       · module
-      · contrapose! hz
+      · contrapose hz
         exact (pow_eq_zero_iff'.mp hz).1 ▸ mem_of_mem_nhds hU0
 
 end NormedSpace

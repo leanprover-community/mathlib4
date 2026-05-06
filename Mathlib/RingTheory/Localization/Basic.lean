@@ -274,7 +274,29 @@ lemma smul_mem_iff {N' : Submodule R' M'} {x : M'} {s : S} :
 
 end smul
 
-section at_units
+section Units
+
+lemma of_le_isUnit_of_bijective {M : Submonoid R}
+    (hM : Algebra.algebraMapSubmonoid S M ≤ IsUnit.submonoid S)
+    (h : Function.Bijective (algebraMap R S)) :
+    IsLocalization M S where
+  map_units y := hM ⟨_, y.prop, rfl⟩
+  surj y := by
+    obtain ⟨x, rfl⟩ := h.surjective y
+    use ⟨x, 1⟩
+    simp
+  exists_of_eq {x y} hxy := ⟨1, by simp [h.injective hxy]⟩
+
+lemma of_le_isUnit {S : Submonoid R} (hS : S ≤ IsUnit.submonoid R) : IsLocalization S R :=
+  of_le_isUnit_of_bijective (by simpa) Function.bijective_id
+
+@[deprecated (since := "2026-04-15")]
+alias at_units := of_le_isUnit
+
+instance : IsLocalization (IsUnit.submonoid R) R := of_le_isUnit le_rfl
+
+instance : IsLocalization (Algebra.algebraMapSubmonoid S (IsUnit.submonoid R)) S :=
+  IsLocalization.of_le_isUnit Algebra.algebraMapSubmonoid_isUnit_le
 
 variable (R M)
 
@@ -293,7 +315,7 @@ noncomputable def atUnits (H : M ≤ IsUnit.submonoid R) : R ≃ₐ[R] S := by
     rw [map_mul, ← eq, ← hu, mul_assoc, ← map_mul]
     simp
 
-end at_units
+end Units
 
 end IsLocalization
 
@@ -431,6 +453,7 @@ noncomputable def algEquiv : Localization M ≃ₐ[R] S :=
   IsLocalization.algEquiv M _ _
 
 /-- The localization of a singleton is a singleton. Cannot be an instance due to metavariables. -/
+@[implicit_reducible]
 noncomputable def _root_.IsLocalization.unique (R Rₘ) [CommSemiring R] [CommSemiring Rₘ]
     (M : Submonoid R) [Subsingleton R] [Algebra R Rₘ] [IsLocalization M Rₘ] : Unique Rₘ :=
   have : Inhabited Rₘ := ⟨1⟩
@@ -462,7 +485,6 @@ end Localization
 
 open IsLocalization
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `R` is a field, then localizing at a submonoid not containing `0` adds no new elements. -/
 theorem IsField.localization_map_bijective {R Rₘ : Type*} [CommRing R] [CommRing Rₘ]
     {M : Submonoid R} (hM : (0 : R) ∉ M) (hR : IsField R) [Algebra R Rₘ] [IsLocalization M Rₘ] :
@@ -502,6 +524,7 @@ This instance can be helpful if you define `Sₘ := Localization (Algebra.algebr
 however we will instead use the hypotheses `[Algebra Rₘ Sₘ] [IsScalarTower R Rₘ Sₘ]` in lemmas
 since the algebra structure may arise in different ways.
 -/
+@[implicit_reducible]
 noncomputable def localizationAlgebra : Algebra Rₘ Sₘ :=
   (map Sₘ (algebraMap R S)
         (show _ ≤ (Algebra.algebraMapSubmonoid S M).comap _ from M.le_comap_map) :
@@ -620,7 +643,7 @@ theorem Localization.mk_intCast (m : ℤ) : (mk m 1 : Localization M) = m := by
   simpa using mk_algebraMap (R := R) (A := ℤ) _
 
 theorem Localization.r_iff_of_le_nonZeroDivisors (hM : M ≤ nonZeroDivisors R) (a c : R) (b d : M) :
-    Localization.r _ (a, b) (c, d) ↔ a * d = b * c  := by
+    Localization.r _ (a, b) (c, d) ↔ a * d = b * c := by
   simp only [Localization.r_eq_r', Localization.r', Subtype.exists, exists_prop, Con.rel_mk]
   refine ⟨fun ⟨u, hu, h⟩ ↦ ?_,
     fun h ↦ ⟨1, Submonoid.one_mem M, by simpa only [one_mul, mul_comm a] using h⟩⟩

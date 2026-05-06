@@ -14,16 +14,16 @@ public import Mathlib.RingTheory.Polynomial.UniqueFactorization
 # Nonsingular points and the group law in affine coordinates
 
 Let `W` be a Weierstrass curve over a field `F` given by a Weierstrass equation `W(X, Y) = 0` in
-affine coordinates. The type of nonsingular points `W⟮F⟯` in affine coordinates is an inductive,
-consisting of the unique point at infinity `𝓞` and nonsingular affine points `(x, y)`. Then `W⟮F⟯`
-can be endowed with a group law, with `𝓞` as the identity nonsingular point, which is uniquely
-determined by the formulae in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine/Formula.lean`.
+affine coordinates. The type of nonsingular points in affine coordinates is an inductive, consisting
+of the unique point at infinity `𝓞` and nonsingular affine points `(x, y)`. It can be endowed with a
+group law, with `𝓞` as the identity nonsingular point, which is uniquely determined by the formulae
+in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine/Formula.lean`.
 
-With this description, there is an addition-preserving injection between `W⟮F⟯` and the ideal class
-group of the *affine coordinate ring* `F[W] := F[X, Y] / ⟨W(X, Y)⟩` of `W`. This is given by mapping
-`𝓞` to the trivial ideal class and a nonsingular affine point `(x, y)` to the ideal class of the
-invertible ideal `⟨X - x, Y - y⟩`. Proving that this is well-defined and preserves addition reduces
-to equalities of integral ideals checked in `WeierstrassCurve.Affine.CoordinateRing.XYIdeal_neg_mul`
+With this description, there is an addition-preserving injection from the nonsingular points to the
+ideal class group of the *affine coordinate ring* `F[W] := F[X, Y] / ⟨W(X, Y)⟩`. This is given by
+mapping `𝓞` to the trivial ideal class and a nonsingular affine point `(x, y)` to the ideal class of
+the invertible ideal `⟨X - x, Y - y⟩`. Proving that this is well-defined and preserves addition
+reduces to equalities of ideals checked in `WeierstrassCurve.Affine.CoordinateRing.XYIdeal_neg_mul`
 and in `WeierstrassCurve.Affine.CoordinateRing.XYIdeal_mul_XYIdeal` via explicit ideal computations.
 Now `F[W]` is a free rank two `F[X]`-algebra with basis `{1, Y}`, so every element of `F[W]` is of
 the form `p + qY` for some `p, q` in `F[X]`, and there is an algebra norm `N : F[W] → F[X]`.
@@ -31,7 +31,7 @@ Injectivity can then be shown by computing the degree of such a norm `N(p + qY)`
 ways, which is done in `WeierstrassCurve.Affine.CoordinateRing.degree_norm_smul_basis` and in the
 auxiliary lemmas in the proof of `WeierstrassCurve.Affine.Point.instAddCommGroup`.
 
-This file defines the group law on nonsingular points `W⟮F⟯` in affine coordinates.
+This file defines the group law on nonsingular points in affine coordinates.
 
 ## Main definitions
 
@@ -47,12 +47,8 @@ This file defines the group law on nonsingular points `W⟮F⟯` in affine coord
   of a Weierstrass curve is an integral domain.
 * `WeierstrassCurve.Affine.CoordinateRing.degree_norm_smul_basis`: the degree of the norm of an
   element in the affine coordinate ring in terms of its power basis.
-* `WeierstrassCurve.Affine.Point.instAddCommGroup`: the type of nonsingular points `W⟮F⟯` in affine
+* `WeierstrassCurve.Affine.Point.instAddCommGroup`: the type of nonsingular points in affine
   coordinates forms an abelian group under addition.
-
-## Notation
-
-* `W⟮K⟯`: the group of nonsingular points on `W` base changed to `K`.
 
 ## References
 
@@ -101,16 +97,12 @@ abbrev FunctionField : Type r :=
 
 namespace CoordinateRing
 
-noncomputable instance : Algebra R W'.CoordinateRing :=
-  Quotient.algebra R
+noncomputable instance : Algebra R W'.CoordinateRing := inferInstance
 
-noncomputable instance : Algebra R[X] W'.CoordinateRing :=
-  Quotient.algebra R[X]
+noncomputable instance : Algebra R[X] W'.CoordinateRing := inferInstance
 
-instance : IsScalarTower R R[X] W'.CoordinateRing :=
-  Quotient.isScalarTower R R[X] _
+instance : IsScalarTower R R[X] W'.CoordinateRing := inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 instance [Subsingleton R] : Subsingleton W'.CoordinateRing :=
   Module.subsingleton R[X] _
 
@@ -119,7 +111,6 @@ variable (W') in
 noncomputable abbrev mk : R[X][Y] →+* W'.CoordinateRing :=
   AdjoinRoot.mk W'.polynomial
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 variable (W') in
 /-- The power basis `{1, Y}` for `R[W]` over `R[X]`. -/
@@ -127,7 +118,6 @@ protected noncomputable def basis : Basis (Fin 2) R[X] W'.CoordinateRing :=
   (subsingleton_or_nontrivial R).by_cases (fun _ => default) fun _ =>
     (AdjoinRoot.powerBasis' monic_polynomial).basis.reindex <| finCongr natDegree_polynomial
 
-set_option backward.isDefEq.respectTransparency false in
 lemma basis_apply (n : Fin 2) :
     CoordinateRing.basis W' n = (AdjoinRoot.powerBasis' monic_polynomial).gen ^ (n : ℕ) := by
   classical
@@ -148,18 +138,15 @@ lemma coe_basis : (CoordinateRing.basis W' : Fin 2 → W'.CoordinateRing) = ![1,
   fin_cases n
   exacts [basis_zero, basis_one]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma smul (x : R[X]) (y : W'.CoordinateRing) : x • y = mk W' (C x) * y :=
   (algebraMap_smul W'.CoordinateRing x y).symm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma smul_basis_eq_zero {p q : R[X]} (hpq : p • (1 : W'.CoordinateRing) + q • mk W' Y = 0) :
     p = 0 ∧ q = 0 := by
   have h := Fintype.linearIndependent_iff.mp (CoordinateRing.basis W').linearIndependent ![p, q]
   rw [Fin.sum_univ_succ, basis_zero, Fin.sum_univ_one, Fin.succ_zero_eq_one, basis_one] at h
   exact ⟨h hpq 0, h hpq 1⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_smul_basis_eq (x : W'.CoordinateRing) :
     ∃ p q : R[X], p • (1 : W'.CoordinateRing) + q • mk W' Y = x := by
   have h := (CoordinateRing.basis W').sum_equivFun x
@@ -182,10 +169,9 @@ lemma smul_basis_mul_Y (p q : R[X]) : (p • (1 : W'.CoordinateRing) + q • mk 
 
 variable (W') in
 /-- The ring homomorphism `R[W] →+* S[W.map f]` induced by a ring homomorphism `f : R →+* S`. -/
-noncomputable def map (f : R →+* S) : W'.CoordinateRing →+* (W'.map f).toAffine.CoordinateRing :=
-  AdjoinRoot.lift ((AdjoinRoot.of _).comp <| mapRingHom f)
-    ((AdjoinRoot.root (W'.map f).toAffine.polynomial)) <| by
-      rw [← eval₂_map, ← map_polynomial, AdjoinRoot.eval₂_root]
+noncomputable def map (f : R →+* S) : W'.CoordinateRing →+* (W'.map f).CoordinateRing :=
+  AdjoinRoot.lift ((AdjoinRoot.of _).comp <| mapRingHom f) (AdjoinRoot.root (W'.map f).polynomial)
+    (by rw [← eval₂_map, ← map_polynomial, AdjoinRoot.eval₂_root])
 
 lemma map_mk (f : R →+* S) (x : R[X][Y]) :
     map W' f (mk W' x) = mk (W'.map f) (x.map <| mapRingHom f) := by
@@ -197,7 +183,6 @@ protected lemma map_smul (f : R →+* S) (x : R[X]) (y : W'.CoordinateRing) :
   rw [smul, map_mul, map_mk, map_C, smul]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma map_injective {f : R →+* S} (hf : Function.Injective f) : Function.Injective <| map W' f :=
   (injective_iff_map_eq_zero _).mpr fun y hy => by
     obtain ⟨p, q, rfl⟩ := exists_smul_basis_eq y
@@ -207,7 +192,7 @@ lemma map_injective {f : R →+* S} (hf : Function.Injective f) : Function.Injec
     simp_rw [hp, hq, zero_smul, add_zero]
 
 instance [IsDomain R] : IsDomain W'.CoordinateRing :=
-  have : IsDomain (W'.map <| algebraMap R <| FractionRing R).toAffine.CoordinateRing :=
+  have : IsDomain (W'.map <| algebraMap R <| FractionRing R).CoordinateRing :=
     AdjoinRoot.isDomain_of_prime irreducible_polynomial.prime
   (map_injective <| IsFractionRing.injective R <| FractionRing R).isDomain
 
@@ -273,14 +258,14 @@ lemma XYIdeal_add_eq (x₁ x₂ y₁ ℓ : R) : XYIdeal W' (W'.addX x₁ x₂ �
   rw [sub_sub <| -(Y : R[X][Y]), neg_sub_left (Y : R[X][Y]), map_neg, span_singleton_neg, sup_comm,
     ← span_insert, ← span_pair_add_left_mul _ _ <| mk W' <| C <| C <| W'.a₁ + ℓ, ← map_mul,
     ← map_add]
-  apply congr_arg (_ ∘ _ ∘ _ ∘ _)
+  congr 4
   C_simp
   ring1
 
 lemma XYIdeal_eq₁ (x y ℓ : R) : XYIdeal W' x (C y) = XYIdeal W' x (linePolynomial x y ℓ) := by
   simp only [XYIdeal, XClass, YClass, linePolynomial]
   rw [← span_pair_add_left_mul _ _ <| mk W' <| C <| C <| -ℓ, ← map_mul, ← map_add]
-  apply congr_arg (_ ∘ _ ∘ _ ∘ _)
+  congr 4
   C_simp
   ring1
 
@@ -301,7 +286,7 @@ lemma XYIdeal_eq₂ [DecidableEq F] {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation
   nth_rw 1 [hy₂]
   simp only [XYIdeal, XClass, YClass, linePolynomial]
   rw [← span_pair_add_left_mul _ _ <| mk W <| C <| C <| -W.slope x₁ x₂ y₁ y₂, ← map_mul, ← map_add]
-  apply congr_arg (_ ∘ _ ∘ _ ∘ _)
+  congr 4
   simp only [eval_C, eval_X, eval_add, eval_sub, eval_mul]
   C_simp
   ring1
@@ -408,7 +393,6 @@ lemma mk_XYIdeal'_mul_mk_XYIdeal' [DecidableEq F] {x₁ x₂ y₁ y₂ : F} (h�
 
 /-! ## Norms on the affine coordinate ring -/
 
-set_option backward.isDefEq.respectTransparency false in
 lemma norm_smul_basis (p q : R[X]) : Algebra.norm R[X] (p • (1 : W'.CoordinateRing) + q • mk W' Y) =
     p ^ 2 - p * q * (C W'.a₁ * X + C W'.a₃) -
       q ^ 2 * (X ^ 3 + C W'.a₂ * X ^ 2 + C W'.a₄ * X + C W'.a₆) := by
@@ -480,10 +464,6 @@ inductive Point
   | zero
   | some (x y : R) (h : W'.Nonsingular x y)
 deriving DecidableEq
-
-/-- For an algebraic extension `S` of a ring `R`, the type of nonsingular `S`-points on a
-Weierstrass curve `W` over `R` in affine coordinates. -/
-scoped notation3:max W' "⟮" S "⟯" => Point <| baseChange W' S
 
 /-- The equivalence between the nonsingular points on a Weierstrass curve `W` in affine coordinates
 satisfying a predicate and the set of pairs `⟨x, y⟩` satisfying `W.Nonsingular x y` with zero. -/
@@ -650,12 +630,18 @@ instance : InvolutiveNeg W'.Point where
     · rfl
     · simp only [neg_some, negY_negY]
 
+lemma X_eq_iff {x₁ y₁ x₂ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h₂ : W.Nonsingular x₂ y₂} :
+    x₁ = x₂ ↔ some x₁ y₁ h₁ = some x₂ y₂ h₂ ∨ some x₁ y₁ h₁ = -some x₂ y₂ h₂ := by
+  refine ⟨fun H ↦ ?_, fun H ↦ by grind [neg_some]⟩
+  simp_rw [neg_some, some.injEq, ← and_or_left]
+  exact ⟨H, Y_eq_of_X_eq h₁.1 h₂.1 H⟩
+
 variable [DecidableEq F] [DecidableEq K] [DecidableEq L]
 
 /-- The addition of two nonsingular points on a Weierstrass curve in affine coordinates.
 
 Given two nonsingular points `P` and `Q` in affine coordinates, use `P + Q` instead of `add P Q`. -/
-def add [DecidableEq F] : W.Point → W.Point → W.Point
+def add : W.Point → W.Point → W.Point
   | 0, P => P
   | P, 0 => P
   | some x₁ y₁ h₁, some x₂ y₂ h₂ =>
@@ -788,33 +774,33 @@ variable [Algebra R S] [Algebra R F] [Algebra S F] [IsScalarTower R S F] [Algebr
   [IsScalarTower R S K] [Algebra R L] [Algebra S L] [IsScalarTower R S L] (f : F →ₐ[S] K)
   (g : K →ₐ[S] L)
 
-/-- The group homomorphism from `W⟮F⟯` to `W⟮K⟯` induced by an algebra homomorphism `f : F →ₐ[S] K`,
+/-- The group homomorphism on nonsingular points induced by an algebra homomorphism `f : F →ₐ[S] K`,
 where `W` is defined over a subring of a ring `S`, and `F` and `K` are field extensions of `S`. -/
-noncomputable def map : W'⟮F⟯ →+ W'⟮K⟯ where
+noncomputable def map : (W'⁄F).Point →+ (W'⁄K).Point where
   toFun P := match P with
     | 0 => 0
-    | some _ _ h => some _ _ <| (baseChange_nonsingular _ _ f.injective).mpr h
+    | some _ _ h => some _ _ <| (W'.baseChange_nonsingular f.injective ..).mpr h
   map_zero' := rfl
   map_add' := by
     rintro (_ | ⟨x₁, y₁, h₁⟩) (_ | ⟨x₂, y₂, h₂⟩)
     any_goals rfl
-    by_cases hxy : x₁ = x₂ ∧ y₁ = (W'.baseChange F).toAffine.negY x₂ y₂
+    by_cases hxy : x₁ = x₂ ∧ y₁ = (W'⁄F).negY x₂ y₂
     · rw [add_of_Y_eq hxy.left hxy.right,
         add_of_Y_eq (congr_arg _ hxy.left) <| by rw [hxy.right, baseChange_negY]]
     · simpa only [add_some hxy, ← baseChange_addX, ← baseChange_addY, ← baseChange_slope] using
         (add_some fun h ↦ hxy ⟨f.injective h.1, f.injective (W'.baseChange_negY f .. ▸ h).2⟩).symm
 
-lemma map_zero : map f (0 : W'⟮F⟯) = 0 :=
+lemma map_zero : map f (0 : (W'⁄F).Point) = 0 :=
   rfl
 
-lemma map_some {x y : F} (h : (W'.baseChange F).toAffine.Nonsingular x y) :
-    map f (some _ _ h) = some _ _ ((W'.baseChange_nonsingular _ _ f.injective).mpr h) :=
+lemma map_some {x y : F} (h : (W'⁄F).Nonsingular x y) :
+    map f (some _ _ h) = some _ _ ((W'.baseChange_nonsingular f.injective ..).mpr h) :=
   rfl
 
-lemma map_id (P : W'⟮F⟯) : map (Algebra.ofId F F) P = P := by
+lemma map_id (P : (W'⁄F).Point) : map (Algebra.ofId F F) P = P := by
   cases P <;> rfl
 
-lemma map_map (P : W'⟮F⟯) : map g (map f P) = map (g.comp f) P := by
+lemma map_map (P : (W'⁄F).Point) : map g (map f P) = map (g.comp f) P := by
   cases P <;> rfl
 
 lemma map_injective : Function.Injective <| map (W' := W') f := by
@@ -824,15 +810,69 @@ lemma map_injective : Function.Injective <| map (W' := W') f := by
   · simpa only [some.injEq] using ⟨f.injective (some.inj h).left, f.injective (some.inj h).right⟩
 
 variable (F K) in
-/-- The group homomorphism from `W⟮F⟯` to `W⟮K⟯` induced by the base change from `F` to `K`, where
+/-- The group homomorphism on nonsingular points induced by the base change from `F` to `K`, where
 `W` is defined over a subring of a ring `S`, and `F` and `K` are field extensions of `S`. -/
-noncomputable abbrev baseChange [Algebra F K] [IsScalarTower R F K] : W'⟮F⟯ →+ W'⟮K⟯ :=
+noncomputable abbrev baseChange [Algebra F K] [IsScalarTower R F K] :
+    (W'⁄F).Point →+ (W'⁄K).Point :=
   map <| Algebra.ofId F K
 
 lemma map_baseChange [Algebra F K] [IsScalarTower R F K] [Algebra F L] [IsScalarTower R F L]
-    (f : K →ₐ[F] L) (P : W'⟮F⟯) : map f (baseChange F K P) = baseChange F L P := by
+    (f : K →ₐ[F] L) (P : (W'⁄F).Point) : map f (baseChange F K P) = baseChange F L P := by
   have : Subsingleton (F →ₐ[F] L) := inferInstance
   convert map_map (Algebra.ofId F K) f P
+
+end Point
+
+/-!
+### The x-coordinate map to ℙ¹
+
+We define the map from points on an affine Weierstrass curve over `R` to the projective line
+by producing a coordinate vector in `Fin 2 → R` that represents the projective point.
+-/
+
+namespace Point
+
+/-- This map sends a point `P` on a Weierstrass curve `W'` in affine coordinates
+to a representative of its image on ℙ¹ under the x-coordinate map.
+We take `![1, 0]` for the point at infinity and `![x, 1]`,
+where `x` is the x-coordinate of `P`, for an affine point.
+
+We define it in the general setting of a commutative base ring, even though the definition
+of points in this setting is not really correct. For Weierstrass curves over fields, this
+gives the correct notion. -/
+noncomputable def xRep : W'.Point → Fin 2 → R
+  | 0 => ![1, 0]
+  | some x _ _ => ![x, 1]
+
+@[simp]
+lemma xRep_zero : (0 : W'.Point).xRep = ![1, 0] :=
+  rfl
+
+@[simp]
+lemma xRep_some {x y : R} (h : W'.Nonsingular x y) : (some x y h).xRep = ![x, 1] :=
+  rfl
+
+lemma xRep_ne_zero [Nontrivial R] (P : W'.Point) : P.xRep ≠ 0 := by
+  cases P <;> simp [xRep]
+
+@[simp]
+lemma xRep_neg (P : W'.Point) : (-P).xRep = P.xRep := by
+  cases P <;> simp [← zero_def]
+
+-- The following lemmas need a field as base ring.
+
+lemma eq_or_eq_neg_of_xRep_eq_xRep {P Q : W.Point} (h : P.xRep = Q.xRep) : P = Q ∨ P = -Q := by
+  match P, Q with
+  | 0, 0 => exact .inl rfl
+  | 0, some .. => simp [xRep] at h
+  | some .., 0 => simp [xRep] at h
+  | some x₁ .., some x₂ .. =>
+    simp only [xRep, Matrix.vecCons_inj, and_true] at h
+    exact X_eq_iff.mp h
+
+lemma xRep_eq_xRep_iff {P Q : W.Point} : P.xRep = Q.xRep ↔ P = Q ∨ P = -Q := by
+  refine ⟨eq_or_eq_neg_of_xRep_eq_xRep, fun H ↦ ?_⟩
+  rcases H with rfl | rfl <;> simp
 
 end Point
 

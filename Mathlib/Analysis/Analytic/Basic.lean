@@ -261,7 +261,6 @@ lemma HasFPowerSeriesWithinOnBall.congr' {f g : E → F} {p : FormalMultilinearS
   convert h.hasSum hy h'y using 1
   exact h' ⟨hy, by simpa [edist_eq_enorm_sub] using h'y⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma HasFPowerSeriesWithinAt.congr {f g : E → F} {p : FormalMultilinearSeries 𝕜 E F} {s : Set E}
     {x : E} (h : HasFPowerSeriesWithinAt f p s x) (h' : g =ᶠ[𝓝[s] x] f) (h'' : g x = f x) :
     HasFPowerSeriesWithinAt g p s x := by
@@ -372,7 +371,6 @@ lemma HasFPowerSeriesAt.hasFPowerSeriesWithinAt (hf : HasFPowerSeriesAt f p x) :
   rw [← hasFPowerSeriesWithinAt_univ] at hf
   apply hf.mono (subset_univ _)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem HasFPowerSeriesWithinAt.mono_of_mem_nhdsWithin
     (h : HasFPowerSeriesWithinAt f p s x) (hst : s ∈ 𝓝[t] x) :
     HasFPowerSeriesWithinAt f p t x := by
@@ -784,7 +782,7 @@ theorem HasFPowerSeriesWithinOnBall.isBigO_image_sub_image_sub_deriv_principal
       =O[𝓟 (Metric.eball (x, x) r' ∩ ((insert x s) ×ˢ (insert x s)))]
       fun y => ‖y - (x, x)‖ * ‖y.1 - y.2‖ := by
   lift r' to ℝ≥0 using ne_top_of_lt hr
-  rcases (zero_le r').eq_or_lt with (rfl | hr'0)
+  rcases eq_zero_or_pos r' with (rfl | hr'0)
   · simp only [ENNReal.coe_zero, Metric.eball_zero, empty_inter, principal_empty, isBigO_bot]
   obtain ⟨a, ha, C, hC : 0 < C, hp⟩ :
       ∃ a ∈ Ioo (0 : ℝ) 1, ∃ C > 0, ∀ n : ℕ, ‖p n‖ * (r' : ℝ) ^ n ≤ C * a ^ n :=
@@ -850,7 +848,6 @@ theorem HasFPowerSeriesOnBall.isBigO_image_sub_image_sub_deriv_principal
   rw [← hasFPowerSeriesWithinOnBall_univ] at hf
   simpa using hf.isBigO_image_sub_image_sub_deriv_principal hr
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` has formal power series `∑ n, pₙ` within a set, on a ball of radius `r`, then for `y, z`
 in any smaller ball, the norm of the difference `f y - f z - p 1 (fun _ ↦ y - z)` is bounded above
 by `C * (max ‖y - x‖ ‖z - x‖) * ‖y - z‖`. -/
@@ -1091,8 +1088,8 @@ theorem HasFPowerSeriesOnBall.sum (h : HasFPowerSeriesOnBall f p x r) {y : E}
 /-- The sum of a converging power series is continuous in its disk of convergence. -/
 protected theorem FormalMultilinearSeries.continuousOn [CompleteSpace F] :
     ContinuousOn p.sum (Metric.eball 0 p.radius) := by
-  rcases (zero_le p.radius).eq_or_lt with h | h
-  · simp [← h, continuousOn_empty]
+  rcases eq_zero_or_pos p.radius with h | h
+  · simp [h, continuousOn_empty]
   · exact (p.hasFPowerSeriesOnBall h).continuousOn
 
 end
@@ -1103,7 +1100,6 @@ open FormalMultilinearSeries
 
 variable {p : FormalMultilinearSeries 𝕜 𝕜 E} {f : 𝕜 → E} {z₀ : 𝕜}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A function `f : 𝕜 → E` has `p` as power series expansion at a point `z₀` iff it is the sum of
 `p` in a neighborhood of `z₀`. This makes some proofs easier by hiding the fact that
 `HasFPowerSeriesAt` depends on `p.radius`. -/

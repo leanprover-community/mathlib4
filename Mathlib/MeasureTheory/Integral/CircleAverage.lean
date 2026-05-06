@@ -229,7 +229,6 @@ lemma ContinuousOn.eq_of_eqOn_Ioo {f : ℝ → ℝ} {c r R : ℝ}
 ## Constant Functions
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The circle average of a constant function equals the constant.
 -/
@@ -350,7 +349,7 @@ theorem circleAverage_sum {ι : Type*} {s : Finset ι} {f : ι → ℂ → E}
     (h : ∀ i ∈ s, CircleIntegrable (f i) c R) :
     circleAverage (∑ i ∈ s, f i) c R = ∑ i ∈ s, circleAverage (f i) c R := by
   unfold circleAverage
-  simp [← Finset.smul_sum, intervalIntegral.integral_finset_sum h]
+  simp [← Finset.smul_sum, intervalIntegral.integral_finsetSum h]
 
 /-- Circle averages commute with sums. -/
 theorem circleAverage_fun_sum {ι : Type*} {s : Finset ι} {f : ι → ℂ → E}

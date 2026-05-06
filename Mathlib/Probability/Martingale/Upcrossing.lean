@@ -107,6 +107,7 @@ $$
 $$
 
 Furthermore,
+$$
 \begin{align}
     (C \bullet f)_N & =
       \sum_{n \le N} \sum_{k \le N} \mathbf{1}_{[\sigma_k, \tau_{k + 1})}(n)(f_{n + 1} - f_n)\\
@@ -116,6 +117,7 @@ Furthermore,
     & = \sum_{k \le N} (f_{\tau_{k + 1}} - f_{\sigma_k})
       \ge \sum_{k < U_N(a, b)} (b - a) = (b - a) U_N(a, b)
 \end{align}
+$$
 where the inequality follows since for all $k < U_N(a, b)$,
 $f_{\tau_{k + 1}} - f_{\sigma_k} \ge b - a$ while for all $k > U_N(a, b)$,
 $f_{\tau_{k + 1}} = f_{\sigma_k} = f_N$ and
@@ -401,7 +403,7 @@ theorem Submartingale.sum_mul_upcrossingStrat_le [IsFiniteMeasure μ] (hf : Subm
     μ[∑ k ∈ Finset.range n, upcrossingStrat a b f N k * (f (k + 1) - f k)] ≤ μ[f n] - μ[f 0] := by
   have h₁ : (0 : ℝ) ≤
       μ[∑ k ∈ Finset.range n, (1 - upcrossingStrat a b f N k) * (f (k + 1) - f k)] := by
-    have := (hf.sum_sub_upcrossingStrat_mul a b N).setIntegral_le (zero_le n) MeasurableSet.univ
+    have := (hf.sum_sub_upcrossingStrat_mul a b N).setIntegral_le (zero_le (a := n)) .univ
     rw [setIntegral_univ, setIntegral_univ] at this
     refine le_trans ?_ this
     simp only [Finset.range_zero, Finset.sum_empty, integral_zero', le_refl]
@@ -410,8 +412,8 @@ theorem Submartingale.sum_mul_upcrossingStrat_le [IsFiniteMeasure μ] (hf : Subm
       μ[∑ k ∈ Finset.range n, upcrossingStrat a b f N k * (f (k + 1) - f k)] := by
     simp only [sub_mul, one_mul, Finset.sum_sub_distrib, Pi.sub_apply, Finset.sum_apply,
       Pi.mul_apply]
-    refine integral_sub (Integrable.sub (integrable_finset_sum _ fun i _ => hf.integrable _)
-      (integrable_finset_sum _ fun i _ => hf.integrable _)) ?_
+    refine integral_sub (Integrable.sub (integrable_finsetSum _ fun i _ => hf.integrable _)
+      (integrable_finsetSum _ fun i _ => hf.integrable _)) ?_
     convert (hf.sum_upcrossingStrat_mul a b N).integrable n using 1
     ext; simp
   rw [h₂, sub_nonneg] at h₁
@@ -823,6 +825,6 @@ theorem Submartingale.mul_lintegral_upcrossings_le_lintegral_pos_part [IsFiniteM
       exact upcrossingsBefore_mono hab hNM ω
   · rw [← sub_nonpos] at hab
     rw [ENNReal.ofReal_of_nonpos hab, zero_mul]
-    exact zero_le _
+    exact zero_le
 
 end MeasureTheory

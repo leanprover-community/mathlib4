@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Floris van Doorn, Mario Carneiro, Reid Barton, Johan C
 module
 
 public import Mathlib.Logic.Function.Basic
-public meta import Mathlib.Tactic.Basic
 
 /-!
 # `choose` tactic

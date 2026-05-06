@@ -28,7 +28,7 @@ theorem acc_def {α} {r : α → α → Prop} {a : α} : Acc r a ↔ ∀ b, r b 
 
 theorem exists_not_acc_lt_of_not_acc {α} {a : α} {r} (h : ¬Acc r a) : ∃ b, ¬Acc r b ∧ r b a := by
   rw [acc_def] at h
-  push_neg at h
+  push Not at h
   simpa only [and_comm]
 
 theorem not_acc_iff_exists_descending_chain {α} {r : α → α → Prop} {x : α} :
@@ -78,6 +78,14 @@ theorem onFun {α β : Sort*} {r : β → β → Prop} {f : α → β} :
     WellFounded r → WellFounded (r on f) :=
   InvImage.wf _
 
+instance (r : β → β → Prop) (f : α → β) [IsWellFounded β r] :
+    IsWellFounded α (r.onFun f) where
+  wf := IsWellFounded.wf.onFun
+
+theorem _root_.Function.Injective.isWellOrder (r : β → β → Prop) {f : α → β} (hf : f.Injective)
+    [IsWellOrder β r] : IsWellOrder α (r.onFun f) where
+  __ := hf.trichotomous_onFun r
+
 /-- If `r` is a well-founded relation, then any nonempty set has a minimal element
 with respect to `r`. -/
 theorem has_min {α} {r : α → α → Prop} (H : WellFounded r) (s : Set α) :
@@ -113,6 +121,14 @@ theorem not_lt_min {r : α → α → Prop} (H : WellFounded r) (s : Set α) {x}
 theorem min_eq_of_forall_not_lt [Std.Trichotomous r] (wf : WellFounded r) {s : Set α} {m : α}
     (hms : m ∈ s) (hrm : ∀ x ∈ s, ¬r x m) : wf.min s ⟨m, hms⟩ = m :=
   Std.Trichotomous.trichotomous _ m (hrm _ <| wf.min_mem s _) (wf.not_lt_min s hms)
+
+theorem notMem_of_lt_min {wf : WellFounded r} {s : Set α} {hs : s.Nonempty} {x : α}
+    (hx : r x (wf.min s hs)) : x ∉ s :=
+  (wf.not_lt_min s · hx)
+
+theorem mem_of_lt_min_compl {wf : WellFounded r} {s : Set α} {hs : sᶜ.Nonempty} {x : α}
+    (hx : r x (wf.min sᶜ hs)) : x ∈ s :=
+  Set.notMem_compl_iff.mp <| notMem_of_lt_min hx
 
 theorem wellFounded_iff_has_min {r : α → α → Prop} :
     WellFounded r ↔ ∀ s : Set α, s.Nonempty → ∃ m ∈ s, ∀ x ∈ s, ¬r x m := by
@@ -315,7 +331,7 @@ theorem WellFounded.induction_bot {α} {r : α → α → Prop} (hwf : WellFound
 end Induction
 
 /-- A nonempty linear order with well-founded `<` has a bottom element. -/
-@[to_dual (attr := instance_reducible)
+@[to_dual (attr := implicit_reducible)
 /-- A nonempty linear order with well-founded `>` has a top element. -/]
 noncomputable def WellFoundedLT.toOrderBot (α) [LinearOrder α] [Nonempty α] [h : WellFoundedLT α] :
     OrderBot α where

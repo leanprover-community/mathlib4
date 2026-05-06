@@ -73,7 +73,7 @@ Non-commutative Jordan algebras have connections to the Vidav-Palmer theorem
 
 -/
 
-@[expose] public section
+public section
 
 
 variable (A : Type*)
@@ -159,7 +159,6 @@ The endomorphisms on an additive monoid `AddMonoid.End` form a `Ring`, and this 
 with a Lie Bracket via `Ring.bracket`.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 theorem two_nsmul_lie_lmul_lmul_add_eq_lie_lmul_lmul_add [IsCommJordan A] (a b : A) :
     2 • (⁅L a, L (a * b)⁆ + ⁅L b, L (b * a)⁆) = ⁅L (a * a), L b⁆ + ⁅L (b * b), L a⁆ := by
   suffices 2 • ⁅L a, L (a * b)⁆ + 2 • ⁅L b, L (b * a)⁆ + ⁅L b, L (a * a)⁆ + ⁅L a, L (b * b)⁆ = 0 by
@@ -182,7 +181,6 @@ private theorem aux0 {a b c : A} : ⁅L (a + b + c), L ((a + b + c) * (a + b + c
   simp only [add_lie]
   abel_nf
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem aux1 {a b c : A} :
     ⁅L a + L b + L c, L (a * a) + L (b * b) + L (c * c) +
     2 • L (a * b) + 2 • L (c * a) + 2 • L (b * c)⁆
@@ -198,7 +196,6 @@ private theorem aux1 {a b c : A} :
 
 variable [IsCommJordan A]
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem aux2 {a b c : A} :
     ⁅L a, L (a * a)⁆ + ⁅L a, L (b * b)⁆ + ⁅L a, L (c * c)⁆ +
     ⁅L a, 2 • L (a * b)⁆ + ⁅L a, 2 • L (c * a)⁆ + ⁅L a, 2 • L (b * c)⁆ +

@@ -249,7 +249,7 @@ abbrev Pi.lift {f : β → C} [HasProduct f] {P : C} (p : ∀ b, P ⟶ f b) : P 
   limit.lift _ (Fan.mk P p)
 
 set_option backward.isDefEq.respectTransparency false in
-@[reassoc]
+@[reassoc, elementwise]
 theorem Pi.lift_π {β : Type w} {f : β → C} [HasProduct f] {P : C} (p : ∀ b, P ⟶ f b) (b : β) :
     Pi.lift p ≫ Pi.π f b = p b := by
   simp only [limit.lift_π, Fan.mk_pt, Fan.mk_π_app]
@@ -325,13 +325,13 @@ def Cofan.isColimitTrans {X : α → C} (c : Cofan X) (hc : IsColimit c)
 /-- Construct a morphism between categorical products (indexed by the same type)
 from a family of morphisms between the factors.
 -/
-abbrev Pi.map {f g : β → C} [HasProduct f] [HasProduct g] (p : ∀ b, f b ⟶ g b) : ∏ᶜ f ⟶ ∏ᶜ g :=
+def Pi.map {f g : β → C} [HasProduct f] [HasProduct g] (p : ∀ b, f b ⟶ g b) : ∏ᶜ f ⟶ ∏ᶜ g :=
   limMap (Discrete.natTrans fun X => p X.as)
 
 set_option backward.isDefEq.respectTransparency false in
-@[reassoc (attr := simp high)]
+@[reassoc (attr := simp), elementwise nosimp]
 lemma Pi.map_π {f g : β → C} [HasProduct f] [HasProduct g] (p : ∀ b, f b ⟶ g b) (b : β) :
-    Pi.map p ≫ Pi.π g b = Pi.π f b ≫ p b := by simp
+    Pi.map p ≫ Pi.π g b = Pi.π f b ≫ p b := by simp [Pi.map]
 
 @[simp]
 lemma Pi.map_id {f : α → C} [HasProduct f] : Pi.map (fun a => 𝟙 (f a)) = 𝟙 (∏ᶜ f) := by
@@ -390,8 +390,18 @@ lemma Pi.map'_eq {f : α → C} {g : β → C} [HasProduct f] [HasProduct g] {p 
 /-- Construct an isomorphism between categorical products (indexed by the same type)
 from a family of isomorphisms between the factors.
 -/
-abbrev Pi.mapIso {f g : β → C} [HasProductsOfShape β C] (p : ∀ b, f b ≅ g b) : ∏ᶜ f ≅ ∏ᶜ g :=
+def Pi.mapIso {f g : β → C} [HasProductsOfShape β C] (p : ∀ b, f b ≅ g b) : ∏ᶜ f ≅ ∏ᶜ g :=
   lim.mapIso (Discrete.natIso fun X => p X.as)
+
+@[reassoc (attr := simp)]
+lemma Pi.mapIso_hom_π {f g : β → C} [HasProductsOfShape β C] (p : ∀ b, f b ≅ g b) (b : β) :
+    (Pi.mapIso p).hom ≫ π _ _ = π _ _ ≫ (p b).hom :=
+  limMap_π _ _
+
+@[reassoc (attr := simp)]
+lemma Pi.mapIso_inv_π {f g : β → C} [HasProductsOfShape β C] (p : ∀ b, f b ≅ g b) (b : β) :
+    (Pi.mapIso p).inv ≫ π _ _ = π _ _ ≫ (p b).inv :=
+  limMap_π _ _
 
 instance Pi.map_isIso {f g : β → C} [HasProductsOfShape β C] (p : ∀ b, f b ⟶ g b)
     [∀ b, IsIso <| p b] : IsIso <| Pi.map p :=
@@ -445,14 +455,14 @@ end
 /-- Construct a morphism between categorical coproducts (indexed by the same type)
 from a family of morphisms between the factors.
 -/
-abbrev Sigma.map {f g : β → C} [HasCoproduct f] [HasCoproduct g] (p : ∀ b, f b ⟶ g b) :
+def Sigma.map {f g : β → C} [HasCoproduct f] [HasCoproduct g] (p : ∀ b, f b ⟶ g b) :
     ∐ f ⟶ ∐ g :=
   colimMap (Discrete.natTrans fun X => p X.as)
 
 set_option backward.isDefEq.respectTransparency false in
-@[reassoc (attr := simp high)]
+@[reassoc (attr := simp)]
 lemma Sigma.ι_map {f g : β → C} [HasCoproduct f] [HasCoproduct g] (p : ∀ b, f b ⟶ g b) (b : β) :
-    Sigma.ι f b ≫ Sigma.map p = p b ≫ Sigma.ι g b := by simp
+    Sigma.ι f b ≫ Sigma.map p = p b ≫ Sigma.ι g b := by simp [Sigma.map]
 
 @[simp]
 lemma Sigma.map_id {f : α → C} [HasCoproduct f] : Sigma.map (fun a => 𝟙 (f a)) = 𝟙 (∐ f) := by
@@ -514,8 +524,18 @@ lemma Sigma.map'_eq {f : α → C} {g : β → C} [HasCoproduct f] [HasCoproduct
 /-- Construct an isomorphism between categorical coproducts (indexed by the same type)
 from a family of isomorphisms between the factors.
 -/
-abbrev Sigma.mapIso {f g : β → C} [HasCoproductsOfShape β C] (p : ∀ b, f b ≅ g b) : ∐ f ≅ ∐ g :=
+def Sigma.mapIso {f g : β → C} [HasCoproductsOfShape β C] (p : ∀ b, f b ≅ g b) : ∐ f ≅ ∐ g :=
   colim.mapIso (Discrete.natIso fun X => p X.as)
+
+@[reassoc (attr := simp)]
+lemma Sigma.ι_mapIso_hom {f g : β → C} [HasCoproductsOfShape β C] (p : ∀ b, f b ≅ g b) (b : β) :
+    ι _ _ ≫ (Sigma.mapIso p).hom = (p b).hom ≫ ι _ _ :=
+  ι_colimMap _ _
+
+@[reassoc (attr := simp)]
+lemma Sigma.ι_mapIso_inv {f g : β → C} [HasCoproductsOfShape β C] (p : ∀ b, f b ≅ g b) (b : β) :
+    ι _ _ ≫ (Sigma.mapIso p).inv = (p b).inv ≫ ι _ _ :=
+  ι_colimMap _ _
 
 instance Sigma.map_isIso {f g : β → C} [HasCoproductsOfShape β C] (p : ∀ b, f b ⟶ g b)
     [∀ b, IsIso <| p b] : IsIso (Sigma.map p) :=
@@ -635,7 +655,7 @@ def piComparison [HasProduct f] [HasProduct fun b => G.obj (f b)] :
     G.obj (∏ᶜ f) ⟶ ∏ᶜ fun b => G.obj (f b) :=
   Pi.lift fun b => G.map (Pi.π f b)
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), elementwise nosimp]
 theorem piComparison_comp_π [HasProduct f] [HasProduct fun b => G.obj (f b)] (b : β) :
     piComparison G f ≫ Pi.π _ b = G.map (Pi.π f b) :=
   limit.lift_π _ (Discrete.mk b)
@@ -732,14 +752,14 @@ open Opposite in
 /-- The functor sending `(X, n)` to the product of copies of `X` indexed by `n`. -/
 @[simps]
 def piConst [Limits.HasProducts.{w} C] : C ⥤ Type wᵒᵖ ⥤ C where
-  obj X := { obj n := ∏ᶜ fun _ : (unop n) ↦ X, map f := Limits.Pi.map' f.unop fun _ ↦ 𝟙 _ }
+  obj X := { obj n := ∏ᶜ fun _ : (unop n :) ↦ X, map f := Limits.Pi.map' f.unop fun _ ↦ 𝟙 _ }
   map f := { app n := Limits.Pi.map fun _ ↦ f }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `n ↦ ∏ₙ X` is left adjoint to `Hom(-, X)`. -/
 def piConstAdj [Limits.HasProducts.{v} C] (X : C) :
     (piConst.obj X).rightOp ⊣ yoneda.obj X where
-  unit := { app n i := Limits.Pi.π (fun _ : n ↦ X) i }
+  unit := { app n := ↾fun i ↦ Limits.Pi.π (fun _ : n ↦ X) i }
   counit :=
   { app Y := (Limits.Pi.lift id).op,
     naturality _ _ _ := by apply Quiver.Hom.unop_inj; cat_disch }
@@ -755,7 +775,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- `n ↦ ∐ₙ X` is left adjoint to `Hom(X, -)`. -/
 def sigmaConstAdj [Limits.HasCoproducts.{v} C] (X : C) :
     sigmaConst.obj X ⊣ coyoneda.obj (Opposite.op X) where
-  unit := { app n i := Limits.Sigma.ι (fun _ : n ↦ X) i }
+  unit := { app n := ↾fun i ↦ Limits.Sigma.ι (fun _ : n ↦ X) i }
   counit := { app Y := Limits.Sigma.desc id }
 
 /-!
@@ -777,8 +797,7 @@ def limitConeOfUnique [Unique β] (f : β → C) : LimitCone (Discrete.functor f
   isLimit :=
     { lift := fun s => s.π.app default
       fac := fun s j => by
-        have h := Subsingleton.elim j default
-        subst h
+        obtain rfl := Subsingleton.elim j default
         simp
       uniq := fun s m w => by
         specialize w default
@@ -813,8 +832,7 @@ def colimitCoconeOfUnique [Unique β] (f : β → C) : ColimitCocone (Discrete.f
   isColimit :=
     { desc := fun s => s.ι.app default
       fac := fun s j => by
-        have h := Subsingleton.elim j default
-        subst h
+        obtain rfl := Subsingleton.elim j default
         apply Category.id_comp
       uniq := fun s m w => by
         specialize w default
@@ -952,11 +970,89 @@ def Cofan.IsColimit.prod (c : ∀ i : ι, Cofan (fun j : ι' ↦ X i j)) (hc : �
 
 end Fubini
 
+variable (α) in
+/-- The functor `(f : α → C) ↦ ∏ᶜ f`. -/
+@[simps]
+noncomputable def Pi.functor [HasProductsOfShape α C] : (α → C) ⥤ C where
+  obj f := ∏ᶜ f
+  map {f g} t := Pi.map t
+
+/-- The natural transformation induced by `Pi.π`. -/
+@[simps]
+def Pi.functorπ [HasProductsOfShape α C] (a : α) :
+    Pi.functor α ⟶ Pi.eval (fun _ ↦ C) a where
+  app f := Pi.π f a
+
+variable (α) in
+/-- Up to pre-composing with an equivalence of categories, `Pi.functor` is isomorphic to `lim`. -/
+@[simps!]
+def piEquivalenceFunctorDiscreteCompLim [HasProductsOfShape α C] :
+    (piEquivalenceFunctorDiscrete α C).functor ⋙ lim ≅ Pi.functor _ :=
+  NatIso.ofComponents fun _ ↦ Iso.refl _
+
+@[reassoc]
+lemma piEquivalenceFunctorDiscreteCompLim_comp_functorπ [HasProductsOfShape α C] (a : α) :
+    (piEquivalenceFunctorDiscreteCompLim (C := C) α).hom ≫ Pi.functorπ a =
+      Functor.whiskerLeft _ (lim.π <| Discrete.mk a) ≫
+        (piEquivalenceFunctorDiscreteCompEvaluationIso _ _).hom := by
+  cat_disch
+
+attribute [local simp] Functor.pi in
+/-- The `∏ᶜ` functor composed with the pointwise constant functor `Π i, I i ⥤ (α → C)` is isomorphic
+to the constant functor with value `∏ᶜ X`. -/
+@[simps!]
+noncomputable def Pi.constCompPiIsoConst [HasProductsOfShape α C] {I : α → Type*}
+    [∀ i, Category* (I i)] (X : α → C) :
+    Functor.pi (fun i ↦ (Functor.const (I i)).obj (X i)) ⋙ Pi.functor α ≅
+      (Functor.const _).obj (∏ᶜ X) :=
+  NatIso.ofComponents (fun _ ↦ Iso.refl _)
+
+variable (α) in
+/-- The functor `(f : α → C) ↦ ∐ f`. -/
+@[simps]
+noncomputable def Sigma.functor [HasCoproductsOfShape α C] : (α → C) ⥤ C where
+  obj f := ∐ f
+  map {f g} t := Sigma.map t
+
+/-- The natural transformation induced by `Sigma.ι`. -/
+@[simps]
+def Sigma.functorι [HasCoproductsOfShape α C] (a : α) :
+    Pi.eval (fun _ ↦ C) a ⟶ Sigma.functor α where
+  app f := Sigma.ι f a
+
+variable (α) in
+/-- Up to pre-composing with an equivalence of categories, `Sigma.functor` is isomorphic
+to `colim`. -/
+@[simps!]
+def piEquivalenceFunctorDiscreteCompColim [HasCoproductsOfShape α C] :
+    (piEquivalenceFunctorDiscrete α C).functor ⋙ colim ≅ Sigma.functor _ :=
+  NatIso.ofComponents fun _ ↦ Iso.refl _
+
+@[reassoc]
+lemma piEquivalenceFunctorDiscreteCompColim_comp_functorι [HasCoproductsOfShape α C] (a : α) :
+    Functor.whiskerLeft _ (colim.ι <| .mk a) ≫ (piEquivalenceFunctorDiscreteCompColim α).hom =
+      (piEquivalenceFunctorDiscreteCompEvaluationIso C _).hom ≫ Sigma.functorι a := by
+  cat_disch
+
+lemma piEquivalenceFunctorDiscrete_functor_comp_colim [HasCoproductsOfShape α C] :
+    (piEquivalenceFunctorDiscrete α C).functor ⋙ colim = Sigma.functor _ :=
+  rfl
+
+attribute [local simp] Functor.pi in
+/-- The `∐` functor composed with the pointwise constant functor `Π i, I i ⥤ (α → C)` is isomorphic
+to the constant functor with value `∐ X`. -/
+@[simps!]
+noncomputable def Sigma.constCompSigmaIsoConst [HasCoproductsOfShape α C] {I : α → Type*}
+    [∀ i, Category* (I i)] (X : α → C) :
+    Functor.pi (fun i ↦ (Functor.const (I i)).obj (X i)) ⋙ Sigma.functor α ≅
+      (Functor.const _).obj (∐ X) :=
+  NatIso.ofComponents (fun _ ↦ Iso.refl _)
+
 /-- The functor `C ⥤ (Type w)ᵒᵖ ⥤ C` which sends `X : C` and `α : Type w` to
 the product of copies of `X` indexed by `α`. -/
 @[simps]
 def piFunctor [HasProducts.{w} C] :
-    C ⥤ (Type w)ᵒᵖ ⥤ C where
+    C ⥤ Type wᵒᵖ ⥤ C where
   obj X :=
     { obj α := ∏ᶜ (fun (t : α.unop) ↦ X)
       map f := Pi.map' f.unop (fun _ ↦ 𝟙 _) }

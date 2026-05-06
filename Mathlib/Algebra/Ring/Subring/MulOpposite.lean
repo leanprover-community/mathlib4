@@ -20,7 +20,7 @@ For every ring `R`, we construct an equivalence between subrings of `R` and that
 
 namespace Subring
 
-variable {ι : Sort*} {R : Type*} [Ring R]
+variable {ι : Sort*} {R : Type*} [NonAssocRing R]
 
 /-- Pull a subring back to an opposite subring along `MulOpposite.unop` -/
 @[simps! coe toSubsemiring]

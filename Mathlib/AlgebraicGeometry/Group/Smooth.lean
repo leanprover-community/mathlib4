@@ -7,7 +7,7 @@ module
 
 public import Mathlib.AlgebraicGeometry.AlgClosed.Basic
 public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
-public import Mathlib.CategoryTheory.Monoidal.Grp_
+public import Mathlib.CategoryTheory.Monoidal.Grp
 
 /-!
 # Smoothness of group schemes
@@ -18,7 +18,7 @@ public import Mathlib.CategoryTheory.Monoidal.Grp_
   of finite type, then `G` is smooth over `k`.
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory
 
@@ -55,7 +55,6 @@ lemma smooth_of_grpObj_of_isAlgClosed : Smooth f := by
     simp [comp_lift_assoc]
   have hα' : α.hom.left x = y := by
     simpa [x', y', pointEquivClosedPoint] using congr(($hα).left (IsLocalRing.closedPoint K))
-  have hαf : α.hom.left ≫ f = f := α.hom.w
   rw! [← hα', ← α.hom.left.mem_preimage, Scheme.Hom.preimage_smoothLocus_eq,
     show α.hom.left ≫ f = f from α.hom.w] at hy
   exact hx hy

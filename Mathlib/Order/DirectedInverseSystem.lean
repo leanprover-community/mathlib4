@@ -96,6 +96,7 @@ open DirectedSystem
 variable [IsDirectedOrder ι]
 
 /-- The setoid on the sigma type defining the direct limit. -/
+@[implicit_reducible]
 def setoid : Setoid (Σ i, F i) where
   r x y := ∃ᵉ (i) (hx : x.1 ≤ i) (hy : y.1 ≤ i), f _ _ hx x.2 = f _ _ hy y.2
   iseqv := ⟨fun x ↦ ⟨x.1, le_rfl, le_rfl, rfl⟩, fun ⟨i, hx, hy, eq⟩ ↦ ⟨i, hy, hx, eq.symm⟩,
@@ -115,6 +116,12 @@ variable {f} in
 theorem eq_of_le (x : Σ i, F i) (i : ι) (h : x.1 ≤ i) :
     (⟦x⟧ : DirectLimit F f) = ⟦⟨i, f _ _ h x.2⟩⟧ :=
   Quotient.sound (r_of_le _ x i h)
+
+variable {f} in
+@[simp]
+theorem mk_apply (i j : ι) (x : F i) (h : i ≤ j) :
+    ⟦⟨j, f _ _ h x⟩⟧ = (⟦⟨i, x⟩⟧ : DirectLimit F f) :=
+  eq_of_le ⟨_, x⟩ j h |>.symm
 
 @[elab_as_elim] protected theorem induction {C : DirectLimit F f → Prop}
     (ih : ∀ i x, C ⟦⟨i, x⟩⟧) (x : DirectLimit F f) : C x :=
@@ -169,6 +176,7 @@ protected def lift (z : DirectLimit F f) : C :=
   z.recOn (fun x ↦ ih x.1 x.2) fun x y ⟨k, hxk, hyk, eq⟩ ↦ by
     simp_rw [eq_rec_constant, compat _ _ hxk, compat _ _ hyk, eq]
 
+@[simp]
 theorem lift_def (x) : DirectLimit.lift f ih compat ⟦x⟧ = ih x.1 x.2 := rfl
 
 theorem lift_injective (h : ∀ i, Function.Injective (ih i)) :

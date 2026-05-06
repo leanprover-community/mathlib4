@@ -95,7 +95,6 @@ lemma norm_complexMGF_le_mgf : ‖complexMGF X μ z‖ ≤ mgf X μ z.re := by
   _ ≤ ∫ ω, ‖cexp (z.re * X ω) * cexp (z.im * I * X ω)‖ ∂μ := norm_integral_le_integral_norm _
   _ = ∫ ω, rexp (z.re * X ω) ∂μ := by simp [Complex.norm_exp]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma complexMGF_ofReal (x : ℝ) : complexMGF X μ x = mgf X μ x := by
   rw [complexMGF, mgf]
   norm_cast
@@ -107,7 +106,6 @@ lemma re_complexMGF_ofReal' : (fun x : ℝ ↦ (complexMGF X μ x).re) = mgf X �
   ext x
   exact re_complexMGF_ofReal x
 
-set_option backward.isDefEq.respectTransparency false in
 lemma complexMGF_id_mul_I {μ : Measure ℝ} (t : ℝ) :
     complexMGF id μ (t * I) = charFun μ t := by
   simp only [complexMGF, id_eq, charFun, RCLike.inner_apply, conj_trivial, ofReal_mul]
@@ -315,7 +313,6 @@ section ext
 
 variable {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {Y : Ω' → ℝ} {μ' : Measure Ω'}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the complex moment-generating functions of two random variables `X` and `Y` with respect to
 the finite measures `μ`, `μ'`, respectively, coincide, then `μ.map X = μ'.map Y`. In other words,
 complex moment-generating functions separate the distributions of random variables. -/

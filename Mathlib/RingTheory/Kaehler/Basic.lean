@@ -160,7 +160,7 @@ notation "Ω[" S "⁄" R "]" => KaehlerDifferential R S
 instance KaehlerDifferential.module' {R' : Type*} [CommRing R'] [Algebra R' S]
     [SMulCommClass R R' S] :
     Module R' Ω[S⁄R] :=
-  Submodule.Quotient.module' _
+  inferInstanceAs <| Module R' (_ ⧸ _)
 
 instance KaehlerDifferential.isScalarTower_of_tower {R₁ R₂ : Type*} [CommRing R₁] [CommRing R₂]
     [Algebra R₁ S] [Algebra R₂ S] [SMul R₁ R₂]
@@ -388,10 +388,6 @@ def KaehlerDifferential.endEquivAuxEquiv :
       { f // (TensorProduct.lmul' R : S ⊗[R] S →ₐ[R] S).kerSquareLift.comp f = AlgHom.id R S } :=
   (Equiv.refl _).subtypeEquiv (KaehlerDifferential.End_equiv_aux R S)
 
-set_option synthInstance.maxHeartbeats 25000 in
--- `Module S (Derivation R S ↥(ideal R S).cotangentIdeal)` just barely times out after
--- `SemigroupAction` was added to Mathlib. 22000 heartbeats is enough when this note was added,
--- but we left 25000 for some buffer.
 /--
 The endomorphisms of `Ω[S⁄R]` corresponds to sections of the surjection `S ⊗[R] S ⧸ J ^ 2 →ₐ[R] S`,
 with `J` being the kernel of the multiplication map `S ⊗[R] S →ₐ[R] S`.
@@ -484,14 +480,12 @@ noncomputable def KaehlerDifferential.kerTotal : Submodule S (S →₀ S) :=
 unsuppress_compilation in
 local notation3 x "𝖣" y => (KaehlerDifferential.kerTotal R S).mkQ (single y x)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem KaehlerDifferential.kerTotal_mkQ_single_add (x y z) : (z𝖣x + y) = (z𝖣x) + z𝖣y := by
   rw [← map_add, eq_comm, ← sub_eq_zero, ← map_sub (Submodule.mkQ (kerTotal R S)),
     Submodule.mkQ_apply, Submodule.Quotient.mk_eq_zero]
   simp_rw [← Finsupp.smul_single_one _ z, ← smul_add, ← smul_sub]
   exact Submodule.smul_mem _ _ (Submodule.subset_span (Or.inl <| Or.inl <| ⟨⟨_, _⟩, rfl⟩))
 
-set_option backward.isDefEq.respectTransparency false in
 theorem KaehlerDifferential.kerTotal_mkQ_single_mul (x y z) :
     (z𝖣x * y) = ((z * x)𝖣y) + (z * y)𝖣x := by
   rw [← map_add, eq_comm, ← sub_eq_zero, ← map_sub (Submodule.mkQ (kerTotal R S)),
@@ -507,7 +501,6 @@ theorem KaehlerDifferential.kerTotal_mkQ_single_algebraMap (x y) : (y𝖣algebra
 theorem KaehlerDifferential.kerTotal_mkQ_single_algebraMap_one (x) : (x𝖣1) = 0 := by
   rw [← (algebraMap R S).map_one, KaehlerDifferential.kerTotal_mkQ_single_algebraMap]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem KaehlerDifferential.kerTotal_mkQ_single_smul (r : R) (x y) : (y𝖣r • x) = r • y𝖣x := by
   letI : SMulZeroClass R S := inferInstance
   rw [Algebra.smul_def, KaehlerDifferential.kerTotal_mkQ_single_mul,
@@ -822,7 +815,7 @@ theorem KaehlerDifferential.range_kerCotangentToTensor
     simp only [LinearMap.mem_range]
     simp only [map_sum, Finsupp.linearCombination_single]
     have : ∑ i ∈ x.support with algebraMap A B i = c, x i ∈ RingHom.ker (algebraMap A B) := by
-      simpa [Finsupp.mapDomain, Finsupp.sum, Finsupp.finset_sum_apply, RingHom.mem_ker,
+      simpa [Finsupp.mapDomain, Finsupp.sum, Finsupp.finsetSum_apply, RingHom.mem_ker,
         Finsupp.single_apply, ← Finset.sum_filter] using DFunLike.congr_fun hx c
     obtain ⟨a, ha⟩ := h c
     use ∑ i ∈ {i ∈ x.support | algebraMap A B i = c}.attach, x i • Ideal.toCotangent _ ⟨i - a, ?_⟩

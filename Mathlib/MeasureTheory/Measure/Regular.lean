@@ -482,6 +482,15 @@ theorem ext_isOpen {ν : Measure α} [OuterRegular μ] [OuterRegular ν]
   congr! 4 with t _ ht2
   exact hμν t ht2
 
+/-- Outer regular measures are determined by values on bounded open sets. -/
+theorem ext_isOpen_isBounded {α : Type*} [PseudoMetricSpace α] {mα : MeasurableSpace α}
+    {μ ν : Measure α} [OuterRegular μ] [OuterRegular ν]
+    (hμν : ∀ U, IsOpen U → Bornology.IsBounded U → μ U = ν U) : μ = ν := by
+  refine ext_isOpen fun U hU ↦ ?_
+  obtain ⟨f, hm, hu, hf⟩ := Metric.eq_countable_union_of_isBounded_of_isOpen hU
+  rw [← hu, hm.measure_iUnion, hm.measure_iUnion]
+  exact iSup_congr fun i ↦ hμν (f i) (hf i).2 (hf i).1
+
 end OuterRegular
 
 /-- If a measure `μ` admits finite spanning open sets such that the restriction of `μ` to each set
@@ -790,11 +799,11 @@ instance {ι : Type*} {μ : ι → Measure α} [∀ i, InnerRegular (μ i)] :
     simp only [hs, Measure.sum_apply]
     exact ENNReal.summable.hasSum
   obtain ⟨a, ha⟩ : ∃ (a : Finset ι), r < (∑ i ∈ a, μ i) s := by
-    simp only [coe_finset_sum, Finset.sum_apply]
+    simp only [coe_finsetSum, Finset.sum_apply]
     exact ((tendsto_order.1 this).1 r hr).exists
   rcases MeasurableSet.exists_lt_isCompact hs ha with ⟨K, Ks, hK, h'K⟩
   refine ⟨K, Ks, hK, h'K.trans_le ?_⟩
-  simp only [coe_finset_sum, Finset.sum_apply]
+  simp only [coe_finsetSum, Finset.sum_apply]
   exact (ENNReal.sum_le_tsum _).trans (le_sum_apply _ _)
 
 end InnerRegular

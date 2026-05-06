@@ -70,11 +70,11 @@ public theorem convexCombination_assoc (f : StdSimplex R (StdSimplex R P)) :
         _ _ d.total b, vadd_vsub, Finset.weightedVSubOfPoint_apply]
     simp only [id]
   simp_rw [Finset.smul_sum, smul_smul]
-  -- Expand RHS using sum_finset_sum_index
+  -- Expand RHS using sum_finsetSum_index
   let h : P → R → V := fun x w => w • (x -ᵥ b)
   have h_rhs : (∑ d ∈ f.weights.support, f.weights d • d.weights).sum h
       = ∑ d ∈ f.weights.support, (f.weights d • d.weights).sum h :=
-    (Finsupp.sum_finset_sum_index (h := h) (fun _ => zero_smul _ _)
+    (Finsupp.sum_finsetSum_index (h := h) (fun _ => zero_smul _ _)
       (fun _ _ _ => add_smul _ _ _)).symm
   simp only [Finsupp.sum] at h_rhs ⊢
   rw [h_rhs]
@@ -102,9 +102,15 @@ public instance instConvexSpace : ConvexSpace R P where
 
 /-- `ConvexSpace.convexCombination` in an affine space is the affine combination. -/
 public theorem convexCombination_eq_affineCombination (s : StdSimplex R P) :
-    letI : ConvexSpace R P := instConvexSpace
+    letI : ConvexSpace R P := inferInstance
     ConvexSpace.convexCombination s = s.weights.support.affineCombination R id s.weights := by
   rfl
+
+public lemma _root_.convexCombination_eq_sum (f : StdSimplex R V) :
+    letI : ConvexSpace R V := inferInstance
+    ConvexSpace.convexCombination f = f.sum fun i r ↦ r • i := by
+  simp [AddTorsor.convexCombination_eq_affineCombination,
+    Finset.affineCombination_eq_linear_combination _ _ _ f.total, Finsupp.sum]
 
 /-- `convexComboPair` in an affine space is the affine line map. -/
 public theorem convexComboPair_eq_lineMap (s t : R) (hs : 0 ≤ s) (ht : 0 ≤ t)

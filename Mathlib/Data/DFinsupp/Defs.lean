@@ -295,10 +295,12 @@ theorem filter_apply_pos [∀ i, Zero (β i)] {p : ι → Prop} [DecidablePred p
 theorem filter_apply_neg [∀ i, Zero (β i)] {p : ι → Prop} [DecidablePred p] (f : Π₀ i, β i) {i : ι}
     (h : ¬p i) : f.filter p i = 0 := by grind
 
-theorem filter_pos_add_filter_neg [∀ i, AddZeroClass (β i)] (f : Π₀ i, β i) (p : ι → Prop)
+@[simp] theorem filter_add_filter_not [∀ i, AddZeroClass (β i)] (f : Π₀ i, β i) (p : ι → Prop)
     [DecidablePred p] : (f.filter p + f.filter fun i => ¬p i) = f :=
   ext fun i => by
     simp only [add_apply, filter_apply]; split_ifs <;> simp only [add_zero, zero_add]
+
+@[deprecated (since := "2026-05-04")] alias filter_pos_add_filter_neg := filter_add_filter_not
 
 @[simp]
 theorem filter_zero [∀ i, Zero (β i)] (p : ι → Prop) [DecidablePred p] :
@@ -531,6 +533,17 @@ theorem equivFunOnFintype_single [Fintype ι] (i : ι) (m : β i) :
 theorem equivFunOnFintype_symm_single [Fintype ι] (i : ι) (m : β i) :
     (@DFinsupp.equivFunOnFintype ι β _ _).symm (Pi.single i m) = DFinsupp.single i m := by
   simp only [← single_eq_pi_single, equivFunOnFintype_symm_coe]
+
+@[simp] lemma filter_eq (f : Π₀ i, β i) (i : ι) : f.filter (i = ·) = single i (f i) := by
+  ext
+  rw [filter_apply, single_apply]
+  split
+  · subst i
+    simp
+  · simp
+
+@[simp] lemma filter_eq' (f : Π₀ i, β i) (i : ι) : f.filter (· = i) = single i (f i) := by
+  simp [eq_comm]
 
 section SingleAndZipWith
 
@@ -836,7 +849,12 @@ def subtypeSupportEqEquiv (s : Finset ι) :
     rintro ⟨f, rfl⟩
     ext i
     simpa using Eq.symm
-  right_inv f := by grind
+  right_inv f := by
+    #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+    (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
+    It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+    canonicalizer; a minimization would help. The original proof was: `grind` -/
+    simp
 
 /-- Equivalence between all dependent finitely supported functions `f : Π₀ i, β i` and type
 of pairs `⟨s : Finset ι, f : ∀ i : s, {x : β i // x ≠ 0}⟩`. -/

@@ -135,8 +135,7 @@ theorem innerContent_of_isCompact {K : Set G} (h1K : IsCompact K) (h2K : IsOpen 
   le_antisymm (iSup₂_le fun _ hK' => μ.mono _ ⟨K, h1K⟩ hK') (μ.le_innerContent _ _ Subset.rfl)
 
 theorem innerContent_bot : μ.innerContent ⊥ = 0 := by
-  refine le_antisymm ?_ (zero_le _)
-  rw [← μ.empty]
+  rw [← nonpos_iff_eq_zero, ← μ.empty]
   refine iSup₂_le fun K hK => ?_
   have : K = ⊥ := by
     ext1
@@ -201,7 +200,7 @@ theorem innerContent_comap (f : G ≃ₜ G) (h : ∀ ⦃K : Compacts G⦄, μ (K
   apply h
 
 @[to_additive]
-theorem is_mul_left_invariant_innerContent [Group G] [ContinuousMul G]
+theorem is_mul_left_invariant_innerContent [Group G] [SeparatelyContinuousMul G]
     (h : ∀ (g : G) {K : Compacts G}, μ (K.map _ <| continuous_const_mul g) = μ K) (g : G)
     (U : Opens G) :
     μ.innerContent (Opens.comap (Homeomorph.mulLeft g) U) = μ.innerContent U := by
@@ -290,7 +289,7 @@ theorem outerMeasure_lt_top_of_isCompact [WeaklyLocallyCompactSpace G]
     _ < ⊤ := μ.lt_top _
 
 @[to_additive]
-theorem is_mul_left_invariant_outerMeasure [Group G] [ContinuousMul G]
+theorem is_mul_left_invariant_outerMeasure [Group G] [SeparatelyContinuousMul G]
     (h : ∀ (g : G) {K : Compacts G}, μ (K.map _ <| continuous_const_mul g) = μ K) (g : G)
     (A : Set G) : μ.outerMeasure ((g * ·) ⁻¹' A) = μ.outerMeasure A := by
   convert μ.outerMeasure_preimage (Homeomorph.mulLeft g) (fun K => h g) A

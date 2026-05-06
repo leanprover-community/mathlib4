@@ -67,7 +67,7 @@ theorem count_le {n : ℕ} : count p n ≤ n := by
 theorem count_succ (n : ℕ) : count p (n + 1) = count p n + if p n then 1 else 0 := by
   grind [count, List.range_succ]
 
-@[mono]
+@[gcongr, mono]
 theorem count_monotone : Monotone (count p) :=
   monotone_nat_of_le_succ (by grind)
 
@@ -104,7 +104,7 @@ theorem count_strict_mono {m n : ℕ} (hm : p m) (hmn : m < n) : count p m < cou
   (count_lt_count_succ_iff.2 hm).trans_le <| count_monotone _ (Nat.succ_le_iff.2 hmn)
 
 theorem count_injective {m n : ℕ} (hm : p m) (hn : p n) (heq : count p m = count p n) : m = n := by
-  by_contra! h : m ≠ n
+  by_contra h : m ≠ n
   wlog hmn : m < n
   · exact this hn hm heq.symm h.symm (by grind)
   · simpa [heq] using count_strict_mono hm hmn
