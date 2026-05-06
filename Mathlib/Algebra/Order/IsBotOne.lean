@@ -116,9 +116,9 @@ alias zero_lt_iff := pos_iff_ne_zero
 theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := one_le.eq_or_lt'
 
 @[to_additive]
-lemma one_notMem_iff {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x := by
+lemma one_notMem_iff {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x :=
   let := IsBotOneClass.toOrderBot α
-  exact bot_notMem_iff
+  bot_notMem_iff
 
 @[deprecated (since := "2026-02-17")] alias NE.ne.pos := Ne.pos
 @[deprecated (since := "2026-02-17")] alias NE.ne.one_lt := Ne.one_lt
