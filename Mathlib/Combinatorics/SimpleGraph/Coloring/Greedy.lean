@@ -250,11 +250,11 @@ theorem nonempty_coloring_iff_exists_isWellOrder {α : Type*} :
   -- But since `G.Adj w (f v)` and `C` is a valid coloring, this is a contradiction.
   exact absurd (by grind) <| C.map_adj hadj
 
-theorem coe_greedyColoringOfEmbedding_le_degree {n : ℕ} (f : V ↪ Fin n) (v : V)
+theorem coe_recolorGreedily_coloringOfEmbedding_le_degree {n : ℕ} (f : V ↪ Fin n) (v : V)
     [Fintype <| G.neighborSet v] :
     (G.coloringOfEmbedding f).recolorGreedily LT.lt v ≤ G.degree v := by
   classical
-  grw [← G.degree_map f, ← Nat.cast_le (α := Ordinal),
+  grw [← G.degree_map_apply f, ← Nat.cast_le (α := Ordinal),
     ← typein_greedyColoring_le_coe_degree _ LT.lt, typein_lt_fin]
   rfl
 
@@ -264,7 +264,7 @@ noncomputable def coloringMaxDegreeAddOne [Fintype V] [DecidableRel G.Adj] :
     G.Coloring <| Fin <| G.maxDegree + 1 :=
   .castLT (G.coloringOfEmbedding (Fintype.equivFin V).toEmbedding |>.recolorGreedily LT.lt)
     fun v ↦ by
-      grw [coe_greedyColoringOfEmbedding_le_degree, degree_le_maxDegree]
+      grw [coe_recolorGreedily_coloringOfEmbedding_le_degree, degree_le_maxDegree]
       apply Nat.lt_add_one
 
 theorem colorable_maxDegree_add_one [Fintype V] [DecidableRel G.Adj] :

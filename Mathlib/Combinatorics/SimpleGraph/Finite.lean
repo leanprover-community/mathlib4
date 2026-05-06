@@ -640,7 +640,7 @@ theorem card_edgeFinset_map (f : V ↪ W) (G : SimpleGraph V) [DecidableRel G.Ad
   rw [edgeFinset_map]
   exact G.edgeFinset.card_map f.sym2Map
 
-theorem degree_map {V W : Type*} (G : SimpleGraph V) (f : V ↪ W) (v : V)
+theorem degree_map_apply {V W : Type*} (G : SimpleGraph V) (f : V ↪ W) (v : V)
     [Fintype <| G.neighborSet v] [Fintype <| G.map f |>.neighborSet <| f v] :
     (G.map f).degree (f v) = G.degree v := by
   simp_rw [← card_neighborSet_eq_degree, ← Set.toFinset_card, ← Set.ncard_eq_toFinset_card',
