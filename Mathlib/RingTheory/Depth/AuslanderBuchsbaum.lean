@@ -218,7 +218,7 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
       Subsingleton (Ext K (ModuleCat.of R (Shrink.{v} R)) (i + 1))) := by
     refine ⟨fun h ↦ ?_, fun ⟨h1, h3⟩ ↦ ?_⟩
     · have zero : IsZero (AddCommGrpCat.of (Ext K M i)) :=
-        AddCommGrpCat.isZero_iff_subsingleton'.mpr h
+        AddCommGrpCat.isZero_of_iff_subsingleton.mpr h
       constructor
       · have : Subsingleton (Ext K S.X₂ i) := AddCommGrpCat.subsingleton_of_isZero <|
           (Ext.covariant_sequence_exact₂' K S_exact i).isZero_of_both_zeros
@@ -229,9 +229,11 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
           (zero.eq_zero_of_src _) (hom_zero (i + 1))
         exact (finte_free_ext_vanish_iff S.X₁ K (i + 1)).mp this
     · have zero1 : IsZero (AddCommGrpCat.of (Ext K S.X₂ i)) :=
-        AddCommGrpCat.isZero_iff_subsingleton'.mpr ((finte_free_ext_vanish_iff _ _ i).mpr h1)
+        AddCommGrpCat.isZero_of_iff_subsingleton.mpr
+          ((finte_free_ext_vanish_iff _ _ i).mpr h1)
       have zero3 : IsZero (AddCommGrpCat.of (Ext K S.X₁ (i + 1))) :=
-        AddCommGrpCat.isZero_iff_subsingleton'.mpr ((finte_free_ext_vanish_iff _ _ (i + 1)).mpr h3)
+        AddCommGrpCat.isZero_of_iff_subsingleton.mpr
+          ((finte_free_ext_vanish_iff _ _ (i + 1)).mpr h3)
       exact AddCommGrpCat.subsingleton_of_isZero <| ShortComplex.Exact.isZero_of_both_zeros
         (Ext.covariant_sequence_exact₃' K S_exact i (i + 1) rfl)
         (zero1.eq_zero_of_src _) (zero3.eq_zero_of_tgt _)
@@ -334,11 +336,11 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{
         IsIso (AddCommGrpCat.ofHom (S_exact.extClass.postcomp K (Eq.refl (i + 1)))) := by
         apply (isIso_iff_mono_and_epi _).mpr ⟨?_, ?_⟩
         · apply (Ext.covariant_sequence_exact₃' K S_exact i (i + 1) rfl).mono_g
-          apply (AddCommGrpCat.isZero_iff_subsingleton'.mpr ?_).eq_zero_of_src
+          apply (AddCommGrpCat.isZero_of_iff_subsingleton.mpr ?_).eq_zero_of_src
           simpa [finte_free_ext_vanish_iff] using
             ext_subsingleton_of_lt_moduleDepth (lt_of_le_of_lt (le_self_add) lt)
         · apply (Ext.covariant_sequence_exact₁' K S_exact i (i + 1) rfl).epi_f
-          apply (AddCommGrpCat.isZero_iff_subsingleton'.mpr ?_).eq_zero_of_tgt
+          apply (AddCommGrpCat.isZero_of_iff_subsingleton.mpr ?_).eq_zero_of_tgt
           simpa [finte_free_ext_vanish_iff] using ext_subsingleton_of_lt_moduleDepth lt
       have eq_add1 : IsLocalRing.depth S.X₁ = IsLocalRing.depth M + 1 := by
         by_cases eqtop : IsLocalRing.depth S.X₁ = ⊤

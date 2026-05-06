@@ -835,6 +835,11 @@ theorem range_eq_top_of_surjective (f : R →+* S) (hf : Function.Surjective f) 
     f.range = (⊤ : Subring S) :=
   range_eq_top.2 hf
 
+@[simp]
+theorem domRestrict_comp_rangeRestrict (g : S →+* T) (f : R →+* S) :
+    (g.domRestrict f.range).comp (f.rangeRestrict) = g.comp f :=
+  rfl
+
 section eqLocus
 
 variable {S : Type v} [Semiring S]
