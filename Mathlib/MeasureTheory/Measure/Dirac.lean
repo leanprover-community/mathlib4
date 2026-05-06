@@ -21,7 +21,7 @@ and prove some basic facts about it.
 @[expose] public section
 
 open Function Set
-open scoped ENNReal
+open scoped ENNReal NNReal
 
 noncomputable section
 
@@ -231,6 +231,21 @@ theorem Measure.map_dirac [MeasurableSingletonClass α] [MeasurableSingletonClas
 instance Measure.dirac.isProbabilityMeasure {x : α} : IsProbabilityMeasure (dirac x) :=
   ⟨dirac_apply_of_mem <| mem_univ x⟩
 
+lemma _root_.HasSum.isProbabilityMeasure_sum_dirac_ennreal {ι : Type*} {mδ : MeasurableSpace δ}
+    {c : ι → ℝ≥0∞} {d : ι → δ} (h : HasSum c 1) :
+    IsProbabilityMeasure (Measure.sum fun i ↦ c i • .dirac (d i)) where
+  measure_univ := by simp [h.tsum_eq]
+
+lemma _root_.HasSum.isProbabilityMeasure_sum_dirac_nnreal {ι : Type*} {mδ : MeasurableSpace δ}
+    {c : ι → ℝ≥0} {d : ι → δ} (h : HasSum c 1) :
+    IsProbabilityMeasure (Measure.sum fun i ↦ c i • .dirac (d i)) :=
+  (ENNReal.hasSum_coe.2 h).isProbabilityMeasure_sum_dirac_ennreal
+
+lemma _root_.HasSum.isProbabilityMeasure_sum_dirac {ι : Type*} {mδ : MeasurableSpace δ}
+    {c : ι → ℝ} {d : ι → δ} (h1 : ∀ i, 0 ≤ c i) (h2 : HasSum c 1) :
+    IsProbabilityMeasure (Measure.sum fun i ↦ ENNReal.ofReal (c i) • .dirac (d i)) :=
+  HasSum.isProbabilityMeasure_sum_dirac_nnreal (by simpa using h2.toNNReal h1)
+
 instance [hα : Nonempty α] : Nonempty {μ : Measure α // IsProbabilityMeasure μ} :=
   ⟨Measure.dirac hα.some, inferInstance⟩
 
@@ -341,7 +356,7 @@ lemma ae_mem_finset_iff : (∀ᵐ a ∂μ, a ∈ s) ↔ μ = ∑ a ∈ s, μ {a}
     simp_rw [Finset.mem_coe, Set.inter_iUnion]
     rw [measure_biUnion_finset (fun i hi j hj hij ↦ .inter_left' _ <| .inter_right' _ ?_)
       (by measurability)]
-    · simp only [coe_finset_sum, Finset.sum_apply, smul_apply]
+    · simp only [coe_finsetSum, Finset.sum_apply, smul_apply]
       congr with a
       by_cases ha : a ∈ t <;> simp [*]
     simpa

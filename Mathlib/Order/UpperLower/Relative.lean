@@ -16,7 +16,7 @@ public import Mathlib.Order.SetNotation
 This file proves results on `IsRelUpperSet` and `IsRelLowerSet`.
 -/
 
-@[expose] public section
+public section
 
 open Set
 
@@ -141,23 +141,21 @@ protected lemma IsRelLowerSet.iInter₂ [Nonempty ι] [∀ i, Nonempty (κ i)]
     IsRelLowerSet (⋂ (i) (j), f i j) P :=
   .iInter fun i ↦ .iInter (hf i)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isUpperSet_subtype_iff_isRelUpperSet {s : Set { x // P x }} :
     IsUpperSet s ↔ IsRelUpperSet (Subtype.val '' s) P := by
   refine ⟨fun h a x ↦ ?_, fun h a b x y ↦ ?_⟩
   · obtain ⟨a, ma, rfl⟩ := x
     exact ⟨a.2, fun b x y ↦ by simpa [h (show a ≤ ⟨b, y⟩ by exact x) ma]⟩
   · have ma : a.1 ∈ Subtype.val '' s := by simp [a.2, y]
-    simpa only [mem_image, SetCoe.ext_iff, exists_eq_right] using (h ma).2 x b.2
+    simpa only [mem_image, Subtype.coe_inj, exists_eq_right] using (h ma).2 x b.2
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isLowerSet_subtype_iff_isRelLowerSet {s : Set { x // P x }} :
     IsLowerSet s ↔ IsRelLowerSet (Subtype.val '' s) P := by
   refine ⟨fun h a x ↦ ?_, fun h a b x y ↦ ?_⟩
   · obtain ⟨a, ma, rfl⟩ := x
     exact ⟨a.2, fun b x y ↦ by simpa [h (show ⟨b, y⟩ ≤ a by exact x) ma]⟩
   · have ma : a.1 ∈ Subtype.val '' s := by simp [a.2, y]
-    simpa only [mem_image, SetCoe.ext_iff, exists_eq_right] using (h ma).2 x b.2
+    simpa only [mem_image, Subtype.coe_inj, exists_eq_right] using (h ma).2 x b.2
 
 instance : SetLike (RelUpperSet P) α where
   coe := RelUpperSet.carrier

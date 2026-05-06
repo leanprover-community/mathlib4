@@ -466,6 +466,11 @@ theorem card_eq_four {s : Multiset α} : card s = 4 ↔ ∃ x y z w, s = {x, y, 
         Exists.imp fun _b => Exists.imp fun _c => Exists.imp fun _d => congr_arg _,
     fun ⟨_a, _b, _c, _d, e⟩ => e.symm ▸ rfl⟩
 
+theorem card_eq_succ_iff {s : Multiset α} {n : ℕ} :
+    card s = n + 1 ↔ ∃ a t, a ::ₘ t = s ∧ card t = n := by
+  refine ⟨?_, by aesop⟩
+  induction s using Multiset.induction generalizing n with aesop
+
 /-! ### Map for partial functions -/
 
 @[simp]
@@ -517,8 +522,7 @@ theorem rel_eq {s t : Multiset α} : Rel (· = ·) s t ↔ s = t := by
   constructor
   · intro h
     induction h <;> simp [*]
-  · intro h
-    subst h
+  · rintro rfl
     exact rel_eq_refl
 
 theorem Rel.mono {r p : α → β → Prop} {s t} (hst : Rel r s t)

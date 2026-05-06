@@ -92,12 +92,7 @@ alias not_principal_iff_of_monotone := not_isPrincipal_iff_of_monotone
 @[deprecated (since := "2026-03-17")]
 alias principal_zero := isPrincipal_zero
 
-@[simp]
-theorem isPrincipal_one_iff : IsPrincipal op 1 ↔ op 0 0 = 0 := by
-  refine ⟨fun h => ?_, fun h a b ha hb => ?_⟩
-  · rw [← lt_one_iff]
-    exact h zero_lt_one zero_lt_one
-  · rwa [lt_one_iff, ha, hb] at *
+@[simp] theorem isPrincipal_one_iff : IsPrincipal op 1 ↔ op 0 0 = 0 := by simp [IsPrincipal]
 
 @[deprecated (since := "2026-03-17")]
 alias principal_one_iff := isPrincipal_one_iff
@@ -185,8 +180,19 @@ alias not_bddAbove_principal := not_bddAbove_setOf_isPrincipal
 
 /-! #### Additive principal ordinals -/
 
-theorem isPrincipal_add_one : IsPrincipal (· + ·) 1 :=
-  isPrincipal_one_iff.2 <| zero_add 0
+theorem isPrincipal_add_iff_add_self_lt : IsPrincipal (· + ·) a ↔ ∀ b < a, b + b < a :=
+  isPrincipal_iff_of_monotone
+    (fun x _ _ h ↦ add_le_add_right h x) (fun x _ _ h ↦ add_le_add_left h x)
+
+theorem IsPrincipal.mul_natCast_lt (ho : IsPrincipal (· + ·) o) (ha : a < o) (n : ℕ) :
+    a * n < o := by
+  induction n with
+  | zero => simpa using ha.pos
+  | succ n h =>
+    rw [Nat.cast_add_one, mul_add_one]
+    exact ho h ha
+
+theorem isPrincipal_add_one : IsPrincipal (· + ·) 1 := by simp
 
 @[deprecated (since := "2026-03-17")]
 alias principal_add_one := isPrincipal_add_one
@@ -212,15 +218,20 @@ theorem isPrincipal_add_iff_add_left_eq_self : IsPrincipal (· + ·) o ↔ ∀ a
   · rcases lt_or_ge 1 o with ho₁ | ho₁
     · exact op_eq_self_of_isPrincipal hao (isNormal_add_right a) ho
         (isSuccLimit_of_isPrincipal_add ho₁ ho)
-    · rcases le_one_iff.1 ho₁ with (rfl | rfl)
-      · exact (not_lt_zero hao).elim
-      · rw [lt_one_iff] at hao
-        rw [hao, zero_add]
+    · cases le_one_iff.1 ho₁ <;> simp_all
   · rw [← h a hao]
     exact (isNormal_add_right a).strictMono hbo
 
 @[deprecated (since := "2026-03-17")]
 alias principal_add_iff_add_left_eq_self := isPrincipal_add_iff_add_left_eq_self
+
+theorem IsPrincipal.add_eq_right (ho : IsPrincipal (· + ·) o) (ha : a < o) : a + o = o :=
+  isPrincipal_add_iff_add_left_eq_self.1 ho a ha
+
+theorem IsPrincipal.add_eq_right_of_le (hb : IsPrincipal (· + ·) b)
+    (hab : a < b) (hbc : b ≤ c) : a + c = c := by
+  rw [← Ordinal.add_sub_cancel_of_le hbc, ← add_assoc, hb.add_eq_right hab,
+    Ordinal.add_sub_cancel_of_le hbc]
 
 theorem exists_lt_add_of_not_isPrincipal_add (ha : ¬ IsPrincipal (· + ·) a) :
     ∃ b < a, ∃ c < a, b + c = a := by
@@ -249,53 +260,43 @@ theorem isPrincipal_add_omega0 : IsPrincipal (· + ·) ω :=
 @[deprecated (since := "2026-03-17")]
 alias principal_add_omega0 := isPrincipal_add_omega0
 
-theorem add_omega0_opow (h : a < ω ^ b) : a + ω ^ b = ω ^ b := by
-  refine le_antisymm ?_ le_add_self
-  induction b using limitRecOn with
-  | zero => simpa using h
-  | succ =>
-    rw [opow_succ] at h
-    rcases (lt_mul_iff_of_isSuccLimit isSuccLimit_omega0).1 h with ⟨x, xo, ax⟩
-    grw [ax, opow_succ, ← mul_add, add_omega0 xo]
-  | limit b l IH =>
-    rcases (lt_opow_of_isSuccLimit omega0_ne_zero l).1 h with ⟨x, xb, ax⟩
-    apply (((isNormal_add_right a).comp <| isNormal_opow one_lt_omega0).le_iff_forall_le l).2
-    intro y yb
-    calc a + ω ^ y ≤ a + ω ^ max x y := by gcongr; exacts [omega0_pos, le_max_right ..]
-    _ ≤ ω ^ max x y :=
-      IH _ (max_lt xb yb) <| ax.trans_le <| opow_le_opow_right omega0_pos <| le_max_left x y
-    _ ≤ ω ^ b :=
-      opow_le_opow_right omega0_pos <| (max_lt xb yb).le
+-- `add_omega0` is proven in the Arithmetic file.
 
-theorem isPrincipal_add_omega0_opow (o : Ordinal) : IsPrincipal (· + ·) (ω ^ o) :=
-  isPrincipal_add_iff_add_left_eq_self.2 fun _ => add_omega0_opow
+theorem add_of_omega0_le : a < ω → ω ≤ b → a + b = b :=
+  isPrincipal_add_omega0.add_eq_right_of_le
+
+theorem isPrincipal_add_omega0_opow (o : Ordinal) : IsPrincipal (· + ·) (ω ^ o) := by
+  obtain rfl | ha' := eq_or_ne o 0
+  · rw [opow_zero, isPrincipal_one_iff, add_zero]
+  · rw [isPrincipal_add_iff_add_self_lt]
+    intro a ha
+    obtain ⟨c, hc, m, hm⟩ := (lt_omega0_opow ha').1 ha
+    apply (add_lt_add_of_le_of_lt hm.le hm).trans_le
+    rw [← mul_add, ← Nat.cast_add]
+    exact (omega0_opow_mul_nat_lt hc _).le
 
 @[deprecated (since := "2026-03-17")]
 alias principal_add_omega0_opow := isPrincipal_add_omega0_opow
 
+theorem add_omega0_opow (h : a < ω ^ b) : a + ω ^ b = ω ^ b :=
+  (isPrincipal_add_omega0_opow b).add_eq_right h
+
+theorem add_of_omega0_opow_le (h₁ : a < ω ^ b) (h₂ : ω ^ b ≤ c) : a + c = c :=
+  (isPrincipal_add_omega0_opow b).add_eq_right_of_le h₁ h₂
+
+@[deprecated (since := "2026-03-18")]
+alias add_absorp := add_of_omega0_opow_le
+
 /-- The main characterization theorem for additive principal ordinals. -/
 theorem isPrincipal_add_iff_zero_or_omega0_opow :
     IsPrincipal (· + ·) o ↔ o = 0 ∨ o ∈ Set.range (ω ^ · : Ordinal → Ordinal) := by
-  rcases eq_or_ne o 0 with (rfl | ho)
-  · simp only [isPrincipal_zero, Or.inl]
-  · rw [isPrincipal_add_iff_add_left_eq_self]
-    simp only [ho, false_or]
-    refine
-      ⟨fun H => ⟨_, ((lt_or_eq_of_le (opow_log_le_self _ ho)).resolve_left fun h => ?_)⟩,
-        fun ⟨b, e⟩ => e.symm ▸ fun a => add_omega0_opow⟩
-    have := H _ h
-    have := lt_opow_succ_log_self one_lt_omega0 o
-    rw [opow_succ, lt_mul_iff_of_isSuccLimit isSuccLimit_omega0] at this
-    rcases this with ⟨a, ao, h'⟩
-    rcases lt_omega0.1 ao with ⟨n, rfl⟩
-    clear ao
-    revert h'
-    apply not_lt_of_ge
-    suffices e : ω ^ log ω o * n + o = o by
-      simpa only [e] using le_self_add (a := ω ^ log ω o * ↑n) (b := o)
-    induction n with
-    | zero => simp [Nat.cast_zero, mul_zero, zero_add]
-    | succ n IH => simp only [Nat.cast_succ, mul_add_one, add_assoc, this, IH]
+  constructor
+  · rw [or_iff_not_imp_left]
+    refine fun H ho ↦ ⟨log ω o, (opow_log_le_self ω ho).eq_of_not_lt ?_⟩
+    obtain ⟨n, hn⟩ := lt_omega0_opow_succ.1 (lt_opow_succ_log_self one_lt_omega0 o)
+    exact fun h ↦ hn.not_gt <| H.mul_natCast_lt h n
+  · rintro (rfl | ⟨a, rfl⟩)
+    exacts [isPrincipal_zero, isPrincipal_add_omega0_opow a]
 
 @[deprecated (since := "2026-03-17")]
 alias principal_add_iff_zero_or_omega0_opow := isPrincipal_add_iff_zero_or_omega0_opow
@@ -312,9 +313,6 @@ theorem isPrincipal_add_opow_of_isPrincipal_add {a} (ha : IsPrincipal (· + ·) 
 
 @[deprecated (since := "2026-03-17")]
 alias principal_add_opow_of_principal_add := isPrincipal_add_opow_of_isPrincipal_add
-
-theorem add_absorp (h₁ : a < ω ^ b) (h₂ : ω ^ b ≤ c) : a + c = c := by
-  rw [← Ordinal.add_sub_cancel_of_le h₂, ← add_assoc, add_omega0_opow h₁]
 
 theorem isPrincipal_add_mul_of_isPrincipal_add (a : Ordinal.{u}) {b : Ordinal.{u}} (hb₁ : b ≠ 1)
     (hb : IsPrincipal (· + ·) b) : IsPrincipal (· + ·) (a * b) := by
@@ -339,30 +337,22 @@ alias principal_add_mul_of_principal_add := isPrincipal_add_mul_of_isPrincipal_a
 
 /-! #### Multiplicative principal ordinals -/
 
-theorem isPrincipal_mul_one : IsPrincipal (· * ·) 1 := by
-  rw [isPrincipal_one_iff]
-  exact zero_mul _
+theorem isPrincipal_mul_one : IsPrincipal (· * ·) 1 := by simp
 
 @[deprecated (since := "2026-03-17")]
 alias principal_mul_one := isPrincipal_mul_one
 
 theorem isPrincipal_mul_two : IsPrincipal (· * ·) 2 := by
   intro a b ha hb
-  rw [← one_add_one_eq_two, lt_add_one_iff] at *
-  convert mul_le_mul' ha hb
-  exact (mul_one 1).symm
+  rw [lt_two_iff] at *
+  simpa using mul_le_mul' ha hb
 
 @[deprecated (since := "2026-03-17")]
 alias principal_mul_two := isPrincipal_mul_two
 
 theorem isPrincipal_mul_of_le_two (ho : o ≤ 2) : IsPrincipal (· * ·) o := by
-  rcases lt_or_eq_of_le ho with (ho | rfl)
-  · rw [← one_add_one_eq_two, lt_add_one_iff] at ho
-    rcases lt_or_eq_of_le ho with (ho | rfl)
-    · rw [lt_one_iff.1 ho]
-      exact isPrincipal_zero
-    · exact isPrincipal_mul_one
-  · exact isPrincipal_mul_two
+  obtain rfl | rfl | rfl := le_two_iff.1 ho
+  exacts [isPrincipal_zero, isPrincipal_mul_one, isPrincipal_mul_two]
 
 @[deprecated (since := "2026-03-17")]
 alias principal_mul_of_le_two := isPrincipal_mul_of_le_two
@@ -370,12 +360,9 @@ alias principal_mul_of_le_two := isPrincipal_mul_of_le_two
 theorem isPrincipal_add_of_isPrincipal_mul (ho : IsPrincipal (· * ·) o) (ho₂ : o ≠ 2) :
     IsPrincipal (· + ·) o := by
   rcases lt_or_gt_of_ne ho₂ with ho₁ | ho₂
-  · rw [← one_add_one_eq_two, lt_add_one_iff] at ho₁
-    exact isPrincipal_add_of_le_one ho₁
-  · refine fun a b hao hbo => lt_of_le_of_lt ?_ (ho (max_lt hao hbo) ho₂)
-    dsimp only
-    rw [← one_add_one_eq_two, mul_add, mul_one]
-    exact add_le_add (le_max_left a b) (le_max_right a b)
+  · exact isPrincipal_add_of_le_one <| lt_two_iff.mp ho₁
+  · simp_rw [isPrincipal_add_iff_add_self_lt, ← Ordinal.mul_two]
+    exact fun a ha ↦ ho ha ho₂
 
 @[deprecated (since := "2026-03-17")]
 alias principal_add_of_principal_mul := isPrincipal_add_of_isPrincipal_mul

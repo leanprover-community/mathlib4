@@ -78,7 +78,6 @@ theorem liesOver_map_of_liesOver [Algebra R Sₚ] [IsScalarTower R S Sₚ] [IsSc
 
 attribute [local instance] Ideal.Quotient.field
 
-set_option backward.isDefEq.respectTransparency false in
 include p in
 theorem exists_algebraMap_quot_eq_of_mem_quot [P.IsMaximal]
     (x : Sₚ ⧸ P.map (algebraMap S Sₚ)) :
@@ -104,7 +103,7 @@ the complement of `p` and `P` is a maximal ideal of `S` above `p`.
 Note that this isomorphism makes the obvious diagram involving `R ⧸ p ≃+* Rₚ ⧸ maximalIdeal Rₚ`
 commute, see `IsLocalization.AtPrime.algebraMap_equivQuotMaximalIdeal_symm_apply`.
 -/
-noncomputable def equivQuotientMapOfIsMaximal [p.IsPrime] [P.IsMaximal] :
+noncomputable def equivQuotientMapOfIsMaximal [P.IsMaximal] :
     S ⧸ P ≃+* Sₚ ⧸ P.map (algebraMap S Sₚ) :=
   .trans
     (Ideal.quotEquivOfEq (by
@@ -118,7 +117,6 @@ theorem equivQuotientMapOfIsMaximal_apply_mk [P.IsMaximal] (x : S) :
     equivQuotientMapOfIsMaximal p Sₚ P (Ideal.Quotient.mk _ x) =
       (Ideal.Quotient.mk _ (algebraMap S Sₚ x)) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem equivQuotientMapOfIsMaximal_symm_apply_mk [P.IsMaximal] (x : S)
     (s : algebraMapSubmonoid S p.primeCompl) :

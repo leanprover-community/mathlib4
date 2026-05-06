@@ -8,6 +8,10 @@ module
 public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.RingTheory.AdicCompletion.Exactness
 public import Mathlib.RingTheory.Finiteness.Ideal
+public import Mathlib.RingTheory.MvPowerSeries.Equiv
+public import Mathlib.RingTheory.PowerSeries.Basic
+
+import Mathlib.RingTheory.AdicCompletion.Topology
 
 /-!
 # Completeness of the Adic Completion for Finitely Generated Ideals
@@ -31,6 +35,9 @@ when the ideal `I` is finitely generated.
 
 * `AdicCompletion.isAdicComplete`: `AdicCompletion I M` is `I`-adically complete if `I` is
   finitely generated.
+
+* `MvPowerSeries.isAdicComplete`: Multivariate power series is adic complete with respect to
+  the ideal spanned by all variables when the index is finite.
 
 -/
 
@@ -64,7 +71,6 @@ theorem ofPowSMul_val_apply_eq_zero (h : a ≤ b)
   refine Quotient.induction_on _ (x.val a) fun z ↦ ?_
   simpa using pow_smul_top_le _ _ h z.prop
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ofPowSMul_injective (n : ℕ) : Function.Injective (ofPowSMul I M n) := by
   rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
   intro x hx; ext i
@@ -79,7 +85,7 @@ private lemma ofValEqZeroAux_exists {x : AdicCompletion I M} (h : c = b + a)
   simpa [← LinearMap.mem_range, range_powSMulQuotInclusion] using
     (val_apply_mem_smul_top_iff I (show a ≤ c by lia)).mpr ha
 
-/-- An auxillary lift function used in the definition of `ofValEqZero`.
+/-- An auxiliary lift function used in the definition of `ofValEqZero`.
 Use `ofValEqZero` instead. -/
 def ofValEqZeroAux {x : AdicCompletion I M} (h : c = b + a) (ha : x.val a = 0) :
     ↥(I ^ a • ⊤ : Submodule R M) ⧸ I ^ b • (⊤ : Submodule R ↥(I ^ a • ⊤ : Submodule R M)) :=
@@ -110,7 +116,6 @@ theorem ofPowSMul_ofValEqZero {n : ℕ} {x : AdicCompletion I M} (hxn : x.val n 
     rw [ofPowSMul_val_apply _ (by rfl), ofValEqZero, ofValEqZeroAux_prop]
   rw [ofPowSMul_val_apply_eq_zero _ h.le, ← x.prop h.le, hxn, _root_.map_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem restrictScalars_range_ofPowSMul_eq_ker_eval {n : ℕ} :
     (ofPowSMul I M n).range.restrictScalars R = (eval I M n).ker := by
   refine le_antisymm (fun x hx ↦ ?_) (fun x hx ↦ ?_)
@@ -119,7 +124,6 @@ theorem restrictScalars_range_ofPowSMul_eq_ker_eval {n : ℕ} :
   simp only [LinearMap.mem_ker, coe_eval] at hx
   use ofValEqZero I hx; simp
 
-set_option backward.isDefEq.respectTransparency false in
 /- An intermediate helper lemma for the theorem below to avoid introducing
 `AdicCompletion.finsuppSum` (the `Finsupp` version of `AdicCompletion.sum`).
 It proves the equality of two linear maps:
@@ -145,7 +149,6 @@ private lemma lsum_smul_comp_finsuppLEquivDirectSum_symm {ι : Type*} [Decidable
     sumEquivOfFintype_apply, sum_lof, map_mk, AdicCauchySequence.map_apply_coe, map_smul]
   rw [← Ideal.Quotient.algebraMap_eq, algebraMap_smul]
 
-set_option backward.isDefEq.respectTransparency false in
 variable {I} in
 @[stacks 05GG "(2)"]
 theorem pow_smul_top_eq_ker_eval {n : ℕ} (h : I.FG) : I ^ n • ⊤ = (eval I M n).ker := by
@@ -192,3 +195,27 @@ theorem isAdicComplete (h : I.FG) : IsAdicComplete I (AdicCompletion I M) where
     simp [L]
 
 end AdicCompletion
+
+namespace MvPowerSeries
+
+instance {σ : Type*} [Finite σ] :
+    IsAdicComplete (.span (.range X) : Ideal (MvPowerSeries σ R)) (MvPowerSeries σ R) := by
+  have : Ideal.map (toAdicCompletionAlgEquiv σ R).toRingEquiv (Ideal.span (Set.range X)) =
+    (MvPolynomial.idealOfVars σ R).map (algebraMap ..):= by
+    simp_rw [Ideal.map_span, ← Set.range_comp]
+    congr 2; ext1
+    simp [AdicCompletion.algebraMap_apply, ← MvPolynomial.coe_X, toAdicCompletion_coe]
+  rw [← IsAdicComplete.congr_ringEquiv _ (toAdicCompletionAlgEquiv σ R).toRingEquiv, this,
+    IsAdicComplete.map_algebraMap_iff]
+  exact AdicCompletion.isAdicComplete (MvPolynomial.idealOfVars_fg σ R)
+
+end MvPowerSeries
+
+namespace PowerSeries
+
+instance : IsAdicComplete (.span {X} : Ideal (PowerSeries R)) (PowerSeries R) := by
+  have : IsAdicComplete (.span (.range MvPowerSeries.X) : Ideal (MvPowerSeries Unit R))
+    (MvPowerSeries Unit R) := inferInstance
+  rwa [Set.range_unique] at this
+
+end PowerSeries
