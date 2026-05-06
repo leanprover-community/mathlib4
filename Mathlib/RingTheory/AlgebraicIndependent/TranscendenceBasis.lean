@@ -256,12 +256,22 @@ theorem Algebra.EssFiniteType.of_isScalarTower
   let bFL := bKL ∪ bFKL
   have : Algebra.IsAlgebraic (IntermediateField.adjoin F bFL) L := by
     suffices bFL = range (Sum.elim Subtype.val (algebraMap K L ∘ Subtype.val)) by
-      convert IsTranscendenceBasis.isAlgebraic_field (hbFK.sumElim_comp hbKL)
-    simp_rw [Sum.elim_range, range_comp, Subtype.range_coe_subtype, setOf_mem_eq, bFL, bFKL]
+      rw [this]
+      exact (hbFK.sumElim_comp hbKL).isAlgebraic_field
+    simp [range_comp, bFL, bFKL]
   have : EssFiniteType (IntermediateField.adjoin F bFL) L :=
     .of_comp F (IntermediateField.adjoin F bFL) L
   have : FiniteDimensional (IntermediateField.adjoin F bFL) L :=
     finite_of_essFiniteType_of_isAlgebraic
+  -- todo: K adjoin bKL is finite dimensional over F adjoint bFL
+  have : Algebra.IsAlgebraic (IntermediateField.adjoin F bFK) K := by
+    suffices bFK = range Subtype.val by
+      rw [this]
+      exact hbFK.isAlgebraic_field
+    simp
+
+
+
   have h1 : IntermediateField.adjoin F bFL ≤ (IntermediateField.adjoin K bKL).restrictScalars F := by
     sorry
   -- figure out the best places for these things to live
