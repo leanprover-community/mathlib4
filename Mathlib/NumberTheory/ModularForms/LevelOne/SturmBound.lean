@@ -30,14 +30,6 @@ open UpperHalfPlane ModularForm CuspForm MatrixGroups
 
 namespace ModularForm
 
-private lemma analyticAt_cuspFunction_discriminant :
-    AnalyticAt ℂ (cuspFunction 1 ModularForm.discriminant) 0 :=
-  CuspForm.coe_discriminant ▸ ModularFormClass.analyticAt_cuspFunction_zero
-    (CuspForm.discriminant : CuspForm 𝒮ℒ 12) one_pos one_mem_strictPeriods_SL
-
-private lemma eq_zero_of_neg_weight {k : ℤ} (hk : k < 0) (f : ModularForm 𝒮ℒ k) : f = 0 :=
-  coe_eq_zero_iff f |>.mp <| ModularFormClass.levelOne_neg_weight_eq_zero hk f
-
 private lemma qExpansion_eq_qExpansion_discriminant_mul {k : ℤ} (f : ModularForm 𝒮ℒ k)
     (hcusp : (qExpansion 1 f).coeff 0 = 0) :
     qExpansion 1 f = qExpansion 1 ModularForm.discriminant *
@@ -51,7 +43,9 @@ private lemma qExpansion_eq_qExpansion_discriminant_mul {k : ℤ} (f : ModularFo
       toCuspForm_apply] at h1
     exact h1
   rw [hfun]
-  exact UpperHalfPlane.qExpansion_mul analyticAt_cuspFunction_discriminant
+  exact UpperHalfPlane.qExpansion_mul
+    (CuspForm.coe_discriminant ▸ ModularFormClass.analyticAt_cuspFunction_zero
+      (CuspForm.discriminant : CuspForm 𝒮ℒ 12) one_pos one_mem_strictPeriods_SL)
     (ModularFormClass.analyticAt_cuspFunction_zero g one_pos one_mem_strictPeriods_SL)
 
 private lemma orderOf_qExpansion_discriminant :
@@ -74,7 +68,8 @@ private lemma eq_zero_of_qExpansion_coeff_zero_lt :
   | zero =>
     intro k f hk _
     push_cast at hk
-    exact eq_zero_of_neg_weight (by omega) f
+    exact rank_zero_iff_forall_zero.mp
+      (ModularForm.levelOne_neg_weight_rank_zero (by omega)) f
   | succ n ih =>
     intro k f hk hcoeff
     have h0 : (qExpansion 1 f).coeff 0 = 0 := hcoeff 0 (Nat.zero_lt_succ n)
@@ -101,7 +96,7 @@ has zero coefficient on `q^i` in its q-expansion for every `i ≥ 0` with `12 * 
 theorem sturm_bound_levelOne {k : ℤ} (f : ModularForm 𝒮ℒ k)
     (h : ∀ i : ℕ, 12 * (i : ℤ) ≤ k → (qExpansion 1 f).coeff i = 0) : f = 0 := by
   by_cases hk_neg : k < 0
-  · exact eq_zero_of_neg_weight hk_neg f
+  · exact rank_zero_iff_forall_zero.mp (ModularForm.levelOne_neg_weight_rank_zero hk_neg) f
   push Not at hk_neg
   refine eq_zero_of_qExpansion_coeff_zero_lt (k.toNat / 12 + 1) f ?_ fun i hi => h i ?_
   · omega
