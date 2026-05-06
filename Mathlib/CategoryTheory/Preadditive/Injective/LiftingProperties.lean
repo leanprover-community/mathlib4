@@ -17,7 +17,7 @@ right lifting property with respect to monomorphisms,
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 
