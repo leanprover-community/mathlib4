@@ -166,7 +166,7 @@ a submersion at `x` includes a choice of linear isomorphism between `E` and `E''
 where the choice of `F` enters.
 If you need stronger control over the complement `F`, use `IsSubmersionAtOfComplement` instead.
 -/
-irreducible_def IsSubmersionAt (f : M → N) (x : M) : Prop :=
+@[no_expose] def IsSubmersionAt (f : M → N) (x : M) : Prop :=
   ∃ (F : Type u) (_ : NormedAddCommGroup F) (_ : NormedSpace 𝕜 F),
     IsSubmersionAtOfComplement F I J n f x
 
@@ -350,7 +350,6 @@ while being a submersion at `x` requires the existence of a complement in the sa
 the model normed space of `N`. This is solved by `smallComplement` and `smallEquiv`. -/
 lemma isSubmersionAt (h : IsSubmersionAtOfComplement F I J n f x) :
     IsSubmersionAt I J n f x := by
-  rw [IsSubmersionAt_def]
   use h.smallComplement, by infer_instance, by infer_instance
   exact (IsSubmersionAtOfComplement.congr_F h.smallEquiv).mp h
 
@@ -366,7 +365,6 @@ lemma mk_of_charts (equiv : E ≃L[𝕜] (E'' × F))
     (hsource : domChart.source ⊆ f ⁻¹' codChart.source)
     (hwrittenInExtend : EqOn ((codChart.extend J) ∘ f ∘ (domChart.extend I).symm) (Prod.fst ∘ equiv)
       (domChart.extend I).target) : IsSubmersionAt I J n f x := by
-  rw [IsSubmersionAt_def]
   have aux : IsSubmersionAtOfComplement F I J n f x := by
     apply IsSubmersionAtOfComplement.mk_of_charts <;> assumption
   use aux.smallComplement, by infer_instance, by infer_instance
@@ -383,7 +381,6 @@ lemma mk_of_continuousAt {f : M → N} {x : M} (hf : ContinuousAt f x) (equiv : 
     (hcodChart : codChart ∈ IsManifold.maximalAtlas J n N)
     (hwrittenInExtend : EqOn ((codChart.extend J) ∘ f ∘ (domChart.extend I).symm) (Prod.fst ∘ equiv)
       (domChart.extend I).target) : IsSubmersionAt I J n f x := by
-  rw [IsSubmersionAt_def]
   have aux : IsSubmersionAtOfComplement F I J n f x := by
     apply IsSubmersionAtOfComplement.mk_of_continuousAt <;> assumption
   use aux.smallComplement, by infer_instance, by infer_instance
@@ -391,12 +388,10 @@ lemma mk_of_continuousAt {f : M → N} {x : M} (hf : ContinuousAt f x) (equiv : 
 
 /-- A choice of complement of the model normed space `E` of `M` in the model normed space
 `E'` of `N` -/
-def complement (h : IsSubmersionAt I J n f x) : Type u := by
-  rw [IsSubmersionAt_def] at h
-  exact Classical.choose h
+@[no_expose] def complement (h : IsSubmersionAt I J n f x) : Type u := Classical.choose h
 
 instance (h : IsSubmersionAt I J n f x) : NormedAddCommGroup h.complement := by
-  rw [IsSubmersionAt_def] at h
+  unfold IsSubmersionAt at h--rw [IsSubmersionAt_def] at h
   exact Classical.choose <| Classical.choose_spec h
 
 instance (h : IsSubmersionAt I J n f x) : NormedSpace 𝕜 h.complement := by
@@ -474,7 +469,6 @@ lemma target_subset_preimage_target (h : IsSubmersionAt I J n f x) :
 then `g` is a submersion at `x`. -/
 lemma congr_of_eventuallyEq (hf : IsSubmersionAt I J n f x) (hfg : f =ᶠ[𝓝 x] g) :
     IsSubmersionAt I J n g x := by
-  rw [IsSubmersionAt_def]
   use hf.complement, by infer_instance, by infer_instance
   exact hf.isSubmersionAtOfComplement_complement.congr_of_eventuallyEq hfg
 
