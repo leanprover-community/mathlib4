@@ -37,11 +37,11 @@ theorem length_iterate (f : V → V) (hadj : ∀ v, G.Adj v (f v)) (v : V) (n : 
     (iterate f hadj v n).length = n := by
   simp [iterate, -List.iterate]
 
-/-- The support of `Walk.iterate` is `[x, f x, f^[2] x, ..., f^[n] x]`. -/
+/-- The support of `Walk.iterate` is `[v, f v, f^[2] v, ..., f^[n] v]`. -/
 @[simp]
-theorem support_iterate (f : α → α) (hadj : ∀ x, G.Adj x (f x)) (x : α) (n : ℕ) :
-    (iterate f hadj x n).support = List.iterate f x (n + 1) := by
-  simp only [iterate, support_copy, support_ofSupport]
+theorem support_iterate (f : V → V) (hadj : ∀ v, G.Adj v (f v)) (v : V) (n : ℕ) :
+    (iterate f hadj v n).support = List.iterate f v (n + 1) := by
+  simp [iterate, -List.iterate]
 
 /-- The edges of `Walk.iterate` are `s(f^[i] x, f^[i+1] x)` for `i < n`. -/
 theorem edges_iterate (f : α → α) (hadj : ∀ x, G.Adj x (f x)) (x : α) (n : ℕ) :
