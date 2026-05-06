@@ -217,7 +217,6 @@ instance for pi types, hence the direct use of `nnrpow` here. -/
 lemma nnrpow_map_pi {c : ∀ i, C i} {x : ℝ≥0} (hc : ∀ i, 0 ≤ c i := by cfc_tac) :
     nnrpow c x = fun i => (c i) ^ x := by
   simp only [nnrpow_def]
-  unfold nnrpow
   exact cfcₙ_map_pi (S := ℝ) _ c
 
 lemma nnrpow_eq_nnrpow_pi {c : ∀ i, C i} {x : ℝ≥0} (hc : ∀ i, 0 ≤ c i := by cfc_tac) :
@@ -583,7 +582,6 @@ lemma rpow_map_prod {a : A} {b : B} {x : ℝ} (ha : IsUnit a) (hb : IsUnit b)
   have ha'' : 0 ∉ spectrum ℝ≥0 a := spectrum.zero_notMem _ ha
   have hb'' : 0 ∉ spectrum ℝ≥0 b := spectrum.zero_notMem _ hb
   simp only [rpow_def]
-  unfold rpow
   refine cfc_map_prod (R := ℝ≥0) (S := ℝ) _ a b (by cfc_cont_tac) ?_
   rw [Prod.le_def]
   constructor <;> simp [ha', hb']
@@ -613,7 +611,6 @@ lemma rpow_map_pi {c : ∀ i, C i} {x : ℝ} (hc : ∀ i, IsUnit (c i))
     rpow c x = fun i => (c i) ^ x := by
   have hc'' : ∀ i, 0 ∉ spectrum ℝ≥0 (c i) := fun i => spectrum.zero_notMem _ (hc i)
   simp only [rpow_def]
-  unfold rpow
   exact cfc_map_pi (S := ℝ) _ c
 
 lemma rpow_eq_rpow_pi {c : ∀ i, C i} {x : ℝ} (hc : ∀ i, IsUnit (c i))
