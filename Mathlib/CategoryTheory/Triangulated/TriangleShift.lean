@@ -62,9 +62,7 @@ noncomputable def Triangle.shiftFunctor (n : ℤ) : Triangle C ⥤ Triangle C wh
       comm₃ := by
         dsimp
         rw [Linear.units_smul_comp, Linear.comp_units_smul, ← Functor.map_comp_assoc, ← f.comm₃,
-          Functor.map_comp, assoc, assoc, ← Functor.comp_map,
-          ← (shiftFunctorComm C 1 n).hom.naturality]
-        rfl }
+          Functor.map_comp, assoc, assoc, dsimp% (shiftFunctorComm C 1 n).hom.naturality] }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism `Triangle.shiftFunctor C 0 ≅ 𝟭 (Triangle C)`. -/
