@@ -80,7 +80,7 @@ class IsSplitEpi {X Y : C} (f : X ⟶ Y) : Prop where
 attribute [reassoc (attr := simp)] SplitMono.id SplitEpi.id
 
 /-- A composition of `SplitEpi` is a split `SplitEpi`. -/
-@[to_dual (attr := simps) (reorder := X Z, f g, sef seg)
+@[to_dual (attr := simps) (reorder := X Z, f g, sef seg) (rename := f ↔ g, sef → smg, seg → smf)
 /-- A composition of `SplitMono` is a `SplitMono`. -/]
 def SplitEpi.comp {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} (sef : SplitEpi f) (seg : SplitEpi g) :
     SplitEpi (f ≫ g) where
