@@ -411,7 +411,8 @@ theorem abs_one_sub_fract : |1 - fract a| = 1 - fract a :=
 
 @[simp]
 theorem fract_intCast (z : ℤ) : fract (z : R) = 0 := by
-  rw [fract, floor_intCast]
+  unfold fract
+  rw [floor_intCast]
   exact sub_self _
 
 @[simp]

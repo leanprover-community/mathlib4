@@ -62,8 +62,7 @@ private def polyBinomAux1 (x y : R) (e : ℕ) (a : R) :
 private theorem poly_binom_aux2 (f : R[X]) (x y : R) :
     f.eval (x + y) =
       f.sum fun e a => a * (x ^ e + e * x ^ (e - 1) * y + (polyBinomAux1 x y e a).val * y ^ 2) := by
-  rw [eval, eval₂_eq_sum]
-  congr with (n z)
+  unfold eval; rw [eval₂_eq_sum]; congr with (n z)
   apply (polyBinomAux1 x y _ _).property
 
 set_option backward.privateInPublic true in

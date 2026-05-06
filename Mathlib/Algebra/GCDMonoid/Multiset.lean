@@ -88,7 +88,8 @@ theorem lcm_dedup (s : Multiset α) : (dedup s).lcm = s.lcm :=
   Multiset.induction_on s (by simp) fun a s IH ↦ by
     by_cases h : a ∈ s; swap; · simp [IH, h]
     simp only [h, dedup_cons_of_mem, IH, lcm_cons]
-    rw [lcm, ← cons_erase h, fold_cons_left, ← lcm_assoc, lcm_same]
+    unfold lcm
+    rw [← cons_erase h, fold_cons_left, ← lcm_assoc, lcm_same]
     apply lcm_eq_of_associated_left (associated_normalize _)
 
 @[simp]
@@ -177,7 +178,8 @@ theorem gcd_dedup (s : Multiset α) : (dedup s).gcd = s.gcd :=
   Multiset.induction_on s (by simp) fun a s IH ↦ by
     by_cases h : a ∈ s; swap; · simp [IH, h]
     simp only [h, dedup_cons_of_mem, IH, gcd_cons]
-    rw [gcd, ← cons_erase h, fold_cons_left, ← gcd_assoc, gcd_same]
+    unfold gcd
+    rw [← cons_erase h, fold_cons_left, ← gcd_assoc, gcd_same]
     apply (associated_normalize _).gcd_eq_left
 
 @[simp]

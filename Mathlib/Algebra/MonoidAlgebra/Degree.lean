@@ -268,7 +268,8 @@ theorem apply_eq_zero_of_not_le_supDegree {p : R[A]} {a : A} (hlt : ¬ D a ≤ p
 
 theorem supDegree_withBot_some_comp {s : AddMonoidAlgebra R A} (hs : s.support.Nonempty) :
     supDegree (WithBot.some ∘ D) s = supDegree D s := by
-  rw [AddMonoidAlgebra.supDegree, ← Finset.coe_sup' hs, Finset.sup'_eq_sup]
+  unfold AddMonoidAlgebra.supDegree
+  rw [← Finset.coe_sup' hs, Finset.sup'_eq_sup]
 
 theorem supDegree_eq_of_isMaxOn {p : R[A]} {a : A} (hmem : a ∈ p.support)
     (hmax : IsMaxOn D p.support a) : p.supDegree D = D a :=
@@ -605,7 +606,8 @@ theorem le_infDegree_add (f g : R[A]) :
 variable {D} in
 theorem infDegree_withTop_some_comp {s : AddMonoidAlgebra R A} (hs : s.support.Nonempty) :
     infDegree (WithTop.some ∘ D) s = infDegree D s := by
-  rw [AddMonoidAlgebra.infDegree, ← Finset.coe_inf' hs, Finset.inf'_eq_inf]
+  unfold AddMonoidAlgebra.infDegree
+  rw [← Finset.coe_inf' hs, Finset.inf'_eq_inf]
 
 theorem le_infDegree_mul [AddZeroClass A] [Add T] [AddLeftMono T] [AddRightMono T]
     (D : AddHom A T) (f g : R[A]) :
